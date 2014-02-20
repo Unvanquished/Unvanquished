@@ -3196,6 +3196,12 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 		filename_p = &filename[ 0 ];
 		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
 
+		if ( IsImageCompressed( bits ) )
+		{
+	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+		        goto skipCubeImage;
+		}
+
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
 			image = NULL;
@@ -3220,6 +3226,12 @@ tryDoom3Suffices:
 
 		filename_p = &filename[ 0 ];
 		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
+
+		if ( IsImageCompressed( bits ) )
+		{
+	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+		        goto skipCubeImage;
+		}
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
@@ -3258,6 +3270,12 @@ tryQuakeSuffices:
 
 		filename_p = &filename[ 0 ];
 		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
+
+		if ( IsImageCompressed( bits ) )
+		{
+	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+		        goto skipCubeImage;
+		}
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
