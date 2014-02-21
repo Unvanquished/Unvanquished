@@ -151,7 +151,6 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 
 #if !defined( COMPAT_ET ) && !defined( COMPAT_Q3A )
 		VectorCopy( vert->lightDirection, tess.lightDirections[ tess.numVertexes + i ] );
-		Vector4Copy( vert->paintColor, tess.paintColors[ tess.numVertexes + i ] );
 #endif
 	}
 
@@ -159,7 +158,7 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 	tess.attribsSet =  ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_COLOR | ATTR_NORMAL | ATTR_TANGENT | ATTR_BINORMAL;
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	tess.attribsSet |= ATTR_PAINTCOLOR | ATTR_LIGHTDIRECTION;
+	tess.attribsSet |= ATTR_LIGHTDIRECTION;
 #endif
 }
 
@@ -587,19 +586,6 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.colors );
 		}
 
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-
-		if ( attribBits & ATTR_PAINTCOLOR )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "glBufferSubData( ATTR_PAINTCOLOR, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
-			}
-
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_PAINTCOLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.paintColors );
-		}
-
-#endif
 		if ( attribBits & ATTR_AMBIENTLIGHT )
 		{
 			if ( r_logFile->integer )

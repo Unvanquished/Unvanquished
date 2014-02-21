@@ -1007,9 +1007,6 @@ void R_InitVBOs( void )
 {
 	uint32_t attribs = ATTR_POSITION | ATTR_TEXCOORD | ATTR_BINORMAL 
 	                   | ATTR_TANGENT | ATTR_NORMAL  | ATTR_LIGHTCOORD 
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	                   | ATTR_PAINTCOLOR
-#endif
 	                   | ATTR_COLOR | ATTR_AMBIENTLIGHT| ATTR_DIRECTEDLIGHT | ATTR_LIGHTDIRECTION;
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitVBOs -------\n" );

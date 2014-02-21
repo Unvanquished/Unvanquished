@@ -1620,7 +1620,6 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -1785,7 +1784,6 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 
 		for ( j = 0; j < 4; j++ )
 		{
-			points[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			points[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -1925,7 +1923,6 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -3423,9 +3420,6 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 
 	for ( j = 0; j < 4; j++ )
 	{
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		out->paintColor[ j ] = in->paintColor[ j ];
-#endif
 		out->lightColor[ j ] = in->lightColor[ j ];
 	}
 
@@ -3485,12 +3479,6 @@ static qboolean CompareLightVert(const srfVert_t * v1, const srfVert_t * v2)
         for(i = 0; i < 2; i++)
         {
                 if(v1->st[i] != v2->st[i])
-                        return qfalse;
-        }
-
-        for(i = 0; i < 4; i++)
-        {
-                if(v1->paintColor[i] != v2->paintColor[i])
                         return qfalse;
         }
 
@@ -5121,7 +5109,7 @@ static void R_CreateWorldVBO( void )
 	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL |
 	                                ATTR_NORMAL | ATTR_COLOR
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	                                | ATTR_PAINTCOLOR | ATTR_LIGHTDIRECTION
+	                                | ATTR_LIGHTDIRECTION
 #endif
 	                                 );
 #endif

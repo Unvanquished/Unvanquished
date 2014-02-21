@@ -559,9 +559,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		ATTR_INDEX_NORMAL,
 		ATTR_INDEX_COLOR,
 
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		ATTR_INDEX_PAINTCOLOR,
-#endif
 		ATTR_INDEX_AMBIENTLIGHT,
 		ATTR_INDEX_DIRECTEDLIGHT,
 		ATTR_INDEX_LIGHTDIRECTION,
@@ -588,9 +585,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		"attr_Binormal",
 		"attr_Normal",
 		"attr_Color",
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		"attr_PaintColor",
-#endif
 		"attr_AmbientLight",
 		"attr_DirectedLight",
 		"attr_LightDirection",
@@ -612,9 +606,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  ATTR_NORMAL         = BIT( ATTR_INDEX_NORMAL ),
 	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
 
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	  ATTR_PAINTCOLOR     = BIT( ATTR_INDEX_PAINTCOLOR ),
-#endif
 	  ATTR_AMBIENTLIGHT   = BIT( ATTR_INDEX_AMBIENTLIGHT ),
 	  ATTR_DIRECTEDLIGHT  = BIT( ATTR_INDEX_DIRECTEDLIGHT ),
 	  ATTR_LIGHTDIRECTION = BIT( ATTR_INDEX_LIGHTDIRECTION ),
@@ -630,7 +621,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	  ATTR_INTERP_BITS = ATTR_POSITION2 | ATTR_TANGENT2 | ATTR_BINORMAL2 | ATTR_NORMAL2,
 
-	  // FIXME XBSP format with ATTR_LIGHTDIRECTION and ATTR_PAINTCOLOR
+	  // FIXME XBSP format with ATTR_LIGHTDIRECTION
 	  //ATTR_DEFAULT = ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_COLOR,
 
 	  ATTR_BITS = ATTR_POSITION |
@@ -642,7 +633,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	              ATTR_COLOR // |
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	              ATTR_PAINTCOLOR |
 	              ATTR_LIGHTDIRECTION |
 #endif
 
@@ -1775,7 +1765,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec4_t lightColor;
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		vec4_t paintColor;
 		vec3_t lightDirection;
 #endif
 
@@ -3507,9 +3496,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec4_t binormals[ SHADER_MAX_VERTEXES ];
 		vec4_t normals[ SHADER_MAX_VERTEXES ];
 		vec4_t colors[ SHADER_MAX_VERTEXES ];
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		vec4_t paintColors[ SHADER_MAX_VERTEXES ]; // for advanced terrain blending
-#endif
 		vec4_t ambientLights[ SHADER_MAX_VERTEXES ];
 		vec4_t directedLights[ SHADER_MAX_VERTEXES ];
 		vec4_t lightDirections[ SHADER_MAX_VERTEXES ];
