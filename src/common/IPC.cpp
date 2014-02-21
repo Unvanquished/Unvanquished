@@ -417,20 +417,24 @@ std::pair<Socket, Socket> Socket::CreatePair()
 	return std::make_pair(std::move(a), std::move(b));
 }
 
-static void* MapSharedMemory(OSHandleType handle, size_t size)
+void SharedMemory::Map()
 {
 	// We don't use NaClMap here because it only supports MAP_FIXED
 #ifdef _WIN32
-	void *base = MapViewOfFile(handle, FILE_MAP_ALL_ACCESS, 0, 0, size);
-	if (base == nullptr)
+	base = MapViewOfFile(handle, FILE_MAP_ALL_ACCESS, 0, 0, size);
+	if (base == nullptr) {
+		NaClClose(handle);
+		handle = INVALID_HANDLE;
 		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %lu: %s", size, Win32StrError(GetLastError()).c_str());
+	}
 #else
-	void *base = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, handle, 0);
-	if (base == MAP_FAILED)
+	base = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, handle, 0);
+	if (base == MAP_FAILED) {
+		NaClClose(handle);
+		handle = INVALID_HANDLE;
 		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %lu: %s", size, strerror(errno));
+	}
 #endif
-
-	return base;
 }
 
 void SharedMemory::Close()
@@ -474,7 +478,7 @@ SharedMemory SharedMemory::FromDesc(const Desc& desc)
 	out.size = desc.size;
 	out.handle = desc.handle;
 #endif
-	out.base = MapSharedMemory(out.handle, out.size);
+	out.Map();
 	return out;
 }
 
@@ -492,8 +496,8 @@ SharedMemory SharedMemory::Create(size_t size)
 
 	SharedMemory out;
 	out.handle = handle;
-	out.base = MapSharedMemory(handle, size);
 	out.size = size;
+	out.Map();
 	return out;
 }
 

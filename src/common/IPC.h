@@ -174,6 +174,7 @@ public:
 	}
 
 private:
+	void Map();
 	OSHandleType handle;
 	void* base;
 	size_t size;
