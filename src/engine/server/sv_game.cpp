@@ -661,7 +661,7 @@ void GameVM::GameShutdown(qboolean restart)
 qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
 {
 	bool denied;
-	Str::StringRef sentReason;
+	std::string sentReason;
 	this->SendMsg<GameClientConnectMsg>(clientNum, firstTime, isBot, denied, sentReason);
 
 	if (denied) {

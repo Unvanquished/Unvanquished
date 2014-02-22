@@ -392,7 +392,7 @@ namespace Audio {
 
         private:
             void StartTest(const Cmd::Args& args) const {
-                Str::StringRef name = args.Argv(1);
+                const std::string& name = args.Argv(1);
 
                 if (name == "none") {
                     testingReverb = true;

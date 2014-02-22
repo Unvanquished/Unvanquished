@@ -47,7 +47,7 @@ namespace Resource {
         return true;
     }
 
-    Str::StringRef Resource::GetName() {
+    const std::string& Resource::GetName() const {
         return name;
     }
 

@@ -188,7 +188,7 @@ int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
 
 void trap_FS_Read(void *buffer, int len, fileHandle_t f)
 {
-	Str::StringRef res;
+	std::string res;
 	VM::SendMsg<FSReadMsg>(f, len, res);
 	memcpy(buffer, res.c_str(), std::min((int)res.size() + 1, len));
 }
@@ -214,7 +214,7 @@ void trap_FS_FCloseFile(fileHandle_t f)
 int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize)
 {
 	int res;
-	Str::StringRef text;
+	std::string text;
 	VM::SendMsg<FSGetFileListMsg>(path, extension, bufsize, res, text);
 	memcpy(listbuf, text.c_str(), std::min((int)text.size() + 1, bufsize));
 	return res;
@@ -372,7 +372,7 @@ void trap_SetConfigstring(int num, const char *string)
 
 void trap_GetConfigstring(int num, char *buffer, int bufferSize)
 {
-	Str::StringRef res;
+	std::string res;
 	VM::SendMsg<GetConfigStringMsg>(num, bufferSize, res);
 	Q_strncpyz(buffer, res.c_str(), bufferSize);
 }
@@ -389,14 +389,14 @@ void trap_SetUserinfo(int num, const char *buffer)
 
 void trap_GetUserinfo(int num, char *buffer, int bufferSize)
 {
-	Str::StringRef res;
+	std::string res;
 	VM::SendMsg<GetUserinfoMsg>(num, bufferSize, res);
 	Q_strncpyz(buffer, res.c_str(), bufferSize);
 }
 
 void trap_GetServerinfo(char *buffer, int bufferSize)
 {
-	Str::StringRef res;
+	std::string res;
 	VM::SendMsg<GetServerinfoMsg>(bufferSize, res);
 	Q_strncpyz(buffer, res.c_str(), bufferSize);
 }
@@ -408,7 +408,7 @@ void trap_GetUsercmd(int clientNum, usercmd_t *cmd)
 
 qboolean trap_GetEntityToken(char *buffer, int bufferSize)
 {
-	Str::StringRef text;
+	std::string text;
 	bool res;
 	VM::SendMsg<GetEntityTokenMsg>(res, text);
 	Q_strncpyz(buffer, text.c_str(), bufferSize);
@@ -450,7 +450,7 @@ messageStatus_t trap_MessageStatus(int clientNum)
 
 int trap_RSA_GenerateMessage(const char *public_key, char *cleartext, char *encrypted)
 {
-	Str::StringRef cleartext2, encrypted2;
+	std::string cleartext2, encrypted2;
 	int res;
 	VM::SendMsg<RSAGenMsgMsg>(public_key, res, cleartext2, encrypted2);
 	Q_strncpyz(cleartext, cleartext2.c_str(), RSA_STRING_LENGTH);
@@ -462,14 +462,14 @@ void trap_GenFingerprint(const char *pubkey, int size, char *buffer, int bufsize
 {
 	std::vector<char> pubkey2(size, 0);
 	memcpy(pubkey2.data(), pubkey, size);
-	Str::StringRef fingerprint;
+	std::string fingerprint;
 	VM::SendMsg<GenFingerprintMsg>(size, pubkey2, bufsize, fingerprint);
 	Q_strncpyz(buffer, fingerprint.c_str(), bufsize);
 }
 
 void trap_GetPlayerPubkey(int clientNum, char *pubkey, int size)
 {
-	Str::StringRef pubkey2;
+	std::string pubkey2;
 	VM::SendMsg<GetPlayerPubkeyMsg>(clientNum, size, pubkey2);
 	Q_strncpyz(pubkey, pubkey2.c_str(), size);
 }
@@ -488,7 +488,7 @@ int trap_GMTime(qtime_t *qtime)
 
 void trap_GetTimeString(char *buffer, int size, const char *format, const qtime_t *tm)
 {
-	Str::StringRef text;
+	std::string text;
 	VM::SendMsg<GetTimeStringMsg>(size, format, *tm, text);
 	Q_strncpyz(buffer, text.c_str(), size);
 }
@@ -524,7 +524,7 @@ int trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
 int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
 {
 	int res;
-	Str::StringRef filename2;
+	std::string filename2;
 	VM::SendMsg<ParseSourceFileAndLineMsg>(handle, res, filename2, *line);
 	Q_strncpyz(filename, filename2.c_str(), 128);
 	return res;

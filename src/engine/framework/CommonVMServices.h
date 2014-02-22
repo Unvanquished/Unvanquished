@@ -49,7 +49,7 @@ namespace VM {
             void Syscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket);
 
         private:
-            Str::StringRef vmName;
+            std::string vmName;
             VMBase& vm;
 
             VMBase& GetVM();
