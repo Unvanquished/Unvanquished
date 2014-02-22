@@ -2030,7 +2030,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	typedef struct
 	{
-		vec3_t origin;
 		vec4_t ambientColor;
 		vec4_t directedColor;
 		vec3_t direction;

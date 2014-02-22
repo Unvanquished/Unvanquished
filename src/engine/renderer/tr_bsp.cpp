@@ -6163,32 +6163,6 @@ void R_LoadLightGrid( lump_t *l )
 #endif
 	}
 
-	// calculate grid point positions
-	gridStep[ 0 ] = 1;
-	gridStep[ 1 ] = w->lightGridBounds[ 0 ];
-	gridStep[ 2 ] = w->lightGridBounds[ 0 ] * w->lightGridBounds[ 1 ];
-
-	for ( i = 0; i < w->lightGridBounds[ 0 ]; i += 1 )
-	{
-		for ( j = 0; j < w->lightGridBounds[ 1 ]; j += 1 )
-		{
-			for ( k = 0; k < w->lightGridBounds[ 2 ]; k += 1 )
-			{
-				pos[ 0 ] = i;
-				pos[ 1 ] = j;
-				pos[ 2 ] = k;
-
-				posFloat[ 0 ] = i * w->lightGridSize[ 0 ];
-				posFloat[ 1 ] = j * w->lightGridSize[ 1 ];
-				posFloat[ 2 ] = k * w->lightGridSize[ 2 ];
-
-				gridPoint = w->lightGridData + pos[ 0 ] * gridStep[ 0 ] + pos[ 1 ] * gridStep[ 1 ] + pos[ 2 ] * gridStep[ 2 ];
-
-				VectorAdd( posFloat, w->lightGridOrigin, gridPoint->origin );
-			}
-		}
-	}
-
 	ri.Printf( PRINT_DEVELOPER, "%i light grid points created\n", w->numLightGridPoints );
 }
 
