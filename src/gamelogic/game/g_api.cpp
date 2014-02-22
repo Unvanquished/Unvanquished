@@ -21,12 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "g_local.h"
-#include "../../libs/nacl/nacl.h"
-#include "../../common/RPC.h"
+#include "../shared/VMMain.h"
 #include "../../common/String.h"
 
 #include "../shared/CommonProxies.h"
-
+/*
 static NaCl::RootSocket rootSocket;
 static NaCl::IPCHandle shmRegion;
 static NaCl::SharedMemoryPtr shmMapping;
@@ -145,14 +144,10 @@ int main(int argc, char** argv)
 	// Start main RPC loop
 	DoRPC(writer);
 }
-
+*/
 void trap_Print(const char *string)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_PRINT);
-	input.WriteString(string);
-	DoRPC(input);
+	VM::SendMsg<PrintMsg>(string);
 }
 
 void NORETURN trap_Error(const char *string)
@@ -161,11 +156,7 @@ void NORETURN trap_Error(const char *string)
 	if (recursiveError)
 		exit(1);
 	recursiveError = true;
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_ERROR);
-	input.WriteString(string);
-	DoRPC(input);
+	VM::SendMsg<ErrorMsg>(string);
 	exit(1); // Amanieu: Need to implement proper error handling
 }
 
@@ -176,94 +167,67 @@ void trap_Log(log_event_t *event)
 
 int trap_Milliseconds(void)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_MILLISECONDS);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
+	int ms;
+	VM::SendMsg<MillisecondsMsg>(ms);
+	return ms;
 }
 
 void trap_SendConsoleCommand(int exec_when, const char *text)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_SEND_CONSOLE_COMMAND);
-	input.WriteInt(exec_when);
-	input.WriteString(text);
-	DoRPC(input);
+	VM::SendMsg<SendConsoleCommandMsg>(exec_when, text);
 }
 
 int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_FS_FOPEN_FILE);
-	input.WriteString(qpath);
-	input.WriteInt(f != NULL);
-	input.WriteInt(mode);
-	RPC::Reader output = DoRPC(input);
-	int ret = output.ReadInt();
+	int ret, handle;
+	VM::SendMsg<FSFOpenFileMsg>(qpath, f == NULL, mode, ret, handle);
 	if (f)
-		*f = output.ReadInt();
+		*f = handle;
 	return ret;
 }
 
 void trap_FS_Read(void *buffer, int len, fileHandle_t f)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_FS_READ);
-	input.WriteInt(f);
-	input.WriteInt(len);
-	RPC::Reader output = DoRPC(input);
-	output.Read(buffer, len);
+	Str::StringRef res;
+	VM::SendMsg<FSReadMsg>(f, len, res);
+	memcpy(buffer, res.c_str(), std::min((int)res.size() + 1, len));
 }
 
 int trap_FS_Write(const void *buffer, int len, fileHandle_t f)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_FS_WRITE);
-	input.WriteInt(f);
-	input.WriteInt(len);
-	input.Write(buffer, len);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
+	int res;
+	std::string text((const char*)buffer, len);
+	VM::SendMsg<FSWriteMsg>(f, text, res);
+	return res;
 }
 
 void trap_FS_Rename(const char *from, const char *to)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_FS_RENAME);
-	input.WriteString(from);
-	input.WriteString(to);
-	DoRPC(input);
+	VM::SendMsg<FSRenameMsg>(from, to);
 }
 
 void trap_FS_FCloseFile(fileHandle_t f)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_FS_FCLOSE_FILE);
-	input.WriteInt(f);
-	DoRPC(input);
+	VM::SendMsg<FSFCloseFileMsg>(f);
 }
 
 int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_FS_GETFILELIST);
-	input.WriteString(path);
-	input.WriteString(extension);
-	input.WriteInt(bufsize);
-	RPC::Reader output = DoRPC(input);
-	int ret = output.ReadInt();
-	output.Read(listbuf, bufsize);
-	return ret;
+	int res;
+	Str::StringRef text;
+	VM::SendMsg<FSGetFileListMsg>(path, extension, bufsize, res, text);
+	memcpy(listbuf, text.c_str(), std::min((int)text.size() + 1, bufsize));
+	return res;
 }
 
+qboolean trap_FindPak( const char *name )
+{
+	bool res;
+	VM::SendMsg<FSFindPakMsg>(name, res);
+	return res;
+}
+
+/*
 // Amanieu: This still has pointers for backward-compatibility, maybe remove them at some point?
 // The actual shared memory region is handled in this file, and is pretty much invisible to the rest of the code
 void trap_LocateGameData(gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient)
@@ -281,15 +245,113 @@ void trap_LocateGameData(gentity_t *gEnts, int numGEntities, int sizeofGEntity_t
 	input.WriteInt(sizeofGClient);
 	DoRPC(input);
 }
+*/
+
+void trap_LinkEntity(gentity_t *ent)
+{
+	VM::SendMsg<LinkEntityMsg>(ent - g_entities);
+}
+
+void trap_UnlinkEntity(gentity_t *ent)
+{
+	VM::SendMsg<UnlinkEntityMsg>(ent - g_entities);
+}
+
+int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxcount)
+{
+	std::vector<int> entityList;
+	std::array<float, 3> mins2, maxs2;
+	VectorCopy(mins, mins2.data());
+	VectorCopy(maxs, maxs2.data());
+	VM::SendMsg<EntitiesInBoxMsg>(mins2, maxs2, maxcount, entityList);
+	memcpy(list, entityList.data(), sizeof(int) * std::min((int) entityList.size(), maxcount));
+	return entityList.size();
+}
+
+qboolean trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
+{
+	std::array<float, 3> mins2, maxs2;
+	VectorCopy(mins, mins2.data());
+	VectorCopy(maxs, maxs2.data());
+	int res;
+	VM::SendMsg<EntityContactMsg>(mins2, maxs2, ent - g_entities, res);
+	return res;
+}
+
+void trap_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask)
+{
+	std::array<float, 3> start2, mins2, maxs2, end2;
+	VectorCopy(start, start2.data());
+	if (mins) {
+		VectorCopy(mins, mins2.data());
+	} else {
+		mins2 = {{0.0f, 0.0f, 0.0f}};
+	}
+	if (maxs) {
+		VectorCopy(maxs, maxs2.data());
+	} else {
+		maxs2 = {{0.0f, 0.0f, 0.0f}};
+	}
+	VectorCopy(end, end2.data());
+	VM::SendMsg<TraceMsg>(start2, mins2, maxs2, end2, passEntityNum, contentmask, *results);
+}
+
+void trap_TraceNoEnts(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask)
+{
+	trap_Trace(results, start, mins, maxs, end, -2, contentmask);
+}
+
+int trap_PointContents(const vec3_t point, int passEntityNum)
+{
+	std::array<float, 3> point2;
+	VectorCopy(point, point2.data());
+	int res;
+	VM::SendMsg<PointContentsMsg>(point2, passEntityNum, res);
+	return res;
+}
+
+void trap_SetBrushModel(gentity_t *ent, const char *name)
+{
+	VM::SendMsg<SetBrushModelMsg>(ent - g_entities, name);
+}
+
+qboolean trap_InPVS(const vec3_t p1, const vec3_t p2)
+{
+	std::array<float, 3> point1;
+	std::array<float, 3> point2;
+	VectorCopy(p1, point1.data());
+	VectorCopy(p2, point2.data());
+	bool res;
+	VM::SendMsg<InPVSMsg>(point1, point2, res);
+	return res;
+}
+
+qboolean trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
+{
+	std::array<float, 3> point1;
+	std::array<float, 3> point2;
+	VectorCopy(p1, point1.data());
+	VectorCopy(p2, point2.data());
+	bool res;
+	VM::SendMsg<InPVSIgnorePortalsMsg>(point1, point2, res);
+	return res;
+}
+
+void trap_AdjustAreaPortalState(gentity_t *ent, qboolean open)
+{
+	VM::SendMsg<AdjustAreaPortalStateMsg>(ent-g_entities, open);
+}
+
+qboolean trap_AreasConnected(int area1, int area2)
+{
+	bool res;
+	VM::SendMsg<AreasConnectedMsg>(area1, area2, res);
+	return res;
+}
 
 void trap_DropClient(int clientNum, const char *reason)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_DROP_CLIENT);
-	input.WriteInt(clientNum);
-	input.WriteString(reason);
-	DoRPC(input);
+	VM::SendMsg<DropClientMsg>(clientNum, reason);
 }
 
 void trap_SendServerCommand(int clientNum, const char *text)
@@ -300,241 +362,202 @@ void trap_SendServerCommand(int clientNum, const char *text)
 		return;
 	}
 
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_SEND_SERVER_COMMAND);
-	input.WriteInt(clientNum);
-	input.WriteString(text);
-	DoRPC(input);
-}
-
-void trap_LinkEntity(gentity_t *ent)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_LINKENTITY);
-	input.WriteInt(ent - g_entities);
-	DoRPC(input);
-}
-
-void trap_UnlinkEntity(gentity_t *ent)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_UNLINKENTITY);
-	input.WriteInt(ent - g_entities);
-	DoRPC(input);
-}
-
-int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxcount)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_ENTITIES_IN_BOX);
-	input.Write(mins, sizeof(vec3_t));
-	input.Write(maxs, sizeof(vec3_t));
-	input.WriteInt(maxcount);
-	RPC::Reader output = DoRPC(input);
-	int len = std::min(output.ReadInt(), maxcount);
-	output.Read(list, len * sizeof(int));
-	return len;
-}
-
-qboolean trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_ENTITY_CONTACT);
-	input.Write(mins, sizeof(vec3_t));
-	input.Write(maxs, sizeof(vec3_t));
-	input.WriteInt(ent - g_entities);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-qboolean trap_EntityContactCapsule(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_ENTITY_CONTACTCAPSULE);
-	input.Write(mins, sizeof(vec3_t));
-	input.Write(maxs, sizeof(vec3_t));
-	input.WriteInt(ent - g_entities);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-void trap_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_TRACE);
-	input.Write(start, sizeof(vec3_t));
-	input.Write(mins ? mins : vec3_origin, sizeof(vec3_t));
-	input.Write(maxs ? maxs : vec3_origin, sizeof(vec3_t));
-	input.Write(end, sizeof(vec3_t));
-	input.WriteInt(passEntityNum);
-	input.WriteInt(contentmask);
-	RPC::Reader output = DoRPC(input);
-	output.Read(results, sizeof(trace_t));
-}
-
-void trap_TraceNoEnts(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask)
-{
-	trap_Trace(results, start, mins, maxs, end, -2, contentmask);
-}
-
-void trap_TraceCapsule(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_TRACECAPSULE);
-	input.Write(start, sizeof(vec3_t));
-	input.Write(mins ? mins : vec3_origin, sizeof(vec3_t));
-	input.Write(maxs ? maxs : vec3_origin, sizeof(vec3_t));
-	input.Write(end, sizeof(vec3_t));
-	input.WriteInt(passEntityNum);
-	input.WriteInt(contentmask);
-	RPC::Reader output = DoRPC(input);
-	output.Read(results, sizeof(trace_t));
-}
-
-void trap_TraceCapsuleNoEnts(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask)
-{
-	trap_TraceCapsule(results, start, mins, maxs, end, -2, contentmask);
-}
-
-int trap_PointContents(const vec3_t point, int passEntityNum)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_POINT_CONTENTS);
-	input.Write(point, sizeof(vec3_t));
-	input.WriteInt(passEntityNum);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-void trap_SetBrushModel(gentity_t *ent, const char *name)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_SET_BRUSH_MODEL);
-	input.WriteInt(ent - g_entities);
-	input.WriteString(name);
-	DoRPC(input);
-}
-
-qboolean trap_InPVS(const vec3_t p1, const vec3_t p2)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_IN_PVS);
-	input.Write(p1, sizeof(vec3_t));
-	input.Write(p2, sizeof(vec3_t));
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-qboolean trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_IN_PVS_IGNORE_PORTALS);
-	input.Write(p1, sizeof(vec3_t));
-	input.Write(p2, sizeof(vec3_t));
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
+	VM::SendMsg<SendServerCommandMsg>(clientNum, text);
 }
 
 void trap_SetConfigstring(int num, const char *string)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_SET_CONFIGSTRING);
-	input.WriteInt(num);
-	input.WriteString(string);
-	DoRPC(input);
+	VM::SendMsg<SetConfigStringMsg>(num, string);
 }
 
 void trap_GetConfigstring(int num, char *buffer, int bufferSize)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GET_CONFIGSTRING);
-	input.WriteInt(num);
-	input.WriteInt(bufferSize);
-	RPC::Reader output = DoRPC(input);
-	Q_strncpyz(buffer, output.ReadString(), bufferSize);
+	Str::StringRef res;
+	VM::SendMsg<GetConfigStringMsg>(num, bufferSize, res);
+	Q_strncpyz(buffer, res.c_str(), bufferSize);
 }
 
 void trap_SetConfigstringRestrictions(int num, const clientList_t *clientList)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_SET_CONFIGSTRING_RESTRICTIONS);
-	input.WriteInt(num);
-	input.Write(clientList, sizeof(clientList_t));
-	DoRPC(input);
+	VM::SendMsg<SetConfigStringRestrictionsMsg>(); // not implemented
 }
 
 void trap_SetUserinfo(int num, const char *buffer)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_SET_USERINFO);
-	input.WriteInt(num);
-	input.WriteString(buffer);
-	DoRPC(input);
+	VM::SendMsg<SetUserinfoMsg>(num, buffer);
 }
 
 void trap_GetUserinfo(int num, char *buffer, int bufferSize)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GET_USERINFO);
-	input.WriteInt(num);
-	input.WriteInt(bufferSize);
-	RPC::Reader output = DoRPC(input);
-	Q_strncpyz(buffer, output.ReadString(), bufferSize);
+	Str::StringRef res;
+	VM::SendMsg<GetUserinfoMsg>(num, bufferSize, res);
+	Q_strncpyz(buffer, res.c_str(), bufferSize);
 }
 
 void trap_GetServerinfo(char *buffer, int bufferSize)
 {
+	Str::StringRef res;
+	VM::SendMsg<GetServerinfoMsg>(bufferSize, res);
+	Q_strncpyz(buffer, res.c_str(), bufferSize);
+}
+
+void trap_GetUsercmd(int clientNum, usercmd_t *cmd)
+{
+	VM::SendMsg<GetUsercmdMsg>(clientNum, *cmd);
+}
+
+qboolean trap_GetEntityToken(char *buffer, int bufferSize)
+{
+	Str::StringRef text;
+	bool res;
+	VM::SendMsg<GetEntityTokenMsg>(res, text);
+	Q_strncpyz(buffer, text.c_str(), bufferSize);
+	return res;
+}
+
+void trap_SendGameStat(const char *data)
+{
+	VM::SendMsg<SendGameStatMsg>(data);
+}
+
+qboolean trap_GetTag(int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori)
+{
+	int res;
+	VM::SendMsg<GetTagMsg>(clientNum, tagFileNumber, tagName, res, *ori);
+	return res;
+}
+
+qboolean trap_LoadTag(const char *filename)
+{
+	int res;
+	VM::SendMsg<RegisterTagMsg>(filename, res);
+	return res;
+}
+
+void trap_SendMessage(int clientNum, char *buf, int buflen)
+{
+	std::vector<char> buffer(buflen, 0);
+	memcpy(buffer.data(), buf, buflen);
+	VM::SendMsg<SendMessageMsg>(clientNum, buflen, buffer);
+}
+
+messageStatus_t trap_MessageStatus(int clientNum)
+{
+	int res;
+	VM::SendMsg<MessageStatusMsg>(clientNum, res);
+	return static_cast<messageStatus_t>(res);
+}
+
+int trap_RSA_GenerateMessage(const char *public_key, char *cleartext, char *encrypted)
+{
+	Str::StringRef cleartext2, encrypted2;
+	int res;
+	VM::SendMsg<RSAGenMsgMsg>(public_key, res, cleartext2, encrypted2);
+	Q_strncpyz(cleartext, cleartext2.c_str(), RSA_STRING_LENGTH);
+	Q_strncpyz(encrypted, encrypted2.c_str(), RSA_STRING_LENGTH);
+	return res;
+}
+
+void trap_GenFingerprint(const char *pubkey, int size, char *buffer, int bufsize)
+{
+	std::vector<char> pubkey2(size, 0);
+	memcpy(pubkey2.data(), pubkey, size);
+	Str::StringRef fingerprint;
+	VM::SendMsg<GenFingerprintMsg>(size, pubkey2, bufsize, fingerprint);
+	Q_strncpyz(buffer, fingerprint.c_str(), bufsize);
+}
+
+void trap_GetPlayerPubkey(int clientNum, char *pubkey, int size)
+{
+	Str::StringRef pubkey2;
+	VM::SendMsg<GetPlayerPubkeyMsg>(clientNum, size, pubkey2);
+	Q_strncpyz(pubkey, pubkey2.c_str(), size);
+}
+
+int trap_GMTime(qtime_t *qtime)
+{
+	int res;
+	if (qtime) {
+		VM::SendMsg<GMTimeMsg>(res, *qtime);
+	} else {
+		qtime_t t;
+		VM::SendMsg<GMTimeMsg>(res, t);
+	}
+	return res;
+}
+
+void trap_GetTimeString(char *buffer, int size, const char *format, const qtime_t *tm)
+{
+	Str::StringRef text;
+	VM::SendMsg<GetTimeStringMsg>(size, format, *tm, text);
+	Q_strncpyz(buffer, text.c_str(), size);
+}
+
+int trap_Parse_AddGlobalDefine(const char *define)
+{
+	int res;
+	VM::SendMsg<ParseAddGlobalDefineMsg>(define, res);
+	return res;
+}
+
+int trap_Parse_LoadSource(const char *filename)
+{
+	int res;
+	VM::SendMsg<ParseLoadSourceMsg>(filename, res);
+	return res;
+}
+
+int trap_Parse_FreeSource(int handle)
+{
+	int res;
+	VM::SendMsg<ParseFreeSourceMsg>(handle, res);
+	return res;
+}
+
+int trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
+{
+	int res;
+	VM::SendMsg<ParseReadTokenMsg>(handle, res, *pc_token);
+	return res;
+}
+
+int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
+{
+	int res;
+	Str::StringRef filename2;
+	VM::SendMsg<ParseSourceFileAndLineMsg>(handle, res, filename2, *line);
+	Q_strncpyz(filename, filename2.c_str(), 128);
+	return res;
+}
+
+/*
+void trap_SnapVector(float *v)
+{
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GET_SERVERINFO);
-	input.WriteInt(bufferSize);
+	input.WriteInt(G_SNAPVECTOR);
+	input.Write(v, sizeof(vec3_t));
 	RPC::Reader output = DoRPC(input);
-	Q_strncpyz(buffer, output.ReadString(), bufferSize);
+	output.Read(v, sizeof(vec3_t));
 }
 
-void trap_AdjustAreaPortalState(gentity_t *ent, qboolean open)
+void trap_QuoteString(const char *str, char *buffer, int size)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_ADJUST_AREA_PORTAL_STATE);
-	input.WriteInt(ent - g_entities);
-	input.WriteInt(open);
-	DoRPC(input);
-}
-
-qboolean trap_AreasConnected(int area1, int area2)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_AREAS_CONNECTED);
-	input.WriteInt(area1);
-	input.WriteInt(area2);
+	input.WriteInt(G_QUOTESTRING);
+	input.WriteString(str);
 	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
+	Q_strncpyz(buffer, output.ReadString(), size);
 }
 
-qboolean trap_FindPak( const char *name )
+sfxHandle_t trap_RegisterSound(const char *sample, qboolean compressed)
 {
 	RPC::Writer input;
-	input.WriteInt(G_FINDPAK);
-	input.WriteString(name);
+	input.WriteInt(GS_QVM_SYSCALL);
+	input.WriteInt(G_REGISTERSOUND);
+	input.WriteString(sample);
+	input.WriteInt(compressed);
 	RPC::Reader output = DoRPC(input);
 	return output.ReadInt();
 }
@@ -569,226 +592,6 @@ int trap_BotGetServerCommand(int clientNum, char *message, int size)
 	int ret = output.ReadInt();
 	Q_strncpyz(message, output.ReadString(), size);
 	return ret;
-}
-
-void trap_GetUsercmd(int clientNum, usercmd_t *cmd)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GET_USERCMD);
-	input.WriteInt(clientNum);
-	RPC::Reader output = DoRPC(input);
-	output.Read(cmd, sizeof(usercmd_t));
-}
-
-qboolean trap_GetEntityToken(char *buffer, int bufferSize)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GET_ENTITY_TOKEN);
-	RPC::Reader output = DoRPC(input);
-	qboolean ret = output.ReadInt();
-	Q_strncpyz(buffer, output.ReadString(), bufferSize);
-	return ret;
-}
-
-int trap_GMTime(qtime_t *qtime)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GM_TIME);
-	RPC::Reader output = DoRPC(input);
-	qboolean ret = output.ReadInt();
-	if (qtime)
-		output.Read(qtime, sizeof(qtime_t));
-	return ret;
-}
-
-void trap_SnapVector(float *v)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_SNAPVECTOR);
-	input.Write(v, sizeof(vec3_t));
-	RPC::Reader output = DoRPC(input);
-	output.Read(v, sizeof(vec3_t));
-}
-
-void trap_SendGameStat(const char *data)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_SEND_GAMESTAT);
-	input.WriteString(data);
-	DoRPC(input);
-}
-
-qboolean trap_GetTag(int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GETTAG);
-	input.WriteInt(clientNum);
-	input.WriteInt(tagFileNumber);
-	input.WriteString(tagName);
-	RPC::Reader output = DoRPC(input);
-	qboolean ret = output.ReadInt();
-	output.Read(ori, sizeof(orientation_t));
-	return ret;
-}
-
-qboolean trap_LoadTag(const char *filename)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_REGISTERTAG);
-	input.WriteString(filename);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-sfxHandle_t trap_RegisterSound(const char *sample, qboolean compressed)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_REGISTERSOUND);
-	input.WriteString(sample);
-	input.WriteInt(compressed);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-int trap_Parse_AddGlobalDefine(const char *define)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_PARSE_ADD_GLOBAL_DEFINE);
-	input.WriteString(define);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-int trap_Parse_LoadSource(const char *filename)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_PARSE_LOAD_SOURCE);
-	input.WriteString(filename);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-int trap_Parse_FreeSource(int handle)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_PARSE_FREE_SOURCE);
-	input.WriteInt(handle);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-int trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_PARSE_READ_TOKEN);
-	input.WriteInt(handle);
-	RPC::Reader output = DoRPC(input);
-	int ret = output.ReadInt();
-	output.Read(pc_token, sizeof(pc_token_t));
-	return ret;
-}
-
-int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_PARSE_SOURCE_FILE_AND_LINE);
-	input.WriteInt(handle);
-	RPC::Reader output = DoRPC(input);
-	int ret = output.ReadInt();
-	Q_strncpyz(filename, output.ReadString(), 128);
-	*line = output.ReadInt();
-	return ret;
-}
-
-void trap_SendMessage(int clientNum, char *buf, int buflen)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_SENDMESSAGE);
-	input.WriteInt(buflen);
-	input.Write(buf, buflen);
-	DoRPC(input);
-}
-
-messageStatus_t trap_MessageStatus(int clientNum)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_MESSAGESTATUS);
-	input.WriteInt(clientNum);
-	RPC::Reader output = DoRPC(input);
-	return static_cast<messageStatus_t>(output.ReadInt());
-}
-
-int trap_RSA_GenerateMessage(const char *public_key, char *cleartext, char *encrypted)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_RSA_GENMSG);
-	input.WriteString(public_key);
-	RPC::Reader output = DoRPC(input);
-	int ret = output.ReadInt();
-	Q_strncpyz(cleartext, output.ReadString(), RSA_STRING_LENGTH);
-	Q_strncpyz(encrypted, output.ReadString(), RSA_STRING_LENGTH);
-	return ret;
-}
-
-void trap_QuoteString(const char *str, char *buffer, int size)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_QUOTESTRING);
-	input.WriteString(str);
-	RPC::Reader output = DoRPC(input);
-	Q_strncpyz(buffer, output.ReadString(), size);
-}
-
-void trap_GenFingerprint(const char *pubkey, int size, char *buffer, int bufsize)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GENFINGERPRINT);
-	input.WriteInt(size);
-	input.Write(pubkey, size);
-	input.WriteInt(bufsize);
-	RPC::Reader output = DoRPC(input);
-	Q_strncpyz(buffer, output.ReadString(), bufsize);
-}
-
-void trap_GetPlayerPubkey(int clientNum, char *pubkey, int size)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GETPLAYERPUBKEY);
-	input.WriteInt(clientNum);
-	input.WriteInt(size);
-	RPC::Reader output = DoRPC(input);
-	Q_strncpyz(pubkey, output.ReadString(), size);
-}
-
-void trap_GetTimeString(char *buffer, int size, const char *format, const qtime_t *tm)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GETTIMESTRING);
-	input.WriteInt(size);
-	input.WriteString(format);
-	input.Write(tm, sizeof(qtime_t));
-	RPC::Reader output = DoRPC(input);
-	Q_strncpyz(buffer, output.ReadString(), size);
 }
 
 qboolean trap_BotSetupNav(const botClass_t *botClass, qhandle_t *navHandle)
@@ -932,3 +735,4 @@ void trap_BotUpdateObstacles(void)
 	input.WriteInt(BOT_UPDATE_OBSTACLES);
 	DoRPC(input);
 }
+*/

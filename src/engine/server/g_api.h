@@ -242,7 +242,7 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC_ID(VM::QVM, G_TRACE), std::array<float, 3>, std::array<float, 3>, std::array<float, 3>, std::array<float, 3>, int, int>,
 	IPC::Reply<trace_t>
 > TraceMsg;
-// PointConentsMsg
+// PointContentsMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC_ID(VM::QVM, G_POINT_CONTENTS), std::array<float, 3>, int>,
 	IPC::Reply<int>
