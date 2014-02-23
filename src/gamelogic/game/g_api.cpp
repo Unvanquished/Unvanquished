@@ -227,25 +227,17 @@ qboolean trap_FindPak( const char *name )
 	return res;
 }
 
-/*
 // Amanieu: This still has pointers for backward-compatibility, maybe remove them at some point?
 // The actual shared memory region is handled in this file, and is pretty much invisible to the rest of the code
 void trap_LocateGameData(gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient)
 {
 	static bool firstTime = true;
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_LOCATE_GAME_DATA);
 	if (firstTime) {
-		input.WriteHandle(shmRegion);
+		VM::SendMsg<LocateGameDataMsg1>(shmRegion, numGEntities, sizeofGEntity_t, sizeofGClient);
 		firstTime = false;
-	}
-	input.WriteInt(numGEntities);
-	input.WriteInt(sizeofGEntity_t);
-	input.WriteInt(sizeofGClient);
-	DoRPC(input);
+	} else
+		VM::SendMsg<LocateGameDataMsg2>(shmRegion, numGEntities, sizeofGEntity_t, sizeofGClient);
 }
-*/
 
 void trap_LinkEntity(gentity_t *ent)
 {
