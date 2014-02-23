@@ -6251,13 +6251,12 @@ static void RB_RenderDebugUtils()
 
 	if ( r_showLightGrid->integer )
 	{
-		bspGridPoint_t *gridPoint;
-		int            x, y, z, k;
-		vec3_t         offset;
-		vec3_t         lightDirection;
-		vec3_t         tmp, tmp2, tmp3;
-		vec_t          length;
-		vec4_t         tetraVerts[ 4 ];
+		int             x, y, z, k;
+		vec3_t          offset;
+		vec3_t          lightDirection;
+		vec3_t          tmp, tmp2, tmp3;
+		vec_t           length;
+		vec4_t          tetraVerts[ 4 ];
 
 		if ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOCUBEMAP ) )
 		{
@@ -6297,11 +6296,13 @@ static void RB_RenderDebugUtils()
 
 		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
 
-		gridPoint = tr.world->lightGridData;
 		for ( z = 0; z < tr.world->lightGridBounds[ 2 ]; z++ ) {
 			for ( y = 0; y < tr.world->lightGridBounds[ 1 ]; y++ ) {
-				for ( x = 0; x < tr.world->lightGridBounds[ 0 ]; x++, gridPoint++ ) {
+				for ( x = 0; x < tr.world->lightGridBounds[ 0 ]; x++ ) {
 					vec3_t origin;
+					vec3_t ambientColor;
+					vec3_t directedColor;
+					vec3_t lightDir;
 
 					VectorCopy( tr.world->lightGridOrigin, origin );
 					origin[ 0 ] += x * tr.world->lightGridSize[ 0 ];
@@ -6313,7 +6314,9 @@ static void RB_RenderDebugUtils()
 						continue;
 					}
 
-					VectorNegate( gridPoint->direction, lightDirection );
+					R_LightForPoint( origin, ambientColor,
+							 directedColor, lightDir );
+					VectorNegate( lightDir, lightDir );
 
 					length = 8;
 					VectorMA( origin, 8, lightDirection, offset );
@@ -6334,11 +6337,11 @@ static void RB_RenderDebugUtils()
 
 					VectorCopy( origin, tetraVerts[ 3 ] );
 					tetraVerts[ 3 ][ 3 ] = 1;
-					Tess_AddTetrahedron( tetraVerts, gridPoint->directedColor );
+					Tess_AddTetrahedron( tetraVerts, directedColor );
 
 					VectorCopy( offset, tetraVerts[ 3 ] );
 					tetraVerts[ 3 ][ 3 ] = 1;
-					Tess_AddTetrahedron( tetraVerts, gridPoint->directedColor );
+					Tess_AddTetrahedron( tetraVerts, directedColor );
 				}
 
 				Tess_End();

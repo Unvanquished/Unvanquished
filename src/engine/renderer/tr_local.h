@@ -2028,12 +2028,26 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		decal_t *decals;
 	} bspModel_t;
 
-	typedef struct
+	// The lightVec is not just a direction vector, it is
+	// the product of the normalized light direction vector
+	// multiplied by the ratio of directed light in the total
+	// luminance.
+	// The reason for storing total luminance and lightVec instead
+	// of separate ambient and directional light, is that this
+	// way the interpolation of two light gridPoints with nearly
+	// opposite light directions will result in a stronger ambient
+	// light in the middle, whereas the other method will produce
+	// directional light from a random direction.
+	typedef struct bspGridPoint1_s
 	{
-		vec4_t ambientColor;
-		vec4_t directedColor;
-		vec3_t direction;
-	} bspGridPoint_t;
+		byte  lightVec[3];
+		byte  luminance;
+	} bspGridPoint1_t;
+	typedef struct bspGridPoint2_s
+	{
+		byte  ambientChroma[2];
+		byte  directedChroma[2];
+	} bspGridPoint2_t;
 
 // ydnar: optimization
 #define WORLD_MAX_SKY_NODES 32
@@ -2106,7 +2120,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec3_t             lightGridSize;
 		vec3_t             lightGridInverseSize;
 		int                lightGridBounds[ 3 ];
-		bspGridPoint_t     *lightGridData;
+		bspGridPoint1_t    *lightGridData1;
+		bspGridPoint2_t    *lightGridData2;
 		int                numLightGridPoints;
 
 		int                numLights;

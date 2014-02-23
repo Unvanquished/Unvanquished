@@ -6039,16 +6039,14 @@ R_LoadLightGrid
 */
 void R_LoadLightGrid( lump_t *l )
 {
-	int            i, j, k;
+	int            i, j;
 	vec3_t         maxs;
 	world_t        *w;
 	float          *wMins, *wMaxs;
 	dgridPoint_t   *in;
-	bspGridPoint_t *gridPoint;
+	bspGridPoint1_t *gridPoint1;
+	bspGridPoint2_t *gridPoint2;
 	float          lat, lng;
-	int            gridStep[ 3 ];
-	int            pos[ 3 ];
-	float          posFloat[ 3 ];
 
 	ri.Printf( PRINT_DEVELOPER, "...loading light grid\n" );
 
@@ -6078,7 +6076,8 @@ void R_LoadLightGrid( lump_t *l )
 	if ( l->filelen != w->numLightGridPoints * sizeof( dgridPoint_t ) )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: light grid mismatch\n" );
-		w->lightGridData = NULL;
+		w->lightGridData1 = NULL;
+		w->lightGridData2 = NULL;
 		return;
 	}
 
@@ -6089,13 +6088,20 @@ void R_LoadLightGrid( lump_t *l )
 		ri.Error( ERR_DROP, "LoadMap: funny lump size in %s", s_worldData.name );
 	}
 
-	gridPoint = (bspGridPoint_t*) ri.Hunk_Alloc( w->numLightGridPoints * sizeof( *gridPoint ), h_low );
+	i = w->numLightGridPoints * ( sizeof( *gridPoint1 ) + sizeof( *gridPoint2 ) );
+	gridPoint1 = (bspGridPoint1_t *) ri.Hunk_Alloc( i, h_low );
+	gridPoint2 = (bspGridPoint2_t *) (gridPoint1 + w->numLightGridPoints);
 
-	w->lightGridData = gridPoint;
-	//Com_Memcpy(w->lightGridData, (void *)(fileBase + l->fileofs), l->filelen);
+	w->lightGridData1 = gridPoint1;
+	w->lightGridData2 = gridPoint2;
 
-	for ( i = 0; i < w->numLightGridPoints; i++, in++, gridPoint++ )
+	for ( i = 0; i < w->numLightGridPoints;
+	      i++, in++, gridPoint1++, gridPoint2++ )
 	{
+		vec3_t ambientColor, directedColor, direction;
+		float  scale;
+		int    tmp, ambient[ 3 ], directed[ 3 ];
+
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 		byte tmpAmbient[ 4 ];
 		byte tmpDirected[ 4 ];
@@ -6115,22 +6121,19 @@ void R_LoadLightGrid( lump_t *l )
 
 		for ( j = 0; j < 3; j++ )
 		{
-			gridPoint->ambientColor[ j ] = tmpAmbient[ j ] * ( 1.0f / 255.0f );
-			gridPoint->directedColor[ j ] = tmpDirected[ j ] * ( 1.0f / 255.0f );
+			ambientColor[ j ] = tmpAmbient[ j ] * ( 1.0f / 255.0f );
+			directedColor[ j ] = tmpDirected[ j ] * ( 1.0f / 255.0f );
 		}
 
 #else
 
 		for ( j = 0; j < 3; j++ )
 		{
-			gridPoint->ambientColor[ j ] = LittleFloat( in->ambient[ j ] );
-			gridPoint->directedColor[ j ] = LittleFloat( in->directed[ j ] );
+			ambientColor[ j ] = LittleFloat( in->ambient[ j ] );
+			directedColor[ j ] = LittleFloat( in->directed[ j ] );
 		}
 
 #endif
-
-		gridPoint->ambientColor[ 3 ] = 1.0f;
-		gridPoint->directedColor[ 3 ] = 1.0f;
 
 		// standard spherical coordinates to cartesian coordinates conversion
 
@@ -6146,9 +6149,9 @@ void R_LoadLightGrid( lump_t *l )
 		lat = DEG2RAD( in->latLong[ 1 ] * ( 360.0f / 255.0f ) );
 		lng = DEG2RAD( in->latLong[ 0 ] * ( 360.0f / 255.0f ) );
 
-		gridPoint->direction[ 0 ] = cos( lat ) * sin( lng );
-		gridPoint->direction[ 1 ] = sin( lat ) * sin( lng );
-		gridPoint->direction[ 2 ] = cos( lng );
+		direction[ 0 ] = cos( lat ) * sin( lng );
+		direction[ 1 ] = sin( lat ) * sin( lng );
+		direction[ 2 ] = cos( lng );
 
 #if 0
 		// debug print to see if the XBSP format is correct
@@ -6158,9 +6161,36 @@ void R_LoadLightGrid( lump_t *l )
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		// deal with overbright bits
-		R_HDRTonemapLightingColors( gridPoint->ambientColor, gridPoint->ambientColor, qtrue );
-		R_HDRTonemapLightingColors( gridPoint->directedColor, gridPoint->directedColor, qtrue );
+		R_HDRTonemapLightingColors( ambientColor, ambientColor, qtrue );
+		R_HDRTonemapLightingColors( directedColor, directedColor, qtrue );
 #endif
+
+		// Pack data into an bspGridPoint
+		ambient[ 0 ] = Q_ftol( ambientColor[ 0 ] * 255.0f );
+		ambient[ 1 ] = Q_ftol( ambientColor[ 1 ] * 255.0f );
+		ambient[ 2 ] = Q_ftol( ambientColor[ 2 ] * 255.0f );
+		directed[ 0 ] = Q_ftol( directedColor[ 0 ] * 255.0f );
+		directed[ 1 ] = Q_ftol( directedColor[ 1 ] * 255.0f );
+		directed[ 2 ] = Q_ftol( directedColor[ 2 ] * 255.0f );
+
+		tmp = (ambient[ 0 ] + ambient[ 2 ] + 1) >> 1;
+		gridPoint2->ambientChroma[ 1 ] = 128 + (ambient[ 0 ] - tmp);
+		tmp = (ambient[ 1 ] + tmp + 1) >> 1;
+		gridPoint2->ambientChroma[ 0 ] = 128 + (ambient[ 1 ] - tmp);
+		gridPoint1->luminance = tmp;
+
+		tmp = (directed[ 0 ] + directed[ 2 ] + 1) >> 1;
+		gridPoint2->directedChroma[ 1 ] = 128 + (directed[ 0 ] - tmp);
+		tmp = (directed[ 1 ] + tmp + 1) >> 1;
+		gridPoint2->directedChroma[ 0 ] = 128 + (directed[ 1 ] - tmp);
+
+		scale = (127.0f * tmp) / (tmp + gridPoint1->luminance);
+		gridPoint1->luminance = (gridPoint1->luminance + tmp + 1) >> 1;
+
+		VectorScale( direction, scale, direction );
+		gridPoint1->lightVec[ 0 ] = 128 + Q_ftol( direction[ 0 ] );
+		gridPoint1->lightVec[ 1 ] = 128 + Q_ftol( direction[ 1 ] );
+		gridPoint1->lightVec[ 2 ] = 128 + Q_ftol( direction[ 2 ] );
 	}
 
 	ri.Printf( PRINT_DEVELOPER, "%i light grid points created\n", w->numLightGridPoints );
