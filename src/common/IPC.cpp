@@ -77,7 +77,7 @@ enum NaClDescTypeTag {
   NACL_DESC_NULL
 };
 #define NACL_DESC_TYPE_MAX      (NACL_DESC_NULL + 1)
-#define NACL_DESC_TYPE_END_TAG  ((char)0xff)
+#define NACL_DESC_TYPE_END_TAG  (0xff)
 
 struct NaClInternalRealHeader {
   uint32_t  xfer_protocol_version;
@@ -199,8 +199,8 @@ void Socket::SendMsg(const Writer& writer) const
 	NaClHandle h[NACL_ABI_IMC_DESC_MAX];
 	const Desc* handles = writer.GetHandles().data();
 	size_t numHandles = writer.GetHandles().size();
-	const void* data = writer.GetHandles().data();
-	size_t len = writer.GetHandles().size();
+	const void* data = writer.GetData().data();
+	size_t len = writer.GetData().size();
 
 	if (numHandles > NACL_ABI_IMC_DESC_MAX)
 		Com_Error(ERR_DROP, "IPC: Message contains more handles than maximum allowed: %lu\n", numHandles);

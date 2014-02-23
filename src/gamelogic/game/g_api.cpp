@@ -193,7 +193,7 @@ void trap_SendConsoleCommand(int exec_when, const char *text)
 int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
 {
 	int ret, handle;
-	VM::SendMsg<FSFOpenFileMsg>(qpath, f == NULL, mode, ret, handle);
+	VM::SendMsg<FSFOpenFileMsg>(qpath, f != NULL, mode, ret, handle);
 	if (f)
 		*f = handle;
 	return ret;

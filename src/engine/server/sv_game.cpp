@@ -844,11 +844,13 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 			const sharedEntity_t* ent = SV_GentityNum(entityNum);
 			res = SV_EntityContact(mins.data(), maxs.data(), ent, TT_AABB);
 		});
+		break;
 
 	case G_TRACE:
 		IPC::HandleMsg<TraceMsg>(socket, std::move(reader), [this](std::array<float, 3> start, std::array<float, 3> mins, std::array<float, 3> maxs, std::array<float, 3> end, int passEntityNum, int contentMask, trace_t& res) {
 			SV_Trace(&res, start.data(), mins.data(), maxs.data(), end.data(), passEntityNum, contentMask, TT_AABB);
 		});
+		break;
 
 	case G_POINT_CONTENTS:
 		IPC::HandleMsg<PointContentsMsg>(socket, std::move(reader), [this](std::array<float, 3> p, int passEntityNum, int& res) {
