@@ -2915,7 +2915,7 @@ int R_StitchPatches( int grid1num, int grid2num )
 						row = 0;
 					}
 
-					grid2 = R_GridInsertColumn( grid2, l + 1, row, grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k ] );
+					grid2 = R_GridInsertColumn( grid2, l + 1, row, grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k - 1 ] );
 					grid2->lodStitched = qfalse;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
 					return qtrue;
@@ -2998,7 +2998,7 @@ int R_StitchPatches( int grid1num, int grid2num )
 						column = 0;
 					}
 
-					grid2 = R_GridInsertRow( grid2, l + 1, column, grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k ] );
+					grid2 = R_GridInsertRow( grid2, l + 1, column, grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k - 1 ] );
 
 					if ( !grid2 )
 					{
@@ -3109,7 +3109,7 @@ int R_StitchPatches( int grid1num, int grid2num )
 					}
 
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
-					                            grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k ] );
+					                            grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k - 1 ] );
 					grid2->lodStitched = qfalse;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
 					return qtrue;
@@ -3193,7 +3193,7 @@ int R_StitchPatches( int grid1num, int grid2num )
 					}
 
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
-					                         grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k ] );
+					                         grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k - 1 ] );
 					grid2->lodStitched = qfalse;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
 					return qtrue;
