@@ -535,16 +535,6 @@ int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
 }
 
 /*
-void trap_SnapVector(float *v)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_SNAPVECTOR);
-	input.Write(v, sizeof(vec3_t));
-	RPC::Reader output = DoRPC(input);
-	output.Read(v, sizeof(vec3_t));
-}
-
 void trap_QuoteString(const char *str, char *buffer, int size)
 {
 	RPC::Writer input;

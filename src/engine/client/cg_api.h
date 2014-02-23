@@ -172,7 +172,6 @@ typedef enum cgameImport_s
   CG_PC_UNREAD_TOKEN,
   CG_S_STOPBACKGROUNDTRACK,
   CG_REAL_TIME,
-  CG_SNAPVECTOR,
   CG_CIN_PLAYCINEMATIC,
   CG_CIN_STOPCINEMATIC,
   CG_CIN_RUNCINEMATIC,
@@ -417,7 +416,6 @@ int             trap_PC_SourceFileAndLine( int handle, char *filename, int *line
 int             trap_PC_UnReadToken( int handle );
 void            trap_S_StopBackgroundTrack( void );
 int             trap_RealTime( qtime_t *qtime );
-void            trap_SnapVector( float *v );
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status        trap_CIN_StopCinematic( int handle );
 e_status        trap_CIN_RunCinematic( int handle );

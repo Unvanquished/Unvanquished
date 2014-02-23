@@ -879,13 +879,6 @@ int trap_RealTime( qtime_t *qtime )
 	return syscallVM( CG_REAL_TIME, qtime );
 }
 
-//125.
-//Q_SnapVector(VMA(1));
-void trap_SnapVector( float *v )
-{
-	syscallVM( CG_SNAPVECTOR, v );
-}
-
 //126.
 //return CIN_PlayCinematic(VMA(1), args[2], args[3], args[4], args[5], args[6]);
 int trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits )
