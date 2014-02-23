@@ -1918,7 +1918,7 @@ void ExitLevel( void )
 	level.intermissiontime = 0;
 
 	// reset all the scores so we don't enter the intermission again
-	for ( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		cl = level.clients + i;
 
@@ -1935,7 +1935,7 @@ void ExitLevel( void )
 
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting
-	for ( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
@@ -2409,7 +2409,7 @@ void CheckIntermissionExit( void )
 	notReady = 0;
 	Com_Memset( &readyMasks, 0, sizeof( readyMasks ) );
 
-	for ( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		cl = level.clients + i;
 
