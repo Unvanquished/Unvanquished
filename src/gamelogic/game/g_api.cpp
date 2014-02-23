@@ -540,17 +540,6 @@ void trap_QuoteString(const char *str, char *buffer, int size)
 }
 
 /*
-sfxHandle_t trap_RegisterSound(const char *sample, qboolean compressed)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_REGISTERSOUND);
-	input.WriteString(sample);
-	input.WriteInt(compressed);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
 int trap_BotAllocateClient(int clientNum)
 {
 	RPC::Writer input;
