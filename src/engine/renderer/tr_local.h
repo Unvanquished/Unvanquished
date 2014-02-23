@@ -2119,6 +2119,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec3_t             lightGridOrigin;
 		vec3_t             lightGridSize;
 		vec3_t             lightGridInverseSize;
+		vec3_t             lightGridGLOrigin;
+		vec3_t             lightGridGLScale;
 		int                lightGridBounds[ 3 ];
 		bspGridPoint1_t    *lightGridData1;
 		bspGridPoint2_t    *lightGridData2;
@@ -2823,6 +2825,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int        fatLightmapSize;
 		int        fatLightmapStep;
 
+		image_t   *lightGrid1Image;
+		image_t   *lightGrid2Image;
+
 		// render entities
 		trRefEntity_t *currentEntity;
 		trRefEntity_t worldEntity; // point currentEntity at this when rendering world
@@ -3430,6 +3435,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	image_t *R_CreateCubeImage( const char *name, const byte *pic[ 6 ],
 	                            int width, int height, int bits,
 				    filterType_t filterType, wrapType_t wrapType );
+	image_t        *R_Create3DImage( const char *name,
+					 const byte *pic,
+					 int width, int height, int depth,
+					 int bits, filterType_t filterType,
+					 wrapType_t wrapType );
 
 	image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
 

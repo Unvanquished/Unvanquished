@@ -6066,6 +6066,13 @@ void R_LoadLightGrid( lump_t *l )
 		w->lightGridBounds[ i ] = ( maxs[ i ] - w->lightGridOrigin[ i ] ) / w->lightGridSize[ i ] + 1;
 	}
 
+	VectorMA( w->lightGridOrigin, -0.5f, w->lightGridSize,
+		  w->lightGridGLOrigin );
+
+	w->lightGridGLScale[ 0 ] = w->lightGridInverseSize[ 0 ] / w->lightGridBounds[ 0 ];
+	w->lightGridGLScale[ 1 ] = w->lightGridInverseSize[ 1 ] / w->lightGridBounds[ 1 ];
+	w->lightGridGLScale[ 2 ] = w->lightGridInverseSize[ 2 ] / w->lightGridBounds[ 2 ];
+
 	w->numLightGridPoints = w->lightGridBounds[ 0 ] * w->lightGridBounds[ 1 ] * w->lightGridBounds[ 2 ];
 
 	ri.Printf( PRINT_DEVELOPER, "grid size (%i %i %i)\n", ( int ) w->lightGridSize[ 0 ], ( int ) w->lightGridSize[ 1 ],
@@ -6192,6 +6199,15 @@ void R_LoadLightGrid( lump_t *l )
 		gridPoint1->lightVec[ 1 ] = 128 + Q_ftol( direction[ 1 ] );
 		gridPoint1->lightVec[ 2 ] = 128 + Q_ftol( direction[ 2 ] );
 	}
+
+	tr.lightGrid1Image = R_Create3DImage("<lightGrid1>", (const byte *)w->lightGridData1,
+					     w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
+					     w->lightGridBounds[ 2 ], IF_NOPICMIP | IF_NOLIGHTSCALE | IF_NOCOMPRESSION,
+					     FT_LINEAR, WT_EDGE_CLAMP );
+	tr.lightGrid2Image = R_Create3DImage("<lightGrid2>", (const byte *)w->lightGridData2,
+					     w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
+					     w->lightGridBounds[ 2 ], IF_NOPICMIP | IF_NOLIGHTSCALE | IF_NOCOMPRESSION,
+					     FT_LINEAR, WT_EDGE_CLAMP );
 
 	ri.Printf( PRINT_DEVELOPER, "%i light grid points created\n", w->numLightGridPoints );
 }
