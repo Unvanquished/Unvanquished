@@ -294,7 +294,7 @@ typedef IPC::SyncMessage<
 > GetServerinfoMsg;
 // GetUsercmdMsg
 typedef IPC::SyncMessage<
-    IPC::Message<IPC_ID(VM::QVM, G_GET_SERVERINFO), int>,
+    IPC::Message<IPC_ID(VM::QVM, G_GET_USERCMD), int>,
     IPC::Reply<usercmd_t>
 > GetUsercmdMsg;
 //GetEntityTokenMsg
