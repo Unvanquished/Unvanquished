@@ -534,17 +534,12 @@ int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
 	return res;
 }
 
-/*
 void trap_QuoteString(const char *str, char *buffer, int size)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_QUOTESTRING);
-	input.WriteString(str);
-	RPC::Reader output = DoRPC(input);
-	Q_strncpyz(buffer, output.ReadString(), size);
+	Q_strncpyz(buffer, Cmd::Escape(str), size);
 }
 
+/*
 sfxHandle_t trap_RegisterSound(const char *sample, qboolean compressed)
 {
 	RPC::Writer input;
