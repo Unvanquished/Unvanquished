@@ -32,15 +32,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace VM {
 
-    extern IPC::Socket rootSocket;
+	// Root socket used to communicate with the engine
+	extern IPC::Socket rootSocket;
 
-	void Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket);
+	// Main handler for incoming messages from the engine
+	void VMMain(uint32_t id, IPC::Reader reader);
 
-    // Send a message to the engine
+	// Send a message to the engine
 	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
-		IPC::SendMsg<Msg>(rootSocket, [](uint32_t id, IPC::Reader reader) {
-			Syscall(id, std::move(reader), rootSocket);
-		}, std::forward<Args>(args)...);
+		IPC::SendMsg<Msg>(rootSocket, VMMain, std::forward<Args>(args)...);
 	}
 
 }

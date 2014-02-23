@@ -185,6 +185,12 @@ Socket Socket::FromDesc(const Desc& desc)
 #endif
 	return out;
 }
+Socket Socket::FromHandle(OSHandleType handle)
+{
+	Socket out;
+	out.handle = handle;
+	return out;
+}
 
 void Socket::SendMsg(const Writer& writer) const
 {

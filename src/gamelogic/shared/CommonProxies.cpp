@@ -343,7 +343,7 @@ class VMCvarProxy : public Cvar::CvarProxy {
             Q_strncpyz(cvar->string, value.c_str(), MAX_CVAR_VALUE_STRING);
 
             if (not Str::ToFloat(value, cvar->value)) {
-                cvar->value = 0,0;
+                cvar->value = 0.0;
             }
             if (not Str::ParseInt(cvar->integer, value)) {
                 cvar->integer = 0;

@@ -415,12 +415,12 @@ typedef enum
 
 // GameInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC_ID(VM::QVM, GAME_INIT), int, int, int>,
+	IPC::Message<IPC_ID(VM::QVM, GAME_INIT), int, int, bool>,
 	IPC::Reply<>
 > GameInitMsg;
 // GameShutdownMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC_ID(VM::QVM, GAME_SHUTDOWN), int>,
+	IPC::Message<IPC_ID(VM::QVM, GAME_SHUTDOWN), bool>,
 	IPC::Reply<>
 > GameShutdownMsg;
 // GameClientConnectMsg

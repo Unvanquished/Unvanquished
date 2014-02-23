@@ -121,6 +121,7 @@ public:
 
 	Desc GetDesc() const;
 	static Socket FromDesc(const Desc& desc);
+	static Socket FromHandle(OSHandleType handle);
 
 	void SendMsg(const Writer& writer) const;
 	Reader RecvMsg() const;

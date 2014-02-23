@@ -23,128 +23,141 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "g_local.h"
 #include "../shared/VMMain.h"
 #include "../../common/String.h"
-
 #include "../shared/CommonProxies.h"
-/*
-static NaCl::RootSocket rootSocket;
-static NaCl::IPCHandle shmRegion;
-static NaCl::SharedMemoryPtr shmMapping;
 
-// Module RPC entry point
-static void VMMain(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs)
+// This really should go in the common code
+static IPC::Socket GetRootSocket()
 {
-    if (major == GS_QVM_SYSCALL) {
-        switch (minor) {
-        case GAME_INIT:
-        {
-            VM::InitializeProxies();
-            int levelTime = inputs.ReadInt();
-            int randomSeed = inputs.ReadInt();
-            qboolean restart = inputs.ReadInt();
-            G_InitGame(levelTime, randomSeed, restart);
-            break;
-        }
+	const char* socket = getenv("ROOT_SOCKET");
+	if (!socket) {
+		fprintf(stderr, "Environment variable ROOT_SOCKET not found\n");
+		exit(1);
+	}
 
-        case GAME_SHUTDOWN:
-            G_ShutdownGame(inputs.ReadInt());
-            break;
+	char* end;
+	IPC::OSHandleType h = (IPC::OSHandleType)strtol(socket, &end, 10);
+	if (socket == end || *end != '\0') {
+		fprintf(stderr, "Environment variable ROOT_SOCKET does not contain a valid handle\n");
+		exit(1);
+	}
 
-        case GAME_CLIENT_CONNECT:
-        {
-            int clientNum = inputs.ReadInt();
-            qboolean firstTime = inputs.ReadInt();
-            qboolean isBot = inputs.ReadInt();
-            const char* denied = isBot ? ClientBotConnect(clientNum, firstTime, TEAM_NONE) : ClientConnect(clientNum, firstTime);
-            outputs.WriteInt(denied ? qtrue : qfalse);
-            if (denied)
-                outputs.WriteString(denied);
-            break;
-        }
-
-        case GAME_CLIENT_THINK:
-            ClientThink(inputs.ReadInt());
-            break;
-
-        case GAME_CLIENT_USERINFO_CHANGED:
-            ClientUserinfoChanged(inputs.ReadInt(), qfalse);
-            break;
-
-        case GAME_CLIENT_DISCONNECT:
-            ClientDisconnect(inputs.ReadInt());
-            break;
-
-        case GAME_CLIENT_BEGIN:
-            ClientBegin(inputs.ReadInt());
-            break;
-
-        case GAME_CLIENT_COMMAND:
-            {
-                int clientNum = inputs.ReadInt();
-                Str::StringRef command = inputs.ReadString();
-                Cmd::PushArgs(command);
-                ClientCommand(clientNum);
-                Cmd::PopArgs();
-            }
-            break;
-
-        case GAME_RUN_FRAME:
-            G_RunFrame(inputs.ReadInt());
-            break;
-
-        case GAME_SNAPSHOT_CALLBACK:
-            G_Error("GAME_SNAPSHOT_CALLBACK not implemented");
-            break;
-
-        case BOTAI_START_FRAME:
-            G_Error("BOTAI_START_FRAME not implemented");
-            break;
-
-        case GAME_MESSAGERECEIVED:
-            G_Error("GAME_MESSAGERECEIVED not implemented");
-            break;
-
-        default:
-            G_Error("VMMain(): unknown game command %i", minor);
-        }
-
-    } else if (major < IPC::LAST_COMMON_SYSCALL) {
-        VM::HandleCommonSyscall(major, minor, inputs, outputs);
-
-    } else {
-        G_Error("unhandled VM major syscall number %i", major);
-    }
-
+	return IPC::Socket::FromHandle(h);
 }
+IPC::Socket VM::rootSocket = GetRootSocket();
 
-// Wrapper which uses the module root socket and VMMain
-RPC::Reader DoRPC(RPC::Writer& writer)
-{
-	return RPC::DoRPC(rootSocket, writer, false, VMMain);
-}
+static IPC::SharedMemory shmRegion;
 
 int main(int argc, char** argv)
 {
-	rootSocket = NaCl::GetRootSocket();
-
 	// Send syscall ABI version, also acts as a sign that the module loaded
-	RPC::Writer writer;
-	writer.WriteInt(GAME_API_VERSION);
+	IPC::Writer writer;
+	writer.Write<uint32_t>(GAME_API_VERSION);
+	VM::rootSocket.SendMsg(writer);
+
+	// Initialize VM proxies
+	VM::InitializeProxies();
 
 	// Allocate entities and clients shared memory region
-	shmRegion = NaCl::CreateSharedMemory(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
-	if (!shmRegion)
-		G_Error("Could not create shared memory region");
-	shmMapping = shmRegion.Map();
-	if (!shmMapping)
-		G_Error("Could not map shared memory region");
-	char* shmBase = reinterpret_cast<char*>(shmMapping.Get());
+	shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
+	char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
 	g_entities = reinterpret_cast<gentity_t*>(shmBase);
 	g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
 
-	// Start main RPC loop
-	DoRPC(writer);
+	// Start main loop
+	while (true) {
+		IPC::Reader reader = VM::rootSocket.RecvMsg();
+		uint32_t id = reader.Read<uint32_t>();
+		VM::VMMain(id, std::move(reader));
+	}
 }
-*/
+
+void VM::VMMain(uint32_t id, IPC::Reader reader)
+{
+	int major = id >> 16;
+	int minor = id & 0xffff;
+	if (major == VM::QVM) {
+		switch (minor) {
+		case GAME_INIT:
+			IPC::HandleMsg<GameInitMsg>(VM::rootSocket, std::move(reader), [](int levelTime, int randomSeed, bool restart) {
+				G_InitGame(levelTime, randomSeed, restart);
+			});
+			break;
+
+		case GAME_SHUTDOWN:
+			IPC::HandleMsg<GameShutdownMsg>(VM::rootSocket, std::move(reader), [](bool restart) {
+				G_ShutdownGame(restart);
+			});
+			break;
+
+		case GAME_CLIENT_CONNECT:
+			IPC::HandleMsg<GameClientConnectMsg>(VM::rootSocket, std::move(reader), [](int clientNum, bool firstTime, int isBot, bool& denied, std::string& reason) {
+				const char* deniedStr = isBot ? ClientBotConnect(clientNum, firstTime, TEAM_NONE) : ClientConnect(clientNum, firstTime);
+				denied = deniedStr != nullptr;
+				if (denied)
+					reason = deniedStr;
+			});
+			break;
+
+		case GAME_CLIENT_THINK:
+			IPC::HandleMsg<GameClientThinkMsg>(VM::rootSocket, std::move(reader), [](int clientNum) {
+				ClientThink(clientNum);
+			});
+			break;
+
+		case GAME_CLIENT_USERINFO_CHANGED:
+			IPC::HandleMsg<GameClientUserinfoChangedMsg>(VM::rootSocket, std::move(reader), [](int clientNum) {
+				ClientUserinfoChanged(clientNum, qfalse);
+			});
+			break;
+
+		case GAME_CLIENT_DISCONNECT:
+			IPC::HandleMsg<GameClientDisconnectMsg>(VM::rootSocket, std::move(reader), [](int clientNum) {
+				ClientDisconnect(clientNum);
+			});
+			break;
+
+		case GAME_CLIENT_BEGIN:
+			IPC::HandleMsg<GameClientBeginMsg>(VM::rootSocket, std::move(reader), [](int clientNum) {
+				ClientBegin(clientNum);
+			});
+			break;
+
+		case GAME_CLIENT_COMMAND:
+			IPC::HandleMsg<GameClientCommandMsg>(VM::rootSocket, std::move(reader), [](int clientNum, std::string command) {
+				Cmd::PushArgs(command);
+				ClientCommand(clientNum);
+				Cmd::PopArgs();
+			});
+			break;
+
+		case GAME_RUN_FRAME:
+			IPC::HandleMsg<GameRunFrameMsg>(VM::rootSocket, std::move(reader), [](int levelTime) {
+				G_RunFrame(levelTime);
+			});
+			break;
+
+		case GAME_SNAPSHOT_CALLBACK:
+			G_Error("GAME_SNAPSHOT_CALLBACK not implemented");
+			break;
+
+		case BOTAI_START_FRAME:
+			G_Error("BOTAI_START_FRAME not implemented");
+			break;
+
+		case GAME_MESSAGERECEIVED:
+			G_Error("GAME_MESSAGERECEIVED not implemented");
+			break;
+
+		default:
+			G_Error("VMMain(): unknown game command %i", minor);
+		}
+	} else if (major < VM::LAST_COMMON_SYSCALL) {
+		VM::HandleCommonSyscall(major, minor, std::move(reader), VM::rootSocket);
+	} else {
+		G_Error("unhandled VM major syscall number %i", major);
+	}
+}
+
 void trap_Print(const char *string)
 {
 	VM::SendMsg<PrintMsg>(string);
@@ -220,23 +233,22 @@ int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, 
 	return res;
 }
 
-qboolean trap_FindPak( const char *name )
+qboolean trap_FindPak(const char *name)
 {
 	bool res;
 	VM::SendMsg<FSFindPakMsg>(name, res);
 	return res;
 }
 
-// Amanieu: This still has pointers for backward-compatibility, maybe remove them at some point?
 // The actual shared memory region is handled in this file, and is pretty much invisible to the rest of the code
-void trap_LocateGameData(gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient)
+void trap_LocateGameData(gentity_t *, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient)
 {
 	static bool firstTime = true;
 	if (firstTime) {
 		VM::SendMsg<LocateGameDataMsg1>(shmRegion, numGEntities, sizeofGEntity_t, sizeofGClient);
 		firstTime = false;
 	} else
-		VM::SendMsg<LocateGameDataMsg2>(shmRegion, numGEntities, sizeofGEntity_t, sizeofGClient);
+		VM::SendMsg<LocateGameDataMsg2>(numGEntities, sizeofGEntity_t, sizeofGClient);
 }
 
 void trap_LinkEntity(gentity_t *ent)
