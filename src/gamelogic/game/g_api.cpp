@@ -536,7 +536,71 @@ int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
 
 void trap_QuoteString(const char *str, char *buffer, int size)
 {
-	Q_strncpyz(buffer, Cmd::Escape(str), size);
+	Q_strncpyz(buffer, Cmd::Escape(str).c_str(), size);
+}
+
+int trap_BotAllocateClient(int clientNum)
+{
+}
+
+void trap_BotFreeClient(int clientNum)
+{
+}
+
+int trap_BotGetServerCommand(int clientNum, char *message, int size)
+{
+}
+
+qboolean trap_BotSetupNav(const botClass_t *botClass, qhandle_t *navHandle)
+{
+}
+
+void trap_BotShutdownNav(void)
+{
+}
+
+void trap_BotSetNavMesh(int botClientNum, qhandle_t navHandle)
+{
+}
+
+qboolean trap_BotFindRoute(int botClientNum, const botRouteTarget_t *target, qboolean allowPartial)
+{
+}
+
+qboolean trap_BotUpdatePath(int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd)
+{
+}
+
+qboolean trap_BotNavTrace(int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end)
+{
+}
+
+void trap_BotFindRandomPoint(int botClientNum, vec3_t point)
+{
+}
+
+qboolean trap_BotFindRandomPointInRadius(int botClientNum, const vec3_t origin, vec3_t point, float radius)
+{
+}
+
+void trap_BotEnableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
+{
+}
+
+void trap_BotDisableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
+{
+}
+
+void trap_BotAddObstacle(const vec3_t mins, const vec3_t maxs, qhandle_t *handle)
+{
+}
+
+void trap_BotRemoveObstacle(qhandle_t handle)
+{
+}
+
+void trap_BotUpdateObstacles(void)
+{
 }
 
 /*
