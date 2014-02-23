@@ -90,7 +90,10 @@ namespace VM {
         IPC::Reply<std::string>
     > GetCvarMsg;
     // SetCvarMsg
-    typedef IPC::Message<IPC_ID(CVAR, SET_CVAR), std::string, std::string> SetCvarMsg;
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC_ID(CVAR, SET_CVAR), std::string, std::string>,
+        IPC::Reply<>
+    > SetCvarMsg;
 
     enum VMCvarMessages {
         ON_VALUE_CHANGED
