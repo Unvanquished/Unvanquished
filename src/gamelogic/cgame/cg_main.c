@@ -2655,6 +2655,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	String_Init();
 
+	trap_S_BeginRegistration();
+
 	CG_AssetCache();
 	CG_LoadHudMenu();
 
@@ -2732,6 +2734,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_InitMarkPolys();
 
 	CG_InitMinimap();
+
+	trap_S_EndRegistration();
 
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();

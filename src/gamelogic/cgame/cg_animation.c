@@ -299,6 +299,16 @@ void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, co
 {
 	if( !lf->animation || !lf->animation->handle )
 	{
+		// initialize skeleton if animation handle is invalid
+		int i;
+
+		newSkeleton->type = SK_ABSOLUTE;
+		newSkeleton->numBones = MAX_BONES;
+		for( i = 0; i < MAX_BONES; i++ ) {
+			newSkeleton->bones[i].parentIndex = -1;
+			TransInit(&newSkeleton->bones[i].t);
+		}
+
 		return;
 	}
 

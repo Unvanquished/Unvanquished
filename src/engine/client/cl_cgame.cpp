@@ -1388,6 +1388,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Audio::SetReverb( args[ 1 ], (const char*) VMA( 2 ), VMF( 3 ) );
 			return 0;
 
+		case CG_S_BEGINREGISTRATION:
+			cls.nCgameSoundSyscalls ++;
+			Audio::BeginRegistration();
+			return 0;
+
+		case CG_S_ENDREGISTRATION:
+			cls.nCgameSoundSyscalls ++;
+			Audio::EndRegistration();
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes

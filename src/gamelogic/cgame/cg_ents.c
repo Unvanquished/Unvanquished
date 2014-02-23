@@ -193,6 +193,8 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale )
 	int       i;
 	refBone_t *bone;
 
+	skel->scale = scale;
+
 	switch ( skel->type )
 	{
 		case SK_INVALID:
@@ -217,7 +219,6 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale )
 	}
 
 	skel->type = SK_ABSOLUTE;
-	skel->scale = scale;
 }
 
 /*
