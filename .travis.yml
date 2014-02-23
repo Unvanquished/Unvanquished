@@ -18,7 +18,7 @@ before_script:
 script:
   - mkdir build
   - cd build
-  - CXXFLAGS="-D__extern_always_inline=inline" cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_SDL2=OFF -DBUILD_GAME_QVM=0 -DBUILD_GAME_QVM_NATIVE=0 ..
+  - CXXFLAGS="-D__extern_always_inline=inline" cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_SDL2=OFF -DBUILD_GAME_NACL=1 -DBUILD_GAME_NACL_NATIVE=1 ..
   - cmake --build .
 
 notifications:
