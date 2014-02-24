@@ -284,7 +284,7 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 		args.push_back("--");
 		args.push_back(module.c_str());
 	} else {
-		module = FS::Path::Build(libPath, name + EXE_EXT);
+		module = FS::Path::Build(libPath, name + "-nacl-native" + EXE_EXT);
 		if (debug) {
 			args.push_back("/usr/bin/gdbserver");
 			args.push_back("localhost:4014");
