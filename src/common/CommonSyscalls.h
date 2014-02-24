@@ -67,7 +67,9 @@ namespace VM {
     };
 
     // ExecuteMsg
-    typedef IPC::Message<IPC_ID(COMMAND, EXECUTE), std::string> ExecuteMsg;
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC_ID(COMMAND, EXECUTE), std::string>
+    >ExecuteMsg;
     // CompleteMsg
     typedef IPC::SyncMessage<
         IPC::Message<IPC_ID(COMMAND, COMPLETE), int, std::string, std::string>,
