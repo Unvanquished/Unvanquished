@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CommonVMServices.h"
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 #include "../framework/VirtualMachine.h"
 #include "../../common/Log.h"
 
@@ -129,6 +130,7 @@ namespace VM {
                 Register();
             }
             virtual ~ProxyCvar() {
+                Cvar::Unregister(name);
             }
 
             virtual Cvar::OnValueChangedResult OnValueChanged(Str::StringRef newValue) OVERRIDE {
