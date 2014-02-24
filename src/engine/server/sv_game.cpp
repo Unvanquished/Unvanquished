@@ -1059,146 +1059,101 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 			file = buffer;
 		});
 		break;
-/*
-	case G_BOT_ALLOCATE_CLIENT:
-		outputs.WriteInt(SV_BotAllocateClient(inputs.ReadInt()));
+
+	case BOT_ALLOCATE_CLIENT:
+		IPC::HandleMsg<BotAllocateClientMsg>(socket, std::move(reader), [this](int input, int& output) {
+			output = SV_BotAllocateClient(input);
+		});
 		break;
 
-	case G_BOT_FREE_CLIENT:
-		SV_BotFreeClient(inputs.ReadInt());
+	case BOT_FREE_CLIENT:
+		IPC::HandleMsg<BotFreeClientMsg>(socket, std::move(reader), [this](int input) {
+			SV_BotFreeClient(input);
+		});
 		break;
 
 	case BOT_GET_CONSOLE_MESSAGE:
-	{
-		int client = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		outputs.WriteInt(SV_BotGetConsoleMessage(client, buffer.get(), len));
-		outputs.WriteString(buffer.get());
+		IPC::HandleMsg<BotGetConsoleMessageMsg>(socket, std::move(reader), [this](int client, int len, int& res, std::string& message) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			res = SV_BotGetConsoleMessage(client, buffer.get(), len);
+			message.assign(buffer.get(), len);
+		});
 		break;
-	}
 
 	case BOT_NAV_SETUP:
-	{
-		botClass_t botClass;
-		qhandle_t handle;
-		inputs.Read(&botClass, sizeof(botClass_t));
-		outputs.WriteInt(BotSetupNav(&botClass, &handle));
-		outputs.WriteInt(handle);
+		IPC::HandleMsg<BotNavSetupMsg>(socket, std::move(reader), [this](botClass_t botClass, int& res, int& handle) {
+			res = BotSetupNav(&botClass, &handle);
+		});
 		break;
-	}
 
 	case BOT_NAV_SHUTDOWN:
 		BotShutdownNav();
 		break;
 
 	case BOT_SET_NAVMESH:
-	{
-		int botClientNum = inputs.ReadInt();
-		qhandle_t navHandle = inputs.ReadInt();
-		BotSetNavMesh(botClientNum, navHandle);
+		IPC::HandleMsg<BotSetNavmeshMsg>(socket, std::move(reader), [this](int clientNum, int navHandle) {
+			BotSetNavMesh(clientNum, navHandle);
+		});
 		break;
-	}
 
 	case BOT_FIND_ROUTE:
-	{
-		int botClientNum = inputs.ReadInt();
-		botRouteTarget_t target;
-		inputs.Read(&target, sizeof(botRouteTarget_t));
-		qboolean allowPartial = inputs.ReadInt();
-		outputs.WriteInt(BotFindRouteExt(botClientNum, &target, allowPartial));
+		IPC::HandleMsg<BotFindRouteMsg>(socket, std::move(reader), [this](int clientNum, botRouteTarget_t target, bool allowPartial, int& res) {
+			res = BotFindRouteExt(clientNum, &target, allowPartial);
+		});
 		break;
-	}
 
 	case BOT_UPDATE_PATH:
-	{
-		int botClientNum = inputs.ReadInt();
-		botRouteTarget_t target;
-		inputs.Read(&target, sizeof(botRouteTarget_t));
-		botNavCmd_t cmd;
-		BotUpdateCorridor(botClientNum, &target, &cmd);
-		outputs.Write(&cmd, sizeof(botNavCmd_t));
+		IPC::HandleMsg<BotUpdatePathMsg>(socket, std::move(reader), [this](int clientNum, botRouteTarget_t target, botNavCmd_t& cmd) {
+			BotUpdateCorridor(clientNum, &target, &cmd);
+		});
 		break;
-	}
 
 	case BOT_NAV_RAYCAST:
-	{
-		int botClientNum = inputs.ReadInt();
-		botTrace_t botTrace;
-		vec3_t start;
-		inputs.Read(start, sizeof(vec3_t));
-		vec3_t end;
-		inputs.Read(end, sizeof(vec3_t));
-		outputs.WriteInt(BotNavTrace(botClientNum, &botTrace, start, end));
-		outputs.Write(&botTrace, sizeof(botTrace_t));
+		IPC::HandleMsg<BotNavRaycastMsg>(socket, std::move(reader), [this](int clientNum, std::array<float, 3> start, std::array<float, 3> end, int& res, botTrace_t& botTrace) {
+			res = BotNavTrace(clientNum, &botTrace, start.data(), end.data());
+		});
 		break;
-	}
 
 	case BOT_NAV_RANDOMPOINT:
-	{
-		int botClientNum = inputs.ReadInt();
-		vec3_t point;
-		BotFindRandomPoint(botClientNum, point);
-		outputs.Write(point, sizeof(vec3_t));
+		IPC::HandleMsg<BotNavRandomPointMsg>(socket, std::move(reader), [this](int clientNum, std::array<float, 3>& point) {
+			BotFindRandomPoint(clientNum, point.data());
+		});
 		break;
-	}
 
 	case BOT_NAV_RANDOMPOINTRADIUS:
-	{
-		int botClientNum = inputs.ReadInt();
-		vec3_t origin;
-		inputs.Read(origin, sizeof(vec3_t));
-		vec3_t point;
-		float radius = inputs.ReadFloat();
-		BotFindRandomPointInRadius(botClientNum, origin, point, radius);
-		outputs.Write(point, sizeof(vec3_t));
+		IPC::HandleMsg<BotNavRandomPointRadiusMsg>(socket, std::move(reader), [this](int clientNum, std::array<float, 3> origin, float radius, int res, std::array<float, 3>& point) {
+			res = BotFindRandomPointInRadius(clientNum, origin.data(), point.data(), radius);
+		});
 		break;
-	}
 
 	case BOT_ENABLE_AREA:
-	{
-		vec3_t origin;
-		inputs.Read(origin, sizeof(vec3_t));
-		vec3_t mins;
-		inputs.Read(mins, sizeof(vec3_t));
-		vec3_t maxs;
-		inputs.Read(maxs, sizeof(vec3_t));
-		BotEnableArea(origin, mins, maxs);
+		IPC::HandleMsg<BotEnableAreaMsg>(socket, std::move(reader), [this](std::array<float, 3> origin, std::array<float, 3> mins, std::array<float, 3> maxs) {
+			BotEnableArea(origin.data(), mins.data(), maxs.data());
+		});
 		break;
-	}
 
 	case BOT_DISABLE_AREA:
-	{
-		vec3_t origin;
-		inputs.Read(origin, sizeof(vec3_t));
-		vec3_t mins;
-		inputs.Read(mins, sizeof(vec3_t));
-		vec3_t maxs;
-		inputs.Read(maxs, sizeof(vec3_t));
-		BotDisableArea(origin, mins, maxs);
+		IPC::HandleMsg<BotDisableAreaMsg>(socket, std::move(reader), [this](std::array<float, 3> origin, std::array<float, 3> mins, std::array<float, 3> maxs) {
+			BotDisableArea(origin.data(), mins.data(), maxs.data());
+		});
 		break;
-	}
 
 	case BOT_ADD_OBSTACLE:
-	{
-		vec3_t mins;
-		inputs.Read(mins, sizeof(vec3_t));
-		vec3_t maxs;
-		inputs.Read(maxs, sizeof(vec3_t));
-		qhandle_t handle;
-		BotAddObstacle(mins, maxs, &handle);
-		outputs.WriteInt(handle);
+		IPC::HandleMsg<BotAddObstacleMsg>(socket, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int& handle) {
+			BotAddObstacle(mins.data(), maxs.data(), &handle);
+		});
 		break;
-	}
 
 	case BOT_REMOVE_OBSTACLE:
-		BotRemoveObstacle(inputs.ReadInt());
+		IPC::HandleMsg<BotRemoveObstacleMsg>(socket, std::move(reader), [this](int handle) {
+			BotRemoveObstacle(handle);
+		});
 		break;
 
 	case BOT_UPDATE_OBSTACLES:
 		BotUpdateObstacles();
 		break;
-*/
+
 	default:
 		Com_Error(ERR_DROP, "Bad game system trap: %d", index);
 	}

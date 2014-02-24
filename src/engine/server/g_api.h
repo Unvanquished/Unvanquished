@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/vm_traps.h"
+#include "../botlib/bot_api.h"
 #include "../../common/CommonSyscalls.h"
 #include "../../common/IPC.h"
 #include <array>
@@ -157,10 +158,9 @@ typedef enum gameImport_s
   G_PARSE_READ_TOKEN,
   G_PARSE_SOURCE_FILE_AND_LINE,
 
-  G_BOT_ALLOCATE_CLIENT,
-  G_BOT_FREE_CLIENT,
-  G_BOT_GET_CONSOLE_MESSAGE,
-
+  BOT_ALLOCATE_CLIENT,
+  BOT_FREE_CLIENT,
+  BOT_GET_CONSOLE_MESSAGE,
   BOT_NAV_SETUP,
   BOT_NAV_SHUTDOWN,
   BOT_SET_NAVMESH,
@@ -372,6 +372,68 @@ typedef IPC::SyncMessage<
     IPC::Message<IPC_ID(VM::QVM, G_PARSE_SOURCE_FILE_AND_LINE), int>,
     IPC::Reply<int, std::string, int>
 > ParseSourceFileAndLineMsg;
+
+// BotAllocateClientMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, BOT_ALLOCATE_CLIENT), int>,
+	IPC::Reply<int>
+> BotAllocateClientMsg;
+// BotFreeClientMsg
+typedef IPC::Message<IPC_ID(VM::QVM, BOT_FREE_CLIENT), int> BotFreeClientMsg;
+// BotGetConsoleMessageMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, BOT_GET_CONSOLE_MESSAGE), int, int>,
+	IPC::Reply<int, std::string>
+> BotGetConsoleMessageMsg;
+// BotNavSetupMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, BOT_NAV_SETUP), botClass_t>,
+	IPC::Reply<int, int>
+> BotNavSetupMsg;
+// BotNavSetupMsg
+typedef IPC::Message<IPC_ID(VM::QVM, BOT_NAV_SHUTDOWN)> BotNavShutdownMsg;
+// BotSetNavmeshMsg
+typedef IPC::Message<IPC_ID(VM::QVM, BOT_SET_NAVMESH), int, int> BotSetNavmeshMsg;
+// BotFindRouteMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, BOT_FIND_ROUTE), int, botRouteTarget_t, bool>,
+	IPC::Reply<int>
+> BotFindRouteMsg;
+// BotUpdatePathMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, BOT_UPDATE_PATH), int, botRouteTarget_t>,
+	IPC::Reply<botNavCmd_t>
+> BotUpdatePathMsg;
+// BotNavRaycastMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, BOT_NAV_RAYCAST), int, std::array<float, 3>, std::array<float, 3>>,
+	IPC::Reply<int, botTrace_t>
+> BotNavRaycastMsg;
+// BotNavRandomPointMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, BOT_NAV_RANDOMPOINT), int>,
+	IPC::Reply<std::array<float, 3>>
+> BotNavRandomPointMsg;
+// BotNavRandomPointRadiusMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, BOT_NAV_RANDOMPOINTRADIUS), int, std::array<float, 3>, float>,
+	IPC::Reply<int, std::array<float, 3>>
+> BotNavRandomPointRadiusMsg;
+// BotEnableAreaMsg
+typedef IPC::Message<IPC_ID(VM::QVM, BOT_ENABLE_AREA), std::array<float, 3>, std::array<float, 3>, std::array<float, 3>> BotEnableAreaMsg;
+// BotDisableAreaMsg
+typedef IPC::Message<IPC_ID(VM::QVM, BOT_DISABLE_AREA), std::array<float, 3>, std::array<float, 3>, std::array<float, 3>> BotDisableAreaMsg;
+// BotAddObstacleMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, BOT_ADD_OBSTACLE), std::array<float, 3>, std::array<float, 3>>,
+	IPC::Reply<int>
+> BotAddObstacleMsg;
+// BotRemoveObstacleMsg
+typedef IPC::Message<IPC_ID(VM::QVM, BOT_REMOVE_OBSTACLE), int> BotRemoveObstacleMsg;
+// BotUpdateObstaclesMsg
+typedef IPC::Message<IPC_ID(VM::QVM, BOT_UPDATE_OBSTACLES)> BotUpdateObstaclesMsg;
+
+
 
 
 

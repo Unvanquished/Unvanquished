@@ -541,240 +541,114 @@ void trap_QuoteString(const char *str, char *buffer, int size)
 
 int trap_BotAllocateClient(int clientNum)
 {
+	int res;
+	VM::SendMsg<BotAllocateClientMsg>(clientNum, res);
+	return res;
 }
 
 void trap_BotFreeClient(int clientNum)
 {
+	VM::SendMsg<BotFreeClientMsg>(clientNum);
 }
 
 int trap_BotGetServerCommand(int clientNum, char *message, int size)
 {
+	int res;
+	std::string message2;
+	VM::SendMsg<BotGetConsoleMessageMsg>(clientNum, size, res, message2);
+	Q_strncpyz(message, message2.c_str(), size);
+	return res;
 }
 
 qboolean trap_BotSetupNav(const botClass_t *botClass, qhandle_t *navHandle)
 {
+	int res;
+	VM::SendMsg<BotNavSetupMsg>(*botClass, res, *navHandle);
+	return res;
 }
 
 void trap_BotShutdownNav(void)
 {
+	VM::SendMsg<BotNavShutdownMsg>();
 }
 
 void trap_BotSetNavMesh(int botClientNum, qhandle_t navHandle)
 {
+	VM::SendMsg<BotSetNavmeshMsg>(botClientNum, navHandle);
 }
 
 qboolean trap_BotFindRoute(int botClientNum, const botRouteTarget_t *target, qboolean allowPartial)
 {
+	int res;
+	VM::SendMsg<BotFindRouteMsg>(botClientNum, *target, allowPartial, res);
+	return res;
 }
 
 qboolean trap_BotUpdatePath(int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd)
 {
-}
-
-qboolean trap_BotNavTrace(int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end)
-{
-}
-
-void trap_BotFindRandomPoint(int botClientNum, vec3_t point)
-{
-}
-
-qboolean trap_BotFindRandomPointInRadius(int botClientNum, const vec3_t origin, vec3_t point, float radius)
-{
-}
-
-void trap_BotEnableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
-{
-}
-
-void trap_BotDisableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
-{
-}
-
-void trap_BotAddObstacle(const vec3_t mins, const vec3_t maxs, qhandle_t *handle)
-{
-}
-
-void trap_BotRemoveObstacle(qhandle_t handle)
-{
-}
-
-void trap_BotUpdateObstacles(void)
-{
-}
-
-/*
-int trap_BotAllocateClient(int clientNum)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_BOT_ALLOCATE_CLIENT);
-	input.WriteInt(clientNum);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-void trap_BotFreeClient(int clientNum)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_BOT_FREE_CLIENT);
-	input.WriteInt(clientNum);
-	DoRPC(input);
-}
-
-int trap_BotGetServerCommand(int clientNum, char *message, int size)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_GET_SERVERINFO);
-	input.WriteInt(clientNum);
-	input.WriteInt(size);
-	RPC::Reader output = DoRPC(input);
-	int ret = output.ReadInt();
-	Q_strncpyz(message, output.ReadString(), size);
-	return ret;
-}
-
-qboolean trap_BotSetupNav(const botClass_t *botClass, qhandle_t *navHandle)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_NAV_SETUP);
-	input.Write(botClass, sizeof(botClass_t));
-	RPC::Reader output = DoRPC(input);
-	qboolean ret = output.ReadInt();
-	*navHandle = output.ReadInt();
-	return ret;
-}
-
-void trap_BotShutdownNav(void)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_NAV_SHUTDOWN);
-	DoRPC(input);
-}
-
-void trap_BotSetNavMesh(int botClientNum, qhandle_t navHandle)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_SET_NAVMESH);
-	input.WriteInt(botClientNum);
-	input.WriteInt(navHandle);
-	DoRPC(input);
-}
-
-qboolean trap_BotFindRoute(int botClientNum, const botRouteTarget_t *target, qboolean allowPartial)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_FIND_ROUTE);
-	input.WriteInt(botClientNum);
-	input.Write(target, sizeof(botRouteTarget_t));
-	input.WriteInt(allowPartial);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-qboolean trap_BotUpdatePath(int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_UPDATE_PATH);
-	input.WriteInt(botClientNum);
-	input.Write(target, sizeof(botRouteTarget_t));
-	RPC::Reader output = DoRPC(input);
-	output.Read(cmd, sizeof(botNavCmd_t));
+	VM::SendMsg<BotUpdatePathMsg>(botClientNum, *target, *cmd);
 	return 0; // Amanieu: This always returns 0, but the value isn't used
 }
 
 qboolean trap_BotNavTrace(int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_NAV_RAYCAST);
-	input.WriteInt(botClientNum);
-	input.Write(start, sizeof(vec3_t));
-	input.Write(end, sizeof(vec3_t));
-	RPC::Reader output = DoRPC(input);
-	qboolean ret = output.ReadInt();
-	output.Read(botTrace, sizeof(botTrace_t));
-	return ret;
+	std::array<float, 3> start2, end2;
+	VectorCopy(start, start2.data());
+	VectorCopy(end, end2.data());
+	int res;
+	VM::SendMsg<BotNavRaycastMsg>(botClientNum, start2, end2, res, *botTrace);
+	return res;
 }
 
 void trap_BotFindRandomPoint(int botClientNum, vec3_t point)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_NAV_RANDOMPOINT);
-	input.WriteInt(botClientNum);
-	RPC::Reader output = DoRPC(input);
-	output.Read(point, sizeof(vec3_t));
+	std::array<float, 3> point2;
+	VM::SendMsg<BotNavRandomPointMsg>(botClientNum, point2);
+	VectorCopy(point2.data(), point);
 }
 
 qboolean trap_BotFindRandomPointInRadius(int botClientNum, const vec3_t origin, vec3_t point, float radius)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_NAV_RANDOMPOINT);
-	input.WriteInt(botClientNum);
-	input.Write(origin, sizeof(vec3_t));
-	input.WriteFloat(radius);
-	RPC::Reader output = DoRPC(input);
-	qboolean ret = output.ReadInt();
-	output.Read(point, sizeof(vec3_t));
-	return ret;
+	std::array<float, 3> point2, origin2;
+	VectorCopy(origin, origin2.data());
+	int res;
+	VM::SendMsg<BotNavRandomPointRadiusMsg>(botClientNum, origin2, radius, res, point2);
+	VectorCopy(point2.data(), point);
+	return res;
 }
 
 void trap_BotEnableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_ENABLE_AREA);
-	input.Write(origin, sizeof(vec3_t));
-	input.Write(mins, sizeof(vec3_t));
-	input.Write(maxs, sizeof(vec3_t));
-	DoRPC(input);
+	std::array<float, 3> origin2, mins2, maxs2;
+	VectorCopy(origin, origin2.data());
+	VectorCopy(mins, mins2.data());
+	VectorCopy(maxs, maxs2.data());
+	VM::SendMsg<BotEnableAreaMsg>(origin2, mins2, maxs2);
 }
 
 void trap_BotDisableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_DISABLE_AREA);
-	input.Write(origin, sizeof(vec3_t));
-	input.Write(mins, sizeof(vec3_t));
-	input.Write(maxs, sizeof(vec3_t));
-	DoRPC(input);
+	std::array<float, 3> origin2, mins2, maxs2;
+	VectorCopy(origin, origin2.data());
+	VectorCopy(mins, mins2.data());
+	VectorCopy(maxs, maxs2.data());
+	VM::SendMsg<BotDisableAreaMsg>(origin2, mins2, maxs2);
 }
 
 void trap_BotAddObstacle(const vec3_t mins, const vec3_t maxs, qhandle_t *handle)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_ADD_OBSTACLE);
-	input.Write(mins, sizeof(vec3_t));
-	input.Write(maxs, sizeof(vec3_t));
-	RPC::Reader output = DoRPC(input);
-	*handle = output.ReadInt();
+	std::array<float, 3> mins2, maxs2;
+	VectorCopy(mins, mins2.data());
+	VectorCopy(maxs, maxs2.data());
+	VM::SendMsg<BotAddObstacleMsg>(mins2, maxs2, *handle);
 }
 
 void trap_BotRemoveObstacle(qhandle_t handle)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_REMOVE_OBSTACLE);
-	input.WriteInt(handle);
-	DoRPC(input);
+	VM::SendMsg<BotRemoveObstacleMsg>(handle);
 }
 
 void trap_BotUpdateObstacles(void)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(BOT_UPDATE_OBSTACLES);
-	DoRPC(input);
+	VM::SendMsg<BotUpdateObstaclesMsg>();
 }
-*/
