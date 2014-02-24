@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 #include <unistd.h>
 #include <signal.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #ifdef __linux__
 #include <sys/prctl.h>
@@ -168,10 +169,19 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	return std::make_pair(job, std::move(pair.first));
 #else
 	Q_UNUSED(reserve_mem);
+
+	// Create a pipe to report errors from the child process
+	int pipefds[2];
+	if (pipe(pipefds) == -1 || fcntl(pipefds[1], F_SETFD, FD_CLOEXEC))
+		Com_Error(ERR_DROP, "VM: Failed to create pipe: %s", strerror(errno));
+
 	int pid = fork();
 	if (pid == -1)
 		Com_Error(ERR_DROP, "VM: Failed to fork process: %s", strerror(errno));
 	if (pid == 0) {
+		// Close the other end of the pipe
+		close(pipefds[0]);
+
 		// Explicitly destroy the local socket, since destructors are not called
 		pair.first.Close();
 
@@ -186,17 +196,29 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 
 		// Close standard input/output descriptors
+		// stderr is not closed so that we can see error messages reported by sel_ldr
 		close(0);
 		close(1);
 
-		// stderr is not closed so that we can see error messages reported by sel_ldr
-
+		// Load the target executable
 		execve(args[0], const_cast<char* const*>(args), const_cast<char* const*>(env));
 
-		// Abort if exec failed, the parent should notice a socket error when
-		// trying to use the root socket.
+		// If the exec fails, return errno to the parent through the pipe
+		write(pipefds[1], &errno, sizeof(int));
 		_exit(-1);
 	}
+
+	// Try to read from the pipe to see if the child successfully exec'd
+	close(pipefds[1]);
+	ssize_t count;
+	int err;
+	while ((count = read(pipefds[0], &err, sizeof(int))) == -1) {
+		if (errno != EAGAIN && errno != EINTR)
+			break;
+	}
+	close(pipefds[0]);
+	if (count)
+		Com_Error(ERR_DROP, "VM: Failed to exec: %s", strerror(err));
 
 	return std::make_pair(pid, std::move(pair.first));
 #endif
