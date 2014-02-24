@@ -1898,7 +1898,7 @@ static void CG_DrawPlayerFuelIcon( rectDef_t *rect, vec4_t backColor,
 {
 	vec4_t   color;
 	int      fuel;
-	qboolean pmNormal, damaged, active;
+	qboolean pmNormal, active;
 
 	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
 	{

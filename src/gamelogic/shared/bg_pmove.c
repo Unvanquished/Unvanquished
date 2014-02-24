@@ -1210,7 +1210,7 @@ static qboolean PM_CheckJetpack( void )
 		{
 			if ( pm->debugLevel > 0 && pm->cmd.upmove < 10 )
 			{
-				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Key Released: Jetpack stopped\n" );
+				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Jetpack thrust stopped (jump key released)\n" );
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1225,7 +1225,7 @@ static qboolean PM_CheckJetpack( void )
 	{
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Can't start jetpack: Not enabled\n" );
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Can't start jetpack thrust (jetpack not enabled)\n" );
 		}
 
 		return qfalse;
@@ -1272,7 +1272,7 @@ static qboolean PM_CheckJetpack( void )
 		{
 			if ( pm->debugLevel > 0 )
 			{
-				Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Out of fuel: Jetpack stopped\n" );
+				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Jetpack thrust stopped (out of fuel)\n" );
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1293,7 +1293,7 @@ static qboolean PM_CheckJetpack( void )
 
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_CheckJetpack] " S_COLOR_GREEN "Jetpack started\n" );
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_GREEN "Jetpack thrust started\n" );
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_ACTIVE;
@@ -1361,7 +1361,7 @@ static void PM_LandJetpack( qboolean force )
 		{
 			if ( pm->debugLevel > 0 )
 			{
-				Com_Printf( "[PM_LandJetpack] %.0f° Ignored landing\n", RAD2DEG( angle ) );
+				Com_Printf( "[PM_LandJetpack] Landing ignored (hit surface at %.0f°)\n", RAD2DEG( angle ) );
 			}
 
 			return;
@@ -1372,8 +1372,8 @@ static void PM_LandJetpack( qboolean force )
 	{
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_LandJetpack] %.0f° %s" S_COLOR_LTORANGE "Landed: Jetpack stopped\n", RAD2DEG( angle ),
-			            force ? S_COLOR_RED "(FORCED) " : "" );
+			Com_Printf( "[PM_LandJetpack] " S_COLOR_LTORANGE "Jetpack thrust stopped (hit surface at %.0f°)%s\n", RAD2DEG( angle ),
+			            force ? S_COLOR_RED " (FORCED)" : "" );
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1388,8 +1388,8 @@ static void PM_LandJetpack( qboolean force )
 	{
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_LandJetpack] %.0f° %s" S_COLOR_YELLOW "Landed: Jetpack disabled\n", RAD2DEG( angle ),
-			            force ? S_COLOR_RED "(FORCED) " : "" );
+			Com_Printf( "[PM_LandJetpack] " S_COLOR_YELLOW "Jetpack disabled (hit surface at %.0f°)%s\n", RAD2DEG( angle ),
+			            force ? S_COLOR_RED " (FORCED)" : "" );
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_WARM;
@@ -1958,7 +1958,7 @@ static void PM_WalkMove( void )
 		return;
 	}
 
-	// if PM_Land didn't stop the jectpack (e.g. to allow for a jump) but we didn't get away
+	// if PM_Land didn't stop the jetpack (e.g. to allow for a jump) but we didn't get away
 	// from the ground, stop it now
 	PM_LandJetpack( qtrue );
 
@@ -2319,6 +2319,7 @@ static void PM_Land( void )
 		pm->ps->torsoTimer = TIMER_LAND;
 	}
 
+	// potential jump ended
 	pm->ps->pm_flags &= ~PMF_JUMPED;
 }
 
@@ -3070,7 +3071,7 @@ static void PM_GroundTrace( void )
 		qboolean steppedDown = qfalse;
 
 		// try to step down
-		if ( pml.groundPlane != qfalse && PM_PredictStepMove() )
+		if ( pml.groundPlane && PM_PredictStepMove() )
 		{
 			//step down
 			point[ 0 ] = pm->ps->origin[ 0 ];
