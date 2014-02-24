@@ -477,13 +477,11 @@ typedef enum
 
 // GameInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC_ID(VM::QVM, GAME_INIT), int, int, bool>,
-	IPC::Reply<>
+	IPC::Message<IPC_ID(VM::QVM, GAME_INIT), int, int, bool>
 > GameInitMsg;
 // GameShutdownMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC_ID(VM::QVM, GAME_SHUTDOWN), bool>,
-	IPC::Reply<>
+	IPC::Message<IPC_ID(VM::QVM, GAME_SHUTDOWN), bool>
 > GameShutdownMsg;
 // GameClientConnectMsg
 typedef IPC::SyncMessage<
@@ -492,31 +490,25 @@ typedef IPC::SyncMessage<
 > GameClientConnectMsg;
 // GameClientBeginMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_BEGIN), int>,
-	IPC::Reply<>
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_BEGIN), int>
 > GameClientBeginMsg;
 // GameClientUserinfoChangedMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_USERINFO_CHANGED), int>,
-	IPC::Reply<>
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_USERINFO_CHANGED), int>
 > GameClientUserinfoChangedMsg;
 // GameClientDisconnectMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_DISCONNECT), int>,
-	IPC::Reply<>
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_DISCONNECT), int>
 > GameClientDisconnectMsg;
 // GameClientCommandMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_COMMAND), int, std::string>,
-	IPC::Reply<>
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_COMMAND), int, std::string>
 > GameClientCommandMsg;
 // GameClientThinkMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_THINK), int>,
-	IPC::Reply<>
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_THINK), int>
 > GameClientThinkMsg;
 // GameRunFrameMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC_ID(VM::QVM, GAME_RUN_FRAME), int>,
-	IPC::Reply<>
+	IPC::Message<IPC_ID(VM::QVM, GAME_RUN_FRAME), int>
 > GameRunFrameMsg;

@@ -84,8 +84,7 @@ namespace VM {
 
     // RegisterCvarMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC_ID(CVAR, REGISTER_CVAR), std::string, std::string, int, std::string>,
-        IPC::Reply<>
+        IPC::Message<IPC_ID(CVAR, REGISTER_CVAR), std::string, std::string, int, std::string>
     > RegisterCvarMsg;
     // GetCvarMsg
     typedef IPC::SyncMessage<
@@ -94,8 +93,7 @@ namespace VM {
     > GetCvarMsg;
     // SetCvarMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC_ID(CVAR, SET_CVAR), std::string, std::string>,
-        IPC::Reply<>
+        IPC::Message<IPC_ID(CVAR, SET_CVAR), std::string, std::string>
     > SetCvarMsg;
 
     enum VMCvarMessages {

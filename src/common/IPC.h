@@ -508,7 +508,7 @@ template<typename... T> struct Reply {
 };
 
 // Synchronous message which waits for a reply. The reply can contain data.
-template<typename Msg, typename Reply> struct SyncMessage {
+template<typename Msg, typename Reply = Reply<>> struct SyncMessage {
 	enum {
 		id = Msg::id
 	};
