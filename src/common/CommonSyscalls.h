@@ -83,7 +83,10 @@ namespace VM {
     };
 
     // RegisterCvarMsg
-    typedef IPC::Message<IPC_ID(CVAR, REGISTER_CVAR), std::string, std::string, int, std::string> RegisterCvarMsg;
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC_ID(CVAR, REGISTER_CVAR), std::string, std::string, int, std::string>,
+        IPC::Reply<>
+    > RegisterCvarMsg;
     // GetCvarMsg
     typedef IPC::SyncMessage<
         IPC::Message<IPC_ID(CVAR, GET_CVAR), std::string>,
