@@ -211,7 +211,12 @@ void trap_Argv(int n, char *buffer, int bufferLength) {
     if (bufferLength <= 0 or argStack.empty()) {
         return;
     }
-    Q_strncpyz(buffer, argStack.back()->Argv(n).c_str(), bufferLength);
+
+    if (n < argStack.back()->Argc()) {
+        Q_strncpyz(buffer, argStack.back()->Argv(n).c_str(), bufferLength);
+    } else {
+        buffer[0] = '\0';
+    }
 }
 
 namespace Cmd {
