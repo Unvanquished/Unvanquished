@@ -1101,12 +1101,16 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			// TODO: Trigger jetpack disable animation
 			break;
 
+		case EV_JETPACK_IGNITE:
+			// TODO: Play jetpack ignite gfx/sfx
+			break;
+
 		case EV_JETPACK_START:
-			// TODO: Start jetpack gfx/sfx
+			// TODO: Start jetpack thrust gfx/sfx
 			break;
 
 		case EV_JETPACK_STOP:
-			// TODO: Stop jetpack gfx/sfx
+			// TODO: Stop jetpack thrust gfx/sfx
 			break;
 
 		case EV_NOAMMO:

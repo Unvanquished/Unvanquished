@@ -1198,7 +1198,6 @@ static qboolean PM_CheckJetpack( void )
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_ENABLED;
-
 		PM_AddEvent( EV_JETPACK_ENABLE );
 
 		return qfalse;
@@ -1215,14 +1214,13 @@ static qboolean PM_CheckJetpack( void )
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
-
 			PM_AddEvent( EV_JETPACK_STOP );
 		}
 
 		return qfalse;
 	}
 
-	// only thrust when jetpack enabled
+	// sanity check that jetpack is enabled at this point
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
 	{
 		if ( pm->debugLevel > 0 )
@@ -1233,7 +1231,7 @@ static qboolean PM_CheckJetpack( void )
 		return qfalse;
 	}
 
-	// check thrust starting conditions
+	// check ignite conditions
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_WARM ) )
 	{
 		// we got off ground by jumping
@@ -1258,16 +1256,16 @@ static qboolean PM_CheckJetpack( void )
 			}
 		}
 
-		// minimum fuel required
-		if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_STOP )
-		{
-			return qfalse;
-		}
+		// use some fuel for ignition
+		pm->ps->stats[ STAT_FUEL ] -= JETPACK_FUEL_IGNITE;
+		if ( pm->ps->stats[ STAT_FUEL ] < 0 ) pm->ps->stats[ STAT_FUEL ] = 0;
 
+		// ignite
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_WARM;
+		PM_AddEvent( EV_JETPACK_IGNITE );
 	}
 
-	// stop thrusting and cold restart engine if completely out of fuel
+	// stop thrusting if completely out of fuel
 	if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_USAGE )
 	{
 		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
@@ -1278,24 +1276,27 @@ static qboolean PM_CheckJetpack( void )
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
-			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_WARM;
-
 			PM_AddEvent( EV_JETPACK_STOP );
 		}
 
 		return qfalse;
 	}
 
-	// start thrust if not already thrusting
+	// start thrusting if possible
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE ) )
 	{
+		// minimum fuel required
+		if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_STOP )
+		{
+			return qfalse;
+		}
+
 		if ( pm->debugLevel > 0 )
 		{
 			Com_Printf( "[PM_CheckJetpack] " S_COLOR_GREEN "Jetpack started\n" );
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_ACTIVE;
-
 		PM_AddEvent( EV_JETPACK_START );
 	}
 
@@ -1307,11 +1308,7 @@ static qboolean PM_CheckJetpack( void )
 
 	// remove fuel
 	pm->ps->stats[ STAT_FUEL ] -= pml.msec * JETPACK_FUEL_USAGE;
-
-	if ( pm->ps->stats[ STAT_FUEL ] < 0 )
-	{
-		pm->ps->stats[ STAT_FUEL ] = 0;
-	}
+	if ( pm->ps->stats[ STAT_FUEL ] < 0 ) pm->ps->stats[ STAT_FUEL ] = 0;
 
 	return qtrue;
 }
@@ -1404,55 +1401,52 @@ static void PM_LandJetpack( qboolean force )
 
 static qboolean PM_CheckJump( void )
 {
-	vec3_t normal;
-	int    staminaJumpCost;
-	float  magnitude;
+	vec3_t   normal;
+	int      staminaJumpCost;
+	float    magnitude;
+	qboolean jetpackJump;
 
+	// can't jump while in air
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
 		return qfalse;
 	}
 
-	if ( BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude == 0.0f )
-	{
-		return qfalse;
-	}
-
-	//can't jump and pounce at the same time
-	if ( ( pm->ps->weapon == WP_ALEVEL3 ||
-	       pm->ps->weapon == WP_ALEVEL3_UPG ) &&
-	     pm->ps->stats[ STAT_MISC ] > 0 )
-	{
-		return qfalse;
-	}
-
-	//can't jump and charge at the same time
-	if ( ( pm->ps->weapon == WP_ALEVEL4 ) &&
-	     pm->ps->stats[ STAT_MISC ] > 0 )
-	{
-		return qfalse;
-	}
-
-	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
-
-	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
-	     ( pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost ) )
-	{
-		return qfalse;
-	}
-
-	if ( pm->ps->pm_flags & PMF_RESPAWNED )
-	{
-		return qfalse; // don't allow jump until all buttons are up
-	}
-
+	// check if holding jump key
 	if ( pm->cmd.upmove < 10 )
 	{
-		// not holding jump
 		return qfalse;
 	}
 
-	//can't jump whilst grabbed
+	// needs jump ability
+	if ( BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude <= 0.0f )
+	{
+		return qfalse;
+	}
+
+	// can't jump and pounce at the same time
+	// TODO: This prevents jumps in an unintuitive manner, since the charge
+	//       meter has nothing to do with the land time.
+	if ( ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3 ||
+	       pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG ) &&
+	     pm->ps->stats[ STAT_MISC ] > 0 )
+	{
+		return qfalse;
+	}
+
+	// can't jump and charge at the same time
+	if ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 && pm->ps->stats[ STAT_MISC ] > 0 )
+	{
+		return qfalse;
+	}
+
+	// don't allow jump until all buttons are up (?)
+	if ( pm->ps->pm_flags & PMF_RESPAWNED )
+	{
+		return qfalse;
+	}
+
+	// can't jump whilst grabbed
 	if ( pm->ps->pm_type == PM_GRABBED )
 	{
 		return qfalse;
@@ -1464,23 +1458,44 @@ static qboolean PM_CheckJump( void )
 		return qfalse;
 	}
 
-	//don't allow walljump for a short while after jumping from the ground
+	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+	jetpackJump     = qfalse;
+
+	// humans need stamina or jetpack to jump
+	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
+	     ( pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost ) )
+	{
+		// use jetpack instead of stamina to take off
+		if ( BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) &&
+		     pm->ps->stats[ STAT_FUEL ] > JETPACK_FUEL_LOW )
+		{
+			jetpackJump = qtrue;
+		}
+		else
+		{
+			return qfalse;
+		}
+	}
+
+	// take some stamina off
+	if ( !jetpackJump && pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	{
+		pm->ps->stats[ STAT_STAMINA ] -= staminaJumpCost;
+	}
+
+	// go into jump mode
+	pml.groundPlane = qfalse;
+	pml.walking     = qfalse;
+	pm->ps->pm_flags |= PMF_JUMP_HELD;
+	pm->ps->pm_flags |= PMF_JUMPED;
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+
+	// don't allow walljump for a short while after jumping from the ground
+	// TODO: There was an issue about this potentially having side effects.
 	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
 	{
 		pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
 		pm->ps->pm_time = 200;
-	}
-
-	pml.groundPlane = qfalse; // jumping away
-	pml.walking = qfalse;
-	pm->ps->pm_flags |= PMF_JUMPED;
-	pm->ps->pm_flags |= PMF_JUMP_HELD;
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-
-	// take some stamina off
-	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
-	{
-		pm->ps->stats[ STAT_STAMINA ] -= staminaJumpCost;
 	}
 
 	// jump in surface normal direction
@@ -1489,8 +1504,8 @@ static qboolean PM_CheckJump( void )
 	// retrieve jump magnitude
 	magnitude = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
 
-	// if jetpack is active, scale down jump magnitude
-	if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+	// if jetpack is active or being used for the jump, scale down jump magnitude
+	if ( jetpackJump || pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
 	{
 		if ( pm->debugLevel > 0 )
 		{

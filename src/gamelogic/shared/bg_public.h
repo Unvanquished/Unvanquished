@@ -546,6 +546,7 @@ typedef enum
 
   EV_JETPACK_ENABLE,  // enable jets
   EV_JETPACK_DISABLE, // disable jets
+  EV_JETPACK_IGNITE,  // ignite engine
   EV_JETPACK_START,   // start thrusting
   EV_JETPACK_STOP,    // stop thrusting
 
