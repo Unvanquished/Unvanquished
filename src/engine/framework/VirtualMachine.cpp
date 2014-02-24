@@ -226,14 +226,11 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 
 int VMBase::Create(Str::StringRef name, vmType_t type)
 {
-	if (type != TYPE_NACL && type != TYPE_NATIVE)
+	if (type != TYPE_NACL && type != TYPE_NATIVE && type != TYPE_NATIVE_DEBUG && type != TYPE_NACL_DEBUG)
 		Com_Error(ERR_DROP, "VM: Invalid type %d", type);
 
 	// Free the VM if it exists
 	Free();
-
-	const std::string& libPath = FS::GetLibPath();
-	bool debug = Cvar_Get("vm_debug", "0", CVAR_INIT)->integer;
 
 	// Create the socket pair to get the handle for ROOT_SOCKET
 	std::pair<IPC::Socket, IPC::Socket> pair = IPC::Socket::CreatePair();
@@ -247,10 +244,11 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 	const char* env[] = {rootSocketHandle, NULL};
 
 	// Generate command line
+	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
 	std::string module, sel_ldr, irt, bootstrap;
-	if (type == TYPE_NACL) {
+	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG) {
 		// Extract the nexe from the pak so that sel_ldr can load it
 		module = name + "-" ARCH_STRING ".nexe";
 		try {
@@ -274,7 +272,7 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 #else
 		args.push_back(sel_ldr.c_str());
 #endif
-		if (debug)
+		if (type == TYPE_NACL_DEBUG)
 			args.push_back("-g");
 		args.push_back("-B");
 		args.push_back(irt.c_str());
@@ -285,7 +283,7 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 		args.push_back(module.c_str());
 	} else {
 		module = FS::Path::Build(libPath, name + "-nacl-native" + EXE_EXT);
-		if (debug) {
+		if (type == TYPE_NATIVE_DEBUG) {
 			args.push_back("/usr/bin/gdbserver");
 			args.push_back("localhost:4014");
 		}
@@ -297,7 +295,7 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 
 	std::tie(processHandle, rootSocket) = InternalLoadModule(std::move(pair), args.data(), env, type == TYPE_NACL);
 
-	if (debug)
+	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_DEBUG)
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
 
 	// Read the ABI version from the root socket.

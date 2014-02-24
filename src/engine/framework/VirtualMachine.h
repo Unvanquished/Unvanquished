@@ -38,7 +38,9 @@ namespace VM {
 
 enum vmType_t {
 	TYPE_NATIVE,
-	TYPE_NACL
+	TYPE_NACL,
+	TYPE_NATIVE_DEBUG,
+	TYPE_NACL_DEBUG
 };
 
 // Base class for a virtual machine instance
