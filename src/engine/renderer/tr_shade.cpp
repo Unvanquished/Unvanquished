@@ -646,6 +646,11 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	gl_vertexLightingShader_DBS_entity->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_vertexLightingShader_DBS_entity->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
+	if( tr.world ) {
+		gl_vertexLightingShader_DBS_entity->SetUniform_LightGridOrigin( tr.world->lightGridGLOrigin );
+		gl_vertexLightingShader_DBS_entity->SetUniform_LightGridScale( tr.world->lightGridGLScale );
+	}
+
 	// u_VertexInterpolation
 	if ( glState.vertexAttribsInterpolation > 0 )
 	{
@@ -792,6 +797,11 @@ static void Render_vertexLighting_DBS_entity( int stage )
 		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] ); 
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
+	}
+
+	if ( tr.lightGrid1Image && tr.lightGrid2Image ) {
+		GL_BindToTMU( 6, tr.lightGrid1Image );
+		GL_BindToTMU( 7, tr.lightGrid2Image );
 	}
 
 	gl_vertexLightingShader_DBS_entity->SetRequiredVertexPointers();

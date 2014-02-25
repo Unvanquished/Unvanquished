@@ -1285,6 +1285,8 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	u_VertexInterpolation( this ),
 	u_DepthScale( this ),
 	u_EnvironmentInterpolation( this ),
+	u_LightGridOrigin( this ),
+	u_LightGridScale( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
@@ -1325,6 +1327,8 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_EnvironmentMap0" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_EnvironmentMap1" ), 4 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 5 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid1" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid2" ), 7 );
 }
 
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderManager *manager ) :
@@ -1345,6 +1349,8 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	u_ModelViewProjectionMatrix( this ),
 	u_DepthScale( this ),
 	u_LightWrapAround( this ),
+	u_LightGridOrigin( this ),
+	u_LightGridScale( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
@@ -1377,6 +1383,8 @@ void GLShader_vertexLighting_DBS_world::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_NormalMap" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 3 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid1" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid2" ), 7 );
 }
 
 GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderManager *manager ):

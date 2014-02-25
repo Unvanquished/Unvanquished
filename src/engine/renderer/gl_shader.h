@@ -2340,6 +2340,36 @@ public:
 	}
 };
 
+class u_LightGridOrigin :
+	GLUniform3f
+{
+public:
+	u_LightGridOrigin( GLShader *shader ) :
+		GLUniform3f( shader, "u_LightGridOrigin" )
+	{
+	}
+
+	void SetUniform_LightGridOrigin( vec3_t origin )
+	{
+		this->SetValue( origin );
+	}
+};
+
+class u_LightGridScale :
+	GLUniform3f
+{
+public:
+	u_LightGridScale( GLShader *shader ) :
+		GLUniform3f( shader, "u_LightGridScale" )
+	{
+	}
+
+	void SetUniform_LightGridScale( vec3_t scale )
+	{
+		this->SetValue( scale );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
@@ -2411,6 +2441,8 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_VertexInterpolation,
 	public u_DepthScale,
 	public u_EnvironmentInterpolation,
+	public u_LightGridOrigin,
+	public u_LightGridScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
@@ -2444,6 +2476,8 @@ class GLShader_vertexLighting_DBS_world :
 	public u_ModelViewProjectionMatrix,
 	public u_DepthScale,
 	public u_LightWrapAround,
+	public u_LightGridOrigin,
+	public u_LightGridScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
