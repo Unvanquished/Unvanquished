@@ -35,6 +35,8 @@ void LoadCRN( const char *name, byte **data, int *width, int *height,
 	crnd::crn_level_info li;
 	crnd::crnd_unpack_context ctx;
 
+	*numLayers = 0;
+
 	buffLen = ri.FS_ReadFile( name, ( void ** ) &buff );
 
 	if ( !buff )

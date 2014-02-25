@@ -108,6 +108,9 @@ namespace Cmd {
     typedef std::pair<std::string, std::string> CompletionItem;
     typedef std::vector<CompletionItem> CompletionResult;
 
+    CompletionResult FilterCompletion(Str::StringRef prefix, std::initializer_list<CompletionItem> list);
+    void AddToCompletion(CompletionResult& res, Str::StringRef prefix, std::initializer_list<CompletionItem> list);
+
     class Environment;
 
     /**

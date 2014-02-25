@@ -1175,6 +1175,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 	}
 
 	// Add the pak to the list of loaded paks
+	Com_Printf("Loading pak '%s'...\n", pak.path.c_str());
 	loadedPaks.push_back(pak);
 
 	// Update the list of files, but don't overwrite existing files to preserve sort order

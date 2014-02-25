@@ -523,6 +523,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		struct image_s *next;
 	} image_t;
 
+	inline bool IsImageCompressed(int bits) { return bits & (IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5); }
+
 	typedef struct FBO_s
 	{
 		char     name[ MAX_QPATH ];

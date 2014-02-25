@@ -166,6 +166,8 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 	int      i, size;
 	qboolean compressed;
 
+	*numLayers = 0;
+
 	buff = ( byte * ) pImageData;
 
 	data[0] = NULL;
