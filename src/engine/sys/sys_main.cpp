@@ -65,11 +65,7 @@ Maryland 20850 USA.
 
 static char binaryPath[ MAX_OSPATH ] = { 0 };
 
-#ifdef USE_CURSES
-static qboolean nocurses = qfalse;
-void            CON_Init_tty( void );
-
-#endif
+void            CON_Init_TTY( void );
 
 /*
 =================
@@ -667,17 +663,16 @@ int ALIGN_STACK main( int argc, char **argv )
 	Sys_ParseArgs( argc, argv );
 	Sys_SetBinaryPath( Sys_Dirname( argv[ 0 ] ) );
 
+	qboolean curses = qfalse;
  	// Concatenate the command line for passing to Com_Init
 	for ( i = 1; i < argc; i++ )
 	{
 
-#ifdef USE_CURSES
-		if ( !strcmp( "+nocurses", argv[ i ] ) )
+		if ( !strcmp( "+curses", argv[ i ] ) )
 		{
-			nocurses = qtrue;
+			curses = qtrue;
 			continue;
 		}
-#endif
 
 		// Allow URIs to be passed without +connect
 		if ( !Q_strnicmp( argv[ i ], URI_SCHEME, URI_SCHEME_LENGTH ) && Q_strnicmp( argv[ i - 1 ], "+connect", 8 ) )
@@ -689,20 +684,14 @@ int ALIGN_STACK main( int argc, char **argv )
 		Q_strcat( commandLine, sizeof( commandLine ), " " );
 	}
 
-#ifdef USE_CURSES
-
-	if ( nocurses )
-	{
-		CON_Init_tty();
-	}
-	else
+	if ( curses )
 	{
 		CON_Init();
 	}
-
-#else
-	CON_Init();
-#endif
+	else
+	{
+		CON_Init_TTY();
+	}
 
 	Com_Init( commandLine );
 	NET_Init();

@@ -61,7 +61,6 @@ option( BUILD_TTY_CLIENT "Build Daemon headless client" 0 )
 
 cmake_dependent_option( USE_MUMBLE "Compile with support for Mumble" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
-cmake_dependent_option( USE_CURSES "Use the curses console" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
@@ -561,7 +560,6 @@ if( WIN32 )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/sys_win32.cpp
     ${ENGINE_DIR}/sys/sys_win32.h
-    ${ENGINE_DIR}/sys/con_passive.cpp
   )
 else()
   set( ENGINELIST ${ENGINELIST}
@@ -570,14 +568,16 @@ else()
   )
 endif()
 
+if( LINUX )
+  set( ENGINELIST ${ENGINELIST}
+    ${ENGINE_DIR}/sys/con_curses.cpp
+  )
+endif()
+
 if( APPLE )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/sys_osx.mm
   )
-endif()
-
-if( USE_CURSES )
-  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/sys/con_curses.cpp )
 endif()
 
 set( CLIENTBASELIST
@@ -1209,19 +1209,19 @@ if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
 endif()
 
 # Curses, pdcurses on Windows and ncursesw on Unix
-if( USE_CURSES )
-  add_definitions( -DUSE_CURSES -DUSE_CURSES_W )
-  if( WIN32 )
-    add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 )
-    include_directories( ${LIB_DIR}/pdcurses )
-    set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
-    set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
-  else()
-    set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
-    find_package( CursesW REQUIRED )
-    include_directories( ${CURSESW_INCLUDE_DIR} )
-    set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
-  endif()
+# For now curses is disabled on windows (introduced 30ms blocks even in non blocking mode)
+# and it isn't supported on mac
+if( WIN32 AND FALSE )
+  add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 )
+  include_directories( ${LIB_DIR}/pdcurses )
+  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
+  set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
+elseif( LINUX )
+  add_definitions( -DUSE_CURSES )
+  set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
+  find_package( CursesW REQUIRED )
+  include_directories( ${CURSESW_INCLUDE_DIR} )
+  set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
 endif()
 
 ################################################################################
