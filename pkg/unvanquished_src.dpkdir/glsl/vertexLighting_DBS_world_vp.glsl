@@ -49,9 +49,7 @@ varying vec4		var_TexDiffuseGlow;
 #if defined(USE_NORMAL_MAPPING)
 varying vec4		var_TexNormalSpecular;
 varying vec3		var_ViewDir;
-varying vec3		var_AmbientLight;
-varying vec3		var_DirectedLight;
-varying vec3		var_LightDirection;
+varying vec3            var_Position;
 #else
 varying vec3		var_Normal;
 varying vec4		var_LightColor;
@@ -83,17 +81,13 @@ void	main()
 	// transform specularmap texture coords
 	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
-	var_AmbientLight = attr_AmbientLight;
-	var_DirectedLight = attr_DirectedLight;
-	
 	// construct object-space-to-tangent-space 3x3 matrix
 	mat3 objectToTangentMatrix = mat3( attr_Tangent.x, attr_Binormal.x, attr_Normal.x,
 							attr_Tangent.y, attr_Binormal.y, attr_Normal.y,
 							attr_Tangent.z, attr_Binormal.z, attr_Normal.z	);
 
-	
-	// assign vertex to light vector in tangent space
-	var_LightDirection = objectToTangentMatrix * attr_LightDirection;
+	// assign vertex Position for light grid sampling
+	var_Position = position.xyz;
 	
 	// assign vertex to view origin vector in tangent space
 	var_ViewDir = objectToTangentMatrix * normalize( u_ViewOrigin - position.xyz );
