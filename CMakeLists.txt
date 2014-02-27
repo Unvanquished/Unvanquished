@@ -601,7 +601,6 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/client/cl_parse.cpp
   ${ENGINE_DIR}/client/cl_scrn.cpp
   ${ENGINE_DIR}/client/cl_ui.cpp
-  ${ENGINE_DIR}/client/cl_logs.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
 )
 

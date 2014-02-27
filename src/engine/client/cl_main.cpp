@@ -4536,9 +4536,6 @@ void CL_Init( void )
 
 	Cvar_Set( "cl_running", "1" );
 
-	CL_OpenClientLog();
-	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
-
 	PrintBanner(_( "Client Initialization Complete" ))
 }
 
@@ -4623,9 +4620,6 @@ void CL_Shutdown( void )
 	// done.
 
 	CL_IRCWaitShutdown();
-
-	CL_WriteClientLog( "`~-     Client Closed     -~`\n" );
-	CL_CloseClientLog();
 
 	Cvar_Set( "cl_running", "0" );
 

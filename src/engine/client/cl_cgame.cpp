@@ -1596,8 +1596,6 @@ void CL_InitCGame( void )
 	CL_ClearKeys();
 	Key_ClearStates();
 
-	CL_WriteClientLog( va("`~=-----------------=~`\n MAP: %s \n`~=-----------------=~`\n", mapname ) );
-
 //  if( cl_autorecord->integer ) {
 //      Cvar_Set( "g_synchronousClients", "1" );
 //  }
