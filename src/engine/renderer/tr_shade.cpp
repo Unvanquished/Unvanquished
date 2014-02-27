@@ -584,9 +584,6 @@ static void Render_generic( int stage )
 static void Render_vertexLighting_DBS_entity( int stage )
 {
 	vec3_t        viewOrigin;
-	vec3_t        ambientColor;
-	vec3_t        lightDir;
-	vec4_t        lightColor;
 	uint32_t      stateBits;
 	shaderStage_t *pStage = tess.surfaceStages[ stage ];
 
@@ -627,21 +624,11 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	// set uniforms
 	VectorCopy( backEnd.viewParms.orientation.origin, viewOrigin );  // in world space
-	VectorCopy( backEnd.currentEntity->ambientLight, ambientColor );
-	//ClampColor(ambientColor);
-	VectorCopy( backEnd.currentEntity->directedLight, lightColor );
-	//ClampColor(directedLight);
-
-	// lightDir = L vector which means surface to light
-	VectorCopy( backEnd.currentEntity->lightDir, lightDir );
 
 	// u_AlphaTest
 	gl_vertexLightingShader_DBS_entity->SetUniform_AlphaTest( pStage->stateBits );
 
-	gl_vertexLightingShader_DBS_entity->SetUniform_AmbientColor( ambientColor );
 	gl_vertexLightingShader_DBS_entity->SetUniform_ViewOrigin( viewOrigin );
-	gl_vertexLightingShader_DBS_entity->SetUniform_LightDir( lightDir );
-	gl_vertexLightingShader_DBS_entity->SetUniform_LightColor( lightColor );
 
 	gl_vertexLightingShader_DBS_entity->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_vertexLightingShader_DBS_entity->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
@@ -1138,10 +1125,10 @@ static void Render_depthFill( int stage )
 	pStage = tess.surfaceStages[ stage ];
 
 	uint32_t stateBits = pStage->stateBits;
-	stateBits &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_ATEST_BITS );
-	stateBits |= GLS_DEPTHMASK_TRUE;
+	stateBits &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS );
+	stateBits |= GLS_DEPTHMASK_TRUE | GLS_COLORMASK_BITS;
 
-	GL_State( pStage->stateBits );
+	GL_State( stateBits );
 
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -1165,29 +1152,10 @@ static void Render_depthFill( int stage )
 	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
 
 	// u_Color
-#if 1
-
-	if ( r_precomputedLighting->integer )
-	{
-		VectorCopy( backEnd.currentEntity->ambientLight, ambientColor );
-		ClampColor( ambientColor );
-	}
-	else if ( r_forceAmbient->integer )
-	{
-		ambientColor[ 0 ] = r_forceAmbient->value;
-		ambientColor[ 1 ] = r_forceAmbient->value;
-		ambientColor[ 2 ] = r_forceAmbient->value;
-	}
-	else
-	{
-		VectorClear( ambientColor );
-	}
-
+	VectorClear( ambientColor );
 	ambientColor[ 3 ] = 1;
+
 	gl_genericShader->SetUniform_Color( ambientColor );
-#else
-	gl_genericShader->SetUniform_Color( colorMdGrey );
-#endif
 
 	gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
@@ -3408,7 +3376,7 @@ void Tess_StageIteratorDepthFill()
 	{
 		shaderStage_t *pStage = tess.surfaceStages[ stage ];
 
-		if ( !pStage )
+		if ( !pStage || !pStage->bundle[0].image[0] )
 		{
 			break;
 		}

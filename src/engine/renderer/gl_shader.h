@@ -1517,21 +1517,6 @@ public:
 	}
 };
 
-class u_AmbientColor :
-	GLUniform3f
-{
-public:
-	u_AmbientColor( GLShader *shader ) :
-		GLUniform3f( shader, "u_AmbientColor" )
-	{
-	}
-
-	void SetUniform_AmbientColor( const vec3_t v )
-	{
-		this->SetValue( v );
-	}
-};
-
 class u_ViewOrigin :
 	GLUniform3f
 {
@@ -2431,10 +2416,7 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_GlowTextureMatrix,
 	public u_SpecularExponent,
 	public u_AlphaThreshold,
-	public u_AmbientColor,
 	public u_ViewOrigin,
-	public u_LightDir,
-	public u_LightColor,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_Bones,

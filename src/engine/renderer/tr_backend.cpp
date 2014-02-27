@@ -1082,7 +1082,6 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	GL_CheckErrors();
 }
 
-#if 0
 static void RB_RenderOpaqueSurfacesIntoDepth( bool onlyWorld )
 {
 	trRefEntity_t *entity, *oldEntity;
@@ -1223,8 +1222,6 @@ static void RB_RenderOpaqueSurfacesIntoDepth( bool onlyWorld )
 
 	GL_CheckErrors();
 }
-
-#endif
 
 // *INDENT-OFF*
 #ifdef VOLUMETRIC_LIGHTING
@@ -7152,8 +7149,8 @@ static void RB_RenderView( void )
 	if ( r_dynamicEntityOcclusionCulling->integer )
 	{
 		// draw everything from world that is opaque into black so we can benefit from early-z rejections later
-		//RB_RenderOpaqueSurfacesIntoDepth(true);
-		RB_RenderDrawSurfaces( true, DRAWSURFACES_WORLD );
+		RB_RenderOpaqueSurfacesIntoDepth(true);
+		//RB_RenderDrawSurfaces( true, DRAWSURFACES_WORLD );
 
 		// try to cull entities using hardware occlusion queries
 		RB_RenderEntityOcclusionQueries();
