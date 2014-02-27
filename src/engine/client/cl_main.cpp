@@ -46,16 +46,11 @@ Maryland 20850 USA.
 
 cvar_t *cl_wavefilerecord;
 
-#ifdef USE_MUMBLE
 #include "libmumblelink.h"
-#endif
-
 #include "../qcommon/crypto.h"
 
-#ifdef USE_MUMBLE
 cvar_t *cl_useMumble;
 cvar_t *cl_mumbleScale;
-#endif
 
 #ifdef USE_VOIP
 cvar_t *cl_voipUseVAD;
@@ -232,7 +227,6 @@ void CL_DoPurgeCache( void )
 	re.purgeCache();
 }
 
-#ifdef USE_MUMBLE
 static void CL_UpdateMumble( void )
 {
 	vec3_t pos, forward, up;
@@ -269,8 +263,6 @@ static void CL_UpdateMumble( void )
 
 	mumble_update_coordinates( pos, forward, up );
 }
-
-#endif
 
 #ifdef USE_VOIP
 static
@@ -527,15 +519,11 @@ void CL_CaptureVoip( void )
 	qboolean       initialFrame = qfalse;
 	qboolean       finalFrame = qfalse;
 
-#if USE_MUMBLE
-
 	// if we're using Mumble, don't try to handle VoIP transmission ourselves.
 	if ( cl_useMumble->integer )
 	{
 		return;
 	}
-
-#endif
 
 	// If your data rate is too low, you'll get Connection Interrupted warnings
 	//  when VoIP packets arrive, even if you have a broadband connection.
@@ -1714,15 +1702,11 @@ void CL_Disconnect( qboolean showMainMenu )
 		Cvar_Set( "cl_downloadName", "" );
 	}
 
-#ifdef USE_MUMBLE
-
 	if ( cl_useMumble->integer && mumble_islinked() )
 	{
 		Com_Printf("%s", _( "Mumble: Unlinking from Mumble application\n" ));
 		mumble_unlink();
 	}
-
-#endif
 
 #ifdef USE_VOIP
 
@@ -3856,9 +3840,7 @@ void CL_Frame( int msec )
 	CL_CaptureVoip();
 #endif
 
-#ifdef USE_MUMBLE
 	CL_UpdateMumble();
-#endif
 
 	// advance local effects for next frame
 	SCR_RunCinematic();
@@ -4443,10 +4425,8 @@ void CL_Init( void )
 
 	Cvar_Get( "password", "", CVAR_USERINFO );
 
-#ifdef USE_MUMBLE
 	cl_useMumble = Cvar_Get( "cl_useMumble", "0",  CVAR_LATCH );
 	cl_mumbleScale = Cvar_Get( "cl_mumbleScale", "0.0254", 0 );
-#endif
 
 #ifdef USE_VOIP
 	cl_voipSend = Cvar_Get( "cl_voipSend", "0", 0 );

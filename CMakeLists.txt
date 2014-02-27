@@ -59,7 +59,6 @@ option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1)
 option( BUILD_GAME_QVM "Build QVM game logic" 1)
 option( BUILD_TTY_CLIENT "Build Daemon headless client" 0 )
 
-cmake_dependent_option( USE_MUMBLE "Compile with support for Mumble" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
@@ -295,11 +294,6 @@ if( APPLE )
   set_linker_flag( "-Wl,-no_pie" )
   set( CMAKE_INSTALL_RPATH "@executable_path/" )
   set( CMAKE_BUILD_WITH_INSTALL_RPATH ON )
-endif()
-
-# Mumble link support
-if( USE_MUMBLE )
-  add_definitions( -DUSE_MUMBLE )
 endif()
 
 ################################################################################
@@ -597,6 +591,8 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/client/cl_scrn.cpp
   ${ENGINE_DIR}/client/cl_ui.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
+  ${ENGINE_DIR}/client/libmumblelink.cpp
+  ${ENGINE_DIR}/client/libmumblelink.h
 )
 
 set( CLIENTLIST
@@ -628,14 +624,6 @@ set( DEDSERVERLIST
     ${ENGINE_DIR}/null/null_input.cpp
     ${ENGINE_DIR}/null/null_client.cpp
 )
-
-
-if( USE_MUMBLE )
-  set( CLIENTBASELIST ${CLIENTBASELIST}
-    ${ENGINE_DIR}/client/libmumblelink.cpp
-    ${ENGINE_DIR}/client/libmumblelink.h
-  )
-endif()
 
 set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.cpp

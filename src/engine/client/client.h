@@ -529,10 +529,8 @@ extern cvar_t *cl_aviMotionJpeg;
 
 extern cvar_t *cl_allowPaste;
 
-#ifdef USE_MUMBLE
 extern cvar_t *cl_useMumble;
 extern cvar_t *cl_mumbleScale;
-#endif
 
 #if defined(USE_VOIP) && !defined(DEDICATED)
 // cl_voipSendTarget is a string: "all" to broadcast to everyone, "none" to

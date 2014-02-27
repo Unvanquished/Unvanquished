@@ -37,10 +37,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include "../sys/sys_local.h"
 
-#ifdef USE_MUMBLE
 #include "libmumblelink.h"
-#endif
-
 #include "../qcommon/crypto.h"
 
 #include "../framework/CommandSystem.h"
@@ -1790,15 +1787,11 @@ void CL_FirstSnapshot( void )
 		Cvar_Set( "activeAction", "" );
 	}
 
-#ifdef USE_MUMBLE
-
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
 		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application okay\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
 	}
-
-#endif
 
 #ifdef USE_VOIP
 
