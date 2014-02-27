@@ -902,6 +902,11 @@ static void Render_vertexLighting_DBS_world( int stage )
 		gl_vertexLightingShader_DBS_world->SetUniform_DepthScale( depthScale );
 	}
 
+	if( tr.world ) {
+		gl_vertexLightingShader_DBS_world->SetUniform_LightGridOrigin( tr.world->lightGridGLOrigin );
+		gl_vertexLightingShader_DBS_world->SetUniform_LightGridScale( tr.world->lightGridGLScale );
+	}
+
 	// bind u_DiffuseMap
 	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
 	gl_vertexLightingShader_DBS_world->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
@@ -936,6 +941,11 @@ static void Render_vertexLighting_DBS_world( int stage )
 		float maxSpec = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
 
 		gl_vertexLightingShader_DBS_world->SetUniform_SpecularExponent( minSpec, maxSpec );
+	}
+
+	if ( tr.lightGrid1Image && tr.lightGrid2Image ) {
+		GL_BindToTMU( 6, tr.lightGrid1Image );
+		GL_BindToTMU( 7, tr.lightGrid2Image );
 	}
 
 	if ( glowMapping )
