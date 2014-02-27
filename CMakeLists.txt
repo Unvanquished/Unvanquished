@@ -527,8 +527,6 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/cvar.cpp
   ${ENGINE_DIR}/qcommon/cvar.h
   ${ENGINE_DIR}/qcommon/qfiles.h
-  ${ENGINE_DIR}/qcommon/htable.cpp
-  ${ENGINE_DIR}/qcommon/htable.h
   ${ENGINE_DIR}/qcommon/huffman.cpp
   ${ENGINE_DIR}/qcommon/md4.cpp
   ${ENGINE_DIR}/qcommon/md4.h
