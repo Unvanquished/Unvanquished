@@ -679,6 +679,12 @@ int ALIGN_STACK main( int argc, char **argv )
 			continue;
 		}
 
+		if ( !strcmp( "+nocurses", argv[ i ] ) )
+		{
+			curses = qfalse;
+			continue;
+		}
+
 		// Allow URIs to be passed without +connect
 		if ( !Q_strnicmp( argv[ i ], URI_SCHEME, URI_SCHEME_LENGTH ) && Q_strnicmp( argv[ i - 1 ], "+connect", 8 ) )
 		{
