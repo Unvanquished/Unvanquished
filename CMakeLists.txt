@@ -566,7 +566,7 @@ else()
   )
 endif()
 
-if( LINUX OR ( WIN32 AND (BUILD_SERVER OR BUILD_TTY_CLIENT) ) )
+if( NOT APPLE )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/con_curses.cpp
   )
@@ -1206,15 +1206,13 @@ if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
 endif()
 
 # Curses, pdcurses on Windows and ncursesw on Unix
-# For now curses is disabled on windows client (introduced 30ms blocks even in non blocking mode)
-# It is however the only way to show console output so we include it
-# it isn't supported on mac
-if( WIN32 AND (BUILD_SERVER OR BUILD_TTY_CLIENT) )
+# Not supported on mac because the included version is too old
+if( WIN32 )
   add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES)
   include_directories( ${LIB_DIR}/pdcurses )
   set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
   set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
-elseif( LINUX )
+elseif( NOT APPLE )
   add_definitions( -DUSE_CURSES )
   set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
   find_package( CursesW REQUIRED )

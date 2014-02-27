@@ -663,7 +663,12 @@ int ALIGN_STACK main( int argc, char **argv )
 	Sys_ParseArgs( argc, argv );
 	Sys_SetBinaryPath( Sys_Dirname( argv[ 0 ] ) );
 
+	// Always enable the curses console for the Windows tty client and server
+#if defined(_WIN32) && (defined(BUILD_TTY_CLIENT) || defined(DEDICATED))
+	qboolean curses = qtrue;
+#else
 	qboolean curses = qfalse;
+#endif
  	// Concatenate the command line for passing to Com_Init
 	for ( i = 1; i < argc; i++ )
 	{
