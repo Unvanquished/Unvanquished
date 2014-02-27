@@ -33,9 +33,6 @@ uniform float		u_EnvironmentInterpolation;
 
 uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
-uniform vec3		u_AmbientColor;
-uniform vec3		u_LightDir;
-uniform vec3		u_LightColor;
 uniform float		u_DepthScale;
 uniform vec2        u_SpecularExponent;
 
