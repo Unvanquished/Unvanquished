@@ -433,9 +433,7 @@ extern struct rsa_private_key private_key;
 // cvars
 //
 extern cvar_t *cl_nodelta;
-extern cvar_t *cl_debugMove;
 extern cvar_t *cl_noprint;
-extern cvar_t *cl_timegraph;
 extern cvar_t *cl_maxpackets;
 extern cvar_t *cl_packetdup;
 extern cvar_t *cl_shownet;
@@ -793,8 +791,6 @@ void             CL_SaveConsoleHistory( void );
 //
 void  SCR_Init( void );
 void  SCR_UpdateScreen( void );
-
-void  SCR_DebugGraph( float value, int color );
 
 int   SCR_GetBigStringWidth( const char *str );  // returns in virtual 640x480 coordinates
 

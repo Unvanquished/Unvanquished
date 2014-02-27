@@ -70,7 +70,6 @@ cvar_t *cl_voip;
 #endif
 
 cvar_t *cl_nodelta;
-cvar_t *cl_debugMove;
 
 cvar_t *cl_noprint;
 cvar_t *cl_motd;
@@ -134,7 +133,6 @@ cvar_t *cl_serverStatusResendTime;
 
 cvar_t                 *cl_demorecording; // fretn
 cvar_t                 *cl_demofilename; // bani
-cvar_t                 *cl_demooffset; // bani
 
 cvar_t                 *cl_waverecording; //bani
 cvar_t                 *cl_wavefilename; //bani
@@ -867,7 +865,6 @@ void CL_StopRecord_f( void )
 	clc.demorecording = qfalse;
 	Cvar_Set( "cl_demorecording", "0" );  // fretn
 	Cvar_Set( "cl_demofilename", "" );  // bani
-	Cvar_Set( "cl_demooffset", "0" );  // bani
 	Com_Printf("%s", _( "Stopped demo.\n" ));
 }
 
@@ -1002,7 +999,6 @@ void CL_Record( const char *name )
 	Cvar_Set( "cl_demorecording", "1" );  // fretn
 	Q_strncpyz( clc.demoName, demoName, sizeof( clc.demoName ) );
 	Cvar_Set( "cl_demofilename", clc.demoName );  // bani
-	Cvar_Set( "cl_demooffset", "0" );  // bani
 
 	// don't start saving messages until a non-delta compressed message is received
 	clc.demowaiting = qtrue;
@@ -3828,11 +3824,6 @@ void CL_Frame( int msec )
 
 	cls.realtime += cls.frametime;
 
-	if ( cl_timegraph->integer )
-	{
-		SCR_DebugGraph( cls.realFrametime * 0.25, 0 );
-	}
-
 	// see if we need to update any userinfo
 	CL_CheckUserinfo();
 
@@ -4435,7 +4426,6 @@ void CL_Init( void )
 	//bani - make these cvars visible to cgame
 	cl_demorecording = Cvar_Get( "cl_demorecording", "0", CVAR_ROM );
 	cl_demofilename = Cvar_Get( "cl_demofilename", "", CVAR_ROM );
-	cl_demooffset = Cvar_Get( "cl_demooffset", "0", CVAR_ROM );
 	cl_waverecording = Cvar_Get( "cl_waverecording", "0", CVAR_ROM );
 	cl_wavefilename = Cvar_Get( "cl_wavefilename", "", CVAR_ROM );
 	cl_waveoffset = Cvar_Get( "cl_waveoffset", "0", CVAR_ROM );
