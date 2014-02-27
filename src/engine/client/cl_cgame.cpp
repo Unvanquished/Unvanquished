@@ -574,8 +574,6 @@ Just adds default parameters that cgame doesn't need to know about
 */
 void CL_CM_LoadMap( const char *mapname )
 {
-	int checksum;
-
 	// DHM - Nerve :: If we are not running the server, then set expected usage here
 	if ( !com_sv_running->integer )
 	{
@@ -588,7 +586,7 @@ void CL_CM_LoadMap( const char *mapname )
 		Cvar_Set( "com_errorDiagnoseIP", "" );
 	}
 
-	CM_LoadMap( mapname, qtrue, &checksum );
+	CM_LoadMap( mapname, qtrue );
 }
 
 /*
