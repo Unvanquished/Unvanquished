@@ -452,7 +452,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_surface.cpp
   ${ENGINE_DIR}/renderer/tr_vbo.cpp
   ${ENGINE_DIR}/renderer/tr_world.cpp
-  ${ENGINE_DIR}/qcommon/md4.cpp
   ${LIB_DIR}/openexr/half.cpp
   ${ENGINE_DIR}/renderer/tr_local.h
   ${ENGINE_DIR}/renderer/tr_public.h
@@ -528,8 +527,6 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/cvar.h
   ${ENGINE_DIR}/qcommon/qfiles.h
   ${ENGINE_DIR}/qcommon/huffman.cpp
-  ${ENGINE_DIR}/qcommon/md4.cpp
-  ${ENGINE_DIR}/qcommon/md4.h
   ${ENGINE_DIR}/qcommon/md5.cpp
   ${ENGINE_DIR}/qcommon/msg.cpp
   ${ENGINE_DIR}/qcommon/net_chan.cpp
