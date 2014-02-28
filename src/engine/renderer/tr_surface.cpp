@@ -586,26 +586,6 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.colors );
 		}
 
-		if ( attribBits & ATTR_AMBIENTLIGHT )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "glBufferSubData( ATTR_AMBIENTLIGHT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
-			}
-
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_AMBIENTLIGHT ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.ambientLights );
-		}
-
-		if ( attribBits & ATTR_DIRECTEDLIGHT )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "glBufferSubData( ATTR_DIRECTEDLIGHT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
-			}
-
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_DIRECTEDLIGHT ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.directedLights );
-		}
-
 		if ( attribBits & ATTR_LIGHTDIRECTION )
 		{
 			if ( r_logFile->integer )
@@ -831,11 +811,6 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 			VectorClear( tess.tangents[ tess.numVertexes + i ] );
 			VectorClear( tess.binormals[ tess.numVertexes + i ] );
 			VectorClear( tess.normals[ tess.numVertexes + i ] );
-
-			R_LightForPoint( tess.xyz[ tess.numVertexes + i ],
-					 tess.ambientLights[ tess.numVertexes + i ],
-					 tess.directedLights[ tess.numVertexes + i ],
-					 tess.lightDirections[ tess.numVertexes + i ] );
 		}
 
 		for ( i = 0, indices = tess.indexes + tess.numIndexes; i < numIndexes; i += 3, indices += 3 )
@@ -865,7 +840,7 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		VectorArrayNormalize( ( vec4_t * ) tess.binormals[ tess.numVertexes ], numVertexes );
 		VectorArrayNormalize( ( vec4_t * ) tess.normals[ tess.numVertexes ], numVertexes );
 
-		tess.attribsSet |= ATTR_NORMAL | ATTR_BINORMAL | ATTR_TANGENT | ATTR_LIGHTDIRECTION | ATTR_AMBIENTLIGHT | ATTR_DIRECTEDLIGHT;
+		tess.attribsSet |= ATTR_NORMAL | ATTR_BINORMAL | ATTR_TANGENT;
 	}
 
 	tess.numIndexes += numIndexes;

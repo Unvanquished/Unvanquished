@@ -1330,8 +1330,8 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderManager *manager ) :
 	GLShader( "vertexLighting_DBS_world",
-	          ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL | ATTR_COLOR
-	          | ATTR_AMBIENTLIGHT | ATTR_DIRECTEDLIGHT | ATTR_LIGHTDIRECTION, manager
+	          ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL | ATTR_COLOR,
+		  manager
 	        ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),

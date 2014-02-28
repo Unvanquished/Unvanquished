@@ -559,8 +559,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		ATTR_INDEX_NORMAL,
 		ATTR_INDEX_COLOR,
 
-		ATTR_INDEX_AMBIENTLIGHT,
-		ATTR_INDEX_DIRECTEDLIGHT,
 		ATTR_INDEX_LIGHTDIRECTION,
 
 		// GPU vertex skinning
@@ -585,8 +583,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		"attr_Binormal",
 		"attr_Normal",
 		"attr_Color",
-		"attr_AmbientLight",
-		"attr_DirectedLight",
 		"attr_LightDirection",
 		"attr_BoneIndexes",
 		"attr_BoneWeights",
@@ -606,8 +602,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  ATTR_NORMAL         = BIT( ATTR_INDEX_NORMAL ),
 	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
 
-	  ATTR_AMBIENTLIGHT   = BIT( ATTR_INDEX_AMBIENTLIGHT ),
-	  ATTR_DIRECTEDLIGHT  = BIT( ATTR_INDEX_DIRECTEDLIGHT ),
 	  ATTR_LIGHTDIRECTION = BIT( ATTR_INDEX_LIGHTDIRECTION ),
 
 	  ATTR_BONE_INDEXES   = BIT( ATTR_INDEX_BONE_INDEXES ),
