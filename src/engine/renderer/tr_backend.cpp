@@ -3952,6 +3952,7 @@ void RB_CameraPostFX( void )
 	MatrixMultiplyTranslation( grain, -0.5, -0.5, 0.0 );
 
 	gl_cameraEffectsShader->SetUniform_ColorTextureMatrix( grain );
+	gl_cameraEffectsShader->SetUniform_InverseGamma( 1.0 / r_gamma->value );
 
 	// bind u_CurrentMap
 	GL_SelectTexture( 0 );

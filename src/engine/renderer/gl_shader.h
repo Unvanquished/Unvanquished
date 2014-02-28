@@ -2340,6 +2340,21 @@ public:
 	}
 };
 
+class u_InverseGamma :
+	GLUniform1f
+{
+public:
+	u_InverseGamma( GLShader *shader ) :
+		GLUniform1f( shader, "u_InverseGamma" )
+	{
+	}
+
+	void SetUniform_InverseGamma( float value )
+	{
+		this->SetValue( value );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
@@ -2752,7 +2767,8 @@ class GLShader_cameraEffects :
 	public u_ColorModulate,
 	public u_ColorTextureMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_DeformMagnitude
+	public u_DeformMagnitude,
+	public u_InverseGamma
 {
 public:
 	GLShader_cameraEffects( GLShaderManager *manager );

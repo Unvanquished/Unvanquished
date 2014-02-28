@@ -1826,7 +1826,8 @@ GLShader_cameraEffects::GLShader_cameraEffects( GLShaderManager *manager ) :
 	u_ColorModulate( this ),
 	u_ColorTextureMatrix( this ),
 	u_ModelViewProjectionMatrix( this ),
-	u_DeformMagnitude( this )
+	u_DeformMagnitude( this ),
+	u_InverseGamma( this )
 {
 }
 
