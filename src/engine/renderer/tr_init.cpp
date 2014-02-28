@@ -185,7 +185,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_rimLighting;
 	cvar_t      *r_rimExponent;
 	cvar_t      *r_gamma;
-	cvar_t      *r_intensity;
 	cvar_t      *r_lockpvs;
 	cvar_t      *r_noportals;
 	cvar_t      *r_portalOnly;
@@ -199,9 +198,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_customwidth;
 	cvar_t      *r_customheight;
 	cvar_t      *r_customaspect;
-
-	cvar_t      *r_overBrightBits;
-	cvar_t      *r_mapOverBrightBits;
 
 	cvar_t      *r_debugSurface;
 	cvar_t      *r_simpleMipMaps;
@@ -653,11 +649,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			p[ 2 ] = temp;
 		}
 
-		if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
-		{
-			R_GammaCorrect( buffer + 18, dataSize );
-		}
-
 		ri.FS_WriteFile( fileName, buffer, 18 + dataSize );
 
 		ri.Hunk_FreeTempMemory( buffer );
@@ -672,11 +663,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	{
 		byte *buffer = RB_ReadPixels( x, y, width, height, 0 );
 
-		if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
-		{
-			R_GammaCorrect( buffer, 3 * width * height );
-		}
-
 		SaveJPG( fileName, 90, width, height, buffer );
 		ri.Hunk_FreeTempMemory( buffer );
 	}
@@ -689,11 +675,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	static void RB_TakeScreenshotPNG( int x, int y, int width, int height, char *fileName )
 	{
 		byte *buffer = RB_ReadPixels( x, y, width, height, 0 );
-
-		if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
-		{
-			R_GammaCorrect( buffer, 3 * width * height );
-		}
 
 		SavePNG( fileName, buffer, width, height, 3, qfalse );
 		ri.Hunk_FreeTempMemory( buffer );
@@ -1000,12 +981,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 			pixels = ( byte * ) PADP( cmd->captureBuffer, packAlign );
 			glReadPixels( 0, 0, cmd->width, cmd->height, GL_RGB, GL_UNSIGNED_BYTE, pixels );
-
-			if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
-			{
-				// this also runs over the padding...
-				R_GammaCorrect( pixels, captureLineLen * cmd->height );
-			}
 
 			if ( cmd->motionJpeg )
 			{
@@ -1441,20 +1416,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_smp = ri.Cvar_Get( "r_smp", "0",  CVAR_LATCH );
 
 		// temporary latched variables that can only change over a restart
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-		r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "1", CVAR_LATCH );
-		r_mapOverBrightBits = ri.Cvar_Get( "r_mapOverBrightBits", "2", CVAR_LATCH );
-#else
-		r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "0", CVAR_LATCH );
-		r_mapOverBrightBits = ri.Cvar_Get( "r_mapOverBrightBits", "0", CVAR_LATCH );
-#endif
-
-		AssertCvarRange( r_overBrightBits, 0, 1, qtrue );  // ydnar: limit to overbrightbits 1 (sorry 1337 players)
-		AssertCvarRange( r_mapOverBrightBits, 0, 3, qtrue );
-
-		r_intensity = ri.Cvar_Get( "r_intensity", "1", CVAR_LATCH );
-		AssertCvarRange( r_intensity, 0, 5, qfalse );
-
 		r_singleShader = ri.Cvar_Get( "r_singleShader", "0", CVAR_CHEAT | CVAR_LATCH );
 		r_stitchCurves = ri.Cvar_Get( "r_stitchCurves", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_debugShadowMaps = ri.Cvar_Get( "r_debugShadowMaps", "0", CVAR_CHEAT | CVAR_SHADER );
