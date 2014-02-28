@@ -229,9 +229,7 @@ typedef enum cgameImport_s
   CG_PREPAREKEYUP,
   CG_R_SETALTSHADERTOKENS,
   CG_S_UPDATEENTITYVELOCITY,
-  CG_S_SETREVERB,
-  CG_S_BEGINREGISTRATION,
-  CG_S_ENDREGISTRATION
+  CG_S_SETREVERB
 } cgameImport_t;
 
 typedef enum
@@ -486,5 +484,3 @@ void            trap_R_SetAltShaderTokens( const char * );
 
 void            trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity );
 void            trap_S_SetReverb( int slotNum, const char* presetName, float ratio );
-void            trap_S_BeginRegistration( void );
-void            trap_S_EndRegistration( void );

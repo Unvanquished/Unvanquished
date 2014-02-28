@@ -54,6 +54,8 @@ void LoadKTX( const char *name, byte **data, int *width, int *height,
 	uint32_t      imageSize;
 	int           i, j;
 
+	*numLayers = 0;
+
 	bufLen = ri.FS_ReadFile( name, ( void ** ) &hdr );
 
 	if( !hdr )
