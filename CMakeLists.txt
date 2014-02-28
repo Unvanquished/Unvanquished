@@ -402,7 +402,6 @@ set( SHAREDLIST
 set( RENDERERLIST
   ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sdl_glimp.cpp
-  ${ENGINE_DIR}/sys/sdl_gamma.cpp
   ${ENGINE_DIR}/renderer/gl_shader.cpp
   ${ENGINE_DIR}/renderer/tr_animation.cpp
   ${ENGINE_DIR}/renderer/tr_backend.cpp

@@ -56,7 +56,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_skipBackEnd;
 	cvar_t      *r_skipLightBuffer;
 
-	cvar_t      *r_ignorehwgamma;
 	cvar_t      *r_measureOverdraw;
 
 	cvar_t      *r_inGameVideo;
@@ -343,8 +342,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		//      - r_fullscreen
 		//      - r_mode
 		//      - r_(color|depth|stencil)bits
-		//      - r_ignorehwgamma
-		//      - r_gamma
 		//
 
 		if ( glConfig.vidWidth == 0 )
@@ -1229,15 +1226,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			ri.Printf( PRINT_DEVELOPER, "N/A\n" );
 		}
 
-		if ( glConfig.deviceSupportsGamma )
-		{
-			ri.Printf( PRINT_DEVELOPER, "GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits );
-		}
-		else
-		{
-			ri.Printf( PRINT_DEVELOPER, "GAMMA: software w/ %d overbright bits\n", tr.overbrightBits );
-		}
-
 		ri.Printf( PRINT_DEVELOPER, "texturemode: %s\n", r_textureMode->string );
 		ri.Printf( PRINT_DEVELOPER, "picmip: %d\n", r_picmip->integer );
 
@@ -1369,11 +1357,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_stencilbits = ri.Cvar_Get( "r_stencilbits", "8",  CVAR_LATCH );
 		r_depthbits = ri.Cvar_Get( "r_depthbits", "0",  CVAR_LATCH );
 		r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0",  CVAR_LATCH | CVAR_ARCHIVE );
-#ifdef WIN32
-		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "0",  CVAR_LATCH );  // use hw gamma on Windows by default
-#else
-		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1",  CVAR_LATCH );  // use software gamma by default
-#endif
 		r_mode = ri.Cvar_Get( "r_mode", "-2", CVAR_LATCH | CVAR_SHADER | CVAR_ARCHIVE );
 		r_fullscreen = ri.Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE );
 		r_customwidth = ri.Cvar_Get( "r_customwidth", "1600", CVAR_LATCH | CVAR_ARCHIVE );

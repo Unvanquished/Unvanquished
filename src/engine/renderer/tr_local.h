@@ -3024,7 +3024,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_mode; // video mode
 	extern cvar_t *r_fullscreen;
 	extern cvar_t *r_gamma;
-	extern cvar_t *r_ignorehwgamma; // overrides hardware gamma capabilities
 
 	extern cvar_t *r_ext_compressed_textures; // these control use of specific extensions
 	extern cvar_t *r_ext_occlusion_query;
@@ -3125,9 +3124,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_skipLightBuffer;
 
 	extern cvar_t *r_ignoreGLErrors;
-
-	extern cvar_t *r_overBrightBits;
-	extern cvar_t *r_mapOverBrightBits;
 
 	extern cvar_t *r_debugSurface;
 	extern cvar_t *r_simpleMipMaps;
@@ -4187,9 +4183,5 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void       RE_Finish( void );
 
 	void       R_SetAltShaderTokens( const char * );
-
-// NOTE TTimo linux works with float gamma value, not the gamma table
-//   the params won't be used, getting the r_gamma cvar directly
-	void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] );
 
 #endif // TR_LOCAL_H
