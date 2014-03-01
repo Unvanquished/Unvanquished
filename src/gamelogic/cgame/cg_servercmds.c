@@ -1371,23 +1371,6 @@ static void CG_ServerCloseMenus_f( void )
 
 /*
 =================
-CG_PoisonCloud_f
-=================
-*/
-static void CG_PoisonCloud_f( void )
-{
-	cg.poisonedTime = cg.time;
-
-	if ( CG_IsParticleSystemValid( &cg.poisonCloudPS ) )
-	{
-		cg.poisonCloudPS = CG_SpawnNewParticleSystem( cgs.media.poisonCloudPS );
-		CG_SetAttachmentCent( &cg.poisonCloudPS->attachment, &cg.predictedPlayerEntity );
-		CG_AttachToCent( &cg.poisonCloudPS->attachment );
-	}
-}
-
-/*
-=================
 CG_VCommand
 
 The server has asked us to execute a string from some variable
@@ -1447,7 +1430,6 @@ static const consoleCommand_t svcommands[] =
 	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cs",               CG_ConfigStringModified },
 	{ "map_restart",      CG_MapRestart           },
-	{ "poisoncloud",      CG_PoisonCloud_f        },
 	{ "print",            CG_Print_f              },
 	{ "print_tr",         CG_PrintTR_f            },
 	{ "print_tr_p",       CG_PrintTR_plural_f     },

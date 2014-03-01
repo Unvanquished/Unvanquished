@@ -1127,10 +1127,10 @@ float CG_ChargeProgress( void )
 	float progress;
 	int   min = 0, max = 0;
 
-	if ( cg.snap->ps.weapon == WP_ALEVEL0_UPG )
+	if ( cg.snap->ps.weapon == WP_ALEVEL1 )
 	{
 		min = 0;
-		max = MAX( LEVEL0_POUNCE_COOLDOWN, LEVEL0_SIDEPOUNCE_COOLDOWN );
+		max = MAX( LEVEL1_POUNCE_COOLDOWN, LEVEL1_SIDEPOUNCE_COOLDOWN );
 	}
 	else if ( cg.snap->ps.weapon == WP_ALEVEL3 )
 	{
@@ -1898,7 +1898,7 @@ static void CG_DrawPlayerFuelIcon( rectDef_t *rect, vec4_t backColor,
 {
 	vec4_t   color;
 	int      fuel;
-	qboolean pmNormal, damaged, active;
+	qboolean pmNormal, active;
 
 	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
 	{
@@ -2656,7 +2656,6 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 					if ( ci->curWeaponClass == PCL_ALIEN_BUILDER0 ||
 					     ci->curWeaponClass == PCL_ALIEN_BUILDER0_UPG ||
 					     ci->curWeaponClass == PCL_ALIEN_LEVEL1 ||
-					     ci->curWeaponClass == PCL_ALIEN_LEVEL1_UPG ||
 					     ci->curWeaponClass == WP_HBUILD )
 					{
 						displayClients[ maxDisplayCount++ ] = i;
@@ -2766,9 +2765,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 			}
 			else
 			{
-				if ( curWeapon == WP_ABUILD2 || curWeapon == WP_ALEVEL0_UPG ||
-				     curWeapon == WP_ALEVEL1_UPG || curWeapon == WP_ALEVEL2_UPG ||
-				     curWeapon == WP_ALEVEL3_UPG )
+				if ( curWeapon == WP_ABUILD2 || curWeapon == WP_ALEVEL2_UPG ||  curWeapon == WP_ALEVEL3_UPG )
 				{
 					CG_DrawPic( x + iconSize + leftMargin, y, iconSize,
 					            iconSize, cgs.media.upgradeClassIconShader );
