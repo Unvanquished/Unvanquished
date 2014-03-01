@@ -2876,6 +2876,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	image_t       *image = NULL;
 	int           width = 0, height = 0, numLayers = 0, numMips = 0;
 	byte          *pic[ MAX_TEXTURE_MIPS * MAX_TEXTURE_LAYERS ];
+	byte          *mallocPtr = NULL;
 	long          hash;
 	char          buffer[ 1024 ];
 	char          *buffer_p;
@@ -2928,11 +2929,11 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	buffer_p = &buffer[ 0 ];
 	R_LoadImage( &buffer_p, pic, &width, &height, &numLayers, &numMips, &bits, materialName );
 
-	if ( pic[ 0 ] == NULL || numLayers > 0 )
+	if ( (mallocPtr = pic[ 0 ]) == NULL || numLayers > 0 )
 	{
-		if ( *pic )
+		if ( mallocPtr )
 		{
-			ri.Free( *pic );
+			ri.Free( mallocPtr );
 		}
 		return NULL;
 	}
@@ -2952,7 +2953,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 			       width, height, numMips, bits,
 			       filterType, wrapType );
 
-	ri.Free( *pic );
+	ri.Free( mallocPtr );
 	return image;
 }
 
