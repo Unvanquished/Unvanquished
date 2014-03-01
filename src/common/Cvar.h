@@ -61,7 +61,7 @@ namespace Cvar {
 
     /*
      * All cvars created by the code inherit from this class although most of the time you'll
-     * want to use Cvar::Cvar. It is basically a callback for hen the value of the cvar changes.
+     * want to use Cvar::Cvar. It is basically a callback for when the value of the cvar changes.
      * A single CvarProxy can be registered for a given cvar name.
      * When extending CvarProxy you should call Register in the constructor to perform the registration
      * of the proxy. It should be done by the first class of the inheritance chain in order to have the
