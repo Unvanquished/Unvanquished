@@ -94,7 +94,7 @@ static void MD5Init( struct MD5Context *ctx )
 static void MD5Transform( uint32_t buf[ 4 ],
                           uint32_t const in[ 16 ] )
 {
-	register uint32_t a, b, c, d;
+	uint32_t a, b, c, d;
 
 	a = buf[ 0 ];
 	b = buf[ 1 ];
@@ -334,7 +334,7 @@ char *Com_MD5File( const char *fn, int length )
 		total += r;
 		MD5Update( &md5, ( unsigned char * ) buffer, r );
 
-		if ( r < sizeof( buffer ) || total >= length )
+		if ( r < (int) sizeof( buffer ) || total >= length )
 		{
 			break;
 		}
@@ -366,4 +366,19 @@ void Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize )
 	{
 		Q_strcat( buffer, bufsize, va( "%02X", digest[ i ] ) );
 	}
+}
+
+unsigned Com_BlockChecksum( const void *buffer, int length )
+{
+	MD5_CTX  md5;
+	unsigned digest[ 4 ];
+	unsigned val;
+
+	MD5Init( &md5 );
+	MD5Update( &md5, (const unsigned char*) buffer, length );
+	MD5Final( &md5, (unsigned char*) digest );
+
+	val = digest[ 0 ] ^ digest[ 1 ] ^ digest[ 2 ] ^ digest[ 3 ];
+
+	return val;
 }
