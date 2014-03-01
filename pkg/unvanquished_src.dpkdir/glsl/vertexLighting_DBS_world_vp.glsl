@@ -28,9 +28,6 @@ attribute vec3		attr_Tangent;
 attribute vec3		attr_Binormal;
 attribute vec3		attr_Normal;
 attribute vec4		attr_Color;
-attribute vec3		attr_AmbientLight;
-attribute vec3		attr_DirectedLight;
-attribute vec3		attr_LightDirection;
 
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
