@@ -3918,11 +3918,6 @@ void RB_CameraPostFX( void )
 		return;
 	}
 
-	if ( !r_cameraPostFX->integer )
-	{
-		return;
-	}
-
 	// set 2D virtual screen size
 	GL_PushMatrix();
 	MatrixOrthogonalProjection( ortho, backEnd.viewParms.viewportX,

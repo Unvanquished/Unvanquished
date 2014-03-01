@@ -1405,34 +1405,10 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
 	}
-	//not actually playing
-	else if (cg.renderingThirdPerson || ! playing )
-	{
-		*fade = 0.0;
-	}
-	else if(ps->weapon == WP_ALEVEL4 && chargeProgress > 0.05)
-	{
-	    *effect = cgs.media.redCgrade;
-	    *fade = chargeProgress * 0.5f;
-	}
+	//no other effects for now
 	else
 	{
-		//health effect
-		float ratio = 0.0f;
-		float maxHealth = BG_Class( class_ )->health;
-		if ( team == TEAM_HUMANS )
-		{
-			*effect = cgs.media.redCgrade;
-			ratio = 0.5f;
-		}
-		else if( team == TEAM_ALIENS )
-		{
-			*effect = cgs.media.desaturatedCgrade;
-			ratio = 0.7f;
-		}
-		//Linear blend if the effect as a function of the health ratio
-		//Find out if a quadratic effect would look better
-		*fade = (1.0f - health / maxHealth) * ratio;
+		*fade = 0.0;
 	}
 }
 

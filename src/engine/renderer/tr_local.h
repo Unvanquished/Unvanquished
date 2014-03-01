@@ -3211,7 +3211,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_bloomPasses;
 	extern cvar_t *r_rotoscope;
 	extern cvar_t *r_FXAA;
-	extern cvar_t *r_cameraPostFX;
 	extern cvar_t *r_cameraVignette;
 	extern cvar_t *r_cameraFilmGrain;
 	extern cvar_t *r_cameraFilmGrainScale;
