@@ -1391,7 +1391,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 	cg.refdef.gradingWeights[3] = totalWeight == 0.0f ? 0.0f : selectedWeight[2] / totalWeight;
 }
 
-static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
+static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade, float* fadeRate )
 {
 	int health = ps->stats[ STAT_HEALTH ];
 	int team = ps->persistant[ PERS_TEAM ];
@@ -1404,6 +1404,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
+        *fadeRate = 0.004;
 	}
 	//no other effects for now
 	else
@@ -1438,13 +1439,13 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 	qhandle_t finalEffect = 0;
 	float finalFade = 0.0f;
 
-	static const float fadeRate = 0.0005;
+	float fadeRate = 0.0005;
 
 	float fadeChange = fadeRate * cg.frametime;
 	float factor;
 
 	//Choose which effect we want
-	CG_ChooseCgradingEffectAndFade( ps, &targetEffect, &targetFade );
+	CG_ChooseCgradingEffectAndFade( ps, &targetEffect, &targetFade, &fadeRate );
 
 	//As we have only one cgrade slot for the effect we transition
 	//smoothly from the current (effect, fading) to the target effect.

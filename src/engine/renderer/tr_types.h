@@ -450,7 +450,6 @@ typedef struct
 	glDriverType_t       driverType;
 	glHardwareType_t     hardwareType;
 
-	qboolean             deviceSupportsGamma; // Not used, stays for compatibility with cgame
 	textureCompression_t textureCompression;
 	qboolean             textureEnvAddAvailable;
 	qboolean             anisotropicAvailable; //----(SA)  added
