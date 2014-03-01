@@ -2849,6 +2849,8 @@ class GLShader_liquid :
 	public u_FogDensity,
 	public u_FogColor,
 	public u_SpecularExponent,
+	public u_LightGridOrigin,
+	public u_LightGridScale,
 	public GLCompileMacro_USE_PARALLAX_MAPPING
 {
 public:

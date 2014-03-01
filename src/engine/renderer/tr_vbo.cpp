@@ -51,11 +51,6 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 		stateBits |= ATTR_COLOR;
 	}
 
-	if ( data.lightDir )
-	{
-		stateBits |= ATTR_LIGHTDIRECTION;
-	}
-
 	if ( data.lightCoord )
 	{
 		stateBits |= ATTR_LIGHTCOORD;
@@ -121,8 +116,7 @@ static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i )
 	}
 	else if ( i == ATTR_INDEX_POSITION || i == ATTR_INDEX_POSITION2 ||
 	     i == ATTR_INDEX_TANGENT2 || i == ATTR_INDEX_NORMAL2 || i == ATTR_INDEX_BINORMAL2 ||
-	     i == ATTR_INDEX_TANGENT || i == ATTR_INDEX_NORMAL || i == ATTR_INDEX_BINORMAL ||
-	     i == ATTR_INDEX_LIGHTDIRECTION )
+	     i == ATTR_INDEX_TANGENT || i == ATTR_INDEX_NORMAL || i == ATTR_INDEX_BINORMAL )
 	{
 		vbo->attribs[ i ].numComponents = 3;
 	}
@@ -436,11 +430,6 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 		if ( ( vbo->attribBits & ATTR_COLOR ) )
 		{
 			VERTEXCOPY( v, color, ATTR_INDEX_COLOR, float );
-		}
-
-		if ( ( vbo->attribBits & ATTR_LIGHTDIRECTION ) )
-		{
-			VERTEXCOPY( v, lightDir, ATTR_INDEX_LIGHTDIRECTION, float );
 		}
 
 		if ( ( vbo->attribBits & ATTR_BONE_INDEXES ) )
@@ -987,7 +976,7 @@ void R_InitVBOs( void )
 {
 	uint32_t attribs = ATTR_POSITION | ATTR_TEXCOORD | ATTR_BINORMAL 
 	                   | ATTR_TANGENT | ATTR_NORMAL  | ATTR_LIGHTCOORD 
-	                   | ATTR_COLOR | ATTR_LIGHTDIRECTION;
+	                   | ATTR_COLOR;
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitVBOs -------\n" );
 

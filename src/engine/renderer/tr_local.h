@@ -559,8 +559,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		ATTR_INDEX_NORMAL,
 		ATTR_INDEX_COLOR,
 
-		ATTR_INDEX_LIGHTDIRECTION,
-
 		// GPU vertex skinning
 		ATTR_INDEX_BONE_INDEXES,
 		ATTR_INDEX_BONE_WEIGHTS,
@@ -583,7 +581,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		"attr_Binormal",
 		"attr_Normal",
 		"attr_Color",
-		"attr_LightDirection",
 		"attr_BoneIndexes",
 		"attr_BoneWeights",
 		"attr_Position2",
@@ -601,8 +598,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  ATTR_BINORMAL       = BIT( ATTR_INDEX_BINORMAL ),
 	  ATTR_NORMAL         = BIT( ATTR_INDEX_NORMAL ),
 	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
-
-	  ATTR_LIGHTDIRECTION = BIT( ATTR_INDEX_LIGHTDIRECTION ),
 
 	  ATTR_BONE_INDEXES   = BIT( ATTR_INDEX_BONE_INDEXES ),
 	  ATTR_BONE_WEIGHTS   = BIT( ATTR_INDEX_BONE_WEIGHTS ),
@@ -625,10 +620,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	              ATTR_BINORMAL |
 	              ATTR_NORMAL |
 	              ATTR_COLOR // |
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	              ATTR_LIGHTDIRECTION |
-#endif
 
 	              //ATTR_BONE_INDEXES |
 	              //ATTR_BONE_WEIGHTS
@@ -3514,9 +3505,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec4_t binormals[ SHADER_MAX_VERTEXES ];
 		vec4_t normals[ SHADER_MAX_VERTEXES ];
 		vec4_t colors[ SHADER_MAX_VERTEXES ];
-		vec4_t ambientLights[ SHADER_MAX_VERTEXES ];
-		vec4_t directedLights[ SHADER_MAX_VERTEXES ];
-		vec4_t lightDirections[ SHADER_MAX_VERTEXES ];
 		vec2_t texCoords[ SHADER_MAX_VERTEXES ];
 		vec2_t lightCoords[ SHADER_MAX_VERTEXES ];
 

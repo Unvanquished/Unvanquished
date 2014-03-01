@@ -156,10 +156,6 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 
 	tess.numVertexes += numVerts;
 	tess.attribsSet =  ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_COLOR | ATTR_NORMAL | ATTR_TANGENT | ATTR_BINORMAL;
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	tess.attribsSet |= ATTR_LIGHTDIRECTION;
-#endif
 }
 
 static qboolean Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIndexes, int firstIndex )
@@ -584,16 +580,6 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 			}
 
 			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.colors );
-		}
-
-		if ( attribBits & ATTR_LIGHTDIRECTION )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "glBufferSubData( ATTR_LIGHTDIRECTION, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
-			}
-
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_LIGHTDIRECTION ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.lightDirections );
 		}
 
 	}
