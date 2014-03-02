@@ -144,6 +144,7 @@ void	main()
 	N.x *= N.z;
 	N.xy = 2.0 * N.xy - 1.0;
 	N.z = sqrt(1.0 - dot(N.xy, N.xy));
+	N = normalize(tangentToWorldMatrix * N);
 
 	// compute half angle in world space
 	vec3 H = normalize(L + V);
