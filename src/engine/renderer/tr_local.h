@@ -559,6 +559,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		ATTR_INDEX_NORMAL,
 		ATTR_INDEX_COLOR,
 
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+		ATTR_INDEX_PAINTCOLOR,
+#endif
+		ATTR_INDEX_AMBIENTLIGHT,
+		ATTR_INDEX_DIRECTEDLIGHT,
+		ATTR_INDEX_LIGHTDIRECTION,
+
 		// GPU vertex skinning
 		ATTR_INDEX_BONE_INDEXES,
 		ATTR_INDEX_BONE_WEIGHTS,
@@ -581,6 +588,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		"attr_Binormal",
 		"attr_Normal",
 		"attr_Color",
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+		"attr_PaintColor",
+#endif
+		"attr_AmbientLight",
+		"attr_DirectedLight",
+		"attr_LightDirection",
 		"attr_BoneIndexes",
 		"attr_BoneWeights",
 		"attr_Position2",
@@ -599,6 +612,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  ATTR_NORMAL         = BIT( ATTR_INDEX_NORMAL ),
 	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
 
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+	  ATTR_PAINTCOLOR     = BIT( ATTR_INDEX_PAINTCOLOR ),
+#endif
+	  ATTR_AMBIENTLIGHT   = BIT( ATTR_INDEX_AMBIENTLIGHT ),
+	  ATTR_DIRECTEDLIGHT  = BIT( ATTR_INDEX_DIRECTEDLIGHT ),
+	  ATTR_LIGHTDIRECTION = BIT( ATTR_INDEX_LIGHTDIRECTION ),
+
 	  ATTR_BONE_INDEXES   = BIT( ATTR_INDEX_BONE_INDEXES ),
 	  ATTR_BONE_WEIGHTS   = BIT( ATTR_INDEX_BONE_WEIGHTS ),
 
@@ -610,7 +630,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	  ATTR_INTERP_BITS = ATTR_POSITION2 | ATTR_TANGENT2 | ATTR_BINORMAL2 | ATTR_NORMAL2,
 
-	  // FIXME XBSP format with ATTR_LIGHTDIRECTION
+	  // FIXME XBSP format with ATTR_LIGHTDIRECTION and ATTR_PAINTCOLOR
 	  //ATTR_DEFAULT = ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_COLOR,
 
 	  ATTR_BITS = ATTR_POSITION |
@@ -620,6 +640,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	              ATTR_BINORMAL |
 	              ATTR_NORMAL |
 	              ATTR_COLOR // |
+
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+	              ATTR_PAINTCOLOR |
+	              ATTR_LIGHTDIRECTION |
+#endif
 
 	              //ATTR_BONE_INDEXES |
 	              //ATTR_BONE_WEIGHTS
@@ -1750,6 +1775,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec4_t lightColor;
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+		vec4_t paintColor;
 		vec3_t lightDirection;
 #endif
 
@@ -2013,26 +2039,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		decal_t *decals;
 	} bspModel_t;
 
-	// The lightVec is not just a direction vector, it is
-	// the product of the normalized light direction vector
-	// multiplied by the ratio of directed light in the total
-	// luminance.
-	// The reason for storing total luminance and lightVec instead
-	// of separate ambient and directional light, is that this
-	// way the interpolation of two light gridPoints with nearly
-	// opposite light directions will result in a stronger ambient
-	// light in the middle, whereas the other method will produce
-	// directional light from a random direction.
-	typedef struct bspGridPoint1_s
+	typedef struct
 	{
-		byte  lightVec[3];
-		byte  luminance;
-	} bspGridPoint1_t;
-	typedef struct bspGridPoint2_s
-	{
-		byte  ambientChroma[2];
-		byte  directedChroma[2];
-	} bspGridPoint2_t;
+		vec3_t origin;
+		vec4_t ambientColor;
+		vec4_t directedColor;
+		vec3_t direction;
+	} bspGridPoint_t;
 
 // ydnar: optimization
 #define WORLD_MAX_SKY_NODES 32
@@ -2104,11 +2117,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec3_t             lightGridOrigin;
 		vec3_t             lightGridSize;
 		vec3_t             lightGridInverseSize;
-		vec3_t             lightGridGLOrigin;
-		vec3_t             lightGridGLScale;
 		int                lightGridBounds[ 3 ];
-		bspGridPoint1_t    *lightGridData1;
-		bspGridPoint2_t    *lightGridData2;
+		bspGridPoint_t     *lightGridData;
 		int                numLightGridPoints;
 
 		int                numLights;
@@ -2810,9 +2820,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int        fatLightmapSize;
 		int        fatLightmapStep;
 
-		image_t   *lightGrid1Image;
-		image_t   *lightGrid2Image;
-
 		// render entities
 		trRefEntity_t *currentEntity;
 		trRefEntity_t worldEntity; // point currentEntity at this when rendering world
@@ -3410,11 +3417,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	image_t *R_CreateCubeImage( const char *name, const byte *pic[ 6 ],
 	                            int width, int height, int bits,
 				    filterType_t filterType, wrapType_t wrapType );
-	image_t        *R_Create3DImage( const char *name,
-					 const byte *pic,
-					 int width, int height, int depth,
-					 int bits, filterType_t filterType,
-					 wrapType_t wrapType );
 
 	image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
 
@@ -3495,6 +3497,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec4_t binormals[ SHADER_MAX_VERTEXES ];
 		vec4_t normals[ SHADER_MAX_VERTEXES ];
 		vec4_t colors[ SHADER_MAX_VERTEXES ];
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+		vec4_t paintColors[ SHADER_MAX_VERTEXES ]; // for advanced terrain blending
+#endif
+		vec4_t ambientLights[ SHADER_MAX_VERTEXES ];
+		vec4_t directedLights[ SHADER_MAX_VERTEXES ];
+		vec4_t lightDirections[ SHADER_MAX_VERTEXES ];
 		vec2_t texCoords[ SHADER_MAX_VERTEXES ];
 		vec2_t lightCoords[ SHADER_MAX_VERTEXES ];
 

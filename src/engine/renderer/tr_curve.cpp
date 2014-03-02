@@ -59,6 +59,12 @@ static void LerpSurfaceVert( srfVert_t *a, srfVert_t *b, srfVert_t *out )
 	out->lightColor[ 3 ] = ( a->lightColor[ 3 ] + b->lightColor[ 3 ] ) * 0.5f;
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+	out->paintColor[ 0 ] = ( a->paintColor[ 0 ] + b->paintColor[ 0 ] ) * 0.5f;
+	out->paintColor[ 1 ] = ( a->paintColor[ 1 ] + b->paintColor[ 1 ] ) * 0.5f;
+	out->paintColor[ 2 ] = ( a->paintColor[ 2 ] + b->paintColor[ 2 ] ) * 0.5f;
+	out->paintColor[ 3 ] = ( a->paintColor[ 3 ] + b->paintColor[ 3 ] ) * 0.5f;
+
+	
 	out->lightDirection[ 0 ] = ( a->lightDirection[ 0 ] + b->lightDirection[ 0 ] ) * 0.5f;
 	out->lightDirection[ 1 ] = ( a->lightDirection[ 1 ] + b->lightDirection[ 1 ] ) * 0.5f;
 	out->lightDirection[ 2 ] = ( a->lightDirection[ 2 ] + b->lightDirection[ 2 ] ) * 0.5f;

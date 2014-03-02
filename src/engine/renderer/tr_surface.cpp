@@ -151,11 +151,16 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 
 #if !defined( COMPAT_ET ) && !defined( COMPAT_Q3A )
 		VectorCopy( vert->lightDirection, tess.lightDirections[ tess.numVertexes + i ] );
+		Vector4Copy( vert->paintColor, tess.paintColors[ tess.numVertexes + i ] );
 #endif
 	}
 
 	tess.numVertexes += numVerts;
 	tess.attribsSet =  ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_COLOR | ATTR_NORMAL | ATTR_TANGENT | ATTR_BINORMAL;
+
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+	tess.attribsSet |= ATTR_PAINTCOLOR | ATTR_LIGHTDIRECTION;
+#endif
 }
 
 static qboolean Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIndexes, int firstIndex )
@@ -582,6 +587,49 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.colors );
 		}
 
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+
+		if ( attribBits & ATTR_PAINTCOLOR )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "glBufferSubData( ATTR_PAINTCOLOR, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+			}
+
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_PAINTCOLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.paintColors );
+		}
+
+#endif
+		if ( attribBits & ATTR_AMBIENTLIGHT )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "glBufferSubData( ATTR_AMBIENTLIGHT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+			}
+
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_AMBIENTLIGHT ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.ambientLights );
+		}
+
+		if ( attribBits & ATTR_DIRECTEDLIGHT )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "glBufferSubData( ATTR_DIRECTEDLIGHT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+			}
+
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_DIRECTEDLIGHT ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.directedLights );
+		}
+
+		if ( attribBits & ATTR_LIGHTDIRECTION )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "glBufferSubData( ATTR_LIGHTDIRECTION, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+			}
+
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_LIGHTDIRECTION ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.lightDirections );
+		}
+
 	}
 
 	GL_CheckErrors();
@@ -797,6 +845,11 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 			VectorClear( tess.tangents[ tess.numVertexes + i ] );
 			VectorClear( tess.binormals[ tess.numVertexes + i ] );
 			VectorClear( tess.normals[ tess.numVertexes + i ] );
+
+			R_LightForPoint( tess.xyz[ tess.numVertexes + i ],
+					 tess.ambientLights[ tess.numVertexes + i ],
+					 tess.directedLights[ tess.numVertexes + i ],
+					 tess.lightDirections[ tess.numVertexes + i ] );
 		}
 
 		for ( i = 0, indices = tess.indexes + tess.numIndexes; i < numIndexes; i += 3, indices += 3 )
@@ -826,7 +879,7 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		VectorArrayNormalize( ( vec4_t * ) tess.binormals[ tess.numVertexes ], numVertexes );
 		VectorArrayNormalize( ( vec4_t * ) tess.normals[ tess.numVertexes ], numVertexes );
 
-		tess.attribsSet |= ATTR_NORMAL | ATTR_BINORMAL | ATTR_TANGENT;
+		tess.attribsSet |= ATTR_NORMAL | ATTR_BINORMAL | ATTR_TANGENT | ATTR_LIGHTDIRECTION | ATTR_AMBIENTLIGHT | ATTR_DIRECTEDLIGHT;
 	}
 
 	tess.numIndexes += numIndexes;
