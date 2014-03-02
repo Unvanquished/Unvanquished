@@ -318,10 +318,6 @@ void CG_OffsetThirdPersonView( void )
 	// get and rangecheck cg_thirdPersonRange
 	range = cg_thirdPersonRange.value;
 
-	if ( range > 150.0f ) { range = 150.0f; }
-
-	if ( range < 30.0f ) { range = 30.0f; }
-
 	// Calculate the angle of the camera's position around the player.
 	// Unless in demo, PLAYING in third person, or in dead-third-person cam, allow the player
 	// to control camera position offsets using the mouse position.
