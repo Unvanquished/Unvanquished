@@ -119,20 +119,173 @@ LIGHT SAMPLING
 
 /*
 =================
+R_LightForPoint
+=================
+*/
+int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
+{
+	int             i, j;
+	int             pos[ 3 ];
+	float           frac[ 3 ];
+	vec3_t          direction;
+	float           luminance;
+	float           ambientChroma[2];
+	float           directedChroma[2];
+	int             gridStep[ 3 ];
+	float           totalFactor;
+	bspGridPoint1_t *gridPoint1;
+	bspGridPoint2_t *gridPoint2;
+
+	// bk010103 - this segfaults with -nolight maps
+	if ( tr.world->lightGridData1 == NULL ||
+	     tr.world->lightGridData2 == NULL )
+	{
+		return qfalse;
+	}
+
+	for ( i = 0; i < 3; i++ )
+	{
+		float v;
+
+		v = point[ i ] - tr.world->lightGridOrigin[ i ];
+		v *= tr.world->lightGridInverseSize[ i ];
+		pos[ i ] = floor( v );
+		frac[ i ] = v - pos[ i ];
+
+		if ( pos[ i ] < 0 )
+		{
+			pos[ i ] = 0;
+			frac[ i ] = 0.0f;
+		}
+		else if ( pos[ i ] >= tr.world->lightGridBounds[ i ] - 1 )
+		{
+			pos[ i ] = tr.world->lightGridBounds[ i ] - 2;
+			frac[ i ] = 1.0f;
+		}
+	}
+
+	VectorClear( direction );
+	luminance = 0.0f;
+	ambientChroma[ 0 ] = 0.0f;
+	ambientChroma[ 1 ] = 0.0f;
+	directedChroma[ 0 ] = 0.0f;
+	directedChroma[ 1 ] = 0.0f;
+
+	// trilerp the light values
+	gridStep[ 0 ] = 1;
+	gridStep[ 1 ] = tr.world->lightGridBounds[ 0 ];
+	gridStep[ 2 ] = gridStep[ 1 ] * tr.world->lightGridBounds[ 1 ];
+	gridPoint1 = tr.world->lightGridData1 + pos[ 0 ] * gridStep[ 0 ] + pos[ 1 ] * gridStep[ 1 ] + pos[ 2 ] * gridStep[ 2 ];
+	gridPoint2 = tr.world->lightGridData2 + pos[ 0 ] * gridStep[ 0 ] + pos[ 1 ] * gridStep[ 1 ] + pos[ 2 ] * gridStep[ 2 ];
+
+	totalFactor = 0;
+
+	// trilinear sample the grids
+	for ( i = 0; i < 8; i++ )
+	{
+		float factor = 1.0f;
+		bspGridPoint1_t *gp1 = gridPoint1;
+		bspGridPoint2_t *gp2 = gridPoint2;
+
+		for ( j = 0; j < 3; j++ )
+		{
+			if ( i & ( 1 << j ) )
+			{
+				factor *= frac[ j ];
+				gp1 += gridStep[ j ];
+				gp2 += gridStep[ j ];
+			}
+			else
+			{
+				factor *= ( 1.0f - frac[ j ] );
+			}
+		}
+
+		if ( !gp1->luminance )
+		{
+			continue; // ignore samples in walls
+		}
+
+		totalFactor += factor;
+
+		direction[ 0 ] += factor * (float)(gp1->lightVec[ 0 ] - 128);
+		direction[ 1 ] += factor * (float)(gp1->lightVec[ 1 ] - 128);
+		direction[ 2 ] += factor * (float)(gp1->lightVec[ 2 ] - 128);
+		luminance += factor * (float)(gp1->luminance);
+
+		ambientChroma[ 0 ] += factor * (float)(gp2->ambientChroma[ 0 ] - 128);
+		ambientChroma[ 1 ] += factor * (float)(gp2->ambientChroma[ 1 ] - 128);
+		directedChroma[ 0 ] += factor * (float)(gp2->directedChroma[ 0 ] - 128);
+		directedChroma[ 1 ] += factor * (float)(gp2->directedChroma[ 1 ] - 128);
+	}
+
+	if ( totalFactor > 0 && totalFactor < 0.99 )
+	{
+		totalFactor = 1.0f / totalFactor;
+
+		VectorScale( direction, totalFactor, direction );
+		luminance *= totalFactor;
+		ambientChroma[ 0 ] *= totalFactor;
+		ambientChroma[ 1 ] *= totalFactor;
+		directedChroma[ 0 ] *= totalFactor;
+		directedChroma[ 1 ] *= totalFactor;
+	}
+
+	direction[0] *= 1.0f / 127.0f;
+	direction[1] *= 1.0f / 127.0f;
+	direction[2] *= 1.0f / 127.0f;
+	luminance *= 1.0f / 255.0f;
+	ambientChroma[0] *= 1.0f / 254.0f;
+	ambientChroma[1] *= 1.0f / 254.0f;
+	directedChroma[0] *= 1.0f / 254.0f;
+	directedChroma[1] *= 1.0f / 254.0f;
+
+	// unpack data
+	VectorNormalize2( direction, lightDir );
+
+	directedLight[ 0 ] = luminance * VectorLength( direction );
+	ambientLight[ 0 ] = luminance - directedLight[ 0 ];
+
+	if ( ambientLight[ 0 ] < r_forceAmbient->value )
+	{
+		ambientLight[ 0 ] = r_forceAmbient->value;
+	}
+
+	ambientLight[ 1 ] = ambientLight[ 0 ] + ambientChroma[ 0 ];
+	ambientLight[ 0 ] = ambientLight[ 0 ] - ambientChroma[ 0 ];
+	ambientLight[ 2 ] = ambientLight[ 0 ] - ambientChroma[ 1 ];
+	ambientLight[ 0 ] = ambientLight[ 0 ] + ambientChroma[ 1 ];
+
+	directedLight[ 1 ] = directedLight[ 0 ] + directedChroma[ 0 ];
+	directedLight[ 0 ] = directedLight[ 0 ] - directedChroma[ 0 ];
+	directedLight[ 2 ] = directedLight[ 0 ] - directedChroma[ 1 ];
+	directedLight[ 0 ] = directedLight[ 0 ] + directedChroma[ 1 ];
+
+//----(SA)  added
+	// cheats?  check for single player?
+	if ( tr.lightGridMulDirected )
+	{
+		VectorScale( directedLight, tr.lightGridMulDirected, directedLight );
+	}
+
+	if ( tr.lightGridMulAmbient )
+	{
+		VectorScale( ambientLight, tr.lightGridMulAmbient, ambientLight );
+	}
+
+//----(SA)  end
+
+	return qtrue;
+}
+
+/*
+=================
 R_SetupEntityLightingGrid
 =================
 */
 static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 {
 	vec3_t         lightOrigin;
-	int            pos[ 3 ];
-	int            i, j;
-	bspGridPoint_t *gridPoint;
-	bspGridPoint_t *gridPoint2;
-	float          frac[ 3 ];
-	int            gridStep[ 3 ];
-	vec3_t         direction;
-	float          totalFactor;
 
 	if ( forcedOrigin )
 	{
@@ -153,111 +306,8 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 		}
 	}
 
-	VectorSubtract( lightOrigin, tr.world->lightGridOrigin, lightOrigin );
-
-	for ( i = 0; i < 3; i++ )
-	{
-		float v;
-
-		v = lightOrigin[ i ] * tr.world->lightGridInverseSize[ i ];
-		pos[ i ] = floor( v );
-		frac[ i ] = v - pos[ i ];
-
-		if ( pos[ i ] < 0 )
-		{
-			pos[ i ] = 0;
-			frac[ i ] = 0.0f;
-		}
-		else if ( pos[ i ] >= tr.world->lightGridBounds[ i ] - 1 )
-		{
-			pos[ i ] = tr.world->lightGridBounds[ i ] - 2;
-			frac[ i ] = 1.0f;
-		}
-	}
-
-	VectorClear( ent->ambientLight );
-	VectorClear( ent->directedLight );
-	VectorClear( direction );
-
-	// trilerp the light value
-	gridStep[ 0 ] = 1; //sizeof(bspGridPoint_t);
-	gridStep[ 1 ] = tr.world->lightGridBounds[ 0 ]; // * sizeof(bspGridPoint_t);
-	gridStep[ 2 ] = tr.world->lightGridBounds[ 0 ] * tr.world->lightGridBounds[ 1 ]; // * sizeof(bspGridPoint_t);
-	gridPoint = tr.world->lightGridData + pos[ 0 ] * gridStep[ 0 ] + pos[ 1 ] * gridStep[ 1 ] + pos[ 2 ] * gridStep[ 2 ];
-
-	totalFactor = 0;
-
-	for ( i = 0; i < 8; i++ )
-	{
-		float factor;
-
-		factor = 1.0;
-		gridPoint2 = gridPoint;
-
-		for ( j = 0; j < 3; j++ )
-		{
-			if ( i & ( 1 << j ) )
-			{
-				factor *= frac[ j ];
-				gridPoint2 += gridStep[ j ];
-			}
-			else
-			{
-				factor *= ( 1.0f - frac[ j ] );
-			}
-		}
-
-		if ( !( gridPoint2->ambientColor[ 0 ] + gridPoint2->ambientColor[ 1 ] + gridPoint2->ambientColor[ 2 ] ) )
-		{
-			continue; // ignore samples in walls
-		}
-
-		totalFactor += factor;
-
-		ent->ambientLight[ 0 ] += factor * gridPoint2->ambientColor[ 0 ];
-		ent->ambientLight[ 1 ] += factor * gridPoint2->ambientColor[ 1 ];
-		ent->ambientLight[ 2 ] += factor * gridPoint2->ambientColor[ 2 ];
-
-		ent->directedLight[ 0 ] += factor * gridPoint2->directedColor[ 0 ];
-		ent->directedLight[ 1 ] += factor * gridPoint2->directedColor[ 1 ];
-		ent->directedLight[ 2 ] += factor * gridPoint2->directedColor[ 2 ];
-
-		VectorMA( direction, factor, gridPoint2->direction, direction );
-	}
-
-#if 1
-
-	if ( totalFactor > 0 && totalFactor < 0.99 )
-	{
-		totalFactor = 1.0f / totalFactor;
-		VectorScale( ent->ambientLight, totalFactor, ent->ambientLight );
-		VectorScale( ent->directedLight, totalFactor, ent->directedLight );
-	}
-
-#endif
-
-	VectorNormalize2( direction, ent->lightDir );
-
-	if ( VectorLength( ent->ambientLight ) < r_forceAmbient->value )
-	{
-		ent->ambientLight[ 0 ] = r_forceAmbient->value;
-		ent->ambientLight[ 1 ] = r_forceAmbient->value;
-		ent->ambientLight[ 2 ] = r_forceAmbient->value;
-	}
-
-//----(SA)  added
-	// cheats?  check for single player?
-	if ( tr.lightGridMulDirected )
-	{
-		VectorScale( ent->directedLight, tr.lightGridMulDirected, ent->directedLight );
-	}
-
-	if ( tr.lightGridMulAmbient )
-	{
-		VectorScale( ent->ambientLight, tr.lightGridMulAmbient, ent->ambientLight );
-	}
-
-//----(SA)  end
+	R_LightForPoint( lightOrigin, ent->ambientLight, ent->directedLight,
+			 ent->lightDir );
 }
 
 /*
@@ -347,7 +397,8 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 	*/
 
 	// if NOWORLDMODEL, only use dynamic lights (menu system, etc)
-	if ( !( refdef->rdflags & RDF_NOWORLDMODEL ) && tr.world && tr.world->lightGridData )
+	if ( !( refdef->rdflags & RDF_NOWORLDMODEL ) && tr.world
+	     && tr.world->lightGridData1 && tr.world->lightGridData2 )
 	{
 		R_SetupEntityLightingGrid( ent, forcedOrigin );
 	}
@@ -448,31 +499,6 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 	//% ent->lightDir[0] = DotProduct(lightDir, ent->e.axis[0]);
 	//% ent->lightDir[1] = DotProduct(lightDir, ent->e.axis[1]);
 	//% ent->lightDir[2] = DotProduct(lightDir, ent->e.axis[2]);
-}
-
-/*
-=================
-R_LightForPoint
-=================
-*/
-int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
-{
-	trRefEntity_t ent;
-
-	// bk010103 - this segfaults with -nolight maps
-	if ( tr.world->lightGridData == NULL )
-	{
-		return qfalse;
-	}
-
-	Com_Memset( &ent, 0, sizeof( ent ) );
-	VectorCopy( point, ent.e.origin );
-	R_SetupEntityLightingGrid( &ent, NULL );
-	VectorCopy( ent.ambientLight, ambientLight );
-	VectorCopy( ent.directedLight, directedLight );
-	VectorCopy( ent.lightDir, lightDir );
-
-	return qtrue;
 }
 
 /*
