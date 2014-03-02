@@ -315,7 +315,7 @@ void CG_OffsetThirdPersonView( void )
 		}
 	}
 
-	// get and rangecheck cg_thirdPersonRange
+	// get cg_thirdPersonRange
 	range = cg_thirdPersonRange.value;
 
 	// Calculate the angle of the camera's position around the player.
