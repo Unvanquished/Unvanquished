@@ -1678,6 +1678,19 @@ Sends a disconnect message to the server
 This is also called on Com_Error and Com_Quit, so it shouldn't cause any errors
 =====================
 */
+void CL_SendDisconnect( void )
+{
+	// send a disconnect message to the server
+	// send it a few times in case one is dropped
+	if ( com_cl_running && com_cl_running->integer && cls.state >= CA_CONNECTED )
+	{
+		CL_AddReliableCommand( "disconnect" );
+		CL_WritePacket();
+		CL_WritePacket();
+		CL_WritePacket();
+	}
+}
+
 void CL_Disconnect( qboolean showMainMenu )
 {
 	if ( !com_cl_running || !com_cl_running->integer )
@@ -1749,19 +1762,9 @@ void CL_Disconnect( qboolean showMainMenu )
 	}
 
 	SCR_StopCinematic();
-#if 1
 
-	// send a disconnect message to the server
-	// send it a few times in case one is dropped
-	if ( cls.state >= CA_CONNECTED )
-	{
-		CL_AddReliableCommand( "disconnect" );
-		CL_WritePacket();
-		CL_WritePacket();
-		CL_WritePacket();
-	}
+	CL_SendDisconnect();
 
-#endif
 	CL_ClearState();
 
 	// wipe the client connection

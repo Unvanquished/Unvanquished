@@ -1065,11 +1065,9 @@ void Sys_PlatformInit( void )
 
 	signal( SIGHUP, Sys_SigHandler );
 	signal( SIGQUIT, Sys_SigHandler );
-#ifdef NDEBUG
 	signal( SIGTRAP, Sys_SigHandler );
 	signal( SIGIOT, Sys_SigHandler );
 	signal( SIGBUS, Sys_SigHandler );
-#endif
 
 	// Enable S3TC on Mesa even if libtxc-dxtn is not available
 	putenv("force_s3tc_enable=true");

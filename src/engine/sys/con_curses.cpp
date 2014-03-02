@@ -80,6 +80,8 @@ static char     *insert = logbuf;
 static int      scrollline = 0;
 static int      lastline = 1;
 
+static int      stderr_fd;
+
 // The special characters look good on the win32 console but suck on other consoles
 #ifdef _WIN32
 #define SCRLBAR_CURSOR ACS_BLOCK
@@ -404,6 +406,15 @@ void CON_Shutdown( void )
 	endwin();
 	dump_logs = curses_on;
 	curses_on = qfalse;
+
+	if ( stderr_fd >= 0 )
+	{
+#ifdef WIN32
+		_dup2( stderr_fd, STDERR_FILENO );
+#else
+		dup2( stderr_fd, STDERR_FILENO );
+#endif
+	}
 }
 
 /*
@@ -431,7 +442,16 @@ void CON_LogDump( void )
 			}
 		}
 
-		fwrite( ptr, 1, logbuf - ptr, stdout );
+		while ( *ptr == '\n' && ptr < insert )
+		{
+			++ptr;
+		}
+
+		if ( insert - ptr )
+		{
+			fputs( "\nPartial log dump:\n\n", stderr );
+			fwrite( ptr, 1, insert - ptr, stderr );
+		}
 	}
 }
 
@@ -514,7 +534,12 @@ void CON_Init( void )
 		}
 
 		// Prevent bad libraries from messing up the console
-		fclose( stderr );
+#ifdef WIN32
+		stderr_fd = _dup( STDERR_FILENO );
+#else
+		stderr_fd = dup( STDERR_FILENO );
+#endif
+		close( STDERR_FILENO );
 	}
 
 	// Create the border

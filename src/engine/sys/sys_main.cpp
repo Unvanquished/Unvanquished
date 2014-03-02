@@ -158,7 +158,7 @@ char *Sys_ConsoleInput( void )
 =================
 Sys_Exit
 
-Single exit point (regular exit or in case of error)
+Single exit point (regular exit or in case of error, but not signals)
 =================
 */
 static void NORETURN Sys_Exit( int exitCode )
@@ -170,7 +170,6 @@ static void NORETURN Sys_Exit( int exitCode )
 #endif
 
 	Sys_PlatformExit();
-	CON_LogDump();
 
 	exit( exitCode );
 }
@@ -502,19 +501,19 @@ void NORETURN Sys_SigHandler( int signal )
 	{
 		signalcaught = qtrue;
 #if !defined(DEDICATED)
-		CL_Shutdown();
+		// we need a FAST shutdown, so just disconnect directly
+		CL_SendDisconnect();
 #endif
 		SV_Shutdown( va( "Received signal %d", signal ) );
 	}
 
-	if ( signal == SIGTERM || signal == SIGINT )
-	{
-		Sys_Exit( 1 );
-	}
-	else
-	{
-		Sys_Exit( 2 );
-	}
+	CON_Shutdown();
+	Sys_PlatformExit();
+
+	fprintf( stderr, "Received signal %d\n", signal );
+	CON_LogDump();
+
+	exit ( ( signal == -SIGTERM || signal == -SIGINT ) ? 1 : 2 );
 }
 
 /*
@@ -709,11 +708,9 @@ int ALIGN_STACK main( int argc, char **argv )
 	Com_Init( commandLine );
 	NET_Init();
 
-#ifdef NDEBUG
 	signal( SIGILL, Sys_SigHandler );
 	signal( SIGFPE, Sys_SigHandler );
 	signal( SIGSEGV, Sys_SigHandler );
-#endif
 	signal( SIGTERM, Sys_SigHandler );
 	signal( SIGINT, Sys_SigHandler );
 

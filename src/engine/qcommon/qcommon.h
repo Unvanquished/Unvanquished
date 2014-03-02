@@ -836,6 +836,7 @@ void CL_InitKeyCommands( void );
 void     CL_Init( void );
 void     CL_ClearStaticDownload( void );
 void     CL_Disconnect( qboolean showMainMenu );
+void     CL_SendDisconnect( void );
 void     CL_Shutdown( void );
 void     CL_Frame( int msec );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
