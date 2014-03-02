@@ -1275,16 +1275,15 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	u_GlowTextureMatrix( this ),
 	u_SpecularExponent( this ),
 	u_AlphaThreshold( this ),
-	u_AmbientColor( this ),
 	u_ViewOrigin( this ),
-	u_LightDir( this ),
-	u_LightColor( this ),
 	u_ModelMatrix( this ),
 	u_ModelViewProjectionMatrix( this ),
 	u_Bones( this ),
 	u_VertexInterpolation( this ),
 	u_DepthScale( this ),
 	u_EnvironmentInterpolation( this ),
+	u_LightGridOrigin( this ),
+	u_LightGridScale( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
@@ -1325,12 +1324,14 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_EnvironmentMap0" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_EnvironmentMap1" ), 4 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 5 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid1" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid2" ), 7 );
 }
 
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderManager *manager ) :
 	GLShader( "vertexLighting_DBS_world",
-	          ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL | ATTR_COLOR
-	          | ATTR_AMBIENTLIGHT | ATTR_DIRECTEDLIGHT | ATTR_LIGHTDIRECTION, manager
+	          ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL | ATTR_COLOR,
+		  manager
 	        ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
@@ -1345,6 +1346,8 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	u_ModelViewProjectionMatrix( this ),
 	u_DepthScale( this ),
 	u_LightWrapAround( this ),
+	u_LightGridOrigin( this ),
+	u_LightGridScale( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
@@ -1377,6 +1380,8 @@ void GLShader_vertexLighting_DBS_world::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_NormalMap" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 3 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid1" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid2" ), 7 );
 }
 
 GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderManager *manager ):
@@ -1913,10 +1918,7 @@ void GLShader_lightVolume_omni::SetShaderProgramUniforms( shaderProgram_t *shade
 }
 
 GLShader_liquid::GLShader_liquid( GLShaderManager *manager ) :
-	GLShader( "liquid", ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL | ATTR_COLOR
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	                     | ATTR_LIGHTDIRECTION
-#endif
+	GLShader( "liquid", ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL
 		, manager ),
 	u_NormalTextureMatrix( this ),
 	u_ViewOrigin( this ),
@@ -1931,6 +1933,8 @@ GLShader_liquid::GLShader_liquid( GLShaderManager *manager ) :
 	u_FogDensity( this ),
 	u_FogColor( this ),
 	u_SpecularExponent( this ),
+	u_LightGridOrigin( this ),
+	u_LightGridScale( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this )
 {
 }
@@ -1941,6 +1945,8 @@ void GLShader_liquid::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_PortalMap" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_NormalMap" ), 3 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid1" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid2" ), 7 );
 }
 
 GLShader_volumetricFog::GLShader_volumetricFog( GLShaderManager *manager ) :

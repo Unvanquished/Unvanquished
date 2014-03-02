@@ -783,8 +783,6 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		vboData.color = (vec4_t *)colorbuf;
 		vboData.st = (vec2_t *)IQModel->texcoords;
 		vboData.lightCoord = NULL;
-		vboData.ambientLight = NULL;
-		vboData.directedLight = NULL;
 		vboData.lightDir = NULL;
 		vboData.boneIndexes = (int (*)[4])indexbuf;
 		vboData.boneWeights = (vec4_t *)weightbuf;
