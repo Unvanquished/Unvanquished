@@ -1082,7 +1082,6 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	GL_CheckErrors();
 }
 
-#if 0
 static void RB_RenderOpaqueSurfacesIntoDepth( bool onlyWorld )
 {
 	trRefEntity_t *entity, *oldEntity;
@@ -1223,8 +1222,6 @@ static void RB_RenderOpaqueSurfacesIntoDepth( bool onlyWorld )
 
 	GL_CheckErrors();
 }
-
-#endif
 
 // *INDENT-OFF*
 #ifdef VOLUMETRIC_LIGHTING
@@ -6247,13 +6244,12 @@ static void RB_RenderDebugUtils()
 
 	if ( r_showLightGrid->integer )
 	{
-		bspGridPoint_t *gridPoint;
-		int            j, k;
-		vec3_t         offset;
-		vec3_t         lightDirection;
-		vec3_t         tmp, tmp2, tmp3;
-		vec_t          length;
-		vec4_t         tetraVerts[ 4 ];
+		int             x, y, z, k;
+		vec3_t          offset;
+		vec3_t          lightDirection;
+		vec3_t          tmp, tmp2, tmp3;
+		vec_t           length;
+		vec4_t          tetraVerts[ 4 ];
 
 		if ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOCUBEMAP ) )
 		{
@@ -6293,48 +6289,61 @@ static void RB_RenderDebugUtils()
 
 		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
 
-		for ( j = 0; j < tr.world->numLightGridPoints; j++ )
-		{
-			gridPoint = &tr.world->lightGridData[ j ];
+		for ( z = 0; z < tr.world->lightGridBounds[ 2 ]; z++ ) {
+			for ( y = 0; y < tr.world->lightGridBounds[ 1 ]; y++ ) {
+				for ( x = 0; x < tr.world->lightGridBounds[ 0 ]; x++ ) {
+					vec3_t origin;
+					vec3_t ambientColor;
+					vec3_t directedColor;
+					vec3_t lightDir;
 
-			if ( VectorDistanceSquared( gridPoint->origin, backEnd.viewParms.orientation.origin ) > Square( 1024 ) )
-			{
-				continue;
+					VectorCopy( tr.world->lightGridOrigin, origin );
+					origin[ 0 ] += x * tr.world->lightGridSize[ 0 ];
+					origin[ 1 ] += y * tr.world->lightGridSize[ 1 ];
+					origin[ 2 ] += z * tr.world->lightGridSize[ 2 ];
+
+					if ( VectorDistanceSquared( origin, backEnd.viewParms.orientation.origin ) > Square( 1024 ) )
+					{
+						continue;
+					}
+
+					R_LightForPoint( origin, ambientColor,
+							 directedColor, lightDir );
+					VectorNegate( lightDir, lightDir );
+
+					length = 8;
+					VectorMA( origin, 8, lightDirection, offset );
+
+					PerpendicularVector( tmp, lightDirection );
+					//VectorCopy(up, tmp);
+
+					VectorScale( tmp, length * 0.1, tmp2 );
+					VectorMA( tmp2, length * 0.2, lightDirection, tmp2 );
+
+					for ( k = 0; k < 3; k++ )
+					{
+						RotatePointAroundVector( tmp3, lightDirection, tmp2, k * 120 );
+						VectorAdd( tmp3, origin, tmp3 );
+						VectorCopy( tmp3, tetraVerts[ k ] );
+						tetraVerts[ k ][ 3 ] = 1;
+					}
+
+					VectorCopy( origin, tetraVerts[ 3 ] );
+					tetraVerts[ 3 ][ 3 ] = 1;
+					Tess_AddTetrahedron( tetraVerts, directedColor );
+
+					VectorCopy( offset, tetraVerts[ 3 ] );
+					tetraVerts[ 3 ][ 3 ] = 1;
+					Tess_AddTetrahedron( tetraVerts, directedColor );
+				}
+
+				Tess_End();
+
+				// go back to the world modelview matrix
+				backEnd.orientation = backEnd.viewParms.world;
+				GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 			}
-
-			VectorNegate( gridPoint->direction, lightDirection );
-
-			length = 8;
-			VectorMA( gridPoint->origin, 8, lightDirection, offset );
-
-			PerpendicularVector( tmp, lightDirection );
-			//VectorCopy(up, tmp);
-
-			VectorScale( tmp, length * 0.1, tmp2 );
-			VectorMA( tmp2, length * 0.2, lightDirection, tmp2 );
-
-			for ( k = 0; k < 3; k++ )
-			{
-				RotatePointAroundVector( tmp3, lightDirection, tmp2, k * 120 );
-				VectorAdd( tmp3, gridPoint->origin, tmp3 );
-				VectorCopy( tmp3, tetraVerts[ k ] );
-				tetraVerts[ k ][ 3 ] = 1;
-			}
-
-			VectorCopy( gridPoint->origin, tetraVerts[ 3 ] );
-			tetraVerts[ 3 ][ 3 ] = 1;
-			Tess_AddTetrahedron( tetraVerts, gridPoint->directedColor );
-
-			VectorCopy( offset, tetraVerts[ 3 ] );
-			tetraVerts[ 3 ][ 3 ] = 1;
-			Tess_AddTetrahedron( tetraVerts, gridPoint->directedColor );
 		}
-
-		Tess_End();
-
-		// go back to the world modelview matrix
-		backEnd.orientation = backEnd.viewParms.world;
-		GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 	}
 
 	if ( r_showBspNodes->integer )
@@ -7136,8 +7145,8 @@ static void RB_RenderView( void )
 	if ( r_dynamicEntityOcclusionCulling->integer )
 	{
 		// draw everything from world that is opaque into black so we can benefit from early-z rejections later
-		//RB_RenderOpaqueSurfacesIntoDepth(true);
-		RB_RenderDrawSurfaces( true, DRAWSURFACES_WORLD );
+		RB_RenderOpaqueSurfacesIntoDepth(true);
+		//RB_RenderDrawSurfaces( true, DRAWSURFACES_WORLD );
 
 		// try to cull entities using hardware occlusion queries
 		RB_RenderEntityOcclusionQueries();
