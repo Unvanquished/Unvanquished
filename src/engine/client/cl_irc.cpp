@@ -335,7 +335,7 @@ static int IRC_ExecuteHandler( void )
 		return IRC_CMD_SUCCESS;
 	}
 
-	(it->second)();
+	return (it->second)();
 }
 
 /*
@@ -354,7 +354,7 @@ static int IRC_ExecuteCTCPHandler( const char *command, qboolean is_channel, con
 		return IRC_CMD_SUCCESS;
 	}
 
-	( it->second )( is_channel, argument );
+	return ( it->second )( is_channel, argument );
 }
 
 /*--------------------------------------------------------------------------*/

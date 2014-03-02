@@ -208,7 +208,7 @@ namespace Resource {
     // Implementation of the templates
 
     template<typename T>
-    Manager<T>::Manager(Str::StringRef defaultName, std::shared_ptr<T> _defaultValue): inRegistration(false) {
+    Manager<T>::Manager(Str::StringRef defaultName, std::shared_ptr<T> _defaultValue): inRegistration(false), immediate(false) {
         if (defaultName == "") {
             defaultValue = nullptr;
         } else {
