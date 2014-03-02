@@ -67,6 +67,7 @@ void         CON_Init( void );
 char         *CON_Input( void );
 void         CON_Print( const char *message );
 
+void         CON_LogDump( void );
 
 // Console - other
 unsigned int CON_LogSize( void );

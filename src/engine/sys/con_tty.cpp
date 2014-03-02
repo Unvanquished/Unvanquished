@@ -429,6 +429,10 @@ void CON_Shutdown( void )
 	CON_Shutdown_TTY();
 }
 
+void CON_LogDump( void )
+{
+}
+
 char *CON_Input( void )
 {
 	return CON_Input_TTY();

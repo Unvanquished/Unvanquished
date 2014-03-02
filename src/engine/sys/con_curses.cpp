@@ -67,6 +67,7 @@ char *CON_Input_TTY( void );
 void CON_Print_TTY( const char *message );
 
 static qboolean curses_on = qfalse;
+static qboolean dump_logs = qfalse;
 static Console::Field input_field(INT_MAX);
 static WINDOW   *borderwin;
 static WINDOW   *logwin;
@@ -401,7 +402,37 @@ void CON_Shutdown( void )
 	}
 
 	endwin();
+	dump_logs = curses_on;
 	curses_on = qfalse;
+}
+
+/*
+==================
+CON_DumpLog
+
+Used for dumping log text to the tty.
+May be called on shutdown from a signal handler.
+==================
+*/
+void CON_LogDump( void )
+{
+	if ( dump_logs )
+	{
+		const char *ptr = insert;
+		int lines = 0;
+
+		dump_logs = 0;
+
+		while ( lines < 24 && --ptr >= logbuf )
+		{
+			if ( *ptr == '\n' )
+			{
+				++lines;
+			}
+		}
+
+		fwrite( ptr, 1, logbuf - ptr, stdout );
+	}
 }
 
 /*

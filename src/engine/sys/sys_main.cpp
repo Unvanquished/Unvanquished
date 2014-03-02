@@ -170,6 +170,8 @@ static void NORETURN Sys_Exit( int exitCode )
 #endif
 
 	Sys_PlatformExit();
+	CON_LogDump();
+
 	exit( exitCode );
 }
 
