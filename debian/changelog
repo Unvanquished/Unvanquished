@@ -2,8 +2,9 @@ unvanquished (0.25.0-1) unstable; urgency=low
 
   * Release of alpha 25.
   * Clean up build options in debian/rules.
+  * Build with hardening enabled.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 02 Mar 2014 18:42:55 +0000
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 02 Mar 2014 23:43:19 +0000
 
 unvanquished (0.24.1-1) unstable; urgency=low
 
