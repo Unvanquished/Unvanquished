@@ -548,6 +548,7 @@ if( WIN32 )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/sys_win32.cpp
     ${ENGINE_DIR}/sys/sys_win32.h
+    ${ENGINE_DIR}/sys/con_passive.cpp
   )
 else()
   set( ENGINELIST ${ENGINELIST}
