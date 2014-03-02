@@ -301,6 +301,14 @@ char *CON_Input_TTY( void )
 					return NULL;
 				}
 
+				if ( key == '\x15' ) // ^U
+				{
+					CON_Hide();
+					TTY_field.Clear();
+					CON_Show();
+					return NULL;
+				}
+
 				avail = read( STDIN_FILENO, &key, 1 );
 
 				if ( avail != -1 )
