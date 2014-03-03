@@ -4092,7 +4092,7 @@ qboolean G_admin_allready( gentity_t *ent )
 		return qfalse;
 	}
 
-	for ( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		cl = level.clients + i;
 
@@ -4327,7 +4327,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	// handle the flag
 	if ( !Q_stricmp( teampref, "keepteams" ) || !Q_stricmp( teampref, "keepteamslock" ) || !Q_stricmp( teampref,"kt" ) || !Q_stricmp( teampref,"ktl" ) )
 	{
-		for ( i = 0; i < g_maxclients.integer; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
 			cl = level.clients + i;
 
@@ -4348,7 +4348,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	}
 	else if ( !Q_stricmp( teampref, "switchteams" ) || !Q_stricmp( teampref, "switchteamslock" ) || !Q_stricmp( teampref,"st" ) || !Q_stricmp( teampref,"stl" ))
 	{
-		for ( i = 0; i < g_maxclients.integer; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
 			cl = level.clients + i;
 

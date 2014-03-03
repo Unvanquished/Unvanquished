@@ -472,6 +472,20 @@ namespace Cmd {
         GetEnv().ExecuteAfter(text, parseCvars);
     }
 
+    CompletionResult FilterCompletion(Str::StringRef prefix, std::initializer_list<CompletionItem> list) {
+        CompletionResult res;
+        AddToCompletion(res, prefix, list);
+        return res;
+    }
+
+    void AddToCompletion(CompletionResult& res, Str::StringRef prefix, std::initializer_list<CompletionItem> list) {
+        for (auto item: list) {
+            if (Str::IsIPrefix(prefix, item.first)) {
+                res.push_back({item.first, item.second});
+            }
+        }
+    }
+
     Environment& CmdBase::GetEnv() const {
         return *Cmd::GetEnv();
     }

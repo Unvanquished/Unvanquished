@@ -37,7 +37,7 @@ Maryland 20850 USA.
 #include "q_shared.h"
 #include "../renderer/tr_types.h"
 
-void         CM_LoadMap( const char *name, qboolean clientload, int *checksum );
+void         CM_LoadMap( const char *name, qboolean clientload );
 void         CM_ClearMap( void );
 
 clipHandle_t CM_InlineModel( int index );  // 0 = world, 1 + are bmodels

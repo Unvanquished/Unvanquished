@@ -10,9 +10,9 @@ models/buildables/mgturret/t_flash
 
 models/buildables/mgturret/turret
 {
-	qer_editorimage models/buildables/mgturret/turret_diff
-	diffuseMap models/buildables/mgturret/turret_diff
-	normalMap models/buildables/mgturret/turret_norm
+	qer_editorimage models/buildables/mgturret/turret_d
+	diffuseMap models/buildables/mgturret/turret_d
+	normalMap models/buildables/mgturret/turret_n
 	specularMap models/buildables/mgturret/turret_spec
 }
 

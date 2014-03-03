@@ -1,16 +1,16 @@
 models/buildables/telenode/telenode_dead
 {
-	diffuseMap	models/buildables/telenode/telenode_diff
-	normalMap	models/buildables/telenode/telenode_normal
+	diffuseMap	models/buildables/telenode/telenode_d
+	normalMap	models/buildables/telenode/telenode_n
 	specularMap	models/buildables/telenode/telenode_spec
 }
 
 models/buildables/telenode/telenode_full
 {
-	qer_editorimage models/buildables/telenode/telenode_diff
+	qer_editorimage models/buildables/telenode/telenode_d
 
-	diffuseMap	models/buildables/telenode/telenode_diff
-	normalMap	models/buildables/telenode/telenode_normal
+	diffuseMap	models/buildables/telenode/telenode_d
+	normalMap	models/buildables/telenode/telenode_n
 	{
 		stage	specularMap
 		map	models/buildables/telenode/telenode_spec
