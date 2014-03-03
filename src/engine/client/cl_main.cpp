@@ -1527,6 +1527,13 @@ void CL_ShutdownAll( void )
 	// shutdown UI
 	CL_ShutdownUI();
 
+	// Clear Faces
+	if ( re.UnregisterFont && cls.consoleFont )
+	{
+		re.UnregisterFont( cls.consoleFont );
+		cls.consoleFont = nullptr;
+	}
+
 	// shutdown the renderer
 	if ( re.Shutdown )
 	{
@@ -1553,13 +1560,6 @@ void CL_ShutdownAll( void )
 	if ( clc.waverecording )
 	{
 		CL_WavStopRecord_f();
-	}
-
-	// Clear Faces
-	if ( re.UnregisterFont )
-	{
-		re.UnregisterFont( &cls.consoleFont );
-		memset( &cls.consoleFont, 0, sizeof( cls.consoleFont ) );
 	}
 }
 
@@ -2288,7 +2288,7 @@ void CL_Vid_Restart_f( void )
 	CL_ShutdownCGame();
 	// clear the font cache
 	re.UnregisterFont( NULL );
-	memset( &cls.consoleFont, 0, sizeof( cls.consoleFont ) );
+	cls.consoleFont = nullptr;
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
 
@@ -4554,7 +4554,7 @@ void CL_Shutdown( void )
 	if ( re.UnregisterFont )
 	{
 		re.UnregisterFont( NULL );
-		memset( &cls.consoleFont, 0, sizeof( cls.consoleFont ) );
+		cls.consoleFont = nullptr;
 	}
 
 	CL_ShutdownRef();

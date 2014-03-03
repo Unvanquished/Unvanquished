@@ -4160,7 +4160,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // font stuff
 	void       R_InitFreeType( void );
 	void       R_DoneFreeType( void );
-	void       RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
+	void       RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font );
 	void       RE_UnregisterFont( fontInfo_t *font );
 	void       RE_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
 	void       RE_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);

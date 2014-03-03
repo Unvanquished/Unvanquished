@@ -405,7 +405,7 @@ typedef struct
 	qhandle_t   consoleShader2; // NERVE - SMF - merged from WolfSP
 	qboolean    useLegacyConsoleFont;
 	qboolean    useLegacyConsoleFace;
-	fontInfo_t  consoleFont;
+	fontInfo_t *consoleFont;
 
 	// www downloading
 	// in the static stuff since this may have to survive server disconnects

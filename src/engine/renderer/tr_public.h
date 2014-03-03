@@ -69,7 +69,7 @@ typedef struct
 	qhandle_t ( *RegisterSkin )( const char *name );
 	qhandle_t ( *RegisterShader )( const char *name,
 				       RegisterShaderFlags_t flags );
-	void   ( *RegisterFont )( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
+	void   ( *RegisterFont )( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font );
 	void   ( *UnregisterFont )( fontInfo_t *font );
 	void   ( *RegisterFontVM )( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
 	void   ( *UnregisterFontVM )( fontHandle_t font );
