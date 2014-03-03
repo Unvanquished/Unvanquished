@@ -80,7 +80,9 @@ static char     *insert = logbuf;
 static int      scrollline = 0;
 static int      lastline = 1;
 
+#ifndef _WIN32
 static int      stderr_fd;
+#endif
 
 // The special characters look good on the win32 console but suck on other consoles
 #ifdef _WIN32
@@ -407,12 +409,12 @@ void CON_Shutdown( void )
 	dump_logs = curses_on;
 	curses_on = qfalse;
 
+#ifndef _WIN32
 	if ( stderr_fd >= 0 )
 	{
-#ifndef WIN32
 		dup2( stderr_fd, STDERR_FILENO );
-#endif
 	}
+#endif
 }
 
 /*
@@ -532,10 +534,10 @@ void CON_Init( void )
 		}
 
 		// Prevent bad libraries from messing up the console
-#ifndef WIN32
+#ifndef _WIN32
 		stderr_fd = dup( STDERR_FILENO );
-#endif
 		close( STDERR_FILENO );
+#endif
 	}
 
 	// Create the border
