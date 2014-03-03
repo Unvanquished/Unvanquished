@@ -667,8 +667,8 @@ int ALIGN_STACK main( int argc, char **argv )
 	// Enable the curses console by default
 	qboolean curses = qtrue;
 
-#if defined(_WIN32) && defined(BUILD_CLIENT)
-	// Windows client defaults to tty
+#if defined(_WIN32) && !defined(BUILD_TTY_CLIENT) && !defined(DEDICATED)
+	// Windows client defaults to curses off because of performance issues
 	curses = qfalse;
 #endif
 

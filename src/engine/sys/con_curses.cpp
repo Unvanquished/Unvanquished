@@ -409,9 +409,7 @@ void CON_Shutdown( void )
 
 	if ( stderr_fd >= 0 )
 	{
-#ifdef WIN32
-		_dup2( stderr_fd, STDERR_FILENO );
-#else
+#ifndef WIN32
 		dup2( stderr_fd, STDERR_FILENO );
 #endif
 	}
@@ -534,9 +532,7 @@ void CON_Init( void )
 		}
 
 		// Prevent bad libraries from messing up the console
-#ifdef WIN32
-		stderr_fd = _dup( STDERR_FILENO );
-#else
+#ifndef WIN32
 		stderr_fd = dup( STDERR_FILENO );
 #endif
 		close( STDERR_FILENO );
