@@ -1250,3 +1250,13 @@ void trap_S_SetReverb( int slotNum, const char* name, float ratio )
 {
 	syscallVM( CG_S_SETREVERB, slotNum, name, PASSFLOAT(ratio) );
 }
+
+void trap_S_BeginRegistration( void )
+{
+	syscallVM( CG_S_BEGINREGISTRATION );
+}
+
+void trap_S_EndRegistration( void )
+{
+	syscallVM( CG_S_ENDREGISTRATION );
+}

@@ -3056,9 +3056,22 @@ static qboolean HTurret_TargetInReach( gentity_t *self )
 static void HTurret_Shoot( gentity_t *self )
 {
 	const int zoneDamage[] = TURRET_ZONE_DAMAGE;
+	int       zone;
 
-	int zone = HTurret_DistanceToZone( Distance( self->s.pos.trBase, self->target->s.pos.trBase ) );
+	// if turret doesn't have the fast loader upgrade, pause after three shots
+	if ( !self->turretHasFastLoader && self->turretSuccessiveShots >= 3 )
+	{
+		self->turretSuccessiveShots = 0;
 
+		self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
+		self->s.eFlags &= ~EF_FIRING;
+
+		return;
+	}
+
+	self->s.eFlags |= EF_FIRING;
+
+	zone = HTurret_DistanceToZone( Distance( self->s.pos.trBase, self->target->s.pos.trBase ) );
 	self->turretCurrentDamage = zoneDamage[ zone ];
 
 	if ( g_debugTurrets.integer > 1 )
@@ -3069,12 +3082,13 @@ static void HTurret_Shoot( gentity_t *self )
 		            TURRET_ZONES, self->turretCurrentDamage );
 	}
 
-	self->turretLastShotAtTarget = level.time;
-	self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
-
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 	G_FireWeapon( self, WP_MGTURRET, WPM_PRIMARY );
+
+	self->turretSuccessiveShots++;
+	self->turretLastShotAtTarget = level.time;
+	self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
 }
 
 void HTurret_Think( gentity_t *self )
@@ -3098,6 +3112,7 @@ void HTurret_Think( gentity_t *self )
 	if ( !self->powered )
 	{
 		self->turretDisabled = qtrue;
+		self->turretSuccessiveShots = 0;
 
 		HTurret_LowerPitch( self );
 		HTurret_MoveHeadToTarget( self );
@@ -3148,12 +3163,14 @@ void HTurret_Think( gentity_t *self )
 	// shoot if possible
 	if ( HTurret_TargetInReach( self ) )
 	{
-		self->s.eFlags |= EF_FIRING;
-
 		if ( self->turretNextShot < level.time )
 		{
 			HTurret_Shoot( self );
 		}
+	}
+	else
+	{
+		self->turretSuccessiveShots = 0;
 	}
 }
 

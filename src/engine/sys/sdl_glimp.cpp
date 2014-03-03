@@ -34,11 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <stdlib.h>
 #include <math.h>
 
-#if defined( USE_XREAL_RENDERER )
-#       include "../rendererGL/tr_local.h"
-#else
-#       include "../renderer/tr_local.h"
-#endif
+#include "../renderer/tr_local.h"
 
 #include "../sys/sys_local.h"
 #include "sdl_icon.h"
@@ -749,7 +745,6 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 				SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
 			}
 
-#if USE_XREAL_RENDERER
 			if ( r_glCoreProfile->integer || r_glDebugProfile->integer )
 			{
 				int major = r_glMajorVersion->integer;
@@ -772,7 +767,6 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 					SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
 				}
 			}
-#endif
 #endif
 			window = SDL_CreateWindow( CLIENT_WINDOW_TITLE, x, y, glConfig.vidWidth, glConfig.vidHeight, flags );
 
@@ -827,28 +821,24 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		ri.Printf( PRINT_ALL, "Using GLEW %s\n", glewGetString( GLEW_VERSION ) );
 	}
 
-#ifdef USE_XREAL_RENDERER
+	int GLmajor, GLminor;
+	sscanf( ( const char * ) glGetString( GL_VERSION ), "%d.%d", &GLmajor, &GLminor );
+	if ( GLmajor < 2 || ( GLmajor == 2 && GLminor < 1 ) )
 	{
-		int GLmajor, GLminor;
-		sscanf( ( const char * ) glGetString( GL_VERSION ), "%d.%d", &GLmajor, &GLminor );
-		if ( GLmajor < 2 || ( GLmajor == 2 && GLminor < 1 ) )
-		{
-			// missing shader support, switch to 1.x renderer
-			return RSERR_OLD_GL;
-		}
-
-		if ( GLmajor < 3 || ( GLmajor == 3 && GLminor < 2 ) )
-		{
-			// shaders are supported, but not all GL3.x features
-			ri.Printf( PRINT_ALL, "Using enhanced (GL3) Renderer in GL 2.x mode...\n" );
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "Using enhanced (GL3) Renderer in GL 3.x mode...\n" );
-			glConfig.driverType = GLDRV_OPENGL3;
-		}
+		// missing shader support, switch to 1.x renderer
+		return RSERR_OLD_GL;
 	}
-#endif
+
+	if ( GLmajor < 3 || ( GLmajor == 3 && GLminor < 2 ) )
+	{
+		// shaders are supported, but not all GL3.x features
+		ri.Printf( PRINT_ALL, "Using enhanced (GL3) Renderer in GL 2.x mode...\n" );
+	}
+	else
+	{
+		ri.Printf( PRINT_ALL, "Using enhanced (GL3) Renderer in GL 3.x mode...\n" );
+		glConfig.driverType = GLDRV_OPENGL3;
+	}
 #if defined( SMP ) && !SDL_VERSION_ATLEAST( 2, 0, 0 )
 	// setup context for SDL_GL_MakeCurrent
 	SDL_GL_GetCurrentContext();
@@ -960,8 +950,6 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 	return qtrue;
 }
 
-#if defined USE_XREAL_RENDERER
-
 static GLenum debugTypes[] =
 {
 	0,
@@ -1043,10 +1031,10 @@ static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum source, GLenum type,
 
 /*
 ===============
-GLimp_XreaLInitExtensions
+GLimp_InitExtensions
 ===============
 */
-static void GLimp_XreaLInitExtensions( void )
+static void GLimp_InitExtensions( void )
 {
 	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
 
@@ -1661,122 +1649,6 @@ static void GLimp_XreaLInitExtensions( void )
 
 }
 
-#endif
-
-/*
-===============
-GLimp_InitExtensions
-===============
-*/
-#if !defined( USE_XREAL_RENDERER )
-static void GLimp_InitExtensions( void )
-{
-	if ( !r_allowExtensions->integer )
-	{
-		ri.Printf( PRINT_ALL, "* IGNORING OPENGL EXTENSIONS *\n" );
-		return;
-	}
-
-	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
-
-	glConfig.textureCompression = TC_NONE;
-
-	// GL_EXT_texture_compression_s3tc
-	if ( GLEW_ARB_texture_compression &&
-	     GLEW_EXT_texture_compression_s3tc )
-	{
-		if ( r_ext_compressed_textures->value )
-		{
-			glConfig.textureCompression = TC_EXT_COMP_S3TC;
-			ri.Printf( PRINT_ALL, "...using GL_EXT_texture_compression_s3tc\n" );
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_compression_s3tc\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_EXT_texture_compression_s3tc not found\n" );
-	}
-
-	// GL_S3_s3tc ... legacy extension before GL_EXT_texture_compression_s3tc.
-	if ( glConfig.textureCompression == TC_NONE )
-	{
-		if ( GLEW_S3_s3tc )
-		{
-			if ( r_ext_compressed_textures->value )
-			{
-				glConfig.textureCompression = TC_S3TC;
-				ri.Printf( PRINT_ALL, "...using GL_S3_s3tc\n" );
-			}
-			else
-			{
-				ri.Printf( PRINT_ALL, "...ignoring GL_S3_s3tc\n" );
-			}
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...GL_S3_s3tc not found\n" );
-		}
-	}
-
-	// GL_EXT_texture_env_add
-	glConfig.textureEnvAddAvailable = qfalse;
-
-	if ( GLEW_EXT_texture_env_add )
-	{
-		if ( r_ext_texture_env_add->integer )
-		{
-			glConfig.textureEnvAddAvailable = qtrue;
-			ri.Printf( PRINT_ALL, "...using GL_EXT_texture_env_add\n" );
-		}
-		else
-		{
-			glConfig.textureEnvAddAvailable = qfalse;
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_env_add\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_EXT_texture_env_add not found\n" );
-	}
-
-	// GL_ARB_multitexture
-	glConfig.maxActiveTextures = 1;
-
-	if ( GLEW_ARB_multitexture )
-	{
-		if ( r_ext_multitexture->value )
-		{
-			GLint glint = 0;
-
-			glGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &glint );
-
-			glConfig.maxActiveTextures = ( int ) glint;
-
-			if ( glConfig.maxActiveTextures > 1 )
-			{
-				ri.Printf( PRINT_ALL, "...using GL_ARB_multitexture\n" );
-			}
-			else
-			{
-				ri.Printf( PRINT_ALL, "...not using GL_ARB_multitexture, < 2 texture units\n" );
-			}
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...ignoring GL_ARB_multitexture\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_ARB_multitexture not found\n" );
-	}
-}
-
-#endif
-
 #define R_MODE_FALLBACK 3 // 640 * 480
 
 /* Support code for GLimp_Init */
@@ -1861,8 +1733,6 @@ qboolean GLimp_Init( void )
 success:
 	// These values force the UI to disable driver selection
 	glConfig.hardwareType = GLHW_GENERIC;
-	glConfig.deviceSupportsGamma = !r_ignorehwgamma->integer &&
-	                               SDL_SetWindowBrightness( window, 1.0f ) >= 0;
 
 	// get our config strings
 	Q_strncpyz( glConfig.vendor_string, ( char * ) glGetString( GL_VENDOR ), sizeof( glConfig.vendor_string ) );
@@ -2029,12 +1899,7 @@ success:
 	}
 
 	// initialize extensions
-#if defined USE_XREAL_RENDERER
-	GLimp_XreaLInitExtensions();
-#endif
-#if !defined USE_XREAL_RENDERER
 	GLimp_InitExtensions();
-#endif
 
 	ri.Cvar_Get( "r_availableModes", "", CVAR_ROM );
 

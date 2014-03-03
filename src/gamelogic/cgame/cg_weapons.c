@@ -785,7 +785,6 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 						break;
 
 					case WP_ALEVEL1:
-					case WP_ALEVEL1_UPG:
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
@@ -876,7 +875,6 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 						break;
 
 					case WP_ALEVEL1:
-					case WP_ALEVEL1_UPG:
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],

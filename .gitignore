@@ -10,7 +10,6 @@ CMakeLists.txt.user*
 Makefile
 cmake_install.cmake
 daemon*
-rendererGL*
 cgame-qvm-native.*
 game-qvm-native.*
 ui-qvm-native.*

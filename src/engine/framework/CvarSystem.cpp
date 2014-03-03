@@ -512,7 +512,7 @@ namespace Cvar {
                 ::Cvar::AddFlags(name, flags);
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE {
                 if (argNum == 1) {
                     return ::Cvar::Complete(prefix);
                 }
@@ -561,7 +561,7 @@ namespace Cvar {
                 }
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE {
                 if (argNum) {
                     return ::Cvar::Complete(prefix);
                 }
@@ -681,7 +681,9 @@ namespace Cvar {
                 }
 
                 if (argNum == 1) {
-                    return Cmd::CompletionFilter(::Cvar::Complete(prefix), prefix, flags);
+                    auto completion = ::Cvar::Complete(prefix);
+                    Cmd::AddToCompletion(completion, prefix, flags);
+                    return completion;
                 }
 
                 if (argNum == nameIndex) {

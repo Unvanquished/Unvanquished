@@ -64,7 +64,6 @@ static const char *const modNames[] =
 	"MOD_ABUILDER_CLAW",
 	"MOD_LEVEL0_BITE",
 	"MOD_LEVEL1_CLAW",
-	"MOD_LEVEL1_PCLOUD",
 	"MOD_LEVEL3_CLAW",
 	"MOD_LEVEL3_POUNCE",
 	"MOD_LEVEL3_BOUNCEBALL",
@@ -1431,9 +1430,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 			}
 
 			// if dretchpunt is enabled and this is a dretch, do dretchpunt instead of damage
-			if ( g_dretchPunt.integer && target->client &&
-			     ( target->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 ||
-			       target->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG ) )
+			if ( g_dretchPunt.integer && target->client && target->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 )
 			{
 				vec3_t dir, push;
 
@@ -1506,7 +1503,6 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 			switch ( mod )
 			{
 				case MOD_POISON:
-				case MOD_LEVEL1_PCLOUD:
 				case MOD_LEVEL2_ZAP:
 					break;
 

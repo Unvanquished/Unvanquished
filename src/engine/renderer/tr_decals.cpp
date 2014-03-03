@@ -52,12 +52,15 @@ MakeTextureMatrix()
 generates a texture projection matrix for a triangle
 returns qfalse if a texture matrix cannot be created
 */
+
+typedef double dvec3_t[ 3 ];
+
 static qboolean MakeTextureMatrix( vec4_t texMat[ 2 ], vec4_t projection, decalVert_t *a, decalVert_t *b, decalVert_t *c )
 {
 	int     i, j;
-	float   bb, s, t, d;
-	vec3_t  pa, pb, pc;
-	vec3_t  bary, origin, xyz;
+	double  bb, s, t, d;
+	dvec3_t pa, pb, pc;
+	dvec3_t bary, origin, xyz;
 	vec3_t  vecs[ 3 ], axis[ 3 ], lengths;
 
 	/* project triangle onto plane of projection */
@@ -319,50 +322,6 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 }
 
 /*
-R_AddModelShadow()
-adds a simple shadow projector to the scene
-*/
-
-void R_AddModelShadow( refEntity_t *ent )
-{
-	model_t *m;
-	vec4_t  projection, color = { 1, 1, 1, 1 };
-	vec3_t  pushedOrigin, points[ 4 ];
-
-	/* shadows? */
-	if ( !r_drawentities->integer || r_shadows->integer != 1 || ent->renderfx & RF_NOSHADOW )
-	{
-		return;
-	}
-
-	/* get model */
-	m = R_GetModelByHandle( ent->hModel );
-
-	if ( m == NULL || m->shadowShader == 0 )
-	{
-		return;
-	}
-
-	/* calculate projection */
-	VectorSubtract( vec3_origin, ent->axis[ 2 ], projection );
-	VectorSet( projection, 0, 0, -1.0f );
-	projection[ 3 ] = m->shadowParms[ 4 ];
-
-	/* push origin */
-	VectorMA( ent->origin, m->shadowParms[ 5 ], projection, pushedOrigin );
-
-	/* make shadow polygon */
-	VectorMA( pushedOrigin, m->shadowParms[ 0 ], ent->axis[ 1 ], points[ 0 ] );
-	VectorMA( points[ 0 ], m->shadowParms[ 1 ], ent->axis[ 0 ], points[ 0 ] );
-	VectorMA( points[ 0 ], m->shadowParms[ 2 ], ent->axis[ 1 ], points[ 1 ] );
-	VectorMA( points[ 1 ], m->shadowParms[ 3 ], ent->axis[ 0 ], points[ 2 ] );
-	VectorMA( points[ 0 ], m->shadowParms[ 3 ], ent->axis[ 0 ], points[ 3 ] );
-
-	/* add the decal */
-	RE_ProjectDecal( m->shadowShader, 4, points, projection, color, -1, -1 );
-}
-
-/*
 RE_ClearDecals()
 clears decals from the world and entities
 */
@@ -372,7 +331,7 @@ void RE_ClearDecals( void )
 	int i, j;
 
 	/* dummy check */
-	if ( tr.world == NULL || tr.world->numBModels <= 0 )
+	if ( tr.world == NULL || tr.world->numModels <= 0 )
 	{
 		return;
 	}
@@ -380,15 +339,15 @@ void RE_ClearDecals( void )
 	/* clear world decals */
 	for ( j = 0; j < MAX_WORLD_DECALS; j++ )
 	{
-		tr.world->bmodels[ 0 ].decals[ j ].shader = NULL;
+		tr.world->models[ 0 ].decals[ j ].shader = NULL;
 	}
 
 	/* clear entity decals */
-	for ( i = 0; i < tr.world->numBModels; i++ )
+	for ( i = 0; i < tr.world->numModels; i++ )
 	{
 		for ( j = 0; j < MAX_ENTITY_DECALS; j++ )
 		{
-			tr.world->bmodels[ i ].decals[ j ].shader = NULL;
+			tr.world->models[ i ].decals[ j ].shader = NULL;
 		}
 	}
 }
@@ -606,8 +565,8 @@ ProjectDecalOntoWinding()
 projects decal onto a polygon
 */
 
-static void ProjectDecalOntoWinding( decalProjector_t *dp, int numPoints, vec3_t points[ 2 ][ MAX_DECAL_VERTS ], msurface_t *surf,
-                                     bmodel_t *bmodel )
+static void ProjectDecalOntoWinding( decalProjector_t *dp, int numPoints, vec3_t points[ 2 ][ MAX_DECAL_VERTS ], bspSurface_t *surf,
+                                     bspModel_t *bmodel )
 {
 	int        i, pingPong, count, axis;
 	float      pd, d, d2, alpha = 1.f;
@@ -694,7 +653,7 @@ static void ProjectDecalOntoWinding( decalProjector_t *dp, int numPoints, vec3_t
 	}
 
 	/* find first free decal (fixme: optimize this) */
-	count = ( bmodel == tr.world->bmodels ? MAX_WORLD_DECALS : MAX_ENTITY_DECALS );
+	count = ( bmodel == tr.world->models ? MAX_WORLD_DECALS : MAX_ENTITY_DECALS );
 	oldest = &bmodel->decals[ 0 ];
 	decal = bmodel->decals;
 
@@ -773,25 +732,45 @@ ProjectDecalOntoTriangles()
 projects a decal onto a triangle surface (brush faces, misc_models, metasurfaces)
 */
 
-static void ProjectDecalOntoTriangles( decalProjector_t *dp, msurface_t *surf, bmodel_t *bmodel )
+static void ProjectDecalOntoTriangles( decalProjector_t *dp, bspSurface_t *surf, bspModel_t *bmodel )
 {
-	int            i;
-	srfTriangles_t *srf;
-	vec3_t         points[ 2 ][ MAX_DECAL_VERTS ];
+	int           i;
+	srfTriangle_t *tri;
+	vec3_t        points[ 2 ][ MAX_DECAL_VERTS ];
 
-	/* get surface */
-	srf = ( srfTriangles_t * ) surf->data;
-
-	/* walk triangle list */
-	for ( i = 0; i < srf->numIndexes; i += 3 )
+	if ( *surf->data == SF_FACE )
 	{
-		/* make triangle */
-		VectorCopy( srf->verts[ srf->indexes[ i ] ].xyz, points[ 0 ][ 0 ] );
-		VectorCopy( srf->verts[ srf->indexes[ i + 1 ] ].xyz, points[ 0 ][ 1 ] );
-		VectorCopy( srf->verts[ srf->indexes[ i + 2 ] ].xyz, points[ 0 ][ 2 ] );
+		/* get surface */
+		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * ) surf->data;
 
-		/* chop it */
-		ProjectDecalOntoWinding( dp, 3, points, surf, bmodel );
+		/* walk triangle list */
+		for ( i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++ )
+		{
+			/* make triangle */
+			VectorCopy( srf->verts[ tri->indexes[ 0 ] ].xyz, points[ 0 ][ 0 ] );
+			VectorCopy( srf->verts[ tri->indexes[ 1 ] ].xyz, points[ 0 ][ 1 ] );
+			VectorCopy( srf->verts[ tri->indexes[ 2 ] ].xyz, points[ 0 ][ 2 ] );
+
+			/* chop it */
+			ProjectDecalOntoWinding( dp, 3, points, surf, bmodel );
+		}
+	}
+	else if ( *surf->data == SF_TRIANGLES )
+	{
+		/* get surface */
+		srfTriangles_t *srf = ( srfTriangles_t * ) surf->data;
+
+		/* walk triangle list */
+		for ( i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++ )
+		{
+			/* make triangle */
+			VectorCopy( srf->verts[ tri->indexes[ 0 ] ].xyz, points[ 0 ][ 0 ] );
+			VectorCopy( srf->verts[ tri->indexes[ 1 ] ].xyz, points[ 0 ][ 1 ] );
+			VectorCopy( srf->verts[ tri->indexes[ 2 ] ].xyz, points[ 0 ][ 2 ] );
+
+			/* chop it */
+			ProjectDecalOntoWinding( dp, 3, points, surf, bmodel );
+		}
 	}
 }
 
@@ -800,11 +779,11 @@ ProjectDecalOntoGrid()
 projects a decal onto a grid (patch) surface
 */
 
-static void ProjectDecalOntoGrid( decalProjector_t *dp, msurface_t *surf, bmodel_t *bmodel )
+static void ProjectDecalOntoGrid( decalProjector_t *dp, bspSurface_t *surf, bspModel_t *bmodel )
 {
 	int           x, y;
 	srfGridMesh_t *srf;
-	drawVert_t    *dv;
+	srfVert_t     *dv;
 	vec3_t        points[ 2 ][ MAX_DECAL_VERTS ];
 
 	/* get surface */
@@ -839,7 +818,7 @@ R_ProjectDecalOntoSurface()
 projects a decal onto a world surface
 */
 
-void R_ProjectDecalOntoSurface( decalProjector_t *dp, msurface_t *surf, bmodel_t *bmodel )
+void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspModel_t *bmodel )
 {
 	float        d;
 	srfGeneric_t *gen;
@@ -871,27 +850,33 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, msurface_t *surf, bmodel_t
 
 	/* test bounding sphere */
 	if ( !R_TestDecalBoundingSphere( dp, gen->origin, ( gen->radius * gen->radius ) ) )
+//	if(!R_TestDecalBoundingBox(dp, gen->bounds[0], gen->bounds[1]))
 	{
 		return;
 	}
 
 	/* planar surface */
-	if ( gen->plane.normal[ 0 ] || gen->plane.normal[ 1 ] || gen->plane.normal[ 2 ] )
+	if ( gen->surfaceType == SF_FACE )
 	{
-		/* backface check */
-		d = DotProduct( dp->planes[ 0 ], gen->plane.normal );
+		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )surf->data;
 
-		if ( d < -0.0001 )
+		if ( srf->plane.normal[ 0 ] || srf->plane.normal[ 1 ] || srf->plane.normal[ 2 ] )
 		{
-			return;
-		}
+			/* backface check */
+			d = DotProduct( dp->planes[ 0 ], srf->plane.normal );
 
-		/* plane-sphere check */
-		d = DotProduct( dp->center, gen->plane.normal ) - gen->plane.dist;
+			if ( d < -0.0001 )
+			{
+				return;
+			}
 
-		if ( fabs( d ) >= dp->radius )
-		{
-			return;
+			/* plane-sphere check */
+			d = DotProduct( dp->center, srf->plane.normal ) - srf->plane.dist;
+
+			if ( fabs( d ) >= dp->radius )
+			{
+				return;
+			}
 		}
 	}
 
@@ -922,13 +907,13 @@ adds a decal surface to the scene
 
 void R_AddDecalSurface( decal_t *decal )
 {
-	int          i, dlightMap;
-	float        fade;
-	srfDecal_t   *srf;
-	srfGeneric_t *gen;
+	int        i; //, dlightMap;
+	float      fade;
+	srfDecal_t *srf;
+//	srfGeneric_t   *gen;
 
 	/* early outs */
-	if ( decal->shader == NULL || decal->parent->viewCount != tr.viewCount || tr.refdef.numDecals >= MAX_DECALS )
+	if ( decal->shader == NULL || decal->parent->viewCount != tr.viewCountNoReset || tr.refdef.numDecals >= MAX_DECALS )
 	{
 		return;
 	}
@@ -957,18 +942,22 @@ void R_AddDecalSurface( decal_t *decal )
 	}
 
 	/* dynamic lights? */
-	if ( decal->parent != NULL )
+
+	/*
+	if(decal->parent != NULL)
 	{
-		gen = ( srfGeneric_t * ) decal->parent->data;
-		dlightMap = ( gen->dlightBits[ tr.smpFrame ] != 0 );
+	        gen = (srfGeneric_t *) decal->parent->data;
+	        dlightMap = (gen->dlightBits[tr.smpFrame] != 0);
 	}
 	else
 	{
-		dlightMap = 0;
+	        dlightMap = 0;
 	}
+	*/
 
 	/* add surface to scene */
-	R_AddDrawSurf( ( surfaceType_t * ) srf, decal->shader, decal->fogIndex, 0, dlightMap );
+	//R_AddDrawSurf((surfaceType_t *)srf, decal->shader, decal->fogIndex, 0, dlightMap);
+	R_AddDrawSurf( ( surfaceType_t * ) srf, decal->shader, -1, decal->fogIndex );
 	tr.pc.c_decalSurfaces++;
 
 	/* free temporary decal */
@@ -983,13 +972,13 @@ R_AddDecalSurfaces()
 adds decal surfaces to the scene
 */
 
-void R_AddDecalSurfaces( bmodel_t *bmodel )
+void R_AddDecalSurfaces( bspModel_t *bmodel )
 {
 	int     i, count;
 	decal_t *decal;
 
 	/* get decal count */
-	count = ( bmodel == tr.world->bmodels ? MAX_WORLD_DECALS : MAX_ENTITY_DECALS );
+	count = ( bmodel == tr.world->models ? MAX_WORLD_DECALS : MAX_ENTITY_DECALS );
 
 	/* iterate through decals */
 	decal = bmodel->decals;

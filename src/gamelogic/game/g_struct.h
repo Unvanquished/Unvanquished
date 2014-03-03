@@ -382,7 +382,9 @@ struct gentity_s
 	vec3_t      buildableAim; // aim vector for buildables
 
 	// turret
+	qboolean    turretHasFastLoader; // a turret upgrade (currently unused)
 	int         turretNextShot;
+	int         turretSuccessiveShots;
 	int         turretLastShotAtTarget;
 	int         turretLastSeenATarget;
 	int         turretLastHeadMove;
@@ -501,7 +503,6 @@ struct clientPersistant_s
 	g_admin_longstrip_t *longstrip;
 
 	int               aliveSeconds; // time player has been alive in seconds
-	qboolean          hasHealed; // has healed a player (basi regen aura) in the last 10sec (for score use)
 
 	// These have a copy in playerState_t.persistent but we use them in GAME so they don't get invalidated by
 	// SPECTATOR_FOLLOW mode
@@ -594,15 +595,13 @@ struct gclient_s
 	int        lastPoisonTime;
 	int        poisonImmunityTime;
 	gentity_t  *lastPoisonClient;
-	int        lastPoisonCloudedTime;
-	int        grabExpiryTime;
 	int        lastLockTime;
 	int        lastSlowTime;
 	int        lastMedKitTime;
 	int        medKitHealthToRestore;
 	int        medKitIncrementTime;
 	int        lastCreepSlowTime; // time until creep can be removed
-	int        lastCombatTime; // time of last damage received/dealt or held by basilisk
+	int        lastCombatTime; // time of last damage received/dealt from/to clients
 	int        lastAmmoRefillTime;
 	int        lastFuelRefillTime;
 
@@ -618,6 +617,8 @@ struct gclient_s
 	int        trampleBuildablesHit[ MAX_TRAMPLE_BUILDABLES_TRACKED ];
 
 	int        nextCrushTime;
+
+	int        lastLevel1SlowTime;
 };
 
 /**

@@ -278,7 +278,6 @@ qboolean          G_FindFuel( gentity_t *self );
 void              G_CalcMuzzlePoint( gentity_t *self, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
 void              G_SnapVectorTowards( vec3_t v, vec3_t to );
 qboolean          G_CheckVenomAttack( gentity_t *self );
-void              G_CheckGrabAttack( gentity_t *self );
 qboolean          G_CheckPounceAttack( gentity_t *self );
 void              G_CheckCkitRepair( gentity_t *self );
 void              G_ChargeAttack( gentity_t *self, gentity_t *victim );

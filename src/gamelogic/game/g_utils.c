@@ -210,7 +210,6 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 
 	VectorCopy( origin, player->client->ps.origin );
 	player->client->ps.groundEntityNum = ENTITYNUM_NONE;
-	player->client->ps.stats[ STAT_STATE ] &= ~SS_GRABBED;
 
 	AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
 	VectorScale( player->client->ps.velocity, speed, player->client->ps.velocity );

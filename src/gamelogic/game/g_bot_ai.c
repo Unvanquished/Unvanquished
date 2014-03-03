@@ -1027,13 +1027,6 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) && g_bot_level1upg.integer )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1 ) && g_bot_level1.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL1 ) )

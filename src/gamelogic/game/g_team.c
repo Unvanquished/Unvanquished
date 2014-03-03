@@ -188,7 +188,7 @@ static clientList_t G_ClientListForTeam( team_t team )
 
 	Com_Memset( &clientList, 0, sizeof( clientList_t ) );
 
-	for ( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		gentity_t *ent = g_entities + i;
 
@@ -549,7 +549,7 @@ void CheckTeamStatus( void )
 	{
 		level.lastTeamLocationTime = level.time;
 
-		for ( i = 0; i < g_maxclients.integer; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
 			ent = g_entities + i;
 
@@ -579,7 +579,7 @@ void CheckTeamStatus( void )
 			}
 		}
 
-		for ( i = 0; i < g_maxclients.integer; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
 			ent = g_entities + i;
 

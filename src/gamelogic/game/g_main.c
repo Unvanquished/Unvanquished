@@ -130,10 +130,6 @@ vmCvar_t           g_powerReactorSupply;
 vmCvar_t           g_powerReactorRange;
 vmCvar_t           g_powerRepeaterSupply;
 vmCvar_t           g_powerRepeaterRange;
-vmCvar_t           g_powerLevel1Interference;
-vmCvar_t           g_powerLevel1Range;
-vmCvar_t           g_powerLevel1UpgInterference;
-vmCvar_t           g_powerLevel1UpgRange;
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
@@ -237,7 +233,6 @@ vmCvar_t g_bot_lcannon;
 // bot evolution cvars
 vmCvar_t g_bot_evolve;
 vmCvar_t g_bot_level1;
-vmCvar_t g_bot_level1upg;
 vmCvar_t g_bot_level2;
 vmCvar_t g_bot_level2upg;
 vmCvar_t g_bot_level3;
@@ -474,14 +469,13 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_lcannon, "g_bot_lcannon", "1",  CVAR_NORESTART, 0, qfalse },
 
 	// bot evolution cvars
-	{ &g_bot_evolve, "g_bot_evolve", "1",  CVAR_NORESTART, 0, qfalse },
-	{ &g_bot_level1, "g_bot_level1", "1",  CVAR_NORESTART, 0, qfalse },
-	{ &g_bot_level1upg, "g_bot_level1upg", "1",  CVAR_NORESTART, 0, qfalse },
-	{ &g_bot_level2, "g_bot_level2", "1",  CVAR_NORESTART, 0, qfalse },
-	{ &g_bot_level2upg, "g_bot_level2upg", "1",  CVAR_NORESTART, 0, qfalse },
-	{ &g_bot_level3, "g_bot_level3", "1",  CVAR_NORESTART, 0, qfalse },
-	{ &g_bot_level3upg, "g_bot_level3upg", "1",  CVAR_NORESTART, 0, qfalse },
-	{ &g_bot_level4, "g_bot_level4", "1",  CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_evolve, "g_bot_evolve", "1", CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level1, "g_bot_level1", "1", CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level2, "g_bot_level2", "1", CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level2upg, "g_bot_level2upg", "1", CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level3, "g_bot_level3", "1", CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level3upg, "g_bot_level3upg", "1", CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level4, "g_bot_level4", "1", CVAR_NORESTART, 0, qfalse },
 
 	// misc bot cvars
 	{ &g_bot_attackStruct, "g_bot_attackStruct", "1",  CVAR_NORESTART, 0, qfalse },
@@ -1957,7 +1951,7 @@ void ExitLevel( void )
 	level.intermissiontime = 0;
 
 	// reset all the scores so we don't enter the intermission again
-	for ( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		cl = level.clients + i;
 
@@ -1974,7 +1968,7 @@ void ExitLevel( void )
 
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting
-	for ( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
@@ -2448,7 +2442,7 @@ void CheckIntermissionExit( void )
 	notReady = 0;
 	Com_Memset( &readyMasks, 0, sizeof( readyMasks ) );
 
-	for ( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		cl = level.clients + i;
 
