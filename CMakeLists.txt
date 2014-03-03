@@ -59,9 +59,7 @@ option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1)
 option( BUILD_GAME_QVM "Build QVM game logic" 1)
 option( BUILD_TTY_CLIENT "Build Daemon headless client" 0 )
 
-cmake_dependent_option( USE_MUMBLE "Compile with support for Mumble" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
-cmake_dependent_option( USE_CURSES "Use the curses console" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
@@ -298,11 +296,6 @@ if( APPLE )
   set( CMAKE_BUILD_WITH_INSTALL_RPATH ON )
 endif()
 
-# Mumble link support
-if( USE_MUMBLE )
-  add_definitions( -DUSE_MUMBLE )
-endif()
-
 ################################################################################
 # Directories
 ################################################################################
@@ -425,7 +418,6 @@ set( COMMONLIST
 set( RENDERERLIST
   ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sdl_glimp.cpp
-  ${ENGINE_DIR}/sys/sdl_gamma.cpp
   ${ENGINE_DIR}/renderer/gl_shader.cpp
   ${ENGINE_DIR}/renderer/tr_animation.cpp
   ${ENGINE_DIR}/renderer/tr_backend.cpp
@@ -469,7 +461,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_surface.cpp
   ${ENGINE_DIR}/renderer/tr_vbo.cpp
   ${ENGINE_DIR}/renderer/tr_world.cpp
-  ${ENGINE_DIR}/qcommon/md4.cpp
   ${LIB_DIR}/openexr/half.cpp
   ${ENGINE_DIR}/renderer/tr_local.h
   ${ENGINE_DIR}/renderer/tr_public.h
@@ -536,11 +527,7 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/cvar.cpp
   ${ENGINE_DIR}/qcommon/cvar.h
   ${ENGINE_DIR}/qcommon/qfiles.h
-  ${ENGINE_DIR}/qcommon/htable.cpp
-  ${ENGINE_DIR}/qcommon/htable.h
   ${ENGINE_DIR}/qcommon/huffman.cpp
-  ${ENGINE_DIR}/qcommon/md4.cpp
-  ${ENGINE_DIR}/qcommon/md4.h
   ${ENGINE_DIR}/qcommon/md5.cpp
   ${ENGINE_DIR}/qcommon/msg.cpp
   ${ENGINE_DIR}/qcommon/net_chan.cpp
@@ -579,14 +566,16 @@ else()
   )
 endif()
 
+if( NOT APPLE )
+  set( ENGINELIST ${ENGINELIST}
+    ${ENGINE_DIR}/sys/con_curses.cpp
+  )
+endif()
+
 if( APPLE )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/sys_osx.mm
   )
-endif()
-
-if( USE_CURSES )
-  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/sys/con_curses.cpp )
 endif()
 
 set( CLIENTBASELIST
@@ -610,8 +599,9 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/client/cl_parse.cpp
   ${ENGINE_DIR}/client/cl_scrn.cpp
   ${ENGINE_DIR}/client/cl_ui.cpp
-  ${ENGINE_DIR}/client/cl_logs.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
+  ${ENGINE_DIR}/client/libmumblelink.cpp
+  ${ENGINE_DIR}/client/libmumblelink.h
 )
 
 set( CLIENTLIST
@@ -643,14 +633,6 @@ set( DEDSERVERLIST
     ${ENGINE_DIR}/null/null_input.cpp
     ${ENGINE_DIR}/null/null_client.cpp
 )
-
-
-if( USE_MUMBLE )
-  set( CLIENTBASELIST ${CLIENTBASELIST}
-    ${ENGINE_DIR}/client/libmumblelink.cpp
-    ${ENGINE_DIR}/client/libmumblelink.h
-  )
-endif()
 
 set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.cpp
@@ -1204,19 +1186,18 @@ if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
 endif()
 
 # Curses, pdcurses on Windows and ncursesw on Unix
-if( USE_CURSES )
-  add_definitions( -DUSE_CURSES -DUSE_CURSES_W )
-  if( WIN32 )
-    add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 )
-    include_directories( ${LIB_DIR}/pdcurses )
-    set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
-    set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
-  else()
-    set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
-    find_package( CursesW REQUIRED )
-    include_directories( ${CURSESW_INCLUDE_DIR} )
-    set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
-  endif()
+# Not supported on mac because the included version is too old
+if( WIN32 )
+  add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES)
+  include_directories( ${LIB_DIR}/pdcurses )
+  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
+  set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
+elseif( NOT APPLE )
+  add_definitions( -DUSE_CURSES )
+  set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
+  find_package( CursesW REQUIRED )
+  include_directories( ${CURSESW_INCLUDE_DIR} )
+  set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
 endif()
 
 ################################################################################
@@ -1471,9 +1452,6 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
-  if( USE_SMP )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
-  endif()
 endif()
 
 if( BUILD_SERVER )

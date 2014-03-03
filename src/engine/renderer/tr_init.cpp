@@ -56,7 +56,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_skipBackEnd;
 	cvar_t      *r_skipLightBuffer;
 
-	cvar_t      *r_ignorehwgamma;
 	cvar_t      *r_measureOverdraw;
 
 	cvar_t      *r_inGameVideo;
@@ -185,7 +184,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_rimLighting;
 	cvar_t      *r_rimExponent;
 	cvar_t      *r_gamma;
-	cvar_t      *r_intensity;
 	cvar_t      *r_lockpvs;
 	cvar_t      *r_noportals;
 	cvar_t      *r_portalOnly;
@@ -199,9 +197,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_customwidth;
 	cvar_t      *r_customheight;
 	cvar_t      *r_customaspect;
-
-	cvar_t      *r_overBrightBits;
-	cvar_t      *r_mapOverBrightBits;
 
 	cvar_t      *r_debugSurface;
 	cvar_t      *r_simpleMipMaps;
@@ -294,7 +289,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_bloomPasses;
 	cvar_t      *r_rotoscope;
 	cvar_t      *r_FXAA;
-	cvar_t      *r_cameraPostFX;
 	cvar_t      *r_cameraVignette;
 	cvar_t      *r_cameraFilmGrain;
 	cvar_t      *r_cameraFilmGrainScale;
@@ -347,8 +341,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		//      - r_fullscreen
 		//      - r_mode
 		//      - r_(color|depth|stencil)bits
-		//      - r_ignorehwgamma
-		//      - r_gamma
 		//
 
 		if ( glConfig.vidWidth == 0 )
@@ -653,11 +645,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			p[ 2 ] = temp;
 		}
 
-		if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
-		{
-			R_GammaCorrect( buffer + 18, dataSize );
-		}
-
 		ri.FS_WriteFile( fileName, buffer, 18 + dataSize );
 
 		ri.Hunk_FreeTempMemory( buffer );
@@ -672,11 +659,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	{
 		byte *buffer = RB_ReadPixels( x, y, width, height, 0 );
 
-		if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
-		{
-			R_GammaCorrect( buffer, 3 * width * height );
-		}
-
 		SaveJPG( fileName, 90, width, height, buffer );
 		ri.Hunk_FreeTempMemory( buffer );
 	}
@@ -689,11 +671,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	static void RB_TakeScreenshotPNG( int x, int y, int width, int height, char *fileName )
 	{
 		byte *buffer = RB_ReadPixels( x, y, width, height, 0 );
-
-		if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
-		{
-			R_GammaCorrect( buffer, 3 * width * height );
-		}
 
 		SavePNG( fileName, buffer, width, height, 3, qfalse );
 		ri.Hunk_FreeTempMemory( buffer );
@@ -1001,12 +978,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			pixels = ( byte * ) PADP( cmd->captureBuffer, packAlign );
 			glReadPixels( 0, 0, cmd->width, cmd->height, GL_RGB, GL_UNSIGNED_BYTE, pixels );
 
-			if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
-			{
-				// this also runs over the padding...
-				R_GammaCorrect( pixels, captureLineLen * cmd->height );
-			}
-
 			if ( cmd->motionJpeg )
 			{
 				// Drop alignment and line padding bytes
@@ -1254,15 +1225,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			ri.Printf( PRINT_DEVELOPER, "N/A\n" );
 		}
 
-		if ( glConfig.deviceSupportsGamma )
-		{
-			ri.Printf( PRINT_DEVELOPER, "GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits );
-		}
-		else
-		{
-			ri.Printf( PRINT_DEVELOPER, "GAMMA: software w/ %d overbright bits\n", tr.overbrightBits );
-		}
-
 		ri.Printf( PRINT_DEVELOPER, "texturemode: %s\n", r_textureMode->string );
 		ri.Printf( PRINT_DEVELOPER, "picmip: %d\n", r_picmip->integer );
 
@@ -1394,11 +1356,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_stencilbits = ri.Cvar_Get( "r_stencilbits", "8",  CVAR_LATCH );
 		r_depthbits = ri.Cvar_Get( "r_depthbits", "0",  CVAR_LATCH );
 		r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0",  CVAR_LATCH | CVAR_ARCHIVE );
-#ifdef WIN32
-		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "0",  CVAR_LATCH );  // use hw gamma on Windows by default
-#else
-		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1",  CVAR_LATCH );  // use software gamma by default
-#endif
 		r_mode = ri.Cvar_Get( "r_mode", "-2", CVAR_LATCH | CVAR_SHADER | CVAR_ARCHIVE );
 		r_fullscreen = ri.Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE );
 		r_customwidth = ri.Cvar_Get( "r_customwidth", "1600", CVAR_LATCH | CVAR_ARCHIVE );
@@ -1441,20 +1398,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_smp = ri.Cvar_Get( "r_smp", "0",  CVAR_LATCH );
 
 		// temporary latched variables that can only change over a restart
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-		r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "1", CVAR_LATCH );
-		r_mapOverBrightBits = ri.Cvar_Get( "r_mapOverBrightBits", "2", CVAR_LATCH );
-#else
-		r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "0", CVAR_LATCH );
-		r_mapOverBrightBits = ri.Cvar_Get( "r_mapOverBrightBits", "0", CVAR_LATCH );
-#endif
-
-		AssertCvarRange( r_overBrightBits, 0, 1, qtrue );  // ydnar: limit to overbrightbits 1 (sorry 1337 players)
-		AssertCvarRange( r_mapOverBrightBits, 0, 3, qtrue );
-
-		r_intensity = ri.Cvar_Get( "r_intensity", "1", CVAR_LATCH );
-		AssertCvarRange( r_intensity, 0, 5, qfalse );
-
 		r_singleShader = ri.Cvar_Get( "r_singleShader", "0", CVAR_CHEAT | CVAR_LATCH );
 		r_stitchCurves = ri.Cvar_Get( "r_stitchCurves", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_debugShadowMaps = ri.Cvar_Get( "r_debugShadowMaps", "0", CVAR_CHEAT | CVAR_SHADER );
@@ -1529,7 +1472,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_bloomPasses = ri.Cvar_Get( "r_bloomPasses", "2", CVAR_CHEAT );
 		r_rotoscope = ri.Cvar_Get( "r_rotoscope", "0", 0 );
 		r_FXAA = ri.Cvar_Get( "r_FXAA", "0", 0 );
-		r_cameraPostFX = ri.Cvar_Get( "r_cameraPostFX", "1", 0 );
 		r_cameraVignette = ri.Cvar_Get( "r_cameraVignette", "0", 0 );
 		r_cameraFilmGrain = ri.Cvar_Get( "r_cameraFilmGrain", "0", 0 );
 		r_cameraFilmGrainScale = ri.Cvar_Get( "r_cameraFilmGrainScale", "3", 0 );

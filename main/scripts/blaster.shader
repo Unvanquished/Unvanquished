@@ -11,9 +11,9 @@ gfx/blaster/orange_particle
 
 models/weapons/blaster/blasterz
 {
-	diffuseMap models/weapons/blaster/blasterz_COLOR
-	normalMap  models/weapons/blaster/blasterz_NRM
-	specularMap models/weapons/blaster/blasterz_SPEC
+	diffuseMap models/weapons/blaster/blasterz_d
+	normalMap  models/weapons/blaster/blasterz_n
+	specularMap models/weapons/blaster/blasterz_s
 	glowMap     models/weapons/blaster/blaster_glow
 }
 

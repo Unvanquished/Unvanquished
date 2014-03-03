@@ -33,11 +33,13 @@ uniform float		u_EnvironmentInterpolation;
 
 uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
-uniform vec3		u_AmbientColor;
-uniform vec3		u_LightDir;
-uniform vec3		u_LightColor;
 uniform float		u_DepthScale;
 uniform vec2        u_SpecularExponent;
+
+uniform sampler3D       u_LightGrid1;
+uniform sampler3D       u_LightGrid2;
+uniform vec3            u_LightGridOrigin;
+uniform vec3            u_LightGridScale;
 
 varying vec3		var_Position;
 varying vec2		var_TexDiffuse;
@@ -52,12 +54,41 @@ varying vec2		var_TexGlow;
 #endif
 varying vec3		var_Normal;
 
+void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
+		   out vec3 ambCol, out vec3 lgtCol ) {
+	vec4 texel1 = texture3D(u_LightGrid1, pos);
+	vec4 texel2 = texture3D(u_LightGrid2, pos);
+	float ambLum, lgtLum;
 
+	texel1.xyz = (texel1.xyz * 255.0 - 128.0) / 127.0;
+	texel2.xyzw = texel2.xyzw - 0.5;
+
+	lgtDir = normalize(texel1.xyz);
+
+	lgtLum = 2.0 * length(texel1.xyz) * texel1.w;
+	ambLum = 2.0 * texel1.w - lgtLum;
+
+	// YCoCg decode chrominance
+	ambCol.g = ambLum + texel2.x;
+	ambLum   = ambLum - texel2.x;
+	ambCol.r = ambLum + texel2.y;
+	ambCol.b = ambLum - texel2.y;
+
+	lgtCol.g = lgtLum + texel2.z;
+	lgtLum   = lgtLum - texel2.z;
+	lgtCol.r = lgtLum + texel2.w;
+	lgtCol.b = lgtLum - texel2.w;
+}
 
 void	main()
 {
 	// compute light direction in world space
-	vec3 L = u_LightDir;
+	vec3 L;
+	vec3 ambCol;
+	vec3 lgtCol;
+
+	ReadLightGrid( (var_Position - u_LightGridOrigin) * u_LightGridScale,
+		       L, ambCol, lgtCol );
 
 	// compute view direction in world space
 	vec3 V = normalize(u_ViewOrigin - var_Position);
@@ -109,7 +140,11 @@ void	main()
 #endif // USE_PARALLAX_MAPPING
 
 	// compute normal in world space from normalmap
-	vec3 N = normalize(tangentToWorldMatrix * (2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5)));
+	vec3 N = texture2D(u_NormalMap, texNormal.st).xyw;
+	N.x *= N.z;
+	N.xy = 2.0 * N.xy - 1.0;
+	N.z = sqrt(1.0 - dot(N.xy, N.xy));
+	N = normalize(tangentToWorldMatrix * N);
 
 	// compute half angle in world space
 	vec3 H = normalize(L + V);
@@ -126,7 +161,7 @@ void	main()
 
 	// Blinn-Phong
 	float NH = clamp(dot(N, H), 0, 1);
-	vec3 specMult = u_LightColor * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y) * r_SpecularScale;
+	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y) * r_SpecularScale;
 
 #if 0
 	gl_FragColor = vec4(specular, 1.0);
@@ -140,7 +175,7 @@ void	main()
 	// simple Blinn-Phong
 	float NH = clamp(dot(N, H), 0, 1);
 	vec4 specBase = texture2D(u_SpecularMap, texSpecular).rgba;
-	vec3 specMult = u_LightColor * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y) * r_SpecularScale;
+	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y) * r_SpecularScale;
 
 #endif // USE_REFLECTIVE_SPECULAR
 
@@ -176,7 +211,7 @@ void	main()
 #if defined(r_RimLighting)
 	float rim = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), r_RimExponent);
 	specBase.rgb = mix(specBase.rgb, vec3(1.0), rim);
-	vec3 emission = u_AmbientColor * rim * rim * 0.2;
+	vec3 emission = ambCol * rim * rim * 0.2;
 
 	//gl_FragColor = vec4(emission, 1.0);
 	//return;
@@ -194,7 +229,7 @@ void	main()
 	float NL = clamp(dot(N, L), 0.0, 1.0);
 #endif
 
-	vec3 light = u_AmbientColor + u_LightColor * NL;
+	vec3 light = ambCol + lgtCol * NL;
 	light = clamp(light, 0.0, 1.0);
 
 	// compute final color

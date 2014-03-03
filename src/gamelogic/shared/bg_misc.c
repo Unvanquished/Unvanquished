@@ -235,20 +235,10 @@ static classData_t bg_classData[] =
 		"level0", //char    *name;
 		WP_ALEVEL0 //weapon_t  startWeapon;
 	},
-    {
-		PCL_ALIEN_LEVEL0_UPG, //int     number;
-		"level0upg", //char    *name;
-		WP_ALEVEL0_UPG //weapon_t  startWeapon;
-	},
 	{
 		PCL_ALIEN_LEVEL1, //int     number;
 		"level1", //char    *name;
 		WP_ALEVEL1 //weapon_t  startWeapon;
-	},
-	{
-		PCL_ALIEN_LEVEL1_UPG, //int     number;
-		"level1upg", //char    *name;
-		WP_ALEVEL1_UPG //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL2, //int     number;
@@ -562,9 +552,7 @@ typedef struct
 static const weaponData_t bg_weaponsData[] =
 {
 	{ WP_ALEVEL0,           "level0"    },
-    { WP_ALEVEL0_UPG,       "level0upg" },
 	{ WP_ALEVEL1,           "level1"    },
-	{ WP_ALEVEL1_UPG,       "level1upg" },
 	{ WP_ALEVEL2,           "level2"    },
 	{ WP_ALEVEL2_UPG,       "level2upg" },
 	{ WP_ALEVEL3,           "level3"    },
@@ -880,7 +868,6 @@ static const meansOfDeathData_t bg_meansOfDeathData[] =
 	{ MOD_ABUILDER_CLAW, "MOD_ABUILDER_CLAW" },
 	{ MOD_LEVEL0_BITE, "MOD_LEVEL0_BITE" },
 	{ MOD_LEVEL1_CLAW, "MOD_LEVEL1_CLAW" },
-	{ MOD_LEVEL1_PCLOUD, "MOD_LEVEL1_PCLOUD" },
 	{ MOD_LEVEL3_CLAW, "MOD_LEVEL3_CLAW" },
 	{ MOD_LEVEL3_POUNCE, "MOD_LEVEL3_POUNCE" },
 	{ MOD_LEVEL3_BOUNCEBALL, "MOD_LEVEL3_BOUNCEBALL" },
@@ -1216,7 +1203,6 @@ static const char *const eventnames[] =
 	"EV_TESLATRAIL",
 	"EV_BULLET", // otherEntity is the shooter
 
-	"EV_LEV1_GRAB",
 	"EV_LEV4_TRAMPLE_PREPARE",
 	"EV_LEV4_TRAMPLE_START",
 
@@ -1970,26 +1956,6 @@ qboolean BG_PlayerCanChangeWeapon( playerState_t *ps )
 
 /*
 =================
-BG_PlayerPoisonCloudTime
-=================
-*/
-int BG_PlayerPoisonCloudTime( playerState_t *ps )
-{
-	int time = LEVEL1_PCLOUD_TIME;
-
-	// HACK: Arbitrary values since we plan to get rid of poison cloud anyway
-	switch ( ps->stats[ STAT_CLASS ] )
-	{
-		case PCL_HUMAN_LIGHT:  time *= 0.6f; break;
-		case PCL_HUMAN_MEDIUM: time *= 0.3f; break;
-		case PCL_HUMAN_BSUIT:  time *= 0.2f; break;
-	}
-
-	return time;
-}
-
-/*
-=================
 BG_GetPlayerWeapon
 
 Returns the players current weapon or the weapon they are switching to.
@@ -2595,7 +2561,7 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 	int  fileLen;
 	int  count;
 
-	numFiles = trap_FS_GetFileList( "emoticons", "x1.tga", fileList,
+	numFiles = trap_FS_GetFileList( "emoticons", "x1.crn", fileList,
 	                                sizeof( fileList ) );
 
 	if ( numFiles < 1 )

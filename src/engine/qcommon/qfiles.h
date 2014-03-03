@@ -905,7 +905,7 @@ typedef struct
 	float st[ 2 ];
 	float lightmap[ 2 ];
 	float normal[ 3 ];
-	float paintColor[ 4 ];
+	float paintColor[ 4 ];  // unused
 	float lightColor[ 4 ];
 	float lightDirection[ 3 ];
 } drawVert_t;

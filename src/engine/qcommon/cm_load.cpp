@@ -895,13 +895,12 @@ CM_LoadMap
 Loads in the map and all submodels
 ==================
 */
-void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
+void CM_LoadMap( const char *name, qboolean clientload )
 {
 	int             *buf;
 	int             i;
 	dheader_t       header;
 	int             length;
-	static unsigned last_checksum;
 
 	if ( !name || !name[ 0 ] )
 	{
@@ -915,7 +914,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 
 	if ( !strcmp( cm.name, name ) && clientload )
 	{
-		*checksum = last_checksum;
 		return;
 	}
 
@@ -929,7 +927,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 		cm.numClusters = 1;
 		cm.numAreas = 1;
 		cm.cmodels = ( cmodel_t * ) Hunk_Alloc( sizeof( *cm.cmodels ), h_high );
-		*checksum = 0;
 		return;
 	}
 
@@ -942,9 +939,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	{
 		Com_Error( ERR_DROP, "Couldn't load %s", name );
 	}
-
-	last_checksum = LittleLong( Com_BlockChecksum( buf, length ) );
-	*checksum = last_checksum;
 
 	header = * ( dheader_t * ) buf;
 

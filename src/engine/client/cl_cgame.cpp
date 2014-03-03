@@ -37,10 +37,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include "../sys/sys_local.h"
 
-#ifdef USE_MUMBLE
 #include "libmumblelink.h"
-#endif
-
 #include "../qcommon/crypto.h"
 
 #include "../framework/CommandSystem.h"
@@ -574,8 +571,6 @@ Just adds default parameters that cgame doesn't need to know about
 */
 void CL_CM_LoadMap( const char *mapname )
 {
-	int checksum;
-
 	// DHM - Nerve :: If we are not running the server, then set expected usage here
 	if ( !com_sv_running->integer )
 	{
@@ -588,7 +583,7 @@ void CL_CM_LoadMap( const char *mapname )
 		Cvar_Set( "com_errorDiagnoseIP", "" );
 	}
 
-	CM_LoadMap( mapname, qtrue, &checksum );
+	CM_LoadMap( mapname, qtrue );
 }
 
 /*
@@ -1591,8 +1586,6 @@ void CL_InitCGame( void )
 	CL_ClearKeys();
 	Key_ClearStates();
 
-	CL_WriteClientLog( va("`~=-----------------=~`\n MAP: %s \n`~=-----------------=~`\n", mapname ) );
-
 //  if( cl_autorecord->integer ) {
 //      Cvar_Set( "g_synchronousClients", "1" );
 //  }
@@ -1789,15 +1782,11 @@ void CL_FirstSnapshot( void )
 		Cvar_Set( "activeAction", "" );
 	}
 
-#ifdef USE_MUMBLE
-
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
 		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application okay\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
 	}
-
-#endif
 
 #ifdef USE_VOIP
 

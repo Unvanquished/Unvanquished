@@ -38,13 +38,16 @@ uniform mat4		u_ModelMatrix;
 uniform mat4		u_UnprojectMatrix;
 uniform vec2		u_SpecularExponent;
 
+uniform sampler3D       u_LightGrid1;
+uniform sampler3D       u_LightGrid2;
+uniform vec3            u_LightGridOrigin;
+uniform vec3            u_LightGridScale;
+
 varying vec3		var_Position;
 varying vec2		var_TexNormal;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
 varying vec3		var_Normal;
-varying vec4		var_LightColor;
-varying vec3		var_LightDirection;
 
 #if defined(USE_PARALLAX_MAPPING)
 float RayIntersectDisplaceMap(vec2 dp, vec2 ds)
@@ -100,6 +103,32 @@ float RayIntersectDisplaceMap(vec2 dp, vec2 ds)
 }
 #endif
 
+void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
+		   out vec3 ambCol, out vec3 lgtCol ) {
+	vec4 texel1 = texture3D(u_LightGrid1, pos);
+	vec4 texel2 = texture3D(u_LightGrid2, pos);
+	float ambLum, lgtLum;
+
+	texel1.xyz = (texel1.xyz * 255.0 - 128.0) / 127.0;
+	texel2.xyzw = texel2.xyzw - 0.5;
+
+	lgtDir = normalize(texel1.xyz);
+
+	lgtLum = 2.0 * length(texel1.xyz) * texel1.w;
+	ambLum = 2.0 * texel1.w - lgtLum;
+
+	// YCoCg decode chrominance
+	ambCol.g = ambLum + texel2.x;
+	ambLum   = ambLum - texel2.x;
+	ambCol.r = ambLum + texel2.y;
+	ambCol.b = ambLum - texel2.y;
+
+	lgtCol.g = lgtLum + texel2.z;
+	lgtLum   = lgtLum - texel2.z;
+	lgtCol.r = lgtLum + texel2.w;
+	lgtCol.b = lgtLum - texel2.w;
+}
+
 
 void	main()
 {
@@ -140,7 +169,10 @@ void	main()
 
 	vec3 N = normalize(var_Normal);
 
-	vec3 N2 = 2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5);
+	vec3 N2 = texture2D(u_NormalMap, texNormal.st).xyw);
+	N2.x *= N2.z;
+	N2.xy = 2.0 * N2.xy - 1.0;
+	N2.z = sqrt(1.0 - dot(N2.xy, N2.xy));
 	N2 = normalize(tangentToWorldMatrix * N2);
 
 	// compute fresnel term
@@ -176,16 +208,21 @@ void	main()
 		color.rgb = mix(u_FogColor, color.rgb, fogFactor);
 	}
 
-	vec3 L = normalize(var_LightDirection);
+	vec3 L;
+	vec3 ambCol;
+	vec3 lgtCol;
+
+	ReadLightGrid( (var_Position - u_LightGridOrigin) * u_LightGridScale,
+		       L, ambCol, lgtCol );
 
 	// compute half angle in world space
 	vec3 H = normalize(L + I);
 
 	// compute the light term
-	vec3 light = var_LightColor.rgb * clamp(dot(N2, L), 0.0, 1.0);
+	vec3 light = lgtCol * clamp(dot(N2, L), 0.0, 1.0);
 
 	// compute the specular term
-	vec3 specular = reflectColor * var_LightColor.rgb * pow(clamp(dot(N2, H), 0.0, 1.0), u_SpecularExponent.x + u_SpecularExponent.y) * r_SpecularScale;
+	vec3 specular = reflectColor * lgtCol * pow(clamp(dot(N2, H), 0.0, 1.0), u_SpecularExponent.x + u_SpecularExponent.y) * r_SpecularScale;
 	color.rgb += specular;
 
 	gl_FragColor = color;

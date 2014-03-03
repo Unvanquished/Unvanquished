@@ -195,7 +195,6 @@ extern vmCvar_t g_bot_lcannon;
 // bot evolution cvars
 extern vmCvar_t g_bot_evolve;
 extern vmCvar_t g_bot_level1;
-extern vmCvar_t g_bot_level1upg;
 extern vmCvar_t g_bot_level2;
 extern vmCvar_t g_bot_level2upg;
 extern vmCvar_t g_bot_level3;
