@@ -34,13 +34,13 @@ Maryland 20850 USA.
 
 // this is only used for visualization tools in cm_ debug functions
 
-#define MAX_POINTS_IN_WINDING 9 + 5 //The maximum observed so far (9) plus some more (5)
-
 typedef struct
 {
 	int    numpoints;
-	vec3_t p[ MAX_POINTS_IN_WINDING ];
+	vec3_t p[ 4 ]; // variable sized
 } winding_t;
+
+#define MAX_POINTS_ON_WINDING 64
 
 #define CLIP_EPSILON          0.1f
 
@@ -52,10 +52,13 @@ typedef struct
 #endif
 
 winding_t *AllocWinding( int points );
-winding_t BaseWindingForPlane( vec3_t normal, vec_t dist );
+winding_t *CopyWinding( winding_t *w );
+winding_t *BaseWindingForPlane( vec3_t normal, vec_t dist );
 void      FreeWinding( winding_t *w );
 void      WindingBounds( winding_t *w, vec3_t mins, vec3_t maxs );
 
-void      ChopWindingInPlace( winding_t *w, vec3_t normal, vec_t dist, vec_t epsilon );
+void      ChopWindingInPlace( winding_t **w, vec3_t normal, vec_t dist, vec_t epsilon );
 
 // frees the original if clipped
+
+void pw( winding_t *w );

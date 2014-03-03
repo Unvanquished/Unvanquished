@@ -43,21 +43,38 @@ int c_peak_windings;
 int c_winding_allocs;
 int c_winding_points;
 
+void pw( winding_t *w )
+{
+	int i;
+
+	for ( i = 0; i < w->numpoints; i++ )
+	{
+		printf( "(%5.1f, %5.1f, %5.1f)\n", w->p[ i ][ 0 ], w->p[ i ][ 1 ], w->p[ i ][ 2 ] );
+	}
+}
+
 /*
 =============
 AllocWinding
 =============
 */
-winding_t MakeWinding( int points )
+winding_t      *AllocWinding( int points )
 {
-	winding_t w;
+	winding_t *w;
+	int       s;
 
-	if ( points > MAX_POINTS_IN_WINDING )
+	c_winding_allocs++;
+	c_winding_points += points;
+	c_active_windings++;
+
+	if ( c_active_windings > c_peak_windings )
 	{
-		Com_Error(ERR_DROP, "Trying to make a winding with %i > %i points", points, MAX_POINTS_IN_WINDING);
+		c_peak_windings = c_active_windings;
 	}
 
-	memset( &w, 0, sizeof(winding_t) );
+	s = sizeof( vec_t ) * 3 * points + sizeof( int );
+	w = ( winding_t * ) Z_Malloc( s );
+	memset( w, 0, s );
 	return w;
 }
 
@@ -106,12 +123,12 @@ void WindingBounds( winding_t *w, vec3_t mins, vec3_t maxs )
 BaseWindingForPlane
 =================
 */
-winding_t      BaseWindingForPlane( vec3_t normal, vec_t dist )
+winding_t      *BaseWindingForPlane( vec3_t normal, vec_t dist )
 {
 	int       i, x;
 	vec_t     max, v;
 	vec3_t    org, vright, vup;
-	winding_t w;
+	winding_t *w;
 
 // find the major axis
 
@@ -160,23 +177,39 @@ winding_t      BaseWindingForPlane( vec3_t normal, vec_t dist )
 	VectorScale( vright, MAX_MAP_BOUNDS, vright );
 
 // project a really big axis aligned box onto the plane
-	w = MakeWinding( 4 );
+	w = AllocWinding( 4 );
 
-	VectorSubtract( org, vright, w.p[ 0 ] );
-	VectorAdd( w.p[ 0 ], vup, w.p[ 0 ] );
+	VectorSubtract( org, vright, w->p[ 0 ] );
+	VectorAdd( w->p[ 0 ], vup, w->p[ 0 ] );
 
-	VectorAdd( org, vright, w.p[ 1 ] );
-	VectorAdd( w.p[ 1 ], vup, w.p[ 1 ] );
+	VectorAdd( org, vright, w->p[ 1 ] );
+	VectorAdd( w->p[ 1 ], vup, w->p[ 1 ] );
 
-	VectorAdd( org, vright, w.p[ 2 ] );
-	VectorSubtract( w.p[ 2 ], vup, w.p[ 2 ] );
+	VectorAdd( org, vright, w->p[ 2 ] );
+	VectorSubtract( w->p[ 2 ], vup, w->p[ 2 ] );
 
-	VectorSubtract( org, vright, w.p[ 3 ] );
-	VectorSubtract( w.p[ 3 ], vup, w.p[ 3 ] );
+	VectorSubtract( org, vright, w->p[ 3 ] );
+	VectorSubtract( w->p[ 3 ], vup, w->p[ 3 ] );
 
-	w.numpoints = 4;
+	w->numpoints = 4;
 
 	return w;
+}
+
+/*
+==================
+CopyWinding
+==================
+*/
+winding_t      *CopyWinding( winding_t *w )
+{
+	intptr_t  size;
+	winding_t *c;
+
+	c = AllocWinding( w->numpoints );
+	size = ( intptr_t )( ( winding_t * ) 0 )->p[ w->numpoints ];
+	memcpy( c, w, size );
+	return c;
 }
 
 /*
@@ -184,26 +217,26 @@ winding_t      BaseWindingForPlane( vec3_t normal, vec_t dist )
 ChopWindingInPlace
 =============
 */
-void ChopWindingInPlace( winding_t *inout, vec3_t normal, vec_t dist, vec_t epsilon )
+void ChopWindingInPlace( winding_t **inout, vec3_t normal, vec_t dist, vec_t epsilon )
 {
-	winding_t    in;
-	vec_t        dists[ MAX_POINTS_IN_WINDING + 4 ];
-	int          sides[ MAX_POINTS_IN_WINDING + 4 ];
+	winding_t    *in;
+	vec_t        dists[ MAX_POINTS_ON_WINDING + 4 ];
+	int          sides[ MAX_POINTS_ON_WINDING + 4 ];
 	int          counts[ 3 ];
 	static vec_t dot; // VC 4.2 optimizer bug if not static
 	int          i, j;
 	vec_t        *p1, *p2;
 	vec3_t       mid;
-	winding_t    f;
+	winding_t    *f;
 	int          maxpts;
 
 	in = *inout;
 	counts[ 0 ] = counts[ 1 ] = counts[ 2 ] = 0;
 
 // determine sides for each point
-	for ( i = 0; i < in.numpoints; i++ )
+	for ( i = 0; i < in->numpoints; i++ )
 	{
-		dot = DotProduct( in.p[ i ], normal );
+		dot = DotProduct( in->p[ i ], normal );
 		dot -= dist;
 		dists[ i ] = dot;
 
@@ -228,7 +261,8 @@ void ChopWindingInPlace( winding_t *inout, vec3_t normal, vec_t dist, vec_t epsi
 
 	if ( !counts[ 0 ] )
 	{
-		inout->numpoints = 0;
+		FreeWinding( in );
+		*inout = NULL;
 		return;
 	}
 
@@ -237,38 +271,26 @@ void ChopWindingInPlace( winding_t *inout, vec3_t normal, vec_t dist, vec_t epsi
 		return; // inout stays the same
 	}
 
-	maxpts = in.numpoints + 4; // can't use counts[0]+2 because
+	maxpts = in->numpoints + 4; // can't use counts[0]+2 because
 	// of fp grouping errors
-	if (in.numpoints > MAX_POINTS_IN_WINDING)
-	{
-		Com_Error(ERR_DROP, "Trying to make a winding in with %i > %i points", in.numpoints, MAX_POINTS_IN_WINDING);
-	}
 
-	f = MakeWinding( maxpts );
+	f = AllocWinding( maxpts );
 
-	for ( i = 0; i < in.numpoints; i++ )
+	for ( i = 0; i < in->numpoints; i++ )
 	{
-		p1 = in.p[ i ];
+		p1 = in->p[ i ];
 
 		if ( sides[ i ] == SIDE_ON )
 		{
-			VectorCopy( p1, f.p[ f.numpoints ] );
-			f.numpoints++;
-			if (f.numpoints > MAX_POINTS_IN_WINDING)
-			{
-				Com_Error(ERR_DROP, "Trying to make a winding f with %i > %i points", f.numpoints, MAX_POINTS_IN_WINDING);
-			}
+			VectorCopy( p1, f->p[ f->numpoints ] );
+			f->numpoints++;
 			continue;
 		}
 
 		if ( sides[ i ] == SIDE_FRONT )
 		{
-			VectorCopy( p1, f.p[ f.numpoints ] );
-			f.numpoints++;
-			if (f.numpoints > MAX_POINTS_IN_WINDING)
-			{
-				Com_Error(ERR_DROP, "Trying to make a winding f with %i > %i points", f.numpoints, MAX_POINTS_IN_WINDING);
-			}
+			VectorCopy( p1, f->p[ f->numpoints ] );
+			f->numpoints++;
 		}
 
 		if ( sides[ i + 1 ] == SIDE_ON || sides[ i + 1 ] == sides[ i ] )
@@ -277,7 +299,7 @@ void ChopWindingInPlace( winding_t *inout, vec3_t normal, vec_t dist, vec_t epsi
 		}
 
 		// generate a split point
-		p2 = in.p[( i + 1 ) % in.numpoints ];
+		p2 = in->p[( i + 1 ) % in->numpoints ];
 
 		dot = dists[ i ] / ( dists[ i ] - dists[ i + 1 ] );
 
@@ -298,24 +320,21 @@ void ChopWindingInPlace( winding_t *inout, vec3_t normal, vec_t dist, vec_t epsi
 			}
 		}
 
-		VectorCopy( mid, f.p[ f.numpoints ] );
-		f.numpoints++;
-		if (f.numpoints > MAX_POINTS_IN_WINDING)
-		{
-			Com_Error(ERR_DROP, "Trying to make a winding f with %i > %i points", f.numpoints, MAX_POINTS_IN_WINDING);
-		}
+		VectorCopy( mid, f->p[ f->numpoints ] );
+		f->numpoints++;
 	}
 
-	if ( f.numpoints > maxpts )
+	if ( f->numpoints > maxpts )
 	{
 		Com_Error( ERR_DROP, "ClipWinding: points exceeded estimate" );
 	}
 
-	if ( f.numpoints > MAX_POINTS_IN_WINDING )
+	if ( f->numpoints > MAX_POINTS_ON_WINDING )
 	{
-		Com_Error( ERR_DROP, "ClipWinding: MAX_POINTS_IN_WINDING" );
+		Com_Error( ERR_DROP, "ClipWinding: MAX_POINTS_ON_WINDING" );
 	}
 
+	FreeWinding( in );
 	*inout = f;
 }
 

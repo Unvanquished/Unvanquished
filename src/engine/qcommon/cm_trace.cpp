@@ -2638,7 +2638,7 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 
 	const cSurfaceCollide_t *pc;
 	cFacet_t                *facet;
-	winding_t               w;
+	winding_t               *w;
 	int                     i, j, k;
 	int                     curplanenum, planenum, curinward, inward;
 	float                   plane[ 4 ];
@@ -2705,7 +2705,7 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 
 			w = BaseWindingForPlane( plane, plane[ 3 ] );
 
-			for ( j = 0; j < facet->numBorders + 1 && w.numpoints; j++ )
+			for ( j = 0; j < facet->numBorders + 1 && w; j++ )
 			{
 				//
 				if ( j < facet->numBorders )
@@ -2752,18 +2752,19 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 				ChopWindingInPlace( &w, plane, plane[ 3 ], 0.1f );
 			}
 
-			if ( w.numpoints == 0 )
+			if ( w )
 			{
 				if ( facet == debugFacet )
 				{
-					drawPoly( 4, w.numpoints, w.p[ 0 ] );
+					drawPoly( 4, w->numpoints, w->p[ 0 ] );
 					//Com_Printf( "blue facet has %d border planes\n", facet->numBorders );
 				}
 				else
 				{
-					drawPoly( 1, w.numpoints, w.p[ 0 ] );
+					drawPoly( 1, w->numpoints, w->p[ 0 ] );
 				}
 
+				FreeWinding( w );
 			}
 			else
 			{
