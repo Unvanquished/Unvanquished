@@ -78,9 +78,6 @@ void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 	lgtLum   = lgtLum - texel2.z;
 	lgtCol.r = lgtLum + texel2.w;
 	lgtCol.b = lgtLum - texel2.w;
-
-	ambCol *= r_AmbientScale;
-	lgtCol *= r_SpecularScale;
 }
 
 void	main()
@@ -169,7 +166,7 @@ void	main()
 
 	// Blinn-Phong
 	float NH = clamp(dot(N, H), 0, 1);
-	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y);
+	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y) * r_SpecularScale;
 
 #if 0
 	gl_FragColor = vec4(specular, 1.0);
@@ -183,7 +180,7 @@ void	main()
 	// simple Blinn-Phong
 	float NH = clamp(dot(N, H), 0, 1);
 	vec4 specBase = texture2D(u_SpecularMap, texSpecular).rgba;
-	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y);
+	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y) * r_SpecularScale;
 
 #endif // USE_REFLECTIVE_SPECULAR
 
@@ -238,7 +235,7 @@ void	main()
 #endif
 
 	vec3 light = ambCol + lgtCol * NL;
-	light = clamp(light, 0.0, 1.0);
+	light *= r_AmbientScale;
 
 	// compute final color
 	vec4 color = diffuse;
