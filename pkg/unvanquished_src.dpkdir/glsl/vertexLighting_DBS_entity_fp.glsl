@@ -78,6 +78,9 @@ void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 	lgtLum   = lgtLum - texel2.z;
 	lgtCol.r = lgtLum + texel2.w;
 	lgtCol.b = lgtLum - texel2.w;
+
+	ambCol *= r_AmbientScale;
+	lgtCol *= r_SpecularScale;
 }
 
 void	main()
@@ -144,6 +147,11 @@ void	main()
 	N.x *= N.z;
 	N.xy = 2.0 * N.xy - 1.0;
 	N.z = sqrt(1.0 - dot(N.xy, N.xy));
+
+	#if defined(r_NormalScale)
+	N.z *= r_NormalScale;
+	#endif
+
 	N = normalize(tangentToWorldMatrix * N);
 
 	// compute half angle in world space
@@ -161,7 +169,7 @@ void	main()
 
 	// Blinn-Phong
 	float NH = clamp(dot(N, H), 0, 1);
-	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y) * r_SpecularScale;
+	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y);
 
 #if 0
 	gl_FragColor = vec4(specular, 1.0);
@@ -175,7 +183,7 @@ void	main()
 	// simple Blinn-Phong
 	float NH = clamp(dot(N, H), 0, 1);
 	vec4 specBase = texture2D(u_SpecularMap, texSpecular).rgba;
-	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y) * r_SpecularScale;
+	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y);
 
 #endif // USE_REFLECTIVE_SPECULAR
 
