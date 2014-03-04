@@ -4088,12 +4088,6 @@ static void PM_Weapon( void )
 		pm->ps->clips--;
 		pm->ps->ammo = BG_Weapon( pm->ps->weapon )->maxAmmo;
 
-		if ( BG_Weapon( pm->ps->weapon )->usesEnergy &&
-		     BG_InventoryContainsUpgrade( UP_BATTPACK, pm->ps->stats ) )
-		{
-			pm->ps->ammo *= BATTPACK_MODIFIER;
-		}
-
 		//allow some time for the weapon to be raised
 		pm->ps->weaponstate = WEAPON_RAISING;
 		PM_StartTorsoAnim( TORSO_RAISE );

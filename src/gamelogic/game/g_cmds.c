@@ -388,9 +388,9 @@ void ScoreboardMessage( gentity_t *ent )
 			{
 				upgrade = UP_JETPACK;
 			}
-			else if ( BG_InventoryContainsUpgrade( UP_BATTPACK, cl->ps.stats ) )
+			else if ( BG_InventoryContainsUpgrade( UP_RADAR, cl->ps.stats ) )
 			{
-				upgrade = UP_BATTPACK;
+				upgrade = UP_RADAR;
 			}
 			else if ( BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, cl->ps.stats ) )
 			{
@@ -3107,12 +3107,8 @@ static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 		ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
 	}
 
+	// remove from inventory
 	BG_RemoveUpgradeFromInventory( item, ent->client->ps.stats );
-
-	if ( item == UP_BATTPACK )
-	{
-		G_RefillAmmo( ent, qfalse );
-	}
 
 	// add to funds
 	G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( item )->price, qfalse );
@@ -3485,11 +3481,6 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		//add to inventory
 		BG_AddUpgradeToInventory( upgrade, ent->client->ps.stats );
 
-		if ( upgrade == UP_BATTPACK )
-		{
-			G_RefillAmmo( ent, qtrue );
-		}
-
 		//subtract from funds
 		G_AddCreditToClient( ent->client, - ( short ) BG_Upgrade( upgrade )->price, qfalse );
 
@@ -3672,7 +3663,6 @@ void Cmd_Build_f( gentity_t *ent )
 void Cmd_Reload_f( gentity_t *ent )
 {
 	playerState_t *ps;
-	int           ammo;
 	const weaponAttributes_t *wa;
 
 	if ( !ent->client )
@@ -3695,17 +3685,8 @@ void Cmd_Reload_f( gentity_t *ent )
 		return;
 	}
 
-	ammo = wa->maxAmmo;
-
-	// apply battery pack modifier
-	if ( BG_Weapon( ps->weapon )->usesEnergy &&
-	     BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
-	{
-		ammo *= BATTPACK_MODIFIER;
-	}
-
 	// don't reload when full
-	if ( ps->ammo >= ammo )
+	if ( ps->ammo >= wa->maxAmmo )
 	{
 		return;
 	}

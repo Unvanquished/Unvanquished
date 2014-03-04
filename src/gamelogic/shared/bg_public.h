@@ -422,8 +422,6 @@ typedef enum
   UP_BATTLESUIT,
 
   UP_RADAR,
-
-  UP_BATTPACK,
   UP_JETPACK,
 
   UP_GRENADE,
@@ -1271,7 +1269,7 @@ typedef struct
 qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
                                 vec2_t angles, vec3_t dir1, vec3_t dir2 );
 
-qboolean BG_WeaponIsFull( int weapon, int stats[], int ammo, int clips );
+qboolean BG_WeaponIsFull(int weapon, int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
 int      BG_SlotsForInventory( int stats[] );
 void     BG_AddUpgradeToInventory( int item, int stats[] );

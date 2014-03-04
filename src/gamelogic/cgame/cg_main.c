@@ -1708,7 +1708,7 @@ static void CG_RegisterClients( void )
 
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.md3" );
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
-	cgs.media.battpackModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" );
+	cgs.media.radarModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" ); // HACK: Use old battpack
 
 	cg.charModelFraction = 1.0f;
 	trap_UpdateScreen();
