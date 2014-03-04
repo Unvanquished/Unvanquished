@@ -158,6 +158,7 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 	float NL = clamp(dot(N, L), 0.0, 1.0);
 #endif
 	vec3 light = ambCol + dirCol * NL;
+	light *= r_AmbientScale;
 
 	// compute the specular term
 	vec4 spec = texture2D(u_SpecularMap, texSpecular).rgba;
