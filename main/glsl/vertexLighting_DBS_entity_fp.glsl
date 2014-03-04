@@ -230,7 +230,7 @@ void	main()
 #endif
 
 	vec3 light = ambCol + lgtCol * NL;
-	light = clamp(light, 0.0, 1.0);
+	light *= r_AmbientScale;
 
 	// compute final color
 	vec4 color = diffuse;
