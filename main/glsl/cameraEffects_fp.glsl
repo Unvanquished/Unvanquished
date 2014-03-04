@@ -22,11 +22,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* cameraEffects_fp.glsl */
 
-uniform sampler2D	u_CurrentMap;
-uniform sampler2D	u_GrainMap;
-uniform sampler2D	u_VignetteMap;
-uniform sampler3D	u_ColorMap;
-uniform vec4            u_ColorModulate;
+uniform sampler2D u_CurrentMap;
+uniform sampler2D u_GrainMap;
+uniform sampler2D u_VignetteMap;
+uniform sampler3D u_ColorMap;
+uniform vec4      u_ColorModulate;
+uniform float     u_InverseGamma;
 
 varying vec2		var_Tex;
 
@@ -72,6 +73,8 @@ void	main()
 	vec4 grain = texture2D(u_GrainMap, var_Tex);
 	color.rgb = (color.rgb + (grain.rgb * vec3(0.035, 0.065, 0.09))) + (color.rgb * (grain.rgb * vec3(0.035, 0.065, 0.09)));
 	//color.rgb = grain.rgb;
+
+	color.xyz = pow(color.xyz, vec3(u_InverseGamma));
 
 	gl_FragColor = color;
 }

@@ -1,8 +1,8 @@
 models/weapons/ckit/demoncore
 {
-	diffuseMap models/weapons/ckit/demoncore_COLOR
-	normalMap models/weapons/ckit/demoncore_NRM
-	specularMap models/weapons/ckit/demoncore_SPEC
+	diffuseMap models/weapons/ckit/demoncore_d
+	normalMap models/weapons/ckit/demoncore_n
+	specularMap models/weapons/ckit/demoncore_s
 }
 
 models/weapons/ckit/rep_cyl
@@ -34,8 +34,8 @@ models/weapons/ckit/screen
 
 models/weapons/ckit/weapon
 {
-	diffuseMap models/weapons/ckit/weapon_COLOR
-	normalMap models/weapons/ckit/weapon_NRM
-	specularMap models/weapons/ckit/weapon_SPEC
+	diffuseMap models/weapons/ckit/weapon_d
+	normalMap models/weapons/ckit/weapon_n
+	specularMap models/weapons/ckit/weapon_s
 }
 

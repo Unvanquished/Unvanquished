@@ -10,9 +10,9 @@ models/weapons/lcannon/flash
 
 models/weapons/lcannon/skin
 {
-	diffuseMap models/weapons/lcannon/skin_COLOR
-	normalMap models/weapons/lcannon/skin_NRM
-	specularMap models/weapons/lcannon/skin_SPEC
+	diffuseMap models/weapons/lcannon/skin_d
+	normalMap models/weapons/lcannon/skin_n
+	specularMap models/weapons/lcannon/skin_s
 }
 
 lucybullet

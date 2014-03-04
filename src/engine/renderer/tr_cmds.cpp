@@ -1,37 +1,26 @@
 /*
 ===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2006-2011 Robert Beckebans <trebor_7@users.sourceforge.net>
 
-Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+This file is part of Daemon source code.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+Daemon source code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
 
-Daemon Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Daemon Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
+Daemon source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
-below.
-
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
-Maryland 20850 USA.
-
+along with Daemon source code; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-
+// tr_cmds.c
 #include "tr_local.h"
 
 volatile qboolean            renderThreadActive;
@@ -46,55 +35,118 @@ void R_PerformanceCounters( void )
 	if ( !r_speeds->integer )
 	{
 		// clear the counters even if we aren't printing
-		memset( &tr.pc, 0, sizeof( tr.pc ) );
-		memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
+		Com_Memset( &tr.pc, 0, sizeof( tr.pc ) );
+		Com_Memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
 		return;
 	}
 
-	if ( r_speeds->integer )
+	if ( r_speeds->integer == RSPEEDS_GENERAL )
 	{
-		//%  == 1)
-		ri.Printf( PRINT_ALL, "%i/%i shaders/surfs %i leafs %i verts %i/%i tris %.2f mtex %.2f dc\n",
-		           backEnd.pc.c_shaders, backEnd.pc.c_surfaces, tr.pc.c_leafs, backEnd.pc.c_vertexes,
-		           backEnd.pc.c_indexes / 3, backEnd.pc.c_totalIndexes / 3,
-		           R_SumOfUsedImages() / ( 1000000.0f ), backEnd.pc.c_overDraw / ( float )( glConfig.vidWidth * glConfig.vidHeight ) );
-	}
+		ri.Printf( PRINT_ALL, "%i views %i portals %i batches %i surfs %i leafs %i verts %i tris\n",
+		           backEnd.pc.c_views, backEnd.pc.c_portals, backEnd.pc.c_batches, backEnd.pc.c_surfaces, tr.pc.c_leafs,
+		           backEnd.pc.c_vertexes, backEnd.pc.c_indexes / 3 );
 
-	if ( r_speeds->integer == 2 )
-	{
-		ri.Printf( PRINT_ALL, "(patch) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
-		           tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip, tr.pc.c_sphere_cull_patch_out,
-		           tr.pc.c_box_cull_patch_in, tr.pc.c_box_cull_patch_clip, tr.pc.c_box_cull_patch_out );
-		ri.Printf( PRINT_ALL, "(md3) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
-		           tr.pc.c_sphere_cull_md3_in, tr.pc.c_sphere_cull_md3_clip, tr.pc.c_sphere_cull_md3_out,
-		           tr.pc.c_box_cull_md3_in, tr.pc.c_box_cull_md3_clip, tr.pc.c_box_cull_md3_out );
-		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout\n",
-		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out );
+		ri.Printf( PRINT_ALL, "%i lights %i bout %i pvsout %i queryout %i interactions\n",
+		           tr.pc.c_dlights + tr.pc.c_slights - backEnd.pc.c_occlusionQueriesLightsCulled,
+		           tr.pc.c_box_cull_light_out,
+		           tr.pc.c_pvs_cull_light_out,
+		           backEnd.pc.c_occlusionQueriesLightsCulled,
+		           tr.pc.c_dlightInteractions + tr.pc.c_slightInteractions - backEnd.pc.c_occlusionQueriesInteractionsCulled );
+
+		ri.Printf( PRINT_ALL, "%i draws %i queries %i CHC++ ms %i vbos %i ibos %i verts %i tris\n",
+		           backEnd.pc.c_drawElements,
+		           tr.pc.c_occlusionQueries,
+		           tr.pc.c_CHCTime,
+		           backEnd.pc.c_vboVertexBuffers, backEnd.pc.c_vboIndexBuffers,
+		           backEnd.pc.c_vboVertexes, backEnd.pc.c_vboIndexes / 3 );
+
+		ri.Printf( PRINT_ALL, "%i multidraws %i primitives %i tris\n",
+		           backEnd.pc.c_multiDrawElements,
+		           backEnd.pc.c_multiDrawPrimitives,
+		           backEnd.pc.c_multiVboIndexes / 3 );
 	}
-	else if ( r_speeds->integer == 3 )
+	else if ( r_speeds->integer == RSPEEDS_CULLING )
 	{
-		ri.Printf( PRINT_ALL, "viewcluster: %i\n", tr.viewCluster );
+		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout %i bin %i bout\n",
+		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out,
+		           tr.pc.c_box_cull_in, tr.pc.c_box_cull_out );
+
+		ri.Printf( PRINT_ALL, "(patch) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
+		           tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip,
+		           tr.pc.c_sphere_cull_patch_out, tr.pc.c_box_cull_patch_in,
+		           tr.pc.c_box_cull_patch_clip, tr.pc.c_box_cull_patch_out );
+
+		ri.Printf( PRINT_ALL, "(mdv) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
+		           tr.pc.c_sphere_cull_mdv_in, tr.pc.c_sphere_cull_mdv_clip,
+		           tr.pc.c_sphere_cull_mdv_out, tr.pc.c_box_cull_mdv_in, tr.pc.c_box_cull_mdv_clip, tr.pc.c_box_cull_mdv_out );
+
+		ri.Printf( PRINT_ALL, "(md5) %i bin %i bclip %i bout\n",
+		           tr.pc.c_box_cull_md5_in, tr.pc.c_box_cull_md5_clip, tr.pc.c_box_cull_md5_out );
 	}
-	else if ( r_speeds->integer == 4 )
+	else if ( r_speeds->integer == RSPEEDS_VIEWCLUSTER )
 	{
-		ri.Printf( PRINT_ALL, "dlight srf:%i  culled:%i  verts:%i  tris:%i\n",
-		           tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled,
-		           backEnd.pc.c_dlightVertexes, backEnd.pc.c_dlightIndexes / 3 );
+		ri.Printf( PRINT_ALL, "viewcluster: %i\n", tr.visClusters[ tr.visIndex ] );
 	}
-	else if ( r_speeds->integer == 6 )
+	else if ( r_speeds->integer == RSPEEDS_LIGHTS )
+	{
+		ri.Printf( PRINT_ALL, "dlight srf:%i culled:%i\n", tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled );
+
+		ri.Printf( PRINT_ALL, "dlights:%i interactions:%i\n", tr.pc.c_dlights, tr.pc.c_dlightInteractions );
+
+		ri.Printf( PRINT_ALL, "slights:%i interactions:%i\n", tr.pc.c_slights, tr.pc.c_slightInteractions );
+	}
+	else if ( r_speeds->integer == RSPEEDS_SHADOWCUBE_CULLING )
+	{
+		ri.Printf( PRINT_ALL, "omni pyramid tests:%i bin:%i bclip:%i bout:%i\n",
+		           tr.pc.c_pyramidTests, tr.pc.c_pyramid_cull_ent_in, tr.pc.c_pyramid_cull_ent_clip, tr.pc.c_pyramid_cull_ent_out );
+	}
+	else if ( r_speeds->integer == RSPEEDS_FOG )
+	{
+		ri.Printf( PRINT_ALL, "fog srf:%i batches:%i\n", backEnd.pc.c_fogSurfaces, backEnd.pc.c_fogBatches );
+	}
+	else if ( r_speeds->integer == RSPEEDS_FLARES )
 	{
 		ri.Printf( PRINT_ALL, "flare adds:%i tests:%i renders:%i\n",
 		           backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders );
 	}
-	else if ( r_speeds->integer == 7 )
+	else if ( r_speeds->integer == RSPEEDS_OCCLUSION_QUERIES )
+	{
+		ri.Printf( PRINT_ALL, "occlusion queries:%i multi:%i saved:%i culled lights:%i culled entities:%i culled leafs:%i response time:%i fetch time:%i\n",
+		           backEnd.pc.c_occlusionQueries,
+		           backEnd.pc.c_occlusionQueriesMulti,
+		           backEnd.pc.c_occlusionQueriesSaved,
+		           backEnd.pc.c_occlusionQueriesLightsCulled,
+		           backEnd.pc.c_occlusionQueriesEntitiesCulled,
+		           backEnd.pc.c_occlusionQueriesLeafsCulled,
+		           backEnd.pc.c_occlusionQueriesResponseTime,
+		           backEnd.pc.c_occlusionQueriesFetchTime );
+	}
+	else if ( r_speeds->integer == RSPEEDS_SHADING_TIMES )
+	{
+		ri.Printf( PRINT_ALL, "forward shading times: ambient:%i lighting:%i\n", backEnd.pc.c_forwardAmbientTime,
+			           backEnd.pc.c_forwardLightingTime );
+	}
+	else if ( r_speeds->integer == RSPEEDS_CHC )
+	{
+		ri.Printf( PRINT_ALL, "%i CHC++ ms %i queries %i multi queries %i saved\n",
+		           tr.pc.c_CHCTime,
+		           tr.pc.c_occlusionQueries,
+		           tr.pc.c_occlusionQueriesMulti,
+		           tr.pc.c_occlusionQueriesSaved );
+	}
+	else if ( r_speeds->integer == RSPEEDS_NEAR_FAR )
+	{
+		ri.Printf( PRINT_ALL, "zNear: %.0f zFar: %.0f\n", tr.viewParms.zNear, tr.viewParms.zFar );
+	}
+	else if ( r_speeds->integer == RSPEEDS_DECALS )
 	{
 		ri.Printf( PRINT_ALL, "decal projectors: %d test surfs: %d clip surfs: %d decal surfs: %d created: %d\n",
 		           tr.pc.c_decalProjectors, tr.pc.c_decalTestSurfaces, tr.pc.c_decalClipSurfaces, tr.pc.c_decalSurfaces,
 		           tr.pc.c_decalSurfacesCreated );
 	}
 
-	memset( &tr.pc, 0, sizeof( tr.pc ) );
-	memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
+	Com_Memset( &tr.pc, 0, sizeof( tr.pc ) );
+	Com_Memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
 }
 
 /*
@@ -207,6 +259,7 @@ void           *R_GetCommandBuffer( int bytes )
 	cmdList = &backEndData[ tr.smpFrame ]->commands;
 
 	// always leave room for the swap buffers and end of list commands
+	// RB: added swapBuffers_t from ET
 	if ( cmdList->used + bytes + ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) > MAX_RENDER_COMMANDS )
 	{
 		if ( bytes > MAX_RENDER_COMMANDS - ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) )
@@ -225,25 +278,21 @@ void           *R_GetCommandBuffer( int bytes )
 
 /*
 =============
-R_AddDrawSurfCmd
-
+R_AddDrawViewCmd
 =============
 */
-void R_AddDrawSurfCmd( drawSurf_t *drawSurfs, int numDrawSurfs )
+void R_AddDrawViewCmd( void )
 {
-	drawSurfsCommand_t *cmd;
+	drawViewCommand_t *cmd;
 
-	cmd = (drawSurfsCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (drawViewCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
 		return;
 	}
 
-	cmd->commandId = RC_DRAW_SURFS;
-
-	cmd->drawSurfs = drawSurfs;
-	cmd->numDrawSurfs = numDrawSurfs;
+	cmd->commandId = RC_DRAW_VIEW;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -255,11 +304,11 @@ R_AddRunVisTestsCmd
 
 =============
 */
-void R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests )
+void R_AddRunVisTestsCmd( void )
 {
 	runVisTestsCommand_t *cmd;
 
-	cmd = (runVisTestsCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( runVisTestsCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -267,9 +316,6 @@ void R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests )
 	}
 
 	cmd->commandId = RC_RUN_VISTESTS;
-
-	cmd->visTests = visTests;
-	cmd->numVisTests = numVisTests;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -285,6 +331,11 @@ Passing NULL will set the color to white
 void RE_SetColor( const float *rgba )
 {
 	setColorCommand_t *cmd;
+
+	if ( !tr.registered )
+	{
+		return;
+	}
 
 	cmd = (setColorCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
@@ -306,6 +357,61 @@ void RE_SetColor( const float *rgba )
 	cmd->color[ 1 ] = rgba[ 1 ];
 	cmd->color[ 2 ] = rgba[ 2 ];
 	cmd->color[ 3 ] = rgba[ 3 ];
+}
+
+/*
+=============
+RE_SetColorGrading
+=============
+*/
+void RE_SetColorGrading( int slot, qhandle_t hShader )
+{
+	setColorGradingCommand_t *cmd;
+	shader_t *shader = R_GetShaderByHandle( hShader );
+	image_t *image;
+
+	if ( !tr.registered )
+	{
+		return;
+	}
+
+	if ( slot < 0 || slot > 3 )
+	{
+		return;
+	}
+
+	if ( shader->defaultShader || !shader->stages[ 0 ] )
+	{
+		return;
+	}
+
+	image = shader->stages[ 0 ]->bundle[ 0 ].image[ 0 ];
+
+	if ( !image )
+	{
+		return;
+	}
+
+	if ( image->width != REF_COLORGRADEMAP_SIZE && image->height != REF_COLORGRADEMAP_SIZE )
+	{
+		return;
+	}
+
+	if ( image->width * image->height != REF_COLORGRADEMAP_STORE_SIZE )
+	{
+		return;
+	}
+
+	cmd = ( setColorGradingCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->slot = slot;
+	cmd->image = image;
+	cmd->commandId = RC_SET_COLORGRADING;
 }
 
 /*
@@ -444,13 +550,13 @@ void RE_StretchPic ( float x, float y, float w, float h,
 RE_2DPolyies
 =============
 */
-extern int r_numpolyverts;
+extern int r_numPolyVerts;
 
 void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 {
 	poly2dCommand_t *cmd;
 
-	if ( r_numpolyverts + numverts > max_polyverts )
+	if ( r_numPolyVerts + numverts > r_maxPolyVerts->integer )
 	{
 		return;
 	}
@@ -463,12 +569,12 @@ void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 	}
 
 	cmd->commandId = RC_2DPOLYS;
-	cmd->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numpolyverts ];
+	cmd->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numPolyVerts ];
 	cmd->numverts = numverts;
 	memcpy( cmd->verts, verts, sizeof( polyVert_t ) * numverts );
 	cmd->shader = R_GetShaderByHandle( hShader );
 
-	r_numpolyverts += numverts;
+	r_numPolyVerts += numverts;
 }
 
 /*
@@ -593,67 +699,6 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 
 /*
 ====================
-RE_SetGlobalFog
-        rgb = colour
-        depthForOpaque is depth for opaque
-
-        the restore flag can be used to restore the original level fog
-        duration can be set to fade over a certain period
-====================
-*/
-void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque )
-{
-	if ( restore )
-	{
-		if ( duration > 0 )
-		{
-			VectorCopy( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color, tr.world->globalTransStartFog );
-			tr.world->globalTransStartFog[ 3 ] = tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque;
-
-			Vector4Copy( tr.world->globalOriginalFog, tr.world->globalTransEndFog );
-
-			tr.world->globalFogTransStartTime = tr.refdef.time;
-			tr.world->globalFogTransEndTime = tr.refdef.time + duration;
-		}
-		else
-		{
-			VectorCopy( tr.world->globalOriginalFog, tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color );
-			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.colorInt =
-			  ColorBytes4( tr.world->globalOriginalFog[ 0 ] * tr.identityLight, tr.world->globalOriginalFog[ 1 ] * tr.identityLight,
-			               tr.world->globalOriginalFog[ 2 ] * tr.identityLight, 1.0 );
-			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque = tr.world->globalOriginalFog[ 3 ];
-			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.tcScale =
-			  1.0f / ( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque );
-		}
-	}
-	else
-	{
-		if ( duration > 0 )
-		{
-			VectorCopy( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color, tr.world->globalTransStartFog );
-			tr.world->globalTransStartFog[ 3 ] = tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque;
-
-			VectorSet( tr.world->globalTransEndFog, r, g, b );
-			tr.world->globalTransEndFog[ 3 ] = depthForOpaque < 1 ? 1 : depthForOpaque;
-
-			tr.world->globalFogTransStartTime = tr.refdef.time;
-			tr.world->globalFogTransEndTime = tr.refdef.time + duration;
-		}
-		else
-		{
-			VectorSet( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color, r, g, b );
-			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.colorInt = ColorBytes4( r * tr.identityLight,
-			    g * tr.identityLight,
-			    b * tr.identityLight, 1.0 );
-			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque = depthForOpaque < 1 ? 1 : depthForOpaque;
-			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.tcScale =
-			  1.0f / ( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque );
-		}
-	}
-}
-
-/*
-====================
 RE_BeginFrame
 
 If running in stereo, RE_BeginFrame will be called twice
@@ -669,12 +714,13 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 		return;
 	}
 
+	GLimp_LogComment( "--- RE_BeginFrame ---\n" );
+
 	tr.frameCount++;
 	tr.frameSceneNum = 0;
+	tr.viewCount = 0;
 
-	//
 	// do overdraw measurement
-	//
 	if ( r_measureOverdraw->integer )
 	{
 		if ( glConfig.stencilBits < 4 )
@@ -683,18 +729,12 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
 			r_measureOverdraw->modified = qfalse;
 		}
-		else if ( r_shadows->integer >= 2 )
-		{
-			ri.Printf( PRINT_ALL, "Warning: stencil shadows and overdraw measurement are mutually exclusive\n" );
-			ri.Cvar_Set( "r_measureOverdraw", "0" );
-			r_measureOverdraw->modified = qfalse;
-		}
 		else
 		{
 			R_SyncRenderThread();
 			glEnable( GL_STENCIL_TEST );
 			glStencilMask( ~0U );
-			glClearStencil( 0U );
+			GL_ClearStencil( 0U );
 			glStencilFunc( GL_ALWAYS, 0U, ~0U );
 			glStencilOp( GL_KEEP, GL_INCR, GL_INCR );
 		}
@@ -713,9 +753,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 		r_measureOverdraw->modified = qfalse;
 	}
 
-	//
 	// texturemode stuff
-	//
 	if ( r_textureMode->modified )
 	{
 		R_SyncRenderThread();
@@ -723,72 +761,61 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 		r_textureMode->modified = qfalse;
 	}
 
-	//
-	// anisotropic filtering stuff
-	//
-	if ( r_ext_texture_filter_anisotropic->modified )
-	{
-		R_SyncRenderThread();
-		GL_TextureAnisotropy( r_ext_texture_filter_anisotropic->value );
-		r_ext_texture_filter_anisotropic->modified = qfalse;
-	}
-
-	//
-	// NVidia stuff
-	//
-
-	// fog control
-	if ( glConfig.NVFogAvailable && r_nv_fogdist_mode->modified )
-	{
-		r_nv_fogdist_mode->modified = qfalse;
-
-		if ( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE_ABSOLUTE_NV" ) )
-		{
-			glConfig.NVFogMode = ( int ) GL_EYE_PLANE_ABSOLUTE_NV;
-		}
-		else if ( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE" ) )
-		{
-			glConfig.NVFogMode = ( int ) GL_EYE_PLANE;
-		}
-		else if ( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_RADIAL_NV" ) )
-		{
-			glConfig.NVFogMode = ( int ) GL_EYE_RADIAL_NV;
-		}
-		else
-		{
-			// in case this was really 'else', store a valid value for next time
-			glConfig.NVFogMode = ( int ) GL_EYE_RADIAL_NV;
-			ri.Cvar_Set( "r_nv_fogdist_mode", "GL_EYE_RADIAL_NV" );
-		}
-	}
-
-	//
-	// gamma stuff
-	//
-	if ( r_gamma->modified )
-	{
-		r_gamma->modified = qfalse;
-
-		R_SyncRenderThread();
-		R_SetColorMappings();
-	}
-
 	// check for errors
 	if ( !r_ignoreGLErrors->integer )
 	{
-		int err;
+		int  err;
+		char s[ 128 ];
 
 		R_SyncRenderThread();
 
 		if ( ( err = glGetError() ) != GL_NO_ERROR )
 		{
-			ri.Error( ERR_FATAL, "RE_BeginFrame() - glGetError() failed (0x%x)!", err );
+			switch ( err )
+			{
+				case GL_INVALID_ENUM:
+					strcpy( s, "GL_INVALID_ENUM" );
+					break;
+
+				case GL_INVALID_VALUE:
+					strcpy( s, "GL_INVALID_VALUE" );
+					break;
+
+				case GL_INVALID_OPERATION:
+					strcpy( s, "GL_INVALID_OPERATION" );
+					break;
+
+				case GL_STACK_OVERFLOW:
+					strcpy( s, "GL_STACK_OVERFLOW" );
+					break;
+
+				case GL_STACK_UNDERFLOW:
+					strcpy( s, "GL_STACK_UNDERFLOW" );
+					break;
+
+				case GL_OUT_OF_MEMORY:
+					strcpy( s, "GL_OUT_OF_MEMORY" );
+					break;
+
+				case GL_TABLE_TOO_LARGE:
+					strcpy( s, "GL_TABLE_TOO_LARGE" );
+					break;
+
+				case GL_INVALID_FRAMEBUFFER_OPERATION_EXT:
+					strcpy( s, "GL_INVALID_FRAMEBUFFER_OPERATION_EXT" );
+					break;
+
+				default:
+					Com_sprintf( s, sizeof( s ), "0x%X", err );
+					break;
+			}
+
+			//ri.Error(ERR_FATAL, "caught OpenGL error: %s in file %s line %i", s, filename, line);
+			ri.Error( ERR_FATAL, "RE_BeginFrame() - glGetError() failed (%s)!", s );
 		}
 	}
 
-	//
 	// draw buffer stuff
-	//
 	cmd = (drawBufferCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
@@ -864,6 +891,9 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 	// may still be rendering into the current ones
 	R_ToggleSmpFrame();
 
+	// update the results of the vis tests
+	R_UpdateVisTests();
+
 	if ( frontEndMsec )
 	{
 		*frontEndMsec = tr.frontEndMsec;
@@ -918,9 +948,11 @@ RE_RenderToTexture
 */
 void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
 {
-	renderToTextureCommand_t *cmd;
+	//renderToTextureCommand_t *cmd;
 
-//  ri.Printf( PRINT_ALL, "RE_RenderToTexture\n" );
+	ri.Printf( PRINT_ALL, S_COLOR_RED "TODO RE_RenderToTexture\n" );
+
+#if 0
 
 	if ( textureid > tr.numImages || textureid < 0 )
 	{
@@ -928,7 +960,7 @@ void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
 		return;
 	}
 
-	cmd = (renderToTextureCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -941,9 +973,8 @@ void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
 	cmd->y = y;
 	cmd->w = w;
 	cmd->h = h;
+#endif
 }
-
-//bani
 
 /*
 ==================

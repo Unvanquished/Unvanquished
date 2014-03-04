@@ -1175,6 +1175,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 	}
 
 	// Add the pak to the list of loaded paks
+	Com_Printf("Loading pak '%s'...\n", pak.path.c_str());
 	loadedPaks.push_back(pak);
 
 	// Update the list of files, but don't overwrite existing files to preserve sort order
@@ -1203,15 +1204,14 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		checksum = crc32(0, Z_NULL, 0);
 		zipFile.ForEachFile([&pak, &checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
-			// Compatibility hack to get the same checksums as before
-			bool isDir = Str::IsSuffix("/", filename);
-			if (!isDir && !Path::IsValid(filename, false)) {
+			// Ignore directories
+			if (Str::IsSuffix("/", filename))
+				return;
+			if (!Path::IsValid(filename, false)) {
 				Log::Warn("Invalid filename '%s' in pak '%s'", filename, pak.path);
 				return; // This is effectively a continue, since we are in a lambda
 			}
 			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
-			if (isDir)
-				return;
 #ifdef GCC_BROKEN_CXX11
 			fileMap.insert({filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
@@ -1967,6 +1967,8 @@ struct handleData_t {
 static handleData_t handleTable[MAX_FILE_HANDLES];
 static std::vector<std::tuple<std::string, std::string, uint32_t>> fs_missingPaks;
 
+static Cvar::Cvar<bool> allowRemotePakDir("client.allowRemotePakDir", "Connect to servers that load game data from directories", Cvar::TEMPORARY, false);
+
 static fileHandle_t FS_AllocHandle()
 {
 	// Don't use handle 0 because it is used to indicate failures
@@ -2418,8 +2420,6 @@ const char* FS_LoadedPaks()
 	static char info[BIG_INFO_STRING];
 	info[0] = '\0';
 	for (const FS::PakInfo& x: FS::PakPath::GetLoadedPaks()) {
-		if (!x.checksum)
-			continue;
 		if (info[0])
 			Q_strcat(info, sizeof(info), " ");
 		Q_strcat(info, sizeof(info), FS::MakePakName(x.name, x.version, x.checksum).c_str());
@@ -2471,9 +2471,12 @@ bool FS_LoadServerPaks(const char* paks)
 	for (auto& x: args) {
 		std::string name, version;
 		Opt::optional<uint32_t> checksum;
-		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum) || !checksum) {
+		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum)) {
 			Com_Error(ERR_DROP, "Invalid pak reference from server: %s", x.c_str());
-			continue;
+		} else if (!checksum) {
+			if (allowRemotePakDir.Get())
+				continue;
+			Com_Error(ERR_DROP, "The server is configured to load game data from a directory which makes it incompatible with remote clients.");
 		}
 
 		// Keep track of all missing paks

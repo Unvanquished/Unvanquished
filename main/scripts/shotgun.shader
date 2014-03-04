@@ -10,9 +10,9 @@ models/weapons/shotgun/flash
 
 models/weapons/shotgun/shotgun
 {
-	diffuseMap models/weapons/shotgun/shotgun_COLOR
-	normalMap models/weapons/shotgun/shotgun_NRM
-	specularMap models/weapons/shotgun/shotgun_SPEC
+	diffuseMap models/weapons/shotgun/shotgun_d
+	normalMap models/weapons/shotgun/shotgun_n
+	specularMap models/weapons/shotgun/shotgun_s
 }
 
 MarkShotgunBullet

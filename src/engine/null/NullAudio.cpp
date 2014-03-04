@@ -44,8 +44,14 @@ namespace Audio {
     }
 
 
+    void BeginRegistration() {
+    }
+
     sfxHandle_t RegisterSFX(Str::StringRef filename) {
         return 0;
+    }
+
+    void EndRegistration() {
     }
 
 

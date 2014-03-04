@@ -1,34 +1,23 @@
 /*
 ===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2006-2009 Robert Beckebans <trebor_7@users.sourceforge.net>
 
-Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+This file is part of Daemon source code.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+Daemon source code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
 
-Daemon Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Daemon Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
+Daemon source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
-below.
-
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
-Maryland 20850 USA.
-
+along with Daemon source code; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
@@ -132,7 +121,7 @@ static char    *CommaParse( char **data_p )
 				return com_token;
 			}
 
-			if ( len < MAX_TOKEN_CHARS )
+			if ( len < MAX_TOKEN_CHARS - 1 )
 			{
 				com_token[ len ] = c;
 				len++;
@@ -205,15 +194,15 @@ RE_GetShaderFromModel
         'withlightmap' set to '0' will create a new shader that is a copy of the one found
         on the model, without the lighmap stage, if the shader has a lightmap stage
 
-        NOTE: only works for bmodels right now.  Could modify for other models (md3's etc.)
+        NOTE: this only works for bmodels right now. could modify it for other models (MD3s, etc.)...
 ==============
 */
 qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap )
 {
-	model_t    *model;
-	bmodel_t   *bmodel;
-	msurface_t *surf;
-	shader_t   *shd;
+	model_t      *model;
+	bspModel_t   *bmodel;
+	bspSurface_t *surf;
+	shader_t     *shd;
 
 	if ( surfnum < 0 )
 	{
@@ -224,7 +213,7 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 
 	if ( model )
 	{
-		bmodel = model->model.bmodel;
+		bmodel = model->bsp;
 
 		if ( bmodel && bmodel->firstSurface )
 		{
@@ -243,28 +232,30 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 			}
 
 //          if(surf->shader->lightmapIndex != LIGHTMAP_NONE) {
-			if ( surf->shader->lightmapIndex > LIGHTMAP_NONE )
+
+			/*
+			RB: FIXME ?
+			if(surf->shader->lightmapIndex > LIGHTMAP_NONE)
 			{
-				image_t  *image;
-				long     hash;
-				qboolean mip = qtrue; // mip generation on by default
+			        image_t        *image;
+			        long            hash;
+			        qboolean        mip = qtrue;  // mip generation on by default
 
-				// get mipmap info for original texture
-				hash = GenerateImageHashValue( surf->shader->name );
-
-				for ( image = r_imageHashTable[ hash ]; image; image = image->next )
-				{
-					if ( !strcmp( surf->shader->name, image->imgName ) )
-					{
-						mip = image->mipmap;
-						break;
-					}
-				}
-
-				shd = R_FindShader( surf->shader->name, LIGHTMAP_NONE, mip );
-				shd->stages[ 0 ]->rgbGen = CGEN_LIGHTING_DIFFUSE; // (SA) new
+			        // get mipmap info for original texture
+			        hash = GenerateImageHashValue(surf->shader->name);
+			        for(image = r_imageHashTable[hash]; image; image = image->next)
+			        {
+			                if(!strcmp(surf->shader->name, image->imgName))
+			                {
+			                        mip = image->mipmap;
+			                        break;
+			                }
+			        }
+			        shd = R_FindShader(surf->shader->name, LIGHTMAP_NONE, mip ? RSF_DEFAULT : RSF_NOMIP);
+			        shd->stages[0]->rgbGen = CGEN_LIGHTING_DIFFUSE; // (SA) new
 			}
 			else
+			*/
 			{
 				shd = surf->shader;
 			}
@@ -336,6 +327,19 @@ qhandle_t RE_RegisterSkin( const char *name )
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
+#if 0
+
+	// If not a .skin file, load as a single shader
+	if ( strcmp( name + strlen( name ) - 5, ".skin" ) )
+	{
+		skin->numSurfaces = 1;
+		skin->surfaces[ 0 ] = ri.Hunk_Alloc( sizeof( skin->surfaces[ 0 ] ), h_low );
+		skin->surfaces[ 0 ]->shader = R_FindShader( name, SHADER_3D_DYNAMIC, RSF_DEFAULT );
+		return hSkin;
+	}
+
+#endif
+
 	// load and parse the skin file
 	ri.FS_ReadFile( name, ( void ** ) &text );
 
@@ -400,8 +404,10 @@ qhandle_t RE_RegisterSkin( const char *name )
 
 		surf = skin->surfaces[ skin->numSurfaces ] = (skinSurface_t*) ri.Hunk_Alloc( sizeof( *skin->surfaces[ 0 ] ), h_low );
 		Q_strncpyz( surf->name, surfName, sizeof( surf->name ) );
-		surf->hash = Com_HashKey( surf->name, sizeof( surf->name ) );
-		surf->shader = R_FindShader( token, LIGHTMAP_NONE, qtrue );
+
+		// RB: bspSurface_t does not have ::hash yet
+//		surf->hash = Com_HashKey(surf->name, sizeof(surf->name));
+		surf->shader = R_FindShader( token, SHADER_3D_DYNAMIC, RSF_DEFAULT );
 		skin->numSurfaces++;
 	}
 
@@ -431,7 +437,7 @@ void R_InitSkins( void )
 	skin = tr.skins[ 0 ] = (skin_t*) ri.Hunk_Alloc( sizeof( skin_t ), h_low );
 	Q_strncpyz( skin->name, "<default skin>", sizeof( skin->name ) );
 	skin->numSurfaces = 1;
-	skin->surfaces[ 0 ] = (skinSurface_t*) ri.Hunk_Alloc( sizeof( *skin->surfaces ), h_low );
+	skin->surfaces[ 0 ] = (skinSurface_t*) ri.Hunk_Alloc( sizeof( *skin->surfaces[ 0 ] ), h_low );
 	skin->surfaces[ 0 ]->shader = tr.defaultShader;
 }
 

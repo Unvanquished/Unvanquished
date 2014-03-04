@@ -433,9 +433,7 @@ extern struct rsa_private_key private_key;
 // cvars
 //
 extern cvar_t *cl_nodelta;
-extern cvar_t *cl_debugMove;
 extern cvar_t *cl_noprint;
-extern cvar_t *cl_timegraph;
 extern cvar_t *cl_maxpackets;
 extern cvar_t *cl_packetdup;
 extern cvar_t *cl_shownet;
@@ -531,10 +529,8 @@ extern cvar_t *cl_aviMotionJpeg;
 
 extern cvar_t *cl_allowPaste;
 
-#ifdef USE_MUMBLE
 extern cvar_t *cl_useMumble;
 extern cvar_t *cl_mumbleScale;
-#endif
 
 #if defined(USE_VOIP) && !defined(DEDICATED)
 // cl_voipSendTarget is a string: "all" to broadcast to everyone, "none" to
@@ -587,7 +583,7 @@ void        CL_ClearPing( int n );
 int         CL_GetPingQueueCount( void );
 
 void        CL_ShutdownRef( void );
-qboolean    CL_InitRef( const char *renderer );
+qboolean    CL_InitRef( void );
 
 int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
 
@@ -794,8 +790,6 @@ void             CL_SaveConsoleHistory( void );
 void  SCR_Init( void );
 void  SCR_UpdateScreen( void );
 
-void  SCR_DebugGraph( float value, int color );
-
 int   SCR_GetBigStringWidth( const char *str );  // returns in virtual 640x480 coordinates
 
 void  SCR_AdjustFrom640( float *x, float *y, float *w, float *h );
@@ -903,11 +897,3 @@ qboolean CL_VideoRecording( void );
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd( void );
 void CL_GetClipboardData( char *, int, clipboard_t );
-
-//
-// cl_logs.c
-//
-void CL_OpenClientLog(void);
-void CL_CloseClientLog(void);
-void CL_WriteClientLog( const char *text );
-void CL_WriteClientChatLog( const char *text );

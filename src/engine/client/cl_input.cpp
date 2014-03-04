@@ -801,20 +801,6 @@ usercmd_t CL_CreateCmd( void )
 	// store out the final values
 	CL_FinishMove( &cmd );
 
-	// draw debug graphs of turning for mouse testing
-	if ( cl_debugMove->integer )
-	{
-		if ( cl_debugMove->integer == 1 )
-		{
-			SCR_DebugGraph( abs( cl.viewangles[ YAW ] - oldAngles[ YAW ] ), 0 );
-		}
-
-		if ( cl_debugMove->integer == 2 )
-		{
-			SCR_DebugGraph( abs( cl.viewangles[ PITCH ] - oldAngles[ PITCH ] ), 0 );
-		}
-	}
-
 	return cmd;
 }
 
@@ -1432,7 +1418,6 @@ void CL_InitInput( void )
 	Cmd_AddCommand( "keyup", IN_KeysUp_f );
 
 	cl_nodelta = Cvar_Get( "cl_nodelta", "0", 0 );
-	cl_debugMove = Cvar_Get( "cl_debugMove", "0", 0 );
 }
 
 /*

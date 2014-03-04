@@ -315,12 +315,8 @@ void CG_OffsetThirdPersonView( void )
 		}
 	}
 
-	// get and rangecheck cg_thirdPersonRange
+	// get cg_thirdPersonRange
 	range = cg_thirdPersonRange.value;
-
-	if ( range > 150.0f ) { range = 150.0f; }
-
-	if ( range < 30.0f ) { range = 30.0f; }
 
 	// Calculate the angle of the camera's position around the player.
 	// Unless in demo, PLAYING in third person, or in dead-third-person cam, allow the player
@@ -1391,7 +1387,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 	cg.refdef.gradingWeights[3] = totalWeight == 0.0f ? 0.0f : selectedWeight[2] / totalWeight;
 }
 
-static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
+static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade, float* fadeRate )
 {
 	int health = ps->stats[ STAT_HEALTH ];
 	int team = ps->persistant[ PERS_TEAM ];
@@ -1404,35 +1400,12 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
+        *fadeRate = 0.004;
 	}
-	//not actually playing
-	else if (cg.renderingThirdPerson || ! playing )
-	{
-		*fade = 0.0;
-	}
-	else if(ps->weapon == WP_ALEVEL4 && chargeProgress > 0.05)
-	{
-	    *effect = cgs.media.redCgrade;
-	    *fade = chargeProgress * 0.5f;
-	}
+	//no other effects for now
 	else
 	{
-		//health effect
-		float ratio = 0.0f;
-		float maxHealth = BG_Class( class_ )->health;
-		if ( team == TEAM_HUMANS )
-		{
-			*effect = cgs.media.redCgrade;
-			ratio = 0.5f;
-		}
-		else if( team == TEAM_ALIENS )
-		{
-			*effect = cgs.media.desaturatedCgrade;
-			ratio = 0.7f;
-		}
-		//Linear blend if the effect as a function of the health ratio
-		//Find out if a quadratic effect would look better
-		*fade = (1.0f - health / maxHealth) * ratio;
+		*fade = 0.0;
 	}
 }
 
@@ -1462,13 +1435,13 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 	qhandle_t finalEffect = 0;
 	float finalFade = 0.0f;
 
-	static const float fadeRate = 0.0005;
+	float fadeRate = 0.0005;
 
 	float fadeChange = fadeRate * cg.frametime;
 	float factor;
 
 	//Choose which effect we want
-	CG_ChooseCgradingEffectAndFade( ps, &targetEffect, &targetFade );
+	CG_ChooseCgradingEffectAndFade( ps, &targetEffect, &targetFade, &fadeRate );
 
 	//As we have only one cgrade slot for the effect we transition
 	//smoothly from the current (effect, fading) to the target effect.
