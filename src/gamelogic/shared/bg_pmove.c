@@ -1176,6 +1176,7 @@ static qboolean PM_CheckWallJump( void )
 static qboolean PM_CheckJetpack( void )
 {
 	static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
+	int                 sideVelocity;
 
 	if ( pm->ps->pm_type != PM_NORMAL ||
 	     pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS ||
@@ -1234,8 +1235,14 @@ static qboolean PM_CheckJetpack( void )
 	// check ignite conditions
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_WARM ) )
 	{
-		// we got off ground by jumping
-		if ( pm->ps->pm_flags & PMF_JUMPED )
+		sideVelocity = sqrt( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ] +
+		                     pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ] );
+
+		// we got off ground by jumping and are not yet in free fall, where free fall is defined as
+		// (1) fall speed bigger than sideways speed (not strafe jumping)
+		// (2) fall speed bigger than jump magnitude (not jumping up and down on solid ground)
+		if ( ( pm->ps->pm_flags & PMF_JUMPED ) && !( -pm->ps->velocity[ 2 ] > sideVelocity &&
+		     -pm->ps->velocity[ 2 ] > BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude ) )
 		{
 			// require the jump key to be held since the jump
 			if ( !( pm->ps->pm_flags & PMF_JUMP_HELD ) )
