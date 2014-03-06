@@ -1779,6 +1779,11 @@ void CL_Disconnect( qboolean showMainMenu )
 	// allow cheats locally
 	Cvar_Set( "sv_cheats", "1" );
 
+	// Load map pk3s to allow menus to load levelshots
+	FS::PakPath::ClearPaks();
+	FS_LoadBasePak();
+	FS_LoadAllMaps();
+
 #ifdef USE_VOIP
 	// not connected to voip server anymore.
 	clc.voipEnabled = qfalse;
