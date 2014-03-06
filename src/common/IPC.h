@@ -119,6 +119,13 @@ public:
 
 	void Close();
 
+	OSHandleType ReleaseHandle()
+	{
+		OSHandleType out = handle;
+		handle = INVALID_HANDLE;
+		return out;
+	}
+
 	Desc GetDesc() const;
 	static Socket FromDesc(const Desc& desc);
 	static Socket FromHandle(OSHandleType handle);

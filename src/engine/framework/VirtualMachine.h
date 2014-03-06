@@ -33,21 +33,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../../common/IPC.h"
 #include "../../common/String.h"
+#include <thread>
 
 namespace VM {
 
 enum vmType_t {
 	TYPE_NATIVE,
 	TYPE_NACL,
-	TYPE_NATIVE_DEBUG,
 	TYPE_NACL_DEBUG
 };
+
+struct NativeInProcessInfo;
 
 // Base class for a virtual machine instance
 class VMBase {
 public:
 	VMBase()
-		: processHandle(IPC::INVALID_HANDLE) {}
+		: processHandle(IPC::INVALID_HANDLE), inProcessInfo(nullptr) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module.
@@ -81,8 +83,15 @@ protected:
 	virtual void Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) const = 0;
 
 private:
+	// Used for the NaCl VMs
 	IPC::OSHandleType processHandle;
+
+	// Used by the native, in process VMs
+	NativeInProcessInfo* inProcessInfo;
+
+	// Common
 	IPC::Socket rootSocket;
+	vmType_t vmType;
 };
 
 } // namespace VM

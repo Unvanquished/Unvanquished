@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
+#include "../sys/sys_loadlib.h"
 #include "VirtualMachine.h"
 
 #ifdef _WIN32
@@ -224,9 +225,91 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 }
 
+std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
+	// Environment variables, forward ROOT_SOCKET to NaCl module
+	char rootSocketHandle[32];
+	snprintf(rootSocketHandle, sizeof(rootSocketHandle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
+
+	const char* env[] = {rootSocketHandle, NULL};
+
+	// Generate command line
+	const std::string& libPath = FS::GetLibPath();
+	std::vector<const char*> args;
+	char rootSocketRedir[32];
+	std::string module, sel_ldr, irt, bootstrap;
+	// Extract the nexe from the pak so that sel_ldr can load it
+	module = name + "-" ARCH_STRING ".nexe";
+	try {
+		FS::File out = FS::HomePath::OpenWrite(module);
+		FS::PakPath::CopyFile(module, out);
+		out.Close();
+	} catch (std::system_error& err) {
+		Com_Error(ERR_DROP, "VM: Failed to extract NaCl module %s: %s\n", module.c_str(), err.what());
+	}
+
+	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)DescToHandle(pair.second.GetDesc()));
+	sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
+	irt = FS::Path::Build(libPath, "irt_core-" ARCH_STRING ".nexe");
+
+#ifdef __linux__
+	bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
+	args.push_back(bootstrap.c_str());
+	args.push_back(sel_ldr.c_str());
+	args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");
+	args.push_back("--reserved_at_zero=0xXXXXXXXXXXXXXXXX");
+#else
+	args.push_back(sel_ldr.c_str());
+#endif
+	if (debug)
+		args.push_back("-g");
+	args.push_back("-B");
+	args.push_back(irt.c_str());
+	args.push_back("-e");
+	args.push_back("-i");
+	args.push_back(rootSocketRedir);
+	args.push_back("--");
+	args.push_back(module.c_str());
+	args.push_back(NULL);
+
+	Com_Printf("Loading VM module %s...\n", module.c_str());
+
+	return InternalLoadModule(std::move(pair), args.data(), env, true);
+}
+
+struct NativeInProcessInfo {
+	void* sharedLibHandle;
+	std::unique_ptr<std::thread> vmThread;
+	const char* vmArgs[2];
+	std::string vmSocketArg;
+};
+
+std::pair<NativeInProcessInfo*, IPC::Socket> CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name) {
+	std::string filename = FS::Path::Build(FS::GetLibPath(), name + "-nacl-native" + DLL_EXT);
+
+	Com_Printf("Loading VM module %s...\n", filename.c_str());
+
+	void* handle = Sys_LoadLibrary(filename.c_str());
+	if (!handle) {
+		Com_Error(ERR_DROP, "Failed to load shared library VM %s: %s", filename.c_str(), Sys_LibraryError());
+	}
+
+	int (*vmMain)(int, const char**) = (int (*)(int, const char**))(Sys_LoadFunction(handle, "main"));
+
+	NativeInProcessInfo* info = new NativeInProcessInfo;
+
+	info->sharedLibHandle = handle;
+	info->vmSocketArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
+	info->vmArgs[0] = nullptr;
+	info->vmArgs[1] = info->vmSocketArg.c_str();
+
+	info->vmThread = std::unique_ptr<std::thread>(new std::thread(vmMain, 2, info->vmArgs));
+
+	return {info, std::move(pair.first)};
+}
+
 int VMBase::Create(Str::StringRef name, vmType_t type)
 {
-	if (type != TYPE_NACL && type != TYPE_NATIVE && type != TYPE_NATIVE_DEBUG && type != TYPE_NACL_DEBUG)
+	if (type != TYPE_NACL && type != TYPE_NATIVE && type != TYPE_NACL_DEBUG)
 		Com_Error(ERR_DROP, "VM: Invalid type %d", type);
 
 	// Free the VM if it exists
@@ -235,72 +318,20 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 	// Create the socket pair to get the handle for ROOT_SOCKET
 	std::pair<IPC::Socket, IPC::Socket> pair = IPC::Socket::CreatePair();
 
-	// Environment variables, forward ROOT_SOCKET to NaCl module
-	char rootSocketHandle[32];
-	if (type == TYPE_NACL)
-		snprintf(rootSocketHandle, sizeof(rootSocketHandle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
-	else
-		snprintf(rootSocketHandle, sizeof(rootSocketHandle), "ROOT_SOCKET=%d", (int)(intptr_t)DescToHandle(pair.second.GetDesc()));
-	const char* env[] = {rootSocketHandle, NULL};
-
-	// Generate command line
-	const std::string& libPath = FS::GetLibPath();
-	std::vector<const char*> args;
-	char rootSocketRedir[32];
-	std::string module, sel_ldr, irt, bootstrap;
 	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG) {
-		// Extract the nexe from the pak so that sel_ldr can load it
-		module = name + "-" ARCH_STRING ".nexe";
-		try {
-			FS::File out = FS::HomePath::OpenWrite(module);
-			FS::PakPath::CopyFile(module, out);
-			out.Close();
-		} catch (std::system_error& err) {
-			Com_Error(ERR_DROP, "VM: Failed to extract NaCl module %s: %s\n", module.c_str(), err.what());
-		}
-
-		snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)DescToHandle(pair.second.GetDesc()));
-		sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
-		irt = FS::Path::Build(libPath, "irt_core-" ARCH_STRING ".nexe");
-
-#ifdef __linux__
-		bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
-		args.push_back(bootstrap.c_str());
-		args.push_back(sel_ldr.c_str());
-		args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");
-		args.push_back("--reserved_at_zero=0xXXXXXXXXXXXXXXXX");
-#else
-		args.push_back(sel_ldr.c_str());
-#endif
-		if (type == TYPE_NACL_DEBUG)
-			args.push_back("-g");
-		args.push_back("-B");
-		args.push_back(irt.c_str());
-		args.push_back("-e");
-		args.push_back("-i");
-		args.push_back(rootSocketRedir);
-		args.push_back("--");
-		args.push_back(module.c_str());
+		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG);
 	} else {
-		module = FS::Path::Build(libPath, name + "-nacl-native" + EXE_EXT);
-		if (type == TYPE_NATIVE_DEBUG) {
-			args.push_back("/usr/bin/gdbserver");
-			args.push_back("localhost:4014");
-		}
-		args.push_back(module.c_str());
+		std::tie(inProcessInfo, rootSocket) = CreateInProcessNativeVM(std::move(pair), name);
 	}
-	args.push_back(NULL);
+	vmType = type;
 
-	Com_Printf("Loading VM module %s...\n", module.c_str());
-
-	std::tie(processHandle, rootSocket) = InternalLoadModule(std::move(pair), args.data(), env, type == TYPE_NACL);
-
-	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_DEBUG)
+	if (type == TYPE_NACL_DEBUG)
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
 
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
 	IPC::Reader reader = rootSocket.RecvMsg();
+	Com_Printf("Stuffffff");
 	Com_Printf("Loaded module with the NaCl ABI");
 	return reader.Read<uint32_t>();
 }
@@ -311,13 +342,22 @@ void VMBase::Free()
 		return;
 
 	rootSocket.Close();
+
+	if (vmType == TYPE_NACL || vmType == TYPE_NACL_DEBUG) {
 #ifdef _WIN32
-	// Closing the job object should kill the child process
-	CloseHandle(processHandle);
+		// Closing the job object should kill the child process
+		CloseHandle(processHandle);
 #else
-	kill(processHandle, SIGKILL);
-	waitpid(processHandle, NULL, 0);
+		kill(processHandle, SIGKILL);
+		waitpid(processHandle, NULL, 0);
 #endif
+	} else if (vmType == TYPE_NATIVE) {
+		// TODO avoit being locked?
+		Com_Printf("Waiting for the VM...");
+		inProcessInfo->vmThread->join();
+		delete inProcessInfo;
+		inProcessInfo = nullptr;
+	}
 
 	processHandle = IPC::INVALID_HANDLE;
 }

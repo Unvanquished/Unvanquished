@@ -1218,10 +1218,11 @@ function( GAMEMODULE )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE )
-    add_executable( ${GAMEMODULE_NAME}-nacl-native ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
+    add_library( ${GAMEMODULE_NAME}-nacl-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES
-      OUTPUT_NAME ${GAMEMODULE_NAME}-nacl-native
+      PREFIX ""
+      #OUTPUT_NAME ${GAMEMODULE_NAME}-nacl-native
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
   endif()

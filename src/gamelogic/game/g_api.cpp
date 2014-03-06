@@ -26,48 +26,66 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../shared/CommonProxies.h"
 
 // This really should go in the common code
-static IPC::Socket GetRootSocket()
+static IPC::Socket GetRootSocket(int argc, char** argv)
 {
-	const char* socket = getenv("ROOT_SOCKET");
-	if (!socket) {
-		fprintf(stderr, "Environment variable ROOT_SOCKET not found\n");
-		exit(1);
+	const char* socket;
+	if (argc == 1) {
+		socket = getenv("ROOT_SOCKET");
+		if (!socket) {
+			fprintf(stderr, "Environment variable ROOT_SOCKET not found\n");
+			VM::Exit();
+		}
+	} else {
+		socket = argv[1];
 	}
 
 	char* end;
 	IPC::OSHandleType h = (IPC::OSHandleType)strtol(socket, &end, 10);
 	if (socket == end || *end != '\0') {
 		fprintf(stderr, "Environment variable ROOT_SOCKET does not contain a valid handle\n");
-		exit(1);
+		VM::Exit();
 	}
 
 	return IPC::Socket::FromHandle(h);
 }
-IPC::Socket VM::rootSocket = GetRootSocket();
+
+class ExitException{};
+
+void VM::Exit() {
+  throw ExitException();
+}
+
+IPC::Socket VM::rootSocket;
 
 static IPC::SharedMemory shmRegion;
 
-int main(int argc, char** argv)
+DLLEXPORT int main(int argc, char** argv)
 {
-	// Send syscall ABI version, also acts as a sign that the module loaded
-	IPC::Writer writer;
-	writer.Write<uint32_t>(GAME_API_VERSION);
-	VM::rootSocket.SendMsg(writer);
+	try {
+		VM::rootSocket = GetRootSocket(argc, argv);
 
-	// Initialize VM proxies
-	VM::InitializeProxies();
+		// Send syscall ABI version, also acts as a sign that the module loaded
+		IPC::Writer writer;
+		writer.Write<uint32_t>(GAME_API_VERSION);
+		VM::rootSocket.SendMsg(writer);
 
-	// Allocate entities and clients shared memory region
-	shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
-	char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
-	g_entities = reinterpret_cast<gentity_t*>(shmBase);
-	g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
+		// Initialize VM proxies
+		VM::InitializeProxies();
 
-	// Start main loop
-	while (true) {
-		IPC::Reader reader = VM::rootSocket.RecvMsg();
-		uint32_t id = reader.Read<uint32_t>();
-		VM::VMMain(id, std::move(reader));
+		// Allocate entities and clients shared memory region
+		shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
+		char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
+		g_entities = reinterpret_cast<gentity_t*>(shmBase);
+		g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
+
+		// Start main loop
+		while (true) {
+			IPC::Reader reader = VM::rootSocket.RecvMsg();
+			uint32_t id = reader.Read<uint32_t>();
+			VM::VMMain(id, std::move(reader));
+		}
+	} catch (ExitException e) {
+		return 0;
 	}
 }
 
@@ -167,10 +185,10 @@ void NORETURN trap_Error(const char *string)
 {
 	static bool recursiveError = false;
 	if (recursiveError)
-		exit(1);
+		VM::Exit();
 	recursiveError = true;
 	VM::SendMsg<ErrorMsg>(string);
-	exit(1); // Amanieu: Need to implement proper error handling
+	VM::Exit(); // Amanieu: Need to implement proper error handling
 }
 
 void trap_Log(log_event_t *event)

@@ -38,6 +38,8 @@ namespace VM {
 	// Main handler for incoming messages from the engine
 	void VMMain(uint32_t id, IPC::Reader reader);
 
+	void Exit();
+
 	// Send a message to the engine
 	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
 		IPC::SendMsg<Msg>(rootSocket, VMMain, std::forward<Args>(args)...);
