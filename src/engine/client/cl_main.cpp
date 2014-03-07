@@ -922,7 +922,6 @@ void CL_Record_f( void )
 
 	else
 	{
-		char    name[ 256 ];
 		char    mapname[ MAX_QPATH ];
 		char    *period;
 		qtime_t time;
