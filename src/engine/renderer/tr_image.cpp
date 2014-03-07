@@ -192,6 +192,7 @@ void R_ImageList_f( void )
 	{
 		"no ", "yes"
 	};
+	const char *filter = ri.Cmd_Argc() > 1 ? ri.Cmd_Argv(1) : NULL;
 
 	ri.Printf( PRINT_ALL, "\n      -w-- -h-- -mm- -type-   -if-- wrap --name-------\n" );
 
@@ -203,6 +204,11 @@ void R_ImageList_f( void )
 		image = (image_t*) Com_GrowListElement( &tr.images, i );
 		char buffer[ MAX_TOKEN_CHARS ];
 		std::string out;
+
+		if ( filter && !Com_Filter( filter, image->name, qtrue ) )
+		{
+			continue;
+		}
 
 		Com_sprintf( buffer, sizeof( buffer ), "%4i: %4i %4i  %s   ",
 		           i, image->uploadWidth, image->uploadHeight, yesno[ image->filterType == FT_DEFAULT ] );
