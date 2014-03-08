@@ -922,7 +922,6 @@ void CL_Record_f( void )
 
 	else
 	{
-		char    name[ 256 ];
 		char    mapname[ MAX_QPATH ];
 		char    *period;
 		qtime_t time;
@@ -1611,6 +1610,7 @@ void CL_MapLoading( void )
 	}
 
 	Con_Close();
+	CL_FlushMemory();
 	cls.keyCatchers = 0;
 
 	// if we are already connected to the local host, stay connected
@@ -1777,6 +1777,11 @@ void CL_Disconnect( qboolean showMainMenu )
 
 	// allow cheats locally
 	Cvar_Set( "sv_cheats", "1" );
+
+	// Load map pk3s to allow menus to load levelshots
+	FS::PakPath::ClearPaks();
+	FS_LoadBasePak();
+	FS_LoadAllMaps();
 
 #ifdef USE_VOIP
 	// not connected to voip server anymore.

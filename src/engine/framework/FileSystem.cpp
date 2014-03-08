@@ -311,6 +311,7 @@ static std::string DefaultBasePath()
 			*p = '\0';
 			return out.get();
 		}
+		len *= 2;
 	}
 #elif defined(__APPLE__)
 	uint32_t bufsize = 0;

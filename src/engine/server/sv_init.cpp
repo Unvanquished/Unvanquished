@@ -554,9 +554,6 @@ void SV_SpawnServer( const char *server )
 	// also print some status stuff
 	CL_MapLoading();
 
-	// make sure all the client stuff is unloaded
-	CL_ShutdownAll();
-
 	// clear the whole hunk because we're (re)loading the server
 	Hunk_Clear();
 

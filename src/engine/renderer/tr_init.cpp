@@ -1322,7 +1322,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_glMinorVersion = ri.Cvar_Get( "r_glMinorVersion", "", CVAR_LATCH );
 		r_glCoreProfile = ri.Cvar_Get( "r_glCoreProfile", "", CVAR_LATCH );
 		r_glDebugProfile = ri.Cvar_Get( "r_glDebugProfile", "", CVAR_LATCH );
-		r_glDebugMode = ri.Cvar_Get( "r_glDebugMode", "0", CVAR_CHEAT ); 
+		r_glDebugMode = ri.Cvar_Get( "r_glDebugMode", "0", CVAR_CHEAT );
 		r_glAllowSoftware = ri.Cvar_Get( "r_glAllowSoftware", "0", CVAR_LATCH );
 
 		// latched and archived variables
@@ -1420,12 +1420,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_inGameVideo = ri.Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 		r_drawSun = ri.Cvar_Get( "r_drawSun", "0", 0 );
 		r_finish = ri.Cvar_Get( "r_finish", "0", CVAR_CHEAT );
-		r_textureMode = ri.Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
+		r_textureMode = ri.Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_LINEAR", CVAR_ARCHIVE );
 		r_swapInterval = ri.Cvar_Get( "r_swapInterval", "1", CVAR_ARCHIVE );
 		r_gamma = ri.Cvar_Get( "r_gamma", "1.3", CVAR_ARCHIVE );
 		r_facePlaneCull = ri.Cvar_Get( "r_facePlaneCull", "1", 0 );
 
-		r_ambientScale = ri.Cvar_Get( "r_ambientScale", "0.6", CVAR_CHEAT );
+		r_ambientScale = ri.Cvar_Get( "r_ambientScale", "0.6", CVAR_CHEAT | CVAR_SHADER );
 		r_lightScale = ri.Cvar_Get( "r_lightScale", "2", CVAR_CHEAT );
 
 		r_vboFaces = ri.Cvar_Get( "r_vboFaces", "1", CVAR_CHEAT );
@@ -1436,10 +1436,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_vboModels = ri.Cvar_Get( "r_vboModels", "1", 0 );
 		r_vboOptimizeVertices = ri.Cvar_Get( "r_vboOptimizeVertices", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_vboVertexSkinning = ri.Cvar_Get( "r_vboVertexSkinning", "1",  CVAR_LATCH );
-		r_vboDeformVertexes = ri.Cvar_Get( "r_vboDeformVertexes", "0",  CVAR_LATCH );
+		r_vboDeformVertexes = ri.Cvar_Get( "r_vboDeformVertexes", "1",  CVAR_LATCH );
 		r_vboSmoothNormals = ri.Cvar_Get( "r_vboSmoothNormals", "1",  CVAR_LATCH );
 
-		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "0",  CVAR_LATCH );
+		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "1",  CVAR_LATCH );
 		r_dynamicBspOcclusionCulling = ri.Cvar_Get( "r_dynamicBspOcclusionCulling", "0", 0 );
 		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
 		r_dynamicLightOcclusionCulling = ri.Cvar_Get( "r_dynamicLightOcclusionCulling", "0", CVAR_CHEAT );
@@ -1521,7 +1521,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_specularExponentMin = ri.Cvar_Get( "r_specularExponentMin", "0", CVAR_CHEAT );
 		r_specularExponentMax = ri.Cvar_Get( "r_specularExponentMax", "16", CVAR_CHEAT );
 		r_specularScale = ri.Cvar_Get( "r_specularScale", "1.4", CVAR_CHEAT | CVAR_SHADER );
-		r_normalScale = ri.Cvar_Get( "r_normalScale", "1.1", CVAR_CHEAT );
+		r_normalScale = ri.Cvar_Get( "r_normalScale", "1.1", CVAR_CHEAT | CVAR_SHADER);
 		r_normalMapping = ri.Cvar_Get( "r_normalMapping", "1", CVAR_ARCHIVE );
 		r_parallaxDepthScale = ri.Cvar_Get( "r_parallaxDepthScale", "0.03", CVAR_CHEAT );
 
@@ -1542,7 +1542,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		AssertCvarRange( r_softShadows, 0, 6, qtrue );
 
 		r_softShadowsPP = ri.Cvar_Get( "r_softShadowsPP", "0",  CVAR_LATCH );
-		
+
 		r_shadowBlur = ri.Cvar_Get( "r_shadowBlur", "2",  CVAR_SHADER );
 
 		r_shadowMapQuality = ri.Cvar_Get( "r_shadowMapQuality", "3",  CVAR_LATCH );

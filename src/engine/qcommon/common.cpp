@@ -544,7 +544,7 @@ qboolean Com_AddStartupCommands( void )
 			added = qtrue;
 		}
 
-		Cmd::BufferCommandTextAfter(com_consoleLines[i], true);
+		Cmd::BufferCommandText(com_consoleLines[i], true);
 	}
 
 	return added;
