@@ -53,7 +53,8 @@ option( ENABLE_HARDENING "Use stack protection and other hardening flags" 0 )
 
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
-option( BUILD_GAME_NACL_NATIVE "Build native NaCl game logic" 0)
+option( BUILD_GAME_NACL_NATIVE_EXE "Build native executable NaCl game logic" 0)
+option( BUILD_GAME_NACL_NATIVE_DLL "Build native shared library NaCl game logic" 0)
 option( BUILD_GAME_NACL "Build NaCl game logic" 0)
 option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1)
 option( BUILD_GAME_QVM "Build QVM game logic" 1)
@@ -1217,12 +1218,20 @@ function( GAMEMODULE )
     set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
   endif()
 
-  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE )
-    add_library( ${GAMEMODULE_NAME}-nacl-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES
+  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_DLL )
+    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
-      #OUTPUT_NAME ${GAMEMODULE_NAME}-nacl-native
+      COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
+    )
+  endif()
+
+  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_EXE )
+    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
+      OUTPUT_NAME ${GAMEMODULE_NAME}-nacl-native-exe
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
   endif()

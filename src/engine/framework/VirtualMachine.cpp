@@ -276,6 +276,27 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	return InternalLoadModule(std::move(pair), args.data(), env, true);
 }
 
+std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
+	const std::string& libPath = FS::GetLibPath();
+	std::vector<const char*> args;
+
+    std::string handleArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle()).c_str();
+
+	std::string module = FS::Path::Build(libPath, name + "-nacl-native-exe" + EXE_EXT);
+	if (debug) {
+		args.push_back("/usr/bin/gdbserver");
+		args.push_back("localhost:4014");
+	}
+	args.push_back(module.c_str());
+	args.push_back(handleArg.c_str());
+	args.push_back(NULL);
+
+	Com_Printf("Loading VM module %s...\n", module.c_str());
+
+	const char* env[] = {nullptr};
+	return InternalLoadModule(std::move(pair), args.data(), env, true);
+}
+
 struct NativeInProcessInfo {
 	void* sharedLibHandle;
 	std::unique_ptr<std::thread> vmThread;
@@ -284,7 +305,7 @@ struct NativeInProcessInfo {
 };
 
 std::pair<NativeInProcessInfo*, IPC::Socket> CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name) {
-	std::string filename = FS::Path::Build(FS::GetLibPath(), name + "-nacl-native" + DLL_EXT);
+	std::string filename = FS::Path::Build(FS::GetLibPath(), name + "-nacl-native-dll" + DLL_EXT);
 
 	Com_Printf("Loading VM module %s...\n", filename.c_str());
 
@@ -309,7 +330,7 @@ std::pair<NativeInProcessInfo*, IPC::Socket> CreateInProcessNativeVM(std::pair<I
 
 int VMBase::Create(Str::StringRef name, vmType_t type)
 {
-	if (type != TYPE_NACL && type != TYPE_NATIVE && type != TYPE_NACL_DEBUG)
+	if (type < 0 || type >= TYPE_END)
 		Com_Error(ERR_DROP, "VM: Invalid type %d", type);
 
 	// Free the VM if it exists
@@ -320,18 +341,19 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 
 	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG) {
 		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG);
+	} else if (type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
+		std::tie(processHandle, rootSocket) = CreateNativeVM(std::move(pair), name, type == TYPE_NATIVE_EXE_DEBUG);
 	} else {
 		std::tie(inProcessInfo, rootSocket) = CreateInProcessNativeVM(std::move(pair), name);
 	}
 	vmType = type;
 
-	if (type == TYPE_NACL_DEBUG)
+	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE_DEBUG)
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
 
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
 	IPC::Reader reader = rootSocket.RecvMsg();
-	Com_Printf("Stuffffff");
 	Com_Printf("Loaded module with the NaCl ABI");
 	return reader.Read<uint32_t>();
 }
@@ -343,7 +365,7 @@ void VMBase::Free()
 
 	rootSocket.Close();
 
-	if (vmType == TYPE_NACL || vmType == TYPE_NACL_DEBUG) {
+	if (vmType == TYPE_NACL || vmType == TYPE_NACL_DEBUG || vmType == TYPE_NATIVE_EXE || vmType == TYPE_NATIVE_EXE_DEBUG) {
 #ifdef _WIN32
 		// Closing the job object should kill the child process
 		CloseHandle(processHandle);
@@ -351,7 +373,7 @@ void VMBase::Free()
 		kill(processHandle, SIGKILL);
 		waitpid(processHandle, NULL, 0);
 #endif
-	} else if (vmType == TYPE_NATIVE) {
+	} else if (vmType == TYPE_NATIVE_DLL) {
 		// TODO avoit being locked?
 		Com_Printf("Waiting for the VM...");
 		inProcessInfo->vmThread->join();
