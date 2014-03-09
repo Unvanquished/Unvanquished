@@ -54,6 +54,7 @@ Maryland 20850 USA.
 // Input subsystem
 void         IN_Init( void *windowData );
 void         IN_Frame( void );
+void         IN_FrameEnd( void );
 void         IN_Shutdown( void );
 void         IN_Restart( void );
 
