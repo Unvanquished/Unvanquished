@@ -128,9 +128,8 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 	int             pos[ 3 ];
 	float           frac[ 3 ];
 	vec3_t          direction;
-	float           luminance;
-	float           ambientChroma[2];
-	float           directedChroma[2];
+	vec3_t          ambient;
+	vec3_t          directed;
 	int             gridStep[ 3 ];
 	float           totalFactor;
 	bspGridPoint1_t *gridPoint1;
@@ -165,11 +164,8 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 	}
 
 	VectorClear( direction );
-	luminance = 0.0f;
-	ambientChroma[ 0 ] = 0.0f;
-	ambientChroma[ 1 ] = 0.0f;
-	directedChroma[ 0 ] = 0.0f;
-	directedChroma[ 1 ] = 0.0f;
+	VectorClear( ambient );
+	VectorClear( directed );
 
 	// trilerp the light values
 	gridStep[ 0 ] = 1;
@@ -201,22 +197,22 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 			}
 		}
 
-		if ( !gp1->luminance )
+		if ( !( gp1->ambient[ 0 ] || gp1->ambient[ 1 ] || gp1->ambient[ 2 ]) )
 		{
 			continue; // ignore samples in walls
 		}
 
 		totalFactor += factor;
 
-		direction[ 0 ] += factor * (float)(gp1->lightVec[ 0 ] - 128);
-		direction[ 1 ] += factor * (float)(gp1->lightVec[ 1 ] - 128);
-		direction[ 2 ] += factor * (float)(gp1->lightVec[ 2 ] - 128);
-		luminance += factor * (float)(gp1->luminance);
+		direction[ 0 ] += factor * snorm8ToFloat( gp1->lightVecX );
+		direction[ 1 ] += factor * snorm8ToFloat( gp2->lightVecY );
 
-		ambientChroma[ 0 ] += factor * (float)(gp2->ambientChroma[ 0 ] - 128);
-		ambientChroma[ 1 ] += factor * (float)(gp2->ambientChroma[ 1 ] - 128);
-		directedChroma[ 0 ] += factor * (float)(gp2->directedChroma[ 0 ] - 128);
-		directedChroma[ 1 ] += factor * (float)(gp2->directedChroma[ 1 ] - 128);
+		ambient[ 0 ] += factor * unorm8ToFloat( gp1->ambient[ 0 ] );
+		ambient[ 1 ] += factor * unorm8ToFloat( gp1->ambient[ 1 ] );
+		ambient[ 2 ] += factor * unorm8ToFloat( gp1->ambient[ 2 ] );
+		directed[ 0 ] += factor * unorm8ToFloat( gp2->directed[ 0 ] );
+		directed[ 1 ] += factor * unorm8ToFloat( gp2->directed[ 1 ] );
+		directed[ 2 ] += factor * unorm8ToFloat( gp2->directed[ 2 ] );
 	}
 
 	if ( totalFactor > 0 && totalFactor < 0.99 )
@@ -224,42 +220,31 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 		totalFactor = 1.0f / totalFactor;
 
 		VectorScale( direction, totalFactor, direction );
-		luminance *= totalFactor;
-		ambientChroma[ 0 ] *= totalFactor;
-		ambientChroma[ 1 ] *= totalFactor;
-		directedChroma[ 0 ] *= totalFactor;
-		directedChroma[ 1 ] *= totalFactor;
+		VectorScale( ambient, totalFactor, ambient );
+		VectorScale( directed, totalFactor, directed );
 	}
 
-	direction[0] *= 1.0f / 127.0f;
-	direction[1] *= 1.0f / 127.0f;
-	direction[2] *= 1.0f / 127.0f;
-	luminance *= 1.0f / 255.0f;
-	ambientChroma[0] *= 1.0f / 254.0f;
-	ambientChroma[1] *= 1.0f / 254.0f;
-	directedChroma[0] *= 1.0f / 254.0f;
-	directedChroma[1] *= 1.0f / 254.0f;
+	// compute z-component of direction
+	direction[ 2 ] = 1.0f - fabsf( direction[ 0 ] ) + fabsf( direction[ 1 ] );
+	if( direction[ 2 ] < 0.0f ) {
+		float X = direction[ 0 ];
+		float Y = direction[ 1 ];
+		direction[ 0 ] = copysignf( 1.0f - fabs( Y ), X );
+		direction[ 1 ] = copysignf( 1.0f - fabs( X ), Y );
+	}
 
-	// unpack data
 	VectorNormalize2( direction, lightDir );
+	VectorCopy( ambient, ambientLight );
+	VectorCopy( directed, directedLight );
 
-	directedLight[ 0 ] = luminance * VectorLength( direction );
-	ambientLight[ 0 ] = luminance - directedLight[ 0 ];
-
-	if ( ambientLight[ 0 ] < r_forceAmbient->value )
+	if ( ambientLight[ 0 ] < r_forceAmbient->value &&
+	     ambientLight[ 1 ] < r_forceAmbient->value &&
+	     ambientLight[ 2 ] < r_forceAmbient->value )
 	{
 		ambientLight[ 0 ] = r_forceAmbient->value;
+		ambientLight[ 1 ] = r_forceAmbient->value;
+		ambientLight[ 2 ] = r_forceAmbient->value;
 	}
-
-	ambientLight[ 1 ] = ambientLight[ 0 ] + ambientChroma[ 0 ];
-	ambientLight[ 0 ] = ambientLight[ 0 ] - ambientChroma[ 0 ];
-	ambientLight[ 2 ] = ambientLight[ 0 ] - ambientChroma[ 1 ];
-	ambientLight[ 0 ] = ambientLight[ 0 ] + ambientChroma[ 1 ];
-
-	directedLight[ 1 ] = directedLight[ 0 ] + directedChroma[ 0 ];
-	directedLight[ 0 ] = directedLight[ 0 ] - directedChroma[ 0 ];
-	directedLight[ 2 ] = directedLight[ 0 ] - directedChroma[ 1 ];
-	directedLight[ 0 ] = directedLight[ 0 ] + directedChroma[ 1 ];
 
 //----(SA)  added
 	// cheats?  check for single player?
