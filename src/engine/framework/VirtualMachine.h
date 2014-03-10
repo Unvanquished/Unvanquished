@@ -34,6 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../../common/IPC.h"
 #include "../../common/String.h"
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 namespace VM {
 
@@ -46,13 +48,11 @@ enum vmType_t {
 	TYPE_END
 };
 
-struct NativeInProcessInfo;
-
 // Base class for a virtual machine instance
 class VMBase {
 public:
 	VMBase()
-		: processHandle(IPC::INVALID_HANDLE), inProcessInfo(nullptr) {}
+		: processHandle(IPC::INVALID_HANDLE), inProcess{nullptr, {}, {}, nullptr, false} {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module.
@@ -64,7 +64,7 @@ public:
 	// Check if the VM is active
 	bool IsActive() const
 	{
-		return processHandle != IPC::INVALID_HANDLE;
+		return processHandle != IPC::INVALID_HANDLE || inProcess.thread;
 	}
 
 	// Make sure the VM is closed on exit
@@ -81,16 +81,26 @@ public:
 		}, std::forward<Args>(args)...);
 	}
 
+	struct InProcessInfo {
+		std::unique_ptr<std::thread> thread;
+		std::mutex mutex;
+		std::condition_variable condition;
+		void* sharedLibHandle;
+		bool running;
+	};
+
 protected:
 	// System call handler
 	virtual void Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) const = 0;
 
 private:
+	void FreeInProcessVM();
+
 	// Used for the NaCl VMs
 	IPC::OSHandleType processHandle;
 
 	// Used by the native, in process VMs
-	NativeInProcessInfo* inProcessInfo;
+	InProcessInfo inProcess;
 
 	// Common
 	IPC::Socket rootSocket;

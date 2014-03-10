@@ -77,7 +77,7 @@ static std::string Win32StrError(uint32_t error)
 #endif
 
 // Platform-specific code to load a module
-static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, const char* const* env, bool reserve_mem)
+static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem)
 {
 #ifdef _WIN32
 	// Inherit the socket in the child process
@@ -120,16 +120,6 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	// Convert command line to UTF-16 and add a NUL terminator
 	std::wstring wcmdline = Str::UTF8To16(cmdline) + L"\0";
 
-	// Build environment data
-	std::vector<char> envData;
-	while (*env) {
-		// Include the terminating NUL byte
-		envData.insert(envData.begin(), *env, *env + strlen(*env) + 1);
-		env++;
-	}
-	// Terminate the environment string with an extra NUL byte
-	envData.push_back('\0');
-
 	// Create a job object to ensure the process is terminated if the parent dies
 	HANDLE job = CreateJobObject(NULL, NULL);
 	if (!job)
@@ -144,7 +134,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	PROCESS_INFORMATION processInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
 	startupInfo.cb = sizeof(startupInfo);
-	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, envData.data(), NULL, &startupInfo, &processInfo)) {
+	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
 		Com_Error(ERR_DROP, "VM: Could create child process: %s", Win32StrError(GetLastError()).c_str());
 	}
@@ -202,7 +192,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 		close(1);
 
 		// Load the target executable
-		execve(args[0], const_cast<char* const*>(args), const_cast<char* const*>(env));
+		execv(args[0], const_cast<char* const*>(args));
 
 		// If the exec fails, return errno to the parent through the pipe
 		write(pipefds[1], &errno, sizeof(int));
@@ -226,14 +216,9 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 }
 
 std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
-	// Environment variables, forward ROOT_SOCKET to NaCl module
-	char rootSocketHandle[32];
-	snprintf(rootSocketHandle, sizeof(rootSocketHandle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
-
-	const char* env[] = {rootSocketHandle, NULL};
-
 	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
+	std::string rootSocketFD = std::to_string(ROOT_SOCKET_FD);
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
 	std::string module, sel_ldr, irt, bootstrap;
@@ -269,11 +254,12 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	args.push_back(rootSocketRedir);
 	args.push_back("--");
 	args.push_back(module.c_str());
+	args.push_back(rootSocketFD.c_str());
 	args.push_back(NULL);
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
 
-	return InternalLoadModule(std::move(pair), args.data(), env, true);
+	return InternalLoadModule(std::move(pair), args.data(), true);
 }
 
 std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
@@ -293,18 +279,10 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, 
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
 
-	const char* env[] = {nullptr};
-	return InternalLoadModule(std::move(pair), args.data(), env, true);
+	return InternalLoadModule(std::move(pair), args.data(), true);
 }
 
-struct NativeInProcessInfo {
-	void* sharedLibHandle;
-	std::unique_ptr<std::thread> vmThread;
-	const char* vmArgs[2];
-	std::string vmSocketArg;
-};
-
-std::pair<NativeInProcessInfo*, IPC::Socket> CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name) {
+IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, VM::VMBase::InProcessInfo& inProcess) {
 	std::string filename = FS::Path::Build(FS::GetLibPath(), name + "-nacl-native-dll" + DLL_EXT);
 
 	Com_Printf("Loading VM module %s...\n", filename.c_str());
@@ -313,19 +291,24 @@ std::pair<NativeInProcessInfo*, IPC::Socket> CreateInProcessNativeVM(std::pair<I
 	if (!handle) {
 		Com_Error(ERR_DROP, "Failed to load shared library VM %s: %s", filename.c_str(), Sys_LibraryError());
 	}
+	inProcess.sharedLibHandle = handle;
 
 	int (*vmMain)(int, const char**) = (int (*)(int, const char**))(Sys_LoadFunction(handle, "main"));
+	//TODO check dlsym worked
 
-	NativeInProcessInfo* info = new NativeInProcessInfo;
+	std::string vmSocketArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
 
-	info->sharedLibHandle = handle;
-	info->vmSocketArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
-	info->vmArgs[0] = nullptr;
-	info->vmArgs[1] = info->vmSocketArg.c_str();
+	inProcess.running = true;
+	inProcess.thread = std::unique_ptr<std::thread>(new std::thread([=, &inProcess](){
+		const char* args[2] = {nullptr, vmSocketArg.c_str()};
+		vmMain(2, args);
 
-	info->vmThread = std::unique_ptr<std::thread>(new std::thread(vmMain, 2, info->vmArgs));
+		std::unique_lock<std::mutex> lock(inProcess.mutex);
+		inProcess.running = false;
+		inProcess.condition.notify_one();
+	}));
 
-	return {info, std::move(pair.first)};
+	return std::move(pair.first);
 }
 
 int VMBase::Create(Str::StringRef name, vmType_t type)
@@ -344,7 +327,7 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 	} else if (type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
 		std::tie(processHandle, rootSocket) = CreateNativeVM(std::move(pair), name, type == TYPE_NATIVE_EXE_DEBUG);
 	} else {
-		std::tie(inProcessInfo, rootSocket) = CreateInProcessNativeVM(std::move(pair), name);
+		rootSocket = CreateInProcessNativeVM(std::move(pair), name, inProcess);
 	}
 	vmType = type;
 
@@ -356,6 +339,36 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 	IPC::Reader reader = rootSocket.RecvMsg();
 	Com_Printf("Loaded module with the NaCl ABI");
 	return reader.Read<uint32_t>();
+}
+
+void VMBase::FreeInProcessVM() {
+	if (inProcess.thread) {
+		bool wait = true;
+		if (inProcess.running) {
+			std::unique_lock<std::mutex> lock(inProcess.mutex);
+			auto status = inProcess.condition.wait_for(lock, std::chrono::milliseconds(500));
+			if (status == std::cv_status::timeout) {
+				wait = false;
+			}
+		}
+
+		if (wait) {
+			Com_Printf("Waiting for the VM thread...");
+			inProcess.thread->join();
+		} else {
+			Com_Printf("The VM thread doesn't seem to stop, detaching it (bad things WILL ensue)");
+			inProcess.thread->detach();
+		}
+
+		inProcess.thread = nullptr;
+	}
+
+	if (inProcess.sharedLibHandle) {
+		Sys_UnloadLibrary(inProcess.sharedLibHandle);
+		inProcess.sharedLibHandle = nullptr;
+	}
+
+	inProcess.running = false;
 }
 
 void VMBase::Free()
@@ -374,11 +387,7 @@ void VMBase::Free()
 		waitpid(processHandle, NULL, 0);
 #endif
 	} else if (vmType == TYPE_NATIVE_DLL) {
-		// TODO avoit being locked?
-		Com_Printf("Waiting for the VM...");
-		inProcessInfo->vmThread->join();
-		delete inProcessInfo;
-		inProcessInfo = nullptr;
+		FreeInProcessVM();
 	}
 
 	processHandle = IPC::INVALID_HANDLE;
