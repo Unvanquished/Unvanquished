@@ -56,9 +56,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //#define VOLUMETRIC_LIGHTING 1
 
-#define DEBUG_OPTIMIZEVERTICES     0
-#define CALC_REDUNDANT_SHADOWVERTS 0
-
 #define GLSL_COMPILE_STARTUP_ONLY  1
 
 #define MAX_TEXTURE_MIPS      16
@@ -1752,10 +1749,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		vec3_t lightDirection;
 #endif
-
-#if DEBUG_OPTIMIZEVERTICES
-		unsigned int id;
-#endif
 	} srfVert_t;
 
 	typedef struct
@@ -2062,12 +2055,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		int           numVerts;
 		srfVert_t     *verts;
-#if CALC_REDUNDANT_SHADOWVERTS
-		int           redundantVertsCalculationNeeded;
-		int           *redundantLightVerts; // util to optimize IBOs
-		int           *redundantShadowVerts;
-		int           *redundantShadowAlphaTestVerts;
-#endif
+
 		VBO_t         *vbo;
 		IBO_t         *ibo;
 
@@ -3157,10 +3145,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_vboShadows;
 	extern cvar_t *r_vboLighting;
 	extern cvar_t *r_vboModels;
-	extern cvar_t *r_vboOptimizeVertices;
 	extern cvar_t *r_vboVertexSkinning;
 	extern cvar_t *r_vboDeformVertexes;
-	extern cvar_t *r_vboSmoothNormals;
 
 	extern cvar_t *r_mergeLeafSurfaces;
 
