@@ -6039,7 +6039,7 @@ R_LoadLightGrid
 */
 void R_LoadLightGrid( lump_t *l )
 {
-	int            i, j;
+	int            i, j, k;
 	vec3_t         maxs;
 	world_t        *w;
 	float          *wMins, *wMaxs;
@@ -6047,6 +6047,12 @@ void R_LoadLightGrid( lump_t *l )
 	bspGridPoint1_t *gridPoint1;
 	bspGridPoint2_t *gridPoint2;
 	float          lat, lng;
+	int            from[ 3 ], to[ 3 ];
+	float          weights[ 3 ] = { 0.25f, 0.5f, 0.25f };
+	float          *factors[ 3 ] = { weights, weights, weights };
+	vec3_t         ambientColor, directedColor, direction;
+	float          scale;
+
 
 	ri.Printf( PRINT_DEVELOPER, "...loading light grid\n" );
 
@@ -6105,9 +6111,6 @@ void R_LoadLightGrid( lump_t *l )
 	for ( i = 0; i < w->numLightGridPoints;
 	      i++, in++, gridPoint1++, gridPoint2++ )
 	{
-		vec3_t ambientColor, directedColor, direction;
-		float  scale;
-
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 		byte tmpAmbient[ 4 ];
 		byte tmpDirected[ 4 ];
@@ -6191,6 +6194,52 @@ void R_LoadLightGrid( lump_t *l )
 		}
 		gridPoint1->lightVecX = floatToSnorm8( direction[ 0 ] );
 		gridPoint2->lightVecY = floatToSnorm8( direction[ 1 ] );
+	}
+
+	// fill in gridpoints with zero light (samples in walls) to avoid
+	// darkening of objects near walls
+	gridPoint1 = w->lightGridData1;
+	gridPoint2 = w->lightGridData2;
+
+	for( k = 0; k < w->lightGridBounds[ 2 ]; k++ ) {
+		from[ 2 ] = k - 1;
+		to[ 2 ] = k + 1;
+
+		for( j = 0; j < w->lightGridBounds[ 1 ]; j++ ) {
+			from[ 1 ] = j - 1;
+			to[ 1 ] = j + 1;
+
+			for( i = 0; i < w->lightGridBounds[ 0 ];
+			     i++, gridPoint1++, gridPoint2++ ) {
+				from[ 0 ] = i - 1;
+				to[ 0 ] = i + 1;
+
+				if( gridPoint1->ambient[ 0 ] ||
+				    gridPoint1->ambient[ 1 ] ||
+				    gridPoint1->ambient[ 2 ] )
+					continue;
+
+				scale = R_InterpolateLightGrid( w, from, to, factors,
+								ambientColor, directedColor,
+								direction );
+				if( scale > 0.0f ) {
+					scale = 1.0f / scale;
+
+					VectorScale( ambientColor, scale, ambientColor );
+					VectorScale( directedColor, scale, directedColor );
+					VectorScale( direction, scale, direction );
+					
+					gridPoint1->ambient[ 0 ] = floatToUnorm8( ambientColor[ 0 ] );
+					gridPoint1->ambient[ 1 ] = floatToUnorm8( ambientColor[ 1 ] );
+					gridPoint1->ambient[ 2 ] = floatToUnorm8( ambientColor[ 2 ] );
+					gridPoint1->lightVecX = floatToSnorm8( direction[ 0 ] );
+					gridPoint2->directed[ 0 ] = floatToUnorm8( directedColor[ 0 ] );
+					gridPoint2->directed[ 1 ] = floatToUnorm8( directedColor[ 1 ] );
+					gridPoint2->directed[ 2 ] = floatToUnorm8( directedColor[ 2 ] );
+					gridPoint2->lightVecY = floatToSnorm8( direction[ 1 ] );
+				}
+			}
+		}
 	}
 
 	tr.lightGrid1Image = R_Create3DImage("<lightGrid1>", (const byte *)w->lightGridData1,

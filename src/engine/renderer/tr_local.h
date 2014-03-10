@@ -3639,6 +3639,9 @@ static inline byte floatToSnorm8(float f) {
 
 	void     R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType );
 	void     R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t forcedOrigin );
+	float R_InterpolateLightGrid( world_t *w, int from[3], int to[3],
+				      float *factors[3], vec3_t ambientLight,
+				      vec3_t directedLight, vec2_t lightDir );
 	int      R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 	void     R_TessLight( const trRefLight_t *light, const vec4_t color );
 
