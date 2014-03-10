@@ -57,14 +57,16 @@ void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 	ambCol = texel1.xyz;
 	lgtCol = texel2.xyz;
 
-	lgtDir.x = texel1.w;
-	lgtDir.y = texel2.w;
+	lgtDir.x = (255.0 * texel1.w - 128.0) / 127.0;
+	lgtDir.y = (255.0 * texel2.w - 128.0) / 127.0;
 	lgtDir.z = 1.0 - abs( lgtDir.x ) - abs( lgtDir.z );
 
 	vec2 signs = 2.0 * step( 0.0, lgtDir.xy ) - 1.0;
 	if( lgtDir.z < 0.0 ) {
 		lgtDir.xy = signs * ( vec2( 1.0 ) - abs( lgtDir.yx ) );
 	}
+
+	lgtDir = normalize( lgtDir );
 }
 #endif
 
