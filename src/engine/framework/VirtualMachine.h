@@ -52,7 +52,7 @@ enum vmType_t {
 class VMBase {
 public:
 	VMBase()
-		: processHandle(IPC::INVALID_HANDLE), inProcess{{}, {}, {}, nullptr, false} {}
+		: processHandle(IPC::INVALID_HANDLE) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module.
@@ -87,6 +87,9 @@ public:
 		std::condition_variable condition;
 		void* sharedLibHandle;
 		bool running;
+
+		InProcessInfo()
+			: sharedLibHandle(nullptr), running(false) {}
 	};
 
 protected:
