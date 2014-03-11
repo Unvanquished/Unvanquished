@@ -13,7 +13,9 @@ install:
 
 before_script:
   - wget http://clang.llvm.org/libstdc++4.6-clang11.patch;
+  - wget "http://gcc.gnu.org/viewcvs/gcc/branches/gcc-4_7-branch/libstdc%2B%2B-v3/include/std/condition_variable?view=patch&r1=193528&r2=193527&pathrev=193528" -O libstdc++4.6-thread-fix.patch
   - sudo patch /usr/include/c++/4.6/type_traits < libstdc++4.6-clang11.patch;
+  - sudo patch /usr/include/c++/4.6/condition_variable < libstdc++4.6-thread-fix.patch;
 
 script:
   - mkdir build
