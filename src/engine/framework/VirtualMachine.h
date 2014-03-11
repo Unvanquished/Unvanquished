@@ -52,7 +52,7 @@ enum vmType_t {
 class VMBase {
 public:
 	VMBase()
-		: processHandle(IPC::INVALID_HANDLE), inProcess{nullptr, {}, {}, nullptr, false} {}
+		: processHandle(IPC::INVALID_HANDLE), inProcess{{}, {}, {}, nullptr, false} {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module.
@@ -64,7 +64,7 @@ public:
 	// Check if the VM is active
 	bool IsActive() const
 	{
-		return processHandle != IPC::INVALID_HANDLE || inProcess.thread;
+		return processHandle != IPC::INVALID_HANDLE || inProcess.thread.joinable();
 	}
 
 	// Make sure the VM is closed on exit
@@ -82,7 +82,7 @@ public:
 	}
 
 	struct InProcessInfo {
-		std::unique_ptr<std::thread> thread;
+		std::thread thread;
 		std::mutex mutex;
 		std::condition_variable condition;
 		void* sharedLibHandle;

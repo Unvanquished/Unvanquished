@@ -134,7 +134,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	PROCESS_INFORMATION processInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
 	startupInfo.cb = sizeof(startupInfo);
-	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
+	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, "", NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
 		Com_Error(ERR_DROP, "VM: Could create child process: %s", Win32StrError(GetLastError()).c_str());
 	}
@@ -192,7 +192,8 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 		close(1);
 
 		// Load the target executable
-		execv(args[0], const_cast<char* const*>(args));
+		char* env[] = {nullptr};
+		execve(args[0], const_cast<char* const*>(args), env);
 
 		// If the exec fails, return errno to the parent through the pipe
 		write(pipefds[1], &errno, sizeof(int));
@@ -218,10 +219,10 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
 	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
-	std::string rootSocketFD = std::to_string(ROOT_SOCKET_FD);
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
 	std::string module, sel_ldr, irt, bootstrap;
+
 	// Extract the nexe from the pak so that sel_ldr can load it
 	module = name + "-" ARCH_STRING ".nexe";
 	try {
@@ -254,7 +255,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	args.push_back(rootSocketRedir);
 	args.push_back("--");
 	args.push_back(module.c_str());
-	args.push_back(rootSocketFD.c_str());
+	args.push_back(XSTRING(ROOT_SOCKET_FD));
 	args.push_back(NULL);
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
@@ -266,7 +267,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, 
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 
-    std::string handleArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle()).c_str();
+    std::string handleArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
 
 	std::string module = FS::Path::Build(libPath, name + "-nacl-native-exe" + EXE_EXT);
 	if (debug) {
@@ -289,24 +290,26 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 
 	void* handle = Sys_LoadLibrary(filename.c_str());
 	if (!handle) {
-		Com_Error(ERR_DROP, "Failed to load shared library VM %s: %s", filename.c_str(), Sys_LibraryError());
+		Com_Error(ERR_DROP, "VM: Failed to load shared library VM %s: %s", filename.c_str(), Sys_LibraryError());
 	}
 	inProcess.sharedLibHandle = handle;
 
 	int (*vmMain)(int, const char**) = (int (*)(int, const char**))(Sys_LoadFunction(handle, "main"));
-	//TODO check dlsym worked
+	if (!vmMain) {
+		Com_Error(ERR_DROP, "VM: Could not find main function in shared library VM %s", filename.c_str());
+	}
 
 	std::string vmSocketArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
 
 	inProcess.running = true;
-	inProcess.thread = std::unique_ptr<std::thread>(new std::thread([=, &inProcess](){
-		const char* args[2] = {nullptr, vmSocketArg.c_str()};
+	inProcess.thread = std::thread([vmMain, vmSocketArg, &inProcess]() {
+		const char* args[2] = {"vm", vmSocketArg.c_str()};
 		vmMain(2, args);
 
-		std::unique_lock<std::mutex> lock(inProcess.mutex);
+		std::lock_guard<std::mutex> lock(inProcess.mutex);
 		inProcess.running = false;
 		inProcess.condition.notify_one();
-	}));
+	});
 
 	return std::move(pair.first);
 }
@@ -342,7 +345,7 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 }
 
 void VMBase::FreeInProcessVM() {
-	if (inProcess.thread) {
+	if (inProcess.thread.joinable()) {
 		bool wait = true;
 		if (inProcess.running) {
 			std::unique_lock<std::mutex> lock(inProcess.mutex);
@@ -354,13 +357,11 @@ void VMBase::FreeInProcessVM() {
 
 		if (wait) {
 			Com_Printf("Waiting for the VM thread...");
-			inProcess.thread->join();
+			inProcess.thread.join();
 		} else {
 			Com_Printf("The VM thread doesn't seem to stop, detaching it (bad things WILL ensue)");
-			inProcess.thread->detach();
+			inProcess.thread.detach();
 		}
-
-		inProcess.thread = nullptr;
 	}
 
 	if (inProcess.sharedLibHandle) {
@@ -386,11 +387,11 @@ void VMBase::Free()
 		kill(processHandle, SIGKILL);
 		waitpid(processHandle, NULL, 0);
 #endif
+		processHandle = IPC::INVALID_HANDLE;
 	} else if (vmType == TYPE_NATIVE_DLL) {
 		FreeInProcessVM();
 	}
 
-	processHandle = IPC::INVALID_HANDLE;
 }
 
 } // namespace VM
