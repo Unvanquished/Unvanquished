@@ -967,7 +967,7 @@ static GLenum debugTypes[] =
 #define DEBUG_CALLBACK_CALL
 #endif
 static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
-                                       GLenum severity, GLsizei length, const GLchar *message, void *userParam )
+                                       GLenum severity, GLsizei length, const GLchar *message, const void *userParam )
 {
 	const char *debugTypeName;
 	const char *debugSeverity;
