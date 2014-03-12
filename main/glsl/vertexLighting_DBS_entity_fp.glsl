@@ -64,9 +64,9 @@ void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 
 	lgtDir.x = (texel1.w * 255.0 - 128.0) / 127.0;
 	lgtDir.y = (texel2.w * 255.0 - 128.0) / 127.0;
-	lgtDir.z = 1.0 - abs( lgtDir.x ) - abs( lgtDir.z );
+	lgtDir.z = 1.0 - abs( lgtDir.x ) - abs( lgtDir.y );
 
-	vec2 signs = 2.0 * step( 0.0, lgtDir.xy ) - 1.0;
+	vec2 signs = 2.0 * step( 0.0, lgtDir.xy ) - vec2( 1.0 );
 	if( lgtDir.z < 0.0 ) {
 		lgtDir.xy = signs * ( vec2( 1.0 ) - abs( lgtDir.yx ) );
 	}
