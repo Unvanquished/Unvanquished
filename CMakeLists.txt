@@ -69,12 +69,6 @@ option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
 
-
-set( NACL_SDK_PATH "" CACHE PATH "Path to native client SDK" )
-if( BUILD_GAME_NACL AND NOT NACL_SDK_PATH )
-  message( SEND_ERROR "You need to set the path to the native client SDK" )
-endif()
-
 ################################################################################
 # Determine platform
 ################################################################################
@@ -310,20 +304,6 @@ set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( TOOLS_DIR ${MOUNT_DIR}/tools )
 set( LCC_DIR ${TOOLS_DIR}/lcc )
 set( LIB_DIR ${MOUNT_DIR}/libs )
-if( CMAKE_HOST_WIN32 )
-  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/win_pnacl/bin )
-  set( PNACL_BIN_EXT ".bat" )
-elseif( CMAKE_HOST_APPLE )
-  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/mac_pnacl/bin )
-  set( PNACL_BIN_EXT "" )
-elseif( CMAKE_HOST_SYSTEM_NAME MATCHES "Linux" )
-  if( CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "amd64" )
-    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_pnacl/bin64 )
-  else()
-    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_pnacl/bin )
-  endif()
-  set( PNACL_BIN_EXT "" )
-endif()
 if( MSVC )
   if( ARCH STREQUAL "x86_64" )
     set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc64 )
@@ -342,6 +322,22 @@ elseif( APPLE )
   else()
     set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx32 )
   endif()
+elseif( LINUX )
+  if( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux64 )
+  else()
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux32 )
+  endif()
+endif()
+if( LINUX AND ARCH STREQUAL "x86_64" )
+  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin64 )
+else()
+  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin )
+endif()
+if( WIN32 )
+  set( PNACL_BIN_EXT ".bat" )
+else()
+  set( PNACL_BIN_EXT "" )
 endif()
 
 ################################################################################
@@ -936,9 +932,9 @@ if( DEPS_DIR )
   # Download them if they not available
   if( NOT EXISTS ${DEPS_DIR} )
     get_filename_component( BASENAME ${DEPS_DIR} NAME )
-    set( REMOTE "http://vanquished.zapto.org/~amanieu/unvanquished_deps/${BASENAME}.zip" )
+    set( REMOTE "http://vanquished.zapto.org/~amanieu/unvanquished_deps/${BASENAME}.tar.bz2" )
     message( STATUS "Downloading dependencies from '${REMOTE}'" )
-    file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}.zip SHOW_PROGRESS
+    file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}.tar.bz2 SHOW_PROGRESS
       STATUS DOWNLOAD_RESULT LOG DOWNLOAD_LOG )
     list( GET DOWNLOAD_RESULT 0 DOWNLOAD_STATUS )
     list( GET DOWNLOAD_RESULT 1 DOWNLOAD_STRING )
@@ -951,10 +947,10 @@ if( DEPS_DIR )
     message( STATUS "Download completed successfully" )
 
     # Extract the downloaded archive
-    execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${OBJ_DIR}/${BASENAME}.zip
+    execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${OBJ_DIR}/${BASENAME}.tar.bz2
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/external_deps RESULT_VARIABLE EXTRACT_RESULT )
     if( NOT EXTRACT_RESULT EQUAL 0 )
-      message( FATAL_ERROR "Could not extract ${BASENAME}.zip" )
+      message( FATAL_ERROR "Could not extract ${BASENAME}.tar.bz2" )
     endif()
   endif()
 

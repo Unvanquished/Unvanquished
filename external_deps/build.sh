@@ -7,25 +7,26 @@ set -u
 
 # Package versions
 PKGCONFIG_VERSION=0.28
-NASM_VERSION=2.11
+NASM_VERSION=2.11.02
 ZLIB_VERSION=1.2.8
 GMP_VERSION=5.1.3
 NETTLE_VERSION=2.7.1
 GEOIP_VERSION=1.6.0
-CURL_VERSION=7.34.0
-SDL2_VERSION=2.0.1
+CURL_VERSION=7.35.0
+SDL2_VERSION=2.0.2
 GLEW_VERSION=1.10.0
-PNG_VERSION=1.6.8
+PNG_VERSION=1.6.9
 JPEG_VERSION=1.3.0
 WEBP_VERSION=0.4.0
-FREETYPE_VERSION=2.5.2
+FREETYPE_VERSION=2.5.3
 OPENAL_VERSION=1.15.1
 OGG_VERSION=1.3.1
-VORBIS_VERSION=1.3.3
+VORBIS_VERSION=1.3.4
 SPEEX_VERSION=1.2rc1
 THEORA_VERSION=1.1.1
 OPUS_VERSION=1.1
-OPUSFILE_VERSION=0.4
+OPUSFILE_VERSION=0.5
+NACLSDK_VERSION=34.0.1825.4
 
 # Download and extract a file
 # Usage: download <filename> <URL>
@@ -210,6 +211,7 @@ build_sdl2() {
 		download "SDL2-${SDL2_VERSION}.dmg" "http://libsdl.org/release/SDL2-${SDL2_VERSION}.dmg"
 		mkdir -p "SDL2-${SDL2_VERSION}-mac"
 		hdiutil attach -mountpoint "SDL2-${SDL2_VERSION}-mac" "SDL2-${SDL2_VERSION}.dmg"
+		rm -rf "${PREFIX}/SDL2.framework"
 		cp -R "SDL2-${SDL2_VERSION}-mac/SDL2.framework" "${PREFIX}"
 		hdiutil detach "SDL2-${SDL2_VERSION}-mac"
 		;;
@@ -421,6 +423,53 @@ build_opusfile() {
 	cd ..
 }
 
+# Build the NaCl SDK
+build_naclsdk() {
+	case "${PLATFORM}" in
+	mingw*|msvc*)
+		local NACLSDK_PLATFORM=win
+		local EXE=.exe
+		;;
+	macosx*)
+		local NACLSDK_PLATFORM=mac
+		local EXE=
+		;;
+	linux*)
+		local NACLSDK_PLATFORM=linux
+		local EXE=
+		;;
+	esac
+	case "${PLATFORM}" in
+	*32)
+		local NACLSDK_ARCH=x86_32
+		local DAEMON_ARCH=x86
+		;;
+	*64)
+		local NACLSDK_ARCH=x86_64
+		local DAEMON_ARCH=x86_64
+		;;
+	esac
+	mkdir -p "naclsdk_${NACLSDK_PLATFORM}-${NACLSDK_VERSION}"
+	cd "naclsdk_${NACLSDK_PLATFORM}-${NACLSDK_VERSION}"
+	download "naclsdk_${NACLSDK_PLATFORM}-${NACLSDK_VERSION}.tar.bz2" "https://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/${NACLSDK_VERSION}/naclsdk_${NACLSDK_PLATFORM}.tar.bz2"
+	cp pepper_*"/tools/sel_ldr_${NACLSDK_ARCH}${EXE}" "${PREFIX}/sel_ldr${EXE}"
+	cp pepper_*"/tools/irt_core_${NACLSDK_ARCH}.nexe" "${PREFIX}/irt_core-${DAEMON_ARCH}.nexe"
+	cp -aT pepper_*"/toolchain/${NACLSDK_PLATFORM}_pnacl" "${PREFIX}/pnacl"
+	case "${PLATFORM}" in
+	linux32)
+		cp pepper_*"/tools/nacl_helper_bootstrap_x86_32" "${PREFIX}/nacl_helper_bootstrap"
+		rm -rf "${PREFIX}/pnacl/bin64"
+		rm -rf "${PREFIX}/pnacl/host_x86_64"
+		;;
+	linux64)
+		cp pepper_*"/tools/nacl_helper_bootstrap_x86_64" "${PREFIX}/nacl_helper_bootstrap"
+		rm -rf "${PREFIX}/pnacl/bin"
+		rm -rf "${PREFIX}/pnacl/host_x86_32"
+		;;
+	esac
+	cd ..
+}
+
 # Common setup code
 common_setup() {
 	PREFIX="${PWD}/${PLATFORM}"
@@ -508,17 +557,38 @@ setup_macosx64() {
 	common_setup
 }
 
+# Set up environment for 32-bit Linux
+setup_linux32() {
+	HOST=i686-pc-linux-gnu
+	MSVC_SHARED=(--disable-shared --enable-static)
+	export CFLAGS="-m32"
+	export CXXFLAGS="-m32"
+	export LDFLAGS="-m32"
+	common_setup
+}
+
+# Set up environment for 64-bit Linux
+setup_linux64() {
+	HOST=x86_64-unknown-linux-gnu
+	MSVC_SHARED=(--disable-shared --enable-static)
+	export CFLAGS="-m64"
+	export CXXFLAGS="-m64"
+	export LDFLAGS="-m64"
+	common_setup
+}
+
 # Usage
 if [ "${#}" -lt "2" ]; then
 	echo "usage: ${0} <platform> <package[s]...>"
 	echo "Script to build dependencies for platforms which do not provide them"
 	echo "Platforms: msvc32 msvc64 mingw32 mingw64 macosx32 macosx64"
-	echo "Packages: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
+	echo "Packages: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile naclsdk"
 	echo
 	echo "Packages requires for each platform:"
-	echo "Linux to Windows cross-compile: zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
-	echo "Native Windows compile: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
-	echo "Native Mac OS X compile: pkgconfig nasm gmp nettle geoip sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
+	echo "Linux native compile: naclsdk (and possibly others depending on what packages your distribution provides)"
+	echo "Linux to Windows cross-compile: zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile naclsdk"
+	echo "Native Windows compile: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile naclsdk"
+	echo "Native Mac OS X compile: pkgconfig nasm gmp nettle geoip sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile naclsdk"
 	exit 1
 fi
 
@@ -540,10 +610,12 @@ rm -rf "${PREFIX}/man"
 rm -rf "${PREFIX}/share"
 rm -rf "${PREFIX}/lib/pkgconfig"
 find "${PREFIX}/bin" -not -type d -not -name '*.dll' -execdir rm -f -- {} \;
-rmdir "${PREFIX}/bin" 2> /dev/null || true
 find "${PREFIX}/lib" -name '*.la' -execdir rm -f -- {} \;
 find "${PREFIX}/lib" -name '*.dll.a' -execdir bash -c 'rm -f -- "`basename "{}" .dll.a`.a"' \;
 find "${PREFIX}/lib" -name '*.dylib' -execdir bash -c 'rm -f -- "`basename "{}" .dylib`.a"' \;
+rmdir "${PREFIX}/bin" 2> /dev/null || true
+rmdir "${PREFIX}/include" 2> /dev/null || true
+rmdir "${PREFIX}/lib" 2> /dev/null || true
 
 # Strip libraries
 case "${PLATFORM}" in
