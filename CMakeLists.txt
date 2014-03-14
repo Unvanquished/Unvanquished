@@ -304,6 +304,11 @@ set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( TOOLS_DIR ${MOUNT_DIR}/tools )
 set( LCC_DIR ${TOOLS_DIR}/lcc )
 set( LIB_DIR ${MOUNT_DIR}/libs )
+if( CMAKE_CFG_INTDIR STREQUAL "." )
+  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
+else()
+  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
+endif()
 if( MSVC )
   if( ARCH STREQUAL "x86_64" )
     set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc64 )
@@ -1208,11 +1213,6 @@ function( GAMEMODULE )
   set( oneValueArgs NAME HAS_NACL HAS_QVM )
   set( multiValueArgs COMPILE_DEF FILES NACL_FILES NATIVE_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-  if( CMAKE_CFG_INTDIR STREQUAL "." )
-    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
-  else()
-    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
-  endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_DLL )
     add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
@@ -1312,44 +1312,44 @@ function( GAMEMODULE )
 
     # Generate PNaCL platform-independant executable
     add_custom_command(
-      OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
         ${NACL_COMPILE_OPTIONS}
-        -o ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
         ${OBJECTS}
       DEPENDS ${OBJECTS}
     )
 
     # Generate NaCl executables for x86 and x86_64
     add_custom_command(
-      OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
         ${NACL_TRANSLATE_OPTIONS}
         -arch i686
-        -o ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
     add_custom_command(
-      OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
         ${NACL_TRANSLATE_OPTIONS}
         -arch x86-64
-        -o ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
-        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
 
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-nacl ALL
-      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
     )
 
     # Create the build directory before building
     add_custom_command( TARGET ${GAMEMODULE_NAME}-nacl PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${GAMEMODULE_FULL_OUTPUT_DIR}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${FULL_OUTPUT_DIR}
       COMMAND ${CMAKE_COMMAND} -E make_directory ${NACL_DIR}
     )
   endif()
@@ -1474,4 +1474,19 @@ if( BUILD_TTY_CLIENT )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
+endif()
+
+################################################################################
+# NaCl SDK files
+################################################################################
+
+if( LINUX )
+  add_custom_target( nacl_sdk ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
+else()
+  add_custom_target( nacl_sdk ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe )
 endif()
