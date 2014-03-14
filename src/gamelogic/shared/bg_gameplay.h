@@ -50,9 +50,9 @@ extern float LEVEL1_CLAW_U_RANGE;
 extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_POUNCE_DISTANCE        300 // pitch between LEVEL1_POUNCE_MINPITCH and pi/4 results in this distance
 #define LEVEL1_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
-#define LEVEL1_POUNCE_COOLDOWN        1500
+#define LEVEL1_POUNCE_COOLDOWN        2000
 #define LEVEL1_WALLPOUNCE_MAGNITUDE   600
-#define LEVEL1_WALLPOUNCE_COOLDOWN    1000
+#define LEVEL1_WALLPOUNCE_COOLDOWN    1200
 #define LEVEL1_SIDEPOUNCE_MAGNITUDE   400
 #define LEVEL1_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
 #define LEVEL1_SIDEPOUNCE_COOLDOWN    750
