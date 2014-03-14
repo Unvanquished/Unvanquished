@@ -2741,7 +2741,7 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 	b = ( gentity_t * )second;
 
 	// Always prefer target that isn't yet targeted.
-	// This makes group attacks more and dretch spam during rushes less efficient.
+	// This makes group attacks more and dretch spam less efficient.
 	{
 		if ( a->numTrackedBy == 0 && b->numTrackedBy > 0 )
 		{
@@ -2753,6 +2753,30 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 		}
 	}
 
+	// Prefer target that can be aimed at more quickly.
+	// This makes the turret spend less time tracking enemies.
+	{
+		vec3_t aimDir, aDir, bDir;
+
+		AngleVectors( cmpTurret->buildableAim, aimDir, NULL, NULL );
+
+		VectorSubtract( a->s.origin, cmpTurret->s.origin, aDir );
+		VectorSubtract( b->s.origin, cmpTurret->s.origin, bDir );
+
+		VectorNormalize( aDir );
+		VectorNormalize( bDir );
+
+		if ( DotProduct( aDir, aimDir ) > DotProduct( bDir, aimDir ) )
+		{
+			return -1;
+		}
+		else
+		{
+			return 1;
+		}
+	}
+
+	/*
 	// Prefer smaller distance. Use zones so close targets with different hit ranges are treated equally.
 	// Note that one target can't hide the other, since the other wouldn't be valid.
 	{
@@ -2780,6 +2804,7 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 			return 1;
 		}
 	}
+	*/
 }
 
 static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolean newTarget )
