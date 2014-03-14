@@ -1612,7 +1612,6 @@ static const struct {
 	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
 	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qtrue,  qno,    &g_admitDefeatVotesPercent },
 	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qtrue,  qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
-	{ "armageddon",   qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qtrue,  qmaybe, &g_drawVotesPercent },
 	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qtrue,  qno,    &g_mapVotesPercent },
 	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qtrue,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qtrue,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
@@ -2059,22 +2058,6 @@ vote_is_disabled:
 		level.team[ team ].voteDelay = 3000;
 		strcpy( level.team[ team ].voteString, "evacuation" );
 		strcpy( level.team[ team ].voteDisplayString, "End match in a draw" );
-		break;
-
-	case VOTE_ARMAGEDDON:
-		if ( atoi( arg ) < 1 || atoi( arg ) > 100 )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: Argument must be a number between 1 and 100\n") ),
-			                            cmd ) );
-			return;
-		}
-
-		level.team[ team ].voteDelay = 3000;
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "armageddon %s", Quote( arg ) );
-		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
-		             "Destroy %s%% of all defensive buildings", arg );
 		break;
 
 	case VOTE_MAP_RESTART:

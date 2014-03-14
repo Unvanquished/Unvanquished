@@ -5196,59 +5196,6 @@ void G_BaseSelfDestruct( team_t team )
 	}
 }
 
-/*
-============
-G_Armageddon
-
-Destroys a part of all defensive buildings.
-strength in ]0,1] is the destruction quota.
-============
-*/
-void G_Armageddon( float strength )
-{
-	int       entNum;
-	gentity_t *ent;
-
-	if ( strength <= 0.0f )
-	{
-		return;
-	}
-
-	for ( entNum = MAX_CLIENTS; entNum < level.num_entities; entNum++ )
-	{
-		ent = &level.gentities[ entNum ];
-
-		// check for alive buildable
-		if ( ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
-		{
-			continue;
-		}
-
-		// check for defensive building
-		switch ( ent->s.modelindex )
-		{
-			case BA_A_ACIDTUBE:
-			case BA_A_TRAPPER:
-			case BA_A_HIVE:
-			case BA_A_BARRICADE:
-			case BA_H_MGTURRET:
-			case BA_H_TESLAGEN:
-				break;
-
-			default:
-				continue;
-		}
-
-		// russian roulette
-		if ( rand() / ( float )RAND_MAX > strength )
-		{
-			continue;
-		}
-
-		G_Damage( ent, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
-	}
-}
-
 buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 {
 	buildLog_t *log = &level.buildLog[ level.buildId++ % MAX_BUILDLOG ];

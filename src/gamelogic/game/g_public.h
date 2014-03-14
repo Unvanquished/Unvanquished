@@ -65,7 +65,6 @@ int               G_LayoutList( const char *map, char *list, int len );
 void              G_LayoutSelect( void );
 void              G_LayoutLoad( void );
 void              G_BaseSelfDestruct( team_t team );
-void              G_Armageddon( float strength );
 int               G_GetBuildPointsInt( team_t team );
 int               G_GetMarkedBuildPointsInt( team_t team );
 buildLog_t        *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
