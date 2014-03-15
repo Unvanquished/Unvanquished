@@ -1110,6 +1110,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_REAL_TIME:
 			return Com_RealTime( (qtime_t*) VMA( 1 ) );
 
+		case CG_SNAPVECTOR:
+			cls.nCgameUselessSyscalls ++;
+			SnapVector( (float*) VMA( 1 ) );
+			return 0;
+
 		case CG_CIN_PLAYCINEMATIC:
 			return CIN_PlayCinematic( (char*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ] );
 
