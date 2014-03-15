@@ -69,7 +69,7 @@ typedef struct
 	qhandle_t ( *RegisterSkin )( const char *name );
 	qhandle_t ( *RegisterShader )( const char *name,
 				       RegisterShaderFlags_t flags );
-	void   ( *RegisterFont )( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
+	void   ( *RegisterFont )( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font );
 	void   ( *UnregisterFont )( fontInfo_t *font );
 	void   ( *RegisterFontVM )( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
 	void   ( *UnregisterFontVM )( fontHandle_t font );
@@ -178,12 +178,6 @@ typedef struct
 	int ( *AnimNumFrames )( qhandle_t hAnim );
 	int ( *AnimFrameRate )( qhandle_t hAnim );
 
-	void ( *GetTextureSize )( int textureID, int *width, int *height );
-	void ( *Add2dPolysIndexed ) ( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader );
-	qhandle_t ( *GenerateTexture ) ( const byte *pic, int width, int height );
-	void ( *ScissorEnable ) ( qboolean enable );
-	void ( *ScissorSet ) ( int x, int y, int w, int h );
-	const char * ( *ShaderNameFromHandle ) ( qhandle_t shader );
 	// XreaL END
 
 	// VisTest API
@@ -195,7 +189,16 @@ typedef struct
 
 	// color grading
 	void      ( *SetColorGrading ) ( int slot, qhandle_t hShader );
+
+	void ( *ScissorEnable ) ( qboolean enable );
+	void ( *ScissorSet ) ( int x, int y, int w, int h );
+
 	void ( *SetAltShaderTokens ) ( const char * );
+
+	void ( *GetTextureSize )( int textureID, int *width, int *height );
+	void ( *Add2dPolysIndexed )( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader );
+	qhandle_t ( *GenerateTexture )( const byte *pic, int width, int height );
+	const char *( *ShaderNameFromHandle )( qhandle_t shader );
 } refexport_t;
 
 //

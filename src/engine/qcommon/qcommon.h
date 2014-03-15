@@ -814,7 +814,7 @@ double Sys_DoubleTime( void );
 
 // commandLine should not include the executable name (argv[0])
 void   Com_Init( char *commandLine );
-void   Com_Frame( void );
+void   Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) );
 void   Com_Shutdown();
 
 /*
@@ -836,6 +836,7 @@ void CL_InitKeyCommands( void );
 void     CL_Init( void );
 void     CL_ClearStaticDownload( void );
 void     CL_Disconnect( qboolean showMainMenu );
+void     CL_SendDisconnect( void );
 void     CL_Shutdown( void );
 void     CL_Frame( int msec );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
@@ -886,10 +887,6 @@ void Key_WriteBindings( fileHandle_t f );
 // for writing the config files
 
 void S_ClearSoundBuffer( void );
-
-// call before filesystem access
-
-void SCR_DebugGraph( float value, int color );  // FIXME: move logging to common?
 
 // AVI files have the start of pixel lines 4 byte-aligned
 #define AVI_LINE_PADDING 4

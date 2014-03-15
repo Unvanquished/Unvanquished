@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_model_md5.c -- Doom 3 .md5mesh model loading and caching
 
 #include "tr_local.h"
+#include "tr_model_skel.h"
 
 /*
 =================
@@ -35,7 +36,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	md5Model_t    *md5;
 	md5Bone_t     *bone;
 	md5Surface_t  *surf;
-	md5Triangle_t *tri;
+	srfTriangle_t *tri;
 	md5Vertex_t   *v;
 	md5Weight_t   *weight;
 	int           version;
@@ -45,6 +46,14 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	vec3_t        boneOrigin;
 	quat_t        boneQuat;
 	matrix_t      boneMat;
+
+	int           numRemaining;
+	growList_t    sortedTriangles;
+	growList_t    vboTriangles;
+	growList_t    vboSurfaces;
+
+	int           numBoneReferences;
+	int           boneReferences[ MAX_BONES ];
 
 	buf_p = ( char * ) buffer;
 
@@ -63,7 +72,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	mod->type = MOD_MD5;
 	mod->dataSize += sizeof( md5Model_t );
-	md5 = mod->model.md5 = (md5Model_t*) ri.Hunk_Alloc( sizeof( md5Model_t ), h_low );
+	md5 = mod->md5 = (md5Model_t*) ri.Hunk_Alloc( sizeof( md5Model_t ), h_low );
 
 	// skip commandline <arguments string>
 	token = COM_ParseExt2( &buf_p, qtrue );
@@ -252,37 +261,35 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		if ( Q_stricmp( token, "shader" ) )
 		{
-			Q_strncpyz( surf->shader, "<default>", sizeof( surf->shader ) );
+			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'shader' found '%s' in model '%s'\n", token, modName );
+			return qfalse;
+		}
+
+		token = COM_ParseExt2( &buf_p, qfalse );
+		Q_strncpyz( surf->shader, token, sizeof( surf->shader ) );
+
+		//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' uses shader '%s'\n", modName, surf->shader);
+
+		// FIXME .md5mesh meshes don't have surface names
+		// lowercase the surface name so skin compares are faster
+		//Q_strlwr(surf->name);
+		//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has surface '%s'\n", modName, surf->name);
+
+		// register the shaders
+		sh = R_FindShader( surf->shader, SHADER_3D_DYNAMIC, RSF_DEFAULT );
+
+		if ( sh->defaultShader )
+		{
 			surf->shaderIndex = 0;
 		}
 		else
 		{
-			token = COM_ParseExt2( &buf_p, qfalse );
-			Q_strncpyz( surf->shader, token, sizeof( surf->shader ) );
-
-			//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' uses shader '%s'\n", modName, surf->shader);
-
-			// FIXME .md5mesh meshes don't have surface names
-			// lowercase the surface name so skin compares are faster
-			//Q_strlwr(surf->name);
-			//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has surface '%s'\n", modName, surf->name);
-
-			// register the shaders
-			sh = R_FindShader( surf->shader, LIGHTMAP_NONE, qtrue );
-
-			if ( sh->defaultShader )
-			{
-				surf->shaderIndex = 0;
-			}
-			else
-			{
-				surf->shaderIndex = sh->index;
-			}
-
-			token = COM_ParseExt2( &buf_p, qtrue );
+			surf->shaderIndex = sh->index;
 		}
 
 		// parse numVerts <number>
+		token = COM_ParseExt2( &buf_p, qtrue );
+
 		if ( Q_stricmp( token, "numVerts" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numVerts' found '%s' in model '%s'\n", token, modName );
@@ -299,6 +306,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		}
 
 		surf->verts = (md5Vertex_t*) ri.Hunk_Alloc( sizeof( *v ) * surf->numVerts, h_low );
+		assert( ((intptr_t) surf->verts & 15) == 0 );
 
 		for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 		{
@@ -368,7 +376,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			          modName, SHADER_MAX_TRIANGLES, surf->numTriangles );
 		}
 
-		surf->triangles = (md5Triangle_t*) ri.Hunk_Alloc( sizeof( *tri ) * surf->numTriangles, h_low );
+		surf->triangles = (srfTriangle_t*) ri.Hunk_Alloc( sizeof( *tri ) * surf->numTriangles, h_low );
 
 		for ( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
 		{
@@ -490,14 +498,19 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			AddPointToBounds( v->position, md5->bounds[ 0 ], md5->bounds[ 1 ] );
 		}
 
-		// calc normals
+		// calc tangent spaces
+#if 1
 		{
 			const float *v0, *v1, *v2;
 			const float *t0, *t1, *t2;
+			vec3_t      tangent;
+			vec3_t      binormal;
 			vec3_t      normal;
 
 			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 			{
+				VectorClear( v->tangent );
+				VectorClear( v->binormal );
 				VectorClear( v->normal );
 			}
 
@@ -511,11 +524,22 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 				t1 = surf->verts[ tri->indexes[ 1 ] ].texCoords;
 				t2 = surf->verts[ tri->indexes[ 2 ] ].texCoords;
 
+#if 1
+				R_CalcTangentSpace( tangent, binormal, normal, v0, v1, v2, t0, t1, t2 );
+#else
 				R_CalcNormalForTriangle( normal, v0, v1, v2 );
+				R_CalcTangentsForTriangle( tangent, binormal, v0, v1, v2, t0, t1, t2 );
+#endif
 
 				for ( k = 0; k < 3; k++ )
 				{
 					float *v;
+
+					v = surf->verts[ tri->indexes[ k ] ].tangent;
+					VectorAdd( v, tangent, v );
+
+					v = surf->verts[ tri->indexes[ k ] ].binormal;
+					VectorAdd( v, binormal, v );
 
 					v = surf->verts[ tri->indexes[ k ] ].normal;
 					VectorAdd( v, normal, v );
@@ -524,10 +548,105 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 			{
+				VectorNormalize( v->tangent );
+				v->tangent[ 3 ] = 0;
+				VectorNormalize( v->binormal );
+				v->binormal[ 3 ] = 0;
 				VectorNormalize( v->normal );
 				v->normal[ 3 ] = 0;
 			}
 		}
+#else
+		{
+			int         k;
+			float       bb, s, t;
+			vec3_t      bary;
+			vec3_t      faceNormal;
+			md5Vertex_t *dv[ 3 ];
+
+			for ( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
+			{
+				dv[ 0 ] = &surf->verts[ tri->indexes[ 0 ] ];
+				dv[ 1 ] = &surf->verts[ tri->indexes[ 1 ] ];
+				dv[ 2 ] = &surf->verts[ tri->indexes[ 2 ] ];
+
+				R_CalcNormalForTriangle( faceNormal, dv[ 0 ]->position, dv[ 1 ]->position, dv[ 2 ]->position );
+
+				// calculate barycentric basis for the triangle
+				bb = ( dv[ 1 ]->texCoords[ 0 ] - dv[ 0 ]->texCoords[ 0 ] ) * ( dv[ 2 ]->texCoords[ 1 ] - dv[ 0 ]->texCoords[ 1 ] ) - ( dv[ 2 ]->texCoords[ 0 ] - dv[ 0 ]->texCoords[ 0 ] ) * ( dv[ 1 ]->texCoords[ 1 ] -
+				     dv[ 0 ]->texCoords[ 1 ] );
+
+				if ( fabs( bb ) < 0.00000001f )
+				{
+					continue;
+				}
+
+				// do each vertex
+				for ( k = 0; k < 3; k++ )
+				{
+					// calculate s tangent vector
+					s = dv[ k ]->texCoords[ 0 ] + 10.0f;
+					t = dv[ k ]->texCoords[ 1 ];
+					bary[ 0 ] = ( ( dv[ 1 ]->texCoords[ 0 ] - s ) * ( dv[ 2 ]->texCoords[ 1 ] - t ) - ( dv[ 2 ]->texCoords[ 0 ] - s ) * ( dv[ 1 ]->texCoords[ 1 ] - t ) ) / bb;
+					bary[ 1 ] = ( ( dv[ 2 ]->texCoords[ 0 ] - s ) * ( dv[ 0 ]->texCoords[ 1 ] - t ) - ( dv[ 0 ]->texCoords[ 0 ] - s ) * ( dv[ 2 ]->texCoords[ 1 ] - t ) ) / bb;
+					bary[ 2 ] = ( ( dv[ 0 ]->texCoords[ 0 ] - s ) * ( dv[ 1 ]->texCoords[ 1 ] - t ) - ( dv[ 1 ]->texCoords[ 0 ] - s ) * ( dv[ 0 ]->texCoords[ 1 ] - t ) ) / bb;
+
+					dv[ k ]->tangent[ 0 ] = bary[ 0 ] * dv[ 0 ]->position[ 0 ] + bary[ 1 ] * dv[ 1 ]->position[ 0 ] + bary[ 2 ] * dv[ 2 ]->position[ 0 ];
+					dv[ k ]->tangent[ 1 ] = bary[ 0 ] * dv[ 0 ]->position[ 1 ] + bary[ 1 ] * dv[ 1 ]->position[ 1 ] + bary[ 2 ] * dv[ 2 ]->position[ 1 ];
+					dv[ k ]->tangent[ 2 ] = bary[ 0 ] * dv[ 0 ]->position[ 2 ] + bary[ 1 ] * dv[ 1 ]->position[ 2 ] + bary[ 2 ] * dv[ 2 ]->position[ 2 ];
+
+					VectorSubtract( dv[ k ]->tangent, dv[ k ]->position, dv[ k ]->tangent );
+					VectorNormalize( dv[ k ]->tangent );
+
+					// calculate t tangent vector (binormal)
+					s = dv[ k ]->texCoords[ 0 ];
+					t = dv[ k ]->texCoords[ 1 ] + 10.0f;
+					bary[ 0 ] = ( ( dv[ 1 ]->texCoords[ 0 ] - s ) * ( dv[ 2 ]->texCoords[ 1 ] - t ) - ( dv[ 2 ]->texCoords[ 0 ] - s ) * ( dv[ 1 ]->texCoords[ 1 ] - t ) ) / bb;
+					bary[ 1 ] = ( ( dv[ 2 ]->texCoords[ 0 ] - s ) * ( dv[ 0 ]->texCoords[ 1 ] - t ) - ( dv[ 0 ]->texCoords[ 0 ] - s ) * ( dv[ 2 ]->texCoords[ 1 ] - t ) ) / bb;
+					bary[ 2 ] = ( ( dv[ 0 ]->texCoords[ 0 ] - s ) * ( dv[ 1 ]->texCoords[ 1 ] - t ) - ( dv[ 1 ]->texCoords[ 0 ] - s ) * ( dv[ 0 ]->texCoords[ 1 ] - t ) ) / bb;
+
+					dv[ k ]->binormal[ 0 ] = bary[ 0 ] * dv[ 0 ]->position[ 0 ] + bary[ 1 ] * dv[ 1 ]->position[ 0 ] + bary[ 2 ] * dv[ 2 ]->position[ 0 ];
+					dv[ k ]->binormal[ 1 ] = bary[ 0 ] * dv[ 0 ]->position[ 1 ] + bary[ 1 ] * dv[ 1 ]->position[ 1 ] + bary[ 2 ] * dv[ 2 ]->position[ 1 ];
+					dv[ k ]->binormal[ 2 ] = bary[ 0 ] * dv[ 0 ]->position[ 2 ] + bary[ 1 ] * dv[ 1 ]->position[ 2 ] + bary[ 2 ] * dv[ 2 ]->position[ 2 ];
+
+					VectorSubtract( dv[ k ]->binormal, dv[ k ]->position, dv[ k ]->binormal );
+					VectorNormalize( dv[ k ]->binormal );
+
+					// calculate the normal as cross product N=TxB
+#if 0
+					CrossProduct( dv[ k ]->tangent, dv[ k ]->binormal, dv[ k ]->normal );
+					VectorNormalize( dv[ k ]->normal );
+
+					// Gram-Schmidt orthogonalization process for B
+					// compute the cross product B=NxT to obtain
+					// an orthogonal basis
+					CrossProduct( dv[ k ]->normal, dv[ k ]->tangent, dv[ k ]->binormal );
+
+					if ( DotProduct( dv[ k ]->normal, faceNormal ) < 0 )
+					{
+						VectorInverse( dv[ k ]->normal );
+						//VectorInverse(dv[k]->tangent);
+						//VectorInverse(dv[k]->binormal);
+					}
+
+#else
+					VectorAdd( dv[ k ]->normal, faceNormal, dv[ k ]->normal );
+#endif
+				}
+			}
+
+#if 1
+
+			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
+			{
+				//VectorNormalize(v->tangent);
+				//VectorNormalize(v->binormal);
+				VectorNormalize( v->normal );
+			}
+
+#endif
+		}
+#endif
 
 #if 0
 
@@ -552,6 +671,113 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 #endif
 	}
+
+	// split the surfaces into VBO surfaces by the maximum number of GPU vertex skinning bones
+	Com_InitGrowList( &vboSurfaces, 10 );
+
+	for ( i = 0, surf = md5->surfaces; i < md5->numSurfaces; i++, surf++ )
+	{
+		// sort triangles
+		Com_InitGrowList( &sortedTriangles, 1000 );
+
+		for ( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
+		{
+			skelTriangle_t *sortTri = (skelTriangle_t*) Com_Allocate( sizeof( *sortTri ) );
+
+			for ( k = 0; k < 3; k++ )
+			{
+				sortTri->indexes[ k ] = tri->indexes[ k ];
+				sortTri->vertexes[ k ] = &surf->verts[ tri->indexes[ k ] ];
+			}
+
+			sortTri->referenced = qfalse;
+
+			Com_AddToGrowList( &sortedTriangles, sortTri );
+		}
+
+		//qsort(sortedTriangles.elements, sortedTriangles.currentElements, sizeof(void *), CompareTrianglesByBoneReferences);
+
+#if 0
+
+		for ( j = 0; j < sortedTriangles.currentElements; j++ )
+		{
+			int            b[ MAX_WEIGHTS * 3 ];
+
+			skelTriangle_t *sortTri = Com_GrowListElement( &sortedTriangles, j );
+
+			for ( k = 0; k < 3; k++ )
+			{
+				v = sortTri->vertexes[ k ];
+
+				for ( l = 0; l < MAX_WEIGHTS; l++ )
+				{
+					b[ k * 3 + l ] = ( l < v->numWeights ) ? v->weights[ l ]->boneIndex : 9999;
+				}
+
+				qsort( b, MAX_WEIGHTS * 3, sizeof( int ), CompareBoneIndices );
+				//ri.Printf(PRINT_ALL, "bone indices: %i %i %i %i\n", b[k * 3 + 0], b[k * 3 + 1], b[k * 3 + 2], b[k * 3 + 3]);
+			}
+		}
+
+#endif
+
+		numRemaining = sortedTriangles.currentElements;
+
+		while ( numRemaining )
+		{
+			numBoneReferences = 0;
+			Com_Memset( boneReferences, 0, sizeof( boneReferences ) );
+
+			Com_InitGrowList( &vboTriangles, 1000 );
+
+			for ( j = 0; j < sortedTriangles.currentElements; j++ )
+			{
+				skelTriangle_t *sortTri = (skelTriangle_t*) Com_GrowListElement( &sortedTriangles, j );
+
+				if ( sortTri->referenced )
+				{
+					continue;
+				}
+
+				if ( AddTriangleToVBOTriangleList( &vboTriangles, sortTri, &numBoneReferences, boneReferences ) )
+				{
+					sortTri->referenced = qtrue;
+				}
+			}
+
+			if ( !vboTriangles.currentElements )
+			{
+				ri.Printf( PRINT_WARNING, "R_LoadMD5: could not add triangles to a remaining VBO surfaces for model '%s'\n", modName );
+				Com_DestroyGrowList( &vboTriangles );
+				break;
+			}
+
+			AddSurfaceToVBOSurfacesList( &vboSurfaces, &vboTriangles, md5, surf, i, numBoneReferences, boneReferences );
+			numRemaining -= vboTriangles.currentElements;
+
+			Com_DestroyGrowList( &vboTriangles );
+		}
+
+		for ( j = 0; j < sortedTriangles.currentElements; j++ )
+		{
+			skelTriangle_t *sortTri = (skelTriangle_t*) Com_GrowListElement( &sortedTriangles, j );
+
+			Com_Dealloc( sortTri );
+		}
+
+		Com_DestroyGrowList( &sortedTriangles );
+	}
+
+	// move VBO surfaces list to hunk
+	md5->numVBOSurfaces = vboSurfaces.currentElements;
+	md5->vboSurfaces = (srfVBOMD5Mesh_t**) ri.Hunk_Alloc( md5->numVBOSurfaces * sizeof( *md5->vboSurfaces ), h_low );
+
+	for ( i = 0; i < md5->numVBOSurfaces; i++ )
+	{
+		md5->vboSurfaces[ i ] = ( srfVBOMD5Mesh_t * ) Com_GrowListElement( &vboSurfaces, i );
+	}
+
+	Com_DestroyGrowList( &vboSurfaces );
 
 	return qtrue;
 }

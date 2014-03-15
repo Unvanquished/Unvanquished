@@ -300,6 +300,8 @@ typedef enum cgameImport_s
   CG_R_SETALTSHADERTOKENS,
   CG_S_UPDATEENTITYVELOCITY,
   CG_S_SETREVERB,
+  CG_S_BEGINREGISTRATION,
+  CG_S_ENDREGISTRATION,
   CG_ROCKET_INIT,
   CG_ROCKET_SHUTDOWN,
   CG_ROCKET_LOADDOCUMENT,
@@ -620,6 +622,8 @@ void            trap_PrepareKeyUp( void );
 void            trap_R_SetAltShaderTokens( const char * );
 void            trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity );
 void            trap_S_SetReverb( int slotNum, const char* presetName, float ratio );
+void            trap_S_BeginRegistration( void );
+void            trap_S_EndRegistration( void );
 void            trap_Rocket_Init( void );
 void            trap_Rocket_Shutdown( void );
 void            trap_Rocket_LoadDocument( const char *path );

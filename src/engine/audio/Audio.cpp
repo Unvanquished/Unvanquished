@@ -46,7 +46,7 @@ namespace Audio {
     static Cvar::Cvar<std::string> captureDeviceString("audio.al.captureDevice", "the OpenAL capture device to use", Cvar::ARCHIVE, "");
     static Cvar::Cvar<std::string> availableCaptureDevices("audio.al.availableCaptureDevices", "the available capture OpenAL devices", Cvar::NONE, "");
 
-    // We mimic the behavior of the previous sound system by allowing only one looping ousnd per entity.
+    // We mimic the behavior of the previous sound system by allowing only one looping sound per entity.
     // (and only one entities) CGame will add at each frame all the loops: if a loop hasn't been given
     // in a frame, it means it sould be destroyed.
     struct entityLoop_t {
@@ -230,9 +230,17 @@ namespace Audio {
         }
     }
 
+    void BeginRegistration() {
+        BeginSampleRegistration();
+    }
+
     sfxHandle_t RegisterSFX(Str::StringRef filename) {
         // TODO: what should we do if we aren't initialized?
         return RegisterSample(filename)->GetHandle();
+    }
+
+    void EndRegistration() {
+        EndSampleRegistration();
     }
 
     void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx) {

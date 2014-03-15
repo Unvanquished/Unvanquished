@@ -611,8 +611,6 @@ qboolean CL_InternalConsolePrint( const char *text )
 	int      c, i, l;
 	int      color;
 
-	CL_WriteClientChatLog( text );
-
 	// for some demos we don't want to ever show anything on the console
 	if ( cl_noprint && cl_noprint->integer )
 	{

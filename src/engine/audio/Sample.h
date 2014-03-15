@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Audio {
 
+    //TODO remove once we have VM handles
     template<typename T>
     class HandledResource {
         public:
@@ -88,21 +89,18 @@ namespace Audio {
     template<typename T>
     std::vector<int> HandledResource<T>::inactiveHandles;
 
-    //TODO handle memory pressure: load and unload buffers automatically
-    class Sample: public HandledResource<Sample> {
+    class Sample: public HandledResource<Sample>, public Resource::Resource {
         public:
             Sample(std::string name);
-            ~Sample();
+            virtual ~Sample() OVERRIDE FINAL;
 
-            void Use();
+            virtual bool Load() OVERRIDE FINAL;
+            virtual void Cleanup() OVERRIDE FINAL;
 
             AL::Buffer& GetBuffer();
 
-            const std::string& GetName();
-
         private:
             AL::Buffer buffer;
-            std::string name;
     };
 
     void InitSamples();
@@ -110,7 +108,9 @@ namespace Audio {
 
 	std::vector<std::string> ListSamples();
 
-    Sample* RegisterSample(Str::StringRef filename);
+    void BeginSampleRegistration();
+    std::shared_ptr<Sample> RegisterSample(Str::StringRef filename);
+    void EndSampleRegistration();
 }
 
 #endif //AUDIO_SAMPLE_H_

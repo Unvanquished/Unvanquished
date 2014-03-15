@@ -77,11 +77,7 @@ Maryland 20850 USA.
 //    touch the font bitmaps.
 
 
-#ifdef USE_XREAL_RENDERER
-#include "../rendererGL/tr_local.h"
-#else
 #include "tr_local.h"
-#endif
 
 #include "../qcommon/qcommon.h"
 #include "../qcommon/q_unicode.h"
@@ -464,11 +460,7 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int 
 
 	ri.Free( buffer );
 
-#ifdef USE_XREAL_RENDERER
 	h = RE_RegisterShaderFromImage( fileName, image );
-#else
-	h = RE_RegisterShaderFromImage( fileName, LIGHTMAP_2D, image );
-#endif
 
 	for ( j = from; j < to; j++ )
 	{
@@ -642,7 +634,7 @@ static void RE_FreeFontFile( void *data )
 	}
 }
 
-static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font )
+static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font )
 {
 	FT_Face       face, fallback;
 	void          *faceData, *fallbackData;
@@ -694,13 +686,14 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		}
 		else if ( pointSize == registeredFont[ i ].pointSize && Q_stricmp( strippedName, registeredFont[ i ].name ) == 0 )
 		{
-			Com_Memcpy( font, &registeredFont[ i ], sizeof( fontInfo_t ) );
+			*font =  &registeredFont[ i ];
 			++fontUsage[ i ];
 			return i;
 		}
 	}
 
-	memset( font, 0, sizeof( fontInfo_t ) );
+	*font = &registeredFont[ fontNo ];
+	memset( *font, 0, sizeof( fontInfo_t ) );
 
 	if ( fontNo < 0 )
 	{
@@ -720,7 +713,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		fdOffset = 0;
 		fdFile = (byte*) faceData;
 
-		glyphs = font->glyphBlock[0] = (glyphInfo_t*) ri.Z_Malloc( sizeof( glyphBlock_t ) );
+		glyphs = (*font)->glyphBlock[0] = (glyphInfo_t*) ri.Z_Malloc( sizeof( glyphBlock_t ) );
 		memset( glyphs, 0, sizeof( glyphBlock_t ) );
 
 		for ( i = 0; i < GLYPHS_PER_FONT; i++ )
@@ -747,10 +740,10 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 			fdOffset += sizeof( glyphs[ i ].shaderName );
 		}
 
-		font->pointSize = pointSize;
-		font->height = height;
-		font->glyphScale = readFloat();
-		Q_strncpyz( font->name, registeredName, sizeof( font->name ) );
+		(*font)->pointSize = pointSize;
+		(*font)->height = height;
+		(*font)->glyphScale = readFloat();
+		Q_strncpyz( (*font)->name, registeredName, sizeof( (*font)->name ) );
 
 		ri.FS_FreeFile( faceData );
 
@@ -759,7 +752,6 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 			glyphs[ i ].glyph = RE_RegisterShader( glyphs[ i ].shaderName, RSF_NOMIP );
 		}
 
-		Com_Memcpy( &registeredFont[ fontNo ], font, sizeof( fontInfo_t ) );
 		++fontUsage[ fontNo ];
 		return fontNo;
 	}
@@ -772,7 +764,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 	}
 
 	// FIXME: fallback name OR index no.
-	Q_strncpyz( font->name, strippedName, sizeof( font->name ) );
+	Q_strncpyz( (*font)->name, strippedName, sizeof( (*font)->name ) );
 
 	Q_strncpyz( fileName, fontName, sizeof( fileName ) );
 
@@ -840,39 +832,38 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		}
 	}
 
-	font->face = face;
-	font->faceData = faceData;
-	font->fallback = fallback;
-	font->fallbackData = fallbackData;
-	font->pointSize = pointSize;
-	font->glyphScale = Com_Clamp( 24.0f, 64.0f, r_fontScale->value ) / pointSize;
-	font->height = ceil( ( face->height / 64.0 ) * ( face->size->metrics.y_scale / 65536.0 ) * font->glyphScale );
+	(*font)->face = face;
+	(*font)->faceData = faceData;
+	(*font)->fallback = fallback;
+	(*font)->fallbackData = fallbackData;
+	(*font)->pointSize = pointSize;
+	(*font)->glyphScale = Com_Clamp( 24.0f, 64.0f, r_fontScale->value ) / pointSize;
+	(*font)->height = ceil( ( face->height / 64.0 ) * ( face->size->metrics.y_scale / 65536.0 ) * (*font)->glyphScale );
 
-	RE_RenderChunk( font, 0 );
+	RE_RenderChunk( *font, 0 );
 
-	Com_Memcpy( &registeredFont[ fontNo ], font, sizeof( fontInfo_t ) );
 	++fontUsage[ fontNo ];
 	return fontNo;
 }
 
-void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font )
+void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font )
 {
 	RE_RegisterFont_Internal( fontName, fallbackName, pointSize, font );
 }
 
 void RE_RegisterFontVM( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *metrics )
 {
-	fontInfo_t font;
+	fontInfo_t *font;
 	fontHandle_t handle = RE_RegisterFont_Internal( fontName, fallbackName, pointSize, &font );
 
 	if ( handle >= 0 )
 	{
 		++fontUsageVM[ handle ];
 		metrics->handle = handle;
-		metrics->isBitmap = !!font.face;
-		metrics->pointSize = font.pointSize;
-		metrics->height = font.height;
-		metrics->glyphScale = font.glyphScale;
+		metrics->isBitmap = !!font->face;
+		metrics->pointSize = font->pointSize;
+		metrics->height = font->height;
+		metrics->glyphScale = font->glyphScale;
 	}
 	else
 	{
@@ -897,7 +888,11 @@ void RE_UnregisterFont_Internal( fontHandle_t handle )
 		return;
 	}
 
-	fontUsage[ handle ]--;
+	if ( --fontUsage[ handle ] )
+	{
+		return;
+	}
+
 
 	if ( registeredFont[ handle ].face )
 	{
@@ -916,6 +911,7 @@ void RE_UnregisterFont_Internal( fontHandle_t handle )
 		if ( registeredFont[ handle ].glyphBlock[ i ] && registeredFont[ handle ].glyphBlock[ i ] != nullGlyphs )
 		{
 			ri.Free( registeredFont[ handle ].glyphBlock[ i ] );
+			registeredFont[ handle ].glyphBlock[ i ] = NULL;
 		}
 	}
 
@@ -933,7 +929,7 @@ void RE_UnregisterFont( fontInfo_t *font )
 			continue;
 		}
 
-		if ( font && ( font->pointSize == registeredFont[ i ].pointSize && !Q_stricmp( font->name, registeredFont[ i ].name ) ) )
+		if ( font && font != &registeredFont[ i ] )
 		{
 			continue; // name & size don't match
 		}

@@ -37,10 +37,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include "../sys/sys_local.h"
 
-#ifdef USE_MUMBLE
 #include "libmumblelink.h"
-#endif
-
 #include "../qcommon/crypto.h"
 
 #include "../framework/CommandSystem.h"
@@ -573,8 +570,6 @@ Just adds default parameters that cgame doesn't need to know about
 */
 void CL_CM_LoadMap( const char *mapname )
 {
-	int checksum;
-
 	// DHM - Nerve :: If we are not running the server, then set expected usage here
 	if ( !com_sv_running->integer )
 	{
@@ -587,7 +582,7 @@ void CL_CM_LoadMap( const char *mapname )
 		Cvar_Set( "com_errorDiagnoseIP", "" );
 	}
 
-	CM_LoadMap( mapname, qtrue, &checksum );
+	CM_LoadMap( mapname, qtrue );
 }
 
 /*
@@ -1713,7 +1708,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			}
 			if( args[ 3 ] )
 			{
-				Audio::UpdateEntityPosition( args[ 1 ], (float*) VMA( 3 ) );
+				Audio::UpdateEntityVelocity( args[ 1 ], (float*) VMA( 3 ) );
 			}
 
 			Audio::AddEntityLoopingSound( args[ 1 ], args[ 4 ]);
@@ -2452,6 +2447,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Audio::SetReverb( args[ 1 ], (const char*) VMA( 2 ), VMF( 3 ) );
 			return 0;
 
+		case CG_S_BEGINREGISTRATION:
+			cls.nCgameSoundSyscalls ++;
+			Audio::BeginRegistration();
+			return 0;
+
+		case CG_S_ENDREGISTRATION:
+			cls.nCgameSoundSyscalls ++;
+			Audio::EndRegistration();
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
@@ -2666,8 +2671,6 @@ void CL_InitCGame( void )
 	CL_ClearKeys();
 	Key_ClearStates();
 
-	CL_WriteClientLog( va("`~=-----------------=~`\n MAP: %s \n`~=-----------------=~`\n", mapname ) );
-
 //  if( cl_autorecord->integer ) {
 //      Cvar_Set( "g_synchronousClients", "1" );
 //  }
@@ -2864,15 +2867,11 @@ void CL_FirstSnapshot( void )
 		Cvar_Set( "activeAction", "" );
 	}
 
-#ifdef USE_MUMBLE
-
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
 		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application okay\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
 	}
-
-#endif
 
 #ifdef USE_VOIP
 

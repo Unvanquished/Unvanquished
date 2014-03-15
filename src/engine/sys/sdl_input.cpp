@@ -1628,7 +1628,6 @@ void IN_Frame( void )
 	}
 
 	IN_ProcessEvents( dropInput );
-	dropInput = qfalse;
 	Rocket_Update();
 
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
@@ -1664,6 +1663,11 @@ void IN_Frame( void )
 void IN_DropInputsForFrame( void )
 {
 	dropInput = qtrue;
+}
+
+void IN_FrameEnd( void )
+{
+	dropInput = qfalse;
 }
 
 /*

@@ -376,6 +376,12 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 			return stepped;
 		}
 
+		// never step up when flying upwards with the jetpack
+		if ( pm->ps->velocity[ 2 ] > 0.0f && ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE ) )
+		{
+			return stepped;
+		}
+
 		VectorCopy( pm->ps->origin, down_o );
 		VectorCopy( pm->ps->velocity, down_v );
 

@@ -418,7 +418,6 @@ void CG_Rocket_BuildResolutionList( const char *args )
 	char        *p;
 	char        *out;
 	char        *s = NULL;
-	resolution_t *resolution;
 	int          i;
 
 	trap_Cvar_VariableStringBuffer( "r_availableModes", buf, sizeof( buf ) );

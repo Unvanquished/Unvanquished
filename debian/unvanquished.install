@@ -1,5 +1,4 @@
 obj-*-*-*/daemon			usr/lib/games/unvanquished/
-obj-*-*-*/renderer*.so			usr/lib/games/unvanquished/
 obj-*-*-*/cgame-qvm-native.so		usr/lib/games/unvanquished/
 obj-*-*-*/ui-qvm-native.so		usr/lib/games/unvanquished/
 

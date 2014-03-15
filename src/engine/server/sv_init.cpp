@@ -542,7 +542,6 @@ This is NOT called for map_restart
 void SV_SpawnServer( const char *server )
 {
 	int        i;
-	int        checksum;
 	qboolean   isBot;
 
 	// shut down the existing game if it is running
@@ -554,9 +553,6 @@ void SV_SpawnServer( const char *server )
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
 	CL_MapLoading();
-
-	// make sure all the client stuff is unloaded
-	CL_ShutdownAll();
 
 	// clear the whole hunk because we're (re)loading the server
 	Hunk_Clear();
@@ -615,12 +611,10 @@ void SV_SpawnServer( const char *server )
 	if (!FS_LoadPak(va("map-%s", server)))
 		Com_Error(ERR_DROP, "Could not load map pak\n");
 
-	CM_LoadMap( va( "maps/%s.bsp", server ), qfalse, &checksum );
+	CM_LoadMap( va( "maps/%s.bsp", server ), qfalse );
 
 	// set serverinfo visible name
 	Cvar_Set( "mapname", server );
-
-	Cvar_Set( "sv_mapChecksum", va( "%i", checksum ) );
 
 	sv_newGameShlib = Cvar_Get( "sv_newGameShlib", "", CVAR_TEMP );
 
@@ -801,7 +795,6 @@ void SV_Init( void )
 	sv_reconnectlimit = Cvar_Get( "sv_reconnectlimit", "3", 0 );
 	sv_padPackets = Cvar_Get( "sv_padPackets", "0", 0 );
 	sv_killserver = Cvar_Get( "sv_killserver", "0", 0 );
-	sv_mapChecksum = Cvar_Get( "sv_mapChecksum", "", CVAR_ROM );
 
 	sv_lanForceRate = Cvar_Get( "sv_lanForceRate", "1", 0 );
 

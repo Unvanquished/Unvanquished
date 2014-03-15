@@ -669,8 +669,6 @@ typedef struct centity_s
 	particleSystem_t      *jetPackPS;
 	jetPackState_t        jetPackState;
 
-	particleSystem_t      *poisonCloudedPS;
-
 	particleSystem_t      *entityPS;
 	qboolean              entityPSMissing;
 
@@ -1139,9 +1137,6 @@ typedef struct
 	consoleLine_t           consoleLines[ MAX_CONSOLE_LINES ];
 	int                     numConsoleLines;
 
-	particleSystem_t        *poisonCloudPS;
-	particleSystem_t        *poisonCloudedPS;
-
 	float                   painBlendValue;
 	float                   painBlendTarget;
 	int                     lastHealth;
@@ -1412,7 +1407,6 @@ typedef struct
 	sfxHandle_t humanBuildablePrebuild;
 	sfxHandle_t humanBuildableDamage[ 4 ];
 
-	sfxHandle_t alienL1Grab;
 	sfxHandle_t alienL4ChargePrepare;
 	sfxHandle_t alienL4ChargeStart;
 
@@ -1434,8 +1428,6 @@ typedef struct
 	sfxHandle_t buildableRepairSound;
 	sfxHandle_t buildableRepairedSound;
 
-	qhandle_t   poisonCloudPS;
-	qhandle_t   poisonCloudedPS;
 	qhandle_t   alienEvolvePS;
 	qhandle_t   alienAcidTubePS;
 

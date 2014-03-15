@@ -1943,7 +1943,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( !down )
 	{
 		// Handle any +commands which were invoked on the corresponding key-down
-		Cmd::ExecuteCommand(va("keyup %d %d %u\n", plusCommand.check, key, time));
+		Cmd::BufferCommandText(va("keyup %d %d %u", plusCommand.check, key, time));
 
 		if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
 		{
@@ -1991,8 +1991,8 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		if ( kb )
 		{
 			// down-only command
-			Cmd::BufferCommandTextAfter(va("setkeydata %d %d %u\n%s\n", plusCommand.check, key + 1, time, kb), true);
-			Cmd::BufferCommandTextAfter(va("setkeydata %d\n", plusCommand.check), true);
+			Cmd::BufferCommandTextAfter(va("setkeydata %d %d %u\n%s", plusCommand.check, key + 1, time, kb), true);
+			Cmd::BufferCommandTextAfter(va("setkeydata %d", plusCommand.check), true);
 		}
 	}
 }
