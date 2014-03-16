@@ -20,6 +20,8 @@ models/buildables/drill/drill
         when destroyed models/buildables/drill/drill_dead
 }
 
+// Used for the glowing effect of the low poly drill model
+// The low poly drill steals its body shader from the low poly repeater (lazy, lazy Ishq!)
 models/buildables/drill/energy
 {
         {
