@@ -669,9 +669,6 @@ static inline byte floatToSnorm8(float f) {
 		vec4_t *color;
 		vec2_t *st;
 		vec2_t *lightCoord;
-		vec3_t *ambientLight;
-		vec3_t *directedLight;
-		vec3_t *lightDir;
 		int    (*boneIndexes)[ 4 ];
 		vec4_t *boneWeights;
 		int     numVerts;
