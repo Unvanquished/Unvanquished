@@ -257,7 +257,7 @@ static cvarTable_t gameCvarTable[] =
 
 	// latched vars
 
-	{ &g_maxclients,                  "sv_maxclients",                 "8",                                CVAR_SERVERINFO | CVAR_LATCH,                    0, qfalse           },
+	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, qfalse           },
 
 	{ NULL,                           "g_mapStartupMessage",           "",                                 0,                                               0, qfalse           },
 
@@ -266,12 +266,12 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_maxGameClients,              "g_maxGameClients",              "0",                                CVAR_SERVERINFO,                                 0, qfalse           },
 
-	{ &g_timelimit,                   "timelimit",                     "0",                                CVAR_SERVERINFO |  CVAR_NORESTART,               0, qtrue            },
+	{ &g_timelimit,                   "timelimit",                     "45",                               CVAR_SERVERINFO |  CVAR_NORESTART,               0, qtrue            },
 
 	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
-	{ &g_friendlyFire,                "g_friendlyFire",                "0",                                CVAR_SERVERINFO,                                 0, qtrue            },
-	{ &g_friendlyBuildableFire,       "g_friendlyBuildableFire",       "0",                                CVAR_SERVERINFO,                                 0, qtrue            },
+	{ &g_friendlyFire,                "g_friendlyFire",                "1",                                CVAR_SERVERINFO,                                 0, qtrue            },
+	{ &g_friendlyBuildableFire,       "g_friendlyBuildableFire",       "1",                                CVAR_SERVERINFO,                                 0, qtrue            },
 	{ &g_dretchPunt,                  "g_dretchPunt",                  "1",                                0,                                               0, qtrue            },
 
 	{ &g_teamForceBalance,            "g_teamForceBalance",            "0",                                0,                                               0, qtrue            },
@@ -371,7 +371,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_markDeconstruct,             "g_markDeconstruct",             "19",                               CVAR_SERVERINFO,                                 0, qtrue            },
 
 	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, qfalse           },
-	{ &g_currentMapRotation,          "g_currentMapRotation",          "-1",                                0,                                               0, qfalse           }, // -1 = NOT_ROTATING
+	{ &g_currentMapRotation,          "g_currentMapRotation",          "-1",                               0,                                               0, qfalse           }, // -1 = NOT_ROTATING
 	{ &g_mapRotationNodes,            "g_mapRotationNodes",            "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_mapRotationStack,            "g_mapRotationStack",            "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, qtrue            },
