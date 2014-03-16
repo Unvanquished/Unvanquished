@@ -578,8 +578,7 @@ static inline byte floatToSnorm8(float f) {
 		ATTR_INDEX_COLOR,
 
 		// GPU vertex skinning
-		ATTR_INDEX_BONE_INDEXES,
-		ATTR_INDEX_BONE_WEIGHTS,
+		ATTR_INDEX_BONE_FACTORS,
 
 		// GPU vertex animations
 		ATTR_INDEX_POSITION2,
@@ -599,8 +598,7 @@ static inline byte floatToSnorm8(float f) {
 		"attr_Binormal",
 		"attr_Normal",
 		"attr_Color",
-		"attr_BoneIndexes",
-		"attr_BoneWeights",
+		"attr_BoneFactors",
 		"attr_Position2",
 		"attr_Tangent2",
 		"attr_Binormal2",
@@ -617,8 +615,7 @@ static inline byte floatToSnorm8(float f) {
 	  ATTR_NORMAL         = BIT( ATTR_INDEX_NORMAL ),
 	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
 
-	  ATTR_BONE_INDEXES   = BIT( ATTR_INDEX_BONE_INDEXES ),
-	  ATTR_BONE_WEIGHTS   = BIT( ATTR_INDEX_BONE_WEIGHTS ),
+	  ATTR_BONE_FACTORS   = BIT( ATTR_INDEX_BONE_FACTORS ),
 
 	  // for .md3 interpolation
 	  ATTR_POSITION2      = BIT( ATTR_INDEX_POSITION2 ),
@@ -773,7 +770,6 @@ static inline byte floatToSnorm8(float f) {
 	  GF_TRIANGLE,
 	  GF_SAWTOOTH,
 	  GF_INVERSE_SAWTOOTH,
-
 	  GF_NOISE
 	} genFunc_t;
 

@@ -61,14 +61,9 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 		stateBits |= ATTR_TEXCOORD;
 	}
 
-	if ( data.boneWeights )
+	if ( data.boneIndexes && data.boneWeights )
 	{
-		stateBits |= ATTR_BONE_WEIGHTS;
-	}
-
-	if ( data.boneIndexes )
-	{
-		stateBits |= ATTR_BONE_INDEXES;
+		stateBits |= ATTR_BONE_FACTORS;
 	}
 
 	if ( data.numFrames )
@@ -99,9 +94,9 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 
 static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i )
 {
-	if ( i == ATTR_INDEX_BONE_INDEXES )
+	if ( i == ATTR_INDEX_BONE_FACTORS )
 	{
-		vbo->attribs[ i ].componentType = GL_INT;
+		vbo->attribs[ i ].componentType = GL_UNSIGNED_SHORT;
 	}
 	else
 	{
@@ -138,6 +133,10 @@ static size_t R_GetSizeForType( GLenum type )
 			return sizeof( unsigned char );
 		case GL_BYTE:
 			return sizeof( signed char );
+		case GL_UNSIGNED_SHORT:
+			return sizeof( unsigned short );
+		case GL_SHORT:
+			return sizeof( short );
 		default:
 			Com_Error( ERR_FATAL, "R_GetSizeForType: ERROR unknown type\n" );
 			return 0;
@@ -253,7 +252,6 @@ static void R_SetAttributeLayoutsSeperate( VBO_t *vbo )
 static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 {
 	int32_t i;
-	uint32_t stride = 0;
 	uint32_t offset = 0;
 	uint32_t positionBits = ATTR_POSITION | ATTR_NORMAL | ATTR_TANGENT | ATTR_BINORMAL;
 
@@ -352,6 +350,13 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo )
 	}
 }
 
+// index has to be in range 0-255, weight has to be >= 0 and < 1
+static inline unsigned short
+boneFactor( int index, float weight ) {
+	int scaledWeight = lrintf( weight * 256.0 );
+	return (unsigned short)( ( index << 8 ) | MIN( scaledWeight, 255 ) );
+}
+
 static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 {
 	uint32_t v;
@@ -432,14 +437,17 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 			VERTEXCOPY( v, color, ATTR_INDEX_COLOR, float );
 		}
 
-		if ( ( vbo->attribBits & ATTR_BONE_INDEXES ) )
+		if ( ( vbo->attribBits & ATTR_BONE_FACTORS ) )
 		{
-			VERTEXCOPY( v, boneIndexes, ATTR_INDEX_BONE_INDEXES, int );
-		}
+			uint32_t j;
+			unsigned short *tmp = (unsigned short *) ( outData + vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].ofs + v * vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].realStride );
 
-		if ( ( vbo->attribBits & ATTR_BONE_WEIGHTS ) )
-		{
-			VERTEXCOPY( v, boneWeights, ATTR_INDEX_BONE_WEIGHTS, float );
+			tmp[ 0 ] = boneFactor( inData.boneIndexes[ v ][ 0 ],
+					       1.0f - inData.boneWeights[ v ][ 0 ]);
+			for ( j = 1; j < 4; j++ ) {
+				tmp[ j ] = boneFactor( inData.boneIndexes[ v ][ j ],
+						       inData.boneWeights[ v ][ j ] );
+			}
 		}
 	}
 
