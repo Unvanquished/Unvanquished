@@ -387,7 +387,7 @@ void Rocket_Init( void )
 	// Create the menu context
 	menuContext = Rocket::Core::CreateContext( "menuContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
 
-	// Add the listenr so we know where to give mouse/keyboard control to
+	// Add the listener so we know where to give mouse/keyboard control to
 	menuContext->GetRootElement()->AddEventListener( "show", &fm );
 	menuContext->GetRootElement()->AddEventListener( "hide", &fm );
 	menuContext->GetRootElement()->AddEventListener( "close", &fm );
@@ -396,7 +396,7 @@ void Rocket_Init( void )
 	// Create the HUD context
 	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
 
-	// Add the event listner instancer
+	// Add the event listener instancer
 	EventInstancer* event_instancer = new EventInstancer();
 	Rocket::Core::Factory::RegisterEventListenerInstancer( event_instancer );
 	event_instancer->RemoveReference();

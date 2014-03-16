@@ -54,6 +54,8 @@ public:
 		}
 		else if ( cls.keyCatchers && cls.state >= CA_PRIMED )
 		{
+			Key_ClearStates();
+			CL_ClearKeys();
 			Key_SetCatcher( 0 );
 		}
 	}
