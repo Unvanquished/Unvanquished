@@ -26,13 +26,13 @@
 		#infos{
 			display:block;
 		}
-		
+
 		#infos div{
 			width: 25%;
 			display:inline-block;
 			text-align:center;
 		}
-		
+
 		#infos div:nth-child(1n){
 			text-align:left;
 		}
@@ -60,14 +60,14 @@
 			text-align:center;
 			font-size:2em;
 		}
-		
+
         </style>
     </head>
-    <body onload="buildDS teams" id="scoreboard">
-    
+    <body onload="buildDS playerList" id="scoreboard">
+
     <h2>Aliens</h2><h2>Humans</h2>
 	<div class="container">
-	<datagrid source="teams.aliens" id="aliens">
+	<datagrid source="playerList.aliens" id="aliens">
 		<col fields="num" formatter="PlayerName" width="40%">Name</col>
 		<col fields="kills" width="10%">Kills</col>
 		<col fields="deaths" width="15%">Deaths</col>
@@ -76,7 +76,7 @@
 	</datagrid>
 	</div>
 	<div class="container">
-	<datagrid source="teams.humans" id="humans">
+	<datagrid source="playerList.humans" id="humans">
 		<col fields="num" formatter="PlayerName" width="40%">Name</col>
 		<col fields="kills" width="10%">Kills</col>
 		<col fields="deaths" width="15%">Deaths</col>
@@ -85,7 +85,7 @@
 	</datagrid>
 	</div>
 	<div class="container">
-	<datagrid source="teams.spectators">
+	<datagrid source="playerList.spectators">
 		<col fields="num" formatter="PlayerName" width="45%">Name:</col>
 	</datagrid>
 	</div>
@@ -96,5 +96,5 @@
 		<div>Time left: 12:34</div>
 		<div>Next Map: parpax</div>
     </div>
-    </body> 
+    </body>
 </rml>
