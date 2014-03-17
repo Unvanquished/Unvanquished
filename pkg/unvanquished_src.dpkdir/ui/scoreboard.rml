@@ -64,7 +64,6 @@
         </style>
     </head>
     <body onload="buildDS playerList" id="scoreboard">
-
     <h2>Aliens</h2><h2>Humans</h2>
 	<div class="container">
 	<datagrid source="playerList.aliens" id="aliens">
