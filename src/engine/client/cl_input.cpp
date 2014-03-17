@@ -760,7 +760,10 @@ usercmd_t CL_CreateCmd( void )
 	CL_KeyMove( &cmd );
 
 	// get basic movement from mouse
-	CL_MouseMove( &cmd );
+	if ( ! ( cls.keyCatchers & KEYCATCH_UI ) )
+	{
+		CL_MouseMove( &cmd );
+	}
 
 	// get basic movement from joystick or controller
 	if ( cl_xbox360ControllerAvailable->integer )
