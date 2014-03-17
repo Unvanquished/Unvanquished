@@ -1283,11 +1283,17 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 				text = ( team == TEAM_ALIENS ) ? "[egg]" : "[telenode]";
 				break;
 
+			case IBE_MAINSTRUCTURE:
+				text = ( team == TEAM_ALIENS ) ? "[overmind]" : "[reactor]";
+				break;
+
 			case IBE_NOROOM:
 				text = "⧉";
-			default:;
-		}
+				break;
 
+			default:
+				break;
+		}
 
 		if ( shader )
 		{
@@ -1297,6 +1303,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 			CG_DrawPic( picX - picH / 2, picY - picH / 2, picH, picH, bs->noPowerShader );
 			trap_R_SetColor( NULL );
 		}
+
 		if ( text )
 		{
 			rectDef_t rect;

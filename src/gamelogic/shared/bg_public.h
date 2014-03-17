@@ -298,6 +298,7 @@ typedef enum
   IBE_SURFACE,          // map doesn't allow building on that surface
   IBE_DISABLED,         // building has been disabled for team
   IBE_LASTSPAWN,        // may not replace last spawn with non-spawn
+  IBE_MAINSTRUCTURE,    // may not replace main structure with other buildable
 
   IBE_MAXERRORS
 } itemBuildError_t;
@@ -672,6 +673,7 @@ typedef enum
   MN_B_NORMAL,
   MN_B_CANNOT,
   MN_B_LASTSPAWN,
+  MN_B_MAINSTRUCTURE,
   MN_B_DISABLED,
   MN_B_REVOKED,
   MN_B_SURRENDER,

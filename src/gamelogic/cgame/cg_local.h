@@ -1365,7 +1365,6 @@ typedef struct
 	int      timelimit;
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
-	qboolean markDeconstruct; // Whether or not buildables are marked
 	int      powerReactorRange;
 	int      powerRepeaterRange;
 	float    momentumHalfLife; // used for momentum bar (un)lock markers
@@ -1972,7 +1971,6 @@ typedef enum
   DT_ARMOURYEVOLVE, // Insufficient funds et al
   DT_BUILD, // build errors
   DT_COMMAND, // You must be alive/human/spec/etc.
-  DT_MISC_CP, // Misc errors which may be centre-printed but not hidden
 } dialogType_t;
 
 //

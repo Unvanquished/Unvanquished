@@ -143,8 +143,6 @@ vmCvar_t           g_disabledClasses;
 vmCvar_t           g_disabledBuildables;
 vmCvar_t           g_disabledVoteCalls;
 
-vmCvar_t           g_markDeconstruct;
-
 vmCvar_t           g_debugMapRotation;
 vmCvar_t           g_currentMapRotation;
 vmCvar_t           g_mapRotationNodes;
@@ -367,8 +365,6 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_floodMaxDemerits,            "g_floodMaxDemerits",            "5000",                             0,                                               0, qfalse           },
 	{ &g_floodMinTime,                "g_floodMinTime",                "2000",                             0,                                               0, qfalse           },
-
-	{ &g_markDeconstruct,             "g_markDeconstruct",             "19",                               CVAR_SERVERINFO,                                 0, qtrue            },
 
 	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, qfalse           },
 	{ &g_currentMapRotation,          "g_currentMapRotation",          "-1",                               0,                                               0, qfalse           }, // -1 = NOT_ROTATING
@@ -2791,7 +2787,6 @@ CheckCvars
 void CheckCvars( void )
 {
 	static int lastPasswordModCount = -1;
-	static int lastMarkDeconModCount = -1;
 
 	if ( g_password.modificationCount != lastPasswordModCount )
 	{
@@ -2805,14 +2800,6 @@ void CheckCvars( void )
 		{
 			trap_Cvar_Set( "g_needpass", "0" );
 		}
-	}
-
-	// Unmark any structures for deconstruction when
-	// the server setting is changed
-	if ( g_markDeconstruct.modificationCount != lastMarkDeconModCount )
-	{
-		lastMarkDeconModCount = g_markDeconstruct.modificationCount;
-		G_ClearDeconMarks();
 	}
 
 	level.frameMsec = trap_Milliseconds();

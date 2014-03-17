@@ -2682,167 +2682,108 @@ void Cmd_Class_f( gentity_t *ent )
 	}
 }
 
-/*
-=================
-Cmd_Destroy_f
-=================
-*/
-void Cmd_Destroy_f( gentity_t *ent )
+void Cmd_Deconstruct_f( gentity_t *ent )
 {
+	char      arg[ 32 ];
 	vec3_t    viewOrigin, forward, end;
-	trace_t   tr;
-	gentity_t *traceEnt;
-	char      cmd[ 12 ];
-	qboolean  deconstruct = qtrue;
-	qboolean  instant = qfalse;
-	qboolean  protect;
-	qboolean  lastSpawn = qfalse;
-	qboolean  prevDeconstruct;
-	const buildableAttributes_t *attr;
+	trace_t   trace;
+	gentity_t *buildable;
+	qboolean  instant;
 
+	// check for revoked building rights
 	if ( ent->client->pers.namelog->denyBuild )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_B_REVOKED );
 		return;
 	}
 
-	trap_Argv( 0, cmd, sizeof( cmd ) );
-
-	if ( Q_stricmp( cmd, "destroy" ) == 0 )
-	{
-		deconstruct = qfalse;
-	}
-	else if ( DECON_OPTION_CHECK( INSTANT ) && trap_Argc() == 2 )
-	{
-		trap_Argv( 1, cmd, sizeof( cmd ) );
-		instant = !Q_stricmp( cmd, "marked" );
-	}
-
+	// trace for target
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
 	VectorMA( viewOrigin, 100, forward, end );
+	trap_Trace( &trace, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+	buildable = &g_entities[ trace.entityNum ];
 
-	trap_Trace( &tr, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
-	traceEnt = &g_entities[ tr.entityNum ];
-	prevDeconstruct = traceEnt->deconstruct;
-
-	if ( tr.fraction < 1.0f &&
-	     ( traceEnt->s.eType == ET_BUILDABLE ) &&
-	     ( traceEnt->buildableTeam == ent->client->pers.team ) &&
-	     ( ( ent->client->ps.weapon >= WP_ABUILD ) &&
-	       ( ent->client->ps.weapon <= WP_HBUILD ) ) )
+	// check if target is valid
+	if ( trace.fraction >= 1.0f ||
+	     buildable->s.eType != ET_BUILDABLE ||
+	     !G_OnSameTeam( ent, buildable ) )
 	{
-		team_t team;
-
-		attr = BG_Buildable( traceEnt->s.modelindex );
-
-		// Always let the builder prevent the explosion
-		if ( traceEnt->health <= 0 )
-		{
-			G_RewardAttackers( traceEnt );
-			G_FreeEntity( traceEnt );
-			return;
-		}
-
-		// Cancel deconstruction (unmark)
-		// If instant decon is enabled and selected, don't unmark
-		if ( deconstruct && !instant && /*! DECON_MARK_CHECK( INSTANT ) &&*/ traceEnt->deconstruct )
-		{
-			traceEnt->deconstruct = qfalse;
-			return;
-		}
-
-		// Prevent destruction of the last spawn
-		team = (team_t) ent->client->pers.team;
-		if ( traceEnt->s.modelindex == BA_A_SPAWN ||
-			traceEnt->s.modelindex == BA_H_SPAWN )
-		{
-			assert( team == TEAM_ALIENS || team == TEAM_HUMANS );
-			if ( level.team[ team ].numSpawns <= 1 )
-			{
-				lastSpawn = qtrue;
-			}
-		}
-
-		// Not marked for decon ⇒ can't do explicit instant decon
-		if ( !traceEnt->deconstruct )
-		{
-			instant = qfalse;
-		}
-
-		switch ( traceEnt->s.modelindex )
-		{
-			case BA_A_SPAWN:
-			case BA_H_SPAWN:
-			case BA_H_REACTOR:
-			case BA_A_OVERMIND:
-				protect = DECON_OPTION_CHECK( PROTECT );
-				break;
-
-			default: // nothing else is protected
-				protect = qfalse;
-				break;
-		}
-
-		if ( traceEnt->health > 0 )
-		{
-			if ( !deconstruct )
-			{
-				G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-				          traceEnt->health, 0, MOD_SUICIDE );
-			}
-			else if ( lastSpawn && !g_cheats.integer )
-			{
-				if ( !instant && !protect && DECON_MARK_CHECK( INSTANT ) ) goto fail_lastSpawn;
-				goto toggle_deconstruct;
-			}
-			else if ( protect )
-			{
-				goto toggle_deconstruct;
-			}
-			else if ( instant || DECON_MARK_CHECK( INSTANT ) )
-			{
-				goto do_deconstruct;
-			}
-			else
-			{
-				goto toggle_deconstruct;
-			}
-		}
-	}
-
-	return;
-
-toggle_deconstruct:
-	traceEnt->deconstruct = !traceEnt->deconstruct;
-	traceEnt->deconstructTime = level.time;
-
-	// Return unless instant decon was requested and the building has just been unmarked for decon
-	if ( !instant ) return;
-
-do_deconstruct:
-	// Deny if last spawn
-	if ( lastSpawn && !g_cheats.integer )
-	{
-fail_lastSpawn:
-		G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
 		return;
 	}
 
-	// deny decon if Build Timer Says No
-	if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
+	// check for valid build weapon
+	switch ( ent->client->ps.weapon )
 	{
-		traceEnt->deconstruct = prevDeconstruct; // restore the decon flag (for repeat '/deconstruct marked')
-		G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
+		case WP_HBUILD:
+		case WP_ABUILD:
+		case WP_ABUILD2:
+			break;
+
+		default:
+			return;
+	}
+
+	// always let the builder prevent the explosion of a buildable
+	if ( buildable->health <= 0 )
+	{
+		G_RewardAttackers( buildable );
+		G_FreeEntity( buildable );
 		return;
 	}
 
-	if ( !g_cheats.integer ) // add a bit to the build timer
+	// check for instant mode
+	if ( trap_Argc() == 2 )
 	{
-		ent->client->ps.stats[ STAT_MISC ] += attr->buildTime / 4;
+		trap_Argv( 1, arg, sizeof( arg ) );
+		instant = !Q_stricmp( arg, "marked" );
+	}
+	else
+	{
+		instant = qfalse;
 	}
 
-	G_Deconstruct( traceEnt, ent, MOD_DECONSTRUCT );
+	if ( instant && buildable->deconstruct )
+	{
+		if ( !g_cheats.integer )
+		{
+			// check if the buildable is protected from instant deconstruction
+			switch ( buildable->s.modelindex )
+			{
+				case BA_A_OVERMIND:
+				case BA_H_REACTOR:
+					G_TriggerMenu( ent->client->ps.clientNum, MN_B_MAINSTRUCTURE );
+					return;
+
+				case BA_A_SPAWN:
+				case BA_H_SPAWN:
+					if ( level.team[ ent->client->ps.persistant[ PERS_TEAM ] ].numSpawns <= 1 )
+					{
+						G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
+						return;
+					}
+					break;
+			}
+
+			// deny if build timer active
+			if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
+			{
+				G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
+				return;
+			}
+
+			// add to build timer
+			ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
+		}
+
+		G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );
+	}
+	else
+	{
+		// toggle mark
+		buildable->deconstruct     = !buildable->deconstruct;
+		buildable->deconstructTime = level.time;
+	}
 }
 
 /*
@@ -3537,7 +3478,6 @@ void Cmd_Build_f( gentity_t *ent )
 	float       dist;
 	vec3_t      origin, normal;
 	int         groundEntNum;
-	team_t      team;
 
 	if ( ent->client->pers.namelog->denyBuild )
 	{
@@ -3554,8 +3494,6 @@ void Cmd_Build_f( gentity_t *ent )
 	trap_Argv( 1, s, sizeof( s ) );
 
 	buildable = BG_BuildableByName( s )->number;
-
-	team = (team_t) ent->client->pers.team;
 
 	if ( buildable != BA_NONE &&
 	     ( ( 1 << ent->client->ps.weapon ) & BG_Buildable( buildable )->buildWeapon ) &&
@@ -3575,36 +3513,12 @@ void Cmd_Build_f( gentity_t *ent )
 		reason = G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum );
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE | SB_BUILDABLE_FROM_IBE( reason );
 
-		//these are the errors displayed when the builder first selects something to use
+		// these are the errors displayed when the builder first selects something to use
 		switch ( reason )
 		{
-			// can place right away, set the blueprint and the valid togglebit
-			case IBE_NONE:
-				err = MN_NONE;
-				// we OR-in the selected builable later
-				break;
-
-			// can't place yet but maybe soon: start with valid togglebit off
-			case IBE_NORMAL:
-			case IBE_NOROOM:
-			case IBE_SURFACE:
-				err = MN_NONE;
-				break;
-
-			case IBE_NOOVERMIND:
-			case IBE_NOREACTOR:
-			case IBE_NOCREEP:
-			case IBE_NOPOWERHERE:
-				err = MN_NONE;
-				break;
-
-			// more serious errors will abort the buildable placement
-			case IBE_NOALIENBP:
-				err = MN_A_NOBP;
-				break;
-
-			case IBE_NOHUMANBP:
-				err = MN_H_NOBP;
+			// non-temporary issues won't spawn a blueprint buildable
+			case IBE_DISABLED:
+				err = MN_B_DISABLED;
 				break;
 
 			case IBE_ONEOVERMIND:
@@ -3615,16 +3529,9 @@ void Cmd_Build_f( gentity_t *ent )
 				err = MN_H_ONEREACTOR;
 				break;
 
-			case IBE_LASTSPAWN:
-				err = MN_B_LASTSPAWN;
-				break;
-
-			case IBE_DISABLED:
-				err = MN_B_DISABLED;
-				break;
-
+			// otherwise we don't error for now
 			default:
-				err = (dynMenu_t) -1; // stop uninitialised warning
+				err = MN_NONE;
 				break;
 		}
 
@@ -4545,8 +4452,7 @@ static const commands_t cmds[] =
 	{ "callvote",        CMD_MESSAGE,                         Cmd_CallVote_f         },
 	{ "class",           CMD_TEAM,                            Cmd_Class_f            },
 	{ "damage",          CMD_CHEAT | CMD_ALIVE,               Cmd_Damage_f           },
-	{ "deconstruct",     CMD_TEAM | CMD_ALIVE,                Cmd_Destroy_f          },
-	{ "destroy",         CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Destroy_f          },
+	{ "deconstruct",     CMD_TEAM | CMD_ALIVE,                Cmd_Deconstruct_f      },
 	{ "follow",          CMD_SPEC,                            Cmd_Follow_f           },
 	{ "follownext",      CMD_SPEC,                            Cmd_FollowCycle_f      },
 	{ "followprev",      CMD_SPEC,                            Cmd_FollowCycle_f      },

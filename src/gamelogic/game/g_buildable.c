@@ -276,11 +276,6 @@ int G_GetMarkedBuildPointsInt( team_t team )
 	int       sum = 0;
 	const buildableAttributes_t *attr;
 
-	if ( DECON_MARK_CHECK( INSTANT ) )
-	{
-		return 0;
-	}
-
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( ent->s.eType != ET_BUILDABLE || !ent->inuse || ent->health <= 0 || ent->buildableTeam != team || !ent->deconstruct )
@@ -3697,34 +3692,6 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	return aPrecedence - bPrecedence;
 }
 
-/*
-===============
-G_ClearDeconMarks
-
-Remove decon mark from all buildables
-===============
-*/
-void G_ClearDeconMarks( void )
-{
-	int       i;
-	gentity_t *ent;
-
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( !ent->inuse )
-		{
-			continue;
-		}
-
-		if ( ent->s.eType != ET_BUILDABLE )
-		{
-			continue;
-		}
-
-		ent->deconstruct = qfalse;
-	}
-}
-
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
 	int   refund;
@@ -3776,11 +3743,6 @@ int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 	if ( nums && nsize )
 	{
 		nums[ 0 ] = '\0';
-	}
-
-	if ( DECON_MARK_CHECK( INSTANT ) && !DECON_OPTION_CHECK( PROTECT ) )
-	{
-		return 0; // Not enabled, can't deconstruct anything
 	}
 
 	for ( i = 0; i < level.numBuildablesForRemoval; i++ )
@@ -3863,7 +3825,7 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 	if (    ( oldBuildable == BA_H_REACTOR  && newBuildable != BA_H_REACTOR  )
 	     || ( oldBuildable == BA_A_OVERMIND && newBuildable != BA_A_OVERMIND ) )
 	{
-		return IBE_NOROOM; // TODO: Introduce fitting IBE
+		return IBE_MAINSTRUCTURE;
 	}
 
 	// don't replace last spawn with a non-spawn
@@ -4772,6 +4734,10 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_LASTSPAWN:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
+			return qfalse;
+
+		case IBE_MAINSTRUCTURE:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_B_MAINSTRUCTURE );
 			return qfalse;
 
 		default:
