@@ -1537,3 +1537,8 @@ void trap_Rocket_ClearText( void )
 {
 	syscallVM( CG_ROCKET_CLEARTEXT );
 }
+
+void trap_Rocket_ShowScoreboard( const char *name, qboolean show )
+{
+	syscallVM( CG_ROCKET_SHOWSCOREBOARD, name, show );
+}

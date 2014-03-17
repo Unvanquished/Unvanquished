@@ -246,3 +246,4 @@ equ trap_Rocket_ShowHud                   -482
 equ trap_Rocket_ClearHud                  -483
 equ trap_Rocket_AddTextElement            -484
 equ trap_Rocket_ClearText                 -485
+equ trap_Rocket_ShowScoreboard            -486

@@ -5,6 +5,7 @@ units
 	ui/hud/common/overlay.rml
 	ui/hud/common/console.rml
 	ui/hud/common/base.rml
+	ui/scoreboard.rml
 }
 
 spectator_hud
