@@ -499,12 +499,17 @@ template<> struct SerializeTraits<SharedMemory> {
 const uint32_t ID_RETURN = 0xffffffffu;
 
 // Combine a major and minor ID into a single number
+template<uint16_t Major, uint16_t Minor> struct Id {
+	enum {
+		value = (Major << 16) + Minor
+	};
+};
 #define IPC_ID(major, minor) ((((uint16_t)major) << 16) + ((uint16_t)minor))
 
 // Asynchronous message which does not wait for a reply
-template<uint32_t Id, typename... T> struct Message {
+template<typename Id, typename... T> struct Message {
 	enum {
-		id = Id
+		id = Id::value
 	};
 	typedef std::tuple<T...> Inputs;
 };
@@ -556,7 +561,7 @@ template<typename... T> struct MapTuple<std::tuple<T...>> {
 };
 
 // Implementations of SendMsg for Message and SyncMessage
-template<typename Func, uint32_t Id, typename... MsgArgs, typename... Args> void SendMsg(const Socket& socket, Func&&, Message<Id, MsgArgs...>, Args&&... args)
+template<typename Func, typename Id, typename... MsgArgs, typename... Args> void SendMsg(const Socket& socket, Func&&, Message<Id, MsgArgs...>, Args&&... args)
 {
 	typedef Message<Id, MsgArgs...> Message;
 	static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value, "Incorrect number of arguments for IPC::SendMsg");
@@ -589,7 +594,7 @@ template<typename Func, typename Msg, typename Reply, typename... Args> void Sen
 }
 
 // Implementations of HandleMsg for Message and SyncMessage
-template<typename Func, uint32_t Id, typename... MsgArgs> void HandleMsg(const Socket&, Message<Id, MsgArgs...>, IPC::Reader reader, Func&& func)
+template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(const Socket&, Message<Id, MsgArgs...>, IPC::Reader reader, Func&& func)
 {
 	typedef Message<Id, MsgArgs...> Message;
 

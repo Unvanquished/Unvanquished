@@ -53,13 +53,13 @@ namespace VM {
     };
 
     // AddCommandMsg
-    typedef IPC::Message<IPC_ID(COMMAND, ADD_COMMAND), std::string, std::string> AddCommandMsg;
+    typedef IPC::Message<IPC::Id<COMMAND, ADD_COMMAND>, std::string, std::string> AddCommandMsg;
     // RemoveCommandMsg
-    typedef IPC::Message<IPC_ID(COMMAND, REMOVE_COMMAND), std::string> RemoveCommandMsg;
+    typedef IPC::Message<IPC::Id<COMMAND, REMOVE_COMMAND>, std::string> RemoveCommandMsg;
     // EnvPrintMsg
-    typedef IPC::Message<IPC_ID(COMMAND, ENV_PRINT), std::string> EnvPrintMsg;
+    typedef IPC::Message<IPC::Id<COMMAND, ENV_PRINT>, std::string> EnvPrintMsg;
     // EnvExecuteAfterMsg
-    typedef IPC::Message<IPC_ID(COMMAND, ENV_EXECUTE_AFTER), std::string, bool> EnvExecuteAfterMsg;
+    typedef IPC::Message<IPC::Id<COMMAND, ENV_EXECUTE_AFTER>, std::string, bool> EnvExecuteAfterMsg;
 
     enum VMCommandMessages {
         EXECUTE,
@@ -68,11 +68,11 @@ namespace VM {
 
     // ExecuteMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC_ID(COMMAND, EXECUTE), std::string>
+        IPC::Message<IPC::Id<COMMAND, EXECUTE>, std::string>
     >ExecuteMsg;
     // CompleteMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC_ID(COMMAND, COMPLETE), int, std::string, std::string>,
+        IPC::Message<IPC::Id<COMMAND, COMPLETE>, int, std::string, std::string>,
         IPC::Reply<Cmd::CompletionResult>
     > CompleteMsg;
 
@@ -86,16 +86,16 @@ namespace VM {
 
     // RegisterCvarMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC_ID(CVAR, REGISTER_CVAR), std::string, std::string, int, std::string>
+        IPC::Message<IPC::Id<CVAR, REGISTER_CVAR>, std::string, std::string, int, std::string>
     > RegisterCvarMsg;
     // GetCvarMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC_ID(CVAR, GET_CVAR), std::string>,
+        IPC::Message<IPC::Id<CVAR, GET_CVAR>, std::string>,
         IPC::Reply<std::string>
     > GetCvarMsg;
     // SetCvarMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC_ID(CVAR, SET_CVAR), std::string, std::string>
+        IPC::Message<IPC::Id<CVAR, SET_CVAR>, std::string, std::string>
     > SetCvarMsg;
 
     enum VMCvarMessages {
@@ -104,7 +104,7 @@ namespace VM {
 
     // OnValueChangedMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC_ID(CVAR, ON_VALUE_CHANGED), std::string, std::string>,
+        IPC::Message<IPC::Id<CVAR, ON_VALUE_CHANGED>, std::string, std::string>,
         IPC::Reply<bool, std::string>
     > OnValueChangedMsg;
 
