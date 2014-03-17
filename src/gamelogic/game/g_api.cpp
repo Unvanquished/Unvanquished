@@ -26,27 +26,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../shared/CommonProxies.h"
 
 // This really should go in the common code
-static IPC::Socket GetRootSocket(int argc, char** argv)
+static IPC::Channel GetRootChannel(int argc, char** argv)
 {
-	const char* socket;
+	const char* channel;
 	if (argc == 1) {
-		socket = getenv("ROOT_SOCKET");
-		if (!socket) {
+		channel = getenv("ROOT_SOCKET");
+		if (!channel) {
 			fprintf(stderr, "Environment variable ROOT_SOCKET not found\n");
 			VM::Exit();
 		}
 	} else {
-		socket = argv[1];
+		channel = argv[1];
 	}
 
 	char* end;
-	IPC::OSHandleType h = (IPC::OSHandleType)strtol(socket, &end, 10);
-	if (socket == end || *end != '\0') {
+	IPC::OSHandleType h = (IPC::OSHandleType)strtol(channel, &end, 10);
+	if (channel == end || *end != '\0') {
 		fprintf(stderr, "Environment variable ROOT_SOCKET does not contain a valid handle\n");
 		VM::Exit();
 	}
 
-	return IPC::Socket::FromHandle(h);
+	return IPC::Channel::FromHandle(h);
 }
 
 class ExitException{};
@@ -55,19 +55,19 @@ void VM::Exit() {
   throw ExitException();
 }
 
-IPC::Socket VM::rootSocket;
+IPC::Channel VM::rootChannel;
 
 static IPC::SharedMemory shmRegion;
 
 DLLEXPORT int main(int argc, char** argv)
 {
 	try {
-		VM::rootSocket = GetRootSocket(argc, argv);
+		VM::rootChannel = GetRootChannel(argc, argv);
 
 		// Send syscall ABI version, also acts as a sign that the module loaded
 		IPC::Writer writer;
 		writer.Write<uint32_t>(GAME_API_VERSION);
-		VM::rootSocket.SendMsg(writer);
+		VM::rootChannel.SendMsg(writer);
 
 		// Initialize VM proxies
 		VM::InitializeProxies();
@@ -80,7 +80,7 @@ DLLEXPORT int main(int argc, char** argv)
 
 		// Start main loop
 		while (true) {
-			IPC::Reader reader = VM::rootSocket.RecvMsg();
+			IPC::Reader reader = VM::rootChannel.RecvMsg();
 			uint32_t id = reader.Read<uint32_t>();
 			VM::VMMain(id, std::move(reader));
 		}
@@ -96,19 +96,19 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 	if (major == VM::QVM) {
 		switch (minor) {
 		case GAME_INIT:
-			IPC::HandleMsg<GameInitMsg>(VM::rootSocket, std::move(reader), [](int levelTime, int randomSeed, bool restart) {
+			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart) {
 				G_InitGame(levelTime, randomSeed, restart);
 			});
 			break;
 
 		case GAME_SHUTDOWN:
-			IPC::HandleMsg<GameShutdownMsg>(VM::rootSocket, std::move(reader), [](bool restart) {
+			IPC::HandleMsg<GameShutdownMsg>(VM::rootChannel, std::move(reader), [](bool restart) {
 				G_ShutdownGame(restart);
 			});
 			break;
 
 		case GAME_CLIENT_CONNECT:
-			IPC::HandleMsg<GameClientConnectMsg>(VM::rootSocket, std::move(reader), [](int clientNum, bool firstTime, int isBot, bool& denied, std::string& reason) {
+			IPC::HandleMsg<GameClientConnectMsg>(VM::rootChannel, std::move(reader), [](int clientNum, bool firstTime, int isBot, bool& denied, std::string& reason) {
 				const char* deniedStr = isBot ? ClientBotConnect(clientNum, firstTime, TEAM_NONE) : ClientConnect(clientNum, firstTime);
 				denied = deniedStr != nullptr;
 				if (denied)
@@ -117,31 +117,31 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 			break;
 
 		case GAME_CLIENT_THINK:
-			IPC::HandleMsg<GameClientThinkMsg>(VM::rootSocket, std::move(reader), [](int clientNum) {
+			IPC::HandleMsg<GameClientThinkMsg>(VM::rootChannel, std::move(reader), [](int clientNum) {
 				ClientThink(clientNum);
 			});
 			break;
 
 		case GAME_CLIENT_USERINFO_CHANGED:
-			IPC::HandleMsg<GameClientUserinfoChangedMsg>(VM::rootSocket, std::move(reader), [](int clientNum) {
+			IPC::HandleMsg<GameClientUserinfoChangedMsg>(VM::rootChannel, std::move(reader), [](int clientNum) {
 				ClientUserinfoChanged(clientNum, qfalse);
 			});
 			break;
 
 		case GAME_CLIENT_DISCONNECT:
-			IPC::HandleMsg<GameClientDisconnectMsg>(VM::rootSocket, std::move(reader), [](int clientNum) {
+			IPC::HandleMsg<GameClientDisconnectMsg>(VM::rootChannel, std::move(reader), [](int clientNum) {
 				ClientDisconnect(clientNum);
 			});
 			break;
 
 		case GAME_CLIENT_BEGIN:
-			IPC::HandleMsg<GameClientBeginMsg>(VM::rootSocket, std::move(reader), [](int clientNum) {
+			IPC::HandleMsg<GameClientBeginMsg>(VM::rootChannel, std::move(reader), [](int clientNum) {
 				ClientBegin(clientNum);
 			});
 			break;
 
 		case GAME_CLIENT_COMMAND:
-			IPC::HandleMsg<GameClientCommandMsg>(VM::rootSocket, std::move(reader), [](int clientNum, std::string command) {
+			IPC::HandleMsg<GameClientCommandMsg>(VM::rootChannel, std::move(reader), [](int clientNum, std::string command) {
 				Cmd::PushArgs(command);
 				ClientCommand(clientNum);
 				Cmd::PopArgs();
@@ -149,7 +149,7 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 			break;
 
 		case GAME_RUN_FRAME:
-			IPC::HandleMsg<GameRunFrameMsg>(VM::rootSocket, std::move(reader), [](int levelTime) {
+			IPC::HandleMsg<GameRunFrameMsg>(VM::rootChannel, std::move(reader), [](int levelTime) {
 				G_RunFrame(levelTime);
 			});
 			break;
@@ -170,7 +170,7 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 			G_Error("VMMain(): unknown game command %i", minor);
 		}
 	} else if (major < VM::LAST_COMMON_SYSCALL) {
-		VM::HandleCommonSyscall(major, minor, std::move(reader), VM::rootSocket);
+		VM::HandleCommonSyscall(major, minor, std::move(reader), VM::rootChannel);
 	} else {
 		G_Error("unhandled VM major syscall number %i", major);
 	}

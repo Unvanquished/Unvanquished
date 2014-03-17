@@ -715,32 +715,32 @@ void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSi
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-void GameVM::Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) const
+void GameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 {
 	int major = id >> 16;
 	int minor = id & 0xffff;
 	if (major == VM::QVM) {
-		this->QVMSyscall(minor, reader, socket);
+		this->QVMSyscall(minor, reader, channel);
 
     } else if (major < VM::LAST_COMMON_SYSCALL) {
-        services->Syscall(major, minor, std::move(reader), socket);
+        services->Syscall(major, minor, std::move(reader), channel);
 
     } else {
 		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
 	}
 }
 
-void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socket) const
+void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
 	case G_PRINT:
-		IPC::HandleMsg<PrintMsg>(socket, std::move(reader), [this](Str::StringRef text) {
+		IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](Str::StringRef text) {
 			Com_Printf("%s", text.c_str());
 		});
 		break;
 
 	case G_ERROR:
-		IPC::HandleMsg<ErrorMsg>(socket, std::move(reader), [this](Str::StringRef text) {
+		IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](Str::StringRef text) {
 			Com_Error(ERR_DROP, "%s", text.c_str());
 		});
 		break;
@@ -749,26 +749,26 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		Com_Error(ERR_DROP, "trap_Log not implemented");
 
 	case G_MILLISECONDS:
-		IPC::HandleMsg<MillisecondsMsg>(socket, std::move(reader), [this](int& time) {
+		IPC::HandleMsg<MillisecondsMsg>(channel, std::move(reader), [this](int& time) {
 			time = Sys_Milliseconds();
 		});
 		break;
 
 	case G_SEND_CONSOLE_COMMAND:
-		IPC::HandleMsg<SendConsoleCommandMsg>(socket, std::move(reader), [this](int when, Str::StringRef text) {
+		IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](int when, Str::StringRef text) {
 			Cbuf_ExecuteText(when, text.c_str());
 		});
 		break;
 
 	case G_FS_FOPEN_FILE:
-		IPC::HandleMsg<FSFOpenFileMsg>(socket, std::move(reader), [this](Str::StringRef filename, bool open, int fsMode, int& success, int& handle) {
+		IPC::HandleMsg<FSFOpenFileMsg>(channel, std::move(reader), [this](Str::StringRef filename, bool open, int fsMode, int& success, int& handle) {
 			fsMode_t mode = static_cast<fsMode_t>(fsMode);
 			success = FS_Game_FOpenFileByMode(filename.c_str(), open ? &handle : NULL, mode);
 		});
 		break;
 
 	case G_FS_READ:
-		IPC::HandleMsg<FSReadMsg>(socket, std::move(reader), [this](int handle, int len, std::string& res) {
+		IPC::HandleMsg<FSReadMsg>(channel, std::move(reader), [this](int handle, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			FS_Read(buffer.get(), len, handle);
 			res.assign(buffer.get(), len);
@@ -776,25 +776,25 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case G_FS_WRITE:
-		IPC::HandleMsg<FSWriteMsg>(socket, std::move(reader), [this](int handle, Str::StringRef text, int& res) {
+		IPC::HandleMsg<FSWriteMsg>(channel, std::move(reader), [this](int handle, Str::StringRef text, int& res) {
 			res = FS_Write(text.c_str(), text.size(), handle);
 		});
 		break;
 
 	case G_FS_RENAME:
-		IPC::HandleMsg<FSRenameMsg>(socket, std::move(reader), [this](Str::StringRef from, Str::StringRef to) {
+		IPC::HandleMsg<FSRenameMsg>(channel, std::move(reader), [this](Str::StringRef from, Str::StringRef to) {
 			FS_Rename(from.c_str(), to.c_str());
 		});
 		break;
 
 	case G_FS_FCLOSE_FILE:
-		IPC::HandleMsg<FSFCloseFileMsg>(socket, std::move(reader), [this](int handle) {
+		IPC::HandleMsg<FSFCloseFileMsg>(channel, std::move(reader), [this](int handle) {
 			FS_FCloseFile(handle);
 		});
 		break;
 
 	case G_FS_GET_FILE_LIST:
-		IPC::HandleMsg<FSGetFileListMsg>(socket, std::move(reader), [this](Str::StringRef path, Str::StringRef extension, int len, int& intRes, std::string& res) {
+		IPC::HandleMsg<FSGetFileListMsg>(channel, std::move(reader), [this](Str::StringRef path, Str::StringRef extension, int len, int& intRes, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			intRes = FS_GetFileList(path.c_str(), extension.c_str(), buffer.get(), len);
 			res.assign(buffer.get(), len);
@@ -802,115 +802,115 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case G_FS_FIND_PAK:
-		IPC::HandleMsg<FSFindPakMsg>(socket, std::move(reader), [this](Str::StringRef pakName, bool& found) {
+		IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](Str::StringRef pakName, bool& found) {
 			found = FS::FindPak(pakName);
 		});
 		break;
 
 	case G_LOCATE_GAME_DATA1:
-		IPC::HandleMsg<LocateGameDataMsg1>(socket, std::move(reader), [this](IPC::SharedMemory shm, int numEntities, int entitySize, int playerSize) {
+		IPC::HandleMsg<LocateGameDataMsg1>(channel, std::move(reader), [this](IPC::SharedMemory shm, int numEntities, int entitySize, int playerSize) {
 			shmRegion = std::move(shm);
 			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
 		});
 		break;
 
 	case G_LOCATE_GAME_DATA2:
-		IPC::HandleMsg<LocateGameDataMsg2>(socket, std::move(reader), [this](int numEntities, int entitySize, int playerSize) {
+		IPC::HandleMsg<LocateGameDataMsg2>(channel, std::move(reader), [this](int numEntities, int entitySize, int playerSize) {
 			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
 		});
 		break;
 
 	case G_LINK_ENTITY:
-		IPC::HandleMsg<LinkEntityMsg>(socket, std::move(reader), [this](int entityNum) {
+		IPC::HandleMsg<LinkEntityMsg>(channel, std::move(reader), [this](int entityNum) {
 			SV_LinkEntity(SV_GentityNum(entityNum));
 		});
 		break;
 
 	case G_UNLINK_ENTITY:
-		IPC::HandleMsg<UnlinkEntityMsg>(socket, std::move(reader), [this](int entityNum) {
+		IPC::HandleMsg<UnlinkEntityMsg>(channel, std::move(reader), [this](int entityNum) {
 			SV_UnlinkEntity(SV_GentityNum(entityNum));
 		});
 		break;
 
 	case G_ENTITIES_IN_BOX:
-		IPC::HandleMsg<EntitiesInBoxMsg>(socket, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int len, std::vector<int>& res) {
+		IPC::HandleMsg<EntitiesInBoxMsg>(channel, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int len, std::vector<int>& res) {
 			res.resize(len); //reserve doesn't guarantee that data() will return an array long enough
 			len = SV_AreaEntities(mins.data(), maxs.data(), res.data(), len);
 		});
 		break;
 
 	case G_ENTITY_CONTACT:
-		IPC::HandleMsg<EntityContactMsg>(socket, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int entityNum, int& res) {
+		IPC::HandleMsg<EntityContactMsg>(channel, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int entityNum, int& res) {
 			const sharedEntity_t* ent = SV_GentityNum(entityNum);
 			res = SV_EntityContact(mins.data(), maxs.data(), ent, TT_AABB);
 		});
 		break;
 
 	case G_TRACE:
-		IPC::HandleMsg<TraceMsg>(socket, std::move(reader), [this](std::array<float, 3> start, std::array<float, 3> mins, std::array<float, 3> maxs, std::array<float, 3> end, int passEntityNum, int contentMask, trace_t& res) {
+		IPC::HandleMsg<TraceMsg>(channel, std::move(reader), [this](std::array<float, 3> start, std::array<float, 3> mins, std::array<float, 3> maxs, std::array<float, 3> end, int passEntityNum, int contentMask, trace_t& res) {
 			SV_Trace(&res, start.data(), mins.data(), maxs.data(), end.data(), passEntityNum, contentMask, TT_AABB);
 		});
 		break;
 
 	case G_POINT_CONTENTS:
-		IPC::HandleMsg<PointContentsMsg>(socket, std::move(reader), [this](std::array<float, 3> p, int passEntityNum, int& res) {
+		IPC::HandleMsg<PointContentsMsg>(channel, std::move(reader), [this](std::array<float, 3> p, int passEntityNum, int& res) {
 			res = SV_PointContents(p.data(), passEntityNum);
 		});
 		break;
 
 	case G_SET_BRUSH_MODEL:
-		IPC::HandleMsg<SetBrushModelMsg>(socket, std::move(reader), [this](int entityNum, Str::StringRef name) {
+		IPC::HandleMsg<SetBrushModelMsg>(channel, std::move(reader), [this](int entityNum, Str::StringRef name) {
 			sharedEntity_t* ent = SV_GentityNum(entityNum);
 			SV_SetBrushModel(ent, name.c_str());
 		});
 		break;
 
 	case G_IN_PVS:
-		IPC::HandleMsg<InPVSMsg>(socket, std::move(reader), [this](std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
+		IPC::HandleMsg<InPVSMsg>(channel, std::move(reader), [this](std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
 			res = SV_inPVS(p1.data(), p2.data());
 		});
 		break;
 
 	case G_IN_PVS_IGNORE_PORTALS:
-		IPC::HandleMsg<InPVSIgnorePortalsMsg>(socket, std::move(reader), [this](std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
+		IPC::HandleMsg<InPVSIgnorePortalsMsg>(channel, std::move(reader), [this](std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
 			res = SV_inPVSIgnorePortals(p1.data(), p2.data());
 		});
 		break;
 
 	case G_ADJUST_AREA_PORTAL_STATE:
-		IPC::HandleMsg<AdjustAreaPortalStateMsg>(socket, std::move(reader), [this](int entityNum, bool open) {
+		IPC::HandleMsg<AdjustAreaPortalStateMsg>(channel, std::move(reader), [this](int entityNum, bool open) {
 			sharedEntity_t* ent = SV_GentityNum(entityNum);
 			SV_AdjustAreaPortalState(ent, open);
         });
 		break;
 
 	case G_AREAS_CONNECTED:
-		IPC::HandleMsg<AreasConnectedMsg>(socket, std::move(reader), [this](int area1, int area2, bool& res) {
+		IPC::HandleMsg<AreasConnectedMsg>(channel, std::move(reader), [this](int area1, int area2, bool& res) {
 			res = CM_AreasConnected(area1, area2);
 		});
 		break;
 
 
 	case G_DROP_CLIENT:
-		IPC::HandleMsg<DropClientMsg>(socket, std::move(reader), [this](int clientNum, Str::StringRef reason) {
+		IPC::HandleMsg<DropClientMsg>(channel, std::move(reader), [this](int clientNum, Str::StringRef reason) {
 			SV_GameDropClient(clientNum, reason.c_str());
 		});
 		break;
 
 	case G_SEND_SERVER_COMMAND:
-		IPC::HandleMsg<SendServerCommandMsg>(socket, std::move(reader), [this](int clientNum, Str::StringRef text) {
+		IPC::HandleMsg<SendServerCommandMsg>(channel, std::move(reader), [this](int clientNum, Str::StringRef text) {
 			SV_GameSendServerCommand(clientNum, text.c_str());
 		});
 		break;
 
 	case G_SET_CONFIGSTRING:
-		IPC::HandleMsg<SetConfigStringMsg>(socket, std::move(reader), [this](int index, Str::StringRef val) {
+		IPC::HandleMsg<SetConfigStringMsg>(channel, std::move(reader), [this](int index, Str::StringRef val) {
 			SV_SetConfigstring(index, val.c_str());
 		});
 		break;
 
 	case G_GET_CONFIGSTRING:
-		IPC::HandleMsg<GetConfigStringMsg>(socket, std::move(reader), [this](int index, int len, std::string& res) {
+		IPC::HandleMsg<GetConfigStringMsg>(channel, std::move(reader), [this](int index, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			SV_GetConfigstring(index, buffer.get(), len);
 			res.assign(buffer.get(), len);
@@ -918,19 +918,19 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case G_SET_CONFIGSTRING_RESTRICTIONS:
-		IPC::HandleMsg<SetConfigStringRestrictionsMsg>(socket, std::move(reader), [this]() {
+		IPC::HandleMsg<SetConfigStringRestrictionsMsg>(channel, std::move(reader), [this]() {
 			Com_Printf("SV_SetConfigstringRestrictions not implemented\n");
 		});
 		break;
 
 	case G_SET_USERINFO:
-		IPC::HandleMsg<SetUserinfoMsg>(socket, std::move(reader), [this](int index, Str::StringRef val) {
+		IPC::HandleMsg<SetUserinfoMsg>(channel, std::move(reader), [this](int index, Str::StringRef val) {
 			SV_SetUserinfo(index, val.c_str());
 		});
 		break;
 
 	case G_GET_USERINFO:
-		IPC::HandleMsg<GetUserinfoMsg>(socket, std::move(reader), [this](int index, int len, std::string& res) {
+		IPC::HandleMsg<GetUserinfoMsg>(channel, std::move(reader), [this](int index, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			SV_GetUserinfo(index, buffer.get(), len);
 			res.assign(buffer.get(), len);
@@ -938,7 +938,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case G_GET_SERVERINFO:
-		IPC::HandleMsg<GetServerinfoMsg>(socket, std::move(reader), [this](int len, std::string& res) {
+		IPC::HandleMsg<GetServerinfoMsg>(channel, std::move(reader), [this](int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			SV_GetServerinfo(buffer.get(), len);
 			res.assign(buffer.get(), len);
@@ -946,50 +946,50 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case G_GET_USERCMD:
-		IPC::HandleMsg<GetUsercmdMsg>(socket, std::move(reader), [this](int index, usercmd_t& cmd) {
+		IPC::HandleMsg<GetUsercmdMsg>(channel, std::move(reader), [this](int index, usercmd_t& cmd) {
 			SV_GetUsercmd(index, &cmd);
 		});
 		break;
 
 	case G_GET_ENTITY_TOKEN:
-		IPC::HandleMsg<GetEntityTokenMsg>(socket, std::move(reader), [this](bool& boolRes, std::string& res) {
+		IPC::HandleMsg<GetEntityTokenMsg>(channel, std::move(reader), [this](bool& boolRes, std::string& res) {
 			res = COM_Parse(&sv.entityParsePoint);
 			boolRes = sv.entityParsePoint or res.size() > 0;
 		});
 		break;
 
 	case G_SEND_GAME_STAT:
-		IPC::HandleMsg<SendGameStatMsg>(socket, std::move(reader), [this](Str::StringRef text) {
+		IPC::HandleMsg<SendGameStatMsg>(channel, std::move(reader), [this](Str::StringRef text) {
 			SV_MasterGameStat(text.c_str());
 		});
 		break;
 
 	case G_GET_TAG:
-		IPC::HandleMsg<GetTagMsg>(socket, std::move(reader), [this](int clientNum, int tagFileNumber, Str::StringRef tagName, int& res, orientation_t& orientation) {
+		IPC::HandleMsg<GetTagMsg>(channel, std::move(reader), [this](int clientNum, int tagFileNumber, Str::StringRef tagName, int& res, orientation_t& orientation) {
 			res = SV_GetTag(clientNum, tagFileNumber, tagName.c_str(), &orientation);
 		});
 		break;
 
 	case G_REGISTER_TAG:
-		IPC::HandleMsg<RegisterTagMsg>(socket, std::move(reader), [this](Str::StringRef tagFileName, int& res) {
+		IPC::HandleMsg<RegisterTagMsg>(channel, std::move(reader), [this](Str::StringRef tagFileName, int& res) {
 			res = SV_LoadTag(tagFileName.c_str());
 		});
 		break;
 
 	case G_SEND_MESSAGE:
-		IPC::HandleMsg<SendMessageMsg>(socket, std::move(reader), [this](int clientNum, int len, std::vector<char> message) {
+		IPC::HandleMsg<SendMessageMsg>(channel, std::move(reader), [this](int clientNum, int len, std::vector<char> message) {
 			SV_SendBinaryMessage(clientNum, message.data(), len);
 		});
 		break;
 
 	case G_MESSAGE_STATUS:
-		IPC::HandleMsg<MessageStatusMsg>(socket, std::move(reader), [this](int index, int& status) {
+		IPC::HandleMsg<MessageStatusMsg>(channel, std::move(reader), [this](int index, int& status) {
 			status = SV_BinaryMessageStatus(index);
 		});
 		break;
 
 	case G_RSA_GENMSG:
-		IPC::HandleMsg<RSAGenMsgMsg>(socket, std::move(reader), [this](Str::StringRef pubkey, int& res, std::string& cleartext, std::string& encrypted) {
+		IPC::HandleMsg<RSAGenMsgMsg>(channel, std::move(reader), [this](Str::StringRef pubkey, int& res, std::string& cleartext, std::string& encrypted) {
 			char cleartextBuffer[RSA_STRING_LENGTH];
 			char encryptedBuffer[RSA_STRING_LENGTH];
 			res = SV_RSAGenMsg(pubkey.c_str(), cleartextBuffer, encryptedBuffer);
@@ -999,7 +999,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case G_GEN_FINGERPRINT:
-		IPC::HandleMsg<GenFingerprintMsg>(socket, std::move(reader), [this](int keylen, const std::vector<char>& key, int len, std::string& res) {
+		IPC::HandleMsg<GenFingerprintMsg>(channel, std::move(reader), [this](int keylen, const std::vector<char>& key, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			Com_MD5Buffer(key.data(), keylen, buffer.get(), len);
 			res.assign(buffer.get(), len);
@@ -1007,7 +1007,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case G_GET_PLAYER_PUBKEY:
-		IPC::HandleMsg<GetPlayerPubkeyMsg>(socket, std::move(reader), [this](int clientNum, int len, std::string& pubkey) {
+		IPC::HandleMsg<GetPlayerPubkeyMsg>(channel, std::move(reader), [this](int clientNum, int len, std::string& pubkey) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			SV_GetPlayerPubkey(clientNum, buffer.get(), len);
 			pubkey.assign(buffer.get());
@@ -1015,13 +1015,13 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case G_GM_TIME:
-		IPC::HandleMsg<GMTimeMsg>(socket, std::move(reader), [this](int& res, qtime_t& time) {
+		IPC::HandleMsg<GMTimeMsg>(channel, std::move(reader), [this](int& res, qtime_t& time) {
 			res = Com_GMTime(&time);
 		});
 		break;
 
 	case G_GET_TIME_STRING:
-		IPC::HandleMsg<GetTimeStringMsg>(socket, std::move(reader), [this](int len, Str::StringRef format, const qtime_t& time, std::string& res) {
+		IPC::HandleMsg<GetTimeStringMsg>(channel, std::move(reader), [this](int len, Str::StringRef format, const qtime_t& time, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			SV_GetTimeString(buffer.get(), len, format.c_str(), &time);
 			res.assign(buffer.get(), len);
@@ -1029,31 +1029,31 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case G_PARSE_ADD_GLOBAL_DEFINE:
-		IPC::HandleMsg<ParseAddGlobalDefineMsg>(socket, std::move(reader), [this](Str::StringRef define, int& res) {
+		IPC::HandleMsg<ParseAddGlobalDefineMsg>(channel, std::move(reader), [this](Str::StringRef define, int& res) {
 			res = Parse_AddGlobalDefine(define.c_str());
 		});
 		break;
 
 	case G_PARSE_LOAD_SOURCE:
-		IPC::HandleMsg<ParseLoadSourceMsg>(socket, std::move(reader), [this](Str::StringRef name, int& res) {
+		IPC::HandleMsg<ParseLoadSourceMsg>(channel, std::move(reader), [this](Str::StringRef name, int& res) {
 			res = Parse_LoadSourceHandle(name.c_str());
 		});
 		break;
 
 	case G_PARSE_FREE_SOURCE:
-		IPC::HandleMsg<ParseFreeSourceMsg>(socket, std::move(reader), [this](int source, int& res) {
+		IPC::HandleMsg<ParseFreeSourceMsg>(channel, std::move(reader), [this](int source, int& res) {
 			res = Parse_FreeSourceHandle(source);
 		});
 		break;
 
 	case G_PARSE_READ_TOKEN:
-		IPC::HandleMsg<ParseReadTokenMsg>(socket, std::move(reader), [this](int source, int& res, pc_token_t& token) {
+		IPC::HandleMsg<ParseReadTokenMsg>(channel, std::move(reader), [this](int source, int& res, pc_token_t& token) {
 			res = Parse_ReadTokenHandle(source, &token);
 		});
 		break;
 
 	case G_PARSE_SOURCE_FILE_AND_LINE:
-		IPC::HandleMsg<ParseSourceFileAndLineMsg>(socket, std::move(reader), [this](int source, int& res, std::string& file, int& line) {
+		IPC::HandleMsg<ParseSourceFileAndLineMsg>(channel, std::move(reader), [this](int source, int& res, std::string& file, int& line) {
 			char buffer[128] = {0};
 			res = Parse_SourceFileAndLine(source, buffer, &line);
 			file = buffer;
@@ -1061,19 +1061,19 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case BOT_ALLOCATE_CLIENT:
-		IPC::HandleMsg<BotAllocateClientMsg>(socket, std::move(reader), [this](int input, int& output) {
+		IPC::HandleMsg<BotAllocateClientMsg>(channel, std::move(reader), [this](int input, int& output) {
 			output = SV_BotAllocateClient(input);
 		});
 		break;
 
 	case BOT_FREE_CLIENT:
-		IPC::HandleMsg<BotFreeClientMsg>(socket, std::move(reader), [this](int input) {
+		IPC::HandleMsg<BotFreeClientMsg>(channel, std::move(reader), [this](int input) {
 			SV_BotFreeClient(input);
 		});
 		break;
 
 	case BOT_GET_CONSOLE_MESSAGE:
-		IPC::HandleMsg<BotGetConsoleMessageMsg>(socket, std::move(reader), [this](int client, int len, int& res, std::string& message) {
+		IPC::HandleMsg<BotGetConsoleMessageMsg>(channel, std::move(reader), [this](int client, int len, int& res, std::string& message) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			res = SV_BotGetConsoleMessage(client, buffer.get(), len);
 			message.assign(buffer.get(), len);
@@ -1081,7 +1081,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case BOT_NAV_SETUP:
-		IPC::HandleMsg<BotNavSetupMsg>(socket, std::move(reader), [this](botClass_t botClass, int& res, int& handle) {
+		IPC::HandleMsg<BotNavSetupMsg>(channel, std::move(reader), [this](botClass_t botClass, int& res, int& handle) {
 			res = BotSetupNav(&botClass, &handle);
 		});
 		break;
@@ -1091,61 +1091,61 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case BOT_SET_NAVMESH:
-		IPC::HandleMsg<BotSetNavmeshMsg>(socket, std::move(reader), [this](int clientNum, int navHandle) {
+		IPC::HandleMsg<BotSetNavmeshMsg>(channel, std::move(reader), [this](int clientNum, int navHandle) {
 			BotSetNavMesh(clientNum, navHandle);
 		});
 		break;
 
 	case BOT_FIND_ROUTE:
-		IPC::HandleMsg<BotFindRouteMsg>(socket, std::move(reader), [this](int clientNum, botRouteTarget_t target, bool allowPartial, int& res) {
+		IPC::HandleMsg<BotFindRouteMsg>(channel, std::move(reader), [this](int clientNum, botRouteTarget_t target, bool allowPartial, int& res) {
 			res = BotFindRouteExt(clientNum, &target, allowPartial);
 		});
 		break;
 
 	case BOT_UPDATE_PATH:
-		IPC::HandleMsg<BotUpdatePathMsg>(socket, std::move(reader), [this](int clientNum, botRouteTarget_t target, botNavCmd_t& cmd) {
+		IPC::HandleMsg<BotUpdatePathMsg>(channel, std::move(reader), [this](int clientNum, botRouteTarget_t target, botNavCmd_t& cmd) {
 			BotUpdateCorridor(clientNum, &target, &cmd);
 		});
 		break;
 
 	case BOT_NAV_RAYCAST:
-		IPC::HandleMsg<BotNavRaycastMsg>(socket, std::move(reader), [this](int clientNum, std::array<float, 3> start, std::array<float, 3> end, int& res, botTrace_t& botTrace) {
+		IPC::HandleMsg<BotNavRaycastMsg>(channel, std::move(reader), [this](int clientNum, std::array<float, 3> start, std::array<float, 3> end, int& res, botTrace_t& botTrace) {
 			res = BotNavTrace(clientNum, &botTrace, start.data(), end.data());
 		});
 		break;
 
 	case BOT_NAV_RANDOMPOINT:
-		IPC::HandleMsg<BotNavRandomPointMsg>(socket, std::move(reader), [this](int clientNum, std::array<float, 3>& point) {
+		IPC::HandleMsg<BotNavRandomPointMsg>(channel, std::move(reader), [this](int clientNum, std::array<float, 3>& point) {
 			BotFindRandomPoint(clientNum, point.data());
 		});
 		break;
 
 	case BOT_NAV_RANDOMPOINTRADIUS:
-		IPC::HandleMsg<BotNavRandomPointRadiusMsg>(socket, std::move(reader), [this](int clientNum, std::array<float, 3> origin, float radius, int res, std::array<float, 3>& point) {
+		IPC::HandleMsg<BotNavRandomPointRadiusMsg>(channel, std::move(reader), [this](int clientNum, std::array<float, 3> origin, float radius, int res, std::array<float, 3>& point) {
 			res = BotFindRandomPointInRadius(clientNum, origin.data(), point.data(), radius);
 		});
 		break;
 
 	case BOT_ENABLE_AREA:
-		IPC::HandleMsg<BotEnableAreaMsg>(socket, std::move(reader), [this](std::array<float, 3> origin, std::array<float, 3> mins, std::array<float, 3> maxs) {
+		IPC::HandleMsg<BotEnableAreaMsg>(channel, std::move(reader), [this](std::array<float, 3> origin, std::array<float, 3> mins, std::array<float, 3> maxs) {
 			BotEnableArea(origin.data(), mins.data(), maxs.data());
 		});
 		break;
 
 	case BOT_DISABLE_AREA:
-		IPC::HandleMsg<BotDisableAreaMsg>(socket, std::move(reader), [this](std::array<float, 3> origin, std::array<float, 3> mins, std::array<float, 3> maxs) {
+		IPC::HandleMsg<BotDisableAreaMsg>(channel, std::move(reader), [this](std::array<float, 3> origin, std::array<float, 3> mins, std::array<float, 3> maxs) {
 			BotDisableArea(origin.data(), mins.data(), maxs.data());
 		});
 		break;
 
 	case BOT_ADD_OBSTACLE:
-		IPC::HandleMsg<BotAddObstacleMsg>(socket, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int& handle) {
+		IPC::HandleMsg<BotAddObstacleMsg>(channel, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int& handle) {
 			BotAddObstacle(mins.data(), maxs.data(), &handle);
 		});
 		break;
 
 	case BOT_REMOVE_OBSTACLE:
-		IPC::HandleMsg<BotRemoveObstacleMsg>(socket, std::move(reader), [this](int handle) {
+		IPC::HandleMsg<BotRemoveObstacleMsg>(channel, std::move(reader), [this](int handle) {
 			BotRemoveObstacle(handle);
 		});
 		break;

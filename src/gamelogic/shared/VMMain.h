@@ -32,8 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace VM {
 
-	// Root socket used to communicate with the engine
-	extern IPC::Socket rootSocket;
+	// Root channel used to communicate with the engine
+	extern IPC::Channel rootChannel;
 
 	// Main handler for incoming messages from the engine
 	void VMMain(uint32_t id, IPC::Reader reader);
@@ -42,7 +42,7 @@ namespace VM {
 
 	// Send a message to the engine
 	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
-		IPC::SendMsg<Msg>(rootSocket, VMMain, std::forward<Args>(args)...);
+		IPC::SendMsg<Msg>(rootChannel, VMMain, std::forward<Args>(args)...);
 	}
 
 }

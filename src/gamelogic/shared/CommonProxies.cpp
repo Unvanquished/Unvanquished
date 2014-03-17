@@ -122,8 +122,8 @@ namespace Cmd {
 
     // Implementation of the engine syscalls
 
-    void ExecuteSyscall(IPC::Reader& reader, const IPC::Socket& socket) {
-        IPC::HandleMsg<VM::ExecuteMsg>(socket, std::move(reader), [](Str::StringRef command){
+    void ExecuteSyscall(IPC::Reader& reader, IPC::Channel& channel) {
+        IPC::HandleMsg<VM::ExecuteMsg>(channel, std::move(reader), [](Str::StringRef command){
             Cmd::Args args(command);
 
             auto map = GetCommandMap();
@@ -137,8 +137,8 @@ namespace Cmd {
         });
     }
 
-    void CompleteSyscall(IPC::Reader& reader, const IPC::Socket& socket) {
-        IPC::HandleMsg<VM::CompleteMsg>(socket, std::move(reader), [](int argNum, Str::StringRef command, Str::StringRef prefix, Cmd::CompletionResult& res) {
+    void CompleteSyscall(IPC::Reader& reader, IPC::Channel& channel) {
+        IPC::HandleMsg<VM::CompleteMsg>(channel, std::move(reader), [](int argNum, Str::StringRef command, Str::StringRef prefix, Cmd::CompletionResult& res) {
             Cmd::Args args(command);
 
             auto map = GetCommandMap();
@@ -152,14 +152,14 @@ namespace Cmd {
         });
     }
 
-    void HandleSyscall(int minor, IPC::Reader& reader, const IPC::Socket& socket) {
+    void HandleSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
         switch (minor) {
             case VM::EXECUTE:
-                ExecuteSyscall(reader, socket);
+                ExecuteSyscall(reader, channel);
                 break;
 
             case VM::COMPLETE:
-                CompleteSyscall(reader, socket);
+                CompleteSyscall(reader, channel);
                 break;
 
             default:
@@ -289,8 +289,8 @@ namespace Cvar{
 
     // Syscalls called by the engine
 
-    void CallOnValueChangedSyscall(IPC::Reader& reader, const IPC::Socket& socket) {
-        IPC::HandleMsg<VM::OnValueChangedMsg>(socket, std::move(reader), [](Str::StringRef name, Str::StringRef value, bool& success, std::string& description) {
+    void CallOnValueChangedSyscall(IPC::Reader& reader, IPC::Channel& channel) {
+        IPC::HandleMsg<VM::OnValueChangedMsg>(channel, std::move(reader), [](Str::StringRef name, Str::StringRef value, bool& success, std::string& description) {
             auto map = GetCvarMap();
             auto it = map.find(name);
 
@@ -307,10 +307,10 @@ namespace Cvar{
         });
     }
 
-    void HandleSyscall(int minor, IPC::Reader& reader, const IPC::Socket& socket) {
+    void HandleSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
         switch (minor) {
             case VM::ON_VALUE_CHANGED:
-                CallOnValueChangedSyscall(reader, socket);
+                CallOnValueChangedSyscall(reader, channel);
                 break;
 
             default:
@@ -411,14 +411,14 @@ namespace VM {
         Cvar::InitializeProxy();
     }
 
-    void HandleCommonSyscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket) {
+    void HandleCommonSyscall(int major, int minor, IPC::Reader reader, IPC::Channel& channel) {
         switch (major) {
             case VM::COMMAND:
-                Cmd::HandleSyscall(minor, reader, socket);
+                Cmd::HandleSyscall(minor, reader, channel);
                 break;
 
             case VM::CVAR:
-                Cvar::HandleSyscall(minor, reader, socket);
+                Cvar::HandleSyscall(minor, reader, channel);
                 break;
 
             default:
