@@ -121,11 +121,6 @@ void CG_ClientList_f( void )
 	Com_Printf(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
 }
 
-static void CG_UIMenu_f( void )
-{
-	trap_SendConsoleCommand( va( "menu %s\n", Quote( CG_Argv( 1 ) ) ) );
-}
-
 static void CG_ReloadHud_f( void )
 {
 	CG_Rocket_LoadHuds();
