@@ -574,12 +574,23 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 
 		if ( attribBits & ATTR_COLOR )
 		{
+			byte *colors;
+			int   i;
+
 			if ( r_logFile->integer )
 			{
 				GLimp_LogComment( va( "glBufferSubData( ATTR_COLOR, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.colors );
+			colors = (byte *)ri.Hunk_AllocateTempMemory( tess.numVertexes * 4 * sizeof( byte ) );
+			for( i = 0; i < tess.numVertexes; i++ ) {
+				colors[ 4 * i + 0 ] = floatToUnorm8( tess.colors[ i ][ 0 ] );
+				colors[ 4 * i + 1 ] = floatToUnorm8( tess.colors[ i ][ 1 ] );
+				colors[ 4 * i + 2 ] = floatToUnorm8( tess.colors[ i ][ 2 ] );
+				colors[ 4 * i + 3 ] = floatToUnorm8( tess.colors[ i ][ 3 ] );
+			}
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * 4 * sizeof( byte ), colors );
+			ri.Hunk_FreeTempMemory( colors );
 		}
 
 	}

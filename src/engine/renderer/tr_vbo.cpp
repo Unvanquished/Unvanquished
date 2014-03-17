@@ -98,12 +98,23 @@ static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i )
 	{
 		vbo->attribs[ i ].componentType = GL_UNSIGNED_SHORT;
 	}
+	else if ( i == ATTR_INDEX_COLOR )
+	{
+		vbo->attribs[ i ].componentType = GL_UNSIGNED_BYTE;
+	}
 	else
 	{
 		vbo->attribs[ i ].componentType = GL_FLOAT;
 	}
 
-	vbo->attribs[ i ].normalize = GL_FALSE;
+	if ( i == ATTR_INDEX_COLOR )
+	{
+		vbo->attribs[ i ].normalize = GL_TRUE;
+	}
+	else
+	{
+		vbo->attribs[ i ].normalize = GL_FALSE;
+	}
 
 	if ( i == ATTR_INDEX_TEXCOORD || i == ATTR_INDEX_LIGHTCOORD )
 	{
@@ -154,6 +165,10 @@ static size_t R_GetAttribStorageSize( const VBO_t *vbo, uint32_t attribute )
 		if ( attribute == ATTR_INDEX_TEXCOORD || attribute == ATTR_INDEX_LIGHTCOORD )
 		{
 			return sizeof( vec2_t );
+		}
+		else if ( attribute == ATTR_INDEX_COLOR )
+		{
+			return 4 * sizeof( byte );
 		}
 		else
 		{
@@ -434,7 +449,12 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 		if ( ( vbo->attribBits & ATTR_COLOR ) )
 		{
-			VERTEXCOPY( v, color, ATTR_INDEX_COLOR, float );
+			uint32_t j;
+			byte *tmp = (byte *) ( outData + vbo->attribs[ ATTR_INDEX_COLOR ].ofs + v * vbo->attribs[ ATTR_INDEX_COLOR ].realStride );
+
+			for ( j = 0; j < 4; j++ ) {
+				tmp[ j ] = floatToUnorm8( inData.color[ v ][ j ] );
+			}
 		}
 
 		if ( ( vbo->attribBits & ATTR_BONE_FACTORS ) )
