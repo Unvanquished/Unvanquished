@@ -933,7 +933,7 @@ set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 ################################################################################
 
 # Import external dependencies
-if( DEPS_DIR AND ( BUILD_GAME_NACL_NATIVE_EXE OR BUILD_GAME_NACL_NATIVE_DLL OR BUILD_GAME_NACL ) )
+if( DEPS_DIR )
   # Download them if they not available
   if( NOT EXISTS ${DEPS_DIR} )
     get_filename_component( BASENAME ${DEPS_DIR} NAME )
