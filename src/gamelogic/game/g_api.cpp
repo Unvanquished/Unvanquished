@@ -46,7 +46,7 @@ static IPC::Channel GetRootChannel(int argc, char** argv)
 		VM::Exit();
 	}
 
-	return IPC::Channel::FromHandle(h);
+	return IPC::Channel(IPC::Socket::FromHandle(h));
 }
 
 class ExitException{};
