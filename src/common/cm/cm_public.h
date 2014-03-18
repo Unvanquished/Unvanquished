@@ -32,10 +32,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "qfiles.h"
-
-#include "q_shared.h"
-#include "../renderer/tr_types.h"
+#include "../../engine/qcommon/q_shared.h"
+#include "../../engine/qcommon/qfiles.h"
+#include "../../engine/renderer/tr_types.h"
 
 void         CM_LoadMap( const char *name, qboolean clientload );
 void         CM_ClearMap( void );

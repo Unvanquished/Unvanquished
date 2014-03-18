@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
-#include "qcommon.h"
+#include "cm_public.h"
+#include "../../engine/qcommon/qcommon.h"
 #include "cm_polylib.h"
 
 // fake submodel handles
