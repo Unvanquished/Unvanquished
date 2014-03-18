@@ -67,6 +67,7 @@ static std::vector<void*> allocations;
 void* CM_Alloc( int size )
 {
     void* alloc = malloc(size);
+	memset(alloc, 0, size);
     allocations.push_back(alloc);
     return alloc;
 }
@@ -918,7 +919,6 @@ Loads in the map and all submodels
 */
 void CM_LoadMap( const char *name, const void* buffer, qboolean clientload )
 {
-	int             *buf;
 	int             i;
 	dheader_t       header;
 
