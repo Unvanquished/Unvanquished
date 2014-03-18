@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #include "cm_public.h"
 #include "../../engine/qcommon/qcommon.h"
 #include "cm_polylib.h"
+#include "../Cvar.h"
+#include "../Log.h"
 
 // fake submodel handles
 #define CAPSULE_MODEL_HANDLE ( MAX_SUBMODELS )
@@ -195,9 +197,8 @@ typedef struct
 extern clipMap_t cm;
 extern int       c_pointcontents;
 extern int       c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces;
-extern cvar_t    *cm_noAreas;
-extern cvar_t    *cm_noCurves;
-extern cvar_t    *cm_forceTriangles;
+extern Cvar::Cvar<bool> cm_forceTriangles;
+extern Log::Logger cmLog;
 
 // cm_test.c
 
@@ -265,6 +266,9 @@ typedef struct
 } cTriangleSoup_t;
 
 cSurfaceCollide_t              *CM_GenerateTriangleSoupCollide( int numVertexes, vec3_t *vertexes, int numIndexes, int *indexes );
+
+
+void* CM_Alloc( int size );
 
 // cm_plane.c
 

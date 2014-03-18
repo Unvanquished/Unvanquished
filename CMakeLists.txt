@@ -415,6 +415,17 @@ set( COMMONLIST
   ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/String.cpp
   ${COMMON_DIR}/String.h
+  ${COMMON_DIR}/cm/cm_load.cpp
+  ${COMMON_DIR}/cm/cm_trisoup.cpp
+  ${COMMON_DIR}/cm/cm_patch.cpp
+  ${COMMON_DIR}/cm/cm_plane.cpp
+  ${COMMON_DIR}/cm/cm_polylib.cpp
+  ${COMMON_DIR}/cm/cm_test.cpp
+  ${COMMON_DIR}/cm/cm_trace.cpp
+  ${COMMON_DIR}/cm/cm_local.h
+  ${COMMON_DIR}/cm/cm_patch.h
+  ${COMMON_DIR}/cm/cm_polylib.h
+  ${COMMON_DIR}/cm/cm_public.h
 )
 
 set( RENDERERLIST
@@ -511,17 +522,6 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/Resource.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
-  ${COMMON_DIR}/cm/cm_load.cpp
-  ${COMMON_DIR}/cm/cm_trisoup.cpp
-  ${COMMON_DIR}/cm/cm_patch.cpp
-  ${COMMON_DIR}/cm/cm_plane.cpp
-  ${COMMON_DIR}/cm/cm_polylib.cpp
-  ${COMMON_DIR}/cm/cm_test.cpp
-  ${COMMON_DIR}/cm/cm_trace.cpp
-  ${COMMON_DIR}/cm/cm_local.h
-  ${COMMON_DIR}/cm/cm_patch.h
-  ${COMMON_DIR}/cm/cm_polylib.h
-  ${COMMON_DIR}/cm/cm_public.h
   ${ENGINE_DIR}/qcommon/cmd.cpp
   ${ENGINE_DIR}/qcommon/common.cpp
   ${ENGINE_DIR}/qcommon/crypto.cpp

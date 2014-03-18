@@ -555,7 +555,7 @@ static void CM_SetBorderInward( cFacet_t *facet, cGrid_t *grid, int gridPlanes[ 
 		else
 		{
 			// bisecting side border
-			Com_DPrintf( "WARNING: CM_SetBorderInward: mixed plane sides\n" );
+			cmLog.Debug( "WARNING: CM_SetBorderInward: mixed plane sides\n" );
 			facet->borderInward[ k ] = qfalse;
 
 			if ( !debugBlock )
@@ -790,9 +790,9 @@ static void CM_SurfaceCollideFromGrid( cGrid_t *grid, cSurfaceCollide_t *sc )
 	// copy the results out
 	sc->numPlanes = numPlanes;
 	sc->numFacets = numFacets;
-	sc->facets = ( cFacet_t * ) Hunk_Alloc( numFacets * sizeof( *sc->facets ), h_high );
+	sc->facets = ( cFacet_t * ) CM_Alloc( numFacets * sizeof( *sc->facets ) );
 	Com_Memcpy( sc->facets, facets, numFacets * sizeof( *sc->facets ) );
-	sc->planes = ( cPlane_t * ) Hunk_Alloc( numPlanes * sizeof( *sc->planes ), h_high );
+	sc->planes = ( cPlane_t * ) CM_Alloc( numPlanes * sizeof( *sc->planes ) );
 	Com_Memcpy( sc->planes, planes, numPlanes * sizeof( *sc->planes ) );
 }
 
@@ -855,7 +855,7 @@ cSurfaceCollide_t *CM_GeneratePatchCollide( int width, int height, vec3_t *point
 	// we now have a grid of points exactly on the curve
 	// the approximate surface defined by these points will be
 	// collided against
-	sc = ( cSurfaceCollide_t * ) Hunk_Alloc( sizeof( *sc ), h_high );
+	sc = ( cSurfaceCollide_t * ) CM_Alloc( sizeof( *sc ) );
 	ClearBounds( sc->bounds[ 0 ], sc->bounds[ 1 ] );
 
 	for ( i = 0; i < grid.width; i++ )
