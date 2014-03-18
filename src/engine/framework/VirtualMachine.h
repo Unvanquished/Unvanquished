@@ -76,7 +76,8 @@ public:
 	// Send a message to the VM
 	template<typename Msg, typename... Args> void SendMsg(Args&&... args)
 	{
-		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, IPC::Reader reader) {
+		// Marking lambda as mutable to work around a bug in gcc 4.6
+		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, IPC::Reader reader) mutable {
 			Syscall(id, std::move(reader), rootChannel);
 		}, std::forward<Args>(args)...);
 	}
