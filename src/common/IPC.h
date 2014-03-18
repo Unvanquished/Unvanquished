@@ -560,7 +560,7 @@ public:
 				return {ID_RETURN, std::move(reader)};
 
 			// Save the reply for later
-			replies.emplace(msg_key, std::move(reader));
+			replies.insert(std::make_pair(msg_key, std::move(reader)));
 		}
 	}
 
