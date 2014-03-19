@@ -361,6 +361,8 @@ struct gentity_s
 	int         last_move_time;
 	int         timestamp; // body queue sinking, etc
 	int         shrunkTime; // time when a barricade shrunk or zero
+	gentity_t   *boosterUsed; // the booster an alien is using for healing
+	int         boosterTime; // last time alien used a booster for healing
 	int         healthSourceTime; // last time an alien had contact to a health source
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second

@@ -136,6 +136,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 #define BOOST_TIME              20000
 #define BOOST_WARN_TIME         15000
+#define BOOST_REPEAT_ANIM       2000
 
 #define ACIDTUBE_DAMAGE         8
 #define ACIDTUBE_RANGE          300.0f

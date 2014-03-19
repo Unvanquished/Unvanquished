@@ -1614,9 +1614,32 @@ void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
 
 void ABooster_Think( gentity_t *self )
 {
-	self->nextthink = level.time + 1000;
+	gentity_t *ent;
+	qboolean  playHealingEffect = qfalse;
+
+	self->nextthink = level.time + BOOST_REPEAT_ANIM / 4;
 
 	AGeneric_Think( self );
+
+	// check if there is a closeby alien that used this booster for healing recently
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, REGEN_BOOST_RANGE ) ); )
+	{
+		if ( ent->boosterUsed == self && ent->boosterTime == level.previousTime )
+		{
+			playHealingEffect = qtrue;
+			break;
+		}
+	}
+
+	if ( playHealingEffect )
+	{
+		if ( level.time > self->timestamp + BOOST_REPEAT_ANIM )
+		{
+			self->timestamp = level.time;
+			G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
+			G_AddEvent( self, EV_ALIEN_BOOSTER, DirToByte( self->s.origin2 ) );
+		}
+	}
 }
 
 void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )

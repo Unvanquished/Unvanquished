@@ -1530,20 +1530,25 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 /**
  * @brief Attempt to find a health source for an alien.
  * @return A mask of SS_HEALING_* flags:
- *         SS_HEALING_ACTIVE when there is any heath source,
+ *         SS_HEALING_ACTIVE when there is any health source,
  *         SS_HEALING_2X     when there also is a source for double healing,
  *         SS_HEALING_3X     when there also is a source for triple healing.
  */
 static int FindAlienHealthSource( gentity_t *self )
 {
 	int       ret = 0;
-	float     distance;
+	float     distance, minBoosterDistance = FLT_MAX;
+	qboolean  needsHealing;
 	gentity_t *ent;
 
 	if ( !self || !self->client )
 	{
 		return 0;
 	}
+
+	needsHealing = self->client->ps.stats[ STAT_HEALTH ] < BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
+
+	self->boosterUsed = NULL;
 
 	for ( ent = NULL; ( ent = G_IterateEntities( ent, NULL, qtrue, 0, NULL ) ); )
 	{
@@ -1571,6 +1576,13 @@ static int FindAlienHealthSource( gentity_t *self )
 			{
 				// Booster healing
 				ret |= SS_HEALING_3X;
+
+				// The closest booster used will play an effect
+				if ( needsHealing && distance < minBoosterDistance )
+				{
+					minBoosterDistance = distance;
+					self->boosterUsed  = ent;
+				}
 			}
 		}
 	}
@@ -1588,6 +1600,11 @@ static int FindAlienHealthSource( gentity_t *self )
 	if ( ret )
 	{
 		self->healthSourceTime = level.time;
+
+		if ( self->boosterUsed )
+		{
+			self->boosterTime = level.time;
+		}
 	}
 
 	return ret;

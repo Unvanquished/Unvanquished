@@ -1510,6 +1510,7 @@ static void CG_RegisterGraphics( void )
 
 	cgs.media.alienEvolvePS = CG_RegisterParticleSystem( "alienEvolvePS" );
 	cgs.media.alienAcidTubePS = CG_RegisterParticleSystem( "alienAcidTubePS" );
+	cgs.media.alienBoosterPS = CG_RegisterParticleSystem( "alienBoosterPS" );
 
 	cgs.media.jetPackThrustPS = CG_RegisterParticleSystem( "jetPackAscendPS" );
 

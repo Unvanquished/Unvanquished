@@ -1285,6 +1285,7 @@ typedef struct
 
 	qhandle_t   alienEvolvePS;
 	qhandle_t   alienAcidTubePS;
+	qhandle_t   alienBoosterPS;
 
 	sfxHandle_t alienEvolveSound;
 

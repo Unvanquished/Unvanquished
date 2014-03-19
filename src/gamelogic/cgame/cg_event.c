@@ -1438,6 +1438,20 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			}
 			break;
 
+		case EV_ALIEN_BOOSTER:
+			{
+				particleSystem_t *ps = CG_SpawnNewParticleSystem( cgs.media.alienBoosterPS );
+
+				if ( CG_IsParticleSystemValid( &ps ) )
+				{
+					CG_SetAttachmentCent( &ps->attachment, cent );
+					ByteToDir( es->eventParm, dir );
+					CG_SetParticleSystemNormal( ps, dir );
+					CG_AttachToCent( &ps->attachment );
+				}
+			}
+			break;
+
 		case EV_MEDKIT_USED:
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.medkitUseSound );
 			break;
