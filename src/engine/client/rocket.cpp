@@ -604,11 +604,11 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 			continue;
 		}
 
-		path =  va( "emoticons/%s_1x1.tga", emoticon.CString() );
+		path =  va( "emoticons/%s_1x1.crn", emoticon.CString() );
 		if ( FS_FOpenFileRead( path, NULL, qtrue ) )
 		{
 			out.Erase( openBracket, closeBracket - openBracket + 1 );
-			path = va( "<img class='trem-emoticon' src='/emoticons/%s_1x1.tga' />", emoticon.CString() );
+			path = va( "<img class='trem-emoticon' src='/emoticons/%s_1x1.crn' />", emoticon.CString() );
 			out.Insert( openBracket, path );
 			currentPosition = openBracket + strlen( path ) + 1;
 		}
