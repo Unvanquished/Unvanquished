@@ -103,17 +103,24 @@ public:
 					Cvar::SetValue( cvar.CString(), GetValue().CString() );
 				}
 
-				else if ( ( type == "radio" || type == "checkbox" ) && event == "click" && !IsDisabled() )
+				else if ( event == "click" && !IsDisabled() )
 				{
-					if ( HasAttribute( "checked" ) )
+					if ( type == "checkbox" )
 					{
-						Cvar::SetValue( cvar.CString(), "1" );
+						if ( HasAttribute( "checked" ) )
+						{
+							Cvar::SetValue( cvar.CString(), "1" );
+						}
 
+						else
+						{
+							Cvar::SetValue( cvar.CString(), "0" );
+						}
 					}
 
-					else
+					else if ( type == "radio" )
 					{
-						Cvar::SetValue( cvar.CString(), "0" );
+						Cvar::SetValue( cvar.CString(), GetValue().CString() );
 					}
 				}
 			}
@@ -125,7 +132,7 @@ public:
 	{
 		if ( !type.Empty() )
 		{
-			if ( type == "checkbox" || type == "radio" )
+			if ( type == "checkbox" )
 			{
 				bool result;
 
@@ -142,6 +149,14 @@ public:
 						RemoveAttribute( "checked" );
 						SetValue( "0" );
 					}
+				}
+			}
+
+			else if ( type == "radio" )
+			{
+				if ( GetValue() == Cvar::GetValue( cvar.CString() ).c_str() )
+				{
+					SetAttribute( "checked", "" );
 				}
 			}
 
