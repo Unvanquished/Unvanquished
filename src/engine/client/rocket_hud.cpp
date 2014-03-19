@@ -156,20 +156,3 @@ void Rocket_ClearHud( int weapon )
 		huds[ weapon ].clear();
 	}
 }
-
-void Rocket_ShowScoreboard( const char *name, bool show )
-{
-	Rocket::Core::ElementDocument* doc = hudContext->GetDocument( name );
-
-	if ( doc )
-	{
-		if ( show )
-		{
-			doc->Show();
-		}
-		else
-		{
-			doc->Hide();
-		}
-	}
-}

@@ -552,6 +552,22 @@ void CG_Rocket_Frame( void )
 		CG_Rocket_BuildServerInfo();
 	}
 
+	// If scores open, update scores
+	if ( cg.showScores )
+	{
+		// UI has focus so scores still open
+		if ( trap_Key_GetCatcher() )
+		{
+			CG_RequestScores();
+		}
+
+		// Game has focus, scores not visible
+		else
+		{
+			cg.showScores = qfalse;
+		}
+	}
+
 	CG_Rocket_ProcessEvents();
 }
 
