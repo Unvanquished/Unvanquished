@@ -547,14 +547,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	{
 		int i;
 
-		ri.Printf( PRINT_ALL, "\n" );
-
 		for ( i = 0; i < s_numVidModes; i++ )
 		{
-			ri.Printf( PRINT_DEVELOPER, "Mode %-2d: %s\n", i, r_vidModes[ i ].description );
+			ri.Printf( PRINT_ALL, "Mode %-2d: %s", i, r_vidModes[ i ].description );
 		}
-
-		ri.Printf( PRINT_DEVELOPER, "\n" );
 	}
 
 	/*
