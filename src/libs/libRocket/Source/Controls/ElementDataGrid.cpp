@@ -262,7 +262,9 @@ void ElementDataGrid::ProcessEvent(Core::Event& event)
 	{
 		if (event.GetTargetElement() == this)
 		{
-			SetScrollTop(GetScrollHeight() - GetClientHeight());
+			// commented this out because this bugs selection on overflowed 
+			// datagrids contained within another overflowed element
+			//SetScrollTop(GetScrollHeight() - GetClientHeight());
 
 			for (int i = 0; i < header->GetNumChildren(); i++)
 			{
