@@ -814,7 +814,7 @@ double Sys_DoubleTime( void );
 
 // commandLine should not include the executable name (argv[0])
 void   Com_Init( char *commandLine );
-void   Com_Frame( void );
+void   Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) );
 void   Com_Shutdown();
 
 /*

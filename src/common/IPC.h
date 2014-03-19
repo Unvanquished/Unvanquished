@@ -496,15 +496,84 @@ template<> struct SerializeTraits<SharedMemory> {
 };
 
 // Message ID to indicate an RPC return
-const uint32_t ID_RETURN = 0xffffffffu;
+const uint32_t ID_RETURN = 0xffffffff;
 
 // Combine a major and minor ID into a single number
-#define IPC_ID(major, minor) ((((uint16_t)major) << 16) + ((uint16_t)minor))
+template<uint16_t Major, uint16_t Minor> struct Id {
+	enum {
+		value = (Major << 16) + Minor
+	};
+};
+
+// An IPC channel wraps a socket and provides additional support for sending
+// synchronous typed messages over it.
+class Channel {
+public:
+	Channel()
+		: counter(0) {}
+	Channel(Socket socket)
+		: socket(std::move(socket)), counter(0) {}
+	explicit operator bool() const
+	{
+		return bool(socket);
+	}
+
+	// Wrappers around socket functions
+	void SendMsg(const Writer& writer) const
+	{
+		socket.SendMsg(writer);
+	}
+	Reader RecvMsg() const
+	{
+		return socket.RecvMsg();
+	}
+
+	// Generate a unique message key to match messages with replies
+	uint32_t GenMsgKey()
+	{
+		return counter++;
+	}
+
+	// Wait for a synchronous message reply, returns the message ID and contents
+	std::pair<uint32_t, Reader> RecvReplyMsg(uint32_t key)
+	{
+		// If we have already recieved a reply for this key, just return that
+		auto it = replies.find(key);
+		if (it != replies.end()) {
+			Reader reader = std::move(it->second);
+			replies.erase(it);
+			return {ID_RETURN, std::move(reader)};
+		}
+
+		// Otherwise handle incoming messages until we find the reply we want
+		while (true) {
+			Reader reader = RecvMsg();
+
+			// Is this a reply?
+			uint32_t id = reader.Read<uint32_t>();
+			if (id != ID_RETURN)
+				return {id, std::move(reader)};
+
+			// Is this the reply we are expecting?
+			uint32_t msg_key = reader.Read<uint32_t>();
+			if (msg_key == key)
+				return {ID_RETURN, std::move(reader)};
+
+			// Save the reply for later
+			replies.insert(std::make_pair(msg_key, std::move(reader)));
+		}
+	}
+
+private:
+	Socket socket;
+	uint32_t counter;
+	std::unordered_map<uint32_t, Reader> replies;
+};
 
 // Asynchronous message which does not wait for a reply
-template<uint32_t Id, typename... T> struct Message {
+template<typename Id, typename... T> struct Message {
 	enum {
-		id = Id
+		id = Id::value
 	};
 	typedef std::tuple<T...> Inputs;
 };
@@ -556,7 +625,7 @@ template<typename... T> struct MapTuple<std::tuple<T...>> {
 };
 
 // Implementations of SendMsg for Message and SyncMessage
-template<typename Func, uint32_t Id, typename... MsgArgs, typename... Args> void SendMsg(const Socket& socket, Func&&, Message<Id, MsgArgs...>, Args&&... args)
+template<typename Func, typename Id, typename... MsgArgs, typename... Args> void SendMsg(Channel& channel, Func&&, Message<Id, MsgArgs...>, Args&&... args)
 {
 	typedef Message<Id, MsgArgs...> Message;
 	static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value, "Incorrect number of arguments for IPC::SendMsg");
@@ -564,21 +633,24 @@ template<typename Func, uint32_t Id, typename... MsgArgs, typename... Args> void
 	Writer writer;
 	writer.Write<uint32_t>(Message::id);
 	SerializeArgs(Util::TypeListFromTuple<typename Message::Inputs>(), writer, std::forward<Args>(args)...);
-	socket.SendMsg(writer);
+	channel.SendMsg(writer);
 }
-template<typename Func, typename Msg, typename Reply, typename... Args> void SendMsg(const Socket& socket, Func&& messageHandler, SyncMessage<Msg, Reply>, Args&&... args)
+template<typename Func, typename Msg, typename Reply, typename... Args> void SendMsg(Channel& channel, Func&& messageHandler, SyncMessage<Msg, Reply>, Args&&... args)
 {
 	typedef SyncMessage<Msg, Reply> Message;
 	static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value + std::tuple_size<typename Message::Outputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
 	Writer writer;
 	writer.Write<uint32_t>(Message::id);
+	uint32_t key = channel.GenMsgKey();
+	writer.Write<uint32_t>(key);
 	SerializeArgs(Util::TypeListFromTuple<typename Message::Inputs>(), writer, std::forward<Args>(args)...);
-	socket.SendMsg(writer);
+	channel.SendMsg(writer);
 
 	while (true) {
-		Reader reader = socket.RecvMsg();
-		uint32_t id = reader.Read<uint32_t>();
+		Reader reader;
+		uint32_t id;
+		std::tie(id, reader) = channel.RecvReplyMsg(key);
 		if (id == ID_RETURN) {
 			auto out = std::forward_as_tuple(std::forward<Args>(args)...);
 			FillTuple<std::tuple_size<typename Message::Inputs>::value>(Util::TypeListFromTuple<typename Message::Outputs>(), out, reader);
@@ -589,7 +661,7 @@ template<typename Func, typename Msg, typename Reply, typename... Args> void Sen
 }
 
 // Implementations of HandleMsg for Message and SyncMessage
-template<typename Func, uint32_t Id, typename... MsgArgs> void HandleMsg(const Socket&, Message<Id, MsgArgs...>, IPC::Reader reader, Func&& func)
+template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel&, Message<Id, MsgArgs...>, IPC::Reader reader, Func&& func)
 {
 	typedef Message<Id, MsgArgs...> Message;
 
@@ -597,10 +669,11 @@ template<typename Func, uint32_t Id, typename... MsgArgs> void HandleMsg(const S
 	FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs, reader);
 	Util::apply(std::forward<Func>(func), std::move(inputs));
 }
-template<typename Func, typename Msg, typename Reply> void HandleMsg(const Socket& socket, SyncMessage<Msg, Reply>, IPC::Reader reader, Func&& func)
+template<typename Func, typename Msg, typename Reply> void HandleMsg(Channel& channel, SyncMessage<Msg, Reply>, IPC::Reader reader, Func&& func)
 {
 	typedef SyncMessage<Msg, Reply> Message;
 
+	uint32_t key = reader.Read<uint32_t>();
 	typename MapTuple<typename Message::Inputs>::type inputs;
 	typename Message::Outputs outputs;
 	FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs, reader);
@@ -608,25 +681,26 @@ template<typename Func, typename Msg, typename Reply> void HandleMsg(const Socke
 
 	Writer writer;
 	writer.Write<uint32_t>(ID_RETURN);
+	writer.Write<uint32_t>(key);
 	SerializeTuple(Util::TypeListFromTuple<typename Message::Outputs>(), writer, std::move(outputs));
-	socket.SendMsg(writer);
+	channel.SendMsg(writer);
 }
 
 } // namespace detail
 
-// Send a message to the given socket. If the message is synchronous then messageHandler is invoked for all
+// Send a message to the given channel. If the message is synchronous then messageHandler is invoked for all
 // message that are recieved until ID_RETURN is recieved. Values returned by a synchronous message are
 // returned through reference parameters.
-template<typename Msg, typename Func, typename... Args> void SendMsg(const Socket& socket, Func&& messageHandler, Args&&... args)
+template<typename Msg, typename Func, typename... Args> void SendMsg(Channel& channel, Func&& messageHandler, Args&&... args)
 {
-	detail::SendMsg(socket, messageHandler, Msg(), std::forward<Args>(args)...);
+	detail::SendMsg(channel, messageHandler, Msg(), std::forward<Args>(args)...);
 }
 
 // Handle an incoming message using a callback function (which can just be a lambda). If the message is
 // synchronous then outputs values are written to using reference parameters.
-template<typename Msg, typename Func> void HandleMsg(const Socket& socket, Reader reader, Func&& func)
+template<typename Msg, typename Func> void HandleMsg(Channel& channel, Reader reader, Func&& func)
 {
-	detail::HandleMsg(socket, Msg(), std::move(reader), std::forward<Func>(func));
+	detail::HandleMsg(channel, Msg(), std::move(reader), std::forward<Func>(func));
 }
 
 } // namespace IPC

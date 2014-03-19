@@ -325,6 +325,7 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 	// Create the socket pair to get the handle for ROOT_SOCKET
 	std::pair<IPC::Socket, IPC::Socket> pair = IPC::Socket::CreatePair();
 
+	IPC::Socket rootSocket;
 	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG) {
 		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG);
 	} else if (type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
@@ -332,6 +333,7 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 	} else {
 		rootSocket = CreateInProcessNativeVM(std::move(pair), name, inProcess);
 	}
+	rootChannel = IPC::Channel(std::move(rootSocket));
 	vmType = type;
 
 	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE_DEBUG)
@@ -339,7 +341,7 @@ int VMBase::Create(Str::StringRef name, vmType_t type)
 
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
-	IPC::Reader reader = rootSocket.RecvMsg();
+	IPC::Reader reader = rootChannel.RecvMsg();
 	Com_Printf("Loaded module with the NaCl ABI");
 	return reader.Read<uint32_t>();
 }
@@ -377,7 +379,7 @@ void VMBase::Free()
 	if (!IsActive())
 		return;
 
-	rootSocket.Close();
+	rootChannel = IPC::Channel();
 
 	if (vmType == TYPE_NACL || vmType == TYPE_NACL_DEBUG || vmType == TYPE_NATIVE_EXE || vmType == TYPE_NATIVE_EXE_DEBUG) {
 #ifdef _WIN32

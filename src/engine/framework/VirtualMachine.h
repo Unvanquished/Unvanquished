@@ -74,10 +74,11 @@ public:
 	}
 
 	// Send a message to the VM
-	template<typename Msg, typename... Args> void SendMsg(Args&&... args) const
+	template<typename Msg, typename... Args> void SendMsg(Args&&... args)
 	{
-		IPC::SendMsg<Msg>(rootSocket, [this](uint32_t id, IPC::Reader reader) {
-			Syscall(id, std::move(reader), rootSocket);
+		// Marking lambda as mutable to work around a bug in gcc 4.6
+		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, IPC::Reader reader) mutable {
+			Syscall(id, std::move(reader), rootChannel);
 		}, std::forward<Args>(args)...);
 	}
 
@@ -94,7 +95,7 @@ public:
 
 protected:
 	// System call handler
-	virtual void Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) const = 0;
+	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) = 0;
 
 private:
 	void FreeInProcessVM();
@@ -106,7 +107,7 @@ private:
 	InProcessInfo inProcess;
 
 	// Common
-	IPC::Socket rootSocket;
+	IPC::Channel rootChannel;
 	vmType_t vmType;
 };
 

@@ -41,7 +41,7 @@ namespace Cmd {
 namespace VM {
 
     void InitializeProxies();
-    void HandleCommonSyscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket);
+    void HandleCommonSyscall(int major, int minor, IPC::Reader reader, IPC::Channel& channel);
 
 }
 
