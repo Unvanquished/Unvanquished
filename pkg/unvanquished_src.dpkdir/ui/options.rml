@@ -38,6 +38,9 @@
 				<label>800x600</label><input type="radio" name="resolution" cvar="r_mode" value="4" />
 				<label>960x720</label><input type="radio" name="resolution" cvar="r_mode" value="5" />
 				<label>1024x768</label><input type="radio" name="resolution" cvar="r_mode" value="6" />
+				<label>Custom</label><input type="radio" name="resolution" cvar="r_mode" value="-1" />
+				<label>Auto Detect</label><input type="radio" name="resolution" cvar="r_mode" value="-2" />
+
 			</div>
 			<div><label>Video Quality:</label>
 			<select name="videoquality">
