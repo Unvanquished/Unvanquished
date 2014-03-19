@@ -69,14 +69,14 @@ DLLEXPORT int main(int argc, char** argv)
 		writer.Write<uint32_t>(GAME_API_VERSION);
 		VM::rootChannel.SendMsg(writer);
 
-		// Initialize VM proxies
-		VM::InitializeProxies();
-
 		// Allocate entities and clients shared memory region
 		shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
 		char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
 		g_entities = reinterpret_cast<gentity_t*>(shmBase);
 		g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
+
+		// Initialize VM proxies
+		VM::InitializeProxies();
 
 		// Start main loop
 		while (true) {
