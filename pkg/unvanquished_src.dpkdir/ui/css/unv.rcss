@@ -204,7 +204,7 @@ input.range slidertrack
 input.range slidertrack:hover,
 input.range slidertrack:active
 {
-	background-color-multitplier: yellow;
+	background-color-multiplier: yellow;
 }
 
 input.range sliderbar
@@ -475,6 +475,12 @@ circlemenu
 .circlemenu button:hover, .circlemenu button:active, .circlemenu button:focus{
 	icon-image: /ui/assets/circle-hover.png;
 
+}
+
+.circlemenu button.disabled, .circlemenu button.disabled:hover,
+.circlemenu button.disabled:active, .circlemenu button.disabled:focus{
+	icon-image: /ui/assets/circle.png;
+	icon-color-multiplier: rgb(12,12,12);
 }
 
 .circlemenu button.cancelButton{
