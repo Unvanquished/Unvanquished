@@ -341,10 +341,10 @@ static cvarTable_t gameCvarTable[] =
 	// gameplay: human power
 	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              0,                                               0, qfalse           },
 	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               0,                                               0, qfalse           },
-	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "40",                               0,                                               0, qfalse           },
-	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_SERVERINFO,                                 0, qfalse           },
+	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "30",                               0,                                               0, qfalse           },
+	{ &g_powerReactorRange,           "g_powerReactorRange",           "1000",                             CVAR_SERVERINFO,                                 0, qfalse           },
 	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               0,                                               0, qfalse           },
-	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_SERVERINFO,                                 0, qfalse           },
+	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "500",                              CVAR_SERVERINFO,                                 0, qfalse           },
 
 	// gameplay: misc
 	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                0,                                               0, qfalse           },

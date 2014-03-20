@@ -2001,7 +2001,8 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 {
 	float range, power;
 
-	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
+	// buildables that need no power don't receive interference
+	if ( !BG_Buildable( buildable )->powerConsumption )
 	{
 		return 0.0f;
 	}
@@ -2087,12 +2088,10 @@ static float OutgoingInterference( buildable_t buildable, gentity_t *neighbor, f
 		return 0.0f;
 	}
 
-	// it's not possible to influence repeater or reactor
-	switch ( neighbor->s.modelindex )
+	// cannot influence buildables that need no power
+	if ( !BG_Buildable(neighbor->s.modelindex )->powerConsumption )
 	{
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			return 0.0f;
+		return 0.0f;
 	}
 
 	switch ( buildable )
@@ -2139,11 +2138,9 @@ static void CalculateSparePower( gentity_t *self )
 		return;
 	}
 
-	switch ( self->s.modelindex )
+	if ( !BG_Buildable( self->s.modelindex )->powerConsumption )
 	{
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			return;
+		return;
 	}
 
 	// reactor enables base supply everywhere on the map
@@ -2254,9 +2251,16 @@ void G_SetHumanBuildablePowerState()
 				continue;
 			}
 
+			// ignore buildables that need no power
+			if ( !BG_Buildable( ent->s.modelindex )->powerConsumption )
+			{
+				continue;
+			}
+
 			CalculateSparePower( ent );
 
-			// never shut down the telenode
+			// never shut down the telenode, even if it was set to consume power and operates below
+			// its threshold
 			if ( ent->s.modelindex == BA_H_SPAWN )
 			{
 				continue;
@@ -3926,7 +3930,6 @@ Takes both power consumption and build points into account.
 Sets level.markedBuildables and level.numBuildablesForRemoval.
 ===============
 */
-// TODO: Add replacement flag checks
 static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3_t origin )
 {
 	int              entNum, listLen;
