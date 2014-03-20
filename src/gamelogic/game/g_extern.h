@@ -58,7 +58,6 @@ extern  vmCvar_t g_password;
 extern  vmCvar_t g_needpass;
 extern  vmCvar_t g_gravity;
 extern  vmCvar_t g_speed;
-extern  vmCvar_t g_knockback;
 extern  vmCvar_t g_inactivity;
 extern  vmCvar_t g_debugMove;
 extern  vmCvar_t g_debugDamage;
@@ -140,7 +139,7 @@ extern  vmCvar_t g_mapStartupMessageDelay;
 extern  vmCvar_t g_sayAreaRange;
 
 extern  vmCvar_t g_debugVoices;
-extern  vmCvar_t g_voiceChats;
+extern  vmCvar_t g_enableVsays;
 
 extern  vmCvar_t g_floodMaxDemerits;
 extern  vmCvar_t g_floodMinTime;

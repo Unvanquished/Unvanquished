@@ -1442,7 +1442,7 @@ void Cmd_VSay_f( gentity_t *ent )
 		return;
 	}
 
-	if ( !g_voiceChats.integer )
+	if ( !g_enableVsays.integer )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
 		                          "print_tr %s %s", QQ( N_("$1$: voice system administratively disabled on this server\n") ),
