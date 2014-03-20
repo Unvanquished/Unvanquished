@@ -3026,9 +3026,9 @@ static void HTurret_SetBaseDir( gentity_t *self )
 
 	// invert base direction if it reaches into a wall within the first damage zone
 	VectorMA( self->s.origin, ( float )TURRET_RANGE / ( float )TURRET_ZONES, dir, end );
-	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SOLID );
+	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT );
 
-	if ( tr.fraction < 1.0f )
+	if ( tr.entityNum == ENTITYNUM_WORLD || g_entities[ tr.entityNum ].s.eType == ET_BUILDABLE )
 	{
 		VectorNegate( dir, self->turretBaseDir );
 	}
