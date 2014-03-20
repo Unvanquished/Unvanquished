@@ -1537,7 +1537,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 static int FindAlienHealthSource( gentity_t *self )
 {
 	int       ret = 0;
-	float     distance, minBoosterDistance = FLT_MAX;
+	float     distance, minBoosterDistance = REGEN_BOOST_RANGE; // TODO: USE FLT_MAX when available
 	qboolean  needsHealing;
 	gentity_t *ent;
 
