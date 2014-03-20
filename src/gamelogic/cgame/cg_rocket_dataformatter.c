@@ -116,15 +116,39 @@ static void CG_Rocket_DFServerLabel( int handle, const char *data )
 static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 {
 	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
+	qboolean disabled = qfalse;
+	const char *Class;
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy' onMouseover='setDS armouryBuyList weapons %s' onClick='execDS armouryBuyList weapons'><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon ) ), qfalse );
+	if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) || BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) )
+	{
+		Class = "armourybuy disabled";
+		disabled = qtrue;
+	}
+	else
+	{
+		Class = "armourybuy";
+	}
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS armouryBuyList weapons %s' %s><img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), disabled ? "" : "onClick='execDS armouryBuyList weapons'", CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon ) ), qfalse );
 }
 
 static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 {
 	upgrade_t upgrade = (upgrade_t) atoi( Info_ValueForKey( data, "1" ) );
+	const char *Class;
+	qboolean disabled = qfalse;
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy' onMouseover='setDS armouryBuyList upgrades %s' onClick='execDS armouryBuyList upgrades'><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon ) ), qfalse );
+	if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) || BG_InventoryContainsUpgrade( upgrade, cg.predictedPlayerState.stats ) )
+	{
+		Class = "armourybuy disabled";
+		disabled = qtrue;
+	}
+	else
+	{
+		Class = "armourybuy";
+	}
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS armouryBuyList upgrades %s' %s><img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), disabled ? "" : "onClick='execDS armouryBuyList upgrades'", CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon ) ), qfalse );
 }
 
 static void CG_Rocket_DFGWeaponDamage( int handle, const char *data )

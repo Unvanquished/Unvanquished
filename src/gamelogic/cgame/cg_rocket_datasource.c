@@ -1214,7 +1214,8 @@ static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 
 	buf[ 0 ] = '\0';
 
-	if ( BG_Weapon( i )->team == TEAM_HUMANS && BG_Weapon( i )->purchasable && BG_WeaponUnlocked( i ) && !BG_WeaponDisabled( i ) && !BG_InventoryContainsWeapon( i, cg.predictedPlayerState.stats ) &&  i != WP_BLASTER )
+	if ( BG_Weapon( i )->team == TEAM_HUMANS && BG_Weapon( i )->purchasable &&
+		i != WP_BLASTER )
 	{
 		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
 		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, qfalse );
@@ -1239,7 +1240,8 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 
 	buf[ 0 ] = '\0';
 
-	if ( BG_Upgrade( i )->team == TEAM_HUMANS && BG_Upgrade( i )->purchasable && BG_UpgradeUnlocked( i ) && !BG_UpgradeDisabled( i ) && !BG_InventoryContainsUpgrade( i, cg.predictedPlayerState.stats ) && i != UP_MEDKIT )
+	if ( BG_Upgrade( i )->team == TEAM_HUMANS && BG_Upgrade( i )->purchasable &&
+		i != UP_MEDKIT )
 	{
 		Info_SetValueForKey( buf, "num", va( "%d", tblIndex == ROCKETDS_BOTH ? i + WP_NUM_WEAPONS : i ), qfalse );
 		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, qfalse );
