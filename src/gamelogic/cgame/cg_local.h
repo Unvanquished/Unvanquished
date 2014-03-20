@@ -27,6 +27,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../shared/bg_public.h"
 #include "../ui/ui_shared.h"
 
+// future imports
+#ifndef Q3_VM
+#include "../../common/Maths.h"
+#endif
+
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is no persistent data between levels on the client side.
 // If you absolutely need something stored, it can either be kept

@@ -283,6 +283,8 @@ extern float REACTOR_ATTACK_RANGE;
 extern int   REACTOR_ATTACK_REPEAT;
 extern int   REACTOR_ATTACK_DAMAGE;
 
+#define POWER_DISPLAY_MAX     40 // power display on human buildables is capped above this
+
 /*
  * HUMAN misc
  */

@@ -2132,7 +2132,7 @@ static void CalculateSparePower( gentity_t *self )
 {
 	gentity_t *neighbor;
 	float     distance;
-	int       baseSupply, relativeSparePower;
+	int       baseSupply;
 
 	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
@@ -2178,25 +2178,12 @@ static void CalculateSparePower( gentity_t *self )
 		}
 	}
 
-	// HACK: store relative spare power in entityState_t.clientNum for display
-	if ( self->spawned && g_powerBaseSupply.integer > 0 )
+	// HACK: Store total power (used + spare) in entityState_t.clientNum for display
+	if ( self->spawned )
 	{
-		relativeSparePower = ( int )( 100.0f * ( self->currentSparePower / g_powerBaseSupply.integer ) + 0.5f );
+		int totalPower = (int)self->currentSparePower + BG_Buildable( self->s.modelindex )->powerConsumption;
 
-		if ( relativeSparePower == 0 && self->currentSparePower > 0.0f )
-		{
-			relativeSparePower = 1;
-		}
-		else if ( relativeSparePower < 0 )
-		{
-			relativeSparePower = 0;
-		}
-		else if ( relativeSparePower > 100 )
-		{
-			relativeSparePower = 100;
-		}
-
-		self->s.clientNum = relativeSparePower;
+		self->s.clientNum = Q_clamp( totalPower, 0, POWER_DISPLAY_MAX );
 	}
 	else
 	{
