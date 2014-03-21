@@ -895,8 +895,8 @@ static int R_CullIQM( trRefEntity_t *ent ) {
 	else
 	{
 		// copy a bounding box in the current coordinate system provided by skeleton
-		VectorCopy( ent->e.skeleton.bounds[ 0 ], localBounds[ 0 ] );
-		VectorCopy( ent->e.skeleton.bounds[ 1 ], localBounds[ 1 ] );
+		VectorScale( ent->e.skeleton.bounds[0], ent->e.skeleton.scale, localBounds[ 0 ] );
+		VectorScale( ent->e.skeleton.bounds[1], ent->e.skeleton.scale, localBounds[ 1 ] );
 	}
 
 	switch ( R_CullLocalBox( localBounds ) )
