@@ -391,7 +391,7 @@ template<> struct SerializeTraits<std::string> {
 	static void Write(Writer& stream, Str::StringRef value)
 	{
 		stream.WriteSize(value.size());
-		stream.WriteData(value.c_str(), value.size());
+		stream.WriteData(value.data(), value.size());
 	}
 	static std::string Read(Reader& stream)
 	{
