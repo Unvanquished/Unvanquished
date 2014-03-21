@@ -245,10 +245,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_vboShadows;
 	cvar_t      *r_vboLighting;
 	cvar_t      *r_vboModels;
-	cvar_t      *r_vboOptimizeVertices;
 	cvar_t      *r_vboVertexSkinning;
 	cvar_t      *r_vboDeformVertexes;
-	cvar_t      *r_vboSmoothNormals;
 
 	cvar_t      *r_mergeLeafSurfaces;
 	cvar_t      *r_parallaxMapping;
@@ -549,14 +547,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	{
 		int i;
 
-		ri.Printf( PRINT_ALL, "\n" );
-
 		for ( i = 0; i < s_numVidModes; i++ )
 		{
-			ri.Printf( PRINT_DEVELOPER, "Mode %-2d: %s\n", i, r_vidModes[ i ].description );
+			ri.Printf( PRINT_ALL, "Mode %-2d: %s", i, r_vidModes[ i ].description );
 		}
-
-		ri.Printf( PRINT_DEVELOPER, "\n" );
 	}
 
 	/*
@@ -1434,10 +1428,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_vboShadows = ri.Cvar_Get( "r_vboShadows", "1", CVAR_CHEAT );
 		r_vboLighting = ri.Cvar_Get( "r_vboLighting", "1", CVAR_CHEAT );
 		r_vboModels = ri.Cvar_Get( "r_vboModels", "1", 0 );
-		r_vboOptimizeVertices = ri.Cvar_Get( "r_vboOptimizeVertices", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_vboVertexSkinning = ri.Cvar_Get( "r_vboVertexSkinning", "1",  CVAR_LATCH );
 		r_vboDeformVertexes = ri.Cvar_Get( "r_vboDeformVertexes", "1",  CVAR_LATCH );
-		r_vboSmoothNormals = ri.Cvar_Get( "r_vboSmoothNormals", "1",  CVAR_LATCH );
 
 		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "1",  CVAR_LATCH );
 		r_dynamicBspOcclusionCulling = ri.Cvar_Get( "r_dynamicBspOcclusionCulling", "0", 0 );
