@@ -734,13 +734,13 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
 	case G_PRINT:
-		IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](Str::StringRef text) {
+		IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](std::string text) {
 			Com_Printf("%s", text.c_str());
 		});
 		break;
 
 	case G_ERROR:
-		IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](Str::StringRef text) {
+		IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](std::string text) {
 			Com_Error(ERR_DROP, "%s", text.c_str());
 		});
 		break;
@@ -755,13 +755,13 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_SEND_CONSOLE_COMMAND:
-		IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](int when, Str::StringRef text) {
+		IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](int when, std::string text) {
 			Cbuf_ExecuteText(when, text.c_str());
 		});
 		break;
 
 	case G_FS_FOPEN_FILE:
-		IPC::HandleMsg<FSFOpenFileMsg>(channel, std::move(reader), [this](Str::StringRef filename, bool open, int fsMode, int& success, int& handle) {
+		IPC::HandleMsg<FSFOpenFileMsg>(channel, std::move(reader), [this](std::string filename, bool open, int fsMode, int& success, int& handle) {
 			fsMode_t mode = static_cast<fsMode_t>(fsMode);
 			success = FS_Game_FOpenFileByMode(filename.c_str(), open ? &handle : NULL, mode);
 		});
@@ -776,13 +776,13 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_FS_WRITE:
-		IPC::HandleMsg<FSWriteMsg>(channel, std::move(reader), [this](int handle, Str::StringRef text, int& res) {
+		IPC::HandleMsg<FSWriteMsg>(channel, std::move(reader), [this](int handle, std::string text, int& res) {
 			res = FS_Write(text.c_str(), text.size(), handle);
 		});
 		break;
 
 	case G_FS_RENAME:
-		IPC::HandleMsg<FSRenameMsg>(channel, std::move(reader), [this](Str::StringRef from, Str::StringRef to) {
+		IPC::HandleMsg<FSRenameMsg>(channel, std::move(reader), [this](std::string from, std::string to) {
 			FS_Rename(from.c_str(), to.c_str());
 		});
 		break;
@@ -794,7 +794,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_FS_GET_FILE_LIST:
-		IPC::HandleMsg<FSGetFileListMsg>(channel, std::move(reader), [this](Str::StringRef path, Str::StringRef extension, int len, int& intRes, std::string& res) {
+		IPC::HandleMsg<FSGetFileListMsg>(channel, std::move(reader), [this](std::string path, std::string extension, int len, int& intRes, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			intRes = FS_GetFileList(path.c_str(), extension.c_str(), buffer.get(), len);
 			res.assign(buffer.get(), len);
@@ -802,7 +802,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_FS_FIND_PAK:
-		IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](Str::StringRef pakName, bool& found) {
+		IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
 			found = FS::FindPak(pakName);
 		});
 		break;
@@ -859,7 +859,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_SET_BRUSH_MODEL:
-		IPC::HandleMsg<SetBrushModelMsg>(channel, std::move(reader), [this](int entityNum, Str::StringRef name) {
+		IPC::HandleMsg<SetBrushModelMsg>(channel, std::move(reader), [this](int entityNum, std::string name) {
 			sharedEntity_t* ent = SV_GentityNum(entityNum);
 			SV_SetBrushModel(ent, name.c_str());
 		});
@@ -892,19 +892,19 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 
 
 	case G_DROP_CLIENT:
-		IPC::HandleMsg<DropClientMsg>(channel, std::move(reader), [this](int clientNum, Str::StringRef reason) {
+		IPC::HandleMsg<DropClientMsg>(channel, std::move(reader), [this](int clientNum, std::string reason) {
 			SV_GameDropClient(clientNum, reason.c_str());
 		});
 		break;
 
 	case G_SEND_SERVER_COMMAND:
-		IPC::HandleMsg<SendServerCommandMsg>(channel, std::move(reader), [this](int clientNum, Str::StringRef text) {
+		IPC::HandleMsg<SendServerCommandMsg>(channel, std::move(reader), [this](int clientNum, std::string text) {
 			SV_GameSendServerCommand(clientNum, text.c_str());
 		});
 		break;
 
 	case G_SET_CONFIGSTRING:
-		IPC::HandleMsg<SetConfigStringMsg>(channel, std::move(reader), [this](int index, Str::StringRef val) {
+		IPC::HandleMsg<SetConfigStringMsg>(channel, std::move(reader), [this](int index, std::string val) {
 			SV_SetConfigstring(index, val.c_str());
 		});
 		break;
@@ -924,7 +924,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_SET_USERINFO:
-		IPC::HandleMsg<SetUserinfoMsg>(channel, std::move(reader), [this](int index, Str::StringRef val) {
+		IPC::HandleMsg<SetUserinfoMsg>(channel, std::move(reader), [this](int index, std::string val) {
 			SV_SetUserinfo(index, val.c_str());
 		});
 		break;
@@ -959,19 +959,19 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_SEND_GAME_STAT:
-		IPC::HandleMsg<SendGameStatMsg>(channel, std::move(reader), [this](Str::StringRef text) {
+		IPC::HandleMsg<SendGameStatMsg>(channel, std::move(reader), [this](std::string text) {
 			SV_MasterGameStat(text.c_str());
 		});
 		break;
 
 	case G_GET_TAG:
-		IPC::HandleMsg<GetTagMsg>(channel, std::move(reader), [this](int clientNum, int tagFileNumber, Str::StringRef tagName, int& res, orientation_t& orientation) {
+		IPC::HandleMsg<GetTagMsg>(channel, std::move(reader), [this](int clientNum, int tagFileNumber, std::string tagName, int& res, orientation_t& orientation) {
 			res = SV_GetTag(clientNum, tagFileNumber, tagName.c_str(), &orientation);
 		});
 		break;
 
 	case G_REGISTER_TAG:
-		IPC::HandleMsg<RegisterTagMsg>(channel, std::move(reader), [this](Str::StringRef tagFileName, int& res) {
+		IPC::HandleMsg<RegisterTagMsg>(channel, std::move(reader), [this](std::string tagFileName, int& res) {
 			res = SV_LoadTag(tagFileName.c_str());
 		});
 		break;
@@ -989,7 +989,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_RSA_GENMSG:
-		IPC::HandleMsg<RSAGenMsgMsg>(channel, std::move(reader), [this](Str::StringRef pubkey, int& res, std::string& cleartext, std::string& encrypted) {
+		IPC::HandleMsg<RSAGenMsgMsg>(channel, std::move(reader), [this](std::string pubkey, int& res, std::string& cleartext, std::string& encrypted) {
 			char cleartextBuffer[RSA_STRING_LENGTH];
 			char encryptedBuffer[RSA_STRING_LENGTH];
 			res = SV_RSAGenMsg(pubkey.c_str(), cleartextBuffer, encryptedBuffer);
@@ -1021,7 +1021,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_GET_TIME_STRING:
-		IPC::HandleMsg<GetTimeStringMsg>(channel, std::move(reader), [this](int len, Str::StringRef format, const qtime_t& time, std::string& res) {
+		IPC::HandleMsg<GetTimeStringMsg>(channel, std::move(reader), [this](int len, std::string format, const qtime_t& time, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			SV_GetTimeString(buffer.get(), len, format.c_str(), &time);
 			res.assign(buffer.get(), len);
@@ -1029,13 +1029,13 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_PARSE_ADD_GLOBAL_DEFINE:
-		IPC::HandleMsg<ParseAddGlobalDefineMsg>(channel, std::move(reader), [this](Str::StringRef define, int& res) {
+		IPC::HandleMsg<ParseAddGlobalDefineMsg>(channel, std::move(reader), [this](std::string define, int& res) {
 			res = Parse_AddGlobalDefine(define.c_str());
 		});
 		break;
 
 	case G_PARSE_LOAD_SOURCE:
-		IPC::HandleMsg<ParseLoadSourceMsg>(channel, std::move(reader), [this](Str::StringRef name, int& res) {
+		IPC::HandleMsg<ParseLoadSourceMsg>(channel, std::move(reader), [this](std::string name, int& res) {
 			res = Parse_LoadSourceHandle(name.c_str());
 		});
 		break;
