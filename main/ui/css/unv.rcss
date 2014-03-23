@@ -180,7 +180,7 @@ label{
 	text-align:right;
 	font-size:0.9em;
 }
-#options div{
+.line{
 	padding:7px;
 	display:block;
 	text-align:left;
@@ -382,7 +382,7 @@ dataselect selectbox option:hover
 	width: 8%;
 	padding:5px 20px 0px 20px ;
 	display:inline-block;
-	margin-top:-30px;
+	margin-top:3.5%;
 	button-font-effect: none;
 	background-image-t:222px 282px;
 }
@@ -399,10 +399,29 @@ dataselect selectbox option:hover
 
 .window panel{
 	z-index: 0;
-	padding: 60px 70px;
+	padding: 8% 10%;
 	margin:auto;
 	width: 80%;
 	height:90%;
+	color:#83fff5;
+	background-decorator: tiled-box;
+	background-top-left-image: /ui/assets/window/top-left.png;
+	background-top-right-image: /ui/assets/window/top-right.png;
+	background-top-image: /ui/assets/window/top.png stretch;
+	background-bottom-left-image: /ui/assets/window/bottom-left.png;
+	background-bottom-right-image: /ui/assets/window/bottom-right.png;
+	background-bottom-image: /ui/assets/window/bottom.png stretch;
+	background-left-image: /ui/assets/window/left.png stretch;
+	background-center-image: /ui/assets/window/line.png stretch;
+	overflow: auto;
+}
+
+div.window{
+	z-index: 0;
+	padding: 20px 30px;
+	margin:auto;
+	display:block;
+	min-height:40%;
 	color:#83fff5;
 	background-decorator: tiled-box;
 	background-top-left-image: /ui/assets/window/top-left.png;
