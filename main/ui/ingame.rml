@@ -79,9 +79,8 @@
 		<div id="sidebar">
 			<button class="menuButton" onClick="show overview">Overview</button>
 			<button class="menuButton" onClick="show serverinfo">Server</button>
-			<button class="menuButton" onClick="show player">Player</button>
-			<button class="menuButton" onClick="show maps">Map</button>
-			<button class="menuButton" onClick="show admin">Vote</button>
+			<button class="menuButton" onClick="exec rocket ui/players.rml load;exec rocket players show">Players</button>
+			<button class="menuButton" onClick="exec rocket ui/maps.rml load;exec rocket maps show">Map</button>
 			<div class="separator"></div>
 			<button class="menuButton" onClick="show options">Options</button>
 			<button class="menuButton" onClick="show help">Guide</button>
