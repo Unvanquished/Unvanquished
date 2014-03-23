@@ -1,0 +1,29 @@
+<rml>
+	<head>
+		<title>Options</title>
+		<link type="text/rcss" href="css/unv.rcss" />
+		<style>
+			body
+			{
+				width:70%;
+				height:60%;
+				display:block;
+				margin:auto;
+				margin-right:5%;
+				margin-top:23%;
+				text-align:center;
+			}
+			</style>
+	</head>
+	<body id="players" onload="buildDS resolutions; sortDS resolutions default width">
+	<div class="window">
+		<div class="teams aliens">
+			<div class="player">^2Granger^1nom <button onClick="exec set ui_dialogCvar1 ^2Granger^1nom;exec rocket ui/dialogs/editplayer.rml load; exec rocket editplayer show">Start Vote</button></div>
+		</div>
+	
+	</div>
+	
+	
+	</body>
+	
+</rml>

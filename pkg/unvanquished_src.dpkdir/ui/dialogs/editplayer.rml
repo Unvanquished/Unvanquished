@@ -1,0 +1,63 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="css/unv.rcss" />
+		<style>
+			body
+			{
+				width:70%;
+				height:60%;
+				display:block;
+				margin:auto;
+				margin-top:33%;
+				margin-right:5%;
+				text-align:center;
+			}
+
+	.menuButton{
+		display:inline-block;
+		font-size:1em;
+		padding:0.3em;
+		width:40%;
+		margin:0px;
+		margin-top:1em;
+	}	
+	input.hidden
+	{
+		 visibility:hidden;
+		 height:0px;
+		 width:0px;
+		 display:none;
+	}
+	input.text{
+	}
+	.line{
+		
+	}
+			
+		</style>
+	</head>
+	<body id="editplayer">
+	<div class="window options">
+	<h1>Start Vote</h1>
+	
+	<div class="line"><label>Type:</label><select name="profile">
+				<option value="/callvote " selected="">Global Vote</option>
+				<option value="/callteamvote ">Team Vote</option>
+				<option value="/">Admin command</option>
+	</select></div>
+	<div class="line"><label>Method:</label><select name="profile">
+				<option value="kick ">Kick</option>
+				<option value="forcespec " selected="">ForceSpec</option>
+				<option value="mute ">Mute</option>
+				<option value="denybuild ">Denybuild</option>
+				<option value="detonate ">Detonate</option>
+	</select></div>
+	<div class="line"><label>Player:</label><input type="text" cvar="ui_dialogCvar1" disabled /></div>
+	<input type="hidden" value=" -r " />
+	<input type="hidden" value="ignore thiiis" ignore />
+	<div class="line"><label>Reason:</label><input type="text" /></div>
+	<button class="menuButton" onClick="combinde all values exept with ignore and make pancakes;hide editplayer;exec set ui_dialogCvar1 ;exec rocket ui/players.rml load;exec rocket players show">Start</button>
+	<button class="menuButton" onClick="hide editplayer;exec set ui_dialogCvar1 ;exec rocket ui/players.rml load;exec rocket players show">Abort</button>
+	</div>
+	</body>
+</rml>	
