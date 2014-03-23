@@ -13,13 +13,12 @@
 				text-align:center;
 			}
 
-	.menuButton{
+	.menuButton,input.submit{
 		display:inline-block;
 		font-size:1em;
 		padding:0.3em;
-		width:40%;
-		margin:0px;
-		margin-top:1em;
+		width:8em;
+		margin:1em 1em;
 	}	
 	input.hidden
 	{
@@ -39,7 +38,7 @@
 	<body id="editplayer">
 	<div class="window options">
 	<h1>Start Vote</h1>
-	
+	<form onsubmit="combinde all values except with ignore and make pancakes">
 	<div class="line"><label>Type:</label><select name="profile">
 				<option value="/callvote " selected="">Global Vote</option>
 				<option value="/callteamvote ">Team Vote</option>
@@ -56,8 +55,9 @@
 	<input type="hidden" value=" -r " />
 	<input type="hidden" value="ignore thiiis" ignore />
 	<div class="line"><label>Reason:</label><input type="text" /></div>
-	<button class="menuButton" onClick="combinde all values exept with ignore and make pancakes;hide editplayer;exec set ui_dialogCvar1 ;exec rocket ui/players.rml load;exec rocket players show">Start</button>
+	<input type="submit" class="menuButton" onClick="hide editplayer;exec set ui_dialogCvar1 ;exec rocket ui/players.rml load;exec rocket players show">Start</input>
 	<button class="menuButton" onClick="hide editplayer;exec set ui_dialogCvar1 ;exec rocket ui/players.rml load;exec rocket players show">Abort</button>
+	</form>
 	</div>
 	</body>
 </rml>	
