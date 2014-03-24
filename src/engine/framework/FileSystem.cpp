@@ -648,27 +648,26 @@ namespace Path {
 
 bool IsValid(Str::StringRef path, bool allowDir)
 {
-	bool nonAlphaNum = true;
+	char prev = '/';
 	for (char c: path) {
-		// Always allow alphanumeric characters
-		if (Str::cisalnum(c)) {
-			nonAlphaNum = false;
-			continue;
-		}
-
-		// Don't allow 2 consecutive punctuation characters
-		if (nonAlphaNum)
+		// Check if the character is allowed
+		if (!Str::cisalnum(c) && c != '/' && c != '-' && c != '_' && c != '.' && c != '+' && c != '~')
 			return false;
 
-		// Only allow the following punctuation characters
-		if (c != '/' && c != '-' && c != '_' && c != '.' && c != '+' && c != '~')
+		// Disallow 2 consecutive / or .
+		if ((c == '/' || c == '.') && (prev == '/' || prev == '.'))
 			return false;
-		nonAlphaNum = true;
+
+		prev = c;
 	}
 
 	// An empty path or a path ending with / is a directory
-	if (nonAlphaNum)
-		return allowDir && (path.empty() || path.back() == '/');
+	if (prev == '/' && !allowDir)
+		return false;
+
+	// Disallow paths ending with .
+	if (prev == '.')
+		return false;
 
 	return true;
 }
