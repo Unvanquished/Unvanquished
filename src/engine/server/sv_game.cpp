@@ -836,6 +836,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		IPC::HandleMsg<EntitiesInBoxMsg>(channel, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int len, std::vector<int>& res) {
 			res.resize(len); //reserve doesn't guarantee that data() will return an array long enough
 			len = SV_AreaEntities(mins.data(), maxs.data(), res.data(), len);
+			res.resize(len);
 		});
 		break;
 
