@@ -248,7 +248,9 @@ typedef IPC::SyncMessage<
 	IPC::Reply<int>
 > PointContentsMsg;
 // SetBrushModelMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_SET_BRUSH_MODEL>, int, std::string> SetBrushModelMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, G_SET_BRUSH_MODEL>, int, std::string>
+> SetBrushModelMsg;
 // InPVSMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, G_IN_PVS>, std::array<float, 3>, std::array<float, 3>>,
