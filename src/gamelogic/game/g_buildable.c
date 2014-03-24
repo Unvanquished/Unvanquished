@@ -2129,28 +2129,50 @@ Calculates the current and expected amount of spare power of a buildable.
 */
 static void CalculateSparePower( gentity_t *self )
 {
-	gentity_t *neighbor;
+	gentity_t *neighbor, *reactor;
 	float     distance;
-	int       baseSupply;
+	int       powerConsumption, currentBaseSupply, expectedBaseSupply;
 
 	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
 		return;
 	}
 
-	if ( !BG_Buildable( self->s.modelindex )->powerConsumption )
+	powerConsumption = BG_Buildable( self->s.modelindex )->powerConsumption;
+
+	if ( !powerConsumption )
 	{
 		return;
 	}
 
 	// reactor enables base supply everywhere on the map
-	baseSupply = G_Reactor() ? g_powerBaseSupply.integer : 0;
+	if ( G_Reactor() != NULL )
+	{
+		// we have an active reactor
+		expectedBaseSupply = currentBaseSupply = g_powerBaseSupply.integer;
+	}
+	else
+	{
+		currentBaseSupply = 0;
 
-	self->expectedSparePower = baseSupply - BG_Buildable( self->s.modelindex )->powerConsumption;
+		// G_Reactor doesn't consider reactors in construction, so look for those seperately
+		reactor = FindBuildable( BA_H_REACTOR );
+
+		if ( reactor && reactor->health > 0 )
+		{
+			expectedBaseSupply = g_powerBaseSupply.integer;
+		}
+		else
+		{
+			expectedBaseSupply = 0;
+		}
+	}
+
+	self->expectedSparePower = expectedBaseSupply - powerConsumption;
 
 	if ( self->spawned )
 	{
-		self->currentSparePower = self->expectedSparePower;
+		self->currentSparePower = currentBaseSupply - powerConsumption;
 	}
 	else
 	{
@@ -3866,17 +3888,29 @@ Takes buildables prepared for deconstruction into account.
 */
 static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 {
-	gentity_t       *neighbor, *buddy;
+	gentity_t       *neighbor, *buddy, *reactor;
 	float           distance, ownPrediction, neighborPrediction;
-	int             baseSupply;
+	int             powerConsumption, baseSupply;
 
-	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
+	powerConsumption = BG_Buildable( buildable )->powerConsumption;
+
+	if ( !powerConsumption )
 	{
 		return qtrue;
 	}
 
-	baseSupply = G_Reactor() ? g_powerBaseSupply.integer : 0;
-	ownPrediction = baseSupply - BG_Buildable( buildable )->powerConsumption;
+	// reactor enables base supply everywhere on the map
+	// also look for reactors in construction since we are predicting
+	if ( G_Reactor() || ( ( reactor = FindBuildable( BA_H_REACTOR ) ) && reactor->health > 0 ) )
+	{
+		baseSupply = g_powerBaseSupply.integer;
+	}
+	else
+	{
+		baseSupply = 0;
+	}
+
+	ownPrediction = baseSupply - powerConsumption;
 
 	neighbor = NULL;
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
@@ -4266,7 +4300,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	vec3_t           mins, maxs;
 	trace_t          tr1, tr2, tr3;
 	itemBuildError_t reason = IBE_NONE, tempReason;
-	gentity_t        *tempent;
+	gentity_t        *tempent, *reactor;
 	float            minNormal;
 	qboolean         invert;
 	int              contents;
@@ -4305,7 +4339,8 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	{
 		reason = tempReason;
 
-		if ( reason == IBE_NOPOWERHERE && !G_Reactor() )
+		if ( reason == IBE_NOPOWERHERE && !G_Reactor() &&
+		     !( ( reactor = FindBuildable( BA_H_REACTOR ) ) && reactor->health > 0 ) )
 		{
 			reason = IBE_NOREACTOR;
 		}

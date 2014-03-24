@@ -1248,6 +1248,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 		{
 			case IBE_NOOVERMIND:
 			case IBE_NOREACTOR:
+			case IBE_NOPOWERHERE:
 				shader = bs->noPowerShader;
 				break;
 
@@ -1261,10 +1262,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 			case IBE_NOCREEP:
 				text = "[egg]";
-				break;
-
-			case IBE_NOPOWERHERE:
-				text = "[repeater]";
 				break;
 
 			case IBE_SURFACE:

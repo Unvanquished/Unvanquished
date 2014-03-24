@@ -288,10 +288,10 @@ typedef enum
   IBE_NOALIENBP,        // not enough build points (aliens)
   IBE_NOCREEP,          // no creep in this area
 
-  IBE_NOREACTOR,        // no reactor present
+  IBE_NOREACTOR,        // not enough power in this area and no reactor present
   IBE_ONEREACTOR,       // may not build two reactors
   IBE_NOHUMANBP,        // not enough build points (humans)
-  IBE_NOPOWERHERE,      // not enough power in this area
+  IBE_NOPOWERHERE,      // not enough power in this area even though a reactor is present
 
   IBE_NORMAL,           // surface is too steep
   IBE_NOROOM,           // no room
