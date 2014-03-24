@@ -43,7 +43,11 @@ const char        *G_quoted_admin_name( gentity_t *ent );
 // g_buildable.c
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
 gentity_t         *G_Reactor( void );
+gentity_t         *G_AliveReactor( void );
+gentity_t         *G_ActiveReactor( void );
 gentity_t         *G_Overmind( void );
+gentity_t         *G_AliveOvermind( void );
+gentity_t         *G_ActiveOvermind( void );
 float             G_DistanceToBase( gentity_t *self, qboolean ownBase );
 qboolean          G_InsideBase( gentity_t *self, qboolean ownBase );
 qboolean          G_FindCreep( gentity_t *self );

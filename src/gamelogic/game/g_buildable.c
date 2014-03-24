@@ -314,13 +314,31 @@ gentity_t *G_Reactor( void )
 		rc = FindBuildable( BA_H_REACTOR );
 	}
 
-	// If we found it and it's alive, return it
-	if ( rc && rc->spawned && rc->health > 0 )
+	return rc;
+}
+
+gentity_t *G_AliveReactor( void )
+{
+	gentity_t *rc = G_Reactor();
+
+	if ( !rc || rc->health <= 0 )
 	{
-		return rc;
+		return NULL;
 	}
 
-	return NULL;
+	return rc;
+}
+
+gentity_t *G_ActiveReactor( void )
+{
+	gentity_t *rc = G_Reactor();
+
+	if ( !rc || rc->health <= 0 || !rc->spawned )
+	{
+		return NULL;
+	}
+
+	return rc;
 }
 
 gentity_t *G_Overmind( void )
@@ -333,13 +351,31 @@ gentity_t *G_Overmind( void )
 		om = FindBuildable( BA_A_OVERMIND );
 	}
 
-	// If we found it and it's alive, return it
-	if ( om && om->spawned && om->health > 0 )
+	return om;
+}
+
+gentity_t *G_AliveOvermind( void )
+{
+	gentity_t *om = G_Overmind();
+
+	if ( !om || om->health <= 0 )
 	{
-		return om;
+		return NULL;
 	}
 
-	return NULL;
+	return om;
+}
+
+gentity_t *G_ActiveOvermind( void )
+{
+	gentity_t *om = G_Overmind();
+
+	if ( !om || om->health <= 0 || !om->spawned )
+	{
+		return NULL;
+	}
+
+	return om;
 }
 
 static gentity_t* GetMainBuilding( gentity_t *self, qboolean ownBase )
@@ -396,9 +432,7 @@ Returns a huge value if the base is not found.
 */
 float G_DistanceToBase( gentity_t *self, qboolean ownBase )
 {
-	gentity_t *mainBuilding;
-
-	mainBuilding = GetMainBuilding( self, ownBase );
+	gentity_t *mainBuilding = GetMainBuilding( self, ownBase );
 
 	if ( mainBuilding )
 	{
@@ -419,9 +453,7 @@ G_InsideBase
 
 qboolean G_InsideBase( gentity_t *self, qboolean ownBase )
 {
-	gentity_t *mainBuilding;
-
-	mainBuilding = GetMainBuilding( self, ownBase );
+	gentity_t *mainBuilding = GetMainBuilding( self, ownBase );
 
 	if ( !mainBuilding )
 	{
@@ -835,7 +867,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	self->powered = qfalse;
 
 	// warn if in main base and there's an overmind
-	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer
+	if ( ( om = G_ActiveOvermind() ) && om != self && level.time > om->warnTimer
 	     && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ) )
 	{
 		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
@@ -953,7 +985,7 @@ A generic think function for Alien buildables
 void AGeneric_Think( gentity_t *self )
 {
 	// set power state
-	self->powered = ( G_Overmind() != NULL );
+	self->powered = ( G_ActiveOvermind() != NULL );
 
 	// check if still on creep
 	AGeneric_CreepCheck( self );
@@ -1957,7 +1989,7 @@ If it is, return whichever is nearest (preferring reactor).
 */
 static gentity_t *NearestPowerSourceInRange( gentity_t *self )
 {
-	gentity_t *neighbor = G_Reactor();
+	gentity_t *neighbor = G_ActiveReactor();
 	gentity_t *best = NULL;
 	float bestDistance = HUGE_QFLT;
 
@@ -2129,7 +2161,7 @@ Calculates the current and expected amount of spare power of a buildable.
 */
 static void CalculateSparePower( gentity_t *self )
 {
-	gentity_t *neighbor, *reactor;
+	gentity_t *neighbor;
 	float     distance;
 	int       powerConsumption, currentBaseSupply, expectedBaseSupply;
 
@@ -2146,26 +2178,18 @@ static void CalculateSparePower( gentity_t *self )
 	}
 
 	// reactor enables base supply everywhere on the map
-	if ( G_Reactor() != NULL )
+	if ( G_ActiveReactor() != NULL )
 	{
-		// we have an active reactor
-		expectedBaseSupply = currentBaseSupply = g_powerBaseSupply.integer;
+		currentBaseSupply = expectedBaseSupply = g_powerBaseSupply.integer;
+	}
+	else if ( G_AliveReactor() != NULL )
+	{
+		currentBaseSupply = 0;
+		expectedBaseSupply = g_powerBaseSupply.integer;
 	}
 	else
 	{
-		currentBaseSupply = 0;
-
-		// G_Reactor doesn't consider reactors in construction, so look for those seperately
-		reactor = FindBuildable( BA_H_REACTOR );
-
-		if ( reactor && reactor->health > 0 )
-		{
-			expectedBaseSupply = g_powerBaseSupply.integer;
-		}
-		else
-		{
-			expectedBaseSupply = 0;
-		}
+		currentBaseSupply = expectedBaseSupply = 0;
 	}
 
 	self->expectedSparePower = expectedBaseSupply - powerConsumption;
@@ -2392,13 +2416,24 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		self->nextthink = level.time;
 	}
 
-	// warn if this building was powered, there's a watcher nearby and it's powered too
-	if ( self->s.modelindex != BA_H_REACTOR && self->powered && G_Reactor() && IsWarnableMOD( mod ) )
+	// warn if this building was powered and there's a watcher nearby
+	if ( self->s.modelindex != BA_H_REACTOR && self->powered && IsWarnableMOD( mod ) )
 	{
-		qboolean inBase = G_InsideBase( self, qtrue );
-		gentity_t *watcher = inBase ? G_Reactor()
-		                            : ( self->s.modelindex == BA_H_REPEATER ) ? self : NearestPowerSourceInRange( self );
+		qboolean  inBase    = G_InsideBase( self, qtrue );
+		gentity_t *watcher  = NULL;
 		gentity_t *location = NULL;
+
+		if ( inBase )
+		{
+			// note that being inside the main base doesn't mean there always is an active reactor
+			watcher = G_ActiveReactor();
+		}
+
+		if ( !watcher )
+		{
+			// note that a repeater will find itself as nearest power source
+			watcher = NearestPowerSourceInRange( self );
+		}
 
 		// found reactor or repeater? get location entity
 		if ( watcher )
@@ -3888,7 +3923,7 @@ Takes buildables prepared for deconstruction into account.
 */
 static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 {
-	gentity_t       *neighbor, *buddy, *reactor;
+	gentity_t       *neighbor, *buddy;
 	float           distance, ownPrediction, neighborPrediction;
 	int             powerConsumption, baseSupply;
 
@@ -3900,8 +3935,7 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 	}
 
 	// reactor enables base supply everywhere on the map
-	// also look for reactors in construction since we are predicting
-	if ( G_Reactor() || ( ( reactor = FindBuildable( BA_H_REACTOR ) ) && reactor->health > 0 ) )
+	if ( G_AliveReactor() )
 	{
 		baseSupply = g_powerBaseSupply.integer;
 	}
@@ -3988,7 +4022,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 	if ( buildable == BA_H_REACTOR )
 	{
-		ent = ( ent = G_Reactor() ) ? ent : FindBuildable( BA_H_REACTOR );
+		ent = G_Reactor();
 
 		if ( ent )
 		{
@@ -4004,7 +4038,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 	else if ( buildable == BA_A_OVERMIND )
 	{
-		ent = ( ent = G_Overmind() ) ? ent : FindBuildable( BA_A_OVERMIND );
+		ent = G_Overmind();
 
 		if ( ent )
 		{
@@ -4300,7 +4334,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	vec3_t           mins, maxs;
 	trace_t          tr1, tr2, tr3;
 	itemBuildError_t reason = IBE_NONE, tempReason;
-	gentity_t        *tempent, *reactor;
+	gentity_t        *tempent;
 	float            minNormal;
 	qboolean         invert;
 	int              contents;
@@ -4339,12 +4373,11 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	{
 		reason = tempReason;
 
-		if ( reason == IBE_NOPOWERHERE && !G_Reactor() &&
-		     !( ( reactor = FindBuildable( BA_H_REACTOR ) ) && reactor->health > 0 ) )
+		if ( reason == IBE_NOPOWERHERE && !G_AliveReactor() )
 		{
 			reason = IBE_NOREACTOR;
 		}
-		else if ( reason == IBE_NOCREEP && !G_Overmind() )
+		else if ( reason == IBE_NOCREEP && !G_ActiveOvermind() )
 		{
 			reason = IBE_NOOVERMIND;
 		}
@@ -4354,7 +4387,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		// Check for Overmind
 		if ( buildable != BA_A_OVERMIND )
 		{
-			if ( !G_Overmind() )
+			if ( !G_ActiveOvermind() )
 			{
 				reason = IBE_NOOVERMIND;
 			}

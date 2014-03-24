@@ -1492,11 +1492,11 @@ void G_CalculateMineRate( void )
 
 	// minimum mine rate
 	// g_minimumMineRate is really a minimum mine efficiency in percent points
-	if ( G_Reactor()  && level.team[ TEAM_HUMANS ].mineEfficiency < ( g_minimumMineRate.value / 100.0f ) )
+	if ( G_ActiveReactor() && level.team[ TEAM_HUMANS ].mineEfficiency < ( g_minimumMineRate.value / 100.0f ) )
 	{
 		level.team[ TEAM_HUMANS ].mineEfficiency = ( g_minimumMineRate.value / 100.0f );
 	}
-	if ( G_Overmind() && level.team[ TEAM_ALIENS ].mineEfficiency < ( g_minimumMineRate.value / 100.0f ) )
+	if ( G_ActiveOvermind() && level.team[ TEAM_ALIENS ].mineEfficiency < ( g_minimumMineRate.value / 100.0f ) )
 	{
 		level.team[ TEAM_ALIENS ].mineEfficiency = ( g_minimumMineRate.value / 100.0f );
 	}

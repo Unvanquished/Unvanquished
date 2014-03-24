@@ -1753,7 +1753,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			}
 		}
 
-		if ( !G_Overmind() )
+		if ( !G_ActiveOvermind() )
 		{
 			return qfalse;
 		}

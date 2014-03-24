@@ -2543,7 +2543,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 			int cost;
 
 			//check that we have an overmind
-			if ( !G_Overmind() )
+			if ( !G_ActiveOvermind() )
 			{
 				if ( report )
 				{

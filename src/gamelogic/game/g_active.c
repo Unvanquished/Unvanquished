@@ -1827,11 +1827,11 @@ void ClientThink_real( gentity_t *self )
 	}
 
 	// Is power/creep available for the client's team?
-	if ( client->pers.team == TEAM_HUMANS && G_Reactor() )
+	if ( client->pers.team == TEAM_HUMANS && G_ActiveReactor() )
 	{
 		client->ps.eFlags |= EF_POWER_AVAILABLE;
 	}
-	else if ( client->pers.team == TEAM_ALIENS && G_Overmind() )
+	else if ( client->pers.team == TEAM_ALIENS && G_ActiveOvermind() )
 	{
 		client->ps.eFlags |= EF_POWER_AVAILABLE;
 	}
