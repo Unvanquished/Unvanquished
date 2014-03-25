@@ -144,6 +144,39 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
 }
 
 /**
+ * @brief Function to find who assisted most (and, in case of a tie, most recently) with a kill
+ * @param self
+ * @param killer
+ */
+const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *killer )
+{
+	const gentity_t *assistant = NULL;
+	float           damage = 0.0f;
+	int             when = 0;
+	int             playerNum;
+
+	for ( playerNum = 0; playerNum < level.maxclients; ++playerNum )
+	{
+		const gentity_t *player = &g_entities[ playerNum ];
+
+		if ( player == killer || player == self )
+		{
+			continue;
+		}
+
+		if ( self->credits[ playerNum ] > damage ||
+		     (self->credits[ playerNum ] == damage && self->creditsTime[ playerNum ] > when ) )
+		{
+			assistant = player;
+			damage = self->credits[ playerNum ];
+			when = self->creditsTime[ playerNum ];
+		}
+	}
+
+	return assistant;
+}
+
+/**
  * @brief Function to distribute rewards to entities that killed this one.
  * @param self
  */
@@ -259,6 +292,10 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	int       i;
 	const char *killerName, *obit;
 
+	const gentity_t *assistantEnt;
+	int             assistant = ENTITYNUM_NONE;
+	const char      *assistantName = NULL;
+
 	if ( self->client->ps.pm_type == PM_DEAD )
 	{
 		return;
@@ -291,6 +328,18 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		killerName = "<world>";
 	}
 
+	assistantEnt = G_FindKillAssist( self, attacker );
+
+	if ( assistantEnt )
+	{
+		assistant = assistantEnt->s.number;
+
+		if ( assistantEnt->client )
+		{
+			assistantName = assistantEnt->client->pers.netname;
+		}
+	}
+
 	if ( meansOfDeath < 0 || meansOfDeath >= ARRAY_LEN( modNames ) )
 	{
 		// fall back on the number
@@ -308,6 +357,15 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	             killerName,
 	             self->client->pers.netname );
 
+	if ( assistant != ENTITYNUM_NONE )
+	{
+		G_LogPrintf( "DieAssist: %d %d %d: %s" S_COLOR_WHITE " assisted %s" S_COLOR_WHITE " in killing %s\n",
+		             assistant, killer,
+		             ( int )( self - g_entities ),
+		             assistantName, killerName,
+		             self->client->pers.netname );
+	}
+
 	// deactivate all upgrades
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
@@ -319,6 +377,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	ent->s.eventParm = meansOfDeath;
 	ent->s.otherEntityNum = self->s.number;
 	ent->s.otherEntityNum2 = killer;
+	ent->s.otherEntityNum3 = assistant;
 	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 
 	if ( attacker && attacker->client )
@@ -1214,6 +1273,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 		{
 			// add to the attacker's account on the target
 			target->credits[ attacker->client->ps.clientNum ] += ( float )loss;
+			target->creditsTime[ attacker->client->ps.clientNum ] = level.time;
 
 			// notify the attacker of a hit
 			NotifyClientOfHit( attacker );

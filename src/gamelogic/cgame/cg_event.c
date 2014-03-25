@@ -33,20 +33,24 @@ CG_Obituary
 static void CG_Obituary( entityState_t *ent )
 {
 	int          mod;
-	int          target, attacker;
+	int          target, attacker, assistant;
 	int          attackerClass = -1;
 	const char   *message;
 	const char   *targetInfo;
 	const char   *attackerInfo;
+	const char   *assistantInfo;
 	char         targetName[ MAX_NAME_LENGTH ];
 	char         attackerName[ MAX_NAME_LENGTH ];
+	char         assistantName[ MAX_NAME_LENGTH ];
 	gender_t     gender;
 	clientInfo_t *ci;
 	qboolean     teamKill = qfalse;
+	qboolean     teamKillAssist = qfalse;
 	qboolean     attackerFirst = qfalse;
 
 	target = ent->otherEntityNum;
 	attacker = ent->otherEntityNum2;
+	assistant = ent->otherEntityNum3;
 	mod = ent->eventParm;
 
 	if ( target < 0 || target >= MAX_CLIENTS )
@@ -70,6 +74,29 @@ static void CG_Obituary( entityState_t *ent )
 		{
 			teamKill = qtrue;
 		}
+	}
+
+	if ( assistant < 0 || assistant >= MAX_CLIENTS )
+	{
+		assistantInfo = NULL;
+	}
+	else
+	{
+		assistantInfo = CG_ConfigString( CS_PLAYERS + assistant );
+
+		if ( cgs.clientinfo[ assistant ].team == ci->team )
+		{
+			teamKillAssist = qtrue;
+		}
+	}
+
+	if ( !assistantInfo )
+	{
+		strcpy( assistantName, "noname" );
+	}
+	else
+	{
+		Q_strncpyz( assistantName, Info_ValueForKey( assistantInfo, "n" ), sizeof( assistantName ) );
 	}
 
 	targetInfo = CG_ConfigString( CS_PLAYERS + target );
@@ -282,6 +309,13 @@ static void CG_Obituary( entityState_t *ent )
 	if ( message )
 	{
 		CG_Printf( message, targetName );
+
+		// FIXME: all on one line?
+		if ( assistantInfo )
+		{
+			CG_Printf( _("%s^7 assisted\n"), assistantName );
+		}
+
 		return;
 	}
 
@@ -650,13 +684,19 @@ static void CG_Obituary( entityState_t *ent )
 			if ( attackerFirst )
 			{
 				// Argument order: "TEAMMATE"/"", attacker, victim
-				CG_Printf( message, ( teamKill ) ? _("^1TEAMMATE^7 ") : "", attackerName, targetName );
+				CG_Printf( message, ( teamKill ) ? _("^1TEAMMATE^7 ") : "", assistantInfo ? va("%s ^7& %s", attackerName, assistantName) : attackerName, targetName );
 			}
 			else
 			{
 				// Argument order: victim, ["TEAMMATE"/"", attacker [, alien class]]
 				CG_Printf( message, targetName, ( teamKill ) ? _("^1TEAMMATE^7 ") : "", attackerName,
 				           ( attackerClass != -1 ) ? _( BG_ClassModelConfig( attackerClass )->humanName ) : NULL );
+
+				// FIXME: all on one line?
+				if ( assistantInfo )
+				{
+					CG_Printf( _("%s^7 assisted\n"), assistantName );
+				}
 			}
 
 			if ( teamKill && attacker == cg.clientNum )
