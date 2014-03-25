@@ -137,7 +137,7 @@ void CG_Rocket_BuildServerInfo( void )
 		}
 
 		// Parse first set of players
-		sscanf( value, "%d %d %s", &score, &ping, name );
+		sscanf( value, "%d %d %1023s", &score, &ping, name );
 		Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
 		Info_SetValueForKeyRocket( buf, "name", name );
 		Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
