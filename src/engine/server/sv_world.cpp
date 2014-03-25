@@ -37,6 +37,37 @@ Maryland 20850 USA.
 
 #include "server.h"
 
+typedef struct worldEntity_s
+{
+	struct worldSector_s *worldSector;
+	struct worldEntity_s *nextEntityInWorldSector;
+} worldEntity_t;
+
+worldEntity_t wentities[ MAX_GENTITIES ];
+
+static int WEntityNum( worldEntity_t* ent )
+{
+	return ent - wentities;
+}
+
+worldEntity_t *SV_WorldEntityForGentity( sharedEntity_t *gEnt )
+{
+	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
+	{
+		Com_Error( ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
+	}
+
+	return &wentities[ gEnt->s.number ];
+}
+
+sharedEntity_t *SV_GEntityForWorldEntity( worldEntity_t *ent )
+{
+	int num;
+
+	num = ent - wentities;
+	return SV_GentityNum( num );
+}
+
 /*
 ================
 SV_ClipHandleForEntity
@@ -83,7 +114,7 @@ typedef struct worldSector_s
 	float                dist;
 	struct worldSector_s *children[ 2 ];
 
-	svEntity_t           *entities;
+	worldEntity_t        *entities;
 } worldSector_t;
 
 #define AREA_DEPTH 4
@@ -101,7 +132,7 @@ void SV_SectorList_f( void )
 {
 	int           i, c;
 	worldSector_t *sec;
-	svEntity_t    *ent;
+	worldEntity_t    *ent;
 
 	for ( i = 0; i < AREA_NODES; i++ )
 	{
@@ -178,6 +209,7 @@ void SV_ClearWorld( void )
 	vec3_t       mins, maxs;
 
 	memset( sv_worldSectors, 0, sizeof( sv_worldSectors ) );
+	memset( wentities, 0, sizeof( wentities ) );
 	sv_numworldSectors = 0;
 
 	// get world map bounds
@@ -194,34 +226,33 @@ SV_UnlinkEntity
 */
 void SV_UnlinkEntity( sharedEntity_t *gEnt )
 {
-	svEntity_t    *ent;
-	svEntity_t    *scan;
-	worldSector_t *ws;
+	worldEntity_t* scan;
+	worldSector_t* ws;
 
-	ent = SV_SvEntityForGentity( gEnt );
+	worldEntity_t* went = SV_WorldEntityForGentity( gEnt );
 
 	gEnt->r.linked = qfalse;
 
-	ws = ent->worldSector;
+	ws = went->worldSector;
 
 	if ( !ws )
 	{
 		return; // not linked in anywhere
 	}
 
-	ent->worldSector = NULL;
+	went->worldSector = NULL;
 
-	if ( ws->entities == ent )
+	if ( ws->entities == went )
 	{
-		ws->entities = ent->nextEntityInWorldSector;
+		ws->entities = went->nextEntityInWorldSector;
 		return;
 	}
 
 	for ( scan = ws->entities; scan; scan = scan->nextEntityInWorldSector )
 	{
-		if ( scan->nextEntityInWorldSector == ent )
+		if ( scan->nextEntityInWorldSector == went )
 		{
-			scan->nextEntityInWorldSector = ent->nextEntityInWorldSector;
+			scan->nextEntityInWorldSector = went->nextEntityInWorldSector;
 			return;
 		}
 	}
@@ -246,11 +277,11 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 	int           area;
 	int           lastLeaf;
 	float         *origin, *angles;
-	svEntity_t    *ent;
 
-	ent = SV_SvEntityForGentity( gEnt );
+	svEntity_t* ent = SV_SvEntityForGentity( gEnt );
+	worldEntity_t* went = SV_WorldEntityForGentity( gEnt );
 
-	if ( ent->worldSector )
+	if ( went->worldSector )
 	{
 		SV_UnlinkEntity( gEnt );  // unlink from old position
 	}
@@ -438,9 +469,9 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 	}
 
 	// link it in
-	ent->worldSector = node;
-	ent->nextEntityInWorldSector = node->entities;
-	node->entities = ent;
+	went->worldSector = node;
+	went->nextEntityInWorldSector = node->entities;
+	node->entities = went;
 
 	gEnt->r.linked = qtrue;
 }
@@ -471,7 +502,7 @@ SV_AreaEntities_r
 */
 void SV_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 {
-	svEntity_t     *check, *next;
+	worldEntity_t     *check, *next;
 	sharedEntity_t *gcheck;
 //	int             count;
 
@@ -481,7 +512,7 @@ void SV_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 	{
 		next = check->nextEntityInWorldSector;
 
-		gcheck = SV_GEntityForSvEntity( check );
+		gcheck = SV_GEntityForWorldEntity( check );
 
 		if ( !gcheck->r.linked )
 		{
@@ -502,7 +533,7 @@ void SV_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 			return;
 		}
 
-		ap->list[ ap->count ] = check - sv.svEntities;
+		ap->list[ ap->count ] = check - wentities;
 		ap->count++;
 	}
 
