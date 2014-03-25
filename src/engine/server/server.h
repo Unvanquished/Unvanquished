@@ -46,8 +46,6 @@ Maryland 20850 USA.
 #define PERS_SCORE        0 // !!! MUST NOT CHANGE, SERVER AND
 // GAME BOTH REFERENCE !!!
 
-#define MAX_ENT_CLUSTERS  16
-
 #ifdef USE_VOIP
 #define VOIP_QUEUE_LENGTH 64
 
@@ -68,12 +66,7 @@ typedef struct voipServerPacket_s
 typedef struct svEntity_s
 {
 	entityState_t        baseline; // for delta compression of initial sighting
-	int                  numClusters; // if -1, use headnode instead
-	int                  clusternums[ MAX_ENT_CLUSTERS ];
-	int                  lastCluster; // if all the clusters don't fit in clusternums
-	int                  areanum, areanum2;
 	int                  snapshotCounter; // used to prevent double adding from portal views
-	int                  originCluster; // Gordon: calced upon linking, for origin only bmodel vis checks
 } svEntity_t;
 
 typedef enum

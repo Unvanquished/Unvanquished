@@ -49,6 +49,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SVF_RIGID_BODY            0x00020000 // ignored by the engine
 #define SVF_CLIENTS_IN_RANGE      0x00040000 // clients within range
 
+#define MAX_ENT_CLUSTERS  16
+
 typedef struct
 {
 	qboolean linked; // qfalse if not in any good cluster
@@ -90,6 +92,12 @@ typedef struct
 	int      ownerNum;
 
 	qboolean snapshotCallback;
+
+	int numClusters; // if -1, use headnode instead
+	int clusternums[ MAX_ENT_CLUSTERS ];
+	int lastCluster; // if all the clusters don't fit in clusternums
+	int originCluster; // Gordon: calced upon linking, for origin only bmodel vis checks
+	int areanum, areanum2;
 } entityShared_t;
 
 // the server looks at a sharedEntity_t structure, which must be at the start of a gentity_t structure

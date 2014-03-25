@@ -281,16 +281,12 @@ SV_AdjustAreaPortalState
 */
 void SV_AdjustAreaPortalState( sharedEntity_t *ent, qboolean open )
 {
-	svEntity_t *svEnt;
-
-	svEnt = SV_SvEntityForGentity( ent );
-
-	if ( svEnt->areanum2 == -1 )
+	if ( ent->r.areanum2 == -1 )
 	{
 		return;
 	}
 
-	CM_AdjustAreaPortalState( svEnt->areanum, svEnt->areanum2, open );
+	CM_AdjustAreaPortalState( ent->r.areanum, ent->r.areanum2, open );
 }
 
 /*

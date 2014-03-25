@@ -45,11 +45,6 @@ typedef struct worldEntity_s
 
 worldEntity_t wentities[ MAX_GENTITIES ];
 
-static int WEntityNum( worldEntity_t* ent )
-{
-	return ent - wentities;
-}
-
 worldEntity_t *SV_WorldEntityForGentity( sharedEntity_t *gEnt )
 {
 	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
@@ -278,7 +273,6 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 	int           lastLeaf;
 	float         *origin, *angles;
 
-	svEntity_t* ent = SV_SvEntityForGentity( gEnt );
 	worldEntity_t* went = SV_WorldEntityForGentity( gEnt );
 
 	if ( went->worldSector )
@@ -292,7 +286,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 		gEnt->s.solid = SOLID_BMODEL; // a solid_box will never create this value
 
 		// Gordon: for the origin only bmodel checks
-		ent->originCluster = CM_LeafCluster( CM_PointLeafnum( gEnt->r.currentOrigin ) );
+		gEnt->r.originCluster = CM_LeafCluster( CM_PointLeafnum( gEnt->r.currentOrigin ) );
 	}
 	else if ( gEnt->r.contents & ( CONTENTS_SOLID | CONTENTS_BODY ) )
 	{
@@ -377,10 +371,10 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 	gEnt->r.absmax[ 2 ] += 1;
 
 	// link to PVS leafs
-	ent->numClusters = 0;
-	ent->lastCluster = 0;
-	ent->areanum = -1;
-	ent->areanum2 = -1;
+	gEnt->r.numClusters = 0;
+	gEnt->r.lastCluster = 0;
+	gEnt->r.areanum = -1;
+	gEnt->r.areanum2 = -1;
 
 	//get all leafs, including solids
 	num_leafs = CM_BoxLeafnums( gEnt->r.absmin, gEnt->r.absmax, leafs, MAX_TOTAL_ENT_LEAFS, &lastLeaf );
@@ -401,25 +395,25 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 		{
 			// doors may legally straggle two areas,
 			// but nothing should evern need more than that
-			if ( ent->areanum != -1 && ent->areanum != area )
+			if ( gEnt->r.areanum != -1 && gEnt->r.areanum != area )
 			{
-				if ( ent->areanum2 != -1 && ent->areanum2 != area && sv.state == SS_LOADING )
+				if ( gEnt->r.areanum2 != -1 && gEnt->r.areanum2 != area && sv.state == SS_LOADING )
 				{
 					Com_DPrintf( "Object %i touching 3 areas at %f %f %f\n",
 					             gEnt->s.number, gEnt->r.absmin[ 0 ], gEnt->r.absmin[ 1 ], gEnt->r.absmin[ 2 ] );
 				}
 
-				ent->areanum2 = area;
+				gEnt->r.areanum2 = area;
 			}
 			else
 			{
-				ent->areanum = area;
+				gEnt->r.areanum = area;
 			}
 		}
 	}
 
 	// store as many explicit clusters as we can
-	ent->numClusters = 0;
+	gEnt->r.numClusters = 0;
 
 	for ( i = 0; i < num_leafs; i++ )
 	{
@@ -427,9 +421,9 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 
 		if ( cluster != -1 )
 		{
-			ent->clusternums[ ent->numClusters++ ] = cluster;
+			gEnt->r.clusternums[ gEnt->r.numClusters++ ] = cluster;
 
-			if ( ent->numClusters == MAX_ENT_CLUSTERS )
+			if ( gEnt->r.numClusters == MAX_ENT_CLUSTERS )
 			{
 				break;
 			}
@@ -439,7 +433,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 	// store off a last cluster if we need to
 	if ( i != num_leafs )
 	{
-		ent->lastCluster = CM_LeafCluster( lastLeaf );
+		gEnt->r.lastCluster = CM_LeafCluster( lastLeaf );
 	}
 
 	gEnt->r.linkcount++;
