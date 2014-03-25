@@ -163,22 +163,22 @@ namespace VM {
     }
 
     void CommonVMServices::RegisterCvar(IPC::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<RegisterCvarMsg>(channel, std::move(reader), [this](Str::StringRef name, Str::StringRef description,
-                int flags, Str::StringRef defaultValue){
+        IPC::HandleMsg<RegisterCvarMsg>(channel, std::move(reader), [this](std::string name, std::string description,
+                int flags, std::string defaultValue){
             // The registration of the cvar is made automatically when it is created
             registeredCvars.emplace_back(new ProxyCvar(this, name, description, flags, defaultValue));
         });
     }
 
     void CommonVMServices::GetCvar(IPC::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<GetCvarMsg>(channel, std::move(reader), [&, this](Str::StringRef name, std::string& value){
+        IPC::HandleMsg<GetCvarMsg>(channel, std::move(reader), [&, this](std::string name, std::string& value){
             //TODO check it is only looking at allowed cvars?
             value = Cvar::GetValue(name);
         });
     }
 
     void CommonVMServices::SetCvar(IPC::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<SetCvarMsg>(channel, std::move(reader), [this](Str::StringRef name, Str::StringRef value){
+        IPC::HandleMsg<SetCvarMsg>(channel, std::move(reader), [this](std::string name, std::string value){
             //TODO check it is only touching allowed cvars?
             Cvar::SetValue(name, value);
         });

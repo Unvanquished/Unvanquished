@@ -123,7 +123,7 @@ namespace Cmd {
     // Implementation of the engine syscalls
 
     void ExecuteSyscall(IPC::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<VM::ExecuteMsg>(channel, std::move(reader), [](Str::StringRef command){
+        IPC::HandleMsg<VM::ExecuteMsg>(channel, std::move(reader), [](std::string command){
             Cmd::Args args(command);
 
             auto map = GetCommandMap();
@@ -138,7 +138,7 @@ namespace Cmd {
     }
 
     void CompleteSyscall(IPC::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<VM::CompleteMsg>(channel, std::move(reader), [](int argNum, Str::StringRef command, Str::StringRef prefix, Cmd::CompletionResult& res) {
+        IPC::HandleMsg<VM::CompleteMsg>(channel, std::move(reader), [](int argNum, std::string command, std::string prefix, Cmd::CompletionResult& res) {
             Cmd::Args args(command);
 
             auto map = GetCommandMap();
@@ -290,7 +290,7 @@ namespace Cvar{
     // Syscalls called by the engine
 
     void CallOnValueChangedSyscall(IPC::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<VM::OnValueChangedMsg>(channel, std::move(reader), [](Str::StringRef name, Str::StringRef value, bool& success, std::string& description) {
+        IPC::HandleMsg<VM::OnValueChangedMsg>(channel, std::move(reader), [](std::string name, std::string value, bool& success, std::string& description) {
             auto map = GetCvarMap();
             auto it = map.find(name);
 
