@@ -1634,7 +1634,7 @@ void IN_Frame( void )
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
 	if ( ( !cls.glconfig.isFullscreen || SDL_VERSION_ATLEAST( 2, 0, 0 ) ) &&
-	     ( cls.keyCatchers & KEYCATCH_CONSOLE ) )
+	     ( cls.keyCatchers & KEYCATCH_CONSOLE || cls.keyCatchers & KEYCATCH_UI ) )
 	{
 		// Console is down, or UI is up, in windowed mode
 		IN_DeactivateMouse( qfalse );
