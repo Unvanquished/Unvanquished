@@ -93,7 +93,7 @@ public:
 
 			if ( this == event.GetTargetElement() )
 			{
-				if ( event == "blur" )
+				if ( event == "blur" && ( type != "checkbox" || type != "radio" ) )
 				{
 					Cvar::SetValue( cvar.CString(), GetValue().CString() );
 				}
