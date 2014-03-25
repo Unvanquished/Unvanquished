@@ -116,7 +116,9 @@
 		width:7em;
 		margin:1em 1em;
 	}
-
+.center{
+	text-align:center;
+}	
 		</style>
 	</head>
 	<body id="resolution">
@@ -151,12 +153,12 @@
 				<input type="radio" name="resolution" cvar="r_mode" value="16" onClick="exec r_customWidth 1920;exec r_customHeight 1080">1920x1080</input>
 
 				<h4></h4>
-				<input type="radio" name="resolution" cvar="r_mode" value="-1">Custom</input>
+				<input type="radio" name="resolution" cvar="r_mode" value="-1" onClick="hide resolution;exec rocket ui/dialogs/customresolution.rml load; exec rocket customresolution show">Custom</input>
 				<input type="radio" name="resolution" cvar="r_mode" value="-2">Auto Detect</input>
 
 				</div>
 				</form>
-				<div>
+				<div class="line center">
 				<button class="menuButton" onClick="exec vid_restart">Save</button><button class="menuButton" onClick="close resolution;show options">Close</button>
 				</div>
 
