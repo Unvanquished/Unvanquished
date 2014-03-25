@@ -122,6 +122,7 @@
 	<body id="resolution">
 
 	<div class="selectradio window">
+				<form>
 				<h4>Select Resolution</h4>
 				<div class="col"><h4>4:3</h4>
 				<input type="radio" name="resolution" cvar="r_mode" value="0" onClick="exec r_customWidth 320;exec r_customHeight 240">320x240</input>
@@ -136,11 +137,6 @@
 				<input type="radio" name="resolution" cvar="r_mode" value="15" onClick="exec r_customWidth 1600;exec r_customHeight 1200">1600x1200</input>
 				<input type="radio" name="resolution" cvar="r_mode" value="11" onClick="exec r_customWidth 2048;exec r_customHeight 1536">2048x1536</input>
 				</div>
-				<div class="col"><h4>16:9</h4>
-				<input type="radio" name="resolution" cvar="r_mode" value="8" onClick="exec r_customWidth 1280;exec r_customHeight 720">1280x720</input>
-				<input type="radio" name="resolution" cvar="r_mode" value="12" onClick="exec r_customWidth 1360;exec r_customHeight 768">1360x760</input>
-				<input type="radio" name="resolution" cvar="r_mode" value="16" onClick="exec r_customWidth 1920;exec r_customHeight 1080">1920x1080</input>
-				</div>
 				<div class="col"><h4>16:10</h4>
 				<input type="radio" name="resolution" cvar="r_mode" value="9" onClick="exec r_customWidth 1280;exec r_customHeight 768">1280x768</input>
 				<input type="radio" name="resolution" cvar="r_mode" value="10" onClick="exec r_customWidth 1280;exec r_customHeight 800">1280x800</input>
@@ -149,11 +145,20 @@
 				<input type="radio" name="resolution" cvar="r_mode" value="17" onClick="exec r_customWidth 1920;exec r_customHeight 1200">1920x1200</input>
 				<input type="radio" name="resolution" cvar="r_mode" value="19" onClick="exec r_customWidth 2560;exec r_customHeight 1600">2560x1600</input>
 				</div>
+				<div class="col"><h4>16:9</h4>
+				<input type="radio" name="resolution" cvar="r_mode" value="8" onClick="exec r_customWidth 1280;exec r_customHeight 720">1280x720</input>
+				<input type="radio" name="resolution" cvar="r_mode" value="12" onClick="exec r_customWidth 1360;exec r_customHeight 768">1360x760</input>
+				<input type="radio" name="resolution" cvar="r_mode" value="16" onClick="exec r_customWidth 1920;exec r_customHeight 1080">1920x1080</input>
+
 				<h4></h4>
 				<input type="radio" name="resolution" cvar="r_mode" value="-1">Custom</input>
 				<input type="radio" name="resolution" cvar="r_mode" value="-2">Auto Detect</input>
+
 				</div>
-				<button class="menuButton" onClick="exec vid_restart">Save</button><button class="menuButton" onClick="hide resolution;exec rocket ui/options.rml load;exec rocket options show">Close</button>
+				</form>
+				<div>
+				<button class="menuButton" onClick="exec vid_restart">Save</button><button class="menuButton" onClick="close resolution;show options">Close</button>
+				</div>
 
 			</div>
 
