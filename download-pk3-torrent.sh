@@ -53,7 +53,6 @@ cd "$cache_dir"
 # download torrent file
 echo "Downloading torrent..."
 aria2c \
-    --console-log-level=warn \
     --follow-torrent=false \
     --allow-overwrite=true \
     "$torrent_url"
@@ -83,7 +82,6 @@ asset_ids=$(aria2c -S "$torrent_file"|grep '.*/pkg/.*\.pk3'|awk -F'|' '{print $1
 # download assets
 echo "Downloading assets..."
 aria2c \
-    --console-log-level=warn \
     --summary-interval=0 \
     --check-integrity=true \
     --seed-time=0 \
