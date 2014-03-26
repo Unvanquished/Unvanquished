@@ -151,9 +151,17 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
 const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *killer )
 {
 	const gentity_t *assistant = NULL;
-	float           damage = 0.0f;
+	float           damage;
 	int             when = 0;
 	int             playerNum;
+
+	// Require that the assist was for, at least, 25% of the damage or
+	// as much damage as the killer did, whichever is lower
+	damage = self->client->ps.stats[ STAT_MAX_HEALTH ] / 4.0f;
+	if ( killer )
+	{
+		damage = MIN( damage, self->credits[ killer - g_entities ] );
+	}
 
 	for ( playerNum = 0; playerNum < level.maxclients; ++playerNum )
 	{
