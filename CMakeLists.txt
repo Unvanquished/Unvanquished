@@ -495,7 +495,6 @@ set( SERVERLIST
   ${ENGINE_DIR}/server/sv_main.cpp
   ${ENGINE_DIR}/server/sv_net_chan.cpp
   ${ENGINE_DIR}/server/sv_snapshot.cpp
-  ${ENGINE_DIR}/server/sv_world.cpp
   ${ENGINE_DIR}/server/server.h
   ${ENGINE_DIR}/server/g_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
@@ -741,6 +740,8 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_bot_nav.c
   ${GAMELOGIC_DIR}/game/g_bot_parse.c
   ${GAMELOGIC_DIR}/game/g_bot_util.c
+  ${GAMELOGIC_DIR}/game/g_cm_world.cpp
+  ${GAMELOGIC_DIR}/game/g_cm_world.h
   ${ENGINE_DIR}/server/g_api.h
 )
 

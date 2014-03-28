@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "g_local.h"
+#include "g_cm_world.h"
 #include "../shared/VMMain.h"
 #include "../../common/String.h"
 #include "../shared/CommonProxies.h"
@@ -75,9 +76,6 @@ DLLEXPORT int main(int argc, char** argv)
 		g_entities = reinterpret_cast<gentity_t*>(shmBase);
 		g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
 
-		// Initialize VM proxies
-		VM::InitializeProxies();
-
 		// Start main loop
 		while (true) {
 			IPC::Reader reader = VM::rootChannel.RecvMsg();
@@ -89,12 +87,36 @@ DLLEXPORT int main(int argc, char** argv)
 	}
 }
 
+//HACK: NaCl doesn't support messages bigger than 128k so for now
+//we send it by small chunks
+
+std::vector<char> mapData;
+
+void G_LoadMapChunk(std::vector<char> data)
+{
+	mapData.insert(mapData.end(), data.begin(), data.end());
+}
+
+void G_FinishMapLoad(std::string name)
+{
+	CM_LoadMap(name.c_str(), mapData.data(), false);
+	mapData.clear();
+	G_CM_ClearWorld();
+}
+
 void VM::VMMain(uint32_t id, IPC::Reader reader)
 {
 	int major = id >> 16;
 	int minor = id & 0xffff;
 	if (major == VM::QVM) {
 		switch (minor) {
+		case GAME_STATIC_INIT:
+			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [](){
+				// Initialize VM proxies
+				VM::InitializeProxies();
+			});
+			break;
+
 		case GAME_INIT:
 			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart) {
 				G_InitGame(levelTime, randomSeed, restart);
@@ -104,6 +126,18 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 		case GAME_SHUTDOWN:
 			IPC::HandleMsg<GameShutdownMsg>(VM::rootChannel, std::move(reader), [](bool restart) {
 				G_ShutdownGame(restart);
+			});
+			break;
+
+		case GAME_LOADMAP:
+			IPC::HandleMsg<GameLoadMapMsg>(VM::rootChannel, std::move(reader), [](std::string name) {
+				G_FinishMapLoad(std::move(name));
+			});
+			break;
+
+		case GAME_LOADMAPCHUNK:
+			IPC::HandleMsg<GameLoadMapChunkMsg>(VM::rootChannel, std::move(reader), [](std::vector<char> data) {
+				G_LoadMapChunk(std::move(data));
 			});
 			break;
 
@@ -271,51 +305,34 @@ void trap_LocateGameData(gentity_t *, int numGEntities, int sizeofGEntity_t, pla
 
 void trap_LinkEntity(gentity_t *ent)
 {
-	VM::SendMsg<LinkEntityMsg>(ent - g_entities);
+	G_CM_LinkEntity(ent);
 }
 
 void trap_UnlinkEntity(gentity_t *ent)
 {
-	VM::SendMsg<UnlinkEntityMsg>(ent - g_entities);
+	G_CM_UnlinkEntity(ent);
 }
 
 int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxcount)
 {
-	std::vector<int> entityList;
-	std::array<float, 3> mins2, maxs2;
-	VectorCopy(mins, mins2.data());
-	VectorCopy(maxs, maxs2.data());
-	VM::SendMsg<EntitiesInBoxMsg>(mins2, maxs2, maxcount, entityList);
-	memcpy(list, entityList.data(), sizeof(int) * std::min((int) entityList.size(), maxcount));
-	return entityList.size();
+	return G_CM_AreaEntities(mins, maxs, list, maxcount);
 }
 
 qboolean trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
 {
-	std::array<float, 3> mins2, maxs2;
-	VectorCopy(mins, mins2.data());
-	VectorCopy(maxs, maxs2.data());
-	int res;
-	VM::SendMsg<EntityContactMsg>(mins2, maxs2, ent - g_entities, res);
-	return res;
+	return G_CM_EntityContact( mins, maxs, ent, TT_AABB );
 }
 
 void trap_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask)
 {
-	std::array<float, 3> start2, mins2, maxs2, end2;
-	VectorCopy(start, start2.data());
-	if (mins) {
-		VectorCopy(mins, mins2.data());
-	} else {
-		mins2 = {{0.0f, 0.0f, 0.0f}};
+	vec3_t origin = {0.0f, 0.0f, 0.0f};
+	if (!mins) {
+		mins = origin;
 	}
-	if (maxs) {
-		VectorCopy(maxs, maxs2.data());
-	} else {
-		maxs2 = {{0.0f, 0.0f, 0.0f}};
+	if (!maxs) {
+		mins = origin;
 	}
-	VectorCopy(end, end2.data());
-	VM::SendMsg<TraceMsg>(start2, mins2, maxs2, end2, passEntityNum, contentmask, *results);
+	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, TT_AABB);
 }
 
 void trap_TraceNoEnts(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask)
@@ -325,11 +342,7 @@ void trap_TraceNoEnts(trace_t *results, const vec3_t start, const vec3_t mins, c
 
 int trap_PointContents(const vec3_t point, int passEntityNum)
 {
-	std::array<float, 3> point2;
-	VectorCopy(point, point2.data());
-	int res;
-	VM::SendMsg<PointContentsMsg>(point2, passEntityNum, res);
-	return res;
+	return G_CM_PointContents( point, passEntityNum );
 }
 
 void trap_SetBrushModel(gentity_t *ent, const char *name)
@@ -339,36 +352,23 @@ void trap_SetBrushModel(gentity_t *ent, const char *name)
 
 qboolean trap_InPVS(const vec3_t p1, const vec3_t p2)
 {
-	std::array<float, 3> point1;
-	std::array<float, 3> point2;
-	VectorCopy(p1, point1.data());
-	VectorCopy(p2, point2.data());
-	bool res;
-	VM::SendMsg<InPVSMsg>(point1, point2, res);
-	return res;
+	return G_CM_inPVS( p1, p2 );
 }
 
 qboolean trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
 {
-	std::array<float, 3> point1;
-	std::array<float, 3> point2;
-	VectorCopy(p1, point1.data());
-	VectorCopy(p2, point2.data());
-	bool res;
-	VM::SendMsg<InPVSIgnorePortalsMsg>(point1, point2, res);
-	return res;
+	return G_CM_inPVSIgnorePortals( p1, p2 );
 }
 
 void trap_AdjustAreaPortalState(gentity_t *ent, qboolean open)
 {
-	VM::SendMsg<AdjustAreaPortalStateMsg>(ent-g_entities, open);
+	G_CM_AdjustAreaPortalState( ent, open );
 }
 
+qboolean CM_AreasConnected(int area1, int area2);
 qboolean trap_AreasConnected(int area1, int area2)
 {
-	bool res;
-	VM::SendMsg<AreasConnectedMsg>(area1, area2, res);
-	return res;
+	return CM_AreasConnected(area1, area2);
 }
 
 void trap_DropClient(int clientNum, const char *reason)

@@ -290,27 +290,6 @@ void SV_AdjustAreaPortalState( sharedEntity_t *ent, qboolean open )
 }
 
 /*
-==================
-SV_EntityContact
-==================
-*/
-qboolean SV_EntityContact( vec3_t mins, vec3_t maxs, const sharedEntity_t *gEnt, traceType_t type )
-{
-	const float  *origin, *angles;
-	clipHandle_t ch;
-	trace_t      trace;
-
-	// check for exact collision
-	origin = gEnt->r.currentOrigin;
-	angles = gEnt->r.currentAngles;
-
-	ch = SV_ClipHandleForEntity( gEnt );
-	CM_TransformedBoxTrace( &trace, vec3_origin, vec3_origin, mins, maxs, ch, -1, origin, angles, type );
-
-	return trace.startsolid;
-}
-
-/*
 ===============
 SV_GetServerinfo
 
@@ -559,13 +538,17 @@ SV_InitGameProgs
 Called on a map change, not on a map_restart
 ===============
 */
-void SV_InitGameProgs( void )
+void SV_InitGameProgs(Str::StringRef mapname)
 {
 	sv.num_tagheaders = 0;
 	sv.num_tags = 0;
 
 	// load the game module
 	gvm = SV_CreateGameVM();
+
+	gvm->GameStaticInit();
+
+	gvm->GameLoadMap(mapname);
 
 	SV_InitGameVM( qfalse );
 }
@@ -640,6 +623,11 @@ GameVM::~GameVM()
     this->Free();
 }
 
+void GameVM::GameStaticInit()
+{
+	this->SendMsg<GameStaticInitMsg>();
+}
+
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 {
 	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart);
@@ -652,6 +640,31 @@ void GameVM::GameShutdown(qboolean restart)
 
 	// Release the shared memory region
 	this->shmRegion.Close();
+}
+
+void GameVM::GameLoadMap(Str::StringRef name)
+{
+	char* buffer;
+	std::string filename = "maps/" + name + ".bsp";
+	int length = FS_ReadFile( filename.c_str(), ( void ** ) &buffer );
+
+	if ( !buffer )
+	{
+		Com_Error( ERR_DROP, "Couldn't load %s", name.c_str() );
+	}
+
+	char* origBuffer = buffer;
+	char* bufferEnd = buffer + length;
+
+	while (buffer < bufferEnd)
+	{
+		this->SendMsg<GameLoadMapChunkMsg>(std::vector<char>(buffer, std::min(buffer + (64 << 10), bufferEnd)));
+		buffer += 64 << 10;
+	}
+
+	this->SendMsg<GameLoadMapMsg>(name);
+
+	FS_FreeFile( origBuffer );
 }
 
 qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
@@ -816,77 +829,12 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		});
 		break;
 
-	case G_LINK_ENTITY:
-		IPC::HandleMsg<LinkEntityMsg>(channel, std::move(reader), [this](int entityNum) {
-			SV_LinkEntity(SV_GentityNum(entityNum));
-		});
-		break;
-
-	case G_UNLINK_ENTITY:
-		IPC::HandleMsg<UnlinkEntityMsg>(channel, std::move(reader), [this](int entityNum) {
-			SV_UnlinkEntity(SV_GentityNum(entityNum));
-		});
-		break;
-
-	case G_ENTITIES_IN_BOX:
-		IPC::HandleMsg<EntitiesInBoxMsg>(channel, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int len, std::vector<int>& res) {
-			res.resize(len); //reserve doesn't guarantee that data() will return an array long enough
-			len = SV_AreaEntities(mins.data(), maxs.data(), res.data(), len);
-			res.resize(len);
-		});
-		break;
-
-	case G_ENTITY_CONTACT:
-		IPC::HandleMsg<EntityContactMsg>(channel, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int entityNum, int& res) {
-			const sharedEntity_t* ent = SV_GentityNum(entityNum);
-			res = SV_EntityContact(mins.data(), maxs.data(), ent, TT_AABB);
-		});
-		break;
-
-	case G_TRACE:
-		IPC::HandleMsg<TraceMsg>(channel, std::move(reader), [this](std::array<float, 3> start, std::array<float, 3> mins, std::array<float, 3> maxs, std::array<float, 3> end, int passEntityNum, int contentMask, trace_t& res) {
-			SV_Trace(&res, start.data(), mins.data(), maxs.data(), end.data(), passEntityNum, contentMask, TT_AABB);
-		});
-		break;
-
-	case G_POINT_CONTENTS:
-		IPC::HandleMsg<PointContentsMsg>(channel, std::move(reader), [this](std::array<float, 3> p, int passEntityNum, int& res) {
-			res = SV_PointContents(p.data(), passEntityNum);
-		});
-		break;
-
 	case G_SET_BRUSH_MODEL:
 		IPC::HandleMsg<SetBrushModelMsg>(channel, std::move(reader), [this](int entityNum, std::string name) {
 			sharedEntity_t* ent = SV_GentityNum(entityNum);
 			SV_SetBrushModel(ent, name.c_str());
 		});
 		break;
-
-	case G_IN_PVS:
-		IPC::HandleMsg<InPVSMsg>(channel, std::move(reader), [this](std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
-			res = SV_inPVS(p1.data(), p2.data());
-		});
-		break;
-
-	case G_IN_PVS_IGNORE_PORTALS:
-		IPC::HandleMsg<InPVSIgnorePortalsMsg>(channel, std::move(reader), [this](std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
-			res = SV_inPVSIgnorePortals(p1.data(), p2.data());
-		});
-		break;
-
-	case G_ADJUST_AREA_PORTAL_STATE:
-		IPC::HandleMsg<AdjustAreaPortalStateMsg>(channel, std::move(reader), [this](int entityNum, bool open) {
-			sharedEntity_t* ent = SV_GentityNum(entityNum);
-			SV_AdjustAreaPortalState(ent, open);
-        });
-		break;
-
-	case G_AREAS_CONNECTED:
-		IPC::HandleMsg<AreasConnectedMsg>(channel, std::move(reader), [this](int area1, int area2, bool& res) {
-			res = CM_AreasConnected(area1, area2);
-		});
-		break;
-
 
 	case G_DROP_CLIENT:
 		IPC::HandleMsg<DropClientMsg>(channel, std::move(reader), [this](int clientNum, std::string reason) {

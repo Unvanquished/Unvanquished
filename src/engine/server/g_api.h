@@ -127,17 +127,7 @@ typedef enum gameImport_s
   G_LOCATE_GAME_DATA1,
   G_LOCATE_GAME_DATA2,
 
-  G_LINK_ENTITY,
-  G_UNLINK_ENTITY,
-  G_ENTITIES_IN_BOX,
-  G_ENTITY_CONTACT,
-  G_TRACE,
-  G_POINT_CONTENTS,
   G_SET_BRUSH_MODEL,
-  G_IN_PVS,
-  G_IN_PVS_IGNORE_PORTALS,
-  G_ADJUST_AREA_PORTAL_STATE,
-  G_AREAS_CONNECTED,
 
   G_DROP_CLIENT,
   G_SEND_SERVER_COMMAND,
@@ -231,51 +221,10 @@ typedef IPC::SyncMessage<
 typedef IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA1>, IPC::SharedMemory, int, int, int> LocateGameDataMsg1;
 typedef IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA2>, int, int, int> LocateGameDataMsg2;
 
-// LinkEntityMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_LINK_ENTITY>, int> LinkEntityMsg;
-// UnlinkEntityMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_UNLINK_ENTITY>, int> UnlinkEntityMsg;
-// EntitiesInBoxMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_ENTITIES_IN_BOX>, std::array<float, 3>, std::array<float, 3>, int>,
-	IPC::Reply<std::vector<int>>
-> EntitiesInBoxMsg;
-// EntityContactMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_ENTITY_CONTACT>, std::array<float, 3>, std::array<float, 3>, int>,
-	IPC::Reply<int>
-> EntityContactMsg;
-// TraceMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_TRACE>, std::array<float, 3>, std::array<float, 3>, std::array<float, 3>, std::array<float, 3>, int, int>,
-	IPC::Reply<trace_t>
-> TraceMsg;
-// PointContentsMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_POINT_CONTENTS>, std::array<float, 3>, int>,
-	IPC::Reply<int>
-> PointContentsMsg;
 // SetBrushModelMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, G_SET_BRUSH_MODEL>, int, std::string>
 > SetBrushModelMsg;
-// InPVSMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_IN_PVS>, std::array<float, 3>, std::array<float, 3>>,
-	IPC::Reply<bool>
-> InPVSMsg;
-// InPVSIgnorePortalsMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_IN_PVS_IGNORE_PORTALS>, std::array<float, 3>, std::array<float, 3>>,
-	IPC::Reply<bool>
-> InPVSIgnorePortalsMsg;
-// AdjustAreaPortalStateMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_ADJUST_AREA_PORTAL_STATE>, int, bool> AdjustAreaPortalStateMsg;
-// AreasConnectedMsg
-typedef IPC::SyncMessage<
-    IPC::Message<IPC::Id<VM::QVM, G_AREAS_CONNECTED>, int, int>,
-    IPC::Reply<bool>
-> AreasConnectedMsg;
 
 // DropClientMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_DROP_CLIENT>, int, std::string> DropClientMsg;
@@ -450,11 +399,16 @@ typedef IPC::Message<IPC::Id<VM::QVM, BOT_UPDATE_OBSTACLES>> BotUpdateObstaclesM
 // engine-to-game-module calls
 typedef enum
 {
+  GAME_STATIC_INIT,
+
   GAME_INIT, // void ()( int levelTime, int randomSeed, qboolean restart );
   // the first call to the game module
 
   GAME_SHUTDOWN, // void ()( void );
   // the last call to the game module
+
+  GAME_LOADMAP,
+  GAME_LOADMAPCHUNK,
 
   GAME_CLIENT_CONNECT, // const char * ()( int clientNum, qboolean firstTime, qboolean isBot );
   // return NULL if the client is allowed to connect,
@@ -485,6 +439,9 @@ typedef enum
   GAME_MESSAGERECEIVED, // void ()( int clientNum, const char *buffer, int bufferSize, int commandTime );
 } gameExport_t;
 
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, GAME_STATIC_INIT>>
+> GameStaticInitMsg;
 // GameInitMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_INIT>, int, int, bool>
@@ -493,6 +450,12 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_SHUTDOWN>, bool>
 > GameShutdownMsg;
+// GameLoadMapChunkMsg
+typedef IPC::Message<IPC::Id<VM::QVM, GAME_LOADMAPCHUNK>, std::vector<char>> GameLoadMapChunkMsg;
+// GameLoadMapMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, GAME_LOADMAP>, std::string>
+> GameLoadMapMsg;
 // GameClientConnectMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_CLIENT_CONNECT>, int, bool, int>,

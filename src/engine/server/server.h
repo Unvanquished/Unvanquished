@@ -318,8 +318,10 @@ public:
     virtual ~GameVM();
 	bool Start();
 
+	void GameStaticInit();
 	void GameInit(int levelTime, int randomSeed, qboolean restart);
 	void GameShutdown(qboolean restart);
+	void GameLoadMap(Str::StringRef name);
 	qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot);
 	void GameClientBegin(int clientNum);
 	void GameClientUserInfoChanged(int clientNum);
@@ -493,7 +495,7 @@ playerState_t  *SV_GameClientNum( int num );
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
 GameVM         *SV_CreateGameVM( void );
-void           SV_InitGameProgs( void );
+void           SV_InitGameProgs(Str::StringRef mapname);
 void           SV_ShutdownGameProgs( void );
 void           SV_RestartGameProgs( void );
 qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );

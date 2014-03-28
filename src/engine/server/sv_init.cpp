@@ -634,9 +634,6 @@ void SV_SpawnServer( const char *server )
 	sv.restartedServerId = sv.serverId;
 	Cvar_Set( "sv_serverid", va( "%i", sv.serverId ) );
 
-	// clear physics interaction links
-	SV_ClearWorld();
-
 	// media configstring setting should be done during
 	// the loading stage, so connected clients don't have
 	// to load during actual gameplay
@@ -645,7 +642,7 @@ void SV_SpawnServer( const char *server )
 	Cvar_Set( "sv_serverRestarting", "1" );
 
 	// load and spawn all other entities
-	SV_InitGameProgs();
+	SV_InitGameProgs(server);
 
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
