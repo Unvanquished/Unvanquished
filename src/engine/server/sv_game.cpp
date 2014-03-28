@@ -176,39 +176,6 @@ int SV_RSAGenMsg( const char *pubkey, char *cleartext, char *encrypted )
 
 /*
 =================
-SV_SetBrushModel
-
-sets mins and maxs for inline bmodels
-=================
-*/
-void SV_SetBrushModel( sharedEntity_t *ent, const char *name )
-{
-	clipHandle_t h;
-	vec3_t       mins, maxs;
-
-	if ( !name )
-	{
-		Com_Error( ERR_DROP, "SV_SetBrushModel: NULL for #%i", ent->s.number );
-	}
-
-	if ( name[ 0 ] != '*' )
-	{
-		Com_Error( ERR_DROP, "SV_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
-	}
-
-	ent->s.modelindex = atoi( name + 1 );
-
-	h = CM_InlineModel( ent->s.modelindex );
-	CM_ModelBounds( h, mins, maxs );
-	VectorCopy( mins, ent->r.mins );
-	VectorCopy( maxs, ent->r.maxs );
-	ent->r.bmodel = qtrue;
-
-	ent->r.contents = -1; // we don't know exactly what is in the brushes
-}
-
-/*
-=================
 SV_inPVS
 
 Also checks portalareas so that doors block sight
@@ -826,13 +793,6 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_LOCATE_GAME_DATA2:
 		IPC::HandleMsg<LocateGameDataMsg2>(channel, std::move(reader), [this](int numEntities, int entitySize, int playerSize) {
 			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
-		});
-		break;
-
-	case G_SET_BRUSH_MODEL:
-		IPC::HandleMsg<SetBrushModelMsg>(channel, std::move(reader), [this](int entityNum, std::string name) {
-			sharedEntity_t* ent = SV_GentityNum(entityNum);
-			SV_SetBrushModel(ent, name.c_str());
 		});
 		break;
 

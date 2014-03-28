@@ -64,6 +64,39 @@ gentity_t *G_CM_GEntityForWorldEntity( worldEntity_t *ent )
 }
 
 /*
+=================
+G_CM_SetBrushModel
+
+sets mins and maxs for inline bmodels
+=================
+*/
+void G_CM_SetBrushModel( gentity_t *ent, const char *name )
+{
+	clipHandle_t h;
+	vec3_t       mins, maxs;
+
+	if ( !name )
+	{
+		Com_Error( ERR_DROP, "G_CM_SetBrushModel: NULL for #%i", ent->s.number );
+	}
+
+	if ( name[ 0 ] != '*' )
+	{
+		Com_Error( ERR_DROP, "G_CM_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
+	}
+
+	ent->s.modelindex = atoi( name + 1 );
+
+	h = CM_InlineModel( ent->s.modelindex );
+	CM_ModelBounds( h, mins, maxs );
+	VectorCopy( mins, ent->r.mins );
+	VectorCopy( maxs, ent->r.maxs );
+	ent->r.bmodel = qtrue;
+
+	ent->r.contents = -1; // we don't know exactly what is in the brushes
+}
+
+/*
 ================
 G_CM_ClipHandleForEntity
 

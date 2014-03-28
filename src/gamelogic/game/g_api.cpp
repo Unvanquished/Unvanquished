@@ -347,7 +347,7 @@ int trap_PointContents(const vec3_t point, int passEntityNum)
 
 void trap_SetBrushModel(gentity_t *ent, const char *name)
 {
-	VM::SendMsg<SetBrushModelMsg>(ent - g_entities, name);
+	G_CM_SetBrushModel( ent, name );
 }
 
 qboolean trap_InPVS(const vec3_t p1, const vec3_t p2)

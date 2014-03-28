@@ -127,8 +127,6 @@ typedef enum gameImport_s
   G_LOCATE_GAME_DATA1,
   G_LOCATE_GAME_DATA2,
 
-  G_SET_BRUSH_MODEL,
-
   G_DROP_CLIENT,
   G_SEND_SERVER_COMMAND,
   G_SET_CONFIGSTRING,
@@ -220,11 +218,6 @@ typedef IPC::SyncMessage<
 // LocateGameData
 typedef IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA1>, IPC::SharedMemory, int, int, int> LocateGameDataMsg1;
 typedef IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA2>, int, int, int> LocateGameDataMsg2;
-
-// SetBrushModelMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_SET_BRUSH_MODEL>, int, std::string>
-> SetBrushModelMsg;
 
 // DropClientMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_DROP_CLIENT>, int, std::string> DropClientMsg;
