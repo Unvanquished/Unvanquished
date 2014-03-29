@@ -415,6 +415,17 @@ set( COMMONLIST
   ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/String.cpp
   ${COMMON_DIR}/String.h
+  ${COMMON_DIR}/cm/cm_load.cpp
+  ${COMMON_DIR}/cm/cm_trisoup.cpp
+  ${COMMON_DIR}/cm/cm_patch.cpp
+  ${COMMON_DIR}/cm/cm_plane.cpp
+  ${COMMON_DIR}/cm/cm_polylib.cpp
+  ${COMMON_DIR}/cm/cm_test.cpp
+  ${COMMON_DIR}/cm/cm_trace.cpp
+  ${COMMON_DIR}/cm/cm_local.h
+  ${COMMON_DIR}/cm/cm_patch.h
+  ${COMMON_DIR}/cm/cm_polylib.h
+  ${COMMON_DIR}/cm/cm_public.h
 )
 
 set( RENDERERLIST
@@ -484,7 +495,6 @@ set( SERVERLIST
   ${ENGINE_DIR}/server/sv_main.cpp
   ${ENGINE_DIR}/server/sv_net_chan.cpp
   ${ENGINE_DIR}/server/sv_snapshot.cpp
-  ${ENGINE_DIR}/server/sv_world.cpp
   ${ENGINE_DIR}/server/server.h
   ${ENGINE_DIR}/server/g_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
@@ -511,17 +521,6 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/Resource.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
-  ${ENGINE_DIR}/qcommon/cm_load.cpp
-  ${ENGINE_DIR}/qcommon/cm_trisoup.cpp
-  ${ENGINE_DIR}/qcommon/cm_patch.cpp
-  ${ENGINE_DIR}/qcommon/cm_plane.cpp
-  ${ENGINE_DIR}/qcommon/cm_polylib.cpp
-  ${ENGINE_DIR}/qcommon/cm_test.cpp
-  ${ENGINE_DIR}/qcommon/cm_trace.cpp
-  ${ENGINE_DIR}/qcommon/cm_local.h
-  ${ENGINE_DIR}/qcommon/cm_patch.h
-  ${ENGINE_DIR}/qcommon/cm_polylib.h
-  ${ENGINE_DIR}/qcommon/cm_public.h
   ${ENGINE_DIR}/qcommon/cmd.cpp
   ${ENGINE_DIR}/qcommon/common.cpp
   ${ENGINE_DIR}/qcommon/crypto.cpp
@@ -741,6 +740,8 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_bot_nav.c
   ${GAMELOGIC_DIR}/game/g_bot_parse.c
   ${GAMELOGIC_DIR}/game/g_bot_util.c
+  ${GAMELOGIC_DIR}/game/g_cm_world.cpp
+  ${GAMELOGIC_DIR}/game/g_cm_world.h
   ${ENGINE_DIR}/server/g_api.h
 )
 

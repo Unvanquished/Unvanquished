@@ -46,8 +46,6 @@ Maryland 20850 USA.
 #define PERS_SCORE        0 // !!! MUST NOT CHANGE, SERVER AND
 // GAME BOTH REFERENCE !!!
 
-#define MAX_ENT_CLUSTERS  16
-
 #ifdef USE_VOIP
 #define VOIP_QUEUE_LENGTH 64
 
@@ -67,17 +65,8 @@ typedef struct voipServerPacket_s
 
 typedef struct svEntity_s
 {
-	struct worldSector_s *worldSector;
-
-	struct svEntity_s    *nextEntityInWorldSector;
-
 	entityState_t        baseline; // for delta compression of initial sighting
-	int                  numClusters; // if -1, use headnode instead
-	int                  clusternums[ MAX_ENT_CLUSTERS ];
-	int                  lastCluster; // if all the clusters don't fit in clusternums
-	int                  areanum, areanum2;
 	int                  snapshotCounter; // used to prevent double adding from portal views
-	int                  originCluster; // Gordon: calced upon linking, for origin only bmodel vis checks
 } svEntity_t;
 
 typedef enum
@@ -329,8 +318,10 @@ public:
     virtual ~GameVM();
 	bool Start();
 
+	void GameStaticInit();
 	void GameInit(int levelTime, int randomSeed, qboolean restart);
 	void GameShutdown(qboolean restart);
+	void GameLoadMap(Str::StringRef name);
 	qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot);
 	void GameClientBegin(int clientNum);
 	void GameClientUserInfoChanged(int clientNum);
@@ -504,7 +495,7 @@ playerState_t  *SV_GameClientNum( int num );
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
 GameVM         *SV_CreateGameVM( void );
-void           SV_InitGameProgs( void );
+void           SV_InitGameProgs(Str::StringRef mapname);
 void           SV_ShutdownGameProgs( void );
 void           SV_RestartGameProgs( void );
 qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );
