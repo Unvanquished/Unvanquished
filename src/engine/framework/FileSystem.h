@@ -102,6 +102,11 @@ public:
 	// Read/Write from the file
 	size_t Read(void* buffer, size_t length, std::error_code& err = throws()) const;
 	void Write(const void* data, size_t length, std::error_code& err = throws()) const;
+    template<typename ... Args>
+    void Printf(Args ... args) {
+        std::string text = Str::Format(args...);
+        Write(text.data(), text.length());
+    }
 
 	// Flush buffers
 	void Flush(std::error_code& err = throws()) const;

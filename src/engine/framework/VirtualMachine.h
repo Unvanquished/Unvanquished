@@ -31,8 +31,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
+#include "../../common/Cvar.h"
 #include "../../common/IPC.h"
 #include "../../common/String.h"
+#include "FileSystem.h"
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -51,12 +53,13 @@ enum vmType_t {
 // Base class for a virtual machine instance
 class VMBase {
 public:
-	VMBase()
-		: processHandle(IPC::INVALID_HANDLE) {}
+	VMBase(std::string name)
+		: processHandle(IPC::INVALID_HANDLE), name(name),
+        logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module.
-	int Create(Str::StringRef name, vmType_t type);
+	int Create(vmType_t type);
 
 	// Free the VM
 	void Free();
@@ -77,8 +80,10 @@ public:
 	template<typename Msg, typename... Args> void SendMsg(Args&&... args)
 	{
 		// Marking lambda as mutable to work around a bug in gcc 4.6
+        LogMessage(false, Msg::id);
 		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, IPC::Reader reader) mutable {
 			Syscall(id, std::move(reader), rootChannel);
+            LogMessage(true, id);
 		}, std::forward<Args>(args)...);
 	}
 
@@ -109,6 +114,15 @@ private:
 	// Common
 	IPC::Channel rootChannel;
 	vmType_t vmType;
+
+    std::string name;
+
+    // Logging the syscalls
+    Cvar::Cvar<bool> logSyscalls;
+    FS::File syscallLogFile;
+
+    void LogMessage(bool vmToEngine, int id);
+
 };
 
 } // namespace VM

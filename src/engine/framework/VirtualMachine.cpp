@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../sys/sys_loadlib.h"
+#include "../../common/Log.h"
 #include "VirtualMachine.h"
 
 #ifdef _WIN32
@@ -314,13 +315,23 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 	return std::move(pair.first);
 }
 
-int VMBase::Create(Str::StringRef name, vmType_t type)
+int VMBase::Create(vmType_t type)
 {
 	if (type < 0 || type >= TYPE_END)
 		Com_Error(ERR_DROP, "VM: Invalid type %d", type);
 
 	// Free the VM if it exists
 	Free();
+
+    // Open the syscall log
+    if (logSyscalls.Get()) {
+        std::string filename = name + ".syscallLog";
+        try {
+            syscallLogFile = FS::RawPath::OpenWrite(filename);
+        } catch (std::system_error& error) {
+            Log::Warn("Couldn't open %s", filename);
+        }
+    }
 
 	// Create the socket pair to get the handle for ROOT_SOCKET
 	std::pair<IPC::Socket, IPC::Socket> pair = IPC::Socket::CreatePair();
@@ -374,8 +385,29 @@ void VMBase::FreeInProcessVM() {
 	inProcess.running = false;
 }
 
+void VMBase::LogMessage(bool vmToEngine, int id)
+{
+    if (syscallLogFile) {
+        int minor = id & 0xffff;
+        int major = id >> 16;
+
+        Str::StringRef direction = vmToEngine ? "V -> E" : "E -> V";
+
+        try {
+            syscallLogFile.Printf("%s (%i, %i)\n", direction, major, minor);
+        } catch (std::system_error& err) {
+            Log::Warn("Error while writing the VM syscall log");
+        }
+    }
+}
+
 void VMBase::Free()
 {
+    if (syscallLogFile) {
+        std::error_code err;
+        syscallLogFile.Close(err);
+    }
+
 	if (!IsActive())
 		return;
 
