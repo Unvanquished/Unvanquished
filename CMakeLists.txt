@@ -612,6 +612,14 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/Sample.h
   ${ENGINE_DIR}/audio/Sound.cpp
   ${ENGINE_DIR}/audio/Sound.h
+  ${ENGINE_DIR}/audio/audio_file.h
+  ${ENGINE_DIR}/audio/audio_file.cpp
+  ${ENGINE_DIR}/audio/wav_file.h
+  ${ENGINE_DIR}/audio/wav_file.cpp
+  ${ENGINE_DIR}/audio/ogg_file.h
+  ${ENGINE_DIR}/audio/ogg_file.h
+  ${ENGINE_DIR}/audio/opus_file.cpp
+  ${ENGINE_DIR}/audio/opus_file.cpp
 )
 
 set( TTYCLIENTLIST
