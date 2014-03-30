@@ -135,7 +135,8 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	PROCESS_INFORMATION processInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
 	startupInfo.cb = sizeof(startupInfo);
-	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, "", NULL, &startupInfo, &processInfo)) {
+	char env[] = "";
+	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, env, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
 		Com_Error(ERR_DROP, "VM: Could create child process: %s", Win32StrError(GetLastError()).c_str());
 	}
@@ -210,8 +211,10 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 			break;
 	}
 	close(pipefds[0]);
-	if (count)
+	if (count) {
+		waitpid(pid, NULL, 0);
 		Com_Error(ERR_DROP, "VM: Failed to exec: %s", strerror(err));
+	}
 
 	return std::make_pair(pid, std::move(pair.first));
 #endif
