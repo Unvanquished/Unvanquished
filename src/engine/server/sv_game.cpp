@@ -724,12 +724,6 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_LOG:
 		Com_Error(ERR_DROP, "trap_Log not implemented");
 
-	case G_MILLISECONDS:
-		IPC::HandleMsg<MillisecondsMsg>(channel, std::move(reader), [this](int& time) {
-			time = Sys_Milliseconds();
-		});
-		break;
-
 	case G_SEND_CONSOLE_COMMAND:
 		IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](int when, std::string text) {
 			Cbuf_ExecuteText(when, text.c_str());

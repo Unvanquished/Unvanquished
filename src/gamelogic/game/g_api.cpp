@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include <chrono>
 #include "g_local.h"
 #include "g_cm_world.h"
 #include "../shared/VMMain.h"
@@ -232,9 +233,8 @@ void trap_Log(log_event_t *event)
 
 int trap_Milliseconds(void)
 {
-	int ms;
-	VM::SendMsg<MillisecondsMsg>(ms);
-	return ms;
+	auto duration = std::chrono::steady_clock::now().time_since_epoch();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
 void trap_SendConsoleCommand(int exec_when, const char *text)

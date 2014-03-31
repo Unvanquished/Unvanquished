@@ -113,7 +113,6 @@ typedef enum gameImport_s
   G_PRINT = FIRST_VM_SYSCALL,
   G_ERROR,
   G_LOG,
-  G_MILLISECONDS,
   G_SEND_CONSOLE_COMMAND,
 
   G_FS_FOPEN_FILE,
@@ -177,11 +176,6 @@ typedef IPC::Message<IPC::Id<VM::QVM, G_PRINT>, std::string> PrintMsg;
 // ErrorMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_ERROR>, std::string> ErrorMsg;
 // LogMsg TODO
-// MillisecondsMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_MILLISECONDS>>,
-	IPC::Reply<int>
-> MillisecondsMsg;
 // SendConsoleCommandMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_CONSOLE_COMMAND>, int, std::string> SendConsoleCommandMsg;
 
