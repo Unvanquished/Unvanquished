@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -92,7 +92,7 @@ void ElementDataGridRow::Initialise(ElementDataGrid* _parent_grid, ElementDataGr
 void ElementDataGridRow::SetChildIndex(int _child_index)
 {
 	if (child_index != _child_index)
-	{	
+	{
 		child_index = _child_index;
 
 		if (parent_row)
@@ -124,7 +124,7 @@ bool ElementDataGridRow::UpdateChildren()
 	if (dirty_children)
 	{
 		float start_time = Core::GetSystemInterface()->GetElapsedTime();
-		
+
 		RowQueue dirty_rows;
 		dirty_rows.push(this);
 
@@ -132,7 +132,7 @@ bool ElementDataGridRow::UpdateChildren()
 		{
 			ElementDataGridRow* dirty_row = dirty_rows.front();
 			dirty_rows.pop();
-			
+
 			float time_slice = MAX_UPDATE_TIME - (Core::GetSystemInterface()->GetElapsedTime() - start_time);
 			if (time_slice <= 0.0f)
 				break;
@@ -149,7 +149,7 @@ bool ElementDataGridRow::UpdateChildren()
 
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -535,6 +535,11 @@ void ElementDataGridRow::Load(const DataQuery& row_information)
 
 			// Add the new contents to the cell.
 			Core::Factory::InstanceElementText(cell, cell_string);
+
+			for (size_t i = 0; i < column->fields.size(); ++i)
+			{
+				cell->SetClass(column->fields[i], true);
+			}
 		}
 		else
 		{
