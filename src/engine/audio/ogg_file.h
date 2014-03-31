@@ -39,8 +39,8 @@ using std::string;
 namespace Audio {
 
 class ogg_file final: public audio_file{
-
-    ogg_file(string filename);
+ public:
+  ogg_file(string filename);
 };
 } //namespace Audio
 #endif

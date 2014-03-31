@@ -39,8 +39,8 @@ using std::string;
 namespace Audio {
 
 class wav_file final: public audio_file{
-
-    wav_file(string filename);
+ public:
+  wav_file(string filename);
 };
 } //namespace Audio
 #endif

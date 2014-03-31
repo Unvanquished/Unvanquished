@@ -28,34 +28,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-//TODO fix spacing
-#ifndef AUDIO_FILE_H
-#define AUDIO_FILE_H
+#ifndef AUDIO_FILE_FACTORY_H
+#define AUDIO_FILE_FACTORY_H
 
-#include <vector>
-using std::vector;
+#include <memory>
+#include <string>
+#include "audio_file.h"
+
+using std::unique_ptr;
+using std::string;
+using Audio::audio_file;
 
 namespace Audio {
 
-class audio_file {
+class audio_file_factory {
  public:
-
-  virtual ~audio_file() = 0 ;
-
-  void* get_audio_data();
-
-  int get_sample_rate() const;
-  int get_bit_depth() const;
-  int get_number_of_channels() const;
-  int get_number_of_samples() const;
-
- protected:
-  int sample_rate; //was rate
-  int bit_depth; //8bits: bit_depth=1, 16bits bit_depth=2
-  int number_of_channels;
-  int number_of_samples; //was samples
-  vector<char> audio_data;
+  static unique_ptr<audio_file> get_audio_file(string filename);
 };
 
-}  // namespace Audio
+} // namespace Audio
 #endif

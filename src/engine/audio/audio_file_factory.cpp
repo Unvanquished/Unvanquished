@@ -27,35 +27,35 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
+#include "audio_file_factory.h"
+#include "wav_file.h"
+#include "ogg_file.h"
+#include "opus_file.h"
 
-//TODO fix spacing
-#ifndef AUDIO_FILE_H
-#define AUDIO_FILE_H
+/*
+ *TODO
+ *create a make_unique method
+ */
 
-#include <vector>
-using std::vector;
 
-namespace Audio {
 
-class audio_file {
- public:
+unique_ptr<audio_file> Audio::audio_file_factory::get_audio_file(string filename){
 
-  virtual ~audio_file() = 0 ;
+  size_t position_of_last_dot{filename.find_last_of('.')};
 
-  void* get_audio_data();
+  if (position_of_last_dot == string::npos)
+    ;  // error no extension
 
-  int get_sample_rate() const;
-  int get_bit_depth() const;
-  int get_number_of_channels() const;
-  int get_number_of_samples() const;
+  string ext{filename.substr(position_of_last_dot)};
 
- protected:
-  int sample_rate; //was rate
-  int bit_depth; //8bits: bit_depth=1, 16bits bit_depth=2
-  int number_of_channels;
-  int number_of_samples; //was samples
-  vector<char> audio_data;
-};
+  if( ext == "wav")
+      return unique_ptr<audio_file>(new Audio::wav_file(filename));
+  if( ext == "ogg")
+      return unique_ptr<audio_file>(new Audio::ogg_file(filename));
+  if( ext == "opus")
+      return unique_ptr<audio_file>(new Audio::opus_file(filename));
 
-}  // namespace Audio
-#endif
+  return nullptr;
+  //error unknown extension
+  //should cause an error?
+}

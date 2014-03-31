@@ -44,7 +44,7 @@ ogg_file::ogg_file(string filename) {
   std::copy(data, data + info.size, std::back_inserter(audio_data));
 
   sample_rate = info.rate;
-  bit_depth = info.width * 8;
+  bit_depth = info.width;
   number_of_channels = info.channels;
   number_of_samples = info.samples;
 
