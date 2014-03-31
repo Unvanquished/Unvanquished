@@ -40,8 +40,10 @@ void* audio_file::get_audio_data() {
 
 int audio_file::get_sample_rate() const { return sample_rate; }
 
-int audio_file::get_bit_depth() const { return bit_depth; }
+int audio_file::get_byte_depth() const { return byte_depth; }
 
 int audio_file::get_number_of_channels() const { return number_of_channels; }
 
 int audio_file::get_number_of_samples() const { return number_of_samples; }
+
+int audio_file::get_size() const { return audio_data.size(); }

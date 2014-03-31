@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "wav_file.h"
 #include "ogg_file.h"
 #include "opus_file.h"
+#include "../../common/Log.h"
 
 /*
  *TODO
@@ -43,10 +44,12 @@ unique_ptr<audio_file> Audio::audio_file_factory::get_audio_file(string filename
 
   size_t position_of_last_dot{filename.find_last_of('.')};
 
-  if (position_of_last_dot == string::npos)
-    ;  // error no extension
+  if (position_of_last_dot == string::npos){
+      Log::Warn("Could not find the extension in %s", filename);
+      return nullptr;
+  }
 
-  string ext{filename.substr(position_of_last_dot)};
+  string ext{filename.substr(position_of_last_dot + 1)};
 
   if( ext == "wav")
       return unique_ptr<audio_file>(new Audio::wav_file(filename));
@@ -55,7 +58,6 @@ unique_ptr<audio_file> Audio::audio_file_factory::get_audio_file(string filename
   if( ext == "opus")
       return unique_ptr<audio_file>(new Audio::opus_file(filename));
 
+  Log::Warn("No codec available for opening %s.", filename);
   return nullptr;
-  //error unknown extension
-  //should cause an error?
 }

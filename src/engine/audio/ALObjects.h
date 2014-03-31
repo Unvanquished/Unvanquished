@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../../common/String.h"
 #include "snd_codec.h"
+#include "audio_file.h"
 
 namespace Audio {
 namespace AL {
@@ -64,6 +65,8 @@ namespace AL {
             // TODO
             // Fills the buffer with data (width/rate/size should be given by info)
             unsigned Feed(snd_info_t info, const void* data);
+
+            unsigned Feed(audio_file& audio_data);
 
             // Both these methods are use by Source to Queue/Unqueue buffers
             Buffer(unsigned handle);

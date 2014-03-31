@@ -45,13 +45,14 @@ class audio_file {
   void* get_audio_data();
 
   int get_sample_rate() const;
-  int get_bit_depth() const;
+  int get_byte_depth() const;
   int get_number_of_channels() const;
   int get_number_of_samples() const;
+  int get_size() const;
 
  protected:
   int sample_rate; //was rate
-  int bit_depth; //8bits: bit_depth=1, 16bits bit_depth=2
+  int byte_depth;
   int number_of_channels;
   int number_of_samples; //was samples
   vector<char> audio_data;
