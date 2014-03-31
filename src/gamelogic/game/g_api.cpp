@@ -233,7 +233,11 @@ void trap_Log(log_event_t *event)
 
 int trap_Milliseconds(void)
 {
+#ifdef LIBSTDCXX_BROKEN_CXX11
+	auto duration = std::chrono::monotonic_clock::now().time_since_epoch();
+#else
 	auto duration = std::chrono::steady_clock::now().time_since_epoch();
+#endif
 	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
