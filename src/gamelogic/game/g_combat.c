@@ -155,6 +155,12 @@ const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *kille
 	int             when = 0;
 	int             playerNum;
 
+	// Suicide? No assistance needed with that
+	if ( killer == self)
+	{
+		return NULL;
+	}
+
 	// Require that the assist was for, at least, 25% of the damage or
 	// as much damage as the killer did, whichever is lower
 	damage = self->client->ps.stats[ STAT_MAX_HEALTH ] / 4.0f;
