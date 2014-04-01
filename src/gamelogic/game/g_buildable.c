@@ -23,12 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-// this is wrong in so many ways
-// 1. the maximum alien bbox is > 25³
-// 2. the maximum alien spawning class bbox is still > 25³
-// 3. why is this even hardcoded?
-#define MAX_ALIEN_BBOX 25
-
 #define PRIMARY_ATTACK_PERIOD 7500
 #define NEARBY_ATTACK_PERIOD  15000
 
@@ -141,7 +135,7 @@ Check if a spawn at a specified point is valid
 gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
                               const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin )
 {
-	float   displacement;
+	float   minDistance, maxDistance, frac, displacement;
 	vec3_t  mins, maxs;
 	vec3_t  cmins, cmaxs;
 	vec3_t  localOrigin;
@@ -151,18 +145,61 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 
 	if ( spawn == BA_A_SPAWN )
 	{
-		VectorSet( cmins, -MAX_ALIEN_BBOX, -MAX_ALIEN_BBOX, -MAX_ALIEN_BBOX );
-		VectorSet( cmaxs,  MAX_ALIEN_BBOX,  MAX_ALIEN_BBOX,  MAX_ALIEN_BBOX );
+		// HACK: Assume advanced granger is biggest class that can spawn
+		BG_ClassBoundingBox( PCL_ALIEN_BUILDER0_UPG, cmins, cmaxs, NULL, NULL, NULL );
 
-		displacement = ( maxs[ 2 ] + MAX_ALIEN_BBOX ) * M_ROOT3 + 1.0f;
+		// Calculate the necessary displacement for a given normal so that the bounding boxes
+		// of buildable and client don't intersect.
+
+		// Method 1
+		// This describes the worst case for any angle.
+		/*
+		displacement = MAX( VectorLength( mins ), VectorLength( maxs ) ) +
+		               MAX( VectorLength( cmins ), VectorLength( cmaxs ) ) + 1.0f;
+		*/
+
+		// Method 2
+		// For normals with equal X and Y component these results are optimal. Otherwise they are
+		// still better than naive worst-case calculations.
+		// HACK: This only works for normals w/ angle < 45° towards either {0,0,1} or {0,0,-1}
+		if ( normal[ 2 ] < 0.0f )
+		{
+			// best case: client spawning right below egg
+			minDistance = -mins[ 2 ] + cmaxs[ 2 ];
+
+			// worst case: bounding boxes meet at their corners
+			maxDistance = VectorLength( mins ) + VectorLength( cmaxs );
+
+			// the fraction of the angle seperating best (0°) and worst case (45°)
+			frac = acos( -normal[ 2 ] ) / ( M_PI / 4.0f );
+		}
+		else
+		{
+			// best case: client spawning right above egg
+			minDistance = maxs[ 2 ] - cmins[ 2 ];
+
+			// worst case: bounding boxes meet at their corners
+			maxDistance = VectorLength( maxs ) + VectorLength( cmins );
+
+			// the fraction of the angle seperating best (0°) and worst case (45°)
+			frac = acos( normal[ 2 ] ) / ( M_PI / 4.0f );
+		}
+
+		// the linear interpolation of min & max distance should be an upper boundary for the
+		// optimal (closest possible) distance.
+		displacement = ( 1.0f - frac ) * minDistance + frac * maxDistance + 1.0f;
+
 		VectorMA( origin, displacement, normal, localOrigin );
 	}
 	else if ( spawn == BA_H_SPAWN )
 	{
+		// HACK: Assume naked human is biggest class that can spawn
 		BG_ClassBoundingBox( PCL_HUMAN_NAKED, cmins, cmaxs, NULL, NULL, NULL );
 
+		// Since humans always spawn right above the telenode center, this is the optimal
+		// (closest possible) client origin.
 		VectorCopy( origin, localOrigin );
-		localOrigin[ 2 ] += maxs[ 2 ] + fabs( cmins[ 2 ] ) + 1.0f;
+		localOrigin[ 2 ] += maxs[ 2 ] - cmins[ 2 ] + 1.0f;
 	}
 	else
 	{
