@@ -1733,11 +1733,11 @@ found:
 	{
 		if ( *v == '/' || *v == '\\' )
 		{
-			Cmd::BufferCommandTextAfter(va("%s\n", v + 1));
+			Cmd::BufferCommandTextAfter(va("%s\n", v + 1), true);
 		}
 		else
 		{
-			Cmd::BufferCommandTextAfter(va("vstr %s\n", v));
+			Cmd::BufferCommandTextAfter(va("vstr %s\n", v), true);
 		}
 	}
 }

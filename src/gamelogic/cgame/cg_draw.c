@@ -2763,14 +2763,6 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 					            iconSize, cg_upgrades[ ci->upgrade ].upgradeIcon );
 				}
 			}
-			else
-			{
-				if ( curWeapon == WP_ABUILD2 || curWeapon == WP_ALEVEL2_UPG ||  curWeapon == WP_ALEVEL3_UPG )
-				{
-					CG_DrawPic( x + iconSize + leftMargin, y, iconSize,
-					            iconSize, cgs.media.upgradeClassIconShader );
-				}
-			}
 
 			s = va( " [^%c%s%d^7] %s ^7%s",
 			        CG_GetColorCharForHealth( displayClients[ i ] ),
