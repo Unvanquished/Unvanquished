@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "IPC.h"
 #include "Command.h"
+#include "Log.h"
 
 #ifndef COMMON_COMMON_SYSCALLS_H_
 #define COMMON_COMMON_SYSCALLS_H_
@@ -40,6 +41,7 @@ namespace VM {
       QVM,
       COMMAND,
       CVAR,
+      LOG,
       LAST_COMMON_SYSCALL
     } gameServices_t;
 
@@ -107,6 +109,15 @@ namespace VM {
         IPC::Message<IPC::Id<CVAR, ON_VALUE_CHANGED>, std::string, std::string>,
         IPC::Reply<bool, std::string>
     > OnValueChangedMsg;
+
+    // Log-Related Syscall Definitions
+
+    enum EngineLogMessage {
+        DISPATCH_EVENT
+    };
+
+    // DispatchLogEventMsg
+    typedef IPC::Message<IPC::Id<LOG, DISPATCH_EVENT>, std::string, int> DispatchLogEventMsg;
 
 }
 

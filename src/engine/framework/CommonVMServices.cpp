@@ -31,8 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CommonVMServices.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/CvarSystem.h"
+#include "../framework/LogSystem.h"
 #include "../framework/VirtualMachine.h"
-#include "../../common/Log.h"
 
 #include "../../common/CommonSyscalls.h"
 
@@ -182,6 +182,19 @@ namespace VM {
             //TODO check it is only touching allowed cvars?
             Cvar::SetValue(name, value);
         });
+    }
+
+    // Log Related
+    void CommonVMServices::HandleLogSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
+        switch(minor) {
+            case DISPATCH_EVENT:
+                IPC::HandleMsg<DispatchLogEventMsg>(channel, std::move(reader), [this](std::string text, int targetControl){
+                    Log::Dispatch(Log::Event(std::move(text)), targetControl);
+                });
+
+            default:
+                Com_Error(ERR_DROP, "Bad log syscall number '%d' for VM '%s'", minor, vmName.c_str());
+        }
     }
 
     // Misc, Dispatch

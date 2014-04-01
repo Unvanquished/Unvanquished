@@ -77,6 +77,9 @@ namespace VM {
 
             class ProxyCvar;
             std::vector<std::unique_ptr<ProxyCvar>> registeredCvars;
+
+            // Log Related
+            void HandleLogSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel);
     };
 }
 

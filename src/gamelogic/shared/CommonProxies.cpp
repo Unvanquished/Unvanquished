@@ -44,12 +44,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VMMain.h"
 #include "unordered_map"
 
-//TODO HACK avoid compile link errors
-namespace Log {
-    void Dispatch(Event, int) {
-    }
-}
-
 const char* Trans_Gettext(const char* text) {
     return text;
 }
@@ -400,6 +394,16 @@ int trap_Cvar_VariableIntegerValue(const char *varName) {
 void trap_Cvar_VariableStringBuffer(const char *varName, char *buffer, int bufsize) {
     std::string value = Cvar::GetValue(varName);
     Q_strncpyz(buffer, value.c_str(), bufsize);
+}
+
+// Log related commands
+
+namespace Log {
+
+    void Dispatch(Event event, int targetControl) {
+        VM::SendMsg<VM::DispatchLogEventMsg>(event.text, targetControl);
+    }
+
 }
 
 // Common functions for all syscalls
