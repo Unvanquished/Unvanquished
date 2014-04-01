@@ -1476,9 +1476,6 @@ static void CG_RegisterGraphics( void )
 	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison",
 							      (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.upgradeClassIconShader = trap_R_RegisterShader("icons/icona_upgrade",
-								 (RegisterShaderFlags_t) RSF_DEFAULT);
-
 	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated",
 								 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
@@ -2354,20 +2351,6 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 					if ( sp->team == TEAM_HUMANS && sp->upgrade != UP_NONE )
 					{
 						*handle = cg_upgrades[ sp->upgrade ].upgradeIcon;
-					}
-					else if ( sp->team == TEAM_ALIENS )
-					{
-						switch ( sp->weapon )
-						{
-							case WP_ABUILD2:
-							case WP_ALEVEL2_UPG:
-							case WP_ALEVEL3_UPG:
-								*handle = cgs.media.upgradeClassIconShader;
-								break;
-
-							default:
-								break;
-						}
 					}
 				}
 
