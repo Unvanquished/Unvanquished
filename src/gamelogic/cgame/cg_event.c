@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 CG_Obituary
 =============
 */
-static const char teamTag[][8] = { "", "^1●^7", "^5●^7" };
+static const char teamTag[][8] = { "^2●^7", "^1●^7", "^4●^7" };
 
 static void CG_Obituary( entityState_t *ent )
 {
@@ -126,36 +126,42 @@ static void CG_Obituary( entityState_t *ent )
 			// Attacked by a building
 
 			case MOD_MGTURRET:
-				message = "[turret] %s%s\n";
-				messageAssisted = "%s%s^7 & [turret] %s%s\n";
+				message = "%s [turret] %s%s\n";
+				messageAssisted = "%s & %s%s^7 [turret] %s%s\n";
+				attackerTeam = TEAM_HUMANS;
 				break;
 
 			case MOD_TESLAGEN:
-				message = "[tesla] %s%s\n";
-				messageAssisted = "%s%s^7 & [tesla] %s%s\n";
+				message = "%s [tesla] %s%s\n";
+				messageAssisted = "%s & %s%s^7 [tesla] %s%s\n";
+				attackerTeam = TEAM_HUMANS;
 				break;
 
 			case MOD_ATUBE:
-				message = "[acidtube] %s%s\n";
-				messageAssisted = "%s%s^7 & [acidtube] %s%s\n";
+				message = "%s [acidtube] %s%s\n";
+				messageAssisted = "%s & %s%s^7 [acidtube] %s%s\n";
+				attackerTeam = TEAM_ALIENS;
 				break;
 
 			case MOD_OVERMIND:
-				message = "[overmind] %s%s\n";
-				messageAssisted = "%s%s^7 & [overmind] %s%s\n";
+				message = "%s [overmind] %s%s\n";
+				messageAssisted = "%s & %s%s^7 [overmind] %s%s\n";
+				attackerTeam = TEAM_ALIENS;
 				break;
 
 			case MOD_REACTOR:
-				message = "[reactor] %s%s\n";
-				messageAssisted = "%s%s^7 & [reactor] %s%s\n";
+				message = "%s [reactor] %s%s\n";
+				messageAssisted = "%s & %s%s^7 [reactor] %s%s\n";
+				attackerTeam = TEAM_HUMANS;
 				break;
 
 			case MOD_SLOWBLOB:
 				goto is_long_env_kill_message;
 
 			case MOD_SWARM:
-				message = "[hive] %s%s\n";
-				messageAssisted = "%s%s & [hive] %s%s\n";
+				message = "%s [hive] %s%s\n";
+				messageAssisted = "%s & %s%s^7 [hive] %s%s\n";
+				attackerTeam = TEAM_ALIENS;
 				break;
 
 			// Shouldn't happen
@@ -167,6 +173,23 @@ static void CG_Obituary( entityState_t *ent )
 				message = NULL;
 				break;
 		}
+
+		if ( message )
+		{
+			// Format: tag, [assistant.] victim
+			if ( messageAssisted && assistantInfo )
+			{
+				CG_Printf( messageAssisted, teamTag[ attackerTeam ], teamTag[ assistantTeam ], assistantName, teamTag[ ci->team ], targetName );
+			}
+			else
+			{
+				CG_Printf( message, teamTag[ attackerTeam ], teamTag[ ci->team ], targetName );
+			}
+
+			return;
+		}
+
+
 
 		if ( !message && attacker == target )
 		{
