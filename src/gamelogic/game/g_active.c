@@ -263,21 +263,23 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	}
 
 	// Shove force is scaled by relative mass
-	entMass = GetClientMass( ent );
-	vicMass = GetClientMass( victim );
+	entMass = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->mass;
+	vicMass = BG_Class( victim->client->ps.stats[ STAT_CLASS ] )->mass;
 
 	if ( vicMass <= 0 || entMass <= 0 )
 	{
 		return;
 	}
 
-	// Give the victim some shove velocity
+	// Find direction of impact
 	VectorSubtract( victim->r.currentOrigin, ent->r.currentOrigin, dir );
 	VectorNormalizeFast( dir );
 
+	// Calculate predicted victim velocity in direction of impact
 	vEnt = DotProduct( dir, ent->client->ps.velocity );
 	vOther = entMass * vEnt / vicMass;
 
+	// Add it to victim
 	VectorScale( dir, vOther * g_shove.integer, push );
 	VectorAdd( victim->client->ps.velocity, push, victim->client->ps.velocity );
 
