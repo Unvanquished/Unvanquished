@@ -166,7 +166,7 @@ const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *kille
 	damage = self->client->ps.stats[ STAT_MAX_HEALTH ] / 4.0f;
 	if ( killer )
 	{
-		damage = MIN( damage, self->credits[ killer - g_entities ] );
+		damage = MIN( damage, self->credits[ killer - g_entities ].value );
 	}
 
 	for ( playerNum = 0; playerNum < level.maxclients; ++playerNum )
@@ -178,12 +178,12 @@ const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *kille
 			continue;
 		}
 
-		if ( self->credits[ playerNum ] > damage ||
-		     (self->credits[ playerNum ] == damage && self->creditsTime[ playerNum ] > when ) )
+		if ( self->credits[ playerNum ].value > damage ||
+		     (self->credits[ playerNum ].value == damage && self->credits[ playerNum ].time > when ) )
 		{
 			assistant = player;
-			damage = self->credits[ playerNum ];
-			when = self->creditsTime[ playerNum ];
+			damage = self->credits[ playerNum ].value;
+			when = self->credits[ playerNum ].time;
 		}
 	}
 
@@ -240,7 +240,7 @@ void G_RewardAttackers( gentity_t *self )
 			continue;
 		}
 
-		enemyDamage += self->credits[ playerNum ];
+		enemyDamage += self->credits[ playerNum ].value;
 	}
 
 	if ( enemyDamage <= 0 )
@@ -253,10 +253,10 @@ void G_RewardAttackers( gentity_t *self )
 	{
 		player      = &g_entities[ playerNum ];
 		playerTeam  = (team_t) player->client->pers.team;
-		damageShare = self->credits[ playerNum ];
+		damageShare = self->credits[ playerNum ].value;
 
 		// Clear reward array
-		self->credits[ playerNum ] = 0.0f;
+		self->credits[ playerNum ].value = 0.0f;
 
 		// Player must be on the other team
 		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
@@ -1286,8 +1286,8 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 		if ( attacker->client )
 		{
 			// add to the attacker's account on the target
-			target->credits[ attacker->client->ps.clientNum ] += ( float )loss;
-			target->creditsTime[ attacker->client->ps.clientNum ] = level.time;
+			target->credits[ attacker->client->ps.clientNum ].value += ( float )loss;
+			target->credits[ attacker->client->ps.clientNum ].time = level.time;
 
 			// notify the attacker of a hit
 			NotifyClientOfHit( attacker );

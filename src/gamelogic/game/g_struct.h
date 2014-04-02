@@ -378,8 +378,12 @@ struct gentity_s
 	int         clientSpawnTime; // the time until this spawn can spawn a client
 	int         spawnBlockTime; // timer for anti spawn-block
 
-	float       credits[ MAX_CLIENTS ];
-	int         creditsTime[ MAX_CLIENTS ];
+	struct {
+	 	float  value;
+		int    time;
+		team_t team;
+	}           credits[ MAX_CLIENTS ];
+
 	int         killedBy; // clientNum of killer
 
 	vec3_t      buildableAim; // aim vector for buildables

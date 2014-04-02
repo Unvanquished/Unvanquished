@@ -1751,7 +1751,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	//clear the credits array
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		ent->credits[ i ] = 0.0f;
+		ent->credits[ i ].value = 0.0f;
 	}
 
 	G_SetOrigin( ent, spawn_origin );
