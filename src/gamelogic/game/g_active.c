@@ -245,7 +245,7 @@ ClientShove
 static void ClientShove( gentity_t *ent, gentity_t *victim )
 {
 	vec3_t dir, push;
-	float  force;
+	float  vEnt, vOther;
 	int    entMass, vicMass;
 
 	// Don't push if the entity is not trying to move
@@ -271,22 +271,14 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 		return;
 	}
 
-	force = g_shove.value * entMass / vicMass;
-
-	if ( force < 0 )
-	{
-		force = 0;
-	}
-
-	if ( force > 150 )
-	{
-		force = 150;
-	}
-
 	// Give the victim some shove velocity
 	VectorSubtract( victim->r.currentOrigin, ent->r.currentOrigin, dir );
 	VectorNormalizeFast( dir );
-	VectorScale( dir, force, push );
+
+	vEnt = DotProduct( dir, ent->client->ps.velocity );
+	vOther = entMass * vEnt / vicMass;
+
+	VectorScale( dir, vOther * g_shove.integer, push );
 	VectorAdd( victim->client->ps.velocity, push, victim->client->ps.velocity );
 
 	// Set the pmove timer so that the other client can't cancel
@@ -295,7 +287,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	{
 		int time;
 
-		time = force * 2 + 0.5f;
+		time = vEnt * g_shove.integer * 2 + 0.5f;
 
 		if ( time < 50 )
 		{
