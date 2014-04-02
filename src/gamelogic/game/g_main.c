@@ -381,7 +381,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapStartupMessageDelay,      "g_mapStartupMessageDelay",      "5000",                             CVAR_LATCH,                                      0, qfalse           },
 	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                0,                                               0, qfalse           },
 	{ &g_voiceChats,                  "g_voiceChats",                  "1",                                0,                                               0, qfalse           },
-	{ &g_shove,                       "g_shove",                       "0.0",                              0,                                               0, qfalse           },
+	{ &g_shove,                       "g_shove",                       "0.5",                              0,                                               0, qfalse           },
 	{ &g_antiSpawnBlock,              "g_antiSpawnBlock",              "0",                                0,                                               0, qfalse           },
 	{ &g_mapConfigs,                  "g_mapConfigs",                  "",                                 0,                                               0, qfalse           },
 	{ NULL,                           "g_mapConfigsLoaded",            "0",                                CVAR_ROM,                                        0, qfalse           },
