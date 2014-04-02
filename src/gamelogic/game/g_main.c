@@ -793,6 +793,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	level.startTime = levelTime;
 	level.snd_fry = G_SoundIndex( "sound/misc/fry.wav" );  // FIXME standing in lava / slime
 
+	// TODO: Move this in a seperate function
 	if ( g_logFile.string[ 0 ] )
 	{
 		if ( g_logFileSync.integer )
@@ -830,6 +831,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	}
 
 	// gameplay statistics logging
+	// TODO: Move this in a seperate function
 	if ( g_logGameplayStatsFrequency.integer > 0 )
 	{
 		char    logfile[ 128 ], mapname[ 64 ];
@@ -856,14 +858,14 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		}
 	}
 
-	// initialise whether bot vote kicks are allowed
-	// rotation may clear this flag
+	// initialise whether bot vote kicks are allowed. the map rotation may clear this flag.
 	trap_Cvar_Set( "g_botKickVotesAllowedThisMap", g_botKickVotesAllowed.integer ? "1" : "0" );
 
 	// clear these now; they'll be set, if needed, from rotation
 	trap_Cvar_Set( "g_mapStartupMessage", "" );
 	trap_Cvar_Set( "g_disabledVoteCalls", "" );
 
+	// retrieve map name and load per-map configuration
 	{
 		char map[ MAX_CVAR_VALUE_STRING ] = { "" };
 
@@ -871,7 +873,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		G_MapConfigs( map );
 	}
 
-	//Load config files
+	// load config files
 	BG_InitAllConfigs();
 
 	// we're done with g_mapConfigs, so reset this for the next map
@@ -896,13 +898,14 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		g_entities[ i ].client = level.clients + i;
 	}
 
-	// always leave room for the max number of clients,
-	// even if they aren't all used, so numbers inside that
-	// range are NEVER anything but clients
+	// always leave room for the max number of clients, even if they aren't all used, so numbers
+	// inside that range are NEVER anything but clients
 	level.num_entities = MAX_CLIENTS;
 
 	for( i = 0; i < MAX_CLIENTS; i++ )
+	{
 		g_entities[ i ].classname = "clientslot";
+	}
 
 	// let the server system know where the entites are
 	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
@@ -917,8 +920,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	// this has to be flipped after the first UpdateCvars
 	level.spawning = qtrue;
+
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString();
+
 	// add any fake entities
 	G_SpawnFakeEntities();
 
@@ -934,12 +939,13 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// Initialize item locking state
 	BG_InitUnlockackables();
 
-	// general initialization
 	G_FindEntityGroups();
 	G_InitSetEntities();
 
 	G_InitDamageLocations();
+
 	G_InitMapRotations();
+
 	G_InitSpawnQueue( &level.team[ TEAM_ALIENS ].spawnQueue );
 	G_InitSpawnQueue( &level.team[ TEAM_HUMANS ].spawnQueue );
 
@@ -952,8 +958,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	BG_PrintVoices( level.voices, g_debugVoices.integer );
 
 	// Give both teams some build points to start out with.
-	level.team[ TEAM_HUMANS ].buildPoints = level.team[ TEAM_ALIENS ].buildPoints
-	                                      = g_initialBuildPoints.integer;
+	level.team[ TEAM_HUMANS ].buildPoints = MAX( 0, g_initialBuildPoints.integer -
+	                                        level.team[ TEAM_HUMANS ].layoutBuildPoints );
+	level.team[ TEAM_ALIENS ].buildPoints = MAX( 0, g_initialBuildPoints.integer -
+	                                        level.team[ TEAM_ALIENS ].layoutBuildPoints );
 
 	G_Printf( "-----------------------------------\n" );
 

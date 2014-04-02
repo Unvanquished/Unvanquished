@@ -5215,6 +5215,7 @@ void G_LayoutLoad( void )
 	vec3_t       angles2 = { 0.0f, 0.0f, 0.0f };
 	char         line[ MAX_STRING_CHARS ];
 	int          i = 0;
+	const buildableAttributes_t *attr;
 
 	if ( !level.layout[ 0 ] || !Q_stricmp( level.layout, S_BUILTIN_LAYOUT ) )
 	{
@@ -5222,8 +5223,7 @@ void G_LayoutLoad( void )
 	}
 
 	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
-	len = trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, level.layout ),
-	                         &f, FS_READ );
+	len = trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, level.layout ), &f, FS_READ );
 
 	if ( len < 0 )
 	{
@@ -5258,7 +5258,8 @@ void G_LayoutLoad( void )
 			        &origin2[ 0 ], &origin2[ 1 ], &origin2[ 2 ],
 			        &angles2[ 0 ], &angles2[ 1 ], &angles2[ 2 ] );
 
-			buildable = BG_BuildableByName( buildName )->number;
+			attr = BG_BuildableByName( buildName );
+			buildable = attr->number;
 
 			if ( buildable <= BA_NONE || buildable >= BA_NUM_BUILDABLES )
 			{
@@ -5268,6 +5269,7 @@ void G_LayoutLoad( void )
 			else
 			{
 				LayoutBuildItem( (buildable_t) buildable, origin, angles, origin2, angles2 );
+				level.team[ attr->team ].layoutBuildPoints += attr->buildPoints;
 			}
 		}
 

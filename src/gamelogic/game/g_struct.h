@@ -787,6 +787,7 @@ struct level_locals_s
 		spawnQueue_t     spawnQueue;
 		qboolean         locked;
 		float            momentum;
+		int              layoutBuildPoints;
 	} team[ NUM_TEAMS ];
 };
 

@@ -364,9 +364,9 @@ extern int   REACTOR_ATTACK_DAMAGE;
 
 // resources
 #define RGS_RANGE                          1000.0f // must be > 0
-#define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
-#define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
-#define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
+#define DEFAULT_INITIAL_BUILD_POINTS       "120"   // in BP
+#define DEFAULT_INITIAL_MINE_RATE          "8"     // in (BP/min)/RGS
+#define DEFAULT_MINE_RATE_HALF_LIFE        "20"    // in min
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 
 // momentum
