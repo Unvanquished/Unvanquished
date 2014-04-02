@@ -249,6 +249,11 @@ struct PakInfo {
 	// reflects the timestamp at the time the pak was loaded.
 	std::chrono::system_clock::time_point timestamp;
 
+	// File handle of a loaded pak. This is only valid for zip paks that are
+	// loaded. Because the handle is used by multiple threads, you should use
+	// pread() to access it, which doesn't use the file position.
+	int fd;
+
 };
 
 // Operations which work on files that are in packages. Packages should be used
