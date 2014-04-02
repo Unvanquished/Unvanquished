@@ -2569,3 +2569,48 @@ public:
 	}
 };
 static ListPathsCmd ListPathsCmdRegistration;
+
+class DirCmd: public Cmd::StaticCmd {
+public:
+	DirCmd(): Cmd::StaticCmd("dir", Cmd::SYSTEM, N_("list all files in a given directory with the option to pass a filter")) {}
+
+	void Run(const Cmd::Args& args) const OVERRIDE
+	{
+		bool filter = false;
+		if (args.Argc() != 2 && args.Argc() != 3) {
+			PrintUsage(args, "<path> [filter]", "");
+			return;
+		}
+
+		if ( args.Argc() == 3) {
+			filter = true;
+		}
+
+		Print("In Paks:");
+		Print("--------");
+		try {
+			for (auto& filename : FS::PakPath::ListFiles(args.Argv(1))) {
+				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), qfalse))) {
+					Print("%s", filename.c_str());
+				}
+			}
+		} catch (std::system_error& err) {
+			Print("^1ERROR^7: Path does not exist");
+		}
+
+		Print("\n");
+		Print("In Homepath");
+		Print("-----------");
+		try {
+			for (auto& filename : FS::RawPath::ListFiles(FS::Path::Build(FS::GetHomePath(),args.Argv(1)))) {
+				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), qfalse))) {
+					Print("%s", filename.c_str());
+				}
+			}
+		} catch (std::system_error& err) {
+			Print("^1ERROR^7: Path does not exist");
+		}
+
+	}
+};
+static DirCmd DirCmdRegistration;
