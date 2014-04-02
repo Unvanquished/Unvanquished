@@ -148,7 +148,7 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
  * @param self
  * @param killer
  */
-const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *killer )
+static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *killer, team_t *team )
 {
 	const gentity_t *assistant = NULL;
 	float           damage;
@@ -184,6 +184,7 @@ const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *kille
 			assistant = player;
 			damage = self->credits[ playerNum ].value;
 			when = self->credits[ playerNum ].time;
+			*team = self->credits[ playerNum ].team;
 		}
 	}
 
@@ -309,6 +310,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	const gentity_t *assistantEnt;
 	int             assistant = ENTITYNUM_NONE;
 	const char      *assistantName = NULL;
+	team_t          assistantTeam = TEAM_NONE;
 
 	if ( self->client->ps.pm_type == PM_DEAD )
 	{
@@ -342,7 +344,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		killerName = "<world>";
 	}
 
-	assistantEnt = G_FindKillAssist( self, attacker );
+	assistantEnt = G_FindKillAssist( self, attacker, &assistantTeam );
 
 	if ( assistantEnt )
 	{
@@ -373,8 +375,8 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( assistant != ENTITYNUM_NONE )
 	{
-		G_LogPrintf( "DieAssist: %d %d %d: %s" S_COLOR_WHITE " assisted %s" S_COLOR_WHITE " in killing %s\n",
-		             assistant, killer,
+		G_LogPrintf( "DieAssist: %d %d %d %d: %s" S_COLOR_WHITE " assisted %s" S_COLOR_WHITE " in killing %s\n",
+		             assistant, assistantTeam, killer,
 		             ( int )( self - g_entities ),
 		             assistantName, killerName,
 		             self->client->pers.netname );
@@ -392,6 +394,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	ent->s.otherEntityNum = self->s.number;
 	ent->s.otherEntityNum2 = killer;
 	ent->s.otherEntityNum3 = assistant;
+	ent->s.generic1 = assistantTeam;
 	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 
 	if ( attacker && attacker->client )
@@ -1288,6 +1291,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 			// add to the attacker's account on the target
 			target->credits[ attacker->client->ps.clientNum ].value += ( float )loss;
 			target->credits[ attacker->client->ps.clientNum ].time = level.time;
+			target->credits[ attacker->client->ps.clientNum ].team = (team_t)attacker->client->pers.team;
 
 			// notify the attacker of a hit
 			NotifyClientOfHit( attacker );

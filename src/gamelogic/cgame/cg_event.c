@@ -52,6 +52,7 @@ static void CG_Obituary( entityState_t *ent )
 	target = ent->otherEntityNum;
 	attacker = ent->otherEntityNum2;
 	assistant = ent->otherEntityNum3;
+	assistantTeam = (team_t) ( ent->generic1 & 0xFF ); // ugly hack allowing for future expansion(!)
 	mod = ent->eventParm;
 
 	if ( target < 0 || target >= MAX_CLIENTS )
@@ -81,7 +82,11 @@ static void CG_Obituary( entityState_t *ent )
 	else
 	{
 		assistantInfo = CG_ConfigString( CS_PLAYERS + assistant );
-		assistantTeam = cgs.clientinfo[ assistant ].team;
+	}
+
+	if ( assistantTeam < TEAM_NONE || assistantTeam >= NUM_TEAMS )
+	{
+		assistantTeam = TEAM_NONE;
 	}
 
 	if ( !assistantInfo )
