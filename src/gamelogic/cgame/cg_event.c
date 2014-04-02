@@ -127,31 +127,31 @@ static void CG_Obituary( entityState_t *ent )
 
 			case MOD_MGTURRET:
 				message = "%s [turret] %s%s\n";
-				messageAssisted = "%s & %s%s^7 [turret] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [turret] %s%s\n";
 				attackerTeam = TEAM_HUMANS;
 				break;
 
 			case MOD_TESLAGEN:
 				message = "%s [tesla] %s%s\n";
-				messageAssisted = "%s & %s%s^7 [tesla] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [tesla] %s%s\n";
 				attackerTeam = TEAM_HUMANS;
 				break;
 
 			case MOD_ATUBE:
 				message = "%s [acidtube] %s%s\n";
-				messageAssisted = "%s & %s%s^7 [acidtube] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [acidtube] %s%s\n";
 				attackerTeam = TEAM_ALIENS;
 				break;
 
 			case MOD_OVERMIND:
 				message = "%s [overmind] %s%s\n";
-				messageAssisted = "%s & %s%s^7 [overmind] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [overmind] %s%s\n";
 				attackerTeam = TEAM_ALIENS;
 				break;
 
 			case MOD_REACTOR:
 				message = "%s [reactor] %s%s\n";
-				messageAssisted = "%s & %s%s^7 [reactor] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [reactor] %s%s\n";
 				attackerTeam = TEAM_HUMANS;
 				break;
 
@@ -160,7 +160,7 @@ static void CG_Obituary( entityState_t *ent )
 
 			case MOD_SWARM:
 				message = "%s [hive] %s%s\n";
-				messageAssisted = "%s & %s%s^7 [hive] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [hive] %s%s\n";
 				attackerTeam = TEAM_ALIENS;
 				break;
 
@@ -360,118 +360,118 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				case MOD_PAINSAW:
 					message = "%s%s^7 [painsaw] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [painsaw] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [painsaw] %s%s\n";
 					break;
 
 				case MOD_BLASTER:
 					message = "%s%s^7 [blaster] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [blaster] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [blaster] %s%s\n";
 					break;
 
 				case MOD_MACHINEGUN:
 					message = "%s%s^7 [rifle] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [rifle] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [rifle] %s%s\n";
 					break;
 
 				case MOD_CHAINGUN:
 					message = "%s%s^7 [chaingun] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [chaingun] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [chaingun] %s%s\n";
 					break;
 
 				case MOD_SHOTGUN:
 					message = "%s%s^7 [shotgun] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [shotgun] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [shotgun] %s%s\n";
 					break;
 
 				case MOD_PRIFLE:
 					message = "%s%s^7 [prifle] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [prifle] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [prifle] %s%s\n";
 					break;
 
 				case MOD_MDRIVER:
 					message = "%s%s^7 [mdriver] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [mdriver] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [mdriver] %s%s\n";
 					break;
 
 				case MOD_LASGUN:
 					message = "%s%s^7 [lasgun] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [lasgun] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [lasgun] %s%s\n";
 					break;
 
 				case MOD_FLAMER:
 				case MOD_FLAMER_SPLASH:
 				case MOD_BURN:
 					message = "%s%s^7 [flamer] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [flamer] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [flamer] %s%s\n";
 					break;
 
 				case MOD_LCANNON:
 				case MOD_LCANNON_SPLASH:
 					message = "%s%s^7 [lcannon] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [lcannon] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [lcannon] %s%s\n";
 					break;
 
 				case MOD_GRENADE:
 					message = "%s%s^7 [grenade] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [grenade] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [grenade] %s%s\n";
 					break;
 
 				case MOD_FIREBOMB:
 					message = "%s%s^7 [firebomb] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [firebomb] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [firebomb] %s%s\n";
 					break;
 
 				case MOD_ABUILDER_CLAW:
 					message = "%s%s^7 [granger] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [granger] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [granger] %s%s\n";
 					break;
 
 				case MOD_LEVEL0_BITE:
 					message = "%s%s^7 [dretch] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [dretch] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [dretch] %s%s\n";
 					break;
 
 				case MOD_LEVEL1_CLAW:
 					message = "%s%s^7 [basilisk] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [basilisk] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [basilisk] %s%s\n";
 					break;
 
 				case MOD_LEVEL2_CLAW:
 					message = "%s%s^7 [marauder] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [marauder] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [marauder] %s%s\n";
 					break;
 
 				case MOD_LEVEL2_ZAP:
 					message = "%s%s^7 [advmarauder] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [advmarauder] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [advmarauder] %s%s\n";
 					break;
 
 				case MOD_LEVEL3_CLAW:
 				case MOD_LEVEL3_POUNCE:
 					message = "%s%s^7 [dragoon] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [dragoon] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [dragoon] %s%s\n";
 					break;
 
 				case MOD_LEVEL3_BOUNCEBALL:
 					message = "%s%s^7 [advdragoon] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [advdragoon] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [advdragoon] %s%s\n";
 					break;
 
 				case MOD_LEVEL4_CLAW:
 				case MOD_LEVEL4_TRAMPLE:
 					message = "%s%s^7 [tyrant] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [tyrant] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [tyrant] %s%s\n";
 					break;
 
 				case MOD_WEIGHT_H:
 				case MOD_WEIGHT_A:
 					message = "%s%s^7 crushed %s%s\n"; // FIXME
-					messageAssisted = "%s%s^7 & %s%s^7 crushed %s%s\n"; // FIXME
+					messageAssisted = "%s%s^7 (+ %s%s^7) crushed %s%s\n"; // FIXME
 					break;
 
 				case MOD_POISON:
 					message = "%s%s^7 [booster] %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 [booster] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [booster] %s%s\n";
 					break;
 
 				case MOD_TELEFRAG:
@@ -480,7 +480,7 @@ static void CG_Obituary( entityState_t *ent )
 
 				default:
 					message = "%s%s^7 ☠ %s%s\n";
-					messageAssisted = "%s%s^7 & %s%s^7 ☠ %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) ☠ %s%s\n";
 					break;
 			}
 
