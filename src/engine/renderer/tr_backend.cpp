@@ -6838,13 +6838,12 @@ void DebugDrawDepthMask(qboolean state)
 }
 
 void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
-	vec4_t colors = {
-		static_cast<vec_t>(color & 0xFF),
-		static_cast<vec_t>((color >> 8) & 0xFF),
-		static_cast<vec_t>((color >> 16) & 0xFF),
-		static_cast<vec_t>((color >> 24) & 0xFF)
+	color4ub_t colors = {
+		static_cast<byte>(color & 0xFF),
+		static_cast<byte>((color >> 8) & 0xFF),
+		static_cast<byte>((color >> 16) & 0xFF),
+		static_cast<byte>((color >> 24) & 0xFF)
 	};
-	Vector4Scale(colors, 1.0f/255.0f, colors);
 
 	//we have reached the maximum number of verts we can batch
 	if( tess.numVertexes == maxDebugVerts ) {
@@ -7601,10 +7600,7 @@ const void     *RB_SetColor( const void *data )
 
 	cmd = ( const setColorCommand_t * ) data;
 
-	backEnd.color2D[ 0 ] = cmd->color[ 0 ];
-	backEnd.color2D[ 1 ] = cmd->color[ 1 ];
-	backEnd.color2D[ 2 ] = cmd->color[ 2 ];
-	backEnd.color2D[ 3 ] = cmd->color[ 3 ];
+	floatToUnorm8( cmd->color, backEnd.color2D );
 
 	return ( const void * )( cmd + 1 );
 }
@@ -7841,10 +7837,10 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.texCoords[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].st[ 0 ];
 		tess.texCoords[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].st[ 1 ];
 
-		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ];
+		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ];
+		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ];
+		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ];
 		tess.numVertexes++;
 	}
 
@@ -8007,8 +8003,8 @@ const void     *RB_StretchPicGradient( const void *data )
 
 	for ( i = 0; i < 4; i++ )
 	{
-		tess.colors[ numVerts + 2 ][ i ] = cmd->gradientColor[ i ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 3 ][ i ] = cmd->gradientColor[ i ] * ( 1.0f / 255.0f );
+		tess.colors[ numVerts + 2 ][ i ] = cmd->gradientColor[ i ];
+		tess.colors[ numVerts + 3 ][ i ] = cmd->gradientColor[ i ];
 	}
 
 	tess.xyz[ numVerts ][ 0 ] = cmd->x;

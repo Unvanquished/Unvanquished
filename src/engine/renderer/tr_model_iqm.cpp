@@ -461,7 +461,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	IQAnim_t		*IQAnim;
 	srfIQModel_t		*surface;
 	vboData_t               vboData;
-	float                   *colorbuf, *weightbuf;
+	float                   *weightbuf;
 	int                     *indexbuf;
 	VBO_t                   *vbo;
 	IBO_t                   *ibo;
@@ -733,17 +733,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	// convert data where necessary and create VBO
 	if( r_vboModels->integer && glConfig2.vboVertexSkinningAvailable
 	    && IQModel->num_joints <= glConfig2.maxVertexSkinningBones ) {
-		if( IQModel->colors ) {
-			colorbuf = (float *)ri.Hunk_AllocateTempMemory( sizeof(vec4_t) * IQModel->num_vertexes );
-			for( i = 0; i < IQModel->num_vertexes; i++ ) {
-				colorbuf[ 4 * i + 0 ] = IQModel->colors[ 4 * i + 0 ];
-				colorbuf[ 4 * i + 1 ] = IQModel->colors[ 4 * i + 1 ];
-				colorbuf[ 4 * i + 2 ] = IQModel->colors[ 4 * i + 2 ];
-				colorbuf[ 4 * i + 3 ] = IQModel->colors[ 4 * i + 3 ];
-			}
-		} else {
-			colorbuf = NULL;
-		}
+
 		if( IQModel->blendIndexes ) {
 			indexbuf = (int *)ri.Hunk_AllocateTempMemory( sizeof(int[4]) * IQModel->num_vertexes );
 			for( i = 0; i < IQModel->num_vertexes; i++ ) {
@@ -780,7 +770,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		vboData.binormal = (vec3_t *)IQModel->bitangents;
 		vboData.normal = (vec3_t *)IQModel->normals;;
 		vboData.numFrames = 0;
-		vboData.color = (vec4_t *)colorbuf;
+		vboData.color = (color4ub_t *)IQModel->colors;
 		vboData.st = (vec2_t *)IQModel->texcoords;
 		vboData.lightCoord = NULL;
 		vboData.boneIndexes = (int (*)[4])indexbuf;
@@ -794,9 +784,6 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		}
 		if( indexbuf ) {
 			ri.Hunk_FreeTempMemory( indexbuf );
-		}
-		if( colorbuf ) {
-			ri.Hunk_FreeTempMemory( colorbuf );
 		}
 
 		// create IBO

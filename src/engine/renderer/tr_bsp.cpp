@@ -1603,24 +1603,26 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
 
 #elif defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
 #else
+
+		vec4_t lightColor;
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
+			lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
 		for ( j = 0; j < 3; j++ )
@@ -1630,7 +1632,8 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 		//VectorNormalize(cv->verts[i].lightDirection);
 
-		R_HDRTonemapLightingColors( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor, qtrue );
+		R_HDRTonemapLightingColors( lightColor, lightColor, qtrue );
+		floatToUnorm8( lightColor, cv->verts[ i ].lightColor );
 #endif
 	}
 
@@ -1767,19 +1770,19 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 
 		for ( j = 0; j < 4; j++ )
 		{
-			points[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			points[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( points[ i ].lightColor, points[ i ].lightColor );
+		R_ColorShiftLightingBytes( points[ i ].lightColor, points[ i ].lightColor );
 
 #elif defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 
 		for ( j = 0; j < 4; j++ )
 		{
-			points[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			points[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( points[ i ].lightColor, points[ i ].lightColor );
+		R_ColorShiftLightingBytes( points[ i ].lightColor, points[ i ].lightColor );
 #else
 
 		for ( j = 0; j < 4; j++ )
@@ -1915,10 +1918,10 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
 #else
 
 		for ( j = 0; j < 4; j++ )

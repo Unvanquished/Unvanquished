@@ -248,9 +248,11 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t c
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
 
+	color4ub_t iColor;
+	floatToUnorm8( color, iColor );
 	for ( i = 0; i < 4; i++ )
 	{
-		Vector4Copy( color, tess.colors[ ndx + i ] );
+		Vector4Copy( iColor, tess.colors[ ndx + i ] );
 	}
 
 	tess.numVertexes += 4;
@@ -332,9 +334,11 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1,
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
 
+	color4ub_t iColor;
+	floatToUnorm8( color, iColor );
 	for ( i = 0; i < 4; i++ )
 	{
-		Vector4Copy( color, tess.colors[ ndx + i ] );
+		Vector4Copy( iColor, tess.colors[ ndx + i ] );
 	}
 
 	tess.numVertexes += 4;
@@ -356,11 +360,14 @@ void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const vec4_t color )
 	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, qtrue );
 }
 
-void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const vec4_t color )
+void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const vec4_t colorf )
 {
 	int k;
+	color4ub_t color;
 
 	Tess_CheckOverflow( 12, 12 );
+
+	floatToUnorm8( colorf, color );
 
 	// ground triangle
 	for ( k = 0; k < 3; k++ )
@@ -574,23 +581,12 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 
 		if ( attribBits & ATTR_COLOR )
 		{
-			byte *colors;
-			int   i;
-
 			if ( r_logFile->integer )
 			{
 				GLimp_LogComment( va( "glBufferSubData( ATTR_COLOR, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			colors = (byte *)ri.Hunk_AllocateTempMemory( tess.numVertexes * 4 * sizeof( byte ) );
-			for( i = 0; i < tess.numVertexes; i++ ) {
-				colors[ 4 * i + 0 ] = floatToUnorm8( tess.colors[ i ][ 0 ] );
-				colors[ 4 * i + 1 ] = floatToUnorm8( tess.colors[ i ][ 1 ] );
-				colors[ 4 * i + 2 ] = floatToUnorm8( tess.colors[ i ][ 2 ] );
-				colors[ 4 * i + 3 ] = floatToUnorm8( tess.colors[ i ][ 3 ] );
-			}
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * 4 * sizeof( byte ), colors );
-			ri.Hunk_FreeTempMemory( colors );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * sizeof( color4ub_t ), tess.colors );
 		}
 
 	}
@@ -625,37 +621,37 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	Vector4Copy( quadVerts[ 0 ], tess.xyz[ tess.numVertexes ] );
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
-	tess.colors[ tess.numVertexes ][ 3 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = 255;
+	tess.colors[ tess.numVertexes ][ 1 ] = 255;
+	tess.colors[ tess.numVertexes ][ 2 ] = 255;
+	tess.colors[ tess.numVertexes ][ 3 ] = 255;
 	tess.numVertexes++;
 
 	Vector4Copy( quadVerts[ 1 ], tess.xyz[ tess.numVertexes ] );
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
-	tess.colors[ tess.numVertexes ][ 3 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = 255;
+	tess.colors[ tess.numVertexes ][ 1 ] = 255;
+	tess.colors[ tess.numVertexes ][ 2 ] = 255;
+	tess.colors[ tess.numVertexes ][ 3 ] = 255;
 	tess.numVertexes++;
 
 	Vector4Copy( quadVerts[ 2 ], tess.xyz[ tess.numVertexes ] );
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
-	tess.colors[ tess.numVertexes ][ 3 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = 255;
+	tess.colors[ tess.numVertexes ][ 1 ] = 255;
+	tess.colors[ tess.numVertexes ][ 2 ] = 255;
+	tess.colors[ tess.numVertexes ][ 3 ] = 255;
 	tess.numVertexes++;
 
 	Vector4Copy( quadVerts[ 3 ], tess.xyz[ tess.numVertexes ] );
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
-	tess.colors[ tess.numVertexes ][ 3 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = 255;
+	tess.colors[ tess.numVertexes ][ 1 ] = 255;
+	tess.colors[ tess.numVertexes ][ 2 ] = 255;
+	tess.colors[ tess.numVertexes ][ 3 ] = 255;
 	tess.numVertexes++;
 
 	tess.indexes[ tess.numIndexes++ ] = 0;
@@ -770,10 +766,10 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		tess.texCoords[ tess.numVertexes + i ][ 0 ] = p->verts[ i ].st[ 0 ];
 		tess.texCoords[ tess.numVertexes + i ][ 1 ] = p->verts[ i ].st[ 1 ];
 
-		tess.colors[ tess.numVertexes + i ][ 0 ] = p->verts[ i ].modulate[ 0 ] * ( 1.0 / 255.0 );
-		tess.colors[ tess.numVertexes + i ][ 1 ] = p->verts[ i ].modulate[ 1 ] * ( 1.0 / 255.0 );
-		tess.colors[ tess.numVertexes + i ][ 2 ] = p->verts[ i ].modulate[ 2 ] * ( 1.0 / 255.0 );
-		tess.colors[ tess.numVertexes + i ][ 3 ] = p->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0 );
+		tess.colors[ tess.numVertexes + i ][ 0 ] = p->verts[ i ].modulate[ 0 ];
+		tess.colors[ tess.numVertexes + i ][ 1 ] = p->verts[ i ].modulate[ 1 ];
+		tess.colors[ tess.numVertexes + i ][ 2 ] = p->verts[ i ].modulate[ 2 ];
+		tess.colors[ tess.numVertexes + i ][ 3 ] = p->verts[ i ].modulate[ 3 ];
 
 		numVertexes++;
 	}
@@ -881,10 +877,10 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 		tess.texCoords[ tess.numVertexes + i ][ 0 ] = st[ 0 ];
 		tess.texCoords[ tess.numVertexes + i ][ 1 ] = st[ 1 ];
 
-		tess.colors[ tess.numVertexes + i ][ 0 ] = color[ 0 ] * ( 1.0 / 255.0 );
-		tess.colors[ tess.numVertexes + i ][ 1 ] = color[ 1 ] * ( 1.0 / 255.0 );
-		tess.colors[ tess.numVertexes + i ][ 2 ] = color[ 2 ] * ( 1.0 / 255.0 );
-		tess.colors[ tess.numVertexes + i ][ 3 ] = color[ 3 ] * ( 1.0 / 255.0 );
+		tess.colors[ tess.numVertexes + i ][ 0 ] = color[ 0 ];
+		tess.colors[ tess.numVertexes + i ][ 1 ] = color[ 1 ];
+		tess.colors[ tess.numVertexes + i ][ 2 ] = color[ 2 ];
+		tess.colors[ tess.numVertexes + i ][ 3 ] = color[ 3 ];
 	}
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
@@ -909,10 +905,10 @@ void Tess_SurfaceDecal( srfDecal_t *srf )
 		tess.texCoords[ tess.numVertexes + i ][ 0 ] = srf->verts[ i ].st[ 0 ];
 		tess.texCoords[ tess.numVertexes + i ][ 1 ] = srf->verts[ i ].st[ 1 ];
 
-		tess.colors[ tess.numVertexes + i ][ 0 ] = srf->verts[ i ].modulate[ 0 ] * ( 1.0 / 255.0 );
-		tess.colors[ tess.numVertexes + i ][ 1 ] = srf->verts[ i ].modulate[ 1 ] * ( 1.0 / 255.0 );
-		tess.colors[ tess.numVertexes + i ][ 2 ] = srf->verts[ i ].modulate[ 2 ] * ( 1.0 / 255.0 );
-		tess.colors[ tess.numVertexes + i ][ 3 ] = srf->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0 );
+		tess.colors[ tess.numVertexes + i ][ 0 ] = srf->verts[ i ].modulate[ 0 ];
+		tess.colors[ tess.numVertexes + i ][ 1 ] = srf->verts[ i ].modulate[ 1 ];
+		tess.colors[ tess.numVertexes + i ][ 2 ] = srf->verts[ i ].modulate[ 2 ];
+		tess.colors[ tess.numVertexes + i ][ 3 ] = srf->verts[ i ].modulate[ 3 ];
 	}
 
 	// generate fan indexes into the tess array

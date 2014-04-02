@@ -688,10 +688,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 		gradientColor = colorWhite;
 	}
 
-	cmd->gradientColor[ 0 ] = gradientColor[ 0 ] * 255;
-	cmd->gradientColor[ 1 ] = gradientColor[ 1 ] * 255;
-	cmd->gradientColor[ 2 ] = gradientColor[ 2 ] * 255;
-	cmd->gradientColor[ 3 ] = gradientColor[ 3 ] * 255;
+	floatToUnorm8( gradientColor, cmd->gradientColor );
 	cmd->gradientType = gradientType;
 }
 

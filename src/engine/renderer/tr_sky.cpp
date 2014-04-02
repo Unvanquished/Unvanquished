@@ -892,9 +892,10 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = 255;
+	tess.colors[ tess.numVertexes ][ 1 ] = 255;
+	tess.colors[ tess.numVertexes ][ 2 ] = 255;
+	tess.colors[ tess.numVertexes ][ 3 ] = 255;
 	tess.numVertexes++;
 
 	VectorCopy( origin, temp );
@@ -904,9 +905,9 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = 255;
+	tess.colors[ tess.numVertexes ][ 1 ] = 255;
+	tess.colors[ tess.numVertexes ][ 2 ] = 255;
 	tess.numVertexes++;
 
 	VectorCopy( origin, temp );
@@ -916,9 +917,9 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = 255;
+	tess.colors[ tess.numVertexes ][ 1 ] = 255;
+	tess.colors[ tess.numVertexes ][ 2 ] = 255;
 	tess.numVertexes++;
 
 	VectorCopy( origin, temp );
@@ -928,9 +929,9 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = 255;
+	tess.colors[ tess.numVertexes ][ 1 ] = 255;
+	tess.colors[ tess.numVertexes ][ 2 ] = 255;
 	tess.numVertexes++;
 
 	tess.indexes[ tess.numIndexes++ ] = 0;

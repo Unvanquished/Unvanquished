@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
 
+typedef byte color4ub_t[ 4 ];
+
 // GL conversion helpers
 static inline float unorm8ToFloat(byte unorm8) {
 	return unorm8 * (1.0f / 255.0f);
@@ -52,6 +54,21 @@ static inline byte floatToSnorm8(float f) {
 	return lrintf(f * 127.0f) + 128;
 }
 
+static inline void floatToUnorm8( const vec4_t in, color4ub_t out )
+{
+	out[ 0 ] = floatToUnorm8( in[ 0 ] );
+	out[ 1 ] = floatToUnorm8( in[ 1 ] );
+	out[ 2 ] = floatToUnorm8( in[ 2 ] );
+	out[ 3 ] = floatToUnorm8( in[ 3 ] );
+}
+
+static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
+{
+	out[ 0 ] = unorm8ToFloat( in[ 0 ] );
+	out[ 1 ] = unorm8ToFloat( in[ 1 ] );
+	out[ 2 ] = unorm8ToFloat( in[ 2 ] );
+	out[ 3 ] = unorm8ToFloat( in[ 3 ] );
+}
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
 // parallel on a dual cpu machine
@@ -666,7 +683,7 @@ static inline byte floatToSnorm8(float f) {
 		vec3_t *normal;
 		int numFrames;
 
-		vec4_t *color;
+		byte (*color)[ 4 ];
 		vec2_t *st;
 		vec2_t *lightCoord;
 		int    (*boneIndexes)[ 4 ];
@@ -1758,7 +1775,7 @@ static inline byte floatToSnorm8(float f) {
 		vec3_t tangent;
 		vec3_t binormal;
 		vec3_t normal;
-		vec4_t lightColor;
+		color4ub_t lightColor;
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		vec3_t lightDirection;
@@ -2652,7 +2669,7 @@ static inline byte floatToSnorm8(float f) {
 		float             hdrKey;
 
 		qboolean          projection2D; // if qtrue, drawstretchpic doesn't need to change modes
-		vec4_t            color2D;
+		color4ub_t        color2D;
 		qboolean          vertexes2D; // shader needs to be finished
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
 	} backEndState_t;
@@ -3483,8 +3500,6 @@ static inline byte floatToSnorm8(float f) {
 	====================================================================
 	*/
 
-	typedef byte color4ub_t[ 4 ];
-
 	typedef struct stageVars
 	{
 		vec4_t   color;
@@ -3500,7 +3515,7 @@ static inline byte floatToSnorm8(float f) {
 		vec4_t tangents[ SHADER_MAX_VERTEXES ];
 		vec4_t binormals[ SHADER_MAX_VERTEXES ];
 		vec4_t normals[ SHADER_MAX_VERTEXES ];
-		vec4_t colors[ SHADER_MAX_VERTEXES ];
+		color4ub_t colors[ SHADER_MAX_VERTEXES ];
 		vec2_t texCoords[ SHADER_MAX_VERTEXES ];
 		vec2_t lightCoords[ SHADER_MAX_VERTEXES ];
 

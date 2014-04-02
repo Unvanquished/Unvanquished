@@ -353,14 +353,13 @@ RB_RenderFlare
 void RB_RenderFlare( flare_t *f )
 {
 	float  size;
-	vec3_t color;
-
+	vec4_t color;
+	color4ub_t iColor;
 	backEnd.pc.c_flareRenders++;
-
+	Vector4Copy( colorWhite, color );
 #if 1
 	//VectorScale(f->color, f->drawIntensity, color);
-	VectorScale( colorWhite, f->drawIntensity, color );
-
+	VectorScale( color, f->drawIntensity, color );
 	size = backEnd.viewParms.viewportWidth * ( r_flareSize->value / 640.0f + 8 / -f->eyeZ );
 #else
 
@@ -396,13 +395,13 @@ void RB_RenderFlare( flare_t *f )
 	intensity = flareCoeff * size * size / ( factor * factor );
 
 	VectorScale( f->color, f->drawIntensity * intensity, color );
-	iColor[ 0 ] = color[ 0 ] * 255;
-	iColor[ 1 ] = color[ 1 ] * 255;
-	iColor[ 2 ] = color[ 2 ] * 255;
 #endif
+
+	floatToUnorm8( color, iColor );
 
 	Tess_Begin( Tess_StageIteratorGeneric, NULL, tr.flareShader, NULL, qfalse, qfalse, -1, f->fogNum );
 
+	
 	// FIXME: use quadstamp?
 	tess.xyz[ tess.numVertexes ][ 0 ] = f->windowX - size;
 	tess.xyz[ tess.numVertexes ][ 1 ] = f->windowY - size;
@@ -410,10 +409,10 @@ void RB_RenderFlare( flare_t *f )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.colors[ tess.numVertexes ][ 0 ] = color[ 0 ];
-	tess.colors[ tess.numVertexes ][ 1 ] = color[ 1 ];
-	tess.colors[ tess.numVertexes ][ 2 ] = color[ 2 ];
-	tess.colors[ tess.numVertexes ][ 3 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = iColor[ 0 ];
+	tess.colors[ tess.numVertexes ][ 1 ] = iColor[ 1 ];
+	tess.colors[ tess.numVertexes ][ 2 ] = iColor[ 2 ];
+	tess.colors[ tess.numVertexes ][ 3 ] = iColor[ 3 ];
 	tess.numVertexes++;
 
 	tess.xyz[ tess.numVertexes ][ 0 ] = f->windowX - size;
@@ -422,10 +421,10 @@ void RB_RenderFlare( flare_t *f )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = color[ 0 ];
-	tess.colors[ tess.numVertexes ][ 1 ] = color[ 1 ];
-	tess.colors[ tess.numVertexes ][ 2 ] = color[ 2 ];
-	tess.colors[ tess.numVertexes ][ 3 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = iColor[ 0 ];
+	tess.colors[ tess.numVertexes ][ 1 ] = iColor[ 1 ];
+	tess.colors[ tess.numVertexes ][ 2 ] = iColor[ 2 ];
+	tess.colors[ tess.numVertexes ][ 3 ] = iColor[ 3 ];
 	tess.numVertexes++;
 
 	tess.xyz[ tess.numVertexes ][ 0 ] = f->windowX + size;
@@ -434,10 +433,10 @@ void RB_RenderFlare( flare_t *f )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = color[ 0 ];
-	tess.colors[ tess.numVertexes ][ 1 ] = color[ 1 ];
-	tess.colors[ tess.numVertexes ][ 2 ] = color[ 2 ];
-	tess.colors[ tess.numVertexes ][ 3 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = iColor[ 0 ];
+	tess.colors[ tess.numVertexes ][ 1 ] = iColor[ 1 ];
+	tess.colors[ tess.numVertexes ][ 2 ] = iColor[ 2 ];
+	tess.colors[ tess.numVertexes ][ 3 ] = iColor[ 3 ];
 	tess.numVertexes++;
 
 	tess.xyz[ tess.numVertexes ][ 0 ] = f->windowX + size;
@@ -446,10 +445,10 @@ void RB_RenderFlare( flare_t *f )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.colors[ tess.numVertexes ][ 0 ] = color[ 0 ];
-	tess.colors[ tess.numVertexes ][ 1 ] = color[ 1 ];
-	tess.colors[ tess.numVertexes ][ 2 ] = color[ 2 ];
-	tess.colors[ tess.numVertexes ][ 3 ] = 1;
+	tess.colors[ tess.numVertexes ][ 0 ] = iColor[ 0 ];
+	tess.colors[ tess.numVertexes ][ 1 ] = iColor[ 1 ];
+	tess.colors[ tess.numVertexes ][ 2 ] = iColor[ 2 ];
+	tess.colors[ tess.numVertexes ][ 3 ] = iColor[ 3 ];
 	tess.numVertexes++;
 
 	tess.indexes[ tess.numIndexes++ ] = 0;

@@ -872,7 +872,9 @@ static void AutospriteDeform( void )
 			VectorScale( up, axisLength, up );
 		}
 
-		Tess_AddQuadStamp( mid, left, up, tess.colors[ i ] );
+		vec4_t color;
+		unorm8ToFloat( tess.colors[ i ], color );
+		Tess_AddQuadStamp( mid, left, up, color );
 	}
 }
 

@@ -449,12 +449,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 		if ( ( vbo->attribBits & ATTR_COLOR ) )
 		{
-			uint32_t j;
-			byte *tmp = (byte *) ( outData + vbo->attribs[ ATTR_INDEX_COLOR ].ofs + v * vbo->attribs[ ATTR_INDEX_COLOR ].realStride );
-
-			for ( j = 0; j < 4; j++ ) {
-				tmp[ j ] = floatToUnorm8( inData.color[ v ][ j ] );
-			}
+			VERTEXCOPY( v, color, ATTR_INDEX_COLOR, byte );
 		}
 
 		if ( ( vbo->attribBits & ATTR_BONE_FACTORS ) )
@@ -637,7 +632,7 @@ static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts )
 		{
 			if ( !data.color )
 			{
-				data.color = ( vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.color ) * data.numVerts );
+				data.color = ( color4ub_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.color ) * data.numVerts );
 			}
 			Vector4Copy( vert->lightColor, data.color[ v ] );
 		}
