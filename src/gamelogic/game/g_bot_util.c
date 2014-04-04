@@ -288,13 +288,9 @@ float PercentAmmoRemaining( weapon_t weapon, playerState_t *ps )
 
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;
 	maxClips = BG_Weapon( weapon )->maxClips;
+
 	if ( !BG_Weapon( weapon )->infiniteAmmo )
 	{
-		if ( BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
-		{
-			maxAmmo = ( int )( ( float )maxAmmo * BATTPACK_MODIFIER );
-		}
-
 		totalMaxAmmo = ( float ) maxAmmo + maxClips * maxAmmo;
 		totalAmmo = ( float ) ps->ammo + ps->clips * maxAmmo;
 
@@ -428,13 +424,6 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	}
 
 	usableCapital -= BG_Weapon( *weapon )->price;
-
-	//finally, see if we can buy a battpack
-	if ( BG_Weapon( *weapon )->usesEnergy && BG_UpgradeUnlocked( UP_BATTPACK ) && usableCapital >= BG_Upgrade( UP_BATTPACK )->price && upgrades[0] != UP_BATTLESUIT )
-	{
-		upgrades[( *numUpgrades )++] = UP_BATTPACK;
-		usableCapital -= BG_Upgrade( UP_BATTPACK )->price;
-	}
 
 	//now test to see if we already have all of these items
 	//check if we already have everything
@@ -1764,7 +1753,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			}
 		}
 
-		if ( !G_Overmind() )
+		if ( !G_ActiveOvermind() )
 		{
 			return qfalse;
 		}
@@ -1960,11 +1949,6 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		//add to inventory
 		BG_AddUpgradeToInventory( upgrade, self->client->ps.stats );
 
-		if ( upgrade == UP_BATTPACK )
-		{
-			G_RefillAmmo( self, qtrue );
-		}
-
 		//subtract from funds
 		G_AddCreditToClient( self->client, -( short )BG_Upgrade( upgrade )->price, qfalse );
 	}
@@ -2052,12 +2036,8 @@ void BotSellAll( gentity_t *self )
 				BotSetNavmesh( self, PCL_HUMAN_NAKED );
 			}
 
+			//remove from inventory
 			BG_RemoveUpgradeFromInventory( i, self->client->ps.stats );
-
-			if ( i == UP_BATTPACK )
-			{
-				G_RefillAmmo( self, qfalse );
-			}
 
 			//add to funds
 			G_AddCreditToClient( self->client, ( short )BG_Upgrade( ( upgrade_t )i )->price, qfalse );

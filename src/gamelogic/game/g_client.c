@@ -1751,14 +1751,11 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	//clear the credits array
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		ent->credits[ i ] = 0.0f;
+		ent->credits[ i ].value = 0.0f;
 	}
 
 	G_SetOrigin( ent, spawn_origin );
 	VectorCopy( spawn_origin, client->ps.origin );
-
-#define UP_VEL 150.0f
-#define F_VEL  50.0f
 
 	//give aliens some spawn velocity
 	if ( client->sess.spectatorState == SPECTATOR_NOT &&
@@ -1779,11 +1776,10 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 				vec3_t forward, dir;
 
 				AngleVectors( spawn_angles, forward, NULL, NULL );
-				VectorScale( forward, F_VEL, forward );
 				VectorAdd( spawnPoint->s.origin2, forward, dir );
 				VectorNormalize( dir );
-
-				VectorScale( dir, UP_VEL, client->ps.velocity );
+				VectorScale( dir, BG_Class( ent->client->pers.classSelection )->jumpMagnitude,
+				             client->ps.velocity );
 			}
 
 			G_AddPredictableEvent( ent, EV_PLAYER_RESPAWN, 0 );

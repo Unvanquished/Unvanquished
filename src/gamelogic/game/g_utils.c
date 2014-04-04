@@ -1007,10 +1007,10 @@ int G_Heal( gentity_t *self, int amount )
 	totalCredits = 0;
 	for ( clientNum = 0, relevantClientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
 	{
-		if ( self->credits[ clientNum ] > 0.0f )
+		if ( self->credits[ clientNum ].value > 0.0f )
 		{
 			relevantClients[ relevantClientNum++ ] = clientNum;
-			totalCredits += self->credits[ clientNum ];
+			totalCredits += self->credits[ clientNum ].value;
 		}
 	}
 
@@ -1028,7 +1028,7 @@ int G_Heal( gentity_t *self, int amount )
 	// scale down or clear damage accounts
 	for ( clientNum = 0; clientNum < relevantClientNum; clientNum++ )
 	{
-		self->credits[ relevantClients[ clientNum ] ] *= scaleAccounts;
+		self->credits[ relevantClients[ clientNum ] ].value *= scaleAccounts;
 	}
 
 	// heal
