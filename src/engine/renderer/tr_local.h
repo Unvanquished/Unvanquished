@@ -3695,7 +3695,6 @@ static inline byte floatToSnorm8(float f) {
 	*/
 
 	void R_InitSkyTexCoords( float cloudLayerHeight );
-	void RB_DrawSun( void );
 
 	/*
 	============================================================

@@ -1323,10 +1323,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			es->loopSound = 0;
 			break;
 
-		case EV_DEBUG_LINE:
-			CG_Beam( cent );
-			break;
-
 		case EV_BUILD_DELAY:
 			if ( clientNum == cg.predictedPlayerState.clientNum )
 			{

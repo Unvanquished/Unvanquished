@@ -841,7 +841,6 @@ void R_BindVBO( VBO_t *vbo )
 {
 	if ( !vbo )
 	{
-		//R_BindNullVBO();
 		ri.Error( ERR_DROP, "R_BindNullVBO: NULL vbo" );
 	}
 
@@ -863,8 +862,6 @@ void R_BindVBO( VBO_t *vbo )
 		glBindBuffer( GL_ARRAY_BUFFER, vbo->vertexesVBO );
 
 		backEnd.pc.c_vboVertexBuffers++;
-
-		//GL_VertexAttribPointers(ATTR_BITS);
 	}
 }
 
@@ -895,7 +892,6 @@ void R_BindIBO( IBO_t *ibo )
 {
 	if ( !ibo )
 	{
-		//R_BindNullIBO();
 		ri.Error( ERR_DROP, "R_BindIBO: NULL ibo" );
 	}
 

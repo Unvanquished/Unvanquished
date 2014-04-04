@@ -7277,11 +7277,6 @@ static void RB_RenderView( void )
 	RB_RenderDeferredHDRResultToFrameBuffer();
 
 #if 0
-	// add the sun flare
-	RB_DrawSun();
-#endif
-
-#if 0
 	// add light flares on lights that aren't obscured
 	RB_RenderFlares();
 #endif

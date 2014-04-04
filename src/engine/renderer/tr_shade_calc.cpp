@@ -50,13 +50,7 @@ static float   *TableForFunc( genFunc_t func )
 			break;
 	}
 
-#if 0
-	ri.Error( ERR_DROP, "TableForFunc called with invalid function '%d' in shader '%s'", func, tess.surfaceShader->name );
-	return NULL;
-#else
-	// FIXME ri.Printf(PRINT_WARNING, "TableForFunc called with invalid function '%d' in shader '%s'\n", func, tess.surfaceShader->name);
 	return tr.sinTable;
-#endif
 }
 
 /*
@@ -231,7 +225,6 @@ const char* GetOpName(opcode_t type);
 
 float RB_EvalExpression( const expression_t *exp, float defaultValue )
 {
-#if 1
 	int                     i;
 	expOperation_t          op;
 	expOperation_t          ops[ MAX_EXPRESSION_OPS ];
@@ -455,8 +448,6 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 							break;
 					}
 
-					//ri.Printf(PRINT_ALL, "%s: %f %f %f\n", GetOpName(op.type), value, value1, value2);
-
 					// push result
 					op.type = OP_NUM;
 					op.value = value;
@@ -467,9 +458,6 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 	}
 
 	return GetOpValue( &ops[ 0 ] );
-#else
-	return defaultValue;
-#endif
 }
 
 /*
@@ -500,8 +488,6 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 	{
 		qboolean inverse = qfalse;
 		vec3_t   worldUp;
-
-		//static vec3_t up = {0,0,1};
 
 		if ( VectorCompare( backEnd.currentEntity->e.fireRiseDir, vec3_origin ) )
 		{
@@ -1120,11 +1106,9 @@ void Tess_DeformGeometry( void )
 				break;
 
 			case DEFORM_SPRITE:
-				//AutospriteDeform();
 				break;
 
 			case DEFORM_FLARE:
-				//Autosprite2Deform();
 				break;
 		}
 	}

@@ -2421,7 +2421,6 @@ void         ByteToDir( int b, vec3_t dir );
 
 		ET_MISSILE,
 		ET_MOVER,
-		ET_BEAM,
 		ET_PORTAL,
 		ET_SPEAKER,
 		ET_PUSHER,

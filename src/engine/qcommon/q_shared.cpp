@@ -700,7 +700,6 @@ const char *Com_EntityTypeName(entityType_t entityType)
 	case ET_LOCATION:         return "LOCATION";
 	case ET_MISSILE:          return "MISSILE";
 	case ET_MOVER:            return "MOVER";
-	case ET_BEAM:             return "BEAM";
 	case ET_PORTAL:           return "PORTAL";
 	case ET_SPEAKER:          return "SPEAKER";
 	case ET_PUSHER:           return "PUSHER";
