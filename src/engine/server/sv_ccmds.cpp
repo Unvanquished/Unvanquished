@@ -85,7 +85,7 @@ class MapCmd: public Cmd::StaticCmd {
                 }
                 return out;
             } else if (argNum > 1) {
-                return FS::HomePath::CompleteFilename(prefix, "layouts/" + args.Argv(1), ".dat", false, true);
+                return FS::HomePath::CompleteFilename(prefix, "game/layouts/" + args.Argv(1), ".dat", false, true);
             }
 
             return {};

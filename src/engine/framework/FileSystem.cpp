@@ -2397,21 +2397,42 @@ int FS_GetFileList(const char* path, const char* extension, char* listBuf, int b
 	if (!strcmp(path, "$modlist"))
 		return 0;
 
-	int numFiles;
-	char** list = FS_ListFiles(path, extension, &numFiles);
+	int numFiles = 0;
+	bool dirsOnly = extension && !strcmp(extension, "/");
 
-	for (int i = 0; i < numFiles; i++) {
-		int length = strlen(list[i]) + 1;
-		if (bufSize < length) {
-			FS_FreeFileList(list);
-			return i;
+	try {
+		for (const std::string& x: FS::PakPath::ListFiles(path)) {
+			if (extension && !Str::IsSuffix(extension, x))
+				continue;
+			if (dirsOnly != (x.back() == '/'))
+				continue;
+			int length = x.size() + (x.back() != '/');
+			if (bufSize < length)
+				return numFiles;
+			memcpy(listBuf, x.c_str(), length);
+			listBuf[length - 1] = '\0';
+			listBuf += length;
+			bufSize -= length;
+			numFiles++;
 		}
-		memcpy(listBuf, list[i], length);
-		listBuf += length;
-		bufSize -= length;
-	}
+	} catch (std::system_error&) {}
+	try {
+		for (const std::string& x: FS::HomePath::ListFiles(FS::Path::Build("game", path))) {
+			if (extension && !Str::IsSuffix(extension, x))
+				continue;
+			if (dirsOnly != (x.back() == '/'))
+				continue;
+			int length = x.size() + (x.back() != '/');
+			if (bufSize < length)
+				return numFiles;
+			memcpy(listBuf, x.c_str(), length);
+			listBuf[length - 1] = '\0';
+			listBuf += length;
+			bufSize -= length;
+			numFiles++;
+		}
+	} catch (std::system_error&) {}
 
-	FS_FreeFileList(list);
 	return numFiles;
 }
 
