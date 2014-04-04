@@ -37,34 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		float          *floatbuf;
 		unsigned short *halfbuf;
 
-#if 0
-		w = h = 0;
-		LoadRGBEToFloats( name, &hdrImage, &w, &h, qtrue, qtrue, qtrue );
-
-		*width = w;
-		*height = h;
-
-		*ldrImage = ri.Malloc( w * h * 4 );
-		pixbuf = *ldrImage;
-
-		floatbuf = hdrImage;
-
-		for ( i = 0; i < ( w * h ); i++ )
-		{
-			for ( j = 0; j < 3; j++ )
-			{
-				sample[ j ] = *floatbuf++;
-			}
-
-			NormalizeColor( sample, sample );
-
-			*pixbuf++ = ( byte )( sample[ 0 ] * 255 );
-			*pixbuf++ = ( byte )( sample[ 1 ] * 255 );
-			*pixbuf++ = ( byte )( sample[ 2 ] * 255 );
-			*pixbuf++ = ( byte ) 255;
-		}
-
-#else
 		w = h = 0;
 		LoadRGBEToFloats( name, &hdrImage, &w, &h, qtrue, qfalse, qtrue );
 
@@ -84,8 +56,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 				*halfbuf++ = sample.bits();
 			}
 		}
-
-#endif
 
 		Com_Dealloc( hdrImage );
 	}

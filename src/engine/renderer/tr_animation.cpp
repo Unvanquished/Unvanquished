@@ -423,17 +423,6 @@ static void GetChunkHeader( memStream_t *s, axChunkHeader_t *chunkHeader )
 	chunkHeader->numData = MemStreamGetLong( s );
 }
 
-static void PrintChunkHeader( axChunkHeader_t *chunkHeader )
-{
-#if 0
-	ri.Printf( PRINT_ALL, "----------------------\n" );
-	ri.Printf( PRINT_ALL, "R_LoadPSA: chunk header ident: '%s'\n", chunkHeader->ident );
-	ri.Printf( PRINT_ALL, "R_LoadPSA: chunk header flags: %i\n", chunkHeader->flags );
-	ri.Printf( PRINT_ALL, "R_LoadPSA: chunk header data size: %i\n", chunkHeader->dataSize );
-	ri.Printf( PRINT_ALL, "R_LoadPSA: chunk header num items: %i\n", chunkHeader->numData );
-#endif
-}
-
 static void GetBone( memStream_t *s, axBone_t *bone )
 {
 	int i;
@@ -484,8 +473,6 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 		return qfalse;
 	}
 
-	PrintChunkHeader( &chunkHeader );
-
 	// read reference bones
 	GetChunkHeader( stream, &chunkHeader );
 
@@ -502,8 +489,6 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 		FreeMemStream( stream );
 		return qfalse;
 	}
-
-	PrintChunkHeader( &chunkHeader );
 
 	numReferenceBones = chunkHeader.numData;
 
@@ -537,31 +522,6 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 		}
 
 		GetBone( stream, &refBone->bone );
-
-#if 0
-		ri.Printf( PRINT_ALL, "R_LoadPSA: axReferenceBone_t(%i):\n"
-		           "axReferenceBone_t::name: '%s'\n"
-		           "axReferenceBone_t::flags: %i\n"
-		           "axReferenceBone_t::numChildren %i\n"
-		           "axReferenceBone_t::parentIndex: %i\n"
-		           "axReferenceBone_t::quat: %f %f %f %f\n"
-		           "axReferenceBone_t::position: %f %f %f\n"
-		           "axReferenceBone_t::length: %f\n"
-		           "axReferenceBone_t::xSize: %f\n"
-		           "axReferenceBone_t::ySize: %f\n"
-		           "axReferenceBone_t::zSize: %f\n",
-		           i,
-		           refBone->name,
-		           refBone->flags,
-		           refBone->numChildren,
-		           refBone->parentIndex,
-		           refBone->bone.quat[ 0 ], refBone->bone.quat[ 1 ], refBone->bone.quat[ 2 ], refBone->bone.quat[ 3 ],
-		           refBone->bone.position[ 0 ], refBone->bone.position[ 1 ], refBone->bone.position[ 2 ],
-		           refBone->bone.length,
-		           refBone->bone.xSize,
-		           refBone->bone.ySize,
-		           refBone->bone.zSize );
-#endif
 	}
 
 	// load animation info
@@ -580,8 +540,6 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 		FreeMemStream( stream );
 		return qfalse;
 	}
-
-	PrintChunkHeader( &chunkHeader );
 
 	numSequences = chunkHeader.numData;
 	Com_InitGrowList( &extraAnims, numSequences - 1 );
@@ -643,35 +601,6 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 
 		animInfo->firstRawFrame = MemStreamGetLong( stream );
 		animInfo->numRawFrames = MemStreamGetLong( stream );
-
-#if 0
-		ri.Printf( PRINT_ALL, "R_LoadPSA: axAnimationInfo_t(%i):\n"
-		           "axAnimationInfo_t::name: '%s'\n"
-		           "axAnimationInfo_t::group: '%s'\n"
-		           "axAnimationInfo_t::numBones: %i\n"
-		           "axAnimationInfo_t::rootInclude: %i\n"
-		           "axAnimationInfo_t::keyCompressionStyle: %i\n"
-		           "axAnimationInfo_t::keyQuotum: %i\n"
-		           "axAnimationInfo_t::keyReduction: %f\n"
-		           "axAnimationInfo_t::trackTime: %f\n"
-		           "axAnimationInfo_t::frameRate: %f\n"
-		           "axAnimationInfo_t::startBoneIndex: %i\n"
-		           "axAnimationInfo_t::firstRawFrame: %i\n"
-		           "axAnimationInfo_t::numRawFrames: %i\n",
-		           i,
-		           animInfo->name,
-		           animInfo->group,
-		           animInfo->numBones,
-		           animInfo->rootInclude,
-		           animInfo->keyCompressionStyle,
-		           animInfo->keyQuotum,
-		           animInfo->keyReduction,
-		           animInfo->trackTime,
-		           animInfo->frameRate,
-		           animInfo->startBoneIndex,
-		           animInfo->firstRawFrame,
-		           animInfo->numRawFrames );
-#endif
 	}
 
 	// load the animation frame keys
@@ -692,8 +621,6 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 		Com_DestroyGrowList( &extraAnims );
 		return qfalse;
 	}
-
-	PrintChunkHeader( &chunkHeader );
 
 	for ( i = 0; i < numSequences; i++ )
 	{
@@ -846,7 +773,6 @@ qhandle_t RE_RegisterAnimation( const char *name )
 
 			animName = strstr( name, "::" );
 
-			//ri.Printf(PRINT_ALL, "animName = '%s'\n", animName ? (animName + 2) : NULL);
 			if ( animName && * ( animName + 2 ) && !Q_stricmp( anim->psa->info.name, ( animName + 2 ) ) )
 			{
 				return hAnim;
@@ -1114,7 +1040,6 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 				shader = tr.defaultShader;
 
 				// FIXME: replace MD3_MAX_SURFACES for skin_t::surfaces
-				//if(i >= 0 && i < skin->numSurfaces && skin->surfaces[i])
 				if ( vboSurface->skinIndex >= 0 && vboSurface->skinIndex < skin->numSurfaces && skin->surfaces[ vboSurface->skinIndex ] )
 				{
 					shader = skin->surfaces[ vboSurface->skinIndex ]->shader;
@@ -1212,11 +1137,6 @@ void R_AddIQMInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 
 	cubeSideBits = R_CalcLightCubeSideBits( light, ent->worldBounds );
 
-#if 0
-	if ( !r_vboModels->integer || !model->numVBOSurfaces ||
-	     ( !glConfig2.vboVertexSkinningAvailable && ent->e.skeleton.type == SK_ABSOLUTE ) )
-	{
-#endif
 		// generate interactions with all surfaces
 		for ( i = 0, surface = model->surfaces; i < model->num_surfaces; i++, surface++ )
 		{
@@ -1268,66 +1188,6 @@ void R_AddIQMInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 				tr.pc.c_dlightSurfaces++;
 			}
 		}
-#if 0
-	}
-	else
-	{
-		int             i;
-		srfVBOMD5Mesh_t *vboSurface;
-		shader_t        *shader;
-
-		for ( i = 0; i < model->numVBOSurfaces; i++ )
-		{
-			vboSurface = model->vboSurfaces[ i ];
-
-			if ( ent->e.customShader )
-			{
-				shader = R_GetShaderByHandle( ent->e.customShader );
-			}
-			else if ( ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins )
-			{
-				skin_t *skin;
-
-				skin = R_GetSkinByHandle( ent->e.customSkin );
-
-				// match the surface name to something in the skin file
-				shader = tr.defaultShader;
-
-				// FIXME: replace MD3_MAX_SURFACES for skin_t::surfaces
-				if ( i >= 0 && i < skin->numSurfaces && skin->surfaces[ i ] )
-				{
-					shader = skin->surfaces[ i ]->shader;
-				}
-
-				if ( shader == tr.defaultShader )
-				{
-					ri.Printf( PRINT_DEVELOPER, "WARNING: no shader for surface %i in skin %s\n", i, skin->name );
-				}
-				else if ( shader->defaultShader )
-				{
-					ri.Printf( PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
-				}
-			}
-			else
-			{
-				shader = vboSurface->shader;
-			}
-
-			// skip all surfaces that don't matter for lighting only pass
-			if ( shader->isSky || ( !shader->interactLight && shader->noShadows ) )
-			{
-				continue;
-			}
-
-			// don't add third_person objects if not viewing through a portal
-			if ( !personalModel )
-			{
-				R_AddLightInteraction( light, ( void * ) vboSurface, shader, cubeSideBits, iaType );
-				tr.pc.c_dlightSurfaces++;
-			}
-		}
-	}
-#endif
 }
 
 /*

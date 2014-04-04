@@ -91,8 +91,6 @@ protected:
 		_vertexAttribs( 0 ),
 		_shaderManager( manager ),
 		_uniformStorageSize( 0 )
-		//_vertexAttribsOptional(vertexAttribsOptional),
-		//_vertexAttribsUnsupported(vertexAttribsUnsupported)
 	{
 	}
 
@@ -1123,7 +1121,6 @@ public:
 		return TWOSIDED;
 	}
 
-//bool    MissesRequiredMacros(int permutation, const std::vector<GLCompileMacro*>& macros) const;
 	uint32_t        GetRequiredVertexAttributes() const
 	{
 		return ATTR_NORMAL;
@@ -2413,7 +2410,6 @@ class GLShader_lightMapping :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_GLOW_MAPPING
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_lightMapping( GLShaderManager *manager );
@@ -2448,7 +2444,6 @@ class GLShader_vertexLighting_DBS_entity :
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_REFLECTIVE_SPECULAR,
 	public GLCompileMacro_USE_GLOW_MAPPING
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_vertexLighting_DBS_entity( GLShaderManager *manager );
@@ -2480,8 +2475,6 @@ class GLShader_vertexLighting_DBS_world :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_GLOW_MAPPING
-//public GLCompileMacro_TWOSIDED
-//public GLCompileMacro_USE_GBUFFER
 {
 public:
 	GLShader_vertexLighting_DBS_world( GLShaderManager *manager );
@@ -2521,7 +2514,6 @@ class GLShader_forwardLighting_omniXYZ :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_forwardLighting_omniXYZ( GLShaderManager *manager );
@@ -2562,7 +2554,6 @@ class GLShader_forwardLighting_projXYZ :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_forwardLighting_projXYZ( GLShaderManager *manager );
@@ -2605,7 +2596,6 @@ class GLShader_forwardLighting_directionalSun :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_forwardLighting_directionalSun( GLShaderManager *manager );
@@ -2652,7 +2642,6 @@ class GLShader_reflection :
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING //,
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_reflection( GLShaderManager *manager );

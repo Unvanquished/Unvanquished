@@ -391,10 +391,6 @@ void R_TransformDecalProjector( decalProjector_t *in, vec3_t axis[ 3 ], vec3_t o
 		out->planes[ i ][ 3 ] = in->planes[ i ][ 3 ] - DotProduct( in->planes[ i ], origin );
 	}
 
-	//% ri.Printf( PRINT_ALL, "plane 0: %f %f %f in dist: %f out dist: %f z: %f\n",
-	//%     out->planes[ 0 ][ 0 ], out->planes[ 0 ][ 1 ], out->planes[ 0 ][ 2 ],
-	//%     in->planes[ 0 ][ 3 ], out->planes[ 0 ][ 3 ], origin[ 2 ] );
-
 	/* translate texture matrices */
 	for ( m = 0; m < 3; m++ )
 	{
@@ -850,7 +846,6 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspMod
 
 	/* test bounding sphere */
 	if ( !R_TestDecalBoundingSphere( dp, gen->origin, ( gen->radius * gen->radius ) ) )
-//	if(!R_TestDecalBoundingBox(dp, gen->bounds[0], gen->bounds[1]))
 	{
 		return;
 	}
@@ -907,10 +902,9 @@ adds a decal surface to the scene
 
 void R_AddDecalSurface( decal_t *decal )
 {
-	int        i; //, dlightMap;
+	int        i;
 	float      fade;
 	srfDecal_t *srf;
-//	srfGeneric_t   *gen;
 
 	/* early outs */
 	if ( decal->shader == NULL || decal->parent->viewCount != tr.viewCountNoReset || tr.refdef.numDecals >= MAX_DECALS )
@@ -941,22 +935,7 @@ void R_AddDecalSurface( decal_t *decal )
 		}
 	}
 
-	/* dynamic lights? */
-
-	/*
-	if(decal->parent != NULL)
-	{
-	        gen = (srfGeneric_t *) decal->parent->data;
-	        dlightMap = (gen->dlightBits[tr.smpFrame] != 0);
-	}
-	else
-	{
-	        dlightMap = 0;
-	}
-	*/
-
 	/* add surface to scene */
-	//R_AddDrawSurf((surfaceType_t *)srf, decal->shader, decal->fogIndex, 0, dlightMap);
 	R_AddDrawSurf( ( surfaceType_t * ) srf, decal->shader, -1, decal->fogIndex );
 	tr.pc.c_decalSurfaces++;
 

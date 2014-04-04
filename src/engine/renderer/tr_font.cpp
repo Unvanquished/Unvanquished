@@ -124,7 +124,7 @@ void R_GetGlyphInfo( FT_GlyphSlot glyph, int *left, int *right, int *width, int 
 	*top = _CEIL( glyph->metrics.horiBearingY + 1);
 	*bottom = _FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height - 1);
 	*height = _TRUNC( *top - *bottom );
-	*pitch = ( *width + 3 ) & - 4; // ( qtrue ? ( *width + 3 ) & - 4 : ( *width + 7 ) >> 3 );
+	*pitch = ( *width + 3 ) & - 4;
 }
 
 FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
@@ -144,7 +144,6 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 		bit2->rows = height;
 		bit2->pitch = pitch;
 		bit2->pixel_mode = ft_pixel_mode_grays;
-		//bit2->pixel_mode = ft_pixel_mode_mono;
 		bit2->buffer = (unsigned char*) ri.Z_Malloc( pitch * height );
 		bit2->num_grays = 256;
 
@@ -218,15 +217,6 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 			ri.Free( bitmap );
 			return &glyph;
 		}
-
-		/*
-		    // need to convert to power of 2 sizes so we do not get
-		    // any scaling from the gl upload
-		        for (scaled_width = 1 ; scaled_width < glyph.pitch ; scaled_width<<=1)
-		                ;
-		        for (scaled_height = 1 ; scaled_height < glyph.height ; scaled_height<<=1)
-		                ;
-		*/
 
 		scaledWidth = glyph.pitch;
 		scaledHeight = glyph.height;
@@ -454,7 +444,6 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int 
 
 
 	Com_sprintf( fileName, sizeof( fileName ), "%s_%i_%i_%i.png", font->name, chunk, page, font->pointSize );
-	//SavePNG( fileName, buffer, FONT_SIZE, y, 2, qtrue );
 
 	image = R_CreateGlyph( fileName, buffer, FONT_SIZE, y );
 
@@ -516,8 +505,6 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 		font->glyphBlock[ chunk ] = nullGlyphs;
 		return;
 	}
-
-	//ri.Printf(PRINT_WARNING, "RE_RenderChunk: max glyph height for font %s is %i\n", strippedName, maxHeight);
 
 	glyphs = font->glyphBlock[ chunk ] = (glyphInfo_t*) ri.Z_Malloc( sizeof( glyphBlock_t ) );
 	memset( glyphs, 0, sizeof( glyphBlock_t ) );

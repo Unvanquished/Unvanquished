@@ -186,17 +186,6 @@ static inline byte floatToSnorm8(float f) {
 		l->prev = l->next = NULL;
 	}
 
-	/*
-	static INLINE void InsertLinkBefore(link_t *l, link_t *sentinel)
-	{
-	        l->next = sentinel;
-	        l->prev = sentinel->prev;
-
-	        l->prev->next = l;
-	        l->next->prev = l;
-	}
-	*/
-
 	static INLINE void InsertLink( link_t *l, link_t *sentinel )
 	{
 		l->next = sentinel->next;
@@ -239,15 +228,7 @@ static inline byte floatToSnorm8(float f) {
 
 		top = l->next;
 
-#if 1
 		RemoveLink( top );
-#else
-		top->next->prev = top->prev;
-		top->prev->next = top->next;
-
-		top->prev = top->next = NULL;
-#endif
-
 		data = top->data;
 		Com_Dealloc( top );
 
@@ -283,20 +264,6 @@ static inline byte floatToSnorm8(float f) {
 		sentinel->numElements++;
 	}
 
-	/*
-	static INLINE void EnQueue2(link_t *sentinel, void *data, void *(*mallocFunc)(size_t __size))
-	{
-	        link_t *l;
-
-	        l = mallocFunc(sizeof(*l));
-	        InitLink(l, data);
-
-	        InsertLink(l, sentinel);
-
-	        sentinel->numElements++;
-	}
-	*/
-
 	static INLINE void *DeQueue( link_t *l )
 	{
 		link_t *tail;
@@ -304,15 +271,7 @@ static inline byte floatToSnorm8(float f) {
 
 		tail = l->prev;
 
-#if 1
 		RemoveLink( tail );
-#else
-		tail->next->prev = tail->prev;
-		tail->prev->next = tail->next;
-
-		tail->prev = tail->next = NULL;
-#endif
-
 		data = tail->data;
 		Com_Dealloc( tail );
 
@@ -402,8 +361,6 @@ static inline byte floatToSnorm8(float f) {
 		link_t                    leafs;
 
 		int                       visCounts[ MAX_VISCOUNTS ]; // node needs to be traversed if current
-		//struct bspNode_s **leafs;
-		//int             numLeafs;
 	} trRefLight_t;
 
 // a trRefEntity_t has all the information passed in by
@@ -702,8 +659,6 @@ static inline byte floatToSnorm8(float f) {
 		uint32_t indexesVBO;
 		uint32_t indexesSize; // amount of memory data allocated for all triangles in bytes
 		uint32_t indexesNum;
-
-//  uint32_t        ofsIndexes;
 	} IBO_t;
 
 //===============================================================================
@@ -1784,9 +1739,6 @@ static inline byte floatToSnorm8(float f) {
 		vec3_t   bounds[ 2 ];
 		vec3_t   origin;
 		float    radius;
-
-		// dynamic lighting information
-//	int             dlightBits[SMP_FRAMES];
 	}
 
 	srfGeneric_t;
@@ -1995,24 +1947,6 @@ static inline byte floatToSnorm8(float f) {
 		bspSurface_t **viewSurfaces;
 	} bspNode_t;
 
-	/*
-	typedef struct
-	{
-	        int             numMarkSurfaces;
-	        bspSurface_t  **markSurfaces;
-
-	        int             numVBOSurfaces;
-	        srfVBOMesh_t  **vboSurfaces;
-	} bspArea_t;
-
-	typedef struct
-	{
-	        int             areas[2];
-
-	        vec3_t          points[4];
-	} bspAreaPortal_t;
-	*/
-
 	typedef struct
 	{
 		vec3_t       bounds[ 2 ]; // for culling
@@ -2074,12 +2008,6 @@ static inline byte floatToSnorm8(float f) {
 
 		int           numTriangles;
 		srfTriangle_t *triangles;
-
-//  int             numAreas;
-//  bspArea_t      *areas;
-
-//  int             numAreaPortals;
-//  bspAreaPortal_t *areaPortals;
 
 		int                numSurfaces;
 		bspSurface_t       *surfaces;
@@ -2230,19 +2158,10 @@ static inline byte floatToSnorm8(float f) {
 		float       boneWeights[ MAX_WEIGHTS ];
 	} ) md5Vertex_t;
 
-	/*
-	typedef struct
-	{
-	        int             indexes[3];
-	        int             neighbors[3];
-	} md5Triangle_t;
-	*/
-
 	typedef struct
 	{
 		surfaceType_t surfaceType;
 
-//  char            name[MAX_QPATH];    // polyset name
 		char              shader[ MAX_QPATH ];
 		int               shaderIndex; // for in-game use
 
@@ -2552,11 +2471,8 @@ static inline byte floatToSnorm8(float f) {
 
 		int    currenttextures[ 32 ];
 		int    currenttmu;
-//  matrix_t        textureMatrix[32];
 
 		int stackIndex;
-//  matrix_t        modelMatrix[MAX_GLSTACK];
-//  matrix_t        viewMatrix[MAX_GLSTACK];
 		matrix_t        modelViewMatrix[ MAX_GLSTACK ];
 		matrix_t        projectionMatrix[ MAX_GLSTACK ];
 		matrix_t        modelViewProjectionMatrix[ MAX_GLSTACK ];
@@ -2758,9 +2674,6 @@ static inline byte floatToSnorm8(float f) {
 		image_t    *depthToColorFrontFacesFBOImage;
 		image_t    *downScaleFBOImage_quarter;
 		image_t    *downScaleFBOImage_64x64;
-//	image_t        *downScaleFBOImage_16x16;
-//	image_t        *downScaleFBOImage_4x4;
-//	image_t        *downScaleFBOImage_1x1;
 		image_t *shadowMapFBOImage[ MAX_SHADOWMAPS * 2 ];
 		image_t *shadowCubeFBOImage[ MAX_SHADOWMAPS ];
 		image_t *sunShadowMapFBOImage[ MAX_SHADOWMAPS * 2 ];
@@ -2781,9 +2694,6 @@ static inline byte floatToSnorm8(float f) {
 		FBO_t *occlusionRenderFBO; // used for overlapping visibility determination
 		FBO_t *downScaleFBO_quarter;
 		FBO_t *downScaleFBO_64x64;
-//	FBO_t          *downScaleFBO_16x16;
-//	FBO_t          *downScaleFBO_4x4;
-//	FBO_t          *downScaleFBO_1x1;
 		FBO_t *contrastRenderFBO;
 		FBO_t *bloomRenderFBO[ 2 ];
 		FBO_t *shadowMapFBO[ MAX_SHADOWMAPS ];
@@ -2918,9 +2828,6 @@ static inline byte floatToSnorm8(float f) {
 		scissorState_t scissor;
 	} trGlobals_t;
 
-//	typedef struct {
-//	} glBroken_t;
-
 	extern const matrix_t quakeToOpenGLMatrix;
 	extern const matrix_t openGLToQuakeMatrix;
 	extern const matrix_t flipZMatrix;
@@ -2932,8 +2839,6 @@ static inline byte floatToSnorm8(float f) {
 	extern trGlobals_t    tr;
 	extern glconfig_t     glConfig; // outside of TR since it shouldn't be cleared during ref re-init
 	extern glconfig2_t    glConfig2;
-
-//	extern glBroken_t     glBroken;
 
 	extern glstate_t      glState; // outside of TR since it shouldn't be cleared during ref re-init
 
@@ -3261,12 +3166,6 @@ static inline byte floatToSnorm8(float f) {
 	void           R_CalcTangentsForTriangle( vec3_t tangent, vec3_t binormal,
 	    const vec3_t v0, const vec3_t v1, const vec3_t v2,
 	    const vec2_t t0, const vec2_t t1, const vec2_t t2 );
-
-#if 0
-	void R_CalcTangentsForTriangle2( vec3_t tangent, vec3_t binormal,
-	                                 const vec3_t v0, const vec3_t v1, const vec3_t v2,
-	                                 const vec2_t t0, const vec2_t t1, const vec2_t t2 );
-#endif
 
 	void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	                         const vec3_t v0, const vec3_t v1, const vec3_t v2,
@@ -3862,18 +3761,6 @@ static inline byte floatToSnorm8(float f) {
 
 	ANIMATED MODELS WOLFENSTEIN
 
-	=============================================================
-	*/
-
-	/*
-	void            R_AddAnimSurfaces(trRefEntity_t * ent);
-	void            RB_SurfaceAnim(mdsSurface_t * surfType);
-	int             R_GetBoneTag(orientation_t * outTag, mdsHeader_t * mds, int startTagIndex, const refEntity_t * refent,
-	                                                         const char *tagName);
-	                                                         */
-
-	/*
-	=============================================================
 	=============================================================
 	*/
 

@@ -304,8 +304,6 @@ breakOut:
 		}
 	}
 
-#if 1
-
 	// TTimo: this is the chunk of code to ensure a behavior that meets TGA specs
 	// bk0101024 - fix from Leonardo
 	// bit 5 set => top-down
@@ -330,16 +328,6 @@ breakOut:
 
 		ri.Hunk_FreeTempMemory( flip );
 	}
-
-#else
-
-	// instead we just print a warning
-	if ( targa_header.attributes & 0x20 )
-	{
-		ri.Printf( PRINT_WARNING, "WARNING: '%s' TGA file header declares top-down image, ignoring\n", name );
-	}
-
-#endif
 
 	ri.FS_FreeFile( buffer );
 }

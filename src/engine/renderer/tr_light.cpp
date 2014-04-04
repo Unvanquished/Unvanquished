@@ -305,48 +305,6 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 }
 
 /*
-===============
-LogLight
-===============
-*/
-#if 0
-static void LogLight( trRefEntity_t *ent )
-{
-	int max1, max2;
-
-	if ( !( ent->e.renderfx & RF_FIRST_PERSON ) )
-	{
-		return;
-	}
-
-	max1 = ent->ambientLight[ 0 ];
-
-	if ( ent->ambientLight[ 1 ] > max1 )
-	{
-		max1 = ent->ambientLight[ 1 ];
-	}
-	else if ( ent->ambientLight[ 2 ] > max1 )
-	{
-		max1 = ent->ambientLight[ 2 ];
-	}
-
-	max2 = ent->directedLight[ 0 ];
-
-	if ( ent->directedLight[ 1 ] > max2 )
-	{
-		max2 = ent->directedLight[ 1 ];
-	}
-	else if ( ent->directedLight[ 2 ] > max2 )
-	{
-		max2 = ent->directedLight[ 2 ];
-	}
-
-	ri.Printf( PRINT_ALL, "amb:%i  dir:%i\n", max1, max2 );
-}
-
-#endif
-
-/*
 =================
 R_SetupEntityLighting
 
@@ -356,10 +314,6 @@ by the Calc_* functions
 */
 void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t forcedOrigin )
 {
-	//vec3_t          lightDir;
-	//vec3_t          lightOrigin;
-	//float           d;
-
 	// lighting calculations
 	if ( ent->lightingCalculated )
 	{
@@ -367,28 +321,6 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 	}
 
 	ent->lightingCalculated = qtrue;
-
-	/*
-	if(forcedOrigin)
-	{
-	        VectorCopy(forcedOrigin, lightOrigin);
-	}
-	else
-	{
-	        // trace a sample point down to find ambient light
-	        if(ent->e.renderfx & RF_LIGHTING_ORIGIN)
-	        {
-	                // separate lightOrigins are needed so an object that is
-	                // sinking into the ground can still be lit, and so
-	                // multi-part models can be lit identically
-	                VectorCopy(ent->e.lightingOrigin, lightOrigin);
-	        }
-	        else
-	        {
-	                VectorCopy(ent->e.origin, lightOrigin);
-	        }
-	}
-	*/
 
 	// if NOWORLDMODEL, only use dynamic lights (menu system, etc)
 	if ( !( refdef->rdflags & RDF_NOWORLDMODEL ) && tr.world
@@ -398,34 +330,6 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 	}
 	else
 	{
-#if 0
-
-		if ( !( refdef->rdflags & RDF_NOWORLDMODEL ) )
-		{
-			ent->ambientLight[ 0 ] = tr.worldEntity.ambientLight[ 0 ];
-			ent->ambientLight[ 1 ] = tr.worldEntity.ambientLight[ 1 ];
-			ent->ambientLight[ 2 ] = tr.worldEntity.ambientLight[ 2 ];
-		}
-		else
-		{
-			ent->ambientLight[ 0 ] = r_forceAmbient->value;
-			ent->ambientLight[ 1 ] = r_forceAmbient->value;
-			ent->ambientLight[ 2 ] = r_forceAmbient->value;
-		}
-
-		ent->directedLight[ 0 ] = ent->directedLight[ 1 ] = ent->directedLight[ 2 ] = tr.identityLight * ( 150.0f / 255.0f );
-
-		if ( ent->e.renderfx & RF_LIGHTING_ORIGIN )
-		{
-			VectorSubtract( ent->e.lightingOrigin, ent->e.origin, ent->lightDir );
-			VectorNormalize( ent->lightDir );
-		}
-		else
-		{
-			VectorCopy( tr.sunDirection, ent->lightDir );
-		}
-
-#else
 		//% ent->ambientLight[0] = ent->ambientLight[1] = ent->ambientLight[2] = tr.identityLight * 150;
 		//% ent->directedLight[0] = ent->directedLight[1] = ent->directedLight[2] = tr.identityLight * 150;
 		//% VectorCopy( tr.sunDirection, ent->lightDir );
@@ -439,10 +343,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 
 		VectorSet( ent->lightDir, -1, 1, 1.25 );
 		VectorNormalize( ent->lightDir );
-#endif
 	}
-
-#if 1
 
 	if ( ent->e.hilightIntensity )
 	{
@@ -459,21 +360,6 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 		ent->ambientLight[ 2 ] += tr.identityLight * 0.125f;
 	}
 
-#endif
-
-#if 0
-
-	// clamp ambient
-	for ( i = 0; i < 3; i++ )
-	{
-		if ( ent->ambientLight[ i ] > tr.identityLight )
-		{
-			ent->ambientLight[ i ] = tr.identityLight;
-		}
-	}
-
-#endif
-
 #if defined( COMPAT_ET )
 
 	if ( ent->e.entityNum < MAX_CLIENTS && ( refdef->rdflags & RDF_SNOOPERVIEW ) )
@@ -482,17 +368,6 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 	}
 
 #endif
-
-	// Tr3B: keep it in world space
-
-	// transform the direction to local space
-	//% d = VectorLength(ent->directedLight);
-	//% VectorScale(ent->lightDir, d, lightDir);
-	//% VectorNormalize(lightDir);
-
-	//% ent->lightDir[0] = DotProduct(lightDir, ent->e.axis[0]);
-	//% ent->lightDir[1] = DotProduct(lightDir, ent->e.axis[1]);
-	//% ent->lightDir[2] = DotProduct(lightDir, ent->e.axis[2]);
 }
 
 /*
@@ -507,8 +382,6 @@ void R_SetupLightOrigin( trRefLight_t *light )
 
 	if ( light->l.rlType == RL_DIRECTIONAL )
 	{
-#if 1
-
 		if ( !VectorCompare( light->l.center, vec3_origin ) )
 		{
 			MatrixTransformPoint( light->transformMatrix, light->l.center, transformed );
@@ -518,7 +391,6 @@ void R_SetupLightOrigin( trRefLight_t *light )
 			VectorMA( light->l.origin, 10000, light->direction, light->origin );
 		}
 		else
-#endif
 		{
 			vec3_t down = { 0, 0, 1 };
 
@@ -562,22 +434,11 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 			{
 				int    j;
 				vec3_t farCorners[ 4 ];
-				//vec4_t      frustum[6];
 				const vec4_t *frustum = (const vec4_t *)light->localFrustum;
 
 				ClearBounds( light->localBounds[ 0 ], light->localBounds[ 1 ] );
 
 				// transform frustum from world space to local space
-
-				/*
-				for(j = 0; j < 6; j++)
-				{
-				        VectorCopy(light->frustum[j].normal, frustum[j]);
-				        frustum[j][3] = light->frustum[j].dist;
-
-				        MatrixTransformPlane2(light->viewMatrix, frustum[j]);
-				}
-				*/
 				R_CalcFrustumFarCorners( frustum, farCorners );
 
 				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
@@ -658,21 +519,6 @@ void R_SetupLightView( trRefLight_t *light )
 				MatrixAffineInverse( light->transformMatrix, light->viewMatrix );
 				break;
 			}
-
-			/*
-			case RL_PROJ:
-			{
-			        matrix_t        viewMatrix;
-
-			        MatrixAffineInverse(light->transformMatrix, viewMatrix);
-
-			        // convert from our coordinate system (looking down X)
-			        // to OpenGL's coordinate system (looking down -Z)
-			        MatrixMultiply(quakeToOpenGLMatrix, viewMatrix, light->viewMatrix);
-			        break;
-			}
-			*/
-
 		default:
 			ri.Error( ERR_DROP, "R_SetupLightView: Bad rlType" );
 	}
@@ -930,12 +776,6 @@ void R_SetupLightProjection( trRefLight_t *light )
 				float  a, b, ofs, dist;
 				vec4_t targetGlobal;
 
-				// This transformation remaps the X,Y coordinates from [-1..1] to [0..1],
-				// presumably needed because the up/right vectors extend symmetrically
-				// either side of the target point.
-				//MatrixSetupTranslation(proj, 0.5f, 0.5f, 0);
-				//MatrixMultiplyScale(proj, 0.5f, 0.5f, 1);
-
 				rLen = VectorNormalize2( light->l.projRight, right );
 				uLen = VectorNormalize2( light->l.projUp, up );
 
@@ -1005,8 +845,6 @@ void R_SetupLightProjection( trRefLight_t *light )
 				//FIXME ?
 				VectorScale( falloff, 1.0f / falloffLen, falloff );
 
-				//light->falloffLength = 1;
-
 				Vector4Set( lightProject[ 3 ], falloff[ 0 ], falloff[ 1 ], falloff[ 2 ], -DotProduct( start, falloff ) );
 
 				// we want the planes of s=0, s=q, t=0, and t=q
@@ -1026,22 +864,6 @@ void R_SetupLightProjection( trRefLight_t *light )
 				VectorNegate( lightProject[ 3 ], frustum[ FRUSTUM_FAR ] );
 				frustum[ FRUSTUM_FAR ][ 3 ] = -lightProject[ 3 ][ 3 ] - 1.0f;
 
-#if 0
-				ri.Printf( PRINT_ALL, "light_target: (%5.3f, %5.3f, %5.3f)\n", light->l.projTarget[ 0 ], light->l.projTarget[ 1 ], light->l.projTarget[ 2 ] );
-				ri.Printf( PRINT_ALL, "light_right: (%5.3f, %5.3f, %5.3f)\n", light->l.projRight[ 0 ], light->l.projRight[ 1 ], light->l.projRight[ 2 ] );
-				ri.Printf( PRINT_ALL, "light_up: (%5.3f, %5.3f, %5.3f)\n", light->l.projUp[ 0 ], light->l.projUp[ 1 ], light->l.projUp[ 2 ] );
-				ri.Printf( PRINT_ALL, "light_start: (%5.3f, %5.3f, %5.3f)\n", light->l.projStart[ 0 ], light->l.projStart[ 1 ], light->l.projStart[ 2 ] );
-				ri.Printf( PRINT_ALL, "light_end: (%5.3f, %5.3f, %5.3f)\n", light->l.projEnd[ 0 ], light->l.projEnd[ 1 ], light->l.projEnd[ 2 ] );
-
-				ri.Printf( PRINT_ALL, "unnormalized frustum:\n" );
-
-				for ( i = 0; i < 6; i++ )
-				{
-					ri.Printf( PRINT_ALL, "(%5.6f, %5.6f, %5.6f, %5.6f)\n", frustum[ i ][ 0 ], frustum[ i ][ 1 ], frustum[ i ][ 2 ], frustum[ i ][ 3 ] );
-				}
-
-#endif
-
 				// calculate the new projection matrix from the frustum planes
 				MatrixFromPlanes( proj, frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], frustum[ FRUSTUM_FAR ] );
 
@@ -1059,15 +881,6 @@ void R_SetupLightProjection( trRefLight_t *light )
 					PlaneNormalize( frustum[ i ] );
 				}
 
-#if 0
-				ri.Printf( PRINT_ALL, "normalized frustum:\n" );
-
-				for ( i = 0; i < 6; i++ )
-				{
-					ri.Printf( PRINT_ALL, "(%5.3f, %5.3f, %5.3f, %5.3f)\n", light->frustum[ i ].normal[ 0 ], frustum[ i ][ 1 ], frustum[ i ][ 2 ], frustum[ i ][ 3 ] );
-				}
-
-#endif
 				break;
 			}
 
@@ -1149,15 +962,6 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	ia->scissorWidth = light->scissor.coords[ 2 ] - light->scissor.coords[ 0 ];
 	ia->scissorHeight = light->scissor.coords[ 3 ] - light->scissor.coords[ 1 ];
 
-	/*
-	if(r_shadows->integer == SHADOWING_STENCIL && glDepthBoundsEXT)
-	{
-	        ia->depthNear = light->depthNear;
-	        ia->depthFar = light->depthFar;
-	        ia->noDepthBoundsTest = light->noDepthBoundsTest;
-	}
-	*/
-
 	if ( glConfig2.occlusionQueryAvailable )
 	{
 		ia->noOcclusionQueries = light->noOcclusionQueries;
@@ -1183,8 +987,6 @@ compare function for qsort()
 */
 static int InteractionCompare( const void *a, const void *b )
 {
-#if 1
-
 	// shader first
 	if ( ( ( interaction_t * ) a )->shaderNum < ( ( interaction_t * ) b )->shaderNum )
 	{
@@ -1195,10 +997,6 @@ static int InteractionCompare( const void *a, const void *b )
 	{
 		return 1;
 	}
-
-#endif
-
-#if 1
 
 	// then entity
 	if ( ( ( interaction_t * ) a )->entity == &tr.worldEntity && ( ( interaction_t * ) b )->entity != &tr.worldEntity )
@@ -1220,8 +1018,6 @@ static int InteractionCompare( const void *a, const void *b )
 	{
 		return 1;
 	}
-
-#endif
 
 	return 0;
 }
@@ -1491,7 +1287,6 @@ void R_SetupLightScissor( trRefLight_t *light )
 				const vec4_t *frustum = (const vec4_t *)light->localFrustum;
 
 				R_CalcFrustumFarCorners( frustum, farCorners );
-#if 1
 
 				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
 				{
@@ -1516,7 +1311,6 @@ void R_SetupLightScissor( trRefLight_t *light )
 					}
 				}
 				else
-#endif
 				{
 					vec3_t top;
 
@@ -1565,21 +1359,6 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	int        r;
 	qboolean   anyClip;
 	qboolean   culled;
-
-#if 0
-	static int count = 0;
-	cubeSideBits = 0;
-
-	for ( cubeSide = 0; cubeSide < 6; cubeSide++ )
-	{
-		if ( count % 2 == 0 )
-		{
-			cubeSideBits |= ( 1 << cubeSide );
-		}
-	}
-
-	return cubeSideBits;
-#endif
 
 	if ( light->l.rlType != RL_OMNI || r_shadows->integer < SHADOWING_ESM16 || r_noShadowPyramids->integer )
 	{
@@ -1641,7 +1420,7 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 
 		// OpenGL projection matrix
 		fovX = 90;
-		fovY = 90; //R_CalcFov(fovX, shadowMapResolutions[light->shadowLOD], shadowMapResolutions[light->shadowLOD]);
+		fovY = 90;
 
 		zNear = 1.0;
 		zFar = light->sphereRadius;

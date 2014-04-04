@@ -357,49 +357,9 @@ void RB_RenderFlare( flare_t *f )
 
 	backEnd.pc.c_flareRenders++;
 
-#if 1
-	//VectorScale(f->color, f->drawIntensity, color);
 	VectorScale( colorWhite, f->drawIntensity, color );
 
 	size = backEnd.viewParms.viewportWidth * ( r_flareSize->value / 640.0f + 8 / -f->eyeZ );
-#else
-
-	/*
-	   As flare sizes stay nearly constant with increasing distance we must decrease the intensity
-	   to achieve a reasonable visual result. The intensity is ~ (size^2 / distance^2) which can be
-	   got by considering the ratio of  (flaresurface on screen) : (Surface of sphere defined by flare origin and distance from flare)
-	   An important requirement is: intensity <= 1 for all distances.
-
-	   The formula used here to compute the intensity is as follows:
-	   intensity = flareCoeff * size^2 / (distance + size*sqrt(flareCoeff))^2.
-	   As you can see, the intensity will have a max. of 1 when the distance is 0.
-
-	   The coefficient flareCoeff will determine the falloff speed with increasing distance.
-	 */
-	float distance, intensity, factor;
-
-	// We don't want too big values anyways when dividing by distance
-	if ( f->eyeZ > -1.0f )
-	{
-		distance = 1.0f;
-	}
-	else
-	{
-		distance = -f->eyeZ;
-	}
-
-	// calculate the flare size
-	size = backEnd.viewParms.viewportWidth * ( r_flareSize->value / 640.0f + 8 / distance );
-
-	factor = distance + size * sqrt( flareCoeff );
-
-	intensity = flareCoeff * size * size / ( factor * factor );
-
-	VectorScale( f->color, f->drawIntensity * intensity, color );
-	iColor[ 0 ] = color[ 0 ] * 255;
-	iColor[ 1 ] = color[ 1 ] * 255;
-	iColor[ 2 ] = color[ 2 ] * 255;
-#endif
 
 	Tess_Begin( Tess_StageIteratorGeneric, NULL, tr.flareShader, NULL, qfalse, qfalse, -1, f->fogNum );
 
@@ -490,24 +450,6 @@ void RB_RenderFlares( void )
 	{
 		return;
 	}
-
-#if 0
-
-	if ( r_flareCoeff->modified )
-	{
-		if ( r_flareCoeff->value == 0.0f )
-		{
-			flareCoeff = atof( "150" );
-		}
-		else
-		{
-			flareCoeff = r_flareCoeff->value;
-		}
-
-		r_flareCoeff->modified = qfalse;
-	}
-
-#endif
 
 	// reset currentEntity to world so that any previously referenced entities don't have influence
 	// on the rendering of these flares (i.e. RF_ renderer flags).
