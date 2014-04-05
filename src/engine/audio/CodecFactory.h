@@ -28,22 +28,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-//TODO fix spacing
-#include "audio_file.h"
-using Audio::audio_file;
+#ifndef CODEC_FACTORY_H
+#define CODEC_FACTORY_H
 
-audio_file::~audio_file() {}
+#include "AudioData.h"
+#include <string>
+//#include "../../common/String.h"
 
-const void* audio_file::get_audio_data() {
-  return static_cast<void*>(audio_data.data());
-}
+namespace Audio {
 
-int audio_file::get_sample_rate() const { return sample_rate; }
 
-int audio_file::get_byte_depth() const { return byte_depth; }
+    AudioData LoadSoundCodec(std::string filename);
 
-int audio_file::get_number_of_channels() const { return number_of_channels; }
-
-int audio_file::get_number_of_samples() const { return number_of_samples; }
-
-int audio_file::get_size() const { return audio_data.size(); }
+} // namespace Audio
+#endif

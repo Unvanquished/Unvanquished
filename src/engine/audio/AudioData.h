@@ -28,28 +28,39 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#ifndef AUDIO_DATA_H
+#define AUDIO_DATA_H
 
-#include "wav_file.h"
-#include "snd_codec.h"
-#include "../qcommon/qcommon.h"
-#include <iterator>
+namespace Audio {
 
-using Audio::wav_file;
+struct AudioData {
+	const int sampleRate;
+	const int byteDepth;
+	const int numberOfChannels;
+	const int size;
+	char* rawSamples;
 
+	AudioData()
+	    : sampleRate{0}
+	    , byteDepth{0}
+	    , numberOfChannels{0}
+	    , size{0}
+	    , rawSamples{nullptr}
+	{}
 
-//TODO add logging and error checking
-wav_file::wav_file(string filename) {
+	AudioData(int sampleRate, int byteDepth, int numberOfChannels, int size, char* rawSamples,
+	          bool dataIsOwned = true)
+	    : sampleRate{sampleRate}
+	    , byteDepth{byteDepth}
+	    , numberOfChannels{numberOfChannels}
+	    , size{size}
+	    , rawSamples{rawSamples}
+	{}
 
-  snd_info_t info;
-  char *data = static_cast<char *>(S_WAV_CodecLoad(filename.data(), &info));
-
-  std::copy(data, data + info.size, std::back_inserter(audio_data));
-
-  sample_rate = info.rate;
-  byte_depth = info.width;
-  number_of_channels = info.channels;
-  number_of_samples = info.samples;
-
-  Hunk_FreeTempMemory(data);
-}
-
+	const void* GetRawData() const
+	{
+		return static_cast<const void*>(rawSamples);
+	}
+};
+} // namespace Audio
+#endif

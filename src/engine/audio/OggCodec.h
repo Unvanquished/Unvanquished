@@ -28,19 +28,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#ifndef OPUS_FILE_H
-#define OPUS_FILE_H
+#ifndef OGG_CODEC_H
+#define OGG_CODEC_H
 
-#include "audio_file.h"
+#include "AudioData.h"
 #include <string>
-
-using std::string;
 
 namespace Audio {
 
-class opus_file final: public audio_file{
- public:
-  opus_file(string filename);
-};
+AudioData LoadOggCodec(std::string filename);
+
 } //namespace Audio
 #endif

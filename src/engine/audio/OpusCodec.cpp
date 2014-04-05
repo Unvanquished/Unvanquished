@@ -28,35 +28,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-//TODO fix spacing
-#ifndef AUDIO_FILE_H
-#define AUDIO_FILE_H
 
-#include <vector>
-using std::vector;
+#include "OpusCodec.h"
+#include "snd_codec.h"
+#include "../qcommon/qcommon.h"
+//
+//TODO write a new loader
+//TODO add logging and error checking
+Audio::AudioData Audio::LoadOpusCodec(std::string filename)
+{
 
-namespace Audio {
+	snd_info_t info;
+	char* data = static_cast<char*>(S_OggOpus_CodecLoad(filename.data(), &info));
 
-class audio_file {
- public:
+	char* dataN = new char[info.size];
 
-  virtual ~audio_file() = 0 ;
+	std::copy_n(data, info.size, dataN);
 
-  const void* get_audio_data();
+	Hunk_FreeTempMemory(data);
 
-  int get_sample_rate() const;
-  int get_byte_depth() const;
-  int get_number_of_channels() const;
-  int get_number_of_samples() const;
-  int get_size() const;
-
- protected:
-  int sample_rate; //was rate
-  int byte_depth;
-  int number_of_channels;
-  int number_of_samples; //was samples
-  vector<char> audio_data;
-};
-
-}  // namespace Audio
-#endif
+	return Audio::AudioData(info.rate, info.width, info.channels, info.size, dataN);
+}

@@ -130,22 +130,15 @@ namespace AL {
         alHandle = 0;
     }
 
-    unsigned Buffer::Feed(snd_info_t info, const void* data) {
-        ALuint format = Format(info.width, info.channels);
+    unsigned Buffer::Feed(const AudioData& audioData)
+    {
+	    ALuint format = Format(audioData.byteDepth, audioData.numberOfChannels);
 
-        CHECK_AL_ERROR();
-		alBufferData(alHandle, format, data, info.size, info.rate);
+	    CHECK_AL_ERROR();
+	    alBufferData(alHandle, format, audioData.GetRawData(), audioData.size,
+	                 audioData.sampleRate);
 
-        return ClearALError();
-    }
-
-    unsigned Buffer::Feed(audio_file& audio_data){
-        ALuint format = Format(audio_data.get_byte_depth(), audio_data.get_number_of_channels());
-
-        CHECK_AL_ERROR();
-		alBufferData(alHandle, format, audio_data.get_audio_data(), audio_data.get_size(), audio_data.get_sample_rate());
-
-        return ClearALError();
+	    return ClearALError();
     }
 
     Buffer::Buffer(unsigned handle): alHandle(handle) {

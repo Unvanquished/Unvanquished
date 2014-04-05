@@ -28,19 +28,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#ifndef WAV_FILE_H
-#define WAV_FILE_H
+#ifndef WAV_CODEC_H
+#define WAV_CODEC_H
 
-#include "audio_file.h"
+#include "AudioData.h"
 #include <string>
-
-using std::string;
 
 namespace Audio {
 
-class wav_file final: public audio_file{
- public:
-  wav_file(string filename);
-};
-} //namespace Audio
+AudioData LoadWavCodec(std::string filename);
+
+} // namespace Audio
 #endif

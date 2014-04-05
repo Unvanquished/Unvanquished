@@ -27,37 +27,27 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
-#include "audio_file_factory.h"
-#include "wav_file.h"
-#include "ogg_file.h"
-#include "opus_file.h"
-#include "../../common/Log.h"
-
-/*
- *TODO
- *create a make_unique method
- */
 
 
+#include "WavCodec.h"
+#include "snd_codec.h"
+#include "../qcommon/qcommon.h"
+#include <algorithm>
 
-unique_ptr<audio_file> Audio::audio_file_factory::get_audio_file(string filename){
+//TODO write a new loader
+//TODO add logging and error checking
+Audio::AudioData Audio::LoadWavCodec(std::string filename)
+{
 
-  size_t position_of_last_dot{filename.find_last_of('.')};
+	snd_info_t info;
+	char* data = static_cast<char*>(S_WAV_CodecLoad(filename.data(), &info));
 
-  if (position_of_last_dot == string::npos){
-      Log::Warn("Could not find the extension in %s", filename);
-      return nullptr;
-  }
+	char* dataN = new char[info.size];
 
-  string ext{filename.substr(position_of_last_dot + 1)};
+	std::copy_n(data, info.size, dataN);
 
-  if( ext == "wav")
-      return unique_ptr<audio_file>(new Audio::wav_file(filename));
-  if( ext == "ogg")
-      return unique_ptr<audio_file>(new Audio::ogg_file(filename));
-  if( ext == "opus")
-      return unique_ptr<audio_file>(new Audio::opus_file(filename));
+	Hunk_FreeTempMemory(data);
 
-  Log::Warn("No codec available for opening %s.", filename);
-  return nullptr;
+	return Audio::AudioData(info.rate, info.width, info.channels, info.size, dataN);
 }
+

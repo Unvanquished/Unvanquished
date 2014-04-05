@@ -28,27 +28,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#ifndef OGG_OGG_H
+#define OGG_OGG_H
 
-#include "opus_file.h"
-#include "snd_codec.h"
-#include "../qcommon/qcommon.h"
-#include <iterator>
+#include "AudioData.h"
+#include <string>
 
-using Audio::opus_file;
+namespace Audio {
 
-//TODO add logging and error checking
-opus_file::opus_file(string filename) {
+AudioData LoadOpusCodec(std::string filename);
 
-  snd_info_t info;
-  char *data = static_cast<char *>(S_OggOpus_CodecLoad(filename.data(), &info));
-
-  std::copy(data, data + info.size, std::back_inserter(audio_data));
-
-  sample_rate = info.rate;
-  byte_depth = info.width;
-  number_of_channels = info.channels;
-  number_of_samples = info.samples;
-
-  Hunk_FreeTempMemory(data);
-}
-
+} //namespace Audio
+#endif

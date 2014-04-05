@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "AudioPrivate.h"
+#include "AudioData.h"
 
 namespace Audio {
 
@@ -356,10 +357,11 @@ namespace Audio {
 
         streams[streamNum]->SetGain(volume);
 
-        snd_info_t dataInfo = {rate, width, channels, numSamples, (width * numSamples * channels), 0};
-        AL::Buffer buffer;
+	    AudioData audioData(rate, width, channels, (width * numSamples * channels),
+	                        (char*)const_cast<void*>(data));
+	    AL::Buffer buffer;
 
-        int feedError = buffer.Feed(dataInfo, data);
+        int feedError = buffer.Feed(audioData);
 
         if (not feedError) {
             streams[streamNum]->AppendBuffer(std::move(buffer));

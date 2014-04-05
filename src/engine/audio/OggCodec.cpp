@@ -28,19 +28,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#ifndef OGG_FILE_H
-#define OGG_FILE_H
 
-#include "audio_file.h"
-#include <string>
+#include "OggCodec.h"
+#include "snd_codec.h"
+#include "../qcommon/qcommon.h"
+//
+//TODO write a new loader
+//TODO add logging and error checking
+Audio::AudioData Audio::LoadOggCodec(std::string filename)
+{
 
-using std::string;
+	snd_info_t info;
+	char* data = static_cast<char*>(S_OGG_CodecLoad(filename.data(), &info));
 
-namespace Audio {
+	char* dataN = new char[info.size];
 
-class ogg_file final: public audio_file{
- public:
-  ogg_file(string filename);
-};
-} //namespace Audio
-#endif
+	std::copy_n(data, info.size, dataN);
+
+	Hunk_FreeTempMemory(data);
+
+	return AudioData(info.rate, info.width, info.channels, info.size, dataN);
+}

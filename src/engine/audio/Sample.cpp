@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "AudioPrivate.h"
-#include "audio_file_factory.h"
+#include "CodecFactory.h"
 
 namespace Audio {
 
@@ -46,21 +46,24 @@ namespace Audio {
 
     bool Sample::Load() {
         audioLogs.Debug("Loading Sample '%s'", GetName());
-        auto audio_file = Audio::audio_file_factory::get_audio_file(GetName());
+	    auto audioData = LoadSoundCodec(GetName());
 
-        if (audio_file == nullptr) {
-            audioLogs.Warn("Couldn't load sound %s", GetName());
+	    if (audioData.size == 0) {
+		    audioLogs.Warn("Couldn't load sound %s", GetName());
             return false;
         }
 
         //TODO handle errors, especially out of memory errors
-        buffer.Feed(*audio_file);
+        buffer.Feed(audioData);
 
-        if (audio_file->get_size() == 0) {
-            audioLogs.Warn("info.size = 0 in RegisterSample, what?");
+	    if (audioData.size == 0) {
+		    audioLogs.Warn("info.size = 0 in RegisterSample, what?");
         }
 
-        return true;
+	    if (audioData.rawSamples != nullptr)
+		    delete[] audioData.rawSamples;
+
+	    return true;
     }
 
     void Sample::Cleanup() {

@@ -27,28 +27,38 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
+#include "CodecFactory.h"
+#include "WavCodec.h"
+#include "OggCodec.h"
+#include "OpusCodec.h"
+#include <algorithm>
+#include "../../common/Log.h"
+
+namespace Audio {
+
+AudioData LoadSoundCodec(std::string filename)
+{
 
 
-#include "ogg_file.h"
-#include "snd_codec.h"
-#include "../qcommon/qcommon.h"
-#include <iterator>
+	size_t position_of_last_dot{filename.find_last_of('.')};
 
-using Audio::ogg_file;
+	if (position_of_last_dot == std::string::npos) {
+		Log::Warn("Could not find the extension in %s", filename);
+		// Should cause an error
+		return std::move(AudioData());
+	}
 
-//TODO add logging and error checking
-ogg_file::ogg_file(string filename) {
+	std::string ext{filename.substr(position_of_last_dot + 1)};
 
-  snd_info_t info;
-  char *data = static_cast<char *>(S_OGG_CodecLoad(filename.data(), &info));
+	if (ext == "wav")
+		return std::move(LoadWavCodec(filename));
+	if (ext == "ogg")
+		return std::move(LoadOggCodec(filename));
+	if (ext == "opus")
+		return std::move(LoadOpusCodec(filename));
 
-  std::copy(data, data + info.size, std::back_inserter(audio_data));
-
-  sample_rate = info.rate;
-  byte_depth = info.width;
-  number_of_channels = info.channels;
-  number_of_samples = info.samples;
-
-  Hunk_FreeTempMemory(data);
+	Log::Warn("No codec available for opening %s.", filename);
+	// Should cause an error
+	return std::move(AudioData());
 }
-
+} // namespace Audio
