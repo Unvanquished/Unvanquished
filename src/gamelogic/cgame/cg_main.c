@@ -1513,9 +1513,6 @@ static void CG_RegisterGraphics( void )
 	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison",
 							      (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.upgradeClassIconShader = trap_R_RegisterShader("icons/icona_upgrade",
-								 (RegisterShaderFlags_t) RSF_DEFAULT);
-
 	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated",
 								 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
@@ -1547,6 +1544,7 @@ static void CG_RegisterGraphics( void )
 
 	cgs.media.alienEvolvePS = CG_RegisterParticleSystem( "alienEvolvePS" );
 	cgs.media.alienAcidTubePS = CG_RegisterParticleSystem( "alienAcidTubePS" );
+	cgs.media.alienBoosterPS = CG_RegisterParticleSystem( "alienBoosterPS" );
 
 	cgs.media.jetPackThrustPS = CG_RegisterParticleSystem( "jetPackAscendPS" );
 
@@ -1745,7 +1743,7 @@ static void CG_RegisterClients( void )
 
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.md3" );
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
-	cgs.media.battpackModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" );
+	cgs.media.radarModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" ); // HACK: Use old battpack
 
 	cg.charModelFraction = 1.0f;
 	trap_UpdateScreen();

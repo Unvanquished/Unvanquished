@@ -135,13 +135,6 @@ static float CG_Rocket_GetPlayerAmmoProgress( void )
 		maxAmmo = BG_Weapon( weapon )->maxAmmo;
 
 		if ( maxAmmo <= 0 ) { return 0; }
-
-		if ( BG_Weapon( weapon )->usesEnergy &&
-			BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
-		{
-			maxAmmo *= BATTPACK_MODIFIER;
-		}
-
 		return (float)cg.snap->ps.ammo / (float)maxAmmo;
 	}
 }

@@ -30,23 +30,29 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 CG_Obituary
 =============
 */
+static const char teamTag[][8] = { "^2●^7", "^1●^7", "^4●^7" };
+
 static void CG_Obituary( entityState_t *ent )
 {
 	int          mod;
-	int          target, attacker;
+	int          target, attacker, assistant;
 	int          attackerClass = -1;
 	const char   *message;
+	const char   *messageAssisted = NULL;
 	const char   *targetInfo;
 	const char   *attackerInfo;
+	const char   *assistantInfo;
 	char         targetName[ MAX_NAME_LENGTH ];
 	char         attackerName[ MAX_NAME_LENGTH ];
+	char         assistantName[ MAX_NAME_LENGTH ];
 	gender_t     gender;
 	clientInfo_t *ci;
-	qboolean     teamKill = qfalse;
-	qboolean     attackerFirst = qfalse;
+	team_t       attackerTeam, assistantTeam = TEAM_NONE;
 
 	target = ent->otherEntityNum;
 	attacker = ent->otherEntityNum2;
+	assistant = ent->otherEntityNum3;
+	assistantTeam = (team_t) ( ent->generic1 & 0xFF ); // ugly hack allowing for future expansion(!)
 	mod = ent->eventParm;
 
 	if ( target < 0 || target >= MAX_CLIENTS )
@@ -61,15 +67,35 @@ static void CG_Obituary( entityState_t *ent )
 	{
 		attacker = ENTITYNUM_WORLD;
 		attackerInfo = NULL;
+		attackerTeam = TEAM_NONE;
 	}
 	else
 	{
 		attackerInfo = CG_ConfigString( CS_PLAYERS + attacker );
+		attackerTeam = cgs.clientinfo[ attacker ].team;
+	}
 
-		if ( cgs.clientinfo[ attacker ].team == ci->team )
-		{
-			teamKill = qtrue;
-		}
+	if ( assistant < 0 || assistant >= MAX_CLIENTS )
+	{
+		assistantInfo = NULL;
+	}
+	else
+	{
+		assistantInfo = CG_ConfigString( CS_PLAYERS + assistant );
+	}
+
+	if ( assistantTeam < TEAM_NONE || assistantTeam >= NUM_TEAMS )
+	{
+		assistantTeam = TEAM_NONE;
+	}
+
+	if ( !assistantInfo )
+	{
+		strcpy( assistantName, "noname" );
+	}
+	else
+	{
+		Q_strncpyz( assistantName, Info_ValueForKey( assistantInfo, "n" ), sizeof( assistantName ) );
 	}
 
 	targetInfo = CG_ConfigString( CS_PLAYERS + target );
@@ -83,205 +109,234 @@ static void CG_Obituary( entityState_t *ent )
 
 	// check for single client messages
 
-	switch ( mod )
-	{
-		case MOD_FALLING:
-			message = G_( "%s ^7fell foul to gravity\n" );
-			break;
-
-		case MOD_CRUSH:
-			message = G_( "%s ^7was squished\n" );
-			break;
-
-		case MOD_WATER:
-			message = G_( "%s ^7forgot to pack a snorkel\n" );
-			break;
-
-		case MOD_SLIME:
-			message = G_( "%s ^7melted\n" );
-			break;
-
-		case MOD_LAVA:
-			message = G_( "%s ^7did a back flip into the lava\n" );
-			break;
-
-		case MOD_TARGET_LASER:
-			message = G_( "%s ^7saw the light\n" );
-			break;
-
-		case MOD_TRIGGER_HURT:
-			message = G_( "%s ^7was in the wrong place\n" );
-			break;
-
-		case MOD_HSPAWN:
-			message = G_( "%s ^7should have run further\n" );
-			break;
-
-		case MOD_ASPAWN:
-			message = G_( "%s ^7shouldn't have trod in the acid\n" );
-			break;
-
-		case MOD_MGTURRET:
-			if ( cg_emoticonsInMessages.integer )
-			{
-				message = "[turret] %s\n";
-			}
-			else
-			{
-				message = G_( "%s ^7was gunned down by a turret\n" );
-			}
-			break;
-
-		case MOD_TESLAGEN:
-			if ( cg_emoticonsInMessages.integer )
-			{
-				message = "[tesla] %s\n";
-			}
-			else
-			{
-				message = G_( "%s ^7was zapped by a tesla generator\n" );
-			}
-			break;
-
-		case MOD_ATUBE:
-			if ( cg_emoticonsInMessages.integer )
-			{
-				message = "[acidtube] %s\n";
-			}
-			else
-			{
-				message = G_( "%s ^7was melted by an acid tube\n" );
-			}
-			break;
-
-		case MOD_OVERMIND:
-			if ( cg_emoticonsInMessages.integer )
-			{
-				message = "[overmind] %s\n";
-			}
-			else
-			{
-				message = G_( "%s ^7got too close to the overmind\n" );
-			}
-			break;
-
-		case MOD_REACTOR:
-			if ( cg_emoticonsInMessages.integer )
-			{
-				message = "[reactor] %s\n";
-			}
-			else
-			{
-				message = G_( "%s ^7got too close to the reactor\n" );
-			}
-			break;
-
-		case MOD_SLOWBLOB:
-			message = G_( "%s ^7should have visited a medical station\n" );
-			break;
-
-		case MOD_SWARM:
-			if ( cg_emoticonsInMessages.integer )
-			{
-				message = "[hive] %s\n";
-			}
-			else
-			{
-				message = G_( "%s ^7was hunted down by the swarm\n" );
-			}
-			break;
-
-		default:
-			message = NULL;
-			break;
-	}
-
-	if ( !message && attacker == target )
+	if ( cg_emoticonsInMessages.integer )
 	{
 		switch ( mod )
 		{
-			case MOD_FLAMER_SPLASH:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "[flamer] %s\n";
-				}
-				else
-				{
-					message = G_( "%s ^7toasted self\n" );
-				}
+			// Environmental kills
+
+			case MOD_FALLING:
+			case MOD_CRUSH:
+			case MOD_WATER:
+			case MOD_SLIME:
+			case MOD_LAVA:
+			case MOD_TRIGGER_HURT:
+
+			// Building explosions
+
+			case MOD_HSPAWN:
+			case MOD_ASPAWN:
+				goto is_long_env_kill_message;
+
+			// Attacked by a building
+
+			case MOD_MGTURRET:
+				message = "%s [turret] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [turret] %s%s\n";
+				attackerTeam = TEAM_HUMANS;
 				break;
 
-			case MOD_BURN:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "[fire] %s\n";
-				}
-				else
-				{
-					message = G_( "%s ^7burned self\n" );
-				}
+			case MOD_TESLAGEN:
+				message = "%s [tesla] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [tesla] %s%s\n";
+				attackerTeam = TEAM_HUMANS;
 				break;
 
-			case MOD_LCANNON_SPLASH:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "[lcannon] %s\n";
-				}
-				else
-				{
-					message = G_( "%s ^7irradiated self\n" );
-				}
+			case MOD_ATUBE:
+				message = "%s [acidtube] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [acidtube] %s%s\n";
+				attackerTeam = TEAM_ALIENS;
 				break;
 
-			case MOD_GRENADE:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "[grenade] %s\n";
-				}
-				else
-				// fall-through
-			case MOD_FIREBOMB:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "[firebomb] %s\n";
-				}
-				else
-				{
-					message = G_( "%s ^7blew self up\n" );
-				}
+			case MOD_OVERMIND:
+				message = "%s [overmind] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [overmind] %s%s\n";
+				attackerTeam = TEAM_ALIENS;
 				break;
 
-			case MOD_LEVEL3_BOUNCEBALL:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "[advdragoon] %s\n";
-				}
-				else
-				{
-					message = G_( "%s ^7sniped self\n" );
-				}
+			case MOD_REACTOR:
+				message = "%s [reactor] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [reactor] %s%s\n";
+				attackerTeam = TEAM_HUMANS;
 				break;
 
-			case MOD_PRIFLE:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "[prifle] %s\n";
-				}
-				else
-				{
-					message = G_( "%s ^7pulse rifled self\n" );
-				}
+			case MOD_SLOWBLOB:
+				goto is_long_env_kill_message;
+
+			case MOD_SWARM:
+				message = "%s [hive] %s%s\n";
+				messageAssisted = "%s (+ %s%s^7) [hive] %s%s\n";
+				attackerTeam = TEAM_ALIENS;
+				break;
+
+			// Shouldn't happen
+
+			case MOD_TARGET_LASER:
+				goto is_long_env_kill_message;
+
+			default:
+				message = NULL;
+				break;
+		}
+
+		if ( message )
+		{
+			// Format: tag, [assistant.] victim
+			if ( messageAssisted && assistantInfo )
+			{
+				CG_Printf( messageAssisted, teamTag[ attackerTeam ], teamTag[ assistantTeam ], assistantName, teamTag[ ci->team ], targetName );
+			}
+			else
+			{
+				CG_Printf( message, teamTag[ attackerTeam ], teamTag[ ci->team ], targetName );
+			}
+
+			return;
+		}
+
+
+
+		if ( !message && attacker == target )
+		{
+			switch ( mod )
+			{
+				case MOD_FLAMER_SPLASH:
+					message = "[flamer] %s%s\n";
+					break;
+
+				case MOD_BURN:
+					message = "[fire] %s%s\n";
+					break;
+
+				case MOD_LCANNON_SPLASH:
+					message = "[lcannon] %s%s\n";
+					break;
+
+				case MOD_GRENADE:
+					message = "[grenade] %s%s\n";
+					break;
+
+				case MOD_FIREBOMB:
+					message = "[firebomb] %s%s\n";
+					break;
+
+				case MOD_LEVEL3_BOUNCEBALL:
+					message = "[advdragoon] %s%s\n";
+					break;
+
+				case MOD_PRIFLE:
+					message = "[prifle] %s%s\n";
+					break;
+
+				default:
+					message = "☠ %s%s\n";
+					break;
+			}
+		}
+	}
+	else
+	{
+		is_long_env_kill_message: // <- use of this label == needs a kill icon
+
+		switch ( mod )
+		{
+			// Environmental kills
+
+			case MOD_FALLING:
+				message = G_( "%s%s ^7fell foul to gravity\n" );
+				break;
+
+			case MOD_CRUSH:
+				message = G_( "%s%s ^7was squished\n" );
+				break;
+
+			case MOD_WATER:
+				message = G_( "%s%s ^7forgot to pack a snorkel\n" );
+				break;
+
+			case MOD_SLIME:
+				message = G_( "%s%s ^7melted\n" );
+				break;
+
+			case MOD_LAVA:
+				message = G_( "%s%s ^7did a back flip into the lava\n" );
+				break;
+
+			case MOD_TRIGGER_HURT:
+				message = G_( "%s%s ^7was in the wrong place\n" );
+				break;
+
+			// Building explosions
+
+			case MOD_HSPAWN:
+				message = G_( "%s%s ^7should have run further\n" );
+				break;
+
+			case MOD_ASPAWN:
+				message = G_( "%s%s ^7shouldn't have trod in the acid\n" );
+				break;
+
+			// Attacked by a building
+
+			case MOD_MGTURRET:
+				message = G_( "%s%s ^7was gunned down by a turret\n" );
+				messageAssisted = G_( "%s%s ^7was gunned down by a turret; %s%s assisted\n" );
+				break;
+
+			case MOD_TESLAGEN:
+				message = G_( "%s%s ^7was zapped by a tesla generator\n" );
+				messageAssisted = G_( "%s%s ^7was zapped by a tesla generator; %s%s assisted\n" );
+				break;
+
+			case MOD_ATUBE:
+				message = G_( "%s%s ^7was melted by an acid tube\n" );
+				messageAssisted = G_( "%s%s ^7was melted by an acid tube; %s%s assisted\n" );
+				break;
+
+			case MOD_OVERMIND:
+				message = G_( "%s%s ^7got too close to the overmind\n" );
+				messageAssisted = G_( "%s%s ^7got too close to the overmind; %s%s assisted\n" );
+				break;
+
+			case MOD_REACTOR:
+				message = G_( "%s%s ^7got too close to the reactor\n" );
+				messageAssisted = G_( "%s%s ^7got too close to the reactor; %s%s assisted\n" );
+				break;
+
+			case MOD_SLOWBLOB:
+				message = G_( "%s%s ^7should have visited a medical station\n" );
+				messageAssisted = G_( "%s%s ^7should have visited a medical station; %s%s assisted\n" );
+				break;
+
+			case MOD_SWARM:
+				message = G_( "%s%s ^7was hunted down by the swarm\n" );
+				messageAssisted = G_( "%s%s ^7was hunted down by the swarm; %s%s assisted\n" );
+				break;
+
+			// Shouldn't happen
+
+			case MOD_TARGET_LASER:
+				message = G_( "%s%s ^7saw the light\n" );
+				messageAssisted = G_( "%s%s ^7saw the light; %s%s assisted\n" );
 				break;
 
 			default:
-				message = G_( "%s ^7killed self\n" );
+				message = NULL;
 				break;
 		}
 	}
 
 	if ( message )
 	{
-		CG_Printf( message, targetName );
+		if ( messageAssisted && assistantInfo )
+		{
+			CG_Printf( messageAssisted, teamTag[ assistantTeam ], assistantName, teamTag[ ci->team ], targetName );
+		}
+		else
+		{
+			CG_Printf( message, teamTag[ ci->team ], targetName );
+		}
+
 		return;
 	}
 
@@ -304,365 +359,337 @@ static void CG_Obituary( entityState_t *ent )
 
 	if ( attacker != ENTITYNUM_WORLD )
 	{
-		switch ( mod )
+		if ( cg_emoticonsInMessages.integer )
 		{
-			case MOD_PAINSAW:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [painsaw] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was sawn by %s%s\n" );
-				}
-				break;
+			switch ( mod )
+			{
+				case MOD_PAINSAW:
+					message = "%s%s^7 [painsaw] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [painsaw] %s%s\n";
+					break;
 
-			case MOD_BLASTER:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [blaster] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was blasted by %s%s\n" );
-				}
-				break;
+				case MOD_BLASTER:
+					message = "%s%s^7 [blaster] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [blaster] %s%s\n";
+					break;
 
-			case MOD_MACHINEGUN:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [rifle] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was machinegunned by %s%s\n" );
-				}
-				break;
+				case MOD_MACHINEGUN:
+					message = "%s%s^7 [rifle] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [rifle] %s%s\n";
+					break;
 
-			case MOD_CHAINGUN:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [chaingun] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was chaingunned by %s%s\n" );
-				}
-				break;
+				case MOD_CHAINGUN:
+					message = "%s%s^7 [chaingun] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [chaingun] %s%s\n";
+					break;
 
-			case MOD_SHOTGUN:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [shotgun] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was gunned down by %s%s\n" );
-				}
-				break;
+				case MOD_SHOTGUN:
+					message = "%s%s^7 [shotgun] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [shotgun] %s%s\n";
+					break;
 
-			case MOD_PRIFLE:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [prifle] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was pulse rifled by %s%s\n" );
-				}
-				break;
+				case MOD_PRIFLE:
+					message = "%s%s^7 [prifle] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [prifle] %s%s\n";
+					break;
 
-			case MOD_MDRIVER:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [mdriver] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was mass driven by %s%s\n" );
-				}
-				break;
+				case MOD_MDRIVER:
+					message = "%s%s^7 [mdriver] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [mdriver] %s%s\n";
+					break;
 
-			case MOD_LASGUN:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [lasgun] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was lasgunned by %s%s\n" );
-				}
-				break;
+				case MOD_LASGUN:
+					message = "%s%s^7 [lasgun] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [lasgun] %s%s\n";
+					break;
 
-			case MOD_FLAMER:
-			case MOD_FLAMER_SPLASH:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [flamer] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was grilled by %s%s^7's flamer\n" );
-				}
-				break;
+				case MOD_FLAMER:
+				case MOD_FLAMER_SPLASH:
+				case MOD_BURN:
+					message = "%s%s^7 [flamer] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [flamer] %s%s\n";
+					break;
 
-			case MOD_BURN:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [flamer] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was burned by %s%s^7's fire\n" );
-				}
-				break;
+				case MOD_LCANNON:
+				case MOD_LCANNON_SPLASH:
+					message = "%s%s^7 [lcannon] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [lcannon] %s%s\n";
+					break;
 
-			case MOD_LCANNON:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [lcannon] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7felt the full force of %s%s^7's lucifer cannon\n" );
-				}
-				break;
+				case MOD_GRENADE:
+					message = "%s%s^7 [grenade] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [grenade] %s%s\n";
+					break;
 
-			case MOD_LCANNON_SPLASH:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [lcannon] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n" );
-				}
-				break;
+				case MOD_FIREBOMB:
+					message = "%s%s^7 [firebomb] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [firebomb] %s%s\n";
+					break;
 
-			case MOD_GRENADE:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [grenade] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7couldn't escape %s%s^7's grenade\n" );
-				}
-				break;
+				case MOD_ABUILDER_CLAW:
+					message = "%s%s^7 [granger] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [granger] %s%s\n";
+					break;
 
-			case MOD_FIREBOMB:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [firebomb] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7couldn't escape %s%s^7's firebomb\n" );
-				}
-				break;
+				case MOD_LEVEL0_BITE:
+					message = "%s%s^7 [dretch] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [dretch] %s%s\n";
+					break;
 
-			case MOD_ABUILDER_CLAW:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [granger] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7should leave %s%s^7's buildings alone\n" );
-				}
-				break;
+				case MOD_LEVEL1_CLAW:
+					message = "%s%s^7 [basilisk] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [basilisk] %s%s\n";
+					break;
 
-			case MOD_LEVEL0_BITE:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [dretch] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was bitten by %s%s\n" );
-				}
-				break;
+				case MOD_LEVEL2_CLAW:
+					message = "%s%s^7 [marauder] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [marauder] %s%s\n";
+					break;
 
-			case MOD_LEVEL1_CLAW:
-				if ( cg_emoticonsInMessages.integer )
+				case MOD_LEVEL2_ZAP:
+					message = "%s%s^7 [advmarauder] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [advmarauder] %s%s\n";
+					break;
+
+				case MOD_LEVEL3_CLAW:
+				case MOD_LEVEL3_POUNCE:
+					message = "%s%s^7 [dragoon] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [dragoon] %s%s\n";
+					break;
+
+				case MOD_LEVEL3_BOUNCEBALL:
+					message = "%s%s^7 [advdragoon] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [advdragoon] %s%s\n";
+					break;
+
+				case MOD_LEVEL4_CLAW:
+				case MOD_LEVEL4_TRAMPLE:
+					message = "%s%s^7 [tyrant] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [tyrant] %s%s\n";
+					break;
+
+				case MOD_WEIGHT_H:
+				case MOD_WEIGHT_A:
+					message = "%s%s^7 crushed %s%s\n"; // FIXME
+					messageAssisted = "%s%s^7 (+ %s%s^7) crushed %s%s\n"; // FIXME
+					break;
+
+				case MOD_POISON:
+					message = "%s%s^7 [booster] %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) [booster] %s%s\n";
+					break;
+
+				case MOD_TELEFRAG:
+					message = "%s%s^7 [telenode] %s%s\n";
+					break;
+
+				default:
+					message = "%s%s^7 ☠ %s%s\n";
+					messageAssisted = "%s%s^7 (+ %s%s^7) ☠ %s%s\n";
+					break;
+			}
+
+			if ( message )
+			{
+				// Argument order: attacker, [assistant,] victim. Each has team tag first.
+				if ( messageAssisted && assistantInfo )
 				{
-					message = "%s%s^7 [basilisk] %s\n";
-					attackerFirst = qtrue;
+					CG_Printf( messageAssisted, teamTag[ attackerTeam ], attackerName, teamTag[ assistantTeam ], assistantName, teamTag[ ci->team ], targetName );
 				}
 				else
 				{
-					message = G_( "%s ^7was swiped by %s%s^7's %s\n" );
+					CG_Printf( message, teamTag[ attackerTeam ], attackerName, teamTag[ ci->team ], targetName );
+				}
+
+				if ( attackerTeam == ci->team && attacker == cg.clientNum )
+				{
+					CG_CenterPrint( va( _("You killed ^1TEAMMATE^7 %s"), targetName ),
+							SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+				}
+
+				return;
+			}
+		}
+		else
+		{
+			is_long_player_kill_message: // <- use of this label == needs a kill icon
+
+			switch ( mod )
+			{
+				case MOD_PAINSAW:
+					message = G_( "%s%s ^7was sawn by %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was sawn by %s%s; %s%s assisted\n" );
+					break;
+
+				case MOD_BLASTER:
+					message = G_( "%s%s ^7was blasted by %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was blasted by %s%s; %s%s assisted\n" );
+					break;
+
+				case MOD_MACHINEGUN:
+					message = G_( "%s%s ^7was machinegunned by %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was machinegunned by %s%s; %s%s assisted\n" );
+					break;
+
+				case MOD_CHAINGUN:
+					message = G_( "%s%s ^7was chaingunned by %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was chaingunned by %s%s; %s%s assisted\n" );
+					break;
+
+				case MOD_SHOTGUN:
+					message = G_( "%s%s ^7was gunned down by %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was gunned down by %s%s; %s%s assisted\n" );
+					break;
+
+				case MOD_PRIFLE:
+					message = G_( "%s%s ^7was pulse rifled by %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was pulse rifled by %s%s; %s%s assisted\n" );
+					break;
+
+				case MOD_MDRIVER:
+					message = G_( "%s%s ^7was mass driven by %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was mass driven by %s%s; %s%s assisted\n" );
+					break;
+
+				case MOD_LASGUN:
+					message = G_( "%s%s ^7was lasgunned by %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was lasgunned by %s%s; %s%s assisted\n" );
+					break;
+
+				case MOD_FLAMER:
+				case MOD_FLAMER_SPLASH:
+					message = G_( "%s%s ^7was grilled by %s%s^7's flamer\n" );
+					messageAssisted = G_( "%s%s ^7was grilled by %s%s^7's flamer; %s%s assisted\n" );
+					break;
+
+				case MOD_BURN:
+					message = G_( "%s%s ^7was burned by %s%s^7's fire\n" );
+					messageAssisted = G_( "%s%s ^7was burned by %s%s^7's fire; %s%s assisted\n" );
+					break;
+
+				case MOD_LCANNON:
+					message = G_( "%s%s ^7felt the full force of %s%s^7's lucifer cannon\n" );
+					messageAssisted = G_( "%s%s ^7felt the full force of %s%s^7's lucifer cannon; %s%s assisted\n" );
+					break;
+
+				case MOD_LCANNON_SPLASH:
+					message = G_( "%s%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n" );
+					messageAssisted = G_( "%s%s ^7was caught in the fallout of %s%s^7's lucifer cannon; %s%s assisted\n" );
+					break;
+
+				case MOD_GRENADE:
+					message = G_( "%s%s ^7couldn't escape %s%s^7's grenade\n" );
+					messageAssisted = G_( "%s%s ^7couldn't escape %s%s^7's grenade; %s%s assisted\n" );
+					break;
+
+				case MOD_FIREBOMB:
+					message = G_( "%s%s ^7couldn't escape %s%s^7's firebomb\n" );
+					messageAssisted = G_( "%s%s ^7couldn't escape %s%s^7's firebomb; %s%s assisted\n" );
+					break;
+
+				case MOD_ABUILDER_CLAW:
+					message = G_( "%s%s ^7should leave %s%s^7's buildings alone\n" );
+					messageAssisted = G_( "%s%s ^7should leave %s%s^7's buildings alone; %s%s assisted\n" );
+					break;
+
+				case MOD_LEVEL0_BITE:
+					message = G_( "%s%s ^7was bitten by %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was bitten by %s%s; %s%s assisted\n" );
+					break;
+
+				case MOD_LEVEL1_CLAW:
+					message = G_( "%s%s ^7was swiped by %s%s^7's %s\n" );
+					messageAssisted = G_( "%s%s ^7was swiped by %s%s^7's %s; %s%s assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL1;
-				}
-				break;
+					break;
 
-			case MOD_LEVEL2_CLAW:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [marauder] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was clawed by %s%s^7's %s\n" );
+				case MOD_LEVEL2_CLAW:
+					message = G_( "%s%s ^7was clawed by %s%s^7's %s\n" );
+					messageAssisted = G_( "%s%s ^7was clawed by %s%s^7's %s; %s%s assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL2;
-				}
-				break;
+					break;
 
-			case MOD_LEVEL2_ZAP:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [advmarauder] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was zapped by %s%s^7's %s\n" );
+				case MOD_LEVEL2_ZAP:
+					message = G_( "%s%s ^7was zapped by %s%s^7's %s\n" );
+					messageAssisted = G_( "%s%s ^7was zapped by %s%s^7's %s; %s%s assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL2;
-				}
-				break;
+					break;
 
-			case MOD_LEVEL3_CLAW:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [dragoon] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was chomped by %s%s^7's %s\n" );
+				case MOD_LEVEL3_CLAW:
+					message = G_( "%s%s ^7was chomped by %s%s^7's %s\n" );
+					messageAssisted = G_( "%s%s ^7was chomped by %s%s^7's %s; %s%s assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL3;
-				}
-				break;
+					break;
 
-			case MOD_LEVEL3_POUNCE:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [dragoon] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was pounced upon by %s%s^7's %s\n" );
+				case MOD_LEVEL3_POUNCE:
+					message = G_( "%s%s ^7was pounced upon by %s%s^7's %s\n" );
+					messageAssisted = G_( "%s%s ^7was pounced upon by %s%s^7's %s; %s%s assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL3;
-				}
-				break;
+					break;
 
-			case MOD_LEVEL3_BOUNCEBALL:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [advdragoon] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was sniped by %s%s^7's %s\n" );
+				case MOD_LEVEL3_BOUNCEBALL:
+					message = G_( "%s%s ^7was sniped by %s%s^7's %s\n" );
+					messageAssisted = G_( "%s%s ^7was sniped by %s%s^7's %s; %s%s assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL3;
-				}
-				break;
+					break;
 
-			case MOD_LEVEL4_CLAW:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [tyrant] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was mauled by %s%s^7's %s\n" );
+				case MOD_LEVEL4_CLAW:
+					message = G_( "%s%s ^7was mauled by %s%s^7's %s\n" );
+					messageAssisted = G_( "%s%s ^7was mauled by %s%s^7's %s; %s%s assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL4;
-				}
-				break;
+					break;
 
-			case MOD_LEVEL4_TRAMPLE:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [tyrant] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7should have gotten out of the way of %s%s^7's %s\n" );
+				case MOD_LEVEL4_TRAMPLE:
+					message = G_( "%s%s ^7should have gotten out of the way of %s%s^7's %s\n" );
+					messageAssisted = G_( "%s%s ^7should have gotten out of the way of %s%s^7's %s; %s%s assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL4;
-				}
-				break;
+					break;
 
-			case MOD_WEIGHT_H:
-			case MOD_WEIGHT_A:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 crushed %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was crushed under %s%s^7's weight\n" );
-				}
-				break;
+				case MOD_WEIGHT_H:
+				case MOD_WEIGHT_A:
+					message = G_( "%s%s ^7was crushed under %s%s^7's weight\n" );
+					messageAssisted = G_( "%s%s ^7was crushed under %s%s^7's weight; %s%s assisted\n" );
+					break;
 
-			case MOD_POISON:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [booster] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7should have used a medkit against %s%s^7's poison\n" );
-				}
-				break;
+				case MOD_POISON:
+					message = G_( "%s%s ^7should have used a medkit against %s%s^7's poison\n" );
+					messageAssisted = G_( "%s%s ^7should have used a medkit against %s%s^7's poison; %s%s assisted\n" );
+					break;
 
-			case MOD_TELEFRAG:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [telenode] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7tried to invade %s%s^7's personal space\n" );
-				}
-				break;
+				case MOD_TELEFRAG:
+					message = G_( "%s%s ^7tried to invade %s%s^7's personal space\n" );
+					break;
 
-			default:
-				message = G_( "%s ^7was killed by %s%s\n" );
-				break;
+				default:
+					message = G_( "%s%s ^7was killed by %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was killed by %s%s and %s%s\n" );
+					break;
+			}
 		}
 
 		if ( message )
 		{
-			if ( attackerFirst )
+			// Argument order: victim, attacker, [class,] [assistant]. Each has team tag first.
+			if ( messageAssisted && assistantInfo )
 			{
-				// Argument order: "TEAMMATE"/"", attacker, victim
-				CG_Printf( message, ( teamKill ) ? _("^1TEAMMATE^7 ") : "", attackerName, targetName );
+				if ( attackerClass != -1 )
+				{
+					CG_Printf( messageAssisted, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, _( BG_ClassModelConfig( attackerClass )->humanName ), teamTag[ assistantTeam ], assistantName );
+				}
+				else
+				{
+					CG_Printf( messageAssisted, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, teamTag[ assistantTeam ], assistantName );
+				}
 			}
 			else
 			{
-				// Argument order: victim, ["TEAMMATE"/"", attacker [, alien class]]
-				CG_Printf( message, targetName, ( teamKill ) ? _("^1TEAMMATE^7 ") : "", attackerName,
-				           ( attackerClass != -1 ) ? _( BG_ClassModelConfig( attackerClass )->humanName ) : NULL );
+				CG_Printf( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, ( attackerClass != -1 ) ? _( BG_ClassModelConfig( attackerClass )->humanName ) : NULL );
 			}
 
-			if ( teamKill && attacker == cg.clientNum )
+			if ( attackerTeam == ci->team && attacker == cg.clientNum )
 			{
 				CG_CenterPrint( va( _("You killed ^1TEAMMATE^7 %s"), targetName ),
-				                SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+						SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 			}
 
 			return;
@@ -670,7 +697,14 @@ static void CG_Obituary( entityState_t *ent )
 	}
 
 	// we don't know what it was
-	CG_Printf( G_( "%s^7 died\n" ), targetName );
+	if ( cg_emoticonsInMessages.integer )
+	{
+		CG_Printf( G_( "☠ %s%s\n" ), teamTag[ ci->team ], targetName );
+	}
+	else
+	{
+		CG_Printf( G_( "%s%s^7 died\n" ), teamTag[ ci->team ], targetName );
+	}
 }
 
 //==========================================================================
@@ -1470,6 +1504,20 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_ALIEN_ACIDTUBE:
 			{
 				particleSystem_t *ps = CG_SpawnNewParticleSystem( cgs.media.alienAcidTubePS );
+
+				if ( CG_IsParticleSystemValid( &ps ) )
+				{
+					CG_SetAttachmentCent( &ps->attachment, cent );
+					ByteToDir( es->eventParm, dir );
+					CG_SetParticleSystemNormal( ps, dir );
+					CG_AttachToCent( &ps->attachment );
+				}
+			}
+			break;
+
+		case EV_ALIEN_BOOSTER:
+			{
+				particleSystem_t *ps = CG_SpawnNewParticleSystem( cgs.media.alienBoosterPS );
 
 				if ( CG_IsParticleSystemValid( &ps ) )
 				{

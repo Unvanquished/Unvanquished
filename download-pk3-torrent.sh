@@ -55,7 +55,7 @@ echo "Downloading torrent..."
 aria2c \
     --follow-torrent=false \
     --allow-overwrite=true \
-    "$torrent_url"
+    "$torrent_url" -d "$cache_dir"
 echo
 
 # get the contained asset path
@@ -86,7 +86,7 @@ aria2c \
     --check-integrity=true \
     --seed-time=0 \
     --select-file="$asset_ids" \
-    -T "$torrent_file"
+    -T "$torrent_file" -d "$cache_dir"
 echo
 
 # delete all previously downloaded assets that aren't in this torrent

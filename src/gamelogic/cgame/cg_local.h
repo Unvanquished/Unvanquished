@@ -30,6 +30,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../engine/client/keycodes.h"
 #include "cg_ui.h"
 
+// future imports
+#ifndef Q3_VM
+#include "../../common/Maths.h"
+#endif
+
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is no persistent data between levels on the client side.
 // If you absolutely need something stored, it can either be kept
@@ -1421,7 +1426,7 @@ typedef struct
 
 	qhandle_t   jetpackModel;
 	qhandle_t   jetpackFlashModel;
-	qhandle_t   battpackModel;
+	qhandle_t   radarModel;
 
 	sfxHandle_t repeaterUseSound;
 
@@ -1430,6 +1435,7 @@ typedef struct
 
 	qhandle_t   alienEvolvePS;
 	qhandle_t   alienAcidTubePS;
+	qhandle_t   alienBoosterPS;
 
 	sfxHandle_t alienEvolveSound;
 
@@ -1453,7 +1459,6 @@ typedef struct
 	sfxHandle_t lCannonWarningSound2;
 
 	qhandle_t   buildWeaponTimerPie[ 8 ];
-	qhandle_t   upgradeClassIconShader;
 	qhandle_t   healthCross;
 	qhandle_t   healthCross2X;
 	qhandle_t   healthCross3X;
@@ -1511,7 +1516,6 @@ typedef struct
 	int      timelimit;
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
-	qboolean markDeconstruct; // Whether or not buildables are marked
 	int      powerReactorRange;
 	int      powerRepeaterRange;
 	float    momentumHalfLife; // used for momentum bar (un)lock markers
@@ -2137,7 +2141,6 @@ typedef enum
   DT_ARMOURYEVOLVE, // Insufficient funds et al
   DT_BUILD, // build errors
   DT_COMMAND, // You must be alive/human/spec/etc.
-  DT_MISC_CP, // Misc errors which may be centre-printed but not hidden
 } dialogType_t;
 
 //

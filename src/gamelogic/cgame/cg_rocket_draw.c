@@ -83,13 +83,6 @@ static void CG_Rocket_DrawAmmo( void )
 			if ( !Q_stricmp( "total", CG_Rocket_GetAttribute( "type" ) ) )
 			{
 				maxAmmo = BG_Weapon( weapon )->maxAmmo;
-
-				if ( BG_Weapon( weapon )->usesEnergy &&
-				        BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
-				{
-					maxAmmo *= BATTPACK_MODIFIER;
-				}
-
 				value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
 			}
 
@@ -1585,12 +1578,6 @@ static void CG_DrawPlayerAmmoStack( void )
 	if ( maxVal <= 0 )
 	{
 		return; // not an ammo-carrying weapon
-	}
-
-	if ( BG_Weapon( primary )->usesEnergy &&
-	        BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
-	{
-		maxVal *= BATTPACK_MODIFIER;
 	}
 
 	val = ps->ammo;

@@ -78,7 +78,7 @@ static void CG_ParseScores( void )
 	{
 		CG_Rocket_BuildPlayerList( NULL );
 	}
-	
+
 }
 
 /*
@@ -141,7 +141,6 @@ void CG_ParseServerinfo( void )
 
 	cgs.timelimit          = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients         = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-	cgs.markDeconstruct    = atoi( Info_ValueForKey( info, "g_markDeconstruct" ) );
 	cgs.powerReactorRange  = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
 	cgs.powerRepeaterRange = atoi( Info_ValueForKey( info, "g_powerRepeaterRange" ) );
 	cgs.momentumHalfLife = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
@@ -580,7 +579,15 @@ void CG_Menu( int menuType, int arg )
 			          "which often quickly results in a loss. Try building more "
 			          "spawns.");
 			shortMsg = _("You may not deconstruct the last spawn");
-			type = DT_MISC_CP;
+			type = DT_BUILD;
+			break;
+
+		case MN_B_MAINSTRUCTURE:
+			longMsg = _("The main structure is protected against instant removal. "
+			            "When it is marked, you can move it to another place by "
+			            "building it there.");
+			shortMsg = _("You may not deconstruct this structure");
+			type = DT_BUILD;
 			break;
 
 		case MN_B_DISABLED:
@@ -601,21 +608,12 @@ void CG_Menu( int menuType, int arg )
 			longMsg = _("Your team has decided to admit defeat and concede the game: "
 			            "There's no point in building anything anymore.");
 			shortMsg = _("Cannot build after admitting defeat");
-			type = DT_MISC_CP;
+			type = DT_BUILD;
 			break;
 
 		case MN_H_NOBP:
-			if ( cgs.markDeconstruct )
-			{
-				longMsg = _("There are no resources remaining. Free up resources by "
-				            "marking existing buildables for deconstruction.");
-			}
-			else
-			{
-				longMsg = _("There are no resources remaining. Free up resources by "
-				            "deconstructing existing buildables.");
-			}
-
+			longMsg = _("There are no resources remaining. Free up resources by "
+			            "marking existing buildables for deconstruction.");
 			shortMsg = _("There are no resources remaining");
 			type = DT_BUILD;
 			break;
