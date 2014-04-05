@@ -612,17 +612,15 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/Sample.h
   ${ENGINE_DIR}/audio/Sound.cpp
   ${ENGINE_DIR}/audio/Sound.h
-  ${ENGINE_DIR}/audio/audio_file.h
-  ${ENGINE_DIR}/audio/audio_file.cpp
-  ${ENGINE_DIR}/audio/wav_file.h
-  ${ENGINE_DIR}/audio/wav_file.cpp
-  ${ENGINE_DIR}/audio/ogg_file.h
-  ${ENGINE_DIR}/audio/ogg_file.cpp
-  ${ENGINE_DIR}/audio/opus_file.h
-  ${ENGINE_DIR}/audio/opus_file.cpp
-  ${ENGINE_DIR}/audio/audio_file_factory.h
-  ${ENGINE_DIR}/audio/audio_file_factory.cpp
-)
+  ${ENGINE_DIR}/audio/CodecFactory.h
+  ${ENGINE_DIR}/audio/CodecFactory.cpp
+  ${ENGINE_DIR}/audio/OggCodec.h
+  ${ENGINE_DIR}/audio/OggCodec.cpp
+  ${ENGINE_DIR}/audio/OpusCodec.h
+  ${ENGINE_DIR}/audio/OpusCodec.cpp
+  ${ENGINE_DIR}/audio/WavCodec.h
+  ${ENGINE_DIR}/audio/WavCodec.cpp
+  )
 
 set( TTYCLIENTLIST
     ${ENGINE_DIR}/null/null_input.cpp
