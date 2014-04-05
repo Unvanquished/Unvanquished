@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //#include <OpenEXR/half.h>
 #include "../../libs/openexr/half.h"
 
-	void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, qboolean doGamma, qboolean toneMap, qboolean compensate );
+	void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height );
 
 	void LoadRGBEToHalfs( const char *name, unsigned short **halfImage, int *width, int *height )
 	{
@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		unsigned short *halfbuf;
 
 		w = h = 0;
-		LoadRGBEToFloats( name, &hdrImage, &w, &h, qtrue, qfalse, qtrue );
+		LoadRGBEToFloats( name, &hdrImage, &w, &h );
 
 		*width = w;
 		*height = h;

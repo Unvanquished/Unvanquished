@@ -438,18 +438,6 @@ void R_InitFBOs( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	// deferredRender FBO for the HDR or LDR context
-	tr.deferredRenderFBO = R_CreateFBO( "_deferredRender", width, height );
-	R_BindFBO( tr.deferredRenderFBO );
-
-	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredRenderFBOImage->texnum, 0 );
-
-	{
-		R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
-	}
-
-	R_CheckFBO( tr.deferredRenderFBO );
-
 	if ( glConfig2.framebufferBlitAvailable )
 	{
 		if ( glConfig2.textureNPOTAvailable )

@@ -3464,14 +3464,7 @@ static void R_CreateContrastRenderFBOImage( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight ) * 0.25f;
 	}
 
-	if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-	{
-		tr.contrastRenderFBOImage = R_CreateImage( "_contrastRenderFBO", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION | IF_RGBA16F, FT_LINEAR, WT_CLAMP );
-	}
-	else
-	{
-		tr.contrastRenderFBOImage = R_CreateImage( "_contrastRenderFBO", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
-	}
+	tr.contrastRenderFBOImage = R_CreateImage( "_contrastRenderFBO", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
 }
 
 static void R_CreateBloomRenderFBOImage( void )
@@ -3492,14 +3485,7 @@ static void R_CreateBloomRenderFBOImage( void )
 
 	for ( i = 0; i < 2; i++ )
 	{
-		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-		{
-			tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION | IF_RGBA16F, FT_LINEAR, WT_CLAMP );
-		}
-		else
-		{
-			tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
-		}
+		tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
 	}
 }
 
@@ -3556,14 +3542,7 @@ static void R_CreatePortalRenderImage( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-	{
-		tr.portalRenderImage = R_CreateImage( "_portalRender", NULL, width, height, 1, IF_NOPICMIP | IF_RGBA16F, FT_NEAREST, WT_CLAMP );
-	}
-	else
-	{
-		tr.portalRenderImage = R_CreateImage( "_portalRender", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-	}
+	tr.portalRenderImage = R_CreateImage( "_portalRender", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 }
 
 static void R_CreateOcclusionRenderFBOImage( void )
@@ -3623,50 +3602,11 @@ static void R_CreateDownScaleFBOImages( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight * 0.25f );
 	}
 
-	if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-	{
-		tr.downScaleFBOImage_quarter = R_CreateImage( "_downScaleFBOImage_quarter", NULL, width, height, 1, IF_NOPICMIP | IF_RGBA16F, FT_NEAREST, WT_CLAMP );
-	}
-	else
-	{
-		tr.downScaleFBOImage_quarter = R_CreateImage( "_downScaleFBOImage_quarter", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-	}
+	tr.downScaleFBOImage_quarter = R_CreateImage( "_downScaleFBOImage_quarter", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 
 	width = height = 64;
 
-	if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-	{
-		tr.downScaleFBOImage_64x64 = R_CreateImage( "_downScaleFBOImage_64x64", NULL, width, height, 1, IF_NOPICMIP | IF_RGBA16F, FT_NEAREST, WT_CLAMP );
-	}
-	else
-	{
-		tr.downScaleFBOImage_64x64 = R_CreateImage( "_downScaleFBOImage_64x64", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-	}
-}
-
-static void R_CreateDeferredRenderFBOImages( void )
-{
-	int  width, height;
-
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		width = glConfig.vidWidth;
-		height = glConfig.vidHeight;
-	}
-	else
-	{
-		width = NearestPowerOfTwo( glConfig.vidWidth );
-		height = NearestPowerOfTwo( glConfig.vidHeight );
-	}
-
-	if ( HDR_ENABLED() )
-	{
-		tr.deferredRenderFBOImage = R_CreateImage( "_deferredRenderFBO", NULL, width, height, 1, IF_NOPICMIP | IF_RGBA16F, FT_NEAREST, WT_CLAMP );
-	}
-	else
-	{
-		tr.deferredRenderFBOImage = R_CreateImage( "_deferredRenderFBO", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-	}
+	tr.downScaleFBOImage_64x64 = R_CreateImage( "_downScaleFBOImage_64x64", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 }
 
 // *INDENT-OFF*
@@ -4004,7 +3944,6 @@ void R_CreateBuiltinImages( void )
 	R_CreateOcclusionRenderFBOImage();
 	R_CreateDepthToColorFBOImages();
 	R_CreateDownScaleFBOImages();
-	R_CreateDeferredRenderFBOImages();
 	R_CreateShadowMapFBOImage();
 	R_CreateShadowCubeFBOImage();
 	R_CreateBlackCubeImage();

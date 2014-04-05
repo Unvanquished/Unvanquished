@@ -1249,18 +1249,10 @@ static void Render_lightVolume( interaction_t *ia )
 
 			gl_lightVolumeShader_omni->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
 
-			// bind u_DepthMap
-			if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
-			{
-				GL_BindToTMU( 0, tr.depthRenderImage );
-			}
-			else
-			{
-				// depth texture is not bound to a FBO
-				GL_SelectTexture( 0 );
-				GL_Bind( tr.depthRenderImage );
-				glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
-			}
+			// depth texture is not bound to a FBO
+			GL_SelectTexture( 0 );
+			GL_Bind( tr.depthRenderImage );
+			glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
 
 			// bind u_AttenuationMapXY
 			GL_SelectTexture( 1 );
@@ -2134,14 +2126,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 		GLimp_LogComment( va( "----- First Light Interaction: %i -----\n", (int)( light->firstInteraction - backEnd.viewParms.interactions ) ) );
 	}
 
-	if ( r_hdrRendering->integer )
-	{
-		R_BindFBO( tr.deferredRenderFBO );
-	}
-	else
-	{
-		R_BindNullFBO();
-	}
+	R_BindNullFBO();
 
 	// set the window clipping
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
@@ -2459,12 +2444,6 @@ static void RB_RenderInteractionsShadowMapped()
 		{
 			// skip this light because it failed the occlusion query
 			continue;
-		}
-
-		if ( light->l.inverseShadows )
-		{
-			// handle those lights in RB_RenderInteractionsDeferredInverseShadows
-			//continue;
 		}
 
 		// begin shadowing
@@ -3019,91 +2998,6 @@ static void RB_RenderInteractionsShadowMapped()
 	}
 }
 
-#ifdef EXPERIMENTAL
-void RB_RenderScreenSpaceAmbientOcclusion( qboolean deferred )
-{
-}
-
-#endif
-#ifdef EXPERIMENTAL
-void RB_RenderDepthOfField()
-{
-	matrix_t ortho;
-
-	GLimp_LogComment( "--- RB_RenderDepthOfField ---\n" );
-
-	if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
-	{
-		return;
-	}
-
-	if ( !r_depthOfField->integer )
-	{
-		return;
-	}
-
-	// enable shader, set arrays
-	gl_depthOfFieldShader->BindProgram();
-
-	GL_State( GLS_DEPTHTEST_DISABLE );  // | GLS_DEPTHMASK_TRUE);
-	GL_Cull( CT_TWO_SIDED );
-
-	glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
-
-	// set uniforms
-
-	// capture current color buffer for u_CurrentMap
-	if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
-	{
-		GL_BindToTMU( 0, tr.deferredRenderFBOImage );
-	}
-	else
-	{
-		GL_SelectTexture( 0 );
-		GL_Bind( tr.currentRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
-	}
-
-	// bind u_DepthMap
-	if ( r_deferredShading->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable &&
-	     glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
-	{
-		GL_BindToTMU( 1, tr.depthRenderImage );
-	}
-	else if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
-	{
-		GL_BindToTMU( 1, tr.depthRenderImage );
-	}
-	else
-	{
-		// depth texture is not bound to a FBO
-		GL_SelectTexture( 1 );
-		GL_Bind( tr.depthRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
-	}
-
-	// set 2D virtual screen size
-	GL_PushMatrix();
-	MatrixOrthogonalProjection( ortho, backEnd.viewParms.viewportX,
-	                            backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
-	                            backEnd.viewParms.viewportY, backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight,
-	                            -99999, 99999 );
-	GL_LoadProjectionMatrix( ortho );
-	GL_LoadModelViewMatrix( matrixIdentity );
-
-	gl_depthOfFieldShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-	// draw viewport
-	Tess_InstantQuad( backEnd.viewParms.viewportVerts );
-
-	// go back to 3D
-	GL_PopMatrix();
-
-	GL_CheckErrors();
-}
-
-#endif
-
 void RB_RenderGlobalFog()
 {
 	vec3_t   local;
@@ -3208,16 +3102,9 @@ void RB_RenderGlobalFog()
 	// bind u_DepthMap
 	GL_SelectTexture( 1 );
 
-	if ( HDR_ENABLED() )
-	{
-		GL_Bind( tr.depthRenderImage );
-	}
-	else
-	{
-		// depth texture is not bound to a FBO
-		GL_Bind( tr.depthRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
-	}
+	// depth texture is not bound to a FBO
+	GL_Bind( tr.depthRenderImage );
+	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
 
 	// set 2D virtual screen size
 	GL_PushMatrix();
@@ -3272,31 +3159,15 @@ void RB_RenderBloom()
 		MatrixOrthogonalProjection( ortho, 0, tr.contrastRenderFBO->width, 0, tr.contrastRenderFBO->height, -99999, 99999 );
 		GL_LoadProjectionMatrix( ortho );
 
-		if ( HDR_ENABLED() )
-		{
-			gl_toneMappingShader->EnableMacro_BRIGHTPASS_FILTER();
-			gl_toneMappingShader->BindProgram();
+		// render contrast downscaled to 1/4th of the screen
+		gl_contrastShader->BindProgram();
 
-			gl_toneMappingShader->SetUniform_HDRKey( backEnd.hdrKey );
-			gl_toneMappingShader->SetUniform_HDRAverageLuminance( backEnd.hdrAverageLuminance );
-			gl_toneMappingShader->SetUniform_HDRMaxLuminance( backEnd.hdrMaxLuminance );
+		gl_contrastShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-			gl_toneMappingShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-			GL_BindToTMU( 0, tr.downScaleFBOImage_quarter ); 
-		}
-		else
-		{
-			// render contrast downscaled to 1/4th of the screen
-			gl_contrastShader->BindProgram();
-
-			gl_contrastShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-			GL_SelectTexture( 0 );
-			GL_Bind( tr.currentRenderImage );
-			glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth,
-			                     tr.currentRenderImage->uploadHeight );
-		}
+		GL_SelectTexture( 0 );
+		GL_Bind( tr.currentRenderImage );
+		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth,
+							 tr.currentRenderImage->uploadHeight );
 
 		GL_PopMatrix(); // special 1/4th of the screen contrastRenderFBO ortho
 
@@ -3356,27 +3227,13 @@ void RB_RenderBloom()
 			}
 		}
 
-		// add offscreen processed bloom to screen
-		if ( HDR_ENABLED() )
-		{
-			R_BindFBO( tr.deferredRenderFBO );
+		R_BindNullFBO();
 
-			gl_screenShader->BindProgram();
-			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-			glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
+		gl_screenShader->BindProgram();
+		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+		glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
 
-			gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-		}
-		else
-		{
-			R_BindNullFBO();
-
-			gl_screenShader->BindProgram();
-			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-			glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
-
-			gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-		}
+		gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		Tess_InstantQuad( backEnd.viewParms.viewportVerts );
 	}
@@ -3558,160 +3415,6 @@ void RB_CameraPostFX( void )
 	GL_PopMatrix();
 
 	GL_CheckErrors();
-}
-
-static void RB_CalculateAdaptation()
-{
-	int          i;
-	static float image[ 64 * 64 * 4 ];
-	float        curTime;
-	float        deltaTime;
-	float        luminance;
-	float        avgLuminance;
-	float        maxLuminance;
-	double       sum;
-	const vec3_t LUMINANCE_VECTOR = { 0.2125f, 0.7154f, 0.0721f };
-	vec4_t       color;
-	float        newAdaptation;
-	float        newMaximum;
-
-	curTime = ri.Milliseconds() / 1000.0f;
-
-	// calculate the average scene luminance
-	R_BindFBO( tr.downScaleFBO_64x64 );
-
-	// read back the contents
-	glReadPixels( 0, 0, 64, 64, GL_RGBA, GL_FLOAT, image );
-
-	sum = 0.0f;
-	maxLuminance = 0.0f;
-
-	for ( i = 0; i < ( 64 * 64 * 4 ); i += 4 )
-	{
-		color[ 0 ] = image[ i + 0 ];
-		color[ 1 ] = image[ i + 1 ];
-		color[ 2 ] = image[ i + 2 ];
-		color[ 3 ] = image[ i + 3 ];
-
-		luminance = DotProduct( color, LUMINANCE_VECTOR ) + 0.0001f;
-
-		if ( luminance > maxLuminance )
-		{
-			maxLuminance = luminance;
-		}
-
-		sum += log( luminance );
-	}
-
-	sum /= 64 * 64;
-	avgLuminance = exp( sum );
-
-	// the user's adapted luminance level is simulated by closing the gap between
-	// adapted luminance and current luminance by 2% every frame, based on a
-	// 30 fps rate. This is not an accurate model of human adaptation, which can
-	// take longer than half an hour.
-	if ( backEnd.hdrTime > curTime )
-	{
-		backEnd.hdrTime = curTime;
-	}
-
-	deltaTime = curTime - backEnd.hdrTime;
-
-	{
-		backEnd.hdrAverageLuminance = Maths::clamp( backEnd.hdrAverageLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
-		avgLuminance = Maths::clamp( avgLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
-
-		backEnd.hdrMaxLuminance = Maths::clamp( backEnd.hdrMaxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
-		maxLuminance = Maths::clamp( maxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
-	}
-
-	newAdaptation = backEnd.hdrAverageLuminance + ( avgLuminance - backEnd.hdrAverageLuminance ) * ( 1.0f - powf( 0.98f, 30.0f * deltaTime ) );
-	newMaximum = backEnd.hdrMaxLuminance + ( maxLuminance - backEnd.hdrMaxLuminance ) * ( 1.0f - powf( 0.98f, 30.0f * deltaTime ) );
-
-	if ( !Q_isnan( newAdaptation ) && !Q_isnan( newMaximum ) )
-	{
-		backEnd.hdrAverageLuminance = newAdaptation;
-		backEnd.hdrMaxLuminance = newMaximum;
-	}
-
-	backEnd.hdrTime = curTime;
-
-	// calculate HDR image key
-	if ( r_hdrKey->value <= 0 )
-	{
-		// calculation from: Perceptual Effects in Real-time Tone Mapping - Krawczyk et al.
-		backEnd.hdrKey = 1.03 - 2.0 / ( 2.0 + log10f( backEnd.hdrAverageLuminance + 1.0f ) );
-	}
-	else
-	{
-		backEnd.hdrKey = r_hdrKey->value;
-	}
-
-	if ( r_hdrDebug->integer )
-	{
-		ri.Printf( PRINT_ALL, "HDR luminance avg = %f, max = %f, key = %f\n", backEnd.hdrAverageLuminance, backEnd.hdrMaxLuminance, backEnd.hdrKey );
-	}
-
-	GL_CheckErrors();
-}
-
-void RB_RenderDeferredHDRResultToFrameBuffer()
-{
-	matrix_t ortho;
-
-	GLimp_LogComment( "--- RB_RenderDeferredHDRResultToFrameBuffer ---\n" );
-
-	if ( !r_hdrRendering->integer || !glConfig2.framebufferObjectAvailable || !glConfig2.textureFloatAvailable )
-	{
-		return;
-	}
-
-	GL_CheckErrors();
-
-	R_BindNullFBO();
-
-	// bind u_CurrentMap
-	GL_BindToTMU( 0, tr.deferredRenderFBOImage ); 
-
-	GL_State( GLS_DEPTHTEST_DISABLE );
-	GL_Cull( CT_TWO_SIDED );
-
-	// set uniforms
-
-	// set 2D virtual screen size
-	GL_PushMatrix();
-	MatrixOrthogonalProjection( ortho, backEnd.viewParms.viewportX,
-	                            backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
-	                            backEnd.viewParms.viewportY, backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight,
-	                            -99999, 99999 );
-	GL_LoadProjectionMatrix( ortho );
-	GL_LoadModelViewMatrix( matrixIdentity );
-
-	if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
-	{
-		gl_screenShader->BindProgram();
-
-		glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
-
-		gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-	}
-	else
-	{
-		gl_toneMappingShader->DisableMacro_BRIGHTPASS_FILTER();
-		gl_toneMappingShader->BindProgram();
-
-		gl_toneMappingShader->SetUniform_HDRKey( backEnd.hdrKey );
-		gl_toneMappingShader->SetUniform_HDRAverageLuminance( backEnd.hdrAverageLuminance );
-		gl_toneMappingShader->SetUniform_HDRMaxLuminance( backEnd.hdrMaxLuminance );
-
-		gl_toneMappingShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-	}
-
-	GL_CheckErrors();
-
-	Tess_InstantQuad( backEnd.viewParms.viewportVerts );
-
-	GL_PopMatrix();
 }
 
 // ================================================================================================
@@ -6096,14 +5799,7 @@ static void RB_RenderView( void )
 	// disable offscreen rendering
 	if ( glConfig2.framebufferObjectAvailable )
 	{
-		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-		{
-			R_BindFBO( tr.deferredRenderFBO );
-		}
-		else
-		{
-			R_BindNullFBO();
-		}
+		R_BindNullFBO();
 	}
 
 	// we will need to change the projection matrix before drawing
@@ -6247,17 +5943,6 @@ static void RB_RenderView( void )
 				}
 			}
 		}
-
-		if ( HDR_ENABLED() )
-		{
-			// copy color of the main context to deferredRenderFBO
-			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, 0 );
-			glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
-			glBlitFramebufferEXT( 0, 0, glConfig.vidWidth, glConfig.vidHeight,
-				                    0, 0, glConfig.vidWidth, glConfig.vidHeight,
-				                    GL_COLOR_BUFFER_BIT,
-				                    GL_NEAREST );
-		}
 	}
 
 #else
@@ -6266,19 +5951,6 @@ static void RB_RenderView( void )
 	{
 		clearBits |= GL_COLOR_BUFFER_BIT; // FIXME: only if sky shaders have been used
 		GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );  // FIXME: get color of sky
-	}
-	else
-	{
-		if ( HDR_ENABLED() )
-		{
-			// copy color of the main context to deferredRenderFBO
-			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, 0 );
-			glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
-			glBlitFramebufferEXT( 0, 0, glConfig.vidWidth, glConfig.vidHeight,
-				                    0, 0, glConfig.vidWidth, glConfig.vidHeight,
-				                    GL_COLOR_BUFFER_BIT,
-				                    GL_NEAREST );
-		}
 	}
 
 #endif
@@ -6356,52 +6028,15 @@ static void RB_RenderView( void )
 		RB_RenderInteractions();
 	}
 
-	// render ambient occlusion process effect
-	// Tr3B: needs way more work RB_RenderScreenSpaceAmbientOcclusion(qfalse);
-
-	if ( HDR_ENABLED() )
-	{
-		R_BindFBO( tr.deferredRenderFBO );
-	}
-
 	// render global fog post process effect
 	RB_RenderGlobalFog();
 
 	// draw everything that is translucent
 	RB_RenderDrawSurfaces( false, DRAWSURFACES_ALL );
 
-	// scale down rendered HDR scene to 1 / 4th
-	if ( HDR_ENABLED() )
-	{
-		if ( glConfig2.framebufferBlitAvailable )
-		{
-			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
-			glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.downScaleFBO_quarter->frameBuffer );
-			glBlitFramebufferEXT( 0, 0, glConfig.vidWidth, glConfig.vidHeight,
-				                    0, 0, glConfig.vidWidth * 0.25f, glConfig.vidHeight * 0.25f,
-				                    GL_COLOR_BUFFER_BIT,
-				                    GL_LINEAR );
-
-			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
-			glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.downScaleFBO_64x64->frameBuffer );
-			glBlitFramebufferEXT( 0, 0, glConfig.vidWidth, glConfig.vidHeight,
-				                    0, 0, 64, 64,
-				                    GL_COLOR_BUFFER_BIT,
-				                    GL_LINEAR );
-		}
-		RB_CalculateAdaptation();
-	}
-
 	GL_CheckErrors();
-#ifdef EXPERIMENTAL
-	// render depth of field post process effect
-	RB_RenderDepthOfField();
-#endif
 	// render bloom post process effect
 	RB_RenderBloom();
-
-	// copy offscreen rendered HDR scene to the current OpenGL context
-	RB_RenderDeferredHDRResultToFrameBuffer();
 
 	// render debug information
 	RB_RenderDebugUtils();

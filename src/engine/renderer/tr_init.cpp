@@ -260,26 +260,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_chcVisibilityThreshold;
 	cvar_t      *r_chcIgnoreLeaves;
 
-	cvar_t      *r_hdrRendering;
-	cvar_t      *r_hdrMinLuminance;
-	cvar_t      *r_hdrMaxLuminance;
-	cvar_t      *r_hdrKey;
-	cvar_t      *r_hdrContrastThreshold;
-	cvar_t      *r_hdrContrastOffset;
-	cvar_t      *r_hdrLightmap;
-	cvar_t      *r_hdrLightmapExposure;
-	cvar_t      *r_hdrLightmapGamma;
-	cvar_t      *r_hdrLightmapCompensate;
-	cvar_t      *r_hdrToneMappingOperator;
-	cvar_t      *r_hdrGamma;
-	cvar_t      *r_hdrDebug;
-
-#ifdef EXPERIMENTAL
-	cvar_t      *r_screenSpaceAmbientOcclusion;
-#endif
-#ifdef EXPERIMENTAL
-	cvar_t      *r_depthOfField;
-#endif
 	cvar_t      *r_reflectionMapping;
 	cvar_t      *r_highQualityNormalMapping;
 	cvar_t      *r_bloom;
@@ -1187,12 +1167,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		AssertCvarRange( r_forceFog, 0.0f, 1.0f, qfalse );
 		r_wolfFog = ri.Cvar_Get( "r_wolfFog", "1", CVAR_CHEAT );
 		r_noFog = ri.Cvar_Get( "r_noFog", "0", CVAR_CHEAT );
-#ifdef EXPERIMENTAL
-		r_screenSpaceAmbientOcclusion = ri.Cvar_Get( "r_screenSpaceAmbientOcclusion", "0", 0 );
-#endif
-#ifdef EXPERIMENTAL
-		r_depthOfField = ri.Cvar_Get( "r_depthOfField", "0", 0 );
-#endif
 
 		r_reflectionMapping = ri.Cvar_Get( "r_reflectionMapping", "0", CVAR_CHEAT );
 		r_highQualityNormalMapping = ri.Cvar_Get( "r_highQualityNormalMapping", "0",  CVAR_LATCH );
@@ -1250,21 +1224,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_chcMaxVisibleFrames = ri.Cvar_Get( "r_chcMaxVisibleFrames", "10", CVAR_CHEAT );
 		r_chcVisibilityThreshold = ri.Cvar_Get( "r_chcVisibilityThreshold", "20", CVAR_CHEAT );
 		r_chcIgnoreLeaves = ri.Cvar_Get( "r_chcIgnoreLeaves", "0", CVAR_CHEAT );
-
-		r_hdrRendering = ri.Cvar_Get( "r_hdrRendering", "0",  CVAR_SHADER );
-
-		r_hdrMinLuminance = ri.Cvar_Get( "r_hdrMinLuminance", "0.18", CVAR_CHEAT );
-		r_hdrMaxLuminance = ri.Cvar_Get( "r_hdrMaxLuminance", "3000", CVAR_CHEAT );
-		r_hdrKey = ri.Cvar_Get( "r_hdrKey", "0.28", CVAR_CHEAT );
-		r_hdrContrastThreshold = ri.Cvar_Get( "r_hdrContrastThreshold", "1.3", CVAR_CHEAT );
-		r_hdrContrastOffset = ri.Cvar_Get( "r_hdrContrastOffset", "3.0", CVAR_CHEAT );
-		r_hdrLightmap = ri.Cvar_Get( "r_hdrLightmap", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_hdrLightmapExposure = ri.Cvar_Get( "r_hdrLightmapExposure", "1.0", CVAR_CHEAT | CVAR_LATCH );
-		r_hdrLightmapGamma = ri.Cvar_Get( "r_hdrLightmapGamma", "1.7", CVAR_CHEAT | CVAR_LATCH );
-		r_hdrLightmapCompensate = ri.Cvar_Get( "r_hdrLightmapCompensate", "1.0", CVAR_CHEAT | CVAR_LATCH );
-		r_hdrToneMappingOperator = ri.Cvar_Get( "r_hdrToneMappingOperator", "1", CVAR_CHEAT );
-		r_hdrGamma = ri.Cvar_Get( "r_hdrGamma", "1.1", CVAR_CHEAT );
-		r_hdrDebug = ri.Cvar_Get( "r_hdrDebug", "0", CVAR_CHEAT );
 
 		r_evsmPostProcess = ri.Cvar_Get( "r_evsmPostProcess", "0",  CVAR_LATCH );
 

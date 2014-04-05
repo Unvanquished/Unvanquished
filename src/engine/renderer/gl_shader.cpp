@@ -40,7 +40,6 @@ GLShader_fogGlobal                       *gl_fogGlobalShader = NULL;
 GLShader_heatHaze                        *gl_heatHazeShader = NULL;
 GLShader_screen                          *gl_screenShader = NULL;
 GLShader_portal                          *gl_portalShader = NULL;
-GLShader_toneMapping                     *gl_toneMappingShader = NULL;
 GLShader_contrast                        *gl_contrastShader = NULL;
 GLShader_cameraEffects                   *gl_cameraEffectsShader = NULL;
 GLShader_blurX                           *gl_blurXShader = NULL;
@@ -50,8 +49,6 @@ GLShader_depthToColor                    *gl_depthToColorShader = NULL;
 GLShader_lightVolume_omni                *gl_lightVolumeShader_omni = NULL;
 GLShader_liquid                          *gl_liquidShader = NULL;
 GLShader_volumetricFog                   *gl_volumetricFogShader = NULL;
-GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader = NULL;
-GLShader_depthOfField                    *gl_depthOfFieldShader = NULL;
 GLShader_motionblur                      *gl_motionblurShader = NULL;
 GLShader_fxaa                            *gl_fxaaShader = NULL;
 GLShaderManager                           gl_shaderManager;
@@ -386,15 +383,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		}
 	}
 
-	if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
-	{
-		AddGLSLDefine( bufferExtra, "r_HDRRendering", 1 );
-		AddGLSLDefine( bufferExtra, "r_HDRContrastThreshold", r_hdrContrastThreshold->value );
-		AddGLSLDefine( bufferExtra, "r_HDRContrastOffset", r_hdrContrastOffset->value );
-		AddGLSLDefine( bufferExtra, va( "r_HDRToneMappingOperator_%d", r_hdrToneMappingOperator->integer ) );
-		AddGLSLDefine( bufferExtra, "r_HDRGamma", r_hdrGamma->value );
-	}
-
 	if ( r_precomputedLighting->integer )
 	{
 		AddGLSLDefine( bufferExtra, "r_precomputedLighting", 1 );
@@ -415,37 +403,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		AddGLSLDefine( bufferExtra, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
 	}
 
-#ifdef EXPERIMENTAL
-
-	if ( r_screenSpaceAmbientOcclusion->integer )
-	{
-		int             i;
-		static vec3_t   jitter[ 32 ];
-		static qboolean jitterInit = qfalse;
-
-		if ( !jitterInit )
-		{
-			for ( i = 0; i < 32; i++ )
-			{
-				float *jit = &jitter[ i ][ 0 ];
-
-				float rad = crandom() * 1024.0f; // FIXME radius;
-				float a = crandom() * M_PI * 2;
-				float b = crandom() * M_PI * 2;
-
-				jit[ 0 ] = rad * sin( a ) * cos( b );
-				jit[ 1 ] = rad * sin( a ) * sin( b );
-				jit[ 2 ] = rad * cos( a );
-			}
-
-			jitterInit = qtrue;
-		}
-
-		// TODO
-	}
-
-#endif
-
 	if ( glConfig2.vboVertexSkinningAvailable )
 	{
 		AddGLSLDefine( bufferExtra, "r_VertexSkinning", 1 );
@@ -455,14 +412,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	{
 		AddGLSLDefine( bufferExtra, "MAX_GLSL_BONES", 4 );
 	}
-
-	/*
-	if(glConfig.drawBuffersAvailable && glConfig.maxDrawBuffers >= 4)
-	{
-		AddGLSLDefine( bufferExtra, "GL_ARB_draw_buffers", 1 );
-		bufferExtra += "#extension GL_ARB_draw_buffers : enable\n";
-	}
-	*/
 
 	if ( r_wrapAroundLighting->value )
 	{
@@ -485,24 +434,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	bufferExtra += "#line 0\n";
 	shaderText = bufferExtra + libsBuffer + mainBuffer;
 
-#if 0
-	{
-		static char msgPart[ 1024 ];
-		int         i;
-		ri.Printf( PRINT_WARNING, "----------------------------------------------------------\n" );
-		ri.Printf( PRINT_WARNING, "CONCATENATED shader '%s' ----------\n", filename );
-		ri.Printf( PRINT_WARNING, " BEGIN ---------------------------------------------------\n" );
-
-		for ( i = 0; i < sizeFinal; i += 1024 )
-		{
-			Q_strncpyz( msgPart, shaderText.c_str() + i, sizeof( msgPart ) );
-			ri.Printf( PRINT_ALL, "%s", msgPart );
-		}
-
-		ri.Printf( PRINT_WARNING, " END-- ---------------------------------------------------\n" );
-	}
-#endif
-
 	ri.FS_FreeFile( mainBuffer );
 
 	return shaderText;
@@ -523,8 +454,6 @@ bool GLShaderManager::buildPermutation( GLShader *shader, size_t i )
 	if( shader->GetCompileMacrosString( i, compileMacros ) )
 	{
 		shader->BuildShaderCompileMacros( compileMacros );
-
-		//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
 		shaderProgram_t *shaderProgram = &shader->_shaderPrograms[ i ];
 
@@ -987,8 +916,6 @@ bool GLCompileMacro_USE_VERTEX_SKINNING::MissesRequiredMacros( size_t permutatio
 
 bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
-#if 1
-
 	for ( size_t i = 0; i < macros.size(); i++ )
 	{
 		GLCompileMacro *macro = macros[ i ];
@@ -1000,7 +927,6 @@ bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( size_t permutati
 		}
 	}
 
-#endif
 	return false;
 }
 
@@ -1800,21 +1726,6 @@ void GLShader_portal::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_CurrentMap" ), 0 );
 }
 
-GLShader_toneMapping::GLShader_toneMapping( GLShaderManager *manager ) :
-	GLShader( "toneMapping", ATTR_POSITION, manager ),
-	u_ModelViewProjectionMatrix( this ),
-	u_HDRKey( this ),
-	u_HDRAverageLuminance( this ),
-	u_HDRMaxLuminance( this ),
-	GLCompileMacro_BRIGHTPASS_FILTER( this )
-{
-}
-
-void GLShader_toneMapping::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
-{
-	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_CurrentMap" ), 0 );
-}
-
 GLShader_contrast::GLShader_contrast( GLShaderManager *manager ) :
 	GLShader( "contrast", ATTR_POSITION, manager ),
 	u_ModelViewProjectionMatrix( this )
@@ -1964,30 +1875,6 @@ void GLShader_volumetricFog::SetShaderProgramUniforms( shaderProgram_t *shaderPr
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 0 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMapBack" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMapFront" ), 2 );
-}
-
-GLShader_screenSpaceAmbientOcclusion::GLShader_screenSpaceAmbientOcclusion( GLShaderManager *manager ) :
-	GLShader( "screenSpaceAmbientOcclusion", ATTR_POSITION, manager ),
-	u_ModelViewProjectionMatrix( this )
-{
-}
-
-void GLShader_screenSpaceAmbientOcclusion::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
-{
-	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_CurrentMap" ), 0 );
-	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 1 );
-}
-
-GLShader_depthOfField::GLShader_depthOfField( GLShaderManager *manager ) :
-	GLShader( "depthOfField", ATTR_POSITION, manager ),
-	u_ModelViewProjectionMatrix( this )
-{
-}
-
-void GLShader_depthOfField::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
-{
-	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_CurrentMap" ), 0 );
-	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 1 );
 }
 
 GLShader_motionblur::GLShader_motionblur( GLShaderManager *manager ) :

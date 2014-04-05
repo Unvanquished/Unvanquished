@@ -2227,51 +2227,6 @@ public:
 	}
 };
 
-class u_HDRKey :
-	GLUniform1f
-{
-public:
-	u_HDRKey( GLShader *shader ) :
-		GLUniform1f( shader, "u_HDRKey" )
-	{
-	}
-
-	void SetUniform_HDRKey( float value )
-	{
-		this->SetValue( value );
-	}
-};
-
-class u_HDRAverageLuminance :
-	GLUniform1f
-{
-public:
-	u_HDRAverageLuminance( GLShader *shader ) :
-		GLUniform1f( shader, "u_HDRAverageLuminance" )
-	{
-	}
-
-	void SetUniform_HDRAverageLuminance( float value )
-	{
-		this->SetValue( value );
-	}
-};
-
-class u_HDRMaxLuminance :
-	GLUniform1f
-{
-public:
-	u_HDRMaxLuminance( GLShader *shader ) :
-		GLUniform1f( shader, "u_HDRMaxLuminance" )
-	{
-	}
-
-	void SetUniform_HDRMaxLuminance( float value )
-	{
-		this->SetValue( value );
-	}
-};
-
 class u_blurVec :
 	GLUniform3f
 {
@@ -2745,19 +2700,6 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
-class GLShader_toneMapping :
-	public GLShader,
-	public u_ModelViewProjectionMatrix,
-	public u_HDRKey,
-	public u_HDRAverageLuminance,
-	public u_HDRMaxLuminance,
-	public GLCompileMacro_BRIGHTPASS_FILTER
-{
-public:
-	GLShader_toneMapping( GLShaderManager *manager );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
 class GLShader_contrast :
 	public GLShader,
 	public u_ModelViewProjectionMatrix
@@ -2876,24 +2818,6 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
-class GLShader_screenSpaceAmbientOcclusion :
-	public GLShader,
-	public u_ModelViewProjectionMatrix
-{
-public:
-	GLShader_screenSpaceAmbientOcclusion( GLShaderManager *manager );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
-class GLShader_depthOfField :
-	public GLShader,
-	public u_ModelViewProjectionMatrix
-{
-public:
-	GLShader_depthOfField( GLShaderManager *manager );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
 class GLShader_motionblur :
 	public GLShader,
 	public u_blurVec
@@ -2927,7 +2851,6 @@ extern GLShader_fogGlobal                       *gl_fogGlobalShader;
 extern GLShader_heatHaze                        *gl_heatHazeShader;
 extern GLShader_screen                          *gl_screenShader;
 extern GLShader_portal                          *gl_portalShader;
-extern GLShader_toneMapping                     *gl_toneMappingShader;
 extern GLShader_contrast                        *gl_contrastShader;
 extern GLShader_cameraEffects                   *gl_cameraEffectsShader;
 extern GLShader_blurX                           *gl_blurXShader;
@@ -2937,8 +2860,6 @@ extern GLShader_depthToColor                    *gl_depthToColorShader;
 extern GLShader_lightVolume_omni                *gl_lightVolumeShader_omni;
 extern GLShader_liquid                          *gl_liquidShader;
 extern GLShader_volumetricFog                   *gl_volumetricFogShader;
-extern GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader;
-extern GLShader_depthOfField                    *gl_depthOfFieldShader;
 extern GLShader_motionblur                      *gl_motionblurShader;
 extern GLShader_fxaa                            *gl_fxaaShader;
 extern GLShaderManager                           gl_shaderManager;

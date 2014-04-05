@@ -1453,14 +1453,7 @@ static void R_CoherentHierachicalCulling()
 		startTime = ri.Milliseconds();
 	}
 
-	if ( HDR_ENABLED() )
-	{
-		R_BindFBO( tr.deferredRenderFBO );
-	}
-	else
-	{
-		R_BindNullFBO();
-	}
+	R_BindNullFBO();
 
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();

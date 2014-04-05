@@ -414,12 +414,9 @@ void RE_AddRefLightToScene( const refLight_t *l )
 		light->l.scale = r_lightScale->value;
 	}
 
-	if ( !HDR_ENABLED() )
+	if ( light->l.scale >= r_lightScale->value )
 	{
-		if ( light->l.scale >= r_lightScale->value )
-		{
-			light->l.scale = r_lightScale->value;
-		}
+		light->l.scale = r_lightScale->value;
 	}
 
 	if ( !r_dynamicLightCastShadows->integer && !light->l.inverseShadows )

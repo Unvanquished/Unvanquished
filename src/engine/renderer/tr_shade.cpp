@@ -100,9 +100,6 @@ void GLSL_InitGPUShaders( void )
 	// portal process effect
 	gl_shaderManager.load( gl_portalShader );
 
-	// HDR -> LDR tone mapping
-	gl_shaderManager.load( gl_toneMappingShader );
-
 	// LDR bright pass filter
 	gl_shaderManager.load( gl_contrastShader );
 
@@ -122,13 +119,6 @@ void GLSL_InitGPUShaders( void )
 	gl_shaderManager.load( gl_liquidShader );
 
 	gl_shaderManager.load( gl_volumetricFogShader );
-
-#ifdef EXPERIMENTAL
-	// screen space ambien occlusion post process effect
-	gl_shaderManager.load( gl_screenSpaceAmbientOcclusionShader );
-
-	gl_shaderManager.load( gl_depthOfFieldShader );
-#endif
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
@@ -165,7 +155,6 @@ void GLSL_ShutdownGPUShaders( void )
 	gl_heatHazeShader = NULL;
 	gl_screenShader = NULL;
 	gl_portalShader = NULL;
-	gl_toneMappingShader = NULL;
 	gl_contrastShader = NULL;
 	gl_cameraEffectsShader = NULL;
 	gl_blurXShader = NULL;
@@ -173,8 +162,6 @@ void GLSL_ShutdownGPUShaders( void )
 	gl_debugShadowMapShader = NULL;
 	gl_liquidShader = NULL;
 	gl_volumetricFogShader = NULL;
-	gl_screenSpaceAmbientOcclusionShader = NULL;
-	gl_depthOfFieldShader = NULL;
 	gl_motionblurShader = NULL;
 	gl_fxaaShader = NULL;
 
@@ -2020,29 +2007,13 @@ static void Render_heatHaze( int stage )
 
 		previousFBO = glState.currentFBO;
 
-		if ( HDR_ENABLED() )
-		{
-			GL_CheckErrors();
-
-			// copy deferredRenderFBO to occlusionRenderFBO
-			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
-			glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.occlusionRenderFBO->frameBuffer );
-			glBlitFramebufferEXT( 0, 0, glConfig.vidWidth, glConfig.vidHeight,
-			                      0, 0, glConfig.vidWidth, glConfig.vidHeight,
-			                      GL_DEPTH_BUFFER_BIT,
-			                      GL_NEAREST );
-			GL_CheckErrors();
-		}
-		else
-		{
-			// copy depth of the main context to occlusionRenderFBO
-			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, 0 );
-			glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.occlusionRenderFBO->frameBuffer );
-			glBlitFramebufferEXT( 0, 0, glConfig.vidWidth, glConfig.vidHeight,
-			                      0, 0, glConfig.vidWidth, glConfig.vidHeight,
-			                      GL_DEPTH_BUFFER_BIT,
-			                      GL_NEAREST );
-		}
+		// copy depth of the main context to occlusionRenderFBO
+		glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, 0 );
+		glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.occlusionRenderFBO->frameBuffer );
+		glBlitFramebufferEXT( 0, 0, glConfig.vidWidth, glConfig.vidHeight,
+							  0, 0, glConfig.vidWidth, glConfig.vidHeight,
+							  GL_DEPTH_BUFFER_BIT,
+							  GL_NEAREST );
 
 		R_BindFBO( tr.occlusionRenderFBO );
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.occlusionRenderFBOImage->texnum, 0 );
@@ -2158,16 +2129,8 @@ static void Render_heatHaze( int stage )
 	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
 	gl_heatHazeShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
-	// bind u_CurrentMap
-	if ( HDR_ENABLED() )
-	{
-		GL_BindToTMU( 1, tr.deferredRenderFBOImage );
-	}
-	else
-	{
-		GL_BindToTMU( 1, tr.currentRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
-	}
+	GL_BindToTMU( 1, tr.currentRenderImage );
+	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
 
 	// bind u_ContrastMap
 	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && glConfig.driverType != GLDRV_MESA )
@@ -2225,41 +2188,17 @@ static void Render_liquid( int stage )
 	float specMax = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
 	gl_liquidShader->SetUniform_SpecularExponent( specMin, specMAx );
 
-	// capture current color buffer for u_CurrentMap
-	if ( DS_STANDARD_ENABLED() )
-	{
-		GL_BindToTMU( 0, tr.deferredRenderFBOImage );
-	}
-	else if ( HDR_ENABLED() )
-	{
-		GL_BindToTMU( 0, tr.deferredRenderFBOImage );
-	}
-	else
-	{
-		GL_SelectTexture( 0 );
-		GL_Bind( tr.currentRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
-	}
+	GL_SelectTexture( 0 );
+	GL_Bind( tr.currentRenderImage );
+	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
 
 	// bind u_PortalMap
 	GL_BindToTMU( 1, tr.portalRenderImage ); 
 
-	// bind u_DepthMap
-	if ( DS_STANDARD_ENABLED() )
-	{
-		GL_BindToTMU( 2, tr.depthRenderImage );
-	}
-	else if ( HDR_ENABLED() )
-	{
-		GL_BindToTMU( 2, tr.depthRenderImage );
-	}
-	else
-	{
-		// depth texture is not bound to a FBO
-		GL_SelectTexture( 2 );
-		GL_Bind( tr.depthRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
-	}
+	// depth texture is not bound to a FBO
+	GL_SelectTexture( 2 );
+	GL_Bind( tr.depthRenderImage );
+	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
 
 	// bind u_NormalMap
 	GL_BindToTMU( 3, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 

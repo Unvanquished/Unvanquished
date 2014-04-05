@@ -319,8 +319,7 @@ static INLINE void rgbe2float( float *red, float *green, float *blue, unsigned c
 	}
 }
 
-void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, qboolean doGamma, qboolean toneMap,
-                       qboolean compensate )
+void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 {
 	int      i, j;
 	byte     *buf_p;
@@ -497,99 +496,6 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, q
 		}
 	}
 
-	// LOADING DONE
-	if ( doGamma )
-	{
-		floatbuf = *pic;
-		gamma = 1.0f / r_hdrLightmapGamma->value;
-
-		for ( i = 0; i < ( w * h ); i++ )
-		{
-			for ( j = 0; j < 3; j++ )
-			{
-				*floatbuf = pow( *floatbuf, gamma );
-				floatbuf++;
-			}
-		}
-	}
-
-	if ( toneMap )
-	{
-		// calculate the average and maximum luminance
-		sum = 0.0f;
-		maxLuminance = 0.0f;
-		floatbuf = *pic;
-
-		for ( i = 0; i < ( w * h ); i++ )
-		{
-			for ( j = 0; j < 3; j++ )
-			{
-				sampleVector[ j ] = *floatbuf++;
-			}
-
-			luminance = DotProduct( sampleVector, LUMINANCE_VECTOR ) + 0.0001f;
-
-			if ( luminance > maxLuminance )
-			{
-				maxLuminance = luminance;
-			}
-
-			sum += log( luminance );
-		}
-
-		sum /= w * h;
-		avgLuminance = exp( sum );
-
-		// post process buffer with tone mapping
-		floatbuf = *pic;
-
-		for ( i = 0; i < ( w * h ); i++ )
-		{
-			for ( j = 0; j < 3; j++ )
-			{
-				sampleVector[ j ] = *floatbuf++;
-			}
-
-			if ( r_hdrLightmapExposure->value <= 0 )
-			{
-				exposure = ( r_hdrKey->value / avgLuminance );
-			}
-			else
-			{
-				exposure = r_hdrLightmapExposure->value;
-			}
-
-			//
-
-			scaledLuminance = exposure * DotProduct( sampleVector, LUMINANCE_VECTOR );
-			// exponential tone mapping
-			finalLuminance = 1.0 - exp( -scaledLuminance );
-
-			VectorScale( sampleVector, finalLuminance, sampleVector );
-
-			floatbuf -= 3;
-
-			for ( j = 0; j < 3; j++ )
-			{
-				*floatbuf++ = sampleVector[ j ];
-			}
-		}
-	}
-
-	if ( compensate )
-	{
-		floatbuf = *pic;
-
-		for ( i = 0; i < ( w * h ); i++ )
-		{
-			for ( j = 0; j < 3; j++ )
-			{
-				*floatbuf = *floatbuf / r_hdrLightmapCompensate->value;
-				floatbuf++;
-			}
-		}
-	}
-
 	ri.FS_FreeFile( buffer );
 }
 
@@ -604,7 +510,7 @@ static void LoadRGBEToBytes( const char *name, byte **ldrImage, int *width, int 
 	float  max;
 
 	w = h = 0;
-	LoadRGBEToFloats( name, &hdrImage, &w, &h, qfalse, qfalse, qfalse );
+	LoadRGBEToFloats( name, &hdrImage, &w, &h );
 
 	*width = w;
 	*height = h;
@@ -691,88 +597,22 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 				return;
 			}
 
-			ri.Printf( PRINT_DEVELOPER, "...loading %i HDR lightmaps\n", numLightmaps );
+			int  width, height;
+			byte *ldrImage;
 
-			if ( r_hdrRendering->integer && r_hdrLightmap->integer && glConfig2.framebufferObjectAvailable &&
-			     glConfig2.framebufferBlitAvailable && glConfig2.textureFloatAvailable && glConfig2.textureHalfFloatAvailable )
+			for ( i = 0; i < numLightmaps; i++ )
 			{
-				int            width, height;
-				unsigned short *hdrImage;
+				ri.Printf( PRINT_DEVELOPER, "...loading external lightmap as RGB8 LDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
-				for ( i = 0; i < numLightmaps; i++ )
-				{
-					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap as RGB 16 bit half HDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
+				width = height = 0;
+				LoadRGBEToBytes( va( "%s/%s", mapName, lightmapFiles[ i ] ), &ldrImage, &width, &height );
 
-					width = height = 0;
-					LoadRGBEToHalfs( va( "%s/%s", mapName, lightmapFiles[ i ] ), &hdrImage, &width, &height );
+				image = R_CreateImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), (const byte **)&ldrImage, width, height,
+									   1, IF_NOPICMIP | IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
 
-					image = R_AllocImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), qtrue );
+				Com_AddToGrowList( &tr.lightmaps, image );
 
-					if ( !image )
-					{
-						Com_Dealloc( hdrImage );
-						break;
-					}
-
-					image->type = GL_TEXTURE_2D;
-
-					image->width = width;
-					image->height = height;
-
-					image->bits = IF_NOPICMIP | IF_RGBA16F;
-					image->filterType = FT_NEAREST;
-					image->wrapType = WT_CLAMP;
-
-					GL_Bind( image );
-
-					image->internalFormat = GL_RGBA16F;
-					image->uploadWidth = width;
-					image->uploadHeight = height;
-
-					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_HALF_FLOAT, hdrImage );
-
-					if ( glConfig2.generateMipmapAvailable )
-					{
-						glTexParameteri( image->type, GL_GENERATE_MIPMAP_SGIS, GL_TRUE );
-						glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
-					}
-
-					{
-						glTexParameterf( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-						glTexParameterf( image->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-					}
-
-					glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-					glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-					GL_Unbind( image );
-
-					GL_CheckErrors();
-
-					Com_Dealloc( hdrImage );
-
-					Com_AddToGrowList( &tr.lightmaps, image );
-				}
-			}
-			else
-			{
-				int  width, height;
-				byte *ldrImage;
-
-				for ( i = 0; i < numLightmaps; i++ )
-				{
-					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap as RGB8 LDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
-
-					width = height = 0;
-					LoadRGBEToBytes( va( "%s/%s", mapName, lightmapFiles[ i ] ), &ldrImage, &width, &height );
-
-					image = R_CreateImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), (const byte **)&ldrImage, width, height,
-					                       1, IF_NOPICMIP | IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
-
-					Com_AddToGrowList( &tr.lightmaps, image );
-
-					ri.Free( ldrImage );
-				}
+				ri.Free( ldrImage );
 			}
 
 			if ( tr.worldDeluxeMapping )
@@ -4899,12 +4739,9 @@ void R_LoadEntities( lump_t *l )
 			{
 				light->l.scale = atof( value );
 
-				if ( !r_hdrRendering->integer || !glConfig2.textureFloatAvailable || !glConfig2.framebufferObjectAvailable || !glConfig2.framebufferBlitAvailable )
+				if ( light->l.scale >= r_lightScale->value )
 				{
-					if ( light->l.scale >= r_lightScale->value )
-					{
-						light->l.scale = r_lightScale->value;
-					}
+					light->l.scale = r_lightScale->value;
 				}
 			}
 			// check for light shader

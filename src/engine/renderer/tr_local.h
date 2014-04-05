@@ -112,8 +112,6 @@ static inline byte floatToSnorm8(float f) {
 		GLDEBUG_ALL
 	} glDebugModes_t;
 
-#define HDR_ENABLED()         (( r_hdrRendering->integer && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable && glConfig2.framebufferBlitAvailable && glConfig.driverType != GLDRV_MESA ))
-
 #define REF_CUBEMAP_SIZE       32
 #define REF_CUBEMAP_STORE_SIZE 1024
 #define REF_CUBEMAP_STORE_SIDE ( REF_CUBEMAP_STORE_SIZE / REF_CUBEMAP_SIZE )
@@ -2557,11 +2555,6 @@ static inline byte floatToSnorm8(float f) {
 		trRefLight_t      *currentLight; // only used when lighting interactions
 		qboolean          skyRenderedThisView; // flag for drawing sun
 
-		float             hdrAverageLuminance;
-		float             hdrMaxLuminance;
-		float             hdrTime;
-		float             hdrKey;
-
 		qboolean          projection2D; // if qtrue, drawstretchpic doesn't need to change modes
 		vec4_t            color2D;
 		qboolean          vertexes2D; // shader needs to be finished
@@ -2668,7 +2661,6 @@ static inline byte floatToSnorm8(float f) {
 		image_t    *depthRenderImage;
 		image_t    *portalRenderImage;
 
-		image_t    *deferredRenderFBOImage;
 		image_t    *occlusionRenderFBOImage;
 		image_t    *depthToColorBackFacesFBOImage;
 		image_t    *depthToColorFrontFacesFBOImage;
@@ -2689,7 +2681,6 @@ static inline byte floatToSnorm8(float f) {
 		GLuint   colorGradePBO;
 
 		// framebuffer objects
-		FBO_t *deferredRenderFBO; // is used by HDR rendering
 		FBO_t *portalRenderFBO; // holds a copy of the last currentRender that was rendered into a FBO
 		FBO_t *occlusionRenderFBO; // used for overlapping visibility determination
 		FBO_t *downScaleFBO_quarter;
@@ -3078,27 +3069,6 @@ static inline byte floatToSnorm8(float f) {
 	extern cvar_t *r_chcMaxVisibleFrames;
 	extern cvar_t *r_chcVisibilityThreshold;
 	extern cvar_t *r_chcIgnoreLeaves;
-
-	extern cvar_t *r_hdrRendering;
-	extern cvar_t *r_hdrMinLuminance;
-	extern cvar_t *r_hdrMaxLuminance;
-	extern cvar_t *r_hdrKey;
-	extern cvar_t *r_hdrContrastThreshold;
-	extern cvar_t *r_hdrContrastOffset;
-	extern cvar_t *r_hdrLightmap;
-	extern cvar_t *r_hdrLightmapExposure;
-	extern cvar_t *r_hdrLightmapGamma;
-	extern cvar_t *r_hdrLightmapCompensate;
-	extern cvar_t *r_hdrToneMappingOperator;
-	extern cvar_t *r_hdrGamma;
-	extern cvar_t *r_hdrDebug;
-
-#ifdef EXPERIMENTAL
-	extern cvar_t *r_screenSpaceAmbientOcclusion;
-#endif
-#ifdef EXPERIMENTAL
-	extern cvar_t *r_depthOfField;
-#endif
 
 	extern cvar_t *r_reflectionMapping;
 	extern cvar_t *r_highQualityNormalMapping;
