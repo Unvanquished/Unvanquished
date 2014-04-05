@@ -463,8 +463,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_model_md3.cpp
   ${ENGINE_DIR}/renderer/tr_model_md5.cpp
   ${ENGINE_DIR}/renderer/tr_model_iqm.cpp
-  ${ENGINE_DIR}/renderer/tr_model_mdc.cpp
-  ${ENGINE_DIR}/renderer/tr_model_psk.cpp
   ${ENGINE_DIR}/renderer/tr_model_skel.cpp
   ${ENGINE_DIR}/renderer/tr_noise.cpp
   ${ENGINE_DIR}/renderer/tr_scene.cpp
