@@ -2708,7 +2708,7 @@ void SP_func_pendulum( gentity_t *self )
 	self->s.apos.trDuration = 1000 / frequency;
 	self->s.apos.trTime = self->s.apos.trDuration * phase;
 	self->s.apos.trType = TR_SINE;
-	self->s.apos.trDelta[ 2 ] = self->config.speed;
+	self->s.apos.trDelta[ 2 ] = self->speed;
 }
 
 /*
