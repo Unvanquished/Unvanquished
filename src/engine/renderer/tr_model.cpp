@@ -142,36 +142,6 @@ qhandle_t RE_RegisterModel( const char *name )
 	// load the files
 	numLoaded = 0;
 
-	if ( strstr( name, ".mds" ) || strstr( name, ".md5mesh" ) )
-	{
-		// try loading skeletal file
-
-		loaded = qfalse;
-		bufferLen = ri.FS_ReadFile( name, ( void ** ) &buffer );
-
-		if ( buffer )
-		{
-			loadmodel = mod;
-
-			ident = LittleLong( * ( unsigned * ) buffer );
-
-			if ( !Q_strnicmp( ( const char * ) buffer, "MD5Version", 10 ) )
-			{
-				loaded = R_LoadMD5( mod, buffer, bufferLen, name );
-			}
-			else if ( !Q_strnicmp( ( const char * ) buffer, "INTERQUAKEMODEL", 15 ) ) {
-				loaded = R_LoadIQModel( mod, buffer, bufferLen, name );
-			}
-
-			ri.FS_FreeFile( buffer );
-		}
-
-		if ( loaded )
-		{
-			return mod->index;
-		}
-	}
-
 	for ( lod = MD3_MAX_LODS - 1; lod >= 0; lod-- )
 	{
 		char filename[ 1024 ];
