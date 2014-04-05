@@ -1139,153 +1139,6 @@ static void RB_RenderOpaqueSurfacesIntoDepth( bool onlyWorld )
 	GL_CheckErrors();
 }
 
-// *INDENT-OFF*
-#ifdef VOLUMETRIC_LIGHTING
-static void Render_lightVolume( interaction_t *ia )
-{
-	int           j;
-	trRefLight_t  *light;
-	shader_t      *lightShader;
-	shaderStage_t *attenuationXYStage;
-	shaderStage_t *attenuationZStage;
-	matrix_t      ortho;
-	vec4_t        quadVerts[ 4 ];
-
-	light = ia->light;
-
-	// set the window clipping
-	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-	             backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
-
-	// set light scissor to reduce fillrate
-	GL_Scissor( ia->scissorX, ia->scissorY, ia->scissorWidth, ia->scissorHeight );
-
-	// set 2D virtual screen size
-	GL_PushMatrix();
-	MatrixOrthogonalProjection( ortho, backEnd.viewParms.viewportX,
-	                            backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
-	                            backEnd.viewParms.viewportY,
-	                            backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight, -99999, 99999 );
-	GL_LoadProjectionMatrix( ortho );
-	GL_LoadModelViewMatrix( matrixIdentity );
-
-	switch ( light->l.rlType )
-	{
-		case RL_PROJ:
-			{
-				MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.0 );  // bias
-				MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / std::min( light->falloffLength, 1.0f ) );   // scale
-				break;
-			}
-
-		case RL_OMNI:
-		default:
-			{
-				MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.5 );  // bias
-				MatrixMultiplyScale( light->attenuationMatrix, 0.5, 0.5, 0.5 );  // scale
-				break;
-			}
-	}
-
-	MatrixMultiply2( light->attenuationMatrix, light->projectionMatrix );  // light projection (frustum)
-	MatrixMultiply2( light->attenuationMatrix, light->viewMatrix );
-
-	lightShader = light->shader;
-	attenuationZStage = lightShader->stages[ 0 ];
-
-	for ( j = 1; j < MAX_SHADER_STAGES; j++ )
-	{
-		attenuationXYStage = lightShader->stages[ j ];
-
-		if ( !attenuationXYStage )
-		{
-			break;
-		}
-
-		if ( attenuationXYStage->type != ST_ATTENUATIONMAP_XY )
-		{
-			continue;
-		}
-
-		if ( !RB_EvalExpression( &attenuationXYStage->ifExp, 1.0 ) )
-		{
-			continue;
-		}
-
-		Tess_ComputeColor( attenuationXYStage );
-		R_ComputeFinalAttenuation( attenuationXYStage, light );
-
-		if ( light->l.rlType == RL_OMNI )
-		{
-			vec3_t   viewOrigin;
-			vec3_t   lightOrigin;
-			vec4_t   lightColor;
-			qboolean shadowCompare;
-
-			GLimp_LogComment( "--- Render_lightVolume_omni ---\n" );
-
-			// enable shader, set arrays
-			gl_lightVolumeShader_omni->BindProgram();
-			GL_Cull( CT_TWO_SIDED );
-			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-
-			// set uniforms
-			VectorCopy( backEnd.viewParms.orientation.origin, viewOrigin );  // in world space
-			VectorCopy( light->origin, lightOrigin );
-			VectorCopy( tess.svars.color, lightColor );
-
-			shadowCompare = (qboolean)((int)r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0);
-
-			gl_lightVolumeShader_omni->SetUniform_ViewOrigin( viewOrigin );
-			gl_lightVolumeShader_omni->SetUniform_LightOrigin( lightOrigin );
-			gl_lightVolumeShader_omni->SetUniform_LightColor( lightColor );
-			gl_lightVolumeShader_omni->SetUniform_LightRadius( light->sphereRadius );
-			gl_lightVolumeShader_omni->SetUniform_LightScale( light->l.scale );
-			gl_lightVolumeShader_omni->SetUniform_LightAttenuationMatrix( light->attenuationMatrix2 );
-
-			// FIXME gl_lightVolumeShader_omni->SetUniform_ShadowMatrix( light->attenuationMatrix );
-			gl_lightVolumeShader_omni->SetShadowing( shadowCompare );
-			gl_lightVolumeShader_omni->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-			gl_lightVolumeShader_omni->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
-
-			// depth texture is not bound to a FBO
-			GL_SelectTexture( 0 );
-			GL_Bind( tr.depthRenderImage );
-			glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
-
-			// bind u_AttenuationMapXY
-			GL_SelectTexture( 1 );
-			BindAnimatedImage( &attenuationXYStage->bundle[ TB_COLORMAP ] );
-
-			// bind u_AttenuationMapZ
-			GL_SelectTexture( 2 );
-			BindAnimatedImage( &attenuationZStage->bundle[ TB_COLORMAP ] );
-
-			// bind u_ShadowMap
-			if ( shadowCompare )
-			{
-				GL_BindToTMU( 3, tr.shadowCubeFBOImage[ light->shadowLOD ] ); 
-			}
-
-			// draw light scissor rectangle
-			Vector4Set( quadVerts[ 0 ], ia->scissorX, ia->scissorY, 0, 1 );
-			Vector4Set( quadVerts[ 1 ], ia->scissorX + ia->scissorWidth - 1, ia->scissorY, 0, 1 );
-			Vector4Set( quadVerts[ 2 ], ia->scissorX + ia->scissorWidth - 1, ia->scissorY + ia->scissorHeight - 1, 0,
-			            1 );
-			Vector4Set( quadVerts[ 3 ], ia->scissorX, ia->scissorY + ia->scissorHeight - 1, 0, 1 );
-			Tess_InstantQuad( quadVerts );
-
-			GL_CheckErrors();
-		}
-	}
-
-	GL_PopMatrix();
-}
-
-#endif
-// *INDENT-ON*
-
 /*
  * helper function for parallel split shadow mapping
  */
@@ -1633,14 +1486,6 @@ static void RB_RenderInteractions()
 
 		// draw the contents of the last shader batch
 		Tess_End();
-
-#ifdef VOLUMETRIC_LIGHTING
-			// draw the light volume if needed
-			if ( light->shader->volumetricLight )
-			{
-				Render_lightVolume( ia );
-			}
-#endif
 
 		// force updates
 		oldEntity = NULL;
@@ -2961,13 +2806,6 @@ static void RB_RenderInteractionsShadowMapped()
 		}
 
 		Tess_End();
-#ifdef VOLUMETRIC_LIGHTING
-		// draw the light volume if needed
-		if ( light->shader->volumetricLight )
-		{
-			Render_lightVolume( ia );
-		}
-#endif
 	}
 
 	// draw the contents of the last shader batch
@@ -3016,26 +2854,10 @@ void RB_RenderGlobalFog()
 		return;
 	}
 
-#if defined( COMPAT_ET )
-
 	if ( !tr.world || tr.world->globalFog < 0 )
 	{
 		return;
 	}
-
-#else
-
-	if ( r_forceFog->value <= 0 && VectorLength( tr.fogColor ) <= 0 )
-	{
-		return;
-	}
-
-	if ( r_forceFog->value <= 0 && tr.fogDensity <= 0 )
-	{
-		return;
-	}
-
-#endif
 
 	GL_Cull( CT_TWO_SIDED );
 
@@ -3046,7 +2868,6 @@ void RB_RenderGlobalFog()
 
 	gl_fogGlobalShader->SetUniform_ViewOrigin( backEnd.viewParms.orientation.origin );  // world space
 
-#if defined( COMPAT_ET )
 	{
 		fog_t *fog;
 
@@ -3075,23 +2896,6 @@ void RB_RenderGlobalFog()
 		gl_fogGlobalShader->SetUniform_FogDistanceVector( fogDistanceVector );
 		gl_fogGlobalShader->SetUniform_Color( fog->color );
 	}
-#else
-	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA );
-
-	if ( r_forceFog->value )
-	{
-		Vector4Set( fogDepthVector, r_forceFog->value, 0, 0, 0 );
-		VectorCopy( colorMdGrey, fogColor );
-	}
-	else
-	{
-		Vector4Set( fogDepthVector, tr.fogDensity, 0, 0, 0 );
-		VectorCopy( tr.fogColor, fogColor );
-	}
-
-	gl_fogGlobalShader->SetUniform_FogDepthVector( fogDepthVector );
-	gl_fogGlobalShader->SetUniform_Color( fogColor );
-#endif
 
 	gl_fogGlobalShader->SetUniform_ViewMatrix( backEnd.viewParms.world.viewMatrix );
 	gl_fogGlobalShader->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
@@ -5811,7 +5615,6 @@ static void RB_RenderView( void )
 	// clear relevant buffers
 	clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
-#if defined( COMPAT_ET )
 	// ydnar: global q3 fog volume
 	if ( tr.world && tr.world->globalFog >= 0 )
 	{
@@ -5940,16 +5743,6 @@ static void RB_RenderView( void )
 			}
 		}
 	}
-
-#else
-
-	if ( !( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) )
-	{
-		clearBits |= GL_COLOR_BUFFER_BIT; // FIXME: only if sky shaders have been used
-		GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );  // FIXME: get color of sky
-	}
-
-#endif
 
 	glClear( clearBits );
 

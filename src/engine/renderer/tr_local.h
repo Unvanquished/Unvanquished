@@ -72,8 +72,6 @@ static inline byte floatToSnorm8(float f) {
 
 #define MAX_SHADOWMAPS        5
 
-//#define VOLUMETRIC_LIGHTING 1
-
 #define GLSL_COMPILE_STARTUP_ONLY  1
 
 #define MAX_TEXTURE_MIPS      16
@@ -1004,11 +1002,7 @@ static inline byte floatToSnorm8(float f) {
 	  ST_PORTALMAP,
 	  ST_HEATHAZEMAP, // heatHaze post process effect
 	  ST_LIQUIDMAP,
-
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 	  ST_LIGHTMAP,
-#endif
-
 	  ST_COLLAPSE_lighting_DB, // diffusemap + bumpmap
 	  ST_COLLAPSE_lighting_DBG, // diffusemap + bumpmap + glowmap
 	  ST_COLLAPSE_lighting_DBS, // diffusemap + bumpmap + specularmap
@@ -1415,9 +1409,7 @@ static inline byte floatToSnorm8(float f) {
 		int                     pixelTargetWidth;
 		int                     pixelTargetHeight;
 
-#if defined( COMPAT_ET )
 		glfog_t glFog; // (SA) added (needed to pass fog infos into the portal sky scene)
-#endif
 
 		int                    numVisTests;
 		struct visTestResult_s *visTests;
@@ -1716,10 +1708,6 @@ static inline byte floatToSnorm8(float f) {
 		vec3_t binormal;
 		vec3_t normal;
 		vec4_t lightColor;
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		vec3_t lightDirection;
-#endif
 	} srfVert_t;
 
 	typedef struct
@@ -2746,10 +2734,8 @@ static inline byte floatToSnorm8(float f) {
 		vec3_t fogColor;
 		float  fogDensity;
 
-#if defined( COMPAT_ET )
 		glfog_t     glfogsettings[ NUM_FOGS ];
 		glfogType_t glfogNum;
-#endif
 
 		frontEndCounters_t pc;
 		int                frontEndMsec; // not in pc due to clearing issue
@@ -3523,15 +3509,12 @@ static inline byte floatToSnorm8(float f) {
 	============================================================
 	*/
 
-#if defined( COMPAT_ET )
 	void R_SetFrameFog( void );
 	void RB_Fog( glfog_t *curfog );
 	void RB_FogOff( void );
 	void RB_FogOn( void );
 	void RE_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density );
 	void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
-
-#endif
 
 	/*
 	============================================================

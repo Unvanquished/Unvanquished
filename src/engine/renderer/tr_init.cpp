@@ -1686,20 +1686,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		re.ClearScene = RE_ClearScene;
 		re.AddRefEntityToScene = RE_AddRefEntityToScene;
 
-#if defined( COMPAT_ET )
 		re.AddPolyToScene = RE_AddPolyToSceneET;
 		re.AddPolysToScene = RE_AddPolysToScene;
-#else
-		re.AddPolyToScene = RE_AddPolyToSceneQ3A;
-#endif
 		re.LightForPoint = R_LightForPoint;
 
-#if defined( COMPAT_ET )
 		re.AddLightToScene = RE_AddDynamicLightToSceneET;
 		re.AddAdditiveLightToScene = RE_AddDynamicLightToSceneQ3A;
-#else
-
-#endif
 
 		re.RenderScene = RE_RenderScene;
 
@@ -1731,7 +1723,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		// Q3A END
 
 		// ET BEGIN
-#if defined( COMPAT_ET )
 		re.GetSkinModel = RE_GetSkinModel;
 		re.GetShaderFromModel = RE_GetShaderFromModel;
 
@@ -1756,15 +1747,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		re.GetTextureId = RE_GetTextureId;
 		re.RenderToTexture = RE_RenderToTexture;
 		re.Finish = RE_Finish;
-#endif
 		// ET END
 
 		// XreaL BEGIN
 		re.TakeVideoFrame = RE_TakeVideoFrame;
-
-#if !defined( COMPAT_ET )
-		re.TakeScreenshotPNG = RB_TakeScreenshotPNG;
-#endif
 
 		re.AddRefLightToScene = RE_AddRefLightToScene;
 

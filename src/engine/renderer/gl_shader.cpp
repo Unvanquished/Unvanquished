@@ -197,14 +197,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	
 	bufferExtra.reserve( 4096 );
 
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-	AddGLSLDefine( bufferExtra, "COMPAT_Q3A", 1 );
-#endif
-
-#if defined( COMPAT_ET )
-	AddGLSLDefine( bufferExtra, "COMPAT_ET", 1 );
-#endif
-
 	if( glConfig2.textureRGAvailable ) {
 		AddGLSLDefine( bufferExtra, "TEXTURE_RG", 1 );
 	}
@@ -230,25 +222,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	AddGLSLDefine( bufferExtra, "GF_SAWTOOTH", static_cast<float>( GF_SAWTOOTH ) );
 	AddGLSLDefine( bufferExtra, "GF_INVERSE_SAWTOOTH", static_cast<float>( GF_INVERSE_SAWTOOTH ) );
 	AddGLSLDefine( bufferExtra, "GF_NOISE", static_cast<float>( GF_NOISE ) );
-
-	/*
-	AddGLSLDefine( bufferExtra, "deformGen_t" );
-	AddGLSLDefine( bufferExtra, "DGEN_WAVE_SIN", static_cast<float>( DGEN_WAVE_SIN ) );
-	AddGLSLDefine( bufferExtra, "DGEN_WAVE_SQUARE", static_cast<float>( DGEN_WAVE_SQUARE ) );
-	AddGLSLDefine( bufferExtra, "DGEN_WAVE_TRIANGLE", static_cast<float>( DGEN_WAVE_TRIANGLE ) );
-	AddGLSLDefine( bufferExtra, "DGEN_WAVE_SAWTOOTH", static_cast<float>( DGEN_WAVE_SAWTOOTH ) );
-	AddGLSLDefine( bufferExtra, "DGEN_WAVE_INVERSE_SAWTOOH", static_cast<float>( DGEN_WAVE_INVERSE_SAWTOOTH ) );
-	AddGLSLDefine( bufferExtra, "DGEN_BULGE", static_cast<float>( DGEN_BULGE ) );
-	AddGLSLDefine( bufferExtra, "DGEN_MOVE", static_cast<float>( DGEN_MOVE ) );
-
-	AddGLSLDefine( bufferExtra, "colorGen_t" );
-	AddGLSLDefine( bufferExtra, "CGEN_VERTEX", CGEN_VERTEX );
-	AddGLSLDefine( bufferExtra, "CGEN_ONE_MINUS_VERTEX", CGEN_ONE_MINUX_VERTEX );
-
-	AddGLSLDefine( bufferExtra, "alphaGen_t" );
-	AddGLSLDefine( bufferExtra, "AGEN_VERTEX", AGEN_VERTEX );
-	AddGLSLDefine( bufferExtra, "AGEN_ONE_MINUS_VERTEX", AGEN_ONE_MINUS_VERTEX );
-	*/
 
 	float fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
 	float fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );

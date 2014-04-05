@@ -72,18 +72,6 @@ Maryland 20850 USA.
 #define CONFIG_NAME             "autogen_server.cfg"
 #endif
 
-#if 1
-#if !defined( COMPAT_Q3A )
-#define COMPAT_Q3A 1
-#endif
-#endif
-
-#if 1
-#if !defined( COMPAT_ET )
-#define COMPAT_ET 1
-#endif
-#endif
-
 #define UNNAMED_PLAYER "UnnamedPlayer"
 
 #define Q_UNUSED(x) (void)(x)

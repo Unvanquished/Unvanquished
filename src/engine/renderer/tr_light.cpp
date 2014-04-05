@@ -360,14 +360,10 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 		ent->ambientLight[ 2 ] += tr.identityLight * 0.125f;
 	}
 
-#if defined( COMPAT_ET )
-
 	if ( ent->e.entityNum < MAX_CLIENTS && ( refdef->rdflags & RDF_SNOOPERVIEW ) )
 	{
 		VectorSet( ent->ambientLight, 0.96f, 0.96f, 0.96f );  // allow a little room for flicker from directed light
 	}
-
-#endif
 }
 
 /*

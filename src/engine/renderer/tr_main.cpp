@@ -2869,9 +2869,7 @@ void R_RenderView( viewParms_t *parms )
 	// matrix for lod calculation
 	R_SetupProjection( qfalse );
 
-#if defined( COMPAT_ET )
 	R_SetFrameFog();
-#endif
 
 	R_SetupUnprojection();
 

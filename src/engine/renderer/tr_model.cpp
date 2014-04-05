@@ -29,9 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 qboolean        R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
 
-#if defined( COMPAT_ET )
 qboolean        R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
-#endif
 
 qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *name );
 qboolean R_LoadIQModel( model_t *mod, void *buffer, int bufferSize, const char *name );
@@ -148,14 +146,8 @@ qhandle_t RE_RegisterModel( const char *name )
 	// load the files
 	numLoaded = 0;
 
-#if defined( COMPAT_ET )
-
 	if ( strstr( name, ".mds" ) || strstr( name, ".md5mesh" ) ||
 	     strstr( name, ".iqm" ) || strstr( name, ".psk" ) )
-#else
-	if ( strstr( name, ".md5mesh" ) || strstr( name, ".iqm" ) ||
-	     strstr( name, ".psk" ) )
-#endif
 	{
 		// try loading skeletal file
 
@@ -231,15 +223,11 @@ qhandle_t RE_RegisterModel( const char *name )
 			loaded = R_LoadMD3( mod, lod, buffer, bufferLen, name );
 			ri.FS_FreeFile( buffer );
 		}
-
-#if defined( COMPAT_ET )
 		else if ( ident == MDC_IDENT )
 		{
 			loaded = R_LoadMDC( mod, lod, buffer, bufferLen, name );
 			ri.FS_FreeFile( buffer );
 		}
-
-#endif
 		else
 		{
 			ri.FS_FreeFile( buffer );
@@ -559,7 +547,6 @@ int RE_LerpTagQ3A( orientation_t *tag, qhandle_t handle, int startFrame, int end
 RE_LerpTag
 ================
 */
-#if defined( COMPAT_ET )
 int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tagNameIn, int startIndex )
 {
 	mdvTag_t  *start, *end;
@@ -639,8 +626,6 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 	
 	return -1;
 }
-
-#endif
 
 /*
 ================

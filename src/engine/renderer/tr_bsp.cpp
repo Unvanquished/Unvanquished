@@ -106,7 +106,6 @@ void HSVtoRGB( float h, float s, float v, float rgb[ 3 ] )
 R_ColorShiftLightingBytes
 ===============
 */
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 static void R_ColorShiftLightingBytes( byte in[ 4 ], byte out[ 4 ] )
 {
 	int shift, r, g, b;
@@ -168,8 +167,6 @@ static void R_ColorShiftLightingBytesCompressed( byte in[ 8 ], byte out[ 8 ] )
 	out[3] = rgb565 >> 8;
 }
 
-#endif
-
 /*
 ===============
 R_ColorShiftLightingFloats
@@ -212,7 +209,6 @@ R_ProcessLightmap
         returns maxIntensity
 ===============
 */
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, int bits, byte *pic_out )
 {
 	int   j;
@@ -238,8 +234,6 @@ float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, int b
 
 	return maxIntensity;
 }
-
-#endif
 
 static int QDECL LightmapNameCompare( const void *a, const void *b )
 {
@@ -802,7 +796,6 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 	}
 }
 
-#if defined( COMPAT_Q3A )
 static float FatPackU( float input, int lightmapnum )
 {
 	if ( tr.fatLightmapSize > 0 )
@@ -826,8 +819,6 @@ static float FatPackV( float input, int lightmapnum )
 
 	return input;
 }
-
-#endif
 
 /*
 =================
@@ -1079,7 +1070,6 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 			cv->verts[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
 		}
 
-#if defined( COMPAT_Q3A )
 		cv->verts[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
 		cv->verts[ i ].lightmap[ 1 ] = FatPackV( LittleFloat( verts[ i ].lightmap[ 1 ] ), realLightmapNum );
 
@@ -1089,29 +1079,6 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		}
 
 		R_ColorShiftLightingFloats( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
-
-#elif defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-
-		for ( j = 0; j < 4; j++ )
-		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
-		}
-
-		R_ColorShiftLightingFloats( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
-#else
-
-		for ( j = 0; j < 4; j++ )
-		{
-			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
-		}
-
-		for ( j = 0; j < 3; j++ )
-		{
-			cv->verts[ i ].lightDirection[ j ] = LittleFloat( verts[ i ].lightDirection[ j ] );
-		}
-
-		R_HDRTonemapLightingColors( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor, qtrue );
-#endif
 	}
 
 	// copy triangles
@@ -1205,12 +1172,7 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 
 	// we may have a nodraw surface, because they might still need to
 	// be around for movement clipping
-#if defined( COMPAT_ET )
-
 	if ( s_worldData.shaders[ LittleLong( ds->shaderNum ) ].surfaceFlags & SURF_NODRAW )
-#else
-	if ( s_worldData.shaders[ LittleLong( ds->shaderNum ) ].surfaceFlags & ( SURF_NODRAW | SURF_COLLISION ) )
-#endif
 	{
 		surf->data = &skipData;
 		return;
@@ -1241,7 +1203,6 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 			points[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
 		}
 
-#if defined( COMPAT_Q3A )
 		points[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
 		points[ i ].lightmap[ 1 ] = FatPackV( LittleFloat( verts[ i ].lightmap[ 1 ] ), realLightmapNum );
 
@@ -1251,29 +1212,6 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 		}
 
 		R_ColorShiftLightingFloats( points[ i ].lightColor, points[ i ].lightColor );
-
-#elif defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-
-		for ( j = 0; j < 4; j++ )
-		{
-			points[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
-		}
-
-		R_ColorShiftLightingFloats( points[ i ].lightColor, points[ i ].lightColor );
-#else
-
-		for ( j = 0; j < 4; j++ )
-		{
-			points[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
-		}
-
-		for ( j = 0; j < 3; j++ )
-		{
-			points[ i ].lightDirection[ j ] = LittleFloat( verts[ i ].lightDirection[ j ] );
-		}
-
-		R_HDRTonemapLightingColors( points[ i ].lightColor, points[ i ].lightColor, qtrue );
-#endif
 	}
 
 	// pre-tesselate
@@ -1309,25 +1247,10 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 	srfTriangle_t        *tri;
 	int                  i, j;
 	int                  numVerts, numTriangles;
-//	int             realLightmapNum;
 	static surfaceType_t skipData = SF_SKIP;
 
 	// get lightmap
-#if defined( COMPAT_Q3A )
 	surf->lightmapNum = -1; // FIXME LittleLong(ds->lightmapNum);
-#else
-	realLightmapNum = LittleLong( ds->lightmapNum );
-
-	if ( r_vertexLighting->integer || !r_precomputedLighting->integer )
-	{
-		surf->lightmapNum = -1;
-	}
-	else
-	{
-		surf->lightmapNum = realLightmapNum;
-	}
-
-#endif
 
 	if ( tr.worldDeluxeMapping && surf->lightmapNum >= 2 )
 	{
@@ -1347,12 +1270,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 	// we may have a nodraw surface, because they might still need to
 	// be around for movement clipping
-#if defined( COMPAT_ET )
-
 	if ( s_worldData.shaders[ LittleLong( ds->shaderNum ) ].surfaceFlags & SURF_NODRAW )
-#else
-	if ( s_worldData.shaders[ LittleLong( ds->shaderNum ) ].surfaceFlags & ( SURF_NODRAW | SURF_COLLISION ) )
-#endif
 	{
 		surf->data = &skipData;
 		return;
@@ -1389,28 +1307,12 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 			cv->verts[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
 		}
 
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-
 		for ( j = 0; j < 4; j++ )
 		{
 			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
 		}
 
 		R_ColorShiftLightingFloats( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
-#else
-
-		for ( j = 0; j < 4; j++ )
-		{
-			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
-		}
-
-		for ( j = 0; j < 3; j++ )
-		{
-			cv->verts[ i ].lightDirection[ j ] = LittleFloat( verts[ i ].lightDirection[ j ] );
-		}
-
-		R_HDRTonemapLightingColors( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor, qtrue );
-#endif
 	}
 
 	// copy triangles
@@ -2851,9 +2753,6 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 		out->tangent[ j ] = in->tangent[ j ];
 		out->binormal[ j ] = in->binormal[ j ];
 		out->normal[ j ] = in->normal[ j ];
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		out->lightDirection[ j ] = in->lightDirection[ j ];
-#endif
 	}
 
 	for ( j = 0; j < 2; j++ )
@@ -3231,11 +3130,7 @@ static void R_CreateWorldVBO( void )
 	// create vbo and ibo
 	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
 	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL |
-	                                ATTR_NORMAL | ATTR_COLOR
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	                                | ATTR_LIGHTDIRECTION
-#endif
-	                                 );
+	                                ATTR_NORMAL | ATTR_COLOR );
 
 	s_worldData.ibo = R_CreateStaticIBO2( va( "staticWorld_IBO %i", 0 ), numTriangles, triangles );
 
@@ -4175,7 +4070,6 @@ void R_LoadLightGrid( lump_t *l )
 	for ( i = 0; i < w->numLightGridPoints;
 	      i++, in++, gridPoint1++, gridPoint2++ )
 	{
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 		byte tmpAmbient[ 4 ];
 		byte tmpDirected[ 4 ];
 
@@ -4198,16 +4092,6 @@ void R_LoadLightGrid( lump_t *l )
 			directedColor[ j ] = tmpDirected[ j ] * ( 1.0f / 255.0f );
 		}
 
-#else
-
-		for ( j = 0; j < 3; j++ )
-		{
-			ambientColor[ j ] = LittleFloat( in->ambient[ j ] );
-			directedColor[ j ] = LittleFloat( in->directed[ j ] );
-		}
-
-#endif
-
 		// standard spherical coordinates to cartesian coordinates conversion
 
 		// decode X as cos( lat ) * sin( long )
@@ -4225,12 +4109,6 @@ void R_LoadLightGrid( lump_t *l )
 		direction[ 0 ] = cos( lat ) * sin( lng );
 		direction[ 1 ] = sin( lat ) * sin( lng );
 		direction[ 2 ] = cos( lng );
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		// deal with overbright bits
-		R_HDRTonemapLightingColors( ambientColor, ambientColor, qtrue );
-		R_HDRTonemapLightingColors( directedColor, directedColor, qtrue );
-#endif
 
 		// Pack data into an bspGridPoint
 		gridPoint1->ambient[ 0 ] = floatToUnorm8( ambientColor[ 0 ] );
@@ -6754,10 +6632,7 @@ void R_BuildCubeMaps( void )
 			do
 			{
 				ri.Printf( PRINT_ALL, "*" );
-
-#if defined( COMPAT_ET )
 				ri.Cmd_ExecuteText( EXEC_NOW, "updatescreen\n" );
-#endif
 			}
 			while ( ++tics < ticsNeeded );
 
@@ -7040,7 +6915,6 @@ void RE_LoadWorldMap( const char *name )
 	//          now that I can see how it's been used.  (functionality can narrow since
 	//          it's not used as much as it's designed for.)
 
-#if defined( COMPAT_ET )
 	RE_SetFog( FOG_SKY, 0, 0, 0, 0, 0, 0 );
 	RE_SetFog( FOG_PORTALVIEW, 0, 0, 0, 0, 0, 0 );
 	RE_SetFog( FOG_HUD, 0, 0, 0, 0, 0, 0 );
@@ -7051,7 +6925,6 @@ void RE_LoadWorldMap( const char *name )
 	RE_SetFog( FOG_SERVER, 0, 0, 0, 0, 0, 0 );
 
 	tr.glfogNum = (glfogType_t) 0;
-#endif
 
 	VectorCopy( colorMdGrey, tr.fogColor );
 	tr.fogDensity = 0;
@@ -7142,10 +7015,8 @@ void RE_LoadWorldMap( const char *name )
 	// only set tr.world now that we know the entire level has loaded properly
 	tr.world = &s_worldData;
 
-#if defined( COMPAT_ET )
 	// reset fog to world fog (if present)
 	RE_SetFog( FOG_CMD_SWITCHFOG, FOG_MAP, 20, 0, 0, 0, 0 );
-#endif
 
 	//----(SA)  set the sun shader if there is one
 	if ( tr.sunShaderName )

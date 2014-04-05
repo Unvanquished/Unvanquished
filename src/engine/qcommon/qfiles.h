@@ -873,23 +873,13 @@ typedef struct
 } dfog_t;
 
 // light grid
-#if defined( COMPAT_ET )
 typedef struct
 {
 	byte ambient[ 3 ];
 	byte directed[ 3 ];
 	byte latLong[ 2 ];
 } dgridPoint_t;
-#else
-typedef struct
-{
-	float ambient[ 3 ];
-	float directed[ 3 ];
-	byte  latLong[ 2 ];
-} dgridPoint_t;
-#endif
 
-#if defined( COMPAT_ET )
 typedef struct
 {
 	vec3_t xyz;
@@ -898,18 +888,6 @@ typedef struct
 	vec3_t normal;
 	byte   color[ 4 ];
 } drawVert_t;
-#else
-typedef struct
-{
-	float xyz[ 3 ];
-	float st[ 2 ];
-	float lightmap[ 2 ];
-	float normal[ 3 ];
-	float paintColor[ 4 ];  // unused
-	float lightColor[ 4 ];
-	float lightDirection[ 3 ];
-} drawVert_t;
-#endif
 
 typedef enum
 {

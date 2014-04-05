@@ -70,15 +70,6 @@ void GLSL_InitGPUShaders( void )
 	// shadowmap distance compression
 	gl_shaderManager.load( gl_shadowFillShader );
 
-#if !defined( GLSL_COMPILE_STARTUP_ONLY )
-
-#ifdef VOLUMETRIC_LIGHTING
-	// volumetric lighting
-	gl_shaderManager.load( gl_lightVolumeShader_omni );
-#endif
-
-#endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
-
 	// bumped cubemap reflection for abitrary polygons ( EMBM )
 	gl_shaderManager.load( gl_reflectionShader );
 
@@ -2217,15 +2208,11 @@ static void Render_fog()
 	vec3_t local;
 	vec4_t fogDistanceVector, fogDepthVector;
 
-#if defined( COMPAT_ET )
-
 	// no fog pass in snooper
 	if ( ( tr.refdef.rdflags & RDF_SNOOPERVIEW ) || tess.surfaceShader->noFog || !r_wolfFog->integer )
 	{
 		return;
 	}
-
-#endif
 
 	// ydnar: no world, no fogging
 	if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
@@ -2643,7 +2630,6 @@ SetIteratorFog
         set the fog parameters for this pass
 ==============
 */
-#if defined( COMPAT_ET )
 static void SetIteratorFog()
 {
 	GLimp_LogComment( "--- SetIteratorFog() ---\n" );
@@ -2692,8 +2678,6 @@ static void SetIteratorFog()
 		}
 	}
 }
-
-#endif // #if defined(COMPAT_ET)
 
 void Tess_StageIteratorDebug()
 {
@@ -2850,15 +2834,11 @@ void Tess_StageIteratorGeneric()
 					break;
 				}
 
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-
 			case ST_LIGHTMAP:
 				{
 					Render_lightMapping( stage, true, false );
 					break;
 				}
-
-#endif
 
 			case ST_DIFFUSEMAP:
 			case ST_COLLAPSE_lighting_DBSG:
@@ -2960,14 +2940,10 @@ void Tess_StageIteratorGeneric()
 			RB_SetStencil( 0, NULL );
 		}
 
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-
 		if ( r_showLightMaps->integer && pStage->type == ST_LIGHTMAP )
 		{
 			break;
 		}
-
-#endif
 	}
 
 	if ( !r_noFog->integer && tess.fogNum >= 1 && tess.surfaceShader->fogPass )
@@ -3047,15 +3023,11 @@ void Tess_StageIteratorDepthFill()
 					break;
 				}
 
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-
 			case ST_LIGHTMAP:
 				{
 					Render_depthFill( stage );
 					break;
 				}
-
-#endif
 
 			case ST_DIFFUSEMAP:
 			case ST_COLLAPSE_lighting_DBSG:
@@ -3141,10 +3113,7 @@ void Tess_StageIteratorShadowFill()
 					break;
 				}
 
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-
 			case ST_LIGHTMAP:
-#endif
 			case ST_DIFFUSEMAP:
 			case ST_COLLAPSE_lighting_DBSG:
 			case ST_COLLAPSE_lighting_DBG:

@@ -688,7 +688,6 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		return -1;
 	}
 
-#if defined( COMPAT_ET ) // DON'T DO THIS WITH VANILLA XREAL
 	len = ri.FS_ReadFile( fileName, NULL );
 
 	if ( len > 0x5004 && len <= 0x5004 + MAX_QPATH ) // 256 glyphs, scale info, and the bitmap name
@@ -742,7 +741,6 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		++fontUsage[ fontNo ];
 		return fontNo;
 	}
-#endif
 
 	if ( ftLibrary == NULL )
 	{

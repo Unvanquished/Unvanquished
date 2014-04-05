@@ -148,10 +148,6 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 		tess.lightCoords[ tess.numVertexes + i ][ 1 ] = vert->lightmap[ 1 ];
 
 		Vector4Copy( vert->lightColor, tess.colors[ tess.numVertexes + i ] );
-
-#if !defined( COMPAT_ET ) && !defined( COMPAT_Q3A )
-		VectorCopy( vert->lightDirection, tess.lightDirections[ tess.numVertexes + i ] );
-#endif
 	}
 
 	tess.numVertexes += numVerts;

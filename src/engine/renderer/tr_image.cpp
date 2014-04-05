@@ -2858,16 +2858,12 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 		return NULL;
 	}
 
-#if defined( COMPAT_ET )
-
 	if ( bits & IF_LIGHTMAP )
 	{
 		R_ProcessLightmap( pic[ 0 ], 4, width, height, bits, pic[ 0 ] );
 
 		bits |= IF_NOCOMPRESSION;
 	}
-
-#endif
 
 	image = R_CreateImage( ( char * ) buffer, (const byte **)pic,
 			       width, height, numMips, bits,
