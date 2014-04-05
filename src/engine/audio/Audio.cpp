@@ -68,7 +68,7 @@ namespace Audio {
     void CaptureTestUpdate();
 
     // Like in the previous sound system, we only have a single music
-    std::shared_ptr<MusicSound> music;
+    std::shared_ptr<LoopingSound> music;
 
     bool IsValidEntity(int entityNum) {
         return entityNum >= 0 and entityNum < MAX_GENTITIES;
@@ -316,8 +316,11 @@ namespace Audio {
             return;
         }
 
+        auto leadingSample = RegisterSample(leadingSound);
+        auto loopingSample = RegisterSample(loopSound);
+
         StopMusic();
-        music = std::make_shared<MusicSound>(leadingSound, loopSound);
+        music = std::make_shared<LoopingSound>(loopingSample.get(), leadingSample.get());
         AddSound(GetLocalEmitter(), music, 1);
     }
 

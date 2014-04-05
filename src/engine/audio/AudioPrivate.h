@@ -46,7 +46,7 @@ namespace Audio {
 
     /**
      * The audio system is split in several parts:
-     * - Codecs, one for each supported format that allow to load a entire file or stream it from the disk.
+     * - Audio files, one for each supported format that allow to load a entire file.
      * - ALObjects that provide OO wrappers around OpenAL (OpenAL headers are only included in ALObjects.cpp)
      * - Audio the external interface, mostly using Sound and Emitter to create new sounds.
      * - Emitters that control the positional effects for the sound sources
