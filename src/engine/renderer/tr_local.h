@@ -2723,17 +2723,6 @@ static inline byte floatToSnorm8(float f) {
 		// render lights
 		trRefLight_t *currentLight;
 
-		//
-		// GPU shader programs
-		//
-
-#if !defined( GLSL_COMPILE_STARTUP_ONLY )
-
-		// post process effects
-		shaderProgram_t rotoscopeShader;
-
-#endif // GLSL_COMPILE_STARTUP_ONLY
-
 		// -----------------------------------------
 
 		viewParms_t    viewParms;
@@ -3076,7 +3065,6 @@ static inline byte floatToSnorm8(float f) {
 	extern cvar_t *r_bloom;
 	extern cvar_t *r_bloomBlur;
 	extern cvar_t *r_bloomPasses;
-	extern cvar_t *r_rotoscope;
 	extern cvar_t *r_FXAA;
 	extern cvar_t *r_cameraVignette;
 	extern cvar_t *r_cameraFilmGrain;

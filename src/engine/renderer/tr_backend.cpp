@@ -3286,10 +3286,6 @@ void RB_RenderMotionBlur( void )
 	GL_CheckErrors();
 }
 
-void RB_RenderRotoscope( void )
-{
-}
-
 void RB_FXAA( void )
 {
 	static vec4_t quadVerts[4] = {
