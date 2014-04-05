@@ -27,13 +27,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LL(x) x = LittleLong(x)
 #define LF(x) x = LittleFloat(x)
 
-qboolean        R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
-
-qboolean        R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
-
+qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
 qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *name );
 qboolean R_LoadIQModel( model_t *mod, void *buffer, int bufferSize, const char *name );
-qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *name );
 
 model_t  *loadmodel;
 
@@ -146,8 +142,7 @@ qhandle_t RE_RegisterModel( const char *name )
 	// load the files
 	numLoaded = 0;
 
-	if ( strstr( name, ".mds" ) || strstr( name, ".md5mesh" ) ||
-	     strstr( name, ".iqm" ) || strstr( name, ".psk" ) )
+	if ( strstr( name, ".mds" ) || strstr( name, ".md5mesh" ) )
 	{
 		// try loading skeletal file
 
@@ -166,10 +161,6 @@ qhandle_t RE_RegisterModel( const char *name )
 			}
 			else if ( !Q_strnicmp( ( const char * ) buffer, "INTERQUAKEMODEL", 15 ) ) {
 				loaded = R_LoadIQModel( mod, buffer, bufferLen, name );
-			}
-			else if ( !Q_strnicmp( ( const char * ) buffer, PSK_IDENTSTRING, PSK_IDENTLEN ) )
-			{
-				loaded = R_LoadPSK( mod, buffer, bufferLen, name );
 			}
 
 			ri.FS_FreeFile( buffer );
@@ -203,29 +194,18 @@ qhandle_t RE_RegisterModel( const char *name )
 		filename[ strlen( filename ) - 1 ] = '3';  // try MD3 first
 		ri.FS_ReadFile( filename, ( void ** ) &buffer );
 
+		loadmodel = mod;
+
 		if ( !buffer )
 		{
-			filename[ strlen( filename ) - 1 ] = 'c';  // try MDC second
-			ri.FS_ReadFile( filename, ( void ** ) &buffer );
-
-			if ( !buffer )
-			{
-				continue;
-			}
+			continue;
 		}
-
-		loadmodel = mod;
 
 		ident = LittleLong( * ( unsigned * ) buffer );
 
 		if ( ident == MD3_IDENT )
 		{
 			loaded = R_LoadMD3( mod, lod, buffer, bufferLen, name );
-			ri.FS_FreeFile( buffer );
-		}
-		else if ( ident == MDC_IDENT )
-		{
-			loaded = R_LoadMDC( mod, lod, buffer, bufferLen, name );
 			ri.FS_FreeFile( buffer );
 		}
 		else
@@ -281,25 +261,6 @@ fail:
 	mod->type = MOD_BAD;
 
 	return 0;
-}
-
-//=============================================================================
-
-/*
-=================
-R_XMLError
-=================
-*/
-void PRINTF_LIKE(2) R_XMLError( void *ctx, const char *fmt, ... )
-{
-	va_list     argptr;
-	static char msg[ 4096 ];
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( msg, sizeof( msg ), fmt, argptr );
-	va_end( argptr );
-
-	ri.Printf( PRINT_WARNING, "%s", msg );
 }
 
 //=============================================================================

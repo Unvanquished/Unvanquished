@@ -2190,7 +2190,6 @@ static inline byte floatToSnorm8(float f) {
 	  AT_BAD,
 	  AT_MD5,
 	  AT_IQM,
-	  AT_PSA
 	} animType_t;
 
 	enum
@@ -2304,17 +2303,6 @@ static inline byte floatToSnorm8(float f) {
 
 	typedef struct
 	{
-		axAnimationInfo_t info;
-
-		int               numBones;
-		axReferenceBone_t *bones;
-
-		int               numKeys;
-		axAnimationKey_t  *keys;
-	} psaAnimation_t;
-
-	typedef struct
-	{
 		char           name[ MAX_QPATH ]; // game path, including extension
 		animType_t     type;
 		int            index; // anim = tr.animations[anim->index]
@@ -2322,7 +2310,6 @@ static inline byte floatToSnorm8(float f) {
 		union {
 			md5Animation_t *md5;
 			IQAnim_t       *iqm;
-			psaAnimation_t *psa;
 		};
 	} skelAnimation_t;
 
