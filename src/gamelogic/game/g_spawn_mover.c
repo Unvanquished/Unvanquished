@@ -1180,17 +1180,22 @@ void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 
 	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
-	// calculate time to reach second position from speed
-	VectorSubtract( self->activatedPosition, self->restingPosition, move );
-	distance = VectorLength( move );
+        // reset duration only for linear moving
+        // else func_bobbing will not move
+        if ( self->s.pos.trType != TR_SINE )
+        {
+            // calculate time to reach second position from speed
+            VectorSubtract( self->activatedPosition, self->restingPosition, move );
+            distance = VectorLength( move );
 
-	VectorScale( move, self->speed, self->s.pos.trDelta );
-	self->s.pos.trDuration = distance * 1000 / self->speed;
+            VectorScale( move, self->speed, self->s.pos.trDelta );
+            self->s.pos.trDuration = distance * 1000 / self->speed;
 
-	if ( self->s.pos.trDuration <= 0 )
-	{
-		self->s.pos.trDuration = 1;
-	}
+            if ( self->s.pos.trDuration <= 0 )
+            {
+                    self->s.pos.trDuration = 1;
+            }
+        }
 }
 
 static void SP_ConstantLightField( gentity_t *self )
