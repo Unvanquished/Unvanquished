@@ -42,7 +42,7 @@ class audio_file {
 
   virtual ~audio_file() = 0 ;
 
-  void* get_audio_data();
+  const void* get_audio_data();
 
   int get_sample_rate() const;
   int get_byte_depth() const;

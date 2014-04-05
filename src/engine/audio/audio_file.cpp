@@ -34,7 +34,7 @@ using Audio::audio_file;
 
 audio_file::~audio_file() {}
 
-void* audio_file::get_audio_data() {
+const void* audio_file::get_audio_data() {
   return static_cast<void*>(audio_data.data());
 }
 
