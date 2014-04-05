@@ -1180,16 +1180,20 @@ void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 
 	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
-	// calculate time to reach second position from speed
-	VectorSubtract( self->activatedPosition, self->restingPosition, move );
-	distance = VectorLength( move );
-
-	VectorScale( move, self->speed, self->s.pos.trDelta );
-	self->s.pos.trDuration = distance * 1000 / self->speed;
-
-	if ( self->s.pos.trDuration <= 0 )
+	// reset duration only for linear movement else func_bobbing will not move
+	if ( self->s.pos.trType != TR_SINE )
 	{
-		self->s.pos.trDuration = 1;
+		// calculate time to reach second position from speed
+		VectorSubtract( self->activatedPosition, self->restingPosition, move );
+		distance = VectorLength( move );
+
+		VectorScale( move, self->speed, self->s.pos.trDelta );
+		self->s.pos.trDuration = distance * 1000 / self->speed;
+
+		if ( self->s.pos.trDuration <= 0 )
+		{
+			self->s.pos.trDuration = 1;
+		}
 	}
 }
 
