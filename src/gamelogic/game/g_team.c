@@ -479,10 +479,6 @@ void TeamplayInfoMessage( gentity_t *ent )
 			{
 				upgrade = UP_JETPACK;
 			}
-			else if ( BG_InventoryContainsUpgrade( UP_BATTPACK, cl->ps.stats ) )
-			{
-				upgrade = UP_BATTPACK;
-			}
 			else if ( BG_InventoryContainsUpgrade( UP_RADAR, cl->ps.stats ) )
 			{
 				upgrade = UP_RADAR;

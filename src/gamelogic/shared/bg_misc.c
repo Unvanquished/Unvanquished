@@ -669,8 +669,6 @@ static const upgradeData_t bg_upgradesData[] =
 	{ UP_BATTLESUIT,  "bsuit"    },
 
 	{ UP_RADAR,       "radar"    },
-
-	{ UP_BATTPACK,    "battpack" },
 	{ UP_JETPACK,     "jetpack"  },
 
 	{ UP_GRENADE,     "gren"     },
@@ -1601,17 +1599,12 @@ BG_WeaponIsFull
 Check if a weapon has full ammo
 ========================
 */
-qboolean BG_WeaponIsFull( int weapon, int stats[], int ammo, int clips )
+qboolean BG_WeaponIsFull( int weapon, int ammo, int clips )
 {
 	int maxAmmo, maxClips;
 
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;
 	maxClips = BG_Weapon( weapon )->maxClips;
-
-	if ( BG_InventoryContainsUpgrade( UP_BATTPACK, stats ) )
-	{
-		maxAmmo = ( int )( ( float ) maxAmmo * BATTPACK_MODIFIER );
-	}
 
 	return ( maxAmmo == ammo ) && ( maxClips == clips );
 }

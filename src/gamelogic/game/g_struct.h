@@ -361,6 +361,8 @@ struct gentity_s
 	int         last_move_time;
 	int         timestamp; // body queue sinking, etc
 	int         shrunkTime; // time when a barricade shrunk or zero
+	gentity_t   *boosterUsed; // the booster an alien is using for healing
+	int         boosterTime; // last time alien used a booster for healing
 	int         healthSourceTime; // last time an alien had contact to a health source
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
@@ -376,7 +378,12 @@ struct gentity_s
 	int         clientSpawnTime; // the time until this spawn can spawn a client
 	int         spawnBlockTime; // timer for anti spawn-block
 
-	float       credits[ MAX_CLIENTS ];
+	struct {
+	 	float  value;
+		int    time;
+		team_t team;
+	}           credits[ MAX_CLIENTS ];
+
 	int         killedBy; // clientNum of killer
 
 	vec3_t      buildableAim; // aim vector for buildables
@@ -780,6 +787,7 @@ struct level_locals_s
 		spawnQueue_t     spawnQueue;
 		qboolean         locked;
 		float            momentum;
+		int              layoutBuildPoints;
 	} team[ NUM_TEAMS ];
 };
 

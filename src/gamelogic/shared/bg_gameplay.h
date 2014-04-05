@@ -50,9 +50,9 @@ extern float LEVEL1_CLAW_U_RANGE;
 extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_POUNCE_DISTANCE        300 // pitch between LEVEL1_POUNCE_MINPITCH and pi/4 results in this distance
 #define LEVEL1_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
-#define LEVEL1_POUNCE_COOLDOWN        1500
+#define LEVEL1_POUNCE_COOLDOWN        2000
 #define LEVEL1_WALLPOUNCE_MAGNITUDE   600
-#define LEVEL1_WALLPOUNCE_COOLDOWN    1000
+#define LEVEL1_WALLPOUNCE_COOLDOWN    1200
 #define LEVEL1_SIDEPOUNCE_MAGNITUDE   400
 #define LEVEL1_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
 #define LEVEL1_SIDEPOUNCE_COOLDOWN    750
@@ -136,6 +136,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 #define BOOST_TIME              20000
 #define BOOST_WARN_TIME         15000
+#define BOOST_REPEAT_ANIM       2000
 
 #define ACIDTUBE_DAMAGE         8
 #define ACIDTUBE_RANGE          300.0f
@@ -282,6 +283,8 @@ extern float REACTOR_ATTACK_RANGE;
 extern int   REACTOR_ATTACK_REPEAT;
 extern int   REACTOR_ATTACK_DAMAGE;
 
+#define POWER_DISPLAY_MAX     40 // power display on human buildables is capped above this
+
 /*
  * HUMAN misc
  */
@@ -361,9 +364,9 @@ extern int   REACTOR_ATTACK_DAMAGE;
 
 // resources
 #define RGS_RANGE                          1000.0f // must be > 0
-#define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
-#define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
-#define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
+#define DEFAULT_INITIAL_BUILD_POINTS       "120"   // in BP
+#define DEFAULT_INITIAL_MINE_RATE          "8"     // in (BP/min)/RGS
+#define DEFAULT_MINE_RATE_HALF_LIFE        "20"    // in min
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 
 // momentum
