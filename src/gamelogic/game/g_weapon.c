@@ -1174,7 +1174,14 @@ static void CancelBuild( gentity_t *self )
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
-	buildable_t buildable = (buildable_t) ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+	buildable_t buildable;
+
+	if ( !self->client )
+	{
+		return;
+	}
+
+	buildable = (buildable_t) ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 	// open build menu
 	if ( buildable <= BA_NONE )
@@ -1617,7 +1624,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 	int    i;
 	vec3_t forward;
 
-	if ( self->client->ps.stats[ STAT_MISC ] <= 0 ||
+	if ( !self->client || self->client->ps.stats[ STAT_MISC ] <= 0 ||
 	     !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) ||
 	     self->client->ps.weaponTime )
 	{

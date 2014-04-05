@@ -827,14 +827,14 @@ static float CalcDamageModifier( vec3_t point, gentity_t *target, class_t pcl, i
 		return G_GetNonLocDamageMod( pcl );
 	}
 
-	// need a valid point for point damage
-	if ( point == NULL )
+	// need a valid point and target client
+	if ( !point || !target || !target->client )
 	{
 		return 1.0f;
 	}
 
 	// Get the point location relative to the floor under the target
-	if ( g_unlagged.integer && target->client && target->client->unlaggedCalc.used )
+	if ( g_unlagged.integer && target->client->unlaggedCalc.used )
 	{
 		VectorCopy( target->client->unlaggedCalc.origin, targOrigin );
 	}
