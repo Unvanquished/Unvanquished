@@ -330,7 +330,7 @@ static void CG_Obituary( entityState_t *ent )
 	{
 		if ( messageAssisted && assistantInfo )
 		{
-			CG_Printf( messageAssisted, teamTag[ assistantTeam ], assistantName, teamTag[ ci->team ], targetName );
+			CG_Printf( messageAssisted, teamTag[ ci->team ], targetName , teamTag[ assistantTeam ], assistantName);
 		}
 		else
 		{
