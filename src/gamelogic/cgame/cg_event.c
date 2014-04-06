@@ -280,44 +280,44 @@ static void CG_Obituary( entityState_t *ent )
 
 			case MOD_MGTURRET:
 				message = G_( "%s%s ^7was gunned down by a turret\n" );
-				messageAssisted = G_( "%s%s ^7was gunned down by a turret; %s%s assisted\n" );
+				messageAssisted = G_( "%s%s ^7was gunned down by a turret; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_TESLAGEN:
 				message = G_( "%s%s ^7was zapped by a tesla generator\n" );
-				messageAssisted = G_( "%s%s ^7was zapped by a tesla generator; %s%s assisted\n" );
+				messageAssisted = G_( "%s%s ^7was zapped by a tesla generator; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_ATUBE:
 				message = G_( "%s%s ^7was melted by an acid tube\n" );
-				messageAssisted = G_( "%s%s ^7was melted by an acid tube; %s%s assisted\n" );
+				messageAssisted = G_( "%s%s ^7was melted by an acid tube; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_OVERMIND:
 				message = G_( "%s%s ^7got too close to the overmind\n" );
-				messageAssisted = G_( "%s%s ^7got too close to the overmind; %s%s assisted\n" );
+				messageAssisted = G_( "%s%s ^7got too close to the overmind; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_REACTOR:
 				message = G_( "%s%s ^7got too close to the reactor\n" );
-				messageAssisted = G_( "%s%s ^7got too close to the reactor; %s%s assisted\n" );
+				messageAssisted = G_( "%s%s ^7got too close to the reactor; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_SLOWBLOB:
 				message = G_( "%s%s ^7should have visited a medical station\n" );
-				messageAssisted = G_( "%s%s ^7should have visited a medical station; %s%s assisted\n" );
+				messageAssisted = G_( "%s%s ^7should have visited a medical station; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_SWARM:
 				message = G_( "%s%s ^7was hunted down by the swarm\n" );
-				messageAssisted = G_( "%s%s ^7was hunted down by the swarm; %s%s assisted\n" );
+				messageAssisted = G_( "%s%s ^7was hunted down by the swarm; %s%s^7 assisted\n" );
 				break;
 
 			// Shouldn't happen
 
 			case MOD_TARGET_LASER:
 				message = G_( "%s%s ^7saw the light\n" );
-				messageAssisted = G_( "%s%s ^7saw the light; %s%s assisted\n" );
+				messageAssisted = G_( "%s%s ^7saw the light; %s%s^7 assisted\n" );
 				break;
 
 			default:
@@ -518,142 +518,142 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				case MOD_PAINSAW:
 					message = G_( "%s%s ^7was sawn by %s%s\n" );
-					messageAssisted = G_( "%s%s ^7was sawn by %s%s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was sawn by %s%s^7; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_BLASTER:
 					message = G_( "%s%s ^7was blasted by %s%s\n" );
-					messageAssisted = G_( "%s%s ^7was blasted by %s%s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was blasted by %s%s^7; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_MACHINEGUN:
 					message = G_( "%s%s ^7was machinegunned by %s%s\n" );
-					messageAssisted = G_( "%s%s ^7was machinegunned by %s%s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was machinegunned by %s%s^7; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_CHAINGUN:
 					message = G_( "%s%s ^7was chaingunned by %s%s\n" );
-					messageAssisted = G_( "%s%s ^7was chaingunned by %s%s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was chaingunned by %s%s^7; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_SHOTGUN:
 					message = G_( "%s%s ^7was gunned down by %s%s\n" );
-					messageAssisted = G_( "%s%s ^7was gunned down by %s%s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was gunned down by %s%s^7; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_PRIFLE:
 					message = G_( "%s%s ^7was pulse rifled by %s%s\n" );
-					messageAssisted = G_( "%s%s ^7was pulse rifled by %s%s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was pulse rifled by %s%s^7; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_MDRIVER:
 					message = G_( "%s%s ^7was mass driven by %s%s\n" );
-					messageAssisted = G_( "%s%s ^7was mass driven by %s%s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was mass driven by %s%s^7; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_LASGUN:
 					message = G_( "%s%s ^7was lasgunned by %s%s\n" );
-					messageAssisted = G_( "%s%s ^7was lasgunned by %s%s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was lasgunned by %s%s^7; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_FLAMER:
 				case MOD_FLAMER_SPLASH:
 					message = G_( "%s%s ^7was grilled by %s%s^7's flamer\n" );
-					messageAssisted = G_( "%s%s ^7was grilled by %s%s^7's flamer; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was grilled by %s%s^7's flamer; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_BURN:
 					message = G_( "%s%s ^7was burned by %s%s^7's fire\n" );
-					messageAssisted = G_( "%s%s ^7was burned by %s%s^7's fire; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was burned by %s%s^7's fire; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_LCANNON:
 					message = G_( "%s%s ^7felt the full force of %s%s^7's lucifer cannon\n" );
-					messageAssisted = G_( "%s%s ^7felt the full force of %s%s^7's lucifer cannon; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7felt the full force of %s%s^7's lucifer cannon; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_LCANNON_SPLASH:
 					message = G_( "%s%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n" );
-					messageAssisted = G_( "%s%s ^7was caught in the fallout of %s%s^7's lucifer cannon; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was caught in the fallout of %s%s^7's lucifer cannon; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_GRENADE:
 					message = G_( "%s%s ^7couldn't escape %s%s^7's grenade\n" );
-					messageAssisted = G_( "%s%s ^7couldn't escape %s%s^7's grenade; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7couldn't escape %s%s^7's grenade; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_FIREBOMB:
 					message = G_( "%s%s ^7couldn't escape %s%s^7's firebomb\n" );
-					messageAssisted = G_( "%s%s ^7couldn't escape %s%s^7's firebomb; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7couldn't escape %s%s^7's firebomb; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_ABUILDER_CLAW:
 					message = G_( "%s%s ^7should leave %s%s^7's buildings alone\n" );
-					messageAssisted = G_( "%s%s ^7should leave %s%s^7's buildings alone; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7should leave %s%s^7's buildings alone; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_LEVEL0_BITE:
 					message = G_( "%s%s ^7was bitten by %s%s\n" );
-					messageAssisted = G_( "%s%s ^7was bitten by %s%s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was bitten by %s%s^7; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_LEVEL1_CLAW:
 					message = G_( "%s%s ^7was swiped by %s%s^7's %s\n" );
-					messageAssisted = G_( "%s%s ^7was swiped by %s%s^7's %s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was swiped by %s%s^7's %s^7; %s%s^7 assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL1;
 					break;
 
 				case MOD_LEVEL2_CLAW:
 					message = G_( "%s%s ^7was clawed by %s%s^7's %s\n" );
-					messageAssisted = G_( "%s%s ^7was clawed by %s%s^7's %s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was clawed by %s%s^7's %s^7; %s%s^7 assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL2;
 					break;
 
 				case MOD_LEVEL2_ZAP:
 					message = G_( "%s%s ^7was zapped by %s%s^7's %s\n" );
-					messageAssisted = G_( "%s%s ^7was zapped by %s%s^7's %s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was zapped by %s%s^7's %s^7; %s%s^7 assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL2;
 					break;
 
 				case MOD_LEVEL3_CLAW:
 					message = G_( "%s%s ^7was chomped by %s%s^7's %s\n" );
-					messageAssisted = G_( "%s%s ^7was chomped by %s%s^7's %s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was chomped by %s%s^7's %s^7; %s%s^7 assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL3;
 					break;
 
 				case MOD_LEVEL3_POUNCE:
 					message = G_( "%s%s ^7was pounced upon by %s%s^7's %s\n" );
-					messageAssisted = G_( "%s%s ^7was pounced upon by %s%s^7's %s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was pounced upon by %s%s^7's %s^7; %s%s^7 assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL3;
 					break;
 
 				case MOD_LEVEL3_BOUNCEBALL:
 					message = G_( "%s%s ^7was sniped by %s%s^7's %s\n" );
-					messageAssisted = G_( "%s%s ^7was sniped by %s%s^7's %s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was sniped by %s%s^7's %s^7; %s%s^7 assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL3;
 					break;
 
 				case MOD_LEVEL4_CLAW:
 					message = G_( "%s%s ^7was mauled by %s%s^7's %s\n" );
-					messageAssisted = G_( "%s%s ^7was mauled by %s%s^7's %s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was mauled by %s%s^7's %s^7; %s%s^7 assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL4;
 					break;
 
 				case MOD_LEVEL4_TRAMPLE:
 					message = G_( "%s%s ^7should have gotten out of the way of %s%s^7's %s\n" );
-					messageAssisted = G_( "%s%s ^7should have gotten out of the way of %s%s^7's %s; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7should have gotten out of the way of %s%s^7's %s^7; %s%s^7 assisted\n" );
 					attackerClass = PCL_ALIEN_LEVEL4;
 					break;
 
 				case MOD_WEIGHT_H:
 				case MOD_WEIGHT_A:
 					message = G_( "%s%s ^7was crushed under %s%s^7's weight\n" );
-					messageAssisted = G_( "%s%s ^7was crushed under %s%s^7's weight; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7was crushed under %s%s^7's weight; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_POISON:
 					message = G_( "%s%s ^7should have used a medkit against %s%s^7's poison\n" );
-					messageAssisted = G_( "%s%s ^7should have used a medkit against %s%s^7's poison; %s%s assisted\n" );
+					messageAssisted = G_( "%s%s ^7should have used a medkit against %s%s^7's poison; %s%s^7 assisted\n" );
 					break;
 
 				case MOD_TELEFRAG:
@@ -662,7 +662,7 @@ static void CG_Obituary( entityState_t *ent )
 
 				default:
 					message = G_( "%s%s ^7was killed by %s%s\n" );
-					messageAssisted = G_( "%s%s ^7was killed by %s%s and %s%s\n" );
+					messageAssisted = G_( "%s%s ^7was killed by %s%s^7 and %s%s\n" );
 					break;
 			}
 		}
