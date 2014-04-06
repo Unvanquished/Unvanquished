@@ -2537,7 +2537,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	refEntity_t jetpack;
 	refEntity_t flash;
 
-#	define battpack jetpack
+#	define radar jetpack
 
 	int           held, publicFlags;
 	entityState_t *es = &cent->currentState;
@@ -2625,22 +2625,22 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	}
 
 	// battery pack
-	if ( held & ( 1 << UP_BATTPACK ) )
+	if ( held & ( 1 << UP_RADAR ) )
 	{
-		memset( &battpack, 0, sizeof( battpack ) );
-		VectorCopy( torso->lightingOrigin, battpack.lightingOrigin );
-		battpack.shadowPlane = torso->shadowPlane;
-		battpack.renderfx = torso->renderfx;
+		memset( &radar, 0, sizeof( radar ) );
+		VectorCopy( torso->lightingOrigin, radar.lightingOrigin );
+		radar.shadowPlane = torso->shadowPlane;
+		radar.renderfx = torso->renderfx;
 
-		battpack.hModel = cgs.media.battpackModel;
+		radar.hModel = cgs.media.radarModel;
 
 		//identity matrix
-		AxisCopy( axisDefault, battpack.axis );
+		AxisCopy( axisDefault, radar.axis );
 
 		//FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &battpack, torso, torso->hModel, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &radar, torso, torso->hModel, "tag_head" );
 
-		trap_R_AddRefEntityToScene( &battpack );
+		trap_R_AddRefEntityToScene( &radar );
 	}
 
 	// creep below bloblocked players

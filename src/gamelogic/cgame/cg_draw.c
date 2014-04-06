@@ -783,7 +783,6 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 {
 	int      value;
 	int      valueMarked = -1;
-	int      maxAmmo;
 	qboolean bp = qfalse;
 	weapon_t weapon;
 
@@ -802,16 +801,7 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 			break;
 
 		default:
-			maxAmmo = BG_Weapon( weapon )->maxAmmo;
-
-			if ( BG_Weapon( weapon )->usesEnergy &&
-				BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
-			{
-				maxAmmo *= BATTPACK_MODIFIER;
-			}
-
-			value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
-
+			value = cg.snap->ps.ammo + ( cg.snap->ps.clips * BG_Weapon( weapon )->maxAmmo );
 			break;
 	}
 
@@ -1755,12 +1745,6 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, int align, vec4_t color, qh
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;
 
 	if ( maxAmmo <= 0 ) { return; }
-
-	if ( BG_Weapon( weapon )->usesEnergy &&
-		BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
-	{
-		maxAmmo *= BATTPACK_MODIFIER;
-	}
 
 	fraction = (float)cg.snap->ps.ammo / (float)maxAmmo;
 
@@ -4077,12 +4061,6 @@ static void CG_DrawPlayerAmmoStack( rectDef_t *rect,
 	if ( maxVal <= 0 )
 	{
 		return; // not an ammo-carrying weapon
-	}
-
-	if ( BG_Weapon( primary )->usesEnergy &&
-	     BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
-	{
-		maxVal *= BATTPACK_MODIFIER;
 	}
 
 	val = ps->ammo;

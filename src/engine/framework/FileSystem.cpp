@@ -2397,21 +2397,42 @@ int FS_GetFileList(const char* path, const char* extension, char* listBuf, int b
 	if (!strcmp(path, "$modlist"))
 		return 0;
 
-	int numFiles;
-	char** list = FS_ListFiles(path, extension, &numFiles);
+	int numFiles = 0;
+	bool dirsOnly = extension && !strcmp(extension, "/");
 
-	for (int i = 0; i < numFiles; i++) {
-		int length = strlen(list[i]) + 1;
-		if (bufSize < length) {
-			FS_FreeFileList(list);
-			return i;
+	try {
+		for (const std::string& x: FS::PakPath::ListFiles(path)) {
+			if (extension && !Str::IsSuffix(extension, x))
+				continue;
+			if (dirsOnly != (x.back() == '/'))
+				continue;
+			int length = x.size() + (x.back() != '/');
+			if (bufSize < length)
+				return numFiles;
+			memcpy(listBuf, x.c_str(), length);
+			listBuf[length - 1] = '\0';
+			listBuf += length;
+			bufSize -= length;
+			numFiles++;
 		}
-		memcpy(listBuf, list[i], length);
-		listBuf += length;
-		bufSize -= length;
-	}
+	} catch (std::system_error&) {}
+	try {
+		for (const std::string& x: FS::HomePath::ListFiles(FS::Path::Build("game", path))) {
+			if (extension && !Str::IsSuffix(extension, x))
+				continue;
+			if (dirsOnly != (x.back() == '/'))
+				continue;
+			int length = x.size() + (x.back() != '/');
+			if (bufSize < length)
+				return numFiles;
+			memcpy(listBuf, x.c_str(), length);
+			listBuf[length - 1] = '\0';
+			listBuf += length;
+			bufSize -= length;
+			numFiles++;
+		}
+	} catch (std::system_error&) {}
 
-	FS_FreeFileList(list);
 	return numFiles;
 }
 
@@ -2569,3 +2590,48 @@ public:
 	}
 };
 static ListPathsCmd ListPathsCmdRegistration;
+
+class DirCmd: public Cmd::StaticCmd {
+public:
+	DirCmd(): Cmd::StaticCmd("dir", Cmd::SYSTEM, N_("list all files in a given directory with the option to pass a filter")) {}
+
+	void Run(const Cmd::Args& args) const OVERRIDE
+	{
+		bool filter = false;
+		if (args.Argc() != 2 && args.Argc() != 3) {
+			PrintUsage(args, "<path> [filter]", "");
+			return;
+		}
+
+		if ( args.Argc() == 3) {
+			filter = true;
+		}
+
+		Print("In Paks:");
+		Print("--------");
+		try {
+			for (auto& filename : FS::PakPath::ListFiles(args.Argv(1))) {
+				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), qfalse))) {
+					Print("%s", filename.c_str());
+				}
+			}
+		} catch (std::system_error& err) {
+			Print("^1ERROR^7: Path does not exist");
+		}
+
+		Print("\n");
+		Print("In Homepath");
+		Print("-----------");
+		try {
+			for (auto& filename : FS::RawPath::ListFiles(FS::Path::Build(FS::GetHomePath(),args.Argv(1)))) {
+				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), qfalse))) {
+					Print("%s", filename.c_str());
+				}
+			}
+		} catch (std::system_error& err) {
+			Print("^1ERROR^7: Path does not exist");
+		}
+
+	}
+};
+static DirCmd DirCmdRegistration;

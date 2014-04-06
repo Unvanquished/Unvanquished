@@ -86,12 +86,6 @@ static void GiveFullClip( gentity_t *self )
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
 	ps->ammo = wa->maxAmmo;
-
-	// apply battery pack modifier
-	if ( wa->usesEnergy && BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
-	{
-		ps->ammo *= BATTPACK_MODIFIER;
-	}
 }
 
 /**
@@ -110,7 +104,6 @@ static qboolean CanUseAmmoRefill( gentity_t *self )
 {
 	const weaponAttributes_t *wa;
 	playerState_t *ps;
-	int           maxAmmo;
 
 	if ( !self || !self->client )
 	{
@@ -127,16 +120,8 @@ static qboolean CanUseAmmoRefill( gentity_t *self )
 
 	if ( wa->maxClips == 0 )
 	{
-		maxAmmo = wa->maxAmmo;
-
-		// apply battery pack modifier
-		if ( wa->usesEnergy && BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
-		{
-			maxAmmo *= BATTPACK_MODIFIER;
-		}
-
 		// clipless weapons can be refilled whenever they lack ammo
-		return ( ps->ammo != maxAmmo );
+		return ( ps->ammo != wa->maxAmmo );
 	}
 	else if ( ps->clips != wa->maxClips )
 	{
