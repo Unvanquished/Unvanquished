@@ -4498,7 +4498,7 @@ static void R_CreateVBOWorldSurfaces( void )
                                 }
 
                                 vboSurf->vbo = R_CreateVBO2(va("staticWorldMesh_vertices %i", vboSurfaces.currentElements), numVerts, optimizedVerts,
-                                                                           ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_NORMAL
+                                                                           ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_NORMAL
                                                                            | ATTR_COLOR);
 
                                 vboSurf->ibo = R_CreateIBO2(va("staticWorldMesh_indices %i", vboSurfaces.currentElements), numTriangles, triangles);
@@ -5105,11 +5105,11 @@ static void R_CreateWorldVBO( void )
 	}
 
 	s_worldData.vbo = R_CreateVBO2( va( "bspModelMesh_vertices %i", 0 ), numVerts, optimizedVerts,
-	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT |
+	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT |
 	                                ATTR_NORMAL | ATTR_COLOR | GLCS_LIGHTCOLOR | ATTR_LIGHTDIRECTION );
 #else
 	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
-	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL |
+	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL |
 	                                ATTR_NORMAL | ATTR_COLOR
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 	                                | ATTR_LIGHTDIRECTION

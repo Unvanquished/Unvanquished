@@ -241,13 +241,13 @@ void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
 }
 
 void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
-                             const vec3_t v0, const vec3_t v1, const vec3_t v2, const vec2_t t0, const vec2_t t1, const vec2_t t2 )
+                             const vec3_t v0, const vec3_t v1, const vec3_t v2, const i16vec4_t t0, const i16vec4_t t1, const i16vec4_t t2 )
 {
 	vec3_t cp, u, v;
 	vec3_t faceNormal;
 
-	VectorSet( u, v1[ 0 ] - v0[ 0 ], t1[ 0 ] - t0[ 0 ], t1[ 1 ] - t0[ 1 ] );
-	VectorSet( v, v2[ 0 ] - v0[ 0 ], t2[ 0 ] - t0[ 0 ], t2[ 1 ] - t0[ 1 ] );
+	VectorSet( u, v1[ 0 ] - v0[ 0 ], unpackTC( t1[ 0 ] - t0[ 0 ] ), unpackTC( t1[ 1 ] - t0[ 1 ] ) );
+	VectorSet( v, v2[ 0 ] - v0[ 0 ], unpackTC( t2[ 0 ] - t0[ 0 ] ), unpackTC( t2[ 1 ] - t0[ 1 ] ) );
 
 	CrossProduct( u, v, cp );
 

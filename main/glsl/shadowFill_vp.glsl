@@ -70,9 +70,9 @@ void	main()
 
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
-								normal,
-								attr_TexCoord0.st,
-								u_Time);
+					normal,
+					attr_TexCoord0.st / 4096.0,
+					u_Time);
 #endif
 
 	// transform vertex position into homogenous clip-space
@@ -86,7 +86,7 @@ void	main()
 #endif
 
 	// transform texcoords
-	var_Tex = (u_ColorTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_Tex = (u_ColorTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 
 	// assign color
 	var_Color = u_Color;

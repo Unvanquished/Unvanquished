@@ -34,7 +34,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
 
-typedef byte color4ub_t[ 4 ];
+typedef int8_t   i8vec4_t[ 4 ];
+typedef uint8_t  u8vec4_t[ 4 ];
+typedef int16_t  i16vec4_t [ 4 ];
+typedef uint16_t u16vec4_t [ 4 ];
+typedef int16_t  i16vec2_t [ 2 ];
+typedef uint16_t u16vec2_t [ 2 ];
 
 // GL conversion helpers
 static inline float unorm8ToFloat(byte unorm8) {
@@ -45,16 +50,34 @@ static inline byte floatToUnorm8(float f) {
 	// has been changed from round to nearest to round to 0 !
 	return lrintf(f * 255.0f);
 }
-static inline float snorm8ToFloat(byte snorm8) {
-	return MAX( (snorm8 - 128) * (1.0f / 127.0f), -1.0f);
+static inline float snorm8ToFloat(int8_t snorm8) {
+	return MAX( snorm8 * (1.0f / 127.0f), -1.0f);
 }
-static inline byte floatToSnorm8(float f) {
+static inline int8_t floatToSnorm8(float f) {
 	// don't use Q_ftol here, as the semantics of Q_ftol
 	// has been changed from round to nearest to round to 0 !
-	return lrintf(f * 127.0f) + 128;
+	return lrintf(f * 127.0f);
 }
 
-static inline void floatToUnorm8( const vec4_t in, color4ub_t out )
+static inline float unorm16ToFloat(uint16_t unorm16) {
+	return unorm16 * (1.0f / 65535.0f);
+}
+static inline uint16_t floatToUnorm16(float f) {
+	// don't use Q_ftol here, as the semantics of Q_ftol
+	// has been changed from round to nearest to round to 0 !
+	return lrintf(f * 65535.0f);
+}
+static inline float snorm16ToFloat(int16_t snorm16) {
+	return MAX( snorm16 * (1.0f / 32767.0f), -1.0f);
+}
+static inline int16_t floatToSnorm16(float f) {
+	// don't use Q_ftol here, as the semantics of Q_ftol
+	// has been changed from round to nearest to round to 0 !
+	return lrintf(f * 32767.0f);
+}
+
+
+static inline void floatToUnorm8( const vec4_t in, u8vec4_t out )
 {
 	out[ 0 ] = floatToUnorm8( in[ 0 ] );
 	out[ 1 ] = floatToUnorm8( in[ 1 ] );
@@ -62,13 +85,31 @@ static inline void floatToUnorm8( const vec4_t in, color4ub_t out )
 	out[ 3 ] = floatToUnorm8( in[ 3 ] );
 }
 
-static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
+static inline void unorm8ToFloat( const u8vec4_t in, vec4_t out )
 {
 	out[ 0 ] = unorm8ToFloat( in[ 0 ] );
 	out[ 1 ] = unorm8ToFloat( in[ 1 ] );
 	out[ 2 ] = unorm8ToFloat( in[ 2 ] );
 	out[ 3 ] = unorm8ToFloat( in[ 3 ] );
 }
+
+static inline int16_t packTC( float tc ) {
+	int roundedTC = lrintf( tc * 4096.0f );
+	if( roundedTC > 7 * 4096 ) {
+		roundedTC %= 14 * 4096;
+		if( roundedTC > 7 * 4096 )
+			roundedTC = 14 * 4096 - roundedTC;
+	} else if( roundedTC < -7 * 4096 ) {
+		roundedTC %= 14 * 4096;
+		if( roundedTC < -7 * 4096 )
+			roundedTC = -14 * 4096 - roundedTC;
+	}
+	return roundedTC;
+}
+static inline float unpackTC( int16_t tc ) {
+	return tc * (1.0f / 4096.0f);
+}
+
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
 // parallel on a dual cpu machine
@@ -588,7 +629,6 @@ static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
 	{
 		ATTR_INDEX_POSITION = 0,
 		ATTR_INDEX_TEXCOORD,
-		ATTR_INDEX_LIGHTCOORD,
 		ATTR_INDEX_TANGENT,
 		ATTR_INDEX_BINORMAL,
 		ATTR_INDEX_NORMAL,
@@ -610,7 +650,6 @@ static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
 	{
 		"attr_Position",
 		"attr_TexCoord0",
-		"attr_TexCoord1",
 		"attr_Tangent",
 		"attr_Binormal",
 		"attr_Normal",
@@ -626,7 +665,6 @@ static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
 	{
 	  ATTR_POSITION       = BIT( ATTR_INDEX_POSITION ),
 	  ATTR_TEXCOORD       = BIT( ATTR_INDEX_TEXCOORD ),
-	  ATTR_LIGHTCOORD     = BIT( ATTR_INDEX_LIGHTCOORD ),
 	  ATTR_TANGENT        = BIT( ATTR_INDEX_TANGENT ),
 	  ATTR_BINORMAL       = BIT( ATTR_INDEX_BINORMAL ),
 	  ATTR_NORMAL         = BIT( ATTR_INDEX_NORMAL ),
@@ -647,7 +685,6 @@ static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
 
 	  ATTR_BITS = ATTR_POSITION |
 	              ATTR_TEXCOORD |
-	              ATTR_LIGHTCOORD |
 	              ATTR_TANGENT |
 	              ATTR_BINORMAL |
 	              ATTR_NORMAL |
@@ -683,12 +720,12 @@ static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
 		vec3_t *normal;
 		int numFrames;
 
-		byte (*color)[ 4 ];
-		vec2_t *st;
-		vec2_t *lightCoord;
+		u8vec4_t *color;
+		union { i16vec2_t *st; i16vec4_t *stpq; };
 		int    (*boneIndexes)[ 4 ];
 		vec4_t *boneWeights;
 		int     numVerts;
+		qboolean noLightCoords;
 	} vboData_t;
 
 	typedef struct VBO_s
@@ -1775,7 +1812,7 @@ static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
 		vec3_t tangent;
 		vec3_t binormal;
 		vec3_t normal;
-		color4ub_t lightColor;
+		u8vec4_t lightColor;
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		vec3_t lightDirection;
@@ -2377,7 +2414,7 @@ static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
 
 		// vertex data
 		float           *positions;
-		float           *texcoords;
+		int16_t         *texcoords;
 		float           *normals;
 		float           *tangents;
 		float           *bitangents;
@@ -2669,7 +2706,7 @@ static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
 		float             hdrKey;
 
 		qboolean          projection2D; // if qtrue, drawstretchpic doesn't need to change modes
-		color4ub_t        color2D;
+		u8vec4_t          color2D;
 		qboolean          vertexes2D; // shader needs to be finished
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
 	} backEndState_t;
@@ -3298,7 +3335,7 @@ static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
 
 	void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	                             const vec3_t v0, const vec3_t v1, const vec3_t v2,
-	                             const vec2_t t0, const vec2_t t1, const vec2_t t2 );
+	                             const i16vec4_t t0, const i16vec4_t t1, const i16vec4_t t2 );
 
 	void R_CalcTBN( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	                const vec3_t v0, const vec3_t v1, const vec3_t v2,
@@ -3515,9 +3552,8 @@ static inline void unorm8ToFloat( const color4ub_t in, vec4_t out )
 		vec4_t tangents[ SHADER_MAX_VERTEXES ];
 		vec4_t binormals[ SHADER_MAX_VERTEXES ];
 		vec4_t normals[ SHADER_MAX_VERTEXES ];
-		color4ub_t colors[ SHADER_MAX_VERTEXES ];
-		vec2_t texCoords[ SHADER_MAX_VERTEXES ];
-		vec2_t lightCoords[ SHADER_MAX_VERTEXES ];
+		u8vec4_t  colors[ SHADER_MAX_VERTEXES ];
+		i16vec4_t texCoords[ SHADER_MAX_VERTEXES ];
 
 		glIndex_t   indexes[ SHADER_MAX_INDEXES ];
 

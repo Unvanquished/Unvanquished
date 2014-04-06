@@ -60,23 +60,23 @@ void	main()
 	vec4 position = vec4(attr_Position, 1.0);
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
-								attr_Normal,
-								attr_TexCoord0.st,
-								u_Time);
+					attr_Normal,
+					attr_TexCoord0.st / 4096.0,
+					u_Time);
 #endif
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
 
 	// transform diffusemap texcoords
-	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
-	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 
 	// construct object-space-to-tangent-space 3x3 matrix
 	mat3 objectToTangentMatrix = mat3( attr_Tangent.x, attr_Binormal.x, attr_Normal.x,
@@ -96,6 +96,6 @@ void	main()
 #endif
 
 #if defined(USE_GLOW_MAPPING)
-	var_TexDiffuseGlow.pq = ( u_GlowTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0) ).st;
+	var_TexDiffuseGlow.pq = ( u_GlowTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0) ).st;
 #endif
 }

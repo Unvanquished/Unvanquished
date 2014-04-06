@@ -354,7 +354,7 @@ void RB_RenderFlare( flare_t *f )
 {
 	float  size;
 	vec4_t color;
-	color4ub_t iColor;
+	u8vec4_t iColor;
 	backEnd.pc.c_flareRenders++;
 	Vector4Copy( colorWhite, color );
 #if 1

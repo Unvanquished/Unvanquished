@@ -234,7 +234,8 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	data.binormal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.binormal ) * vertexesNum );
 	data.boneIndexes = ( int (*)[ 4 ] ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneIndexes ) * vertexesNum );
 	data.boneWeights = ( vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneWeights ) * vertexesNum );
-	data.st = ( vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.st ) * vertexesNum );
+	data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * vertexesNum );
+	data.noLightCoords = qtrue;
 	data.numVerts = vertexesNum;
 
 	indexes = ( glIndex_t * ) ri.Hunk_AllocateTempMemory( indexesNum * sizeof( glIndex_t ) );
@@ -279,8 +280,8 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		VectorCopy( surf->verts[ j ].normal, data.normal[ j ] );
 		VectorCopy( surf->verts[ j ].binormal, data.binormal[ j ] );
 		
-		data.st[ j ][ 0 ] = surf->verts[ j ].texCoords[ 0 ];
-		data.st[ j ][ 1 ] = surf->verts[ j ].texCoords[ 1 ];
+		data.st[ j ][ 0 ] = packTC( surf->verts[ j ].texCoords[ 0 ] );
+		data.st[ j ][ 1 ] = packTC( surf->verts[ j ].texCoords[ 1 ] );
 
 		for ( k = 0; k < MAX_WEIGHTS; k++ )
 		{
@@ -374,7 +375,7 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 	data.binormal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.binormal ) * vertexesNum );
 	data.boneIndexes = ( int (*)[ 4 ] ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneIndexes ) * vertexesNum );
 	data.boneWeights = ( vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneWeights ) * vertexesNum );
-	data.st = ( vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.st ) * vertexesNum );
+	data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * vertexesNum );
 	data.numVerts = vertexesNum;
 
 	indexes = ( glIndex_t * ) ri.Hunk_AllocateTempMemory( indexesNum * sizeof( glIndex_t ) );
@@ -420,8 +421,8 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 		VectorCopy( v->normal, data.normal[ j ] );
 		VectorCopy( v->binormal, data.binormal[ j ] );
 		
-		data.st[ j ][ 0 ] = v->texCoords[ 0 ];
-		data.st[ j ][ 1 ] = v->texCoords[ 1 ];
+		data.st[ j ][ 0 ] = packTC( v->texCoords[ 0 ] );
+		data.st[ j ][ 1 ] = packTC( v->texCoords[ 1 ] );
 
 		for ( k = 0; k < MAX_WEIGHTS; k++ )
 		{

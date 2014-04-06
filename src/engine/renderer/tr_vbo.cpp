@@ -51,11 +51,6 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 		stateBits |= ATTR_COLOR;
 	}
 
-	if ( data.lightCoord )
-	{
-		stateBits |= ATTR_LIGHTCOORD;
-	}
-
 	if ( data.st )
 	{
 		stateBits |= ATTR_TEXCOORD;
@@ -92,7 +87,7 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 	return stateBits;
 }
 
-static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i )
+static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i, qboolean noLightCoords )
 {
 	if ( i == ATTR_INDEX_BONE_FACTORS )
 	{
@@ -101,6 +96,10 @@ static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i )
 	else if ( i == ATTR_INDEX_COLOR )
 	{
 		vbo->attribs[ i ].componentType = GL_UNSIGNED_BYTE;
+	}
+	else if ( i == ATTR_INDEX_TEXCOORD )
+	{
+		vbo->attribs[ i ].componentType = GL_SHORT;
 	}
 	else
 	{
@@ -115,8 +114,8 @@ static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i )
 	{
 		vbo->attribs[ i ].normalize = GL_FALSE;
 	}
-
-	if ( i == ATTR_INDEX_TEXCOORD || i == ATTR_INDEX_LIGHTCOORD )
+	
+	if ( i == ATTR_INDEX_TEXCOORD && noLightCoords )
 	{
 		vbo->attribs[ i ].numComponents = 2;
 	}
@@ -154,7 +153,7 @@ static size_t R_GetSizeForType( GLenum type )
 	}
 }
 
-static size_t R_GetAttribStorageSize( const VBO_t *vbo, uint32_t attribute )
+static size_t R_GetAttribStorageSize( const VBO_t *vbo, uint32_t attribute, qboolean noLightCoords )
 {
 	if ( vbo->usage == GL_STATIC_DRAW )
 	{
@@ -162,9 +161,12 @@ static size_t R_GetAttribStorageSize( const VBO_t *vbo, uint32_t attribute )
 	}
 	else
 	{
-		if ( attribute == ATTR_INDEX_TEXCOORD || attribute == ATTR_INDEX_LIGHTCOORD )
+		if ( attribute == ATTR_INDEX_TEXCOORD )
 		{
-			return sizeof( vec2_t );
+			if( noLightCoords )
+				return sizeof( i16vec2_t );
+			else
+				return sizeof( i16vec4_t );
 		}
 		else if ( attribute == ATTR_INDEX_COLOR )
 		{
@@ -184,7 +186,7 @@ static qboolean R_AttributeTightlyPacked( const VBO_t *vbo, uint32_t attribute )
 	return layout->numComponents * R_GetSizeForType( layout->componentType ) == layout->realStride;
 }
 
-static uint32_t R_FindVertexSize( VBO_t *vbo, uint32_t attribBits )
+static uint32_t R_FindVertexSize( VBO_t *vbo, uint32_t attribBits, qboolean noLightCoords )
 {
 	uint32_t bits = attribBits & ~ATTR_INTERP_BITS;
 	uint32_t size = 0;
@@ -194,7 +196,7 @@ static uint32_t R_FindVertexSize( VBO_t *vbo, uint32_t attribBits )
 	{
 		if ( ( bits & 1 ) )
 		{
-			size += R_GetAttribStorageSize( vbo, attribute );
+			size += R_GetAttribStorageSize( vbo, attribute, noLightCoords );
 		}
 		bits >>= 1;
 		attribute++;
@@ -203,11 +205,11 @@ static uint32_t R_FindVertexSize( VBO_t *vbo, uint32_t attribBits )
 	return size;
 }
 
-static void R_SetAttributeLayoutsInterleaved( VBO_t *vbo )
+static void R_SetAttributeLayoutsInterleaved( VBO_t *vbo, qboolean noLightCoords )
 {
 	uint32_t i;
 	uint32_t offset = 0;
-	uint32_t vertexSize = R_FindVertexSize( vbo, vbo->attribBits );
+	uint32_t vertexSize = R_FindVertexSize( vbo, vbo->attribBits, noLightCoords );
 
 	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
 	{
@@ -227,14 +229,14 @@ static void R_SetAttributeLayoutsInterleaved( VBO_t *vbo )
 
 		if ( ( vbo->attribBits & BIT( i ) ) )
 		{
-			offset += R_GetAttribStorageSize( vbo, i );
+			offset += R_GetAttribStorageSize( vbo, i, noLightCoords );
 		}
 	}
 
 	vbo->vertexesSize = vertexSize * vbo->vertexesNum;
 }
 
-static void R_SetAttributeLayoutsSeperate( VBO_t *vbo )
+static void R_SetAttributeLayoutsSeperate( VBO_t *vbo, qboolean noLightCoords )
 {
 	uint32_t i;
 	uint32_t offset = 0;
@@ -242,7 +244,7 @@ static void R_SetAttributeLayoutsSeperate( VBO_t *vbo )
 	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
 	{
 		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i );
+		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i, noLightCoords );
 
 		if ( R_AttributeTightlyPacked( vbo, i ) )
 		{
@@ -264,7 +266,7 @@ static void R_SetAttributeLayoutsSeperate( VBO_t *vbo )
 	vbo->vertexesSize = offset;
 }
 
-static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
+static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo, qboolean noLightCoords )
 {
 	int32_t i;
 	uint32_t offset = 0;
@@ -285,7 +287,7 @@ static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 		}
 
 		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i );
+		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i, noLightCoords );
 
 		if ( R_AttributeTightlyPacked( vbo, i ) )
 		{
@@ -317,7 +319,7 @@ static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 		}
 
 		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i );
+		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i, noLightCoords );
 
 		if ( R_AttributeTightlyPacked( vbo, i ) )
 		{
@@ -339,25 +341,25 @@ static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 	vbo->vertexesSize = offset;
 }
 
-static void R_SetVBOAttributeLayouts( VBO_t *vbo )
+static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 {
 	uint32_t i;
 	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
 	{
-		R_SetVBOAttributeComponentType( vbo, i );
+		R_SetVBOAttributeComponentType( vbo, i, noLightCoords );
 	}
 
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
-		R_SetAttributeLayoutsVertexAnimation( vbo );
+		R_SetAttributeLayoutsVertexAnimation( vbo, noLightCoords );
 	}
 	else if ( vbo->layout == VBO_LAYOUT_INTERLEAVED )
 	{
-		R_SetAttributeLayoutsInterleaved( vbo );
+		R_SetAttributeLayoutsInterleaved( vbo, noLightCoords );
 	}
 	else if ( vbo->layout == VBO_LAYOUT_SEPERATE )
 	{
-		R_SetAttributeLayoutsSeperate( vbo );
+		R_SetAttributeLayoutsSeperate( vbo, noLightCoords );
 	}
 	else
 	{
@@ -439,12 +441,11 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 		if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
 		{
-			VERTEXCOPY( v, st, ATTR_INDEX_TEXCOORD, float );
-		}
-
-		if ( ( vbo->attribBits & ATTR_LIGHTCOORD ) )
-		{
-			VERTEXCOPY( v, lightCoord, ATTR_INDEX_LIGHTCOORD, float );
+			if( inData.noLightCoords ) {
+				VERTEXCOPY( v, st, ATTR_INDEX_TEXCOORD, int16_t );
+			} else {
+				VERTEXCOPY( v, stpq, ATTR_INDEX_TEXCOORD, int16_t );
+			}
 		}
 
 		if ( ( vbo->attribBits & ATTR_COLOR ) )
@@ -498,7 +499,7 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 	vbo->attribBits = stateBits;
 	vbo->usage = GL_DYNAMIC_DRAW;
 
-	R_SetVBOAttributeLayouts( vbo );
+	R_SetVBOAttributeLayouts( vbo, qfalse );
 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 
@@ -542,7 +543,7 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	vbo->attribBits = R_DeriveAttrBits( data );
 	vbo->usage = GL_STATIC_DRAW;
 
-	R_SetVBOAttributeLayouts( vbo );
+	R_SetVBOAttributeLayouts( vbo, data.noLightCoords );
 
 	outData = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
 
@@ -561,13 +562,14 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	return vbo;
 }
 
-static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts )
+static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts, qboolean noLightCoords )
 {
 	uint32_t v;
 	vboData_t data;
 	memset( &data, 0, sizeof( data ) );
 	data.numVerts = vbo->vertexesNum;
 	data.numFrames = vbo->framesNum;
+	data.noLightCoords = noLightCoords;
 
 	for ( v = 0; v < vbo->vertexesNum; v++ )
 	{
@@ -581,14 +583,26 @@ static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts )
 			VectorCopy( vert->xyz, data.xyz[ v ] );
 		}
 
-		if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
+		if ( ( vbo->attribBits & ATTR_TEXCOORD ) && noLightCoords )
 		{
 			if ( !data.st )
 			{
-				data.st = ( vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.st ) * data.numVerts );
+				data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * data.numVerts );
 			}
-			data.st[ v ][ 0 ] = vert->st[ 0 ];
-			data.st[ v ][ 1 ] = vert->st[ 1 ];
+			data.st[ v ][ 0 ] = packTC( vert->st[ 0 ] );
+			data.st[ v ][ 1 ] = packTC( vert->st[ 1 ] );
+		}
+
+		if ( ( vbo->attribBits & ATTR_TEXCOORD ) && !noLightCoords )
+		{
+			if ( !data.stpq )
+			{
+				data.stpq = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * data.numVerts );
+			}
+			data.stpq[ v ][ 0 ] = packTC( vert->st[ 0 ] );
+			data.stpq[ v ][ 1 ] = packTC( vert->st[ 1 ] );
+			data.stpq[ v ][ 2 ] = packTC( vert->lightmap[ 0 ] );
+			data.stpq[ v ][ 3 ] = packTC( vert->lightmap[ 1 ] );
 		}
 
 		if ( ( vbo->attribBits & ATTR_NORMAL ) )
@@ -618,21 +632,11 @@ static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts )
 			VectorCopy( vert->tangent, data.tangent[ v ] );
 		}
 
-		if ( ( vbo->attribBits & ATTR_LIGHTCOORD ) )
-		{
-			if ( !data.lightCoord )
-			{
-				data.lightCoord = ( vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.lightCoord ) * data.numVerts );
-			}
-			data.lightCoord[ v ][ 0 ] = vert->lightmap[ 0 ];
-			data.lightCoord[ v ][ 1 ] = vert->lightmap[ 1 ];
-		}
-
 		if ( ( vbo->attribBits & ATTR_COLOR ) )
 		{
 			if ( !data.color )
 			{
-				data.color = ( color4ub_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.color ) * data.numVerts );
+				data.color = ( u8vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.color ) * data.numVerts );
 			}
 			Vector4Copy( vert->lightColor, data.color[ v ] );
 		}
@@ -646,11 +650,6 @@ static void R_FreeVBOData( vboData_t data )
 	if ( data.color )
 	{
 		ri.Hunk_FreeTempMemory( data.color );
-	}
-
-	if ( data.lightCoord )
-	{
-		ri.Hunk_FreeTempMemory( data.lightCoord );
 	}
 
 	if ( data.tangent )
@@ -717,9 +716,9 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, 
 	vbo->attribBits = stateBits;
 	vbo->usage = GL_STATIC_DRAW;
 
-	vboData = R_CreateVBOData( vbo, verts );
+	vboData = R_CreateVBOData( vbo, verts, qfalse );
 
-	R_SetVBOAttributeLayouts( vbo );
+	R_SetVBOAttributeLayouts( vbo, qfalse );
 	
 	data = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
 
@@ -998,8 +997,7 @@ R_InitVBOs
 void R_InitVBOs( void )
 {
 	uint32_t attribs = ATTR_POSITION | ATTR_TEXCOORD | ATTR_BINORMAL 
-	                   | ATTR_TANGENT | ATTR_NORMAL  | ATTR_LIGHTCOORD 
-	                   | ATTR_COLOR;
+	                   | ATTR_TANGENT | ATTR_NORMAL  | ATTR_COLOR;
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitVBOs -------\n" );
 
@@ -1025,7 +1023,7 @@ void R_InitVBOs( void )
 	glGenBuffers( 1, &tr.colorGradePBO );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
 	glBufferData( GL_PIXEL_PACK_BUFFER,
-		      REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t),
+		      REF_COLORGRADEMAP_STORE_SIZE * sizeof(u8vec4_t),
 		      NULL, GL_STREAM_COPY );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
 

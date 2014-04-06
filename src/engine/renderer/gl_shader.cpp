@@ -1217,7 +1217,7 @@ void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram 
 }
 
 GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
-	GLShader( "lightMapping", ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_NORMAL, manager ),
+	GLShader( "lightMapping", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),

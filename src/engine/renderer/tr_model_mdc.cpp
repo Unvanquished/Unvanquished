@@ -677,7 +677,8 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			data.tangent = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.tangent ) * mdvModel->numFrames * surf->numVerts );
 			data.binormal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.binormal ) * mdvModel->numFrames * surf->numVerts );
 			data.numFrames = mdvModel->numFrames;
-			data.st = ( vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.st ) * surf->numVerts );
+			data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * surf->numVerts );
+			data.noLightCoords = qtrue;
 			data.numVerts = surf->numVerts;
 
 			// feed vertex XYZ
@@ -692,8 +693,8 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			// feed vertex texcoords
 			for ( j = 0; j < surf->numVerts; j++ )
 			{
-				data.st[ j ][ 0 ] = surf->st[ j ].st[ 0 ];
-				data.st[ j ][ 1 ] = surf->st[ j ].st[ 1 ];
+				data.st[ j ][ 0 ] = packTC( surf->st[ j ].st[ 0 ] );
+				data.st[ j ][ 1 ] = packTC( surf->st[ j ].st[ 1 ] );
 			}
 
 			// calc and feed tangent spaces

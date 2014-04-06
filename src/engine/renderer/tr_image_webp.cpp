@@ -59,7 +59,7 @@ void LoadWEBP( const char *filename, unsigned char **pic, int *width, int *heigh
 		return;
 	}
 
-	stride = *width * sizeof( color4ub_t );
+	stride = *width * sizeof( u8vec4_t );
 	size = *height * stride;
 
 	out = (byte*) ri.Z_Malloc( size );

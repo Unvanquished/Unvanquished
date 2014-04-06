@@ -483,10 +483,10 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	if(header->ofs_bounds)
 		size += header->num_frames * 6 * sizeof(float);	// model bounds
 	size += header->num_vertexes * 3 * sizeof(float);	// positions
-	size += header->num_vertexes * 2 * sizeof(float);	// texcoords
 	size += header->num_vertexes * 3 * sizeof(float);	// normals
 	size += header->num_vertexes * 3 * sizeof(float);	// tangents
 	size += header->num_vertexes * 3 * sizeof(float);	// bitangents
+	size += header->num_vertexes * 2 * sizeof(int16_t);	// texcoords
 	size += header->num_vertexes * 4 * sizeof(byte);	// blendIndexes
 	size += header->num_vertexes * 4 * sizeof(byte);	// blendWeights
 	size += header->num_vertexes * 4 * sizeof(byte);	// colors
@@ -537,9 +537,6 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	IQModel->positions = (float *)ptr;
 	ptr = IQModel->positions + 3 * header->num_vertexes;
 
-	IQModel->texcoords = (float *)ptr;
-	ptr = IQModel->texcoords + 2 * header->num_vertexes;
-
 	IQModel->normals = (float *)ptr;
 	ptr = IQModel->normals + 3 * header->num_vertexes;
 
@@ -548,6 +545,9 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 	IQModel->bitangents = (float *)ptr;
 	ptr = IQModel->bitangents + 3 * header->num_vertexes;
+
+	IQModel->texcoords = (int16_t *)ptr;
+	ptr = IQModel->texcoords + 2 * header->num_vertexes;
 
 	IQModel->blendIndexes = (byte *)ptr;
 	ptr = IQModel->blendIndexes + 4 * header->num_vertexes;
@@ -700,9 +700,9 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 				       IQModel->bitangents );
 			break;
 		case IQM_TEXCOORD:
-			Com_Memcpy( IQModel->texcoords,
-				    IQMPtr( header, vertexarray->offset ),
-				    n * sizeof(float) );
+			for( j = 0; j < n; j++ ) {
+				IQModel->texcoords[ j ] = packTC( ((float *)IQMPtr( header, vertexarray->offset ))[ j ] );
+			}
 			break;
 		case IQM_BLENDINDEXES:
 			Com_Memcpy( IQModel->blendIndexes,
@@ -770,9 +770,9 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		vboData.binormal = (vec3_t *)IQModel->bitangents;
 		vboData.normal = (vec3_t *)IQModel->normals;;
 		vboData.numFrames = 0;
-		vboData.color = (color4ub_t *)IQModel->colors;
-		vboData.st = (vec2_t *)IQModel->texcoords;
-		vboData.lightCoord = NULL;
+		vboData.color = (u8vec4_t *)IQModel->colors;
+		vboData.st = (i16vec2_t *)IQModel->texcoords;
+		vboData.noLightCoords = qtrue;
 		vboData.boneIndexes = (int (*)[4])indexbuf;
 		vboData.boneWeights = (vec4_t *)weightbuf;
 		vboData.numVerts = IQModel->num_vertexes;

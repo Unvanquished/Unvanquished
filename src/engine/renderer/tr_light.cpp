@@ -738,7 +738,7 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 					for ( j = 0; j < 4; j++ )
 					{
 						const float *c = color ? color : colorCyan;
-						color4ub_t iColor;
+						u8vec4_t iColor;
 						iColor[ 0 ] = floatToUnorm8( c[ 0 ] );
 						iColor[ 1 ] = floatToUnorm8( c[ 1 ] );
 						iColor[ 2 ] = floatToUnorm8( c[ 2 ] );

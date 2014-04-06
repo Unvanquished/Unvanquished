@@ -941,11 +941,6 @@ public:
 		return USE_TCGEN_LIGHTMAP;
 	}
 
-	uint32_t        GetRequiredVertexAttributes() const
-	{
-		return ATTR_LIGHTCOORD;
-	}
-
 	void EnableTCGenLightmap()
 	{
 		EnableMacro();
