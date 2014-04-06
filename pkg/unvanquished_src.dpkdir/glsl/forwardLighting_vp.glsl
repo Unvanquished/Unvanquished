@@ -113,9 +113,9 @@ void	main()
 
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
-								normal,
-								attr_TexCoord0.st,
-								u_Time);
+					normal,
+					attr_TexCoord0.st / 4096.0,
+					u_Time);
 #endif
 
 	// transform vertex position into homogenous clip-space
@@ -135,14 +135,14 @@ void	main()
 	var_TexAttenuation = u_LightAttenuationMatrix * position;
 
 	// transform diffusemap texcoords
-	var_TexDiffuse.xy = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexDiffuse.xy = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexNormal.xy = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormal.xy = (u_NormalTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
-	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 #endif
 
 	// assign color

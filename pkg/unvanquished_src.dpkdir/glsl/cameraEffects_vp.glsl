@@ -35,5 +35,5 @@ void	main()
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * vec4(attr_Position, 1.0);
 
-	var_Tex = (u_ColorTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_Tex = (u_ColorTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 }
