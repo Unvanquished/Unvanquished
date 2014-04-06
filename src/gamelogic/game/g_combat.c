@@ -366,19 +366,25 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		obit = modNames[ meansOfDeath ];
 	}
 
-	G_LogPrintf( "Die: %d %d %s: %s" S_COLOR_WHITE " killed %s\n",
-	             killer,
-	             ( int )( self - g_entities ),
-	             obit,
-	             killerName,
-	             self->client->pers.netname );
-
 	if ( assistant != ENTITYNUM_NONE )
 	{
-		G_LogPrintf( "DieAssist: %d %d %d %d: %s" S_COLOR_WHITE " assisted %s" S_COLOR_WHITE " in killing %s\n",
-		             assistant, assistantTeam, killer,
+		G_LogPrintf( "Die: %d %d %s %d %d: %s" S_COLOR_WHITE " killed %s" S_COLOR_WHITE "; %s" S_COLOR_WHITE " assisted\n",
+		             killer,
 		             ( int )( self - g_entities ),
-		             assistantName, killerName,
+		             obit,
+		             assistant,
+		             assistantTeam,
+			     killerName,
+			     self->client->pers.netname,
+			     assistantName );
+	}
+	else
+	{
+		G_LogPrintf( "Die: %d %d %s: %s" S_COLOR_WHITE " killed %s\n",
+		             killer,
+		             ( int )( self - g_entities ),
+		             obit,
+		             killerName,
 		             self->client->pers.netname );
 	}
 
