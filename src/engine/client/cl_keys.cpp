@@ -1730,11 +1730,11 @@ found:
 	{
 		if ( *v == '/' || *v == '\\' )
 		{
-			Cmd::BufferCommandTextAfter(va("%s\n", v + 1));
+			Cmd::BufferCommandTextAfter(va("%s\n", v + 1), true);
 		}
 		else
 		{
-			Cmd::BufferCommandTextAfter(va("vstr %s\n", v));
+			Cmd::BufferCommandTextAfter(va("vstr %s\n", v), true);
 		}
 	}
 }
@@ -1936,7 +1936,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( !down )
 	{
 		// Handle any +commands which were invoked on the corresponding key-down
-		Cmd::ExecuteCommand(va("keyup %d %d %u\n", plusCommand.check, key, time));
+		Cmd::BufferCommandText(va("keyup %d %d %u", plusCommand.check, key, time));
 
 		if ( cls.keyCatchers & KEYCATCH_UI && uivm )
 		{
@@ -1998,8 +1998,8 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		if ( kb )
 		{
 			// down-only command
-			Cmd::BufferCommandTextAfter(va("setkeydata %d %d %u\n%s\n", plusCommand.check, key + 1, time, kb), true);
-			Cmd::BufferCommandTextAfter(va("setkeydata %d\n", plusCommand.check), true);
+			Cmd::BufferCommandTextAfter(va("setkeydata %d %d %u\n%s", plusCommand.check, key + 1, time, kb), true);
+			Cmd::BufferCommandTextAfter(va("setkeydata %d", plusCommand.check), true);
 		}
 	}
 }

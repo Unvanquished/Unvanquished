@@ -237,7 +237,10 @@ typedef nacl_abi___blkcnt_t nacl_abi_blkcnt_t;
 #define nacl_abi___time_t_defined
 typedef int64_t       nacl_abi___time_t;
 typedef nacl_abi___time_t nacl_abi_time_t;
+#endif
 
+#ifndef nacl_abi___timespec_defined
+#define nacl_abi___timespec_defined
 struct nacl_abi_timespec {
   nacl_abi_time_t tv_sec;
 #ifdef __native_client__

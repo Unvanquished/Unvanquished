@@ -311,12 +311,8 @@ void CG_OffsetThirdPersonView( void )
 		}
 	}
 
-	// get and rangecheck cg_thirdPersonRange
+	// get cg_thirdPersonRange
 	range = cg_thirdPersonRange.value;
-
-	if ( range > 150.0f ) { range = 150.0f; }
-
-	if ( range < 30.0f ) { range = 30.0f; }
 
 	// Calculate the angle of the camera's position around the player.
 	// Unless in demo, PLAYING in third person, or in dead-third-person cam, allow the player
@@ -559,12 +555,6 @@ static void CG_StepOffset( void )
 		VectorMA( cg.refdef.vieworg, -stepChange, normal, cg.refdef.vieworg );
 	}
 }
-
-#define PCLOUD_ROLL_AMPLITUDE     25.0f
-#define PCLOUD_ROLL_FREQUENCY     0.4f
-#define PCLOUD_ZOOM_AMPLITUDE     15
-#define PCLOUD_ZOOM_FREQUENCY     0.625f // 2.5s / 4
-#define PCLOUD_DISORIENT_DURATION 2500
 
 /*
 ===============
@@ -818,30 +808,6 @@ void CG_OffsetFirstPersonView( void )
 		}
 	}
 
-	if ( ( cg.predictedPlayerEntity.currentState.eFlags & EF_POISONCLOUDED ) &&
-	     ( cg.time - cg.poisonedTime < PCLOUD_DISORIENT_DURATION ) &&
-	     !( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
-	{
-		float scale, fraction, pitchFraction;
-
-		scale = 1.0f - ( float )( cg.time - cg.poisonedTime ) /
-		        BG_PlayerPoisonCloudTime( &cg.predictedPlayerState );
-
-		if ( scale < 0.0f )
-		{
-			scale = 0.0f;
-		}
-
-		fraction = sin( ( cg.time - cg.poisonedTime ) / 500.0f * M_PI * PCLOUD_ROLL_FREQUENCY ) *
-		           scale;
-		pitchFraction = sin( ( cg.time - cg.poisonedTime ) / 200.0f * M_PI * PCLOUD_ROLL_FREQUENCY ) *
-		                scale;
-
-		angles[ ROLL ] += fraction * PCLOUD_ROLL_AMPLITUDE;
-		angles[ YAW ] += fraction * PCLOUD_ROLL_AMPLITUDE;
-		angles[ PITCH ] += pitchFraction * PCLOUD_ROLL_AMPLITUDE / 2.0f;
-	}
-
 	// this *feels* more realisitic for humans <- this comment feels very descriptive
 	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 	     cg.predictedPlayerState.pm_type == PM_NORMAL )
@@ -1071,20 +1037,6 @@ static int CG_CalcFov( void )
 	else
 	{
 		inwater = qfalse;
-	}
-
-	if ( ( cg.predictedPlayerEntity.currentState.eFlags & EF_POISONCLOUDED ) &&
-	     ( cg.time - cg.poisonedTime < PCLOUD_DISORIENT_DURATION ) &&
-	     cg.predictedPlayerState.stats[ STAT_HEALTH ] > 0 &&
-	     !( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
-	{
-		float scale = 1.0f - ( float )( cg.time - cg.poisonedTime ) /
-		              BG_PlayerPoisonCloudTime( &cg.predictedPlayerState );
-
-		phase = ( cg.time - cg.poisonedTime ) / 1000.0f * PCLOUD_ZOOM_FREQUENCY * M_PI * 2.0f;
-		v = PCLOUD_ZOOM_AMPLITUDE * sin( phase ) * scale;
-		fov_x += v;
-		fov_y += v;
 	}
 
 	// set it
@@ -1431,7 +1383,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 	cg.refdef.gradingWeights[3] = totalWeight == 0.0f ? 0.0f : selectedWeight[2] / totalWeight;
 }
 
-static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
+static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade, float* fadeRate )
 {
 	int health = ps->stats[ STAT_HEALTH ];
 	int team = ps->persistant[ PERS_TEAM ];
@@ -1444,35 +1396,12 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
+        *fadeRate = 0.004;
 	}
-	//not actually playing
-	else if (cg.renderingThirdPerson || ! playing )
-	{
-		*fade = 0.0;
-	}
-	else if(ps->weapon == WP_ALEVEL4 && chargeProgress > 0.05)
-	{
-	    *effect = cgs.media.redCgrade;
-	    *fade = chargeProgress * 0.5f;
-	}
+	//no other effects for now
 	else
 	{
-		//health effect
-		float ratio = 0.0f;
-		float maxHealth = BG_Class( class_ )->health;
-		if ( team == TEAM_HUMANS )
-		{
-			*effect = cgs.media.redCgrade;
-			ratio = 0.5f;
-		}
-		else if( team == TEAM_ALIENS )
-		{
-			*effect = cgs.media.desaturatedCgrade;
-			ratio = 0.7f;
-		}
-		//Linear blend if the effect as a function of the health ratio
-		//Find out if a quadratic effect would look better
-		*fade = (1.0f - health / maxHealth) * ratio;
+		*fade = 0.0;
 	}
 }
 
@@ -1502,13 +1431,13 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 	qhandle_t finalEffect = 0;
 	float finalFade = 0.0f;
 
-	static const float fadeRate = 0.0005;
+	float fadeRate = 0.0005;
 
 	float fadeChange = fadeRate * cg.frametime;
 	float factor;
 
 	//Choose which effect we want
-	CG_ChooseCgradingEffectAndFade( ps, &targetEffect, &targetFade );
+	CG_ChooseCgradingEffectAndFade( ps, &targetEffect, &targetFade, &fadeRate );
 
 	//As we have only one cgrade slot for the effect we transition
 	//smoothly from the current (effect, fading) to the target effect.
@@ -1787,14 +1716,7 @@ static int CG_CalcViewValues( void )
 	}
 
 	//shut off the poison cloud effect if it's still on the go
-	if ( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 )
-	{
-		if ( CG_IsParticleSystemValid( &cg.poisonCloudPS ) )
-		{
-			CG_DestroyParticleSystem( &cg.poisonCloudPS );
-		}
-	}
-	else
+	if ( cg.snap->ps.stats[ STAT_HEALTH ] > 0 )
 	{
 		cg.wasDeadLastFrame = qfalse;
 	}

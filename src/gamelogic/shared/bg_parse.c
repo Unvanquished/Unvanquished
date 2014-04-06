@@ -78,16 +78,6 @@ int   LEVEL1_CLAW_DMG;
 float LEVEL1_CLAW_RANGE;
 float LEVEL1_CLAW_U_RANGE;
 float LEVEL1_CLAW_WIDTH;
-float LEVEL1_GRAB_RANGE;
-float LEVEL1_GRAB_U_RANGE;
-int   LEVEL1_GRAB_TIME;
-int   LEVEL1_GRAB_U_TIME;
-float LEVEL1_PCLOUD_RANGE;
-int   LEVEL1_PCLOUD_TIME;
-float LEVEL1_REGEN_MOD;
-float LEVEL1_UPG_REGEN_MOD;
-int   LEVEL1_REGEN_SCOREINC;
-int   LEVEL1_UPG_REGEN_SCOREINC;
 
 int   LEVEL2_CLAW_DMG;
 float LEVEL2_CLAW_RANGE;
@@ -136,8 +126,6 @@ int   LEVEL4_TRAMPLE_REPEAT;
 
 // Human upgrades
 float RADAR_RANGE;
-
-float BATTPACK_MODIFIER;
 
 int   MEDKIT_POISON_IMMUNITY_TIME;
 int   MEDKIT_STARTUP_TIME;
@@ -225,8 +213,6 @@ static configVar_t bg_configVars[] =
 	{"b_tesla_zapAttackRange", FLOAT, qfalse, &TESLAGEN_RANGE},
 	{"b_tesla_zapAttackRepeat", INTEGER, qfalse, &TESLAGEN_REPEAT},
 
-	{"u_battpack_ammoCapacityModifier", FLOAT, qfalse, &BATTPACK_MODIFIER},
-
 	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},
 	{"u_medkit_startupTime", INTEGER, qfalse, &MEDKIT_STARTUP_TIME},
@@ -278,21 +264,9 @@ static configVar_t bg_configVars[] =
 	{"w_level0_biteRepeat", INTEGER, qfalse, &LEVEL0_BITE_REPEAT},
 	{"w_level0_biteWidth", FLOAT, qfalse, &LEVEL0_BITE_WIDTH},
 
-	{"w_level1upg_clawRange", FLOAT, qfalse, &LEVEL1_CLAW_U_RANGE},
-	{"w_level1upg_grabRange", FLOAT, qfalse, &LEVEL1_GRAB_U_RANGE},
-	{"w_level1upg_grabTime", INTEGER, qfalse, &LEVEL1_GRAB_U_TIME},
-	{"w_level1upg_poisonCloudDuration", INTEGER, qfalse, &LEVEL1_PCLOUD_TIME},
-	{"w_level1upg_poisonCloudRange", FLOAT, qfalse, &LEVEL1_PCLOUD_RANGE},
-	{"w_level1upg_regenMod", FLOAT, qfalse, &LEVEL1_UPG_REGEN_MOD},
-	{"w_level1upg_regenScoreGain", INTEGER, qfalse, &LEVEL1_UPG_REGEN_SCOREINC},
-
 	{"w_level1_clawDmg", INTEGER, qfalse, &LEVEL1_CLAW_DMG},
 	{"w_level1_clawRange", FLOAT, qfalse, &LEVEL1_CLAW_RANGE},
 	{"w_level1_clawWidth", FLOAT, qfalse, &LEVEL1_CLAW_WIDTH},
-	{"w_level1_grabRange", FLOAT, qfalse, &LEVEL1_GRAB_RANGE},
-	{"w_level1_grabTime", INTEGER, qfalse, &LEVEL1_GRAB_TIME},
-	{"w_level1_regenMod", FLOAT, qfalse, &LEVEL1_REGEN_MOD},
-	{"w_level1_regenScoreGain", INTEGER, qfalse, &LEVEL1_REGEN_SCOREINC},
 
 	{"w_level2upg_clawRange", FLOAT, qfalse, &LEVEL2_CLAW_U_RANGE},
 	{"w_level2upg_zapChainFalloff", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_FALLOFF},

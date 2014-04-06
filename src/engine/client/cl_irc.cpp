@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "revision.h"
 #include "client.h"
-#include "../qcommon/htable.h"
 
 #ifdef WIN32
 # include <winsock.h>
@@ -219,8 +218,8 @@ typedef struct
 	void ( *handler )( void );
 }irc_handler_t;
 
-static hashtable_t IRC_Handlers;
-static hashtable_t IRC_CTCPHandlers;
+static std::unordered_map<std::string, irc_handler_func_t>  IRC_Handlers;
+static std::unordered_map<std::string, ctcp_handler_func_t> IRC_CTCPHandlers;
 
 /*
  * Username, nickname, etc...
@@ -282,34 +281,15 @@ static unsigned int IRC_RateLimiter[ 3 ];
 
 /*
 ==================
-IRC_InitHandlers
+IRC_ResetHandlers
 
-Initialises the handler tables
+Re-Initialises the handler tables
 ==================
 */
-static INLINE void IRC_InitHandlers( void )
+static INLINE void IRC_ResetHandlers( void )
 {
-	IRC_Handlers = HT_Create( 100, HT_FLAG_INTABLE | HT_FLAG_CASE,
-	                          sizeof( irc_handler_t ),
-	                          HT_OffsetOfField( irc_handler_t, cmd_string ),
-	                          32 );
-	IRC_CTCPHandlers = HT_Create( 100, HT_FLAG_INTABLE | HT_FLAG_CASE,
-	                              sizeof( irc_handler_t ),
-	                              HT_OffsetOfField( irc_handler_t, cmd_string ),
-	                              32 );
-}
-
-/*
-==================
-IRC_FreeHandlers
-
-Frees the list of handlers (used when the IRC thread dies).
-==================
-*/
-static void IRC_FreeHandlers( void )
-{
-	HT_Destroy( IRC_Handlers );
-	HT_Destroy( IRC_CTCPHandlers );
+	IRC_Handlers.clear();
+	IRC_CTCPHandlers.clear();
 }
 
 /*
@@ -321,12 +301,7 @@ Registers a new IRC command handler.
 */
 static INLINE void IRC_AddHandler( const char *command, irc_handler_func_t handler )
 {
-	qboolean            created;
-	irc_handler_t *rv;
-
-	rv = (irc_handler_t*) HT_GetItem( IRC_Handlers, command, &created );
-	assert( created );
-	rv->handler = ( void (*)( void ) )handler;
+	IRC_Handlers[command] = handler;
 }
 
 /*
@@ -338,12 +313,7 @@ Registers a new CTCP command handler.
 */
 static void IRC_AddCTCPHandler( const char *command, ctcp_handler_func_t handler )
 {
-	qboolean             created;
-	irc_handler_t *rv;
-
-	rv = (irc_handler_t*) HT_GetItem( IRC_CTCPHandlers, command, &created );
-	assert( created );
-	rv->handler = ( void (*)( void ) )handler;
+	IRC_CTCPHandlers[command] = handler;
 }
 
 /*
@@ -356,16 +326,14 @@ no registered handler matching the command, ignore it.
 */
 static int IRC_ExecuteHandler( void )
 {
-	irc_handler_t *handler;
+	auto it = IRC_Handlers.find( IRC_String( cmd_string ) );
 
-	handler = (irc_handler_t*) HT_GetItem( IRC_Handlers, IRC_String( cmd_string ), NULL );
-
-	if ( handler == NULL )
+	if ( it == IRC_Handlers.end() )
 	{
 		return IRC_CMD_SUCCESS;
 	}
 
-	return ( ( irc_handler_func_t )( handler->handler ) )();
+	return (it->second)();
 }
 
 /*
@@ -377,16 +345,14 @@ Executes a CTCP command handler.
 */
 static int IRC_ExecuteCTCPHandler( const char *command, qboolean is_channel, const char *argument )
 {
-	irc_handler_t *handler;
+	auto it = IRC_CTCPHandlers.find( IRC_String( cmd_string ) );
 
-	handler = (irc_handler_t*) HT_GetItem( IRC_CTCPHandlers, command, NULL );
-
-	if ( handler == NULL )
+	if ( it == IRC_CTCPHandlers.end() )
 	{
 		return IRC_CMD_SUCCESS;
 	}
 
-	return ( ( ctcp_handler_func_t )( handler->handler ) )( is_channel, argument );
+	return ( it->second )( is_channel, argument );
 }
 
 /*--------------------------------------------------------------------------*/
@@ -2505,7 +2471,7 @@ static void IRC_Thread( void )
 	// Init. send queue & rate limiter
 	IRC_InitSendQueue();
 	IRC_InitRateLimiter();
-	IRC_InitHandlers();
+	IRC_ResetHandlers();
 
 	// Init. IRC handlers
 	IRC_AddHandler( "PING",                &IRCH_Ping );  // Ping request
@@ -2533,7 +2499,6 @@ static void IRC_Thread( void )
 	// Clean up
 	Com_Printf("…IRC: %s\n", _( "disconnected from server" ));
 	IRC_FlushDEQueue();
-	IRC_FreeHandlers();
 	IRC_SetThreadDead();
 }
 

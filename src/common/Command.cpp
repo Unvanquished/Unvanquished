@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // FIXME: Code in common shouldn't depend on framework
 #include "../engine/framework/CommandSystem.h"
+#include "../engine/qcommon/qcommon.h"
 #include "../engine/framework/CvarSystem.h"
 
 namespace Cmd {
@@ -471,8 +472,28 @@ namespace Cmd {
         GetEnv().ExecuteAfter(text, parseCvars);
     }
 
+    CompletionResult FilterCompletion(Str::StringRef prefix, std::initializer_list<CompletionItem> list) {
+        CompletionResult res;
+        AddToCompletion(res, prefix, list);
+        return res;
+    }
+
+    void AddToCompletion(CompletionResult& res, Str::StringRef prefix, std::initializer_list<CompletionItem> list) {
+        for (auto item: list) {
+            if (Str::IsIPrefix(prefix, item.first)) {
+                res.push_back({item.first, item.second});
+            }
+        }
+    }
+
     Environment& CmdBase::GetEnv() const {
         return *Cmd::GetEnv();
+    }
+
+    StaticCmd::StaticCmd(std::string name, std::string description)
+    :CmdBase(0){
+        //Register this command statically
+        AddCommand(std::move(name), *this, std::move(description));
     }
 
     StaticCmd::StaticCmd(std::string name, const int flags, std::string description)
@@ -480,6 +501,5 @@ namespace Cmd {
         //Register this command statically
         AddCommand(std::move(name), *this, std::move(description));
     }
-
 
 }

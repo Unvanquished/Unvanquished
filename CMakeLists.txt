@@ -53,15 +53,14 @@ option( ENABLE_HARDENING "Use stack protection and other hardening flags" 0 )
 
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
-option( BUILD_GAME_NACL_NATIVE "Build native NaCl game logic" 0)
-option( BUILD_GAME_NACL "Build NaCl game logic" 0)
-option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1)
-option( BUILD_GAME_QVM "Build QVM game logic" 1)
-option( BUILD_TTY_CLIENT "Build Daemon headless client" 0 )
+option( BUILD_GAME_NACL_NATIVE_EXE "Build native executable NaCl game logic" 1 )
+option( BUILD_GAME_NACL_NATIVE_DLL "Build native shared library NaCl game logic" 1 )
+option( BUILD_GAME_NACL "Build NaCl game logic" 1 )
+option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1 )
+option( BUILD_GAME_QVM "Build QVM game logic" 1 )
+option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 
-cmake_dependent_option( USE_MUMBLE "Compile with support for Mumble" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
-cmake_dependent_option( USE_CURSES "Use the curses console" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
@@ -69,12 +68,6 @@ option( USE_WEXTRA "Enable extra compilation warnings" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
-
-
-set( NACL_SDK_PATH "" CACHE PATH "Path to native client SDK" )
-if( BUILD_GAME_NACL AND NOT NACL_SDK_PATH )
-  message( SEND_ERROR "You need to set the path to the native client SDK" )
-endif()
 
 ################################################################################
 # Determine platform
@@ -299,11 +292,6 @@ if( APPLE )
   set( CMAKE_BUILD_WITH_INSTALL_RPATH ON )
 endif()
 
-# Mumble link support
-if( USE_MUMBLE )
-  add_definitions( -DUSE_MUMBLE )
-endif()
-
 ################################################################################
 # Directories
 ################################################################################
@@ -317,19 +305,10 @@ set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( TOOLS_DIR ${MOUNT_DIR}/tools )
 set( LCC_DIR ${TOOLS_DIR}/lcc )
 set( LIB_DIR ${MOUNT_DIR}/libs )
-if( CMAKE_HOST_WIN32 )
-  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/win_pnacl/bin )
-  set( PNACL_BIN_EXT ".bat" )
-elseif( CMAKE_HOST_APPLE )
-  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/mac_pnacl/bin )
-  set( PNACL_BIN_EXT "" )
-elseif( CMAKE_HOST_SYSTEM_NAME MATCHES "Linux" )
-  if( CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "amd64" )
-    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_pnacl/bin64 )
-  else()
-    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_pnacl/bin )
-  endif()
-  set( PNACL_BIN_EXT "" )
+if( CMAKE_CFG_INTDIR STREQUAL "." )
+  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
+else()
+  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
 endif()
 if( MSVC )
   if( ARCH STREQUAL "x86_64" )
@@ -349,6 +328,22 @@ elseif( APPLE )
   else()
     set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx32 )
   endif()
+elseif( LINUX )
+  if( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux64 )
+  else()
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux32 )
+  endif()
+endif()
+if( LINUX AND ARCH STREQUAL "x86_64" )
+  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin64 )
+else()
+  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin )
+endif()
+if( WIN32 )
+  set( PNACL_BIN_EXT ".bat" )
+else()
+  set( PNACL_BIN_EXT "" )
 endif()
 
 ################################################################################
@@ -407,10 +402,36 @@ set( SHAREDLIST
   ${SHAREDLIST_H}
 )
 
+set( COMMONLIST
+  ${COMMON_DIR}/Command.cpp
+  ${COMMON_DIR}/Command.h
+  ${COMMON_DIR}/Cvar.cpp
+  ${COMMON_DIR}/Cvar.h
+  ${COMMON_DIR}/IPC.h
+  ${COMMON_DIR}/LineEditData.cpp
+  ${COMMON_DIR}/LineEditData.h
+  ${COMMON_DIR}/Log.cpp
+  ${COMMON_DIR}/Log.h
+  ${COMMON_DIR}/IPC.cpp
+  ${COMMON_DIR}/IPC.h
+  ${COMMON_DIR}/String.cpp
+  ${COMMON_DIR}/String.h
+  ${COMMON_DIR}/cm/cm_load.cpp
+  ${COMMON_DIR}/cm/cm_trisoup.cpp
+  ${COMMON_DIR}/cm/cm_patch.cpp
+  ${COMMON_DIR}/cm/cm_plane.cpp
+  ${COMMON_DIR}/cm/cm_polylib.cpp
+  ${COMMON_DIR}/cm/cm_test.cpp
+  ${COMMON_DIR}/cm/cm_trace.cpp
+  ${COMMON_DIR}/cm/cm_local.h
+  ${COMMON_DIR}/cm/cm_patch.h
+  ${COMMON_DIR}/cm/cm_polylib.h
+  ${COMMON_DIR}/cm/cm_public.h
+)
+
 set( RENDERERLIST
   ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sdl_glimp.cpp
-  ${ENGINE_DIR}/sys/sdl_gamma.cpp
   ${ENGINE_DIR}/renderer/gl_shader.cpp
   ${ENGINE_DIR}/renderer/tr_animation.cpp
   ${ENGINE_DIR}/renderer/tr_backend.cpp
@@ -454,7 +475,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_surface.cpp
   ${ENGINE_DIR}/renderer/tr_vbo.cpp
   ${ENGINE_DIR}/renderer/tr_world.cpp
-  ${ENGINE_DIR}/qcommon/md4.cpp
   ${LIB_DIR}/openexr/half.cpp
   ${ENGINE_DIR}/renderer/tr_local.h
   ${ENGINE_DIR}/renderer/tr_public.h
@@ -476,29 +496,20 @@ set( SERVERLIST
   ${ENGINE_DIR}/server/sv_main.cpp
   ${ENGINE_DIR}/server/sv_net_chan.cpp
   ${ENGINE_DIR}/server/sv_snapshot.cpp
-  ${ENGINE_DIR}/server/sv_world.cpp
   ${ENGINE_DIR}/server/server.h
   ${ENGINE_DIR}/server/g_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
 )
 
 set( ENGINELIST
-  ${COMMON_DIR}/Command.cpp
-  ${COMMON_DIR}/Command.h
-  ${COMMON_DIR}/Cvar.cpp
-  ${COMMON_DIR}/Cvar.h
-  ${COMMON_DIR}/LineEditData.cpp
-  ${COMMON_DIR}/LineEditData.h
-  ${COMMON_DIR}/Log.cpp
-  ${COMMON_DIR}/Log.h
-  ${COMMON_DIR}/String.cpp
-  ${COMMON_DIR}/String.h
   ${ENGINE_DIR}/framework/BaseCommands.cpp
   ${ENGINE_DIR}/framework/BaseCommands.h
   ${ENGINE_DIR}/framework/CommandSystem.cpp
   ${ENGINE_DIR}/framework/CommandSystem.h
   ${ENGINE_DIR}/framework/CvarSystem.cpp
   ${ENGINE_DIR}/framework/CvarSystem.h
+  ${ENGINE_DIR}/framework/CommonVMServices.cpp
+  ${ENGINE_DIR}/framework/CommonVMServices.h
   ${ENGINE_DIR}/framework/ConsoleField.cpp
   ${ENGINE_DIR}/framework/ConsoleField.h
   ${ENGINE_DIR}/framework/ConsoleHistory.cpp
@@ -511,17 +522,6 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/Resource.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
-  ${ENGINE_DIR}/qcommon/cm_load.cpp
-  ${ENGINE_DIR}/qcommon/cm_trisoup.cpp
-  ${ENGINE_DIR}/qcommon/cm_patch.cpp
-  ${ENGINE_DIR}/qcommon/cm_plane.cpp
-  ${ENGINE_DIR}/qcommon/cm_polylib.cpp
-  ${ENGINE_DIR}/qcommon/cm_test.cpp
-  ${ENGINE_DIR}/qcommon/cm_trace.cpp
-  ${ENGINE_DIR}/qcommon/cm_local.h
-  ${ENGINE_DIR}/qcommon/cm_patch.h
-  ${ENGINE_DIR}/qcommon/cm_polylib.h
-  ${ENGINE_DIR}/qcommon/cm_public.h
   ${ENGINE_DIR}/qcommon/cmd.cpp
   ${ENGINE_DIR}/qcommon/common.cpp
   ${ENGINE_DIR}/qcommon/crypto.cpp
@@ -529,11 +529,7 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/cvar.cpp
   ${ENGINE_DIR}/qcommon/cvar.h
   ${ENGINE_DIR}/qcommon/qfiles.h
-  ${ENGINE_DIR}/qcommon/htable.cpp
-  ${ENGINE_DIR}/qcommon/htable.h
   ${ENGINE_DIR}/qcommon/huffman.cpp
-  ${ENGINE_DIR}/qcommon/md4.cpp
-  ${ENGINE_DIR}/qcommon/md4.h
   ${ENGINE_DIR}/qcommon/md5.cpp
   ${ENGINE_DIR}/qcommon/msg.cpp
   ${ENGINE_DIR}/qcommon/net_chan.cpp
@@ -548,6 +544,7 @@ set( ENGINELIST
   ${ENGINE_DIR}/sys/con_log.cpp
   ${ENGINE_DIR}/qcommon/qcommon.h
   ${ENGINE_DIR}/qcommon/surfaceflags.h
+  ${COMMONLIST}
 )
 
 if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
@@ -571,14 +568,16 @@ else()
   )
 endif()
 
+if( NOT APPLE )
+  set( ENGINELIST ${ENGINELIST}
+    ${ENGINE_DIR}/sys/con_curses.cpp
+  )
+endif()
+
 if( APPLE )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/sys_osx.mm
   )
-endif()
-
-if( USE_CURSES )
-  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/sys/con_curses.cpp )
 endif()
 
 set( CLIENTBASELIST
@@ -602,8 +601,9 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/client/cl_parse.cpp
   ${ENGINE_DIR}/client/cl_scrn.cpp
   ${ENGINE_DIR}/client/cl_ui.cpp
-  ${ENGINE_DIR}/client/cl_logs.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
+  ${ENGINE_DIR}/client/libmumblelink.cpp
+  ${ENGINE_DIR}/client/libmumblelink.h
 )
 
 set( CLIENTLIST
@@ -635,14 +635,6 @@ set( DEDSERVERLIST
     ${ENGINE_DIR}/null/null_input.cpp
     ${ENGINE_DIR}/null/null_client.cpp
 )
-
-
-if( USE_MUMBLE )
-  set( CLIENTBASELIST ${CLIENTBASELIST}
-    ${ENGINE_DIR}/client/libmumblelink.cpp
-    ${ENGINE_DIR}/client/libmumblelink.h
-  )
-endif()
 
 set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.cpp
@@ -713,6 +705,9 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/bg_voice.c
   ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
   ${GAMELOGIC_DIR}/shared/bg_utilities.c
+  ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
+  ${GAMELOGIC_DIR}/shared/CommonProxies.h
+  ${GAMELOGIC_DIR}/shared/VMMain.h
   ${GAMELOGIC_DIR}/game/g_active.c
   ${GAMELOGIC_DIR}/game/g_client.c
   ${GAMELOGIC_DIR}/game/g_cmds.c
@@ -746,25 +741,14 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_bot_nav.c
   ${GAMELOGIC_DIR}/game/g_bot_parse.c
   ${GAMELOGIC_DIR}/game/g_bot_util.c
+  ${GAMELOGIC_DIR}/game/g_cm_world.cpp
+  ${GAMELOGIC_DIR}/game/g_cm_world.h
   ${ENGINE_DIR}/server/g_api.h
 )
 
 set( GAMENACLLIST
   ${GAMELOGIC_DIR}/game/g_api.cpp
-)
-
-set( GAMENATIVELIST
-  ${GAMELOGIC_DIR}/game/g_api.c
-)
-
-set( GAMEQVMLIST
-  ${GAMELOGIC_DIR}/shared/bg_lib.c
-  ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST_C}
-)
-
-set( GAMEASMLIST
-  ${GAMELOGIC_DIR}/game/g_api.asm
+  ${COMMONLIST}
 )
 
 set( UILIST
@@ -912,21 +896,18 @@ set( RECASTLIST
 
 if( APPLE )
   set( NACLLIST_NATIVE
-    ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/osx/nacl_imc.cc
   )
 elseif( LINUX )
   set( NACLLIST_NATIVE
-    ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/linux/nacl_imc.cc
   )
 elseif( WIN32 )
   set( NACLLIST_NATIVE
-    ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_imc.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_shm.cc
@@ -934,7 +915,6 @@ elseif( WIN32 )
 endif()
 
 set( NACLLIST_MODULE
-  ${LIB_DIR}/nacl/nacl.cpp
   ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
   ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl/nacl_imc.cc
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_accept.c
@@ -959,9 +939,9 @@ if( DEPS_DIR )
   # Download them if they not available
   if( NOT EXISTS ${DEPS_DIR} )
     get_filename_component( BASENAME ${DEPS_DIR} NAME )
-    set( REMOTE "http://vanquished.zapto.org/~amanieu/unvanquished_deps/${BASENAME}.zip" )
+    set( REMOTE "http://vanquished.zapto.org/~amanieu/unvanquished_deps/${BASENAME}.tar.bz2" )
     message( STATUS "Downloading dependencies from '${REMOTE}'" )
-    file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}.zip SHOW_PROGRESS
+    file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}.tar.bz2 SHOW_PROGRESS
       STATUS DOWNLOAD_RESULT LOG DOWNLOAD_LOG )
     list( GET DOWNLOAD_RESULT 0 DOWNLOAD_STATUS )
     list( GET DOWNLOAD_RESULT 1 DOWNLOAD_STRING )
@@ -974,10 +954,10 @@ if( DEPS_DIR )
     message( STATUS "Download completed successfully" )
 
     # Extract the downloaded archive
-    execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${OBJ_DIR}/${BASENAME}.zip
+    execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${OBJ_DIR}/${BASENAME}.tar.bz2
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/external_deps RESULT_VARIABLE EXTRACT_RESULT )
     if( NOT EXTRACT_RESULT EQUAL 0 )
-      message( FATAL_ERROR "Could not extract ${BASENAME}.zip" )
+      message( FATAL_ERROR "Could not extract ${BASENAME}.tar.bz2" )
     endif()
   endif()
 
@@ -1210,19 +1190,18 @@ if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
 endif()
 
 # Curses, pdcurses on Windows and ncursesw on Unix
-if( USE_CURSES )
-  add_definitions( -DUSE_CURSES -DUSE_CURSES_W )
-  if( WIN32 )
-    add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 )
-    include_directories( ${LIB_DIR}/pdcurses )
-    set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
-    set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
-  else()
-    set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
-    find_package( CursesW REQUIRED )
-    include_directories( ${CURSESW_INCLUDE_DIR} )
-    set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
-  endif()
+# Not supported on mac because the included version is too old
+if( WIN32 )
+  add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES)
+  include_directories( ${LIB_DIR}/pdcurses )
+  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
+  set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
+elseif( NOT APPLE )
+  add_definitions( -DUSE_CURSES )
+  set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
+  find_package( CursesW REQUIRED )
+  include_directories( ${CURSESW_INCLUDE_DIR} )
+  set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
 endif()
 
 ################################################################################
@@ -1233,25 +1212,29 @@ endif()
 include( CMakeParseArguments )
 function( GAMEMODULE )
   # ParseArguments setup
-  set( oneValueArgs NAME HAS_NACL )
+  set( oneValueArgs NAME HAS_NACL HAS_QVM )
   set( multiValueArgs COMPILE_DEF FILES NACL_FILES NATIVE_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-  if( CMAKE_CFG_INTDIR STREQUAL "." )
-    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
-  else()
-    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
-  endif()
 
-  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE )
-    add_executable( ${GAMEMODULE_NAME}-nacl-native ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES
-      OUTPUT_NAME ${GAMEMODULE_NAME}
+  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_DLL )
+    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
+      PREFIX ""
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
   endif()
 
-  if( BUILD_GAME_QVM_NATIVE )
+  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_EXE )
+    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
+      OUTPUT_NAME ${GAMEMODULE_NAME}-nacl-native-exe
+      COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
+    )
+  endif()
+
+  if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM_NATIVE )
     set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
     add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
     target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
@@ -1276,6 +1259,7 @@ function( GAMEMODULE )
       -Wall
       -ffast-math
       -fvisibility=hidden
+      -stdlib=libc++
       --pnacl-allow-exceptions
       $<$<CONFIG:None>:-O3>
       $<$<CONFIG:None>:-fomit-frame-pointer>
@@ -1330,49 +1314,49 @@ function( GAMEMODULE )
 
     # Generate PNaCL platform-independant executable
     add_custom_command(
-      OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
         ${NACL_COMPILE_OPTIONS}
-        -o ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
         ${OBJECTS}
       DEPENDS ${OBJECTS}
     )
 
     # Generate NaCl executables for x86 and x86_64
     add_custom_command(
-      OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
         ${NACL_TRANSLATE_OPTIONS}
         -arch i686
-        -o ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
     add_custom_command(
-      OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
         ${NACL_TRANSLATE_OPTIONS}
         -arch x86-64
-        -o ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
-        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
 
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-nacl ALL
-      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
     )
 
     # Create the build directory before building
     add_custom_command( TARGET ${GAMEMODULE_NAME}-nacl PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${GAMEMODULE_FULL_OUTPUT_DIR}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${FULL_OUTPUT_DIR}
       COMMAND ${CMAKE_COMMAND} -E make_directory ${NACL_DIR}
     )
   endif()
 
-  if( BUILD_GAME_QVM )
+  if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM )
     if( CMAKE_CFG_INTDIR STREQUAL "." )
       set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir )
     else()
@@ -1430,6 +1414,7 @@ endif()
 GAMEMODULE( NAME game
   COMPILE_DEF IN_GAME_VM
   HAS_NACL 1
+  HAS_QVM 0
   FILES ${GAMELIST}
   NACL_FILES ${GAMENACLLIST}
   NATIVE_FILES ${GAMENATIVELIST}
@@ -1440,6 +1425,7 @@ GAMEMODULE( NAME game
 GAMEMODULE( NAME cgame
   COMPILE_DEF IN_CGAME_VM
   HAS_NACL 0
+  HAS_QVM 1
   FILES ${CGAMELIST}
   NACL_FILES ${CGAMENACLLIST}
   NATIVE_FILES ${CGAMENATIVELIST}
@@ -1451,6 +1437,7 @@ GAMEMODULE( NAME ui
   COMPILE_DEF UI
   FILES ${UILIST}
   HAS_NACL 0
+  HAS_QVM 1
   NACL_FILES ${UINACLLIST}
   NATIVE_FILES ${UINATIVELIST}
   QVM_FILES ${UIQVMLIST}
@@ -1473,9 +1460,6 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
-  if( USE_SMP )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
-  endif()
 endif()
 
 if( BUILD_SERVER )
@@ -1492,4 +1476,19 @@ if( BUILD_TTY_CLIENT )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
+endif()
+
+################################################################################
+# NaCl SDK files
+################################################################################
+
+if( LINUX )
+  add_custom_target( nacl_sdk ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
+else()
+  add_custom_target( nacl_sdk ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe )
 endif()

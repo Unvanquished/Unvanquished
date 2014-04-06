@@ -1,49 +1,34 @@
 models/buildables/telenode/telenode_dead
 {
-	diffuseMap	models/buildables/telenode/telenode_diff
-	normalMap	models/buildables/telenode/telenode_normal
+	diffuseMap	models/buildables/telenode/telenode_d
+	normalMap	models/buildables/telenode/telenode_n
 	specularMap	models/buildables/telenode/telenode_spec
 }
 
 models/buildables/telenode/telenode_full
 {
-	qer_editorimage models/buildables/telenode/telenode_diff
-
-	diffuseMap	models/buildables/telenode/telenode_diff
-	normalMap	models/buildables/telenode/telenode_normal
-	{
-		stage	specularMap
-		map	models/buildables/telenode/telenode_spec
-		specularExponentMin 8
-		specularExponentMax 85
-	}
+	diffuseMap	models/buildables/telenode/telenode_d
+	normalMap	models/buildables/telenode/telenode_n
+	specularMap	models/buildables/telenode/telenode_spec
 	glowMap		models/buildables/telenode/telenode_glow
 
-	when destroyed	models/buildables/telenode/telenode_dead
-}
-
-models/buildables/telenode/telenode-effect_dead
-{
-	cull none
-
-	{
-		map models/buildables/telenode/telenode-effect
-		blendfunc blend
-		tcMod scroll -0.997 0
-		tAlphaZeroClamp
-	}
+	when unpowered models/buildables/telenode/telenode_dead
+	when destroyed models/buildables/telenode/telenode_dead
 }
 
 models/buildables/telenode/telenode-effect
 {
 	cull none
 
+	surfaceparm nolightmap
+
 	{
-		map models/buildables/telenode/telenode-effect
-		blendfunc GL_SRC_ALPHA GL_ONE
-		tcMod scroll -0.997 0
+		map   models/buildables/telenode/telenode-effect
+		blend blend
+
+		tcMod scroll -1.0 0
+
+		// TODO: Add a comment explaining what this does
 		tAlphaZeroClamp
 	}
-
-	when destroyed	models/buildables/telenode/telenode-effect_dead
 }

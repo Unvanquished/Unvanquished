@@ -546,16 +546,8 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_classname", "Dretch" );
 			break;
 
-		case PCL_ALIEN_LEVEL0_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Dretch" );
-			break;
-
 		case PCL_ALIEN_LEVEL1:
-			trap_Cvar_Set( "p_classname", "Basilisk" );
-			break;
-
-		case PCL_ALIEN_LEVEL1_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Basilisk" );
+			trap_Cvar_Set( "p_classname", "Mantis" );
 			break;
 
 		case PCL_ALIEN_LEVEL2:
@@ -652,14 +644,12 @@ static void CG_SetPVars( void )
 			break;
 
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			trap_Cvar_Set( "p_weaponname", "Teeth" );
 			break;
 
 		case WP_ABUILD:
 		case WP_ABUILD2:
 		case WP_ALEVEL1:
-		case WP_ALEVEL1_UPG:
 		case WP_ALEVEL2:
 		case WP_ALEVEL2_UPG:
 		case WP_ALEVEL3:
@@ -1251,7 +1241,6 @@ static void CG_RegisterSounds( void )
 	cgs.media.alienOvermindDying = trap_S_RegisterSound( "sound/announcements/overminddying.wav", qtrue );
 	cgs.media.alienOvermindSpawns = trap_S_RegisterSound( "sound/announcements/overmindspawns.wav", qtrue );
 
-	cgs.media.alienL1Grab = trap_S_RegisterSound( "sound/player/level1/grab.wav", qtrue );
 	cgs.media.alienL4ChargePrepare = trap_S_RegisterSound( "sound/player/level4/charge_prepare.wav", qtrue );
 	cgs.media.alienL4ChargeStart = trap_S_RegisterSound( "sound/player/level4/charge_start.wav", qtrue );
 
@@ -1487,9 +1476,6 @@ static void CG_RegisterGraphics( void )
 	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison",
 							      (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.upgradeClassIconShader = trap_R_RegisterShader("icons/icona_upgrade",
-								 (RegisterShaderFlags_t) RSF_DEFAULT);
-
 	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated",
 								 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
@@ -1519,10 +1505,9 @@ static void CG_RegisterGraphics( void )
 	cgs.media.wakeMarkShader = trap_R_RegisterShader("gfx/marks/wake",
 							 (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.poisonCloudPS = CG_RegisterParticleSystem( "firstPersonPoisonCloudPS" );
-	cgs.media.poisonCloudedPS = CG_RegisterParticleSystem( "poisonCloudedPS" );
 	cgs.media.alienEvolvePS = CG_RegisterParticleSystem( "alienEvolvePS" );
 	cgs.media.alienAcidTubePS = CG_RegisterParticleSystem( "alienAcidTubePS" );
+	cgs.media.alienBoosterPS = CG_RegisterParticleSystem( "alienBoosterPS" );
 
 	cgs.media.jetPackThrustPS = CG_RegisterParticleSystem( "jetPackAscendPS" );
 
@@ -1721,7 +1706,7 @@ static void CG_RegisterClients( void )
 
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.md3" );
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
-	cgs.media.battpackModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" );
+	cgs.media.radarModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" ); // HACK: Use old battpack
 
 	cg.charModelFraction = 1.0f;
 	trap_UpdateScreen();
@@ -2367,21 +2352,6 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 					if ( sp->team == TEAM_HUMANS && sp->upgrade != UP_NONE )
 					{
 						*handle = cg_upgrades[ sp->upgrade ].upgradeIcon;
-					}
-					else if ( sp->team == TEAM_ALIENS )
-					{
-						switch ( sp->weapon )
-						{
-							case WP_ABUILD2:
-							case WP_ALEVEL1_UPG:
-							case WP_ALEVEL2_UPG:
-							case WP_ALEVEL3_UPG:
-								*handle = cgs.media.upgradeClassIconShader;
-								break;
-
-							default:
-								break;
-						}
 					}
 				}
 

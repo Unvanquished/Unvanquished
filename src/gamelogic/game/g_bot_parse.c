@@ -1247,7 +1247,6 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( UP_MEDIUMARMOUR );
 	D( UP_BATTLESUIT );
 	D( UP_RADAR );
-	D( UP_BATTPACK );
 	D( UP_JETPACK );
 	D( UP_GRENADE );
 	D( UP_MEDKIT );
@@ -1297,9 +1296,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( PCL_ALIEN_BUILDER0 );
 	D( PCL_ALIEN_BUILDER0_UPG );
 	D( PCL_ALIEN_LEVEL0 );
-	D( PCL_ALIEN_LEVEL0_UPG );
 	D( PCL_ALIEN_LEVEL1 );
-	D( PCL_ALIEN_LEVEL1_UPG );
 	D( PCL_ALIEN_LEVEL2 );
 	D( PCL_ALIEN_LEVEL2_UPG );
 	D( PCL_ALIEN_LEVEL3 );

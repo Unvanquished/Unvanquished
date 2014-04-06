@@ -212,18 +212,20 @@ namespace Cvar {
         } else {
             cvarRecord_t* cvar = it->second;
 
-            if (cvar->flags & (CVAR_ROM | CVAR_INIT) and not rom) {
-                Com_Printf(_("%s is read only.\n"), cvarName.c_str());
-                return;
-            }
+            if (not cvar->flags & CVAR_USER_CREATED) {
+                if (cvar->flags & (CVAR_ROM | CVAR_INIT) and not rom) {
+                    Com_Printf(_("%s is read only.\n"), cvarName.c_str());
+                    return;
+                }
 
-            if (rom and warnRom and not (cvar->flags & (CVAR_ROM | CVAR_INIT))) {
-                Com_Printf("SetValueROM called on non-ROM cvar '%s'\n", cvarName.c_str());
-            }
+                if (rom and warnRom and not (cvar->flags & (CVAR_ROM | CVAR_INIT))) {
+                    Com_Printf("SetValueROM called on non-ROM cvar '%s'\n", cvarName.c_str());
+                }
 
-            if (not *cvar_cheats && cvar->flags & CHEAT) {
-                Com_Printf(_("%s is cheat-protected.\n"), cvarName.c_str());
-                return;
+                if (not *cvar_cheats && cvar->flags & CHEAT) {
+                    Com_Printf(_("%s is cheat-protected.\n"), cvarName.c_str());
+                    return;
+                }
             }
 
             std::string oldValue = std::move(cvar->value);
@@ -507,7 +509,7 @@ namespace Cvar {
                 ::Cvar::AddFlags(name, flags);
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE {
                 if (argNum == 1) {
                     return ::Cvar::Complete(prefix);
                 }
@@ -556,7 +558,7 @@ namespace Cvar {
                 }
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE {
                 if (argNum) {
                     return ::Cvar::Complete(prefix);
                 }
@@ -609,7 +611,7 @@ namespace Cvar {
 
                 //Find all the matching cvars
                 for (auto& entry : cvars) {
-                    if (Q_stristr(entry.first.c_str(), match.c_str())) {
+			if (Com_Filter(match.c_str(), entry.first.c_str(), qfalse)) {
                         matchesNames.push_back(entry.first);
 
                         matches.push_back(entry.second);
@@ -676,7 +678,9 @@ namespace Cvar {
                 }
 
                 if (argNum == 1) {
-                    return Cmd::CompletionFilter(::Cvar::Complete(prefix), prefix, flags);
+                    auto completion = ::Cvar::Complete(prefix);
+                    Cmd::AddToCompletion(completion, prefix, flags);
+                    return completion;
                 }
 
                 if (argNum == nameIndex) {

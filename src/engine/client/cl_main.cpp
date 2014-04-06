@@ -45,16 +45,11 @@ Maryland 20850 USA.
 
 cvar_t *cl_wavefilerecord;
 
-#ifdef USE_MUMBLE
 #include "libmumblelink.h"
-#endif
-
 #include "../qcommon/crypto.h"
 
-#ifdef USE_MUMBLE
 cvar_t *cl_useMumble;
 cvar_t *cl_mumbleScale;
-#endif
 
 #ifdef USE_VOIP
 cvar_t *cl_voipUseVAD;
@@ -69,7 +64,6 @@ cvar_t *cl_voip;
 #endif
 
 cvar_t *cl_nodelta;
-cvar_t *cl_debugMove;
 
 cvar_t *cl_noprint;
 cvar_t *cl_motd;
@@ -133,7 +127,6 @@ cvar_t *cl_serverStatusResendTime;
 
 cvar_t                 *cl_demorecording; // fretn
 cvar_t                 *cl_demofilename; // bani
-cvar_t                 *cl_demooffset; // bani
 
 cvar_t                 *cl_waverecording; //bani
 cvar_t                 *cl_wavefilename; //bani
@@ -233,7 +226,6 @@ void CL_DoPurgeCache( void )
 	re.purgeCache();
 }
 
-#ifdef USE_MUMBLE
 static void CL_UpdateMumble( void )
 {
 	vec3_t pos, forward, up;
@@ -270,8 +262,6 @@ static void CL_UpdateMumble( void )
 
 	mumble_update_coordinates( pos, forward, up );
 }
-
-#endif
 
 #ifdef USE_VOIP
 static
@@ -528,15 +518,11 @@ void CL_CaptureVoip( void )
 	qboolean       initialFrame = qfalse;
 	qboolean       finalFrame = qfalse;
 
-#if USE_MUMBLE
-
 	// if we're using Mumble, don't try to handle VoIP transmission ourselves.
 	if ( cl_useMumble->integer )
 	{
 		return;
 	}
-
-#endif
 
 	// If your data rate is too low, you'll get Connection Interrupted warnings
 	//  when VoIP packets arrive, even if you have a broadband connection.
@@ -866,7 +852,6 @@ void CL_StopRecord_f( void )
 	clc.demorecording = qfalse;
 	Cvar_Set( "cl_demorecording", "0" );  // fretn
 	Cvar_Set( "cl_demofilename", "" );  // bani
-	Cvar_Set( "cl_demooffset", "0" );  // bani
 	Com_Printf("%s", _( "Stopped demo.\n" ));
 }
 
@@ -936,7 +921,6 @@ void CL_Record_f( void )
 
 	else
 	{
-		char    name[ 256 ];
 		char    mapname[ MAX_QPATH ];
 		char    *period;
 		qtime_t time;
@@ -1001,7 +985,6 @@ void CL_Record( const char *name )
 	Cvar_Set( "cl_demorecording", "1" );  // fretn
 	Q_strncpyz( clc.demoName, demoName, sizeof( clc.demoName ) );
 	Cvar_Set( "cl_demofilename", clc.demoName );  // bani
-	Cvar_Set( "cl_demooffset", "0" );  // bani
 
 	// don't start saving messages until a non-delta compressed message is received
 	clc.demowaiting = qtrue;
@@ -1542,6 +1525,13 @@ void CL_ShutdownAll( void )
 	// shutdown UI
 	CL_ShutdownUI();
 
+	// Clear Faces
+	if ( re.UnregisterFont && cls.consoleFont )
+	{
+		re.UnregisterFont( cls.consoleFont );
+		cls.consoleFont = nullptr;
+	}
+
 	// shutdown the renderer
 	if ( re.Shutdown )
 	{
@@ -1568,12 +1558,6 @@ void CL_ShutdownAll( void )
 	if ( clc.waverecording )
 	{
 		CL_WavStopRecord_f();
-	}
-
-	// Clear Faces
-	if ( re.UnregisterFont )
-	{
-		re.UnregisterFont( &cls.consoleFont );
 	}
 }
 
@@ -1625,6 +1609,7 @@ void CL_MapLoading( void )
 	}
 
 	Con_Close();
+	CL_FlushMemory();
 	cls.keyCatchers = 0;
 
 	// if we are already connected to the local host, stay connected
@@ -1692,6 +1677,19 @@ Sends a disconnect message to the server
 This is also called on Com_Error and Com_Quit, so it shouldn't cause any errors
 =====================
 */
+void CL_SendDisconnect( void )
+{
+	// send a disconnect message to the server
+	// send it a few times in case one is dropped
+	if ( com_cl_running && com_cl_running->integer && cls.state >= CA_CONNECTED )
+	{
+		CL_AddReliableCommand( "disconnect" );
+		CL_WritePacket();
+		CL_WritePacket();
+		CL_WritePacket();
+	}
+}
+
 void CL_Disconnect( qboolean showMainMenu )
 {
 	if ( !com_cl_running || !com_cl_running->integer )
@@ -1716,15 +1714,11 @@ void CL_Disconnect( qboolean showMainMenu )
 		Cvar_Set( "cl_downloadName", "" );
 	}
 
-#ifdef USE_MUMBLE
-
 	if ( cl_useMumble->integer && mumble_islinked() )
 	{
 		Com_Printf("%s", _( "Mumble: Unlinking from Mumble application\n" ));
 		mumble_unlink();
 	}
-
-#endif
 
 #ifdef USE_VOIP
 
@@ -1767,19 +1761,9 @@ void CL_Disconnect( qboolean showMainMenu )
 	}
 
 	SCR_StopCinematic();
-#if 1
 
-	// send a disconnect message to the server
-	// send it a few times in case one is dropped
-	if ( cls.state >= CA_CONNECTED )
-	{
-		CL_AddReliableCommand( "disconnect" );
-		CL_WritePacket();
-		CL_WritePacket();
-		CL_WritePacket();
-	}
+	CL_SendDisconnect();
 
-#endif
 	CL_ClearState();
 
 	// wipe the client connection
@@ -1792,6 +1776,11 @@ void CL_Disconnect( qboolean showMainMenu )
 
 	// allow cheats locally
 	Cvar_Set( "sv_cheats", "1" );
+
+	// Load map pk3s to allow menus to load levelshots
+	FS::PakPath::ClearPaks();
+	FS_LoadBasePak();
+	FS_LoadAllMaps();
 
 #ifdef USE_VOIP
 	// not connected to voip server anymore.
@@ -2303,6 +2292,7 @@ void CL_Vid_Restart_f( void )
 	CL_ShutdownCGame();
 	// clear the font cache
 	re.UnregisterFont( NULL );
+	cls.consoleFont = nullptr;
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
 
@@ -3825,11 +3815,6 @@ void CL_Frame( int msec )
 
 	cls.realtime += cls.frametime;
 
-	if ( cl_timegraph->integer )
-	{
-		SCR_DebugGraph( cls.realFrametime * 0.25, 0 );
-	}
-
 	// see if we need to update any userinfo
 	CL_CheckUserinfo();
 
@@ -3862,9 +3847,7 @@ void CL_Frame( int msec )
 	CL_CaptureVoip();
 #endif
 
-#ifdef USE_MUMBLE
 	CL_UpdateMumble();
-#endif
 
 	// advance local effects for next frame
 	SCR_RunCinematic();
@@ -4432,7 +4415,6 @@ void CL_Init( void )
 	//bani - make these cvars visible to cgame
 	cl_demorecording = Cvar_Get( "cl_demorecording", "0", CVAR_ROM );
 	cl_demofilename = Cvar_Get( "cl_demofilename", "", CVAR_ROM );
-	cl_demooffset = Cvar_Get( "cl_demooffset", "0", CVAR_ROM );
 	cl_waverecording = Cvar_Get( "cl_waverecording", "0", CVAR_ROM );
 	cl_wavefilename = Cvar_Get( "cl_wavefilename", "", CVAR_ROM );
 	cl_waveoffset = Cvar_Get( "cl_waveoffset", "0", CVAR_ROM );
@@ -4450,10 +4432,8 @@ void CL_Init( void )
 
 	Cvar_Get( "password", "", CVAR_USERINFO );
 
-#ifdef USE_MUMBLE
 	cl_useMumble = Cvar_Get( "cl_useMumble", "0",  CVAR_LATCH );
 	cl_mumbleScale = Cvar_Get( "cl_mumbleScale", "0.0254", 0 );
-#endif
 
 #ifdef USE_VOIP
 	cl_voipSend = Cvar_Get( "cl_voipSend", "0", 0 );
@@ -4533,9 +4513,6 @@ void CL_Init( void )
 
 	Cvar_Set( "cl_running", "1" );
 
-	CL_OpenClientLog();
-	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
-
 	PrintBanner(_( "Client Initialization Complete" ))
 }
 
@@ -4581,6 +4558,7 @@ void CL_Shutdown( void )
 	if ( re.UnregisterFont )
 	{
 		re.UnregisterFont( NULL );
+		cls.consoleFont = nullptr;
 	}
 
 	CL_ShutdownRef();
@@ -4619,9 +4597,6 @@ void CL_Shutdown( void )
 	// done.
 
 	CL_IRCWaitShutdown();
-
-	CL_WriteClientLog( "`~-     Client Closed     -~`\n" );
-	CL_CloseClientLog();
 
 	Cvar_Set( "cl_running", "0" );
 

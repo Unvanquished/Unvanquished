@@ -86,12 +86,6 @@ static void GiveFullClip( gentity_t *self )
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
 	ps->ammo = wa->maxAmmo;
-
-	// apply battery pack modifier
-	if ( wa->usesEnergy && BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
-	{
-		ps->ammo *= BATTPACK_MODIFIER;
-	}
 }
 
 /**
@@ -110,7 +104,6 @@ static qboolean CanUseAmmoRefill( gentity_t *self )
 {
 	const weaponAttributes_t *wa;
 	playerState_t *ps;
-	int           maxAmmo;
 
 	if ( !self || !self->client )
 	{
@@ -127,16 +120,8 @@ static qboolean CanUseAmmoRefill( gentity_t *self )
 
 	if ( wa->maxClips == 0 )
 	{
-		maxAmmo = wa->maxAmmo;
-
-		// apply battery pack modifier
-		if ( wa->usesEnergy && BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
-		{
-			maxAmmo *= BATTPACK_MODIFIER;
-		}
-
 		// clipless weapons can be refilled whenever they lack ammo
-		return ( ps->ammo != maxAmmo );
+		return ( ps->ammo != wa->maxAmmo );
 	}
 	else if ( ps->clips != wa->maxClips )
 	{
@@ -522,22 +507,36 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 	event->s.generic1 = attacker->s.generic1;
 }
 
-static void FireMelee( gentity_t *self, float range, float width, float height,
-                       int damage, meansOfDeath_t mod )
+static gentity_t *FireMelee( gentity_t *self, float range, float width, float height,
+                             int damage, meansOfDeath_t mod )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
 
 	G_WideTrace( &tr, self, range, width, height, &traceEnt );
 
-	if ( traceEnt == NULL || !traceEnt->takedamage )
+	if ( traceEnt != NULL && traceEnt->takedamage )
 	{
-		return;
+		SendMeleeHitEvent( self, traceEnt, &tr );
+
+		G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, mod );
 	}
 
-	SendMeleeHitEvent( self, traceEnt, &tr );
+	return traceEnt;
+}
 
-	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, mod );
+static void FireLevel1Melee( gentity_t *self )
+{
+	gentity_t *target;
+
+	target = FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
+	                    LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
+
+	if ( target && target->client && target->takedamage )
+	{
+		target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
+		target->client->lastLevel1SlowTime = level.time;
+	}
 }
 
 /*
@@ -1175,31 +1174,55 @@ static void CancelBuild( gentity_t *self )
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
-	buildable_t buildable = (buildable_t) ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+	buildable_t buildable;
 
-	if ( buildable > BA_NONE )
+	if ( !self->client )
 	{
-		if ( self->client->ps.stats[ STAT_MISC ] > 0 )
-		{
-			G_AddEvent( self, EV_BUILD_DELAY, self->client->ps.clientNum );
-			return;
-		}
-
-		if ( G_BuildIfValid( self, buildable ) )
-		{
-			if ( !g_cheats.integer )
-			{
-				self->client->ps.stats[ STAT_MISC ] +=
-				  BG_Buildable( buildable )->buildTime;
-			}
-
-			self->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-		}
-
 		return;
 	}
 
-	G_TriggerMenu( self->client->ps.clientNum, menu );
+	buildable = (buildable_t) ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+
+	// open build menu
+	if ( buildable <= BA_NONE )
+	{
+		G_TriggerMenu( self->client->ps.clientNum, menu );
+		return;
+	}
+
+	// can't build just yet
+	if ( self->client->ps.stats[ STAT_MISC ] > 0 )
+	{
+		G_AddEvent( self, EV_BUILD_DELAY, self->client->ps.clientNum );
+		return;
+	}
+
+	// build
+	if ( G_BuildIfValid( self, buildable ) )
+	{
+		if ( !g_cheats.integer )
+		{
+			int buildTime = BG_Buildable( buildable )->buildTime;
+
+			switch ( self->client->ps.persistant[ PERS_TEAM ] )
+			{
+				case TEAM_ALIENS:
+					buildTime *= ALIEN_BUILDDELAY_MOD;
+					break;
+
+				case TEAM_HUMANS:
+					buildTime *= HUMAN_BUILDDELAY_MOD;
+					break;
+
+				default:
+					break;
+			}
+
+			self->client->ps.stats[ STAT_MISC ] += buildTime;
+		}
+
+		self->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+	}
 }
 
 static void FireSlowblob( gentity_t *self )
@@ -1281,121 +1304,6 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_LEVEL0_BITE );
 	self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
 	return qtrue;
-}
-
-/*
-======================================================================
-
-LEVEL1
-
-======================================================================
-*/
-
-void G_CheckGrabAttack( gentity_t *self )
-{
-	trace_t   tr;
-	vec3_t    end, dir;
-	gentity_t *traceEnt;
-
-	// set aiming directions
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
-
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
-
-	if ( self->client->ps.weapon == WP_ALEVEL1 )
-	{
-		VectorMA( muzzle, LEVEL1_GRAB_RANGE, forward, end );
-	}
-	else if ( self->client->ps.weapon == WP_ALEVEL1_UPG )
-	{
-		VectorMA( muzzle, LEVEL1_GRAB_U_RANGE, forward, end );
-	}
-
-	trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
-
-	if ( tr.surfaceFlags & SURF_NOIMPACT )
-	{
-		return;
-	}
-
-	traceEnt = &g_entities[ tr.entityNum ];
-
-	if ( !traceEnt->takedamage )
-	{
-		return;
-	}
-
-	if ( traceEnt->client )
-	{
-		if ( traceEnt->client->pers.team == TEAM_ALIENS )
-		{
-			return;
-		}
-
-		if ( traceEnt->client->ps.stats[ STAT_HEALTH ] <= 0 )
-		{
-			return;
-		}
-
-		if ( !( traceEnt->client->ps.stats[ STAT_STATE ] & SS_GRABBED ) )
-		{
-			AngleVectors( traceEnt->client->ps.viewangles, dir, NULL, NULL );
-			traceEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
-
-			//event for client side grab effect
-			G_AddPredictableEvent( self, EV_LEV1_GRAB, 0 );
-		}
-
-		traceEnt->client->ps.stats[ STAT_STATE ] |= SS_GRABBED;
-
-		if ( self->client->ps.weapon == WP_ALEVEL1 )
-		{
-			traceEnt->client->grabExpiryTime = level.time + LEVEL1_GRAB_TIME;
-
-			// Update the last combat time.
-			self->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
-			traceEnt->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
-		}
-		else if ( self->client->ps.weapon == WP_ALEVEL1_UPG )
-		{
-			traceEnt->client->grabExpiryTime = level.time + LEVEL1_GRAB_U_TIME;
-
-			// Update the last combat time.
-			self->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
-			traceEnt->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
-		}
-	}
-}
-
-static void FirePoisonCloud( gentity_t *self )
-{
-	gentity_t *other;
-	trace_t   tr;
-
-	G_UnlaggedOn( self, self->s.origin, LEVEL1_PCLOUD_RANGE );
-
-	for ( other = NULL; ( other = G_IterateEntitiesWithinRadius( other, self->s.origin, LEVEL1_PCLOUD_RANGE ) ); )
-	{
-		if ( !other->client || other->client->pers.team != TEAM_HUMANS )
-		{
-			continue;
-		}
-
-		// check for line of sight
-		trap_Trace( &tr, muzzle, NULL, NULL, other->s.origin, other->s.number, CONTENTS_SOLID );
-
-		if ( tr.entityNum == ENTITYNUM_WORLD )
-		{
-			continue;
-		}
-
-		other->client->ps.eFlags |= EF_POISONCLOUDED;
-		other->client->lastPoisonCloudedTime = level.time;
-
-		trap_SendServerCommand( other->client->ps.clientNum, "poisoncloud" );
-	}
-
-	G_UnlaggedOff();
 }
 
 /*
@@ -1716,7 +1624,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 	int    i;
 	vec3_t forward;
 
-	if ( self->client->ps.stats[ STAT_MISC ] <= 0 ||
+	if ( !self->client || self->client->ps.stats[ STAT_MISC ] <= 0 ||
 	     !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) ||
 	     self->client->ps.weaponTime )
 	{
@@ -1930,13 +1838,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			switch ( weapon )
 			{
 				case WP_ALEVEL1:
-					FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
-					           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
-					break;
-
-				case WP_ALEVEL1_UPG:
-					FireMelee( self, LEVEL1_CLAW_U_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
-					           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
+					FireLevel1Melee( self );
 					break;
 
 				case WP_ALEVEL3:
@@ -2038,10 +1940,6 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 		{
 			switch ( weapon )
 			{
-				case WP_ALEVEL1_UPG:
-					FirePoisonCloud( self );
-					break;
-
 				case WP_LUCIFER_CANNON:
 					FireLcannon( self, qtrue );
 					break;

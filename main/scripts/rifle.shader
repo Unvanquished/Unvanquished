@@ -22,9 +22,9 @@ models/weapons/rifle/flash
 
 models/weapons/rifle/zrifle
 {
-	diffuseMap models/weapons/rifle/zrifle_COLOR
-	normalMap models/weapons/rifle/zrifle_NRM
-	specularMap models/weapons/rifle/zrifle_SPEC
+	diffuseMap models/weapons/rifle/zrifle_d
+	normalMap models/weapons/rifle/zrifle_n
+	specularMap models/weapons/rifle/zrifle_s
 }
 
 models/weapons/rifle/zriflelens
@@ -38,9 +38,9 @@ models/weapons/rifle/zriflelens
 
 models/weapons/rifle/zsight
 {
-	diffuseMap models/weapons/rifle/zsight_COLOR
-	normalMap models/weapons/rifle/zsight_NRM
-	specularMap models/weapons/rifle/zsight_SPEC
+	diffuseMap models/weapons/rifle/zsight_d
+	normalMap models/weapons/rifle/zsight_n
+	specularMap models/weapons/rifle/zsight_s
 }
 
 

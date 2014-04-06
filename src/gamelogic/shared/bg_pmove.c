@@ -487,20 +487,10 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 			}
 		}
 
-		// Apply poisoncloud modifier
-		// TODO: Move modifer into upgrade/class config files of armour items/classes
-		if ( pm->ps->eFlags & EF_POISONCLOUDED )
+		// Apply level1 slow modifier
+		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_LEVEL1SLOW )
 		{
-			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
-			     BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, pm->ps->stats ) ||
-			     BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
-			{
-				modifier *= PCLOUD_ARMOUR_MODIFIER;
-			}
-			else
-			{
-				modifier *= PCLOUD_MODIFIER;
-			}
+			modifier *= LEVEL1_SLOW_MOD;
 		}
 	}
 
@@ -661,7 +651,7 @@ static void PM_CheckWaterPounce( void )
 	// Check for valid class
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0_UPG:
+		case WP_ALEVEL1:
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
 			break;
@@ -727,14 +717,16 @@ PM_CheckPounce
 */
 static qboolean PM_CheckPounce( void )
 {
+	const static vec3_t up = { 0.0f, 0.0f, 1.0f };
+
 	int      jumpMagnitude;
-	vec3_t   jumpDirection, groundDirection;
-	float    pitch;
+	vec3_t   jumpDirection;
+	float    pitch, pitchToGround, pitchToRef;
 
 	// Check for valid class
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0_UPG:
+		case WP_ALEVEL1:
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
 			break;
@@ -764,7 +756,7 @@ static qboolean PM_CheckPounce( void )
 	// Check class-specific conditions for starting a pounce
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0_UPG:
+		case WP_ALEVEL1:
 			// Check if player wants to pounce
 			if ( !usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
 			{
@@ -811,12 +803,12 @@ static qboolean PM_CheckPounce( void )
 	// Calculate jump parameters
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0_UPG:
-			// wallwalking
-			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
+		case WP_ALEVEL1:
+			// wallwalking (ground surface normal is off more than 45° from Z direction)
+			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acos( pml.groundTrace.plane.normal[ 2 ] ) > M_PI / 4.0f )
 			{
 				// get jump magnitude
-				jumpMagnitude = LEVEL0_WALLPOUNCE_MAGNITUDE;
+				jumpMagnitude = LEVEL1_WALLPOUNCE_MAGNITUDE;
 
 				// if looking in the direction of the surface, jump in opposite normal direction
 				if ( DotProduct( pml.groundTrace.plane.normal, pml.forward ) < 0.0f )
@@ -870,6 +862,8 @@ static qboolean PM_CheckPounce( void )
 					     BG_GetTrajectoryPitch( pm->ps->origin, endpos, jumpMagnitude, pm->ps->gravity,
 					                            trajAngles, trajDir1, trajDir2 ) )
 					{
+						int iter;
+
 						if ( pm->debugLevel > 0 )
 						{
 							Com_Printf( "[PM_CheckPounce] Found trajectory angles: "
@@ -901,9 +895,19 @@ static qboolean PM_CheckPounce( void )
 
 						// HACK: make sure we get off the ceiling if jumping to an adjacent wall
 						//       this is done by subsequently rotating the jump direction in surface
-						//       normal direction until their angle is below a threshold
-						while ( DotProduct( jumpDirection, pml.groundTrace.plane.normal ) <= 0.1f ) // acos(0.1) ~= 85°
+						//       normal direction until its angle is below a threshold (acos(0.1) ~= 85°)
+						for ( iter = 0; DotProduct( jumpDirection, pml.groundTrace.plane.normal ) <= 0.1f; iter++ )
 						{
+							if ( iter > 10 )
+							{
+								if ( pm->debugLevel > 0 )
+								{
+									Com_Printf("[PM_CheckPounce] Giving up adjusting jump direction.\n");
+								}
+
+								break;
+							}
+
 							VectorMA( jumpDirection, 0.1f, pml.groundTrace.plane.normal, jumpDirection );
 							VectorNormalize( jumpDirection );
 
@@ -913,7 +917,6 @@ static qboolean PM_CheckPounce( void )
 								           "( %.2f, %.2f, %.2f )\n",
 								           jumpDirection[ 0 ], jumpDirection[ 1 ], jumpDirection[ 2 ] );
 							}
-
 						}
 					}
 					// resort to jumping in view direction
@@ -929,7 +932,7 @@ static qboolean PM_CheckPounce( void )
 				}
 
 				// add cooldown
-				pm->ps->stats[ STAT_MISC ] = LEVEL0_WALLPOUNCE_COOLDOWN;
+				pm->ps->stats[ STAT_MISC ] = LEVEL1_WALLPOUNCE_COOLDOWN;
 			}
 			// moving foward or standing still
 			else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0 ) )
@@ -938,29 +941,30 @@ static qboolean PM_CheckPounce( void )
 				VectorCopy( pml.forward, jumpDirection );
 				jumpDirection[ 2 ] = fabs( jumpDirection[ 2 ] );
 
-				// calculate jump magnitude so that jump length is fixed for pitch between
-				// LEVEL0_POUNCE_MINPITCH and pi/4 (45°)
-				groundDirection[ 0 ] = jumpDirection[ 0 ];
-				groundDirection[ 1 ] = jumpDirection[ 1 ];
-				groundDirection[ 2 ] = 0.0f;
-				VectorNormalize( groundDirection );
+				// get pitch towards ground surface
+				pitchToGround = ( M_PI / 2.0f ) - acos( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
 
-				pitch = acos( groundDirection[ 0 ] * jumpDirection[ 0 ] +
-							  groundDirection[ 1 ] * jumpDirection[ 1 ] );
+				// get pitch towards XY reference plane
+				pitchToRef = ( M_PI / 2.0f ) - acos( DotProduct( up, jumpDirection ) );
 
-				if ( pitch > M_PI / 4.0f ) // 45°
+				// use the advantageous pitch; allows using an upwards gradiant as a ramp
+				pitch = MIN( pitchToGround, pitchToRef );
+
+				// pitches above 45° or below LEVEL1_POUNCE_MINPITCH will result in less than the maximum jump length
+				if ( pitch > M_PI / 4.0f )
 				{
 					pitch = M_PI / 4.0f;
 				}
-				else if ( pitch < LEVEL0_POUNCE_MINPITCH )
+				else if ( pitch < LEVEL1_POUNCE_MINPITCH )
 				{
-					pitch = LEVEL0_POUNCE_MINPITCH;
+					pitch = LEVEL1_POUNCE_MINPITCH;
 				}
 
-				jumpMagnitude = ( int )sqrt( LEVEL0_POUNCE_DISTANCE * pm->ps->gravity / sin( 2.0f * pitch ) );
+				// calculate jump magnitude for given pitch so that jump length is fixed
+				jumpMagnitude = ( int )sqrt( LEVEL1_POUNCE_DISTANCE * pm->ps->gravity / sin( 2.0f * pitch ) );
 
 				// add cooldown
-				pm->ps->stats[ STAT_MISC ] = LEVEL0_POUNCE_COOLDOWN;
+				pm->ps->stats[ STAT_MISC ] = LEVEL1_POUNCE_COOLDOWN;
 			}
 			// going backwards or strafing
 			else if ( pm->cmd.forwardmove < 0 || pm->cmd.rightmove != 0 )
@@ -979,13 +983,13 @@ static qboolean PM_CheckPounce( void )
 					VectorCopy( pml.right, jumpDirection );
 				}
 
-				jumpDirection[ 2 ] = LEVEL0_SIDEPOUNCE_DIR_Z;
+				jumpDirection[ 2 ] = LEVEL1_SIDEPOUNCE_DIR_Z;
 
 				// get jump magnitude
-				jumpMagnitude = LEVEL0_SIDEPOUNCE_MAGNITUDE;
+				jumpMagnitude = LEVEL1_SIDEPOUNCE_MAGNITUDE;
 
 				// add cooldown
-				pm->ps->stats[ STAT_MISC ] = LEVEL0_SIDEPOUNCE_COOLDOWN;
+				pm->ps->stats[ STAT_MISC ] = LEVEL1_SIDEPOUNCE_COOLDOWN;
 			}
 			// compilers don't get my epic dijkstra-if
 			else
@@ -1172,6 +1176,7 @@ static qboolean PM_CheckWallJump( void )
 static qboolean PM_CheckJetpack( void )
 {
 	static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
+	int                 sideVelocity;
 
 	if ( pm->ps->pm_type != PM_NORMAL ||
 	     pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS ||
@@ -1194,7 +1199,6 @@ static qboolean PM_CheckJetpack( void )
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_ENABLED;
-
 		PM_AddEvent( EV_JETPACK_ENABLE );
 
 		return qfalse;
@@ -1207,33 +1211,38 @@ static qboolean PM_CheckJetpack( void )
 		{
 			if ( pm->debugLevel > 0 && pm->cmd.upmove < 10 )
 			{
-				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Key Released: Jetpack stopped\n" );
+				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Jetpack thrust stopped (jump key released)\n" );
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
-
 			PM_AddEvent( EV_JETPACK_STOP );
 		}
 
 		return qfalse;
 	}
 
-	// only thrust when jetpack enabled
+	// sanity check that jetpack is enabled at this point
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
 	{
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Can't start jetpack: Not enabled\n" );
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Can't start jetpack thrust (jetpack not enabled)\n" );
 		}
 
 		return qfalse;
 	}
 
-	// check thrust starting conditions
+	// check ignite conditions
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_WARM ) )
 	{
-		// we got off ground by jumping
-		if ( pm->ps->pm_flags & PMF_JUMPED )
+		sideVelocity = sqrt( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ] +
+		                     pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ] );
+
+		// we got off ground by jumping and are not yet in free fall, where free fall is defined as
+		// (1) fall speed bigger than sideways speed (not strafe jumping)
+		// (2) fall speed bigger than jump magnitude (not jumping up and down on solid ground)
+		if ( ( pm->ps->pm_flags & PMF_JUMPED ) && !( -pm->ps->velocity[ 2 ] > sideVelocity &&
+		     -pm->ps->velocity[ 2 ] > BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude ) )
 		{
 			// require the jump key to be held since the jump
 			if ( !( pm->ps->pm_flags & PMF_JUMP_HELD ) )
@@ -1254,44 +1263,47 @@ static qboolean PM_CheckJetpack( void )
 			}
 		}
 
-		// minimum fuel required
-		if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_STOP )
-		{
-			return qfalse;
-		}
+		// use some fuel for ignition
+		pm->ps->stats[ STAT_FUEL ] -= JETPACK_FUEL_IGNITE;
+		if ( pm->ps->stats[ STAT_FUEL ] < 0 ) pm->ps->stats[ STAT_FUEL ] = 0;
 
+		// ignite
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_WARM;
+		PM_AddEvent( EV_JETPACK_IGNITE );
 	}
 
-	// stop thrusting and cold restart engine if completely out of fuel
+	// stop thrusting if completely out of fuel
 	if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_USAGE )
 	{
 		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
 		{
 			if ( pm->debugLevel > 0 )
 			{
-				Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Out of fuel: Jetpack stopped\n" );
+				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Jetpack thrust stopped (out of fuel)\n" );
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
-			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_WARM;
-
 			PM_AddEvent( EV_JETPACK_STOP );
 		}
 
 		return qfalse;
 	}
 
-	// start thrust if not already thrusting
+	// start thrusting if possible
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE ) )
 	{
+		// minimum fuel required
+		if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_STOP )
+		{
+			return qfalse;
+		}
+
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_CheckJetpack] " S_COLOR_GREEN "Jetpack started\n" );
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_GREEN "Jetpack thrust started\n" );
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_ACTIVE;
-
 		PM_AddEvent( EV_JETPACK_START );
 	}
 
@@ -1303,11 +1315,7 @@ static qboolean PM_CheckJetpack( void )
 
 	// remove fuel
 	pm->ps->stats[ STAT_FUEL ] -= pml.msec * JETPACK_FUEL_USAGE;
-
-	if ( pm->ps->stats[ STAT_FUEL ] < 0 )
-	{
-		pm->ps->stats[ STAT_FUEL ] = 0;
-	}
+	if ( pm->ps->stats[ STAT_FUEL ] < 0 ) pm->ps->stats[ STAT_FUEL ] = 0;
 
 	return qtrue;
 }
@@ -1360,7 +1368,7 @@ static void PM_LandJetpack( qboolean force )
 		{
 			if ( pm->debugLevel > 0 )
 			{
-				Com_Printf( "[PM_LandJetpack] %.0f° Ignored landing\n", RAD2DEG( angle ) );
+				Com_Printf( "[PM_LandJetpack] Landing ignored (hit surface at %.0f°)\n", RAD2DEG( angle ) );
 			}
 
 			return;
@@ -1371,8 +1379,8 @@ static void PM_LandJetpack( qboolean force )
 	{
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_LandJetpack] %.0f° %s" S_COLOR_LTORANGE "Landed: Jetpack stopped\n", RAD2DEG( angle ),
-			            force ? S_COLOR_RED "(FORCED) " : "" );
+			Com_Printf( "[PM_LandJetpack] " S_COLOR_LTORANGE "Jetpack thrust stopped (hit surface at %.0f°)%s\n", RAD2DEG( angle ),
+			            force ? S_COLOR_RED " (FORCED)" : "" );
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1387,8 +1395,8 @@ static void PM_LandJetpack( qboolean force )
 	{
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_LandJetpack] %.0f° %s" S_COLOR_YELLOW "Landed: Jetpack disabled\n", RAD2DEG( angle ),
-			            force ? S_COLOR_RED "(FORCED) " : "" );
+			Com_Printf( "[PM_LandJetpack] " S_COLOR_YELLOW "Jetpack disabled (hit surface at %.0f°)%s\n", RAD2DEG( angle ),
+			            force ? S_COLOR_RED " (FORCED)" : "" );
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_WARM;
@@ -1400,55 +1408,52 @@ static void PM_LandJetpack( qboolean force )
 
 static qboolean PM_CheckJump( void )
 {
-	vec3_t normal;
-	int    staminaJumpCost;
-	float  magnitude;
+	vec3_t   normal;
+	int      staminaJumpCost;
+	float    magnitude;
+	qboolean jetpackJump;
 
+	// can't jump while in air
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
 		return qfalse;
 	}
 
-	if ( BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude == 0.0f )
-	{
-		return qfalse;
-	}
-
-	//can't jump and pounce at the same time
-	if ( ( pm->ps->weapon == WP_ALEVEL3 ||
-	       pm->ps->weapon == WP_ALEVEL3_UPG ) &&
-	     pm->ps->stats[ STAT_MISC ] > 0 )
-	{
-		return qfalse;
-	}
-
-	//can't jump and charge at the same time
-	if ( ( pm->ps->weapon == WP_ALEVEL4 ) &&
-	     pm->ps->stats[ STAT_MISC ] > 0 )
-	{
-		return qfalse;
-	}
-
-	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
-
-	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
-	     ( pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost ) )
-	{
-		return qfalse;
-	}
-
-	if ( pm->ps->pm_flags & PMF_RESPAWNED )
-	{
-		return qfalse; // don't allow jump until all buttons are up
-	}
-
+	// check if holding jump key
 	if ( pm->cmd.upmove < 10 )
 	{
-		// not holding jump
 		return qfalse;
 	}
 
-	//can't jump whilst grabbed
+	// needs jump ability
+	if ( BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude <= 0.0f )
+	{
+		return qfalse;
+	}
+
+	// can't jump and pounce at the same time
+	// TODO: This prevents jumps in an unintuitive manner, since the charge
+	//       meter has nothing to do with the land time.
+	if ( ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3 ||
+	       pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG ) &&
+	     pm->ps->stats[ STAT_MISC ] > 0 )
+	{
+		return qfalse;
+	}
+
+	// can't jump and charge at the same time
+	if ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 && pm->ps->stats[ STAT_MISC ] > 0 )
+	{
+		return qfalse;
+	}
+
+	// don't allow jump until all buttons are up (?)
+	if ( pm->ps->pm_flags & PMF_RESPAWNED )
+	{
+		return qfalse;
+	}
+
+	// can't jump whilst grabbed
 	if ( pm->ps->pm_type == PM_GRABBED )
 	{
 		return qfalse;
@@ -1460,23 +1465,44 @@ static qboolean PM_CheckJump( void )
 		return qfalse;
 	}
 
-	//don't allow walljump for a short while after jumping from the ground
+	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+	jetpackJump     = qfalse;
+
+	// humans need stamina or jetpack to jump
+	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
+	     ( pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost ) )
+	{
+		// use jetpack instead of stamina to take off
+		if ( BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) &&
+		     pm->ps->stats[ STAT_FUEL ] > JETPACK_FUEL_LOW )
+		{
+			jetpackJump = qtrue;
+		}
+		else
+		{
+			return qfalse;
+		}
+	}
+
+	// take some stamina off
+	if ( !jetpackJump && pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	{
+		pm->ps->stats[ STAT_STAMINA ] -= staminaJumpCost;
+	}
+
+	// go into jump mode
+	pml.groundPlane = qfalse;
+	pml.walking     = qfalse;
+	pm->ps->pm_flags |= PMF_JUMP_HELD;
+	pm->ps->pm_flags |= PMF_JUMPED;
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+
+	// don't allow walljump for a short while after jumping from the ground
+	// TODO: There was an issue about this potentially having side effects.
 	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
 	{
 		pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
 		pm->ps->pm_time = 200;
-	}
-
-	pml.groundPlane = qfalse; // jumping away
-	pml.walking = qfalse;
-	pm->ps->pm_flags |= PMF_JUMPED;
-	pm->ps->pm_flags |= PMF_JUMP_HELD;
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-
-	// take some stamina off
-	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
-	{
-		pm->ps->stats[ STAT_STAMINA ] -= staminaJumpCost;
 	}
 
 	// jump in surface normal direction
@@ -1485,8 +1511,8 @@ static qboolean PM_CheckJump( void )
 	// retrieve jump magnitude
 	magnitude = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
 
-	// if jetpack is active, scale down jump magnitude
-	if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+	// if jetpack is active or being used for the jump, scale down jump magnitude
+	if ( jetpackJump || pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
 	{
 		if ( pm->debugLevel > 0 )
 		{
@@ -1939,7 +1965,7 @@ static void PM_WalkMove( void )
 		return;
 	}
 
-	// if PM_Land didn't stop the jectpack (e.g. to allow for a jump) but we didn't get away
+	// if PM_Land didn't stop the jetpack (e.g. to allow for a jump) but we didn't get away
 	// from the ground, stop it now
 	PM_LandJetpack( qtrue );
 
@@ -2300,6 +2326,7 @@ static void PM_Land( void )
 		pm->ps->torsoTimer = TIMER_LAND;
 	}
 
+	// potential jump ended
 	pm->ps->pm_flags &= ~PMF_JUMPED;
 }
 
@@ -3051,7 +3078,7 @@ static void PM_GroundTrace( void )
 		qboolean steppedDown = qfalse;
 
 		// try to step down
-		if ( pml.groundPlane != qfalse && PM_PredictStepMove() )
+		if ( pml.groundPlane && PM_PredictStepMove() )
 		{
 			//step down
 			point[ 0 ] = pm->ps->origin[ 0 ];
@@ -3759,8 +3786,8 @@ static void PM_Weapon( void )
 		return;
 	}
 
-	// Pounce cooldown (advanced dretch)
-	if ( pm->ps->weapon == WP_ALEVEL0_UPG )
+	// Pounce cooldown (Mantis)
+	if ( pm->ps->weapon == WP_ALEVEL1 )
 	{
 		pm->ps->stats[ STAT_MISC ] -= pml.msec;
 
@@ -3770,7 +3797,7 @@ static void PM_Weapon( void )
 		}
 	}
 
-	// Charging for a pounce or canceling a pounce (dragoon)
+	// Charging for a pounce or canceling a pounce (Dragoon)
 	if ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
 	{
 		int max;
@@ -4061,12 +4088,6 @@ static void PM_Weapon( void )
 		pm->ps->clips--;
 		pm->ps->ammo = BG_Weapon( pm->ps->weapon )->maxAmmo;
 
-		if ( BG_Weapon( pm->ps->weapon )->usesEnergy &&
-		     BG_InventoryContainsUpgrade( UP_BATTPACK, pm->ps->stats ) )
-		{
-			pm->ps->ammo *= BATTPACK_MODIFIER;
-		}
-
 		//allow some time for the weapon to be raised
 		pm->ps->weaponstate = WEAPON_RAISING;
 		PM_StartTorsoAnim( TORSO_RAISE );
@@ -4095,7 +4116,6 @@ static void PM_Weapon( void )
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			//venom is only autohit
 			return;
 
@@ -4247,7 +4267,6 @@ static void PM_Weapon( void )
 		switch ( pm->ps->weapon )
 		{
 			case WP_ALEVEL0:
-			case WP_ALEVEL0_UPG:
 				pm->ps->generic1 = WPM_PRIMARY;
 				PM_AddEvent( EV_FIRE_WEAPON );
 				addTime = BG_Weapon( pm->ps->weapon )->repeatRate1;
@@ -4312,7 +4331,6 @@ static void PM_Weapon( void )
 		//       weapon.cfg
 		switch ( pm->ps->weapon )
 		{
-			case WP_ALEVEL1_UPG:
 			case WP_ALEVEL1:
 				if ( attack1 )
 				{
@@ -4672,6 +4690,62 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 }
 
+static void PM_HumanStaminaEffects( void )
+{
+	const classAttributes_t *ca;
+	int      *stats;
+	qboolean crouching, stopped, walking;
+
+	if ( pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	stats     = pm->ps->stats;
+	ca        = BG_Class( stats[ STAT_CLASS ] );
+	stopped   = ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0 );
+	crouching = ( pm->ps->pm_flags & PMF_DUCKED );
+	walking   = usercmdButtonPressed( pm->cmd.buttons, BUTTON_WALKING );
+
+	// Use/Restore stamina
+	if ( stats[ STAT_STATE2 ] & SS2_JETPACK_WARM )
+	{
+		stats[ STAT_STAMINA ] += ( int )( pml.msec * ca->staminaJogRestore * 0.001f );
+	}
+	else if ( stopped )
+	{
+		stats[ STAT_STAMINA ] += ( int )( pml.msec * ca->staminaStopRestore * 0.001f );
+	}
+	else if ( ( stats[ STAT_STATE ] & SS_SPEEDBOOST ) && !walking && !crouching ) // walk/crouch overrides sprint
+	{
+		stats[ STAT_STAMINA ] -= ( int )( pml.msec * ca->staminaSprintCost * 0.001f );
+	}
+	else if ( walking || crouching )
+	{
+		stats[ STAT_STAMINA ] += ( int )( pml.msec * ca->staminaWalkRestore * 0.001f );
+	}
+	else // assume jogging
+	{
+		stats[ STAT_STAMINA ] += ( int )( pml.msec * ca->staminaJogRestore * 0.001f );
+	}
+
+	// Remove stamina based on status effects
+	if ( stats[ STAT_STATE2 ] & SS2_LEVEL1SLOW )
+	{
+		stats[ STAT_STAMINA ] -= pml.msec * STAMINA_LEVEL1SLOW_TAKE;
+	}
+
+	// Check stamina limits
+	if ( stats[ STAT_STAMINA ] > STAMINA_MAX )
+	{
+		stats[ STAT_STAMINA ] = STAMINA_MAX;
+	}
+	else if ( stats[ STAT_STAMINA ] < 0 )
+	{
+		stats[ STAT_STAMINA ] = 0;
+	}
+}
+
 /*
 ================
 PmoveSingle
@@ -4895,6 +4969,9 @@ void PmoveSingle( pmove_t *pmove )
 
 	// restore jetpack fuel if possible
 	PM_CheckJetpackRestoreFuel();
+
+	// restore or remove stamina
+	PM_HumanStaminaEffects();
 
 	PM_Animate();
 

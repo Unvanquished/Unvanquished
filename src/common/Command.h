@@ -103,6 +103,9 @@ namespace Cmd {
     typedef std::pair<std::string, std::string> CompletionItem;
     typedef std::vector<CompletionItem> CompletionResult;
 
+    CompletionResult FilterCompletion(Str::StringRef prefix, std::initializer_list<CompletionItem> list);
+    void AddToCompletion(CompletionResult& res, Str::StringRef prefix, std::initializer_list<CompletionItem> list);
+
     class Environment;
 
     /**
@@ -154,8 +157,8 @@ namespace Cmd {
      */
     class StaticCmd : public CmdBase {
         protected:
+            StaticCmd(std::string name, std::string description);
             StaticCmd(std::string name, int flags, std::string description);
-            //TODO: sometimes (in the gamelogic) we already know what the flags is, provide another constructor for it.
     };
 
     /**
@@ -170,6 +173,12 @@ namespace Cmd {
             virtual void Print(Str::StringRef text) = 0;
             virtual void ExecuteAfter(Str::StringRef text, bool parseCvars = false) = 0;
     };
+
+    // Engine calls available everywhere
+
+    void AddCommand(std::string name, const CmdBase& cmd, std::string description);
+    void RemoveCommand(const std::string& name);
+    Environment* GetEnv();
 
     // Implementation of templates.
 

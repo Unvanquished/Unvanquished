@@ -82,7 +82,9 @@ void	main()
 	vec4 texCoord;
 #if defined(USE_TCGEN_ENVIRONMENT)
 	{
-		position = (mat3(u_ModelMatrix) * position.xyz).xyzx;
+		// TODO: Explain why only the rotational part of u_ModelMatrix is relevant
+		position.xyz = mat3(u_ModelMatrix) * position.xyz;
+
 		vec3 viewer = normalize(u_ViewOrigin - position.xyz);
 
 		float d = dot(normal, viewer);

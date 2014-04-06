@@ -135,7 +135,6 @@ void CG_ParseServerinfo( void )
 
 	cgs.timelimit          = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients         = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-	cgs.markDeconstruct    = atoi( Info_ValueForKey( info, "g_markDeconstruct" ) );
 	cgs.powerReactorRange  = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
 	cgs.powerRepeaterRange = atoi( Info_ValueForKey( info, "g_powerRepeaterRange" ) );
 	cgs.momentumHalfLife = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
@@ -577,7 +576,15 @@ void CG_Menu( int menu, int arg )
 			          "which often quickly results in a loss. Try building more "
 			          "spawns.");
 			shortMsg = _("You may not deconstruct the last spawn");
-			type = DT_MISC_CP;
+			type = DT_BUILD;
+			break;
+
+		case MN_B_MAINSTRUCTURE:
+			longMsg = _("The main structure is protected against instant removal. "
+			            "When it is marked, you can move it to another place by "
+			            "building it there.");
+			shortMsg = _("You may not deconstruct this structure");
+			type = DT_BUILD;
 			break;
 
 		case MN_B_DISABLED:
@@ -598,21 +605,12 @@ void CG_Menu( int menu, int arg )
 			longMsg = _("Your team has decided to admit defeat and concede the game: "
 			            "There's no point in building anything anymore.");
 			shortMsg = _("Cannot build after admitting defeat");
-			type = DT_MISC_CP;
+			type = DT_BUILD;
 			break;
 
 		case MN_H_NOBP:
-			if ( cgs.markDeconstruct )
-			{
-				longMsg = _("There are no resources remaining. Free up resources by "
-				            "marking existing buildables for deconstruction.");
-			}
-			else
-			{
-				longMsg = _("There are no resources remaining. Free up resources by "
-				            "deconstructing existing buildables.");
-			}
-
+			longMsg = _("There are no resources remaining. Free up resources by "
+			            "marking existing buildables for deconstruction.");
 			shortMsg = _("There are no resources remaining");
 			type = DT_BUILD;
 			break;
@@ -812,7 +810,6 @@ void CG_Menu( int menu, int arg )
 	{
 		case DT_BUILD:
 		case DT_ARMOURYEVOLVE:
-		case DT_MISC_CP:
 			// menu open? we need to use the modal dbox
 			// menu closed? we want to centre print
 			if ( !trap_Cvar_VariableIntegerValue( "ui_menuIsOpen" ) )
@@ -1371,23 +1368,6 @@ static void CG_ServerCloseMenus_f( void )
 
 /*
 =================
-CG_PoisonCloud_f
-=================
-*/
-static void CG_PoisonCloud_f( void )
-{
-	cg.poisonedTime = cg.time;
-
-	if ( CG_IsParticleSystemValid( &cg.poisonCloudPS ) )
-	{
-		cg.poisonCloudPS = CG_SpawnNewParticleSystem( cgs.media.poisonCloudPS );
-		CG_SetAttachmentCent( &cg.poisonCloudPS->attachment, &cg.predictedPlayerEntity );
-		CG_AttachToCent( &cg.poisonCloudPS->attachment );
-	}
-}
-
-/*
-=================
 CG_VCommand
 
 The server has asked us to execute a string from some variable
@@ -1447,7 +1427,6 @@ static const consoleCommand_t svcommands[] =
 	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cs",               CG_ConfigStringModified },
 	{ "map_restart",      CG_MapRestart           },
-	{ "poisoncloud",      CG_PoisonCloud_f        },
 	{ "print",            CG_Print_f              },
 	{ "print_tr",         CG_PrintTR_f            },
 	{ "print_tr_p",       CG_PrintTR_plural_f     },

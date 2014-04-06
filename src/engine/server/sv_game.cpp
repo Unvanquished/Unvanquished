@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include "server.h"
 #include "../qcommon/crypto.h"
+#include "../framework/CommonVMServices.h"
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
@@ -174,39 +175,6 @@ int SV_RSAGenMsg( const char *pubkey, char *cleartext, char *encrypted )
 
 /*
 =================
-SV_SetBrushModel
-
-sets mins and maxs for inline bmodels
-=================
-*/
-void SV_SetBrushModel( sharedEntity_t *ent, const char *name )
-{
-	clipHandle_t h;
-	vec3_t       mins, maxs;
-
-	if ( !name )
-	{
-		Com_Error( ERR_DROP, "SV_SetBrushModel: NULL for #%i", ent->s.number );
-	}
-
-	if ( name[ 0 ] != '*' )
-	{
-		Com_Error( ERR_DROP, "SV_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
-	}
-
-	ent->s.modelindex = atoi( name + 1 );
-
-	h = CM_InlineModel( ent->s.modelindex );
-	CM_ModelBounds( h, mins, maxs );
-	VectorCopy( mins, ent->r.mins );
-	VectorCopy( maxs, ent->r.maxs );
-	ent->r.bmodel = qtrue;
-
-	ent->r.contents = -1; // we don't know exactly what is in the brushes
-}
-
-/*
-=================
 SV_inPVS
 
 Also checks portalareas so that doors block sight
@@ -279,37 +247,12 @@ SV_AdjustAreaPortalState
 */
 void SV_AdjustAreaPortalState( sharedEntity_t *ent, qboolean open )
 {
-	svEntity_t *svEnt;
-
-	svEnt = SV_SvEntityForGentity( ent );
-
-	if ( svEnt->areanum2 == -1 )
+	if ( ent->r.areanum2 == -1 )
 	{
 		return;
 	}
 
-	CM_AdjustAreaPortalState( svEnt->areanum, svEnt->areanum2, open );
-}
-
-/*
-==================
-SV_EntityContact
-==================
-*/
-qboolean SV_EntityContact( vec3_t mins, vec3_t maxs, const sharedEntity_t *gEnt, traceType_t type )
-{
-	const float  *origin, *angles;
-	clipHandle_t ch;
-	trace_t      trace;
-
-	// check for exact collision
-	origin = gEnt->r.currentOrigin;
-	angles = gEnt->r.currentAngles;
-
-	ch = SV_ClipHandleForEntity( gEnt );
-	CM_TransformedBoxTrace( &trace, vec3_origin, vec3_origin, mins, maxs, ch, -1, origin, angles, type );
-
-	return trace.startsolid;
+	CM_AdjustAreaPortalState( ent->r.areanum, ent->r.areanum2, open );
 }
 
 /*
@@ -334,28 +277,16 @@ SV_LocateGameData
 
 ===============
 */
-void SV_LocateGameDataQVM( sharedEntity_t *gEnts, int numGEntities, int sizeofGEntity_t,
-                        playerState_t *clients, int sizeofGameClient )
-{
-	sv.gentities = gEnts;
-	sv.gentitySize = sizeofGEntity_t;
-	sv.num_entities = numGEntities;
 
-	sv.gameClients = clients;
-	sv.gameClientSize = sizeofGameClient;
-}
-
-void SV_LocateGameDataNaCl( const NaCl::SharedMemoryPtr& shmRegion, int numGEntities, int sizeofGEntity_t,
+void SV_LocateGameData( const IPC::SharedMemory& shmRegion, int numGEntities, int sizeofGEntity_t,
                         int sizeofGameClient )
 {
-	if ( !shmRegion )
-		Com_Error( ERR_DROP, "SV_LocateGameDataNaCl: Failed to map shared memory region" );
 	if ( numGEntities < 0 || sizeofGEntity_t < 0 || sizeofGameClient < 0 )
-		Com_Error( ERR_DROP, "SV_LocateGameDataNaCl: Invalid game data parameters" );
+		Com_Error( ERR_DROP, "SV_LocateGameData: Invalid game data parameters" );
 	if ( shmRegion.GetSize() < numGEntities * sizeofGEntity_t + sv_maxclients->integer * sizeofGameClient )
-		Com_Error( ERR_DROP, "SV_LocateGameDataNaCl: Shared memory region too small" );
+		Com_Error( ERR_DROP, "SV_LocateGameData: Shared memory region too small" );
 
-	char* base = static_cast<char*>(shmRegion.Get());
+	char* base = static_cast<char*>(shmRegion.GetBase());
 	sv.gentities = reinterpret_cast<sharedEntity_t*>(base);
 	sv.gentitySize = sizeofGEntity_t;
 	sv.num_entities = numGEntities;
@@ -385,7 +316,7 @@ void SV_GetUsercmd( int clientNum, usercmd_t *cmd )
 SV_SendBinaryMessage
 ====================
 */
-static void SV_SendBinaryMessage( int cno, char *buf, int buflen )
+static void SV_SendBinaryMessage( int cno, const char *buf, int buflen )
 {
 	if ( cno < 0 || cno >= sv_maxclients->integer )
 	{
@@ -470,318 +401,6 @@ static void SV_GetTimeString( char *buffer, int length, const char *format, cons
 	}
 }
 
-intptr_t SV_GameSystemCalls( intptr_t *args )
-{
-	switch ( args[ 0 ] )
-	{
-		case G_PRINT:
-			Com_Printf( "%s", ( char * ) VMA( 1 ) );
-			return 0;
-
-		case G_ERROR:
-			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
-			return 0; //silence warning and have a fallback behavior if Com_Error behavior changes
-
-		case G_LOG:
-			Com_LogEvent( ( log_event_t* ) VMA( 1 ), NULL );
-			return 0;
-
-		case G_MILLISECONDS:
-			return Sys_Milliseconds();
-
-		case G_CVAR_REGISTER:
-			Cvar_Register( ( vmCvar_t* ) VMA( 1 ), ( const char* ) VMA( 2 ), ( const char* ) VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case G_CVAR_UPDATE:
-			Cvar_Update( ( vmCvar_t* ) VMA( 1 ) );
-			return 0;
-
-		case G_CVAR_SET:
-			Cvar_Set( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_CVAR_VARIABLE_INTEGER_VALUE:
-			return Cvar_VariableIntegerValue( ( const char * ) VMA( 1 ) );
-
-		case G_CVAR_VARIABLE_STRING_BUFFER:
-		        VM_CheckBlock( args[2], args[3], "CVARVSB" );
-			Cvar_VariableStringBuffer( ( const char* ) VMA( 1 ), ( char* ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_ARGC:
-			return Cmd_Argc();
-
-		case G_ARGV:
-		        VM_CheckBlock( args[2], args[3], "ARGV" );
-			Cmd_ArgvBuffer( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_SEND_CONSOLE_COMMAND:
-			Cbuf_ExecuteText( args[ 1 ], ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_FS_FOPEN_FILE:
-			return FS_Game_FOpenFileByMode( ( const char * ) VMA( 1 ), ( fileHandle_t* ) VMA( 2 ), ( fsMode_t ) args[ 3 ] );
-
-		case G_FS_READ:
-		        VM_CheckBlock( args[1], args[2], "FSREAD" );
-			FS_Read( VMA( 1 ), args[ 2 ], args[ 3 ] );
-			return 0;
-
-		case G_FS_WRITE:
-		        VM_CheckBlock( args[1], args[2], "FSWRITE" );
-			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
-
-		case G_FS_RENAME:
-			FS_Rename( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_FS_FCLOSE_FILE:
-			FS_FCloseFile( args[ 1 ] );
-			return 0;
-
-		case G_FS_GETFILELIST:
-		        VM_CheckBlock( args[3], args[4], "FSGFL" );
-			return FS_GetFileList( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ), ( char * ) VMA( 3 ), args[ 4 ] );
-
-		case G_LOCATE_GAME_DATA:
-			SV_LocateGameDataQVM( ( sharedEntity_t* ) VMA( 1 ), args[ 2 ], args[ 3 ], ( playerState_t* ) VMA( 4 ), args[ 5 ] );
-			return 0;
-
-		case G_DROP_CLIENT:
-			SV_GameDropClient( args[ 1 ], ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_SEND_SERVER_COMMAND:
-			SV_GameSendServerCommand( args[ 1 ], ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_LINKENTITY:
-			SV_LinkEntity( ( sharedEntity_t* ) VMA( 1 ) );
-			return 0;
-
-		case G_UNLINKENTITY:
-			SV_UnlinkEntity( ( sharedEntity_t* ) VMA( 1 ) );
-			return 0;
-
-		case G_ENTITIES_IN_BOX:
-		        VM_CheckBlock( args[3], args[4] * sizeof( int ), "ENTIB" );
-			return SV_AreaEntities( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( int * ) VMA( 3 ), args[ 4 ] );
-
-		case G_ENTITY_CONTACT:
-			return SV_EntityContact( ( float * ) VMA( 1 ), ( float * ) VMA( 2 ), ( const sharedEntity_t * ) VMA( 3 ), TT_AABB );
-
-		case G_ENTITY_CONTACTCAPSULE:
-			return SV_EntityContact( ( float * ) VMA( 1 ), ( float * ) VMA( 2 ), ( const sharedEntity_t * ) VMA( 3 ), TT_CAPSULE );
-
-		case G_TRACE:
-			SV_Trace( ( trace_t * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( float * ) VMA( 3 ), ( float * ) VMA( 4 ), ( const float * ) VMA( 5 ), args[ 6 ], args[ 7 ], TT_AABB );
-			return 0;
-
-		case G_TRACECAPSULE:
-			SV_Trace( ( trace_t * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( float * ) VMA( 3 ), ( float * ) VMA( 4 ), ( const float * ) VMA( 5 ), args[ 6 ], args[ 7 ], TT_CAPSULE );
-			return 0;
-
-		case G_POINT_CONTENTS:
-			return SV_PointContents( ( const float * ) VMA( 1 ), args[ 2 ] );
-
-		case G_SET_BRUSH_MODEL:
-			SV_SetBrushModel( ( sharedEntity_t * ) VMA( 1 ), ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_IN_PVS:
-			return SV_inPVS( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ) );
-
-		case G_IN_PVS_IGNORE_PORTALS:
-			return SV_inPVSIgnorePortals( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ) );
-
-		case G_SET_CONFIGSTRING:
-			SV_SetConfigstring( args[ 1 ], ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_GET_CONFIGSTRING:
-		        VM_CheckBlock( args[2], args[3], "GETCS" );
-			SV_GetConfigstring( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_SET_CONFIGSTRING_RESTRICTIONS:
-			// FIXME
-			//SV_SetConfigstringRestrictions( args[1], VMA(2) );
-			return 0;
-
-		case G_SET_USERINFO:
-			SV_SetUserinfo( args[ 1 ], ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_GET_USERINFO:
-		        VM_CheckBlock( args[2], args[3], "GETUI" );
-			SV_GetUserinfo( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_GET_SERVERINFO:
-		        VM_CheckBlock( args[2], args[3], "GETSI" );
-			SV_GetServerinfo( ( char * ) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case G_ADJUST_AREA_PORTAL_STATE:
-			SV_AdjustAreaPortalState( ( sharedEntity_t * ) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case G_AREAS_CONNECTED:
-			return CM_AreasConnected( args[ 1 ], args[ 2 ] );
-
-		case G_BOT_ALLOCATE_CLIENT:
-			return SV_BotAllocateClient( args[ 1 ] );
-
-		case G_BOT_FREE_CLIENT:
-			SV_BotFreeClient( args[ 1 ] );
-			return 0;
-
-		case BOT_GET_CONSOLE_MESSAGE:
-		        VM_CheckBlock( args[2], args[3], "BOTGCM" );
-			return SV_BotGetConsoleMessage( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-
-		case G_GET_USERCMD:
-			SV_GetUsercmd( args[ 1 ], ( usercmd_t * ) VMA( 2 ) );
-			return 0;
-
-		case G_GET_ENTITY_TOKEN:
-		        VM_CheckBlock( args[1], args[2], "GETET" );
-			{
-				const char *s;
-
-				s = COM_Parse( &sv.entityParsePoint );
-				Q_strncpyz( ( char * ) VMA( 1 ), s, args[ 2 ] );
-
-				if ( !sv.entityParsePoint && !s[ 0 ] )
-				{
-					return qfalse;
-				}
-				else
-				{
-					return qtrue;
-				}
-			}
-
-		case G_GM_TIME:
-			return Com_GMTime( ( qtime_t * ) VMA( 1 ) );
-
-		case G_SNAPVECTOR:
-			SnapVector( ( float * ) VMA( 1 ) );
-			return 0;
-
-		case G_SEND_GAMESTAT:
-			SV_MasterGameStat( ( const char * ) VMA( 1 ) );
-			return 0;
-
-		case G_ADDCOMMAND:
-			Cmd_AddCommand( ( const char * ) VMA( 1 ), SV_GameCommandHandler );
-			return 0;
-
-		case G_REMOVECOMMAND:
-			Cmd_RemoveCommand( ( const char * ) VMA( 1 ) );
-			return 0;
-
-		case G_GETTAG:
-			return SV_GetTag( args[ 1 ], args[ 2 ], ( const char * ) VMA( 3 ), ( orientation_t * ) VMA( 4 ) );
-
-		case G_REGISTERTAG:
-			return SV_LoadTag( ( const char * ) VMA( 1 ) );
-
-			// START    xkan, 10/28/2002
-		case G_REGISTERSOUND:
-			return 0;
-
-		case G_PARSE_ADD_GLOBAL_DEFINE:
-			return Parse_AddGlobalDefine( ( const char * ) VMA( 1 ) );
-
-		case G_PARSE_LOAD_SOURCE:
-			return Parse_LoadSourceHandle( ( const char * ) VMA( 1 ) );
-
-		case G_PARSE_FREE_SOURCE:
-			return Parse_FreeSourceHandle( args[ 1 ] );
-
-		case G_PARSE_READ_TOKEN:
-			return Parse_ReadTokenHandle( args[ 1 ], ( pc_token_t * ) VMA( 2 ) );
-
-		case G_PARSE_SOURCE_FILE_AND_LINE:
-			return Parse_SourceFileAndLine( args[ 1 ], ( char * ) VMA( 2 ), ( int * ) VMA( 3 ) );
-
-		case G_SENDMESSAGE:
-		        VM_CheckBlock( args[2], args[3], "SENDM" );
-			SV_SendBinaryMessage( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_MESSAGESTATUS:
-			return SV_BinaryMessageStatus( args[ 1 ] );
-
-		case G_RSA_GENMSG:
-			return SV_RSAGenMsg( ( const char * ) VMA( 1 ), ( char * ) VMA( 2 ), ( char * ) VMA( 3 ) );
-
-		case G_QUOTESTRING:
-			VM_CheckBlock( args[ 2 ], args[ 3 ], "QUOTE" );
-			Cmd_QuoteStringBuffer( ( const char * ) VMA( 1 ), ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_GENFINGERPRINT:
-			Com_MD5Buffer( ( const char * ) VMA( 1 ), args[ 2 ], ( char * ) VMA( 3 ), args [ 4 ] );
-			return 0;
-
-		case G_GETPLAYERPUBKEY:
-			SV_GetPlayerPubkey( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_GETTIMESTRING:
-			VM_CheckBlock( args[1], args[2], "STRFTIME" );
-			SV_GetTimeString( ( char * ) VMA( 1 ), args[ 2 ], ( const char * ) VMA( 3 ), ( const qtime_t * ) VMA( 4 ) );
-			return 0;
-
-		case G_FINDPAK:
-			return !!FS::FindPak( ( const char * ) VMA( 1 ) );
-
-		case BOT_NAV_SETUP:
-			return BotSetupNav( ( const botClass_t * ) VMA( 1 ), ( qhandle_t * ) VMA( 2 ) );
-		case BOT_NAV_SHUTDOWN:
-			BotShutdownNav();
-			return 0;
-		case BOT_SET_NAVMESH:
-			BotSetNavMesh( args[ 1 ], args[ 2 ] );
-			return 0;
-		case BOT_FIND_ROUTE:
-			return BotFindRouteExt( args[ 1 ], ( const botRouteTarget_t * ) VMA( 2 ), args[ 3 ] );
-		case BOT_UPDATE_PATH:
-			BotUpdateCorridor( args[ 1 ], ( const botRouteTarget_t * ) VMA( 2 ), ( botNavCmd_t * ) VMA( 3 ) );
-			return 0;
-		case BOT_NAV_RAYCAST:
-			return BotNavTrace( args[ 1 ], ( botTrace_t * ) VMA( 2 ), ( const float * ) VMA( 3 ), ( const float * ) VMA( 4 ) );
-		case BOT_NAV_RANDOMPOINT:
-			BotFindRandomPoint( args[ 1 ], ( float * ) VMA( 2 ) );
-			return 0;
-		case BOT_NAV_RANDOMPOINTRADIUS:
-			return BotFindRandomPointInRadius( args[ 1 ], ( const float * ) VMA( 2 ), ( float * ) VMA( 3 ), VMF( 4 ) );
-		case BOT_ENABLE_AREA:
-			BotEnableArea( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( const float * ) VMA( 3 ) );
-			return 0;
-		case BOT_DISABLE_AREA:
-			BotDisableArea( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( const float * ) VMA( 3 ) );
-			return 0;
-		case BOT_ADD_OBSTACLE:
-			BotAddObstacle( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( qhandle_t * ) VMA( 3 ) );
-			return 0;
-		case BOT_REMOVE_OBSTACLE:
-			BotRemoveObstacle( args[ 1 ] );
-			return 0;
-		case BOT_UPDATE_OBSTACLES:
-			BotUpdateObstacles();
-			return 0;
-
-		default:
-			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
-			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
-	}
-}
-
 /*
 ===============
 SV_ShutdownGameProgs
@@ -805,8 +424,6 @@ void SV_ShutdownGameProgs( void )
 		FS_Rename( sv_newGameShlib->string, "game" DLL_EXT );
 		Cvar_Set( "sv_newGameShlib", "" );
 	}
-
-	Cmd_RemoveCommandsByFunc( SV_GameCommandHandler );
 }
 
 /*
@@ -832,7 +449,7 @@ static void SV_InitGameVM( qboolean restart )
 
 	// use the current msec count for a random seed
 	// init for this gamestate
-	gvm->GameInit( svs.time, Com_Milliseconds(), restart );
+	gvm->GameInit( sv.time, Com_Milliseconds(), restart );
 }
 
 /*
@@ -842,26 +459,14 @@ SV_CreateGameVM
 Load a QVM vm or fails and try to load a NaCl vm
 ===================
 */
-static Cvar::Cvar<bool> naclGame("server.vm.useNaCl", "what VM ABI should be used for the game VM (0 = QVM, 1 = NaCl)", Cvar::NONE, false);
 GameVM* SV_CreateGameVM( void )
 {
-	if ( naclGame.Get() )
-	{
-		NaClGameVM* nacl = new NaClGameVM();
+    GameVM* vm = new GameVM();
 
-		if (nacl->Start()) {
-			return nacl;
-		}
-
-		delete nacl;
-	} else {
-		vm_t* vm = VM_Create( "game", SV_GameSystemCalls, ( vmInterpret_t ) vm_game->integer );
-
-		if ( vm )
-		{
-			return new QVMGameVM(vm);
-		}
-	}
+    if (vm->Start()) {
+        return vm;
+    }
+    delete vm;
 
 	Com_Error(ERR_DROP, "Couldn't load the game VM");
 
@@ -886,7 +491,6 @@ void SV_RestartGameProgs( void )
 
 	delete gvm;
 	gvm = nullptr;
-	Cmd_RemoveCommandsByFunc( SV_GameCommandHandler );
 
 	gvm = SV_CreateGameVM();
 
@@ -900,7 +504,7 @@ SV_InitGameProgs
 Called on a map change, not on a map_restart
 ===============
 */
-void SV_InitGameProgs( void )
+void SV_InitGameProgs(Str::StringRef mapname)
 {
 	sv.num_tagheaders = 0;
 	sv.num_tags = 0;
@@ -908,17 +512,11 @@ void SV_InitGameProgs( void )
 	// load the game module
 	gvm = SV_CreateGameVM();
 
-	SV_InitGameVM( qfalse );
-}
+	gvm->GameStaticInit();
 
-/*
-====================
-SV_GameCommandHandler
-====================
-*/
-void SV_GameCommandHandler( void )
-{
-	gvm->GameConsoleCommand();
+	gvm->GameLoadMap(mapname);
+
+	SV_InitGameVM( qfalse );
 }
 
 /*
@@ -965,94 +563,13 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 #endif
 }
 
-GameVM::~GameVM()
+GameVM::GameVM(): VM::VMBase("game"), services(new VM::CommonVMServices(*this, "Game", Cmd::GAME_VM))
 {
 }
 
-QVMGameVM::QVMGameVM(vm_t* vm): vm(vm)
+bool GameVM::Start()
 {
-}
-
-QVMGameVM::~QVMGameVM()
-{
-    VM_Free(vm);
-}
-
-void QVMGameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
-{
-	VM_Call( vm, GAME_INIT, levelTime, randomSeed, restart );
-}
-
-void QVMGameVM::GameShutdown(qboolean restart)
-{
-	VM_Call( vm, GAME_SHUTDOWN, qfalse );
-}
-
-qboolean QVMGameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
-{
-	const char* denied = reinterpret_cast<const char*>( VM_Call( vm, GAME_CLIENT_CONNECT, clientNum, firstTime, isBot ) );
-	if ( denied )
-		Q_strncpyz( reason, denied, size );
-	return denied != NULL;
-}
-
-void QVMGameVM::GameClientBegin(int clientNum)
-{
-	VM_Call( vm, GAME_CLIENT_BEGIN, clientNum );
-}
-
-void QVMGameVM::GameClientUserInfoChanged(int clientNum)
-{
-	VM_Call( vm, GAME_CLIENT_USERINFO_CHANGED, clientNum );
-}
-
-void QVMGameVM::GameClientDisconnect(int clientNum)
-{
-	VM_Call( vm, GAME_CLIENT_DISCONNECT, clientNum );
-}
-
-void QVMGameVM::GameClientCommand(int clientNum)
-{
-	VM_Call( vm, GAME_CLIENT_COMMAND, clientNum );
-}
-
-void QVMGameVM::GameClientThink(int clientNum)
-{
-	VM_Call( vm, GAME_CLIENT_THINK, clientNum );
-}
-
-void QVMGameVM::GameRunFrame(int levelTime)
-{
-	VM_Call( vm, GAME_RUN_FRAME, levelTime );
-}
-
-qboolean QVMGameVM::GameConsoleCommand()
-{
-	return VM_Call( vm, GAME_CONSOLE_COMMAND );
-}
-
-qboolean QVMGameVM::GameSnapshotCallback(int entityNum, int clientNum)
-{
-	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
-}
-
-void QVMGameVM::BotAIStartFrame(int levelTime)
-{
-	Com_Error(ERR_DROP, "GameVM::BotAIStartFrame not implemented");
-}
-
-void QVMGameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
-{
-	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
-}
-
-NaClGameVM::NaClGameVM()
-{
-}
-
-bool NaClGameVM::Start()
-{
-    int version = this->Create( "game", ( VM::Type ) vm_game->integer );
+    int version = this->Create( ( VM::vmType_t ) vm_game->integer );
 
     if (version < 0)
     {
@@ -1063,753 +580,472 @@ bool NaClGameVM::Start()
 		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
     }
 
+
     return true;
 }
 
-NaClGameVM::~NaClGameVM()
+GameVM::~GameVM()
 {
     this->Free();
 }
 
-void NaClGameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
+void GameVM::GameStaticInit()
 {
-	RPC::Writer input;
-	input.WriteInt(GAME_INIT);
-	input.WriteInt(levelTime);
-	input.WriteInt(randomSeed);
-	input.WriteInt(restart);
-	DoRPC(input);
+	this->SendMsg<GameStaticInitMsg>();
 }
 
-void NaClGameVM::GameShutdown(qboolean restart)
+void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 {
-	RPC::Writer input;
-	input.WriteInt(GAME_SHUTDOWN);
-	input.WriteInt(restart);
+	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart);
+}
 
-	// Ignore socket errors when shutting down, in case the remote process
-	// has been killed and we are shutting down because of an error.
-	DoRPC(input, true);
+void GameVM::GameShutdown(qboolean restart)
+{
+	//TODO ignore errors
+	this->SendMsg<GameShutdownMsg>(restart);
 
 	// Release the shared memory region
 	this->shmRegion.Close();
 }
 
-qboolean NaClGameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
+void GameVM::GameLoadMap(Str::StringRef name)
 {
-	RPC::Writer input;
-	input.WriteInt(GAME_CLIENT_CONNECT);
-	input.WriteInt(clientNum);
-	input.WriteInt(firstTime);
-	input.WriteInt(isBot);
-	RPC::Reader output = DoRPC(input);
-	qboolean denied = output.ReadInt();
-	if (denied)
-		Q_strncpyz(reason, output.ReadString(), size);
+	char* buffer;
+	std::string filename = "maps/" + name + ".bsp";
+	int length = FS_ReadFile( filename.c_str(), ( void ** ) &buffer );
+
+	if ( !buffer )
+	{
+		Com_Error( ERR_DROP, "Couldn't load %s", name.c_str() );
+	}
+
+	char* origBuffer = buffer;
+	char* bufferEnd = buffer + length;
+
+	while (buffer < bufferEnd)
+	{
+		this->SendMsg<GameLoadMapChunkMsg>(std::vector<char>(buffer, std::min(buffer + (64 << 10), bufferEnd)));
+		buffer += 64 << 10;
+	}
+
+	this->SendMsg<GameLoadMapMsg>(name);
+
+	FS_FreeFile( origBuffer );
+}
+
+qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
+{
+	bool denied;
+	std::string sentReason;
+	this->SendMsg<GameClientConnectMsg>(clientNum, firstTime, isBot, denied, sentReason);
+
+	if (denied) {
+		Q_strncpyz(reason, sentReason.c_str(), size);
+	}
 	return denied;
 }
 
-void NaClGameVM::GameClientBegin(int clientNum)
+void GameVM::GameClientBegin(int clientNum)
 {
-	RPC::Writer input;
-	input.WriteInt(GAME_CLIENT_BEGIN);
-	input.WriteInt(clientNum);
-	DoRPC(input);
+	this->SendMsg<GameClientBeginMsg>(clientNum);
 }
 
-void NaClGameVM::GameClientUserInfoChanged(int clientNum)
+void GameVM::GameClientUserInfoChanged(int clientNum)
 {
-	RPC::Writer input;
-	input.WriteInt(GAME_CLIENT_USERINFO_CHANGED);
-	input.WriteInt(clientNum);
-	DoRPC(input);
+	this->SendMsg<GameClientUserinfoChangedMsg>(clientNum);
 }
 
-void NaClGameVM::GameClientDisconnect(int clientNum)
+void GameVM::GameClientDisconnect(int clientNum)
 {
-	RPC::Writer input;
-	input.WriteInt(GAME_CLIENT_DISCONNECT);
-	input.WriteInt(clientNum);
-	DoRPC(input);
+	this->SendMsg<GameClientDisconnectMsg>(clientNum);
 }
 
-void NaClGameVM::GameClientCommand(int clientNum)
+void GameVM::GameClientCommand(int clientNum, const char* command)
 {
-	RPC::Writer input;
-	input.WriteInt(GAME_CLIENT_COMMAND);
-	input.WriteInt(clientNum);
-	DoRPC(input);
+	this->SendMsg<GameClientCommandMsg>(clientNum, command);
 }
 
-void NaClGameVM::GameClientThink(int clientNum)
+void GameVM::GameClientThink(int clientNum)
 {
-	RPC::Writer input;
-	input.WriteInt(GAME_CLIENT_THINK);
-	input.WriteInt(clientNum);
-	DoRPC(input);
+	this->SendMsg<GameClientThinkMsg>(clientNum);
 }
 
-void NaClGameVM::GameRunFrame(int levelTime)
+void GameVM::GameRunFrame(int levelTime)
 {
-	RPC::Writer input;
-	input.WriteInt(GAME_RUN_FRAME);
-	input.WriteInt(levelTime);
-	DoRPC(input);
+	this->SendMsg<GameRunFrameMsg>(levelTime);
 }
 
-qboolean NaClGameVM::GameConsoleCommand()
-{
-	RPC::Writer input;
-	input.WriteInt(GAME_CONSOLE_COMMAND);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-qboolean NaClGameVM::GameSnapshotCallback(int entityNum, int clientNum)
+qboolean GameVM::GameSnapshotCallback(int entityNum, int clientNum)
 {
 	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
 }
 
-void NaClGameVM::BotAIStartFrame(int levelTime)
+void GameVM::BotAIStartFrame(int levelTime)
 {
 	Com_Error(ERR_DROP, "GameVM::BotAIStartFrame not implemented");
 }
 
-void NaClGameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
+void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
 {
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-void NaClGameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
+void GameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
+{
+	int major = id >> 16;
+	int minor = id & 0xffff;
+	if (major == VM::QVM) {
+		this->QVMSyscall(minor, reader, channel);
+
+    } else if (major < VM::LAST_COMMON_SYSCALL) {
+        services->Syscall(major, minor, std::move(reader), channel);
+
+    } else {
+		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
+	}
+}
+
+void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
 	case G_PRINT:
-		Com_Printf("%s", inputs.ReadString());
+		IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](std::string text) {
+			Com_Printf("%s", text.c_str());
+		});
 		break;
 
 	case G_ERROR:
-		Com_Error(ERR_DROP, "%s", inputs.ReadString());
+		IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](std::string text) {
+			Com_Error(ERR_DROP, "%s", text.c_str());
+		});
+		break;
 
 	case G_LOG:
 		Com_Error(ERR_DROP, "trap_Log not implemented");
 
-	case G_MILLISECONDS:
-		outputs.WriteInt(Sys_Milliseconds());
-		break;
-
-	case G_CVAR_REGISTER:
-	{
-		vmCvar_t cvar;
-		inputs.Read(&cvar, sizeof(vmCvar_t));
-		const char* name = inputs.ReadString();
-		const char* defaultValue = inputs.ReadString();
-		int flags = inputs.ReadInt();
-		Cvar_Register(&cvar, name, defaultValue, flags);
-		outputs.Write(&cvar, sizeof(vmCvar_t));
-		break;
-	}
-
-	case G_CVAR_UPDATE:
-	{
-		vmCvar_t cvar;
-		inputs.Read(&cvar, sizeof(vmCvar_t));
-		Cvar_Update(&cvar);
-		outputs.Write(&cvar, sizeof(vmCvar_t));
-		break;
-	}
-
-	case G_CVAR_SET:
-	{
-		const char* name = inputs.ReadString();
-		qboolean haveValue = inputs.ReadInt();
-		const char* value = haveValue ? inputs.ReadString() : NULL;
-		Cvar_Set(name, value);
-		break;
-	}
-
-	case G_CVAR_VARIABLE_INTEGER_VALUE:
-		outputs.WriteInt(Cvar_VariableIntegerValue(inputs.ReadString()));
-		break;
-
-	case G_CVAR_VARIABLE_STRING_BUFFER:
-		outputs.WriteString(Cvar_VariableString(inputs.ReadString()));
-		break;
-
-	case G_ARGC:
-		outputs.WriteInt(Cmd_Argc());
-		break;
-
-	case G_ARGV:
-		outputs.WriteString(Cmd_Argv(inputs.ReadInt()));
-		break;
-
 	case G_SEND_CONSOLE_COMMAND:
-	{
-		int exec_when = inputs.ReadInt();
-		const char* text = inputs.ReadString();
-		Cbuf_ExecuteText(exec_when, text);
+		IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](int when, std::string text) {
+			Cbuf_ExecuteText(when, text.c_str());
+		});
 		break;
-	}
 
 	case G_FS_FOPEN_FILE:
-	{
-		const char* filename = inputs.ReadString();
-		qboolean openFile = inputs.ReadInt();
-		fsMode_t mode = static_cast<fsMode_t>(inputs.ReadInt());
-		fileHandle_t f;
-		outputs.WriteInt(FS_Game_FOpenFileByMode(filename, openFile ? &f : NULL, mode));
-		if (openFile)
-			outputs.WriteInt(f);
+		IPC::HandleMsg<FSFOpenFileMsg>(channel, std::move(reader), [this](std::string filename, bool open, int fsMode, int& success, int& handle) {
+			fsMode_t mode = static_cast<fsMode_t>(fsMode);
+			success = FS_Game_FOpenFileByMode(filename.c_str(), open ? &handle : NULL, mode);
+		});
 		break;
-	}
 
 	case G_FS_READ:
-	{
-		fileHandle_t f= inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		FS_Read(buffer.get(), len, f);
-		outputs.Write(buffer.get(), len);
+		IPC::HandleMsg<FSReadMsg>(channel, std::move(reader), [this](int handle, int len, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			FS_Read(buffer.get(), len, handle);
+			res.assign(buffer.get(), len);
+		});
 		break;
-	}
 
 	case G_FS_WRITE:
-	{
-		fileHandle_t f= inputs.ReadInt();
-		int len = inputs.ReadInt();
-		const void* buffer = inputs.ReadInline(len);
-		outputs.WriteInt(FS_Write(buffer, len, f));
+		IPC::HandleMsg<FSWriteMsg>(channel, std::move(reader), [this](int handle, std::string text, int& res) {
+			res = FS_Write(text.c_str(), text.size(), handle);
+		});
 		break;
-	}
 
 	case G_FS_RENAME:
-	{
-		const char* from = inputs.ReadString();
-		const char* to = inputs.ReadString();
-		FS_Rename(from, to);
+		IPC::HandleMsg<FSRenameMsg>(channel, std::move(reader), [this](std::string from, std::string to) {
+			FS_Rename(from.c_str(), to.c_str());
+		});
 		break;
-	}
 
 	case G_FS_FCLOSE_FILE:
-		FS_FCloseFile(inputs.ReadInt());
+		IPC::HandleMsg<FSFCloseFileMsg>(channel, std::move(reader), [this](int handle) {
+			FS_FCloseFile(handle);
+		});
 		break;
 
-	case G_FS_GETFILELIST:
-	{
-		const char* path = inputs.ReadString();
-		const char* extension = inputs.ReadString();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		outputs.WriteInt(FS_GetFileList(path, extension, buffer.get(), len));
-		outputs.Write(buffer.get(), len);
+	case G_FS_GET_FILE_LIST:
+		IPC::HandleMsg<FSGetFileListMsg>(channel, std::move(reader), [this](std::string path, std::string extension, int len, int& intRes, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			intRes = FS_GetFileList(path.c_str(), extension.c_str(), buffer.get(), len);
+			res.assign(buffer.get(), len);
+		});
 		break;
-	}
 
-	case G_LOCATE_GAME_DATA:
-	{
-		if (!shmRegion)
-			shmRegion = inputs.ReadHandle().Map();
-		int numEntities = inputs.ReadInt();
-		int entitySize = inputs.ReadInt();
-		int playerSize = inputs.ReadInt();
-		SV_LocateGameDataNaCl(shmRegion, numEntities, entitySize, playerSize);
+	case G_FS_FIND_PAK:
+		IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
+			found = FS::FindPak(pakName);
+		});
 		break;
-	}
+
+	case G_LOCATE_GAME_DATA1:
+		IPC::HandleMsg<LocateGameDataMsg1>(channel, std::move(reader), [this](IPC::SharedMemory shm, int numEntities, int entitySize, int playerSize) {
+			shmRegion = std::move(shm);
+			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
+		});
+		break;
+
+	case G_LOCATE_GAME_DATA2:
+		IPC::HandleMsg<LocateGameDataMsg2>(channel, std::move(reader), [this](int numEntities, int entitySize, int playerSize) {
+			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
+		});
+		break;
 
 	case G_DROP_CLIENT:
-	{
-		int clientNum = inputs.ReadInt();
-		const char* reason = inputs.ReadString();
-		SV_GameDropClient(clientNum, reason);
+		IPC::HandleMsg<DropClientMsg>(channel, std::move(reader), [this](int clientNum, std::string reason) {
+			SV_GameDropClient(clientNum, reason.c_str());
+		});
 		break;
-	}
 
 	case G_SEND_SERVER_COMMAND:
-	{
-		int clientNum = inputs.ReadInt();
-		const char* text = inputs.ReadString();
-		SV_GameSendServerCommand(clientNum, text);
+		IPC::HandleMsg<SendServerCommandMsg>(channel, std::move(reader), [this](int clientNum, std::string text) {
+			SV_GameSendServerCommand(clientNum, text.c_str());
+		});
 		break;
-	}
-
-	case G_LINKENTITY:
-		SV_LinkEntity(SV_GentityNum(inputs.ReadInt()));
-		break;
-
-	case G_UNLINKENTITY:
-		SV_UnlinkEntity(SV_GentityNum(inputs.ReadInt()));
-		break;
-
-	case G_ENTITIES_IN_BOX:
-	{
-		vec3_t mins, maxs;
-		inputs.Read(mins, sizeof(vec3_t));
-		inputs.Read(maxs, sizeof(vec3_t));
-		int len = inputs.ReadInt();
-		std::unique_ptr<int[]> buffer(new int[len]);
-		len = SV_AreaEntities(mins, maxs, buffer.get(), len);
-		outputs.WriteInt(len);
-		outputs.Write(buffer.get(), len * sizeof(int));
-		break;
-	}
-
-	case G_ENTITY_CONTACT:
-	{
-		vec3_t mins, maxs;
-		inputs.Read(mins, sizeof(vec3_t));
-		inputs.Read(maxs, sizeof(vec3_t));
-		const sharedEntity_t* ent = SV_GentityNum(inputs.ReadInt());
-		outputs.WriteInt(SV_EntityContact(mins, maxs, ent, TT_AABB));
-		break;
-	}
-
-	case G_ENTITY_CONTACTCAPSULE:
-	{
-		vec3_t mins, maxs;
-		inputs.Read(mins, sizeof(vec3_t));
-		inputs.Read(maxs, sizeof(vec3_t));
-		const sharedEntity_t* ent = SV_GentityNum(inputs.ReadInt());
-		outputs.WriteInt(SV_EntityContact(mins, maxs, ent, TT_CAPSULE));
-		break;
-	}
-
-	case G_TRACE:
-	{
-		vec3_t start, mins, maxs, end;
-		inputs.Read(start, sizeof(vec3_t));
-		inputs.Read(mins, sizeof(vec3_t));
-		inputs.Read(maxs, sizeof(vec3_t));
-		inputs.Read(end, sizeof(vec3_t));
-		int passEntityNum = inputs.ReadInt();
-		int contentmask = inputs.ReadInt();
-		trace_t result;
-		SV_Trace(&result, start, mins, maxs, end, passEntityNum, contentmask, TT_AABB);
-		outputs.Write(&result, sizeof(trace_t));
-		break;
-	}
-
-	case G_TRACECAPSULE:
-	{
-		vec3_t start, mins, maxs, end;
-		inputs.Read(start, sizeof(vec3_t));
-		inputs.Read(mins, sizeof(vec3_t));
-		inputs.Read(maxs, sizeof(vec3_t));
-		inputs.Read(end, sizeof(vec3_t));
-		int passEntityNum = inputs.ReadInt();
-		int contentmask = inputs.ReadInt();
-		trace_t result;
-		SV_Trace(&result, start, mins, maxs, end, passEntityNum, contentmask, TT_CAPSULE);
-		outputs.Write(&result, sizeof(trace_t));
-		break;
-	}
-
-	case G_POINT_CONTENTS:
-	{
-		vec3_t p;
-		inputs.Read(p, sizeof(p));
-		int passEntityNum = inputs.ReadInt();
-		outputs.WriteInt(SV_PointContents(p, passEntityNum));
-		break;
-	}
-
-	case G_SET_BRUSH_MODEL:
-	{
-		sharedEntity_t* ent = SV_GentityNum(inputs.ReadInt());
-		const char* name = inputs.ReadString();
-		SV_SetBrushModel(ent, name);
-		break;
-	}
-
-	case G_IN_PVS:
-	{
-		vec3_t p1, p2;
-		inputs.Read(p1, sizeof(vec3_t));
-		inputs.Read(p2, sizeof(vec3_t));
-		outputs.WriteInt(SV_inPVS(p1, p2));
-		break;
-	}
-
-	case G_IN_PVS_IGNORE_PORTALS:
-	{
-		vec3_t p1, p2;
-		inputs.Read(p1, sizeof(vec3_t));
-		inputs.Read(p2, sizeof(vec3_t));
-		outputs.WriteInt(SV_inPVSIgnorePortals(p1, p2));
-		break;
-	}
 
 	case G_SET_CONFIGSTRING:
-	{
-		int index = inputs.ReadInt();
-		const char* val = inputs.ReadString();
-		SV_SetConfigstring(index, val);
+		IPC::HandleMsg<SetConfigStringMsg>(channel, std::move(reader), [this](int index, std::string val) {
+			SV_SetConfigstring(index, val.c_str());
+		});
 		break;
-	}
 
 	case G_GET_CONFIGSTRING:
-	{
-		int index = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		SV_GetConfigstring(index, buffer.get(), len);
-		outputs.WriteString(buffer.get());
+		IPC::HandleMsg<GetConfigStringMsg>(channel, std::move(reader), [this](int index, int len, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			SV_GetConfigstring(index, buffer.get(), len);
+			res.assign(buffer.get(), len);
+		});
 		break;
-	}
 
 	case G_SET_CONFIGSTRING_RESTRICTIONS:
-	{
-		Com_Printf("SV_SetConfigstringRestrictions not implemented\n");
+		IPC::HandleMsg<SetConfigStringRestrictionsMsg>(channel, std::move(reader), [this]() {
+			Com_Printf("SV_SetConfigstringRestrictions not implemented\n");
+		});
 		break;
-	}
 
 	case G_SET_USERINFO:
-	{
-		int index = inputs.ReadInt();
-		const char* val = inputs.ReadString();
-		SV_SetUserinfo(index, val);
+		IPC::HandleMsg<SetUserinfoMsg>(channel, std::move(reader), [this](int index, std::string val) {
+			SV_SetUserinfo(index, val.c_str());
+		});
 		break;
-	}
 
 	case G_GET_USERINFO:
-	{
-		int index = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		SV_GetUserinfo(index, buffer.get(), len);
-		outputs.WriteString(buffer.get());
+		IPC::HandleMsg<GetUserinfoMsg>(channel, std::move(reader), [this](int index, int len, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			SV_GetUserinfo(index, buffer.get(), len);
+			res.assign(buffer.get(), len);
+		});
 		break;
-	}
 
 	case G_GET_SERVERINFO:
-	{
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		SV_GetServerinfo(buffer.get(), len);
-		outputs.WriteString(buffer.get());
+		IPC::HandleMsg<GetServerinfoMsg>(channel, std::move(reader), [this](int len, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			SV_GetServerinfo(buffer.get(), len);
+			res.assign(buffer.get(), len);
+		});
 		break;
-	}
-
-	case G_ADJUST_AREA_PORTAL_STATE:
-	{
-		sharedEntity_t* ent = SV_GentityNum(inputs.ReadInt());
-		qboolean open = inputs.ReadInt();
-		SV_AdjustAreaPortalState(ent, open);
-		break;
-	}
-
-	case G_AREAS_CONNECTED:
-	{
-		int area1 = inputs.ReadInt();
-		int area2 = inputs.ReadInt();
-		outputs.WriteInt(CM_AreasConnected(area1, area2));
-		break;
-	}
-
-	case G_BOT_ALLOCATE_CLIENT:
-		outputs.WriteInt(SV_BotAllocateClient(inputs.ReadInt()));
-		break;
-
-	case G_BOT_FREE_CLIENT:
-		SV_BotFreeClient(inputs.ReadInt());
-		break;
-
-	case BOT_GET_CONSOLE_MESSAGE:
-	{
-		int client = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		outputs.WriteInt(SV_BotGetConsoleMessage(client, buffer.get(), len));
-		outputs.WriteString(buffer.get());
-		break;
-	}
 
 	case G_GET_USERCMD:
-	{
-		int index = inputs.ReadInt();
-		usercmd_t cmd;
-		SV_GetUsercmd(index, &cmd);
-		outputs.Write(&cmd, sizeof(usercmd_t));
+		IPC::HandleMsg<GetUsercmdMsg>(channel, std::move(reader), [this](int index, usercmd_t& cmd) {
+			SV_GetUsercmd(index, &cmd);
+		});
 		break;
-	}
 
 	case G_GET_ENTITY_TOKEN:
-	{
-		const char *s = COM_Parse(&sv.entityParsePoint);
-		if (!sv.entityParsePoint && !s[0])
-			outputs.WriteInt(qfalse);
-		else
-			outputs.WriteInt(qtrue);
-		outputs.WriteString(s);
-		break;
-	}
-
-	case G_GM_TIME:
-	{
-		qtime_t t;
-		outputs.WriteInt(Com_GMTime(&t));
-		outputs.Write(&t, sizeof(qtime_t));
-		break;
-	}
-
-	case G_SNAPVECTOR:
-	{
-		vec3_t v;
-		inputs.Read(v, sizeof(vec3_t));
-		SnapVector(v);
-		outputs.Write(v, sizeof(vec3_t));
-		break;
-	}
-
-	case G_SEND_GAMESTAT:
-		SV_MasterGameStat(inputs.ReadString());
+		IPC::HandleMsg<GetEntityTokenMsg>(channel, std::move(reader), [this](bool& boolRes, std::string& res) {
+			res = COM_Parse(&sv.entityParsePoint);
+			boolRes = sv.entityParsePoint or res.size() > 0;
+		});
 		break;
 
-	case G_ADDCOMMAND:
-		Cmd_AddCommand(inputs.ReadString(), SV_GameCommandHandler );
+	case G_SEND_GAME_STAT:
+		IPC::HandleMsg<SendGameStatMsg>(channel, std::move(reader), [this](std::string text) {
+			SV_MasterGameStat(text.c_str());
+		});
 		break;
 
-	case G_REMOVECOMMAND:
-		Cmd_RemoveCommand(inputs.ReadString());
+	case G_GET_TAG:
+		IPC::HandleMsg<GetTagMsg>(channel, std::move(reader), [this](int clientNum, int tagFileNumber, std::string tagName, int& res, orientation_t& orientation) {
+			res = SV_GetTag(clientNum, tagFileNumber, tagName.c_str(), &orientation);
+		});
 		break;
 
-	case G_GETTAG:
-	{
-		int clientNum = inputs.ReadInt();
-		int tagFileNumber = inputs.ReadInt();
-		const char* tagName = inputs.ReadString();
-		orientation_t org;
-		outputs.WriteInt(SV_GetTag(clientNum, tagFileNumber, tagName, &org));
-		outputs.Write(&org, sizeof(orientation_t));
-		break;
-	}
-
-	case G_REGISTERTAG:
-		outputs.WriteInt(SV_LoadTag(inputs.ReadString()));
+	case G_REGISTER_TAG:
+		IPC::HandleMsg<RegisterTagMsg>(channel, std::move(reader), [this](std::string tagFileName, int& res) {
+			res = SV_LoadTag(tagFileName.c_str());
+		});
 		break;
 
-	case G_REGISTERSOUND:
-	{
-		const char* name = inputs.ReadString();
-		qboolean compressed = inputs.ReadInt();
-		outputs.WriteInt(0);
-		break;
-	}
-
-	case G_PARSE_ADD_GLOBAL_DEFINE:
-		outputs.WriteInt(Parse_AddGlobalDefine(inputs.ReadString()));
+	case G_SEND_MESSAGE:
+		IPC::HandleMsg<SendMessageMsg>(channel, std::move(reader), [this](int clientNum, int len, std::vector<char> message) {
+			SV_SendBinaryMessage(clientNum, message.data(), len);
+		});
 		break;
 
-	case G_PARSE_LOAD_SOURCE:
-		outputs.WriteInt(Parse_LoadSourceHandle(inputs.ReadString()));
-		break;
-
-	case G_PARSE_FREE_SOURCE:
-		outputs.WriteInt(Parse_FreeSourceHandle(inputs.ReadInt()));
-		break;
-
-	case G_PARSE_READ_TOKEN:
-	{
-		pc_token_t token;
-		outputs.WriteInt(Parse_ReadTokenHandle(inputs.ReadInt(), &token));
-		outputs.Write(&token, sizeof(pc_token_t));
-		break;
-	}
-
-	case G_PARSE_SOURCE_FILE_AND_LINE:
-	{
-		char buffer[128];
-		int line;
-		outputs.WriteInt(Parse_SourceFileAndLine(inputs.ReadInt(), buffer, &line));
-		outputs.WriteString(buffer);
-		outputs.WriteInt(line);
-		break;
-	}
-
-	case G_SENDMESSAGE:
-	{
-		int clientNum = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		inputs.Read(buffer.get(), len);
-		SV_SendBinaryMessage(clientNum, buffer.get(), len);
-		break;
-	}
-
-	case G_MESSAGESTATUS:
-		outputs.WriteInt(SV_BinaryMessageStatus(inputs.ReadInt()));
+	case G_MESSAGE_STATUS:
+		IPC::HandleMsg<MessageStatusMsg>(channel, std::move(reader), [this](int index, int& status) {
+			status = SV_BinaryMessageStatus(index);
+		});
 		break;
 
 	case G_RSA_GENMSG:
-	{
-		const char* pubkey = inputs.ReadString();
-		char cleartext[RSA_STRING_LENGTH];
-		char encrypted[RSA_STRING_LENGTH];
-		outputs.WriteInt(SV_RSAGenMsg(pubkey, cleartext, encrypted));
-		outputs.WriteString(cleartext);
-		outputs.WriteString(encrypted);
-		break;
-	}
-
-	case G_QUOTESTRING:
-		outputs.WriteString(Cmd_QuoteString(inputs.ReadString()));
+		IPC::HandleMsg<RSAGenMsgMsg>(channel, std::move(reader), [this](std::string pubkey, int& res, std::string& cleartext, std::string& encrypted) {
+			char cleartextBuffer[RSA_STRING_LENGTH];
+			char encryptedBuffer[RSA_STRING_LENGTH];
+			res = SV_RSAGenMsg(pubkey.c_str(), cleartextBuffer, encryptedBuffer);
+			cleartext = cleartextBuffer;
+			encrypted = encryptedBuffer;
+		});
 		break;
 
-	case G_GENFINGERPRINT:
-	{
-		int keylen = inputs.ReadInt();
-		const char* key = static_cast<const char*>(inputs.ReadInline(keylen));
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		Com_MD5Buffer(key, keylen, buffer.get(), len);
-		outputs.WriteString(buffer.get());
+	case G_GEN_FINGERPRINT:
+		IPC::HandleMsg<GenFingerprintMsg>(channel, std::move(reader), [this](int keylen, const std::vector<char>& key, int len, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			Com_MD5Buffer(key.data(), keylen, buffer.get(), len);
+			res.assign(buffer.get(), len);
+		});
 		break;
-	}
 
-	case G_GETPLAYERPUBKEY:
-	{
-		int clientNum = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		SV_GetPlayerPubkey(clientNum, buffer.get(), len);
-		outputs.WriteString(buffer.get());
+	case G_GET_PLAYER_PUBKEY:
+		IPC::HandleMsg<GetPlayerPubkeyMsg>(channel, std::move(reader), [this](int clientNum, int len, std::string& pubkey) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			SV_GetPlayerPubkey(clientNum, buffer.get(), len);
+			pubkey.assign(buffer.get());
+		});
 		break;
-	}
 
-	case G_GETTIMESTRING:
-	{
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		const char* format = inputs.ReadString();
-		qtime_t t;
-		inputs.Read(&t, sizeof(qtime_t));
-		SV_GetTimeString(buffer.get(), len, format, &t);
-		outputs.WriteString(buffer.get());
+	case G_GM_TIME:
+		IPC::HandleMsg<GMTimeMsg>(channel, std::move(reader), [this](int& res, qtime_t& time) {
+			res = Com_GMTime(&time);
+		});
 		break;
-	}
 
-	case G_FINDPAK:
-	{
-		const char* pakName = inputs.ReadString();
-		bool found = FS::FindPak(pakName);
-		outputs.WriteInt(found);
+	case G_GET_TIME_STRING:
+		IPC::HandleMsg<GetTimeStringMsg>(channel, std::move(reader), [this](int len, std::string format, const qtime_t& time, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			SV_GetTimeString(buffer.get(), len, format.c_str(), &time);
+			res.assign(buffer.get(), len);
+		});
 		break;
-	}
+
+	case G_PARSE_ADD_GLOBAL_DEFINE:
+		IPC::HandleMsg<ParseAddGlobalDefineMsg>(channel, std::move(reader), [this](std::string define, int& res) {
+			res = Parse_AddGlobalDefine(define.c_str());
+		});
+		break;
+
+	case G_PARSE_LOAD_SOURCE:
+		IPC::HandleMsg<ParseLoadSourceMsg>(channel, std::move(reader), [this](std::string name, int& res) {
+			res = Parse_LoadSourceHandle(name.c_str());
+		});
+		break;
+
+	case G_PARSE_FREE_SOURCE:
+		IPC::HandleMsg<ParseFreeSourceMsg>(channel, std::move(reader), [this](int source, int& res) {
+			res = Parse_FreeSourceHandle(source);
+		});
+		break;
+
+	case G_PARSE_READ_TOKEN:
+		IPC::HandleMsg<ParseReadTokenMsg>(channel, std::move(reader), [this](int source, int& res, pc_token_t& token) {
+			res = Parse_ReadTokenHandle(source, &token);
+		});
+		break;
+
+	case G_PARSE_SOURCE_FILE_AND_LINE:
+		IPC::HandleMsg<ParseSourceFileAndLineMsg>(channel, std::move(reader), [this](int source, int& res, std::string& file, int& line) {
+			char buffer[128] = {0};
+			res = Parse_SourceFileAndLine(source, buffer, &line);
+			file = buffer;
+		});
+		break;
+
+	case BOT_ALLOCATE_CLIENT:
+		IPC::HandleMsg<BotAllocateClientMsg>(channel, std::move(reader), [this](int input, int& output) {
+			output = SV_BotAllocateClient(input);
+		});
+		break;
+
+	case BOT_FREE_CLIENT:
+		IPC::HandleMsg<BotFreeClientMsg>(channel, std::move(reader), [this](int input) {
+			SV_BotFreeClient(input);
+		});
+		break;
+
+	case BOT_GET_CONSOLE_MESSAGE:
+		IPC::HandleMsg<BotGetConsoleMessageMsg>(channel, std::move(reader), [this](int client, int len, int& res, std::string& message) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			res = SV_BotGetConsoleMessage(client, buffer.get(), len);
+			message.assign(buffer.get(), len);
+		});
+		break;
 
 	case BOT_NAV_SETUP:
-	{
-		botClass_t botClass;
-		qhandle_t handle;
-		inputs.Read(&botClass, sizeof(botClass_t));
-		outputs.WriteInt(BotSetupNav(&botClass, &handle));
-		outputs.WriteInt(handle);
+		IPC::HandleMsg<BotNavSetupMsg>(channel, std::move(reader), [this](botClass_t botClass, int& res, int& handle) {
+			res = BotSetupNav(&botClass, &handle);
+		});
 		break;
-	}
 
 	case BOT_NAV_SHUTDOWN:
 		BotShutdownNav();
 		break;
 
 	case BOT_SET_NAVMESH:
-	{
-		int botClientNum = inputs.ReadInt();
-		qhandle_t navHandle = inputs.ReadInt();
-		BotSetNavMesh(botClientNum, navHandle);
+		IPC::HandleMsg<BotSetNavmeshMsg>(channel, std::move(reader), [this](int clientNum, int navHandle) {
+			BotSetNavMesh(clientNum, navHandle);
+		});
 		break;
-	}
 
 	case BOT_FIND_ROUTE:
-	{
-		int botClientNum = inputs.ReadInt();
-		botRouteTarget_t target;
-		inputs.Read(&target, sizeof(botRouteTarget_t));
-		qboolean allowPartial = inputs.ReadInt();
-		outputs.WriteInt(BotFindRouteExt(botClientNum, &target, allowPartial));
+		IPC::HandleMsg<BotFindRouteMsg>(channel, std::move(reader), [this](int clientNum, botRouteTarget_t target, bool allowPartial, int& res) {
+			res = BotFindRouteExt(clientNum, &target, allowPartial);
+		});
 		break;
-	}
 
 	case BOT_UPDATE_PATH:
-	{
-		int botClientNum = inputs.ReadInt();
-		botRouteTarget_t target;
-		inputs.Read(&target, sizeof(botRouteTarget_t));
-		botNavCmd_t cmd;
-		BotUpdateCorridor(botClientNum, &target, &cmd);
-		outputs.Write(&cmd, sizeof(botNavCmd_t));
+		IPC::HandleMsg<BotUpdatePathMsg>(channel, std::move(reader), [this](int clientNum, botRouteTarget_t target, botNavCmd_t& cmd) {
+			BotUpdateCorridor(clientNum, &target, &cmd);
+		});
 		break;
-	}
 
 	case BOT_NAV_RAYCAST:
-	{
-		int botClientNum = inputs.ReadInt();
-		botTrace_t botTrace;
-		vec3_t start;
-		inputs.Read(start, sizeof(vec3_t));
-		vec3_t end;
-		inputs.Read(end, sizeof(vec3_t));
-		outputs.WriteInt(BotNavTrace(botClientNum, &botTrace, start, end));
-		outputs.Write(&botTrace, sizeof(botTrace_t));
+		IPC::HandleMsg<BotNavRaycastMsg>(channel, std::move(reader), [this](int clientNum, std::array<float, 3> start, std::array<float, 3> end, int& res, botTrace_t& botTrace) {
+			res = BotNavTrace(clientNum, &botTrace, start.data(), end.data());
+		});
 		break;
-	}
 
 	case BOT_NAV_RANDOMPOINT:
-	{
-		int botClientNum = inputs.ReadInt();
-		vec3_t point;
-		BotFindRandomPoint(botClientNum, point);
-		outputs.Write(point, sizeof(vec3_t));
+		IPC::HandleMsg<BotNavRandomPointMsg>(channel, std::move(reader), [this](int clientNum, std::array<float, 3>& point) {
+			BotFindRandomPoint(clientNum, point.data());
+		});
 		break;
-	}
 
 	case BOT_NAV_RANDOMPOINTRADIUS:
-	{
-		int botClientNum = inputs.ReadInt();
-		vec3_t origin;
-		inputs.Read(origin, sizeof(vec3_t));
-		vec3_t point;
-		float radius = inputs.ReadFloat();
-		BotFindRandomPointInRadius(botClientNum, origin, point, radius);
-		outputs.Write(point, sizeof(vec3_t));
+		IPC::HandleMsg<BotNavRandomPointRadiusMsg>(channel, std::move(reader), [this](int clientNum, std::array<float, 3> origin, float radius, int res, std::array<float, 3>& point) {
+			res = BotFindRandomPointInRadius(clientNum, origin.data(), point.data(), radius);
+		});
 		break;
-	}
 
 	case BOT_ENABLE_AREA:
-	{
-		vec3_t origin;
-		inputs.Read(origin, sizeof(vec3_t));
-		vec3_t mins;
-		inputs.Read(mins, sizeof(vec3_t));
-		vec3_t maxs;
-		inputs.Read(maxs, sizeof(vec3_t));
-		BotEnableArea(origin, mins, maxs);
+		IPC::HandleMsg<BotEnableAreaMsg>(channel, std::move(reader), [this](std::array<float, 3> origin, std::array<float, 3> mins, std::array<float, 3> maxs) {
+			BotEnableArea(origin.data(), mins.data(), maxs.data());
+		});
 		break;
-	}
 
 	case BOT_DISABLE_AREA:
-	{
-		vec3_t origin;
-		inputs.Read(origin, sizeof(vec3_t));
-		vec3_t mins;
-		inputs.Read(mins, sizeof(vec3_t));
-		vec3_t maxs;
-		inputs.Read(maxs, sizeof(vec3_t));
-		BotDisableArea(origin, mins, maxs);
+		IPC::HandleMsg<BotDisableAreaMsg>(channel, std::move(reader), [this](std::array<float, 3> origin, std::array<float, 3> mins, std::array<float, 3> maxs) {
+			BotDisableArea(origin.data(), mins.data(), maxs.data());
+		});
 		break;
-	}
 
 	case BOT_ADD_OBSTACLE:
-	{
-		vec3_t mins;
-		inputs.Read(mins, sizeof(vec3_t));
-		vec3_t maxs;
-		inputs.Read(maxs, sizeof(vec3_t));
-		qhandle_t handle;
-		BotAddObstacle(mins, maxs, &handle);
-		outputs.WriteInt(handle);
+		IPC::HandleMsg<BotAddObstacleMsg>(channel, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int& handle) {
+			BotAddObstacle(mins.data(), maxs.data(), &handle);
+		});
 		break;
-	}
 
 	case BOT_REMOVE_OBSTACLE:
-		BotRemoveObstacle(inputs.ReadInt());
+		IPC::HandleMsg<BotRemoveObstacleMsg>(channel, std::move(reader), [this](int handle) {
+			BotRemoveObstacle(handle);
+		});
 		break;
 
 	case BOT_UPDATE_OBSTACLES:

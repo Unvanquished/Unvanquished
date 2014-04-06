@@ -526,17 +526,6 @@ needammo
 	}
 }
 
-needbasi
-{
-	"voice/alien/needbasi.ogg"
-	{
-		team aliens
-		class aliens -Basilisk -"Advanced Basilisk"
-		text "Need friend basi!"
-		enthusiasm 0
-	}
-}
-
 needhealth
 {
 	"voice/human/needhealth.ogg"

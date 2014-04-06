@@ -531,6 +531,11 @@ g_admin_cmd_t *G_admin_cmd( const char *cmd )
 		--count;
 	}
 
+	if ( !count )
+	{
+		return NULL;
+	}
+
 	return (g_admin_cmd_t*) bsearch( cmd, cmds, count, sizeof( g_admin_cmd_t ), cmdcmp );
 }
 
@@ -4016,7 +4021,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 			{
 				ADMP( va( "%s %s", QQ( N_("^3adminhelp: ^7help for '$1$':\n") ), c->command ) );
 
-				if ( c->desc )
+				if ( c->desc[ 0 ] )
 				{
 					ADMP( va( "%s %s", QQ( N_(" ^3Description: ^7$1t$\n") ), Quote( c->desc ) ) );
 				}
@@ -4092,7 +4097,7 @@ qboolean G_admin_allready( gentity_t *ent )
 		return qfalse;
 	}
 
-	for ( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		cl = level.clients + i;
 
@@ -4327,7 +4332,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	// handle the flag
 	if ( !Q_stricmp( teampref, "keepteams" ) || !Q_stricmp( teampref, "keepteamslock" ) || !Q_stricmp( teampref,"kt" ) || !Q_stricmp( teampref,"ktl" ) )
 	{
-		for ( i = 0; i < g_maxclients.integer; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
 			cl = level.clients + i;
 
@@ -4348,7 +4353,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	}
 	else if ( !Q_stricmp( teampref, "switchteams" ) || !Q_stricmp( teampref, "switchteamslock" ) || !Q_stricmp( teampref,"st" ) || !Q_stricmp( teampref,"stl" ))
 	{
-		for ( i = 0; i < g_maxclients.integer; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
 			cl = level.clients + i;
 

@@ -31,8 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FRAMEWORK_COMMAND_SYSTEM_H_
 #define FRAMEWORK_COMMAND_SYSTEM_H_
 
-#include <initializer_list>
-
 /*
  * Command execution and command text buffering.
  *
@@ -95,8 +93,6 @@ namespace Cmd {
     //Completion stuff, highly unstable :-)
     CompletionResult CompleteArgument(const Args& args, int argNum);
     CompletionResult CompleteCommandNames(Str::StringRef prefix = "");
-    CompletionResult CompletionFilter(Str::StringRef prefix, std::initializer_list<CompletionItem> list);
-    CompletionResult CompletionFilter(CompletionResult &&res, Str::StringRef prefix, std::initializer_list<CompletionItem> list);
 
     //Function to ease the transition to C++
     bool CommandExists(const std::string& name);

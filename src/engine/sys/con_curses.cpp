@@ -56,14 +56,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_LOG_LINES 1024
 #define LOG_BUF_SIZE  65536
 
-// Functions from the tty console for fallback
-void            CON_Shutdown_tty( void );
-void            CON_Init_tty( void );
-char            *CON_Input_tty( void );
-void            CON_Print_tty( const char *message );
-void            CON_Clear_tty( void );
+// TTY Console prototypes
+void CON_Shutdown_TTY( void );
+void CON_Init_TTY( void );
+char *CON_Input_TTY( void );
+void CON_Print_TTY( const char *message );
 
 static qboolean curses_on = qfalse;
+static qboolean dump_logs = qfalse;
 static Console::Field input_field(INT_MAX);
 static WINDOW   *borderwin;
 static WINDOW   *logwin;
@@ -75,6 +75,10 @@ static char     logbuf[ LOG_BUF_SIZE ];
 static char     *insert = logbuf;
 static int      scrollline = 0;
 static int      lastline = 1;
+
+#ifndef _WIN32
+static int      stderr_fd;
+#endif
 
 // The special characters look good on the win32 console but suck on other consoles
 #ifdef _WIN32
@@ -154,7 +158,6 @@ CON_UpdateCursor
 Update the cursor position
 ==================
 */
-#ifdef USE_CURSES_W
 static INLINE int CON_wcwidth( const char *s )
 {
 #ifdef _WIN32
@@ -164,7 +167,6 @@ static INLINE int CON_wcwidth( const char *s )
 	return w < 0 ? 0 : w;
 #endif
 }
-#endif
 
 
 static INLINE void CON_UpdateCursor( void )
@@ -173,9 +175,6 @@ static INLINE void CON_UpdateCursor( void )
 #ifdef _WIN32
 	move( LINES - 1, Q_PrintStrlen( PROMPT ) + 8 + input_field.GetViewCursorPos() );
 	wnoutrefresh( stdscr );
-#elif defined USE_CURSES_W
-	wmove( inputwin, 0, input_field.GetViewCursorPos());
-	wnoutrefresh( inputwin );
 #else
 	wmove( inputwin, 0, input_field.GetViewCursorPos() );
 	wnoutrefresh( inputwin );
@@ -223,11 +222,7 @@ CON_ColorPrint
 */
 static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 {
-#ifdef USE_CURSES_W
 	static wchar_t buffer[ MAXPRINTMSG ];
-#else
-	static char buffer[ MAXPRINTMSG ];
-#endif
 	int         length = 0;
 	qboolean    noColour = qfalse;
 
@@ -242,13 +237,8 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 			// First empty the buffer
 			if ( length > 0 )
 			{
-#ifdef USE_CURSES_W
 				buffer[ length ] = L'\0';
 				waddwstr( win, buffer );
-#else
-				buffer[ length ] = '\0';
-				wprintw( win, "%s", buffer );
-#endif
 				length = 0;
 			}
 
@@ -312,30 +302,17 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 			{
 				noColour = qfalse;
 			}
-#ifdef USE_CURSES_W
 			buffer[ length ] = (wchar_t) Q_UTF8_CodePoint( msg );
 			msg += Q_UTF8_WidthCP( buffer[ length ]);
 			length++;
-#else
-			{
-				int chr = Q_UTF8_CodePoint( msg );
-				msg += Q_UTF8_WidthCP( chr );
-				buffer[ length++ ] = ( chr >= 0x100 ) ? '?' : chr;
-			}
-#endif
 		}
 	}
 
 	// Empty anything still left in the buffer
 	if ( length > 0 )
 	{
-#ifdef USE_CURSES_W
 		buffer[ length ] = L'\0';
 		waddwstr( win, buffer );
-#else
-		buffer[ length ] = '\0';
-		wprintw( win, "%s", buffer );
-#endif
 	}
 }
 
@@ -395,7 +372,7 @@ void CON_Clear_f( void )
 {
 	if ( !curses_on )
 	{
-//              CON_Clear_tty();
+//              CON_Clear_TTY();
 		return;
 	}
 
@@ -420,12 +397,58 @@ void CON_Shutdown( void )
 {
 	if ( !curses_on )
 	{
-		CON_Shutdown_tty();
+		CON_Shutdown_TTY();
 		return;
 	}
 
 	endwin();
+	dump_logs = curses_on;
 	curses_on = qfalse;
+
+#ifndef _WIN32
+	if ( stderr_fd >= 0 )
+	{
+		dup2( stderr_fd, STDERR_FILENO );
+	}
+#endif
+}
+
+/*
+==================
+CON_DumpLog
+
+Used for dumping log text to the tty.
+May be called on shutdown from a signal handler.
+==================
+*/
+void CON_LogDump( void )
+{
+	if ( dump_logs )
+	{
+		const char *ptr = insert;
+		int lines = 0;
+
+		dump_logs = 0;
+
+		while ( lines < 24 && --ptr >= logbuf )
+		{
+			if ( *ptr == '\n' )
+			{
+				++lines;
+			}
+		}
+
+		while ( *ptr == '\n' && ptr < insert )
+		{
+			++ptr;
+		}
+
+		if ( insert - ptr )
+		{
+			fputs( "\nPartial log dump:\n\n", stderr );
+			fwrite( ptr, 1, insert - ptr, stderr );
+		}
+	}
 }
 
 /*
@@ -448,7 +471,7 @@ void CON_Init( void )
 	// Make sure we're on a tty
 	if ( !isatty( STDIN_FILENO ) || !isatty( STDOUT_FILENO ) )
 	{
-		CON_Init_tty();
+		CON_Init_TTY();
 		return;
 	}
 #endif
@@ -461,8 +484,8 @@ void CON_Init( void )
 
 		if ( !test )
 		{
-			CON_Init_tty();
-			CON_Print_tty( "Couldn't initialize curses, falling back to tty\n" );
+			CON_Init_TTY();
+			CON_Print_TTY( "Couldn't initialize curses, falling back to tty\n" );
 			return;
 		}
 
@@ -507,7 +530,10 @@ void CON_Init( void )
 		}
 
 		// Prevent bad libraries from messing up the console
-		fclose( stderr );
+#ifndef _WIN32
+		stderr_fd = dup( STDERR_FILENO );
+		close( STDERR_FILENO );
+#endif
 	}
 
 	// Create the border
@@ -598,7 +624,7 @@ char *CON_Input( void )
 
 	if ( !curses_on )
 	{
-		return CON_Input_tty();
+		return CON_Input_TTY();
 	}
 
 	if ( com_ansiColor->modified )
@@ -855,7 +881,7 @@ void CON_Print( const char *msg )
 
 	if ( !curses_on )
 	{
-		CON_Print_tty( msg );
+		CON_Print_TTY( msg );
 		return;
 	}
 

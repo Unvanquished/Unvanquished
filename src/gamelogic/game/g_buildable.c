@@ -23,12 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-// this is wrong in so many ways
-// 1. the maximum alien bbox is > 25³
-// 2. the maximum alien spawning class bbox is still > 25³
-// 3. why is this even hardcoded?
-#define MAX_ALIEN_BBOX 25
-
 #define PRIMARY_ATTACK_PERIOD 7500
 #define NEARBY_ATTACK_PERIOD  15000
 
@@ -141,7 +135,7 @@ Check if a spawn at a specified point is valid
 gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
                               const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin )
 {
-	float   displacement;
+	float   minDistance, maxDistance, frac, displacement;
 	vec3_t  mins, maxs;
 	vec3_t  cmins, cmaxs;
 	vec3_t  localOrigin;
@@ -151,18 +145,61 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 
 	if ( spawn == BA_A_SPAWN )
 	{
-		VectorSet( cmins, -MAX_ALIEN_BBOX, -MAX_ALIEN_BBOX, -MAX_ALIEN_BBOX );
-		VectorSet( cmaxs,  MAX_ALIEN_BBOX,  MAX_ALIEN_BBOX,  MAX_ALIEN_BBOX );
+		// HACK: Assume advanced granger is biggest class that can spawn
+		BG_ClassBoundingBox( PCL_ALIEN_BUILDER0_UPG, cmins, cmaxs, NULL, NULL, NULL );
 
-		displacement = ( maxs[ 2 ] + MAX_ALIEN_BBOX ) * M_ROOT3 + 1.0f;
+		// Calculate the necessary displacement for a given normal so that the bounding boxes
+		// of buildable and client don't intersect.
+
+		// Method 1
+		// This describes the worst case for any angle.
+		/*
+		displacement = MAX( VectorLength( mins ), VectorLength( maxs ) ) +
+		               MAX( VectorLength( cmins ), VectorLength( cmaxs ) ) + 1.0f;
+		*/
+
+		// Method 2
+		// For normals with equal X and Y component these results are optimal. Otherwise they are
+		// still better than naive worst-case calculations.
+		// HACK: This only works for normals w/ angle < 45° towards either {0,0,1} or {0,0,-1}
+		if ( normal[ 2 ] < 0.0f )
+		{
+			// best case: client spawning right below egg
+			minDistance = -mins[ 2 ] + cmaxs[ 2 ];
+
+			// worst case: bounding boxes meet at their corners
+			maxDistance = VectorLength( mins ) + VectorLength( cmaxs );
+
+			// the fraction of the angle seperating best (0°) and worst case (45°)
+			frac = acos( -normal[ 2 ] ) / ( M_PI / 4.0f );
+		}
+		else
+		{
+			// best case: client spawning right above egg
+			minDistance = maxs[ 2 ] - cmins[ 2 ];
+
+			// worst case: bounding boxes meet at their corners
+			maxDistance = VectorLength( maxs ) + VectorLength( cmins );
+
+			// the fraction of the angle seperating best (0°) and worst case (45°)
+			frac = acos( normal[ 2 ] ) / ( M_PI / 4.0f );
+		}
+
+		// the linear interpolation of min & max distance should be an upper boundary for the
+		// optimal (closest possible) distance.
+		displacement = ( 1.0f - frac ) * minDistance + frac * maxDistance + 1.0f;
+
 		VectorMA( origin, displacement, normal, localOrigin );
 	}
 	else if ( spawn == BA_H_SPAWN )
 	{
+		// HACK: Assume naked human is biggest class that can spawn
 		BG_ClassBoundingBox( PCL_HUMAN_NAKED, cmins, cmaxs, NULL, NULL, NULL );
 
+		// Since humans always spawn right above the telenode center, this is the optimal
+		// (closest possible) client origin.
 		VectorCopy( origin, localOrigin );
-		localOrigin[ 2 ] += maxs[ 2 ] + fabs( cmins[ 2 ] ) + 1.0f;
+		localOrigin[ 2 ] += maxs[ 2 ] - cmins[ 2 ] + 1.0f;
 	}
 	else
 	{
@@ -276,11 +313,6 @@ int G_GetMarkedBuildPointsInt( team_t team )
 	int       sum = 0;
 	const buildableAttributes_t *attr;
 
-	if ( DECON_MARK_CHECK( INSTANT ) )
-	{
-		return 0;
-	}
-
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( ent->s.eType != ET_BUILDABLE || !ent->inuse || ent->health <= 0 || ent->buildableTeam != team || !ent->deconstruct )
@@ -319,13 +351,31 @@ gentity_t *G_Reactor( void )
 		rc = FindBuildable( BA_H_REACTOR );
 	}
 
-	// If we found it and it's alive, return it
-	if ( rc && rc->spawned && rc->health > 0 )
+	return rc;
+}
+
+gentity_t *G_AliveReactor( void )
+{
+	gentity_t *rc = G_Reactor();
+
+	if ( !rc || rc->health <= 0 )
 	{
-		return rc;
+		return NULL;
 	}
 
-	return NULL;
+	return rc;
+}
+
+gentity_t *G_ActiveReactor( void )
+{
+	gentity_t *rc = G_Reactor();
+
+	if ( !rc || rc->health <= 0 || !rc->spawned )
+	{
+		return NULL;
+	}
+
+	return rc;
 }
 
 gentity_t *G_Overmind( void )
@@ -338,13 +388,31 @@ gentity_t *G_Overmind( void )
 		om = FindBuildable( BA_A_OVERMIND );
 	}
 
-	// If we found it and it's alive, return it
-	if ( om && om->spawned && om->health > 0 )
+	return om;
+}
+
+gentity_t *G_AliveOvermind( void )
+{
+	gentity_t *om = G_Overmind();
+
+	if ( !om || om->health <= 0 )
 	{
-		return om;
+		return NULL;
 	}
 
-	return NULL;
+	return om;
+}
+
+gentity_t *G_ActiveOvermind( void )
+{
+	gentity_t *om = G_Overmind();
+
+	if ( !om || om->health <= 0 || !om->spawned )
+	{
+		return NULL;
+	}
+
+	return om;
 }
 
 static gentity_t* GetMainBuilding( gentity_t *self, qboolean ownBase )
@@ -401,9 +469,7 @@ Returns a huge value if the base is not found.
 */
 float G_DistanceToBase( gentity_t *self, qboolean ownBase )
 {
-	gentity_t *mainBuilding;
-
-	mainBuilding = GetMainBuilding( self, ownBase );
+	gentity_t *mainBuilding = GetMainBuilding( self, ownBase );
 
 	if ( mainBuilding )
 	{
@@ -424,9 +490,7 @@ G_InsideBase
 
 qboolean G_InsideBase( gentity_t *self, qboolean ownBase )
 {
-	gentity_t *mainBuilding;
-
-	mainBuilding = GetMainBuilding( self, ownBase );
+	gentity_t *mainBuilding = GetMainBuilding( self, ownBase );
 
 	if ( !mainBuilding )
 	{
@@ -840,7 +904,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	self->powered = qfalse;
 
 	// warn if in main base and there's an overmind
-	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer
+	if ( ( om = G_ActiveOvermind() ) && om != self && level.time > om->warnTimer
 	     && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ) )
 	{
 		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
@@ -958,7 +1022,7 @@ A generic think function for Alien buildables
 void AGeneric_Think( gentity_t *self )
 {
 	// set power state
-	self->powered = ( G_Overmind() != NULL );
+	self->powered = ( G_ActiveOvermind() != NULL );
 
 	// check if still on creep
 	AGeneric_CreepCheck( self );
@@ -1619,9 +1683,32 @@ void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
 
 void ABooster_Think( gentity_t *self )
 {
-	self->nextthink = level.time + 1000;
+	gentity_t *ent;
+	qboolean  playHealingEffect = qfalse;
+
+	self->nextthink = level.time + BOOST_REPEAT_ANIM / 4;
 
 	AGeneric_Think( self );
+
+	// check if there is a closeby alien that used this booster for healing recently
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, REGEN_BOOST_RANGE ) ); )
+	{
+		if ( ent->boosterUsed == self && ent->boosterTime == level.previousTime )
+		{
+			playHealingEffect = qtrue;
+			break;
+		}
+	}
+
+	if ( playHealingEffect )
+	{
+		if ( level.time > self->timestamp + BOOST_REPEAT_ANIM )
+		{
+			self->timestamp = level.time;
+			G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
+			G_AddEvent( self, EV_ALIEN_BOOSTER, DirToByte( self->s.origin2 ) );
+		}
+	}
 }
 
 void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
@@ -1939,7 +2026,7 @@ If it is, return whichever is nearest (preferring reactor).
 */
 static gentity_t *NearestPowerSourceInRange( gentity_t *self )
 {
-	gentity_t *neighbor = G_Reactor();
+	gentity_t *neighbor = G_ActiveReactor();
 	gentity_t *best = NULL;
 	float bestDistance = HUGE_QFLT;
 
@@ -1983,7 +2070,8 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 {
 	float range, power;
 
-	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
+	// buildables that need no power don't receive interference
+	if ( !BG_Buildable( buildable )->powerConsumption )
 	{
 		return 0.0f;
 	}
@@ -2069,12 +2157,10 @@ static float OutgoingInterference( buildable_t buildable, gentity_t *neighbor, f
 		return 0.0f;
 	}
 
-	// it's not possible to influence repeater or reactor
-	switch ( neighbor->s.modelindex )
+	// cannot influence buildables that need no power
+	if ( !BG_Buildable(neighbor->s.modelindex )->powerConsumption )
 	{
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			return 0.0f;
+		return 0.0f;
 	}
 
 	switch ( buildable )
@@ -2114,28 +2200,40 @@ static void CalculateSparePower( gentity_t *self )
 {
 	gentity_t *neighbor;
 	float     distance;
-	int       baseSupply, relativeSparePower;
+	int       powerConsumption, currentBaseSupply, expectedBaseSupply;
 
 	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
 		return;
 	}
 
-	switch ( self->s.modelindex )
+	powerConsumption = BG_Buildable( self->s.modelindex )->powerConsumption;
+
+	if ( !powerConsumption )
 	{
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			return;
+		return;
 	}
 
 	// reactor enables base supply everywhere on the map
-	baseSupply = G_Reactor() ? g_powerBaseSupply.integer : 0;
+	if ( G_ActiveReactor() != NULL )
+	{
+		currentBaseSupply = expectedBaseSupply = g_powerBaseSupply.integer;
+	}
+	else if ( G_AliveReactor() != NULL )
+	{
+		currentBaseSupply = 0;
+		expectedBaseSupply = g_powerBaseSupply.integer;
+	}
+	else
+	{
+		currentBaseSupply = expectedBaseSupply = 0;
+	}
 
-	self->expectedSparePower = baseSupply - BG_Buildable( self->s.modelindex )->powerConsumption;
+	self->expectedSparePower = expectedBaseSupply - powerConsumption;
 
 	if ( self->spawned )
 	{
-		self->currentSparePower = self->expectedSparePower;
+		self->currentSparePower = currentBaseSupply - powerConsumption;
 	}
 	else
 	{
@@ -2160,25 +2258,12 @@ static void CalculateSparePower( gentity_t *self )
 		}
 	}
 
-	// HACK: store relative spare power in entityState_t.clientNum for display
-	if ( self->spawned && g_powerBaseSupply.integer > 0 )
+	// HACK: Store total power (used + spare) in entityState_t.clientNum for display
+	if ( self->spawned )
 	{
-		relativeSparePower = ( int )( 100.0f * ( self->currentSparePower / g_powerBaseSupply.integer ) + 0.5f );
+		int totalPower = (int)self->currentSparePower + BG_Buildable( self->s.modelindex )->powerConsumption;
 
-		if ( relativeSparePower == 0 && self->currentSparePower > 0.0f )
-		{
-			relativeSparePower = 1;
-		}
-		else if ( relativeSparePower < 0 )
-		{
-			relativeSparePower = 0;
-		}
-		else if ( relativeSparePower > 100 )
-		{
-			relativeSparePower = 100;
-		}
-
-		self->s.clientNum = relativeSparePower;
+		self->s.clientNum = Q_clamp( totalPower, 0, POWER_DISPLAY_MAX );
 	}
 	else
 	{
@@ -2249,9 +2334,16 @@ void G_SetHumanBuildablePowerState()
 				continue;
 			}
 
+			// ignore buildables that need no power
+			if ( !BG_Buildable( ent->s.modelindex )->powerConsumption )
+			{
+				continue;
+			}
+
 			CalculateSparePower( ent );
 
-			// never shut down the telenode
+			// never shut down the telenode, even if it was set to consume power and operates below
+			// its threshold
 			if ( ent->s.modelindex == BA_H_SPAWN )
 			{
 				continue;
@@ -2361,13 +2453,24 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		self->nextthink = level.time;
 	}
 
-	// warn if this building was powered, there's a watcher nearby and it's powered too
-	if ( self->s.modelindex != BA_H_REACTOR && self->powered && G_Reactor() && IsWarnableMOD( mod ) )
+	// warn if this building was powered and there's a watcher nearby
+	if ( self->s.modelindex != BA_H_REACTOR && self->powered && IsWarnableMOD( mod ) )
 	{
-		qboolean inBase = G_InsideBase( self, qtrue );
-		gentity_t *watcher = inBase ? G_Reactor()
-		                            : ( self->s.modelindex == BA_H_REPEATER ) ? self : NearestPowerSourceInRange( self );
+		qboolean  inBase    = G_InsideBase( self, qtrue );
+		gentity_t *watcher  = NULL;
 		gentity_t *location = NULL;
+
+		if ( inBase )
+		{
+			// note that being inside the main base doesn't mean there always is an active reactor
+			watcher = G_ActiveReactor();
+		}
+
+		if ( !watcher )
+		{
+			// note that a repeater will find itself as nearest power source
+			watcher = NearestPowerSourceInRange( self );
+		}
 
 		// found reactor or repeater? get location entity
 		if ( watcher )
@@ -2741,7 +2844,7 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 	b = ( gentity_t * )second;
 
 	// Always prefer target that isn't yet targeted.
-	// This makes group attacks more and dretch spam during rushes less efficient.
+	// This makes group attacks more and dretch spam less efficient.
 	{
 		if ( a->numTrackedBy == 0 && b->numTrackedBy > 0 )
 		{
@@ -2753,6 +2856,30 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 		}
 	}
 
+	// Prefer target that can be aimed at more quickly.
+	// This makes the turret spend less time tracking enemies.
+	{
+		vec3_t aimDir, aDir, bDir;
+
+		AngleVectors( cmpTurret->buildableAim, aimDir, NULL, NULL );
+
+		VectorSubtract( a->s.origin, cmpTurret->s.origin, aDir );
+		VectorSubtract( b->s.origin, cmpTurret->s.origin, bDir );
+
+		VectorNormalize( aDir );
+		VectorNormalize( bDir );
+
+		if ( DotProduct( aDir, aimDir ) > DotProduct( bDir, aimDir ) )
+		{
+			return -1;
+		}
+		else
+		{
+			return 1;
+		}
+	}
+
+	/*
 	// Prefer smaller distance. Use zones so close targets with different hit ranges are treated equally.
 	// Note that one target can't hide the other, since the other wouldn't be valid.
 	{
@@ -2780,6 +2907,7 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 			return 1;
 		}
 	}
+	*/
 }
 
 static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolean newTarget )
@@ -2992,9 +3120,9 @@ static void HTurret_SetBaseDir( gentity_t *self )
 
 	// invert base direction if it reaches into a wall within the first damage zone
 	VectorMA( self->s.origin, ( float )TURRET_RANGE / ( float )TURRET_ZONES, dir, end );
-	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SOLID );
+	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT );
 
-	if ( tr.fraction < 1.0f )
+	if ( tr.entityNum == ENTITYNUM_WORLD || g_entities[ tr.entityNum ].s.eType == ET_BUILDABLE )
 	{
 		VectorNegate( dir, self->turretBaseDir );
 	}
@@ -3056,9 +3184,22 @@ static qboolean HTurret_TargetInReach( gentity_t *self )
 static void HTurret_Shoot( gentity_t *self )
 {
 	const int zoneDamage[] = TURRET_ZONE_DAMAGE;
+	int       zone;
 
-	int zone = HTurret_DistanceToZone( Distance( self->s.pos.trBase, self->target->s.pos.trBase ) );
+	// if turret doesn't have the fast loader upgrade, pause after three shots
+	if ( !self->turretHasFastLoader && self->turretSuccessiveShots >= 3 )
+	{
+		self->turretSuccessiveShots = 0;
 
+		self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
+		self->s.eFlags &= ~EF_FIRING;
+
+		return;
+	}
+
+	self->s.eFlags |= EF_FIRING;
+
+	zone = HTurret_DistanceToZone( Distance( self->s.pos.trBase, self->target->s.pos.trBase ) );
 	self->turretCurrentDamage = zoneDamage[ zone ];
 
 	if ( g_debugTurrets.integer > 1 )
@@ -3069,12 +3210,13 @@ static void HTurret_Shoot( gentity_t *self )
 		            TURRET_ZONES, self->turretCurrentDamage );
 	}
 
-	self->turretLastShotAtTarget = level.time;
-	self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
-
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 	G_FireWeapon( self, WP_MGTURRET, WPM_PRIMARY );
+
+	self->turretSuccessiveShots++;
+	self->turretLastShotAtTarget = level.time;
+	self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
 }
 
 void HTurret_Think( gentity_t *self )
@@ -3098,6 +3240,7 @@ void HTurret_Think( gentity_t *self )
 	if ( !self->powered )
 	{
 		self->turretDisabled = qtrue;
+		self->turretSuccessiveShots = 0;
 
 		HTurret_LowerPitch( self );
 		HTurret_MoveHeadToTarget( self );
@@ -3148,12 +3291,14 @@ void HTurret_Think( gentity_t *self )
 	// shoot if possible
 	if ( HTurret_TargetInReach( self ) )
 	{
-		self->s.eFlags |= EF_FIRING;
-
 		if ( self->turretNextShot < level.time )
 		{
 			HTurret_Shoot( self );
 		}
+	}
+	else
+	{
+		self->turretSuccessiveShots = 0;
 	}
 }
 
@@ -3655,34 +3800,6 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	return aPrecedence - bPrecedence;
 }
 
-/*
-===============
-G_ClearDeconMarks
-
-Remove decon mark from all buildables
-===============
-*/
-void G_ClearDeconMarks( void )
-{
-	int       i;
-	gentity_t *ent;
-
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( !ent->inuse )
-		{
-			continue;
-		}
-
-		if ( ent->s.eType != ET_BUILDABLE )
-		{
-			continue;
-		}
-
-		ent->deconstruct = qfalse;
-	}
-}
-
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
 	int   refund;
@@ -3734,11 +3851,6 @@ int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 	if ( nums && nsize )
 	{
 		nums[ 0 ] = '\0';
-	}
-
-	if ( DECON_MARK_CHECK( INSTANT ) && !DECON_OPTION_CHECK( PROTECT ) )
-	{
-		return 0; // Not enabled, can't deconstruct anything
 	}
 
 	for ( i = 0; i < level.numBuildablesForRemoval; i++ )
@@ -3821,7 +3933,7 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 	if (    ( oldBuildable == BA_H_REACTOR  && newBuildable != BA_H_REACTOR  )
 	     || ( oldBuildable == BA_A_OVERMIND && newBuildable != BA_A_OVERMIND ) )
 	{
-		return IBE_NOROOM; // TODO: Introduce fitting IBE
+		return IBE_MAINSTRUCTURE;
 	}
 
 	// don't replace last spawn with a non-spawn
@@ -3850,15 +3962,26 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 {
 	gentity_t       *neighbor, *buddy;
 	float           distance, ownPrediction, neighborPrediction;
-	int             baseSupply;
+	int             powerConsumption, baseSupply;
 
-	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
+	powerConsumption = BG_Buildable( buildable )->powerConsumption;
+
+	if ( !powerConsumption )
 	{
 		return qtrue;
 	}
 
-	baseSupply = G_Reactor() ? g_powerBaseSupply.integer : 0;
-	ownPrediction = baseSupply - BG_Buildable( buildable )->powerConsumption;
+	// reactor enables base supply everywhere on the map
+	if ( G_AliveReactor() )
+	{
+		baseSupply = g_powerBaseSupply.integer;
+	}
+	else
+	{
+		baseSupply = 0;
+	}
+
+	ownPrediction = baseSupply - powerConsumption;
 
 	neighbor = NULL;
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
@@ -3912,7 +4035,6 @@ Takes both power consumption and build points into account.
 Sets level.markedBuildables and level.numBuildablesForRemoval.
 ===============
 */
-// TODO: Add replacement flag checks
 static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3_t origin )
 {
 	int              entNum, listLen;
@@ -3937,7 +4059,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 	if ( buildable == BA_H_REACTOR )
 	{
-		ent = ( ent = G_Reactor() ) ? ent : FindBuildable( BA_H_REACTOR );
+		ent = G_Reactor();
 
 		if ( ent )
 		{
@@ -3953,7 +4075,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 	else if ( buildable == BA_A_OVERMIND )
 	{
-		ent = ( ent = G_Overmind() ) ? ent : FindBuildable( BA_A_OVERMIND );
+		ent = G_Overmind();
 
 		if ( ent )
 		{
@@ -4288,11 +4410,11 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	{
 		reason = tempReason;
 
-		if ( reason == IBE_NOPOWERHERE && !G_Reactor() )
+		if ( reason == IBE_NOPOWERHERE && !G_AliveReactor() )
 		{
 			reason = IBE_NOREACTOR;
 		}
-		else if ( reason == IBE_NOCREEP && !G_Overmind() )
+		else if ( reason == IBE_NOCREEP && !G_ActiveOvermind() )
 		{
 			reason = IBE_NOOVERMIND;
 		}
@@ -4302,7 +4424,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		// Check for Overmind
 		if ( buildable != BA_A_OVERMIND )
 		{
-			if ( !G_Overmind() )
+			if ( !G_ActiveOvermind() )
 			{
 				reason = IBE_NOOVERMIND;
 			}
@@ -4732,6 +4854,10 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
 			return qfalse;
 
+		case IBE_MAINSTRUCTURE:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_B_MAINSTRUCTURE );
+			return qfalse;
+
 		default:
 			break;
 	}
@@ -5089,6 +5215,7 @@ void G_LayoutLoad( void )
 	vec3_t       angles2 = { 0.0f, 0.0f, 0.0f };
 	char         line[ MAX_STRING_CHARS ];
 	int          i = 0;
+	const buildableAttributes_t *attr;
 
 	if ( !level.layout[ 0 ] || !Q_stricmp( level.layout, S_BUILTIN_LAYOUT ) )
 	{
@@ -5096,8 +5223,7 @@ void G_LayoutLoad( void )
 	}
 
 	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
-	len = trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, level.layout ),
-	                         &f, FS_READ );
+	len = trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, level.layout ), &f, FS_READ );
 
 	if ( len < 0 )
 	{
@@ -5132,7 +5258,8 @@ void G_LayoutLoad( void )
 			        &origin2[ 0 ], &origin2[ 1 ], &origin2[ 2 ],
 			        &angles2[ 0 ], &angles2[ 1 ], &angles2[ 2 ] );
 
-			buildable = BG_BuildableByName( buildName )->number;
+			attr = BG_BuildableByName( buildName );
+			buildable = attr->number;
 
 			if ( buildable <= BA_NONE || buildable >= BA_NUM_BUILDABLES )
 			{
@@ -5142,6 +5269,7 @@ void G_LayoutLoad( void )
 			else
 			{
 				LayoutBuildItem( (buildable_t) buildable, origin, angles, origin2, angles2 );
+				level.team[ attr->team ].layoutBuildPoints += attr->buildPoints;
 			}
 		}
 
@@ -5171,59 +5299,6 @@ void G_BaseSelfDestruct( team_t team )
 		}
 
 		if ( ent->buildableTeam != team )
-		{
-			continue;
-		}
-
-		G_Damage( ent, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
-	}
-}
-
-/*
-============
-G_Armageddon
-
-Destroys a part of all defensive buildings.
-strength in ]0,1] is the destruction quota.
-============
-*/
-void G_Armageddon( float strength )
-{
-	int       entNum;
-	gentity_t *ent;
-
-	if ( strength <= 0.0f )
-	{
-		return;
-	}
-
-	for ( entNum = MAX_CLIENTS; entNum < level.num_entities; entNum++ )
-	{
-		ent = &level.gentities[ entNum ];
-
-		// check for alive buildable
-		if ( ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
-		{
-			continue;
-		}
-
-		// check for defensive building
-		switch ( ent->s.modelindex )
-		{
-			case BA_A_ACIDTUBE:
-			case BA_A_TRAPPER:
-			case BA_A_HIVE:
-			case BA_A_BARRICADE:
-			case BA_H_MGTURRET:
-			case BA_H_TESLAGEN:
-				break;
-
-			default:
-				continue;
-		}
-
-		// russian roulette
-		if ( rand() / ( float )RAND_MAX > strength )
 		{
 			continue;
 		}

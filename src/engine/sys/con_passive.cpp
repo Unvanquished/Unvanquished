@@ -35,20 +35,12 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
-/* fallbacks for con_curses.c */
-#ifdef USE_CURSES
-#define CON_Init     CON_Init_tty
-#define CON_Shutdown CON_Shutdown_tty
-#define CON_Print    CON_Print_tty
-#define CON_Input    CON_Input_tty
-#endif
-
 /*
 ==================
 CON_Shutdown
 ==================
 */
-void CON_Shutdown( void )
+void CON_Shutdown_TTY( void )
 {
 }
 
@@ -57,7 +49,7 @@ void CON_Shutdown( void )
 CON_Init
 ==================
 */
-void CON_Init( void )
+void CON_Init_TTY( void )
 {
 }
 
@@ -66,7 +58,7 @@ void CON_Init( void )
 CON_Input
 ==================
 */
-char *CON_Input( void )
+char *CON_Input_TTY( void )
 {
 	return NULL;
 }
@@ -76,7 +68,7 @@ char *CON_Input( void )
 CON_Print
 ==================
 */
-void CON_Print( const char *msg )
+void CON_Print_TTY( const char *msg )
 {
 	//if( com_ansiColor && com_ansiColor->integer )
 	//  Sys_AnsiColorPrint( msg );

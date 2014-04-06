@@ -93,6 +93,11 @@ public:
 	// Read/Write from the file
 	size_t Read(void* buffer, size_t length, std::error_code& err = throws()) const;
 	void Write(const void* data, size_t length, std::error_code& err = throws()) const;
+	template<typename ... Args> void Printf(Args&&... args)
+	{
+		std::string text = Str::Format(std::forward<Args>(args)...);
+		Write(text.data(), text.length());
+	}
 
 	// Flush buffers
 	void Flush(std::error_code& err = throws()) const;
@@ -223,7 +228,7 @@ struct PakInfo {
 	// pak, but not necessarily for available paks. Also it might be inaccurate
 	// for available paks if the checksum in the filename doesn't match the
 	// actual checksum.
-	Opt::optional<uint32_t> checksum;
+	Util::optional<uint32_t> checksum;
 
 	// Type of pak
 	pakType_t type;
@@ -234,6 +239,11 @@ struct PakInfo {
 	// Time this pak was last updated. This is only valid for zip paks and
 	// reflects the timestamp at the time the pak was loaded.
 	std::chrono::system_clock::time_point timestamp;
+
+	// File handle of a loaded pak. This is only valid for zip paks that are
+	// loaded. Because the handle is used by multiple threads, you should use
+	// pread() to access it, which doesn't use the file position.
+	int fd;
 
 };
 
@@ -438,10 +448,10 @@ const PakInfo* FindPak(Str::StringRef name, Str::StringRef version);
 const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t checksum);
 
 // Extract a name, version and optional checksum from a pak filename
-bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Opt::optional<uint32_t>& checksum);
+bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Util::optional<uint32_t>& checksum);
 
 // Generate a pak name from a name, version and optional checksum
-std::string MakePakName(Str::StringRef name, Str::StringRef version, Opt::optional<uint32_t> checksum = Opt::nullopt);
+std::string MakePakName(Str::StringRef name, Str::StringRef version, Util::optional<uint32_t> checksum = Util::nullopt);
 
 // Get the list of available paks
 const std::vector<PakInfo>& GetAvailablePaks();

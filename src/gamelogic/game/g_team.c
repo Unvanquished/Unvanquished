@@ -23,31 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-// NULL for everyone
-void QDECL PRINTF_LIKE(2) PrintMsg( gentity_t *ent, const char *fmt, ... )
-{
-	char    msg[ 1024 ];
-	va_list argptr;
-	char    *p;
-
-	va_start( argptr, fmt );
-
-	if ( Q_vsnprintf( msg, sizeof( msg ), fmt, argptr ) >= sizeof( msg ) )
-	{
-		G_Error( "PrintMsg overrun" );
-	}
-
-	va_end( argptr );
-
-	// double quotes are bad
-	while ( ( p = strchr( msg, '"' ) ) != NULL )
-	{
-		*p = '\'';
-	}
-
-	trap_SendServerCommand( ( ( ent == NULL ) ? -1 : ent - g_entities ), va( "print %s", Quote( msg ) ) );
-}
-
 /*
 ================
 G_TeamFromString
@@ -188,7 +163,7 @@ static clientList_t G_ClientListForTeam( team_t team )
 
 	Com_Memset( &clientList, 0, sizeof( clientList_t ) );
 
-	for ( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		gentity_t *ent = g_entities + i;
 
@@ -479,10 +454,6 @@ void TeamplayInfoMessage( gentity_t *ent )
 			{
 				upgrade = UP_JETPACK;
 			}
-			else if ( BG_InventoryContainsUpgrade( UP_BATTPACK, cl->ps.stats ) )
-			{
-				upgrade = UP_BATTPACK;
-			}
 			else if ( BG_InventoryContainsUpgrade( UP_RADAR, cl->ps.stats ) )
 			{
 				upgrade = UP_RADAR;
@@ -549,7 +520,7 @@ void CheckTeamStatus( void )
 	{
 		level.lastTeamLocationTime = level.time;
 
-		for ( i = 0; i < g_maxclients.integer; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
 			ent = g_entities + i;
 
@@ -579,7 +550,7 @@ void CheckTeamStatus( void )
 			}
 		}
 
-		for ( i = 0; i < g_maxclients.integer; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
 			ent = g_entities + i;
 

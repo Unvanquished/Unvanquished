@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "../server/server.h"
 #include "bot_local.h"
+#include "../server/server.h"
 
 Bot_t agents[ MAX_CLIENTS ];
 

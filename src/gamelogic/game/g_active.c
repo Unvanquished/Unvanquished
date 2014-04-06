@@ -350,7 +350,7 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 	trace_t   trace;
 	gentity_t *other;
 
-	if( !ent->client )
+	if( !ent || !ent->client )
 	{
 		return;
 	}
@@ -376,7 +376,7 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 		G_WeightAttack( ent, other );
 
 		// tyrant trample
-		if ( ent->client && ent->client->ps.weapon == WP_ALEVEL4 )
+		if ( ent->client->ps.weapon == WP_ALEVEL4 )
 		{
 			G_ChargeAttack( ent, other );
 		}
@@ -387,13 +387,14 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 			ClientShove( ent, other );
 
 			//bot should get pushed out the way
-			if((ent->client) && (other->r.svFlags & SVF_BOT) && ent->client->pers.team == other->client->pers.team)
+			if( (other->r.svFlags & SVF_BOT) && ent->client->pers.team == other->client->pers.team)
 			{
 				PushBot(ent, other);
 			}
 
 			// if we are standing on their head, then we should be pushed also
-			if((ent->r.svFlags & SVF_BOT) && ent->s.groundEntityNum == other->s.number && other->client && ent->client->pers.team == other->client->pers.team)
+			if( (ent->r.svFlags & SVF_BOT) && ent->s.groundEntityNum == other->s.number &&
+			    other->client && ent->client->pers.team == other->client->pers.team)
 			{
 				PushBot(other, ent);
 			}
@@ -800,14 +801,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	gclient_t     *client;
 	usercmd_t     *ucmd;
 	int           i, aForward, aRight;
-	qboolean      walking = qfalse,
-	              stopped = qfalse,
-	              crouched = qfalse,
-	              jumping = qfalse,
-	              strafing = qfalse;
 	buildable_t   buildable;
-	const classAttributes_t *ca;
-	const weaponAttributes_t *wa;
 
 	if ( !ent || !ent->client )
 	{
@@ -817,8 +811,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	client = ent->client;
 	ps     = &client->ps;
 	ucmd   = &client->pers.cmd;
-	ca     = BG_Class( ps->stats[ STAT_CLASS ] );
-	wa     = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
 	aForward = abs( ucmd->forwardmove );
 	aRight   = abs( ucmd->rightmove );
@@ -826,29 +818,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	client->time100 += msec;
 	client->time1000 += msec;
 	client->time10000 += msec;
-
-	if ( aForward == 0 && aRight == 0 )
-	{
-		stopped = qtrue;
-	}
-	else if ( aForward <= 64 && aRight <= 64 )
-	{
-		walking = qtrue;
-	}
-
-	if ( aRight > 0 )
-	{
-		strafing = qtrue;
-	}
-
-	if ( ucmd->upmove > 0 )
-	{
-		jumping = qtrue;
-	}
-	else if ( ent->client->ps.pm_flags & PMF_DUCKED )
-	{
-		crouched = qtrue;
-	}
 
 	if( ent->r.svFlags & SVF_BOT )
 	{
@@ -860,40 +829,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		weapon_t weapon = BG_GetPlayerWeapon( &client->ps );
 
 		client->time100 -= 100;
-
-		// Use/Restore stamina (TODO: Move this to pmove to get rid of prediction errors!)
-		if ( client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_WARM )
-		{
-			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;
-		}
-		else if ( stopped )
-		{
-			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
-		}
-		else if ( ( client->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST ) &&
-		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) &&
-		          !crouched ) // walk overrides sprint
-		{
-			client->ps.stats[ STAT_STAMINA ] -= ca->staminaSprintCost;
-		}
-		else if ( walking || crouched )
-		{
-			client->ps.stats[ STAT_STAMINA ] += ca->staminaWalkRestore;
-		}
-		else // assume jogging
-		{
-			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;
-		}
-
-		// Check stamina limits
-		if ( client->ps.stats[ STAT_STAMINA ] > STAMINA_MAX )
-		{
-			client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
-		}
-		else if ( client->ps.stats[ STAT_STAMINA ] < 0 )
-		{
-			client->ps.stats[ STAT_STAMINA ] = 0;
-		}
 
 		// Update build timer
 		if ( weapon == WP_ABUILD || weapon == WP_ABUILD2 ||
@@ -1050,21 +985,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		else if ( ent->client->ps.weapon == WP_HBUILD )
 		{
 			G_AddCreditsToScore( ent, HUMAN_BUILDER_SCOREINC );
-		}
-
-		// Give score to basis that healed other aliens
-		if ( ent->client->pers.hasHealed )
-		{
-			if ( client->ps.weapon == WP_ALEVEL1 )
-			{
-				G_AddCreditsToScore( ent, LEVEL1_REGEN_SCOREINC );
-			}
-			else if ( client->ps.weapon == WP_ALEVEL1_UPG )
-			{
-				G_AddCreditsToScore( ent, LEVEL1_UPG_REGEN_SCOREINC );
-			}
-
-			ent->client->pers.hasHealed = qfalse;
 		}
 	}
 
@@ -1611,20 +1531,25 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 /**
  * @brief Attempt to find a health source for an alien.
  * @return A mask of SS_HEALING_* flags:
- *         SS_HEALING_ACTIVE when there is any heath source,
+ *         SS_HEALING_ACTIVE when there is any health source,
  *         SS_HEALING_2X     when there also is a source for double healing,
  *         SS_HEALING_3X     when there also is a source for triple healing.
  */
 static int FindAlienHealthSource( gentity_t *self )
 {
 	int       ret = 0;
-	float     distance;
+	float     distance, minBoosterDistance = REGEN_BOOST_RANGE; // TODO: USE FLT_MAX when available
+	qboolean  needsHealing;
 	gentity_t *ent;
 
 	if ( !self || !self->client )
 	{
 		return 0;
 	}
+
+	needsHealing = self->client->ps.stats[ STAT_HEALTH ] < BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
+
+	self->boosterUsed = NULL;
 
 	for ( ent = NULL; ( ent = G_IterateEntities( ent, NULL, qtrue, 0, NULL ) ); )
 	{
@@ -1633,16 +1558,11 @@ static int FindAlienHealthSource( gentity_t *self )
 		if ( ent->client && ent->health > 0 && distance < REGEN_BOOST_RANGE &&
 		     ent->client->pers.team == self->client->pers.team )
 		{
-			if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
+			/*if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 )
 			{
-				// Basilisk healing aura
+				// Tyrant healing aura
 				ret |= SS_HEALING_2X;
-			}
-			else if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
-			{
-				// Advanced Basilisk healing aura
-				ret |= SS_HEALING_3X;
-			}
+			}*/
 		}
 		else if ( ent->s.eType == ET_BUILDABLE && ent->spawned && ent->health > 0 &&
 		          ent->buildableTeam == self->client->pers.team )
@@ -1657,6 +1577,13 @@ static int FindAlienHealthSource( gentity_t *self )
 			{
 				// Booster healing
 				ret |= SS_HEALING_3X;
+
+				// The closest booster used will play an effect
+				if ( needsHealing && distance < minBoosterDistance )
+				{
+					minBoosterDistance = distance;
+					self->boosterUsed  = ent;
+				}
 			}
 		}
 	}
@@ -1674,6 +1601,11 @@ static int FindAlienHealthSource( gentity_t *self )
 	if ( ret )
 	{
 		self->healthSourceTime = level.time;
+
+		if ( self->boosterUsed )
+		{
+			self->boosterTime = level.time;
+		}
 	}
 
 	return ret;
@@ -1874,20 +1806,13 @@ void ClientThink_real( gentity_t *self )
 	{
 		client->ps.pm_type = PM_DEAD;
 	}
-	else if ( (client->ps.stats[ STAT_STATE ] & SS_BLOBLOCKED) ||
-	          (client->ps.stats[ STAT_STATE ] & SS_GRABBED) )
+	else if ( client->ps.stats[ STAT_STATE ] & SS_BLOBLOCKED )
 	{
 		client->ps.pm_type = PM_GRABBED;
 	}
 	else
 	{
 		client->ps.pm_type = PM_NORMAL;
-	}
-
-	if ( ( client->ps.stats[ STAT_STATE ] & SS_GRABBED ) &&
-	     client->grabExpiryTime < level.time )
-	{
-		client->ps.stats[ STAT_STATE ] &= ~SS_GRABBED;
 	}
 
 	if ( ( client->ps.stats[ STAT_STATE ] & SS_BLOBLOCKED ) &&
@@ -1903,11 +1828,11 @@ void ClientThink_real( gentity_t *self )
 	}
 
 	// Is power/creep available for the client's team?
-	if ( client->pers.team == TEAM_HUMANS && G_Reactor() )
+	if ( client->pers.team == TEAM_HUMANS && G_ActiveReactor() )
 	{
 		client->ps.eFlags |= EF_POWER_AVAILABLE;
 	}
-	else if ( client->pers.team == TEAM_ALIENS && G_Overmind() )
+	else if ( client->pers.team == TEAM_ALIENS && G_ActiveOvermind() )
 	{
 		client->ps.eFlags |= EF_POWER_AVAILABLE;
 	}
@@ -1933,14 +1858,6 @@ void ClientThink_real( gentity_t *self )
 		{
 			client->ps.stats[ STAT_STATE ] |= SS_BOOSTEDWARNING;
 		}
-	}
-
-	// Check if poison cloud has worn off
-	if ( ( client->ps.eFlags & EF_POISONCLOUDED ) &&
-	     BG_PlayerPoisonCloudTime( &client->ps ) - level.time +
-	     client->lastPoisonCloudedTime <= 0 )
-	{
-		client->ps.eFlags &= ~EF_POISONCLOUDED;
 	}
 
 	if ( (client->ps.stats[ STAT_STATE ] & SS_POISONED) &&
@@ -2025,6 +1942,12 @@ void ClientThink_real( gentity_t *self )
 		client->ps.stats[ STAT_STATE ] &= ~SS_CREEPSLOWED;
 	}
 
+	// unset level1slow flag if it's time
+	if ( client->lastLevel1SlowTime + LEVEL1_SLOW_TIME < level.time )
+	{
+		client->ps.stats[ STAT_STATE2 ] &= ~SS2_LEVEL1SLOW;
+	}
+
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
 
@@ -2087,7 +2010,6 @@ void ClientThink_real( gentity_t *self )
 	switch ( client->ps.weapon )
 	{
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			if ( !G_CheckVenomAttack( self ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;
@@ -2098,11 +2020,6 @@ void ClientThink_real( gentity_t *self )
 				G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 			}
 
-			break;
-
-		case WP_ALEVEL1:
-		case WP_ALEVEL1_UPG:
-			G_CheckGrabAttack( self );
 			break;
 
 		case WP_ALEVEL3:

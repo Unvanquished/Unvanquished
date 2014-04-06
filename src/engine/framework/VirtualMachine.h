@@ -31,45 +31,93 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
-#include "../../libs/nacl/nacl.h"
-#include "../../common/RPC.h"
-#include "../../common/String.h"
+#include "../../common/Common.h"
+#include "FileSystem.h"
 
 namespace VM {
 
-enum Type {
-  TYPE_NATIVE,
-  TYPE_NACL
+enum vmType_t {
+	TYPE_NACL,
+	TYPE_NACL_DEBUG,
+	TYPE_NATIVE_EXE,
+	TYPE_NATIVE_EXE_DEBUG,
+	TYPE_NATIVE_DLL,
+	TYPE_END
 };
 
 // Base class for a virtual machine instance
 class VMBase {
 public:
-  // Create the VM for the named module. Returns the ABI version reported
-  // by the module.
-  int Create(Str::StringRef name, Type type);
+	VMBase(std::string name)
+		: processHandle(IPC::INVALID_HANDLE), name(name),
+        logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false) {}
 
-  // Free the VM
-  void Free()
-  {
-    module.Close();
-  }
+	// Create the VM for the named module. Returns the ABI version reported
+	// by the module.
+	int Create(vmType_t type);
 
-  // Check if the VM is active
-  bool IsActive() const
-  {
-    return bool(module);
-  }
+	// Free the VM
+	void Free();
+
+	// Check if the VM is active
+	bool IsActive() const
+	{
+		return processHandle != IPC::INVALID_HANDLE || inProcess.thread.joinable();
+	}
+
+	// Make sure the VM is closed on exit
+	~VMBase()
+	{
+		Free();
+	}
+
+	// Send a message to the VM
+	template<typename Msg, typename... Args> void SendMsg(Args&&... args)
+	{
+		// Marking lambda as mutable to work around a bug in gcc 4.6
+        LogMessage(false, Msg::id);
+		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, IPC::Reader reader) mutable {
+			Syscall(id, std::move(reader), rootChannel);
+            LogMessage(true, id);
+		}, std::forward<Args>(args)...);
+	}
+
+	struct InProcessInfo {
+		std::thread thread;
+		std::mutex mutex;
+		std::condition_variable condition;
+		void* sharedLibHandle;
+		bool running;
+
+		InProcessInfo()
+			: sharedLibHandle(nullptr), running(false) {}
+	};
 
 protected:
-  // Perform an RPC call with the given inputs, returns results in output
-  RPC::Reader DoRPC(RPC::Writer& input, bool ignoreErrors = false);
-
-  // System call handler
-  virtual void Syscall(int index, RPC::Reader& input, RPC::Writer& output) = 0;
+	// System call handler
+	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) = 0;
 
 private:
-  NaCl::Module module;
+	void FreeInProcessVM();
+
+	// Used for the NaCl VMs
+	IPC::OSHandleType processHandle;
+
+	// Used by the native, in process VMs
+	InProcessInfo inProcess;
+
+	// Common
+	IPC::Channel rootChannel;
+	vmType_t vmType;
+
+    std::string name;
+
+    // Logging the syscalls
+    Cvar::Cvar<bool> logSyscalls;
+    FS::File syscallLogFile;
+
+    void LogMessage(bool vmToEngine, int id);
+
 };
 
 } // namespace VM

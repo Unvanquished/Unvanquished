@@ -39,12 +39,6 @@ Maryland 20850 USA.
 
 qboolean scr_initialized; // ready to draw
 
-cvar_t   *cl_timegraph;
-cvar_t   *cl_debuggraph;
-cvar_t   *cl_graphheight;
-cvar_t   *cl_graphscale;
-cvar_t   *cl_graphshift;
-
 /*
 ================
 SCR_DrawNamedPic
@@ -157,7 +151,7 @@ static glyphInfo_t *Glyph( int ch )
 	static int index = 0;
 	glyphInfo_t *glyph = &glyphs[ index++ & 7 ];
 
-	re.GlyphChar( &cls.consoleFont, ch, glyph );
+	re.GlyphChar( cls.consoleFont, ch, glyph );
 
 	return glyph;
 }
@@ -670,73 +664,6 @@ void SCR_DrawVoipSender( void )
 }
 #endif
 
-/*
-===============================================================================
-
-DEBUG GRAPH
-
-===============================================================================
-*/
-
-typedef struct
-{
-	float value;
-	int   color;
-} graphsamp_t;
-
-static int         current;
-static graphsamp_t values[ 1024 ];
-
-/*
-==============
-SCR_DebugGraph
-==============
-*/
-void SCR_DebugGraph( float value, int color )
-{
-	values[ current & 1023 ].value = value;
-	values[ current & 1023 ].color = color;
-	current++;
-}
-
-/*
-==============
-SCR_DrawDebugGraph
-==============
-*/
-void SCR_DrawDebugGraph( void )
-{
-	int   a, x, y, w, i, h;
-	float v;
-//	int             color;
-
-	//
-	// draw the graph
-	//
-	w = cls.glconfig.vidWidth;
-	x = 0;
-	y = cls.glconfig.vidHeight;
-	re.SetColor( g_color_table[ 0 ] );
-	re.DrawStretchPic( x, y - cl_graphheight->integer, w, cl_graphheight->integer, 0, 0, 0, 0, cls.whiteShader );
-	re.SetColor( NULL );
-
-	for ( a = 0; a < w; a++ )
-	{
-		i = ( current - 1 - a + 1024 ) & 1023;
-		v = values[ i ].value;
-//		color = values[i].color;
-		v = v * cl_graphscale->integer + cl_graphshift->integer;
-
-		if ( v < 0 )
-		{
-			v += cl_graphheight->integer * ( 1 + ( int )( -v / cl_graphheight->integer ) );
-		}
-
-		h = ( int ) v % cl_graphheight->integer;
-		re.DrawStretchPic( x + w - 1 - a, y - h, 1, h, 0, 0, 0, 0, cls.whiteShader );
-	}
-}
-
 //=============================================================================
 
 /*
@@ -746,12 +673,6 @@ SCR_Init
 */
 void SCR_Init( void )
 {
-	cl_timegraph = Cvar_Get( "timegraph", "0", CVAR_CHEAT );
-	cl_debuggraph = Cvar_Get( "debuggraph", "0", CVAR_CHEAT );
-	cl_graphheight = Cvar_Get( "graphheight", "32", CVAR_CHEAT );
-	cl_graphscale = Cvar_Get( "graphscale", "1", CVAR_CHEAT );
-	cl_graphshift = Cvar_Get( "graphshift", "0", CVAR_CHEAT );
-
 	scr_initialized = qtrue;
 }
 
@@ -846,11 +767,6 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 		VM_Call( uivm, UI_MOUSE_POSITION, qtrue );
 	}
 #endif
-	// debug graph can be drawn on top of anything
-	if ( cl_debuggraph->integer || cl_timegraph->integer || cl_debugMove->integer )
-	{
-		SCR_DrawDebugGraph();
-	}
 }
 
 /*
@@ -926,14 +842,14 @@ float SCR_ConsoleFontCharHeight( void )
 {
 	return cls.useLegacyConsoleFont
 	       ? SMALLCHAR_HEIGHT
-	       : cls.consoleFont.glyphBlock[0]['I'].imageHeight + CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
+	       : cls.consoleFont->glyphBlock[0]['I'].imageHeight + CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
 }
 
 float SCR_ConsoleFontCharVPadding( void )
 {
 	return cls.useLegacyConsoleFont
 	       ? 0
-	       : std::max( 0, -cls.consoleFont.glyphBlock[0]['g'].bottom >> 6);
+	       : std::max( 0, -cls.consoleFont->glyphBlock[0]['g'].bottom >> 6);
 }
 
 float SCR_ConsoleFontStringWidth( const char* s, int len )
