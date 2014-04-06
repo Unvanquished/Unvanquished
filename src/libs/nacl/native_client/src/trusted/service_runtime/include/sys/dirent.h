@@ -59,5 +59,6 @@ struct nacl_abi_dirent {
 extern nacl_abi_DIR           *nacl_abi_opendir(const char *dirpath);
 extern struct nacl_abi_dirent *nacl_abi_readdir(nacl_abi_DIR *direntry);
 extern int                    nacl_abi_closedir(nacl_abi_DIR *direntry);
+extern void                   nacl_abi_rewinddir(nacl_abi_DIR *direntry);
 
 #endif

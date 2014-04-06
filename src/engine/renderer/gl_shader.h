@@ -1517,21 +1517,6 @@ public:
 	}
 };
 
-class u_AmbientColor :
-	GLUniform3f
-{
-public:
-	u_AmbientColor( GLShader *shader ) :
-		GLUniform3f( shader, "u_AmbientColor" )
-	{
-	}
-
-	void SetUniform_AmbientColor( const vec3_t v )
-	{
-		this->SetValue( v );
-	}
-};
-
 class u_ViewOrigin :
 	GLUniform3f
 {
@@ -2340,6 +2325,51 @@ public:
 	}
 };
 
+class u_InverseGamma :
+	GLUniform1f
+{
+public:
+	u_InverseGamma( GLShader *shader ) :
+		GLUniform1f( shader, "u_InverseGamma" )
+	{
+	}
+
+	void SetUniform_InverseGamma( float value )
+	{
+		this->SetValue( value );
+	}
+};
+
+class u_LightGridOrigin :
+	GLUniform3f
+{
+public:
+	u_LightGridOrigin( GLShader *shader ) :
+		GLUniform3f( shader, "u_LightGridOrigin" )
+	{
+	}
+
+	void SetUniform_LightGridOrigin( vec3_t origin )
+	{
+		this->SetValue( origin );
+	}
+};
+
+class u_LightGridScale :
+	GLUniform3f
+{
+public:
+	u_LightGridScale( GLShader *shader ) :
+		GLUniform3f( shader, "u_LightGridScale" )
+	{
+	}
+
+	void SetUniform_LightGridScale( vec3_t scale )
+	{
+		this->SetValue( scale );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
@@ -2401,16 +2431,15 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_GlowTextureMatrix,
 	public u_SpecularExponent,
 	public u_AlphaThreshold,
-	public u_AmbientColor,
 	public u_ViewOrigin,
-	public u_LightDir,
-	public u_LightColor,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_Bones,
 	public u_VertexInterpolation,
 	public u_DepthScale,
 	public u_EnvironmentInterpolation,
+	public u_LightGridOrigin,
+	public u_LightGridScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
@@ -2444,6 +2473,8 @@ class GLShader_vertexLighting_DBS_world :
 	public u_ModelViewProjectionMatrix,
 	public u_DepthScale,
 	public u_LightWrapAround,
+	public u_LightGridOrigin,
+	public u_LightGridScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
@@ -2752,7 +2783,8 @@ class GLShader_cameraEffects :
 	public u_ColorModulate,
 	public u_ColorTextureMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_DeformMagnitude
+	public u_DeformMagnitude,
+	public u_InverseGamma
 {
 public:
 	GLShader_cameraEffects( GLShaderManager *manager );
@@ -2833,6 +2865,8 @@ class GLShader_liquid :
 	public u_FogDensity,
 	public u_FogColor,
 	public u_SpecularExponent,
+	public u_LightGridOrigin,
+	public u_LightGridScale,
 	public GLCompileMacro_USE_PARALLAX_MAPPING
 {
 public:

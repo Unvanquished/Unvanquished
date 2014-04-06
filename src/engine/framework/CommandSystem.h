@@ -97,8 +97,6 @@ namespace Cmd {
     //Completion stuff, highly unstable :-)
     CompletionResult CompleteArgument(const Args& args, int argNum);
     CompletionResult CompleteCommandNames(Str::StringRef prefix = "");
-    CompletionResult CompletionFilter(Str::StringRef prefix, std::initializer_list<CompletionItem> list);
-    CompletionResult CompletionFilter(CompletionResult &&res, Str::StringRef prefix, std::initializer_list<CompletionItem> list);
 
     //Function to ease the transition to C++
     bool CommandExists(const std::string& name);

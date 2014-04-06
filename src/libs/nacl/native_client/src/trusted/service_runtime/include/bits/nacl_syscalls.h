@@ -54,6 +54,12 @@
 #define NACL_sys_clock_getres           43
 #define NACL_sys_clock_gettime          44
 
+#define NACL_sys_mkdir                  45
+#define NACL_sys_rmdir                  46
+#define NACL_sys_chdir                  47
+#define NACL_sys_getcwd                 48
+#define NACL_sys_unlink                 49
+
 /* 50-58 previously used for multimedia syscalls */
 
 #define NACL_sys_imc_makeboundsock      60
@@ -104,6 +110,12 @@
 #define NACL_sys_test_syscall_1         111
 #define NACL_sys_test_syscall_2         112
 
-#define NACL_MAX_SYSCALLS               113
+#define NACL_sys_futex_wait_abs         120
+#define NACL_sys_futex_wake             121
+
+#define NACL_sys_pread                  130
+#define NACL_sys_pwrite                 131
+
+#define NACL_MAX_SYSCALLS               132
 
 #endif

@@ -783,8 +783,6 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		vboData.color = (vec4_t *)colorbuf;
 		vboData.st = (vec2_t *)IQModel->texcoords;
 		vboData.lightCoord = NULL;
-		vboData.ambientLight = NULL;
-		vboData.directedLight = NULL;
 		vboData.lightDir = NULL;
 		vboData.boneIndexes = (int (*)[4])indexbuf;
 		vboData.boneWeights = (vec4_t *)weightbuf;
@@ -897,8 +895,8 @@ static int R_CullIQM( trRefEntity_t *ent ) {
 	else
 	{
 		// copy a bounding box in the current coordinate system provided by skeleton
-		VectorCopy( ent->e.skeleton.bounds[ 0 ], localBounds[ 0 ] );
-		VectorCopy( ent->e.skeleton.bounds[ 1 ], localBounds[ 1 ] );
+		VectorScale( ent->e.skeleton.bounds[0], ent->e.skeleton.scale, localBounds[ 0 ] );
+		VectorScale( ent->e.skeleton.bounds[1], ent->e.skeleton.scale, localBounds[ 1 ] );
 	}
 
 	switch ( R_CullLocalBox( localBounds ) )
@@ -1041,7 +1039,14 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 				shader = skin->surfaces[ i ]->shader;
 			}
 		} else {
+
 			shader = surface->shader;
+
+			if ( ent->e.altShaderIndex > 0 && ent->e.altShaderIndex < MAX_ALTSHADERS &&
+				shader->altShader[ ent->e.altShaderIndex ].index )
+			{
+				shader = R_GetShaderByHandle( shader->altShader[ ent->e.altShaderIndex ].index );
+			}
 		}
 
 		// we will add shadows even if the main object isn't visible in the view

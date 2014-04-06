@@ -46,7 +46,8 @@ void G_SetShaderRemap( const char *oldShader, const char *newShader, float timeO
 		if ( Q_stricmp( oldShader, remappedShaders[ i ].oldShader ) == 0 )
 		{
 			// found it, just update this one
-			strcpy( remappedShaders[ i ].newShader, newShader );
+			strncpy( remappedShaders[ i ].newShader, newShader, MAX_QPATH );
+			remappedShaders[ i ].newShader[ MAX_QPATH - 1 ] = '\0';
 			remappedShaders[ i ].timeOffset = timeOffset;
 			return;
 		}
@@ -54,8 +55,10 @@ void G_SetShaderRemap( const char *oldShader, const char *newShader, float timeO
 
 	if ( remapCount < MAX_SHADER_REMAPS )
 	{
-		strcpy( remappedShaders[ remapCount ].newShader, newShader );
-		strcpy( remappedShaders[ remapCount ].oldShader, oldShader );
+		strncpy( remappedShaders[ remapCount ].newShader, newShader, MAX_QPATH );
+		remappedShaders[ remapCount ].newShader[ MAX_QPATH - 1 ] = '\0';
+		strncpy( remappedShaders[ remapCount ].oldShader, oldShader, MAX_QPATH );
+		remappedShaders[ remapCount ].oldShader[ MAX_QPATH - 1 ] = '\0';
 		remappedShaders[ remapCount ].timeOffset = timeOffset;
 		remapCount++;
 	}
@@ -210,7 +213,6 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 
 	VectorCopy( origin, player->client->ps.origin );
 	player->client->ps.groundEntityNum = ENTITYNUM_NONE;
-	player->client->ps.stats[ STAT_STATE ] &= ~SS_GRABBED;
 
 	AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
 	VectorScale( player->client->ps.velocity, speed, player->client->ps.velocity );
@@ -544,11 +546,6 @@ static const char *addr4parse( const char *str, addr_t *addr )
 
 			num = 0;
 		}
-	}
-
-	if ( octet < 1 )
-	{
-		return NULL;
 	}
 
 	return str + i;
@@ -1008,10 +1005,10 @@ int G_Heal( gentity_t *self, int amount )
 	totalCredits = 0;
 	for ( clientNum = 0, relevantClientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
 	{
-		if ( self->credits[ clientNum ] > 0.0f )
+		if ( self->credits[ clientNum ].value > 0.0f )
 		{
 			relevantClients[ relevantClientNum++ ] = clientNum;
-			totalCredits += self->credits[ clientNum ];
+			totalCredits += self->credits[ clientNum ].value;
 		}
 	}
 
@@ -1029,7 +1026,7 @@ int G_Heal( gentity_t *self, int amount )
 	// scale down or clear damage accounts
 	for ( clientNum = 0; clientNum < relevantClientNum; clientNum++ )
 	{
-		self->credits[ relevantClients[ clientNum ] ] *= scaleAccounts;
+		self->credits[ relevantClients[ clientNum ] ].value *= scaleAccounts;
 	}
 
 	// heal

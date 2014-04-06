@@ -16,7 +16,7 @@ models/weapons/lgun/grill
 models/weapons/lgun/zlasgun
 {
 	diffuseMap models/weapons/lgun/zlasgun
-	normalMap models/weapons/lgun/zlasgun_NRM
-	specularMap models/weapons/lgun/zlasgun_SPEC
+	normalMap models/weapons/lgun/zlasgun_n
+	specularMap models/weapons/lgun/zlasgun_s
 }
 

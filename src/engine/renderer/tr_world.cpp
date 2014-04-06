@@ -924,34 +924,33 @@ static void R_MarkLeaves( void )
 
 	// if the cluster is the same and the area visibility matrix
 	// hasn't changed, we don't need to mark everything again
-
-	for ( i = 0; i < MAX_VISCOUNTS; i++ )
-	{
-		if ( tr.visClusters[ i ] == cluster )
-		{
-			// if r_showcluster was just turned on, remark everything
-			if ( !tr.refdef.areamaskModified && !r_showcluster->modified ) // && !r_dynamicBspOcclusionCulling->modified)
-			{
-				if ( tr.visClusters[ i ] != tr.visClusters[ tr.visIndex ] && r_showcluster->integer )
+	if( tr.refdef.areamaskModified ) {
+		// remark ALL cached visClusters
+		for ( i = 0; i < MAX_VISCOUNTS; i++ ) {
+			tr.visClusters[ i ] = -1;
+		}
+		tr.visIndex = 1;
+	} else {
+		for ( i = 0; i < MAX_VISCOUNTS; i++ ) {
+			if ( tr.visClusters[ i ] == cluster ) {
+				// if r_showcluster was just turned on, remark everything
+				if ( !r_showcluster->modified ) // && !r_dynamicBspOcclusionCulling->modified)
 				{
-					ri.Printf( PRINT_ALL, "found cluster:%i  area:%i  index:%i\n", cluster, leaf->area, i );
+					if ( tr.visClusters[ i ] != tr.visClusters[ tr.visIndex ] && r_showcluster->integer )
+					{
+						ri.Printf( PRINT_ALL, "found cluster:%i  area:%i  index:%i\n", cluster, leaf->area, i );
+					}
+
+					tr.visIndex = i;
+					return;
 				}
-
-				tr.visIndex = i;
-				return;
-			}
-
-			if ( tr.refdef.areamaskModified )
-			{
-				// invalidate old visclusters so they will be updated next time
-				tr.visClusters[ i ] = -1;
 			}
 		}
+		tr.visIndex = ( tr.visIndex + 1 ) % MAX_VISCOUNTS;
 	}
 
-	tr.visIndex = ( tr.visIndex + 1 ) % MAX_VISCOUNTS;
-	tr.visCounts[ tr.visIndex ]++;
 	tr.visClusters[ tr.visIndex ] = cluster;
+	tr.visCounts[ tr.visIndex ]++;
 
 	if ( r_showcluster->modified || r_showcluster->integer )
 	{

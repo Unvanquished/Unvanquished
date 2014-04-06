@@ -34,18 +34,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define N_( text ) text
 #define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
 
-// decon types for g_markDeconstruct
-#define DECON_MARK_MASK            15
-#define DECON_MARK_INSTANT         0
-#define DECON_MARK_NO_REPLACE      1
-#define DECON_MARK_REPLACE_SAME    2
-#define DECON_MARK_REPLACE_ANY     3
-#define DECON_MARK_CHECK(mark) ( ( g_markDeconstruct.integer & DECON_MARK_MASK ) == DECON_MARK_##mark )
-
-#define DECON_OPTION_INSTANT       16
-#define DECON_OPTION_PROTECT       32
-#define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
-
 // factor applied to burning durations for randomization
 #define BURN_PERIODS_RAND_FACTOR   ( 1.0f + ( random() - 0.5f ) * 2.0f * BURN_PERIODS_RAND )
 

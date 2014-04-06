@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define COMMON_OPTIONAL_H_
 
 #include "../engine/qcommon/q_shared.h"
+#include "Util.h"
 #include <type_traits>
 #include <initializer_list>
 #include <memory>
@@ -41,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // The implementation is heavily based on experimental/optional in libc++, but
 // rewritten to work with older compilers.
 
-namespace Opt {
+namespace Util {
 
 struct nullopt_t {
 	explicit nullopt_t(int) {}
@@ -64,7 +65,7 @@ public:
 namespace detail {
 
 // GCC 4.6 is missing some type traits
-#ifdef GCC_BROKEN_CXX11
+#ifdef LIBSTDCXX_BROKEN_CXX11
 typedef char one[1];
 typedef char two[2];
 template<typename T, typename Arg, typename = decltype(std::declval<T>() = std::declval<Arg>())>
@@ -100,48 +101,48 @@ public:
 		: engaged(other.engaged)
 	{
 		if (other)
-			init(*other);
+			storage.construct(*other);
 	}
 	optional(optional&& other) NOEXCEPT_IF(detail::is_nothrow_move_constructible<value_type>::value)
 		: engaged(other.engaged)
 	{
 		if (other)
-			init(std::move(*other));
+			storage.construct(std::move(*other));
 	}
 	optional(const value_type& value)
 		: engaged(true)
 	{
-		init(value);
+		storage.construct(value);
 	}
 	optional(value_type&& value)
 		: engaged(true)
 	{
-		init(std::move(value));
+		storage.construct(std::move(value));
 	}
 	~optional()
 	{
 		if (engaged)
-			destroy();
+			storage.destroy();
 	}
 
 	template<typename... Args, typename = typename std::enable_if<std::is_constructible<value_type, Args...>::value>::type>
 	explicit optional(inplace_t, Args&&... args)
 		: engaged(true)
 	{
-		init(std::forward<Args>(args)...);
+		storage.construct(std::forward<Args>(args)...);
 	}
 	template<typename U, typename... Args, typename = typename std::enable_if<std::is_constructible<value_type, std::initializer_list<U>&, Args...>::value>::type>
 	explicit optional(inplace_t, std::initializer_list<U> il, Args&&... args)
 		: engaged(true)
 	{
-		init(il, std::forward<Args>(args)...);
+		storage.construct(il, std::forward<Args>(args)...);
 	}
 
 	optional& operator=(nullopt_t)
 	{
 		if (engaged) {
 			engaged = false;
-			destroy();
+			storage.destroy();
 		}
 		return *this;
 	}
@@ -149,12 +150,12 @@ public:
 	{
 		if (engaged == other.engaged) {
 			if (engaged)
-				assign(*other);
+				storage.assign(*other);
 		} else {
 			if (engaged)
-				destroy();
+				storage.destroy();
 			else
-				init(*other);
+				storage.construct(*other);
 			engaged = other.engaged;
 		}
 		return *this;
@@ -163,12 +164,12 @@ public:
 	{
 		if (engaged == other.engaged) {
 			if (engaged)
-				assign(std::move(*other));
+				storage.assign(std::move(*other));
 		} else {
 			if (engaged)
-				destroy();
+				storage.destroy();
 			else
-				init(std::move(*other));
+				storage.construct(std::move(*other));
 			engaged = other.engaged;
 		}
 		return *this;
@@ -179,9 +180,9 @@ public:
 	optional& operator=(U&& value)
 	{
 		if (engaged) {
-			assign(std::forward<U>(value));
+			storage.assign(std::forward<U>(value));
 		} else {
-			init(std::forward<U>(value));
+			storage.construct(std::forward<U>(value));
 			engaged = true;
 		}
 		return *this;
@@ -191,16 +192,16 @@ public:
 	void emplace(Args&&... args)
 	{
 		if (engaged)
-			destroy();
-		init(std::forward<Args>(args)...);
+			storage.destroy();
+		storage.construct(std::forward<Args>(args)...);
 		engaged = true;
 	}
 	template<typename U, typename... Args, typename = typename std::enable_if<std::is_constructible<value_type, std::initializer_list<U>&, Args...>::value>::type>
 	void emplace(std::initializer_list<U> il, Args&&... args)
 	{
 		if (engaged)
-			destroy();
-		init(il, std::forward<Args>(args)...);
+			storage.destroy();
+		storage.construct(il, std::forward<Args>(args)...);
 		engaged = true;
 	}
 
@@ -209,14 +210,14 @@ public:
 		using std::swap;
 		if (engaged == other.engaged) {
 			if (engaged)
-				swap(get_value(), *other);
+				swap(storage.get(), *other);
 		} else {
 			if (engaged) {
-				other.init(std::move(get_value()));
-				destroy();
+				other.storage.construct(std::move(storage.get()));
+				storage.destroy();
 			} else {
-				init(std::move(*other));
-				other.destroy();
+				storage.construct(std::move(*other));
+				other.storage.destroy();
 			}
 			swap(engaged, other.engaged);
 		}
@@ -224,19 +225,19 @@ public:
 
 	value_type* operator->()
 	{
-		return std::addressof(get_value());
+		return std::addressof(storage.get());
 	}
 	const value_type* operator->() const
 	{
-		return std::addressof(get_value());
+		return std::addressof(storage.get());
 	}
 	value_type& operator*()
 	{
-		return get_value();
+		return storage.get();
 	}
 	const value_type& operator*() const
 	{
-		return get_value();
+		return storage.get();
 	}
 
 	explicit operator bool() const
@@ -248,49 +249,28 @@ public:
 	{
 		if (!engaged)
 			throw bad_optional_access("optional<T>::value: not engaged");
-		return get_value();
+		return storage.get();
 	}
 	const value_type& value() const
 	{
 		if (!engaged)
 			throw bad_optional_access("optional<T>::value: not engaged");
-		return get_value();
+		return storage.get();
 	}
 
 	// Because we don't have rvalue references for *this, split into 2 functions
 	template<typename U> value_type value_or(U&& value) const
 	{
-		return engaged ? get_value() : static_cast<value_type>(std::forward<U>(value));
+		return engaged ? storage.get() : static_cast<value_type>(std::forward<U>(value));
 	}
 	template<typename U> value_type move_or(U&& value)
 	{
-		return engaged ? std::move(get_value()) : static_cast<value_type>(std::forward<U>(value));
+		return engaged ? std::move(storage.get()) : static_cast<value_type>(std::forward<U>(value));
 	}
 
 private:
-	typename std::aligned_storage<sizeof(value_type), std::alignment_of<value_type>::value>::type data;
+	uninitialized<T> storage;
 	bool engaged;
-
-	template<typename... Args> void init(Args&&... args)
-	{
-		new(&data) value_type(std::forward<Args>(args)...);
-	}
-	template<typename Arg> void assign(Arg&& arg)
-	{
-		get_value() = std::forward<Arg>(arg);
-	}
-	void destroy()
-	{
-		get_value().~value_type();
-	}
-	T& get_value()
-	{
-		return *reinterpret_cast<value_type*>(&data);
-	}
-	const T& get_value() const
-	{
-		return *reinterpret_cast<const value_type*>(&data);
-	}
 };
 
 template<typename T> void swap(optional<T>& a, optional<T>& b) NOEXCEPT_IF(NOEXCEPT_EXPR(a.swap(b)))
@@ -439,13 +419,13 @@ template<typename T> bool operator>(const T& a, const optional<T>& b)
 namespace std {
 
 // Hash support for optional
-template<typename T> struct hash<Opt::optional<T>> {
-	size_t operator()(const Opt::optional<T>& value) const
+template<typename T> struct hash<Util::optional<T>> {
+	size_t operator()(const Util::optional<T>& value) const
 	{
 		return static_cast<bool>(value) ? std::hash<T>()(*value) : 0;
 	}
 };
 
-} // namespace std
+} // namespace Util
 
 #endif // COMMON_OPTIONAL_H_

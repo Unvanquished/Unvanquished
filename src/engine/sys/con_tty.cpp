@@ -45,14 +45,6 @@ Maryland 20850 USA.
 #include "../../common/String.h"
 #include "../framework/ConsoleField.h"
 
-/* fallbacks for con_curses.c */
-#ifdef USE_CURSES
-#define CON_Init     CON_Init_tty
-#define CON_Shutdown CON_Shutdown_tty
-#define CON_Print    CON_Print_tty
-#define CON_Input    CON_Input_tty
-#endif
-
 /*
 =============================================================
 tty console routines
@@ -89,7 +81,7 @@ static void CON_FlushIn( void )
 {
 	char key;
 
-	while ( read( STDIN_FILENO, &key, 1 ) != -1 ) {; }
+	while ( read( STDIN_FILENO, &key, 1 ) > 0 ) {}
 }
 
 /*
@@ -172,12 +164,12 @@ static void CON_Show( void )
 
 /*
 ==================
-CON_Shutdown
+CON_Shutdown_TTY
 
 Never exit without calling this, or your terminal will be left in a pretty bad state
 ==================
 */
-void CON_Shutdown( void )
+void CON_Shutdown_TTY( void )
 {
 	if ( ttycon_on )
 	{
@@ -199,19 +191,19 @@ set attributes if user did CTRL+Z and then does fg again.
 
 void CON_SigCont( int signum )
 {
-	void CON_Init( void );
+	void CON_Init_TTY( void );
 
-	CON_Init();
+	CON_Init_TTY();
 }
 
 /*
 ==================
-CON_Init
+CON_Init_TTY
 
 Initialize the console input (tty mode if possible)
 ==================
 */
-void CON_Init( void )
+void CON_Init_TTY( void )
 {
 	struct termios tc;
 
@@ -262,17 +254,16 @@ void CON_Init( void )
 
 /*
 ==================
-CON_Input
+CON_Input_TTY
 ==================
 */
-char *CON_Input( void )
+char *CON_Input_TTY( void )
 {
 	// we use this when sending back commands
 	static char text[ MAX_EDIT_LINE ];
 	int         avail;
 	char        key;
 	const char  *history;
-//	size_t size;
 
 	if ( ttycon_on )
 	{
@@ -306,6 +297,14 @@ char *CON_Input( void )
 				{
 					CON_Hide();
 					TTY_field.AutoComplete();
+					CON_Show();
+					return NULL;
+				}
+
+				if ( key == '\x15' ) // ^U
+				{
+					CON_Hide();
+					TTY_field.Clear();
 					CON_Show();
 					return NULL;
 				}
@@ -399,10 +398,10 @@ char *CON_Input( void )
 
 /*
 ==================
-CON_Print
+CON_Print_TTY
 ==================
 */
-void CON_Print( const char *msg )
+void CON_Print_TTY( const char *msg )
 {
 	CON_Hide();
 
@@ -417,3 +416,34 @@ void CON_Print( const char *msg )
 
 	CON_Show();
 }
+
+/* fallbacks for con_curses.c */
+#ifndef USE_CURSES
+void CON_Init( void )
+{
+	CON_Init_TTY();
+}
+
+void CON_Shutdown( void )
+{
+	CON_Shutdown_TTY();
+}
+
+void CON_LogDump( void )
+{
+}
+
+char *CON_Input( void )
+{
+	return CON_Input_TTY();
+}
+
+void CON_Print( const char *message )
+{
+	CON_Print_TTY( message );
+}
+
+void CON_Clear_f( void )
+{
+}
+#endif

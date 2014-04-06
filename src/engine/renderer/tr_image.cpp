@@ -24,9 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 #include "../../common/Maths.h"
 
-static byte          s_intensitytable[ 256 ];
-static unsigned char s_gammatable[ 256 ];
-
 int                  gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
 int                  gl_filter_max = GL_LINEAR;
 
@@ -36,19 +33,6 @@ image_t              *r_imageHashTable[ IMAGE_FILE_HASH_SIZE ];
 #define Tex_FloatToByte(v) ( 128 + (int) ( (v) * 127.0f + 0.5 ) )
 //#define Tex_ByteToFloat(v) ( ( (float)(v) / 127.5f ) - 1.0f )
 //#define Tex_FloatToByte(v) (byte)( roundf( ( (v) + 1.0f ) * 127.5f ) )
-
-/*
-** R_GammaCorrect
-*/
-void R_GammaCorrect( byte *buffer, int bufSize )
-{
-	int i;
-
-	for ( i = 0; i < bufSize; i++ )
-	{
-		buffer[ i ] = s_gammatable[ buffer[ i ] ];
-	}
-}
 
 typedef struct
 {
@@ -206,6 +190,7 @@ void R_ImageList_f( void )
 	{
 		"no ", "yes"
 	};
+	const char *filter = ri.Cmd_Argc() > 1 ? ri.Cmd_Argv(1) : NULL;
 
 	ri.Printf( PRINT_ALL, "\n      -w-- -h-- -mm- -type-   -if-- wrap --name-------\n" );
 
@@ -215,28 +200,38 @@ void R_ImageList_f( void )
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
 		image = (image_t*) Com_GrowListElement( &tr.images, i );
+		char buffer[ MAX_TOKEN_CHARS ];
+		std::string out;
 
-		ri.Printf( PRINT_ALL, "%4i: %4i %4i  %s   ",
+		if ( filter && !Com_Filter( filter, image->name, qtrue ) )
+		{
+			continue;
+		}
+
+		Com_sprintf( buffer, sizeof( buffer ), "%4i: %4i %4i  %s   ",
 		           i, image->uploadWidth, image->uploadHeight, yesno[ image->filterType == FT_DEFAULT ] );
-
+		out += buffer;
 		switch ( image->type )
 		{
 			case GL_TEXTURE_2D:
 				texels += image->uploadWidth * image->uploadHeight;
 				imageDataSize = image->uploadWidth * image->uploadHeight;
 
-				ri.Printf( PRINT_ALL, "2D   " );
+				Com_sprintf( buffer, sizeof( buffer ),  "2D   " );
+				out += buffer;
 				break;
 
 			case GL_TEXTURE_CUBE_MAP:
 				texels += image->uploadWidth * image->uploadHeight * 6;
 				imageDataSize = image->uploadWidth * image->uploadHeight * 6;
 
-				ri.Printf( PRINT_ALL, "CUBE " );
+				Com_sprintf( buffer, sizeof( buffer ),  "CUBE " );
+				out += buffer;
 				break;
 
 			default:
-				ri.Printf( PRINT_ALL, "???? " );
+				Com_sprintf( buffer, sizeof( buffer ),  "???? " );
+				out += buffer;
 				imageDataSize = image->uploadWidth * image->uploadHeight;
 				break;
 		}
@@ -244,122 +239,147 @@ void R_ImageList_f( void )
 		switch ( image->internalFormat )
 		{
 			case GL_RGB8:
-				ri.Printf( PRINT_ALL, "RGB8     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGB8     " );
+				out += buffer;
 				imageDataSize *= 3;
 				break;
 
 			case GL_RGBA8:
-				ri.Printf( PRINT_ALL, "RGBA8    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGBA8    " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			case GL_RGB16:
-				ri.Printf( PRINT_ALL, "RGB      " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGB      " );
+				out += buffer;
 				imageDataSize *= 6;
 				break;
 
 			case GL_RGB16F:
-				ri.Printf( PRINT_ALL, "RGB16F   " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGB16F   " );
+				out += buffer;
 				imageDataSize *= 6;
 				break;
 
 			case GL_RGB32F:
-				ri.Printf( PRINT_ALL, "RGB32F   " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGB32F   " );
+				out += buffer;
 				imageDataSize *= 12;
 				break;
 
 			case GL_RGBA16F:
-				ri.Printf( PRINT_ALL, "RGBA16F  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGBA16F  " );
+				out += buffer;
 				imageDataSize *= 8;
 				break;
 
 			case GL_RGBA32F:
-				ri.Printf( PRINT_ALL, "RGBA32F  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGBA32F  " );
+				out += buffer;
 				imageDataSize *= 16;
 				break;
 
 			case GL_ALPHA16F_ARB:
-				ri.Printf( PRINT_ALL, "A16F     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "A16F     " );
+				out += buffer;
 				imageDataSize *= 2;
 				break;
 
 			case GL_ALPHA32F_ARB:
-				ri.Printf( PRINT_ALL, "A32F     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "A32F     " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			case GL_R16F:
-				ri.Printf( PRINT_ALL, "R16F     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "R16F     " );
+				out += buffer;
 				imageDataSize *= 2;
 				break;
 
 			case GL_R32F:
-				ri.Printf( PRINT_ALL, "R32F     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "R32F     " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			case GL_LUMINANCE_ALPHA16F_ARB:
-				ri.Printf( PRINT_ALL, "LA16F    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "LA16F    " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			case GL_LUMINANCE_ALPHA32F_ARB:
-				ri.Printf( PRINT_ALL, "LA32F    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "LA32F    " );
+				out += buffer;
 				imageDataSize *= 8;
 				break;
 
 			case GL_RG16F:
-				ri.Printf( PRINT_ALL, "RG16F    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RG16F    " );
+				out += buffer;
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			case GL_RG32F:
-				ri.Printf( PRINT_ALL, "RG32F    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RG32F    " );
+				out += buffer;
 				imageDataSize *= 8;
 				break;
 
 			case GL_COMPRESSED_RGBA:
-				ri.Printf( PRINT_ALL, "      " );
+				Com_sprintf( buffer, sizeof( buffer ),  "      " );
+				out += buffer;
 				imageDataSize *= 4; // FIXME
 				break;
 
 			case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-				ri.Printf( PRINT_ALL, "DXT1     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "DXT1     " );
+				out += buffer;
 				imageDataSize *= 4 / 8;
 				break;
 
 			case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-				ri.Printf( PRINT_ALL, "DXT1a    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "DXT1a    " );
+				out += buffer;
 				imageDataSize *= 4 / 8;
 				break;
 
 			case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-				ri.Printf( PRINT_ALL, "DXT3     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "DXT3     " );
+				out += buffer;
 				imageDataSize *= 4 / 4;
 				break;
 
 			case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-				ri.Printf( PRINT_ALL, "DXT5     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "DXT5     " );
+				out += buffer;
 				imageDataSize *= 4 / 4;
 				break;
 
 			case GL_DEPTH_COMPONENT16:
-				ri.Printf( PRINT_ALL, "D16      " );
+				Com_sprintf( buffer, sizeof( buffer ),  "D16      " );
+				out += buffer;
 				imageDataSize *= 2;
 				break;
 
 			case GL_DEPTH_COMPONENT24:
-				ri.Printf( PRINT_ALL, "D24      " );
+				Com_sprintf( buffer, sizeof( buffer ),  "D24      " );
+				out += buffer;
 				imageDataSize *= 3;
 				break;
 
 			case GL_DEPTH_COMPONENT32:
-				ri.Printf( PRINT_ALL, "D32      " );
+				Com_sprintf( buffer, sizeof( buffer ),  "D32      " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			default:
-				ri.Printf( PRINT_ALL, "????     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "????     " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 		}
@@ -367,60 +387,72 @@ void R_ImageList_f( void )
 		switch ( image->wrapType.s )
 		{
 			case WT_REPEAT:
-				ri.Printf( PRINT_ALL, "s.rept  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.rept  " );
+				out += buffer;
 				break;
 
 			case WT_CLAMP:
-				ri.Printf( PRINT_ALL, "s.clmp  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.clmp  " );
+				out += buffer;
 				break;
 
 			case WT_EDGE_CLAMP:
-				ri.Printf( PRINT_ALL, "s.eclmp " );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.eclmp " );
+				out += buffer;
 				break;
 
 			case WT_ZERO_CLAMP:
-				ri.Printf( PRINT_ALL, "s.zclmp " );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.zclmp " );
+				out += buffer;
 				break;
 
 			case WT_ALPHA_ZERO_CLAMP:
-				ri.Printf( PRINT_ALL, "s.azclmp" );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.azclmp" );
+				out += buffer;
 				break;
 
 			default:
-				ri.Printf( PRINT_ALL, "s.%4i  ", image->wrapType.s );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.%4i  ", image->wrapType.s );
+				out += buffer;
 				break;
 		}
 
 		switch ( image->wrapType.t )
 		{
 			case WT_REPEAT:
-				ri.Printf( PRINT_ALL, "t.rept  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.rept  " );
+				out += buffer;
 				break;
 
 			case WT_CLAMP:
-				ri.Printf( PRINT_ALL, "t.clmp  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.clmp  " );
+				out += buffer;
 				break;
 
 			case WT_EDGE_CLAMP:
-				ri.Printf( PRINT_ALL, "t.eclmp " );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.eclmp " );
+				out += buffer;
 				break;
 
 			case WT_ZERO_CLAMP:
-				ri.Printf( PRINT_ALL, "t.zclmp " );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.zclmp " );
+				out += buffer;
 				break;
 
 			case WT_ALPHA_ZERO_CLAMP:
-				ri.Printf( PRINT_ALL, "t.azclmp" );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.azclmp" );
+				out += buffer;
 				break;
 
 			default:
-				ri.Printf( PRINT_ALL, "t.%4i  ", image->wrapType.t );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.%4i  ", image->wrapType.t );
+				out += buffer;
 				break;
 		}
 
 		dataSize += imageDataSize;
 
-		ri.Printf( PRINT_ALL, " %s\n", image->name );
+		ri.Printf( PRINT_ALL, "%s %s\n", out.c_str(), image->name );
 	}
 
 	ri.Printf( PRINT_ALL, " ---------\n" );
@@ -549,69 +581,6 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 				( ( byte * )( out ) ) [ 3 ] = ( pix1[ 3 ] + pix2[ 3 ] + pix3[ 3 ] + pix4[ 3 ] ) >> 2;
 
 				++out;
-			}
-		}
-	}
-}
-
-/*
-================
-R_LightScaleTexture
-
-Scale up the pixel values in a texture to increase the
-lighting range
-================
-*/
-void R_LightScaleTexture( unsigned *in, int inwidth, int inheight, qboolean onlyGamma )
-{
-	if ( onlyGamma )
-	{
-		if ( !glConfig.deviceSupportsGamma )
-		{
-			int  i, c;
-			byte *p;
-
-			p = ( byte * ) in;
-
-			c = inwidth * inheight;
-
-			for ( i = 0; i < c; i++, p += 4 )
-			{
-				p[ 0 ] = s_gammatable[ p[ 0 ] ];
-				p[ 1 ] = s_gammatable[ p[ 1 ] ];
-				p[ 2 ] = s_gammatable[ p[ 2 ] ];
-			}
-		}
-	}
-	else
-	{
-		int  i, c;
-		byte *p;
-
-		p = ( byte * ) in;
-
-		c = inwidth * inheight;
-
-		if ( glConfig.deviceSupportsGamma )
-		{
-			// raynorpat: small optimization
-			if ( r_intensity->value != 1.0f )
-			{
-				for ( i = 0; i < c; i++, p += 4 )
-				{
-					p[ 0 ] = s_intensitytable[ p[ 0 ] ];
-					p[ 1 ] = s_intensitytable[ p[ 1 ] ];
-					p[ 2 ] = s_intensitytable[ p[ 2 ] ];
-				}
-			}
-		}
-		else
-		{
-			for ( i = 0; i < c; i++, p += 4 )
-			{
-				p[ 0 ] = s_gammatable[ s_intensitytable[ p[ 0 ] ] ];
-				p[ 1 ] = s_gammatable[ s_intensitytable[ p[ 1 ] ] ];
-				p[ 2 ] = s_gammatable[ s_intensitytable[ p[ 2 ] ] ];
 			}
 		}
 	}
@@ -1656,11 +1625,6 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 						scaledBuffer[ i * 4 + 2 ] = Tex_FloatToByte( n[ 2 ] );
 					}
 				}
-
-				if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_TWOCOMP16F | IF_TWOCOMP32F | IF_NOLIGHTSCALE ) ) )
-				{
-					R_LightScaleTexture( ( unsigned * ) scaledBuffer, scaledWidth, scaledHeight, image->filterType == FT_DEFAULT );
-				}
 			}
 
 			image->uploadWidth = scaledWidth;
@@ -2019,13 +1983,14 @@ static void R_ExportTexture( image_t *image )
 	char path[ 1024 ];
 	int i;
 
+
 	Com_sprintf( path, sizeof( path ), "texexp/%s.ktx",
 		     image->name );
 
 	// quick and dirty sanitize path name
 	for( i = strlen( path ) - 1; i >= 7; i-- ) {
 		if( !isalnum( path[ i ] ) && path[ i ] != '.' && path[ i ] != '-' ) {
-			path[ i ] = '+';
+			path[ i ] = 'z';
 		}
 	}
 	SaveImageKTX( path, image );
@@ -2876,6 +2841,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	image_t       *image = NULL;
 	int           width = 0, height = 0, numLayers = 0, numMips = 0;
 	byte          *pic[ MAX_TEXTURE_MIPS * MAX_TEXTURE_LAYERS ];
+	byte          *mallocPtr = NULL;
 	long          hash;
 	char          buffer[ 1024 ];
 	char          *buffer_p;
@@ -2928,11 +2894,11 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	buffer_p = &buffer[ 0 ];
 	R_LoadImage( &buffer_p, pic, &width, &height, &numLayers, &numMips, &bits, materialName );
 
-	if ( pic[ 0 ] == NULL || numLayers > 0 )
+	if ( (mallocPtr = pic[ 0 ]) == NULL || numLayers > 0 )
 	{
-		if ( *pic )
+		if ( mallocPtr )
 		{
-			ri.Free( *pic );
+			ri.Free( mallocPtr );
 		}
 		return NULL;
 	}
@@ -2952,7 +2918,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 			       width, height, numMips, bits,
 			       filterType, wrapType );
 
-	ri.Free( *pic );
+	ri.Free( mallocPtr );
 	return image;
 }
 
@@ -3108,6 +3074,18 @@ Returns NULL if it fails, not a default image.
 Tr3B: fear the use of goto
 ==============
 */
+static void R_FreeCubePics( byte **pic, int count )
+{
+	while (--count >= 0)
+	{
+		if ( pic[ count ] )
+		{
+			ri.Free( pic[ count ] );
+		}
+	}
+}
+
+
 image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName )
 {
 	int         i;
@@ -3175,6 +3153,8 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	if( numLayers == 6 && pic[0] ) {
 		numPicsToFree = 1;
 		goto createCubeImage;
+	} else {
+		R_FreeCubePics( pic, numLayers );
 	}
 
 	// try to load .KTX cubemap
@@ -3182,6 +3162,8 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	if( numLayers == 6 && pic[0] ) {
 		numPicsToFree = 1;
 		goto createCubeImage;
+	} else {
+		R_FreeCubePics( pic, numLayers );
 	}
 
 	for ( i = 0; i < 6; i++ )
@@ -3195,6 +3177,12 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 
 		filename_p = &filename[ 0 ];
 		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
+
+		if ( IsImageCompressed( bits ) )
+		{
+	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+		        goto skipCubeImage;
+		}
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
@@ -3220,6 +3208,12 @@ tryDoom3Suffices:
 
 		filename_p = &filename[ 0 ];
 		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
+
+		if ( IsImageCompressed( bits ) )
+		{
+	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+		        goto skipCubeImage;
+		}
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
@@ -3259,6 +3253,12 @@ tryQuakeSuffices:
 		filename_p = &filename[ 0 ];
 		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
 
+		if ( IsImageCompressed( bits ) )
+		{
+	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+		        goto skipCubeImage;
+		}
+
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
 			image = NULL;
@@ -3284,14 +3284,7 @@ createCubeImage:
 	image = R_CreateCubeImage( ( char * ) buffer, ( const byte ** ) pic, width, height, bits, filterType, wrapType );
 
 skipCubeImage:
-
-	for ( i = 0; i < numPicsToFree; i++ )
-	{
-		if ( pic[ i ] )
-		{
-			ri.Free( pic[ i ] );
-		}
-	}
+	R_FreeCubePics( pic, numPicsToFree );
 
 	return image;
 }
@@ -4170,116 +4163,6 @@ void R_CreateBuiltinImages( void )
 
 /*
 ===============
-R_SetColorMappings
-===============
-*/
-void R_SetColorMappings( void )
-{
-	int   i, j;
-	float g;
-	int   inf;
-	int   shift;
-
-	tr.mapOverBrightBits = r_mapOverBrightBits->integer;
-
-	// setup the overbright lighting
-	tr.overbrightBits = r_overBrightBits->integer;
-
-	if ( !glConfig.deviceSupportsGamma )
-	{
-		tr.overbrightBits = 0; // need hardware gamma for overbright
-	}
-
-	// never overbright in windowed mode
-	if ( !glConfig.isFullscreen )
-	{
-		tr.overbrightBits = 0;
-	}
-
-	// allow 2 overbright bits in 24 bit, but only 1 in 16 bit
-	if ( glConfig.colorBits > 16 )
-	{
-		if ( tr.overbrightBits > 2 )
-		{
-			tr.overbrightBits = 2;
-		}
-	}
-	else
-	{
-		if ( tr.overbrightBits > 1 )
-		{
-			tr.overbrightBits = 1;
-		}
-	}
-
-	if ( tr.overbrightBits < 0 )
-	{
-		tr.overbrightBits = 0;
-	}
-
-	tr.identityLight = 1.0f / ( 1 << tr.overbrightBits );
-
-	if ( r_intensity->value <= 1 )
-	{
-		ri.Cvar_Set( "r_intensity", "1" );
-	}
-
-	if ( r_gamma->value < 0.5f )
-	{
-		ri.Cvar_Set( "r_gamma", "0.5" );
-	}
-	else if ( r_gamma->value > 3.0f )
-	{
-		ri.Cvar_Set( "r_gamma", "3.0" );
-	}
-
-	g = r_gamma->value;
-
-	shift = tr.overbrightBits;
-
-	for ( i = 0; i < 256; i++ )
-	{
-		if ( g == 1 )
-		{
-			inf = i;
-		}
-		else
-		{
-			inf = 255 * pow( i / 255.0f, 1.0f / g ) + 0.5f;
-		}
-
-		inf <<= shift;
-
-		if ( inf < 0 )
-		{
-			inf = 0;
-		}
-
-		if ( inf > 255 )
-		{
-			inf = 255;
-		}
-
-		s_gammatable[ i ] = inf;
-	}
-
-	for ( i = 0; i < 256; i++ )
-	{
-		j = i * r_intensity->value;
-
-		if ( j > 255 )
-		{
-			j = 255;
-		}
-
-		s_intensitytable[ i ] = j;
-	}
-
-	GLimp_SetGamma( s_gammatable, s_gammatable, s_gammatable );
-}
-
-/*
-===============
 R_InitImages
 ===============
 */
@@ -4296,8 +4179,11 @@ void R_InitImages( void )
 	Com_InitGrowList( &tr.lightmaps, 128 );
 	Com_InitGrowList( &tr.deluxemaps, 128 );
 
-	// build brightness translation tables
-	R_SetColorMappings();
+	// These are the values expected by the rest of the renderer (esp. tr_bsp), used for "gamma correction of the map"
+	// (both were set to 0 if we had neither COMPAT_ET nor COMPAT_Q3, it may be interesting to remember)
+	tr.overbrightBits = 0;
+	tr.mapOverBrightBits = 2;
+	tr.identityLight = 1.0f / ( 1 << tr.overbrightBits );
 
 	// create default texture and white texture
 	R_CreateBuiltinImages();

@@ -91,8 +91,6 @@ float BotGetBaseRushScore( gentity_t *ent )
 			return 0.0f;
 		case WP_ALEVEL0:
 			return 0.0f;
-		case WP_ALEVEL0_UPG:
-			return 0.0f;
 		case WP_ALEVEL1:
 			return 0.2f;
 		case WP_ALEVEL2:
@@ -160,11 +158,7 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case WP_ALEVEL0:
 				enemyScore = 0.1;
 				break;
-			case WP_ALEVEL0_UPG:
-				enemyScore = 0.2;
-				break;
 			case WP_ALEVEL1:
-			case WP_ALEVEL1_UPG:
 				enemyScore = 0.3;
 				break;
 			case WP_ALEVEL2:
@@ -294,13 +288,9 @@ float PercentAmmoRemaining( weapon_t weapon, playerState_t *ps )
 
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;
 	maxClips = BG_Weapon( weapon )->maxClips;
+
 	if ( !BG_Weapon( weapon )->infiniteAmmo )
 	{
-		if ( BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
-		{
-			maxAmmo = ( int )( ( float )maxAmmo * BATTPACK_MODIFIER );
-		}
-
 		totalMaxAmmo = ( float ) maxAmmo + maxClips * maxAmmo;
 		totalAmmo = ( float ) ps->ammo + ps->clips * maxAmmo;
 
@@ -434,13 +424,6 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	}
 
 	usableCapital -= BG_Weapon( *weapon )->price;
-
-	//finally, see if we can buy a battpack
-	if ( BG_Weapon( *weapon )->usesEnergy && BG_UpgradeUnlocked( UP_BATTPACK ) && usableCapital >= BG_Upgrade( UP_BATTPACK )->price && upgrades[0] != UP_BATTLESUIT )
-	{
-		upgrades[( *numUpgrades )++] = UP_BATTPACK;
-		usableCapital -= BG_Upgrade( UP_BATTPACK )->price;
-	}
 
 	//now test to see if we already have all of these items
 	//check if we already have everything
@@ -700,7 +683,8 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 		}
 
 		//ignore buildings if we cant attack them
-		if ( target->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer || self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
+		if ( target->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer ||
+		                                          self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
 		{
 			continue;
 		}
@@ -1041,18 +1025,12 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			range = LEVEL0_BITE_RANGE;
 			secondaryRange = 0;
 			break;
 		case WP_ALEVEL1:
 			range = LEVEL1_CLAW_RANGE;
-			secondaryRange = 0;
-			width = height = LEVEL1_CLAW_WIDTH;
-			break;
-		case WP_ALEVEL1_UPG:
-			range = LEVEL1_CLAW_RANGE;
-			secondaryRange = LEVEL1_PCLOUD_RANGE;
+			secondaryRange = LEVEL1_POUNCE_DISTANCE;
 			width = height = LEVEL1_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2:
@@ -1514,27 +1492,9 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 	switch ( self->client->ps.stats[STAT_CLASS] )
 	{
 		case PCL_ALIEN_LEVEL0:
-		case PCL_ALIEN_LEVEL0_UPG:
 			BotStrafeDodge( self );
 			break;
 		case PCL_ALIEN_LEVEL1:
-		case PCL_ALIEN_LEVEL1_UPG:
-			if ( BotTargetIsPlayer( self->botMind->goal ) && ( self->botMind->goal.ent->client->ps.stats[STAT_STATE] & SS_GRABBED ) && inAttackRange )
-			{
-				if ( self->botMind->botSkill.level == 10 )
-				{
-					BotStandStill( self );
-					BotStrafeDodge( self );//only move if skill == 10 because otherwise we wont aim fast enough to not lose grab
-				}
-				else
-				{
-					BotStandStill( self );
-				}
-			}
-			else
-			{
-				BotStrafeDodge( self );
-			}
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
@@ -1676,20 +1636,17 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			break; //auto hit
 		case WP_ALEVEL1:
-			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //basi swipe
-			break;
-		case WP_ALEVEL1_UPG:
-			if ( distance <= LEVEL1_CLAW_U_RANGE )
+			if ( distance < LEVEL1_CLAW_RANGE )
 			{
-				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //basi swipe
+				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}
-			/*
-			 *		else
-			 *		BotFireWeapn(WPM_SECONDARY,botCmdBuffer); //basi poisen
-			 */
+			else if ( self->client->ps.stats[ STAT_MISC ] == 0 )
+			{
+				BotMoveInDir( self, MOVE_FORWARD );
+				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
+			}
 			break;
 		case WP_ALEVEL2:
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mara swipe
@@ -1796,7 +1753,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			}
 		}
 
-		if ( !G_Overmind() )
+		if ( !G_ActiveOvermind() )
 		{
 			return qfalse;
 		}
@@ -1992,11 +1949,6 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		//add to inventory
 		BG_AddUpgradeToInventory( upgrade, self->client->ps.stats );
 
-		if ( upgrade == UP_BATTPACK )
-		{
-			G_RefillAmmo( self, qtrue );
-		}
-
 		//subtract from funds
 		G_AddCreditToClient( self->client, -( short )BG_Upgrade( upgrade )->price, qfalse );
 	}
@@ -2084,12 +2036,8 @@ void BotSellAll( gentity_t *self )
 				BotSetNavmesh( self, PCL_HUMAN_NAKED );
 			}
 
+			//remove from inventory
 			BG_RemoveUpgradeFromInventory( i, self->client->ps.stats );
-
-			if ( i == UP_BATTPACK )
-			{
-				G_RefillAmmo( self, qfalse );
-			}
 
 			//add to funds
 			G_AddCreditToClient( self->client, ( short )BG_Upgrade( ( upgrade_t )i )->price, qfalse );
@@ -2166,7 +2114,8 @@ qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 	}
 
 	//ignore buildings if we cant attack them
-	if ( enemy->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer || self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
+	if ( enemy->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer ||
+	                                         self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
 	{
 		return qfalse;
 	}

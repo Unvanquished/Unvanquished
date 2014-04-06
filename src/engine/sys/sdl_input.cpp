@@ -1642,7 +1642,6 @@ void IN_Frame( void )
 	}
 
 	IN_ProcessEvents( dropInput );
-	dropInput = qfalse;
 
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
@@ -1677,6 +1676,11 @@ void IN_Frame( void )
 void IN_DropInputsForFrame( void )
 {
 	dropInput = qtrue;
+}
+
+void IN_FrameEnd( void )
+{
+	dropInput = qfalse;
 }
 
 /*

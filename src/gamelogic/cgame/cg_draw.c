@@ -783,7 +783,6 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 {
 	int      value;
 	int      valueMarked = -1;
-	int      maxAmmo;
 	qboolean bp = qfalse;
 	weapon_t weapon;
 
@@ -802,16 +801,7 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 			break;
 
 		default:
-			maxAmmo = BG_Weapon( weapon )->maxAmmo;
-
-			if ( BG_Weapon( weapon )->usesEnergy &&
-				BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
-			{
-				maxAmmo *= BATTPACK_MODIFIER;
-			}
-
-			value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
-
+			value = cg.snap->ps.ammo + ( cg.snap->ps.clips * BG_Weapon( weapon )->maxAmmo );
 			break;
 	}
 
@@ -1127,10 +1117,10 @@ float CG_ChargeProgress( void )
 	float progress;
 	int   min = 0, max = 0;
 
-	if ( cg.snap->ps.weapon == WP_ALEVEL0_UPG )
+	if ( cg.snap->ps.weapon == WP_ALEVEL1 )
 	{
 		min = 0;
-		max = MAX( LEVEL0_POUNCE_COOLDOWN, LEVEL0_SIDEPOUNCE_COOLDOWN );
+		max = MAX( LEVEL1_POUNCE_COOLDOWN, LEVEL1_SIDEPOUNCE_COOLDOWN );
 	}
 	else if ( cg.snap->ps.weapon == WP_ALEVEL3 )
 	{
@@ -1756,12 +1746,6 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, int align, vec4_t color, qh
 
 	if ( maxAmmo <= 0 ) { return; }
 
-	if ( BG_Weapon( weapon )->usesEnergy &&
-		BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
-	{
-		maxAmmo *= BATTPACK_MODIFIER;
-	}
-
 	fraction = (float)cg.snap->ps.ammo / (float)maxAmmo;
 
 	CG_DrawPlayerMeter( rect, align, fraction, color, shader );
@@ -1898,7 +1882,7 @@ static void CG_DrawPlayerFuelIcon( rectDef_t *rect, vec4_t backColor,
 {
 	vec4_t   color;
 	int      fuel;
-	qboolean pmNormal, damaged, active;
+	qboolean pmNormal, active;
 
 	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
 	{
@@ -2656,7 +2640,6 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 					if ( ci->curWeaponClass == PCL_ALIEN_BUILDER0 ||
 					     ci->curWeaponClass == PCL_ALIEN_BUILDER0_UPG ||
 					     ci->curWeaponClass == PCL_ALIEN_LEVEL1 ||
-					     ci->curWeaponClass == PCL_ALIEN_LEVEL1_UPG ||
 					     ci->curWeaponClass == WP_HBUILD )
 					{
 						displayClients[ maxDisplayCount++ ] = i;
@@ -2762,16 +2745,6 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 				{
 					CG_DrawPic( x + iconSize + leftMargin, y, iconSize,
 					            iconSize, cg_upgrades[ ci->upgrade ].upgradeIcon );
-				}
-			}
-			else
-			{
-				if ( curWeapon == WP_ABUILD2 || curWeapon == WP_ALEVEL0_UPG ||
-				     curWeapon == WP_ALEVEL1_UPG || curWeapon == WP_ALEVEL2_UPG ||
-				     curWeapon == WP_ALEVEL3_UPG )
-				{
-					CG_DrawPic( x + iconSize + leftMargin, y, iconSize,
-					            iconSize, cgs.media.upgradeClassIconShader );
 				}
 			}
 
@@ -4088,12 +4061,6 @@ static void CG_DrawPlayerAmmoStack( rectDef_t *rect,
 	if ( maxVal <= 0 )
 	{
 		return; // not an ammo-carrying weapon
-	}
-
-	if ( BG_Weapon( primary )->usesEnergy &&
-	     BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
-	{
-		maxVal *= BATTPACK_MODIFIER;
 	}
 
 	val = ps->ammo;

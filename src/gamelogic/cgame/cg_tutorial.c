@@ -212,25 +212,17 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 
 	if ( ( es = CG_BuildableInRange( ps, NULL ) ) )
 	{
-	        const char *key = CG_KeyNameForCommand( "modcase alt \"/deconstruct marked\" /deconstruct" );
+		const char *key = CG_KeyNameForCommand( "modcase alt \"/deconstruct marked\" /deconstruct" );
 
-		if ( cgs.markDeconstruct )
+		if ( es->eFlags & EF_B_MARKED )
 		{
-			if ( es->eFlags & EF_B_MARKED )
-			{
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Press %s to unmark this structure for replacement\n" ), key ) );
-			}
-			else
-			{
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Press %s to mark this structure for replacement\n" ), key ) );
-			}
+			Q_strcat( text, MAX_TUTORIAL_TEXT,
+					  va( _( "Press %s to unmark this structure for replacement\n" ), key ) );
 		}
 		else
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to destroy this structure\n" ), key ) );
+					  va( _( "Press %s to mark this structure for replacement\n" ), key ) );
 		}
 	}
 }
@@ -279,13 +271,6 @@ static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to walk on walls\n" ),
 	              CG_KeyNameForCommand( "+movedown" ) ) );
-
-	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to pounce\n" ),
-		              CG_KeyNameForCommand( "+attack2" ) ) );
-	}
 }
 
 /*
@@ -296,19 +281,8 @@ CG_AlienLevel1Text
 static void CG_AlienLevel1Text( char *text, playerState_t *ps )
 {
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          _( "Touch humans to grab them\n"
-	             "Look at them to maintain the grab\n" ) );
-
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to swipe\n" ),
 	              CG_KeyNameForCommand( "+attack" ) ) );
-
-	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to spray disorienting gas\n" ),
-		              CG_KeyNameForCommand( "+attack2" ) ) );
-	}
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to walk on walls\n" ),
@@ -650,12 +624,10 @@ const char *CG_TutorialText( void )
 					break;
 
 				case PCL_ALIEN_LEVEL0:
-				case PCL_ALIEN_LEVEL0_UPG:
 					CG_AlienLevel0Text( text, ps );
 					break;
 
 				case PCL_ALIEN_LEVEL1:
-				case PCL_ALIEN_LEVEL1_UPG:
 					CG_AlienLevel1Text( text, ps );
 					break;
 

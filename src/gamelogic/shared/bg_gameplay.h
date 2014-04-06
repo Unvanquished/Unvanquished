@@ -43,31 +43,21 @@ extern int   LEVEL0_BITE_DMG;
 extern float LEVEL0_BITE_RANGE;
 extern float LEVEL0_BITE_WIDTH;
 extern int   LEVEL0_BITE_REPEAT;
-#define LEVEL0_POUNCE_DISTANCE        300 // pitch between LEVEL0_POUNCE_MINPITCH and pi/4 results in this distance
-#define LEVEL0_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
-#define LEVEL0_POUNCE_COOLDOWN        2000
-#define LEVEL0_WALLPOUNCE_MAGNITUDE   600
-#define LEVEL0_WALLPOUNCE_COOLDOWN    750
-#define LEVEL0_SIDEPOUNCE_MAGNITUDE   400
-#define LEVEL0_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
-#define LEVEL0_SIDEPOUNCE_COOLDOWN    750
 
 extern int   LEVEL1_CLAW_DMG;
 extern float LEVEL1_CLAW_RANGE;
 extern float LEVEL1_CLAW_U_RANGE;
 extern float LEVEL1_CLAW_WIDTH;
-extern float LEVEL1_GRAB_RANGE;
-extern float LEVEL1_GRAB_U_RANGE;
-extern int   LEVEL1_GRAB_TIME;
-extern int   LEVEL1_GRAB_U_TIME;
-extern float LEVEL1_PCLOUD_RANGE;
-extern int   LEVEL1_PCLOUD_TIME;
-extern float LEVEL1_REGEN_MOD;
-extern float LEVEL1_UPG_REGEN_MOD;
-extern int   LEVEL1_REGEN_SCOREINC;
-extern int   LEVEL1_UPG_REGEN_SCOREINC;
-#define PCLOUD_MODIFIER         0.5f
-#define PCLOUD_ARMOUR_MODIFIER  0.75f
+#define LEVEL1_POUNCE_DISTANCE        300 // pitch between LEVEL1_POUNCE_MINPITCH and pi/4 results in this distance
+#define LEVEL1_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
+#define LEVEL1_POUNCE_COOLDOWN        2000
+#define LEVEL1_WALLPOUNCE_MAGNITUDE   600
+#define LEVEL1_WALLPOUNCE_COOLDOWN    1200
+#define LEVEL1_SIDEPOUNCE_MAGNITUDE   400
+#define LEVEL1_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
+#define LEVEL1_SIDEPOUNCE_COOLDOWN    750
+#define LEVEL1_SLOW_TIME              1000
+#define LEVEL1_SLOW_MOD               0.75f
 
 extern int   LEVEL2_CLAW_DMG;
 extern float LEVEL2_CLAW_RANGE;
@@ -146,6 +136,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 #define BOOST_TIME              20000
 #define BOOST_WARN_TIME         15000
+#define BOOST_REPEAT_ANIM       2000
 
 #define ACIDTUBE_DAMAGE         8
 #define ACIDTUBE_RANGE          300.0f
@@ -278,7 +269,7 @@ extern float REPEATER_BASESIZE;
 #define TURRET_RANGE          400
 #define TURRET_SPREAD         200
 #define TURRET_ZONES          4   // range is divided into this amount of zones (disks) with equal width
-#define TURRET_ZONE_DAMAGE    { 5, 4, 3, 2 } // damage for each of the TURRET_ZONES zones
+#define TURRET_ZONE_DAMAGE    { 5, 4, 3, 3 } // damage for each of the TURRET_ZONES zones
 #define TURRET_PITCH_CAP      30  // in degrees
 #define TURRET_PITCH_SPEED    160 // in degrees per second
 #define TURRET_YAW_SPEED      120 // in degrees per second
@@ -292,6 +283,8 @@ extern float REACTOR_ATTACK_RANGE;
 extern int   REACTOR_ATTACK_REPEAT;
 extern int   REACTOR_ATTACK_DAMAGE;
 
+#define POWER_DISPLAY_MAX     40 // power display on human buildables is capped above this
+
 /*
  * HUMAN misc
  */
@@ -301,8 +294,9 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define HUMAN_SIDE_MODIFIER           0.9f
 #define HUMAN_LAND_FRICTION           3.0f
 
-#define STAMINA_MAX                   2000
-#define STAMINA_MEDISTAT_RESTORE      30   // 1/(100 ms). stacks.
+#define STAMINA_MAX                   30000
+#define STAMINA_MEDISTAT_RESTORE      450  // 1/(100 ms). stacks.
+#define STAMINA_LEVEL1SLOW_TAKE       6    // 1/ms
 
 #define HUMAN_SPAWN_REPEAT_TIME       10000
 
@@ -320,6 +314,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define JETPACK_FUEL_USAGE            6     // in 1/ms
 #define JETPACK_FUEL_PER_DMG          300   // per damage point received (before armor mod is applied)
 #define JETPACK_FUEL_RESTORE          3     // in 1/ms
+#define JETPACK_FUEL_IGNITE           JETPACK_FUEL_MAX / 20      // used when igniting the engine
 #define JETPACK_FUEL_LOW              JETPACK_FUEL_MAX / 5       // jetpack doesn't start from a jump below this
 #define JETPACK_FUEL_STOP             JETPACK_FUEL_RESTORE * 150 // jetpack doesn't activate below this
 #define JETPACK_FUEL_REFUEL           JETPACK_FUEL_MAX - JETPACK_FUEL_USAGE * 1000
@@ -351,14 +346,17 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define ALIEN_DETONATION_DELAY             5000
 #define DETONATION_DELAY_RAND_RANGE        0.25f
 
+// buildable limits
+#define HUMAN_BUILDDELAY_MOD               0.6f
+#define ALIEN_BUILDDELAY_MOD               0.6f
+
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points
-#define SCORE_PER_MOMENTUM               1.0f  // used to convert momentum rewards to score points
+#define SCORE_PER_MOMENTUM                 1.0f  // used to convert momentum rewards to score points
 #define HUMAN_BUILDER_SCOREINC             50    // in credits/10s
 #define ALIEN_BUILDER_SCOREINC             50    // in credits/10s
 
-// funds
-// Values are in credits. 'evo' is just another unit for credits.
+// funds (values are in credits, 1 evo = 100 credits)
 #define CREDITS_PER_EVO                    100   // Used when alien credits are displayed as evos
 #define PLAYER_BASE_VALUE                  200   // base credit value of a player
 #define PLAYER_PRICE_TO_VALUE              0.5f  // fraction of upgrade price added to player value
@@ -366,9 +364,9 @@ extern int   REACTOR_ATTACK_DAMAGE;
 
 // resources
 #define RGS_RANGE                          1000.0f // must be > 0
-#define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
-#define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
-#define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
+#define DEFAULT_INITIAL_BUILD_POINTS       "120"   // in BP
+#define DEFAULT_INITIAL_MINE_RATE          "8"     // in (BP/min)/RGS
+#define DEFAULT_MINE_RATE_HALF_LIFE        "20"    // in min
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 
 // momentum

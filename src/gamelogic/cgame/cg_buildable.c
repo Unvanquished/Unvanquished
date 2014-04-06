@@ -1248,6 +1248,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 		{
 			case IBE_NOOVERMIND:
 			case IBE_NOREACTOR:
+			case IBE_NOPOWERHERE:
 				shader = bs->noPowerShader;
 				break;
 
@@ -1261,10 +1262,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 			case IBE_NOCREEP:
 				text = "[egg]";
-				break;
-
-			case IBE_NOPOWERHERE:
-				text = "[repeater]";
 				break;
 
 			case IBE_SURFACE:
@@ -1283,11 +1280,17 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 				text = ( team == TEAM_ALIENS ) ? "[egg]" : "[telenode]";
 				break;
 
+			case IBE_MAINSTRUCTURE:
+				text = ( team == TEAM_ALIENS ) ? "[overmind]" : "[reactor]";
+				break;
+
 			case IBE_NOROOM:
 				text = "⧉";
-			default:;
-		}
+				break;
 
+			default:
+				break;
+		}
 
 		if ( shader )
 		{
@@ -1297,6 +1300,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 			CG_DrawPic( picX - picH / 2, picY - picH / 2, picH, picH, bs->noPowerShader );
 			trap_R_SetColor( NULL );
 		}
+
 		if ( text )
 		{
 			rectDef_t rect;
@@ -1651,8 +1655,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthScale, relativeSparePowerScale = 0, mineEfficiencyScale = 0;
-	int           health, relativeSparePower = 0, mineEfficiency = 0;
+	float         healthFrac, powerUsageFrac = 0, totalPowerFrac = 0, mineEfficiencyFrac = 0;
+	int           health, powerUsage = 0, totalPower = 0, mineEfficiency = 0;
 	float         x, y;
 	vec4_t        color;
 	qboolean      powered, marked, showMineEfficiency, showPower;
@@ -1668,8 +1672,9 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	vec3_t        cullMins, cullMaxs;
 	entityState_t *hit;
 	int           anim;
+	const buildableAttributes_t *attr = BG_Buildable( es->modelindex );
 
-	if ( BG_Buildable( es->modelindex )->team == TEAM_ALIENS )
+	if ( attr->team == TEAM_ALIENS )
 	{
 		bs = &cgs.alienBuildStat;
 	}
@@ -1695,7 +1700,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	// trace for center point
 	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
 
-	//cull buildings outside the view frustum
+	// cull buildings outside the view frustum
 	VectorAdd(cent->lerpOrigin, mins, cullMins);
 	VectorAdd(cent->lerpOrigin, maxs, cullMaxs);
 
@@ -1774,17 +1779,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 	}
 
-	// hack to make the kit obscure view
-	if ( cg_drawGun.integer && visible &&
-	     cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
-	     CG_WorldToScreen( origin, &x, &y ) )
-	{
-		if ( x > 450 && y > 290 )
-		{
-			visible = qfalse;
-		}
-	}
-
 	// check if visibility state changed
 	if ( !visible && cent->buildableStatus.visible )
 	{
@@ -1819,84 +1813,57 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 	}
 
-	// get mine efficiency data
-	showMineEfficiency = ( BG_Buildable( es->modelindex )->number == BA_A_LEECH ||
-	                       BG_Buildable( es->modelindex )->number == BA_H_DRILL );
-
-	if ( showMineEfficiency )
-	{
-		mineEfficiency = es->weaponAnim;
-	}
-
-	// get health data
-	{
-		health = es->generic1;
-	}
-
-	// get power consumption data
-	showPower = ( BG_Buildable( es->modelindex )->team == TEAM_HUMANS &&
-	              !( BG_Buildable( es->modelindex )->number == BA_H_REACTOR ||
-	                 BG_Buildable( es->modelindex )->number == BA_H_REPEATER ) );
-
-	if ( showPower )
-	{
-		relativeSparePower = es->clientNum;
-	}
+	// find out what data we want to display
+	showMineEfficiency = ( attr->number == BA_A_LEECH || attr->number == BA_H_DRILL );
+	showPower          = ( attr->team == TEAM_HUMANS && attr->powerConsumption > 0 );
 
 	// calculate mine efficiency bar size
 	if ( showMineEfficiency )
 	{
-		mineEfficiencyScale = ( float )mineEfficiency / 100.0f;
+		mineEfficiency      = es->weaponAnim;
+		mineEfficiencyFrac = (float)mineEfficiency / 100.0f;
 
-		if ( mineEfficiency > 0 && mineEfficiencyScale < 0.01f )
+		if ( mineEfficiency > 0 && mineEfficiencyFrac < 0.01f )
 		{
-			mineEfficiencyScale = 0.01f;
+			mineEfficiencyFrac = 0.01f;
 		}
-		else if ( mineEfficiencyScale < 0.0f )
+		else if ( mineEfficiencyFrac < 0.0f )
 		{
-			mineEfficiencyScale = 0.0f;
+			mineEfficiencyFrac = 0.0f;
 		}
-		else if ( mineEfficiencyScale > 1.0f )
+		else if ( mineEfficiencyFrac > 1.0f )
 		{
-			mineEfficiencyScale = 1.0f;
+			mineEfficiencyFrac = 1.0f;
 		}
 	}
 
 	// calculate health bar size
 	{
-		healthScale = ( float ) health / BG_Buildable( es->modelindex )->health;
+		health     = es->generic1;
+		healthFrac = (float)health / (float)attr->health;
 
-		if ( health > 0 && healthScale < 0.01f )
+		if ( health > 0 && healthFrac < 0.01f )
 		{
-			healthScale = 0.01f;
+			healthFrac = 0.01f;
 		}
-		else if ( healthScale < 0.0f )
+		else if ( healthFrac < 0.0f )
 		{
-			healthScale = 0.0f;
+			healthFrac = 0.0f;
 		}
-		else if ( healthScale > 1.0f )
+		else if ( healthFrac > 1.0f )
 		{
-			healthScale = 1.0f;
+			healthFrac = 1.0f;
 		}
 	}
 
 	// calculate power consumption bar size
 	if ( showPower )
 	{
-		relativeSparePowerScale = ( float )relativeSparePower / 100.0f;
+		totalPower     = Q_clamp( es->clientNum, 0, POWER_DISPLAY_MAX );
+		powerUsage     = BG_Buildable( es->modelindex )->powerConsumption;
 
-		if ( relativeSparePower > 0 && relativeSparePowerScale < 0.01f )
-		{
-			relativeSparePowerScale = 0.01f;
-		}
-		else if ( relativeSparePowerScale < 0.0f )
-		{
-			relativeSparePowerScale = 0.0f;
-		}
-		else if ( relativeSparePowerScale > 1.0f )
-		{
-			relativeSparePowerScale = 1.0f;
-		}
+		totalPowerFrac = (float)totalPower / (float)POWER_DISPLAY_MAX;
+		powerUsageFrac = (float)powerUsage / (float)POWER_DISPLAY_MAX;
 	}
 
 	// draw elements
@@ -1932,6 +1899,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		clipY = 240.0f - ( clipH * 0.5f );
 		CG_SetClipRegion( clipX, clipY, clipW, clipH );
 
+		// draw bar frames
 		if ( bs->frameShader )
 		{
 			Vector4Copy( bs->backColor, frameColor );
@@ -1960,20 +1928,20 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		// draw mine rate bar
 		if ( showMineEfficiency && mineEfficiency > 0 )
 		{
-			float  hX, hY, hW, hH;
+			float  barX, barY, barW, barH;
 			vec4_t barColor;
 
-			hX = picX + ( bs->healthPadding * scale );
-			hY = picY - ( 0.5f * picH ) + ( bs->healthPadding * scale );
-			hH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
-			hW = ( picW * mineEfficiencyScale ) - ( bs->healthPadding * 2.0f * scale );
+			barX = picX + ( bs->healthPadding * scale );
+			barY = picY - ( 0.5f * picH ) + ( bs->healthPadding * scale );
+			barH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
+			barW = ( picW * mineEfficiencyFrac ) - ( bs->healthPadding * 2.0f * scale );
 
-			DepletionColorFade( barColor, mineEfficiencyScale, bs );
+			DepletionColorFade( barColor, mineEfficiencyFrac, bs );
 			barColor[ 3 ] = color[ 3 ];
 
 			trap_R_SetColor( barColor );
 
-			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
+			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
 
 			trap_R_SetColor( NULL );
 		}
@@ -1981,41 +1949,54 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		// draw health bar
 		if ( health > 0 )
 		{
-			float  hX, hY, hW, hH;
+			float  barX, barY, barW, barH;
 			vec4_t barColor;
 
-			hX = picX + ( bs->healthPadding * scale );
-			hY = picY + ( bs->healthPadding * scale );
-			hH = picH - ( bs->healthPadding * 2.0f * scale );
-			hW = picW * healthScale - ( bs->healthPadding * 2.0f * scale );
+			barX = picX + ( bs->healthPadding * scale );
+			barY = picY + ( bs->healthPadding * scale );
+			barH = picH - ( bs->healthPadding * 2.0f * scale );
+			barW = picW * healthFrac - ( bs->healthPadding * 2.0f * scale );
 
-			HealthColorFade( barColor, healthScale, bs );
+			HealthColorFade( barColor, healthFrac, bs );
 			barColor[ 3 ] = color[ 3 ];
 
 			trap_R_SetColor( barColor );
-
-			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
+			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
 
 			trap_R_SetColor( NULL );
 		}
 
 		// draw power consumption bar
-		if ( showPower && relativeSparePower > 0 )
+		if ( showPower )
 		{
-			float  hX, hY, hW, hH;
-			vec4_t barColor;
+			float  barX, barY, barW, barH, markX, markH, markW;
+			vec4_t barColor, markColor;
 
-			hX = picX + ( bs->healthPadding * scale );
-			hY = picY + picH;
-			hH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
-			hW = ( picW * relativeSparePowerScale ) - ( bs->healthPadding * 2.0f * scale );
+			// draw bar
+			barX = picX + ( bs->healthPadding * scale );
+			barY = picY + picH;
+			barH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
+			barW = ( picW * totalPowerFrac ) - ( bs->healthPadding * 2.0f * scale );
 
-			DepletionColorFade( barColor, relativeSparePowerScale, bs );
-			barColor[ 3 ] = color[ 3 ];
+			if ( barW > 0.0f )
+			{
+				if ( powered ) { DepletionColorFade( barColor, totalPowerFrac, bs ); }
+				else           { Vector4Copy( bs->healthSevereColor, barColor ); }
+				barColor[ 3 ] = color[ 3 ];
 
-			trap_R_SetColor( barColor );
+				trap_R_SetColor( barColor );
+				CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
+			}
 
-			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
+			// draw mark
+			markX = barX + ( picW * powerUsageFrac ) - ( bs->healthPadding * 2.5f * scale );
+			markH = 0.5f * barH;
+			markW = ( bs->healthPadding * scale );
+
+			Vector4Copy( colorBlack, markColor );
+
+			trap_R_SetColor( markColor );
+			CG_DrawPic( markX, barY, markW, markH, cgs.media.whiteShader );
 
 			trap_R_SetColor( NULL );
 		}
@@ -2033,7 +2014,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			oY -= ( oH * 0.5f );
 
 			trap_R_SetColor( frameColor );
-
 			CG_DrawPic( oX, oY, oW, oH, bs->overlayShader );
 
 			trap_R_SetColor( NULL );
@@ -2066,21 +2046,14 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			int   healthPoints;
 
 			healthMax = BG_Buildable( es->modelindex )->health;
-			healthPoints = ( int )( healthScale * healthMax );
+			healthPoints = ( int )( healthFrac * healthMax );
 
 			if ( health > 0 && healthPoints < 1 )
 			{
 				healthPoints = 1;
 			}
 
-			//if (showMineEfficiency)
-			//{
-			//	nX = picX + ( picW * 0.33f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
-			//}
-			//else
-			//{
 			nX = picX + ( picW * 0.5f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
-			//}
 
 			if ( healthPoints > 999 )
 			{
@@ -2101,44 +2074,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			CG_DrawField( nX, subY, 4, subH, subH, healthPoints );
 		}
-
-		/*
-		// show mine rate for resource generating structures
-		if ( showMineEfficiency )
-		{
-			float rX, rY;
-			int   mineRate;
-
-			mineRate = es->weaponAnim;
-
-			if (mineRate < 0)
-			{
-				mineRate = 0;
-			}
-
-			rX = picX + ( picW * 0.66f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
-			rY = subY;
-
-			if ( mineRate > 999 )
-			{
-				rX -= 0.0f;
-			}
-			else if ( mineRate > 99 )
-			{
-				rX -= subH * 0.5f;
-			}
-			else if ( mineRate > 9 )
-			{
-				rX -= subH * 1.0f;
-			}
-			else
-			{
-				rX -= subH * 1.5f;
-			}
-
-			CG_DrawField( rX, rY, 4, subH, subH, mineRate );
-		}
-		*/
 
 		trap_R_SetColor( NULL );
 		CG_ClearClipRegion();

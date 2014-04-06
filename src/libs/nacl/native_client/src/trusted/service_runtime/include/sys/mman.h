@@ -11,7 +11,11 @@
 #ifndef NATIVE_CLIENT_SRC_TRUSTED_SERVICE_RUNTIME_INCLUDE_SYS_MMAN_H_
 #define NATIVE_CLIENT_SRC_TRUSTED_SERVICE_RUNTIME_INCLUDE_SYS_MMAN_H_
 
+#include <sys/types.h>
+
 #include "native_client/src/trusted/service_runtime/include/bits/mman.h"
+
+#ifdef __native_client__
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,5 +34,7 @@ extern int mprotect(void *start, size_t length, int prot);
 #ifdef __cplusplus
 }
 #endif
+
+#endif  // __native_client__
 
 #endif

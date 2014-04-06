@@ -542,7 +542,6 @@ This is NOT called for map_restart
 void SV_SpawnServer( const char *server )
 {
 	int        i;
-	int        checksum;
 	qboolean   isBot;
 
 	// shut down the existing game if it is running
@@ -554,9 +553,6 @@ void SV_SpawnServer( const char *server )
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
 	CL_MapLoading();
-
-	// make sure all the client stuff is unloaded
-	CL_ShutdownAll();
 
 	// clear the whole hunk because we're (re)loading the server
 	Hunk_Clear();
@@ -615,12 +611,21 @@ void SV_SpawnServer( const char *server )
 	if (!FS_LoadPak(va("map-%s", server)))
 		Com_Error(ERR_DROP, "Could not load map pak\n");
 
-	CM_LoadMap( va( "maps/%s.bsp", server ), qfalse, &checksum );
+	void* buffer;
+	const char* name = va( "maps/%s.bsp", server );
+	FS_ReadFile( name, ( void ** ) &buffer );
+
+	if ( !buffer )
+	{
+		Com_Error( ERR_DROP, "Couldn't load %s", name );
+	}
+
+	CM_LoadMap( name, buffer, qfalse );
+
+	FS_FreeFile( buffer );
 
 	// set serverinfo visible name
 	Cvar_Set( "mapname", server );
-
-	Cvar_Set( "sv_mapChecksum", va( "%i", checksum ) );
 
 	sv_newGameShlib = Cvar_Get( "sv_newGameShlib", "", CVAR_TEMP );
 
@@ -628,9 +633,6 @@ void SV_SpawnServer( const char *server )
 	sv.serverId = com_frameTime;
 	sv.restartedServerId = sv.serverId;
 	Cvar_Set( "sv_serverid", va( "%i", sv.serverId ) );
-
-	// clear physics interaction links
-	SV_ClearWorld();
 
 	// media configstring setting should be done during
 	// the loading stage, so connected clients don't have
@@ -640,13 +642,14 @@ void SV_SpawnServer( const char *server )
 	Cvar_Set( "sv_serverRestarting", "1" );
 
 	// load and spawn all other entities
-	SV_InitGameProgs();
+	SV_InitGameProgs(server);
 
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		gvm->GameRunFrame( svs.time );
+		gvm->GameRunFrame( sv.time );
 		svs.time += FRAMETIME;
+		sv.time += FRAMETIME;
 	}
 
 	// create a baseline for more efficient communications
@@ -708,8 +711,9 @@ void SV_SpawnServer( const char *server )
 	}
 
 	// run another frame to allow things to look at all the players
-	gvm->GameRunFrame( svs.time );
+	gvm->GameRunFrame( sv.time );
 	svs.time += FRAMETIME;
+	sv.time += FRAMETIME;
 
 	// the server sends these to the clients so they can figure
 	// out which pk3s should be auto-downloaded
@@ -801,7 +805,6 @@ void SV_Init( void )
 	sv_reconnectlimit = Cvar_Get( "sv_reconnectlimit", "3", 0 );
 	sv_padPackets = Cvar_Get( "sv_padPackets", "0", 0 );
 	sv_killserver = Cvar_Get( "sv_killserver", "0", 0 );
-	sv_mapChecksum = Cvar_Get( "sv_mapChecksum", "", CVAR_ROM );
 
 	sv_lanForceRate = Cvar_Get( "sv_lanForceRate", "1", 0 );
 

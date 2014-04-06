@@ -105,10 +105,10 @@ void	main()
 
 
 	// compute normal in world space from normalmap
-	vec3 N = (2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5));
-	//N.x = -N.x;
-	//N = normalize(N);
-	//N = normalize(var_Normal.xyz);
+	vec3 N = texture2D(u_NormalMap, texNormal.st).xyw;
+	N.x *= N.z;
+	N.xy = 2.0 * N.xy - 1.0;
+	N.z = sqrt(1.0 - dot(N.xy, N.xy));
 	N = normalize(tangentToWorldMatrix * N);
 
 	// compute light direction in world space
@@ -142,7 +142,7 @@ void	main()
 	//color.rgb *= diffuse.rgb;
 	//color.rgb = L * 0.5 + 0.5;
 	color.rgb += specular.rgb * lightColorNoNdotL * pow(clamp(dot(N, H), 0.0, 1.0), u_SpecularExponent.x * specular.a + u_SpecularExponent.y) * r_SpecularScale;
-	color.a = var_Color.a;	// for terrain blending
+	color.a *= var_Color.a;	// for terrain blending
 
 
 #else // USE_NORMAL_MAPPING
@@ -172,7 +172,7 @@ void	main()
 
 	vec4 color = diffuse;
 	color.rgb *= lightColor;
-	color.a = var_Color.a;	// for terrain blending
+	color.a *= var_Color.a;	// for terrain blending
 #endif
 #if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, var_TexDiffuseGlow.pq).rgb;

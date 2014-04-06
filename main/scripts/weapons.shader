@@ -30,7 +30,7 @@ gfx/weapons/flamerhaze
 	{
 		stage heathazeMap
 		deformMagnitude 4.0
-		map gfx/weapons/flamerhaze_normal
+		map gfx/weapons/flamerhaze_n
 	}
 }
 
@@ -112,7 +112,7 @@ gfx/weapons/grenade_shockwave_haze
 	{
 		stage heathazeMap
 		deformMagnitude 5.0
-		map gfx/weapons/shockwave_normal
+		map gfx/weapons/shockwave_n
 	}
 }
 
@@ -196,7 +196,7 @@ gfx/weapons/luci_shockwave_haze
 	{
 		stage heathazeMap
 		deformMagnitude 5.0
-		map gfx/weapons/shockwave_normal
+		map gfx/weapons/shockwave_n
 	}
 }
 
@@ -208,7 +208,7 @@ gfx/weapons/luci_shockwave_haze_small
 	{
 		stage heathazeMap
 		deformMagnitude 3.0
-		map gfx/weapons/shockwave_normal
+		map gfx/weapons/shockwave_n
 	}
 }
 

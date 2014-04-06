@@ -40,7 +40,6 @@ static growList_t s_interactions;
 static byte       *fileBase;
 
 static int        c_redundantInteractions;
-//static int      c_redundantVertexes;
 static int        c_vboWorldSurfaces;
 static int        c_vboLightSurfaces;
 static int        c_vboShadowSurfaces;
@@ -1620,7 +1619,6 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -1785,7 +1783,6 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 
 		for ( j = 0; j < 4; j++ )
 		{
-			points[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			points[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -1925,7 +1922,6 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -2915,7 +2911,7 @@ int R_StitchPatches( int grid1num, int grid2num )
 						row = 0;
 					}
 
-					grid2 = R_GridInsertColumn( grid2, l + 1, row, grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
+					grid2 = R_GridInsertColumn( grid2, l + 1, row, grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k - 1 ] );
 					grid2->lodStitched = qfalse;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
 					return qtrue;
@@ -2998,7 +2994,7 @@ int R_StitchPatches( int grid1num, int grid2num )
 						column = 0;
 					}
 
-					grid2 = R_GridInsertRow( grid2, l + 1, column, grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
+					grid2 = R_GridInsertRow( grid2, l + 1, column, grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k - 1 ] );
 
 					if ( !grid2 )
 					{
@@ -3109,7 +3105,7 @@ int R_StitchPatches( int grid1num, int grid2num )
 					}
 
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
-					                            grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
+					                            grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k - 1 ] );
 					grid2->lodStitched = qfalse;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
 					return qtrue;
@@ -3193,7 +3189,7 @@ int R_StitchPatches( int grid1num, int grid2num )
 					}
 
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
-					                         grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
+					                         grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k - 1 ] );
 					grid2->lodStitched = qfalse;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
 					return qtrue;
@@ -3423,569 +3419,9 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 
 	for ( j = 0; j < 4; j++ )
 	{
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		out->paintColor[ j ] = in->paintColor[ j ];
-#endif
 		out->lightColor[ j ] = in->lightColor[ j ];
 	}
-
-#if DEBUG_OPTIMIZEVERTICES
-	out->id = in->id;
-#endif
 }
-
-#define EQUAL_EPSILON 0.001
-
-/*static qboolean CompareWorldVert(const srfVert_t * v1, const srfVert_t * v2)
-{
-        int             i;
-
-        for(i = 0; i < 3; i++)
-        {
-                //if(fabs(v1->xyz[i] - v2->xyz[i]) > EQUAL_EPSILON)
-                if(v1->xyz[i] != v2->xyz[i])
-                        return qfalse;
-        }
-
-        for(i = 0; i < 2; i++)
-        {
-                if(v1->st[i] != v2->st[i])
-                        return qfalse;
-        }
-
-        if(r_precomputedLighting->integer)
-        {
-                for(i = 0; i < 2; i++)
-                {
-                        if(v1->lightmap[i] != v2->lightmap[i])
-                                return qfalse;
-                }
-        }
-
-        for(i = 0; i < 4; i++)
-        {
-                if(v1->lightColor[i] != v2->lightColor[i])
-                        return qfalse;
-        }
-
-        return qtrue;
-}
-
-static qboolean CompareLightVert(const srfVert_t * v1, const srfVert_t * v2)
-{
-        int             i;
-
-        for(i = 0; i < 3; i++)
-        {
-                //if(fabs(v1->xyz[i] - v2->xyz[i]) > EQUAL_EPSILON)
-                if(v1->xyz[i] != v2->xyz[i])
-                        return qfalse;
-        }
-
-        for(i = 0; i < 2; i++)
-        {
-                if(v1->st[i] != v2->st[i])
-                        return qfalse;
-        }
-
-        for(i = 0; i < 4; i++)
-        {
-                if(v1->paintColor[i] != v2->paintColor[i])
-                        return qfalse;
-        }
-
-        return qtrue;
-}
-
-static qboolean CompareShadowVertAlphaTest(const srfVert_t * v1, const srfVert_t * v2)
-{
-        int             i;
-
-        for(i = 0; i < 3; i++)
-        {
-                //if(fabs(v1->xyz[i] - v2->xyz[i]) > EQUAL_EPSILON)
-                if(v1->xyz[i] != v2->xyz[i])
-                        return qfalse;
-        }
-
-        for(i = 0; i < 2; i++)
-        {
-                if(v1->st[i] != v2->st[i])
-                        return qfalse;
-        }
-
-        return qtrue;
-}
-
-static qboolean CompareShadowVert(const srfVert_t * v1, const srfVert_t * v2)
-{
-        int             i;
-
-        for(i = 0; i < 3; i++)
-        {
-                //if(fabs(v1->xyz[i] - v2->xyz[i]) > EQUAL_EPSILON)
-                if(v1->xyz[i] != v2->xyz[i])
-                        return qfalse;
-        }
-
-        return qtrue;
-}*/
-
-#if 0
-static qboolean CompareShadowVolumeVert( const srfVert_t *v1, const srfVert_t *v2 )
-{
-	int i;
-
-	for ( i = 0; i < 3; i++ )
-	{
-		// don't consider epsilon to avoid shadow volume z-fighting
-		if ( v1->xyz[ i ] != v2->xyz[ i ] )
-		{
-			return qfalse;
-		}
-	}
-
-	return qtrue;
-}
-
-#endif
-
-/*static qboolean CompareWorldVertSmoothNormal(const srfVert_t * v1, const srfVert_t * v2)
-{
-        int             i;
-
-        for(i = 0; i < 3; i++)
-        {
-                if(fabs(v1->xyz[i] - v2->xyz[i]) > EQUAL_EPSILON)
-                        return qfalse;
-        }
-
-        return qtrue;
-}*/
-
-/*
-remove duplicated / redundant vertices from a batch of vertices
-return the new number of vertices
-*/
-#if 0
-static int OptimizeVertices( int numVerts, srfVert_t *verts, int numTriangles, srfTriangle_t *triangles, srfVert_t *outVerts,
-                             qboolean( *CompareVert )( const srfVert_t *v1, const srfVert_t *v2 ) )
-{
-	srfTriangle_t *tri;
-	int           i, j, k, l;
-
-	static int    redundantIndex[ MAX_MAP_DRAW_VERTS ];
-	int           numOutVerts;
-
-	if ( r_vboOptimizeVertices->integer )
-	{
-		if ( numVerts >= MAX_MAP_DRAW_VERTS )
-		{
-			ri.Printf( PRINT_WARNING, "OptimizeVertices: MAX_MAP_DRAW_VERTS reached\n" );
-
-			for ( j = 0; j < numVerts; j++ )
-			{
-				CopyVert( &verts[ j ], &outVerts[ j ] );
-			}
-
-			return numVerts;
-		}
-
-		memset( redundantIndex, -1, sizeof( redundantIndex ) );
-
-		c_redundantVertexes = 0;
-		numOutVerts = 0;
-
-		for ( i = 0; i < numVerts; i++ )
-		{
-#if DEBUG_OPTIMIZEVERTICES
-			verts[ i ].id = i;
-#endif
-
-			if ( redundantIndex[ i ] == -1 )
-			{
-				for ( j = i + 1; j < numVerts; j++ )
-				{
-					if ( redundantIndex[ i ] != -1 )
-					{
-						continue;
-					}
-
-					if ( CompareVert( &verts[ i ], &verts[ j ] ) )
-					{
-						// mark vertex as redundant
-						redundantIndex[ j ] = i; //numOutVerts;
-					}
-				}
-			}
-		}
-
-#if DEBUG_OPTIMIZEVERTICES
-		ri.Printf( PRINT_ALL, "input triangles: " );
-
-		for ( k = 0, tri = triangles; k < numTriangles; k++, tri++ )
-		{
-			ri.Printf( PRINT_ALL, "(%i,%i,%i),", verts[ tri->indexes[ 0 ] ].id, verts[ tri->indexes[ 1 ] ].id, verts[ tri->indexes[ 2 ] ].id );
-		}
-
-		ri.Printf( PRINT_ALL, "\n" );
-#endif
-
-#if DEBUG_OPTIMIZEVERTICES
-		ri.Printf( PRINT_ALL, "input vertices: " );
-
-		for ( i = 0; i < numVerts; i++ )
-		{
-			if ( redundantIndex[ i ] != -1 )
-			{
-				ri.Printf( PRINT_ALL, "(%i,%i),", i, redundantIndex[ i ] );
-			}
-			else
-			{
-				ri.Printf( PRINT_ALL, "(%i,-),", i );
-			}
-		}
-
-		ri.Printf( PRINT_ALL, "\n" );
-#endif
-
-		for ( i = 0; i < numVerts; i++ )
-		{
-			if ( redundantIndex[ i ] != -1 )
-			{
-				c_redundantVertexes++;
-			}
-			else
-			{
-				CopyVert( &verts[ i ], &outVerts[ numOutVerts ] );
-				numOutVerts++;
-			}
-		}
-
-#if DEBUG_OPTIMIZEVERTICES
-		ri.Printf( PRINT_ALL, "output vertices: " );
-
-		for ( i = 0; i < numOutVerts; i++ )
-		{
-			ri.Printf( PRINT_ALL, "(%i),", outVerts[ i ].id );
-		}
-
-		ri.Printf( PRINT_ALL, "\n" );
-#endif
-
-		for ( i = 0; i < numVerts; )
-		{
-			qboolean noIncrement = qfalse;
-
-			if ( redundantIndex[ i ] != -1 )
-			{
-#if DEBUG_OPTIMIZEVERTICES
-				ri.Printf( PRINT_ALL, "-------------------------------------------------\n" );
-				ri.Printf( PRINT_ALL, "changing triangles for redundant vertex (%i->%i):\n", i, redundantIndex[ i ] );
-#endif
-
-				// kill redundant vert
-				for ( k = 0, tri = triangles; k < numTriangles; k++, tri++ )
-				{
-					for ( l = 0; l < 3; l++ )
-					{
-						if ( tri->indexes[ l ] == i ) //redundantIndex[i])
-						{
-							// replace duplicated index j with the original vertex index i
-							tri->indexes[ l ] = redundantIndex[ i ]; //numOutVerts;
-
-#if DEBUG_OPTIMIZEVERTICES
-							ri.Printf( PRINT_ALL, "mapTriangleIndex<%i,%i>(%i->%i)\n", k, l, i, redundantIndex[ i ] );
-#endif
-						}
-
-#if 1
-						else if ( tri->indexes[ l ] > i ) // && redundantIndex[tri->indexes[l]] == -1)
-						{
-							tri->indexes[ l ]--;
-#if DEBUG_OPTIMIZEVERTICES
-							ri.Printf( PRINT_ALL, "decTriangleIndex<%i,%i>(%i->%i)\n", k, l, tri->indexes[ l ] + 1, tri->indexes[ l ] );
-#endif
-
-							if ( tri->indexes[ l ] < 0 )
-							{
-								ri.Printf( PRINT_WARNING, "OptimizeVertices: triangle index < 0\n" );
-
-								for ( j = 0; j < numVerts; j++ )
-								{
-									CopyVert( &verts[ j ], &outVerts[ j ] );
-								}
-
-								return numVerts;
-							}
-						}
-
-#endif
-					}
-				}
-
-#if DEBUG_OPTIMIZEVERTICES
-				ri.Printf( PRINT_ALL, "pending redundant vertices: " );
-
-				for ( j = i + 1; j < numVerts; j++ )
-				{
-					if ( redundantIndex[ j ] != -1 )
-					{
-						ri.Printf( PRINT_ALL, "(%i,%i),", j, redundantIndex[ j ] );
-					}
-					else
-					{
-						//ri.Printf(PRINT_ALL, "(%i,-),", j);
-					}
-				}
-
-				ri.Printf( PRINT_ALL, "\n" );
-#endif
-
-				for ( j = i + 1; j < numVerts; j++ )
-				{
-					if ( redundantIndex[ j ] != -1 ) //> i)//== tri->indexes[l])
-					{
-#if DEBUG_OPTIMIZEVERTICES
-						ri.Printf( PRINT_ALL, "updateRedundantIndex(%i->%i) to (%i->%i)\n", j, redundantIndex[ j ], j - 1,
-						           redundantIndex[ j ] );
-#endif
-
-						if ( redundantIndex[ j ] <= i )
-						{
-							redundantIndex[ j - 1 ] = redundantIndex[ j ];
-							redundantIndex[ j ] = -1;
-						}
-						else
-						{
-							redundantIndex[ j - 1 ] = redundantIndex[ j ] - 1;
-							redundantIndex[ j ] = -1;
-						}
-
-						if ( ( j - 1 ) == i )
-						{
-							noIncrement = qtrue;
-						}
-					}
-				}
-
-#if DEBUG_OPTIMIZEVERTICES
-				ri.Printf( PRINT_ALL, "current triangles: " );
-
-				for ( k = 0, tri = triangles; k < numTriangles; k++, tri++ )
-				{
-					ri.Printf( PRINT_ALL, "(%i,%i,%i),", verts[ tri->indexes[ 0 ] ].id, verts[ tri->indexes[ 1 ] ].id,
-					           verts[ tri->indexes[ 2 ] ].id );
-				}
-
-				ri.Printf( PRINT_ALL, "\n" );
-#endif
-			}
-
-			if ( !noIncrement )
-			{
-				i++;
-			}
-		}
-
-#if DEBUG_OPTIMIZEVERTICES
-		ri.Printf( PRINT_ALL, "output triangles: " );
-
-		for ( k = 0, tri = triangles; k < numTriangles; k++, tri++ )
-		{
-			ri.Printf( PRINT_ALL, "(%i,%i,%i),", verts[ tri->indexes[ 0 ] ].id, verts[ tri->indexes[ 1 ] ].id, verts[ tri->indexes[ 2 ] ].id );
-		}
-
-		ri.Printf( PRINT_ALL, "\n" );
-#endif
-
-		if ( c_redundantVertexes )
-		{
-			//*numVerts -= c_redundantVertexes;
-
-			//ri.Printf(PRINT_ALL, "removed %i redundant vertices\n", c_redundantVertexes);
-		}
-
-		return numOutVerts;
-	}
-	else
-	{
-		for ( j = 0; j < numVerts; j++ )
-		{
-			CopyVert( &verts[ j ], &outVerts[ j ] );
-		}
-
-		return numVerts;
-	}
-}
-
-#endif
-
-/*static void OptimizeTriangles(int numVerts, srfVert_t * verts, int numTriangles, srfTriangle_t * triangles,
-                                                          qboolean(*compareVert) (const srfVert_t * v1, const srfVert_t * v2))
-{
-#if 1
-        srfTriangle_t  *tri;
-        int             i, j, k, l;
-        static int      redundantIndex[MAX_MAP_DRAW_VERTS];
-        static          qboolean(*compareFunction) (const srfVert_t * v1, const srfVert_t * v2) = NULL;
-        //static int      minVertOld = 9999999, maxVertOld = 0;
-        int             minVert, maxVert;
-
-        if(numVerts >= MAX_MAP_DRAW_VERTS)
-        {
-                ri.Printf(PRINT_WARNING, "OptimizeTriangles: MAX_MAP_DRAW_VERTS reached\n");
-                return;
-        }
-
-        // find vertex bounds
-        maxVert = 0;
-        minVert = numVerts - 1;
-        for(k = 0, tri = triangles; k < numTriangles; k++, tri++)
-        {
-                for(l = 0; l < 3; l++)
-                {
-                        if(tri->indexes[l] > maxVert)
-                                maxVert = tri->indexes[l];
-
-                        if(tri->indexes[l] < minVert)
-                                minVert = tri->indexes[l];
-                }
-        }
-
-        ri.Printf(PRINT_ALL, "OptimizeTriangles: minVert %i maxVert %i\n", minVert, maxVert);
-
-//  if(compareFunction != compareVert || minVert != minVertOld || maxVert != maxVertOld)
-        {
-                compareFunction = compareVert;
-
-                memset(redundantIndex, -1, sizeof(redundantIndex));
-
-                for(i = minVert; i <= maxVert; i++)
-                {
-                        if(redundantIndex[i] == -1)
-                        {
-                                for(j = i + 1; j <= maxVert; j++)
-                                {
-                                        if(redundantIndex[i] != -1)
-                                                continue;
-
-                                        if(compareVert(&verts[i], &verts[j]))
-                                        {
-                                                // mark vertex as redundant
-                                                redundantIndex[j] = i;
-                                        }
-                                }
-                        }
-                }
-        }
-
-        c_redundantVertexes = 0;
-        for(i = minVert; i <= maxVert; i++)
-        {
-                if(redundantIndex[i] != -1)
-                {
-                        //ri.Printf(PRINT_ALL, "changing triangles for redundant vertex (%i->%i):\n", i, redundantIndex[i]);
-
-                        // kill redundant vert
-                        for(k = 0, tri = triangles; k < numTriangles; k++, tri++)
-                        {
-                                for(l = 0; l < 3; l++)
-                                {
-                                        if(tri->indexes[l] == i)  //redundantIndex[i])
-                                        {
-                                                // replace duplicated index j with the original vertex index i
-                                                tri->indexes[l] = redundantIndex[i];
-
-                                                //ri.Printf(PRINT_ALL, "mapTriangleIndex<%i,%i>(%i->%i)\n", k, l, i, redundantIndex[i]);
-                                        }
-                                }
-                        }
-
-                        c_redundantVertexes++;
-                }
-        }
-
-#if 0
-        ri.Printf(PRINT_ALL, "vertices: ");
-        for(i = 0; i < numVerts; i++)
-        {
-                if(redundantIndex[i] != -1)
-                {
-                        ri.Printf(PRINT_ALL, "(%i,%i),", i, redundantIndex[i]);
-                }
-                else
-                {
-                        ri.Printf(PRINT_ALL, "(%i,-),", i);
-                }
-        }
-        ri.Printf(PRINT_ALL, "\n");
-
-        ri.Printf(PRINT_ALL, "triangles: ");
-        for(k = 0, tri = triangles; k < numTriangles; k++, tri++)
-        {
-                ri.Printf(PRINT_ALL, "(%i,%i,%i),", tri->indexes[0], tri->indexes[1], tri->indexes[2]);
-        }
-        ri.Printf(PRINT_ALL, "\n");
-#endif
-
-        if(c_redundantVertexes)
-        {
-                // *numVerts -= c_redundantVertexes;
-
-                //ri.Printf(PRINT_ALL, "removed %i redundant vertices\n", c_redundantVertexes);
-        }
-#endif
-}
-
-static void OptimizeTrianglesLite(const int *redundantIndex, int numTriangles, srfTriangle_t * triangles)
-{
-        srfTriangle_t  *tri;
-        int             k, l;
-
-        c_redundantVertexes = 0;
-        for(k = 0, tri = triangles; k < numTriangles; k++, tri++)
-        {
-                for(l = 0; l < 3; l++)
-                {
-                        if(redundantIndex[tri->indexes[l]] != -1)
-                        {
-                                // replace duplicated index j with the original vertex index i
-                                tri->indexes[l] = redundantIndex[tri->indexes[l]];
-
-                                //ri.Printf(PRINT_ALL, "mapTriangleIndex<%i,%i>(%i->%i)\n", k, l, tri->indexes[l], redundantIndex[tri->indexes[l]]);
-
-                                c_redundantVertexes++;
-                        }
-                }
-        }
-}
-
-static void BuildRedundantIndices(int numVerts, const srfVert_t * verts, int *redundantIndex,
-                                                                  qboolean(*CompareVert) (const srfVert_t * v1, const srfVert_t * v2))
-{
-        int             i, j;
-
-        memset(redundantIndex, -1, numVerts * sizeof(int));
-
-        for(i = 0; i < numVerts; i++)
-        {
-                if(redundantIndex[i] == -1)
-                {
-                        for(j = i + 1; j < numVerts; j++)
-                        {
-                                if(redundantIndex[j] != -1)
-                                        continue;
-
-                                if(CompareVert(&verts[i], &verts[j]))
-                                {
-                                        // mark vertex as redundant
-                                        redundantIndex[j] = i;
-                                }
-                        }
-                }
-        }
-}*/
 
 /*
 static void R_LoadAreaPortals(const char *bspName)
@@ -4189,350 +3625,6 @@ static void R_CreateAreas( void )
         }
 
         ri.Printf(PRINT_ALL, "%i world areas created\n", numAreas);
-}
-*/
-
-/*
-===============
-R_CreateVBOWorldSurfaces
-===============
-*/
-
-/*
-static void R_CreateVBOWorldSurfaces( void )
-{
-        int             i, j, k, l, a;
-
-        int             numVerts;
-        srfVert_t      *verts;
-
-        srfVert_t      *optimizedVerts;
-
-        int             numTriangles;
-        srfTriangle_t  *triangles;
-
-        shader_t       *shader, *oldShader;
-        int             lightmapNum, oldLightmapNum;
-
-        int             numSurfaces;
-        bspSurface_t   *surface, *surface2;
-        bspSurface_t  **surfacesSorted;
-
-        bspArea_t      *area;
-
-        growList_t      vboSurfaces;
-        srfVBOMesh_t   *vboSurf;
-
-        if(!glConfig.vertexBufferObjectAvailable)
-                return;
-
-        for(a = 0, area = s_worldData.areas; a < s_worldData.numAreas; a++, area++)
-        {
-                // count number of static area surfaces
-                numSurfaces = 0;
-                for(k = 0; k < area->numMarkSurfaces; k++)
-                {
-                        surface = area->markSurfaces[k];
-                        shader = surface->shader;
-
-                        if(shader->isSky)
-                                continue;
-
-                        if(shader->isPortal || shader->isMirror)
-                                continue;
-
-                        if(shader->numDeforms)
-                                continue;
-
-                        numSurfaces++;
-                }
-
-                if(!numSurfaces)
-                        continue;
-
-                // build interaction caches list
-                surfacesSorted = ri.Hunk_AllocateTempMemory(numSurfaces * sizeof(surfacesSorted[0]));
-
-                numSurfaces = 0;
-                for(k = 0; k < area->numMarkSurfaces; k++)
-                {
-                        surface = area->markSurfaces[k];
-                        shader = surface->shader;
-
-                        if(shader->isSky)
-                                continue;
-
-                        if(shader->isPortal || shader->isMirror)
-                                continue;
-
-                        if(shader->numDeforms)
-                                continue;
-
-                        surfacesSorted[numSurfaces] = surface;
-                        numSurfaces++;
-                }
-
-                Com_InitGrowList(&vboSurfaces, 100);
-
-                // sort surfaces by shader
-                qsort(surfacesSorted, numSurfaces, sizeof(*surfacesSorted), BSPSurfaceCompare);
-
-                // create a VBO for each shader
-                shader = oldShader = NULL;
-                lightmapNum = oldLightmapNum = -1;
-
-                for(k = 0; k < numSurfaces; k++)
-                {
-                        surface = surfacesSorted[k];
-                        shader = surface->shader;
-                        lightmapNum = surface->lightmapNum;
-
-                        if(shader != oldShader || (r_precomputedLighting->integer ? lightmapNum != oldLightmapNum : 0))
-                        {
-                                oldShader = shader;
-                                oldLightmapNum = lightmapNum;
-
-                                // count vertices and indices
-                                numVerts = 0;
-                                numTriangles = 0;
-
-                                for(l = k; l < numSurfaces; l++)
-                                {
-                                        surface2 = surfacesSorted[l];
-
-                                        if(surface2->shader != shader)
-                                                continue;
-
-                                        if(*surface2->data == SF_FACE)
-                                        {
-                                                srfSurfaceFace_t *face = (srfSurfaceFace_t *) surface2->data;
-
-                                                if(face->numVerts)
-                                                        numVerts += face->numVerts;
-
-                                                if(face->numTriangles)
-                                                        numTriangles += face->numTriangles;
-                                        }
-                                        else if(*surface2->data == SF_GRID)
-                                        {
-                                                srfGridMesh_t  *grid = (srfGridMesh_t *) surface2->data;
-
-                                                if(grid->numVerts)
-                                                        numVerts += grid->numVerts;
-
-                                                if(grid->numTriangles)
-                                                        numTriangles += grid->numTriangles;
-                                        }
-                                        else if(*surface2->data == SF_TRIANGLES)
-                                        {
-                                                srfTriangles_t *tri = (srfTriangles_t *) surface2->data;
-
-                                                if(tri->numVerts)
-                                                        numVerts += tri->numVerts;
-
-                                                if(tri->numTriangles)
-                                                        numTriangles += tri->numTriangles;
-                                        }
-                                }
-
-                                if(!numVerts || !numTriangles)
-                                        continue;
-
-                                ri.Printf(PRINT_DEVELOPER, "...calculating world mesh VBOs ( %s, %i verts %i tris )\n", shader->name, numVerts,
-                                                  numTriangles);
-
-                                // create surface
-                                vboSurf = ri.Hunk_Alloc(sizeof(*vboSurf), h_low);
-                                Com_AddToGrowList(&vboSurfaces, vboSurf);
-
-                                vboSurf->surfaceType = SF_VBO_MESH;
-                                vboSurf->numIndexes = numTriangles * 3;
-                                vboSurf->numVerts = numVerts;
-
-                                vboSurf->shader = shader;
-                                vboSurf->lightmapNum = lightmapNum;
-
-                                // create arrays
-                                verts = ri.Hunk_AllocateTempMemory(numVerts * sizeof(srfVert_t));
-                                optimizedVerts = ri.Hunk_AllocateTempMemory(numVerts * sizeof(srfVert_t));
-                                numVerts = 0;
-
-                                triangles = ri.Hunk_AllocateTempMemory(numTriangles * sizeof(srfTriangle_t));
-                                numTriangles = 0;
-
-                                ClearBounds(vboSurf->bounds[0], vboSurf->bounds[1]);
-
-                                // build triangle indices
-                                for(l = k; l < numSurfaces; l++)
-                                {
-                                        surface2 = surfacesSorted[l];
-
-                                        if(surface2->shader != shader)
-                                                continue;
-
-                                        // set up triangle indices
-                                        if(*surface2->data == SF_FACE)
-                                        {
-                                                srfSurfaceFace_t *srf = (srfSurfaceFace_t *) surface2->data;
-
-                                                if(srf->numTriangles)
-                                                {
-                                                        srfTriangle_t  *tri;
-
-                                                        for(i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++)
-                                                        {
-                                                                for(j = 0; j < 3; j++)
-                                                                {
-                                                                        triangles[numTriangles + i].indexes[j] = numVerts + tri->indexes[j];
-                                                                }
-                                                        }
-
-                                                        numTriangles += srf->numTriangles;
-                                                }
-
-                                                if(srf->numVerts)
-                                                        numVerts += srf->numVerts;
-                                        }
-                                        else if(*surface2->data == SF_GRID)
-                                        {
-                                                srfGridMesh_t  *srf = (srfGridMesh_t *) surface2->data;
-
-                                                if(srf->numTriangles)
-                                                {
-                                                        srfTriangle_t  *tri;
-
-                                                        for(i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++)
-                                                        {
-                                                                for(j = 0; j < 3; j++)
-                                                                {
-                                                                        triangles[numTriangles + i].indexes[j] = numVerts + tri->indexes[j];
-                                                                }
-                                                        }
-
-                                                        numTriangles += srf->numTriangles;
-                                                }
-
-                                                if(srf->numVerts)
-                                                        numVerts += srf->numVerts;
-                                        }
-                                        else if(*surface2->data == SF_TRIANGLES)
-                                        {
-                                                srfTriangles_t *srf = (srfTriangles_t *) surface2->data;
-
-                                                if(srf->numTriangles)
-                                                {
-                                                        srfTriangle_t  *tri;
-
-                                                        for(i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++)
-                                                        {
-                                                                for(j = 0; j < 3; j++)
-                                                                {
-                                                                        triangles[numTriangles + i].indexes[j] = numVerts + tri->indexes[j];
-                                                                }
-                                                        }
-
-                                                        numTriangles += srf->numTriangles;
-                                                }
-
-                                                if(srf->numVerts)
-                                                        numVerts += srf->numVerts;
-                                        }
-                                }
-
-                                // build vertices
-                                numVerts = 0;
-                                for(l = k; l < numSurfaces; l++)
-                                {
-                                        surface2 = surfacesSorted[l];
-
-                                        if(surface2->shader != shader)
-                                                continue;
-
-                                        if(*surface2->data == SF_FACE)
-                                        {
-                                                srfSurfaceFace_t *cv = (srfSurfaceFace_t *) surface2->data;
-
-                                                if(cv->numVerts)
-                                                {
-                                                        for(i = 0; i < cv->numVerts; i++)
-                                                        {
-                                                                CopyVert(&cv->verts[i], &verts[numVerts + i]);
-
-                                                                AddPointToBounds(cv->verts[i].xyz, vboSurf->bounds[0], vboSurf->bounds[1]);
-                                                        }
-
-                                                        numVerts += cv->numVerts;
-                                                }
-                                        }
-                                        else if(*surface2->data == SF_GRID)
-                                        {
-                                                srfGridMesh_t  *cv = (srfGridMesh_t *) surface2->data;
-
-                                                if(cv->numVerts)
-                                                {
-                                                        for(i = 0; i < cv->numVerts; i++)
-                                                        {
-                                                                CopyVert(&cv->verts[i], &verts[numVerts + i]);
-
-                                                                AddPointToBounds(cv->verts[i].xyz, vboSurf->bounds[0], vboSurf->bounds[1]);
-                                                        }
-
-                                                        numVerts += cv->numVerts;
-                                                }
-                                        }
-                                        else if(*surface2->data == SF_TRIANGLES)
-                                        {
-                                                srfTriangles_t *cv = (srfTriangles_t *) surface2->data;
-
-                                                if(cv->numVerts)
-                                                {
-                                                        for(i = 0; i < cv->numVerts; i++)
-                                                        {
-                                                                CopyVert(&cv->verts[i], &verts[numVerts + i]);
-
-                                                                AddPointToBounds(cv->verts[i].xyz, vboSurf->bounds[0], vboSurf->bounds[1]);
-                                                        }
-
-                                                        numVerts += cv->numVerts;
-                                                }
-                                        }
-                                }
-
-                                numVerts = OptimizeVertices(numVerts, verts, numTriangles, triangles, optimizedVerts, CompareWorldVert);
-                                if(c_redundantVertexes)
-                                {
-                                        ri.Printf(PRINT_DEVELOPER,
-                                                          "...removed %i redundant vertices from staticWorldMesh %i ( %s, %i verts %i tris )\n",
-                                                          c_redundantVertexes, vboSurfaces.currentElements, shader->name, numVerts, numTriangles);
-                                }
-
-                                vboSurf->vbo = R_CreateVBO2(va("staticWorldMesh_vertices %i", vboSurfaces.currentElements), numVerts, optimizedVerts,
-                                                                           ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_NORMAL
-                                                                           | ATTR_COLOR);
-
-                                vboSurf->ibo = R_CreateIBO2(va("staticWorldMesh_indices %i", vboSurfaces.currentElements), numTriangles, triangles);
-
-                                ri.Hunk_FreeTempMemory(triangles);
-                                ri.Hunk_FreeTempMemory(optimizedVerts);
-                                ri.Hunk_FreeTempMemory(verts);
-                        }
-                }
-
-                ri.Hunk_FreeTempMemory(surfacesSorted);
-
-                // move VBO surfaces list to hunk
-                area->numVBOSurfaces = vboSurfaces.currentElements;
-                area->vboSurfaces = ri.Hunk_Alloc(area->numVBOSurfaces * sizeof(*area->vboSurfaces), h_low);
-
-                for(i = 0; i < area->numVBOSurfaces; i++)
-                {
-                        area->vboSurfaces[i] = (srfVBOMesh_t *) Com_GrowListElement(&vboSurfaces, i);
-                }
-
-                Com_DestroyGrowList(&vboSurfaces);
-
-                ri.Printf(PRINT_ALL, "%i VBO surfaces created for area %i\n", area->numVBOSurfaces, a);
-        }
 }
 */
 
@@ -4828,8 +3920,6 @@ static void R_CreateWorldVBO( void )
 	int       numVerts;
 	srfVert_t *verts;
 
-//  srfVert_t      *optimizedVerts;
-
 	int           numTriangles;
 	srfTriangle_t *triangles;
 
@@ -4991,7 +4081,6 @@ static void R_CreateWorldVBO( void )
 	// create arrays
 	s_worldData.numVerts = numVerts;
 	s_worldData.verts = verts = (srfVert_t*) ri.Hunk_Alloc( numVerts * sizeof( srfVert_t ), h_low );
-	//optimizedVerts = ri.Hunk_AllocateTempMemory(numVerts * sizeof(srfVert_t));
 
 	s_worldData.numTriangles = numTriangles;
 	s_worldData.triangles = triangles = (srfTriangle_t*) ri.Hunk_Alloc( numTriangles * sizeof( srfTriangle_t ), h_low );
@@ -5103,28 +4192,13 @@ static void R_CreateWorldVBO( void )
 	}
 
 	// create vbo and ibo
-#if 0
-	numVerts = OptimizeVertices( numVerts, verts, numTriangles, triangles, optimizedVerts, CompareWorldVert );
-
-	if ( c_redundantVertexes )
-	{
-		ri.Printf( PRINT_DEVELOPER,
-		           "...removed %i redundant vertices from staticWorldMesh %i ( %s, %i verts %i tris )\n",
-		           c_redundantVertexes, vboSurfaces.currentElements, shader->name, numVerts, numTriangles );
-	}
-
-	s_worldData.vbo = R_CreateVBO2( va( "bspModelMesh_vertices %i", 0 ), numVerts, optimizedVerts,
-	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT |
-	                                ATTR_NORMAL | ATTR_COLOR | GLCS_LIGHTCOLOR | ATTR_LIGHTDIRECTION );
-#else
 	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
 	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL |
 	                                ATTR_NORMAL | ATTR_COLOR
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	                                | ATTR_PAINTCOLOR | ATTR_LIGHTDIRECTION
+	                                | ATTR_LIGHTDIRECTION
 #endif
 	                                 );
-#endif
 
 	s_worldData.ibo = R_CreateStaticIBO2( va( "staticWorld_IBO %i", 0 ), numTriangles, triangles );
 
@@ -5306,44 +4380,7 @@ static void R_CreateWorldVBO( void )
 		surface->viewCount = -1;
 	}
 
-	// Tr3B: FIXME move this to somewhere else?
-#if CALC_REDUNDANT_SHADOWVERTS
-	startTime = ri.Milliseconds();
-
-	s_worldData.redundantVertsCalculationNeeded = 0;
-
-	for ( i = 0; i < s_worldData.numLights; i++ )
-	{
-		light = &s_worldData.lights[ i ];
-
-		if ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity )
-		{
-			continue;
-		}
-
-		s_worldData.redundantVertsCalculationNeeded++;
-	}
-
-	if ( s_worldData.redundantVertsCalculationNeeded )
-	{
-		ri.Printf( PRINT_ALL, "...calculating redundant world vertices ( %i verts )\n", numVerts );
-
-		s_worldData.redundantLightVerts = ri.Hunk_Alloc( numVerts * sizeof( int ), h_low );
-		BuildRedundantIndices( numVerts, verts, s_worldData.redundantLightVerts, CompareLightVert );
-
-		s_worldData.redundantShadowVerts = ri.Hunk_Alloc( numVerts * sizeof( int ), h_low );
-		BuildRedundantIndices( numVerts, verts, s_worldData.redundantShadowVerts, CompareShadowVert );
-
-		s_worldData.redundantShadowAlphaTestVerts = ri.Hunk_Alloc( numVerts * sizeof( int ), h_low );
-		BuildRedundantIndices( numVerts, verts, s_worldData.redundantShadowAlphaTestVerts, CompareShadowVertAlphaTest );
-	}
-
-	endTime = ri.Milliseconds();
-	ri.Printf( PRINT_ALL, "redundant world vertices calculation time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
-#endif
-
 	//ri.Hunk_FreeTempMemory(triangles);
-	//ri.Hunk_FreeTempMemory(optimizedVerts);
 	//ri.Hunk_FreeTempMemory(verts);
 	ri.Hunk_FreeTempMemory( surfaces );
 }
@@ -6056,11 +5093,15 @@ void R_LoadLightGrid( lump_t *l )
 	world_t        *w;
 	float          *wMins, *wMaxs;
 	dgridPoint_t   *in;
-	bspGridPoint_t *gridPoint;
+	bspGridPoint1_t *gridPoint1;
+	bspGridPoint2_t *gridPoint2;
 	float          lat, lng;
-	int            gridStep[ 3 ];
-	int            pos[ 3 ];
-	float          posFloat[ 3 ];
+	int            from[ 3 ], to[ 3 ];
+	float          weights[ 3 ] = { 0.25f, 0.5f, 0.25f };
+	float          *factors[ 3 ] = { weights, weights, weights };
+	vec3_t         ambientColor, directedColor, direction;
+	float          scale;
+
 
 	ri.Printf( PRINT_DEVELOPER, "...loading light grid\n" );
 
@@ -6080,6 +5121,13 @@ void R_LoadLightGrid( lump_t *l )
 		w->lightGridBounds[ i ] = ( maxs[ i ] - w->lightGridOrigin[ i ] ) / w->lightGridSize[ i ] + 1;
 	}
 
+	VectorMA( w->lightGridOrigin, -0.5f, w->lightGridSize,
+		  w->lightGridGLOrigin );
+
+	w->lightGridGLScale[ 0 ] = w->lightGridInverseSize[ 0 ] / w->lightGridBounds[ 0 ];
+	w->lightGridGLScale[ 1 ] = w->lightGridInverseSize[ 1 ] / w->lightGridBounds[ 1 ];
+	w->lightGridGLScale[ 2 ] = w->lightGridInverseSize[ 2 ] / w->lightGridBounds[ 2 ];
+
 	w->numLightGridPoints = w->lightGridBounds[ 0 ] * w->lightGridBounds[ 1 ] * w->lightGridBounds[ 2 ];
 
 	ri.Printf( PRINT_DEVELOPER, "grid size (%i %i %i)\n", ( int ) w->lightGridSize[ 0 ], ( int ) w->lightGridSize[ 1 ],
@@ -6090,7 +5138,8 @@ void R_LoadLightGrid( lump_t *l )
 	if ( l->filelen != w->numLightGridPoints * sizeof( dgridPoint_t ) )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: light grid mismatch\n" );
-		w->lightGridData = NULL;
+		w->lightGridData1 = NULL;
+		w->lightGridData2 = NULL;
 		return;
 	}
 
@@ -6101,12 +5150,15 @@ void R_LoadLightGrid( lump_t *l )
 		ri.Error( ERR_DROP, "LoadMap: funny lump size in %s", s_worldData.name );
 	}
 
-	gridPoint = (bspGridPoint_t*) ri.Hunk_Alloc( w->numLightGridPoints * sizeof( *gridPoint ), h_low );
+	i = w->numLightGridPoints * ( sizeof( *gridPoint1 ) + sizeof( *gridPoint2 ) );
+	gridPoint1 = (bspGridPoint1_t *) ri.Hunk_Alloc( i, h_low );
+	gridPoint2 = (bspGridPoint2_t *) (gridPoint1 + w->numLightGridPoints);
 
-	w->lightGridData = gridPoint;
-	//Com_Memcpy(w->lightGridData, (void *)(fileBase + l->fileofs), l->filelen);
+	w->lightGridData1 = gridPoint1;
+	w->lightGridData2 = gridPoint2;
 
-	for ( i = 0; i < w->numLightGridPoints; i++, in++, gridPoint++ )
+	for ( i = 0; i < w->numLightGridPoints;
+	      i++, in++, gridPoint1++, gridPoint2++ )
 	{
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 		byte tmpAmbient[ 4 ];
@@ -6127,22 +5179,19 @@ void R_LoadLightGrid( lump_t *l )
 
 		for ( j = 0; j < 3; j++ )
 		{
-			gridPoint->ambientColor[ j ] = tmpAmbient[ j ] * ( 1.0f / 255.0f );
-			gridPoint->directedColor[ j ] = tmpDirected[ j ] * ( 1.0f / 255.0f );
+			ambientColor[ j ] = tmpAmbient[ j ] * ( 1.0f / 255.0f );
+			directedColor[ j ] = tmpDirected[ j ] * ( 1.0f / 255.0f );
 		}
 
 #else
 
 		for ( j = 0; j < 3; j++ )
 		{
-			gridPoint->ambientColor[ j ] = LittleFloat( in->ambient[ j ] );
-			gridPoint->directedColor[ j ] = LittleFloat( in->directed[ j ] );
+			ambientColor[ j ] = LittleFloat( in->ambient[ j ] );
+			directedColor[ j ] = LittleFloat( in->directed[ j ] );
 		}
 
 #endif
-
-		gridPoint->ambientColor[ 3 ] = 1.0f;
-		gridPoint->directedColor[ 3 ] = 1.0f;
 
 		// standard spherical coordinates to cartesian coordinates conversion
 
@@ -6158,9 +5207,9 @@ void R_LoadLightGrid( lump_t *l )
 		lat = DEG2RAD( in->latLong[ 1 ] * ( 360.0f / 255.0f ) );
 		lng = DEG2RAD( in->latLong[ 0 ] * ( 360.0f / 255.0f ) );
 
-		gridPoint->direction[ 0 ] = cos( lat ) * sin( lng );
-		gridPoint->direction[ 1 ] = sin( lat ) * sin( lng );
-		gridPoint->direction[ 2 ] = cos( lng );
+		direction[ 0 ] = cos( lat ) * sin( lng );
+		direction[ 1 ] = sin( lat ) * sin( lng );
+		direction[ 2 ] = cos( lng );
 
 #if 0
 		// debug print to see if the XBSP format is correct
@@ -6170,36 +5219,86 @@ void R_LoadLightGrid( lump_t *l )
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		// deal with overbright bits
-		R_HDRTonemapLightingColors( gridPoint->ambientColor, gridPoint->ambientColor, qtrue );
-		R_HDRTonemapLightingColors( gridPoint->directedColor, gridPoint->directedColor, qtrue );
+		R_HDRTonemapLightingColors( ambientColor, ambientColor, qtrue );
+		R_HDRTonemapLightingColors( directedColor, directedColor, qtrue );
 #endif
+
+		// Pack data into an bspGridPoint
+		gridPoint1->ambient[ 0 ] = floatToUnorm8( ambientColor[ 0 ] );
+		gridPoint1->ambient[ 1 ] = floatToUnorm8( ambientColor[ 1 ] );
+		gridPoint1->ambient[ 2 ] = floatToUnorm8( ambientColor[ 2 ] );
+		gridPoint2->directed[ 0 ] = floatToUnorm8( directedColor[ 0 ] );
+		gridPoint2->directed[ 1 ] = floatToUnorm8( directedColor[ 1 ] );
+		gridPoint2->directed[ 2 ] = floatToUnorm8( directedColor[ 2 ] );
+
+		scale = fabsf( direction[ 0 ] ) + fabsf( direction[ 1 ] ) + fabsf( direction[ 2 ] );
+		if( scale > 0.0f ) {
+			VectorScale( direction, 1.0f / scale, direction );
+			if( direction[ 2 ] < 0.0f ) {
+				float X = direction[ 0 ];
+				float Y = direction[ 1 ];
+				direction[ 0 ] = copysignf( 1.0f - fabs( Y ), X );
+				direction[ 1 ] = copysignf( 1.0f - fabs( X ), Y );
+			}
+		}
+		gridPoint1->lightVecX = floatToSnorm8( direction[ 0 ] );
+		gridPoint2->lightVecY = floatToSnorm8( direction[ 1 ] );
 	}
 
-	// calculate grid point positions
-	gridStep[ 0 ] = 1;
-	gridStep[ 1 ] = w->lightGridBounds[ 0 ];
-	gridStep[ 2 ] = w->lightGridBounds[ 0 ] * w->lightGridBounds[ 1 ];
+	// fill in gridpoints with zero light (samples in walls) to avoid
+	// darkening of objects near walls
+	gridPoint1 = w->lightGridData1;
+	gridPoint2 = w->lightGridData2;
 
-	for ( i = 0; i < w->lightGridBounds[ 0 ]; i += 1 )
-	{
-		for ( j = 0; j < w->lightGridBounds[ 1 ]; j += 1 )
-		{
-			for ( k = 0; k < w->lightGridBounds[ 2 ]; k += 1 )
-			{
-				pos[ 0 ] = i;
-				pos[ 1 ] = j;
-				pos[ 2 ] = k;
+	for( k = 0; k < w->lightGridBounds[ 2 ]; k++ ) {
+		from[ 2 ] = k - 1;
+		to[ 2 ] = k + 1;
 
-				posFloat[ 0 ] = i * w->lightGridSize[ 0 ];
-				posFloat[ 1 ] = j * w->lightGridSize[ 1 ];
-				posFloat[ 2 ] = k * w->lightGridSize[ 2 ];
+		for( j = 0; j < w->lightGridBounds[ 1 ]; j++ ) {
+			from[ 1 ] = j - 1;
+			to[ 1 ] = j + 1;
 
-				gridPoint = w->lightGridData + pos[ 0 ] * gridStep[ 0 ] + pos[ 1 ] * gridStep[ 1 ] + pos[ 2 ] * gridStep[ 2 ];
+			for( i = 0; i < w->lightGridBounds[ 0 ];
+			     i++, gridPoint1++, gridPoint2++ ) {
+				from[ 0 ] = i - 1;
+				to[ 0 ] = i + 1;
 
-				VectorAdd( posFloat, w->lightGridOrigin, gridPoint->origin );
+				if( gridPoint1->ambient[ 0 ] ||
+				    gridPoint1->ambient[ 1 ] ||
+				    gridPoint1->ambient[ 2 ] )
+					continue;
+
+				scale = R_InterpolateLightGrid( w, from, to, factors,
+								ambientColor, directedColor,
+								direction );
+				if( scale > 0.0f ) {
+					scale = 1.0f / scale;
+
+					VectorScale( ambientColor, scale, ambientColor );
+					VectorScale( directedColor, scale, directedColor );
+					VectorScale( direction, scale, direction );
+					
+					gridPoint1->ambient[ 0 ] = floatToUnorm8( ambientColor[ 0 ] );
+					gridPoint1->ambient[ 1 ] = floatToUnorm8( ambientColor[ 1 ] );
+					gridPoint1->ambient[ 2 ] = floatToUnorm8( ambientColor[ 2 ] );
+					gridPoint1->lightVecX = floatToSnorm8( direction[ 0 ] );
+					gridPoint2->directed[ 0 ] = floatToUnorm8( directedColor[ 0 ] );
+					gridPoint2->directed[ 1 ] = floatToUnorm8( directedColor[ 1 ] );
+					gridPoint2->directed[ 2 ] = floatToUnorm8( directedColor[ 2 ] );
+					gridPoint2->lightVecY = floatToSnorm8( direction[ 1 ] );
+				}
 			}
 		}
 	}
+
+	tr.lightGrid1Image = R_Create3DImage("<lightGrid1>", (const byte *)w->lightGridData1,
+					     w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
+					     w->lightGridBounds[ 2 ], IF_NOPICMIP | IF_NOLIGHTSCALE | IF_NOCOMPRESSION,
+					     FT_LINEAR, WT_EDGE_CLAMP );
+	tr.lightGrid2Image = R_Create3DImage("<lightGrid2>", (const byte *)w->lightGridData2,
+					     w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
+					     w->lightGridBounds[ 2 ], IF_NOPICMIP | IF_NOLIGHTSCALE | IF_NOCOMPRESSION,
+					     FT_LINEAR, WT_EDGE_CLAMP );
 
 	ri.Printf( PRINT_DEVELOPER, "%i light grid points created\n", w->numLightGridPoints );
 }
@@ -7772,30 +6871,6 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 				}
 			}
 
-			/*
-			   numVerts = OptimizeVertices(numVerts, verts, numTriangles, triangles, optimizedVerts, CompareLightVert);
-			   if(c_redundantVertexes)
-			   {
-			   ri.Printf(PRINT_DEVELOPER,
-			   "...removed %i redundant vertices from staticLightMesh %i ( %s, %i verts %i tris )\n",
-			   c_redundantVertexes, c_vboLightSurfaces, shader->name, numVerts, numTriangles);
-			   }
-
-			   vboSurf->vbo = R_CreateVBO2(va("staticLightMesh_vertices %i", c_vboLightSurfaces), numVerts, optimizedVerts,
-			   ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_NORMAL |
-			   ATTR_COLOR, VBO_USAGE_STATIC);
-			 */
-
-#if CALC_REDUNDANT_SHADOWVERTS
-			OptimizeTrianglesLite( s_worldData.redundantLightVerts, numTriangles, triangles );
-
-			if ( c_redundantVertexes )
-			{
-				ri.Printf( PRINT_DEVELOPER, "...removed %i redundant vertices from staticLightMesh %i ( %s, %i verts %i tris )\n",
-				           c_redundantVertexes, c_vboLightSurfaces, shader->name, numVerts, numTriangles );
-			}
-
-#endif
 			vboSurf->vbo = s_worldData.vbo;
 			vboSurf->ibo = R_CreateStaticIBO2( va( "staticLightMesh_IBO %i", c_vboLightSurfaces ), numTriangles, triangles );
 
@@ -8204,30 +7279,6 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 				}
 			}
 
-			/*
-			   numVerts = OptimizeVertices(numVerts, verts, numTriangles, triangles, optimizedVerts, CompareLightVert);
-			   if(c_redundantVertexes)
-			   {
-			   ri.Printf(PRINT_DEVELOPER,
-			   "...removed %i redundant vertices from staticLightMesh %i ( %s, %i verts %i tris )\n",
-			   c_redundantVertexes, c_vboLightSurfaces, shader->name, numVerts, numTriangles);
-			   }
-
-			   vboSurf->vbo = R_CreateVBO2(va("staticLightMesh_vertices %i", c_vboLightSurfaces), numVerts, optimizedVerts,
-			   ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_NORMAL |
-			   ATTR_COLOR, VBO_USAGE_STATIC);
-			 */
-
-#if CALC_REDUNDANT_SHADOWVERTS
-			OptimizeTrianglesLite( s_worldData.redundantShadowVerts, numTriangles, triangles );
-
-			if ( c_redundantVertexes )
-			{
-				ri.Printf( PRINT_DEVELOPER, "...removed %i redundant vertices from staticLightMesh %i ( %s, %i verts %i tris )\n",
-				           c_redundantVertexes, c_vboLightSurfaces, shader->name, numVerts, numTriangles );
-			}
-
-#endif
 			vboSurf->vbo = s_worldData.vbo;
 			vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowMesh_IBO %i", c_vboLightSurfaces ), numTriangles, triangles );
 
@@ -8621,40 +7672,8 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 					}
 				}
 
-				if ( alphaTest )
-				{
-#if CALC_REDUNDANT_SHADOWVERTS
-					//OptimizeTriangles(s_worldData.numVerts, s_worldData.verts, numTriangles, triangles, CompareShadowVertAlphaTest);
-					OptimizeTrianglesLite( s_worldData.redundantShadowAlphaTestVerts, numTriangles, triangles );
-
-					if ( c_redundantVertexes )
-					{
-						ri.Printf( PRINT_DEVELOPER,
-						           "...removed %i redundant vertices from staticShadowPyramidMesh %i ( %s, %i verts %i tris )\n",
-						           c_redundantVertexes, c_vboShadowSurfaces, shader->name, numVerts, numTriangles );
-					}
-
-#endif
-					vboSurf->vbo = s_worldData.vbo;
-					vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowPyramidMesh_IBO %i", c_vboShadowSurfaces ), numTriangles, triangles );
-				}
-				else
-				{
-#if CALC_REDUNDANT_SHADOWVERTS
-					//OptimizeTriangles(s_worldData.numVerts, s_worldData.verts, numTriangles, triangles, CompareShadowVert);
-					OptimizeTrianglesLite( s_worldData.redundantShadowVerts, numTriangles, triangles );
-
-					if ( c_redundantVertexes )
-					{
-						ri.Printf( PRINT_DEVELOPER,
-						           "...removed %i redundant vertices from staticShadowPyramidMesh %i ( %s, %i verts %i tris )\n",
-						           c_redundantVertexes, c_vboShadowSurfaces, shader->name, numVerts, numTriangles );
-					}
-
-#endif
-					vboSurf->vbo = s_worldData.vbo;
-					vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowPyramidMesh_IBO %i", c_vboShadowSurfaces ), numTriangles, triangles );
-				}
+				vboSurf->vbo = s_worldData.vbo;
+				vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowPyramidMesh_IBO %i", c_vboShadowSurfaces ), numTriangles, triangles );
 
 				ri.Hunk_FreeTempMemory( triangles );
 

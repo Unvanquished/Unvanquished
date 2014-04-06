@@ -65,11 +65,7 @@ Maryland 20850 USA.
 
 static char binaryPath[ MAX_OSPATH ] = { 0 };
 
-#ifdef USE_CURSES
-static qboolean nocurses = qfalse;
-void            CON_Init_tty( void );
-
-#endif
+void            CON_Init_TTY( void );
 
 /*
 =================
@@ -162,7 +158,7 @@ char *Sys_ConsoleInput( void )
 =================
 Sys_Exit
 
-Single exit point (regular exit or in case of error)
+Single exit point (regular exit or in case of error, but not signals)
 =================
 */
 static void NORETURN Sys_Exit( int exitCode )
@@ -174,6 +170,7 @@ static void NORETURN Sys_Exit( int exitCode )
 #endif
 
 	Sys_PlatformExit();
+
 	exit( exitCode );
 }
 
@@ -504,19 +501,19 @@ void NORETURN Sys_SigHandler( int signal )
 	{
 		signalcaught = qtrue;
 #if !defined(DEDICATED)
-		CL_Shutdown();
+		// we need a FAST shutdown, so just disconnect directly
+		CL_SendDisconnect();
 #endif
 		SV_Shutdown( va( "Received signal %d", signal ) );
 	}
 
-	if ( signal == SIGTERM || signal == SIGINT )
-	{
-		Sys_Exit( 1 );
-	}
-	else
-	{
-		Sys_Exit( 2 );
-	}
+	CON_Shutdown();
+	Sys_PlatformExit();
+
+	fprintf( stderr, "Received signal %d\n", signal );
+	CON_LogDump();
+
+	exit ( ( signal == -SIGTERM || signal == -SIGINT ) ? 1 : 2 );
 }
 
 /*
@@ -667,17 +664,29 @@ int ALIGN_STACK main( int argc, char **argv )
 	Sys_ParseArgs( argc, argv );
 	Sys_SetBinaryPath( Sys_Dirname( argv[ 0 ] ) );
 
+	// Enable the curses console by default
+	qboolean curses = qtrue;
+
+#if defined(_WIN32) && !defined(BUILD_TTY_CLIENT) && !defined(DEDICATED)
+	// Windows client defaults to curses off because of performance issues
+	curses = qfalse;
+#endif
+
  	// Concatenate the command line for passing to Com_Init
 	for ( i = 1; i < argc; i++ )
 	{
 
-#ifdef USE_CURSES
-		if ( !strcmp( "+nocurses", argv[ i ] ) )
+		if ( !strcmp( "+curses", argv[ i ] ) )
 		{
-			nocurses = qtrue;
+			curses = qtrue;
 			continue;
 		}
-#endif
+
+		if ( !strcmp( "+nocurses", argv[ i ] ) )
+		{
+			curses = qfalse;
+			continue;
+		}
 
 		// Allow URIs to be passed without +connect
 		if ( !Q_strnicmp( argv[ i ], URI_SCHEME, URI_SCHEME_LENGTH ) && Q_strnicmp( argv[ i - 1 ], "+connect", 8 ) )
@@ -689,35 +698,26 @@ int ALIGN_STACK main( int argc, char **argv )
 		Q_strcat( commandLine, sizeof( commandLine ), " " );
 	}
 
-#ifdef USE_CURSES
-
-	if ( nocurses )
-	{
-		CON_Init_tty();
-	}
-	else
+	if ( curses )
 	{
 		CON_Init();
 	}
-
-#else
-	CON_Init();
-#endif
+	else
+	{
+		CON_Init_TTY();
+	}
 
 	Com_Init( commandLine );
 	NET_Init();
 
-#ifdef NDEBUG
 	signal( SIGILL, Sys_SigHandler );
 	signal( SIGFPE, Sys_SigHandler );
 	signal( SIGSEGV, Sys_SigHandler );
-#endif
 	signal( SIGTERM, Sys_SigHandler );
 	signal( SIGINT, Sys_SigHandler );
 
 	while ( 1 )
 	{
-		IN_Frame();
-		Com_Frame();
+		Com_Frame( IN_Frame, IN_FrameEnd );
 	}
 }

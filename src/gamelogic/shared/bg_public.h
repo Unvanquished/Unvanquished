@@ -254,12 +254,12 @@ typedef enum
 #define SS_WALLCLIMBING     BIT(0)
 #define SS_CREEPSLOWED      BIT(1)
 #define SS_SPEEDBOOST       BIT(2)
-#define SS_GRABBED          BIT(3)
+#define SS_UNUSED_1         BIT(3)
 #define SS_BLOBLOCKED       BIT(4)
 #define SS_POISONED         BIT(5)
 #define SS_BOOSTED          BIT(6)
-#define SS_BOOSTEDNEW       BIT(7) // booster recharged
-#define SS_BOOSTEDWARNING   BIT(8) // booster poison is running out
+#define SS_BOOSTEDNEW       BIT(7) // booster recharged // TODO: Unnecessary, remove
+#define SS_BOOSTEDWARNING   BIT(8) // booster poison is running out // TODO: Unnecessary, remove
 #define SS_SLOWLOCKED       BIT(9)
 #define SS_CHARGING         BIT(10)
 #define SS_HEALING_ACTIVE   BIT(11) // medistat for humans, creep for aliens
@@ -270,6 +270,7 @@ typedef enum
 #define SS2_JETPACK_ENABLED BIT(0)  // whether jets/wings are extended
 #define SS2_JETPACK_WARM    BIT(1)  // whether we can start a thrust
 #define SS2_JETPACK_ACTIVE  BIT(2)  // whether we are thrusting
+#define SS2_LEVEL1SLOW      BIT(3)  // hit and slowed by a Mantis attack
 
 // has to fit into 16 bits
 #define SB_BUILDABLE_MASK        0x00FF
@@ -287,16 +288,17 @@ typedef enum
   IBE_NOALIENBP,        // not enough build points (aliens)
   IBE_NOCREEP,          // no creep in this area
 
-  IBE_NOREACTOR,        // no reactor present
+  IBE_NOREACTOR,        // not enough power in this area and no reactor present
   IBE_ONEREACTOR,       // may not build two reactors
   IBE_NOHUMANBP,        // not enough build points (humans)
-  IBE_NOPOWERHERE,      // not enough power in this area
+  IBE_NOPOWERHERE,      // not enough power in this area even though a reactor is present
 
   IBE_NORMAL,           // surface is too steep
   IBE_NOROOM,           // no room
   IBE_SURFACE,          // map doesn't allow building on that surface
   IBE_DISABLED,         // building has been disabled for team
   IBE_LASTSPAWN,        // may not replace last spawn with non-spawn
+  IBE_MAINSTRUCTURE,    // may not replace main structure with other buildable
 
   IBE_MAXERRORS
 } itemBuildError_t;
@@ -355,7 +357,7 @@ typedef enum
 #define EF_FIRING2          0x0400 // alt fire
 #define EF_FIRING3          0x0800 // third fire
 #define EF_MOVER_STOP       0x1000 // will push otherwise
-#define EF_POISONCLOUDED    0x2000 // player hit with basilisk gas
+#define EF_UNUSED_1         0x2000 // UNUSED
 #define EF_CONNECTION       0x4000 // draw a connection trouble sprite
 #define EF_BLOBLOCKED       0x8000 // caught by a trapper
 
@@ -381,9 +383,7 @@ typedef enum
   WP_NONE,
 
   WP_ALEVEL0,
-  WP_ALEVEL0_UPG,
   WP_ALEVEL1,
-  WP_ALEVEL1_UPG,
   WP_ALEVEL2,
   WP_ALEVEL2_UPG,
   WP_ALEVEL3,
@@ -423,8 +423,6 @@ typedef enum
   UP_BATTLESUIT,
 
   UP_RADAR,
-
-  UP_BATTPACK,
   UP_JETPACK,
 
   UP_GRENADE,
@@ -547,6 +545,7 @@ typedef enum
 
   EV_JETPACK_ENABLE,  // enable jets
   EV_JETPACK_DISABLE, // disable jets
+  EV_JETPACK_IGNITE,  // ignite engine
   EV_JETPACK_START,   // start thrusting
   EV_JETPACK_STOP,    // stop thrusting
 
@@ -578,7 +577,6 @@ typedef enum
   EV_TESLATRAIL,
   EV_BULLET, // otherEntity is the shooter
 
-  EV_LEV1_GRAB,
   EV_LEV4_TRAMPLE_PREPARE,
   EV_LEV4_TRAMPLE_START,
 
@@ -599,6 +597,7 @@ typedef enum
   EV_HUMAN_BUILDABLE_EXPLOSION,
   EV_ALIEN_BUILDABLE_EXPLOSION,
   EV_ALIEN_ACIDTUBE,
+  EV_ALIEN_BOOSTER,
 
   EV_MEDKIT_USED,
 
@@ -675,6 +674,7 @@ typedef enum
   MN_B_NORMAL,
   MN_B_CANNOT,
   MN_B_LASTSPAWN,
+  MN_B_MAINSTRUCTURE,
   MN_B_DISABLED,
   MN_B_REVOKED,
   MN_B_SURRENDER,
@@ -910,9 +910,7 @@ typedef enum
 
   //offensive classes
   PCL_ALIEN_LEVEL0,
-  PCL_ALIEN_LEVEL0_UPG,
   PCL_ALIEN_LEVEL1,
-  PCL_ALIEN_LEVEL1_UPG,
   PCL_ALIEN_LEVEL2,
   PCL_ALIEN_LEVEL2_UPG,
   PCL_ALIEN_LEVEL3,
@@ -995,7 +993,6 @@ typedef enum
   MOD_ABUILDER_CLAW,
   MOD_LEVEL0_BITE,
   MOD_LEVEL1_CLAW,
-  MOD_LEVEL1_PCLOUD,
   MOD_LEVEL3_CLAW,
   MOD_LEVEL3_POUNCE,
   MOD_LEVEL3_BOUNCEBALL,
@@ -1275,7 +1272,7 @@ typedef struct
 qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
                                 vec2_t angles, vec3_t dir1, vec3_t dir2 );
 
-qboolean BG_WeaponIsFull( int weapon, int stats[], int ammo, int clips );
+qboolean BG_WeaponIsFull(int weapon, int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
 int      BG_SlotsForInventory( int stats[] );
 void     BG_AddUpgradeToInventory( int item, int stats[] );
@@ -1294,7 +1291,6 @@ void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t m
                                                vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
 int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
-int                         BG_PlayerPoisonCloudTime( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );

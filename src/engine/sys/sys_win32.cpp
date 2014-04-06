@@ -1040,10 +1040,11 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		startTime = Sys_Milliseconds();
 
 		// make sure mouse and joystick are only called once a frame
-		IN_Frame();
+//		IN_Frame();
+//		IN_FrameEnd();
 
 //		Com_FrameExt();
-		Com_Frame();
+		Com_Frame( IN_Frame, IN_FrameEnd );
 
 		endTime = Sys_Milliseconds();
 		totalMsec += endTime - startTime;
