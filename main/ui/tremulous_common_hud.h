@@ -200,7 +200,7 @@ itemDef
 	forecolor 0.93 0.93 0.92 1
 	textalign ALIGN_LEFT
 	textvalign VALIGN_TOP
-	textscale 0.35
+	textscale 0.3
 	textstyle ITEM_TEXTSTYLE_SHADOWED
 	ownerdraw CG_CONSOLE
 }

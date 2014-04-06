@@ -60,7 +60,7 @@ while :; do
 done
 
 PAKBASE="$1"
-shift
+shift || :
 BUILDDIR="${1:-.}"
 shift || :
 

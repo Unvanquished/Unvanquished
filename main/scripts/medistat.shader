@@ -1,75 +1,64 @@
 models/buildables/medistat/base
 {
-	qer_editorimage models/buildables/medistat/medistat_d
-	diffuseMap models/buildables/medistat/medistat_d
-	normalMap models/buildables/medistat/medistat_n
-	{
-		stage specularMap
-		map models/buildables/medistat/medistat_s
-		specularExponentMin 12
-		specularExponentMax 128
-	}
+	diffuseMap  models/buildables/medistat/medistat_d
+	normalMap   models/buildables/medistat/medistat_n
+	specularMap models/buildables/medistat/medistat_s
+
 	// displays
 	{
-		map models/buildables/medistat/medistat_g1
-		blendfunc add
-		rgb 0.5 0.5 0.5
+		map   models/buildables/medistat/medistat_g1
+		blend add
+		rgb   0.5 0.5 0.5
 	}
+
 	// hexagons
 	{
-		map models/buildables/medistat/medistat_g2
-		blendfunc add
+		map    models/buildables/medistat/medistat_g2
+		blend  add
 		rgbGen wave sin 0.375 0.1875 0 0.25
 	}
+
 	when unpowered models/buildables/medistat/base_down
 	when destroyed models/buildables/medistat/base_dead
 }
 
 models/buildables/medistat/base_dead
 {
-	diffuseMap models/buildables/medistat/medistat_d
-	normalMap models/buildables/medistat/medistat_n
+	diffuseMap  models/buildables/medistat/medistat_d
+	normalMap   models/buildables/medistat/medistat_n
+	specularMap models/buildables/medistat/medistat_s
+
 	{
-		stage specularMap
-		map models/buildables/medistat/medistat_s
-		specularExponentMin 12
-		specularExponentMax 128
-	}
-	{
-		map models/buildables/medistat/medistat_dead
-		blendfunc filter
+		map   models/buildables/medistat/medistat_dead
+		blend filter
 	}
 }
 
 models/buildables/medistat/base_down
 {
-	diffuseMap models/buildables/medistat/medistat_d
-	normalMap models/buildables/medistat/medistat_n
-	{
-		stage specularMap
-		map models/buildables/medistat/medistat_s
-		specularExponentMin 12
-		specularExponentMax 128
-	}
+	diffuseMap  models/buildables/medistat/medistat_d
+	normalMap   models/buildables/medistat/medistat_n
+	specularMap models/buildables/medistat/medistat_s
 }
 
 models/buildables/medistat/healing
 {
 	cull none
+	surfaceparm nolightmap
+
 	{
-		map models/buildables/medistat/active
-		blendfunc blend
-		rgbGen lightingDiffuse
+		map   models/buildables/medistat/active
+		blend blend
 	}
+
 	{
-		map models/buildables/medistat/active_noise
-		blendfunc GL_SRC_ALPHA GL_ONE
-		rgbGen wave noise 0.0546875 0.0234375 35 0.25
-		// let's have some fun with this
-		tcMod rotate 59
+		map    models/buildables/medistat/active_noise
+		blend  add
+		rgb    0.05 0.05 0.05
+
+		tcMod rotate 60
 		tcmod scale 2 4
-		tcmod stretch sin 1 0.5 0 0.497
-		tcMod scroll -0.997 0.5
+		tcmod stretch sin 1 0.5 0 0.5
+		tcMod scroll -1 0.5
 	}
 }
-

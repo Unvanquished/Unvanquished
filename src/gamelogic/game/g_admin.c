@@ -531,6 +531,11 @@ g_admin_cmd_t *G_admin_cmd( const char *cmd )
 		--count;
 	}
 
+	if ( !count )
+	{
+		return NULL;
+	}
+
 	return (g_admin_cmd_t*) bsearch( cmd, cmds, count, sizeof( g_admin_cmd_t ), cmdcmp );
 }
 
@@ -4016,7 +4021,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 			{
 				ADMP( va( "%s %s", QQ( N_("^3adminhelp: ^7help for '$1$':\n") ), c->command ) );
 
-				if ( c->desc )
+				if ( c->desc[ 0 ] )
 				{
 					ADMP( va( "%s %s", QQ( N_(" ^3Description: ^7$1t$\n") ), Quote( c->desc ) ) );
 				}

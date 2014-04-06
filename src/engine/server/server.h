@@ -103,6 +103,7 @@ typedef struct
 	int            gameClientSize; // will be > sizeof(playerState_t) due to game private data
 
 	int            restartTime;
+	int            time;
 
 	// NERVE - SMF - net debugging
 	int   bpsWindow[ MAX_BPS_WINDOW ];

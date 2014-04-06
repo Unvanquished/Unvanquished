@@ -34,6 +34,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
 
+// GL conversion helpers
+static inline float unorm8ToFloat(byte unorm8) {
+	return unorm8 * (1.0f / 255.0f);
+}
+static inline byte floatToUnorm8(float f) {
+	// don't use Q_ftol here, as the semantics of Q_ftol
+	// has been changed from round to nearest to round to 0 !
+	return lrintf(f * 255.0f);
+}
+static inline float snorm8ToFloat(byte snorm8) {
+	return MAX( (snorm8 - 128) * (1.0f / 127.0f), -1.0f);
+}
+static inline byte floatToSnorm8(float f) {
+	// don't use Q_ftol here, as the semantics of Q_ftol
+	// has been changed from round to nearest to round to 0 !
+	return lrintf(f * 127.0f) + 128;
+}
+
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
 // parallel on a dual cpu machine
@@ -2006,25 +2024,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		decal_t *decals;
 	} bspModel_t;
 
-	// The lightVec is not just a direction vector, it is
-	// the product of the normalized light direction vector
-	// multiplied by the ratio of directed light in the total
-	// luminance.
-	// The reason for storing total luminance and lightVec instead
-	// of separate ambient and directional light, is that this
-	// way the interpolation of two light gridPoints with nearly
-	// opposite light directions will result in a stronger ambient
-	// light in the middle, whereas the other method will produce
-	// directional light from a random direction.
+	// The light direction vector is stored as the x/y coordinates
+	// of the vector projected on an unit octahedron. To disambiguate
+	// the upper and lower half of the octahedron, the four lower
+	// triangles of the octahedron are flipped into the outer corners
+	// of the unit square.
 	typedef struct bspGridPoint1_s
 	{
-		byte  lightVec[3];
-		byte  luminance;
+		byte  ambient[3];
+		byte  lightVecX;
 	} bspGridPoint1_t;
 	typedef struct bspGridPoint2_s
 	{
-		byte  ambientChroma[2];
-		byte  directedChroma[2];
+		byte  directed[3];
+		byte  lightVecY;
 	} bspGridPoint2_t;
 
 // ydnar: optimization
@@ -3612,6 +3625,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	void     R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType );
 	void     R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t forcedOrigin );
+	float R_InterpolateLightGrid( world_t *w, int from[3], int to[3],
+				      float *factors[3], vec3_t ambientLight,
+				      vec3_t directedLight, vec2_t lightDir );
 	int      R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 	void     R_TessLight( const trRefLight_t *light, const vec4_t color );
 

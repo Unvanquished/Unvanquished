@@ -85,7 +85,7 @@ class MapCmd: public Cmd::StaticCmd {
                 }
                 return out;
             } else if (argNum > 1) {
-                return FS::HomePath::CompleteFilename(prefix, "layouts/" + args.Argv(1), ".dat", false, true);
+                return FS::HomePath::CompleteFilename(prefix, "game/layouts/" + args.Argv(1), ".dat", false, true);
             }
 
             return {};
@@ -182,8 +182,9 @@ static void SV_MapRestart_f( void )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		gvm->GameRunFrame( svs.time );
+		gvm->GameRunFrame( sv.time );
 		svs.time += FRAMETIME;
+		sv.time += FRAMETIME;
 	}
 
 	// create a baseline for more efficient communications
@@ -239,8 +240,9 @@ static void SV_MapRestart_f( void )
 	}
 
 	// run another frame to allow things to look at all the players
-	gvm->GameRunFrame( svs.time );
+	gvm->GameRunFrame( sv.time );
 	svs.time += FRAMETIME;
+	sv.time += FRAMETIME;
 
 	Cvar_Set( "sv_serverRestarting", "0" );
 }
