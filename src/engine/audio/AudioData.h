@@ -34,33 +34,51 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Audio {
 
 struct AudioData {
-	const int sampleRate;
-	const int byteDepth;
-	const int numberOfChannels;
-	const int size;
-	char* rawSamples;
-
 	AudioData()
 	    : sampleRate{0}
 	    , byteDepth{0}
 	    , numberOfChannels{0}
 	    , size{0}
 	    , rawSamples{nullptr}
+	    , memoryOwned{false}
 	{}
 
-	AudioData(int sampleRate, int byteDepth, int numberOfChannels, int size, char* rawSamples,
-	          bool dataIsOwned = true)
+	AudioData(int sampleRate, int byteDepth, int numberOfChannels, int size, const void* rawSamples,
+	          bool memoryOwned = true)
 	    : sampleRate{sampleRate}
 	    , byteDepth{byteDepth}
 	    , numberOfChannels{numberOfChannels}
 	    , size{size}
 	    , rawSamples{rawSamples}
+	    , memoryOwned{memoryOwned}
 	{}
 
-	const void* GetRawData() const
+	AudioData(AudioData&& that)
+	    : sampleRate{that.sampleRate}
+	    , byteDepth{that.byteDepth}
+	    , numberOfChannels{that.numberOfChannels}
+	    , size{that.size}
+	    , rawSamples{that.rawSamples}
+	    , memoryOwned{that.memoryOwned}
 	{
-		return static_cast<const void*>(rawSamples);
+		that.memoryOwned = false;
 	}
+
+	AudioData(const AudioData& that) = delete;
+
+	~AudioData()
+	{
+		if (memoryOwned && rawSamples != nullptr)
+			delete[] static_cast<const char*>(rawSamples);
+	}
+	const int sampleRate;
+	const int byteDepth;
+	const int numberOfChannels;
+	const int size;
+	const void* rawSamples;
+
+private:
+	bool memoryOwned; // if the memory is owned then it must be deleted during destruction
 };
 } // namespace Audio
 #endif

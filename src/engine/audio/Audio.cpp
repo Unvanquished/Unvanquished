@@ -357,8 +357,7 @@ namespace Audio {
 
         streams[streamNum]->SetGain(volume);
 
-	    AudioData audioData(rate, width, channels, (width * numSamples * channels),
-	                        (char*)const_cast<void*>(data));
+	    AudioData audioData(rate, width, channels, (width * numSamples * channels), data, false);
 	    AL::Buffer buffer;
 
         int feedError = buffer.Feed(audioData);

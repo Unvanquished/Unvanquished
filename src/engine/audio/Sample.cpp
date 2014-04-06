@@ -60,9 +60,6 @@ namespace Audio {
 		    audioLogs.Warn("info.size = 0 in RegisterSample, what?");
         }
 
-	    if (audioData.rawSamples != nullptr)
-		    delete[] audioData.rawSamples;
-
 	    return true;
     }
 
