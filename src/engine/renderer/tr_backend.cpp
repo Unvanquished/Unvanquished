@@ -3138,7 +3138,6 @@ void RB_FXAA( void )
 void RB_CameraPostFX( void )
 {
 	matrix_t ortho;
-	matrix_t grain;
 
 	GLimp_LogComment( "--- RB_CameraPostFX ---\n" );
 
@@ -3166,16 +3165,6 @@ void RB_CameraPostFX( void )
 	gl_cameraEffectsShader->SetUniform_ColorModulate( backEnd.viewParms.gradingWeights );
 	gl_cameraEffectsShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	MatrixIdentity( grain );
-
-	MatrixMultiplyScale( grain, r_cameraFilmGrainScale->value, r_cameraFilmGrainScale->value, 0 );
-	MatrixMultiplyTranslation( grain, backEnd.refdef.floatTime * 10, backEnd.refdef.floatTime * 10, 0 );
-
-	MatrixMultiplyTranslation( grain, 0.5, 0.5, 0.0 );
-	MatrixMultiplyZRotation( grain, backEnd.refdef.floatTime * ( random() * 7 ) );
-	MatrixMultiplyTranslation( grain, -0.5, -0.5, 0.0 );
-
-	gl_cameraEffectsShader->SetUniform_ColorTextureMatrix( grain );
 	gl_cameraEffectsShader->SetUniform_InverseGamma( 1.0 / r_gamma->value );
 
 	// bind u_CurrentMap
@@ -3184,26 +3173,6 @@ void RB_CameraPostFX( void )
 
 	{
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.occlusionRenderFBOImage->uploadWidth, tr.occlusionRenderFBOImage->uploadHeight );
-	}
-
-	// bind u_GrainMap
-	if ( r_cameraFilmGrain->integer && tr.grainImage )
-	{
-		GL_BindToTMU( 1, tr.grainImage );
-	}
-	else
-	{
-		GL_BindToTMU( 1, tr.blackImage );
-	}
-
-	// bind u_VignetteMap
-	if ( r_cameraVignette->integer && tr.vignetteImage )
-	{
-		GL_BindToTMU( 2, tr.vignetteImage );
-	}
-	else
-	{
-		GL_BindToTMU( 2, tr.whiteImage );
 	}
 
 	GL_BindToTMU( 3, tr.colorGradeImage ); 
