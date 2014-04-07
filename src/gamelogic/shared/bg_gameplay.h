@@ -119,17 +119,24 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define CREEP_SCALEDOWN_TIME    3000
 
 // TODO: Increase burn damage frequencies, make sure burn functions are called frequently
-#define BURN_DAMAGE             10
-#define BURN_DAMAGE_PERIOD      1000
+// Average burn damage of an independent buildable is given by the limit of a geometric series:
+// ( BURN_SELFDAMAGE / BURN_SELFDAMAGE_PERIOD ) * ( BURN_STOP_PERIOD / BURN_STOP_CHANCE )
+#define BURN_SELFDAMAGE         10
+#define BURN_SELFDAMAGE_PERIOD  1000
 #define BURN_SPLDAMAGE          10
 #define BURN_SPLDAMAGE_RADIUS   60
 #define BURN_SPLDAMAGE_PERIOD   500
-#define BURN_STOP_PERIOD        2500
+// A burn action will first evaluate the stop chance, then a spread chance for each close neighbor
+#define BURN_ACTION_PERIOD      2500
+// The stop chance is lowered by a factor for every burning entity nearby
+// The factors decrease lineraly from BURN_STOP_CHANCE to 0.0 over the given radius
 #define BURN_STOP_CHANCE        0.5f
-#define BURN_SPREAD_PERIOD      1000
-#define BURN_SPREAD_CHANCE      0.2f
-#define BURN_SPREAD_RADIUS      100
-#define BURN_PERIODS_RAND       0.2  // randomization applied to all burn periods
+#define BURN_STOP_RADIUS        150
+// Spread chance decreases linearly from 1.0 to 0.0 over this distance
+// A target entity that's already burning will reset its action timer
+#define BURN_SPREAD_RADIUS      120
+// Randomization applied to all burn periods
+#define BURN_PERIODS_RAND       0.25
 
 #define BARRICADE_SHRINKPROP    0.25f
 #define BARRICADE_SHRINKTIMEOUT 500

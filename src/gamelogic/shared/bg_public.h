@@ -1271,6 +1271,7 @@ typedef struct
 // bg_utilities.c
 qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
                                 vec2_t angles, vec3_t dir1, vec3_t dir2 );
+void     BG_BuildEntityDescription( char *str, size_t size, entityState_t *es );
 
 qboolean BG_WeaponIsFull(int weapon, int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
