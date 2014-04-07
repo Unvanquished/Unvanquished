@@ -173,7 +173,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	{
 		const gentity_t *player = &g_entities[ playerNum ];
 
-		if ( player == killer || player == self )
+		if ( player == killer || player == self || self->credits[ playerNum ].team <= TEAM_NONE )
 		{
 			continue;
 		}
