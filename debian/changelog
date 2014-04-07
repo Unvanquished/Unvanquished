@@ -1,3 +1,15 @@
+unvanquished (0.26.0-1) unstable; urgency=low
+
+  * Release of alpha 26.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 06 Apr 2014 23:24:30 +0100
+
+unvanquished (0.25.0-2) unstable; urgency=low
+
+  * Pull in a few patches from git master, fixing font-related crashes.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 03 Mar 2014 18:40:52 +0000
+
 unvanquished (0.25.0-1) unstable; urgency=low
 
   * Release of alpha 25.
