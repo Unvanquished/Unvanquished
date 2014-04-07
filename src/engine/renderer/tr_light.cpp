@@ -117,6 +117,67 @@ LIGHT SAMPLING
 =============================================================================
 */
 
+float R_InterpolateLightGrid( world_t *w, int from[3], int to[3],
+			      float *factors[3], vec3_t ambientLight,
+			      vec3_t directedLight, vec2_t lightDir ) {
+	float           totalFactor = 0.0f, factor;
+	float           *xFactor, *yFactor, *zFactor;
+	int             gridStep[ 3 ];
+	int             x, y, z;
+	bspGridPoint1_t *gp1;
+	bspGridPoint2_t *gp2;
+
+	VectorClear( ambientLight );
+	VectorClear( directedLight );
+	lightDir[ 0 ] = lightDir[ 1 ] = 0.0f;
+
+	gridStep[ 0 ] = 1;
+	gridStep[ 1 ] = w->lightGridBounds[ 0 ];
+	gridStep[ 2 ] = gridStep[ 1 ] * w->lightGridBounds[ 1 ];
+
+	for( x = from[ 0 ], xFactor = factors[ 0 ]; x <= to[ 0 ];
+	     x++, xFactor++ ) {
+		if( x < 0 || x > w->lightGridBounds[ 0 ] )
+			continue;
+
+		for( y = from[ 1 ], yFactor = factors[ 1 ]; y <= to[ 1 ];
+		     y++, yFactor++ ) {
+			if( y < 0 || y > w->lightGridBounds[ 1 ] )
+				continue;
+
+			for( z = from[ 2 ], zFactor = factors[ 2 ]; z <= to[ 2 ];
+			     z++, zFactor++ ) {
+				if( z < 0 || z > w->lightGridBounds[ 2 ] )
+					continue;
+
+				gp1 = w->lightGridData1 + x * gridStep[ 0 ] + y * gridStep[ 1 ] + z * gridStep[ 2 ];
+				gp2 = w->lightGridData2 + x * gridStep[ 0 ] + y * gridStep[ 1 ] + z * gridStep[ 2 ];
+
+				if ( !( gp1->ambient[ 0 ] || gp1->ambient[ 1 ] || gp1->ambient[ 2 ]) )
+				{
+					continue; // ignore samples in walls
+				}
+
+				factor = *xFactor * *yFactor * *zFactor;
+
+				totalFactor += factor;
+
+				lightDir[ 0 ] += factor * snorm8ToFloat( gp1->lightVecX );
+				lightDir[ 1 ] += factor * snorm8ToFloat( gp2->lightVecY );
+				
+				ambientLight[ 0 ] += factor * unorm8ToFloat( gp1->ambient[ 0 ] );
+				ambientLight[ 1 ] += factor * unorm8ToFloat( gp1->ambient[ 1 ] );
+				ambientLight[ 2 ] += factor * unorm8ToFloat( gp1->ambient[ 2 ] );
+				directedLight[ 0 ] += factor * unorm8ToFloat( gp2->directed[ 0 ] );
+				directedLight[ 1 ] += factor * unorm8ToFloat( gp2->directed[ 1 ] );
+				directedLight[ 2 ] += factor * unorm8ToFloat( gp2->directed[ 2 ] );
+			}
+		}
+	}
+
+	return totalFactor;
+}
+
 /*
 =================
 R_LightForPoint
@@ -124,17 +185,11 @@ R_LightForPoint
 */
 int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
 {
-	int             i, j;
-	int             pos[ 3 ];
-	float           frac[ 3 ];
-	vec3_t          direction;
-	float           luminance;
-	float           ambientChroma[2];
-	float           directedChroma[2];
-	int             gridStep[ 3 ];
+	int             i;
+	int             from[ 3 ], to[ 3 ];
+	float           frac[ 3 ][ 2 ];
+	float           *factors[ 3 ] = { frac[ 0 ], frac[ 1 ], frac[ 2 ] };
 	float           totalFactor;
-	bspGridPoint1_t *gridPoint1;
-	bspGridPoint2_t *gridPoint2;
 
 	// bk010103 - this segfaults with -nolight maps
 	if ( tr.world->lightGridData1 == NULL ||
@@ -149,117 +204,56 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 
 		v = point[ i ] - tr.world->lightGridOrigin[ i ];
 		v *= tr.world->lightGridInverseSize[ i ];
-		pos[ i ] = floor( v );
-		frac[ i ] = v - pos[ i ];
+		from[ i ] = floor( v );
+		frac[ i ][ 0 ] = v - from[ i ];
 
-		if ( pos[ i ] < 0 )
+		if ( from[ i ] < 0 )
 		{
-			pos[ i ] = 0;
-			frac[ i ] = 0.0f;
+			from[ i ] = 0;
+			frac[ i ][ 0 ] = 0.0f;
 		}
-		else if ( pos[ i ] >= tr.world->lightGridBounds[ i ] - 1 )
+		else if ( from[ i ] >= tr.world->lightGridBounds[ i ] - 1 )
 		{
-			pos[ i ] = tr.world->lightGridBounds[ i ] - 2;
-			frac[ i ] = 1.0f;
+			from[ i ] = tr.world->lightGridBounds[ i ] - 2;
+			frac[ i ][ 0 ] = 1.0f;
 		}
+
+		to[ i ] = from[ i ] + 1;
+		frac[ i ][ 1 ] = 1.0f - frac[ i ][ 0 ];
 	}
 
-	VectorClear( direction );
-	luminance = 0.0f;
-	ambientChroma[ 0 ] = 0.0f;
-	ambientChroma[ 1 ] = 0.0f;
-	directedChroma[ 0 ] = 0.0f;
-	directedChroma[ 1 ] = 0.0f;
-
-	// trilerp the light values
-	gridStep[ 0 ] = 1;
-	gridStep[ 1 ] = tr.world->lightGridBounds[ 0 ];
-	gridStep[ 2 ] = gridStep[ 1 ] * tr.world->lightGridBounds[ 1 ];
-	gridPoint1 = tr.world->lightGridData1 + pos[ 0 ] * gridStep[ 0 ] + pos[ 1 ] * gridStep[ 1 ] + pos[ 2 ] * gridStep[ 2 ];
-	gridPoint2 = tr.world->lightGridData2 + pos[ 0 ] * gridStep[ 0 ] + pos[ 1 ] * gridStep[ 1 ] + pos[ 2 ] * gridStep[ 2 ];
-
-	totalFactor = 0;
-
-	// trilinear sample the grids
-	for ( i = 0; i < 8; i++ )
-	{
-		float factor = 1.0f;
-		bspGridPoint1_t *gp1 = gridPoint1;
-		bspGridPoint2_t *gp2 = gridPoint2;
-
-		for ( j = 0; j < 3; j++ )
-		{
-			if ( i & ( 1 << j ) )
-			{
-				factor *= frac[ j ];
-				gp1 += gridStep[ j ];
-				gp2 += gridStep[ j ];
-			}
-			else
-			{
-				factor *= ( 1.0f - frac[ j ] );
-			}
-		}
-
-		if ( !gp1->luminance )
-		{
-			continue; // ignore samples in walls
-		}
-
-		totalFactor += factor;
-
-		direction[ 0 ] += factor * (float)(gp1->lightVec[ 0 ] - 128);
-		direction[ 1 ] += factor * (float)(gp1->lightVec[ 1 ] - 128);
-		direction[ 2 ] += factor * (float)(gp1->lightVec[ 2 ] - 128);
-		luminance += factor * (float)(gp1->luminance);
-
-		ambientChroma[ 0 ] += factor * (float)(gp2->ambientChroma[ 0 ] - 128);
-		ambientChroma[ 1 ] += factor * (float)(gp2->ambientChroma[ 1 ] - 128);
-		directedChroma[ 0 ] += factor * (float)(gp2->directedChroma[ 0 ] - 128);
-		directedChroma[ 1 ] += factor * (float)(gp2->directedChroma[ 1 ] - 128);
-	}
+	totalFactor = R_InterpolateLightGrid( tr.world, from, to, factors,
+					      ambientLight, directedLight,
+					      lightDir );
 
 	if ( totalFactor > 0 && totalFactor < 0.99 )
 	{
 		totalFactor = 1.0f / totalFactor;
 
-		VectorScale( direction, totalFactor, direction );
-		luminance *= totalFactor;
-		ambientChroma[ 0 ] *= totalFactor;
-		ambientChroma[ 1 ] *= totalFactor;
-		directedChroma[ 0 ] *= totalFactor;
-		directedChroma[ 1 ] *= totalFactor;
+		VectorScale( lightDir, totalFactor, lightDir );
+		VectorScale( ambientLight, totalFactor, ambientLight );
+		VectorScale( directedLight, totalFactor, directedLight );
 	}
 
-	direction[0] *= 1.0f / 127.0f;
-	direction[1] *= 1.0f / 127.0f;
-	direction[2] *= 1.0f / 127.0f;
-	luminance *= 1.0f / 255.0f;
-	ambientChroma[0] *= 1.0f / 254.0f;
-	ambientChroma[1] *= 1.0f / 254.0f;
-	directedChroma[0] *= 1.0f / 254.0f;
-	directedChroma[1] *= 1.0f / 254.0f;
+	// compute z-component of direction
+	lightDir[ 2 ] = 1.0f - fabsf( lightDir[ 0 ] ) + fabsf( lightDir[ 1 ] );
+	if( lightDir[ 2 ] < 0.0f ) {
+		float X = lightDir[ 0 ];
+		float Y = lightDir[ 1 ];
+		lightDir[ 0 ] = copysignf( 1.0f - fabs( Y ), X );
+		lightDir[ 1 ] = copysignf( 1.0f - fabs( X ), Y );
+	}
 
-	// unpack data
-	VectorNormalize2( direction, lightDir );
+	VectorNormalize( lightDir );
 
-	directedLight[ 0 ] = luminance * VectorLength( direction );
-	ambientLight[ 0 ] = luminance - directedLight[ 0 ];
-
-	if ( ambientLight[ 0 ] < r_forceAmbient->value )
+	if ( ambientLight[ 0 ] < r_forceAmbient->value &&
+	     ambientLight[ 1 ] < r_forceAmbient->value &&
+	     ambientLight[ 2 ] < r_forceAmbient->value )
 	{
 		ambientLight[ 0 ] = r_forceAmbient->value;
+		ambientLight[ 1 ] = r_forceAmbient->value;
+		ambientLight[ 2 ] = r_forceAmbient->value;
 	}
-
-	ambientLight[ 1 ] = ambientLight[ 0 ] + ambientChroma[ 0 ];
-	ambientLight[ 0 ] = ambientLight[ 0 ] - ambientChroma[ 0 ];
-	ambientLight[ 2 ] = ambientLight[ 0 ] - ambientChroma[ 1 ];
-	ambientLight[ 0 ] = ambientLight[ 0 ] + ambientChroma[ 1 ];
-
-	directedLight[ 1 ] = directedLight[ 0 ] + directedChroma[ 0 ];
-	directedLight[ 0 ] = directedLight[ 0 ] - directedChroma[ 0 ];
-	directedLight[ 2 ] = directedLight[ 0 ] - directedChroma[ 1 ];
-	directedLight[ 0 ] = directedLight[ 0 ] + directedChroma[ 1 ];
 
 //----(SA)  added
 	// cheats?  check for single player?

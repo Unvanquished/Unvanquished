@@ -922,7 +922,6 @@ void CL_Record_f( void )
 
 	else
 	{
-		char    name[ 256 ];
 		char    mapname[ MAX_QPATH ];
 		char    *period;
 		qtime_t time;
@@ -1527,6 +1526,13 @@ void CL_ShutdownAll( void )
 	// shutdown UI
 	CL_ShutdownUI();
 
+	// Clear Faces
+	if ( re.UnregisterFont && cls.consoleFont )
+	{
+		re.UnregisterFont( cls.consoleFont );
+		cls.consoleFont = nullptr;
+	}
+
 	// shutdown the renderer
 	if ( re.Shutdown )
 	{
@@ -1553,13 +1559,6 @@ void CL_ShutdownAll( void )
 	if ( clc.waverecording )
 	{
 		CL_WavStopRecord_f();
-	}
-
-	// Clear Faces
-	if ( re.UnregisterFont )
-	{
-		re.UnregisterFont( &cls.consoleFont );
-		memset( &cls.consoleFont, 0, sizeof( cls.consoleFont ) );
 	}
 }
 
@@ -1611,6 +1610,7 @@ void CL_MapLoading( void )
 	}
 
 	Con_Close();
+	CL_FlushMemory();
 	cls.keyCatchers = 0;
 
 	// if we are already connected to the local host, stay connected
@@ -1777,6 +1777,11 @@ void CL_Disconnect( qboolean showMainMenu )
 
 	// allow cheats locally
 	Cvar_Set( "sv_cheats", "1" );
+
+	// Load map pk3s to allow menus to load levelshots
+	FS::PakPath::ClearPaks();
+	FS_LoadBasePak();
+	FS_LoadAllMaps();
 
 #ifdef USE_VOIP
 	// not connected to voip server anymore.
@@ -2288,7 +2293,7 @@ void CL_Vid_Restart_f( void )
 	CL_ShutdownCGame();
 	// clear the font cache
 	re.UnregisterFont( NULL );
-	memset( &cls.consoleFont, 0, sizeof( cls.consoleFont ) );
+	cls.consoleFont = nullptr;
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
 
@@ -4554,7 +4559,7 @@ void CL_Shutdown( void )
 	if ( re.UnregisterFont )
 	{
 		re.UnregisterFont( NULL );
-		memset( &cls.consoleFont, 0, sizeof( cls.consoleFont ) );
+		cls.consoleFont = nullptr;
 	}
 
 	CL_ShutdownRef();

@@ -58,26 +58,20 @@ void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 		   out vec3 ambCol, out vec3 lgtCol ) {
 	vec4 texel1 = texture3D(u_LightGrid1, pos);
 	vec4 texel2 = texture3D(u_LightGrid2, pos);
-	float ambLum, lgtLum;
 
-	texel1.xyz = (texel1.xyz * 255.0 - 128.0) / 127.0;
-	texel2.xyzw = texel2.xyzw - 0.5;
+	ambCol = texel1.xyz;
+	lgtCol = texel2.xyz;
 
-	lgtDir = normalize(texel1.xyz);
+	lgtDir.x = (texel1.w * 255.0 - 128.0) / 127.0;
+	lgtDir.y = (texel2.w * 255.0 - 128.0) / 127.0;
+	lgtDir.z = 1.0 - abs( lgtDir.x ) - abs( lgtDir.y );
 
-	lgtLum = 2.0 * length(texel1.xyz) * texel1.w;
-	ambLum = 2.0 * texel1.w - lgtLum;
+	vec2 signs = 2.0 * step( 0.0, lgtDir.xy ) - vec2( 1.0 );
+	if( lgtDir.z < 0.0 ) {
+		lgtDir.xy = signs * ( vec2( 1.0 ) - abs( lgtDir.yx ) );
+	}
 
-	// YCoCg decode chrominance
-	ambCol.g = ambLum + texel2.x;
-	ambLum   = ambLum - texel2.x;
-	ambCol.r = ambLum + texel2.y;
-	ambCol.b = ambLum - texel2.y;
-
-	lgtCol.g = lgtLum + texel2.z;
-	lgtLum   = lgtLum - texel2.z;
-	lgtCol.r = lgtLum + texel2.w;
-	lgtCol.b = lgtLum - texel2.w;
+	lgtDir = normalize( lgtDir );
 }
 
 void	main()
@@ -144,6 +138,11 @@ void	main()
 	N.x *= N.z;
 	N.xy = 2.0 * N.xy - 1.0;
 	N.z = sqrt(1.0 - dot(N.xy, N.xy));
+
+	#if defined(r_NormalScale)
+	N.z *= r_NormalScale;
+	#endif
+
 	N = normalize(tangentToWorldMatrix * N);
 
 	// compute half angle in world space
@@ -230,7 +229,7 @@ void	main()
 #endif
 
 	vec3 light = ambCol + lgtCol * NL;
-	light = clamp(light, 0.0, 1.0);
+	light *= r_AmbientScale;
 
 	// compute final color
 	vec4 color = diffuse;

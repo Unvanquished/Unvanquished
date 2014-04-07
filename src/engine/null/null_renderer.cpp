@@ -54,12 +54,12 @@ qhandle_t RE_RegisterShaderNoMip( const char *name )
 {
 	return 1;
 }
-void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font )
+void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font )
 {
-	font->pointSize = pointSize;
-	font->height = 1;
-	font->glyphScale = 1.0f;
-	font->name[0] = '\0';
+	(*font)->pointSize = pointSize;
+	(*font)->height = 1;
+	(*font)->glyphScale = 1.0f;
+	(*font)->name[0] = '\0';
 }
 void RE_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
 {

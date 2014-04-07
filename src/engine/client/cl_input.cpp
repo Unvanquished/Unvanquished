@@ -110,7 +110,7 @@ void IN_KeyDown( kbutton_t *b )
 	}
 	else
 	{
-		Com_DPrintf( "Three keys down for a button!\n" );
+		Com_DPrintf( "Three keys down for a button!" );
 		return;
 	}
 
@@ -615,7 +615,7 @@ void CL_MouseMove( usercmd_t *cmd )
 
 			if ( cl_showMouseRate->integer )
 			{
-				Com_Printf( "rate: %f, accelSensitivity: %f\n", rate, accelSensitivity );
+				Com_Printf( "rate: %f, accelSensitivity: %f", rate, accelSensitivity );
 			}
 		}
 		else
@@ -648,7 +648,7 @@ void CL_MouseMove( usercmd_t *cmd )
 			*/
 			if ( cl_showMouseRate->integer )
 			{
-				Com_Printf( "ratex: %f, ratey: %f, powx: %f, powy: %f\n", rate[ 0 ], rate[ 1 ], power[ 0 ], power[ 1 ] );
+				Com_Printf( "ratex: %f, ratey: %f, powx: %f, powy: %f", rate[ 0 ], rate[ 1 ], power[ 0 ], power[ 1 ] );
 			}
 		}
 	}
@@ -993,7 +993,7 @@ void CL_WritePacket( void )
 	if ( count > MAX_PACKET_USERCMDS )
 	{
 		count = MAX_PACKET_USERCMDS;
-		Com_Printf( "MAX_PACKET_USERCMDS\n" );
+		Com_Printf( "MAX_PACKET_USERCMDS" );
 	}
 
 #ifdef USE_VOIP
@@ -1111,7 +1111,7 @@ void CL_WritePacket( void )
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf( "WARNING: unsent fragments (not supposed to happen!)\n" );
+			Com_Printf( "WARNING: unsent fragments (not supposed to happen!)" );
 		}
 
 		CL_Netchan_TransmitNextFragment( &clc.netchan );
@@ -1248,11 +1248,11 @@ void IN_KeysUp_f( void )
 		{
 			if ( first )
 			{
-				Cmd::ExecuteCommand(va("setkeydata %d %d %u\n", check, key + 1, time));
+				Cmd::ExecuteCommand(va("setkeydata %d %d %u", check, key + 1, time));
 				first = qfalse;
 			}
 
-			Cmd::ExecuteCommand(va("-%s\n", registeredButtonCommands[ i ] + 1)); // command name includes '+'
+			Cmd::ExecuteCommand(va("-%s", registeredButtonCommands[ i ] + 1)); // command name includes '+'
 		}
 	}
 
@@ -1262,17 +1262,17 @@ void IN_KeysUp_f( void )
 		{
 			if ( first )
 			{
-				Cmd::ExecuteCommand(va("setkeydata %d %d %u\n", check, key + 1, time));
+				Cmd::ExecuteCommand(va("setkeydata %d %d %u", check, key + 1, time));
 				first = qfalse;
 			}
 
-			Cmd::ExecuteCommand(va("-%s\n", builtinButtonCommands[i].name)); // command name doesn't include '+'
+			Cmd::ExecuteCommand(va("-%s", builtinButtonCommands[i].name)); // command name doesn't include '+'
 		}
 	}
 
 	if ( !first )
 	{
-		Cmd::ExecuteCommand(va("setkeydata %d\n", check));
+		Cmd::ExecuteCommand(va("setkeydata %d", check));
 	}
 
 	// Pseudo-button commands handled here
@@ -1320,14 +1320,14 @@ void IN_PrepareKeyUp( void )
 	if ( keyup[ key ] )
 	{
 		char *newcmd = ( char* )Z_Malloc( strlen( keyup[ key ] ) + strlen( cmd ) + 3 );
-		sprintf( newcmd, "%s-%s\n", keyup[ key ], cmd );
+		sprintf( newcmd, "%s-%s", keyup[ key ], cmd );
 		Z_Free( keyup[ key ] );
 		keyup[ key ] = newcmd;
 	}
 	else
 	{
 		keyup[ key ] = ( char* )Z_Malloc( strlen( cmd ) + 3 );
-		sprintf( keyup[ key ], "-%s\n", cmd );
+		sprintf( keyup[ key ], "-%s", cmd );
 	}
 }
 
@@ -1385,7 +1385,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 
 	if ( cmd_names )
 	{
-		Com_Printf( S_WARNING "cgame: some button commands left unregistered (\"%s\")\n", cmd_names );
+		Com_Printf( S_WARNING "cgame: some button commands left unregistered (\"%s\")", cmd_names );
 	}
 }
 
