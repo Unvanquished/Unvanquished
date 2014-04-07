@@ -541,9 +541,8 @@ void Cmd_Give_f( gentity_t *ent )
 	if ( trap_Argc() < 2 )
 	{
 		ADMP( QQ( N_( "usage: give [what]\n" ) ) );
-		ADMP( QQ( N_( "usage: valid choices are: all, health, funds [amount], "
-		              "bp [amount], momentum [amount], stamina, "
-		              "poison, gas, ammo\n" ) ) );
+		ADMP( QQ( N_( "usage: valid choices are: all, health [amount], funds [amount], "
+		              "bp [amount], momentum [amount], stamina, poison, gas, ammo\n" ) ) );
 		return;
 	}
 
@@ -597,7 +596,7 @@ void Cmd_Give_f( gentity_t *ent )
 	// give momentum
 	if ( Q_strnicmp( name, "momentum", strlen("momentum") ) == 0 )
 	{
-		if ( give_all || trap_Argc() < 3 )
+		if ( trap_Argc() < 3 )
 		{
 			amount = 300.0f;
 		}
@@ -619,10 +618,19 @@ void Cmd_Give_f( gentity_t *ent )
 		return;
 	}
 
-	if ( give_all || Q_stricmp( name, "health" ) == 0 )
+	if ( give_all || Q_strnicmp( name, "health", strlen("health") ) == 0 )
 	{
-		ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
-		BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
+		if ( give_all || trap_Argc() < 3 )
+		{
+			ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
+			BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
+		}
+		else
+		{
+			int amount = atoi( name + strlen("health") + 1 );
+			ent->health = Maths::clamp(amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ]);
+		}
+		return;
 	}
 
 	if ( give_all || Q_stricmp( name, "stamina" ) == 0 )
