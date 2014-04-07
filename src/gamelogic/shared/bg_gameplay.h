@@ -180,8 +180,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define ALIEN_CLIENT_REGEN_WAIT    2000 // in ms
 #define ALIEN_BUILDABLE_REGEN_WAIT 2000 // in ms
 
-#define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) // regen off creep
-#define ALIEN_REGEN_NOCREEP_MIN  0.1f // minimum off creep regen when half life is active. must be > 0.
+#define ALIEN_REGEN_NOCREEP_MIN  0.5f // minimum off creep regen when half life is active. must be > 0.
 
 #define ALIEN_MAX_CREDITS        2000 // CREDITS_PER_EVO converts this to evos for display
 #define ALIEN_TK_SUICIDE_PENALTY 150

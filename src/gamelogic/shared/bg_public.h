@@ -262,9 +262,9 @@ typedef enum
 #define SS_BOOSTEDWARNING   BIT(8) // booster poison is running out // TODO: Unnecessary, remove
 #define SS_SLOWLOCKED       BIT(9)
 #define SS_CHARGING         BIT(10)
-#define SS_HEALING_ACTIVE   BIT(11) // medistat for humans, creep for aliens
-#define SS_HEALING_2X       BIT(12) // medkit or double healing rate
-#define SS_HEALING_3X       BIT(13) // triple healing rate
+#define SS_HEALING_2X       BIT(11) // humans: medistation
+#define SS_HEALING_4X       BIT(12) // humans: medikit active
+#define SS_HEALING_8X       BIT(13)
 
 // STAT_STATE2 fields. 16 bit available
 #define SS2_JETPACK_ENABLED BIT(0)  // whether jets/wings are extended

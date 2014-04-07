@@ -2624,7 +2624,7 @@ void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
 	// clear target's healing flag
 	if ( self->target && self->target->client )
 	{
-		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
+		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
 	}
 
 	HGeneric_Die( self, inflictor, attacker, mod );
@@ -2664,7 +2664,7 @@ void HMedistat_Think( gentity_t *self )
 	// clear target's healing flag for now
 	if ( self->target && self->target->client )
 	{
-		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
+		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
 	}
 
 	// clear target on power loss
@@ -2760,7 +2760,7 @@ void HMedistat_Think( gentity_t *self )
 	{
 		player = self->target;
 		client = player->client;
-		client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
+		client->ps.stats[ STAT_STATE ] |= SS_HEALING_2X;
 
 		// start healing animation
 		if ( !self->active )
