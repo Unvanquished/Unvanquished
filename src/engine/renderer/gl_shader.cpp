@@ -212,9 +212,9 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		AddGLSLDefine( bufferExtra, "TEXTURE_RG", 1 );
 	}
 
+	AddGLSLDefine( bufferExtra, "r_AmbientScale", r_ambientScale->value );
 	AddGLSLDefine( bufferExtra, "r_SpecularScale", r_specularScale->value );
-
-	//AddGLSLDefine( bufferExtra, "r_NormalScale", r_normalScale->value );
+	AddGLSLDefine( bufferExtra, "r_NormalScale", r_normalScale->value );
 
 	AddGLSLDefine( bufferExtra, "M_PI", static_cast<float>( M_PI ) );
 	AddGLSLDefine( bufferExtra, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );

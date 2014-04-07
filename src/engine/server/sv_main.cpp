@@ -1322,7 +1322,7 @@ void SV_Frame( int msec )
 		return;
 	}
 
-	if ( sv.restartTime && svs.time >= sv.restartTime )
+	if ( sv.restartTime && sv.time >= sv.restartTime )
 	{
 		sv.restartTime = 0;
 		Cmd::BufferCommandText("map_restart 0");
@@ -1359,9 +1359,10 @@ void SV_Frame( int msec )
 	{
 		sv.timeResidual -= frameMsec;
 		svs.time += frameMsec;
+		sv.time += frameMsec;
 
 		// let everything in the world think and move
-		gvm->GameRunFrame( svs.time );
+		gvm->GameRunFrame( sv.time );
 	}
 
 	if ( com_speeds->integer )

@@ -350,7 +350,7 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 	trace_t   trace;
 	gentity_t *other;
 
-	if( !ent->client )
+	if( !ent || !ent->client )
 	{
 		return;
 	}
@@ -376,7 +376,7 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 		G_WeightAttack( ent, other );
 
 		// tyrant trample
-		if ( ent->client && ent->client->ps.weapon == WP_ALEVEL4 )
+		if ( ent->client->ps.weapon == WP_ALEVEL4 )
 		{
 			G_ChargeAttack( ent, other );
 		}
@@ -387,13 +387,14 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 			ClientShove( ent, other );
 
 			//bot should get pushed out the way
-			if((ent->client) && (other->r.svFlags & SVF_BOT) && ent->client->pers.team == other->client->pers.team)
+			if( (other->r.svFlags & SVF_BOT) && ent->client->pers.team == other->client->pers.team)
 			{
 				PushBot(ent, other);
 			}
 
 			// if we are standing on their head, then we should be pushed also
-			if((ent->r.svFlags & SVF_BOT) && ent->s.groundEntityNum == other->s.number && other->client && ent->client->pers.team == other->client->pers.team)
+			if( (ent->r.svFlags & SVF_BOT) && ent->s.groundEntityNum == other->s.number &&
+			    other->client && ent->client->pers.team == other->client->pers.team)
 			{
 				PushBot(other, ent);
 			}
@@ -1530,20 +1531,25 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 /**
  * @brief Attempt to find a health source for an alien.
  * @return A mask of SS_HEALING_* flags:
- *         SS_HEALING_ACTIVE when there is any heath source,
+ *         SS_HEALING_ACTIVE when there is any health source,
  *         SS_HEALING_2X     when there also is a source for double healing,
  *         SS_HEALING_3X     when there also is a source for triple healing.
  */
 static int FindAlienHealthSource( gentity_t *self )
 {
 	int       ret = 0;
-	float     distance;
+	float     distance, minBoosterDistance = REGEN_BOOST_RANGE; // TODO: USE FLT_MAX when available
+	qboolean  needsHealing;
 	gentity_t *ent;
 
 	if ( !self || !self->client )
 	{
 		return 0;
 	}
+
+	needsHealing = self->client->ps.stats[ STAT_HEALTH ] < BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
+
+	self->boosterUsed = NULL;
 
 	for ( ent = NULL; ( ent = G_IterateEntities( ent, NULL, qtrue, 0, NULL ) ); )
 	{
@@ -1571,6 +1577,13 @@ static int FindAlienHealthSource( gentity_t *self )
 			{
 				// Booster healing
 				ret |= SS_HEALING_3X;
+
+				// The closest booster used will play an effect
+				if ( needsHealing && distance < minBoosterDistance )
+				{
+					minBoosterDistance = distance;
+					self->boosterUsed  = ent;
+				}
 			}
 		}
 	}
@@ -1588,6 +1601,11 @@ static int FindAlienHealthSource( gentity_t *self )
 	if ( ret )
 	{
 		self->healthSourceTime = level.time;
+
+		if ( self->boosterUsed )
+		{
+			self->boosterTime = level.time;
+		}
 	}
 
 	return ret;
@@ -1810,11 +1828,11 @@ void ClientThink_real( gentity_t *self )
 	}
 
 	// Is power/creep available for the client's team?
-	if ( client->pers.team == TEAM_HUMANS && G_Reactor() )
+	if ( client->pers.team == TEAM_HUMANS && G_ActiveReactor() )
 	{
 		client->ps.eFlags |= EF_POWER_AVAILABLE;
 	}
-	else if ( client->pers.team == TEAM_ALIENS && G_Overmind() )
+	else if ( client->pers.team == TEAM_ALIENS && G_ActiveOvermind() )
 	{
 		client->ps.eFlags |= EF_POWER_AVAILABLE;
 	}

@@ -127,8 +127,6 @@ int   LEVEL4_TRAMPLE_REPEAT;
 // Human upgrades
 float RADAR_RANGE;
 
-float BATTPACK_MODIFIER;
-
 int   MEDKIT_POISON_IMMUNITY_TIME;
 int   MEDKIT_STARTUP_TIME;
 int   MEDKIT_STARTUP_SPEED;
@@ -214,8 +212,6 @@ static configVar_t bg_configVars[] =
 	{"b_tesla_zapAttackDamage", INTEGER, qfalse, &TESLAGEN_DMG},
 	{"b_tesla_zapAttackRange", FLOAT, qfalse, &TESLAGEN_RANGE},
 	{"b_tesla_zapAttackRepeat", INTEGER, qfalse, &TESLAGEN_REPEAT},
-
-	{"u_battpack_ammoCapacityModifier", FLOAT, qfalse, &BATTPACK_MODIFIER},
 
 	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},

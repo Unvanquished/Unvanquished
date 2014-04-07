@@ -554,9 +554,6 @@ void SV_SpawnServer( const char *server )
 	// also print some status stuff
 	CL_MapLoading();
 
-	// make sure all the client stuff is unloaded
-	CL_ShutdownAll();
-
 	// clear the whole hunk because we're (re)loading the server
 	Hunk_Clear();
 
@@ -642,8 +639,9 @@ void SV_SpawnServer( const char *server )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		gvm->GameRunFrame( svs.time );
+		gvm->GameRunFrame( sv.time );
 		svs.time += FRAMETIME;
+		sv.time += FRAMETIME;
 	}
 
 	// create a baseline for more efficient communications
@@ -705,8 +703,9 @@ void SV_SpawnServer( const char *server )
 	}
 
 	// run another frame to allow things to look at all the players
-	gvm->GameRunFrame( svs.time );
+	gvm->GameRunFrame( sv.time );
 	svs.time += FRAMETIME;
+	sv.time += FRAMETIME;
 
 	// the server sends these to the clients so they can figure
 	// out which pk3s should be auto-downloaded

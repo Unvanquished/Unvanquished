@@ -9727,8 +9727,11 @@ const char *Gettext( const char *msgid )
 
 const char *Pgettext( const char *ctxt, const char *msgid )
 {
-	static char buffer[ 32000 ];
-	char *buf = buffer;
+	static char buffer[ 4 ][ 32000 ];
+	static int index = -1;
+	char *buf = buffer[ ++index ];
+
+	index &= 3;
 	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
 	return buf;
 }

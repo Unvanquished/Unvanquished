@@ -81,7 +81,7 @@ static void CON_FlushIn( void )
 {
 	char key;
 
-	while ( read( STDIN_FILENO, &key, 1 ) != -1 ) {; }
+	while ( read( STDIN_FILENO, &key, 1 ) > 0 ) {}
 }
 
 /*

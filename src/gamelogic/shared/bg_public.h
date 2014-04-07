@@ -288,16 +288,17 @@ typedef enum
   IBE_NOALIENBP,        // not enough build points (aliens)
   IBE_NOCREEP,          // no creep in this area
 
-  IBE_NOREACTOR,        // no reactor present
+  IBE_NOREACTOR,        // not enough power in this area and no reactor present
   IBE_ONEREACTOR,       // may not build two reactors
   IBE_NOHUMANBP,        // not enough build points (humans)
-  IBE_NOPOWERHERE,      // not enough power in this area
+  IBE_NOPOWERHERE,      // not enough power in this area even though a reactor is present
 
   IBE_NORMAL,           // surface is too steep
   IBE_NOROOM,           // no room
   IBE_SURFACE,          // map doesn't allow building on that surface
   IBE_DISABLED,         // building has been disabled for team
   IBE_LASTSPAWN,        // may not replace last spawn with non-spawn
+  IBE_MAINSTRUCTURE,    // may not replace main structure with other buildable
 
   IBE_MAXERRORS
 } itemBuildError_t;
@@ -422,8 +423,6 @@ typedef enum
   UP_BATTLESUIT,
 
   UP_RADAR,
-
-  UP_BATTPACK,
   UP_JETPACK,
 
   UP_GRENADE,
@@ -598,6 +597,7 @@ typedef enum
   EV_HUMAN_BUILDABLE_EXPLOSION,
   EV_ALIEN_BUILDABLE_EXPLOSION,
   EV_ALIEN_ACIDTUBE,
+  EV_ALIEN_BOOSTER,
 
   EV_MEDKIT_USED,
 
@@ -674,6 +674,7 @@ typedef enum
   MN_B_NORMAL,
   MN_B_CANNOT,
   MN_B_LASTSPAWN,
+  MN_B_MAINSTRUCTURE,
   MN_B_DISABLED,
   MN_B_REVOKED,
   MN_B_SURRENDER,
@@ -1274,7 +1275,7 @@ typedef struct
 qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
                                 vec2_t angles, vec3_t dir1, vec3_t dir2 );
 
-qboolean BG_WeaponIsFull( int weapon, int stats[], int ammo, int clips );
+qboolean BG_WeaponIsFull(int weapon, int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
 int      BG_SlotsForInventory( int stats[] );
 void     BG_AddUpgradeToInventory( int item, int stats[] );

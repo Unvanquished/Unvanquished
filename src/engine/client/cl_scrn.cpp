@@ -151,7 +151,7 @@ static glyphInfo_t *Glyph( int ch )
 	static int index = 0;
 	glyphInfo_t *glyph = &glyphs[ index++ & 7 ];
 
-	re.GlyphChar( &cls.consoleFont, ch, glyph );
+	re.GlyphChar( cls.consoleFont, ch, glyph );
 
 	return glyph;
 }
@@ -842,14 +842,14 @@ float SCR_ConsoleFontCharHeight( void )
 {
 	return cls.useLegacyConsoleFont
 	       ? SMALLCHAR_HEIGHT
-	       : cls.consoleFont.glyphBlock[0]['I'].imageHeight + CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
+	       : cls.consoleFont->glyphBlock[0]['I'].imageHeight + CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
 }
 
 float SCR_ConsoleFontCharVPadding( void )
 {
 	return cls.useLegacyConsoleFont
 	       ? 0
-	       : std::max( 0, -cls.consoleFont.glyphBlock[0]['g'].bottom >> 6);
+	       : std::max( 0, -cls.consoleFont->glyphBlock[0]['g'].bottom >> 6);
 }
 
 float SCR_ConsoleFontStringWidth( const char* s, int len )

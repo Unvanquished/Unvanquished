@@ -833,7 +833,7 @@ static void SV_InitGameVM( qboolean restart )
 
 	// use the current msec count for a random seed
 	// init for this gamestate
-	gvm->GameInit( svs.time, Com_Milliseconds(), restart );
+	gvm->GameInit( sv.time, Com_Milliseconds(), restart );
 }
 
 /*

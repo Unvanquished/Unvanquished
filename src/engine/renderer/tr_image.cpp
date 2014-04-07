@@ -24,8 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 #include "../../common/Maths.h"
 
-static byte          s_intensitytable[ 256 ];
-
 int                  gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
 int                  gl_filter_max = GL_LINEAR;
 
@@ -192,6 +190,7 @@ void R_ImageList_f( void )
 	{
 		"no ", "yes"
 	};
+	const char *filter = ri.Cmd_Argc() > 1 ? ri.Cmd_Argv(1) : NULL;
 
 	ri.Printf( PRINT_ALL, "\n      -w-- -h-- -mm- -type-   -if-- wrap --name-------\n" );
 
@@ -201,28 +200,38 @@ void R_ImageList_f( void )
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
 		image = (image_t*) Com_GrowListElement( &tr.images, i );
+		char buffer[ MAX_TOKEN_CHARS ];
+		std::string out;
 
-		ri.Printf( PRINT_ALL, "%4i: %4i %4i  %s   ",
+		if ( filter && !Com_Filter( filter, image->name, qtrue ) )
+		{
+			continue;
+		}
+
+		Com_sprintf( buffer, sizeof( buffer ), "%4i: %4i %4i  %s   ",
 		           i, image->uploadWidth, image->uploadHeight, yesno[ image->filterType == FT_DEFAULT ] );
-
+		out += buffer;
 		switch ( image->type )
 		{
 			case GL_TEXTURE_2D:
 				texels += image->uploadWidth * image->uploadHeight;
 				imageDataSize = image->uploadWidth * image->uploadHeight;
 
-				ri.Printf( PRINT_ALL, "2D   " );
+				Com_sprintf( buffer, sizeof( buffer ),  "2D   " );
+				out += buffer;
 				break;
 
 			case GL_TEXTURE_CUBE_MAP:
 				texels += image->uploadWidth * image->uploadHeight * 6;
 				imageDataSize = image->uploadWidth * image->uploadHeight * 6;
 
-				ri.Printf( PRINT_ALL, "CUBE " );
+				Com_sprintf( buffer, sizeof( buffer ),  "CUBE " );
+				out += buffer;
 				break;
 
 			default:
-				ri.Printf( PRINT_ALL, "???? " );
+				Com_sprintf( buffer, sizeof( buffer ),  "???? " );
+				out += buffer;
 				imageDataSize = image->uploadWidth * image->uploadHeight;
 				break;
 		}
@@ -230,122 +239,147 @@ void R_ImageList_f( void )
 		switch ( image->internalFormat )
 		{
 			case GL_RGB8:
-				ri.Printf( PRINT_ALL, "RGB8     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGB8     " );
+				out += buffer;
 				imageDataSize *= 3;
 				break;
 
 			case GL_RGBA8:
-				ri.Printf( PRINT_ALL, "RGBA8    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGBA8    " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			case GL_RGB16:
-				ri.Printf( PRINT_ALL, "RGB      " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGB      " );
+				out += buffer;
 				imageDataSize *= 6;
 				break;
 
 			case GL_RGB16F:
-				ri.Printf( PRINT_ALL, "RGB16F   " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGB16F   " );
+				out += buffer;
 				imageDataSize *= 6;
 				break;
 
 			case GL_RGB32F:
-				ri.Printf( PRINT_ALL, "RGB32F   " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGB32F   " );
+				out += buffer;
 				imageDataSize *= 12;
 				break;
 
 			case GL_RGBA16F:
-				ri.Printf( PRINT_ALL, "RGBA16F  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGBA16F  " );
+				out += buffer;
 				imageDataSize *= 8;
 				break;
 
 			case GL_RGBA32F:
-				ri.Printf( PRINT_ALL, "RGBA32F  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RGBA32F  " );
+				out += buffer;
 				imageDataSize *= 16;
 				break;
 
 			case GL_ALPHA16F_ARB:
-				ri.Printf( PRINT_ALL, "A16F     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "A16F     " );
+				out += buffer;
 				imageDataSize *= 2;
 				break;
 
 			case GL_ALPHA32F_ARB:
-				ri.Printf( PRINT_ALL, "A32F     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "A32F     " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			case GL_R16F:
-				ri.Printf( PRINT_ALL, "R16F     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "R16F     " );
+				out += buffer;
 				imageDataSize *= 2;
 				break;
 
 			case GL_R32F:
-				ri.Printf( PRINT_ALL, "R32F     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "R32F     " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			case GL_LUMINANCE_ALPHA16F_ARB:
-				ri.Printf( PRINT_ALL, "LA16F    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "LA16F    " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			case GL_LUMINANCE_ALPHA32F_ARB:
-				ri.Printf( PRINT_ALL, "LA32F    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "LA32F    " );
+				out += buffer;
 				imageDataSize *= 8;
 				break;
 
 			case GL_RG16F:
-				ri.Printf( PRINT_ALL, "RG16F    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RG16F    " );
+				out += buffer;
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			case GL_RG32F:
-				ri.Printf( PRINT_ALL, "RG32F    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "RG32F    " );
+				out += buffer;
 				imageDataSize *= 8;
 				break;
 
 			case GL_COMPRESSED_RGBA:
-				ri.Printf( PRINT_ALL, "      " );
+				Com_sprintf( buffer, sizeof( buffer ),  "      " );
+				out += buffer;
 				imageDataSize *= 4; // FIXME
 				break;
 
 			case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-				ri.Printf( PRINT_ALL, "DXT1     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "DXT1     " );
+				out += buffer;
 				imageDataSize *= 4 / 8;
 				break;
 
 			case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-				ri.Printf( PRINT_ALL, "DXT1a    " );
+				Com_sprintf( buffer, sizeof( buffer ),  "DXT1a    " );
+				out += buffer;
 				imageDataSize *= 4 / 8;
 				break;
 
 			case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-				ri.Printf( PRINT_ALL, "DXT3     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "DXT3     " );
+				out += buffer;
 				imageDataSize *= 4 / 4;
 				break;
 
 			case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-				ri.Printf( PRINT_ALL, "DXT5     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "DXT5     " );
+				out += buffer;
 				imageDataSize *= 4 / 4;
 				break;
 
 			case GL_DEPTH_COMPONENT16:
-				ri.Printf( PRINT_ALL, "D16      " );
+				Com_sprintf( buffer, sizeof( buffer ),  "D16      " );
+				out += buffer;
 				imageDataSize *= 2;
 				break;
 
 			case GL_DEPTH_COMPONENT24:
-				ri.Printf( PRINT_ALL, "D24      " );
+				Com_sprintf( buffer, sizeof( buffer ),  "D24      " );
+				out += buffer;
 				imageDataSize *= 3;
 				break;
 
 			case GL_DEPTH_COMPONENT32:
-				ri.Printf( PRINT_ALL, "D32      " );
+				Com_sprintf( buffer, sizeof( buffer ),  "D32      " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 
 			default:
-				ri.Printf( PRINT_ALL, "????     " );
+				Com_sprintf( buffer, sizeof( buffer ),  "????     " );
+				out += buffer;
 				imageDataSize *= 4;
 				break;
 		}
@@ -353,60 +387,72 @@ void R_ImageList_f( void )
 		switch ( image->wrapType.s )
 		{
 			case WT_REPEAT:
-				ri.Printf( PRINT_ALL, "s.rept  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.rept  " );
+				out += buffer;
 				break;
 
 			case WT_CLAMP:
-				ri.Printf( PRINT_ALL, "s.clmp  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.clmp  " );
+				out += buffer;
 				break;
 
 			case WT_EDGE_CLAMP:
-				ri.Printf( PRINT_ALL, "s.eclmp " );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.eclmp " );
+				out += buffer;
 				break;
 
 			case WT_ZERO_CLAMP:
-				ri.Printf( PRINT_ALL, "s.zclmp " );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.zclmp " );
+				out += buffer;
 				break;
 
 			case WT_ALPHA_ZERO_CLAMP:
-				ri.Printf( PRINT_ALL, "s.azclmp" );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.azclmp" );
+				out += buffer;
 				break;
 
 			default:
-				ri.Printf( PRINT_ALL, "s.%4i  ", image->wrapType.s );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.%4i  ", image->wrapType.s );
+				out += buffer;
 				break;
 		}
 
 		switch ( image->wrapType.t )
 		{
 			case WT_REPEAT:
-				ri.Printf( PRINT_ALL, "t.rept  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.rept  " );
+				out += buffer;
 				break;
 
 			case WT_CLAMP:
-				ri.Printf( PRINT_ALL, "t.clmp  " );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.clmp  " );
+				out += buffer;
 				break;
 
 			case WT_EDGE_CLAMP:
-				ri.Printf( PRINT_ALL, "t.eclmp " );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.eclmp " );
+				out += buffer;
 				break;
 
 			case WT_ZERO_CLAMP:
-				ri.Printf( PRINT_ALL, "t.zclmp " );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.zclmp " );
+				out += buffer;
 				break;
 
 			case WT_ALPHA_ZERO_CLAMP:
-				ri.Printf( PRINT_ALL, "t.azclmp" );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.azclmp" );
+				out += buffer;
 				break;
 
 			default:
-				ri.Printf( PRINT_ALL, "t.%4i  ", image->wrapType.t );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.%4i  ", image->wrapType.t );
+				out += buffer;
 				break;
 		}
 
 		dataSize += imageDataSize;
 
-		ri.Printf( PRINT_ALL, " %s\n", image->name );
+		ri.Printf( PRINT_ALL, "%s %s\n", out.c_str(), image->name );
 	}
 
 	ri.Printf( PRINT_ALL, " ---------\n" );

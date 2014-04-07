@@ -549,6 +549,8 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 
 	if ( buildable != BA_NONE )
 	{
+		const buildableAttributes_t *attr = BG_Buildable( buildable );
+
 		// don't spawn built-in buildings if we are using a custom layout
 		if ( level.layout[ 0 ] && Q_stricmp( level.layout, S_BUILTIN_LAYOUT ) )
 		{
@@ -562,6 +564,8 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 		}
 
 		G_SpawnBuildable( spawnedEntity, buildable );
+		level.team[ attr->team ].layoutBuildPoints += attr->buildPoints;
+
 		return qtrue;
 	}
 

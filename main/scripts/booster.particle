@@ -1,0 +1,35 @@
+alienBoosterPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/sprites/boosterspore
+
+      displacement 0 0 0 0
+
+      velocityType      normal
+      velocityDir       linear
+      velocityMagnitude 100~100%
+      velocity          0 0 0 ~90
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 100
+      acceleration          0 0 -1 0
+
+      radius 0 10 400~20%
+      alpha  1000~100% 0.6~0.1 0
+      rotation 0 ~360 ~360
+      bounce 0
+
+      lifeTime 6000~10%
+
+      cullOnStartSolid
+    }
+
+    count 20
+    delay 100
+    period 40 - 0
+  }
+}
