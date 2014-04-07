@@ -4,5 +4,6 @@ models/buildables/trapper
 	diffuseMap models/buildables/trapper/trapper
 	bumpMap models/buildables/trapper/trapper_n
 	specularMap models/buildables/trapper/trapper_s
+	glowMap models/buildables/trapper/trapper_g
 }
 
