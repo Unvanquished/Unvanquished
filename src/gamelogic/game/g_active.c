@@ -350,7 +350,7 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 	trace_t   trace;
 	gentity_t *other;
 
-	if( !ent->client )
+	if( !ent || !ent->client )
 	{
 		return;
 	}
@@ -376,7 +376,7 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 		G_WeightAttack( ent, other );
 
 		// tyrant trample
-		if ( ent->client && ent->client->ps.weapon == WP_ALEVEL4 )
+		if ( ent->client->ps.weapon == WP_ALEVEL4 )
 		{
 			G_ChargeAttack( ent, other );
 		}
@@ -387,13 +387,14 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 			ClientShove( ent, other );
 
 			//bot should get pushed out the way
-			if((ent->client) && (other->r.svFlags & SVF_BOT) && ent->client->pers.team == other->client->pers.team)
+			if( (other->r.svFlags & SVF_BOT) && ent->client->pers.team == other->client->pers.team)
 			{
 				PushBot(ent, other);
 			}
 
 			// if we are standing on their head, then we should be pushed also
-			if((ent->r.svFlags & SVF_BOT) && ent->s.groundEntityNum == other->s.number && other->client && ent->client->pers.team == other->client->pers.team)
+			if( (ent->r.svFlags & SVF_BOT) && ent->s.groundEntityNum == other->s.number &&
+			    other->client && ent->client->pers.team == other->client->pers.team)
 			{
 				PushBot(other, ent);
 			}
