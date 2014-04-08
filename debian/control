@@ -3,6 +3,7 @@ Section: contrib/games
 Priority: extra
 Maintainer: Darren Salt <devspam@moreofthesa.me.uk>
 Build-Depends: debhelper (>= 8.0.0), g++ (>= 4.7) | g++-4.7, po-debconf, cmake,
+	unv-nacl-sdk,
 	libcurl4-gnutls-dev,
 	libfreetype6-dev,
 	libglew-dev | libglew1.6-dev | libglew1.5-dev,
