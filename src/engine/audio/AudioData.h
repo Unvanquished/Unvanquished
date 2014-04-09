@@ -71,6 +71,21 @@ struct AudioData {
 		if (memoryOwned && rawSamples != nullptr)
 			delete[] static_cast<const char*>(rawSamples);
 	}
+
+	bool operator==(const AudioData& that) const
+	{
+		if (sampleRate != that.sampleRate || byteDepth != that.byteDepth ||
+		    numberOfChannels != that.numberOfChannels || size != that.size)
+			return false;
+
+		for (int i = 0; i < size; ++i)
+			if (static_cast<const char*>(rawSamples)[i] !=
+			    static_cast<const char*>(that.rawSamples)[i])
+				return false;
+
+        return true;
+	}
+
 	const int sampleRate;
 	const int byteDepth;
 	const int numberOfChannels;
