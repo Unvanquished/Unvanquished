@@ -1312,7 +1312,7 @@ function( GAMEMODULE )
       endif()
     endforeach()
 
-    # Generate PNaCL platform-independant executable
+    # Generate PNaCL platform-independent executable
     add_custom_command(
       OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
