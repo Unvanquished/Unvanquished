@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "IPC.h"
 #include "Command.h"
 #include "Log.h"
+#include "FileSystem.h"
 
 #ifndef COMMON_COMMON_SYSCALLS_H_
 #define COMMON_COMMON_SYSCALLS_H_
@@ -42,6 +43,7 @@ namespace VM {
       COMMAND,
       CVAR,
       LOG,
+      FILESYSTEM,
       LAST_COMMON_SYSCALL
     } gameServices_t;
 
@@ -118,6 +120,72 @@ namespace VM {
 
     // DispatchLogEventMsg
     typedef IPC::Message<IPC::Id<LOG, DISPATCH_EVENT>, std::string, int> DispatchLogEventMsg;
+
+    // Filesystem-Related Syscall Definitions
+
+    enum EngineFileSystemMessages {
+        FS_INITIALIZE,
+        FS_HOMEPATH_OPENMODE,
+        FS_HOMEPATH_FILEEXISTS,
+        FS_HOMEPATH_TIMESTAMP,
+        FS_HOMEPATH_MOVEFILE,
+        FS_HOMEPATH_DELETEFILE,
+        FS_HOMEPATH_LISTFILES,
+        FS_HOMEPATH_LISTFILESRECURSIVE,
+        FS_PAKPATH_OPEN,
+        FS_PAKPATH_TIMESTAMP
+    };
+
+    // FSInitializeMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<FILESYSTEM, FS_INITIALIZE>>,
+        IPC::Reply<std::string, std::string, std::vector<FS::PakInfo>, std::vector<FS::PakInfo>, std::unordered_map<std::string, std::pair<uint32_t, FS::offset_t>>>
+    > FSInitializeMsg;
+    // FSHomePathOpenModeMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<FILESYSTEM, FS_HOMEPATH_OPENMODE>, std::string, uint32_t>,
+        IPC::Reply<IPC::FileHandle> // TODO: error return
+    > FSHomePathOpenModeMsg;
+    // FSHomePathFileExistsMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<FILESYSTEM, FS_HOMEPATH_FILEEXISTS>, std::string>,
+        IPC::Reply<bool>
+    > FSHomePathFileExistsMsg;
+    // FSHomePathTimestampMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<FILESYSTEM, FS_HOMEPATH_TIMESTAMP>, std::string>,
+        IPC::Reply<uint64_t> // TODO: error return
+    > FSHomePathTimestampMsg;
+    // FSHomePathMoveFileMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<FILESYSTEM, FS_HOMEPATH_MOVEFILE>, std::string, std::string>
+        // TODO: error return
+    > FSHomePathMoveFileMsg;
+    // FSHomePathDeleteFileMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<FILESYSTEM, FS_HOMEPATH_DELETEFILE>, std::string>
+        // TODO: error return
+    > FSHomePathDeleteFileMsg;
+    // FSHomePathListFilesMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<FILESYSTEM, FS_HOMEPATH_LISTFILES>, std::string>,
+        IPC::Reply<std::vector<std::string>> // TODO: error return
+    > FSHomePathListFilesMsg;
+    // FSHomePathListFilesRecursiveMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<FILESYSTEM, FS_HOMEPATH_LISTFILESRECURSIVE>, std::string>,
+        IPC::Reply<std::vector<std::string>> // TODO: error return
+    > FSHomePathListFilesRecursiveMsg;
+    // FSPakPathOpenMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<FILESYSTEM, FS_PAKPATH_OPEN>, uint32_t, std::string>,
+        IPC::Reply<IPC::FileHandle> // TODO: error return
+    > FSPakPathOpenMsg;
+    // FSPakPathTimestampMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<FILESYSTEM, FS_PAKPATH_TIMESTAMP>, uint32_t, std::string>,
+        IPC::Reply<uint64_t> // TODO: error return
+    > FSPakPathTimestampMsg;
 
 }
 

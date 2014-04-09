@@ -22,15 +22,21 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
+#include "../engine/qcommon/q_shared.h"
+#include "../engine/qcommon/qcommon.h"
 #include "FileSystem.h"
-#include "../../common/Log.h"
-#include "../../common/Command.h"
-#include "../../common/Optional.h"
-#include "../../libs/minizip/unzip.h"
+#include "Log.h"
+#include "Command.h"
+#include "Optional.h"
+#include "CommonSyscalls.h"
+#include "IPC.h"
+#include "../libs/minizip/unzip.h"
 #include <vector>
 #include <algorithm>
+
+#ifdef BUILD_VM
+#include "../gamelogic/shared/VMMain.h"
+#endif
 
 #ifdef _WIN32
 #include <windows.h>
@@ -51,6 +57,53 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <mach-o/dyld.h>
 #endif
 
+// SerializeTraits for PakInfo
+namespace IPC {
+
+	template<> struct SerializeTraits<FS::PakInfo> {
+		static void Write(Writer& stream, const FS::PakInfo& value)
+		{
+			stream.Write<std::string>(value.name);
+			stream.Write<std::string>(value.version);
+			stream.Write<Util::optional<uint32_t>>(value.checksum);
+			stream.Write<uint32_t>(value.type);
+			stream.Write<std::string>(value.path);
+			stream.Write<uint64_t>(std::chrono::system_clock::to_time_t(value.timestamp));
+			stream.Write<bool>(value.fd != -1);
+			if (value.fd != -1) {
+#ifdef _WIN32
+				stream.Write<IPC::FileHandle>(IPC::FileHandle(_get_osfhandle(value.fd), IPC::MODE_READ));
+#else
+				stream.Write<IPC::FileHandle>(IPC::FileHandle(value.fd, IPC::MODE_READ));
+#endif
+			}
+		}
+		static FS::PakInfo Read(Reader& stream)
+		{
+			FS::PakInfo value;
+			value.name = stream.Read<std::string>();
+			value.version = stream.Read<std::string>();
+			value.checksum = stream.Read<Util::optional<uint32_t>>();
+			value.type = static_cast<FS::pakType_t>(stream.Read<uint32_t>());
+			value.path = stream.Read<std::string>();
+			value.timestamp = std::chrono::system_clock::from_time_t(stream.Read<uint64_t>());
+			if (stream.Read<bool>()) {
+#ifdef _WIN32
+				void* handle = stream.Read<IPC::FileHandle>().GetHandle();
+				value.fd = _open_osfhandle(handle, O_RDONLY);
+				if (value.fd == -1)
+					CloseHandle(handle);
+#else
+				value.fd = stream.Read<IPC::FileHandle>().GetHandle();
+#endif
+			} else
+				value.fd = -1;
+			return value;
+		}
+	};
+
+} // namespace IPC
+
 namespace FS {
 
 // Pak zip and directory extensions
@@ -65,9 +118,11 @@ const char DEFAULT_BASE_PAK[] = "unvanquished";
 
 const char TEMP_SUFFIX[] = ".tmp";
 
+#ifndef BUILD_VM
 // Cvars to select the base and extra packages to use
 static Cvar::Cvar<std::string> fs_basepak("fs_basepak", "base pak to load", 0, DEFAULT_BASE_PAK);
 static Cvar::Cvar<std::string> fs_extrapaks("fs_extrapaks", "space-seperated list of paks to load in addition to the base pak", 0, "");
+#endif
 
 // Whether the search paths have been initialized yet. This can be used to delay
 // writing log files until the filesystem is initialized.
@@ -92,7 +147,7 @@ enum openMode_t {
 	MODE_APPEND,
 	MODE_EDIT
 };
-static int my_open(Str::StringRef path, openMode_t mode)
+inline int my_open(Str::StringRef path, openMode_t mode)
 {
 	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
 #ifdef _WIN32
@@ -102,6 +157,8 @@ static int my_open(Str::StringRef path, openMode_t mode)
 	int fd = open(path.c_str(), modes[mode] | O_CLOEXEC, 0666);
 #elif defined(__linux__)
 	int fd = open64(path.c_str(), modes[mode] | O_CLOEXEC | O_LARGEFILE, 0666);
+#elif defined(__native_client__)
+	int fd = open(path.c_str(), modes[mode], 0666);
 #endif
 
 #ifndef _WIN32
@@ -122,38 +179,34 @@ static int my_open(Str::StringRef path, openMode_t mode)
 
 	return fd;
 }
-static FILE* my_fopen(Str::StringRef path, openMode_t mode)
+inline FILE* my_fopen(Str::StringRef path, openMode_t mode)
 {
 	int fd = my_open(path, mode);
 	if (fd == -1)
 		return nullptr;
 
 	const char* modes[] = {"rb", "wb", "ab", "rb+"};
-#ifdef _WIN32
-	FILE* fp = _fdopen(fd, modes[mode]);
-#else
 	FILE* fp = fdopen(fd, modes[mode]);
-#endif
 
 	if (!fp)
 		close(fd);
 	return fp;
 }
-static offset_t my_ftell(FILE* fd)
+inline offset_t my_ftell(FILE* fd)
 {
 #ifdef _WIN32
 	return _ftelli64(fd);
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__native_client__)
 	return ftello(fd);
 #elif defined(__linux__)
 	return ftello64(fd);
 #endif
 }
-static int my_fseek(FILE* fd, offset_t off, int whence)
+inline int my_fseek(FILE* fd, offset_t off, int whence)
 {
 #ifdef _WIN32
 	return _fseeki64(fd, off, whence);
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__native_client__)
 	return fseeko(fd, off, whence);
 #elif defined(__linux__)
 	return fseeko64(fd, off, whence);
@@ -161,32 +214,32 @@ static int my_fseek(FILE* fd, offset_t off, int whence)
 }
 #ifdef _WIN32
 typedef struct _stati64 my_stat_t;
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__native_client__)
 typedef struct stat my_stat_t;
 #elif defined(__linux__)
 typedef struct stat64 my_stat_t;
 #endif
-static int my_fstat(int fd, my_stat_t* st)
+inline int my_fstat(int fd, my_stat_t* st)
 {
 #ifdef _WIN32
 	return _fstati64(fd, st);
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__native_client__)
 	return fstat(fd, st);
 #elif defined(__linux__)
 	return fstat64(fd, st);
 #endif
 }
-static int my_stat(Str::StringRef path, my_stat_t* st)
+inline int my_stat(Str::StringRef path, my_stat_t* st)
 {
 #ifdef _WIN32
 	return _wstati64(Str::UTF8To16(path).c_str(), st);
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__native_client__)
 	return stat(path.c_str(), st);
 #elif defined(__linux__)
 	return stat64(path.c_str(), st);
 #endif
 }
-static ssize_t my_pread(int fd, void* buf, size_t count, offset_t offset)
+inline ssize_t my_pread(int fd, void* buf, size_t count, offset_t offset)
 {
 #ifdef _WIN32
 	OVERLAPPED overlapped;
@@ -199,7 +252,7 @@ static ssize_t my_pread(int fd, void* buf, size_t count, offset_t offset)
 		return -1;
 	}
 	return bytesRead;
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__native_client__)
 	return pread(fd, buf, count, offset);
 #elif defined(__linux__)
 	return pread64(fd, buf, count, offset);
@@ -319,74 +372,6 @@ static void SetErrorCodeZlib(std::error_code& err, int num)
 		SetErrorCode(err, num, minizip_category());
 }
 
-// Determine path to the executable, default to current directory
-static std::string DefaultBasePath()
-{
-#ifdef _WIN32
-	wchar_t buffer[MAX_PATH];
-	DWORD len = GetModuleFileNameW(nullptr, buffer, MAX_PATH);
-	if (len == 0 || len >= MAX_PATH)
-		return "";
-
-	wchar_t* p = wcsrchr(buffer, L'\\');
-	if (!p)
-		return "";
-	*p = L'\0';
-
-	return Str::UTF16To8(buffer);
-#elif defined(__linux__)
-	ssize_t len = 64;
-	while (true) {
-		std::unique_ptr<char[]> out(new char[len]);
-		ssize_t result = readlink("/proc/self/exe", out.get(), len);
-		if (result == -1)
-			return "";
-		if (result < len) {
-			out[result] = '\0';
-			char* p = strrchr(out.get(), '/');
-			if (!p)
-				return "";
-			*p = '\0';
-			return out.get();
-		}
-		len *= 2;
-	}
-#elif defined(__APPLE__)
-	uint32_t bufsize = 0;
-	_NSGetExecutablePath(nullptr, &bufsize);
-
-	std::unique_ptr<char[]> out(new char[bufsize]);
-	_NSGetExecutablePath(out.get(), &bufsize);
-
-	char* p = strrchr(out.get(), '/');
-	if (!p)
-		return "";
-	*p = '\0';
-
-	return out.get();
-#endif
-}
-
-// Determine path to user settings directory
-static std::string DefaultHomePath()
-{
-#ifdef _WIN32
-	wchar_t buffer[MAX_PATH];
-	if (!SUCCEEDED(SHGetFolderPathW(nullptr, CSIDL_PERSONAL, nullptr, SHGFP_TYPE_CURRENT, buffer)))
-		return "";
-	return Str::UTF16To8(buffer) + "\\My Games\\Unvanquished";
-#else
-	const char* home = getenv("HOME");
-	if (!home)
-		return "";
-#ifdef __APPLE__
-	return std::string(home) + "/Library/Application Support/Unvanquished";
-#else
-	return std::string(home) + "/.unvanquished";
-#endif
-#endif
-}
-
 // Determine whether a character is a OS-dependent path separator
 inline bool isdirsep(unsigned int c)
 {
@@ -395,291 +380,6 @@ inline bool isdirsep(unsigned int c)
 #else
 	return c == '/';
 #endif
-}
-
-void Initialize()
-{
-	Com_StartupVariable("fs_basepath");
-	Com_StartupVariable("fs_extrapath");
-	Com_StartupVariable("fs_homepath");
-	Com_StartupVariable("fs_libpath");
-	Com_StartupVariable("fs_extrapaks");
-	Com_StartupVariable("fs_basepak");
-
-	std::string defaultBasePath = DefaultBasePath();
-	std::string defaultHomePath = DefaultHomePath();
-	libPath = Cvar_Get("fs_libpath", defaultBasePath.c_str(), CVAR_INIT)->string;
-	homePath = Cvar_Get("fs_homepath", defaultHomePath.c_str(), CVAR_INIT)->string;
-	const char* basePath = Cvar_Get("fs_basepath", defaultBasePath.c_str(), CVAR_INIT)->string;
-	const char* extraPath = Cvar_Get("fs_extrapath", "", CVAR_INIT)->string;
-
-	if (basePath != homePath)
-		pakPaths.push_back(Path::Build(basePath, "pkg"));
-	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
-		pakPaths.push_back(Path::Build(extraPath, "pkg"));
-	pakPaths.push_back(Path::Build(homePath, "pkg"));
-	isInitialized = true;
-
-	Com_Printf("Home path: %s\n", homePath.c_str());
-	for (std::string& x: pakPaths)
-		Com_Printf("Pak path: %s\n", x.c_str());
-
-	RefreshPaks();
-}
-
-void FlushAll()
-{
-	fflush(nullptr);
-}
-
-bool IsInitialized()
-{
-	return isInitialized;
-}
-
-// Add a pak to the list of available paks
-static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef basePath)
-{
-	std::string fullPath = Path::Build(basePath, filename);
-
-	size_t suffixLen = type == PAK_DIR ? strlen(PAK_DIR_EXT) : strlen(PAK_ZIP_EXT);
-	std::string name, version;
-	Util::optional<uint32_t> checksum;
-	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == PAK_DIR && checksum)) {
-		Log::Warn("Invalid pak name: %s", fullPath);
-		return;
-	}
-
-	availablePaks.push_back({std::move(name), std::move(version), checksum, type, std::move(fullPath)});
-}
-
-// Find all paks in the given path
-static void FindPaksInPath(Str::StringRef basePath, Str::StringRef subPath)
-{
-	std::string fullPath = Path::Build(basePath, subPath);
-	try {
-		for (auto& filename: RawPath::ListFiles(fullPath)) {
-			if (Str::IsSuffix(PAK_ZIP_EXT, filename)) {
-				AddPak(PAK_ZIP, Path::Build(subPath, filename), basePath);
-			} else if (Str::IsSuffix(PAK_DIR_EXT, filename)) {
-				AddPak(PAK_DIR, Path::Build(subPath, filename), basePath);
-			} else if (Str::IsSuffix("/", filename))
-				FindPaksInPath(basePath, Path::Build(subPath, filename));
-		}
-	} catch (std::system_error& err) {
-		// If there was an error reading a directory, just ignore it and go to
-		// the next one.
-	}
-}
-
-// Comparaison function for version numbers
-// Implementation is based on dpkg's version comparison code (verrevcmp() and order())
-// http://anonscm.debian.org/gitweb/?p=dpkg/dpkg.git;a=blob;f=lib/dpkg/version.c;hb=74946af470550a3295e00cf57eca1747215b9311
-static int VersionCmp(Str::StringRef aStr, Str::StringRef bStr)
-{
-	// Character weight
-	auto order = [](char c) -> int {
-		if (Str::cisdigit(c))
-			return 0;
-		else if (Str::cisalpha(c))
-			return c;
-		else if (c == '~')
-			return -1;
-		else if (c)
-			return c + 256;
-		else
-			return 0;
-	};
-
-	const char* a = aStr.c_str();
-	const char* b = bStr.c_str();
-
-	while (*a || *b) {
-		int firstDiff = 0;
-
-		while ((*a && !Str::cisdigit(*a)) || (*b && !Str::cisdigit(*b))) {
-			int ac = order(*a);
-			int bc = order(*b);
-
-			if (ac != bc)
-				return ac - bc;
-
-			a++;
-			b++;
-		}
-
-		while (*a == '0')
-			a++;
-		while (*b == '0')
-			b++;
-
-		while (Str::cisdigit(*a) && Str::cisdigit(*b)) {
-			if (firstDiff == 0)
-				firstDiff = *a - *b;
-			a++;
-			b++;
-		}
-
-		if (Str::cisdigit(*a))
-			return 1;
-		if (Str::cisdigit(*b))
-			return -1;
-		if (firstDiff)
-			return firstDiff;
-	}
-
-	return false;
-}
-
-void RefreshPaks()
-{
-	availablePaks.clear();
-	for (auto& path: pakPaths)
-		FindPaksInPath(path, "");
-
-	// Sort the pak list for easy binary searching:
-	// First sort by name, then by version.
-	// For checksums, place files without checksums in front, so they are selected
-	// before any pak with an explicit checksum.
-	// Use a stable sort to preserve the order of files within search paths
-	std::stable_sort(availablePaks.begin(), availablePaks.end(), [](const PakInfo& a, const PakInfo& b) -> bool {
-		// Sort by name
-		int result = a.name.compare(b.name);
-		if (result != 0)
-			return result < 0;
-
-		// Sort by version, putting latest versions last
-		result = VersionCmp(a.version, b.version);
-		if (result != 0)
-			return result < 0;
-
-		// Sort by checksum, putting packages with no checksum last
-		if (a.checksum != b.checksum)
-			return a.checksum > b.checksum;
-
-		// Prefer zip packages to directory packages
-		return b.type == PAK_ZIP;
-	});
-}
-
-const PakInfo* FindPak(Str::StringRef name)
-{
-	// Find the latest version with the matching name
-	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [](Str::StringRef name, const PakInfo& pakInfo) -> bool {
-		return name < pakInfo.name;
-	});
-
-	if (iter == availablePaks.begin() || (iter - 1)->name != name)
-		return nullptr;
-	else
-		return &*(iter - 1);
-}
-
-const PakInfo* FindPak(Str::StringRef name, Str::StringRef version)
-{
-	// Find a matching name and version, but prefer the last matching element since that is usually the one with no checksum
-	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) -> bool {
-		int result = name.compare(pakInfo.name);
-		if (result != 0)
-			return result < 0;
-		return VersionCmp(version, pakInfo.version) < 0;
-	});
-
-	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version)
-		return nullptr;
-	else
-		return &*(iter - 1);
-}
-
-const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t checksum)
-{
-	// Try to find an exact match
-	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version, checksum](Str::StringRef name, const PakInfo& pakInfo) -> bool {
-		int result = name.compare(pakInfo.name);
-		if (result != 0)
-			return result < 0;
-		result = VersionCmp(version, pakInfo.version);
-		if (result != 0)
-			return result < 0;
-		return checksum > pakInfo.checksum;
-	});
-
-	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version || !(iter - 1)->checksum || *(iter - 1)->checksum != checksum) {
-		// Try again, but this time look for the pak without a checksum. We will verify the checksum later.
-		iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) -> bool {
-			int result = name.compare(pakInfo.name);
-			if (result != 0)
-				return result < 0;
-			result = VersionCmp(version, pakInfo.version);
-			if (result != 0)
-				return result < 0;
-			return Util::nullopt > pakInfo.checksum;
-		});
-
-		// Only allow zip packages because directories don't have a checksum
-		if (iter == availablePaks.begin() || (iter - 1)->type == PAK_DIR || (iter - 1)->name != name || (iter - 1)->version != version || (iter - 1)->checksum)
-			return nullptr;
-	}
-
-	return &*(iter - 1);
-}
-
-bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Util::optional<uint32_t>& checksum)
-{
-	const char* nameStart = std::find(std::reverse_iterator<const char*>(end), std::reverse_iterator<const char*>(begin), '/').base();
-	if (nameStart != begin)
-		nameStart++;
-
-	// Get the name of the package
-	const char* underscore1 = std::find(nameStart, end, '_');
-	if (underscore1 == end)
-		return false;
-	name.assign(begin, underscore1);
-
-	// Get the version of the package
-	const char* underscore2 = std::find(underscore1 + 1, end, '_');
-	if (underscore2 == end) {
-		version.assign(underscore1 + 1, end);
-		checksum = Util::nullopt;
-	} else {
-		// Get the optional checksum of the package
-		version.assign(underscore1 + 1, underscore2);
-		if (underscore2 + 9 != end)
-			return false;
-		checksum = 0;
-		for (int i = 0; i < 8; i++) {
-			char c = underscore2[i + 1];
-			if (!Str::cisxdigit(c))
-				return false;
-			uint32_t hexValue = Str::cisdigit(c) ? c - '0' : Str::ctolower(c) - 'a' + 10;
-			checksum = (*checksum << 4) | hexValue;
-		}
-	}
-
-	return true;
-}
-
-std::string MakePakName(Str::StringRef name, Str::StringRef version, Util::optional<uint32_t> checksum)
-{
-	if (checksum)
-		return Str::Format("%s_%s_%08x", name, version, *checksum);
-	else
-		return Str::Format("%s_%s", name, version);
-}
-
-const std::vector<PakInfo>& GetAvailablePaks()
-{
-	return availablePaks;
-}
-
-const std::string& GetHomePath()
-{
-	return homePath;
-}
-
-const std::string& GetLibPath()
-{
-	return libPath;
 }
 
 namespace Path {
@@ -907,6 +607,36 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 			return;
 	}
 }
+
+#ifdef BUILD_VM
+// Convert an IPC file handle to a File object
+// TODO: error return
+static File FileFromIPC(IPC::FileHandle ipcFile, openMode_t mode)
+{
+	if (!ipcFile)
+		return File();
+
+#ifdef _WIN32
+	int raw_modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
+	int fd = _open_osfhandle(ipcFile.GetHandle(), raw_modes[mode]);
+	if (fd == -1) {
+		CloseHandle(ipcFile.GetHandle());
+		return File();
+	}
+#else
+	int fd = ipcFile.GetHandle();
+#endif
+
+	const char* modes[] = {"rb", "wb", "ab", "rb+"};
+	FILE* fp = fdopen(fd, modes[mode]);
+	if (!fp) {
+		close(fd);
+		return File();
+	}
+
+	return File(fp);
+}
+#endif
 
 // Workaround for GCC 4.7.2 bug: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=55015
 namespace {
@@ -1166,8 +896,9 @@ static std::vector<PakInfo> loadedPaks;
 
 // Map of filenames to pak files. The size_t is an offset into loadedPaks and
 // the offset_t is the position within the zip archive (unused for PAK_DIR).
-static std::unordered_map<std::string, std::pair<size_t, offset_t>> fileMap;
+static std::unordered_map<std::string, std::pair<uint32_t, offset_t>> fileMap;
 
+#ifndef BUILD_VM
 // Parse the dependencies file of a package
 // Each line of the dependencies file is a name followed by an optional version
 static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error_code& err)
@@ -1265,9 +996,9 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
 #ifdef LIBSTDCXX_BROKEN_CXX11
-			fileMap.insert({*it, std::pair<size_t, offset_t>(loadedPaks.size() - 1, 0)});
+			fileMap.insert({*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0)});
 #else
-			fileMap.emplace(*it, std::pair<size_t, offset_t>(loadedPaks.size() - 1, 0));
+			fileMap.emplace(*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0));
 #endif
 			if (*it == PAK_DEPS_FILE)
 				hasDeps = true;
@@ -1300,9 +1031,9 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 			}
 			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
 #ifdef LIBSTDCXX_BROKEN_CXX11
-			fileMap.insert({filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset)});
+			fileMap.insert({filename, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
-			fileMap.emplace(filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset));
+			fileMap.emplace(filename, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, offset));
 #endif
 			if (filename == PAK_DEPS_FILE) {
 				hasDeps = true;
@@ -1367,11 +1098,6 @@ void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_c
 	InternalLoadPak(pak, expectedChecksum, err);
 }
 
-const std::vector<PakInfo>& GetLoadedPaks()
-{
-	return loadedPaks;
-}
-
 void ClearPaks()
 {
 	fileMap.clear();
@@ -1381,6 +1107,12 @@ void ClearPaks()
 	}
 	loadedPaks.clear();
 	FS::RefreshPaks();
+}
+#endif // BUILD_VM
+
+const std::vector<PakInfo>& GetLoadedPaks()
+{
+	return loadedPaks;
 }
 
 std::string ReadFile(Str::StringRef path, std::error_code& err)
@@ -1394,9 +1126,20 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 	const PakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR) {
 		// Open file
+#ifdef BUILD_VM
+		IPC::FileHandle handle;
+		VM::SendMsg<VM::FSPakPathOpenMsg>(it->second.first, path, handle);
+		File file = FileFromIPC(handle, MODE_READ);
+		if (!file) {
+			// TODO: error return
+			SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
+			return "";
+		}
+#else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 		if (HaveError(err))
 			return "";
+#endif
 
 		// Get file length
 		offset_t length = file.Length(err);
@@ -1450,9 +1193,20 @@ void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 
 	const PakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR) {
+#ifdef BUILD_VM
+		IPC::FileHandle handle;
+		VM::SendMsg<VM::FSPakPathOpenMsg>(it->second.first, path, handle);
+		File file = FileFromIPC(handle, MODE_READ);
+		if (!file) {
+			// TODO: error return
+			SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
+			return;
+		}
+#else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 		if (HaveError(err))
 			return;
+#endif
 		file.CopyTo(dest, err);
 	} else {
 		// Open zip
@@ -1506,9 +1260,15 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 	}
 
 	const PakInfo& pak = loadedPaks[it->second.first];
-	if (pak.type == PAK_DIR)
+	if (pak.type == PAK_DIR) {
+#ifdef BUILD_VM
+		uint64_t result;
+		VM::SendMsg<VM::FSPakPathTimestampMsg>(it->second.first, path, result);
+		return std::chrono::system_clock::from_time_t(result);
+#else
 		return RawPath::FileTimestamp(Path::Build(pak.path, path), err);
-	else
+#endif
+	} else
 		return pak.timestamp;
 }
 
@@ -1619,6 +1379,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 
 } // namespace PakPath
 
+#ifndef BUILD_VM
 namespace RawPath {
 
 // Create all directories leading to a filename
@@ -1918,16 +1679,29 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 }
 
 } // namespace RawPath
+#endif // BUILD_VM
 
 namespace HomePath {
 
 static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 {
+#ifdef BUILD_VM
+	IPC::FileHandle handle;
+	VM::SendMsg<VM::FSHomePathOpenModeMsg>(path, mode, handle);
+	File file = FileFromIPC(handle, mode);
+	if (!file) {
+		// TODO: error return
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
+		return {};
+	}
+	return file;
+#else
 	if (!Path::IsValid(path, false)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return {};
 	}
 	return RawPath::OpenMode(Path::Build(homePath, path), mode, err);
+#endif
 }
 File OpenRead(Str::StringRef path, std::error_code& err)
 {
@@ -1948,53 +1722,89 @@ File OpenEdit(Str::StringRef path, std::error_code& err)
 
 bool FileExists(Str::StringRef path)
 {
+#ifdef BUILD_VM
+	bool result;
+	VM::SendMsg<VM::FSHomePathFileExistsMsg>(path, result);
+	return result;
+#else
 	if (!Path::IsValid(path, false))
 		return false;
 	return RawPath::FileExists(Path::Build(homePath, path));
+#endif
 }
 
 std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err)
 {
+#ifdef BUILD_VM
+	uint64_t result;
+	VM::SendMsg<VM::FSHomePathTimestampMsg>(path, result);
+	return std::chrono::system_clock::from_time_t(result);
+#else
 	if (!Path::IsValid(path, false)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return {};
 	}
 	return RawPath::FileTimestamp(Path::Build(homePath, path), err);
+#endif
 }
 
 void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err)
 {
+#ifdef BUILD_VM
+	VM::SendMsg<VM::FSHomePathMoveFileMsg>(dest, src);
+	ClearErrorCode(err); // TODO: error return
+#else
 	if (!Path::IsValid(dest, false) || !Path::IsValid(src, false)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return;
 	}
 	RawPath::MoveFile(Path::Build(homePath, dest), Path::Build(homePath, src), err);
+#endif
 }
 void DeleteFile(Str::StringRef path, std::error_code& err)
 {
+#ifdef BUILD_VM
+	VM::SendMsg<VM::FSHomePathDeleteFileMsg>(path);
+	ClearErrorCode(err); // TODO: error return
+#else
 	if (!Path::IsValid(path, false)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return;
 	}
 	RawPath::DeleteFile(Path::Build(homePath, path), err);
+#endif
 }
 
 DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 {
+#ifdef BUILD_VM
+	DirectoryRange out;
+	VM::SendMsg<VM::FSHomePathListFilesMsg>(path, out);
+	ClearErrorCode(err); // TODO: error return
+	return out;
+#else
 	if (!Path::IsValid(path, true)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return {};
 	}
 	return RawPath::ListFiles(Path::Build(homePath, path), err);
+#endif
 }
 
 RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err)
 {
+#ifdef BUILD_VM
+	DirectoryRange out;
+	VM::SendMsg<VM::FSHomePathListFilesRecursiveMsg>(path, out);
+	ClearErrorCode(err); // TODO: error return
+	return out;
+#else
 	if (!Path::IsValid(path, true)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return {};
 	}
 	return RawPath::ListFilesRecursive(Path::Build(homePath, path), err);
+#endif
 }
 
 // Note that this function is practically identical to the PakPath version.
@@ -2036,8 +1846,372 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 
 } // namespace HomePath
 
+#ifndef BUILD_VM
+// Determine path to the executable, default to current directory
+static std::string DefaultBasePath()
+{
+#ifdef _WIN32
+	wchar_t buffer[MAX_PATH];
+	DWORD len = GetModuleFileNameW(nullptr, buffer, MAX_PATH);
+	if (len == 0 || len >= MAX_PATH)
+		return "";
+
+	wchar_t* p = wcsrchr(buffer, L'\\');
+	if (!p)
+		return "";
+	*p = L'\0';
+
+	return Str::UTF16To8(buffer);
+#elif defined(__linux__)
+	ssize_t len = 64;
+	while (true) {
+		std::unique_ptr<char[]> out(new char[len]);
+		ssize_t result = readlink("/proc/self/exe", out.get(), len);
+		if (result == -1)
+			return "";
+		if (result < len) {
+			out[result] = '\0';
+			char* p = strrchr(out.get(), '/');
+			if (!p)
+				return "";
+			*p = '\0';
+			return out.get();
+		}
+		len *= 2;
+	}
+#elif defined(__APPLE__)
+	uint32_t bufsize = 0;
+	_NSGetExecutablePath(nullptr, &bufsize);
+
+	std::unique_ptr<char[]> out(new char[bufsize]);
+	_NSGetExecutablePath(out.get(), &bufsize);
+
+	char* p = strrchr(out.get(), '/');
+	if (!p)
+		return "";
+	*p = '\0';
+
+	return out.get();
+#endif
+}
+
+// Determine path to user settings directory
+static std::string DefaultHomePath()
+{
+#ifdef _WIN32
+	wchar_t buffer[MAX_PATH];
+	if (!SUCCEEDED(SHGetFolderPathW(nullptr, CSIDL_PERSONAL, nullptr, SHGFP_TYPE_CURRENT, buffer)))
+		return "";
+	return Str::UTF16To8(buffer) + "\\My Games\\Unvanquished";
+#else
+	const char* home = getenv("HOME");
+	if (!home)
+		return "";
+#ifdef __APPLE__
+	return std::string(home) + "/Library/Application Support/Unvanquished";
+#else
+	return std::string(home) + "/.unvanquished";
+#endif
+#endif
+}
+#endif // BUILD_VM
+
+void Initialize()
+{
+#ifdef BUILD_VM
+	VM::SendMsg<VM::FSInitializeMsg>(homePath, libPath, availablePaks, PakPath::loadedPaks, PakPath::fileMap);
+#else
+	Com_StartupVariable("fs_basepath");
+	Com_StartupVariable("fs_extrapath");
+	Com_StartupVariable("fs_homepath");
+	Com_StartupVariable("fs_libpath");
+	Com_StartupVariable("fs_extrapaks");
+	Com_StartupVariable("fs_basepak");
+
+	std::string defaultBasePath = DefaultBasePath();
+	std::string defaultHomePath = DefaultHomePath();
+	libPath = Cvar_Get("fs_libpath", defaultBasePath.c_str(), CVAR_INIT)->string;
+	homePath = Cvar_Get("fs_homepath", defaultHomePath.c_str(), CVAR_INIT)->string;
+	const char* basePath = Cvar_Get("fs_basepath", defaultBasePath.c_str(), CVAR_INIT)->string;
+	const char* extraPath = Cvar_Get("fs_extrapath", "", CVAR_INIT)->string;
+
+	if (basePath != homePath)
+		pakPaths.push_back(Path::Build(basePath, "pkg"));
+	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
+		pakPaths.push_back(Path::Build(extraPath, "pkg"));
+	pakPaths.push_back(Path::Build(homePath, "pkg"));
+	isInitialized = true;
+
+	Com_Printf("Home path: %s\n", homePath.c_str());
+	for (std::string& x: pakPaths)
+		Com_Printf("Pak path: %s\n", x.c_str());
+
+	RefreshPaks();
+#endif
+}
+
+void FlushAll()
+{
+	fflush(nullptr);
+}
+
+bool IsInitialized()
+{
+	return isInitialized;
+}
+
+#ifndef BUILD_VM
+// Add a pak to the list of available paks
+static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef basePath)
+{
+	std::string fullPath = Path::Build(basePath, filename);
+
+	size_t suffixLen = type == PAK_DIR ? strlen(PAK_DIR_EXT) : strlen(PAK_ZIP_EXT);
+	std::string name, version;
+	Util::optional<uint32_t> checksum;
+	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == PAK_DIR && checksum)) {
+		Log::Warn("Invalid pak name: %s", fullPath);
+		return;
+	}
+
+	availablePaks.push_back({std::move(name), std::move(version), checksum, type, std::move(fullPath), {}, -1});
+}
+
+// Find all paks in the given path
+static void FindPaksInPath(Str::StringRef basePath, Str::StringRef subPath)
+{
+	std::string fullPath = Path::Build(basePath, subPath);
+	try {
+		for (auto& filename: RawPath::ListFiles(fullPath)) {
+			if (Str::IsSuffix(PAK_ZIP_EXT, filename)) {
+				AddPak(PAK_ZIP, Path::Build(subPath, filename), basePath);
+			} else if (Str::IsSuffix(PAK_DIR_EXT, filename)) {
+				AddPak(PAK_DIR, Path::Build(subPath, filename), basePath);
+			} else if (Str::IsSuffix("/", filename))
+				FindPaksInPath(basePath, Path::Build(subPath, filename));
+		}
+	} catch (std::system_error& err) {
+		// If there was an error reading a directory, just ignore it and go to
+		// the next one.
+	}
+}
+#endif // BUILD_VM
+
+// Comparaison function for version numbers
+// Implementation is based on dpkg's version comparison code (verrevcmp() and order())
+// http://anonscm.debian.org/gitweb/?p=dpkg/dpkg.git;a=blob;f=lib/dpkg/version.c;hb=74946af470550a3295e00cf57eca1747215b9311
+static int VersionCmp(Str::StringRef aStr, Str::StringRef bStr)
+{
+	// Character weight
+	auto order = [](char c) -> int {
+		if (Str::cisdigit(c))
+			return 0;
+		else if (Str::cisalpha(c))
+			return c;
+		else if (c == '~')
+			return -1;
+		else if (c)
+			return c + 256;
+		else
+			return 0;
+	};
+
+	const char* a = aStr.c_str();
+	const char* b = bStr.c_str();
+
+	while (*a || *b) {
+		int firstDiff = 0;
+
+		while ((*a && !Str::cisdigit(*a)) || (*b && !Str::cisdigit(*b))) {
+			int ac = order(*a);
+			int bc = order(*b);
+
+			if (ac != bc)
+				return ac - bc;
+
+			a++;
+			b++;
+		}
+
+		while (*a == '0')
+			a++;
+		while (*b == '0')
+			b++;
+
+		while (Str::cisdigit(*a) && Str::cisdigit(*b)) {
+			if (firstDiff == 0)
+				firstDiff = *a - *b;
+			a++;
+			b++;
+		}
+
+		if (Str::cisdigit(*a))
+			return 1;
+		if (Str::cisdigit(*b))
+			return -1;
+		if (firstDiff)
+			return firstDiff;
+	}
+
+	return false;
+}
+
+#ifndef BUILD_VM
+void RefreshPaks()
+{
+	availablePaks.clear();
+	for (auto& path: pakPaths)
+		FindPaksInPath(path, "");
+
+	// Sort the pak list for easy binary searching:
+	// First sort by name, then by version.
+	// For checksums, place files without checksums in front, so they are selected
+	// before any pak with an explicit checksum.
+	// Use a stable sort to preserve the order of files within search paths
+	std::stable_sort(availablePaks.begin(), availablePaks.end(), [](const PakInfo& a, const PakInfo& b) -> bool {
+		// Sort by name
+		int result = a.name.compare(b.name);
+		if (result != 0)
+			return result < 0;
+
+		// Sort by version, putting latest versions last
+		result = VersionCmp(a.version, b.version);
+		if (result != 0)
+			return result < 0;
+
+		// Sort by checksum, putting packages with no checksum last
+		if (a.checksum != b.checksum)
+			return a.checksum > b.checksum;
+
+		// Prefer zip packages to directory packages
+		return b.type == PAK_ZIP;
+	});
+}
+#endif
+
+const PakInfo* FindPak(Str::StringRef name)
+{
+	// Find the latest version with the matching name
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [](Str::StringRef name, const PakInfo& pakInfo) -> bool {
+		return name < pakInfo.name;
+	});
+
+	if (iter == availablePaks.begin() || (iter - 1)->name != name)
+		return nullptr;
+	else
+		return &*(iter - 1);
+}
+
+const PakInfo* FindPak(Str::StringRef name, Str::StringRef version)
+{
+	// Find a matching name and version, but prefer the last matching element since that is usually the one with no checksum
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) -> bool {
+		int result = name.compare(pakInfo.name);
+		if (result != 0)
+			return result < 0;
+		return VersionCmp(version, pakInfo.version) < 0;
+	});
+
+	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version)
+		return nullptr;
+	else
+		return &*(iter - 1);
+}
+
+const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t checksum)
+{
+	// Try to find an exact match
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version, checksum](Str::StringRef name, const PakInfo& pakInfo) -> bool {
+		int result = name.compare(pakInfo.name);
+		if (result != 0)
+			return result < 0;
+		result = VersionCmp(version, pakInfo.version);
+		if (result != 0)
+			return result < 0;
+		return checksum > pakInfo.checksum;
+	});
+
+	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version || !(iter - 1)->checksum || *(iter - 1)->checksum != checksum) {
+		// Try again, but this time look for the pak without a checksum. We will verify the checksum later.
+		iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) -> bool {
+			int result = name.compare(pakInfo.name);
+			if (result != 0)
+				return result < 0;
+			result = VersionCmp(version, pakInfo.version);
+			if (result != 0)
+				return result < 0;
+			return Util::nullopt > pakInfo.checksum;
+		});
+
+		// Only allow zip packages because directories don't have a checksum
+		if (iter == availablePaks.begin() || (iter - 1)->type == PAK_DIR || (iter - 1)->name != name || (iter - 1)->version != version || (iter - 1)->checksum)
+			return nullptr;
+	}
+
+	return &*(iter - 1);
+}
+
+bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Util::optional<uint32_t>& checksum)
+{
+	const char* nameStart = std::find(std::reverse_iterator<const char*>(end), std::reverse_iterator<const char*>(begin), '/').base();
+	if (nameStart != begin)
+		nameStart++;
+
+	// Get the name of the package
+	const char* underscore1 = std::find(nameStart, end, '_');
+	if (underscore1 == end)
+		return false;
+	name.assign(begin, underscore1);
+
+	// Get the version of the package
+	const char* underscore2 = std::find(underscore1 + 1, end, '_');
+	if (underscore2 == end) {
+		version.assign(underscore1 + 1, end);
+		checksum = Util::nullopt;
+	} else {
+		// Get the optional checksum of the package
+		version.assign(underscore1 + 1, underscore2);
+		if (underscore2 + 9 != end)
+			return false;
+		checksum = 0;
+		for (int i = 0; i < 8; i++) {
+			char c = underscore2[i + 1];
+			if (!Str::cisxdigit(c))
+				return false;
+			uint32_t hexValue = Str::cisdigit(c) ? c - '0' : Str::ctolower(c) - 'a' + 10;
+			checksum = (*checksum << 4) | hexValue;
+		}
+	}
+
+	return true;
+}
+
+std::string MakePakName(Str::StringRef name, Str::StringRef version, Util::optional<uint32_t> checksum)
+{
+	if (checksum)
+		return Str::Format("%s_%s_%08x", name, version, *checksum);
+	else
+		return Str::Format("%s_%s", name, version);
+}
+
+const std::vector<PakInfo>& GetAvailablePaks()
+{
+	return availablePaks;
+}
+
+const std::string& GetHomePath()
+{
+	return homePath;
+}
+
+const std::string& GetLibPath()
+{
+	return libPath;
+}
+
 } // namespace FS
 
+#ifdef BUILD_ENGINE
 // Compatibility wrapper
 
 struct handleData_t {
@@ -2726,3 +2900,4 @@ public:
 	}
 };
 static DirCmd DirCmdRegistration;
+#endif // BUILD_ENGINE

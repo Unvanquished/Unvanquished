@@ -82,7 +82,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 {
 #ifdef _WIN32
 	// Inherit the socket in the child process
-	if (!SetHandleInformation(DescToHandle(pair.second.GetDesc()), HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
+	if (!SetHandleInformation(pair.second.GetHandle(), HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
 		Com_Error(ERR_DROP, "VM: Could not make socket inheritable: %s", Win32StrError(GetLastError()).c_str());
 
 	// Escape command line arguments
@@ -237,7 +237,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 		Com_Error(ERR_DROP, "VM: Failed to extract NaCl module %s: %s\n", module.c_str(), err.what());
 	}
 
-	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)DescToHandle(pair.second.GetDesc()));
+	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
 	sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
 	irt = FS::Path::Build(libPath, "irt_core-" ARCH_STRING ".nexe");
 

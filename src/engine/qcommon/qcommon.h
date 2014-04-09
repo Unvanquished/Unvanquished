@@ -491,7 +491,7 @@ issues.
 ==============================================================
 */
 
-#include "../framework/FileSystem.h"
+#include "../../common/FileSystem.h"
 
 char **FS_ListFiles( const char *directory, const char *extension, int *numfiles );
 

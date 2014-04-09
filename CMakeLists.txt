@@ -409,6 +409,8 @@ set( COMMONLIST
   ${COMMON_DIR}/Command.h
   ${COMMON_DIR}/Cvar.cpp
   ${COMMON_DIR}/Cvar.h
+  ${COMMON_DIR}/FileSystem.cpp
+  ${COMMON_DIR}/FileSystem.h
   ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/LineEditData.cpp
   ${COMMON_DIR}/LineEditData.h
@@ -514,8 +516,6 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/ConsoleField.h
   ${ENGINE_DIR}/framework/ConsoleHistory.cpp
   ${ENGINE_DIR}/framework/ConsoleHistory.h
-  ${ENGINE_DIR}/framework/FileSystem.cpp
-  ${ENGINE_DIR}/framework/FileSystem.h
   ${ENGINE_DIR}/framework/LogSystem.cpp
   ${ENGINE_DIR}/framework/LogSystem.h
   ${ENGINE_DIR}/framework/Resource.cpp
@@ -788,6 +788,37 @@ set( MINIZIPLIST
   ${LIB_DIR}/minizip/unzip.h
 )
 
+# This is only used for the NaCl modules. For all other targets, the host zlib
+# is used (sourced from external_deps if not available on target platform).
+set( ZLIBLIST
+  ${LIB_DIR}/zlib/adler32.c
+  ${LIB_DIR}/zlib/compress.c
+  ${LIB_DIR}/zlib/crc32.c
+  ${LIB_DIR}/zlib/crc32.h
+  ${LIB_DIR}/zlib/deflate.c
+  ${LIB_DIR}/zlib/deflate.h
+  ${LIB_DIR}/zlib/gzclose.c
+  ${LIB_DIR}/zlib/gzguts.h
+  ${LIB_DIR}/zlib/gzlib.c
+  ${LIB_DIR}/zlib/gzread.c
+  ${LIB_DIR}/zlib/gzwrite.c
+  ${LIB_DIR}/zlib/infback.c
+  ${LIB_DIR}/zlib/inffast.c
+  ${LIB_DIR}/zlib/inffast.h
+  ${LIB_DIR}/zlib/inffixed.h
+  ${LIB_DIR}/zlib/inflate.c
+  ${LIB_DIR}/zlib/inflate.h
+  ${LIB_DIR}/zlib/inftrees.c
+  ${LIB_DIR}/zlib/inftrees.h
+  ${LIB_DIR}/zlib/trees.c
+  ${LIB_DIR}/zlib/trees.h
+  ${LIB_DIR}/zlib/uncompr.c
+  ${LIB_DIR}/zlib/zconf.h
+  ${LIB_DIR}/zlib/zlib.h
+  ${LIB_DIR}/zlib/zutil.c
+  ${LIB_DIR}/zlib/zutil.h
+)
+
 set( TINYGETTEXTLIST
   ${LIB_DIR}/tinygettext/dictionary_manager.hpp
   ${LIB_DIR}/tinygettext/file_system.hpp
@@ -1006,7 +1037,7 @@ else()
 endif()
 
 # Minizip
-set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${MINIZIPLIST} )
+set( LIBSRC_BASE ${LIBSRC_BASE} ${MINIZIPLIST} )
 
 # Tinygettext
 set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${TINYGETTEXTLIST} )
@@ -1217,7 +1248,7 @@ function( GAMEMODULE )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_DLL )
-    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
+    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} ${LIBSRC_BASE} )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
@@ -1226,7 +1257,7 @@ function( GAMEMODULE )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_EXE )
-    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
+    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} ${LIBSRC_BASE} )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
       OUTPUT_NAME ${GAMEMODULE_NAME}-nacl-native-exe
@@ -1236,7 +1267,7 @@ function( GAMEMODULE )
 
   if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM_NATIVE )
     set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
-    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
+    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} ${LIBSRC_BASE} )
     target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
@@ -1254,6 +1285,7 @@ function( GAMEMODULE )
     # Determine compiler and translator options
     set( NACL_COMPILE_OPTIONS
       -I${LIB_DIR}/nacl
+      -I${LIB_DIR}/zlib
       -DNACL_BUILD_ARCH=x86 # Not actually used
       -DNACL_BUILD_SUBARCH=64 # Not actually used
       -Wall
@@ -1291,13 +1323,24 @@ function( GAMEMODULE )
 
     # Compile C files with clang and C++ files with clang++
     set( OBJECTS )
-    foreach( FILE ${GAMEMODULE_FILES} ${GAMEMODULE_NACL_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} )
+    foreach( FILE ${GAMEMODULE_FILES} ${GAMEMODULE_NACL_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} ${ZLIBLIST} ${LIBSRC_BASE} )
       get_filename_component( FILENAME ${FILE} NAME_WE )
       get_filename_component( FILEDIR ${FILE} PATH )
       get_filename_component( EXT ${FILE} EXT )
       set( OBJ ${NACL_DIR}/${FILENAME}.o )
 
-      if( EXT STREQUAL ".c" OR EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
+      if( EXT STREQUAL ".c" AND FILEDIR MATCHES ${LIB_DIR} )
+        add_custom_command( OUTPUT ${OBJ}
+          COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
+            ${NACL_COMPILE_OPTIONS}
+            -c
+            -o ${OBJ}
+            ${FILE}
+          DEPENDS ${FILE}
+          IMPLICIT_DEPENDS C ${FILE}
+        )
+        set( OBJECTS ${OBJECTS} ${OBJ} )
+      elseif( EXT STREQUAL ".c" OR EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
         add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
             -x c++ -std=gnu++11
@@ -1412,7 +1455,7 @@ if( BUILD_GAME_QVM )
 endif()
 
 GAMEMODULE( NAME game
-  COMPILE_DEF IN_GAME_VM
+  COMPILE_DEF IN_GAME_VM BUILD_VM BUILD_GAME
   HAS_NACL 1
   HAS_QVM 0
   FILES ${GAMELIST}
@@ -1423,7 +1466,7 @@ GAMEMODULE( NAME game
 )
 
 GAMEMODULE( NAME cgame
-  COMPILE_DEF IN_CGAME_VM
+  COMPILE_DEF IN_CGAME_VM BUILD_VM BUILD_CGAME
   HAS_NACL 0
   HAS_QVM 1
   FILES ${CGAMELIST}
@@ -1434,7 +1477,7 @@ GAMEMODULE( NAME cgame
 )
 
 GAMEMODULE( NAME ui
-  COMPILE_DEF UI
+  COMPILE_DEF UI BUILD_VM BUILD_UI
   FILES ${UILIST}
   HAS_NACL 0
   HAS_QVM 1
@@ -1455,6 +1498,7 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
   target_link_libraries( client ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
+  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_CLIENT )
   if( USE_VOIP )
     # Set it here so the tty client doesn't need to depend on speex
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
@@ -1466,7 +1510,7 @@ if( BUILD_SERVER )
   add_executable( server WIN32 ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
-  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
+  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
 endif()
 
@@ -1474,7 +1518,7 @@ if( BUILD_TTY_CLIENT )
   add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC} )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
-  set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
+  set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
 endif()
 
