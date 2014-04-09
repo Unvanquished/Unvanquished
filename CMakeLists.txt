@@ -1498,7 +1498,7 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
   target_link_libraries( client ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
-  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_CLIENT )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_CLIENT )
   if( USE_VOIP )
     # Set it here so the tty client doesn't need to depend on speex
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
