@@ -49,7 +49,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <wchar.h>
 #include <curses.h>
 
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 #define TITLE         S_COLOR_BLUE "---[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Server Console " S_COLOR_BLUE "]---"
 #else
 #define TITLE         S_COLOR_BLUE "---[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Console " S_COLOR_BLUE "]---"

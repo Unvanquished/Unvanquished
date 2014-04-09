@@ -58,7 +58,7 @@ Maryland 20850 USA.
 // Used to determine where to store user-specific files
 static char homePath[ MAX_OSPATH ] = { 0 };
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 static UINT timerResolution = 0;
 #endif
 
@@ -674,7 +674,7 @@ void Sys_Sleep( int msec )
 		return;
 	}
 
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 
 	if ( msec < 0 )
 	{
@@ -801,7 +801,7 @@ Windows specific initialisation
 */
 void Sys_PlatformInit( void )
 {
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	TIMECAPS ptc;
 #endif
 
@@ -816,7 +816,7 @@ void Sys_PlatformInit( void )
 		FreeLibrary(user32);
 	}
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	if(timeGetDevCaps(&ptc, sizeof(ptc)) == MMSYSERR_NOERROR)
 	{
 		timerResolution = ptc.wPeriodMin;
@@ -841,7 +841,7 @@ Windows specific deinitialisation
 */
 void Sys_PlatformExit( void )
 {
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	if(timerResolution)
 		timeEndPeriod(timerResolution);
 #endif
@@ -1006,7 +1006,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	Com_Init( sys_cmdline );
 	NET_Init();
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	IN_Init(); // fretn - directinput must be inited after video etc
 #endif
 

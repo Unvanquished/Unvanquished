@@ -54,7 +54,7 @@ Maryland 20850 USA.
 #include <fenv.h>
 
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 #include <SDL.h>
 #include <SDL_syswm.h>
 #include "sdl2_compat.h"
@@ -180,7 +180,7 @@ Sys_GetClipboardData
 ==================
 */
 #ifndef MACOS_X
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 static struct {
 	Display *display;
 	Window  window;
@@ -190,7 +190,7 @@ static struct {
 
 char *Sys_GetClipboardData( clipboard_t clip )
 {
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	// derived from SDL clipboard code (http://hg.assembla.com/SDL_Clipboard)
 	Window        owner;
 	Atom          selection;
@@ -305,7 +305,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	}
 
 	XUnlockDisplay( x11.display );
-#endif // !DEDICATED
+#endif // !BUILD_SERVER
 	return NULL;
 }
 #endif // !MACOSX
@@ -760,7 +760,7 @@ void Sys_ErrorDialog( const char *error )
 
 	Sys_Print( va( "%s\n", error ) );
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	// We may have grabbed input devices. Need to release.
 	if ( SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
@@ -1106,7 +1106,7 @@ Sys_IsNumLockDown
 */
 qboolean Sys_IsNumLockDown( void )
 {
-#if !defined(MACOS_X) && !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#if !defined(MACOS_X) && defined(BUILD_CLIENT)
 	const char     *denv = getenv( "DISPLAY" );
 	Display        *dpy;
 	XKeyboardState x;

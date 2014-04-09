@@ -356,7 +356,7 @@ void SV_Startup( void )
 	svs.initialized = qtrue;
 
 	Cvar_Set( "sv_running", "1" );
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	NET_Config( qtrue );
 #endif
 
@@ -776,7 +776,7 @@ void SV_Init( void )
 
 	// systeminfo
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 	sv_pure = Cvar_Get( "sv_pure", "1", CVAR_SYSTEMINFO );
 #else
 	// Use OS shared libs for the client at startup. This prevents crashes due to mismatching syscall ABIs
@@ -922,7 +922,7 @@ void SV_Shutdown( const char *finalmsg )
 	svs.serverLoad = -1;
 
 	Cvar_Set( "sv_running", "0" );
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	NET_Config( qtrue );
 #endif
 

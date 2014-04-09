@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 #include <SDL_version.h>
 
 // Require a minimum version of SDL

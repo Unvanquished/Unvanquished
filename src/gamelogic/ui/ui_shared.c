@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_TEAMS 4 // keep in sync with src/engine/client/keys.h"
 
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 #include "../cgame/cg_local.h"
-#elif defined UI
+#elif defined(BUILD_UI)
 #include "ui_local.h"
 #else
 #error Unexpectedly built!
@@ -158,7 +158,7 @@ void UI_RemoveCaptureFunc( void )
 	captureFuncExpiry = 0;
 }
 
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 #define MEM_POOL_SIZE 128 * 1024
 #else
 #define MEM_POOL_SIZE 1024 * 1024

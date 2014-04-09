@@ -64,7 +64,7 @@ Maryland 20850 USA.
 
 #define AUTOEXEC_NAME           "autoexec.cfg"
 
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 #define CONFIG_NAME             "autogen.cfg"
 #define KEYBINDINGS_NAME        "keybindings.cfg"
 #define TEAMCONFIG_NAME         "teamconfig.cfg"

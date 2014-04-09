@@ -347,7 +347,7 @@ void BotShutdownNav( void )
 		memset( nav->name, 0, sizeof( nav->name ) );
 	}
 
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	NavEditShutdown();
 #endif
 	numNavData = 0;
@@ -381,7 +381,7 @@ qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 			agents[ i ].offMesh = false;
 			memset( agents[ i ].routeResults, 0, sizeof( agents[ i ].routeResults ) );
 		}
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 		NavEditInit();
 #endif
 	}

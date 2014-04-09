@@ -23,7 +23,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../engine/qcommon/q_shared.h"
-#include "../engine/qcommon/qcommon.h"
 #include "FileSystem.h"
 #include "Log.h"
 #include "Command.h"
@@ -36,6 +35,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef BUILD_VM
 #include "../gamelogic/shared/VMMain.h"
+#else
+#include "../engine/qcommon/qcommon.h"
 #endif
 
 #ifdef _WIN32
@@ -2798,7 +2799,7 @@ qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
 			Q_strcat(neededpaks, len, va("%s.pk3", FS::MakePakName(std::get<0>(x), std::get<1>(x)).c_str()));
 			if (FS::FindPak(std::get<0>(x), std::get<1>(x))) {
 				Q_strcat(neededpaks, len, " (local file exists with wrong checksum)");
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 				if (CL_WWWBadChecksum(FS::MakePakName(std::get<0>(x), std::get<1>(x), std::get<2>(x)).c_str())) {
 					try {
 						FS::HomePath::DeleteFile(Str::Format("pkg/%s.pk3", FS::MakePakName(std::get<0>(x), std::get<1>(x))));
