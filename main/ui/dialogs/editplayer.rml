@@ -19,7 +19,7 @@
 		padding:0.3em;
 		width:8em;
 		margin:1em 1em;
-	}	
+	}
 	input.hidden
 	{
 		 visibility:hidden;
@@ -30,26 +30,26 @@
 	input.text{
 	}
 	.line{
-		
+
 	}
-			
+
 		</style>
 	</head>
 	<body id="editplayer">
 	<div class="window options">
 	<h1>Start Vote</h1>
-	<form onsubmit="combinde all values except with ignore and make pancakes">
-	<div class="line"><label>Type:</label><select name="profile">
-				<option value="/callvote " selected="">Global Vote</option>
-				<option value="/callteamvote ">Team Vote</option>
-				<option value="/">Admin command</option>
+	<form onsubmit='execForm "$prefix$ $cmd$'>
+	<div class="line"><label>Type:</label><select name="prefix">
+				<option value="callvote" selected="">Global Vote</option>
+				<option value="callteamvote">Team Vote</option>
+				<option value="">Admin command</option>
 	</select></div>
-	<div class="line"><label>Method:</label><select name="profile">
-				<option value="kick ">Kick</option>
-				<option value="forcespec " selected="">ForceSpec</option>
-				<option value="mute ">Mute</option>
-				<option value="denybuild ">Denybuild</option>
-				<option value="detonate ">Detonate</option>
+	<div class="line"><label>Method:</label><select name="cmd">
+				<option value="kick">Kick</option>
+				<option value="forcespec" selected="">ForceSpec</option>
+				<option value="mute">Mute</option>
+				<option value="denybuild">Denybuild</option>
+				<option value="detonate">Detonate</option>
 	</select></div>
 	<div class="line"><label>Player:</label><input type="text" cvar="ui_dialogCvar1" disabled /></div>
 	<input type="hidden" value=" -r " />
@@ -60,4 +60,4 @@
 	</form>
 	</div>
 	</body>
-</rml>	
+</rml>

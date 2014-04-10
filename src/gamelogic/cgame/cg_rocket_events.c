@@ -192,6 +192,47 @@ static void CG_Rocket_SetChatCommand( void )
 	}
 }
 
+static void CG_Rocket_EventExecForm( void )
+{
+	static char params[ BIG_INFO_STRING ];
+	static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
+	char cmd[ MAX_STRING_CHARS ]  = { 0 };
+	char Template[ MAX_STRING_CHARS ];
+	char *k = Template;
+	char *s = Template;
+
+	Q_strncpyz( Template, CG_Argv( 1 ), sizeof( Template ) );
+	trap_Rocket_GetEventParameters( params, sizeof( params ) );
+
+	if ( !*params )
+	{
+		return;
+	}
+
+	while ( k && *k )
+	{
+		s = strchr( k, '$' );
+		if ( s )
+		{
+			char *ss = strchr( s + 1, '$' );
+			if ( ss )
+			{
+				*s =  0;
+				*ss = 0;
+				Q_strcat( cmd, sizeof( cmd ), k );
+				Q_strcat( cmd, sizeof( cmd ), Info_ValueForKey( params, s + 1 ) );
+			}
+
+			k = ss + 1;
+		}
+	}
+
+	if ( *cmd )
+	{
+		trap_SendConsoleCommand( cmd );
+	}
+}
+
 typedef struct
 {
 	const char *command;
@@ -205,6 +246,7 @@ static const eventCmd_t eventCmdList[] =
 	{ "close", &CG_Rocket_EventClose },
 	{ "exec", &CG_Rocket_EventExec },
 	{ "execDS", &CG_Rocket_ExecDS },
+	{ "execForm", &CG_Rocket_EventExecForm },
 	{ "filterDS", &CG_Rocket_FilterDS },
 	{ "goto", &CG_Rocket_EventGoto },
 	{ "hide", &CG_Rocket_EventHide },
