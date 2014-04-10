@@ -528,6 +528,7 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/crypto.h
   ${ENGINE_DIR}/qcommon/cvar.cpp
   ${ENGINE_DIR}/qcommon/cvar.h
+  ${ENGINE_DIR}/qcommon/files.cpp
   ${ENGINE_DIR}/qcommon/qfiles.h
   ${ENGINE_DIR}/qcommon/huffman.cpp
   ${ENGINE_DIR}/qcommon/md5.cpp
