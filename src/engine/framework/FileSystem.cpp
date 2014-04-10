@@ -35,6 +35,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef _WIN32
 #include <windows.h>
 #include <shlobj.h>
+#include <io.h>
+#include <fcntl.h>
 #undef MoveFile
 #undef CopyFile
 #undef DeleteFile
@@ -90,81 +92,117 @@ enum openMode_t {
 	MODE_APPEND,
 	MODE_EDIT
 };
-static FILE* my_fopen(Str::StringRef path, openMode_t mode)
+static int my_open(Str::StringRef path, openMode_t mode)
 {
+	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
 #ifdef _WIN32
-	const wchar_t* modes[] = {L"rb", L"wb", L"ab", L"rb+"};
-	return _wfopen(Str::UTF8To16(path).c_str(), modes[mode]);
-#else
-	const char* modes[] = {"rb", "wb", "ab", "rb+"};
-#if defined(__APPLE__)
-	FILE* fd = fopen(path.c_str(), modes[mode]);
+	int fd =  _wopen(Str::UTF8To16(path).c_str(), modes[mode]);
+#elif defined(__APPLE__)
+	// O_CLOEXEC is supported from 10.7 onwards
+	int fd = open(path.c_str(), modes[mode] | O_CLOEXEC, 0666);
 #elif defined(__linux__)
-	FILE* fd = fopen64(path.c_str(), modes[mode]);
+	int fd = open64(path.c_str(), modes[mode] | O_CLOEXEC | O_LARGEFILE, 0666);
 #endif
 
+#ifndef _WIN32
 	// Only allow opening regular files
-	if (mode == MODE_READ && fd) {
+	if (mode == MODE_READ && fd != -1) {
 		struct stat st;
-		if (fstat(fileno(fd), &st) == -1) {
-			fclose(fd);
-			return nullptr;
+		if (fstat(fd, &st) == -1) {
+			close(fd);
+			return -1;
 		}
 		if (!S_ISREG(st.st_mode)) {
-			fclose(fd);
+			close(fd);
 			errno = EISDIR;
-			return nullptr;
+			return -1;
 		}
 	}
-
-	// Set the close-on-exec flag
-	if (fd && fcntl(fileno(fd), F_SETFD, FD_CLOEXEC) == -1) {
-		fclose(fd);
-		return nullptr;
-	}
+#endif
 
 	return fd;
+}
+static FILE* my_fopen(Str::StringRef path, openMode_t mode)
+{
+	int fd = my_open(path, mode);
+	if (fd == -1)
+		return nullptr;
+
+	const char* modes[] = {"rb", "wb", "ab", "rb+"};
+#ifdef _WIN32
+	FILE* fp = _fdopen(fd, modes[mode]);
+#else
+	FILE* fp = fdopen(fd, modes[mode]);
 #endif
+
+	if (!fp)
+		close(fd);
+	return fp;
 }
 static offset_t my_ftell(FILE* fd)
 {
 #ifdef _WIN32
-		return _ftelli64(fd);
+	return _ftelli64(fd);
 #elif defined(__APPLE__)
-		return ftello(fd);
+	return ftello(fd);
 #elif defined(__linux__)
-		return ftello64(fd);
+	return ftello64(fd);
 #endif
 }
 static int my_fseek(FILE* fd, offset_t off, int whence)
 {
 #ifdef _WIN32
-		return _fseeki64(fd, off, whence);
+	return _fseeki64(fd, off, whence);
 #elif defined(__APPLE__)
-		return fseeko(fd, off, whence);
+	return fseeko(fd, off, whence);
 #elif defined(__linux__)
-		return fseeko64(fd, off, whence);
+	return fseeko64(fd, off, whence);
 #endif
 }
 #ifdef _WIN32
 typedef struct _stati64 my_stat_t;
-#else
+#elif defined(__APPLE__)
+typedef struct stat my_stat_t;
+#elif defined(__linux__)
 typedef struct stat64 my_stat_t;
 #endif
 static int my_fstat(int fd, my_stat_t* st)
 {
 #ifdef _WIN32
-		return _fstati64(fd, st);
-#else
-		return fstat64(fd, st);
+	return _fstati64(fd, st);
+#elif defined(__APPLE__)
+	return fstat(fd, st);
+#elif defined(__linux__)
+	return fstat64(fd, st);
 #endif
 }
 static int my_stat(Str::StringRef path, my_stat_t* st)
 {
 #ifdef _WIN32
-		return _wstati64(Str::UTF8To16(path).c_str(), st);
-#else
-		return stat64(path.c_str(), st);
+	return _wstati64(Str::UTF8To16(path).c_str(), st);
+#elif defined(__APPLE__)
+	return stat(path.c_str(), st);
+#elif defined(__linux__)
+	return stat64(path.c_str(), st);
+#endif
+}
+static ssize_t my_pread(int fd, void* buf, size_t count, offset_t offset)
+{
+#ifdef _WIN32
+	OVERLAPPED overlapped;
+	DWORD bytesRead;
+	memset(&overlapped, 0, sizeof(overlapped));
+	overlapped.Offset = offset & 0xffffffff;
+	overlapped.OffsetHigh = offset >> 32;
+	if (!ReadFile(reinterpret_cast<HANDLE>(_get_osfhandle(fd)), buf, count, &bytesRead, &overlapped)) {
+		_doserrno = GetLastError();
+		return -1;
+	}
+	return bytesRead;
+#elif defined(__APPLE__)
+	return pread(fd, buf, count, offset);
+#elif defined(__linux__)
+	return pread64(fd, buf, count, offset);
 #endif
 }
 
@@ -269,7 +307,7 @@ static void SetErrorCodeSystem(std::error_code& err)
 	SetErrorCode(err, errno, std::generic_category());
 #endif
 }
-static void SetErrorCodeFilesystem(filesystem_error ec, std::error_code& err)
+static void SetErrorCodeFilesystem(std::error_code& err, filesystem_error ec)
 {
 	SetErrorCode(err, ec, filesystem_category());
 }
@@ -406,7 +444,7 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 
 	size_t suffixLen = type == PAK_DIR ? strlen(PAK_DIR_EXT) : strlen(PAK_ZIP_EXT);
 	std::string name, version;
-	Opt::optional<uint32_t> checksum;
+	Util::optional<uint32_t> checksum;
 	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == PAK_DIR && checksum)) {
 		Log::Warn("Invalid pak name: %s", fullPath);
 		return;
@@ -575,7 +613,7 @@ const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t che
 			result = VersionCmp(version, pakInfo.version);
 			if (result != 0)
 				return result < 0;
-			return Opt::nullopt > pakInfo.checksum;
+			return Util::nullopt > pakInfo.checksum;
 		});
 
 		// Only allow zip packages because directories don't have a checksum
@@ -586,7 +624,7 @@ const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t che
 	return &*(iter - 1);
 }
 
-bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Opt::optional<uint32_t>& checksum)
+bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Util::optional<uint32_t>& checksum)
 {
 	const char* nameStart = std::find(std::reverse_iterator<const char*>(end), std::reverse_iterator<const char*>(begin), '/').base();
 	if (nameStart != begin)
@@ -602,7 +640,7 @@ bool ParsePakName(const char* begin, const char* end, std::string& name, std::st
 	const char* underscore2 = std::find(underscore1 + 1, end, '_');
 	if (underscore2 == end) {
 		version.assign(underscore1 + 1, end);
-		checksum = Opt::nullopt;
+		checksum = Util::nullopt;
 	} else {
 		// Get the optional checksum of the package
 		version.assign(underscore1 + 1, underscore2);
@@ -621,7 +659,7 @@ bool ParsePakName(const char* begin, const char* end, std::string& name, std::st
 	return true;
 }
 
-std::string MakePakName(Str::StringRef name, Str::StringRef version, Opt::optional<uint32_t> checksum)
+std::string MakePakName(Str::StringRef name, Str::StringRef version, Util::optional<uint32_t> checksum)
 {
 	if (checksum)
 		return Str::Format("%s_%s_%08x", name, version, *checksum);
@@ -900,64 +938,106 @@ public:
 			unzClose(zipFile);
 	}
 
-	// Open an archive
-	static ZipArchive Open(Str::StringRef path, std::error_code& err)
+	// Open an archive from an existing file descriptor
+	static ZipArchive Open(int fd, std::error_code& err)
 	{
 		// Initialize the zlib I/O functions
 		zlib_filefunc64_def funcs;
+		struct zipData_t {
+			int fd;
+			char buffer[1024];
+			offset_t pos;
+			offset_t bufferPos;
+			offset_t bufferLen;
+			offset_t fileLen;
+		};
 		funcs.zopen64_file = [](voidpf opaque, const void* filename, int mode) -> voidpf {
-			// Interpret the filename as a file handle
+			// Just forward the filename as the stream handle
 			Q_UNUSED(opaque);
 			Q_UNUSED(mode);
 			return const_cast<void*>(filename);
 		};
 		funcs.zread_file = [](voidpf opaque, voidpf stream, void* buf, uLong size) -> uLong {
 			Q_UNUSED(opaque);
-			return fread(buf, 1, size, static_cast<FILE*>(stream));
+			zipData_t* zipData = static_cast<zipData_t*>(stream);
+
+			// Use pread directly for large reads
+			if (size > sizeof(zipData->buffer)) {
+				ssize_t result = my_pread(zipData->fd, buf, size, zipData->pos);
+				if (result == -1)
+					return 0;
+				zipData->pos += result;
+				return result;
+			}
+
+			// Refill the buffer if the request can't be satisfied from it
+			if (zipData->pos < zipData->bufferPos || zipData->pos + size > zipData->bufferPos + zipData->bufferLen) {
+				ssize_t result = my_pread(zipData->fd, zipData->buffer, sizeof(zipData->buffer), zipData->pos);
+				if (result == -1)
+					return 0;
+				zipData->bufferPos = zipData->pos;
+				zipData->bufferLen = result;
+			}
+
+			// Read from the buffer, but handle short reads
+			size_t offset = zipData->pos - zipData->bufferPos;
+			size_t readLen = zipData->bufferLen - offset < size ? zipData->bufferLen - offset : size;
+			memcpy(buf, zipData->buffer + offset, readLen);
+			zipData->pos += readLen;
+			return readLen;
 		};
-		funcs.zwrite_file = [](voidpf opaque, voidpf stream, const void* buf, uLong size) -> uLong {
-			Q_UNUSED(opaque);
-			return fwrite(buf, 1, size, static_cast<FILE*>(stream));
-		};
+		funcs.zwrite_file = nullptr; // Writing to zip files is not supported
 		funcs.ztell64_file = [](voidpf opaque, voidpf stream) -> ZPOS64_T {
 			Q_UNUSED(opaque);
-			return my_ftell(static_cast<FILE*>(stream));
+			zipData_t* zipData = static_cast<zipData_t*>(stream);
+			return zipData->pos;
 		};
 		funcs.zseek64_file = [](voidpf opaque, voidpf stream, ZPOS64_T offset, int origin) -> long {
 			Q_UNUSED(opaque);
+			zipData_t* zipData = static_cast<zipData_t*>(stream);
 			switch (origin) {
 			case ZLIB_FILEFUNC_SEEK_CUR:
-				origin = SEEK_CUR;
+				zipData->pos += offset;
 				break;
 			case ZLIB_FILEFUNC_SEEK_END:
-				origin = SEEK_END;
+				zipData->pos = zipData->fileLen + offset;
 				break;
 			case ZLIB_FILEFUNC_SEEK_SET:
-				origin = SEEK_SET;
+				zipData->pos = offset;
 				break;
 			default:
+				errno = EINVAL;
 				return -1;
 			}
-			return my_fseek(static_cast<FILE*>(stream), offset, origin);
+			return 0;
 		};
 		funcs.zclose_file = [](voidpf opaque, voidpf stream) -> int {
 			Q_UNUSED(opaque);
-			return fclose(static_cast<FILE*>(stream));
+			zipData_t* zipData = static_cast<zipData_t*>(stream);
+			delete zipData;
+			return 0;
 		};
 		funcs.zerror_file = [](voidpf opaque, voidpf stream) -> int {
 			Q_UNUSED(opaque);
-			return ferror(static_cast<FILE*>(stream));
+			zipData_t* zipData = static_cast<zipData_t*>(stream);
+			return zipData->pos >= zipData->fileLen;
 		};
 
-		// Open the file
-		FILE* fd = my_fopen(path, MODE_READ);
-		if (!fd) {
+		// Get the file length
+		my_stat_t st;
+		if (my_fstat(fd, &st) == -1) {
 			SetErrorCodeSystem(err);
 			return ZipArchive();
 		}
 
 		// Open the zip with zlib
-		unzFile zipFile = unzOpen2_64(fd, &funcs);
+		zipData_t* zipData = new zipData_t;
+		zipData->fd = fd;
+		zipData->pos = 0;
+		zipData->bufferPos = 0;
+		zipData->bufferLen = 0;
+		zipData->fileLen = st.st_size;
+		unzFile zipFile = unzOpen2_64(zipData, &funcs);
 		if (!zipFile) {
 			// Unfortunately unzOpen doesn't return an error code, so we assume UNZ_BADZIPFILE
 			SetErrorCodeZlib(err, UNZ_BADZIPFILE);
@@ -1121,7 +1201,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 			const PakInfo* pak = FindPak(name);
 			if (!pak) {
 				Log::Warn("Could not find pak '%s' required by '%s'", name, parent.path);
-				SetErrorCodeFilesystem(filesystem_error::missing_depdency, err);
+				SetErrorCodeFilesystem(err, filesystem_error::missing_depdency);
 				return;
 			}
 			LoadPak(*pak, err);
@@ -1145,7 +1225,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 			const PakInfo* pak = FindPak(name, version);
 			if (!pak) {
 				Log::Warn("Could not find pak '%s' with version '%s' required by '%s'", name, version, parent.path);
-				SetErrorCodeFilesystem(filesystem_error::missing_depdency, err);
+				SetErrorCodeFilesystem(err, filesystem_error::missing_depdency);
 				return;
 			}
 			LoadPak(*pak, err);
@@ -1161,9 +1241,9 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 	}
 }
 
-static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expectedChecksum, std::error_code& err)
+static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expectedChecksum, std::error_code& err)
 {
-	Opt::optional<uint32_t> checksum;
+	Util::optional<uint32_t> checksum;
 	bool hasDeps = false;
 	offset_t depsOffset;
 	ZipArchive zipFile;
@@ -1184,7 +1264,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		if (HaveError(err))
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
-#ifdef GCC_BROKEN_CXX11
+#ifdef LIBSTDCXX_BROKEN_CXX11
 			fileMap.insert({*it, std::pair<size_t, offset_t>(loadedPaks.size() - 1, 0)});
 #else
 			fileMap.emplace(*it, std::pair<size_t, offset_t>(loadedPaks.size() - 1, 0));
@@ -1196,8 +1276,15 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 				return;
 		}
 	} else {
+		// Open file
+		loadedPaks.back().fd = my_open(pak.path, MODE_READ);
+		if (loadedPaks.back().fd == -1) {
+			SetErrorCodeSystem(err);
+			return;
+		}
+
 		// Open zip
-		zipFile = ZipArchive::Open(pak.path, err);
+		zipFile = ZipArchive::Open(loadedPaks.back().fd, err);
 		if (HaveError(err))
 			return;
 
@@ -1212,7 +1299,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 				return; // This is effectively a continue, since we are in a lambda
 			}
 			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
-#ifdef GCC_BROKEN_CXX11
+#ifdef LIBSTDCXX_BROKEN_CXX11
 			fileMap.insert({filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
 			fileMap.emplace(filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset));
@@ -1236,7 +1323,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 
 	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
 	if (expectedChecksum && checksum != *expectedChecksum) {
-		SetErrorCodeFilesystem(filesystem_error::wrong_pak_checksum, err);
+		SetErrorCodeFilesystem(err, filesystem_error::wrong_pak_checksum);
 		return;
 	}
 
@@ -1272,7 +1359,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 
 void LoadPak(const PakInfo& pak, std::error_code& err)
 {
-	InternalLoadPak(pak, Opt::nullopt, err);
+	InternalLoadPak(pak, Util::nullopt, err);
 }
 
 void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err)
@@ -1288,6 +1375,10 @@ const std::vector<PakInfo>& GetLoadedPaks()
 void ClearPaks()
 {
 	fileMap.clear();
+	for (PakInfo& x: loadedPaks) {
+		if (x.type == PAK_ZIP)
+			close(x.fd);
+	}
 	loadedPaks.clear();
 	FS::RefreshPaks();
 }
@@ -1296,7 +1387,7 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
-		SetErrorCodeFilesystem(filesystem_error::no_such_file, err);
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
 		return "";
 	}
 
@@ -1319,7 +1410,7 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 		return out;
 	} else {
 		// Open zip
-		ZipArchive zipFile = ZipArchive::Open(pak.path, err);
+		ZipArchive zipFile = ZipArchive::Open(pak.fd, err);
 		if (HaveError(err))
 			return "";
 
@@ -1353,7 +1444,7 @@ void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
-		SetErrorCodeFilesystem(filesystem_error::no_such_file, err);
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
 		return;
 	}
 
@@ -1365,7 +1456,7 @@ void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 		file.CopyTo(dest, err);
 	} else {
 		// Open zip
-		ZipArchive zipFile = ZipArchive::Open(pak.path, err);
+		ZipArchive zipFile = ZipArchive::Open(pak.fd, err);
 		if (HaveError(err))
 			return;
 
@@ -1410,7 +1501,7 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
-		SetErrorCodeFilesystem(filesystem_error::no_such_file, err);
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
 		return {};
 	}
 
@@ -1459,7 +1550,7 @@ DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 	state.iter = fileMap.begin();
 	state.iter_end = fileMap.end();
 	if (!state.InternalAdvance())
-		SetErrorCodeFilesystem(filesystem_error::no_such_directory, err);
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_directory);
 	else
 		ClearErrorCode(err);
 	return state;
@@ -1475,7 +1566,7 @@ DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err)
 	state.iter = fileMap.begin();
 	state.iter_end = fileMap.end();
 	if (!state.InternalAdvance())
-		SetErrorCodeFilesystem(filesystem_error::no_such_directory, err);
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_directory);
 	else
 		ClearErrorCode(err);
 	return state;
@@ -1730,7 +1821,7 @@ DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 {
 	std::string dirPath = path;
 	if (!dirPath.empty() && dirPath.back() == '/')
-#ifdef GCC_BROKEN_CXX11
+#ifdef LIBSTDCXX_BROKEN_CXX11
 		dirPath.resize(dirPath.size() - 1);
 #else
 		dirPath.pop_back();
@@ -1833,7 +1924,7 @@ namespace HomePath {
 static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 {
 	if (!Path::IsValid(path, false)) {
-		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
+		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return {};
 	}
 	return RawPath::OpenMode(Path::Build(homePath, path), mode, err);
@@ -1865,7 +1956,7 @@ bool FileExists(Str::StringRef path)
 std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err)
 {
 	if (!Path::IsValid(path, false)) {
-		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
+		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return {};
 	}
 	return RawPath::FileTimestamp(Path::Build(homePath, path), err);
@@ -1874,7 +1965,7 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err)
 {
 	if (!Path::IsValid(dest, false) || !Path::IsValid(src, false)) {
-		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
+		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return;
 	}
 	RawPath::MoveFile(Path::Build(homePath, dest), Path::Build(homePath, src), err);
@@ -1882,7 +1973,7 @@ void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err)
 void DeleteFile(Str::StringRef path, std::error_code& err)
 {
 	if (!Path::IsValid(path, false)) {
-		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
+		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return;
 	}
 	RawPath::DeleteFile(Path::Build(homePath, path), err);
@@ -1891,7 +1982,7 @@ void DeleteFile(Str::StringRef path, std::error_code& err)
 DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 {
 	if (!Path::IsValid(path, true)) {
-		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
+		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return {};
 	}
 	return RawPath::ListFiles(Path::Build(homePath, path), err);
@@ -1900,7 +1991,7 @@ DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err)
 {
 	if (!Path::IsValid(path, true)) {
-		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
+		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return {};
 	}
 	return RawPath::ListFilesRecursive(Path::Build(homePath, path), err);
@@ -1952,7 +2043,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 struct handleData_t {
 	bool isOpen;
 	bool isPakFile;
-	Opt::optional<std::string> renameTo;
+	Util::optional<std::string> renameTo;
 
 	// Normal file info
 	bool forceFlush;
@@ -2131,7 +2222,7 @@ int FS_FCloseFile(fileHandle_t handle)
 			handleTable[handle].file.Close();
 			if (handleTable[handle].renameTo) {
 				std::string renameTo = std::move(*handleTable[handle].renameTo);
-				handleTable[handle].renameTo = Opt::nullopt; // tidy up after abusing std::move
+				handleTable[handle].renameTo = Util::nullopt; // tidy up after abusing std::move
 				try {
 					FS::RawPath::MoveFile(renameTo, renameTo + FS::TEMP_SUFFIX);
 				} catch (std::system_error& err) {
@@ -2491,8 +2582,8 @@ bool FS_LoadServerPaks(const char* paks)
 	fs_missingPaks.clear();
 	for (auto& x: args) {
 		std::string name, version;
-		Opt::optional<uint32_t> checksum;
-		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum)) {
+		Util::optional<uint32_t> checksum;
+		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum) || !checksum) {
 			Com_Error(ERR_DROP, "Invalid pak reference from server: %s", x.c_str());
 		} else if (!checksum) {
 			if (allowRemotePakDir.Get())

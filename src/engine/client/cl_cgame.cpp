@@ -581,8 +581,17 @@ void CL_CM_LoadMap( const char *mapname )
 		// catch here when a local server is started to avoid outdated com_errorDiagnoseIP
 		Cvar_Set( "com_errorDiagnoseIP", "" );
 	}
+	void* buffer;
+	FS_ReadFile( mapname, ( void ** ) &buffer );
 
-	CM_LoadMap( mapname, qtrue );
+	if ( !buffer )
+	{
+		Com_Error( ERR_DROP, "Couldn't load %s", mapname );
+	}
+
+	CM_LoadMap( mapname, buffer, qtrue );
+
+	FS_FreeFile( buffer );
 }
 
 /*

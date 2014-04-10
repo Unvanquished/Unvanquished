@@ -1226,7 +1226,6 @@ static const char *const eventnames[] =
 	"EV_ALIEN_EVOLVE",
 	"EV_ALIEN_EVOLVE_FAILED",
 
-	"EV_DEBUG_LINE",
 	"EV_STOPLOOPINGSOUND",
 	"EV_TAUNT",
 

@@ -125,7 +125,7 @@ namespace Resource {
             virtual bool IsStillValid();
 
             // Returns the name of the resource.
-            Str::StringRef GetName();
+            const std::string& GetName() const;
 
         private:
             bool TryLoad();

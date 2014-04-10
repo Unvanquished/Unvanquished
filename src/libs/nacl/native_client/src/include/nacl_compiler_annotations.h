@@ -47,8 +47,10 @@
 
 #if NACL_WINDOWS
 # define NORETURN __declspec(noreturn)
+# define NORETURN_PTR /* No way to declare it for a function pointer.  */
 #else
 # define NORETURN __attribute__((noreturn))  /* assumes gcc */
+# define NORETURN_PTR NORETURN
 # define _cdecl /* empty */
 #endif
 

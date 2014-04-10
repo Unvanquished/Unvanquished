@@ -34,6 +34,8 @@ Maryland 20850 USA.
 
 #include "cm_local.h"
 
+static Cvar::Cvar<bool> cm_noAreas("cm_noAreas", "Ignore the areas (ie make them all connected)", Cvar::CHEAT, false);
+
 /*
 ==================
 CM_PointLeafnum_r
@@ -477,7 +479,7 @@ CM_AreasConnected
 */
 qboolean CM_AreasConnected( int area1, int area2 )
 {
-	if ( cm_noAreas->integer )
+	if ( cm_noAreas.Get() )
 	{
 		return qtrue;
 	}
@@ -522,7 +524,7 @@ int CM_WriteAreaBits( byte *buffer, int area )
 
 	bytes = ( cm.numAreas + 7 ) >> 3;
 
-	if ( cm_noAreas->integer || area == -1 )
+	if ( cm_noAreas.Get() || area == -1 )
 	{
 		// for debugging, send everything
 		memset( buffer, 255, bytes );

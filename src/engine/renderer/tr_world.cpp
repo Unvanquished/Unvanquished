@@ -26,96 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "gl_shader.h"
 
 /*
-=================
-R_CullTriSurf
-
-Returns true if the grid is completely culled away.
-Also sets the clipped hint bit in tess
-=================
-*/
-
-/*
-static qboolean R_CullTriSurf(srfTriangles_t * cv)
-{
-        int             boxCull;
-
-        boxCull = R_CullLocalBox(cv->bounds);
-
-        if(boxCull == CULL_OUT)
-        {
-                return qtrue;
-        }
-        return qfalse;
-}
-*/
-
-/*
-=================
-R_CullGrid
-
-Returns true if the grid is completely culled away.
-Also sets the clipped hint bit in tess
-=================
-*/
-
-/*
-static qboolean R_CullGrid(srfGridMesh_t * cv)
-{
-        int             boxCull;
-        int             sphereCull;
-
-        if(r_nocurves->integer)
-        {
-                return qtrue;
-        }
-
-        if(tr.currentEntity != &tr.worldEntity)
-        {
-                sphereCull = R_CullLocalPointAndRadius(cv->origin, cv->radius);
-        }
-        else
-        {
-                sphereCull = R_CullPointAndRadius(cv->origin, cv->radius);
-        }
-        boxCull = CULL_OUT;
-
-        // check for trivial reject
-        if(sphereCull == CULL_OUT)
-        {
-                tr.pc.c_sphere_cull_patch_out++;
-                return qtrue;
-        }
-        // check bounding box if necessary
-        else if(sphereCull == CULL_CLIP)
-        {
-                tr.pc.c_sphere_cull_patch_clip++;
-
-                boxCull = R_CullLocalBox(cv->bounds);
-
-                if(boxCull == CULL_OUT)
-                {
-                        tr.pc.c_box_cull_patch_out++;
-                        return qtrue;
-                }
-                else if(boxCull == CULL_IN)
-                {
-                        tr.pc.c_box_cull_patch_in++;
-                }
-                else
-                {
-                        tr.pc.c_box_cull_patch_clip++;
-                }
-        }
-        else
-        {
-                tr.pc.c_sphere_cull_patch_in++;
-        }
-
-        return qfalse;
-}
-*/
-
-/*
 ================
 R_CullSurface
 
@@ -458,7 +368,6 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 	vec3_t     v;
 	vec3_t     transformed;
 	vec3_t     boundsCenter;
-//	float      boundsRadius;
 	int        fogNum;
 
 	pModel = R_GetModelByHandle( ent->e.hModel );
@@ -471,18 +380,12 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 		ent->localBounds[ 1 ][ i ] = bspModel->bounds[ 1 ][ i ];
 	}
 
-#if 0
-	boundsRadius = RadiusFromBounds( bspModel->bounds[ 0 ], bspModel->bounds[ 1 ] );
-	ent->cull = R_CullPointAndRadius( ent->e.origin, boundsRadius );
-#else
 	ent->cull = R_CullLocalBox( bspModel->bounds );
 
 	if ( ent->cull == CULL_OUT )
 	{
 		return;
 	}
-
-#endif
 
 	// setup world bounds for intersection tests
 	ClearBounds( ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
@@ -934,7 +837,7 @@ static void R_MarkLeaves( void )
 		for ( i = 0; i < MAX_VISCOUNTS; i++ ) {
 			if ( tr.visClusters[ i ] == cluster ) {
 				// if r_showcluster was just turned on, remark everything
-				if ( !r_showcluster->modified ) // && !r_dynamicBspOcclusionCulling->modified)
+				if ( !r_showcluster->modified )
 				{
 					if ( tr.visClusters[ i ] != tr.visClusters[ tr.visIndex ] && r_showcluster->integer )
 					{
@@ -961,13 +864,6 @@ static void R_MarkLeaves( void )
 			ri.Printf( PRINT_ALL, "update cluster:%i  area:%i  index:%i\n", cluster, leaf->area, tr.visIndex );
 		}
 	}
-
-	/*
-	if(r_dynamicBspOcclusionCulling->modified)
-	{
-	        r_dynamicBspOcclusionCulling->modified = qfalse;
-	}
-	*/
 
 	if ( r_novis->integer || tr.visClusters[ tr.visIndex ] == -1 )
 	{
@@ -1208,7 +1104,7 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 
 	if ( r_logFile->integer )
 	{
-		if ( node->contents != -1 ) // && !(node->contents & CONTENTS_TRANSLUCENT))
+		if ( node->contents != -1 )
 		{
 			GLimp_LogComment( va( "--- IssueOcclusionQuery( leaf = %i ) ---\n", node - tr.world->nodes ) );
 			gl_genericShader->SetUniform_Color( colorGreen );
@@ -1232,15 +1128,6 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 
 	GL_CheckErrors();
 
-#if 0
-
-	if ( glIsQuery( node->occlusionQueryObjects[ tr.viewCount ] ) )
-	{
-		ri.Error( ERR_FATAL, "IssueOcclusionQuery: node %i has already an occlusion query object in slot %i: %i", node - tr.world->nodes, tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
-	}
-
-#endif
-
 	// begin the occlusion query
 	glBeginQuery( GL_SAMPLES_PASSED, node->occlusionQueryObjects[ tr.viewCount ] );
 
@@ -1259,14 +1146,10 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 	// end the query
 	glEndQuery( GL_SAMPLES_PASSED );
 
-#if 1
-
 	if ( !glIsQuery( node->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "IssueOcclusionQuery: node %li has no occlusion query object in slot %i: %i", (long)( node - tr.world->nodes ), tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
 	}
-
-#endif
 
 	node->occlusionQueryNumbers[ tr.viewCount ] = tr.pc.c_occlusionQueries;
 	tr.pc.c_occlusionQueries++;
@@ -1310,25 +1193,15 @@ static void IssueMultiOcclusionQueries( link_t *multiQueue, link_t *individualQu
 	// begin the occlusion query
 	GL_CheckErrors();
 
-#if 0
-
-	if ( !glIsQuery( multiQueryNode->occlusionQueryObjects[ tr.viewCount ] ) )
-	{
-		ri.Error( ERR_FATAL, "IssueMultiOcclusionQueries: node %i has already occlusion query object in slot %i: %i", multiQueryNode - tr.world->nodes, tr.viewCount, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
-	}
-
-#endif
-
 	glBeginQuery( GL_SAMPLES_PASSED, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
 
 	GL_CheckErrors();
 
-	//GLimp_LogComment("rendering nodes:[");
 	for ( l = multiQueue->prev; l != multiQueue; l = l->prev )
 	{
 		node = ( bspNode_t * ) l->data;
 
-		if ( node->contents != -1 ) // && !(node->contents & CONTENTS_TRANSLUCENT))
+		if ( node->contents != -1 )
 		{
 			gl_genericShader->SetUniform_Color( colorGreen );
 		}
@@ -1336,13 +1209,6 @@ static void IssueMultiOcclusionQueries( link_t *multiQueue, link_t *individualQu
 		{
 			gl_genericShader->SetUniform_Color( colorMdGrey );
 		}
-
-		//if(r_logFile->integer)
-		//{
-		//  GLimp_LogComment(va("%i, ", node - tr.world->nodes));
-		//}
-
-		//Tess_EndBegin();
 
 		R_BindVBO( node->volumeVBO );
 		R_BindIBO( node->volumeIBO );
@@ -1359,8 +1225,6 @@ static void IssueMultiOcclusionQueries( link_t *multiQueue, link_t *individualQu
 		tess.numVertexes = 0;
 	}
 
-	//GLimp_LogComment("]\n");
-
 	multiQueryNode->occlusionQueryNumbers[ tr.viewCount ] = tr.pc.c_occlusionQueries;
 	tr.pc.c_occlusionQueries++;
 	tr.pc.c_occlusionQueriesMulti++;
@@ -1369,15 +1233,6 @@ static void IssueMultiOcclusionQueries( link_t *multiQueue, link_t *individualQu
 	glEndQuery( GL_SAMPLES_PASSED );
 
 	GL_CheckErrors();
-
-#if 0
-
-	if ( !glIsQuery( multiQueryNode->occlusionQueryObjects[ tr.viewCount ] ) )
-	{
-		ri.Error( ERR_FATAL, "IssueMultiOcclusionQueries: node %i has no occlusion query object in slot %i: %i", multiQueryNode - tr.world->nodes, tr.viewCount, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
-	}
-
-#endif
 
 	// move queue to node->multiQuery queue
 	QueueInit( &multiQueryNode->multiQuery );
@@ -1419,26 +1274,11 @@ static void GetOcclusionQueryResult( bspNode_t *node )
 
 	GLimp_LogComment( "--- GetOcclusionQueryResult ---\n" );
 
-	//glFinish();
-
-#if 0
-
-	if ( !glIsQuery( node->occlusionQueryObjects[ tr.viewCount ] ) )
-	{
-		ri.Error( ERR_FATAL, "GetOcclusionQueryResult: node %i has no occlusion query object in slot %i: %i", node - tr.world->nodes, tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
-	}
-
-#endif
-
 	available = 0;
 
 	while ( !available )
 	{
-		//if(glIsQuery(node->occlusionQueryObjects[tr.viewCount]))
-		{
-			glGetQueryObjectiv( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT_AVAILABLE, &available );
-			//GL_CheckErrors();
-		}
+		glGetQueryObjectiv( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT_AVAILABLE, &available );
 	}
 
 	glGetQueryObjectiv( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT, &ocSamples );
@@ -1480,55 +1320,6 @@ static void PullUpVisibility( bspNode_t *node )
 	};
 }
 
-/*
-static void PushNode(link_t * traversalStack, bspNode_t * node)
-{
-        if(node->contents != -1)
-        {
-                //DrawLeaf(node, tr.refdef.decalBits);
-        }
-        else
-        {
-                //float     d1, d2;
-                cplane_t       *splitPlane;
-
-                splitPlane = node->plane;
-
-                //d1 = DistanceSquared(tr.viewParms.orientation.origin, node->children[0]->origin);
-                //d2 = DistanceSquared(tr.viewParms.orientation.origin, node->children[1]->origin);
-
-                //if(d1 <= d2)
-#if 0
-                if(DotProduct(splitPlane->normal, tr.viewParms.orientation.axis[0]) <= 0)
-                {
-                        StackPush(traversalStack, node->children[0]);
-                        StackPush(traversalStack, node->children[1]);
-
-                        ri.Printf(PRINT_ALL, "--> %i\n", node->children[0] - tr.world->nodes);
-                        ri.Printf(PRINT_ALL, "--> %i\n", node->children[1] - tr.world->nodes);
-                }
-                else
-#endif
-                {
-#if 1
-                        StackPush(traversalStack, node->children[0]);
-                        StackPush(traversalStack, node->children[1]);
-#else
-                        InsertLink(&((bspNode_t*)node->children[0])->visChain, traversalStack);
-                        InsertLink(&((bspNode_t*)node->children[1])->visChain, traversalStack);
-
-                        traversalStack->numElements += 2;
-#endif
-                        if(r_logFile->integer)
-                        {
-                                GLimp_LogComment(va("traversal-stack <-- node %i\n", node->children[0] - tr.world->nodes));
-                                GLimp_LogComment(va("traversal-stack <-- node %i\n", node->children[1] - tr.world->nodes));
-                        }
-                }
-        }
-}
-*/
-
 static void TraverseNode( link_t *distanceQueue, bspNode_t *node )
 {
 #if defined( DEBUG_CHC )
@@ -1568,11 +1359,7 @@ static void TraverseNode( link_t *distanceQueue, bspNode_t *node )
 
 #endif
 
-	if ( node->contents != -1 )
-	{
-		//DrawLeaf(node, tr.refdef.decalBits);
-	}
-	else
+	if ( node->contents == -1 )
 	{
 		EnQueue( distanceQueue, node->children[ 0 ] );
 		EnQueue( distanceQueue, node->children[ 1 ] );
@@ -1639,8 +1426,6 @@ static bool WasVisible( bspNode_t *node )
 static bool QueryReasonable( bspNode_t *node )
 {
 	int v = ceil( r_chcMaxVisibleFrames->value * 0.5f * ( 1.0f + random() ) );
-	// if r_chcMaxVisibleFrames 10 then range from 5 to 10
-	//return ((tr.frameCount - node->lastQueried[tr.viewCount]) > r_chcMaxVisibleFrames->integer);
 	return tr.frameCount - node->lastQueried[ tr.viewCount ] > std::max( v, r_chcMaxVisibleFrames->integer );
 }
 
@@ -1649,15 +1434,11 @@ static void R_CoherentHierachicalCulling()
 	bspNode_t *node;
 	bspNode_t *multiQueryNode;
 
-//	link_t     traversalStack;
 	link_t    distanceQueue;
 	link_t    occlusionQueryQueue;
 	link_t    visibleQueue; // CHC++
 	link_t    invisibleQueue; // CHC++
-	//link_t    renderQueue;
 	int       startTime = 0, endTime = 0;
-
-	//ri.Cvar_Set("r_logFile", "1");
 
 	GLimp_LogComment( "--- R_CoherentHierachicalCulling ---\n" );
 
@@ -1672,14 +1453,7 @@ static void R_CoherentHierachicalCulling()
 		startTime = ri.Milliseconds();
 	}
 
-	if ( HDR_ENABLED() )
-	{
-		R_BindFBO( tr.deferredRenderFBO );
-	}
-	else
-	{
-		R_BindNullFBO();
-	}
+	R_BindNullFBO();
 
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
@@ -1710,26 +1484,6 @@ static void R_CoherentHierachicalCulling()
 	GL_BindToTMU( 0, tr.whiteImage );
 	gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
-#if 0
-	GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-	glClear( GL_COLOR_BUFFER_BIT );
-
-	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
-
-	// draw BSP leaf volumes to color for debugging
-	DrawNode_r( &tr.world->nodes[ 0 ], FRUSTUM_CLIPALL );
-#endif
-
-#if 0
-	GL_ClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
-	glClear( GL_DEPTH_BUFFER_BIT );
-
-	GL_State( GLS_COLORMASK_BITS | GLS_DEPTHMASK_TRUE );
-
-	// draw BSP leaf volumes to depth
-	DrawNode_r( &tr.world->nodes[ 0 ], FRUSTUM_CLIPALL );
-#endif
-
 	if ( r_logFile->integer )
 	{
 		GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -1747,24 +1501,12 @@ static void R_CoherentHierachicalCulling()
 	QueueInit( &tr.occlusionQueryQueue );
 	ClearLink( &tr.occlusionQueryList );
 
-	//ClearLink(&traversalStack);
 	QueueInit( &distanceQueue );
 	QueueInit( &occlusionQueryQueue );
 	QueueInit( &visibleQueue );
 	QueueInit( &invisibleQueue );
-	//QueueInit(&renderQueue);
 
 	EnQueue( &distanceQueue, &tr.world->nodes[ 0 ] );
-	//StackPush(&traversalStack, &tr.world->nodes[0]);
-
-	/*
-	ClearLink(&traversalStack);
-	traversalStack.numElements = 0;
-
-	node = &tr.world->nodes[0];
-	InsertLink(&node->visChain, &traversalStack);
-	traversalStack.numElements++;
-	*/
 
 	while ( !QueueEmpty( &distanceQueue ) || !QueueEmpty( &occlusionQueryQueue ) || !QueueEmpty( &invisibleQueue ) || !QueueEmpty( &visibleQueue ) )
 	{
@@ -1852,8 +1594,6 @@ static void R_CoherentHierachicalCulling()
 					}
 				}
 			}
-
-#if 1
 			else if ( r_dynamicBspOcclusionCulling->integer == 1 )
 			{
 				if ( !QueueEmpty( &visibleQueue ) )
@@ -1863,22 +1603,12 @@ static void R_CoherentHierachicalCulling()
 					IssueOcclusionQuery( &occlusionQueryQueue, node, qtrue );
 				}
 			}
-
-#endif
 		} // end while(!QueueEmpty(&occlusionQueryQueue))
 
 		//--PART 2: hierarchical traversal
 		if ( !QueueEmpty( &distanceQueue ) )  //if(!StackEmpty(&traversalStack))
 		{
 			node = ( bspNode_t * ) DeQueue( &distanceQueue );
-			//node = (bspNode_t *) StackPop(&traversalStack);
-
-			/*
-			link_t* top = traversalStack.next;
-			RemoveLink(top);
-
-			node = (bspNode_t *) top->data;
-			*/
 
 			if ( r_logFile->integer )
 			{
@@ -1913,8 +1643,6 @@ static void R_CoherentHierachicalCulling()
 
 					needsQuery = false;
 				}
-
-#if 1
 				else if ( r_chcIgnoreLeaves->integer && node->contents != -1 )
 				{
 					// NOTE: this is the fastest dynamic occlusion culling path
@@ -1928,8 +1656,6 @@ static void R_CoherentHierachicalCulling()
 
 					needsQuery = false;
 				}
-
-#endif
 				else
 				{
 					// CHC default
@@ -1973,8 +1699,6 @@ static void R_CoherentHierachicalCulling()
 					}
 					else
 					{
-#if 1
-
 						if ( ( node->contents != -1 ) && !clipsNearPlane && QueryReasonable( node ) && leafThatNeedsQuery )
 						{
 							if ( r_logFile->integer )
@@ -1984,8 +1708,6 @@ static void R_CoherentHierachicalCulling()
 
 							EnQueue( &visibleQueue, node );
 						}
-
-#endif
 
 						// always traverse a node if it was visible
 						TraverseNode( &distanceQueue, node );
@@ -2004,11 +1726,6 @@ static void R_CoherentHierachicalCulling()
 					{
 						// always traverse a node if it was visible
 						TraverseNode( &distanceQueue, node );
-
-						//if(clipsNearPlane)
-						//{
-						//  PullUpVisibility(node);
-						//}
 					}
 				}
 			}
@@ -2017,7 +1734,6 @@ static void R_CoherentHierachicalCulling()
 		if ( r_dynamicBspOcclusionCulling->integer == 1 )
 		{
 			if ( QueueEmpty( &distanceQueue ) )
-				//if(StackEmpty(&traversalStack))
 			{
 				// remaining previously visible node queries
 				if ( !QueueEmpty( &invisibleQueue ) )
@@ -2036,8 +1752,6 @@ static void R_CoherentHierachicalCulling()
 				}
 			}
 		}
-
-		//ri.Printf(PRINT_ALL, "--- (%i, %i, %i)\n", !StackEmpty(&traversalStack), !QueueEmpty(&occlusionQueryQueue), !QueueEmpty(&invisibleQueue));
 	}
 
 	ClearLink( &tr.traversalStack );
@@ -2049,8 +1763,6 @@ static void R_CoherentHierachicalCulling()
 	GL_State( GLS_DEFAULT );
 
 	GL_CheckErrors();
-
-	//ri.Printf(PRINT_ALL, "--- R_CHC++ end ---\n");
 
 	if ( r_speeds->integer )
 	{
@@ -2185,7 +1897,7 @@ void R_AddPrecachedWorldInteractions( trRefLight_t *light )
 
 	tr.currentEntity = &tr.worldEntity;
 
-	if ( ( r_vboShadows->integer || r_vboLighting->integer ) ) // && light->l.rlType != RL_DIRECTIONAL)
+	if ( ( r_vboShadows->integer || r_vboLighting->integer ) )
 	{
 		interactionCache_t *iaCache;
 		interactionVBO_t   *iaVBO;

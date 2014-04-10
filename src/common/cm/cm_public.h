@@ -32,12 +32,11 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "qfiles.h"
+#include "../../engine/qcommon/q_shared.h"
+#include "../../engine/qcommon/qfiles.h"
+#include "../../engine/renderer/tr_types.h"
 
-#include "q_shared.h"
-#include "../renderer/tr_types.h"
-
-void         CM_LoadMap( const char *name, qboolean clientload );
+void         CM_LoadMap( const char *name, const void* buffer, qboolean clientload );
 void         CM_ClearMap( void );
 
 clipHandle_t CM_InlineModel( int index );  // 0 = world, 1 + are bmodels

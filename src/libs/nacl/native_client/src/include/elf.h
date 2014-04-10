@@ -47,8 +47,8 @@ EXTERN_C_BEGIN
 #define NACL_PRIxElf_Addr   NACL_PRIx32
 #define NACL_PRIXElf_Addr   NACL_PRIX32
 
-#define NACL_PRIxElf_AddrAll   "08"NACL_PRIx32
-#define NACL_PRIXElf_AddrAll   "08"NACL_PRIX32
+#define NACL_PRIxElf_AddrAll   "08" NACL_PRIx32
+#define NACL_PRIXElf_AddrAll   "08" NACL_PRIX32
 
 #define NACL_PRIdElf_Off    NACL_PRId32
 #define NACL_PRIiElf_Off    NACL_PRIi32

@@ -177,7 +177,7 @@ static void CM_SetBorderInward( cFacet_t *facet, cTriangleSoup_t *triSoup, int i
 		else
 		{
 			// bisecting side border
-			Com_DPrintf( "WARNING: CM_SetBorderInward: mixed plane sides\n" );
+			cmLog.Debug( "WARNING: CM_SetBorderInward: mixed plane sides\n" );
 			facet->borderInward[ k ] = qfalse;
 		}
 	}
@@ -270,11 +270,11 @@ static void CM_SurfaceCollideFromTriangleSoup( cTriangleSoup_t *triSoup, cSurfac
 
 	// copy the results out
 	sc->numPlanes = numPlanes;
-	sc->planes = ( cPlane_t * ) Hunk_Alloc( numPlanes * sizeof( *sc->planes ), h_high );
+	sc->planes = ( cPlane_t * ) CM_Alloc( numPlanes * sizeof( *sc->planes ) );
 	Com_Memcpy( sc->planes, planes, numPlanes * sizeof( *sc->planes ) );
 
 	sc->numFacets = numFacets;
-	sc->facets = ( cFacet_t * ) Hunk_Alloc( numFacets * sizeof( *sc->facets ), h_high );
+	sc->facets = ( cFacet_t * ) CM_Alloc( numFacets * sizeof( *sc->facets ) );
 	Com_Memcpy( sc->facets, facets, numFacets * sizeof( *sc->facets ) );
 }
 
@@ -321,7 +321,7 @@ cSurfaceCollide_t *CM_GenerateTriangleSoupCollide( int numVertexes, vec3_t *vert
 
 	//for(i = 0; i < triSoup.num
 
-	sc = ( cSurfaceCollide_t * ) Hunk_Alloc( sizeof( *sc ), h_high );
+	sc = ( cSurfaceCollide_t * ) CM_Alloc( sizeof( *sc ) );
 	ClearBounds( sc->bounds[ 0 ], sc->bounds[ 1 ] );
 
 	for ( i = 0; i < triSoup.numTriangles; i++ )
@@ -344,7 +344,7 @@ cSurfaceCollide_t *CM_GenerateTriangleSoupCollide( int numVertexes, vec3_t *vert
 	sc->bounds[ 1 ][ 1 ] += 1;
 	sc->bounds[ 1 ][ 2 ] += 1;
 
-	Com_DPrintf( "CM_GenerateTriangleSoupCollide: %i planes %i facets\n", sc->numPlanes, sc->numFacets );
+	cmLog.Debug( "CM_GenerateTriangleSoupCollide: %i planes %i facets\n", sc->numPlanes, sc->numFacets );
 
 	return sc;
 }
