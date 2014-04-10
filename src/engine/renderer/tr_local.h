@@ -3317,17 +3317,6 @@ static inline float unpackTC( int16_t tc ) {
 	void           R_CalcFrustumNearCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
 	void           R_CalcFrustumFarCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
 	qboolean       R_CompareVert( srfVert_t *v1, srfVert_t *v2, qboolean checkst );
-	void           R_CalcNormalForTriangle( vec3_t normal, const vec3_t v0, const vec3_t v1, const vec3_t v2 );
-
-	void           R_CalcTangentsForTriangle( vec3_t tangent, vec3_t binormal,
-	    const vec3_t v0, const vec3_t v1, const vec3_t v2,
-	    const vec2_t t0, const vec2_t t1, const vec2_t t2 );
-
-#if 0
-	void R_CalcTangentsForTriangle2( vec3_t tangent, vec3_t binormal,
-	                                 const vec3_t v0, const vec3_t v1, const vec3_t v2,
-	                                 const vec2_t t0, const vec2_t t1, const vec2_t t2 );
-#endif
 
 	void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	                         const vec3_t v0, const vec3_t v1, const vec3_t v2,
@@ -3335,11 +3324,7 @@ static inline float unpackTC( int16_t tc ) {
 
 	void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	                             const vec3_t v0, const vec3_t v1, const vec3_t v2,
-	                             const i16vec4_t t0, const i16vec4_t t1, const i16vec4_t t2 );
-
-	void R_CalcTBN( vec3_t tangent, vec3_t binormal, vec3_t normal,
-	                const vec3_t v0, const vec3_t v1, const vec3_t v2,
-	                const vec2_t t0, const vec2_t t1, const vec2_t t2 );
+	                             const i16vec2_t t0, const i16vec2_t t1, const i16vec2_t t2 );
 
 	qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] );
 
