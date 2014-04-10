@@ -28,26 +28,94 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-
 #include "WavCodec.h"
 #include "snd_codec.h"
+#include "../framework/FileSystem.h"
 #include "../qcommon/qcommon.h"
+#include "../../common/Log.h"
+#include <string>
 #include <algorithm>
 
-//TODO write a new loader
-//TODO add logging and error checking
-Audio::AudioData Audio::LoadWavCodec(std::string filename)
+
+namespace Audio {
+
+inline int PackChars(const std::string& input, int startingPosition, int numberOfCharsToPack)
 {
-
-	snd_info_t info;
-	char* data = static_cast<char*>(S_WAV_CodecLoad(filename.data(), &info));
-
-	char* dataN = new char[info.size];
-
-	std::copy_n(data, info.size, dataN);
-
-	Hunk_FreeTempMemory(data);
-
-	return Audio::AudioData(info.rate, info.width, info.channels, info.size, dataN);
+	int packed = 0;
+	int charsLeftToPack = numberOfCharsToPack;
+	while (charsLeftToPack > 0) {
+		int position = numberOfCharsToPack - charsLeftToPack;
+        //the number must be converted to unsinged char first
+        //else if it's >127, 1s will be added to the higher-order bits
+		packed |= static_cast<unsigned char>(input[startingPosition + position]) << position * 8;
+		--charsLeftToPack;
+	}
+	return packed;
 }
 
+
+AudioData LoadWavCodec(std::string filename)
+{
+	std::string audioFile;
+
+	try
+	{
+		audioFile = std::move(FS::PakPath::ReadFile(filename));
+	}
+	catch (std::system_error& err)
+	{
+		Log::Warn("Failed to open %s: %s", filename, err.what());
+        return AudioData();
+	}
+
+	std::string format = audioFile.substr(8, 4);
+
+	if (format != "WAVE") {
+		Log::Warn("The format label in %s is not WAVE.", filename);
+		return AudioData();
+	}
+
+	std::string chunk1ID = audioFile.substr(12, 4);
+
+	if (chunk1ID != "fmt ") {
+		Log::Warn("The Chunk1ID in %s is not fmt .", filename);
+		return AudioData();
+	}
+
+	int numChannels = PackChars(audioFile, 22, 2);
+
+	if (numChannels != 1 && numChannels != 2) {
+		Log::Warn("%s has an unsupported number of channels.", filename);
+		return AudioData();
+	}
+
+	int sampleRate = PackChars(audioFile, 24, 4);
+	int byteDepth = PackChars(audioFile, 34, 2) / 8;
+
+	if (byteDepth != 1 && byteDepth != 2) {
+		Log::Warn("%s has an unsupported bytedepth.", filename);
+		return AudioData();
+	}
+
+	std::string chunk2ID = audioFile.substr(36, 4);
+
+	if (chunk2ID != "data") {
+		Log::Warn("The Chunk2ID in %s is not data.", filename);
+		return AudioData();
+	}
+
+	int size = PackChars(audioFile, 40, 4);
+
+    if (size <= 0 || sampleRate  <=0 ){
+		Log::Warn("Error in reading %s.", filename);
+		return AudioData();
+	}
+
+	char* data = new char[size];
+
+	std::copy_n(audioFile.data() + 44, size, data);
+
+	return AudioData(sampleRate, byteDepth, numChannels, size, data);
+}
+
+} // namespace Audio

@@ -33,7 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "AudioData.h"
 #include <string>
-//#include "../../common/String.h"
 
 namespace Audio {
 
