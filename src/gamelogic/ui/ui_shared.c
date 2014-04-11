@@ -7636,7 +7636,7 @@ keywordHash_t;
 
 int KeywordHash_Key( const char *keyword )
 {
-	register int hash, i;
+	int hash, i;
 
 	hash = 0;
 

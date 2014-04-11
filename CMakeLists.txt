@@ -125,7 +125,9 @@ endmacro()
 
 # Try flag and set if it works, optional argument specifies build type
 macro( try_cxx_flag PROP FLAG )
+  set( CMAKE_REQUIRED_FLAGS "-x none" )
   check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
+  set( CMAKE_REQUIRED_FLAGS "" )
   if( FLAG_${PROP} )
     set_cxx_flag( ${FLAG} ${ARGV2} )
   endif()
@@ -156,13 +158,11 @@ if( MSVC )
   endif()
   if( ENABLE_LTO )
     set_c_cxx_flag( "/GL" RELEASE )
-    set_linker_flag( "/LTCG" )
+    set_linker_flag( "/LTCG" RELEASE )
   endif()
 else()
   set_c_cxx_flag( "-ffast-math" )
   set_c_cxx_flag( "-fno-strict-aliasing" )
-  set_c_cxx_flag( "-fomit-frame-pointer" RELEASE )
-  set_c_cxx_flag( "-fomit-frame-pointer" MINSIZEREL )
 
   # Set arch on x86 to SSE2 minimum and enable CMPXCHG16B
   if( ARCH STREQUAL "x86" )
@@ -195,6 +195,8 @@ else()
   endif()
 
   # C++11 support
+  set_cxx_flag( "-x c++" )
+  set_linker_flag( "-x none" ) # Override the previous value because CMake insists on passing compile flags to the linker
   try_cxx_flag( GNUXX11 "-std=gnu++11" )
   if( NOT FLAG_GNUXX11 )
     try_cxx_flag( GNUXX0X "-std=gnu++0x" )
@@ -245,12 +247,16 @@ else()
 
   # LTO support, only used on release builds
   if( ENABLE_LTO )
-    # This flag is also used when linking
     set_c_cxx_flag( "-flto" RELEASE )
+    set_linker_flag( "-flto" RELEASE )
   endif()
 
-  # The -pthread flag sets some preprocessor defines
+  # The -pthread flag sets some preprocessor defines, it is also used to link
+  # with libpthread on Linux
   try_c_cxx_flag( PTHREAD "-pthread" )
+  if( LINUX )
+    set_linker_flag( "-pthread" )
+  endif()
 
   # Warning options
   set_c_cxx_flag( "-Wall" )
@@ -262,11 +268,12 @@ else()
   endif()
 
   if( USE_PEDANTIC )
-    set_c_cxx_flag("-pedantic")
+    set_c_cxx_flag( "-pedantic" )
   endif()
 
   if( USE_ADDRESS_SANITIZER )
     set_cxx_flag( "-fsanitize=address" )
+    set_linker_flag( "-fsanitize=address" )
   endif()
 
 endif()
@@ -1299,10 +1306,8 @@ function( GAMEMODULE )
       -stdlib=libc++
       --pnacl-allow-exceptions
       $<$<CONFIG:None>:-O3>
-      $<$<CONFIG:None>:-fomit-frame-pointer>
       $<$<CONFIG:None>:-DNDEBUG>
       $<$<CONFIG:Release>:-O3>
-      $<$<CONFIG:Release>:-fomit-frame-pointer>
       $<$<CONFIG:Release>:-DNDEBUG>
       $<$<CONFIG:Debug>:-O0>
       $<$<CONFIG:Debug>:-g3>
@@ -1310,7 +1315,6 @@ function( GAMEMODULE )
       $<$<CONFIG:RelWithDebInfo>:-DNDEBUG>
       $<$<CONFIG:RelWithDebInfo>:-g3>
       $<$<CONFIG:MinSizeRel>:-Os>
-      $<$<CONFIG:MinSizeRel>:-fomit-frame-pointer>
       $<$<CONFIG:MinSizeRel>:-DNDEBUG>
     )
     set( NACL_TRANSLATE_OPTIONS
@@ -1322,6 +1326,15 @@ function( GAMEMODULE )
       $<$<CONFIG:RelWithDebInfo>:-O2>
       $<$<CONFIG:MinSizeRel>:-O2>
     )
+    if( USE_WEXTRA )
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wextra" )
+    else()
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wno-sign-compare" )
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wno-write-strings" )
+    endif()
+    if( USE_PEDANTIC )
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-pedantic" )
+    endif()
     foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
       set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} -D${DEF} )
     endforeach()
@@ -1337,6 +1350,7 @@ function( GAMEMODULE )
       if( EXT STREQUAL ".c" AND FILEDIR MATCHES ${LIB_DIR} )
         add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
+            -std=gnu89
             ${NACL_COMPILE_OPTIONS}
             -c
             -o ${OBJ}

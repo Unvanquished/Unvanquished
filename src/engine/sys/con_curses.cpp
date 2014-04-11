@@ -155,24 +155,6 @@ static void CON_SetColor( WINDOW *win, int color )
 	}
 }
 
-/*
-==================
-CON_UpdateCursor
-
-Update the cursor position
-==================
-*/
-static INLINE int CON_wcwidth( const char *s )
-{
-#ifdef _WIN32
-	return 1;
-#else
-	int w = wcwidth( Q_UTF8_CodePoint( s ) );
-	return w < 0 ? 0 : w;
-#endif
-}
-
-
 static INLINE void CON_UpdateCursor( void )
 {
 // pdcurses uses a different mechanism to move the cursor than ncurses
