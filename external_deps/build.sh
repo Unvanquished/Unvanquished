@@ -514,17 +514,7 @@ build_package() {
 	mkdir -p "${PWD}/pkg"
 	PKG_PREFIX="${PWD}/pkg/${PLATFORM}-${DEPS_VERSION}"
 	rm -rf "${PKG_PREFIX}"
-
-	# Resolve symlinks for windows platforms
-	case "${PLATFORM}" in
-	mingw*)
-	msvc*)
-		rsync -aL --link-dest="${PREFIX}" "${PREFIX}/" "${PKG_PREFIX}"
-		;;
-	*)
-		rsync -a --link-dest="${PREFIX}" "${PREFIX}/" "${PKG_PREFIX}"
-		;;
-	esac
+	rsync -a --link-dest="${PREFIX}" "${PREFIX}/" "${PKG_PREFIX}"
 
 	# Remove all unneeded files
 	rm -rf "${PKG_PREFIX}/man"
@@ -552,7 +542,14 @@ build_package() {
 	esac
 
 	cd pkg
-	tar cvjf "${PLATFORM}-${DEPS_VERSION}.tar.bz2" "${PLATFORM}-${DEPS_VERSION}"
+	case "${PLATFORM}" in
+	mingw*|msvc*)
+		zip -r "${PLATFORM}-${DEPS_VERSION}.zip" "${PLATFORM}-${DEPS_VERSION}"
+		;;
+	*)
+		tar cvjf "${PLATFORM}-${DEPS_VERSION}.tar.bz2" "${PLATFORM}-${DEPS_VERSION}"
+		;;
+	esac
 	cd ..
 }
 
