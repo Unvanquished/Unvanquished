@@ -53,9 +53,10 @@ Maryland 20850 USA.
 #include "rocketElementDocument.h"
 #include "rocketChatField.h"
 #include "rocketFormControlInput.h"
+#include "rocketMiscText.h"
+#include "rocketConditionalElement.h"
 #include "client.h"
 #include "rocket.h"
-#include "rocketMiscText.h"
 #include <Rocket/Debugger.h>
 
 extern "C"
@@ -413,6 +414,8 @@ void Rocket_Init( void )
 	Rocket::Core::Factory::RegisterElementInstancer( "chatfield", new Rocket::Core::ElementInstancerGeneric< RocketChatField >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "misc_text", new Rocket::Core::ElementInstancerGeneric< RocketMiscText >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "input", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlInput >() )->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( "if", new Rocket::Core::ElementInstancerGeneric< RocketConditionalElement >() )->RemoveReference();
+
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
 	Cmd_AddCommand( "printkeys", Rocket_PrintKeys_f );
