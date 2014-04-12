@@ -1476,6 +1476,26 @@ void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	G_RGSInformNeighbors( self );
 }
 
+void ASpiker_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+{
+	AGeneric_Die( self, inflictor, attacker, mod );
+
+	self->s.weapon = 0;
+	self->s.weaponAnim = 0;
+
+	// Assume our state has changed and inform closeby RGS
+	G_RGSInformNeighbors( self );
+}
+
+void ASpiker_Think( gentity_t *self )
+{
+	self->nextthink = level.time + 1000;
+
+	AGeneric_Think( self );
+
+	// TODO: Rest of function
+}
+
 static gentity_t *cmpHive = NULL;
 
 static int AHive_CompareTargets( const void *first, const void *second )
@@ -4624,6 +4644,12 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		case BA_A_LEECH:
 			built->die = ALeech_Die;
 			built->think = ALeech_Think;
+			built->pain = AGeneric_Pain;
+			break;
+
+		case BA_A_SPIKER:
+			built->die = ASpiker_Die;
+			built->think = ASpiker_Think;
 			built->pain = AGeneric_Pain;
 			break;
 

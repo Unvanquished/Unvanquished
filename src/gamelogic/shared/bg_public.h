@@ -477,6 +477,7 @@ typedef enum
   BA_A_BOOSTER,
   BA_A_HIVE,
   BA_A_LEECH,
+  BA_A_SPIKER,
 
   BA_H_SPAWN,
 

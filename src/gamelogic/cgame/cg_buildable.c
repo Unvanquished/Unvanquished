@@ -88,6 +88,7 @@ static const int animLoading[] = {
 	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_BOOSTER
 	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_HIVE
 	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_LEECH
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qtrue,  qfalse, qfalse, qfalse, qtrue,  qfalse, qfalse, qfalse ), // BA_A_SPIKER
 
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_SPAWN
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
