@@ -24,14 +24,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required( VERSION 2.8.12 )
 if( POLICY CMP0017 )
   cmake_policy( SET CMP0017 NEW )
-endif()
-
-# Need 2.8.12 for RPATH support
-if( APPLE )
-  cmake_minimum_required( VERSION 2.8.12 )
 endif()
 
 include( CMakeDependentOption )
