@@ -134,6 +134,21 @@ macro( try_c_cxx_flag PROP FLAG )
     set_c_flag( ${FLAG} ${ARGV2} )
   endif()
 endmacro()
+# Clang prints a warning when if it doesn't support a flag, so use -Werror to detect
+macro( try_cxx_flag_werror PROP FLAG )
+  set( CMAKE_REQUIRED_FLAGS "-Werror -x none" )
+  check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
+  set( CMAKE_REQUIRED_FLAGS "" )
+  if( FLAG_${PROP} )
+    set_cxx_flag( ${FLAG} ${ARGV2} )
+  endif()
+endmacro()
+macro( try_c_cxx_flag_werror PROP FLAG )
+  try_cxx_flag_werror( ${PROP} ${FLAG} ${ARGV2} )
+  if( FLAG_${PROP} )
+    set_c_flag( ${FLAG} ${ARGV2} )
+  endif()
+endmacro()
 macro( try_linker_flag PROP FLAG )
   # Check it with the C compiler
   set( CMAKE_REQUIRED_FLAGS ${FLAG} )
@@ -164,19 +179,11 @@ else()
     set_c_cxx_flag( "-m32" )
     set_c_cxx_flag( "-msse2" )
     set_c_cxx_flag( "-mtune=generic" )
-
-    # Clang prints a warning when if it doesn't support -mfpmath=sse
-    set( CMAKE_REQUIRED_FLAGS "-Werror" )
-    try_c_cxx_flag( MFPMATH_SSE "-mfpmath=sse" )
-    set( CMAKE_REQUIRED_FLAGS "" )
+    try_c_cxx_flag_werror( MFPMATH_SSE "-mfpmath=sse" )
   elseif( ARCH STREQUAL "x86_64" )
     set_c_cxx_flag( "-m64" )
     set_c_cxx_flag( "-mtune=generic" )
-
-    # Clang prints a warning when if it doesn't support -mcx16
-    set( CMAKE_REQUIRED_FLAGS "-Werror" )
-    try_c_cxx_flag( MCX16 "-mcx16" )
-    set( CMAKE_REQUIRED_FLAGS "" )
+    try_c_cxx_flag_werror( MCX16 "-mcx16" )
   endif()
 
   # Use hidden symbol visibility if possible
