@@ -301,7 +301,7 @@ typedef int clipHandle_t;
     // We disable compiler warnings when using -Wpedantic for this specific case.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
+#pragma GCC diagnostic ignored "-pedantic"
 #endif
 	typedef ALIGNED( 16, union transform_u {
 		struct {
