@@ -582,7 +582,7 @@ const char *CG_Rocket_GetTag()
 
 const char *CG_Rocket_GetAttribute( const char *attribute )
 {
-	static char buffer[ 1000 ];
+	static char buffer[ MAX_STRING_CHARS ];
 
 	trap_Rocket_GetAttribute( attribute, buffer, sizeof( buffer ) );
 

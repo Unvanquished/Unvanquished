@@ -92,8 +92,12 @@ const char *Gettext( const char *msgid )
 
 const char *Pgettext( const char *ctxt, const char *msgid )
 {
-	static char buffer[ 32000 ];
-	char *buf = buffer;
+	static char buffer[ 4 ][ MAX_STRING_CHARS ];
+	static int index = -1;
+	char *buf;
+
+	index = ( index + 1 ) & 3;
+	buf = buffer[ index ];
 	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
 	return buf;
 }
