@@ -790,6 +790,13 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		});
 		break;
 
+	case G_ADJUST_AREA_PORTAL_STATE:
+		IPC::HandleMsg<AdjustAreaPortalStateMsg>(channel, std::move(reader), [this](int entityNum, bool open) {
+			sharedEntity_t* ent = SV_GentityNum(entityNum);
+			CM_AdjustAreaPortalState(ent->r.areanum, ent->r.areanum2, open);
+		});
+		break;
+
 	case G_DROP_CLIENT:
 		IPC::HandleMsg<DropClientMsg>(channel, std::move(reader), [this](int clientNum, std::string reason) {
 			SV_GameDropClient(clientNum, reason.c_str());
