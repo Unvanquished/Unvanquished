@@ -137,15 +137,6 @@ public:
 		Rocket::Core::Element::OnRender();
 	}
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
-	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
-	}
-
-	void OnPropertyChange( const Rocket::Core::PropertyNameList &changed_properties )
-	{
-		Rocket::Core::Element::OnPropertyChange( changed_properties );
-	}
 
 	Rocket::Core::Vector2f dimensions;
 private:

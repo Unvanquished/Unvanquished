@@ -49,6 +49,7 @@ public:
 
 	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
+		Rocket::Core::Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "cmd" ) != changed_attributes.end() )
 		{
 			cmd = GetAttribute( "cmd" )->Get<Rocket::Core::String>();

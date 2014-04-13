@@ -44,6 +44,7 @@ public:
 
 	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
+		Rocket::Core::Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
 		{
 			cvar = GetAttribute< Rocket::Core::String >( "cvar",  "" );

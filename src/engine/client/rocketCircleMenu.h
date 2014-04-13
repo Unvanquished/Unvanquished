@@ -331,7 +331,7 @@ protected:
 			return;
 		}
 
-		float angle = 360 / ( numChildren - 1 );
+		float angle = 360.0f / ( numChildren - 1 );
 
 		// Rest are the circular buttons
 		for ( int i = 1; i < numChildren; ++i )
