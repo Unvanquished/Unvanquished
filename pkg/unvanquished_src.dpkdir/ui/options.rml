@@ -13,9 +13,9 @@
 				margin-top:23%;
 				text-align:center;
 			}
-			
+
 			input.disabled{
-				
+
 				margin:0px;
 				height:1em;
 				max-width:2.2em;
@@ -27,11 +27,11 @@
 				border:none;
 				margin-bottom:-10px;
 				display:inline-block;
-				
+
 				width:2em;
 			}
 			div.selectvalue{
-				
+
 				display:inline-block;
 				border-style:solid;
 				padding:4px;
@@ -41,13 +41,13 @@
 				width:173px;
 				font-size:.8em;
 				margin-left:20px;
-				
+
 			}
 			div.selectvalue:hover
 			{
 				background: #00000055;
 			}
-			
+
 			div.arrow{
 				width:18px;
 				height:18px;
@@ -70,13 +70,13 @@
 				<option value="Anonyme" selected="">Anonyme</option>
 				<option value="Granger">Granger</option>
 			</select></div>
-			<div class="line"><label>Name:</label><input type="text" cvar="name" /></div>
+			<div class="line"><label>Name:</label><colorinput type="text" cvar="name" /></div>
 
 			<div class="line"><label>Resolution:</label>
 				<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
 			</div>
 			<div class="line"><label>Resolution:</label><div class="selectvalue" onClick="hide options;exec rocket ui/dialogs/resolution.rml load; exec rocket resolution show"><input class="disabled" type="text" cvar="r_customWidth" disabled/>x<input class="disabled" type="text" cvar="r_customHeight" disabled/><div class="arrow"></div></div>
-			
+
 			</div>
 			<div class="line"><label>Video Quality:</label>
 			<select name="videoquality">

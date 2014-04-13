@@ -29,6 +29,7 @@ h1
 
 
 input,
+colorinput,
 select,
 dataselect
 {
@@ -53,6 +54,7 @@ input.input.submit:focus
 
 
 input.text,
+colorinput,
 select,
 dataselect
 {
@@ -265,6 +267,7 @@ input.radio:checked, input.radio:checked:hover, input.radio.checked:active
 	icon-image-t: 444px 666px;
 }
 
+colorinput div,
 input.text
 {
 	color:#83fff5;
@@ -277,6 +280,11 @@ input.text
 	padding:0.2em 0.4em;
 }
 
+colorinput input
+{
+	border-style: none;
+	margin-left: 0px;
+}
 
 /* Specify the dimensions of the select element. */
 select,
