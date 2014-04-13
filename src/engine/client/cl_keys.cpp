@@ -1913,6 +1913,8 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 				{
 					Con_ToggleConsole_f();
 				}
+
+				Cmd::BufferCommandText( "toggleMenu" );
 			}
 			else
 			{

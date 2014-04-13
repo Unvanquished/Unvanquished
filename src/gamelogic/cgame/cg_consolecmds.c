@@ -368,6 +368,11 @@ static void CG_ShowScores_f( void )
 	cg.showScores = qtrue;
 }
 
+static void CG_ToggleMenu_f( void )
+{
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_INGAME_MENU ].id, "show" );
+}
+
 static const struct
 {
 	const char *cmd;
@@ -425,6 +430,7 @@ static const struct
 	{ "testmodel",        CG_TestModel_f,          0                },
 	{ "testPS",           CG_TestPS_f,             0                },
 	{ "testTS",           CG_TestTS_f,             0                },
+	{ "toggleMenu",       CG_ToggleMenu_f,         0                },
 	{ "unignore",         0,                       CG_CompleteName  },
 	{ "viewpos",          CG_Viewpos_f,            0                },
 	{ "vote",             0,                       0                },
