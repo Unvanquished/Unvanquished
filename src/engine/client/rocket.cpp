@@ -55,6 +55,7 @@ Maryland 20850 USA.
 #include "rocketFormControlInput.h"
 #include "rocketMiscText.h"
 #include "rocketConditionalElement.h"
+#include "rocketColorInput.h"
 #include "client.h"
 #include "rocket.h"
 #include <Rocket/Debugger.h>
@@ -415,6 +416,7 @@ void Rocket_Init( void )
 	Rocket::Core::Factory::RegisterElementInstancer( "misc_text", new Rocket::Core::ElementInstancerGeneric< RocketMiscText >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "input", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlInput >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "if", new Rocket::Core::ElementInstancerGeneric< RocketConditionalElement >() )->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( "colorinput", new Rocket::Core::ElementInstancerGeneric< RocketColorInput >() )->RemoveReference();
 
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
