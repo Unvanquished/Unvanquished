@@ -35,6 +35,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../common/String.h"
 #include "../../common/Optional.h"
 #include "../../common/Command.h"
+#include "../../common/IPC.h"
 
 namespace FS {
 
@@ -85,6 +86,12 @@ public:
 		// Don't throw in destructor
 		std::error_code err;
 		Close(err);
+	}
+
+	// Get the stdio handle of this file
+	FILE* GetHandle() const
+	{
+		return fd;
 	}
 
 	// Get the length of the file
@@ -481,6 +488,11 @@ const std::string& GetHomePath();
 
 // Get the path containing program binaries
 const std::string& GetLibPath();
+
+#ifdef BUILD_ENGINE
+// Handle filesystem system calls
+void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel, Str::StringRef vmName);
+#endif
 
 } // namespace FS
 

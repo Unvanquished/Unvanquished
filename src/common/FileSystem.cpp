@@ -628,6 +628,37 @@ static File FileFromIPC(IPC::FileHandle ipcFile, openMode_t mode)
 }
 #endif
 
+#ifdef BUILD_ENGINE
+// Convert a File object to an ipc file handle
+static IPC::FileHandle FileToIPC(File file, openMode_t mode)
+{
+	if (!file)
+		return IPC::FileHandle();
+
+	IPC::FileOpenMode ipcMode = IPC::MODE_READ;
+	switch (mode) {
+	case MODE_READ:
+		ipcMode = IPC::MODE_READ;
+		break;
+	case MODE_WRITE:
+		ipcMode = IPC::MODE_WRITE;
+		break;
+	case MODE_APPEND:
+		ipcMode = IPC::MODE_WRITE_APPEND;
+		break;
+	case MODE_EDIT:
+		ipcMode = IPC::MODE_RW;
+		break;
+	}
+
+#ifdef _WIN32
+	return IPC::FileHandle(_get_osfhandle(fileno(file.GetHandle())), ipcMode);
+#else
+	return IPC::FileHandle(fileno(file.GetHandle()), ipcMode);
+#endif
+}
+#endif
+
 // Workaround for GCC 4.7.2 bug: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=55015
 namespace {
 
@@ -2198,5 +2229,103 @@ const std::string& GetLibPath()
 {
 	return libPath;
 }
+
+#ifdef BUILD_ENGINE
+void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel, Str::StringRef vmName)
+{
+	switch (minor) {
+	case VM::FS_INITIALIZE:
+		IPC::HandleMsg<VM::FSInitializeMsg>(channel, std::move(reader), [](std::string& homePath, std::string& libPath, std::vector<FS::PakInfo>& availablePaks, std::vector<FS::PakInfo>& loadedPaks, std::unordered_map<std::string, std::pair<uint32_t, FS::offset_t>>& fileMap) {
+			homePath = GetHomePath();
+			libPath = GetLibPath();
+			availablePaks = GetAvailablePaks();
+			loadedPaks = PakPath::loadedPaks;
+			fileMap = PakPath::fileMap;
+		});
+		break;
+
+	case VM::FS_HOMEPATH_OPENMODE:
+		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, std::move(reader), [](std::string path, uint32_t mode, IPC::FileHandle& out) {
+			// TODO: error return
+			out = FileToIPC(HomePath::OpenMode(path, static_cast<openMode_t>(mode), throws()), static_cast<openMode_t>(mode));
+		});
+		break;
+
+	case VM::FS_HOMEPATH_FILEEXISTS:
+		IPC::HandleMsg<VM::FSHomePathFileExistsMsg>(channel, std::move(reader), [](std::string path, bool& out) {
+			out = HomePath::FileExists(path);
+		});
+		break;
+
+	case VM::FS_HOMEPATH_TIMESTAMP:
+		IPC::HandleMsg<VM::FSHomePathTimestampMsg>(channel, std::move(reader), [](std::string path, uint64_t& out) {
+			// TODO: error return
+			out = std::chrono::system_clock::to_time_t(HomePath::FileTimestamp(path));
+		});
+		break;
+
+	case VM::FS_HOMEPATH_MOVEFILE:
+		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src) {
+			// TODO: error return
+			HomePath::MoveFile(dest, src);
+		});
+		break;
+
+	case VM::FS_HOMEPATH_DELETEFILE:
+		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path) {
+			// TODO: error return
+			HomePath::DeleteFile(path);
+		});
+		break;
+
+	case VM::FS_HOMEPATH_LISTFILES:
+		IPC::HandleMsg<VM::FSHomePathListFilesMsg>(channel, std::move(reader), [](std::string path, std::vector<std::string>& out) {
+			// TODO: error return
+			for (auto&& x: FS::HomePath::ListFiles(path))
+				out.push_back(std::move(x));
+		});
+		break;
+
+	case VM::FS_HOMEPATH_LISTFILESRECURSIVE:
+		IPC::HandleMsg<VM::FSHomePathListFilesRecursiveMsg>(channel, std::move(reader), [](std::string path, std::vector<std::string>& out) {
+			// TODO: error return
+			for (auto&& x: FS::HomePath::ListFilesRecursive(path))
+				out.push_back(std::move(x));
+		});
+		break;
+
+	case VM::FS_PAKPATH_OPEN:
+		IPC::HandleMsg<VM::FSPakPathOpenMsg>(channel, std::move(reader), [](uint32_t pakIndex, std::string path, IPC::FileHandle& out) {
+			auto& loadedPaks = FS::PakPath::GetLoadedPaks();
+			if (loadedPaks.size() <= pakIndex)
+				return;
+			if (loadedPaks[pakIndex].type != PAK_DIR)
+				return;
+			if (!Path::IsValid(path, false))
+				return;
+			// TODO: error return
+			out = FileToIPC(RawPath::OpenRead(Path::Build(loadedPaks[pakIndex].path, path)), MODE_READ);
+		});
+		break;
+
+	case VM::FS_PAKPATH_TIMESTAMP:
+		IPC::HandleMsg<VM::FSPakPathTimestampMsg>(channel, std::move(reader), [](uint32_t pakIndex, std::string path, uint64_t& out) {
+			auto& loadedPaks = FS::PakPath::GetLoadedPaks();
+			if (loadedPaks.size() <= pakIndex)
+				return;
+			if (loadedPaks[pakIndex].type != PAK_DIR)
+				return;
+			if (!Path::IsValid(path, false))
+				return;
+			// TODO: error return
+			out = std::chrono::system_clock::to_time_t(RawPath::FileTimestamp(Path::Build(loadedPaks[pakIndex].path, path)));
+		});
+		break;
+
+	default:
+		Com_Error(ERR_DROP, "Bad filesystem syscall number '%d' for VM '%s'", minor, vmName.c_str());
+	}
+}
+#endif
 
 } // namespace FS
