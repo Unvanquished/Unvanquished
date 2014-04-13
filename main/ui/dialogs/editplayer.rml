@@ -55,8 +55,8 @@
 	<input type="hidden" value=" -r " />
 	<input type="hidden" value="ignore thiiis" ignore />
 	<div class="line"><label>Reason:</label><input type="text" /></div>
-	<input type="submit" class="menuButton" onClick="hide editplayer;exec set ui_dialogCvar1 ;exec rocket ui/players.rml load;exec rocket players show">Start</input>
-	<button class="menuButton" onClick="hide editplayer;exec set ui_dialogCvar1 ;exec rocket ui/players.rml load;exec rocket players show">Abort</button>
+	<input type="submit" class="menuButton" onClick="hide editplayer;exec set ui_dialogCvar1 ;show players">Start</input>
+	<button class="menuButton" onClick="hide editplayer;exec set ui_dialogCvar1; show players">Abort</button>
 	</form>
 	</div>
 	</body>

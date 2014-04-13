@@ -22,6 +22,10 @@
 		ui/options.rml
 		ui/serverbrowser.rml
 		ui/mods.rml
+		ui/help.rml
+		ui/dialogs/customresolution.rml
+		ui/dialogs/editplayer.rml
+		ui/resolution.rml
 	}
 	cursor ui/cursor.rml
 }
