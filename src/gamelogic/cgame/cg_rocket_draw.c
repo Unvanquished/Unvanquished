@@ -208,7 +208,6 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	weapon_t     weapon;
 	weaponInfo_t *wi;
 	qboolean     onRelevantEntity;
-	rectDef_t    rect;
 
 	if ( ( !cg_drawCrosshairHit.integer && !cg_drawCrosshairFriendFoe.integer ) ||
 	        cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
@@ -218,7 +217,6 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 		return;
 	}
 
-	CG_GetRocketElementRect( &rect );
 	CG_GetRocketElementColor( color );
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
@@ -283,9 +281,10 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
 	w *= cgs.aspectScale;
 
-	// HACK: This ignores the width/height of the rect (does it?)
-	x = rect.x + ( rect.w / 2 ) - ( w / 2 );
-	y = rect.y + ( rect.h / 2 ) - ( h / 2 );
+	//FIXME: this still ignores the width/height of the rect, but at least it's
+	//neater than cg_crosshairX/cg_crosshairY
+	x = ( cgs.glconfig.vidWidth / 2 ) - ( w / 2 );
+	y = ( cgs.glconfig.vidHeight / 2 ) - ( h / 2 );
 
 	// draw
 	trap_R_SetColor( drawColor );
