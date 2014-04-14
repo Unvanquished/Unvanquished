@@ -1114,8 +1114,10 @@ static void CG_ScanForCrosshairEntity( void )
 
 static void CG_Rocket_DrawCrosshairNames( void )
 {
-	float *color;
+	float alpha;
 	char  *name;
+
+	trap_Rocket_SetInnerRML( "&nbsp;", qfalse );
 
 	if ( !cg_drawCrosshairNames.integer )
 	{
@@ -1131,13 +1133,19 @@ static void CG_Rocket_DrawCrosshairNames( void )
 	CG_ScanForCrosshairEntity();
 
 	// draw the name of the player being looked at
-	color = CG_FadeColor( cg.crosshairClientTime, CROSSHAIR_CLIENT_TIMEOUT );
+	alpha = CG_FadeAlpha( cg.crosshairClientTime, CROSSHAIR_CLIENT_TIMEOUT );
 
-	if ( !color )
+	if ( cg.crosshairClientTime == cg.time )
 	{
-		trap_R_SetColor( NULL );
+		alpha = 1.0f;
+	}
+
+	else if ( !alpha )
+	{
 		return;
 	}
+
+	trap_Rocket_SetProperty( "opacity", va( "%f", alpha ) );
 
 	if ( cg_drawEntityInfo.integer )
 	{
