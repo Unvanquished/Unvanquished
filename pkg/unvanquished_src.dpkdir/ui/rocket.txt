@@ -25,7 +25,7 @@
 		ui/help.rml
 		ui/dialogs/customresolution.rml
 		ui/dialogs/editplayer.rml
-		ui/resolution.rml
+		ui/dialogs/resolution.rml
 	}
 	cursor ui/cursor.rml
 }
