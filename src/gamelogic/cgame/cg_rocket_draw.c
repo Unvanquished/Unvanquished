@@ -288,7 +288,7 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 
 	// draw
 	trap_R_SetColor( drawColor );
-	CG_DrawPic( x, y, w, h, indicator );
+	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, indicator );
 	trap_R_SetColor( NULL );
 }
 
