@@ -58,29 +58,29 @@ public:
 
 		if ( changed_attributes.find( "value" ) != changed_attributes.end() )
 		{
-			Rocket::Core::String tmp = GetAttribute< Rocket::Core::String >( "value", "" );
+			Rocket::Core::String attrib = GetAttribute< Rocket::Core::String >( "value", "" );
 			char *end = nullptr;
 			// Check if float
-			float isFloat = strtof( tmp.CString(), &end );
+			float floatVal = strtof( attrib.CString(), &end );
 
 			// Is either an integer or float
 			if ( end )
 			{
 				// is integer
-				if ( static_cast< int >( isFloat ) == isFloat )
+				if ( static_cast< int >( floatVal ) == floatVal )
 				{
-					value.Set( static_cast< int >( isFloat ) );
+					value.Set( static_cast< int >( floatVal ) );
 				}
 				else
 				{
-					value.Set( isFloat );
+					value.Set( floatVal );
 				}
 			}
 
 			// Is a string
 			else
 			{
-				value.Set( tmp );
+				value.Set( attrib );
 			}
 		}
 	}
@@ -164,19 +164,7 @@ private:
 			case Rocket::Core::Variant::FLOAT:
 				Compare( Cvar_VariableValue( cvar.CString() ), value.Get<float>() );
 			default:
-				switch ( condition )
-				{
-					case LESS:
-					case LESS_EQUAL:
-						return Q_stricmp( Cvar_VariableString( cvar.CString() ), value.Get< Rocket::Core::String >().CString() ) < 0;
-					case GREATER:
-					case GREATER_EQUAL:
-						return Q_stricmp( Cvar_VariableString( cvar.CString() ), value.Get< Rocket::Core::String >().CString() ) > 0;
-					case EQUALS:
-						return !Q_stricmp( Cvar_VariableString( cvar.CString() ), value.Get< Rocket::Core::String >().CString() );
-					case NOT_EQUAL:
-						return !!Q_stricmp( Cvar_VariableString( cvar.CString() ), value.Get< Rocket::Core::String >().CString() );
-				}
+				Compare( Q_stricmp( Cvar_VariableString( cvar.CString() ), value.Get< Rocket::Core::String >().CString() ), 0 );
 		}
 
 		// Should never reach
