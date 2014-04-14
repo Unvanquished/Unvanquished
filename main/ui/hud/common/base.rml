@@ -63,11 +63,20 @@
 		}
 		div#crosshair
 		{
-			position: fixed;
+			width: 100%;
 		}
-		crosshair
+		crosshair,
+		crosshair_indicator
 		{
 			color: white;
+		}
+		crosshair_name
+		{
+			position: absolute;
+			width: 100%;
+			left: 70%;
+			margin-top: 50%;
+			padding-left: 30px;
 		}
 	</style>
 </head>
@@ -94,6 +103,8 @@
 	</div>
 	<div id="crosshair">
 		<crosshair/>
+		<crosshair_indicator/>
+		<crosshair_name/>
 	</div>
 </body>
 </rml>
