@@ -1786,8 +1786,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		return;
 	}
 
-	Rocket_ProcessKeyInput( key, down );
-
 	switch ( key )
 	{
 		case K_KP_PGUP:
@@ -1913,8 +1911,10 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 				{
 					Con_ToggleConsole_f();
 				}
-
-				Cmd::BufferCommandText( "toggleMenu" );
+				else
+				{
+					Cmd::BufferCommandText( "toggleMenu" );
+				}
 			}
 			else
 			{
@@ -1925,6 +1925,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 			return;
 		}
 
+		Rocket_ProcessKeyInput( key, down );
 		return;
 	}
 
@@ -1933,6 +1934,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	// to run any binds (since they won't be found).
 	if ( cls.keyCatchers & KEYCATCH_UI && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
+		Rocket_ProcessKeyInput( key, down );
 		return;
 	}
 
