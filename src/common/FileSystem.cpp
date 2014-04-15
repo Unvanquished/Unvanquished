@@ -608,7 +608,7 @@ static File FileFromIPC(IPC::FileHandle ipcFile, openMode_t mode)
 
 #ifdef _WIN32
 	int raw_modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
-	int fd = _open_osfhandle(ipcFile.GetHandle(), raw_modes[mode]);
+	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(ipcFile.GetHandle()), raw_modes[mode]);
 	if (fd == -1) {
 		CloseHandle(ipcFile.GetHandle());
 		return File();
