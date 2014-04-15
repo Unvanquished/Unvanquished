@@ -673,9 +673,12 @@ template<size_t Index, typename Type0, typename... Types, typename Tuple> void F
 }
 
 // Map a tuple to get the actual types returned by SerializeTraits::Read instead of the declared types
+template<typename T> struct MapTupleHelper {
+	typedef decltype(SerializeTraits<T>::Read(std::declval<Reader&>())) type;
+};
 template<typename T> struct MapTuple {};
 template<typename... T> struct MapTuple<std::tuple<T...>> {
-	typedef std::tuple<decltype(SerializeTraits<T>::Read(std::declval<Reader&>()))...> type;
+	typedef std::tuple<typename MapTupleHelper<T>::type...> type;
 };
 
 // Implementations of SendMsg for Message and SyncMessage

@@ -73,7 +73,7 @@ namespace IPC {
 			stream.Write<bool>(value.fd != -1);
 			if (value.fd != -1) {
 #ifdef _WIN32
-				stream.Write<IPC::FileHandle>(IPC::FileHandle(_get_osfhandle(value.fd), IPC::MODE_READ));
+				stream.Write<IPC::FileHandle>(IPC::FileHandle(reinterpret_cast<HANDLE>(_get_osfhandle(value.fd), IPC::MODE_READ), IPC::MODE_READ));
 #else
 				stream.Write<IPC::FileHandle>(IPC::FileHandle(value.fd, IPC::MODE_READ));
 #endif
@@ -91,7 +91,7 @@ namespace IPC {
 			if (stream.Read<bool>()) {
 #ifdef _WIN32
 				void* handle = stream.Read<IPC::FileHandle>().GetHandle();
-				value.fd = _open_osfhandle(handle, O_RDONLY);
+				value.fd = _open_osfhandle(reinterpret_cast<intptr_t>(handle), O_RDONLY);
 				if (value.fd == -1)
 					CloseHandle(handle);
 #else
@@ -229,7 +229,7 @@ inline int my_stat(Str::StringRef path, my_stat_t* st)
 	return stat64(path.c_str(), st);
 #endif
 }
-inline ssize_t my_pread(int fd, void* buf, size_t count, offset_t offset)
+inline intptr_t my_pread(int fd, void* buf, size_t count, offset_t offset)
 {
 #ifdef _WIN32
 	OVERLAPPED overlapped;
@@ -652,7 +652,7 @@ static IPC::FileHandle FileToIPC(File file, openMode_t mode)
 	}
 
 #ifdef _WIN32
-	return IPC::FileHandle(_get_osfhandle(fileno(file.GetHandle())), ipcMode);
+	return IPC::FileHandle(reinterpret_cast<HANDLE>(_get_osfhandle(fileno(file.GetHandle()))), ipcMode);
 #else
 	return IPC::FileHandle(fileno(file.GetHandle()), ipcMode);
 #endif
@@ -714,7 +714,7 @@ public:
 
 			// Use pread directly for large reads
 			if (size > sizeof(zipData->buffer)) {
-				ssize_t result = my_pread(zipData->fd, buf, size, zipData->pos);
+				intptr_t result = my_pread(zipData->fd, buf, size, zipData->pos);
 				if (result == -1)
 					return 0;
 				zipData->pos += result;
@@ -723,7 +723,7 @@ public:
 
 			// Refill the buffer if the request can't be satisfied from it
 			if (zipData->pos < zipData->bufferPos || zipData->pos + size > zipData->bufferPos + zipData->bufferLen) {
-				ssize_t result = my_pread(zipData->fd, zipData->buffer, sizeof(zipData->buffer), zipData->pos);
+				intptr_t result = my_pread(zipData->fd, zipData->buffer, sizeof(zipData->buffer), zipData->pos);
 				if (result == -1)
 					return 0;
 				zipData->bufferPos = zipData->pos;
