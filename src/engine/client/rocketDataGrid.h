@@ -36,11 +36,10 @@ Maryland 20850 USA.
 #define ROCKETDATAGRID_H
 
 #include "../qcommon/q_shared.h"
-
+#include "client.h"
+#include "rocket.h"
 #include <Rocket/Controls/DataSource.h>
 #include <Rocket/Core/Types.h>
-
-Rocket::Core::String Rocket_QuakeToRML( const char *in );
 
 class RocketDataGrid : public Rocket::Controls::DataSource
 {
@@ -56,7 +55,7 @@ public:
 
 		for ( size_t i = 0; i < columns.size(); ++i )
 		{
-			row.push_back( Rocket_QuakeToRML ( Info_ValueForKey( data[ table ][ row_index ].CString(), columns[ i ].CString() ) ) );
+			row.push_back( Rocket_QuakeToRML( Info_ValueForKey( data[ table ][ row_index ].CString(), columns[ i ].CString() ), RP_EMOTICONS ) );
 		}
 	}
 

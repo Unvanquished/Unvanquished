@@ -54,4 +54,6 @@ public:
 	Rocket::Core::Dictionary Parameters;
 	Rocket::Core::String cmd;
 };
+
+Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
 #endif

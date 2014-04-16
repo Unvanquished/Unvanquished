@@ -2398,7 +2398,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_ROCKET_QUAKETORML:
-			Rocket_QuakeToRML( (const char *) VMA(1), (char *) VMA(2), args[3] );
+			Rocket_QuakeToRMLBuffer( (const char *) VMA(1), (char *) VMA(2), args[3] );
 			return 0;
 
 		case CG_ROCKET_SETCLASS:

@@ -37,8 +37,7 @@ Maryland 20850 USA.
 
 #include <Rocket/Core.h>
 #include <Rocket/Controls/ElementFormControlInput.h>
-
-Rocket::Core::String Rocket_QuakeToRML( const char *in );
+#include "client.h"
 
 class RocketColorInput : public Rocket::Core::Element, public Rocket::Core::EventListener
 {
@@ -118,7 +117,7 @@ private:
 			color_value->RemoveChild( color_value->GetFirstChild() );
 		}
 
-		Rocket::Core::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( dynamic_cast< Rocket::Controls::ElementFormControlInput* >( input )->GetValue().CString() ) );
+		Rocket::Core::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( dynamic_cast< Rocket::Controls::ElementFormControlInput* >( input )->GetValue().CString(), RP_QUAKE ) );
 	}
 
 	Rocket::Core::Element *input;

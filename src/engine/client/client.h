@@ -42,7 +42,6 @@ Maryland 20850 USA.
 #include "../renderer/tr_public.h"
 #include "keys.h"
 #include "../audio/Audio.h"
-
 #include "../client/cg_api.h"
 
 #if defined(USE_VOIP) && !defined(DEDICATED)
@@ -917,7 +916,7 @@ void Rocket_DSChangeRow( const char *name, const char *table, const int row, con
 void Rocket_DSRemoveRow( const char *name, const char *table, const int row );
 void Rocket_DSClearTable( const char *name, const char *table );
 void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboolean parseQuake );
-void Rocket_QuakeToRML( const char *in, char *out, int length );
+void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length );
 void Rocket_GetEventParameters( char *params, int length );
 void Rocket_RegisterDataFormatter( const char *name );
 void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );

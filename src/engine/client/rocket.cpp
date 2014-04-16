@@ -513,7 +513,7 @@ static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
 	return false;
 }
 
-Rocket::Core::String Rocket_QuakeToRML( const char *in )
+Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 {
 	const char *p;
 	Rocket::Core::String out;
@@ -578,57 +578,60 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 		out = out.Replace( "^^", "^" );
 	}
 
-	// Parse emoticons
-	size_t openBracket = 0;
-	size_t closeBracket = 0;
-	size_t currentPosition = 0;
-
-	while ( 1 )
+	if ( parseFlags & RP_EMOTICONS )
 	{
-		Rocket::Core::String emoticon;
-		const char *path;
+		// Parse emoticons
+		size_t openBracket = 0;
+		size_t closeBracket = 0;
+		size_t currentPosition = 0;
 
-		openBracket = out.Find( "[", currentPosition );
-		if ( openBracket == Rocket::Core::String::npos )
+		while ( 1 )
 		{
-			break;
-		}
+			Rocket::Core::String emoticon;
+			const char *path;
 
-		closeBracket = out.Find( "]", openBracket );
-		if ( closeBracket == Rocket::Core::String::npos )
-		{
-			break;
-		}
+			openBracket = out.Find( "[", currentPosition );
+			if ( openBracket == Rocket::Core::String::npos )
+			{
+				break;
+			}
 
-		emoticon = out.Substring( openBracket + 1, closeBracket - openBracket - 1 );
+			closeBracket = out.Find( "]", openBracket );
+			if ( closeBracket == Rocket::Core::String::npos )
+			{
+				break;
+			}
 
-		// Certain characters are invalid
-		if ( emoticon.Empty() || IsInvalidEmoticon( emoticon ) )
-		{
-			currentPosition = closeBracket + 1;
-			continue;
-		}
+			emoticon = out.Substring( openBracket + 1, closeBracket - openBracket - 1 );
 
-		path =  va( "emoticons/%s_1x1.crn", emoticon.CString() );
-		if ( FS_FOpenFileRead( path, NULL, qtrue ) )
-		{
-			out.Erase( openBracket, closeBracket - openBracket + 1 );
-			path = va( "<img class='trem-emoticon' src='/emoticons/%s_1x1.crn' />", emoticon.CString() );
-			out.Insert( openBracket, path );
-			currentPosition = openBracket + strlen( path ) + 1;
-		}
-		else
-		{
-			currentPosition = closeBracket + 1;
+			// Certain characters are invalid
+			if ( emoticon.Empty() || IsInvalidEmoticon( emoticon ) )
+			{
+				currentPosition = closeBracket + 1;
+				continue;
+			}
+
+			path =  va( "emoticons/%s_1x1.crn", emoticon.CString() );
+			if ( FS_FOpenFileRead( path, NULL, qtrue ) )
+			{
+				out.Erase( openBracket, closeBracket - openBracket + 1 );
+				path = va( "<img class='trem-emoticon' src='/emoticons/%s_1x1.crn' />", emoticon.CString() );
+				out.Insert( openBracket, path );
+				currentPosition = openBracket + strlen( path ) + 1;
+			}
+			else
+			{
+				currentPosition = closeBracket + 1;
+			}
 		}
 	}
 
 	return out;
 }
 
-void Rocket_QuakeToRML( const char *in, char *out, int length )
+void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
 {
-	Q_strncpyz( out, Rocket_QuakeToRML( in ).CString(), length );
+	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).CString(), length );
 }
 
 void Rocket_SetActiveContext( int catcher )

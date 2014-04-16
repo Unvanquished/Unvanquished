@@ -50,7 +50,7 @@ struct ConsoleLine
 		time = Sys_Milliseconds();
 	}
 };
-Rocket::Core::String Rocket_QuakeToRML( const char *in );
+
 class RocketConsoleTextElement : public Rocket::Core::Element
 {
 public:
@@ -92,7 +92,7 @@ public:
 			for (; line >= 0; --line, numLines++ )
 			{
 				Rocket::Core::Element *child = Rocket::Core::Factory::InstanceElement( this, "#text", "span", Rocket::Core::XMLAttributes() );
-				Rocket::Core::Factory::InstanceElementText( child, Rocket_QuakeToRML( lines[ line ].text.CString() ));
+				Rocket::Core::Factory::InstanceElementText( child, Rocket_QuakeToRML( lines[ line ].text.CString(), RP_EMOTICONS ));
 				child->SetId( va( "%d", lines[ line ].time ) );
 				AppendChild( child );
 				child->RemoveReference();

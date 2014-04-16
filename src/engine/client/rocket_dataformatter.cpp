@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include <Rocket/Core.h>
 #include <Rocket/Controls.h>
+#include "client.h"
 #include "rocket.h"
 #include "rocketDataFormatter.h"
 
@@ -52,9 +53,8 @@ void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *
 	Q_strncpyz( data, dataFormatterList[ handle ]->data, dataLength );
 }
 
-extern Rocket::Core::String Rocket_QuakeToRML( const char *in );
 void Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake )
 {
-	dataFormatterList[ handle ]->out = parseQuake ? Rocket_QuakeToRML( data ) :
+	dataFormatterList[ handle ]->out = parseQuake ? Rocket_QuakeToRML( data, RP_EMOTICONS ) :
 		Rocket::Core::String( data );
 }

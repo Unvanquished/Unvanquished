@@ -106,9 +106,9 @@ static inline void Rocket_SetInnerRMLGuarded( Rocket::Core::Element *e, const Ro
 	}
 }
 
-void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboolean parseQuake )
+void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, int parseFlags )
 {
-	Rocket::Core::String newRML = parseQuake ? Rocket_QuakeToRML( RML ) : RML;
+	Rocket::Core::String newRML = parseFlags  ? Rocket_QuakeToRML( RML, parseFlags ) : RML;
 
 	if ( ( !*name || !*id ) && activeElement )
 	{

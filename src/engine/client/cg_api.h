@@ -86,6 +86,11 @@ typedef enum {
 	ROCKETMENU_NUM_TYPES
 } rocketMenuType_t;
 
+typedef enum {
+	RP_QUAKE = 1 << 0,
+	RP_EMOTICONS = 1 << 1,
+} rocketInnerRMLParseTypes_t;
+
 typedef struct
 {
 	connstate_t connState;
@@ -637,7 +642,7 @@ void            trap_Rocket_DSAddRow( const char *name, const char *table, const
 void            trap_Rocket_DSChangeRow( const char *name, const char *table, int row, const char *data );
 void            trap_Rocket_DSRemoveRow( const char *name, const char *table, int row );
 void            trap_Rocket_DSClearTable( const char *name, const char *table );
-void            trap_Rocket_SetInnerRML( const char *RML, qboolean parseQuake );
+void            trap_Rocket_SetInnerRML( const char *RML, int parseFlags );
 void            trap_Rocket_GetAttribute( const char *attribute, char *out, int length );
 void            trap_Rocket_SetAttribute( const char *attribute, const char *value );
 void            trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
