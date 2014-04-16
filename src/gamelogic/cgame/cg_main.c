@@ -1923,6 +1923,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	// load the new map
 	trap_CM_LoadMap( va( "maps/%s.bsp", cgs.mapname) );
+	CG_InitMinimap();
 
 	srand( serverMessageNum * serverCommandSequence ^ clientNum );
 
@@ -1963,8 +1964,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_RegisterClients(); // if low on memory, some clients will be deferred
 
 	CG_InitMarkPolys();
-
-	CG_InitMinimap();
 
 	trap_S_EndRegistration();
 

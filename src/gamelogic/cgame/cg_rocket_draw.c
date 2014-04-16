@@ -1718,14 +1718,17 @@ static void CG_DrawPlayerClipsStack( void )
 
 void CG_Rocket_DrawMinimap( void )
 {
-	vec4_t    foreColor;
-	rectDef_t rect;
+	if ( cg.minimap.defined )
+	{
+		vec4_t    foreColor;
+		rectDef_t rect;
 
-	// grab info from libRocket
-	CG_GetRocketElementColor( foreColor );
-	CG_GetRocketElementRect( &rect );
+		// grab info from libRocket
+		CG_GetRocketElementColor( foreColor );
+		CG_GetRocketElementRect( &rect );
 
-	CG_DrawMinimap( &rect, foreColor );
+		CG_DrawMinimap( &rect, foreColor );
+	}
 }
 
 #define FOLLOWING_STRING "following "
@@ -2529,7 +2532,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
 	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
-	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_GAME },
+	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_ALL },
 	{ "momentum", &CG_Rocket_DrawMomentum, ELEMENT_BOTH },
 	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
 	{ "motd", &CG_Rocket_DrawMOTD, ELEMENT_ALL },

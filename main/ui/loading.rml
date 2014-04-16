@@ -35,6 +35,7 @@
 			}
 			.minimap{
 				width:30%;
+				height: 30%;
 			}
 			p,h1,h2,h3{
 				display:block;
@@ -113,7 +114,7 @@
 	<body id="loading" nohide>
 		<div id="mapinfo"><h1><levelname/></h1></div>
 		<levelshot/>
-<!-- 		<img class="minimap" src="/minimaps/parpax_upper.png" /> -->
+		<minimap class="minimap"/>
 		<div id="serverbox">
 		<h2 class="servername"><hostname/></h2>
 		<div class="serverdescription"><motd/></div>
