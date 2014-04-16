@@ -1212,11 +1212,11 @@ static void CG_Rocket_DrawLevelshot( void )
 		return;
 	}
 
-	if ( rocketInfo.cstate.connState < CA_ACTIVE && rocketInfo.cstate.connState > CA_CONNECTED )
+	if ( rocketInfo.cstate.connState < CA_CONNECTED )
 	{
 		shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot;
 
-		if ( shader == -1 )
+		if ( ( shader == -1 || !shader ) && *rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].imageName )
 		{
 			shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot = trap_R_RegisterShader( rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].imageName, RSF_NOMIP );
 		}
@@ -2435,6 +2435,16 @@ static void CG_Rocket_DrawWarmup( void )
 	trap_Rocket_SetInnerRML( va( "%s", sec ? va( "%d", sec ) : _("FIGHT!") ), qfalse );
 }
 
+static void CG_Rocket_DrawProgressValue( void )
+{
+	const char *src = CG_Rocket_GetAttribute( "src" );
+	if ( *src )
+	{
+		float value = CG_Rocket_ProgressBarValueByName( src );
+		trap_Rocket_SetInnerRML( va( "%d", (int) ( value * 100 ) ), qfalse );
+	}
+}
+
 typedef struct
 {
 	const char *name;
@@ -2476,6 +2486,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
 	{ "numSpawns", &CG_Rocket_DrawNumSpawns, ELEMENT_DEAD },
 	{ "predictedMineEfficiency", &CG_Rocket_DrawPredictedRGSRate, ELEMENT_BOTH },
+	{ "progress_value", &CG_Rocket_DrawProgressValue, ELEMENT_ALL },
 	{ "scanner", &CG_Rocket_DrawHumanScanner, ELEMENT_HUMANS },
 	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, ELEMENT_DEAD },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },

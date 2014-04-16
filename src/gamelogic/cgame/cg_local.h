@@ -2201,7 +2201,7 @@ void CG_Rocket_BuildPlayerList( const char *args );
 // cg_rocket_progressbar.c
 //
 float CG_Rocket_ProgressBarValue( void );
-
+float CG_Rocket_ProgressBarValueByName( const char *name );
 //
 // cg_gameinfo.c
 //

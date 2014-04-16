@@ -195,3 +195,18 @@ float CG_Rocket_ProgressBarValue( void )
 
 	return 0;
 }
+
+float CG_Rocket_ProgressBarValueByName( const char *name )
+{
+	progressBarCmd_t *cmd;
+
+	// Get the progressbar command
+	cmd = (progressBarCmd_t*) bsearch( name, progressBarCmdList, progressBarCmdListCount, sizeof( progressBarCmd_t ), progressBarCmdCmp );
+
+	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
+	{
+		return cmd->get();
+	}
+
+	return 0;
+}
