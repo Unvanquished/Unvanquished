@@ -111,13 +111,12 @@
 		<title>Loading</title>
 	</head>
 	<body id="loading" nohide>
-		<div id="mapinfo"><h1>Parpax</h1>
-			<h4>v.23 by Viecherich</h4></div>
+		<div id="mapinfo"><h1><levelname/></h1></div>
 		<levelshot/>
 <!-- 		<img class="minimap" src="/minimaps/parpax_upper.png" /> -->
 		<div id="serverbox">
-		<h2 class="servername">Parpax 24/7 Server</h2>
-		<div class="serverdescription">Never Whistle While You're Pissing.</div>
+		<h2 class="servername"><hostname/></h2>
+		<div class="serverdescription"><motd/></div>
 		</div>
 		<div id="loadstatus">
 		<p>Loading...</p>
