@@ -2445,6 +2445,52 @@ static void CG_Rocket_DrawProgressValue( void )
 	}
 }
 
+static void CG_Rocket_DrawLevelName( void )
+{
+	const char *s;
+	// Ugly hack so its not updated each frame
+	static char oldLevelname[ MAX_STRING_CHARS ];
+
+	s = CG_ConfigString( CS_MESSAGE );
+
+	if ( Q_stricmp( s, oldLevelname ) )
+	{
+		Q_strncpyz( oldLevelname, s, sizeof( oldLevelname ) );
+		trap_Rocket_SetInnerRML( s, qtrue );
+	}
+}
+
+static void CG_Rocket_DrawMOTD( void )
+{
+	const char *s;
+	char       parsed[ MAX_STRING_CHARS ];
+	static char oldMotd[ MAX_STRING_CHARS ];
+
+	s = CG_ConfigString( CS_MOTD );
+
+	if ( Q_stricmp( s, oldMotd ) )
+	{
+		Q_strncpyz( oldMotd, s, sizeof( oldMotd ) );
+		Q_ParseNewlines( parsed, s, sizeof( parsed ) );
+		trap_Rocket_SetInnerRML( parsed, qtrue );
+	}
+}
+
+static void CG_Rocket_DrawHostname( void )
+{
+	char       buffer[ 1024 ];
+	const char *info;
+	static char oldHostname[ MAX_STRING_CHARS ];
+
+	info = CG_ConfigString( CS_SERVERINFO );
+
+	if ( Q_stricmp( info, oldHostname ) )
+	{
+		Q_strncpyz( oldHostname, info, sizeof( oldHostname ) );
+		trap_Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), qtrue );
+	}
+}
+
 typedef struct
 {
 	const char *name;
@@ -2475,15 +2521,18 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "fuel", &CG_Rocket_DrawPlayerFuelValue, ELEMENT_HUMANS },
 	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
 	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
+	{ "hostname", &CG_Rocket_DrawHostname, ELEMENT_ALL },
 	{ "inventory", &CG_DrawHumanInventory, ELEMENT_HUMANS },
 	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
+	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
 	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_GAME },
 	{ "momentum", &CG_Rocket_DrawMomentum, ELEMENT_BOTH },
 	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
+	{ "motd", &CG_Rocket_DrawMOTD, ELEMENT_ALL },
 	{ "numSpawns", &CG_Rocket_DrawNumSpawns, ELEMENT_DEAD },
 	{ "predictedMineEfficiency", &CG_Rocket_DrawPredictedRGSRate, ELEMENT_BOTH },
 	{ "progress_value", &CG_Rocket_DrawProgressValue, ELEMENT_ALL },
