@@ -37,26 +37,6 @@ Maryland 20850 USA.
 #include "tr_local.h"
 
 /*
-=================
-R_Fog (void)
-=================
-*/
-void RB_Fog( glfog_t *curfog )
-{
-	GLimp_LogComment( "--- RB_Fog() ---\n" );
-}
-
-void RB_FogOff( void )
-{
-	GLimp_LogComment( "--- RB_FogOff() ---\n" );
-}
-
-void RB_FogOn( void )
-{
-	GLimp_LogComment( "--- RB_FogOn() ---\n" );
-}
-
-/*
 ==============
 RE_SetFog
 

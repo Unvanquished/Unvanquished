@@ -2624,61 +2624,6 @@ static void Tess_ComputeTexMatrices( shaderStage_t *pStage )
 	}
 }
 
-/*
-==============
-SetIteratorFog
-        set the fog parameters for this pass
-==============
-*/
-static void SetIteratorFog()
-{
-	GLimp_LogComment( "--- SetIteratorFog() ---\n" );
-
-	// changed for problem when you start the game with r_fastsky set to '1'
-	if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
-	{
-		RB_FogOff();
-		return;
-	}
-
-	if ( backEnd.refdef.rdflags & RDF_DRAWINGSKY )
-	{
-		if ( tr.glfogsettings[ FOG_SKY ].registered )
-		{
-			RB_Fog( &tr.glfogsettings[ FOG_SKY ] );
-		}
-		else
-		{
-			RB_FogOff();
-		}
-
-		return;
-	}
-
-	if ( tr.world && tr.world->hasSkyboxPortal && ( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL ) )
-	{
-		if ( tr.glfogsettings[ FOG_PORTALVIEW ].registered )
-		{
-			RB_Fog( &tr.glfogsettings[ FOG_PORTALVIEW ] );
-		}
-		else
-		{
-			RB_FogOff();
-		}
-	}
-	else
-	{
-		if ( tr.glfogNum > FOG_NONE )
-		{
-			RB_Fog( &tr.glfogsettings[ FOG_CURRENT ] );
-		}
-		else
-		{
-			RB_FogOff();
-		}
-	}
-}
-
 void Tess_StageIteratorDebug()
 {
 	// log this call

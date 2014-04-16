@@ -103,45 +103,6 @@ void BindAnimatedImage( textureBundle_t *bundle )
 	GL_Bind( bundle->image[ index ] );
 }
 
-void GL_TextureFilter( image_t *image, filterType_t filterType )
-{
-	if ( !image )
-	{
-		ri.Printf( PRINT_WARNING, "GL_TextureFilter: NULL image\n" );
-		return;
-	}
-	else
-	{
-		if ( r_logFile->integer )
-		{
-			// don't just call LogComment, or we will get a call to va() every frame!
-			GLimp_LogComment( va( "--- GL_TextureFilter( %s ) ---\n", image->name ) );
-		}
-	}
-
-	if ( image->filterType == filterType )
-	{
-		return;
-	}
-
-	// set filter type
-	switch ( image->filterType )
-	{
-		case FT_LINEAR:
-			glTexParameterf( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexParameterf( image->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-			break;
-
-		case FT_NEAREST:
-			glTexParameterf( image->type, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			glTexParameterf( image->type, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-			break;
-
-		default:
-			break;
-	}
-}
-
 void GL_BindProgram( shaderProgram_t *program )
 {
 	if ( !program )

@@ -46,61 +46,6 @@ static int        c_vboShadowSurfaces;
 
 //===============================================================================
 
-void HSVtoRGB( float h, float s, float v, float rgb[ 3 ] )
-{
-	int   i;
-	float f;
-	float p, q, t;
-
-	h *= 5;
-
-	i = floor( h );
-	f = h - i;
-
-	p = v * ( 1 - s );
-	q = v * ( 1 - s * f );
-	t = v * ( 1 - s * ( 1 - f ) );
-
-	switch ( i )
-	{
-		case 0:
-			rgb[ 0 ] = v;
-			rgb[ 1 ] = t;
-			rgb[ 2 ] = p;
-			break;
-
-		case 1:
-			rgb[ 0 ] = q;
-			rgb[ 1 ] = v;
-			rgb[ 2 ] = p;
-			break;
-
-		case 2:
-			rgb[ 0 ] = p;
-			rgb[ 1 ] = v;
-			rgb[ 2 ] = t;
-			break;
-
-		case 3:
-			rgb[ 0 ] = p;
-			rgb[ 1 ] = q;
-			rgb[ 2 ] = v;
-			break;
-
-		case 4:
-			rgb[ 0 ] = t;
-			rgb[ 1 ] = p;
-			rgb[ 2 ] = v;
-			break;
-
-		case 5:
-			rgb[ 0 ] = v;
-			rgb[ 1 ] = p;
-			rgb[ 2 ] = q;
-			break;
-	}
-}
-
 /*
 ===============
 R_ColorShiftLightingBytes
@@ -4899,56 +4844,6 @@ static void R_RecursivePrecacheInteractionNode( bspNode_t *node, trRefLight_t *l
 			light->leafs.numElements++;
 		}
 	}
-}
-
-/*
-=================
-R_ShadowFrustumCullWorldBounds
-
-Returns CULL_IN, CULL_CLIP, or CULL_OUT
-=================
-*/
-int R_ShadowFrustumCullWorldBounds( int numShadowPlanes, cplane_t *shadowPlanes, vec3_t worldBounds[ 2 ] )
-{
-	int      i;
-	cplane_t *plane;
-	qboolean anyClip;
-	int      r;
-
-	if ( !numShadowPlanes )
-	{
-		return CULL_CLIP;
-	}
-
-	// check against frustum planes
-	anyClip = qfalse;
-
-	for ( i = 0; i < numShadowPlanes; i++ )
-	{
-		plane = &shadowPlanes[ i ];
-
-		r = BoxOnPlaneSide( worldBounds[ 0 ], worldBounds[ 1 ], plane );
-
-		if ( r == 2 )
-		{
-			// completely outside frustum
-			return CULL_OUT;
-		}
-
-		if ( r == 3 )
-		{
-			anyClip = qtrue;
-		}
-	}
-
-	if ( !anyClip )
-	{
-		// completely inside frustum
-		return CULL_IN;
-	}
-
-	// partially clipped
-	return CULL_CLIP;
 }
 
 /*
