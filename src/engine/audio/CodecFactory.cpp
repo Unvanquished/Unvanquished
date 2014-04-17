@@ -31,7 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "WavCodec.h"
 #include "OggCodec.h"
 #include "OpusCodec.h"
-#include <algorithm>
 #include "../../common/Log.h"
 
 namespace Audio {
@@ -44,21 +43,19 @@ AudioData LoadSoundCodec(std::string filename)
 
 	if (position_of_last_dot == std::string::npos) {
 		Log::Warn("Could not find the extension in %s", filename);
-		// Should cause an error
-		return std::move(AudioData());
+		return AudioData();
 	}
 
 	std::string ext{filename.substr(position_of_last_dot + 1)};
 
 	if (ext == "wav")
-		return std::move(LoadWavCodec(filename));
+		return LoadWavCodec(filename);
 	if (ext == "ogg")
-		return std::move(LoadOggCodec(filename));
+		return LoadOggCodec(filename);
 	if (ext == "opus")
-		return std::move(LoadOpusCodec(filename));
+		return LoadOpusCodec(filename);
 
 	Log::Warn("No codec available for opening %s.", filename);
-	// Should cause an error
-	return std::move(AudioData());
+	return AudioData();
 }
 } // namespace Audio

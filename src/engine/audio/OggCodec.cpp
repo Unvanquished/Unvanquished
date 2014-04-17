@@ -32,20 +32,144 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OggCodec.h"
 #include "snd_codec.h"
 #include "../qcommon/qcommon.h"
-//
-//TODO write a new loader
-//TODO add logging and error checking
-Audio::AudioData Audio::LoadOggCodec(std::string filename)
+#include "../../common/Log.h"
+#include <memory>
+#include <vector>
+
+#include <errno.h>
+#define OV_EXCLUDE_STATIC_CALLBACKS
+#include <vorbis/vorbisfile.h>
+
+/*
+ *The following assumptions made:
+ *-Each byte consists of 8bits
+ *-sizeof(char) == 1
+ *-sizeof(short) == 2
+ *-sizeof(int) == 4
+ */
+
+
+namespace Audio{
+/*
+ *Used by OggCallbackRead
+ *audioFile contains the whole .ogg file
+ *position tracks the current position while reading the file
+ */
+struct OggDataSource {
+	std::string* audioFile;
+	int position;
+};
+
+
+/*
+ *Replacement for the read_func
+ *ptr: Pointer to a block of memory with a size of at least (size*count) bytes, converted to a void*.
+ *size: Size, in bytes, of each element to be read.
+ *count: Number of elements, each one of size bytes.
+ *datasource: Pointer to an object (here a OggDataSource) which contains the data to be read into ptr, converted to a *void. 
+ *Returns the number of successfully read elements.
+ */
+size_t OggCallbackRead(void* ptr, size_t size, size_t count, void* datasource)
 {
 
-	snd_info_t info;
-	char* data = static_cast<char*>(S_OGG_CodecLoad(filename.data(), &info));
+	OggDataSource* data = static_cast<OggDataSource*>(datasource);
 
-	char* dataN = new char[info.size];
+	// check if input is valid
+	if ( !ptr )
+	{
+		errno = EFAULT;
+		return 0;
+	}
 
-	std::copy_n(data, info.size, dataN);
+	if ( !( size && count ) )
+	{
+		// It's not an error, caller just wants zero bytes!
+		errno = 0;
+		return 0;
+	}
 
-	Hunk_FreeTempMemory(data);
+	if (data == nullptr || data->audioFile == nullptr || data->audioFile->size() < data->position) {
+		errno = EBADF;
+		return 0;
+	}
 
-	return AudioData(info.rate, info.width, info.channels, info.size, dataN);
+	std::string* audioFile = data->audioFile;
+	int position = data->position;
+	int bytesRemaining = audioFile->size() - position;
+	int bytesToRead = size * count;
+	if (bytesToRead > bytesRemaining) {
+		bytesToRead = bytesRemaining;
+	}
+
+	std::copy_n(audioFile->cbegin() + position, bytesToRead, static_cast<char*>(ptr));
+	data->position += bytesToRead;
+
+	int elementsRead = bytesToRead/size;
+
+    //An element was partially read
+	if (bytesToRead % size)
+		++elementsRead;
+
+    return elementsRead;
 }
+
+
+const ov_callbacks Ogg_Callbacks = {&OggCallbackRead, nullptr, nullptr, nullptr};
+
+AudioData LoadOggCodec(std::string filename)
+{
+	std::string audioFile;
+	try
+	{
+		audioFile = std::move(FS::PakPath::ReadFile(filename));
+	}
+	catch (std::system_error& err)
+	{
+		Log::Warn("Failed to open %s: %s", filename, err.what());
+		return AudioData();
+	}
+	OggDataSource dataSource = {&audioFile, 0};
+	std::unique_ptr<OggVorbis_File> vorbisFile(new OggVorbis_File);
+
+	if (ov_open_callbacks(&dataSource, vorbisFile.get(), nullptr, 0, Ogg_Callbacks) != 0) {
+        Log::Warn("Error while reading %s", filename);
+		ov_clear(vorbisFile.get());
+		return AudioData();
+	}
+
+	if (ov_streams(vorbisFile.get()) != 1) {
+		Log::Warn("Unsupported number of streams in %s.", filename);
+		ov_clear(vorbisFile.get());
+		return AudioData();
+	}
+
+	vorbis_info* oggInfo = ov_info(vorbisFile.get(), 0);
+
+	if (!oggInfo) {
+        Log::Warn("Could not read vorbis_info in %s.", filename);
+		ov_clear(vorbisFile.get());
+		return AudioData();
+	}
+
+	const int sampleWidth = 2;
+
+	int sampleRate = oggInfo->rate;
+	int numberOfChannels = oggInfo->channels;
+
+	char* buffer = new char[4096];
+	int bytesRead = 0;
+	int bitStream = 0;
+
+	std::vector<char> samples;
+
+	while ((bytesRead = ov_read(vorbisFile.get(), buffer, 4096, 0, sampleWidth, 1, &bitStream)) >
+	       0) {
+		std::copy_n(buffer, bytesRead, std::back_inserter(samples));
+	}
+	ov_clear(vorbisFile.get());
+
+	char* rawSamples = new char[samples.size()];
+	std::copy_n(samples.data(), samples.size(), rawSamples);
+	return AudioData(sampleRate, sampleWidth, numberOfChannels, samples.size(), rawSamples);
+}
+} //namespace Audio
