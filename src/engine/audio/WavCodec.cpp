@@ -36,6 +36,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <algorithm>
 
+/*
+ *The following assumptions made:
+ *-Each byte consists of 8bits
+ *-sizeof(char) == 1
+ *-sizeof(short) == 2
+ *-sizeof(int) == 4
+ */
 
 namespace Audio {
 
@@ -71,14 +78,14 @@ AudioData LoadWavCodec(std::string filename)
 	std::string format = audioFile.substr(8, 4);
 
 	if (format != "WAVE") {
-		Log::Warn("The format label in %s is not WAVE.", filename);
+		Log::Warn("The format label in %s is not \"WAVE\".", filename);
 		return AudioData();
 	}
 
 	std::string chunk1ID = audioFile.substr(12, 4);
 
 	if (chunk1ID != "fmt ") {
-		Log::Warn("The Chunk1ID in %s is not fmt .", filename);
+		Log::Warn("The Chunk1ID in %s is not \"fmt\".", filename);
 		return AudioData();
 	}
 
@@ -97,23 +104,24 @@ AudioData LoadWavCodec(std::string filename)
 		return AudioData();
 	}
 
-	std::string chunk2ID = audioFile.substr(36, 4);
-
-	if (chunk2ID != "data") {
-		Log::Warn("The Chunk2ID in %s is not data.", filename);
+    //TODO  find the position of "data"
+    std::size_t dataOffset{audioFile.find("data", 36)};
+	if (dataOffset == std::string::npos) {
+		Log::Warn("Could not find the data chunk in %s", filename);
 		return AudioData();
 	}
+	std::string chunk2ID = audioFile.substr(dataOffset, 4);
 
-	int size = PackChars(audioFile, 40, 4);
+	int size = PackChars(audioFile, dataOffset + 4, 4);
 
-    if (size <= 0 || sampleRate  <=0 ){
+	if (size <= 0 || sampleRate  <=0 ){
 		Log::Warn("Error in reading %s.", filename);
 		return AudioData();
 	}
 
 	char* data = new char[size];
 
-	std::copy_n(audioFile.data() + 44, size, data);
+	std::copy_n(audioFile.data() + dataOffset + 8, size, data);
 
 	return AudioData(sampleRate, byteDepth, numChannels, size, data);
 }
