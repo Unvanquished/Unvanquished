@@ -145,32 +145,6 @@ void GL_TextureMode( const char *string )
 
 /*
 ===============
-R_SumOfUsedImages
-===============
-*/
-int R_SumOfUsedImages( void )
-{
-	int     total;
-	int     i;
-	image_t *image;
-
-	total = 0;
-
-	for ( i = 0; i < tr.images.currentElements; i++ )
-	{
-		image = (image_t*) Com_GrowListElement( &tr.images, i );
-
-		if ( image->frameUsed == tr.frameCount )
-		{
-			total += image->uploadWidth * image->uploadHeight;
-		}
-	}
-
-	return total;
-}
-
-/*
-===============
 R_ImageList_f
 ===============
 */
@@ -2973,46 +2947,6 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 	}
 
 	ri.Hunk_FreeTempMemory( tmp );
-}
-
-/*
-===============
-R_SubImageCpy
-
-Copies between a smaller image and a larger image.
-Last flag controls is copy in or out of larger image.
-
-e.g.
-dest = malloc(4*4*channels);
-[________]
-[________]
-[________]
-[________]
-src = malloc(2*2*channels);
-[____]
-[____]
-R_SubImageCpy(dest, 0, 0, 4, 4, src, 2, 2, channels);
-[____]___]
-[____]___]
-[________]
-[________]
-===============
-*/
-void R_SubImageCpy( byte *dest, size_t destx, size_t desty, size_t destw, size_t desth, byte *src, size_t srcw, size_t srch, size_t bytes )
-{
-	size_t s_rowBytes = srcw * bytes;
-	size_t d_rowBytes = destw * bytes;
-	byte   *d = dest + ( ( destx * bytes ) + ( desty * d_rowBytes ) );
-	byte   *d_max = dest + ( destw * desth * bytes ) - s_rowBytes;
-	byte   *s = src;
-	byte   *s_max = src + ( srcw * srch * bytes ) - s_rowBytes;
-
-	while ( ( s <= s_max ) && ( d <= d_max ) )
-	{
-		memcpy( d, s, s_rowBytes );
-		d += d_rowBytes;
-		s += s_rowBytes;
-	}
 }
 
 /*

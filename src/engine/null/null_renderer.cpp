@@ -56,6 +56,8 @@ qhandle_t RE_RegisterShaderNoMip( const char *name )
 }
 void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font )
 {
+	if (!*font)
+		return;
 	(*font)->pointSize = pointSize;
 	(*font)->height = 1;
 	(*font)->glyphScale = 1.0f;

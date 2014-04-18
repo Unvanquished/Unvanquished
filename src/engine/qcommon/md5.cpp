@@ -290,68 +290,6 @@ static void MD5Final( struct MD5Context *ctx, unsigned char *digest )
 
 #endif /* USE_OPENSSL */
 
-
-char *Com_MD5File( const char *fn, int length )
-{
-	static char   final[ 33 ] = { "unknown" };
-	unsigned char digest[ 16 ] = { "" };
-	fileHandle_t  f;
-	MD5_CTX       md5;
-	char          buffer[ 2048 ];
-	int           i;
-	int           filelen = 0;
-	int           r = 0;
-	int           total = 0;
-
-	filelen = FS_FOpenFileRead( fn, &f, qtrue );
-
-	if ( filelen < 1 )
-	{
-		return final;
-	}
-
-	if ( filelen < length || !length )
-	{
-		length = filelen;
-	}
-
-	MD5Init( &md5 );
-
-	for ( ;; )
-	{
-		r = FS_Read( buffer, sizeof( buffer ), f );
-
-		if ( r < 1 )
-		{
-			break;
-		}
-
-		if ( r + total > length )
-		{
-			r = length - total;
-		}
-
-		total += r;
-		MD5Update( &md5, ( unsigned char * ) buffer, r );
-
-		if ( r < (int) sizeof( buffer ) || total >= length )
-		{
-			break;
-		}
-	}
-
-	FS_FCloseFile( f );
-	MD5Final( &md5, digest );
-	final[ 0 ] = '\0';
-
-	for ( i = 0; i < 16; i++ )
-	{
-		Q_strcat( final, sizeof( final ), va( "%02X", digest[ i ] ) );
-	}
-
-	return final;
-}
-
 void Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize )
 {
 	MD5_CTX       md5;

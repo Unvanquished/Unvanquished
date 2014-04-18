@@ -451,60 +451,6 @@ static int R_GetTag( mdvModel_t *model, int frame, const char *_tagName, int sta
 
 /*
 ================
-RE_LerpTagQ3A
-================
-*/
-int RE_LerpTagQ3A( orientation_t *tag, qhandle_t handle, int startFrame, int endFrame, float frac, const char *tagNameIn )
-{
-	mdvTag_t *start, *end;
-	int      i;
-	float    frontLerp, backLerp;
-	model_t  *model;
-	char     tagName[ MAX_QPATH ];
-	int      retval;
-
-	Q_strncpyz( tagName, tagNameIn, MAX_QPATH );
-
-	model = R_GetModelByHandle( handle );
-
-	if ( !model->mdv[ 0 ] )
-	{
-		AxisClear( tag->axis );
-		VectorClear( tag->origin );
-		return -1;
-	}
-
-	start = end = NULL;
-
-	retval = R_GetTag( model->mdv[ 0 ], startFrame, tagName, 0, &start );
-	retval = R_GetTag( model->mdv[ 0 ], endFrame, tagName, 0, &end );
-
-	if ( !start || !end )
-	{
-		AxisClear( tag->axis );
-		VectorClear( tag->origin );
-		return -1;
-	}
-
-	frontLerp = frac;
-	backLerp = 1.0f - frac;
-
-	for ( i = 0; i < 3; i++ )
-	{
-		tag->origin[ i ] = start->origin[ i ] * backLerp + end->origin[ i ] * frontLerp;
-		tag->axis[ 0 ][ i ] = start->axis[ 0 ][ i ] * backLerp + end->axis[ 0 ][ i ] * frontLerp;
-		tag->axis[ 1 ][ i ] = start->axis[ 1 ][ i ] * backLerp + end->axis[ 1 ][ i ] * frontLerp;
-		tag->axis[ 2 ][ i ] = start->axis[ 2 ][ i ] * backLerp + end->axis[ 2 ][ i ] * frontLerp;
-	}
-
-	VectorNormalize( tag->axis[ 0 ] );
-	VectorNormalize( tag->axis[ 1 ] );
-	VectorNormalize( tag->axis[ 2 ] );
-	return retval;
-}
-
-/*
-================
 RE_LerpTag
 ================
 */

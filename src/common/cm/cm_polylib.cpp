@@ -43,16 +43,6 @@ int c_peak_windings;
 int c_winding_allocs;
 int c_winding_points;
 
-void pw( winding_t *w )
-{
-	int i;
-
-	for ( i = 0; i < w->numpoints; i++ )
-	{
-		printf( "(%5.1f, %5.1f, %5.1f)\n", w->p[ i ][ 0 ], w->p[ i ][ 1 ], w->p[ i ][ 2 ] );
-	}
-}
-
 /*
 =============
 AllocWinding

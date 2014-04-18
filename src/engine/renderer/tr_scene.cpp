@@ -270,11 +270,6 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 RE_AddPolyToScene
 =====================
 */
-void RE_AddPolyToSceneQ3A( qhandle_t hShader, int numVerts, const polyVert_t *verts, int num )
-{
-	R_AddPolysToScene( hShader, numVerts, verts, num );
-}
-
 void RE_AddPolyToSceneET( qhandle_t hShader, int numVerts, const polyVert_t *verts )
 {
 	R_AddPolysToScene( hShader, numVerts, verts, 1 );

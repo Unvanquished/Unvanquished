@@ -66,12 +66,8 @@ Maryland 20850 USA.
 // JPW NERVE changed this for multiplayer back to 42, 56 for depot/mp_cpdepot, 42 for everything else
 #define DEF_COMHUNKMEGS_S         XSTRING(DEF_COMHUNKMEGS)
 
-int                 com_argc;
-char                *com_argv[ MAX_NUM_ARGVS + 1 ];
-
 jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire frame
 
-FILE                *debuglogfile;
 static fileHandle_t logfile;
 static FILE         *pipefile;
 
@@ -612,48 +608,6 @@ void Info_Print( const char *s )
 	}
 }
 
-/*
-============
-Com_FilterPath
-============
-*/
-int Com_FilterPath( const char *filter, char *name, int casesensitive )
-{
-	int  i;
-	char new_filter[ MAX_QPATH ];
-	char new_name[ MAX_QPATH ];
-
-	for ( i = 0; i < MAX_QPATH - 1 && filter[ i ]; i++ )
-	{
-		if ( filter[ i ] == '\\' || filter[ i ] == ':' )
-		{
-			new_filter[ i ] = '/';
-		}
-		else
-		{
-			new_filter[ i ] = filter[ i ];
-		}
-	}
-
-	new_filter[ i ] = '\0';
-
-	for ( i = 0; i < MAX_QPATH - 1 && name[ i ]; i++ )
-	{
-		if ( name[ i ] == '\\' || name[ i ] == ':' )
-		{
-			new_name[ i ] = '/';
-		}
-		else
-		{
-			new_name[ i ] = name[ i ];
-		}
-	}
-
-	new_name[ i ] = '\0';
-	return Com_Filter( new_filter, new_name, casesensitive );
-}
-
-
 /* Internals for Com_RealTime & Com_GMTime */
 static int internalTime( qtime_t *qtime, struct tm *( *timefunc )( const time_t * ) )
 {
@@ -1054,21 +1008,6 @@ void Hunk_ClearToMark( void )
 	hunk_high.permanent = hunk_high.temp = hunk_high.mark;
 }
 
-/*
-=================
-Hunk_CheckMark
-=================
-*/
-qboolean Hunk_CheckMark( void )
-{
-	if ( hunk_low.mark || hunk_high.mark )
-	{
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
 void SV_ShutdownGameProgs( void );
 
 /*
@@ -1325,23 +1264,6 @@ void Hunk_FreeTempMemory( void *buf )
 		{
 			Com_Printf( "Hunk_FreeTempMemory: not the final block\n" );
 		}
-	}
-}
-
-/*
-=================
-Hunk_ClearTempMemory
-
-The temp space is no longer needed.  If we have left more
-touched but unused memory on this side, have future
-permanent allocs use this side.
-=================
-*/
-void Hunk_ClearTempMemory( void )
-{
-	if ( s_hunkData != NULL )
-	{
-		hunk_temp->temp = hunk_temp->permanent;
 	}
 }
 
@@ -2509,29 +2431,6 @@ void Com_Shutdown()
 }
 
 //------------------------------------------------------------------------
-
-/*
-===========================================
-command line completion
-===========================================
-*/
-
-/*
-==================
-Field_CursorToOffset
-==================
-*/
-int Field_CursorToOffset( field_t *edit )
-{
-	int i = -1, j = 0;
-
-	while ( ++i < edit->cursor )
-	{
-		j += Q_UTF8_Width( edit->buffer + j );
-	}
-
-	return j;
-}
 
 void Com_GetHunkInfo( int *hunkused, int *hunkexpected )
 {

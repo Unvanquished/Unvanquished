@@ -1207,7 +1207,7 @@ static void CG_Rocket_DrawLevelshot( void )
 {
 	qhandle_t shader;
 
-	if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) &&  rocketInfo.cstate.connState < CA_CONNECTED )
+	if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) && rocketInfo.cstate.connState < CA_CONNECTED )
 	{
 		return;
 	}

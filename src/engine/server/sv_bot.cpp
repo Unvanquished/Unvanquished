@@ -138,16 +138,6 @@ void SV_BotFreeClient( int clientNum )
 */
 }
 
-/*
-==================
-SV_BotClientCommand
-==================
-*/
-void BotClientCommand( int client, char *command )
-{
-	SV_ExecuteClientCommand( &svs.clients[ client ], command, qtrue, qfalse );
-}
-
 //
 //  * * * BOT AI CODE IS BELOW THIS POINT * * *
 //
