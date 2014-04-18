@@ -1144,106 +1144,123 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 
 static const char *const eventnames[] =
 {
-	"EV_NONE",
+  "EV_NONE",
 
-	"EV_FOOTSTEP",
-	"EV_FOOTSTEP_METAL",
-	"EV_FOOTSTEP_SQUELCH",
-	"EV_FOOTSPLASH",
-	"EV_FOOTWADE",
-	"EV_SWIM",
+  "EV_FOOTSTEP",
+  "EV_FOOTSTEP_METAL",
+  "EV_FOOTSTEP_SQUELCH",
+  "EV_FOOTSPLASH",
+  "EV_FOOTWADE",
+  "EV_SWIM",
 
-	"EV_STEP_4",
-	"EV_STEP_8",
-	"EV_STEP_12",
-	"EV_STEP_16",
+  "EV_STEP_4",
+  "EV_STEP_8",
+  "EV_STEP_12",
+  "EV_STEP_16",
 
-	"EV_STEPDN_4",
-	"EV_STEPDN_8",
-	"EV_STEPDN_12",
-	"EV_STEPDN_16",
+  "EV_STEPDN_4",
+  "EV_STEPDN_8",
+  "EV_STEPDN_12",
+  "EV_STEPDN_16",
 
-	"EV_FALL_SHORT",
-	"EV_FALL_MEDIUM",
-	"EV_FALL_FAR",
-	"EV_FALLING",
+  "EV_FALL_SHORT",
+  "EV_FALL_MEDIUM",
+  "EV_FALL_FAR",
+  "EV_FALLING",
 
-	"EV_JUMP",
-	"EV_WATER_TOUCH", // foot touches
-	"EV_WATER_LEAVE", // foot leaves
-	"EV_WATER_UNDER", // head touches
-	"EV_WATER_CLEAR", // head leaves
+  "EV_JUMP",
 
-	"EV_NOAMMO",
-	"EV_CHANGE_WEAPON",
-	"EV_FIRE_WEAPON",
-	"EV_FIRE_WEAPON2",
-	"EV_FIRE_WEAPON3",
+  "EV_WATER_TOUCH", // foot touches
+  "EV_WATER_LEAVE", // foot leaves
+  "EV_WATER_UNDER", // head touches
+  "EV_WATER_CLEAR", // head leaves
 
-	"EV_PLAYER_RESPAWN", // for fovwarp effects
-	"EV_PLAYER_TELEPORT_IN",
-	"EV_PLAYER_TELEPORT_OUT",
+  "EV_JETPACK_ENABLE",  // enable jets
+  "EV_JETPACK_DISABLE", // disable jets
+  "EV_JETPACK_IGNITE",  // ignite engine
+  "EV_JETPACK_START",   // start thrusting
+  "EV_JETPACK_STOP",    // stop thrusting
 
-	"EV_GRENADE_BOUNCE", // eventParm will be the soundindex
+  "EV_NOAMMO",
+  "EV_CHANGE_WEAPON",
+  "EV_FIRE_WEAPON",
+  "EV_FIRE_WEAPON2",
+  "EV_FIRE_WEAPON3",
+  "EV_WEAPON_RELOAD",
 
-	"EV_GENERAL_SOUND",
-	"EV_GLOBAL_SOUND", // no attenuation
+  "EV_PLAYER_RESPAWN", // for fovwarp effects
+  "EV_PLAYER_TELEPORT_IN",
+  "EV_PLAYER_TELEPORT_OUT",
 
-	"EV_BULLET_HIT_FLESH",
-	"EV_BULLET_HIT_WALL",
+  "EV_GRENADE_BOUNCE", // eventParm will be the soundindex
 
-	"EV_SHOTGUN",
-	"EV_MASS_DRIVER",
+  "EV_GENERAL_SOUND",
+  "EV_GLOBAL_SOUND", // no attenuation
 
-	"EV_MISSILE_HIT",
-	"EV_MISSILE_MISS",
-	"EV_MISSILE_MISS_METAL",
-	"EV_TESLATRAIL",
-	"EV_BULLET", // otherEntity is the shooter
+  "EV_WEAPON_HIT_ENTITY",
+  "EV_WEAPON_HIT_ENVIRONMENT",
 
-	"EV_LEV4_TRAMPLE_PREPARE",
-	"EV_LEV4_TRAMPLE_START",
+  "EV_SHOTGUN",
+  "EV_MASS_DRIVER",
 
-	"EV_PAIN",
-	"EV_DEATH1",
-	"EV_DEATH2",
-	"EV_DEATH3",
-	"EV_OBITUARY",
+  "EV_MISSILE_HIT_ENTITY",
+  "EV_MISSILE_HIT_ENVIRONMENT",
+  "EV_MISSILE_HIT_METAL", // necessary?
+  "EV_TESLATRAIL",
+  "EV_BULLET", // otherEntity is the shooter
 
-	"EV_GIB_PLAYER",
+  "EV_LEV4_TRAMPLE_PREPARE",
+  "EV_LEV4_TRAMPLE_START",
 
-	"EV_BUILD_CONSTRUCT",
-	"EV_BUILD_DESTROY",
-	"EV_BUILD_DELAY", // can't build yet
-	"EV_BUILD_REPAIR", // repairing buildable
-	"EV_BUILD_REPAIRED", // buildable has full health
-	"EV_HUMAN_BUILDABLE_EXPLOSION",
-	"EV_ALIEN_BUILDABLE_EXPLOSION",
-	"EV_ALIEN_ACIDTUBE",
+  "EV_PAIN",
+  "EV_DEATH1",
+  "EV_DEATH2",
+  "EV_DEATH3",
+  "EV_OBITUARY",
 
-	"EV_MEDKIT_USED",
+  "EV_GIB_PLAYER",
 
-	"EV_ALIEN_EVOLVE",
-	"EV_ALIEN_EVOLVE_FAILED",
+  "EV_BUILD_CONSTRUCT",
+  "EV_BUILD_DESTROY",
+  "EV_BUILD_DELAY", // can't build yet
+  "EV_BUILD_REPAIR", // repairing buildable
+  "EV_BUILD_REPAIRED", // buildable has full health
+  "EV_HUMAN_BUILDABLE_DYING",
+  "EV_HUMAN_BUILDABLE_EXPLOSION",
+  "EV_ALIEN_BUILDABLE_EXPLOSION",
+  "EV_ALIEN_ACIDTUBE",
+  "EV_ALIEN_BOOSTER",
 
-	"EV_STOPLOOPINGSOUND",
-	"EV_TAUNT",
+  "EV_MEDKIT_USED",
 
-	"EV_OVERMIND_ATTACK_1", // overmind under attack
-	"EV_OVERMIND_ATTACK_2", // overmind under attack
-	"EV_OVERMIND_DYING", // overmind dead
-	"EV_OVERMIND_SPAWNS", // overmind needs spawns
+  "EV_ALIEN_EVOLVE",
+  "EV_ALIEN_EVOLVE_FAILED",
 
-	"EV_REACTOR_ATTACK_1", // reactor under attack
-	"EV_REACTOR_ATTACK_2", // reactor under attack
-	"EV_REACTOR_DYING", // reactor destroyed
+  "EV_STOPLOOPINGSOUND",
+  "EV_TAUNT",
 
-	"EV_WARN_ATTACK",
+  "EV_OVERMIND_ATTACK_1", // overmind under attack
+  "EV_OVERMIND_ATTACK_2", // overmind under attack
+  "EV_OVERMIND_DYING", // overmind close to death
+  "EV_OVERMIND_SPAWNS", // overmind needs spawns
 
-	"EV_MGTURRET_SPINUP", // trigger a sound
+  "EV_REACTOR_ATTACK_1", // reactor under attack
+  "EV_REACTOR_ATTACK_2", // reactor under attack
+  "EV_REACTOR_DYING", // reactor destroyed
 
-	"EV_RPTUSE_SOUND", // trigger a sound
-	"EV_LEV2_ZAP"
+  "EV_WARN_ATTACK", // a building has been destroyed and the destruction noticed by a nearby om/rc/rrep
+
+  "EV_MGTURRET_SPINUP", // turret spinup sound should play
+
+  "EV_AMMO_REFILL",     // ammo for clipless weapon has been refilled
+  "EV_CLIPS_REFILL",    // weapon clips have been refilled
+  "EV_FUEL_REFILL",     // jetpack fuel has been refilled
+
+  "EV_LEV2_ZAP",
+
+  "EV_HIT", // notify client of a hit
+
+  "EV_MOMENTUM" // notify client of generated momentum
 };
 
 /*
