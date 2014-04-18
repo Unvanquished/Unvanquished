@@ -49,16 +49,12 @@ namespace Audio {
 	    auto audioData = LoadSoundCodec(GetName());
 
 	    if (audioData.size == 0) {
-		    audioLogs.Warn("Couldn't load sound %s", GetName());
+		    audioLogs.Warn("Couldn't load sound %s, it's empty!", GetName());
             return false;
         }
 
         //TODO handle errors, especially out of memory errors
         buffer.Feed(audioData);
-
-	    if (audioData.size == 0) {
-		    audioLogs.Warn("info.size = 0 in RegisterSample, what?");
-        }
 
 	    return true;
     }
