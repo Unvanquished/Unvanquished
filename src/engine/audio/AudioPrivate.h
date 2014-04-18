@@ -40,7 +40,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "snd_codec.h"
 
 namespace Audio {
 

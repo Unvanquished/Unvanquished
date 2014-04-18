@@ -133,7 +133,6 @@ namespace Audio {
         initialized = true;
 
         // Initializes the rest of the audio system
-        S_CodecInit();
         AL::InitEffectPresets();
         InitSamples();
         InitSounds();
@@ -169,7 +168,6 @@ namespace Audio {
         ShutdownSounds();
         ShutdownEmitters();
         ShutdownSamples();
-        S_CodecShutdown();
 
         // Free OpenAL resources
         delete context;

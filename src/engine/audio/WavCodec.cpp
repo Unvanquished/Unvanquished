@@ -29,9 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "WavCodec.h"
-#include "snd_codec.h"
 #include "../framework/FileSystem.h"
-#include "../qcommon/qcommon.h"
 #include "../../common/Log.h"
 #include <string>
 #include <algorithm>

@@ -32,7 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AUDIO_AL_OBJECTS_H_
 
 #include "../../common/String.h"
-#include "snd_codec.h"
 #include "AudioData.h"
 
 namespace Audio {

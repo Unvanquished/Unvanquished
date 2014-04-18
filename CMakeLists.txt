@@ -596,11 +596,6 @@ set( CLIENTBASELIST
 )
 
 set( CLIENTLIST
-  ${ENGINE_DIR}/audio/snd_codec.cpp
-  ${ENGINE_DIR}/audio/snd_codec.h
-  ${ENGINE_DIR}/audio/snd_codec_ogg.cpp
-  ${ENGINE_DIR}/audio/snd_codec_opus.cpp
-  ${ENGINE_DIR}/audio/snd_codec_wav.cpp
   ${ENGINE_DIR}/audio/ALObjects.cpp
   ${ENGINE_DIR}/audio/ALObjects.h
   ${ENGINE_DIR}/audio/Audio.cpp
