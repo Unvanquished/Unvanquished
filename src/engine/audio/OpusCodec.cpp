@@ -28,24 +28,144 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-
 #include "OpusCodec.h"
 #include "snd_codec.h"
 #include "../qcommon/qcommon.h"
-//
+#include "../../common/Log.h"
+#include <memory>
+#include <vector>
+
+#include <errno.h>
+#include <opusfile.h>
+
+/*
+ *The following assumptions made:
+ *-Each byte consists of 8bits
+ *-sizeof(char) == 1
+ *-sizeof(short) == 2
+ *-sizeof(int) == 4
+ */
+
+namespace Audio{
 //TODO write a new loader
 //TODO add logging and error checking
-Audio::AudioData Audio::LoadOpusCodec(std::string filename)
+
+struct OpusDataSource {
+	std::string* audioFile;
+	int position;
+};
+
+
+/*
+ *Replacement for the op_read_func
+ *datasource: Pointer to an object (here a OggDataSource) which contains the data to be read into ptr, converted to a *void. 
+ *ptr: Pointer to a block of memory with a size of at least nbytes.
+ *nBytes: the number of bytes to read. 
+ *Returns the number of successfully read elements.
+ */
+int OpusCallbackRead(void* dataSource, unsigned char* ptr, int nBytes)
 {
 
-	snd_info_t info;
-	char* data = static_cast<char*>(S_OggOpus_CodecLoad(filename.data(), &info));
+	OpusDataSource* data = static_cast<OpusDataSource*>(dataSource);
 
-	char* dataN = new char[info.size];
+	// check if input is valid
+	if ( !ptr )
+	{
+		errno = EFAULT;
+		return 0;
+	}
 
-	std::copy_n(data, info.size, dataN);
+	if (!nBytes) {
+		// It's not an error, caller just wants zero bytes!
+		errno = 0;
+		return 0;
+	}
 
-	Hunk_FreeTempMemory(data);
+	if (data == nullptr || data->audioFile == nullptr || data->audioFile->size() < data->position ||
+	    nBytes < 0) {
+		errno = EBADF;
+		return 0;
+	}
 
-	return Audio::AudioData(info.rate, info.width, info.channels, info.size, dataN);
+	std::string* audioFile = data->audioFile;
+	int position = data->position;
+	int bytesRemaining = audioFile->size() - position;
+	int bytesToRead = nBytes;
+	if (bytesToRead > bytesRemaining) {
+		bytesToRead = bytesRemaining;
+	}
+	// char to unsigned char????
+	std::copy_n(reinterpret_cast<const unsigned char*>(audioFile->data()) + position, bytesToRead, ptr);
+	data->position += bytesToRead;
+
+    return bytesToRead;
 }
+
+const OpusFileCallbacks Opus_Callbacks = {&OpusCallbackRead, nullptr, nullptr, nullptr};
+
+AudioData LoadOpusCodec(std::string filename)
+{
+	std::string audioFile;
+	try
+	{
+		audioFile = std::move(FS::PakPath::ReadFile(filename));
+	}
+	catch (std::system_error& err)
+	{
+		Log::Warn("Failed to open %s: %s", filename, err.what());
+		return AudioData();
+	}
+
+	OpusDataSource dataSource = {&audioFile, 0};
+	OggOpusFile* opusFile = op_open_callbacks(&dataSource, &Opus_Callbacks, nullptr, 0, nullptr);
+
+	if (!opusFile) {
+		Log::Warn("Error while reading %s", filename);
+		return AudioData();
+	}
+
+	const OpusHead* opusInfo = op_head(opusFile, -1);
+
+	if (!opusInfo) {
+		op_free(opusFile);
+		Log::Warn("Could not read OpusHead in %s", filename);
+		return AudioData();
+	}
+
+	if (opusInfo->stream_count != 1) {
+		op_free(opusFile);
+		Log::Warn("Only one stream is supported in Opus files: %s", filename);
+		return AudioData();
+	}
+
+	if (opusInfo->channel_count != 1 && opusInfo->channel_count != 2) {
+		op_free(opusFile);
+		Log::Warn("Only mono and stereo Opus files are supported: %s", filename);
+		return AudioData();
+	}
+
+	const int sampleWidth = 2;
+
+	int sampleRate = 48000;
+	int numberOfChannels = opusInfo->channel_count;
+
+	// The buffer is big enough to hold 120ms worth of samples per channel
+	opus_int16* buffer = new opus_int16[numberOfChannels * 5760];
+	int samplesPerChannelRead = 0;
+
+	std::vector<opus_int16> samples;
+
+	while ((samplesPerChannelRead =
+	            op_read(opusFile, buffer, sampleWidth * numberOfChannels * 5760, nullptr)) > 0) {
+		std::copy_n(buffer, samplesPerChannelRead * numberOfChannels, std::back_inserter(samples));
+	}
+
+	op_free(opusFile);
+
+	char* rawSamples = new char[sampleWidth * samples.size()];
+	std::copy_n(reinterpret_cast<char*>(samples.data()), sampleWidth * samples.size(), rawSamples);
+
+	return AudioData(sampleRate, sampleWidth, numberOfChannels, samples.size() * sampleWidth,
+	                 rawSamples);
+}
+} //namespace Audio
