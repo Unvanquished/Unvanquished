@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2014, Theodoros Theodoridis <theodoridisgr@gmail.com>
+Copyright (c) 2014, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,14 +46,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 namespace Audio{
-//TODO write a new loader
-//TODO add logging and error checking
 
 struct OpusDataSource {
 	std::string* audioFile;
 	int position;
 };
-
 
 /*
  *Replacement for the op_read_func
@@ -167,4 +164,5 @@ AudioData LoadOpusCodec(std::string filename)
 	return AudioData(sampleRate, sampleWidth, numberOfChannels, samples.size() * sampleWidth,
 	                 rawSamples);
 }
+
 } //namespace Audio

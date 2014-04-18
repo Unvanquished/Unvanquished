@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2014, Theodoros Theodoridis <theodoridisgr@gmail.com>
+Copyright (c) 2014, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2014, Theodoros Theodoridis <theodoridisgr@gmail.com>
+Copyright (c) 2014, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ namespace Audio {
 
 AudioData LoadSoundCodec(std::string filename)
 {
-
 
 	size_t position_of_last_dot{filename.find_last_of('.')};
 

@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2014, Theodoros Theodoridis <theodoridisgr@gmail.com>
+Copyright (c) 2014, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-
 #include "OggCodec.h"
 #include "../framework/FileSystem.h"
 #include "../../common/Log.h"
@@ -47,7 +46,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *-sizeof(int) == 4
  */
 
-
 namespace Audio{
 /*
  *Used by OggCallbackRead
@@ -58,7 +56,6 @@ struct OggDataSource {
 	std::string* audioFile;
 	int position;
 };
-
 
 /*
  *Replacement for the read_func
@@ -171,4 +168,5 @@ AudioData LoadOggCodec(std::string filename)
 	std::copy_n(samples.data(), samples.size(), rawSamples);
 	return AudioData(sampleRate, sampleWidth, numberOfChannels, samples.size(), rawSamples);
 }
+
 } //namespace Audio
