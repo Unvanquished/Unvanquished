@@ -463,6 +463,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	vboData_t               vboData;
 	float                   *weightbuf;
 	int                     *indexbuf;
+	i16vec4_t               *qtangentbuf;
 	VBO_t                   *vbo;
 	IBO_t                   *ibo;
 	void                    *ptr;
@@ -765,10 +766,17 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			weightbuf = NULL;
 		}
 
+		qtangentbuf = (i16vec4_t *)ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * IQModel->num_vertexes );
+
+		for( i = 0; i < IQModel->num_vertexes; i++ ) {
+			R_TBNtoQtangents( &IQModel->tangents[ 3 * i ],
+					  &IQModel->bitangents[ 3 * i ],
+					  &IQModel->normals[ 3 * i ],
+					  qtangentbuf[ i ] );
+		}
+
 		vboData.xyz = (vec3_t *)IQModel->positions;
-		vboData.tangent = (vec3_t *)IQModel->tangents;
-		vboData.binormal = (vec3_t *)IQModel->bitangents;
-		vboData.normal = (vec3_t *)IQModel->normals;;
+		vboData.qtangent = qtangentbuf;
 		vboData.numFrames = 0;
 		vboData.color = (u8vec4_t *)IQModel->colors;
 		vboData.st = (i16vec2_t *)IQModel->texcoords;
@@ -776,9 +784,14 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		vboData.boneIndexes = (int (*)[4])indexbuf;
 		vboData.boneWeights = (vec4_t *)weightbuf;
 		vboData.numVerts = IQModel->num_vertexes;
+
+
 		vbo = R_CreateStaticVBO( "IQM surface VBO", vboData,
 					 VBO_LAYOUT_SEPERATE );
 
+		if( qtangentbuf ) {
+			ri.Hunk_FreeTempMemory( qtangentbuf );
+		}
 		if( weightbuf ) {
 			ri.Hunk_FreeTempMemory( weightbuf );
 		}

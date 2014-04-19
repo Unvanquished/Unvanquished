@@ -229,9 +229,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	memset( &data, 0, sizeof( data ) );
 
 	data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.xyz ) * vertexesNum );
-	data.normal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.normal ) * vertexesNum );
-	data.tangent = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.tangent ) * vertexesNum );
-	data.binormal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.binormal ) * vertexesNum );
+	data.qtangent = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * vertexesNum );
 	data.boneIndexes = ( int (*)[ 4 ] ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneIndexes ) * vertexesNum );
 	data.boneWeights = ( vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneWeights ) * vertexesNum );
 	data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * vertexesNum );
@@ -276,9 +274,8 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	for ( j = 0; j < vertexesNum; j++ )
 	{
 		VectorCopy( surf->verts[ j ].position, data.xyz[ j ] );
-		VectorCopy( surf->verts[ j ].tangent, data.tangent[ j ] );
-		VectorCopy( surf->verts[ j ].normal, data.normal[ j ] );
-		VectorCopy( surf->verts[ j ].binormal, data.binormal[ j ] );
+		R_TBNtoQtangents( surf->verts[ j ].tangent, surf->verts[ j ].binormal,
+				  surf->verts[ j ].normal, data.qtangent[ j ] );
 		
 		data.st[ j ][ 0 ] = packTC( surf->verts[ j ].texCoords[ 0 ] );
 		data.st[ j ][ 1 ] = packTC( surf->verts[ j ].texCoords[ 1 ] );
@@ -306,9 +303,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	ri.Hunk_FreeTempMemory( data.st );
 	ri.Hunk_FreeTempMemory( data.boneWeights );
 	ri.Hunk_FreeTempMemory( data.boneIndexes );
-	ri.Hunk_FreeTempMemory( data.binormal );
-	ri.Hunk_FreeTempMemory( data.tangent );
-	ri.Hunk_FreeTempMemory( data.normal );
+	ri.Hunk_FreeTempMemory( data.qtangent );
 	ri.Hunk_FreeTempMemory( data.xyz );
 
 	// megs
@@ -370,9 +365,7 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 	memset( &data, 0, sizeof( data ) );
 
 	data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.xyz ) * vertexesNum );
-	data.normal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.normal ) * vertexesNum );
-	data.tangent = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.tangent ) * vertexesNum );
-	data.binormal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.binormal ) * vertexesNum );
+	data.qtangent = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * vertexesNum );
 	data.boneIndexes = ( int (*)[ 4 ] ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneIndexes ) * vertexesNum );
 	data.boneWeights = ( vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneWeights ) * vertexesNum );
 	data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * vertexesNum );
@@ -417,9 +410,8 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 	{
 		v = ( md5Vertex_t * ) Com_GrowListElement( vboVertexes, j );
 		VectorCopy( v->position, data.xyz[ j ] );
-		VectorCopy( v->tangent, data.tangent[ j ] );
-		VectorCopy( v->normal, data.normal[ j ] );
-		VectorCopy( v->binormal, data.binormal[ j ] );
+		R_TBNtoQtangents( v->tangent, v->binormal,
+				  v->normal, data.qtangent[ j ] );
 		
 		data.st[ j ][ 0 ] = packTC( v->texCoords[ 0 ] );
 		data.st[ j ][ 1 ] = packTC( v->texCoords[ 1 ] );
@@ -447,9 +439,7 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 	ri.Hunk_FreeTempMemory( data.st );
 	ri.Hunk_FreeTempMemory( data.boneWeights );
 	ri.Hunk_FreeTempMemory( data.boneIndexes );
-	ri.Hunk_FreeTempMemory( data.binormal );
-	ri.Hunk_FreeTempMemory( data.tangent );
-	ri.Hunk_FreeTempMemory( data.normal );
+	ri.Hunk_FreeTempMemory( data.qtangent );
 	ri.Hunk_FreeTempMemory( data.xyz );
 
 	ri.Printf( PRINT_ALL, "created VBO surface %i with %i vertices and %i triangles\n", vboSurfaces->currentElements, vboSurf->numVerts, vboSurf->numIndexes / 3 );

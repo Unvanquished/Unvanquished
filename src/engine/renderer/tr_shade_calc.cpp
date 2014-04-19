@@ -491,7 +491,8 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 	vec3_t offset;
 	float  scale;
 	float  *xyz = ( float * ) tess.xyz;
-	float  *normal = ( float * ) tess.normals;
+	i16vec4_t *qtangent = tess.qtangents;
+	vec3_t tangent, binormal, normal;
 	float  *table;
 
 #if defined( COMPAT_ET )
@@ -533,10 +534,12 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 
 		table = TableForFunc( ds->deformationWave.func );
 
-		for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+		for ( i = 0; i < tess.numVertexes; i++, xyz += 4, qtangent++ )
 		{
 			float off = ( xyz[ 0 ] + xyz[ 1 ] + xyz[ 2 ] ) * ds->deformationSpread;
 			float dot;
+
+			R_QtangentsToTBN( *qtangent, tangent, binormal, normal );
 
 			scale = WAVEVALUE( table, ds->deformationWave.base,
 			                   ds->deformationWave.amplitude, ds->deformationWave.phase + off, ds->deformationWave.frequency );
@@ -567,8 +570,9 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 		{
 			scale = RB_EvalWaveForm( &ds->deformationWave );
 
-			for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+			for ( i = 0; i < tess.numVertexes; i++, xyz += 4, qtangent++ )
 			{
+				R_QtangentsToTBN( *qtangent, tangent, binormal, normal );
 				VectorScale( normal, scale, offset );
 
 				xyz[ 0 ] += offset[ 0 ];
@@ -580,12 +584,14 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 		{
 			table = TableForFunc( ds->deformationWave.func );
 
-			for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+			for ( i = 0; i < tess.numVertexes; i++, xyz += 4, qtangent++ )
 			{
 				float off = ( xyz[ 0 ] + xyz[ 1 ] + xyz[ 2 ] ) * ds->deformationSpread;
 
 				scale = WAVEVALUE( table, ds->deformationWave.base,
 				                   ds->deformationWave.amplitude, ds->deformationWave.phase + off, ds->deformationWave.frequency );
+
+				R_QtangentsToTBN( *qtangent, tangent, binormal, normal );
 
 				VectorScale( normal, scale, offset );
 
@@ -608,10 +614,13 @@ void RB_CalcDeformNormals( deformStage_t *ds )
 	int   i;
 	float scale;
 	float *xyz = ( float * ) tess.xyz;
-	float *normal = ( float * ) tess.normals;
+	i16vec4_t *qtangent = tess.qtangents;
+	vec3_t normal, tangent, binormal;
 
-	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, qtangent++ )
 	{
+		R_QtangentsToTBN( *qtangent, tangent, binormal, normal );
+
 		scale = 0.98f;
 		scale =
 		  R_NoiseGet4f( xyz[ 0 ] * scale, xyz[ 1 ] * scale, xyz[ 2 ] * scale,
@@ -629,6 +638,8 @@ void RB_CalcDeformNormals( deformStage_t *ds )
 		normal[ 2 ] += ds->deformationWave.amplitude * scale;
 
 		VectorNormalizeFast( normal );
+
+		R_TBNtoQtangents( tangent, binormal, normal, *qtangent );
 	}
 }
 
@@ -642,15 +653,18 @@ void RB_CalcBulgeVertexes( deformStage_t *ds )
 	int         i;
 	const float *st = ( const float * ) tess.texCoords[ 0 ];
 	float       *xyz = ( float * ) tess.xyz;
-	float       *normal = ( float * ) tess.normals;
+	i16vec4_t   *qtangent = tess.qtangents;
+	vec3_t      tangent, binormal, normal;
 	float       now;
 
 	now = backEnd.refdef.time * ds->bulgeSpeed * 0.001f;
 
-	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, st += 4, normal += 4 )
+	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, st += 4, qtangent++ )
 	{
 		int   off;
 		float scale;
+
+		R_QtangentsToTBN( *qtangent, tangent, binormal, normal );
 
 		off = ( float )( FUNCTABLE_SIZE / ( M_PI * 2 ) ) * ( st[ 0 ] * ds->bulgeWidth + now );
 

@@ -842,7 +842,7 @@ public:
 
 	uint32_t        GetRequiredVertexAttributes() const
 	{
-		return ATTR_NORMAL;
+		return ATTR_QTANGENT;
 	}
 
 	void EnableDeformVertexes()
@@ -896,7 +896,7 @@ public:
 
 	uint32_t        GetRequiredVertexAttributes() const
 	{
-		return ATTR_NORMAL;
+		return ATTR_QTANGENT;
 	}
 
 	void EnableTCGenEnvironment()
@@ -985,7 +985,7 @@ public:
 
 	uint32_t        GetRequiredVertexAttributes() const
 	{
-		return ATTR_NORMAL | ATTR_TANGENT | ATTR_BINORMAL;
+		return ATTR_QTANGENT;
 	}
 
 	void EnableNormalMapping()
@@ -1121,7 +1121,7 @@ public:
 //bool    MissesRequiredMacros(int permutation, const std::vector<GLCompileMacro*>& macros) const;
 	uint32_t        GetRequiredVertexAttributes() const
 	{
-		return ATTR_NORMAL;
+		return ATTR_QTANGENT;
 	}
 
 	void EnableMacro_TWOSIDED()

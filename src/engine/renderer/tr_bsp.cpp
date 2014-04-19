@@ -1666,15 +1666,24 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 	surf->data = ( surfaceType_t * ) cv;
 
 	{
-		srfVert_t *dv[ 3 ];
+		srfVert_t *dv0, *dv1, *dv2;
+		vec3_t    tangent, binormal;
 
 		for ( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ )
 		{
-			dv[ 0 ] = &cv->verts[ tri->indexes[ 0 ] ];
-			dv[ 1 ] = &cv->verts[ tri->indexes[ 1 ] ];
-			dv[ 2 ] = &cv->verts[ tri->indexes[ 2 ] ];
+			dv0 = &cv->verts[ tri->indexes[ 0 ] ];
+			dv1 = &cv->verts[ tri->indexes[ 1 ] ];
+			dv2 = &cv->verts[ tri->indexes[ 2 ] ];
 
-			R_CalcTangentVectors( dv );
+			R_CalcTangents( tangent, binormal,
+					dv0->xyz, dv1->xyz, dv2->xyz,
+					dv0->st, dv1->st, dv2->st );
+			R_TBNtoQtangents( tangent, binormal, dv0->normal,
+					  dv0->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv1->normal,
+					  dv1->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv2->normal,
+					  dv2->qtangent );
 		}
 	}
 
@@ -1969,15 +1978,24 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 	// Tr3B - calc tangent spaces
 	{
-		srfVert_t *dv[ 3 ];
+		srfVert_t *dv0, *dv1, *dv2;
+		vec3_t    tangent, binormal;
 
 		for ( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ )
 		{
-			dv[ 0 ] = &cv->verts[ tri->indexes[ 0 ] ];
-			dv[ 1 ] = &cv->verts[ tri->indexes[ 1 ] ];
-			dv[ 2 ] = &cv->verts[ tri->indexes[ 2 ] ];
+			dv0 = &cv->verts[ tri->indexes[ 0 ] ];
+			dv1 = &cv->verts[ tri->indexes[ 1 ] ];
+			dv2 = &cv->verts[ tri->indexes[ 2 ] ];
 
-			R_CalcTangentVectors( dv );
+			R_CalcTangents( tangent, binormal,
+					dv0->xyz, dv1->xyz, dv2->xyz,
+					dv0->st, dv1->st, dv2->st );
+			R_TBNtoQtangents( tangent, binormal, dv0->normal,
+					  dv0->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv1->normal,
+					  dv1->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv2->normal,
+					  dv2->qtangent );
 		}
 	}
 
@@ -3407,8 +3425,6 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 	for ( j = 0; j < 3; j++ )
 	{
 		out->xyz[ j ] = in->xyz[ j ];
-		out->tangent[ j ] = in->tangent[ j ];
-		out->binormal[ j ] = in->binormal[ j ];
 		out->normal[ j ] = in->normal[ j ];
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		out->lightDirection[ j ] = in->lightDirection[ j ];
@@ -3423,6 +3439,7 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 
 	for ( j = 0; j < 4; j++ )
 	{
+		out->qtangent[ j ] = in->qtangent[ j ];
 		out->lightColor[ j ] = in->lightColor[ j ];
 	}
 
@@ -4498,8 +4515,7 @@ static void R_CreateVBOWorldSurfaces( void )
                                 }
 
                                 vboSurf->vbo = R_CreateVBO2(va("staticWorldMesh_vertices %i", vboSurfaces.currentElements), numVerts, optimizedVerts,
-                                                                           ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_NORMAL
-                                                                           | ATTR_COLOR);
+                                                                           ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR);
 
                                 vboSurf->ibo = R_CreateIBO2(va("staticWorldMesh_indices %i", vboSurfaces.currentElements), numTriangles, triangles);
 
@@ -5105,12 +5121,11 @@ static void R_CreateWorldVBO( void )
 	}
 
 	s_worldData.vbo = R_CreateVBO2( va( "bspModelMesh_vertices %i", 0 ), numVerts, optimizedVerts,
-	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT |
-	                                ATTR_NORMAL | ATTR_COLOR | GLCS_LIGHTCOLOR | ATTR_LIGHTDIRECTION );
+	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT |
+	                                ATTR_COLOR | GLCS_LIGHTCOLOR | ATTR_LIGHTDIRECTION );
 #else
 	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
-	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL |
-	                                ATTR_NORMAL | ATTR_COLOR
+	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 	                                | ATTR_LIGHTDIRECTION
 #endif

@@ -715,7 +715,8 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 			t1 = v1->texCoords;
 			t2 = v2->texCoords;
 
-			R_CalcTangentSpace( tangent, binormal, normal, p0, p1, p2, t0, t1, t2 );
+			R_CalcFaceNormal( normal, p0, p1, p2 );
+			R_CalcTangents( tangent, binormal, p0, p1, p2, t0, t1, t2 );
 
 			for ( k = 0; k < 3; k++ )
 			{

@@ -7434,7 +7434,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 
 	RB_SetGL2D();
 
-	glVertexAttrib4f( ATTR_INDEX_NORMAL, 0, 0, 1, 1 );
+	glVertexAttrib4f( ATTR_INDEX_QTANGENT, 0.0f, 0.0f, 0.0f, 1.0f );
 	glVertexAttrib4f( ATTR_INDEX_COLOR, tr.identityLight, tr.identityLight, tr.identityLight, 1 );
 
 	gl_genericShader->DisableVertexSkinning();
