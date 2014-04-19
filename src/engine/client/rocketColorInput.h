@@ -112,12 +112,16 @@ public:
 private:
 	void UpdateValue( void )
 	{
+		Rocket::Core::String string = "^7";
+
 		while( color_value->HasChildNodes() )
 		{
 			color_value->RemoveChild( color_value->GetFirstChild() );
 		}
 
-		Rocket::Core::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( dynamic_cast< Rocket::Controls::ElementFormControlInput* >( input )->GetValue().CString(), RP_QUAKE ) );
+		string += dynamic_cast< Rocket::Controls::ElementFormControlInput* >( input )->GetValue();
+
+		Rocket::Core::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( string.CString(), RP_QUAKE ) );
 	}
 
 	Rocket::Core::Element *input;
