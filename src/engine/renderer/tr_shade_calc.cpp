@@ -693,90 +693,6 @@ void RB_CalcMoveVertexes( deformStage_t *ds )
 }
 
 /*
-=============
-DeformText
-
-Change a polygon into a bunch of text polygons
-=============
-*/
-void DeformText( const char *text )
-{
-	int    i;
-	vec3_t origin, width, height;
-	int    len;
-	int    ch;
-	float  bottom, top;
-	vec3_t mid;
-
-	height[ 0 ] = 0;
-	height[ 1 ] = 0;
-	height[ 2 ] = -1;
-	CrossProduct( tess.normals[ 0 ], height, width );
-
-	// find the midpoint of the box
-	VectorClear( mid );
-	bottom = 999999;
-	top = -999999;
-
-	for ( i = 0; i < 4; i++ )
-	{
-		VectorAdd( tess.xyz[ i ], mid, mid );
-
-		if ( tess.xyz[ i ][ 2 ] < bottom )
-		{
-			bottom = tess.xyz[ i ][ 2 ];
-		}
-
-		if ( tess.xyz[ i ][ 2 ] > top )
-		{
-			top = tess.xyz[ i ][ 2 ];
-		}
-	}
-
-	VectorScale( mid, 0.25f, origin );
-
-	// determine the individual character size
-	height[ 0 ] = 0;
-	height[ 1 ] = 0;
-	height[ 2 ] = ( top - bottom ) * 0.5f;
-
-	VectorScale( width, height[ 2 ] * -0.75f, width );
-
-	// determine the starting position
-	len = strlen( text );
-	VectorMA( origin, ( len - 1 ), width, origin );
-
-	// clear the shader indexes
-	tess.multiDrawPrimitives = 0;
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
-
-	// draw each character
-	for ( i = 0; i < len; i++ )
-	{
-		ch = text[ i ];
-		ch &= 255;
-
-		if ( ch != ' ' )
-		{
-			int   row, col;
-			float frow, fcol, size;
-
-			row = ch >> 4;
-			col = ch & 15;
-
-			frow = row * 0.0625f;
-			fcol = col * 0.0625f;
-			size = 0.0625f;
-
-			Tess_AddQuadStampExt( origin, width, height, colorWhite, fcol, frow, fcol + size, frow + size );
-		}
-
-		VectorMA( origin, -2, width, origin );
-	}
-}
-
-/*
 ==================
 GlobalVectorToLocal
 ==================
@@ -1108,17 +1024,6 @@ void Tess_DeformGeometry( void )
 
 			case DEFORM_AUTOSPRITE2:
 				Autosprite2Deform();
-				break;
-
-			case DEFORM_TEXT0:
-			case DEFORM_TEXT1:
-			case DEFORM_TEXT2:
-			case DEFORM_TEXT3:
-			case DEFORM_TEXT4:
-			case DEFORM_TEXT5:
-			case DEFORM_TEXT6:
-			case DEFORM_TEXT7:
-				DeformText( backEnd.refdef.text[ ds->deformation - DEFORM_TEXT0 ] );
 				break;
 
 			case DEFORM_SPRITE:

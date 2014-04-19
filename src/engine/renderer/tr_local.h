@@ -834,14 +834,6 @@ static inline float unpackTC( int16_t tc ) {
 	  DEFORM_PROJECTION_SHADOW,
 	  DEFORM_AUTOSPRITE,
 	  DEFORM_AUTOSPRITE2,
-	  DEFORM_TEXT0,
-	  DEFORM_TEXT1,
-	  DEFORM_TEXT2,
-	  DEFORM_TEXT3,
-	  DEFORM_TEXT4,
-	  DEFORM_TEXT5,
-	  DEFORM_TEXT6,
-	  DEFORM_TEXT7,
 	  DEFORM_SPRITE,
 	  DEFORM_FLARE
 	} deform_t;
@@ -1479,9 +1471,6 @@ static inline float unpackTC( int16_t tc ) {
 		qboolean areamaskModified; // qtrue if areamask changed since last scene
 
 		float    floatTime; // tr.refdef.time / 1000.0
-
-		// text messages for deform text shaders
-		char                    text[ MAX_RENDER_STRINGS ][ MAX_RENDER_STRING_LENGTH ];
 
 		int                     numEntities;
 		trRefEntity_t           *entities;
