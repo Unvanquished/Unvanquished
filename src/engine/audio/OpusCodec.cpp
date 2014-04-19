@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "OpusCodec.h"
+#include "SoundCodec.h"
 #include "../framework/FileSystem.h"
 #include "../../common/Log.h"
 #include <memory>

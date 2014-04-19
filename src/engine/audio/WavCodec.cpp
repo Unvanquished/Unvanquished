@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "WavCodec.h"
+#include "SoundCodec.h"
 #include "../framework/FileSystem.h"
 #include "../../common/Log.h"
 #include <string>

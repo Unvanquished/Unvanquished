@@ -27,16 +27,31 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
-
-#ifndef OGG_CODEC_H
-#define OGG_CODEC_H
-
-#include "AudioData.h"
-#include <string>
+#include "SoundCodec.h"
+#include "../../common/Log.h"
 
 namespace Audio {
 
-AudioData LoadOggCodec(std::string filename);
+AudioData LoadSoundCodec(std::string filename)
+{
 
-} //namespace Audio
-#endif
+	size_t position_of_last_dot{filename.find_last_of('.')};
+
+	if (position_of_last_dot == std::string::npos) {
+		Log::Warn("Could not find the extension in %s", filename);
+		return AudioData();
+	}
+
+	std::string ext{filename.substr(position_of_last_dot + 1)};
+
+	if (ext == "wav")
+		return LoadWavCodec(filename);
+	if (ext == "ogg")
+		return LoadOggCodec(filename);
+	if (ext == "opus")
+		return LoadOpusCodec(filename);
+
+	Log::Warn("No codec available for opening %s.", filename);
+	return AudioData();
+}
+} // namespace Audio

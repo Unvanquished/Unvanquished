@@ -607,13 +607,10 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/Sample.h
   ${ENGINE_DIR}/audio/Sound.cpp
   ${ENGINE_DIR}/audio/Sound.h
-  ${ENGINE_DIR}/audio/CodecFactory.h
-  ${ENGINE_DIR}/audio/CodecFactory.cpp
-  ${ENGINE_DIR}/audio/OggCodec.h
+  ${ENGINE_DIR}/audio/SoundCodec.h
+  ${ENGINE_DIR}/audio/SoundCodec.cpp
   ${ENGINE_DIR}/audio/OggCodec.cpp
-  ${ENGINE_DIR}/audio/OpusCodec.h
   ${ENGINE_DIR}/audio/OpusCodec.cpp
-  ${ENGINE_DIR}/audio/WavCodec.h
   ${ENGINE_DIR}/audio/WavCodec.cpp
   )
 
