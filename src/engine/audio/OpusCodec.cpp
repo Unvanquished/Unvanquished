@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SoundCodec.h"
 #include "../framework/FileSystem.h"
-#include "../../common/Log.h"
+#include "AudioPrivate.h"
 #include <memory>
 #include <vector>
 
@@ -108,7 +108,7 @@ AudioData LoadOpusCodec(std::string filename)
 	}
 	catch (std::system_error& err)
 	{
-		Log::Warn("Failed to open %s: %s", filename, err.what());
+		audioLogs.Warn("Failed to open %s: %s", filename, err.what());
 		return AudioData();
 	}
 
@@ -116,7 +116,7 @@ AudioData LoadOpusCodec(std::string filename)
 	OggOpusFile* opusFile = op_open_callbacks(&dataSource, &Opus_Callbacks, nullptr, 0, nullptr);
 
 	if (!opusFile) {
-		Log::Warn("Error while reading %s", filename);
+		audioLogs.Warn("Error while reading %s", filename);
 		return AudioData();
 	}
 
@@ -124,19 +124,19 @@ AudioData LoadOpusCodec(std::string filename)
 
 	if (!opusInfo) {
 		op_free(opusFile);
-		Log::Warn("Could not read OpusHead in %s", filename);
+		audioLogs.Warn("Could not read OpusHead in %s", filename);
 		return AudioData();
 	}
 
 	if (opusInfo->stream_count != 1) {
 		op_free(opusFile);
-		Log::Warn("Only one stream is supported in Opus files: %s", filename);
+		audioLogs.Warn("Only one stream is supported in Opus files: %s", filename);
 		return AudioData();
 	}
 
 	if (opusInfo->channel_count != 1 && opusInfo->channel_count != 2) {
 		op_free(opusFile);
-		Log::Warn("Only mono and stereo Opus files are supported: %s", filename);
+		audioLogs.Warn("Only mono and stereo Opus files are supported: %s", filename);
 		return AudioData();
 	}
 

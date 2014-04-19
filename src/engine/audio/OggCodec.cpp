@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SoundCodec.h"
 #include "../framework/FileSystem.h"
-#include "../../common/Log.h"
+#include "AudioPrivate.h"
 #include <memory>
 #include <vector>
 
@@ -121,20 +121,20 @@ AudioData LoadOggCodec(std::string filename)
 	}
 	catch (std::system_error& err)
 	{
-		Log::Warn("Failed to open %s: %s", filename, err.what());
+		audioLogs.Warn("Failed to open %s: %s", filename, err.what());
 		return AudioData();
 	}
 	OggDataSource dataSource = {&audioFile, 0};
 	std::unique_ptr<OggVorbis_File> vorbisFile(new OggVorbis_File);
 
 	if (ov_open_callbacks(&dataSource, vorbisFile.get(), nullptr, 0, Ogg_Callbacks) != 0) {
-        Log::Warn("Error while reading %s", filename);
+        audioLogs.Warn("Error while reading %s", filename);
 		ov_clear(vorbisFile.get());
 		return AudioData();
 	}
 
 	if (ov_streams(vorbisFile.get()) != 1) {
-		Log::Warn("Unsupported number of streams in %s.", filename);
+		audioLogs.Warn("Unsupported number of streams in %s.", filename);
 		ov_clear(vorbisFile.get());
 		return AudioData();
 	}
@@ -142,7 +142,7 @@ AudioData LoadOggCodec(std::string filename)
 	vorbis_info* oggInfo = ov_info(vorbisFile.get(), 0);
 
 	if (!oggInfo) {
-        Log::Warn("Could not read vorbis_info in %s.", filename);
+        audioLogs.Warn("Could not read vorbis_info in %s.", filename);
 		ov_clear(vorbisFile.get());
 		return AudioData();
 	}

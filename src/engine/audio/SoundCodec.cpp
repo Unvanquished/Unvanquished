@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "SoundCodec.h"
-#include "../../common/Log.h"
+#include "AudioPrivate.h"
 
 namespace Audio {
 
@@ -38,7 +38,7 @@ AudioData LoadSoundCodec(std::string filename)
 	size_t position_of_last_dot{filename.find_last_of('.')};
 
 	if (position_of_last_dot == std::string::npos) {
-		Log::Warn("Could not find the extension in %s", filename);
+		audioLogs.Warn("Could not find the extension in %s", filename);
 		return AudioData();
 	}
 
@@ -51,7 +51,7 @@ AudioData LoadSoundCodec(std::string filename)
 	if (ext == "opus")
 		return LoadOpusCodec(filename);
 
-	Log::Warn("No codec available for opening %s.", filename);
+	audioLogs.Warn("No codec available for opening %s.", filename);
 	return AudioData();
 }
 } // namespace Audio

@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SoundCodec.h"
 #include "../framework/FileSystem.h"
-#include "../../common/Log.h"
+#include "AudioPrivate.h"
 #include <string>
 #include <algorithm>
 
@@ -68,28 +68,28 @@ AudioData LoadWavCodec(std::string filename)
 	}
 	catch (std::system_error& err)
 	{
-		Log::Warn("Failed to open %s: %s", filename, err.what());
+		audioLogs.Warn("Failed to open %s: %s", filename, err.what());
         return AudioData();
 	}
 
 	std::string format = audioFile.substr(8, 4);
 
 	if (format != "WAVE") {
-		Log::Warn("The format label in %s is not \"WAVE\".", filename);
+		audioLogs.Warn("The format label in %s is not \"WAVE\".", filename);
 		return AudioData();
 	}
 
 	std::string chunk1ID = audioFile.substr(12, 4);
 
 	if (chunk1ID != "fmt ") {
-		Log::Warn("The Chunk1ID in %s is not \"fmt\".", filename);
+		audioLogs.Warn("The Chunk1ID in %s is not \"fmt\".", filename);
 		return AudioData();
 	}
 
 	int numChannels = PackChars(audioFile, 22, 2);
 
 	if (numChannels != 1 && numChannels != 2) {
-		Log::Warn("%s has an unsupported number of channels.", filename);
+		audioLogs.Warn("%s has an unsupported number of channels.", filename);
 		return AudioData();
 	}
 
@@ -97,14 +97,14 @@ AudioData LoadWavCodec(std::string filename)
 	int byteDepth = PackChars(audioFile, 34, 2) / 8;
 
 	if (byteDepth != 1 && byteDepth != 2) {
-		Log::Warn("%s has an unsupported bytedepth.", filename);
+		audioLogs.Warn("%s has an unsupported bytedepth.", filename);
 		return AudioData();
 	}
 
     //TODO  find the position of "data"
     std::size_t dataOffset{audioFile.find("data", 36)};
 	if (dataOffset == std::string::npos) {
-		Log::Warn("Could not find the data chunk in %s", filename);
+		audioLogs.Warn("Could not find the data chunk in %s", filename);
 		return AudioData();
 	}
 	std::string chunk2ID = audioFile.substr(dataOffset, 4);
@@ -112,7 +112,7 @@ AudioData LoadWavCodec(std::string filename)
 	int size = PackChars(audioFile, dataOffset + 4, 4);
 
 	if (size <= 0 || sampleRate  <=0 ){
-		Log::Warn("Error in reading %s.", filename);
+		audioLogs.Warn("Error in reading %s.", filename);
 		return AudioData();
 	}
 
