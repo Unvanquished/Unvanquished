@@ -355,10 +355,11 @@ namespace Audio {
 
         streams[streamNum]->SetGain(volume);
 
-	    AudioData audioData(rate, width, channels, (width * numSamples * channels), data, false);
+	    AudioData audioData(rate, width, channels, (width * numSamples * channels),
+	                        reinterpret_cast<const char*>(data));
 	    AL::Buffer buffer;
 
-        int feedError = buffer.Feed(audioData);
+	    int feedError = buffer.Feed(audioData);
 
         if (not feedError) {
             streams[streamNum]->AppendBuffer(std::move(buffer));
@@ -468,7 +469,6 @@ namespace Audio {
             uint16_t* buffer = new uint16_t[numSamples];
             GetCapturedData(numSamples, buffer);
             StreamData(N_STREAMS - 1, buffer, numSamples, 16000, 2, 1, 1.0, -1);
-            delete[] buffer;
         }
     }
 

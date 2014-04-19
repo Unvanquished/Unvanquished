@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef AUDIO_DATA_H
 #define AUDIO_DATA_H
+#include <memory>
 
 namespace Audio {
 
@@ -40,17 +41,14 @@ struct AudioData {
 	    , numberOfChannels{0}
 	    , size{0}
 	    , rawSamples{nullptr}
-	    , memoryOwned{false}
 	{}
 
-	AudioData(int sampleRate, int byteDepth, int numberOfChannels, int size, const void* rawSamples,
-	          bool memoryOwned = true)
+	AudioData(int sampleRate, int byteDepth, int numberOfChannels, int size, const char* rawSamples)
 	    : sampleRate{sampleRate}
 	    , byteDepth{byteDepth}
 	    , numberOfChannels{numberOfChannels}
 	    , size{size}
 	    , rawSamples{rawSamples}
-	    , memoryOwned{memoryOwned}
 	{}
 
 	AudioData(AudioData&& that)
@@ -58,28 +56,16 @@ struct AudioData {
 	    , byteDepth{that.byteDepth}
 	    , numberOfChannels{that.numberOfChannels}
 	    , size{that.size}
-	    , rawSamples{that.rawSamples}
-	    , memoryOwned{that.memoryOwned}
-	{
-		that.memoryOwned = false;
-	}
+	    , rawSamples{std::move(that.rawSamples)}
+	{}
 
 	AudioData(const AudioData& that) = delete;
-
-	~AudioData()
-	{
-		if (memoryOwned && rawSamples != nullptr)
-			delete[] static_cast<const char*>(rawSamples);
-	}
 
 	const int sampleRate;
 	const int byteDepth;
 	const int numberOfChannels;
 	const int size;
-	const void* rawSamples;
-
-private:
-	bool memoryOwned; // if the memory is owned then it must be deleted during destruction
+	std::unique_ptr<const char[]> rawSamples;
 };
 } // namespace Audio
 #endif

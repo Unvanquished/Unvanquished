@@ -135,7 +135,7 @@ namespace AL {
 	    ALuint format = Format(audioData.byteDepth, audioData.numberOfChannels);
 
 	    CHECK_AL_ERROR();
-	    alBufferData(alHandle, format, audioData.rawSamples, audioData.size,
+	    alBufferData(alHandle, format, audioData.rawSamples.get(), audioData.size,
 	                 audioData.sampleRate);
 
 	    return ClearALError();

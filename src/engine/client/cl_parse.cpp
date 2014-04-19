@@ -843,7 +843,7 @@ A VoIP message has been received from the server
 static
 void CL_ParseVoip( msg_t *msg )
 {
-	static short decoded[ 4096 ]; // !!! FIXME: don't hardcode.
+    const int decodedSize = 4096 * sizeof(short); //FIXME: don't hardcode.
 
 	const int    sender = MSG_ReadShort( msg );
 	const int    generation = MSG_ReadByte( msg );
@@ -936,7 +936,7 @@ void CL_ParseVoip( msg_t *msg )
 		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
 		seqdiff = 0;
 	}
-	else if ( seqdiff * clc.speexFrameSize * 2 >= sizeof( decoded ) ) // more than 2 seconds of audio dropped?
+	else if ( seqdiff * clc.speexFrameSize * 2 >= decodedSize ) // more than 2 seconds of audio dropped?
 	{
 		// just start over.
 		Com_DPrintf( "VoIP: Dropped way too many (%d) frames from client #%d\n",
@@ -944,6 +944,8 @@ void CL_ParseVoip( msg_t *msg )
 		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
 		seqdiff = 0;
 	}
+
+    short *decoded = new short[decodedSize/sizeof(short)];
 
 	if ( seqdiff != 0 )
 	{
@@ -953,7 +955,7 @@ void CL_ParseVoip( msg_t *msg )
 		// tell speex that we're missing frames...
 		for ( i = 0; i < seqdiff; i++ )
 		{
-			assert( ( written + clc.speexFrameSize ) * 2 < sizeof( decoded ) );
+			assert( ( written + clc.speexFrameSize ) * 2 < decodedSize );
 			speex_decode_int( clc.speexDecoder[ sender ], NULL, decoded + written );
 			written += clc.speexFrameSize;
 		}
@@ -972,13 +974,14 @@ void CL_ParseVoip( msg_t *msg )
 		MSG_ReadData( msg, encoded, len );
 
 		// shouldn't happen, but just in case...
-		if ( ( written + clc.speexFrameSize ) * 2 > sizeof( decoded ) )
+		if ( ( written + clc.speexFrameSize ) * 2 > decodedSize )
 		{
 			Com_DPrintf( "VoIP: playback %d bytes, %d samples, %d frames\n",
 			             written * 2, written, i );
 
 			CL_PlayVoip( sender, written, ( const byte * ) decoded, flags );
 			written = 0;
+            decoded = new short[decodedSize / sizeof(short)];
 		}
 
 		speex_bits_read_from( &clc.speexDecoderBits[ sender ], encoded, len );
