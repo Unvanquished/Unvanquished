@@ -26,13 +26,10 @@ uniform int		u_VertexSkinning;
 // even elements are rotation quat, odd elements are translation + scale (in .w)
 uniform vec4		u_Bones[ 2 * MAX_GLSL_BONES ];
 
-vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
-	vec3 tmp = 2.0 * cross( quat.xyz, vec );
-	return vec + quat.w * tmp + cross( quat.xyz, tmp );
-}
+vec3 QuatTransVec(in vec4 quat, in vec3 vec);
 
 void VertexSkinning_P_N(const vec3 inPosition,
-			const vec3 inNormal,
+			const vec4 inQTangent,
 
 			out vec4 position,
 			out vec3 normal)
@@ -45,6 +42,8 @@ void VertexSkinning_P_N(const vec3 inPosition,
 
 	vec4 quat = u_Bones[ idx.x ];
 	vec4 trans = u_Bones[ idx.x + 1 ];
+
+	vec3 inNormal = QuatTransVec( inQTangent, vec3( 0.0, 0.0, 1.0 ) );
 
 	position.xyz = weights.x * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
 	normal = weights.x * (QuatTransVec( quat, inNormal ));
@@ -72,9 +71,7 @@ void VertexSkinning_P_N(const vec3 inPosition,
 }
 
 void VertexSkinning_P_TBN(	const vec3 inPosition,
-				const vec3 inTangent,
-				const vec3 inBinormal,
-				const vec3 inNormal,
+				const vec4 inQTangent,
 
 				out vec4 position,
 				out vec3 tangent,
@@ -89,6 +86,12 @@ void VertexSkinning_P_TBN(	const vec3 inPosition,
 
 	vec4 quat = u_Bones[ idx.x ];
 	vec4 trans = u_Bones[ idx.x + 1 ];
+
+	vec3 inTangent = QuatTransVec( inQTangent, vec3( 1.0, 0.0, 0.0 ) );
+	vec3 inBinormal = QuatTransVec( inQTangent, vec3( 0.0, 1.0, 0.0 ) );
+	vec3 inNormal = QuatTransVec( inQTangent, vec3( 0.0, 0.0, 1.0 ) );
+
+	inTangent *= sign( inQTangent.w );
 
 	position.xyz = weights.x * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
 	normal = weights.x * (QuatTransVec( quat, inNormal ));
