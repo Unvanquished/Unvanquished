@@ -158,8 +158,7 @@ AudioData LoadOggCodec(std::string filename)
 
 	std::vector<char> samples;
 
-	while ((bytesRead = ov_read(vorbisFile.get(), buffer, 4096, 0, sampleWidth, 1, &bitStream)) >
-	       0) {
+	while ((bytesRead = ov_read(vorbisFile.get(), buffer, 4096, 0, sampleWidth, 1, &bitStream)) > 0) {
 		std::copy_n(buffer, bytesRead, std::back_inserter(samples));
 	}
 	ov_clear(vorbisFile.get());
