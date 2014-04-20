@@ -214,21 +214,19 @@ datagridrow:selected{
 			<panel>
 				Favorite servers here
 			</panel>
-			<tab onClick="buildDS server_browser local">LAN</tab>
-			<panel onShow="init_servers local">
+			<tab onClick="init_servers local;buildDS server_browser local">LAN</tab>
+			<panel>
 				<p><span id="status"></span></p>
 				<button onClick="buildDS server_browser local">Refresh</button>
-				<button onClick="sortDS server_browser local ping">Sort</button>
-				<button onClick="hide serverbrowser; show main">Close</button>
 				<div class="servers">
 				<datagrid source="server_browser.local">
-					<col fields="label" width="2%" formatter="ServerLabel"></col>
-					<col fields="name" width="56%">Name:</col>
-					<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
-					<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
+					<col fields="label" width="30px" class="label" formatter="ServerLabel"><div></div></col>
+					<col fields="name" width="45%" class="name" >Name:</col>
+					<col fields="map" width="15%" class="map"><button onClick="sortDS server_browser local map">Map:</button></col>
+					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><button onClick="sortDS server_browser local players">Players (Bots)</button></col>
+					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><button onClick="sortDS server_browser local ping">Ping</button></col>
 				</datagrid>
 				</div>
-
 			</panel>
 		</tabset>
 		</div>
