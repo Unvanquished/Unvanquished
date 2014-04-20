@@ -51,12 +51,14 @@
 			{
 				position: absolute;
 				top: 40%;
+				z-index: -1;
 
 			}
 			clip_stack
 			{
 				position: absolute;
 				top: 57%;
+				z-index: -1;
 			}
 			div#bars
 			{
@@ -72,14 +74,15 @@
 				width: 100%;
 				height: 28px;
 				image: /white;
-				z-index: 2;
 				left: 5%;
 				orientation: right;
+				z-index: -1;
 			}
 			progressbar#health
 			{
 				top: 20%;
 				color: #ff001c7a;
+				z-index: -1;
 			}
 			progressbar#stamina
 			{
@@ -92,7 +95,7 @@
 				margin-left:10px;
 				display:block;
 				text-align:center;
-				color:#ffffff;
+				color:#ff6562ff;
 				z-index: 2;
 
 			}
@@ -105,7 +108,7 @@
 			}
 			img.health{
 				margin-top:28px;
-				margin-left:10px;
+				margin-left:13px;
 				width:40px;
 				color:#ffffff;
 				height:40px;
@@ -126,7 +129,7 @@
 			height:35px;
 			margin-top:90px;
 			}
-			div.ammo{
+			div.ammo, div.credits{
 				color:#aaffffff;
 				width: 100%;
 				height: 28px;
@@ -144,10 +147,11 @@
 		<img id="left" src="/ui/assets/human/leftbg.tga"/>
 	</div>
 	<div id="gunstuff">
-		<weapon_icon/><div class="ammo">100</div>
+		<weapon_icon/><div class="ammo"><ammo/></div>
 		<ammo_stack/>
 		<img class="clip" src="/ui/assets/human/clip.tga"/>
 		<clip_stack/>
+		<div class="credits"><credits/> Credits</div>
 	</div>
 	<div id="bars">
 		<img class="stamina" src="/ui/assets/human/stamina.tga"/>
