@@ -24,9 +24,13 @@
 			}
 			body
 			{
-				background-color:#000;
+				width: 100%;
+				height: 100%;
 				font-family: Roboto;
 				font-size:1.5em;
+				background-decorator: image;
+				background-image:/ui/assets/mainmenu;
+
 			}
 			p,h1,h2{
 				display:block;
@@ -48,24 +52,29 @@
 				margin-top:.5em;
 			}
 			.bar{
-				text-align:left;
-				width:50%;
+				text-align:center;
+				width:90%;
 				display:inline-block;
 				height:1em;
 				background:#333;
 				border-style:solid;
 				border-width:1px;
-				border-color:#777;			
+				border-color:#777;
 			}
-			
+			progressbar
+			{
+				width: 100%;
+				image: /white;
+				z-index: 3;
+			}
 			.bar .barValue {
-				float:left;
+				left:0px;
+				position:absolute;
 				height:100%;
 				background:#BBBBBBAA;
 				display:block;
 			}
-			
-			
+
 		</style>
 		<title>Connecting</title>
 	</head>
@@ -73,16 +82,16 @@
 		<p>
 		This Server requires additional files.</p>
 		<p>Please wait while downloading.</p>
-		
-		<h2>Time left: 32s</h2>
-		
-		<h1>Download</h1>
-		<p>Download rate: 123 KB/s</p>
-		<p>Size: 14MB</p>
-		
-		<p>68%</p>
-		<div class="bar"><div class="barValue" style="width:68%;"></div></div>
-		
+
+		<h2>Time left: <downloadTime/></h2>
+
+		<h1>Download: <downloadName/></h1>
+		<p>Download rate: <downloadSpeed/></p>
+		<p>Size: <downloadTotalSize/></p>
+
+		<p><progress_value src="download"/>%</p>
+		<div class="bar"><progressbar src="download" class="barValue" /></div>
+
 		<p id="tip">Pro Tip: Don't feed grangers after midnight.</p>
 		<div id="background">
 			<img src="/ui/assets/mainmenu.jpg" />
