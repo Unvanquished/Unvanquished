@@ -720,6 +720,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 			case CA_CONNECTING:
 			case CA_CHALLENGING:
 			case CA_CONNECTED:
+			case CA_DOWNLOADING:
 				// connecting clients will only show the connection dialog
 				// refresh to update the time
 				break;

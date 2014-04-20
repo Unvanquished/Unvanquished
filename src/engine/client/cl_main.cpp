@@ -2643,7 +2643,7 @@ void CL_InitDownloads( void )
 		if ( *clc.downloadList )
 		{
 			// if autodownloading is not enabled on the server
-			cls.state = CA_CONNECTED;
+			cls.state = CA_DOWNLOADING;
 			CL_NextDownload();
 			return;
 		}
