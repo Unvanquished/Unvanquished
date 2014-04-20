@@ -827,16 +827,16 @@ void CG_Rocket_CleanUpDemoList( const char *args )
 
 void CG_Rocket_BuildPlayerList( const char *args )
 {
-	char buf[ MAX_INFO_STRING ];
+	char buf[ MAX_INFO_STRING ] = { 0 };
 	clientInfo_t *ci;
 	score_t *score;
 	int i;
 
-// 	// Do not build list if not currently playing
-// 	if ( rocketInfo.cstate.connState < CA_ACTIVE )
-// 	{
-// 		return;
-// 	}
+	// Do not build list if not currently playing
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
+	{
+		return;
+	}
 
 	CG_RequestScores();
 
