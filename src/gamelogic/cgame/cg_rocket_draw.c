@@ -2529,6 +2529,46 @@ static void CG_Rocket_DrawDownloadTime( void )
 	}
 }
 
+static void CG_Rocket_DrawDownloadTotalSize( void )
+{
+	char totalSizeBuf[ MAX_STRING_CHARS ];
+	float downloadSize = trap_Cvar_VariableValue( "cl_downloadSize" );
+
+	CG_ReadableSize( totalSizeBuf,  sizeof totalSizeBuf,  downloadSize );
+
+	trap_Rocket_SetInnerRML( totalSizeBuf, RP_QUAKE );
+}
+
+static void CG_Rocket_DrawDownloadCompletedSize( void )
+{
+	char dlSizeBuf[ MAX_STRING_CHARS ];
+	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
+
+	CG_ReadableSize( dlSizeBuf,  sizeof dlSizeBuf,  downloadCount );
+
+	trap_Rocket_SetInnerRML( dlSizeBuf, RP_QUAKE );
+}
+
+static void CG_Rocket_DrawDownloadSpeed( void )
+{
+	char xferRateBuf[ MAX_STRING_CHARS ];
+	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
+	float downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
+	int xferRate;
+
+	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
+	{
+		xferRate = downloadCount / ( ( rocketInfo.realtime - downloadTime ) / 1000 );
+		CG_ReadableSize( xferRateBuf, sizeof xferRateBuf, xferRate );
+		trap_Rocket_SetInnerRML( va( "%s/Sec", xferRateBuf ), RP_QUAKE );
+	}
+	else
+	{
+		xferRate = 0;
+		trap_Rocket_SetInnerRML( va( "0 KB/Sec", xferRateBuf ), RP_QUAKE );
+	}
+}
+
 typedef struct
 {
 	const char *name;
@@ -2553,8 +2593,11 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
 	{ "crosshair_indicator", &CG_Rocket_DrawCrosshairIndicator, ELEMENT_BOTH },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
+	{ "downloadCompletedSize", &CG_Rocket_DrawDownloadCompletedSize, ELEMENT_ALL },
 	{ "downloadName", &CG_Rocket_DrawDownloadName, ELEMENT_ALL },
+	{ "downloadSpeed", &CG_Rocket_DrawDownloadSpeed, ELEMENT_ALL },
 	{ "downloadTime", &CG_Rocket_DrawDownloadTime, ELEMENT_ALL },
+	{ "downloadTotalSize", &CG_Rocket_DrawDownloadTotalSize, ELEMENT_ALL },
 	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
 	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
 	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },

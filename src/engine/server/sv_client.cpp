@@ -1291,10 +1291,10 @@ void SV_UserinfoChanged( client_t *cl )
 			{
 				cl->rate = 1000;
 			}
-// 			else if ( cl->rate > 90000 )
-// 			{
-// 				cl->rate = 90000;
-// 			}
+			else if ( cl->rate > 90000 )
+			{
+				cl->rate = 90000;
+			}
 		}
 		else
 		{

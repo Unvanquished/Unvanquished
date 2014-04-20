@@ -152,6 +152,12 @@ float CG_Rocket_FuelProgress( void )
 	return ( float )fuel / ( float )JETPACK_FUEL_MAX;
 }
 
+float CG_Rocket_DownloadProgress( void )
+{
+	return trap_Cvar_VariableValue( "cl_downloadCount" ) / trap_Cvar_VariableValue( "cl_downloadSize" );
+}
+
+
 typedef struct progressBarCmd_s
 {
 	const char *command;
@@ -166,6 +172,7 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "buildables", &CG_Rocket_GetBuildableLoadProgress, ELEMENT_LOADING },
 	{ "characters", &CG_Rocket_GetCharLoadProgress, ELEMENT_LOADING },
 	{ "charge", &CG_ChargeProgress, ELEMENT_BOTH },
+	{ "download", &CG_Rocket_DownloadProgress, ELEMENT_ALL },
 	{ "fuel", &CG_Rocket_FuelProgress, ELEMENT_HUMANS },
 	{ "health", &CG_Rocket_GetPlayerHealthProgress, ELEMENT_BOTH },
 	{ "media", &CG_Rocket_GetMediaLoadProgress, ELEMENT_LOADING },

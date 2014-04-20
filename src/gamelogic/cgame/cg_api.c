@@ -125,7 +125,9 @@ int trap_Cvar_VariableIntegerValue( const char *var_name )
 
 float trap_Cvar_VariableValue( const char *var_name )
 {
-	return syscallVM( CG_CVAR_VARIABLEVALUE, var_name );
+	floatint_t fi;
+	fi.i = syscallVM( CG_CVAR_VARIABLEVALUE, var_name );
+	return fi.f;
 }
 
 //08.
