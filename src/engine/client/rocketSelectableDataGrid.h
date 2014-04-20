@@ -69,6 +69,9 @@ public:
 		{
 			Element* elem;
 			int column = -1;
+			Rocket::Core::String dsName = dataSource.Substring( 0, dataSource.Find( "." ) );
+			Rocket::Core::String tableName =  dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() );
+
 
 			// get the column index
 			elem = evt.GetTargetElement();
@@ -103,8 +106,6 @@ public:
 				Rocket::Controls::ElementDataGridRow *row = dynamic_cast<Rocket::Controls::ElementDataGridRow*>( elem );
 				int index = row->GetTableRelativeIndex();
 				Rocket::Core::String indexStr( va( "%d", index ) );
-				Rocket::Core::String dsName = dataSource.Substring( 0, dataSource.Find( "." ) );
-				Rocket::Core::String tableName =  dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() );
 
 				// this should never happen
 				if( index >= this->GetNumRows() )
@@ -145,6 +146,11 @@ public:
 				else
 					DispatchEvent( "rowactivate", parameters );
 			}
+
+			if( evt == "dblclick" )
+			{
+				eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "execDS %s %s", dataSource.Substring( 0, dataSource.Find( "." ) ).CString(), tableName.CString() ) ) ) );
+			}
 		}
 		else if( evt == "rowremove" )
 		{
@@ -163,10 +169,6 @@ public:
 			}
 		}
 
-		if( evt == "dblclick" )
-		{
-			eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "execDS %s", dataSource.Substring( 0, dataSource.Find( "." ) ).CString() ) ) ) );
-		}
 	}
 
 private:
