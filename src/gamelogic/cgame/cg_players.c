@@ -33,6 +33,7 @@ float debug_anim_blend;
 static refSkeleton_t legsSkeleton;
 static refSkeleton_t torsoSkeleton;
 static refSkeleton_t oldSkeleton;
+static refSkeleton_t jetpackSkeleton;
 
 typedef struct {
 	vec3_t delta;
@@ -2530,6 +2531,85 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 	AnglesToAxis( localAngles, nonSegAxis );
 }
 
+/*
+===============
+CG_JetpackAnimation
+===============
+*/
+#define JETPACK_USES_SKELETAL_ANIMATION 1
+
+static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *backLerp )
+{
+	lerpFrame_t	*lf = &cent->jetpackLerpFrame;
+	animation_t	*anim;
+
+	if ( cent->jetpackAnim != lf->animationNumber || !lf->animation )
+	{
+		lf->old_animationNumber = lf->animationNumber;
+		lf->old_animation = lf->animation;
+
+		lf->animationNumber = cent->jetpackAnim;
+
+		if( cent->jetpackAnim < 0 || cent->jetpackAnim >= MAX_JETPACK_ANIMATIONS )
+			CG_Error( "Bad animation number: %i", cent->jetpackAnim );
+
+
+		if( JETPACK_USES_SKELETAL_ANIMATION )
+		{
+			if ( jetpackSkeleton.type != SK_INVALID )
+			{
+				oldSkeleton = jetpackSkeleton;
+
+				if ( lf->old_animation != NULL && lf->old_animation->handle )
+				{
+					if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+					{
+						CG_Printf( "Can't build old jetpack skeleton\n" );
+						return;
+					}
+				}
+			}
+		}
+
+		anim = &cgs.media.jetpackAnims[ cent->jetpackAnim ];
+
+		if ( !lf->animation )
+			lf->frameTime = cg.time;
+
+		lf->animation = anim;
+
+		lf->animationTime = cg.time + anim->initialLerp;
+
+		if ( JETPACK_USES_SKELETAL_ANIMATION )
+		{
+			lf->oldFrame = lf->frame = 0;
+			lf->oldFrameTime = lf->frameTime = 0;
+		}
+
+		if ( lf->old_animationNumber <= 0 )
+			lf->blendlerp = 0.0f;
+		else
+		{
+			if ( lf->blendlerp <= 0.0f )
+				lf->blendlerp = 1.0f;
+			else
+				lf->blendlerp = 1.0f - lf->blendlerp;
+		}
+	}
+
+	CG_RunLerpFrame( lf, 1.0f );
+
+	*old = lf->oldFrame;
+	*now = lf->frame;
+	*backLerp = lf->backlerp;
+
+	if ( JETPACK_USES_SKELETAL_ANIMATION )
+	{
+		CG_BlendLerpFrame( lf );
+		CG_BuildAnimSkeleton( lf, &jetpackSkeleton, &oldSkeleton );
+	}
+}
+
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
 	// These are static because otherwise we have >32K of locals, and lcc doesn't like that.
@@ -2560,6 +2640,10 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 
 		// FIXME: change to tag_back when it exists
 		CG_PositionRotatedEntityOnTag( &jetpack, torso, torso->hModel, "tag_head" );
+
+		CG_JetpackAnimation( cent, &jetpack.oldframe, &jetpack.frame, &jetpack.backlerp );
+		jetpack.skeleton = jetpackSkeleton;
+		CG_TransformSkeleton( &jetpack.skeleton, 1.0 );
 
 		trap_R_AddRefEntityToScene( &jetpack );
 
