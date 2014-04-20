@@ -2639,7 +2639,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		AxisCopy( axisDefault, jetpack.axis );
 
 		// FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &jetpack, torso, torso->hModel, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &jetpack, torso, torso->hModel, "tag_gear" );
 
 		CG_JetpackAnimation( cent, &jetpack.oldframe, &jetpack.frame, &jetpack.backlerp );
 		jetpack.skeleton = jetpackSkeleton;
