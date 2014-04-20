@@ -2146,8 +2146,10 @@ typedef enum
 //
 // cg_utils.c
 //
-qboolean CG_ParseColor( byte *c, char **text_p );
+qboolean   CG_ParseColor( byte *c, char **text_p );
 const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
+void       CG_ReadableSize( char *buf, int bufsize, int value );
+void       CG_PrintTime( char *buf, int bufsize, int time );
 
 //
 // cg_rocket.c

@@ -1518,6 +1518,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameUselessSyscalls ++;
 			return Cvar_VariableIntegerValue( (char*) VMA( 1 ) );
 
+		case CG_CVAR_VARIABLEVALUE:
+			cls.nCgameUselessSyscalls ++;
+			return FloatAsInt( Cvar_VariableValue( (char*) VMA( 1 ) ) );
+
 		case CG_ARGC:
 			cls.nCgameUselessSyscalls ++;
 			return Cmd_Argc();

@@ -1787,19 +1787,7 @@ void CG_Rocket_DrawConnectText( void )
 			break;
 
 		case CA_CONNECTED:
-		{
-			char downloadName[ MAX_INFO_VALUE ];
-
-			trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof( downloadName ) );
-
-			if ( *downloadName )
-			{
-				//TODO: Download menu
-				return;
-			}
-		}
-
-		s = _( "Awaiting gamestate…" );
+			s = _( "Awaiting gamestate…" );
 		break;
 
 		case CA_LOADING:
@@ -2494,6 +2482,53 @@ static void CG_Rocket_DrawHostname( void )
 	}
 }
 
+static void CG_Rocket_DrawDownloadName( void )
+{
+	static char oldDownload[ MAX_STRING_CHARS ];
+	char downloadName[ MAX_STRING_CHARS ];
+
+	trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof( downloadName ) );
+
+	if ( Q_stricmp( downloadName, oldDownload ) )
+	{
+		Q_strncpyz( oldDownload, downloadName, sizeof( oldDownload ) );
+		trap_Rocket_SetInnerRML( oldDownload, RP_QUAKE );
+	}
+}
+
+static void CG_Rocket_DrawDownloadTime( void )
+{
+	float downloadSize = trap_Cvar_VariableValue( "cl_downloadSize" );
+	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
+	float downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
+	int xferRate;
+	int n;
+
+	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
+	{
+		xferRate = downloadCount / ( ( rocketInfo.realtime - downloadTime ) / 1000 );
+	}
+	else
+	{
+		xferRate = 0;
+	}
+
+	if ( xferRate && downloadSize )
+	{
+		char dlTimeBuf[ MAX_STRING_CHARS ];
+		int n = downloadSize / xferRate; // estimated time for entire d/l in secs
+
+		// We do it in K (/1024) because we'd overflow around 4MB
+		CG_PrintTime( dlTimeBuf, sizeof dlTimeBuf,
+			      ( n - ( ( ( downloadCount / 1024 ) * n ) / ( downloadSize / 1024 ) ) ) * 1000 );
+		trap_Rocket_SetInnerRML( dlTimeBuf, RP_QUAKE );
+	}
+	else
+	{
+		trap_Rocket_SetInnerRML( _( "estimating" ), RP_QUAKE );
+	}
+}
+
 typedef struct
 {
 	const char *name;
@@ -2518,6 +2553,8 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
 	{ "crosshair_indicator", &CG_Rocket_DrawCrosshairIndicator, ELEMENT_BOTH },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
+	{ "downloadName", &CG_Rocket_DrawDownloadName, ELEMENT_ALL },
+	{ "downloadTime", &CG_Rocket_DrawDownloadTime, ELEMENT_ALL },
 	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
 	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
 	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },

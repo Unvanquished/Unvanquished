@@ -520,9 +520,20 @@ void CG_Rocket_Frame( void )
 			case CA_CONNECTING:
 			case CA_CHALLENGING:
 			case CA_CONNECTED:
+			{
+				char downloadName[ MAX_STRING_CHARS ];
+				int show = ROCKETMENU_CONNECTING;
+
+				trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof( downloadName ) );
+
+				if ( *downloadName )
+				{
+					show = ROCKETMENU_DOWNLOADING;
+				}
 				trap_Rocket_DocumentAction( "", "blurall" );
-				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "show" );
+				trap_Rocket_DocumentAction( rocketInfo.menu[ show ].id, "show" );
 				break;
+			}
 
 			case CA_LOADING:
 			case CA_PRIMED:
