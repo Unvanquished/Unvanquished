@@ -29,14 +29,7 @@ void                CG_Init( int serverMessageNum, int serverCommandSequence, in
 void                CG_RegisterCvars( void );
 void                CG_Shutdown( void );
 static char         *CG_VoIPString( void );
-
-static int FloatAsInt( float f )
-{
-	floatint_t fi;
-
-	fi.f = f;
-	return fi.i;
-}
+int                 FloatAsInt( float f );
 
 /*
 ================
@@ -500,6 +493,15 @@ void CG_RegisterCvars( void )
 		                    cv->defaultString, cv->cvarFlags );
 	}
 }
+
+int FloatAsInt( float f )
+{
+	floatint_t fi;
+
+	fi.f = f;
+	return fi.i;
+}
+
 
 /*
 ===============
