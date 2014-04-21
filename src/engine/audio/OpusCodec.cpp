@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "SoundCodec.h"
-#include "../framework/FileSystem.h"
+#include "../../common/FileSystem.h"
 #include "AudioPrivate.h"
 #include <memory>
 #include <vector>
