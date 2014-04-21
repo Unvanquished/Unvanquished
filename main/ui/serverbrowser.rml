@@ -8,75 +8,35 @@
 
 
 
-#right, #left{
-	margin:auto;
-	position:absolute;
-}
-
-#left{
-	height:95%;
-	width:75%;
-	margin-left:-2%;
-	left:0px;
-	margin-top:3%;
-}
-#right{
-	height:70%;
-	width:32%;
-	margin-right:0%;
-	right:0px;
-	margin-top:9%;
-}
-
-#right panel{
-	padding:20% 7%;
-}
-
-#left panel{
-	padding:5% 7%;
-	margin-top:-6.5%;
-}
-
-#right tabs{
-	display:block;
-	margin-top:2.5%;
-	margin-bottom: 3.3%;
-}
-
-#left tabs{
-	display:block;
-	margin-top:5%;
-}
 
 #serverbrowser .close{
 	z-index:7;
+	margin-top:10%;
+	margin-left:6%;
 	max-width: 9em;
 	width:auto;
 	padding:1%;
-	margin-left:0%;
 	font-size: 0.8em;
 	position:absolute;
-	top:5px;
-	left:5px;
 }
 
 
 #serverbrowser .connect{
 	z-index:7;
-	max-width: 10em;
-	width:auto;
-	padding:2% 5%;
-	margin-left:0%;
+	max-width: 16em;
+	width:100%;
+	padding:5% 4%;
 	font-size: 1em;
-	position:absolute;
-	bottom:2%;
-	right:5%;
+	display:block;
+	margin:auto;
+	margin-top:3%;
 }
 body
 {
-	width: 100%;
-	height: 100%;
+	width:100%;
+	height:100%;
 	margin: auto;
+
 	text-align:center;
 }
 
@@ -186,9 +146,39 @@ datagridrow:selected{
 	margin-left:0px;
 }
 
-.window panel {
-	overflow: hidden hidden;
+#right{
+
 }
+
+#left{
+width:60%;
+margin-left:3.5%;
+}
+
+#right, #left{
+margin-top:6%;
+float:left;
+height:100%;
+padding:0% 2%;
+}
+
+
+
+#right{
+font-size:90%;
+width:25%;
+padding-top:2%;
+}
+
+.window panel {
+	overflow: hidden auto;
+	height:65%;
+}
+
+.window datagrid{
+	overflow:auto scroll;
+}
+
 
 </style>
     </head>
@@ -208,11 +198,13 @@ datagridrow:selected{
 					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><button onClick="sortDS server_browser internet players">Players (Bots)</button></col>
 					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><button onClick="sortDS server_browser internet ping">Ping</button></col>
 				</datagrid>
+				
 				</div>
 			</panel>
 			<tab>Favorite</tab>
 			<panel>
 				Favorite servers here
+				
 			</panel>
 			<tab onClick="init_servers local;buildDS server_browser local">LAN</tab>
 			<panel>
@@ -272,6 +264,7 @@ datagridrow:selected{
 		</div>
 		</panel>
 		</tabset>
+		<button class="connect menuButton" onClick="execDS server_browser internet">Connect</button>
 		</div>
 		<div id="backdrop">
 			<div id="background">
@@ -284,6 +277,6 @@ datagridrow:selected{
 				<img style="position: fixed; width: 15%; left: 75%; top: 650px;" src="/ui/assets/dretch1.png"/>
 			</div>
 		</div>
-		<button class="connect menuButton" onClick="execDS server_browser internet">Connect</button>
+		
 	</body>
 </rml>
