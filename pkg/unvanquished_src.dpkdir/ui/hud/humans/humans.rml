@@ -161,7 +161,7 @@
 			{
 				width: 100%;
 				height: 30%;
-				cell-color: red;
+				cell-color: #FFFFFF99;
 				color: #aaffffff;
 			}
 
