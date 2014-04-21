@@ -2097,7 +2097,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
 
 	CG_GetRocketElementRect( &rect );
-	CG_GetRocketElementBGColor( backColour );
+	trap_Rocket_GetProperty( "cell-color", backColour, sizeof( vec4_t ), ROCKET_COLOR );
 	CG_GetRocketElementColor( foreColour );
 	trap_Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
 
