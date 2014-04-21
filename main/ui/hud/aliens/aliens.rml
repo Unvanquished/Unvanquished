@@ -65,29 +65,29 @@
 				width: 33px;
 				height: 33px;
 			}
-			
-			
+
+
 			#left img.sides,#right img.sides{
 				width:100%;
 				height:auto;
-				position:absolute;			
+				position:absolute;
 				z-index:1;
 				opacity:0.7;
-				
+
 			}
 			#left img.sides{
 				left:0px;
 				position:absolute;
-				bottom:0px;	
+				bottom:0px;
 			}
 			#right img.sides{
 				right:0px;
 				position:absolute;
-				bottom:0px;	
+				bottom:0px;
 			}
-			
-			
-			
+
+
+
 			#health-bar{
 				color:#b3000094;
 			}
@@ -110,7 +110,7 @@
 			#right{
 				right:0px;
 			}
-			
+
 			#health-icon{
 				position:absolute;
 				left:20%;
@@ -120,7 +120,7 @@
 				color:#ff0000ff;
 			}
 			#health{
-				color:#ef221aff;	
+				color:#ef221aff;
 				position:absolute;
 				left:32%;
 				bottom:15%;
@@ -134,7 +134,7 @@
 				height:auto;
 				color:#f500ffAA;
 			}
-			
+
 			weapon_icon img{
 				position:absolute;
 				right:27%;
@@ -143,7 +143,7 @@
 				height:auto;
 				color:#ff0000ff;
 			}
-			
+
 			#evos{
 				font-size:0.5em;
 				position:absolute;
@@ -154,27 +154,25 @@
 			#evos evos{
 				color:red;
 			}
-			
-			
+
+
 		</style>
 			</head>
 	<body id="alien_hud">
-		<crosshair /><br />
-		<speedometer /><br />
 		<alien_sense />
 		<div id="barbs">
 			<barbs src="/ui/assets/alien/tremublob" />
 		</div>
-		<div id="left"> 
+		<div id="left">
 			<img class="bg sides" src="/ui/assets/alien/bg-l.png" />
 			<img class="health sides" id="health-bar" src="/ui/assets/alien/bar-l.png"/>
 			<img class="spikes sides" src="/ui/assets/alien/spikes-l.png" />
 			<img class="light sides" src="/ui/assets/alien/ll.png" />
-			
+
 			<img class="health" id="health-icon" src="/ui/assets/neutral/cross.tga"/>
 			<div id="health">200</div>
 		</div>
-		<div id="right"> 
+		<div id="right">
 			<img class="bg sides" src="/ui/assets/alien/bg-r.png" />
 			<img class="poison sides" id="poison-bar" src="/ui/assets/alien/bar-r.png" />
 			<img class="spikes sides" src="/ui/assets/alien/smallspikes-r.png" />
@@ -183,6 +181,6 @@
 			<weapon_icon />
 			<div id="evos"><evos /> evolution points</div>
 		</div>
-		
+
 	</body>
 </rml>
