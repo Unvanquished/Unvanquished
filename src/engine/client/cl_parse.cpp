@@ -479,7 +479,7 @@ void CL_PurgeCache( void );
 void CL_SystemInfoChanged( void )
 {
 	char       *systemInfo;
-	const char *s, *t;
+	const char *s;
 	char       key[ BIG_INFO_KEY ];
 	char       value[ BIG_INFO_VALUE ];
 

@@ -43,6 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "String.h"
 #include <limits>
 #include "Util.h"
+#include "Optional.h"
 #include "../engine/qcommon/q_shared.h"
 
 namespace IPC {
@@ -80,7 +81,7 @@ struct Desc {
 #endif
 void CloseDesc(const Desc& desc);
 
-// Conversion between Desc and handles
+// Simple file handle wrapper, does *not* close handle on destruction
 enum FileOpenMode {
 	MODE_READ,
 	MODE_WRITE,
@@ -88,8 +89,29 @@ enum FileOpenMode {
 	MODE_WRITE_APPEND,
 	MODE_RW_APPEND
 };
-Desc DescFromFile(OSHandleType handle, FileOpenMode mode);
-OSHandleType DescToHandle(const Desc& desc);
+class FileHandle {
+public:
+	FileHandle()
+		: handle(INVALID_HANDLE) {}
+	FileHandle(OSHandleType handle, FileOpenMode mode)
+		: handle(handle), mode(mode) {}
+	explicit operator bool() const
+	{
+		return handle != INVALID_HANDLE;
+	}
+
+	Desc GetDesc() const;
+	static FileHandle FromDesc(const Desc& desc);
+
+	OSHandleType GetHandle() const
+	{
+		return handle;
+	}
+
+private:
+	OSHandleType handle;
+	FileOpenMode mode;
+};
 
 // Message-based socket through which data and handles can be passed.
 class Reader;
@@ -119,6 +141,10 @@ public:
 
 	void Close();
 
+	OSHandleType GetHandle() const
+	{
+		return handle;
+	}
 	OSHandleType ReleaseHandle()
 	{
 		OSHandleType out = handle;
@@ -324,13 +350,13 @@ struct SerializeTraits<std::array<T, N>, typename std::enable_if<!std::is_pod<T>
 	static void Write(Writer& stream, const std::array<T, N>& value)
 	{
 		for (const T& x: value)
-			SerializeTraits<T>::Write(stream, x);
+			stream.Write<T>(x);
 	}
 	static std::array<T, N> Read(Reader& stream)
 	{
 		std::array<T, N> value;
 		for (T& x: value)
-			x = SerializeTraits<T>::Read(stream);
+			x = stream.Read<T>();
 		return value;
 	}
 };
@@ -357,14 +383,14 @@ struct SerializeTraits<std::vector<T>, typename std::enable_if<!std::is_pod<T>::
 	{
 		stream.WriteSize(value.size());
 		for (const T& x: value)
-			SerializeTraits<T>::Write(stream, x);
+			stream.Write<T>(x);
 	}
 	static std::vector<T> Read(Reader& stream)
 	{
 		std::vector<T> value;
 		value.resize(stream.ReadSize<T>());
 		for (T& x: value)
-			x = SerializeTraits<T>::Read(stream);
+			x = stream.Read<T>();
 		return value;
 	}
 };
@@ -374,15 +400,33 @@ template<typename T, typename U>
 struct SerializeTraits<std::pair<T, U>> {
 	static void Write(Writer& stream, const std::pair<T, U>& value)
 	{
-		SerializeTraits<T>::Write(stream, value.first);
-		SerializeTraits<U>::Write(stream, value.second);
+		stream.Write<T>(value.first);
+		stream.Write<U>(value.second);
 	}
 	static std::pair<T, U> Read(Reader& stream)
 	{
 		std::pair<T, U> value;
-		value.first = SerializeTraits<T>::Read(stream);
-		value.second = SerializeTraits<U>::Read(stream);
+		value.first = stream.Read<T>();
+		value.second = stream.Read<U>();
 		return value;
+	}
+};
+
+// Util::optional
+template<typename T>
+struct SerializeTraits<Util::optional<T>> {
+	static void Write(Writer& stream, const Util::optional<T>& value)
+	{
+		stream.Write<bool>(bool(value));
+		if (value)
+			stream.Write<T>(*value);
+	}
+	static Util::optional<T> Read(Reader& stream)
+	{
+		if (stream.Read<bool>())
+			return stream.Read<T>();
+		else
+			return Util::nullopt;
 	}
 };
 
@@ -408,14 +452,14 @@ struct SerializeTraits<std::map<T, U>> {
 	{
 		stream.WriteSize(value.size());
 		for (const std::pair<T, U>& x: value)
-			SerializeTraits<std::pair<T, U>>::Write(x);
+			stream.Write<std::pair<T, U>>(x);
 	}
 	static std::map<T, U> Read(Reader& stream)
 	{
 		std::map<T, U> value;
 		size_t size = stream.ReadSize<std::pair<T, U>>();
 		for (size_t i = 0; i != size; i++)
-			value.insert(SerializeTraits<std::pair<T, U>>::Read(stream));
+			value.insert(stream.Read<std::pair<T, U>>());
 		return value;
 	}
 };
@@ -425,14 +469,14 @@ struct SerializeTraits<std::unordered_map<T, U>> {
 	{
 		stream.WriteSize(value.size());
 		for (const std::pair<T, U>& x: value)
-			SerializeTraits<std::pair<T, U>>::Write(x);
+			stream.Write<std::pair<T, U>>(x);
 	}
 	static std::unordered_map<T, U> Read(Reader& stream)
 	{
 		std::unordered_map<T, U> value;
 		size_t size = stream.ReadSize<std::pair<T, U>>();
 		for (size_t i = 0; i != size; i++)
-			value.insert(SerializeTraits<std::pair<T, U>>::Read(stream));
+			value.insert(stream.Read<std::pair<T, U>>());
 		return value;
 	}
 };
@@ -444,14 +488,14 @@ struct SerializeTraits<std::set<T>> {
 	{
 		stream.WriteSize(value.size());
 		for (const T& x: value)
-			SerializeTraits<T>::Write(x);
+			stream.Write<T>(x);
 	}
 	static std::set<T> Read(Reader& stream)
 	{
 		std::set<T> value;
 		size_t size = stream.ReadSize<T>();
 		for (size_t i = 0; i != size; i++)
-			value.insert(SerializeTraits<T>::Read(stream));
+			value.insert(stream.Read<T>());
 		return value;
 	}
 };
@@ -461,19 +505,19 @@ struct SerializeTraits<std::unordered_set<T>> {
 	{
 		stream.WriteSize(value.size());
 		for (const T& x: value)
-			SerializeTraits<T>::Write(x);
+			stream.Write<T>(x);
 	}
 	static std::unordered_set<T> Read(Reader& stream)
 	{
 		std::unordered_set<T> value;
 		size_t size = stream.ReadSize<T>();
 		for (size_t i = 0; i != size; i++)
-			value.insert(SerializeTraits<T>::Read(stream));
+			value.insert(stream.Read<T>());
 		return value;
 	}
 };
 
-// Socket and shared memory
+// Socket, file handle and shared memory
 template<> struct SerializeTraits<Socket> {
 	static void Write(Writer& stream, const Socket& value)
 	{
@@ -482,6 +526,16 @@ template<> struct SerializeTraits<Socket> {
 	static Socket Read(Reader& stream)
 	{
 		return Socket::FromDesc(stream.ReadHandle());
+	}
+};
+template<> struct SerializeTraits<FileHandle> {
+	static void Write(Writer& stream, const FileHandle& value)
+	{
+		stream.WriteHandle(value.GetDesc());
+	}
+	static FileHandle Read(Reader& stream)
+	{
+		return FileHandle::FromDesc(stream.ReadHandle());
 	}
 };
 template<> struct SerializeTraits<SharedMemory> {
@@ -619,9 +673,12 @@ template<size_t Index, typename Type0, typename... Types, typename Tuple> void F
 }
 
 // Map a tuple to get the actual types returned by SerializeTraits::Read instead of the declared types
+template<typename T> struct MapTupleHelper {
+	typedef decltype(SerializeTraits<T>::Read(std::declval<Reader&>())) type;
+};
 template<typename T> struct MapTuple {};
 template<typename... T> struct MapTuple<std::tuple<T...>> {
-	typedef std::tuple<decltype(SerializeTraits<T>::Read(std::declval<Reader&>()))...> type;
+	typedef std::tuple<typename MapTupleHelper<T>::type...> type;
 };
 
 // Implementations of SendMsg for Message and SyncMessage

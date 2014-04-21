@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../../common/Cvar.h"
 #include "../../common/IPC.h"
 #include "../../common/String.h"
-#include "FileSystem.h"
+#include "../../common/FileSystem.h"
 #include <thread>
 #include <mutex>
 #include <condition_variable>
