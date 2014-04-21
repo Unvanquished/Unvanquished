@@ -832,13 +832,16 @@ void CG_Rocket_BuildPlayerList( const char *args )
 	score_t *score;
 	int i;
 
+	CG_RequestScores();
+
 	// Do not build list if not currently playing
-	if ( rocketInfo.cstate.connState < CA_ACTIVE )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE || rocketInfo.realtime - rocketInfo.scoresLastUpdate < 2000 )
 	{
 		return;
 	}
 
-	CG_RequestScores();
+	rocketInfo.scoresLastUpdate = rocketInfo.realtime;
+
 
 	// Clear old values. Always build all three teams.
 	trap_Rocket_DSClearTable( "playerList", "spectators" );

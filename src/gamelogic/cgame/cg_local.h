@@ -1302,6 +1302,7 @@ typedef struct
 	int currentNetSrc;
 	int serversLastRefresh;
 	int serverStatusLastRefresh;
+	int scoresLastUpdate;
 	int realtime;
 	cgClientState_t cstate;
 	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
