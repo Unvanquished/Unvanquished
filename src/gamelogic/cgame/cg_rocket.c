@@ -104,6 +104,8 @@ void CG_Rocket_Init( void )
 	// Register elements
 	CG_Rocket_RegisterElements();
 
+	trap_Rocket_RegisterProperty( "cell-color", "white", qfalse, qfalse, "color" );
+
 	// Preload all the menu files...
 	len = trap_FS_FOpenFile( rocket_menuFile.string, &f, FS_READ );
 

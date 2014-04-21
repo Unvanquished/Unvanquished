@@ -343,7 +343,8 @@ typedef enum cgameImport_s
   CG_ROCKET_SHOWHUD,
   CG_ROCKET_CLEARHUD,
   CG_ROCKET_ADDTEXT,
-  CG_ROCKET_CLEARTEXT
+  CG_ROCKET_CLEARTEXT,
+  CG_ROCKET_REGISTERPROPERTY
 } cgameImport_t;
 
 typedef enum
@@ -667,4 +668,5 @@ void            trap_Rocket_ShowHud( int weapon );
 void            trap_Rocket_ClearHud( int weapon );
 void            trap_Rocket_AddTextElement( const char *text, const char *Class, float x, float y );
 void            trap_Rocket_ClearText( void );
+void            trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
 #endif

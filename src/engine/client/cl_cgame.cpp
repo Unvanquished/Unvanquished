@@ -2447,6 +2447,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Audio::EndRegistration();
 			return 0;
 
+		case CG_ROCKET_REGISTERPROPERTY:
+			Rocket_RegisterProperty( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ), args[ 3 ], args[ 4 ], ( const char * ) VMA( 5 ) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes

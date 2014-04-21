@@ -1545,3 +1545,8 @@ void trap_Rocket_ClearText( void )
 {
 	syscallVM( CG_ROCKET_CLEARTEXT );
 }
+
+void trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs )
+{
+	syscallVM( CG_ROCKET_REGISTERPROPERTY, name, defaultValue, inherited, force_layout, parseAs );
+}

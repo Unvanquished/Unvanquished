@@ -1,4 +1,4 @@
-	/*
+/*
 ===========================================================================
 
 Daemon GPL Source Code
@@ -59,7 +59,7 @@ void Rocket_SetElementDimensions( float x, float y )
 {
 	if ( activeElement )
 	{
-		static_cast<RocketElement*>(activeElement)->SetDimensions( x, y );
+		static_cast<RocketElement *>( activeElement )->SetDimensions( x, y );
 	}
 }
 
@@ -86,6 +86,7 @@ static Rocket::Core::String ReduceRML( const Rocket::Core::String &rml )
 		{
 			ret += '\'';
 		}
+
 		else
 		{
 			ret += rml[ i ];
@@ -114,9 +115,11 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, int 
 	{
 		Rocket_SetInnerRMLGuarded( activeElement, newRML );
 	}
+
 	else
 	{
 		Rocket::Core::ElementDocument *document = menuContext->GetDocument( name );
+
 		if ( document )
 		{
 			Rocket::Core::Element *e = document->GetElementById( id );
@@ -136,6 +139,7 @@ void Rocket_GetAttribute( const char *name, const char *id, const char *attribut
 	{
 		Q_strncpyz( out, activeElement->GetAttribute< Rocket::Core::String >( attribute, "" ).CString(), length );
 	}
+
 	else
 	{
 		Rocket::Core::ElementDocument *document = menuContext->GetDocument( name );
@@ -153,6 +157,7 @@ void Rocket_SetAttribute( const char *name, const char *id, const char *attribut
 	{
 		activeElement->SetAttribute( attribute, value );
 	}
+
 	else
 	{
 		Rocket::Core::ElementDocument *document = name[0] ? menuContext->GetDocument( name ) : menuContext->GetFocusElement()->GetOwnerDocument();
@@ -177,6 +182,7 @@ void Rocket_GetElementAbsoluteOffset( float *x, float *y )
 		*x = position.x;
 		*y = position.y;
 	}
+
 	else
 	{
 		*x = -1;
@@ -200,10 +206,12 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 			case ROCKET_STRING:
 			{
 				char *string = ( char * ) out;
+
 				if ( property )
 				{
 					Q_strncpyz( string, property->Get<Rocket::Core::String>().CString(), len );
 				}
+
 				return;
 			}
 
@@ -305,6 +313,7 @@ void Rocket_SetPropertyById( const char *id, const char *property, const char *v
 			}
 		}
 	}
+
 	else if ( activeElement )
 	{
 		activeElement->SetProperty( property, value );
@@ -315,11 +324,18 @@ void Rocket_AddConsoleText( void )
 {
 	// HACK: Ugly way to force pre-engine-upgrade behavior. TODO: Make it work without this hack
 	static char buffer[ MAX_STRING_CHARS ];
-	static char* newline = "\n";
+	static char *newline = "\n";
 	Cmd_LiteralArgsBuffer( buffer, sizeof( buffer ) );
-	if ( !Q_stricmp(newline, buffer) )
+
+	if ( !Q_stricmp( newline, buffer ) )
 	{
 		return;
 	}
-	RocketConsoleTextElement::lines.push_front( ConsoleLine( Rocket::Core::String( va("%s\n", buffer) ) ) );
+
+	RocketConsoleTextElement::lines.push_front( ConsoleLine( Rocket::Core::String( va( "%s\n", buffer ) ) ) );
+}
+
+void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs )
+{
+	Rocket::Core::StyleSheetSpecification::RegisterProperty( name, defaultValue, ( bool ) inherited, ( bool ) force_layout ).AddParser( parseAs );
 }
