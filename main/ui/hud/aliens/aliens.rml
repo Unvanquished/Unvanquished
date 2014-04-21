@@ -3,10 +3,10 @@
 		<style>
 			body
 			{
-				font-family: Roboto;
-				font-size: 48;
-				width:100%;
-				height:100%;
+				font-family: DejaVu Sans;
+				font-size: 46;
+				width: 100%;
+				height: 100%;
 			}
 			speedometer
 			{
@@ -85,7 +85,9 @@
 				position:absolute;
 				bottom:0px;
 			}
-
+			.bg,.health,.spikes{
+				color:#ff0000AA;
+			}
 
 
 			#health-bar{

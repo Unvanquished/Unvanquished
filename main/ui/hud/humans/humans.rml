@@ -70,9 +70,9 @@
 			}
 			progressbar
 			{
-				position: fixed;
+				position: absolute;
 				width: 100%;
-				height: 28px;
+				height: 16%;
 				image: /white;
 				left: 5%;
 				orientation: right;
@@ -80,19 +80,23 @@
 			}
 			progressbar#health
 			{
+				orientation:left;
 				top: 20%;
+				position:absolute;
 				color: #ff001c7a;
 				z-index: -1;
 			}
 			progressbar#stamina
 			{
 				color: #82ffee52;
+				top:0%;
+				orientation:left;
 			}
 			health.health{
 				width: 100%;
 				height: 28px;
-				margin-top:28px;
-				margin-left:10px;
+				margin-top:17%;
+				margin-left:6%;
 				display:block;
 				text-align:center;
 				color:#ff6562ff;
@@ -100,43 +104,55 @@
 
 			}
 			img.stamina{
-				width:40px;
-				height:40px;
+				width:auto;
+				height:23%;
 				color:#aaffffff;
-				margin-top:-10px;
+				top:-5%;
+				left:2%;
 				position:absolute;
 			}
 			img.health{
-				margin-top:28px;
-				margin-left:13px;
-				width:40px;
-				color:#ffffff;
-				height:40px;
+				top:20%;
+				left:5%;
+				width:auto;
+				height:23%;
+				color:#ff6562ff;
+
 				position:absolute;
 			}
 
 			weapon_icon img, img.clip{
 				z-index:3;
-				margin-top:44px;
-				left:-40px;
+				top:36%;
+				left:-17%;
 				position:absolute;
-				width:50px;
+				width:auto;
+				height:23%;
 				color:#aaffffff;
-				height:50px;
 			}
+			
 			img.clip{
-			width:35px;
-			height:35px;
-			margin-top:90px;
+				width:auto;
+				height:15%;
+				left:-15%;
+				top:60%;
 			}
-			div.ammo, div.credits{
+			
+			
+			div.ammo, div.credits,div.clips{
 				color:#aaffffff;
 				width: 100%;
-				height: 28px;
-				margin-top:25px;
-				margin-left:-30px;
+				top:38%;
+				left:-15%;
+				position:absolute;
 				display:block;
 				text-align:center;
+			}
+			div.credits{
+				top:75%;
+			}
+			div.clips{
+				top:57%;
 			}
 			div#momentum
 			{
@@ -227,7 +243,7 @@
 		<weapon_icon/><div class="ammo"><ammo/></div>
 		<ammo_stack/>
 		<img class="clip" src="/ui/assets/human/clip.tga"/>
-		<clip_stack/>
+		<clip_stack/><div class="clips"><clips/></div>
 		<div class="credits"><credits/> Credits</div>
 	</div>
 	<div id="bars">
