@@ -138,6 +138,32 @@
 				display:block;
 				text-align:center;
 			}
+			div#momentum
+			{
+				position: absolute;
+				width: 40%;
+				height: 10%;
+				bottom: 0px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			momentum_bar
+			{
+				width: 100%;
+				height: 30%;
+				border-width: 1px;
+				background-color: #ffffff65;
+				color: #aaffffff;
+			}
+
+			unlocked_items
+			{
+				width: 100%;
+				height: 30%;
+				cell-color: red;
+				color: #aaffffff;
+			}
 
 		</style>
 	</head>
@@ -159,6 +185,10 @@
 		<img class="health" src="/ui/assets/neutral/cross.tga"/>
 		<health class="health" />
 		<progressbar id="health" src="health" />
+	</div>
+	<div id="momentum">
+		<unlocked_items/>
+		<momentum_bar/>
 	</div>
 	</body>
 </rml>
