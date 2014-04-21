@@ -165,6 +165,57 @@
 				color: #aaffffff;
 			}
 
+			usable_buildable
+			{
+				position: absolute;
+				bottom: 200px;
+				margin-left: auto;
+				margin-right: auto;
+				color: #aaffffff;
+			}
+
+			usable_buildable img
+			{
+				width: 30px;
+				height: 30px;
+			}
+
+			inventory
+			{
+				margin-top: auto;
+				margin-bottom: auto;
+				position: absolute;
+				left: 0px;
+				width: 30px;
+			}
+
+			inventory img
+			{
+				width: 30px;
+				float: left;
+				clear: right;
+			}
+
+			div#scanner
+			{
+				position: fixed;
+				width: 48%;
+				height: 15%;
+				bottom: 15%;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			scanner
+			{
+				width: 100%;
+				height: 100%;
+			}
+			scanner.active
+			{
+				background-decorator: image;
+				background-image: "/ui/assets/human/scanner";
+			}
+
 		</style>
 	</head>
 	<body id="human_hud">
@@ -189,6 +240,13 @@
 	<div id="momentum">
 		<unlocked_items/>
 		<momentum_bar/>
+	</div>
+	<div id="items">
+		<usable_buildable src="/ui/assets/neutral/use"/>
+		<inventory />
+	</div>
+	<div id="scanner">
+		<scanner />
 	</div>
 	</body>
 </rml>

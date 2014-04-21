@@ -10,9 +10,17 @@ units
 spectator_hud
 {
 	base
+	overlay
+	console
+}
+
+human_hud
+{
+	base
 	human_hud
 	overlay
 	console
+}
 }
 
 alien_hud
