@@ -45,14 +45,26 @@ public:
 	RocketFocusManager( void ) { }
 	void ProcessEvent( Rocket::Core::Event &evt )
 	{
-		if ( !( cls.keyCatchers & KEYCATCH_UI ) &&
-			evt.GetTargetElement() &&
-			evt.GetTargetElement()->GetContext() &&
-			IsTreeVisible(evt.GetTargetElement()->GetContext()->GetFocusElement()) )
+		bool anyVisible = false;
+		Rocket::Core::Context* context = evt.GetTargetElement() ? evt.GetTargetElement()->GetContext() : nullptr;
+
+		if ( context )
+		{
+			for ( size_t i = 0; i < context->GetNumDocuments(); ++i )
+			{
+				if ( context->GetDocument( i )->IsVisible() )
+				{
+					anyVisible = true;
+					break;
+				}
+			}
+		}
+
+		if ( anyVisible && ! ( cls.keyCatchers & KEYCATCH_UI ) )
 		{
 			Key_SetCatcher( KEYCATCH_UI );
 		}
-		else if ( cls.keyCatchers && cls.state >= CA_PRIMED )
+		else if ( !anyVisible && cls.keyCatchers && cls.state >= CA_PRIMED )
 		{
 			Key_ClearStates();
 			CL_ClearKeys();
