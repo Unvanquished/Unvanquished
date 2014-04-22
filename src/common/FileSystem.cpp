@@ -293,7 +293,7 @@ enum filesystem_error {
 	no_such_file,
 	no_such_directory,
 	wrong_pak_checksum,
-	missing_depdency
+	missing_dependency
 };
 class filesystem_category_impl: public std::error_category
 {
@@ -313,7 +313,7 @@ public:
 			return "No such directory";
 		case filesystem_error::wrong_pak_checksum:
 			return "Pak checksum incorrect";
-		case filesystem_error::missing_depdency:
+		case filesystem_error::missing_dependency:
 			return "Missing dependency";
 		default:
 			return "Unknown error";
@@ -955,7 +955,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 			const PakInfo* pak = FindPak(name);
 			if (!pak) {
 				fsLogs.Warn("Could not find pak '%s' required by '%s'", name, parent.path);
-				SetErrorCodeFilesystem(err, filesystem_error::missing_depdency);
+				SetErrorCodeFilesystem(err, filesystem_error::missing_dependency);
 				return;
 			}
 			LoadPak(*pak, err);
@@ -979,7 +979,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 			const PakInfo* pak = FindPak(name, version);
 			if (!pak) {
 				fsLogs.Warn("Could not find pak '%s' with version '%s' required by '%s'", name, version, parent.path);
-				SetErrorCodeFilesystem(err, filesystem_error::missing_depdency);
+				SetErrorCodeFilesystem(err, filesystem_error::missing_dependency);
 				return;
 			}
 			LoadPak(*pak, err);
