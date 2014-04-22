@@ -58,6 +58,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <mach-o/dyld.h>
 #endif
 
+Log::Logger fsLogs(VM_STRING_PREFIX "fs");
+
 // SerializeTraits for PakInfo
 namespace IPC {
 
@@ -952,7 +954,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 		if (lineStart == lineEnd) {
 			const PakInfo* pak = FindPak(name);
 			if (!pak) {
-				Log::Warn("Could not find pak '%s' required by '%s'", name, parent.path);
+				fsLogs.Warn("Could not find pak '%s' required by '%s'", name, parent.path);
 				SetErrorCodeFilesystem(err, filesystem_error::missing_depdency);
 				return;
 			}
@@ -976,7 +978,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 		if (lineStart == lineEnd) {
 			const PakInfo* pak = FindPak(name, version);
 			if (!pak) {
-				Log::Warn("Could not find pak '%s' with version '%s' required by '%s'", name, version, parent.path);
+				fsLogs.Warn("Could not find pak '%s' with version '%s' required by '%s'", name, version, parent.path);
 				SetErrorCodeFilesystem(err, filesystem_error::missing_depdency);
 				return;
 			}
@@ -988,7 +990,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 		}
 
 		// If there is still stuff at the end of the line, print a warning and ignore it
-		Log::Warn("Invalid dependency specification on line %d in %s", line, Path::Build(parent.path, PAK_DEPS_FILE));
+		fsLogs.Warn("Invalid dependency specification on line %d in %s", line, Path::Build(parent.path, PAK_DEPS_FILE));
 		lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
 	}
 }
@@ -1047,7 +1049,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 			if (Str::IsSuffix("/", filename))
 				return;
 			if (!Path::IsValid(filename, false)) {
-				Log::Warn("Invalid filename '%s' in pak '%s'", filename, pak.path);
+				fsLogs.Warn("Invalid filename '%s' in pak '%s'", filename, pak.path);
 				return; // This is effectively a continue, since we are in a lambda
 			}
 			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
@@ -1081,7 +1083,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 
 	// Print a warning if the checksum doesn't match the one in the filename
 	if (pak.checksum && *pak.checksum != checksum)
-		Log::Warn("Pak checksum doesn't match filename: %s", pak.path);
+		fsLogs.Warn("Pak checksum doesn't match filename: %s", pak.path);
 
 	// Load dependencies, but not if a checksum was specified
 	if (hasDeps && !expectedChecksum) {
@@ -1991,7 +1993,7 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 	std::string name, version;
 	Util::optional<uint32_t> checksum;
 	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == PAK_DIR && checksum)) {
-		Log::Warn("Invalid pak name: %s", fullPath);
+		fsLogs.Warn("Invalid pak name: %s", fullPath);
 		return;
 	}
 
