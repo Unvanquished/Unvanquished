@@ -39,12 +39,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vorbis/vorbisfile.h>
 
 /*
- *The following assumptions made:
+ *The following assumptions are made:
  *-Each byte consists of 8bits
  *-sizeof(char) == 1
  *-sizeof(short) == 2
  *-sizeof(int) == 4
  */
+static_assert(sizeof(char)==1,"sizeof(char)!=1");
+static_assert(sizeof(short)==2,"sizeof(short)!=2");
+static_assert(sizeof(int)==4,"sizeof(int)!=4");
 
 namespace Audio{
 /*
