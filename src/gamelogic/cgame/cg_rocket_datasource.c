@@ -110,6 +110,7 @@ void CG_Rocket_BuildServerInfo( void )
 	{
 		int line = 0;
 		int i = 0, score, ping;
+		const char *start, *end;
 		static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
 		char name[ MAX_STRING_CHARS ];
 
@@ -137,7 +138,23 @@ void CG_Rocket_BuildServerInfo( void )
 		}
 
 		// Parse first set of players
-		sscanf( value, "%d %d %1023s", &score, &ping, name );
+		sscanf( value, "%d %d", &score, &ping );
+		start = strchr( value, '"' );
+
+		if ( !start )
+		{
+			return;
+		}
+
+		end = strchr( start + 1, '"' );
+
+		if ( !end )
+		{
+			return;
+		}
+
+		Q_strncpyz( name, start + 1, end - start );
+		start = end = NULL;
 		Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
 		Info_SetValueForKeyRocket( buf, "name", name );
 		Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
@@ -150,7 +167,23 @@ void CG_Rocket_BuildServerInfo( void )
 
 			if ( key[ 0 ] )
 			{
-				sscanf( key, "%d %d %s", &score, &ping, name );
+				sscanf( key, "%d %d", &score, &ping );
+				start = strchr( key, '"' );
+
+				if ( !start )
+				{
+					break;
+				}
+
+				end = strchr( start + 1, '"' );
+
+				if ( !end )
+				{
+					break;
+				}
+
+				Q_strncpyz( name, start + 1, end - start );
+				start = end = NULL;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
 				Info_SetValueForKeyRocket( buf, "name", name );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
@@ -160,7 +193,23 @@ void CG_Rocket_BuildServerInfo( void )
 
 			if ( value[ 0 ] )
 			{
-				sscanf( value, "%d %d %s", &score, &ping, name );
+				sscanf( value, "%d %d", &score, &ping );
+				start = strchr( value, '"' );
+
+				if ( !start )
+				{
+					break;
+				}
+
+				end = strchr( start + 1, '"' );
+
+				if ( !end )
+				{
+					break;
+				}
+
+				Q_strncpyz( name, start + 1, end - start );
+				start = end = NULL;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
 				Info_SetValueForKeyRocket( buf, "name", name );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
@@ -168,6 +217,7 @@ void CG_Rocket_BuildServerInfo( void )
 				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 			}
 		}
+
 		trap_LAN_ServerStatus( NULL, NULL, 0 );
 		rocketInfo.data.buildingServerInfo = qfalse;
 	}
@@ -1218,7 +1268,7 @@ static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 	buf[ 0 ] = '\0';
 
 	if ( BG_Weapon( i )->team == TEAM_HUMANS && BG_Weapon( i )->purchasable &&
-		i != WP_BLASTER )
+	        i != WP_BLASTER )
 	{
 		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
 		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, qfalse );
@@ -1244,7 +1294,7 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 	buf[ 0 ] = '\0';
 
 	if ( BG_Upgrade( i )->team == TEAM_HUMANS && BG_Upgrade( i )->purchasable &&
-		i != UP_MEDKIT )
+	        i != UP_MEDKIT )
 	{
 		Info_SetValueForKey( buf, "num", va( "%d", tblIndex == ROCKETDS_BOTH ? i + WP_NUM_WEAPONS : i ), qfalse );
 		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, qfalse );
