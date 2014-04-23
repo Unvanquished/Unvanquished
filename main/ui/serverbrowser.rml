@@ -179,6 +179,16 @@ div#serverInfo datagrid
 	height: 50%;
 }
 
+div.levelshot
+{
+	width: 100%;
+}
+
+img.levelshot
+{
+	width: 100%;
+}
+
 </style>
     </head>
     <body onload="init_servers internet" id="serverbrowser">
@@ -190,7 +200,7 @@ div#serverInfo datagrid
 				<p><span id="status"></span></p>
 				<button onClick="buildDS server_browser internet">Refresh</button>
 				<div class="servers">
-				<datagrid source="server_browser.internet">
+				<datagrid id="iServers" source="server_browser.internet">
 					<col fields="label" width="30px" class="label" formatter="ServerLabel"><div></div></col>
 					<col fields="name" width="45%" class="name" >Name:</col>
 					<col fields="map" width="15%" class="map"><button onClick="sortDS server_browser internet map">Map:</button></col>
@@ -243,6 +253,9 @@ div#serverInfo datagrid
 
 			<div class="filter2">
 				<label>Server Name: </label><input type='text' name="filter" ontextinput="filterDS server_browser" />
+			</div>
+			<div class="levelshot">
+				<datasource_single source="server_browser.internet" targetid="iServers" fields="map" formatter="LevelShot" />
 			</div>
 
 		</panel>

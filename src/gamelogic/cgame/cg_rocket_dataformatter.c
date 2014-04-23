@@ -220,6 +220,11 @@ static void CG_Rocket_DFGWeaponRange( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), qfalse );
 }
 
+static void CG_Rocket_DFLevelShot( int handle, const char *data )
+{
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<img class=\"levelshot\" src=\"/levelshots/%s\"/>", Info_ValueForKey( data, "1" ) ), qfalse );
+}
+
 typedef struct
 {
 	const char *name;
@@ -234,6 +239,7 @@ static const dataFormatterCmd_t dataFormatterCmdList[] =
 	{ "GWeaponDamage", &CG_Rocket_DFGWeaponDamage },
 	{ "GWeaponRange", &CG_Rocket_DFGWeaponRange },
 	{ "GWeaponRateOfFire", &CG_Rocket_DFGWeaponRateOfFire },
+	{ "LevelShot", &CG_Rocket_DFLevelShot },
 	{ "PlayerName", &CG_Rocket_DFPlayerName },
 	{ "Resolution", &CG_Rocket_DFResolution },
 	{ "ServerLabel", &CG_Rocket_DFServerLabel },
