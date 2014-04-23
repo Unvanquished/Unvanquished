@@ -21,6 +21,7 @@
 		ui/demos.rml
 		ui/options.rml
 		ui/serverbrowser.rml
+		ui/serverinfo.rml
 		ui/mods.rml
 		ui/help.rml
 		ui/dialogs/customresolution.rml

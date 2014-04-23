@@ -254,26 +254,11 @@ img.levelshot
 			<div class="filter2">
 				<label>Server Name: </label><input type='text' name="filter" ontextinput="filterDS server_browser" />
 			</div>
+			<button class="menuButton" onClick="show serverinfo">Details</button>
 			<div class="levelshot">
 				<datasource_single source="server_browser.internet" targetid="iServers" fields="map" formatter="LevelShot" />
 			</div>
 
-		</panel>
-		<tab>Server Details</tab>
-		<panel>
-		<div id="serverInfo">
-			<datagrid id="info" source="server_browser.serverInfo">
-				<col fields="cvar" width="50%">Cvar</col>
-				<col fields="value" width="50%">Value</col>
-			</datagrid>
-			<br />
-			<datagrid id="players" source="server_browser.serverPlayers">
-				<col fields="num" width="5%">Num</col>
-				<col fields="score" width="5%">Score</col>
-				<col fields="ping" width="5%">Ping</col>
-				<col fields="name" width="85%">Name</col>
-			</datagrid>
-		</div>
 		</panel>
 		</tabset>
 		<button class="connect menuButton" onClick="execDS server_browser internet">Connect</button>
