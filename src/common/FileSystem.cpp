@@ -63,47 +63,47 @@ Log::Logger fsLogs(VM_STRING_PREFIX "fs");
 // SerializeTraits for PakInfo
 namespace IPC {
 
-	template<> struct SerializeTraits<FS::PakInfo> {
-		static void Write(Writer& stream, const FS::PakInfo& value)
-		{
-			stream.Write<std::string>(value.name);
-			stream.Write<std::string>(value.version);
-			stream.Write<Util::optional<uint32_t>>(value.checksum);
-			stream.Write<uint32_t>(value.type);
-			stream.Write<std::string>(value.path);
-			stream.Write<uint64_t>(std::chrono::system_clock::to_time_t(value.timestamp));
-			stream.Write<bool>(value.fd != -1);
-			if (value.fd != -1) {
+template<> struct SerializeTraits<FS::PakInfo> {
+	static void Write(Writer& stream, const FS::PakInfo& value)
+	{
+		stream.Write<std::string>(value.name);
+		stream.Write<std::string>(value.version);
+		stream.Write<Util::optional<uint32_t>>(value.checksum);
+		stream.Write<uint32_t>(value.type);
+		stream.Write<std::string>(value.path);
+		stream.Write<uint64_t>(std::chrono::system_clock::to_time_t(value.timestamp));
+		stream.Write<bool>(value.fd != -1);
+		if (value.fd != -1) {
 #ifdef _WIN32
-				stream.Write<IPC::FileHandle>(IPC::FileHandle(reinterpret_cast<HANDLE>(_get_osfhandle(value.fd), IPC::MODE_READ), IPC::MODE_READ));
+			stream.Write<IPC::FileHandle>(IPC::FileHandle(reinterpret_cast<HANDLE>(_get_osfhandle(value.fd), IPC::MODE_READ), IPC::MODE_READ));
 #else
-				stream.Write<IPC::FileHandle>(IPC::FileHandle(value.fd, IPC::MODE_READ));
+			stream.Write<IPC::FileHandle>(IPC::FileHandle(value.fd, IPC::MODE_READ));
 #endif
-			}
 		}
-		static FS::PakInfo Read(Reader& stream)
-		{
-			FS::PakInfo value;
-			value.name = stream.Read<std::string>();
-			value.version = stream.Read<std::string>();
-			value.checksum = stream.Read<Util::optional<uint32_t>>();
-			value.type = static_cast<FS::pakType_t>(stream.Read<uint32_t>());
-			value.path = stream.Read<std::string>();
-			value.timestamp = std::chrono::system_clock::from_time_t(stream.Read<uint64_t>());
-			if (stream.Read<bool>()) {
+	}
+	static FS::PakInfo Read(Reader& stream)
+	{
+		FS::PakInfo value;
+		value.name = stream.Read<std::string>();
+		value.version = stream.Read<std::string>();
+		value.checksum = stream.Read<Util::optional<uint32_t>>();
+		value.type = static_cast<FS::pakType_t>(stream.Read<uint32_t>());
+		value.path = stream.Read<std::string>();
+		value.timestamp = std::chrono::system_clock::from_time_t(stream.Read<uint64_t>());
+		if (stream.Read<bool>()) {
 #ifdef _WIN32
-				void* handle = stream.Read<IPC::FileHandle>().GetHandle();
-				value.fd = _open_osfhandle(reinterpret_cast<intptr_t>(handle), O_RDONLY);
-				if (value.fd == -1)
-					CloseHandle(handle);
+			void* handle = stream.Read<IPC::FileHandle>().GetHandle();
+			value.fd = _open_osfhandle(reinterpret_cast<intptr_t>(handle), O_RDONLY);
+			if (value.fd == -1)
+				CloseHandle(handle);
 #else
-				value.fd = stream.Read<IPC::FileHandle>().GetHandle();
+			value.fd = stream.Read<IPC::FileHandle>().GetHandle();
 #endif
-			} else
-				value.fd = -1;
-			return value;
-		}
-	};
+		} else
+			value.fd = -1;
+		return value;
+	}
+};
 
 } // namespace IPC
 
@@ -150,6 +150,7 @@ inline int my_open(Str::StringRef path, openMode_t mode)
 #elif defined(__linux__)
 	int fd = open64(path.c_str(), modes[mode] | O_CLOEXEC | O_LARGEFILE, 0666);
 #elif defined(__native_client__)
+	// This doesn't actually work, but it's not used anyways
 	int fd = open(path.c_str(), modes[mode], 0666);
 #endif
 
@@ -602,17 +603,19 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 
 #ifdef BUILD_VM
 // Convert an IPC file handle to a File object
-// TODO: error return
-static File FileFromIPC(IPC::FileHandle ipcFile, openMode_t mode)
+static File FileFromIPC(IPC::FileHandle ipcFile, openMode_t mode, std::error_code& err)
 {
-	if (!ipcFile)
+	if (!ipcFile) {
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
 		return File();
+	}
 
 #ifdef _WIN32
 	int raw_modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
 	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(ipcFile.GetHandle()), raw_modes[mode]);
 	if (fd == -1) {
 		CloseHandle(ipcFile.GetHandle());
+		SetErrorCodeSystem(err);
 		return File();
 	}
 #else
@@ -623,6 +626,7 @@ static File FileFromIPC(IPC::FileHandle ipcFile, openMode_t mode)
 	FILE* fp = fdopen(fd, modes[mode]);
 	if (!fp) {
 		close(fd);
+		SetErrorCodeSystem(err);
 		return File();
 	}
 
@@ -1152,17 +1156,12 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 #ifdef BUILD_VM
 		IPC::FileHandle handle;
 		VM::SendMsg<VM::FSPakPathOpenMsg>(it->second.first, path, handle);
-		File file = FileFromIPC(handle, MODE_READ);
-		if (!file) {
-			// TODO: error return
-			SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
-			return "";
-		}
+		File file = FileFromIPC(handle, MODE_READ, err);
 #else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
+#endif
 		if (HaveError(err))
 			return "";
-#endif
 
 		// Get file length
 		offset_t length = file.Length(err);
@@ -1219,17 +1218,12 @@ void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 #ifdef BUILD_VM
 		IPC::FileHandle handle;
 		VM::SendMsg<VM::FSPakPathOpenMsg>(it->second.first, path, handle);
-		File file = FileFromIPC(handle, MODE_READ);
-		if (!file) {
-			// TODO: error return
-			SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
-			return;
-		}
+		File file = FileFromIPC(handle, MODE_READ, err);
 #else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
+#endif
 		if (HaveError(err))
 			return;
-#endif
 		file.CopyTo(dest, err);
 	} else {
 		// Open zip
@@ -1285,9 +1279,15 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 	const PakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR) {
 #ifdef BUILD_VM
-		uint64_t result;
+		Util::optional<uint64_t> result;
 		VM::SendMsg<VM::FSPakPathTimestampMsg>(it->second.first, path, result);
-		return std::chrono::system_clock::from_time_t(result);
+		if (result) {
+			ClearErrorCode(err);
+			return std::chrono::system_clock::from_time_t(*result);
+		} else {
+			SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
+			return {};
+		}
 #else
 		return RawPath::FileTimestamp(Path::Build(pak.path, path), err);
 #endif
@@ -1711,12 +1711,9 @@ static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 #ifdef BUILD_VM
 	IPC::FileHandle handle;
 	VM::SendMsg<VM::FSHomePathOpenModeMsg>(path, mode, handle);
-	File file = FileFromIPC(handle, mode);
-	if (!file) {
-		// TODO: error return
-		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
+	File file = FileFromIPC(handle, mode, err);
+	if (HaveError(err))
 		return {};
-	}
 	return file;
 #else
 	if (!Path::IsValid(path, false)) {
@@ -1759,9 +1756,15 @@ bool FileExists(Str::StringRef path)
 std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err)
 {
 #ifdef BUILD_VM
-	uint64_t result;
+	Util::optional<uint64_t> result;
 	VM::SendMsg<VM::FSHomePathTimestampMsg>(path, result);
-	return std::chrono::system_clock::from_time_t(result);
+	if (result) {
+		ClearErrorCode(err);
+		return std::chrono::system_clock::from_time_t(*result);
+	} else {
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
+		return {};
+	}
 #else
 	if (!Path::IsValid(path, false)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
@@ -1774,8 +1777,12 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err)
 {
 #ifdef BUILD_VM
-	VM::SendMsg<VM::FSHomePathMoveFileMsg>(dest, src);
-	ClearErrorCode(err); // TODO: error return
+	bool success;
+	VM::SendMsg<VM::FSHomePathMoveFileMsg>(dest, src, success);
+	if (success)
+		ClearErrorCode(err);
+	else
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
 #else
 	if (!Path::IsValid(dest, false) || !Path::IsValid(src, false)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
@@ -1787,8 +1794,12 @@ void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err)
 void DeleteFile(Str::StringRef path, std::error_code& err)
 {
 #ifdef BUILD_VM
-	VM::SendMsg<VM::FSHomePathDeleteFileMsg>(path);
-	ClearErrorCode(err); // TODO: error return
+	bool success;
+	VM::SendMsg<VM::FSHomePathDeleteFileMsg>(path, success);
+	if (success)
+		ClearErrorCode(err);
+	else
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
 #else
 	if (!Path::IsValid(path, false)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
@@ -1801,10 +1812,15 @@ void DeleteFile(Str::StringRef path, std::error_code& err)
 DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 {
 #ifdef BUILD_VM
-	DirectoryRange out;
+	Util::optional<DirectoryRange> out;
 	VM::SendMsg<VM::FSHomePathListFilesMsg>(path, out);
-	ClearErrorCode(err); // TODO: error return
-	return out;
+	if (out) {
+		ClearErrorCode(err);
+		return *out;
+	} else {
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_directory);
+		return {};
+	}
 #else
 	if (!Path::IsValid(path, true)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
@@ -1817,10 +1833,15 @@ DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err)
 {
 #ifdef BUILD_VM
-	DirectoryRange out;
+	Util::optional<RecursiveDirectoryRange> out;
 	VM::SendMsg<VM::FSHomePathListFilesRecursiveMsg>(path, out);
-	ClearErrorCode(err); // TODO: error return
-	return out;
+	if (out) {
+		ClearErrorCode(err);
+		return *out;
+	} else {
+		SetErrorCodeFilesystem(err, filesystem_error::no_such_directory);
+		return {};
+	}
 #else
 	if (!Path::IsValid(path, true)) {
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
@@ -2248,8 +2269,9 @@ void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& chann
 
 	case VM::FS_HOMEPATH_OPENMODE:
 		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, std::move(reader), [](std::string path, uint32_t mode, IPC::FileHandle& out) {
-			// TODO: error return
-			out = FileToIPC(HomePath::OpenMode(path, static_cast<openMode_t>(mode), throws()), static_cast<openMode_t>(mode));
+			try {
+				out = FileToIPC(HomePath::OpenMode(path, static_cast<openMode_t>(mode), throws()), static_cast<openMode_t>(mode));
+			} catch (std::system_error& err) {}
 		});
 		break;
 
@@ -2260,39 +2282,54 @@ void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& chann
 		break;
 
 	case VM::FS_HOMEPATH_TIMESTAMP:
-		IPC::HandleMsg<VM::FSHomePathTimestampMsg>(channel, std::move(reader), [](std::string path, uint64_t& out) {
-			// TODO: error return
-			out = std::chrono::system_clock::to_time_t(HomePath::FileTimestamp(path));
+		IPC::HandleMsg<VM::FSHomePathTimestampMsg>(channel, std::move(reader), [](std::string path, Util::optional<uint64_t>& out) {
+			try {
+				out = std::chrono::system_clock::to_time_t(HomePath::FileTimestamp(path));
+			} catch (std::system_error& err) {}
 		});
 		break;
 
 	case VM::FS_HOMEPATH_MOVEFILE:
-		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src) {
-			// TODO: error return
-			HomePath::MoveFile(dest, src);
+		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src, bool success) {
+			try {
+				HomePath::MoveFile(dest, src);
+				success = true;
+			} catch (std::system_error& err) {
+				success = false;
+			}
 		});
 		break;
 
 	case VM::FS_HOMEPATH_DELETEFILE:
-		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path) {
-			// TODO: error return
-			HomePath::DeleteFile(path);
+		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path, bool success) {
+			try {
+				HomePath::DeleteFile(path);
+				success = true;
+			} catch (std::system_error& err) {
+				success = false;
+			}
 		});
 		break;
 
 	case VM::FS_HOMEPATH_LISTFILES:
-		IPC::HandleMsg<VM::FSHomePathListFilesMsg>(channel, std::move(reader), [](std::string path, std::vector<std::string>& out) {
-			// TODO: error return
-			for (auto&& x: FS::HomePath::ListFiles(path))
-				out.push_back(std::move(x));
+		IPC::HandleMsg<VM::FSHomePathListFilesMsg>(channel, std::move(reader), [](std::string path, Util::optional<std::vector<std::string>>& out) {
+			try {
+				std::vector<std::string> vec;
+				for (auto&& x: FS::HomePath::ListFiles(path))
+					vec.push_back(std::move(x));
+				out = std::move(vec);
+			} catch (std::system_error& err) {}
 		});
 		break;
 
 	case VM::FS_HOMEPATH_LISTFILESRECURSIVE:
-		IPC::HandleMsg<VM::FSHomePathListFilesRecursiveMsg>(channel, std::move(reader), [](std::string path, std::vector<std::string>& out) {
-			// TODO: error return
-			for (auto&& x: FS::HomePath::ListFilesRecursive(path))
-				out.push_back(std::move(x));
+		IPC::HandleMsg<VM::FSHomePathListFilesRecursiveMsg>(channel, std::move(reader), [](std::string path, Util::optional<std::vector<std::string>>& out) {
+			try {
+				std::vector<std::string> vec;
+				for (auto&& x: FS::HomePath::ListFilesRecursive(path))
+					vec.push_back(std::move(x));
+				out = std::move(vec);
+			} catch (std::system_error& err) {}
 		});
 		break;
 
@@ -2305,13 +2342,14 @@ void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& chann
 				return;
 			if (!Path::IsValid(path, false))
 				return;
-			// TODO: error return
-			out = FileToIPC(RawPath::OpenRead(Path::Build(loadedPaks[pakIndex].path, path)), MODE_READ);
+			try {
+				out = FileToIPC(RawPath::OpenRead(Path::Build(loadedPaks[pakIndex].path, path)), MODE_READ);
+			} catch (std::system_error& err) {}
 		});
 		break;
 
 	case VM::FS_PAKPATH_TIMESTAMP:
-		IPC::HandleMsg<VM::FSPakPathTimestampMsg>(channel, std::move(reader), [](uint32_t pakIndex, std::string path, uint64_t& out) {
+		IPC::HandleMsg<VM::FSPakPathTimestampMsg>(channel, std::move(reader), [](uint32_t pakIndex, std::string path, Util::optional<uint64_t>& out) {
 			auto& loadedPaks = FS::PakPath::GetLoadedPaks();
 			if (loadedPaks.size() <= pakIndex)
 				return;
@@ -2319,8 +2357,9 @@ void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& chann
 				return;
 			if (!Path::IsValid(path, false))
 				return;
-			// TODO: error return
-			out = std::chrono::system_clock::to_time_t(RawPath::FileTimestamp(Path::Build(loadedPaks[pakIndex].path, path)));
+			try {
+				out = std::chrono::system_clock::to_time_t(RawPath::FileTimestamp(Path::Build(loadedPaks[pakIndex].path, path)));
+			} catch (std::system_error& err) {}
 		});
 		break;
 
