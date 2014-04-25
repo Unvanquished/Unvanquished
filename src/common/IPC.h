@@ -295,7 +295,7 @@ public:
 	const void* ReadInline(size_t len)
 	{
 		if (pos + len <= data.size()) {
-			const void* out = &data[pos];
+			const void* out = data.data() + pos;
 			pos += len;
 			return out;
 		} else
@@ -567,6 +567,13 @@ public:
 		: counter(0) {}
 	Channel(Socket socket)
 		: socket(std::move(socket)), counter(0) {}
+	Channel(Channel&& other)
+		: socket(std::move(other.socket)) {}
+	Channel& operator=(Channel&& other)
+	{
+		std::swap(socket, other.socket);
+		return *this;
+	}
 	explicit operator bool() const
 	{
 		return bool(socket);

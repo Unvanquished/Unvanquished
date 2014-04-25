@@ -143,7 +143,7 @@ inline int my_open(Str::StringRef path, openMode_t mode)
 {
 	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
 #ifdef _WIN32
-	int fd =  _wopen(Str::UTF8To16(path).c_str(), modes[mode]);
+	int fd =  _wopen(Str::UTF8To16(path).c_str(), modes[mode] | O_BINARY, _S_IREAD | _S_IWRITE);
 #elif defined(__APPLE__)
 	// O_CLOEXEC is supported from 10.7 onwards
 	int fd = open(path.c_str(), modes[mode] | O_CLOEXEC, 0666);
