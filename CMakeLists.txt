@@ -305,12 +305,14 @@ endif()
 ################################################################################
 # Determine python version and set env variable
 ################################################################################
-if( BUILD_GAME_NACL )
-  set( PythonInterp_FIND_VERSION 2 )
-  find_package(PythonInterp)
-  if ( NOT PYTHONINTERP_FOUND )
+
+if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
+  set( PYTHONINTERP_FIND_VERSION 2 )
+  find_package( PythonInterp )
+  if( NOT PYTHONINTERP_FOUND )
     message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
   endif()
+  set( PNACLPYTHON_PREFIX env "PNACLPYTHON=${PYTHON_EXECUTABLE}" )
 endif()
 
 ################################################################################
@@ -1367,7 +1369,7 @@ function( GAMEMODULE )
 
       if( EXT STREQUAL ".c" AND FILEDIR MATCHES ${LIB_DIR} )
         add_custom_command( OUTPUT ${OBJ}
-          COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
+          COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
             -std=gnu89
             ${NACL_COMPILE_OPTIONS}
             -c
@@ -1379,7 +1381,7 @@ function( GAMEMODULE )
         set( OBJECTS ${OBJECTS} ${OBJ} )
       elseif( EXT STREQUAL ".c" OR EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
         add_custom_command( OUTPUT ${OBJ}
-          COMMAND PNACLPYTHON=${PYTHON_EXECUTABLE} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
+          COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
             -x c++ -std=gnu++11
             ${NACL_COMPILE_OPTIONS}
             -c
@@ -1395,7 +1397,7 @@ function( GAMEMODULE )
     # Generate PNaCL platform-independent executable
     add_custom_command(
       OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      COMMAND PNACLPYTHON=${PYTHON_EXECUTABLE} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
         ${NACL_COMPILE_OPTIONS}
         -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
         ${OBJECTS}
@@ -1405,7 +1407,7 @@ function( GAMEMODULE )
     # Generate NaCl executables for x86 and x86_64
     add_custom_command(
       OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-      COMMAND PNACLPYTHON=${PYTHON_EXECUTABLE} ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
         ${NACL_TRANSLATE_OPTIONS}
         -arch i686
         -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
@@ -1414,7 +1416,7 @@ function( GAMEMODULE )
     )
     add_custom_command(
       OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
-      COMMAND PNACLPYTHON=${PYTHON_EXECUTABLE} ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
         ${NACL_TRANSLATE_OPTIONS}
         -arch x86-64
         -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe

@@ -113,6 +113,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 				for (int k = 0; k < num_slashes; k++)
 					cmdline += "\\";
 				num_slashes = 0;
+				cmdline.push_back(c);
 			}
 		}
 		cmdline += "\"";
@@ -135,8 +136,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	PROCESS_INFORMATION processInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
 	startupInfo.cb = sizeof(startupInfo);
-	char env[] = "";
-	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, env, NULL, &startupInfo, &processInfo)) {
+	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
 		Com_Error(ERR_DROP, "VM: Could create child process: %s", Win32StrError(GetLastError()).c_str());
 	}
@@ -225,16 +225,17 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
-	std::string module, sel_ldr, irt, bootstrap;
+	std::string module, sel_ldr, irt, bootstrap, modulePath;
 
 	// Extract the nexe from the pak so that sel_ldr can load it
 	module = name + "-" ARCH_STRING ".nexe";
+	modulePath = FS::Path::Build(FS::GetHomePath(), module);
 	try {
 		FS::File out = FS::HomePath::OpenWrite(module);
 		FS::PakPath::CopyFile(module, out);
 		out.Close();
 	} catch (std::system_error& err) {
-		Com_Error(ERR_DROP, "VM: Failed to extract NaCl module %s: %s\n", module.c_str(), err.what());
+		Com_Error(ERR_DROP, "VM: Failed to extract VM module %s: %s\n", module.c_str(), err.what());
 	}
 
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
@@ -258,7 +259,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	args.push_back("-i");
 	args.push_back(rootSocketRedir);
 	args.push_back("--");
-	args.push_back(module.c_str());
+	args.push_back(modulePath.c_str());
 	args.push_back(XSTRING(ROOT_SOCKET_FD));
 	args.push_back(NULL);
 

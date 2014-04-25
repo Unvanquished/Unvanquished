@@ -278,7 +278,7 @@ public:
 	void ReadData(void* p, size_t len)
 	{
 		if (pos + len <= data.size()) {
-			memcpy(p, &data[pos], len);
+			memcpy(p, data.data() + pos, len);
 			pos += len;
 		} else
 			Com_Error(ERR_DROP, "IPC: Unexpected end of message");
