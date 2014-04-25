@@ -220,7 +220,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 }
 
-std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
+std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract) {
 	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
@@ -229,14 +229,17 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 
 	// Extract the nexe from the pak so that sel_ldr can load it
 	module = name + "-" ARCH_STRING ".nexe";
-	modulePath = FS::Path::Build(FS::GetHomePath(), module);
-	try {
-		FS::File out = FS::HomePath::OpenWrite(module);
-		FS::PakPath::CopyFile(module, out);
-		out.Close();
-	} catch (std::system_error& err) {
-		Com_Error(ERR_DROP, "VM: Failed to extract VM module %s: %s\n", module.c_str(), err.what());
-	}
+	if (extract) {
+		try {
+			FS::File out = FS::HomePath::OpenWrite(module);
+			FS::PakPath::CopyFile(module, out);
+			out.Close();
+		} catch (std::system_error& err) {
+			Com_Error(ERR_DROP, "VM: Failed to extract VM module %s: %s\n", module.c_str(), err.what());
+		}
+		modulePath = FS::Path::Build(FS::GetHomePath(), module);
+	} else
+		modulePath = FS::Path::Build(libPath, module);
 
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
 	sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
@@ -341,8 +344,8 @@ int VMBase::Create(vmType_t type)
 	std::pair<IPC::Socket, IPC::Socket> pair = IPC::Socket::CreatePair();
 
 	IPC::Socket rootSocket;
-	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG) {
-		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG);
+	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH || type == TYPE_NACL_LIBPATH_DEBUG) {
+		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG, type == TYPE_NACL || type == TYPE_NACL_DEBUG);
 	} else if (type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
 		std::tie(processHandle, rootSocket) = CreateNativeVM(std::move(pair), name, type == TYPE_NATIVE_EXE_DEBUG);
 	} else {
@@ -351,7 +354,7 @@ int VMBase::Create(vmType_t type)
 	rootChannel = IPC::Channel(std::move(rootSocket));
 	vmType = type;
 
-	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE_DEBUG)
+	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG)
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
 
 	// Read the ABI version from the root socket.
