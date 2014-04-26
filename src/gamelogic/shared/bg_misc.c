@@ -1297,7 +1297,7 @@ void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerSta
 
 		if ( atof( buf ) != 0 )
 		{
-#ifdef IN_GAME_VM
+#ifdef BUILD_GAME
 			Com_Printf( " game event svt %5d -> %5d: num = %20s parm %d\n",
 			ps->pmove_framecount /*ps->commandTime*/, ps->eventSequence,
 			BG_EventName( newEvent ), eventParm );
@@ -2608,7 +2608,7 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 		}
 
 		Q_strncpyz( emoticons[ count ].name, filePtr, fileLen - 8 + 1 );
-#ifndef IN_GAME_VM
+#ifndef BUILD_GAME
 		emoticons[ count ].width = filePtr[ fileLen - 7 ] - '0';
 #endif
 		count++;

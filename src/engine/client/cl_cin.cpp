@@ -1315,7 +1315,6 @@ static void RoQReset( void )
 static void RoQInterrupt( void )
 {
 	byte  *framedata;
-	short sbuf[ 32768 ];
 	int   ssize;
 
 	if ( currentHandle < 0 ) { return; }
@@ -1383,7 +1382,8 @@ redump:
 		case    ZA_SOUND_MONO:
 			if ( !cinTable[ currentHandle ].silent )
 			{
-				ssize = RllDecodeMonoToStereo( framedata, sbuf, cinTable[ currentHandle ].RoQFrameSize, 0, ( unsigned short ) cinTable[ currentHandle ].roq_flags );
+			    short* sbuf = new short[32768];
+			    ssize = RllDecodeMonoToStereo( framedata, sbuf, cinTable[ currentHandle ].RoQFrameSize, 0, ( unsigned short ) cinTable[ currentHandle ].roq_flags );
                 Audio::StreamData( 0, (byte*) sbuf, ssize, 22050, 2, 1, 1.0f, 1);
 			}
 
@@ -1398,7 +1398,7 @@ redump:
 					//TODO
 					//s_rawend[0] = s_soundtime;
 				}
-
+			    short* sbuf = new short[32768];
 				ssize = RllDecodeStereoToStereo( framedata, sbuf, cinTable[ currentHandle ].RoQFrameSize, 0, ( unsigned short ) cinTable[ currentHandle ].roq_flags );
                 Audio::StreamData( 0, (byte*) sbuf, ssize, 22050, 2, 2, 1.0f, 1);
 			}

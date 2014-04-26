@@ -68,7 +68,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CURSOR_ARROW               0x00000002
 #define CURSOR_SIZER               0x00000004
 
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 #define STRING_POOL_SIZE           128 * 1024
 #else
 #define STRING_POOL_SIZE           384 * 1024

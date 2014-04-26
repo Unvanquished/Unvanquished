@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "AudioPrivate.h"
+#include "SoundCodec.h"
 
 namespace Audio {
 
@@ -45,24 +46,17 @@ namespace Audio {
 
     bool Sample::Load() {
         audioLogs.Debug("Loading Sample '%s'", GetName());
-        snd_info_t info;
-        void* data = S_CodecLoad(GetName().c_str(), &info);
+	    auto audioData = LoadSoundCodec(GetName());
 
-        if (data == nullptr) {
-            audioLogs.Warn("Couldn't load sound %s", GetName());
+	    if (audioData.size == 0) {
+		    audioLogs.Warn("Couldn't load sound %s, it's empty!", GetName());
             return false;
         }
 
         //TODO handle errors, especially out of memory errors
-        buffer.Feed(info, data);
+        buffer.Feed(audioData);
 
-        if (info.size == 0) {
-            audioLogs.Warn("info.size = 0 in RegisterSample, what?");
-        }
-
-        Hunk_FreeTempMemory(data);
-
-        return true;
+	    return true;
     }
 
     void Sample::Cleanup() {

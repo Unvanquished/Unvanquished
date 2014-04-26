@@ -141,7 +141,7 @@ void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
  *  can then be cleared to allow another change detection.
  */
 extern int cvar_modifiedFlags;
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 extern qboolean bindingsModified;
 #endif
 
