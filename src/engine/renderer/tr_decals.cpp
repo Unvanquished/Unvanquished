@@ -353,58 +353,6 @@ void RE_ClearDecals( void )
 }
 
 /*
-TransformDecalProjector()
-transforms a decal projector
-note: non-normalized axes will screw up the plane transform
-*/
-
-void R_TransformDecalProjector( decalProjector_t *in, vec3_t axis[ 3 ], vec3_t origin, decalProjector_t *out )
-{
-	int    i, m;
-	vec3_t center;
-
-	/* copy misc stuff */
-	out->shader = in->shader;
-	* ( ( int * ) out->color ) = * ( ( int * ) in->color );
-	out->fadeStartTime = in->fadeStartTime;
-	out->fadeEndTime = in->fadeEndTime;
-	out->omnidirectional = in->omnidirectional;
-	out->numPlanes = in->numPlanes;
-
-	/* translate bounding box and sphere (note: rotated projector bounding box will be invalid!) */
-	VectorSubtract( in->mins, origin, out->mins );
-	VectorSubtract( in->maxs, origin, out->maxs );
-	VectorSubtract( in->center, origin, center );
-	out->center[ 0 ] = DotProduct( center, axis[ 0 ] );
-	out->center[ 1 ] = DotProduct( center, axis[ 1 ] );
-	out->center[ 2 ] = DotProduct( center, axis[ 2 ] );
-	out->radius = in->radius;
-	out->radius2 = in->radius2;
-
-	/* translate planes */
-	for ( i = 0; i < in->numPlanes; i++ )
-	{
-		/* transform by transposed inner 3x3 matrix */
-		out->planes[ i ][ 0 ] = DotProduct( in->planes[ i ], axis[ 0 ] );
-		out->planes[ i ][ 1 ] = DotProduct( in->planes[ i ], axis[ 1 ] );
-		out->planes[ i ][ 2 ] = DotProduct( in->planes[ i ], axis[ 2 ] );
-		out->planes[ i ][ 3 ] = in->planes[ i ][ 3 ] - DotProduct( in->planes[ i ], origin );
-	}
-
-	/* translate texture matrices */
-	for ( m = 0; m < 3; m++ )
-	{
-		for ( i = 0; i < 2; i++ )
-		{
-			out->texMat[ m ][ i ][ 0 ] = DotProduct( in->texMat[ m ][ i ], axis[ 0 ] );
-			out->texMat[ m ][ i ][ 1 ] = DotProduct( in->texMat[ m ][ i ], axis[ 1 ] );
-			out->texMat[ m ][ i ][ 2 ] = DotProduct( in->texMat[ m ][ i ], axis[ 2 ] );
-			out->texMat[ m ][ i ][ 3 ] = in->texMat[ m ][ i ][ 3 ] + DotProduct( in->texMat[ m ][ i ], origin );
-		}
-	}
-}
-
-/*
 R_TestDecalBoundingBox()
 return qtrue if the decal projector intersects the bounding box
 */

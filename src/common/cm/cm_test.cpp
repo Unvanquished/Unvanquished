@@ -117,53 +117,6 @@ void CM_StoreLeafs( leafList_t *ll, int nodenum )
 	ll->list[ ll->count++ ] = leafNum;
 }
 
-void CM_StoreBrushes( leafList_t *ll, int nodenum )
-{
-	int      i, k;
-	int      leafnum;
-	int      brushnum;
-	cLeaf_t  *leaf;
-	cbrush_t *b;
-
-	leafnum = -1 - nodenum;
-
-	leaf = &cm.leafs[ leafnum ];
-
-	for ( k = 0; k < leaf->numLeafBrushes; k++ )
-	{
-		brushnum = cm.leafbrushes[ leaf->firstLeafBrush + k ];
-		b = &cm.brushes[ brushnum ];
-
-		if ( b->checkcount == cm.checkcount )
-		{
-			continue; // already checked this brush in another leaf
-		}
-
-		b->checkcount = cm.checkcount;
-
-		for ( i = 0; i < 3; i++ )
-		{
-			if ( b->bounds[ 0 ][ i ] >= ll->bounds[ 1 ][ i ] || b->bounds[ 1 ][ i ] <= ll->bounds[ 0 ][ i ] )
-			{
-				break;
-			}
-		}
-
-		if ( i != 3 )
-		{
-			continue;
-		}
-
-		if ( ll->count >= ll->maxcount )
-		{
-			ll->overflowed = qtrue;
-			return;
-		}
-
-		( ( cbrush_t ** ) ll->list ) [ ll->count++ ] = b;
-	}
-}
-
 /*
 =============
 CM_BoxLeafnums

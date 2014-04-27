@@ -35,31 +35,6 @@ const matrix_t quakeToOpenGLMatrix =
 	0,  0, 0,  1
 };
 
-// inverse of quakeToOpenGL matrix
-const matrix_t openGLToQuakeMatrix =
-{
-	0,  -1, 0, 0,
-	0,  0,  1, 0,
-	-1, 0,  0, 0,
-	0,  0,  0, 1
-};
-
-const matrix_t flipZMatrix =
-{
-	1, 0, 0,  0,
-	0, 1, 0,  0,
-	0, 0, -1, 0,
-	0, 0, 0,  1
-};
-
-const GLenum   geometricRenderTargets[] =
-{
-	GL_COLOR_ATTACHMENT0_EXT,
-	GL_COLOR_ATTACHMENT1_EXT,
-	GL_COLOR_ATTACHMENT2_EXT,
-	GL_COLOR_ATTACHMENT3_EXT
-};
-
 int            shadowMapResolutions[ 5 ] = { 2048, 1024, 512, 256, 128 };
 int            sunShadowMapResolutions[ 5 ] = { 2048, 2048, 1024, 1024, 1024 };
 
@@ -68,92 +43,6 @@ refimport_t    ri;
 // entities that will have procedurally generated surfaces will just
 // point at this for their sorting surface
 surfaceType_t entitySurface = SF_ENTITY;
-
-/*
-================
-R_CompareVert
-================
-*/
-qboolean R_CompareVert( srfVert_t *v1, srfVert_t *v2, qboolean checkST )
-{
-	int i;
-
-	for ( i = 0; i < 3; i++ )
-	{
-		if ( floor( v1->xyz[ i ] + 0.1 ) != floor( v2->xyz[ i ] + 0.1 ) )
-		{
-			return qfalse;
-		}
-
-		if ( checkST && ( ( v1->st[ 0 ] != v2->st[ 0 ] ) || ( v1->st[ 1 ] != v2->st[ 1 ] ) ) )
-		{
-			return qfalse;
-		}
-	}
-
-	return qtrue;
-}
-
-/*
-=============
-R_CalcNormalForTriangle
-=============
-*/
-void R_CalcNormalForTriangle( vec3_t normal, const vec3_t v0, const vec3_t v1, const vec3_t v2 )
-{
-	vec3_t udir, vdir;
-
-	// compute the face normal based on vertex points
-	VectorSubtract( v2, v0, udir );
-	VectorSubtract( v1, v0, vdir );
-	CrossProduct( udir, vdir, normal );
-
-	VectorNormalize( normal );
-}
-
-/*
-=============
-R_CalcTangentsForTriangle
-http://members.rogers.com/deseric/tangentspace.htm
-=============
-*/
-void R_CalcTangentsForTriangle( vec3_t tangent, vec3_t binormal,
-                                const vec3_t v0, const vec3_t v1, const vec3_t v2,
-                                const vec2_t t0, const vec2_t t1, const vec2_t t2 )
-{
-	int    i;
-	vec3_t planes[ 3 ];
-	vec3_t u, v;
-
-	for ( i = 0; i < 3; i++ )
-	{
-		VectorSet( u, v1[ i ] - v0[ i ], t1[ 0 ] - t0[ 0 ], t1[ 1 ] - t0[ 1 ] );
-		VectorSet( v, v2[ i ] - v0[ i ], t2[ 0 ] - t0[ 0 ], t2[ 1 ] - t0[ 1 ] );
-
-		VectorNormalize( u );
-		VectorNormalize( v );
-
-		CrossProduct( u, v, planes[ i ] );
-	}
-
-	//So your tangent space will be defined by this :
-	//Normal = Normal of the triangle or Tangent X Binormal (careful with the cross product,
-	// you have to make sure the normal points in the right direction)
-	//Tangent = ( dp(Fx(s,t)) / ds,  dp(Fy(s,t)) / ds, dp(Fz(s,t)) / ds )   or     ( -Bx/Ax, -By/Ay, - Bz/Az )
-	//Binormal =  ( dp(Fx(s,t)) / dt,  dp(Fy(s,t)) / dt, dp(Fz(s,t)) / dt )  or     ( -Cx/Ax, -Cy/Ay, -Cz/Az )
-
-	// tangent...
-	tangent[ 0 ] = -planes[ 0 ][ 1 ] / planes[ 0 ][ 0 ];
-	tangent[ 1 ] = -planes[ 1 ][ 1 ] / planes[ 1 ][ 0 ];
-	tangent[ 2 ] = -planes[ 2 ][ 1 ] / planes[ 2 ][ 0 ];
-	VectorNormalize( tangent );
-
-	// binormal...
-	binormal[ 0 ] = -planes[ 0 ][ 2 ] / planes[ 0 ][ 0 ];
-	binormal[ 1 ] = -planes[ 1 ][ 2 ] / planes[ 1 ][ 0 ];
-	binormal[ 2 ] = -planes[ 2 ][ 2 ] / planes[ 2 ][ 0 ];
-	VectorNormalize( binormal );
-}
 
 /*
 =============
@@ -272,155 +161,6 @@ void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	VectorNormalizeFast( tangent );
 
 	VectorCopy( faceNormal, normal );
-}
-
-/*
-http://www.terathon.com/code/tangent.html
-*/
-void R_CalcTBN( vec3_t tangent, vec3_t bitangent, vec3_t normal,
-                const vec3_t v1, const vec3_t v2, const vec3_t v3, const vec2_t w1, const vec2_t w2, const vec2_t w3 )
-{
-	vec3_t u, v;
-	float  x1, x2, y1, y2, z1, z2;
-	float  s1, s2, t1, t2;
-	float  r, dot;
-
-	x1 = v2[ 0 ] - v1[ 0 ];
-	x2 = v3[ 0 ] - v1[ 0 ];
-	y1 = v2[ 1 ] - v1[ 1 ];
-	y2 = v3[ 1 ] - v1[ 1 ];
-	z1 = v2[ 2 ] - v1[ 2 ];
-	z2 = v3[ 2 ] - v1[ 2 ];
-
-	s1 = w2[ 0 ] - w1[ 0 ];
-	s2 = w3[ 0 ] - w1[ 0 ];
-	t1 = w2[ 1 ] - w1[ 1 ];
-	t2 = w3[ 1 ] - w1[ 1 ];
-
-	r = 1.0f / ( s1 * t2 - s2 * t1 );
-
-	VectorSet( tangent, ( t2 * x1 - t1 * x2 ) * r, ( t2 * y1 - t1 * y2 ) * r, ( t2 * z1 - t1 * z2 ) * r );
-	VectorSet( bitangent, ( s1 * x2 - s2 * x1 ) * r, ( s1 * y2 - s2 * y1 ) * r, ( s1 * z2 - s2 * z1 ) * r );
-
-	// compute the face normal based on vertex points
-	VectorSubtract( v3, v1, u );
-	VectorSubtract( v2, v1, v );
-	CrossProduct( u, v, normal );
-
-	VectorNormalize( normal );
-
-	// Gram-Schmidt orthogonalize
-	//tangent[a] = (t - n * Dot(n, t)).Normalize();
-	dot = DotProduct( normal, tangent );
-	VectorMA( tangent, -dot, normal, tangent );
-	VectorNormalize( tangent );
-
-	// B=NxT
-	//CrossProduct(normal, tangent, bitangent);
-}
-
-void R_CalcTBN2( vec3_t tangent, vec3_t binormal, vec3_t normal,
-                 const vec3_t v1, const vec3_t v2, const vec3_t v3, const vec2_t t1, const vec2_t t2, const vec2_t t3 )
-{
-	vec3_t v2v1;
-	vec3_t v3v1;
-
-	float  c2c1_T;
-	float  c2c1_B;
-
-	float  c3c1_T;
-	float  c3c1_B;
-
-	float  denominator;
-	float  scale1, scale2;
-
-	vec3_t T, B, N, C;
-
-	// Calculate the tangent basis for each vertex of the triangle
-	// UPDATE: In the 3rd edition of the accompanying article, the for-loop located here has
-	// been removed as it was redundant (the entire TBN matrix was calculated three times
-	// instead of just one).
-	//
-	// Please note, that this function relies on the fact that the input geometry are triangles
-	// and the tangent basis for each vertex thus is identical!
-	//
-
-	// Calculate the vectors from the current vertex to the two other vertices in the triangle
-	VectorSubtract( v2, v1, v2v1 );
-	VectorSubtract( v3, v1, v3v1 );
-
-	// The equation presented in the article states that:
-	// c2c1_T = V2.texcoord.x − V1.texcoord.x
-	// c2c1_B = V2.texcoord.y − V1.texcoord.y
-	// c3c1_T = V3.texcoord.x − V1.texcoord.x
-	// c3c1_B = V3.texcoord.y − V1.texcoord.y
-
-	// Calculate c2c1_T and c2c1_B
-	c2c1_T = t2[ 0 ] - t1[ 0 ];
-	c2c1_B = t2[ 1 ] - t2[ 1 ];
-
-	// Calculate c3c1_T and c3c1_B
-	c3c1_T = t3[ 0 ] - t1[ 0 ];
-	c3c1_B = t3[ 1 ] - t1[ 1 ];
-
-	denominator = c2c1_T * c3c1_B - c3c1_T * c2c1_B;
-
-	//if(ROUNDOFF(fDenominator) == 0.0f)
-	if ( denominator == 0.0f )
-	{
-		// We won't risk a divide by zero, so set the tangent matrix to the identity matrix
-		VectorSet( tangent, 1, 0, 0 );
-		VectorSet( binormal, 0, 1, 0 );
-		VectorSet( normal, 0, 0, 1 );
-	}
-	else
-	{
-		// Calculate the reciprocal value once and for all (to achieve speed)
-		scale1 = 1.0f / denominator;
-
-		// T and B are calculated just as the equation in the article states
-		VectorSet( T, ( c3c1_B * v2v1[ 0 ] - c2c1_B * v3v1[ 0 ] ) * scale1,
-		           ( c3c1_B * v2v1[ 1 ] - c2c1_B * v3v1[ 1 ] ) * scale1,
-		           ( c3c1_B * v2v1[ 2 ] - c2c1_B * v3v1[ 2 ] ) * scale1 );
-
-		VectorSet( B, ( -c3c1_T * v2v1[ 0 ] + c2c1_T * v3v1[ 0 ] ) * scale1,
-		           ( -c3c1_T * v2v1[ 1 ] + c2c1_T * v3v1[ 1 ] ) * scale1,
-		           ( -c3c1_T * v2v1[ 2 ] + c2c1_T * v3v1[ 2 ] ) * scale1 );
-
-		// The normal N is calculated as the cross product between T and B
-		CrossProduct( T, B, N );
-
-		// Calculate the reciprocal value once and for all (to achieve speed)
-		scale2 = 1.0f / ( ( T[ 0 ] * B[ 1 ] * N[ 2 ] - T[ 2 ] * B[ 1 ] * N[ 0 ] ) +
-		                  ( B[ 0 ] * N[ 1 ] * T[ 2 ] - B[ 2 ] * N[ 1 ] * T[ 0 ] ) +
-		                  ( N[ 0 ] * T[ 1 ] * B[ 2 ] - N[ 2 ] * T[ 1 ] * B[ 0 ] ) );
-
-		// Calculate the inverse if the TBN matrix using the formula described in the article.
-		// We store the basis vectors directly in the provided TBN matrix: pvTBNMatrix
-		CrossProduct( B, N, C );
-		tangent[ 0 ] = C[ 0 ] * scale2;
-		CrossProduct( N, T, C );
-		tangent[ 1 ] = -C[ 0 ] * scale2;
-		CrossProduct( T, B, C );
-		tangent[ 2 ] = C[ 0 ] * scale2;
-		VectorNormalize( tangent );
-
-		CrossProduct( B, N, C );
-		binormal[ 0 ] = -C[ 1 ] * scale2;
-		CrossProduct( N, T, C );
-		binormal[ 1 ] = C[ 1 ] * scale2;
-		CrossProduct( T, B, C );
-		binormal[ 2 ] = -C[ 1 ] * scale2;
-		VectorNormalize( binormal );
-
-		CrossProduct( B, N, C );
-		normal[ 0 ] = C[ 2 ] * scale2;
-		CrossProduct( N, T, C );
-		normal[ 1 ] = -C[ 2 ] * scale2;
-		CrossProduct( T, B, C );
-		normal[ 2 ] = C[ 2 ] * scale2;
-		VectorNormalize( normal );
-	}
 }
 
 qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] )
@@ -606,62 +346,6 @@ int R_CullPointAndRadius( vec3_t pt, float radius )
 	}
 
 	return CULL_IN; // completely inside frustum
-}
-
-/*
-=================
-R_FogLocalPointAndRadius
-=================
-*/
-int R_FogLocalPointAndRadius( const vec3_t pt, float radius )
-{
-	vec3_t transformed;
-
-	R_LocalPointToWorld( pt, transformed );
-
-	return R_FogPointAndRadius( transformed, radius );
-}
-
-/*
-=================
-R_FogPointAndRadius
-=================
-*/
-int R_FogPointAndRadius( const vec3_t pt, float radius )
-{
-	int   i, j;
-	fog_t *fog;
-
-	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL )
-	{
-		return 0;
-	}
-
-	// FIXME: non-normalized axis issues
-	for ( i = 1; i < tr.world->numFogs; i++ )
-	{
-		fog = &tr.world->fogs[ i ];
-
-		for ( j = 0; j < 3; j++ )
-		{
-			if ( pt[ j ] - radius >= fog->bounds[ 1 ][ j ] )
-			{
-				break;
-			}
-
-			if ( pt[ j ] + radius <= fog->bounds[ 0 ][ j ] )
-			{
-				break;
-			}
-		}
-
-		if ( j == 3 )
-		{
-			return i;
-		}
-	}
-
-	return 0;
 }
 
 /*
@@ -2266,52 +1950,6 @@ void R_AddEntityInteractions( trRefLight_t *light )
 }
 
 /*
-=====================
-R_AddPolygonInteractions
-=====================
-*/
-void R_AddPolygonInteractions( trRefLight_t *light )
-{
-	int       i, j;
-	shader_t  *shader;
-	srfPoly_t *poly;
-	vec3_t    worldBounds[ 2 ];
-
-	if ( light->l.inverseShadows )
-	{
-		return;
-	}
-
-	tr.currentEntity = &tr.worldEntity;
-
-	for ( i = 0, poly = tr.refdef.polys; i < tr.refdef.numPolys; i++, poly++ )
-	{
-		shader = R_GetShaderByHandle( poly->hShader );
-
-		if ( !shader->interactLight )
-		{
-			continue;
-		}
-
-		// calc AABB of the triangle
-		ClearBounds( worldBounds[ 0 ], worldBounds[ 1 ] );
-
-		for ( j = 0; j < poly->numVerts; j++ )
-		{
-			AddPointToBounds( poly->verts[ j ].xyz, worldBounds[ 0 ], worldBounds[ 1 ] );
-		}
-
-		// do a quick AABB cull
-		if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], worldBounds[ 0 ], worldBounds[ 1 ] ) )
-		{
-			continue;
-		}
-
-		R_AddLightInteraction( light, ( surfaceType_t * ) poly, shader, CUBESIDE_CLIPALL, IA_LIGHT );
-	}
-}
-
-/*
 =============
 R_TransformShadowLight
 
@@ -2745,15 +2383,6 @@ void R_AddLightBoundsToVisBounds( void )
 			tr.viewParms.visBounds[ 1 ][ 2 ] = light->worldBounds[ 1 ][ 2 ];
 		}
 	}
-}
-
-void R_DebugAxis( const vec3_t origin, const matrix_t transformMatrix )
-{
-}
-
-// Tr3B - from botlib
-void R_DebugBoundingBox( const vec3_t origin, const vec3_t mins, const vec3_t maxs, vec4_t color )
-{
 }
 
 /*

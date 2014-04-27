@@ -119,7 +119,7 @@ void CloseDesc(const Desc& desc)
 #endif
 }
 
-Desc DescFromFile(OSHandleType handle, FileOpenMode mode)
+Desc FileHandle::GetDesc() const
 {
 #ifdef __native_client__
 	Q_UNUSED(mode);
@@ -148,12 +148,31 @@ Desc DescFromFile(OSHandleType handle, FileOpenMode mode)
 	return out;
 #endif
 }
-OSHandleType DescToHandle(const Desc& desc)
+
+FileHandle FileHandle::FromDesc(const Desc& desc)
 {
 #ifdef __native_client__
-	return desc;
+	return FileHandle(desc, MODE_READ); // Mode isn't used in NaCl
 #else
-	return desc.handle;
+	FileOpenMode mode = MODE_READ;
+	switch (desc.flags) {
+	case NACL_ABI_O_RDONLY:
+		mode = MODE_READ;
+		break;
+	case NACL_ABI_O_WRONLY:
+		mode = MODE_WRITE;
+		break;
+	case NACL_ABI_O_RDWR:
+		mode = MODE_RW;
+		break;
+	case NACL_ABI_O_WRONLY | NACL_ABI_O_APPEND:
+		mode = MODE_WRITE_APPEND;
+		break;
+	case NACL_ABI_O_RDWR | NACL_ABI_O_APPEND:
+		mode = MODE_RW_APPEND;
+		break;
+	}
+	return FileHandle(desc.handle, mode);
 #endif
 }
 
@@ -175,6 +194,7 @@ Desc Socket::GetDesc() const
 	return out;
 #endif
 }
+
 Socket Socket::FromDesc(const Desc& desc)
 {
 	Socket out;
@@ -196,18 +216,23 @@ void Socket::SendMsg(const Writer& writer) const
 {
 	NaClMessageHeader hdr;
 	NaClIOVec iov[3];
-	NaClHandle h[NACL_ABI_IMC_DESC_MAX];
 	const Desc* handles = writer.GetHandles().data();
 	size_t numHandles = writer.GetHandles().size();
 	const void* data = writer.GetData().data();
 	size_t len = writer.GetData().size();
 
 	if (numHandles > NACL_ABI_IMC_DESC_MAX)
-		Com_Error(ERR_DROP, "IPC: Message contains more handles than maximum allowed: %lu\n", numHandles);
+		Com_Error(ERR_DROP, "IPC: Message contains more handles than maximum allowed: %zu\n", numHandles);
 	if (len > NACL_ABI_IMC_USER_BYTES_MAX)
-		Com_Error(ERR_DROP, "IPC: Message above maximum size: %lu\n", len);
+		Com_Error(ERR_DROP, "IPC: Message above maximum size: %zu\n", len);
+
+#ifdef __native_client__
+	NaClHandle* h = const_cast<NaClHandle*>(handles);
+#else
+	NaClHandle h[NACL_ABI_IMC_DESC_MAX];
 	for (size_t i = 0; i < numHandles; i++)
-		h[i] = DescToHandle(handles[i]);
+		h[i] = handles[i].handle;
+#endif
 
 #ifdef __native_client__
 	hdr.iov = iov;
@@ -431,14 +456,14 @@ void SharedMemory::Map()
 	if (base == nullptr) {
 		NaClClose(handle);
 		handle = INVALID_HANDLE;
-		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %lu: %s", size, Win32StrError(GetLastError()).c_str());
+		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %zu: %s", size, Win32StrError(GetLastError()).c_str());
 	}
 #else
 	base = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, handle, 0);
 	if (base == MAP_FAILED) {
 		NaClClose(handle);
 		handle = INVALID_HANDLE;
-		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %lu: %s", size, strerror(errno));
+		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %zu: %s", size, strerror(errno));
 	}
 #endif
 }
@@ -468,6 +493,7 @@ Desc SharedMemory::GetDesc() const
 	return out;
 #endif
 }
+
 SharedMemory SharedMemory::FromDesc(const Desc& desc)
 {
 	SharedMemory out;
@@ -497,7 +523,7 @@ SharedMemory SharedMemory::Create(size_t size)
 	if (handle == INVALID_HANDLE) {
 		char error[256];
 		NaClGetLastErrorString(error, sizeof(error));
-		Com_Error(ERR_DROP, "IPC: Failed to create shared memory object of size %lu: %s", size, error);
+		Com_Error(ERR_DROP, "IPC: Failed to create shared memory object of size %zu: %s", size, error);
 	}
 
 	SharedMemory out;

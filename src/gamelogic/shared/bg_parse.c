@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA	02110-1301	USA
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 #include "../cgame/cg_local.h"
 #endif
 
@@ -2180,7 +2180,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		if      ( !Q_stricmp( token, "model" ) )
 		{
 			PARSE( text, token );
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 			ma->model = trap_R_RegisterModel( token );
 #endif
 			defined |= MODEL;
@@ -2188,7 +2188,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "sound" ) )
 		{
 			PARSE( text, token );
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 			ma->sound = trap_S_RegisterSound( token, qfalse );
 #endif
 			defined |= SOUND;
@@ -2227,7 +2227,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "sprite" ) )
 		{
 			PARSE( text, token );
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 			ma->sprite = trap_R_RegisterShader( token, RSF_DEFAULT );
 #endif
 			defined |= SPRITE;
@@ -2250,7 +2250,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "particleSystem" ) )
 		{
 			PARSE( text, token );
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 			ma->particleSystem = CG_RegisterParticleSystem( token );
 #endif
 			defined |= PARTICLE_SYSTEM;
@@ -2258,7 +2258,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "trailSystem" ) )
 		{
 			PARSE( text, token );
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 			ma->trailSystem = CG_RegisterTrailSystem( token );
 #endif
 			defined |= TRAIL_SYSTEM;
@@ -2303,7 +2303,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "impactParticleSystem" ) )
 		{
 			PARSE( text, token );
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 			ma->impactParticleSystem = CG_RegisterParticleSystem( token );
 #endif
 			defined |= IMPACT_PARTICLE;
@@ -2311,7 +2311,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "impactMark" ) )
 		{
 			PARSE( text, token );
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 			ma->impactMark = trap_R_RegisterShader( token, RSF_DEFAULT );
 #endif
 			defined |= IMPACT_MARK;
@@ -2329,7 +2329,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			PARSE( text, token );
 			index = atoi( token );
 			PARSE( text, token );
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 			if ( index >= 0 && index < 4 )
 			{
 				ma->impactSound[ index ] = trap_S_RegisterSound( token, qfalse );
@@ -2342,7 +2342,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			PARSE( text, token );
 			index = atoi( token );
 			PARSE( text, token );
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 			if ( index >= 0 && index < 4 )
 			{
 				ma->impactFleshSound[ index ] = trap_S_RegisterSound( token, qfalse );

@@ -376,7 +376,7 @@ void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;
 	maxClips = BG_Weapon( weapon )->maxClips;
 
-	if ( ( other->client->ps.ammo + self->damage ) > maxAmmo )
+	if ( ( other->client->ps.ammo + self->config.amount ) > maxAmmo )
 	{
 		if ( other->client->ps.clips < maxClips )
 		{
@@ -390,7 +390,7 @@ void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	}
 	else
 	{
-		other->client->ps.ammo += self->damage;
+		other->client->ps.ammo += self->config.amount;
 	}
 }
 
@@ -410,6 +410,7 @@ void SP_env_afx_ammo( gentity_t *self )
 	}
 
 	self->touch = env_afx_ammo_touch;
+	self->act = env_afx_toggle;
 
 	InitEnvAFXEntity( self, qtrue );
 }

@@ -126,6 +126,8 @@ typedef enum gameImport_s
   G_LOCATE_GAME_DATA1,
   G_LOCATE_GAME_DATA2,
 
+  G_ADJUST_AREA_PORTAL_STATE,
+
   G_DROP_CLIENT,
   G_SEND_SERVER_COMMAND,
   G_SET_CONFIGSTRING,
@@ -212,6 +214,9 @@ typedef IPC::SyncMessage<
 // LocateGameData
 typedef IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA1>, IPC::SharedMemory, int, int, int> LocateGameDataMsg1;
 typedef IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA2>, int, int, int> LocateGameDataMsg2;
+
+//AdjustAreaPortalStateMsg
+typedef IPC::Message<IPC::Id<VM::QVM, G_ADJUST_AREA_PORTAL_STATE>, int, bool> AdjustAreaPortalStateMsg;
 
 // DropClientMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_DROP_CLIENT>, int, std::string> DropClientMsg;

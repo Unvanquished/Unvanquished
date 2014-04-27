@@ -91,7 +91,7 @@ namespace Audio {
 
     class Sample: public HandledResource<Sample>, public Resource::Resource {
         public:
-            Sample(std::string name);
+            explicit Sample(std::string name);
             virtual ~Sample() OVERRIDE FINAL;
 
             virtual bool Load() OVERRIDE FINAL;

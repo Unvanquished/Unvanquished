@@ -699,7 +699,7 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to )
 		return;
 	}
 
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	if ( sock == NS_CLIENT && cl_packetdelay->integer > 0 )
 	{
 		NET_QueuePacket( length, data, to, cl_packetdelay->integer );
