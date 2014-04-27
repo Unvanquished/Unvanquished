@@ -1706,15 +1706,21 @@ static void CG_RegisterClients( void )
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
 	cgs.media.radarModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" ); // HACK: Use old battpack
 
-  CG_RegisterWeaponAnimation(
-    &cgs.media.jetpackAnims[ JANIM_SLIDEOUT ],
-    "models/players/human_base/jetpack.iqm:slideout",
-    qfalse, qfalse, qfalse );
+	CG_RegisterWeaponAnimation(
+	    &cgs.media.jetpackAnims[ JANIM_NONE ],
+	    "models/players/human_base/jetpack.iqm:idle",
+	    qfalse, qfalse, qfalse );
 
-  CG_RegisterWeaponAnimation(
-    &cgs.media.jetpackAnims[ JANIM_SLIDEIN ],
-    "models/players/human_base/jetpack.iqm:slidein",
-    qfalse, qfalse, qfalse );
+
+	CG_RegisterWeaponAnimation(
+	    &cgs.media.jetpackAnims[ JANIM_SLIDEOUT ],
+	    "models/players/human_base/jetpack.iqm:slideout",
+	    qfalse, qfalse, qfalse );
+
+	CG_RegisterWeaponAnimation(
+	    &cgs.media.jetpackAnims[ JANIM_SLIDEIN ],
+	    "models/players/human_base/jetpack.iqm:slidein",
+	    qfalse, qfalse, qfalse );
 
 	cg.charModelFraction = 1.0f;
 	trap_UpdateScreen();

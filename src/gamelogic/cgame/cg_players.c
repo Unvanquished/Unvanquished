@@ -2643,7 +2643,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 
 		CG_JetpackAnimation( cent, &jetpack.oldframe, &jetpack.frame, &jetpack.backlerp );
 		jetpack.skeleton = jetpackSkeleton;
-		CG_TransformSkeleton( &jetpack.skeleton, 1.0 );
+		CG_TransformSkeleton( &jetpack.skeleton, 1.0f );
 
 		trap_R_AddRefEntityToScene( &jetpack );
 
