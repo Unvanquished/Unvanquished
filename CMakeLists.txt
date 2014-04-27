@@ -307,7 +307,7 @@ endif()
 ################################################################################
 
 if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
-  set( PYTHONINTERP_FIND_VERSION 2 )
+  set( PythonInterp_FIND_VERSION 2 )
   find_package( PythonInterp )
   if( NOT PYTHONINTERP_FOUND )
     message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
