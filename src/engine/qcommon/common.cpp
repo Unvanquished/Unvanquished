@@ -281,7 +281,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if (code != ERR_FATAL) {
 		FS::PakPath::ClearPaks();
 		FS_LoadBasePak();
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 		// Load map pk3s to allow menus to load levelshots
 		FS_LoadAllMaps();
 #endif
@@ -379,7 +379,7 @@ void NORETURN Com_Quit_f( void )
 		// a corrupt call stack makes no difference
 		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
 //bani
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 		CL_ShutdownCGame();
 #endif
 		CL_Shutdown();
@@ -1019,11 +1019,11 @@ The server calls this before shutting down or loading a new map
 */
 void Hunk_Clear( void )
 {
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	CL_ShutdownCGame();
 #endif
 	SV_ShutdownGameProgs();
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	CIN_CloseAllVideos();
 #endif
 	hunk_low.mark = 0;
@@ -1434,7 +1434,7 @@ Returns last event time
 =================
 */
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 extern qboolean consoleButtonWasPressed;
 #endif
 
@@ -1486,7 +1486,7 @@ int Com_EventLoop( void )
 				break;
 
 			case SE_CHAR:
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 
 				// fretn
 				// we just pressed the console button,
@@ -1525,7 +1525,7 @@ int Com_EventLoop( void )
 					/*
 					 * when there was no command prefix, execute the command prefixed by com_consoleCommand
 					 * if the cvar is empty, it will interpret the text as command direclty
-					 * (and will so for DEDICATED)
+					 * (and will so for BUILD_SERVER)
 					 *
 					 * the additional space gets trimmed by the parser
 					 */
@@ -1698,7 +1698,7 @@ Com_Init
 
 
 #ifndef _WIN32
-# ifdef DEDICATED
+# ifdef BUILD_SERVER
 	const char* defaultPipeFilename = "svpipe";
 # else
 	const char* defaultPipeFilename = "pipe";
@@ -1745,18 +1745,18 @@ void Com_Init( char *commandLine )
 
 	FS::Initialize();
 	FS_LoadBasePak();
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	// Load map pk3s to allow menus to load levelshots
 	FS_LoadAllMaps();
 #endif
 
 	Trans_Init();
 
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	Cmd::BufferCommandText("preset default.cfg");
 #endif
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
@@ -1777,7 +1777,7 @@ void Com_Init( char *commandLine )
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
 
-#if defined(DEDICATED)
+#ifdef BUILD_SERVER
 	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 #else
@@ -1845,7 +1845,7 @@ void Com_Init( char *commandLine )
 
 	Cmd_AddCommand( "quit", Com_Quit_f );
 	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
-#if !defined(DEDICATED)
+#ifndef BUILD_SERVER
 	Cmd_AddCommand( "writebindings", Com_WriteBindings_f );
 #endif
 
@@ -2013,7 +2013,7 @@ void Com_WriteConfiguration( void )
 		Com_WriteConfigToFile( CONFIG_NAME, Cvar_WriteVariables );
 	}
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	if ( bindingsModified )
 	{
 		bindingsModified = qfalse;
@@ -2053,7 +2053,7 @@ Com_WriteBindings_f
 Write the key bindings file to a specific name
 ===============
 */
-#if !defined(DEDICATED)
+#ifndef BUILD_SERVER
 void Com_WriteBindings_f( void )
 {
 	char filename[ MAX_QPATH ];

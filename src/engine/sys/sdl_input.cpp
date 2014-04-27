@@ -49,7 +49,9 @@ static SDL_Joystick *stick = NULL;
 
 static qboolean     mouseAvailable = qfalse;
 qboolean            mouseActive = qfalse;
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
 static qboolean     keyRepeatEnabled = qfalse;
+#endif
 
 static cvar_t       *in_mouse = NULL;
 

@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../../common/Cvar.h"
 #include "../../common/IPC.h"
 #include "../../common/String.h"
-#include "FileSystem.h"
+#include "../../common/FileSystem.h"
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -47,6 +47,8 @@ enum vmType_t {
 	TYPE_NATIVE_EXE,
 	TYPE_NATIVE_EXE_DEBUG,
 	TYPE_NATIVE_DLL,
+	TYPE_NACL_LIBPATH,
+	TYPE_NACL_LIBPATH_DEBUG,
 	TYPE_END
 };
 

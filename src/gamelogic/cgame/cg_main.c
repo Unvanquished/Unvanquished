@@ -732,8 +732,6 @@ these will change when following another player
 */
 static void CG_SetUIVars( void )
 {
-	playerState_t *ps;
-
 	if ( !cg.snap )
 	{
 		return;
