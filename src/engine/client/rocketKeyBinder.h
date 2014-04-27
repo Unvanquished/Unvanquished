@@ -95,6 +95,7 @@ public:
 
 	void ProcessEvent( Rocket::Core::Event &event )
 	{
+		Element::ProcessEvent( event );
 		if ( !waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
 		{
 			waitingForKeypress = true;

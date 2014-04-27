@@ -107,6 +107,8 @@ public:
 
 	void ProcessEvent( Rocket::Core::Event &event )
 	{
+		Element::ProcessEvent( event );
+
 		// Cannot move mouse while this element is in view
 		if ( focus && event == "mousemove" )
 		{

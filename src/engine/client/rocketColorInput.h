@@ -77,6 +77,7 @@ public:
 
 	virtual void ProcessEvent( Rocket::Core::Event &event )
 	{
+		Element::ProcessEvent( event );
 		if ( event.GetTargetElement() == input )
 		{
 			if ( event == "change" )

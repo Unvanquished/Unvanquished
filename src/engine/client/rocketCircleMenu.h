@@ -271,6 +271,7 @@ public:
 
 	virtual void ProcessEvent( Rocket::Core::Event &event )
 	{
+		Element::ProcessEvent( event );
 		if ( event == "mouseover" )
 		{
 			Rocket::Core::Element *parent = event.GetTargetElement();
