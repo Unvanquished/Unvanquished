@@ -28,8 +28,9 @@ script:
   - cmake --build .
 
 notifications:
-  irc: "irc.freenode.org#unvanquished-dev"
-  irc: "irc.quakenet.org#unvanquished"
+  irc:
+    - "irc.freenode.org#unvanquished-dev"
+    - "irc.quakenet.org#unvanquished"
   on_success: change
   on_failure: always
 
