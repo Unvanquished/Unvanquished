@@ -642,6 +642,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_FS_READ:
 		IPC::HandleMsg<FSReadMsg>(channel, std::move(reader), [this](int handle, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			FS_Read(buffer.get(), len, handle);
 			res.assign(buffer.get(), len);
 		});
@@ -668,6 +669,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_FS_GET_FILE_LIST:
 		IPC::HandleMsg<FSGetFileListMsg>(channel, std::move(reader), [this](std::string path, std::string extension, int len, int& intRes, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			intRes = FS_GetFileList(path.c_str(), extension.c_str(), buffer.get(), len);
 			res.assign(buffer.get(), len);
 		});
@@ -720,6 +722,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GET_CONFIGSTRING:
 		IPC::HandleMsg<GetConfigStringMsg>(channel, std::move(reader), [this](int index, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			SV_GetConfigstring(index, buffer.get(), len);
 			res.assign(buffer.get(), len);
 		});
@@ -740,6 +743,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GET_USERINFO:
 		IPC::HandleMsg<GetUserinfoMsg>(channel, std::move(reader), [this](int index, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			SV_GetUserinfo(index, buffer.get(), len);
 			res.assign(buffer.get(), len);
 		});
@@ -748,6 +752,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GET_SERVERINFO:
 		IPC::HandleMsg<GetServerinfoMsg>(channel, std::move(reader), [this](int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			SV_GetServerinfo(buffer.get(), len);
 			res.assign(buffer.get(), len);
 		});
@@ -809,6 +814,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GEN_FINGERPRINT:
 		IPC::HandleMsg<GenFingerprintMsg>(channel, std::move(reader), [this](int keylen, const std::vector<char>& key, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			Com_MD5Buffer(key.data(), keylen, buffer.get(), len);
 			res.assign(buffer.get(), len);
 		});
@@ -817,6 +823,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GET_PLAYER_PUBKEY:
 		IPC::HandleMsg<GetPlayerPubkeyMsg>(channel, std::move(reader), [this](int clientNum, int len, std::string& pubkey) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			SV_GetPlayerPubkey(clientNum, buffer.get(), len);
 			pubkey.assign(buffer.get());
 		});
@@ -831,6 +838,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GET_TIME_STRING:
 		IPC::HandleMsg<GetTimeStringMsg>(channel, std::move(reader), [this](int len, std::string format, const qtime_t& time, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			SV_GetTimeString(buffer.get(), len, format.c_str(), &time);
 			res.assign(buffer.get(), len);
 		});
@@ -883,6 +891,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case BOT_GET_CONSOLE_MESSAGE:
 		IPC::HandleMsg<BotGetConsoleMessageMsg>(channel, std::move(reader), [this](int client, int len, int& res, std::string& message) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			res = SV_BotGetConsoleMessage(client, buffer.get(), len);
 			message.assign(buffer.get(), len);
 		});
