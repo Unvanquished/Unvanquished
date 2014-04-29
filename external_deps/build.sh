@@ -295,6 +295,8 @@ build_freetype() {
 	make clean
 	make
 	make install
+	cp -a "${PREFIX}/include/freetype2" "${PREFIX}/include/freetype"
+	mv "${PREFIX}/include/freetype" "${PREFIX}/include/freetype2/freetype"
 	cd ..
 }
 

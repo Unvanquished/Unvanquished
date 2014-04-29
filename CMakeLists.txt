@@ -610,6 +610,7 @@ if( APPLE )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/sys_osx.mm
   )
+  set_source_files_properties( ${ENGINE_DIR}/sys/sys_osx.mm PROPERTIES COMPILE_FLAGS "-x objective-c++" )
 endif()
 
 set( CLIENTBASELIST
