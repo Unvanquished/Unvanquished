@@ -2652,12 +2652,19 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			// spawn ps if necessary
 			if ( cent->jetPackState != JPS_ACTIVE )
 			{
-				if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+				if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
 				{
-					CG_DestroyParticleSystem( &cent->jetPackPS );
+					CG_DestroyParticleSystem( &cent->jetPackPS[ 0 ] );
 				}
 
-				cent->jetPackPS = CG_SpawnNewParticleSystem( cgs.media.jetPackThrustPS );
+				if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+				{
+					CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
+				}
+
+
+				cent->jetPackPS[ 0 ] = CG_SpawnNewParticleSystem( cgs.media.jetPackThrustPS );
+				cent->jetPackPS[ 1 ] = CG_SpawnNewParticleSystem( cgs.media.jetPackThrustPS );
 
 				cent->jetPackState = JPS_ACTIVE;
 			}
@@ -2687,25 +2694,53 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			}
 
 			// attach ps
-			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
 			{
-				CG_SetAttachmentTag( &cent->jetPackPS->attachment, &jetpack, jetpack.hModel, "tag_flash" );
-				CG_SetAttachmentCent( &cent->jetPackPS->attachment, cent );
-				CG_AttachToTag( &cent->jetPackPS->attachment );
+				CG_SetAttachmentTag( &cent->jetPackPS[ 0 ]->attachment, &jetpack, jetpack.hModel, "nozzle.R" );
+				CG_SetAttachmentCent( &cent->jetPackPS[ 0 ]->attachment, cent );
+				CG_AttachToTag( &cent->jetPackPS[ 0 ]->attachment );
+			}
+
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+			{
+				CG_SetAttachmentTag( &cent->jetPackPS[ 1 ]->attachment, &jetpack, jetpack.hModel, "nozzle.L" );
+				CG_SetAttachmentCent( &cent->jetPackPS[ 1 ]->attachment, cent );
+				CG_AttachToTag( &cent->jetPackPS[ 1 ]->attachment );
 			}
 		}
-		else if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+		else
 		{
-			// disable jetpack ps when not thrusting anymore
-			CG_DestroyParticleSystem( &cent->jetPackPS );
-			cent->jetPackState = JPS_INACTIVE;
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
+			{
+				// disable jetpack ps when not thrusting anymore
+				CG_DestroyParticleSystem( &cent->jetPackPS[ 0 ] );
+				cent->jetPackState = JPS_INACTIVE;
+			}
+
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+			{
+				// disable jetpack ps when not thrusting anymore
+				CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
+				cent->jetPackState = JPS_INACTIVE;
+			}
 		}
 	}
-	else if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+	else
 	{
 		// disable jetpack ps when not carrying it anymore
-		CG_DestroyParticleSystem( &cent->jetPackPS );
-		cent->jetPackState = JPS_INACTIVE;
+		if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
+		{
+			// disable jetpack ps when not thrusting anymore
+			CG_DestroyParticleSystem( &cent->jetPackPS[ 0 ] );
+			cent->jetPackState = JPS_INACTIVE;
+		}
+
+		if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+		{
+			// disable jetpack ps when not thrusting anymore
+			CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
+			cent->jetPackState = JPS_INACTIVE;
+		}
 	}
 
 	// battery pack
@@ -3655,9 +3690,14 @@ finish_up:
 			CG_DestroyParticleSystem( &cent->muzzlePS );
 		}
 
-		if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+		if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
 		{
-			CG_DestroyParticleSystem( &cent->jetPackPS );
+			CG_DestroyParticleSystem( &cent->jetPackPS[ 0 ] );
+		}
+
+		if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+		{
+			CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
 		}
 	}
 

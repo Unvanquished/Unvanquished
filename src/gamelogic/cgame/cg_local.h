@@ -94,7 +94,7 @@ typedef enum
 
   JANIM_SLIDEOUT,
   JANIM_SLIDEIN,
-  
+
   MAX_JETPACK_ANIMATIONS
 } jetpackAnimNumber_t;
 
@@ -678,7 +678,7 @@ typedef struct centity_s
 	particleSystem_t      *muzzlePS;
 	qboolean              muzzlePsTrigger;
 
-	particleSystem_t      *jetPackPS;
+	particleSystem_t      *jetPackPS[ 2 ];
 	jetPackState_t        jetPackState;
 	lerpFrame_t           jetpackLerpFrame;
 	jetpackAnimNumber_t   jetpackAnim;
