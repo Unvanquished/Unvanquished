@@ -37,7 +37,7 @@ namespace Audio {
 
     // Implementation of Sample
 
-    Sample::Sample(std::string filename): HandledResource<Sample>(this), Resource(filename) {
+    Sample::Sample(std::string filename): Resource(filename) {
     }
 
     Sample::~Sample() {
@@ -81,6 +81,10 @@ namespace Audio {
 
         sampleManager = new Resource::Manager<Sample>(errorSampleName);
 
+        // Work around for the lack of VM Handles, initiliaze the HandledResource
+        auto errorSample = sampleManager->GetResource(errorSampleName).Get();
+        errorSample->InitHandle(errorSample);
+
         initialized = true;
     }
 
@@ -117,6 +121,8 @@ namespace Audio {
 
     std::shared_ptr<Sample> RegisterSample(Str::StringRef filename) {
         Resource::Handle<Sample> sample = sampleManager->Register(filename);
+        // Work around for the lack of VM Handles, initiliaze the HandledResource
+        sample.Get()->InitHandle(sample.Get());
         return sample.Get();
     }
 

@@ -41,13 +41,13 @@ namespace Audio {
         public:
             struct handleRecord_t {
                 bool active;
-                T* value;
+                std::shared_ptr<T> value;
             };
 
             static bool IsValidHandle(int handle) {
                 return handle >= 0 and (unsigned)handle < handles.size() and handles[handle].active;
             }
-            static T* FromHandle(int handle) {
+            static std::shared_ptr<T> FromHandle(int handle) {
                 if (not IsValidHandle(handle)) {
                     return nullptr;
                 }
@@ -59,8 +59,11 @@ namespace Audio {
                 return handle;
             }
 
-        protected:
-            HandledResource(T* self) {
+            void InitHandle(std::shared_ptr<T> self) {
+                if (handle != -1) {
+                    return;
+                }
+
                 if (not inactiveHandles.empty()) {
                     handle = inactiveHandles.back();
                     inactiveHandles.pop_back();
@@ -69,6 +72,10 @@ namespace Audio {
                     handle = handles.size();
                     handles.push_back({true, self});
                 }
+            }
+
+        protected:
+            HandledResource(): handle(-1) {
             }
 
             ~HandledResource() {
