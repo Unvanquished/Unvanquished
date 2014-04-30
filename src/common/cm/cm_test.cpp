@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "cm_local.h"
 
-static Cvar::Cvar<bool> cm_noAreas("cm_noAreas", "Ignore the areas (ie make them all connected)", Cvar::CHEAT, false);
+static Cvar::Cvar<bool> cm_noAreas(VM_STRING_PREFIX "cm_noAreas", "Ignore the areas (ie make them all connected)", Cvar::CHEAT, false);
 
 /*
 ==================
