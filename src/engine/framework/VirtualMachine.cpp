@@ -275,7 +275,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, 
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 
-    std::string handleArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
+	std::string handleArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
 
 	std::string module = FS::Path::Build(libPath, name + "-nacl-native-exe" + EXE_EXT);
 	if (debug) {
@@ -327,18 +327,20 @@ int VMBase::Create(vmType_t type)
 	if (type < 0 || type >= TYPE_END)
 		Com_Error(ERR_DROP, "VM: Invalid type %d", type);
 
+	int loadStartTime = Sys_Milliseconds();
+
 	// Free the VM if it exists
 	Free();
 
-    // Open the syscall log
-    if (logSyscalls.Get()) {
-        std::string filename = name + ".syscallLog";
-        try {
-            syscallLogFile = FS::RawPath::OpenWrite(filename);
-        } catch (std::system_error& error) {
-            Log::Warn("Couldn't open %s", filename);
-        }
-    }
+	// Open the syscall log
+	if (logSyscalls.Get()) {
+		std::string filename = name + ".syscallLog";
+		try {
+			syscallLogFile = FS::RawPath::OpenWrite(filename);
+		} catch (std::system_error& error) {
+			Log::Warn("Couldn't open %s", filename);
+		}
+	}
 
 	// Create the socket pair to get the handle for ROOT_SOCKET
 	std::pair<IPC::Socket, IPC::Socket> pair = IPC::Socket::CreatePair();
@@ -360,7 +362,7 @@ int VMBase::Create(vmType_t type)
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
 	IPC::Reader reader = rootChannel.RecvMsg();
-	Com_Printf("Loaded module with the NaCl ABI");
+	Com_Printf("Loaded VM module in %d msec\n", Sys_Milliseconds() - loadStartTime);
 	return reader.Read<uint32_t>();
 }
 
@@ -376,10 +378,10 @@ void VMBase::FreeInProcessVM() {
 		}
 
 		if (wait) {
-			Com_Printf("Waiting for the VM thread...");
+			Com_Printf("Waiting for the VM thread...\n");
 			inProcess.thread.join();
 		} else {
-			Com_Printf("The VM thread doesn't seem to stop, detaching it (bad things WILL ensue)");
+			Com_Printf("The VM thread doesn't seem to stop, detaching it (bad things WILL ensue)\n");
 			inProcess.thread.detach();
 		}
 	}
@@ -394,26 +396,26 @@ void VMBase::FreeInProcessVM() {
 
 void VMBase::LogMessage(bool vmToEngine, int id)
 {
-    if (syscallLogFile) {
-        int minor = id & 0xffff;
-        int major = id >> 16;
+	if (syscallLogFile) {
+		int minor = id & 0xffff;
+		int major = id >> 16;
 
-        Str::StringRef direction = vmToEngine ? "V -> E" : "E -> V";
+		const char* direction = vmToEngine ? "V -> E" : "E -> V";
 
-        try {
-            syscallLogFile.Printf("%s (%i, %i)\n", direction, major, minor);
-        } catch (std::system_error& err) {
-            Log::Warn("Error while writing the VM syscall log");
-        }
-    }
+		try {
+			syscallLogFile.Printf("%s (%i, %i)\n", direction, major, minor);
+		} catch (std::system_error& err) {
+			Log::Warn("Error while writing the VM syscall log: %s", err.what());
+		}
+	}
 }
 
 void VMBase::Free()
 {
-    if (syscallLogFile) {
-        std::error_code err;
-        syscallLogFile.Close(err);
-    }
+	if (syscallLogFile) {
+		std::error_code err;
+		syscallLogFile.Close(err);
+	}
 
 	if (!IsActive())
 		return;
