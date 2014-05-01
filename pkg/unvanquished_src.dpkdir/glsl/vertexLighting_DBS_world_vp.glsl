@@ -24,9 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 attribute vec3 		attr_Position;
 attribute vec2 		attr_TexCoord0;
-attribute vec3		attr_Tangent;
-attribute vec3		attr_Binormal;
-attribute vec3		attr_Normal;
+attribute vec4		attr_QTangent;
 attribute vec4		attr_Color;
 
 uniform mat4		u_DiffuseTextureMatrix;
@@ -52,36 +50,50 @@ varying vec3		var_Normal;
 varying vec4		var_LightColor;
 #endif
 
+vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
+	vec3 tmp = 2.0 * cross( quat.xyz, vec );
+	return vec + quat.w * tmp + cross( quat.xyz, tmp );
+}
 
-
+void QTangentToTBN( in vec4 qtangent, out vec3 tangent,
+                    out vec3 binormal, out vec3 normal ) {
+	tangent = QuatTransVec( qtangent, vec3( 1.0, 0.0, 0.0 ) );
+	binormal = QuatTransVec( qtangent, vec3( 0.0, 1.0, 0.0 ) );
+	normal = QuatTransVec( qtangent, vec3( 0.0, 0.0, 1.0 ) );
+	
+	tangent *= sign( qtangent.w );
+}
 
 void	main()
 {
 	vec4 position = vec4(attr_Position, 1.0);
+	vec3 tangent, binormal, normal;
+
+	QTangentToTBN( attr_QTangent, tangent, binormal, normal );
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
-								attr_Normal,
-								attr_TexCoord0.st,
-								u_Time);
+					normal,
+					attr_TexCoord0.st / 4096.0,
+					u_Time);
 #endif
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
 
 	// transform diffusemap texcoords
-	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
-	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
 
 	// construct object-space-to-tangent-space 3x3 matrix
-	mat3 objectToTangentMatrix = mat3( attr_Tangent.x, attr_Binormal.x, attr_Normal.x,
-							attr_Tangent.y, attr_Binormal.y, attr_Normal.y,
-							attr_Tangent.z, attr_Binormal.z, attr_Normal.z	);
+	mat3 objectToTangentMatrix = mat3( tangent.x, binormal.x, normal.x,
+					   tangent.y, binormal.y, normal.y,
+					   tangent.z, binormal.z, normal.z );
 
 	// assign vertex Position for light grid sampling
 	var_Position = position.xyz;
@@ -92,10 +104,10 @@ void	main()
 	// assign color
 	var_LightColor = attr_Color * u_ColorModulate + u_Color;
 	
-	var_Normal = attr_Normal;
+	var_Normal = normal;
 #endif
 
 #if defined(USE_GLOW_MAPPING)
-	var_TexDiffuseGlow.pq = ( u_GlowTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0) ).st;
+	var_TexDiffuseGlow.pq = ( u_GlowTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0) ).st;
 #endif
 }
