@@ -1,3 +1,12 @@
+unvanquished (0.27.0-1) unstable; urgency=low
+
+  * Release of alpha 27.
+  * Update build options to avoid compiling most NaCl code.
+    The exception is the native game code executable, which replaces the
+    native QVM code from previous releases.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 01 May 2014 23:42:17 +0100
+
 unvanquished (0.26.0-1) unstable; urgency=low
 
   * Release of alpha 26.
