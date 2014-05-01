@@ -79,8 +79,10 @@ namespace Audio {
             }
 
             ~HandledResource() {
-                handles[handle] = {false, nullptr};
-                inactiveHandles.push_back(handle);
+                if (IsValidHandle(handle)) {
+                    handles[handle] = {false, nullptr};
+                    inactiveHandles.push_back(handle);
+                }
             }
 
         private:
