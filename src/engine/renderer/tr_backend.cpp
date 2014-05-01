@@ -615,7 +615,7 @@ void GL_VertexAttribsState( uint32_t stateBits )
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		stateBits |= ( ATTR_BONE_INDEXES | ATTR_BONE_WEIGHTS );
+		stateBits |= ATTR_BONE_FACTORS;
 	}
 
 	GL_VertexAttribPointers( stateBits );
@@ -680,7 +680,7 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		attribBits |= ( ATTR_BONE_INDEXES | ATTR_BONE_WEIGHTS );
+		attribBits |= ATTR_BONE_FACTORS;
 	}
 
 	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
@@ -5470,13 +5470,12 @@ void DebugDrawDepthMask(qboolean state)
 }
 
 void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
-	vec4_t colors = {
-		static_cast<vec_t>(color & 0xFF),
-		static_cast<vec_t>((color >> 8) & 0xFF),
-		static_cast<vec_t>((color >> 16) & 0xFF),
-		static_cast<vec_t>((color >> 24) & 0xFF)
+	u8vec4_t colors = {
+		static_cast<byte>(color & 0xFF),
+		static_cast<byte>((color >> 8) & 0xFF),
+		static_cast<byte>((color >> 16) & 0xFF),
+		static_cast<byte>((color >> 24) & 0xFF)
 	};
-	Vector4Scale(colors, 1.0f/255.0f, colors);
 
 	//we have reached the maximum number of verts we can batch
 	if( tess.numVertexes == maxDebugVerts ) {
@@ -5492,8 +5491,8 @@ void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	Vector4Copy(colors, tess.colors[ tess.numVertexes ]);
 	if( uv ) {
-		tess.texCoords[ tess.numVertexes ][ 0 ] = uv[ 0 ];
-		tess.texCoords[ tess.numVertexes ][ 1 ] = uv[ 1 ];
+		tess.texCoords[ tess.numVertexes ][ 0 ] = packTC( uv[ 0 ] );
+		tess.texCoords[ tess.numVertexes ][ 1 ] = packTC( uv[ 1 ] );
 	}
 	tess.indexes[ tess.numIndexes ] = tess.numVertexes;
 	tess.numVertexes++;
@@ -5885,7 +5884,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 
 	RB_SetGL2D();
 
-	glVertexAttrib4f( ATTR_INDEX_NORMAL, 0, 0, 1, 1 );
+	glVertexAttrib4f( ATTR_INDEX_QTANGENT, 0.0f, 0.0f, 0.0f, 1.0f );
 	glVertexAttrib4f( ATTR_INDEX_COLOR, tr.identityLight, tr.identityLight, tr.identityLight, 1 );
 
 	gl_genericShader->DisableVertexSkinning();
@@ -5945,32 +5944,32 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.xyz[ tess.numVertexes ][ 1 ] = y;
 	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = 0.5f / cols;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 0.5f / rows;
+	tess.texCoords[ tess.numVertexes ][ 0 ] = packTC( 0.5f / cols );
+	tess.texCoords[ tess.numVertexes ][ 1 ] = packTC( 0.5f / rows );
 	tess.numVertexes++;
 
 	tess.xyz[ tess.numVertexes ][ 0 ] = x + w;
 	tess.xyz[ tess.numVertexes ][ 1 ] = y;
 	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = ( cols - 0.5f ) / cols;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 0.5f / rows;
+	tess.texCoords[ tess.numVertexes ][ 0 ] = packTC( ( cols - 0.5f ) / cols );
+	tess.texCoords[ tess.numVertexes ][ 1 ] = packTC( 0.5f / rows );
 	tess.numVertexes++;
 
 	tess.xyz[ tess.numVertexes ][ 0 ] = x + w;
 	tess.xyz[ tess.numVertexes ][ 1 ] = y + h;
 	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = ( cols - 0.5f ) / cols;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = ( rows - 0.5f ) / rows;
+	tess.texCoords[ tess.numVertexes ][ 0 ] = packTC( ( cols - 0.5f ) / cols );
+	tess.texCoords[ tess.numVertexes ][ 1 ] = packTC( ( rows - 0.5f ) / rows );
 	tess.numVertexes++;
 
 	tess.xyz[ tess.numVertexes ][ 0 ] = x;
 	tess.xyz[ tess.numVertexes ][ 1 ] = y + h;
 	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = 0.5f / cols;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = ( rows - 0.5f ) / rows;
+	tess.texCoords[ tess.numVertexes ][ 0 ] = packTC( 0.5f / cols );
+	tess.texCoords[ tess.numVertexes ][ 1 ] = packTC( ( rows - 0.5f ) / rows );
 	tess.numVertexes++;
 
 	tess.indexes[ tess.numIndexes++ ] = 0;
@@ -6038,10 +6037,7 @@ const void     *RB_SetColor( const void *data )
 
 	cmd = ( const setColorCommand_t * ) data;
 
-	backEnd.color2D[ 0 ] = cmd->color[ 0 ];
-	backEnd.color2D[ 1 ] = cmd->color[ 1 ];
-	backEnd.color2D[ 2 ] = cmd->color[ 2 ];
-	backEnd.color2D[ 3 ] = cmd->color[ 3 ];
+	floatToUnorm8( cmd->color, backEnd.color2D );
 
 	return ( const void * )( cmd + 1 );
 }
@@ -6086,7 +6082,7 @@ const void *RB_SetColorGrading( const void *data )
 		{
 			glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i + cmd->slot * REF_COLORGRADEMAP_SIZE,
 			                 REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE, 1,
-			                 GL_RGBA, GL_UNSIGNED_BYTE, ( ( color4ub_t * ) NULL ) + REF_COLORGRADEMAP_SIZE );
+			                 GL_RGBA, GL_UNSIGNED_BYTE, ( ( u8vec4_t * ) NULL ) + REF_COLORGRADEMAP_SIZE );
 		}
 
 		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
@@ -6158,32 +6154,32 @@ const void     *RB_StretchPic( const void *data )
 	tess.xyz[ numVerts ][ 2 ] = 0;
 	tess.xyz[ numVerts ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts ][ 1 ] = cmd->t1;
+	tess.texCoords[ numVerts ][ 0 ] = packTC( cmd->s1 );
+	tess.texCoords[ numVerts ][ 1 ] = packTC( cmd->t1 );
 
 	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
 	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
 	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
 	tess.xyz[ numVerts + 1 ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts + 1 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 1 ][ 1 ] = cmd->t1;
+	tess.texCoords[ numVerts + 1 ][ 0 ] = packTC( cmd->s2 );
+	tess.texCoords[ numVerts + 1 ][ 1 ] = packTC( cmd->t1 );
 
 	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
 	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
 	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
 	tess.xyz[ numVerts + 2 ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts + 2 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 2 ][ 1 ] = cmd->t2;
+	tess.texCoords[ numVerts + 2 ][ 0 ] = packTC( cmd->s2 );
+	tess.texCoords[ numVerts + 2 ][ 1 ] = packTC( cmd->t2 );
 
 	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
 	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
 	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
 	tess.xyz[ numVerts + 3 ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
+	tess.texCoords[ numVerts + 3 ][ 0 ] = packTC( cmd->s1 );
+	tess.texCoords[ numVerts + 3 ][ 1 ] = packTC( cmd->t2 );
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
 
@@ -6275,13 +6271,13 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
 		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 
-		tess.texCoords[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].st[ 0 ];
-		tess.texCoords[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].st[ 1 ];
+		tess.texCoords[ tess.numVertexes ][ 0 ] = packTC( cmd->verts[ i ].st[ 0 ] );
+		tess.texCoords[ tess.numVertexes ][ 1 ] = packTC( cmd->verts[ i ].st[ 1 ] );
 
-		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ];
+		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ];
+		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ];
+		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ];
 		tess.numVertexes++;
 	}
 
@@ -6356,32 +6352,32 @@ const void     *RB_RotatedPic( const void *data )
 	tess.xyz[ numVerts ][ 2 ] = 0;
 	tess.xyz[ numVerts ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts ][ 1 ] = cmd->t1;
+	tess.texCoords[ numVerts ][ 0 ] = packTC( cmd->s1 );
+	tess.texCoords[ numVerts ][ 1 ] = packTC( cmd->t1 );
 
 	tess.xyz[ numVerts + 1 ][ 0 ] = mx + cw - sh;
 	tess.xyz[ numVerts + 1 ][ 1 ] = my - sw - ch;
 	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
 	tess.xyz[ numVerts + 1 ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts + 1 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 1 ][ 1 ] = cmd->t1;
+	tess.texCoords[ numVerts + 1 ][ 0 ] = packTC( cmd->s2 );
+	tess.texCoords[ numVerts + 1 ][ 1 ] = packTC( cmd->t1 );
 
 	tess.xyz[ numVerts + 2 ][ 0 ] = mx + cw + sh;
 	tess.xyz[ numVerts + 2 ][ 1 ] = my - sw + ch;
 	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
 	tess.xyz[ numVerts + 2 ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts + 2 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 2 ][ 1 ] = cmd->t2;
+	tess.texCoords[ numVerts + 2 ][ 0 ] = packTC( cmd->s2 );
+	tess.texCoords[ numVerts + 2 ][ 1 ] = packTC( cmd->t2 );
 
 	tess.xyz[ numVerts + 3 ][ 0 ] = mx - cw + sh;
 	tess.xyz[ numVerts + 3 ][ 1 ] = my + sw + ch;
 	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
 	tess.xyz[ numVerts + 3 ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
+	tess.texCoords[ numVerts + 3 ][ 0 ] = packTC( cmd->s1 );
+	tess.texCoords[ numVerts + 3 ][ 1 ] = packTC( cmd->t2 );
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 
@@ -6441,8 +6437,8 @@ const void     *RB_StretchPicGradient( const void *data )
 
 	for ( i = 0; i < 4; i++ )
 	{
-		tess.colors[ numVerts + 2 ][ i ] = cmd->gradientColor[ i ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 3 ][ i ] = cmd->gradientColor[ i ] * ( 1.0f / 255.0f );
+		tess.colors[ numVerts + 2 ][ i ] = cmd->gradientColor[ i ];
+		tess.colors[ numVerts + 3 ][ i ] = cmd->gradientColor[ i ];
 	}
 
 	tess.xyz[ numVerts ][ 0 ] = cmd->x;
@@ -6450,32 +6446,32 @@ const void     *RB_StretchPicGradient( const void *data )
 	tess.xyz[ numVerts ][ 2 ] = 0;
 	tess.xyz[ numVerts ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts ][ 1 ] = cmd->t1;
+	tess.texCoords[ numVerts ][ 0 ] = packTC( cmd->s1 );
+	tess.texCoords[ numVerts ][ 1 ] = packTC( cmd->t1 );
 
 	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
 	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
 	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
 	tess.xyz[ numVerts + 1 ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts + 1 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 1 ][ 1 ] = cmd->t1;
+	tess.texCoords[ numVerts + 1 ][ 0 ] = packTC( cmd->s2 );
+	tess.texCoords[ numVerts + 1 ][ 1 ] = packTC( cmd->t1 );
 
 	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
 	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
 	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
 	tess.xyz[ numVerts + 2 ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts + 2 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 2 ][ 1 ] = cmd->t2;
+	tess.texCoords[ numVerts + 2 ][ 0 ] = packTC( cmd->s2 );
+	tess.texCoords[ numVerts + 2 ][ 1 ] = packTC( cmd->t2 );
 
 	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
 	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
 	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
 	tess.xyz[ numVerts + 3 ][ 3 ] = 1;
 
-	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
+	tess.texCoords[ numVerts + 3 ][ 0 ] = packTC( cmd->s1 );
+	tess.texCoords[ numVerts + 3 ][ 1 ] = packTC( cmd->t2 );
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 	return ( const void * )( cmd + 1 );

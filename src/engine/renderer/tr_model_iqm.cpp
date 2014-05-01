@@ -461,8 +461,9 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	IQAnim_t		*IQAnim;
 	srfIQModel_t		*surface;
 	vboData_t               vboData;
-	float                   *colorbuf, *weightbuf;
+	float                   *weightbuf;
 	int                     *indexbuf;
+	i16vec4_t               *qtangentbuf;
 	VBO_t                   *vbo;
 	IBO_t                   *ibo;
 	void                    *ptr;
@@ -483,10 +484,10 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	if(header->ofs_bounds)
 		size += header->num_frames * 6 * sizeof(float);	// model bounds
 	size += header->num_vertexes * 3 * sizeof(float);	// positions
-	size += header->num_vertexes * 2 * sizeof(float);	// texcoords
 	size += header->num_vertexes * 3 * sizeof(float);	// normals
 	size += header->num_vertexes * 3 * sizeof(float);	// tangents
 	size += header->num_vertexes * 3 * sizeof(float);	// bitangents
+	size += header->num_vertexes * 2 * sizeof(int16_t);	// texcoords
 	size += header->num_vertexes * 4 * sizeof(byte);	// blendIndexes
 	size += header->num_vertexes * 4 * sizeof(byte);	// blendWeights
 	size += header->num_vertexes * 4 * sizeof(byte);	// colors
@@ -537,9 +538,6 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	IQModel->positions = (float *)ptr;
 	ptr = IQModel->positions + 3 * header->num_vertexes;
 
-	IQModel->texcoords = (float *)ptr;
-	ptr = IQModel->texcoords + 2 * header->num_vertexes;
-
 	IQModel->normals = (float *)ptr;
 	ptr = IQModel->normals + 3 * header->num_vertexes;
 
@@ -548,6 +546,9 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 	IQModel->bitangents = (float *)ptr;
 	ptr = IQModel->bitangents + 3 * header->num_vertexes;
+
+	IQModel->texcoords = (int16_t *)ptr;
+	ptr = IQModel->texcoords + 2 * header->num_vertexes;
 
 	IQModel->blendIndexes = (byte *)ptr;
 	ptr = IQModel->blendIndexes + 4 * header->num_vertexes;
@@ -700,9 +701,9 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 				       IQModel->bitangents );
 			break;
 		case IQM_TEXCOORD:
-			Com_Memcpy( IQModel->texcoords,
-				    IQMPtr( header, vertexarray->offset ),
-				    n * sizeof(float) );
+			for( j = 0; j < n; j++ ) {
+				IQModel->texcoords[ j ] = packTC( ((float *)IQMPtr( header, vertexarray->offset ))[ j ] );
+			}
 			break;
 		case IQM_BLENDINDEXES:
 			Com_Memcpy( IQModel->blendIndexes,
@@ -733,17 +734,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	// convert data where necessary and create VBO
 	if( r_vboModels->integer && glConfig2.vboVertexSkinningAvailable
 	    && IQModel->num_joints <= glConfig2.maxVertexSkinningBones ) {
-		if( IQModel->colors ) {
-			colorbuf = (float *)ri.Hunk_AllocateTempMemory( sizeof(vec4_t) * IQModel->num_vertexes );
-			for( i = 0; i < IQModel->num_vertexes; i++ ) {
-				colorbuf[ 4 * i + 0 ] = IQModel->colors[ 4 * i + 0 ];
-				colorbuf[ 4 * i + 1 ] = IQModel->colors[ 4 * i + 1 ];
-				colorbuf[ 4 * i + 2 ] = IQModel->colors[ 4 * i + 2 ];
-				colorbuf[ 4 * i + 3 ] = IQModel->colors[ 4 * i + 3 ];
-			}
-		} else {
-			colorbuf = NULL;
-		}
+
 		if( IQModel->blendIndexes ) {
 			indexbuf = (int *)ri.Hunk_AllocateTempMemory( sizeof(int[4]) * IQModel->num_vertexes );
 			for( i = 0; i < IQModel->num_vertexes; i++ ) {
@@ -775,29 +766,37 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			weightbuf = NULL;
 		}
 
+		qtangentbuf = (i16vec4_t *)ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * IQModel->num_vertexes );
+
+		for( i = 0; i < IQModel->num_vertexes; i++ ) {
+			R_TBNtoQtangents( &IQModel->tangents[ 3 * i ],
+					  &IQModel->bitangents[ 3 * i ],
+					  &IQModel->normals[ 3 * i ],
+					  qtangentbuf[ i ] );
+		}
+
 		vboData.xyz = (vec3_t *)IQModel->positions;
-		vboData.tangent = (vec3_t *)IQModel->tangents;
-		vboData.binormal = (vec3_t *)IQModel->bitangents;
-		vboData.normal = (vec3_t *)IQModel->normals;;
+		vboData.qtangent = qtangentbuf;
 		vboData.numFrames = 0;
-		vboData.color = (vec4_t *)colorbuf;
-		vboData.st = (vec2_t *)IQModel->texcoords;
-		vboData.lightCoord = NULL;
-		vboData.lightDir = NULL;
+		vboData.color = (u8vec4_t *)IQModel->colors;
+		vboData.st = (i16vec2_t *)IQModel->texcoords;
+		vboData.noLightCoords = qtrue;
 		vboData.boneIndexes = (int (*)[4])indexbuf;
 		vboData.boneWeights = (vec4_t *)weightbuf;
 		vboData.numVerts = IQModel->num_vertexes;
+
+
 		vbo = R_CreateStaticVBO( "IQM surface VBO", vboData,
 					 VBO_LAYOUT_SEPERATE );
 
+		if( qtangentbuf ) {
+			ri.Hunk_FreeTempMemory( qtangentbuf );
+		}
 		if( weightbuf ) {
 			ri.Hunk_FreeTempMemory( weightbuf );
 		}
 		if( indexbuf ) {
 			ri.Hunk_FreeTempMemory( indexbuf );
-		}
-		if( colorbuf ) {
-			ri.Hunk_FreeTempMemory( colorbuf );
 		}
 
 		// create IBO

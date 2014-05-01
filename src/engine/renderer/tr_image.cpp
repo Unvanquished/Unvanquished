@@ -2096,7 +2096,7 @@ image_t        *R_Create3DImage( const char *name,
 
 	pics = (const byte**) ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
 	for( i = 0; i < depth; i++ ) {
-		pics[i] = pic + i * width * height * sizeof(color4ub_t);
+		pics[i] = pic + i * width * height * sizeof(u8vec4_t);
 	}
 
 	image->bits = bits;
@@ -3735,7 +3735,7 @@ static void R_CreateColorGradeImage( void )
 	byte *data, *ptr;
 	int i, r, g, b;
 
-	data = (byte*) ri.Hunk_AllocateTempMemory( 4 * REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t) );
+	data = (byte*) ri.Hunk_AllocateTempMemory( 4 * REF_COLORGRADEMAP_STORE_SIZE * sizeof(u8vec4_t) );
 
 	// 255 is 15 * 17, so the colors range from 0 to 255
 	for( ptr = data, i = 0; i < 4; i++ ) {

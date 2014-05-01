@@ -34,6 +34,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
 
+typedef int8_t   i8vec4_t[ 4 ];
+typedef uint8_t  u8vec4_t[ 4 ];
+typedef int16_t  i16vec4_t [ 4 ];
+typedef uint16_t u16vec4_t [ 4 ];
+typedef int16_t  i16vec2_t [ 2 ];
+typedef uint16_t u16vec2_t [ 2 ];
+
 // GL conversion helpers
 static inline float unorm8ToFloat(byte unorm8) {
 	return unorm8 * (1.0f / 255.0f);
@@ -43,13 +50,80 @@ static inline byte floatToUnorm8(float f) {
 	// has been changed from round to nearest to round to 0 !
 	return lrintf(f * 255.0f);
 }
-static inline float snorm8ToFloat(byte snorm8) {
-	return MAX( (snorm8 - 128) * (1.0f / 127.0f), -1.0f);
+static inline float snorm8ToFloat(int8_t snorm8) {
+	return MAX( snorm8 * (1.0f / 127.0f), -1.0f);
 }
-static inline byte floatToSnorm8(float f) {
+static inline int8_t floatToSnorm8(float f) {
 	// don't use Q_ftol here, as the semantics of Q_ftol
 	// has been changed from round to nearest to round to 0 !
-	return lrintf(f * 127.0f) + 128;
+	return lrintf(f * 127.0f);
+}
+
+static inline float unorm16ToFloat(uint16_t unorm16) {
+	return unorm16 * (1.0f / 65535.0f);
+}
+static inline uint16_t floatToUnorm16(float f) {
+	// don't use Q_ftol here, as the semantics of Q_ftol
+	// has been changed from round to nearest to round to 0 !
+	return lrintf(f * 65535.0f);
+}
+static inline float snorm16ToFloat(int16_t snorm16) {
+	return MAX( snorm16 * (1.0f / 32767.0f), -1.0f);
+}
+static inline int16_t floatToSnorm16(float f) {
+	// don't use Q_ftol here, as the semantics of Q_ftol
+	// has been changed from round to nearest to round to 0 !
+	return lrintf(f * 32767.0f);
+}
+
+
+static inline void floatToUnorm8( const vec4_t in, u8vec4_t out )
+{
+	out[ 0 ] = floatToUnorm8( in[ 0 ] );
+	out[ 1 ] = floatToUnorm8( in[ 1 ] );
+	out[ 2 ] = floatToUnorm8( in[ 2 ] );
+	out[ 3 ] = floatToUnorm8( in[ 3 ] );
+}
+
+static inline void unorm8ToFloat( const u8vec4_t in, vec4_t out )
+{
+	out[ 0 ] = unorm8ToFloat( in[ 0 ] );
+	out[ 1 ] = unorm8ToFloat( in[ 1 ] );
+	out[ 2 ] = unorm8ToFloat( in[ 2 ] );
+	out[ 3 ] = unorm8ToFloat( in[ 3 ] );
+}
+
+static inline void floatToSnorm16( const vec4_t in, i16vec4_t out )
+{
+	out[ 0 ] = floatToSnorm16( in[ 0 ] );
+	out[ 1 ] = floatToSnorm16( in[ 1 ] );
+	out[ 2 ] = floatToSnorm16( in[ 2 ] );
+	out[ 3 ] = floatToSnorm16( in[ 3 ] );
+}
+
+static inline void snorm16ToFloat( const i16vec4_t in, vec4_t out )
+{
+	out[ 0 ] = snorm16ToFloat( in[ 0 ] );
+	out[ 1 ] = snorm16ToFloat( in[ 1 ] );
+	out[ 2 ] = snorm16ToFloat( in[ 2 ] );
+	out[ 3 ] = snorm16ToFloat( in[ 3 ] );
+}
+
+static inline int16_t packTC( float tc ) {
+	int roundedTC = lrintf( tc * 4096.0f );
+	if( roundedTC > 7 * 4096 ) {
+		roundedTC %= 14 * 4096;
+		if( roundedTC > 7 * 4096 )
+			roundedTC = 14 * 4096 - roundedTC;
+	} else if( roundedTC < -7 * 4096 ) {
+		roundedTC %= 14 * 4096;
+		if( roundedTC < -7 * 4096 )
+			roundedTC = -14 * 4096 - roundedTC;
+	}
+	return roundedTC;
+}
+static inline float unpackTC( int16_t tc ) {
+	return tc * (1.0f / 4096.0f);
 }
 
 // everything that is needed by the backend needs
@@ -521,21 +595,15 @@ static inline byte floatToSnorm8(float f) {
 	{
 		ATTR_INDEX_POSITION = 0,
 		ATTR_INDEX_TEXCOORD,
-		ATTR_INDEX_LIGHTCOORD,
-		ATTR_INDEX_TANGENT,
-		ATTR_INDEX_BINORMAL,
-		ATTR_INDEX_NORMAL,
+		ATTR_INDEX_QTANGENT,
 		ATTR_INDEX_COLOR,
 
 		// GPU vertex skinning
-		ATTR_INDEX_BONE_INDEXES,
-		ATTR_INDEX_BONE_WEIGHTS,
+		ATTR_INDEX_BONE_FACTORS,
 
 		// GPU vertex animations
 		ATTR_INDEX_POSITION2,
-		ATTR_INDEX_TANGENT2,
-		ATTR_INDEX_BINORMAL2,
-		ATTR_INDEX_NORMAL2,
+		ATTR_INDEX_QTANGENT2,
 		ATTR_INDEX_MAX
 	};
 
@@ -544,49 +612,31 @@ static inline byte floatToSnorm8(float f) {
 	{
 		"attr_Position",
 		"attr_TexCoord0",
-		"attr_TexCoord1",
-		"attr_Tangent",
-		"attr_Binormal",
-		"attr_Normal",
+		"attr_QTangent",
 		"attr_Color",
-		"attr_BoneIndexes",
-		"attr_BoneWeights",
+		"attr_BoneFactors",
 		"attr_Position2",
-		"attr_Tangent2",
-		"attr_Binormal2",
-		"attr_Normal2"
+		"attr_QTangent2"
 	};
 
 	enum
 	{
 	  ATTR_POSITION       = BIT( ATTR_INDEX_POSITION ),
 	  ATTR_TEXCOORD       = BIT( ATTR_INDEX_TEXCOORD ),
-	  ATTR_LIGHTCOORD     = BIT( ATTR_INDEX_LIGHTCOORD ),
-	  ATTR_TANGENT        = BIT( ATTR_INDEX_TANGENT ),
-	  ATTR_BINORMAL       = BIT( ATTR_INDEX_BINORMAL ),
-	  ATTR_NORMAL         = BIT( ATTR_INDEX_NORMAL ),
+	  ATTR_QTANGENT       = BIT( ATTR_INDEX_QTANGENT ),
 	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
 
-	  ATTR_BONE_INDEXES   = BIT( ATTR_INDEX_BONE_INDEXES ),
-	  ATTR_BONE_WEIGHTS   = BIT( ATTR_INDEX_BONE_WEIGHTS ),
+	  ATTR_BONE_FACTORS   = BIT( ATTR_INDEX_BONE_FACTORS ),
 
 	  // for .md3 interpolation
 	  ATTR_POSITION2      = BIT( ATTR_INDEX_POSITION2 ),
-	  ATTR_TANGENT2       = BIT( ATTR_INDEX_TANGENT2 ),
-	  ATTR_BINORMAL2      = BIT( ATTR_INDEX_BINORMAL2 ),
-	  ATTR_NORMAL2        = BIT( ATTR_INDEX_NORMAL2 ),
+	  ATTR_QTANGENT2      = BIT( ATTR_INDEX_QTANGENT2 ),
 
-	  ATTR_INTERP_BITS = ATTR_POSITION2 | ATTR_TANGENT2 | ATTR_BINORMAL2 | ATTR_NORMAL2,
-
-	  // FIXME XBSP format with ATTR_LIGHTDIRECTION
-	  //ATTR_DEFAULT = ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_COLOR,
+	  ATTR_INTERP_BITS = ATTR_POSITION2 | ATTR_QTANGENT2,
 
 	  ATTR_BITS = ATTR_POSITION |
 	              ATTR_TEXCOORD |
-	              ATTR_LIGHTCOORD |
-	              ATTR_TANGENT |
-	              ATTR_BINORMAL |
-	              ATTR_NORMAL |
+	              ATTR_QTANGENT |
 	              ATTR_COLOR // |
 
 	              //ATTR_BONE_INDEXES |
@@ -614,20 +664,15 @@ static inline byte floatToSnorm8(float f) {
 	typedef struct
 	{
 		vec3_t *xyz;
-		vec3_t *tangent;
-		vec3_t *binormal;
-		vec3_t *normal;
-		int numFrames;
-
-		vec4_t *color;
-		vec2_t *st;
-		vec2_t *lightCoord;
-		vec3_t *ambientLight;
-		vec3_t *directedLight;
-		vec3_t *lightDir;
+		i16vec4_t *qtangent;
+		u8vec4_t *color;
+		union { i16vec2_t *st; i16vec4_t *stpq; };
 		int    (*boneIndexes)[ 4 ];
 		vec4_t *boneWeights;
+
+		int	numFrames;
 		int     numVerts;
+		qboolean noLightCoords;
 	} vboData_t;
 
 	typedef struct VBO_s
@@ -721,7 +766,6 @@ static inline byte floatToSnorm8(float f) {
 	  GF_TRIANGLE,
 	  GF_SAWTOOTH,
 	  GF_INVERSE_SAWTOOTH,
-
 	  GF_NOISE
 	} genFunc_t;
 
@@ -735,14 +779,6 @@ static inline byte floatToSnorm8(float f) {
 	  DEFORM_PROJECTION_SHADOW,
 	  DEFORM_AUTOSPRITE,
 	  DEFORM_AUTOSPRITE2,
-	  DEFORM_TEXT0,
-	  DEFORM_TEXT1,
-	  DEFORM_TEXT2,
-	  DEFORM_TEXT3,
-	  DEFORM_TEXT4,
-	  DEFORM_TEXT5,
-	  DEFORM_TEXT6,
-	  DEFORM_TEXT7,
 	  DEFORM_SPRITE,
 	  DEFORM_FLARE
 	} deform_t;
@@ -1377,9 +1413,6 @@ static inline byte floatToSnorm8(float f) {
 
 		float    floatTime; // tr.refdef.time / 1000.0
 
-		// text messages for deform text shaders
-		char                    text[ MAX_RENDER_STRINGS ][ MAX_RENDER_STRING_LENGTH ];
-
 		int                     numEntities;
 		trRefEntity_t           *entities;
 
@@ -1704,10 +1737,9 @@ static inline byte floatToSnorm8(float f) {
 		vec3_t xyz;
 		vec2_t st;
 		vec2_t lightmap;
-		vec3_t tangent;
-		vec3_t binormal;
 		vec3_t normal;
-		vec4_t lightColor;
+		i16vec4_t qtangent;
+		u8vec4_t lightColor;
 	} srfVert_t;
 
 	typedef struct
@@ -2075,6 +2107,11 @@ static inline byte floatToSnorm8(float f) {
 
 	typedef struct
 	{
+		vec3_t normal;
+	} mdvNormal_t;
+
+	typedef struct
+	{
 		float st[ 2 ];
 	} mdvSt_t;
 
@@ -2088,6 +2125,7 @@ static inline byte floatToSnorm8(float f) {
 
 		int               numVerts;
 		mdvXyz_t          *verts;
+		mdvNormal_t       *normals;
 		mdvSt_t           *st;
 
 		int               numTriangles;
@@ -2259,7 +2297,7 @@ static inline byte floatToSnorm8(float f) {
 
 		// vertex data
 		float           *positions;
-		float           *texcoords;
+		int16_t         *texcoords;
 		float           *normals;
 		float           *tangents;
 		float           *bitangents;
@@ -2531,7 +2569,7 @@ static inline byte floatToSnorm8(float f) {
 		qboolean          skyRenderedThisView; // flag for drawing sun
 
 		qboolean          projection2D; // if qtrue, drawstretchpic doesn't need to change modes
-		vec4_t            color2D;
+		u8vec4_t          color2D;
 		qboolean          vertexes2D; // shader needs to be finished
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
 	} backEndState_t;
@@ -3092,25 +3130,42 @@ static inline byte floatToSnorm8(float f) {
 	void           R_CalcFrustumNearCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
 	void           R_CalcFrustumFarCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
 	qboolean       R_CompareVert( srfVert_t *v1, srfVert_t *v2, qboolean checkst );
-	void           R_CalcNormalForTriangle( vec3_t normal, const vec3_t v0, const vec3_t v1, const vec3_t v2 );
 
-	void           R_CalcTangentsForTriangle( vec3_t tangent, vec3_t binormal,
-	    const vec3_t v0, const vec3_t v1, const vec3_t v2,
-	    const vec2_t t0, const vec2_t t1, const vec2_t t2 );
+	/* Tangent/normal vector calculation functions */
+	void R_CalcFaceNormal( vec3_t normal, const vec3_t v0,
+			       const vec3_t v1, const vec3_t v2 );
 
-	void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
-	                         const vec3_t v0, const vec3_t v1, const vec3_t v2,
-	                         const vec2_t t0, const vec2_t t1, const vec2_t t2 );
+	void R_CalcTangents( vec3_t tangent, vec3_t binormal,
+			     const vec3_t v0, const vec3_t v1, const vec3_t v2,
+			     const vec2_t t0, const vec2_t t1, const vec2_t t2 );
 
-	void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
-	                             const vec3_t v0, const vec3_t v1, const vec3_t v2,
-	                             const vec2_t t0, const vec2_t t1, const vec2_t t2 );
+	void R_CalcTangents( vec3_t tangent, vec3_t binormal,
+			     const vec3_t v0, const vec3_t v1, const vec3_t v2,
+			     const i16vec2_t t0, const i16vec2_t t1, const i16vec2_t t2 );
 
-	void R_CalcTBN( vec3_t tangent, vec3_t binormal, vec3_t normal,
-	                const vec3_t v0, const vec3_t v1, const vec3_t v2,
-	                const vec2_t t0, const vec2_t t1, const vec2_t t2 );
+	/*
+	 * QTangent representation of tangentspace:
+	 *
+	 *   A unit quaternion can represent any member of the special
+	 *   orthogonal subgroup of 3x3 matrices, i.e. orthogonal matrices
+	 *   with determinant 1.  In the general case the TBN vectors may not
+	 *   be orthogonal, so they have to be orthogonalized first.
+	 *
+	 *   Even then the determinant may be -1, so we can only encode the
+	 *   TBN we get by flipping the T vector.  Fortunately every
+	 *   quaternion and its negative represent the same rotation, so we
+	 *   can remember if the matrix has been flipped in the sign of the W
+	 *   component.
+	 *
+	 *   This is not possible if W == 0, i.e. it is a 180 degree rotation,
+	 *   so in that case we set W to 1 or -1. This introduces another
+	 *   minimal error.
+	 */
+	void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
+			       const vec3_t normal, i16vec4_t qtangent );
 
-	qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] );
+	void R_QtangentsToTBN( const i16vec4_t qtangent, vec3_t tangent,
+			       vec3_t binormal, vec3_t normal );
 
 	float    R_CalcFov( float fovX, float width, float height );
 
@@ -3306,8 +3361,6 @@ static inline byte floatToSnorm8(float f) {
 	====================================================================
 	*/
 
-	typedef byte color4ub_t[ 4 ];
-
 	typedef struct stageVars
 	{
 		vec4_t   color;
@@ -3320,12 +3373,9 @@ static inline byte floatToSnorm8(float f) {
 	typedef struct shaderCommands_s
 	{
 		vec4_t xyz[ SHADER_MAX_VERTEXES ];
-		vec4_t tangents[ SHADER_MAX_VERTEXES ];
-		vec4_t binormals[ SHADER_MAX_VERTEXES ];
-		vec4_t normals[ SHADER_MAX_VERTEXES ];
-		vec4_t colors[ SHADER_MAX_VERTEXES ];
-		vec2_t texCoords[ SHADER_MAX_VERTEXES ];
-		vec2_t lightCoords[ SHADER_MAX_VERTEXES ];
+		i16vec4_t qtangents[ SHADER_MAX_VERTEXES ];
+		i16vec4_t texCoords[ SHADER_MAX_VERTEXES ];
+		u8vec4_t  colors[ SHADER_MAX_VERTEXES ];
 
 		glIndex_t   indexes[ SHADER_MAX_INDEXES ];
 
