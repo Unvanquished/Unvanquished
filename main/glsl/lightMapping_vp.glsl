@@ -58,9 +58,11 @@ void	main()
 {
 	vec4 position = vec4(attr_Position, 1.0);
 
+	var_Normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
+
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
-					attr_Normal,
+					var_Normal,
 					attr_TexCoord0.st / 4096.0,
 					u_Time);
 #endif
@@ -99,8 +101,6 @@ void	main()
 #else
 
 	var_Position = position.xyz;
-
-	var_Normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
 
 #if defined(USE_NORMAL_MAPPING)
 	var_Tangent = QuatTransVec( attr_QTangent, vec3( 1.0, 0.0, 0.0 ) );
