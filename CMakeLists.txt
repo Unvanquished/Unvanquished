@@ -24,7 +24,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required( VERSION 2.8.10 )
+cmake_minimum_required( VERSION 2.8 )
 if( POLICY CMP0017 )
   cmake_policy( SET CMP0017 NEW )
 endif()
@@ -1331,27 +1331,46 @@ function( GAMEMODULE )
       -fvisibility=hidden
       -stdlib=libc++
       --pnacl-allow-exceptions
-      $<$<CONFIG:None>:-O3>
-      $<$<CONFIG:None>:-DNDEBUG>
-      $<$<CONFIG:Release>:-O3>
-      $<$<CONFIG:Release>:-DNDEBUG>
-      $<$<CONFIG:Debug>:-O0>
-      $<$<CONFIG:Debug>:-g3>
-      $<$<CONFIG:RelWithDebInfo>:-O2>
-      $<$<CONFIG:RelWithDebInfo>:-DNDEBUG>
-      $<$<CONFIG:RelWithDebInfo>:-g3>
-      $<$<CONFIG:MinSizeRel>:-Os>
-      $<$<CONFIG:MinSizeRel>:-DNDEBUG>
     )
     set( NACL_TRANSLATE_OPTIONS
       --allow-llvm-bitcode-input
       --pnacl-allow-exceptions
-      $<$<CONFIG:None>:-O3>
-      $<$<CONFIG:Release>:-O3>
-      $<$<CONFIG:Debug>:-O0>
-      $<$<CONFIG:RelWithDebInfo>:-O2>
-      $<$<CONFIG:MinSizeRel>:-O2>
     )
+    if( CMAKE_VERSION VERSION_LESS 2.8.10 )
+      # Use some default flags if cmake doesn't support generator expressions
+      set( NACL_COMPILE_OPTIONS
+        ${NACL_COMPILE_OPTIONS}
+        -O3
+        -DNDEBUG
+      )
+      set( NACL_TRANSLATE_OPTIONS
+        ${NACL_TRANSLATE_OPTIONS}
+        -O3
+      )
+    else()
+      set( NACL_COMPILE_OPTIONS
+        ${NACL_COMPILE_OPTIONS}
+        $<$<CONFIG:None>:-O3>
+        $<$<CONFIG:None>:-DNDEBUG>
+        $<$<CONFIG:Release>:-O3>
+        $<$<CONFIG:Release>:-DNDEBUG>
+        $<$<CONFIG:Debug>:-O0>
+        $<$<CONFIG:Debug>:-g3>
+        $<$<CONFIG:RelWithDebInfo>:-O2>
+        $<$<CONFIG:RelWithDebInfo>:-DNDEBUG>
+        $<$<CONFIG:RelWithDebInfo>:-g3>
+        $<$<CONFIG:MinSizeRel>:-Os>
+        $<$<CONFIG:MinSizeRel>:-DNDEBUG>
+      )
+      set( NACL_TRANSLATE_OPTIONS
+        ${NACL_TRANSLATE_OPTIONS}
+        $<$<CONFIG:None>:-O3>
+        $<$<CONFIG:Release>:-O3>
+        $<$<CONFIG:Debug>:-O0>
+        $<$<CONFIG:RelWithDebInfo>:-O2>
+        $<$<CONFIG:MinSizeRel>:-O2>
+      )
+    endif()
     if( USE_WEXTRA )
       set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wextra" )
     else()
