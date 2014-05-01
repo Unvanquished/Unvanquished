@@ -106,7 +106,7 @@ fi
 
 echo '[33mGathering VM code[m'
 cd "$BASEDIR/$BUILDDIR"
-dozip vm/*qvm
+dozip vm/*qvm game.pexe game-*.nexe
 
 cd "$BASEDIR"
 
