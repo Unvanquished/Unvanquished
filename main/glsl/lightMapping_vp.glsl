@@ -24,9 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 attribute vec3 		attr_Position;
 attribute vec4 		attr_TexCoord0;
-attribute vec3		attr_Tangent;
-attribute vec3		attr_Binormal;
-attribute vec3		attr_Normal;
+attribute vec4		attr_QTangent;
 attribute vec4		attr_Color;
 
 uniform mat4		u_DiffuseTextureMatrix;
@@ -51,6 +49,10 @@ varying vec3		var_Normal;
 varying vec4		var_Color;
 
 
+vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
+	vec3 tmp = 2.0 * cross( quat.xyz, vec );
+	return vec + quat.w * tmp + cross( quat.xyz, tmp );
+}
 
 void	main()
 {
@@ -97,11 +99,13 @@ void	main()
 #else
 
 	var_Position = position.xyz;
-	var_Normal = attr_Normal.xyz;
+
+	var_Normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
 
 #if defined(USE_NORMAL_MAPPING)
-	var_Tangent = attr_Tangent.xyz;
-	var_Binormal = attr_Binormal.xyz;
+	var_Tangent = QuatTransVec( attr_QTangent, vec3( 1.0, 0.0, 0.0 ) );
+	var_Binormal = QuatTransVec( attr_QTangent, vec3( 0.0, 1.0, 0.0 ) );
+	var_Tangent *= sign( attr_QTangent.w );
 #endif
 
 #endif
