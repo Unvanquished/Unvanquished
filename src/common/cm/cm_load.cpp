@@ -59,8 +59,8 @@ cbrush_t  *box_brush;
 void      CM_InitBoxHull( void );
 void      CM_FloodAreaConnections( void );
 
-Cvar::Cvar<bool> cm_forceTriangles("cm_forceTriangles", "Convert all patches into triangles?", Cvar::CHEAT | Cvar::ROM, false);
-Log::Logger cmLog("common.cm");
+Cvar::Cvar<bool> cm_forceTriangles(VM_STRING_PREFIX "cm_forceTriangles", "Convert all patches into triangles?", Cvar::CHEAT | Cvar::ROM, false);
+Log::Logger cmLog(VM_STRING_PREFIX "common.cm");
 
 static std::vector<void*> allocations;
 

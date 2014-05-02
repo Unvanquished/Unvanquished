@@ -42,7 +42,7 @@ Maryland 20850 USA.
 
 //#define CAPSULE_DEBUG
 
-Cvar::Cvar<bool> cm_noCurves("cm_noCurves", "something in cm about curves?", Cvar::CHEAT, false);
+Cvar::Cvar<bool> cm_noCurves(VM_STRING_PREFIX "cm_noCurves", "something in cm about curves?", Cvar::CHEAT, false);
 
 /*
 ===============================================================================

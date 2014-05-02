@@ -94,20 +94,20 @@ namespace Audio {
     // A sound that is played once.
     class OneShotSound : public Sound {
         public:
-            OneShotSound(Sample* sample);
+            OneShotSound(std::shared_ptr<Sample> sample);
             virtual ~OneShotSound();
 
             virtual void SetupSource(AL::Source& source) OVERRIDE;
             virtual void InternalUpdate() OVERRIDE;
 
         private:
-            Sample* sample;
+            std::shared_ptr<Sample> sample;
     };
 
     // A looping sound
     class LoopingSound : public Sound {
         public:
-            LoopingSound(Sample* loopingSample, Sample* leadingSample = nullptr);
+            LoopingSound(std::shared_ptr<Sample> loopingSample, std::shared_ptr<Sample> leadingSample = nullptr);
             virtual ~LoopingSound();
 
             void FadeOutAndDie();
@@ -117,8 +117,8 @@ namespace Audio {
 
         private:
             void SetupLoopingSound(AL::Source& source);
-            Sample* loopingSample;
-            Sample* leadingSample;
+            std::shared_ptr<Sample> loopingSample;
+            std::shared_ptr<Sample> leadingSample;
             bool fadingOut;
     };
 
