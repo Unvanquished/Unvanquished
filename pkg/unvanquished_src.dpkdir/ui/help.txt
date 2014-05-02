@@ -107,7 +107,9 @@
   }
   "[dev] Miscellaneous"
   {
-    "The human dodge has been removed, stamina has been increased.\n"
+    "The human dodge has been removed, stamina has been increased, and "
+    "battery packs have been removed. Energy weapon clip sizes have been "
+    "adjusted accordingly.\n"
     "\n"
     "The grenade price has been increased (200 → 300).\n"
     "\n"
