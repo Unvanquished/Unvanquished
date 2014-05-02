@@ -1449,11 +1449,31 @@ function( GAMEMODULE )
       DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
 
+    # Create stripped versions of the NaCl executables
+    add_custom_command(
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-strip${PNACL_BIN_EXT}
+        -s
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+    )
+    add_custom_command(
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-strip${PNACL_BIN_EXT}
+        -s
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+    )
+
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-nacl ALL
       DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
         ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
         ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
     )
 
     # Create the build directory before building
