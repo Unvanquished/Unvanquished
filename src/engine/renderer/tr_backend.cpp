@@ -4894,7 +4894,6 @@ static void RB_RenderDebugUtils()
 	{
 		int             x, y, z, k;
 		vec3_t          offset;
-		vec3_t          lightDirection;
 		vec3_t          tmp, tmp2, tmp3;
 		vec_t           length;
 		vec4_t          tetraVerts[ 4 ];
@@ -4960,17 +4959,17 @@ static void RB_RenderDebugUtils()
 					VectorNegate( lightDir, lightDir );
 
 					length = 8;
-					VectorMA( origin, 8, lightDirection, offset );
+					VectorMA( origin, 8, lightDir, offset );
 
-					PerpendicularVector( tmp, lightDirection );
+					PerpendicularVector( tmp, lightDir );
 					//VectorCopy(up, tmp);
 
 					VectorScale( tmp, length * 0.1, tmp2 );
-					VectorMA( tmp2, length * 0.2, lightDirection, tmp2 );
+					VectorMA( tmp2, length * 0.2, lightDir, tmp2 );
 
 					for ( k = 0; k < 3; k++ )
 					{
-						RotatePointAroundVector( tmp3, lightDirection, tmp2, k * 120 );
+						RotatePointAroundVector( tmp3, lightDir, tmp2, k * 120 );
 						VectorAdd( tmp3, origin, tmp3 );
 						VectorCopy( tmp3, tetraVerts[ k ] );
 						tetraVerts[ k ][ 3 ] = 1;

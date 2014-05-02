@@ -4090,8 +4090,8 @@ void R_LoadLightGrid( lump_t *l )
 				direction[ 1 ] = copysignf( 1.0f - fabs( X ), Y );
 			}
 		}
-		gridPoint1->lightVecX = floatToSnorm8( direction[ 0 ] );
-		gridPoint2->lightVecY = floatToSnorm8( direction[ 1 ] );
+		gridPoint1->lightVecX = 128 + floatToSnorm8( direction[ 0 ] );
+		gridPoint2->lightVecY = 128 + floatToSnorm8( direction[ 1 ] );
 	}
 
 	// fill in gridpoints with zero light (samples in walls) to avoid

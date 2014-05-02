@@ -162,8 +162,8 @@ float R_InterpolateLightGrid( world_t *w, int from[3], int to[3],
 
 				totalFactor += factor;
 
-				lightDir[ 0 ] += factor * snorm8ToFloat( gp1->lightVecX );
-				lightDir[ 1 ] += factor * snorm8ToFloat( gp2->lightVecY );
+				lightDir[ 0 ] += factor * snorm8ToFloat( gp1->lightVecX - 128 );
+				lightDir[ 1 ] += factor * snorm8ToFloat( gp2->lightVecY - 128 );
 				
 				ambientLight[ 0 ] += factor * unorm8ToFloat( gp1->ambient[ 0 ] );
 				ambientLight[ 1 ] += factor * unorm8ToFloat( gp1->ambient[ 1 ] );
