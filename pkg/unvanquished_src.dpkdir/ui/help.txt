@@ -64,9 +64,8 @@
     "The [drill] drill is the only buildable that requires a close repeater or "
     "reactor to work, since resources are transmitted via the power grid.\n"
     "\n"
-    "The [basilisk] basilisk consumes power, too, so it can shut down "
-    "buildables by its presence. Improve the power supply with repeaters to "
-    "prevent this."
+    "[turret] Turrets cost more and are a little stronger, "
+    "and [armoury] armouries are easier to use and cost less."
   }
   "[flamer] Wildfire"
   {
