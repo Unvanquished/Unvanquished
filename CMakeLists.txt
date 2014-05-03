@@ -24,9 +24,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required( VERSION 2.8.12 )
+cmake_minimum_required( VERSION 2.8 )
 if( POLICY CMP0017 )
   cmake_policy( SET CMP0017 NEW )
+endif()
+
+# Need 2.8.12 for RPATH support
+if( APPLE )
+  cmake_minimum_required( VERSION 2.8.12 )
 endif()
 
 include( CMakeDependentOption )
@@ -308,7 +313,7 @@ endif()
 ################################################################################
 
 if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
-  set( PYTHONINTERP_FIND_VERSION 2 )
+  set( PythonInterp_FIND_VERSION 2 )
   find_package( PythonInterp )
   if( NOT PYTHONINTERP_FOUND )
     message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
@@ -614,6 +619,7 @@ if( APPLE )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/sys_osx.mm
   )
+  set_source_files_properties( ${ENGINE_DIR}/sys/sys_osx.mm PROPERTIES COMPILE_FLAGS "-x objective-c++" )
 endif()
 
 set( CLIENTBASELIST
@@ -1352,27 +1358,46 @@ function( GAMEMODULE )
       -fvisibility=hidden
       -stdlib=libc++
       --pnacl-allow-exceptions
-      $<$<CONFIG:None>:-O3>
-      $<$<CONFIG:None>:-DNDEBUG>
-      $<$<CONFIG:Release>:-O3>
-      $<$<CONFIG:Release>:-DNDEBUG>
-      $<$<CONFIG:Debug>:-O0>
-      $<$<CONFIG:Debug>:-g3>
-      $<$<CONFIG:RelWithDebInfo>:-O2>
-      $<$<CONFIG:RelWithDebInfo>:-DNDEBUG>
-      $<$<CONFIG:RelWithDebInfo>:-g3>
-      $<$<CONFIG:MinSizeRel>:-Os>
-      $<$<CONFIG:MinSizeRel>:-DNDEBUG>
     )
     set( NACL_TRANSLATE_OPTIONS
       --allow-llvm-bitcode-input
       --pnacl-allow-exceptions
-      $<$<CONFIG:None>:-O3>
-      $<$<CONFIG:Release>:-O3>
-      $<$<CONFIG:Debug>:-O0>
-      $<$<CONFIG:RelWithDebInfo>:-O2>
-      $<$<CONFIG:MinSizeRel>:-O2>
     )
+    if( CMAKE_VERSION VERSION_LESS 2.8.10 )
+      # Use some default flags if cmake doesn't support generator expressions
+      set( NACL_COMPILE_OPTIONS
+        ${NACL_COMPILE_OPTIONS}
+        -O3
+        -DNDEBUG
+      )
+      set( NACL_TRANSLATE_OPTIONS
+        ${NACL_TRANSLATE_OPTIONS}
+        -O3
+      )
+    else()
+      set( NACL_COMPILE_OPTIONS
+        ${NACL_COMPILE_OPTIONS}
+        $<$<CONFIG:None>:-O3>
+        $<$<CONFIG:None>:-DNDEBUG>
+        $<$<CONFIG:Release>:-O3>
+        $<$<CONFIG:Release>:-DNDEBUG>
+        $<$<CONFIG:Debug>:-O0>
+        $<$<CONFIG:Debug>:-g3>
+        $<$<CONFIG:RelWithDebInfo>:-O2>
+        $<$<CONFIG:RelWithDebInfo>:-DNDEBUG>
+        $<$<CONFIG:RelWithDebInfo>:-g3>
+        $<$<CONFIG:MinSizeRel>:-Os>
+        $<$<CONFIG:MinSizeRel>:-DNDEBUG>
+      )
+      set( NACL_TRANSLATE_OPTIONS
+        ${NACL_TRANSLATE_OPTIONS}
+        $<$<CONFIG:None>:-O3>
+        $<$<CONFIG:Release>:-O3>
+        $<$<CONFIG:Debug>:-O0>
+        $<$<CONFIG:RelWithDebInfo>:-O2>
+        $<$<CONFIG:MinSizeRel>:-O2>
+      )
+    endif()
     if( USE_WEXTRA )
       set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wextra" )
     else()
@@ -1451,11 +1476,31 @@ function( GAMEMODULE )
       DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
 
+    # Create stripped versions of the NaCl executables
+    add_custom_command(
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-strip${PNACL_BIN_EXT}
+        -s
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+    )
+    add_custom_command(
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-strip${PNACL_BIN_EXT}
+        -s
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+    )
+
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-nacl ALL
       DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
         ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
         ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
     )
 
     # Create the build directory before building

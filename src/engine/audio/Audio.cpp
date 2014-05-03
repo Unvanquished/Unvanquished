@@ -315,11 +315,17 @@ namespace Audio {
             return;
         }
 
-        auto leadingSample = RegisterSample(leadingSound);
-        auto loopingSample = RegisterSample(loopSound);
+        std::shared_ptr<Sample> leadingSample = nullptr;
+        std::shared_ptr<Sample> loopingSample = nullptr;
+        if (not leadingSound.empty()) {
+            leadingSample = RegisterSample(leadingSound);
+        }
+        if (not loopSound.empty()) {
+            loopingSample = RegisterSample(loopSound);
+        }
 
         StopMusic();
-        music = std::make_shared<LoopingSound>(loopingSample.get(), leadingSample.get());
+        music = std::make_shared<LoopingSound>(loopingSample, leadingSample);
         AddSound(GetLocalEmitter(), music, 1);
     }
 

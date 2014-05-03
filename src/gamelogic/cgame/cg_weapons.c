@@ -590,7 +590,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 	return qfalse;
 }
 
-static qboolean CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, qboolean loop, qboolean reversed,
+qboolean CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, qboolean loop, qboolean reversed,
     qboolean clearOrigin )
 {
 	int frameRate;

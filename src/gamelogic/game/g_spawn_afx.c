@@ -72,17 +72,39 @@ trigger_push
 ==============================================================================
 */
 
-void env_afx_push_touch( gentity_t *self, gentity_t *other, trace_t *trace )
+void env_afx_push_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
 {
+	//only triggered by clients
+	if ( !activator || !activator->client )
+	{
+		return;
+	}
+
+	if ( activator->client->ps.pm_type != PM_NORMAL )
+	{
+		return;
+	}
+
+	if ( self->nextthink > level.time )
+	{
+		return;
+	}
+	self->nextthink = VariatedLevelTime( self->config.wait );
+
+	VectorCopy( self->s.origin2, activator->client->ps.velocity );
 }
 
 void SP_env_afx_push( gentity_t *self )
 {
+	SP_WaitFields(self, 0.5f, 0);
+
 	self->s.eType = ET_PUSHER;
 	self->touch = env_afx_push_touch;
 	self->think = think_aimAtTarget;
 	self->nextthink = level.time + FRAMETIME;
-	InitEnvAFXEntity( self, qtrue );
+	self->act = env_afx_toggle;
+
+	InitEnvAFXEntity( self, !(self->spawnflags & SPF_SPAWN_DISABLED ) );
 
 	// unlike other afx, we need to send this one to the client
 	self->r.svFlags &= ~SVF_NOCLIENT;
