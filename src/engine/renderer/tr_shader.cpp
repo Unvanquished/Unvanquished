@@ -2854,7 +2854,6 @@ deformVertexes bulge <bulgeWidth> <bulgeHeight> <bulgeSpeed>
 deformVertexes projectionShadow
 deformVertexes autoSprite
 deformVertexes autoSprite2
-deformVertexes text[0-7]
 ===============
 */
 static void ParseDeform( char **text )
@@ -2894,21 +2893,6 @@ static void ParseDeform( char **text )
 	if ( !Q_stricmp( token, "autosprite2" ) )
 	{
 		ds->deformation = DEFORM_AUTOSPRITE2;
-		return;
-	}
-
-	if ( !Q_strnicmp( token, "text", 4 ) )
-	{
-		int n;
-
-		n = token[ 4 ] - '0';
-
-		if ( n < 0 || n > 7 )
-		{
-			n = 0;
-		}
-
-		ds->deformation = (deform_t) (DEFORM_TEXT0 + n);
 		return;
 	}
 

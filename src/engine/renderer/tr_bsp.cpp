@@ -1020,10 +1020,10 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
 	}
 
 	// copy triangles
@@ -1055,15 +1055,24 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 	surf->data = ( surfaceType_t * ) cv;
 
 	{
-		srfVert_t *dv[ 3 ];
+		srfVert_t *dv0, *dv1, *dv2;
+		vec3_t    tangent, binormal;
 
 		for ( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ )
 		{
-			dv[ 0 ] = &cv->verts[ tri->indexes[ 0 ] ];
-			dv[ 1 ] = &cv->verts[ tri->indexes[ 1 ] ];
-			dv[ 2 ] = &cv->verts[ tri->indexes[ 2 ] ];
+			dv0 = &cv->verts[ tri->indexes[ 0 ] ];
+			dv1 = &cv->verts[ tri->indexes[ 1 ] ];
+			dv2 = &cv->verts[ tri->indexes[ 2 ] ];
 
-			R_CalcTangentVectors( dv );
+			R_CalcTangents( tangent, binormal,
+					dv0->xyz, dv1->xyz, dv2->xyz,
+					dv0->st, dv1->st, dv2->st );
+			R_TBNtoQtangents( tangent, binormal, dv0->normal,
+					  dv0->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv1->normal,
+					  dv1->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv2->normal,
+					  dv2->qtangent );
 		}
 	}
 
@@ -1153,10 +1162,10 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 
 		for ( j = 0; j < 4; j++ )
 		{
-			points[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			points[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( points[ i ].lightColor, points[ i ].lightColor );
+		R_ColorShiftLightingBytes( points[ i ].lightColor, points[ i ].lightColor );
 	}
 
 	// pre-tesselate
@@ -1254,10 +1263,10 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
 	}
 
 	// copy triangles
@@ -1289,15 +1298,24 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 	// Tr3B - calc tangent spaces
 	{
-		srfVert_t *dv[ 3 ];
+		srfVert_t *dv0, *dv1, *dv2;
+		vec3_t    tangent, binormal;
 
 		for ( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ )
 		{
-			dv[ 0 ] = &cv->verts[ tri->indexes[ 0 ] ];
-			dv[ 1 ] = &cv->verts[ tri->indexes[ 1 ] ];
-			dv[ 2 ] = &cv->verts[ tri->indexes[ 2 ] ];
+			dv0 = &cv->verts[ tri->indexes[ 0 ] ];
+			dv1 = &cv->verts[ tri->indexes[ 1 ] ];
+			dv2 = &cv->verts[ tri->indexes[ 2 ] ];
 
-			R_CalcTangentVectors( dv );
+			R_CalcTangents( tangent, binormal,
+					dv0->xyz, dv1->xyz, dv2->xyz,
+					dv0->st, dv1->st, dv2->st );
+			R_TBNtoQtangents( tangent, binormal, dv0->normal,
+					  dv0->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv1->normal,
+					  dv1->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv2->normal,
+					  dv2->qtangent );
 		}
 	}
 
@@ -2695,8 +2713,7 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 	for ( j = 0; j < 3; j++ )
 	{
 		out->xyz[ j ] = in->xyz[ j ];
-		out->tangent[ j ] = in->tangent[ j ];
-		out->binormal[ j ] = in->binormal[ j ];
+		out->qtangent[ j ] = in->qtangent[ j ];
 		out->normal[ j ] = in->normal[ j ];
 	}
 
@@ -3074,8 +3091,8 @@ static void R_CreateWorldVBO( void )
 
 	// create vbo and ibo
 	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
-	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL |
-	                                ATTR_NORMAL | ATTR_COLOR );
+	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR
+	                                 );
 
 	s_worldData.ibo = R_CreateStaticIBO2( va( "staticWorld_IBO %i", 0 ), numTriangles, triangles );
 

@@ -509,7 +509,8 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 				t1 = surf->verts[ tri->indexes[ 1 ] ].texCoords;
 				t2 = surf->verts[ tri->indexes[ 2 ] ].texCoords;
 
-				R_CalcTangentSpace( tangent, binormal, normal, v0, v1, v2, t0, t1, t2 );
+				R_CalcFaceNormal( normal, v0, v1, v2 );
+				R_CalcTangents( tangent, binormal, v0, v1, v2, t0, t1, t2 );
 
 				for ( k = 0; k < 3; k++ )
 				{

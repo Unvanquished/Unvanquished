@@ -746,7 +746,7 @@ public:
 
 	uint32_t        GetRequiredVertexAttributes() const
 	{
-		return ATTR_BONE_INDEXES | ATTR_BONE_WEIGHTS;
+		return ATTR_BONE_FACTORS;
 	}
 
 	void EnableVertexSkinning()
@@ -840,7 +840,7 @@ public:
 
 	uint32_t        GetRequiredVertexAttributes() const
 	{
-		return ATTR_NORMAL;
+		return ATTR_QTANGENT;
 	}
 
 	void EnableDeformVertexes()
@@ -894,7 +894,7 @@ public:
 
 	uint32_t        GetRequiredVertexAttributes() const
 	{
-		return ATTR_NORMAL;
+		return ATTR_QTANGENT;
 	}
 
 	void EnableTCGenEnvironment()
@@ -937,11 +937,6 @@ public:
 	EGLCompileMacro GetType() const
 	{
 		return USE_TCGEN_LIGHTMAP;
-	}
-
-	uint32_t        GetRequiredVertexAttributes() const
-	{
-		return ATTR_LIGHTCOORD;
 	}
 
 	void EnableTCGenLightmap()
@@ -988,7 +983,7 @@ public:
 
 	uint32_t        GetRequiredVertexAttributes() const
 	{
-		return ATTR_NORMAL | ATTR_TANGENT | ATTR_BINORMAL;
+		return ATTR_QTANGENT;
 	}
 
 	void EnableNormalMapping()
@@ -1123,7 +1118,7 @@ public:
 
 	uint32_t        GetRequiredVertexAttributes() const
 	{
-		return ATTR_NORMAL;
+		return ATTR_QTANGENT;
 	}
 
 	void EnableMacro_TWOSIDED()

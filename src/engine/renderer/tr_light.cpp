@@ -580,19 +580,24 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 					for ( j = 0; j < 4; j++ )
 					{
 						const float *c = color ? color : colorCyan;
+						u8vec4_t iColor;
+						iColor[ 0 ] = floatToUnorm8( c[ 0 ] );
+						iColor[ 1 ] = floatToUnorm8( c[ 1 ] );
+						iColor[ 2 ] = floatToUnorm8( c[ 2 ] );
+						iColor[ 3 ] = floatToUnorm8( c[ 3 ] );
 
 						VectorCopy( top, tess.xyz[ tess.numVertexes ] );
-						Vector4Copy( c, tess.colors[ tess.numVertexes ] );
+						Vector4Copy( iColor, tess.colors[ tess.numVertexes ] );
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 
 						VectorCopy( farCorners[( j + 1 ) % 4 ], tess.xyz[ tess.numVertexes ] );
-						Vector4Copy( c, tess.colors[ tess.numVertexes ] );
+						Vector4Copy( iColor, tess.colors[ tess.numVertexes ] );
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 
 						VectorCopy( farCorners[ j ], tess.xyz[ tess.numVertexes ] );
-						Vector4Copy( c, tess.colors[ tess.numVertexes ] );
+						Vector4Copy( iColor, tess.colors[ tess.numVertexes ] );
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 					}
