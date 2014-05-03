@@ -1155,8 +1155,8 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 			}
 
-			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
-			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
+			tess.texCoords[ tess.numVertexes + j ][ 0 ] = packTC( v->texCoords[ 0 ] );
+			tess.texCoords[ tess.numVertexes + j ][ 1 ] = packTC( v->texCoords[ 1 ] );
 		}
 	}
 	else
@@ -1219,8 +1219,8 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 			R_TBNtoQtangents( tangent, binormal, normal, tess.qtangents[ tess.numVertexes + j ] );
 
-			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
-			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
+			tess.texCoords[ tess.numVertexes + j ][ 0 ] = packTC( v->texCoords[ 0 ] );
+			tess.texCoords[ tess.numVertexes + j ][ 1 ] = packTC( v->texCoords[ 1 ] );
 		}
 	}
 
