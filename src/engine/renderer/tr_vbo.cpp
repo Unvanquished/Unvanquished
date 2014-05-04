@@ -150,6 +150,10 @@ static size_t R_GetAttribStorageSize( const VBO_t *vbo, uint32_t attribute, qboo
 		{
 			return 4 * sizeof( byte );
 		}
+		else if ( attribute == ATTR_INDEX_QTANGENT )
+		{
+			return sizeof( i16vec4_t );
+		}
 		else
 		{
 			return sizeof( vec4_t );
