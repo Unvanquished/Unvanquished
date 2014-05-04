@@ -110,11 +110,11 @@ template<> struct SerializeTraits<FS::PakInfo> {
 namespace FS {
 
 // Pak zip and directory extensions
-const char PAK_ZIP_EXT[] = ".pk3";
-const char PAK_DIR_EXT[] = ".pk3dir/";
+#define PAK_ZIP_EXT ".pk3"
+#define PAK_DIR_EXT ".pk3dir/"
 
 // Dependencies file in packages
-const char PAK_DEPS_FILE[] = "DEPS";
+#define PAK_DEPS_FILE "DEPS"
 
 // Whether the search paths have been initialized yet. This can be used to delay
 // writing log files until the filesystem is initialized.
