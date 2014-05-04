@@ -704,6 +704,7 @@ msgid "loads a new map"
 msgstr "lädt eine neue Map"
 
 #: src/engine/server/sv_ccmds.cpp:65
+#, c-format
 #, c-format, fuzzy
 msgid "Can't find map %s"
 msgstr "Kann Map %s nicht finden\n"
