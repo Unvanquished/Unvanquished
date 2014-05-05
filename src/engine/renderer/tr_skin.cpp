@@ -145,7 +145,6 @@ static char    *CommaParse( char **data_p )
 
 	if ( len == MAX_TOKEN_CHARS )
 	{
-//      Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
 		len = 0;
 	}
 
@@ -231,31 +230,6 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 				return 0;
 			}
 
-//          if(surf->shader->lightmapIndex != LIGHTMAP_NONE) {
-
-			/*
-			RB: FIXME ?
-			if(surf->shader->lightmapIndex > LIGHTMAP_NONE)
-			{
-			        image_t        *image;
-			        long            hash;
-			        qboolean        mip = qtrue;  // mip generation on by default
-
-			        // get mipmap info for original texture
-			        hash = GenerateImageHashValue(surf->shader->name);
-			        for(image = r_imageHashTable[hash]; image; image = image->next)
-			        {
-			                if(!strcmp(surf->shader->name, image->imgName))
-			                {
-			                        mip = image->mipmap;
-			                        break;
-			                }
-			        }
-			        shd = R_FindShader(surf->shader->name, LIGHTMAP_NONE, mip ? RSF_DEFAULT : RSF_NOMIP);
-			        shd->stages[0]->rgbGen = CGEN_LIGHTING_DIFFUSE; // (SA) new
-			}
-			else
-			*/
 			{
 				shd = surf->shader;
 			}
@@ -327,19 +301,6 @@ qhandle_t RE_RegisterSkin( const char *name )
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-#if 0
-
-	// If not a .skin file, load as a single shader
-	if ( strcmp( name + strlen( name ) - 5, ".skin" ) )
-	{
-		skin->numSurfaces = 1;
-		skin->surfaces[ 0 ] = ri.Hunk_Alloc( sizeof( skin->surfaces[ 0 ] ), h_low );
-		skin->surfaces[ 0 ]->shader = R_FindShader( name, SHADER_3D_DYNAMIC, RSF_DEFAULT );
-		return hSkin;
-	}
-
-#endif
-
 	// load and parse the skin file
 	ri.FS_ReadFile( name, ( void ** ) &text );
 
@@ -406,7 +367,6 @@ qhandle_t RE_RegisterSkin( const char *name )
 		Q_strncpyz( surf->name, surfName, sizeof( surf->name ) );
 
 		// RB: bspSurface_t does not have ::hash yet
-//		surf->hash = Com_HashKey(surf->name, sizeof(surf->name));
 		surf->shader = R_FindShader( token, SHADER_3D_DYNAMIC, RSF_DEFAULT );
 		skin->numSurfaces++;
 	}

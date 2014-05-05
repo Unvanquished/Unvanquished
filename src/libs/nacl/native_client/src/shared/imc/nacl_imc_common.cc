@@ -26,7 +26,7 @@
 
 int NaClMessageSizeIsValid(const NaClMessageHeader *message) {
   size_t cur_bytes = 0;
-  static size_t const kMax = static_cast<size_t>(~static_cast<uint32_t>(0));
+  static size_t const kMax = ~(uint32_t) 0;
   size_t ix;
   /* we assume that sizeof(uint32_t) <= sizeof(size_t) */
 

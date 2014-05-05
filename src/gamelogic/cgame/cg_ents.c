@@ -578,33 +578,6 @@ static void CG_Mover( centity_t *cent )
 
 /*
 ===============
-CG_Beam
-
-Also called as an event
-===============
-*/
-void CG_Beam( centity_t *cent )
-{
-	refEntity_t   ent;
-	entityState_t *s1;
-
-	s1 = &cent->currentState;
-
-	// create the render entity
-	memset( &ent, 0, sizeof( ent ) );
-	VectorCopy( s1->pos.trBase, ent.origin );
-	VectorCopy( s1->origin2, ent.oldorigin );
-	AxisClear( ent.axis );
-	ent.reType = RT_BEAM;
-
-	ent.renderfx = RF_NOSHADOW;
-
-	// add to refresh list
-	trap_R_AddRefEntityToScene( &ent );
-}
-
-/*
-===============
 CG_Portal
 ===============
 */
@@ -1078,7 +1051,8 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	//clear any particle systems from previous uses of this centity_t
 	cent->muzzlePS = NULL;
 	cent->muzzlePsTrigger = qfalse;
-	cent->jetPackPS = NULL;
+	cent->jetPackPS[ 0 ] = NULL;
+	cent->jetPackPS[ 1 ] = NULL;
 	cent->jetPackState = JPS_INACTIVE;
 	cent->buildablePS = NULL;
 	cent->buildableStatusPS = NULL;
@@ -1143,10 +1117,16 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 	}
 
 	// destroy the jetpack PS
-	if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+	if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
 	{
-	     CG_DestroyParticleSystem( &cent->jetPackPS );
+	     CG_DestroyParticleSystem( &cent->jetPackPS[ 0 ] );
 	}
+
+	if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+	{
+		CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
+	}
+
 
 	// Lazy TODO: Destroy more PS/TS here
 	// Better TODO: Make two groups cent->temporaryPS[NUM_TMPPS], cent->persistentPS[NUM_PERSPS]
@@ -1209,10 +1189,6 @@ static void CG_AddCEntity( centity_t *cent )
 
 		case ET_MOVER:
 			CG_Mover( cent );
-			break;
-
-		case ET_BEAM:
-			CG_Beam( cent );
 			break;
 
 		case ET_PORTAL:

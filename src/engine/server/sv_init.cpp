@@ -46,29 +46,6 @@ Maryland 20850 USA.
 SV_SetConfigstring
 ===============
 */
-void SV_SetConfigstringNoUpdate( int index, const char *val )
-{
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
-	{
-		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i", index );
-	}
-
-	if ( !val )
-	{
-		val = "";
-	}
-
-	// don't bother broadcasting an update if no change
-	if ( !strcmp( val, sv.configstrings[ index ] ) )
-	{
-		return;
-	}
-
-	// change the string in sv
-	Z_Free( sv.configstrings[ index ] );
-	sv.configstrings[ index ] = CopyString( val );
-}
-
 void SV_SetConfigstring( int index, const char *val )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
@@ -356,7 +333,7 @@ void SV_Startup( void )
 	svs.initialized = qtrue;
 
 	Cvar_Set( "sv_running", "1" );
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	NET_Config( qtrue );
 #endif
 
@@ -611,7 +588,18 @@ void SV_SpawnServer( const char *server )
 	if (!FS_LoadPak(va("map-%s", server)))
 		Com_Error(ERR_DROP, "Could not load map pak\n");
 
-	CM_LoadMap( va( "maps/%s.bsp", server ), qfalse );
+	void* buffer;
+	const char* name = va( "maps/%s.bsp", server );
+	FS_ReadFile( name, ( void ** ) &buffer );
+
+	if ( !buffer )
+	{
+		Com_Error( ERR_DROP, "Couldn't load %s", name );
+	}
+
+	CM_LoadMap( name, buffer, qfalse );
+
+	FS_FreeFile( buffer );
 
 	// set serverinfo visible name
 	Cvar_Set( "mapname", server );
@@ -623,9 +611,6 @@ void SV_SpawnServer( const char *server )
 	sv.restartedServerId = sv.serverId;
 	Cvar_Set( "sv_serverid", va( "%i", sv.serverId ) );
 
-	// clear physics interaction links
-	SV_ClearWorld();
-
 	// media configstring setting should be done during
 	// the loading stage, so connected clients don't have
 	// to load during actual gameplay
@@ -634,7 +619,7 @@ void SV_SpawnServer( const char *server )
 	Cvar_Set( "sv_serverRestarting", "1" );
 
 	// load and spawn all other entities
-	SV_InitGameProgs();
+	SV_InitGameProgs(server);
 
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
@@ -768,7 +753,7 @@ void SV_Init( void )
 
 	// systeminfo
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 	sv_pure = Cvar_Get( "sv_pure", "1", CVAR_SYSTEMINFO );
 #else
 	// Use OS shared libs for the client at startup. This prevents crashes due to mismatching syscall ABIs
@@ -914,7 +899,7 @@ void SV_Shutdown( const char *finalmsg )
 	svs.serverLoad = -1;
 
 	Cvar_Set( "sv_running", "0" );
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	NET_Config( qtrue );
 #endif
 

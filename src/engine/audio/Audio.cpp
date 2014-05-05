@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "AudioPrivate.h"
+#include "AudioData.h"
 
 namespace Audio {
 
@@ -68,7 +69,7 @@ namespace Audio {
     void CaptureTestUpdate();
 
     // Like in the previous sound system, we only have a single music
-    std::shared_ptr<MusicSound> music;
+    std::shared_ptr<LoopingSound> music;
 
     bool IsValidEntity(int entityNum) {
         return entityNum >= 0 and entityNum < MAX_GENTITIES;
@@ -132,7 +133,6 @@ namespace Audio {
         initialized = true;
 
         // Initializes the rest of the audio system
-        S_CodecInit();
         AL::InitEffectPresets();
         InitSamples();
         InitSounds();
@@ -168,7 +168,6 @@ namespace Audio {
         ShutdownSounds();
         ShutdownEmitters();
         ShutdownSamples();
-        S_CodecShutdown();
 
         // Free OpenAL resources
         delete context;
@@ -316,8 +315,17 @@ namespace Audio {
             return;
         }
 
+        std::shared_ptr<Sample> leadingSample = nullptr;
+        std::shared_ptr<Sample> loopingSample = nullptr;
+        if (not leadingSound.empty()) {
+            leadingSample = RegisterSample(leadingSound);
+        }
+        if (not loopSound.empty()) {
+            loopingSample = RegisterSample(loopSound);
+        }
+
         StopMusic();
-        music = std::make_shared<MusicSound>(leadingSound, loopSound);
+        music = std::make_shared<LoopingSound>(loopingSample, leadingSample);
         AddSound(GetLocalEmitter(), music, 1);
     }
 
@@ -353,10 +361,11 @@ namespace Audio {
 
         streams[streamNum]->SetGain(volume);
 
-        snd_info_t dataInfo = {rate, width, channels, numSamples, (width * numSamples * channels), 0};
-        AL::Buffer buffer;
+	    AudioData audioData(rate, width, channels, (width * numSamples * channels),
+	                        reinterpret_cast<const char*>(data));
+	    AL::Buffer buffer;
 
-        int feedError = buffer.Feed(dataInfo, data);
+	    int feedError = buffer.Feed(audioData);
 
         if (not feedError) {
             streams[streamNum]->AppendBuffer(std::move(buffer));
@@ -466,7 +475,6 @@ namespace Audio {
             uint16_t* buffer = new uint16_t[numSamples];
             GetCapturedData(numSamples, buffer);
             StreamData(N_STREAMS - 1, buffer, numSamples, 16000, 2, 1, 1.0, -1);
-            delete[] buffer;
         }
     }
 

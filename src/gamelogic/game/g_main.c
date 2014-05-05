@@ -383,7 +383,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          0,                                               0, qfalse           },
 
 	// gameplay: momentum
-	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                CVAR_TEMP,                                       0, qfalse           },
 	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, qfalse           },
 	{ &g_momentumHalfLife,            "g_momentumHalfLife",            DEFAULT_MOMENTUM_HALF_LIFE,         CVAR_SERVERINFO,                                 0, qfalse           },
 	{ &g_momentumRewardDoubleTime,    "g_momentumRewardDoubleTime",    DEFAULT_CONF_REWARD_DOUBLE_TIME,    0,                                               0, qfalse           },
@@ -493,76 +492,6 @@ enum
 	LOG_GAMEPLAY_STATS_BODY,
 	LOG_GAMEPLAY_STATS_FOOTER
 };
-
-#ifdef QVM_ABI
-/*
-================
-vmMain
-
-This is the only way control passes into the module.
-This must be the very first function compiled into the .q3vm file
-================
-*/
-EXTERN_C Q_EXPORT
-intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
-                 int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11 )
-{
-	switch ( command )
-	{
-		case GAME_INIT:
-			trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
-			G_InitGame( arg0, arg1, arg2 );
-			return 0;
-
-		case GAME_SHUTDOWN:
-			G_ShutdownGame( arg0 );
-			return 0;
-
-		case GAME_CLIENT_CONNECT:
-			if ( arg2 )
-			{
-				return ( intptr_t ) ClientBotConnect( arg0, arg1, TEAM_NONE );
-			}
-			return ( intptr_t ) ClientConnect( arg0, arg1 );
-
-		case GAME_CLIENT_THINK:
-			ClientThink( arg0 );
-			return 0;
-
-		case GAME_CLIENT_USERINFO_CHANGED:
-			ClientUserinfoChanged( arg0, qfalse );
-			return 0;
-
-		case GAME_CLIENT_DISCONNECT:
-			ClientDisconnect( arg0 );
-			return 0;
-
-		case GAME_CLIENT_BEGIN:
-			ClientBegin( arg0 );
-			return 0;
-
-		case GAME_CLIENT_COMMAND:
-			ClientCommand( arg0 );
-			return 0;
-
-		case GAME_RUN_FRAME:
-			G_RunFrame( arg0 );
-			return 0;
-
-		case GAME_CONSOLE_COMMAND:
-			return ConsoleCommand();
-
-		case GAME_MESSAGERECEIVED:
-			// ignored
-			return 0;
-
-		default:
-			G_Error( "vmMain(): unknown game command %i", command );
-	}
-
-	return -1;
-}
-#endif
 
 void QDECL PRINTF_LIKE(1) G_Printf( const char *fmt, ... )
 {

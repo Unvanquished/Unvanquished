@@ -9,11 +9,17 @@ install:
   - sudo sh -c 'echo deb http://debs.unvanquished.net precise main >>/etc/apt/sources.list'
   - sudo apt-key adv --keyserver x-hkp://pool.sks-keyservers.net --recv-key 06AF4C14
   - sudo apt-get -qq update
-  - sudo apt-get -qq install cmake libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libgeoip-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl1.2-dev libspeexdsp-dev libtheora-dev libvorbis-dev libopusfile-dev libxvidcore-dev nettle-dev zlib1g-dev
+  - sudo apt-get -qq install libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libgeoip-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl1.2-dev libspeexdsp-dev libtheora-dev libvorbis-dev libopusfile-dev libxvidcore-dev nettle-dev zlib1g-dev
+  - wget http://ppa.launchpad.net/purplekarrot/cmake/ubuntu/pool/main/c/cmake/cmake-data_2.8.12.20131104_all.deb
+  - wget http://ppa.launchpad.net/purplekarrot/cmake/ubuntu/pool/main/c/cmake/cmake_2.8.12.20131104_amd64.deb
+  - sudo apt-get remove cmake-data cmake
+  - sudo dpkg --install cmake-data_2.8.12.20131104_all.deb cmake_2.8.12.20131104_amd64.deb
 
 before_script:
   - wget http://clang.llvm.org/libstdc++4.6-clang11.patch;
+  - wget "http://gcc.gnu.org/viewcvs/gcc/branches/gcc-4_7-branch/libstdc%2B%2B-v3/include/std/condition_variable?view=patch&r1=193528&r2=193527&pathrev=193528" -O libstdc++4.6-thread-fix.patch
   - sudo patch /usr/include/c++/4.6/type_traits < libstdc++4.6-clang11.patch;
+  - sudo patch /usr/include/c++/4.6/condition_variable < libstdc++4.6-thread-fix.patch;
 
 script:
   - mkdir build
@@ -22,7 +28,9 @@ script:
   - cmake --build .
 
 notifications:
-  irc: "irc.freenode.org#unvanquished-dev"
+  irc:
+    - "irc.freenode.org#unvanquished-dev"
+    - "irc.quakenet.org#unvanquished"
   on_success: change
   on_failure: always
 

@@ -34,7 +34,9 @@
 #include "native_client/src/shared/platform/nacl_check.h"
 
 
+#if NACL_LINUX && defined(NACL_ENABLE_TMPFS_REDIRECT_VAR)
 static const char kNaClTempPrefixVar[] = "NACL_TMPFS_PREFIX";
+#endif
 
 /*
  * The pathname or SHM-namespace prefixes for memory objects created
@@ -114,7 +116,7 @@ static int TryShmOrTempOpen(size_t length, const char* prefix, bool use_temp) {
     int m;
     snprintf(name, sizeof name, "%s-%u.%u", prefix,
              getpid(),
-             static_cast<uint32_t>(AtomicIncrement(&memory_object_count, 1)));
+             (int) AtomicIncrement(&memory_object_count, 1));
     if (use_temp) {
       m = open(name, O_RDWR | O_CREAT | O_EXCL, 0);
     } else {

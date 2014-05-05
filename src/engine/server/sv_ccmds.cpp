@@ -414,7 +414,7 @@ void SV_AddOperatorCommands( void )
 		Cmd_AddCommand( "heartbeat",   SV_Heartbeat_f );
 		Cmd_AddCommand( "killserver",  SV_KillServer_f );
 		Cmd_AddCommand( "map_restart", SV_MapRestart_f );
-		Cmd_AddCommand( "sectorlist",  SV_SectorList_f );
+		//Cmd_AddCommand( "sectorlist",  SV_SectorList_f );
 		Cmd_AddCommand( "serverinfo",  SV_Serverinfo_f );
 		Cmd_AddCommand( "status",      SV_Status_f );
 		Cmd_AddCommand( "systeminfo",  SV_Systeminfo_f );

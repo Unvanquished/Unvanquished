@@ -173,7 +173,6 @@ static int loadPagesToStreams( void )
 }
 
 #define SIZEOF_RAWBUFF    4 * 1024
-static byte rawBuffer[ SIZEOF_RAWBUFF ];
 
 #define MIN_AUDIO_PRELOAD 400 // in ms
 #define MAX_AUDIO_PRELOAD 500 // in ms
@@ -189,6 +188,7 @@ static qboolean loadAudio( void )
 	float        *right, *left;
 	int          samples, samplesNeeded;
 	int          i;
+    short        *rawBuffer = new short[SIZEOF_RAWBUFF/sizeof(short)];
 	short        *ptr;
 	ogg_packet   op;
 	vorbis_block vb;
@@ -204,7 +204,7 @@ static qboolean loadAudio( void )
 		if ( ( samples = vorbis_synthesis_pcmout( &g_ogm.vd, &pcm ) ) > 0 )
 		{
 			// vorbis -> raw
-			ptr = ( short * ) rawBuffer;
+            ptr = rawBuffer;
 			samplesNeeded = ( SIZEOF_RAWBUFF ) / ( 2 * 2 ); // (width*channel)
 
 			if ( samples < samplesNeeded )

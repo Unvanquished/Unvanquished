@@ -109,29 +109,6 @@ int CL_GetCurrentCmdNumber( void )
 
 /*
 ====================
-CL_GetParseEntityState
-====================
-*/
-qboolean CL_GetParseEntityState( int parseEntityNumber, entityState_t *state )
-{
-	// can't return anything that hasn't been parsed yet
-	if ( parseEntityNumber >= cl.parseEntitiesNum )
-	{
-		Com_Error( ERR_DROP, "CL_GetParseEntityState: %i >= %i", parseEntityNumber, cl.parseEntitiesNum );
-	}
-
-	// can't return anything that has been overwritten in the circular buffer
-	if ( parseEntityNumber <= cl.parseEntitiesNum - MAX_PARSE_ENTITIES )
-	{
-		return qfalse;
-	}
-
-	*state = cl.parseEntities[ parseEntityNumber & ( MAX_PARSE_ENTITIES - 1 ) ];
-	return qtrue;
-}
-
-/*
-====================
 CL_GetCurrentSnapshotNumber
 ====================
 */
@@ -583,7 +560,18 @@ void CL_CM_LoadMap( const char *mapname )
 		Cvar_Set( "com_errorDiagnoseIP", "" );
 	}
 
-	CM_LoadMap( mapname, qtrue );
+
+	void* buffer;
+	FS_ReadFile( mapname, ( void ** ) &buffer );
+
+	if ( !buffer )
+	{
+		Com_Error( ERR_DROP, "Couldn't load %s", mapname );
+	}
+
+	CM_LoadMap( mapname, buffer, qtrue );
+
+	FS_FreeFile( buffer );
 }
 
 /*

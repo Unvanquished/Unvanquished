@@ -517,10 +517,6 @@ struct proxyInfo_t{
 //Contains the commands given through the C interface
 std::unordered_map<std::string, proxyInfo_t, Str::IHash, Str::IEqual> proxies;
 
-//Contains data send to Cmd_CompleteArguments
-char* completeArgs = NULL;
-int completeArgNum = 0;
-
 Cmd::CompletionResult completeMatches;
 std::string completedPrefix;
 

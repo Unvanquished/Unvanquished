@@ -1547,33 +1547,28 @@ static int FindAlienHealthSource( gentity_t *self )
 		return 0;
 	}
 
-	needsHealing = self->client->ps.stats[ STAT_HEALTH ] < BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
+	needsHealing = self->client->ps.stats[ STAT_HEALTH ] <
+	               BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
 
 	self->boosterUsed = NULL;
 
 	for ( ent = NULL; ( ent = G_IterateEntities( ent, NULL, qtrue, 0, NULL ) ); )
 	{
+		if ( !G_OnSameTeam( self, ent ) ) continue;
+		if ( ent->health <= 0 )           continue;
+
 		distance = Distance( ent->s.origin, self->s.origin );
 
-		if ( ent->client && ent->health > 0 && distance < REGEN_BOOST_RANGE &&
-		     ent->client->pers.team == self->client->pers.team )
-		{
-			/*if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 )
-			{
-				// Tyrant healing aura
-				ret |= SS_HEALING_2X;
-			}*/
-		}
-		else if ( ent->s.eType == ET_BUILDABLE && ent->spawned && ent->health > 0 &&
-		          ent->buildableTeam == self->client->pers.team )
+		if ( ent->s.eType == ET_BUILDABLE && ent->spawned )
 		{
 			if ( ( ent->s.modelindex == BA_A_SPAWN || ent->s.modelindex == BA_A_OVERMIND ) &&
-			     distance < ( float )CREEP_BASESIZE )
+			     distance < (float)CREEP_BASESIZE )
 			{
 				// "Creep healing" (close to spawn or OM)
 				ret |= SS_HEALING_ACTIVE;
 			}
-			else if ( ent->s.modelindex == BA_A_BOOSTER && distance < REGEN_BOOST_RANGE )
+			else if ( ent->s.modelindex == BA_A_BOOSTER && ent->powered &&
+			          distance < REGEN_BOOST_RANGE )
 			{
 				// Booster healing
 				ret |= SS_HEALING_3X;
@@ -1588,15 +1583,8 @@ static int FindAlienHealthSource( gentity_t *self )
 		}
 	}
 
-	if ( ret & SS_HEALING_3X )
-	{
-		ret |= SS_HEALING_2X;
-	}
-
-	if ( ret & SS_HEALING_2X )
-	{
-		ret |= SS_HEALING_ACTIVE;
-	}
+	if ( ret & SS_HEALING_3X ) ret |= SS_HEALING_2X;
+	if ( ret & SS_HEALING_2X ) ret |= SS_HEALING_ACTIVE;
 
 	if ( ret )
 	{

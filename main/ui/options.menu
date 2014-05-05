@@ -335,17 +335,16 @@
     }
 
 	BINDX	( move, "Run / Walk:", "+speed", 0 )
-	BINDX	( move, "Dodge:", "+dodge", 1 )
-	BINDX	( move, "Sprint:", "+sprint", 2 )
-	BINDX	( move, "Forward:", "+forward", 3 )
-	BINDX	( move, "Backpedal:", "+back", 4 )
-	BINDX	( move, "Move Left:", "+moveleft", 5 )
-	BINDX	( move, "Move Right:", "+moveright", 6 )
-	BINDX	( move, "Jump:", "+moveup", 7 )
-	BINDX	( move, "Crouch:", "+movedown", 8 )
-	BINDX	( move, "Turn Left:", "+left", 9 )
-	BINDX	( move, "Turn Right:", "+right", 10 )
-	BINDX	( move, "Strafe:", "+strafe", 11 )
+	BINDX	( move, "Sprint:", "+sprint", 1 )
+	BINDX	( move, "Forward:", "+forward", 2 )
+	BINDX	( move, "Backpedal:", "+back", 3 )
+	BINDX	( move, "Move Left:", "+moveleft", 4 )
+	BINDX	( move, "Move Right:", "+moveright", 5 )
+	BINDX	( move, "Jump:", "+moveup", 6 )
+	BINDX	( move, "Crouch:", "+movedown", 7 )
+	BINDX	( move, "Turn Left:", "+left", 8 )
+	BINDX	( move, "Turn Right:", "+right", 9 )
+	BINDX	( move, "Strafe:", "+strafe", 10 )
 
 //////// UPGRADES
 
@@ -383,9 +382,8 @@
 	BINDX	( upgrades, "Next Upgrade:", "weapnext", 3 )
 	BINDX	( upgrades, "Activate Upgrade:", "+useitem", 4 )
 	BINDX	( upgrades, "Reload:", "-reload", 5 )
-	BINDX	( upgrades, "Buy Ammo:", "-ammo", 6 )
-	BINDX	( upgrades, "Use Medkit:", "-medkit", 7 )
-	BINDX	( upgrades, "Use Structure/Evolve:", "+activate", 8 )
+	BINDX	( upgrades, "Use Medkit:", "-medkit", 6 )
+	BINDX	( upgrades, "Use Structure/Evolve:", "+activate", 7 )
 
 //////// COMMUNICATION
 

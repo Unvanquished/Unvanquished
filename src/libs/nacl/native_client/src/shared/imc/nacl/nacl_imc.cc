@@ -66,7 +66,7 @@ int NaClClose(NaClHandle handle) {
 
 int NaClSendDatagram(NaClHandle handle, const NaClMessageHeader* message,
                      int flags) {
-  return imc_sendmsg(handle, reinterpret_cast<const NaClImcMsgHdr*>(message),
+  return imc_sendmsg(handle, (const NaClImcMsgHdr *) message,
                      flags);
 }
 
@@ -77,7 +77,7 @@ int NaClSendDatagramTo(const NaClMessageHeader* message, int flags,
 
 int NaClReceiveDatagram(NaClHandle handle, NaClMessageHeader* message,
                         int flags) {
-  return imc_recvmsg(handle, reinterpret_cast<NaClImcMsgHdr*>(message), flags);
+  return imc_recvmsg(handle, (NaClImcMsgHdr *) message, flags);
 }
 
 NaClHandle NaClCreateMemoryObject(size_t length, int executable) {

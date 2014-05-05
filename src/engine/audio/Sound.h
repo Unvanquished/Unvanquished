@@ -94,20 +94,20 @@ namespace Audio {
     // A sound that is played once.
     class OneShotSound : public Sound {
         public:
-            OneShotSound(Sample* sample);
+            OneShotSound(std::shared_ptr<Sample> sample);
             virtual ~OneShotSound();
 
             virtual void SetupSource(AL::Source& source) OVERRIDE;
             virtual void InternalUpdate() OVERRIDE;
 
         private:
-            Sample* sample;
+            std::shared_ptr<Sample> sample;
     };
 
     // A looping sound
     class LoopingSound : public Sound {
         public:
-            LoopingSound(Sample* sample);
+            LoopingSound(std::shared_ptr<Sample> loopingSample, std::shared_ptr<Sample> leadingSample = nullptr);
             virtual ~LoopingSound();
 
             void FadeOutAndDie();
@@ -116,38 +116,12 @@ namespace Audio {
             virtual void InternalUpdate() OVERRIDE;
 
         private:
-            Sample* sample;
+            void SetupLoopingSound(AL::Source& source);
+            std::shared_ptr<Sample> loopingSample;
+            std::shared_ptr<Sample> leadingSample;
             bool fadingOut;
     };
 
-    // A sound that is too big to be loaded al at once in the memory: it is instead streamed from the disc.
-    class MusicSound : public Sound {
-        public:
-            // Both names are optional
-            MusicSound(Str::StringRef leadingStreamName, Str::StringRef loopStreamName);
-            virtual ~MusicSound();
-
-            virtual void SetupSource(AL::Source& source) OVERRIDE;
-            virtual void InternalUpdate() OVERRIDE;
-
-        private:
-            void AppendBuffer(AL::Source& source, AL::Buffer buffer);
-
-            snd_stream_t* leadingStream;
-
-            std::string loopStreamName;
-            snd_stream_t* loopStream;
-
-            bool playingLeadingSound;
-
-            // We only need three buffers in order to we have at all time a full buffer queued
-            // the problematic case is when we have a buffer buffering the last few samples of
-            // the leading sound or of the end of the loop.
-            static CONSTEXPR int NUM_BUFFERS = 4;
-
-            // Buffer about a tenth of a second in each chunk (with 16 bit stereo at 44kHz)
-            static CONSTEXPR int CHUNK_SIZE = 16384;
-    };
 
     // Any sound that receives its data over time (such as VoIP)
     class StreamingSound : public Sound {

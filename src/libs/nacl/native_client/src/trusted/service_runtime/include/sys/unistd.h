@@ -4,7 +4,10 @@
  * found in the LICENSE file.
  */
 
-
+/*
+ * This file is based on the file "newlib/libc/include/sys/unistd.h"
+ * from newlib.
+ */
 
 #ifndef NATIVE_CLIENT_SRC_TRUSTED_SERVICE_RUNTIME_INCLUDE_SYS_UNISTD_H_
 #define NATIVE_CLIENT_SRC_TRUSTED_SERVICE_RUNTIME_INCLUDE_SYS_UNISTD_H_
@@ -88,7 +91,7 @@ char    _EXFUN(*getlogin, (void ));
 int _EXFUN(getlogin_r, (char *name, size_t namesize) );
 #endif
 char _EXFUN(*getpass, (const char *__prompt));
-size_t  _EXFUN(getpagesize, (void));
+int     _EXFUN(getpagesize, (void));
 #if defined(__CYGWIN__)
 int    _EXFUN(getpeereid, (int, uid_t *, gid_t *));
 #endif
@@ -214,7 +217,8 @@ _READ_WRITE_RETURN_TYPE _EXFUN(_write, (int __fd, const void *__buf, size_t __nb
 int     _EXFUN(_execve, (const char *__path, char * const __argv[], char * const __envp[] ));
 #endif
 
-#if defined(__CYGWIN__) || defined(__rtems__) || defined(__sh__) || defined(__SPU__)
+#if defined(__CYGWIN__) || defined(__rtems__) || defined(__sh__) \
+    || defined(__SPU__) || defined(__native_client__)
 #if !defined(__INSIDE_CYGWIN__)
 int     _EXFUN(ftruncate, (int __fd, off_t __length));
 int     _EXFUN(truncate, (const char *, off_t __length));
@@ -278,7 +282,16 @@ enum {
 #define NACL_ABI__SC_NPROCESSORS_ONLN NACL_ABI__SC_NPROCESSORS_ONLN
   NACL_ABI__SC_PAGESIZE,
 #define NACL_ABI__SC_PAGESIZE NACL_ABI__SC_PAGESIZE
-  NACL_ABI__SC_LAST
+
+  /*
+   * The sysconf values below are not part of the stable ABI.
+   */
+  NACL_ABI__SC_NACL_FILE_ACCESS_ENABLED = 1000,
+#define NACL_ABI__SC_NACL_FILE_ACCESS_ENABLED \
+    NACL_ABI__SC_NACL_FILE_ACCESS_ENABLED
+  NACL_ABI__SC_NACL_LIST_MAPPINGS_ENABLED,
+#define NACL_ABI__SC_NACL_LIST_MAPPINGS_ENABLED \
+    NACL_ABI__SC_NACL_LIST_MAPPINGS_ENABLED
 };
 
 #ifdef __native_client__

@@ -106,7 +106,7 @@ static size_t GetRights(struct msghdr* msg, int* fdv) {
        cmsg = CMSG_NXTHDR(msg, cmsg)) {
     if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
       while (CMSG_LEN((1 + count) * sizeof(int)) <= cmsg->cmsg_len) {
-        *fdv++ = *(reinterpret_cast<int*>(CMSG_DATA(cmsg)) + count);
+        *fdv++ = ((int *) CMSG_DATA(cmsg))[count];
         ++count;
       }
     }
@@ -124,7 +124,7 @@ static bool SkipFile(int handle, size_t length) {
     char scratch[1024];
     size_t count = std::min(sizeof scratch, length);
     count = read(handle, scratch, count);
-    if (static_cast<ssize_t>(count) == -1 || count == 0) {
+    if ((ssize_t) count == -1 || count == 0) {
       return false;
     }
     length -= count;
@@ -252,7 +252,7 @@ int NaClSendDatagram(NaClHandle handle, const NaClMessageHeader* message,
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
     cmsg->cmsg_len = CMSG_LEN(size);
-    memcpy(reinterpret_cast<int*>(CMSG_DATA(cmsg)), message->handles, size);
+    memcpy(CMSG_DATA(cmsg), message->handles, size);
     msg.msg_controllen = cmsg->cmsg_len;
     header.handle_count = message->handle_count;
   } else {
@@ -274,7 +274,7 @@ int NaClSendDatagram(NaClHandle handle, const NaClMessageHeader* message,
   if (result == -1) {
     return -1;
   }
-  if (static_cast<size_t>(result) < sizeof header) {
+  if ((size_t) result < sizeof header) {
     errno = EMSGSIZE;
     return -1;
   }
@@ -431,7 +431,7 @@ int NaClReceiveDatagram(NaClHandle handle, NaClMessageHeader* message,
      * If the caller requested fewer bytes than the message contained, we need
      * to read the remaining bytes, discard them, and report message truncated.
      */
-    if (static_cast<size_t>(count) < header.message_bytes) {
+    if ((size_t) count < header.message_bytes) {
       if (!SkipFile(handle, header.message_bytes - count)) {
         return -1;
       }

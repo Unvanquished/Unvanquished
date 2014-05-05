@@ -23,8 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /* cameraEffects_fp.glsl */
 
 uniform sampler2D u_CurrentMap;
-uniform sampler2D u_GrainMap;
-uniform sampler2D u_VignetteMap;
 uniform sampler3D u_ColorMap;
 uniform vec4      u_ColorModulate;
 uniform float     u_InverseGamma;
@@ -53,26 +51,6 @@ void	main()
 	color.rgb += u_ColorModulate.z * texture3D(u_ColorMap, colCoord).rgb;
 	colCoord.z += 0.25;
 	color.rgb += u_ColorModulate.w * texture3D(u_ColorMap, colCoord).rgb;
-
-	// calculate chromatic aberration
-#if 0
-	vec2 redOffset = vec2(0.5, 0.25);
-	vec2 greenOffset = vec2(0.0, 0.0);
-	vec2 blueOffset = vec2(-0.5, -0.25);
-
-	color.r = texture2D(u_CurrentMap, st + redOffset * r_FBufScale).r;
-	color.g = texture2D(u_CurrentMap, st + greenOffset * r_FBufScale).g;
-	color.b = texture2D(u_CurrentMap, st + blueOffset * r_FBufScale).b;
-#endif
-
-	// blend the vignette
-	vec4 vignette = texture2D(u_VignetteMap, stClamped);
-	color.rgb *= vignette.rgb;
-
-	// add grain
-	vec4 grain = texture2D(u_GrainMap, var_Tex);
-	color.rgb = (color.rgb + (grain.rgb * vec3(0.035, 0.065, 0.09))) + (color.rgb * (grain.rgb * vec3(0.035, 0.065, 0.09)));
-	//color.rgb = grain.rgb;
 
 	color.xyz = pow(color.xyz, vec3(u_InverseGamma));
 
