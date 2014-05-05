@@ -998,7 +998,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		if ( sv_wwwDownload->integer )
 		{
 			std::string name, version;
-			Opt::optional<uint32_t> checksum;
+			Util::optional<uint32_t> checksum;
 			int downloadSize = 0;
 			bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
 			if (success) {
@@ -1082,7 +1082,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		// find file
 		cl->bWWWDl = qfalse;
 		std::string name, version;
-		Opt::optional<uint32_t> checksum;
+		Util::optional<uint32_t> checksum;
 		bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
 		if (success) {
 			const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
@@ -1523,7 +1523,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 		// pass unknown strings to the game
 		if ( !u->name && sv.state == SS_GAME )
 		{
-			gvm->GameClientCommand( cl - svs.clients );
+			gvm->GameClientCommand( cl - svs.clients, s );
 		}
 	}
 	else if ( !bProcessed )

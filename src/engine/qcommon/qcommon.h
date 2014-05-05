@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #ifndef QCOMMON_H_
 #define QCOMMON_H_
 
-#include "../qcommon/cm_public.h"
+#include "../../common/cm/cm_public.h"
 
 //kangz need these for the command completion handlers
 #include <vector>
@@ -491,7 +491,7 @@ issues.
 ==============================================================
 */
 
-#include "../framework/FileSystem.h"
+#include "../../common/FileSystem.h"
 
 char **FS_ListFiles( const char *directory, const char *extension, int *numfiles );
 
@@ -688,7 +688,7 @@ int        Com_FilterPath( const char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );
 int        Com_GMTime( qtime_t *qtime );
 // Com_Time: client gets local time, server gets GMT
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 #define Com_Time(t) Com_GMTime(t)
 #else
 #define Com_Time(t) Com_RealTime(t)
@@ -1004,9 +1004,6 @@ char         *Sys_DefaultHomePath( void );
 char         *Sys_Dirname( char *path );
 char         *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
-
-char         **Sys_ListFiles( const char *directory, const char *extension, const char *filter, int *numfiles, qboolean wantsubs );
-void         Sys_FreeFileList( char **list );
 
 void         Sys_Sleep( int msec );
 

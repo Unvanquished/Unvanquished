@@ -62,10 +62,6 @@
  * and when foo.h is modified, it will generate a compile-time error
  * alerting the engineer makin the change that the read code will need to
  * be modified.
- *
- * NB: The -pedantic flag is REQUIRED for the C version to catch the
- *     error.  No special warning flags are required for the C++
- *     version to work.
  */
 
 #ifdef __cplusplus
@@ -105,52 +101,20 @@ char (&NaClArraySizeHelper(const T (&array)[N]))[N];
  * difference is not a top-level qualifier difference as mentioned in
  * the gcc info node; that would apply to T * versus T const *.)  In
  * the assertion statement version (NACL_ASSERT_IS_ARRAY), we use this
- * to allocate an array, and ISO C forbids a zero-sized (or
- * negative-sized) array.  In the expression version (ARRAY_SIZE), we
- * assign to a global void * -- assigning a zero is fine, but
- * assigning a 1 results in a warning that making a pointer from an
- * integer is verboten.  When ARRAY_SIZE is used in a loop control
- * context, e.g.,
- *
- * for (ix = 0; ix < ARRAY_SIZE(arr); ++ix) { ... }
- *
- * with -O the optimizer recognizes that the store can be moved out of
- * the loop, so the performance impact should be minimal.
+ * to declare an array, and ISO C forbids a negative-sized array.
  */
 # if __GNUC__
-#  define NACL_ASSERT_IS_ARRAY(arr)                           \
-  do {                                                        \
-    char __is_array__[1-2*__builtin_types_compatible_p(       \
-        __typeof__(&arr[0]),                                  \
-        __typeof__(arr))];                                    \
-    /* dead code, but gets rid of unused-variable warnings */ \
-    if (0 == sizeof __is_array__) {                           \
-      abort();                                                \
-    }                                                         \
-  } while (0)
 
-static inline void *NaClArrayCheckHelper(void *arg) {
-  /*
-   * Doing runtime checks is not really necessary -- this code is in
-   * fact unreachable code that gets optimized out when used with the
-   * NACL_ARRAY_SIZE definition below.
-   *
-   * The runtime check is only useful when the build system is using
-   * the inappropriate flags (e.g., missing -pedantic -Werror or
-   * -pedantic-error), in which case instead of a compile-time error,
-   * we'd get a runtime error.
-   */
-  if (NULL != arg) {
-    abort();
-  }
-  return arg;
-}
+#  define NACL_ASSERT_IS_ARRAY_HELPER(arr)                                \
+  sizeof(char[1-2*__builtin_types_compatible_p(__typeof__(&arr[0]),       \
+                                                       __typeof__(arr))])
+
+#  define NACL_ASSERT_IS_ARRAY(arr)         \
+  ((void) NACL_ASSERT_IS_ARRAY_HELPER(arr))
 
 #  define NACL_ARRAY_SIZE(arr)                                         \
-  (NaClArrayCheckHelper(                                               \
-      __builtin_types_compatible_p(__typeof__(&arr[0]),                \
-                                   __typeof__(arr))),                  \
-  NACL_ARRAY_SIZE_UNSAFE(arr))
+  (NACL_ASSERT_IS_ARRAY_HELPER(arr) ? NACL_ARRAY_SIZE_UNSAFE(arr) : 0)
+
 # else  /* __GNUC__ */
 
 /*

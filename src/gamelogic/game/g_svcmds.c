@@ -665,16 +665,6 @@ static void Svcmd_MessageWrapper( void )
 	}
 }
 
-static void Svcmd_ListMapsWrapper( void )
-{
-	Cmd_ListMaps_f( NULL );
-}
-
-static void Svcmd_ListRotationWrapper( void )
-{
-	G_PrintCurrentRotation( NULL );
-}
-
 static void Svcmd_MapLogWrapper( void )
 {
 	Cmd_MapLog_f( NULL );
@@ -710,8 +700,6 @@ static const struct svcmd
 	{ "humanWin",           qfalse, Svcmd_TeamWin_f              },
 	{ "layoutLoad",         qfalse, Svcmd_LayoutLoad_f           },
 	{ "layoutSave",         qfalse, Svcmd_LayoutSave_f           },
-	{ "listmaps",           qtrue,  Svcmd_ListMapsWrapper        },
-	{ "listrotation",       qtrue,  Svcmd_ListRotationWrapper    },
 	{ "loadcensors",        qfalse, G_LoadCensors                },
 	{ "m",                  qtrue,  Svcmd_MessageWrapper         },
 	{ "maplog",             qtrue,  Svcmd_MapLogWrapper          },

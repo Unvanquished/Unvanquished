@@ -64,7 +64,6 @@ static void AddSkyPolygon( int nump, vec3_t vecs )
 	int        axis;
 	float      *vp;
 
-	// s = [0]/[2], t = [1]/[2]
 	static const int vec_to_st[ 6 ][ 3 ] =
 	{
 		{ -2, 3,  1  },
@@ -429,35 +428,8 @@ static void MakeSkyVec( float s, float t, int axis, vec4_t outSt, vec4_t outXYZ 
 	}
 }
 
-//static int      sky_texorder[6] = { 0, 2, 1, 3, 4, 5 };
 static vec4_t s_skyPoints[ SKY_SUBDIVISIONS + 1 ][ SKY_SUBDIVISIONS + 1 ];
 static float  s_skyTexCoords[ SKY_SUBDIVISIONS + 1 ][ SKY_SUBDIVISIONS + 1 ][ 4 ];
-
-/*
-static void DrawSkySide(struct image_s *image, const int mins[2], const int maxs[2])
-{
-        int             s, t;
-
-        GL_SelectTexture(0);
-        GL_Bind(image);
-
-        for(t = mins[1] + HALF_SKY_SUBDIVISIONS; t < maxs[1] + HALF_SKY_SUBDIVISIONS; t++)
-        {
-                glBegin(GL_TRIANGLE_STRIP);
-
-                for(s = mins[0] + HALF_SKY_SUBDIVISIONS; s <= maxs[0] + HALF_SKY_SUBDIVISIONS; s++)
-                {
-                        glVertexAttrib4fv(ATTR_INDEX_TEXCOORD0, s_skyTexCoords[t][s]);
-                        glVertexAttrib4fv(ATTR_INDEX_POSITION, s_skyPoints[t][s]);
-
-                        glVertexAttrib4fv(ATTR_INDEX_TEXCOORD0, s_skyTexCoords[t + 1][s]);
-                        glVertexAttrib4fv(ATTR_INDEX_POSITION, s_skyPoints[t + 1][s]);
-                }
-
-                glEnd();
-        }
-}
-*/
 
 static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolean addIndexes )
 {
@@ -598,8 +570,6 @@ static void DrawSkyBox( shader_t *shader )
 			}
 		}
 
-		//DrawSkySide(shader->sky.outerbox[sky_texorder[i]], sky_mins_subd, sky_maxs_subd);
-
 		// only add indexes for first stage
 		FillCloudySkySide( sky_mins_subd, sky_maxs_subd, qtrue );
 	}
@@ -618,7 +588,6 @@ static void FillCloudBox( const shader_t *shader, int stage )
 		int   s, t;
 		float MIN_T;
 
-		//if ( FIXME? shader->sky.fullClouds )
 		{
 			MIN_T = -HALF_SKY_SUBDIVISIONS;
 
@@ -628,27 +597,6 @@ static void FillCloudBox( const shader_t *shader, int stage )
 				continue;
 			}
 		}
-		/*else
-		{
-			switch ( i )
-			{
-				case 0:
-				case 1:
-				case 2:
-				case 3:
-					MIN_T = -1;
-					break;
-
-				case 5:
-					// don't draw clouds beneath you
-					continue;
-
-				case 4: // top
-				default:
-					MIN_T = -HALF_SKY_SUBDIVISIONS;
-					break;
-			}
-		}*/
 
 		sky_mins[ 0 ][ i ] = floor( sky_mins[ 0 ][ i ] * HALF_SKY_SUBDIVISIONS ) / HALF_SKY_SUBDIVISIONS;
 		sky_mins[ 1 ][ i ] = floor( sky_mins[ 1 ][ i ] * HALF_SKY_SUBDIVISIONS ) / HALF_SKY_SUBDIVISIONS;
@@ -807,149 +755,6 @@ void R_InitSkyTexCoords( float heightCloud )
 //======================================================================================
 
 /*
-** RB_DrawSun
-*/
-void RB_DrawSun( void )
-{
-#if 0
-	float    size;
-	float    dist;
-	vec3_t   origin, vec1, vec2;
-	vec3_t   temp;
-	matrix_t transformMatrix;
-	matrix_t modelViewMatrix;
-
-	if ( !backEnd.skyRenderedThisView )
-	{
-		return;
-	}
-
-	if ( !r_drawSun->integer )
-	{
-		return;
-	}
-
-	GL_PushMatrix();
-
-	GL_BindProgram( &tr.genericShader );
-
-	// set uniforms
-	GLSL_SetUniform_TCGen_Environment( &tr.genericShader,  qfalse );
-	GLSL_SetUniform_InverseVertexColor( &tr.genericShader,  qfalse );
-
-	if ( glConfig2.vboVertexSkinningAvailable )
-	{
-		GLSL_SetUniform_VertexSkinning( &tr.genericShader, qfalse );
-	}
-
-	GLSL_SetUniform_DeformGen( &tr.genericShader, DGEN_NONE );
-	GLSL_SetUniform_AlphaTest( &tr.genericShader, -1.0 );
-
-	MatrixSetupTranslation( transformMatrix, backEnd.viewParms.orientation.origin[ 0 ], backEnd.viewParms.orientation.origin[ 1 ],
-	                        backEnd.viewParms.orientation.origin[ 2 ] );
-	MatrixMultiply( backEnd.viewParms.world.viewMatrix, transformMatrix, modelViewMatrix );
-
-	GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
-	GL_LoadModelViewMatrix( modelViewMatrix );
-
-	GLSL_SetUniform_ModelMatrix( &tr.genericShader, backEnd.orientation.transformMatrix );
-	GLSL_SetUniform_ModelViewProjectionMatrix( &tr.genericShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-	GLSL_SetUniform_PortalClipping( &tr.genericShader, backEnd.viewParms.isPortal );
-
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		GLSL_SetUniform_PortalPlane( &tr.genericShader, plane );
-	}
-
-	dist = backEnd.viewParms.skyFar / 1.75; // div sqrt(3)
-	size = dist * 0.4;
-
-	VectorScale( tr.sunDirection, dist, origin );
-	PerpendicularVector( vec1, tr.sunDirection );
-	CrossProduct( tr.sunDirection, vec1, vec2 );
-
-	VectorScale( vec1, size, vec1 );
-	VectorScale( vec2, size, vec2 );
-
-	// farthest depth range
-	glDepthRange( 1.0, 1.0 );
-
-	// FIXME: use quad stamp
-	Tess_Begin( Tess_StageIteratorGeneric, tr.sunShader, NULL, tess.skipTangentSpaces, qfalse, -1, tess.fogNum );
-	VectorCopy( origin, temp );
-	VectorSubtract( temp, vec1, temp );
-	VectorSubtract( temp, vec2, temp );
-	VectorCopy( temp, tess.xyz[ tess.numVertexes ] );
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
-	tess.numVertexes++;
-
-	VectorCopy( origin, temp );
-	VectorAdd( temp, vec1, temp );
-	VectorSubtract( temp, vec2, temp );
-	VectorCopy( temp, tess.xyz[ tess.numVertexes ] );
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
-	tess.numVertexes++;
-
-	VectorCopy( origin, temp );
-	VectorAdd( temp, vec1, temp );
-	VectorAdd( temp, vec2, temp );
-	VectorCopy( temp, tess.xyz[ tess.numVertexes ] );
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
-	tess.numVertexes++;
-
-	VectorCopy( origin, temp );
-	VectorSubtract( temp, vec1, temp );
-	VectorAdd( temp, vec2, temp );
-	VectorCopy( temp, tess.xyz[ tess.numVertexes ] );
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.colors[ tess.numVertexes ][ 0 ] = 1;
-	tess.colors[ tess.numVertexes ][ 1 ] = 1;
-	tess.colors[ tess.numVertexes ][ 2 ] = 1;
-	tess.numVertexes++;
-
-	tess.indexes[ tess.numIndexes++ ] = 0;
-	tess.indexes[ tess.numIndexes++ ] = 1;
-	tess.indexes[ tess.numIndexes++ ] = 2;
-	tess.indexes[ tess.numIndexes++ ] = 0;
-	tess.indexes[ tess.numIndexes++ ] = 2;
-	tess.indexes[ tess.numIndexes++ ] = 3;
-
-	Tess_End();
-
-	// back to standard depth range
-	glDepthRange( 0.0, 1.0 );
-
-	GL_PopMatrix();
-#endif
-}
-
-/*
 ================
 Tess_StageIteratorSky
 
@@ -1023,7 +828,6 @@ void Tess_StageIteratorSky( void )
 		// draw the outer skybox
 		if ( tess.surfaceShader->sky.outerbox && tess.surfaceShader->sky.outerbox != tr.blackCubeImage )
 		{
-#if 1
 			R_BindVBO( tess.vbo );
 			R_BindIBO( tess.ibo );
 
@@ -1040,7 +844,6 @@ void Tess_StageIteratorSky( void )
 			GL_BindToTMU( 0, tess.surfaceShader->sky.outerbox );
 
 			DrawSkyBox( tess.surfaceShader );
-#endif
 		}
 
 		// generate the vertexes for all the clouds, which will be drawn

@@ -67,6 +67,15 @@
 #endif  /* !_POSIX_SOURCE */
 
 #ifdef __native_client__
+/* file segment locking set data type - information passed to system by user */
+struct flock {
+  short l_type;
+  short l_whence;
+  off_t l_start;
+  off_t l_len;
+  pid_t l_pid;
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif  /* __cplusplus */

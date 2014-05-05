@@ -24,15 +24,15 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
-#ifdef IN_GAME_VM
+#ifdef BUILD_GAME
 #include "../game/g_local.h"
 #endif
 
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 #include "../cgame/cg_local.h"
 #endif
 
-#ifdef UI
+#ifdef BUILD_UI
 #include "../../engine/client/ui_api.h"
 #endif
 
@@ -95,13 +95,13 @@ static qboolean Disabled( unlockable_t *unlockable )
 	return qfalse;
 }
 
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unlocked )
 {
 }
-#endif // IN_CGAME_VM
+#endif // BUILD_CGAME
 
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 static void InformUnlockableStatusChanges( int *statusChanges, int count )
 {
 	char         text[ MAX_STRING_CHARS ];
@@ -167,7 +167,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 
 	CG_CenterPrint( text, SCREEN_HEIGHT * 0.3, GIANTCHAR_WIDTH * 2 );
 }
-#endif // IN_CGAME_VM
+#endif // BUILD_CGAME
 
 static INLINE qboolean Unlocked( unlockableType_t type, int itemNum )
 {
@@ -192,7 +192,7 @@ static float UnlockToLockThreshold( float unlockThreshold )
 {
 	float momentumHalfLife = 0.0f;
 	float unlockableMinTime  = 0.0f;
-#ifdef UI
+#ifdef BUILD_UI
 	char  buffer[ MAX_TOKEN_CHARS ];
 #endif
 
@@ -202,15 +202,15 @@ static float UnlockToLockThreshold( float unlockThreshold )
 	static float lastMod                = 0.0f;
 
 	// retrieve relevant settings
-#ifdef IN_GAME_VM
+#ifdef BUILD_GAME
 	momentumHalfLife = g_momentumHalfLife.value;
 	unlockableMinTime  = g_unlockableMinTime.value;
 #endif
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 	momentumHalfLife = cgs.momentumHalfLife;
 	unlockableMinTime  = cgs.unlockableMinTime;
 #endif
-#ifdef UI
+#ifdef BUILD_UI
 	trap_Cvar_VariableStringBuffer( "ui_momentumHalfLife", buffer, sizeof( buffer ) );
 	sscanf( buffer, "%f", &momentumHalfLife );
 	trap_Cvar_VariableStringBuffer( "ui_unlockableMinTime",  buffer, sizeof( buffer ) );
@@ -257,7 +257,7 @@ void BG_InitUnlockackables( void )
 	unlockablesTypeOffset[ UNLT_BUILDABLE ] = unlockablesTypeOffset[ UNLT_UPGRADE ]   + UP_NUM_UPGRADES;
 	unlockablesTypeOffset[ UNLT_CLASS ]     = unlockablesTypeOffset[ UNLT_BUILDABLE ] + BA_NUM_BUILDABLES;
 
-#ifdef IN_GAME_VM
+#ifdef BUILD_GAME
 	G_UpdateUnlockables();
 #endif
 }
@@ -270,7 +270,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 	team_t           currentTeam;
 	qboolean         newStatus;
 	int              statusChanges[ NUM_UNLOCKABLES ];
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 	int statusChangeCount = 0;
 #endif
 
@@ -347,7 +347,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 		{
 			newStatus = mask & ( 1 << teamUnlockableNum );
 
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 			// notify client about single status change
 			if ( unlockablesTeamKnowledge == team && unlockable->statusKnown &&
 			     unlockable->unlocked != newStatus )
@@ -373,7 +373,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 		itemNum++;
 	}
 
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 	// notify client about all status changes
 	if ( statusChangeCount )
 	{
@@ -499,7 +499,7 @@ momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdItera
 // GAME methods
 // ------------
 
-#ifdef IN_GAME_VM
+#ifdef BUILD_GAME
 static void UpdateUnlockablesMask( void )
 {
 	int    unlockable, unlockableNum[ NUM_TEAMS ];
@@ -538,7 +538,7 @@ static void UpdateUnlockablesMask( void )
 }
 #endif
 
-#ifdef IN_GAME_VM
+#ifdef BUILD_GAME
 void G_UpdateUnlockables( void )
 {
 	int              itemNum = 0, unlockableNum, unlockThreshold;
@@ -622,7 +622,7 @@ void G_UpdateUnlockables( void )
 // CGAME methods
 // -------------
 
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 void CG_UpdateUnlockables( playerState_t *ps )
 {
 	BG_ImportUnlockablesFromMask( ps->persistant[ PERS_TEAM ], ps->persistant[ PERS_UNLOCKABLES ] );
@@ -633,7 +633,7 @@ void CG_UpdateUnlockables( playerState_t *ps )
 // UI methods
 // ----------
 
-#ifdef UI
+#ifdef BUILD_UI
 void UI_UpdateUnlockables( void )
 {
 	char   buffer[ MAX_TOKEN_CHARS ];

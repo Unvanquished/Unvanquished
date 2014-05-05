@@ -125,7 +125,7 @@ namespace Resource {
             virtual bool IsStillValid();
 
             // Returns the name of the resource.
-            Str::StringRef GetName();
+            const std::string& GetName() const;
 
         private:
             bool TryLoad();
@@ -283,10 +283,14 @@ namespace Resource {
 
     template<typename T>
     void Manager<T>::Prune() {
-        for (auto it = resources.begin(); it != resources.end(); it ++) {
+        auto it = resources.begin();
+
+        while (it != resources.end()) {
             if (not it->second->keep and it->second.unique()) {
                 it->second->Cleanup();
                 it = resources.erase(it);
+            } else {
+                it ++;
             }
         }
     }

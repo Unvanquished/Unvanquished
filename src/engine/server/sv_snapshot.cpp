@@ -472,7 +472,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 		// Gordon: just check origin for being in pvs, ignore bmodel extents
 		if ( ent->r.svFlags & SVF_IGNOREBMODELEXTENTS )
 		{
-			if ( bitvector[ svEnt->originCluster >> 3 ] & ( 1 << ( svEnt->originCluster & 7 ) ) )
+			if ( bitvector[ ent->r.originCluster >> 3 ] & ( 1 << ( ent->r.originCluster & 7 ) ) )
 			{
 				SV_AddEntToSnapshot( playerEnt, svEnt, ent, eNums );
 			}
@@ -482,27 +482,27 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 
 		// ignore if not touching a PV leaf
 		// check area
-		if ( !CM_AreasConnected( clientarea, svEnt->areanum ) )
+		if ( !CM_AreasConnected( clientarea, ent->r.areanum ) )
 		{
 			// doors can legally straddle two areas, so
 			// we may need to check another one
-			if ( !CM_AreasConnected( clientarea, svEnt->areanum2 ) )
+			if ( !CM_AreasConnected( clientarea, ent->r.areanum2 ) )
 			{
 				continue;
 			}
 		}
 
 		// check individual leafs
-		if ( !svEnt->numClusters )
+		if ( !ent->r.numClusters )
 		{
 			continue;
 		}
 
 		l = 0;
 
-		for ( i = 0; i < svEnt->numClusters; i++ )
+		for ( i = 0; i < ent->r.numClusters; i++ )
 		{
-			l = svEnt->clusternums[ i ];
+			l = ent->r.clusternums[ i ];
 
 			if ( bitvector[ l >> 3 ] & ( 1 << ( l & 7 ) ) )
 			{
@@ -512,11 +512,11 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 
 		// if we haven't found it to be visible,
 		// check the overflow clusters that couldn't be stored
-		if ( i == svEnt->numClusters )
+		if ( i == ent->r.numClusters )
 		{
-			if ( svEnt->lastCluster )
+			if ( ent->r.lastCluster )
 			{
-				for ( ; l <= svEnt->lastCluster; l++ )
+				for ( ; l <= ent->r.lastCluster; l++ )
 				{
 					if ( bitvector[ l >> 3 ] & ( 1 << ( l & 7 ) ) )
 					{
@@ -524,7 +524,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 					}
 				}
 
-				if ( l == svEnt->lastCluster )
+				if ( l == ent->r.lastCluster )
 				{
 					continue;
 				}

@@ -75,21 +75,6 @@ static kbuttons_t dtmapping[] =
 	KB_UP // DT_UP
 };
 
-void IN_MLookDown( void )
-{
-	kb[ KB_MLOOK ].active = qtrue;
-}
-
-void IN_MLookUp( void )
-{
-	kb[ KB_MLOOK ].active = qfalse;
-
-	if ( !cl_freelook->integer )
-	{
-		//IN_CenterView ();
-	}
-}
-
 void IN_KeyDown( kbutton_t *b )
 {
 	qboolean nokey = ( Cmd_Argc() > 1 );
@@ -249,13 +234,6 @@ void IN_CenterView (void)
         cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
 }
 
-void IN_Notebook( void )
-{
-	//if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
-	//VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NOTEBOOK);  // startup notebook
-	//}
-}
-
 void IN_Help( void )
 {
 	if ( cls.state == CA_ACTIVE && !clc.demoplaying )
@@ -265,10 +243,6 @@ void IN_Help( void )
 }
 
 //==========================================================================
-
-cvar_t *cl_upspeed;
-cvar_t *cl_forwardspeed;
-cvar_t *cl_sidespeed;
 
 cvar_t *cl_yawspeed;
 cvar_t *cl_pitchspeed;

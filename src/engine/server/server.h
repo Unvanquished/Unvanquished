@@ -37,16 +37,14 @@ Maryland 20850 USA.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../server/g_api.h"
 #include "../botlib/bot_api.h"
+#include "../server/g_api.h"
 #include "../framework/VirtualMachine.h"
 
 //=============================================================================
 
 #define PERS_SCORE        0 // !!! MUST NOT CHANGE, SERVER AND
 // GAME BOTH REFERENCE !!!
-
-#define MAX_ENT_CLUSTERS  16
 
 #ifdef USE_VOIP
 #define VOIP_QUEUE_LENGTH 64
@@ -67,17 +65,8 @@ typedef struct voipServerPacket_s
 
 typedef struct svEntity_s
 {
-	struct worldSector_s *worldSector;
-
-	struct svEntity_s    *nextEntityInWorldSector;
-
 	entityState_t        baseline; // for delta compression of initial sighting
-	int                  numClusters; // if -1, use headnode instead
-	int                  clusternums[ MAX_ENT_CLUSTERS ];
-	int                  lastCluster; // if all the clusters don't fit in clusternums
-	int                  areanum, areanum2;
 	int                  snapshotCounter; // used to prevent double adding from portal views
-	int                  originCluster; // Gordon: calced upon linking, for origin only bmodel vis checks
 } svEntity_t;
 
 typedef enum
@@ -320,73 +309,40 @@ typedef struct
 
 //=============================================================================
 
-class GameVM {
+namespace VM {
+    class CommonVMServices;
+}
+
+class GameVM: public VM::VMBase {
 public:
+	GameVM();
     virtual ~GameVM();
-
-	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) = 0;
-	virtual void GameShutdown(qboolean restart) = 0;
-	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) = 0;
-	virtual void GameClientBegin(int clientNum) = 0;
-	virtual void GameClientUserInfoChanged(int clientNum) = 0;
-	virtual void GameClientDisconnect(int clientNum) = 0;
-	virtual void GameClientCommand(int clientNum) = 0;
-	virtual void GameClientThink(int clientNum) = 0;
-	virtual void GameRunFrame(int levelTime) = 0;
-	virtual qboolean GameConsoleCommand() = 0;
-	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) = 0;
-	virtual void BotAIStartFrame(int levelTime) = 0;
-	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) = 0;
-};
-
-class NaClGameVM: public GameVM, public VM::VMBase {
-public:
-	NaClGameVM();
-    virtual ~NaClGameVM();
 	bool Start();
 
-	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) OVERRIDE;
-	virtual void GameShutdown(qboolean restart) OVERRIDE;
-	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) OVERRIDE;
-	virtual void GameClientBegin(int clientNum) OVERRIDE;
-	virtual void GameClientUserInfoChanged(int clientNum) OVERRIDE;
-	virtual void GameClientDisconnect(int clientNum) OVERRIDE;
-	virtual void GameClientCommand(int clientNum) OVERRIDE;
-	virtual void GameClientThink(int clientNum) OVERRIDE;
-	virtual void GameRunFrame(int levelTime) OVERRIDE;
-	virtual qboolean GameConsoleCommand() OVERRIDE;
-	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) OVERRIDE;
-	virtual void BotAIStartFrame(int levelTime) OVERRIDE;
-	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) OVERRIDE;
+	void GameStaticInit();
+	void GameInit(int levelTime, int randomSeed, qboolean restart);
+	void GameShutdown(qboolean restart);
+	void GameLoadMap(Str::StringRef name);
+	qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot);
+	void GameClientBegin(int clientNum);
+	void GameClientUserInfoChanged(int clientNum);
+	void GameClientDisconnect(int clientNum);
+	void GameClientCommand(int clientNum, const char* command);
+	void GameClientThink(int clientNum);
+	void GameRunFrame(int levelTime);
+	qboolean GameSnapshotCallback(int entityNum, int clientNum);
+	void BotAIStartFrame(int levelTime);
+	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
 
 private:
-	void Syscall(int index, RPC::Reader& input, RPC::Writer& outputs);
+	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
+	void QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel);
 
-	NaCl::SharedMemoryPtr shmRegion;
+	IPC::SharedMemory shmRegion;
+
+    std::unique_ptr<VM::CommonVMServices> services;
 };
 
-class QVMGameVM: public GameVM {
-public:
-    QVMGameVM(vm_t* vm);
-    virtual ~QVMGameVM();
-
-	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) OVERRIDE;
-	virtual void GameShutdown(qboolean restart) OVERRIDE;
-	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) OVERRIDE;
-	virtual void GameClientBegin(int clientNum) OVERRIDE;
-	virtual void GameClientUserInfoChanged(int clientNum) OVERRIDE;
-	virtual void GameClientDisconnect(int clientNum) OVERRIDE;
-	virtual void GameClientCommand(int clientNum) OVERRIDE;
-	virtual void GameClientThink(int clientNum) OVERRIDE;
-	virtual void GameRunFrame(int levelTime) OVERRIDE;
-	virtual qboolean GameConsoleCommand() OVERRIDE;
-	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) OVERRIDE;
-	virtual void BotAIStartFrame(int levelTime) OVERRIDE;
-	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) OVERRIDE;
-
-private:
-    vm_t* vm;
-};
 //=============================================================================
 
 extern serverStatic_t svs; // persistent server info across maps
@@ -540,7 +496,7 @@ playerState_t  *SV_GameClientNum( int num );
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
 GameVM         *SV_CreateGameVM( void );
-void           SV_InitGameProgs( void );
+void           SV_InitGameProgs(Str::StringRef mapname);
 void           SV_ShutdownGameProgs( void );
 void           SV_RestartGameProgs( void );
 qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );

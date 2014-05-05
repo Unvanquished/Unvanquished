@@ -119,7 +119,7 @@ typedef enum
   RT_UNUSED_1,
   RT_SPRITE,
   RT_UNUSED_3,
-  RT_BEAM,
+  RT_UNUSED_4,
   RT_UNUSED_5,
   RT_UNUSED_6,
   RT_UNUSED_7,
@@ -144,10 +144,6 @@ typedef enum
 // RB: having bone names for each refEntity_t takes several MiBs
 // in backEndData_t so only use it for debugging and development
 // enabling this will show the bone names with r_showSkeleton 1
-
-#if 0 // #ifndef NDEBUG // FIXME - needs to be separately debuggable
-#define REFBONE_NAMES 1
-#endif
 
 typedef struct
 {
