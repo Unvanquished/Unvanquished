@@ -203,8 +203,6 @@ else()
   endif()
 
   # C++11 support
-  set_cxx_flag( "-x c++" )
-  set_linker_flag( "-x none" ) # Override the previous value because CMake insists on passing compile flags to the linker
   try_cxx_flag( GNUXX11 "-std=gnu++11" )
   if( NOT FLAG_GNUXX11 )
     try_cxx_flag( GNUXX0X "-std=gnu++0x" )
@@ -255,12 +253,6 @@ else()
     try_linker_flag( LINKER_NXCOMPAT "-Wl,--nxcompat" )
   endif()
 
-  # LTO support, only used on release builds
-  if( ENABLE_LTO )
-    set_c_cxx_flag( "-flto" RELEASE )
-    set_linker_flag( "-flto" RELEASE )
-  endif()
-
   # The -pthread flag sets some preprocessor defines, it is also used to link
   # with libpthread on Linux
   try_c_cxx_flag( PTHREAD "-pthread" )
@@ -285,6 +277,20 @@ else()
     set_cxx_flag( "-fsanitize=address" )
     set_linker_flag( "-fsanitize=address" )
   endif()
+
+  # Link-time optimization
+  if( ENABLE_LTO )
+    set_c_cxx_flag( "-flto" )
+    set_linker_flag( "-flto" )
+
+    # For LTO compilation we must send a copy of all compile flags to the linker
+    set_linker_flag( "${CMAKE_CXX_FLAGS}" )
+  endif()
+
+  # Fix up the languages because in some cases CMake insists on passing compile
+  # flags to the linker.
+  set_cxx_flag( "-x c++" )
+  set_linker_flag( "-x none" )
 
 endif()
 
