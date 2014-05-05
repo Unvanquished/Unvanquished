@@ -110,11 +110,11 @@ template<> struct SerializeTraits<FS::PakInfo> {
 namespace FS {
 
 // Pak zip and directory extensions
-const char PAK_ZIP_EXT[] = ".pk3";
-const char PAK_DIR_EXT[] = ".pk3dir/";
+#define PAK_ZIP_EXT ".pk3"
+#define PAK_DIR_EXT ".pk3dir/"
 
 // Dependencies file in packages
-const char PAK_DEPS_FILE[] = "DEPS";
+#define PAK_DEPS_FILE "DEPS"
 
 // Whether the search paths have been initialized yet. This can be used to delay
 // writing log files until the filesystem is initialized.
@@ -885,7 +885,7 @@ public:
 		// zlib read returns an int, which means that we can only read 2G at once
 		size_t read = 0;
 		while (read != length) {
-			size_t currentRead = std::max<size_t>(length - read, INT_MAX);
+			size_t currentRead = std::min<size_t>(length - read, INT_MAX);
 			int result = unzReadCurrentFile(zipFile, buffer, currentRead);
 			if (result < 0) {
 				SetErrorCodeZlib(err, result);
