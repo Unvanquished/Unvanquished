@@ -235,7 +235,7 @@ namespace Audio {
     }
     // Implementation of OneShotSound
 
-    OneShotSound::OneShotSound(Sample* sample): sample(sample) {
+    OneShotSound::OneShotSound(std::shared_ptr<Sample> sample): sample(sample) {
     }
 
     OneShotSound::~OneShotSound() {
@@ -256,8 +256,10 @@ namespace Audio {
 
     // Implementation of LoopingSound
 
-    LoopingSound::LoopingSound(Sample* sample): sample(sample), fadingOut(false) {
-    }
+    LoopingSound::LoopingSound(std::shared_ptr<Sample> loopingSample, std::shared_ptr<Sample> leadingSample)
+        : loopingSample(loopingSample),
+          leadingSample(leadingSample),
+          fadingOut(false) {}
 
     LoopingSound::~LoopingSound() {
     }
@@ -268,8 +270,11 @@ namespace Audio {
     }
 
     void LoopingSound::SetupSource(AL::Source& source) {
-        source.SetLooping(true);
-        source.SetBuffer(sample->GetBuffer());
+        if (leadingSample) {
+            source.SetBuffer(leadingSample->GetBuffer());
+        } else {
+            SetupLoopingSound(source);
+        }
         SetSoundGain(effectsVolume.Get());
     }
 
@@ -279,98 +284,22 @@ namespace Audio {
         }
 
         if (not fadingOut) {
+            if (leadingSample) {
+                if (GetSource().IsStopped()) {
+                    SetupLoopingSound(GetSource());
+                    GetSource().Play();
+                    leadingSample = nullptr;
+                }
+            }
             SetSoundGain(effectsVolume.Get());
         }
     }
 
-    // Implementation of MusicSound
-
-    MusicSound::MusicSound(Str::StringRef leadingStreamName, Str::StringRef loopStreamName)
-        : leadingStream(nullptr), loopStreamName(loopStreamName), loopStream(nullptr), playingLeadingSound(true) {
-
-        //Try to open the leading sound
-        if (leadingStreamName != "") {
-            leadingStream = S_CodecOpenStream(leadingStreamName.c_str());
+    void LoopingSound::SetupLoopingSound(AL::Source& source){
+        source.SetLooping(true);
+        if (loopingSample) {
+            source.SetBuffer(loopingSample->GetBuffer());
         }
-
-        //Start the loop if it failed
-        if (not leadingStream) {
-            playingLeadingSound = false;
-            if (loopStreamName != "") {
-                loopStream = S_CodecOpenStream(loopStreamName.c_str());
-            }
-        }
-    }
-
-    MusicSound::~MusicSound() {
-        if (leadingStream) {
-            S_CodecCloseStream(leadingStream);
-        }
-        if (loopStream) {
-            S_CodecCloseStream(loopStream);
-        }
-    }
-
-    void MusicSound::SetupSource(AL::Source& source) {
-        for (int i = 0; i < NUM_BUFFERS; i++) {
-            AppendBuffer(source, std::move(AL::Buffer()));
-        }
-        SetSoundGain(musicVolume.Get());
-    }
-
-    void MusicSound::InternalUpdate() {
-        AL::Source& source = GetSource();
-
-        // Fill processed buffers and queue them back in the source
-        while (source.GetNumProcessedBuffers() > 0) {
-            AppendBuffer(source, std::move(source.PopBuffer()));
-        }
-
-        // If we don't have any more buffers queued it means we have to stop the music
-        if (source.GetNumQueuedBuffers() == 0) {
-            Stop();
-
-        // If the source stopped because of a lack of buffer but we still have data to play we start the source again
-        } else if (source.IsStopped()) {
-            Play();
-        }
-
-        SetSoundGain(musicVolume.Get());
-    }
-
-    void MusicSound::AppendBuffer(AL::Source& source, AL::Buffer buffer) {
-        snd_stream_t* streamToRead;
-        if (playingLeadingSound and leadingStream) {
-            streamToRead = leadingStream;
-        } else if (loopStream) {
-            streamToRead = loopStream;
-        } else {
-            return;
-        }
-
-        static char tempBuffer[CHUNK_SIZE];
-        int lengthRead = S_CodecReadStream(streamToRead, CHUNK_SIZE, tempBuffer);
-
-        // if a stream is finished, we start playing the loop again, if possible
-        if (lengthRead == 0) {
-            S_CodecCloseStream(streamToRead);
-            playingLeadingSound = false;
-            // either the stream was the leadin stream and we null it
-            leadingStream = nullptr;
-
-            // either it is the loop stream and we overwrite it
-            if (loopStreamName != "") {
-                loopStream = S_CodecOpenStream(loopStreamName.c_str());
-                AppendBuffer(source, std::move(buffer));
-            }
-            return;
-        }
-
-        snd_info_t streamInfo = streamToRead->info;
-        streamInfo.size = lengthRead; // this isn't set by Codec
-        buffer.Feed(streamInfo, tempBuffer);
-
-        source.QueueBuffer(std::move(buffer));
     }
 
     // Implementation of StreamingSound

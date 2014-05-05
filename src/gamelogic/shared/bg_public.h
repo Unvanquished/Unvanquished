@@ -604,7 +604,6 @@ typedef enum
   EV_ALIEN_EVOLVE,
   EV_ALIEN_EVOLVE_FAILED,
 
-  EV_DEBUG_LINE,
   EV_STOPLOOPINGSOUND,
   EV_TAUNT,
 
@@ -1376,13 +1375,13 @@ qboolean BG_ClassUnlocked( int class_ );
 unlockableType_t              BG_UnlockableType( int num );
 int                           BG_UnlockableTypeIndex( int num );
 momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, team_t team, int *threshold, qboolean *unlocked );
-#ifdef IN_GAME_VM
+#ifdef BUILD_GAME
 void     G_UpdateUnlockables( void );
 #endif
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 void     CG_UpdateUnlockables( playerState_t *ps );
 #endif
-#ifdef UI
+#ifdef BUILD_UI
 void     UI_UpdateUnlockables( void );
 #endif
 
@@ -1453,7 +1452,7 @@ typedef enum
 
 typedef struct voiceTrack_s
 {
-#ifdef IN_CGAME_VM
+#ifdef BUILD_CGAME
 	sfxHandle_t         track;
 	int                 duration;
 #endif

@@ -33,6 +33,7 @@ float debug_anim_blend;
 static refSkeleton_t legsSkeleton;
 static refSkeleton_t torsoSkeleton;
 static refSkeleton_t oldSkeleton;
+static refSkeleton_t jetpackSkeleton;
 
 typedef struct {
 	vec3_t delta;
@@ -2530,6 +2531,85 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 	AnglesToAxis( localAngles, nonSegAxis );
 }
 
+/*
+===============
+CG_JetpackAnimation
+===============
+*/
+#define JETPACK_USES_SKELETAL_ANIMATION 1
+
+static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *backLerp )
+{
+	lerpFrame_t	*lf = &cent->jetpackLerpFrame;
+	animation_t	*anim;
+
+	if ( cent->jetpackAnim != lf->animationNumber || !lf->animation )
+	{
+		lf->old_animationNumber = lf->animationNumber;
+		lf->old_animation = lf->animation;
+
+		lf->animationNumber = cent->jetpackAnim;
+
+		if( cent->jetpackAnim < 0 || cent->jetpackAnim >= MAX_JETPACK_ANIMATIONS )
+			CG_Error( "Bad animation number: %i", cent->jetpackAnim );
+
+
+		if( JETPACK_USES_SKELETAL_ANIMATION )
+		{
+			if ( jetpackSkeleton.type != SK_INVALID )
+			{
+				oldSkeleton = jetpackSkeleton;
+
+				if ( lf->old_animation != NULL && lf->old_animation->handle )
+				{
+					if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+					{
+						CG_Printf( "Can't build old jetpack skeleton\n" );
+						return;
+					}
+				}
+			}
+		}
+
+		anim = &cgs.media.jetpackAnims[ cent->jetpackAnim ];
+
+		if ( !lf->animation )
+			lf->frameTime = cg.time;
+
+		lf->animation = anim;
+
+		lf->animationTime = cg.time + anim->initialLerp;
+
+		if ( JETPACK_USES_SKELETAL_ANIMATION )
+		{
+			lf->oldFrame = lf->frame = 0;
+			lf->oldFrameTime = lf->frameTime = 0;
+		}
+
+		if ( lf->old_animationNumber <= 0 )
+			lf->blendlerp = 0.0f;
+		else
+		{
+			if ( lf->blendlerp <= 0.0f )
+				lf->blendlerp = 1.0f;
+			else
+				lf->blendlerp = 1.0f - lf->blendlerp;
+		}
+	}
+
+	CG_RunLerpFrame( lf, 1.0f );
+
+	*old = lf->oldFrame;
+	*now = lf->frame;
+	*backLerp = lf->backlerp;
+
+	if ( JETPACK_USES_SKELETAL_ANIMATION )
+	{
+		CG_BlendLerpFrame( lf );
+		CG_BuildAnimSkeleton( lf, &jetpackSkeleton, &oldSkeleton );
+	}
+}
+
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
 	// These are static because otherwise we have >32K of locals, and lcc doesn't like that.
@@ -2559,7 +2639,11 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		AxisCopy( axisDefault, jetpack.axis );
 
 		// FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &jetpack, torso, torso->hModel, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &jetpack, torso, torso->hModel, "tag_gear" );
+
+		CG_JetpackAnimation( cent, &jetpack.oldframe, &jetpack.frame, &jetpack.backlerp );
+		jetpack.skeleton = jetpackSkeleton;
+		CG_TransformSkeleton( &jetpack.skeleton, 1.0f );
 
 		trap_R_AddRefEntityToScene( &jetpack );
 
@@ -2568,12 +2652,19 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			// spawn ps if necessary
 			if ( cent->jetPackState != JPS_ACTIVE )
 			{
-				if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+				if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
 				{
-					CG_DestroyParticleSystem( &cent->jetPackPS );
+					CG_DestroyParticleSystem( &cent->jetPackPS[ 0 ] );
 				}
 
-				cent->jetPackPS = CG_SpawnNewParticleSystem( cgs.media.jetPackThrustPS );
+				if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+				{
+					CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
+				}
+
+
+				cent->jetPackPS[ 0 ] = CG_SpawnNewParticleSystem( cgs.media.jetPackThrustPS );
+				cent->jetPackPS[ 1 ] = CG_SpawnNewParticleSystem( cgs.media.jetPackThrustPS );
 
 				cent->jetPackState = JPS_ACTIVE;
 			}
@@ -2603,25 +2694,53 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			}
 
 			// attach ps
-			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
 			{
-				CG_SetAttachmentTag( &cent->jetPackPS->attachment, &jetpack, jetpack.hModel, "tag_flash" );
-				CG_SetAttachmentCent( &cent->jetPackPS->attachment, cent );
-				CG_AttachToTag( &cent->jetPackPS->attachment );
+				CG_SetAttachmentTag( &cent->jetPackPS[ 0 ]->attachment, &jetpack, jetpack.hModel, "nozzle.R" );
+				CG_SetAttachmentCent( &cent->jetPackPS[ 0 ]->attachment, cent );
+				CG_AttachToTag( &cent->jetPackPS[ 0 ]->attachment );
+			}
+
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+			{
+				CG_SetAttachmentTag( &cent->jetPackPS[ 1 ]->attachment, &jetpack, jetpack.hModel, "nozzle.L" );
+				CG_SetAttachmentCent( &cent->jetPackPS[ 1 ]->attachment, cent );
+				CG_AttachToTag( &cent->jetPackPS[ 1 ]->attachment );
 			}
 		}
-		else if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+		else
 		{
-			// disable jetpack ps when not thrusting anymore
-			CG_DestroyParticleSystem( &cent->jetPackPS );
-			cent->jetPackState = JPS_INACTIVE;
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
+			{
+				// disable jetpack ps when not thrusting anymore
+				CG_DestroyParticleSystem( &cent->jetPackPS[ 0 ] );
+				cent->jetPackState = JPS_INACTIVE;
+			}
+
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+			{
+				// disable jetpack ps when not thrusting anymore
+				CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
+				cent->jetPackState = JPS_INACTIVE;
+			}
 		}
 	}
-	else if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+	else
 	{
 		// disable jetpack ps when not carrying it anymore
-		CG_DestroyParticleSystem( &cent->jetPackPS );
-		cent->jetPackState = JPS_INACTIVE;
+		if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
+		{
+			// disable jetpack ps when not thrusting anymore
+			CG_DestroyParticleSystem( &cent->jetPackPS[ 0 ] );
+			cent->jetPackState = JPS_INACTIVE;
+		}
+
+		if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+		{
+			// disable jetpack ps when not thrusting anymore
+			CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
+			cent->jetPackState = JPS_INACTIVE;
+		}
 	}
 
 	// battery pack
@@ -3571,9 +3690,14 @@ finish_up:
 			CG_DestroyParticleSystem( &cent->muzzlePS );
 		}
 
-		if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+		if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
 		{
-			CG_DestroyParticleSystem( &cent->jetPackPS );
+			CG_DestroyParticleSystem( &cent->jetPackPS[ 0 ] );
+		}
+
+		if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+		{
+			CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
 		}
 	}
 

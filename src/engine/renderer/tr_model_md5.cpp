@@ -77,7 +77,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// skip commandline <arguments string>
 	token = COM_ParseExt2( &buf_p, qtrue );
 	token = COM_ParseExt2( &buf_p, qtrue );
-//  ri.Printf(PRINT_ALL, "%s\n", token);
 
 	// parse numJoints <number>
 	token = COM_ParseExt2( &buf_p, qtrue );
@@ -102,7 +101,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	token = COM_ParseExt2( &buf_p, qfalse );
 	md5->numSurfaces = atoi( token );
-	//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has %i surfaces\n", modName, md5->numSurfaces);
 
 	if ( md5->numBones < 1 )
 	{
@@ -115,8 +113,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		ri.Printf( PRINT_WARNING, "R_LoadMD5: '%s' has more than %i bones (%i)\n", modName, MAX_BONES, md5->numBones );
 		return qfalse;
 	}
-
-	//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has %i bones\n", modName, md5->numBones);
 
 	// parse all the bones
 	md5->bones = (md5Bone_t*) ri.Hunk_Alloc( sizeof( *bone ) * md5->numBones, h_low );
@@ -143,12 +139,8 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		token = COM_ParseExt2( &buf_p, qtrue );
 		Q_strncpyz( bone->name, token, sizeof( bone->name ) );
 
-		//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has bone '%s'\n", modName, bone->name);
-
 		token = COM_ParseExt2( &buf_p, qfalse );
 		bone->parentIndex = atoi( token );
-
-		//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has bone '%s' with parent index %i\n", modName, bone->name, bone->parentIndex);
 
 		if ( bone->parentIndex >= md5->numBones )
 		{
@@ -227,8 +219,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		return qfalse;
 	}
 
-	//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has %i surfaces\n", modName, md5->numSurfaces);
-
 	md5->surfaces = (md5Surface_t*) ri.Hunk_Alloc( sizeof( *surf ) * md5->numSurfaces, h_low );
 
 	for ( i = 0, surf = md5->surfaces; i < md5->numSurfaces; i++, surf++ )
@@ -268,12 +258,8 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		token = COM_ParseExt2( &buf_p, qfalse );
 		Q_strncpyz( surf->shader, token, sizeof( surf->shader ) );
 
-		//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' uses shader '%s'\n", modName, surf->shader);
-
 		// FIXME .md5mesh meshes don't have surface names
 		// lowercase the surface name so skin compares are faster
-		//Q_strlwr(surf->name);
-		//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has surface '%s'\n", modName, surf->name);
 
 		// register the shaders
 		sh = R_FindShader( surf->shader, SHADER_3D_DYNAMIC, RSF_DEFAULT );
@@ -499,7 +485,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		}
 
 		// calc tangent spaces
-#if 1
 		{
 			const float *v0, *v1, *v2;
 			const float *t0, *t1, *t2;
@@ -524,12 +509,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 				t1 = surf->verts[ tri->indexes[ 1 ] ].texCoords;
 				t2 = surf->verts[ tri->indexes[ 2 ] ].texCoords;
 
-#if 1
 				R_CalcTangentSpace( tangent, binormal, normal, v0, v1, v2, t0, t1, t2 );
-#else
-				R_CalcNormalForTriangle( normal, v0, v1, v2 );
-				R_CalcTangentsForTriangle( tangent, binormal, v0, v1, v2, t0, t1, t2 );
-#endif
 
 				for ( k = 0; k < 3; k++ )
 				{
@@ -556,120 +536,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 				v->normal[ 3 ] = 0;
 			}
 		}
-#else
-		{
-			int         k;
-			float       bb, s, t;
-			vec3_t      bary;
-			vec3_t      faceNormal;
-			md5Vertex_t *dv[ 3 ];
-
-			for ( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
-			{
-				dv[ 0 ] = &surf->verts[ tri->indexes[ 0 ] ];
-				dv[ 1 ] = &surf->verts[ tri->indexes[ 1 ] ];
-				dv[ 2 ] = &surf->verts[ tri->indexes[ 2 ] ];
-
-				R_CalcNormalForTriangle( faceNormal, dv[ 0 ]->position, dv[ 1 ]->position, dv[ 2 ]->position );
-
-				// calculate barycentric basis for the triangle
-				bb = ( dv[ 1 ]->texCoords[ 0 ] - dv[ 0 ]->texCoords[ 0 ] ) * ( dv[ 2 ]->texCoords[ 1 ] - dv[ 0 ]->texCoords[ 1 ] ) - ( dv[ 2 ]->texCoords[ 0 ] - dv[ 0 ]->texCoords[ 0 ] ) * ( dv[ 1 ]->texCoords[ 1 ] -
-				     dv[ 0 ]->texCoords[ 1 ] );
-
-				if ( fabs( bb ) < 0.00000001f )
-				{
-					continue;
-				}
-
-				// do each vertex
-				for ( k = 0; k < 3; k++ )
-				{
-					// calculate s tangent vector
-					s = dv[ k ]->texCoords[ 0 ] + 10.0f;
-					t = dv[ k ]->texCoords[ 1 ];
-					bary[ 0 ] = ( ( dv[ 1 ]->texCoords[ 0 ] - s ) * ( dv[ 2 ]->texCoords[ 1 ] - t ) - ( dv[ 2 ]->texCoords[ 0 ] - s ) * ( dv[ 1 ]->texCoords[ 1 ] - t ) ) / bb;
-					bary[ 1 ] = ( ( dv[ 2 ]->texCoords[ 0 ] - s ) * ( dv[ 0 ]->texCoords[ 1 ] - t ) - ( dv[ 0 ]->texCoords[ 0 ] - s ) * ( dv[ 2 ]->texCoords[ 1 ] - t ) ) / bb;
-					bary[ 2 ] = ( ( dv[ 0 ]->texCoords[ 0 ] - s ) * ( dv[ 1 ]->texCoords[ 1 ] - t ) - ( dv[ 1 ]->texCoords[ 0 ] - s ) * ( dv[ 0 ]->texCoords[ 1 ] - t ) ) / bb;
-
-					dv[ k ]->tangent[ 0 ] = bary[ 0 ] * dv[ 0 ]->position[ 0 ] + bary[ 1 ] * dv[ 1 ]->position[ 0 ] + bary[ 2 ] * dv[ 2 ]->position[ 0 ];
-					dv[ k ]->tangent[ 1 ] = bary[ 0 ] * dv[ 0 ]->position[ 1 ] + bary[ 1 ] * dv[ 1 ]->position[ 1 ] + bary[ 2 ] * dv[ 2 ]->position[ 1 ];
-					dv[ k ]->tangent[ 2 ] = bary[ 0 ] * dv[ 0 ]->position[ 2 ] + bary[ 1 ] * dv[ 1 ]->position[ 2 ] + bary[ 2 ] * dv[ 2 ]->position[ 2 ];
-
-					VectorSubtract( dv[ k ]->tangent, dv[ k ]->position, dv[ k ]->tangent );
-					VectorNormalize( dv[ k ]->tangent );
-
-					// calculate t tangent vector (binormal)
-					s = dv[ k ]->texCoords[ 0 ];
-					t = dv[ k ]->texCoords[ 1 ] + 10.0f;
-					bary[ 0 ] = ( ( dv[ 1 ]->texCoords[ 0 ] - s ) * ( dv[ 2 ]->texCoords[ 1 ] - t ) - ( dv[ 2 ]->texCoords[ 0 ] - s ) * ( dv[ 1 ]->texCoords[ 1 ] - t ) ) / bb;
-					bary[ 1 ] = ( ( dv[ 2 ]->texCoords[ 0 ] - s ) * ( dv[ 0 ]->texCoords[ 1 ] - t ) - ( dv[ 0 ]->texCoords[ 0 ] - s ) * ( dv[ 2 ]->texCoords[ 1 ] - t ) ) / bb;
-					bary[ 2 ] = ( ( dv[ 0 ]->texCoords[ 0 ] - s ) * ( dv[ 1 ]->texCoords[ 1 ] - t ) - ( dv[ 1 ]->texCoords[ 0 ] - s ) * ( dv[ 0 ]->texCoords[ 1 ] - t ) ) / bb;
-
-					dv[ k ]->binormal[ 0 ] = bary[ 0 ] * dv[ 0 ]->position[ 0 ] + bary[ 1 ] * dv[ 1 ]->position[ 0 ] + bary[ 2 ] * dv[ 2 ]->position[ 0 ];
-					dv[ k ]->binormal[ 1 ] = bary[ 0 ] * dv[ 0 ]->position[ 1 ] + bary[ 1 ] * dv[ 1 ]->position[ 1 ] + bary[ 2 ] * dv[ 2 ]->position[ 1 ];
-					dv[ k ]->binormal[ 2 ] = bary[ 0 ] * dv[ 0 ]->position[ 2 ] + bary[ 1 ] * dv[ 1 ]->position[ 2 ] + bary[ 2 ] * dv[ 2 ]->position[ 2 ];
-
-					VectorSubtract( dv[ k ]->binormal, dv[ k ]->position, dv[ k ]->binormal );
-					VectorNormalize( dv[ k ]->binormal );
-
-					// calculate the normal as cross product N=TxB
-#if 0
-					CrossProduct( dv[ k ]->tangent, dv[ k ]->binormal, dv[ k ]->normal );
-					VectorNormalize( dv[ k ]->normal );
-
-					// Gram-Schmidt orthogonalization process for B
-					// compute the cross product B=NxT to obtain
-					// an orthogonal basis
-					CrossProduct( dv[ k ]->normal, dv[ k ]->tangent, dv[ k ]->binormal );
-
-					if ( DotProduct( dv[ k ]->normal, faceNormal ) < 0 )
-					{
-						VectorInverse( dv[ k ]->normal );
-						//VectorInverse(dv[k]->tangent);
-						//VectorInverse(dv[k]->binormal);
-					}
-
-#else
-					VectorAdd( dv[ k ]->normal, faceNormal, dv[ k ]->normal );
-#endif
-				}
-			}
-
-#if 1
-
-			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
-			{
-				//VectorNormalize(v->tangent);
-				//VectorNormalize(v->binormal);
-				VectorNormalize( v->normal );
-			}
-
-#endif
-		}
-#endif
-
-#if 0
-
-		// do another extra smoothing for normals to avoid flat shading
-		for ( j = 0; j < surf->numVerts; j++ )
-		{
-			for ( k = 0; k < surf->numVerts; k++ )
-			{
-				if ( j == k )
-				{
-					continue;
-				}
-
-				if ( VectorCompare( surf->verts[ j ].position, surf->verts[ k ].position ) )
-				{
-					VectorAdd( surf->verts[ j ].normal, surf->verts[ k ].normal, surf->verts[ j ].normal );
-				}
-			}
-
-			VectorNormalize( surf->verts[ j ].normal );
-		}
-
-#endif
 	}
 
 	// split the surfaces into VBO surfaces by the maximum number of GPU vertex skinning bones
@@ -694,32 +560,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 			Com_AddToGrowList( &sortedTriangles, sortTri );
 		}
-
-		//qsort(sortedTriangles.elements, sortedTriangles.currentElements, sizeof(void *), CompareTrianglesByBoneReferences);
-
-#if 0
-
-		for ( j = 0; j < sortedTriangles.currentElements; j++ )
-		{
-			int            b[ MAX_WEIGHTS * 3 ];
-
-			skelTriangle_t *sortTri = Com_GrowListElement( &sortedTriangles, j );
-
-			for ( k = 0; k < 3; k++ )
-			{
-				v = sortTri->vertexes[ k ];
-
-				for ( l = 0; l < MAX_WEIGHTS; l++ )
-				{
-					b[ k * 3 + l ] = ( l < v->numWeights ) ? v->weights[ l ]->boneIndex : 9999;
-				}
-
-				qsort( b, MAX_WEIGHTS * 3, sizeof( int ), CompareBoneIndices );
-				//ri.Printf(PRINT_ALL, "bone indices: %i %i %i %i\n", b[k * 3 + 0], b[k * 3 + 1], b[k * 3 + 2], b[k * 3 + 3]);
-			}
-		}
-
-#endif
 
 		numRemaining = sortedTriangles.currentElements;
 

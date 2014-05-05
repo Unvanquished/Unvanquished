@@ -353,62 +353,6 @@ void RE_ClearDecals( void )
 }
 
 /*
-TransformDecalProjector()
-transforms a decal projector
-note: non-normalized axes will screw up the plane transform
-*/
-
-void R_TransformDecalProjector( decalProjector_t *in, vec3_t axis[ 3 ], vec3_t origin, decalProjector_t *out )
-{
-	int    i, m;
-	vec3_t center;
-
-	/* copy misc stuff */
-	out->shader = in->shader;
-	* ( ( int * ) out->color ) = * ( ( int * ) in->color );
-	out->fadeStartTime = in->fadeStartTime;
-	out->fadeEndTime = in->fadeEndTime;
-	out->omnidirectional = in->omnidirectional;
-	out->numPlanes = in->numPlanes;
-
-	/* translate bounding box and sphere (note: rotated projector bounding box will be invalid!) */
-	VectorSubtract( in->mins, origin, out->mins );
-	VectorSubtract( in->maxs, origin, out->maxs );
-	VectorSubtract( in->center, origin, center );
-	out->center[ 0 ] = DotProduct( center, axis[ 0 ] );
-	out->center[ 1 ] = DotProduct( center, axis[ 1 ] );
-	out->center[ 2 ] = DotProduct( center, axis[ 2 ] );
-	out->radius = in->radius;
-	out->radius2 = in->radius2;
-
-	/* translate planes */
-	for ( i = 0; i < in->numPlanes; i++ )
-	{
-		/* transform by transposed inner 3x3 matrix */
-		out->planes[ i ][ 0 ] = DotProduct( in->planes[ i ], axis[ 0 ] );
-		out->planes[ i ][ 1 ] = DotProduct( in->planes[ i ], axis[ 1 ] );
-		out->planes[ i ][ 2 ] = DotProduct( in->planes[ i ], axis[ 2 ] );
-		out->planes[ i ][ 3 ] = in->planes[ i ][ 3 ] - DotProduct( in->planes[ i ], origin );
-	}
-
-	//% ri.Printf( PRINT_ALL, "plane 0: %f %f %f in dist: %f out dist: %f z: %f\n",
-	//%     out->planes[ 0 ][ 0 ], out->planes[ 0 ][ 1 ], out->planes[ 0 ][ 2 ],
-	//%     in->planes[ 0 ][ 3 ], out->planes[ 0 ][ 3 ], origin[ 2 ] );
-
-	/* translate texture matrices */
-	for ( m = 0; m < 3; m++ )
-	{
-		for ( i = 0; i < 2; i++ )
-		{
-			out->texMat[ m ][ i ][ 0 ] = DotProduct( in->texMat[ m ][ i ], axis[ 0 ] );
-			out->texMat[ m ][ i ][ 1 ] = DotProduct( in->texMat[ m ][ i ], axis[ 1 ] );
-			out->texMat[ m ][ i ][ 2 ] = DotProduct( in->texMat[ m ][ i ], axis[ 2 ] );
-			out->texMat[ m ][ i ][ 3 ] = in->texMat[ m ][ i ][ 3 ] + DotProduct( in->texMat[ m ][ i ], origin );
-		}
-	}
-}
-
-/*
 R_TestDecalBoundingBox()
 return qtrue if the decal projector intersects the bounding box
 */
@@ -850,7 +794,6 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspMod
 
 	/* test bounding sphere */
 	if ( !R_TestDecalBoundingSphere( dp, gen->origin, ( gen->radius * gen->radius ) ) )
-//	if(!R_TestDecalBoundingBox(dp, gen->bounds[0], gen->bounds[1]))
 	{
 		return;
 	}
@@ -907,10 +850,9 @@ adds a decal surface to the scene
 
 void R_AddDecalSurface( decal_t *decal )
 {
-	int        i; //, dlightMap;
+	int        i;
 	float      fade;
 	srfDecal_t *srf;
-//	srfGeneric_t   *gen;
 
 	/* early outs */
 	if ( decal->shader == NULL || decal->parent->viewCount != tr.viewCountNoReset || tr.refdef.numDecals >= MAX_DECALS )
@@ -941,22 +883,7 @@ void R_AddDecalSurface( decal_t *decal )
 		}
 	}
 
-	/* dynamic lights? */
-
-	/*
-	if(decal->parent != NULL)
-	{
-	        gen = (srfGeneric_t *) decal->parent->data;
-	        dlightMap = (gen->dlightBits[tr.smpFrame] != 0);
-	}
-	else
-	{
-	        dlightMap = 0;
-	}
-	*/
-
 	/* add surface to scene */
-	//R_AddDrawSurf((surfaceType_t *)srf, decal->shader, decal->fogIndex, 0, dlightMap);
 	R_AddDrawSurf( ( surfaceType_t * ) srf, decal->shader, -1, decal->fogIndex );
 	tr.pc.c_decalSurfaces++;
 

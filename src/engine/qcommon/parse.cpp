@@ -1631,7 +1631,7 @@ Parse_NameHash
 //char primes[16] = {1, 3, 5, 7, 11, 13, 17, 19, 23, 27, 29, 31, 37, 41, 43, 47};
 static int Parse_NameHash( char *name )
 {
-	register int hash, i;
+	int hash, i;
 
 	hash = 0;
 

@@ -367,7 +367,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          0,                                               0, qfalse           },
 
 	// gameplay: momentum
-	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                CVAR_TEMP,                                       0, qfalse           },
 	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, qfalse           },
 	{ &g_momentumHalfLife,            "g_momentumHalfLife",            DEFAULT_MOMENTUM_HALF_LIFE,         CVAR_SERVERINFO,                                 0, qfalse           },
 	{ &g_momentumRewardDoubleTime,    "g_momentumRewardDoubleTime",    DEFAULT_CONF_REWARD_DOUBLE_TIME,    0,                                               0, qfalse           },

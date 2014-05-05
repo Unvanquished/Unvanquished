@@ -3345,7 +3345,7 @@ void HTeslaGen_Think( gentity_t *self )
 			// TODO: Replace this with IsAliveEnemy helper
 			if ( !ent->client ||
 			     ent->client->pers.team != TEAM_ALIENS ||
-			     !ent->health > 0 ||
+			     ent->health <= 0 ||
 			     ent->flags & FL_NOTARGET )
 			{
 				continue;

@@ -106,7 +106,12 @@ fi
 
 echo '[33mGathering VM code[m'
 cd "$BASEDIR/$BUILDDIR"
-dozip vm/*qvm
+dozip vm/*qvm game-*-stripped.nexe
+
+echo '[33mRenaming *-stripped.nexe[m'
+zipnote "$BASEDIR/$PAKFILENAME" |
+  sed -e '/-stripped\.nexe$/ { p; s/^@ /@=/; s/-stripped\.nexe$/.nexe/; }' |
+  zipnote -w "$BASEDIR/$PAKFILENAME"
 
 cd "$BASEDIR"
 

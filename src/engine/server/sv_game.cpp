@@ -41,14 +41,6 @@ Maryland 20850 USA.
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
-int SV_NumForGentity( sharedEntity_t *ent )
-{
-	int num;
-
-	num = ( ( byte * ) ent - ( byte * ) sv.gentities ) / sv.gentitySize;
-
-	return num;
-}
 
 sharedEntity_t *SV_GentityNum( int num )
 {
@@ -86,14 +78,6 @@ svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt )
 	}
 
 	return &sv.svEntities[ gEnt->s.number ];
-}
-
-sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt )
-{
-	int num;
-
-	num = svEnt - sv.svEntities;
-	return SV_GentityNum( num );
 }
 
 /*
@@ -172,88 +156,6 @@ int SV_RSAGenMsg( const char *pubkey, char *cleartext, char *encrypted )
 	mpz_get_str( encrypted, 16, message );
 	mpz_clear( message );
 	return retval;
-}
-
-/*
-=================
-SV_inPVS
-
-Also checks portalareas so that doors block sight
-=================
-*/
-qboolean SV_inPVS( const vec3_t p1, const vec3_t p2 )
-{
-	int  leafnum;
-	int  cluster;
-	int  area1, area2;
-	byte *mask;
-
-	leafnum = CM_PointLeafnum( p1 );
-	cluster = CM_LeafCluster( leafnum );
-	area1 = CM_LeafArea( leafnum );
-	mask = CM_ClusterPVS( cluster );
-
-	leafnum = CM_PointLeafnum( p2 );
-	cluster = CM_LeafCluster( leafnum );
-	area2 = CM_LeafArea( leafnum );
-
-	if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
-	{
-		return qfalse;
-	}
-
-	if ( !CM_AreasConnected( area1, area2 ) )
-	{
-		return qfalse; // a door blocks sight
-	}
-
-	return qtrue;
-}
-
-/*
-=================
-SV_inPVSIgnorePortals
-
-Does NOT check portalareas
-=================
-*/
-qboolean SV_inPVSIgnorePortals( const vec3_t p1, const vec3_t p2 )
-{
-	int  leafnum;
-	int  cluster;
-//	int             area1, area2; //unused
-	byte *mask;
-
-	leafnum = CM_PointLeafnum( p1 );
-	cluster = CM_LeafCluster( leafnum );
-//	area1 = CM_LeafArea(leafnum); //Doesn't modify anything.
-
-	mask = CM_ClusterPVS( cluster );
-	leafnum = CM_PointLeafnum( p2 );
-	cluster = CM_LeafCluster( leafnum );
-//	area2 = CM_LeafArea(leafnum); //Doesn't modify anything.
-
-	if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-/*
-========================
-SV_AdjustAreaPortalState
-========================
-*/
-void SV_AdjustAreaPortalState( sharedEntity_t *ent, qboolean open )
-{
-	if ( ent->r.areanum2 == -1 )
-	{
-		return;
-	}
-
-	CM_AdjustAreaPortalState( ent->r.areanum, ent->r.areanum2, open );
 }
 
 /*
@@ -551,7 +453,7 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 
 	// Gordon: let's try and remove the inconsistency between ded/non-ded servers...
 	// Gordon: bleh, some code in clientthink_real really relies on this working on player models...
-#ifndef DEDICATED // TTimo: dedicated only binary defines DEDICATED
+#ifndef BUILD_SERVER // TTimo: dedicated only binary defines BUILD_SERVER
 
 	if ( com_dedicated->integer )
 	{
@@ -740,6 +642,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_FS_READ:
 		IPC::HandleMsg<FSReadMsg>(channel, std::move(reader), [this](int handle, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			FS_Read(buffer.get(), len, handle);
 			res.assign(buffer.get(), len);
 		});
@@ -766,6 +669,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_FS_GET_FILE_LIST:
 		IPC::HandleMsg<FSGetFileListMsg>(channel, std::move(reader), [this](std::string path, std::string extension, int len, int& intRes, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			intRes = FS_GetFileList(path.c_str(), extension.c_str(), buffer.get(), len);
 			res.assign(buffer.get(), len);
 		});
@@ -790,6 +694,13 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		});
 		break;
 
+	case G_ADJUST_AREA_PORTAL_STATE:
+		IPC::HandleMsg<AdjustAreaPortalStateMsg>(channel, std::move(reader), [this](int entityNum, bool open) {
+			sharedEntity_t* ent = SV_GentityNum(entityNum);
+			CM_AdjustAreaPortalState(ent->r.areanum, ent->r.areanum2, open);
+		});
+		break;
+
 	case G_DROP_CLIENT:
 		IPC::HandleMsg<DropClientMsg>(channel, std::move(reader), [this](int clientNum, std::string reason) {
 			SV_GameDropClient(clientNum, reason.c_str());
@@ -811,6 +722,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GET_CONFIGSTRING:
 		IPC::HandleMsg<GetConfigStringMsg>(channel, std::move(reader), [this](int index, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			SV_GetConfigstring(index, buffer.get(), len);
 			res.assign(buffer.get(), len);
 		});
@@ -831,6 +743,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GET_USERINFO:
 		IPC::HandleMsg<GetUserinfoMsg>(channel, std::move(reader), [this](int index, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			SV_GetUserinfo(index, buffer.get(), len);
 			res.assign(buffer.get(), len);
 		});
@@ -839,6 +752,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GET_SERVERINFO:
 		IPC::HandleMsg<GetServerinfoMsg>(channel, std::move(reader), [this](int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			SV_GetServerinfo(buffer.get(), len);
 			res.assign(buffer.get(), len);
 		});
@@ -900,6 +814,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GEN_FINGERPRINT:
 		IPC::HandleMsg<GenFingerprintMsg>(channel, std::move(reader), [this](int keylen, const std::vector<char>& key, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			Com_MD5Buffer(key.data(), keylen, buffer.get(), len);
 			res.assign(buffer.get(), len);
 		});
@@ -908,6 +823,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GET_PLAYER_PUBKEY:
 		IPC::HandleMsg<GetPlayerPubkeyMsg>(channel, std::move(reader), [this](int clientNum, int len, std::string& pubkey) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			SV_GetPlayerPubkey(clientNum, buffer.get(), len);
 			pubkey.assign(buffer.get());
 		});
@@ -922,6 +838,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case G_GET_TIME_STRING:
 		IPC::HandleMsg<GetTimeStringMsg>(channel, std::move(reader), [this](int len, std::string format, const qtime_t& time, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			SV_GetTimeString(buffer.get(), len, format.c_str(), &time);
 			res.assign(buffer.get(), len);
 		});
@@ -974,6 +891,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 	case BOT_GET_CONSOLE_MESSAGE:
 		IPC::HandleMsg<BotGetConsoleMessageMsg>(channel, std::move(reader), [this](int client, int len, int& res, std::string& message) {
 			std::unique_ptr<char[]> buffer(new char[len]);
+			buffer[0] = '\0';
 			res = SV_BotGetConsoleMessage(client, buffer.get(), len);
 			message.assign(buffer.get(), len);
 		});
