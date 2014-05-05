@@ -264,9 +264,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_bloomBlur;
 	cvar_t      *r_bloomPasses;
 	cvar_t      *r_FXAA;
-	cvar_t      *r_cameraVignette;
-	cvar_t      *r_cameraFilmGrain;
-	cvar_t      *r_cameraFilmGrainScale;
 
 	cvar_t      *r_evsmPostProcess;
 
@@ -1198,7 +1195,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_finish = ri.Cvar_Get( "r_finish", "0", CVAR_CHEAT );
 		r_textureMode = ri.Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_LINEAR", CVAR_ARCHIVE );
 		r_swapInterval = ri.Cvar_Get( "r_swapInterval", "1", CVAR_ARCHIVE );
-		r_gamma = ri.Cvar_Get( "r_gamma", "1.3", CVAR_ARCHIVE );
+		r_gamma = ri.Cvar_Get( "r_gamma", "1.0", CVAR_ARCHIVE );
 		r_facePlaneCull = ri.Cvar_Get( "r_facePlaneCull", "1", 0 );
 
 		r_ambientScale = ri.Cvar_Get( "r_ambientScale", "1.0", CVAR_CHEAT | CVAR_SHADER );
@@ -1230,9 +1227,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "1.0", CVAR_CHEAT );
 		r_bloomPasses = ri.Cvar_Get( "r_bloomPasses", "2", CVAR_CHEAT );
 		r_FXAA = ri.Cvar_Get( "r_FXAA", "0", 0 );
-		r_cameraVignette = ri.Cvar_Get( "r_cameraVignette", "0", 0 );
-		r_cameraFilmGrain = ri.Cvar_Get( "r_cameraFilmGrain", "0", 0 );
-		r_cameraFilmGrainScale = ri.Cvar_Get( "r_cameraFilmGrainScale", "3", 0 );
 
 		// temporary variables that can change at any time
 		r_showImages = ri.Cvar_Get( "r_showImages", "0", CVAR_TEMP );
@@ -1278,7 +1272,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_forceSpecular = ri.Cvar_Get( "r_forceSpecular", "0", CVAR_CHEAT );
 		r_specularExponentMin = ri.Cvar_Get( "r_specularExponentMin", "0", CVAR_CHEAT );
 		r_specularExponentMax = ri.Cvar_Get( "r_specularExponentMax", "16", CVAR_CHEAT );
-		r_specularScale = ri.Cvar_Get( "r_specularScale", "1.4", CVAR_CHEAT | CVAR_SHADER );
+		r_specularScale = ri.Cvar_Get( "r_specularScale", "1.0", CVAR_CHEAT | CVAR_SHADER );
 		r_normalScale = ri.Cvar_Get( "r_normalScale", "1.0", CVAR_SHADER );
 		r_normalMapping = ri.Cvar_Get( "r_normalMapping", "1", CVAR_ARCHIVE );
 		r_parallaxDepthScale = ri.Cvar_Get( "r_parallaxDepthScale", "0.03", CVAR_CHEAT );

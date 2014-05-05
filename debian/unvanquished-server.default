@@ -23,3 +23,6 @@ DAEMON_OPTS=""
 
 # Uncomment if you want to be able to connect to this server over IPv6.
 #DAEMON_OPTS+=" +set net_enabled 3"
+
+# Required
+DAEMON_OPTS+=" +set vm_game 2"

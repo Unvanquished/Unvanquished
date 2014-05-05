@@ -3099,7 +3099,6 @@ void RB_FXAA( void )
 void RB_CameraPostFX( void )
 {
 	matrix_t ortho;
-	matrix_t grain;
 
 	GLimp_LogComment( "--- RB_CameraPostFX ---\n" );
 
@@ -3127,16 +3126,6 @@ void RB_CameraPostFX( void )
 	gl_cameraEffectsShader->SetUniform_ColorModulate( backEnd.viewParms.gradingWeights );
 	gl_cameraEffectsShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	MatrixIdentity( grain );
-
-	MatrixMultiplyScale( grain, r_cameraFilmGrainScale->value, r_cameraFilmGrainScale->value, 0 );
-	MatrixMultiplyTranslation( grain, backEnd.refdef.floatTime * 10, backEnd.refdef.floatTime * 10, 0 );
-
-	MatrixMultiplyTranslation( grain, 0.5, 0.5, 0.0 );
-	MatrixMultiplyZRotation( grain, backEnd.refdef.floatTime * ( random() * 7 ) );
-	MatrixMultiplyTranslation( grain, -0.5, -0.5, 0.0 );
-
-	gl_cameraEffectsShader->SetUniform_ColorTextureMatrix( grain );
 	gl_cameraEffectsShader->SetUniform_InverseGamma( 1.0 / r_gamma->value );
 
 	// bind u_CurrentMap
@@ -3145,26 +3134,6 @@ void RB_CameraPostFX( void )
 
 	{
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.occlusionRenderFBOImage->uploadWidth, tr.occlusionRenderFBOImage->uploadHeight );
-	}
-
-	// bind u_GrainMap
-	if ( r_cameraFilmGrain->integer && tr.grainImage )
-	{
-		GL_BindToTMU( 1, tr.grainImage );
-	}
-	else
-	{
-		GL_BindToTMU( 1, tr.blackImage );
-	}
-
-	// bind u_VignetteMap
-	if ( r_cameraVignette->integer && tr.vignetteImage )
-	{
-		GL_BindToTMU( 2, tr.vignetteImage );
-	}
-	else
-	{
-		GL_BindToTMU( 2, tr.whiteImage );
 	}
 
 	GL_BindToTMU( 3, tr.colorGradeImage ); 
@@ -4894,7 +4863,6 @@ static void RB_RenderDebugUtils()
 	{
 		int             x, y, z, k;
 		vec3_t          offset;
-		vec3_t          lightDirection;
 		vec3_t          tmp, tmp2, tmp3;
 		vec_t           length;
 		vec4_t          tetraVerts[ 4 ];
@@ -4960,17 +4928,17 @@ static void RB_RenderDebugUtils()
 					VectorNegate( lightDir, lightDir );
 
 					length = 8;
-					VectorMA( origin, 8, lightDirection, offset );
+					VectorMA( origin, 8, lightDir, offset );
 
-					PerpendicularVector( tmp, lightDirection );
+					PerpendicularVector( tmp, lightDir );
 					//VectorCopy(up, tmp);
 
 					VectorScale( tmp, length * 0.1, tmp2 );
-					VectorMA( tmp2, length * 0.2, lightDirection, tmp2 );
+					VectorMA( tmp2, length * 0.2, lightDir, tmp2 );
 
 					for ( k = 0; k < 3; k++ )
 					{
-						RotatePointAroundVector( tmp3, lightDirection, tmp2, k * 120 );
+						RotatePointAroundVector( tmp3, lightDir, tmp2, k * 120 );
 						VectorAdd( tmp3, origin, tmp3 );
 						VectorCopy( tmp3, tetraVerts[ k ] );
 						tetraVerts[ k ][ 3 ] = 1;

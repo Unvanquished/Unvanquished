@@ -1055,7 +1055,8 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	//clear any particle systems from previous uses of this centity_t
 	cent->muzzlePS = NULL;
 	cent->muzzlePsTrigger = qfalse;
-	cent->jetPackPS = NULL;
+	cent->jetPackPS[ 0 ] = NULL;
+	cent->jetPackPS[ 1 ] = NULL;
 	cent->jetPackState = JPS_INACTIVE;
 	cent->buildablePS = NULL;
 	cent->buildableStatusPS = NULL;
@@ -1120,10 +1121,16 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 	}
 
 	// destroy the jetpack PS
-	if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+	if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
 	{
-	     CG_DestroyParticleSystem( &cent->jetPackPS );
+	     CG_DestroyParticleSystem( &cent->jetPackPS[ 0 ] );
 	}
+
+	if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
+	{
+		CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
+	}
+
 
 	// Lazy TODO: Destroy more PS/TS here
 	// Better TODO: Make two groups cent->temporaryPS[NUM_TMPPS], cent->persistentPS[NUM_PERSPS]

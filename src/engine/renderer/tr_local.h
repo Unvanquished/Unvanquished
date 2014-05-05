@@ -2650,8 +2650,6 @@ static inline byte floatToSnorm8(float f) {
 
 		// external images
 		image_t *charsetImage;
-		image_t *grainImage;
-		image_t *vignetteImage;
 		image_t *colorGradeImage;
 		GLuint   colorGradePBO;
 
@@ -3039,9 +3037,6 @@ static inline byte floatToSnorm8(float f) {
 	extern cvar_t *r_bloomBlur;
 	extern cvar_t *r_bloomPasses;
 	extern cvar_t *r_FXAA;
-	extern cvar_t *r_cameraVignette;
-	extern cvar_t *r_cameraFilmGrain;
-	extern cvar_t *r_cameraFilmGrainScale;
 
 	extern cvar_t *r_evsmPostProcess;
 

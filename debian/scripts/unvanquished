@@ -52,4 +52,4 @@ case "$PRECMD$@" in
     ;;
 esac
 
-exec $RUNGDB ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished $PREFIX$PRECMD"$@"
+exec $RUNGDB ./unvanquished +set vm_game 2 +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished $PREFIX$PRECMD"$@"

@@ -235,7 +235,7 @@ namespace Audio {
     }
     // Implementation of OneShotSound
 
-    OneShotSound::OneShotSound(Sample* sample): sample(sample) {
+    OneShotSound::OneShotSound(std::shared_ptr<Sample> sample): sample(sample) {
     }
 
     OneShotSound::~OneShotSound() {
@@ -256,7 +256,7 @@ namespace Audio {
 
     // Implementation of LoopingSound
 
-    LoopingSound::LoopingSound(Sample* loopingSample, Sample* leadingSample)
+    LoopingSound::LoopingSound(std::shared_ptr<Sample> loopingSample, std::shared_ptr<Sample> leadingSample)
         : loopingSample(loopingSample),
           leadingSample(leadingSample),
           fadingOut(false) {}
@@ -270,10 +270,9 @@ namespace Audio {
     }
 
     void LoopingSound::SetupSource(AL::Source& source) {
-        if (leadingSample != nullptr){
+        if (leadingSample) {
             source.SetBuffer(leadingSample->GetBuffer());
-        }
-        else {
+        } else {
             SetupLoopingSound(source);
         }
         SetSoundGain(effectsVolume.Get());
@@ -285,19 +284,22 @@ namespace Audio {
         }
 
         if (not fadingOut) {
-          if (leadingSample != nullptr) {
-            if (GetSource().IsStopped()) {
-              SetupLoopingSound(GetSource());
-              leadingSample = nullptr;
+            if (leadingSample) {
+                if (GetSource().IsStopped()) {
+                    SetupLoopingSound(GetSource());
+                    GetSource().Play();
+                    leadingSample = nullptr;
+                }
             }
-          }
-          SetSoundGain(effectsVolume.Get());
+            SetSoundGain(effectsVolume.Get());
         }
     }
 
     void LoopingSound::SetupLoopingSound(AL::Source& source){
-      source.SetLooping(true);
-      source.SetBuffer(loopingSample->GetBuffer());
+        source.SetLooping(true);
+        if (loopingSample) {
+            source.SetBuffer(loopingSample->GetBuffer());
+        }
     }
 
     // Implementation of StreamingSound

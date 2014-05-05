@@ -70,6 +70,7 @@ vmCvar_t           g_debugMove;
 vmCvar_t           g_debugDamage;
 vmCvar_t           g_debugKnockback;
 vmCvar_t           g_debugTurrets;
+vmCvar_t           g_debugFire;
 vmCvar_t           g_motd;
 vmCvar_t           g_synchronousClients;
 vmCvar_t           g_warmup;
@@ -193,6 +194,7 @@ vmCvar_t           g_combatCooldown;
 vmCvar_t           g_geoip;
 
 vmCvar_t           g_debugEntities;
+
 
 // <bot stuff>
 
@@ -345,6 +347,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, qfalse           },
 	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                CVAR_TEMP,                                       0, qfalse           },
 	{ &g_debugEntities,               "g_debugEntities",               "0",                                CVAR_TEMP,                                       0, qfalse           },
+	{ &g_debugFire,                   "g_debugFire",                   "0",                                CVAR_TEMP,                                       0, qfalse           },
 
 	// gameplay: basic
 	{ &g_timelimit,                   "timelimit",                     "45",                               CVAR_SERVERINFO,                                 0, qtrue            },
@@ -364,7 +367,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          0,                                               0, qfalse           },
 
 	// gameplay: momentum
-	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                CVAR_TEMP,                                       0, qfalse           },
 	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, qfalse           },
 	{ &g_momentumHalfLife,            "g_momentumHalfLife",            DEFAULT_MOMENTUM_HALF_LIFE,         CVAR_SERVERINFO,                                 0, qfalse           },
 	{ &g_momentumRewardDoubleTime,    "g_momentumRewardDoubleTime",    DEFAULT_CONF_REWARD_DOUBLE_TIME,    0,                                               0, qfalse           },
