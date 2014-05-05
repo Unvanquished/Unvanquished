@@ -689,6 +689,7 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_particles.c
   ${GAMELOGIC_DIR}/cgame/cg_tutorial.c
   ${GAMELOGIC_DIR}/cgame/cg_utils.c
+  ${GAMELOGIC_DIR}/cgame/cg_beacon.c
   ${GAMELOGIC_DIR}/ui/ui_shared.c
   ${GAMELOGIC_DIR}/ui/ui_utf8.c
   ${ENGINE_DIR}/client/cg_api.h
@@ -723,6 +724,7 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/shared/VMMain.h
   ${GAMELOGIC_DIR}/game/g_active.c
+  ${GAMELOGIC_DIR}/game/g_beacon.c  
   ${GAMELOGIC_DIR}/game/g_client.c
   ${GAMELOGIC_DIR}/game/g_cmds.c
   ${GAMELOGIC_DIR}/game/g_combat.c

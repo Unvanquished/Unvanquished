@@ -1044,6 +1044,10 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 			cent->lfs.hTest = trap_RegisterVisTest();
 			break;
 
+		case ET_BEACON:
+			memset( &cent->beaconPersistant, 0, sizeof( cbeaconPersistant_t ) );
+			break;
+
 		default:
 			break;
 	}
@@ -1158,6 +1162,7 @@ static void CG_AddCEntity( centity_t *cent )
 		case ET_PUSHER:
 		case ET_TELEPORTER:
 		case ET_LOCATION:
+		case ET_BEACON:
 			break;
 
 		case ET_GENERAL:

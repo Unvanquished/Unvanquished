@@ -1020,6 +1020,50 @@ typedef enum
 
 //---------------------------------------------------------
 
+#define BEACON_TIMER_TIME 3500
+
+typedef enum
+{
+	BCT_NONE,
+
+	BCT_POINTER,
+	BCT_TAG,
+	BCT_TIMER,
+	
+	BCT_ALIENBASE,
+	BCT_HUMANBASE,
+
+	BCT_ATTACK,
+	BCT_DEFEND,
+	BCT_ENEMY,
+
+	BCT_HEALTH,
+	BCT_AMMO,
+	
+	NUM_BEACON_TYPES
+} beaconType_t;
+
+typedef struct
+{
+	beaconType_t number;
+
+	const char *name; // parameter for /beacon
+	const char *text; // NULL if handled differently
+	const char *icon; // cgame icon
+	const char *sound; // cgame sound
+	
+	int        decayTime; // 0 to never decay
+
+	qboolean   exact; // true if should appear exactly at the crosshair
+	qboolean   entity; // true if should appear at an entity (tagging)
+	qboolean   leaderOnly; // not yet implemented
+	qboolean   implicit; // "virtual" client-side beacon
+	qboolean   playerUnique; // per-player instead of per-team
+	qboolean   unlimited; // no uniqueness insurance at all
+} beaconAttributes_t;
+
+//---------------------------------------------------------
+
 // player class record
 typedef struct
 {
@@ -1291,6 +1335,7 @@ void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t m
 int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
+qboolean                    BG_PlayerLowAmmo( playerState_t *ps, qboolean *energy );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );
 int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count );
@@ -1327,6 +1372,9 @@ const upgradeAttributes_t *BG_Upgrade( int upgrade );
 
 const missileAttributes_t *BG_MissileByName( const char *name );
 const missileAttributes_t *BG_Missile( int missile );
+
+const beaconAttributes_t  *BG_BeaconByName( const char *name );
+const beaconAttributes_t  *BG_Beacon( int index );
 
 meansOfDeath_t            BG_MeansOfDeathByName( const char *name );
 

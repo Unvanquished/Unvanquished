@@ -40,6 +40,14 @@ void              G_TouchTriggers( gentity_t *ent );
 const char        *G_admin_name( gentity_t *ent );
 const char        *G_quoted_admin_name( gentity_t *ent );
 
+// g_beacon.c
+gentity_t         *G_GetBeacon( int clientNum, team_t team, beaconType_t type );
+qboolean          G_PositionBeacon( gentity_t *ent, gentity_t *beacon );
+void              G_PropagateBeacon( gentity_t *ent );
+void              G_PropagateAllBeacons( void );
+void              G_BeaconThink( gentity_t *ent );
+void              G_RemoveOwnedBeacons( int clientNum );
+
 // g_buildable.c
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
 gentity_t         *G_Reactor( void );

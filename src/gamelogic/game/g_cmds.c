@@ -4368,6 +4368,60 @@ void Cmd_Damage_f( gentity_t *ent )
 }
 
 /*
+=================
+Cmd_Beacon_f
+=================
+*/
+void Cmd_Beacon_f( gentity_t *ent )
+{
+	qboolean alien;
+	char type_str[ 64 ];
+	beaconType_t type;
+	const beaconAttributes_t *battr;
+	gentity_t *beacon;
+
+	if ( trap_Argc( ) < 2 )
+	{
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", QQ( N_("Usage: beacon [type]\n") ) ) );
+		return;
+	}
+
+	trap_Argv( 1, type_str, sizeof( type_str ) );
+
+	alien = ( ent->client->pers.team == TEAM_ALIENS );
+
+	//a few useful aliases
+	if( !Q_stricmp( type_str, "ourbase" ) )
+		battr = BG_Beacon( ( alien ? BCT_ALIENBASE : BCT_HUMANBASE ) );
+	else if( !Q_stricmp( type_str, "enemybase" ) )
+		battr = BG_Beacon( ( alien ? BCT_HUMANBASE : BCT_ALIENBASE ) );
+	else
+		battr = BG_BeaconByName( type_str );
+
+	if ( !battr || battr->implicit )
+	{
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("Unknown beacon type $1$\n") ), Quote( type_str ) ) );
+		return;
+	}
+
+	if ( /*TODO: battr->leaderOnly && player is not a leader*/ 0 )
+	{
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", QQ( N_("Beacons of this kind may be placed only by a leader, which you are not.\n") ) ) );
+		return;
+	}
+
+	type = battr->number;
+
+	beacon = G_GetBeacon( ent - g_entities, (team_t)ent->client->pers.team, type );
+	if( !G_PositionBeacon( ent, beacon ) )
+	{
+		G_FreeEntity( beacon );
+		return;
+	}
+	G_PropagateBeacon( beacon );
+}
+
+/*
 ==================
 G_FloodLimited
 
@@ -4446,6 +4500,7 @@ static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
 	{ "asay",            CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
+	{ "beacon",          CMD_TEAM | CMD_ALIVE,                Cmd_Beacon_f           },
 	{ "build",           CMD_TEAM | CMD_ALIVE,                Cmd_Build_f            },
 	{ "buy",             CMD_HUMAN | CMD_ALIVE,               Cmd_Buy_f              },
 	{ "callteamvote",    CMD_MESSAGE | CMD_TEAM,              Cmd_CallVote_f         },

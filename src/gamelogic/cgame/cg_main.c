@@ -278,6 +278,11 @@ vmCvar_t        cg_fov_level3;
 vmCvar_t        cg_fov_level4;
 vmCvar_t        cg_fov_human;
 
+vmCvar_t        cg_beaconHUDScale;
+vmCvar_t        cg_beaconMapScale;
+vmCvar_t        cg_lazyBeacons;
+vmCvar_t        cg_lazyBeaconsLambda;
+
 typedef struct
 {
 	vmCvar_t   *vmCvar;
@@ -457,6 +462,11 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_fov_level3,                  "cg_fov_level3",                  "0",            0                            },
 	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            0                            },
 	{ &cg_fov_human,                   "cg_fov_human",                   "0",            0                            },
+
+	{ &cg_beaconHUDScale,              "cg_beaconHUDScale",              "1",            CVAR_ARCHIVE                 },
+	{ &cg_beaconMapScale,              "cg_beaconMapScale",              "1",            CVAR_ARCHIVE                 },
+	{ &cg_lazyBeacons,                 "cg_lazyBeacons",                 "1",            CVAR_ARCHIVE                 },
+  { &cg_lazyBeaconsLambda,           "cg_lazyBeaconsLambda",           "20",           CVAR_ARCHIVE                 }
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
@@ -1321,6 +1331,16 @@ static void CG_RegisterSounds( void )
 
 	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning.wav", qfalse );
 	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", qfalse );
+
+	for( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
+	{
+		if( BG_Beacon( i )->sound )
+			cgs.media.beaconSounds[ i - 1 ] = trap_S_RegisterSound( BG_Beacon( i )->sound, false );
+		else
+			cgs.media.beaconSounds[ i - 1 ] = 0;
+	}
+
+	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", false );
 }
 
 //===================================================================================
@@ -1553,6 +1573,11 @@ static void CG_RegisterGraphics( void )
 
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
+
+	for( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
+		cgs.media.beaconIcons[ i - 1 ] = trap_R_RegisterShader( BG_Beacon( i )->icon, RSF_DEFAULT );
+
+	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacon-arrow", RSF_DEFAULT );
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();

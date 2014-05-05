@@ -813,6 +813,9 @@ void         ByteToDir( int b, vec3_t dir );
 	void     RotateAroundDirection( vec3_t axis[ 3 ], float yaw );
 	void     MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
 
+	float    ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const vec2_t dir, const vec2_t bounds[ 2 ] );
+	void     ExponentialFade( float *value, float target, float lambda, float timedelta );
+
 // perpendicular vector could be replaced by this
 
 //int       PlaneTypeForNormal( vec3_t normal );
@@ -2423,6 +2426,8 @@ void         ByteToDir( int b, vec3_t dir );
 		ET_MODELDOOR,
 		ET_LIGHTFLARE,
 		ET_LEV2_ZAP_CHAIN,
+		
+		ET_BEACON,
 
 		ET_EVENTS       // any of the EV_* events can be added freestanding
 		// by setting eType to ET_EVENTS + eventNum

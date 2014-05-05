@@ -279,6 +279,24 @@ static void CG_CompleteSell( void )
 }
 
 
+static void CG_CompleteBeacon( void )
+{
+	int i;
+
+	for ( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
+	{
+		const beaconAttributes_t *item = BG_Beacon( i );
+		if ( !item->implicit )
+		{
+			trap_CompleteCallback( item->name );
+		}
+	}
+
+	//aliases
+	trap_CompleteCallback( "ourbase" );
+	trap_CompleteCallback( "enemybase" );
+}
+
 static void CG_CompleteBuild( void )
 {
 	int i;
@@ -416,6 +434,7 @@ static const struct
 {
 	{ "+scores",          CG_ScoresDown_f,         0                },
 	{ "-scores",          CG_ScoresUp_f,           0                },
+	{ "beacon",           0,                       CG_CompleteBeacon },
 	{ "build",            0,                       CG_CompleteBuild },
 	{ "buy",              0,                       CG_CompleteBuy   },
 	{ "callteamvote",     0,                       CG_CompleteTeamVote },

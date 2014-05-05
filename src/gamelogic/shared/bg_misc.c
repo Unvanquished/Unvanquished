@@ -913,6 +913,186 @@ meansOfDeath_t BG_MeansOfDeathByName( const char *name )
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static const beaconAttributes_t nullBeacon =
+{
+	BCT_NONE, NULL, NULL, NULL, 0, qfalse, qfalse, qfalse, qfalse, qfalse, qfalse
+};
+
+static const beaconAttributes_t bg_beaconAttributes[ ] =
+{
+	// name, text, icon, decayTime, exact, entity, leaderOnly, implicit, perPlayer, unlimited
+	{
+		BCT_POINTER,
+		"pointer",
+		N_("Look!"),
+		"gfx/2d/beacon-pointer",
+		"sound/feedback/beacon.ogg",
+		2000,
+		qtrue,
+		qfalse,
+		qfalse,
+		qfalse,
+		qtrue,
+		qfalse
+	},
+	{
+		BCT_TAG,
+		"tag",
+		NULL, //special case
+		"gfx/2d/beacon",
+		"sound/feedback/beacon.ogg",
+		7500,
+		qfalse,
+		qtrue,
+		qfalse,
+		qfalse,
+		qfalse,
+		qtrue
+	},
+	{
+		BCT_TIMER,
+		"timer",
+		N_("Timer"),
+		"gfx/2d/beacon-timer",
+		"sound/feedback/beacon.ogg",
+		BEACON_TIMER_TIME + 1000,
+		qfalse,
+		qfalse,
+		qfalse,
+		qfalse,
+		qtrue,
+		qfalse
+	},
+	{
+		BCT_ALIENBASE,
+		"alienbase",
+		N_("Alien base"),
+		"gfx/2d/beacon-alienbase",
+		"sound/feedback/beacon.ogg",
+		0,
+		qfalse,
+		qfalse,
+		qtrue,
+		qfalse,
+		qfalse,
+		qfalse
+	},
+	{
+		BCT_HUMANBASE,
+		"humanbase",
+		N_("Human base"),
+		"gfx/2d/beacon-humanbase",
+		"sound/feedback/beacon.ogg",
+		0,
+		qfalse,
+		qfalse,
+		qtrue,
+		qfalse,
+		qfalse,
+		qfalse
+	},
+	{
+		BCT_ATTACK,
+		"attack",
+		N_("Attack!"),
+		"gfx/2d/beacon-attack",
+		"sound/feedback/beacon.ogg",
+		10000,
+		qfalse,
+		qfalse,
+		qtrue,
+		qfalse,
+		qfalse,
+		qtrue
+	},
+	{
+		BCT_DEFEND,
+		"defend",
+		N_("Defend!"),
+		"gfx/2d/beacon-defend",
+		"sound/feedback/beacon.ogg",
+		10000,
+		qfalse,
+		qfalse,
+		qtrue,
+		qfalse,
+		qfalse,
+		qtrue
+	},
+	{
+		BCT_ENEMY,
+		"enemy",
+		N_("Enemy spotted"),
+		"gfx/2d/beacon-enemy",
+		"sound/feedback/beacon.ogg",
+		5000,
+		qfalse,
+		qfalse,
+		qfalse,
+		qfalse,
+		qfalse,
+		qtrue
+	},
+	{
+		BCT_HEALTH,
+		"",
+		N_("Heal here!"),
+		"gfx/2d/beacon-health",
+		"sound/feedback/beacon.ogg",
+		0,
+		qfalse,
+		qfalse,
+		qfalse,
+		qtrue,
+		qfalse,
+		qfalse
+	},
+	{
+		BCT_AMMO,
+		"",
+		N_("Ammo here!"),
+		"gfx/2d/beacon-ammo",
+		"sound/feedback/beacon.ogg",
+		0,
+		qfalse,
+		qfalse,
+		qfalse,
+		qtrue,
+		qfalse,
+		qfalse
+	}
+};
+
+/*
+================
+BG_BeaconByName
+================
+*/
+const beaconAttributes_t *BG_BeaconByName( const char *name )
+{
+	int i;
+
+	for ( i = 0; i < NUM_BEACON_TYPES - 1; i++ )
+		if ( !Q_stricmp( bg_beaconAttributes[ i ].name, name ) )
+			return bg_beaconAttributes + i;
+
+	return NULL;
+}
+
+/*
+================
+BG_Beacon
+================
+*/
+const beaconAttributes_t *BG_Beacon( int index )
+{
+	if( index > BCT_NONE && index < NUM_BEACON_TYPES )
+		return bg_beaconAttributes + index - 1;
+	return &nullBeacon;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 /*
 ================
 BG_InitAllConfigs
@@ -1979,6 +2159,42 @@ weapon_t BG_GetPlayerWeapon( playerState_t *ps )
 	}
 
 	return (weapon_t) ps->weapon;
+}
+
+/*
+=================
+BG_PlayerLowAmmo
+
+Checks if a player is running low on ammo
+Also returns whether the gun uses energy or not
+=================
+*/
+qboolean BG_PlayerLowAmmo( playerState_t *ps, qboolean *energy )
+{
+  int weapon;
+	const weaponAttributes_t *wattr;
+
+	// look for the primary weapon
+	for( weapon = WP_NONE + 1; weapon < WP_NUM_WEAPONS; weapon++ )
+		if( weapon != WP_BLASTER )
+			if( BG_InventoryContainsWeapon( weapon, ps->stats ) )
+				goto found;
+
+	return qfalse; // got only blaster
+
+found:
+
+	wattr = BG_Weapon( weapon );
+
+	if( wattr->infiniteAmmo )
+		return qfalse;
+
+	*energy = wattr->usesEnergy;
+
+	if( wattr->maxClips )
+		return ( ps->clips <= wattr->maxClips * 0.25 );
+
+	return ( ps->ammo <= wattr->maxAmmo * 0.25 );
 }
 
 /*

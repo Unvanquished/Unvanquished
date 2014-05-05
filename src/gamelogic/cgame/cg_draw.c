@@ -4965,6 +4965,216 @@ static void CG_DrawWarmup( void )
 	UI_Text_Paint( 320 - w / 2, 200 + 1.5f * h, size, colorWhite, text, 0, ITEM_TEXTSTYLE_SHADOWED );
 }
 
+/*
+==================
+CG_FormatLength
+
+Formats given length with three significant digits of precision
+and a proper SI unit.
+==================
+*/
+static const char *CG_FormatLength( float dist )
+{
+	char fmt[ ] = { '%', '.', 123, 'f', '%', 's', 'm', 0 };
+	const char *prefix;
+	float mult;
+	int prec;
+
+	dist *= 0.0381; // quake units to meters
+
+	if( dist > 1.0e+5 )
+		return "∞";
+	else if( dist > 1.0e+4 )
+		prefix = "k",
+		mult = 1.0e-3,
+		prec = 1;
+	else if( dist > 1.0e+3 )
+		prefix = "k",
+		mult = 1.0e-3,
+		prec = 2;
+	else if( dist > 1.0e+2 )
+		prefix = "",
+		mult = 1.0,
+		prec = 0;
+	else if( dist > 1.0e+1 )
+		prefix = "",
+		mult = 1.0,
+		prec = 1;
+	else if( dist > 1.0 )
+		prefix = "",
+		mult = 1.0,
+		prec = 2;
+	else if( dist > 1.0e-1 )
+		prefix = "m",
+		mult = 1.0e+3,
+		prec = 0;
+	else if( dist > 1.0e-2 )
+		prefix = "m",
+		mult = 1.0e+3,
+		prec = 1;
+	else if( dist > 1.0e-3 )
+		prefix = "m",
+		mult = 1.0e+3,
+		prec = 2;
+	else
+		prefix = "µ",
+		mult = 1.0e+3,
+		prec = 6;
+
+	fmt[ 2 ] = '0' + prec;
+
+	return va( fmt, dist * mult, prefix );
+}
+
+/*
+==================
+CG_DrawBeacon
+
+Draw a beacon on the HUD
+==================
+*/
+#define BEACON_MARGIN_X 50 //FIXME: these shouldn't be hardcoded;
+#define BEACON_MARGIN_Y 50 //       would be better if beacons had
+#define BEACON_SIZE_MAX 50 //       their own area in HUD
+
+float LinearRemap( float value, float from_min, float from_max, float to_min, float to_max )
+{
+	return ( value - from_min ) / ( from_max - from_min ) * ( to_max - to_min ) + to_min;
+}
+
+static void CG_DrawBeacon( cbeacon_t *b )
+{
+	qboolean front, clamped;
+	vec2_t pos2d, dir;
+	float w, h, ts, tx, ty, tw, th, angle;
+	const char *text;
+	vec4_t color;
+	clientInfo_t *ci;
+	
+	switch( b->team )
+	{/*
+		FIXME: these colors are bullshit but white isn't much better
+		case TEAM_ALIENS:
+			Vector4Set( color, 1, 0, 0, 1 );
+			break;
+
+		case TEAM_HUMANS:
+			Vector4Set( color, 0, 0, 1, 1 );
+			break;*/
+
+		default:
+			Vector4Set( color, 1, 1, 1, b->alpha * b->s->t_occlusion );
+			break;
+	}
+
+	front = CG_WorldToScreen( b->s->origin, pos2d, pos2d + 1 );
+		
+	if( !front )
+		pos2d[ 0 ] = 640.0 - pos2d[ 0 ],
+		pos2d[ 1 ] = 480.0 - pos2d[ 1 ];
+
+	if( !front || pos2d[ 0 ] < BEACON_MARGIN_X || pos2d[ 0 ] > 640 - BEACON_MARGIN_X ||
+								pos2d[ 1 ] < BEACON_MARGIN_Y || pos2d[ 1 ] > 480 - BEACON_MARGIN_Y )
+	{
+		static const vec2_t screen[ 2 ] =
+		{
+			{ BEACON_MARGIN_X, BEACON_MARGIN_Y },
+			{ 640 - BEACON_MARGIN_X, 480 - BEACON_MARGIN_Y }
+		};
+		static const vec2_t point = { 320, 240 };
+		
+		clamped = true;
+		dir[ 0 ] = pos2d[ 0 ] - 320;
+		dir[ 1 ] = pos2d[ 1 ] - 240;
+		ProjectPointOntoRectangleOutwards( pos2d, point, dir, screen );
+	}
+	else
+		clamped = false;
+
+	h = ( 60 * 300 / b->dist + 30 ) / 2;
+	if( h > BEACON_SIZE_MAX )
+		h = BEACON_SIZE_MAX;
+	h *= b->scale * LinearRemap( b->s->t_highlight, 0, 1, 1, 1.5 ) * cg_beaconHUDScale.value;
+	w = h * cgDC.aspectScale;
+
+	if( cg_lazyBeacons.integer )
+	{
+		if( b->s->old_hud )
+		{
+			int i;
+
+			for( i = 0; i < 2; i++ )
+				CG_ExponentialFade( b->s->oldpos2d + i, pos2d[ i ], cg_lazyBeaconsLambda.value );
+
+			VectorCopy( b->s->oldpos2d, pos2d );
+		}
+		else
+			VectorCopy( pos2d, b->s->oldpos2d );
+	}
+
+	trap_R_SetColor( color );
+	CG_DrawPic( pos2d[ 0 ] - w/2, pos2d[ 1 ] - h/2, w, h, CG_BeaconIcon( b ) );
+	if ( clamped )
+		CG_DrawRotatedPic( pos2d[ 0 ] - w/2 * 1.5, 
+		                   pos2d[ 1 ] - h/2 * 1.5,
+		                   w * 1.5, h * 1.5, 
+		                   cgs.media.beaconIconArrow, 
+		                   270.0 - ( angle = atan2( dir[ 1 ], dir[ 0 ] ) ) * 180 / M_PI );
+
+	text = CG_FormatLength( b->dist );
+  ts = 0.25;
+  tw = UI_Text_Width( text, ts );
+  th = UI_Text_Height( text, ts );
+
+	if( !clamped )
+		tx = pos2d[ 0 ] - tw/2,
+		ty = pos2d[ 1 ] - h/2;
+	else if( angle > - M_PI / 2.0 && angle < M_PI / 2.0 )
+		tx = pos2d[ 0 ] - w/2 - tw,
+		ty = pos2d[ 1 ] + th/2;
+	else
+		tx = pos2d[ 0 ] + w/2,
+		ty = pos2d[ 1 ] + th/2;
+
+	UI_Text_Paint( tx, ty, ts, color, text, 0 , ITEM_TEXTSTYLE_SHADOWED );
+
+	color[ 3 ] *= LinearRemap( b->s->t_highlight, 0, 1, 0, 1 );
+
+	if ( !clamped && color[ 3 ] > 0.01f )
+	{
+		text = CG_BeaconText( b );
+
+		ts = 0.35;
+		tw = UI_Text_Width( text, ts );
+		th = UI_Text_Height( text, ts );
+		pos2d[ 1 ] += h/2 + th / 2;
+		UI_Text_Paint( pos2d[ 0 ] - tw/2, pos2d[ 1 ], ts, color, text, 0, ITEM_TEXTSTYLE_SHADOWED );
+
+		if( b->owner != ENTITYNUM_NONE &&
+				b->owner >= 0 && b->owner < MAX_CLIENTS &&
+				!BG_Beacon( b->type )->implicit )
+		{
+			ci = cgs.clientinfo + b->owner;
+
+			if( ci->infoValid )
+			{
+				text = ci->name;
+
+				ts *= 0.8;
+				pos2d[ 1 ] += th / 2;
+				tw = UI_Text_Width( text, ts );
+				th = UI_Text_Height( text, ts );
+				pos2d[ 1 ] += th / 2;
+				UI_Text_Paint( pos2d[ 0 ] - tw/2, pos2d[ 1 ], ts, color, text, 0, ITEM_TEXTSTYLE_SHADOWED );
+			}
+		}
+	}
+
+	trap_R_SetColor( NULL );
+
+	b->s->old_hud = qtrue;
+}
+
 //==================================================================================
 
 /*
@@ -4974,6 +5184,7 @@ CG_Draw2D
 */
 static void CG_Draw2D( void )
 {
+	int i;
 	menuDef_t *menu = NULL;
 
 	if ( cg_draw2D.integer == 0 )
@@ -4997,6 +5208,13 @@ static void CG_Draw2D( void )
 
 		CG_DrawBuildableStatus();
 	}
+
+	// get an up-to-date list of beacons
+	CG_ListBeacons();
+
+	// draw beacons on HUD (TODO: move to Menu_Paint)
+	for( i = 0; i < cg.num_beacons; i++ )
+		CG_DrawBeacon( cg.beacons + i );
 
 	if ( !menu )
 	{

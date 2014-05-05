@@ -609,6 +609,59 @@ typedef struct buildableCache_s
 
 //=================================================
 
+#define MAX_CBEACONS 50
+
+// the point of keeping the beacon data separately from centities is
+// to be able to handle virtual beacons (client-side beacons) without
+// having to add fake centities
+
+// static data belonging to a specific beacon
+// here's all beacon info that can't be deduced at will (e.g. because
+// it depends on past states)
+typedef struct
+{
+	qboolean  valid;
+	qboolean  old; // true if it's not the first time we see it
+	qboolean  old_hud;
+	
+	qboolean  eventFired; // BCT_TIMER
+	qboolean  fadingOut; // fading out client-side beacons
+	qboolean  highlighted; // only one beacon can be highlighted at a time
+	
+	vec3_t   origin;
+	int      ctime; // creation time
+	int      etime; // expiration time, 0 if never expires
+
+	int  oldEntityNum; // BCT_HEALTH and BCT_AMMO
+
+	// animations stuff
+	float  t_occlusion;
+	float  t_highlight;
+
+	vec2_t oldpos2d;
+
+} cbeaconPersistant_t;
+
+// all data here must be deduceable at any moment
+// can be cleared every frame
+typedef struct
+{
+	cbeaconPersistant_t  *s;
+
+	beaconType_t  type;
+	int           data;
+	team_t        team;
+	int           owner;
+
+	// aesthetic stuff
+	float         scale;
+	float         alpha;
+	float         dot;
+	float         dist;
+} cbeacon_t;
+
+//======================================================================
+
 // centity_t has a direct correspondence with gentity_t in the game, but
 // only the entityState_t is directly communicated to the cgame
 typedef struct centity_s
@@ -685,6 +738,8 @@ typedef struct centity_s
 	qboolean              valid;
 	qboolean              oldValid;
 	struct centity_s      *nextLocation;
+
+	cbeaconPersistant_t   beaconPersistant;
 } centity_t;
 
 //======================================================================
@@ -1164,6 +1219,10 @@ typedef struct
 	// momentum
 	float                   momentumGained;
 	int                     momentumGainedTime;
+
+	// beacons
+	cbeacon_t               beacons[ MAX_CBEACONS ];
+	int                     num_beacons;
 } cg_t;
 
 // all of the model, shader, and sound references that are
@@ -1326,6 +1385,13 @@ typedef struct
 	qhandle_t   desaturatedCgrade;
 
 	qhandle_t   scopeShader;
+
+	qhandle_t   beaconIcons[ NUM_BEACON_TYPES - 1 ]; // -1 because BCT_NONE needs no icon
+	qhandle_t   beaconIconArrow;
+	sfxHandle_t beaconSounds[ NUM_BEACON_TYPES - 1 ];
+
+	//special beacons
+	sfxHandle_t timerBeaconExpiredSound;
 } cgMedia_t;
 
 typedef struct
@@ -1629,6 +1695,11 @@ extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
 
+extern vmCvar_t             cg_beaconHUDScale;
+extern vmCvar_t             cg_beaconMapScale;
+extern vmCvar_t             cg_lazyBeacons;
+extern vmCvar_t             cg_lazyBeaconsLambda;
+
 //
 // cg_main.c
 //
@@ -1684,6 +1755,7 @@ void     CG_DrawPlane( vec3_t origin, vec3_t down, vec3_t right, qhandle_t shade
 void     CG_AdjustFrom640( float *x, float *y, float *w, float *h );
 void     CG_FillRect( float x, float y, float width, float height, const float *color );
 void     CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
+void     CG_DrawRotatedPic( float x, float y, float width, float height, qhandle_t hShader, float angle );
 void     CG_DrawNoStretchPic( float x, float y, float width, float height, qhandle_t hShader );
 void     CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
                          vec4_t tcolor, float amount, qhandle_t hShader );
@@ -1706,6 +1778,11 @@ void     CG_DrawSphere( const vec3_t center, float radius, int customShader, con
 void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
                                qboolean a240, int customShader, const float *shaderRGBA );
 void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, vec4_t rgba );
+
+inline void CG_ExponentialFade( float *value, float target, float lambda )
+{
+	ExponentialFade( value, target, lambda, (float)cg.frametime * 0.001 );
+}
 
 //
 // cg_draw.c
@@ -1957,6 +2034,14 @@ void          CG_DestroyTestTS_f( void );
 // cg_tutorial.c
 //
 const char *CG_TutorialText( void );
+
+//
+// cg_beacon.c
+//
+
+void          CG_ListBeacons( void );
+qhandle_t     CG_BeaconIcon( const cbeacon_t *b );
+const char    *CG_BeaconText( const cbeacon_t *b );
 
 //
 //===============================================
