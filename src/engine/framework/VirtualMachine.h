@@ -117,14 +117,13 @@ private:
 	IPC::Channel rootChannel;
 	vmType_t vmType;
 
-    std::string name;
+	std::string name;
 
-    // Logging the syscalls
-    Cvar::Cvar<bool> logSyscalls;
-    FS::File syscallLogFile;
+	// Logging the syscalls
+	Cvar::Cvar<bool> logSyscalls;
+	FS::File syscallLogFile;
 
-    void LogMessage(bool vmToEngine, int id);
-
+	void LogMessage(bool vmToEngine, int id);
 };
 
 } // namespace VM

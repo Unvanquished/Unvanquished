@@ -217,7 +217,7 @@ namespace Cvar {
         } else {
             cvarRecord_t* cvar = it->second;
 
-            if (not cvar->flags & CVAR_USER_CREATED) {
+            if (not (cvar->flags & CVAR_USER_CREATED)) {
                 if (cvar->flags & (CVAR_ROM | CVAR_INIT) and not rom) {
                     Com_Printf(_("%s is read only.\n"), cvarName.c_str());
                     return;

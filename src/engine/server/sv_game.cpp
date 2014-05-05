@@ -938,7 +938,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case BOT_NAV_RANDOMPOINTRADIUS:
-		IPC::HandleMsg<BotNavRandomPointRadiusMsg>(channel, std::move(reader), [this](int clientNum, std::array<float, 3> origin, float radius, int res, std::array<float, 3>& point) {
+		IPC::HandleMsg<BotNavRandomPointRadiusMsg>(channel, std::move(reader), [this](int clientNum, std::array<float, 3> origin, float radius, int& res, std::array<float, 3>& point) {
 			res = BotFindRandomPointInRadius(clientNum, origin.data(), point.data(), radius);
 		});
 		break;
