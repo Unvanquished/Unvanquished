@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 #include "../../engine/qcommon/q_unicode.h"
+#include "../../common/FileSystem.h"
 
 #define CMD_CHEAT        0x0001
 #define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
@@ -4014,7 +4015,7 @@ List all maps on the server
 
 static int SortMaps( const void *a, const void *b )
 {
-	return strcmp( * ( char ** ) a, * ( char ** ) b );
+	return strcmp( * ( const char ** ) a, * ( const char ** ) b );
 }
 
 #define MAX_MAPLIST_MAPS 256
@@ -4022,11 +4023,8 @@ static int SortMaps( const void *a, const void *b )
 void Cmd_ListMaps_f( gentity_t *ent )
 {
 	char search[ 16 ] = { "" };
-	char fileList[ 4096 ] = { "" };
-	char *fileSort[ MAX_MAPLIST_MAPS ];
-	char *filePtr, *p;
-	int  numFiles;
-	int  fileLen = 0;
+	const char *fileSort[ MAX_MAPLIST_MAPS ] = { 0 };
+	char *p;
 	int  shown = 0;
 	int  count = 0;
 	int  page = 0;
@@ -4065,27 +4063,22 @@ void Cmd_ListMaps_f( gentity_t *ent )
 		}
 	}
 
-	numFiles = trap_FS_GetFileList( "maps/", ".bsp",
-	                                fileList, sizeof( fileList ) );
-	filePtr = fileList;
+	auto paks = FS::GetAvailablePaks();
 
-	for ( i = 0; i < numFiles && count < MAX_MAPLIST_MAPS; i++, filePtr += fileLen + 1 )
+	for ( size_t i = 0; i < paks.size(); ++i )
 	{
-		fileLen = strlen( filePtr );
-
-		if ( fileLen < 5 )
+		// Filter out duplicates
+		if ( i && !strcmp( paks[ i ].name.c_str(), paks[ i - 1 ].name.c_str() ) )
 		{
 			continue;
 		}
 
-		filePtr[ fileLen - 4 ] = '\0';
-
-		if ( search[ 0 ] && !strstr( filePtr, search ) )
+		if ( Q_strncmp( "map-", paks[ i ].name.c_str(), 4 ) || ( search[ 0 ] && !strstr( paks[ i ].name.c_str(), search ) ) )
 		{
 			continue;
 		}
 
-		fileSort[ count ] = filePtr;
+		fileSort[ count ] = paks[ i ].name.c_str() + 4;
 		count++;
 	}
 
