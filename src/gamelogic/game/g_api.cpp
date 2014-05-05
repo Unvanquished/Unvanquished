@@ -120,6 +120,7 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 
 		case GAME_INIT:
 			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart) {
+				FS::Initialize();
 				G_InitGame(levelTime, randomSeed, restart);
 			});
 			break;
