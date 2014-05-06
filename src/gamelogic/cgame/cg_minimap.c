@@ -567,7 +567,7 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 		ProjectPointOntoRectangleOutwards( pos2d, center, dir, bounds );
 	}
 	else
-		clamped = false;
+		clamped = qfalse;
 
 	trap_R_SetColor( currentMinimapColor );
 	trap_R_DrawRotatedPic( pos2d[ 0 ], pos2d[ 1 ], size, size, 0.0, 0.0, 1.0, 1.0, CG_BeaconIcon( b ), 0.0 );
@@ -605,7 +605,7 @@ static void CG_MinimapDrawBeacons( const minimap_t* m, const rectDef_t *rect )
   center[ 1 ] = rect->y + rect->h / 2.0f;
 
 	for ( i = 0; i < cg.num_beacons; i++ )
-		CG_MinimapDrawBeacon( cg.beacons + i, size, center, bounds );
+		CG_MinimapDrawBeacon( cg.beacons + i, size, center, (const vec2_t*)bounds );
 }
 
 //Entry points in the minimap code

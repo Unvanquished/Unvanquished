@@ -5083,13 +5083,13 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		};
 		static const vec2_t point = { 320, 240 };
 		
-		clamped = true;
+		clamped = qtrue;
 		dir[ 0 ] = pos2d[ 0 ] - 320;
 		dir[ 1 ] = pos2d[ 1 ] - 240;
 		ProjectPointOntoRectangleOutwards( pos2d, point, dir, screen );
 	}
 	else
-		clamped = false;
+		clamped = qfalse;
 
 	h = ( 60 * 300 / b->dist + 30 ) / 2;
 	if( h > BEACON_SIZE_MAX )

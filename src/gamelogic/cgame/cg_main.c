@@ -1333,12 +1333,12 @@ static void CG_RegisterSounds( void )
 	for( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
 	{
 		if( BG_Beacon( i )->sound )
-			cgs.media.beaconSounds[ i - 1 ] = trap_S_RegisterSound( BG_Beacon( i )->sound, false );
+			cgs.media.beaconSounds[ i - 1 ] = trap_S_RegisterSound( BG_Beacon( i )->sound, qfalse );
 		else
 			cgs.media.beaconSounds[ i - 1 ] = 0;
 	}
 
-	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", false );
+	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", qfalse );
 }
 
 //===================================================================================

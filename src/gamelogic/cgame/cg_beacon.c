@@ -41,7 +41,7 @@ static int CG_NearestBuildable( int a, int b, int c, vec3_t origin )
 	int i;
 	centity_t *cent;
 	entityState_t *es, *nearest = NULL;
-	float distance, minDistance = INFINITY;
+	float distance, minDistance = 1.0e20;
 
 	for ( i = 0; i < cg.snap->numEntities; i++ )
 	{
@@ -133,7 +133,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 
 	// pulsation
 	if( b->type == BCT_HEALTH && delta > 600 )
-		b->scale *= 1.0 + Square( 1.0 - fmod( delta, 600.0 ) / 600.0 ) * 0.4;
+		b->scale *= 1.0 + Square( 1.0 - (float)( delta % 600 ) / 600.0 ) * 0.4;
 
 	// timer expired
 	if( b->type == BCT_TIMER )

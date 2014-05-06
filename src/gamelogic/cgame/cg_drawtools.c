@@ -424,7 +424,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 	float  xc, yc;
 	float  px, py;
 	float  z;
-	qboolean front = true;
+	qboolean front = qtrue;
 
 	px = tan( cg.refdef.fov_x * M_PI / 360.0f );
 	py = tan( cg.refdef.fov_y * M_PI / 360.0f );
@@ -438,7 +438,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 
 	if ( z <= 0.001f )
 	{
-		front = false;
+		front = qfalse;
 	}
 
 	if ( x )
