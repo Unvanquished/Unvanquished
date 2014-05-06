@@ -2154,12 +2154,10 @@ void CG_LoadMenus( const char *menuFile )
 {
 	char         *token;
 	char         *p;
-	int          len, start;
+	int          len;
 	fileHandle_t f;
 	static char  buf[ MAX_MENUDEFFILE ];
 	char         assetScale[ 20 ];
-
-	start = trap_Milliseconds();
 
 	len = trap_FS_FOpenFile( menuFile, &f, FS_READ );
 
@@ -2220,8 +2218,6 @@ void CG_LoadMenus( const char *menuFile )
 			}
 		}
 	}
-
-	// Com_Printf(_( "UI menu load time = %dms\n"), trap_Milliseconds() - start );
 }
 
 static qboolean CG_OwnerDrawHandleKey( int ownerDraw, int key )

@@ -246,22 +246,22 @@ static cvarTable_t gameCvarTable[] =
 	// TODO: Split and comment this section
 	{ NULL,                           "gamename",                      GAME_VERSION,                       CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "gamedate",                      __DATE__,                           CVAR_ROM,                                        0, qfalse           },
-	{ NULL,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
-	{ NULL,                           "P",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
-	{ NULL,                           "B",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
+	{ NULL,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO,                                 0, qfalse           },
+	{ NULL,                           "P",                             "",                                 CVAR_SERVERINFO,                                 0, qfalse           },
+	{ NULL,                           "B",                             "",                                 CVAR_SERVERINFO,                                 0, qfalse           },
 	{ NULL,                           "g_mapStartupMessage",           "",                                 0,                                               0, qfalse           },
-	{ NULL,                           "g_mapConfigsLoaded",            "0",                                CVAR_ROM,                                        0, qfalse           },
+	{ NULL,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, qfalse           },
 	{ &g_dedicated,                   "dedicated",                     "0",                                0,                                               0, qfalse           },
 	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, qfalse           },
 	{ &g_cheats,                      "sv_cheats",                     "",                                 0,                                               0, qfalse           },
-	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                CVAR_ROM,                                        0, qfalse           },
-	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                CVAR_ROM,                                        0, qfalse           },
+	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, qfalse           },
+	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                0,                                               0, qfalse           },
 	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, qfalse           },
 
 
 	// server: basic
 	{ &g_maxGameClients,              "g_maxGameClients",              "0",                                CVAR_SERVERINFO,                                 0, qfalse           },
-	{ &g_needpass,                    "g_needpass",                    "0",                                CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
+	{ &g_needpass,                    "g_needpass",                    "0",                                CVAR_SERVERINFO,                                 0, qfalse           },
 	{ &g_password,                    "g_password",                    "",                                 CVAR_USERINFO,                                   0, qfalse           },
 	{ &g_motd,                        "g_motd",                        "",                                 0,                                               0, qfalse           },
 	{ &g_showHelpOnConnection,        "g_showHelpOnConnection",        "1",                                0,                                               0, qfalse           },
@@ -326,12 +326,12 @@ static cvarTable_t gameCvarTable[] =
 
 	// maps, layouts & rotation
 	{ &g_currentMapRotation,          "g_currentMapRotation",          "-1",                               0,                                               0, qfalse           },
-	{ &g_mapRotationNodes,            "g_mapRotationNodes",            "",                                 CVAR_ROM,                                        0, qfalse           },
-	{ &g_mapRotationStack,            "g_mapRotationStack",            "",                                 CVAR_ROM,                                        0, qfalse           },
+	{ &g_mapRotationNodes,            "g_mapRotationNodes",            "",                                 0,                                               0, qfalse           },
+	{ &g_mapRotationStack,            "g_mapRotationStack",            "",                                 0,                                               0, qfalse           },
 	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, qtrue            },
 	{ &g_nextMapLayouts,              "g_nextMapLayouts",              "",                                 0,                                               0, qtrue            },
 	{ &g_initialMapRotation,          "g_initialMapRotation",          "rotation1",                        0,                                               0, qfalse           },
-	{ &g_mapLog,                      "g_mapLog",                      "",                                 CVAR_ROM,                                        0, qfalse           },
+	{ &g_mapLog,                      "g_mapLog",                      "",                                 0,                                               0, qfalse           },
 	{ &g_mapStartupMessageDelay,      "g_mapStartupMessageDelay",      "5000",                             CVAR_LATCH,                                      0, qfalse           },
 	{ &g_mapConfigs,                  "g_mapConfigs",                  "",                                 0,                                               0, qfalse           },
 	{ &g_defaultLayouts,              "g_defaultLayouts",              "",                                 CVAR_LATCH,                                      0, qfalse           },
@@ -387,9 +387,9 @@ static cvarTable_t gameCvarTable[] =
 	// gameplay: limits
 	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, qfalse           },
 	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, qfalse           },
-	{ &g_disabledEquipment,           "g_disabledEquipment",           "",                                 CVAR_ROM | CVAR_SYSTEMINFO,                      0, qfalse           },
-	{ &g_disabledClasses,             "g_disabledClasses",             "",                                 CVAR_ROM | CVAR_SYSTEMINFO,                      0, qfalse           },
-	{ &g_disabledBuildables,          "g_disabledBuildables",          "",                                 CVAR_ROM | CVAR_SYSTEMINFO,                      0, qfalse           },
+	{ &g_disabledEquipment,           "g_disabledEquipment",           "",                                 CVAR_SYSTEMINFO,                                 0, qfalse           },
+	{ &g_disabledClasses,             "g_disabledClasses",             "",                                 CVAR_SYSTEMINFO,                                 0, qfalse           },
+	{ &g_disabledBuildables,          "g_disabledBuildables",          "",                                 CVAR_SYSTEMINFO,                                 0, qfalse           },
 
 	// gameplay: misc
 	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                0,                                               0, qfalse           },

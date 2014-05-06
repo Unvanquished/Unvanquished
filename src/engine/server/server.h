@@ -401,8 +401,6 @@ extern cvar_t *sv_fullmsg;
 extern cvar_t *sv_voip;
 #endif
 
-extern cvar_t *vm_game;
-
 //===========================================================
 
 //

@@ -657,7 +657,7 @@ static void CG_LightFlare( centity_t *cent )
 	float         len;
 	float         maxAngle;
 	vec3_t        start, end;
-	float         srcRadius, srLocal, ratio = 1.0f;
+	float         ratio = 1.0f;
 	float         newStatus;
 
 	es = &cent->currentState;
@@ -711,15 +711,6 @@ static void CG_LightFlare( centity_t *cent )
 
 	//can only see the flare when in front of it
 	flare.radius = len / es->origin2[ 0 ];
-
-	if ( es->origin2[ 2 ] == 0 )
-	{
-		srcRadius = srLocal = flare.radius / 2.0f;
-	}
-	else
-	{
-		srcRadius = srLocal = len / es->origin2[ 2 ];
-	}
 
 	maxAngle = es->origin2[ 1 ];
 

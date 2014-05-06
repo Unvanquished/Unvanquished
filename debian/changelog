@@ -1,11 +1,8 @@
 unvanquished (0.27.1-1) unstable; urgency=low
 
   * Release of alpha 27.1.
-  * Fix server start-up failure when vm_game ≠ 2 by setting it in
-    /etc/default/unvanquished-server.default.
-  * Tell the client to use vm_game=2 by default.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 05 May 2014 16:53:03 +0100
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Tue, 06 May 2014 14:25:37 +0100
 
 unvanquished (0.27.0-1) unstable; urgency=low
 
