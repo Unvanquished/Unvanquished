@@ -275,7 +275,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, 
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 
-	std::string handleArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
+	std::string handleArg = std::to_string((int)(intptr_t)pair.second.GetHandle());
 
 	std::string module = FS::Path::Build(libPath, name + "-nacl-native-exe" + EXE_EXT);
 	if (debug) {
