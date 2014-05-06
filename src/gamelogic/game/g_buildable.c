@@ -975,41 +975,34 @@ void G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter )
 
 	if ( !self->onFire && level.time > self->fireImmunityUntil )
 	{
-		self->onFire = qtrue;
-		self->fireStarter = fireStarter;
-		self->nextBurnDamage = level.time + BURN_DAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
-		self->nextBurnSplashDamage = level.time + BURN_DAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
-		self->nextBurnSpreadCheck = level.time + BURN_SPREAD_PERIOD * BURN_PERIODS_RAND_FACTOR;
+		if ( g_debugFire.integer )
+		{
+			char selfDescr[ 64 ], fireStarterDescr[ 64 ];
+			BG_BuildEntityDescription( selfDescr, sizeof( selfDescr ), &self->s );
+			BG_BuildEntityDescription( fireStarterDescr, sizeof( fireStarterDescr ), &fireStarter->s );
+			Com_Printf("%s ^2ignited^7 %s.", fireStarterDescr, selfDescr);
+		}
+
+		self->onFire               = qtrue;
+		self->fireStarter          = fireStarter;
+		self->nextBurnDamage       = level.time + BURN_SELFDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
+		self->nextBurnSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD  * BURN_PERIODS_RAND_MOD;
+		self->nextBurnAction       = level.time + BURN_ACTION_PERIOD     * BURN_PERIODS_RAND_MOD;
 	}
-
-	// re-ignition resets burn stop check
-	self->nextBurnStopCheck = level.time + BURN_STOP_PERIOD * BURN_PERIODS_RAND_FACTOR;
-}
-
-/*
-================
-AGeneric_Burn
-
-Deals damage to burning buildables.
-A burning buildable has a chance to stop burning or ignite close buildables.
-================
-*/
-void AGeneric_Burn( gentity_t *self )
-{
-	if ( !self->onFire )
+	else if ( self->onFire )
 	{
-		return;
+		if ( g_debugFire.integer )
+		{
+			char selfDescr[ 64 ], fireStarterDescr[ 64 ];
+			BG_BuildEntityDescription( selfDescr, sizeof( selfDescr ), &self->s );
+			BG_BuildEntityDescription( fireStarterDescr, sizeof( fireStarterDescr ), &fireStarter->s );
+			Com_Printf("%s ^2reset burning action timer of^7 %s.", fireStarterDescr, selfDescr);
+		}
+
+		// always reset the action timer
+		// this leads to prolonged burning but slow spread in burning groups
+		self->nextBurnAction = level.time + BURN_ACTION_PERIOD * BURN_PERIODS_RAND_MOD;
 	}
-
-	// damage self
-	if ( self->nextBurnDamage < level.time )
-	{
-		G_Damage( self, self, self->fireStarter, NULL, NULL, BURN_DAMAGE, 0, MOD_BURN );
-
-		self->nextBurnDamage = level.time + BURN_DAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
-	}
-
-	G_FireThink( self );
 }
 
 /*
@@ -1030,8 +1023,11 @@ void AGeneric_Think( gentity_t *self )
 	// slow down close humans
 	AGeneric_CreepSlow( self );
 
-	// check if on fire
-	AGeneric_Burn( self );
+	// burn if on fire
+	if ( self->onFire )
+	{
+		G_FireThink( self );
+	}
 }
 
 /*
@@ -2628,7 +2624,7 @@ void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
 	// clear target's healing flag
 	if ( self->target && self->target->client )
 	{
-		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
+		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
 	}
 
 	HGeneric_Die( self, inflictor, attacker, mod );
@@ -2668,7 +2664,7 @@ void HMedistat_Think( gentity_t *self )
 	// clear target's healing flag for now
 	if ( self->target && self->target->client )
 	{
-		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
+		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
 	}
 
 	// clear target on power loss
@@ -2764,7 +2760,7 @@ void HMedistat_Think( gentity_t *self )
 	{
 		player = self->target;
 		client = player->client;
-		client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
+		client->ps.stats[ STAT_STATE ] |= SS_HEALING_2X;
 
 		// start healing animation
 		if ( !self->active )

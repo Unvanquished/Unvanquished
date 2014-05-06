@@ -199,8 +199,7 @@ struct gentity_s
 	int          fireImmunityUntil;
 	int          nextBurnDamage;
 	int          nextBurnSplashDamage;
-	int          nextBurnStopCheck;
-	int          nextBurnSpreadCheck;
+	int          nextBurnAction;
 	gentity_t    *fireStarter;
 
 	/*

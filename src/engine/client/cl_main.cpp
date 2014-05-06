@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include <limits.h>
 
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"
@@ -1686,7 +1687,7 @@ void CL_Disconnect( qboolean showMainMenu )
 	}
 
 	// allow cheats locally
-	Cvar_Set( "sv_cheats", "1" );
+    Cvar::SetValueForce("sv_cheats", "1");
 
 	// Load map pk3s to allow menus to load levelshots
 	FS::PakPath::ClearPaks();
@@ -3811,7 +3812,7 @@ static void CL_Cache_UsedFile_f( void )
 {
 	char        groupStr[ MAX_QPATH ];
 	char        itemStr[ MAX_QPATH ];
-	int         i, group;
+	int         i, group, len;
 	cacheItem_t *item;
 
 	if ( Cmd_Argc() < 2 )
@@ -3822,10 +3823,13 @@ static void CL_Cache_UsedFile_f( void )
 	Q_strncpyz( groupStr, Cmd_Argv( 1 ), MAX_QPATH );
 	Q_strncpyz( itemStr, Cmd_Argv( 2 ), MAX_QPATH );
 
-	for ( i = 3; i < Cmd_Argc(); i++ )
+	len = sizeof( itemStr ) - strlen( itemStr );
+
+	for ( i = 3; i < Cmd_Argc() && len > 0; i++ )
 	{
-		strncat( itemStr, " ", MAX_QPATH - 1 );
-		strncat( itemStr, Cmd_Argv( i ), MAX_QPATH - 1 );
+		strncat( itemStr, " ", len-- );
+		strncat( itemStr, Cmd_Argv( i ), len );
+		len -= strlen( Cmd_Argv( i ) );
 	}
 
 	Q_strlwr( itemStr );
