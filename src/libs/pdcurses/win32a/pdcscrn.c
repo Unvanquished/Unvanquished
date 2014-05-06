@@ -43,7 +43,7 @@ unsigned long pdc_key_modifiers = 0L;
 int PDC_show_ctrl_alts = 0;
 
 /* RR: Removed statis on next line */
-bool PDC_bDone = FALSE;
+BOOL PDC_bDone = FALSE;
 static HWND originally_focussed_window;
 
 int debug_printf( const char *format, ...)
