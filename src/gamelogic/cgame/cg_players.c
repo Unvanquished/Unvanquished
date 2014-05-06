@@ -115,11 +115,10 @@ models/players/visor/character.cfg, etc
 
 static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 {
-	char         *text_p, *prev;
+	char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
-	int          skip;
 	char         text[ 20000 ];
 	fileHandle_t f;
 
@@ -144,7 +143,6 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 	// parse the text
 	text_p = text;
-	skip = 0; // quite the compiler warning
 
 	ci->footsteps = FOOTSTEP_GENERAL;
 	VectorClear( ci->headOffset );
@@ -159,7 +157,6 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	// read optional parameters
 	while ( 1 )
 	{
-		prev = text_p; // so we can unget
 		token = COM_Parse2( &text_p );
 
 		if ( !token[ 0 ] )
@@ -1797,7 +1794,6 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation )
 {
 	animation_t *anim;
-	qboolean    animChanged;
 
 	// debugging tool to get no animations
 	if ( cg_animSpeed.integer == 0 )
@@ -1815,14 +1811,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		{
 			oldSkeleton = legsSkeleton;
 		}
-
-		animChanged = qtrue;
 	}
-	else
-	{
-		animChanged = qfalse;
-	}
-
 
 	anim = lf->animation;
 
@@ -3166,7 +3155,6 @@ void CG_Player( centity_t *cent )
 
 	int           clientNum;
 	int           renderfx;
-	qboolean      shadow = qfalse;
 	float         shadowPlane = 0.0f;
 	entityState_t *es = &cent->currentState;
 	class_t       class_ = (class_t) ( ( es->misc >> 8 ) & 0xFF );
@@ -3313,7 +3301,7 @@ void CG_Player( centity_t *cent )
 		if ( ( es->number == cg.snap->ps.clientNum && cg.renderingThirdPerson ) ||
 			 es->number != cg.snap->ps.clientNum )
 		{
-			shadow = CG_PlayerShadow( cent, &shadowPlane, class_ );
+			CG_PlayerShadow( cent, &shadowPlane, class_ );
 		}
 
 		// add a water splash if partially in and out of water
@@ -3521,7 +3509,7 @@ void CG_Player( centity_t *cent )
 	if ( ( es->number == cg.snap->ps.clientNum && cg.renderingThirdPerson ) ||
 	     es->number != cg.snap->ps.clientNum )
 	{
-		shadow = CG_PlayerShadow( cent, &shadowPlane, class_ );
+		CG_PlayerShadow( cent, &shadowPlane, class_ );
 	}
 
 	// add a water splash if partially in and out of water
@@ -3719,7 +3707,6 @@ void CG_Corpse( centity_t *cent )
 	entityState_t *es = &cent->currentState;
 	int           corpseNum;
 	int           renderfx;
-	qboolean      shadow = qfalse;
 	float         shadowPlane;
 	vec3_t        origin, liveZ, deadZ, deadMax;
 	float         scale;
@@ -3814,7 +3801,7 @@ void CG_Corpse( centity_t *cent )
 	}
 
 	// add the shadow
-	shadow = CG_PlayerShadow( cent, &shadowPlane, (class_t) es->clientNum );
+	CG_PlayerShadow( cent, &shadowPlane, (class_t) es->clientNum );
 
 	// get the player model information
 	renderfx = RF_LIGHTING_ORIGIN; // use the same origin for all
