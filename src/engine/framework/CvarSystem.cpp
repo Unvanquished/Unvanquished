@@ -266,7 +266,7 @@ namespace Cvar {
         InternalSetValue(cvarName, std::move(value), 0, false, true);
     }
 
-    void SetValueROM(const std::string& cvarName, std::string value) {
+    void SetValueForce(const std::string& cvarName, std::string value) {
         InternalSetValue(cvarName, std::move(value), 0, true, true);
     }
 

@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include <limits.h>
 
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"
@@ -1686,7 +1687,7 @@ void CL_Disconnect( qboolean showMainMenu )
 	}
 
 	// allow cheats locally
-	Cvar_Set( "sv_cheats", "1" );
+    Cvar::SetValueForce("sv_cheats", "1");
 
 	// Load map pk3s to allow menus to load levelshots
 	FS::PakPath::ClearPaks();
