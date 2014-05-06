@@ -1659,7 +1659,12 @@ Note,  though,  that in Win9x,  detection of the Shift keys is hardware
 dependent;  if you've an unusual keyboard,  both Shift keys may be
 detected as right, or both as left. */
 
-static LRESULT CALLBACK WndProc (const HWND hwnd,
+#if defined(_WIN32) && defined(__GNUC__)
+#define ALIGN_STACK __attribute__((force_align_arg_pointer))
+#else
+#define ALIGN_STACK
+#endif
+static LRESULT ALIGN_STACK CALLBACK WndProc (const HWND hwnd,
                           const UINT message,
                           const WPARAM wParam,
                           const LPARAM lParam)
