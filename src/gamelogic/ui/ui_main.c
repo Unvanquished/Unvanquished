@@ -1635,10 +1635,7 @@ qboolean UI_LoadMenus( const char *menuFile, qboolean reset )
 {
 	pc_token_t token;
 	int        handle;
-	int        start;
 	char       assetScale[ 20 ];
-
-	start = trap_Milliseconds();
 
 	handle = trap_Parse_LoadSource( menuFile );
 
@@ -1702,8 +1699,6 @@ qboolean UI_LoadMenus( const char *menuFile, qboolean reset )
 		}
 	}
 
-	// Com_Printf(_( "UI menu file '%s' loaded in %d msec\n"), menuFile, trap_Milliseconds() - start );
-
 	trap_Parse_FreeSource( handle );
 	return qtrue;
 }
@@ -1711,10 +1706,8 @@ qboolean UI_LoadMenus( const char *menuFile, qboolean reset )
 qboolean UI_LoadHelp( const char *helpFile )
 {
 	pc_token_t token;
-	int        handle, start;
+	int        handle;
 	char       title[ 32 ], buffer[ 1024 ];
-
-	start = trap_Milliseconds();
 
 	handle = trap_Parse_LoadSource( helpFile );
 
@@ -1769,9 +1762,6 @@ qboolean UI_LoadHelp( const char *helpFile )
 	}
 
 	trap_Parse_FreeSource( handle );
-
-	// Com_Printf(_( "UI help file '%s' loaded in %d msec (%d infopanes)\n"),
-	//             helpFile, trap_Milliseconds() - start, uiInfo.helpCount );
 	return qtrue;
 }
 
@@ -1910,6 +1900,9 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 					}
 
 					break;
+
+					default:
+						break;
 			}
 
 			break;
@@ -2100,7 +2093,7 @@ UI_BuildPlayerList
 static void UI_BuildPlayerList( void )
 {
 	uiClientState_t cs;
-	int   n, count, team, team2, playerTeamNumber;
+	int   n, count, team, team2;
 	char  info[ MAX_INFO_STRING ];
 
 	trap_GetClientState( &cs );
@@ -2112,7 +2105,6 @@ static void UI_BuildPlayerList( void )
 	uiInfo.playerCount = 0;
 	uiInfo.myTeamCount = 0;
 	uiInfo.myPlayerIndex = 0;
-	playerTeamNumber = 0;
 
 	for ( n = 0; n < count; n++ )
 	{
@@ -2146,11 +2138,6 @@ static void UI_BuildPlayerList( void )
 				            Info_ValueForKey( info, "n" ), MAX_NAME_LENGTH );
 				Q_CleanStr( uiInfo.teamNames[ uiInfo.myTeamCount ] );
 				uiInfo.teamClientNums[ uiInfo.myTeamCount ] = n;
-
-				if ( uiInfo.playerNumber == n )
-				{
-					playerTeamNumber = uiInfo.myTeamCount;
-				}
 
 				uiInfo.myTeamCount++;
 			}
@@ -4807,8 +4794,6 @@ UI_Init
 */
 void UI_Init( void )
 {
-	int start;
-
 	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 
 	BG_InitMemory();
@@ -4893,8 +4878,6 @@ void UI_Init( void )
 	uiInfo.uiDC.whiteShader = trap_R_RegisterShader("white", RSF_NOMIP);
 
 	AssetCache();
-
-	start = trap_Milliseconds();
 
 	if ( !UI_LoadMenus( ui_menuFiles.string, qtrue ) )
 	{
