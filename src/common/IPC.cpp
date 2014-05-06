@@ -339,14 +339,12 @@ bool InternalRecvMsg(OSHandleType handle, Reader& reader)
 
 #ifdef __native_client__
 	hdr.iov = iov;
-	hdr.iov_length = 2;
+	hdr.iov_length = 1;
 	hdr.handles = h;
 	hdr.handle_count = NACL_ABI_IMC_DESC_MAX;
 	hdr.flags = 0;
-	iov[0].base = &more;
-	iov[0].length = 1;
-	iov[1].base = recvBuffer.get();
-	iov[1].length = NACL_ABI_IMC_BYTES_MAX;
+	iov[0].base = recvBuffer.get();
+	iov[0].length = NACL_ABI_IMC_BYTES_MAX;
 
 	int result = NaClReceiveDatagram(handle, &hdr, 0);
 	if (result == -1) {
