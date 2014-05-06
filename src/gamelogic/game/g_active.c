@@ -515,7 +515,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	pmove_t   pm;
 	gclient_t *client;
 	int       clientNum;
-	qboolean  attack1, attack3, following, queued;
+	qboolean  attack1, following, queued;
 	team_t    team;
 
 	client = ent->client;
@@ -525,8 +525,6 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 
 	attack1 = usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
 	          !usercmdButtonPressed( client->oldbuttons, BUTTON_ATTACK );
-	attack3 = usercmdButtonPressed( client->buttons, BUTTON_USE_HOLDABLE ) &&
-	          !usercmdButtonPressed( client->oldbuttons, BUTTON_USE_HOLDABLE );
 
 	//if bot
 	if( ent->r.svFlags & SVF_BOT ) {
@@ -799,8 +797,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 {
 	playerState_t *ps;
 	gclient_t     *client;
-	usercmd_t     *ucmd;
-	int           i, aForward, aRight;
+	int           i;
 	buildable_t   buildable;
 
 	if ( !ent || !ent->client )
@@ -810,10 +807,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 	client = ent->client;
 	ps     = &client->ps;
-	ucmd   = &client->pers.cmd;
-
-	aForward = abs( ucmd->forwardmove );
-	aRight   = abs( ucmd->rightmove );
 
 	client->time100 += msec;
 	client->time1000 += msec;
@@ -2266,15 +2259,11 @@ while a slow client may have multiple ClientEndFrame between ClientThink.
 */
 void ClientEndFrame( gentity_t *ent )
 {
-	clientPersistant_t *pers;
-
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		SpectatorClientEndFrame( ent );
 		return;
 	}
-
-	pers = &ent->client->pers;
 
 	//
 	// If the end of unit layout is displayed, don't give

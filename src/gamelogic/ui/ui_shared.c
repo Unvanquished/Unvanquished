@@ -3247,9 +3247,6 @@ int Item_ListBox_OverLB( itemDef_t *item, float x, float y )
 {
 	rectDef_t r;
 	int       thumbstart;
-	int       count;
-
-	count = DC->feederCount( item->feederID );
 
 	r.x = SCROLLBAR_SLIDER_X( item );
 	r.y = SCROLLBAR_Y( item );
@@ -4896,8 +4893,6 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 {
 	int       i;
 	itemDef_t *item = NULL;
-	qboolean  inHandler = qfalse;
-	inHandler = qtrue;
 
 	if ( menu->onKEY[ key ] && *menu->onKEY[ key ] && !down )
 	{
@@ -4929,7 +4924,6 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 	if ( g_waitingForKey && down )
 	{
 		Item_Bind_HandleKey( g_bindItem, key, chr, down );
-		inHandler = qfalse;
 		return;
 	}
 
@@ -4940,7 +4934,6 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 			g_editingField = qfalse;
 			Item_RunScript( g_editItem, g_editItem->onTextEntry );
 			g_editItem = NULL;
-			inHandler = qfalse;
 			return;
 		}
 		else
@@ -4951,7 +4944,6 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 
 	if ( menu == NULL )
 	{
-		inHandler = qfalse;
 		return;
 	}
 
@@ -4959,14 +4951,9 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 	if ( down && !( menu->window.flags & WINDOW_POPUP ) &&
 	     !Rect_ContainsPoint( &menu->window.rect, DC->cursorx, DC->cursory ) )
 	{
-		static qboolean inHandleKey = qfalse;
-
-		if ( !inHandleKey && ( key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 ) )
+		if ( key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 )
 		{
-			inHandleKey = qtrue;
 			Menus_HandleOOBClick( menu, key, chr, down );
-			inHandleKey = qfalse;
-			inHandler = qfalse;
 			return;
 		}
 	}
@@ -4992,14 +4979,12 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 		if ( Item_HandleKey( item, key, chr, down ) )
 		{
 			Item_Action( item );
-			inHandler = qfalse;
 			return;
 		}
 	}
 
 	if ( !down )
 	{
-		inHandler = qfalse;
 		return;
 	}
 
@@ -5135,8 +5120,6 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 
 			break;
 	}
-
-	inHandler = qfalse;
 }
 
 void ToWindowCoords( float *x, float *y, windowDef_t *window )
@@ -5911,7 +5894,6 @@ void Item_YesNo_Paint( itemDef_t *item )
 {
 	vec4_t    newColor;
 	float     value;
-	int       offset;
 	menuDef_t *parent = ( menuDef_t * ) item->parent;
 	char buff[1024];
 
@@ -5926,8 +5908,6 @@ void Item_YesNo_Paint( itemDef_t *item )
 	{
 		memcpy( &newColor, &item->window.foreColor, sizeof( vec4_t ) );
 	}
-
-	offset = ( item->text && *item->text ) ? ITEM_VALUE_OFFSET : 0;
 
 	if ( item->text )
 	{
@@ -6278,11 +6258,9 @@ void BindingFromName( const char *cvar )
 void Item_Slider_Paint( itemDef_t *item )
 {
 	vec4_t    newColor;
-	float     x, y, value;
+	float     x, y;
 	menuDef_t *parent = ( menuDef_t * ) item->parent;
 	float     vScale = Item_Slider_VScale( item );
-
-	value = ( item->cvar ) ? DC->getCVarValue( item->cvar ) : 0;
 
 	if ( item->window.flags & WINDOW_HASFOCUS )
 	{
@@ -6320,16 +6298,7 @@ void Item_Slider_Paint( itemDef_t *item )
 void Item_Bind_Paint( itemDef_t *item )
 {
 	vec4_t    newColor, lowLight;
-	float     value;
-	int       maxChars = 0;
 	menuDef_t *parent = ( menuDef_t * ) item->parent;
-
-	if ( item->typeData.edit )
-	{
-		maxChars = item->typeData.edit->maxPaintChars;
-	}
-
-	value = ( item->cvar ) ? DC->getCVarValue( item->cvar ) : 0;
 
 	if ( item->window.flags & WINDOW_HASFOCUS )
 	{
@@ -6372,7 +6341,7 @@ void Item_Bind_Paint( itemDef_t *item )
 	else
 	{
 		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor,
-		               ( value != 0 ) ? "FIXME" : "FIXME", 0, item->textStyle );
+		               "FIXME", 0, item->textStyle );
 	}
 }
 
@@ -6875,7 +6844,6 @@ void Item_OwnerDraw_Paint( itemDef_t *item )
 	if ( DC->ownerDrawItem )
 	{
 		vec4_t    color, lowLight;
-		menuDef_t *parent = ( menuDef_t * ) item->parent;
 		Fade( &item->window.flags, &item->window.foreColor[ 3 ], parent->fadeClamp, &item->window.nextTime,
 		      parent->fadeCycle, qtrue, parent->fadeAmount );
 		memcpy( &color, &item->window.foreColor, sizeof( color ) );
