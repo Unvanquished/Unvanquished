@@ -311,7 +311,7 @@ void Socket::SendMsg(const Writer& writer) const
 		InternalSendMsg(handle, more, handles, std::min<size_t>(numHandles, NACL_ABI_IMC_DESC_MAX), data, std::min<size_t>(len, NACL_ABI_IMC_USER_BYTES_MAX - 1));
 		handles += std::min<size_t>(numHandles, NACL_ABI_IMC_DESC_MAX);
 		numHandles -= std::min<size_t>(numHandles, NACL_ABI_IMC_DESC_MAX);
-		data += std::min<size_t>(len, NACL_ABI_IMC_USER_BYTES_MAX - 1);
+		data = static_cast<const char*>(data) + std::min<size_t>(len, NACL_ABI_IMC_USER_BYTES_MAX - 1);
 		len -= std::min<size_t>(len, NACL_ABI_IMC_USER_BYTES_MAX - 1);
 	}
 }
