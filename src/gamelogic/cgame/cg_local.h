@@ -1793,10 +1793,8 @@ void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float ra
                                qboolean a240, int customShader, const float *shaderRGBA );
 void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, vec4_t rgba );
 
-inline void CG_ExponentialFade( float *value, float target, float lambda )
-{
-	ExponentialFade( value, target, lambda, (float)cg.frametime * 0.001 );
-}
+#define CG_ExponentialFade( value, target, lambda ) \
+ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001 );
 
 //
 // cg_draw.c
