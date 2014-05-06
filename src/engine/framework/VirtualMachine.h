@@ -52,16 +52,25 @@ enum vmType_t {
 	TYPE_END
 };
 
+struct VMParams {
+	VMParams(std::string name)
+	:logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
+	vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NATIVE_EXE, 0, TYPE_END - 1) {
+	}
+
+	Cvar::Cvar<bool> logSyscalls;
+	Cvar::Range<Cvar::Cvar<int>> vmType;
+};
+
 // Base class for a virtual machine instance
 class VMBase {
 public:
-	VMBase(std::string name)
-		: processHandle(IPC::INVALID_HANDLE), name(name),
-        logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false) {}
+	VMBase(std::string name, VMParams& params)
+	: processHandle(IPC::INVALID_HANDLE), name(name), params(params) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module.
-	int Create(vmType_t type);
+	int Create();
 
 	// Free the VM
 	void Free();
@@ -115,12 +124,12 @@ private:
 
 	// Common
 	IPC::Channel rootChannel;
-	vmType_t vmType;
 
 	std::string name;
 
+	VMParams& params;
+
 	// Logging the syscalls
-	Cvar::Cvar<bool> logSyscalls;
 	FS::File syscallLogFile;
 
 	void LogMessage(bool vmToEngine, int id);

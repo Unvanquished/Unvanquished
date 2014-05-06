@@ -322,8 +322,10 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 	return std::move(pair.first);
 }
 
-int VMBase::Create(vmType_t type)
+int VMBase::Create()
 {
+	vmType_t type = static_cast<vmType_t>(params.vmType.Get());
+
 	if (type < 0 || type >= TYPE_END)
 		Com_Error(ERR_DROP, "VM: Invalid type %d", type);
 
@@ -333,7 +335,7 @@ int VMBase::Create(vmType_t type)
 	Free();
 
 	// Open the syscall log
-	if (logSyscalls.Get()) {
+	if (params.logSyscalls.Get()) {
 		std::string filename = name + ".syscallLog";
 		try {
 			syscallLogFile = FS::RawPath::OpenWrite(filename);
@@ -354,7 +356,6 @@ int VMBase::Create(vmType_t type)
 		rootSocket = CreateInProcessNativeVM(std::move(pair), name, inProcess);
 	}
 	rootChannel = IPC::Channel(std::move(rootSocket));
-	vmType = type;
 
 	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG)
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
@@ -422,7 +423,9 @@ void VMBase::Free()
 
 	rootChannel = IPC::Channel();
 
-	if (vmType == TYPE_NACL || vmType == TYPE_NACL_DEBUG || vmType == TYPE_NATIVE_EXE || vmType == TYPE_NATIVE_EXE_DEBUG) {
+	vmType_t type = static_cast<vmType_t>(params.vmType.Get());
+
+	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
 #ifdef _WIN32
 		// Closing the job object should kill the child process
 		CloseHandle(processHandle);
@@ -431,7 +434,7 @@ void VMBase::Free()
 		waitpid(processHandle, NULL, 0);
 #endif
 		processHandle = IPC::INVALID_HANDLE;
-	} else if (vmType == TYPE_NATIVE_DLL) {
+	} else if (type == TYPE_NATIVE_DLL) {
 		FreeInProcessVM();
 	}
 

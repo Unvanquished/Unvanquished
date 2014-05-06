@@ -466,13 +466,15 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 #endif
 }
 
-GameVM::GameVM(): VM::VMBase("game"), services(new VM::CommonVMServices(*this, "Game", Cmd::GAME))
+static VM::VMParams gameParams("game");
+
+GameVM::GameVM(): VM::VMBase("game", gameParams), services(new VM::CommonVMServices(*this, "Game", Cmd::GAME))
 {
 }
 
 bool GameVM::Start()
 {
-    int version = this->Create( ( VM::vmType_t ) vm_game->integer );
+    int version = this->Create();
 
     if (version < 0)
     {
