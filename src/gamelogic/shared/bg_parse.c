@@ -2157,7 +2157,9 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 	char        text_buffer[ 20000 ];
 	char        *text;
 	int         defined = 0;
+#ifdef BUILD_CGAME
 	int         index;
+#endif
 
 	enum
 	{
@@ -2346,7 +2348,9 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "impactSound" ) )
 		{
 			PARSE( text, token );
+#ifdef BUILD_CGAME
 			index = atoi( token );
+#endif
 			PARSE( text, token );
 #ifdef BUILD_CGAME
 			if ( index >= 0 && index < 4 )
@@ -2359,7 +2363,9 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "impactFleshSound" ) )
 		{
 			PARSE( text, token );
+#ifdef BUILD_CGAME
 			index = atoi( token );
+#endif
 			PARSE( text, token );
 #ifdef BUILD_CGAME
 			if ( index >= 0 && index < 4 )
