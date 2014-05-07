@@ -78,7 +78,7 @@ static std::string Win32StrError(uint32_t error)
 #endif
 
 // Platform-specific code to load a module
-static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem)
+static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem, Str::StringRef loaderLogFile)
 {
 #ifdef _WIN32
 	// Inherit the socket in the child process
@@ -136,6 +136,11 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	PROCESS_INFORMATION processInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
 	startupInfo.cb = sizeof(startupInfo);
+	if (not loaderLogFile.empty()) {
+		startupinfo.dwFlags = STARTF_USESTDHANDLES;
+		FS::File logFile = FS::RawPath::OpenAppend(loaderLogFile);
+		startupinfo.hStdError = reinterpret_cast<HANDLE>(_get_osfhandle(fileno(logFile.ReleaseHandle())))
+	}
 	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
 		Com_Error(ERR_DROP, "VM: Could not create child process: %s", Win32StrError(GetLastError()).c_str());
@@ -192,6 +197,11 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 		// stderr is not closed so that we can see error messages reported by sel_ldr
 		close(0);
 		close(1);
+
+		if (not loaderLogFile.empty()) {
+			FS::File logFile = FS::RawPath::OpenAppend(loaderLogFile);
+			dup2(fileno(logFile.ReleaseHandle()), 2);
+		}
 
 		// Load the target executable
 		char* env[] = {nullptr};
@@ -301,7 +311,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 		Com_Printf("Using loader args: %s", commandLine.c_str());
 	}
 
-	return InternalLoadModule(std::move(pair), args.data(), true);
+	return InternalLoadModule(std::move(pair), args.data(), true, loaderLogFile);
 }
 
 std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
@@ -321,7 +331,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, 
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
 
-	return InternalLoadModule(std::move(pair), args.data(), true);
+	return InternalLoadModule(std::move(pair), args.data(), true, "");
 }
 
 IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, VM::VMBase::InProcessInfo& inProcess) {

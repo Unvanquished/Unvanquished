@@ -94,6 +94,13 @@ public:
 		return fd;
 	}
 
+	FILE* ReleaseHandle()
+	{
+		FILE* res = fd;
+		fd = nullptr;
+		return res;
+	}
+
 	// Get the length of the file
 	offset_t Length(std::error_code& err = throws()) const;
 
