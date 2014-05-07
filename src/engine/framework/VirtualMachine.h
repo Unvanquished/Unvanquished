@@ -55,10 +55,13 @@ enum vmType_t {
 struct VMParams {
 	VMParams(std::string name)
 		: logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
-		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NATIVE_EXE, 0, TYPE_END - 1) {}
+		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NATIVE_EXE, 0, TYPE_END - 1),
+		  debugLoader("vm." + name + ".debugLoader", "make sel_ldr dump information to " + name + "-sel_ldr.log", Cvar::NONE, false) {
+	}
 
 	Cvar::Cvar<bool> logSyscalls;
 	Cvar::Range<Cvar::Cvar<int>> vmType;
+	Cvar::Cvar<bool> debugLoader;
 };
 
 // Base class for a virtual machine instance

@@ -220,12 +220,12 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 }
 
-std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract) {
+std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, bool debugLoader) {
 	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
-	std::string module, sel_ldr, irt, bootstrap, modulePath;
+	std::string module, sel_ldr, irt, bootstrap, modulePath, loaderLogFile;
 
 	// Extract the nexe from the pak so that sel_ldr can load it
 	module = name + "-" ARCH_STRING ".nexe";
@@ -256,6 +256,13 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 #endif
 	if (debug)
 		args.push_back("-g");
+	if (debugLoader) {
+		loaderLogFile = FS::Path::Build(FS::GetHomePath(), name + ".sel_ldr.log");
+		args.push_back("-vvvv");
+		args.push_back("-l");
+		args.push_back(loaderLogFile.c_str());
+	}
+
 	args.push_back("-B");
 	args.push_back(irt.c_str());
 	args.push_back("-e");
@@ -267,6 +274,16 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	args.push_back(NULL);
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
+
+	if (debugLoader) {
+		std::ostringstream commandLine;
+		for (auto arg : args) {
+			if (arg) {
+				commandLine << " " << arg;
+			}
+		}
+		Com_Printf("Using loader args: %s", commandLine.str().c_str());
+	}
 
 	return InternalLoadModule(std::move(pair), args.data(), true);
 }
@@ -349,7 +366,7 @@ int VMBase::Create()
 
 	IPC::Socket rootSocket;
 	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH || type == TYPE_NACL_LIBPATH_DEBUG) {
-		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG, type == TYPE_NACL || type == TYPE_NACL_DEBUG);
+		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG, type == TYPE_NACL || type == TYPE_NACL_DEBUG, params.debugLoader.Get());
 	} else if (type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
 		std::tie(processHandle, rootSocket) = CreateNativeVM(std::move(pair), name, type == TYPE_NATIVE_EXE_DEBUG);
 	} else {
