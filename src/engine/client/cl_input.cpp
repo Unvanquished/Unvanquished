@@ -884,6 +884,31 @@ qboolean CL_ReadyToSendPacket( void )
 }
 
 /*
+================
+CL_WriteBinaryMessage
+================
+*/
+static void CL_WriteBinaryMessage( msg_t *msg )
+{
+	if ( !clc.binaryMessageLength )
+	{
+		return;
+	}
+
+	MSG_Uncompressed( msg );
+
+	if ( ( msg->cursize + clc.binaryMessageLength ) >= msg->maxsize )
+	{
+		clc.binaryMessageOverflowed = qtrue;
+		return;
+	}
+
+	MSG_WriteData( msg, clc.binaryMessage, clc.binaryMessageLength );
+	clc.binaryMessageLength = 0;
+	clc.binaryMessageOverflowed = qfalse;
+}
+
+/*
 ===================
 CL_WritePacket
 
@@ -1074,7 +1099,9 @@ void CL_WritePacket( void )
 		Com_Printf("%i ", buf.cursize );
 	}
 
-	CL_Netchan_Transmit( &clc.netchan, &buf );
+	MSG_WriteByte( &buf, clc_EOF );
+	CL_WriteBinaryMessage( &buf );
+	Netchan_Transmit( &clc.netchan, buf.cursize, buf.data );
 
 	// clients never really should have messages large enough
 	// to fragment, but in case they do, fire them all off
@@ -1088,7 +1115,7 @@ void CL_WritePacket( void )
 			Com_Printf( "WARNING: unsent fragments (not supposed to happen!)" );
 		}
 
-		CL_Netchan_TransmitNextFragment( &clc.netchan );
+		Netchan_TransmitNextFragment( &clc.netchan );
 	}
 }
 
