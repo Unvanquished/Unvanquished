@@ -232,12 +232,12 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 }
 
-std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, bool debugLoader) {
+std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, int debugLoader) {
 	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
-	std::string module, sel_ldr, irt, bootstrap, modulePath;
+	std::string module, sel_ldr, irt, bootstrap, modulePath, verbosity;
 	FS::File stderrRedirect;
 
 	// Extract the nexe from the pak so that sel_ldr can load it
@@ -290,7 +290,9 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 		} catch (std::system_error& err) {
 			Log::Warn("Couldn't open %s: %s", name + ".sel_ldr.log", err.what());
 		}
-		args.push_back("-vvvv");
+		verbosity = "-";
+		verbosity.append(debugLoader, 'v');
+		args.push_back(verbosity.c_str());
 	}
 
 	args.push_back("-B");
