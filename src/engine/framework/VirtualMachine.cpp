@@ -239,9 +239,18 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	char rootSocketRedir[32];
 	std::string module, sel_ldr, irt, bootstrap, modulePath, verbosity;
 	FS::File stderrRedirect;
+	bool win32Force64Bit = false;
+
+	// On Windows, even if we are running a 32-bit engine, we must use the
+	// 64-bit sel_ldr if the host operating system is 64-bit.
+#if defined(_WIN32) && !defined(_WIN64)
+	SYSTEM_INFO systemInfo;
+	GetNativeSystemInfo(&systemInfo);
+	win32Force64Bit = systemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;
+#endif
 
 	// Extract the nexe from the pak so that sel_ldr can load it
-	module = name + "-" ARCH_STRING ".nexe";
+	module = win32Force64Bit ? name + "-x86_64.nexe" : name + "-" ARCH_STRING ".nexe";
 	if (extract) {
 		try {
 			FS::File out = FS::HomePath::OpenWrite(module);
@@ -255,20 +264,9 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 		modulePath = FS::Path::Build(libPath, module);
 
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
-	irt = FS::Path::Build(libPath, "irt_core-" ARCH_STRING ".nexe");
+	irt = FS::Path::Build(libPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
 
-	// On Windows, even if we are running a 32-bit engine, we must use the
-	// 64-bit sel_ldr if the host operating system is 64-bit.
-#if defined(_WIN32) && !defined(_WIN64)
-	SYSTEM_INFO systemInfo;
-	GetNativeSystemInfo(&systemInfo);
-	if (systemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
-		sel_ldr = FS::Path::Build(libPath, "sel_ldr64" EXE_EXT);
-	else
-		sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
-#else
-	sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
-#endif
+	sel_ldr = FS::Path::Build(libPath, win32Force64Bit ? "sel_ldr64" EXE_EXT : "sel_ldr" EXE_EXT);
 
 #ifdef __linux__
 	bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
