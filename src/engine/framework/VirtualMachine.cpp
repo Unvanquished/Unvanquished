@@ -242,8 +242,20 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 		modulePath = FS::Path::Build(libPath, module);
 
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
-	sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
 	irt = FS::Path::Build(libPath, "irt_core-" ARCH_STRING ".nexe");
+
+	// On Windows, even if we are running a 32-bit engine, we must use the
+	// 64-bit sel_ldr if the host operating system is 64-bit.
+#if defined(_WIN32) && !defined(_WIN64)
+	SYSTEM_INFO systemInfo;
+	GetNativeSystemInfo(&systemInfo);
+	if (systemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
+		sel_ldr = FS::Path::Build(libPath, "sel_ldr64" EXE_EXT);
+	else
+		sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
+#else
+	sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
+#endif
 
 #ifdef __linux__
 	bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
@@ -252,6 +264,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");
 	args.push_back("--reserved_at_zero=0xXXXXXXXXXXXXXXXX");
 #else
+	Q_UNUSED(bootstrap);
 	args.push_back(sel_ldr.c_str());
 #endif
 	if (debug) {
