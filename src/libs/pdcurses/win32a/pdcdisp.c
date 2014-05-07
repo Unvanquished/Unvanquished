@@ -474,7 +474,6 @@ void PDC_transform_line_given_hdc( const HDC hdc, const int lineno,
 #ifdef CHTYPE_LONG
             if( ch > 0xffff)    /* use Unicode surrogates to fit */
                 {               /* >64K values into 16-bit wchar_t: */
-//              printf( "Got char %x: ", (unsigned)ch);
                 ch -= 0x10000;
                 buff[olen] = (wchar_t)( 0xd800 | (ch >> 10));
                 lpDx[olen] = PDC_cxChar;          /* ^ upper 10 bits */
@@ -581,14 +580,6 @@ void PDC_transform_line_given_hdc( const HDC hdc, const int lineno,
         clip_rect.top = lineno * PDC_cyChar;
         clip_rect.right = clip_rect.left + i * PDC_cxChar;
         clip_rect.bottom = clip_rect.top + PDC_cyChar;
-//      if( funny_chars)
-//      {
-//          int j;
-//
-//          printf( "%d out:\n", olen);
-//          for( j = 0; j < olen; j++)
-//             printf( "%x ", buff[j]);
-//      }
         ExtTextOutW( hdc, clip_rect.left, clip_rect.top,
                            ETO_CLIPPED | ETO_OPAQUE, &clip_rect,
                            buff, olen, (olen > 1 ? lpDx : NULL));

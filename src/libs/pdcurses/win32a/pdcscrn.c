@@ -171,7 +171,7 @@ static void add_key_to_queue( const int new_key)
         if( PDC_choose_a_new_font( ))
             adjust_font_size( 0);
     }
-    else if( new_idx != PDC_key_queue_low && new_key <= KEY_MAX)
+    else if( new_idx != PDC_key_queue_low)
     {
         PDC_key_queue[PDC_key_queue_high] = new_key;
         PDC_key_queue_high = new_idx;
@@ -1087,16 +1087,19 @@ static void adjust_font_size( const int font_size_change)
          /* rectangle is redrawn by PDC_transform_line(). */
 RECT PDC_mouse_rect = { -1, -1, -1, -1 };
 
+int PDC_setclipboard_raw( const char *contents, long length,
+            const bool translate_multibyte_to_wide_char);
+
 static void HandleBlockCopy( void)
 {
     int i, j, len, x[2];
-    char *buff, *tptr;
+    TCHAR *buff, *tptr;
 
             /* Make a first pass to determine how much text is blocked: */
     for( i = len = 0; i < SP->lines; i++)
         if( PDC_find_ends_of_selected_text( i, &PDC_mouse_rect, x))
             len += x[1] - x[0] + 3;
-    buff = tptr = (char *)malloc( len + 1);
+    buff = tptr = (TCHAR *)malloc( (len + 1) * sizeof( TCHAR));
             /* Make second pass to copy that text to a buffer: */
     for( i = len = 0; i < SP->lines; i++)
         if( PDC_find_ends_of_selected_text( i, &PDC_mouse_rect, x))
@@ -1104,17 +1107,17 @@ static void HandleBlockCopy( void)
             const chtype *cptr = curscr->_y[i];
 
             for( j = 0; j < x[1] - x[0] + 1; j++)
-                tptr[j] = (char)cptr[j + x[0]];
+                tptr[j] = (TCHAR)cptr[j + x[0]];
             while( j > 0 && tptr[j - 1] == ' ')
                 j--;          /* remove trailing spaces */
             tptr += j;
-            *tptr++ = (char)13;
-            *tptr++ = (char)10;
+            *tptr++ = (TCHAR)13;
+            *tptr++ = (TCHAR)10;
         }
     if( tptr != buff)   /* at least one line read in */
     {
        tptr[-2] = '\0';       /* cut off the last CR/LF */
-       PDC_setclipboard( buff, tptr - buff);
+       PDC_setclipboard_raw( (char *)buff, tptr - buff, FALSE);
     }
     free( buff);
 }
@@ -1471,7 +1474,7 @@ static void HandleSyskeyDown( const WPARAM wParam, const LPARAM lParam,
     /* running on a US keyboard layout (or other layout that doesn't  */
     /* make special use of Ctrl-Alt... for example,  I use the Dvorak */
     /* layout;  it's fine with PDC_show_ctrl_alts = 1.)               */
-    if( key >= KEY_MIN)
+    if( key >= KEY_MIN && key <= KEY_MAX)
         if( !ctrl_pressed || !alt_pressed || PDC_show_ctrl_alts)
             add_key_to_queue( key);
     pdc_key_modifiers = 0;
