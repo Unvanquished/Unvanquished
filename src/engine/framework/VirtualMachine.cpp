@@ -254,8 +254,10 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 #else
 	args.push_back(sel_ldr.c_str());
 #endif
-	if (debug)
+	if (debug) {
 		args.push_back("-g");
+	}
+
 	if (debugLoader) {
 		loaderLogFile = FS::Path::Build(FS::GetHomePath(), name + ".sel_ldr.log");
 		args.push_back("-vvvv");
@@ -276,13 +278,14 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	Com_Printf("Loading VM module %s...\n", module.c_str());
 
 	if (debugLoader) {
-		std::ostringstream commandLine;
+		std::string commandLine;
 		for (auto arg : args) {
 			if (arg) {
-				commandLine << " " << arg;
+				commandLine += " ";
+				commandLine += arg;
 			}
 		}
-		Com_Printf("Using loader args: %s", commandLine.str().c_str());
+		Com_Printf("Using loader args: %s", commandLine.c_str());
 	}
 
 	return InternalLoadModule(std::move(pair), args.data(), true);
