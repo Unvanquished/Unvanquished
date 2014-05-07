@@ -78,12 +78,17 @@ static std::string Win32StrError(uint32_t error)
 #endif
 
 // Platform-specific code to load a module
-static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem)
+static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem, FS::File stderrRedirect = FS::File())
 {
 #ifdef _WIN32
 	// Inherit the socket in the child process
 	if (!SetHandleInformation(pair.second.GetHandle(), HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
 		Com_Error(ERR_DROP, "VM: Could not make socket inheritable: %s", Win32StrError(GetLastError()).c_str());
+
+	// Inherit the stderr redirect in the child process
+	HANDLE stderrRedirectHandle = stderrRedirect ? reinterpret_cast<HANDLE>(_get_osfhandle(fileno(stderrRedirect.GetHandle()))) : NULL;
+	if (stderrRedirect && !SetHandleInformation(stderrRedirectHandle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
+		Com_Error(ERR_DROP, "VM: Could not make stderr redirect inheritable: %s", Win32StrError(GetLastError()).c_str());
 
 	// Escape command line arguments
 	std::string cmdline;
@@ -135,6 +140,10 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	STARTUPINFOW startupInfo;
 	PROCESS_INFORMATION processInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
+	if (stderrRedirect) {
+		startupInfo.hStdError = stderrRedirectHandle;
+		startupInfo.dwFlags = STARTF_USESTDHANDLES;
+	}
 	startupInfo.cb = sizeof(startupInfo);
 	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
@@ -189,9 +198,12 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 
 		// Close standard input/output descriptors
-		// stderr is not closed so that we can see error messages reported by sel_ldr
 		close(0);
 		close(1);
+
+		// If an stderr redirect is provided, set it now
+		if (stderrRedirect)
+			dup2(fileno(stderrRedirect.GetHandle()), 2);
 
 		// Load the target executable
 		char* env[] = {nullptr};
@@ -225,7 +237,8 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
-	std::string module, sel_ldr, irt, bootstrap, modulePath, loaderLogFile;
+	std::string module, sel_ldr, irt, bootstrap, modulePath;
+	FS::File stderrRedirect;
 
 	// Extract the nexe from the pak so that sel_ldr can load it
 	module = name + "-" ARCH_STRING ".nexe";
@@ -272,10 +285,12 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	}
 
 	if (debugLoader) {
-		loaderLogFile = FS::Path::Build(FS::GetHomePath(), name + ".sel_ldr.log");
+		try {
+			stderrRedirect = FS::HomePath::OpenWrite(name + ".sel_ldr.log");
+		} catch (std::system_error& err) {
+			Log::Warn("Couldn't open %s: %s", name + ".sel_ldr.log", err.what());
+		}
 		args.push_back("-vvvv");
-		args.push_back("-l");
-		args.push_back(loaderLogFile.c_str());
 	}
 
 	args.push_back("-B");
@@ -301,7 +316,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 		Com_Printf("Using loader args: %s", commandLine.c_str());
 	}
 
-	return InternalLoadModule(std::move(pair), args.data(), true);
+	return InternalLoadModule(std::move(pair), args.data(), true, std::move(stderrRedirect));
 }
 
 std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
@@ -372,8 +387,8 @@ int VMBase::Create()
 		std::string filename = name + ".syscallLog";
 		try {
 			syscallLogFile = FS::RawPath::OpenWrite(filename);
-		} catch (std::system_error& error) {
-			Log::Warn("Couldn't open %s", filename);
+		} catch (std::system_error& err) {
+			Log::Warn("Couldn't open %s: %s", filename, err.what());
 		}
 	}
 
