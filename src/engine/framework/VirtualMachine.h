@@ -54,9 +54,8 @@ enum vmType_t {
 
 struct VMParams {
 	VMParams(std::string name)
-	:logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
-	vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NATIVE_EXE, 0, TYPE_END - 1) {
-	}
+		: logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
+		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NATIVE_EXE, 0, TYPE_END - 1) {}
 
 	Cvar::Cvar<bool> logSyscalls;
 	Cvar::Range<Cvar::Cvar<int>> vmType;
@@ -66,7 +65,7 @@ struct VMParams {
 class VMBase {
 public:
 	VMBase(std::string name, VMParams& params)
-	: processHandle(IPC::INVALID_HANDLE), name(name), params(params) {}
+		: processHandle(IPC::INVALID_HANDLE), name(name), params(params) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module.
@@ -126,6 +125,8 @@ private:
 	IPC::Channel rootChannel;
 
 	std::string name;
+
+	vmType_t type;
 
 	VMParams& params;
 

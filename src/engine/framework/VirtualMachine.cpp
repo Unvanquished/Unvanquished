@@ -324,7 +324,7 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 
 int VMBase::Create()
 {
-	vmType_t type = static_cast<vmType_t>(params.vmType.Get());
+	type = static_cast<vmType_t>(params.vmType.Get());
 
 	if (type < 0 || type >= TYPE_END)
 		Com_Error(ERR_DROP, "VM: Invalid type %d", type);
@@ -422,8 +422,6 @@ void VMBase::Free()
 		return;
 
 	rootChannel = IPC::Channel();
-
-	vmType_t type = static_cast<vmType_t>(params.vmType.Get());
 
 	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
 #ifdef _WIN32
