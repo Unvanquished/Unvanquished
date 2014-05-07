@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef _WIN32
 #include <windows.h>
+#include <io.h>
 #undef CopyFile
 #else
 #include <unistd.h>
