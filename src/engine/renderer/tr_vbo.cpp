@@ -253,7 +253,6 @@ static void R_SetAttributeLayoutsSeperate( VBO_t *vbo )
 static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 {
 	int32_t i;
-	uint32_t stride = 0;
 	uint32_t offset = 0;
 	uint32_t positionBits = ATTR_POSITION | ATTR_NORMAL | ATTR_TANGENT | ATTR_BINORMAL;
 

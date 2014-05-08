@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include <limits.h>
 
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"
@@ -194,38 +195,6 @@ void        CL_ServerStatusResponse( netadr_t from, msg_t *msg );
 // fretn
 void        CL_WriteWaveClose( void );
 void        CL_WavStopRecord_f( void );
-
-void CL_PurgeCache( void )
-{
-	cls.doCachePurge = qtrue;
-}
-
-void CL_DoPurgeCache( void )
-{
-	if ( !cls.doCachePurge )
-	{
-		return;
-	}
-
-	cls.doCachePurge = qfalse;
-
-	if ( !com_cl_running )
-	{
-		return;
-	}
-
-	if ( !com_cl_running->integer )
-	{
-		return;
-	}
-
-	if ( !cls.rendererStarted )
-	{
-		return;
-	}
-
-	re.purgeCache();
-}
 
 static void CL_UpdateMumble( void )
 {
@@ -773,29 +742,6 @@ void CL_AddReliableCommand( const char *cmd )
 }
 
 /*
-======================
-CL_ChangeReliableCommand
-======================
-*/
-void CL_ChangeReliableCommand( void )
-{
-	int index, l;
-
-	// NOTE TTimo: what is the randomize for?
-	//r = clc.reliableSequence - (random() * 5);
-	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	l = strlen( clc.reliableCommands[ index ] );
-
-	if ( l >= MAX_STRING_CHARS - 1 )
-	{
-		l = MAX_STRING_CHARS - 2;
-	}
-
-	clc.reliableCommands[ index ][ l ] = '\n';
-	clc.reliableCommands[ index ][ l + 1 ] = '\0';
-}
-
-/*
 =======================================================================
 
 CLIENT SIDE DEMO RECORDING
@@ -854,22 +800,6 @@ void CL_StopRecord_f( void )
 	Cvar_Set( "cl_demorecording", "0" );  // fretn
 	Cvar_Set( "cl_demofilename", "" );  // bani
 	Com_Printf("%s", _( "Stopped demo.\n" ));
-}
-
-/*
-==================
-CL_DemoFilename
-==================
-*/
-void CL_DemoFilename( int number, char *fileName )
-{
-	if ( number < 0 || number > 9999 )
-	{
-		Com_sprintf( fileName, MAX_OSPATH, "demo9999" );  // fretn - removed .tga
-		return;
-	}
-
-	Com_sprintf( fileName, MAX_OSPATH, "demo%04i", number );
 }
 
 /*
@@ -1408,20 +1338,6 @@ class DemoCmd: public Cmd::StaticCmd {
 static DemoCmd DemoCmdRegistration;
 
 /*
-====================
-CL_StartDemoLoop
-
-Closing the main menu will restart the demo loop
-====================
-*/
-void CL_StartDemoLoop( void )
-{
-	// start the demo loop again
-	Cmd::BufferCommandText("d1");
-	Key_SetCatcher( 0 );
-}
-
-/*
 ==================
 CL_DemoState
 
@@ -1537,11 +1453,6 @@ void CL_ShutdownAll( void )
 	if ( re.Shutdown )
 	{
 		re.Shutdown( qfalse );  // don't destroy window or context
-	}
-
-	if ( re.purgeCache )
-	{
-		CL_DoPurgeCache();
 	}
 
 	cls.uiStarted = qfalse;
@@ -1776,7 +1687,7 @@ void CL_Disconnect( qboolean showMainMenu )
 	}
 
 	// allow cheats locally
-	Cvar_Set( "sv_cheats", "1" );
+    Cvar::SetValueForce("sv_cheats", "1");
 
 	// Load map pk3s to allow menus to load levelshots
 	FS::PakPath::ClearPaks();
@@ -3901,7 +3812,7 @@ static void CL_Cache_UsedFile_f( void )
 {
 	char        groupStr[ MAX_QPATH ];
 	char        itemStr[ MAX_QPATH ];
-	int         i, group;
+	int         i, group, len;
 	cacheItem_t *item;
 
 	if ( Cmd_Argc() < 2 )
@@ -3912,10 +3823,13 @@ static void CL_Cache_UsedFile_f( void )
 	Q_strncpyz( groupStr, Cmd_Argv( 1 ), MAX_QPATH );
 	Q_strncpyz( itemStr, Cmd_Argv( 2 ), MAX_QPATH );
 
-	for ( i = 3; i < Cmd_Argc(); i++ )
+	len = sizeof( itemStr ) - strlen( itemStr );
+
+	for ( i = 3; i < Cmd_Argc() && len > 0; i++ )
 	{
-		strncat( itemStr, " ", MAX_QPATH - 1 );
-		strncat( itemStr, Cmd_Argv( i ), MAX_QPATH - 1 );
+		strncat( itemStr, " ", len-- );
+		strncat( itemStr, Cmd_Argv( i ), len );
+		len -= strlen( Cmd_Argv( i ) );
 	}
 
 	Q_strlwr( itemStr );
@@ -5609,18 +5523,6 @@ CL_ShowIP_f
 void CL_ShowIP_f( void )
 {
 	Sys_ShowIP();
-}
-
-// Gordon: TEST TEST TEST
-
-/*
-==================
-BotImport_DrawPolygon
-==================
-*/
-void BotImport_DrawPolygon( int color, int numpoints, float *points )
-{
-	re.DrawDebugPolygon( color, numpoints, points );
 }
 
 /*

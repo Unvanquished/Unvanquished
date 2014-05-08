@@ -537,7 +537,7 @@ Com_HashKey
 */
 int Com_HashKey( char *string, int maxlen )
 {
-	register int hash, i;
+	int hash, i;
 
 	hash = 0;
 

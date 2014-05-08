@@ -28,5 +28,5 @@ test -e autogen.cfg && grep '^seta name ' autogen.cfg >~/.unvanquished/config/au
 echo "Basic profile for '$NAME' has been copied into ~/.unvanquished."
 echo "Some local server configuration (if present) has also been copied."
 echo 'Most settings have not been transferred.'
-echo 'You should check the ocnfiguration (in ~/.unvanquished).'
+echo 'You should check the configuration (in ~/.unvanquished).'
 echo 'Anything missing is in ~/.Unvanquished, which you may remove once done.'

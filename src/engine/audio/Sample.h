@@ -41,13 +41,13 @@ namespace Audio {
         public:
             struct handleRecord_t {
                 bool active;
-                T* value;
+                std::shared_ptr<T> value;
             };
 
             static bool IsValidHandle(int handle) {
                 return handle >= 0 and (unsigned)handle < handles.size() and handles[handle].active;
             }
-            static T* FromHandle(int handle) {
+            static std::shared_ptr<T> FromHandle(int handle) {
                 if (not IsValidHandle(handle)) {
                     return nullptr;
                 }
@@ -59,8 +59,11 @@ namespace Audio {
                 return handle;
             }
 
-        protected:
-            HandledResource(T* self) {
+            void InitHandle(std::shared_ptr<T> self) {
+                if (handle != -1) {
+                    return;
+                }
+
                 if (not inactiveHandles.empty()) {
                     handle = inactiveHandles.back();
                     inactiveHandles.pop_back();
@@ -71,9 +74,15 @@ namespace Audio {
                 }
             }
 
+        protected:
+            HandledResource(): handle(-1) {
+            }
+
             ~HandledResource() {
-                handles[handle] = {false, nullptr};
-                inactiveHandles.push_back(handle);
+                if (IsValidHandle(handle)) {
+                    handles[handle] = {false, nullptr};
+                    inactiveHandles.push_back(handle);
+                }
             }
 
         private:
@@ -91,7 +100,7 @@ namespace Audio {
 
     class Sample: public HandledResource<Sample>, public Resource::Resource {
         public:
-            Sample(std::string name);
+            explicit Sample(std::string name);
             virtual ~Sample() OVERRIDE FINAL;
 
             virtual bool Load() OVERRIDE FINAL;

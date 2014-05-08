@@ -46,29 +46,6 @@ Maryland 20850 USA.
 SV_SetConfigstring
 ===============
 */
-void SV_SetConfigstringNoUpdate( int index, const char *val )
-{
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
-	{
-		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i", index );
-	}
-
-	if ( !val )
-	{
-		val = "";
-	}
-
-	// don't bother broadcasting an update if no change
-	if ( !strcmp( val, sv.configstrings[ index ] ) )
-	{
-		return;
-	}
-
-	// change the string in sv
-	Z_Free( sv.configstrings[ index ] );
-	sv.configstrings[ index ] = CopyString( val );
-}
-
 void SV_SetConfigstring( int index, const char *val )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
@@ -356,7 +333,7 @@ void SV_Startup( void )
 	svs.initialized = qtrue;
 
 	Cvar_Set( "sv_running", "1" );
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	NET_Config( qtrue );
 #endif
 
@@ -776,7 +753,7 @@ void SV_Init( void )
 
 	// systeminfo
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 	sv_pure = Cvar_Get( "sv_pure", "1", CVAR_SYSTEMINFO );
 #else
 	// Use OS shared libs for the client at startup. This prevents crashes due to mismatching syscall ABIs
@@ -824,8 +801,6 @@ void SV_Init( void )
 	// fretn - note: redirecting of clients to other servers relies on this,
 	// ET://someserver.com
 	sv_fullmsg = Cvar_Get( "sv_fullmsg", "Server is full.", 0 );
-
-	vm_game = Cvar_Get( "vm_game", "0", 0 );
 
 	svs.serverLoad = -1;
 }
@@ -922,7 +897,7 @@ void SV_Shutdown( const char *finalmsg )
 	svs.serverLoad = -1;
 
 	Cvar_Set( "sv_running", "0" );
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	NET_Config( qtrue );
 #endif
 

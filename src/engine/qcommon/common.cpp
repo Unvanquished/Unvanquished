@@ -66,12 +66,8 @@ Maryland 20850 USA.
 // JPW NERVE changed this for multiplayer back to 42, 56 for depot/mp_cpdepot, 42 for everything else
 #define DEF_COMHUNKMEGS_S         XSTRING(DEF_COMHUNKMEGS)
 
-int                 com_argc;
-char                *com_argv[ MAX_NUM_ARGVS + 1 ];
-
 jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire frame
 
-FILE                *debuglogfile;
 static fileHandle_t logfile;
 static FILE         *pipefile;
 
@@ -285,7 +281,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if (code != ERR_FATAL) {
 		FS::PakPath::ClearPaks();
 		FS_LoadBasePak();
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 		// Load map pk3s to allow menus to load levelshots
 		FS_LoadAllMaps();
 #endif
@@ -383,7 +379,7 @@ void NORETURN Com_Quit_f( void )
 		// a corrupt call stack makes no difference
 		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
 //bani
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 		CL_ShutdownCGame();
 #endif
 		CL_Shutdown();
@@ -611,48 +607,6 @@ void Info_Print( const char *s )
 		Com_Printf( "%s\n", value );
 	}
 }
-
-/*
-============
-Com_FilterPath
-============
-*/
-int Com_FilterPath( const char *filter, char *name, int casesensitive )
-{
-	int  i;
-	char new_filter[ MAX_QPATH ];
-	char new_name[ MAX_QPATH ];
-
-	for ( i = 0; i < MAX_QPATH - 1 && filter[ i ]; i++ )
-	{
-		if ( filter[ i ] == '\\' || filter[ i ] == ':' )
-		{
-			new_filter[ i ] = '/';
-		}
-		else
-		{
-			new_filter[ i ] = filter[ i ];
-		}
-	}
-
-	new_filter[ i ] = '\0';
-
-	for ( i = 0; i < MAX_QPATH - 1 && name[ i ]; i++ )
-	{
-		if ( name[ i ] == '\\' || name[ i ] == ':' )
-		{
-			new_name[ i ] = '/';
-		}
-		else
-		{
-			new_name[ i ] = name[ i ];
-		}
-	}
-
-	new_name[ i ] = '\0';
-	return Com_Filter( new_filter, new_name, casesensitive );
-}
-
 
 /* Internals for Com_RealTime & Com_GMTime */
 static int internalTime( qtime_t *qtime, struct tm *( *timefunc )( const time_t * ) )
@@ -1054,21 +1008,6 @@ void Hunk_ClearToMark( void )
 	hunk_high.permanent = hunk_high.temp = hunk_high.mark;
 }
 
-/*
-=================
-Hunk_CheckMark
-=================
-*/
-qboolean Hunk_CheckMark( void )
-{
-	if ( hunk_low.mark || hunk_high.mark )
-	{
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
 void CL_ShutdownUI( void );
 void SV_ShutdownGameProgs( void );
 
@@ -1081,12 +1020,12 @@ The server calls this before shutting down or loading a new map
 */
 void Hunk_Clear( void )
 {
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	CL_ShutdownCGame();
 	CL_ShutdownUI();
 #endif
 	SV_ShutdownGameProgs();
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	CIN_CloseAllVideos();
 #endif
 	hunk_low.mark = 0;
@@ -1331,23 +1270,6 @@ void Hunk_FreeTempMemory( void *buf )
 }
 
 /*
-=================
-Hunk_ClearTempMemory
-
-The temp space is no longer needed.  If we have left more
-touched but unused memory on this side, have future
-permanent allocs use this side.
-=================
-*/
-void Hunk_ClearTempMemory( void )
-{
-	if ( s_hunkData != NULL )
-	{
-		hunk_temp->temp = hunk_temp->permanent;
-	}
-}
-
-/*
 ===================================================================
 
 EVENTS
@@ -1514,7 +1436,7 @@ Returns last event time
 =================
 */
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 extern qboolean consoleButtonWasPressed;
 #endif
 
@@ -1566,7 +1488,7 @@ int Com_EventLoop( void )
 				break;
 
 			case SE_CHAR:
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 
 				// fretn
 				// we just pressed the console button,
@@ -1605,7 +1527,7 @@ int Com_EventLoop( void )
 					/*
 					 * when there was no command prefix, execute the command prefixed by com_consoleCommand
 					 * if the cvar is empty, it will interpret the text as command direclty
-					 * (and will so for DEDICATED)
+					 * (and will so for BUILD_SERVER)
 					 *
 					 * the additional space gets trimmed by the parser
 					 */
@@ -1778,7 +1700,7 @@ Com_Init
 
 
 #ifndef _WIN32
-# ifdef DEDICATED
+# ifdef BUILD_SERVER
 	const char* defaultPipeFilename = "svpipe";
 # else
 	const char* defaultPipeFilename = "pipe";
@@ -1825,27 +1747,27 @@ void Com_Init( char *commandLine )
 
 	FS::Initialize();
 	FS_LoadBasePak();
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	// Load map pk3s to allow menus to load levelshots
 	FS_LoadAllMaps();
 #endif
 
 	Trans_Init();
 
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	Cmd::BufferCommandText("preset default.cfg");
 #endif
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
-		Cmd::BufferCommandText("exec " CONFIG_NAME);
-		Cmd::BufferCommandText("exec " KEYBINDINGS_NAME);
-		Cmd::BufferCommandText("exec " AUTOEXEC_NAME);
+		Cmd::BufferCommandText("exec -f " CONFIG_NAME);
+		Cmd::BufferCommandText("exec -f " KEYBINDINGS_NAME);
+		Cmd::BufferCommandText("exec -f " AUTOEXEC_NAME);
 	}
 #else
-	Cmd::BufferCommandText("exec " CONFIG_NAME);
+	Cmd::BufferCommandText("exec -f " CONFIG_NAME);
 #endif
 
 	// ydnar: reset crashed state
@@ -1857,7 +1779,7 @@ void Com_Init( char *commandLine )
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
 
-#if defined(DEDICATED)
+#ifdef BUILD_SERVER
 	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 #else
@@ -1925,7 +1847,7 @@ void Com_Init( char *commandLine )
 
 	Cmd_AddCommand( "quit", Com_Quit_f );
 	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
-#if !defined(DEDICATED)
+#ifndef BUILD_SERVER
 	Cmd_AddCommand( "writebindings", Com_WriteBindings_f );
 #endif
 
@@ -2093,7 +2015,7 @@ void Com_WriteConfiguration( void )
 		Com_WriteConfigToFile( CONFIG_NAME, Cvar_WriteVariables );
 	}
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	if ( bindingsModified )
 	{
 		bindingsModified = qfalse;
@@ -2133,7 +2055,7 @@ Com_WriteBindings_f
 Write the key bindings file to a specific name
 ===============
 */
-#if !defined(DEDICATED)
+#ifndef BUILD_SERVER
 void Com_WriteBindings_f( void )
 {
 	char filename[ MAX_QPATH ];
@@ -2511,29 +2433,6 @@ void Com_Shutdown()
 }
 
 //------------------------------------------------------------------------
-
-/*
-===========================================
-command line completion
-===========================================
-*/
-
-/*
-==================
-Field_CursorToOffset
-==================
-*/
-int Field_CursorToOffset( field_t *edit )
-{
-	int i = -1, j = 0;
-
-	while ( ++i < edit->cursor )
-	{
-		j += Q_UTF8_Width( edit->buffer + j );
-	}
-
-	return j;
-}
 
 void Com_GetHunkInfo( int *hunkused, int *hunkexpected )
 {

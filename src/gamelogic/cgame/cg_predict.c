@@ -630,7 +630,6 @@ void CG_PredictPlayerState( void )
 {
 	int           cmdNum, current, i;
 	playerState_t oldPlayerState;
-	qboolean      moved;
 	usercmd_t     oldestCmd;
 	usercmd_t     latestCmd;
 	int           stateIndex = 0, predictCmd = 0;
@@ -833,9 +832,6 @@ void CG_PredictPlayerState( void )
 		stateIndex = cg.stateHead;
 	}
 
-	// run cmds
-	moved = qfalse;
-
 	for ( cmdNum = current - CMD_BACKUP + 1; cmdNum <= current; cmdNum++ )
 	{
 		// get the command
@@ -974,8 +970,6 @@ void CG_PredictPlayerState( void )
 			*cg_pmove.ps = cg.savedPmoveStates[ stateIndex ];
 			stateIndex = ( stateIndex + 1 ) % NUM_SAVED_STATES;
 		}
-
-		moved = qtrue;
 
 		// add push trigger movement effects
 		CG_TouchTriggerPrediction();

@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.26.0"
+#define PRODUCT_VERSION         "0.27.2"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -64,7 +64,7 @@ Maryland 20850 USA.
 
 #define AUTOEXEC_NAME           "autoexec.cfg"
 
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 #define CONFIG_NAME             "autogen.cfg"
 #define KEYBINDINGS_NAME        "keybindings.cfg"
 #define TEAMCONFIG_NAME         "teamconfig.cfg"

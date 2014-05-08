@@ -295,6 +295,8 @@ build_freetype() {
 	make clean
 	make
 	make install
+	cp -a "${PREFIX}/include/freetype2" "${PREFIX}/include/freetype"
+	mv "${PREFIX}/include/freetype" "${PREFIX}/include/freetype2/freetype"
 	cd ..
 }
 
@@ -458,8 +460,13 @@ build_naclsdk() {
 	download "naclsdk_${NACLSDK_PLATFORM}-${NACLSDK_VERSION}.tar.bz2" "https://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/${NACLSDK_VERSION}/naclsdk_${NACLSDK_PLATFORM}.tar.bz2"
 	cp pepper_*"/tools/sel_ldr_${NACLSDK_ARCH}${EXE}" "${PREFIX}/sel_ldr${EXE}"
 	cp pepper_*"/tools/irt_core_${NACLSDK_ARCH}.nexe" "${PREFIX}/irt_core-${DAEMON_ARCH}.nexe"
+	cp pepper_*"/toolchain/${NACLSDK_PLATFORM}_x86_newlib/bin/x86_64-nacl-gdb${EXE}" "${PREFIX}/nacl-gdb${EXE}"
 	cp -aT pepper_*"/toolchain/${NACLSDK_PLATFORM}_pnacl" "${PREFIX}/pnacl"
 	case "${PLATFORM}" in
+	mingw32|msvc32)
+		cp pepper_*"/tools/sel_ldr_x86_64.exe" "${PREFIX}/sel_ldr64.exe"
+		cp pepper_*"/tools/irt_core_x86_64.nexe" "${PREFIX}/irt_core-x86_64.nexe"
+		;;
 	linux32)
 		cp pepper_*"/tools/nacl_helper_bootstrap_x86_32" "${PREFIX}/nacl_helper_bootstrap"
 		rm -rf "${PREFIX}/pnacl/bin64"
@@ -511,32 +518,46 @@ build_gendef() {
 
 # Clean the target directory and build a package
 build_package() {
-	rm -rf "${PREFIX}/man"
-	rm -rf "${PREFIX}/def"
-	rm -rf "${PREFIX}/share"
-	rm -f "${PREFIX}/genlib.bat"
-	rm -rf "${PREFIX}/lib/pkgconfig"
-	find "${PREFIX}/bin" -not -type d -not -name '*.dll' -execdir rm -f -- {} \;
-	find "${PREFIX}/lib" -name '*.la' -execdir rm -f -- {} \;
-	find "${PREFIX}/lib" -name '*.dll.a' -execdir bash -c 'rm -f -- "`basename "{}" .dll.a`.a"' \;
-	find "${PREFIX}/lib" -name '*.dylib' -execdir bash -c 'rm -f -- "`basename "{}" .dylib`.a"' \;
-	rmdir "${PREFIX}/bin" 2> /dev/null || true
-	rmdir "${PREFIX}/include" 2> /dev/null || true
-	rmdir "${PREFIX}/lib" 2> /dev/null || true
+	mkdir -p "${PWD}/pkg"
+	PKG_PREFIX="${PWD}/pkg/${PLATFORM}-${DEPS_VERSION}"
+	rm -rf "${PKG_PREFIX}"
+	rsync -a --link-dest="${PREFIX}" "${PREFIX}/" "${PKG_PREFIX}"
+
+	# Remove all unneeded files
+	rm -rf "${PKG_PREFIX}/man"
+	rm -rf "${PKG_PREFIX}/def"
+	rm -rf "${PKG_PREFIX}/share"
+	rm -f "${PKG_PREFIX}/genlib.bat"
+	rm -rf "${PKG_PREFIX}/lib/pkgconfig"
+	find "${PKG_PREFIX}/bin" -not -type d -not -name '*.dll' -execdir rm -f -- {} \;
+	find "${PKG_PREFIX}/lib" -name '*.la' -execdir rm -f -- {} \;
+	find "${PKG_PREFIX}/lib" -name '*.dll.a' -execdir bash -c 'rm -f -- "`basename "{}" .dll.a`.a"' \;
+	find "${PKG_PREFIX}/lib" -name '*.dylib' -execdir bash -c 'rm -f -- "`basename "{}" .dylib`.a"' \;
+	rmdir "${PKG_PREFIX}/bin" 2> /dev/null || true
+	rmdir "${PKG_PREFIX}/include" 2> /dev/null || true
+	rmdir "${PKG_PREFIX}/lib" 2> /dev/null || true
 	case "${PLATFORM}" in
 	mingw*)
-		find "${PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
-		find "${PREFIX}/lib" -name '*.a' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
+		find "${PKG_PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
+		find "${PKG_PREFIX}/lib" -name '*.a' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
 		;;
 	msvc*)
-		find "${PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
-		find "${PREFIX}/lib" -name '*.a' -execdir rm -f -- {} \;
-		find "${PREFIX}/lib" -name '*.exp' -execdir rm -f -- {} \;
+		find "${PKG_PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
+		find "${PKG_PREFIX}/lib" -name '*.a' -execdir rm -f -- {} \;
+		find "${PKG_PREFIX}/lib" -name '*.exp' -execdir rm -f -- {} \;
 		;;
 	esac
 
-	cd "${PREFIX}/.."
-	tar cvjf "${PLATFORM}-${DEPS_VERSION}.tar.bz2" "${PLATFORM}-${DEPS_VERSION}"
+	cd pkg
+	case "${PLATFORM}" in
+	mingw*|msvc*)
+		zip -r "${PLATFORM}-${DEPS_VERSION}.zip" "${PLATFORM}-${DEPS_VERSION}"
+		;;
+	*)
+		tar cvjf "${PLATFORM}-${DEPS_VERSION}.tar.bz2" "${PLATFORM}-${DEPS_VERSION}"
+		;;
+	esac
+	cd ..
 }
 
 # Common setup code

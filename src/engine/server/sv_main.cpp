@@ -60,7 +60,6 @@ cvar_t         *sv_reconnectlimit; // minimum seconds between connect messages
 cvar_t         *sv_padPackets; // add nop bytes to messages
 cvar_t         *sv_killserver; // menu system can set to 1 to shut server down
 cvar_t         *sv_mapname;
-cvar_t         *sv_mapChecksum;
 cvar_t         *sv_serverid;
 cvar_t         *sv_maxRate;
 cvar_t         *sv_minPing;
@@ -102,47 +101,6 @@ EVENT MESSAGES
 
 =============================================================================
 */
-
-/*
-===============
-SV_ExpandNewlines
-
-Converts newlines to "\n" so a line prints nicer
-===============
-*/
-char           *SV_ExpandNewlines( char *in )
-{
-	static char string[ 1024 ];
-	int         l;
-
-	l = 0;
-
-	while ( *in && l < sizeof( string ) - 3 )
-	{
-		if ( *in == '\n' )
-		{
-			string[ l++ ] = '\\';
-			string[ l++ ] = 'n';
-		}
-		else
-		{
-			// NERVE - SMF - HACK - strip out localization tokens before string command is displayed in syscon window
-			if ( !Q_strncmp( in, "[lon]", 5 ) || !Q_strncmp( in, "[lof]", 5 ) )
-			{
-				in += 5;
-				continue;
-			}
-
-			string[ l++ ] = *in;
-		}
-
-		in++;
-	}
-
-	string[ l ] = 0;
-
-	return string;
-}
 
 /*
 ======================

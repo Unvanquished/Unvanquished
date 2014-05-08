@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include "../../common/Command.h"
 #include "../../common/String.h"
+#include "../framework/CvarSystem.h"
 
 /*
 ===============================================================================
@@ -73,7 +74,7 @@ class MapCmd: public Cmd::StaticCmd {
             }
 
             SV_SpawnServer(mapName.c_str());
-            Cvar_Set("sv_cheats", cheat ? "1" : "0");
+            Cvar::SetValueForce("sv_cheats", cheat ? "1" : "0");
         }
 
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
