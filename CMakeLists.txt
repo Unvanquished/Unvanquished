@@ -44,6 +44,32 @@ set( CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options 
 
 project( Daemon C CXX )
 
+MACRO(ADD_PRECOMPILED_HEADERS Target Header Sources Flags)
+  string(REPLACE " " ";" FlagsString ${Flags})
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(PreCompiledHeader "${OBJ_DIR}/${Target}.pch")
+
+    get_target_property(CompileDefs ${Target} COMPILE_DEFINITIONS)
+    set(Defs "")
+
+    foreach(Def ${CompileDefs})
+        set(Defs ${Defs} -D${Def})
+    endforeach()
+
+    add_custom_command(OUTPUT ${PreCompiledHeader}
+      COMMAND ${CMAKE_CXX_COMPILER} ${FlagsString} ${Defs} -x c++-header ${Header} -o ${PreCompiledHeader}
+      DEPENDS ${Header}
+      IMPLICIT_DEPENDS CXX ${Header}
+    )
+
+    set_source_files_properties(
+      ${Sources} PROPERTIES
+      COMPILE_FLAGS "-include-pch ${PreCompiledHeader}"
+      OBJECT_DEPENDS "${PreCompiledHeader}"
+    )
+  ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+ENDMACRO(ADD_PRECOMPILED_HEADERS)
+
 ################################################################################
 # Configuration options
 ################################################################################
@@ -1583,8 +1609,9 @@ GAMEMODULE( NAME ui
 ################################################################################
 
 if( BUILD_CLIENT )
-  add_executable( client WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST} ${RENDERERLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
+  set( ALL_CLIENT_SOURCES ${ENGINELIST} ${SHAREDLIST} ${CLIENTLIST} ${CLIENTBASELIST} ${RENDERERLIST} ${SERVERLIST} ${SDLLIST} )
+
+  add_executable( client WIN32 ${ALL_CLIENT_SOURCES} ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
   if( USE_SMP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
@@ -1595,22 +1622,30 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
+
+  ADD_PRECOMPILED_HEADERS( client ${COMMON_DIR}/Common.h "${ALL_CLIENT_SOURCES}" "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}" )
 endif()
 
 if( BUILD_SERVER )
-  add_executable( server WIN32 ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${WIN_RC} )
+  set( ALL_SERVER_SOURCES ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST} )
+
+  add_executable( server WIN32 ${ALL_SERVER_SOURCES} ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
+
+  ADD_PRECOMPILED_HEADERS( server ${COMMON_DIR}/Common.h "${ALL_SERVER_SOURCES}" "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}" )
 endif()
 
 if( BUILD_TTY_CLIENT )
-  add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC} )
+  set( ALL_TTYCLIENT_SOURCES ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST} )
+
+  add_executable( ttyclient WIN32 ${ALL_TTYCLIENT_SOURCES} ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC} )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
+
+  ADD_PRECOMPILED_HEADERS( ttyclient ${COMMON_DIR}/Common.h "${ALL_TTYCLIENT_SOURCES}" "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}" )
 endif()
 
 ################################################################################
