@@ -517,6 +517,11 @@ void CG_Rocket_Frame( void )
 		switch ( rocketInfo.cstate.connState )
 		{
 			case CA_DISCONNECTED:
+				// Kill the server if its still running
+				if ( trap_Cvar_VariableIntegerValue( "sv_running" ) )
+				{
+					trap_Cvar_Set( "sv_killserver", "1" );
+				}
 				break;
 
 			case CA_CONNECTING:

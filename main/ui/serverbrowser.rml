@@ -191,7 +191,7 @@ img.levelshot
 
 </style>
     </head>
-    <body onload="init_servers internet" id="serverbrowser">
+    <body onshow="init_servers internet" id="serverbrowser">
     	<button class="close menuButton" onClick="hide serverbrowser; show main">Back</button>
 		<div id="left" >
 		<tabset id="server" class="window">
