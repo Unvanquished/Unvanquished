@@ -22,6 +22,7 @@ datagrid{
 	font-size:0.8em;
 	text-align:left;
 	z-index:2;
+	height: 50%;
 }
 
 datagridbody{
@@ -35,14 +36,6 @@ datagridcell{
 	color:white;
 }
 
-datagridcell:nth-child(2n) {
-	padding-left:30px;
-}
-datagridcell:nth-child(1n){
-	position:absolute;
-	left:0px;
-	display:block;
-}
 datagridheader{
 	background:#00000044;
 	margin-bottom:10px;
