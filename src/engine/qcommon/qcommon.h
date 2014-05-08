@@ -486,8 +486,6 @@ issues.
 ==============================================================
 */
 
-#include "../../common/FileSystem.h"
-
 char **FS_ListFiles( const char *directory, const char *extension, int *numfiles );
 
 // directory should not have either a leading or trailing /
