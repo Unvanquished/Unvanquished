@@ -38,6 +38,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "LineEditData.h"
 #include "Maths.h"
 #include "IPC.h"
+#include "FileSystem.h"
 #include "CommonSyscalls.h"
 
 #endif // COMMON_COMMON_H_

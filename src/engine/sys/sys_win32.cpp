@@ -55,7 +55,7 @@ Maryland 20850 USA.
 // Used to determine where to store user-specific files
 static char homePath[ MAX_OSPATH ] = { 0 };
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 static UINT timerResolution = 0;
 #endif
 
@@ -394,270 +394,6 @@ char *Sys_Cwd( void )
 }
 
 /*
-==============================================================
-
-DIRECTORY SCANNING
-
-==============================================================
-*/
-
-#define MAX_FOUND_FILES 0x1000
-
-/*
-==============
-Sys_ListFilteredFiles
-==============
-*/
-void Sys_ListFilteredFiles( const char *basedir, char *subdirs, const char *filter, char **list, int *numfiles )
-{
-	char               search[ MAX_OSPATH ], newsubdirs[ MAX_OSPATH ];
-	char               filename[ MAX_OSPATH ];
-	intptr_t           findhandle;
-	struct _finddata_t findinfo;
-
-	if ( *numfiles >= MAX_FOUND_FILES - 1 )
-	{
-		return;
-	}
-
-	if ( strlen( subdirs ) )
-	{
-		Com_sprintf( search, sizeof( search ), "%s\\%s\\*", basedir, subdirs );
-	}
-	else
-	{
-		Com_sprintf( search, sizeof( search ), "%s\\*", basedir );
-	}
-
-	findhandle = _findfirst( search, &findinfo );
-
-	if ( findhandle == -1 )
-	{
-		return;
-	}
-
-	do
-	{
-		if ( findinfo.attrib & _A_SUBDIR )
-		{
-			if ( Q_stricmp( findinfo.name, "." ) && Q_stricmp( findinfo.name, ".." ) )
-			{
-				if ( strlen( subdirs ) )
-				{
-					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s\\%s", subdirs, findinfo.name );
-				}
-				else
-				{
-					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s", findinfo.name );
-				}
-
-				Sys_ListFilteredFiles( basedir, newsubdirs, filter, list, numfiles );
-			}
-		}
-
-		if ( *numfiles >= MAX_FOUND_FILES - 1 )
-		{
-			break;
-		}
-
-		Com_sprintf( filename, sizeof( filename ), "%s\\%s", subdirs, findinfo.name );
-
-		if ( !Com_FilterPath( filter, filename, qfalse ) )
-		{
-			continue;
-		}
-
-		list[ *numfiles ] = CopyString( filename );
-		( *numfiles ) ++;
-	}
-	while ( _findnext( findhandle, &findinfo ) != -1 );
-
-	_findclose( findhandle );
-}
-
-/*
-==============
-strgtr
-==============
-*/
-static qboolean strgtr( const char *s0, const char *s1 )
-{
-	int l0, l1, i;
-
-	l0 = strlen( s0 );
-	l1 = strlen( s1 );
-
-	if ( l1 < l0 )
-	{
-		l0 = l1;
-	}
-
-	for ( i = 0; i < l0; i++ )
-	{
-		if ( s1[ i ] > s0[ i ] )
-		{
-			return qtrue;
-		}
-
-		if ( s1[ i ] < s0[ i ] )
-		{
-			return qfalse;
-		}
-	}
-
-	return qfalse;
-}
-
-/*
-==============
-Sys_ListFiles
-==============
-*/
-char **Sys_ListFiles( const char *directory, const char *extension, const char *filter, int *numfiles, qboolean wantsubs )
-{
-	char               search[ MAX_OSPATH ];
-	int                nfiles;
-	char               **listCopy;
-	char               *list[ MAX_FOUND_FILES ];
-	struct _finddata_t findinfo;
-
-	intptr_t           findhandle;
-	int                flag;
-	int                i;
-
-	if ( filter )
-	{
-		nfiles = 0;
-		Sys_ListFilteredFiles( directory, "", filter, list, &nfiles );
-
-		list[ nfiles ] = 0;
-		*numfiles = nfiles;
-
-		if ( !nfiles )
-		{
-			return NULL;
-		}
-
-		listCopy = ( char ** ) Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
-
-		for ( i = 0; i < nfiles; i++ )
-		{
-			listCopy[ i ] = list[ i ];
-		}
-
-		listCopy[ i ] = NULL;
-
-		return listCopy;
-	}
-
-	if ( !extension )
-	{
-		extension = "";
-	}
-
-	// passing a slash as extension will find directories
-	if ( extension[ 0 ] == '/' && extension[ 1 ] == 0 )
-	{
-		extension = "";
-		flag = 0;
-	}
-	else
-	{
-		flag = _A_SUBDIR;
-	}
-
-	Com_sprintf( search, sizeof( search ), "%s\\*%s", directory, extension );
-
-	// search
-	nfiles = 0;
-
-	findhandle = _findfirst( search, &findinfo );
-
-	if ( findhandle == -1 )
-	{
-		*numfiles = 0;
-		return NULL;
-	}
-
-	do
-	{
-		if ( ( !wantsubs && flag ^ ( findinfo.attrib & _A_SUBDIR ) ) || ( wantsubs && findinfo.attrib & _A_SUBDIR ) )
-		{
-			if ( nfiles == MAX_FOUND_FILES - 1 )
-			{
-				break;
-			}
-
-			list[ nfiles ] = CopyString( findinfo.name );
-			nfiles++;
-		}
-	}
-	while ( _findnext( findhandle, &findinfo ) != -1 );
-
-	list[ nfiles ] = 0;
-
-	_findclose( findhandle );
-
-	// return a copy of the list
-	*numfiles = nfiles;
-
-	if ( !nfiles )
-	{
-		return NULL;
-	}
-
-	listCopy = ( char ** ) Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
-
-	for ( i = 0; i < nfiles; i++ )
-	{
-		listCopy[ i ] = list[ i ];
-	}
-
-	listCopy[ i ] = NULL;
-
-	do
-	{
-		flag = 0;
-
-		for ( i = 1; i < nfiles; i++ )
-		{
-			if ( strgtr( listCopy[ i - 1 ], listCopy[ i ] ) )
-			{
-				char *temp = listCopy[ i ];
-				listCopy[ i ] = listCopy[ i - 1 ];
-				listCopy[ i - 1 ] = temp;
-				flag = 1;
-			}
-		}
-	}
-	while ( flag );
-
-	return listCopy;
-}
-
-/*
-==============
-Sys_FreeFileList
-==============
-*/
-void Sys_FreeFileList( char **list )
-{
-	int i;
-
-	if ( !list )
-	{
-		return;
-	}
-
-	for ( i = 0; list[ i ]; i++ )
-	{
-		Z_Free( list[ i ] );
-	}
-
-	Z_Free( list );
-}
-
-/*
 ==============
 Sys_Sleep
 
@@ -671,7 +407,7 @@ void Sys_Sleep( int msec )
 		return;
 	}
 
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 
 	if ( msec < 0 )
 	{
@@ -798,7 +534,7 @@ Windows specific initialisation
 */
 void Sys_PlatformInit( void )
 {
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	TIMECAPS ptc;
 #endif
 
@@ -813,7 +549,7 @@ void Sys_PlatformInit( void )
 		FreeLibrary(user32);
 	}
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	if(timeGetDevCaps(&ptc, sizeof(ptc)) == MMSYSERR_NOERROR)
 	{
 		timerResolution = ptc.wPeriodMin;
@@ -838,7 +574,7 @@ Windows specific deinitialisation
 */
 void Sys_PlatformExit( void )
 {
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	if(timerResolution)
 		timeEndPeriod(timerResolution);
 #endif
@@ -1003,7 +739,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	Com_Init( sys_cmdline );
 	NET_Init();
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	IN_Init(); // fretn - directinput must be inited after video etc
 #endif
 

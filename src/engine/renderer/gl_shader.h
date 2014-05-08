@@ -87,8 +87,6 @@ protected:
 		_vertexAttribs( 0 ),
 		_shaderManager( manager ),
 		_uniformStorageSize( 0 )
-		//_vertexAttribsOptional(vertexAttribsOptional),
-		//_vertexAttribsUnsupported(vertexAttribsUnsupported)
 	{
 	}
 
@@ -1119,7 +1117,6 @@ public:
 		return TWOSIDED;
 	}
 
-//bool    MissesRequiredMacros(int permutation, const std::vector<GLCompileMacro*>& macros) const;
 	uint32_t        GetRequiredVertexAttributes() const
 	{
 		return ATTR_NORMAL;
@@ -2226,51 +2223,6 @@ public:
 	}
 };
 
-class u_HDRKey :
-	GLUniform1f
-{
-public:
-	u_HDRKey( GLShader *shader ) :
-		GLUniform1f( shader, "u_HDRKey" )
-	{
-	}
-
-	void SetUniform_HDRKey( float value )
-	{
-		this->SetValue( value );
-	}
-};
-
-class u_HDRAverageLuminance :
-	GLUniform1f
-{
-public:
-	u_HDRAverageLuminance( GLShader *shader ) :
-		GLUniform1f( shader, "u_HDRAverageLuminance" )
-	{
-	}
-
-	void SetUniform_HDRAverageLuminance( float value )
-	{
-		this->SetValue( value );
-	}
-};
-
-class u_HDRMaxLuminance :
-	GLUniform1f
-{
-public:
-	u_HDRMaxLuminance( GLShader *shader ) :
-		GLUniform1f( shader, "u_HDRMaxLuminance" )
-	{
-	}
-
-	void SetUniform_HDRMaxLuminance( float value )
-	{
-		this->SetValue( value );
-	}
-};
-
 class u_blurVec :
 	GLUniform3f
 {
@@ -2409,7 +2361,6 @@ class GLShader_lightMapping :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_GLOW_MAPPING
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_lightMapping( GLShaderManager *manager );
@@ -2444,7 +2395,6 @@ class GLShader_vertexLighting_DBS_entity :
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_REFLECTIVE_SPECULAR,
 	public GLCompileMacro_USE_GLOW_MAPPING
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_vertexLighting_DBS_entity( GLShaderManager *manager );
@@ -2476,8 +2426,6 @@ class GLShader_vertexLighting_DBS_world :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_GLOW_MAPPING
-//public GLCompileMacro_TWOSIDED
-//public GLCompileMacro_USE_GBUFFER
 {
 public:
 	GLShader_vertexLighting_DBS_world( GLShaderManager *manager );
@@ -2517,7 +2465,6 @@ class GLShader_forwardLighting_omniXYZ :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_forwardLighting_omniXYZ( GLShaderManager *manager );
@@ -2558,7 +2505,6 @@ class GLShader_forwardLighting_projXYZ :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_forwardLighting_projXYZ( GLShaderManager *manager );
@@ -2601,7 +2547,6 @@ class GLShader_forwardLighting_directionalSun :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_forwardLighting_directionalSun( GLShaderManager *manager );
@@ -2648,7 +2593,6 @@ class GLShader_reflection :
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING //,
-//public GLCompileMacro_TWOSIDED
 {
 public:
 	GLShader_reflection( GLShaderManager *manager );
@@ -2749,19 +2693,6 @@ class GLShader_portal :
 {
 public:
 	GLShader_portal( GLShaderManager *manager );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
-class GLShader_toneMapping :
-	public GLShader,
-	public u_ModelViewProjectionMatrix,
-	public u_HDRKey,
-	public u_HDRAverageLuminance,
-	public u_HDRMaxLuminance,
-	public GLCompileMacro_BRIGHTPASS_FILTER
-{
-public:
-	GLShader_toneMapping( GLShaderManager *manager );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -2883,24 +2814,6 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
-class GLShader_screenSpaceAmbientOcclusion :
-	public GLShader,
-	public u_ModelViewProjectionMatrix
-{
-public:
-	GLShader_screenSpaceAmbientOcclusion( GLShaderManager *manager );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
-class GLShader_depthOfField :
-	public GLShader,
-	public u_ModelViewProjectionMatrix
-{
-public:
-	GLShader_depthOfField( GLShaderManager *manager );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
 class GLShader_motionblur :
 	public GLShader,
 	public u_blurVec
@@ -2934,7 +2847,6 @@ extern GLShader_fogGlobal                       *gl_fogGlobalShader;
 extern GLShader_heatHaze                        *gl_heatHazeShader;
 extern GLShader_screen                          *gl_screenShader;
 extern GLShader_portal                          *gl_portalShader;
-extern GLShader_toneMapping                     *gl_toneMappingShader;
 extern GLShader_contrast                        *gl_contrastShader;
 extern GLShader_cameraEffects                   *gl_cameraEffectsShader;
 extern GLShader_blurX                           *gl_blurXShader;
@@ -2944,8 +2856,6 @@ extern GLShader_depthToColor                    *gl_depthToColorShader;
 extern GLShader_lightVolume_omni                *gl_lightVolumeShader_omni;
 extern GLShader_liquid                          *gl_liquidShader;
 extern GLShader_volumetricFog                   *gl_volumetricFogShader;
-extern GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader;
-extern GLShader_depthOfField                    *gl_depthOfFieldShader;
 extern GLShader_motionblur                      *gl_motionblurShader;
 extern GLShader_fxaa                            *gl_fxaaShader;
 extern GLShaderManager                           gl_shaderManager;

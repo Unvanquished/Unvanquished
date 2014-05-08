@@ -173,7 +173,6 @@ void UI_LoadArenas( void )
 	char *dirptr;
 	int  i, n;
 	int  dirlen;
-	char *type;
 
 	ui_numArenas = 0;
 	uiInfo.mapCount = 0;
@@ -199,10 +198,6 @@ void UI_LoadArenas( void )
 
 	for ( n = 0; n < ui_numArenas; n++ )
 	{
-		// determine type
-		type = Info_ValueForKey( ui_arenaInfos[ n ], "type" );
-		// if no type specified, it will be treated as "ffa"
-
 		uiInfo.mapList[ uiInfo.mapCount ].cinematic = -1;
 		uiInfo.mapList[ uiInfo.mapCount ].mapLoadName = String_Alloc( Info_ValueForKey( ui_arenaInfos[ n ], "map" ) );
 		uiInfo.mapList[ uiInfo.mapCount ].mapName = String_Alloc( Info_ValueForKey( ui_arenaInfos[ n ], "longname" ) );

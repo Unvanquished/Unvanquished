@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.26.0"
+#define PRODUCT_VERSION         "0.27.1"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -64,24 +64,12 @@ Maryland 20850 USA.
 
 #define AUTOEXEC_NAME           "autoexec.cfg"
 
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 #define CONFIG_NAME             "autogen.cfg"
 #define KEYBINDINGS_NAME        "keybindings.cfg"
 #define TEAMCONFIG_NAME         "teamconfig.cfg"
 #else
 #define CONFIG_NAME             "autogen_server.cfg"
-#endif
-
-#if 1
-#if !defined( COMPAT_Q3A )
-#define COMPAT_Q3A 1
-#endif
-#endif
-
-#if 1
-#if !defined( COMPAT_ET )
-#define COMPAT_ET 1
-#endif
 #endif
 
 #define UNNAMED_PLAYER "UnnamedPlayer"
@@ -2466,7 +2454,7 @@ void         ByteToDir( int b, vec3_t dir );
 
 		ET_MISSILE,
 		ET_MOVER,
-		ET_BEAM,
+		ET_UNUSED,
 		ET_PORTAL,
 		ET_SPEAKER,
 		ET_PUSHER,

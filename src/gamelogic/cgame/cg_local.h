@@ -88,6 +88,16 @@ typedef enum
   JPS_ACTIVE
 } jetPackState_t;
 
+typedef enum
+{
+  JANIM_NONE,
+
+  JANIM_SLIDEOUT,
+  JANIM_SLIDEIN,
+
+  MAX_JETPACK_ANIMATIONS
+} jetpackAnimNumber_t;
+
 //======================================================================
 
 // when changing animation, set animationTime to frameTime + lerping time
@@ -563,7 +573,7 @@ typedef struct
 
 typedef struct
 {
-	lerpFrame_t legs, torso, nonseg, weapon;
+	lerpFrame_t legs, torso, nonseg, weapon, jetpack;
 	int         painTime;
 	int         painDirection; // flip from 0 to 1
 
@@ -668,8 +678,10 @@ typedef struct centity_s
 	particleSystem_t      *muzzlePS;
 	qboolean              muzzlePsTrigger;
 
-	particleSystem_t      *jetPackPS;
+	particleSystem_t      *jetPackPS[ 2 ];
 	jetPackState_t        jetPackState;
+	lerpFrame_t           jetpackLerpFrame;
+	jetpackAnimNumber_t   jetpackAnim;
 
 	particleSystem_t      *entityPS;
 	qboolean              entityPSMissing;
@@ -1326,6 +1338,8 @@ typedef struct
 	qhandle_t   desaturatedCgrade;
 
 	qhandle_t   scopeShader;
+
+	animation_t jetpackAnims[ MAX_JETPACK_ANIMATIONS ];
 } cgMedia_t;
 
 typedef struct
@@ -1823,6 +1837,8 @@ void CG_InitUpgrades( void );
 void CG_RegisterUpgrade( int upgradeNum );
 void CG_InitWeapons( void );
 void CG_RegisterWeapon( int weaponNum );
+qboolean CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, qboolean loop, qboolean reversed,
+    qboolean clearOrigin );
 
 void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode );
 void CG_HandleFireShotgun( entityState_t *es );

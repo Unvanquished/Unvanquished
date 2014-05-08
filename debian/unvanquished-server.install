@@ -1,3 +1,6 @@
 debian/scripts/unvanquished-server	usr/games/
 obj-*-*-*/daemonded			usr/lib/games/unvanquished/
 debian/configfiles/*.cfg		etc/unvanquished-server
+
+# NaCl
+#obj-*-*-*/game.pexe			usr/lib/games/unvanquished/

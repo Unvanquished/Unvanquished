@@ -163,7 +163,6 @@ void R_AddPolygonBufferSurfaces( void )
 	{
 		sh = R_GetShaderByHandle( polybuffer->pPolyBuffer->shader );
 
-		//R_AddDrawSurf((void *)polybuffer, sh, polybuffer->fogIndex, 0, 0);
 		R_AddDrawSurf( ( surfaceType_t * ) polybuffer, sh, -1, polybuffer->fogIndex );
 	}
 }
@@ -269,11 +268,6 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 RE_AddPolyToScene
 =====================
 */
-void RE_AddPolyToSceneQ3A( qhandle_t hShader, int numVerts, const polyVert_t *verts, int num )
-{
-	R_AddPolysToScene( hShader, numVerts, verts, num );
-}
-
 void RE_AddPolyToSceneET( qhandle_t hShader, int numVerts, const polyVert_t *verts )
 {
 	R_AddPolysToScene( hShader, numVerts, verts, 1 );
@@ -370,7 +364,6 @@ void RE_AddRefEntityToScene( const refEntity_t *ent )
 	}
 
 	Com_Memcpy( &backEndData[ tr.smpFrame ]->entities[ r_numEntities ].e, ent, sizeof( refEntity_t ) );
-	//backEndData[tr.smpFrame]->entities[r_numentities].e = *ent;
 	backEndData[ tr.smpFrame ]->entities[ r_numEntities ].lightingCalculated = qfalse;
 
 	r_numEntities++;
@@ -416,12 +409,9 @@ void RE_AddRefLightToScene( const refLight_t *l )
 		light->l.scale = r_lightScale->value;
 	}
 
-	if ( !HDR_ENABLED() )
+	if ( light->l.scale >= r_lightScale->value )
 	{
-		if ( light->l.scale >= r_lightScale->value )
-		{
-			light->l.scale = r_lightScale->value;
-		}
+		light->l.scale = r_lightScale->value;
 	}
 
 	if ( !r_dynamicLightCastShadows->integer && !light->l.inverseShadows )
@@ -458,13 +448,6 @@ static void R_AddWorldLightsToScene( void )
 		{
 			return;
 		}
-
-		/*
-		   if(light->radius[0] <= 0 && !VectorLength(light->radius) && light->distance <= 0)
-		   {
-		   continue;
-		   }
-		 */
 
 		if ( !light->firstInteractionCache )
 		{
@@ -514,22 +497,12 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	light = &backEndData[ tr.smpFrame ]->lights[ r_numLights++ ];
 
 	light->l.rlType = RL_OMNI;
-//  light->l.lightfx = 0;
 	VectorCopy( org, light->l.origin );
 
 	QuatClear( light->l.rotation );
 	VectorClear( light->l.center );
 
 	// HACK: this will tell the renderer backend to use tr.defaultLightShader
-#if 0
-	dl->shader = R_GetShaderByHandle( hShader );
-
-	if ( dl->shader == tr.defaultShader )
-	{
-		dl->shader = NULL;
-	}
-
-#endif
 	light->l.attenuationShader = 0;
 
 	light->l.radius[ 0 ] = radius;
@@ -558,14 +531,6 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 		light->l.scale = -intensity;
 	else
 		light->l.scale = intensity;
-#if 0
-
-	if ( light->l.scale <= r_lightScale->value )
-	{
-		light->l.scale = r_lightScale->value;
-	}
-
-#endif
 }
 
 void RE_AddDynamicLightToSceneQ3A( const vec3_t org, float radius, float r, float g, float b )
@@ -582,28 +547,6 @@ RB: TODO
 */
 void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible )
 {
-#if 0
-	corona_t *cor;
-
-	if ( !tr.registered )
-	{
-		return;
-	}
-
-	if ( r_numcoronas >= MAX_CORONAS )
-	{
-		return;
-	}
-
-	cor = &backEndData[ tr.smpFrame ]->coronas[ r_numcoronas++ ];
-	VectorCopy( org, cor->origin );
-	cor->color[ 0 ] = r;
-	cor->color[ 1 ] = g;
-	cor->color[ 2 ] = b;
-	cor->scale = scale;
-	cor->id = id;
-	cor->visible = visible;
-#endif
 }
 
 /*
@@ -658,13 +601,6 @@ void RE_RenderScene( const refdef_t *fd )
 
 	tr.refdef.time = fd->time;
 	tr.refdef.rdflags = fd->rdflags;
-
-	/*
-	if(fd->rdflags & RDF_SKYBOXPORTAL)
-	{
-	        ri.Printf(PRINT_ALL, "skyboxportal = 1\n");
-	}
-	*/
 
 	// copy the areamask data over and note if it has changed, which
 	// will force a reset of the visible leafs even if the view hasn't moved
@@ -744,8 +680,6 @@ void RE_RenderScene( const refdef_t *fd )
 	//
 	Com_Memset( &parms, 0, sizeof( parms ) );
 
-#if 1
-
 	if ( tr.refdef.pixelTarget == NULL )
 	{
 		parms.viewportX = tr.refdef.x;
@@ -759,11 +693,6 @@ void RE_RenderScene( const refdef_t *fd )
 		parms.viewportX = glConfig.vidWidth / 2;
 		parms.viewportY = glConfig.vidHeight / 2;
 	}
-
-#else
-	parms.viewportX = tr.refdef.x;
-	parms.viewportY = glConfig.vidHeight - ( tr.refdef.y + tr.refdef.height );
-#endif
 
 	parms.viewportWidth = tr.refdef.width;
 	parms.viewportHeight = tr.refdef.height;

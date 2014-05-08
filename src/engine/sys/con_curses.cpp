@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <curses.h>
 
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 #define TITLE         S_COLOR_BLUE "---[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Server Console " S_COLOR_BLUE "]---"
 #else
 #define TITLE         S_COLOR_BLUE "---[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Console " S_COLOR_BLUE "]---"
@@ -107,7 +107,7 @@ static void CON_SetColor( WINDOW *win, int color )
 {
 	// Approximations of g_color_table (q_math.c)
 	// Colours are hard-wired below; see init_pair() calls
-	static const int colour16map[2][32] = {
+	static const chtype colour16map[2][32] = {
 		{ // Variant 1 (xterm)
 			1 | A_BOLD, 2,          3,          4,
 			5,          6,          7,          8,
@@ -150,24 +150,6 @@ static void CON_SetColor( WINDOW *win, int color )
 		wattrset( win, COLOR_PAIR( colour16map[index][ color ] & 0xF ) | ( colour16map[index][color] & ~0xF ) );
 	}
 }
-
-/*
-==================
-CON_UpdateCursor
-
-Update the cursor position
-==================
-*/
-static INLINE int CON_wcwidth( const char *s )
-{
-#ifdef _WIN32
-	return 1;
-#else
-	int w = wcwidth( Q_UTF8_CodePoint( s ) );
-	return w < 0 ? 0 : w;
-#endif
-}
-
 
 static INLINE void CON_UpdateCursor( void )
 {

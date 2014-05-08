@@ -148,10 +148,6 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 		tess.lightCoords[ tess.numVertexes + i ][ 1 ] = vert->lightmap[ 1 ];
 
 		Vector4Copy( vert->lightColor, tess.colors[ tess.numVertexes + i ] );
-
-#if !defined( COMPAT_ET ) && !defined( COMPAT_Q3A )
-		VectorCopy( vert->lightDirection, tess.lightDirections[ tess.numVertexes + i ] );
-#endif
 	}
 
 	tess.numVertexes += numVerts;
@@ -962,87 +958,6 @@ static void Tess_SurfaceTriangles( srfTriangles_t *srf )
 	}
 }
 
-/*
-==============
-Tess_SurfaceBeam
-==============
-*/
-static void Tess_SurfaceBeam( void )
-{
-#if 1
-
-	GLimp_LogComment( "--- Tess_SurfaceBeam ---\n" );
-
-	// TODO rewrite without glBegin/glEnd
-
-#else
-#define NUM_BEAM_SEGS 6
-	refEntity_t *e;
-	int         i;
-	vec3_t      perpvec;
-	vec3_t      direction, normalized_direction;
-	vec3_t      start_points[ NUM_BEAM_SEGS ], end_points[ NUM_BEAM_SEGS ];
-	vec3_t      oldorigin, origin;
-
-	GLimp_LogComment( "--- Tess_SurfaceBeam ---\n" );
-
-	if ( glState.currentVBO != tess.vbo || glState.currentIBO != tess.ibo )
-	{
-		Tess_EndBegin();
-
-		R_BindVBO( tess.vbo );
-		R_BindIBO( tess.ibo );
-	}
-
-	e = &backEnd.currentEntity->e;
-
-	oldorigin[ 0 ] = e->oldorigin[ 0 ];
-	oldorigin[ 1 ] = e->oldorigin[ 1 ];
-	oldorigin[ 2 ] = e->oldorigin[ 2 ];
-
-	origin[ 0 ] = e->origin[ 0 ];
-	origin[ 1 ] = e->origin[ 1 ];
-	origin[ 2 ] = e->origin[ 2 ];
-
-	normalized_direction[ 0 ] = direction[ 0 ] = oldorigin[ 0 ] - origin[ 0 ];
-	normalized_direction[ 1 ] = direction[ 1 ] = oldorigin[ 1 ] - origin[ 1 ];
-	normalized_direction[ 2 ] = direction[ 2 ] = oldorigin[ 2 ] - origin[ 2 ];
-
-	if ( VectorNormalize( normalized_direction ) == 0 )
-	{
-		return;
-	}
-
-	PerpendicularVector( perpvec, normalized_direction );
-
-	VectorScale( perpvec, 4, perpvec );
-
-	for ( i = 0; i < NUM_BEAM_SEGS; i++ )
-	{
-		RotatePointAroundVector( start_points[ i ], normalized_direction, perpvec, ( 360.0 / NUM_BEAM_SEGS ) * i );
-//      VectorAdd( start_points[i], origin, start_points[i] );
-		VectorAdd( start_points[ i ], direction, end_points[ i ] );
-	}
-
-	GL_BindProgram( 0 );
-	GL_BindToTMU( 0 ,tr.whiteImage );
-
-	GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-
-	glColor3f( 1, 0, 0 );
-
-	glBegin( GL_TRIANGLE_STRIP );
-
-	for ( i = 0; i <= NUM_BEAM_SEGS; i++ )
-	{
-		glVertex3fv( start_points[ i % NUM_BEAM_SEGS ] );
-		glVertex3fv( end_points[ i % NUM_BEAM_SEGS ] );
-	}
-
-	glEnd();
-#endif
-}
-
 //================================================================================
 
 /*
@@ -1055,11 +970,9 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 	int           i, j;
 	int           numIndexes = 0;
 	int           numVertexes;
-//	mdvModel_t     *model;
 	mdvXyz_t      *oldVert, *newVert;
 	mdvSt_t       *st;
 	srfTriangle_t *tri;
-//	vec3_t          lightOrigin;
 	float         backlerp;
 	float         oldXyzScale, newXyzScale;
 
@@ -1078,8 +991,6 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 	oldXyzScale = backlerp;
 
 	Tess_CheckOverflow( srf->numVerts, srf->numTriangles * 3 );
-
-//	model = srf->model;
 
 	numIndexes = srf->numTriangles * 3;
 
@@ -1172,29 +1083,9 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 			}
 		}
 
-#if 1
 		VectorArrayNormalize( ( vec4_t * ) tess.tangents[ tess.numVertexes ], numVertexes );
 		VectorArrayNormalize( ( vec4_t * ) tess.binormals[ tess.numVertexes ], numVertexes );
 		VectorArrayNormalize( ( vec4_t * ) tess.normals[ tess.numVertexes ], numVertexes );
-#else
-
-		for ( i = 0; i < numVertexes; i++ )
-		{
-			VectorNormalize( tess.tangents[ tess.numVertexes + i ] );
-			VectorNormalize( tess.binormals[ tess.numVertexes + i ] );
-			VectorNormalize( tess.normals[ tess.numVertexes + i ] );
-		}
-
-#endif
-
-		// TEST
-
-		/*
-		for(i = 0; i < numVertexes; i++)
-		{
-		        VectorSet(tess.normals[tess.numVertexes + i], 0, 0, 1);
-		}
-		*/
 	}
 
 	tess.numIndexes += numIndexes;
@@ -1458,94 +1349,6 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 	tess.numVertexes += surf->num_vertexes;
 }
 
-/*
-===========================================================================
-
-NULL MODEL
-
-===========================================================================
-*/
-
-/*
-===================
-Tess_SurfaceAxis
-
-Draws x/y/z lines from the origin for orientation debugging
-===================
-*/
-static void Tess_SurfaceAxis( void )
-{
-	//int             k;
-	//vec4_t          verts[3];
-	//vec3_t          forward, right, up;
-
-	GLimp_LogComment( "--- Tess_SurfaceAxis ---\n" );
-
-#if 0
-	Tess_CheckOverflow( 9, 9 );
-
-	MatrixToVectorsFRU( backEnd.orientation.transformMatrix, forward, right, up );
-
-	VectorClear( verts[ 0 ] );
-	VectorScale( forward, 1, verts[ 1 ] );
-	VectorScale( up, 0.2, verts[ 2 ] );
-
-	for ( k = 0; k < 3; k++ )
-	{
-		verts[ k ][ 3 ] = 1;
-		Vector4Copy( verts[ k ], tess.xyz[ tess.numVertexes ] );
-		Vector4Copy( colorRed, tess.colors[ tess.numVertexes ] );
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-		tess.numVertexes++;
-	}
-
-	VectorScale( right, 1, verts[ 1 ] );
-	VectorScale( up, 0.2, verts[ 2 ] );
-
-	for ( k = 0; k < 3; k++ )
-	{
-		verts[ k ][ 3 ] = 1;
-		Vector4Copy( verts[ k ], tess.xyz[ tess.numVertexes ] );
-		Vector4Copy( colorGreen, tess.colors[ tess.numVertexes ] );
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-		tess.numVertexes++;
-	}
-
-	VectorScale( up, 1, verts[ 1 ] );
-	VectorScale( forward, 0.2, verts[ 2 ] );
-
-	for ( k = 0; k < 3; k++ )
-	{
-		verts[ k ][ 3 ] = 1;
-		Vector4Copy( verts[ k ], tess.xyz[ tess.numVertexes ] );
-		Vector4Copy( colorBlue, tess.colors[ tess.numVertexes ] );
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-		tess.numVertexes++;
-	}
-
-#endif
-
-	/*
-	   GL_BindProgram(0);
-	   GL_SelectTexture(0);
-	   GL_Bind(tr.whiteImage);
-
-	   glLineWidth(3);
-	   glBegin(GL_LINES);
-	   glColor3f(1, 0, 0);
-	   glVertex3f(0, 0, 0);
-	   glVertex3f(16, 0, 0);
-	   glColor3f(0, 1, 0);
-	   glVertex3f(0, 0, 0);
-	   glVertex3f(0, 16, 0);
-	   glColor3f(0, 0, 1);
-	   glVertex3f(0, 0, 0);
-	   glVertex3f(0, 0, 16);
-	   glEnd();
-	   glLineWidth(1);
-	 */
-}
-
 //===========================================================================
 
 /*
@@ -1563,14 +1366,6 @@ static void Tess_SurfaceEntity( surfaceType_t *surfType )
 	{
 		case RT_SPRITE:
 			Tess_SurfaceSprite();
-			break;
-
-		case RT_BEAM:
-			Tess_SurfaceBeam();
-			break;
-
-		default:
-			Tess_SurfaceAxis();
 			break;
 	}
 }
@@ -1626,10 +1421,6 @@ Tess_SurfaceVBOMDVMesh
 */
 void Tess_SurfaceVBOMDVMesh( srfVBOMDVMesh_t *surface )
 {
-//	int             i;
-//	mdvModel_t     *mdvModel;
-//	mdvSurface_t   *mdvSurface;
-//	matrix_t        m, m2; //, m3
 	refEntity_t *refEnt;
 
 	GLimp_LogComment( "--- Tess_SurfaceVBOMDVMesh ---\n" );
@@ -1647,9 +1438,6 @@ void Tess_SurfaceVBOMDVMesh( srfVBOMDVMesh_t *surface )
 	tess.numIndexes = surface->numIndexes;
 	tess.numVertexes = surface->numVerts;
 
-//	mdvModel = surface->mdvModel;
-//	mdvSurface = surface->mdvSurface;
-
 	refEnt = &backEnd.currentEntity->e;
 
 	if ( refEnt->oldframe == refEnt->frame )
@@ -1663,9 +1451,6 @@ void Tess_SurfaceVBOMDVMesh( srfVBOMDVMesh_t *surface )
 
 	glState.vertexAttribsOldFrame = refEnt->oldframe;
 	glState.vertexAttribsNewFrame = refEnt->frame;
-
-	//glState.vertexAttribPointersSet = 0;
-	//GL_VertexAttribPointers(ATTR_BITS | ATTR_POSITION2 | ATTR_TANGENT2 | ATTR_BINORMAL2 | ATTR_NORMAL2);
 
 	Tess_End();
 }
@@ -1717,8 +1502,6 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 	{
 		tess.vboVertexSkinning = qfalse;
 	}
-
-	//GL_VertexAttribPointers(ATTR_BITS | ATTR_BONE_INDEXES | ATTR_BONE_WEIGHTS);
 
 	Tess_End();
 }

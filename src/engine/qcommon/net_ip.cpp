@@ -108,7 +108,7 @@ static GeoIP *geoip_data_6 = NULL;
 
 static qboolean            usingSocks = qfalse;
 static int                 networkingEnabled = 0;
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 static qboolean            serverMode = qfalse;
 #else
 #define serverMode (qtrue)
@@ -1803,7 +1803,7 @@ static qboolean NET_GetCvars( void )
 {
 	int modified;
 
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 	// I want server owners to explicitly turn on IPv6 support.
 	net_enabled = Cvar_Get( "net_enabled", "1", CVAR_LATCH  );
 #else
@@ -1877,13 +1877,13 @@ void NET_Config( qboolean enableNetworking )
 	qboolean modified;
 	qboolean stop;
 	qboolean start;
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	qboolean svRunning;
 #endif
 
 	// get any latched changes to cvars
 	modified = NET_GetCvars();
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	svRunning = !!com_sv_running->integer;
 	modified |= ( svRunning != serverMode );
 #endif
@@ -1926,7 +1926,7 @@ void NET_Config( qboolean enableNetworking )
 		}
 	}
 
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	serverMode = svRunning;
 #endif
 	networkingEnabled = enableNetworking;

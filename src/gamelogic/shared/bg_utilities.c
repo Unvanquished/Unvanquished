@@ -104,3 +104,9 @@ qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
 
 	return qtrue;
 }
+
+void BG_BuildEntityDescription( char *str, size_t size, entityState_t *es )
+{
+	Q_snprintf(str, size, "%s #%i", Com_EntityTypeName( es->eType ), es->number );
+	str[ size -1 ] = '\0';
+}

@@ -5,18 +5,22 @@
 set -e
 set -u
 
+# Dependencies version. This number must be updated every time the version
+# numbers below change, or packages are added/removed.
+DEPS_VERSION=1
+
 # Package versions
 PKGCONFIG_VERSION=0.28
 NASM_VERSION=2.11.02
 ZLIB_VERSION=1.2.8
-GMP_VERSION=5.1.3
+GMP_VERSION=6.0.0
 NETTLE_VERSION=2.7.1
 GEOIP_VERSION=1.6.0
-CURL_VERSION=7.35.0
-SDL2_VERSION=2.0.2
+CURL_VERSION=7.36.0
+SDL2_VERSION=2.0.3
 GLEW_VERSION=1.10.0
-PNG_VERSION=1.6.9
-JPEG_VERSION=1.3.0
+PNG_VERSION=1.6.10
+JPEG_VERSION=1.3.1
 WEBP_VERSION=0.4.0
 FREETYPE_VERSION=2.5.3
 OPENAL_VERSION=1.15.1
@@ -108,7 +112,7 @@ build_zlib() {
 
 # Build GMP
 build_gmp() {
-	download "gmp-${GMP_VERSION}.tar.xz" "ftp://ftp.gmplib.org/pub/gmp/gmp-${GMP_VERSION}.tar.xz"
+	download "gmp-${GMP_VERSION}a.tar.xz" "ftp://ftp.gmplib.org/pub/gmp/gmp-${GMP_VERSION}a.tar.xz"
 	cd "gmp-${GMP_VERSION}"
 	make distclean || true
 	case "${PLATFORM}" in
@@ -287,10 +291,12 @@ build_freetype() {
 	download "freetype-${FREETYPE_VERSION}.tar.bz2" "http://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.bz2"
 	cd "freetype-${FREETYPE_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --without-bzip2 --without-png
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --without-bzip2 --without-png --with-harfbuzz=no
 	make clean
 	make
 	make install
+	cp -a "${PREFIX}/include/freetype2" "${PREFIX}/include/freetype"
+	mv "${PREFIX}/include/freetype" "${PREFIX}/include/freetype2/freetype"
 	cd ..
 }
 
@@ -454,6 +460,7 @@ build_naclsdk() {
 	download "naclsdk_${NACLSDK_PLATFORM}-${NACLSDK_VERSION}.tar.bz2" "https://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/${NACLSDK_VERSION}/naclsdk_${NACLSDK_PLATFORM}.tar.bz2"
 	cp pepper_*"/tools/sel_ldr_${NACLSDK_ARCH}${EXE}" "${PREFIX}/sel_ldr${EXE}"
 	cp pepper_*"/tools/irt_core_${NACLSDK_ARCH}.nexe" "${PREFIX}/irt_core-${DAEMON_ARCH}.nexe"
+	cp pepper_*"/toolchain/${NACLSDK_PLATFORM}_x86_newlib/bin/x86_64-nacl-gdb${EXE}" "${PREFIX}/nacl-gdb${EXE}"
 	cp -aT pepper_*"/toolchain/${NACLSDK_PLATFORM}_pnacl" "${PREFIX}/pnacl"
 	case "${PLATFORM}" in
 	linux32)
@@ -507,37 +514,51 @@ build_gendef() {
 
 # Clean the target directory and build a package
 build_package() {
-	rm -rf "${PREFIX}/man"
-	rm -rf "${PREFIX}/def"
-	rm -rf "${PREFIX}/share"
-	rm -f "${PREFIX}/genlib.bat"
-	rm -rf "${PREFIX}/lib/pkgconfig"
-	find "${PREFIX}/bin" -not -type d -not -name '*.dll' -execdir rm -f -- {} \;
-	find "${PREFIX}/lib" -name '*.la' -execdir rm -f -- {} \;
-	find "${PREFIX}/lib" -name '*.dll.a' -execdir bash -c 'rm -f -- "`basename "{}" .dll.a`.a"' \;
-	find "${PREFIX}/lib" -name '*.dylib' -execdir bash -c 'rm -f -- "`basename "{}" .dylib`.a"' \;
-	rmdir "${PREFIX}/bin" 2> /dev/null || true
-	rmdir "${PREFIX}/include" 2> /dev/null || true
-	rmdir "${PREFIX}/lib" 2> /dev/null || true
+	mkdir -p "${PWD}/pkg"
+	PKG_PREFIX="${PWD}/pkg/${PLATFORM}-${DEPS_VERSION}"
+	rm -rf "${PKG_PREFIX}"
+	rsync -a --link-dest="${PREFIX}" "${PREFIX}/" "${PKG_PREFIX}"
+
+	# Remove all unneeded files
+	rm -rf "${PKG_PREFIX}/man"
+	rm -rf "${PKG_PREFIX}/def"
+	rm -rf "${PKG_PREFIX}/share"
+	rm -f "${PKG_PREFIX}/genlib.bat"
+	rm -rf "${PKG_PREFIX}/lib/pkgconfig"
+	find "${PKG_PREFIX}/bin" -not -type d -not -name '*.dll' -execdir rm -f -- {} \;
+	find "${PKG_PREFIX}/lib" -name '*.la' -execdir rm -f -- {} \;
+	find "${PKG_PREFIX}/lib" -name '*.dll.a' -execdir bash -c 'rm -f -- "`basename "{}" .dll.a`.a"' \;
+	find "${PKG_PREFIX}/lib" -name '*.dylib' -execdir bash -c 'rm -f -- "`basename "{}" .dylib`.a"' \;
+	rmdir "${PKG_PREFIX}/bin" 2> /dev/null || true
+	rmdir "${PKG_PREFIX}/include" 2> /dev/null || true
+	rmdir "${PKG_PREFIX}/lib" 2> /dev/null || true
 	case "${PLATFORM}" in
 	mingw*)
-		find "${PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
-		find "${PREFIX}/lib" -name '*.a' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
+		find "${PKG_PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
+		find "${PKG_PREFIX}/lib" -name '*.a' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
 		;;
 	msvc*)
-		find "${PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
-		find "${PREFIX}/lib" -name '*.dll.a' -execdir rm -f -- {} \;
-		find "${PREFIX}/lib" -name '*.exp' -execdir rm -f -- {} \;
+		find "${PKG_PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
+		find "${PKG_PREFIX}/lib" -name '*.a' -execdir rm -f -- {} \;
+		find "${PKG_PREFIX}/lib" -name '*.exp' -execdir rm -f -- {} \;
 		;;
 	esac
 
-	cd "${PREFIX}/.."
-	tar cvjf "${PLATFORM}.tar.bz2" "${PLATFORM}"
+	cd pkg
+	case "${PLATFORM}" in
+	mingw*|msvc*)
+		zip -r "${PLATFORM}-${DEPS_VERSION}.zip" "${PLATFORM}-${DEPS_VERSION}"
+		;;
+	*)
+		tar cvjf "${PLATFORM}-${DEPS_VERSION}.tar.bz2" "${PLATFORM}-${DEPS_VERSION}"
+		;;
+	esac
+	cd ..
 }
 
 # Common setup code
 common_setup() {
-	PREFIX="${PWD}/${PLATFORM}"
+	PREFIX="${PWD}/${PLATFORM}-${DEPS_VERSION}"
 	export PATH="${PATH}:${PREFIX}/bin"
 	export PKG_CONFIG="pkg-config"
 	export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
@@ -613,7 +634,7 @@ setup_macosx64() {
 	HOST=x86_64-apple-darwin11
 	MSVC_SHARED=(--disable-shared --enable-static)
 	export MACOSX_DEPLOYMENT_TARGET=10.6
-	export NASM="${PWD}/macosx64/bin/nasm" # A newer version of nasm is required for 64-bit
+	export NASM="${PWD}/macosx64-${DEPS_VERSION}/bin/nasm" # A newer version of nasm is required for 64-bit
 	export CC=clang
 	export CXX=clang++
 	export CFLAGS="-arch x86_64"

@@ -46,6 +46,8 @@ qvmcall64 PROC
   pop rcx
 
   mov dword ptr [rcx], esi			; write back the programStack value
+
+  xor rax, rax
   mov al, bl						; return the opStack offset
 
   pop rbx

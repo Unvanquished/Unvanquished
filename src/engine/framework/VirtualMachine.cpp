@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../sys/sys_loadlib.h"
 #include "VirtualMachine.h"
@@ -77,11 +76,11 @@ static std::string Win32StrError(uint32_t error)
 #endif
 
 // Platform-specific code to load a module
-static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem)
+static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem, Str::StringRef loaderLogFile)
 {
 #ifdef _WIN32
 	// Inherit the socket in the child process
-	if (!SetHandleInformation(DescToHandle(pair.second.GetDesc()), HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
+	if (!SetHandleInformation(pair.second.GetHandle(), HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
 		Com_Error(ERR_DROP, "VM: Could not make socket inheritable: %s", Win32StrError(GetLastError()).c_str());
 
 	// Escape command line arguments
@@ -112,6 +111,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 				for (int k = 0; k < num_slashes; k++)
 					cmdline += "\\";
 				num_slashes = 0;
+				cmdline.push_back(c);
 			}
 		}
 		cmdline += "\"";
@@ -134,10 +134,14 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	PROCESS_INFORMATION processInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
 	startupInfo.cb = sizeof(startupInfo);
-	char env[] = "";
-	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, env, NULL, &startupInfo, &processInfo)) {
+	if (not loaderLogFile.empty()) {
+		startupinfo.dwFlags = STARTF_USESTDHANDLES;
+		FS::File logFile = FS::RawPath::OpenAppend(loaderLogFile);
+		startupinfo.hStdError = reinterpret_cast<HANDLE>(_get_osfhandle(fileno(logFile.ReleaseHandle())))
+	}
+	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
-		Com_Error(ERR_DROP, "VM: Could create child process: %s", Win32StrError(GetLastError()).c_str());
+		Com_Error(ERR_DROP, "VM: Could not create child process: %s", Win32StrError(GetLastError()).c_str());
 	}
 
 	if (!AssignProcessToJobObject(job, processInfo.hProcess)) {
@@ -192,6 +196,11 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 		close(0);
 		close(1);
 
+		if (not loaderLogFile.empty()) {
+			FS::File logFile = FS::RawPath::OpenAppend(loaderLogFile);
+			dup2(fileno(logFile.ReleaseHandle()), 2);
+		}
+
 		// Load the target executable
 		char* env[] = {nullptr};
 		execve(args[0], const_cast<char* const*>(args), env);
@@ -219,26 +228,42 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 }
 
-std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
+std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, bool debugLoader) {
 	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
-	std::string module, sel_ldr, irt, bootstrap;
+	std::string module, sel_ldr, irt, bootstrap, modulePath, loaderLogFile;
 
 	// Extract the nexe from the pak so that sel_ldr can load it
 	module = name + "-" ARCH_STRING ".nexe";
-	try {
-		FS::File out = FS::HomePath::OpenWrite(module);
-		FS::PakPath::CopyFile(module, out);
-		out.Close();
-	} catch (std::system_error& err) {
-		Com_Error(ERR_DROP, "VM: Failed to extract NaCl module %s: %s\n", module.c_str(), err.what());
-	}
+	if (extract) {
+		try {
+			FS::File out = FS::HomePath::OpenWrite(module);
+			FS::PakPath::CopyFile(module, out);
+			out.Close();
+		} catch (std::system_error& err) {
+			Com_Error(ERR_DROP, "VM: Failed to extract VM module %s: %s\n", module.c_str(), err.what());
+		}
+		modulePath = FS::Path::Build(FS::GetHomePath(), module);
+	} else
+		modulePath = FS::Path::Build(libPath, module);
 
-	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)DescToHandle(pair.second.GetDesc()));
-	sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
+	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
 	irt = FS::Path::Build(libPath, "irt_core-" ARCH_STRING ".nexe");
+
+	// On Windows, even if we are running a 32-bit engine, we must use the
+	// 64-bit sel_ldr if the host operating system is 64-bit.
+#if defined(_WIN32) && !defined(_WIN64)
+	SYSTEM_INFO systemInfo;
+	GetNativeSystemInfo(&systemInfo);
+	if (systemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
+		sel_ldr = FS::Path::Build(libPath, "sel_ldr64" EXE_EXT);
+	else
+		sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
+#else
+	sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
+#endif
 
 #ifdef __linux__
 	bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
@@ -247,30 +272,51 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");
 	args.push_back("--reserved_at_zero=0xXXXXXXXXXXXXXXXX");
 #else
+	Q_UNUSED(bootstrap);
 	args.push_back(sel_ldr.c_str());
 #endif
-	if (debug)
+	if (debug) {
 		args.push_back("-g");
+	}
+
+	if (debugLoader) {
+		loaderLogFile = FS::Path::Build(FS::GetHomePath(), name + ".sel_ldr.log");
+		args.push_back("-vvvv");
+		args.push_back("-l");
+		args.push_back(loaderLogFile.c_str());
+	}
+
 	args.push_back("-B");
 	args.push_back(irt.c_str());
 	args.push_back("-e");
 	args.push_back("-i");
 	args.push_back(rootSocketRedir);
 	args.push_back("--");
-	args.push_back(module.c_str());
+	args.push_back(modulePath.c_str());
 	args.push_back(XSTRING(ROOT_SOCKET_FD));
 	args.push_back(NULL);
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
 
-	return InternalLoadModule(std::move(pair), args.data(), true);
+	if (debugLoader) {
+		std::string commandLine;
+		for (auto arg : args) {
+			if (arg) {
+				commandLine += " ";
+				commandLine += arg;
+			}
+		}
+		Com_Printf("Using loader args: %s", commandLine.c_str());
+	}
+
+	return InternalLoadModule(std::move(pair), args.data(), true, loaderLogFile);
 }
 
 std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 
-    std::string handleArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
+	std::string handleArg = std::to_string((int)(intptr_t)pair.second.GetHandle());
 
 	std::string module = FS::Path::Build(libPath, name + "-nacl-native-exe" + EXE_EXT);
 	if (debug) {
@@ -283,7 +329,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, 
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
 
-	return InternalLoadModule(std::move(pair), args.data(), true);
+	return InternalLoadModule(std::move(pair), args.data(), true, "");
 }
 
 IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, VM::VMBase::InProcessInfo& inProcess) {
@@ -317,45 +363,48 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 	return std::move(pair.first);
 }
 
-int VMBase::Create(vmType_t type)
+int VMBase::Create()
 {
+	type = static_cast<vmType_t>(params.vmType.Get());
+
 	if (type < 0 || type >= TYPE_END)
 		Com_Error(ERR_DROP, "VM: Invalid type %d", type);
+
+	int loadStartTime = Sys_Milliseconds();
 
 	// Free the VM if it exists
 	Free();
 
-    // Open the syscall log
-    if (logSyscalls.Get()) {
-        std::string filename = name + ".syscallLog";
-        try {
-            syscallLogFile = FS::RawPath::OpenWrite(filename);
-        } catch (std::system_error& error) {
-            Log::Warn("Couldn't open %s", filename);
-        }
-    }
+	// Open the syscall log
+	if (params.logSyscalls.Get()) {
+		std::string filename = name + ".syscallLog";
+		try {
+			syscallLogFile = FS::RawPath::OpenWrite(filename);
+		} catch (std::system_error& error) {
+			Log::Warn("Couldn't open %s", filename);
+		}
+	}
 
 	// Create the socket pair to get the handle for ROOT_SOCKET
 	std::pair<IPC::Socket, IPC::Socket> pair = IPC::Socket::CreatePair();
 
 	IPC::Socket rootSocket;
-	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG) {
-		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG);
+	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH || type == TYPE_NACL_LIBPATH_DEBUG) {
+		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG, type == TYPE_NACL || type == TYPE_NACL_DEBUG, params.debugLoader.Get());
 	} else if (type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
 		std::tie(processHandle, rootSocket) = CreateNativeVM(std::move(pair), name, type == TYPE_NATIVE_EXE_DEBUG);
 	} else {
 		rootSocket = CreateInProcessNativeVM(std::move(pair), name, inProcess);
 	}
 	rootChannel = IPC::Channel(std::move(rootSocket));
-	vmType = type;
 
-	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE_DEBUG)
+	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG)
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
 
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
 	IPC::Reader reader = rootChannel.RecvMsg();
-	Com_Printf("Loaded module with the NaCl ABI");
+	Com_Printf("Loaded VM module in %d msec\n", Sys_Milliseconds() - loadStartTime);
 	return reader.Read<uint32_t>();
 }
 
@@ -371,10 +420,10 @@ void VMBase::FreeInProcessVM() {
 		}
 
 		if (wait) {
-			Com_Printf("Waiting for the VM thread...");
+			Com_Printf("Waiting for the VM thread...\n");
 			inProcess.thread.join();
 		} else {
-			Com_Printf("The VM thread doesn't seem to stop, detaching it (bad things WILL ensue)");
+			Com_Printf("The VM thread doesn't seem to stop, detaching it (bad things WILL ensue)\n");
 			inProcess.thread.detach();
 		}
 	}
@@ -389,33 +438,33 @@ void VMBase::FreeInProcessVM() {
 
 void VMBase::LogMessage(bool vmToEngine, int id)
 {
-    if (syscallLogFile) {
-        int minor = id & 0xffff;
-        int major = id >> 16;
+	if (syscallLogFile) {
+		int minor = id & 0xffff;
+		int major = id >> 16;
 
-        Str::StringRef direction = vmToEngine ? "V -> E" : "E -> V";
+		const char* direction = vmToEngine ? "V -> E" : "E -> V";
 
-        try {
-            syscallLogFile.Printf("%s (%i, %i)\n", direction, major, minor);
-        } catch (std::system_error& err) {
-            Log::Warn("Error while writing the VM syscall log");
-        }
-    }
+		try {
+			syscallLogFile.Printf("%s (%i, %i)\n", direction, major, minor);
+		} catch (std::system_error& err) {
+			Log::Warn("Error while writing the VM syscall log: %s", err.what());
+		}
+	}
 }
 
 void VMBase::Free()
 {
-    if (syscallLogFile) {
-        std::error_code err;
-        syscallLogFile.Close(err);
-    }
+	if (syscallLogFile) {
+		std::error_code err;
+		syscallLogFile.Close(err);
+	}
 
 	if (!IsActive())
 		return;
 
 	rootChannel = IPC::Channel();
 
-	if (vmType == TYPE_NACL || vmType == TYPE_NACL_DEBUG || vmType == TYPE_NATIVE_EXE || vmType == TYPE_NATIVE_EXE_DEBUG) {
+	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
 #ifdef _WIN32
 		// Closing the job object should kill the child process
 		CloseHandle(processHandle);
@@ -424,7 +473,7 @@ void VMBase::Free()
 		waitpid(processHandle, NULL, 0);
 #endif
 		processHandle = IPC::INVALID_HANDLE;
-	} else if (vmType == TYPE_NATIVE_DLL) {
+	} else if (type == TYPE_NATIVE_DLL) {
 		FreeInProcessVM();
 	}
 

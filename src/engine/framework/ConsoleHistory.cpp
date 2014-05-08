@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //TODO: make it thread safe.
 namespace Console {
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
     static const char* HISTORY_FILE = "conhistory";
 #else
     static const char* HISTORY_FILE = "conhistory_server";

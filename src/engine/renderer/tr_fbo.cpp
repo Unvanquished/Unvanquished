@@ -62,10 +62,6 @@ qboolean R_CheckFBO( const FBO_t *fbo )
 			ri.Printf( PRINT_WARNING, "R_CheckFBO: (%s) Framebuffer incomplete, missing attachment\n", fbo->name );
 			break;
 
-			//case GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT:
-			//  ri.Printf(PRINT_WARNING, "R_CheckFBO: (%s) Framebuffer incomplete, duplicate attachment\n", fbo->name);
-			//  break;
-
 		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
 			ri.Printf( PRINT_WARNING, "R_CheckFBO: (%s) Framebuffer incomplete, attached images must have same dimensions\n",
 			           fbo->name );
@@ -86,8 +82,6 @@ qboolean R_CheckFBO( const FBO_t *fbo )
 
 		default:
 			ri.Printf( PRINT_WARNING, "R_CheckFBO: (%s) unknown error 0x%X\n", fbo->name, code );
-			//ri.Error(ERR_FATAL, "R_CheckFBO: (%s) unknown error 0x%X", fbo->name, code);
-			//assert(0);
 			break;
 	}
 
@@ -152,18 +146,6 @@ void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 		ri.Printf( PRINT_WARNING, "R_CreateFBOColorBuffer: invalid attachment index %i\n", index );
 		return;
 	}
-
-#if 0
-
-	if ( format != GL_RGB &&
-	     format != GL_RGBA &&
-	     format != GL_RGB16F && format != GL_RGBA16F && format != GL_RGB32F_ARB && format != GL_RGBA32F_ARB )
-	{
-		ri.Printf( PRINT_WARNING, "R_CreateFBOColorBuffer: format %i is not color-renderable\n", format );
-		//return;
-	}
-
-#endif
 
 	fbo->colorFormat = format;
 
@@ -232,7 +214,6 @@ void R_CreateFBOStencilBuffer( FBO_t *fbo, int format )
 	qboolean absent;
 
 	if ( format != GL_STENCIL_INDEX &&
-	     //format != GL_STENCIL_INDEX_EXT &&
 	     format != GL_STENCIL_INDEX1_EXT &&
 	     format != GL_STENCIL_INDEX4_EXT && format != GL_STENCIL_INDEX8_EXT && format != GL_STENCIL_INDEX16_EXT )
 	{
@@ -398,21 +379,6 @@ void R_BindFBO( FBO_t *fbo )
 	{
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fbo->frameBuffer );
 
-		/*
-		   if(fbo->colorBuffers[0])
-		   {
-		   glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, fbo->colorBuffers[0]);
-		   }
-		 */
-
-		/*
-		   if(fbo->depthBuffer)
-		   {
-		   glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, fbo->depthBuffer);
-		   glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fbo->depthBuffer);
-		   }
-		 */
-
 		glState.currentFBO = fbo;
 	}
 }
@@ -472,30 +438,6 @@ void R_InitFBOs( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	// deferredRender FBO for the HDR or LDR context
-	tr.deferredRenderFBO = R_CreateFBO( "_deferredRender", width, height );
-	R_BindFBO( tr.deferredRenderFBO );
-
-	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredRenderFBOImage->texnum, 0 );
-
-#if 0
-
-	if ( glConfig2.framebufferPackedDepthStencilAvailable )
-	{
-		R_AttachFBOTexturePackedDepthStencil( tr.depthRenderImage->texnum );
-	}
-	else if ( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 ) // || glConfig.hardwareType == GLHW_NV_DX10)
-	{
-		R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
-	}
-	else
-#endif
-	{
-		R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
-	}
-
-	R_CheckFBO( tr.deferredRenderFBO );
-
 	if ( glConfig2.framebufferBlitAvailable )
 	{
 		if ( glConfig2.textureNPOTAvailable )
@@ -514,22 +456,18 @@ void R_InitFBOs( void )
 
 		if ( glConfig.hardwareType == GLHW_ATI_DX10 )
 		{
-			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA16F, 0);
 			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT16 );
 		}
 		else if ( glConfig.hardwareType == GLHW_NV_DX10 )
 		{
-			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA32F, 0);
 			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
 		}
 		else if ( glConfig2.framebufferPackedDepthStencilAvailable )
 		{
-			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA32F, 0);
 			R_CreateFBOPackedDepthStencilBuffer( tr.occlusionRenderFBO, GL_DEPTH24_STENCIL8_EXT );
 		}
 		else
 		{
-			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_RGBA, 0);
 			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
 		}
 
@@ -630,26 +568,6 @@ void R_InitFBOs( void )
 
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.downScaleFBOImage_64x64->texnum, 0 );
 		R_CheckFBO( tr.downScaleFBO_64x64 );
-
-#if 0
-		tr.downScaleFBO_16x16 = R_CreateFBO( "_downScale_16x16", 16, 16 );
-		R_BindFBO( tr.downScaleFBO_16x16 );
-
-		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.downScaleFBOImage_16x16->texnum, 0 );
-		R_CheckFBO( tr.downScaleFBO_16x16 );
-
-		tr.downScaleFBO_4x4 = R_CreateFBO( "_downScale_4x4", 4, 4 );
-		R_BindFBO( tr.downScaleFBO_4x4 );
-
-		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.downScaleFBOImage_4x4->texnum, 0 );
-		R_CheckFBO( tr.downScaleFBO_4x4 );
-
-		tr.downScaleFBO_1x1 = R_CreateFBO( "_downScale_1x1", 1, 1 );
-		R_BindFBO( tr.downScaleFBO_1x1 );
-
-		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.downScaleFBOImage_1x1->texnum, 0 );
-		R_CheckFBO( tr.downScaleFBO_1x1 );
-#endif
 
 		if ( glConfig2.textureNPOTAvailable )
 		{

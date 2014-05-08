@@ -1,6 +1,5 @@
 /* Public Domain Curses */
 
-#include <windows.h>
 #include "pdcwin.h"
 
 RCSID("$Id: pdcutil.c,v 1.14 2008/07/14 04:24:52 wmcbrine Exp $")

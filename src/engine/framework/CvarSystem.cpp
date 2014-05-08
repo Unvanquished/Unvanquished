@@ -31,7 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CvarSystem.h"
 #include "CommandSystem.h"
 
-#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../qcommon/cvar.h"
 
@@ -212,7 +211,7 @@ namespace Cvar {
         } else {
             cvarRecord_t* cvar = it->second;
 
-            if (not cvar->flags & CVAR_USER_CREATED) {
+            if (not (cvar->flags & CVAR_USER_CREATED)) {
                 if (cvar->flags & (CVAR_ROM | CVAR_INIT) and not rom) {
                     Com_Printf(_("%s is read only.\n"), cvarName.c_str());
                     return;
@@ -261,7 +260,7 @@ namespace Cvar {
         InternalSetValue(cvarName, std::move(value), 0, false, true);
     }
 
-    void SetValueROM(const std::string& cvarName, std::string value) {
+    void SetValueForce(const std::string& cvarName, std::string value) {
         InternalSetValue(cvarName, std::move(value), 0, true, true);
     }
 

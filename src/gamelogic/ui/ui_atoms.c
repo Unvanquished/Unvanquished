@@ -164,14 +164,12 @@ const char *const chatMenus[CHAT_TYPE_LAST] = { "say_command", "say", "say_team"
 static void UI_MessageMode_f( void )
 {
 	char *arg = UI_Argv( 0 );
-	int             team;
 	uiClientState_t cs;
 	char            info[ MAX_INFO_STRING ];
 	int             i;
 
 	trap_GetClientState( &cs );
 	trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
-	team = atoi( Info_ValueForKey( info, "t" ) );
 
 	trap_Cvar_Set( "ui_sayBuffer", "" );
 

@@ -31,9 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
-#include "../../common/Common.h"
-#include "FileSystem.h"
-
 namespace VM {
 
 enum vmType_t {
@@ -42,19 +39,32 @@ enum vmType_t {
 	TYPE_NATIVE_EXE,
 	TYPE_NATIVE_EXE_DEBUG,
 	TYPE_NATIVE_DLL,
+	TYPE_NACL_LIBPATH,
+	TYPE_NACL_LIBPATH_DEBUG,
 	TYPE_END
+};
+
+struct VMParams {
+	VMParams(std::string name)
+		: logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
+		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NATIVE_EXE, 0, TYPE_END - 1),
+		  debugLoader("vm." + name + ".debugLoader", "make sel_ldr dump information to " + name + "-sel_ldr.log", Cvar::NONE, false) {
+	}
+
+	Cvar::Cvar<bool> logSyscalls;
+	Cvar::Range<Cvar::Cvar<int>> vmType;
+	Cvar::Cvar<bool> debugLoader;
 };
 
 // Base class for a virtual machine instance
 class VMBase {
 public:
-	VMBase(std::string name)
-		: processHandle(IPC::INVALID_HANDLE), name(name),
-        logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false) {}
+	VMBase(std::string name, VMParams& params)
+		: processHandle(IPC::INVALID_HANDLE), name(name), params(params) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module.
-	int Create(vmType_t type);
+	int Create();
 
 	// Free the VM
 	void Free();
@@ -108,16 +118,17 @@ private:
 
 	// Common
 	IPC::Channel rootChannel;
-	vmType_t vmType;
 
-    std::string name;
+	std::string name;
 
-    // Logging the syscalls
-    Cvar::Cvar<bool> logSyscalls;
-    FS::File syscallLogFile;
+	vmType_t type;
 
-    void LogMessage(bool vmToEngine, int id);
+	VMParams& params;
 
+	// Logging the syscalls
+	FS::File syscallLogFile;
+
+	void LogMessage(bool vmToEngine, int id);
 };
 
 } // namespace VM

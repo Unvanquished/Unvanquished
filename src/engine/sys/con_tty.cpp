@@ -146,8 +146,6 @@ static void CON_Show( void )
 {
 	if ( ttycon_on )
 	{
-		int i;
-
 		assert( ttycon_hide > 0 );
 		ttycon_hide--;
 
@@ -262,7 +260,6 @@ char *CON_Input_TTY( void )
 	static char text[ MAX_EDIT_LINE ];
 	int         avail;
 	char        key;
-	const char  *history;
 
 	if ( ttycon_on )
 	{
