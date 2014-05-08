@@ -8,7 +8,7 @@
 
 		console_text {
 		font-family: Roboto;
-		font-size: 24;
+		font-size: 16;
 		position: absolute;
 		top: 0px;
 		width: 75%;
