@@ -81,6 +81,7 @@ static const char *UnlockableHumanName( unlockable_t *unlockable )
 	return NULL;
 }
 
+#ifdef BUILD_CGAME
 static qboolean Disabled( unlockable_t *unlockable )
 {
 	switch ( unlockable->type )
@@ -94,6 +95,7 @@ static qboolean Disabled( unlockable_t *unlockable )
 	Com_Error( ERR_FATAL, "Disabled: Unlockable has unknown type" );
 	return qfalse;
 }
+#endif // BUILD_CGAME
 
 #ifdef BUILD_CGAME
 static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unlocked )

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 #include "../../engine/qcommon/q_unicode.h"
+#include "../../common/FileSystem.h"
 
 #define CMD_CHEAT        0x0001
 #define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
@@ -541,9 +542,8 @@ void Cmd_Give_f( gentity_t *ent )
 	if ( trap_Argc() < 2 )
 	{
 		ADMP( QQ( N_( "usage: give [what]\n" ) ) );
-		ADMP( QQ( N_( "usage: valid choices are: all, health, funds [amount], "
-		              "bp [amount], momentum [amount], stamina, "
-		              "poison, gas, ammo\n" ) ) );
+		ADMP( QQ( N_( "usage: valid choices are: all, health [amount], funds [amount], "
+		              "bp [amount], momentum [amount], stamina, poison, gas, ammo\n" ) ) );
 		return;
 	}
 
@@ -597,7 +597,7 @@ void Cmd_Give_f( gentity_t *ent )
 	// give momentum
 	if ( Q_strnicmp( name, "momentum", strlen("momentum") ) == 0 )
 	{
-		if ( give_all || trap_Argc() < 3 )
+		if ( trap_Argc() < 3 )
 		{
 			amount = 300.0f;
 		}
@@ -619,10 +619,19 @@ void Cmd_Give_f( gentity_t *ent )
 		return;
 	}
 
-	if ( give_all || Q_stricmp( name, "health" ) == 0 )
+	if ( give_all || Q_strnicmp( name, "health", strlen("health") ) == 0 )
 	{
-		ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
-		BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
+		if ( give_all || trap_Argc() < 3 )
+		{
+			ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
+			BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
+		}
+		else
+		{
+			int amount = atoi( name + strlen("health") + 1 );
+			ent->health = Maths::clamp(amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ]);
+		}
+		return;
 	}
 
 	if ( give_all || Q_stricmp( name, "stamina" ) == 0 )
@@ -4014,7 +4023,7 @@ List all maps on the server
 
 static int SortMaps( const void *a, const void *b )
 {
-	return strcmp( * ( char ** ) a, * ( char ** ) b );
+	return strcmp( * ( const char ** ) a, * ( const char ** ) b );
 }
 
 #define MAX_MAPLIST_MAPS 256
@@ -4022,11 +4031,8 @@ static int SortMaps( const void *a, const void *b )
 void Cmd_ListMaps_f( gentity_t *ent )
 {
 	char search[ 16 ] = { "" };
-	char fileList[ 4096 ] = { "" };
-	char *fileSort[ MAX_MAPLIST_MAPS ];
-	char *filePtr, *p;
-	int  numFiles;
-	int  fileLen = 0;
+	const char *fileSort[ MAX_MAPLIST_MAPS ] = { 0 };
+	char *p;
 	int  shown = 0;
 	int  count = 0;
 	int  page = 0;
@@ -4065,27 +4071,22 @@ void Cmd_ListMaps_f( gentity_t *ent )
 		}
 	}
 
-	numFiles = trap_FS_GetFileList( "maps/", ".bsp",
-	                                fileList, sizeof( fileList ) );
-	filePtr = fileList;
+	auto paks = FS::GetAvailablePaks();
 
-	for ( i = 0; i < numFiles && count < MAX_MAPLIST_MAPS; i++, filePtr += fileLen + 1 )
+	for ( size_t i = 0; i < paks.size(); ++i )
 	{
-		fileLen = strlen( filePtr );
-
-		if ( fileLen < 5 )
+		// Filter out duplicates
+		if ( i && !strcmp( paks[ i ].name.c_str(), paks[ i - 1 ].name.c_str() ) )
 		{
 			continue;
 		}
 
-		filePtr[ fileLen - 4 ] = '\0';
-
-		if ( search[ 0 ] && !strstr( filePtr, search ) )
+		if ( Q_strncmp( "map-", paks[ i ].name.c_str(), 4 ) || ( search[ 0 ] && !strstr( paks[ i ].name.c_str(), search ) ) )
 		{
 			continue;
 		}
 
-		fileSort[ count ] = filePtr;
+		fileSort[ count ] = paks[ i ].name.c_str() + 4;
 		count++;
 	}
 

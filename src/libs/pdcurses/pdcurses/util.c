@@ -237,6 +237,8 @@ int PDC_mbtowc(wchar_t *pwc, const char *s, size_t n)
     return i;
 # else
     return mbtowc(pwc, s, n);
+//  *pwc = (wchar_t)((unsigned char)*s);
+//  return( 1);
 # endif
 }
 

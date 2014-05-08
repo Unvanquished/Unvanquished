@@ -63,6 +63,7 @@ extern  vmCvar_t g_debugMove;
 extern  vmCvar_t g_debugDamage;
 extern  vmCvar_t g_debugKnockback;
 extern  vmCvar_t g_debugTurrets;
+extern  vmCvar_t g_debugFire;
 extern  vmCvar_t g_synchronousClients;
 extern  vmCvar_t g_motd;
 extern  vmCvar_t g_warmup;

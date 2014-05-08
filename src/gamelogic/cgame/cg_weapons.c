@@ -231,7 +231,6 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 	int          i;
 	char         *token;
 	float        fps;
-	int          skip;
 	char         text[ 20000 ];
 	fileHandle_t f;
 	animation_t  *animations;
@@ -259,7 +258,6 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 
 	// parse the text
 	text_p = text;
-	skip = 0; // quite the compiler warning
 
 	for ( i = WANIM_NONE + 1; i < MAX_WEAPON_ANIMATIONS; i++ )
 	{
@@ -2001,7 +1999,6 @@ void CG_DrawHumanInventory( void )
 	int           numItems = 0, selectedItem = 0;
 	int           length;
 	qboolean      vertical;
-	centity_t     *cent;
 	playerState_t *ps;
 	static char   RML[ MAX_STRING_CHARS ];
 
@@ -2012,7 +2009,6 @@ void CG_DrawHumanInventory( void )
 		NOT_USABLE
 	};
 
-	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
 
 	// don't display if dead

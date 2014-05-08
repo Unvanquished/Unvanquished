@@ -1760,12 +1760,12 @@ void Com_Init( char *commandLine )
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
-		Cmd::BufferCommandText("exec " CONFIG_NAME);
-		Cmd::BufferCommandText("exec " KEYBINDINGS_NAME);
-		Cmd::BufferCommandText("exec " AUTOEXEC_NAME);
+		Cmd::BufferCommandText("exec -f " CONFIG_NAME);
+		Cmd::BufferCommandText("exec -f " KEYBINDINGS_NAME);
+		Cmd::BufferCommandText("exec -f " AUTOEXEC_NAME);
 	}
 #else
-	Cmd::BufferCommandText("exec " CONFIG_NAME);
+	Cmd::BufferCommandText("exec -f " CONFIG_NAME);
 #endif
 
 	// ydnar: reset crashed state

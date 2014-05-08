@@ -1278,12 +1278,12 @@ void CG_Rocket_DrawPlayerHealthCross( void )
 	// Pick the current icon
 	shader = cgs.media.healthCross;
 
-	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_3X )
+	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
 	{
 		shader = cgs.media.healthCross3X;
 	}
 
-	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
+	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
 	{
 		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
@@ -1313,7 +1313,7 @@ void CG_Rocket_DrawPlayerHealthCross( void )
 
 	ref_alpha = ref_color[ 3 ];
 
-	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE )
+	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
 	{
 		ref_alpha = 1.0f;
 	}

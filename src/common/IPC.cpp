@@ -50,8 +50,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Make sure if we notice if any of our assumptions about NaCl are violated
 static_assert(std::is_same<IPC::OSHandleType, NaClHandle>::value, "NaClHandle");
 static_assert(IPC::INVALID_HANDLE == NACL_INVALID_HANDLE, "NACL_INVALID_HANDLE");
-static_assert(IPC::MSG_MAX_BYTES == NACL_ABI_IMC_USER_BYTES_MAX, "NACL_ABI_IMC_USER_BYTES_MAX");
-static_assert(IPC::MSG_MAX_HANDLES == NACL_ABI_IMC_DESC_MAX, "NACL_ABI_IMC_DESC_MAX");
 
 // Definitions taken from nacl_desc_base.h
 enum NaClDescTypeTag {
@@ -212,19 +210,10 @@ Socket Socket::FromHandle(OSHandleType handle)
 	return out;
 }
 
-void Socket::SendMsg(const Writer& writer) const
+static void InternalSendMsg(OSHandleType handle, bool more, const Desc* handles, size_t numHandles, const void* data, size_t len)
 {
 	NaClMessageHeader hdr;
-	NaClIOVec iov[3];
-	const Desc* handles = writer.GetHandles().data();
-	size_t numHandles = writer.GetHandles().size();
-	const void* data = writer.GetData().data();
-	size_t len = writer.GetData().size();
-
-	if (numHandles > NACL_ABI_IMC_DESC_MAX)
-		Com_Error(ERR_DROP, "IPC: Message contains more handles than maximum allowed: %zu\n", numHandles);
-	if (len > NACL_ABI_IMC_USER_BYTES_MAX)
-		Com_Error(ERR_DROP, "IPC: Message above maximum size: %zu\n", len);
+	NaClIOVec iov[4];
 
 #ifdef __native_client__
 	NaClHandle* h = const_cast<NaClHandle*>(handles);
@@ -236,12 +225,14 @@ void Socket::SendMsg(const Writer& writer) const
 
 #ifdef __native_client__
 	hdr.iov = iov;
-	hdr.iov_length = 1;
+	hdr.iov_length = 2;
 	hdr.handles = h;
 	hdr.handle_count = numHandles;
 	hdr.flags = 0;
-	iov[0].base = const_cast<void*>(data);
-	iov[0].length = len;
+	iov[0].base = &more;
+	iov[0].length = 1;
+	iov[1].base = const_cast<void*>(data);
+	iov[1].length = len;
 	if (NaClSendDatagram(handle, &hdr, 0) == -1) {
 		char error[256];
 		NaClGetLastErrorString(error, sizeof(error));
@@ -287,7 +278,7 @@ void Socket::SendMsg(const Writer& writer) const
 
 	NaClInternalHeader internalHdr = {{NACL_HANDLE_TRANSFER_PROTOCOL, static_cast<uint32_t>(descBytes)}, {}};
 	hdr.iov = iov;
-	hdr.iov_length = 3;
+	hdr.iov_length = 4;
 	hdr.handles = h;
 	hdr.handle_count = numHandles;
 	hdr.flags = 0;
@@ -295,8 +286,10 @@ void Socket::SendMsg(const Writer& writer) const
 	iov[0].length = sizeof(NaClInternalHeader);
 	iov[1].base = descBuffer.get();
 	iov[1].length = descBytes;
-	iov[2].base = const_cast<void*>(data);
-	iov[2].length = len;
+	iov[2].base = &more;
+	iov[2].length = 1;
+	iov[3].base = const_cast<void*>(data);
+	iov[3].length = len;
 
 	if (NaClSendDatagram(handle, &hdr, 0) == -1) {
 		char error[256];
@@ -304,6 +297,23 @@ void Socket::SendMsg(const Writer& writer) const
 		Com_Error(ERR_DROP, "IPC: Failed to send message: %s", error);
 	}
 #endif
+}
+
+void Socket::SendMsg(const Writer& writer) const
+{
+	const Desc* handles = writer.GetHandles().data();
+	size_t numHandles = writer.GetHandles().size();
+	const void* data = writer.GetData().data();
+	size_t len = writer.GetData().size();
+
+	while (numHandles || len) {
+		bool more = numHandles > NACL_ABI_IMC_DESC_MAX || len > NACL_ABI_IMC_USER_BYTES_MAX - 1;
+		InternalSendMsg(handle, more, handles, std::min<size_t>(numHandles, NACL_ABI_IMC_DESC_MAX), data, std::min<size_t>(len, NACL_ABI_IMC_USER_BYTES_MAX - 1));
+		handles += std::min<size_t>(numHandles, NACL_ABI_IMC_DESC_MAX);
+		numHandles -= std::min<size_t>(numHandles, NACL_ABI_IMC_DESC_MAX);
+		data = static_cast<const char*>(data) + std::min<size_t>(len, NACL_ABI_IMC_USER_BYTES_MAX - 1);
+		len -= std::min<size_t>(len, NACL_ABI_IMC_USER_BYTES_MAX - 1);
+	}
 }
 
 #ifndef __native_client__
@@ -317,13 +327,12 @@ static void FreeHandles(const NaClHandle* h)
 }
 #endif
 
-Reader Socket::RecvMsg() const
+bool InternalRecvMsg(OSHandleType handle, Reader& reader)
 {
 	NaClMessageHeader hdr;
 	NaClIOVec iov[2];
 	NaClHandle h[NACL_ABI_IMC_DESC_MAX];
 	std::unique_ptr<char[]> recvBuffer(new char[NACL_ABI_IMC_BYTES_MAX]);
-	Reader out;
 
 	for (size_t i = 0; i < NACL_ABI_IMC_DESC_MAX; i++)
 		h[i] = NACL_INVALID_HANDLE;
@@ -346,10 +355,10 @@ Reader Socket::RecvMsg() const
 
 	for (size_t i = 0; i < NACL_ABI_IMC_DESC_MAX; i++) {
 		if (h[i] != NACL_INVALID_HANDLE)
-			out.GetHandles().push_back(h[i]);
+			reader.GetHandles().push_back(h[i]);
 	}
-	out.GetData().assign(&recvBuffer[0], &recvBuffer[result]);
-	return out;
+	reader.GetData().insert(reader.GetData().end(), &recvBuffer[1], &recvBuffer[result]);
+	return recvBuffer[0];
 #else
 	NaClInternalHeader internalHdr;
 	hdr.iov = iov;
@@ -367,6 +376,11 @@ Reader Socket::RecvMsg() const
 		char error[256];
 		NaClGetLastErrorString(error, sizeof(error));
 		Com_Error(ERR_DROP, "IPC: Failed to receive message: %s", error);
+	}
+
+	if (result == 0) {
+		FreeHandles(h);
+		Com_Error(ERR_DROP, "IPC: Socket closed by remote end");
 	}
 
 	if (result < (int)sizeof(NaClInternalHeader)) {
@@ -419,19 +433,26 @@ Reader Socket::RecvMsg() const
 		}
 
 		size_t i = handle_index++;
-		out.GetHandles().emplace_back();
-		out.GetHandles().back().handle = h[i];
-		out.GetHandles().back().type = tag;
+		reader.GetHandles().emplace_back();
+		reader.GetHandles().back().handle = h[i];
+		reader.GetHandles().back().type = tag;
 		h[i] = NACL_INVALID_HANDLE;
 		if (tag == NACL_DESC_SHM)
-			out.GetHandles().back().size = size;
+			reader.GetHandles().back().size = size;
 		else if (tag == NACL_DESC_HOST_IO)
-			out.GetHandles().back().flags = flags;
+			reader.GetHandles().back().flags = flags;
 	}
 
-	out.GetData().assign(&desc_end[0], &desc_end[result]);
-	return out;
+	reader.GetData().insert(reader.GetData().end(), &desc_end[1], &desc_end[result]);
+	return desc_end[0];
 #endif
+}
+
+Reader Socket::RecvMsg() const
+{
+	Reader out;
+	while (InternalRecvMsg(handle, out)) {}
+	return out;
 }
 
 std::pair<Socket, Socket> Socket::CreatePair()

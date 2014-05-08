@@ -111,7 +111,7 @@ static void CON_SetColor( WINDOW *win, int color )
 {
 	// Approximations of g_color_table (q_math.c)
 	// Colours are hard-wired below; see init_pair() calls
-	static const int colour16map[2][32] = {
+	static const chtype colour16map[2][32] = {
 		{ // Variant 1 (xterm)
 			1 | A_BOLD, 2,          3,          4,
 			5,          6,          7,          8,
