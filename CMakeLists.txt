@@ -44,31 +44,60 @@ set( CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options 
 
 project( Daemon C CXX )
 
-MACRO(ADD_PRECOMPILED_HEADERS Target Header Sources Flags)
-  string(REPLACE " " ";" FlagsString ${Flags})
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set(PreCompiledHeader "${OBJ_DIR}/${Target}.pch")
+################################################################################
+# Support for precompiled headers
+################################################################################
 
-    get_target_property(CompileDefs ${Target} COMPILE_DEFINITIONS)
+function(get_pic_flags Result Target)
+  get_target_property(TargetPIC ${Target} POSITION_INDEPENDENT_CODE)
+
+  if (TargetPIC)
+      set(${Result} "-fPIC" PARENT_SCOPE)
+  endif()
+endfunction()
+
+function(ADD_PRECOMPILED_HEADERS Target Header Sources)
+  if(USE_PRECOMPILED_HEADERS)
+    # Get the common compile flags
+    get_pic_flags("TargetPICFlags" ${Target})
+    set(Flags "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} ${TargetPICFlags}")
+    string(REPLACE " " ";" FlagsString ${Flags})
+
+    # Get that target's compile defs
+    get_directory_property(DirCompileDefs COMPILE_DEFINITIONS)
+    get_target_property(TargetCompileDefs ${Target} COMPILE_DEFINITIONS)
+    get_target_property(f ${Target} CMAKE_CXX_FLAGS)
+
     set(Defs "")
-
-    foreach(Def ${CompileDefs})
-        set(Defs ${Defs} -D${Def})
+    foreach(Def ${DirCompileDefs})
+      set(Defs -D${Def} ${Defs})
+    endforeach()
+    foreach(Def ${TargetCompileDefs})
+      set(Defs -D${Def} ${Defs})
     endforeach()
 
-    add_custom_command(OUTPUT ${PreCompiledHeader}
-      COMMAND ${CMAKE_CXX_COMPILER} ${FlagsString} ${Defs} -x c++-header ${Header} -o ${PreCompiledHeader}
-      DEPENDS ${Header}
-      IMPLICIT_DEPENDS CXX ${Header}
-    )
+    set(Objs "")
+    foreach(Source ${Sources})
+      set(Objs ${Objs} ${OBJ_DIR}/${Target}.dir/${Source}.o)
+    endforeach()
 
-    set_source_files_properties(
-      ${Sources} PROPERTIES
-      COMPILE_FLAGS "-include-pch ${PreCompiledHeader}"
-      OBJECT_DEPENDS "${PreCompiledHeader}"
-    )
-  ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-ENDMACRO(ADD_PRECOMPILED_HEADERS)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+      set(PreCompiledHeader "${OBJ_DIR}/${Target}.pch")
+
+      add_custom_command(OUTPUT ${PreCompiledHeader}
+        COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${FlagsString} -x c++-header ${Header} -o ${PreCompiledHeader}
+        DEPENDS ${Header}
+        IMPLICIT_DEPENDS CXX ${Header}
+      )
+
+      add_custom_target(PCH-for-${Target} DEPENDS ${PreCompiledHeader})
+
+      add_dependencies(${Target} PCH-for-${Target})
+
+      set_target_properties(${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${PreCompiledHeader}")
+    endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  endif()
+endfunction()
 
 ################################################################################
 # Configuration options
@@ -93,6 +122,7 @@ option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
 option( USE_WEXTRA "Enable extra compilation warnings" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
+option( USE_PRECOMPILED_HEADERS "Try to make the build faster" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
 
 ################################################################################
@@ -1306,6 +1336,14 @@ elseif( NOT APPLE )
   set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
 endif()
 
+# Builds the libs for which we include the source
+add_library( base-source-libs ${LIBSRC_BASE} )
+add_library( engine-source-libs ${LIBSRC_ENGINE} )
+set_target_properties( base-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
+
+set( LIBS_BASE ${LIBS_BASE} base-source-libs)
+set( LIBS_ENGINE ${LIBS_ENGINE} engine-source-libs)
+
 ################################################################################
 # Game logic
 ################################################################################
@@ -1319,31 +1357,37 @@ function( GAMEMODULE )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_DLL )
-    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} ${LIBSRC_BASE} )
+    set( ALL_MODULE_SOURCES ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
+    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${ALL_MODULE_SOURCES} ${NACLLIST_NATIVE} )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
+    ADD_PRECOMPILED_HEADERS( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h ${ALL_MODULE_SOURCES} )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_EXE )
-    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} ${LIBSRC_BASE} )
+    set( ALL_MODULE_SOURCES ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
+    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${ALL_MODULE_SOURCES} ${NACLLIST_NATIVE} )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
       OUTPUT_NAME ${GAMEMODULE_NAME}-nacl-native-exe
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
+    ADD_PRECOMPILED_HEADERS( ${GAMEMODULE_NAME}-nacl-native-exe ${COMMON_DIR}/Common.h ${ALL_MODULE_SOURCES} )
   endif()
 
   if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM_NATIVE )
+    set( ALL_MODULE_SOURCES ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
     set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
-    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} ${LIBSRC_BASE} )
+    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${ALL_MODULE_SOURCES} )
     target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
     )
+    ADD_PRECOMPILED_HEADERS( ${GAMEMODULE_NAME}-qvm-native ${COMMON_DIR}/Common.h ${ALL_MODULE_SOURCES} )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL )
@@ -1611,7 +1655,7 @@ GAMEMODULE( NAME ui
 if( BUILD_CLIENT )
   set( ALL_CLIENT_SOURCES ${ENGINELIST} ${SHAREDLIST} ${CLIENTLIST} ${CLIENTBASELIST} ${RENDERERLIST} ${SERVERLIST} ${SDLLIST} )
 
-  add_executable( client WIN32 ${ALL_CLIENT_SOURCES} ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
+  add_executable( client WIN32 ${ALL_CLIENT_SOURCES} ${WIN_RC} )
   if( USE_SMP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
@@ -1623,29 +1667,29 @@ if( BUILD_CLIENT )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
 
-  ADD_PRECOMPILED_HEADERS( client ${COMMON_DIR}/Common.h "${ALL_CLIENT_SOURCES}" "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}" )
+  ADD_PRECOMPILED_HEADERS( client ${COMMON_DIR}/Common.h ${ALL_CLIENT_SOURCES} )
 endif()
 
 if( BUILD_SERVER )
   set( ALL_SERVER_SOURCES ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST} )
 
-  add_executable( server WIN32 ${ALL_SERVER_SOURCES} ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${WIN_RC} )
+  add_executable( server WIN32 ${ALL_SERVER_SOURCES} ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
 
-  ADD_PRECOMPILED_HEADERS( server ${COMMON_DIR}/Common.h "${ALL_SERVER_SOURCES}" "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}" )
+  ADD_PRECOMPILED_HEADERS( server ${COMMON_DIR}/Common.h ${ALL_SERVER_SOURCES} )
 endif()
 
 if( BUILD_TTY_CLIENT )
   set( ALL_TTYCLIENT_SOURCES ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST} )
 
-  add_executable( ttyclient WIN32 ${ALL_TTYCLIENT_SOURCES} ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC} )
+  add_executable( ttyclient WIN32 ${ALL_TTYCLIENT_SOURCES} ${WIN_RC} )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
 
-  ADD_PRECOMPILED_HEADERS( ttyclient ${COMMON_DIR}/Common.h "${ALL_TTYCLIENT_SOURCES}" "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}" )
+  ADD_PRECOMPILED_HEADERS( ttyclient ${COMMON_DIR}/Common.h ${ALL_TTYCLIENT_SOURCES} )
 endif()
 
 ################################################################################

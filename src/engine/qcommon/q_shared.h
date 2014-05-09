@@ -106,7 +106,7 @@ typedef int intptr_t;
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
-#include <fenv.h>
+//#include <fenv.h>
 #include <float.h>
 #include <iso646.h>
 #include <limits.h>
