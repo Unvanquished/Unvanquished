@@ -114,9 +114,6 @@ endfunction()
 # Configuration options
 ################################################################################
 
-option( ENABLE_LTO "Use link-time optimization for release builds" 0 )
-option( ENABLE_HARDENING "Use stack protection and other hardening flags" 0 )
-
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
 option( BUILD_GAME_NACL_NATIVE_EXE "Build native executable NaCl game logic" 1 )
@@ -129,6 +126,9 @@ option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
+option( USE_LTO "Use link-time optimization for release builds" 0 )
+cmake_dependent_option( USE_SLIM_LTO "Generate slim LTO objects" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0 )
+option( USE_HARDENING "Use stack protection and other hardening flags" 0 )
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
 option( USE_WEXTRA "Enable extra compilation warnings" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
@@ -236,8 +236,12 @@ if( MSVC )
   if( ARCH STREQUAL "x86" )
     set_c_cxx_flag( "/arch:SSE2" )
   endif()
-  if( ENABLE_LTO )
+  if( USE_LTO )
+    set_c_cxx_flag( "/GL" MINSIZEREL )
+    set_c_cxx_flag( "/GL" RELWITHDEBINFO )
     set_c_cxx_flag( "/GL" RELEASE )
+    set_linker_flag( "/LTCG" MINSIZEREL )
+    set_linker_flag( "/LTCG" RELWITHDEBINFO )
     set_linker_flag( "/LTCG" RELEASE )
   endif()
 else()
@@ -290,7 +294,7 @@ else()
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELEASE )
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELWITHDEBINFO )
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" MINSIZEREL )
-  if( ENABLE_HARDENING )
+  if( USE_HARDENING )
     try_c_cxx_flag( FSTACK_PROTECTOR_STRONG "-fstack-protector-strong" )
     if( NOT FLAG_FSTACK_PROTECTOR_STRONG )
       try_c_cxx_flag( FSTACK_PROTECTOR_ALL "-fstack-protector-all" )
@@ -343,12 +347,49 @@ else()
   endif()
 
   # Link-time optimization
-  if( ENABLE_LTO )
+  if( USE_LTO )
     set_c_cxx_flag( "-flto" )
     set_linker_flag( "-flto" )
 
     # For LTO compilation we must send a copy of all compile flags to the linker
     set_linker_flag( "${CMAKE_CXX_FLAGS}" )
+
+    # Use gcc-ar and gcc-ranlib instead of ar and ranlib so that we can use
+    # slim LTO objects. This requires a recent version of GCC and binutils.
+    if( USE_SLIM_LTO )
+      string(REGEX MATCH "^([0-9]+.[0-9]+)" _version
+         "${CMAKE_CXX_COMPILER_VERSION}")
+      get_filename_component(COMPILER_BASENAME "${CMAKE_C_COMPILER}" NAME)
+      if (COMPILER_BASENAME MATCHES "^(.+-)g?cc(-[0-9]+\\.[0-9]+\\.[0-9]+)?(\\.exe)?$")
+        set(TOOLCHAIN_PREFIX ${CMAKE_MATCH_1})
+      endif()
+
+      find_program(GCC_AR NAMES
+        "${TOOLCHAIN_PREFIX}gcc-ar"
+        "${TOOLCHAIN_PREFIX}gcc-ar-${_version}"
+        DOC "gcc provided wrapper for ar which adds the --plugin option"
+      )
+
+      find_program(GCC_RANLIB NAMES
+        "${TOOLCHAIN_PREFIX}gcc-ranlib"
+        "${TOOLCHAIN_PREFIX}gcc-ranlib-${_version}"
+        DOC "gcc provided wrapper for ranlib which adds the --plugin option"
+      )
+
+      mark_as_advanced( GCC_AR GCC_RANLIB )
+
+      # Override standard ar and ranlib with the gcc- versions
+      if( GCC_AR )
+        set( CMAKE_AR ${GCC_AR} )
+      endif()
+      if( GCC_RANLIB )
+        set( CMAKE_RANLIB ${GCC_RANLIB} )
+      endif()
+
+      try_c_cxx_flag( NO_FAT_LTO_OBJECTS "-fno-fat-lto-objects" )
+    else()
+      try_c_cxx_flag( FAT_LTO_OBJECTS "-ffat-lto-objects" )
+    endif()
   endif()
 
 endif()
