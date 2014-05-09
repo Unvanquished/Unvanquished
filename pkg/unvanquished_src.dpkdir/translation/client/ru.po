@@ -1,0 +1,1575 @@
+# UNVANQUISHED
+# Copyright (C) 2012 Unvanquished Development
+# This file is distributed under the same license as Unvanquished.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-04-23 10:11-0700\n"
+"PO-Revision-Date: 2014-04-24 13:46+0000\n"
+"Last-Translator: neumond <knifeslaughter@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Pootle 2.5.0-beta1\n"
+"X-POOTLE-MTIME: 1398347211.0\n"
+
+#: src/engine/client/cl_cgame.cpp:463
+msgid "Server sent a pubkey_decrypt command, but sent nothing to decrypt!"
+msgstr "Сервер послал команду pubkey_decrypt, но её не к чему применить!"
+
+#: src/engine/client/cl_cgame.cpp:1781
+msgid "Mumble: Linking to Mumble application okay\n"
+msgstr "Mumble: Соединение с Mumble прошло успешно\n"
+
+#: src/engine/client/cl_cgame.cpp:1781
+msgid "Mumble: Linking to Mumble application failed\n"
+msgstr "Mumble: Соединение с Mumble прошло неудачно\n"
+
+#: src/engine/client/cl_console.cpp:253
+msgid "[<filename>]"
+msgstr "[<имя_файла>]"
+
+#: src/engine/client/cl_console.cpp:272 src/engine/client/cl_main.cpp:910
+msgid "couldn't open."
+msgstr "не могу открыть."
+
+#: src/engine/client/cl_console.cpp:276
+#, c-format
+msgid "Dumped console text to %s.\n"
+msgstr "Консольный лог записан в %s.\n"
+
+#: src/engine/client/cl_console.cpp:312
+msgid "<string>…"
+msgstr "<строка…>"
+
+#: src/engine/client/cl_console.cpp:357
+msgid "<string>"
+msgstr "<строка>"
+
+#: src/engine/client/cl_irc.cpp:967
+msgid "Unable to initialise socket.\n"
+msgstr "Не могу инициализировать сокет.\n"
+
+#: src/engine/client/cl_irc.cpp:971
+msgid "The specified address family is not supported.\n"
+msgstr "Данное семейство адресов не поддерживается.\n"
+
+#: src/engine/client/cl_irc.cpp:975
+msgid "Specified address is not available from the local machine.\n"
+msgstr "Указанный адрес недоступен с данного компьютера.\n"
+
+#: src/engine/client/cl_irc.cpp:979
+msgid "The attempt to connect was forcefully rejected.\n"
+msgstr "Попытка присоединиться была вынужденно прервана.\n"
+
+#: src/engine/client/cl_irc.cpp:983
+msgid "address destination address is required.\n"
+msgstr "требуется указать адресат.\n"
+
+#: src/engine/client/cl_irc.cpp:987
+msgid "The namelen argument is incorrect.\n"
+msgstr "Параметр namelen неверен.\n"
+
+#: src/engine/client/cl_irc.cpp:991
+msgid "The socket is not already bound to an address.\n"
+msgstr "Сокет не был привязан к адресу.\n"
+
+#: src/engine/client/cl_irc.cpp:995
+msgid "The socket is already connected.\n"
+msgstr "Сокет уже присоединен.\n"
+
+#: src/engine/client/cl_irc.cpp:999
+msgid "The specified address is already in use.\n"
+msgstr "Указанный адрес уже используется.\n"
+
+#: src/engine/client/cl_irc.cpp:1003
+msgid "No more file descriptors are available.\n"
+msgstr "Нет доступных файловых дескрипторов.\n"
+
+#: src/engine/client/cl_irc.cpp:1007
+msgid "No buffer space available. The socket cannot be created.\n"
+msgstr "Нет места в буфере. Не могу создать сокет.\n"
+
+#: src/engine/client/cl_irc.cpp:1011
+msgid "The specified protocol is not supported.\n"
+msgstr "Указанный протокол не поддерживается.\n"
+
+#: src/engine/client/cl_irc.cpp:1015
+msgid "The specified protocol is the wrong type for this socket.\n"
+msgstr "Указанный протокол не подходит для этого сокета.\n"
+
+#: src/engine/client/cl_irc.cpp:1019
+msgid "The network can't be reached from this host at this time.\n"
+msgstr "В данный момент сетевое подключение с этого хоста недоступно.\n"
+
+#: src/engine/client/cl_irc.cpp:1023
+msgid "The descriptor is not a socket.\n"
+msgstr "Дескриптор не является сокетом.\n"
+
+#: src/engine/client/cl_irc.cpp:1027
+msgid "Attempt timed out without establishing a connection.\n"
+msgstr "Время попытки вышло. Связь не установлена.\n"
+
+#: src/engine/client/cl_irc.cpp:1031
+msgid "Socket type is not supported in this address family.\n"
+msgstr "Тип сокета не поддерживается в данном семействе адресов.\n"
+
+#: src/engine/client/cl_irc.cpp:1035
+msgid "Network subsystem failure.\n"
+msgstr "Ошибка сетевой подсистемы.\n"
+
+#: src/engine/client/cl_irc.cpp:1039
+msgid "Authoritative Answer Host not found.\n"
+msgstr "Авторитативный ответ: хост не найден.\n"
+
+#: src/engine/client/cl_irc.cpp:1043
+msgid "Non-Authoritative Host not found or SERVERFAIL.\n"
+msgstr "Неавторитативный ответ: хост не найден или произошла ошибка SERVERFAIL.\n"
+
+#: src/engine/client/cl_irc.cpp:1047
+msgid "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n"
+msgstr "Непоправимые ошибки, FORMERR, REFUSED, NOTIMP.\n"
+
+#: src/engine/client/cl_irc.cpp:1051
+msgid "Valid name, no data record of requested type.\n"
+msgstr "Правильное имя, но нет данных по запрошенному типу.\n"
+
+#: src/engine/client/cl_irc.cpp:1055
+msgid "address blocking Windows Sockets operation is in progress.\n"
+msgstr "адресно-блочная операция Windows Sockets в действии"
+
+#: src/engine/client/cl_irc.cpp:1059
+msgid "Unknown connection error.\n"
+msgstr "Неизвестная ошибка соединения.\n"
+
+#: src/engine/client/cl_irc.cpp:1069
+msgid "socket connection error"
+msgstr "ошибка соединения сокета"
+
+#: src/engine/client/cl_irc.cpp:1360
+#, c-format
+msgid "^5-> ^7%s^5 has entered the channel.\n"
+msgstr "^5-> ^7%s^5 присоединился к каналу.\n"
+
+#: src/engine/client/cl_irc.cpp:1364
+msgid "^2Joined IRC chat.\n"
+msgstr "^2Вошёл в IRC чат.\n"
+
+#: src/engine/client/cl_irc.cpp:1377
+#, c-format
+msgid "^5<- ^7%s^5 has left the channel: %s.\n"
+msgstr "^5<- ^7%s^5 покинул канал: %s.\n"
+
+#: src/engine/client/cl_irc.cpp:1381
+#, c-format
+msgid "^5<- ^7%s^5 has left the channel.\n"
+msgstr "^5<- ^7%s^5 покинул канал.\n"
+
+#: src/engine/client/cl_irc.cpp:1395
+#, c-format
+msgid "^5<- ^7%s^5 has quit: %s.\n"
+msgstr "^5<- ^7%s^5 вышел: %s.\n"
+
+#: src/engine/client/cl_irc.cpp:1399
+#, c-format
+msgid "^5<- ^7%s^5 has quit.\n"
+msgstr "^5<- ^7%s^5 вышел.\n"
+
+#: src/engine/client/cl_irc.cpp:1405
+#, c-format
+msgid "^2Quit IRC chat: %s.\n"
+msgstr "^2Покинул IRC чат: %s.\n"
+
+#: src/engine/client/cl_irc.cpp:1415
+#, c-format
+msgid "^2Kicked by ^7%s^2: %s.\n"
+msgstr "^2Кикнут ^7%s^2: %s.\n"
+
+#: src/engine/client/cl_irc.cpp:1419
+#, c-format
+msgid "^5<- ^7%s^5 has been kicked: %s.\n"
+msgstr "^5<- ^7%s^5 был кикнут: %s.\n"
+
+#: src/engine/client/cl_irc.cpp:1429
+#, c-format
+msgid "^2** ^7%s^2 is now known as ^7%s^2.\n"
+msgstr "^2** ^7%s^2 теперь известен как ^7%s^2.\n"
+
+#: src/engine/client/cl_irc.cpp:1433
+#, c-format
+msgid "^5** ^7%s^5 is now known as ^7%s^5.\n"
+msgstr "^5** ^7%s^5 теперь известен как ^7%s^5.\n"
+
+#: src/engine/client/cl_irc.cpp:1440
+msgid "unknown message received\n"
+msgstr "получено неизвестное сообщение"
+
+#: src/engine/client/cl_irc.cpp:1537 src/engine/client/cl_irc.cpp:1541
+msgid "server error"
+msgstr "ошибка сервера"
+
+#: src/engine/client/cl_irc.cpp:1599
+msgid "got spurious nickname error"
+msgstr "получена ошибка поддельного имени"
+
+#: src/engine/client/cl_irc.cpp:1999
+msgid "<text>"
+msgstr "<текст>"
+
+#: src/engine/client/cl_irc.cpp:2005
+msgid "Not connected"
+msgstr "Нет соединения"
+
+#: src/engine/client/cl_irc.cpp:2027
+msgid "flood detected, message not sent"
+msgstr "обнаружен флуд, сообщение не отправлено"
+
+#: src/engine/client/cl_irc.cpp:2223
+msgid "connecting to server"
+msgstr "соединение с сервером"
+
+#: src/engine/client/cl_irc.cpp:2230
+msgid "rejected due to unset player name"
+msgstr "отказано по причине неуказанного имени игрока"
+
+#: src/engine/client/cl_irc.cpp:2237
+msgid "rejected due to mostly unusable player name"
+msgstr "отказано по причине неподходящего имени игрока"
+
+#: src/engine/client/cl_irc.cpp:2246
+msgid "unknown server"
+msgstr "неизвестный сервер"
+
+#: src/engine/client/cl_irc.cpp:2264
+msgid "invalid port number, defaulting to 6667"
+msgstr "неправильный порт, установка по умолчанию в 6667"
+
+#: src/engine/client/cl_irc.cpp:2277
+msgid "connection refused"
+msgstr "отказано в соединении"
+
+#: src/engine/client/cl_irc.cpp:2301
+msgid "…Connected to IRC server\n"
+msgstr "…Соединение с IRC сервером\n"
+
+#: src/engine/client/cl_irc.cpp:2502
+msgid "disconnected from server"
+msgstr "разъединение с сервером"
+
+#: src/engine/client/cl_irc.cpp:2665
+msgid "thread is already running"
+msgstr "поток уже запущен"
+
+#: src/engine/client/cl_keys.cpp:935
+#, c-format
+msgid "^3%s:^7 %d is not a valid team number\n"
+msgstr "^3%s:^7 %d не является номером команды\n"
+
+#: src/engine/client/cl_keys.cpp:954
+#, c-format
+msgid "^3%s:^7 '%s^7' is not a valid team name\n"
+msgstr "^3%s:^7 '%s^7' не является именем команды\n"
+
+#: src/engine/client/cl_keys.cpp:1078 src/engine/client/cl_keys.cpp:1229
+msgid "[<team>] <key>"
+msgstr "[<команда>] <клавиша>"
+
+#: src/engine/client/cl_keys.cpp:1078
+msgid "remove commands from a key"
+msgstr "убирает действия с клавиши"
+
+#: src/engine/client/cl_keys.cpp:1096 src/engine/client/cl_keys.cpp:1159
+#: src/engine/client/cl_keys.cpp:1248
+#, c-format
+msgid "\"%s\" isn't a valid key\n"
+msgstr "\"%s\" не является правильной клавишей\n"
+
+#: src/engine/client/cl_keys.cpp:1136
+msgid "<team> <key> [<command>]"
+msgstr "<команда> <клавиша> [<действие>]"
+
+#: src/engine/client/cl_keys.cpp:1136
+msgid "<key> [<command>]"
+msgstr "<key> [<действие>]"
+
+#: src/engine/client/cl_keys.cpp:1136
+msgid "attach a command to a key"
+msgstr "назначает действие на клавишу"
+
+#: src/engine/client/cl_keys.cpp:1175
+#, c-format
+msgid "\"%s\"[%s] is not bound\n"
+msgstr "действие \"%s\"[%s] не назначено\n"
+
+#: src/engine/client/cl_keys.cpp:1194
+#, c-format
+msgid "\"%s\" is not bound\n"
+msgstr "действие \"%s\" не назначено\n"
+
+#: src/engine/client/cl_keys.cpp:1528
+msgid ""
+"shift, ctrl, alt, command/cmd, mode, super, compose, menu; ! negates; e.g. "
+"shift,!alt"
+msgstr ""
+"shift, ctrl, alt, command/cmd, mode, super, compose, menu; ! отключает; "
+"например shift,!alt"
+
+#: src/engine/client/cl_keys.cpp:1602
+#, c-format
+msgid "can't have %s both pressed and not pressed\n"
+msgstr "%s не может быть нажатой и не нажатой одновременно\n"
+
+#: src/engine/client/cl_keys.cpp:1623
+#, c-format
+msgid "unknown modifier key name in \"%s\"\n"
+msgstr "неизвестная клавиша-модификатор в \"%s\"\n"
+
+#: src/engine/client/cl_keys.cpp:1687
+msgid "<modifiers> <command> [<modifiers> <command>] … [<command>]"
+msgstr "<модификаторы> <действие> [<модификаторы> <действие>] … [<действие>]"
+
+#: src/engine/client/cl_main.cpp:248
+#, c-format
+msgid "VoIP: Now ignoring player #%d\n"
+msgstr "VoIP: Теперь игрок #%d игнорируется\n"
+
+#: src/engine/client/cl_main.cpp:248
+#, c-format
+msgid "VoIP: No longer ignoring player #%d\n"
+msgstr "VoIP: Игрок #%d больше не игнорируется\n"
+
+#: src/engine/client/cl_main.cpp:253 src/engine/client/cl_main.cpp:325
+msgid "VoIP: invalid player ID#\n"
+msgstr "VoIP: неправильный ID# игрока\n"
+
+#: src/engine/client/cl_main.cpp:271
+#, c-format
+msgid "VoIP: player #%d gain now set to %f\n"
+msgstr "VoIP: усиление игрока #%d установлено в %f\n"
+
+#: src/engine/client/cl_main.cpp:296
+#, c-format
+msgid "VoIP: command ignored: %s\n"
+msgstr "VoIP: директива проигнорирована: %s\n"
+
+#: src/engine/client/cl_main.cpp:320
+#, c-format
+msgid "VoIP: current gain for player #%d is %f\n"
+msgstr "VoIP: текущее усиление для игрока #%d равно %f\n"
+
+#: src/engine/client/cl_main.cpp:335
+msgid "VoIP: muting incoming voice\n"
+msgstr "VoIP: заглушка входящего голоса\n"
+
+#: src/engine/client/cl_main.cpp:341
+msgid "VoIP: unmuting incoming voice\n"
+msgstr "VoIP: разглушка входящего голоса\n"
+
+#: src/engine/client/cl_main.cpp:463
+#, c-format
+msgid "VoIP target %d is not a valid client number\n"
+msgstr "VoIP цель %d не является клиентским номером\n"
+
+#: src/engine/client/cl_main.cpp:506
+msgid ""
+"Your network rate is too slow for VoIP.\n"
+"Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
+"Until then, VoIP is disabled.\n"
+msgstr ""
+"Ваше подключение слишком медленное для использования VoIP.\n"
+"Смените 'Data Rate' на 'LAN/Cable/xDSL' в 'Setup/System/Network' и "
+"перезапустите игру.\n"
+"До тех пор VoIP будет выключен.\n"
+
+#: src/engine/client/cl_main.cpp:787
+msgid "Not recording a demo.\n"
+msgstr "Демо не записывается.\n"
+
+#: src/engine/client/cl_main.cpp:801
+msgid "Stopped demo.\n"
+msgstr "Запись остановлена.\n"
+
+#: src/engine/client/cl_main.cpp:828
+msgid "Already recording."
+msgstr "Уже записывается."
+
+#: src/engine/client/cl_main.cpp:834
+msgid "You must be in a level to record."
+msgstr "Для записи вы должны находиться на карте."
+
+#: src/engine/client/cl_main.cpp:842
+#, c-format
+msgid "You should set '%s' for smoother demo recording"
+msgstr "Установите '%s' для более плавной записи демо-роликов"
+
+#: src/engine/client/cl_main.cpp:905 src/engine/client/cl_main.cpp:1225
+#, c-format
+msgid "recording to %s.\n"
+msgstr "запись в %s.\n"
+
+#: src/engine/client/cl_main.cpp:1009
+#, c-format
+msgid "%i frames, %3.1fs: %3.1f fps\n"
+msgstr "%i кадров, %3.1fs: %3.1f кадров/с\n"
+
+#: src/engine/client/cl_main.cpp:1084
+msgid "Demo file was truncated.\n"
+msgstr "Файл с демо-роликом был обрезан.\n"
+
+#: src/engine/client/cl_main.cpp:1192 src/engine/client/cl_main.cpp:2358
+msgid "Already recording a wav file\n"
+msgstr "Wav-файл уже записывается\n"
+
+#: src/engine/client/cl_main.cpp:1230
+#, c-format
+msgid "couldn't open %s for writing."
+msgstr "не могу открыть %s для записи."
+
+#: src/engine/client/cl_main.cpp:1246
+msgid "Stopped recording\n"
+msgstr "Запись остановлена\n"
+
+#: src/engine/client/cl_main.cpp:1268
+msgid "<demoname>"
+msgstr "<имя_демки>"
+
+#: src/engine/client/cl_main.cpp:1268
+msgid "starts playing a demo file"
+msgstr "начинает проигрывать демку"
+
+#: src/engine/client/cl_main.cpp:1630
+msgid "Mumble: Unlinking from Mumble application\n"
+msgstr "Mumble: Разъединение с Mumble\n"
+
+#: src/engine/client/cl_main.cpp:1756
+#, c-format
+msgid "Unknown command \"%s\"\n"
+msgstr "Неизвестная команда \"%s\"\n"
+
+#: src/engine/client/cl_main.cpp:1791
+msgid "Couldn't resolve master address\n"
+msgstr "Не удалось распознать адрес мастера\n"
+
+#: src/engine/client/cl_main.cpp:1833 src/engine/client/cl_main.cpp:2316
+#: src/engine/client/cl_main.cpp:5464
+msgid "Not connected to a server.\n"
+msgstr "Нет соединения с сервером.\n"
+
+#: src/engine/client/cl_main.cpp:1864
+msgid "Can't reconnect to nothing.\n"
+msgstr "Не могу переподключиться, не зная имени сервера.\n"
+
+#: src/engine/client/cl_main.cpp:1868
+msgid "Can't reconnect to localhost.\n"
+msgstr "Не могу переподключиться к localhost.\n"
+
+#: src/engine/client/cl_main.cpp:1892 src/engine/client/cl_main.cpp:5263
+#: src/engine/client/cl_main.cpp:5465
+msgid "[-4|-6] <server>"
+msgstr "[-4|-6] <сервер>"
+
+#: src/engine/client/cl_main.cpp:1912
+msgid "only -4 or -6 as address type understood."
+msgstr "только -4 или -6 принимаются как типы адресов."
+
+#: src/engine/client/cl_main.cpp:1967
+msgid "Bad server address\n"
+msgstr "Плохой адрес сервера\n"
+
+#: src/engine/client/cl_main.cpp:2028
+msgid ""
+"You must set 'rconPassword' before\n"
+"issuing an rcon command.\n"
+msgstr ""
+"Вы должны установить переменную 'rconPassword' перед тем,\n"
+"как использовать rcon команду.\n"
+
+#: src/engine/client/cl_main.cpp:2055
+msgid ""
+"Connect to a server or set the 'rconAddress' cvar to issue rcon commands\n"
+msgstr "Присоединитесь к серверу или установите переменную 'rconAddress', чтобы "
+"использовать rcon команды\n"
+
+#: src/engine/client/cl_main.cpp:2097
+#, c-format
+msgid "^5Regenerating RSA keypair; writing to %s\n"
+msgstr "^5Пересоздание пары ключей RSA; запись в %s\n"
+
+#: src/engine/client/cl_main.cpp:2116
+msgid "Daemon RSA keys generated\n"
+msgstr "Сгенерированы ключи Daemon RSA\n"
+
+#: src/engine/client/cl_main.cpp:2139
+#, c-format
+msgid "^5Loading RSA keys from %s\n"
+msgstr "^5Загрузка RSA ключей из %s\n"
+
+#: src/engine/client/cl_main.cpp:2145
+msgid "Daemon RSA public-key file not found, regenerating\n"
+msgstr "Файл с открытым ключом Daemon RSA не найден, пересоздание\n"
+
+#: src/engine/client/cl_main.cpp:2156
+msgid "Invalid RSA keypair in file, regenerating\n"
+msgstr "Некорректная пара RSA-ключей в файле, пересоздание\n"
+
+#: src/engine/client/cl_main.cpp:2163
+msgid "Daemon RSA public-key found.\n"
+msgstr "Открытый ключ Daemon RSA найден.\n"
+
+#: src/engine/client/cl_main.cpp:2375
+msgid "Not recording a wav file\n"
+msgstr "Wav-файл не записывается\n"
+
+#: src/engine/client/cl_main.cpp:2403
+msgid "The video command can only be used when playing back demos\n"
+msgstr "Команда video доступна только при проигрывании демо-роликов\n"
+
+#: src/engine/client/cl_main.cpp:2439
+msgid "no free file names to create video"
+msgstr "нет свободных имён для создания видеофайла"
+
+#: src/engine/client/cl_main.cpp:3623 src/engine/client/cl_main.cpp:3632
+#, c-format
+msgid "Download failure while getting '%s'\n"
+msgstr "Произошёл сбой при загрузке '%s'\n"
+
+#: src/engine/client/cl_main.cpp:3657
+#, c-format
+msgid ""
+"file %s obtained through download redirect has wrong checksum\n"
+"\tthis likely means the server configuration is broken"
+msgstr ""
+"файл %s полученный при переадресации загрузки имеет неправильную контрольную "
+"сумму\n"
+"\tскорее всего, сбились настройки сервера"
+
+#: src/engine/client/cl_main.cpp:4171
+msgid "Calling GetRefAPI…\n"
+msgstr "Вызов GetRefAPI…\n"
+
+#: src/engine/client/cl_main.cpp:4213
+msgid "Client Initialization"
+msgstr "Инициализация клиента"
+
+#: src/engine/client/cl_main.cpp:4311 src/engine/qcommon/translation.cpp:270
+msgid "~ ` 0x7e 0x60"
+msgstr "~ ` 0x7e 0x60"
+
+#: src/engine/client/cl_main.cpp:4427
+msgid "Client Initialization Complete"
+msgstr "Инициализация клиента завершена"
+
+#: src/engine/client/cl_main.cpp:4867
+msgid "Server settings:\n"
+msgstr "Настройки сервера:\n"
+
+#: src/engine/client/cl_main.cpp:4917
+msgid ""
+"\n"
+"Players:\n"
+msgstr ""
+"\n"
+"Игроки:\n"
+
+#: src/engine/client/cl_main.cpp:4918
+msgid "num: score: ping: name:\n"
+msgstr "номер: очки: ping: имя:"
+
+#: src/engine/client/cl_main.cpp:5283 src/engine/client/cl_main.cpp:5492
+msgid "warning: only -4 or -6 as address type understood.\n"
+msgstr "предупреждение: только -4 или -6 принимаются как типы адресов."
+
+#: src/engine/client/cl_parse.cpp:638
+msgid "Server sending download, but no download was requested\n"
+msgstr "Сервер отправляет данные на загрузку, но запроса на загрузку не было\n"
+
+#: src/engine/client/cl_parse.cpp:666
+#, c-format
+msgid "refusing redirect to %s by server (bad checksum)\n"
+msgstr "сервер отказал в перенаправлении на %s (неправильная контрольная сумма)\n"
+
+#: src/engine/client/cl_parse.cpp:680
+#, c-format
+msgid "Failed to initialize download for '%s'\n"
+msgstr "Не удалось инициализировать загрузку для '%s'\n"
+
+#: src/engine/client/cl_parse.cpp:739
+#, c-format
+msgid "Could not create %s\n"
+msgstr "Не удалось создать %s\n"
+
+#: src/engine/qcommon/cmd.cpp:136 src/engine/qcommon/cmd.cpp:140
+msgid "usage"
+msgstr "использование"
+
+#: src/engine/qcommon/common.cpp:193
+#, c-format
+msgid "^3Warning: ^7%s\n"
+msgstr "^3Предупреждение: ^7%s\n"
+
+#: src/engine/qcommon/common.cpp:196
+#, c-format
+msgid "^1Error: ^7%s\n"
+msgstr "^1Ошибка: ^7%s\n"
+
+#: src/engine/qcommon/common.cpp:199
+#, c-format
+msgid "Debug: %s\n"
+msgstr "Отладка"
+
+#: src/engine/qcommon/common.cpp:1639
+msgid "freeze <seconds>\n"
+msgstr "freeze <секунды>\n"
+
+#: src/engine/qcommon/common.cpp:1683
+msgid "Found high quality video and slow CPU\n"
+msgstr "Обнаружено видео высокого качества и медленный ЦП\n"
+
+#: src/engine/qcommon/common.cpp:1689
+msgid "Found low quality video and slow CPU\n"
+msgstr "Обнаружено видео низкого качества и медленный ЦП\n"
+
+#: src/engine/qcommon/common.cpp:1986
+#, c-format
+msgid "Couldn't write %s.\n"
+msgstr "Не удалось записать %s.\n"
+
+#: src/engine/qcommon/common.cpp:2041 src/engine/qcommon/common.cpp:2065
+msgid "<filename>"
+msgstr "<имя_файла>"
+
+#: src/engine/qcommon/common.cpp:2047 src/engine/qcommon/common.cpp:2071
+#, c-format
+msgid "Writing %s.\n"
+msgstr "Запись %s.\n"
+
+#: src/engine/qcommon/common.cpp:2348
+msgid "watchdog will trigger in 4 seconds"
+msgstr "watchdog сработает через 4 секунды"
+
+#: src/engine/qcommon/common.cpp:2353
+msgid "Idle server with no map — triggering watchdog\n"
+msgstr "Бездействующий сервер без карты  — запускаю watchdog\n"
+
+#: src/engine/qcommon/net_ip.cpp:1065
+#, c-format
+msgid "Opening IP socket: %s:%s\n"
+msgstr "Открытие IP сокета: %s:%s\n"
+
+#: src/engine/qcommon/net_ip.cpp:1150
+#, c-format
+msgid "Opening IP6 socket: %s%s%s:%s\n"
+msgstr "Открытие IP6 сокета: %s%s%s:%s\n"
+
+#: src/engine/qcommon/net_ip.cpp:1353
+msgid "Opening connection to SOCKS server.\n"
+msgstr "Открытие соединения с SOCKS сервером.\n"
+
+#: src/engine/qcommon/net_ip.cpp:1645
+#, c-format
+msgid "Hostname: %s\n"
+msgstr "Имя хоста: %s\n"
+
+#: src/engine/qcommon/translation.cpp:260
+#, c-format
+msgid "Set language to %s\n"
+msgstr "Язык изменён на %s\n"
+
+#: src/engine/qcommon/translation.cpp:317
+#, c-format
+msgid "Loaded %u language\n"
+msgid_plural "Loaded %u languages\n"
+msgstr[0] "Загружен %u язык\n"
+msgstr[1] "Загружены %u языка\n"
+msgstr[2] "Загружены %u языков\n"
+
+#: src/engine/qcommon/vm.cpp:1148
+msgid "Registered virtual machines:\n"
+msgstr "Зарегистированные виртуальные машины:\n"
+
+#: src/engine/server/sv_ccmds.cpp:57
+msgid "<mapname> (layoutname)"
+msgstr "<имя_карты> (имя_расположения)"
+
+#: src/engine/server/sv_ccmds.cpp:57
+msgid "loads a new map"
+msgstr "загружает новую карту"
+
+#: src/engine/server/sv_ccmds.cpp:65
+#, c-format
+msgid "Can't find map %s"
+msgstr "Не удалось найти карту %s"
+
+#: src/engine/server/sv_ccmds.cpp:97
+msgid "starts a new map"
+msgstr "начинает новую карту"
+
+#: src/engine/server/sv_ccmds.cpp:98
+msgid "starts a new map with cheats enabled"
+msgstr "начинает новую карту с включенными читами"
+
+#: src/engine/server/sv_ccmds.cpp:135 src/engine/server/sv_ccmds.cpp:267
+#: src/engine/server/sv_ccmds.cpp:365 src/engine/server/sv_ccmds.cpp:385
+msgid "Server is not running.\n"
+msgstr "Сервер не запущен.\n"
+
+#: src/engine/server/sv_ccmds.cpp:155
+msgid "sv_maxclients variable change — restarting.\n"
+msgstr "переменная sv_maxclients — рестарт.\n"
+
+#: src/engine/server/sv_ccmds.cpp:369
+msgid "Server info settings:\n"
+msgstr "Настройки сервера:\n"
+
+#: src/engine/server/sv_ccmds.cpp:389
+msgid "System info settings:\n"
+msgstr "Настройки системы:\n"
+
+#: src/engine/server/sv_client.cpp:234
+#, c-format
+msgid "Client %i connecting from %s with %i challenge ping\n"
+msgstr "Клиент %i присоединяется из %s с пингом %i\n"
+
+#: src/engine/server/sv_client.cpp:238
+#, c-format
+msgid "Client %i connecting from somewhere unknown with %i challenge ping\n"
+msgstr "Клиент %i присоединяется не понятно откуда с пингом %i\n"
+
+#: src/engine/server/sv_client.cpp:241
+#, c-format
+msgid "Client %i connecting with %i challenge ping\n"
+msgstr "Клиент %i присоединяется с пингом %i\n"
+
+#: src/engine/server/sv_client.cpp:784
+#, c-format
+msgid "clientDownload: %d : file \"%s\" completed\n"
+msgstr "clientDownload: %d : скачивание файла \"%s\" завершено\n"
+
+#: src/engine/server/sv_client.cpp:833 src/engine/server/sv_client.cpp:857
+#, c-format
+msgid "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n"
+msgstr "SV_WWWDownload: непредвиденный wwwdl '%s' для клиента '%s'\n"
+
+#: src/engine/server/sv_client.cpp:842
+#, c-format
+msgid "dupe wwwdl ack from client '%s'"
+msgstr "dupe wwwdl ack from client '%s'"
+
+#: src/engine/server/sv_client.cpp:879
+#, c-format
+msgid ""
+"client '%s' reports that the redirect download for '%s' had wrong checksum.\n"
+"\tYou should check your download redirect configuration."
+msgstr ""
+"клиент '%s' сообщает, что перенаправленная закачка '%s' имеет неправильную "
+"контрольную сумму.\n"
+"\tПроверьте конфигурацию своего перенаправления закачек."
+
+#: src/engine/server/sv_client.cpp:919
+#, c-format
+msgid "clientDownload: sending client '%s' to fallback URL '%s'\n"
+msgstr "Перенаправление клиента '%s' на %s\n"
+
+#: src/engine/server/sv_client.cpp:1030
+#, c-format
+msgid "Redirecting client '%s' to %s\n"
+msgstr "Перенаправление клиента '%s' на %s\n"
+
+#: src/engine/server/sv_client.cpp:1054
+#, c-format
+msgid "Client '%s': couldn't extract file size for %s"
+msgstr "Клиент '%s': не удалось извлечь размер файла %s"
+
+#: src/engine/server/sv_client.cpp:1067
+#, c-format
+msgid "Client '%s': falling back to regular downloading for failed file %s"
+msgstr "Клиент '%s': начало обычной загрузки файла после неудачи %s"
+
+#: src/engine/server/sv_client.cpp:1078
+#, c-format
+msgid "Client '%s' is not configured for www download\n"
+msgstr "Клиент '%s' не настроен для закачивания через www\n"
+
+#: src/engine/server/sv_client.cpp:1102
+#, c-format
+msgid "clientDownload: %d : \"%s\" file not found on server\n"
+msgstr "clientDownload: %d : \"%s\" файл не найден на сервере\n"
+
+#: src/engine/server/sv_client.cpp:1167
+#, c-format
+msgid "'%s' downloading at sv_dl_maxrate (%d)\n"
+msgstr "'%s' скачивание на скорости sv_dl_maxrate (%d)\n"
+
+#: src/engine/server/sv_client.cpp:1172
+#, c-format
+msgid "'%s' downloading at rate %d\n"
+msgstr "'%s' скачивание на скорости %d\n"
+
+#: src/engine/server/sv_client.cpp:1254
+msgid "disconnected"
+msgstr "разъединение"
+
+#: src/engine/server/sv_client.cpp:1561
+#, c-format
+msgid "Client %s lost %i clientCommands\n"
+msgstr "Клиент %s потерял %i clientCommands\n"
+
+#: src/engine/server/sv_client.cpp:1871
+#, c-format
+msgid "Too many VoIP packets queued for client #%d\n"
+msgstr "Слишком много VoIP пакетов в очереди клиента #%d\n"
+
+#: src/engine/server/sv_init.cpp:527
+msgid "Server Initialization"
+msgstr "Инициализация сервера"
+
+#: src/engine/server/sv_init.cpp:528
+#, c-format
+msgid "Server: %s\n"
+msgstr "Сервер: %s\n"
+
+#: src/engine/server/sv_init.cpp:868
+msgid "Server Shutdown"
+msgstr "Выключение сервера"
+
+#: src/engine/server/sv_main.cpp:249
+#, c-format
+msgid "Resolving %s (IPv4)\n"
+msgstr "Распознование %s (IPv4)\n"
+
+#: src/engine/server/sv_main.cpp:260 src/engine/server/sv_main.cpp:281
+#: src/engine/server/sv_main.cpp:415
+#, c-format
+msgid "%s resolved to %s\n"
+msgstr "%s распознано как %s\n"
+
+#: src/engine/server/sv_main.cpp:264
+#, c-format
+msgid "%s has no IPv4 address.\n"
+msgstr "%s не имеет IPv4 адреса.\n"
+
+#: src/engine/server/sv_main.cpp:270
+#, c-format
+msgid "Resolving %s (IPv6)\n"
+msgstr "Распознование %s (IPv6)\n"
+
+#: src/engine/server/sv_main.cpp:285
+#, c-format
+msgid "%s has no IPv6 address.\n"
+msgstr "%s не имеет IPv6 адреса.\n"
+
+#: src/engine/server/sv_main.cpp:293
+#, c-format
+msgid "Couldn't resolve address: %s\n"
+msgstr "Не удалось распознать адрес: %s\n"
+
+#: src/engine/server/sv_main.cpp:348
+#, c-format
+msgid "Sending heartbeat to %s\n"
+msgstr "Отправление heartbeat к %s\n"
+
+#: src/engine/server/sv_main.cpp:400
+#, c-format
+msgid "Resolving %s\n"
+msgstr "Распознование %s\n"
+
+#: src/engine/server/sv_main.cpp:405
+#, c-format
+msgid "Couldn't resolve master address: %s\n"
+msgstr "Не удалось распознать адрес мастер-сервера: %s\n"
+
+#: src/engine/server/sv_main.cpp:418
+#, c-format
+msgid "Sending gamestat to %s\n"
+msgstr "Отправка gamestat к %s\n"
+
+#: src/engine/server/sv_main.cpp:730
+msgid "Detected flood of getinfo/getstatus connectionless packets\n"
+msgstr "Замечен флуд пакетами getinfo/getstatus без установления соединения\n"
+
+#: src/engine/server/sv_main.cpp:741
+#, c-format
+msgid ""
+"Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus "
+"connectionless packet\n"
+msgstr "Возможная DRDoS-атака по адресу %i.%i.%i.%i, игнорирую пакет "
+"getinfo/getstatus \n"
+
+#: src/engine/server/sv_main.cpp:815
+#, c-format
+msgid ""
+"Bad rcon from %s:\n"
+"%s\n"
+msgstr ""
+"Плохой rcon от %s:\n"
+"%s\n"
+
+#: src/engine/server/sv_main.cpp:820
+#, c-format
+msgid ""
+"Rcon from %s:\n"
+"%s\n"
+msgstr ""
+"Rcon от %s:\n"
+"%s\n"
+
+#: src/engine/server/sv_main.cpp:834
+msgid "No rconpassword set on the server."
+msgstr "На сервере не установлен rconpassword."
+
+#: src/engine/server/sv_main.cpp:838
+msgid "Bad rconpassword."
+msgstr "Плохой rconpassword."
+
+#: src/engine/server/sv_snapshot.cpp:963
+#, c-format
+msgid "WARNING: msg overflowed for %s\n"
+msgstr "ВНИМАНИЕ: msg переполнено для %s\n"
+
+#~ msgid "Initializing Renderer"
+#~ msgstr "Инициализация рендера"
+
+#~ msgid "map features per poly collision detection\n"
+#~ msgstr "map features per poly collision detection\n"
+
+#~ msgid "WARNING: CM_GridPlane unresolvable\n"
+#~ msgstr "ВНИМАНИЕ: CM_GridPlane неразрешенная ситуация\n"
+
+#~ msgid "Cbuf_AddText: overflow\n"
+#~ msgstr "Cbuf_AddText: переполнение\n"
+
+#~ msgid "Cbuf_InsertText overflowed\n"
+#~ msgstr "Cbuf_InsertText переполнен\n"
+
+#~ msgid "<filename> [<arguments>…]"
+#~ msgstr "<имя_файла> [<параметры>…]"
+
+#~ msgid "execute a script file without notification, a shortcut for exec -q"
+#~ msgstr "исполняет скрипт без уведомления, сокращение для exec -q"
+
+#~ msgid "[-q|-f|-s] <filename> [<arguments>…]"
+#~ msgstr "[-q|-f|-s] <имя_файла> [<параметры>…]"
+
+#~ msgid "execute a script file."
+#~ msgstr "исполняет скрипт."
+
+#, c-format
+#~ msgid "couldn't exec %s\n"
+#~ msgstr "не могу выполнить %s\n"
+
+#, c-format
+#~ msgid "execing %s\n"
+#~ msgstr "выполнение %s\n"
+
+#~ msgid "<variablename>"
+#~ msgstr "<имя_переменной>"
+
+#~ msgid "execute a variable command"
+#~ msgstr "исполняет команду, хранящуюся в переменной"
+
+#~ msgid "not supported in the dedicated server"
+#~ msgstr "не работает на выделенном сервере"
+
+#~ msgid "shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt"
+#~ msgstr "shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt"
+
+#~ msgid "if <modifiers>… is not supported on the server — assuming true.\n"
+#~ msgstr "if <модификаторы>… не поддерживается на сервере — вычисление в true.\n"
+
+#~ msgid ""
+#~ "invalid relation operator in if command. valid relation operators are = != ≠ "
+#~ "< > ≥ >= ≤ <= eq ne in !in\n"
+#~ msgstr "неизвестный оператор сравнения в инструкции if. Возможные операторы "
+#~ "сравнения: = != ≠ < > ≥ >= ≤ <= eq ne in !in\n"
+
+#, c-format
+#~ msgid ""
+#~ "if <number|string> <relation> <number|string> <cmdthen> (<cmdelse>) : "
+#~ "compares two numbers or two strings and executes <cmdthen> if true, "
+#~ "<cmdelse> if false\n"
+#~ "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
+#~ "-- modifiers are %s\n"
+#~ "-- commands are cvar names unless prefixed with / or \\\n"
+#~ msgstr ""
+#~ "if <число|строка> <оператор отношения> <число|строка> <тогда_действие> "
+#~ "(<иначе_действие>) : сравнивает два числа или две строки и выполняет "
+#~ "<тогда_действие> в случае истины, <иначе_действие> в случае лжи\n"
+#~ "if <модификаторы> <тогда_действие> (<иначе_действие>) : проверяет нажаты "
+#~ "(или нет) модификаторы\n"
+#~ "-- модификаторы: %s\n"
+#~ "-- командами называются переменные, если им предшествует / или \\\n"
+
+#~ msgid "<variableToSet> = <number> <operator> <number>"
+#~ msgstr "<переменная> = <число> <оператор> <число>"
+
+#~ msgid "<variableToSet> <operator> <number>"
+#~ msgstr "<variableToSet> <оператор> <число>"
+
+#~ msgid "<variableToSet> (++|--)"
+#~ msgstr "<переменная> (++|--)"
+
+#~ msgid "valid operators: + - × * ÷ /\n"
+#~ msgstr "доступные операторы: + - × * ÷ /\n"
+
+#~ msgid "Cannot divide by 0!"
+#~ msgstr "Не могу поделить на 0!"
+
+#~ msgid "<variableToSet> <variable1> … <variableN>"
+#~ msgstr "<переменная результата> <переменная1> … <переменнаяN>"
+
+#~ msgid ""
+#~ "concatenates variable1 to variableN and sets the result to variableToSet"
+#~ msgstr ""
+#~ "объединяет всё с переменная1 до переменнаяN и заносит результат в переменную "
+#~ "результата"
+
+#~ msgid "<number> <operator> <number>"
+#~ msgstr "<number> <operator> <number>"
+
+#~ msgid ""
+#~ "Calculator.\n"
+#~ "Accepted operators: +, -, /, */x\n"
+#~ msgstr ""
+#~ "Калькулятор.\n"
+#~ "Доступные операторы: +, -, /, */x\n"
+
+#~ msgid "<name> (command)"
+#~ msgstr "<имя> (действие)"
+
+#~ msgid ""
+#~ "removes all commands with <name> in them.\n"
+#~ "if (command) is specified, the removal will be limited only to delays whose "
+#~ "commands contain (command)."
+#~ msgstr ""
+#~ "отменяет все действия с именем <имя>.\n"
+#~ "если указано (действие), отменяются только те задержки, действия которых "
+#~ "содержат (действие)."
+
+#~ msgid ""
+#~ "delay (name) <delay in milliseconds> <command>\n"
+#~ "delay <delay in frames>f <command>\n"
+#~ "executes <command> after the delay\n"
+#~ msgstr ""
+#~ "delay (имя) <задержка в миллисекундах> <действие>\n"
+#~ "delay <задержка в фреймах>f <действие>\n"
+#~ "выполняет <действие> после задержки\n"
+
+#~ msgid "delay: the delay must be a positive integer\n"
+#~ msgstr "delay: задержка должна быть положительным числом\n"
+
+#~ msgid "Maximum amount of delayed commands reached."
+#~ msgstr "Достигнуто максимальное количество отложенных команд\n"
+
+#, c-format
+#~ msgid "%i aliases\n"
+#~ msgstr "%i алиасов\n"
+
+#~ msgid "<name>"
+#~ msgstr "<имя>"
+
+#~ msgid "delete an alias"
+#~ msgstr "удаляет алиас"
+
+#~ msgid "show an alias"
+#~ msgstr "выводит алиас"
+
+#~ msgid "<name> <exec>"
+#~ msgstr "<имя> <выполнить>"
+
+#~ msgid "create an alias"
+#~ msgstr "создаёт алиас"
+
+#~ msgid "Can't make an alias to itself\n"
+#~ msgstr "Нельзя создать алиас на самого себя\n"
+
+#~ msgid "Can't override a builtin function with an alias\n"
+#~ msgstr "Не могу заменить встроенную функцию алиасом\n"
+
+#, c-format
+#~ msgid "Alias %s does not exist\n"
+#~ msgstr "Алиас %s не существует\n"
+
+#, c-format
+#~ msgid "Cmd_AddCommand: %s already defined\n"
+#~ msgstr "Cmd_AddCommand: %s уже определена\n"
+
+#, c-format
+#~ msgid "%i commands\n"
+#~ msgstr "%i команд\n"
+
+#, c-format
+#~ msgid "logfile opened on %s\n"
+#~ msgstr "лог-файл открыт в %s\n"
+
+#, c-format
+#~ msgid "%s couldn't write %s\n"
+#~ msgstr "%s не удалось записать %s\n"
+
+#, c-format
+#~ msgid ""
+#~ "profile.pid found for profile '%s' — the system settings will revert to "
+#~ "their defaults\n"
+#~ msgstr "profile.pid найден для профиля '%s' — системные настройки будут сброшены в "
+#~ "настройки по умолчанию\n"
+
+#, c-format
+#~ msgid "Couldn't read %s.\n"
+#~ msgstr "Не удалось прочитать %s.\n"
+
+#, c-format
+#~ msgid "Using %s instead of %s\n"
+#~ msgstr "Использование %s вместо of %s\n"
+
+#, c-format
+#~ msgid "%s is unsafe. Check com_crashed.\n"
+#~ msgstr "Использование %s небезопасно. Проверьте значение переменной com_crashed.\n"
+
+#, c-format
+#~ msgid "%s is read only.\n"
+#~ msgstr "%s только для чтения.\n"
+
+#, c-format
+#~ msgid "%s is write protected.\n"
+#~ msgstr "переменная %s защищена от записи.\n"
+
+#, c-format
+#~ msgid "%s is cheat protected.\n"
+#~ msgstr "переменная %s имеет защиту от читов.\n"
+
+#, c-format
+#~ msgid "%s will be changed upon recompiling shaders.\n"
+#~ msgstr "%s изменится после перекомпиляции шейдеров.\n"
+
+#, c-format
+#~ msgid "%s will be changed upon restarting.\n"
+#~ msgstr "%s изменится после рестарта.\n"
+
+#, c-format
+#~ msgid "\"%s\" is \"%s^7\" default: \"%s^7\"\n"
+#~ msgstr "\"%s\" равно \"%s^7\" значение по умолчанию: \"%s^7\"\n"
+
+#, c-format
+#~ msgid "latched: \"%s\"\n"
+#~ msgstr "присвоено: \"%s\"\n"
+
+#~ msgid "[+|-] <variable> [<value>…]"
+#~ msgstr "[+|-] <переменная> [<значение>…]"
+
+#~ msgid "<variable> <start> <end> [<step>]"
+#~ msgstr "<переменная> <начальное_значение> <конечное_значение> [<шаг>]"
+
+#~ msgid "[-unsafe] <variable> <value>"
+#~ msgstr "[-unsafe] <переменная> <значение>"
+
+#~ msgid "<variable>"
+#~ msgstr "<переменная>"
+
+#~ msgid "Replace existing download target file\n"
+#~ msgstr "Заменить существующий файл загрузки\n"
+
+#~ msgid "<directory> [<extension>]"
+#~ msgstr "<директория> [<расширение>]"
+
+#, c-format
+#~ msgid "Directory of %s %s\n"
+#~ msgstr "Директория of %s %s\n"
+
+#~ msgid "<filter>"
+#~ msgstr "<фильтр>"
+
+#~ msgid "example: fdir *q3dm*.bsp\n"
+#~ msgstr "например: fdir *q3dm*.bsp\n"
+
+#, c-format
+#~ msgid "%d files listed\n"
+#~ msgstr "выведено %d файлов\n"
+
+#~ msgid "<file>"
+#~ msgstr "<файл>"
+
+#, c-format
+#~ msgid "File \"%s\" found in \"%s\"\n"
+#~ msgstr "File \"%s\" найден в \"%s\"\n"
+
+#, c-format
+#~ msgid "File \"%s\" found at \"%s\"\n"
+#~ msgstr "Файл \"%s\" найден в \"%s\"\n"
+
+#, c-format
+#~ msgid "File not found: \"%s\"\n"
+#~ msgstr "Файл не найден: \"%s\"\n"
+
+#, c-format
+#~ msgid "Can't find map %s\n"
+#~ msgstr "Не удалось найти карту %s\n"
+
+#~ msgid "sv_pure set but no PK3 files loaded"
+#~ msgstr "sv_pure включен, но PK3 файлы не загружены"
+
+#~ msgid "No rconpassword set on the server.\n"
+#~ msgstr "На сервере не установлен rconpassword.\n"
+
+#~ msgid "Bad rconpassword.\n"
+#~ msgstr "Плохой rconpassword.\n"
+
+#, c-format
+#~ msgid "Unknown extension for %s\n"
+#~ msgstr "Неизвестное расширение у %s\n"
+
+#, c-format
+#~ msgid "Can't read sound file %s\n"
+#~ msgstr "Не удалось прочитать звуковой файл %s\n"
+
+#~ msgid "No ‘data’ chunk\n"
+#~ msgstr "Отсутствует блок ‘data’"
+
+#, c-format
+#~ msgid "Can't understand wav file %s\n"
+#~ msgstr "Не удалось распознать wav-файл %s\n"
+
+#, c-format
+#~ msgid "Out of memory reading \"%s\"\n"
+#~ msgstr "Не хватает памяти для считывания \"%s\"\n"
+
+#~ msgid "Sound Info"
+#~ msgstr "Информация о звуке"
+
+#~ msgid "the sound system is not started\n"
+#~ msgstr "звуковая система не запущена\n"
+
+#, c-format
+#~ msgid "%5d stereo\n"
+#~ msgstr "%5d стерео\n"
+
+#, c-format
+#~ msgid "%5d samples\n"
+#~ msgstr "%5d сэмплов\n"
+
+#, c-format
+#~ msgid "%5d samplebits\n"
+#~ msgstr "%5d сэмпловых битов\n"
+
+#, c-format
+#~ msgid "%5d submission_chunk\n"
+#~ msgstr "%5d submission_chunk\n"
+
+#, c-format
+#~ msgid "%5d speed\n"
+#~ msgstr "%5d скорость\n"
+
+#, c-format
+#~ msgid "%p DMA buffer\n"
+#~ msgstr "%p DMA-буфер\n"
+
+#, c-format
+#~ msgid "Background stream: %s\n"
+#~ msgstr "Фоновый поток: %s\n"
+
+#~ msgid "No background file.\n"
+#~ msgstr "Отсутствует фоновый файл.\n"
+
+#~ msgid "Sound name exceeds MAX_QPATH"
+#~ msgstr "Длина имени звукового файла превышает MAX_QPATH"
+
+#, c-format
+#~ msgid "could not find %s — using default"
+#~ msgstr "не удалось найти %s — установка по умолчанию"
+
+#, c-format
+#~ msgid "handle %i out of range"
+#~ msgstr "значение %i вне диапозона"
+
+#~ msgid "dropping sound\n"
+#~ msgstr "сбрасываю звук\n"
+
+#~ msgid "Initializing Sound"
+#~ msgstr "Инициализация звука"
+
+#~ msgid "Sound memory manager started\n"
+#~ msgstr "Запущено управление звуковой памятью\n"
+
+#, c-format
+#~ msgid "Cmd_AddButtonCommand: +/-%s already defined\n"
+#~ msgstr "Cmd_AddButtonCommand: +/-%s уже определена\n"
+
+#~ msgid "<variable> <value> [unsafe]"
+#~ msgstr "<переменная> <значение> [unsafe]"
+
+#~ msgid "No player specified.\n"
+#~ msgstr "Укажите конкретного игрока.\n"
+
+#, c-format
+#~ msgid "Player %s is not on the server\n"
+#~ msgstr "На сервере нет игрока по имени %s\n"
+
+#, c-format
+#~ msgid "Bad slot number: %s\n"
+#~ msgstr "Плохой номер слота: %s\n"
+
+#, c-format
+#~ msgid "Bad client slot: %i\n"
+#~ msgstr "Плохой слот клиента: %i\n"
+
+#, c-format
+#~ msgid "Client %i is not active\n"
+#~ msgstr "Клиент %i не активен\n"
+
+#~ msgid "bind <key> [command] : attach a command to a key\n"
+#~ msgstr "bind <клавиша> [команда] : назначить команду клавише\n"
+
+#~ msgid "------ Initializing Sound -----\n"
+#~ msgstr "------ Инициализация Звука -----\n"
+
+#~ msgid "unbind <key> : remove commands from a key\n"
+#~ msgstr "unbind <клавиша> : убрать команду с клавиши\n"
+
+# 89%
+#, fuzzy
+#~ msgid "[Theora] unexpected resolution in a YUV frame\n"
+#~ msgstr "[Theora] неожиданное разрешение в yuv-кадре\n"
+
+# 91%
+#, c-format, fuzzy
+#~ msgid "WARNING: Can't open OGM file for reading (%s)\n"
+#~ msgstr "ВНИМАНИЕ: Не удаётся открыть ogm-файл для чтения (%s)\n"
+
+# 78%
+#, c-format, fuzzy
+#~ msgid "Video width of the OGM file isn't a power of 2 (%s)\n"
+#~ msgstr "VideoWidth(ширина видео) ogm-файла не является степенью 2 (%s)\n"
+
+# 79%
+#, c-format, fuzzy
+#~ msgid "Video height of the OGM file isn't a power of 2 (%s)\n"
+#~ msgstr "VideoHeight(высота видео) ogm-файла не является степенью 2 (%s)\n"
+
+# 86%
+#, c-format, fuzzy
+#~ msgid "WARNING: Found \"video\" and \"theora\" stream; OGM file (%s)\n"
+#~ msgstr "ВНИМАНИЕ: Найдены \"video\" и \"theora\" потоки, ogm-файл (%s)\n"
+
+# 92%
+#, c-format, fuzzy
+#~ msgid "WARNING: Haven't found a video stream in OGM file (%s)\n"
+#~ msgstr "ВНИМАНИЕ: Не найден видео поток в ogm-файле (%s)\n"
+
+# 92%
+#, c-format, fuzzy
+#~ msgid "WARNING: Couldn't find all Vorbis headers before end of OGM file (%s)\n"
+#~ msgstr "ВНИМАНИЕ: Не удалось найти все заголовки vorbis до завершения ogm-файла (%s)\n"
+
+# 92%
+#, c-format, fuzzy
+#~ msgid "[Xvid]Decore INIT problem, return value %d(OGM file: %s)\n"
+#~ msgstr "[Xvid]Decore INIT problem, return value %d(ogm-file: %s)\n"
+
+# 91%
+# 92%
+#, c-format, fuzzy
+#~ msgid "WARNING: Couldn't find all Theora headers before end of OGM file (%s)\n"
+#~ msgstr "ВНИМАНИЕ: Не удалось найти все заголовки vorbis до завершения ogm-файла (%s)\n"
+
+# 86%
+# 81%
+#, c-format, fuzzy
+#~ msgid "WARNING: Video width of the OGM file isn't a power of 2 (%s)\n"
+#~ msgstr "VideoWidth(ширина видео) ogm-файла не является степенью 2 (%s)\n"
+
+# 86%
+# 82%
+#, c-format, fuzzy
+#~ msgid "WARNING: Video height of the OGM file isn't a power of 2 (%s)\n"
+#~ msgstr "VideoHeight(высота видео) ogm-файла не является степенью 2 (%s)\n"
+
+# 93%
+#, fuzzy
+#~ msgid "cl_aviFrameRate must be ≥ 1\n"
+#~ msgstr "cl_aviFrameRate должен быть >= 1\n"
+
+#, c-format
+#~ msgid ""
+#~ "WARNING: cl_aviFrameRate is not a divisor of the audio rate, suggest %d\n"
+#~ msgstr "ВНИМАНИЕ: cl_aviFrameRate не является делителем частоты звуковой "
+#~ "дискретизации, попробуйте %d\n"
+
+#~ msgid ""
+#~ "WARNING: Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 "
+#~ "for audio capture\n"
+#~ msgstr "ВНИМАНИЕ: Захват звука не поддерживается OpenAL. Установите s_useOpenAL 0 "
+#~ "для записи аудио\n"
+
+# 96%
+#, fuzzy
+#~ msgid "WARNING: Audio capture buffer overflow – truncating\n"
+#~ msgstr "ВНИМАНИЕ: Буффер записи аудио переполнен -- усекаю\n"
+
+#, c-format
+#~ msgid "Wrote %d:%d frames to %s\n"
+#~ msgstr "Записано %d:%d кадров в %s\n"
+
+#~ msgid "Three keys down for a button!\n"
+#~ msgstr "Нажато три клавиши одновременно!\n"
+
+#~ msgid "WARNING: unsent fragments (not supposed to happen!)\n"
+#~ msgstr "ВНИМАНИЕ: неотправленные фрагменты (такого не должно случаться!)\n"
+
+#, c-format
+#~ msgid "^1BUG: cgame: some button commands left unregistered (\"%s\")\n"
+#~ msgstr "^1БАГ: cgame: некоторые команды клавиш остались незарегистрированными (\"%s\")\n"
+
+#~ msgid "editbind <key> : edit a key binding (in the in-game console)"
+#~ msgstr "editbind <клавиша> : изменить назначение клавиши (в игровой консоли)"
+
+#~ msgid "Delta from invalid frame (not supposed to happen!).\n"
+#~ msgstr "Дельта из неверного кадра (такого не должно случаться!).\n"
+
+#~ msgid "Delta frame too old.\n"
+#~ msgstr "Дельта кадр слишком стар.\n"
+
+#~ msgid "Delta parseEntitiesNum too old.\n"
+#~ msgstr "Дельта parseEntitiesNum слишком старая.\n"
+
+#, c-format
+#~ msgid "Server redirected download: %s\n"
+#~ msgstr "Сервер перенаправил загрузку: %s\n"
+
+#, c-format
+#~ msgid "CL_ParseDownload: Expected block %d, got %d\n"
+#~ msgstr "CL_ParseDownload: Ожидался блок %d, но получен %d\n"
+
+#, c-format
+#~ msgid "using sound module %s\n"
+#~ msgstr "используется модуль звука %s\n"
+
+# 97%
+#, fuzzy
+#~ msgid "can't load sound module – bailing\n"
+#~ msgstr "не удаётся загрузить звуковой модуль - отмена\n"
+
+# 96%
+#, fuzzy
+#~ msgid "can't find GetSndAPI – bailing\n"
+#~ msgstr "не удаётся найти GetSndAPI - отмена\n"
+
+# 97%
+#, fuzzy
+#~ msgid "call to GetSndAPI failed – bailing\n"
+#~ msgstr "вызов GetSndAPI неудачен - отмена\n"
+
+# 96%
+#, fuzzy
+#~ msgid "call to Init failed – bailing\n"
+#~ msgstr "вызов Init неудачен - отмена\n"
+
+# данный вариант в контексте client/snd_load.c:216 мне кажется верным
+#~ msgid "not initializing.\n"
+#~ msgstr "отмена инициализации.\n"
+
+# 96%
+#, fuzzy
+#~ msgid "using built-in sound system\n"
+#~ msgstr "использую встроенную звуковую систему\n"
+
+#, c-format
+#~ msgid "%s is unbound, use controls menu to set.\n"
+#~ msgstr "%s не назначена, используйте меню управления, чтобы назначить.\n"
+
+#~ msgid "can't load sound module - bailing\n"
+#~ msgstr "не удаётся загрузить звуковой модуль - отмена\n"
+
+#~ msgid "can't find GetSndAPI - bailing\n"
+#~ msgstr "не удаётся найти GetSndAPI - отмена\n"
+
+#~ msgid "call to GetSndAPI failed - bailing\n"
+#~ msgstr "вызов GetSndAPI неудачен - отмена\n"
+
+#~ msgid "call to Init failed - bailing\n"
+#~ msgstr "вызов Init неудачен - отмена\n"
+
+#~ msgid "using builtin sound system\n"
+#~ msgstr "использую встроенную звуковую систему\n"
+
+#~ msgid "cl_aviFrameRate must be >= 1\n"
+#~ msgstr "cl_aviFrameRate должен быть >= 1\n"
+
+#~ msgid "WARNING: Audio capture buffer overflow -- truncating\n"
+#~ msgstr "ВНИМАНИЕ: Буффер записи аудио переполнен -- усекаю\n"
+
+#~ msgid "[Theora] unexpected resolution in a yuv-Frame\n"
+#~ msgstr "[Theora] неожиданное разрешение в yuv-кадре\n"
+
+#, c-format
+#~ msgid ""
+#~ "WARNING: it seams there was already a ogm running, it will be killed to "
+#~ "start %s\n"
+#~ msgstr "ВНИМАНИЕ: кажется, ogm уже был запущен, он будет убит для запуска%s\n"
+
+#, c-format
+#~ msgid "WARNING: Can't open ogm-file for reading (%s)\n"
+#~ msgstr "ВНИМАНИЕ: Не удаётся открыть ogm-файл для чтения (%s)\n"
+
+#, c-format
+#~ msgid ""
+#~ "WARNING: more than one audio stream, in ogm-file(%s) ... we will stay at the "
+#~ "first one\n"
+#~ msgstr "ВНИМАНИЕ: обнаружено более одного аудио-потока в ogm-файле(%s) ... будет "
+#~ "использован первый\n"
+
+#, c-format
+#~ msgid ""
+#~ "WARNING: more than one video stream, in ogm-file(%s) ... we will stay at the "
+#~ "first one\n"
+#~ msgstr "ВНИМАНИЕ: обнаружено более одного видео-потока в ogm-файле(%s) ... будет "
+#~ "использован первый\n"
+
+#, c-format
+#~ msgid ""
+#~ "more than one video stream, in ogm-file(%s) ... we will stay at the first "
+#~ "one\n"
+#~ msgstr "ogm-файл содержит больше одного видео-потока(%s) ... будет использован "
+#~ "первый\n"
+
+#, c-format
+#~ msgid "VideoWidth of the ogm-file isn't a power of 2 value (%s)\n"
+#~ msgstr "VideoWidth(ширина видео) ogm-файла не является степенью 2 (%s)\n"
+
+#, c-format
+#~ msgid "VideoHeight of the ogm-file isn't a power of 2 value (%s)\n"
+#~ msgstr "VideoHeight(высота видео) ogm-файла не является степенью 2 (%s)\n"
+
+#, c-format
+#~ msgid "WARNING: Found \"video\"- and \"theora\"-stream ,ogm-file (%s)\n"
+#~ msgstr "ВНИМАНИЕ: Найдены \"video\" и \"theora\" потоки, ogm-файл (%s)\n"
+
+#, c-format
+#~ msgid "WARNING: Haven't found a audio(vorbis) stream in ogm-file (%s)\n"
+#~ msgstr "ВНИМАНИЕ: Не найден айдио(vorbis) поток в ogm-файле (%s)\n"
+
+#, c-format
+#~ msgid "WARNING: Haven't found a video stream in ogm-file (%s)\n"
+#~ msgstr "ВНИМАНИЕ: Не найден видео поток в ogm-файле (%s)\n"
+
+#, c-format
+#~ msgid ""
+#~ "WARNING: Corrupt ogg packet while loading vorbis-headers, ogm-file(%s)\n"
+#~ msgstr "ВНИМАНИЕ: Получен повреждённый ogg пакет во время загрузки vorbis-заголовка, "
+#~ "ogm-файл(%s)\n"
+
+#, c-format
+#~ msgid ""
+#~ "WARNING: This Ogg bitstream does not contain Vorbis audio data, ogm-file"
+#~ "(%s)\n"
+#~ msgstr "ВНИМАНИЕ: Этот Ogg поток не содержит аудио данные Vorbis, ogm-файл(%s)\n"
+
+#, c-format
+#~ msgid "WARNING: Couldn't find all vorbis headers before end of ogm-file (%s)\n"
+#~ msgstr "ВНИМАНИЕ: Не удалось найти все заголовки vorbis до завершения ogm-файла (%s)\n"
+
+#, c-format
+#~ msgid "[Xvid]Decore INIT problem, return value %d(ogm-file: %s)\n"
+#~ msgstr "[Xvid]Decore INIT problem, return value %d(ogm-file: %s)\n"
