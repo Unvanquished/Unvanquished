@@ -35,6 +35,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <shlobj.h>
 #include <io.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #undef MoveFile
 #undef CopyFile
 #undef DeleteFile
