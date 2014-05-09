@@ -52,7 +52,7 @@ function(get_pic_flags Result Target)
   get_target_property(TargetPIC ${Target} POSITION_INDEPENDENT_CODE)
 
   if (TargetPIC)
-      set(${Result} "-fPIC" PARENT_SCOPE)
+      set(${Result} ${CMAKE_SHARED_MODULE_CXX_FLAGS} PARENT_SCOPE)
   endif()
 endfunction()
 
@@ -76,26 +76,23 @@ function(ADD_PRECOMPILED_HEADERS Target Header Sources)
       set(Defs -D${Def} ${Defs})
     endforeach()
 
-    set(Objs "")
-    foreach(Source ${Sources})
-      set(Objs ${Objs} ${OBJ_DIR}/${Target}.dir/${Source}.o)
-    endforeach()
-
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-      set(PreCompiledHeader "${OBJ_DIR}/${Target}.pch")
-
-      add_custom_command(OUTPUT ${PreCompiledHeader}
-        COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${FlagsString} -x c++-header ${Header} -o ${PreCompiledHeader}
+    if(CMAKE_COMPILER_IS_GNUCXX)
+      add_custom_command(OUTPUT "${OBJ_DIR}/${Target}.h.gch"
+        COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${FlagsString} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
         DEPENDS ${Header}
         IMPLICIT_DEPENDS CXX ${Header}
       )
 
-      add_custom_target(PCH-for-${Target} DEPENDS ${PreCompiledHeader})
+      add_custom_target(PCH-for-${Target} DEPENDS "${OBJ_DIR}/${Target}.h.gch")
 
       add_dependencies(${Target} PCH-for-${Target})
 
-      set_target_properties(${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${PreCompiledHeader}")
-    endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+      if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        set_target_properties(${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${OBJ_DIR}/${Target}.h.gch")
+      else()
+        set_target_properties(${Target} PROPERTIES COMPILE_FLAGS "-include ${OBJ_DIR}/${Target}.h -Winvalid-pch")
+      endif()
+    endif()
   endif()
 endfunction()
 
@@ -341,11 +338,6 @@ else()
     # For LTO compilation we must send a copy of all compile flags to the linker
     set_linker_flag( "${CMAKE_CXX_FLAGS}" )
   endif()
-
-  # Fix up the languages because in some cases CMake insists on passing compile
-  # flags to the linker.
-  set_cxx_flag( "-x c++" )
-  set_linker_flag( "-x none" )
 
 endif()
 
@@ -1324,7 +1316,7 @@ endif()
 # Curses, pdcurses on Windows and ncursesw on Unix
 # Not supported on mac because the included version is too old
 if( WIN32 )
-  add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES)
+  add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES )
   include_directories( ${LIB_DIR}/pdcurses )
   set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
   set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
@@ -1341,8 +1333,8 @@ add_library( base-source-libs ${LIBSRC_BASE} )
 add_library( engine-source-libs ${LIBSRC_ENGINE} )
 set_target_properties( base-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 
-set( LIBS_BASE ${LIBS_BASE} base-source-libs)
-set( LIBS_ENGINE ${LIBS_ENGINE} engine-source-libs)
+set( LIBS_BASE base-source-libs ${LIBS_BASE} )
+set( LIBS_ENGINE engine-source-libs ${LIBS_ENGINE} )
 
 ################################################################################
 # Game logic
@@ -1372,7 +1364,6 @@ function( GAMEMODULE )
     add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${ALL_MODULE_SOURCES} ${NACLLIST_NATIVE} )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
-      OUTPUT_NAME ${GAMEMODULE_NAME}-nacl-native-exe
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
     ADD_PRECOMPILED_HEADERS( ${GAMEMODULE_NAME}-nacl-native-exe ${COMMON_DIR}/Common.h ${ALL_MODULE_SOURCES} )
