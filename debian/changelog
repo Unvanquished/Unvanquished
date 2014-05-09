@@ -1,3 +1,26 @@
+unvanquished (0.27.2-1) unstable; urgency=low
+
+  * Release of alpha 27.2.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 07 May 2014 16:55:05 +0100
+
+unvanquished (0.27.1-1) unstable; urgency=low
+
+  * Release of alpha 27.1.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Tue, 06 May 2014 14:25:37 +0100
+
+unvanquished (0.27.0-1) unstable; urgency=low
+
+  * Release of alpha 27.
+  * Update build options to avoid compiling most NaCl code.
+    The exception is the native game code executable, which replaces the
+    native QVM code from previous releases.
+  * Work around an Ubuntu 14.04 problem by using SDL 1.2 there.
+    https://bugs.launchpad.net/ubuntu/+source/libsdl2/+bug/1306629
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 04 May 2014 18:45:24 +0100
+
 unvanquished (0.26.0-1) unstable; urgency=low
 
   * Release of alpha 26.

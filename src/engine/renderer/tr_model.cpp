@@ -479,7 +479,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 	backLerp = 1.0 - frac;
 
 	start = end = NULL;
-	if ( model->type == MOD_MD5 )
+	if ( model->type == MOD_MD5 || model->type == MOD_IQM )
 	{
 		vec3_t tmp;
 
@@ -507,7 +507,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 		// old MD3 style
 		retval = R_GetTag( model->mdv[ 0 ], startFrame, tagName, startIndex, &start );
 		retval = R_GetTag( model->mdv[ 0 ], endFrame, tagName, startIndex, &end );
-	
+
 
 		if ( !start || !end )
 		{
@@ -530,7 +530,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 
 		return retval;
 	}
-	
+
 	return -1;
 }
 
@@ -541,29 +541,46 @@ RE_BoneIndex
 */
 int RE_BoneIndex( qhandle_t hModel, const char *boneName )
 {
-	int        i;
-	md5Bone_t  *bone;
-	md5Model_t *md5;
+	int        i = 0;
 	model_t    *model;
 
 	model = R_GetModelByHandle( hModel );
 
-	if ( !model->md5 )
+	switch ( model->type )
 	{
-		return -1;
-	}
-	else
-	{
-		md5 = model->md5;
+		case MOD_MD5:
+		{
+			md5Bone_t  *bone;
+			md5Model_t *md5 = model->md5;
+
+			for ( i = 0, bone = md5->bones; i < md5->numBones; i++, bone++ )
+			{
+				if ( !Q_stricmp( bone->name, boneName ) )
+				{
+					return i;
+				}
+			}
+		}
+		break;
+
+		case MOD_IQM:
+		{
+			char *str = model->iqm->jointNames;
+
+			while (  i < model->iqm->num_joints )
+			{
+				if ( !Q_stricmp( boneName, str ) )
+				{
+					return i;
+				}
+
+				str += strlen( str ) + 1;
+				++i;
+			}
+		}
+		break;
 	}
 
-	for ( i = 0, bone = md5->bones; i < md5->numBones; i++, bone++ )
-	{
-		if ( !Q_stricmp( bone->name, boneName ) )
-		{
-			return i;
-		}
-	}
 
 	return -1;
 }

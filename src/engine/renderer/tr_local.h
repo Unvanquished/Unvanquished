@@ -2688,8 +2688,6 @@ static inline float unpackTC( int16_t tc ) {
 
 		// external images
 		image_t *charsetImage;
-		image_t *grainImage;
-		image_t *vignetteImage;
 		image_t *colorGradeImage;
 		GLuint   colorGradePBO;
 
@@ -3077,9 +3075,6 @@ static inline float unpackTC( int16_t tc ) {
 	extern cvar_t *r_bloomBlur;
 	extern cvar_t *r_bloomPasses;
 	extern cvar_t *r_FXAA;
-	extern cvar_t *r_cameraVignette;
-	extern cvar_t *r_cameraFilmGrain;
-	extern cvar_t *r_cameraFilmGrainScale;
 
 	extern cvar_t *r_evsmPostProcess;
 

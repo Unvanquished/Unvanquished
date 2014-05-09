@@ -433,10 +433,9 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 	float         value;
 	float         tx, ty;
 	playerState_t *ps;
-	centity_t     *cent;
 	char           *s;
 	vec4_t        localColor;
-	cent = &cg_entities[ cg.snap->ps.clientNum ];
+
 	ps = &cg.snap->ps;
 
 	value = ( float ) ps->persistant[ PERS_CREDIT ];
@@ -528,12 +527,9 @@ static void CG_DrawPlayerBuildTimerRing( rectDef_t *rect, vec4_t backColor,
     vec4_t foreColor, qhandle_t shader )
 {
 	playerState_t *ps = &cg.snap->ps;
-	centity_t     *cent;
 	float         buildTime = ps->stats[ STAT_MISC ];
 	float         progress;
 	vec4_t        color;
-
-	cent = &cg_entities[ cg.snap->ps.clientNum ];
 
 	if ( buildTime > MAXIMUM_BUILD_TIME )
 	{
@@ -1038,11 +1034,11 @@ static void CG_DrawPlayerHealthCross( rectDef_t *rect, vec4_t ref_color )
 	// Pick the current icon
 	shader = cgs.media.healthCross;
 
-	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_3X )
+	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
 	{
 		shader = cgs.media.healthCross3X;
 	}
-	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
+	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
 	{
 		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
@@ -1070,7 +1066,7 @@ static void CG_DrawPlayerHealthCross( rectDef_t *rect, vec4_t ref_color )
 
 	ref_alpha = ref_color[ 3 ];
 
-	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE )
+	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
 	{
 		ref_alpha = 1.0f;
 	}
@@ -1498,8 +1494,8 @@ static INLINE qhandle_t CG_GetUnlockableIcon( int num )
 		case UNLT_UPGRADE:   return cg_upgrades[ index ].upgradeIcon;
 		case UNLT_BUILDABLE: return cg_buildables[ index ].buildableIcon;
 		case UNLT_CLASS:     return cg_classes[ index ].classIcon;
+		default:             return 0;
 	}
-	return 0;
 }
 
 static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4_t backColour, float borderSize )
@@ -1625,7 +1621,6 @@ static void CG_DrawPlayerBuildTimerBar( rectDef_t *rect, vec4_t foreColor, qhand
 {
 	playerState_t *ps = &cg.snap->ps;
 	float         progress;
-	int           failedAttempt;
 	weapon_t      weapon;
 	static int    misc = 0;
 	static int    max;
@@ -1653,17 +1648,6 @@ static void CG_DrawPlayerBuildTimerBar( rectDef_t *rect, vec4_t foreColor, qhand
 
 	misc = ps->stats[ STAT_MISC ];
 	progress = (float)misc/(float)max;
-
-	if ( cg.time - cg.lastBuildAttempt <= BUILD_DELAY_TIME &&
-	     ( ( cg.time - cg.lastBuildAttempt ) / 300 ) % 2 )
-	{
-		failedAttempt = -1;
-	}
-	else
-	{
-		failedAttempt = 0;
-	}
-
 
 	CG_DrawPlayerProgressBar( rect, foreColor, 1-progress, 0.9, shader );
 }
@@ -2154,11 +2138,9 @@ void CG_DrawLoadingScreen( void )
 
 float CG_GetValue( int ownerDraw )
 {
-	centity_t     *cent;
 	playerState_t *ps;
 	weapon_t      weapon;
 
-	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
 	weapon = BG_GetPlayerWeapon( ps );
 
@@ -2786,14 +2768,13 @@ static void CG_DrawClock( rectDef_t *rect, float scale, vec4_t color,
 	float   tx, ty;
 	float   maxX;
 	qtime_t qt;
-	int     t;
 
 	if ( !cg_drawClock.integer )
 	{
 		return;
 	}
 
-	t = trap_RealTime( &qt );
+	trap_RealTime( &qt );
 
 	if ( cg_drawClock.integer == 2 )
 	{
@@ -3409,12 +3390,10 @@ CG_DrawWeaponIcon
 void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 {
 	int           maxAmmo;
-	centity_t     *cent;
 	playerState_t *ps;
 	weapon_t      weapon;
 	vec4_t        localColor;
 
-	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
 	weapon = BG_GetPlayerWeapon( ps );
 

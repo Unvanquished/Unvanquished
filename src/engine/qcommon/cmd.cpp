@@ -610,6 +610,7 @@ Cmd_RemoveCommandByFunc
 void Cmd_RemoveCommandsByFunc( xcommand_t function ) {
     for (auto it = proxies.cbegin(); it != proxies.cend();) {
         if (it->second.cmd == function) {
+            Cmd::RemoveCommand(it->first);
             proxies.erase(it ++);
         } else {
             ++ it;

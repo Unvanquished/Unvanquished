@@ -1718,8 +1718,6 @@ GLShader_cameraEffects::GLShader_cameraEffects( GLShaderManager *manager ) :
 void GLShader_cameraEffects::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_CurrentMap" ), 0 );
-	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GrainMap" ), 1 );
-	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_VignetteMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ColorMap" ), 3 );
 }
 

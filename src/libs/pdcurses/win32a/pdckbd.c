@@ -1,6 +1,7 @@
 /* Public Domain Curses */
 
 #include "pdcwin.h"
+#include <tchar.h>
 
 RCSID("$Id: pdckbd.c,v 1.115 2008/07/20 20:12:04 wmcbrine Exp $")
 
@@ -42,20 +43,38 @@ void PDC_set_keyboard_binary(bool on)
 
 extern int PDC_key_queue_low, PDC_key_queue_high;
 extern int PDC_key_queue[KEY_QUEUE_SIZE];
-static char *clipboard_contents;
+static TCHAR *clipboard_contents;
 static long clipboard_len;
+
+int PDC_getclipboard_handle( HANDLE *handle);      /* pdcclip.c */
 
       /* When copying the clipboard contents for use in the key */
       /* queue,  we leave out the line feeds.  We also don't do */
       /* it at all if 'clipboard_contents' is already full.     */
 void PDC_add_clipboard_to_key_queue( void)
 {
-    long i, j, temp_len;
+    long i, j;
+    HANDLE handle;
 
     if( !clipboard_contents)
-        if( PDC_getclipboard( &clipboard_contents, &temp_len) == PDC_CLIP_SUCCESS)
+        if( PDC_getclipboard_handle( &handle) == PDC_CLIP_SUCCESS)
         {
-            for( i = j = 0; i < temp_len; i++)
+#ifdef PDC_WIDE
+            const long len = wcslen((wchar_t *)handle);
+#else
+            const long len = strlen((char *)handle);
+#endif
+
+            clipboard_contents = (TCHAR *)calloc( len + 1, sizeof( TCHAR));
+//          _tcscpy( clipboard_contents, (TCHAR *)handle);
+            memcpy( clipboard_contents, (TCHAR *)handle, (len + 1) * sizeof( TCHAR));
+#ifdef PDC_WIDE
+            printf( "ilen = %ld\n", len);
+            for( i = 0; i < len; i++)
+               printf( "%x ", clipboard_contents[i]);
+#endif
+            CloseClipboard( );
+            for( i = j = 0; i < len; i++)
                 if( clipboard_contents[i] != 10)
                     clipboard_contents[j++] = clipboard_contents[i];
             clipboard_len = j;
@@ -91,15 +110,15 @@ int PDC_get_key(void)
     {
         rval = *clipboard_contents;
         clipboard_len--;
-        memmove( clipboard_contents, clipboard_contents + 1, clipboard_len);
+        memmove( clipboard_contents, clipboard_contents + 1, clipboard_len * sizeof( TCHAR));
         if( !clipboard_len)
         {
-            PDC_freeclipboard( clipboard_contents);
+            free( clipboard_contents);
             clipboard_contents = NULL;
         }
     }
 
-    SP->key_code = (rval >= 256);
+    SP->key_code = (rval >= KEY_MIN && rval <= KEY_MAX);
     return rval;
 }
 
@@ -112,7 +131,7 @@ void PDC_flushinp(void)
     PDC_key_queue_low = PDC_key_queue_high = 0;
     if( clipboard_len)
     {
-        PDC_freeclipboard( clipboard_contents);
+        free( clipboard_contents);
         clipboard_contents = NULL;
         clipboard_len = 0;
     }

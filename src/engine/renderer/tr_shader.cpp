@@ -6109,14 +6109,18 @@ void R_ShaderExp_f( void )
 
 	ri.Printf( PRINT_ALL, "-----------------------\n" );
 
-	for ( i = 1; i < ri.Cmd_Argc(); i++ )
-	{
-		strncat( buffer, ri.Cmd_Argv( i ), sizeof( buffer ) - 1 );
-		strncat( buffer, " ", sizeof( buffer ) - 1 );
-	}
+	len = sizeof( buffer );
 
-	len = strlen( buffer );
-	buffer[ len - 1 ] = 0; // replace last " " with tailing zero
+	for ( i = 1; i < ri.Cmd_Argc() && len > 0; i++ )
+	{
+		if ( i > 1 )
+		{
+			strncat( buffer, " ", len-- );
+		}
+
+		strncat( buffer, ri.Cmd_Argv( i ), len );
+		len -= strlen( ri.Cmd_Argv( i ) );
+	}
 
 	ParseExpression( &buffer_p, &exp );
 

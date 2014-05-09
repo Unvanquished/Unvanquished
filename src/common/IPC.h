@@ -48,12 +48,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace IPC {
 
-// Maximum number of bytes that can be sent in a message
-const size_t MSG_MAX_BYTES = 128 << 10;
-
-// Maximum number of handles that can be sent in a message
-const size_t MSG_MAX_HANDLES = 8;
-
 // Operating system handle type
 #ifdef _WIN32
 // HANDLE is defined as void* in windows.h
