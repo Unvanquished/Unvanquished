@@ -49,43 +49,57 @@ project( Daemon C CXX )
 ################################################################################
 
 function(get_pic_flags Result Target)
-  get_target_property(TargetPIC ${Target} POSITION_INDEPENDENT_CODE)
-
-  if (TargetPIC)
+  get_target_property(Type ${Target} TYPE)
+  if(Type STREQUAL MODULE_LIBRARY)
       set(${Result} ${CMAKE_SHARED_MODULE_CXX_FLAGS} PARENT_SCOPE)
   endif()
 endfunction()
 
 function(ADD_PRECOMPILED_HEADERS Target Header Sources)
-  if(USE_PRECOMPILED_HEADERS)
+  if(USE_PRECOMPILED_HEADERS AND NOT CMAKE_VERSION VERSION_LESS 2.8.10)
     # Get the common compile flags
-    get_pic_flags("TargetPICFlags" ${Target})
-    set(Flags "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} ${TargetPICFlags}")
-    string(REPLACE " " ";" FlagsString ${Flags})
+    set(Flags ${CMAKE_CXX_FLAGS})
+    get_target_property(Type ${Target} TYPE)
+    if(Type STREQUAL MODULE_LIBRARY)
+        set(Flags ${Flags} ${CMAKE_SHARED_MODULE_CXX_FLAGS})
+    endif()
+    separate_arguments(Flags)
 
-    # Get that target's compile defs
+    # Get the per-configuration compile flags
+    foreach(Config Debug Release RelWithDebInfo MinSizeRel)
+      string(TOUPPER ${Config} CONFIG)
+      set(ConfigFlags ${CMAKE_CXX_FLAGS_${CONFIG}})
+      separate_arguments(ConfigFlags)
+      foreach(Flag ${ConfigFlags})
+        set(Flags ${Flags} $<$<CONFIG:${Config}>:${Flag}>)
+      endforeach()
+    endforeach()
+
+    # Get preprocessor options for the target and directory (global)
     get_directory_property(DirCompileDefs COMPILE_DEFINITIONS)
+    get_directory_property(DirIncludeDirs INCLUDE_DIRECTORIES)
     get_target_property(TargetCompileDefs ${Target} COMPILE_DEFINITIONS)
-    get_target_property(f ${Target} CMAKE_CXX_FLAGS)
-
-    set(Defs "")
-    foreach(Def ${DirCompileDefs})
-      set(Defs -D${Def} ${Defs})
-    endforeach()
+    set(Defs)
     foreach(Def ${TargetCompileDefs})
-      set(Defs -D${Def} ${Defs})
+      set(Defs ${Defs} -D${Def})
+    endforeach()
+    foreach(Def ${DirCompileDefs})
+      set(Defs ${Defs} -D${Def})
+    endforeach()
+    foreach(Def ${DirIncludeDirs})
+      set(Defs ${Defs} -I${Def})
     endforeach()
 
+    # Compiler-specific PCH support
     if(CMAKE_COMPILER_IS_GNUCXX)
       add_custom_command(OUTPUT "${OBJ_DIR}/${Target}.h.gch"
-        COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${FlagsString} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
+        COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
         DEPENDS ${Header}
         IMPLICIT_DEPENDS CXX ${Header}
       )
 
-      add_custom_target(PCH-for-${Target} DEPENDS "${OBJ_DIR}/${Target}.h.gch")
-
-      add_dependencies(${Target} PCH-for-${Target})
+      add_custom_target(${Target}-pch DEPENDS "${OBJ_DIR}/${Target}.h.gch")
+      add_dependencies(${Target} ${Target}-pch)
 
       if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set_target_properties(${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${OBJ_DIR}/${Target}.h.gch")
@@ -178,9 +192,7 @@ endmacro()
 
 # Try flag and set if it works, optional argument specifies build type
 macro( try_cxx_flag PROP FLAG )
-  set( CMAKE_REQUIRED_FLAGS "-x none" )
   check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
-  set( CMAKE_REQUIRED_FLAGS "" )
   if( FLAG_${PROP} )
     set_cxx_flag( ${FLAG} ${ARGV2} )
   endif()
@@ -194,7 +206,7 @@ macro( try_c_cxx_flag PROP FLAG )
 endmacro()
 # Clang prints a warning when if it doesn't support a flag, so use -Werror to detect
 macro( try_cxx_flag_werror PROP FLAG )
-  set( CMAKE_REQUIRED_FLAGS "-Werror -x none" )
+  set( CMAKE_REQUIRED_FLAGS "-Werror" )
   check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
   set( CMAKE_REQUIRED_FLAGS "" )
   if( FLAG_${PROP} )
@@ -1098,11 +1110,9 @@ if( DEPS_DIR )
   endif()
 endif()
 
-# These variables are defined
-# LIBS_BASE, LIBSRC_BASE
-# LIBS_ENGINE, LIBSRC_ENGINE
-# LIBS_BASECLIENT, LIBSRC_BASECLIENT
-# LIBS_CLIENT, LIBSRC_CLIENT
+# These variables are defined:
+# LIBS_BASE, LIBS_ENGINE, LIBS_BASECLIENT, LIBS_CLIENT
+# LIBSRC_BASE, LIBSRC_NACL, LIBSRC_ENGINE
 
 # Base OS libs
 if( WIN32 )
@@ -1165,7 +1175,7 @@ else()
   add_definitions( -DNACL_BUILD_SUBARCH=32 )
 endif()
 include_directories( ${LIB_DIR}/nacl )
-set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACLLIST_NATIVE} )
+set( LIBSRC_NACL ${LIBSRC_NACL} ${NACLLIST_NATIVE} )
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
@@ -1329,12 +1339,13 @@ elseif( NOT APPLE )
 endif()
 
 # Builds the libs for which we include the source
-add_library( base-source-libs ${LIBSRC_BASE} )
-add_library( engine-source-libs ${LIBSRC_ENGINE} )
-set_target_properties( base-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
+add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
+add_library( nacl-source-libs EXCLUDE_FROM_ALL ${LIBSRC_NACL} )
+add_library( engine-source-libs EXCLUDE_FROM_ALL ${LIBSRC_ENGINE} )
+set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 
 set( LIBS_BASE base-source-libs ${LIBS_BASE} )
-set( LIBS_ENGINE engine-source-libs ${LIBS_ENGINE} )
+set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
 
 ################################################################################
 # Game logic
@@ -1350,8 +1361,8 @@ function( GAMEMODULE )
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_DLL )
     set( ALL_MODULE_SOURCES ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
-    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${ALL_MODULE_SOURCES} ${NACLLIST_NATIVE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll ${LIBS_BASE} )
+    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${ALL_MODULE_SOURCES} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
@@ -1361,8 +1372,8 @@ function( GAMEMODULE )
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_EXE )
     set( ALL_MODULE_SOURCES ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
-    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${ALL_MODULE_SOURCES} ${NACLLIST_NATIVE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe ${LIBS_BASE} )
+    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${ALL_MODULE_SOURCES} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
