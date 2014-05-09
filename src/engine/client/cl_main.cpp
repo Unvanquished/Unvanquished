@@ -4409,6 +4409,7 @@ void CL_Init( void )
 // XreaL END
 
 	SCR_Init();
+	Duk_Init();
 
 	Cmd::ExecuteCommandBuffer();
 
@@ -4502,7 +4503,8 @@ void CL_Shutdown( void )
 	recursive = qfalse;
 
 	memset( &cls, 0, sizeof( cls ) );
-
+	Duk_Shutdown();
+	
 	Com_DPrintf( "-----------------------\n" );
 
 }
