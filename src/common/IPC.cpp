@@ -378,6 +378,11 @@ bool InternalRecvMsg(OSHandleType handle, Reader& reader)
 		Com_Error(ERR_DROP, "IPC: Failed to receive message: %s", error);
 	}
 
+	if (result == 0) {
+		FreeHandles(h);
+		Com_Error(ERR_DROP, "IPC: Socket closed by remote end");
+	}
+
 	if (result < (int)sizeof(NaClInternalHeader)) {
 		FreeHandles(h);
 		Com_Error(ERR_DROP, "IPC: Message with invalid header");

@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef _WIN32
 #include <windows.h>
+#include <io.h>
 #undef CopyFile
 #else
 #include <unistd.h>
@@ -76,12 +77,17 @@ static std::string Win32StrError(uint32_t error)
 #endif
 
 // Platform-specific code to load a module
-static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem, Str::StringRef loaderLogFile)
+static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem, FS::File stderrRedirect = FS::File())
 {
 #ifdef _WIN32
 	// Inherit the socket in the child process
 	if (!SetHandleInformation(pair.second.GetHandle(), HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
 		Com_Error(ERR_DROP, "VM: Could not make socket inheritable: %s", Win32StrError(GetLastError()).c_str());
+
+	// Inherit the stderr redirect in the child process
+	HANDLE stderrRedirectHandle = stderrRedirect ? reinterpret_cast<HANDLE>(_get_osfhandle(fileno(stderrRedirect.GetHandle()))) : NULL;
+	if (stderrRedirect && !SetHandleInformation(stderrRedirectHandle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
+		Com_Error(ERR_DROP, "VM: Could not make stderr redirect inheritable: %s", Win32StrError(GetLastError()).c_str());
 
 	// Escape command line arguments
 	std::string cmdline;
@@ -133,12 +139,11 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	STARTUPINFOW startupInfo;
 	PROCESS_INFORMATION processInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
-	startupInfo.cb = sizeof(startupInfo);
-	if (not loaderLogFile.empty()) {
-		startupinfo.dwFlags = STARTF_USESTDHANDLES;
-		FS::File logFile = FS::RawPath::OpenAppend(loaderLogFile);
-		startupinfo.hStdError = reinterpret_cast<HANDLE>(_get_osfhandle(fileno(logFile.ReleaseHandle())))
+	if (stderrRedirect) {
+		startupInfo.hStdError = stderrRedirectHandle;
+		startupInfo.dwFlags = STARTF_USESTDHANDLES;
 	}
+	startupInfo.cb = sizeof(startupInfo);
 	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
 		Com_Error(ERR_DROP, "VM: Could not create child process: %s", Win32StrError(GetLastError()).c_str());
@@ -192,14 +197,12 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 
 		// Close standard input/output descriptors
-		// stderr is not closed so that we can see error messages reported by sel_ldr
 		close(0);
 		close(1);
 
-		if (not loaderLogFile.empty()) {
-			FS::File logFile = FS::RawPath::OpenAppend(loaderLogFile);
-			dup2(fileno(logFile.ReleaseHandle()), 2);
-		}
+		// If an stderr redirect is provided, set it now
+		if (stderrRedirect)
+			dup2(fileno(stderrRedirect.GetHandle()), 2);
 
 		// Load the target executable
 		char* env[] = {nullptr};
@@ -228,15 +231,25 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 }
 
-std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, bool debugLoader) {
+std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, int debugLoader) {
 	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
-	std::string module, sel_ldr, irt, bootstrap, modulePath, loaderLogFile;
+	std::string module, sel_ldr, irt, bootstrap, modulePath, verbosity;
+	FS::File stderrRedirect;
+	bool win32Force64Bit = false;
+
+	// On Windows, even if we are running a 32-bit engine, we must use the
+	// 64-bit sel_ldr if the host operating system is 64-bit.
+#if defined(_WIN32) && !defined(_WIN64)
+	SYSTEM_INFO systemInfo;
+	GetNativeSystemInfo(&systemInfo);
+	win32Force64Bit = systemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;
+#endif
 
 	// Extract the nexe from the pak so that sel_ldr can load it
-	module = name + "-" ARCH_STRING ".nexe";
+	module = win32Force64Bit ? name + "-x86_64.nexe" : name + "-" ARCH_STRING ".nexe";
 	if (extract) {
 		try {
 			FS::File out = FS::HomePath::OpenWrite(module);
@@ -250,20 +263,9 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 		modulePath = FS::Path::Build(libPath, module);
 
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
-	irt = FS::Path::Build(libPath, "irt_core-" ARCH_STRING ".nexe");
+	irt = FS::Path::Build(libPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
 
-	// On Windows, even if we are running a 32-bit engine, we must use the
-	// 64-bit sel_ldr if the host operating system is 64-bit.
-#if defined(_WIN32) && !defined(_WIN64)
-	SYSTEM_INFO systemInfo;
-	GetNativeSystemInfo(&systemInfo);
-	if (systemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
-		sel_ldr = FS::Path::Build(libPath, "sel_ldr64" EXE_EXT);
-	else
-		sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
-#else
-	sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
-#endif
+	sel_ldr = FS::Path::Build(libPath, win32Force64Bit ? "sel_ldr64" EXE_EXT : "sel_ldr" EXE_EXT);
 
 #ifdef __linux__
 	bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
@@ -280,10 +282,14 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	}
 
 	if (debugLoader) {
-		loaderLogFile = FS::Path::Build(FS::GetHomePath(), name + ".sel_ldr.log");
-		args.push_back("-vvvv");
-		args.push_back("-l");
-		args.push_back(loaderLogFile.c_str());
+		try {
+			stderrRedirect = FS::HomePath::OpenWrite(name + ".sel_ldr.log");
+		} catch (std::system_error& err) {
+			Log::Warn("Couldn't open %s: %s", name + ".sel_ldr.log", err.what());
+		}
+		verbosity = "-";
+		verbosity.append(debugLoader, 'v');
+		args.push_back(verbosity.c_str());
 	}
 
 	args.push_back("-B");
@@ -309,7 +315,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 		Com_Printf("Using loader args: %s", commandLine.c_str());
 	}
 
-	return InternalLoadModule(std::move(pair), args.data(), true, loaderLogFile);
+	return InternalLoadModule(std::move(pair), args.data(), true, std::move(stderrRedirect));
 }
 
 std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
@@ -329,7 +335,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, 
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
 
-	return InternalLoadModule(std::move(pair), args.data(), true, "");
+	return InternalLoadModule(std::move(pair), args.data(), true);
 }
 
 IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, VM::VMBase::InProcessInfo& inProcess) {
@@ -380,8 +386,8 @@ int VMBase::Create()
 		std::string filename = name + ".syscallLog";
 		try {
 			syscallLogFile = FS::RawPath::OpenWrite(filename);
-		} catch (std::system_error& error) {
-			Log::Warn("Couldn't open %s", filename);
+		} catch (std::system_error& err) {
+			Log::Warn("Couldn't open %s: %s", filename, err.what());
 		}
 	}
 
