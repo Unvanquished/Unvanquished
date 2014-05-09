@@ -1167,6 +1167,8 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
 
   include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
   set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
+  include_directories( ${LIB_DIR}/duktape )
+  set( LIBS_CLIENT ${LIBS_CLIENT} DUK_LIB )
 
   # Used by tinygettext to use SDL_iconv instead of base iconv
   if( WIN32 )
@@ -1305,6 +1307,7 @@ elseif( NOT APPLE )
 endif()
 
 add_subdirectory( ${ROCKET_DIR} )
+add_subdirectory( ${LIB_DIR}/duktape )
 
 ################################################################################
 # Game logic
