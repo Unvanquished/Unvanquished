@@ -38,6 +38,12 @@ Maryland 20850 USA.
 
 duk_context *ctx;
 
+NORETURN static void Duk_Fatal_Handler( duk_context *ctx, int code, const char *msg )
+{
+	Com_Printf("^1ERROR: ^3Duk:^7 %s", msg );
+	throw code;
+}
+
 static int Duk_Cvar_Get( duk_context *ctx )
 {
 	int nargs = duk_get_top( ctx );
@@ -103,7 +109,7 @@ static int Duk_Cmd_Exec( duk_context *ctx )
 
 void Duk_Init( void )
 {
-	ctx = duk_create_heap_default();
+	ctx = duk_create_heap( NULL, NULL, NULL, NULL, Duk_Fatal_Handler );
 	duk_push_global_object( ctx );
 	duk_push_c_function( ctx, Duk_Print, 1 );
 	duk_put_prop_string( ctx, -2, "print" );
@@ -134,9 +140,15 @@ public:
 	{
 		if ( args.Argc() == 2 )
 		{
-			duk_push_global_object(ctx);
-			duk_eval_string( ctx, args.Argv( 1 ).c_str() );
-			duk_pop( ctx );
+			try
+			{
+				duk_eval_string( ctx, args.Argv( 1 ).c_str() );
+				duk_pop( ctx );
+			}
+			catch( int i )
+			{
+
+			}
 		}
 	}
 };
