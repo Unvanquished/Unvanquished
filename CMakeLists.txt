@@ -48,9 +48,6 @@ project( Daemon C CXX )
 # Configuration options
 ################################################################################
 
-option( ENABLE_LTO "Use link-time optimization for release builds" 0 )
-option( ENABLE_HARDENING "Use stack protection and other hardening flags" 0 )
-
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
 option( BUILD_GAME_NACL_NATIVE_EXE "Build native executable NaCl game logic" 1 )
@@ -63,10 +60,14 @@ option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
+option( USE_LTO "Use link-time optimization for release builds" 0 )
+cmake_dependent_option( USE_SLIM_LTO "Generate slim LTO objects, improves build times" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0 )
+option( USE_HARDENING "Use stack protection and other hardening flags" 0 )
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
 option( USE_WEXTRA "Enable extra compilation warnings" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
+option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
 
 ################################################################################
@@ -125,9 +126,7 @@ endmacro()
 
 # Try flag and set if it works, optional argument specifies build type
 macro( try_cxx_flag PROP FLAG )
-  set( CMAKE_REQUIRED_FLAGS "-x none" )
   check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
-  set( CMAKE_REQUIRED_FLAGS "" )
   if( FLAG_${PROP} )
     set_cxx_flag( ${FLAG} ${ARGV2} )
   endif()
@@ -141,7 +140,7 @@ macro( try_c_cxx_flag PROP FLAG )
 endmacro()
 # Clang prints a warning when if it doesn't support a flag, so use -Werror to detect
 macro( try_cxx_flag_werror PROP FLAG )
-  set( CMAKE_REQUIRED_FLAGS "-Werror -x none" )
+  set( CMAKE_REQUIRED_FLAGS "-Werror" )
   check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
   set( CMAKE_REQUIRED_FLAGS "" )
   if( FLAG_${PROP} )
@@ -171,8 +170,12 @@ if( MSVC )
   if( ARCH STREQUAL "x86" )
     set_c_cxx_flag( "/arch:SSE2" )
   endif()
-  if( ENABLE_LTO )
+  if( USE_LTO )
+    set_c_cxx_flag( "/GL" MINSIZEREL )
+    set_c_cxx_flag( "/GL" RELWITHDEBINFO )
     set_c_cxx_flag( "/GL" RELEASE )
+    set_linker_flag( "/LTCG" MINSIZEREL )
+    set_linker_flag( "/LTCG" RELWITHDEBINFO )
     set_linker_flag( "/LTCG" RELEASE )
   endif()
 else()
@@ -225,7 +228,7 @@ else()
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELEASE )
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELWITHDEBINFO )
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" MINSIZEREL )
-  if( ENABLE_HARDENING )
+  if( USE_HARDENING )
     try_c_cxx_flag( FSTACK_PROTECTOR_STRONG "-fstack-protector-strong" )
     if( NOT FLAG_FSTACK_PROTECTOR_STRONG )
       try_c_cxx_flag( FSTACK_PROTECTOR_ALL "-fstack-protector-all" )
@@ -278,18 +281,50 @@ else()
   endif()
 
   # Link-time optimization
-  if( ENABLE_LTO )
+  if( USE_LTO )
     set_c_cxx_flag( "-flto" )
     set_linker_flag( "-flto" )
 
     # For LTO compilation we must send a copy of all compile flags to the linker
     set_linker_flag( "${CMAKE_CXX_FLAGS}" )
-  endif()
 
-  # Fix up the languages because in some cases CMake insists on passing compile
-  # flags to the linker.
-  set_cxx_flag( "-x c++" )
-  set_linker_flag( "-x none" )
+    # Use gcc-ar and gcc-ranlib instead of ar and ranlib so that we can use
+    # slim LTO objects. This requires a recent version of GCC and binutils.
+    if( USE_SLIM_LTO )
+      string(REGEX MATCH "^([0-9]+.[0-9]+)" _version
+         "${CMAKE_CXX_COMPILER_VERSION}")
+      get_filename_component(COMPILER_BASENAME "${CMAKE_C_COMPILER}" NAME)
+      if (COMPILER_BASENAME MATCHES "^(.+-)g?cc(-[0-9]+\\.[0-9]+\\.[0-9]+)?(\\.exe)?$")
+        set(TOOLCHAIN_PREFIX ${CMAKE_MATCH_1})
+      endif()
+
+      find_program(GCC_AR NAMES
+        "${TOOLCHAIN_PREFIX}gcc-ar"
+        "${TOOLCHAIN_PREFIX}gcc-ar-${_version}"
+        DOC "gcc provided wrapper for ar which adds the --plugin option"
+      )
+
+      find_program(GCC_RANLIB NAMES
+        "${TOOLCHAIN_PREFIX}gcc-ranlib"
+        "${TOOLCHAIN_PREFIX}gcc-ranlib-${_version}"
+        DOC "gcc provided wrapper for ranlib which adds the --plugin option"
+      )
+
+      mark_as_advanced( GCC_AR GCC_RANLIB )
+
+      # Override standard ar and ranlib with the gcc- versions
+      if( GCC_AR )
+        set( CMAKE_AR ${GCC_AR} )
+      endif()
+      if( GCC_RANLIB )
+        set( CMAKE_RANLIB ${GCC_RANLIB} )
+      endif()
+
+      try_c_cxx_flag( NO_FAT_LTO_OBJECTS "-fno-fat-lto-objects" )
+    else()
+      try_c_cxx_flag( FAT_LTO_OBJECTS "-ffat-lto-objects" )
+    endif()
+  endif()
 
 endif()
 
@@ -298,7 +333,8 @@ if( WIN32 )
   # Minimum Windows version: XP
   # Define WIN32 for compatibility (compiler defines _WIN32)
   # Define NOMINMAX to prevent conflics between std::min/max and the min/max macros in WinDef.h
-  add_definitions( -DWINVER=0x501 -DWIN32 -DNOMINMAX )
+  # Enable STRICT type checking for windows.h
+  add_definitions( -DWINVER=0x501 -DWIN32 -DNOMINMAX -DSTRICT )
   set( CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "" "lib" )
 endif()
 if( MSVC )
@@ -420,6 +456,74 @@ else()
 endif()
 
 include_directories( "${OBJ_DIR}" )
+
+################################################################################
+# Support for precompiled headers
+################################################################################
+
+# MSVC requires that an extra file be added to a project
+if( USE_PRECOMPILED_HEADER AND MSVC )
+  file( WRITE ${OBJ_DIR}/PrecompiledHeader.cpp "" )
+  set( PCH_FILE ${OBJ_DIR}/PrecompiledHeader.cpp )
+endif()
+
+function( ADD_PRECOMPILED_HEADER Target Header )
+  if( USE_PRECOMPILED_HEADER AND NOT CMAKE_VERSION VERSION_LESS 2.8.10 )
+    # Get the common compile flags
+    set( Flags ${CMAKE_CXX_FLAGS} )
+    get_target_property( Type ${Target} TYPE )
+    if( Type STREQUAL MODULE_LIBRARY )
+        set( Flags ${Flags} ${CMAKE_SHARED_MODULE_CXX_FLAGS} )
+    endif()
+    separate_arguments( Flags )
+
+    # Get the per-configuration compile flags
+    foreach( Config Debug Release RelWithDebInfo MinSizeRel )
+      string( TOUPPER ${Config} CONFIG )
+      set( ConfigFlags ${CMAKE_CXX_FLAGS_${CONFIG}} )
+      separate_arguments( ConfigFlags )
+      foreach( Flag ${ConfigFlags} )
+        set( Flags ${Flags} $<$<CONFIG:${Config}>:${Flag}> )
+      endforeach()
+    endforeach()
+
+    # Get preprocessor options for the target and directory (global)
+    get_directory_property( DirCompileDefs COMPILE_DEFINITIONS )
+    get_directory_property( DirIncludeDirs INCLUDE_DIRECTORIES )
+    get_target_property( TargetCompileDefs ${Target} COMPILE_DEFINITIONS )
+    set( Defs )
+    foreach( Def ${TargetCompileDefs} )
+      set( Defs ${Defs} -D${Def} )
+    endforeach()
+    foreach( Def ${DirCompileDefs} )
+      set( Defs ${Defs} -D${Def} )
+    endforeach()
+    foreach( Def ${DirIncludeDirs} )
+      set( Defs ${Defs} -I${Def} )
+    endforeach()
+
+    # Compiler-specific PCH support
+    if( CMAKE_COMPILER_IS_GNUCXX )
+      add_custom_command( OUTPUT "${OBJ_DIR}/${Target}.h.gch"
+        COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
+        DEPENDS ${Header}
+        IMPLICIT_DEPENDS CXX ${Header}
+      )
+
+      add_custom_target( ${Target}-pch DEPENDS "${OBJ_DIR}/${Target}.h.gch" )
+      add_dependencies( ${Target} ${Target}-pch )
+
+      if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+        set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${OBJ_DIR}/${Target}.h.gch" )
+      else()
+        set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include ${OBJ_DIR}/${Target}.h -Winvalid-pch" )
+      endif()
+    elseif( MSVC )
+      set_source_files_properties( ${PCH_FILE} PROPERTIES COMPILE_FLAGS "/Yc${Header}" )
+      set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "/Yu${Header} /Fp${OBJ_DIR}/${Target}.pch /FI${Header}" )
+    endif()
+  endif()
+endfunction()
 
 ################################################################################
 # File lists
@@ -1049,11 +1153,9 @@ if( DEPS_DIR )
   endif()
 endif()
 
-# These variables are defined
-# LIBS_BASE, LIBSRC_BASE
-# LIBS_ENGINE, LIBSRC_ENGINE
-# LIBS_BASECLIENT, LIBSRC_BASECLIENT
-# LIBS_CLIENT, LIBSRC_CLIENT
+# These variables are defined:
+# LIBS_BASE, LIBS_ENGINE, LIBS_BASECLIENT, LIBS_CLIENT
+# LIBSRC_BASE, LIBSRC_NACL, LIBSRC_ENGINE
 
 # Base OS libs
 if( WIN32 )
@@ -1116,7 +1218,7 @@ else()
   add_definitions( -DNACL_BUILD_SUBARCH=32 )
 endif()
 include_directories( ${LIB_DIR}/nacl )
-set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACLLIST_NATIVE} )
+set( LIBSRC_NACL ${LIBSRC_NACL} ${NACLLIST_NATIVE} )
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
@@ -1267,7 +1369,7 @@ endif()
 # Curses, pdcurses on Windows and ncursesw on Unix
 # Not supported on mac because the included version is too old
 if( WIN32 )
-  add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES)
+  add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES )
   include_directories( ${LIB_DIR}/pdcurses )
   set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
   set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
@@ -1278,6 +1380,15 @@ elseif( NOT APPLE )
   include_directories( ${CURSESW_INCLUDE_DIR} )
   set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
 endif()
+
+# Builds the libs for which we include the source
+add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
+add_library( nacl-source-libs EXCLUDE_FROM_ALL ${LIBSRC_NACL} )
+add_library( engine-source-libs EXCLUDE_FROM_ALL ${LIBSRC_ENGINE} )
+set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
+
+set( LIBS_BASE base-source-libs ${LIBS_BASE} )
+set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
 
 ################################################################################
 # Game logic
@@ -1292,31 +1403,33 @@ function( GAMEMODULE )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_DLL )
-    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} ${LIBSRC_BASE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll ${LIBS_BASE} )
+    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_EXE )
-    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} ${LIBSRC_BASE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe ${LIBS_BASE} )
+    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
-      OUTPUT_NAME ${GAMEMODULE_NAME}-nacl-native-exe
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-exe ${COMMON_DIR}/Common.h )
   endif()
 
   if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM_NATIVE )
     set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
-    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} ${LIBSRC_BASE} )
+    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
     target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
     )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-qvm-native ${COMMON_DIR}/Common.h )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL )
@@ -1582,8 +1695,7 @@ GAMEMODULE( NAME ui
 ################################################################################
 
 if( BUILD_CLIENT )
-  add_executable( client WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST} ${RENDERERLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
+  add_executable( client WIN32 ${PCH_FILE} ${ENGINELIST} ${SHAREDLIST} ${CLIENTLIST} ${CLIENTBASELIST} ${RENDERERLIST} ${SERVERLIST} ${SDLLIST} ${WIN_RC} )
   if( USE_SMP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
@@ -1594,22 +1706,23 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
+  ADD_PRECOMPILED_HEADER( client ${COMMON_DIR}/Common.h )
 endif()
 
 if( BUILD_SERVER )
-  add_executable( server WIN32 ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${WIN_RC} )
+  add_executable( server WIN32 ${PCH_FILE} ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
+  ADD_PRECOMPILED_HEADER( server ${COMMON_DIR}/Common.h )
 endif()
 
 if( BUILD_TTY_CLIENT )
-  add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC} )
+  add_executable( ttyclient WIN32 ${PCH_FILE} ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST} ${WIN_RC} )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
+  ADD_PRECOMPILED_HEADER( ttyclient ${COMMON_DIR}/Common.h )
 endif()
 
 ################################################################################

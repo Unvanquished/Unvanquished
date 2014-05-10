@@ -102,19 +102,64 @@ typedef int intptr_t;
 #define _POSIX_C_SOURCE 200112L
 #endif
 
+// C standard library headers
 #include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
 #include <ctype.h>
-#include <limits.h>
-#include <sys/stat.h> // rain
+#include <errno.h>
+//#include <fenv.h>
 #include <float.h>
-#include <stdint.h>
 #include <iso646.h>
+#include <limits.h>
+#include <locale.h>
+#include <math.h>
+#include <setjmp.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <wchar.h>
+
+// C++ standard library headers
+#ifdef __cplusplus
+#include <utility>
+#include <functional>
+#include <chrono>
+#include <type_traits>
+#include <initializer_list>
+#include <tuple>
+#include <new>
+#include <memory>
+#include <limits>
+#include <exception>
+#include <stdexcept>
+#include <system_error>
+#include <string>
+#include <vector>
+#include <array>
+#include <list>
+#include <forward_list>
+#include <set>
+#include <map>
+#include <unordered_set>
+#include <unordered_map>
+#include <stack>
+#include <queue>
+#include <algorithm>
+#include <iterator>
+#include <random>
+#include <numeric>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <valarray>
+#include <sstream>
+#include <iostream>
+#endif // __cplusplus
 
 // vsnprintf is ISO/IEC 9899:1999
 // abstracting this to make it portable
@@ -2643,5 +2688,10 @@ typedef struct
 #define RSA_PUBLIC_EXPONENT 65537
 #define RSA_KEY_LENGTH      2048
 #define RSA_STRING_LENGTH   ( RSA_KEY_LENGTH / 4 + 1 )
+
+// Include common for C++ code
+#ifdef __cplusplus
+#include "../../common/Common.h"
+#endif // __cplusplus
 
 #endif /* Q_SHARED_H_ */

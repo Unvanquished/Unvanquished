@@ -36,22 +36,18 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
 
-#include <stdarg.h>
-#include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <errno.h>
-#include <stdio.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/time.h>
-#include <locale.h>
 #include <pwd.h>
 #include <libgen.h>
 #include <fcntl.h>
 #include <fenv.h>
+#include <sys/stat.h>
 
 
 #ifdef BUILD_CLIENT

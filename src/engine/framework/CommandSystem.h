@@ -28,12 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Command.h"
-
 #ifndef FRAMEWORK_COMMAND_SYSTEM_H_
 #define FRAMEWORK_COMMAND_SYSTEM_H_
-
-#include <initializer_list>
 
 /*
  * Command execution and command text buffering.

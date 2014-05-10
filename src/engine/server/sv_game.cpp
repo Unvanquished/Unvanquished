@@ -35,7 +35,6 @@ Maryland 20850 USA.
 // sv_game.c -- interface to the game module
 
 #include "server.h"
-#include "../../common/Cvar.h"
 #include "../qcommon/crypto.h"
 #include "../framework/CommonVMServices.h"
 
@@ -468,7 +467,7 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 
 static VM::VMParams gameParams("game");
 
-GameVM::GameVM(): VM::VMBase("game", gameParams), services(new VM::CommonVMServices(*this, "Game", Cmd::GAME))
+GameVM::GameVM(): VM::VMBase("game", gameParams), services(new VM::CommonVMServices(*this, "Game", Cmd::GAME_VM))
 {
 }
 
