@@ -31,14 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
-#include "../../common/Cvar.h"
-#include "../../common/IPC.h"
-#include "../../common/String.h"
-#include "../../common/FileSystem.h"
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-
 namespace VM {
 
 enum vmType_t {

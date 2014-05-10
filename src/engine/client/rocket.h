@@ -33,6 +33,10 @@ Maryland 20850 USA.
 */
 #ifndef ROCKET_H
 #define ROCKET_H
+#ifdef DotProduct
+// Ugly hack to fix the DotProduct conflict
+#undef DotProduct
+#endif
 #include <Rocket/Core/Core.h>
 
 extern Rocket::Core::Context *menuContext;

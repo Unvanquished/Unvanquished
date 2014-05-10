@@ -35,10 +35,9 @@ Maryland 20850 USA.
 // Code for generating custom events for libRocket
 
 #include <queue>
-#include <Rocket/Core.h>
+#include "rocket.h"
 #include <Rocket/Core/StringUtilities.h>
 #include "client.h"
-#include "rocket.h"
 
 std::queue< RocketEvent_t* > eventQueue;
 extern Rocket::Core::Element *activeElement;

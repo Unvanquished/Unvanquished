@@ -32,14 +32,13 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "rocket.h"
 #include "rocketElement.h"
-#include <Rocket/Core/Core.h>
 #include <Rocket/Core/Factory.h>
 #include <Rocket/Core/ElementInstancer.h>
 #include <Rocket/Core/ElementInstancerGeneric.h>
 #include "rocketConsoleTextElement.h"
 #include "client.h"
-#include "rocket.h"
 
 extern Rocket::Core::Element *activeElement;
 

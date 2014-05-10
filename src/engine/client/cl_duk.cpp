@@ -33,9 +33,8 @@ Maryland 20850 USA.
 */
 
 #include <duktape.h>
-#include <Rocket/Core.h>
-#include "client.h"
 #include "rocket.h"
+#include "client.h"
 #include "../framework/CvarSystem.h"
 #include "../framework/CommandSystem.h"
 

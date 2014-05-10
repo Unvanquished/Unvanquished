@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 
 #include <duktape.h>
-#include <Rocket/Core.h>
+#include "rocket.h"
 
 static int Duk_Rocket_Document_SetTitle( duk_context *ctx )
 {

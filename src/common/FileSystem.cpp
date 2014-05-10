@@ -22,16 +22,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../engine/qcommon/q_shared.h"
-#include "FileSystem.h"
-#include "Log.h"
-#include "Command.h"
-#include "Optional.h"
-#include "CommonSyscalls.h"
-#include "IPC.h"
-#include "../libs/minizip/unzip.h"
-#include <vector>
-#include <algorithm>
+#include "../../libs/minizip/unzip.h"
 
 #ifdef BUILD_VM
 #include "../gamelogic/shared/VMMain.h"
@@ -44,6 +35,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <shlobj.h>
 #include <io.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #undef MoveFile
 #undef CopyFile
 #undef DeleteFile

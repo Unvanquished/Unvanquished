@@ -38,14 +38,11 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "q_unicode.h"
 #include "qcommon.h"
-#include <setjmp.h>
 
 #include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
-#include "../../common/Cvar.h"
-#include "../../common/Log.h"
 
 // htons
 #ifdef _WIN32

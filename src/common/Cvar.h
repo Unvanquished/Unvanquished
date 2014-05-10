@@ -28,11 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../engine/qcommon/q_shared.h"
-#include "String.h"
-#include <string>
-#include <functional>
-
 #ifndef COMMON_CVAR_H_
 #define COMMON_CVAR_H_
 
