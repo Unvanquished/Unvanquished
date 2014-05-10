@@ -49,10 +49,11 @@
 			alien_sense
 			{
 				position: absolute;
-				width: 1024;
-				height: 768px;
-				top: 0px;
-				left: 0px;
+				width: 85%;
+				height: 85%;
+				top: 40px;
+				margin-left: auto;
+				margin-right: auto;
 			}
 			div#barbs
 			{
@@ -72,7 +73,7 @@
 				height:auto;
 				position:absolute;
 				z-index:1;
-				opacity:0.7;
+				opacity:0.6;
 
 			}
 			#left img.sides{
@@ -84,6 +85,9 @@
 				right:0px;
 				position:absolute;
 				bottom:0px;
+			}
+			#right img.poison{
+				opacity: 0.2;
 			}
 			.bg,.health,.spikes{
 				color:#ff0000AA;
@@ -101,7 +105,7 @@
 			}
 			#left,#right{
 				display:block;
-				width:40%;
+				width:37%;
 				bottom:0px;
 				position:absolute;
 				height:30%;
@@ -115,16 +119,18 @@
 
 			#health-icon{
 				position:absolute;
-				left:20%;
+				left:60px;
+				top: 10px;
 				bottom:15%;
 				width:15%;
 				height:auto;
+				width: 1.3em;
 				color:#ff0000ff;
 			}
 			#health{
-				color:#ef221aff;
+				color:#f02119;
 				position:absolute;
-				left:32%;
+				left:20%;
 				bottom:15%;
 				line-height:1.3em;
 			}
@@ -156,23 +162,61 @@
 			#evos evos{
 				color:red;
 			}
+			minimap {
+				position: absolute;
+				right: 0px;
+				width: 4em;
+				height: 4em;
+			}
+			unlocked_items
+			{
+				width: 100%;
+				height: 30%;
+				cell-color: #703030;
+				color: #931414;
+			}
+			div#momentum
+			{
+				position: absolute;
+				width: 40%;
+				height: 10%;
+				bottom: 0px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			momentum_bar
+			{
+				width: 100%;
+				height: 30%;
+				border-width: 1px;
+				border-color: #5C3333;
+				background-color: #3a2323;
+				color: #6e1b1c;
+			}
 
 
 		</style>
-			</head>
+	</head>
 	<body id="alien_hud">
 		<alien_sense />
+		<minimap />
+		<div id="momentum">
+			<unlocked_items/>
+			<momentum_bar/>
+		</div>
 		<div id="barbs">
 			<barbs src="/ui/assets/alien/tremublob" />
 		</div>
 		<div id="left">
 			<img class="bg sides" src="/ui/assets/alien/bg-l.png" />
 			<img class="health sides" id="health-bar" src="/ui/assets/alien/bar-l.png"/>
-			<img class="spikes sides" src="/ui/assets/alien/spikes-l.png" />
+			<img class="spikes sides" src="/ui/assets/alien/smallspikes-l.png" />
 			<img class="light sides" src="/ui/assets/alien/ll.png" />
 
-			<img class="health" id="health-icon" src="/ui/assets/neutral/cross.tga"/>
-			<div id="health">200</div>
+			<div id="health">
+				<health />
+				<img class="health" id="health-icon" src="/ui/assets/neutral/cross.tga"/>
+			</div>
 		</div>
 		<div id="right">
 			<img class="bg sides" src="/ui/assets/alien/bg-r.png" />
@@ -181,7 +225,7 @@
 			<img class="light sides" src="/ui/assets/alien/lr.png" />
 			<img id="poison-icon" src="/ui/assets/alien/poison.tga" />
 			<weapon_icon />
-			<div id="evos"><evos /> evolution points</div>
+			<div id="evos"><evos /> morph points</div>
 		</div>
 
 	</body>
