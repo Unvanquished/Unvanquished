@@ -325,10 +325,10 @@ build_openal() {
 		rm -rf CMakeCache.txt CMakeFiles
 		case "${PLATFORM}" in
 		macosx32)
-			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_BUILD_TYPE=Release
+			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" -DCMAKE_BUILD_TYPE=Release
 			;;
 		macosx64)
-			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_BUILD_TYPE=Release
+			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" -DCMAKE_BUILD_TYPE=Release
 			;;
 		esac
 		make clean
@@ -624,7 +624,7 @@ setup_mingw64() {
 setup_macosx32() {
 	HOST=i686-apple-darwin11
 	MSVC_SHARED=(--disable-shared --enable-static)
-	export MACOSX_DEPLOYMENT_TARGET=10.6
+	export MACOSX_DEPLOYMENT_TARGET=10.7
 	export CC=clang
 	export CXX=clang++
 	export CFLAGS="-arch i386"
@@ -637,7 +637,7 @@ setup_macosx32() {
 setup_macosx64() {
 	HOST=x86_64-apple-darwin11
 	MSVC_SHARED=(--disable-shared --enable-static)
-	export MACOSX_DEPLOYMENT_TARGET=10.6
+	export MACOSX_DEPLOYMENT_TARGET=10.7
 	export NASM="${PWD}/macosx64-${DEPS_VERSION}/bin/nasm" # A newer version of nasm is required for 64-bit
 	export CC=clang
 	export CXX=clang++
