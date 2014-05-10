@@ -45,72 +45,6 @@ set( CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options 
 project( Daemon C CXX )
 
 ################################################################################
-# Support for precompiled headers
-################################################################################
-
-function(get_pic_flags Result Target)
-  get_target_property(Type ${Target} TYPE)
-  if(Type STREQUAL MODULE_LIBRARY)
-      set(${Result} ${CMAKE_SHARED_MODULE_CXX_FLAGS} PARENT_SCOPE)
-  endif()
-endfunction()
-
-function(ADD_PRECOMPILED_HEADERS Target Header Sources)
-  if(USE_PRECOMPILED_HEADERS AND NOT CMAKE_VERSION VERSION_LESS 2.8.10)
-    # Get the common compile flags
-    set(Flags ${CMAKE_CXX_FLAGS})
-    get_target_property(Type ${Target} TYPE)
-    if(Type STREQUAL MODULE_LIBRARY)
-        set(Flags ${Flags} ${CMAKE_SHARED_MODULE_CXX_FLAGS})
-    endif()
-    separate_arguments(Flags)
-
-    # Get the per-configuration compile flags
-    foreach(Config Debug Release RelWithDebInfo MinSizeRel)
-      string(TOUPPER ${Config} CONFIG)
-      set(ConfigFlags ${CMAKE_CXX_FLAGS_${CONFIG}})
-      separate_arguments(ConfigFlags)
-      foreach(Flag ${ConfigFlags})
-        set(Flags ${Flags} $<$<CONFIG:${Config}>:${Flag}>)
-      endforeach()
-    endforeach()
-
-    # Get preprocessor options for the target and directory (global)
-    get_directory_property(DirCompileDefs COMPILE_DEFINITIONS)
-    get_directory_property(DirIncludeDirs INCLUDE_DIRECTORIES)
-    get_target_property(TargetCompileDefs ${Target} COMPILE_DEFINITIONS)
-    set(Defs)
-    foreach(Def ${TargetCompileDefs})
-      set(Defs ${Defs} -D${Def})
-    endforeach()
-    foreach(Def ${DirCompileDefs})
-      set(Defs ${Defs} -D${Def})
-    endforeach()
-    foreach(Def ${DirIncludeDirs})
-      set(Defs ${Defs} -I${Def})
-    endforeach()
-
-    # Compiler-specific PCH support
-    if(CMAKE_COMPILER_IS_GNUCXX)
-      add_custom_command(OUTPUT "${OBJ_DIR}/${Target}.h.gch"
-        COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
-        DEPENDS ${Header}
-        IMPLICIT_DEPENDS CXX ${Header}
-      )
-
-      add_custom_target(${Target}-pch DEPENDS "${OBJ_DIR}/${Target}.h.gch")
-      add_dependencies(${Target} ${Target}-pch)
-
-      if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-        set_target_properties(${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${OBJ_DIR}/${Target}.h.gch")
-      else()
-        set_target_properties(${Target} PROPERTIES COMPILE_FLAGS "-include ${OBJ_DIR}/${Target}.h -Winvalid-pch")
-      endif()
-    endif()
-  endif()
-endfunction()
-
-################################################################################
 # Configuration options
 ################################################################################
 
@@ -127,13 +61,13 @@ cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR 
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
 option( USE_LTO "Use link-time optimization for release builds" 0 )
-cmake_dependent_option( USE_SLIM_LTO "Generate slim LTO objects" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0 )
+cmake_dependent_option( USE_SLIM_LTO "Generate slim LTO objects, improves build times" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0 )
 option( USE_HARDENING "Use stack protection and other hardening flags" 0 )
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
 option( USE_WEXTRA "Enable extra compilation warnings" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
-option( USE_PRECOMPILED_HEADERS "Try to make the build faster" 1 )
+option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
 
 ################################################################################
@@ -522,6 +456,74 @@ else()
 endif()
 
 include_directories( "${OBJ_DIR}" )
+
+################################################################################
+# Support for precompiled headers
+################################################################################
+
+# MSVC requires that an extra file be added to a project
+if( USE_PRECOMPILED_HEADER AND MSVC )
+  file( WRITE ${OBJ_DIR}/PrecompiledHeader.cpp "" )
+  set( PCH_FILE ${OBJ_DIR}/PrecompiledHeader.cpp )
+endif()
+
+function( ADD_PRECOMPILED_HEADER Target Header )
+  if( USE_PRECOMPILED_HEADER AND NOT CMAKE_VERSION VERSION_LESS 2.8.10 )
+    # Get the common compile flags
+    set( Flags ${CMAKE_CXX_FLAGS} )
+    get_target_property( Type ${Target} TYPE )
+    if( Type STREQUAL MODULE_LIBRARY )
+        set( Flags ${Flags} ${CMAKE_SHARED_MODULE_CXX_FLAGS} )
+    endif()
+    separate_arguments( Flags )
+
+    # Get the per-configuration compile flags
+    foreach( Config Debug Release RelWithDebInfo MinSizeRel )
+      string( TOUPPER ${Config} CONFIG )
+      set( ConfigFlags ${CMAKE_CXX_FLAGS_${CONFIG}} )
+      separate_arguments( ConfigFlags )
+      foreach( Flag ${ConfigFlags} )
+        set( Flags ${Flags} $<$<CONFIG:${Config}>:${Flag}> )
+      endforeach()
+    endforeach()
+
+    # Get preprocessor options for the target and directory (global)
+    get_directory_property( DirCompileDefs COMPILE_DEFINITIONS )
+    get_directory_property( DirIncludeDirs INCLUDE_DIRECTORIES )
+    get_target_property( TargetCompileDefs ${Target} COMPILE_DEFINITIONS )
+    set( Defs )
+    foreach( Def ${TargetCompileDefs} )
+      set( Defs ${Defs} -D${Def} )
+    endforeach()
+    foreach( Def ${DirCompileDefs} )
+      set( Defs ${Defs} -D${Def} )
+    endforeach()
+    foreach( Def ${DirIncludeDirs} )
+      set( Defs ${Defs} -I${Def} )
+    endforeach()
+
+    # Compiler-specific PCH support
+    if( CMAKE_COMPILER_IS_GNUCXX )
+      add_custom_command( OUTPUT "${OBJ_DIR}/${Target}.h.gch"
+        COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
+        DEPENDS ${Header}
+        IMPLICIT_DEPENDS CXX ${Header}
+      )
+
+      add_custom_target( ${Target}-pch DEPENDS "${OBJ_DIR}/${Target}.h.gch" )
+      add_dependencies( ${Target} ${Target}-pch )
+
+      if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+        set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${OBJ_DIR}/${Target}.h.gch" )
+      else()
+        set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include ${OBJ_DIR}/${Target}.h -Winvalid-pch" )
+      endif()
+    elseif( MSVC )
+      set_source_files_properties( ${PCH_FILE} PROPERTIES COMPILE_FLAGS "/Yc${Header}" )
+      set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "/Yu${Header} /Fp${OBJ_DIR}/${Target}.pch /FI${Header}" )
+    endif()
+  endif()
+endfunction()
 
 ################################################################################
 # File lists
@@ -1401,36 +1403,33 @@ function( GAMEMODULE )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_DLL )
-    set( ALL_MODULE_SOURCES ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
-    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${ALL_MODULE_SOURCES} )
+    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
-    ADD_PRECOMPILED_HEADERS( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h ${ALL_MODULE_SOURCES} )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_EXE )
-    set( ALL_MODULE_SOURCES ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
-    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${ALL_MODULE_SOURCES} )
+    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
-    ADD_PRECOMPILED_HEADERS( ${GAMEMODULE_NAME}-nacl-native-exe ${COMMON_DIR}/Common.h ${ALL_MODULE_SOURCES} )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-exe ${COMMON_DIR}/Common.h )
   endif()
 
   if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM_NATIVE )
-    set( ALL_MODULE_SOURCES ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
     set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
-    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${ALL_MODULE_SOURCES} )
+    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
     target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
     )
-    ADD_PRECOMPILED_HEADERS( ${GAMEMODULE_NAME}-qvm-native ${COMMON_DIR}/Common.h ${ALL_MODULE_SOURCES} )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-qvm-native ${COMMON_DIR}/Common.h )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL )
@@ -1696,9 +1695,7 @@ GAMEMODULE( NAME ui
 ################################################################################
 
 if( BUILD_CLIENT )
-  set( ALL_CLIENT_SOURCES ${ENGINELIST} ${SHAREDLIST} ${CLIENTLIST} ${CLIENTBASELIST} ${RENDERERLIST} ${SERVERLIST} ${SDLLIST} )
-
-  add_executable( client WIN32 ${ALL_CLIENT_SOURCES} ${WIN_RC} )
+  add_executable( client WIN32 ${PCH_FILE} ${ENGINELIST} ${SHAREDLIST} ${CLIENTLIST} ${CLIENTBASELIST} ${RENDERERLIST} ${SERVERLIST} ${SDLLIST} ${WIN_RC} )
   if( USE_SMP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
@@ -1709,30 +1706,23 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
-
-  ADD_PRECOMPILED_HEADERS( client ${COMMON_DIR}/Common.h ${ALL_CLIENT_SOURCES} )
+  ADD_PRECOMPILED_HEADER( client ${COMMON_DIR}/Common.h )
 endif()
 
 if( BUILD_SERVER )
-  set( ALL_SERVER_SOURCES ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST} )
-
-  add_executable( server WIN32 ${ALL_SERVER_SOURCES} ${WIN_RC} )
+  add_executable( server WIN32 ${PCH_FILE} ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
-
-  ADD_PRECOMPILED_HEADERS( server ${COMMON_DIR}/Common.h ${ALL_SERVER_SOURCES} )
+  ADD_PRECOMPILED_HEADER( server ${COMMON_DIR}/Common.h )
 endif()
 
 if( BUILD_TTY_CLIENT )
-  set( ALL_TTYCLIENT_SOURCES ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST} )
-
-  add_executable( ttyclient WIN32 ${ALL_TTYCLIENT_SOURCES} ${WIN_RC} )
+  add_executable( ttyclient WIN32 ${PCH_FILE} ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST} ${WIN_RC} )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
-
-  ADD_PRECOMPILED_HEADERS( ttyclient ${COMMON_DIR}/Common.h ${ALL_TTYCLIENT_SOURCES} )
+  ADD_PRECOMPILED_HEADER( ttyclient ${COMMON_DIR}/Common.h )
 endif()
 
 ################################################################################
