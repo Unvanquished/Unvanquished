@@ -28,8 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include <algorithm>
-
 #ifndef COMMON_MATHS_H_
 #define COMMON_MATHS_H_
 

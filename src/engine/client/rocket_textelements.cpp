@@ -34,8 +34,8 @@ Maryland 20850 USA.
 
 // For various text elements that need to be drawn each frame
 
-#include "rocketMiscText.h"
 #include "rocket.h"
+#include "rocketMiscText.h"
 #include "client.h"
 
 std::vector<TextAndRect> RocketMiscText::strings;

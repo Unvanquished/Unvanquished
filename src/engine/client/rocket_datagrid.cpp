@@ -32,9 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include <Rocket/Core.h>
-#include <Rocket/Controls.h>
 #include "rocket.h"
+#include <Rocket/Controls.h>
 #include "rocketDataGrid.h"
 #include <string>
 #include <map>

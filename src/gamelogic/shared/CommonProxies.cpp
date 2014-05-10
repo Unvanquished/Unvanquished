@@ -28,8 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include <string>
-
 //TODO we need to include headers in this order
 //#include "../../engine/qcommon/q_shared.h"
 //#include "bg_public.h"
@@ -37,12 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // We only do game for now but later have a common list of game services
 #include "../game/g_local.h"
 
-#include "../../common/Command.h"
-#include "../../common/CommonSyscalls.h"
-#include "../../common/Cvar.h"
-#include "../../common/Log.h"
+#include "../../common/Common.h"
 #include "VMMain.h"
-#include "unordered_map"
 
 const char* Trans_Gettext(const char* text) {
     return text;

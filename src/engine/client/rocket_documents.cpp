@@ -34,9 +34,8 @@ Maryland 20850 USA.
 
 // Code to deal with libRocket's loading and handling of documents and elements
 
-#include <Rocket/Core.h>
-#include "client.h"
 #include "rocket.h"
+#include "client.h"
 
 void Rocket_LoadDocument( const char *path )
 {

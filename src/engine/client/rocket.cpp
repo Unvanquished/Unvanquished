@@ -34,10 +34,10 @@ Maryland 20850 USA.
 
 // The basic interfaces for libRocket
 
+#include "rocket.h"
 #include <Rocket/Core/FileInterface.h>
 #include <Rocket/Core/SystemInterface.h>
 #include <Rocket/Core/RenderInterface.h>
-#include <Rocket/Core.h>
 #include <Rocket/Controls.h>
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
@@ -57,7 +57,6 @@ Maryland 20850 USA.
 #include "rocketConditionalElement.h"
 #include "rocketColorInput.h"
 #include "client.h"
-#include "rocket.h"
 #include <Rocket/Debugger.h>
 
 extern "C"

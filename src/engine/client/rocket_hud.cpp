@@ -32,9 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include <Rocket/Core/Core.h>
-#include "client.h"
 #include "rocket.h"
+#include "client.h"
 
 
 struct HudUnit

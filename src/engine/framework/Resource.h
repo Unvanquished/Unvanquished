@@ -28,14 +28,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include <memory>
-#include <unordered_map>
-
-#include "../../common/Log.h"
-#include "../../common/String.h"
-
 #ifndef FRAMEWORK_RESOURCE_H_
 #define FRAMEWORK_RESOURCE_H_
+
+#include "../../common/Common.h"
 
 /*
  * Resource registration logic.
