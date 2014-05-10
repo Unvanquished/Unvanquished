@@ -686,6 +686,7 @@ set( ROCKET_CLIENTLIST
 
 set( DUK_CLIENTLIST
 	${MOUNT_DIR}/engine/client/cl_duk.cpp
+	${MOUNT_DIR}/engine/client/cl_duk_rocket.cpp
 )
 
 set( TTYCLIENTLIST

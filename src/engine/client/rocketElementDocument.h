@@ -38,12 +38,23 @@ Maryland 20850 USA.
 #include <Rocket/Core.h>
 #include <Rocket/Core/Element.h>
 #include <Rocket/Core/ElementDocument.h>
+#include "client.h"
+#include <duktape.h>
 
 
 class RocketElementDocument : public Rocket::Core::ElementDocument
 {
 public:
-	RocketElementDocument( const Rocket::Core::String &tag ) : Rocket::Core::ElementDocument( tag ) { }
+	RocketElementDocument( const Rocket::Core::String &tag ) : Rocket::Core::ElementDocument( tag )
+	{
+		ctx = Duk_CreateBaseHeap();
+		Duk_Create_Document_Object( ctx );
+		duk_push_this( ctx );
+		duk_push_pointer( ctx, this );
+		duk_put_prop_string( ctx, -3, "pointer" );
+		duk_pop( ctx );
+		duk_put_prop_string( ctx, -2, "document" );
+	}
 
 	void ProcessEvent( Rocket::Core::Event &event )
 	{
@@ -59,6 +70,21 @@ public:
 			}
 		}
 	}
+
+	virtual void LoadScript( Rocket::Core::Stream *stream, const Rocket::Core::String &source_name )
+	{
+		Rocket::Core::String str;
+		stream->Read( str, stream->Length() );
+		duk_eval_string_noresult( ctx, str.CString() );
+	}
+
+	virtual void ExecuteLocalScript( const Rocket::Core::Element *element, const Rocket::Core::String &eval )
+	{
+
+	}
+
+private:
+	duk_context *ctx;
 };
 
 #endif

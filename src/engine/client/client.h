@@ -947,4 +947,8 @@ void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboole
 // cl_duk.cpp
 void Duk_Init( void );
 void Duk_Shutdown( void );
+void* Duk_CreateBaseHeap( void );
+
+// cl_duk_rocket.cpp
+void Duk_Create_Document_Object( void *ctx );
 #endif

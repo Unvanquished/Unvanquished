@@ -32,9 +32,12 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include <duktape.h>
+#include <Rocket/Core.h>
+#include "client.h"
+#include "rocket.h"
 #include "../framework/CvarSystem.h"
 #include "../framework/CommandSystem.h"
-#include <duktape.h>
 
 duk_context *ctx;
 
@@ -107,23 +110,63 @@ static int Duk_Cmd_Exec( duk_context *ctx )
 	return 1;
 }
 
-void Duk_Init( void )
+static int Duk_Document( duk_context *ctx )
 {
-	ctx = duk_create_heap( NULL, NULL, NULL, NULL, Duk_Fatal_Handler );
+	int nargs = duk_get_top( ctx );
+
+	if ( nargs == 1 )
+	{
+		const char *value = duk_to_string( ctx, 0 );
+		Rocket::Core::ElementDocument *doc = menuContext->GetDocument( value );
+
+		if ( doc )
+		{
+			Duk_Create_Document_Object( ctx );
+			duk_push_this( ctx );
+			duk_push_pointer( ctx, doc );
+			duk_put_prop_string( ctx, -3, "pointer" );
+			duk_pop( ctx );
+			return 1;
+		}
+	}
+
+	duk_push_false( ctx );
+	return 1;
+}
+
+void* Duk_CreateBaseHeap( void )
+{
+	const duk_function_list_entry cvar_funcs[] = {
+		{ "set", Duk_Cvar_Set, 2 },
+		{ "get", Duk_Cvar_Get, 1 },
+		{ NULL, NULL, 0 }
+	};
+
+	const duk_function_list_entry cmd_funcs[] = {
+		{ "exec", Duk_Cmd_Exec, 2 },
+		{ NULL, NULL, 0 }
+	};
+
+	duk_context *ctx = duk_create_heap( NULL, NULL, NULL, NULL, Duk_Fatal_Handler );
 	duk_push_global_object( ctx );
 	duk_push_c_function( ctx, Duk_Print, 1 );
 	duk_put_prop_string( ctx, -2, "print" );
 	duk_push_object( ctx );
-	duk_push_c_function( ctx, Duk_Cvar_Get, 1 );
-	duk_put_prop_string( ctx, -2, "get" );
-	duk_push_c_function( ctx, Duk_Cvar_Set, 2 );
-	duk_put_prop_string( ctx, -2, "set" );
-	duk_put_prop_string( ctx, -2, "Cvar" );
+	duk_put_function_list(ctx, -1, cvar_funcs);
+	duk_put_prop_string(ctx, -2, "Cvar");
 	duk_push_object( ctx );
-	duk_push_c_function( ctx, Duk_Cmd_Exec, 1 );
-	duk_put_prop_string( ctx, -2, "exec" );
-	duk_put_prop_string( ctx, -2, "Cmd" );
+	duk_put_function_list(ctx, -1, cmd_funcs);
+	duk_put_prop_string(ctx, -2, "Cmd");
+	duk_push_c_function( ctx, Duk_Document, 1 );
+	duk_put_prop_string( ctx, -2, "Document" );
 	duk_pop( ctx );
+
+	return ctx;
+}
+
+void Duk_Init( void )
+{
+	ctx = Duk_CreateBaseHeap();
 }
 
 void Duk_Shutdown( void )
