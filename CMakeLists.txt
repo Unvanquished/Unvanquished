@@ -1118,7 +1118,7 @@ if( DEPS_DIR )
   # Download them if they not available
   if( NOT EXISTS ${DEPS_DIR} )
     get_filename_component( BASENAME ${DEPS_DIR} NAME )
-    set( REMOTE "http://vanquished.zapto.org/~amanieu/unvanquished_deps/${BASENAME}${DEPS_EXT}" )
+    set( REMOTE "http://www.unvanquished.net/unvanquished_deps/${BASENAME}${DEPS_EXT}" )
     message( STATUS "Downloading dependencies from '${REMOTE}'" )
     file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}${DEPS_EXT} SHOW_PROGRESS
       STATUS DOWNLOAD_RESULT LOG DOWNLOAD_LOG )
