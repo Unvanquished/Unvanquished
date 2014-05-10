@@ -503,7 +503,7 @@ function( ADD_PRECOMPILED_HEADER Target Header )
     endforeach()
 
     # Compiler-specific PCH support
-    if( CMAKE_COMPILER_IS_GNUCXX )
+    if( CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
       add_custom_command( OUTPUT "${OBJ_DIR}/${Target}.h.gch"
         COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
         DEPENDS ${Header}
