@@ -42,14 +42,14 @@ namespace Log {
      */
 
     enum Level {
-        DEBUG,
-        NOTICE,
-        WARNING,
-        ERROR
+        LOG_DEBUG,
+        LOG_NOTICE,
+        LOG_WARNING,
+        LOG_ERROR
     };
 
     // The default filtering level
-    const Level DEFAULT_FILTER_LEVEL = WARNING;
+    const Level DEFAULT_FILTER_LEVEL = LOG_WARNING;
 
     /*
      * Loggers are used to group logs by subsystems and allow logs
@@ -155,21 +155,21 @@ namespace Log {
 
     template<typename ... Args>
     void Logger::Warn(Str::StringRef format, Args&& ... args) {
-        if (filterLevel.Get() <= WARNING) {
+        if (filterLevel.Get() <= LOG_WARNING) {
             CodeSourceWarn(Str::Format(format, std::forward<Args>(args) ...));
         }
     }
 
     template<typename ... Args>
     void Logger::Notice(Str::StringRef format, Args&& ... args) {
-        if (filterLevel.Get() <= NOTICE) {
+        if (filterLevel.Get() <= LOG_NOTICE) {
             CodeSourceNotice(Str::Format(format, std::forward<Args>(args) ...));
         }
     }
 
     template<typename ... Args>
     void Logger::Debug(Str::StringRef format, Args&& ... args) {
-        if (filterLevel.Get() <= DEBUG) {
+        if (filterLevel.Get() <= LOG_DEBUG) {
             CodeSourceDebug(Str::Format(format, std::forward<Args>(args) ...));
         }
     }
