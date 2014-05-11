@@ -4375,11 +4375,14 @@ Cmd_Beacon_f
 */
 void Cmd_Beacon_f( gentity_t *ent )
 {
-	qboolean alien;
 	char type_str[ 64 ];
 	beaconType_t type;
 	const beaconAttributes_t *battr;
-	gentity_t *beacon;
+
+	gentity_t *beacon, *other;
+	vec3_t origin;
+	team_t team;
+	int data;
 
 	if ( trap_Argc( ) < 2 )
 	{
@@ -4389,37 +4392,43 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	trap_Argv( 1, type_str, sizeof( type_str ) );
 
-	alien = ( ent->client->pers.team == TEAM_ALIENS );
+	team = (team_t)ent->client->pers.team;
 
 	//a few useful aliases
 	if( !Q_stricmp( type_str, "ourbase" ) )
-		battr = BG_Beacon( ( alien ? BCT_ALIENBASE : BCT_HUMANBASE ) );
+		battr = BG_Beacon( ( team == TEAM_ALIENS ? BCT_ALIENBASE : BCT_HUMANBASE ) );
 	else if( !Q_stricmp( type_str, "enemybase" ) )
-		battr = BG_Beacon( ( alien ? BCT_HUMANBASE : BCT_ALIENBASE ) );
+		battr = BG_Beacon( ( team == TEAM_ALIENS ? BCT_HUMANBASE : BCT_ALIENBASE ) );
 	else
 		battr = BG_BeaconByName( type_str );
 
-	if ( !battr || battr->implicit )
+	if ( !battr || battr->flags & BCF_IMPLICIT )
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("Unknown beacon type $1$\n") ), Quote( type_str ) ) );
 		return;
 	}
 
-	if ( /*TODO: battr->leaderOnly && player is not a leader*/ 0 )
-	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", QQ( N_("Beacons of this kind may be placed only by a leader, which you are not.\n") ) ) );
-		return;
-	}
-
 	type = battr->number;
 
-	beacon = G_GetBeacon( ent - g_entities, (team_t)ent->client->pers.team, type );
-	if( !G_PositionBeacon( ent, beacon ) )
-	{
-		G_FreeEntity( beacon );
+	Com_Printf( "Beacon: %s %c%c%c%c%c\n",
+							battr->name,
+							( battr->flags & BCF_ENTITY ) ? 'E' : ' ',
+							( battr->flags & BCF_PER_PLAYER ) ? 'P' : ' ',
+							( battr->flags & BCF_PER_TEAM ) ? 'T' : ' ',
+							( battr->flags & BCF_DATA_UNIQUE ) ? 'D' : ' ',
+							( battr->flags & BCF_PRECISE ) ? 'X' : ' ' );
+
+	if( !Beacon::PositionPlayerBeacon( origin, &other, type, ent ) )
 		return;
-	}
-	G_PropagateBeacon( beacon );
+
+	if( BG_Beacon( type )->flags & BCF_ENTITY )
+		data = other->s.modelindex;
+	else
+		data = 0;
+		
+	Beacon::RemoveSimilar( origin, type, data, team, ent->s.number );
+	beacon = Beacon::New( origin, type, data, team, ent->s.number );
+	Beacon::Propagate( beacon );
 }
 
 /*

@@ -913,153 +913,100 @@ meansOfDeath_t BG_MeansOfDeathByName( const char *name )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const beaconAttributes_t nullBeacon =
-{
-	BCT_NONE, NULL, NULL, NULL, 0, qfalse, qfalse, qfalse, qfalse, qfalse, qfalse
-};
+static const beaconAttributes_t nullBeacon = { BCT_NONE };
 
 static const beaconAttributes_t bg_beaconAttributes[ ] =
 {
-	// name, text, icon, decayTime, exact, entity, leaderOnly, implicit, perPlayer, unlimited
 	{
-		BCT_POINTER,
-		"pointer",
-		N_("Look!"),
-		"gfx/2d/beacon-pointer",
-		"sound/feedback/beacon.ogg",
-		2000,
-		qtrue,
-		qfalse,
-		qfalse,
-		qfalse,
-		qtrue,
-		qfalse
+		/* number  */ BCT_POINTER,
+		/*  name   */ "pointer",
+		/*  text   */ N_("Look!"),
+		/*  icon   */ "gfx/2d/beacon-pointer",
+		/*  sound  */ "sound/feedback/beacon.ogg",
+		/*decayTime*/ 2000,
+		/*  flags  */ BCF_PER_PLAYER | BCF_PRECISE
 	},
 	{
-		BCT_TAG,
-		"tag",
-		NULL, //special case
-		"gfx/2d/beacon",
-		"sound/feedback/beacon.ogg",
-		7500,
-		qfalse,
-		qtrue,
-		qfalse,
-		qfalse,
-		qfalse,
-		qtrue
+		/* number  */ BCT_TIMER,
+		/*  name   */ "timer",
+		/*  text   */ N_("Timer"),
+		/*  icon   */ "gfx/2d/beacon-timer",
+		/*  sound  */ "sound/feedback/beacon.ogg",
+		/*decayTime*/ BEACON_TIMER_TIME + 1000,
+		/*  flags  */ BCF_PER_PLAYER
 	},
 	{
-		BCT_TIMER,
-		"timer",
-		N_("Timer"),
-		"gfx/2d/beacon-timer",
-		"sound/feedback/beacon.ogg",
-		BEACON_TIMER_TIME + 1000,
-		qfalse,
-		qfalse,
-		qfalse,
-		qfalse,
-		qtrue,
-		qfalse
+		/* number  */ BCT_ENEMY,
+		/*  name   */ "enemy",
+		/*  text   */ N_("Enemy spotted"),
+		/*  icon   */ "gfx/2d/beacon-enemy",
+		/*  sound  */ "sound/feedback/beacon.ogg",
+		/*decayTime*/ 5000,
+		/*  flags  */ 0
 	},
 	{
-		BCT_ALIENBASE,
-		"alienbase",
-		N_("Alien base"),
-		"gfx/2d/beacon-alienbase",
-		"sound/feedback/beacon.ogg",
-		0,
-		qfalse,
-		qfalse,
-		qtrue,
-		qfalse,
-		qfalse,
-		qfalse
+		/* number  */ BCT_TAG,
+		/*  name   */ "tag",
+		/*  text   */ N_("Tag"),
+		/*  icon   */ "gfx/2d/beacon",
+		/*  sound  */ "sound/feedback/beacon.ogg",
+		/*decayTime*/ 7500,
+		/*  flags  */ BCF_ENTITY | BCF_DATA_UNIQUE
 	},
 	{
-		BCT_HUMANBASE,
-		"humanbase",
-		N_("Human base"),
-		"gfx/2d/beacon-humanbase",
-		"sound/feedback/beacon.ogg",
-		0,
-		qfalse,
-		qfalse,
-		qtrue,
-		qfalse,
-		qfalse,
-		qfalse
+		/* number  */ BCT_ALIENBASE,
+		/*  name   */ "alienbase",
+		/*  text   */ N_("Alien base"),
+		/*  icon   */ "gfx/2d/beacon-alienbase",
+		/*  sound  */ "sound/feedback/beacon.ogg",
+		/*decayTime*/ 0,
+		/*  flags  */ BCF_PER_TEAM
 	},
 	{
-		BCT_ATTACK,
-		"attack",
-		N_("Attack!"),
-		"gfx/2d/beacon-attack",
-		"sound/feedback/beacon.ogg",
-		10000,
-		qfalse,
-		qfalse,
-		qtrue,
-		qfalse,
-		qfalse,
-		qtrue
+		/* number  */ BCT_HUMANBASE,
+		/*  name   */ "humanbase",
+		/*  text   */ N_("Human base"),
+		/*  icon   */ "gfx/2d/beacon-humanbase",
+		/*  sound  */ "sound/feedback/beacon.ogg",
+		/*decayTime*/ 0,
+		/*  flags  */ BCF_PER_TEAM
 	},
 	{
-		BCT_DEFEND,
-		"defend",
-		N_("Defend!"),
-		"gfx/2d/beacon-defend",
-		"sound/feedback/beacon.ogg",
-		10000,
-		qfalse,
-		qfalse,
-		qtrue,
-		qfalse,
-		qfalse,
-		qtrue
+		/* number  */ BCT_ATTACK,
+		/*  name   */ "attack",
+		/*  text   */ N_("Attack!"),
+		/*  icon   */ "gfx/2d/beacon-attack",
+		/*  sound  */ "sound/feedback/beacon.ogg",
+		/*decayTime*/ 10000,
+		/*  flags  */ 0
 	},
 	{
-		BCT_ENEMY,
-		"enemy",
-		N_("Enemy spotted"),
-		"gfx/2d/beacon-enemy",
-		"sound/feedback/beacon.ogg",
-		5000,
-		qfalse,
-		qfalse,
-		qfalse,
-		qfalse,
-		qfalse,
-		qtrue
+		/* number  */ BCT_DEFEND,
+		/*  name   */ "defend",
+		/*  text   */ N_("Defend!"),
+		/*  icon   */ "gfx/2d/beacon-defend",
+		/*  sound  */ "sound/feedback/beacon.ogg",
+		/*decayTime*/ 10000,
+		/*  flags  */ 0
+	},
+
+	{
+		/* number  */ BCT_HEALTH,
+		/*  name   */ "",
+		/*  text   */ N_("Heal here!"),
+		/*  icon   */ "gfx/2d/beacon-health",
+		/*  sound  */ "sound/feedback/beacon.ogg",
+		/*decayTime*/ 0,
+		/*  flags  */ BCF_IMPLICIT
 	},
 	{
-		BCT_HEALTH,
-		"",
-		N_("Heal here!"),
-		"gfx/2d/beacon-health",
-		"sound/feedback/beacon.ogg",
-		0,
-		qfalse,
-		qfalse,
-		qfalse,
-		qtrue,
-		qfalse,
-		qfalse
-	},
-	{
-		BCT_AMMO,
-		"",
-		N_("Ammo here!"),
-		"gfx/2d/beacon-ammo",
-		"sound/feedback/beacon.ogg",
-		0,
-		qfalse,
-		qfalse,
-		qfalse,
-		qtrue,
-		qfalse,
-		qfalse
+		/* number  */ BCT_AMMO,
+		/*  name   */ "",
+		/*  text   */ N_("Ammo here!"),
+		/*  icon   */ "gfx/2d/beacon-ammo",
+		/*  sound  */ "sound/feedback/beacon.ogg",
+		/*decayTime*/ 0,
+		/*  flags  */ BCF_IMPLICIT
 	}
 };
 

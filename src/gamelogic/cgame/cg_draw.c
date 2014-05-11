@@ -5131,7 +5131,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 
 		if( b->owner != ENTITYNUM_NONE &&
 				b->owner >= 0 && b->owner < MAX_CLIENTS &&
-				!BG_Beacon( b->type )->implicit )
+				!( BG_Beacon( b->type )->flags & BCF_IMPLICIT ) )
 		{
 			ci = cgs.clientinfo + b->owner;
 

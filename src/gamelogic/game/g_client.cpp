@@ -1937,5 +1937,5 @@ void ClientDisconnect( int clientNum )
 
 	CalculateRanks();
 
-	G_PropagateAllBeacons( );
+	Beacon::PropagateAll();
 }

@@ -267,7 +267,7 @@ void G_LeaveTeam( gentity_t *self )
 	// cut all relevant zap beams
 	G_ClearPlayerZapEffects( self );
 
-	G_RemoveOwnedBeacons( self->s.number );
+	Beacon::RemoveOrphaned( self->s.number );
 
 	G_namelog_update_score( self->client );
 }
@@ -328,7 +328,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 
 	G_UpdateTeamConfigStrings();
 
-	G_PropagateAllBeacons( );
+	Beacon::PropagateAll( );
 
 	G_LogPrintf( "ChangeTeam: %d %s: %s" S_COLOR_WHITE " switched teams\n",
 	             ( int )( ent - g_entities ), BG_TeamName( newTeam ), ent->client->pers.netname );

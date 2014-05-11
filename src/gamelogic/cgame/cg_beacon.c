@@ -329,12 +329,7 @@ static void CG_ListImplicitBeacons( )
 
 			// renew if it's a different medistat
 			if ( entityNum != bp_ammo.oldEntityNum )
-			{
 				bp_ammo.old = qfalse;
-				// this is supposed to be uncommented but jumping smoothly
-				// from one medistat to another looks really interesting
-				//bp_ammo.old_hud = qfalse;
-			}
 
 			// initialize if new/renewed
 			if ( !bp_ammo.old )

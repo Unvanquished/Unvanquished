@@ -1026,22 +1026,37 @@ typedef enum
 {
 	BCT_NONE,
 
+	//local
 	BCT_POINTER,
-	BCT_TAG,
 	BCT_TIMER,
-	
+
+	//indicators
+	BCT_ENEMY,
+	BCT_TAG,
 	BCT_ALIENBASE,
 	BCT_HUMANBASE,
 
+	//commands
 	BCT_ATTACK,
 	BCT_DEFEND,
-	BCT_ENEMY,
+	//BCT_REPAIR, (TODO)
 
+	//implicit
 	BCT_HEALTH,
 	BCT_AMMO,
 	
 	NUM_BEACON_TYPES
 } beaconType_t;
+
+// beacon flags
+#define BCF_IMPLICIT      0x0001 // client-side, not networked
+
+#define BCF_PER_PLAYER    0x0002 // one beacon per player
+#define BCF_PER_TEAM      0x0004 // one beacon per team
+#define BCF_DATA_UNIQUE   0x0008 // data extends type
+
+#define BCF_PRECISE       0x0010 // place exactly at crosshair
+#define BCF_ENTITY        0x0020 // place at an entity's center
 
 typedef struct
 {
@@ -1054,12 +1069,7 @@ typedef struct
 	
 	int        decayTime; // 0 to never decay
 
-	qboolean   exact; // true if should appear exactly at the crosshair
-	qboolean   entity; // true if should appear at an entity (tagging)
-	qboolean   leaderOnly; // not yet implemented
-	qboolean   implicit; // "virtual" client-side beacon
-	qboolean   playerUnique; // per-player instead of per-team
-	qboolean   unlimited; // no uniqueness insurance at all
+	int        flags;
 } beaconAttributes_t;
 
 //---------------------------------------------------------
