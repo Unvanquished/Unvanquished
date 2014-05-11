@@ -435,7 +435,13 @@ Figures out the icon shader for a beacon.
 */
 qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 {
-	//TODO: per-building icons for BCT_TAG ?
+	if ( b->type == BCT_TAG )
+	{
+		if( b->data <= BA_NONE || b->data >= BA_NUM_BUILDABLES )
+			return 0;
+
+		return cg_buildables[ b->data ].buildableIcon;
+	}
 
 	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
 		return 0;
