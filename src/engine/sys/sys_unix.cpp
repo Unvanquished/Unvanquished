@@ -313,6 +313,7 @@ Sys_GetClipboardData
 */
 char *Sys_GetClipboardData( clipboard_t clip )
 {
+#ifdef BUILD_CLIENT
 #if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	char *buffer = SDL_GetClipboardText();
 	char *data = NULL;
@@ -327,6 +328,9 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	SDL_free( buffer );
 
 	return data;
+#else
+	return NULL;
+#endif
 #else
 	return NULL;
 #endif
@@ -843,6 +847,7 @@ Sys_Dialog
 */
 dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title )
 {
+#ifdef BUILD_CLIENT
 #if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	switch ( type )
 	{
@@ -859,6 +864,7 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, message, NULL);
 			break;
 	}
+#endif
 #endif
 	return DR_OK;
 }
