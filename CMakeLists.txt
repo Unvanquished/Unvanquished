@@ -721,13 +721,6 @@ if( NOT APPLE )
   )
 endif()
 
-if( APPLE )
-  set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_osx.mm
-  )
-  set_source_files_properties( ${ENGINE_DIR}/sys/sys_osx.mm PROPERTIES COMPILE_FLAGS "-x objective-c++" )
-endif()
-
 set( CLIENTBASELIST
   ${ENGINE_DIR}/botlib/bot_debug.cpp
   ${ENGINE_DIR}/botlib/bot_nav_edit.cpp
@@ -1237,11 +1230,6 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
       set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL_LIBRARY} )
     else()
       set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
-    endif()
-    if( APPLE )
-      # Mac OS X does not provide a SDLMain.dylib so we must compile our own
-      add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.mm )
-      set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
     endif()
   endif()
 
