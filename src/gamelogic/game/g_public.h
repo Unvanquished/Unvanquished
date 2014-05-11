@@ -45,9 +45,10 @@ namespace Beacon
 {
 	void Think( gentity_t *ent );
 	gentity_t *New( vec3_t origin, beaconType_t type, int data, team_t team, int owner );
+	void Delete( gentity_t *ent );
 	void MoveTowardsRoom( vec3_t origin, const vec3_t normal );
 	void RemoveSimilar( vec3_t origin, beaconType_t type, int data, int team, int owner );
-	qboolean PositionPlayerBeacon( vec3_t out, gentity_t **hit, beaconType_t type, gentity_t *player );
+	qboolean PositionAtCrosshair( vec3_t out, gentity_t **hit, beaconType_t type, gentity_t *player );
 	void Propagate( gentity_t *ent );
 	void PropagateAll( void );
 	void RemoveOrphaned( int clientNum );

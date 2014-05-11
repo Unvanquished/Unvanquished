@@ -45,7 +45,7 @@ namespace Beacon //this should eventually become a class
 		ent->nextthink = level.time + BEACON_THINKRATE;
 
 		if ( ent->s.time2 && level.time > ent->s.time2 )
-			G_FreeEntity( ent );
+			Delete( ent );
 	}
 
 	////// Beacon::New
@@ -72,6 +72,13 @@ namespace Beacon //this should eventually become a class
 		ent->nextthink = level.time;
 
 		return ent;
+	}
+
+	////// Beacon::Delete
+	// Delete a beacon
+	void Delete( gentity_t *ent )
+	{
+		G_FreeEntity( ent );
 	}
 
 	////// Beacon::MoveTowardsRoom
@@ -156,80 +163,40 @@ namespace Beacon //this should eventually become a class
 					continue;
 			}
 
-			G_FreeEntity( ent );
+			Delete( ent );
 		}
 	}
-	
-/*
-=================
-G_RemoveDuplicateBeacons
 
-
-=================
-*/
-/*
- * 
-		for ( i = 0; i < 3; i++ )
-			mins[ i ] = center[ i ] - 4.0f,
-			maxs[ i ] = center[ i ] + 4.0f;
-
-		for ( i = MAX_CLIENTS - 1; i < level.num_entities; i++ )
-		{
-			other = g_entities + i;
-
-			if ( other == beacon )
-				continue;
-
-			if ( other->s.eType != ET_BEACON )
-				continue;
-
-			if ( other->s.modelindex != beacon->s.modelindex )
-				continue;
-
-			if ( other->s.generic1 != beacon->s.generic1 )
-				continue;
-
-			if ( other->s.modelindex2 != beacon->s.modelindex2 )
-				continue;
-
-			if ( !PointInBounds( other->s.origin, mins, maxs ) )
-				continue;
-
-			G_FreeEntity( other );
-		}
-
-	if( !BG_Beacon( type )->unlimited )
-		for ( i = MAX_CLIENTS - 1; i < level.num_entities; i++ )
-		{
-			ent = g_entities + i;
-
-			if ( ent->s.eType != ET_BEACON )
-				continue;
-
-			if ( ent->s.generic1 != team )
-				continue;
-
-			if ( ent->s.modelindex != type )
-				continue;
-
-			if ( ent->s.modelindex != type )
-				continue;
-
-			if ( BG_Beacon( type )->playerUnique &&
-			     ent->s.otherEntityNum != owner )
-				continue;
-
-			G_FreeEntity( ent );
-			break;
-		}
- */
-
-	////// PositionPlayerBeacon (TODO: a better name)
-	// Calculate the origin for a player-made beacon
-	qboolean PositionPlayerBeacon( vec3_t out, gentity_t **hit,
-	                               beaconType_t type, gentity_t *player )
+	////// PositionAtEntity
+	// Calculate the origin for a BCF_ENTITY beacon
+	void PositionAtEntity( gentity_t *ent, vec3_t out )
 	{
 		int i;
+		vec3_t mins, maxs;
+
+		switch( ent->s.eType )
+		{
+			case ET_BUILDABLE:
+				BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
+				break;
+
+			case ET_PLAYER:
+				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, NULL, NULL, NULL );
+				break;
+
+			default:
+				VectorCopy( ent->s.origin, out );
+				return;
+		}
+
+		for( i = 0; i < 3; i++ )
+			out[ i ] = ent->s.origin[ i ] + ( mins[ i ] + maxs[ i ] ) / 2.0;
+	}
+
+	////// PositionAtCrosshair
+	// Calculate the origin for a player-made beacon
+	qboolean PositionAtCrosshair( vec3_t out, gentity_t **hit, beaconType_t type, gentity_t *player )
+	{
 		vec3_t origin, end, forward;
 		trace_t tr;
 		
@@ -247,21 +214,12 @@ G_RemoveDuplicateBeacons
 		}
 		else if ( BG_Beacon( type )->flags & BCF_ENTITY )
 		{
-			vec3_t mins, maxs;
-
 			if ( tr.entityNum == ENTITYNUM_NONE ||
 					 tr.entityNum == ENTITYNUM_WORLD )
 				return qfalse;
 
 			*hit = g_entities + tr.entityNum;
-
-			if ( (*hit)->s.eType != ET_BUILDABLE )
-				return qfalse;
-
-			BG_BuildableBoundingBox( (*hit)->s.modelindex, mins, maxs );
-			
-			for ( i = 0; i < 3; i++ )
-				out[ i ] = (*hit)->s.origin[ i ] + ( mins[ i ] + maxs[ i ] ) / 2.0;
+			PositionAtEntity( *hit, out ); 
 		}
 		else
 		{
@@ -345,7 +303,7 @@ G_RemoveDuplicateBeacons
 				continue;
 
 			if ( BG_Beacon( ent->s.modelindex )->flags & BCF_PER_PLAYER )
-				G_FreeEntity( ent );
+				Delete( ent );
 			else
 				ent->s.otherEntityNum = ENTITYNUM_NONE;
 		}

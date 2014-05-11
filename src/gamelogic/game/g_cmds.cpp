@@ -4418,7 +4418,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 							( battr->flags & BCF_DATA_UNIQUE ) ? 'D' : ' ',
 							( battr->flags & BCF_PRECISE ) ? 'X' : ' ' );
 
-	if( !Beacon::PositionPlayerBeacon( origin, &other, type, ent ) )
+	if( !Beacon::PositionAtCrosshair( origin, &other, type, ent ) )
 		return;
 
 	if( BG_Beacon( type )->flags & BCF_ENTITY )
