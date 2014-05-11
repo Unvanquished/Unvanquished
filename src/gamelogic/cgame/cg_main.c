@@ -1330,14 +1330,6 @@ static void CG_RegisterSounds( void )
 	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning.wav", qfalse );
 	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", qfalse );
 
-	for( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
-	{
-		if( BG_Beacon( i )->sound )
-			cgs.media.beaconSounds[ i - 1 ] = trap_S_RegisterSound( BG_Beacon( i )->sound, qfalse );
-		else
-			cgs.media.beaconSounds[ i - 1 ] = 0;
-	}
-
 	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", qfalse );
 }
 
@@ -1571,9 +1563,6 @@ static void CG_RegisterGraphics( void )
 
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
-
-	for( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
-		cgs.media.beaconIcons[ i - 1 ] = trap_R_RegisterShader( BG_Beacon( i )->icon, RSF_DEFAULT );
 
 	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacon-arrow", RSF_DEFAULT );
 

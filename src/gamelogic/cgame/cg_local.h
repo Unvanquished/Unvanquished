@@ -1400,11 +1400,7 @@ typedef struct
 
 	animation_t jetpackAnims[ MAX_JETPACK_ANIMATIONS ];
 
-	qhandle_t   beaconIcons[ NUM_BEACON_TYPES - 1 ]; // -1 because BCT_NONE needs no icon
 	qhandle_t   beaconIconArrow;
-	sfxHandle_t beaconSounds[ NUM_BEACON_TYPES - 1 ];
-
-	//special beacons
 	sfxHandle_t timerBeaconExpiredSound;
 } cgMedia_t;
 

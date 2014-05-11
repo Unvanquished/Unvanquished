@@ -4410,14 +4410,6 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	type = battr->number;
 
-	Com_Printf( "Beacon: %s %c%c%c%c%c\n",
-							battr->name,
-							( battr->flags & BCF_ENTITY ) ? 'E' : ' ',
-							( battr->flags & BCF_PER_PLAYER ) ? 'P' : ' ',
-							( battr->flags & BCF_PER_TEAM ) ? 'T' : ' ',
-							( battr->flags & BCF_DATA_UNIQUE ) ? 'D' : ' ',
-							( battr->flags & BCF_PRECISE ) ? 'X' : ' ' );
-
 	if( !Beacon::PositionAtCrosshair( origin, &other, type, ent ) )
 		return;
 

@@ -109,8 +109,8 @@ static void CG_RunBeacon( cbeacon_t *b )
 		//       first time it sees them (e.g. after changing teams),
 		//       so omit the events if the event was created long time ago
 		if( cg.time - b->s->ctime < 1000 )
-			if( cgs.media.beaconSounds[ b->type - 1 ] )
-				trap_S_StartLocalSound( cgs.media.beaconSounds[ b->type - 1 ], CHAN_LOCAL_SOUND );
+			if( BG_Beacon( b->type )->sound )
+				trap_S_StartLocalSound( BG_Beacon( b->type )->sound, CHAN_LOCAL_SOUND );
 	}
 
 	// fade in
@@ -446,7 +446,7 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
 		return 0;
 	
-	return cgs.media.beaconIcons[ b->type - 1 ];
+	return BG_Beacon( b->type - 1 )->icon;
 }
 
 /*
@@ -459,12 +459,16 @@ The returned string is localized.
 */
 const char *CG_BeaconText( const cbeacon_t *b )
 {
-	const char *text;
+	const char *text = "";
 
 	if ( b->type == BCT_TAG )
-		text = _( BG_Buildable( b->data )->humanName );
+	{
+		if( BG_Buildable( b->data )->humanName )
+			text = _( BG_Buildable( b->data )->humanName );
+	}
 	else
-		text = _( BG_Beacon( b->type )->text );
+		if( BG_Beacon( b->type )->text )
+			text = _( BG_Beacon( b->type )->text );
 
 	if ( b->type == BCT_TIMER )
 	{

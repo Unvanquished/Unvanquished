@@ -2400,3 +2400,61 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		Com_Printf( S_ERROR "Not all mandatory impactMark vars defined in %s\n", filename );
 	}
 }
+
+/*
+======================
+BG_ParseBeaconAttirubteFile
+
+Parses a configuration file describing a beacon type
+======================
+*/
+void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
+{
+	char        *token;
+	char        text_buffer[ 20000 ];
+	char        *text;
+
+	if( !BG_ReadWholeFile( filename, text_buffer, sizeof( text_buffer ) ) )
+	{
+		return;
+	}
+
+	text = text_buffer;
+
+	while ( qtrue )
+	{
+		PARSE( text, token );
+
+		if      ( !Q_stricmp( token, "humanName" ) )
+		{
+			PARSE( text, token );
+			ba->humanName = BG_strdup( token );
+		}
+		else if ( !Q_stricmp( token, "text" ) )
+		{
+			PARSE( text, token );
+#ifdef BUILD_CGAME		
+			ba->text = BG_strdup( token );
+#endif
+		}
+		else if ( !Q_stricmp( token, "icon" ) )
+		{
+			PARSE( text, token );
+#ifdef BUILD_CGAME
+			ba->icon = trap_R_RegisterShader( token, RSF_DEFAULT );
+#endif
+		}
+		else if ( !Q_stricmp( token, "sound" ) )
+		{
+			PARSE( text, token );
+#ifdef BUILD_CGAME
+			ba->sound = trap_S_RegisterSound( token, qfalse );
+#endif
+		}
+		else if ( !Q_stricmp( token, "decayTime" ) )
+		{
+			PARSE( text, token );
+			ba->decayTime = atoi( token );
+		}
+	}
+}

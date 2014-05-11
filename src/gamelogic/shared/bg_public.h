@@ -1060,16 +1060,19 @@ typedef enum
 
 typedef struct
 {
-	beaconType_t number;
+	beaconType_t  number;
+	int           flags;
 
-	const char *name; // parameter for /beacon
-	const char *text; // NULL if handled differently
-	const char *icon; // cgame icon
-	const char *sound; // cgame sound
-	
-	int        decayTime; // 0 to never decay
+	const char    *name;
+	const char    *humanName;
 
-	int        flags;
+#ifdef BUILD_CGAME	
+	const char    *text;
+	qhandle_t     icon;
+	sfxHandle_t   sound;
+#endif	
+
+	int           decayTime;
 } beaconAttributes_t;
 
 //---------------------------------------------------------
@@ -1404,6 +1407,7 @@ void                      BG_ParseWeaponAttributeFile( const char *filename, wea
 void                      BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua );
 void                      BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma );
 void                      BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma );
+void                      BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba );
 
 // bg_teamprogress.c
 #define NUM_UNLOCKABLES WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES

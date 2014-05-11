@@ -913,102 +913,31 @@ meansOfDeath_t BG_MeansOfDeathByName( const char *name )
 
 ////////////////////////////////////////////////////////////////////////////////
 
+typedef struct
+{
+	beaconType_t  number;
+	const char*   name;
+	int           flags;
+} beaconData_t;
+
 static const beaconAttributes_t nullBeacon = { BCT_NONE };
 
-static const beaconAttributes_t bg_beaconAttributes[ ] =
+static const beaconData_t bg_beaconsData[ ] =
 {
-	{
-		/* number  */ BCT_POINTER,
-		/*  name   */ "pointer",
-		/*  text   */ N_("Look!"),
-		/*  icon   */ "gfx/2d/beacon-pointer",
-		/*  sound  */ "sound/feedback/beacon.ogg",
-		/*decayTime*/ 2000,
-		/*  flags  */ BCF_PER_PLAYER | BCF_PRECISE
-	},
-	{
-		/* number  */ BCT_TIMER,
-		/*  name   */ "timer",
-		/*  text   */ N_("Timer"),
-		/*  icon   */ "gfx/2d/beacon-timer",
-		/*  sound  */ "sound/feedback/beacon.ogg",
-		/*decayTime*/ BEACON_TIMER_TIME + 1000,
-		/*  flags  */ BCF_PER_PLAYER
-	},
-	{
-		/* number  */ BCT_ENEMY,
-		/*  name   */ "enemy",
-		/*  text   */ N_("Enemy spotted"),
-		/*  icon   */ "gfx/2d/beacon-enemy",
-		/*  sound  */ "sound/feedback/beacon.ogg",
-		/*decayTime*/ 5000,
-		/*  flags  */ 0
-	},
-	{
-		/* number  */ BCT_TAG,
-		/*  name   */ "tag",
-		/*  text   */ N_("Tag"),
-		/*  icon   */ "gfx/2d/beacon",
-		/*  sound  */ "sound/feedback/beacon.ogg",
-		/*decayTime*/ 7500,
-		/*  flags  */ BCF_ENTITY | BCF_DATA_UNIQUE
-	},
-	{
-		/* number  */ BCT_ALIENBASE,
-		/*  name   */ "alienbase",
-		/*  text   */ N_("Alien base"),
-		/*  icon   */ "gfx/2d/beacon-alienbase",
-		/*  sound  */ "sound/feedback/beacon.ogg",
-		/*decayTime*/ 0,
-		/*  flags  */ BCF_PER_TEAM
-	},
-	{
-		/* number  */ BCT_HUMANBASE,
-		/*  name   */ "humanbase",
-		/*  text   */ N_("Human base"),
-		/*  icon   */ "gfx/2d/beacon-humanbase",
-		/*  sound  */ "sound/feedback/beacon.ogg",
-		/*decayTime*/ 0,
-		/*  flags  */ BCF_PER_TEAM
-	},
-	{
-		/* number  */ BCT_ATTACK,
-		/*  name   */ "attack",
-		/*  text   */ N_("Attack!"),
-		/*  icon   */ "gfx/2d/beacon-attack",
-		/*  sound  */ "sound/feedback/beacon.ogg",
-		/*decayTime*/ 10000,
-		/*  flags  */ 0
-	},
-	{
-		/* number  */ BCT_DEFEND,
-		/*  name   */ "defend",
-		/*  text   */ N_("Defend!"),
-		/*  icon   */ "gfx/2d/beacon-defend",
-		/*  sound  */ "sound/feedback/beacon.ogg",
-		/*decayTime*/ 10000,
-		/*  flags  */ 0
-	},
-
-	{
-		/* number  */ BCT_HEALTH,
-		/*  name   */ "",
-		/*  text   */ N_("Heal here!"),
-		/*  icon   */ "gfx/2d/beacon-health",
-		/*  sound  */ "sound/feedback/beacon.ogg",
-		/*decayTime*/ 0,
-		/*  flags  */ BCF_IMPLICIT
-	},
-	{
-		/* number  */ BCT_AMMO,
-		/*  name   */ "",
-		/*  text   */ N_("Ammo here!"),
-		/*  icon   */ "gfx/2d/beacon-ammo",
-		/*  sound  */ "sound/feedback/beacon.ogg",
-		/*decayTime*/ 0,
-		/*  flags  */ BCF_IMPLICIT
-	}
+	{ BCT_POINTER,    "pointer",    BCF_PER_PLAYER | BCF_PRECISE },
+	{ BCT_TIMER,      "timer",      BCF_PER_PLAYER },
+	{ BCT_ENEMY,      "enemy",      0 }, 
+	{ BCT_TAG,        "tag",        BCF_ENTITY | BCF_DATA_UNIQUE },
+	{ BCT_ALIENBASE,  "alienbase",  BCF_PER_TEAM },
+	{ BCT_HUMANBASE,  "humanbase",  BCF_PER_TEAM },
+	{ BCT_ATTACK,     "attack",     0 },
+	{ BCT_DEFEND,     "defend",     0 },
+	{ BCT_HEALTH,     "health",     BCF_IMPLICIT },
+	{ BCT_AMMO,       "ammo",       BCF_IMPLICIT }
 };
+
+static const size_t bg_numBeacons = ARRAY_LEN( bg_beaconsData );
+static beaconAttributes_t bg_beacons[ ARRAY_LEN( bg_beaconsData ) ];
 
 /*
 ================
@@ -1019,9 +948,9 @@ const beaconAttributes_t *BG_BeaconByName( const char *name )
 {
 	int i;
 
-	for ( i = 0; i < NUM_BEACON_TYPES - 1; i++ )
-		if ( !Q_stricmp( bg_beaconAttributes[ i ].name, name ) )
-			return bg_beaconAttributes + i;
+	for ( i = 0; i < bg_numBeacons; i++ )
+		if ( !Q_stricmp( bg_beacons[ i ].name, name ) )
+			return bg_beacons + i;
 
 	return NULL;
 }
@@ -1033,9 +962,38 @@ BG_Beacon
 */
 const beaconAttributes_t *BG_Beacon( int index )
 {
-	if( index > BCT_NONE && index < NUM_BEACON_TYPES )
-		return bg_beaconAttributes + index - 1;
+	if( index > BCT_NONE && index < bg_numBeacons )
+		return bg_beacons + index - 1;
 	return &nullBeacon;
+}
+
+/*
+===============
+BG_InitBeaconAttributes
+===============
+*/
+void BG_InitBeaconAttributes( void )
+{
+	int i;
+	const beaconData_t *bd;
+	beaconAttributes_t *ba;
+
+	for ( i = 0; i < bg_numBeacons; i++ )
+	{
+		bd = bg_beaconsData + i;
+		ba = bg_beacons + i;
+
+		Com_Memset( ba, 0, sizeof( beaconAttributes_t ) );
+
+		ba->number = bd->number;
+		ba->name = bd->name;
+		ba->flags = bd->flags;
+
+		BG_ParseBeaconAttributeFile( va( "configs/beacons/%s.beacon.cfg", bd->name ), ba );
+	}
+
+	//hardcoded
+	bg_beacons[ BCT_TIMER - 1 ].decayTime = BEACON_TIMER_TIME + 1000;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1058,6 +1016,7 @@ void BG_InitAllConfigs( void )
 	BG_InitWeaponAttributes();
 	BG_InitUpgradeAttributes();
 	BG_InitMissileAttributes();
+	BG_InitBeaconAttributes();
 
 	BG_CheckConfigVars();
 
@@ -1145,6 +1104,20 @@ void BG_UnloadAllConfigs( void )
                 BG_Free( (char *)ua->info );
             }
         }
+    }
+
+    for ( i = 0; i < bg_numBeacons; i++ )
+    {
+		    beaconAttributes_t *ba = bg_beacons + i;
+
+		    if ( ba )
+		    {
+				    BG_Free( (char *)ba->humanName );
+
+#ifdef BUILD_CGAME
+						BG_Free( (char *)ba->text );
+#endif
+		    }
     }
 }
 
