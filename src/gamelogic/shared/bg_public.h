@@ -449,6 +449,7 @@ typedef enum
 	MIS_LOCKBLOB,
 	MIS_SLOWBLOB,
 	MIS_BOUNCEBALL,
+	MIS_SPIKER,
 
 	MIS_NUM_MISSILES
 } missile_t;
@@ -959,7 +960,7 @@ typedef enum
 
 // means of death
 // keep modNames[] in g_combat.c in sync with this list!
-// keep bg_meansOfDeathData[] in g_misc.c in sync, too!
+// keep bg_meansOfDeathData[] in bg_misc.c in sync, too!
 // TODO: Get rid of the former and use the latter instead
 typedef enum
 {
@@ -1013,6 +1014,7 @@ typedef enum
 
   MOD_ASPAWN,
   MOD_ATUBE,
+  MOD_SPIKER,
   MOD_OVERMIND,
   MOD_DECONSTRUCT,
   MOD_REPLACE,

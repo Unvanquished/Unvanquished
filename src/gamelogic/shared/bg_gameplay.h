@@ -150,6 +150,12 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define ACIDTUBE_REPEAT         300
 #define ACIDTUBE_REPEAT_ANIM    2000
 
+#define SPIKER_RANGE            200.0f
+#define SPIKER_MISSILEROWS      4
+#define SPIKER_MISSILES         26   // actual value +/- SPIKER_MISSILEROWS
+#define SPIKER_ROWOFFSET        0.5f // 0.0: Spikes are shot upwards, 1.0: Spikes are shot sideways
+#define SPIKER_COOLDOWN         5000
+
 #define TRAPPER_RANGE           400
 
 #define HIVE_SENSE_RANGE        500.0f

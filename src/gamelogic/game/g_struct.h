@@ -399,6 +399,10 @@ struct gentity_s
 	vec3_t      turretBaseDir;
 	qboolean    turretDisabled;
 
+	// spiker
+	int         spikerRestUntil;
+	float       spikerLastScoring;
+
 	vec4_t      animation; // animated map objects
 
 	qboolean    nonSegModel; // this entity uses a nonsegmented player model
