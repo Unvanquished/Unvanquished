@@ -224,9 +224,17 @@ public:
 	{
 		const Rocket::Core::Property *property;
 		property = GetProperty( "width" );
+		bool auto_width, auto_height;
 
+		auto_width = auto_height = false;
+
+		// Keyword means its auto
+		if ( property->unit == Rocket::Core::Property::KEYWORD )
+		{
+			auto_width = true;
+		}
 		// Absolute unit. We can use it as is
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		else if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.x = property->value.Get<float>();
 		}
@@ -246,7 +254,11 @@ public:
 		}
 
 		property = GetProperty( "height" );
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		if ( property->unit == Rocket::Core::Property::KEYWORD )
+		{
+			auto_height = true;
+		}
+		else if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.y = property->value.Get<float>();
 		}
@@ -262,6 +274,26 @@ public:
 					dimensions.y = ResolveProperty( "height", base_size );
 					break;
 				}
+			}
+		}
+
+		if ( shader && ( auto_height || auto_width ) )
+		{
+			int x, y;
+			re.GetTextureSize( shader, &x, &y );
+
+			if ( auto_height && !auto_width )
+			{
+				dimensions.y = ( dimensions.x / x ) * y;
+			}
+			else if ( !auto_height && auto_width )
+			{
+				dimensions.x = ( dimensions.y / y ) * x;
+			}
+			else
+			{
+				dimensions.x = x;
+				dimensions.y = y;
 			}
 		}
 		// Return the calculated dimensions. If this changes the size of the element, it will result in
@@ -280,5 +312,4 @@ private:
 	vec4_t color;
 	Rocket::Core::Vector2f dimensions;
 };
-
 #endif
