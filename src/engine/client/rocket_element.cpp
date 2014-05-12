@@ -292,7 +292,11 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 
 void Rocket_SetClass( const char *in, qboolean activate )
 {
-	activeElement->SetClass( in, static_cast<bool>( activate ) );
+	bool isSet = activeElement->IsClassSet( in );
+	if ( ( activate && !isSet ) || ( !activate && isSet ) )
+	{
+		activeElement->SetClass( in, static_cast<bool>( activate ) );
+	}
 }
 
 
