@@ -272,19 +272,6 @@ void R_AddMarkFragments( int numClipPoints, vec3_t clipPoints[ 2 ][ MAX_VERTS_ON
 		return; // not enough space for this polygon
 	}
 
-	/*
-	   // all the clip points should be within the bounding box
-	   for ( i = 0 ; i < numClipPoints ; i++ ) {
-	   int j;
-	   for ( j = 0 ; j < 3 ; j++ ) {
-	   if (clipPoints[pingPong][i][j] < mins[j] - 0.5) break;
-	   if (clipPoints[pingPong][i][j] > maxs[j] + 0.5) break;
-	   }
-	   if (j < 3) break;
-	   }
-	   if (i < numClipPoints) return;
-	 */
-
 	mf = fragmentBuffer + ( *returnedFragments );
 	mf->firstPoint = ( *returnedPoints );
 	mf->numPoints = numClipPoints;
@@ -370,8 +357,6 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 
 	numsurfaces = 0;
 	R_BoxSurfaces_r( tr.world->nodes, mins, maxs, surfaces, 64, &numsurfaces, projectionDir );
-	//assert(numsurfaces <= 64);
-	//assert(numsurfaces != 64);
 
 	returnedPoints = 0;
 	returnedFragments = 0;
@@ -483,14 +468,6 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 					VectorMA( v, MARKER_OFFSET, face->plane.normal, clipPoints[ 0 ][ j ] );
 				}
 
-				/*
-				   VectorSubtract(clipPoints[0][0], clipPoints[0][1], v1);
-				   VectorSubtract(clipPoints[0][2], clipPoints[0][1], v2);
-				   CrossProduct(v1, v2, normal);
-				   VectorNormalize(normal);
-				   if (DotProduct(normal, projectionDir) > -0.5) continue;
-				   */
-
 				// add the fragments of this face
 				R_AddMarkFragments( 3, clipPoints,
 				                    numPlanes, normals, dists,
@@ -513,14 +490,6 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 				{
 					VectorCopy( trisurf->verts[ tri->indexes[ j ] ].xyz, clipPoints[ 0 ][ j ] );
 				}
-
-				/*
-				   VectorSubtract(clipPoints[0][0], clipPoints[0][1], v1);
-				   VectorSubtract(clipPoints[0][2], clipPoints[0][1], v2);
-				   CrossProduct(v1, v2, normal);
-				   VectorNormalize(normal);
-				   if (DotProduct(normal, projectionDir) > -0.5) continue;
-				   */
 
 				// add the fragments of this face
 				R_AddMarkFragments( 3, clipPoints,

@@ -28,17 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "ConsoleHistory.h"
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-
-#include <vector>
-#include <memory>
-#include <algorithm>
+#include "ConsoleHistory.h"
 
 //TODO: make it thread safe.
 namespace Console {
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
     static const char* HISTORY_FILE = "conhistory";
 #else
     static const char* HISTORY_FILE = "conhistory_server";

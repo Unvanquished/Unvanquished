@@ -28,14 +28,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include <memory>
-#include <unordered_map>
-
-#include "../../common/Log.h"
-#include "../../common/String.h"
-
 #ifndef FRAMEWORK_RESOURCE_H_
 #define FRAMEWORK_RESOURCE_H_
+
+#include "../../common/Common.h"
 
 /*
  * Resource registration logic.
@@ -283,10 +279,14 @@ namespace Resource {
 
     template<typename T>
     void Manager<T>::Prune() {
-        for (auto it = resources.begin(); it != resources.end(); it ++) {
+        auto it = resources.begin();
+
+        while (it != resources.end()) {
             if (not it->second->keep and it->second.unique()) {
                 it->second->Cleanup();
                 it = resources.erase(it);
+            } else {
+                it ++;
             }
         }
     }

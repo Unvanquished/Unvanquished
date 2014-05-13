@@ -46,10 +46,10 @@ and one exported function: Perform
 
 */
 
-#include "../framework/CommandSystem.h"
-
 #include "vm_local.h"
 #include "vm_traps.h"
+
+#include "../framework/CommandSystem.h"
 
 vm_t       *currentVM = NULL;
 vm_t       *lastVM = NULL;
@@ -742,7 +742,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	int        i, remaining;
 	qboolean   onlyQVM = !!Cvar_VariableValue( "sv_pure" );
 
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 	onlyQVM &= strcmp( module, "game" );
 #endif
 

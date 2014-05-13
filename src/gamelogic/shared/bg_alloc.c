@@ -24,10 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
-#ifdef DEBUG_VM_ALLOC
-#include <stdlib.h>
-#endif
-
 #define  POOLSIZE      ( 2048 * 1024 )
 
 #define  FREEMEMCOOKIE ((int)0xDEADBE3F ) // Any unlikely to be used value

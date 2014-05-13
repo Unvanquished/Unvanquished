@@ -43,9 +43,6 @@ extern "C" {
 #include "../../libs/tinygettext/tinygettext.hpp"
 #include "../../libs/tinygettext/file_system.hpp"
 
-#include <sstream>
-#include <iostream>
-
 using namespace tinygettext;
 
 // Ugly char buffer
@@ -60,7 +57,7 @@ cvar_t            *trans_debug;
 cvar_t            *trans_encodings;
 cvar_t            *trans_languages;
 
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 extern cvar_t *cl_consoleKeys; // should really #include client.h
 #endif
 
@@ -264,7 +261,7 @@ void Trans_UpdateLanguage_f( void )
 {
 	Trans_SetLanguage( language->string );
 
-#ifndef DEDICATED
+#ifndef BUILD_SERVER
 	// update the default console keys string
 	Z_Free( cl_consoleKeys->resetString );
 	cl_consoleKeys->resetString = CopyString( _("~ ` 0x7e 0x60") );
@@ -291,9 +288,9 @@ void Trans_Init( void )
 	trans_encodings = Cvar_Get( "trans_encodings", "", CVAR_ROM );
 
 	// set tinygettext log callbacks
-	Log::set_log_error_callback( &Trans_Error );
-	Log::set_log_warning_callback( &Trans_Warning );
-	Log::set_log_info_callback( &Trans_Info );
+	tinygettext::Log::set_log_error_callback( &Trans_Error );
+	tinygettext::Log::set_log_warning_callback( &Trans_Warning );
+	tinygettext::Log::set_log_info_callback( &Trans_Info );
 
 	trans_manager.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );
 	trans_managergame.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );

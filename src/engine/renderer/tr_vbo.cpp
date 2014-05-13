@@ -253,7 +253,6 @@ static void R_SetAttributeLayoutsSeperate( VBO_t *vbo )
 static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 {
 	int32_t i;
-	uint32_t stride = 0;
 	uint32_t offset = 0;
 	uint32_t positionBits = ATTR_POSITION | ATTR_NORMAL | ATTR_TANGENT | ATTR_BINORMAL;
 
@@ -841,7 +840,6 @@ void R_BindVBO( VBO_t *vbo )
 {
 	if ( !vbo )
 	{
-		//R_BindNullVBO();
 		ri.Error( ERR_DROP, "R_BindNullVBO: NULL vbo" );
 	}
 
@@ -863,8 +861,6 @@ void R_BindVBO( VBO_t *vbo )
 		glBindBuffer( GL_ARRAY_BUFFER, vbo->vertexesVBO );
 
 		backEnd.pc.c_vboVertexBuffers++;
-
-		//GL_VertexAttribPointers(ATTR_BITS);
 	}
 }
 
@@ -895,7 +891,6 @@ void R_BindIBO( IBO_t *ibo )
 {
 	if ( !ibo )
 	{
-		//R_BindNullIBO();
 		ri.Error( ERR_DROP, "R_BindIBO: NULL ibo" );
 	}
 

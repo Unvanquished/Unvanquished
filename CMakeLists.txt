@@ -48,9 +48,6 @@ project( Daemon C CXX )
 # Configuration options
 ################################################################################
 
-option( ENABLE_LTO "Use link-time optimization for release builds" 0 )
-option( ENABLE_HARDENING "Use stack protection and other hardening flags" 0 )
-
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
 option( BUILD_GAME_NACL_NATIVE_EXE "Build native executable NaCl game logic" 1 )
@@ -63,10 +60,14 @@ option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
+option( USE_LTO "Use link-time optimization for release builds" 0 )
+cmake_dependent_option( USE_SLIM_LTO "Generate slim LTO objects, improves build times" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0 )
+option( USE_HARDENING "Use stack protection and other hardening flags" 0 )
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
 option( USE_WEXTRA "Enable extra compilation warnings" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
+option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
 
 ################################################################################
@@ -137,6 +138,21 @@ macro( try_c_cxx_flag PROP FLAG )
     set_c_flag( ${FLAG} ${ARGV2} )
   endif()
 endmacro()
+# Clang prints a warning when if it doesn't support a flag, so use -Werror to detect
+macro( try_cxx_flag_werror PROP FLAG )
+  set( CMAKE_REQUIRED_FLAGS "-Werror" )
+  check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
+  set( CMAKE_REQUIRED_FLAGS "" )
+  if( FLAG_${PROP} )
+    set_cxx_flag( ${FLAG} ${ARGV2} )
+  endif()
+endmacro()
+macro( try_c_cxx_flag_werror PROP FLAG )
+  try_cxx_flag_werror( ${PROP} ${FLAG} ${ARGV2} )
+  if( FLAG_${PROP} )
+    set_c_flag( ${FLAG} ${ARGV2} )
+  endif()
+endmacro()
 macro( try_linker_flag PROP FLAG )
   # Check it with the C compiler
   set( CMAKE_REQUIRED_FLAGS ${FLAG} )
@@ -154,34 +170,28 @@ if( MSVC )
   if( ARCH STREQUAL "x86" )
     set_c_cxx_flag( "/arch:SSE2" )
   endif()
-  if( ENABLE_LTO )
+  if( USE_LTO )
+    set_c_cxx_flag( "/GL" MINSIZEREL )
+    set_c_cxx_flag( "/GL" RELWITHDEBINFO )
     set_c_cxx_flag( "/GL" RELEASE )
-    set_linker_flag( "/LTCG" )
+    set_linker_flag( "/LTCG" MINSIZEREL )
+    set_linker_flag( "/LTCG" RELWITHDEBINFO )
+    set_linker_flag( "/LTCG" RELEASE )
   endif()
 else()
   set_c_cxx_flag( "-ffast-math" )
   set_c_cxx_flag( "-fno-strict-aliasing" )
-  set_c_cxx_flag( "-fomit-frame-pointer" RELEASE )
-  set_c_cxx_flag( "-fomit-frame-pointer" MINSIZEREL )
 
   # Set arch on x86 to SSE2 minimum and enable CMPXCHG16B
   if( ARCH STREQUAL "x86" )
     set_c_cxx_flag( "-m32" )
     set_c_cxx_flag( "-msse2" )
     set_c_cxx_flag( "-mtune=generic" )
-
-    # Clang prints a warning when if it doesn't support -mfpmath=sse
-    set( CMAKE_REQUIRED_FLAGS "-Werror" )
-    try_c_cxx_flag( MFPMATH_SSE "-mfpmath=sse" )
-    set( CMAKE_REQUIRED_FLAGS "" )
+    try_c_cxx_flag_werror( MFPMATH_SSE "-mfpmath=sse" )
   elseif( ARCH STREQUAL "x86_64" )
     set_c_cxx_flag( "-m64" )
     set_c_cxx_flag( "-mtune=generic" )
-
-    # Clang prints a warning when if it doesn't support -mcx16
-    set( CMAKE_REQUIRED_FLAGS "-Werror" )
-    try_c_cxx_flag( MCX16 "-mcx16" )
-    set( CMAKE_REQUIRED_FLAGS "" )
+    try_c_cxx_flag_werror( MCX16 "-mcx16" )
   endif()
 
   # Use hidden symbol visibility if possible
@@ -218,10 +228,12 @@ else()
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELEASE )
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELWITHDEBINFO )
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" MINSIZEREL )
-  if( ENABLE_HARDENING )
+  if( USE_HARDENING )
+    try_c_cxx_flag( FSTACK_PROTECTOR_STRONG "-fstack-protector-strong" )
+    if( NOT FLAG_FSTACK_PROTECTOR_STRONG )
+      try_c_cxx_flag( FSTACK_PROTECTOR_ALL "-fstack-protector-all" )
+    endif()
     try_c_cxx_flag( FNO_STRICT_OVERFLOW "-fno-strict-overflow" )
-    try_c_cxx_flag( FSTACK_PROTECTOR_ALL "-fstack-protector-all" )
-    try_c_cxx_flag( PARAM_SSP_BUFFER_SIZE "--param ssp-buffer-size=1" )
     try_c_cxx_flag( WSTACK_PROTECTOR "-Wstack-protector" )
     try_c_cxx_flag( FPIE "-fPIE" )
     try_linker_flag( LINKER_PIE "-pie" )
@@ -243,14 +255,12 @@ else()
     try_linker_flag( LINKER_NXCOMPAT "-Wl,--nxcompat" )
   endif()
 
-  # LTO support, only used on release builds
-  if( ENABLE_LTO )
-    # This flag is also used when linking
-    set_c_cxx_flag( "-flto" RELEASE )
-  endif()
-
-  # The -pthread flag sets some preprocessor defines
+  # The -pthread flag sets some preprocessor defines, it is also used to link
+  # with libpthread on Linux
   try_c_cxx_flag( PTHREAD "-pthread" )
+  if( LINUX )
+    set_linker_flag( "-pthread" )
+  endif()
 
   # Warning options
   set_c_cxx_flag( "-Wall" )
@@ -262,11 +272,58 @@ else()
   endif()
 
   if( USE_PEDANTIC )
-    set_c_cxx_flag("-pedantic")
+    set_c_cxx_flag( "-pedantic" )
   endif()
 
   if( USE_ADDRESS_SANITIZER )
     set_cxx_flag( "-fsanitize=address" )
+    set_linker_flag( "-fsanitize=address" )
+  endif()
+
+  # Link-time optimization
+  if( USE_LTO )
+    set_c_cxx_flag( "-flto" )
+    set_linker_flag( "-flto" )
+
+    # For LTO compilation we must send a copy of all compile flags to the linker
+    set_linker_flag( "${CMAKE_CXX_FLAGS}" )
+
+    # Use gcc-ar and gcc-ranlib instead of ar and ranlib so that we can use
+    # slim LTO objects. This requires a recent version of GCC and binutils.
+    if( USE_SLIM_LTO )
+      string(REGEX MATCH "^([0-9]+.[0-9]+)" _version
+         "${CMAKE_CXX_COMPILER_VERSION}")
+      get_filename_component(COMPILER_BASENAME "${CMAKE_C_COMPILER}" NAME)
+      if (COMPILER_BASENAME MATCHES "^(.+-)g?cc(-[0-9]+\\.[0-9]+\\.[0-9]+)?(\\.exe)?$")
+        set(TOOLCHAIN_PREFIX ${CMAKE_MATCH_1})
+      endif()
+
+      find_program(GCC_AR NAMES
+        "${TOOLCHAIN_PREFIX}gcc-ar"
+        "${TOOLCHAIN_PREFIX}gcc-ar-${_version}"
+        DOC "gcc provided wrapper for ar which adds the --plugin option"
+      )
+
+      find_program(GCC_RANLIB NAMES
+        "${TOOLCHAIN_PREFIX}gcc-ranlib"
+        "${TOOLCHAIN_PREFIX}gcc-ranlib-${_version}"
+        DOC "gcc provided wrapper for ranlib which adds the --plugin option"
+      )
+
+      mark_as_advanced( GCC_AR GCC_RANLIB )
+
+      # Override standard ar and ranlib with the gcc- versions
+      if( GCC_AR )
+        set( CMAKE_AR ${GCC_AR} )
+      endif()
+      if( GCC_RANLIB )
+        set( CMAKE_RANLIB ${GCC_RANLIB} )
+      endif()
+
+      try_c_cxx_flag( NO_FAT_LTO_OBJECTS "-fno-fat-lto-objects" )
+    else()
+      try_c_cxx_flag( FAT_LTO_OBJECTS "-ffat-lto-objects" )
+    endif()
   endif()
 
 endif()
@@ -276,7 +333,8 @@ if( WIN32 )
   # Minimum Windows version: XP
   # Define WIN32 for compatibility (compiler defines _WIN32)
   # Define NOMINMAX to prevent conflics between std::min/max and the min/max macros in WinDef.h
-  add_definitions( -DWINVER=0x501 -DWIN32 -DNOMINMAX )
+  # Enable STRICT type checking for windows.h
+  add_definitions( -DWINVER=0x501 -DWIN32 -DNOMINMAX -DSTRICT )
   set( CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "" "lib" )
 endif()
 if( MSVC )
@@ -292,8 +350,24 @@ if( APPLE )
 endif()
 
 ################################################################################
+# Determine python version and set env variable
+################################################################################
+
+if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
+  set( PythonInterp_FIND_VERSION 2 )
+  find_package( PythonInterp )
+  if( NOT PYTHONINTERP_FOUND )
+    message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
+  endif()
+  set( PNACLPYTHON_PREFIX env "PNACLPYTHON=${PYTHON_EXECUTABLE}" )
+endif()
+
+################################################################################
 # Directories
 ################################################################################
+
+# Dependencies version, this must match the number in external_deps/build.sh
+set( DEPS_VERSION 2 )
 
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
@@ -310,28 +384,35 @@ else()
   set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
 endif()
 if( MSVC )
+  set( DEPS_EXT ".zip" )
   if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc64 )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc64-${DEPS_VERSION} )
   else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc32 )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc32-${DEPS_VERSION} )
   endif()
 elseif( WIN32 )
+  set( DEPS_EXT ".zip" )
   if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw64 )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw64-${DEPS_VERSION} )
   else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw32 )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw32-${DEPS_VERSION} )
   endif()
 elseif( APPLE )
+  set( DEPS_EXT ".tar.bz2" )
   if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx64 )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx64-${DEPS_VERSION} )
   else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx32 )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx32-${DEPS_VERSION} )
   endif()
 elseif( LINUX )
-  if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux64 )
+  set( DEPS_EXT ".tar.bz2" )
+  # Our minimal NaCl .debs put the files in /usr/lib/nacl, so check that first
+  if( EXISTS "/usr/lib/nacl/sel_ldr" )
+    set( DEPS_DIR "/usr/lib/nacl" )
+  elseif( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux64-${DEPS_VERSION} )
   else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux32 )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux32-${DEPS_VERSION} )
   endif()
 endif()
 if( LINUX AND ARCH STREQUAL "x86_64" )
@@ -377,6 +458,74 @@ endif()
 include_directories( "${OBJ_DIR}" )
 
 ################################################################################
+# Support for precompiled headers
+################################################################################
+
+# MSVC requires that an extra file be added to a project
+if( USE_PRECOMPILED_HEADER AND MSVC )
+  file( WRITE ${OBJ_DIR}/PrecompiledHeader.cpp "" )
+  set( PCH_FILE ${OBJ_DIR}/PrecompiledHeader.cpp )
+endif()
+
+function( ADD_PRECOMPILED_HEADER Target Header )
+  if( USE_PRECOMPILED_HEADER AND NOT CMAKE_VERSION VERSION_LESS 2.8.10 )
+    # Get the common compile flags
+    set( Flags ${CMAKE_CXX_FLAGS} )
+    get_target_property( Type ${Target} TYPE )
+    if( Type STREQUAL MODULE_LIBRARY )
+        set( Flags ${Flags} ${CMAKE_SHARED_MODULE_CXX_FLAGS} )
+    endif()
+    separate_arguments( Flags )
+
+    # Get the per-configuration compile flags
+    foreach( Config Debug Release RelWithDebInfo MinSizeRel )
+      string( TOUPPER ${Config} CONFIG )
+      set( ConfigFlags ${CMAKE_CXX_FLAGS_${CONFIG}} )
+      separate_arguments( ConfigFlags )
+      foreach( Flag ${ConfigFlags} )
+        set( Flags ${Flags} $<$<CONFIG:${Config}>:${Flag}> )
+      endforeach()
+    endforeach()
+
+    # Get preprocessor options for the target and directory (global)
+    get_directory_property( DirCompileDefs COMPILE_DEFINITIONS )
+    get_directory_property( DirIncludeDirs INCLUDE_DIRECTORIES )
+    get_target_property( TargetCompileDefs ${Target} COMPILE_DEFINITIONS )
+    set( Defs )
+    foreach( Def ${TargetCompileDefs} )
+      set( Defs ${Defs} -D${Def} )
+    endforeach()
+    foreach( Def ${DirCompileDefs} )
+      set( Defs ${Defs} -D${Def} )
+    endforeach()
+    foreach( Def ${DirIncludeDirs} )
+      set( Defs ${Defs} -I${Def} )
+    endforeach()
+
+    # Compiler-specific PCH support
+    if( CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+      add_custom_command( OUTPUT "${OBJ_DIR}/${Target}.h.gch"
+        COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
+        DEPENDS ${Header}
+        IMPLICIT_DEPENDS CXX ${Header}
+      )
+
+      add_custom_target( ${Target}-pch DEPENDS "${OBJ_DIR}/${Target}.h.gch" )
+      add_dependencies( ${Target} ${Target}-pch )
+
+      if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+        set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${OBJ_DIR}/${Target}.h.gch" )
+      else()
+        set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include ${OBJ_DIR}/${Target}.h -Winvalid-pch" )
+      endif()
+    elseif( MSVC )
+      set_source_files_properties( ${PCH_FILE} PROPERTIES COMPILE_FLAGS "/Yc${Header}" )
+      set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "/Yu${Header} /Fp${OBJ_DIR}/${Target}.pch /FI${Header}" )
+    endif()
+  endif()
+endfunction()
+
+################################################################################
 # File lists
 ################################################################################
 
@@ -406,6 +555,8 @@ set( COMMONLIST
   ${COMMON_DIR}/Command.h
   ${COMMON_DIR}/Cvar.cpp
   ${COMMON_DIR}/Cvar.h
+  ${COMMON_DIR}/FileSystem.cpp
+  ${COMMON_DIR}/FileSystem.h
   ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/LineEditData.cpp
   ${COMMON_DIR}/LineEditData.h
@@ -460,8 +611,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_model_md3.cpp
   ${ENGINE_DIR}/renderer/tr_model_md5.cpp
   ${ENGINE_DIR}/renderer/tr_model_iqm.cpp
-  ${ENGINE_DIR}/renderer/tr_model_mdc.cpp
-  ${ENGINE_DIR}/renderer/tr_model_psk.cpp
   ${ENGINE_DIR}/renderer/tr_model_skel.cpp
   ${ENGINE_DIR}/renderer/tr_noise.cpp
   ${ENGINE_DIR}/renderer/tr_scene.cpp
@@ -513,8 +662,6 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/ConsoleField.h
   ${ENGINE_DIR}/framework/ConsoleHistory.cpp
   ${ENGINE_DIR}/framework/ConsoleHistory.h
-  ${ENGINE_DIR}/framework/FileSystem.cpp
-  ${ENGINE_DIR}/framework/FileSystem.h
   ${ENGINE_DIR}/framework/LogSystem.cpp
   ${ENGINE_DIR}/framework/LogSystem.h
   ${ENGINE_DIR}/framework/Resource.cpp
@@ -527,6 +674,7 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/crypto.h
   ${ENGINE_DIR}/qcommon/cvar.cpp
   ${ENGINE_DIR}/qcommon/cvar.h
+  ${ENGINE_DIR}/qcommon/files.cpp
   ${ENGINE_DIR}/qcommon/qfiles.h
   ${ENGINE_DIR}/qcommon/huffman.cpp
   ${ENGINE_DIR}/qcommon/md5.cpp
@@ -573,12 +721,6 @@ if( NOT APPLE )
   )
 endif()
 
-if( APPLE )
-  set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_osx.mm
-  )
-endif()
-
 set( CLIENTBASELIST
   ${ENGINE_DIR}/botlib/bot_debug.cpp
   ${ENGINE_DIR}/botlib/bot_nav_edit.cpp
@@ -606,11 +748,6 @@ set( CLIENTBASELIST
 )
 
 set( CLIENTLIST
-  ${ENGINE_DIR}/audio/snd_codec.cpp
-  ${ENGINE_DIR}/audio/snd_codec.h
-  ${ENGINE_DIR}/audio/snd_codec_ogg.cpp
-  ${ENGINE_DIR}/audio/snd_codec_opus.cpp
-  ${ENGINE_DIR}/audio/snd_codec_wav.cpp
   ${ENGINE_DIR}/audio/ALObjects.cpp
   ${ENGINE_DIR}/audio/ALObjects.h
   ${ENGINE_DIR}/audio/Audio.cpp
@@ -622,7 +759,12 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/Sample.h
   ${ENGINE_DIR}/audio/Sound.cpp
   ${ENGINE_DIR}/audio/Sound.h
-)
+  ${ENGINE_DIR}/audio/SoundCodec.h
+  ${ENGINE_DIR}/audio/SoundCodec.cpp
+  ${ENGINE_DIR}/audio/OggCodec.cpp
+  ${ENGINE_DIR}/audio/OpusCodec.cpp
+  ${ENGINE_DIR}/audio/WavCodec.cpp
+  )
 
 set( TTYCLIENTLIST
     ${ENGINE_DIR}/null/null_input.cpp
@@ -787,6 +929,37 @@ set( MINIZIPLIST
   ${LIB_DIR}/minizip/unzip.h
 )
 
+# This is only used for the NaCl modules. For all other targets, the host zlib
+# is used (sourced from external_deps if not available on target platform).
+set( ZLIBLIST
+  ${LIB_DIR}/zlib/adler32.c
+  ${LIB_DIR}/zlib/compress.c
+  ${LIB_DIR}/zlib/crc32.c
+  ${LIB_DIR}/zlib/crc32.h
+  ${LIB_DIR}/zlib/deflate.c
+  ${LIB_DIR}/zlib/deflate.h
+  ${LIB_DIR}/zlib/gzclose.c
+  ${LIB_DIR}/zlib/gzguts.h
+  ${LIB_DIR}/zlib/gzlib.c
+  ${LIB_DIR}/zlib/gzread.c
+  ${LIB_DIR}/zlib/gzwrite.c
+  ${LIB_DIR}/zlib/infback.c
+  ${LIB_DIR}/zlib/inffast.c
+  ${LIB_DIR}/zlib/inffast.h
+  ${LIB_DIR}/zlib/inffixed.h
+  ${LIB_DIR}/zlib/inflate.c
+  ${LIB_DIR}/zlib/inflate.h
+  ${LIB_DIR}/zlib/inftrees.c
+  ${LIB_DIR}/zlib/inftrees.h
+  ${LIB_DIR}/zlib/trees.c
+  ${LIB_DIR}/zlib/trees.h
+  ${LIB_DIR}/zlib/uncompr.c
+  ${LIB_DIR}/zlib/zconf.h
+  ${LIB_DIR}/zlib/zlib.h
+  ${LIB_DIR}/zlib/zutil.c
+  ${LIB_DIR}/zlib/zutil.h
+)
+
 set( TINYGETTEXTLIST
   ${LIB_DIR}/tinygettext/dictionary_manager.hpp
   ${LIB_DIR}/tinygettext/file_system.hpp
@@ -938,9 +1111,9 @@ if( DEPS_DIR )
   # Download them if they not available
   if( NOT EXISTS ${DEPS_DIR} )
     get_filename_component( BASENAME ${DEPS_DIR} NAME )
-    set( REMOTE "http://vanquished.zapto.org/~amanieu/unvanquished_deps/${BASENAME}.tar.bz2" )
+    set( REMOTE "http://www.unvanquished.net/unvanquished_deps/${BASENAME}${DEPS_EXT}" )
     message( STATUS "Downloading dependencies from '${REMOTE}'" )
-    file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}.tar.bz2 SHOW_PROGRESS
+    file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}${DEPS_EXT} SHOW_PROGRESS
       STATUS DOWNLOAD_RESULT LOG DOWNLOAD_LOG )
     list( GET DOWNLOAD_RESULT 0 DOWNLOAD_STATUS )
     list( GET DOWNLOAD_RESULT 1 DOWNLOAD_STRING )
@@ -953,10 +1126,10 @@ if( DEPS_DIR )
     message( STATUS "Download completed successfully" )
 
     # Extract the downloaded archive
-    execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${OBJ_DIR}/${BASENAME}.tar.bz2
+    execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${OBJ_DIR}/${BASENAME}${DEPS_EXT}
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/external_deps RESULT_VARIABLE EXTRACT_RESULT )
     if( NOT EXTRACT_RESULT EQUAL 0 )
-      message( FATAL_ERROR "Could not extract ${BASENAME}.tar.bz2" )
+      message( FATAL_ERROR "Could not extract ${BASENAME}${DEPS_EXT}" )
     endif()
   endif()
 
@@ -973,11 +1146,9 @@ if( DEPS_DIR )
   endif()
 endif()
 
-# These variables are defined
-# LIBS_BASE, LIBSRC_BASE
-# LIBS_ENGINE, LIBSRC_ENGINE
-# LIBS_BASECLIENT, LIBSRC_BASECLIENT
-# LIBS_CLIENT, LIBSRC_CLIENT
+# These variables are defined:
+# LIBS_BASE, LIBS_ENGINE, LIBS_BASECLIENT, LIBS_CLIENT
+# LIBSRC_BASE, LIBSRC_NACL, LIBSRC_ENGINE
 
 # Base OS libs
 if( WIN32 )
@@ -1005,7 +1176,7 @@ else()
 endif()
 
 # Minizip
-set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${MINIZIPLIST} )
+set( LIBSRC_BASE ${LIBSRC_BASE} ${MINIZIPLIST} )
 
 # Tinygettext
 set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${TINYGETTEXTLIST} )
@@ -1040,7 +1211,7 @@ else()
   add_definitions( -DNACL_BUILD_SUBARCH=32 )
 endif()
 include_directories( ${LIB_DIR}/nacl )
-set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACLLIST_NATIVE} )
+set( LIBSRC_NACL ${LIBSRC_NACL} ${NACLLIST_NATIVE} )
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
@@ -1059,11 +1230,6 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
       set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL_LIBRARY} )
     else()
       set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
-    endif()
-    if( APPLE )
-      # Mac OS X does not provide a SDLMain.dylib so we must compile our own
-      add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.mm )
-      set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
     endif()
   endif()
 
@@ -1191,7 +1357,7 @@ endif()
 # Curses, pdcurses on Windows and ncursesw on Unix
 # Not supported on mac because the included version is too old
 if( WIN32 )
-  add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES)
+  add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES )
   include_directories( ${LIB_DIR}/pdcurses )
   set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
   set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
@@ -1202,6 +1368,15 @@ elseif( NOT APPLE )
   include_directories( ${CURSESW_INCLUDE_DIR} )
   set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
 endif()
+
+# Builds the libs for which we include the source
+add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
+add_library( nacl-source-libs EXCLUDE_FROM_ALL ${LIBSRC_NACL} )
+add_library( engine-source-libs EXCLUDE_FROM_ALL ${LIBSRC_ENGINE} )
+set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
+
+set( LIBS_BASE base-source-libs ${LIBS_BASE} )
+set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
 
 ################################################################################
 # Game logic
@@ -1216,31 +1391,33 @@ function( GAMEMODULE )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_DLL )
-    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll ${LIBS_BASE} )
+    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
-      COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
+      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};VM_IN_PROCESS"
     )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_EXE )
-    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe ${LIBS_BASE} )
+    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
-      OUTPUT_NAME ${GAMEMODULE_NAME}-nacl-native-exe
-      COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
+      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-exe ${COMMON_DIR}/Common.h )
   endif()
 
   if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM_NATIVE )
     set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
-    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
+    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
     target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
     )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-qvm-native ${COMMON_DIR}/Common.h )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL )
@@ -1253,6 +1430,7 @@ function( GAMEMODULE )
     # Determine compiler and translator options
     set( NACL_COMPILE_OPTIONS
       -I${LIB_DIR}/nacl
+      -I${LIB_DIR}/zlib
       -DNACL_BUILD_ARCH=x86 # Not actually used
       -DNACL_BUILD_SUBARCH=64 # Not actually used
       -Wall
@@ -1260,45 +1438,82 @@ function( GAMEMODULE )
       -fvisibility=hidden
       -stdlib=libc++
       --pnacl-allow-exceptions
-      $<$<CONFIG:None>:-O3>
-      $<$<CONFIG:None>:-fomit-frame-pointer>
-      $<$<CONFIG:None>:-DNDEBUG>
-      $<$<CONFIG:Release>:-O3>
-      $<$<CONFIG:Release>:-fomit-frame-pointer>
-      $<$<CONFIG:Release>:-DNDEBUG>
-      $<$<CONFIG:Debug>:-O0>
-      $<$<CONFIG:Debug>:-g3>
-      $<$<CONFIG:RelWithDebInfo>:-O2>
-      $<$<CONFIG:RelWithDebInfo>:-DNDEBUG>
-      $<$<CONFIG:RelWithDebInfo>:-g3>
-      $<$<CONFIG:MinSizeRel>:-Os>
-      $<$<CONFIG:MinSizeRel>:-fomit-frame-pointer>
-      $<$<CONFIG:MinSizeRel>:-DNDEBUG>
     )
     set( NACL_TRANSLATE_OPTIONS
       --allow-llvm-bitcode-input
       --pnacl-allow-exceptions
-      $<$<CONFIG:None>:-O3>
-      $<$<CONFIG:Release>:-O3>
-      $<$<CONFIG:Debug>:-O0>
-      $<$<CONFIG:RelWithDebInfo>:-O2>
-      $<$<CONFIG:MinSizeRel>:-O2>
     )
+    if( CMAKE_VERSION VERSION_LESS 2.8.10 )
+      # Use some default flags if cmake doesn't support generator expressions
+      set( NACL_COMPILE_OPTIONS
+        ${NACL_COMPILE_OPTIONS}
+        -O3
+        -DNDEBUG
+      )
+      set( NACL_TRANSLATE_OPTIONS
+        ${NACL_TRANSLATE_OPTIONS}
+        -O3
+      )
+    else()
+      set( NACL_COMPILE_OPTIONS
+        ${NACL_COMPILE_OPTIONS}
+        $<$<CONFIG:None>:-O3>
+        $<$<CONFIG:None>:-DNDEBUG>
+        $<$<CONFIG:Release>:-O3>
+        $<$<CONFIG:Release>:-DNDEBUG>
+        $<$<CONFIG:Debug>:-O0>
+        $<$<CONFIG:Debug>:-g3>
+        $<$<CONFIG:RelWithDebInfo>:-O2>
+        $<$<CONFIG:RelWithDebInfo>:-DNDEBUG>
+        $<$<CONFIG:RelWithDebInfo>:-g3>
+        $<$<CONFIG:MinSizeRel>:-Os>
+        $<$<CONFIG:MinSizeRel>:-DNDEBUG>
+      )
+      set( NACL_TRANSLATE_OPTIONS
+        ${NACL_TRANSLATE_OPTIONS}
+        $<$<CONFIG:None>:-O3>
+        $<$<CONFIG:Release>:-O3>
+        $<$<CONFIG:Debug>:-O0>
+        $<$<CONFIG:RelWithDebInfo>:-O2>
+        $<$<CONFIG:MinSizeRel>:-O2>
+      )
+    endif()
+    if( USE_WEXTRA )
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wextra" )
+    else()
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wno-sign-compare" )
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wno-write-strings" )
+    endif()
+    if( USE_PEDANTIC )
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-pedantic" )
+    endif()
     foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
       set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} -D${DEF} )
     endforeach()
 
     # Compile C files with clang and C++ files with clang++
     set( OBJECTS )
-    foreach( FILE ${GAMEMODULE_FILES} ${GAMEMODULE_NACL_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} )
+    foreach( FILE ${GAMEMODULE_FILES} ${GAMEMODULE_NACL_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} ${ZLIBLIST} ${LIBSRC_BASE} )
       get_filename_component( FILENAME ${FILE} NAME_WE )
       get_filename_component( FILEDIR ${FILE} PATH )
       get_filename_component( EXT ${FILE} EXT )
       set( OBJ ${NACL_DIR}/${FILENAME}.o )
 
-      if( EXT STREQUAL ".c" OR EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
+      if( EXT STREQUAL ".c" AND FILEDIR MATCHES ${LIB_DIR} )
         add_custom_command( OUTPUT ${OBJ}
-          COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
+          COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
+            -std=gnu89
+            ${NACL_COMPILE_OPTIONS}
+            -c
+            -o ${OBJ}
+            ${FILE}
+          DEPENDS ${FILE}
+          IMPLICIT_DEPENDS C ${FILE}
+        )
+        set( OBJECTS ${OBJECTS} ${OBJ} )
+      elseif( EXT STREQUAL ".c" OR EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
+        add_custom_command( OUTPUT ${OBJ}
+          COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
             -x c++ -std=gnu++11
             ${NACL_COMPILE_OPTIONS}
             -c
@@ -1311,10 +1526,10 @@ function( GAMEMODULE )
       endif()
     endforeach()
 
-    # Generate PNaCL platform-independant executable
+    # Generate PNaCL platform-independent executable
     add_custom_command(
       OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
         ${NACL_COMPILE_OPTIONS}
         -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
         ${OBJECTS}
@@ -1324,7 +1539,7 @@ function( GAMEMODULE )
     # Generate NaCl executables for x86 and x86_64
     add_custom_command(
       OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-      COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
         ${NACL_TRANSLATE_OPTIONS}
         -arch i686
         -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
@@ -1333,7 +1548,7 @@ function( GAMEMODULE )
     )
     add_custom_command(
       OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
-      COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
         ${NACL_TRANSLATE_OPTIONS}
         -arch x86-64
         -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
@@ -1341,11 +1556,31 @@ function( GAMEMODULE )
       DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
 
+    # Create stripped versions of the NaCl executables
+    add_custom_command(
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-strip${PNACL_BIN_EXT}
+        -s
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+    )
+    add_custom_command(
+      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
+      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-strip${PNACL_BIN_EXT}
+        -s
+        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+    )
+
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-nacl ALL
       DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
         ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
         ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
+        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
     )
 
     # Create the build directory before building
@@ -1411,7 +1646,7 @@ if( BUILD_GAME_QVM )
 endif()
 
 GAMEMODULE( NAME game
-  COMPILE_DEF IN_GAME_VM
+  COMPILE_DEF BUILD_VM BUILD_GAME
   HAS_NACL 1
   HAS_QVM 0
   FILES ${GAMELIST}
@@ -1422,7 +1657,7 @@ GAMEMODULE( NAME game
 )
 
 GAMEMODULE( NAME cgame
-  COMPILE_DEF IN_CGAME_VM
+  COMPILE_DEF BUILD_VM BUILD_CGAME
   HAS_NACL 0
   HAS_QVM 1
   FILES ${CGAMELIST}
@@ -1433,7 +1668,7 @@ GAMEMODULE( NAME cgame
 )
 
 GAMEMODULE( NAME ui
-  COMPILE_DEF UI
+  COMPILE_DEF UI BUILD_VM BUILD_UI
   FILES ${UILIST}
   HAS_NACL 0
   HAS_QVM 1
@@ -1448,33 +1683,34 @@ GAMEMODULE( NAME ui
 ################################################################################
 
 if( BUILD_CLIENT )
-  add_executable( client WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST} ${RENDERERLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
+  add_executable( client WIN32 ${PCH_FILE} ${ENGINELIST} ${SHAREDLIST} ${CLIENTLIST} ${CLIENTBASELIST} ${RENDERERLIST} ${SERVERLIST} ${SDLLIST} ${WIN_RC} )
   if( USE_SMP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
   target_link_libraries( client ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_CLIENT )
   if( USE_VOIP )
     # Set it here so the tty client doesn't need to depend on speex
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
+  ADD_PRECOMPILED_HEADER( client ${COMMON_DIR}/Common.h )
 endif()
 
 if( BUILD_SERVER )
-  add_executable( server WIN32 ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${WIN_RC} )
+  add_executable( server WIN32 ${PCH_FILE} ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
-  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
+  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
+  ADD_PRECOMPILED_HEADER( server ${COMMON_DIR}/Common.h )
 endif()
 
 if( BUILD_TTY_CLIENT )
-  add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC} )
+  add_executable( ttyclient WIN32 ${PCH_FILE} ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST} ${WIN_RC} )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
-  set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
+  set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
+  ADD_PRECOMPILED_HEADER( ttyclient ${COMMON_DIR}/Common.h )
 endif()
 
 ################################################################################
@@ -1486,6 +1722,13 @@ if( LINUX )
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
+elseif(WIN32 AND ARCH STREQUAL x86)
+  # Win32 requires sel_ldr64.exe in order to run on Win64
+  add_custom_target( nacl_sdk ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-x86_64.nexe ${FULL_OUTPUT_DIR}/irt_core-x86_64.nexe )
 else()
   add_custom_target( nacl_sdk ALL
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}

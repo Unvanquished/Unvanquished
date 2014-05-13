@@ -22,19 +22,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#ifndef FRAMEWORK_FILESYSTEM_H_
-#define FRAMEWORK_FILESYSTEM_H_
-
-#include <system_error>
-#include <iterator>
-#include <vector>
-#include <string>
-#include <memory>
-#include <chrono>
-#include <unordered_map>
-#include "../../common/String.h"
-#include "../../common/Optional.h"
-#include "../../common/Command.h"
+#ifndef COMMON_FILESYSTEM_H_
+#define COMMON_FILESYSTEM_H_
 
 namespace FS {
 
@@ -87,6 +76,12 @@ public:
 		Close(err);
 	}
 
+	// Get the stdio handle of this file
+	FILE* GetHandle() const
+	{
+		return fd;
+	}
+
 	// Get the length of the file
 	offset_t Length(std::error_code& err = throws()) const;
 
@@ -126,9 +121,9 @@ namespace Path {
 
 	// Check whether a path is valid. Validation rules:
 	// - The path separator is the forward slash (/)
-	// - A path element must start and end with [0-9][A-Z][a-z]
-	// - A path element may contain [0-9][A-Z][a-z]-_.
-	// - A path element may not contain two successive -_. characters
+	// - A path must start and end with [0-9][A-Z][a-z]-_+~
+	// - A path may contain [0-9][A-Z][a-z]-_+~./
+	// - A path may not contain two successive / or . characters
 	// Note that paths are validated in all filesystem functions, so manual
 	// validation is usually not required.
 	// Implicitly disallows the following:
@@ -260,17 +255,19 @@ struct PakInfo {
 // for read-only assets which can be distributed by auto-download.
 namespace PakPath {
 
+#ifndef BUILD_VM
 	// Load a pak into the namespace with all its dependencies
 	void LoadPak(const PakInfo& pak, std::error_code& err = throws());
 
 	// Load a pak into the namespace and verify its checksum but *don't* load its dependencies
 	void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err = throws());
 
-	// Get a list of all the loaded paks
-	const std::vector<PakInfo>& GetLoadedPaks();
-
 	// Remove all loaded paks
 	void ClearPaks();
+#endif
+
+	// Get a list of all the loaded paks
+	const std::vector<PakInfo>& GetLoadedPaks();
 
 	// Read an entire file into a string
 	std::string ReadFile(Str::StringRef path, std::error_code& err = throws());
@@ -321,12 +318,13 @@ namespace PakPath {
 		bool InternalAdvance();
 		std::string current;
 		std::string prefix;
-		std::unordered_map<std::string, std::pair<size_t, offset_t>>::iterator iter, iter_end;
+		std::unordered_map<std::string, std::pair<uint32_t, offset_t>>::iterator iter, iter_end;
 		bool recursive;
 	};
 
 } // namespace PakPath
 
+#ifndef BUILD_VM
 // Operations which work on raw OS paths. Note that no validation on file names is performed
 namespace RawPath {
 
@@ -404,6 +402,7 @@ namespace RawPath {
 	};
 
 } // namespace RawPath
+#endif // BUILD_VM
 
 // Operations which work on the home path. This should be used when you need to
 // create files which are readable and writeable.
@@ -427,8 +426,13 @@ namespace HomePath {
 
 	// List all files in the given subdirectory, optionally recursing into subdirectories
 	// Directory names are returned with a trailing slash to differentiate them from files
+#ifdef BUILD_VM
+	typedef std::vector<std::string> DirectoryRange;
+	typedef std::vector<std::string> RecursiveDirectoryRange;
+#else
 	typedef RawPath::DirectoryRange DirectoryRange;
 	typedef RawPath::RecursiveDirectoryRange RecursiveDirectoryRange;
+#endif
 	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
 	RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());
 
@@ -447,8 +451,10 @@ void FlushAll();
 // Check if the filesystem paths have been initialized
 bool IsInitialized();
 
+#ifndef BUILD_VM
 // Refresh the list of available paks
 void RefreshPaks();
+#endif
 
 // Find a pak by name, version or checksum. Note that the checksum may not match
 // the actual checksum since the search is only done using file names.
@@ -471,6 +477,11 @@ const std::string& GetHomePath();
 // Get the path containing program binaries
 const std::string& GetLibPath();
 
+#ifdef BUILD_ENGINE
+// Handle filesystem system calls
+void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel, Str::StringRef vmName);
+#endif
+
 } // namespace FS
 
-#endif // FRAMEWORK_FILESYSTEM_H_
+#endif // COMMON_FILESYSTEM_H_

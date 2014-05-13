@@ -28,13 +28,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "../../common/Common.h"
 #include "CommonVMServices.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/CvarSystem.h"
 #include "../framework/LogSystem.h"
 #include "../framework/VirtualMachine.h"
-
-#include "../../common/CommonSyscalls.h"
 
 //TODO
 #include "../server/g_api.h"
@@ -191,6 +190,7 @@ namespace VM {
                 IPC::HandleMsg<DispatchLogEventMsg>(channel, std::move(reader), [this](std::string text, int targetControl){
                     Log::Dispatch(Log::Event(std::move(text)), targetControl);
                 });
+                break;
 
             default:
                 Com_Error(ERR_DROP, "Bad log syscall number '%d' for VM '%s'", minor, vmName.c_str());
@@ -217,6 +217,14 @@ namespace VM {
 
             case CVAR:
                 HandleCvarSyscall(minor, reader, channel);
+                break;
+
+            case LOG:
+                HandleLogSyscall(minor, reader, channel);
+                break;
+
+            case FILESYSTEM:
+                FS::HandleFileSystemSyscall(minor, reader, channel, vmName);
                 break;
 
             default:

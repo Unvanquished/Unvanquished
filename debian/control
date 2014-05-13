@@ -3,6 +3,7 @@ Section: contrib/games
 Priority: extra
 Maintainer: Darren Salt <devspam@moreofthesa.me.uk>
 Build-Depends: debhelper (>= 8.0.0), g++ (>= 4.7) | g++-4.7, po-debconf, cmake,
+	unv-nacl-sdk,
 	libcurl4-gnutls-dev,
 	libfreetype6-dev,
 	libglew-dev | libglew1.6-dev | libglew1.5-dev,
@@ -12,7 +13,7 @@ Build-Depends: debhelper (>= 8.0.0), g++ (>= 4.7) | g++-4.7, po-debconf, cmake,
 	libogg-dev,
 	libopenal-dev,
 	libpng-dev | libpng12-dev,
-	libsdl2-dev | libsdl1.2-dev,
+	libsdl2-dev (<< 2.0.2+dfsg1-3ubuntu1) | libsdl2-dev (>> 2.0.2+dfsg1-3ubuntu1)| libsdl1.2-dev,
 	libspeexdsp-dev,
 	libtheora-dev,
 	libvorbis-dev,
@@ -21,7 +22,7 @@ Build-Depends: debhelper (>= 8.0.0), g++ (>= 4.7) | g++-4.7, po-debconf, cmake,
 	libgeoip-dev,
 	nettle-dev,
 	zlib1g-dev
-Standards-Version: 3.9.2
+Standards-Version: 3.9.5
 Homepage: http://www.unvanquished.net/
 Vcs-Git: git://github.com/Unvanquished/Unvanquished.git
 Vcs-Browser: http://github.com/Unvanquished/Unvanquished
@@ -38,7 +39,7 @@ Description: Team-based FPS game, aliens v. humans
 Package: unvanquished-server
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, adduser,
-	unvanquished-common (= ${binary:Version})
+	unvanquished-common (= ${binary:Version}), unv-nacl-runtime
 Suggests: unvanquished, geoip-database | geoip-database-contrib
 Conflicts: unvanquished (<< 0.3.5-2~)
 Replaces: unvanquished (<< 0.3.5-2~)

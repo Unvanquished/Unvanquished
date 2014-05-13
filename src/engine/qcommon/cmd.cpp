@@ -38,10 +38,7 @@ Maryland 20850 USA.
 #include "qcommon.h"
 #include "../client/keys.h"
 
-#include "../../common/Command.h"
 #include "../framework/CommandSystem.h"
-
-#include <unordered_map>
 
 #define MAX_CMD_BUFFER 131072
 
@@ -517,10 +514,6 @@ struct proxyInfo_t{
 //Contains the commands given through the C interface
 std::unordered_map<std::string, proxyInfo_t, Str::IHash, Str::IEqual> proxies;
 
-//Contains data send to Cmd_CompleteArguments
-char* completeArgs = NULL;
-int completeArgNum = 0;
-
 Cmd::CompletionResult completeMatches;
 std::string completedPrefix;
 
@@ -614,6 +607,7 @@ Cmd_RemoveCommandByFunc
 void Cmd_RemoveCommandsByFunc( xcommand_t function ) {
     for (auto it = proxies.cbegin(); it != proxies.cend();) {
         if (it->second.cmd == function) {
+            Cmd::RemoveCommand(it->first);
             proxies.erase(it ++);
         } else {
             ++ it;

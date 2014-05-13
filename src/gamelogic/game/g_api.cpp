@@ -20,11 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include <chrono>
 #include "g_local.h"
 #include "g_cm_world.h"
 #include "../shared/VMMain.h"
-#include "../../common/String.h"
 #include "../shared/CommonProxies.h"
 
 // This really should go in the common code
@@ -54,7 +52,11 @@ static IPC::Channel GetRootChannel(int argc, char** argv)
 class ExitException{};
 
 void VM::Exit() {
-  throw ExitException();
+#ifndef VM_IN_PROCESS
+	// Give the engine time to kill our process
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+#endif
+	throw ExitException();
 }
 
 IPC::Channel VM::rootChannel;
@@ -120,6 +122,7 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 
 		case GAME_INIT:
 			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart) {
+				FS::Initialize();
 				G_InitGame(levelTime, randomSeed, restart);
 			});
 			break;
@@ -366,6 +369,7 @@ qboolean trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
 
 void trap_AdjustAreaPortalState(gentity_t *ent, qboolean open)
 {
+    VM::SendMsg<AdjustAreaPortalStateMsg>(ent - g_entities, open);
 	G_CM_AdjustAreaPortalState( ent, open );
 }
 

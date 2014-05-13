@@ -34,17 +34,8 @@ Maryland 20850 USA.
 
 #include "revision.h"
 
-#include <signal.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <locale.h>
 #include <sys/types.h>
-#include <stdarg.h>
-#include <stdio.h>
 #include <sys/stat.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -52,7 +43,7 @@ Maryland 20850 USA.
 #include <omp.h>
 #endif
 
-#if defined(_WIN32) || (!defined(DEDICATED) && !defined(BUILD_TTY_CLIENT))
+#if defined(_WIN32) || defined(BUILD_CLIENT)
 #include <SDL.h>
 #include "sdl2_compat.h"
 #endif
@@ -165,7 +156,7 @@ static void NORETURN Sys_Exit( int exitCode )
 {
 	CON_Shutdown();
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	SDL_Quit();
 #endif
 
@@ -192,7 +183,7 @@ Sys_GetProcessorFeatures
 int Sys_GetProcessorFeatures( void )
 {
 	int features = 0;
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	if( SDL_HasRDTSC( ) ) features |= CF_RDTSC;
 	if( SDL_HasMMX( ) ) features |= CF_MMX;
 	if( SDL_Has3DNow( ) ) features |= CF_3DNOW;
@@ -473,7 +464,7 @@ void Sys_ParseArgs( int argc, char **argv )
 		     !strcmp( argv[ 1 ], "-v" ) )
 		{
 			const char *date = __DATE__;
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 			fprintf( stdout, Q3_VERSION " dedicated server (%s)\n", date );
 #else
 			fprintf( stdout, Q3_VERSION " client (%s)\n", date );
@@ -500,7 +491,7 @@ void NORETURN Sys_SigHandler( int signal )
 	else
 	{
 		signalcaught = qtrue;
-#if !defined(DEDICATED)
+#ifndef BUILD_SERVER
 		// we need a FAST shutdown, so just disconnect directly
 		CL_SendDisconnect();
 #endif
@@ -522,7 +513,7 @@ main
 =================
 */
 
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 #define UNVANQUISHED_URL ""
 #else
 #define UNVANQUISHED_URL " [unv://ADDRESS[:PORT]]"
@@ -547,7 +538,7 @@ int ALIGN_STACK main( int argc, char **argv )
 	int  i;
 	char commandLine[ MAX_STRING_CHARS ] = { 0 };
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	// Run time
 	SDL_version ver;
 	SDL_GetVersion( &ver );
@@ -572,7 +563,7 @@ int ALIGN_STACK main( int argc, char **argv )
 		}
 	}
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#ifdef BUILD_CLIENT
 	// SDL version check
 
 	// Compile time
@@ -667,7 +658,7 @@ int ALIGN_STACK main( int argc, char **argv )
 	// Enable the curses console by default
 	qboolean curses = qtrue;
 
-#if defined(_WIN32) && !defined(BUILD_TTY_CLIENT) && !defined(DEDICATED)
+#if defined(_WIN32) && defined(BUILD_CLIENT)
 	// Windows client defaults to curses off because of performance issues
 	curses = qfalse;
 #endif
