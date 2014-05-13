@@ -309,6 +309,7 @@ namespace Cvar {
             //Register the cvar with the previous user_created value
             cvar->flags &= ~CVAR_USER_CREATED;
             cvar->flags |= flags;
+            cvar->proxy = proxy;
 
             cvar->resetValue = std::move(defaultValue);
             cvar->description = "";
