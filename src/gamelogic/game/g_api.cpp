@@ -52,7 +52,11 @@ static IPC::Channel GetRootChannel(int argc, char** argv)
 class ExitException{};
 
 void VM::Exit() {
-  throw ExitException();
+#ifndef VM_IN_PROCESS
+	// Give the engine time to kill our process
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+#endif
+	throw ExitException();
 }
 
 IPC::Channel VM::rootChannel;
