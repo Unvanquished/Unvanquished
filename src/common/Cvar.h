@@ -127,10 +127,13 @@ namespace Cvar {
             virtual OnValueChangedResult Validate(const T& value);
             // Returns the new description of the cvar given the current value and the description
             // given at the creation of the cvar.
-            virtual std::string GetDescription(Str::StringRef value, Str::StringRef originalDescription);
+            virtual std::string GetAdditionalDescription();
 
             T value;
             std::string description;
+
+        private:
+            std::string GetDescription(Str::StringRef originalDescription);
     };
 
     /*
@@ -202,7 +205,7 @@ namespace Cvar {
 
         private:
             virtual OnValueChangedResult Validate(const value_type& value);
-            virtual std::string GetDescription(Str::StringRef value, Str::StringRef originalDescription);
+            virtual std::string GetAdditionalDescription();
 
             value_type min;
             value_type max;
@@ -241,14 +244,14 @@ namespace Cvar {
 
     template<typename T>
     Cvar<T>::Cvar(std::string name, std::string description, int flags, value_type defaultValue)
-    : CvarProxy(std::move(name), GetDescription(SerializeCvarValue(defaultValue), description), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
+    : CvarProxy(std::move(name), GetDescription(description), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
         value = std::move(defaultValue);
         CvarProxy::Register();
     }
 
     template<typename T>
     Cvar<T>::Cvar(NoRegisterTag, std::string name, std::string description, int flags, value_type defaultValue)
-    : CvarProxy(std::move(name), GetDescription(SerializeCvarValue(defaultValue), description), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
+    : CvarProxy(std::move(name), GetDescription(description), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
         value = std::move(defaultValue);
     }
 
@@ -274,7 +277,7 @@ namespace Cvar {
         if (Parse(text, value)) {
             OnValueChangedResult validationResult = Validate(value);
             if (validationResult.success) {
-                return {true, GetDescription(text, description)};
+                return {true, GetDescription(description)};
             } else {
                 return validationResult;
             }
@@ -294,10 +297,14 @@ namespace Cvar {
     }
 
     template<typename T>
-    std::string Cvar<T>::GetDescription(Str::StringRef value, Str::StringRef originalDescription) {
-        return Str::Format("\"%s\" - %s - %s", value, GetCvarTypeName<T>(), originalDescription);
+    std::string Cvar<T>::GetAdditionalDescription() {
+        return "";
     }
 
+    template<typename T>
+    std::string Cvar<T>::GetDescription(Str::StringRef originalDescription) {
+        return Str::Format("%s - %s%s", GetCvarTypeName<T>(), originalDescription, GetAdditionalDescription());
+    }
 
     // Callback<Base>
 
@@ -385,8 +392,8 @@ namespace Cvar {
     }
 
     template <typename Base>
-    std::string Range<Base>::GetDescription(Str::StringRef value, Str::StringRef originalDescription) {
-        return Base::GetDescription(value, Str::Format("%s - between %s and %s", originalDescription, SerializeCvarValue(min), SerializeCvarValue(max)));
+    std::string Range<Base>::GetAdditionalDescription() {
+        return Str::Format(" - between %s and %s", SerializeCvarValue(min), SerializeCvarValue(max));
     }
 
 }
