@@ -962,8 +962,9 @@ BG_Beacon
 */
 const beaconAttributes_t *BG_Beacon( int index )
 {
-	if( index > BCT_NONE && index < bg_numBeacons )
+	if( index > BCT_NONE && index < NUM_BEACON_TYPES )
 		return bg_beacons + index - 1;
+
 	return &nullBeacon;
 }
 

@@ -446,7 +446,7 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
 		return 0;
 	
-	return BG_Beacon( b->type - 1 )->icon;
+	return BG_Beacon( b->type )->icon;
 }
 
 /*
