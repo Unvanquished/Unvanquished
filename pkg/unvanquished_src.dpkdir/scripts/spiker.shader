@@ -1,4 +1,4 @@
-models/buildables/spiker/body
+models/buildables/spiker/spiker
 {
 	diffuseMap      models/buildables/spiker/spiker_d
 	normalMap       models/buildables/spiker/spiker_n
