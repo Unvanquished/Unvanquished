@@ -69,7 +69,7 @@ namespace Cvar {
      */
     class CvarProxy {
         public:
-            CvarProxy(std::string name, std::string description, int flags, std::string defaultValue);
+            CvarProxy(std::string name, int flags, std::string defaultValue);
 
             // Called when the value of the cvar changes, returns success=true if the new value
             // is valid, false otherwise. If true is returned, the description will be the new
@@ -83,10 +83,9 @@ namespace Cvar {
 
             // Will trigger another OnValueChanged after a roundtrip in the cvar system.
             void SetValue(std::string value);
-            void Register();
+            void Register(std::string description);
 
         private:
-            std::string description;
             int flags;
             std::string defaultValue;
     };
@@ -129,11 +128,13 @@ namespace Cvar {
             // given at the creation of the cvar.
             virtual std::string GetAdditionalDescription();
 
+            void Register();
+
             T value;
             std::string description;
 
         private:
-            std::string GetDescription(Str::StringRef originalDescription);
+            std::string GetDescription();
     };
 
     /*
@@ -244,14 +245,14 @@ namespace Cvar {
 
     template<typename T>
     Cvar<T>::Cvar(std::string name, std::string description, int flags, value_type defaultValue)
-    : CvarProxy(std::move(name), GetDescription(description), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
+    : CvarProxy(std::move(name), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
         value = std::move(defaultValue);
-        CvarProxy::Register();
+        Register();
     }
 
     template<typename T>
     Cvar<T>::Cvar(NoRegisterTag, std::string name, std::string description, int flags, value_type defaultValue)
-    : CvarProxy(std::move(name), GetDescription(description), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
+    : CvarProxy(std::move(name), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
         value = std::move(defaultValue);
     }
 
@@ -277,7 +278,7 @@ namespace Cvar {
         if (Parse(text, value)) {
             OnValueChangedResult validationResult = Validate(value);
             if (validationResult.success) {
-                return {true, GetDescription(description)};
+                return {true, GetDescription()};
             } else {
                 return validationResult;
             }
@@ -302,8 +303,13 @@ namespace Cvar {
     }
 
     template<typename T>
-    std::string Cvar<T>::GetDescription(Str::StringRef originalDescription) {
-        return Str::Format("%s - %s%s", GetCvarTypeName<T>(), originalDescription, GetAdditionalDescription());
+    void Cvar<T>::Register() {
+        CvarProxy::Register(GetDescription());
+    }
+
+    template<typename T>
+    std::string Cvar<T>::GetDescription() {
+        return Str::Format("%s - %s%s", GetCvarTypeName<T>(), description, GetAdditionalDescription());
     }
 
     // Callback<Base>
@@ -313,7 +319,7 @@ namespace Cvar {
     Callback<Base>::Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args&& ... args)
     : Base(NoRegisterTag(), std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...),
     callback(callback) {
-        CvarProxy::Register();
+        Cvar<value_type>::Register();
     }
 
     template <typename Base>
@@ -339,7 +345,7 @@ namespace Cvar {
     template <typename ... Args>
     Modified<Base>::Modified(std::string name, std::string description, int flags, value_type defaultValue, Args ... args)
     : Base(NoRegisterTag(), std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...), modified(false) {
-        CvarProxy::Register();
+        Cvar<value_type>::Register();
     }
 
     template <typename Base>
@@ -372,7 +378,7 @@ namespace Cvar {
     template <typename ... Args>
     Range<Base>::Range(std::string name, std::string description, int flags, value_type defaultValue, value_type min, value_type max, Args ... args)
     : Base(NoRegisterTag(), std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...), min(min), max(max) {
-        CvarProxy::Register();
+        Cvar<value_type>::Register();
     }
 
     template <typename Base>

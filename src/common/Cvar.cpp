@@ -37,15 +37,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Cvar {
 
-    CvarProxy::CvarProxy(std::string name, std::string description, int flags, std::string defaultValue)
-    : name(std::move(name)), description(std::move(description)), flags(flags), defaultValue(std::move(defaultValue)) {
+    CvarProxy::CvarProxy(std::string name, int flags, std::string defaultValue)
+    : name(std::move(name)), flags(flags), defaultValue(std::move(defaultValue)) {
     }
 
     void CvarProxy::SetValue(std::string value) {
         ::Cvar::SetValue(name, std::move(value));
     }
 
-    void CvarProxy::Register() {
+    void CvarProxy::Register(std::string description) {
         ::Cvar::Register(this, name, std::move(description), flags, std::move(defaultValue));
     }
 
