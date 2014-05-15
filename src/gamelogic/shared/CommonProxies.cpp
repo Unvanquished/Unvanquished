@@ -324,8 +324,8 @@ namespace Cvar{
 class VMCvarProxy : public Cvar::CvarProxy {
     public:
         VMCvarProxy(Str::StringRef name, int flags, Str::StringRef defaultValue)
-        : Cvar::CvarProxy(name, "a vmCvar_t", flags, defaultValue), modificationCount(0), value(defaultValue) {
-            Register();
+        : Cvar::CvarProxy(name, flags, defaultValue), modificationCount(0), value(defaultValue) {
+            Register("");
         }
 
         virtual Cvar::OnValueChangedResult OnValueChanged(Str::StringRef newValue) OVERRIDE {
