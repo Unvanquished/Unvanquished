@@ -77,6 +77,16 @@
 				left: 0px;
 				bottom: 0px;
 			}
+			progressbar#poison-bar
+			{
+				position: absolute;
+				image: /ui/assets/alien/bar-r.png;
+				orientation: right;
+				width: 80%;
+				height: auto;
+				right: 0px;
+				bottom: 0px;
+			}
 			wallwalk.wallwalking.inactive img.sides
 			{
 				opacity: 0;
@@ -215,7 +225,6 @@
 		<div id="left">
 			<img class="bg sides" src="/ui/assets/alien/bg-l.png" />
 			<progressbar src="health" id="health-bar" />
-<!-- 			<img class="health sides" id="health-bar" src="/ui/assets/alien/bar-l.png"/> -->
 			<wallwalk>
 				<img class="spikes sides" src="/ui/assets/alien/smallspikes-l.png" />
 			</wallwalk>
@@ -232,7 +241,7 @@
 		</div>
 		<div id="right">
 			<img class="bg sides" src="/ui/assets/alien/bg-r.png" />
-			<img class="poison sides" id="poison-bar" src="/ui/assets/alien/bar-r.png" />
+			<progressbar src="poison" id="poison-bar" />
 			<wallwalk>
 				<img class="spikes sides" src="/ui/assets/alien/smallspikes-r.png" />
 			</wallwalk>
@@ -240,7 +249,6 @@
 				<img class="spikes sides" src="/ui/assets/alien/spikes-r.png" />
 			</wallwalk>
 			<img class="light sides" src="/ui/assets/alien/lr.png" />
-			<img id="poison-icon" src="/ui/assets/alien/poison.tga" />
 			<weapon_icon />
 			<div id="evos"><evos /> morph points</div>
 		</div>
