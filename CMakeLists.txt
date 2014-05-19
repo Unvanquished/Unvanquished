@@ -368,7 +368,7 @@ endif()
 ################################################################################
 
 # Dependencies version, this must match the number in external_deps/build.sh
-set( DEPS_VERSION 1 )
+set( DEPS_VERSION 2 )
 
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
@@ -507,7 +507,7 @@ function( ADD_PRECOMPILED_HEADER Target Header )
     endforeach()
 
     # Compiler-specific PCH support
-    if( CMAKE_COMPILER_IS_GNUCXX )
+    if( CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
       add_custom_command( OUTPUT "${OBJ_DIR}/${Target}.h.gch"
         COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
         DEPENDS ${Header}
@@ -723,13 +723,6 @@ if( NOT APPLE )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/con_curses.cpp
   )
-endif()
-
-if( APPLE )
-  set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_osx.mm
-  )
-  set_source_files_properties( ${ENGINE_DIR}/sys/sys_osx.mm PROPERTIES COMPILE_FLAGS "-x objective-c++" )
 endif()
 
 set( CLIENTBASELIST
@@ -1260,11 +1253,6 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
     else()
       set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
     endif()
-    if( APPLE )
-      # Mac OS X does not provide a SDLMain.dylib so we must compile our own
-      add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.mm )
-      set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
-    endif()
   endif()
 
   include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
@@ -1434,7 +1422,7 @@ function( GAMEMODULE )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
-      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
+      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};VM_IN_PROCESS"
     )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h )
   endif()
