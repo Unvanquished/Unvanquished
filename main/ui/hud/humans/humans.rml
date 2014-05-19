@@ -130,15 +130,15 @@
 				height:23%;
 				color:#aaffffff;
 			}
-			
+
 			img.clip{
 				width:auto;
 				height:15%;
 				left:-15%;
 				top:60%;
 			}
-			
-			
+
+
 			div.ammo, div.credits,div.clips{
 				color:#aaffffff;
 				width: 100%;

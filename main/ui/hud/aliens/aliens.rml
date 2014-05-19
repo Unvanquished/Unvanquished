@@ -26,12 +26,6 @@
 				padding: 25px;
 				margin: -65px;
 			}
-			progressbar
-			{
-				width: 20%;
-				height: 32px;
-				image: /ui/progress.png;
-			}
 			div.item_select img
 			{
 				color: blue;
@@ -66,15 +60,26 @@
 				width: 33px;
 				height: 33px;
 			}
-
-
 			#left img.sides,#right img.sides{
-				width:100%;
+				width:80%;
 				height:auto;
 				position:absolute;
 				z-index:1;
-				opacity:0.6;
-
+/* 				opacity:0.6; */
+			}
+			progressbar#health-bar
+			{
+				position: absolute;
+				image: /ui/assets/alien/bar-l.png;
+				orientation: left;
+				width: 80%;
+				height: auto;
+				left: 0px;
+				bottom: 0px;
+			}
+			wallwalk.wallwalking.inactive img.sides
+			{
+				opacity: 0;
 			}
 			#left img.sides{
 				left:0px;
@@ -92,16 +97,11 @@
 			.bg,.health,.spikes{
 				color:#ff0000AA;
 			}
-
-
 			#health-bar{
 				color:#b3000094;
 			}
 			#poison-bar{
 				color:#ff009b94;
-			}
-			.spikes{
-
 			}
 			#left,#right{
 				display:block;
@@ -193,8 +193,13 @@
 				background-color: #3a2323;
 				color: #6e1b1c;
 			}
+			health, img.health
+			{
+				z-index: 1;
+			}
+			progressbar {
 
-
+			}
 		</style>
 	</head>
 	<body id="alien_hud">
@@ -209,8 +214,15 @@
 		</div>
 		<div id="left">
 			<img class="bg sides" src="/ui/assets/alien/bg-l.png" />
-			<img class="health sides" id="health-bar" src="/ui/assets/alien/bar-l.png"/>
-			<img class="spikes sides" src="/ui/assets/alien/smallspikes-l.png" />
+			<progressbar src="health" id="health-bar" />
+<!-- 			<img class="health sides" id="health-bar" src="/ui/assets/alien/bar-l.png"/> -->
+			<wallwalk>
+				<img class="spikes sides" src="/ui/assets/alien/smallspikes-l.png" />
+			</wallwalk>
+			<wallwalk class="wallwalking">
+				<img class="spikes sides" src="/ui/assets/alien/spikes-l.png" />
+			</wallwalk>
+
 			<img class="light sides" src="/ui/assets/alien/ll.png" />
 
 			<div id="health">
@@ -221,7 +233,12 @@
 		<div id="right">
 			<img class="bg sides" src="/ui/assets/alien/bg-r.png" />
 			<img class="poison sides" id="poison-bar" src="/ui/assets/alien/bar-r.png" />
-			<img class="spikes sides" src="/ui/assets/alien/smallspikes-r.png" />
+			<wallwalk>
+				<img class="spikes sides" src="/ui/assets/alien/smallspikes-r.png" />
+			</wallwalk>
+			<wallwalk class="wallwalking">
+				<img class="spikes sides" src="/ui/assets/alien/spikes-r.png" />
+			</wallwalk>
 			<img class="light sides" src="/ui/assets/alien/lr.png" />
 			<img id="poison-icon" src="/ui/assets/alien/poison.tga" />
 			<weapon_icon />
