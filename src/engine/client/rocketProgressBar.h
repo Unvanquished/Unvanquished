@@ -172,15 +172,15 @@ public:
 
 		if ( changed_properties.find( "image" ) != changed_properties.end() )
 		{
-			const char *image = GetProperty( "image" )->Get<Rocket::Core::String>().CString();
+			Rocket::Core::String image = GetProperty<Rocket::Core::String>( "image" );
 
 			// skip the leading slash
-			if ( image && *image == '/' )
+			if ( !image.Empty() && image[0] == '/' )
 			{
-				image++;
+				image = image.Substring( 1 );
 			}
 
-			shader = re.RegisterShader( image, RSF_NOMIP );
+			shader = re.RegisterShader( image.CString(), RSF_NOMIP );
 		}
 
 		if ( changed_properties.find( "orientation" ) != changed_properties.end() )
