@@ -83,22 +83,23 @@ static float CG_Rocket_GetStaminaProgress( void )
 	playerState_t *ps = &cg.snap->ps;
 	float         stamina = ps->stats[ STAT_STAMINA ];
 
-	return ( stamina / (float) STAMINA_MAX);
+	return ( stamina / ( float ) STAMINA_MAX );
 }
 
 static float CG_Rocket_GetPoisonProgress( void )
 {
 	static int time = -1;
 
-	if( cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTED )
+	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTED )
 	{
-		if( time == -1 || cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTEDNEW )
+		if ( time == -1 || cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTEDNEW )
 		{
 			time = cg.time;
 		}
 
-		return ( (float)cg.time - time ) / BOOST_TIME;
+		return 1 - ( ( ( float )cg.time - time ) / BOOST_TIME );
 	}
+
 	else
 	{
 		time = -1;
@@ -111,7 +112,7 @@ static float CG_Rocket_GetPlayerHealthProgress( void )
 {
 	playerState_t *ps = &cg.snap->ps;
 
-	return (float)ps->stats[ STAT_HEALTH ] / (float)BG_Class( ps->stats[ STAT_CLASS ] )->health;
+	return ( float )ps->stats[ STAT_HEALTH ] / ( float )BG_Class( ps->stats[ STAT_CLASS ] )->health;
 }
 
 static float CG_Rocket_GetPlayerAmmoProgress( void )
@@ -126,6 +127,7 @@ static float CG_Rocket_GetPlayerAmmoProgress( void )
 		return ( maxDelay - ( float ) ps->weaponTime ) / maxDelay;
 
 	}
+
 	else
 	{
 		int      maxAmmo;
@@ -134,8 +136,12 @@ static float CG_Rocket_GetPlayerAmmoProgress( void )
 		weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
 		maxAmmo = BG_Weapon( weapon )->maxAmmo;
 
-		if ( maxAmmo <= 0 ) { return 0; }
-		return (float)cg.snap->ps.ammo / (float)maxAmmo;
+		if ( maxAmmo <= 0 )
+		{
+			return 0;
+		}
+
+		return ( float )cg.snap->ps.ammo / ( float )maxAmmo;
 	}
 }
 
@@ -161,7 +167,7 @@ float CG_Rocket_DownloadProgress( void )
 typedef struct progressBarCmd_s
 {
 	const char *command;
-	float ( *get ) ( void );
+	float( *get )( void );
 	rocketElementType_t type;
 } progressBarCmd_t;
 
@@ -193,7 +199,7 @@ float CG_Rocket_ProgressBarValue( void )
 	progressBarCmd_t *cmd;
 
 	// Get the progressbar command
-	cmd = (progressBarCmd_t*) bsearch( CG_Argv( 0 ), progressBarCmdList, progressBarCmdListCount, sizeof( progressBarCmd_t ), progressBarCmdCmp );
+	cmd = ( progressBarCmd_t * ) bsearch( CG_Argv( 0 ), progressBarCmdList, progressBarCmdListCount, sizeof( progressBarCmd_t ), progressBarCmdCmp );
 
 	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
 	{
@@ -208,7 +214,7 @@ float CG_Rocket_ProgressBarValueByName( const char *name )
 	progressBarCmd_t *cmd;
 
 	// Get the progressbar command
-	cmd = (progressBarCmd_t*) bsearch( name, progressBarCmdList, progressBarCmdListCount, sizeof( progressBarCmd_t ), progressBarCmdCmp );
+	cmd = ( progressBarCmd_t * ) bsearch( name, progressBarCmdList, progressBarCmdListCount, sizeof( progressBarCmd_t ), progressBarCmdCmp );
 
 	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
 	{
