@@ -8,14 +8,14 @@
 			width: 100%;
 			height: 100%;
 		}
-		div#fps
+		div.fps
 		{
 			position: fixed;
 			top: 0%;
 			text-align: right;
 			font-size: 18;
 		}
-		div#lagometer
+		div.lagometer
 		{
 			position: fixed;
 			top: 10%;
@@ -38,6 +38,11 @@
 			top: 5%;
 
 		}
+		div.minimap
+		{
+			right: 20%;
+		}
+
 		div#location
 		{
 			position: fixed;
@@ -95,7 +100,6 @@
 			height: 100%;
 			background-color: #1E1E1E1E;
 		}
-
 		speedometer span
 		{
 			margin-left: auto;
@@ -105,14 +109,26 @@
 	</style>
 </head>
 <body id="base">
-	<div id="fps">
-		<fps /> fps<br />
-		<timer /><br />
-		<clock />
-	</div>
-	<div id="lagometer">
-		<lagometer />
-	</div>
+	<if cvar="cg_minimapActive" condition="==" value="0">
+		<div class="fps">
+			<fps /> fps<br />
+			<timer /><br />
+			<clock />
+		</div>
+		<div class="lagometer">
+			<lagometer />
+		</div>
+	</if>
+	<if cvar="cg_minimapActive" condition="==" value="1">
+		<div class="minimap fps">
+			<fps /> fps<br />
+			<timer /><br />
+			<clock />
+		</div>
+		<div class="minimap lagometer">
+			<lagometer />
+		</div>
+	</if>
 	<div id="location">
 		<location />
 	</div>
