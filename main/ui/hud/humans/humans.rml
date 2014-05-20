@@ -80,7 +80,7 @@
 			}
 			progressbar#health
 			{
-				orientation:left;
+				orientation:right;
 				top: 20%;
 				position:absolute;
 				color: #ff001c7a;
@@ -90,7 +90,7 @@
 			{
 				color: #82ffee52;
 				top:0%;
-				orientation:left;
+				orientation:right;
 			}
 			health.health{
 				width: 100%;
