@@ -40,7 +40,7 @@ Maryland 20850 USA.
 class RocketConditionalElement : public Rocket::Core::Element
 {
 public:
-	RocketConditionalElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), condition( NOT_EQUAL ) {}
+	RocketConditionalElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), condition( NOT_EQUAL ), dirty_value( false ) {}
 
 	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
@@ -82,12 +82,14 @@ public:
 			{
 				value.Set( attrib );
 			}
+
+			dirty_value = true;
 		}
 	}
 
 	virtual void OnUpdate( void )
 	{
-		if ( !cvar.Empty() && cvar_value != Cvar_VariableString( cvar.CString() ) )
+		if ( dirty_value || ( !cvar.Empty() && cvar_value != Cvar_VariableString( cvar.CString() ) ) )
 		{
 			if ( IsConditionValid() )
 			{
@@ -105,6 +107,11 @@ public:
 			}
 
 			cvar_value = Cvar_VariableString( cvar.CString() );
+
+			if ( dirty_value )
+			{
+				dirty_value = false;
+			}
 		}
 	}
 
@@ -175,6 +182,7 @@ private:
 	Rocket::Core::String cvar_value;
 	Condition condition;
 	Rocket::Core::Variant value;
+	bool dirty_value;
 
 };
 #endif
