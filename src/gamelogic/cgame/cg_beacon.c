@@ -31,9 +31,12 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 CG_NearestBuildable
 
 Returns the nearest _powered_ buildable of the given type (up to 3 types)
-and its origin.
+and its origin. If a is -1 then return the nearest alien builable.
 Ideally this function should take the actual route length into account
 and not just the straight line distance.
+
+FIXME: Make it take a func as an argument instead of a weird spam of ints.
+       Probably will need lambda functions or else it'll be even messier.
 =============
 */
 static int CG_NearestBuildable( int a, int b, int c, vec3_t origin )
@@ -54,10 +57,16 @@ static int CG_NearestBuildable( int a, int b, int c, vec3_t origin )
 		if( !( es->eFlags & EF_B_POWERED ) )
 			continue;
 
-		if( !( es->modelindex == a ||
+		if( a == -1 )
+		{
+			if( BG_Buildable( es->modelindex )->team != TEAM_ALIENS )
+				continue;
+		}
+		else
+			if( !( es->modelindex == a ||
 		       ( b && es->modelindex == b ) ||
 		       ( c && es->modelindex == c ) ) )
-			continue;
+				continue;
 
 		if( ( distance = Distance( cg.predictedPlayerState.origin, es->origin ) ) < minDistance )
 			minDistance = distance,
@@ -259,7 +268,6 @@ static void CG_ListImplicitBeacons( )
 	static cbeaconPersistant_t bp_health = { qfalse, qfalse };
 	static cbeaconPersistant_t bp_ammo = { qfalse, qfalse };
 	playerState_t *ps;
-	buildable_t buildable;
 	int entityNum;
 	qboolean energy;
 
@@ -278,11 +286,13 @@ static void CG_ListImplicitBeacons( )
 	if ( ps->stats[ STAT_HEALTH ] < ps->stats[ STAT_MAX_HEALTH ] / 2 )
 	{
 		if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS )
-			buildable = BA_A_BOOSTER;
+		{
+			entityNum = CG_NearestBuildable( BA_A_BOOSTER, 0, 0, bp_health.origin );
+			if( entityNum == ENTITYNUM_NONE )
+				entityNum = CG_NearestBuildable( -1, 0, 0, bp_health.origin );
+		}
 		else
-			buildable = BA_H_MEDISTAT;
-		
-		entityNum = CG_NearestBuildable( buildable, 0, 0, bp_health.origin );
+			entityNum = CG_NearestBuildable( BA_H_MEDISTAT, 0, 0, bp_health.origin );		
 
 		if ( entityNum != ENTITYNUM_NONE )
 		{
@@ -315,6 +325,8 @@ static void CG_ListImplicitBeacons( )
 	if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 	     BG_PlayerLowAmmo( ps, &energy ) )
 	{
+		buildable_t buildable;
+
 		if ( energy )
 			entityNum = CG_NearestBuildable( BA_H_ARMOURY, BA_H_REACTOR, BA_H_REPEATER, bp_ammo.origin );
 		else
