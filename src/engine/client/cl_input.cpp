@@ -423,6 +423,10 @@ void CL_MouseEvent( int dx, int dy, int time )
 	{
 		VM_Call( cgvm, CG_MOUSE_EVENT, dx, dy );
 	}
+	else if ( cls.keyCatchers & KEYCATCH_UI )
+	{
+		Rocket_MouseMove( dx, dy );
+	}
 	else
 	{
 		cl.mouseDx[ cl.mouseIndex ] += dx;
@@ -741,10 +745,7 @@ usercmd_t CL_CreateCmd( void )
 	CL_KeyMove( &cmd );
 
 	// get basic movement from mouse
-	if ( ! ( cls.keyCatchers & KEYCATCH_UI ) )
-	{
-		CL_MouseMove( &cmd );
-	}
+	CL_MouseMove( &cmd );
 
 	// get basic movement from joystick or controller
 	if ( cl_xbox360ControllerAvailable->integer )
