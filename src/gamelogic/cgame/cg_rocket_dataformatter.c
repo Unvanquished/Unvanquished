@@ -129,7 +129,7 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 		Class = "armourybuy";
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS armouryBuyList weapons %s' %s><img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), disabled ? "" : "onClick='execDS armouryBuyList weapons'", CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon ) ), qfalse );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS armouryBuyList weapons %s' %s><img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), disabled ? "" : va( "onClick='exec \"buy +%s\"'", BG_Weapon( weapon )->name ), CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon ) ), qfalse );
 }
 
 static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
@@ -148,7 +148,7 @@ static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 		Class = "armourybuy";
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS armouryBuyList upgrades %s' %s><img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), disabled ? "" : "onClick='execDS armouryBuyList upgrades'", CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon ) ), qfalse );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS armouryBuyList upgrades %s' %s><img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), disabled ? "" : va( "onClick='exec \"buy +%s'", BG_Upgrade( upgrade )->name ), CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon ) ), qfalse );
 }
 
 static void CG_Rocket_DFGWeaponDamage( int handle, const char *data )
