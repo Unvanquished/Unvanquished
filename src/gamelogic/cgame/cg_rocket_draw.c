@@ -607,14 +607,9 @@ static void CG_Rocket_DrawWeaponIcon( void )
 
 static void CG_Rocket_DrawPlayerWallclimbing( void )
 {
-	const char *wallwalking = NULL;
-
-	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING )
-	{
-		wallwalking = "wallwalking";
-	}
-
-	trap_Rocket_SetInnerRML( va( "<img class='wallclimb_indictator %s%s' src='%s' />", wallwalking ? " " : "", wallwalking, CG_Rocket_GetAttribute( "src" ) ), 0 );
+	qboolean wallwalking = cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING;
+	trap_Rocket_SetClass( "active", wallwalking );
+	trap_Rocket_SetClass( "inactive", !wallwalking );
 }
 
 static void CG_Rocket_DrawAlienSense( void )

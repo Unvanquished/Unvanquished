@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -60,7 +60,7 @@ int StyleSheetParser::Parse(StyleSheetNode* node, Stream* _stream)
 	while (FillBuffer())
 	{
 		String style_names;
-		
+
 		while (FindToken(style_names, "{", true))
 		{
 			// Read the attributes
@@ -79,7 +79,7 @@ int StyleSheetParser::Parse(StyleSheetNode* node, Stream* _stream)
 
 			rule_count++;
 		}
-	}	
+	}
 
 	return rule_count;
 }
@@ -137,7 +137,7 @@ bool StyleSheetParser::ReadProperties(PropertyDictionary& properties)
 					name.Append(character);
 			}
 			break;
-			
+
 			case VALUE:
 			{
 				if (character == ';')
@@ -179,7 +179,7 @@ bool StyleSheetParser::ReadProperties(PropertyDictionary& properties)
 
 	if (!name.Empty() || !value.Empty())
 		Log::Message(Log::LT_WARNING, "Invalid property declaration at %s:%d", stream_file_name.CString(), line_number);
-	
+
 	return true;
 }
 
@@ -335,7 +335,7 @@ bool StyleSheetParser::ReadCharacter(char& buffer)
 							return true;
 						}
 					}
-					
+
 					if (parse_buffer[parse_buffer_pos] == '*')
 						comment = true;
 					else

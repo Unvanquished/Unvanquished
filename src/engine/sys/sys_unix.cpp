@@ -304,6 +304,38 @@ char *Sys_GetClipboardData( clipboard_t clip )
 #endif // !BUILD_SERVER
 	return NULL;
 }
+#else
+
+/*
+==================
+Sys_GetClipboardData
+==================
+*/
+char *Sys_GetClipboardData( clipboard_t clip )
+{
+#ifdef BUILD_CLIENT
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
+	char *buffer = SDL_GetClipboardText();
+	char *data = NULL;
+
+	if( !buffer )
+	{
+		return NULL;
+	}
+
+	data = ( char * ) Z_Malloc( sizeof( buffer ) );
+	Q_strncpyz( data, buffer, sizeof( buffer ) );
+	SDL_free( buffer );
+
+	return data;
+#else
+	return NULL;
+#endif
+#else
+	return NULL;
+#endif
+}
+
 #endif // !MACOSX
 
 #define MEM_THRESHOLD 96 * 1024 * 1024
@@ -803,6 +835,37 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 	}
 
 	Com_DPrintf( S_WARNING "failed to show a dialog\n" );
+	return DR_OK;
+}
+
+#else
+
+/*
+==============
+Sys_Dialog
+==============
+*/
+dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title )
+{
+#ifdef BUILD_CLIENT
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
+	switch ( type )
+	{
+		default:
+		case DT_INFO:
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, title, message, NULL);
+			break;
+
+		case DT_WARNING:
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, title, message, NULL);
+			break;
+
+		case DT_ERROR:
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, message, NULL);
+			break;
+	}
+#endif
+#endif
 	return DR_OK;
 }
 

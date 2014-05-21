@@ -125,8 +125,8 @@ namespace VM {
     class CommonVMServices::ProxyCvar : public Cvar::CvarProxy {
         public:
             ProxyCvar(CommonVMServices* services, std::string name, std::string description, int flags, std::string defaultValue)
-            :CvarProxy(std::move(name), std::move(description), flags, std::move(defaultValue)), services(services) {
-                Register();
+            :CvarProxy(std::move(name), flags, std::move(defaultValue)), services(services) {
+                Register(std::move(description));
             }
             virtual ~ProxyCvar() {
                 Cvar::Unregister(name);

@@ -1387,7 +1387,6 @@ static void IN_Xbox360ControllerMove( void )
 IN_ProcessEvents
 ===============
 */
-void Rocket_MouseMove( int x, int y );
 static void IN_ProcessEvents( qboolean dropInput )
 {
 	SDL_Event  e;
@@ -1477,7 +1476,6 @@ static void IN_ProcessEvents( qboolean dropInput )
 					if ( mouseActive )
 					{
 						Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL );
-						Rocket_MouseMove( e.motion.x, e.motion.y );
 #if ( defined( __linux__ ) || defined( __BSD__ ) ) && SDL_VERSION_ATLEAST( 2, 0, 0 )
 						{
 							// work around X window managers and edge-based workspace flipping
