@@ -327,7 +327,7 @@ void CG_Rocket_LoadHuds( void )
 		if ( !Q_stricmp( token, "human_hud" ) )
 		{
 			// Clear old values
-			for ( i = WP_BLASTER; i < WP_LUCIFER_CANNON; ++i )
+			for ( i = WP_BLASTER; i <= WP_LUCIFER_CANNON; ++i )
 			{
 				trap_Rocket_ClearHud( i );
 			}
@@ -354,7 +354,7 @@ void CG_Rocket_LoadHuds( void )
 				}
 
 
-				for ( i = WP_BLASTER; i < WP_LUCIFER_CANNON; ++i )
+				for ( i = WP_BLASTER; i <= WP_LUCIFER_CANNON; ++i )
 				{
 					trap_Rocket_AddUnitToHud( i, token );
 				}
@@ -404,7 +404,7 @@ void CG_Rocket_LoadHuds( void )
 
 		if ( !Q_stricmp( token, "alien_hud" ) )
 		{
-			for ( i = WP_ALEVEL0; i < WP_ALEVEL4; ++i )
+			for ( i = WP_ALEVEL0; i <= WP_ALEVEL4; ++i )
 			{
 				trap_Rocket_ClearHud( i );
 			}
@@ -430,7 +430,7 @@ void CG_Rocket_LoadHuds( void )
 					{
 						break;
 					}
-				for ( i = WP_ALEVEL0; i < WP_ALEVEL4; ++i )
+				for ( i = WP_ALEVEL0; i <= WP_ALEVEL4; ++i )
 				{
 					trap_Rocket_AddUnitToHud( i, token );
 				}
@@ -453,7 +453,7 @@ void CG_Rocket_LoadHuds( void )
 
 					if ( !*token )
 					{
-						Com_Error( ERR_DROP, "Unable to load huds from %s. Unexpected end of file. Expected closing } to close off spectator_hud.", rocket_hudFile.string );
+						Com_Error( ERR_DROP, "Unable to load huds from %s. Unexpected end of file. Expected closing } to close off %s_hud.", rocket_hudFile.string, BG_Weapon( i )->name );
 					}
 
 					if ( *token == '{' )
