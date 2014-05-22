@@ -29,5 +29,6 @@
 		<col fields="description" width="70%">Description:</col>
 	</datagrid>
 	</if>
+	<inlinecvar cvar="cg_draw2d"/>
     </body>
 </rml>
