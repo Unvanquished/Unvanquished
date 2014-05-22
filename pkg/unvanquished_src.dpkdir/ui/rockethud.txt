@@ -6,6 +6,7 @@ units
 	ui/hud/common/console.rml
 	ui/hud/common/base.rml
 	ui/hud/common/spectator.rml
+	ui/hud/aliens/barbs.rml
 }
 
 spectator_hud
@@ -28,6 +29,15 @@ alien_hud
 {
 	base
 	alien_hud
+	overlay
+	console
+}
+
+level3upg_hud
+{
+	base
+	alien_hud
+	barbs
 	overlay
 	console
 }
