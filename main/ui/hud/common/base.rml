@@ -36,19 +36,17 @@
 		{
 			position: absolute;
 			top: 5%;
-
 		}
 		div.minimap
 		{
-			right: 20%;
+			right: 15%;
 		}
-
 		div#location
 		{
 			position: fixed;
 			text-align: right;
 			right: 0%;
-			top: 20%;
+			top: 25%;
 		}
 		div#tutorial
 		{
