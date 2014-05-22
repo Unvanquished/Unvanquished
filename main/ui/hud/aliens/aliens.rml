@@ -225,9 +225,6 @@
 			<unlocked_items/>
 			<momentum_bar/>
 		</div>
-		<div id="barbs">
-			<barbs src="/ui/assets/alien/tremublob" />
-		</div>
 		<div id="left">
 			<img class="bg sides" src="/ui/assets/alien/bg-l.png" />
 			<progressbar src="health" id="health-bar" />

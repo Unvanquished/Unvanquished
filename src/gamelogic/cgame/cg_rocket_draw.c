@@ -1360,6 +1360,7 @@ void CG_Rocket_DrawAlienBarbs( void )
 
 	if ( !numBarbs )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
