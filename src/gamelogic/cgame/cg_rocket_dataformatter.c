@@ -225,6 +225,39 @@ static void CG_Rocket_DFLevelShot( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<img class=\"levelshot\" src=\"/levelshots/%s\"/>", Info_ValueForKey( data, "1" ) ), qfalse );
 }
 
+static void CG_Rocket_DFGearOrReady( int handle, const char *data )
+{
+	int clientNum = atoi( Info_ValueForKey( data, "1" ) );
+	if ( cg.intermissionStarted )
+	{
+		if ( CG_ClientIsReady( clientNum ) )
+		{
+			trap_Rocket_DataFormatterFormattedData( handle, "[check]", qtrue );
+		}
+		else
+		{
+			trap_Rocket_DataFormatterFormattedData( handle, "", qfalse );
+		}
+	}
+	else
+	{
+		score_t *s = &cg.scores[ clientNum ];
+		const char *rml = "";
+
+		if ( s->weapon != WP_NONE )
+		{
+			rml = va( "<img src='/%s'/>", CG_GetShaderNameFromHandle( cg_weapons[ s->weapon ].weaponIcon ) );
+		}
+
+		if ( s->team == TEAM_HUMANS && s->upgrade != UP_NONE )
+		{
+			rml = va( "%s<img src='/%s'/>", rml, CG_GetShaderNameFromHandle( cg_upgrades[ s->upgrade ].upgradeIcon ) );
+		}
+
+		trap_Rocket_DataFormatterFormattedData( handle, rml, qfalse );
+	}
+}
+
 typedef struct
 {
 	const char *name;
@@ -236,6 +269,7 @@ static const dataFormatterCmd_t dataFormatterCmdList[] =
 	{ "ClassName", &CG_Rocket_DFClassName },
 	{ "CMArmouryBuyUpgrades", &CG_Rocket_DFCMArmouryBuyUpgrade },
 	{ "CMArmouryBuyWeapons", &CG_Rocket_DFCMArmouryBuyWeapon },
+	{ "GearOrReady", &CG_Rocket_DFGearOrReady },
 	{ "GWeaponDamage", &CG_Rocket_DFGWeaponDamage },
 	{ "GWeaponRange", &CG_Rocket_DFGWeaponRange },
 	{ "GWeaponRateOfFire", &CG_Rocket_DFGWeaponRateOfFire },

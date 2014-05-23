@@ -60,6 +60,11 @@
 			text-align:center;
 			font-size:2em;
 		}
+		datagrid img
+		{
+			width: 32px;
+			height: 32px;
+		}
 
         </style>
     </head>
@@ -67,20 +72,20 @@
     <h2>Aliens</h2><h2>Humans</h2>
 	<div class="container">
 	<datagrid source="playerList.aliens" id="aliens">
-		<col fields="num" formatter="PlayerName" width="40%">Name</col>
-		<col fields="kills" width="10%">Kills</col>
-		<col fields="deaths" width="15%">Deaths</col>
-		<col fields="ping" width="10%">Ping</col>
+		<col fields="num" formatter="GearOrReady" width="15%"></col>
+		<col fields="num" formatter="PlayerName" width="50%">Name</col>
 		<col fields="score" width="15%">Score</col>
+		<col fields="ping" width="10%">Ping</col>
+		<col fields="time" width="10%">Time</col>
 	</datagrid>
 	</div>
 	<div class="container">
 	<datagrid source="playerList.humans" id="humans">
-		<col fields="num" formatter="PlayerName" width="40%">Name</col>
-		<col fields="kills" width="10%">Kills</col>
-		<col fields="deaths" width="15%">Deaths</col>
-		<col fields="ping" width="10%">Ping</col>
+		<col fields="num" formatter="GearOrReady" width="15%"></col>
+		<col fields="num" formatter="PlayerName" width="50%">Name</col>
 		<col fields="score" width="15%">Score</col>
+		<col fields="ping" width="10%">Ping</col>
+		<col fields="time" width="10%">Time</col>
 	</datagrid>
 	</div>
 	<div class="container">
@@ -90,10 +95,8 @@
 	</div>
 	<div>Server: Official NA Unvanquished Server</div>
 	<div id="infos">
-		<div>Map: ATCSHD</div>
-		<div>GameMode: Grangerhunt</div>
-		<div>Time left: 12:34</div>
-		<div>Next Map: parpax</div>
+		<div>Map: <levelname/></div>
+		<div>Time: <timer/></div>
     </div>
     </body>
 </rml>
