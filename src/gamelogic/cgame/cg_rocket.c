@@ -286,6 +286,8 @@ void CG_Rocket_LoadHuds( void )
 
 	while ( 1 )
 	{
+		qboolean valid = qfalse;
+
 		token = COM_Parse2( &text_p );
 
 		if ( !*token )
@@ -469,7 +471,15 @@ void CG_Rocket_LoadHuds( void )
 
 					trap_Rocket_AddUnitToHud( i, token );
 				}
+
+				valid = qtrue;
+				break;
 			}
+		}
+
+		if ( !valid )
+		{
+			Com_Error( ERR_DROP, "Could not parse %s. Unrecognized top level item: %s", rocket_hudFile.string, token );
 		}
 	}
 }
