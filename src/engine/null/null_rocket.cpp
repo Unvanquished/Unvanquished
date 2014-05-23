@@ -34,32 +34,50 @@ Maryland 20850 USA.
 
 // Null interface for libRocket
 
-void Rocket_Init( void ) { }
-void Rocket_Shutdown( void ) { }
-void Rocket_Render( void ) { }
-void Rocket_Update( void ) { }
-void Rocket_InjectMouseMotion( int x, int y ) { }
-void Rocket_LoadDocument( const char *path ) { }
-void Rocket_LoadCursor( const char *path ) { }
-void Rocket_DocumentAction( const char *name, const char *action ) { }
-void Rocket_GetEvent( char *event, int length ) { }
-void Rocket_DeleteEvent( void ) { }
-void Rocket_RegisterDataSource( const char *name ) { }
-void Rocket_DSAddRow( const char *name, const char *table, const char *data ) { }
-void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data ) { }
-void Rocket_DSRemoveRow( const char *name, const char *table, const int row ) { }
-void Rocket_DSClearTable( const char *name, const char *table ) { }
-void Rocket_SetInnerRML( const char *name, const char *id, const char *RML ) { }
-void Rocket_GetEventParameters( char *params, int length ) { }
-void Rocket_RegisterDataFormatter( const char *name ) { }
-void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength ) { }
-void Rocket_DataFormatterFormattedData( int handle, const char *data ) { }
-int Rocket_ToQuakeKey( const int rocketKey ) { }
-void Rocket_GetElementTag( char *tag, int length ) { }
-void Rocket_SetElementDimensions( float x, float y ) { }
-void Rocket_RegisterElement( const char *tag ) { }
-void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value ) { }
-void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length ) { }
-void Rocket_GetElementAbsoluteOffset( float *x, float *y ) { }
-void Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, const char *src ) { }
-void Rocket_ClearElementGeometry( void ) { }
+#include "../client/client.h"
+
+void Rocket_Init( void ) {}
+void Rocket_Shutdown( void ) {}
+void Rocket_Render( void ) {}
+void Rocket_Update( void ) {}
+void Rocket_InjectMouseMotion( int x, int y ) {}
+void Rocket_LoadDocument( const char *path ) {}
+void Rocket_LoadCursor( const char *path ) {}
+void Rocket_DocumentAction( const char *name, const char *action ) {}
+qboolean Rocket_GetEvent( void ) { return false; }
+void Rocket_DeleteEvent( void ) {}
+void Rocket_RegisterDataSource( const char *name ) {}
+void Rocket_DSAddRow( const char *name, const char *table, const char *data ) {}
+void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data ) {}
+void Rocket_DSRemoveRow( const char *name, const char *table, const int row ) {}
+void Rocket_DSClearTable( const char *name, const char *table ) {}
+void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboolean parseQuake ) {}
+void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length ) {}
+void Rocket_GetEventParameters( char *params, int length ) {}
+void Rocket_RegisterDataFormatter( const char *name ) {}
+void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength ) {}
+void Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake ) {}
+void Rocket_GetElementTag( char *tag, int length ) {}
+void Rocket_SetElementDimensions( float x, float y ) {}
+void Rocket_RegisterElement( const char *tag ) {}
+void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value ) {}
+void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length ) {}
+void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type ) {}
+void Rocket_GetElementAbsoluteOffset( float *x, float *y ) {}
+void Rocket_SetClass( const char *in, qboolean activate ) {}
+void Rocket_SetPropertyById( const char *id, const char *property, const char *value ) {}
+void Rocket_SetActiveContext( int catcher ) {}
+void Rocket_AddConsoleText( void ) {}
+void Rocket_InitializeHuds( int size ) {}
+void Rocket_LoadUnit( const char *path ) {}
+void Rocket_AddUnitToHud( int weapon, const char *id ) {}
+void Rocket_ShowHud( int weapon ) {}
+void Rocket_ClearHud( int weapon ) {}
+void Rocket_InitKeys( void ) {}
+keyNum_t Rocket_ToQuake( int key ) { return K_NONE; }
+void Rocket_ProcessKeyInput( int key, qboolean down ) {}
+void Rocket_ProcessTextInput( int key ) {}
+void Rocket_MouseMove( int x, int y ) {}
+void Rocket_AddTextElement( const char *text, const char *_class, float x, float y ) {}
+void Rocket_ClearText( void ) {}
+void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs ) {}
