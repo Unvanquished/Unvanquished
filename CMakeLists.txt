@@ -1395,7 +1395,7 @@ function( GAMEMODULE )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
-      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};VM_IN_PROCESS"
+      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h )
   endif()
