@@ -1901,9 +1901,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_RegisterCvars();
 
 	CG_InitConsoleCommands();
-
-	CG_Rocket_LoadHuds();
-
 	trap_S_BeginRegistration();
 
 
@@ -1993,6 +1990,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	trap_S_ClearLoopingSounds( qtrue );
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
 
+	CG_Rocket_LoadHuds();
 	CG_UpdateLoadingStep( LOAD_DONE );
 }
 

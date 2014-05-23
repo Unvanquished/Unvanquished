@@ -422,14 +422,15 @@ void CG_Rocket_LoadHuds( void )
 				}
 
 				if ( *token == '{' )
-					{
-						continue;
-					}
+				{
+					continue;
+				}
 
-					if ( *token == '}' )
-					{
-						break;
-					}
+				if ( *token == '}' )
+				{
+					break;
+				}
+
 				for ( i = WP_ALEVEL0; i <= WP_ALEVEL4; ++i )
 				{
 					trap_Rocket_AddUnitToHud( i, token );
