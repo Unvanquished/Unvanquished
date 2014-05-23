@@ -382,7 +382,7 @@ SV_RestartGameProgs
 Called on a map_restart, but not on a map change
 ===================
 */
-void SV_RestartGameProgs( void )
+void SV_RestartGameProgs(Str::StringRef mapname)
 {
 	if ( !gvm )
 	{
@@ -395,6 +395,10 @@ void SV_RestartGameProgs( void )
 	gvm = nullptr;
 
 	gvm = SV_CreateGameVM();
+
+	gvm->GameStaticInit();
+
+	gvm->GameLoadMap(mapname);
 
 	SV_InitGameVM( qtrue );
 }

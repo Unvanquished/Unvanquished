@@ -175,7 +175,7 @@ static void SV_MapRestart_f( void )
 
 	Cvar_Set( "sv_serverRestarting", "1" );
 
-	SV_RestartGameProgs();
+	SV_RestartGameProgs(Cvar_VariableString("mapname"));
 
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
