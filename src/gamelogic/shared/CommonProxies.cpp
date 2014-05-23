@@ -72,7 +72,7 @@ namespace Cmd {
         std::string description;
     };
 
-    typedef std::unordered_map<std::string, CommandRecord> CommandMap;
+    typedef std::unordered_map<std::string, CommandRecord, Str::IHash, Str::IEqual> CommandMap;
 
     CommandMap& GetCommandMap() {
         static CommandMap map;
