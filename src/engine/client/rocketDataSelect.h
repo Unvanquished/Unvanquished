@@ -43,11 +43,57 @@ extern "C"
 #include "client.h"
 }
 
-class RocketDataSelect : public Rocket::Controls::ElementFormControlDataSelect
+class RocketDataSelect : public Rocket::Controls::ElementFormControlDataSelect, public Rocket::Core::EventListener
 {
 public:
 	RocketDataSelect( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlDataSelect( tag ), selection( -2 ) { }
 	~RocketDataSelect() { }
+
+	virtual void OnChildAdd( Element *child )
+	{
+		ElementFormControlDataSelect::OnChildAdd( child );
+
+		if ( child == this )
+		{
+			owner = GetOwnerDocument();
+			owner->AddEventListener( "show", this );
+		}
+	}
+
+	virtual void OnChildRemove( Element *child )
+	{
+		ElementFormControlDataSelect::OnChildRemove( child );
+
+		if (  child == this )
+		{
+			if ( owner )
+			{
+				owner->RemoveEventListener( "show", this );
+			}
+		}
+	}
+
+	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	{
+		if (  changed_attributes.find( "source" ) != changed_attributes.end() )
+		{
+			Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String>( "source", "" );
+			unsigned int pos = dataSource.Find( "." );
+			dsName = dataSource.Substring( 0, pos );
+			tableName =  dataSource.Substring( pos + 1, dataSource.Length() );
+		}
+	}
+
+	virtual void ProcessEvent( Rocket::Core::Event &event )
+	{
+		extern std::queue< RocketEvent_t * > eventQueue;
+
+		if ( event.GetTargetElement() == owner && event == "show" )
+		{
+			eventQueue.push( new RocketEvent_t( this, Rocket::Core::String( 1024, "setDataSelectValue %s %s", dsName.CString(), tableName.CString() ) ) );
+		}
+	}
+
 	void OnUpdate( void )
 	{
 		extern std::queue< RocketEvent_t * > eventQueue;
@@ -56,15 +102,6 @@ public:
 
 		if ( GetSelection() != selection )
 		{
-			Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String>( "source", "" );
-			Rocket::Core::String dsName = dataSource.Substring( 0, dataSource.Find( "." ) );
-			Rocket::Core::String tableName =  dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() );
-
-			if ( dataSource.Empty() )
-			{
-				return;
-			}
-
 			selection = GetSelection();
 
 			// dispatch event so cgame knows about it
@@ -81,5 +118,7 @@ public:
 private:
 	int selection;
 	Rocket::Core::Element *owner;
+	Rocket::Core::String dsName;
+	Rocket::Core::String tableName;
 };
 

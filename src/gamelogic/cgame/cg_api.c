@@ -1555,3 +1555,8 @@ void trap_Rocket_ShowScoreboard( const char *name, qboolean show )
 {
 	syscallVM( CG_ROCKET_SHOWSCOREBOARD, name, show );
 }
+
+void trap_Rocket_SetDataSelectIndex( int index )
+{
+	syscallVM( CG_ROCKET_SETDATASELECTINDEX, index );
+}

@@ -2449,9 +2449,13 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_ROCKET_REGISTERPROPERTY:
 			Rocket_RegisterProperty( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ), args[ 3 ], args[ 4 ], ( const char * ) VMA( 5 ) );
 			return 0;
-			
+
 		case CG_ROCKET_SHOWSCOREBOARD:
 			Rocket_ShowScoreboard( ( const char * ) VMA( 1 ), args[ 2 ] );
+			return 0;
+
+		case CG_ROCKET_SETDATASELECTINDEX:
+			Rocket_SetDataSelectIndex( args[ 1 ] );
 			return 0;
 
 		default:

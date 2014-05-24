@@ -82,3 +82,4 @@ void Rocket_AddTextElement( const char *text, const char *_class, float x, float
 void Rocket_ClearText( void ) {}
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs ) {}
 void Rocket_ShowScoreboard( const char *name, bool show ) {}
+void Rocket_SetDataSelectIndex( int index ) {}

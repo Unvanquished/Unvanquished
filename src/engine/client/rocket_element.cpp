@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include <Rocket/Core/Factory.h>
 #include <Rocket/Core/ElementInstancer.h>
 #include <Rocket/Core/ElementInstancerGeneric.h>
+#include <Rocket/Controls/ElementFormControlDataSelect.h>
 #include "rocketConsoleTextElement.h"
 #include "client.h"
 
@@ -341,4 +342,13 @@ void Rocket_AddConsoleText( void )
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs )
 {
 	Rocket::Core::StyleSheetSpecification::RegisterProperty( name, defaultValue, ( bool ) inherited, ( bool ) force_layout ).AddParser( parseAs );
+}
+
+
+void Rocket_SetDataSelectIndex( int index )
+{
+	if ( activeElement )
+	{
+		dynamic_cast< Rocket::Controls::ElementFormControlDataSelect* >( activeElement )->SetSelection( index );
+	}
 }

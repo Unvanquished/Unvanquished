@@ -45,12 +45,15 @@ extern Rocket::Core::Context *hudContext;
 class RocketEvent_t
 {
 public:
-	RocketEvent_t( Rocket::Core::Event &event, Rocket::Core::String cmds ) : cmd( cmds )
+	RocketEvent_t( Rocket::Core::Event &event, const Rocket::Core::String &cmds ) : cmd( cmds )
 	{
 		targetElement = event.GetTargetElement();
 		Parameters = *(event.GetParameters());
 	}
-	RocketEvent_t( Rocket::Core::String cmds ) : cmd( cmds )
+	RocketEvent_t( const Rocket::Core::String &cmds ) : cmd( cmds )
+	{
+	}
+	RocketEvent_t( Rocket::Core::Element *e, const Rocket::Core::String &cmds ) : targetElement( e ), cmd( cmds )
 	{
 	}
 	~RocketEvent_t() { }
