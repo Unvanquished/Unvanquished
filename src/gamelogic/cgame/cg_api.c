@@ -1491,11 +1491,6 @@ void trap_Rocket_GetElementTag( char *tag, int length )
 	syscallVM( CG_ROCKET_GETELEMENTTAG, tag, length );
 }
 
-int trap_Rocket_KeyToQuake( int key )
-{
-	return syscallVM( CG_ROCKET_KEYTOQUAKE, key );
-}
-
 void trap_Rocket_GetElementAbsoluteOffset( float *x, float *y )
 {
 	syscallVM( CG_ROCKET_GETELEMENTABSOLUTEOFFSET, x, y );

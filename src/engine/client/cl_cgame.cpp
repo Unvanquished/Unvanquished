@@ -2370,10 +2370,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_GetElementTag( (char *)VMA(1), args[ 2 ] );
 			return 0;
 
-		case CG_ROCKET_KEYTOQUAKE:
-// 			return Rocket_ToQuakeKey( args[ 1 ] );
-			return 0;
-
 		case CG_ROCKET_GETELEMENTABSOLUTEOFFSET:
 			Rocket_GetElementAbsoluteOffset( (float*) VMA(1), (float*) VMA(2) );
 			return 0;

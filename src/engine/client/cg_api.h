@@ -332,7 +332,6 @@ typedef enum cgameImport_s
   CG_ROCKET_REGISTERELEMENT,
   CG_ROCKET_SETELEMENTDIMENSIONS,
   CG_ROCKET_GETELEMENTTAG,
-  CG_ROCKET_KEYTOQUAKE,
   CG_ROCKET_GETELEMENTABSOLUTEOFFSET,
   CG_ROCKET_QUAKETORML,
   CG_ROCKET_SETCLASS,
@@ -658,7 +657,6 @@ void            trap_Rocket_DataFormatterFormattedData( int handle, const char *
 void            trap_Rocket_RegisterElement( const char *tag );
 void            trap_Rocket_SetElementDimensions( float x, float y );
 void            trap_Rocket_GetElementTag( char *tag, int length );
-int             trap_Rocket_KeyToQuake( int key );
 void            trap_Rocket_GetElementAbsoluteOffset( float *x, float *y );
 void            trap_Rocket_QuakeToRML( const char *in, char *out, int length );
 void            trap_Rocket_SetClass( const char *in, qboolean activate );
