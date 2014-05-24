@@ -2412,47 +2412,24 @@ static void CG_Rocket_DrawProgressValue( void )
 
 static void CG_Rocket_DrawLevelName( void )
 {
-	const char *s;
-	// Ugly hack so its not updated each frame
-	static char oldLevelname[ MAX_STRING_CHARS ];
-
-	s = CG_ConfigString( CS_MESSAGE );
-
-	if ( Q_stricmp( s, oldLevelname ) )
-	{
-		Q_strncpyz( oldLevelname, s, sizeof( oldLevelname ) );
-		trap_Rocket_SetInnerRML( s, RP_QUAKE );
-	}
+	trap_Rocket_SetInnerRML( CG_ConfigString( CS_MESSAGE ), RP_QUAKE );
 }
 
 static void CG_Rocket_DrawMOTD( void )
 {
 	const char *s;
 	char       parsed[ MAX_STRING_CHARS ];
-	static char oldMotd[ MAX_STRING_CHARS ];
 
 	s = CG_ConfigString( CS_MOTD );
-
-	if ( Q_stricmp( s, oldMotd ) )
-	{
-		Q_strncpyz( oldMotd, s, sizeof( oldMotd ) );
-		Q_ParseNewlines( parsed, s, sizeof( parsed ) );
-		trap_Rocket_SetInnerRML( parsed, RP_EMOTICONS );
-	}
+	Q_ParseNewlines( parsed, s, sizeof( parsed ) );
+	trap_Rocket_SetInnerRML( parsed, RP_EMOTICONS );
 }
 
 static void CG_Rocket_DrawHostname( void )
 {
 	const char *info;
-	static char oldHostname[ MAX_STRING_CHARS ];
-
 	info = CG_ConfigString( CS_SERVERINFO );
-
-	if ( Q_stricmp( info, oldHostname ) )
-	{
-		Q_strncpyz( oldHostname, info, sizeof( oldHostname ) );
-		trap_Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE );
-	}
+	trap_Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE );
 }
 
 static void CG_Rocket_DrawDownloadName( void )
