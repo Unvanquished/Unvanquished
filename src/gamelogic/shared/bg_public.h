@@ -1039,7 +1039,7 @@ typedef enum
 	//commands
 	BCT_ATTACK,
 	BCT_DEFEND,
-	//BCT_REPAIR, (TODO)
+	BCT_REPAIR,
 
 	//implicit
 	BCT_HEALTH,

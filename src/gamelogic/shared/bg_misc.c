@@ -932,6 +932,7 @@ static const beaconData_t bg_beaconsData[ ] =
 	{ BCT_HUMANBASE,  "humanbase",  BCF_PER_TEAM },
 	{ BCT_ATTACK,     "attack",     0 },
 	{ BCT_DEFEND,     "defend",     0 },
+	{ BCT_REPAIR,     "repair",     BCF_ENTITY },
 	{ BCT_HEALTH,     "health",     BCF_IMPLICIT },
 	{ BCT_AMMO,       "ammo",       BCF_IMPLICIT }
 };
