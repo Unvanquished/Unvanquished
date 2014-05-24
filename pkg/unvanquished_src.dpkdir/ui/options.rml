@@ -60,20 +60,37 @@
 			}
 		</style>
 	</head>
-	<body id="options" onload="buildDS resolutions; sortDS resolutions default width; buildDS languages">
+	<body id="options" onload="buildDS languages">
 		<tabset class="options window">
 		<tab>Player</tab>
 		<panel>
 			<div class="line"><label>Language:</label>
 			<dataselect source="languages.default" fields="name" /></div>
 			<div class="line"><label>Name:</label><colorinput type="text" cvar="name" /></div>
+			<div class="line"><label>No Taunt Sounds:</label><input cvar="cg_noTaunt" type="checkbox" /></div>
+			<div class="line"><label>Team Chats Only:</label><input cvar="cg_teamChatsOnly" type="checkbox" /></div>
+			<div class="line"><label>Sticky Spectate:</label><input cvar="cg_stickySpec" type="checkbox" /></div>
+			<div class="line"><label>Tutorial Mode:</label><input cvar="cg_tutorial" type="checkbox" /></div>
+			<div class="line"><label>Disable Warning Dialogs:</label>
+			<select name="videoquality" cvar="cg_disableWarningDialogs">
+				<option value="0">No</option>
+				<option value="1">Print To Console</option>
+				<option value="2">Yes</option>
+			</select></div>
+			<div class="line"><label>Static Death Cam:</label><input cvar="cg_staticDeathCam" type="checkbox" /></div>
+			<div class="line"><label>Sprint Toggles:</label><input cvar="cg_sprintToggle" type="checkbox" /></div>
+			<div class="line"><label>Wallwalk Control Toggles:</label><input cvar="cg_wwToggle" type="checkbox" /></div>
+			<div class="line"><label>Wallwalk Speed:</label>
+			<select name="wwspeed" cvar="cg_wwSmoothTime">
+				<option value="0">Instant</option>
+				<option value="150">Fast</option>
+				<option value="300">Medium</option>
+				<option value="600">Slow</option>
+			</select></div>
 
-			<div class="line"><label>Resolution:</label>
-				<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
+			<div class="line"><label>Resolution:</label><div class="selectvalue" onClick="hide options;exec rocket ui/dialogs/resolution.rml load; exec rocket resolution show"><input class="disabled" type="text" cvar="r_customWidth" disabled/>&nbsp;x<input class="disabled" type="text" cvar="r_customHeight" disabled/><div class="arrow"></div></div>
 			</div>
-			<div class="line"><label>Resolution:</label><div class="selectvalue" onClick="hide options;exec rocket ui/dialogs/resolution.rml load; exec rocket resolution show"><input class="disabled" type="text" cvar="r_customWidth" disabled/>x<input class="disabled" type="text" cvar="r_customHeight" disabled/><div class="arrow"></div></div>
 
-			</div>
 			<div class="line"><label>Video Quality:</label>
 			<select name="videoquality">
 				<option value="low">Low</option>
