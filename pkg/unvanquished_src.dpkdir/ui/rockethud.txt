@@ -8,6 +8,7 @@ units
 	ui/hud/common/spectator.rml
 	ui/hud/aliens/barbs.rml
 	ui/hud/common/charge.rml
+	ui/scoreboard.rml
 }
 
 spectator_hud
