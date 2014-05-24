@@ -2054,7 +2054,7 @@ void CG_ProcessSnapshots( void );
 //
 qboolean CG_ConsoleCommand( void );
 void     CG_InitConsoleCommands( void );
-qboolean CG_RequestScores( void );
+void     CG_RequestScores( void );
 
 //
 // cg_servercmds.c

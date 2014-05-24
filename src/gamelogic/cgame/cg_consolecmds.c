@@ -64,21 +64,10 @@ static void CG_Viewpos_f( void )
 	           ( int ) cg.refdefViewAngles[ YAW ] );
 }
 
-qboolean CG_RequestScores( void )
+void CG_RequestScores( void )
 {
-	if ( cg.scoresRequestTime + 2000 < cg.time )
-	{
-		// the scores are more than two seconds out of data,
-		// so request new ones
 		cg.scoresRequestTime = cg.time;
 		trap_SendClientCommand( "score\n" );
-
-		return qtrue;
-	}
-	else
-	{
-		return qfalse;
-	}
 }
 
 void CG_ClientList_f( void )

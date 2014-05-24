@@ -65,6 +65,12 @@
 			width: 32px;
 			height: 32px;
 		}
+		datagrid#specs datagridbody
+		{
+			display: inline;
+			overflow-y: hidden;
+			max-height: 20%;
+		}
 
         </style>
     </head>
@@ -89,11 +95,11 @@
 	</datagrid>
 	</div>
 	<div class="container">
-	<datagrid source="playerList.spectators">
+	<datagrid id="specs" source="playerList.spectators">
 		<col fields="num" formatter="PlayerName" width="45%">Name:</col>
 	</datagrid>
 	</div>
-	<div>Server: Official NA Unvanquished Server</div>
+	<div>Server: <hostname/></div>
 	<div id="infos">
 		<div>Map: <levelname/></div>
 		<div>Time: <timer/></div>

@@ -570,6 +570,12 @@ void CG_Rocket_Frame( void )
 		CG_Rocket_BuildServerInfo();
 	}
 
+	// Update scores as long as they are showing
+	if ( cg.showScores && cg.scoresRequestTime + 750 < cg.time )
+	{
+		CG_RequestScores();
+	}
+
 	CG_Rocket_ProcessEvents();
 }
 
