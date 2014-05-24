@@ -578,6 +578,7 @@ void CG_Rocket_BuildLanguageList( const char *args )
 	{
 		if ( *p == '"' && quoted )
 		{
+			temp[ index ] = '\0';
 			AddToLanguageList( BG_strdup( temp ), NULL );
 			quoted = qfalse;
 			index = 0;
@@ -605,6 +606,7 @@ void CG_Rocket_BuildLanguageList( const char *args )
 	{
 		if ( *p == '"' && quoted )
 		{
+			temp[ index ] = '\0';
 			rocketInfo.data.languages[ lang++ ].lang = BG_strdup( temp );
 			quoted = qfalse;
 			index = 0;
@@ -631,7 +633,7 @@ void CG_Rocket_BuildLanguageList( const char *args )
 		Info_SetValueForKey( buf, "name", rocketInfo.data.languages[ index ].name, qfalse );
 		Info_SetValueForKey( buf, "lang", rocketInfo.data.languages[ index ].lang, qfalse );
 
-		trap_Rocket_DSAddRow( "language", "default", buf );
+		trap_Rocket_DSAddRow( "languages", "default", buf );
 	}
 }
 
