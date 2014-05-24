@@ -2214,7 +2214,7 @@ void CG_Rocket_BuildServerInfo( void );
 void CG_Rocket_BuildServerList( const char *args );
 void CG_Rocket_BuildArmourySellList( const char *table );
 void CG_Rocket_BuildArmouryBuyList( const char *table );
-void CG_Rocket_BuildPlayerList( const char *args );
+void CG_Rocket_BuildPlayerList( const char *table );
 
 //
 // cg_rocket_progressbar.c

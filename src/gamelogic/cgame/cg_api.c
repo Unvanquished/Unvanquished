@@ -1550,3 +1550,8 @@ void trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, q
 {
 	syscallVM( CG_ROCKET_REGISTERPROPERTY, name, defaultValue, inherited, force_layout, parseAs );
 }
+
+void trap_Rocket_ShowScoreboard( const char *name, qboolean show )
+{
+	syscallVM( CG_ROCKET_SHOWSCOREBOARD, name, show );
+}

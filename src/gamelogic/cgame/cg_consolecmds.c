@@ -362,16 +362,32 @@ static void CG_MessagePublic_f( void )
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
-static void CG_ShowScores_f( void )
-{
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_SCOREBOARD ].id, "show" );
-	cg.showScores = qtrue;
-}
-
 static void CG_ToggleMenu_f( void )
 {
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_INGAME_MENU ].id, "show" );
 }
+
+// FIXME: Don't hardcode scoreboard ID
+static void CG_ShowScores_f( void )
+{
+	if ( !cg.showScores )
+	{
+		trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
+		trap_PrepareKeyUp();
+		cg.showScores = qtrue;
+	}
+	else
+	{
+		cg.showScores = qfalse;
+	}
+}
+
+static void CG_HideScores_f( void )
+{
+	trap_Rocket_ShowScoreboard( "scoreboard", qfalse );
+	cg.showScores = qfalse;
+}
+
 
 static const struct
 {
@@ -380,6 +396,8 @@ static const struct
 	void ( *completer )( void );
 } commands[] =
 {
+	{ "+scores",           CG_ShowScores_f,        0                },
+	{ "-scores",           CG_HideScores_f,        0                },
 	{ "build",            0,                       CG_CompleteBuild },
 	{ "buy",              0,                       CG_CompleteBuy   },
 	{ "callteamvote",     0,                       CG_CompleteTeamVote },

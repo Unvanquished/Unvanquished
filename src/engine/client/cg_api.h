@@ -82,7 +82,6 @@ typedef enum {
 	ROCKETMENU_ARMOURYBUY,
 	ROCKETMENU_ALIENEVOLVE,
 	ROCKETMENU_CHAT,
-	ROCKETMENU_SCOREBOARD,
 	ROCKETMENU_NUM_TYPES
 } rocketMenuType_t;
 
@@ -344,7 +343,8 @@ typedef enum cgameImport_s
   CG_ROCKET_CLEARHUD,
   CG_ROCKET_ADDTEXT,
   CG_ROCKET_CLEARTEXT,
-  CG_ROCKET_REGISTERPROPERTY
+  CG_ROCKET_REGISTERPROPERTY,
+  CG_ROCKET_SHOWSCOREBOARD
 } cgameImport_t;
 
 typedef enum
@@ -669,4 +669,5 @@ void            trap_Rocket_ClearHud( int weapon );
 void            trap_Rocket_AddTextElement( const char *text, const char *Class, float x, float y );
 void            trap_Rocket_ClearText( void );
 void            trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
+void            trap_Rocket_ShowScoreboard( const char *name, qboolean show );
 #endif
