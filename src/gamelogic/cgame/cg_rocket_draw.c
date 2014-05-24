@@ -569,12 +569,10 @@ static void CG_Rocket_DrawStaminaValue( void )
 
 static void CG_Rocket_DrawWeaponIcon( void )
 {
-	centity_t     *cent;
 	playerState_t *ps;
 	weapon_t      weapon;
 	const char    *rmlClass = NULL;
 
-	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
 	weapon = BG_GetPlayerWeapon( ps );
 
@@ -813,8 +811,6 @@ static void CG_Rocket_DrawDisconnect( void )
 	float      x, y;
 	int        cmdNum;
 	usercmd_t  cmd;
-	const char *s;
-	vec4_t     color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// draw the phone jack if we are completely past our buffers
 	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
@@ -825,9 +821,6 @@ static void CG_Rocket_DrawDisconnect( void )
 	{
 		return;
 	}
-
-	// also add text in center of screen
-	s = _( "Connection Interrupted" );
 
 	// blink the icon
 	if ( ( cg.time >> 9 ) & 1 )
@@ -2026,8 +2019,7 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 
 void CG_Rocket_DrawMineRate( void )
 {
-	char s[ MAX_TOKEN_CHARS ];
-	float tx, ty, levelRate, rate;
+	float levelRate, rate;
 	int efficiency;
 
 	// check if builder
@@ -2272,20 +2264,14 @@ static void CG_Rocket_DrawTeamVote( void )
 
 static void CG_Rocket_DrawSpawnQueuePosition( void )
 {
-	float  w;
-	vec4_t color;
 	int    position;
 	const char *s;
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
-
-	color[ 0 ] = 1;
-	color[ 1 ] = 1;
-	color[ 2 ] = 1;
-	color[ 3 ] = 1;
 
 	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
 
@@ -2309,8 +2295,6 @@ static void CG_Rocket_DrawSpawnQueuePosition( void )
 
 static void CG_Rocket_DrawNumSpawns( void )
 {
-	float  w;
-	vec4_t color;
 	int    position, spawns;
 	const char *s;
 
@@ -2318,11 +2302,6 @@ static void CG_Rocket_DrawNumSpawns( void )
 	{
 		return;
 	}
-
-	color[ 0 ] = 1;
-	color[ 1 ] = 1;
-	color[ 2 ] = 1;
-	color[ 3 ] = 1;
 
 	spawns   = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
 	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
@@ -2394,16 +2373,12 @@ static void CG_Rocket_DrawPlayerFuelValue( void )
 	percent = ( int )( 100.0f * ( float )fuel / ( float )JETPACK_FUEL_MAX );
 
 
-	trap_Rocket_SetInnerRML( va( "%f", percent ), 0 );
+	trap_Rocket_SetInnerRML( va( "%d", percent ), 0 );
 }
 
 static void CG_Rocket_DrawWarmup( void )
 {
 	int   sec = 0;
-	int   w;
-	int   h;
-	float size = 0.5f;
-	char  text[ MAX_STRING_CHARS ];
 
 	if ( !cg.warmupTime )
 	{
@@ -2465,7 +2440,6 @@ static void CG_Rocket_DrawMOTD( void )
 
 static void CG_Rocket_DrawHostname( void )
 {
-	char       buffer[ 1024 ];
 	const char *info;
 	static char oldHostname[ MAX_STRING_CHARS ];
 
@@ -2498,7 +2472,6 @@ static void CG_Rocket_DrawDownloadTime( void )
 	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
 	float downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 	int xferRate;
-	int n;
 
 	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
 	{
@@ -2561,7 +2534,7 @@ static void CG_Rocket_DrawDownloadSpeed( void )
 	else
 	{
 		xferRate = 0;
-		trap_Rocket_SetInnerRML( va( "0 KB/Sec", xferRateBuf ), RP_QUAKE );
+		trap_Rocket_SetInnerRML( "0 KB/Sec", RP_QUAKE );
 	}
 }
 
