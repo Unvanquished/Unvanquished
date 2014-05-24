@@ -202,6 +202,7 @@ static void CG_Rocket_DrawFPS( void )
 
 static void CG_Rocket_DrawCrosshairIndicator( void )
 {
+	rectDef_t    rect;
 	float        x, y, w, h, dim;
 	qhandle_t    indicator;
 	vec4_t       color, drawColor, baseColor;
@@ -217,8 +218,6 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 		return;
 	}
 
-	CG_GetRocketElementColor( color );
-
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 	wi = &cg_weapons[ weapon ];
 	indicator = wi->crossHairIndicator;
@@ -227,6 +226,9 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	{
 		return;
 	}
+
+	CG_GetRocketElementColor( color );
+	CG_GetRocketElementRect( &rect );
 
 	// set base color (friend/foe detection)
 	if ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_ALWAYSON ||
@@ -281,25 +283,26 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
 	w *= cgs.aspectScale;
 
-	//FIXME: this still ignores the width/height of the rect, but at least it's
-	//neater than cg_crosshairX/cg_crosshairY
-	x = ( cgs.glconfig.vidWidth / 2 ) - ( w / 2 );
-	y = ( cgs.glconfig.vidHeight / 2 ) - ( h / 2 );
+	// HACK: This ignores the width/height of the rect (does it?)
+	x = rect.x + ( rect.w / 2 ) - ( w / 2 );
+	y = rect.y + ( rect.h / 2 ) - ( h / 2 );
 
 	// draw
 	trap_R_SetColor( drawColor );
-	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, indicator );
+	CG_DrawPic( x, y, w, h, indicator );
 	trap_R_SetColor( NULL );
 }
 
 static void CG_Rocket_DrawCrosshair( void )
 {
+	rectDef_t    rect;
 	float        w, h;
-	qhandle_t    hShader;
+	qhandle_t    crosshair;
 	float        x, y;
 	weaponInfo_t *wi;
 	weapon_t     weapon;
 	vec4_t       color = { 255, 255, 255, 255 };
+
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
@@ -329,24 +332,24 @@ static void CG_Rocket_DrawCrosshair( void )
 		return;
 	}
 
+	CG_GetRocketElementRect( &rect );
+
 	wi = &cg_weapons[ weapon ];
 
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
 	w *= cgs.aspectScale;
 
-	//FIXME: this still ignores the width/height of the rect, but at least it's
-	//neater than cg_crosshairX/cg_crosshairY
-	x = ( cgs.glconfig.vidWidth / 2 ) - ( w / 2 );
-	y = ( cgs.glconfig.vidHeight / 2 ) - ( h / 2 );
+	// HACK: This ignores the width/height of the rect (does it?)
+	x = rect.x + ( rect.w / 2 ) - ( w / 2 );
+	y = rect.y + ( rect.h / 2 ) - ( h / 2 );
 
-	hShader = wi->crossHair;
+	crosshair = wi->crossHair;
 
-	CG_GetRocketElementColor( color );
-
-	if ( hShader != 0 )
+	if ( crosshair )
 	{
+		CG_GetRocketElementColor( color );
 		trap_R_SetColor( color );
-		trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, hShader );
+		CG_DrawPic( x, y, w, h, crosshair );
 		trap_R_SetColor( NULL );
 	}
 }
