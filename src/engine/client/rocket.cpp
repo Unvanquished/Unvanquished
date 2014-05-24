@@ -53,6 +53,7 @@ Maryland 20850 USA.
 #include "rocketElementDocument.h"
 #include "rocketChatField.h"
 #include "rocketFormControlInput.h"
+#include "rocketFormControlSelect.h"
 #include "rocketMiscText.h"
 #include "rocketConditionalElement.h"
 #include "rocketColorInput.h"
@@ -416,6 +417,8 @@ void Rocket_Init( void )
 	Rocket::Core::Factory::RegisterElementInstancer( "chatfield", new Rocket::Core::ElementInstancerGeneric< RocketChatField >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "misc_text", new Rocket::Core::ElementInstancerGeneric< RocketMiscText >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "input", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlInput >() )->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( "select", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlSelect >() )->RemoveReference();
+
 	Rocket::Core::Factory::RegisterElementInstancer( "if", new Rocket::Core::ElementInstancerGeneric< RocketConditionalElement >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "colorinput", new Rocket::Core::ElementInstancerGeneric< RocketColorInput >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "include", new Rocket::Core::ElementInstancerGeneric< RocketIncludeElement > () )->RemoveReference();
