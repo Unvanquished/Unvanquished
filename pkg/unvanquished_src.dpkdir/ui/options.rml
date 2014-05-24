@@ -60,16 +60,12 @@
 			}
 		</style>
 	</head>
-	<body id="options" onload="buildDS resolutions; sortDS resolutions default width">
+	<body id="options" onload="buildDS resolutions; sortDS resolutions default width; buildDS languages">
 		<tabset class="options window">
-		<tab>Quick Options</tab>
+		<tab>Player</tab>
 		<panel>
-			<div class="line"><label>Profile:</label>
-			<select name="profile">
-				<option value="Me">Me</option>
-				<option value="Anonyme" selected="">Anonyme</option>
-				<option value="Granger">Granger</option>
-			</select></div>
+			<div class="line"><label>Language:</label>
+			<dataselect source="languages.default" fields="name" /></div>
 			<div class="line"><label>Name:</label><colorinput type="text" cvar="name" /></div>
 
 			<div class="line"><label>Resolution:</label>
