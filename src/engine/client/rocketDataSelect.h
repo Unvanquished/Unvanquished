@@ -80,5 +80,6 @@ public:
 	}
 private:
 	int selection;
+	Rocket::Core::Element *owner;
 };
 

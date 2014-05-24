@@ -53,6 +53,7 @@ public:
 
 	virtual void OnChildAdd( Element *child )
 	{
+		Element::OnChildAdd( child );
 		if ( child == this )
 		{
 			AppendChild(input);

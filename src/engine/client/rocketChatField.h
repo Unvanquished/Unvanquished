@@ -58,6 +58,7 @@ public:
 
 	virtual void OnChildRemove( Element *child )
 	{
+		Element::OnChildRemove(child);
 		if ( child == this && context )
 		{
 			context->GetRootElement()->RemoveEventListener( "show", this );
@@ -77,6 +78,7 @@ public:
 
 	virtual void OnChildAdd( Element *child )
 	{
+		Element::OnChildAdd( child );
 		if ( child == this )
 		{
 			// Cache context so we can remove the event listeners later

@@ -65,6 +65,7 @@ public:
 
 	virtual void OnChildAdd( Element *child )
 	{
+		Element::OnChildAdd( child );
 		if ( child == this )
 		{
 			context = GetContext();
@@ -75,6 +76,7 @@ public:
 
 	virtual void OnChildRemove( Element *child )
 	{
+		Element::OnChildRemove( child );
 		if (  child == this )
 		{
 			context->RemoveEventListener( "mousemove", this );

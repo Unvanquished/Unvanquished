@@ -63,6 +63,7 @@ public:
 
 	virtual void OnChildAdd( Element *child )
 	{
+		Rocket::Controls::ElementFormControlInput::OnChildAdd( child );
 		if ( child == this )
 		{
 			// Need to cache this because it is not available
@@ -74,6 +75,7 @@ public:
 
 	virtual void OnChildRemove( Element *child )
 	{
+		Rocket::Controls::ElementFormControlInput::OnChildRemove( child );
 		if ( child == this )
 		{
 			owner->RemoveEventListener( "show", this );

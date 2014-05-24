@@ -44,6 +44,7 @@ public:
 	RocketIncludeElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ) { }
 	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
+		Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
 		{
 			Rocket::Core::String filename = GetAttribute<Rocket::Core::String>("src", "");
