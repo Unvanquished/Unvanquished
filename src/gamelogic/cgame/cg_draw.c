@@ -5085,10 +5085,10 @@ static void CG_DrawBeacon( cbeacon_t *b )
 			for( i = 0; i < 2; i++ )
 				CG_ExponentialFade( b->s->oldpos2d + i, pos2d[ i ], cg_lazyBeaconsLambda.value );
 
-			VectorCopy( b->s->oldpos2d, pos2d );
+			Vector2Copy( b->s->oldpos2d, pos2d );
 		}
 		else
-			VectorCopy( pos2d, b->s->oldpos2d );
+			Vector2Copy( pos2d, b->s->oldpos2d );
 	}
 
 	trap_R_SetColor( color );
