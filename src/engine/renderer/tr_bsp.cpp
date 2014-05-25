@@ -6017,16 +6017,8 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 					}
 				}
 
-				if ( alphaTest )
-				{
-					vboSurf->vbo = s_worldData.vbo;
-					vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowPyramidMesh_IBO %i", c_vboShadowSurfaces ), numTriangles, triangles );
-				}
-				else
-				{
-					vboSurf->vbo = s_worldData.vbo;
-					vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowPyramidMesh_IBO %i", c_vboShadowSurfaces ), numTriangles, triangles );
-				}
+				vboSurf->vbo = s_worldData.vbo;
+				vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowPyramidMesh_IBO %i", c_vboShadowSurfaces ), numTriangles, triangles );
 
 				ri.Hunk_FreeTempMemory( triangles );
 
