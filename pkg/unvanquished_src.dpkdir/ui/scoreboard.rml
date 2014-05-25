@@ -65,13 +65,6 @@
 			width: 32px;
 			height: 32px;
 		}
-		datagrid#specs datagridbody
-		{
-			display: inline;
-			overflow-y: hidden;
-			max-height: 20%;
-		}
-
         </style>
     </head>
     <body onshow="buildDS playerList" id="scoreboard">
