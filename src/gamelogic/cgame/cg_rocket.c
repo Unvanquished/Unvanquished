@@ -606,7 +606,7 @@ const char *CG_Rocket_QuakeToRML( const char *in )
 
 qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 {
-	playerState_t *ps = &cg.predictedPlayerState;
+	playerState_t *ps;
 
 	switch ( type )
 	{
@@ -629,6 +629,18 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 
 			return qfalse;
 
+		default:
+			break;
+	}
+
+
+	if ( !cg.snap )
+	{
+		return qfalse;
+	}
+	ps = &cg.snap->ps;
+	switch( type )
+	{
 		case ELEMENT_ALIENS:
 			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
@@ -654,7 +666,8 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return qfalse;
 
 		case ELEMENT_DEAD:
-			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->stats[ STAT_HEALTH ] == 0 && ps->weapon == WP_NONE )
+			// If you're on a team and spectating, you're probably dead
+			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 			{
 				return qtrue;
 			}

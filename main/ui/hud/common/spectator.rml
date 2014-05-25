@@ -18,11 +18,28 @@
 		border-left-width: 2px;
 		border-bottom-width: 2px;
 	}
+	div#spawn
+	{
+		position: absolute;
+		top: 75%;
+		width: 50%;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	spawnPos, numSpawns
+	{
+		width: 100%;
+		text-align: center;
+	}
 </style>
 </head>
 <body id="spectator_hud">
 	<if cvar="cg_minimapActive" condition="==" value="1">
 		<minimap/>
 	</if>
+	<div id="spawn">
+		<spawnPos/><br/>
+		<numSpawns/>
+	</div>
 </body>
 </rml>
