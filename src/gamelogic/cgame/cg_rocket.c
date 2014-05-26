@@ -571,7 +571,7 @@ void CG_Rocket_Frame( void )
 	}
 
 	// Update scores as long as they are showing
-	if ( cg.showScores && cg.scoresRequestTime + 750 < cg.time )
+	if ( cg.showScores && cg.scoresRequestTime + 2000 < cg.time )
 	{
 		CG_RequestScores();
 	}

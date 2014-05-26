@@ -361,13 +361,14 @@ static void CG_ShowScores_f( void )
 {
 	if ( !cg.showScores )
 	{
-		trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
+		CG_RequestScores();
 		trap_PrepareKeyUp();
 		cg.showScores = qtrue;
 	}
 	else
 	{
 		cg.showScores = qfalse;
+		cg.scoreBoardShowing = qfalse;
 	}
 }
 
@@ -375,6 +376,7 @@ static void CG_HideScores_f( void )
 {
 	trap_Rocket_ShowScoreboard( "scoreboard", qfalse );
 	cg.showScores = qfalse;
+	cg.scoreBoardShowing = qfalse;
 }
 
 

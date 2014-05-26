@@ -39,7 +39,7 @@
 		#infos div:nth-child(4n){
 			text-align:right;
 		}
-		div#content
+		datagridbody
 		{
 			overflow-y: auto;
 		}
@@ -67,7 +67,7 @@
 		}
         </style>
     </head>
-    <body onshow="buildDS playerList" id="scoreboard">
+    <body onshow="" id="scoreboard">
     <h2>Aliens</h2><h2>Humans</h2>
 	<div class="container">
 	<datagrid source="playerList.aliens" id="aliens">
