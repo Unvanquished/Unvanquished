@@ -4413,6 +4413,9 @@ void Cmd_Beacon_f( gentity_t *ent )
 	if( !Beacon::PositionAtCrosshair( origin, &other, type, ent ) )
 		return;
 
+	if( G_FloodLimited( ent ) )
+		return;
+
 	if( BG_Beacon( type )->flags & BCF_ENTITY )
 		data = other->s.modelindex;
 	else
