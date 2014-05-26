@@ -280,7 +280,11 @@ static void CG_ListImplicitBeacons( )
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION ||
 			 cg.snap->ps.pm_type == PM_DEAD ||
 	     ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+	{
+		memset( &bp_health, 0, sizeof( cbeaconPersistant_t ) );
+		memset( &bp_ammo, 0, sizeof( cbeaconPersistant_t ) );
 		return;
+	}
 
 	// health
 	if ( ps->stats[ STAT_HEALTH ] < ps->stats[ STAT_MAX_HEALTH ] / 2 )
@@ -331,8 +335,6 @@ static void CG_ListImplicitBeacons( )
 	if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 	     BG_PlayerLowAmmo( ps, &energy ) )
 	{
-		buildable_t buildable;
-
 		if ( energy )
 			entityNum = CG_NearestBuildable( BA_H_ARMOURY, BA_H_REACTOR, BA_H_REPEATER, bp_ammo.origin );
 		else
