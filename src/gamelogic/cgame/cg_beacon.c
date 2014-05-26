@@ -285,11 +285,17 @@ static void CG_ListImplicitBeacons( )
 	// health
 	if ( ps->stats[ STAT_HEALTH ] < ps->stats[ STAT_MAX_HEALTH ] / 2 )
 	{
+		bp_health.altIcon = qfalse;
+
 		if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
+			bp_health.altIcon = qtrue;
 			entityNum = CG_NearestBuildable( BA_A_BOOSTER, 0, 0, bp_health.origin );
 			if( entityNum == ENTITYNUM_NONE )
+			{
 				entityNum = CG_NearestBuildable( -1, 0, 0, bp_health.origin );
+				bp_health.altIcon = qfalse;
+			}
 		}
 		else
 			entityNum = CG_NearestBuildable( BA_H_MEDISTAT, 0, 0, bp_health.origin );		
@@ -403,7 +409,7 @@ void CG_ListBeacons( void )
 		beacon->s->valid = qtrue;
 		beacon->s->ctime = es->time;
 		beacon->s->etime = es->time2;
-		
+
 		VectorCopy( es->origin, beacon->s->origin );
 		beacon->type = (beaconType_t)es->modelindex;
 		beacon->data = es->modelindex2;
@@ -457,8 +463,11 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 
 	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
 		return 0;
-	
-	return BG_Beacon( b->type )->icon;
+
+	if ( b->s->altIcon )
+		return BG_Beacon( b->type )->altIcon;
+	else
+		return BG_Beacon( b->type )->icon;
 }
 
 /*

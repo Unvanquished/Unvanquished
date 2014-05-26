@@ -1068,7 +1068,7 @@ typedef struct
 
 #ifdef BUILD_CGAME	
 	const char    *text;
-	qhandle_t     icon;
+	qhandle_t     icon, altIcon;
 	sfxHandle_t   sound;
 #endif	
 

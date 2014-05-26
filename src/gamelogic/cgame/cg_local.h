@@ -633,23 +633,24 @@ typedef struct
 	qboolean  valid;
 	qboolean  old; // true if it's not the first time we see it
 	qboolean  old_hud;
-	
+
 	qboolean  eventFired; // BCT_TIMER
 	qboolean  fadingOut; // fading out client-side beacons
 	qboolean  highlighted; // only one beacon can be highlighted at a time
-	
+
 	vec3_t   origin;
 	int      ctime; // creation time
 	int      etime; // expiration time, 0 if never expires
 
-	int  oldEntityNum; // BCT_HEALTH and BCT_AMMO
+	int       oldEntityNum; // BCT_HEALTH and BCT_AMMO
+
+	qboolean      altIcon;
 
 	// animations stuff
 	float  t_occlusion;
 	float  t_highlight;
 
 	vec2_t oldpos2d;
-
 } cbeaconPersistant_t;
 
 // all data here must be deduceable at any moment
@@ -663,7 +664,7 @@ typedef struct
 	team_t        team;
 	int           owner;
 
-	// aesthetic stuff
+	// aesthetic stuff that changes every frame
 	float         scale;
 	float         alpha;
 	float         dot;

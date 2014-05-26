@@ -2444,6 +2444,13 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 			ba->icon = trap_R_RegisterShader( token, RSF_DEFAULT );
 #endif
 		}
+		else if ( !Q_stricmp( token, "altIcon" ) )
+		{
+			PARSE( text, token );
+#ifdef BUILD_CGAME
+			ba->altIcon = trap_R_RegisterShader( token, RSF_DEFAULT );
+#endif
+		}
 		else if ( !Q_stricmp( token, "sound" ) )
 		{
 			PARSE( text, token );

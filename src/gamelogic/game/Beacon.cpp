@@ -95,16 +95,16 @@ namespace Beacon //this should eventually become a class
 		{
 			for ( j = 0; j < 3; j++ )
 				rnd[ j ] = crandom();
-			
+
 			if ( DotProduct( rnd, normal ) < 0 )
 				for ( j = 0; j < 3; j++ )
 					rnd[ j ] = - rnd[ j ];
-			
+
 			VectorMA( origin, 500, rnd, end );
 			trap_Trace( &tr, origin, NULL, NULL, end, 0, MASK_SOLID );
 			VectorAdd( accumulator, tr.endpos, accumulator );
 		}
-		
+
 		VectorScale( accumulator, 1.0 / BEACONS_MTR_SAMPLES, accumulator );
 		VectorCopy( accumulator, origin );
 	}
@@ -199,7 +199,7 @@ namespace Beacon //this should eventually become a class
 	{
 		vec3_t origin, end, forward;
 		trace_t tr;
-		
+
 		BG_GetClientViewOrigin( &player->client->ps, origin );
 		AngleVectors( player->client->ps.viewangles, forward, NULL, NULL );
 		VectorMA( origin, 65536, forward, end );
@@ -272,7 +272,7 @@ namespace Beacon //this should eventually become a class
 	{
 		int i;
 		gentity_t *ent;
-		
+
 		for ( i = MAX_CLIENTS - 1; i < level.num_entities; i++ )
 		{
 			ent = g_entities + i;
