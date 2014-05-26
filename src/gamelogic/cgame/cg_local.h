@@ -646,11 +646,12 @@ typedef struct
 
 	qboolean      altIcon;
 
-	// animations stuff
+	// animation stuff
 	float  t_occlusion;
 	float  t_highlight;
 
 	vec2_t oldpos2d;
+	qboolean unclutter;
 } cbeaconPersistant_t;
 
 // all data here must be deduceable at any moment
@@ -1402,6 +1403,8 @@ typedef struct
 	animation_t jetpackAnims[ MAX_JETPACK_ANIMATIONS ];
 
 	qhandle_t   beaconIconArrow;
+	qhandle_t   beaconLongArrow;
+	qhandle_t   beaconLongArrowDot;
 	sfxHandle_t timerBeaconExpiredSound;
 } cgMedia_t;
 

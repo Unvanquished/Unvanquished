@@ -924,8 +924,8 @@ static const beaconAttributes_t nullBeacon = { BCT_NONE };
 
 static const beaconData_t bg_beaconsData[ ] =
 {
-	{ BCT_POINTER,    "pointer",    BCF_PER_PLAYER | BCF_PRECISE },
-	{ BCT_TIMER,      "timer",      BCF_PER_PLAYER },
+	{ BCT_POINTER,    "pointer",    BCF_PER_PLAYER | BCF_PRECISE | BCF_NO_UNCLUTTER },
+	{ BCT_TIMER,      "timer",      BCF_PER_PLAYER | BCF_NO_UNCLUTTER },
 	{ BCT_ENEMY,      "enemy",      0 }, 
 	{ BCT_TAG,        "tag",        BCF_ENTITY | BCF_DATA_UNIQUE },
 	{ BCT_ALIENBASE,  "alienbase",  BCF_PER_TEAM },

@@ -1565,6 +1565,9 @@ static void CG_RegisterGraphics( void )
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
 
 	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacon-arrow", RSF_DEFAULT );
+	cgs.media.beaconLongArrow = trap_R_RegisterShader( "gfx/2d/beacon-longarrow", RSF_DEFAULT );
+	cgs.media.beaconLongArrowDot = trap_R_RegisterShader( "gfx/2d/beacon-longarrowdot", RSF_DEFAULT );
+
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();

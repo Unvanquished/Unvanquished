@@ -178,7 +178,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 	CG_ExponentialFade( &b->s->t_occlusion, target, 10 );
 
 	// highlight animation
-	target = ( b->s->highlighted ? 1.0 : 0.0 );
+	target = ( ( b->s->highlighted || b->s->unclutter ) ? 1.0 : 0.0 );
 	CG_ExponentialFade( &b->s->t_highlight, target, 20 );
 
 	b->s->old = qtrue;
