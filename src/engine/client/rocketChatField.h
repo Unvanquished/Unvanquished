@@ -130,7 +130,6 @@ public:
 			else if ( event == "blur" || event == "hide" )
 			{
 				focus =  false;
-				GetContext()->ShowMouseCursor( true );
 			}
 		}
 
