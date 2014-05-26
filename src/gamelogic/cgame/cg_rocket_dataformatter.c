@@ -116,20 +116,36 @@ static void CG_Rocket_DFServerLabel( int handle, const char *data )
 static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 {
 	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
-	qboolean disabled = qfalse;
-	const char *Class;
+	const char *Class = "";
+	const char *Icon = "";
+	const char *action = "";
+	playerState_t *ps = &cg.snap->ps;
+	int credits = ps->persistant[ PERS_CREDIT ];
+	weapon_t currentweapon = BG_PrimaryWeapon( ps->stats );
+	credits += BG_Weapon( currentweapon )->price;
 
-	if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) || BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) )
+	if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
 	{
-		Class = "armourybuy disabled";
-		disabled = qtrue;
+		Class = "locked";
+		Icon = "<icon>\uf023</icon>";
+	}
+	else if(BG_Weapon( weapon )->price > credits){
+
+		Class = "expensive";
+		Icon = "<icon>\uf0d6</icon>";
+	}
+	else if( BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) ){
+		Class = "active";
+		action =  va( "onClick='exec \"sell +%s\"'", BG_Weapon( weapon )->name );
+		Icon = "<icon class=\"current\">\uf00c</icon><icon class=\"sell\">\uf0d6</icon>";
 	}
 	else
 	{
-		Class = "armourybuy";
+		Class = "available";
+		action =  va( "onClick='exec \"buy +%s\"'", BG_Weapon( weapon )->name );
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS armouryBuyList weapons %s' %s><img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), disabled ? "" : va( "onClick='exec \"buy +%s\"'", BG_Weapon( weapon )->name ), CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon ) ), qfalse );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='setDS armouryBuyList weapons %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon )), qfalse );
 }
 
 static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )

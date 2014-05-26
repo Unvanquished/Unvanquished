@@ -494,6 +494,15 @@ circlemenu
 	icon-color-multiplier: rgb(12,12,12);
 }
 
+.circlemenu icon{
+  display: inline-block;
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+
+}
+
 .circlemenu button.cancelButton{
 	width:180px;
 	height:180px;
