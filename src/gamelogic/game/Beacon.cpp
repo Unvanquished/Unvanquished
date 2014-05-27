@@ -64,12 +64,12 @@ namespace Beacon //this should eventually become a class
 		ent->s.modelindex2 = data;
 		ent->s.generic1 = team;
 		ent->s.otherEntityNum = owner;
-
-		ent->s.time = level.time;	
-		decayTime = BG_Beacon( type )->decayTime;	
-		ent->s.time2 = ( decayTime ? level.time + decayTime : 0 );
-		ent->think = Beacon::Think;
+		ent->think = Think;
 		ent->nextthink = level.time;
+
+		ent->s.time = level.time;
+		decayTime = BG_Beacon( type )->decayTime;
+		ent->s.time2 = ( decayTime ? level.time + decayTime : 0 );
 
 		return ent;
 	}
@@ -78,6 +78,8 @@ namespace Beacon //this should eventually become a class
 	// Delete a beacon
 	void Delete( gentity_t *ent )
 	{
+		if( !ent )
+			return;
 		G_FreeEntity( ent );
 	}
 
@@ -167,69 +169,6 @@ namespace Beacon //this should eventually become a class
 		}
 	}
 
-	////// PositionAtEntity
-	// Calculate the origin for a BCF_ENTITY beacon
-	void PositionAtEntity( gentity_t *ent, vec3_t out )
-	{
-		int i;
-		vec3_t mins, maxs;
-
-		switch( ent->s.eType )
-		{
-			case ET_BUILDABLE:
-				BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
-				break;
-
-			case ET_PLAYER:
-				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, NULL, NULL, NULL );
-				break;
-
-			default:
-				VectorCopy( ent->s.origin, out );
-				return;
-		}
-
-		for( i = 0; i < 3; i++ )
-			out[ i ] = ent->s.origin[ i ] + ( mins[ i ] + maxs[ i ] ) / 2.0;
-	}
-
-	////// PositionAtCrosshair
-	// Calculate the origin for a player-made beacon
-	qboolean PositionAtCrosshair( vec3_t out, gentity_t **hit, beaconType_t type, gentity_t *player )
-	{
-		vec3_t origin, end, forward;
-		trace_t tr;
-
-		BG_GetClientViewOrigin( &player->client->ps, origin );
-		AngleVectors( player->client->ps.viewangles, forward, NULL, NULL );
-		VectorMA( origin, 65536, forward, end );
-		trap_Trace( &tr, origin, NULL, NULL, end, player->s.number, MASK_PLAYERSOLID );
-
-		if ( tr.fraction > 0.99 )
-			return qfalse;
-
-		if ( BG_Beacon( type )->flags & BCF_PRECISE )
-		{
-			VectorCopy( tr.endpos, out );
-		}
-		else if ( BG_Beacon( type )->flags & BCF_ENTITY )
-		{
-			if ( tr.entityNum == ENTITYNUM_NONE ||
-					 tr.entityNum == ENTITYNUM_WORLD )
-				return qfalse;
-
-			*hit = g_entities + tr.entityNum;
-			PositionAtEntity( *hit, out ); 
-		}
-		else
-		{
-			VectorCopy( tr.endpos, out );
-			MoveTowardsRoom( out, tr.plane.normal );
-		}
-
-		return qtrue;
-	}
-
 	////// Beacon::Propagate
 	// Sets the server entity fields so that the beacon is visible only by
   // its team (and spectators).
@@ -307,5 +246,135 @@ namespace Beacon //this should eventually become a class
 			else
 				ent->s.otherEntityNum = ENTITYNUM_NONE;
 		}
+	}
+
+	////// Beacon::UpdateTags
+	// ...
+	void UpdateTags( gentity_t *ent )
+	{
+		// buildables are supposed to be static
+		if( ent->s.eType == ET_BUILDABLE )
+			return;
+
+		if( ent->alienTag )
+			VectorCopy( ent->s.origin, ent->alienTag->s.origin );
+		if( ent->humanTag )
+			VectorCopy( ent->s.origin, ent->humanTag->s.origin );
+	}
+
+	////// Beacon::DetachTag
+	// ...
+	static void DetachTag( gentity_t *ent )
+	{
+		if( !ent )
+			return;
+
+		ent->s.eFlags |= EF_BC_TAG_DETACHED;
+		ent->s.time2 = level.time + 1500;
+	}
+
+	////// Beacon::DetachTags
+	// ...
+	void DetachTags( gentity_t *ent )
+	{
+		DetachTag( ent->alienTag );
+		ent->alienTag = NULL;
+		DetachTag( ent->humanTag );
+		ent->humanTag = NULL;
+	}
+
+	////// Beacon::DeleteTags
+	void DeleteTags( gentity_t *ent )
+	{
+		Delete( ent->alienTag );
+		ent->alienTag = NULL;
+		Delete( ent->humanTag );
+		ent->humanTag = NULL;
+	}
+
+	////// Beacon::Tag
+	// Tag an entity
+	void Tag( gentity_t *ent, team_t team, int owner )
+	{
+		int i, data;
+		vec3_t origin, mins, maxs;
+		qboolean dead, alien = qfalse, human = qfalse;
+		gentity_t *beacon, **attachment;
+
+		switch( ent->s.eType )
+		{
+			case ET_BUILDABLE:
+				BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
+				data = ent->s.modelindex;
+				dead = ( ent->health <= 0 );
+				break;
+
+			case ET_PLAYER:
+				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, NULL, NULL, NULL );
+				dead = ( ent->client && ent->client->ps.stats[ STAT_HEALTH ] <= 0 );
+				switch( ent->client->pers.team )
+				{
+					case TEAM_ALIENS:
+						alien = qtrue;
+						data = ent->client->ps.stats[ STAT_CLASS ];
+						break;
+
+					case TEAM_HUMANS:
+						human = qtrue;
+						data = BG_GetPlayerWeapon( &ent->client->ps );
+						break;
+
+					default:
+						return;
+				}
+				break;
+
+			default:
+				return;
+		}
+
+		for( i = 0; i < 3; i++ )
+			origin[ i ] = ent->s.origin[ i ] + ( mins[ i ] + maxs[ i ] ) / 2.0;
+
+		switch( team )
+		{
+			case TEAM_ALIENS:
+				attachment = &ent->alienTag;
+				break;
+
+			case TEAM_HUMANS:
+				attachment = &ent->humanTag;
+				break;
+
+			default:
+				return;
+		}
+
+		RemoveSimilar( origin, BCT_TAG, data, team, owner );
+		beacon = New( origin, BCT_TAG, data, team, owner );
+
+		if( alien )
+		{
+			beacon->s.eFlags |= EF_BC_TAG_ALIEN;
+			beacon->s.time2 = level.time + 4000;
+		}
+		else if( human )
+		{
+			beacon->s.eFlags |= EF_BC_TAG_HUMAN;
+			beacon->s.time2 = level.time + 4000;
+		}
+		else
+			beacon->s.time2 = level.time + 15000;
+
+		if( dead )
+			DetachTag( beacon );
+		else
+		{
+			//if( *attachment )
+			//	Delete( *attachment );
+			*attachment = beacon;
+		}
+
+		Propagate( beacon );
 	}
 }

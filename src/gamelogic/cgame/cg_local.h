@@ -633,6 +633,7 @@ typedef struct
 	qboolean  valid;
 	qboolean  old; // true if it's not the first time we see it
 	qboolean  old_hud;
+	int       oldFlags;
 
 	qboolean  eventFired; // BCT_TIMER
 	qboolean  fadingOut; // fading out client-side beacons
@@ -664,6 +665,7 @@ typedef struct
 	int           data;
 	team_t        team;
 	int           owner;
+	int           flags;
 
 	// aesthetic stuff that changes every frame
 	float         scale;
@@ -1406,6 +1408,7 @@ typedef struct
 	qhandle_t   beaconLongArrow;
 	qhandle_t   beaconLongArrowDot;
 	sfxHandle_t timerBeaconExpiredSound;
+	sfxHandle_t tagBeaconDetachSound;
 } cgMedia_t;
 
 typedef struct

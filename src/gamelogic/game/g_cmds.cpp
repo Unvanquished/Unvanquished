@@ -4378,11 +4378,11 @@ void Cmd_Beacon_f( gentity_t *ent )
 	char type_str[ 64 ];
 	beaconType_t type;
 	const beaconAttributes_t *battr;
+	team_t team;
 
 	gentity_t *beacon, *other;
-	vec3_t origin;
-	team_t team;
-	int data;
+	vec3_t origin, end, forward;
+	trace_t tr;
 
 	if ( trap_Argc( ) < 2 )
 	{
@@ -4402,7 +4402,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 	else
 		battr = BG_BeaconByName( type_str );
 
-	if ( !battr || battr->flags & BCF_IMPLICIT )
+	if ( !battr || battr->flags & BCF_RESERVED )
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("Unknown beacon type $1$\n") ), Quote( type_str ) ) );
 		return;
@@ -4410,20 +4410,45 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	type = battr->number;
 
-	if( !Beacon::PositionAtCrosshair( origin, &other, type, ent ) )
-		return;
-
 	if( G_FloodLimited( ent ) )
 		return;
 
-	if( BG_Beacon( type )->flags & BCF_ENTITY )
-		data = other->s.modelindex;
+	BG_GetClientViewOrigin( &ent->client->ps, origin );
+	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	VectorMA( origin, 65536, forward, end );
+	trap_Trace( &tr, origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+
+	if ( tr.fraction > 0.99 )
+		goto invalid_beacon;
+
+	if ( BG_Beacon( type )->flags & BCF_PRECISE )
+	{
+		VectorCopy( tr.endpos, origin );
+	}
+	else if ( BG_Beacon( type )->flags & BCF_ENTITY )
+	{
+		if ( tr.entityNum == ENTITYNUM_NONE ||
+		     tr.entityNum == ENTITYNUM_WORLD )
+			goto invalid_beacon;
+
+		other = g_entities + tr.entityNum;
+
+		Beacon::Tag( other, team, ent->s.number );
+		return;
+	}
 	else
-		data = 0;
-		
-	Beacon::RemoveSimilar( origin, type, data, team, ent->s.number );
-	beacon = Beacon::New( origin, type, data, team, ent->s.number );
+	{
+		VectorCopy( tr.endpos, origin );
+		Beacon::MoveTowardsRoom( origin, tr.plane.normal );
+	}
+
+	Beacon::RemoveSimilar( origin, type, 0, team, ent->s.number );
+	beacon = Beacon::New( origin, type, 0, team, ent->s.number );
 	Beacon::Propagate( beacon );
+	return;
+
+invalid_beacon:
+	Com_Printf( "NYI: invalid_beacon\n" );
 }
 
 /*

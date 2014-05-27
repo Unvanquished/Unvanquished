@@ -286,7 +286,7 @@ static void CG_CompleteBeacon( void )
 	for ( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
 	{
 		const beaconAttributes_t *item = BG_Beacon( i );
-		if ( !( item->flags & BCF_IMPLICIT ) )
+		if ( !( item->flags & BCF_RESERVED ) )
 		{
 			trap_CompleteCallback( item->name );
 		}

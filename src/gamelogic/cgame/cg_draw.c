@@ -5179,6 +5179,15 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	                       size, size,
 	                       0, 0, 1, 1,
 	                       CG_BeaconIcon( b ) );
+
+	if( b->type == BCT_TAG &&
+	    ( b->flags & EF_BC_TAG_DETACHED ) )
+		trap_R_DrawStretchPic( pos2d[ 0 ] - size/2 * 1.3,
+		                       pos2d[ 1 ] - size/2 * 1.3,
+		                       size * 1.3, size * 1.3,
+		                       0, 0, 1, 1,
+		                       BG_Beacon( BCT_TAG )->altIcon );
+
 	if ( clamped )
 		trap_R_DrawRotatedPic( pos2d[ 0 ] - size/2 * 1.5, 
 		                       pos2d[ 1 ] - size/2 * 1.5,
@@ -5219,7 +5228,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 
 		if( b->owner != ENTITYNUM_NONE &&
 				b->owner >= 0 && b->owner < MAX_CLIENTS &&
-				!( BG_Beacon( b->type )->flags & BCF_IMPLICIT ) )
+				!( BG_Beacon( b->type )->flags & BCF_RESERVED ) )
 		{
 			ci = cgs.clientinfo + b->owner;
 

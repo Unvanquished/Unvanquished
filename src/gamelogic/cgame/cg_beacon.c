@@ -122,6 +122,11 @@ static void CG_RunBeacon( cbeacon_t *b )
 				trap_S_StartLocalSound( BG_Beacon( b->type )->sound, CHAN_LOCAL_SOUND );
 	}
 
+	if( b->type == BCT_TAG &&
+	    !( b->s->oldFlags & EF_BC_TAG_DETACHED ) &&
+	    ( b->flags & EF_BC_TAG_DETACHED ) )
+		trap_S_StartLocalSound( cgs.media.tagBeaconDetachSound, CHAN_LOCAL_SOUND );
+
 	// fade in
 	delta = cg.time - b->s->ctime; // time since creation
 	if ( delta >= BEACON_FADEIN )
@@ -182,6 +187,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 	CG_ExponentialFade( &b->s->t_highlight, target, 20 );
 
 	b->s->old = qtrue;
+	b->s->oldFlags = b->flags;
 }
 
 /*
@@ -417,6 +423,7 @@ void CG_ListBeacons( void )
 		beacon->data = es->modelindex2;
 		beacon->team = (team_t)es->generic1;
 		beacon->owner = es->otherEntityNum;
+		beacon->flags = es->eFlags;
 
 		// cache some stuff
 		VectorSubtract( beacon->s->origin, cg.refdef.vieworg, vdelta );
@@ -457,10 +464,24 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 {
 	if ( b->type == BCT_TAG )
 	{
-		if( b->data <= BA_NONE || b->data >= BA_NUM_BUILDABLES )
-			return 0;
-
-		return cg_buildables[ b->data ].buildableIcon;
+		if( b->flags & EF_BC_TAG_ALIEN )
+		{
+			if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
+				return 0;
+			return cg_classes[ b->data ].classIcon;
+		}
+		else if( b->flags & EF_BC_TAG_HUMAN )
+		{
+			if( b->data <= WP_NONE || b->data >= WP_NUM_WEAPONS )
+				return 0;
+			return cg_weapons[ b->data ].weaponIcon;
+		}
+		else
+		{
+			if( b->data <= BA_NONE || b->data >= BA_NUM_BUILDABLES )
+				return 0;
+			return cg_buildables[ b->data ].buildableIcon;
+		}
 	}
 
 	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
@@ -486,8 +507,24 @@ const char *CG_BeaconText( const cbeacon_t *b )
 
 	if ( b->type == BCT_TAG )
 	{
-		if( BG_Buildable( b->data )->humanName )
+		if( b->flags & EF_BC_TAG_ALIEN )
+		{
+			if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
+				return 0;
+			text = _( BG_ClassModelConfig( b->data )->humanName );
+		}
+		else if( b->flags & EF_BC_TAG_HUMAN )
+		{
+			if( b->data <= WP_NONE || b->data >= WP_NUM_WEAPONS )
+				return 0;
+			text = _( BG_Weapon( b->data )->humanName );
+		}
+		else
+		{
+			if( b->data <= BA_NONE || b->data >= BA_NUM_BUILDABLES )
+				return 0;
 			text = _( BG_Buildable( b->data )->humanName );
+		}
 	}
 	else
 		if( BG_Beacon( b->type )->text )

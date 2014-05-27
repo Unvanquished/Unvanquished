@@ -1331,6 +1331,7 @@ static void CG_RegisterSounds( void )
 	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", qfalse );
 
 	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", qfalse );
+	cgs.media.tagBeaconDetachSound = trap_S_RegisterSound( "sound/feedback/beacon-tag-detach.ogg", qfalse );
 }
 
 //===================================================================================

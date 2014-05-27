@@ -365,6 +365,11 @@ typedef enum
 #define PF_JETPACK_ENABLED  BIT(0)
 #define PF_JETPACK_ACTIVE   BIT(1)
 
+// for beacons:
+#define EF_BC_TAG_DETACHED       0x0008 // tagged entity is gone
+#define EF_BC_TAG_ALIEN          0x0010 // tagged entity is an alien player
+#define EF_BC_TAG_HUMAN          0x0020 // tagged entity is a human player
+
 typedef enum
 {
   WPM_NONE,
@@ -1049,7 +1054,7 @@ typedef enum
 } beaconType_t;
 
 // beacon flags
-#define BCF_IMPLICIT      0x0001 // client-side, not networked
+#define BCF_RESERVED      0x0001 // generated automatically, not created by players
 
 #define BCF_PER_PLAYER    0x0002 // one beacon per player
 #define BCF_PER_TEAM      0x0004 // one beacon per team

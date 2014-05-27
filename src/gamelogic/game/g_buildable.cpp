@@ -926,6 +926,8 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	}
 
 	G_LogDestruction( self, attacker, mod );
+
+	Beacon::DetachTags( self );
 }
 
 /*
@@ -2487,6 +2489,8 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	}
 
 	G_LogDestruction( self, attacker, mod );
+
+	Beacon::DetachTags( self );
 }
 
 void HSpawn_Think( gentity_t *self )

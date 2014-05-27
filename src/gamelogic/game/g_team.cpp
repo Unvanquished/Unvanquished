@@ -267,6 +267,7 @@ void G_LeaveTeam( gentity_t *self )
 	// cut all relevant zap beams
 	G_ClearPlayerZapEffects( self );
 
+	Beacon::DeleteTags( self );
 	Beacon::RemoveOrphaned( self->s.number );
 
 	G_namelog_update_score( self->client );
