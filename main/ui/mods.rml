@@ -24,10 +24,7 @@
     </head>
     <body template="window" onload="buildDS modList" id="mods">
 	<if cvar="cg_draw2d" condition="==" value="1">
-	<datagrid source="modList.default">
-		<col fields="name" width="30%">Name:</col>
-		<col fields="description" width="70%">Description:</col>
-	</datagrid>
+		Hidden!
 	</if>
 	<inlinecvar cvar="cg_draw2d"/>
     </body>
