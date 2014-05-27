@@ -5076,17 +5076,14 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	if( !front || pos2d_exact[ 0 ] < BEACON_MARGIN || pos2d_exact[ 0 ] > vw - BEACON_MARGIN ||
 	              pos2d_exact[ 1 ] < BEACON_MARGIN || pos2d_exact[ 1 ] > vh - BEACON_MARGIN )
 	{
-		vec2_t screen[ 2 ] =
-		{
-			{ (vec_t)BEACON_MARGIN, (vec_t)BEACON_MARGIN },
-			{ (vec_t)( vw - BEACON_MARGIN ), (vec_t)( vh - BEACON_MARGIN ) }
-		};
-		vec2_t point = { (vec_t)vw / 2.0 , (vec_t)vh / 2.0 };
-		
-		clamped = qtrue;
+		vec2_t screen[ 2 ], point;
+		Vector2Set( screen[ 0 ], (vec_t)BEACON_MARGIN, (vec_t)BEACON_MARGIN );
+		Vector2Set( screen[ 1 ], (vec_t)( vw - BEACON_MARGIN ), (vec_t)( vh - BEACON_MARGIN ) );
+		Vector2Set( point, (vec_t)vw / 2.0 , (vec_t)vh / 2.0 );
 		dir[ 0 ] = pos2d_exact[ 0 ] - point[ 0 ];
 		dir[ 1 ] = pos2d_exact[ 1 ] - point[ 1 ];
-		ProjectPointOntoRectangleOutwards( pos2d_exact, point, dir, screen );
+		ProjectPointOntoRectangleOutwards( pos2d_exact, point, dir, (const vec2_t*)screen );
+		clamped = qtrue;
 	}
 	else
 		clamped = qfalse;
