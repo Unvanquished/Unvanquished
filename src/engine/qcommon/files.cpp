@@ -526,7 +526,7 @@ const char* FS_LoadedPaks()
 {
 	static char info[BIG_INFO_STRING];
 	info[0] = '\0';
-	for (const FS::PakInfo& x: FS::PakPath::GetLoadedPaks()) {
+	for (const FS::LoadedPakInfo& x: FS::PakPath::GetLoadedPaks()) {
 		if (info[0])
 			Q_strcat(info, sizeof(info), " ");
 		Q_strcat(info, sizeof(info), FS::MakePakName(x.name, x.version, x.checksum).c_str());
@@ -645,7 +645,7 @@ public:
 		}
 
 		const std::string& filename = args.Argv(1);
-		const FS::PakInfo* pak = FS::PakPath::LocateFile(filename);
+		const FS::LoadedPakInfo* pak = FS::PakPath::LocateFile(filename);
 		if (pak)
 			Print(_( "File \"%s\" found in \"%s\""), filename, pak->path);
 		else

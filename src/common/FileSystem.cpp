@@ -52,7 +52,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 Log::Logger fsLogs(VM_STRING_PREFIX "fs");
 
-// SerializeTraits for PakInfo
+// SerializeTraits for PakInfo/LoadedPakInfo
 namespace IPC {
 
 template<> struct SerializeTraits<FS::PakInfo> {
@@ -63,15 +63,6 @@ template<> struct SerializeTraits<FS::PakInfo> {
 		stream.Write<Util::optional<uint32_t>>(value.checksum);
 		stream.Write<uint32_t>(value.type);
 		stream.Write<std::string>(value.path);
-		stream.Write<uint64_t>(std::chrono::system_clock::to_time_t(value.timestamp));
-		stream.Write<bool>(value.fd != -1);
-		if (value.fd != -1) {
-#ifdef _WIN32
-			stream.Write<IPC::FileHandle>(IPC::FileHandle(reinterpret_cast<HANDLE>(_get_osfhandle(value.fd)), IPC::MODE_READ));
-#else
-			stream.Write<IPC::FileHandle>(IPC::FileHandle(value.fd, IPC::MODE_READ));
-#endif
-		}
 	}
 	static FS::PakInfo Read(Reader& stream)
 	{
@@ -81,6 +72,39 @@ template<> struct SerializeTraits<FS::PakInfo> {
 		value.checksum = stream.Read<Util::optional<uint32_t>>();
 		value.type = static_cast<FS::pakType_t>(stream.Read<uint32_t>());
 		value.path = stream.Read<std::string>();
+		return value;
+	}
+};
+
+template<> struct SerializeTraits<FS::LoadedPakInfo> {
+	static void Write(Writer& stream, const FS::LoadedPakInfo& value)
+	{
+		stream.Write<std::string>(value.name);
+		stream.Write<std::string>(value.version);
+		stream.Write<Util::optional<uint32_t>>(value.checksum);
+		stream.Write<uint32_t>(value.type);
+		stream.Write<std::string>(value.path);
+		stream.Write<Util::optional<uint32_t>>(value.realChecksum);
+		stream.Write<uint64_t>(std::chrono::system_clock::to_time_t(value.timestamp));
+		stream.Write<bool>(value.fd != -1);
+		if (value.fd != -1) {
+#ifdef _WIN32
+			stream.Write<IPC::FileHandle>(IPC::FileHandle(reinterpret_cast<HANDLE>(_get_osfhandle(value.fd)), IPC::MODE_READ));
+#else
+			stream.Write<IPC::FileHandle>(IPC::FileHandle(value.fd, IPC::MODE_READ));
+#endif
+		}
+		stream.Write<std::string>(value.pathPrefix);
+	}
+	static FS::LoadedPakInfo Read(Reader& stream)
+	{
+		FS::LoadedPakInfo value;
+		value.name = stream.Read<std::string>();
+		value.version = stream.Read<std::string>();
+		value.checksum = stream.Read<Util::optional<uint32_t>>();
+		value.type = static_cast<FS::pakType_t>(stream.Read<uint32_t>());
+		value.path = stream.Read<std::string>();
+		value.realChecksum = stream.Read<Util::optional<uint32_t>>();
 		value.timestamp = std::chrono::system_clock::from_time_t(stream.Read<uint64_t>());
 		if (stream.Read<bool>()) {
 #ifdef _WIN32
@@ -91,8 +115,8 @@ template<> struct SerializeTraits<FS::PakInfo> {
 #else
 			value.fd = stream.Read<IPC::FileHandle>().GetHandle();
 #endif
-		} else
-			value.fd = -1;
+		}
+		value.pathPrefix = stream.Read<std::string>();
 		return value;
 	}
 };
@@ -908,10 +932,18 @@ private:
 
 } // GCC bug workaround
 
+LoadedPakInfo::LoadedPakInfo()
+	: fd(-1) {}
+LoadedPakInfo::~LoadedPakInfo()
+{
+	if (fd != -1)
+		close(fd);
+}
+
 namespace PakPath {
 
 // List of loaded pak files
-static std::vector<PakInfo> loadedPaks;
+static std::vector<LoadedPakInfo> loadedPaks;
 
 // Map of filenames to pak files. The size_t is an offset into loadedPaks and
 // the offset_t is the position within the zip archive (unused for PAK_DIR).
@@ -991,22 +1023,29 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 	}
 }
 
-static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expectedChecksum, std::error_code& err)
+static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expectedChecksum, Str::StringRef pathPrefix, std::error_code& err)
 {
-	Util::optional<uint32_t> checksum;
+	Util::optional<uint32_t> realChecksum;
 	bool hasDeps = false;
 	offset_t depsOffset;
 	ZipArchive zipFile;
 
 	// Check if this pak has already been loaded to avoid recursive dependencies
 	for (auto& x: loadedPaks) {
-		if (x.path == pak.path)
+		// If the prefix is a superset of our current prefix, then it already
+		// includes all the files we care about.
+		if (x.path == pak.path && Str::IsPrefix(x.pathPrefix, pathPrefix))
 			return;
 	}
 
 	// Add the pak to the list of loaded paks
 	Com_Printf("Loading pak '%s'...\n", pak.path.c_str());
-	loadedPaks.push_back(pak);
+	loadedPaks.emplace_back();
+	loadedPaks.back().name = pak.name;
+	loadedPaks.back().version = pak.version;
+	loadedPaks.back().checksum = pak.checksum;
+	loadedPaks.back().type = pak.type;
+	loadedPaks.back().path = pak.path;
 
 	// Update the list of files, but don't overwrite existing files to preserve sort order
 	if (pak.type == PAK_DIR) {
@@ -1014,13 +1053,17 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 		if (HaveError(err))
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
+			if (*it == PAK_DEPS_FILE) {
+				hasDeps = true;
+				continue;
+			}
+			if (!Str::IsPrefix(pathPrefix, *it))
+				continue;
 #ifdef LIBSTDCXX_BROKEN_CXX11
 			fileMap.insert({*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0)});
 #else
 			fileMap.emplace(*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0));
 #endif
-			if (*it == PAK_DEPS_FILE)
-				hasDeps = true;
 			it.increment(err);
 			if (HaveError(err))
 				return;
@@ -1039,25 +1082,28 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 			return;
 
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
-		checksum = crc32(0, Z_NULL, 0);
-		zipFile.ForEachFile([&pak, &checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
-			// Ignore directories
+		realChecksum = crc32(0, Z_NULL, 0);
+		zipFile.ForEachFile([&pak, &realChecksum, &pathPrefix, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
+			// Note that 'return' is effectively 'continue' , since we are in a lambda
+			if (filename == PAK_DEPS_FILE) {
+				hasDeps = true;
+				depsOffset = offset;
+				return;
+			}
+			if (!Str::IsPrefix(pathPrefix, filename))
+				return;
 			if (Str::IsSuffix("/", filename))
 				return;
 			if (!Path::IsValid(filename, false)) {
 				fsLogs.Warn("Invalid filename '%s' in pak '%s'", filename, pak.path);
-				return; // This is effectively a continue, since we are in a lambda
+				return;
 			}
-			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
+			realChecksum = crc32(*realChecksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
 #ifdef LIBSTDCXX_BROKEN_CXX11
 			fileMap.insert({filename, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
 			fileMap.emplace(filename, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, offset));
 #endif
-			if (filename == PAK_DEPS_FILE) {
-				hasDeps = true;
-				depsOffset = offset;
-			}
 		}, err);
 		if (HaveError(err))
 			return;
@@ -1069,16 +1115,17 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 	}
 
 	// Save the real checksum in the list of loaded paks (empty for directories)
-	loadedPaks.back().checksum = checksum;
+	loadedPaks.back().realChecksum = realChecksum;
+	loadedPaks.back().pathPrefix = pathPrefix;
 
 	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
-	if (expectedChecksum && checksum != *expectedChecksum) {
+	if (expectedChecksum && realChecksum != *expectedChecksum) {
 		SetErrorCodeFilesystem(err, filesystem_error::wrong_pak_checksum);
 		return;
 	}
 
 	// Print a warning if the checksum doesn't match the one in the filename
-	if (pak.checksum && *pak.checksum != checksum)
+	if (pak.checksum && *pak.checksum != realChecksum)
 		fsLogs.Warn("Pak checksum doesn't match filename: %s", pak.path);
 
 	// Load dependencies, but not if a checksum was specified
@@ -1109,27 +1156,43 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 
 void LoadPak(const PakInfo& pak, std::error_code& err)
 {
-	InternalLoadPak(pak, Util::nullopt, err);
+	InternalLoadPak(pak, Util::nullopt, "", err);
+}
+
+void LoadPakPrefix(const PakInfo& pak, Str::StringRef pathPrefix, std::error_code& err)
+{
+	InternalLoadPak(pak, Util::nullopt, pathPrefix, err);
 }
 
 void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err)
 {
-	InternalLoadPak(pak, expectedChecksum, err);
+	InternalLoadPak(pak, expectedChecksum, "", err);
 }
 
 void ClearPaks()
 {
 	fileMap.clear();
-	for (PakInfo& x: loadedPaks) {
-		if (x.type == PAK_ZIP)
-			close(x.fd);
-	}
 	loadedPaks.clear();
 	FS::RefreshPaks();
 }
+#else // BUILD_VM
+void LoadPak(const PakInfo& pak, std::error_code& err)
+{
+	VM::SendMsg<VM::FSPakPathLoadPakMsg>(&pak - availablePaks.data(), Util::nullopt, "");
+}
+
+void LoadPakPrefix(const PakInfo& pak, Str::StringRef pathPrefix, std::error_code& err)
+{
+	VM::SendMsg<VM::FSPakPathLoadPakMsg>(&pak - availablePaks.data(), Util::nullopt, pathPrefix);
+}
+
+void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err)
+{
+	VM::SendMsg<VM::FSPakPathLoadPakMsg>(&pak - availablePaks.data(), expectedChecksum, "");
+}
 #endif // BUILD_VM
 
-const std::vector<PakInfo>& GetLoadedPaks()
+const std::vector<LoadedPakInfo>& GetLoadedPaks()
 {
 	return loadedPaks;
 }
@@ -1142,7 +1205,7 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 		return "";
 	}
 
-	const PakInfo& pak = loadedPaks[it->second.first];
+	const LoadedPakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR) {
 		// Open file
 #ifdef BUILD_VM
@@ -1205,7 +1268,7 @@ void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 		return;
 	}
 
-	const PakInfo& pak = loadedPaks[it->second.first];
+	const LoadedPakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR) {
 #ifdef BUILD_VM
 		Util::optional<IPC::FileHandle> handle;
@@ -1251,7 +1314,7 @@ bool FileExists(Str::StringRef path)
 	return fileMap.find(path) != fileMap.end();
 }
 
-const PakInfo* LocateFile(Str::StringRef path)
+const LoadedPakInfo* LocateFile(Str::StringRef path)
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end())
@@ -1268,7 +1331,7 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 		return {};
 	}
 
-	const PakInfo& pak = loadedPaks[it->second.first];
+	const LoadedPakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR) {
 #ifdef BUILD_VM
 		Util::optional<uint64_t> result;
@@ -2010,7 +2073,7 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 		return;
 	}
 
-	availablePaks.push_back({std::move(name), std::move(version), checksum, type, std::move(fullPath), {}, -1});
+	availablePaks.push_back({std::move(name), std::move(version), checksum, type, std::move(fullPath)});
 }
 
 // Find all paks in the given path
@@ -2250,7 +2313,7 @@ void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& chann
 {
 	switch (minor) {
 	case VM::FS_INITIALIZE:
-		IPC::HandleMsg<VM::FSInitializeMsg>(channel, std::move(reader), [](std::string& homePath, std::string& libPath, std::vector<FS::PakInfo>& availablePaks, std::vector<FS::PakInfo>& loadedPaks, std::unordered_map<std::string, std::pair<uint32_t, FS::offset_t>>& fileMap) {
+		IPC::HandleMsg<VM::FSInitializeMsg>(channel, std::move(reader), [](std::string& homePath, std::string& libPath, std::vector<FS::PakInfo>& availablePaks, std::vector<FS::LoadedPakInfo>& loadedPaks, std::unordered_map<std::string, std::pair<uint32_t, FS::offset_t>>& fileMap) {
 			homePath = GetHomePath();
 			libPath = GetLibPath();
 			availablePaks = GetAvailablePaks();
@@ -2351,6 +2414,16 @@ void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& chann
 				return;
 			try {
 				out = std::chrono::system_clock::to_time_t(RawPath::FileTimestamp(Path::Build(loadedPaks[pakIndex].path, path)));
+			} catch (std::system_error& err) {}
+		});
+		break;
+
+	case VM::FS_PAKPATH_LOADPAK:
+		IPC::HandleMsg<VM::FSPakPathLoadPakMsg>(channel, std::move(reader), [](uint32_t pakIndex, Util::optional<uint32_t> expectedChecksum, std::string pathPrefix) {
+			if (availablePaks.size() <= pakIndex)
+				return;
+			try {
+				FS::PakPath::InternalLoadPak(availablePaks[pakIndex], expectedChecksum, pathPrefix, FS::throws());
 			} catch (std::system_error& err) {}
 		});
 		break;
