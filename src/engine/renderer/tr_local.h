@@ -3002,6 +3002,7 @@ static inline byte floatToSnorm8(float f) {
 	extern cvar_t *r_showBatches;
 	extern cvar_t *r_showLightMaps; // render lightmaps only
 	extern cvar_t *r_showDeluxeMaps;
+	extern cvar_t *r_showEntityNormals;
 	extern cvar_t *r_showAreaPortals;
 	extern cvar_t *r_showCubeProbes;
 	extern cvar_t *r_showBspNodes;
