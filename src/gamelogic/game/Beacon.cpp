@@ -312,6 +312,7 @@ namespace Beacon //this should eventually become a class
 			case ET_PLAYER:
 				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, NULL, NULL, NULL );
 				dead = ( ent->client && ent->client->ps.stats[ STAT_HEALTH ] <= 0 );
+				owner = ent->s.number;
 				switch( ent->client->pers.team )
 				{
 					case TEAM_ALIENS:

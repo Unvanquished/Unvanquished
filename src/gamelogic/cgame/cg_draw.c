@@ -5193,7 +5193,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		                       cgs.media.beaconIconArrow,
 		                       270.0 - ( angle = atan2( dir[ 1 ], dir[ 0 ] ) ) * 180 / M_PI );
 
-	
+
 	text = CG_FormatLength( b->dist );
 	ts = BEACON_FONTSIZE;
 	tw = TextWidth( text, ts );
