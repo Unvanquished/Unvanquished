@@ -1119,13 +1119,11 @@ static void GLimp_InitExtensions( void )
 	{
 		glConfig.textureCompression = TC_S3TC;
 	}
-	REQUIRE_EXTENSION(EXT_texture3D); //TODO sure?
-	glConfig2.texture3DAvailable = qtrue; // TODO what
+	REQUIRE_EXTENSION(EXT_texture3D);
 
 	// Texture - others
 	glConfig2.textureNPOTAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_non_power_of_two, r_ext_texture_non_power_of_two);
 	glConfig2.generateMipmapAvailable = LOAD_EXTENSION_WITH_CVAR(SGIS_generate_mipmap, r_ext_generate_mipmap);
-	glConfig2.stencilWrapAvailable = LOAD_EXTENSION_WITH_CVAR(EXT_stencil_wrap, r_ext_stencil_wrap);
 
 	glConfig2.textureAnisotropyAvailable = qfalse;
 	if ( LOAD_EXTENSION_WITH_CVAR(EXT_texture_filter_anisotropic, r_ext_texture_filter_anisotropic) )
@@ -1135,7 +1133,7 @@ static void GLimp_InitExtensions( void )
 	}
 
 	// VAO and VBO
-	glConfig2.vertexArrayObjectAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_vertex_array_object, r_ext_vertex_array_object);
+	REQUIRE_EXTENSION( ARB_vertex_array_object );
 	REQUIRE_EXTENSION( ARB_vertex_buffer_object );
 
 	// FBO
@@ -1149,10 +1147,6 @@ static void GLimp_InitExtensions( void )
 	glConfig2.framebufferBlitAvailable = LOAD_EXTENSION_WITH_CVAR(EXT_framebuffer_blit, r_ext_framebuffer_blit);
 
 	// Other
-	LOAD_EXTENSION_WITH_CVAR(EXT_stencil_two_side, r_ext_stencil_two_side);
-	LOAD_EXTENSION_WITH_CVAR(EXT_depth_bounds_test, r_ext_depth_bounds_test);
-	LOAD_EXTENSION_WITH_CVAR(ATI_separate_stencil, r_ext_separate_stencil);
-
 	REQUIRE_EXTENSION( ARB_shader_objects );
 
 	glConfig2.occlusionQueryAvailable = qfalse;

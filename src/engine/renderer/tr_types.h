@@ -493,7 +493,7 @@ typedef struct
 	qboolean vboVertexSkinningAvailable;
 	int      maxVertexSkinningBones;
 
-	qboolean texture3DAvailable;
+	qboolean unused_texture3DAvailable;
 	qboolean textureNPOTAvailable;
 
 	qboolean drawBuffersAvailable;
@@ -502,9 +502,9 @@ typedef struct
 	qboolean textureRGAvailable;
 	int      maxDrawBuffers;
 
-	qboolean vertexArrayObjectAvailable;
+	qboolean unused_vertexArrayObjectAvailable;
 
-	qboolean stencilWrapAvailable;
+	qboolean unused_stencilWrapAvailable;
 
 	float    maxTextureAnisotropy;
 	qboolean textureAnisotropyAvailable;

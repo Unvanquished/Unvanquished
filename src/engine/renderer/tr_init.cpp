@@ -100,11 +100,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_ext_half_float_pixel;
 	cvar_t      *r_ext_texture_float;
 	cvar_t      *r_ext_texture_rg;
-	cvar_t      *r_ext_stencil_wrap;
 	cvar_t      *r_ext_texture_filter_anisotropic;
-	cvar_t      *r_ext_stencil_two_side;
-	cvar_t      *r_ext_separate_stencil;
-	cvar_t      *r_ext_depth_bounds_test;
 	cvar_t      *r_ext_framebuffer_object;
 	cvar_t      *r_ext_packed_depth_stencil;
 	cvar_t      *r_ext_framebuffer_blit;
@@ -1099,11 +1095,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_ext_half_float_pixel = ri.Cvar_Get( "r_ext_half_float_pixel", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_float = ri.Cvar_Get( "r_ext_texture_float", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_rg = ri.Cvar_Get( "r_ext_texture_rg", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_ext_stencil_wrap = ri.Cvar_Get( "r_ext_stencil_wrap", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "4",  CVAR_LATCH | CVAR_ARCHIVE );
-		r_ext_stencil_two_side = ri.Cvar_Get( "r_ext_stencil_two_side", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_ext_separate_stencil = ri.Cvar_Get( "r_ext_separate_stencil", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_ext_depth_bounds_test = ri.Cvar_Get( "r_ext_depth_bounds_test", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_framebuffer_object = ri.Cvar_Get( "r_ext_framebuffer_object", "1",  CVAR_LATCH );
 		r_ext_packed_depth_stencil = ri.Cvar_Get( "r_ext_packed_depth_stencil", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_framebuffer_blit = ri.Cvar_Get( "r_ext_framebuffer_blit", "1", CVAR_CHEAT | CVAR_LATCH );

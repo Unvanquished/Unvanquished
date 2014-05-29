@@ -2883,11 +2883,7 @@ static inline byte floatToSnorm8(float f) {
 	extern cvar_t *r_ext_half_float_pixel;
 	extern cvar_t *r_ext_texture_float;
 	extern cvar_t *r_ext_texture_rg;
-	extern cvar_t *r_ext_stencil_wrap;
 	extern cvar_t *r_ext_texture_filter_anisotropic;
-	extern cvar_t *r_ext_stencil_two_side;
-	extern cvar_t *r_ext_separate_stencil;
-	extern cvar_t *r_ext_depth_bounds_test;
 	extern cvar_t *r_ext_framebuffer_object;
 	extern cvar_t *r_ext_packed_depth_stencil;
 	extern cvar_t *r_ext_framebuffer_blit;
