@@ -89,7 +89,7 @@ static void CG_Rocket_DFServerPlayers( int handle, const char *data )
 
 static void CG_Rocket_DFPlayerName( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name, qtrue );
+	trap_Rocket_DataFormatterFormattedData( handle, va("<span class=\"playername\">%s</span>",  cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ), qfalse );
 }
 
 static void CG_Rocket_DFUpgradeName( int handle, const char *data )
