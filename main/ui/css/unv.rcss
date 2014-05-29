@@ -405,7 +405,6 @@ background-color:#227c77FF;
 	padding:2%;
 	display:block;
 	min-height:40%;
-	max-height:80%;
 	z-index: 0;
 	overflow:auto auto;
 	color:#83fff5;
