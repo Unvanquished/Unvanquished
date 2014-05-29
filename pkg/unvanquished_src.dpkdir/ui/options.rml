@@ -30,6 +30,9 @@
 
 				width:2em;
 			}
+			.window panel,div.window{
+				max-height:80%;
+			}
 			div.selectvalue{
 
 				display:inline-block;
