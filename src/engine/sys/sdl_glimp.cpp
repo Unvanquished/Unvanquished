@@ -1049,28 +1049,6 @@ static void GLimp_InitExtensions( void )
 		ri.Printf( PRINT_ALL, "...GL_ARB_debug_output not found\n" );
 	}
 
-	// GL_ARB_multitexture
-	if ( glConfig.driverType != GLDRV_OPENGL3 )
-	{
-		if ( GLEW_ARB_multitexture )
-		{
-			glGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &glConfig.maxActiveTextures );
-
-			if ( glConfig.maxActiveTextures > 1 )
-			{
-				ri.Printf( PRINT_ALL, "...using GL_ARB_multitexture\n" );
-			}
-			else
-			{
-				ri.Error( ERR_FATAL, "...not using GL_ARB_multitexture, < 2 texture units" );
-			}
-		}
-		else
-		{
-			ri.Error( ERR_FATAL, "...GL_ARB_multitexture not found" );
-		}
-	}
-
 	// GL_ARB_depth_texture
 	if ( GLEW_ARB_depth_texture )
 	{

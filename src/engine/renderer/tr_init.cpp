@@ -868,17 +868,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 				GL_TextureMode( r_textureMode->string );
 			}
 		}
-		else
-		{
-			if ( GLEW_ARB_multitexture )
-			{
-				for ( i = glConfig.maxActiveTextures - 1; i >= 0; i-- )
-				{
-					GL_SelectTexture( i );
-					GL_TextureMode( r_textureMode->string );
-				}
-			}
-		}
 
 		GL_CheckErrors();
 
@@ -960,11 +949,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		ri.Printf( PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
 		ri.Printf( PRINT_DEVELOPER, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
 		ri.Printf( PRINT_DEVELOPER, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
-
-		if ( glConfig.driverType != GLDRV_OPENGL3 )
-		{
-			ri.Printf( PRINT_DEVELOPER, "GL_MAX_TEXTURE_UNITS: %d\n", glConfig.maxActiveTextures );
-		}
 
 		ri.Printf( PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersionString );
 
