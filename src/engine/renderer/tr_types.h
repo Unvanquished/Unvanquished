@@ -439,6 +439,7 @@ typedef struct
 	char                 extensions_string[ MAX_STRING_CHARS * 4 ]; // TTimo - bumping, some cards have a big extension string
 
 	int                  maxTextureSize; // queried from GL
+	int                  unused;
 
 	int                  colorBits, depthBits, stencilBits;
 
