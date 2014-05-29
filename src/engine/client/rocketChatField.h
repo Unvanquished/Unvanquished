@@ -58,6 +58,7 @@ public:
 
 	virtual void OnChildRemove( Element *child )
 	{
+		Element::OnChildRemove(child);
 		if ( child == this && context )
 		{
 			context->GetRootElement()->RemoveEventListener( "show", this );
@@ -77,6 +78,7 @@ public:
 
 	virtual void OnChildAdd( Element *child )
 	{
+		Element::OnChildAdd( child );
 		if ( child == this )
 		{
 			// Cache context so we can remove the event listeners later
@@ -128,7 +130,6 @@ public:
 			else if ( event == "blur" || event == "hide" )
 			{
 				focus =  false;
-				GetContext()->ShowMouseCursor( true );
 			}
 		}
 
@@ -235,14 +236,24 @@ public:
 		{
 			float base_size = 0;
 			Rocket::Core::Element *parent = this;
+			std::stack<Rocket::Core::Element*> stack;
+			stack.push( this );
 
 			while ( ( parent = parent->GetParentNode() ) )
 			{
 				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
 				{
-					dimensions.x = ResolveProperty( "width", base_size );
+					dimensions.x = base_size;
+					while ( !stack.empty() )
+					{
+						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
+
+						stack.pop();
+					}
 					break;
 				}
+
+				stack.push( parent );
 			}
 		}
 

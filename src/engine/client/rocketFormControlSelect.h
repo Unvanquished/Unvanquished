@@ -32,38 +32,33 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef ROCKETFORMCONTROLINPUT_H
-#define ROCKETFORMCONTROLINPUT_H
+#ifndef ROCKETFORMCONTROLSELECT_H
+#define ROCKETFORMCONTROLSELECT_H
 
 #include "client.h"
 #include "../framework/CvarSystem.h"
 #include <Rocket/Core/Core.h>
-#include <Rocket/Controls/ElementFormControlInput.h>
+#include <Rocket/Controls/ElementFormControlSelect.h>
 
-class CvarElementFormControlInput : public Rocket::Controls::ElementFormControlInput, public Rocket::Core::EventListener
+class CvarElementFormControlSelect : public Rocket::Controls::ElementFormControlSelect, public Rocket::Core::EventListener
 {
 public:
-	CvarElementFormControlInput( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlInput( tag ) { }
+	CvarElementFormControlSelect( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlSelect( tag ) { }
 
 	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
-		Rocket::Controls::ElementFormControlInput::OnAttributeChange( changed_attributes );
+		Rocket::Controls::ElementFormControlSelect::OnAttributeChange( changed_attributes );
 
 		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
 		{
 			cvar = GetAttribute< Rocket::Core::String >( "cvar", "" );
 			UpdateValue();
 		}
-
-		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
-		{
-			type = GetAttribute< Rocket::Core::String >( "type", "" );
-		}
 	}
 
 	virtual void OnChildAdd( Element *child )
 	{
-		Rocket::Controls::ElementFormControlInput::OnChildAdd( child );
+		Rocket::Controls::ElementFormControlSelect::OnChildAdd( child );
 		if ( child == this )
 		{
 			// Need to cache this because it is not available
@@ -75,7 +70,7 @@ public:
 
 	virtual void OnChildRemove( Element *child )
 	{
-		Rocket::Controls::ElementFormControlInput::OnChildRemove( child );
+		Rocket::Controls::ElementFormControlSelect::OnChildRemove( child );
 		if ( child == this )
 		{
 			owner->RemoveEventListener( "show", this );
@@ -84,7 +79,7 @@ public:
 
 	virtual void ProcessEvent( Rocket::Core::Event &event )
 	{
-		Rocket::Controls::ElementFormControlInput::ProcessEvent( event );
+		Rocket::Controls::ElementFormControlSelect::ProcessEvent( event );
 
 		if ( !cvar.Empty() )
 		{
@@ -92,82 +87,28 @@ public:
 			{
 				UpdateValue();
 			}
-
-			if ( this == event.GetTargetElement() )
+			else if ( this == event.GetTargetElement() && event == "change" )
 			{
-				if ( event == "blur" && ( type != "checkbox" && type != "radio" ) )
-				{
-					Cvar::SetValue( cvar.CString(), GetValue().CString() );
-				}
-
-				else if ( event == "change" && type == "range" )
-				{
-					Cvar::SetValue( cvar.CString(), GetValue().CString() );
-				}
-
-				else if ( event == "click" && !IsDisabled() )
-				{
-					if ( type == "checkbox" )
-					{
-						if ( HasAttribute( "checked" ) )
-						{
-							Cvar::SetValue( cvar.CString(), "1" );
-						}
-
-						else
-						{
-							Cvar::SetValue( cvar.CString(), "0" );
-						}
-					}
-
-					else if ( type == "radio" )
-					{
-						Cvar::SetValue( cvar.CString(), GetValue().CString() );
-					}
-				}
+				Cvar::SetValue( cvar.CString(), GetValue().CString() );
 			}
 		}
 	}
 
-
 	void UpdateValue( void )
 	{
-		if ( !type.Empty() )
+		Rocket::Core::String value = Cvar::GetValue( cvar.CString() ).c_str();
+
+		for ( size_t i = 0; i < GetNumOptions(); ++i )
 		{
-			if ( type == "checkbox" )
+			Rocket::Controls::SelectOption *o = GetOption( i );
+			if ( o->GetValue() == value )
 			{
-				bool result;
-
-				if ( Cvar::ParseCvarValue( Cvar::GetValue( cvar.CString() ).c_str(), result ) )
-				{
-					if ( result )
-					{
-						SetAttribute( "checked", "" );
-						SetValue( "1" );
-					}
-
-					else
-					{
-						RemoveAttribute( "checked" );
-						SetValue( "0" );
-					}
-				}
-			}
-
-			else if ( type == "radio" )
-			{
-				if ( GetValue() == Cvar::GetValue( cvar.CString() ).c_str() )
-				{
-					SetAttribute( "checked", "" );
-				}
-			}
-
-			else
-			{
-				SetValue( Cvar::GetValue( cvar.CString() ).c_str() );
+				SetSelection( i );
+				return;
 			}
 		}
 
+		SetSelection( -1 );
 	}
 
 private:

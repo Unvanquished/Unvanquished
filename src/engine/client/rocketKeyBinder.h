@@ -65,6 +65,7 @@ public:
 
 	virtual void OnChildAdd( Element *child )
 	{
+		Element::OnChildAdd( child );
 		if ( child == this )
 		{
 			context = GetContext();
@@ -75,6 +76,7 @@ public:
 
 	virtual void OnChildRemove( Element *child )
 	{
+		Element::OnChildRemove( child );
 		if (  child == this )
 		{
 			context->RemoveEventListener( "mousemove", this );
@@ -89,7 +91,7 @@ public:
 		{
 			dirty_key = false;
 			key = Key_GetKey( cmd.CString(), team );
-			SetInnerRML( Key_KeynumToString( key ) );
+			SetInnerRML( key == -1 ? "Unbound" : Key_KeynumToString( key ) );
 		}
 	}
 
@@ -141,6 +143,8 @@ protected:
 		// Don't accept the same key
 		if ( key == newKey )
 		{
+			waitingForKeypress = false;
+			dirty_key = true;
 			return;
 		}
 		// Cancel selection

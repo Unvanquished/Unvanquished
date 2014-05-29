@@ -2054,7 +2054,7 @@ void CG_ProcessSnapshots( void );
 //
 qboolean CG_ConsoleCommand( void );
 void     CG_InitConsoleCommands( void );
-qboolean CG_RequestScores( void );
+void     CG_RequestScores( void );
 
 //
 // cg_servercmds.c
@@ -2209,12 +2209,13 @@ void CG_Rocket_RegisterDataSources( void );
 void CG_Rocket_CleanUpDataSources( void );
 void CG_Rocket_ExecDataSource( const char *dataSource, const char *table );
 void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, int index );
+int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table );
 void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter );
 void CG_Rocket_BuildServerInfo( void );
 void CG_Rocket_BuildServerList( const char *args );
 void CG_Rocket_BuildArmourySellList( const char *table );
 void CG_Rocket_BuildArmouryBuyList( const char *table );
-void CG_Rocket_BuildPlayerList( const char *args );
+void CG_Rocket_BuildPlayerList( const char *table );
 
 //
 // cg_rocket_progressbar.c

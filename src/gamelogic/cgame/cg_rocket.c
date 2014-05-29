@@ -286,6 +286,8 @@ void CG_Rocket_LoadHuds( void )
 
 	while ( 1 )
 	{
+		qboolean valid = qfalse;
+
 		token = COM_Parse2( &text_p );
 
 		if ( !*token )
@@ -327,7 +329,7 @@ void CG_Rocket_LoadHuds( void )
 		if ( !Q_stricmp( token, "human_hud" ) )
 		{
 			// Clear old values
-			for ( i = WP_BLASTER; i < WP_LUCIFER_CANNON; ++i )
+			for ( i = WP_BLASTER; i <= WP_LUCIFER_CANNON; ++i )
 			{
 				trap_Rocket_ClearHud( i );
 			}
@@ -354,7 +356,7 @@ void CG_Rocket_LoadHuds( void )
 				}
 
 
-				for ( i = WP_BLASTER; i < WP_LUCIFER_CANNON; ++i )
+				for ( i = WP_BLASTER; i <= WP_LUCIFER_CANNON; ++i )
 				{
 					trap_Rocket_AddUnitToHud( i, token );
 				}
@@ -404,7 +406,7 @@ void CG_Rocket_LoadHuds( void )
 
 		if ( !Q_stricmp( token, "alien_hud" ) )
 		{
-			for ( i = WP_ALEVEL0; i < WP_ALEVEL4; ++i )
+			for ( i = WP_ALEVEL0; i <= WP_ALEVEL4; ++i )
 			{
 				trap_Rocket_ClearHud( i );
 			}
@@ -422,15 +424,16 @@ void CG_Rocket_LoadHuds( void )
 				}
 
 				if ( *token == '{' )
-					{
-						continue;
-					}
+				{
+					continue;
+				}
 
-					if ( *token == '}' )
-					{
-						break;
-					}
-				for ( i = WP_ALEVEL0; i < WP_ALEVEL4; ++i )
+				if ( *token == '}' )
+				{
+					break;
+				}
+
+				for ( i = WP_ALEVEL0; i <= WP_ALEVEL4; ++i )
 				{
 					trap_Rocket_AddUnitToHud( i, token );
 				}
@@ -453,7 +456,7 @@ void CG_Rocket_LoadHuds( void )
 
 					if ( !*token )
 					{
-						Com_Error( ERR_DROP, "Unable to load huds from %s. Unexpected end of file. Expected closing } to close off spectator_hud.", rocket_hudFile.string );
+						Com_Error( ERR_DROP, "Unable to load huds from %s. Unexpected end of file. Expected closing } to close off %s_hud.", rocket_hudFile.string, BG_Weapon( i )->name );
 					}
 
 					if ( *token == '{' )
@@ -468,7 +471,15 @@ void CG_Rocket_LoadHuds( void )
 
 					trap_Rocket_AddUnitToHud( i, token );
 				}
+
+				valid = qtrue;
+				break;
 			}
+		}
+
+		if ( !valid )
+		{
+			Com_Error( ERR_DROP, "Could not parse %s. Unrecognized top level item: %s", rocket_hudFile.string, token );
 		}
 	}
 }
@@ -559,20 +570,10 @@ void CG_Rocket_Frame( void )
 		CG_Rocket_BuildServerInfo();
 	}
 
-	// If scores open, update scores
-	if ( cg.showScores )
+	// Update scores as long as they are showing
+	if ( cg.showScores && cg.scoresRequestTime + 2000 < cg.time )
 	{
-		// UI has focus so scores still open
-		if ( trap_Key_GetCatcher() )
-		{
-			CG_RequestScores();
-		}
-
-		// Game has focus, scores not visible
-		else
-		{
-			cg.showScores = qfalse;
-		}
+		CG_RequestScores();
 	}
 
 	CG_Rocket_ProcessEvents();
@@ -605,7 +606,7 @@ const char *CG_Rocket_QuakeToRML( const char *in )
 
 qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 {
-	playerState_t *ps = &cg.predictedPlayerState;
+	playerState_t *ps;
 
 	switch ( type )
 	{
@@ -628,6 +629,18 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 
 			return qfalse;
 
+		default:
+			break;
+	}
+
+
+	if ( !cg.snap )
+	{
+		return qfalse;
+	}
+	ps = &cg.snap->ps;
+	switch( type )
+	{
 		case ELEMENT_ALIENS:
 			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
@@ -653,7 +666,8 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return qfalse;
 
 		case ELEMENT_DEAD:
-			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->stats[ STAT_HEALTH ] == 0 && ps->weapon == WP_NONE )
+			// If you're on a team and spectating, you're probably dead
+			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 			{
 				return qtrue;
 			}

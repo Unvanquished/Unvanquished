@@ -174,9 +174,13 @@
 			}
 			minimap {
 				position: absolute;
+				color: red;
 				right: 0px;
 				width: 4em;
 				height: 4em;
+				border-color: red;
+				border-left-width: 2px;
+				border-bottom-width: 2px;
 			}
 			unlocked_items
 			{
@@ -214,13 +218,12 @@
 	</head>
 	<body id="alien_hud">
 		<alien_sense />
-		<minimap />
+		<if cvar="cg_minimapActive" condition="==" value="1">
+			<minimap />
+		</if>
 		<div id="momentum">
 			<unlocked_items/>
 			<momentum_bar/>
-		</div>
-		<div id="barbs">
-			<barbs src="/ui/assets/alien/tremublob" />
 		</div>
 		<div id="left">
 			<img class="bg sides" src="/ui/assets/alien/bg-l.png" />

@@ -233,6 +233,24 @@ static void CG_Rocket_EventExecForm( void )
 	}
 }
 
+static void CG_Rocket_SetDataSelectValue( void )
+{
+	char src[ 100 ];
+	char tbl[ 100 ];
+	int index;
+
+	Q_strncpyz( src, CG_Argv( 1 ), sizeof ( src ) );
+	Q_strncpyz( tbl, CG_Argv( 2 ), sizeof( tbl ) );
+
+	index = CG_Rocket_GetDataSourceIndex( src, tbl );
+
+	if ( index > -1 )
+	{
+		trap_Rocket_SetDataSelectIndex( index );
+	}
+
+}
+
 typedef struct
 {
 	const char *command;
@@ -254,6 +272,7 @@ static const eventCmd_t eventCmdList[] =
 	{ "open", &CG_Rocket_EventOpen },
 	{ "setAttribute", &CG_Rocket_SetAttribute },
 	{ "setChatCommand", &CG_Rocket_SetChatCommand },
+	{ "setDataSelectValue", &CG_Rocket_SetDataSelectValue },
 	{ "setDS", &CG_Rocket_SetDS },
 	{ "show", &CG_Rocket_EventShow },
 	{ "sortDS", &CG_Rocket_SortDS }
@@ -274,7 +293,6 @@ void CG_Rocket_ProcessEvents( void )
 	// Get the even command
 	while ( trap_Rocket_GetEvent() )
 	{
-
 		cmd = (eventCmd_t*) bsearch( CG_Argv( 0 ), eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
 
 		if ( cmd )

@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef ROCKETCIRCLEMENU_H
-#define ROCKETCIRCLEMENU_H
+#ifndef ROCKETDATASOURCE_H
+#define ROCKETDATASOURCE_H
 
 #include <Rocket/Core.h>
 #include <Rocket/Core/Element.h>
@@ -43,14 +43,14 @@ Maryland 20850 USA.
 #include "client.h"
 #include "rocket.h"
 
-class RocketCircleMenu : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener
+class RocketDataSource : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener
 {
 public:
-	RocketCircleMenu( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( NULL ), data_source( NULL )
+	RocketDataSource( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( NULL ), data_source( NULL )
 	{
 	}
 
-	virtual ~RocketCircleMenu( void )
+	virtual ~RocketDataSource( void )
 	{
 		if ( data_source )
 		{
@@ -247,7 +247,7 @@ public:
 				RemoveChild( GetFirstChild() );
 			}
 
-			AddCancelbutton();
+			//AddCancelbutton();
 
 			Rocket::Controls::DataQuery query( data_source, data_table, csvFields, 0, -1 );
 			int index = 0;
@@ -264,9 +264,12 @@ public:
 
 				raw_data.push_back( va( "%d", index++ ) );
 
+
 				if ( formatter )
 				{
+
 					formatter->FormatData( out, raw_data );
+
 				}
 
 				else
@@ -281,11 +284,11 @@ public:
 						out.Append( raw_data[ i ] );
 					}
 				}
-
 				Rocket::Core::Factory::InstanceElementText( this, out );
+				//Rocket::Core::Factory::InstanceElementText( this, out );
 			}
 
-			LayoutChildren();
+			//LayoutChildren();
 		}
 	}
 

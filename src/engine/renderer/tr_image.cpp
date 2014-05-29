@@ -3981,4 +3981,3 @@ qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
 	R_SyncRenderThread();
 	return RE_RegisterShaderFromImage( name, R_CreateImage( name, &pic, width, height, 1, IF_NOCOMPRESSION | IF_NOPICMIP, FT_LINEAR, WT_CLAMP ) );
 }
-

@@ -1491,11 +1491,6 @@ void trap_Rocket_GetElementTag( char *tag, int length )
 	syscallVM( CG_ROCKET_GETELEMENTTAG, tag, length );
 }
 
-int trap_Rocket_KeyToQuake( int key )
-{
-	return syscallVM( CG_ROCKET_KEYTOQUAKE, key );
-}
-
 void trap_Rocket_GetElementAbsoluteOffset( float *x, float *y )
 {
 	syscallVM( CG_ROCKET_GETELEMENTABSOLUTEOFFSET, x, y );
@@ -1549,4 +1544,14 @@ void trap_Rocket_ClearText( void )
 void trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs )
 {
 	syscallVM( CG_ROCKET_REGISTERPROPERTY, name, defaultValue, inherited, force_layout, parseAs );
+}
+
+void trap_Rocket_ShowScoreboard( const char *name, qboolean show )
+{
+	syscallVM( CG_ROCKET_SHOWSCOREBOARD, name, show );
+}
+
+void trap_Rocket_SetDataSelectIndex( int index )
+{
+	syscallVM( CG_ROCKET_SETDATASELECTINDEX, index );
 }

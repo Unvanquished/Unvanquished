@@ -82,7 +82,6 @@ typedef enum {
 	ROCKETMENU_ARMOURYBUY,
 	ROCKETMENU_ALIENEVOLVE,
 	ROCKETMENU_CHAT,
-	ROCKETMENU_SCOREBOARD,
 	ROCKETMENU_NUM_TYPES
 } rocketMenuType_t;
 
@@ -333,7 +332,6 @@ typedef enum cgameImport_s
   CG_ROCKET_REGISTERELEMENT,
   CG_ROCKET_SETELEMENTDIMENSIONS,
   CG_ROCKET_GETELEMENTTAG,
-  CG_ROCKET_KEYTOQUAKE,
   CG_ROCKET_GETELEMENTABSOLUTEOFFSET,
   CG_ROCKET_QUAKETORML,
   CG_ROCKET_SETCLASS,
@@ -344,7 +342,9 @@ typedef enum cgameImport_s
   CG_ROCKET_CLEARHUD,
   CG_ROCKET_ADDTEXT,
   CG_ROCKET_CLEARTEXT,
-  CG_ROCKET_REGISTERPROPERTY
+  CG_ROCKET_REGISTERPROPERTY,
+  CG_ROCKET_SHOWSCOREBOARD,
+  CG_ROCKET_SETDATASELECTINDEX
 } cgameImport_t;
 
 typedef enum
@@ -657,7 +657,6 @@ void            trap_Rocket_DataFormatterFormattedData( int handle, const char *
 void            trap_Rocket_RegisterElement( const char *tag );
 void            trap_Rocket_SetElementDimensions( float x, float y );
 void            trap_Rocket_GetElementTag( char *tag, int length );
-int             trap_Rocket_KeyToQuake( int key );
 void            trap_Rocket_GetElementAbsoluteOffset( float *x, float *y );
 void            trap_Rocket_QuakeToRML( const char *in, char *out, int length );
 void            trap_Rocket_SetClass( const char *in, qboolean activate );
@@ -669,4 +668,6 @@ void            trap_Rocket_ClearHud( int weapon );
 void            trap_Rocket_AddTextElement( const char *text, const char *Class, float x, float y );
 void            trap_Rocket_ClearText( void );
 void            trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
+void            trap_Rocket_ShowScoreboard( const char *name, qboolean show );
+void            trap_Rocket_SetDataSelectIndex( int index );
 #endif

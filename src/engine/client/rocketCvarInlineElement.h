@@ -31,36 +31,42 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef ROCKET_H
-#define ROCKET_H
-#ifdef DotProduct
-// Ugly hack to fix the DotProduct conflict
-#undef DotProduct
-#endif
+
+#ifndef ROCKETCVARINLINEELEMENT_H
+#define ROCKETCVARINLINEELEMENT_H
+
+#include "../framework/CvarSystem.h"
 #include <Rocket/Core/Core.h>
 
-extern Rocket::Core::Context *menuContext;
-extern Rocket::Core::Context *hudContext;
-
-class RocketEvent_t
+class RocketCvarInlineElement : public Rocket::Core::Element
 {
 public:
-	RocketEvent_t( Rocket::Core::Event &event, const Rocket::Core::String &cmds ) : cmd( cmds )
+	RocketCvarInlineElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cvar( "" ), cvar_value( "" ), dirty_value( false ) {}
+
+	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
-		targetElement = event.GetTargetElement();
-		Parameters = *(event.GetParameters());
+		Rocket::Core::Element::OnAttributeChange( changed_attributes );
+		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
+		{
+			cvar = GetAttribute< Rocket::Core::String >( "cvar",  "" );
+			cvar_value = Cvar_VariableString( cvar.CString() );
+			dirty_value = true;
+		}
 	}
-	RocketEvent_t( const Rocket::Core::String &cmds ) : cmd( cmds )
+
+	virtual void OnUpdate( void )
 	{
+		if ( dirty_value || ( !cvar.Empty() && cvar_value != Cvar_VariableString( cvar.CString() ) ) )
+		{
+			cvar_value = Cvar_VariableString( cvar.CString() );
+			SetInnerRML( cvar_value );
+			dirty_value = false;
+		}
 	}
-	RocketEvent_t( Rocket::Core::Element *e, const Rocket::Core::String &cmds ) : targetElement( e ), cmd( cmds )
-	{
-	}
-	~RocketEvent_t() { }
-	Rocket::Core::Element *targetElement;
-	Rocket::Core::Dictionary Parameters;
-	Rocket::Core::String cmd;
+private:
+	Rocket::Core::String cvar;
+	Rocket::Core::String cvar_value;
+	bool dirty_value;
 };
 
-Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
 #endif

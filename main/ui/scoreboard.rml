@@ -16,11 +16,11 @@
 			height:70%;
 		}
 		#aliens{
-			background:#88000044;
+			background:#FF2B2622;
 			float:left;
 		}
 		#humans{
-			background:#00008844;
+			background:#26ABFF22;
 			float:right;
 		}
 		#infos{
@@ -39,10 +39,11 @@
 		#infos div:nth-child(4n){
 			text-align:right;
 		}
-		div#content
+		datagridbody
 		{
 			overflow-y: auto;
 		}
+
 
 		div#title_bar div#icon
 		{
@@ -52,7 +53,9 @@
 
 		div.container
 		{
+			color:#fff;
 			border-style: solid;
+			font-size:.8em;
 		}
 		h2{
 			width:50%;
@@ -60,40 +63,80 @@
 			text-align:center;
 			font-size:2em;
 		}
+		datagrid img
+		{
+			width: 23px;
+			height: 23px;
+		}
+
+		div.window{
+			padding:0;
+			color:#fff;
+		}
+		datagridrow:nth-child(odd) {
+			background:#00000033;
+		}
+		h2.alien{
+			color:#FF2B26BB;
+		}
+		h2.human{
+			color:#26ABFFBB;
+		}
+
+
+		.dspecs:nth-child(odd) {
+			background:#00000033;
+
+		}
+		.specs{
+			float:left;
+			padding:1em;
+		}
+
+		datasource, datagridcell{
+			text-align:left;
+			display:inline;
+			width:auto;
+			margin:10px;
+			padding:5px;
+
+		}
 
         </style>
     </head>
-    <body onload="buildDS playerList" id="scoreboard">
-    <h2>Aliens</h2><h2>Humans</h2>
+    <body onshow="" id="scoreboard">
+    <div class="window">
+    <h2 class="alien">Aliens</h2><h2 class="human">Humans</h2>
 	<div class="container">
 	<datagrid source="playerList.aliens" id="aliens">
-		<col fields="num" formatter="PlayerName" width="40%">Name</col>
-		<col fields="kills" width="10%">Kills</col>
-		<col fields="deaths" width="15%">Deaths</col>
-		<col fields="ping" width="10%">Ping</col>
+		<col fields="num" formatter="GearOrReady" width="15%"></col>
+		<col fields="num" formatter="PlayerName" width="50%">Name</col>
 		<col fields="score" width="15%">Score</col>
+		<col fields="ping" width="10%">Ping</col>
+		<col fields="time" width="10%">Time</col>
 	</datagrid>
 	</div>
 	<div class="container">
 	<datagrid source="playerList.humans" id="humans">
-		<col fields="num" formatter="PlayerName" width="40%">Name</col>
-		<col fields="kills" width="10%">Kills</col>
-		<col fields="deaths" width="15%">Deaths</col>
-		<col fields="ping" width="10%">Ping</col>
+		<col fields="num" formatter="GearOrReady" width="15%"></col>
+		<col fields="num" formatter="PlayerName" width="50%">Name</col>
 		<col fields="score" width="15%">Score</col>
+		<col fields="ping" width="10%">Ping</col>
+		<col fields="time" width="10%">Time</col>
 	</datagrid>
 	</div>
 	<div class="container">
-	<datagrid source="playerList.spectators">
-		<col fields="num" formatter="PlayerName" width="45%">Name:</col>
-	</datagrid>
+	<div class="specs">
+	<h2>Spectators</h2>
+	<datasource  source="playerList.spectators" fields="num" formatter="PlayerName" />
 	</div>
-	<div>Server: Official NA Unvanquished Server</div>
+
+	</div>
+	<div>Server: <hostname/></div>
 	<div id="infos">
-		<div>Map: ATCSHD</div>
-		<div>GameMode: Grangerhunt</div>
-		<div>Time left: 12:34</div>
-		<div>Next Map: parpax</div>
+		<div>Map: <levelname/></div>
+		<div>Time: <timer/></div>
+    </div>
     </div>
     </body>
 </rml>

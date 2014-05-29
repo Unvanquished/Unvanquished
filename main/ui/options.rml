@@ -30,6 +30,9 @@
 
 				width:2em;
 			}
+			.window panel,div.window{
+				max-height:80%;
+			}
 			div.selectvalue{
 
 				display:inline-block;
@@ -58,129 +61,198 @@
 				icon-decorator: image;
 				icon-image: /ui/assets/select.png;
 			}
+			.nested tabs,
+			.nested panels
+			{
+				float: left;
+				height: 100%;
+				margin: 0px 0px 0px 0px;
+			}
+			.nested tabs
+			{
+				width: 20%;
+				margin-top: auto;
+				margin-bottom: auto;
+			}
+			.nested panels
+			{
+				width: 80%;
+			}
+			.nested panel, .nested tab
+			{
+				background-decorator: none;
+				background-color: #FFFFFF00;
+			}
+			.nested tab
+			{
+				clear: left;
+				float: left;
+				margin: 0px 0px;
+				padding: 0px 0px;
+			}
+			keybind
+			{
+				color:#83fff5;
+				width:40%;
+				display:inline-block;
+				text-align:right;
+				font-size:0.9em;
+			}
 		</style>
 	</head>
-	<body id="options" onload="buildDS resolutions; sortDS resolutions default width">
+	<body id="options" onload="buildDS languages">
 		<tabset class="options window">
-		<tab>Quick Options</tab>
-		<panel>
-			<div class="line"><label>Profile:</label>
-			<select name="profile">
-				<option value="Me">Me</option>
-				<option value="Anonyme" selected="">Anonyme</option>
-				<option value="Granger">Granger</option>
-			</select></div>
-			<div class="line"><label>Name:</label><colorinput type="text" cvar="name" /></div>
-
-			<div class="line"><label>Resolution:</label>
-				<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
-			</div>
-			<div class="line"><label>Resolution:</label><div class="selectvalue" onClick="hide options;exec rocket ui/dialogs/resolution.rml load; exec rocket resolution show"><input class="disabled" type="text" cvar="r_customWidth" disabled/>x<input class="disabled" type="text" cvar="r_customHeight" disabled/><div class="arrow"></div></div>
-
-			</div>
-			<div class="line"><label>Video Quality:</label>
-			<select name="videoquality">
-				<option value="low">Low</option>
-				<option value="medium">Medium</option>
-				<option value="hight" selected="">Hight</option>
-				<option  onClick="show help" value="ultra">Ultra</option>
-			</select></div>
-			<div class="line"><label>Fullscreen</label><input cvar="r_fullscreen" type="checkbox" /></div>
-			<div class="line"><label>Video Brightness:</label><input type="range" min="0" max="1" step="0.01"  /></div>
-			<div class="line"><label>Mouse Sensitivity:</label><input type="range" min="0" max="1" step="0.01"  /></div>
-			<div class="line"><label>Effect Volume:</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
-			<div class="line"><label>Music Volume:</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
-
-			<div class="line"><label>Network Connection:</label>
-			<select name="network">
-				<option value="modem">Modem</option>
-				<option value="isdn">ISDN</option>
-				<option value="dsl" selected="">DSL</option>
-			</select>
-			</div>
-
-		</panel>
 		<tab>Player</tab>
 		<panel>
-			<div class="line"><label>Name: </label><input type="text" cvar="name" /></div>
-			<div class="line"><label>VoIP: </label><input type="checkbox" cvar="cl_voip" /></div>
-			<div class="line"><label>Volume: </label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
+			<div class="line"><label>Language:</label>
+			<dataselect source="languages.default" fields="name" /></div>
+			<div class="line"><label>Name:</label><colorinput type="text" cvar="name" /></div>
+			<div class="line"><label>No Taunt Sounds:</label><input cvar="cg_noTaunt" type="checkbox" /></div>
+			<div class="line"><label>Team Chats Only:</label><input cvar="cg_teamChatsOnly" type="checkbox" /></div>
+			<div class="line"><label>Sticky Spectate:</label><input cvar="cg_stickySpec" type="checkbox" /></div>
+			<div class="line"><label>Tutorial Mode:</label><input cvar="cg_tutorial" type="checkbox" /></div>
+			<div class="line"><label>Disable Warning Dialogs:</label>
+			<select name="videoquality" cvar="cg_disableWarningDialogs">
+				<option value="0">No</option>
+				<option value="1">Print To Console</option>
+				<option value="2">Yes</option>
+			</select></div>
+			<div class="line"><label>Static Death Cam:</label><input cvar="cg_staticDeathCam" type="checkbox" /></div>
+			<div class="line"><label>Sprint Toggles:</label><input cvar="cg_sprintToggle" type="checkbox" /></div>
+			<div class="line"><label>Wallwalk Control Toggles:</label><input cvar="cg_wwToggle" type="checkbox" /></div>
+			<div class="line"><label>Wallwalk Speed:</label>
+			<select name="wwspeed" cvar="cg_wwSmoothTime">
+				<option value="0">Instant</option>
+				<option value="150">Fast</option>
+				<option value="300">Medium</option>
+				<option value="600">Slow</option>
+			</select></div>
+
+			<div class="line"><label>Resolution:</label><div class="selectvalue" onClick="hide options;exec rocket ui/dialogs/resolution.rml load; exec rocket resolution show"><input class="disabled" type="text" cvar="r_customWidth" disabled/>&nbsp;x<input class="disabled" type="text" cvar="r_customHeight" disabled/><div class="arrow"></div></div>
+			</div>
+		</panel>
+		<tab>HUD</tab>
+		<panel>
+			<div class="line"><label>Show clock:</label>
+			<select name="drawclock" cvar="cg_drawClock">
+				<option value="0">No</option>
+				<option value="1">12 Hour</option>
+				<option value="2">24 Hour</option>
+			</select></div>
+			<div class="line"><label>Show crosshair:</label>
+			<select name="drawcrosshair" cvar="cg_drawCrosshair">
+				<option value="0">Never</option>
+				<option value="1">Ranged Weapons Only</option>
+				<option value="2">Always</option>
+			</select></div>
+			<div class="line"><label>Crosshair Size:</label>
+			<select name="wwspeed" cvar="cg_crosshairSize">
+				<option value="0.5">Tiny</option>
+				<option value="0.75">Small Weapons Only</option>
+				<option value="1">Regular</option>
+				<option value="1.5">Huge</option>
+			</select></div>
+			<div class="line"><label>Show Charge Bar:</label><input cvar="cg_drawChargeBar" type="checkbox" /></div>
+			<div class="line"><label>Show Lag-o-meter:</label><input cvar="cg_lagometer" type="checkbox" /></div>
+			<div class="line"><label>Show Team Overlay:</label>
+			<select cvar="cg_drawTeamOverlay">
+				<option value="0">Off</option>
+				<option value="1">All Teammates</option>
+				<option value="2">Support Teammates</option>
+				<option value="3">Nearby Teammates</option>
+			</select></div>
+			<div class="line"><label>Sort Team Overlay:</label>
+			<select cvar="cg_teamOverlaySortMode">
+				<option value="0">None</option>
+				<option value="1">Score</option>
+				<option value="2">Weapon/Class</option>
+			</select></div>
+			<div class="line"><label>Show Gun:</label>
+			<select cvar="cg_drawGun">
+				<option value="0">No</option>
+				<option value="1">Humans Only</option>
+				<option value="2">Yes</option>
+			</select></div>
+			<div class="line"><label>Mirror Gun</label><input cvar="cg_mirrorgun" type="checkbox" /></div>
+			<div class="line"><label>Show Speed:</label>
+			<select cvar="cg_drawspeed">
+				<option value="0">No</option>
+				<option value="1">Text</option>
+				<option value="2">Graph</option>
+				<option value="3">Text + Graph</option>
+				<option value="5">Text No-Z</option>
+				<option value="6">Graph No-Z</option>
+				<option value="7">Text + Graph No-Z</option>
+			</select></div>
+			<div class="line"><label>Show FPS:</label><input cvar="cg_drawFPS" type="checkbox" /></div>
+			<div class="line"><label>Show Timer:</label><input cvar="cg_drawTimer" type="checkbox" /></div>
+			<div class="line"><label>Show Demo State:</label><input cvar="cg_drawDemoState" type="checkbox" /></div>
 		</panel>
 		<tab>Controls</tab>
 		<panel>
-			<div class="line"><label>Bla</label><input type="checkbox" /></div>
-			<div class="line"><label>Bla</label><input type="radio" /></div>
-			<div class="line"><label>Profile</label>
-			<select name="profile">
-				<option value="Me">Me</option>
-				<option value="Anonyme" selected="">Anonyme</option>
-				<option value="Granger">Granger</option>
-			</select></div>
-			<div class="line"><label>Name</label><input type="text" cvar="name" /></div>
-
-			<div class="line"><label>Resolution</label>
-			<select name="resolution">
-				<option value="800x600">800x600</option>
-				<option value="800x600" selected="">800x600</option>
-				<option value="800x600">800x600</option>
-			</select></div>
-
-			<div class="line"><label>Video Quality</label>
-			<select name="videoquality">
-				<option value="low">Low</option>
-				<option value="medium">Medium</option>
-				<option value="hight" selected="">Hight</option>
-				<option value="ultra">Ultra</option>
-			</select></div>
-
-			<div class="line"><label>Video Brightness</label><input type="range" min="0" max="1" step="0.01"  /></div>
-			<div class="line"><label>Mouse Sensitivity</label><input type="range" min="0" max="1" step="0.01"  /></div>
-			<div class="line"><label>Effect Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
-			<div class="line"><label>Music Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
-
-			<div><label>Network Connection</label>
-			<select name="network">
-				<option value="modem">Modem</option>
-				<option value="isdn">ISDN</option>
-				<option value="dsl" selected="">DSL</option>
-			</select>
-			</div>			<div><label>Bla</label><input type="checkbox" /></div>
-			<div><label>Bla</label><input type="radio" /></div>
-			<div><label>Profile</label>
-			<select name="profile">
-				<option value="Me">Me</option>
-				<option value="Anonyme" selected="">Anonyme</option>
-				<option value="Granger">Granger</option>
-			</select></div>
-			<div><label>Name</label><input type="text" cvar="name" /></div>
-
-			<div><label>Resolution</label>
-			<select name="resolution">
-				<option value="800x600">800x600</option>
-				<option value="800x600" selected="">800x600</option>
-				<option value="800x600">800x600</option>
-			</select></div>
-
-			<div><label>Video Quality</label>
-			<select name="videoquality">
-				<option value="low">Low</option>
-				<option value="medium">Medium</option>
-				<option value="hight" selected="">Hight</option>
-				<option value="ultra">Ultra</option>
-			</select></div>
-
-			<div><label>Video Brightness</label><input type="range" min="0" max="1" step="0.01"  /></div>
-			<div><label>Mouse Sensitivity</label><input type="range" min="0" max="1" step="0.01"  /></div>
-			<div><label>Effect Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
-			<div><label>Music Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
-
-			<div><label>Network Connection</label>
-			<select name="network">
-				<option value="modem">Modem</option>
-				<option value="isdn">ISDN</option>
-				<option value="dsl" selected="">DSL</option>
-			</select>
-			</div>
+			<tabset class="nested">
+			<tab>Look</tab>
+			<panel>
+				<div class="line"><label>Look Up:</label><keybind cmd="+lookup" /></div>
+				<div class="line"><label>Look Down:</label><keybind cmd="+lookdown" /></div>
+				<div class="line"><label>Mouse Look:</label><keybind cmd="+mlook" /></div>
+				<div class="line"><label>Centerview:</label><keybind cmd="centerview" /></div>
+				<div class="line"><label>Free Look:</label><input cvar="cl_freelook" type="checkbox" /></div>
+				<div class="line"><label>Mouse Sensitivity:</label><input type="range" min=" 1" max=" 30" step="0.01" cvar="sensitivity"/></div>
+				<div class="line"><label>Invert Mouse:</label><input cvar="ui_mousePitch" type="checkbox" /></div>
+				<div class="line"><label>Smooth Mouse:</label><input cvar="m_filter" type="checkbox" /></div>
+				<div class="line"><label>Auto Wallwalk Pitching:</label><input cvar="cg_wwFollow" type="checkbox" /></div>
+			</panel>
+			<tab>Move</tab>
+			<panel>
+				<div class="line"><label>Run / Walk:</label><keybind cmd="+speed" /></div>
+				<div class="line"><label>Sprint:</label><keybind cmd="+sprint" /></div>
+				<div class="line"><label>Forward:</label><keybind cmd="+forward" /></div>
+				<div class="line"><label>Backpedal:</label><keybind cmd="+back" /></div>
+				<div class="line"><label>Move Left:</label><keybind cmd="+moveleft" /></div>
+				<div class="line"><label>Move Right:</label><keybind cmd="+moveright" /></div>
+				<div class="line"><label>Jump:</label><keybind cmd="+moveup" /></div>
+				<div class="line"><label>Crouch:</label><keybind cmd="+movedown" /></div>
+				<div class="line"><label>Turn Left:</label><keybind cmd="+left" /></div>
+				<div class="line"><label>Turn Right:</label><keybind cmd="+right" /></div>
+				<div class="line"><label>Strafe:</label><keybind cmd="+strafe" /></div>
+			</panel>
+			<tab>Upgrades</tab>
+			<panel>
+				<div class="line"><label>Primary Attack:</label><keybind cmd="+attack" /></div>
+				<div class="line"><label>Secondary Attack:</label><keybind cmd="+attack2" /></div>
+				<div class="line"><label>Previous Upgrade:</label><keybind cmd="weapprev" /></div>
+				<div class="line"><label>Next Upgrade:</label><keybind cmd="weapnext" /></div>
+				<div class="line"><label>Activate Upgrade:</label><keybind cmd="+useitem" /></div>
+				<div class="line"><label>Reload:</label><keybind cmd="-reload" /></div>
+				<div class="line"><label>Use Medkit:</label><keybind cmd="-medkit" /></div>
+				<div class="line"><label>Use Structure/Evolve:</label><keybind cmd="+activate" /></div>
+			</panel>
+			<tab>Chat &amp; Vote</tab>
+			<panel>
+				<div class="line"><label>Gesture:</label><keybind cmd="+taunt" /></div>
+				<div class="line"><label>Rally:</label><keybind cmd="+rally" /></div>
+				<div class="line"><label>Chat:</label><keybind cmd="messagemode" /></div>
+				<div class="line"><label>Team Chat:</label><keybind cmd="messagemode2" /></div>
+				<div class="line"><label>Admin Chat:</label><keybind cmd="messagemode3" /></div>
+				<div class="line"><label>IRC Chat:</label><keybind cmd="messagemode4" /></div>
+				<div class="line"><label>VoIP Chat:</label><keybind cmd="+voiprecord" /></div>
+				<div class="line"><label>Vote Yes:</label><keybind cmd="vote yes" /></div>
+				<div class="line"><label>Vote No:</label><keybind cmd="vote no" /></div>
+				<div class="line"><label>Team Vote Yes:</label><keybind cmd="teamvote yes" /></div>
+				<div class="line"><label>Team Vote No:</label><keybind cmd="teamvote no" /></div>
+				<div class="line"><label>Voice Say Menu:</label><keybind cmd="-vsay" /></div>
+				<div class="line"><label>VoIP Menu:</label><keybind cmd="menu voip" /></div>
+			</panel>
+			<tab>Misc</tab>
+			<panel>
+				<div class="line"><label>Show Scores:</label><keybind cmd="+scores" /></div>
+				<div class="line"><label>Scroll Scores Up:</label><keybind cmd="scoresUp" /></div>
+				<div class="line"><label>Scroll Score Down:</label><keybind cmd="scoresDown" /></div>
+				<div class="line"><label>Deconstruct Structure:</label><keybind cmd='modcase alt \"/deconstruct marked\" /deconstruct' /></div>
+				<div class="line"><label>Screenshot:</label><keybind cmd="modcase shift /screenshotJPEG /screenshotPNG" /></div>
+			</panel>
+			</tabset>
 		</panel>
 		<tab>Graphics</tab>
 		<panel>

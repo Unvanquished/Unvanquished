@@ -202,6 +202,7 @@ static void CG_Rocket_DrawFPS( void )
 
 static void CG_Rocket_DrawCrosshairIndicator( void )
 {
+	rectDef_t    rect;
 	float        x, y, w, h, dim;
 	qhandle_t    indicator;
 	vec4_t       color, drawColor, baseColor;
@@ -217,8 +218,6 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 		return;
 	}
 
-	CG_GetRocketElementColor( color );
-
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 	wi = &cg_weapons[ weapon ];
 	indicator = wi->crossHairIndicator;
@@ -227,6 +226,9 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	{
 		return;
 	}
+
+	CG_GetRocketElementColor( color );
+	CG_GetRocketElementRect( &rect );
 
 	// set base color (friend/foe detection)
 	if ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_ALWAYSON ||
@@ -281,25 +283,26 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
 	w *= cgs.aspectScale;
 
-	//FIXME: this still ignores the width/height of the rect, but at least it's
-	//neater than cg_crosshairX/cg_crosshairY
-	x = ( cgs.glconfig.vidWidth / 2 ) - ( w / 2 );
-	y = ( cgs.glconfig.vidHeight / 2 ) - ( h / 2 );
+	// HACK: This ignores the width/height of the rect (does it?)
+	x = rect.x + ( rect.w / 2 ) - ( w / 2 );
+	y = rect.y + ( rect.h / 2 ) - ( h / 2 );
 
 	// draw
 	trap_R_SetColor( drawColor );
-	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, indicator );
+	CG_DrawPic( x, y, w, h, indicator );
 	trap_R_SetColor( NULL );
 }
 
 static void CG_Rocket_DrawCrosshair( void )
 {
+	rectDef_t    rect;
 	float        w, h;
-	qhandle_t    hShader;
+	qhandle_t    crosshair;
 	float        x, y;
 	weaponInfo_t *wi;
 	weapon_t     weapon;
 	vec4_t       color = { 255, 255, 255, 255 };
+
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
@@ -329,24 +332,24 @@ static void CG_Rocket_DrawCrosshair( void )
 		return;
 	}
 
+	CG_GetRocketElementRect( &rect );
+
 	wi = &cg_weapons[ weapon ];
 
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
 	w *= cgs.aspectScale;
 
-	//FIXME: this still ignores the width/height of the rect, but at least it's
-	//neater than cg_crosshairX/cg_crosshairY
-	x = ( cgs.glconfig.vidWidth / 2 ) - ( w / 2 );
-	y = ( cgs.glconfig.vidHeight / 2 ) - ( h / 2 );
+	// HACK: This ignores the width/height of the rect (does it?)
+	x = rect.x + ( rect.w / 2 ) - ( w / 2 );
+	y = rect.y + ( rect.h / 2 ) - ( h / 2 );
 
-	hShader = wi->crossHair;
+	crosshair = wi->crossHair;
 
-	CG_GetRocketElementColor( color );
-
-	if ( hShader != 0 )
+	if ( crosshair )
 	{
+		CG_GetRocketElementColor( color );
 		trap_R_SetColor( color );
-		trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, hShader );
+		CG_DrawPic( x, y, w, h, crosshair );
 		trap_R_SetColor( NULL );
 	}
 }
@@ -569,12 +572,10 @@ static void CG_Rocket_DrawStaminaValue( void )
 
 static void CG_Rocket_DrawWeaponIcon( void )
 {
-	centity_t     *cent;
 	playerState_t *ps;
 	weapon_t      weapon;
 	const char    *rmlClass = NULL;
 
-	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
 	weapon = BG_GetPlayerWeapon( ps );
 
@@ -813,8 +814,6 @@ static void CG_Rocket_DrawDisconnect( void )
 	float      x, y;
 	int        cmdNum;
 	usercmd_t  cmd;
-	const char *s;
-	vec4_t     color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// draw the phone jack if we are completely past our buffers
 	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
@@ -825,9 +824,6 @@ static void CG_Rocket_DrawDisconnect( void )
 	{
 		return;
 	}
-
-	// also add text in center of screen
-	s = _( "Connection Interrupted" );
 
 	// blink the icon
 	if ( ( cg.time >> 9 ) & 1 )
@@ -1360,6 +1356,7 @@ void CG_Rocket_DrawAlienBarbs( void )
 
 	if ( !numBarbs )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2025,8 +2022,7 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 
 void CG_Rocket_DrawMineRate( void )
 {
-	char s[ MAX_TOKEN_CHARS ];
-	float tx, ty, levelRate, rate;
+	float levelRate, rate;
 	int efficiency;
 
 	// check if builder
@@ -2271,20 +2267,14 @@ static void CG_Rocket_DrawTeamVote( void )
 
 static void CG_Rocket_DrawSpawnQueuePosition( void )
 {
-	float  w;
-	vec4_t color;
 	int    position;
 	const char *s;
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
-
-	color[ 0 ] = 1;
-	color[ 1 ] = 1;
-	color[ 2 ] = 1;
-	color[ 3 ] = 1;
 
 	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
 
@@ -2308,8 +2298,6 @@ static void CG_Rocket_DrawSpawnQueuePosition( void )
 
 static void CG_Rocket_DrawNumSpawns( void )
 {
-	float  w;
-	vec4_t color;
 	int    position, spawns;
 	const char *s;
 
@@ -2317,11 +2305,6 @@ static void CG_Rocket_DrawNumSpawns( void )
 	{
 		return;
 	}
-
-	color[ 0 ] = 1;
-	color[ 1 ] = 1;
-	color[ 2 ] = 1;
-	color[ 3 ] = 1;
 
 	spawns   = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
 	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
@@ -2393,16 +2376,12 @@ static void CG_Rocket_DrawPlayerFuelValue( void )
 	percent = ( int )( 100.0f * ( float )fuel / ( float )JETPACK_FUEL_MAX );
 
 
-	trap_Rocket_SetInnerRML( va( "%f", percent ), 0 );
+	trap_Rocket_SetInnerRML( va( "%d", percent ), 0 );
 }
 
 static void CG_Rocket_DrawWarmup( void )
 {
 	int   sec = 0;
-	int   w;
-	int   h;
-	float size = 0.5f;
-	char  text[ MAX_STRING_CHARS ];
 
 	if ( !cg.warmupTime )
 	{
@@ -2433,48 +2412,24 @@ static void CG_Rocket_DrawProgressValue( void )
 
 static void CG_Rocket_DrawLevelName( void )
 {
-	const char *s;
-	// Ugly hack so its not updated each frame
-	static char oldLevelname[ MAX_STRING_CHARS ];
-
-	s = CG_ConfigString( CS_MESSAGE );
-
-	if ( Q_stricmp( s, oldLevelname ) )
-	{
-		Q_strncpyz( oldLevelname, s, sizeof( oldLevelname ) );
-		trap_Rocket_SetInnerRML( s, RP_QUAKE );
-	}
+	trap_Rocket_SetInnerRML( CG_ConfigString( CS_MESSAGE ), RP_QUAKE );
 }
 
 static void CG_Rocket_DrawMOTD( void )
 {
 	const char *s;
 	char       parsed[ MAX_STRING_CHARS ];
-	static char oldMotd[ MAX_STRING_CHARS ];
 
 	s = CG_ConfigString( CS_MOTD );
-
-	if ( Q_stricmp( s, oldMotd ) )
-	{
-		Q_strncpyz( oldMotd, s, sizeof( oldMotd ) );
-		Q_ParseNewlines( parsed, s, sizeof( parsed ) );
-		trap_Rocket_SetInnerRML( parsed, RP_EMOTICONS );
-	}
+	Q_ParseNewlines( parsed, s, sizeof( parsed ) );
+	trap_Rocket_SetInnerRML( parsed, RP_EMOTICONS );
 }
 
 static void CG_Rocket_DrawHostname( void )
 {
-	char       buffer[ 1024 ];
 	const char *info;
-	static char oldHostname[ MAX_STRING_CHARS ];
-
 	info = CG_ConfigString( CS_SERVERINFO );
-
-	if ( Q_stricmp( info, oldHostname ) )
-	{
-		Q_strncpyz( oldHostname, info, sizeof( oldHostname ) );
-		trap_Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE );
-	}
+	trap_Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE );
 }
 
 static void CG_Rocket_DrawDownloadName( void )
@@ -2497,7 +2452,6 @@ static void CG_Rocket_DrawDownloadTime( void )
 	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
 	float downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 	int xferRate;
-	int n;
 
 	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
 	{
@@ -2560,7 +2514,7 @@ static void CG_Rocket_DrawDownloadSpeed( void )
 	else
 	{
 		xferRate = 0;
-		trap_Rocket_SetInnerRML( va( "0 KB/Sec", xferRateBuf ), RP_QUAKE );
+		trap_Rocket_SetInnerRML( "0 KB/Sec", RP_QUAKE );
 	}
 }
 

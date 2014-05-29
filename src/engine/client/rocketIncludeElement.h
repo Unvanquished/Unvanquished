@@ -31,36 +31,33 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef ROCKET_H
-#define ROCKET_H
-#ifdef DotProduct
-// Ugly hack to fix the DotProduct conflict
-#undef DotProduct
-#endif
-#include <Rocket/Core/Core.h>
 
-extern Rocket::Core::Context *menuContext;
-extern Rocket::Core::Context *hudContext;
+#ifndef ROCKETINCLUDEELEMENT_H
+#define ROCKETINCLUDEELEMENT_H
 
-class RocketEvent_t
+#include "client.h"
+#include "rocket.h"
+
+class RocketIncludeElement : public Rocket::Core::Element
 {
 public:
-	RocketEvent_t( Rocket::Core::Event &event, const Rocket::Core::String &cmds ) : cmd( cmds )
+	RocketIncludeElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ) { }
+	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
-		targetElement = event.GetTargetElement();
-		Parameters = *(event.GetParameters());
+		Element::OnAttributeChange( changed_attributes );
+		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
+		{
+			Rocket::Core::String filename = GetAttribute<Rocket::Core::String>("src", "");
+
+			if ( !filename.Empty() )
+			{
+				std::string buffer;
+				buffer = FS::PakPath::ReadFile(filename.CString());
+				SetInnerRML(buffer.c_str());
+			}
+		}
 	}
-	RocketEvent_t( const Rocket::Core::String &cmds ) : cmd( cmds )
-	{
-	}
-	RocketEvent_t( Rocket::Core::Element *e, const Rocket::Core::String &cmds ) : targetElement( e ), cmd( cmds )
-	{
-	}
-	~RocketEvent_t() { }
-	Rocket::Core::Element *targetElement;
-	Rocket::Core::Dictionary Parameters;
-	Rocket::Core::String cmd;
 };
 
-Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
+
 #endif

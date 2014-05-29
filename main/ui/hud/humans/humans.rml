@@ -231,10 +231,22 @@
 				background-decorator: image;
 				background-image: "/ui/assets/human/scanner";
 			}
-
-		</style>
+			minimap {
+				position: absolute;
+				color: blue;
+				right: 0px;
+				width: 7.5em;
+				height: 7.5em;
+				border-color: blue;
+				border-left-width: 2px;
+				border-bottom-width: 2px;
+			}
+	</style>
 	</head>
 	<body id="human_hud">
+	<if cvar="cg_minimapActive" condition="==" value="1">
+		<minimap />
+	</if>
 	<div id="hudbg">
 		<img id="right" src="/ui/assets/human/rightbg.tga"/>
 		<img id="left" src="/ui/assets/human/leftbg.tga"/>

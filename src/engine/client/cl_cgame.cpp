@@ -2370,10 +2370,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_GetElementTag( (char *)VMA(1), args[ 2 ] );
 			return 0;
 
-		case CG_ROCKET_KEYTOQUAKE:
-// 			return Rocket_ToQuakeKey( args[ 1 ] );
-			return 0;
-
 		case CG_ROCKET_GETELEMENTABSOLUTEOFFSET:
 			Rocket_GetElementAbsoluteOffset( (float*) VMA(1), (float*) VMA(2) );
 			return 0;
@@ -2446,9 +2442,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameSoundSyscalls ++;
 			Audio::EndRegistration();
 			return 0;
-
 		case CG_ROCKET_REGISTERPROPERTY:
 			Rocket_RegisterProperty( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ), args[ 3 ], args[ 4 ], ( const char * ) VMA( 5 ) );
+			return 0;
+
+		case CG_ROCKET_SHOWSCOREBOARD:
+			Rocket_ShowScoreboard( ( const char * ) VMA( 1 ), args[ 2 ] );
+			return 0;
+
+		case CG_ROCKET_SETDATASELECTINDEX:
+			Rocket_SetDataSelectIndex( args[ 1 ] );
 			return 0;
 
 		default:

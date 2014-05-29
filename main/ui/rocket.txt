@@ -14,7 +14,6 @@
 		ui/armourybuy.rml armourybuy // ROCKETMENU_ARMOURYBUY
 		ui/alienevo.rml alienevo     // ROCKETMENU_ALIENEVOLVE
 		ui/chat.rml chat             // ROCKETMENU_CHAT
-		ui/scoreboard.rml scoreboard // ROCKETMENU_SCOREBOARD
 	}
 	misc
 	{

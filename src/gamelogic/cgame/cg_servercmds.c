@@ -73,12 +73,16 @@ static void CG_ParseScores( void )
 
 		cg.scores[ i ].team = cgs.clientinfo[ cg.scores[ i ].client ].team;
 	}
-
 	if ( cg.showScores )
 	{
 		CG_Rocket_BuildPlayerList( NULL );
-	}
 
+		if ( !cg.scoreBoardShowing )
+		{
+			trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
+			cg.scoreBoardShowing = qtrue;
+		}
+	}
 }
 
 /*
@@ -318,6 +322,8 @@ static void CG_ConfigStringModified( void )
 	else if ( num == CS_INTERMISSION )
 	{
 		cg.intermissionStarted = atoi( str );
+		trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
+		cg.showScores = qtrue;
 	}
 	else if ( num >= CS_MODELS && num < CS_MODELS + MAX_MODELS )
 	{
