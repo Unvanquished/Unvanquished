@@ -43,7 +43,7 @@
 		{
 			overflow-y: auto;
 		}
-		
+
 
 		div#title_bar div#icon
 		{
@@ -68,7 +68,7 @@
 			width: 23px;
 			height: 23px;
 		}
-		
+
 		div.window{
 			padding:0;
 			color:#fff;
@@ -82,18 +82,18 @@
 		h2.human{
 			color:#26ABFFBB;
 		}
-		
-		
+
+
 		.dspecs:nth-child(odd) {
 			background:#00000033;
-			
+
 		}
 		.specs{
 			float:left;
 			padding:1em;
 		}
-		
-		.playername{
+
+		datasource, datagridcell{
 			text-align:left;
 			display:inline;
 			width:auto;
@@ -101,7 +101,7 @@
 			padding:5px;
 
 		}
-		
+
         </style>
     </head>
     <body onshow="" id="scoreboard">
@@ -130,7 +130,7 @@
 	<h2>Spectators</h2>
 	<datasource  source="playerList.spectators" fields="num" formatter="PlayerName" />
 	</div>
-	
+
 	</div>
 	<div>Server: <hostname/></div>
 	<div id="infos">
