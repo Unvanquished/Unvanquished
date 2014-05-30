@@ -1868,6 +1868,12 @@ void func_door_model_reset( gentity_t *self )
 	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
+
+	self->s.torsoAnim = self->s.weapon * ( 1000.0f / self->speed ); //framerate
+	if ( self->s.torsoAnim <= 0 )
+	{
+		self->s.torsoAnim = 1;
+	}
 }
 
 void SP_func_door_model( gentity_t *self )
@@ -1971,7 +1977,7 @@ void SP_func_door_model( gentity_t *self )
 		self->s.weapon = 1;
 	}
 
-	self->s.torsoAnim = self->s.weapon * ( 1000.0f / self->config.speed ); //framerate
+	self->s.torsoAnim = 1; // stub value to avoid sigfpe
 
 	trap_LinkEntity( self );
 

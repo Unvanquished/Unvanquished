@@ -5078,9 +5078,9 @@ void G_LayoutSelect( void )
 	char fileName[ MAX_OSPATH ];
 	char layouts[ MAX_CVAR_VALUE_STRING ];
 	char layouts2[ MAX_CVAR_VALUE_STRING ];
-	char *l;
+	char *layoutPtr;
 	char map[ MAX_QPATH ];
-	char *s;
+	char *layout;
 	int  cnt = 0;
 	int  layoutNum;
 
@@ -5090,6 +5090,7 @@ void G_LayoutSelect( void )
 	// one time use cvar
 	trap_Cvar_Set( "g_layouts", "" );
 
+	// pick from list of default layouts if provided
 	if ( !layouts[ 0 ] )
 	{
 		Q_strncpyz( layouts, g_defaultLayouts.string, sizeof( layouts ) );
@@ -5101,78 +5102,56 @@ void G_LayoutSelect( void )
 		G_LayoutList( map, layouts, sizeof( layouts ) );
 	}
 
+	// no layout specified, use the map's builtin layout
 	if ( !layouts[ 0 ] )
 	{
 		return;
 	}
 
 	Q_strncpyz( layouts2, layouts, sizeof( layouts2 ) );
-	l = &layouts2[ 0 ];
+	layoutPtr = &layouts2[ 0 ];
 	layouts[ 0 ] = '\0';
 
-	while ( 1 )
+	while ( *(layout = COM_ParseExt( &layoutPtr, qfalse )) )
 	{
-		s = COM_ParseExt( &l, qfalse );
-
-		if ( !*s )
+		if ( !Q_stricmp( layout, S_BUILTIN_LAYOUT ) )
 		{
-			break;
-		}
-
-		if ( !Q_stricmp( s, S_BUILTIN_LAYOUT ) )
-		{
-			Q_strcat( layouts, sizeof( layouts ), s );
+			Q_strcat( layouts, sizeof( layouts ), layout );
 			Q_strcat( layouts, sizeof( layouts ), " " );
 			cnt++;
 			continue;
 		}
 
-		Com_sprintf( fileName, sizeof( fileName ), "layouts/%s/%s.dat", map, s );
+		Com_sprintf( fileName, sizeof( fileName ), "layouts/%s/%s.dat", map, layout );
 
 		if ( trap_FS_FOpenFile( fileName, NULL, FS_READ ) > 0 )
 		{
-			Q_strcat( layouts, sizeof( layouts ), s );
+			Q_strcat( layouts, sizeof( layouts ), layout );
 			Q_strcat( layouts, sizeof( layouts ), " " );
 			cnt++;
 		}
 		else
 		{
-			G_Printf( S_WARNING "layout \"%s\" does not exist\n", s );
+			G_Printf( S_WARNING "Layout \"%s\" does not exist.\n", layout );
 		}
 	}
 
 	if ( !cnt )
 	{
-		G_Printf( S_ERROR "none of the specified layouts could be "
-		          "found, using map default\n" );
+		G_Printf( S_ERROR "None of the specified layouts could be found, using map default.\n" );
 		return;
 	}
 
-	layoutNum = rand() / ( RAND_MAX / cnt + 1 ) + 1;
-	cnt = 0;
-
+	layoutNum = ( rand() % cnt ) + 1;
 	Q_strncpyz( layouts2, layouts, sizeof( layouts2 ) );
-	l = &layouts2[ 0 ];
+	layoutPtr = &layouts2[ 0 ];
 
-	while ( 1 )
+	for ( cnt = 0; *(layout = COM_ParseExt( &layoutPtr, qfalse )) && cnt < layoutNum; cnt++ )
 	{
-		s = COM_ParseExt( &l, qfalse );
-
-		if ( !*s )
-		{
-			break;
-		}
-
-		Q_strncpyz( level.layout, s, sizeof( level.layout ) );
-		cnt++;
-
-		if ( cnt >= layoutNum )
-		{
-			break;
-		}
+		Q_strncpyz( level.layout, layout, sizeof( level.layout ) );
 	}
 
-	G_Printf( "using layout \"%s\" from list (%s)\n", level.layout, layouts );
+	G_Printf( "Using layout \"%s\" from list (%s).\n", level.layout, layouts );
 	trap_Cvar_Set( "layout", level.layout );
 }
 

@@ -28,8 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/LineEditData.h"
-#include "../../common/String.h"
 #include "ConsoleHistory.h"
 
 #ifndef FRAMEWORK_CONSOLE_FIELD_H_

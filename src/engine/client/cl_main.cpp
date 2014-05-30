@@ -36,7 +36,6 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include "../qcommon/q_unicode.h"
-#include <limits.h>
 
 #include "../framework/CommandSystem.h"
 #include "../framework/CvarSystem.h"
@@ -49,6 +48,10 @@ cvar_t *cl_wavefilerecord;
 
 #include "libmumblelink.h"
 #include "../qcommon/crypto.h"
+
+#ifndef _WIN32
+#include <sys/stat.h>
+#endif
 
 cvar_t *cl_useMumble;
 cvar_t *cl_mumbleScale;
@@ -667,20 +670,6 @@ void CL_CaptureVoip( void )
 				Com_DPrintf( "VoIP: Send %d frames, %d bytes, %f power\n",
 				             speexFrames, wpos, clc.voipPower );
 
-#if 0
-				static FILE *encio = NULL;
-
-				if ( encio == NULL ) { encio = fopen( "voip-outgoing-encoded.bin", "wb" ); }
-
-				if ( encio != NULL ) { fwrite( clc.voipOutgoingData, wpos, 1, encio ); fflush( encio ); }
-
-				static FILE *decio = NULL;
-
-				if ( decio == NULL ) { decio = fopen( "voip-outgoing-decoded.bin", "wb" ); }
-
-				if ( decio != NULL ) { fwrite( sampbuffer, speexFrames * clc.speexFrameSize * 2, 1, decio ); fflush( decio ); }
-
-#endif
 			}
 		}
 	}
