@@ -13,18 +13,24 @@
 
 		#aliens,#humans{
 			width:50%;
-			height:70%;
+			height:65%;
 		}
 		#aliens{
-			background:#FF2B2622;
+			background:#FF2B2610;
 			float:left;
+			border-right:1px;
+			border-color:#00000044;
+			margin-right:-1px;
 		}
 		#humans{
-			background:#26ABFF22;
+			background:#26ABFF10;
 			float:right;
 		}
 		#infos{
 			display:block;
+			width:90%;
+			margin:auto;
+			padding:1em 0;
 		}
 
 		#infos div{
@@ -35,8 +41,9 @@
 
 		#infos div:nth-child(1n){
 			text-align:left;
+			width:50%;
 		}
-		#infos div:nth-child(4n){
+		#infos div:nth-child(3n){
 			text-align:right;
 		}
 		datagridbody
@@ -78,30 +85,50 @@
 		}
 		h2.alien{
 			color:#FF2B26BB;
+			background:#FF2B2611;
 		}
 		h2.human{
 			color:#26ABFFBB;
+			background:#26ABFF11;
 		}
-
-
-		.dspecs:nth-child(odd) {
-			background:#00000033;
-
+		
+		#spec{
+			position:relative;
+			display:block;
 		}
-		.specs{
+		
+		h2.spec{
+			font-size:1.2em;
+			width:8em;
+			text-align:right;
+			background:#FFB70033;
+			color:#FFB700;
+			display:block;
 			float:left;
-			padding:1em;
+			margin-top:1.5em;
 		}
-
-		datasource, datagridcell{
+		div.playername{
 			text-align:left;
-			display:inline;
-			width:auto;
-			margin:10px;
-			padding:5px;
-
+			margin-left:.8em;
+			padding:.2em;
+			float:left;
+			width:20%;
+		}
+		
+		div.spec{
+			display:block;
+			margin-left:10em;
+			padding:.5em 0;
+			background:#00000033;
 		}
 
+		
+		div.clear{
+			clear:both;
+			height:.5em;
+			width:5px;
+			display:block;
+		}
         </style>
     </head>
     <body onshow="" id="scoreboard">
@@ -125,18 +152,23 @@
 		<col fields="time" width="10%">Time</col>
 	</datagrid>
 	</div>
-	<div class="container">
-	<div class="specs">
-	<h2>Spectators</h2>
-	<datasource  source="playerList.spectators" fields="num" formatter="PlayerName" />
-	</div>
+	<div class="clear"></div>
+	<div class="container" id="spec">
+		<h2 class="spec">Spectators:</h2>
+		<div class="spec">
+			<datasource  source="playerList.spectators" fields="num" formatter="PlayerName" />
+		</div>
 
 	</div>
-	<div>Server: <hostname/></div>
-	<div id="infos">
+<div id="infos">
+
+
+    	<div>Server: <hostname/></div>
 		<div>Map: <levelname/></div>
 		<div>Time: <timer/></div>
+		    </div>
+    
     </div>
-    </div>
+    	
     </body>
 </rml>
