@@ -274,8 +274,8 @@ extern float REPEATER_BASESIZE;
 #define TURRET_ATTACK_PERIOD  125
 #define TURRET_RANGE          400
 #define TURRET_SPREAD         200
-#define TURRET_ZONES          4   // range is divided into this amount of zones (disks) with equal width
-#define TURRET_ZONE_DAMAGE    { 5, 4, 3, 3 } // damage for each of the TURRET_ZONES zones
+#define TURRET_ZONES          3   // range is divided into this amount of zones (disks) with equal width
+#define TURRET_ZONE_DAMAGE    { 4, 3, 2 } // damage for each of the TURRET_ZONES zones
 #define TURRET_PITCH_CAP      30  // in degrees
 #define TURRET_PITCH_SPEED    160 // in degrees per second
 #define TURRET_YAW_SPEED      120 // in degrees per second

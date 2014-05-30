@@ -3183,7 +3183,7 @@ static void HTurret_Shoot( gentity_t *self )
 	int       zone;
 
 	// if turret doesn't have the fast loader upgrade, pause after three shots
-	if ( !self->turretHasFastLoader && self->turretSuccessiveShots >= 3 )
+	/*if ( !self->turretHasFastLoader && self->turretSuccessiveShots >= 3 )
 	{
 		self->turretSuccessiveShots = 0;
 
@@ -3191,7 +3191,7 @@ static void HTurret_Shoot( gentity_t *self )
 		self->s.eFlags &= ~EF_FIRING;
 
 		return;
-	}
+	}*/
 
 	self->s.eFlags |= EF_FIRING;
 
