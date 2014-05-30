@@ -683,10 +683,25 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 		}
 
 		//ignore buildings if we cant attack them
-		if ( target->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer ||
-		                                          self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
+		if ( target->s.eType == ET_BUILDABLE )
 		{
-			continue;
+			if ( !g_bot_attackStruct.integer )
+			{
+				continue;
+			}
+
+			if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 )
+			{
+				switch ( target->s.modelindex )
+				{
+					case BA_H_MGTURRET:
+					case BA_H_TESLAGEN:
+						break;
+
+					default:
+						continue;
+				}
+			}
 		}
 
 		//ignore neutrals
