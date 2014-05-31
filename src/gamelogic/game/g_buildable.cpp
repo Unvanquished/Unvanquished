@@ -3281,12 +3281,15 @@ void HTurret_Think( gentity_t *self )
 		HTurret_ResetDirection( self );
 	}
 
-	// move head according to target direction
-	HTurret_MoveHeadToTarget( self );
-
-	// shoot if possible
+	// shoot if target in reach
 	if ( HTurret_TargetInReach( self ) )
 	{
+		// if the target's origin is visible, aim for it first
+		if ( G_LineOfSight( self->s.pos.trBase, self->target->s.origin, self ) )
+		{
+			HTurret_MoveHeadToTarget( self );
+		}
+
 		if ( self->turretNextShot < level.time )
 		{
 			HTurret_Shoot( self );
@@ -3294,6 +3297,9 @@ void HTurret_Think( gentity_t *self )
 	}
 	else
 	{
+		// move head towards target
+		HTurret_MoveHeadToTarget( self );
+
 		self->turretSuccessiveShots = 0;
 	}
 }
