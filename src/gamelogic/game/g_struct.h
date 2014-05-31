@@ -693,8 +693,6 @@ struct level_locals_s
 
 	int      warmupModificationCount; // for detecting if g_warmup is changed
 
-	int  extend_vote_count;
-
 	// spawn variables
 	qboolean spawning; // the G_Spawn*() functions are valid
 	int      numSpawnVars;
