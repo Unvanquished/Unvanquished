@@ -266,7 +266,8 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 
 qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
-	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT] ) >= 0 );
+	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass,
+	                                  self->client->ps.persistant[PERS_CREDIT] ) >= 0 );
 }
 
 qboolean WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
