@@ -1119,7 +1119,7 @@ static void GLimp_InitExtensions( void )
 	{
 		glConfig.textureCompression = TC_S3TC;
 	}
-	REQUIRE_EXTENSION(EXT_texture3D);
+	//REQUIRE_EXTENSION(EXT_texture3D);
 
 	// Texture - others
 	glConfig2.textureNPOTAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_non_power_of_two, r_ext_texture_non_power_of_two);
@@ -1133,7 +1133,7 @@ static void GLimp_InitExtensions( void )
 	}
 
 	// VAO and VBO
-	REQUIRE_EXTENSION( ARB_vertex_array_object );
+	//REQUIRE_EXTENSION( ARB_vertex_array_object );
 	REQUIRE_EXTENSION( ARB_vertex_buffer_object );
 
 	// FBO
