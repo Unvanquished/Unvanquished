@@ -441,12 +441,6 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 	fromCost = BG_Class( from )->cost;
 	toCost = BG_Class( to )->cost;
 
-	// don't allow devolving
-	if ( toCost <= fromCost )
-	{
-		return -1;
-	}
-
 	// classes w/o a cost are for spawning only
 	if ( toCost == 0 )
 	{
@@ -457,6 +451,12 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 			return 0;
 		}
 
+		return -1;
+	}
+
+	// don't allow devolving
+	if ( toCost <= fromCost )
+	{
 		return -1;
 	}
 
