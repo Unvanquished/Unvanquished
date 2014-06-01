@@ -1,6 +1,7 @@
 unvanquished (0.28.0-1) unstable; urgency=low
 
   * Release of alpha 28.
+  * Ubuntu have fixed their broken libsdl2-dev; drop the workaround.
 
  -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 01 Jun 2014 14:38:35 +0100
 
