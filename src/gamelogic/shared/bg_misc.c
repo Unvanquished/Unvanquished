@@ -442,7 +442,7 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 	toCost = BG_Class( to )->cost;
 
 	// don't allow devolving
-	if ( toCost < fromCost )
+	if ( toCost <= fromCost )
 	{
 		return -1;
 	}
@@ -460,8 +460,7 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 		return -1;
 	}
 
-	// evolving between classes of euqal cost costs one evo
-	evolveCost = MAX( toCost - fromCost, CREDITS_PER_EVO );
+	evolveCost = toCost - fromCost;
 
 	if ( credits < evolveCost )
 	{
