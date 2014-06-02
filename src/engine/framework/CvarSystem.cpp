@@ -30,15 +30,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CvarSystem.h"
 #include "CommandSystem.h"
-#include "../../common/String.h"
-#include "../../common/Log.h"
-#include "../../common/Command.h"
 
-#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../qcommon/cvar.h"
-
-#include <unordered_map>
 
 //TODO: thread safety (not possible with the C API that doesn't care at all about this)
 
@@ -70,7 +64,7 @@ namespace Cvar {
         }
 
         if (cvar.flags & CVAR_LATCH and cvar.ccvar.latchedString) {
-            cvar.description = Str::Format("\"%s^7\", latched value \"%s^7\"", cvar.ccvar.string, cvar.ccvar.latchedString);
+            cvar.description = Str::Format("\"%s^7\" - latched value \"%s^7\"", cvar.ccvar.string, cvar.ccvar.latchedString);
         } else {
             cvar.description = Str::Format("\"%s^7\"", cvar.value);
         }
@@ -187,7 +181,7 @@ namespace Cvar {
                 cvarRecord_t* var = cvars[name];
 
                 if (args.Argc() < 2) {
-                    Print(_("\"%s\" - %s^7 default: \"%s^7\""), name.c_str(), var->description.c_str(), var->resetValue.c_str());
+                    Print(_("\"%s\" - %s^7 - default: \"%s^7\""), name.c_str(), var->description.c_str(), var->resetValue.c_str());
                 } else {
                     //TODO forward the print part of the environment
                     SetValue(name, args.Argv(1));
@@ -196,6 +190,12 @@ namespace Cvar {
             }
     };
     static CvarCommand cvarCommand;
+
+    void ChangeCvarDescription(Str::StringRef cvarName, cvarRecord_t* cvar, Str::StringRef description) {
+        std::string realDescription = Str::Format("\"%s\" - %s", cvar->value, description);
+        Cmd::ChangeDescription(cvarName, "cvar - " + realDescription);
+        cvar->description = std::move(realDescription);
+    }
 
     void InternalSetValue(const std::string& cvarName, std::string value, int flags, bool rom, bool warnRom) {
         CvarMap& cvars = GetCvarMap();
@@ -247,8 +247,7 @@ namespace Cvar {
                 OnValueChangedResult result = cvar->proxy->OnValueChanged(cvar->value);
 
                 if (result.success) {
-                    Cmd::ChangeDescription(cvarName, result.description);
-                    cvar->description = std::move(result.description);
+                    ChangeCvarDescription(cvarName, cvar, result.description);
                 } else {
                     //The proxy could not parse the value, rollback
                     Com_Printf("Value '%s' is not valid for cvar %s: %s\n",
@@ -298,7 +297,7 @@ namespace Cvar {
             cvar = new cvarRecord_t(std::move(temp));
             cvars[name] = cvar;
 
-            Cmd::AddCommand(name, cvarCommand, "cvar - " + description);
+            Cmd::AddCommand(name, cvarCommand, "cvar - \"" + defaultValue + "\" - " + description);
 
         } else {
             cvar = it->second;
@@ -310,6 +309,7 @@ namespace Cvar {
             //Register the cvar with the previous user_created value
             cvar->flags &= ~CVAR_USER_CREATED;
             cvar->flags |= flags;
+            cvar->proxy = proxy;
 
             cvar->resetValue = std::move(defaultValue);
             cvar->description = "";
@@ -323,13 +323,11 @@ namespace Cvar {
             if (proxy) { //TODO replace me with an assert once we do not need to support the C API
                 OnValueChangedResult result = proxy->OnValueChanged(cvar->value);
                 if (result.success) {
-                    Cmd::ChangeDescription(name, result.description);
-                    cvar->description = std::move(result.description);
+                    ChangeCvarDescription(name, cvar, result.description);
                 } else {
                     OnValueChangedResult defaultValueResult = proxy->OnValueChanged(defaultValue);
                     if (defaultValueResult.success) {
-                        Cmd::ChangeDescription(name, result.description);
-                        cvar->description = std::move(result.description);
+                        ChangeCvarDescription(name, cvar, result.description);
                     } else {
                         Com_Printf(_("Default value '%s' is not correct for cvar '%s': %s\n"),
                                 defaultValue.c_str(), name.c_str(), defaultValueResult.description.c_str());
@@ -425,8 +423,7 @@ namespace Cvar {
                 if (cvar->proxy) {
                     OnValueChangedResult result = cvar->proxy->OnValueChanged(cvar->resetValue);
                     if(result.success) {
-                        Cmd::ChangeDescription(entry.first, result.description);
-                        cvar->description = std::move(result.description);
+                        ChangeCvarDescription(entry.first, cvar, result.description);
                     } else {
                         Com_Printf(_("Default value '%s' is not correct for cvar '%s': %s\n"),
                                 cvar->resetValue.c_str(), entry.first.c_str(), result.description.c_str());
@@ -616,7 +613,7 @@ namespace Cvar {
 
                 //Find all the matching cvars
                 for (auto& entry : cvars) {
-			if (Com_Filter(match.c_str(), entry.first.c_str(), qfalse)) {
+                    if (Com_Filter(match.c_str(), entry.first.c_str(), qfalse)) {
                         matchesNames.push_back(entry.first);
 
                         matches.push_back(entry.second);

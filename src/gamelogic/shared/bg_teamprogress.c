@@ -95,7 +95,7 @@ static qboolean Disabled( unlockable_t *unlockable )
 	Com_Error( ERR_FATAL, "Disabled: Unlockable has unknown type" );
 	return qfalse;
 }
-#endif //BUILD_CGAME
+#endif // BUILD_CGAME
 
 #ifdef BUILD_CGAME
 static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unlocked )

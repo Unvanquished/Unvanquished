@@ -28,24 +28,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "Cvar.h"
-#include "../engine/framework/CvarSystem.h"
+#include "Common.h"
 
-#include "../engine/qcommon/q_shared.h"
-#include "../engine/qcommon/qcommon.h"
-#include "./String.h"
+// FIXME: Code in common shouldn't depend on framework
+#include "../engine/framework/CvarSystem.h"
 
 namespace Cvar {
 
-    CvarProxy::CvarProxy(std::string name, std::string description, int flags, std::string defaultValue)
-    : name(std::move(name)), description(std::move(description)), flags(flags), defaultValue(std::move(defaultValue)) {
+    CvarProxy::CvarProxy(std::string name, int flags, std::string defaultValue)
+    : name(std::move(name)), flags(flags), defaultValue(std::move(defaultValue)) {
     }
 
     void CvarProxy::SetValue(std::string value) {
         ::Cvar::SetValue(name, std::move(value));
     }
 
-    void CvarProxy::Register() {
+    void CvarProxy::Register(std::string description) {
         ::Cvar::Register(this, name, std::move(description), flags, std::move(defaultValue));
     }
 

@@ -28,14 +28,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "CommandSystem.h"
-
-#include "../../common/Log.h"
-#include "../../common/String.h"
-
-#include <unordered_map>
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
+
+#include "CommandSystem.h"
 
 //TODO: use case-insensitive comparisons for commands (store the lower case version?)
 namespace Cmd {
@@ -359,8 +355,8 @@ namespace Cmd {
     static ListCmdsCmd listSystemCmdsRegistration("listSystemCmds", BASE | SYSTEM, "lists all the system commands", SYSTEM);
     static ListCmdsCmd listRendererCmdsRegistration("listRendererCmds", BASE | RENDERER, "lists all the renderer commands", RENDERER);
     static ListCmdsCmd listAudioCmdsRegistration("listAudioCmds", BASE | AUDIO, "lists all the audio commands", AUDIO);
-    static ListCmdsCmd listCGameCmdsRegistration("listCGameCmds", BASE | CGAME, "lists all the client-side game commands", CGAME);
-    static ListCmdsCmd listGameCmdsRegistration("listGameCmds", BASE | GAME, "lists all the server-side game commands", GAME);
-    static ListCmdsCmd listUICmdsRegistration("listUICmds", BASE | UI, "lists all the UI commands", UI);
+    static ListCmdsCmd listCGameCmdsRegistration("listCGameCmds", BASE | CGAME_VM, "lists all the client-side game commands", CGAME_VM);
+    static ListCmdsCmd listGameCmdsRegistration("listGameCmds", BASE | GAME_VM, "lists all the server-side game commands", CGAME_VM);
+    static ListCmdsCmd listUICmdsRegistration("listUICmds", BASE | UI_VM, "lists all the UI commands", CGAME_VM);
     static ListCmdsCmd listOldStyleCmdsRegistration("listOldStyleCmds", BASE, "lists all the commands registered through the C interface", PROXY_FOR_OLD);
 }

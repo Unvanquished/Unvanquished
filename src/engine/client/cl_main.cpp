@@ -36,7 +36,6 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include "../qcommon/q_unicode.h"
-#include <limits.h>
 
 #include "../framework/CommandSystem.h"
 #include "../framework/CvarSystem.h"
@@ -49,6 +48,10 @@ cvar_t *cl_wavefilerecord;
 
 #include "libmumblelink.h"
 #include "../qcommon/crypto.h"
+
+#ifndef _WIN32
+#include <sys/stat.h>
+#endif
 
 cvar_t *cl_useMumble;
 cvar_t *cl_mumbleScale;
@@ -667,20 +670,6 @@ void CL_CaptureVoip( void )
 				Com_DPrintf( "VoIP: Send %d frames, %d bytes, %f power\n",
 				             speexFrames, wpos, clc.voipPower );
 
-#if 0
-				static FILE *encio = NULL;
-
-				if ( encio == NULL ) { encio = fopen( "voip-outgoing-encoded.bin", "wb" ); }
-
-				if ( encio != NULL ) { fwrite( clc.voipOutgoingData, wpos, 1, encio ); fflush( encio ); }
-
-				static FILE *decio = NULL;
-
-				if ( decio == NULL ) { decio = fopen( "voip-outgoing-decoded.bin", "wb" ); }
-
-				if ( decio != NULL ) { fwrite( sampbuffer, speexFrames * clc.speexFrameSize * 2, 1, decio ); fflush( decio ); }
-
-#endif
 			}
 		}
 	}
@@ -3771,169 +3760,6 @@ void CL_Frame( int msec )
 	cls.framecount++;
 }
 
-//============================================================================
-// Ridah, startup-caching system
-typedef struct
-{
-	char name[ MAX_QPATH ];
-	int  hits;
-	int  lastSetIndex;
-} cacheItem_t;
-typedef enum
-{
-  CACHE_SOUNDS,
-  CACHE_MODELS,
-  CACHE_IMAGES,
-
-  CACHE_NUMGROUPS
-} cacheGroup_t;
-static cacheItem_t cacheGroups[ CACHE_NUMGROUPS ] =
-{
-	{ { 's', 'o', 'u', 'n', 'd', 0 }, CACHE_SOUNDS },
-	{ { 'm', 'o', 'd', 'e', 'l', 0 }, CACHE_MODELS },
-	{ { 'i', 'm', 'a', 'g', 'e', 0 }, CACHE_IMAGES },
-};
-
-#define MAX_CACHE_ITEMS 4096
-#define CACHE_HIT_RATIO 0.75 // if hit on this percentage of maps, it'll get cached
-
-static int         cacheIndex;
-static cacheItem_t cacheItems[ CACHE_NUMGROUPS ][ MAX_CACHE_ITEMS ];
-
-static void CL_Cache_StartGather_f( void )
-{
-	cacheIndex = 0;
-	memset( cacheItems, 0, sizeof( cacheItems ) );
-
-	Cvar_Set( "cl_cacheGathering", "1" );
-}
-
-static void CL_Cache_UsedFile_f( void )
-{
-	char        groupStr[ MAX_QPATH ];
-	char        itemStr[ MAX_QPATH ];
-	int         i, group, len;
-	cacheItem_t *item;
-
-	if ( Cmd_Argc() < 2 )
-	{
-		Com_Error( ERR_DROP, "usedfile without enough parameters" );
-	}
-
-	Q_strncpyz( groupStr, Cmd_Argv( 1 ), MAX_QPATH );
-	Q_strncpyz( itemStr, Cmd_Argv( 2 ), MAX_QPATH );
-
-	len = sizeof( itemStr ) - strlen( itemStr );
-
-	for ( i = 3; i < Cmd_Argc() && len > 0; i++ )
-	{
-		strncat( itemStr, " ", len-- );
-		strncat( itemStr, Cmd_Argv( i ), len );
-		len -= strlen( Cmd_Argv( i ) );
-	}
-
-	Q_strlwr( itemStr );
-
-	// find the cache group
-	for ( i = 0; i < CACHE_NUMGROUPS; i++ )
-	{
-		if ( !Q_strncmp( groupStr, cacheGroups[ i ].name, MAX_QPATH ) )
-		{
-			break;
-		}
-	}
-
-	if ( i == CACHE_NUMGROUPS )
-	{
-		Com_Error( ERR_DROP, "usedfile without a valid cache group" );
-	}
-
-	// see if it's already there
-	group = i;
-
-	for ( i = 0, item = cacheItems[ group ]; i < MAX_CACHE_ITEMS; i++, item++ )
-	{
-		if ( !item->name[ 0 ] )
-		{
-			// didn't find it, so add it here
-			Q_strncpyz( item->name, itemStr, MAX_QPATH );
-
-			if ( cacheIndex > 9999 )
-			{
-				// hack, but yeh
-				item->hits = cacheIndex;
-			}
-			else
-			{
-				item->hits++;
-			}
-
-			item->lastSetIndex = cacheIndex;
-			break;
-		}
-
-		if ( item->name[ 0 ] == itemStr[ 0 ] && !Q_strncmp( item->name, itemStr, MAX_QPATH ) )
-		{
-			if ( item->lastSetIndex != cacheIndex )
-			{
-				item->hits++;
-				item->lastSetIndex = cacheIndex;
-			}
-
-			break;
-		}
-	}
-}
-
-static void CL_Cache_SetIndex_f( void )
-{
-	if ( Cmd_Argc() < 2 )
-	{
-		Com_Error( ERR_DROP, "setindex needs an index" );
-	}
-
-	cacheIndex = atoi( Cmd_Argv( 1 ) );
-}
-
-static void CL_Cache_MapChange_f( void )
-{
-	cacheIndex++;
-}
-
-static void CL_Cache_EndGather_f( void )
-{
-	// save the frequently used files to the cache list file
-	int  i, j, handle, cachePass;
-	char filename[ MAX_QPATH ];
-
-	cachePass = ( int ) floor( ( float ) cacheIndex * CACHE_HIT_RATIO );
-
-	for ( i = 0; i < CACHE_NUMGROUPS; i++ )
-	{
-		Q_strncpyz( filename, cacheGroups[ i ].name, MAX_QPATH );
-		Q_strcat( filename, MAX_QPATH, ".cache" );
-
-		handle = FS_FOpenFileWrite( filename );
-
-		for ( j = 0; j < MAX_CACHE_ITEMS; j++ )
-		{
-			// if it's a valid filename, and it's been hit enough times, cache it
-			if ( cacheItems[ i ][ j ].hits >= cachePass && strstr( cacheItems[ i ][ j ].name, "/" ) )
-			{
-				FS_Write( cacheItems[ i ][ j ].name, strlen( cacheItems[ i ][ j ].name ), handle );
-				FS_Write( "\n", 1, handle );
-			}
-		}
-
-		FS_FCloseFile( handle );
-	}
-
-	Cvar_Set( "cl_cacheGathering", "0" );
-}
-
-// done.
-//============================================================================
-
 /*
 ================
 CL_SetRecommended_f
@@ -4401,13 +4227,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "irc_quit", CL_IRCInitiateShutdown );
 	Cmd_AddCommand( "irc_say", CL_IRCSay );
 
-	// Ridah, startup-caching system
-	Cmd_AddCommand( "cache_startgather", CL_Cache_StartGather_f );
-	Cmd_AddCommand( "cache_usedfile", CL_Cache_UsedFile_f );
-	Cmd_AddCommand( "cache_setindex", CL_Cache_SetIndex_f );
-	Cmd_AddCommand( "cache_mapchange", CL_Cache_MapChange_f );
-	Cmd_AddCommand( "cache_endgather", CL_Cache_EndGather_f );
-
 	Cmd_AddCommand( "updatehunkusage", CL_UpdateLevelHunkUsage );
 	Cmd_AddCommand( "updatescreen", SCR_UpdateScreen );
 	// done.
@@ -4498,13 +4317,6 @@ void CL_Shutdown( void )
 	Cmd_RemoveCommand( "serverstatus" );
 	Cmd_RemoveCommand( "showip" );
 	Cmd_RemoveCommand( "model" );
-
-	// Ridah, startup-caching system
-	Cmd_RemoveCommand( "cache_startgather" );
-	Cmd_RemoveCommand( "cache_usedfile" );
-	Cmd_RemoveCommand( "cache_setindex" );
-	Cmd_RemoveCommand( "cache_mapchange" );
-	Cmd_RemoveCommand( "cache_endgather" );
 
 	Cmd_RemoveCommand( "updatehunkusage" );
 	Cmd_RemoveCommand( "wav_record" );

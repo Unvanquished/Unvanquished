@@ -311,14 +311,11 @@ Trace a bounding box against entities, but not the world
 Also check there is a line of sight between the start and end point
 ================
 */
-static void G_WideTrace( trace_t *tr, gentity_t *ent, float range,
-                         float width, float height, gentity_t **target )
+static void G_WideTrace( trace_t *tr, gentity_t *ent, const float range,
+                         const float width, const float height, gentity_t **target )
 {
-	vec3_t mins, maxs;
-	vec3_t end;
-
-	VectorSet( mins, -width, -width, -height );
-	VectorSet( maxs, width, width, height );
+	vec3_t mins, maxs, end;
+	float  halfDiagonal;
 
 	*target = NULL;
 
@@ -327,11 +324,15 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, float range,
 		return;
 	}
 
-	G_UnlaggedOn( ent, muzzle, range + width );
+	// Calculate box to use for trace
+	VectorSet( maxs, width, width, height );
+	VectorNegate( maxs, mins );
+	halfDiagonal = VectorLength( maxs );
 
+	G_UnlaggedOn( ent, muzzle, range + halfDiagonal );
+
+	// Trace box against entities
 	VectorMA( muzzle, range, forward, end );
-
-	// Trace against entities
 	trap_Trace( tr, muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY );
 
 	if ( tr->entityNum != ENTITYNUM_NONE )
@@ -339,14 +340,14 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, float range,
 		*target = &g_entities[ tr->entityNum ];
 	}
 
-	// Set range to the trace length plus the width, so that the end of the
-	// LOS trace is close to the exterior of the target's bounding box
-	range = Distance( muzzle, tr->endpos ) + width;
-	VectorMA( muzzle, range, forward, end );
-
-	// Trace for line of sight against the world
+	// Line trace against the world, so we never hit through obstacles.
+	// The range is reduced according to the former trace so we don't hit something behind the
+	// current target.
+	VectorMA( muzzle, Distance( muzzle, tr->endpos ) + halfDiagonal, forward, end );
 	trap_Trace( tr, muzzle, NULL, NULL, end, ent->s.number, CONTENTS_SOLID );
 
+	// In case we hit a different target, which can happen if two potential targets are close,
+	// switch to it, so we will end up with the target we were looking at.
 	if ( tr->entityNum != ENTITYNUM_NONE )
 	{
 		*target = &g_entities[ tr->entityNum ];
@@ -1253,56 +1254,35 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 
-	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH,
-	             LEVEL0_BITE_WIDTH, &traceEnt );
+	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
-	if ( traceEnt == NULL )
+	if ( !traceEnt || !traceEnt->takedamage || traceEnt->health <= 0 ||
+	     G_OnSameTeam( self, traceEnt ) )
 	{
 		return qfalse;
 	}
 
-	if ( !traceEnt->takedamage )
+	// only allow bites to work against turrets or buildables in construction
+	if ( traceEnt->s.eType == ET_BUILDABLE && traceEnt->spawned )
 	{
-		return qfalse;
-	}
-
-	if ( traceEnt->health <= 0 )
-	{
-		return qfalse;
-	}
-
-	// only allow bites to work against buildings as they are constructing
-	if ( traceEnt->s.eType == ET_BUILDABLE )
-	{
-		if ( traceEnt->spawned )
+		switch ( traceEnt->s.modelindex )
 		{
-			return qfalse;
-		}
+			case BA_H_MGTURRET:
+			case BA_H_TESLAGEN:
+				break;
 
-		if ( traceEnt->buildableTeam == TEAM_ALIENS )
-		{
-			return qfalse;
+			default:
+				return qfalse;
 		}
 	}
 
-	if ( traceEnt->client )
-	{
-		if ( traceEnt->client->pers.team == TEAM_ALIENS )
-		{
-			return qfalse;
-		}
-
-		if ( traceEnt->client->ps.stats[ STAT_HEALTH ] <= 0 )
-		{
-			return qfalse;
-		}
-	}
-
-	// send blood impact
 	SendMeleeHitEvent( self, traceEnt, &tr );
 
-	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_LEVEL0_BITE );
+	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK,
+	          MOD_LEVEL0_BITE );
+
 	self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
+
 	return qtrue;
 }
 

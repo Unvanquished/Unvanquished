@@ -37,11 +37,6 @@ Maryland 20850 USA.
 #define QCOMMON_H_
 
 #include "../../common/cm/cm_public.h"
-
-//kangz need these for the command completion handlers
-#include <vector>
-#include <string>
-#include "../../common/String.h"
 #include "cvar.h"
 
 //============================================================================
@@ -490,8 +485,6 @@ we need to deal with all sorts of directory and separator char
 issues.
 ==============================================================
 */
-
-#include "../../common/FileSystem.h"
 
 char **FS_ListFiles( const char *directory, const char *extension, int *numfiles );
 

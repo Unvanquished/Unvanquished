@@ -8,7 +8,7 @@
 ############
 
 if [ $# -gt 2 ]; then
-    torrent_file="unvanquished_${3}_universal.torrent"
+    torrent_file="unvanquished_${3}.torrent"
 else
     torrent_file="current.torrent"
 fi
