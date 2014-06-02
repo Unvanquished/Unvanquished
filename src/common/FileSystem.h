@@ -25,18 +25,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef COMMON_FILESYSTEM_H_
 #define COMMON_FILESYSTEM_H_
 
-#include <system_error>
-#include <iterator>
-#include <vector>
-#include <string>
-#include <memory>
-#include <chrono>
-#include <unordered_map>
-#include "../../common/String.h"
-#include "../../common/Optional.h"
-#include "../../common/Command.h"
-#include "../../common/IPC.h"
-
 namespace FS {
 
 // File offset type. Using 64bit to allow large files.

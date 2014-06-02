@@ -4327,12 +4327,6 @@ qboolean G_admin_endvote( gentity_t *ent )
 	level.team[ team ].quorum = 0;
 	G_CheckVote( team );
 
-	if ( !Q_strncmp( level.team[ team ].voteDisplayString, "Extend", 6 ) &&
-	     level.extend_vote_count > 0 )
-	{
-		level.extend_vote_count--;
-	}
-
 	if ( team == TEAM_NONE )
 	{
 		AP( msg );

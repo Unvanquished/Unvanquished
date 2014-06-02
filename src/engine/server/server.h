@@ -496,7 +496,7 @@ sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
 GameVM         *SV_CreateGameVM( void );
 void           SV_InitGameProgs(Str::StringRef mapname);
 void           SV_ShutdownGameProgs( void );
-void           SV_RestartGameProgs( void );
+void           SV_RestartGameProgs(Str::StringRef mapname);
 qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
 int            SV_LoadTag( const char *mod_name );

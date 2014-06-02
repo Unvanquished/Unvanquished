@@ -28,13 +28,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "../../common/Common.h"
 #include "CommonVMServices.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/CvarSystem.h"
 #include "../framework/LogSystem.h"
 #include "../framework/VirtualMachine.h"
-
-#include "../../common/CommonSyscalls.h"
 
 //TODO
 #include "../server/g_api.h"

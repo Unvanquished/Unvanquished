@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sys_local.h"
 
 #include "../framework/ConsoleField.h"
-#include "../../common/String.h"
 
 // curses.h defines COLOR_*, which are already defined in q_shared.h
 #undef COLOR_BLACK
@@ -40,13 +39,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #ifndef _WIN32
 #include <fcntl.h>
-#include <signal.h>
 #include <unistd.h>
-#include <locale.h>
 #include <sys/ioctl.h>
 #endif
 
-#include <wchar.h>
 #include <curses.h>
 
 #ifdef BUILD_SERVER

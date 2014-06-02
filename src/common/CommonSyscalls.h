@@ -28,11 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "IPC.h"
-#include "Command.h"
-#include "Log.h"
-#include "FileSystem.h"
-
 #ifndef COMMON_COMMON_SYSCALLS_H_
 #define COMMON_COMMON_SYSCALLS_H_
 

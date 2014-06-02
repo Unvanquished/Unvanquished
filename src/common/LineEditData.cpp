@@ -28,11 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "LineEditData.h"
-
-#include <string.h>
-#include <algorithm>
-#include <utility>
+#include "Common.h"
 
 //TODO: use a std::string instead of a fixed size char* ?
 //TODO: support MAJ-selection ?

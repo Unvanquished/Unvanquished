@@ -24,8 +24,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "q_shared.h"
 #include "qcommon.h"
-#include "../../common/FileSystem.h"
-#include "../../common/Cvar.h"
 
 // Compatibility wrapper for the filesystem
 const char TEMP_SUFFIX[] = ".tmp";

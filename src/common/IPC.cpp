@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "IPC.h"
+#include "Common.h"
 
 #ifdef _WIN32
 #include <windows.h>

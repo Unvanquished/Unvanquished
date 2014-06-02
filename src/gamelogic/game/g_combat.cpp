@@ -1282,7 +1282,7 @@ static void NotifyClientOfHit( gentity_t *attacker )
 #define KNOCKBACK_PMOVE_TIME  50
 
 void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength,
-                              qboolean ignoreMass )
+                       qboolean ignoreMass )
 {
 	vec3_t dir, vel;
 	int    mass;

@@ -28,14 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../../common/Log.h"
-#include "VirtualMachine.h"
 #include "../sys/sys_loadlib.h"
+#include "VirtualMachine.h"
 
 #ifdef _WIN32
 #include <windows.h>
+#include <io.h>
 #undef CopyFile
 #else
 #include <unistd.h>

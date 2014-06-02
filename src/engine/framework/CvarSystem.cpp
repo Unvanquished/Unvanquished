@@ -30,15 +30,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CvarSystem.h"
 #include "CommandSystem.h"
-#include "../../common/String.h"
-#include "../../common/Log.h"
-#include "../../common/Command.h"
 
-#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../qcommon/cvar.h"
-
-#include <unordered_map>
 
 //TODO: thread safety (not possible with the C API that doesn't care at all about this)
 
