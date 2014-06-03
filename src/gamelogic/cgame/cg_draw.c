@@ -5177,13 +5177,12 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	                       0, 0, 1, 1,
 	                       CG_BeaconIcon( b ) );
 
-	if( b->type == BCT_TAG &&
-	    ( b->flags & EF_BC_TAG_DETACHED ) )
+	if( b->flags & EF_BC_NO_TARGET )
 		trap_R_DrawStretchPic( pos2d[ 0 ] - size/2 * 1.3,
 		                       pos2d[ 1 ] - size/2 * 1.3,
 		                       size * 1.3, size * 1.3,
 		                       0, 0, 1, 1,
-		                       BG_Beacon( BCT_TAG )->altIcon );
+		                       cgs.media.beaconNoTarget );
 
 	if ( clamped )
 		trap_R_DrawRotatedPic( pos2d[ 0 ] - size/2 * 1.5, 

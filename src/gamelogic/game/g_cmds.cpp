@@ -4431,6 +4431,13 @@ void Cmd_Beacon_f( gentity_t *ent )
 		Beacon::Tag( other, team, ent->s.number );
 		return;
 	}
+	else if ( BG_Beacon( type )->flags & BCF_BASE )
+	{
+		if( !Beacon::FindBase( type, team, tr.endpos ) )
+			goto invalid_beacon;
+		VectorCopy( tr.endpos, origin );
+		Beacon::MoveTowardsRoom( origin, tr.plane.normal );
+	}
 	else
 	{
 		VectorCopy( tr.endpos, origin );

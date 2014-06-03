@@ -1407,8 +1407,10 @@ typedef struct
 	qhandle_t   beaconIconArrow;
 	qhandle_t   beaconLongArrow;
 	qhandle_t   beaconLongArrowDot;
+	qhandle_t   beaconNoTarget;
+
+	sfxHandle_t beaconTargetLostSound;
 	sfxHandle_t timerBeaconExpiredSound;
-	sfxHandle_t tagBeaconDetachSound;
 } cgMedia_t;
 
 typedef struct

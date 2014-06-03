@@ -1330,8 +1330,8 @@ static void CG_RegisterSounds( void )
 	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning.wav", qfalse );
 	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", qfalse );
 
+	cgs.media.beaconTargetLostSound = trap_S_RegisterSound( "sound/feedback/beacon-target-lost.ogg", qfalse );
 	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", qfalse );
-	cgs.media.tagBeaconDetachSound = trap_S_RegisterSound( "sound/feedback/beacon-tag-detach.ogg", qfalse );
 }
 
 //===================================================================================
@@ -1568,6 +1568,7 @@ static void CG_RegisterGraphics( void )
 	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacon-arrow", RSF_DEFAULT );
 	cgs.media.beaconLongArrow = trap_R_RegisterShader( "gfx/2d/beacon-longarrow", RSF_DEFAULT );
 	cgs.media.beaconLongArrowDot = trap_R_RegisterShader( "gfx/2d/beacon-longarrowdot", RSF_DEFAULT );
+	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacon-no-target", RSF_DEFAULT );
 
 
 	// register the inline models

@@ -55,6 +55,7 @@ namespace Beacon
 	void UpdateTags( gentity_t *ent );
 	void DetachTags( gentity_t *ent );
 	void DeleteTags( gentity_t *ent );
+	qboolean FindBase( int type, team_t ownerTeam, vec3_t origin );
 }
 
 // g_buildable.c

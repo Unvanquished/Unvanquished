@@ -117,15 +117,15 @@ static void CG_RunBeacon( cbeacon_t *b )
 		// note: old beacons will be treated by cgame as new if it's the
 		//       first time it sees them (e.g. after changing teams),
 		//       so omit the events if the event was created long time ago
-		if( cg.time - b->s->ctime < 1000 )
+		if( cg.time - b->s->ctime < 1000 &&
+		    !( b->flags & EF_BC_NO_TARGET ) )
 			if( BG_Beacon( b->type )->sound )
 				trap_S_StartLocalSound( BG_Beacon( b->type )->sound, CHAN_LOCAL_SOUND );
 	}
 
-	if( b->type == BCT_TAG &&
-	    !( b->s->oldFlags & EF_BC_TAG_DETACHED ) &&
-	    ( b->flags & EF_BC_TAG_DETACHED ) )
-		trap_S_StartLocalSound( cgs.media.tagBeaconDetachSound, CHAN_LOCAL_SOUND );
+	if( !( b->s->oldFlags & EF_BC_NO_TARGET ) &&
+	    ( b->flags & EF_BC_NO_TARGET ) )
+		trap_S_StartLocalSound( cgs.media.beaconTargetLostSound, CHAN_LOCAL_SOUND );
 
 	// fade in
 	delta = cg.time - b->s->ctime; // time since creation

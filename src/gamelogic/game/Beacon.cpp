@@ -44,6 +44,14 @@ namespace Beacon //this should eventually become a class
 	{
 		ent->nextthink = level.time + BEACON_THINKRATE;
 
+		if( !( ent->s.eFlags & EF_BC_NO_TARGET ) &&
+		    ( BG_Beacon( ent->s.modelindex )->flags & BCF_BASE ) )
+			if( !FindBase( ent->s.modelindex, (team_t)ent->s.generic1, ent->s.origin ) )
+			{
+				ent->nextthink = ent->s.time2 = level.time + 1500;
+				ent->s.eFlags |= EF_BC_NO_TARGET;
+			}
+
 		if ( ent->s.time2 && level.time > ent->s.time2 )
 			Delete( ent );
 	}
@@ -269,7 +277,7 @@ namespace Beacon //this should eventually become a class
 		if( !ent )
 			return;
 
-		ent->s.eFlags |= EF_BC_TAG_DETACHED;
+		ent->s.eFlags |= EF_BC_NO_TARGET;
 		ent->s.time2 = level.time + 1500;
 	}
 
@@ -365,7 +373,7 @@ namespace Beacon //this should eventually become a class
 			beacon->s.time2 = level.time + 4000;
 		}
 		else
-			beacon->s.time2 = level.time + 15000;
+			beacon->s.time2 = level.time + 35000;
 
 		if( dead )
 			DetachTag( beacon );
@@ -377,5 +385,54 @@ namespace Beacon //this should eventually become a class
 		}
 
 		Propagate( beacon );
+	}
+
+	////// Beacon::FindBase
+	// Look for a base for a base beacon
+	qboolean FindBase( int type, team_t ownerTeam, vec3_t origin )
+	{
+		qboolean enemy, outpost;
+		team_t team;
+		float radius;
+		int i, count, list[ MAX_GENTITIES ];
+		vec3_t mins, maxs;
+		gentity_t *ent;
+
+		enemy = ( type == BCT_BASE_ENEMY ||
+		          type == BCT_OUTPOST_ENEMY );
+		outpost = ( type == BCT_OUTPOST ||
+		            type == BCT_OUTPOST_ENEMY );
+		team = ( ( ownerTeam == TEAM_ALIENS ) ^ enemy ? TEAM_ALIENS : TEAM_HUMANS );
+		radius = ( outpost ? 300.0 : 700.0 );
+
+		for( i = 0; i < 3; i++ )
+			mins[ i ] = origin[ i ] - radius,
+			maxs[ i ] = origin[ i ] + radius;
+
+		count = trap_EntitiesInBox( mins, maxs, list, MAX_GENTITIES );
+
+		for( i = 0; i < count; i++ )
+		{
+			ent = g_entities + list[ i ];
+
+			if( ent->s.eType != ET_BUILDABLE )
+				continue;
+
+			if( !( ent->s.eFlags & EF_B_POWERED ) )
+				continue;
+
+			if( ent->health <= 0 )
+				continue;
+
+			if( (team_t)ent->buildableTeam != team )
+				continue;
+
+			if( trap_InPVS( ent->s.origin, origin ) )
+				continue;
+
+			return qtrue;
+		}
+
+		return qfalse;
 	}
 }

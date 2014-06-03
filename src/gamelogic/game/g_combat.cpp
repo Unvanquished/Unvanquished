@@ -556,6 +556,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		i = ( i + 1 ) % 3;
 	}
 
+	Beacon::Tag( self, (team_t)self->client->pers.team, self - g_entities );
 	Beacon::DetachTags( self );
 
 	trap_LinkEntity( self );

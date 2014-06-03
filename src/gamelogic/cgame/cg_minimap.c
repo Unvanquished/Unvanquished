@@ -571,8 +571,7 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 
 	trap_R_SetColor( currentMinimapColor );
 	trap_R_DrawRotatedPic( pos2d[ 0 ], pos2d[ 1 ], size, size, 0.0, 0.0, 1.0, 1.0, CG_BeaconIcon( b ), 0.0 );
-	if( b->type == BCT_TAG &&
-	    ( b->flags & EF_BC_TAG_DETACHED ) )
+	if( b->flags & EF_BC_NO_TARGET )
 		trap_R_DrawStretchPic( pos2d[ 0 ] - size/2 * 0.3,
 		                       pos2d[ 1 ] - size/2 * 0.3,
 		                       size * 1.3, size * 1.3,
