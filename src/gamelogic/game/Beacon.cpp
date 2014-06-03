@@ -160,8 +160,10 @@ namespace Beacon //this should eventually become a class
 			}
 			else
 			{
-				if( BG_Beacon( type )->flags & BCF_ENTITY )
+				if ( BG_Beacon( type )->flags & BCF_ENTITY )
 					radius = 5.0;
+				else if ( BG_Beacon( type )->flags & BCF_BASE )
+					radius = 400.0;
 				else
 					radius = 250.0;
 
@@ -170,6 +172,9 @@ namespace Beacon //this should eventually become a class
 					maxs[ j ] = origin[ j ] + radius;
 
 				if ( !PointInBounds( ent->s.origin, mins, maxs ) )
+					continue;
+
+				if ( !trap_InPVS( ent->s.origin, origin ) )
 					continue;
 			}
 
@@ -397,13 +402,14 @@ namespace Beacon //this should eventually become a class
 		int i, count, list[ MAX_GENTITIES ];
 		vec3_t mins, maxs;
 		gentity_t *ent;
+		trace_t tr;
 
 		enemy = ( type == BCT_BASE_ENEMY ||
 		          type == BCT_OUTPOST_ENEMY );
 		outpost = ( type == BCT_OUTPOST ||
 		            type == BCT_OUTPOST_ENEMY );
 		team = ( ( ownerTeam == TEAM_ALIENS ) ^ enemy ? TEAM_ALIENS : TEAM_HUMANS );
-		radius = ( outpost ? 300.0 : 700.0 );
+		radius = ( outpost ? 300.0 : 600.0 );
 
 		for( i = 0; i < 3; i++ )
 			mins[ i ] = origin[ i ] - radius,
@@ -427,7 +433,9 @@ namespace Beacon //this should eventually become a class
 			if( (team_t)ent->buildableTeam != team )
 				continue;
 
-			if( trap_InPVS( ent->s.origin, origin ) )
+			trap_Trace( &tr, ent->s.origin, NULL, NULL, origin, ent->s.number, MASK_SHOT );
+
+			if ( tr.fraction < 0.99f )
 				continue;
 
 			return qtrue;

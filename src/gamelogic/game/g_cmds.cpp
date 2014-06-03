@@ -4421,10 +4421,10 @@ void Cmd_Beacon_f( gentity_t *ent )
 	}
 	else if ( BG_Beacon( type )->flags & BCF_BASE )
 	{
-		if( !Beacon::FindBase( type, team, tr.endpos ) )
-			goto invalid_beacon;
 		VectorCopy( tr.endpos, origin );
 		Beacon::MoveTowardsRoom( origin, tr.plane.normal );
+		if( !Beacon::FindBase( type, team, origin ) )
+			goto invalid_beacon;
 	}
 	else
 	{
