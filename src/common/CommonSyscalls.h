@@ -28,11 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "IPC.h"
-#include "Command.h"
-#include "Log.h"
-#include "FileSystem.h"
-
 #ifndef COMMON_COMMON_SYSCALLS_H_
 #define COMMON_COMMON_SYSCALLS_H_
 
@@ -144,7 +139,7 @@ namespace VM {
     // FSHomePathOpenModeMsg
     typedef IPC::SyncMessage<
         IPC::Message<IPC::Id<FILESYSTEM, FS_HOMEPATH_OPENMODE>, std::string, uint32_t>,
-        IPC::Reply<IPC::FileHandle>
+        IPC::Reply<Util::optional<IPC::FileHandle>>
     > FSHomePathOpenModeMsg;
     // FSHomePathFileExistsMsg
     typedef IPC::SyncMessage<
@@ -179,7 +174,7 @@ namespace VM {
     // FSPakPathOpenMsg
     typedef IPC::SyncMessage<
         IPC::Message<IPC::Id<FILESYSTEM, FS_PAKPATH_OPEN>, uint32_t, std::string>,
-        IPC::Reply<IPC::FileHandle>
+        IPC::Reply<Util::optional<IPC::FileHandle>>
     > FSPakPathOpenMsg;
     // FSPakPathTimestampMsg
     typedef IPC::SyncMessage<

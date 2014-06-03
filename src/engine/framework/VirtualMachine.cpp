@@ -28,14 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../../common/Log.h"
-#include "VirtualMachine.h"
 #include "../sys/sys_loadlib.h"
+#include "VirtualMachine.h"
 
 #ifdef _WIN32
 #include <windows.h>
+#include <io.h>
 #undef CopyFile
 #else
 #include <unistd.h>
@@ -78,12 +77,17 @@ static std::string Win32StrError(uint32_t error)
 #endif
 
 // Platform-specific code to load a module
-static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem)
+static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem, FS::File stderrRedirect = FS::File())
 {
 #ifdef _WIN32
 	// Inherit the socket in the child process
 	if (!SetHandleInformation(pair.second.GetHandle(), HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
 		Com_Error(ERR_DROP, "VM: Could not make socket inheritable: %s", Win32StrError(GetLastError()).c_str());
+
+	// Inherit the stderr redirect in the child process
+	HANDLE stderrRedirectHandle = stderrRedirect ? reinterpret_cast<HANDLE>(_get_osfhandle(fileno(stderrRedirect.GetHandle()))) : NULL;
+	if (stderrRedirect && !SetHandleInformation(stderrRedirectHandle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
+		Com_Error(ERR_DROP, "VM: Could not make stderr redirect inheritable: %s", Win32StrError(GetLastError()).c_str());
 
 	// Escape command line arguments
 	std::string cmdline;
@@ -135,10 +139,14 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	STARTUPINFOW startupInfo;
 	PROCESS_INFORMATION processInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
+	if (stderrRedirect) {
+		startupInfo.hStdError = stderrRedirectHandle;
+		startupInfo.dwFlags = STARTF_USESTDHANDLES;
+	}
 	startupInfo.cb = sizeof(startupInfo);
 	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
-		Com_Error(ERR_DROP, "VM: Could create child process: %s", Win32StrError(GetLastError()).c_str());
+		Com_Error(ERR_DROP, "VM: Could not create child process: %s", Win32StrError(GetLastError()).c_str());
 	}
 
 	if (!AssignProcessToJobObject(job, processInfo.hProcess)) {
@@ -189,9 +197,12 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 
 		// Close standard input/output descriptors
-		// stderr is not closed so that we can see error messages reported by sel_ldr
 		close(0);
 		close(1);
+
+		// If an stderr redirect is provided, set it now
+		if (stderrRedirect)
+			dup2(fileno(stderrRedirect.GetHandle()), 2);
 
 		// Load the target executable
 		char* env[] = {nullptr};
@@ -220,15 +231,25 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 #endif
 }
 
-std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract) {
+std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, int debugLoader) {
 	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
-	std::string module, sel_ldr, irt, bootstrap, modulePath;
+	std::string module, sel_ldr, irt, bootstrap, modulePath, verbosity;
+	FS::File stderrRedirect;
+	bool win32Force64Bit = false;
+
+	// On Windows, even if we are running a 32-bit engine, we must use the
+	// 64-bit sel_ldr if the host operating system is 64-bit.
+#if defined(_WIN32) && !defined(_WIN64)
+	SYSTEM_INFO systemInfo;
+	GetNativeSystemInfo(&systemInfo);
+	win32Force64Bit = systemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;
+#endif
 
 	// Extract the nexe from the pak so that sel_ldr can load it
-	module = name + "-" ARCH_STRING ".nexe";
+	module = win32Force64Bit ? name + "-x86_64.nexe" : name + "-" ARCH_STRING ".nexe";
 	if (extract) {
 		try {
 			FS::File out = FS::HomePath::OpenWrite(module);
@@ -242,8 +263,9 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 		modulePath = FS::Path::Build(libPath, module);
 
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
-	sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
-	irt = FS::Path::Build(libPath, "irt_core-" ARCH_STRING ".nexe");
+	irt = FS::Path::Build(libPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
+
+	sel_ldr = FS::Path::Build(libPath, win32Force64Bit ? "sel_ldr64" EXE_EXT : "sel_ldr" EXE_EXT);
 
 #ifdef __linux__
 	bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
@@ -252,10 +274,24 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");
 	args.push_back("--reserved_at_zero=0xXXXXXXXXXXXXXXXX");
 #else
+	Q_UNUSED(bootstrap);
 	args.push_back(sel_ldr.c_str());
 #endif
-	if (debug)
+	if (debug) {
 		args.push_back("-g");
+	}
+
+	if (debugLoader) {
+		try {
+			stderrRedirect = FS::HomePath::OpenWrite(name + ".sel_ldr.log");
+		} catch (std::system_error& err) {
+			Log::Warn("Couldn't open %s: %s", name + ".sel_ldr.log", err.what());
+		}
+		verbosity = "-";
+		verbosity.append(debugLoader, 'v');
+		args.push_back(verbosity.c_str());
+	}
+
 	args.push_back("-B");
 	args.push_back(irt.c_str());
 	args.push_back("-e");
@@ -268,14 +304,25 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
 
-	return InternalLoadModule(std::move(pair), args.data(), true);
+	if (debugLoader) {
+		std::string commandLine;
+		for (auto arg : args) {
+			if (arg) {
+				commandLine += " ";
+				commandLine += arg;
+			}
+		}
+		Com_Printf("Using loader args: %s", commandLine.c_str());
+	}
+
+	return InternalLoadModule(std::move(pair), args.data(), true, std::move(stderrRedirect));
 }
 
 std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 
-	std::string handleArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
+	std::string handleArg = std::to_string((int)(intptr_t)pair.second.GetHandle());
 
 	std::string module = FS::Path::Build(libPath, name + "-nacl-native-exe" + EXE_EXT);
 	if (debug) {
@@ -324,7 +371,7 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 
 int VMBase::Create()
 {
-	vmType_t type = static_cast<vmType_t>(params.vmType.Get());
+	type = static_cast<vmType_t>(params.vmType.Get());
 
 	if (type < 0 || type >= TYPE_END)
 		Com_Error(ERR_DROP, "VM: Invalid type %d", type);
@@ -339,8 +386,8 @@ int VMBase::Create()
 		std::string filename = name + ".syscallLog";
 		try {
 			syscallLogFile = FS::RawPath::OpenWrite(filename);
-		} catch (std::system_error& error) {
-			Log::Warn("Couldn't open %s", filename);
+		} catch (std::system_error& err) {
+			Log::Warn("Couldn't open %s: %s", filename, err.what());
 		}
 	}
 
@@ -349,7 +396,7 @@ int VMBase::Create()
 
 	IPC::Socket rootSocket;
 	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH || type == TYPE_NACL_LIBPATH_DEBUG) {
-		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG, type == TYPE_NACL || type == TYPE_NACL_DEBUG);
+		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG, type == TYPE_NACL || type == TYPE_NACL_DEBUG, params.debugLoader.Get());
 	} else if (type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
 		std::tie(processHandle, rootSocket) = CreateNativeVM(std::move(pair), name, type == TYPE_NATIVE_EXE_DEBUG);
 	} else {
@@ -422,8 +469,6 @@ void VMBase::Free()
 		return;
 
 	rootChannel = IPC::Channel();
-
-	vmType_t type = static_cast<vmType_t>(params.vmType.Get());
 
 	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
 #ifdef _WIN32

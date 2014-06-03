@@ -28,9 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include <string>
-#include <climits>
-
 #ifndef COMMON_LINE_EDIT_DATA_H_
 #define COMMON_LINE_EDIT_DATA_H_
 

@@ -28,8 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include <string>
-
 #ifndef FRAMEWORK_CONSOLE_HISTORY_H_
 #define FRAMEWORK_CONSOLE_HISTORY_H_
 

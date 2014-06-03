@@ -22,16 +22,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../engine/qcommon/q_shared.h"
-#include "FileSystem.h"
-#include "Log.h"
-#include "Command.h"
-#include "Optional.h"
-#include "CommonSyscalls.h"
-#include "IPC.h"
-#include "../libs/minizip/unzip.h"
-#include <vector>
-#include <algorithm>
+#include "../../libs/minizip/unzip.h"
 
 #ifdef BUILD_VM
 #include "../gamelogic/shared/VMMain.h"
@@ -44,6 +35,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <shlobj.h>
 #include <io.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #undef MoveFile
 #undef CopyFile
 #undef DeleteFile
@@ -75,7 +67,7 @@ template<> struct SerializeTraits<FS::PakInfo> {
 		stream.Write<bool>(value.fd != -1);
 		if (value.fd != -1) {
 #ifdef _WIN32
-			stream.Write<IPC::FileHandle>(IPC::FileHandle(reinterpret_cast<HANDLE>(_get_osfhandle(value.fd), IPC::MODE_READ), IPC::MODE_READ));
+			stream.Write<IPC::FileHandle>(IPC::FileHandle(reinterpret_cast<HANDLE>(_get_osfhandle(value.fd)), IPC::MODE_READ));
 #else
 			stream.Write<IPC::FileHandle>(IPC::FileHandle(value.fd, IPC::MODE_READ));
 #endif
@@ -603,7 +595,7 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 
 #ifdef BUILD_VM
 // Convert an IPC file handle to a File object
-static File FileFromIPC(IPC::FileHandle ipcFile, openMode_t mode, std::error_code& err)
+static File FileFromIPC(Util::optional<IPC::FileHandle> ipcFile, openMode_t mode, std::error_code& err)
 {
 	if (!ipcFile) {
 		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
@@ -612,14 +604,14 @@ static File FileFromIPC(IPC::FileHandle ipcFile, openMode_t mode, std::error_cod
 
 #ifdef _WIN32
 	int raw_modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
-	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(ipcFile.GetHandle()), raw_modes[mode]);
+	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(ipcFile->GetHandle()), raw_modes[mode]);
 	if (fd == -1) {
-		CloseHandle(ipcFile.GetHandle());
+		CloseHandle(ipcFile->GetHandle());
 		SetErrorCodeSystem(err);
 		return File();
 	}
 #else
-	int fd = ipcFile.GetHandle();
+	int fd = ipcFile->GetHandle();
 #endif
 
 	const char* modes[] = {"rb", "wb", "ab", "rb+"};
@@ -1154,7 +1146,7 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 	if (pak.type == PAK_DIR) {
 		// Open file
 #ifdef BUILD_VM
-		IPC::FileHandle handle;
+		Util::optional<IPC::FileHandle> handle;
 		VM::SendMsg<VM::FSPakPathOpenMsg>(it->second.first, path, handle);
 		File file = FileFromIPC(handle, MODE_READ, err);
 #else
@@ -1216,7 +1208,7 @@ void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 	const PakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR) {
 #ifdef BUILD_VM
-		IPC::FileHandle handle;
+		Util::optional<IPC::FileHandle> handle;
 		VM::SendMsg<VM::FSPakPathOpenMsg>(it->second.first, path, handle);
 		File file = FileFromIPC(handle, MODE_READ, err);
 #else
@@ -1709,7 +1701,7 @@ namespace HomePath {
 static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 {
 #ifdef BUILD_VM
-	IPC::FileHandle handle;
+	Util::optional<IPC::FileHandle> handle;
 	VM::SendMsg<VM::FSHomePathOpenModeMsg>(path, mode, handle);
 	File file = FileFromIPC(handle, mode, err);
 	if (HaveError(err))
@@ -2268,7 +2260,7 @@ void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& chann
 		break;
 
 	case VM::FS_HOMEPATH_OPENMODE:
-		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, std::move(reader), [](std::string path, uint32_t mode, IPC::FileHandle& out) {
+		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, std::move(reader), [](std::string path, uint32_t mode, Util::optional<IPC::FileHandle>& out) {
 			try {
 				out = FileToIPC(HomePath::OpenMode(path, static_cast<openMode_t>(mode), throws()), static_cast<openMode_t>(mode));
 			} catch (std::system_error& err) {}
@@ -2334,7 +2326,7 @@ void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& chann
 		break;
 
 	case VM::FS_PAKPATH_OPEN:
-		IPC::HandleMsg<VM::FSPakPathOpenMsg>(channel, std::move(reader), [](uint32_t pakIndex, std::string path, IPC::FileHandle& out) {
+		IPC::HandleMsg<VM::FSPakPathOpenMsg>(channel, std::move(reader), [](uint32_t pakIndex, std::string path, Util::optional<IPC::FileHandle>& out) {
 			auto& loadedPaks = FS::PakPath::GetLoadedPaks();
 			if (loadedPaks.size() <= pakIndex)
 				return;

@@ -2329,7 +2329,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "impactSound" ) )
 		{
 			PARSE( text, token );
-#ifdef BUILD_CGAME			
+#ifdef BUILD_CGAME
 			index = atoi( token );
 #endif
 			PARSE( text, token );
@@ -2344,7 +2344,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "impactFleshSound" ) )
 		{
 			PARSE( text, token );
-#ifdef BUILD_CGAME			
+#ifdef BUILD_CGAME
 			index = atoi( token );
 #endif
 			PARSE( text, token );

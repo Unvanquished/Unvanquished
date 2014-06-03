@@ -3215,7 +3215,7 @@ void CG_Player( centity_t *cent )
 		}
 	}
 
-	if ( cg_drawBBOX.integer )
+	if ( cg_drawBBOX.integer && cg.renderingThirdPerson )
 	{
 		vec3_t mins, maxs;
 

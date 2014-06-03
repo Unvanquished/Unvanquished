@@ -388,7 +388,7 @@ struct gentity_s
 	vec3_t      buildableAim; // aim vector for buildables
 
 	// turret
-	qboolean    turretHasFastLoader; // a turret upgrade (currently unused)
+	//qboolean    turretHasFastLoader; // a turret upgrade (currently unused)
 	int         turretNextShot;
 	int         turretSuccessiveShots;
 	int         turretLastShotAtTarget;
@@ -694,8 +694,6 @@ struct level_locals_s
 	int      snd_fry; // sound index for standing in lava
 
 	int      warmupModificationCount; // for detecting if g_warmup is changed
-
-	int  extend_vote_count;
 
 	// spawn variables
 	qboolean spawning; // the G_Spawn*() functions are valid

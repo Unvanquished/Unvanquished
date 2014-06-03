@@ -69,17 +69,6 @@ void SCR_AdjustFrom640( float *x, float *y, float *w, float *h )
 	float xscale;
 	float yscale;
 
-#if 0
-
-	// adjust for wide screens
-	if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
-1
-	{
-		*x += 0.5 * ( cls.glconfig.vidWidth - ( cls.glconfig.vidHeight * 640 / 480 ) );
-	}
-
-#endif
-
 	// scale for screen sizes
 	xscale = cls.glconfig.vidWidth / 640.0;
 	yscale = cls.glconfig.vidHeight / 480.0;

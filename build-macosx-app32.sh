@@ -6,7 +6,7 @@ set -e
 set -u
 
 # Dynamic libraries for inclusion in app bundle
-DEPS_VERSION=1
+DEPS_VERSION=2
 SDL2_VERSION=2.0.3
 GLEW_VERSION=1.10.0
 OPENAL_VERSION=1.15.1

@@ -31,14 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
-#include "../../common/Cvar.h"
-#include "../../common/IPC.h"
-#include "../../common/String.h"
-#include "../../common/FileSystem.h"
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-
 namespace VM {
 
 enum vmType_t {
@@ -54,19 +46,21 @@ enum vmType_t {
 
 struct VMParams {
 	VMParams(std::string name)
-	:logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
-	vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NATIVE_EXE, 0, TYPE_END - 1) {
+		: logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
+		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NATIVE_EXE, 0, TYPE_END - 1),
+		  debugLoader("vm." + name + ".debugLoader", "make sel_ldr dump information to " + name + "-sel_ldr.log", Cvar::NONE, 0, 0, 5) {
 	}
 
 	Cvar::Cvar<bool> logSyscalls;
 	Cvar::Range<Cvar::Cvar<int>> vmType;
+	Cvar::Range<Cvar::Cvar<int>> debugLoader;
 };
 
 // Base class for a virtual machine instance
 class VMBase {
 public:
 	VMBase(std::string name, VMParams& params)
-	: processHandle(IPC::INVALID_HANDLE), name(name), params(params) {}
+		: processHandle(IPC::INVALID_HANDLE), name(name), params(params) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module.
@@ -126,6 +120,8 @@ private:
 	IPC::Channel rootChannel;
 
 	std::string name;
+
+	vmType_t type;
 
 	VMParams& params;
 

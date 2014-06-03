@@ -29,10 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "SoundCodec.h"
-#include "../../common/FileSystem.h"
 #include "AudioPrivate.h"
-#include <memory>
-#include <vector>
 
 #include <errno.h>
 #define OV_EXCLUDE_STATIC_CALLBACKS
