@@ -4395,12 +4395,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 	team = (team_t)ent->client->pers.team;
 
 	//a few useful aliases
-	if( !Q_stricmp( type_str, "ourbase" ) )
-		battr = BG_Beacon( ( team == TEAM_ALIENS ? BCT_ALIENBASE : BCT_HUMANBASE ) );
-	else if( !Q_stricmp( type_str, "enemybase" ) )
-		battr = BG_Beacon( ( team == TEAM_ALIENS ? BCT_HUMANBASE : BCT_ALIENBASE ) );
-	else
-		battr = BG_BeaconByName( type_str );
+	battr = BG_BeaconByName( type_str );
 
 	if ( !battr || battr->flags & BCF_RESERVED )
 	{

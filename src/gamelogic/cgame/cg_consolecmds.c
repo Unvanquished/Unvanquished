@@ -291,10 +291,6 @@ static void CG_CompleteBeacon( void )
 			trap_CompleteCallback( item->name );
 		}
 	}
-
-	//aliases
-	trap_CompleteCallback( "ourbase" );
-	trap_CompleteCallback( "enemybase" );
 }
 
 static void CG_CompleteBuild( void )

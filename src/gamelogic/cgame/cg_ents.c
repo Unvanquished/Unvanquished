@@ -1036,7 +1036,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 			break;
 
 		case ET_BEACON:
-			memset( &cent->beaconPersistant, 0, sizeof( cbeaconPersistant_t ) );
+			memset( &cent->beaconPersistent, 0, sizeof( cbeaconPersistent_t ) );
 			break;
 
 		default:

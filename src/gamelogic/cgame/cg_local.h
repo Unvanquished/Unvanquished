@@ -653,13 +653,13 @@ typedef struct
 
 	vec2_t oldpos2d;
 	qboolean unclutter;
-} cbeaconPersistant_t;
+} cbeaconPersistent_t;
 
 // all data here must be deduceable at any moment
 // can be cleared every frame
 typedef struct
 {
-	cbeaconPersistant_t  *s;
+	cbeaconPersistent_t  *s;
 
 	beaconType_t  type;
 	int           data;
@@ -755,7 +755,7 @@ typedef struct centity_s
 	qboolean              oldValid;
 	struct centity_s      *nextLocation;
 
-	cbeaconPersistant_t   beaconPersistant;
+	cbeaconPersistent_t   beaconPersistent;
 } centity_t;
 
 //======================================================================

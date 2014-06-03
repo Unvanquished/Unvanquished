@@ -1038,8 +1038,10 @@ typedef enum
 	//indicators
 	BCT_ENEMY,
 	BCT_TAG,
-	BCT_ALIENBASE,
-	BCT_HUMANBASE,
+	BCT_BASE,
+	BCT_BASE_ENEMY,
+	BCT_OUTPOST,
+	BCT_OUTPOST_ENEMY,
 
 	//commands
 	BCT_ATTACK,

@@ -210,7 +210,7 @@ Checks a cbeacon_t and copies it to cg.beacons if valid
 This is to be used for client-side beacons (e.g. personal waypoint)
 =============
 */
-static void CG_AddImplicitBeacon( cbeaconPersistant_t *bp, beaconType_t type )
+static void CG_AddImplicitBeacon( cbeaconPersistent_t *bp, beaconType_t type )
 {
 	cbeacon_t *beacon;
 	vec3_t vdelta;
@@ -224,7 +224,7 @@ static void CG_AddImplicitBeacon( cbeaconPersistant_t *bp, beaconType_t type )
 	{
 		if ( cg.time >= bp->etime )
 		{
-			memset( bp, 0, sizeof( cbeaconPersistant_t ) );
+			memset( bp, 0, sizeof( cbeaconPersistent_t ) );
 			return;
 		}
 	}
@@ -237,14 +237,14 @@ static void CG_AddImplicitBeacon( cbeaconPersistant_t *bp, beaconType_t type )
 		}
 		else
 		{
-			memset( bp, 0, sizeof( cbeaconPersistant_t ) );
+			memset( bp, 0, sizeof( cbeaconPersistent_t ) );
 			return;
 		}
 	}
 	
 	if ( bp->etime && bp->etime <= cg.time ) // expired
 	{
-		memset( bp, 0, sizeof( cbeaconPersistant_t ) );
+		memset( bp, 0, sizeof( cbeaconPersistent_t ) );
 		return;
 	}
 
@@ -269,10 +269,10 @@ Figures out all implicit beacons and adds them to cg.beacons
 */
 static void CG_ListImplicitBeacons( )
 {
-	// every implicit beacon must have its very own cbeaconPeristant that
+	// every implicit beacon must have its very own cbeaconPeristent that
 	// is kept between frames, but cbeacon_t can be shared
-	static cbeaconPersistant_t bp_health = { qfalse, qfalse };
-	static cbeaconPersistant_t bp_ammo = { qfalse, qfalse };
+	static cbeaconPersistent_t bp_health = { qfalse, qfalse };
+	static cbeaconPersistent_t bp_ammo = { qfalse, qfalse };
 	playerState_t *ps;
 	int entityNum;
 	qboolean energy;
@@ -287,8 +287,8 @@ static void CG_ListImplicitBeacons( )
 			 cg.snap->ps.pm_type == PM_DEAD ||
 	     ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 	{
-		memset( &bp_health, 0, sizeof( cbeaconPersistant_t ) );
-		memset( &bp_ammo, 0, sizeof( cbeaconPersistant_t ) );
+		memset( &bp_health, 0, sizeof( cbeaconPersistent_t ) );
+		memset( &bp_ammo, 0, sizeof( cbeaconPersistent_t ) );
 		return;
 	}
 
@@ -412,7 +412,7 @@ void CG_ListBeacons( void )
 		if( es->time2 && es->time2 <= cg.time ) //expired
 			continue;
 
-		beacon->s = &cent->beaconPersistant;
+		beacon->s = &cent->beaconPersistent;
 
 		beacon->s->valid = qtrue;
 		beacon->s->ctime = es->time;
