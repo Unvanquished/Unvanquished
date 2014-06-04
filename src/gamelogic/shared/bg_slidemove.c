@@ -101,7 +101,18 @@ qboolean  PM_SlideMove( qboolean gravity )
 		VectorMA( pm->ps->origin, time_left, pm->ps->velocity, end );
 
 		// see if we can make it there
-		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, end, pm->ps->clientNum, pm->tracemask );
+		if ( pm->ps->pm_type == PM_SPECTATOR )
+		{
+			// Spectators ignore all entities, even those with CONTENTS_SOLID set
+			// In particular, this allows them to fly through doors
+			// HACK: Use passEntityNum = -2 to exclude entities from the trace on the server side
+			// TODO: Allow traces to ignore content types
+			pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, end, -2, pm->tracemask );
+		}
+		else
+		{
+			pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, end, pm->ps->clientNum, pm->tracemask );
+		}
 
 		if ( trace.allsolid )
 		{
@@ -345,7 +356,7 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 	VectorCopy( pm->ps->origin, start_o );
 	VectorCopy( pm->ps->velocity, start_v );
 
-	if ( PM_SlideMove( gravity ) == 0 )
+	if ( !PM_SlideMove( gravity ) )
 	{
 		VectorCopy( start_o, down );
 		VectorMA( down, -STEPSIZE, normal, down );
