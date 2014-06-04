@@ -52,7 +52,7 @@ namespace Beacon
 	void Propagate( gentity_t *ent );
 	void PropagateAll( void );
 	void RemoveOrphaned( int clientNum );
-	void Tag( gentity_t *ent, team_t team, int owner );
+	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent );
 	void UpdateTags( gentity_t *ent );
 	void DetachTags( gentity_t *ent );
 	void DeleteTags( gentity_t *ent );

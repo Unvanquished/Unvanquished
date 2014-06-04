@@ -4415,7 +4415,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 		other = g_entities + tr.entityNum;
 
-		Beacon::Tag( other, team, ent->s.number );
+		Beacon::Tag( other, team, ent->s.number, qfalse );
 		return;
 	}
 	else if ( BG_Beacon( type )->flags & BCF_BASE )

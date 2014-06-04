@@ -5140,6 +5140,9 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		Vector2Copy( b->s->oldpos2d, pos2d );
 	}
 
+	if( b->dist < 500 )
+		color[ 3 ] *= LinearRemap( b->dist, 0, 500, 0.5, 1 );
+
 	trap_R_SetColor( color );
 
 	if( b->s->unclutter )

@@ -4788,6 +4788,16 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		G_BuildLogSet( log, built );
 	}
 
+	switch ( buildable )
+	{
+		case BA_A_OVERMIND:
+		case BA_H_REACTOR:
+			Beacon::Tag( built, attr->team, ENTITYNUM_NONE, qtrue );
+			break;
+		default:
+			break;
+	}
+
 	return built;
 }
 

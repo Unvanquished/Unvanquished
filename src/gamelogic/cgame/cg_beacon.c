@@ -301,11 +301,11 @@ static void CG_ListImplicitBeacons( )
 		{
 			bp_health.altIcon = qtrue;
 			entityNum = CG_NearestBuildable( BA_A_BOOSTER, 0, 0, bp_health.origin );
-			if( entityNum == ENTITYNUM_NONE )
+			/*if( entityNum == ENTITYNUM_NONE )
 			{
 				entityNum = CG_NearestBuildable( -1, 0, 0, bp_health.origin );
 				bp_health.altIcon = qfalse;
-			}
+			}*/
 		}
 		else
 			entityNum = CG_NearestBuildable( BA_H_MEDISTAT, 0, 0, bp_health.origin );		

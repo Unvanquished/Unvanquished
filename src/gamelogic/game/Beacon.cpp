@@ -324,7 +324,7 @@ namespace Beacon //this should eventually become a class
 
 	////// Beacon::Tag
 	// Tag an entity
-	void Tag( gentity_t *ent, team_t team, int owner )
+	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent )
 	{
 		int i, data;
 		vec3_t origin, mins, maxs;
@@ -396,6 +396,9 @@ namespace Beacon //this should eventually become a class
 		}
 		else
 			beacon->s.time2 = level.time + 35000;
+
+		if( permanent )
+			beacon->s.time2 = 0;
 
 		if( dead )
 			DetachTag( beacon );
