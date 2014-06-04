@@ -38,7 +38,7 @@
     "new weapons, structures or classes will be unlocked.\n"
     "\n"
     "Momentum decreases exponentially over time so if you idle your team will "
-	"lose access to new items. Existing upgrades will remain functional.\n"
+    "lose access to new items. Existing upgrades will remain functional.\n"
   }
   "[ckit] Human building ^21^7"
   {
@@ -60,12 +60,6 @@
     "When the power consumption in a region is too high, the smallest possible "
     "number of buildables will power down so that the other structures have "
     "enough energy to remain operational.\n"
-    "\n"
-    "The [drill] drill is the only buildable that requires a close repeater or "
-    "reactor to work, since resources are transmitted via the power grid.\n"
-    "\n"
-    "[turret] Turrets cost more and are a little stronger, "
-    "and [armoury] armouries are easier to use and cost less."
   }
   "[flamer] Wildfire"
   {
@@ -110,8 +104,6 @@
     "The human dodge has been removed, stamina has been increased, and "
     "battery packs have been removed. Energy weapon clip sizes have been "
     "adjusted accordingly.\n"
-    "\n"
-    "The grenade price has been increased (200 → 300).\n"
     "\n"
     "All alien evo costs and gains have been doubled. The new maximum of evos "
     "an alien can store is 20 (formerly 9)."
