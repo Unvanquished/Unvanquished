@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -61,7 +61,7 @@ void ElementTabSet::SetPanel(int tab_index, const Rocket::Core::String& rml)
 
 // Set the specifed tab index's title element.
 void ElementTabSet::SetTab(int tab_index, Core::Element* element)
-{	
+{
 	Core::Element* tabs = GetChildByTag("tabs");
 	if (tab_index >= 0 &&
 		tab_index < tabs->GetNumChildren())
@@ -72,7 +72,7 @@ void ElementTabSet::SetTab(int tab_index, Core::Element* element)
 
 // Set the specified tab index's body element.
 void ElementTabSet::SetPanel(int tab_index, Core::Element* element)
-{	
+{
 	// Append the window
 	Core::Element* windows = GetChildByTag("panels");
 	if (tab_index >= 0 &&
@@ -124,7 +124,7 @@ void ElementTabSet::SetActiveTab(int tab_index)
 		Core::Element* new_window = windows->GetChild(tab_index);
 
 		if (old_window)
-			old_window->SetProperty("display", "none");			
+			old_window->SetProperty("display", "none");
 		if (new_window)
 			new_window->SetProperty("display", "inline-block");
 
@@ -191,7 +191,7 @@ void ElementTabSet::OnChildAdd(Core::Element* child)
 	{
 		// Hide the new tab window
 		child->SetProperty("display", "none");
-		
+
 		// Make the new element visible if its the active tab
 		if (child->GetParentNode()->GetChild(active_tab) == child)
 			child->SetProperty("display", "inline-block");
