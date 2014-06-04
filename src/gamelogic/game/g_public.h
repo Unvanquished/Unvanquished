@@ -45,6 +45,7 @@ namespace Beacon
 {
 	void Think( gentity_t *ent );
 	gentity_t *New( vec3_t origin, beaconType_t type, int data, team_t team, int owner );
+	void NewArea( beaconType_t type, vec3_t point, team_t team );
 	void Delete( gentity_t *ent );
 	void MoveTowardsRoom( vec3_t origin, const vec3_t normal );
 	void RemoveSimilar( vec3_t origin, beaconType_t type, int data, int team, int owner );
@@ -55,7 +56,7 @@ namespace Beacon
 	void UpdateTags( gentity_t *ent );
 	void DetachTags( gentity_t *ent );
 	void DeleteTags( gentity_t *ent );
-	qboolean FindBase( int type, team_t ownerTeam, vec3_t origin );
+	qboolean FindBase( beaconType_t type, team_t ownerTeam, vec3_t origin );
 }
 
 // g_buildable.c

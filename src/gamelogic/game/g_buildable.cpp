@@ -58,6 +58,7 @@ static void G_WarnPrimaryUnderAttack( gentity_t *self )
 		self->attackTimer = level.time + PRIMARY_ATTACK_PERIOD; // don't spam
 		self->attackLastEvent = event;
 		G_BroadcastEvent( event, 0, attr->team );
+		Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
 	}
 
 	self->lastHealth = self->health;
@@ -909,6 +910,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	{
 		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
 		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
+		Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
 	}
 
 	// fully grown and not blasted to smithereens
@@ -2485,6 +2487,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		{
 			location->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
 			G_BroadcastEvent( EV_WARN_ATTACK, inBase ? 0 : ( watcher - level.gentities ), TEAM_HUMANS );
+			Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
 		}
 	}
 

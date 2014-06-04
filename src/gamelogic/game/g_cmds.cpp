@@ -4382,7 +4382,6 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	team = (team_t)ent->client->pers.team;
 
-	//a few useful aliases
 	battr = BG_BeaconByName( type_str );
 
 	if ( !battr || battr->flags & BCF_RESERVED )

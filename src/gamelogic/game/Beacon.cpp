@@ -46,7 +46,7 @@ namespace Beacon //this should eventually become a class
 
 		if( !( ent->s.eFlags & EF_BC_NO_TARGET ) &&
 		    ( BG_Beacon( ent->s.modelindex )->flags & BCF_BASE ) )
-			if( !FindBase( ent->s.modelindex, (team_t)ent->s.generic1, ent->s.origin ) )
+			if( !FindBase( (beaconType_t)ent->s.modelindex, (team_t)ent->s.generic1, ent->s.origin ) )
 			{
 				ent->nextthink = ent->s.time2 = level.time + 1500;
 				ent->s.eFlags |= EF_BC_NO_TARGET;
@@ -82,6 +82,21 @@ namespace Beacon //this should eventually become a class
 		return ent;
 	}
 
+
+	////// Beacon::NewArea
+	// Create and set up an area beacon (i.e. "Defend")
+	void NewArea( beaconType_t type, vec3_t point, team_t team )
+	{
+		vec3_t origin;
+		gentity_t *beacon;
+
+		VectorCopy( point, origin );
+		MoveTowardsRoom( origin, NULL );
+		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE );
+		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE );
+		Beacon::Propagate( beacon );
+	}
+
 	////// Beacon::Delete
 	// Delete a beacon
 	void Delete( gentity_t *ent )
@@ -93,7 +108,7 @@ namespace Beacon //this should eventually become a class
 
 	////// Beacon::MoveTowardsRoom
 	// Move a point towards empty space (away from map geometry)
-	// Note: normal is only for making this function converge quicker
+	// Normal is optional
 	#define BEACONS_MTR_SAMPLES 100
 	void MoveTowardsRoom( vec3_t origin, const vec3_t normal )
 	{
@@ -106,9 +121,10 @@ namespace Beacon //this should eventually become a class
 			for ( j = 0; j < 3; j++ )
 				rnd[ j ] = crandom();
 
-			if ( DotProduct( rnd, normal ) < 0 )
-				for ( j = 0; j < 3; j++ )
-					rnd[ j ] = - rnd[ j ];
+			if( normal )
+				if ( DotProduct( rnd, normal ) < 0 )
+					for ( j = 0; j < 3; j++ )
+						rnd[ j ] = - rnd[ j ];
 
 			VectorMA( origin, 500, rnd, end );
 			trap_Trace( &tr, origin, NULL, NULL, end, 0, MASK_SOLID );
@@ -395,7 +411,7 @@ namespace Beacon //this should eventually become a class
 
 	////// Beacon::FindBase
 	// Look for a base for a base beacon
-	qboolean FindBase( int type, team_t ownerTeam, vec3_t origin )
+	qboolean FindBase( beaconType_t type, team_t ownerTeam, vec3_t origin )
 	{
 		qboolean enemy, outpost;
 		team_t team;
