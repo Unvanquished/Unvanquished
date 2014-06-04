@@ -294,7 +294,7 @@ static void PM_Friction( void )
 		drop += speed * pm_waterfriction * pm->waterlevel * pml.frametime;
 	}
 
-	if ( pm->ps->pm_type == PM_SPECTATOR )
+	if ( pm->ps->pm_type == PM_SPECTATOR || pm->ps->pm_type == PM_NOCLIP )
 	{
 		drop += speed * pm_spectatorfriction * pml.frametime;
 	}
@@ -1697,43 +1697,40 @@ static void PM_WaterMove( void )
 	PM_SlideMove( qfalse );
 }
 
-static void PM_FlyMove( void )
+/**
+ * @brief Used for both free spectating and noclip mode
+ */
+static void PM_GhostMove( qboolean noclip )
 {
 	int    i;
-	vec3_t wishvel;
-	float  wishspeed;
-	vec3_t wishdir;
-	float  scale;
+	float  scale, wishspeed;
+	vec3_t wishvel, wishdir;
 
 	PM_Friction();
 
 	scale = PM_CmdScale( &pm->cmd, qtrue );
 
-	//
-	// user intentions
-	//
-	if ( !scale )
+	for ( i = 0; i < 3; i++ )
 	{
-		wishvel[ 0 ] = 0;
-		wishvel[ 1 ] = 0;
-		wishvel[ 2 ] = 0;
+		wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove +
+					   scale * pml.right[ i ]   * pm->cmd.rightmove;
 	}
-	else
-	{
-		for ( i = 0; i < 3; i++ )
-		{
-			wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
-		}
 
-		wishvel[ 2 ] += scale * pm->cmd.upmove;
-	}
+	wishvel[ 2 ] += scale * pm->cmd.upmove;
 
 	VectorCopy( wishvel, wishdir );
 	wishspeed = VectorNormalize( wishdir );
 
 	PM_Accelerate( wishdir, wishspeed, pm_flyaccelerate );
 
-	PM_StepSlideMove( qfalse, qfalse );
+	if ( noclip )
+	{
+		VectorMA( pm->ps->origin, pml.frametime, pm->ps->velocity, pm->ps->origin );
+	}
+	else
+	{
+		PM_StepSlideMove( qfalse, qfalse );
+	}
 }
 
 /*
@@ -2184,73 +2181,6 @@ static void PM_DeadMove( void )
 		VectorNormalize( pm->ps->velocity );
 		VectorScale( pm->ps->velocity, forward, pm->ps->velocity );
 	}
-}
-
-/*
-===============
-PM_NoclipMove
-===============
-*/
-static void PM_NoclipMove( void )
-{
-	float  speed, drop, friction, control, newspeed;
-	int    i;
-	vec3_t wishvel;
-	float  fmove, smove;
-	vec3_t wishdir;
-	float  wishspeed;
-	float  scale;
-
-	// friction
-
-	speed = VectorLength( pm->ps->velocity );
-
-	if ( speed < 1 )
-	{
-		VectorCopy( vec3_origin, pm->ps->velocity );
-	}
-	else
-	{
-		drop = 0;
-
-		friction = pm_friction * 1.5; // extra friction
-		control = speed < pm_stopspeed ? pm_stopspeed : speed;
-		drop += control * friction * pml.frametime;
-
-		// scale the velocity
-		newspeed = speed - drop;
-
-		if ( newspeed < 0 )
-		{
-			newspeed = 0;
-		}
-
-		newspeed /= speed;
-
-		VectorScale( pm->ps->velocity, newspeed, pm->ps->velocity );
-	}
-
-	// accelerate
-	scale = PM_CmdScale( &pm->cmd, qtrue );
-
-	fmove = pm->cmd.forwardmove;
-	smove = pm->cmd.rightmove;
-
-	for ( i = 0; i < 3; i++ )
-	{
-		wishvel[ i ] = pml.forward[ i ] * fmove + pml.right[ i ] * smove;
-	}
-
-	wishvel[ 2 ] += pm->cmd.upmove;
-
-	VectorCopy( wishvel, wishdir );
-	wishspeed = VectorNormalize( wishdir );
-	wishspeed *= scale;
-
-	PM_Accelerate( wishdir, wishspeed, pm_accelerate );
-
-	// move
-	VectorMA( pm->ps->origin, pml.frametime, pm->ps->velocity, pm->ps->origin );
 }
 
 //============================================================================
@@ -4886,34 +4816,29 @@ void PmoveSingle( pmove_t *pmove )
 		pm->cmd.upmove = 0;
 	}
 
-	if ( pm->ps->pm_type == PM_SPECTATOR )
+	switch ( pm->ps->pm_type )
 	{
-		// update the viewangles
-		PM_UpdateViewAngles( pm->ps, &pm->cmd );
-		PM_CheckDuck();
-		PM_FlyMove();
-		PM_DropTimers();
-		return;
-	}
+		case PM_SPECTATOR:
+			PM_UpdateViewAngles( pm->ps, &pm->cmd );
+			PM_CheckDuck();
+			PM_GhostMove( qfalse );
+			PM_DropTimers();
+			return;
 
-	if ( pm->ps->pm_type == PM_NOCLIP )
-	{
-		PM_UpdateViewAngles( pm->ps, &pm->cmd );
-		PM_NoclipMove();
-		PM_SetViewheight();
-		PM_Weapon();
-		PM_DropTimers();
-		return;
-	}
+		case PM_NOCLIP:
+			PM_UpdateViewAngles( pm->ps, &pm->cmd );
+			PM_GhostMove( qtrue );
+			PM_SetViewheight();
+			PM_Weapon();
+			PM_DropTimers();
+			return;
 
-	if ( pm->ps->pm_type == PM_FREEZE )
-	{
-		return; // no movement at all
-	}
+		case PM_FREEZE:
+		case PM_INTERMISSION:
+			return;
 
-	if ( pm->ps->pm_type == PM_INTERMISSION )
-	{
-		return; // no movement at all
+		default:
+			break;
 	}
 
 	// set watertype, and waterlevel
