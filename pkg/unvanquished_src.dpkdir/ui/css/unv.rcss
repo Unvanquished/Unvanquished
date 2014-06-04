@@ -139,6 +139,7 @@ input.submit:hover
 	background-image: /ui/assets/buttons.png 0px 0px 311px 111px;
 }
 
+.window tab:selected,
 .window tab:active,
 .menuButton:active,
 input.submit:active
@@ -393,11 +394,7 @@ background:#073128cf;
 margin-right:3%;
 }
 
-.window tab:active{
-background-color:#ffffffff;
-}
-
-.window tab:hover,.window tab:focus{
+.window tab:hover,.window tab:selected{
 background-color:#227c77FF;
 }
 
@@ -409,7 +406,7 @@ background-color:#227c77FF;
 	overflow:auto auto;
 	color:#83fff5;
 	background-decorator: tiled-box;
-	background-top-left-image: /ui/assets/window/top-left.png; 
+	background-top-left-image: /ui/assets/window/top-left.png;
 	background-top-right-image: /ui/assets/window/top-right.png;
 	background-top-image: /ui/assets/window/top.png stretch;
 	background-bottom-left-image: /ui/assets/window/bottom-left.png;
@@ -418,7 +415,7 @@ background-color:#227c77FF;
 	background-left-image: /ui/assets/window/left.png stretch;
 	background-center-image: /ui/assets/window/line.png stretch;
 	overflow: hidden auto;
-	
+
 	/*
 	background:#073128cf;
 	border-style:solid;
