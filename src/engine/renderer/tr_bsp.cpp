@@ -2843,7 +2843,6 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 	for ( j = 0; j < 3; j++ )
 	{
 		out->xyz[ j ] = in->xyz[ j ];
-		out->qtangent[ j ] = in->qtangent[ j ];
 		out->normal[ j ] = in->normal[ j ];
 	}
 
@@ -2856,6 +2855,7 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 	for ( j = 0; j < 4; j++ )
 	{
 		out->lightColor[ j ] = in->lightColor[ j ];
+		out->qtangent[ j ] = in->qtangent[ j ];
 	}
 }
 

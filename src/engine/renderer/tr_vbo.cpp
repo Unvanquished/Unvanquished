@@ -571,7 +571,7 @@ static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts, qboo
 			{
 				data.qtangent = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.qtangent ) * data.numVerts );
 			}
-			VectorCopy( vert->qtangent, data.qtangent[ v ] );
+			Vector4Copy( vert->qtangent, data.qtangent[ v ] );
 		}
 
 		if ( ( vbo->attribBits & ATTR_COLOR ) )
