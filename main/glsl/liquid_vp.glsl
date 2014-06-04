@@ -47,7 +47,7 @@ void	main()
 	var_Position = (u_ModelMatrix * vec4(attr_Position, 1.0)).xyz;
 
 	// transform normalmap texcoords
-	var_TexNormal = (u_NormalTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
+	var_TexNormal = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 	var_Tangent.xyz = (u_ModelMatrix * vec4(attr_Tangent, 0.0)).xyz;
 	var_Binormal.xyz = (u_ModelMatrix * vec4(attr_Binormal, 0.0)).xyz;

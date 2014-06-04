@@ -97,9 +97,16 @@ void R_CalcTangents( vec3_t tangent, vec3_t binormal,
 		     const i16vec2_t t0, const i16vec2_t t1, const i16vec2_t t2 )
 {
 	vec3_t cp, u, v;
+	vec2_t t0f, t1f, t2f;
 
-	VectorSet( u, v1[ 0 ] - v0[ 0 ], unpackTC( t1[ 0 ] - t0[ 0 ] ), unpackTC( t1[ 1 ] - t0[ 1 ] ) );
-	VectorSet( v, v2[ 0 ] - v0[ 0 ], unpackTC( t2[ 0 ] - t0[ 0 ] ), unpackTC( t2[ 1 ] - t0[ 1 ] ) );
+	t0f[ 0 ] = halfToFloat( t0[ 0 ] );
+	t0f[ 1 ] = halfToFloat( t0[ 1 ] );
+	t1f[ 0 ] = halfToFloat( t1[ 0 ] );
+	t1f[ 1 ] = halfToFloat( t1[ 1 ] );
+	t2f[ 0 ] = halfToFloat( t2[ 0 ] );
+	t2f[ 1 ] = halfToFloat( t2[ 1 ] );
+	VectorSet( u, v1[ 0 ] - v0[ 0 ], t1f[ 0 ] - t0f[ 0 ], t1f[ 1 ] - t0f[ 1 ] );
+	VectorSet( v, v2[ 0 ] - v0[ 0 ], t2f[ 0 ] - t0f[ 0 ], t2f[ 1 ] - t0f[ 1 ] );
 
 	CrossProduct( u, v, cp );
 

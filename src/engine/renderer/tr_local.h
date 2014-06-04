@@ -109,21 +109,20 @@ static inline void snorm16ToFloat( const i16vec4_t in, vec4_t out )
 	out[ 3 ] = snorm16ToFloat( in[ 3 ] );
 }
 
-static inline int16_t packTC( float tc ) {
-	int roundedTC = lrintf( tc * 4096.0f );
-	if( roundedTC > 7 * 4096 ) {
-		roundedTC %= 14 * 4096;
-		if( roundedTC > 7 * 4096 )
-			roundedTC = 14 * 4096 - roundedTC;
-	} else if( roundedTC < -7 * 4096 ) {
-		roundedTC %= 14 * 4096;
-		if( roundedTC < -7 * 4096 )
-			roundedTC = -14 * 4096 - roundedTC;
-	}
-	return roundedTC;
+static inline int16_t floatToHalf( float in ) {
+	static float scale = powf(2.0f, 15 - 127);
+	floatint_t fi;
+
+	fi.f = in * scale;
+	
+	return (int16_t)(((fi.ui & 0x80000000) >> 16) | ((fi.ui & 0x0fffe000) >> 13));
 }
-static inline float unpackTC( int16_t tc ) {
-	return tc * (1.0f / 4096.0f);
+static inline float halfToFloat( int16_t in ) {
+	static float scale = powf(2.0f, 127 - 15);
+	floatint_t fi;
+
+	fi.ui = (((unsigned int)in & 0x8000) << 16) | (((unsigned int)in & 0x7fff) << 13);
+	return fi.f * scale;
 }
 
 // everything that is needed by the backend needs

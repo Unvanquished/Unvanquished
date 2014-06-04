@@ -702,7 +702,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			break;
 		case IQM_TEXCOORD:
 			for( j = 0; j < n; j++ ) {
-				IQModel->texcoords[ j ] = packTC( ((float *)IQMPtr( header, vertexarray->offset ))[ j ] );
+				IQModel->texcoords[ j ] = floatToHalf( ((float *)IQMPtr( header, vertexarray->offset ))[ j ] );
 			}
 			break;
 		case IQM_BLENDINDEXES:

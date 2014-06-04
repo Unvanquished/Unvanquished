@@ -142,11 +142,11 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 		tess.qtangents[ tess.numVertexes + i ][ 2 ] = vert->qtangent[ 2 ];
 		tess.qtangents[ tess.numVertexes + i ][ 3 ] = vert->qtangent[ 3 ];
 
-		tess.texCoords[ tess.numVertexes + i ][ 0 ] = packTC( vert->st[ 0 ] );
-		tess.texCoords[ tess.numVertexes + i ][ 1 ] = packTC( vert->st[ 1 ] );
+		tess.texCoords[ tess.numVertexes + i ][ 0 ] = floatToHalf( vert->st[ 0 ] );
+		tess.texCoords[ tess.numVertexes + i ][ 1 ] = floatToHalf( vert->st[ 1 ] );
 
-		tess.texCoords[ tess.numVertexes + i ][ 2 ] = packTC( vert->lightmap[ 0 ] );
-		tess.texCoords[ tess.numVertexes + i ][ 3 ] = packTC( vert->lightmap[ 1 ] );
+		tess.texCoords[ tess.numVertexes + i ][ 2 ] = floatToHalf( vert->lightmap[ 0 ] );
+		tess.texCoords[ tess.numVertexes + i ][ 3 ] = floatToHalf( vert->lightmap[ 1 ] );
 
 		Vector4Copy( vert->lightColor, tess.colors[ tess.numVertexes + i ] );
 	}
@@ -230,17 +230,17 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t c
 	Vector4Copy( tess.qtangents[ ndx ], tess.qtangents[ ndx + 3 ] );
 
 	// standard square texture coordinates
-	tess.texCoords[ ndx ][ 0 ] = packTC( s1 );
-	tess.texCoords[ ndx ][ 1 ] = packTC( t1 );
+	tess.texCoords[ ndx ][ 0 ] = floatToHalf( s1 );
+	tess.texCoords[ ndx ][ 1 ] = floatToHalf( t1 );
 
-	tess.texCoords[ ndx + 1 ][ 0 ] = packTC( s2 );
-	tess.texCoords[ ndx + 1 ][ 1 ] = packTC( t1 );
+	tess.texCoords[ ndx + 1 ][ 0 ] = floatToHalf( s2 );
+	tess.texCoords[ ndx + 1 ][ 1 ] = floatToHalf( t1 );
 
-	tess.texCoords[ ndx + 2 ][ 0 ] = packTC( s2 );
-	tess.texCoords[ ndx + 2 ][ 1 ] = packTC( t2 );
+	tess.texCoords[ ndx + 2 ][ 0 ] = floatToHalf( s2 );
+	tess.texCoords[ ndx + 2 ][ 1 ] = floatToHalf( t2 );
 
-	tess.texCoords[ ndx + 3 ][ 0 ] = packTC( s1 );
-	tess.texCoords[ ndx + 3 ][ 1 ] = packTC( t2 );
+	tess.texCoords[ ndx + 3 ][ 0 ] = floatToHalf( s1 );
+	tess.texCoords[ ndx + 3 ][ 1 ] = floatToHalf( t2 );
 
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
@@ -318,17 +318,17 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1,
 	Vector4Copy( tess.qtangents[ ndx ], tess.qtangents[ ndx + 3 ] );
 
 	// standard square texture coordinates
-	tess.texCoords[ ndx ][ 0 ] = packTC( s1 );
-	tess.texCoords[ ndx ][ 1 ] = packTC( t1 );
+	tess.texCoords[ ndx ][ 0 ] = floatToHalf( s1 );
+	tess.texCoords[ ndx ][ 1 ] = floatToHalf( t1 );
 
-	tess.texCoords[ ndx + 1 ][ 0 ] = packTC( s2 );
-	tess.texCoords[ ndx + 1 ][ 1 ] = packTC( t1 );
+	tess.texCoords[ ndx + 1 ][ 0 ] = floatToHalf( s2 );
+	tess.texCoords[ ndx + 1 ][ 1 ] = floatToHalf( t1 );
 
-	tess.texCoords[ ndx + 2 ][ 0 ] = packTC( s2 );
-	tess.texCoords[ ndx + 2 ][ 1 ] = packTC( t2 );
+	tess.texCoords[ ndx + 2 ][ 0 ] = floatToHalf( s2 );
+	tess.texCoords[ ndx + 2 ][ 1 ] = floatToHalf( t2 );
 
-	tess.texCoords[ ndx + 3 ][ 0 ] = packTC( s1 );
-	tess.texCoords[ ndx + 3 ][ 1 ] = packTC( t2 );
+	tess.texCoords[ ndx + 3 ][ 0 ] = floatToHalf( s1 );
+	tess.texCoords[ ndx + 3 ][ 1 ] = floatToHalf( t2 );
 
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
@@ -588,8 +588,8 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.attribsSet = 0;
 
 	Vector4Copy( quadVerts[ 0 ], tess.xyz[ tess.numVertexes ] );
-	tess.texCoords[ tess.numVertexes ][ 0 ] = packTC( 0 );
-	tess.texCoords[ tess.numVertexes ][ 1 ] = packTC( 0 );
+	tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( 0 );
+	tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( 0 );
 	tess.colors[ tess.numVertexes ][ 0 ] = 255;
 	tess.colors[ tess.numVertexes ][ 1 ] = 255;
 	tess.colors[ tess.numVertexes ][ 2 ] = 255;
@@ -597,8 +597,8 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.numVertexes++;
 
 	Vector4Copy( quadVerts[ 1 ], tess.xyz[ tess.numVertexes ] );
-	tess.texCoords[ tess.numVertexes ][ 0 ] = packTC( 1 );
-	tess.texCoords[ tess.numVertexes ][ 1 ] = packTC( 0 );
+	tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( 1 );
+	tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( 0 );
 	tess.colors[ tess.numVertexes ][ 0 ] = 255;
 	tess.colors[ tess.numVertexes ][ 1 ] = 255;
 	tess.colors[ tess.numVertexes ][ 2 ] = 255;
@@ -606,8 +606,8 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.numVertexes++;
 
 	Vector4Copy( quadVerts[ 2 ], tess.xyz[ tess.numVertexes ] );
-	tess.texCoords[ tess.numVertexes ][ 0 ] = packTC( 1 );
-	tess.texCoords[ tess.numVertexes ][ 1 ] = packTC( 1 );
+	tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( 1 );
+	tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( 1 );
 	tess.colors[ tess.numVertexes ][ 0 ] = 255;
 	tess.colors[ tess.numVertexes ][ 1 ] = 255;
 	tess.colors[ tess.numVertexes ][ 2 ] = 255;
@@ -615,8 +615,8 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.numVertexes++;
 
 	Vector4Copy( quadVerts[ 3 ], tess.xyz[ tess.numVertexes ] );
-	tess.texCoords[ tess.numVertexes ][ 0 ] = packTC( 0 );
-	tess.texCoords[ tess.numVertexes ][ 1 ] = packTC( 1 );
+	tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( 0 );
+	tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( 1 );
 	tess.colors[ tess.numVertexes ][ 0 ] = 255;
 	tess.colors[ tess.numVertexes ][ 1 ] = 255;
 	tess.colors[ tess.numVertexes ][ 2 ] = 255;
@@ -714,8 +714,8 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		VectorCopy( p->verts[ i ].xyz, tess.xyz[ tess.numVertexes + i ] );
 		tess.xyz[ tess.numVertexes + i ][ 3 ] = 1;
 
-		tess.texCoords[ tess.numVertexes + i ][ 0 ] = packTC( p->verts[ i ].st[ 0 ] );
-		tess.texCoords[ tess.numVertexes + i ][ 1 ] = packTC( p->verts[ i ].st[ 1 ] );
+		tess.texCoords[ tess.numVertexes + i ][ 0 ] = floatToHalf( p->verts[ i ].st[ 0 ] );
+		tess.texCoords[ tess.numVertexes + i ][ 1 ] = floatToHalf( p->verts[ i ].st[ 1 ] );
 
 		tess.colors[ tess.numVertexes + i ][ 0 ] = p->verts[ i ].modulate[ 0 ];
 		tess.colors[ tess.numVertexes + i ][ 1 ] = p->verts[ i ].modulate[ 1 ];
@@ -837,8 +837,8 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 		VectorCopy( xyzw, tess.xyz[ tess.numVertexes + i ] );
 		tess.xyz[ tess.numVertexes + i ][ 3 ] = 1;
 
-		tess.texCoords[ tess.numVertexes + i ][ 0 ] = packTC( st[ 0 ] );
-		tess.texCoords[ tess.numVertexes + i ][ 1 ] = packTC( st[ 1 ] );
+		tess.texCoords[ tess.numVertexes + i ][ 0 ] = floatToHalf( st[ 0 ] );
+		tess.texCoords[ tess.numVertexes + i ][ 1 ] = floatToHalf( st[ 1 ] );
 
 		tess.colors[ tess.numVertexes + i ][ 0 ] = color[ 0 ];
 		tess.colors[ tess.numVertexes + i ][ 1 ] = color[ 1 ];
@@ -865,8 +865,8 @@ void Tess_SurfaceDecal( srfDecal_t *srf )
 		VectorCopy( srf->verts[ i ].xyz, tess.xyz[ tess.numVertexes + i ] );
 		tess.xyz[ tess.numVertexes + i ][ 3 ] = 1;
 
-		tess.texCoords[ tess.numVertexes + i ][ 0 ] = packTC( srf->verts[ i ].st[ 0 ] );
-		tess.texCoords[ tess.numVertexes + i ][ 1 ] = packTC( srf->verts[ i ].st[ 1 ] );
+		tess.texCoords[ tess.numVertexes + i ][ 0 ] = floatToHalf( srf->verts[ i ].st[ 0 ] );
+		tess.texCoords[ tess.numVertexes + i ][ 1 ] = floatToHalf( srf->verts[ i ].st[ 1 ] );
 
 		tess.colors[ tess.numVertexes + i ][ 0 ] = srf->verts[ i ].modulate[ 0 ];
 		tess.colors[ tess.numVertexes + i ][ 1 ] = srf->verts[ i ].modulate[ 1 ];
@@ -1005,8 +1005,8 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 		tess.xyz[ tess.numVertexes + j ][ 2 ] = tmpVert[ 2 ];
 		tess.xyz[ tess.numVertexes + j ][ 3 ] = 1;
 
-		tess.texCoords[ tess.numVertexes + j ][ 0 ] = packTC( st->st[ 0 ] );
-		tess.texCoords[ tess.numVertexes + j ][ 1 ] = packTC( st->st[ 1 ] );
+		tess.texCoords[ tess.numVertexes + j ][ 0 ] = floatToHalf( st->st[ 0 ] );
+		tess.texCoords[ tess.numVertexes + j ][ 1 ] = floatToHalf( st->st[ 1 ] );
 	}
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD;
@@ -1155,8 +1155,8 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 			}
 
-			tess.texCoords[ tess.numVertexes + j ][ 0 ] = packTC( v->texCoords[ 0 ] );
-			tess.texCoords[ tess.numVertexes + j ][ 1 ] = packTC( v->texCoords[ 1 ] );
+			tess.texCoords[ tess.numVertexes + j ][ 0 ] = floatToHalf( v->texCoords[ 0 ] );
+			tess.texCoords[ tess.numVertexes + j ][ 1 ] = floatToHalf( v->texCoords[ 1 ] );
 		}
 	}
 	else
@@ -1219,8 +1219,8 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 			R_TBNtoQtangents( tangent, binormal, normal, tess.qtangents[ tess.numVertexes + j ] );
 
-			tess.texCoords[ tess.numVertexes + j ][ 0 ] = packTC( v->texCoords[ 0 ] );
-			tess.texCoords[ tess.numVertexes + j ][ 1 ] = packTC( v->texCoords[ 1 ] );
+			tess.texCoords[ tess.numVertexes + j ][ 0 ] = floatToHalf( v->texCoords[ 0 ] );
+			tess.texCoords[ tess.numVertexes + j ][ 1 ] = floatToHalf( v->texCoords[ 1 ] );
 		}
 	}
 

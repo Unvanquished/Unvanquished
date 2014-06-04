@@ -168,8 +168,8 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		R_TBNtoQtangents( surf->verts[ j ].tangent, surf->verts[ j ].binormal,
 				  surf->verts[ j ].normal, data.qtangent[ j ] );
 		
-		data.st[ j ][ 0 ] = packTC( surf->verts[ j ].texCoords[ 0 ] );
-		data.st[ j ][ 1 ] = packTC( surf->verts[ j ].texCoords[ 1 ] );
+		data.st[ j ][ 0 ] = floatToHalf( surf->verts[ j ].texCoords[ 0 ] );
+		data.st[ j ][ 1 ] = floatToHalf( surf->verts[ j ].texCoords[ 1 ] );
 
 		for ( k = 0; k < MAX_WEIGHTS; k++ )
 		{

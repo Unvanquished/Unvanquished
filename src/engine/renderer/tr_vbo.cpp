@@ -77,7 +77,11 @@ static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i, qboolean noL
 	{
 		vbo->attribs[ i ].componentType = GL_UNSIGNED_BYTE;
 	}
-	else if ( i == ATTR_INDEX_TEXCOORD || i == ATTR_INDEX_QTANGENT || i == ATTR_INDEX_QTANGENT2 )
+	else if ( i == ATTR_INDEX_TEXCOORD )
+	{
+		vbo->attribs[ i ].componentType = GL_HALF_FLOAT;
+	}
+	else if ( i == ATTR_INDEX_QTANGENT || i == ATTR_INDEX_QTANGENT2 )
 	{
 		vbo->attribs[ i ].componentType = GL_SHORT;
 	}
@@ -125,6 +129,8 @@ static size_t R_GetSizeForType( GLenum type )
 			return sizeof( unsigned short );
 		case GL_SHORT:
 			return sizeof( short );
+		case GL_HALF_FLOAT:
+			return sizeof( int16_t );
 		default:
 			Com_Error( ERR_FATAL, "R_GetSizeForType: ERROR unknown type\n" );
 			return 0;
@@ -549,8 +555,8 @@ static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts, qboo
 			{
 				data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * data.numVerts );
 			}
-			data.st[ v ][ 0 ] = packTC( vert->st[ 0 ] );
-			data.st[ v ][ 1 ] = packTC( vert->st[ 1 ] );
+			data.st[ v ][ 0 ] = floatToHalf( vert->st[ 0 ] );
+			data.st[ v ][ 1 ] = floatToHalf( vert->st[ 1 ] );
 		}
 
 		if ( ( vbo->attribBits & ATTR_TEXCOORD ) && !noLightCoords )
@@ -559,10 +565,10 @@ static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts, qboo
 			{
 				data.stpq = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * data.numVerts );
 			}
-			data.stpq[ v ][ 0 ] = packTC( vert->st[ 0 ] );
-			data.stpq[ v ][ 1 ] = packTC( vert->st[ 1 ] );
-			data.stpq[ v ][ 2 ] = packTC( vert->lightmap[ 0 ] );
-			data.stpq[ v ][ 3 ] = packTC( vert->lightmap[ 1 ] );
+			data.stpq[ v ][ 0 ] = floatToHalf( vert->st[ 0 ] );
+			data.stpq[ v ][ 1 ] = floatToHalf( vert->st[ 1 ] );
+			data.stpq[ v ][ 2 ] = floatToHalf( vert->lightmap[ 0 ] );
+			data.stpq[ v ][ 3 ] = floatToHalf( vert->lightmap[ 1 ] );
 		}
 
 		if ( ( vbo->attribBits & ATTR_QTANGENT ) )

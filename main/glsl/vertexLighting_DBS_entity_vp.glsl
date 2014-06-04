@@ -106,7 +106,7 @@ void	main()
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
 					normal,
-					attr_TexCoord0.st / 4096.0,
+					attr_TexCoord0.st,
 					u_Time);
 #endif
 
@@ -123,16 +123,16 @@ void	main()
 
 	var_Normal.xyz = (u_ModelMatrix * vec4(normal, 0.0)).xyz;
 	// transform diffusemap texcoords
-	var_TexDiffuse = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
+	var_TexDiffuse = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexNormal = (u_NormalTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
+	var_TexNormal = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
-	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
+	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 #endif
 #if defined(USE_GLOW_MAPPING)
-	var_TexGlow = (u_GlowTextureMatrix * vec4(attr_TexCoord0 / 4096.0, 0.0, 1.0)).st;
+	var_TexGlow = (u_GlowTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 #endif
 }

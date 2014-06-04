@@ -274,8 +274,8 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			// feed vertex texcoords
 			for ( j = 0; j < surf->numVerts; j++ )
 			{
-				data.st[ j ][ 0 ] = packTC( surf->st[ j ].st[ 0 ] );
-				data.st[ j ][ 1 ] = packTC( surf->st[ j ].st[ 1 ] );
+				data.st[ j ][ 0 ] = floatToHalf( surf->st[ j ].st[ 0 ] );
+				data.st[ j ][ 1 ] = floatToHalf( surf->st[ j ].st[ 1 ] );
 			}
 
 			// calc and feed tangent spaces
