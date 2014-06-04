@@ -75,7 +75,7 @@ void	main()
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
 					normal,
-					attr_TexCoord0.st / 4096.0,
+					attr_TexCoord0.st,
 					u_Time);
 #endif
 
@@ -101,9 +101,9 @@ void	main()
 		texCoord.w = 1;
 	}
 #elif defined(USE_TCGEN_LIGHTMAP)
-	texCoord = vec4(attr_TexCoord0.zw / 4096.0, 0.0, 1.0);
+	texCoord = vec4(attr_TexCoord0.zw, 0.0, 1.0);
 #else
-	texCoord = vec4(attr_TexCoord0.xy / 4096.0, 0.0, 1.0);
+	texCoord = vec4(attr_TexCoord0.xy, 0.0, 1.0);
 #endif
 
 	var_Tex = (u_ColorTextureMatrix * texCoord).st;

@@ -81,7 +81,7 @@ void	main()
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
 					normal,
-					attr_TexCoord0.st / 4096.0,
+					attr_TexCoord0.st,
 					u_Time);
 #endif
 
