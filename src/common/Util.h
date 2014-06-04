@@ -33,11 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Various utilities
 
-#include "../engine/qcommon/q_shared.h"
-#include <utility>
-#include <type_traits>
-#include <memory>
-
 // Workaround for broken tuples in GCC 4.6
 #ifdef LIBSTDCXX_BROKEN_CXX11
 namespace std {

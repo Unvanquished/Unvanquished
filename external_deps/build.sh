@@ -7,7 +7,7 @@ set -u
 
 # Dependencies version. This number must be updated every time the version
 # numbers below change, or packages are added/removed.
-DEPS_VERSION=1
+DEPS_VERSION=2
 
 # Package versions
 PKGCONFIG_VERSION=0.28
@@ -30,60 +30,71 @@ SPEEX_VERSION=1.2rc1
 THEORA_VERSION=1.1.1
 OPUS_VERSION=1.1
 OPUSFILE_VERSION=0.5
-NACLSDK_VERSION=34.0.1825.4
+NACLSDK_VERSION=35.0.1916.99
 
-# Download and extract a file
-# Usage: download <filename> <URL>
+# Extract an archive into the given subdirectory of the build dir and cd to it
+# Usage: extract <filename> <directory>
+extract() {
+	rm -rf "${BUILD_DIR}/${2}"
+	mkdir -p "${BUILD_DIR}/${2}"
+	case "${1}" in
+	*.tar.bz2)
+		tar xjf "${DOWNLOAD_DIR}/${1}" -C "${BUILD_DIR}/${2}"
+		;;
+	*.tar.gz|*.tgz)
+		tar xzf "${DOWNLOAD_DIR}/${1}" -C "${BUILD_DIR}/${2}"
+		;;
+	*.zip)
+		unzip -d "${BUILD_DIR}/${2}" "${DOWNLOAD_DIR}/${1}"
+		;;
+	*.cygtar.bz2)
+		# Some Windows NaCl SDK packages have incorrect symlinks, so use
+		# cygtar to extract them.
+		"${ROOT_DIR}/cygtar.py" -xjf "${DOWNLOAD_DIR}/${1}" -C "${BUILD_DIR}/${2}"
+		;;
+	*.dmg)
+		mkdir -p "${BUILD_DIR}/${2}-dmg"
+		hdiutil attach -mountpoint "${BUILD_DIR}/${2}-dmg" "${DOWNLOAD_DIR}/${1}"
+		cp -R "${BUILD_DIR}/${2}-dmg/"* "${BUILD_DIR}/${2}/"
+		hdiutil detach "${BUILD_DIR}/${2}-dmg"
+		rmdir "${BUILD_DIR}/${2}-dmg"
+		;;
+	*)
+		echo "Unknown archive type for ${1}"
+		exit 1
+		;;
+	esac
+	cd "${BUILD_DIR}/${2}"
+}
+
+# Download a file if it doesn't exist yet, and extract it into the build dir
+# Usage: download <filename> <URL> <dir>
 download() {
-	if [ ! -f "${1}" ]; then
-		curl -L -o "${1}" "${2}"
-		case "${1##*\.}" in
-		xz)
-			tar xJf "${1}"
-			;;
-		bz2)
-			tar xjf "${1}"
-			;;
-		gz|tgz)
-			tar xzf "${1}"
-			;;
-		zip)
-			unzip "${1}"
-			;;
-		dmg)
-			;;
-		*)
-			echo "Unknown archive type for ${1}"
-			exit 1
-			;;
-		esac
+	if [ ! -f "${DOWNLOAD_DIR}/${1}" ]; then
+		curl -L -o "${DOWNLOAD_DIR}/${1}" "${2}"
 	fi
+	extract "${1}" "${3}"
 }
 
 # Build pkg-config
 build_pkgconfig() {
-	download "pkg-config-${PKGCONFIG_VERSION}.tar.gz" "http://pkgconfig.freedesktop.org/releases/pkg-config-${PKGCONFIG_VERSION}.tar.gz"
+	download "pkg-config-${PKGCONFIG_VERSION}.tar.gz" "http://pkgconfig.freedesktop.org/releases/pkg-config-${PKGCONFIG_VERSION}.tar.gz" pkgconfig
 	cd "pkg-config-${PKGCONFIG_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" --with-internal-glib
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build NASM
 build_nasm() {
 	case "${PLATFORM}" in
 	macosx*)
-		download "nasm-${NASM_VERSION}-macosx.zip" "http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/macosx/nasm-${NASM_VERSION}-macosx.zip"
-		[ -d "nasm-${NASM_VERSION}-macosx" ] || mv "nasm-${NASM_VERSION}" "nasm-${NASM_VERSION}-macosx"
-		cp "nasm-${NASM_VERSION}-macosx/nasm" "${PREFIX}/bin"
+		download "nasm-${NASM_VERSION}-macosx.zip" "http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/macosx/nasm-${NASM_VERSION}-macosx.zip" nasm
+		cp "nasm-${NASM_VERSION}/nasm" "${PREFIX}/bin"
 		;;
 	mingw*|msvc*)
-		download "nasm-${NASM_VERSION}-win32.zip" "http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win32/nasm-${NASM_VERSION}-win32.zip"
-		[ -d "nasm-${NASM_VERSION}-win32" ] || mv "nasm-${NASM_VERSION}" "nasm-${NASM_VERSION}-win32"
-		cp "nasm-${NASM_VERSION}-win32/nasm.exe" "${PREFIX}/bin"
+		download "nasm-${NASM_VERSION}-win32.zip" "http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win32/nasm-${NASM_VERSION}-win32.zip" nasm
+		cp "nasm-${NASM_VERSION}/nasm.exe" "${PREFIX}/bin"
 		;;
 	*)
 		echo "Unsupported platform for NASM"
@@ -94,11 +105,10 @@ build_nasm() {
 
 # Build zlib
 build_zlib() {
-	download "zlib-${ZLIB_VERSION}.tar.xz" "http://zlib.net/zlib-${ZLIB_VERSION}.tar.xz"
+	download "zlib-${ZLIB_VERSION}.tar.gz" "http://zlib.net/zlib-${ZLIB_VERSION}.tar.gz" zlib
 	cd "zlib-${ZLIB_VERSION}"
 	case "${PLATFORM}" in
 	mingw*|msvc*)
-		make -f win32/Makefile.gcc clean
 		make -f win32/Makefile.gcc PREFIX="${HOST}-"
 		make -f win32/Makefile.gcc install BINARY_PATH="${PREFIX}/bin" LIBRARY_PATH="${PREFIX}/lib" INCLUDE_PATH="${PREFIX}/include" SHARED_MODE=1
 		;;
@@ -107,17 +117,15 @@ build_zlib() {
 		exit 1
 		;;
 	esac
-	cd ..
 }
 
 # Build GMP
 build_gmp() {
-	download "gmp-${GMP_VERSION}a.tar.xz" "ftp://ftp.gmplib.org/pub/gmp/gmp-${GMP_VERSION}a.tar.xz"
+	download "gmp-${GMP_VERSION}a.tar.bz2" "https://gmplib.org/download/gmp/gmp-${GMP_VERSION}a.tar.bz2" gmp
 	cd "gmp-${GMP_VERSION}"
-	make distclean || true
 	case "${PLATFORM}" in
 	msvc*)
-		# Configure script gets confused if we overide the compiler. Shouldn't
+		# Configure script gets confused if we override the compiler. Shouldn't
 		# matter since gmp doesn't use anything from libgcc.
 		local CC_BACKUP="${CC}"
 		local CXX_BACKUP="${CXX}"
@@ -126,7 +134,6 @@ build_gmp() {
 		;;
 	esac
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
-	make clean
 	make
 	make install
 	case "${PLATFORM}" in
@@ -135,28 +142,23 @@ build_gmp() {
 		export CXX="${CXX_BACKUP}"
 		;;
 	esac
-	cd ..
 }
 
 # Build Nettle
 build_nettle() {
-	download "nettle-${NETTLE_VERSION}.tar.gz" "http://www.lysator.liu.se/~nisse/archive/nettle-${NETTLE_VERSION}.tar.gz"
+	download "nettle-${NETTLE_VERSION}.tar.gz" "http://www.lysator.liu.se/~nisse/archive/nettle-${NETTLE_VERSION}.tar.gz" nettle
 	cd "nettle-${NETTLE_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --enable-static
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build GeoIP
 build_geoip() {
-	download "GeoIP-${GEOIP_VERSION}.tar.gz" "http://www.maxmind.com/download/geoip/api/c/GeoIP-${GEOIP_VERSION}.tar.gz"
+	download "GeoIP-${GEOIP_VERSION}.tar.gz" "http://www.maxmind.com/download/geoip/api/c/GeoIP-${GEOIP_VERSION}.tar.gz" geoip
 	cd "GeoIP-${GEOIP_VERSION}"
 	export ac_cv_func_malloc_0_nonnull=yes
 	export ac_cv_func_realloc_0_nonnull=yes
-	make distclean || true
 	# GeoIP needs -lws2_32 in LDFLAGS
 	local TEMP_LDFLAGS="${LDFLAGS}"
 	case "${PLATFORM}" in
@@ -165,38 +167,30 @@ build_geoip() {
 		;;
 	esac
 	LDFLAGS="${TEMP_LDFLAGS}" ./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build cURL
 build_curl() {
-	download "curl-${CURL_VERSION}.tar.bz2" "http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.bz2"
+	download "curl-${CURL_VERSION}.tar.bz2" "http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.bz2" curl
 	cd "curl-${CURL_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-shared
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build SDL2
 build_sdl2() {
 	case "${PLATFORM}" in
 	mingw*)
-		download "SDL2-devel-${SDL2_VERSION}-mingw.tar.gz" "http://www.libsdl.org/release/SDL2-devel-${SDL2_VERSION}-mingw.tar.gz"
-		[ -d "SDL2-${SDL2_VERSION}-mingw" ] || mv "SDL2-${SDL2_VERSION}" "SDL2-${SDL2_VERSION}-mingw"
-		cd "SDL2-${SDL2_VERSION}-mingw"
+		download "SDL2-devel-${SDL2_VERSION}-mingw.tar.gz" "http://www.libsdl.org/release/SDL2-devel-${SDL2_VERSION}-mingw.tar.gz" sdl2
+		cd "SDL2-${SDL2_VERSION}"
 		make install-package arch="${HOST}" prefix="${PREFIX}"
-		cd ..
 		;;
 	msvc*)
-		download "SDL2-devel-${SDL2_VERSION}-VC.zip" "http://www.libsdl.org/release/SDL2-devel-${SDL2_VERSION}-VC.zip"
-		[ -d "SDL2-${SDL2_VERSION}-msvc" ] || mv "SDL2-${SDL2_VERSION}" "SDL2-${SDL2_VERSION}-msvc"
-		cd "SDL2-${SDL2_VERSION}-msvc"
+		download "SDL2-devel-${SDL2_VERSION}-VC.zip" "http://www.libsdl.org/release/SDL2-devel-${SDL2_VERSION}-VC.zip" sdl2
+		cd "SDL2-${SDL2_VERSION}"
 		mkdir -p "${PREFIX}/include/SDL2"
 		cp include/* "${PREFIX}/include/SDL2"
 		case "${PLATFORM}" in
@@ -209,15 +203,10 @@ build_sdl2() {
 			cp lib/x64/*.dll "${PREFIX}/bin"
 			;;
 		esac
-		cd ..
 		;;
 	macosx*)
-		download "SDL2-${SDL2_VERSION}.dmg" "http://libsdl.org/release/SDL2-${SDL2_VERSION}.dmg"
-		mkdir -p "SDL2-${SDL2_VERSION}-mac"
-		hdiutil attach -mountpoint "SDL2-${SDL2_VERSION}-mac" "SDL2-${SDL2_VERSION}.dmg"
-		rm -rf "${PREFIX}/SDL2.framework"
-		cp -R "SDL2-${SDL2_VERSION}-mac/SDL2.framework" "${PREFIX}"
-		hdiutil detach "SDL2-${SDL2_VERSION}-mac"
+		download "SDL2-${SDL2_VERSION}.dmg" "http://libsdl.org/release/SDL2-${SDL2_VERSION}.dmg" sdl2
+		cp -R "SDL2.framework" "${PREFIX}"
 		;;
 	*)
 		echo "Unsupported platform for SDL2"
@@ -228,9 +217,8 @@ build_sdl2() {
 
 # Build GLEW
 build_glew() {
-	download "glew-${GLEW_VERSION}.tgz" "http://downloads.sourceforge.net/project/glew/glew/${GLEW_VERSION}/glew-${GLEW_VERSION}.tgz"
+	download "glew-${GLEW_VERSION}.tgz" "http://downloads.sourceforge.net/project/glew/glew/${GLEW_VERSION}/glew-${GLEW_VERSION}.tgz" glew
 	cd "glew-${GLEW_VERSION}"
-	make distclean
 	case "${PLATFORM}" in
 	mingw*|msvc*)
 		make SYSTEM=mingw GLEW_DEST="${PREFIX}" CC="${HOST}-gcc" AR="${HOST}-ar" RANLIB="${HOST}-ranlib" STRIP="${HOST}-strip" LD="${HOST}-gcc"
@@ -246,65 +234,52 @@ build_glew() {
 		exit 1
 		;;
 	esac
-	cd ..
 }
 
 # Build PNG
 build_png() {
-	download "libpng-${PNG_VERSION}.tar.xz" "http://download.sourceforge.net/libpng/libpng-${PNG_VERSION}.tar.xz"
+	download "libpng-${PNG_VERSION}.tar.gz" "http://download.sourceforge.net/libpng/libpng-${PNG_VERSION}.tar.gz" png
 	cd "libpng-${PNG_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build JPEG
 build_jpeg() {
-	download "libjpeg-turbo-${JPEG_VERSION}.tar.gz" "http://downloads.sourceforge.net/project/libjpeg-turbo/${JPEG_VERSION}/libjpeg-turbo-${JPEG_VERSION}.tar.gz"
+	download "libjpeg-turbo-${JPEG_VERSION}.tar.gz" "http://downloads.sourceforge.net/project/libjpeg-turbo/${JPEG_VERSION}/libjpeg-turbo-${JPEG_VERSION}.tar.gz" jpeg
 	cd "libjpeg-turbo-${JPEG_VERSION}"
-	make distclean || true
 	# JPEG doesn't set -O3 if CFLAGS is defined
 	CFLAGS="${CFLAGS:-} -O3" ./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --with-jpeg8
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build WebP
 build_webp() {
-	download "libwebp-${WEBP_VERSION}.tar.gz" "https://webp.googlecode.com/files/libwebp-${WEBP_VERSION}.tar.gz"
+	download "libwebp-${WEBP_VERSION}.tar.gz" "https://webp.googlecode.com/files/libwebp-${WEBP_VERSION}.tar.gz" webp
 	cd "libwebp-${WEBP_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build FreeType
 build_freetype() {
-	download "freetype-${FREETYPE_VERSION}.tar.bz2" "http://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.bz2"
+	download "freetype-${FREETYPE_VERSION}.tar.bz2" "http://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.bz2" freetype
 	cd "freetype-${FREETYPE_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --without-bzip2 --without-png --with-harfbuzz=no
-	make clean
 	make
 	make install
 	cp -a "${PREFIX}/include/freetype2" "${PREFIX}/include/freetype"
 	mv "${PREFIX}/include/freetype" "${PREFIX}/include/freetype2/freetype"
-	cd ..
 }
 
 # Build OpenAL
 build_openal() {
 	case "${PLATFORM}" in
 	mingw*|msvc*)
-		download "openal-soft-${OPENAL_VERSION}-bin.zip" "http://kcat.strangesoft.net/openal-soft-${OPENAL_VERSION}-bin.zip"
+		download "openal-soft-${OPENAL_VERSION}-bin.zip" "http://kcat.strangesoft.net/openal-soft-${OPENAL_VERSION}-bin.zip" openal
 		cd "openal-soft-${OPENAL_VERSION}-bin"
 		cp -r "include/AL" "${PREFIX}/include"
 		case "${PLATFORM}" in
@@ -317,25 +292,21 @@ build_openal() {
 			cp "Win64/soft_oal.dll" "${PREFIX}/bin/OpenAL32.dll"
 			;;
 		esac
-		cd ..
 		;;
 	macosx*)
-		download "openal-soft-${OPENAL_VERSION}.tar.bz2" "http://kcat.strangesoft.net/openal-releases/openal-soft-${OPENAL_VERSION}.tar.bz2"
+		download "openal-soft-${OPENAL_VERSION}.tar.bz2" "http://kcat.strangesoft.net/openal-releases/openal-soft-${OPENAL_VERSION}.tar.bz2" openal
 		cd "openal-soft-${OPENAL_VERSION}"
-		rm -rf CMakeCache.txt CMakeFiles
 		case "${PLATFORM}" in
 		macosx32)
-			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_BUILD_TYPE=Release
+			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" -DCMAKE_BUILD_TYPE=Release
 			;;
 		macosx64)
-			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_BUILD_TYPE=Release
+			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" -DCMAKE_BUILD_TYPE=Release
 			;;
 		esac
-		make clean
 		make
 		make install
 		install_name_tool -id "@rpath/libopenal.${OPENAL_VERSION}.dylib" "${PREFIX}/lib/libopenal.${OPENAL_VERSION}.dylib"
-		cd ..
 		;;
 	*)
 		echo "Unsupported platform for OpenAL"
@@ -346,48 +317,38 @@ build_openal() {
 
 # Build Ogg
 build_ogg() {
-	download "libogg-${OGG_VERSION}.tar.xz" "http://downloads.xiph.org/releases/ogg/libogg-${OGG_VERSION}.tar.xz"
+	download "libogg-${OGG_VERSION}.tar.gz" "http://downloads.xiph.org/releases/ogg/libogg-${OGG_VERSION}.tar.gz" ogg
 	cd "libogg-${OGG_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build Vorbis
 build_vorbis() {
-	download "libvorbis-${VORBIS_VERSION}.tar.xz" "http://downloads.xiph.org/releases/vorbis/libvorbis-${VORBIS_VERSION}.tar.xz"
+	download "libvorbis-${VORBIS_VERSION}.tar.gz" "http://downloads.xiph.org/releases/vorbis/libvorbis-${VORBIS_VERSION}.tar.gz" vorbis
 	cd "libvorbis-${VORBIS_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --disable-examples
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build Speex
 build_speex() {
-	download "speex-${SPEEX_VERSION}.tar.gz" "http://downloads.xiph.org/releases/speex/speex-${SPEEX_VERSION}.tar.gz"
+	download "speex-${SPEEX_VERSION}.tar.gz" "http://downloads.xiph.org/releases/speex/speex-${SPEEX_VERSION}.tar.gz" speex
 	cd "speex-${SPEEX_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
 	local TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
 	sed "s/deplibs_check_method=.*/deplibs_check_method=pass_all/g" libtool > "${TMP_FILE}"
 	mv "${TMP_FILE}" libtool
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build Theora
 build_theora() {
-	download "libtheora-${THEORA_VERSION}.tar.bz2" "http://downloads.xiph.org/releases/theora/libtheora-${THEORA_VERSION}.tar.bz2"
+	download "libtheora-${THEORA_VERSION}.tar.bz2" "http://downloads.xiph.org/releases/theora/libtheora-${THEORA_VERSION}.tar.bz2" theora
 	cd "libtheora-${THEORA_VERSION}"
-	make distclean || true
 	case "${PLATFORM}" in
 	mingw*|msvc*)
 		local TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
@@ -399,34 +360,26 @@ build_theora() {
 		;;
 	esac
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --disable-examples --disable-encode
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build Opus
 build_opus() {
-	download "opus-${OPUS_VERSION}.tar.gz" "http://downloads.xiph.org/releases/opus/opus-${OPUS_VERSION}.tar.gz"
+	download "opus-${OPUS_VERSION}.tar.gz" "http://downloads.xiph.org/releases/opus/opus-${OPUS_VERSION}.tar.gz" opus
 	cd "opus-${OPUS_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build OpusFile
 build_opusfile() {
-	download "opusfile-${OPUSFILE_VERSION}.tar.gz" "http://downloads.xiph.org/releases/opus/opusfile-${OPUSFILE_VERSION}.tar.gz"
+	download "opusfile-${OPUSFILE_VERSION}.tar.gz" "http://downloads.xiph.org/releases/opus/opusfile-${OPUSFILE_VERSION}.tar.gz" opusfile
 	cd "opusfile-${OPUSFILE_VERSION}"
-	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --disable-http
-	make clean
 	make
 	make install
-	cd ..
 }
 
 # Build the NaCl SDK
@@ -435,14 +388,17 @@ build_naclsdk() {
 	mingw*|msvc*)
 		local NACLSDK_PLATFORM=win
 		local EXE=.exe
+		local TAR_EXT=cygtar
 		;;
 	macosx*)
 		local NACLSDK_PLATFORM=mac
 		local EXE=
+		local TAR_EXT=tar
 		;;
 	linux*)
 		local NACLSDK_PLATFORM=linux
 		local EXE=
+		local TAR_EXT=tar
 		;;
 	esac
 	case "${PLATFORM}" in
@@ -455,13 +411,16 @@ build_naclsdk() {
 		local DAEMON_ARCH=x86_64
 		;;
 	esac
-	mkdir -p "naclsdk_${NACLSDK_PLATFORM}-${NACLSDK_VERSION}"
-	cd "naclsdk_${NACLSDK_PLATFORM}-${NACLSDK_VERSION}"
-	download "naclsdk_${NACLSDK_PLATFORM}-${NACLSDK_VERSION}.tar.bz2" "https://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/${NACLSDK_VERSION}/naclsdk_${NACLSDK_PLATFORM}.tar.bz2"
+	download "naclsdk_${NACLSDK_PLATFORM}-${NACLSDK_VERSION}.${TAR_EXT}.bz2" "https://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/${NACLSDK_VERSION}/naclsdk_${NACLSDK_PLATFORM}.tar.bz2" naclsdk
 	cp pepper_*"/tools/sel_ldr_${NACLSDK_ARCH}${EXE}" "${PREFIX}/sel_ldr${EXE}"
 	cp pepper_*"/tools/irt_core_${NACLSDK_ARCH}.nexe" "${PREFIX}/irt_core-${DAEMON_ARCH}.nexe"
 	cp pepper_*"/toolchain/${NACLSDK_PLATFORM}_x86_newlib/bin/x86_64-nacl-gdb${EXE}" "${PREFIX}/nacl-gdb${EXE}"
-	cp -aT pepper_*"/toolchain/${NACLSDK_PLATFORM}_pnacl" "${PREFIX}/pnacl"
+	rm -rf "${PREFIX}/pnacl"
+	cp -a pepper_*"/toolchain/${NACLSDK_PLATFORM}_pnacl" "${PREFIX}/pnacl"
+	rm -rf "${PREFIX}/pnacl/lib-bc-x86_64"
+	rm -rf "${PREFIX}/pnacl/usr-bc-arm"
+	rm -rf "${PREFIX}/pnacl/usr-bc-x86_32"
+	rm -rf "${PREFIX}/pnacl/usr-bc-x86_64"
 	case "${PLATFORM}" in
 	mingw32|msvc32)
 		cp pepper_*"/tools/sel_ldr_x86_64.exe" "${PREFIX}/sel_ldr64.exe"
@@ -478,7 +437,6 @@ build_naclsdk() {
 		rm -rf "${PREFIX}/pnacl/host_x86_32"
 		;;
 	esac
-	cd ..
 }
 
 # For MSVC, we need to use the Microsoft LIB tool to generate import libraries,
@@ -507,7 +465,6 @@ build_gendef() {
 
 			echo "lib /def:def\\${DEF} /machine:${MACHINE} /out:lib\\${LIB}" >> "${PREFIX}/genlib.bat"
 		done
-		cd ../..
 		;;
 	*)
 		echo "Unsupported platform for gendef"
@@ -516,10 +473,9 @@ build_gendef() {
 	esac
 }
 
-# Clean the target directory and build a package
-build_package() {
-	mkdir -p "${PWD}/pkg"
-	PKG_PREFIX="${PWD}/pkg/${PLATFORM}-${DEPS_VERSION}"
+# Install all the necessary files to the location expected by CMake
+build_install() {
+	PKG_PREFIX="${ROOT_DIR}/${PLATFORM}-${DEPS_VERSION}"
 	rm -rf "${PKG_PREFIX}"
 	rsync -a --link-dest="${PREFIX}" "${PREFIX}/" "${PKG_PREFIX}"
 
@@ -536,6 +492,8 @@ build_package() {
 	rmdir "${PKG_PREFIX}/bin" 2> /dev/null || true
 	rmdir "${PKG_PREFIX}/include" 2> /dev/null || true
 	rmdir "${PKG_PREFIX}/lib" 2> /dev/null || true
+
+	# Strip libraries
 	case "${PLATFORM}" in
 	mingw*)
 		find "${PKG_PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
@@ -547,27 +505,35 @@ build_package() {
 		find "${PKG_PREFIX}/lib" -name '*.exp' -execdir rm -f -- {} \;
 		;;
 	esac
+}
 
-	cd pkg
+# Create a redistributable package for the dependencies
+build_package() {
+	cd "${ROOT_DIR}"
 	case "${PLATFORM}" in
 	mingw*|msvc*)
+		rm -f "${PLATFORM}-${DEPS_VERSION}.zip"
 		zip -r "${PLATFORM}-${DEPS_VERSION}.zip" "${PLATFORM}-${DEPS_VERSION}"
 		;;
 	*)
+		rm -f "${PLATFORM}-${DEPS_VERSION}.tar.bz2"
 		tar cvjf "${PLATFORM}-${DEPS_VERSION}.tar.bz2" "${PLATFORM}-${DEPS_VERSION}"
 		;;
 	esac
-	cd ..
 }
 
 # Common setup code
 common_setup() {
-	PREFIX="${PWD}/${PLATFORM}-${DEPS_VERSION}"
+	ROOT_DIR="${PWD}"
+	DOWNLOAD_DIR="${PWD}/download_cache"
+	BUILD_DIR="${PWD}/build-${PLATFORM}-${DEPS_VERSION}"
+	PREFIX="${BUILD_DIR}/prefix"
 	export PATH="${PATH}:${PREFIX}/bin"
 	export PKG_CONFIG="pkg-config"
 	export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 	export CPPFLAGS="${CPPFLAGS:-} -I${PREFIX}/include"
 	export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
+	mkdir -p "${DOWNLOAD_DIR}"
 	mkdir -p "${PREFIX}"
 	mkdir -p "${PREFIX}/bin"
 	mkdir -p "${PREFIX}/include"
@@ -624,7 +590,7 @@ setup_mingw64() {
 setup_macosx32() {
 	HOST=i686-apple-darwin11
 	MSVC_SHARED=(--disable-shared --enable-static)
-	export MACOSX_DEPLOYMENT_TARGET=10.6
+	export MACOSX_DEPLOYMENT_TARGET=10.7
 	export CC=clang
 	export CXX=clang++
 	export CFLAGS="-arch i386"
@@ -637,8 +603,8 @@ setup_macosx32() {
 setup_macosx64() {
 	HOST=x86_64-apple-darwin11
 	MSVC_SHARED=(--disable-shared --enable-static)
-	export MACOSX_DEPLOYMENT_TARGET=10.6
-	export NASM="${PWD}/macosx64-${DEPS_VERSION}/bin/nasm" # A newer version of nasm is required for 64-bit
+	export MACOSX_DEPLOYMENT_TARGET=10.7
+	export NASM="${PWD}/build-${PLATFORM}-${DEPS_VERSION}/prefix/bin/nasm" # A newer version of nasm is required for 64-bit
 	export CC=clang
 	export CXX=clang++
 	export CFLAGS="-arch x86_64"
@@ -671,8 +637,11 @@ setup_linux64() {
 if [ "${#}" -lt "2" ]; then
 	echo "usage: ${0} <platform> <package[s]...>"
 	echo "Script to build dependencies for platforms which do not provide them"
-	echo "Platforms: msvc32 msvc64 mingw32 mingw64 macosx32 macosx64"
+	echo "Platforms: msvc32 msvc64 mingw32 mingw64 macosx32 macosx64 linux32 linux64"
 	echo "Packages: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile naclsdk"
+	echo "Virtual packages:"
+	echo "  install - create a stripped down version of the built packages that CMake can use"
+	echo "  package - create a zip/tarball of the dependencies so they can be distributed"
 	echo
 	echo "Packages requires for each platform:"
 	echo "Linux native compile: naclsdk (and possibly others depending on what packages your distribution provides)"
@@ -692,5 +661,6 @@ PLATFORM="${1}"
 # Build packages
 shift
 for pkg in "${@}"; do
+	cd "${ROOT_DIR}"
 	"build_${pkg}"
 done

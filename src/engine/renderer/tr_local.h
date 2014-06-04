@@ -2921,11 +2921,7 @@ static inline float unpackTC( int16_t tc ) {
 	extern cvar_t *r_ext_half_float_pixel;
 	extern cvar_t *r_ext_texture_float;
 	extern cvar_t *r_ext_texture_rg;
-	extern cvar_t *r_ext_stencil_wrap;
 	extern cvar_t *r_ext_texture_filter_anisotropic;
-	extern cvar_t *r_ext_stencil_two_side;
-	extern cvar_t *r_ext_separate_stencil;
-	extern cvar_t *r_ext_depth_bounds_test;
 	extern cvar_t *r_ext_framebuffer_object;
 	extern cvar_t *r_ext_packed_depth_stencil;
 	extern cvar_t *r_ext_framebuffer_blit;
@@ -3040,6 +3036,7 @@ static inline float unpackTC( int16_t tc ) {
 	extern cvar_t *r_showBatches;
 	extern cvar_t *r_showLightMaps; // render lightmaps only
 	extern cvar_t *r_showDeluxeMaps;
+	extern cvar_t *r_showEntityNormals;
 	extern cvar_t *r_showAreaPortals;
 	extern cvar_t *r_showCubeProbes;
 	extern cvar_t *r_showBspNodes;

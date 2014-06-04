@@ -28,18 +28,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "../framework/Resource.h"
+#include "../qcommon/qcommon.h"
+
 #ifndef AUDIO_AUDIO_PRIVATE_H_
 #define AUDIO_AUDIO_PRIVATE_H_
-
-#include <unordered_map>
-#include <memory>
-
-#include "../../common/Command.h"
-#include "../../common/Log.h"
-#include "../framework/Resource.h"
-
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
 
 namespace Audio {
 

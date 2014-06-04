@@ -436,7 +436,7 @@ typedef struct
 	char                 extensions_string[ MAX_STRING_CHARS * 4 ]; // TTimo - bumping, some cards have a big extension string
 
 	int                  maxTextureSize; // queried from GL
-	int                  maxActiveTextures; // multitexture ability
+	int                  unused;
 
 	int                  colorBits, depthBits, stencilBits;
 
@@ -490,7 +490,7 @@ typedef struct
 	qboolean vboVertexSkinningAvailable;
 	int      maxVertexSkinningBones;
 
-	qboolean texture3DAvailable;
+	qboolean unused_texture3DAvailable;
 	qboolean textureNPOTAvailable;
 
 	qboolean drawBuffersAvailable;
@@ -499,9 +499,9 @@ typedef struct
 	qboolean textureRGAvailable;
 	int      maxDrawBuffers;
 
-	qboolean vertexArrayObjectAvailable;
+	qboolean unused_vertexArrayObjectAvailable;
 
-	qboolean stencilWrapAvailable;
+	qboolean unused_stencilWrapAvailable;
 
 	float    maxTextureAnisotropy;
 	qboolean textureAnisotropyAvailable;

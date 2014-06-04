@@ -28,9 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Cvar.h"
-#include "../../common/Command.h"
-#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
 #ifndef FRAMEWORK_CVAR_SYSTEM_H_

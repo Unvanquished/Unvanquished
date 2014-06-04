@@ -427,9 +427,14 @@ static void Svcmd_TeamWin_f( void )
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
 	team = G_TeamFromString( cmd );
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+
+	if ( TEAM_ALIENS == team )
 	{
-		G_BaseSelfDestruct( team );
+		G_BaseSelfDestruct( TEAM_HUMANS );
+	}
+	if ( TEAM_HUMANS == team )
+	{
+		G_BaseSelfDestruct( TEAM_ALIENS );
 	}
 }
 
