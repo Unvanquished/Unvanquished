@@ -262,7 +262,7 @@ namespace Beacon //this should eventually become a class
 	}
 
 	////// Beacon::UpdateTags
-	// ...
+	// Update tags attached to an entity
 	void UpdateTags( gentity_t *ent )
 	{
 		// buildables are supposed to be static
@@ -276,7 +276,7 @@ namespace Beacon //this should eventually become a class
 	}
 
 	////// Beacon::DetachTag
-	// ...
+	// Sets the "no target" flag and makes the tag expire soon.
 	static void DetachTag( gentity_t *ent )
 	{
 		if( !ent )
@@ -287,7 +287,7 @@ namespace Beacon //this should eventually become a class
 	}
 
 	////// Beacon::DetachTags
-	// ...
+	// Calls DetachTag for all tags attached to an entity.
 	void DetachTags( gentity_t *ent )
 	{
 		DetachTag( ent->alienTag );
@@ -297,6 +297,7 @@ namespace Beacon //this should eventually become a class
 	}
 
 	////// Beacon::DeleteTags
+	// Immediately deletes all tags attached to an entity (skips all effects).
 	void DeleteTags( gentity_t *ent )
 	{
 		Delete( ent->alienTag );
