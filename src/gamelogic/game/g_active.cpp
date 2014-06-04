@@ -1503,7 +1503,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
 
 	trap_Trace( &tr, ent->client->oldOrigin, ent->r.mins, ent->r.maxs,
-	            ent->client->ps.origin, ent->s.number,  MASK_PLAYERSOLID );
+	            ent->client->ps.origin, ent->s.number, MASK_PLAYERSOLID, 0 );
 
 	if ( tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS )
 	{
@@ -2096,7 +2096,7 @@ void ClientThink_real( gentity_t *self )
 		// look for object infront of player
 		AngleVectors( client->ps.viewangles, view, NULL, NULL );
 		VectorMA( client->ps.origin, ENTITY_USE_RANGE, view, point );
-		trap_Trace( &trace, client->ps.origin, NULL, NULL, point, self->s.number, MASK_SHOT );
+		trap_Trace( &trace, client->ps.origin, NULL, NULL, point, self->s.number, MASK_SHOT, 0 );
 
 		ent = &g_entities[ trace.entityNum ];
 

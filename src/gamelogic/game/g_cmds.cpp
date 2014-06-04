@@ -2392,17 +2392,16 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 	//compute a place up in the air to start the real trace
 	VectorCopy( newOrigin, temp );
 	temp[ 2 ] += nudgeHeight;
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->s.number, MASK_PLAYERSOLID, 0 );
 
 	//trace down to the ground so that we can evolve on slopes
 	VectorCopy( newOrigin, temp );
 	temp[ 2 ] += ( nudgeHeight * tr.fraction );
-	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0 );
 	VectorCopy( tr.endpos, newOrigin );
 
 	//make REALLY sure
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin,
-	            ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0 );
 
 	//check there is room to evolve
 	return ( !tr.startsolid && tr.fraction == 1.0f );
@@ -2698,7 +2697,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
 	VectorMA( viewOrigin, 100, forward, end );
-	trap_Trace( &trace, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &trace, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	buildable = &g_entities[ trace.entityNum ];
 
 	// check if target is valid
@@ -2797,7 +2796,7 @@ void Cmd_Ignite_f( gentity_t *player )
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
 	AngleVectors( player->client->ps.viewangles, forward, NULL, NULL );
 	VectorMA( viewOrigin, 100, forward, end );
-	trap_Trace( &trace, viewOrigin, NULL, NULL, end, player->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &trace, viewOrigin, NULL, NULL, end, player->s.number, MASK_PLAYERSOLID, 0 );
 	target = &g_entities[ trace.entityNum ];
 
 	if ( !target || target->s.eType != ET_BUILDABLE || target->buildableTeam != TEAM_ALIENS )

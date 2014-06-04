@@ -55,7 +55,8 @@ bool GetPointPointedTo( NavData_t *nav, rVec &p )
 	AngleVectors( cl.snap.ps.viewangles, forward, NULL, NULL );
 	VectorMA( cl.snap.ps.origin, 8096, forward, end );
 
-	CM_BoxTrace( &trace, cl.snap.ps.origin, end, NULL, NULL, 0, CONTENTS_SOLID | CONTENTS_PLAYERCLIP, TT_AABB );
+	CM_BoxTrace( &trace, cl.snap.ps.origin, end, NULL, NULL, 0,
+	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP, 0, TT_AABB );
 
 	pos = qVec( trace.endpos );
 	if ( dtStatusFailed( nav->query->findNearestPoly( pos, extents, &nav->filter, &nearRef, p ) ) )

@@ -414,7 +414,7 @@ void G_RunMissile( gentity_t *ent )
 
 	// general trace to see if we hit anything at all
 	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs,
-	            origin, passent, ent->clipmask );
+	            origin, passent, ent->clipmask, 0 );
 
 	if ( tr.startsolid || tr.allsolid )
 	{
@@ -432,7 +432,7 @@ void G_RunMissile( gentity_t *ent )
 		else
 		{
 			trap_Trace( &tr, ent->r.currentOrigin, NULL, NULL, origin,
-			            passent, ent->clipmask );
+			            passent, ent->clipmask, 0 );
 
 			if ( tr.fraction < 1.0f )
 			{
@@ -449,7 +449,7 @@ void G_RunMissile( gentity_t *ent )
 				else
 				{
 					trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs,
-					            origin, passent, CONTENTS_BODY );
+					            origin, passent, CONTENTS_BODY, 0 );
 
 					if ( tr.fraction < 1.0f )
 					{
