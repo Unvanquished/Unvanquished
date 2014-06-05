@@ -21,13 +21,16 @@ class Message:
         self.args = args
         self.args_list = list(self.args.items())
 
+    def get_num_args(self):
+        return len(self.args_list)
+
     def get_enum_name(self):
         return 'MSG_' + self.name.upper()
 
     def get_function_args(self):
         args = []
         for arg in self.args_list:
-            args.append(' '.join(arg))
+            args.append(arg[1] + ' ' + arg[0])
         return ', '.join(args)
 
     def get_tuple_type(self):

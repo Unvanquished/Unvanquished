@@ -9,14 +9,19 @@ enum {
     {% for attribute in attributes %}
         {{attribute.get_change_enum_name()}},
     {% endfor %}
-}
+};
+
+// Component forward declarations
+
+{% for component in components %}
+    class {{component.get_type_name()}};
+{% endfor %}
 
 // Base entity class
 
 class Entity {
-    private:
-        virtual void SendMessage(int msg, void* data) = 0;
     public:
+        virtual void SendMessage(int msg, void* data) = 0;
         {% for message in messages %}
             void {{message.name}}({{message.get_function_args()}});
         {% endfor %}

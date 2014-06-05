@@ -1,10 +1,16 @@
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 
+#include <tuple>
+
 // Implementation of the base entity class
 
 {% for message in messages %}
     void Entity::{{message.name}}({{message.get_function_args()}}) {
-        SendMessage({{message.get_enum_name()}}, new {{message.get_tuple_type()}}({{message.get_args_names()}}));
+        {% if message.get_num_args() == 0 %}
+            SendMessage({{message.get_enum_name()}}, nullptr);
+        {% else %}
+            SendMessage({{message.get_enum_name()}}, new {{message.get_tuple_type()}}({{message.get_args_names()}}));
+        {% endif %}
     }
 {% endfor %}
 
