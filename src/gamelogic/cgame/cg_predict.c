@@ -94,7 +94,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
                                    const vec3_t maxs, const vec3_t end, int skipNumber,
                                    int mask, int skipmask, trace_t *tr, traceType_t collisionType )
 {
-	int           i, j, x, zd, zu;
+	int           i, x, zd, zu;
 	trace_t       trace;
 	entityState_t *ent;
 	clipHandle_t  cmodel;
@@ -102,17 +102,6 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	vec3_t        bmins, bmaxs;
 	vec3_t        origin, angles;
 	centity_t     *cent;
-
-	//SUPAR HACK
-	//this causes a trace to collide with the local player
-	if ( skipNumber == MAGIC_TRACE_HACK )
-	{
-		j = cg_numSolidEntities + 1;
-	}
-	else
-	{
-		j = cg_numSolidEntities;
-	}
 
 	// calculate bounding box of the trace
 	ClearBounds( tmins, tmaxs );
@@ -123,7 +112,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	if( maxs )
 		VectorAdd( maxs, tmaxs, tmaxs );
 
-	for ( i = 0; i < j; i++ )
+	for ( i = 0; i < cg_numSolidEntities; i++ )
 	{
 		if ( i < cg_numSolidEntities )
 		{

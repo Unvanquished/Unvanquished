@@ -1792,8 +1792,6 @@ void CG_ModelDoor( centity_t *cent );
 // cg_predict.c
 //
 
-#define MAGIC_TRACE_HACK -2
-
 void CG_BuildSolidList( void );
 int  CG_PointContents( const vec3_t point, int passEntityNum );
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,

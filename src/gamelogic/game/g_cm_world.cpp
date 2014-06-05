@@ -221,7 +221,8 @@ qboolean G_CM_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity
 	angles = gEnt->r.currentAngles;
 
 	ch = G_CM_ClipHandleForEntity( gEnt );
-	CM_TransformedBoxTrace( &trace, vec3_origin, vec3_origin, mins, maxs, ch, -1, 0, origin, angles, type );
+	CM_TransformedBoxTrace( &trace, vec3_origin, vec3_origin, mins, maxs, ch, MASK_ALL, 0, origin,
+	                        angles, type );
 
 	return trace.startsolid;
 }
@@ -894,9 +895,6 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const
     vec3_t mins, maxs;
     VectorCopy(mins2, mins);
     VectorCopy(maxs2, maxs);
-
-	if ( passEntityNum == -1 )
-		passEntityNum = ENTITYNUM_NONE;
 
 	memset( &clip, 0, sizeof( moveclip_t ) );
 
