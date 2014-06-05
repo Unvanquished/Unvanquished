@@ -3285,7 +3285,7 @@ void HTurret_Think( gentity_t *self )
 	if ( HTurret_TargetInReach( self ) )
 	{
 		// if the target's origin is visible, aim for it first
-		if ( G_LineOfSight( self->s.pos.trBase, self->target->s.origin, self ) )
+		if ( G_LineOfFire( self, self->target ) )
 		{
 			HTurret_MoveHeadToTarget( self );
 		}
