@@ -1281,6 +1281,7 @@ void InitMover( gentity_t *ent )
 
 	ent->moverState = MOVER_POS1;
 	ent->s.eType = ET_MOVER;
+	ent->r.contents |= CONTENTS_MOVER;
 	VectorCopy( ent->restingPosition, ent->r.currentOrigin );
 	trap_LinkEntity( ent );
 
@@ -1347,6 +1348,7 @@ void InitRotator( gentity_t *ent )
 
 	ent->moverState = ROTATOR_POS1;
 	ent->s.eType = ET_MOVER;
+	ent->r.contents |= CONTENTS_MOVER;
 	VectorCopy( ent->restingPosition, ent->r.currentAngles );
 	trap_LinkEntity( ent );
 
@@ -1801,6 +1803,7 @@ void SP_func_door_model( gentity_t *self )
 
 	self->moverState = MODEL_POS1;
 	self->s.eType = ET_MODELDOOR;
+	self->r.contents |= CONTENTS_MOVER; // TODO: Check if this is the right thing to add the flag to
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	self->s.pos.trType = TR_STATIONARY;
 	self->s.pos.trTime = 0;
@@ -2394,6 +2397,9 @@ void SP_func_static( gentity_t *self )
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.origin, self->r.currentOrigin );
 
+	// HACK: Not really a mover, so unset the content flag
+	self->r.contents &= ~CONTENTS_MOVER;
+
 	// check if this func_static has a colorgrading texture
 	if( self->model[0] == '*' &&
 	    G_SpawnString( "gradingTexture", "", &gradingTexture ) ) {
@@ -2593,6 +2599,7 @@ void SP_func_spawn( gentity_t *self )
 {
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
   self->s.eType = ET_MOVER;
+  self->r.contents |= CONTENTS_MOVER;
   self->moverState = MOVER_POS1;
   VectorCopy( self->s.origin, self->restingPosition );
 
@@ -2662,6 +2669,7 @@ void SP_func_destructable( gentity_t *self )
 
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
   self->s.eType = ET_MOVER;
+  self->r.contents |= CONTENTS_MOVER;
   self->moverState = MOVER_POS1;
   VectorCopy( self->s.origin, self->restingPosition );
 

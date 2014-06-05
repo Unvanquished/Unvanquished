@@ -42,6 +42,8 @@ CG_BuildSolidList
 When a new cg.snap has been set, this function builds a sublist
 of the entities that are actually solid, to make for more
 efficient collision detection
+
+It also adds content flags to allow for more specific traces in synchronized code.
 ====================
 */
 void CG_BuildSolidList( void )
@@ -77,6 +79,20 @@ void CG_BuildSolidList( void )
 
 		if ( cent->nextState.solid && ent->eType != ET_MISSILE )
 		{
+			cent->contents |= CONTENTS_SOLID;
+
+			// retreive some content flags from the entity type
+			switch ( ent->eType )
+			{
+				case ET_MOVER:
+				case ET_MODELDOOR:
+					cent->contents |= CONTENTS_MOVER;
+					break;
+
+				default:
+					break;
+			}
+
 			cg_solidEntities[ cg_numSolidEntities ] = cent;
 			cg_numSolidEntities++;
 			continue;
@@ -126,6 +142,16 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		ent = &cent->currentState;
 
 		if ( ent->number == skipNumber )
+		{
+			continue;
+		}
+
+		if ( !( cent->contents & mask ) )
+		{
+			continue;
+		}
+
+		if ( cent->contents & skipmask )
 		{
 			continue;
 		}

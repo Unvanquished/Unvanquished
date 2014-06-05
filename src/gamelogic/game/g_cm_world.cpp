@@ -710,6 +710,7 @@ typedef struct
 	trace_t     trace;
 	int         passEntityNum;
 	int         contentmask;
+	int         skipmask;
 	traceType_t collisionType;
 } moveclip_t;
 
@@ -828,6 +829,11 @@ void G_CM_ClipMoveToEntities( moveclip_t *clip )
 			continue;
 		}
 
+		if ( clip->skipmask & touch->r.contents )
+		{
+			continue;
+		}
+
 		// might intersect, so do an exact clip
 		clipHandle = G_CM_ClipHandleForEntity( touch );
 
@@ -899,6 +905,8 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const
 	memset( &clip, 0, sizeof( moveclip_t ) );
 
 	// clip to world
+	// -------------
+
 	CM_BoxTrace( &clip.trace, start, end, mins, maxs, 0, contentmask, skipmask, type );
 	clip.trace.entityNum = clip.trace.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 
@@ -908,7 +916,11 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const
 		return; // blocked immediately by the world
 	}
 
+	// clip to entities
+	// ----------------
+
 	clip.contentmask = contentmask;
+	clip.skipmask = skipmask;
 	clip.start = start;
 //  VectorCopy( clip.trace.endpos, clip.end );
 	VectorCopy( end, clip.end );

@@ -697,6 +697,11 @@ typedef struct centity_s
 	qboolean              valid;
 	qboolean              oldValid;
 	struct centity_s      *nextLocation;
+
+	// Content flags derived from the entity state
+	// HACK: This is not an exact copy of the content flags the server sees.
+	// If this is desired, it needs to be made part of entityState_t instead.
+	int                   contents;
 } centity_t;
 
 //======================================================================
