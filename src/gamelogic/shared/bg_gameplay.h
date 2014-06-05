@@ -169,7 +169,8 @@ extern int   LEVEL4_CRUSH_REPEAT;
  */
 
 #define ALIENSENSE_RANGE         1000.0f
-#define REGEN_BOOST_RANGE        200.0f
+#define REGEN_BOOSTER_RANGE      200.0f
+#define REGEN_TEAMMATE_RANGE     300.0f
 
 #define ALIEN_POISON_TIME        10000
 #define ALIEN_POISON_DMG         5

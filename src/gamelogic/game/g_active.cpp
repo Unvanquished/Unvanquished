@@ -1527,7 +1527,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
  */
 static int FindAlienHealthSource( gentity_t *self )
 {
-	int       ret = 0;
+	int       ret = 0, closeTeammates = 0;
 	float     distance, minBoosterDistance = FLT_MAX;
 	qboolean  needsHealing;
 	gentity_t *ent;
@@ -1549,19 +1549,23 @@ static int FindAlienHealthSource( gentity_t *self )
 
 		distance = Distance( ent->s.origin, self->s.origin );
 
-		if ( ent->client && self != ent && distance < REGEN_BOOST_RANGE )
+		if ( ent->client && self != ent && distance < REGEN_TEAMMATE_RANGE &&
+		     G_LineOfSight( self, ent, MASK_SOLID, false ) )
 		{
+			closeTeammates++;
+
 			switch ( ent->client->ps.stats[ STAT_CLASS ] )
 			{
 				// Group healing
 				default:
-					ret |= SS_HEALING_2X;
+					ret |= ( closeTeammates > 1 ) ? SS_HEALING_4X : SS_HEALING_2X;
 					break;
 			}
 		}
 		else if ( ent->s.eType == ET_BUILDABLE && ent->spawned && ent->powered )
 		{
-			if ( ent->s.modelindex == BA_A_BOOSTER && ent->powered && distance < REGEN_BOOST_RANGE )
+			if ( ent->s.modelindex == BA_A_BOOSTER && ent->powered &&
+			     distance < REGEN_BOOSTER_RANGE )
 			{
 				// Booster healing
 				ret |= SS_HEALING_8X;

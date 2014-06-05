@@ -1687,7 +1687,7 @@ void ABooster_Think( gentity_t *self )
 	AGeneric_Think( self );
 
 	// check if there is a closeby alien that used this booster for healing recently
-	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, REGEN_BOOST_RANGE ) ); )
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, REGEN_BOOSTER_RANGE ) ); )
 	{
 		if ( ent->boosterUsed == self && ent->boosterTime == level.previousTime )
 		{
