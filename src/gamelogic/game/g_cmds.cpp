@@ -4428,7 +4428,6 @@ void Cmd_Beacon_f( gentity_t *ent )
 			int i, count, list[ MAX_GENTITIES ], teamBias = 0;
 			vec3_t mins, maxs;
 			gentity_t *ent;
-			trace_t tr2;
 			qboolean primary, foundAny = qfalse, foundPrimary = qfalse, enemy;
 
 			for( i = 0; i < 3; i++ )
@@ -4449,11 +4448,6 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 				if( !trap_InPVS( ent->s.origin, origin ) )
 					continue;
-/*
-				trap_Trace( &tr2, ent->s.origin, NULL, NULL, origin, -2, CONTENTS_SOLID );
-
-				if( tr2.fraction < 0.99 )
-					continue;*/
 
 				primary = ( ent->s.modelindex == BA_A_OVERMIND ||
 				            ent->s.modelindex == BA_H_REACTOR );
@@ -4499,7 +4493,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 	return;
 
 invalid_beacon:
-	Com_Printf( "NYI: invalid_beacon\n" );
+	CP( "cp_tr " QQ(N_("Couldn't place beacon")) "\n" );
 }
 
 /*
