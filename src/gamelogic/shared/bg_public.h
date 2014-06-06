@@ -1042,6 +1042,7 @@ typedef enum
 	BCT_BASE_ENEMY,
 	BCT_OUTPOST,
 	BCT_OUTPOST_ENEMY,
+	BCT_AUTOBASE,
 
 	//commands
 	BCT_ATTACK,

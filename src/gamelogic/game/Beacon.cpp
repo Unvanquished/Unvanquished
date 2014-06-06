@@ -139,9 +139,8 @@ namespace Beacon //this should eventually become a class
 	// Remove beacons matching a pattern
 	void RemoveSimilar( vec3_t origin, beaconType_t type, int data, int team, int owner )
 	{
-		int i, j;
+		int i;
 		gentity_t *ent;
-		vec3_t mins, maxs;
 		float radius;
 
 		for( i = 0; i < level.num_entities; i++ )
@@ -179,15 +178,27 @@ namespace Beacon //this should eventually become a class
 				if ( BG_Beacon( type )->flags & BCF_ENTITY )
 					radius = 5.0;
 				else if ( BG_Beacon( type )->flags & BCF_BASE )
-					radius = 400.0;
+				{
+					switch( type )
+					{
+						case BCT_BASE:
+						case BCT_BASE_ENEMY:
+							radius = BEACON_BASE_RANGE;
+							break;
+
+						case BCT_OUTPOST:
+						case BCT_OUTPOST_ENEMY:
+							radius = BEACON_OUTPOST_RANGE;
+							break;
+
+						default:
+							radius = 400.0;
+					}
+				}
 				else
 					radius = 250.0;
 
-				for( j = 0; j < 3; j++ )
-					mins[ j ] = origin[ j ] - radius,
-					maxs[ j ] = origin[ j ] + radius;
-
-				if ( !PointInBounds( ent->s.origin, mins, maxs ) )
+				if ( Distance( ent->s.origin, origin ) > radius )
 					continue;
 
 				if ( !trap_InPVS( ent->s.origin, origin ) )
@@ -429,7 +440,7 @@ namespace Beacon //this should eventually become a class
 		outpost = ( type == BCT_OUTPOST ||
 		            type == BCT_OUTPOST_ENEMY );
 		team = ( ( ownerTeam == TEAM_ALIENS ) ^ enemy ? TEAM_ALIENS : TEAM_HUMANS );
-		radius = ( outpost ? 300.0 : 600.0 );
+		radius = ( outpost ? BEACON_OUTPOST_RANGE : BEACON_BASE_RANGE );
 
 		for( i = 0; i < 3; i++ )
 			mins[ i ] = origin[ i ] - radius,

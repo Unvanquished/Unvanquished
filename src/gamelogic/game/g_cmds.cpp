@@ -4422,8 +4422,70 @@ void Cmd_Beacon_f( gentity_t *ent )
 	{
 		VectorCopy( tr.endpos, origin );
 		Beacon::MoveTowardsRoom( origin, tr.plane.normal );
-		if( !Beacon::FindBase( type, team, origin ) )
-			goto invalid_beacon;
+
+		if( type == BCT_AUTOBASE )
+		{
+			int i, count, list[ MAX_GENTITIES ], teamBias = 0;
+			vec3_t mins, maxs;
+			gentity_t *ent;
+			trace_t tr2;
+			qboolean primary, foundAny = qfalse, foundPrimary = qfalse, enemy;
+
+			for( i = 0; i < 3; i++ )
+				mins[ i ] = origin[ i ] - BEACON_BASE_RANGE,
+				maxs[ i ] = origin[ i ] + BEACON_BASE_RANGE;
+
+			count = trap_EntitiesInBox( mins, maxs, list, MAX_GENTITIES );
+
+			for( i = 0; i < count; i++ )
+			{
+				ent = g_entities + list[ i ];
+
+				if( ent->s.eType != ET_BUILDABLE )
+					continue;
+
+				if( ent->health <= 0 )
+					continue;
+
+				if( !trap_InPVS( ent->s.origin, origin ) )
+					continue;
+/*
+				trap_Trace( &tr2, ent->s.origin, NULL, NULL, origin, -2, CONTENTS_SOLID );
+
+				if( tr2.fraction < 0.99 )
+					continue;*/
+
+				primary = ( ent->s.modelindex == BA_A_OVERMIND ||
+				            ent->s.modelindex == BA_H_REACTOR );
+
+				if( Distance( ent->s.origin, origin ) >
+				    ( primary ? BEACON_BASE_RANGE : BEACON_OUTPOST_RANGE ) )
+					continue;
+
+				if( primary )
+					foundPrimary = qtrue;
+				foundAny = qtrue;
+
+				if( ent->buildableTeam == TEAM_ALIENS )
+					teamBias--;
+				else
+					teamBias++;
+			}
+
+			if( !foundAny )
+				goto invalid_beacon;
+
+			enemy = ( ( teamBias >= 0 && team == TEAM_ALIENS ) ||
+			          ( teamBias < 0 && team == TEAM_HUMANS ) );
+
+			if( foundPrimary )
+				type = ( enemy ? BCT_BASE_ENEMY : BCT_BASE );
+			else
+				type = ( enemy ? BCT_OUTPOST_ENEMY : BCT_OUTPOST );
+		}
+		else
+			if( !Beacon::FindBase( type, team, origin ) )
+				goto invalid_beacon;
 	}
 	else
 	{
