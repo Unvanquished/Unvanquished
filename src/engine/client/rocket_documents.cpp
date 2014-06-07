@@ -115,18 +115,21 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "blur", action ) || !Q_stricmp( "hide", action ) )
 	{
+		Rocket::Core::ElementDocument* document = nullptr;
+
 		if ( !*name ) // If name is empty, hide active
 		{
 			if ( menuContext->GetFocusElement() &&
 				menuContext->GetFocusElement()->GetOwnerDocument() )
 			{
-				menuContext->GetFocusElement()->GetOwnerDocument()->Hide();
+				document = menuContext->GetFocusElement()->GetOwnerDocument();
 			}
-
-			return;
+		}
+		else
+		{
+			Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
 		}
 
-		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
 			document->Hide();
@@ -137,6 +140,31 @@ void Rocket_DocumentAction( const char *name, const char *action )
 		for ( int i = 0; i < menuContext->GetNumDocuments(); ++i )
 		{
 			menuContext->GetDocument( i )->Hide();
+		}
+	}
+	else if ( !Q_stricmp( "reload", action ) )
+	{
+		Rocket::Core::ElementDocument* document = nullptr;
+
+		if ( !*name ) // If name is empty, hide active
+		{
+			if ( menuContext->GetFocusElement() &&
+				menuContext->GetFocusElement()->GetOwnerDocument() )
+			{
+				document = menuContext->GetFocusElement()->GetOwnerDocument();
+			}
+		}
+		else
+		{
+			document = menuContext->GetDocument( name );
+		}
+
+		if ( document )
+		{
+			Rocket::Core::String url = document->GetSourceURL();
+			document->Close();
+			document = menuContext->LoadDocument( url );
+			document->Show();
 		}
 	}
 }
