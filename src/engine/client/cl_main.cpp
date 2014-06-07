@@ -2273,12 +2273,16 @@ void CL_Snd_Restart_f( void )
 
 	if( !cls.cgameStarted )
 	{
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		//TODO S_BeginRegistration()
 	}
 	else
 	{
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		CL_Vid_Restart_f();
 	}
 }
@@ -3860,7 +3864,9 @@ void CL_StartHunkUsers( void )
 	if ( !cls.soundStarted )
 	{
 		cls.soundStarted = qtrue;
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 	}
 
 	if ( !cls.soundRegistered )
