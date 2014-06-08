@@ -102,6 +102,11 @@ static void CG_Rocket_DFVotePlayer( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"exec set ui_dialogCvar1 %s;exec rocket ui/dialogs/editplayer.rml load; exec rocket editplayer show\">vote/moderate</button>", cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) , qfalse );
 }
 
+static void CG_Rocket_DFVoteMap( int handle, const char *data )
+{
+	trap_Rocket_DataFormatterFormattedData( handle, va("map: %s <br />levelshot: %s", rocketInfo.data.mapList[ atoi( Info_ValueForKey( data, "1" ) ) ].mapName, rocketInfo.data.mapList[ atoi( Info_ValueForKey( data, "1" ) ) ].levelShot ) , qfalse );
+}
+
 static void CG_Rocket_DFWeaponName( int handle, const char *data )
 {
 	trap_Rocket_DataFormatterFormattedData( handle, BG_Weapon( atoi( Info_ValueForKey( data, "1" ) ) )->humanName, qtrue );
@@ -301,6 +306,7 @@ static const dataFormatterCmd_t dataFormatterCmdList[] =
 	{ "ServerPing", &CG_Rocket_DFServerPing },
 	{ "ServerPlayers", &CG_Rocket_DFServerPlayers },
 	{ "UpgradeName", &CG_Rocket_DFUpgradeName },
+	{ "VoteMap", &CG_Rocket_DFVoteMap },
 	{ "VotePlayer", &CG_Rocket_DFVotePlayer },
 	{ "WeaponName", &CG_Rocket_DFWeaponName },
 };
