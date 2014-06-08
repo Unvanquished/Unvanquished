@@ -473,6 +473,7 @@ static void CG_Rocket_DrawSpeedGraph( void )
 
 	if ( !cg_drawSpeed.integer )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
