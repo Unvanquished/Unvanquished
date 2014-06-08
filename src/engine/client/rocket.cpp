@@ -125,9 +125,6 @@ public:
 		return Sys_Milliseconds() / 1000.0f;
 	}
 
-	/*
-	Not sure if this is correct
-	*/
 	int TranslateString( Rocket::Core::String &translated, const Rocket::Core::String &input )
 	{
 		const char* ret = Trans_GettextGame( input.CString() );
