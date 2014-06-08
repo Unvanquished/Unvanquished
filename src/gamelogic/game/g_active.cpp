@@ -2165,6 +2165,8 @@ void ClientThink_real( gentity_t *self )
 		client->ps.persistant[ PERS_BP ] = 0;
 	}
 
+	Beacon::UpdateTags( self );
+
 	// perform once-a-second actions
 	ClientTimerActions( self, msec );
 

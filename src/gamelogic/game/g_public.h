@@ -40,6 +40,25 @@ void              G_TouchTriggers( gentity_t *ent );
 const char        *G_admin_name( gentity_t *ent );
 const char        *G_quoted_admin_name( gentity_t *ent );
 
+// Beacon.cpp
+namespace Beacon 
+{
+	void Think( gentity_t *ent );
+	gentity_t *New( vec3_t origin, beaconType_t type, int data, team_t team, int owner );
+	void NewArea( beaconType_t type, vec3_t point, team_t team );
+	void Delete( gentity_t *ent );
+	void MoveTowardsRoom( vec3_t origin, const vec3_t normal );
+	void RemoveSimilar( vec3_t origin, beaconType_t type, int data, int team, int owner );
+	void Propagate( gentity_t *ent );
+	void PropagateAll( void );
+	void RemoveOrphaned( int clientNum );
+	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent );
+	void UpdateTags( gentity_t *ent );
+	void DetachTags( gentity_t *ent );
+	void DeleteTags( gentity_t *ent );
+	qboolean FindBase( beaconType_t type, team_t ownerTeam, vec3_t origin );
+}
+
 // g_buildable.c
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
 gentity_t         *G_Reactor( void );

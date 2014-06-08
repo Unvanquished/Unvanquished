@@ -365,6 +365,11 @@ typedef enum
 #define PF_JETPACK_ENABLED  BIT(0)
 #define PF_JETPACK_ACTIVE   BIT(1)
 
+// for beacons:
+#define EF_BC_NO_TARGET          0x0008 // beacon lost its target
+#define EF_BC_TAG_ALIEN          0x0010 // tagged entity is an alien player
+#define EF_BC_TAG_HUMAN          0x0020 // tagged entity is a human player
+
 typedef enum
 {
   WPM_NONE,
@@ -1020,6 +1025,68 @@ typedef enum
 
 //---------------------------------------------------------
 
+#define BEACON_TIMER_TIME 3500
+
+typedef enum
+{
+	BCT_NONE,
+
+	//local
+	BCT_POINTER,
+	BCT_TIMER,
+
+	//indicators
+	BCT_ENEMY,
+	BCT_TAG,
+	BCT_BASE,
+	BCT_BASE_ENEMY,
+	BCT_OUTPOST,
+	BCT_OUTPOST_ENEMY,
+	BCT_AUTOBASE,
+
+	//commands
+	BCT_ATTACK,
+	BCT_DEFEND,
+	BCT_REPAIR,
+
+	//implicit
+	BCT_HEALTH,
+	BCT_AMMO,
+	
+	NUM_BEACON_TYPES
+} beaconType_t;
+
+// beacon flags
+#define BCF_RESERVED      0x0001 // generated automatically, not created by players
+
+#define BCF_PER_PLAYER    0x0002 // one beacon per player
+#define BCF_PER_TEAM      0x0004 // one beacon per team
+#define BCF_DATA_UNIQUE   0x0008 // data extends type
+
+#define BCF_PRECISE       0x0010 // place exactly at crosshair
+#define BCF_ENTITY        0x0020 // place at an entity's center
+#define BCF_NO_UNCLUTTER  0x0040 // don't move it away from crosshair
+#define BCF_BASE          0x0080 // tags a group of buildings
+
+typedef struct
+{
+	beaconType_t  number;
+	int           flags;
+
+	const char    *name;
+	const char    *humanName;
+
+#ifdef BUILD_CGAME	
+	const char    *text;
+	qhandle_t     icon, altIcon;
+	sfxHandle_t   sound;
+#endif	
+
+	int           decayTime;
+} beaconAttributes_t;
+
+//---------------------------------------------------------
+
 // player class record
 typedef struct
 {
@@ -1292,6 +1359,7 @@ void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t m
 int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
+qboolean                    BG_PlayerLowAmmo( playerState_t *ps, qboolean *energy );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );
 int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count );
@@ -1329,6 +1397,9 @@ const upgradeAttributes_t *BG_Upgrade( int upgrade );
 const missileAttributes_t *BG_MissileByName( const char *name );
 const missileAttributes_t *BG_Missile( int missile );
 
+const beaconAttributes_t  *BG_BeaconByName( const char *name );
+const beaconAttributes_t  *BG_Beacon( int index );
+
 meansOfDeath_t            BG_MeansOfDeathByName( const char *name );
 
 void                      BG_InitAllConfigs( void );
@@ -1346,6 +1417,7 @@ void                      BG_ParseWeaponAttributeFile( const char *filename, wea
 void                      BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua );
 void                      BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma );
 void                      BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma );
+void                      BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba );
 
 // bg_teamprogress.c
 #define NUM_UNLOCKABLES WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES

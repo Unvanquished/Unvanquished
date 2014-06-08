@@ -391,4 +391,8 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 #define BUILDABLE_START_HEALTH_FRAC        0.25f
 
+// beacons
+#define BEACON_BASE_RANGE        800.0f
+#define BEACON_OUTPOST_RANGE     400.0f
+
 #endif // G_GAMEPLAY_H_

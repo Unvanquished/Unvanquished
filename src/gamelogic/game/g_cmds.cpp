@@ -4357,6 +4357,146 @@ void Cmd_Damage_f( gentity_t *ent )
 }
 
 /*
+=================
+Cmd_Beacon_f
+=================
+*/
+void Cmd_Beacon_f( gentity_t *ent )
+{
+	char type_str[ 64 ];
+	beaconType_t type;
+	const beaconAttributes_t *battr;
+	team_t team;
+
+	gentity_t *beacon, *other;
+	vec3_t origin, end, forward;
+	trace_t tr;
+
+	if ( trap_Argc( ) < 2 )
+	{
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", QQ( N_("Usage: beacon [type]\n") ) ) );
+		return;
+	}
+
+	trap_Argv( 1, type_str, sizeof( type_str ) );
+
+	team = (team_t)ent->client->pers.team;
+
+	battr = BG_BeaconByName( type_str );
+
+	if ( !battr || battr->flags & BCF_RESERVED )
+	{
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("Unknown beacon type $1$\n") ), Quote( type_str ) ) );
+		return;
+	}
+
+	type = battr->number;
+
+	if( G_FloodLimited( ent ) )
+		return;
+
+	BG_GetClientViewOrigin( &ent->client->ps, origin );
+	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	VectorMA( origin, 65536, forward, end );
+	trap_Trace( &tr, origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+
+	if ( tr.fraction > 0.99 )
+		goto invalid_beacon;
+
+	if ( BG_Beacon( type )->flags & BCF_PRECISE )
+	{
+		VectorCopy( tr.endpos, origin );
+	}
+	else if ( BG_Beacon( type )->flags & BCF_ENTITY )
+	{
+		if ( tr.entityNum == ENTITYNUM_NONE ||
+		     tr.entityNum == ENTITYNUM_WORLD )
+			goto invalid_beacon;
+
+		other = g_entities + tr.entityNum;
+
+		Beacon::Tag( other, team, ent->s.number, qfalse );
+		return;
+	}
+	else if ( BG_Beacon( type )->flags & BCF_BASE )
+	{
+		VectorCopy( tr.endpos, origin );
+		Beacon::MoveTowardsRoom( origin, tr.plane.normal );
+
+		if( type == BCT_AUTOBASE )
+		{
+			int i, count, list[ MAX_GENTITIES ], teamBias = 0;
+			vec3_t mins, maxs;
+			gentity_t *ent;
+			qboolean primary, foundAny = qfalse, foundPrimary = qfalse, enemy;
+
+			for( i = 0; i < 3; i++ )
+				mins[ i ] = origin[ i ] - BEACON_BASE_RANGE,
+				maxs[ i ] = origin[ i ] + BEACON_BASE_RANGE;
+
+			count = trap_EntitiesInBox( mins, maxs, list, MAX_GENTITIES );
+
+			for( i = 0; i < count; i++ )
+			{
+				ent = g_entities + list[ i ];
+
+				if( ent->s.eType != ET_BUILDABLE )
+					continue;
+
+				if( ent->health <= 0 )
+					continue;
+
+				if( !trap_InPVS( ent->s.origin, origin ) )
+					continue;
+
+				primary = ( ent->s.modelindex == BA_A_OVERMIND ||
+				            ent->s.modelindex == BA_H_REACTOR );
+
+				if( Distance( ent->s.origin, origin ) >
+				    ( primary ? BEACON_BASE_RANGE : BEACON_OUTPOST_RANGE ) )
+					continue;
+
+				if( primary )
+					foundPrimary = qtrue;
+				foundAny = qtrue;
+
+				if( ent->buildableTeam == TEAM_ALIENS )
+					teamBias--;
+				else
+					teamBias++;
+			}
+
+			if( !foundAny )
+				goto invalid_beacon;
+
+			enemy = ( ( teamBias >= 0 && team == TEAM_ALIENS ) ||
+			          ( teamBias < 0 && team == TEAM_HUMANS ) );
+
+			if( foundPrimary )
+				type = ( enemy ? BCT_BASE_ENEMY : BCT_BASE );
+			else
+				type = ( enemy ? BCT_OUTPOST_ENEMY : BCT_OUTPOST );
+		}
+		else
+			if( !Beacon::FindBase( type, team, origin ) )
+				goto invalid_beacon;
+	}
+	else
+	{
+		VectorCopy( tr.endpos, origin );
+		Beacon::MoveTowardsRoom( origin, tr.plane.normal );
+	}
+
+	Beacon::RemoveSimilar( origin, type, 0, team, ent->s.number );
+	beacon = Beacon::New( origin, type, 0, team, ent->s.number );
+	Beacon::Propagate( beacon );
+	return;
+
+invalid_beacon:
+	CP( "cp_tr " QQ(N_("Couldn't place beacon")) "\n" );
+}
+
+/*
 ==================
 G_FloodLimited
 
@@ -4435,6 +4575,7 @@ static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
 	{ "asay",            CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
+	{ "beacon",          CMD_TEAM | CMD_ALIVE,                Cmd_Beacon_f           },
 	{ "build",           CMD_TEAM | CMD_ALIVE,                Cmd_Build_f            },
 	{ "buy",             CMD_HUMAN | CMD_ALIVE,               Cmd_Buy_f              },
 	{ "callteamvote",    CMD_MESSAGE | CMD_TEAM,              Cmd_CallVote_f         },

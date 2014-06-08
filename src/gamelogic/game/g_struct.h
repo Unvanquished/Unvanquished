@@ -412,6 +412,8 @@ struct gentity_s
 
 	qhandle_t   obstacleHandle;
 	botMemory_t *botMind;
+
+	gentity_t   *alienTag, *humanTag;
 };
 
 /**
