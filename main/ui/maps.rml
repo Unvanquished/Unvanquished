@@ -12,7 +12,7 @@
 
 				background:#000000FF;
 			}
-			
+
 			.map{
 				width:200px;
 				height:100px;
@@ -26,7 +26,7 @@
 				margin-right:-300px;
 				z-index:10;
 			}
-			
+
 			.map .levelshot{
 				width:200px;
 				float:left;
@@ -39,33 +39,33 @@
 				float:right;
 				width:200px;
 			}
-			
+
 			.mapwindow{
-	z-index: 0;
-	padding: 60px 70px;
-	margin:auto;
-	width: 900px;
-	display:block;
-	height:90%;
-	color:#83fff5;
-	background-decorator: tiled-box;
-	background-top-left-image: /ui/assets/window/top-left.png;
-	background-top-right-image: /ui/assets/window/top-right.png;
-	background-top-image: /ui/assets/window/top.png stretch;
-	background-bottom-left-image: /ui/assets/window/bottom-left.png;
-	background-bottom-right-image: /ui/assets/window/bottom-right.png;
-	background-bottom-image: /ui/assets/window/bottom.png stretch;
-	background-left-image: /ui/assets/window/left.png stretch;
-	background-center-image: /ui/assets/window/line.png stretch;
-	overflow: auto;
+				z-index: 0;
+				padding: 60px 70px;
+				margin:auto;
+				width: 900px;
+				display:block;
+				height:90%;
+/* 				color:#83fff5; */
+				background-decorator: tiled-box;
+				background-top-left-image: /ui/assets/window/top-left.png;
+				background-top-right-image: /ui/assets/window/top-right.png;
+				background-top-image: /ui/assets/window/top.png stretch;
+				background-bottom-left-image: /ui/assets/window/bottom-left.png;
+				background-bottom-right-image: /ui/assets/window/bottom-right.png;
+				background-bottom-image: /ui/assets/window/bottom.png stretch;
+				background-left-image: /ui/assets/window/left.png stretch;
+				background-center-image: /ui/assets/window/line.png stretch;
+				overflow: auto;
 			}
-			
+
 		</style>
 	</head>
-	<body id="maps">
+	<body id="maps" onshow="buildDS mapList default">
 	<div class="mapwindow">
-	
-		<datasource  source="mapList" fields="num" formatter="VoteMap" />
+
+		<datasource  source="mapList.default" fields="num" formatter="VoteMap" />
 		<div class="map">
 			<img class="levelshot" src="/levelshots/parpax.jpg" />
 			<img class="minimap" src="/minimaps/parpax_upper.png" />

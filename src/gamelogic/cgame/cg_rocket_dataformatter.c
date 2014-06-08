@@ -104,7 +104,11 @@ static void CG_Rocket_DFVotePlayer( int handle, const char *data )
 
 static void CG_Rocket_DFVoteMap( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, va("map: %s <br />levelshot: %s", rocketInfo.data.mapList[ atoi( Info_ValueForKey( data, "1" ) ) ].mapName, rocketInfo.data.mapList[ atoi( Info_ValueForKey( data, "1" ) ) ].levelShot ) , qfalse );
+	int mapIndex = atoi( Info_ValueForKey( data, "1" ) );
+	if ( mapIndex < rocketInfo.data.mapCount )
+	{
+		trap_Rocket_DataFormatterFormattedData( handle, va("map: %s <br />levelshot: <img src='%s'/>", CG_Rocket_QuakeToRML( rocketInfo.data.mapList[ mapIndex ].mapName ), rocketInfo.data.mapList[ mapIndex ].imageName ) , qfalse );
+	}
 }
 
 static void CG_Rocket_DFWeaponName( int handle, const char *data )
