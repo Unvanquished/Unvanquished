@@ -38,7 +38,7 @@
 	<body id="editplayer">
 	<div class="window options">
 	<h1>Start Vote</h1>
-	<form onsubmit='execForm "$prefix$ $cmd$'>
+	<form onsubmit='execForm "echo $prefix$ $cmd$ $player$ -r $reason$'>
 	<div class="line"><label>Type:</label><select name="prefix">
 				<option value="callvote" selected="">Global Vote</option>
 				<option value="callteamvote">Team Vote</option>
@@ -51,12 +51,12 @@
 				<option value="denybuild">Denybuild</option>
 				<option value="detonate">Detonate</option>
 	</select></div>
-	<div class="line"><label>Player:</label><input type="text" cvar="ui_dialogCvar1" disabled /></div>
+	<div class="line"><label>Player:</label><colorinput type="text" cvar="ui_dialogCvar1" name="player" disabled /></div>
 	<input type="hidden" value=" -r " />
 	<input type="hidden" value="ignore thiiis" ignore />
-	<div class="line"><label>Reason:</label><input type="text" /></div>
-	<input type="submit" class="menuButton" onClick="hide editplayer;exec set ui_dialogCvar1 ;show players">Start</input>
-	<button class="menuButton" onClick="hide editplayer;exec set ui_dialogCvar1; show players">Abort</button>
+	<div class="line"><label>Reason:</label><input type="text" name="reason"/></div>
+	<input type="submit" class="menuButton" onClick="close editplayer;exec set ui_dialogCvar1 ;show players">Start</input>
+	<button class="menuButton" onClick="close editplayer;exec set ui_dialogCvar1; show players">Abort</button>
 	</form>
 	</div>
 	</body>
