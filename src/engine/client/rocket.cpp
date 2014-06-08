@@ -34,6 +34,13 @@ Maryland 20850 USA.
 
 // The basic interfaces for libRocket
 
+// In the librocket code they detect that define and add attribute(ddlimport)
+// However the client is not compiled as a static lib, so when linking the functions
+// attributes don't match and the linker produces an error on windows.
+// see for example src/libs/libRocket/Include/Rocket/Debugger/Header.h
+// HACK: define STATIC_LIB to trick librocket to produce the same function prototypes
+#define STATIC_LIB 1
+
 #include "rocket.h"
 #include <Rocket/Core/FileInterface.h>
 #include <Rocket/Core/SystemInterface.h>

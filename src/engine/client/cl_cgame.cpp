@@ -2598,7 +2598,7 @@ Start the cgame so we can load rocket
 
 void CL_InitUI( void )
 {
-	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableValue( "vm_cgame" ) );
+	cgvm = VM_Create("cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue("vm_cgame"));
 
 	if ( !cgvm )
 	{
