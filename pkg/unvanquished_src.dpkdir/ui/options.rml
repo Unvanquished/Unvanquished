@@ -209,7 +209,8 @@
 				<div class="line"><label>Move Left:</label><keybind cmd="+moveleft" /></div>
 				<div class="line"><label>Move Right:</label><keybind cmd="+moveright" /></div>
 				<div class="line"><label>Jump:</label><keybind cmd="+moveup" /></div>
-				<div class="line"><label>Crouch:</label><keybind cmd="+movedown" /></div>
+				<div class="line"><label>Crouch:</label><keybind cmd="+movedown" team="humans" /></div>
+				<div class="line"><label>Wallwalk:</label><keybind cmd="+movedown" team="aliens" /></div>
 				<div class="line"><label>Turn Left:</label><keybind cmd="+left" /></div>
 				<div class="line"><label>Turn Right:</label><keybind cmd="+right" /></div>
 				<div class="line"><label>Strafe:</label><keybind cmd="+strafe" /></div>
@@ -221,18 +222,18 @@
 				<div class="line"><label>Previous Upgrade:</label><keybind cmd="weapprev" /></div>
 				<div class="line"><label>Next Upgrade:</label><keybind cmd="weapnext" /></div>
 				<div class="line"><label>Activate Upgrade:</label><keybind cmd="+useitem" /></div>
-				<div class="line"><label>Reload:</label><keybind cmd="-reload" /></div>
-				<div class="line"><label>Use Medkit:</label><keybind cmd="-medkit" /></div>
+				<div class="line"><label>Reload:</label><keybind cmd="-reload" team="humans" /></div>
+				<div class="line"><label>Use Medkit:</label><keybind cmd="-medkit" team="humans" /></div>
 				<div class="line"><label>Use Structure/Evolve:</label><keybind cmd="+activate" /></div>
 			</panel>
 			<tab>Chat &amp; Vote</tab>
 			<panel>
 				<div class="line"><label>Gesture:</label><keybind cmd="+taunt" /></div>
 				<div class="line"><label>Rally:</label><keybind cmd="+rally" /></div>
-				<div class="line"><label>Chat:</label><keybind cmd="messagemode" /></div>
-				<div class="line"><label>Team Chat:</label><keybind cmd="messagemode2" /></div>
-				<div class="line"><label>Admin Chat:</label><keybind cmd="messagemode3" /></div>
-				<div class="line"><label>IRC Chat:</label><keybind cmd="messagemode4" /></div>
+				<div class="line"><label>Chat:</label><keybind cmd="messagemode_public" /></div>
+				<div class="line"><label>Team Chat:</label><keybind cmd="messagemode_team" /></div>
+				<div class="line"><label>Admin Chat:</label><keybind cmd="messagemode_admin" /></div>
+<!-- 				<div class="line"><label>IRC Chat:</label><keybind cmd="messagemode4" /></div> -->
 				<div class="line"><label>VoIP Chat:</label><keybind cmd="+voiprecord" /></div>
 				<div class="line"><label>Vote Yes:</label><keybind cmd="vote yes" /></div>
 				<div class="line"><label>Vote No:</label><keybind cmd="vote no" /></div>
