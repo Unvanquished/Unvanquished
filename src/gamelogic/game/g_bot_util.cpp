@@ -266,7 +266,8 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 
 qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
-	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT] ) >= 0 );
+	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass,
+	                                  self->client->ps.persistant[PERS_CREDIT] ) >= 0 );
 }
 
 qboolean WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
@@ -683,10 +684,25 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 		}
 
 		//ignore buildings if we cant attack them
-		if ( target->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer ||
-		                                          self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
+		if ( target->s.eType == ET_BUILDABLE )
 		{
-			continue;
+			if ( !g_bot_attackStruct.integer )
+			{
+				continue;
+			}
+
+			if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 )
+			{
+				switch ( target->s.modelindex )
+				{
+					case BA_H_MGTURRET:
+					case BA_H_TESLAGEN:
+						break;
+
+					default:
+						continue;
+				}
+			}
 		}
 
 		//ignore neutrals

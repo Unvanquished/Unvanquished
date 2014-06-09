@@ -28,6 +28,10 @@
 #ifndef ROCKETCOREFONTFACEHANDLE_H
 #define ROCKETCOREFONTFACEHANDLE_H
 
+// HACK: Include cstdint here, for some reasons it is enough for the
+// whole librocket code.
+#include <cstdint>
+
 #include <Rocket/Core/ReferenceCountable.h>
 #include <Rocket/Core/UnicodeRange.h>
 #include <Rocket/Core/Font.h>

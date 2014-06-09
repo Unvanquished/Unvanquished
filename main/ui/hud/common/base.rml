@@ -90,7 +90,7 @@
 		}
 		div#speed
 		{
-			position: fixed;
+			position: absolute;
 			bottom: 30%;
 			margin-left: auto;
 			margin-right: auto;
@@ -98,17 +98,16 @@
 			height: 4%;
 			text-align: center;
 			font-size: 16;
+			background-color: #1E1E1E1E;
 		}
 		speedometer
 		{
 			width: 100%;
 			height: 100%;
-			background-color: #1E1E1E1E;
 		}
 		speedometer span
 		{
-			margin-left: auto;
-			margin-right: auto;
+			margin: auto auto;
 			padding: 5%;
 		}
 	</style>
@@ -151,8 +150,12 @@
 		<crosshair_indicator/>
 		<crosshair_name/>
 	</div>
+	<if cvar="cg_drawSpeed" condition="!=" value="0">
+	<div class="omg">
 	<div id="speed">
 		<speedometer />
 	</div>
+	</div>
+	</if>
 </body>
 </rml>

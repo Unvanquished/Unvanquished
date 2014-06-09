@@ -506,6 +506,18 @@ static void CG_Obituary( entityState_t *ent )
 
 		if ( message )
 		{
+			// shouldn't need to do this here, but it avoids
+			char attackerClassName[ 64 ];
+
+			if ( attackerClass == -1 )
+			{
+				*attackerClassName = 0;
+			}
+			else
+			{
+				Q_strncpyz( attackerClassName, _( BG_ClassModelConfig( attackerClass )->humanName ), sizeof( attackerClassName ) );
+			}
+
 			// Argument order: victim, attacker, [class,] [assistant]. Each has team tag first.
 			if ( messageSuicide && attacker == target )
 			{
@@ -515,7 +527,7 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				if ( attackerClass != -1 )
 				{
-					CG_Printf( messageAssisted, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, _( BG_ClassModelConfig( attackerClass )->humanName ), teamTag[ assistantTeam ], assistantName );
+					CG_Printf( messageAssisted, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, attackerClassName, teamTag[ assistantTeam ], assistantName );
 				}
 				else
 				{
@@ -524,7 +536,7 @@ static void CG_Obituary( entityState_t *ent )
 			}
 			else
 			{
-				CG_Printf( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, ( attackerClass != -1 ) ? _( BG_ClassModelConfig( attackerClass )->humanName ) : NULL );
+				CG_Printf( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, attackerClassName );
 			}
 
 			if ( attackerTeam == ci->team && attacker == cg.clientNum && attacker != target )

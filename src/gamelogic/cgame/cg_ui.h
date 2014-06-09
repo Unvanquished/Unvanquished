@@ -47,9 +47,9 @@ typedef rectDef_t Rectangle;
 #endif
 
 
-const char *Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
-const char *Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
-const char *GettextPlural( const char *msgid, const char *msgid2, int number ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
+const char *Gettext( const char *msgid ) PRINTF_TRANSLATE_ARG(1);
+const char *Pgettext( const char *ctxt, const char *msgid ) PRINTF_TRANSLATE_ARG(2);
+const char *GettextPlural( const char *msgid, const char *msgid2, int number ) PRINTF_TRANSLATE_ARG(1) PRINTF_TRANSLATE_ARG(1);
 
 //
 // Parsing

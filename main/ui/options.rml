@@ -65,7 +65,7 @@
 			.nested panels
 			{
 				float: left;
-				height: 100%;
+				min-height: 40%;
 				margin: 0px 0px 0px 0px;
 			}
 			.nested tabs
@@ -127,9 +127,6 @@
 				<option value="300">Medium</option>
 				<option value="600">Slow</option>
 			</select></div>
-
-			<div class="line"><label>Resolution:</label><div class="selectvalue" onClick="hide options;exec rocket ui/dialogs/resolution.rml load; exec rocket resolution show"><input class="disabled" type="text" cvar="r_customWidth" disabled/>&nbsp;x<input class="disabled" type="text" cvar="r_customHeight" disabled/><div class="arrow"></div></div>
-			</div>
 		</panel>
 		<tab>HUD</tab>
 		<panel>
@@ -212,7 +209,8 @@
 				<div class="line"><label>Move Left:</label><keybind cmd="+moveleft" /></div>
 				<div class="line"><label>Move Right:</label><keybind cmd="+moveright" /></div>
 				<div class="line"><label>Jump:</label><keybind cmd="+moveup" /></div>
-				<div class="line"><label>Crouch:</label><keybind cmd="+movedown" /></div>
+				<div class="line"><label>Crouch:</label><keybind cmd="+movedown" team="humans" /></div>
+				<div class="line"><label>Wallwalk:</label><keybind cmd="+movedown" team="aliens" /></div>
 				<div class="line"><label>Turn Left:</label><keybind cmd="+left" /></div>
 				<div class="line"><label>Turn Right:</label><keybind cmd="+right" /></div>
 				<div class="line"><label>Strafe:</label><keybind cmd="+strafe" /></div>
@@ -224,18 +222,18 @@
 				<div class="line"><label>Previous Upgrade:</label><keybind cmd="weapprev" /></div>
 				<div class="line"><label>Next Upgrade:</label><keybind cmd="weapnext" /></div>
 				<div class="line"><label>Activate Upgrade:</label><keybind cmd="+useitem" /></div>
-				<div class="line"><label>Reload:</label><keybind cmd="-reload" /></div>
-				<div class="line"><label>Use Medkit:</label><keybind cmd="-medkit" /></div>
+				<div class="line"><label>Reload:</label><keybind cmd="-reload" team="humans" /></div>
+				<div class="line"><label>Use Medkit:</label><keybind cmd="-medkit" team="humans" /></div>
 				<div class="line"><label>Use Structure/Evolve:</label><keybind cmd="+activate" /></div>
 			</panel>
 			<tab>Chat &amp; Vote</tab>
 			<panel>
 				<div class="line"><label>Gesture:</label><keybind cmd="+taunt" /></div>
 				<div class="line"><label>Rally:</label><keybind cmd="+rally" /></div>
-				<div class="line"><label>Chat:</label><keybind cmd="messagemode" /></div>
-				<div class="line"><label>Team Chat:</label><keybind cmd="messagemode2" /></div>
-				<div class="line"><label>Admin Chat:</label><keybind cmd="messagemode3" /></div>
-				<div class="line"><label>IRC Chat:</label><keybind cmd="messagemode4" /></div>
+				<div class="line"><label>Chat:</label><keybind cmd="messagemode_public" /></div>
+				<div class="line"><label>Team Chat:</label><keybind cmd="messagemode_team" /></div>
+				<div class="line"><label>Admin Chat:</label><keybind cmd="messagemode_admin" /></div>
+<!-- 				<div class="line"><label>IRC Chat:</label><keybind cmd="messagemode4" /></div> -->
 				<div class="line"><label>VoIP Chat:</label><keybind cmd="+voiprecord" /></div>
 				<div class="line"><label>Vote Yes:</label><keybind cmd="vote yes" /></div>
 				<div class="line"><label>Vote No:</label><keybind cmd="vote no" /></div>
@@ -254,13 +252,159 @@
 			</panel>
 			</tabset>
 		</panel>
-		<tab>Graphics</tab>
+		<tab>System</tab>
 		<panel>
-		Other stuff
-		</panel>
-		<tab>Audio</tab>
-		<panel>
-		Some stuff
+			<tabset class="nested">
+			<tab>Display</tab>
+			<panel>
+			<div class="line"><label>Quality:</label>
+			<select cvar="ui_glCustom">
+				<option value="0">High</option>
+				<option value="1">Intermediate</option>
+				<option value="5">Dlights, no fx</option>
+				<option value="2">Low</option>
+				<option value="3">Very Low</option>
+				<option value="4">Custom</option>
+			</select></div>
+			<div class="line"><label>Resolution:</label><div class="selectvalue" onClick="hide options;exec rocket ui/dialogs/resolution.rml load; exec rocket resolution show"><input class="disabled" type="text" cvar="r_customWidth" disabled/>&nbsp;x<input class="disabled" type="text" cvar="r_customHeight" disabled/><div class="arrow"></div></div>
+			</div>
+			<div class="line"><label>Sync Every Frame:</label><input cvar="r_swapinterval" type="checkbox" /></div>
+			<div class="line"><label>Fullscreen:</label><input cvar="r_fullscreen" type="checkbox" /></div>
+			<div class="line"><label>Multisampling:</label>
+			<select cvar="r_ext_multisample">
+				<option value="0">No</option>
+				<option value="2">2×</option>
+				<option value="4">4×</option>
+				<option value="8">8×</option>
+				<option value="16">16×</option>
+			</select></div>
+			<div class="line"><label>Anisotropic Filtering:</label>
+			<select cvar="r_ext_texture_filter_anisotropic">
+				<option value="0">No</option>
+				<option value="2">2×</option>
+				<option value="4">4×</option>
+				<option value="8">8×</option>
+				<option value="16">16×</option>
+			</select></div>
+			</panel>
+			<tab>Effecs</tab>
+			<panel>
+			<div class="line"><label>Lighting:</label>
+			<select cvar="r_vertexLighting">
+				<option value="0">Light Map (high)</option>
+				<option value="1">Vertex (low)</option>
+			</select></div>
+			<div class="line"><label>Dynamic Lights:</label><input cvar="r_dynamiclight" type="checkbox" /></div>
+			<div class="line"><label>Shadows:</label>
+			<select cvar="cg_shadows">
+				<option value="0">No</option>
+				<option value="1">Blobs</option>
+				<option value="3">Exponential mapping</option>
+				<option value="5">Variance mapping</option>
+				<option value="6">Exponential variance</option>
+			</select></div>
+			<div class="line"><label>Compress Textures:</label><input cvar="r_ext_compressed_textures" type="checkbox" /></div>
+			<div class="line"><label>Texture Detail:</label>
+			<select cvar="r_picmip">
+				<option value="2">Low (1:4)</option>
+				<option value="1">Medium (1:2)</option>
+				<option value="0">Full (1:1)</option>
+			</select></div>
+			<div class="line"><label>Texture Filter:</label>
+			<select cvar="r_texturemode">
+				<option value="GL_LINEAR_MIPMAP_NEAREST">Bilinear</option>
+				<option value="GL_LINEAR_MIPMAP_LINEAR">Trilinear</option>
+			</select></div>
+			<div class="line"><label>Normal Mapping:</label><input cvar="r_normalMapping" type="checkbox" /></div>
+			<div class="line"><label>Bloom:</label><input cvar="r_bloom" type="checkbox" /></div>
+			<div class="line"><label>Rim Lighting:</label><input cvar="r_rimlighting" type="checkbox" /></div>
+			<div class="line"><label>Motion Blur:</label>
+			<select cvar="cg_motionblur">
+				<option value="0.05">Yes</option>
+				<option value="0">No</option>
+			</select></div>
+			<div class="line"><label>Heat Haze:</label><input cvar="r_heatHaze" type="checkbox" /></div>
+			</panel>
+			<tab>GFX Software</tab>
+			<panel>
+			<div class="line"><label>Brightness:</label><input type="range" min=" .5" max=" 2" step="0.01" cvar="r_gamma"/></div>
+			<div class="line"><label>Draw Gun:</label><input cvar="cg_drawGun" type="checkbox" /></div>
+			<div class="line"><label>In Game Videos:</label><input cvar="r_inGameVideo" type="checkbox" /></div>
+			<div class="line"><label>Depth Sort Particles:</label><input cvar="cg_depthSortParticles" type="checkbox" /></div>
+			<div class="line"><label>Particle Physics:</label>
+			<select cvar="cg_bounceParticles">
+				<option value="0">Low Quality</option>
+				<option value="1">High Quality</option>
+			</select></div>
+			<div class="line"><label>Light Flares:</label>
+			<select cvar="cg_lightFlare">
+				<option value="0">Off</option>
+				<option value="1">No Fade</option>
+				<option value="2">Timed Fade</option>
+				<option value="3">Real Fade</option>
+			</select></div>
+			</panel>
+			<tab>Net &amp; Sound</tab>
+			<panel>
+			<div class="line"><label>Global Volume:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.volume.master"/></div>
+			<div class="line"><label>Effects Volume:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.volume.effects"/></div>
+			<div class="line"><label>Music Volume:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.volume.music"/></div>
+			<div class="line"><label>Reverb Intensity:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.reverbIntensity"/></div>
+			<div class="line"><label>Doppler Intensity:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.dopplerExaggeration"/></div>
+			<div class="line"><label>OpenAL Device:</label><dataselect source="FILL ME IN"/></div>
+			<div class="line"><label>OpenAL Capture Device:</label><dataselect source="FILL ME IN"/></div>
+			<div class="line"><label>Net Data Rate:</label>
+			<select cvar="rate">
+				<option value="2500">&lt;=28.8k</option>
+				<option value="3000">33.6k</option>
+				<option value="4000">56k</option>
+				<option value="5000">ISDN</option>
+				<option value="25000">LAN/CABLE/xDSL</option>
+			</select></div>
+			</panel>
+			<tab>VoIP</tab>
+			<panel>
+			<div class="line"><label>Enable VoIP:</label><input cvar="cl_voip" type="checkbox" /></div>
+			<div class="line"><label>Show VoIP Meter:</label><input cvar="cl_voipShowMeter" type="checkbox" /></div>
+			<div class="line"><label>Show VoIP Sender:</label>
+			<select cvar="cl_voipShowSender">
+				<option value="0">Off</option>
+				<option value="1">Lower Right</option>
+				<option value="2">Lower Left</option>
+				<option value="3">Top Right</option>
+				<option value="4">Top Center</option>
+				<option value="5">Bottom Center</option>
+			</select></div>
+			<div class="line"><label>Capture Gain:</label><input type="range" min=" 0.2" max=" 6" step="0.01" cvar="cl_voipGainDuringCapture"/></div>
+			<div class="line"><label>Capture Multiplier:</label><input type="range" min=" 2" max=" 6" step="0.01" cvar="cl_voipCaptureMult"/></div>
+			<div class="line"><label>Voice Activation Detection:</label><input cvar="cl_voipUseVAD" type="checkbox" /></div>
+			<div class="line"><label>VAD Threshold:</label><input type="range" min=" 0.25" max=" 1" step="0.01" cvar="cl_voipVADThreshold"/></div>\
+			</panel>
+			<tab>Range Markers</tab>
+			<panel>
+			<div class="line"><label>Range Markers for:</label>
+			<select cvar="cg_rangeMarkerBuildableTypes">
+				<option value="none">No Buildables</option>
+				<option value="all">All Buildables</option>
+				<option value="support">Support Buildables</option>
+				<option value="offensive">Offensive Buildables</option>
+				<option value="alien">Alien Buildables</option>
+				<option value="human">Human Buildables</option>
+				<option value="aliensupport">Alien Support Buildables</option>
+				<option value="humansupport">Human Support Buildables</option>
+				<option value="alienoffensive">Offensive Alien Buildables</option>
+				<option value="humanoffensive">Offensive Human Buildables</option>
+			</select></div>
+			<div class="line"><label>Range Marker for Blueprint:</label><input cvar="cg_rangeMarkerForBlueprint" type="checkbox" /></div>
+			<div class="line"><label>Draw Surface:</label><input cvar="cg_rangeMarkerDrawSurface" type="checkbox" /></div>
+			<div class="line"><label>Draw Intersection:</label><input cvar="cg_rangeMarkerDrawIntersection" type="checkbox" /></div>
+			<div class="line"><label>Draw Frontline:</label><input cvar="cg_rangeMarkerDrawFrontline" type="checkbox" /></div>
+			<div class="line"><label>Surface Opacity:</label><input type="range" min=" .035" max=" .3" step="0.01" cvar="cg_rangeMarkerSurfaceOpacity"/></div>
+			<div class="line"><label>Line Opacity:</label><input type="range" min=" .075" max=" 1" step="0.01" cvar="cg_rangeMarkerLineOpacity"/></div>
+			<div class="line"><label>Line Thickness:</label><input type="range" min=" 1" max=" 11" step="0.01" cvar="cg_rangeMarkerLineThickness"/></div>
+			<div class="line"><label>Binary Shader Screen Scale:</label><input type="range" min=" .005" max=" 1" step="0.01" cvar="cg_binaryShaderScreenScale"/></div>
+			</panel>
+			</tabset>
 		</panel>
 		</tabset>
 	</body>

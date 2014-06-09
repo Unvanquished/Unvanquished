@@ -17,6 +17,18 @@
 	</head>
 	<body id="players" onload="buildDS resolutions; sortDS resolutions default width">
 	<div class="window">
+		<datagrid source="playerList.humans" >
+			<col fields="num" formatter="PlayerName" width="70%">Name</col>
+			<col fields="num" formatter="VotePlayer" width="30%"></col>
+		</datagrid>
+		<datagrid source="playerList.aliens" >
+			<col fields="num" formatter="PlayerName" width="70%"></col>
+			<col fields="num" formatter="VotePlayer" width="30%"></col>
+		</datagrid>
+		<datagrid source="playerList.specs" >
+			<col fields="num" formatter="PlayerName" width="70%"></col>
+			<col fields="num" formatter="VotePlayer" width="30%"></col>
+		</datagrid>
 		<div class="teams aliens">
 			<div class="player">^2Granger^1nom <button onClick="exec set ui_dialogCvar1 ^2Granger^1nom;exec rocket ui/dialogs/editplayer.rml load; exec rocket editplayer show">Start Vote</button></div>
 		</div>

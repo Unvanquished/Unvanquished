@@ -291,39 +291,41 @@ else()
 
     # Use gcc-ar and gcc-ranlib instead of ar and ranlib so that we can use
     # slim LTO objects. This requires a recent version of GCC and binutils.
-    if( USE_SLIM_LTO )
-      string(REGEX MATCH "^([0-9]+.[0-9]+)" _version
-         "${CMAKE_CXX_COMPILER_VERSION}")
-      get_filename_component(COMPILER_BASENAME "${CMAKE_C_COMPILER}" NAME)
-      if (COMPILER_BASENAME MATCHES "^(.+-)g?cc(-[0-9]+\\.[0-9]+\\.[0-9]+)?(\\.exe)?$")
-        set(TOOLCHAIN_PREFIX ${CMAKE_MATCH_1})
+    if( ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU )
+      if( USE_SLIM_LTO )
+        string(REGEX MATCH "^([0-9]+.[0-9]+)" _version
+           "${CMAKE_CXX_COMPILER_VERSION}")
+        get_filename_component(COMPILER_BASENAME "${CMAKE_C_COMPILER}" NAME)
+        if (COMPILER_BASENAME MATCHES "^(.+-)g?cc(-[0-9]+\\.[0-9]+\\.[0-9]+)?(\\.exe)?$")
+          set(TOOLCHAIN_PREFIX ${CMAKE_MATCH_1})
+        endif()
+
+        find_program(GCC_AR NAMES
+          "${TOOLCHAIN_PREFIX}gcc-ar"
+          "${TOOLCHAIN_PREFIX}gcc-ar-${_version}"
+          DOC "gcc provided wrapper for ar which adds the --plugin option"
+        )
+
+        find_program(GCC_RANLIB NAMES
+          "${TOOLCHAIN_PREFIX}gcc-ranlib"
+          "${TOOLCHAIN_PREFIX}gcc-ranlib-${_version}"
+          DOC "gcc provided wrapper for ranlib which adds the --plugin option"
+        )
+
+        mark_as_advanced( GCC_AR GCC_RANLIB )
+
+        # Override standard ar and ranlib with the gcc- versions
+        if( GCC_AR )
+          set( CMAKE_AR ${GCC_AR} )
+        endif()
+        if( GCC_RANLIB )
+          set( CMAKE_RANLIB ${GCC_RANLIB} )
+        endif()
+
+        try_c_cxx_flag( NO_FAT_LTO_OBJECTS "-fno-fat-lto-objects" )
+      else()
+        try_c_cxx_flag( FAT_LTO_OBJECTS "-ffat-lto-objects" )
       endif()
-
-      find_program(GCC_AR NAMES
-        "${TOOLCHAIN_PREFIX}gcc-ar"
-        "${TOOLCHAIN_PREFIX}gcc-ar-${_version}"
-        DOC "gcc provided wrapper for ar which adds the --plugin option"
-      )
-
-      find_program(GCC_RANLIB NAMES
-        "${TOOLCHAIN_PREFIX}gcc-ranlib"
-        "${TOOLCHAIN_PREFIX}gcc-ranlib-${_version}"
-        DOC "gcc provided wrapper for ranlib which adds the --plugin option"
-      )
-
-      mark_as_advanced( GCC_AR GCC_RANLIB )
-
-      # Override standard ar and ranlib with the gcc- versions
-      if( GCC_AR )
-        set( CMAKE_AR ${GCC_AR} )
-      endif()
-      if( GCC_RANLIB )
-        set( CMAKE_RANLIB ${GCC_RANLIB} )
-      endif()
-
-      try_c_cxx_flag( NO_FAT_LTO_OBJECTS "-fno-fat-lto-objects" )
-    else()
-      try_c_cxx_flag( FAT_LTO_OBJECTS "-ffat-lto-objects" )
     endif()
   endif()
 
@@ -505,6 +507,11 @@ function( ADD_PRECOMPILED_HEADER Target Header )
     foreach( Def ${DirIncludeDirs} )
       set( Defs ${Defs} -I${Def} )
     endforeach()
+
+    # Specify minimum OSX version
+    if( APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET )
+      set( Flags ${Flags} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} )
+    endif()
 
     # Compiler-specific PCH support
     if( CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
@@ -864,7 +871,7 @@ set( CGAMEASMLIST
 )
 
 set( GAMELIST
-  ${GAMELOGIC_DIR}/game/g_main.c #keep it first because vmMain must be the first function compiled in qvms
+  ${GAMELOGIC_DIR}/game/g_main.cpp
   ${GAMELOGIC_DIR}/shared/bg_misc.c
   ${GAMELOGIC_DIR}/shared/bg_parse.c
   ${GAMELOGIC_DIR}/shared/bg_pmove.c
@@ -876,39 +883,39 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/shared/VMMain.h
-  ${GAMELOGIC_DIR}/game/g_active.c
-  ${GAMELOGIC_DIR}/game/g_client.c
-  ${GAMELOGIC_DIR}/game/g_cmds.c
-  ${GAMELOGIC_DIR}/game/g_combat.c
-  ${GAMELOGIC_DIR}/game/g_confidence.c
-  ${GAMELOGIC_DIR}/game/g_entities.c
-  ${GAMELOGIC_DIR}/game/g_physics.c
-  ${GAMELOGIC_DIR}/game/g_buildable.c
-  ${GAMELOGIC_DIR}/game/g_missile.c
-  ${GAMELOGIC_DIR}/game/g_session.c
-  ${GAMELOGIC_DIR}/game/g_spawn_afx.c
-  ${GAMELOGIC_DIR}/game/g_spawn_ctrl.c
-  ${GAMELOGIC_DIR}/game/g_spawn_fx.c
-  ${GAMELOGIC_DIR}/game/g_spawn_game.c
-  ${GAMELOGIC_DIR}/game/g_spawn_generic.c
-  ${GAMELOGIC_DIR}/game/g_spawn_gfx.c
-  ${GAMELOGIC_DIR}/game/g_spawn_mover.c
-  ${GAMELOGIC_DIR}/game/g_spawn_position.c
-  ${GAMELOGIC_DIR}/game/g_spawn_sensor.c
-  ${GAMELOGIC_DIR}/game/g_spawn_shared.c
-  ${GAMELOGIC_DIR}/game/g_spawn.c
-  ${GAMELOGIC_DIR}/game/g_svcmds.c
-  ${GAMELOGIC_DIR}/game/g_team.c
-  ${GAMELOGIC_DIR}/game/g_utils.c
-  ${GAMELOGIC_DIR}/game/g_maprotation.c
-  ${GAMELOGIC_DIR}/game/g_weapon.c
-  ${GAMELOGIC_DIR}/game/g_admin.c
-  ${GAMELOGIC_DIR}/game/g_namelog.c
-  ${GAMELOGIC_DIR}/game/g_bot.c
-  ${GAMELOGIC_DIR}/game/g_bot_ai.c
-  ${GAMELOGIC_DIR}/game/g_bot_nav.c
-  ${GAMELOGIC_DIR}/game/g_bot_parse.c
-  ${GAMELOGIC_DIR}/game/g_bot_util.c
+  ${GAMELOGIC_DIR}/game/g_active.cpp
+  ${GAMELOGIC_DIR}/game/g_client.cpp
+  ${GAMELOGIC_DIR}/game/g_cmds.cpp
+  ${GAMELOGIC_DIR}/game/g_combat.cpp
+  ${GAMELOGIC_DIR}/game/g_confidence.cpp
+  ${GAMELOGIC_DIR}/game/g_entities.cpp
+  ${GAMELOGIC_DIR}/game/g_physics.cpp
+  ${GAMELOGIC_DIR}/game/g_buildable.cpp
+  ${GAMELOGIC_DIR}/game/g_missile.cpp
+  ${GAMELOGIC_DIR}/game/g_session.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_afx.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_ctrl.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_fx.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_game.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_generic.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_gfx.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_mover.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_position.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_sensor.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_shared.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn.cpp
+  ${GAMELOGIC_DIR}/game/g_svcmds.cpp
+  ${GAMELOGIC_DIR}/game/g_team.cpp
+  ${GAMELOGIC_DIR}/game/g_utils.cpp
+  ${GAMELOGIC_DIR}/game/g_maprotation.cpp
+  ${GAMELOGIC_DIR}/game/g_weapon.cpp
+  ${GAMELOGIC_DIR}/game/g_admin.cpp
+  ${GAMELOGIC_DIR}/game/g_namelog.cpp
+  ${GAMELOGIC_DIR}/game/g_bot.cpp
+  ${GAMELOGIC_DIR}/game/g_bot_ai.cpp
+  ${GAMELOGIC_DIR}/game/g_bot_nav.cpp
+  ${GAMELOGIC_DIR}/game/g_bot_parse.cpp
+  ${GAMELOGIC_DIR}/game/g_bot_util.cpp
   ${GAMELOGIC_DIR}/game/g_cm_world.cpp
   ${GAMELOGIC_DIR}/game/g_cm_world.h
   ${ENGINE_DIR}/server/g_api.h

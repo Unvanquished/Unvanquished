@@ -6,22 +6,20 @@
         <style>
 #serverbrowser .close{
 	z-index:7;
-	margin-top:10%;
+	margin-top:5%;
 	margin-left:6%;
-	max-width: 9em;
 	width:auto;
+	max-width: 10%;
+	max-height: 10%;
 	padding:1%;
-	font-size: 0.8em;
 	position:absolute;
 }
 
 
 #serverbrowser .connect{
 	z-index:7;
-	max-width: 16em;
 	width:100%;
 	padding:5% 4%;
-	font-size: 1em;
 	display:block;
 	margin:auto;
 	margin-top:3%;
