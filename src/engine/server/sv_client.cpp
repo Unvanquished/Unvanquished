@@ -733,7 +733,7 @@ SV_StopDownload_f
 Abort a download if in progress
 ==================
 */
-void SV_StopDownload_f( client_t *cl )
+void SV_StopDownload_f( client_t *cl, const Cmd::Args& )
 {
 	if ( *cl->downloadName )
 	{
@@ -750,7 +750,7 @@ SV_DoneDownload_f
 Downloads are finished
 ==================
 */
-void SV_DoneDownload_f( client_t *cl )
+void SV_DoneDownload_f( client_t *cl, const Cmd::Args& )
 {
 	if ( cl->state == CS_ACTIVE )
 	{
@@ -770,9 +770,12 @@ The argument will be the last acknowledged block from the client, it should be
 the same as cl->downloadClientBlock
 ==================
 */
-void SV_NextDownload_f( client_t *cl )
+void SV_NextDownload_f( client_t *cl, const Cmd::Args& args )
 {
-	int block = atoi( Cmd_Argv( 1 ) );
+	int block;
+	if (args.Argc() < 2 or not Str::ParseInt(block, args.Argv(1))) {
+		return;
+	}
 
 	if ( block == cl->downloadClientBlock )
 	{
@@ -802,20 +805,24 @@ void SV_NextDownload_f( client_t *cl )
 SV_BeginDownload_f
 ==================
 */
-void SV_BeginDownload_f( client_t *cl )
+void SV_BeginDownload_f( client_t *cl, const Cmd::Args& args )
 {
 	// Kill any existing download
 	SV_CloseDownload( cl );
 
+	if (args.Argc() < 2) {
+		return;
+	}
+
 	//bani - stop us from printing dupe messages
-	if ( strcmp( cl->downloadName, Cmd_Argv( 1 ) ) )
+	if (args.Argv(1) != cl->downloadName)
 	{
 		cl->downloadnotify = DLNOTIFY_ALL;
 	}
 
 	// cl->downloadName is non-zero now, SV_WriteDownloadToClient will see this and open
 	// the file itself
-	Q_strncpyz( cl->downloadName, Cmd_Argv( 1 ), sizeof( cl->downloadName ) );
+	Q_strncpyz( cl->downloadName, args.Argv(1).c_str(), sizeof( cl->downloadName ) );
 }
 
 /*
@@ -823,9 +830,13 @@ void SV_BeginDownload_f( client_t *cl )
 SV_WWWDownload_f
 ==================
 */
-void SV_WWWDownload_f( client_t *cl )
+void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 {
-	char *subcmd = Cmd_Argv( 1 );
+	if (args.Argc() < 2) {
+		return;
+	}
+
+	const char *subcmd = args.Argv(1).c_str();
 
 	// only accept wwwdl commands for clients which we first flagged as wwwdl ourselves
 	if ( !cl->bWWWDl )
@@ -1249,7 +1260,7 @@ SV_Disconnect_f
 The client is going to disconnect, so remove the connection immediately  FIXME: move to game?
 =================
 */
-static void SV_Disconnect_f( client_t *cl )
+static void SV_Disconnect_f( client_t *cl, const Cmd::Args& )
 {
 	SV_DropClient( cl, _("disconnected") );
 }
@@ -1376,10 +1387,13 @@ void SV_UserinfoChanged( client_t *cl )
 SV_UpdateUserinfo_f
 ==================
 */
-static void SV_UpdateUserinfo_f( client_t *cl )
+static void SV_UpdateUserinfo_f( client_t *cl, const Cmd::Args& args )
 {
-	//Q_strncpyz( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) );
-	Q_strncpyz( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) ); // FIXME QUOTING INFO
+	if (args.Argc() < 2) {
+		return;
+	}
+
+	Q_strncpyz(cl->userinfo, args.Argv(1).c_str(), sizeof(cl->userinfo)); // FIXME QUOTING INFO
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides
@@ -1406,17 +1420,20 @@ void SV_UpdateVoipIgnore( client_t *cl, const char *idstr, qboolean ignore )
 SV_Voip_f
 ==================
 */
-static void SV_Voip_f( client_t *cl )
+static void SV_Voip_f( client_t *cl, const Cmd::Args& args )
 {
-	const char *cmd = Cmd_Argv( 1 );
-
-	if ( strcmp( cmd, "ignore" ) == 0 )
-	{
-		SV_UpdateVoipIgnore( cl, Cmd_Argv( 2 ), qtrue );
+	if (args.Argc() < 2) {
+		return;
 	}
-	else if ( strcmp( cmd, "unignore" ) == 0 )
+	const char *cmd = args.Argv(1).c_str();
+
+	if ( strcmp( cmd, "ignore" ) == 0 and args.Argc >= 3)
 	{
-		SV_UpdateVoipIgnore( cl, Cmd_Argv( 2 ), qfalse );
+		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), qtrue );
+	}
+	else if ( strcmp( cmd, "unignore" ) == 0 and args.Argc() >= 3)
+	{
+		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), qfalse );
 	}
 	else if ( strcmp( cmd, "muteall" ) == 0 )
 	{
@@ -1433,7 +1450,7 @@ static void SV_Voip_f( client_t *cl )
 typedef struct
 {
 	const char *name;
-	void ( *func )( client_t *cl );
+	void ( *func )( client_t *cl, const Cmd::Args& args );
 	qboolean allowedpostmapchange;
 } ucmd_t;
 
@@ -1449,7 +1466,7 @@ static ucmd_t ucmds[] =
 	{ "voip",       SV_Voip_f,            qfalse },
 #endif
 	{ "wwwdl",      SV_WWWDownload_f,     qfalse },
-	{ NULL,         NULL }
+	{ NULL,         NULL, qfalse}
 };
 
 /*
@@ -1492,19 +1509,19 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 	qboolean bProcessed = qfalse;
 
 	Com_DPrintf( "EXCL: %s\n", s );
-	Cmd_TokenizeString( s );
+	Cmd::Args args(s);
 
-	// see if it is a server level command
-	for ( u = ucmds; u->name; u++ )
-	{
-		if ( !strcmp( Cmd_Argv( 0 ), u->name ) )
-		{
-			if ( premaprestart && !u->allowedpostmapchange )
-			{
+	if (args.Argc() == 0) {
+		return;
+	}
+
+	for (u = ucmds; u->name; u++) {
+		if (args.Argv(0) == u->name) {
+			if (premaprestart && !u->allowedpostmapchange) {
 				continue;
 			}
 
-			u->func( cl );
+			u->func(cl, args);
 			bProcessed = qtrue;
 			break;
 		}
@@ -1520,7 +1537,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 	}
 	else if ( !bProcessed )
 	{
-		Com_DPrintf( "client text ignored for %s^7: %s\n", cl->name, Cmd_Argv( 0 ) );
+		Com_DPrintf( "client text ignored for %s^7: %s\n", cl->name, args.Argv(0).c_str());
 	}
 }
 
