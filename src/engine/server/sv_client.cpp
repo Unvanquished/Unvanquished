@@ -1025,68 +1025,56 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			}
 			std::string pakName = name + "_" + version + ".pk3";
 
-			if ( cl->bDlOK )
+			if ( !cl->bFallback )
 			{
-				if ( !cl->bFallback )
+				if ( success )
 				{
-					if ( success )
+					Q_strncpyz( cl->downloadURL, va("%s/%s", sv_wwwBaseURL->string, pakName.c_str()),
+								sizeof( cl->downloadURL ) );
+
+					//bani - prevent multiple download notifications
+					if ( cl->downloadnotify & DLNOTIFY_REDIRECT )
 					{
-						Q_strncpyz( cl->downloadURL, va("%s/%s", sv_wwwBaseURL->string, pakName.c_str()),
-						            sizeof( cl->downloadURL ) );
-
-						//bani - prevent multiple download notifications
-						if ( cl->downloadnotify & DLNOTIFY_REDIRECT )
-						{
-							cl->downloadnotify &= ~DLNOTIFY_REDIRECT;
-							Com_Printf(_( "Redirecting client '%s' to %s\n"), cl->name, cl->downloadURL );
-						}
-
-						// once cl->downloadName is set (and possibly we have our listening socket), let the client know
-						cl->bWWWDl = qtrue;
-						MSG_WriteByte( msg, svc_download );
-						MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
-						// compatible with legacy svc_download protocol: [size] [size bytes]
-						// download URL, size of the download file, download flags
-						MSG_WriteString( msg, cl->downloadURL );
-						MSG_WriteLong( msg, downloadSize );
-						download_flag = 0;
-
-						if ( sv_wwwDlDisconnected->integer )
-						{
-							download_flag |= ( 1 << DL_FLAG_DISCON );
-						}
-
-						MSG_WriteLong( msg, download_flag );  // flags
-						return;
+						cl->downloadnotify &= ~DLNOTIFY_REDIRECT;
+						Com_Printf(_( "Redirecting client '%s' to %s\n"), cl->name, cl->downloadURL );
 					}
-					else
+
+					// once cl->downloadName is set (and possibly we have our listening socket), let the client know
+					cl->bWWWDl = qtrue;
+					MSG_WriteByte( msg, svc_download );
+					MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
+					// compatible with legacy svc_download protocol: [size] [size bytes]
+					// download URL, size of the download file, download flags
+					MSG_WriteString( msg, cl->downloadURL );
+					MSG_WriteLong( msg, downloadSize );
+					download_flag = 0;
+
+					if ( sv_wwwDlDisconnected->integer )
 					{
-						// that should NOT happen - even regular download would fail then anyway
-						Com_Logf(LOG_ERROR, _( "Client '%s': couldn't extract file size for %s"), cl->name, cl->downloadName );
+						download_flag |= ( 1 << DL_FLAG_DISCON );
 					}
+
+					MSG_WriteLong( msg, download_flag );  // flags
+					return;
 				}
 				else
 				{
-					cl->bFallback = qfalse;
-					cl->bWWWDl = qtrue;
-
-					if ( SV_CheckFallbackURL( cl, pakName.c_str(), msg ) )
-					{
-						return;
-					}
-
-					Com_Logf(LOG_ERROR, _( "Client '%s': falling back to regular downloading for failed file %s"), cl->name,
-					            cl->downloadName );
+					// that should NOT happen - even regular download would fail then anyway
+					Com_Logf(LOG_ERROR, _( "Client '%s': couldn't extract file size for %s"), cl->name, cl->downloadName );
 				}
 			}
 			else
 			{
+				cl->bFallback = qfalse;
+				cl->bWWWDl = qtrue;
+
 				if ( SV_CheckFallbackURL( cl, pakName.c_str(), msg ) )
 				{
 					return;
 				}
 
-				Com_Printf(_( "Client '%s' is not configured for www download\n"), cl->name );
+				Com_Logf(LOG_ERROR, _( "Client '%s': falling back to regular downloading for failed file %s"), cl->name,
+							cl->downloadName );
 			}
 		}
 
@@ -1364,21 +1352,6 @@ void SV_UserinfoChanged( client_t *cl )
 #ifdef HAVE_GEOIP
 		Info_SetValueForKey( cl->userinfo, "geoip", NULL, qfalse );
 #endif
-	}
-
-	// TTimo
-	// download prefs of the client
-	val = Info_ValueForKey( cl->userinfo, "cl_wwwDownload" );
-	cl->bDlOK = qfalse;
-
-	if ( strlen( val ) )
-	{
-		i = atoi( val );
-
-		if ( i != 0 )
-		{
-			cl->bDlOK = qtrue;
-		}
 	}
 }
 
