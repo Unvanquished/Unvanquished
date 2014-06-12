@@ -43,8 +43,8 @@ namespace Cvar {
         ::Cvar::SetValue(name, std::move(value));
     }
 
-    void CvarProxy::Register(std::string description) {
-        ::Cvar::Register(this, name, std::move(description), flags, std::move(defaultValue));
+    bool CvarProxy::Register(std::string description) {
+        return ::Cvar::Register(this, name, std::move(description), flags, std::move(defaultValue));
     }
 
     bool ParseCvarValue(Str::StringRef value, bool& result) {
