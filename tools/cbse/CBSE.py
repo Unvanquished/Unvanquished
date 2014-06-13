@@ -47,25 +47,37 @@ class Message:
         return 'Message({}, {})'.format(self.name, self.args)
 
 class Component:
-    def __init__(self, name, parameters=None, attributes=None, messages=None, dependencies=None, inherits=None):
+    def __init__(self, name, parameters=None, attributes=None, messages=None, requires=None, inherits=None):
         self.name = name
         self.params = parameters
         self.param_list = list(parameters.items())
         self.attribs = attributes
         self.messages = messages
         self.priority = None
+        self.requires = requires
+        self.inherits = inherits
 
     def gather_dependencies(self, attributes, messages, components):
         self.attribs = list(map(lambda attrib: attributes[attrib], self.attribs))
 
+    def gather_component_dependencies(self, components):
+        self.requires = list(map(lambda component: components[component], self.requires))
+        self.inherits = list(map(lambda component: components[component], self.inherits))
+
     def for_each_component_dependencies(self, fun):
-        pass
+        for require in self.requires:
+            fun(require)
+        for inherit in self.inherits:
+            fun(inherit)
 
     def get_type_name(self):
         return self.name + "Component"
 
     def get_base_type_name(self):
         return self.name + "ComponentBase"
+
+    def get_priority(self):
+        return self.priority
 
     def get_param_declarations(self):
         return list(map(lambda p: p[1] + ' ' + p[0], self.param_list))
@@ -102,6 +114,27 @@ class Component:
         #TODO
         return list(map(lambda a: a.name, self.attribs))
 
+    def get_required_components(self):
+        return self.requires
+
+    def get_own_required_components(self):
+        #TODO
+        return self.requires
+
+    def get_required_component_declarations(self):
+        return list(map(lambda c: c.get_type_name() + '* const r_' + c.get_type_name(), self.requires))
+
+    def get_own_required_component_declarations(self):
+        #TODO
+        return list(map(lambda c: c.get_type_name() + '* const r_' + c.get_type_name(), self.requires))
+
+    def get_required_component_names(self):
+        return list(map(lambda c: 'r_' + c.get_type_name(), self.requires))
+
+    def get_own_required_component_names(self):
+        #TODO
+        return list(map(lambda c: 'r_' + c.get_type_name(), self.requires))
+
     def __repr__(self):
         return "Component({}, ...)".format(self.name)
 
@@ -133,6 +166,10 @@ def load_components(definitions):
             kwargs['attributes'] = []
         if not 'parameters' in kwargs:
             kwargs['parameters'] = {}
+        if not 'requires' in kwargs:
+            kwargs['requires'] = []
+        if not 'inherits' in kwargs:
+            kwargs['inherits'] = {}
         components[name] = Component(name, **kwargs)
     return components
 
@@ -143,16 +180,6 @@ def load_entities(definitions):
     return entities
 
 #############################################################################
-
-# Not handled yet
-# - Component dependencies
-# - Entity definitions
-# - Component parameters
-# - Component initialization
-# - Component inheritance
-
-# Maybe add
-# - Entity inheritance (sorta entity templates)
 
 def topo_sort_components(components):
     sorted_components = []
@@ -166,13 +193,9 @@ def topo_sort_components(components):
             raise 'The component dep graph has a cycle'
         elif component.temp_visited == NOT_VISITED:
             component.temp_visited = VISITING
-            component.for_each_component_dependencies(handle_component_deps)
+            component.for_each_component_dependencies(handle_component)
             component.temp_visited = VISITED
             sorted_components.append(component)
-
-    def handle_component_deps(deps):
-        for dep in deps:
-            handle_component(dep)
 
     for component in components:
         handle_component(component)
@@ -201,6 +224,9 @@ if __name__ == '__main__':
     entity_list = list(entities.values())
 
     # Compute stuff
+    for component in component_list:
+        component.gather_component_dependencies(components)
+
     sorted_components = topo_sort_components(component_list)
     for (i, component) in enumerate(sorted_components):
         component.priority = i

@@ -41,6 +41,8 @@ components:
         inherits:
             - Comp3
     Comp2:
+        dependencies:
+            - Comp1
         messages:
             - Foo3
         attributes:
