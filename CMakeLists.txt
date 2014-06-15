@@ -866,6 +866,7 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_entities.cpp
   ${GAMELOGIC_DIR}/game/g_physics.cpp
   ${GAMELOGIC_DIR}/game/g_buildable.cpp
+  ${GAMELOGIC_DIR}/game/g_buildpoints.cpp
   ${GAMELOGIC_DIR}/game/g_missile.cpp
   ${GAMELOGIC_DIR}/game/g_session.cpp
   ${GAMELOGIC_DIR}/game/g_spawn_afx.cpp

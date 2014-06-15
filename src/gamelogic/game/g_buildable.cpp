@@ -282,53 +282,6 @@ static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 }
 
 /*
-==================
-G_GetBuildPointsInt
-
-Get the number of build points for a team
-==================
-*/
-int G_GetBuildPointsInt( team_t team )
-{
-	if ( team > TEAM_NONE && team < NUM_TEAMS )
-	{
-		return ( int )level.team[ team ].buildPoints;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-/*
-==================
-G_GetMarkedBuildPointsInt
-
-Get the number of marked build points for a team
-==================
-*/
-int G_GetMarkedBuildPointsInt( team_t team )
-{
-	gentity_t *ent;
-	int       i;
-	int       sum = 0;
-	const buildableAttributes_t *attr;
-
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( ent->s.eType != ET_BUILDABLE || !ent->inuse || ent->health <= 0 || ent->buildableTeam != team || !ent->deconstruct )
-		{
-			continue;
-		}
-
-		attr = BG_Buildable( ent->s.modelindex );
-		sum += attr->buildPoints * ( ent->health / (float)attr->health );
-	}
-
-	return sum;
-}
-
-/*
 ================
 G_Reactor
 G_Overmind
@@ -616,155 +569,6 @@ static void AGeneric_CreepSlow( gentity_t *self )
 		ent->client->ps.stats[ STAT_STATE ] |= SS_CREEPSLOWED;
 		ent->client->lastCreepSlowTime = level.time;
 	}
-}
-
-/**
- * @brief Calculates modifier for the efficiency of one RGS when another one interfers at given distance.
- */
-static float RGSInterferenceMod( float distance )
-{
-	float dr, q;
-
-	if ( RGS_RANGE <= 0.0f )
-	{
-		return 1.0f;
-	}
-
-	// q is the ratio of the part of a sphere with radius RGS_RANGE that intersects
-	// with another sphere of equal size and given distance
-	dr = distance / RGS_RANGE;
-	q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
-
-	// Two RGS together should mine at a rate proportional to the volume of the
-	// union of their areas of effect. If more RGS intersect, this is just an
-	// approximation that tends to punish cluttering of RGS.
-	return ( (1.0f - q) + 0.5f * q );
-}
-
-/**
- * @brief Adjust the rate of a RGS.
- */
-void G_RGSCalculateRate( gentity_t *self )
-{
-	gentity_t       *rgs;
-	float           rate;
-
-	if ( self->s.modelindex != BA_A_LEECH && self->s.modelindex != BA_H_DRILL )
-	{
-		return;
-	}
-
-	if ( !self->spawned || !self->powered )
-	{
-		self->mineRate       = 0.0f;
-		self->mineEfficiency = 0.0f;
-
-		// HACK: Save rate and efficiency entityState.weapon and entityState.weaponAnim
-		self->s.weapon     = 0;
-		self->s.weaponAnim = 0;
-	}
-	else
-	{
-		rate = level.mineRate;
-
-		for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
-		{
-			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-				 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
-			{
-				rate *= RGSInterferenceMod( Distance( self->s.origin, rgs->s.origin ) );
-			}
-		}
-
-		self->mineRate       = rate;
-		self->mineEfficiency = rate / level.mineRate;
-
-		// HACK: Save rate and efficiency in entityState.weapon and entityState.weaponAnim
-		self->s.weapon     = ( int )( self->mineRate * 1000.0f );
-		self->s.weaponAnim = ( int )( self->mineEfficiency * 100.0f );
-
-		// The transmitted rate must be positive to indicate that the RGS is active
-		if ( self->s.weapon < 1 )
-		{
-			self->s.weapon = 1;
-		}
-	}
-}
-
-/**
- * @brief Adjust the rate of all RGS in range.
- */
-void G_RGSInformNeighbors( gentity_t *self )
-{
-	gentity_t       *rgs;
-
-	for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
-	{
-		if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-			 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
-		{
-			G_RGSCalculateRate( rgs );
-		}
-	}
-}
-
-/**
- * @brief Predict the efficiecy loss of a RGS if another one is constructed at given origin.
- * @return Efficiency loss as negative value
- */
-static float RGSPredictInterferenceLoss( gentity_t *self, vec3_t origin )
-{
-	float currentRate, predictedRate, rateLoss;
-
-	currentRate   = self->mineRate;
-	predictedRate = currentRate * RGSInterferenceMod( Distance( self->s.origin, origin ) );
-	rateLoss      = predictedRate - currentRate;
-
-	return ( rateLoss / level.mineRate );
-}
-
-/**
- * @brief Predict the efficiency of a RGS constructed at the given point.
- * @return Predicted efficiency in percent points
- */
-float G_RGSPredictEfficiency( vec3_t origin )
-{
-	gentity_t dummy;
-
-	memset( &dummy, 0, sizeof( gentity_t ) );
-	VectorCopy( origin, dummy.s.origin );
-	dummy.s.eType = ET_BUILDABLE;
-	dummy.s.modelindex = BA_A_LEECH;
-	dummy.spawned = qtrue;
-	dummy.powered = qtrue;
-
-	G_RGSCalculateRate( &dummy );
-
-	return dummy.mineEfficiency;
-}
-
-/**
- * @brief Predict the total efficiency gain for a team when a RGS is constructed at the given point.
- * @return Predicted efficiency delta in percent points
- * @todo Consider RGS set for deconstruction
- */
-float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
-{
-	gentity_t *rgs;
-	float     delta;
-
-	delta = G_RGSPredictEfficiency( origin );
-
-	for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, origin, RGS_RANGE * 2.0f ) ); )
-	{
-		if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-		     && rgs->spawned && rgs->powered && rgs->health > 0 && rgs->buildableTeam == team )
-		{
-			delta += RGSPredictInterferenceLoss( rgs, origin );
-		}
-	}
-
-	return delta;
 }
 
 /*
@@ -1440,40 +1244,25 @@ void AAcidTube_Think( gentity_t *self )
 
 void ALeech_Think( gentity_t *self )
 {
-	qboolean active, lastThinkActive;
-	float    resources;
-
 	self->nextthink = level.time + 1000;
 
 	AGeneric_Think( self );
 
-	active = self->spawned & self->powered;
-	lastThinkActive = self->s.weapon > 0;
-
-	if ( active ^ lastThinkActive )
-	{
-		// If the state of this RGS has changed, adjust own rate and inform
-		// active closeby RGS so they can adjust their rate immediately.
-		G_RGSCalculateRate( self );
-		G_RGSInformNeighbors( self );
-	}
-
-	if ( active )
-	{
-		resources = self->s.weapon / 60000.0f;
-		self->buildableStatsTotalF += resources;
-	}
+	G_RGSThink( self );
 }
 
 void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
 
-	self->s.weapon = 0;
-	self->s.weaponAnim = 0;
-
-	// Assume our state has changed and inform closeby RGS
-	G_RGSInformNeighbors( self );
+	if ( mod == MOD_DECONSTRUCT )
+	{
+		G_RGSDeconstruct( self );
+	}
+	else
+	{
+		G_RGSDie( self );
+	}
 }
 
 static gentity_t *cmpHive = NULL;
@@ -3381,27 +3170,9 @@ void HTeslaGen_Think( gentity_t *self )
 
 void HDrill_Think( gentity_t *self )
 {
-	qboolean active, lastThinkActive;
-	float    resources;
-
 	self->nextthink = level.time + 1000;
 
-	active = self->spawned & self->powered;
-	lastThinkActive = self->s.weapon > 0;
-
-	if ( active ^ lastThinkActive )
-	{
-		// If the state of this RGS has changed, adjust own rate and inform
-		// active closeby RGS so they can adjust their rate immediately.
-		G_RGSCalculateRate( self );
-		G_RGSInformNeighbors( self );
-	}
-
-	if ( active )
-	{
-		resources = self->s.weapon / 60000.0f;
-		self->buildableStatsTotalF += resources;
-	}
+	G_RGSThink( self );
 
 	IdlePowerState( self );
 }
@@ -3410,11 +3181,14 @@ void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
 
-	self->s.weapon = 0;
-	self->s.weaponAnim = 0;
-
-	// Assume our state has changed and inform closeby RGS
-	G_RGSInformNeighbors( self );
+	if ( mod == MOD_DECONSTRUCT )
+	{
+		G_RGSDeconstruct( self );
+	}
+	else
+	{
+		G_RGSDie( self );
+	}
 }
 
 /*
@@ -5482,103 +5256,4 @@ void G_BuildLogRevert( int id )
 	}
 
 	G_AddMomentumEnd();
-}
-
-/*
-================
-G_CanAffordBuildPoints
-
-Tests wether a team can afford an amont of build points.
-The sign of amount is discarded.
-================
-*/
-qboolean G_CanAffordBuildPoints( team_t team, float amount )
-{
-	float *bp;
-
-	//TODO write a function to check if a team is a playable one
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
-	{
-		bp = &level.team[ team ].buildPoints;
-	}
-	else
-	{
-		return qfalse;
-	}
-
-	if ( fabs( amount ) > *bp )
-	{
-		return qfalse;
-	}
-	else
-	{
-		return qtrue;
-	}
-}
-
-/*
-================
-G_ModifyBuildPoints
-
-Adds or removes build points from a team.
-================
-*/
-void G_ModifyBuildPoints( team_t team, float amount )
-{
-	float *bp, newbp;
-
-	if ( team > TEAM_NONE && team < NUM_TEAMS )
-	{
-		bp = &level.team[ team ].buildPoints;
-	}
-	else
-	{
-		return;
-	}
-
-	newbp = *bp + amount;
-
-	if ( newbp < 0.0f )
-	{
-		*bp = 0.0f;
-	}
-	else
-	{
-		*bp = newbp;
-	}
-}
-
-/*
-=================
-G_GetBuildableValueBP
-
-Calculates the value of buildables (in build points) for both teams.
-=================
-*/
-void G_GetBuildableResourceValue( int *teamValue )
-{
-	int       entityNum;
-	gentity_t *ent;
-	int       team;
-	const buildableAttributes_t *attr;
-
-	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
-	{
-		teamValue[ team ] = 0;
-	}
-
-	for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
-	{
-		ent = &g_entities[ entityNum ];
-
-		if ( ent->s.eType != ET_BUILDABLE )
-		{
-			continue;
-		}
-
-		team = ent->buildableTeam ;
-		attr = BG_Buildable( ent->s.modelindex );
-
-		teamValue[ team ] += ( attr->buildPoints * MAX( 0, ent->health ) ) / attr->health;
-	}
 }

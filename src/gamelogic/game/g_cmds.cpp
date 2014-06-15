@@ -590,7 +590,8 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = atof( name + 3 );
 		}
 
-		G_ModifyBuildPoints( (team_t) ent->client->pers.team, amount );
+		G_ModifyBuildPoints( (team_t)ent->client->pers.team, amount );
+		G_ModifyMinedBuildPoints( (team_t)ent->client->pers.team, amount );
 	}
 
 	// give momentum
@@ -2870,11 +2871,6 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 	else
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("You don't have the $1$\n") ), Quote( s ) ) );
-
-		if ( upgrade == UP_MEDKIT )
-		{
-			trap_SendServerCommand( ent - g_entities, "vcommand needhealth" );
-		}
 	}
 }
 

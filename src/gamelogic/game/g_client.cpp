@@ -756,8 +756,8 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			continue;
 		}
 
-		// check colors
-		if ( Q_IsColorString( in ) )
+		// check colors or escaped escape character
+		if ( Q_IsColorString(in) || ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE ) )
 		{
 			in++;
 

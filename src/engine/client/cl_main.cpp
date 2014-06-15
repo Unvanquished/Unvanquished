@@ -125,7 +125,6 @@ cvar_t *cl_autorecord;
 cvar_t *cl_motdString;
 
 cvar_t *cl_allowDownload;
-cvar_t *cl_wwwDownload;
 cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
@@ -2280,13 +2279,17 @@ void CL_Snd_Restart_f( void )
 	if( !cls.cgameStarted )
 	{
 		CL_ShutdownUI();
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		//TODO S_BeginRegistration()
 		CL_InitUI();
 	}
 	else
 	{
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		CL_Vid_Restart_f();
 	}
 }
@@ -3875,7 +3878,9 @@ void CL_StartHunkUsers( void )
 	if ( !cls.soundStarted )
 	{
 		cls.soundStarted = qtrue;
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 	}
 
 	if ( !cls.soundRegistered )
@@ -4110,7 +4115,6 @@ void CL_Init( void )
 	cl_showMouseRate = Cvar_Get( "cl_showmouserate", "0", 0 );
 
 	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", 0 );
-	cl_wwwDownload = Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO  );
 
 	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", 0 );
 

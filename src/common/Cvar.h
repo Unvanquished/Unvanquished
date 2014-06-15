@@ -78,7 +78,7 @@ namespace Cvar {
 
             // Will trigger another OnValueChanged after a roundtrip in the cvar system.
             void SetValue(std::string value);
-            void Register(std::string description);
+            bool Register(std::string description);
 
         private:
             int flags;
@@ -230,7 +230,7 @@ namespace Cvar {
 
     // Engine calls available everywhere
 
-    void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
+    bool Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
     std::string GetValue(const std::string& cvarName);
     void SetValue(const std::string& cvarName, std::string value);
 

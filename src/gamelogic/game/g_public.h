@@ -71,8 +71,6 @@ float             G_DistanceToBase( gentity_t *self, qboolean ownBase );
 qboolean          G_InsideBase( gentity_t *self, qboolean ownBase );
 qboolean          G_FindCreep( gentity_t *self );
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
-float             G_RGSPredictEfficiency( vec3_t origin );
-float             G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team );
 void              G_BuildableThink( gentity_t *ent, int msec );
 qboolean          G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
 void              G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter );
@@ -87,16 +85,25 @@ int               G_LayoutList( const char *map, char *list, int len );
 void              G_LayoutSelect( void );
 void              G_LayoutLoad( void );
 void              G_BaseSelfDestruct( team_t team );
-int               G_GetBuildPointsInt( team_t team );
-int               G_GetMarkedBuildPointsInt( team_t team );
 buildLog_t        *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void              G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void              G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void              G_BuildLogRevert( int id );
-qboolean          G_CanAffordBuildPoints( team_t team, float amount );
-void              G_ModifyBuildPoints( team_t team, float amount );
-void              G_GetBuildableResourceValue( int *teamValue );
 void              G_SetHumanBuildablePowerState();
+
+// g_buildpoints
+void              G_RGSThink( gentity_t *self );
+void              G_RGSDie( gentity_t *self );
+void              G_RGSDeconstruct( gentity_t *self );
+float             G_RGSPredictEfficiency( vec3_t origin );
+float             G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team );
+void              G_CalculateMineRate( void );
+int               G_GetBuildPointsInt( team_t team );
+int               G_GetMarkedBuildPointsInt( team_t team );
+qboolean          G_CanAffordBuildPoints( team_t team, float amount );
+void              G_GetBuildableResourceValue( int *teamValue );
+void              G_ModifyBuildPoints( team_t team, float amount );
+void              G_ModifyMinedBuildPoints( team_t team, float amount );
 
 // g_client.c
 void              G_AddCreditToClient( gclient_t *client, short credit, qboolean cap );
