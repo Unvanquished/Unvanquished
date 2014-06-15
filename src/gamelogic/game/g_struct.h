@@ -191,6 +191,7 @@ struct gentity_s
 	 */
 	float        mineRate;
 	float        mineEfficiency;
+	float        minedBuildPoints;
 
 	/**
 	 * Alien buildables can burn, which is a lot of fun if they are close.
@@ -779,6 +780,7 @@ struct level_locals_s
 		int              numSamples;
 		int              numAliveClients;
 		float            buildPoints;
+		float            minedBuildPoints;
 		float            mineEfficiency;
 		int              kills;
 		spawnQueue_t     spawnQueue;

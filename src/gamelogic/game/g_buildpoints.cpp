@@ -52,7 +52,7 @@ static float RGSInterferenceMod( float distance )
 /**
  * @brief Adjust the rate of a RGS.
  */
-void G_RGSCalculateRate( gentity_t *self )
+static void RGSCalculateRate( gentity_t *self )
 {
 	gentity_t       *rgs;
 	float           rate;
@@ -104,7 +104,7 @@ void G_RGSCalculateRate( gentity_t *self )
 /**
  * @brief Adjust the rate of all RGS in range.
  */
-void G_RGSInformNeighbors( gentity_t *self )
+static void RGSInformNeighbors( gentity_t *self )
 {
 	gentity_t       *rgs;
 
@@ -115,9 +115,58 @@ void G_RGSInformNeighbors( gentity_t *self )
 		     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
 			 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
 		{
-			G_RGSCalculateRate( rgs );
+			RGSCalculateRate( rgs );
 		}
 	}
+}
+
+/**
+ * @brief Called when a RGS thinks.
+ */
+void G_RGSThink( gentity_t *self )
+{
+	bool active          = ( self->spawned && self->powered );
+	bool lastThinkActive = ( self->s.weapon > 0 );
+
+	if ( active ^ lastThinkActive )
+	{
+		// If the state of this RGS has changed, adjust own rate and inform active closeby RGS so
+		// they can adjust their rate immediately.
+		RGSCalculateRate( self );
+		RGSInformNeighbors( self );
+	}
+}
+
+/**
+ * @brief Called when a RGS dies.
+ */
+void G_RGSDie( gentity_t *self )
+{
+	team_t team = self->buildableTeam;
+
+	self->s.weapon     = 0;
+	self->s.weaponAnim = 0;
+
+	// Remove some of the team's build points, proportional to the amount this RGS mined
+	float minedFrac = self->minedBuildPoints / level.team[ team ].minedBuildPoints;
+	float loss      = std::min( minedFrac, 1.0f ) * level.team[ team ].buildPoints;
+	G_ModifyBuildPoints( team, -loss );
+	G_ModifyMinedBuildPoints( team, -self->minedBuildPoints );
+
+	// Inform neighbours so they can increase their rate immediately.
+	RGSInformNeighbors( self );
+}
+
+/**
+ * @brief Called when a RGS gets deconstructed.
+ */
+void G_RGSDeconstruct( gentity_t *self )
+{
+	// The remaining RGS take over this one's account (they become more valuable targets)
+	G_ModifyMinedBuildPoints( self->buildableTeam, -self->minedBuildPoints );
+
+	// Inform neighbours so they can increase their rate immediately.
+	RGSInformNeighbors( self );
 }
 
 /**
@@ -150,7 +199,7 @@ float G_RGSPredictEfficiency( vec3_t origin )
 	dummy.spawned = qtrue;
 	dummy.powered = qtrue;
 
-	G_RGSCalculateRate( &dummy );
+	RGSCalculateRate( &dummy );
 
 	return dummy.mineEfficiency;
 }
@@ -188,7 +237,7 @@ void G_CalculateMineRate( void )
 	int              i, playerNum;
 	gentity_t        *ent, *player;
 	gclient_t        *client;
-	float            tmp;
+	float            mineMod;
 
 	static int       nextCalculation = 0;
 
@@ -200,13 +249,19 @@ void G_CalculateMineRate( void )
 	level.team[ TEAM_HUMANS ].mineEfficiency = 0.0f;
 	level.team[ TEAM_ALIENS ].mineEfficiency = 0.0f;
 
-	// sum up mine rates of RGS
+	// calculate level wide mine rate
+	level.mineRate = g_initialMineRate.value *
+	                 std::pow( 2.0f, -level.matchTime / ( 60000.0f * g_mineRateHalfLife.value ) );
+
+	// calculate efficiency to build point gain modifier
+	mineMod = ( level.mineRate / 60.0f ) * ( CALCULATE_MINE_RATE_PERIOD / 1000.0f );
+
+	// sum up mine rates of RGS, store how many build points they mined
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( ent->s.eType != ET_BUILDABLE )
-		{
-			continue;
-		}
+		if ( ent->s.eType != ET_BUILDABLE ) continue;
+
+		ent->minedBuildPoints += ent->mineEfficiency * mineMod;
 
 		switch ( ent->s.modelindex )
 		{
@@ -220,28 +275,26 @@ void G_CalculateMineRate( void )
 		}
 	}
 
-	// minimum mine rate
-	// g_minimumMineRate is really a minimum mine efficiency in percent points
-	if ( G_ActiveReactor() &&
-	     level.team[ TEAM_HUMANS ].mineEfficiency < ( g_minimumMineRate.value / 100.0f ) )
+	// consider minimum mining efficiency
+	float minEff = ( g_minimumMineRate.value / 100.0f ), deltaEff;
+	if ( G_ActiveReactor() && ( deltaEff = minEff - level.team[ TEAM_HUMANS ].mineEfficiency ) > 0 )
 	{
-		level.team[ TEAM_HUMANS ].mineEfficiency = ( g_minimumMineRate.value / 100.0f );
+		level.team[ TEAM_HUMANS ].mineEfficiency   += deltaEff;
+		level.team[ TEAM_HUMANS ].minedBuildPoints += mineMod * deltaEff;
 	}
-	if ( G_ActiveOvermind() &&
-	     level.team[ TEAM_ALIENS ].mineEfficiency < ( g_minimumMineRate.value / 100.0f ) )
+	if ( G_ActiveOvermind() &&( deltaEff = minEff - level.team[ TEAM_ALIENS ].mineEfficiency ) > 0 )
 	{
-		level.team[ TEAM_ALIENS ].mineEfficiency = ( g_minimumMineRate.value / 100.0f );
+		level.team[ TEAM_ALIENS ].mineEfficiency   += deltaEff;
+		level.team[ TEAM_ALIENS ].minedBuildPoints += mineMod * deltaEff;
 	}
 
-	// calculate level wide mine rate. ln(2) ~= 0.6931472
-	level.mineRate = g_initialMineRate.value *
-	                 exp( ( -0.6931472f * level.matchTime ) /
-	                      ( 60000.0f * g_mineRateHalfLife.value ) );
-
-	// add build points
-	tmp = ( level.mineRate / 60.0f ) * ( CALCULATE_MINE_RATE_PERIOD / 1000.0f );
-	G_ModifyBuildPoints( TEAM_HUMANS, tmp * level.team[ TEAM_HUMANS ].mineEfficiency );
-	G_ModifyBuildPoints( TEAM_ALIENS, tmp * level.team[ TEAM_ALIENS ].mineEfficiency );
+	// add build points, mark them mined
+	float earnedHumanBP = mineMod * level.team[ TEAM_HUMANS ].mineEfficiency;
+	float earnedAlienBP = mineMod * level.team[ TEAM_ALIENS ].mineEfficiency;
+	G_ModifyBuildPoints( TEAM_HUMANS, earnedHumanBP );
+	G_ModifyBuildPoints( TEAM_ALIENS, earnedAlienBP );
+	G_ModifyMinedBuildPoints( TEAM_HUMANS, earnedHumanBP );
+	G_ModifyMinedBuildPoints( TEAM_ALIENS, earnedAlienBP );
 
 	// send to clients
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
@@ -373,41 +426,38 @@ void G_GetBuildableResourceValue( int *teamValue )
 	}
 }
 
-/**
- * @brief Adds or removes build points from a team.
- */
-void G_ModifyBuildPoints( team_t team, float amount )
+static void ModifyBuildPoints( team_t team, float amount, bool mined )
 {
-	float *bp, newbp;
+	float *availBP, *minedBP;
 
 	if ( team > TEAM_NONE && team < NUM_TEAMS )
 	{
-		bp = &level.team[ team ].buildPoints;
+		availBP = &level.team[ team ].buildPoints;
+		minedBP = &level.team[ team ].minedBuildPoints;
 	}
 	else
 	{
 		return;
 	}
 
-	newbp = *bp + amount;
-
-	if ( newbp < 0.0f )
-	{
-		*bp = 0.0f;
-	}
-	else
-	{
-		*bp = newbp;
-	}
+	*availBP = mined ? *availBP : std::max( *availBP + amount, 0.0f );
+	*minedBP = mined ? std::max( *minedBP + amount, 0.0f ) : *minedBP;
 }
 
 /**
- * @brief Sets a team's build points to a given value.
+ * @brief Adds or removes build points from a team.
  */
-void G_SetBuildPoints( team_t team, float amount )
+void G_ModifyBuildPoints( team_t team, float amount )
 {
-	if ( team > TEAM_NONE && team < NUM_TEAMS )
-	{
-		level.team[ team ].buildPoints = std::max( amount, 0.0f );
-	}
+	if ( abs(amount) > 0.5f ) Com_Printf("Add %s BP: %f\n", BG_TeamName( team ), amount );
+	ModifyBuildPoints( team, amount, false );
+}
+
+/**
+ * @brief Adds or removes build points to the virtual pool of mined build points.
+ */
+void G_ModifyMinedBuildPoints( team_t team, float amount )
+{
+	if ( abs(amount) > 0.5f )Com_Printf("Add %s mine value: %f\n", BG_TeamName( team ), amount );
+	ModifyBuildPoints( team, amount, true );
 }

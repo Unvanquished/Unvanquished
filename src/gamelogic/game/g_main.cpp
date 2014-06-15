@@ -890,8 +890,11 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// Give both teams some build points to start out with.
 	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
-		G_SetBuildPoints( (team_t)team, g_initialBuildPoints.integer -
-		                  level.team[ (team_t)team ].layoutBuildPoints );
+		G_ModifyBuildPoints( (team_t)team, g_initialBuildPoints.integer -
+		                     level.team[ (team_t)team ].layoutBuildPoints );
+
+		// mark even the build points used by structures as mined
+		G_ModifyMinedBuildPoints( (team_t)team, g_initialBuildPoints.integer );
 	}
 
 	G_Printf( "-----------------------------------\n" );

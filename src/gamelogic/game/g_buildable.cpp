@@ -1240,40 +1240,25 @@ void AAcidTube_Think( gentity_t *self )
 
 void ALeech_Think( gentity_t *self )
 {
-	qboolean active, lastThinkActive;
-	float    resources;
-
 	self->nextthink = level.time + 1000;
 
 	AGeneric_Think( self );
 
-	active = self->spawned & self->powered;
-	lastThinkActive = self->s.weapon > 0;
-
-	if ( active ^ lastThinkActive )
-	{
-		// If the state of this RGS has changed, adjust own rate and inform
-		// active closeby RGS so they can adjust their rate immediately.
-		G_RGSCalculateRate( self );
-		G_RGSInformNeighbors( self );
-	}
-
-	if ( active )
-	{
-		resources = self->s.weapon / 60000.0f;
-		self->buildableStatsTotalF += resources;
-	}
+	G_RGSThink( self );
 }
 
 void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
 
-	self->s.weapon = 0;
-	self->s.weaponAnim = 0;
-
-	// Assume our state has changed and inform closeby RGS
-	G_RGSInformNeighbors( self );
+	if ( mod == MOD_DECONSTRUCT )
+	{
+		G_RGSDeconstruct( self );
+	}
+	else
+	{
+		G_RGSDie( self );
+	}
 }
 
 static gentity_t *cmpHive = NULL;
@@ -3178,27 +3163,9 @@ void HTeslaGen_Think( gentity_t *self )
 
 void HDrill_Think( gentity_t *self )
 {
-	qboolean active, lastThinkActive;
-	float    resources;
-
 	self->nextthink = level.time + 1000;
 
-	active = self->spawned & self->powered;
-	lastThinkActive = self->s.weapon > 0;
-
-	if ( active ^ lastThinkActive )
-	{
-		// If the state of this RGS has changed, adjust own rate and inform
-		// active closeby RGS so they can adjust their rate immediately.
-		G_RGSCalculateRate( self );
-		G_RGSInformNeighbors( self );
-	}
-
-	if ( active )
-	{
-		resources = self->s.weapon / 60000.0f;
-		self->buildableStatsTotalF += resources;
-	}
+	G_RGSThink( self );
 
 	IdlePowerState( self );
 }
@@ -3207,11 +3174,14 @@ void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
 
-	self->s.weapon = 0;
-	self->s.weaponAnim = 0;
-
-	// Assume our state has changed and inform closeby RGS
-	G_RGSInformNeighbors( self );
+	if ( mod == MOD_DECONSTRUCT )
+	{
+		G_RGSDeconstruct( self );
+	}
+	else
+	{
+		G_RGSDie( self );
+	}
 }
 
 /*
