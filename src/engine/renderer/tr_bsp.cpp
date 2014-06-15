@@ -1334,6 +1334,8 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 	for ( i = 0; i < numVerts; i++ )
 	{
+		components[ i ].minVertex = i;
+
 		for ( j = 0; j < 3; j++ )
 		{
 			cv->verts[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
