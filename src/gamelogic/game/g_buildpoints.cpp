@@ -23,7 +23,7 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 
 #include "g_local.h"
 
-#define CALCULATE_MINE_RATE_PERIOD 1000
+#define MINING_PERIOD 1000
 
 /**
  * @brief Calculates modifier for the efficiency of one RGS when another one interfers at given
@@ -230,9 +230,9 @@ float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
 }
 
 /**
- * @brief Recalculate the mine rate and the teams' mine efficiencies.
+ * @brief Calculate the level mine rate and the teams' mining efficiencies, add build points.
  */
-void G_CalculateMineRate( void )
+void G_MineBuildPoints( void )
 {
 	int              i, playerNum;
 	gentity_t        *ent, *player;
@@ -254,7 +254,7 @@ void G_CalculateMineRate( void )
 	                 std::pow( 2.0f, -level.matchTime / ( 60000.0f * g_mineRateHalfLife.value ) );
 
 	// calculate efficiency to build point gain modifier
-	mineMod = ( level.mineRate / 60.0f ) * ( CALCULATE_MINE_RATE_PERIOD / 1000.0f );
+	mineMod = ( level.mineRate / 60.0f ) * ( MINING_PERIOD / 1000.0f );
 
 	// sum up mine rates of RGS, store how many build points they mined
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
@@ -287,42 +287,39 @@ void G_CalculateMineRate( void )
 	}
 
 	// add build points, mark them mined
-	float earnedHumanBP = mineMod * level.team[ TEAM_HUMANS ].mineEfficiency;
-	float earnedAlienBP = mineMod * level.team[ TEAM_ALIENS ].mineEfficiency;
-	G_ModifyBuildPoints( TEAM_HUMANS, earnedHumanBP );
-	G_ModifyBuildPoints( TEAM_ALIENS, earnedAlienBP );
-	G_ModifyMinedBuildPoints( TEAM_HUMANS, earnedHumanBP );
-	G_ModifyMinedBuildPoints( TEAM_ALIENS, earnedAlienBP );
+	for ( team_t team = TEAM_NONE; ( team = G_IterateTeams( team ) ); )
+	{
+		float earnedBP = mineMod * level.team[ team ].mineEfficiency;
+
+		G_ModifyBuildPoints( team, earnedBP );
+		G_ModifyMinedBuildPoints( team, earnedBP );
+	}
 
 	// send to clients
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		team_t team;
-
 		player = &g_entities[ playerNum ];
 		client = player->client;
 
-		if ( !client )
-		{
-			continue;
-		}
-
-		team = (team_t) client->pers.team;
+		if ( !client ) continue;
 
 		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
 
-		if ( team > TEAM_NONE && team < NUM_TEAMS )
+		team_t team = (team_t)client->pers.team;
+
+		if ( G_IsPlayableTeam( team ) )
 		{
 			client->ps.persistant[ PERS_RGS_EFFICIENCY ] =
 				( short )( level.team[ team ].mineEfficiency * 100.0f );
 		}
 		else
 		{
+			// TODO: Check if this is related to efficiency display flickering for spectators
 			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = 0;
 		}
 	}
 
-	nextCalculation = level.time + CALCULATE_MINE_RATE_PERIOD;
+	nextCalculation = level.time + MINING_PERIOD;
 }
 
 /**
@@ -330,7 +327,7 @@ void G_CalculateMineRate( void )
  */
 int G_GetBuildPointsInt( team_t team )
 {
-	if ( team > TEAM_NONE && team < NUM_TEAMS )
+	if ( G_IsPlayableTeam( team ) )
 	{
 		return ( int )level.team[ team ].buildPoints;
 	}
@@ -373,8 +370,7 @@ qboolean G_CanAffordBuildPoints( team_t team, float amount )
 {
 	float *bp;
 
-	//TODO write a function to check if a team is a playable one
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+	if ( G_IsPlayableTeam( team ) )
 	{
 		bp = &level.team[ team ].buildPoints;
 	}
@@ -400,10 +396,10 @@ void G_GetBuildableResourceValue( int *teamValue )
 {
 	int       entityNum;
 	gentity_t *ent;
-	int       team;
+	team_t    team;
 	const buildableAttributes_t *attr;
 
-	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
+	for ( team = TEAM_NONE; ( team = G_IterateTeams( team ) ); )
 	{
 		teamValue[ team ] = 0;
 	}
@@ -428,7 +424,7 @@ static void ModifyBuildPoints( team_t team, float amount, bool mined )
 {
 	float *availBP, *minedBP;
 
-	if ( team > TEAM_NONE && team < NUM_TEAMS )
+	if ( G_IsPlayableTeam( team ) )
 	{
 		availBP = &level.team[ team ].buildPoints;
 		minedBP = &level.team[ team ].minedBuildPoints;
