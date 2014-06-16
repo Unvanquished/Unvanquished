@@ -449,7 +449,6 @@ static void ModifyBuildPoints( team_t team, float amount, bool mined )
  */
 void G_ModifyBuildPoints( team_t team, float amount )
 {
-	if ( abs(amount) > 0.5f ) Com_Printf("Add %s BP: %f\n", BG_TeamName( team ), amount );
 	ModifyBuildPoints( team, amount, false );
 }
 
@@ -458,6 +457,5 @@ void G_ModifyBuildPoints( team_t team, float amount )
  */
 void G_ModifyMinedBuildPoints( team_t team, float amount )
 {
-	if ( abs(amount) > 0.5f )Com_Printf("Add %s mine value: %f\n", BG_TeamName( team ), amount );
 	ModifyBuildPoints( team, amount, true );
 }
