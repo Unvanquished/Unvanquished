@@ -279,13 +279,11 @@ void G_CalculateMineRate( void )
 	float minEff = ( g_minimumMineRate.value / 100.0f ), deltaEff;
 	if ( G_ActiveReactor() && ( deltaEff = minEff - level.team[ TEAM_HUMANS ].mineEfficiency ) > 0 )
 	{
-		level.team[ TEAM_HUMANS ].mineEfficiency   += deltaEff;
-		level.team[ TEAM_HUMANS ].minedBuildPoints += mineMod * deltaEff;
+		level.team[ TEAM_HUMANS ].mineEfficiency += deltaEff;
 	}
 	if ( G_ActiveOvermind() &&( deltaEff = minEff - level.team[ TEAM_ALIENS ].mineEfficiency ) > 0 )
 	{
-		level.team[ TEAM_ALIENS ].mineEfficiency   += deltaEff;
-		level.team[ TEAM_ALIENS ].minedBuildPoints += mineMod * deltaEff;
+		level.team[ TEAM_ALIENS ].mineEfficiency += deltaEff;
 	}
 
 	// add build points, mark them mined
