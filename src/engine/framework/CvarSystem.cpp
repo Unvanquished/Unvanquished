@@ -97,6 +97,12 @@ namespace Cvar {
                     modified = true;
                     Z_Free(var.string);
                     var.string = CopyString(cvar.value.c_str());
+                } else if (!Q_stricmp(var.name, "name"))
+                {
+                    /* Sometimes the previous attempt to set name may have been blocked by
+                      the gamelogic due to g_maxnamechanges, being muted, etc. This causes
+                      the name to always be sent to the server */
+                    modified = true;
                 }
             } else {
                 var.string = CopyString(cvar.value.c_str());
