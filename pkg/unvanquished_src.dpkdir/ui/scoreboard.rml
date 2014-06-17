@@ -74,6 +74,8 @@
 		{
 			width: 23px;
 			height: 23px;
+			margin:auto;
+			
 		}
 
 		div.window{
@@ -82,6 +84,9 @@
 		}
 		datagridrow:nth-child(odd) {
 			background:#00000033;
+		}
+		datagridcell:nth-child(1n){
+			text-align:center;
 		}
 		h2.alien{
 			color:#FF2B26BB;
@@ -99,33 +104,33 @@
 		
 		h2.spec{
 			font-size:1.2em;
-			width:8em;
+			padding:0em 1em;
 			text-align:right;
 			background:#FFB70033;
 			color:#FFB700;
-			display:block;
-			float:left;
-			margin-top:1.5em;
+			display:inline;
+
+
 		}
 		div.playername{
 			text-align:left;
 			margin-left:.8em;
-			padding:.2em;
+			padding:.5em;
 			float:left;
 			width:20%;
 		}
 		
 		div.spec{
 			display:block;
-			margin-left:10em;
-			padding:.5em 0;
+			line-height:.4em;
+			clear:both;
 			background:#00000033;
 		}
 
 		
 		div.clear{
 			clear:both;
-			height:.5em;
+			height:0px;
 			width:5px;
 			display:block;
 		}
