@@ -5,48 +5,37 @@
 		<style>
 			body
 			{
-				width:100%;
-				height:100%;
+				height:50%;
 				display:block;
+				width:50%;
 				margin:auto;
-
-				background:#000000FF;
+				text-align:center;
 			}
 
-			.map{
-				width:200px;
-				height:100px;
-				overflow:hidden;
-				background:red;
-				display:inline-block;
-				z-index:1;
+			.menuButton{
+				padding:1em;
+				font-size:.8em;
+				position:absolute;
+				top:-30px;
+				right:0px;
+				width:8%;
 			}
-			.map:hover{
-				width:500px;
-				margin-right:-300px;
-				z-index:10;
-			}
-
-			.map .levelshot{
-				width:200px;
-				float:left;
-			}
-			.map button{
-				margin-left:200px;
-				display:block;
-			}
-			.map .minimap{
-				float:right;
-				width:200px;
+			h1{
+				color:#83fff5;
+				width:100%;
+				position:absolute;
+				text-align:center;
+				top:-30px;
+				right:0px;
 			}
 
 			.mapwindow{
 				z-index: 0;
 				padding: 60px 70px;
 				margin:auto;
-				width: 900px;
+				width: 100%;
 				display:block;
-				height:90%;
+				height:100%;
 /* 				color:#83fff5; */
 				background-decorator: tiled-box;
 				background-top-left-image: /ui/assets/window/top-left.png;
@@ -59,51 +48,62 @@
 				background-center-image: /ui/assets/window/line.png stretch;
 				overflow: auto;
 			}
+			.maps{
+				width:200px;
+				height:auto;
+				display:block;
+				float:left;
+				margin:0.2em;
+			}
+			.maps .levelname{
+				display:block;
+				position:absolute;
+				
+				bottom:0px;
+				left:0px;
+				width:100%;
+				background:#000000aa;
+				text-align:center;
+				
+			}
+			.maps .levelshot{
+				width:100%;
+				
+			}
+			.maps .hovertext{
+				display:none;
+				
+				
+			}
+			.maps:hover .hovertext{
+				display:block;
+				position:absolute;
+				top:50%;
+				bottom:0px;
+				height:auto;
+				text-align:center;
+				margin-top:-.5em;
+			}
+			.maps{
+				background:#000;
+			}
+			.maps:hover .levelname,.maps:hover .levelshot{
+				opacity:0;
+			
+			}
+			
 
 		</style>
 	</head>
 	<body id="maps" onshow="buildDS mapList default">
+	<h1>Select Map</h1>
+	<button class="menuButton" onClick="close maps">Close</button>
+	
 	<div class="mapwindow">
-
+		
 		<datasource  source="mapList.default" fields="num" formatter="VoteMap" />
-		<div class="map">
-			<img class="levelshot" src="/levelshots/parpax.jpg" />
-			<img class="minimap" src="/minimaps/parpax_upper.png" />
-			<button>Map Vote</button><button>NextMap Vote</button>
-		</div>
-		<div class="map">
-			<img class="levelshot" src="/levelshots/plat23.jpg" />
-			<img class="minimap" src="/minimaps/plat23-b11.webp" />
-			<button>Map Vote</button><button>NextMap Vote</button>
-		</div>
-		<div class="map">
-			<img class="levelshot" src="/levelshots/parpax.jpg" />
-			<img class="minimap" src="/minimaps/parpax_upper.png" />
-			<button>Map Vote</button><button>NextMap Vote</button>
-		</div>
-		<div class="map">
-			<img class="levelshot" src="/levelshots/plat23.jpg" />
-			<img class="minimap" src="/minimaps/plat23-b11.webp" />
-			<button>Map Vote</button><button>NextMap Vote</button>
-		</div><div class="map">
-			<img class="levelshot" src="/levelshots/parpax.jpg" />
-			<img class="minimap" src="/minimaps/parpax_upper.png" />
-			<button>Map Vote</button><button>NextMap Vote</button>
-		</div>
-		<div class="map">
-			<img class="levelshot" src="/levelshots/plat23.jpg" />
-			<img class="minimap" src="/minimaps/plat23-b11.webp" />
-			<button>Map Vote</button><button>NextMap Vote</button>
-		</div><div class="map">
-			<img class="levelshot" src="/levelshots/parpax.jpg" />
-			<img class="minimap" src="/minimaps/parpax_upper.png" />
-			<button>Map Vote</button><button>NextMap Vote</button>
-		</div>
-		<div class="map">
-			<img class="levelshot" src="/levelshots/plat23.jpg" />
-			<img class="minimap" src="/minimaps/plat23-b11.webp" />
-			<button>Map Vote</button><button>NextMap Vote</button>
-		</div>
+		
 	</div>
+	
 	</body>
 </rml>
