@@ -4398,7 +4398,10 @@ void Cmd_Beacon_f( gentity_t *ent )
 	BG_GetClientViewOrigin( &ent->client->ps, origin );
 	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
 	VectorMA( origin, 65536, forward, end );
+
+	G_UnlaggedOn( ent, origin, 65536 );
 	trap_Trace( &tr, origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+	G_UnlaggedOff( );
 
 	if ( tr.fraction > 0.99 )
 		goto invalid_beacon;

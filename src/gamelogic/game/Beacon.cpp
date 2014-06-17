@@ -433,7 +433,6 @@ namespace Beacon //this should eventually become a class
 		int i, count, list[ MAX_GENTITIES ];
 		vec3_t mins, maxs;
 		gentity_t *ent;
-		trace_t tr;
 
 		enemy = ( type == BCT_BASE_ENEMY ||
 		          type == BCT_OUTPOST_ENEMY );
@@ -462,11 +461,6 @@ namespace Beacon //this should eventually become a class
 				continue;
 
 			if( (team_t)ent->buildableTeam != team )
-				continue;
-
-			trap_Trace( &tr, ent->s.origin, NULL, NULL, origin, ent->s.number, MASK_SHOT );
-
-			if ( tr.fraction < 0.99f )
 				continue;
 
 			return qtrue;

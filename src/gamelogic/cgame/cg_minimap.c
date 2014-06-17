@@ -576,7 +576,7 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 		                       pos2d[ 1 ] - size/2 * 0.3,
 		                       size * 1.3, size * 1.3,
 		                       0, 0, 1, 1,
-		                       BG_Beacon( BCT_TAG )->altIcon );	
+		                       cgs.media.beaconNoTarget );	
 	if( clamped )
 		trap_R_DrawRotatedPic( pos2d[ 0 ] - size * 0.25,
 		                       pos2d[ 1 ] - size * 0.25, 
