@@ -1,0 +1,53 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="css/unv.rcss" />
+		<style>
+			body
+			{
+				width:40%;
+				height:40%;
+				display:block;
+				margin:auto;
+				
+				text-align:center;
+			}
+
+	.menuButton,input.submit{
+		display:inline-block;
+		font-size:1em;
+		padding:0.3em;
+		width:8em;
+		margin:1em 1em;
+	}
+	input.hidden
+	{
+		 visibility:hidden;
+		 height:0px;
+		 width:0px;
+		 display:none;
+	}
+	input.text{
+	}
+	.line{
+
+	}
+
+		</style>
+	</head>
+	<body id="mapdialog">
+	<div class="window options">
+	<h1>Start Vote</h1>
+	<form onsubmit='execForm "$prefix$ $map$ -r $reason$'>
+	<div class="line"><label>Type:</label><select name="prefix">
+				<option value="callvote map" selected="">Vote</option>
+				<option value="map">Admin command</option>
+	</select></div>
+	<div class="line"><label>Map:</label><colorinput type="text" cvar="ui_dialogCvar1" disabled /></div>
+	<input type="hidden" cvar="ui_dialogCvar1" name="map"/>
+	<div class="line"><label>Reason:</label><input type="text" name="reason"/></div>
+	<input type="submit" class="menuButton" onClick="close mapdialog;exec set ui_dialogCvar1">Start</input>
+	<button class="menuButton" onClick="close mapdialog;exec set ui_dialogCvar1;exec rocket ui/maps.rml load; exec rocket maps show">Abort</button>
+	</form>
+	</div>
+	</body>
+</rml>
