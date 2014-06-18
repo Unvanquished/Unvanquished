@@ -7,7 +7,7 @@
 		}
 
 		console_text {
-		font-family: Roboto;
+		font-family: DejaVu Sans;
 		font-size: 16;
 		position: absolute;
 		top: 0px;
