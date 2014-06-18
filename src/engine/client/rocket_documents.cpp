@@ -127,7 +127,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 		}
 		else
 		{
-			Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
+			document = menuContext->GetDocument( name );
 		}
 
 		if ( document )
