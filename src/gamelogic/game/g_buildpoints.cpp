@@ -67,8 +67,7 @@ static void RGSCalculateRate( gentity_t *self )
 		self->mineRate       = 0.0f;
 		self->mineEfficiency = 0.0f;
 
-		// HACK: Save rate and efficiency entityState.weapon and entityState.weaponAnim
-		self->s.weapon     = 0;
+		// HACK: Save RGS mining efficiency in entityState.weaponAnim
 		self->s.weaponAnim = 0;
 	}
 	else
@@ -89,15 +88,8 @@ static void RGSCalculateRate( gentity_t *self )
 		self->mineRate       = rate;
 		self->mineEfficiency = rate / level.mineRate;
 
-		// HACK: Save rate and efficiency in entityState.weapon and entityState.weaponAnim
-		self->s.weapon     = ( int )( self->mineRate * 1000.0f );
+		// HACK: Save RGS mining efficiency in entityState.weaponAnim
 		self->s.weaponAnim = ( int )( self->mineEfficiency * 100.0f );
-
-		// The transmitted rate must be positive to indicate that the RGS is active
-		if ( self->s.weapon < 1 )
-		{
-			self->s.weapon = 1;
-		}
 	}
 }
 
@@ -126,7 +118,7 @@ static void RGSInformNeighbors( gentity_t *self )
 void G_RGSThink( gentity_t *self )
 {
 	bool active          = ( self->spawned && self->powered );
-	bool lastThinkActive = ( self->s.weapon > 0 );
+	bool lastThinkActive = ( self->mineEfficiency > 0.0f );
 
 	if ( active ^ lastThinkActive )
 	{
@@ -135,6 +127,10 @@ void G_RGSThink( gentity_t *self )
 		RGSCalculateRate( self );
 		RGSInformNeighbors( self );
 	}
+
+	// HACK: Save fraction of mined build points in entityState.weapon
+	self->s.weapon = ( int )( ( 100.0f * self->minedBuildPoints ) /
+	                          level.team[ self->buildableTeam ].minedBuildPoints );
 }
 
 /**
