@@ -1262,9 +1262,6 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
     endif()
   endif()
 
-  include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
-  set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
-
   # Used by tinygettext to use SDL_iconv instead of base iconv
   if( WIN32 )
     add_definitions( -DHAVE_SDL )
@@ -1272,6 +1269,14 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
 endif()
 mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR MINGW32_LIBRARY )
 mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
+
+# libRocket
+if( BUILD_CLIENT )
+  include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
+  add_subdirectory( ${ROCKET_DIR} )
+  add_definitions( -DSTATIC_LIB )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
+endif()
 
 # zlib
 find_package( ZLIB REQUIRED )
@@ -1400,8 +1405,6 @@ elseif( NOT APPLE )
   include_directories( ${CURSESW_INCLUDE_DIR} )
   set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
 endif()
-
-add_subdirectory( ${ROCKET_DIR} )
 
 # Builds the libs for which we include the source
 add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
