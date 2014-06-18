@@ -109,6 +109,7 @@ vmCvar_t           g_initialBuildPoints;
 vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
 vmCvar_t           g_minimumMineRate;
+vmCvar_t           g_buildPointLossFraction;
 
 vmCvar_t           g_debugMomentum;
 vmCvar_t           g_momentumHalfLife;
@@ -363,6 +364,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          0,                                               0, qfalse           },
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        0,                                               0, qfalse           },
 	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          0,                                               0, qfalse           },
+	{ &g_buildPointLossFraction,      "g_buildPointLossFraction",      DEFAULT_BP_LOSS_FRAC,               0,                                               0, qfalse           },
 
 	// gameplay: momentum
 	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, qfalse           },
@@ -890,11 +892,13 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// Give both teams some build points to start out with.
 	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
-		G_ModifyBuildPoints( (team_t)team, g_initialBuildPoints.integer -
-		                     level.team[ (team_t)team ].layoutBuildPoints );
+		int startBP = std::max( 0, g_initialBuildPoints.integer -
+		                        level.team[ (team_t)team ].layoutBuildPoints );
 
-		// mark even the build points used by structures as mined
-		G_ModifyMinedBuildPoints( (team_t)team, g_initialBuildPoints.integer );
+		G_ModifyBuildPoints( (team_t)team, (float)startBP );
+		G_MarkBuildPointsMined( (team_t)team, (float)startBP );
+
+		level.team[ (team_t)team ].mainStructAcquiredBP = std::max( (float)startBP, FLT_EPSILON );
 	}
 
 	G_Printf( "-----------------------------------\n" );

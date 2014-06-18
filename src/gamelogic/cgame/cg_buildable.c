@@ -1808,14 +1808,14 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 	// find out what data we want to display
 	showMineEfficiency = ( attr->number == BA_A_LEECH || attr->number == BA_H_DRILL );
-	showStoredBP = showMineEfficiency;/* ||
-	               ( attr->number == BA_A_OVERMIND || attr->number == BA_H_REACTOR );*/
+	showStoredBP = showMineEfficiency ||
+	               ( attr->number == BA_A_OVERMIND || attr->number == BA_H_REACTOR );
 	showPower = ( attr->team == TEAM_HUMANS && attr->powerConsumption > 0 );
 
 	// calculate mine efficiency bar size
 	if ( showMineEfficiency )
 	{
-		mineEfficiencyFrac = (float)es->weaponAnim / 100.0f;
+		mineEfficiencyFrac = (float)es->weaponAnim / 255.0f;
 
 		if ( mineEfficiencyFrac < 0.0f )
 		{
@@ -1830,7 +1830,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	// calculate stored build points bar size
 	if ( showStoredBP )
 	{
-		storedBPFrac = (float)es->weapon / 100.0f;
+		storedBPFrac = (float)es->weapon / 255.0f;
 
 		if ( storedBPFrac < 0.0f )
 		{

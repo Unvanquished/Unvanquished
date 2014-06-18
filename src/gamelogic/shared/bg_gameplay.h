@@ -375,6 +375,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_INITIAL_MINE_RATE          "8"     // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"    // in min
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
+#define DEFAULT_BP_LOSS_FRAC               "0.5"
 
 // momentum
 #define MOMENTUM_MAX                     300.0f

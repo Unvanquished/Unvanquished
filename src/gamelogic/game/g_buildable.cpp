@@ -988,6 +988,8 @@ void AOvermind_Think( gentity_t *self )
 		}
 
 		G_WarnPrimaryUnderAttack( self );
+
+		G_MainStructBPStorageThink( self );
 	}
 	else
 	{
@@ -1005,10 +1007,13 @@ Called when the overmind dies
 void AOvermind_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
+
 	if ( IsWarnableMOD( mod ) )
 	{
 		G_BroadcastEvent( EV_OVERMIND_DYING, 0, TEAM_ALIENS );
 	}
+
+	G_BPStorageDie( self );
 }
 
 /*
@@ -1251,14 +1256,7 @@ void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
 
-	if ( mod == MOD_DECONSTRUCT )
-	{
-		G_RGSDeconstruct( self );
-	}
-	else
-	{
-		G_RGSDie( self );
-	}
+	G_RGSDie( self );
 }
 
 static gentity_t *cmpHive = NULL;
@@ -2370,15 +2368,20 @@ void HReactor_Think( gentity_t *self )
 	}
 
 	G_WarnPrimaryUnderAttack( self );
+
+	G_MainStructBPStorageThink( self );
 }
 
 void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
+
 	if ( IsWarnableMOD( mod ) )
 	{
 		G_BroadcastEvent( EV_REACTOR_DYING, 0, TEAM_HUMANS );
 	}
+
+	G_BPStorageDie( self );
 }
 
 void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -3174,14 +3177,7 @@ void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
 
-	if ( mod == MOD_DECONSTRUCT )
-	{
-		G_RGSDeconstruct( self );
-	}
-	else
-	{
-		G_RGSDie( self );
-	}
+	G_RGSDie( self );
 }
 
 /*
@@ -3578,18 +3574,18 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
-	int   refund;
-	const buildableAttributes_t *attr;
-
 	if ( !self || self->s.eType != ET_BUILDABLE )
 	{
 		return;
 	}
 
-	attr = BG_Buildable( self->s.modelindex );
+	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
+
+	// save remaining health fraction
+	self->deconHealthFrac = Maths::clamp( self->health / ( float )attr->health, 0.0f, 1.0f );
 
 	// return BP
-	refund = attr->buildPoints * ( self->health / ( float )attr->health );
+	int refund = attr->buildPoints * self->deconHealthFrac;
 	G_ModifyBuildPoints( self->buildableTeam, refund );
 
 	// remove momentum

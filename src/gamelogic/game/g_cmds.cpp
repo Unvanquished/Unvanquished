@@ -591,7 +591,7 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 
 		G_ModifyBuildPoints( (team_t)ent->client->pers.team, amount );
-		G_ModifyMinedBuildPoints( (team_t)ent->client->pers.team, amount );
+		G_MarkBuildPointsMined( (team_t)ent->client->pers.team, amount );
 	}
 
 	// give momentum
