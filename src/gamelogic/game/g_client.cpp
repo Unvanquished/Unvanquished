@@ -974,8 +974,6 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		{
 			Q_strncpyz( client->pers.netname, *oldname ? oldname : G_UnnamedClientName( client ),
 			            sizeof( client->pers.netname ) );
-			Info_SetValueForKey( userinfo, "name", client->pers.netname, qfalse );
-			trap_SetUserinfo( clientNum, userinfo );
 		}
 		else
 		{
@@ -1003,6 +1001,9 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		}
 
 		G_namelog_update_name( client );
+
+		Info_SetValueForKey(userinfo, "name", client->pers.netname, qfalse);
+		trap_SetUserinfo(clientNum, userinfo);
 	}
 
 	if ( client->pers.classSelection == PCL_NONE )
