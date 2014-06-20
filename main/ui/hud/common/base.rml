@@ -13,7 +13,7 @@
 			position: fixed;
 			top: 0%;
 			text-align: right;
-			font-size: 18;
+			font-size: 24;
 		}
 		div.lagometer
 		{
@@ -39,7 +39,7 @@
 		}
 		div.minimap
 		{
-			right: 15%;
+			right: 7.5em;
 		}
 		div#location
 		{
