@@ -196,7 +196,6 @@ typedef struct client_s
 	int           downloadSendTime; // time we last got an ack from the client
 
 	// www downloading
-	qboolean bDlOK; // passed from cl_wwwDownload CVAR_USERINFO, whether this client supports www dl
 	char     downloadURL[ MAX_OSPATH ]; // the URL we redirected the client to
 	qboolean bWWWDl; // we have a www download going
 	qboolean bWWWing; // the client is doing an ftp/http download
