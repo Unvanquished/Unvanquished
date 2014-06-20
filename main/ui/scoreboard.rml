@@ -75,7 +75,7 @@
 			width: 23px;
 			height: 23px;
 			margin:auto;
-			
+
 		}
 
 		div.window{
@@ -96,12 +96,12 @@
 			color:#26ABFFBB;
 			background:#26ABFF11;
 		}
-		
+
 		#spec{
 			position:relative;
 			display:block;
 		}
-		
+
 		h2.spec{
 			font-size:1.2em;
 			padding:0em 1em;
@@ -116,10 +116,12 @@
 			text-align:left;
 			margin-left:.8em;
 			padding:.5em;
-			float:left;
 			width:20%;
 		}
-		
+		.score, .ping, .time, .num {
+			text-align:center;
+		}
+
 		div.spec{
 			display:block;
 			line-height:.4em;
@@ -127,7 +129,7 @@
 			background:#00000033;
 		}
 
-		
+
 		div.clear{
 			clear:both;
 			height:0px;
@@ -172,8 +174,8 @@
 		<div>Map: <levelname/></div>
 		<div>Time: <timer/></div>
 		    </div>
-    
+
     </div>
-    	
+
     </body>
 </rml>
