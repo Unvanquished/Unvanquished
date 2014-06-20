@@ -37,7 +37,7 @@
 				float: right;
 				z-index: 1;
 			}
-			
+
 			clip_stack
 			{
 
@@ -59,7 +59,7 @@
 				orientation: right;
 				z-index: -1;
 			}
-			
+
 			.credits{
 				margin-top:2%;
 				width:80%;
@@ -85,14 +85,14 @@
 				display:block;
 				position:relative;
 				width:80%;
-			} 
+			}
 			div.ammo, div.clips{
 				margin-left:15%;
 			}
 			div.stamina, div.health{
 				margin-left:5%;
 			}
-			
+
 			ammo_stack, clip_stack, progressbar.health, progressbar.stamina
 			{
 				position:absolute;
@@ -103,7 +103,7 @@
 				width: 100%;
 				height: 100%;
 				z-index: -1;
-				
+
 			}
 			ammo_stack, clip_stack
 			{
@@ -113,12 +113,12 @@
 				orientation:left;
 				color: #ff001c7a;
 			}
-			
+
 			progressbar.stamina{
 				orientation:left;
 				color: #82ffee52;
 			}
-			
+
 			ammo, clips, health.health{
 				position:absolute;
 				top:50%;
@@ -132,8 +132,8 @@
 				text-align:center;
 				display:block;
 			}
-			
-			
+
+
 			weapon_icon img, img.clip, img.health, img.stamina{
 				z-index:3;
 				width:auto;
@@ -159,7 +159,7 @@
 				top:-10%;
 				left:2%;
 			}
-			
+
 
 			div#momentum
 			{
@@ -244,7 +244,7 @@
 				right: 0px;
 				width: 7.5em;
 				height: 7.5em;
-				border-color: #ffffff11;
+				border-color: white;
 				border-left-width: 2px;
 				border-bottom-width: 2px;
 			}
