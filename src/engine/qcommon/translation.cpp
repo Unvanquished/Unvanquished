@@ -46,7 +46,7 @@ extern "C" {
 using namespace tinygettext;
 
 // Ugly char buffer
-static char gettextbuffer[ 4 ][ MAX_STRING_CHARS ];
+static std::string gettextbuffer[ 4 ];
 static int num = -1;
 
 DictionaryManager trans_manager;
@@ -349,8 +349,8 @@ const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manage
 	}
 
 	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
+	gettextbuffer[ num ] = manager.get_dictionary().translate( msgid );
+	return gettextbuffer[ num ].c_str();
 }
 
 const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, DictionaryManager& manager )
@@ -361,8 +361,8 @@ const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, Dictio
 	}
 
 	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
+	gettextbuffer[ num ] = manager.get_dictionary().translate_ctxt( ctxt, msgid );
+	return gettextbuffer[ num ].c_str();
 }
 
 const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_plural, int number, DictionaryManager& manager )
@@ -383,8 +383,8 @@ const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_p
 	}
 
 	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_plural( msgid, msgid_plural, number ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
+	gettextbuffer[ num ] = manager.get_dictionary().translate_plural( msgid, msgid_plural, number );
+	return gettextbuffer[ num ].c_str();
 }
 
 const char* Trans_Gettext( const char *msgid )

@@ -1254,56 +1254,35 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 
-	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH,
-	             LEVEL0_BITE_WIDTH, &traceEnt );
+	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
-	if ( traceEnt == NULL )
+	if ( !traceEnt || !traceEnt->takedamage || traceEnt->health <= 0 ||
+	     G_OnSameTeam( self, traceEnt ) )
 	{
 		return qfalse;
 	}
 
-	if ( !traceEnt->takedamage )
+	// only allow bites to work against turrets or buildables in construction
+	if ( traceEnt->s.eType == ET_BUILDABLE && traceEnt->spawned )
 	{
-		return qfalse;
-	}
-
-	if ( traceEnt->health <= 0 )
-	{
-		return qfalse;
-	}
-
-	// only allow bites to work against buildings as they are constructing
-	if ( traceEnt->s.eType == ET_BUILDABLE )
-	{
-		if ( traceEnt->spawned )
+		switch ( traceEnt->s.modelindex )
 		{
-			return qfalse;
-		}
+			case BA_H_MGTURRET:
+			case BA_H_TESLAGEN:
+				break;
 
-		if ( traceEnt->buildableTeam == TEAM_ALIENS )
-		{
-			return qfalse;
+			default:
+				return qfalse;
 		}
 	}
 
-	if ( traceEnt->client )
-	{
-		if ( traceEnt->client->pers.team == TEAM_ALIENS )
-		{
-			return qfalse;
-		}
-
-		if ( traceEnt->client->ps.stats[ STAT_HEALTH ] <= 0 )
-		{
-			return qfalse;
-		}
-	}
-
-	// send blood impact
 	SendMeleeHitEvent( self, traceEnt, &tr );
 
-	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_LEVEL0_BITE );
+	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK,
+	          MOD_LEVEL0_BITE );
+
 	self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
+
 	return qtrue;
 }
 
@@ -2004,12 +1983,18 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 
 	switch ( upgrade )
 	{
+		case UP_GRENADE:  FireGrenade( self );  break;
+		case UP_FIREBOMB: FireFirebomb( self ); break;
+		default:                                break;
+	}
+
+	switch ( upgrade )
+	{
 		case UP_GRENADE:
-			FireGrenade( self );
-			break;
 		case UP_FIREBOMB:
-			FireFirebomb( self );
+			trap_SendServerCommand( self->client->ps.clientNum, "vcommand grenade" );
 			break;
+
 		default:
 			break;
 	}

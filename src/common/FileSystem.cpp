@@ -1059,6 +1059,8 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 			}
 			if (!Str::IsPrefix(pathPrefix, *it))
 				continue;
+			if (Str::IsSuffix("/", *it))
+				return;
 #ifdef LIBSTDCXX_BROKEN_CXX11
 			fileMap.insert({*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0)});
 #else

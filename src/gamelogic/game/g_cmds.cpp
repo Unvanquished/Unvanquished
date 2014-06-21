@@ -2037,17 +2037,6 @@ vote_is_disabled:
 		break;
 
 	case VOTE_EXTEND:
-		if ( g_extendVotesCount.integer
-		     && level.extend_vote_count >= g_extendVotesCount.integer )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %d", QQ( N_("callvote: Maximum number of $1$ extend votes has been reached\n") ),
-			                            g_extendVotesCount.integer ) );
-			return;
-		}
-
-		level.extend_vote_count++;
-
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "time %i", level.timelimit + g_extendVotesTime.integer );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
@@ -2881,11 +2870,6 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 	else
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("You don't have the $1$\n") ), Quote( s ) ) );
-
-		if ( upgrade == UP_MEDKIT )
-		{
-			trap_SendServerCommand( ent - g_entities, "vcommand needhealth" );
-		}
 	}
 }
 

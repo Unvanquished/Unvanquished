@@ -990,7 +990,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	return fire;
 }
 
-qboolean G_LineOfSight( gentity_t *ent1, gentity_t *ent2 )
+qboolean G_LineOfSight( const gentity_t *ent1, const gentity_t *ent2 )
 {
 	trace_t trace;
 
@@ -999,7 +999,16 @@ qboolean G_LineOfSight( gentity_t *ent1, gentity_t *ent2 )
 		return qfalse;
 	}
 
-	trap_Trace( &trace, ent1->s.origin, NULL, NULL, ent2->s.origin, ent1->s.number, CONTENTS_SOLID );
+	trap_Trace( &trace, ent1->s.origin, NULL, NULL, ent2->s.origin, ent1->s.number, MASK_SHOT );
+
+	return ( trace.entityNum == ent2->s.number );
+}
+
+qboolean G_LineOfSight( const vec3_t point1, const vec3_t point2, const gentity_t *ignore )
+{
+	trace_t trace;
+
+	trap_Trace( &trace, point1, NULL, NULL, point2, ignore ? ignore->s.number : -1, CONTENTS_SOLID );
 
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }
