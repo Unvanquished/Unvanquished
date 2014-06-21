@@ -28,11 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../engine/qcommon/q_shared.h"
-#include "String.h"
-#include <string>
-#include <vector>
-
 #ifndef COMMON_COMMAND_H_
 #define COMMON_COMMAND_H_
 
@@ -50,9 +45,9 @@ namespace Cmd {
         SYSTEM           = BIT(3),
         RENDERER         = BIT(4),
         AUDIO            = BIT(5),
-        GAME             = BIT(6),
-        CGAME            = BIT(7),
-        UI               = BIT(8),
+        GAME_VM          = BIT(6),
+        CGAME_VM         = BIT(7),
+        UI_VM            = BIT(8),
         PROXY_FOR_OLD    = BIT(31) // OLD: The command has been registered through the proxy function in cmd.c
     };
 
@@ -162,8 +157,8 @@ namespace Cmd {
      */
     class StaticCmd : public CmdBase {
         protected:
+            StaticCmd(std::string name, std::string description);
             StaticCmd(std::string name, int flags, std::string description);
-            //TODO: sometimes (in the gamelogic) we already know what the flags is, provide another constructor for it.
     };
 
     /**
@@ -178,6 +173,12 @@ namespace Cmd {
             virtual void Print(Str::StringRef text) = 0;
             virtual void ExecuteAfter(Str::StringRef text, bool parseCvars = false) = 0;
     };
+
+    // Engine calls available everywhere
+
+    void AddCommand(std::string name, const CmdBase& cmd, std::string description);
+    void RemoveCommand(const std::string& name);
+    Environment* GetEnv();
 
     // Implementation of templates.
 

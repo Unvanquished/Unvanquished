@@ -35,7 +35,7 @@ static size_t GetRights(struct msghdr* msg, int* fdv) {
        cmsg = CMSG_NXTHDR(msg, cmsg)) {
     if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
       while (CMSG_LEN((1 + count) * sizeof(int)) <= cmsg->cmsg_len) {
-        *fdv++ = *(reinterpret_cast<int*>(CMSG_DATA(cmsg)) + count);
+        *fdv++ = ((int *) CMSG_DATA(cmsg))[count];
         ++count;
       }
     }
@@ -108,7 +108,7 @@ int NaClSendDatagram(NaClHandle handle, const NaClMessageHeader* message,
     return -1;
   }
 
-  msg.msg_iov = reinterpret_cast<struct iovec*>(message->iov);
+  msg.msg_iov = (struct iovec *) message->iov;
   msg.msg_iovlen = message->iov_length;
   msg.msg_name = 0;
   msg.msg_namelen = 0;
@@ -122,7 +122,7 @@ int NaClSendDatagram(NaClHandle handle, const NaClMessageHeader* message,
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
     cmsg->cmsg_len = CMSG_LEN(size);
-    memcpy(reinterpret_cast<int*>(CMSG_DATA(cmsg)), message->handles, size);
+    memcpy(CMSG_DATA(cmsg), message->handles, size);
     msg.msg_controllen = cmsg->cmsg_len;
   } else {
     msg.msg_control = 0;
@@ -154,7 +154,7 @@ int NaClReceiveDatagram(NaClHandle handle, NaClMessageHeader* message,
     return -1;
   }
 
-  msg.msg_iov = reinterpret_cast<struct iovec*>(message->iov);
+  msg.msg_iov = (struct iovec *) message->iov;
   msg.msg_iovlen = message->iov_length;
   if (0 < message->handle_count && message->handles != NULL) {
     msg.msg_control = buf;

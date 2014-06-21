@@ -183,28 +183,21 @@ void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t di
 	}
 }
 
-#define CREEP_SIZE     64.0f
-#define CREEP_DISTANCE 64.0f
-
-/*
-==================
-CG_Creep
-==================
-*/
 static void CG_Creep( centity_t *cent )
 {
 	int     msec;
 	float   size, frac;
 	trace_t tr;
-	vec3_t  temp, origin;
+	vec3_t  temp;
 	int     time;
+	const buildableAttributes_t *attr = BG_Buildable( cent->currentState.modelindex );
 
 	time = cent->currentState.time;
 
-	//should the creep be growing or receding?
+	// should the creep be growing or receding?
 	if ( time >= 0 )
 	{
-		int scaleUpTime = BG_Buildable( cent->currentState.modelindex )->buildTime;
+		int scaleUpTime = attr->buildTime;
 
 		msec = cg.time - time;
 
@@ -231,19 +224,18 @@ static void CG_Creep( centity_t *cent )
 		}
 	}
 
+	size = attr->creepSize * frac;
+
+	// TODO: Add comment explaining what this does
 	VectorCopy( cent->currentState.origin2, temp );
-	VectorScale( temp, -CREEP_DISTANCE, temp );
+	VectorScale( temp, -attr->creepSize, temp );
 	VectorAdd( temp, cent->lerpOrigin, temp );
 
 	CG_Trace( &tr, cent->lerpOrigin, NULL, NULL, temp, cent->currentState.number, MASK_PLAYERSOLID );
 
-	VectorCopy( tr.endpos, origin );
-
-	size = CREEP_SIZE * frac;
-
 	if ( size > 0.0f && tr.fraction < 1.0f )
 	{
-		CG_ImpactMark( cgs.media.creepShader, origin, cent->currentState.origin2,
+		CG_ImpactMark( cgs.media.creepShader, tr.endpos, cent->currentState.origin2,
 		               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, qfalse, size, qtrue );
 	}
 }

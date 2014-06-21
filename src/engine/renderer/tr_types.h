@@ -119,7 +119,7 @@ typedef enum
   RT_UNUSED_1,
   RT_SPRITE,
   RT_UNUSED_3,
-  RT_BEAM,
+  RT_UNUSED_4,
   RT_UNUSED_5,
   RT_UNUSED_6,
   RT_UNUSED_7,
@@ -144,10 +144,6 @@ typedef enum
 // RB: having bone names for each refEntity_t takes several MiBs
 // in backEndData_t so only use it for debugging and development
 // enabling this will show the bone names with r_showSkeleton 1
-
-#if 0 // #ifndef NDEBUG // FIXME - needs to be separately debuggable
-#define REFBONE_NAMES 1
-#endif
 
 typedef struct
 {
@@ -443,7 +439,7 @@ typedef struct
 	char                 extensions_string[ MAX_STRING_CHARS * 4 ]; // TTimo - bumping, some cards have a big extension string
 
 	int                  maxTextureSize; // queried from GL
-	int                  maxActiveTextures; // multitexture ability
+	int                  unused;
 
 	int                  colorBits, depthBits, stencilBits;
 
@@ -497,7 +493,7 @@ typedef struct
 	qboolean vboVertexSkinningAvailable;
 	int      maxVertexSkinningBones;
 
-	qboolean texture3DAvailable;
+	qboolean unused_texture3DAvailable;
 	qboolean textureNPOTAvailable;
 
 	qboolean drawBuffersAvailable;
@@ -506,9 +502,9 @@ typedef struct
 	qboolean textureRGAvailable;
 	int      maxDrawBuffers;
 
-	qboolean vertexArrayObjectAvailable;
+	qboolean unused_vertexArrayObjectAvailable;
 
-	qboolean stencilWrapAvailable;
+	qboolean unused_stencilWrapAvailable;
 
 	float    maxTextureAnisotropy;
 	qboolean textureAnisotropyAvailable;

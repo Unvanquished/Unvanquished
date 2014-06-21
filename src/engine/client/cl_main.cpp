@@ -36,9 +36,9 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include "../qcommon/q_unicode.h"
-#include <limits.h>
 
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"
@@ -48,6 +48,10 @@ cvar_t *cl_wavefilerecord;
 
 #include "libmumblelink.h"
 #include "../qcommon/crypto.h"
+
+#ifndef _WIN32
+#include <sys/stat.h>
+#endif
 
 cvar_t *cl_useMumble;
 cvar_t *cl_mumbleScale;
@@ -121,7 +125,6 @@ cvar_t *cl_autorecord;
 cvar_t *cl_motdString;
 
 cvar_t *cl_allowDownload;
-cvar_t *cl_wwwDownload;
 cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
@@ -194,38 +197,6 @@ void        CL_ServerStatusResponse( netadr_t from, msg_t *msg );
 // fretn
 void        CL_WriteWaveClose( void );
 void        CL_WavStopRecord_f( void );
-
-void CL_PurgeCache( void )
-{
-	cls.doCachePurge = qtrue;
-}
-
-void CL_DoPurgeCache( void )
-{
-	if ( !cls.doCachePurge )
-	{
-		return;
-	}
-
-	cls.doCachePurge = qfalse;
-
-	if ( !com_cl_running )
-	{
-		return;
-	}
-
-	if ( !com_cl_running->integer )
-	{
-		return;
-	}
-
-	if ( !cls.rendererStarted )
-	{
-		return;
-	}
-
-	re.purgeCache();
-}
 
 static void CL_UpdateMumble( void )
 {
@@ -698,20 +669,6 @@ void CL_CaptureVoip( void )
 				Com_DPrintf( "VoIP: Send %d frames, %d bytes, %f power\n",
 				             speexFrames, wpos, clc.voipPower );
 
-#if 0
-				static FILE *encio = NULL;
-
-				if ( encio == NULL ) { encio = fopen( "voip-outgoing-encoded.bin", "wb" ); }
-
-				if ( encio != NULL ) { fwrite( clc.voipOutgoingData, wpos, 1, encio ); fflush( encio ); }
-
-				static FILE *decio = NULL;
-
-				if ( decio == NULL ) { decio = fopen( "voip-outgoing-decoded.bin", "wb" ); }
-
-				if ( decio != NULL ) { fwrite( sampbuffer, speexFrames * clc.speexFrameSize * 2, 1, decio ); fflush( decio ); }
-
-#endif
 			}
 		}
 	}
@@ -773,29 +730,6 @@ void CL_AddReliableCommand( const char *cmd )
 }
 
 /*
-======================
-CL_ChangeReliableCommand
-======================
-*/
-void CL_ChangeReliableCommand( void )
-{
-	int index, l;
-
-	// NOTE TTimo: what is the randomize for?
-	//r = clc.reliableSequence - (random() * 5);
-	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	l = strlen( clc.reliableCommands[ index ] );
-
-	if ( l >= MAX_STRING_CHARS - 1 )
-	{
-		l = MAX_STRING_CHARS - 2;
-	}
-
-	clc.reliableCommands[ index ][ l ] = '\n';
-	clc.reliableCommands[ index ][ l + 1 ] = '\0';
-}
-
-/*
 =======================================================================
 
 CLIENT SIDE DEMO RECORDING
@@ -854,22 +788,6 @@ void CL_StopRecord_f( void )
 	Cvar_Set( "cl_demorecording", "0" );  // fretn
 	Cvar_Set( "cl_demofilename", "" );  // bani
 	Com_Printf("%s", _( "Stopped demo.\n" ));
-}
-
-/*
-==================
-CL_DemoFilename
-==================
-*/
-void CL_DemoFilename( int number, char *fileName )
-{
-	if ( number < 0 || number > 9999 )
-	{
-		Com_sprintf( fileName, MAX_OSPATH, "demo9999" );  // fretn - removed .tga
-		return;
-	}
-
-	Com_sprintf( fileName, MAX_OSPATH, "demo%04i", number );
 }
 
 /*
@@ -1408,20 +1326,6 @@ class DemoCmd: public Cmd::StaticCmd {
 static DemoCmd DemoCmdRegistration;
 
 /*
-====================
-CL_StartDemoLoop
-
-Closing the main menu will restart the demo loop
-====================
-*/
-void CL_StartDemoLoop( void )
-{
-	// start the demo loop again
-	Cmd::BufferCommandText("d1");
-	Key_SetCatcher( 0 );
-}
-
-/*
 ==================
 CL_DemoState
 
@@ -1537,11 +1441,6 @@ void CL_ShutdownAll( void )
 	if ( re.Shutdown )
 	{
 		re.Shutdown( qfalse );  // don't destroy window or context
-	}
-
-	if ( re.purgeCache )
-	{
-		CL_DoPurgeCache();
 	}
 
 	cls.uiStarted = qfalse;
@@ -1776,7 +1675,7 @@ void CL_Disconnect( qboolean showMainMenu )
 	}
 
 	// allow cheats locally
-	Cvar_Set( "sv_cheats", "1" );
+    Cvar::SetValueForce("sv_cheats", "1");
 
 	// Load map pk3s to allow menus to load levelshots
 	FS::PakPath::ClearPaks();
@@ -2380,13 +2279,17 @@ void CL_Snd_Restart_f( void )
 	if( !cls.cgameStarted )
 	{
 		CL_ShutdownUI();
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		//TODO S_BeginRegistration()
 		CL_InitUI();
 	}
 	else
 	{
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		CL_Vid_Restart_f();
 	}
 }
@@ -3860,166 +3763,6 @@ void CL_Frame( int msec )
 	cls.framecount++;
 }
 
-//============================================================================
-// Ridah, startup-caching system
-typedef struct
-{
-	char name[ MAX_QPATH ];
-	int  hits;
-	int  lastSetIndex;
-} cacheItem_t;
-typedef enum
-{
-  CACHE_SOUNDS,
-  CACHE_MODELS,
-  CACHE_IMAGES,
-
-  CACHE_NUMGROUPS
-} cacheGroup_t;
-static cacheItem_t cacheGroups[ CACHE_NUMGROUPS ] =
-{
-	{ { 's', 'o', 'u', 'n', 'd', 0 }, CACHE_SOUNDS },
-	{ { 'm', 'o', 'd', 'e', 'l', 0 }, CACHE_MODELS },
-	{ { 'i', 'm', 'a', 'g', 'e', 0 }, CACHE_IMAGES },
-};
-
-#define MAX_CACHE_ITEMS 4096
-#define CACHE_HIT_RATIO 0.75 // if hit on this percentage of maps, it'll get cached
-
-static int         cacheIndex;
-static cacheItem_t cacheItems[ CACHE_NUMGROUPS ][ MAX_CACHE_ITEMS ];
-
-static void CL_Cache_StartGather_f( void )
-{
-	cacheIndex = 0;
-	memset( cacheItems, 0, sizeof( cacheItems ) );
-
-	Cvar_Set( "cl_cacheGathering", "1" );
-}
-
-static void CL_Cache_UsedFile_f( void )
-{
-	char        groupStr[ MAX_QPATH ];
-	char        itemStr[ MAX_QPATH ];
-	int         i, group;
-	cacheItem_t *item;
-
-	if ( Cmd_Argc() < 2 )
-	{
-		Com_Error( ERR_DROP, "usedfile without enough parameters" );
-	}
-
-	Q_strncpyz( groupStr, Cmd_Argv( 1 ), MAX_QPATH );
-	Q_strncpyz( itemStr, Cmd_Argv( 2 ), MAX_QPATH );
-
-	for ( i = 3; i < Cmd_Argc(); i++ )
-	{
-		strncat( itemStr, " ", MAX_QPATH - 1 );
-		strncat( itemStr, Cmd_Argv( i ), MAX_QPATH - 1 );
-	}
-
-	Q_strlwr( itemStr );
-
-	// find the cache group
-	for ( i = 0; i < CACHE_NUMGROUPS; i++ )
-	{
-		if ( !Q_strncmp( groupStr, cacheGroups[ i ].name, MAX_QPATH ) )
-		{
-			break;
-		}
-	}
-
-	if ( i == CACHE_NUMGROUPS )
-	{
-		Com_Error( ERR_DROP, "usedfile without a valid cache group" );
-	}
-
-	// see if it's already there
-	group = i;
-
-	for ( i = 0, item = cacheItems[ group ]; i < MAX_CACHE_ITEMS; i++, item++ )
-	{
-		if ( !item->name[ 0 ] )
-		{
-			// didn't find it, so add it here
-			Q_strncpyz( item->name, itemStr, MAX_QPATH );
-
-			if ( cacheIndex > 9999 )
-			{
-				// hack, but yeh
-				item->hits = cacheIndex;
-			}
-			else
-			{
-				item->hits++;
-			}
-
-			item->lastSetIndex = cacheIndex;
-			break;
-		}
-
-		if ( item->name[ 0 ] == itemStr[ 0 ] && !Q_strncmp( item->name, itemStr, MAX_QPATH ) )
-		{
-			if ( item->lastSetIndex != cacheIndex )
-			{
-				item->hits++;
-				item->lastSetIndex = cacheIndex;
-			}
-
-			break;
-		}
-	}
-}
-
-static void CL_Cache_SetIndex_f( void )
-{
-	if ( Cmd_Argc() < 2 )
-	{
-		Com_Error( ERR_DROP, "setindex needs an index" );
-	}
-
-	cacheIndex = atoi( Cmd_Argv( 1 ) );
-}
-
-static void CL_Cache_MapChange_f( void )
-{
-	cacheIndex++;
-}
-
-static void CL_Cache_EndGather_f( void )
-{
-	// save the frequently used files to the cache list file
-	int  i, j, handle, cachePass;
-	char filename[ MAX_QPATH ];
-
-	cachePass = ( int ) floor( ( float ) cacheIndex * CACHE_HIT_RATIO );
-
-	for ( i = 0; i < CACHE_NUMGROUPS; i++ )
-	{
-		Q_strncpyz( filename, cacheGroups[ i ].name, MAX_QPATH );
-		Q_strcat( filename, MAX_QPATH, ".cache" );
-
-		handle = FS_FOpenFileWrite( filename );
-
-		for ( j = 0; j < MAX_CACHE_ITEMS; j++ )
-		{
-			// if it's a valid filename, and it's been hit enough times, cache it
-			if ( cacheItems[ i ][ j ].hits >= cachePass && strstr( cacheItems[ i ][ j ].name, "/" ) )
-			{
-				FS_Write( cacheItems[ i ][ j ].name, strlen( cacheItems[ i ][ j ].name ), handle );
-				FS_Write( "\n", 1, handle );
-			}
-		}
-
-		FS_FCloseFile( handle );
-	}
-
-	Cvar_Set( "cl_cacheGathering", "0" );
-}
-
-// done.
-//============================================================================
-
 /*
 ================
 CL_SetRecommended_f
@@ -4135,7 +3878,9 @@ void CL_StartHunkUsers( void )
 	if ( !cls.soundStarted )
 	{
 		cls.soundStarted = qtrue;
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 	}
 
 	if ( !cls.soundRegistered )
@@ -4370,7 +4115,6 @@ void CL_Init( void )
 	cl_showMouseRate = Cvar_Get( "cl_showmouserate", "0", 0 );
 
 	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", 0 );
-	cl_wwwDownload = Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO  );
 
 	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", 0 );
 
@@ -4487,13 +4231,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "irc_quit", CL_IRCInitiateShutdown );
 	Cmd_AddCommand( "irc_say", CL_IRCSay );
 
-	// Ridah, startup-caching system
-	Cmd_AddCommand( "cache_startgather", CL_Cache_StartGather_f );
-	Cmd_AddCommand( "cache_usedfile", CL_Cache_UsedFile_f );
-	Cmd_AddCommand( "cache_setindex", CL_Cache_SetIndex_f );
-	Cmd_AddCommand( "cache_mapchange", CL_Cache_MapChange_f );
-	Cmd_AddCommand( "cache_endgather", CL_Cache_EndGather_f );
-
 	Cmd_AddCommand( "updatehunkusage", CL_UpdateLevelHunkUsage );
 	Cmd_AddCommand( "updatescreen", SCR_UpdateScreen );
 	// done.
@@ -4584,13 +4321,6 @@ void CL_Shutdown( void )
 	Cmd_RemoveCommand( "serverstatus" );
 	Cmd_RemoveCommand( "showip" );
 	Cmd_RemoveCommand( "model" );
-
-	// Ridah, startup-caching system
-	Cmd_RemoveCommand( "cache_startgather" );
-	Cmd_RemoveCommand( "cache_usedfile" );
-	Cmd_RemoveCommand( "cache_setindex" );
-	Cmd_RemoveCommand( "cache_mapchange" );
-	Cmd_RemoveCommand( "cache_endgather" );
 
 	Cmd_RemoveCommand( "updatehunkusage" );
 	Cmd_RemoveCommand( "wav_record" );
@@ -5609,18 +5339,6 @@ CL_ShowIP_f
 void CL_ShowIP_f( void )
 {
 	Sys_ShowIP();
-}
-
-// Gordon: TEST TEST TEST
-
-/*
-==================
-BotImport_DrawPolygon
-==================
-*/
-void BotImport_DrawPolygon( int color, int numpoints, float *points )
-{
-	re.DrawDebugPolygon( color, numpoints, points );
 }
 
 /*

@@ -47,6 +47,20 @@ void nacl_minidump_set_callback(nacl_minidump_callback_t callback);
  */
 void nacl_minidump_set_module_name(const char *module_name);
 
+/*
+ * Traversing the module set may fail in the midst of a crash. However,
+ * capturing the module set ahead of time may yield an incomplete snapshot.
+ * This function captures the module list to be used in place of a live
+ * traversal during a crash.
+ */
+void nacl_minidump_snapshot_module_list(void);
+
+/*
+ * This function clears any current snapshot of the module list, switching to
+ * live traversal of modules when a crash occurs.
+ */
+void nacl_minidump_clear_module_list(void);
+
 #define NACL_MINIDUMP_BUILD_ID_SIZE 16
 
 /*

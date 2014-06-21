@@ -28,25 +28,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "../framework/Resource.h"
+#include "../qcommon/qcommon.h"
+
 #ifndef AUDIO_AUDIO_PRIVATE_H_
 #define AUDIO_AUDIO_PRIVATE_H_
-
-#include <unordered_map>
-#include <memory>
-
-#include "../../common/Command.h"
-#include "../../common/Log.h"
-#include "../framework/Resource.h"
-
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
-#include "snd_codec.h"
 
 namespace Audio {
 
     /**
      * The audio system is split in several parts:
-     * - Codecs, one for each supported format that allow to load a entire file or stream it from the disk.
+     * - Audio codecs, one for each supported format that allow to load an entire file.
      * - ALObjects that provide OO wrappers around OpenAL (OpenAL headers are only included in ALObjects.cpp)
      * - Audio the external interface, mostly using Sound and Emitter to create new sounds.
      * - Emitters that control the positional effects for the sound sources

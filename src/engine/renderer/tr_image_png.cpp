@@ -60,13 +60,11 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 	png_uint_32  w;
 	png_uint_32  h;
 	unsigned int row;
-//	size_t          rowbytes;
 	png_infop    info;
 	png_structp  png;
 	png_bytep    *row_pointers;
 	byte         *data;
 	byte         *out;
-//	int             size;
 
 	// load png
 	ri.FS_ReadFile( name, ( void ** ) &data );
@@ -76,7 +74,6 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 		return;
 	}
 
-	//png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	png = png_create_read_struct( PNG_LIBPNG_VER_STRING, ( png_voidp ) NULL, png_user_error_fn, png_user_warning_fn );
 
 	if ( !png )
@@ -111,7 +108,6 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 		return;
 	}
 
-	//png_set_write_fn(png, buffer, png_write_data, png_flush_data);
 	png_set_read_fn( png, data, png_read_data );
 
 	png_set_sig_bytes( png, 0 );
@@ -139,8 +135,6 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 	}
 
 	// expand grayscale images to the full 8 bits from 1, 2, or 4 bits/pixel
-	//if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
-	//  png_set_gray_1_2_4_to_8(png);
 
 	// expand paletted or RGB images with transparency to full alpha channels
 	// so the data will be available as RGBA quartets
@@ -180,8 +174,6 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 		png_destroy_read_struct( &png, ( png_infopp ) & info, ( png_infopp ) NULL );
 		return;
 	}
-
-	//rowbytes = png_get_rowbytes(png, info);
 
 	for ( row = 0; row < h; row++ )
 	{

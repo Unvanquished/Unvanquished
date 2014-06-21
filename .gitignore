@@ -21,6 +21,15 @@ build
 *.vcxproj.user
 *.kdev4
 
+# NaCl
+game-nacl-native-dll.*
+game-nacl-native-exe*
+game-x86*.nexe
+game.pexe
+irt_core-x86_64.nexe
+nacl_helper_bootstrap*
+sel_ldr*
+
 #ignore editor temporary files
 .*.swp
 .#*
@@ -37,6 +46,7 @@ build
 #ignore external deps
 external_deps/*
 !external_deps/build.sh
+!external_deps/cygtar.py
 
 #never ignore these in subdirectories by accident
 !.gitattributes

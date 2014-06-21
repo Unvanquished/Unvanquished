@@ -738,7 +738,6 @@ void CG_OffsetFirstPersonView( void )
 		usercmd_t cmd;
 		int       cmdNum;
 		float     fFraction, rFraction, uFraction;
-		float     fFraction2, rFraction2, uFraction2;
 
 		cmdNum = trap_GetCurrentCmdNumber();
 		trap_GetUserCmd( cmdNum, &cmd );
@@ -763,10 +762,6 @@ void CG_OffsetFirstPersonView( void )
 		{
 			uFraction = 1.0f;
 		}
-
-		fFraction2 = -sin( fFraction * M_PI / 2 );
-		rFraction2 = -sin( rFraction * M_PI / 2 );
-		uFraction2 = -sin( uFraction * M_PI / 2 );
 
 		if ( cmd.forwardmove > 0 )
 		{
@@ -1387,9 +1382,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 {
 	int health = ps->stats[ STAT_HEALTH ];
 	int team = ps->persistant[ PERS_TEAM ];
-	int class_ = ps->stats[ STAT_CLASS ];
 	qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
-	float chargeProgress = CG_ChargeProgress();
 
 	//the player has spawned once and is dead or in the intermission
 	if ( health <= 0 || (playing && cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )

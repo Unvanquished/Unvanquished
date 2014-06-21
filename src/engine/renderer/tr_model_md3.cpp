@@ -28,36 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 =================
-MDVSurfaceCompare
-compare function for qsort()
-=================
-*/
-#if 0
-static int MDVSurfaceCompare( const void *a, const void *b )
-{
-	mdvSurface_t *aa, *bb;
-
-	aa = * ( mdvSurface_t ** ) a;
-	bb = * ( mdvSurface_t ** ) b;
-
-	// shader first
-	if ( &aa->shader < &bb->shader )
-	{
-		return -1;
-	}
-
-	else if ( &aa->shader > &bb->shader )
-	{
-		return 1;
-	}
-
-	return 0;
-}
-
-#endif
-
-/*
-=================
 R_LoadMD3
 =================
 */
@@ -100,8 +70,6 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 	size = LittleLong( md3Model->ofsEnd );
 	mod->dataSize += size;
 	mdvModel = mod->mdv[ lod ] = (mdvModel_t*) ri.Hunk_Alloc( sizeof( mdvModel_t ), h_low );
-
-//  Com_Memcpy(mod->md3[lod], buffer, LittleLong(md3Model->ofsEnd));
 
 	LL( md3Model->ident );
 	LL( md3Model->version );
@@ -216,29 +184,6 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			surf->name[ j - 2 ] = 0;
 		}
 
-		// register the shaders
-
-		/*
-		   surf->numShaders = md3Surf->numShaders;
-		   surf->shaders = shader = ri.Hunk_Alloc(sizeof(*shader) * md3Surf->numShaders, h_low);
-
-		   md3Shader = (md3Shader_t *) ((byte *) md3Surf + md3Surf->ofsShaders);
-		   for(j = 0; j < md3Surf->numShaders; j++, shader++, md3Shader++)
-		   {
-		   shader_t       *sh;
-
-		   sh = R_FindShader(md3Shader->name, SHADER_3D_DYNAMIC, RSF_DEFAULT);
-		   if(sh->defaultShader)
-		   {
-		   shader->shaderIndex = 0;
-		   }
-		   else
-		   {
-		   shader->shaderIndex = sh->index;
-		   }
-		   }
-		 */
-
 		// only consider the first shader
 		md3Shader = ( md3Shader_t * )( ( byte * ) md3Surf + md3Surf->ofsShaders );
 		surf->shader = R_FindShader( md3Shader->name, SHADER_3D_DYNAMIC, RSF_DEFAULT );
@@ -285,7 +230,6 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		surf++;
 	}
 
-#if 1
 	// create VBO surfaces from md3 surfaces
 	{
 		growList_t      vboSurfaces;
@@ -351,12 +295,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 						t1 = surf->st[ tri->indexes[ 1 ] ].st;
 						t2 = surf->st[ tri->indexes[ 2 ] ].st;
 
-#if 1
 						R_CalcTangentSpace( tangent, binormal, normal, v0, v1, v2, t0, t1, t2 );
-#else
-						R_CalcNormalForTriangle( normal, v0, v1, v2 );
-						R_CalcTangentsForTriangle( tangent, binormal, v0, v1, v2, t0, t1, t2 );
-#endif
 
 						for ( k = 0; k < 3; k++ )
 						{
@@ -381,8 +320,6 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 					VectorNormalize( data.normal[ j ] );
 				}
 			}
-
-			//ri.Printf(PRINT_ALL, "...calculating MD3 mesh VBOs ( '%s', %i verts %i tris )\n", surf->name, surf->numVerts, surf->numTriangles);
 
 			// create surface
 
@@ -417,7 +354,6 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 		Com_DestroyGrowList( &vboSurfaces );
 	}
-#endif
 
 	return qtrue;
 }

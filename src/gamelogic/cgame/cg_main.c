@@ -707,8 +707,6 @@ these will change when following another player
 */
 static void CG_SetUIVars( void )
 {
-	playerState_t *ps;
-
 	if ( !cg.snap )
 	{
 		return;
@@ -1704,9 +1702,25 @@ static void CG_RegisterClients( void )
 		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmetlarmour.skin" );
 	}
 
-	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.md3" );
+	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.iqm" );
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
 	cgs.media.radarModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" ); // HACK: Use old battpack
+
+	CG_RegisterWeaponAnimation(
+	    &cgs.media.jetpackAnims[ JANIM_NONE ],
+	    "models/players/human_base/jetpack.iqm:idle",
+	    qfalse, qfalse, qfalse );
+
+
+	CG_RegisterWeaponAnimation(
+	    &cgs.media.jetpackAnims[ JANIM_SLIDEOUT ],
+	    "models/players/human_base/jetpack.iqm:slideout",
+	    qfalse, qfalse, qfalse );
+
+	CG_RegisterWeaponAnimation(
+	    &cgs.media.jetpackAnims[ JANIM_SLIDEIN ],
+	    "models/players/human_base/jetpack.iqm:slidein",
+	    qfalse, qfalse, qfalse );
 
 	cg.charModelFraction = 1.0f;
 	trap_UpdateScreen();
@@ -2115,12 +2129,10 @@ void CG_LoadMenus( const char *menuFile )
 {
 	char         *token;
 	char         *p;
-	int          len, start;
+	int          len;
 	fileHandle_t f;
 	static char  buf[ MAX_MENUDEFFILE ];
 	char         assetScale[ 20 ];
-
-	start = trap_Milliseconds();
 
 	len = trap_FS_FOpenFile( menuFile, &f, FS_READ );
 
@@ -2181,8 +2193,6 @@ void CG_LoadMenus( const char *menuFile )
 			}
 		}
 	}
-
-	// Com_Printf(_( "UI menu load time = %dms\n"), trap_Milliseconds() - start );
 }
 
 static qboolean CG_OwnerDrawHandleKey( int ownerDraw, int key )
