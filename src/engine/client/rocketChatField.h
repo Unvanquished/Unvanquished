@@ -91,6 +91,14 @@ public:
 		}
 	}
 
+	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	{
+		if (changed_attributes.find( "exec" ) != changed_attributes.end() )
+		{
+			cmd = GetAttribute<Rocket::Core::String>( "exec", "" );
+		}
+	}
+
 	void OnUpdate( void )
 	{
 		// Ensure mouse follow cursor
@@ -175,7 +183,15 @@ public:
 					case Rocket::Core::Input::KI_RETURN:
 					case Rocket::Core::Input::KI_NUMPADENTER:
 					{
-						Rocket::Core::String cmd = GetAttribute<Rocket::Core::String>( "exec", "" );
+						if ( text[0] == '/' || text[0] == '\\' )
+						{
+							Cmd::BufferCommandText( va( "%s\n", text.CString() ) );
+							text.Clear();
+							UpdateText();
+							GetOwnerDocument()->Hide();
+							return;
+						}
+
 						if ( cmd.Empty() )
 						{
 							cmd = Cvar_VariableString( "cg_sayCommand" );
@@ -448,6 +464,7 @@ private:
 	Rocket::Core::Vector2f cursor_size;
 	Rocket::Core::Vector2f dimensions;
 	Rocket::Core::String text;
+	Rocket::Core::String cmd;
 
 };
 #endif
