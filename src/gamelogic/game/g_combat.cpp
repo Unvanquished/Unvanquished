@@ -293,7 +293,7 @@ void G_RewardAttackers( gentity_t *self )
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
 			// Add momentum
-			G_AddMomentumForKillingStep( self, player, reward );
+			G_AddMomentumForKillingStep( self, player, share );
 		}
 	}
 
