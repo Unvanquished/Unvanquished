@@ -1141,3 +1141,27 @@ int G_Heal( gentity_t *self, int amount )
 
 	return healed;
 }
+
+bool G_IsPlayableTeam( team_t team )
+{
+	return ( team > TEAM_NONE && team < NUM_TEAMS );
+}
+
+bool G_IsPlayableTeam( int team )
+{
+	return G_IsPlayableTeam( (team_t)team );
+}
+
+team_t G_IterateTeams( team_t team )
+{
+	team_t nextTeam = (team_t)(std::max((int)team, (int)TEAM_NONE) + 1);
+
+	if ( nextTeam >= NUM_TEAMS )
+	{
+		return TEAM_NONE;
+	}
+	else
+	{
+		return nextTeam;
+	}
+}

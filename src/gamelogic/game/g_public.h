@@ -93,17 +93,18 @@ void              G_SetHumanBuildablePowerState();
 
 // g_buildpoints
 void              G_RGSThink( gentity_t *self );
+void              G_MainStructBPStorageThink( gentity_t *self );
+void              G_BPStorageDie( gentity_t *self );
 void              G_RGSDie( gentity_t *self );
-void              G_RGSDeconstruct( gentity_t *self );
 float             G_RGSPredictEfficiency( vec3_t origin );
 float             G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team );
-void              G_CalculateMineRate( void );
+void              G_MineBuildPoints( void );
 int               G_GetBuildPointsInt( team_t team );
 int               G_GetMarkedBuildPointsInt( team_t team );
 qboolean          G_CanAffordBuildPoints( team_t team, float amount );
 void              G_GetBuildableResourceValue( int *teamValue );
 void              G_ModifyBuildPoints( team_t team, float amount );
-void              G_ModifyMinedBuildPoints( team_t team, float amount );
+void              G_MarkBuildPointsMined( team_t team, float amount );
 
 // g_client.c
 void              G_AddCreditToClient( gclient_t *client, short credit, qboolean cap );
@@ -181,8 +182,8 @@ float             G_AddMomentumGenericStep( team_t team, float amount );
 float             G_PredictMomentumForBuilding( gentity_t *buildable );
 float             G_AddMomentumForBuilding( gentity_t *buildable );
 float             G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner );
-float             G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float share );
-float             G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float share );
+float             G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float amount );
+float             G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float amount );
 void              G_AddMomentumEnd( void );
 
 // g_main.c
@@ -298,6 +299,9 @@ qboolean          G_LineOfSight( const gentity_t *from, const gentity_t *to );
 qboolean          G_LineOfFire( const gentity_t *from, const gentity_t *to );
 qboolean          G_LineOfSight( const vec3_t point1, const vec3_t point2 );
 int               G_Heal( gentity_t *self, int amount );
+bool              G_IsPlayableTeam( team_t team );
+bool              G_IsPlayableTeam( int team );
+team_t            G_IterateTeams( team_t team );
 
 // g_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );

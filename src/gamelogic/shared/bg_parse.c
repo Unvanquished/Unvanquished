@@ -617,10 +617,9 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		TEAM = 1 << 8,
 		BUILDWEAPON = 1 << 9,
 		BUILDTIME = 1 << 10,
-		VALUE = 1 << 11,
-		RADAR = 1 << 12,
-		POWERCONSUMPTION = 1 << 13,
-		UNLOCKTHRESHOLD = 1 << 14
+		RADAR = 1 << 11,
+		POWERCONSUMPTION = 1 << 12,
+		UNLOCKTHRESHOLD = 1 << 13
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -806,14 +805,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		{
 			ba->uniqueTest = qtrue;
 		}
-		else if ( !Q_stricmp( token, "reward" ) )
-		{
-			PARSE(text, token);
-
-			ba->value = atoi(token);
-
-			defined |= VALUE;
-		}
 		else if ( !Q_stricmp( token, "radarFadeOut" ) )
 		{
 			PARSE(text, token);
@@ -847,7 +838,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 	else if ( !( defined & TEAM) ) { token = "team"; }
 	else if ( !( defined & BUILDWEAPON) ) { token = "buildWeapon"; }
 	else if ( !( defined & BUILDTIME) ) { token = "buildTime"; }
-	else if ( !( defined & VALUE) ) { token = "reward"; }
 	else if ( !( defined & RADAR) ) { token = "radarFadeOut"; }
 	else if ( !( defined & NORMAL) ) { token = "minNormal"; }
 

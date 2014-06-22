@@ -110,3 +110,18 @@ void BG_BuildEntityDescription( char *str, size_t size, entityState_t *es )
 	Q_snprintf(str, size, "%s #%i", Com_EntityTypeName( es->eType ), es->number );
 	str[ size -1 ] = '\0';
 }
+
+qboolean BG_IsMainStructure( entityState_t *es )
+{
+	if ( es->eType != ET_BUILDABLE ) return qfalse;
+
+	switch ( es->modelindex )
+	{
+		case BA_A_OVERMIND:
+		case BA_H_REACTOR:
+			return qtrue;
+
+		default:
+			return qfalse;
+	}
+}

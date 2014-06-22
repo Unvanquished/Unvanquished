@@ -631,8 +631,6 @@ void AGeneric_CreepRecede( gentity_t *self )
 	{
 		self->s.eFlags |= EF_DEAD;
 
-		G_RewardAttackers( self );
-
 		G_AddEvent( self, EV_BUILD_DESTROY, 0 );
 
 		if ( self->spawned )
@@ -672,9 +670,10 @@ void AGeneric_Blast( gentity_t *self )
 
 	VectorCopy( self->s.origin2, dir );
 
-	//do a bit of radius damage
 	G_SelectiveRadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                         self->splashRadius, self, self->splashMethodOfDeath, TEAM_ALIENS );
+
+	G_RewardAttackers( self );
 
 	//pretty events and item cleanup
 	self->s.eFlags |= EF_NODRAW; //don't draw the model once it's destroyed
@@ -992,6 +991,8 @@ void AOvermind_Think( gentity_t *self )
 		}
 
 		G_WarnPrimaryUnderAttack( self );
+
+		G_MainStructBPStorageThink( self );
 	}
 	else
 	{
@@ -1009,10 +1010,13 @@ Called when the overmind dies
 void AOvermind_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
+
 	if ( IsWarnableMOD( mod ) )
 	{
 		G_BroadcastEvent( EV_OVERMIND_DYING, 0, TEAM_ALIENS );
 	}
+
+	G_BPStorageDie( self );
 }
 
 /*
@@ -1255,14 +1259,7 @@ void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
 
-	if ( mod == MOD_DECONSTRUCT )
-	{
-		G_RGSDeconstruct( self );
-	}
-	else
-	{
-		G_RGSDie( self );
-	}
+	G_RGSDie( self );
 }
 
 static gentity_t *cmpHive = NULL;
@@ -2177,11 +2174,9 @@ void HGeneric_Blast( gentity_t *self )
 
 	self->timestamp = level.time;
 
-	//do some radius damage
 	G_RadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                self->splashRadius, self, self->splashMethodOfDeath );
 
-	// begin freeing build points
 	G_RewardAttackers( self );
 
 	// turn into an explosion
@@ -2200,6 +2195,7 @@ Called when a human buildable is destroyed before it is spawned.
 void HGeneric_Disappear( gentity_t *self )
 {
 	self->timestamp = level.time;
+
 	G_RewardAttackers( self );
 
 	G_FreeEntity( self );
@@ -2377,15 +2373,20 @@ void HReactor_Think( gentity_t *self )
 	}
 
 	G_WarnPrimaryUnderAttack( self );
+
+	G_MainStructBPStorageThink( self );
 }
 
 void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
+
 	if ( IsWarnableMOD( mod ) )
 	{
 		G_BroadcastEvent( EV_REACTOR_DYING, 0, TEAM_HUMANS );
 	}
+
+	G_BPStorageDie( self );
 }
 
 void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -3181,14 +3182,7 @@ void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
 
-	if ( mod == MOD_DECONSTRUCT )
-	{
-		G_RGSDeconstruct( self );
-	}
-	else
-	{
-		G_RGSDie( self );
-	}
+	G_RGSDie( self );
 }
 
 /*
@@ -3585,22 +3579,25 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
-	int   refund;
-	const buildableAttributes_t *attr;
-
 	if ( !self || self->s.eType != ET_BUILDABLE )
 	{
 		return;
 	}
 
-	attr = BG_Buildable( self->s.modelindex );
+	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
+
+	// save remaining health fraction
+	self->deconHealthFrac = Maths::clamp( self->health / ( float )attr->health, 0.0f, 1.0f );
 
 	// return BP
-	refund = attr->buildPoints * ( self->health / ( float )attr->health );
+	int refund = attr->buildPoints * self->deconHealthFrac;
 	G_ModifyBuildPoints( self->buildableTeam, refund );
 
 	// remove momentum
 	G_RemoveMomentumForDecon( self, deconner );
+
+	// reward attackers if the structure was hurt before deconstruction
+	if ( self->deconHealthFrac < 1.0f ) G_RewardAttackers( self );
 
 	// deconstruct
 	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, deconType );
