@@ -388,6 +388,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MOMENTUM_BUILD_MOD       "0.6"
 #define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod
 #define DEFAULT_MOMENTUM_DESTROY_MOD     "0.8"
+#define MAIN_STRUCTURE_MOMENTUM_VALUE    20    // momentum reward for destroying OM/RC
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 #define BUILDABLE_START_HEALTH_FRAC        0.25f

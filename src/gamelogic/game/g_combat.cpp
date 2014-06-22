@@ -213,7 +213,9 @@ void G_RewardAttackers( gentity_t *self )
 	{
 		ownTeam   = (team_t) self->buildableTeam;
 		maxHealth = BG_Buildable( self->s.modelindex )->health;
-		value     = BG_Buildable( self->s.modelindex )->value;
+		value     = BG_IsMainStructure( &self->s )
+		            ? MAIN_STRUCTURE_MOMENTUM_VALUE
+		            : BG_Buildable( self->s.modelindex )->buildPoints;
 
 		// Give partial credits for buildables in construction
 		if ( !self->spawned )
@@ -280,7 +282,7 @@ void G_RewardAttackers( gentity_t *self )
 			G_AddMomentumToScore( player, reward );
 
 			// Add momentum
-			G_AddMomentumForDestroyingStep( self, player, share );
+			G_AddMomentumForDestroyingStep( self, player, reward );
 		}
 		else
 		{
@@ -291,7 +293,7 @@ void G_RewardAttackers( gentity_t *self )
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
 			// Add momentum
-			G_AddMomentumForKillingStep( self, player, share );
+			G_AddMomentumForKillingStep( self, player, reward );
 		}
 	}
 

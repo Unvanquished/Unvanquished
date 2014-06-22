@@ -368,7 +368,7 @@ float G_PredictMomentumForBuilding( gentity_t *buildable )
 		return 0.0f;
 	}
 
-	return BG_Buildable( buildable->s.modelindex )->value * MomentumMod( CONF_BUILDING );
+	return BG_Buildable( buildable->s.modelindex )->buildPoints * MomentumMod( CONF_BUILDING );
 }
 
 /**
@@ -387,7 +387,7 @@ float G_AddMomentumForBuilding( gentity_t *buildable )
 		return 0.0f;
 	}
 
-	value   = BG_Buildable( buildable->s.modelindex )->value;
+	value   = BG_Buildable( buildable->s.modelindex )->buildPoints;
 	team    = BG_Buildable( buildable->s.modelindex )->team;
 	builder = &g_entities[ buildable->builtBy->slot ];
 
@@ -422,7 +422,7 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 	}
 	else
 	{
-		// assume the buildable has just been built
+		// assume the buildable has just been placed
 		value = G_PredictMomentumForBuilding( buildable );
 	}
 
@@ -436,9 +436,8 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
  *
  * G_AddMomentumEnd has to be called after all G_AddMomentum*Step steps are done.
  */
-float G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float share )
+float G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float amount )
 {
-	float  value;
 	team_t team;
 
 	// sanity check buildable
@@ -453,10 +452,9 @@ float G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker,
 		return 0.0f;
 	}
 
-	value = BG_Buildable( buildable->s.modelindex )->value * share;
-	team  = (team_t) attacker->client->pers.team;
+	team = (team_t) attacker->client->pers.team;
 
-	return AddMomentum( CONF_DESTROYING, team, value, attacker, qtrue );
+	return AddMomentum( CONF_DESTROYING, team, amount, attacker, qtrue );
 }
 
 /**
@@ -464,10 +462,9 @@ float G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker,
  *
  * G_AddMomentumEnd has to be called after all G_AddMomentum*Step steps are done.
  */
-float G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float share )
+float G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float amount )
 {
-	float     value;
-	team_t    team;
+	team_t team;
 
 	// sanity check victim
 	if ( !victim || !victim->client )
@@ -481,10 +478,9 @@ float G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float
 		return 0.0f;
 	}
 
-	value = BG_GetValueOfPlayer( &victim->client->ps ) * MOMENTUM_PER_CREDIT * share;
-	team  = (team_t) attacker->client->pers.team;
+	team = (team_t) attacker->client->pers.team;
 
-	return AddMomentum( CONF_KILLING, team, value, attacker, qtrue );
+	return AddMomentum( CONF_KILLING, team, amount, attacker, qtrue );
 }
 
 /**
