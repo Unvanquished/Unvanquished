@@ -630,8 +630,6 @@ void AGeneric_CreepRecede( gentity_t *self )
 	{
 		self->s.eFlags |= EF_DEAD;
 
-		G_RewardAttackers( self );
-
 		G_AddEvent( self, EV_BUILD_DESTROY, 0 );
 
 		if ( self->spawned )
@@ -671,9 +669,10 @@ void AGeneric_Blast( gentity_t *self )
 
 	VectorCopy( self->s.origin2, dir );
 
-	//do a bit of radius damage
 	G_SelectiveRadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                         self->splashRadius, self, self->splashMethodOfDeath, TEAM_ALIENS );
+
+	G_RewardAttackers( self );
 
 	//pretty events and item cleanup
 	self->s.eFlags |= EF_NODRAW; //don't draw the model once it's destroyed
@@ -2171,11 +2170,9 @@ void HGeneric_Blast( gentity_t *self )
 
 	self->timestamp = level.time;
 
-	//do some radius damage
 	G_RadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                self->splashRadius, self, self->splashMethodOfDeath );
 
-	// begin freeing build points
 	G_RewardAttackers( self );
 
 	// turn into an explosion
@@ -2194,6 +2191,7 @@ Called when a human buildable is destroyed before it is spawned.
 void HGeneric_Disappear( gentity_t *self )
 {
 	self->timestamp = level.time;
+
 	G_RewardAttackers( self );
 
 	G_FreeEntity( self );
@@ -3590,6 +3588,9 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 
 	// remove momentum
 	G_RemoveMomentumForDecon( self, deconner );
+
+	// reward attackers if the structure was hurt before deconstruction
+	if ( self->deconHealthFrac < 1.0f ) G_RewardAttackers( self );
 
 	// deconstruct
 	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, deconType );

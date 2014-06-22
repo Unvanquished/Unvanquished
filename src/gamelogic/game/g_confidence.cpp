@@ -404,7 +404,7 @@ float G_AddMomentumForBuilding( gentity_t *buildable )
  */
 float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 {
-	float     healthFraction, value;
+	float     value;
 	team_t    team;
 
 	// sanity check buildable
@@ -412,8 +412,6 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 	{
 		return 0.0f;
 	}
-
-	healthFraction = buildable->health / ( float )BG_Buildable( buildable->s.modelindex )->health;
 	team           = BG_Buildable( buildable->s.modelindex )->team;
 
 	if ( buildable->momentumEarned )
@@ -426,7 +424,7 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 		value = G_PredictMomentumForBuilding( buildable );
 	}
 
-	value *= healthFraction;
+	value *= buildable->deconHealthFrac;
 
 	return AddMomentum( CONF_DECONSTRUCTING, team, -value, deconner, qfalse );
 }
