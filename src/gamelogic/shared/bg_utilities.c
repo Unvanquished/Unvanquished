@@ -113,7 +113,7 @@ void BG_BuildEntityDescription( char *str, size_t size, entityState_t *es )
 
 qboolean BG_IsMainStructure( entityState_t *es )
 {
-	if ( es->eType != ET_BUILDABLE ) return false;
+	if ( es->eType != ET_BUILDABLE ) return qfalse;
 
 	switch ( es->modelindex )
 	{
