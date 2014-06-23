@@ -74,7 +74,7 @@
 			<img style="width: 100%;" src="/ui/assets/logo" />
 		</div>
 		<div id="sidebar">
-			<button class="menuButton" onClick="show serverbrowser">Play</button>
+			<button class="menuButton" onClick="show serverbrowser;exec delay 200 rocket buildDS server_browser internet">Play</button>
 			<button class="menuButton" onClick="show options">Options</button>
 			<div class="separator"></div>
 			<button class="menuButton" onClick="show help">Guide</button>
