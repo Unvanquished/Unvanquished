@@ -208,11 +208,6 @@ img.levelshot
 
 				</div>
 			</panel>
-			<tab>Favorite</tab>
-			<panel>
-				Favorite servers here
-
-			</panel>
 			<tab onClick="init_servers local;buildDS server_browser local">LAN</tab>
 			<panel>
 				<p><span id="status"></span></p>
