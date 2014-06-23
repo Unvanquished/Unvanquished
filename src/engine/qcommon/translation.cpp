@@ -254,7 +254,9 @@ void Trans_SetLanguage( const char* lang )
 	trans_manager.set_language( bestLang );
 	trans_managergame.set_language( bestLang );
 
-	Com_Printf( _( "Set language to %s\n" ), bestLang.get_name().c_str() );
+	Cvar_Set( "language", bestLang.str().c_str() );
+
+	Com_Printf( _( "Set language to %s" ), bestLang.get_name().c_str() );
 }
 
 void Trans_UpdateLanguage_f( void )
@@ -303,9 +305,7 @@ void Trans_Init( void )
 	for( std::set<Language>::iterator p = langs.begin(); p != langs.end(); p++ )
 	{
 		Q_strcat( langList, sizeof( langList ), va( "\"%s\" ", p->get_name().c_str() ) );
-		Q_strcat( encList, sizeof( encList ), va( "\"%s%s%s\" ", p->get_language().c_str(),
-												  p->get_country().c_str()[0] ? "_" : "",
-												  p->get_country().c_str() ) );
+		Q_strcat( encList, sizeof( encList ), va( "\"%s\" ", p->str().c_str() ) );
 	}
 
 	Cvar_Set( "trans_languages", langList );
