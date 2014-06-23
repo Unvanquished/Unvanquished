@@ -173,7 +173,6 @@ class Entity:
     def __init__(self, name, params):
         self.name = name
         self.params = params
-        print(params)
 
     def gather_components(self, components):
         self.components = list(map(lambda component: components[component], self.params.keys()))
@@ -267,6 +266,9 @@ def topo_sort_components(components):
 
     return sorted_components
 
+def my_print(text):
+    print('\n'.join(filter(lambda line: line.strip() != '', text.split('\n'))))
+
 if __name__ == '__main__':
     f = open('def.yaml')
     definitions = yaml.load(f.read())
@@ -311,7 +313,7 @@ if __name__ == '__main__':
     }
 
     implementation_h_template = template_env.get_template('implementation.h')
-    print(implementation_h_template.render(**template_params))
+    my_print(implementation_h_template.render(**template_params))
 
     print()
     print()
@@ -322,4 +324,4 @@ if __name__ == '__main__':
     print()
 
     implementation_cpp_template = template_env.get_template('implementation.cpp')
-    print(implementation_cpp_template.render(**template_params))
+    my_print(implementation_cpp_template.render(**template_params))
