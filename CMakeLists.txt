@@ -1411,6 +1411,7 @@ add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
 add_library( nacl-source-libs EXCLUDE_FROM_ALL ${LIBSRC_NACL} )
 add_library( engine-source-libs EXCLUDE_FROM_ALL ${LIBSRC_ENGINE} )
 set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
+set_source_files_properties( ${LIBSRC_BASE} ${LIBSRC_NACL} ${LIBSRC_ENGINE} PROPERTIES COMPILE_FLAGS "-fPIC" )
 
 set( LIBS_BASE base-source-libs ${LIBS_BASE} )
 set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
