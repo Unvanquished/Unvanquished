@@ -196,7 +196,6 @@
 				<div class="line"><label>Centerview:</label><keybind cmd="centerview" /></div>
 				<div class="line"><label>Free Look:</label><input cvar="cl_freelook" type="checkbox" /></div>
 				<div class="line"><label>Mouse Sensitivity:</label><input type="range" min=" 1" max=" 30" step="0.01" cvar="sensitivity"/></div>
-				<div class="line"><label>Invert Mouse:</label><input cvar="ui_mousePitch" type="checkbox" /></div>
 				<div class="line"><label>Smooth Mouse:</label><input cvar="m_filter" type="checkbox" /></div>
 				<div class="line"><label>Auto Wallwalk Pitching:</label><input cvar="cg_wwFollow" type="checkbox" /></div>
 			</panel>
