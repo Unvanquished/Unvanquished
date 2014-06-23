@@ -112,7 +112,7 @@
 			<div class="line"><label>Sticky Spectate:</label><input cvar="cg_stickySpec" type="checkbox" /></div>
 			<div class="line"><label>Tutorial Mode:</label><input cvar="cg_tutorial" type="checkbox" /></div>
 			<div class="line"><label>Disable Warning Dialogs:</label>
-			<select name="videoquality" cvar="cg_disableWarningDialogs">
+			<select  cvar="cg_disableWarningDialogs">
 				<option value="0">No</option>
 				<option value="1">Print To Console</option>
 				<option value="2">Yes</option>
@@ -258,7 +258,7 @@
 			<tab>Display</tab>
 			<panel>
 			<div class="line"><label>Quality:</label>
-			<select cvar="ui_glCustom">
+			<select cvar="ui_glCustom" onchange="graphicsqualitychanged">
 				<option value="0">High</option>
 				<option value="1">Intermediate</option>
 				<option value="5">Dlights, no fx</option>
