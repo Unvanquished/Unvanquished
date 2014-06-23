@@ -694,7 +694,7 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 	char *p, *head;
 	int inputs = 0;
 
-	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
+	trap_Cvar_VariableStringBuffer( "audio.al.availableCaptureDevices", buf, sizeof( buf ) );
 	head = buf;
 
 	while ( ( p = strchr( head, '\n' ) ) )
@@ -747,7 +747,7 @@ void CG_Rocket_BuildAlOutputs( const char *args )
 	char *p, *head;
 	int outputs = 0;
 
-	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
+	trap_Cvar_VariableStringBuffer( "audio.al.availableDevices", buf, sizeof( buf ) );
 	head = buf;
 
 	while ( ( p = strchr( head, '\n' ) ) )

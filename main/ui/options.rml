@@ -100,7 +100,7 @@
 			}
 		</style>
 	</head>
-	<body id="options" onload="buildDS languages">
+	<body id="options" onload="buildDS languages; buildDS alOutputs; buildDS voipInputs">
 		<tabset class="options window">
 		<tab>Player</tab>
 		<panel>
@@ -350,8 +350,8 @@
 			<div class="line"><label>Music Volume:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.volume.music"/></div>
 			<div class="line"><label>Reverb Intensity:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.reverbIntensity"/></div>
 			<div class="line"><label>Doppler Intensity:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.dopplerExaggeration"/></div>
-			<div class="line"><label>OpenAL Device:</label><dataselect source="FILL ME IN"/></div>
-			<div class="line"><label>OpenAL Capture Device:</label><dataselect source="FILL ME IN"/></div>
+			<div class="line"><label>OpenAL Device:</label><dataselect source="alOutputs.default" fields="name" /></div>
+			<div class="line"><label>OpenAL Capture Device:</label><dataselect source="voipInputs.default" fields="name" /></div>
 			<div class="line"><label>Net Data Rate:</label>
 			<select cvar="rate">
 				<option value="2500">&lt;=28.8k</option>
