@@ -6,26 +6,42 @@ class Attribute:
         self.name = name
         self.typ = typ
 
-    def get_change_enum_name(self):
-        return 'ATTRIB_' + self.name.upper()
-
     def get_setter_name(self):
         return 'Set' + self.name[0].upper() + self.name[1:]
+
+    def get_variable_name(self):
+        return 'a_' + self.name
+
+    def get_message(self):
+        return self.message
+
+    def set_message(self, message):
+        self.message = message
 
     def __repr__(self):
         return 'Attribute({}, {})'.format(self.name, self.typ)
 
 class Message:
-    def __init__(self, name, args):
+    def __init__(self, name, args, attrib = False):
         self.name = name
         self.args = args
         self.args_list = list(self.args.items())
+        self.attrib = attrib
 
     def get_num_args(self):
         return len(self.args_list)
 
     def get_enum_name(self):
-        return 'MSG_' + self.name.upper()
+        if not self.attrib:
+            return 'MSG_' + self.name.upper()
+        else:
+            return 'ATTRIB_' + self.name.upper()
+
+    def get_handler_name(self):
+        if not self.attrib:
+            return 'On' + self.name
+        else:
+            return 'Attrib' + self.name
 
     def get_function_args(self):
         args = []
@@ -35,13 +51,19 @@ class Message:
 
     def get_tuple_type(self):
         if self.args_list == []:
-            return 'nullptr_t'
+            return 'std::nullptr_t'
         return 'std::tuple<{}>'.format(', '.join(list(zip(*self.args_list))[1]))
 
     def get_args_names(self):
         if self.args_list == []:
             return ''
         return ', '.join(map(str, list(zip(*self.args_list))[0]))
+
+    def get_unpacked_tuple_args(self, tuple_name):
+        return ', '.join(['std::get<' + str(i) + '>(' + tuple_name +')' for i in range(len(self.args_list))])
+
+    def get_arg_number(self):
+        return len(self.args_list)
 
     def __repr__(self):
         return 'Message({}, {})'.format(self.name, self.args)
@@ -59,6 +81,9 @@ class Component:
 
     def gather_dependencies(self, attributes, messages, components):
         self.attribs = list(map(lambda attrib: attributes[attrib], self.attribs))
+        self.messages = list(map(lambda message: messages[message], self.messages))
+        for attrib in self.attribs:
+            self.messages.append(attrib.get_message())
 
     def gather_component_dependencies(self, components):
         self.requires = list(map(lambda component: components[component], self.requires))
@@ -76,8 +101,14 @@ class Component:
     def get_base_type_name(self):
         return self.name + "ComponentBase"
 
+    def get_variable_name(self):
+        return "c_" + self.get_type_name()
+
     def get_priority(self):
         return self.priority
+
+    def get_messages_to_handle(self):
+        return self.messages
 
     def get_param_declarations(self):
         return list(map(lambda p: p[1] + ' ' + p[0], self.param_list))
@@ -139,9 +170,38 @@ class Component:
         return "Component({}, ...)".format(self.name)
 
 class Entity:
-    def __init__(self, name, components):
+    def __init__(self, name, params):
         self.name = name
-        self.components = components
+        self.params = params
+        print(params)
+
+    def gather_components(self, components):
+        self.components = list(map(lambda component: components[component], self.params.keys()))
+        self.messages = set()
+        self.attributes = set()
+        for component in self.components:
+            self.messages |= set(component.get_messages_to_handle())
+            self.attributes |= set(component.get_attribs())
+        self.messages = list(self.messages)
+        self.attributes = list(self.attributes)
+
+    def get_type_name(self):
+        return self.name + "Entity"
+
+    def get_components(self):
+        return self.components
+
+    def get_attributes(self):
+        return self.attributes
+
+    def get_params(self):
+        return self.params
+
+    def get_messages_to_handle(self):
+        return self.messages
+
+    def get_message_handler_name(self, message):
+        return "h_" + self.name + "_" + message.name
 
 #############################################################################
 
@@ -164,6 +224,8 @@ def load_components(definitions):
     for (name, kwargs) in definitions['components'].items():
         if not 'attributes' in kwargs:
             kwargs['attributes'] = []
+        if not 'messages' in kwargs:
+            kwargs['messages'] = []
         if not 'parameters' in kwargs:
             kwargs['parameters'] = {}
         if not 'requires' in kwargs:
@@ -175,8 +237,8 @@ def load_components(definitions):
 
 def load_entities(definitions):
     entities = {}
-    for (name, components) in definitions['entities'].items():
-        entities[name] = Entity(name, components)
+    for (name, kwargs) in definitions['entities'].items():
+        entities[name] = Entity(name, kwargs['components'])
     return entities
 
 #############################################################################
@@ -215,6 +277,10 @@ if __name__ == '__main__':
     attribute_list = list(attributes.values())
 
     messages = load_messages(definitions)
+    for attribute in attribute_list:
+        message = Message(attribute.name, {"value": attribute.typ}, True)
+        messages["attr_" + attribute.name] = message
+        attribute.set_message(message)
     message_list = list(messages.values())
 
     components = load_components(definitions)
@@ -231,6 +297,9 @@ if __name__ == '__main__':
     for (i, component) in enumerate(sorted_components):
         component.priority = i
         component.gather_dependencies(attributes, messages, components)
+
+    for entity in entity_list:
+        entity.gather_components(components)
 
     template_env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
 

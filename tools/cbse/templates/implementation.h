@@ -6,9 +6,6 @@ enum {
     {% for message in messages%}
         {{message.get_enum_name()}},
     {% endfor %}
-    {% for attribute in attributes %}
-        {{attribute.get_change_enum_name()}},
-    {% endfor %}
 };
 
 // Component forward declarations
@@ -17,11 +14,15 @@ enum {
     class {{component.get_type_name()}};
 {% endfor %}
 
+class Entity;
+
+typedef void (*MessageHandler)(Entity*, const void*);
+
 // Base entity class
 
 class Entity {
     public:
-        Entity(void (**messageHandlers)(Entity*, const void*), const int* componentOffsets);
+        Entity(MessageHandler* messageHandlers, const int* componentOffsets);
 
         void SendMessage(int msg, const void* data);
         {% for message in messages %}
@@ -71,6 +72,27 @@ class Entity {
                 {{required.get_type_name()}}* Get{{required.get_type_name()}}() {
                     return r_{{required.get_type_name()}};
                 }
+            {% endfor %}
+
+    };
+{% endfor %}
+
+// Entity definitions
+
+{% for entity in entities %}
+    class {{entity.get_type_name()}}: public Entity {
+            static MessageHandler* messageHandlers;
+            static int* componentOffsets;
+
+            {% for attribute in entity.get_attributes() %}
+                {{attribute.typ}} {{attribute.get_variable_name()}};
+            {% endfor %}
+
+        public:
+            {{entity.get_type_name()}}();
+
+            {% for component in entity.get_components() %}
+                {{component.get_type_name()}}* {{component.get_variable_name()}};
             {% endfor %}
 
     };

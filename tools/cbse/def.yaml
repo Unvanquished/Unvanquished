@@ -28,7 +28,7 @@ components:
         messages:
             - Die
     Comp1:
-        dependencies:
+        requires:
             - Comp2
         inherits:
             - Comp3
@@ -41,8 +41,6 @@ components:
         inherits:
             - Comp3
     Comp2:
-        dependencies:
-            - Comp1
         messages:
             - Foo3
         attributes:
