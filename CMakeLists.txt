@@ -560,8 +560,10 @@ set( SHAREDLIST
 set( COMMONLIST
   ${COMMON_DIR}/Command.cpp
   ${COMMON_DIR}/Command.h
+  ${COMMON_DIR}/Clustering.h
   ${COMMON_DIR}/Cvar.cpp
   ${COMMON_DIR}/Cvar.h
+  ${COMMON_DIR}/DisjointSet.h
   ${COMMON_DIR}/FileSystem.cpp
   ${COMMON_DIR}/FileSystem.h
   ${COMMON_DIR}/IPC.h
@@ -860,6 +862,7 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_active.cpp
   ${GAMELOGIC_DIR}/game/Beacon.cpp 
   ${GAMELOGIC_DIR}/game/g_client.cpp
+  ${GAMELOGIC_DIR}/game/g_clustering.cpp
   ${GAMELOGIC_DIR}/game/g_cmds.cpp
   ${GAMELOGIC_DIR}/game/g_combat.cpp
   ${GAMELOGIC_DIR}/game/g_confidence.cpp

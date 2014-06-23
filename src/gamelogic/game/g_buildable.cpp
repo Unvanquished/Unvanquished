@@ -4798,6 +4798,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			break;
 	}
 
+	G_BaseClusteringUpdate(built);
+
 	return built;
 }
 

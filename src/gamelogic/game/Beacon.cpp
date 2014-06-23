@@ -58,7 +58,7 @@ namespace Beacon //this should eventually become a class
 
 	////// Beacon::New
 	// Create a new ET_BEACON entity
-	gentity_t *New( vec3_t origin, beaconType_t type, int data, 
+	gentity_t *New( const vec3_t origin, beaconType_t type, int data,
 	                team_t team, int owner )
 	{
 		gentity_t *ent;

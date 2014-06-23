@@ -4311,7 +4311,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 Cmd_Test_f
 =================
 */
-void Cmd_Test_f( gentity_t *humanPlayer )
+void Cmd_Test_f( gentity_t *player )
 {
 }
 
