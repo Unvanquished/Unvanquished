@@ -56,11 +56,19 @@
 			margin: 0px 0px;
 			padding: 0px 0px;
 		}
-		</style>
+		.emoticon
+		{
+			color: white;
+			height: 1em;
+			width: auto;
+		}</style>
 	</head>
 	<body template="unvwindow" id="help">
 		<tabset class="nested">
-			<tab>[official] Welcome</tab>
+			<tab>
+				<img class="emoticon" src="/emoticons/official_1x1" />
+				Welcome
+			</tab>
 			<panel>
 				In this section you will find a summary of major gameplay changes since Tremulous GPP.
 				<br />
@@ -71,7 +79,10 @@
 				<span class="red">20:00 UTC</span>
 				on the »Dev &amp; Testing Server«!
 			</panel>
-			<tab>[drill] Resources</tab>
+			<tab>
+				<img class="emoticon" src="/emoticons/drill_1x1" />
+				Resources
+			</tab>
 			<panel>
 				Building a structure requires build points, which are now a one-time
     payment – if the buildable gets destroyed, the build points spent on it
@@ -84,10 +95,17 @@
 				<br />
 				Read »Resource generation« for more.
 			</panel>
-			<tab>[leech] Resource generation</tab>
+			<tab>
+				<img class="emoticon" src="/emoticons/leech_1x1" />
+				Resource generation
+			</tab>
 			<panel>
-				Build points are acquired via two structures – the human [drill] drill and
-     the alien [leech] leech. These buildings need to be spread out for
+				Build points are acquired via two structures – the human
+				<img class="emoticon" src="/emoticons/drill_1x1" />
+				drill and
+     the alien
+				<img class="emoticon" src="/emoticons/leech_1x1" />
+				leech. These buildings need to be spread out for
     efficiency.
 				<br />
 				<br />
@@ -100,7 +118,10 @@
      acquire resources in a long lasting match. This replaces sudden death.
 				<br />
 			</panel>
-			<tab>[bsuit] Stages &amp; Momentum</tab>
+			<tab>
+				<img class="emoticon" src="/emoticons/bsuit_1x1" />
+				Stages &amp; Momentum
+			</tab>
 			<panel>
 				Building and destroying structures as well as killing enemies earns your
     team a new resource called momentum. If you gain enough momentum
@@ -111,9 +132,14 @@
 	lose access to new items. Existing upgrades will remain functional.
 				<br />
 			</panel>
-			<tab>[ckit] Human building 1</tab>
+			<tab>
+				<img class="emoticon" src="/emoticons/ckit_2x1" />
+				Human building 1
+			</tab>
 			<panel>
-				The [reactor] reactor now supplies power to every point on the map, but
+				The
+				<img class="emoticon" src="/emoticons/reactor_1x1" />
+				reactor now supplies power to every point on the map, but
     there is a limited amount of energy per region. Human buildables will
     compete for power and shut down if they don't get enough.
 				<br />
@@ -124,29 +150,45 @@
 				<br />
 				<br />
 				If you want to place a greater number of buildables in an area, you can
-    build a [repeater] repeater to increase the available power.
+    build a
+				<img class="emoticon" src="/emoticons/repeater_1x1" />
+				repeater to increase the available power.
     Be warned that repeaters will deal significant damage to close structures
     when they explode.
 			</panel>
-			<tab>[ckit] Human building 2</tab>
+			<tab>
+				<img class="emoticon" src="/emoticons/ckit_2x1" />
+				Human building 2
+			</tab>
 			<panel>
 				When the power consumption in a region is too high, the smallest possible
     number of buildables will power down so that the other strucutres have
     enough energy to remain operational.
 				<br />
 				<br />
-				The [drill] drill is the only buildable that requires a close repeater or
+				The
+				<img class="emoticon" src="/emoticons/drill_1x1" />
+				drill is the only buildable that requires a close repeater or
     reactor to work, since resources are transmitted via the power grid.
 				<br />
 				<br />
-				The [basilisk] basilisk consumes power, too, so it can shut down
+				The
+				<img class="emoticon" src="/emoticons/basilisk_1x1" />
+				basilisk consumes power, too, so it can shut down
     buildables by its presence. Improve the power supply with repeaters to
     prevent this.
 			</panel>
-			<tab>[flamer] Wildfire</tab>
+			<tab>
+				<img class="emoticon" src="/emoticons/flamer_2x1" />
+				Wildfire
+			</tab>
 			<panel>
-				Alien buildables can catch fire when they are hit with the [flamer] flame
-    thrower or the [grenade] firebomb.
+				Alien buildables can catch fire when they are hit with the
+				<img class="emoticon" src="/emoticons/flamer_2x1" />
+				flame
+    thrower or the
+				<img class="emoticon" src="/emoticons/grenade_1x1" />
+				firebomb.
 				<br />
 				<br />
 				If structures are built too close, the fire can jump over to the
@@ -157,23 +199,39 @@
     burning structures will keep itself hot enough for greater mayhem.
 				<br />
 				<br />
-				The [advgranger] advanced granger's spit attack can be used to put out
+				The
+				<img class="emoticon" src="/emoticons/advgranger_1x1" />
+				advanced granger's spit attack can be used to put out
     fires.
 			</panel>
-			<tab>[lcannon] Under attack</tab>
+			<tab>
+				<img class="emoticon" src="/emoticons/lcannon_2x1" />
+				Under attack
+			</tab>
 			<panel>
 				Destroying buildings will trigger ‘under attack’ warnings for the owning
-    team if the buildings are in range of (for humans) the [reactor] reactor
-    or a [repeater] repeater or (for aliens) the [overmind] Overmind.
+    team if the buildings are in range of (for humans) the
+				<img class="emoticon" src="/emoticons/reactor_1x1" />
+				reactor
+    or a
+				<img class="emoticon" src="/emoticons/repeater_1x1" />
+				repeater or (for aliens) the
+				<img class="emoticon" src="/emoticons/overmind_1x1" />
+				Overmind.
     The name of the location of the repeater will be given if available.
 				<br />
 				<br />
 				The reactor and the Overmind will issue warnings to the team when at
     75% health, at 25% health and when destroyed.
 			</panel>
-			<tab>[dretch] Advanced dretch</tab>
+			<tab>
+				<img class="emoticon" src="/emoticons/dretch_1x1" />
+				Advanced dretch
+			</tab>
 			<panel>
-				The [dretch] advanced dretch has a pounce ability. A pounce can be
+				The
+				<img class="emoticon" src="/emoticons/dretch_1x1" />
+				advanced dretch has a pounce ability. A pounce can be
 	started with ATTACK2.
 				<br />
 				<br />
@@ -187,7 +245,10 @@
     moving backwards, the dretch will dodge. When pouncing off a wall, it will
     attempt to go to the surface you are aiming at.
 			</panel>
-			<tab>[dev] Miscellaneous</tab>
+			<tab>
+				<img class="emoticon" src="/emoticons/dev_1x1" />
+				Miscellaneous
+			</tab>
 			<panel>
 				The human dodge has been removed, stamina has been increased.
 				<br />
