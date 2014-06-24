@@ -419,7 +419,7 @@ background-color:#227c77FF;
 	background-center-image: /ui/assets/window/line.png stretch;
 	background-z-index: 0;
 	overflow: hidden auto;
-	
+
 }
 
 /* circlemenu */
@@ -547,6 +547,7 @@ circlemenu
 .infobox p.text{
 	background:#25252599;
 	padding:5px;
+	font-size: 0.9em;
 }
 
 
