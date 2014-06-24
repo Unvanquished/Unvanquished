@@ -1725,13 +1725,11 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
 		{
-			if ( BG_Buildable( i )->team == TEAM_ALIENS &&
-			        BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
-			        !BG_BuildableDisabled( i ) &&
-			        BG_BuildableUnlocked( i ) )
+			if ( BG_Buildable( i )->team == TEAM_ALIENS )
 			{
 				buf[ 0 ] = '\0';
 
+				Info_SetValueForKey( buf, "num", va( "%d", (int) i ), qfalse );
 				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, qfalse );
 				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
 				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, qfalse );
