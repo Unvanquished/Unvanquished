@@ -40,5 +40,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "IPC.h"
 #include "FileSystem.h"
 #include "CommonSyscalls.h"
+#include "DisjointSets.h"
 
 #endif // COMMON_COMMON_H_

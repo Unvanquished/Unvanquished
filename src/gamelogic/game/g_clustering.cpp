@@ -64,14 +64,6 @@ class EntityClustering : Cluster::EuclideanClustering<gentity_t*, 3> {
 			return super::end();
 		}
 
-		inline iter_type cbegin() {
-			return super::cbegin();
-		}
-
-		inline iter_type cend() {
-			return super::cend();
-		}
-
 		/**
 		 * @brief An edge visibility check that checks for PVS visibility.
 		 */
@@ -82,19 +74,21 @@ class EntityClustering : Cluster::EuclideanClustering<gentity_t*, 3> {
 
 /**
  * @brief A wrapper around EntityClustering that keeps track of the bases of both teams.
+ * @todo This is in a proof of concept state, improve the integration in the beacon system.
  */
-class BaseClustering {
+class BaseClusterings {
 	public:
 		EntityClustering alienBases;
 		EntityClustering humanBases;
 
-		BaseClustering(float laxity = 2.5, std::function<bool(gentity_t*, gentity_t*)>
-		               edgeVisCallback = EntityClustering::edgeVisPVS)
+		BaseClusterings(float laxity = 2.5, std::function<bool(gentity_t*, gentity_t*)>
+		                edgeVisCallback = EntityClustering::edgeVisPVS)
 		    : alienBases(laxity, edgeVisCallback), humanBases(laxity, edgeVisCallback)
 		{}
 
 		/**
 		 * @brief Adds a buildable to the clusters or updates its location.
+		 * @todo Remove workarounds for base/outpost beacons.
 		 */
 		void Update(gentity_t *ent) {
 			EntityClustering *clusters = TeamClustering(ent);
@@ -110,11 +104,12 @@ class BaseClustering {
 				                      ENTITYNUM_NONE);
 			}
 
-			AfterChangeHook(ent->buildableTeam);
+			PostChangeHook(ent->buildableTeam);
 		}
 
 		/**
 		 * @brief Removes a buildable from the clusters.
+		 * @todo Remove workarounds for base/outpost beacons.
 		 */
 		void Remove(gentity_t *ent) {
 			EntityClustering *clusters = TeamClustering(ent);
@@ -129,11 +124,11 @@ class BaseClustering {
 				                      ENTITYNUM_NONE);
 			}
 
-			AfterChangeHook(ent->buildableTeam);
+			PostChangeHook(ent->buildableTeam);
 		}
 
 		/**
-		 * @brief Resets the structure.
+		 * @brief Resets the clusterings.
 		 */
 		void Clear() {
 			alienBases.Clear();
@@ -148,16 +143,16 @@ class BaseClustering {
 				team_t team = (team_t)teamNum;
 				int clusterNum = 1;
 
-				for (EntityClustering::cluster_type *cluster : *TeamClustering(team)) {
-					EntityClustering::point_type center = cluster->GetCenter();
+				for (EntityClustering::cluster_type cluster : *TeamClustering(team)) {
+					EntityClustering::point_type center = cluster.GetCenter();
 
 					Com_Printf("%s base #%d (%lu buildings): Center: %.0f %.0f %.0f. "
 					           "Avg. distance: %.0f. Standard deviation: %.0f.\n",
-							   BG_TeamName(team), clusterNum, cluster->size(),
+							   BG_TeamName(team), clusterNum, cluster.size(),
 					           center[0], center[1], center[2],
-					           cluster->GetAverageDistance(), cluster->GetStandardDeviation());
+					           cluster.GetAverageDistance(), cluster.GetStandardDeviation());
 
-					Beacon::Propagate(Beacon::New(cluster->GetCenter().coords, BCT_POINTER, 0, team,
+					Beacon::Propagate(Beacon::New(cluster.GetCenter().coords, BCT_POINTER, 0, team,
 					                              ENTITYNUM_NONE));
 
 					clusterNum++;
@@ -169,12 +164,12 @@ class BaseClustering {
 		/**
 		 * @brief Called after calls to Update and Remove (but not Clear).
 		 */
-		void AfterChangeHook(team_t team) {
-			for (EntityClustering::cluster_type *cluster : *TeamClustering(team)) {
-				EntityClustering::point_type center = cluster->GetCenter();
+		void PostChangeHook(team_t team) {
+			for (EntityClustering::cluster_type cluster : *TeamClustering(team)) {
+				EntityClustering::point_type center = cluster.GetCenter();
 
 				beaconType_t type = BCT_OUTPOST;
-				for (EntityClustering::cluster_type::record_type record : *cluster) {
+				for (EntityClustering::cluster_type::record_type record : cluster) {
 					// TODO: Use G_IsMainStructure when merged.
 					if (record.first->s.modelindex == BA_A_OVERMIND ||
 					    record.first->s.modelindex == BA_H_REACTOR) {
@@ -185,12 +180,18 @@ class BaseClustering {
 
 				// TODO: Enneract: Move code from Cmd_Beaconf_f into helpers in a central location
 				//       so it can be used from elsewhere without knowledge of the beacon internals.
+				// TODO: Enneract: Either make the beacon spawn inside a room even if the center
+				//       point is inside the world geometry or make RemoveSimiliar work with beacons
+				//       stuck inside the world. Right now we have a beacon leak. :)
 				Beacon::RemoveSimilar(center.coords, type, 0, team, ENTITYNUM_NONE);
 				Beacon::Propagate(Beacon::New(center.coords, type, 0, team, ENTITYNUM_NONE));
 			}
 	}
 
 	private:
+		/**
+		 * @brief Retrieves the clustering for a team.
+		 */
 		inline EntityClustering* TeamClustering(team_t team) {
 			switch (team) {
 				case TEAM_ALIENS: return &alienBases;
@@ -199,25 +200,41 @@ class BaseClustering {
 			}
 		}
 
+		/**
+		 * @brief Retreives the clustering for the team that owns the entity.
+		 */
 		inline EntityClustering* TeamClustering(gentity_t *ent) {
 			return TeamClustering(ent->buildableTeam);
 		}
 };
 
-BaseClustering baseClustering = BaseClustering();
+/** The global base clusterings for both teams. */
+BaseClusterings baseClusterings = BaseClusterings();
 
-void G_InitBaseClustering() {
-	baseClustering.Clear();
+/**
+ * @brief Resets the base clusterings.
+ */
+void G_InitBaseClusterings() {
+	baseClusterings.Clear();
 }
 
-void G_DebugBaseClustering() {
-	baseClustering.Debug();
+/**
+ * @brief Prints debugging information and spawns pointer beacons for the base clusterings.
+ */
+void G_DebugBaseClusterings() {
+	baseClusterings.Debug();
 }
 
-void G_BaseClusteringUpdate(gentity_t *ent) {
-	baseClustering.Update(ent);
+/**
+ * @brief Adds a buildable to the base clusterings or updates its location.
+ */
+void G_BaseClusteringsUpdate(gentity_t *ent) {
+	baseClusterings.Update(ent);
 }
 
-void G_BaseClusteringRemove(gentity_t *ent) {
-	baseClustering.Remove(ent);
+/**
+ * @brief Removes a buildable from the base clusterings.
+ */
+void G_BaseClusteringsRemove(gentity_t *ent) {
+	baseClusterings.Remove(ent);
 }

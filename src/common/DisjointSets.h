@@ -28,46 +28,52 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#pragma once
-
-#include <map>
-#include <set>
+#ifndef COMMON_DISJOINTSETS_H_
+#define COMMON_DISJOINTSETS_H_
 
 /**
- * @brief A simple disjoint set container.
+ * @brief A simple container of disjoint sets.
  */
-template<class ELEMENT> class DisjointSet {
+template<typename Element> class DisjointSets {
 	public:
-		typedef std::set<ELEMENT> set_type;
-		typedef typename std::map<ELEMENT, set_type*>::const_iterator iter_type;
+		typedef std::unordered_set<Element>                                    set_type;
+		typedef typename std::unordered_map<Element, set_type>::const_iterator iter_type;
 
-		DisjointSet() = default;
-
-		DisjointSet(const DisjointSet& other) {
-			for (auto pair : other.sets) {
-				sets.emplace(pair.first, new set_type(pair.second->begin(), pair.second->end()));
-			}
-			_size = other._size;
-		}
+		DisjointSets()
+		    : totalSize(0)
+		{}
 
 		/**
 		 * @brief Creates a new set with a single element. Careful: Does not enforce disjointness!
 		 * @return The representative element for the set, which happens to be the parameter.
 		 */
-		ELEMENT MakeSet(const ELEMENT x) {
-			set_type *newSet = new set_type();
-			newSet->insert(x);
-			sets.emplace(x, newSet);
-			_size++;
+		Element MakeSetFast(const Element& x) {
+			sets.insert(std::make_pair(x, set_type{x}));
+			totalSize++;
 			return x;
+		}
+
+		/**
+		 * @brief Creates a new set with a single element. Enforces disjointness at some cost.
+		 * @return The representative element for the set that contains x after the operation.
+		 */
+		Element MakeSetSecure(const Element& x) {
+			Element& xRepr = Find(x);
+			if (xRepr == nullptr) {
+				sets.insert(std::make_pair(x, set_type{x}));
+				totalSize++;
+				return x;
+			} else {
+				return xRepr;
+			}
 		}
 
 		/**
 		 * @return The representative of the set containing x or nullptr.
 		 */
-		ELEMENT Find(const ELEMENT x) const {
-			for (auto pair : sets) {
-				if (pair.second->find(x) != pair.second->end()) {
+		Element Find(const Element& x) const {
+			for (auto& pair : sets) {
+				if (pair.second.find(x) != pair.second.end()) {
 					return pair.first;
 				}
 			}
@@ -78,15 +84,14 @@ template<class ELEMENT> class DisjointSet {
 		 * @brief Unites the sets represented by x and y. The new representative is x.
 		 * @return The new representative.
 		 */
-		ELEMENT Link(const ELEMENT x, const ELEMENT y) {
+		Element Link(const Element& x, const Element& y) {
 			if (x != y) {
-				set_type *xSet = sets.at(x);
-				set_type *ySet = sets.at(y);
-				_size -= xSet->size() + ySet->size();
-				xSet->insert(ySet->cbegin(), ySet->cend());
+				set_type& xSet = sets.at(x);
+				set_type& ySet = sets.at(y);
+				totalSize -= xSet.size() + ySet.size();
+				xSet.insert(ySet.begin(), ySet.end());
 				sets.erase(y);
-				delete ySet;
-				_size += xSet->size();
+				totalSize += xSet.size();
 			}
 			return x;
 		}
@@ -94,50 +99,45 @@ template<class ELEMENT> class DisjointSet {
 		/**
 		 * @brief Finds the representative elements and unites their sets.
 		 *        The same as Link(Find(x), Find(y)).
+		 * @return The new representative.
 		 */
-		inline void Union(const ELEMENT x, const ELEMENT y) {
-			Link(Find(x), Find(y));
+		Element Union(const Element& x, const Element& y) {
+			return Link(Find(x), Find(y));
 		}
 
 		/**
 		 * @return Whether the elements are in the same set.
 		 */
-		bool Connected(const ELEMENT x, const ELEMENT y) {
-			ELEMENT xRepresentative = Find(x);
-			return (xRepresentative == Find(y) && xRepresentative != nullptr);
+		bool Connected(const Element& x, const Element& y) {
+			Element& xRepr = Find(x);
+			return (xRepr != nullptr && xRepr == Find(y));
 		}
 
-		inline const iter_type begin() const {
-			return sets.cbegin();
+		iter_type begin() const {
+			return sets.begin();
 		}
 
-		inline const iter_type cbegin() const {
-			return sets.cbegin();
-		}
-
-		inline const iter_type end() const {
-			return sets.cend();
-		}
-
-		inline const iter_type cend() const {
-			return sets.cend();
+		iter_type end() const {
+			return sets.end();
 		}
 
 		/**
 		 * @return The size of the container as seen when iterating.
 		 */
-		std::size_t size() {
+		size_t size() {
 			return sets.size();
 		}
 
 		/**
 		 * @return The total amount of elements stored.
 		 */
-		std::size_t TotalSize() {
-			return _size;
+		size_t TotalSize() {
+			return totalSize;
 		}
 
 	protected:
-		std::map<ELEMENT, set_type*> sets;
-		std::size_t _size;
+		std::unordered_map<Element, set_type> sets;
+		size_t totalSize;
 };
+
+#endif // COMMON_DISJOINTSETS_H_

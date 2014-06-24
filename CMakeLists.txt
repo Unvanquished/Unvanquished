@@ -563,7 +563,7 @@ set( COMMONLIST
   ${COMMON_DIR}/Clustering.h
   ${COMMON_DIR}/Cvar.cpp
   ${COMMON_DIR}/Cvar.h
-  ${COMMON_DIR}/DisjointSet.h
+  ${COMMON_DIR}/DisjointSets.h
   ${COMMON_DIR}/FileSystem.cpp
   ${COMMON_DIR}/FileSystem.h
   ${COMMON_DIR}/IPC.h

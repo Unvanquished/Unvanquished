@@ -28,43 +28,40 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#pragma once
+#ifndef COMMON_CLUSTERING_H_
+#define COMMON_CLUSTERING_H_
 
 #include <vector>
 #include <map>
-#include <set>
+#include <unordered_map>
+#include <unordered_set>
 #include <cmath>
+#include <utility>
 
-#include "DisjointSet.h"
+#include "DisjointSets.h"
 
 namespace Cluster {
 	/**
 	 * @brief A point in euclidean space.
 	 * @todo Use engine's vector class once available.
 	 */
-	template <int DIM>
+	template <int Dim>
 	class Point {
 		public:
-			float coords[DIM];
+			float coords[Dim];
 
 			Point() = default;
 
-			Point(const float vec[DIM]) {
-				for (int i = 0; i < DIM; i++) {
-					this->coords[i] = vec[i];
-				}
+			Point(const float vec[Dim]) {
+				for (int i = 0; i < Dim; i++) coords[i] = vec[i];
 			}
 
 			Point(const Point &other) {
-				for (int i = 0; i < DIM; i++) {
-					this->coords[i] = other.coords[i];
-				}
+				for (int i = 0; i < Dim; i++) coords[i] = other.coords[i];
 			}
 
 			void Clear() {
-				for (int i = 0; i < DIM; i++) {
-					coords[i] = 0;
-				}
+				for (int i = 0; i < Dim; i++) coords[i] = 0;
 			}
 
 			float& operator[](int i) {
@@ -75,82 +72,60 @@ namespace Cluster {
 				return coords[i];
 			}
 
-			Point<DIM> operator+(const Point<DIM> &other) const {
-				Point<DIM> result = Point<DIM>();
-				for (int i = 0; i < DIM; i++) {
-					result[i] = coords[i] + other[i];
-				}
+			Point<Dim> operator+(const Point<Dim> &other) const {
+				Point<Dim> result;
+				for (int i = 0; i < Dim; i++) result[i] = coords[i] + other[i];
 				return result;
 			}
 
-			Point<DIM> operator-(const Point<DIM> &other) const {
-				Point<DIM> result = Point<DIM>();
-				for (int i = 0; i < DIM; i++) {
-					result[i] = coords[i] - other[i];
-				}
+			Point<Dim> operator-(const Point<Dim> &other) const {
+				Point<Dim> result;
+				for (int i = 0; i < Dim; i++) result[i] = coords[i] - other[i];
 				return result;
 			}
 
-			Point<DIM> operator*(float value) const {
-				Point<DIM> result = Point<DIM>();
-				for (int i = 0; i < DIM; i++) {
-					result[i] = coords[i] / value;
-				}
+			Point<Dim> operator*(float value) const {
+				Point<Dim> result;
+				for (int i = 0; i < Dim; i++) result[i] = coords[i] * value;
 				return result;
 			}
 
-			Point<DIM> operator/(float value) const {
-				Point<DIM> result = Point<DIM>();
-				for (int i = 0; i < DIM; i++) {
-					result[i] = coords[i] / value;
-				}
+			Point<Dim> operator/(float value) const {
+				Point<Dim> result;
+				for (int i = 0; i < Dim; i++) result[i] = coords[i] / value;
 				return result;
 			}
 
-			void operator+=(const Point<DIM> &other) {
-				for (int i = 0; i < DIM; i++) {
-					coords[i] += other[i];
-				}
+			void operator+=(const Point<Dim> &other) {
+				for (int i = 0; i < Dim; i++) coords[i] += other[i];
 			}
 
-			void operator-=(const Point<DIM> &other) {
-				for (int i = 0; i < DIM; i++) {
-					coords[i] -= other[i];
-				}
+			void operator-=(const Point<Dim> &other) {
+				for (int i = 0; i < Dim; i++) coords[i] -= other[i];
 			}
 
 			void operator*=(float value) {
-				for (int i = 0; i < DIM; i++) {
-					coords[i] *= value;
-				}
+				for (int i = 0; i < Dim; i++) coords[i] *= value;
 			}
 
 			void operator/=(float value) {
-				for (int i = 0; i < DIM; i++) {
-					coords[i] /= value;
-				}
+				for (int i = 0; i < Dim; i++) coords[i] /= value;
 			}
 
-			bool operator==(const Point<DIM> &other) const {
-				for (int i = 0; i < DIM; i++) {
-					if (coords[i] != other[i]) {
-						return false;
-					}
-				}
+			bool operator==(const Point<Dim> &other) const {
+				for (int i = 0; i < Dim; i++) if (coords[i] != other[i]) return false;
 				return true;
 			}
 
-			inline float Dot(const Point &other) const {
+			float Dot(const Point &other) const {
 				float product = 0;
-				for (int i = 0; i < DIM; i++) {
-					product += coords[i] * other[i];
-				}
+				for (int i = 0; i < Dim; i++) product += coords[i] * other[i];
 				return product;
 			}
 
-			inline float Distance(const Point &other) const {
+			float Distance(const Point &other) const {
 				float distanceSquared = 0;
-				for (int i = 0; i < DIM; i++) {
+				for (int i = 0; i < Dim; i++) {
 					float delta = coords[i] - other[i];
 					distanceSquared += delta * delta;
 				}
@@ -159,67 +134,57 @@ namespace Cluster {
 	};
 
 	/**
-	 * A cluster of objects with a location. Technically an adaptor for std::map.
+	 * @brief A cluster of objects with a location. Technically an adaptor for std::unordered_map.
 	 */
-	template <class LOCATION, class DATA>
+	template <typename Location, typename Data>
 	class Cluster {
 		public:
-			typedef std::pair<DATA, LOCATION> record_type;
-			typedef typename std::map<DATA, LOCATION>::const_iterator iter_type;
+			typedef std::pair<Data, Location>                                   record_type;
+			typedef typename std::unordered_map<Data, Location>::const_iterator iter_type;
 
 			Cluster() = default;
 
-			inline void Update(const DATA data, const LOCATION location) {
-				records.emplace(data, location);
+			void Update(const Data data, const Location location) {
+				records.insert(std::make_pair(data, location));
 			}
 
-			inline void Remove(const DATA data) {
+			void Remove(const Data data) {
 				records.erase(data);
 			}
 
-			inline void Clear() {
+			void Clear() {
 				records.clear();
 			}
 
-			inline iter_type begin() const noexcept {
+			iter_type begin() const noexcept {
 				return records.begin();
 			}
 
-			inline iter_type end() const noexcept {
+			iter_type end() const noexcept {
 				return records.end();
 			}
 
-			inline iter_type cbegin() const noexcept {
-				return records.cbegin();
-			}
-
-			inline iter_type cend() const noexcept {
-				return records.cend();
-			}
-
-			inline iter_type find(const DATA &key) const {
+			iter_type find(const Data &key) const {
 				return records.find(key);
 			}
 
-			inline size_t size() const {
+			size_t size() const {
 				return records.size();
 			}
 
 		protected:
-			/**
-			 * @brief Maps data objects to their location.
-			 */
-			std::map<DATA, LOCATION> records;
+			/** Maps data objects to their location. */
+			std::unordered_map<Data, Location> records;
 	};
 
 	/**
 	 * @brief A cluster of objects located in euclidean space.
 	 */
-	template <class DATA, int DIM>
-	class EuclideanCluster : public Cluster<Point<DIM>, DATA> {
+	template <typename Data, int Dim>
+	class EuclideanCluster : public Cluster<Point<Dim>, Data> {
 		public:
-			typedef Point<DIM>                  point_type;
-			typedef Cluster<point_type, DATA>   super;
+			typedef Point<Dim>                  point_type;
+			typedef Cluster<point_type, Data>   super;
 			typedef typename super::record_type record_type;
 
 			EuclideanCluster() = default;
@@ -227,7 +192,7 @@ namespace Cluster {
 			/**
 			 * @brief Updates the cluster while keeping track of metadata.
 			 */
-			void Update(const DATA data, const point_type location) {
+			void Update(const Data data, const point_type location) {
 				super::Update(data, location);
 				dirty = true;
 			}
@@ -235,7 +200,7 @@ namespace Cluster {
 			/**
 			 * @brief Removes data from the cluster while keeping track of metadata.
 			 */
-			void Remove(const DATA data) {
+			void Remove(const Data data) {
 				super::Remove(data);
 				dirty = true;
 			}
@@ -249,7 +214,7 @@ namespace Cluster {
 			}
 
 			/**
-			 * @return The average distance from the center.
+			 * @return The average distance of objects from the center.
 			 */
 			float GetAverageDistance() {
 				if (dirty) UpdateMetadata();
@@ -276,7 +241,6 @@ namespace Cluster {
 				standardDeviation = 0;
 
 				int size = super::records.size();
-
 				if (size == 0) return;
 
 				// Find center
@@ -299,73 +263,80 @@ namespace Cluster {
 				standardDeviation = std::sqrt(standardDeviation / size);
 			}
 
+			/** The cluster's center point. */
 			point_type center;
-			float      averageDistance;
-			float      standardDeviation;
-			bool       dirty;
+
+			/** The average distance of objects from the cluster's center. */
+			float averageDistance;
+
+			/** The standard deviation from the average distance to the center. */
+			float standardDeviation;
+
+			/** Whether metadata needs to be recalculated. */
+			bool dirty;
 	};
 
 	/**
 	 * @brief A self-organizing container of clusters of objects located in euclidean space.
 	 *
 	 * The clustering algorihm is based on Kruskal's algorithm for minimum spanning trees.
-	 * In the minimum spanning tree of all edges that pass the optional visibility check, delete
+	 * In the minimum spanning tree of all edges that pass the optional visibility check, delete the
+	 * edges that are longer than the average plus the standard deviation multiplied by a "laxity"
+	 * factor. The remaining trees span the clusters.
 	 */
-	template <class DATA, int DIM>
+	template <typename Data, int Dim>
 	class EuclideanClustering {
 		public:
-			typedef Point<DIM>                  point_type;
-			typedef EuclideanCluster<DATA, DIM> cluster_type;
-			typedef DATA                        vertex_type;
-			typedef std::pair<DATA, point_type> vertex_record_type;
-			typedef std::pair<DATA, DATA>       edge_type;
-			typedef typename std::vector<cluster_type*>::const_iterator iter_type;
+			typedef Point<Dim>                                         point_type;
+			typedef EuclideanCluster<Data, Dim>                        cluster_type;
+			typedef Data                                               vertex_type;
+			typedef std::pair<Data, point_type>                        vertex_record_type;
+			typedef std::pair<Data, Data>                              edge_type;
+			typedef std::pair<float, edge_type>                        edge_record_type;
+			typedef typename std::vector<cluster_type>::const_iterator iter_type;
 
 			/**
-			 * @brief Edges are stored in multimaps with their length as the key, so that they are
-			 *        implicitly sorted.
+			 * @param laxity Factor that scales the allowed deviation from the average edge length.
+			 * @param edgeVisCallback Relation that decides whether an edge should be considered.
 			 */
-			typedef std::pair<float, edge_type> edge_record_type;
-
 			EuclideanClustering(float laxity = 1.0,
-			                    std::function<bool(DATA, DATA)> edgeVisCallback = nullptr)
+			                    std::function<bool(Data, Data)> edgeVisCallback = nullptr)
 			    : laxity(laxity), edgeVisCallback(edgeVisCallback)
 			{}
 
 			/**
 			 * @brief Adds or updates the location of objects.
 			 */
-			void Update(const DATA data, const Point<DIM> location) {
-				// TODO: Check if the location has actually changed
+			void Update(const Data data, const Point<Dim> location) {
+				// TODO: Check if the location has actually changed.
 
-				// Remove the object first
+				// Remove the object first.
 				Remove(data);
 
-				// Iterate over all other objects and save the distance
+				// Iterate over all other objects and save the distance.
 				for ( vertex_record_type record : records ) {
 					if (edgeVisCallback == nullptr || edgeVisCallback(data, record.first)) {
 						float distance = location.Distance(record.second);
-						edges.emplace(distance, edge_type(data, record.first));
+						edges.insert(std::make_pair(distance, edge_type(data, record.first)));
 					}
 				}
 
-				// The object is now known
-				records.emplace(data, location);
+				// The object is now known.
+				records.insert(std::make_pair(data, location));
 
-				// Rebuild MST and clusters on next read access
+				// Rebuild MST and clusters on next read access.
 				dirtyMST = true;
 			}
 
 			/**
 			 * @brief Removes objects.
 			 */
-			void Remove(const DATA data) {
-				// Check if we even know the object to avoid unnecessary O(n²) iteration.
+			void Remove(const Data data) {
+				// Check if we even know the object in O(n) to avoid unnecessary O(m) iteration.
 				if (records.find(data) == records.end()) return;
 
 				// Delete all edges that involve the object.
-				for (typename std::map<float, edge_type>::iterator edge = edges.begin();
-				     edge != edges.end(); ) {
+				for (auto edge = edges.begin(); edge != edges.end(); ) {
 				    if ((*edge).second.first == data || (*edge).second.second == data) {
 						edge = edges.erase(edge);
 					} else {
@@ -394,22 +365,14 @@ namespace Cluster {
 				dirtyClusters = true;
 			}
 
-			iter_type cbegin() {
+			iter_type begin() {
 				if (dirtyMST || dirtyClusters) GenerateClusters();
-				return clusters.cbegin();
+				return clusters.begin();
 			}
 
-			iter_type cend() {
+			iter_type end() {
 				if (dirtyMST || dirtyClusters) GenerateClusters();
-				return clusters.cend();
-			}
-
-			inline iter_type begin() {
-				return cbegin();
-			}
-
-			inline iter_type end() {
-				return cend();
+				return clusters.end();
 			}
 
 		private:
@@ -417,7 +380,7 @@ namespace Cluster {
 			 * @brief Finds the minimum spanning tree in the graph defined by edges, where edge
 			 *        weight is the euclidean distance of the data object's location.
 			 *
-			 * @details Uses Kruskal's algorithm.
+			 * Uses Kruskal's algorithm.
 			 */
 			void FindMST() {
 				// Clear an existing MST.
@@ -426,26 +389,26 @@ namespace Cluster {
 				mstStandardDeviation = 0;
 
 				// Track connected components for circle prevention.
-				DisjointSet<DATA> components = DisjointSet<DATA>();
+				DisjointSets<Data> components = DisjointSets<Data>();
 
 				// The edges are implicitely sorted by distance, iterate in ascending order.
 				for (edge_record_type edgeRecord : edges) {
 					float distance  = edgeRecord.first;
-					edge_type *edge = &edgeRecord.second;
+					edge_type &edge = edgeRecord.second;
 
 					// Stop if spanning tree is complete.
 					if ((mstEdges.size() + 1) == records.size()) break;
 
 					// Get component representatives, if available.
-					DATA firstVertexRepr  = components.Find(edge->first);
-					DATA secondVertexRepr = components.Find(edge->second);
+					Data firstVertexRepr  = components.Find(edge.first);
+					Data secondVertexRepr = components.Find(edge.second);
 
 					// Otheriwse add vertices to new components.
 					if (firstVertexRepr == nullptr) {
-						firstVertexRepr = components.MakeSet(edge->first);
+						firstVertexRepr = components.MakeSetFast(edge.first);
 					}
 					if (secondVertexRepr == nullptr) {
-						secondVertexRepr = components.MakeSet(edge->second);
+						secondVertexRepr = components.MakeSetFast(edge.second);
 					}
 
 					// Don't create circles.
@@ -455,7 +418,7 @@ namespace Cluster {
 					components.Link(firstVertexRepr, secondVertexRepr);
 
 					// Add the edge to the MST.
-					mstEdges.emplace(distance, *edge);
+					mstEdges.insert(std::make_pair(distance, edge));
 
 					// Add distance to average.
 					mstAverageDistance += distance;
@@ -481,9 +444,9 @@ namespace Cluster {
 			/**
 			 * @brief Generates the clusters.
 			 *
-			 * @details In the miminimum spanning tree, it cuts the edges that are longer than a
-			 *          threshold (average_edge_length + standard_deviation * laxity).
-			 *          Every tree in the resulting forest spans a cluster.
+			 * In the minimum spanning tree, delete the edges that are longer than the average plus
+			 * the standard deviation multiplied by a "laxity" factor. The remaining trees span the
+			 * clusters.
 			 */
 			void GenerateClusters() {
 				if (dirtyMST) {
@@ -507,112 +470,91 @@ namespace Cluster {
 				}
 
 				// Retreive the connected components, excluding isolated vertices.
-				DisjointSet<DATA> components = DisjointSet<DATA>();
+				DisjointSets<Data> components = DisjointSets<Data>();
 				for (edge_record_type edgeRecord : forestEdges) {
-					edge_type *edge = &edgeRecord.second;
+					edge_type &edge = edgeRecord.second;
 
 					// Get component representatives, if available.
-					DATA firstVertexRepr  = components.Find(edge->first);
-					DATA secondVertexRepr = components.Find(edge->second);
+					Data firstVertexRepr = components.Find(edge.first);
+					Data secndVertexRepr = components.Find(edge.second);
 
 					// Otheriwse add vertices to new components.
 					if (firstVertexRepr == nullptr) {
-						firstVertexRepr = components.MakeSet(edge->first);
+						firstVertexRepr = components.MakeSetFast(edge.first);
 					}
-					if (secondVertexRepr == nullptr) {
-						secondVertexRepr = components.MakeSet(edge->second);
+					if (secndVertexRepr == nullptr) {
+						secndVertexRepr = components.MakeSetFast(edge.second);
 					}
 
 					// Mark components as connected.
-					components.Link(firstVertexRepr, secondVertexRepr);
+					components.Link(firstVertexRepr, secndVertexRepr);
 				}
 
 				// Keep track of non-clustered vertices.
-				std::set<DATA> remainingVertices = std::set<DATA>();
+				std::unordered_set<Data> remainingVertices = std::unordered_set<Data>();
 				for (vertex_record_type record : records) {
 					remainingVertices.insert(record.first);
 				}
 
 				// Build a cluster for each connected component, excluding isolated vertices.
 				for (auto component : components) {
-					cluster_type *newCluster = new cluster_type();
-					for (DATA vertex : *component.second) {
-						newCluster->Update(vertex, records[vertex]);
+					cluster_type newCluster;
+					for (Data vertex : component.second) {
+						newCluster.Update(vertex, records[vertex]);
 						remainingVertices.erase(vertex);
 					}
 					clusters.push_back(newCluster);
 				}
 
 				// The remaining vertices are isolated, they go in a cluster of their own.
-				for (DATA vertex : remainingVertices) {
-					cluster_type *newCluster = new cluster_type();
-					newCluster->Update(vertex, records[vertex]);
+				for (Data vertex : remainingVertices) {
+					cluster_type newCluster;
+					newCluster.Update(vertex, records[vertex]);
 					clusters.push_back(newCluster);
 				}
 
 				dirtyClusters = false;
 			}
 
-			/**
-			 * @brief The generated clusters.
-			 */
-			std::vector<cluster_type*> clusters;
+			/** The generated clusters. */
+			std::vector<cluster_type> clusters;
 
-			/**
-			 * @brief Maps data objects to their location.
-			 */
-			std::map<DATA, point_type> records;
+			/** Maps data objects to their location. */
+			std::unordered_map<Data, point_type> records;
 
-			/**
-			 * @brief The edges of a non-reflexive but otherwise complete graph of all data objects,
-			 *        implicitly sorted by distance.
-			 */
+			/**  The edges of a non-reflexive graph of the data objects, sorted by distance. */
 			std::multimap<float, edge_type> edges;
 
-			/**
-			 * @brief The edges of the minimum spanning tree in the graph defined by @c edges,
-			 *        implicitly sorted by distance.
-			 */
+			/** The edges of the minimum spanning tree in the graph defined by edges, sorted by
+			 *  distance. Is a subset of edges. */
 			std::multimap<float, edge_type> mstEdges;
 
-			/**
-			 * @brief The edges of a forest of spanning trees, each connected component spans a
-			 *        cluster. Is a subset of `mstEdges`.
-			 */
+			/** The edges of a forest of which each connected component spans a cluster. Is a subset
+			 *  of mstEdges. */
 			std::multimap<float, edge_type> forestEdges;
 
-			/**
-			 * @brief The average edge length in the minimum spanning tree.
-			 */
+			/** The average edge length in the minimum spanning tree. */
 			float mstAverageDistance;
 
-			/**
-			 * @brief The standard deviation of the edge length in the minimum spanning tree.
-			 */
+			/** The standard deviation of the edge length in the minimum spanning tree. */
 			float mstStandardDeviation;
 
-			/**
-			 * @brief Whether clusters need to be rebuild on read acces. Does not imply regeneration
-			 *        of the minimum spanning tree.
-			 */
+			/** Whether clusters need to be rebuilt on read acces. Does not imply regeneration of
+			 *  the minimum spanning tree. */
 			bool dirtyClusters;
 
-			/**
-			 * @brief Whether the minimum spanning tree needs to be rebuild on read access. Implies
-			 *        regeneration of clusters.
-			 */
+			/** Whether the minimum spanning tree needs to be rebuild on read access. Implies
+			 *  regeneration of clusters. */
 			bool dirtyMST;
 
-			/**
-			 * @brief A factor that scales the allowed deviation from the average edge length when
-			 *        splitting the minimum spanning tree into cluster spanning trees.
-			 */
+			/** A factor that scales the allowed deviation from the average edge length when
+			 *  splitting the minimum spanning tree into cluster spanning trees. */
 			float laxity;
 
-			/**
-			 * @brief A callback function that decides whether an edge should be considered for the
-			 *        initial MST. Note that edges are bidirectional.
-			 */
-			std::function<bool(DATA, DATA)> edgeVisCallback;
+			/** A callback relation that decides whether an edge should be part of edges.
+			 *  Needs to be symmetric as edges are bidirectional. */
+			std::function<bool(Data, Data)> edgeVisCallback;
 	};
 }
+
+#endif // COMMON_CLUSTERING_H_

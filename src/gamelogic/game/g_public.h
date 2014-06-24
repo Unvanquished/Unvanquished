@@ -119,10 +119,10 @@ void              ClientBegin( int clientNum );
 void              ClientAdminChallenge( int clientNum );
 
 // g_clustering.c
-void              G_BaseClusteringUpdate(gentity_t *ent);
-void              G_BaseClusteringRemove(gentity_t *ent);
-void              G_InitBaseClustering();
-void              G_DebugBaseClustering();
+void              G_BaseClusteringsUpdate(gentity_t *ent);
+void              G_BaseClusteringsRemove(gentity_t *ent);
+void              G_InitBaseClusterings();
+void              G_DebugBaseClusterings();
 
 // g_cmds.c
 void              G_StopFollowing( gentity_t *ent );
