@@ -1015,15 +1015,14 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
 			// Ignore directories
-			if (!Str::IsSuffix("/", *it))
-			{
+			if (!Str::IsSuffix("/", *it)) {
 #ifdef LIBSTDCXX_BROKEN_CXX11
-				fileMap.insert({ *it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0) });
+				fileMap.insert({*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0)});
 #else
 				fileMap.emplace(*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0));
 #endif
 				if (*it == PAK_DEPS_FILE)
-				hasDeps = true;
+					hasDeps = true;
 			}
 			it.increment(err);
 			if (HaveError(err))
