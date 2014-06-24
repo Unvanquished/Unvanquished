@@ -1,82 +1,103 @@
 <rml>
-	<head>
-		<title>Help</title>
-		<link type="text/template" href="templates/unvwindow.rml" />
-		<style>
-			body
-			{
-				width: 40%;
-				height: 30%;
-				margin: auto;
-			}
+<head>
+<link type="text/rcss" href="css/unv.rcss"/>
+<style>
+body
+{
+	padding-top:10%;
+	width:100%;
+	height:100%;
+	background:#00000066;
+	text-align:center;
+}
 
-			div
-			{
-				float: left;
-			}
-			div#list
-			{
-				width: 30%;
-				height: 100%;
-			}
+.circlemenu icon{
+	display:inline-block;
+	position:absolute;
+	bottom:20px;
+	right:-20px;
+	font-size:1.5em;
+}
+.circlemenu button.locked{
+	icon-image: /ui/assets/circle-gray.png;
+	icon-color-multiplier: rgb(70,70,70);
+}
+.circlemenu button.locked:hover{
+	icon-image: /ui/assets/circle-gray.png;
+	icon-color-multiplier: rgb(255,255,255);
+}
+.circlemenu button.locked:hover img,
+.circlemenu button.locked:hover icon,
+.circlemenu button.expensive:hover img,
+.circlemenu button.expensive:hover icon{
+	opacity:1;
+}
 
-			div#info
-			{
-				width: 70%;
-				height: 100%;
-			}
+.circlemenu button.locked img{
+	opacity:.6;
+}
+.circlemenu button.locked icon{
+	color:#ffffff;
+	opacity:.6;
+}
 
-			datagrid
-			{
-				width: 100%;
-				float: left;
-			}
+.circlemenu button.expensive{
+	icon-image: /ui/assets/circle-gray.png;
+	icon-color-multiplier: rgb(70,30,30);
+}
+.circlemenu button.expensive:hover{
+	icon-image: /ui/assets/circle-gray.png;
+	icon-color-multiplier: rgb(255,0,0);
+}
 
-			datagridbody
-			{
-				height: 70%;
-				overflow-y: auto;
-			}
+.circlemenu button.expensive img{
+	opacity:.6;
+}
+.circlemenu button.expensive:hover img{
+	opacity:1;
+}
+.circlemenu button.expensive icon{
+	color:#C5000A;
+	opacity:.7;
+}
 
-			datagridrow:selected
-			{
-				background: rgba(111,111,111,111);
-			}
-			div#buttons
-			{
-				position: absolute;
-				height: 3%;
-				width: 100%;
-				bottom: 0px;
-			}
-			button
-			{
-				float: right;
-				height: 17px;
-				font-size: 18;
-			}
-			button p
-			{
-				position: absolute;
-				text-align: center;
-				top: 0px;
-			}
-		</style>
-	</head>
-	<body template="unvwindow" id="humanbuild" onShow="buildDS humanBuildList default">
-		<div id="list">
-		<datagrid id="team"  source="humanBuildList.default">
-			<col fields="name" width="100%"/>
-		</datagrid>
-		</div>
-		<div id="info">
-		<datasource_single source="humanBuildList.default" fields="name" targetid="team" /><br />
-		<datasource_single source="humanBuildList.default" fields="price" targetid="team" /><br />
-		<datasource_single source="humanBuildList.default" fields="description" targetid="team" />
-		</div>
-		<div id='buttons'>
-			<button onClick="execDS humanBuildList default"><p>Join!</p></button>
-			<button onClick="hide humanbuild"><p>Cancel</p></button>
-		</div>
-	</body>
+.circlemenu button{
+	position:relative;
+}
+
+.circlemenu button.active{
+	icon-image: /ui/assets/circle-hover.png;
+	icon-color-multiplier: rgb(100,100,100);
+}
+.circlemenu button.active:hover{
+	icon-image: /ui/assets/circle-hover.png;
+	icon-color-multiplier: rgb(255,255,255);
+}
+.circlemenu button.active icon{
+	color:#9AFFBD;
+}
+.circlemenu button.active .sell{
+	display:none;
+}
+tabs {
+	display: none;
+}
+</style>
+</head>
+<body id="humanbuild" class="circlemenu human" onShow="buildDS humanBuildList default; buildDS humanBuildList upgrades">
+<div id="foo">
+<tabset class="circlemenu">
+<tab></tab>
+<panel>
+<circlemenu id="default" source="humanBuildList.default" fields="num" formatter="CMHumanBuildables" cancel="hide humanbuild"/>
+</panel>
+</tabset>
+
+<div class="infobox">
+<h2><datasource_single source="humanBuildList.default" fields="name" targetid="default" /></h2>
+
+<p class="text"><datasource_single source="humanBuildList.default" fields="description" targetid="default" /></p>
+</div>
+</div>
+</body>
 </rml>

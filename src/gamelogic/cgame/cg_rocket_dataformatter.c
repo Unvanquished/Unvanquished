@@ -318,6 +318,36 @@ static void CG_Rocket_DFCMAlienBuildables( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS alienBuildList default %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), qfalse );
 }
 
+static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
+{
+	buildable_t buildable = ( buildable_t ) atoi( Info_ValueForKey( data, "1" ) );
+	const char *Class = "";
+	const char *Icon = "";
+	const char *action = "";
+	int value, valueMarked;
+
+	value = cg.snap->ps.persistant[ PERS_BP ];
+	valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
+
+	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
+	{
+		Class = "locked";
+		Icon = "<icon>\uf023</icon>";
+	}
+	else if ( BG_Buildable( buildable )->buildPoints > value + valueMarked )
+	{
+		Class = "expensive";
+		Icon = "<icon>\uf0d6</icon>";
+	}
+	else
+	{
+		Class = "available";
+		action = va( "onClick='exec \"build %s\"; hide %s'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id );
+	}
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS humanBuildList default %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), qfalse );
+}
+
 typedef struct
 {
 	const char *name;
@@ -330,6 +360,7 @@ static const dataFormatterCmd_t dataFormatterCmdList[] =
 	{ "CMAlienBuildables", &CG_Rocket_DFCMAlienBuildables },
 	{ "CMArmouryBuyUpgrades", &CG_Rocket_DFCMArmouryBuyUpgrade },
 	{ "CMArmouryBuyWeapons", &CG_Rocket_DFCMArmouryBuyWeapon },
+	{ "CMHumanBuildables", &CG_Rocket_DFCMHumanBuildables },
 	{ "GearOrReady", &CG_Rocket_DFGearOrReady },
 	{ "GWeaponDamage", &CG_Rocket_DFGWeaponDamage },
 	{ "GWeaponRange", &CG_Rocket_DFGWeaponRange },
