@@ -1610,13 +1610,14 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 
 		for ( i = 0; i < PCL_NUM_CLASSES; ++i )
 		{
-			if ( ( cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) ) > 0 )
+			if ( BG_Class( i )->team == TEAM_ALIENS )
 			{
 				buf[ 0 ] = '\0';
 
+				Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
 				Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, qfalse );
 				Info_SetValueForKey( buf, "description", BG_Class( i )->info, qfalse );
-				Info_SetValueForKey( buf, "price", va( "%d", cost / CREDITS_PER_EVO ), qfalse );
+				Info_SetValueForKey( buf, "price", va( "%d", BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) / CREDITS_PER_EVO ), qfalse );
 
 				trap_Rocket_DSAddRow( "alienEvolveList", "default", buf );
 
