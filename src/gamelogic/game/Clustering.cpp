@@ -147,9 +147,14 @@ namespace Clustering {
 			/**
 			 * @return The euclidean center of the cluster.
 			 */
-			const point_type GetCenter() {
+			const point_type& GetCenter() {
 				if (dirty) UpdateMetadata();
 				return center;
+			}
+
+			Data GetMeanObject() {
+				if (dirty) UpdateMetadata();
+				return meanObject;
 			}
 
 			/**
@@ -192,11 +197,14 @@ namespace Clustering {
 				dirty = false;
 
 				center.Clear();
+				meanObject        = nullptr;
 				averageDistance   = 0;
 				standardDeviation = 0;
 
 				int size = records.size();
 				if (size == 0) return;
+
+				float smallestDistance = FLT_MAX;
 
 				// Find center
 				for (auto& record : records) {
@@ -204,9 +212,15 @@ namespace Clustering {
 				}
 				center /= size;
 
-				// Find average distance
+				// Find average distance and mean object
 				for (auto& record : records) {
-					averageDistance += record.second.Distance(center);
+					point_type& location = record.second;
+					float distance = location.Distance(center);
+					averageDistance += distance;
+					if (distance < smallestDistance) {
+						smallestDistance = distance;
+						meanObject       = record.first;
+					}
 				}
 				averageDistance /= size;
 
@@ -223,6 +237,9 @@ namespace Clustering {
 
 			/** The cluster's center point. */
 			point_type center;
+
+			/** The object closest to the center. */
+			Data meanObject;
 
 			/** The average distance of objects from the cluster's center. */
 			float averageDistance;
@@ -564,7 +581,6 @@ namespace Clustering {
 				// When the main structure is built, an outpost beacon needs to be removed manually.
 				// The range of this is quite high so outpost beacons can be lost.
 				// TODO: Enneract: Unify the two beacon types a bit.
-				// TODO: Use G_IsMainStructure when merged.
 				if (ent->s.modelindex == BA_A_OVERMIND || ent->s.modelindex == BA_H_REACTOR) {
 					Beacon::RemoveSimilar(ent->s.origin, BCT_OUTPOST, 0, ent->buildableTeam,
 										  ENTITYNUM_NONE);
@@ -584,7 +600,6 @@ namespace Clustering {
 
 				// When the main structure is removed, the base beacon needs to be removed manually.
 				// TODO: Enneract: Unify the two beacon types a bit.
-				// TODO: Use G_IsMainStructure when merged.
 				if (ent->s.modelindex == BA_A_OVERMIND || ent->s.modelindex == BA_H_REACTOR) {
 					Beacon::RemoveSimilar(ent->s.origin, BCT_BASE, 0, ent->buildableTeam,
 										  ENTITYNUM_NONE);
@@ -610,7 +625,7 @@ namespace Clustering {
 					int clusterNum = 1;
 
 					for (EntityClustering::cluster_type cluster : *TeamClustering(team)) {
-						EntityClustering::point_type center = cluster.GetCenter();
+						const EntityClustering::point_type& center = cluster.GetCenter();
 
 						Com_Printf("%s base #%d (%lu buildings): Center: %.0f %.0f %.0f. "
 								   "Avg. distance: %.0f. Standard deviation: %.0f.\n",
@@ -632,8 +647,9 @@ namespace Clustering {
 			 */
 			void PostChangeHook(team_t team) {
 				for (EntityClustering::cluster_type& cluster : *TeamClustering(team)) {
-					EntityClustering::point_type center = cluster.GetCenter();
+					const EntityClustering::point_type &center = cluster.GetCenter();
 
+					// Find out if it's an outpost or main base
 					beaconType_t type = BCT_OUTPOST;
 					for (const EntityClustering::cluster_type::record_type& record : cluster) {
 						// TODO: Use G_IsMainStructure when merged.
@@ -644,13 +660,22 @@ namespace Clustering {
 						}
 					}
 
-					// TODO: Enneract: Move code from Cmd_Beaconf_f into helpers in a central location
-					//       so it can be used from elsewhere without knowledge of the beacon internals.
-					// TODO: Enneract: Either make the beacon spawn inside a room even if the center
-					//       point is inside the world geometry or make RemoveSimiliar work with beacons
-					//       stuck inside the world. Right now we have a beacon leak. :)
+					// Approach 1: Spawn beacon at euclidean center of the cluster.
+					// The beacon can be inside walls which means RemoveSimiliar won't always work.
+					/*
 					Beacon::RemoveSimilar(center.coords, type, 0, team, ENTITYNUM_NONE);
 					Beacon::Propagate(Beacon::New(center.coords, type, 0, team, ENTITYNUM_NONE));
+					*/
+
+					// Approach 2: Trace from mean buildable's origin towards cluster center, so
+					// that the beacon does not spawn inside a wall. Then use MoveTowardsRoom on the
+					// trace results.
+					trace_t tr;
+					gentity_t *mean = cluster.GetMeanObject();
+					trap_Trace(&tr, mean->s.origin, NULL, NULL, center.coords, 0, MASK_SOLID);
+					Beacon::MoveTowardsRoom(tr.endpos, NULL);
+					Beacon::RemoveSimilar(tr.endpos, type, 0, team, ENTITYNUM_NONE);
+					Beacon::Propagate(Beacon::New(tr.endpos, type, 0, team, ENTITYNUM_NONE));
 				}
 		}
 
