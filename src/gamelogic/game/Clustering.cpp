@@ -1,46 +1,29 @@
 /*
 ===========================================================================
-Daemon BSD Source Code
-Copyright (c) 2014, Daemon Developers
-All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the Daemon developers nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+Copyright 2014 Unvanquished Developers
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL DAEMON DEVELOPERS BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+This file is part of Unvanquished.
+
+Unvanquished is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Unvanquished is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
+
 ===========================================================================
 */
 
-#ifndef COMMON_CLUSTERING_H_
-#define COMMON_CLUSTERING_H_
+#include "g_local.h"
 
-#include <vector>
-#include <map>
-#include <unordered_map>
-#include <unordered_set>
-#include <cmath>
-#include <utility>
-
-#include "DisjointSets.h"
-
-namespace Cluster {
+namespace Clustering {
 	/**
 	 * @brief A point in euclidean space.
 	 * @todo Use engine's vector class once available.
@@ -56,7 +39,7 @@ namespace Cluster {
 				for (int i = 0; i < Dim; i++) coords[i] = vec[i];
 			}
 
-			Point(const Point &other) {
+			Point(const Point& other) {
 				for (int i = 0; i < Dim; i++) coords[i] = other.coords[i];
 			}
 
@@ -72,13 +55,13 @@ namespace Cluster {
 				return coords[i];
 			}
 
-			Point<Dim> operator+(const Point<Dim> &other) const {
+			Point<Dim> operator+(const Point<Dim>& other) const {
 				Point<Dim> result;
 				for (int i = 0; i < Dim; i++) result[i] = coords[i] + other[i];
 				return result;
 			}
 
-			Point<Dim> operator-(const Point<Dim> &other) const {
+			Point<Dim> operator-(const Point<Dim>& other) const {
 				Point<Dim> result;
 				for (int i = 0; i < Dim; i++) result[i] = coords[i] - other[i];
 				return result;
@@ -96,11 +79,11 @@ namespace Cluster {
 				return result;
 			}
 
-			void operator+=(const Point<Dim> &other) {
+			void operator+=(const Point<Dim>& other) {
 				for (int i = 0; i < Dim; i++) coords[i] += other[i];
 			}
 
-			void operator-=(const Point<Dim> &other) {
+			void operator-=(const Point<Dim>& other) {
 				for (int i = 0; i < Dim; i++) coords[i] -= other[i];
 			}
 
@@ -112,96 +95,52 @@ namespace Cluster {
 				for (int i = 0; i < Dim; i++) coords[i] /= value;
 			}
 
-			bool operator==(const Point<Dim> &other) const {
+			bool operator==(const Point<Dim>& other) const {
 				for (int i = 0; i < Dim; i++) if (coords[i] != other[i]) return false;
 				return true;
 			}
 
-			float Dot(const Point &other) const {
+			float Dot(const Point& other) const {
 				float product = 0;
 				for (int i = 0; i < Dim; i++) product += coords[i] * other[i];
 				return product;
 			}
 
-			float Distance(const Point &other) const {
+			float Distance(const Point& other) const {
 				float distanceSquared = 0;
 				for (int i = 0; i < Dim; i++) {
 					float delta = coords[i] - other[i];
 					distanceSquared += delta * delta;
 				}
-				return std::sqrt(distanceSquared);
+				return sqrtf(distanceSquared);
 			}
-	};
-
-	/**
-	 * @brief A cluster of objects with a location. Technically an adaptor for std::unordered_map.
-	 */
-	template <typename Location, typename Data>
-	class Cluster {
-		public:
-			typedef std::pair<Data, Location>                                   record_type;
-			typedef typename std::unordered_map<Data, Location>::const_iterator iter_type;
-
-			Cluster() = default;
-
-			void Update(const Data data, const Location location) {
-				records.insert(std::make_pair(data, location));
-			}
-
-			void Remove(const Data data) {
-				records.erase(data);
-			}
-
-			void Clear() {
-				records.clear();
-			}
-
-			iter_type begin() const noexcept {
-				return records.begin();
-			}
-
-			iter_type end() const noexcept {
-				return records.end();
-			}
-
-			iter_type find(const Data &key) const {
-				return records.find(key);
-			}
-
-			size_t size() const {
-				return records.size();
-			}
-
-		protected:
-			/** Maps data objects to their location. */
-			std::unordered_map<Data, Location> records;
 	};
 
 	/**
 	 * @brief A cluster of objects located in euclidean space.
 	 */
 	template <typename Data, int Dim>
-	class EuclideanCluster : public Cluster<Point<Dim>, Data> {
+	class EuclideanCluster {
 		public:
-			typedef Point<Dim>                  point_type;
-			typedef Cluster<point_type, Data>   super;
-			typedef typename super::record_type record_type;
+			typedef Point<Dim>                                                    point_type;
+			typedef std::pair<Data, point_type>                                   record_type;
+			typedef typename std::unordered_map<Data, point_type>::const_iterator iter_type;
 
 			EuclideanCluster() = default;
 
 			/**
 			 * @brief Updates the cluster while keeping track of metadata.
 			 */
-			void Update(const Data data, const point_type location) {
-				super::Update(data, location);
+			void Update(const Data& data, const point_type& location) {
+				records.insert(std::make_pair(data, location));
 				dirty = true;
 			}
 
 			/**
 			 * @brief Removes data from the cluster while keeping track of metadata.
 			 */
-			void Remove(const Data data) {
-				super::Remove(data);
+			void Remove(const Data& data) {
+				records.erase(data);
 				dirty = true;
 			}
 
@@ -229,6 +168,22 @@ namespace Cluster {
 				return standardDeviation;
 			}
 
+			iter_type begin() const noexcept {
+				return records.begin();
+			}
+
+			iter_type end() const noexcept {
+				return records.end();
+			}
+
+			iter_type find(const Data& key) const {
+				return records.find(key);
+			}
+
+			size_t size() const {
+				return records.size();
+			}
+
 		private:
 			/**
 			 * @brief Calculates cluster metadata.
@@ -240,28 +195,31 @@ namespace Cluster {
 				averageDistance   = 0;
 				standardDeviation = 0;
 
-				int size = super::records.size();
+				int size = records.size();
 				if (size == 0) return;
 
 				// Find center
-				for (typename super::record_type record : super::records) {
+				for (auto& record : records) {
 					center += record.second;
 				}
 				center /= size;
 
 				// Find average distance
-				for (typename super::record_type record : super::records) {
+				for (auto& record : records) {
 					averageDistance += record.second.Distance(center);
 				}
 				averageDistance /= size;
 
 				// Find standard deviation
-				for (typename super::record_type record : super::records) {
+				for (auto& record : records) {
 					float deviation = averageDistance - record.second.Distance(center);
 					standardDeviation += deviation * deviation;
 				}
-				standardDeviation = std::sqrt(standardDeviation / size);
+				standardDeviation = sqrtf(standardDeviation / size);
 			}
+
+			/** Maps data objects to their location. */
+			std::unordered_map<Data, point_type> records;
 
 			/** The cluster's center point. */
 			point_type center;
@@ -287,13 +245,13 @@ namespace Cluster {
 	template <typename Data, int Dim>
 	class EuclideanClustering {
 		public:
-			typedef Point<Dim>                                         point_type;
-			typedef EuclideanCluster<Data, Dim>                        cluster_type;
-			typedef Data                                               vertex_type;
-			typedef std::pair<Data, point_type>                        vertex_record_type;
-			typedef std::pair<Data, Data>                              edge_type;
-			typedef std::pair<float, edge_type>                        edge_record_type;
-			typedef typename std::vector<cluster_type>::const_iterator iter_type;
+			typedef EuclideanCluster<Data, Dim>                      cluster_type;
+			typedef typename EuclideanCluster<Data, Dim>::point_type point_type;
+			typedef Data                                             vertex_type;
+			typedef std::pair<Data, point_type>                      vertex_record_type;
+			typedef std::pair<Data, Data>                            edge_type;
+			typedef std::pair<float, edge_type>                      edge_record_type;
+			typedef typename std::vector<cluster_type>::iterator     iter_type;
 
 			/**
 			 * @param laxity Factor that scales the allowed deviation from the average edge length.
@@ -307,14 +265,14 @@ namespace Cluster {
 			/**
 			 * @brief Adds or updates the location of objects.
 			 */
-			void Update(const Data data, const Point<Dim> location) {
+			void Update(const Data& data, const Point<Dim>& location) {
 				// TODO: Check if the location has actually changed.
 
 				// Remove the object first.
 				Remove(data);
 
 				// Iterate over all other objects and save the distance.
-				for ( vertex_record_type record : records ) {
+				for (const vertex_record_type& record : records) {
 					if (edgeVisCallback == nullptr || edgeVisCallback(data, record.first)) {
 						float distance = location.Distance(record.second);
 						edges.insert(std::make_pair(distance, edge_type(data, record.first)));
@@ -331,7 +289,7 @@ namespace Cluster {
 			/**
 			 * @brief Removes objects.
 			 */
-			void Remove(const Data data) {
+			void Remove(const Data& data) {
 				// Check if we even know the object in O(n) to avoid unnecessary O(m) iteration.
 				if (records.find(data) == records.end()) return;
 
@@ -392,9 +350,9 @@ namespace Cluster {
 				DisjointSets<Data> components = DisjointSets<Data>();
 
 				// The edges are implicitely sorted by distance, iterate in ascending order.
-				for (edge_record_type edgeRecord : edges) {
-					float distance  = edgeRecord.first;
-					edge_type &edge = edgeRecord.second;
+				for (const edge_record_type& edgeRecord : edges) {
+					float distance        = edgeRecord.first;
+					const edge_type& edge = edgeRecord.second;
 
 					// Stop if spanning tree is complete.
 					if ((mstEdges.size() + 1) == records.size()) break;
@@ -431,11 +389,11 @@ namespace Cluster {
 					mstAverageDistance /= numMstEdges;
 
 					// Find standard deviation.
-					for (edge_record_type edgeRecord : mstEdges) {
+					for (const edge_record_type& edgeRecord : mstEdges) {
 						float deviation = mstAverageDistance - edgeRecord.first;
 						mstStandardDeviation += deviation * deviation;
 					}
-					mstStandardDeviation = std::sqrt(mstStandardDeviation / numMstEdges);
+					mstStandardDeviation = sqrtf(mstStandardDeviation / numMstEdges);
 				}
 
 				dirtyMST = false;
@@ -460,7 +418,7 @@ namespace Cluster {
 				// Split the MST into several trees by keeping only the edges that have a length up
 				// to a threshold.
 				float edgeLengthThreshold = mstAverageDistance + mstStandardDeviation * laxity;
-				for (edge_record_type edge : mstEdges) {
+				for (const edge_record_type& edge : mstEdges) {
 					if (edge.first <= edgeLengthThreshold) {
 						forestEdges.insert(edge);
 					} else {
@@ -470,9 +428,9 @@ namespace Cluster {
 				}
 
 				// Retreive the connected components, excluding isolated vertices.
-				DisjointSets<Data> components = DisjointSets<Data>();
-				for (edge_record_type edgeRecord : forestEdges) {
-					edge_type &edge = edgeRecord.second;
+				DisjointSets<Data> components;
+				for (const edge_record_type& edgeRecord : forestEdges) {
+					const edge_type& edge = edgeRecord.second;
 
 					// Get component representatives, if available.
 					Data firstVertexRepr = components.Find(edge.first);
@@ -491,15 +449,15 @@ namespace Cluster {
 				}
 
 				// Keep track of non-clustered vertices.
-				std::unordered_set<Data> remainingVertices = std::unordered_set<Data>();
-				for (vertex_record_type record : records) {
+				std::unordered_set<Data> remainingVertices;
+				for (const vertex_record_type& record : records) {
 					remainingVertices.insert(record.first);
 				}
 
 				// Build a cluster for each connected component, excluding isolated vertices.
-				for (auto component : components) {
+				for (auto& component : components) {
 					cluster_type newCluster;
-					for (Data vertex : component.second) {
+					for (const Data& vertex : component.second) {
 						newCluster.Update(vertex, records[vertex]);
 						remainingVertices.erase(vertex);
 					}
@@ -507,7 +465,7 @@ namespace Cluster {
 				}
 
 				// The remaining vertices are isolated, they go in a cluster of their own.
-				for (Data vertex : remainingVertices) {
+				for (const Data& vertex : remainingVertices) {
 					cluster_type newCluster;
 					newCluster.Update(vertex, records[vertex]);
 					clusters.push_back(newCluster);
@@ -555,6 +513,195 @@ namespace Cluster {
 			 *  Needs to be symmetric as edges are bidirectional. */
 			std::function<bool(Data, Data)> edgeVisCallback;
 	};
+
+	/**
+	 * @brief A clustering of entities in the world.
+	 */
+	class EntityClustering : public EuclideanClustering<gentity_t*, 3> {
+		public:
+			typedef Clustering::EuclideanClustering<gentity_t*, 3> super;
+
+			EntityClustering(float laxity = 1.0,
+							 std::function<bool(gentity_t*, gentity_t*)> edgeVisCallback = nullptr)
+				: super(laxity, edgeVisCallback)
+			{}
+
+			void Update(gentity_t *ent) {
+				super::Update(ent, point_type(ent->s.origin));
+			}
+
+			/**
+			 * @brief An edge visibility check that checks for PVS visibility.
+			 */
+			static bool edgeVisPVS(gentity_t *a, gentity_t *b) {
+				return trap_InPVSIgnorePortals(a->s.origin, b->s.origin);
+			}
+	};
+
+	/**
+	 * @brief A wrapper around EntityClustering that keeps track of the bases of both teams.
+	 * @todo This is in a proof of concept state, improve the integration in the beacon system.
+	 */
+	class BaseClusterings {
+		public:
+			EntityClustering alienBases;
+			EntityClustering humanBases;
+
+			BaseClusterings(float laxity = 2.5, std::function<bool(gentity_t*, gentity_t*)>
+							edgeVisCallback = EntityClustering::edgeVisPVS)
+				: alienBases(laxity, edgeVisCallback), humanBases(laxity, edgeVisCallback)
+			{}
+
+			/**
+			 * @brief Adds a buildable to the clusters or updates its location.
+			 * @todo Remove workarounds for base/outpost beacons.
+			 */
+			void Update(gentity_t *ent) {
+				EntityClustering *clusters = TeamClustering(ent);
+				if (!clusters) return;
+				clusters->Update(ent);
+
+				// When the main structure is built, an outpost beacon needs to be removed manually.
+				// The range of this is quite high so outpost beacons can be lost.
+				// TODO: Enneract: Unify the two beacon types a bit.
+				// TODO: Use G_IsMainStructure when merged.
+				if (ent->s.modelindex == BA_A_OVERMIND || ent->s.modelindex == BA_H_REACTOR) {
+					Beacon::RemoveSimilar(ent->s.origin, BCT_OUTPOST, 0, ent->buildableTeam,
+										  ENTITYNUM_NONE);
+				}
+
+				PostChangeHook(ent->buildableTeam);
+			}
+
+			/**
+			 * @brief Removes a buildable from the clusters.
+			 * @todo Remove workarounds for base/outpost beacons.
+			 */
+			void Remove(gentity_t *ent) {
+				EntityClustering *clusters = TeamClustering(ent);
+				if (!clusters) return;
+				clusters->Remove(ent);
+
+				// When the main structure is removed, the base beacon needs to be removed manually.
+				// TODO: Enneract: Unify the two beacon types a bit.
+				// TODO: Use G_IsMainStructure when merged.
+				if (ent->s.modelindex == BA_A_OVERMIND || ent->s.modelindex == BA_H_REACTOR) {
+					Beacon::RemoveSimilar(ent->s.origin, BCT_BASE, 0, ent->buildableTeam,
+										  ENTITYNUM_NONE);
+				}
+
+				PostChangeHook(ent->buildableTeam);
+			}
+
+			/**
+			 * @brief Resets the clusterings.
+			 */
+			void Clear() {
+				alienBases.Clear();
+				humanBases.Clear();
+			}
+
+			/**
+			 * @brief Prints debugging information and spawns pointer beacons for every cluster.
+			 */
+			void Debug() {
+				for (int teamNum = TEAM_NONE + 1; teamNum < NUM_TEAMS; teamNum++) {
+					team_t team = (team_t)teamNum;
+					int clusterNum = 1;
+
+					for (EntityClustering::cluster_type cluster : *TeamClustering(team)) {
+						EntityClustering::point_type center = cluster.GetCenter();
+
+						Com_Printf("%s base #%d (%lu buildings): Center: %.0f %.0f %.0f. "
+								   "Avg. distance: %.0f. Standard deviation: %.0f.\n",
+								   BG_TeamName(team), clusterNum, cluster.size(),
+								   center[0], center[1], center[2],
+								   cluster.GetAverageDistance(), cluster.GetStandardDeviation());
+
+						Beacon::Propagate(Beacon::New(cluster.GetCenter().coords, BCT_POINTER, 0,
+						                              team, ENTITYNUM_NONE));
+
+						clusterNum++;
+					}
+				}
+			}
+
+		protected:
+			/**
+			 * @brief Called after calls to Update and Remove (but not Clear).
+			 */
+			void PostChangeHook(team_t team) {
+				for (EntityClustering::cluster_type& cluster : *TeamClustering(team)) {
+					EntityClustering::point_type center = cluster.GetCenter();
+
+					beaconType_t type = BCT_OUTPOST;
+					for (const EntityClustering::cluster_type::record_type& record : cluster) {
+						// TODO: Use G_IsMainStructure when merged.
+						if (record.first->s.modelindex == BA_A_OVERMIND ||
+							record.first->s.modelindex == BA_H_REACTOR) {
+							type = BCT_BASE;
+							break;
+						}
+					}
+
+					// TODO: Enneract: Move code from Cmd_Beaconf_f into helpers in a central location
+					//       so it can be used from elsewhere without knowledge of the beacon internals.
+					// TODO: Enneract: Either make the beacon spawn inside a room even if the center
+					//       point is inside the world geometry or make RemoveSimiliar work with beacons
+					//       stuck inside the world. Right now we have a beacon leak. :)
+					Beacon::RemoveSimilar(center.coords, type, 0, team, ENTITYNUM_NONE);
+					Beacon::Propagate(Beacon::New(center.coords, type, 0, team, ENTITYNUM_NONE));
+				}
+		}
+
+		private:
+			/**
+			 * @brief Retrieves the clustering for a team.
+			 */
+			EntityClustering* TeamClustering(team_t team) {
+				switch (team) {
+					case TEAM_ALIENS: return &alienBases;
+					case TEAM_HUMANS: return &humanBases;
+					default:          return NULL;
+				}
+			}
+
+			/**
+			 * @brief Retreives the clustering for the team that owns the entity.
+			 */
+			EntityClustering* TeamClustering(gentity_t *ent) {
+				return TeamClustering(ent->buildableTeam);
+			}
+	};
 }
 
-#endif // COMMON_CLUSTERING_H_
+/** The global base clusterings for both teams. */
+Clustering::BaseClusterings baseClusterings;
+
+/**
+ * @brief Resets the base clusterings.
+ */
+void G_InitBaseClusterings() {
+	baseClusterings.Clear();
+}
+
+/**
+ * @brief Prints debugging information and spawns pointer beacons for the base clusterings.
+ */
+void G_DebugBaseClusterings() {
+	baseClusterings.Debug();
+}
+
+/**
+ * @brief Adds a buildable to the base clusterings or updates its location.
+ */
+void G_BaseClusteringsUpdate(gentity_t *ent) {
+	baseClusterings.Update(ent);
+}
+
+/**
+ * @brief Removes a buildable from the base clusterings.
+ */
+void G_BaseClusteringsRemove(gentity_t *ent) {
+	baseClusterings.Remove(ent);
+}
