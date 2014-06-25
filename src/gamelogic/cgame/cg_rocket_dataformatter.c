@@ -375,7 +375,7 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	else
 	{
 		Class = "available";
-		action =  va( "onClick='exec \"class %s\"'", BG_Class( alienClass )->name );
+		action =  va( "onClick='exec \"class %s\"; hide %s'", BG_Class( alienClass )->name, rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id );
 	}
 
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' onMouseover='setDS alienEvolveList alienClasss %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), qfalse );
