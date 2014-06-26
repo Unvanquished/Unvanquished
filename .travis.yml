@@ -12,7 +12,7 @@ install:
   - sudo apt-get -qq install libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libgeoip-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl1.2-dev libspeexdsp-dev libtheora-dev libvorbis-dev libopusfile-dev libxvidcore-dev nettle-dev zlib1g-dev
   - wget http://ppa.launchpad.net/purplekarrot/cmake/ubuntu/pool/main/c/cmake/cmake-data_3.0.20140625_all.deb 
   - wget http://ppa.launchpad.net/purplekarrot/cmake/ubuntu/pool/main/c/cmake/cmake_3.0.20140625_amd64.deb 
-  - sudo apt-get remove cmake-data cmake
+  - sudo apt-get remove cmake-data cmake emacsen-common
   - sudo dpkg --install cmake-data_3.0.20140625_all.deb cmake_3.0.20140625_amd64.deb
 
 before_script:
