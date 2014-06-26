@@ -3297,7 +3297,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 
 			G_Heal( ent, gain );
 		}
-		else if ( ent->health > 0 && ent->health < maxHealth )
+		else if ( ent->health > 0 && ent->health < maxHealth && ent->powered )
 		{
 			int regenWait;
 
