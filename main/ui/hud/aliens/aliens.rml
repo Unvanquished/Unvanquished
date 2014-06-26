@@ -188,6 +188,7 @@
 				width: 100%;
 				height: 30%;
 				cell-color: #703030;
+				border-width: 1px;
 				color: #931414;
 			}
 			div#momentum
