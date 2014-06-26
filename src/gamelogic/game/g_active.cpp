@@ -213,22 +213,8 @@ ClientShove
 static void ClientShove( gentity_t *ent, gentity_t *victim )
 {
 	vec3_t dir, push;
-	float  vEnt, vOther;
+	float  vEnt, vVic, massRatio;
 	int    entMass, vicMass;
-
-	// Don't push if the entity is not trying to move
-	if ( !ent->client->pers.cmd.rightmove && !ent->client->pers.cmd.forwardmove &&
-	     !ent->client->pers.cmd.upmove )
-	{
-		return;
-	}
-
-	// Cannot push enemy players unless they are walking on the player
-	if ( !G_OnSameTeam( ent, victim ) &&
-	     victim->client->ps.groundEntityNum != ent - g_entities )
-	{
-		return;
-	}
 
 	// Shove force is scaled by relative mass
 	entMass = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->mass;
@@ -245,10 +231,11 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 
 	// Calculate predicted victim velocity in direction of impact
 	vEnt = DotProduct( dir, ent->client->ps.velocity );
-	vOther = entMass * vEnt / vicMass;
+	massRatio = Com_Clamp( 0, 10.0f, float( entMass ) / vicMass );
+	vVic = vEnt * massRatio;
 
 	// Add it to victim
-	VectorScale( dir, vOther * g_shove.integer, push );
+	VectorScale( dir, vVic * g_shove.integer, push );
 	VectorAdd( victim->client->ps.velocity, push, victim->client->ps.velocity );
 
 	// Set the pmove timer so that the other client can't cancel
