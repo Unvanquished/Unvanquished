@@ -185,6 +185,7 @@
 				width: 100%;
 				height: 30%;
 				cell-color: #FFFFFF99;
+				border-width: 1px;
 				color: #aaffffff;
 			}
 
