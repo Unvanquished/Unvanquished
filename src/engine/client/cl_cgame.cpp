@@ -1566,10 +1566,7 @@ void CL_InitCGame( void )
 	re.EndRegistration();
 
 	// make sure everything is paged in
-	if ( !Sys_LowPhysicalMemory() )
-	{
-		Com_TouchMemory();
-	}
+	Com_TouchMemory();
 
 	// Ridah, update the memory usage file
 	CL_UpdateLevelHunkUsage();
@@ -1578,10 +1575,6 @@ void CL_InitCGame( void )
 	IN_DropInputsForFrame();
 	CL_ClearKeys();
 	Key_ClearStates();
-
-//  if( cl_autorecord->integer ) {
-//      Cvar_Set( "g_synchronousClients", "1" );
-//  }
 }
 
 void CL_InitCGameCVars( void )
