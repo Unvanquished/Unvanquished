@@ -396,7 +396,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_speed,                       "g_speed",                       "320",                              0,                                               0, qtrue            },
 	{ &g_gravity,                     "g_gravity",                     "800",                              0,                                               0, qtrue, cv_gravity},
 	{ &g_antiSpawnBlock,              "g_antiSpawnBlock",              "0",                                0,                                               0, qfalse           },
-	{ &g_shove,                       "g_shove",                       "0.5",                              0,                                               0, qfalse           },
+	{ &g_shove,                       "g_shove",                       "1.0",                              0,                                               0, qfalse           },
 	{ &g_dretchPunt,                  "g_dretchPunt",                  "1",                                0,                                               0, qtrue            },
 	{ &g_allowTeamOverlay,            "g_allowTeamOverlay",            "1",                                0,                                               0, qtrue            },
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                0,                                               0, qfalse           },
