@@ -7,7 +7,7 @@
 			width: 50%;
 			height: 70%;
 			margin: auto;
-			font-family: DejaVu Sans;
+			font-family: Roboto;
 		}
 
 		div#content
