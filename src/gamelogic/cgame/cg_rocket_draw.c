@@ -1760,7 +1760,7 @@ void CG_Rocket_DrawConnectText( void )
 
 	else
 	{
-		Q_strncpyz( rml, va( "Connecting to %s", rocketInfo.cstate.servername ), sizeof( rml ) );
+		Q_strncpyz( rml, va( "Connecting to %s <br/>", rocketInfo.cstate.servername ), sizeof( rml ) );
 	}
 
 	if ( rocketInfo.cstate.connState < CA_CONNECTED && *rocketInfo.cstate.messageString )
@@ -1795,7 +1795,7 @@ void CG_Rocket_DrawConnectText( void )
 
 	Q_strcat( rml, sizeof( rml ), s );
 
-	trap_Rocket_SetInnerRML( rml, RP_QUAKE );
+	trap_Rocket_SetInnerRML( rml, 0 );
 }
 
 void CG_Rocket_DrawClock( void )
