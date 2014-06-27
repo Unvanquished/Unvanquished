@@ -1316,6 +1316,7 @@ typedef struct
 	int serverStatusLastRefresh;
 	int scoresLastUpdate;
 	int realtime;
+	char downloadName[ MAX_STRING_CHARS ];
 	cgClientState_t cstate;
 	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
