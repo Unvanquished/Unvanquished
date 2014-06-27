@@ -3655,7 +3655,7 @@ void CL_Frame( int msec )
 	CL_CheckTimeout();
 
 	// wwwdl download may survive a server disconnect
-	if ( ( cls.state == CA_CONNECTED && clc.bWWWDl ) || cls.bWWWDlDisconnected )
+	if ( ( cls.state == CA_DOWNLOADING && clc.bWWWDl ) || cls.bWWWDlDisconnected )
 	{
 		CL_WWWDownload();
 	}
