@@ -603,8 +603,9 @@ If no console is visible, the text will appear at the top of the game window
 qboolean CL_InternalConsolePrint( const char *text )
 {
 	int      y;
-	int      c, i, l;
+	int      c, i;
 	int      color;
+	int      wordLen = 0;
 
 	// for some demos we don't want to ever show anything on the console
 	if ( cl_noprint && cl_noprint->integer )
@@ -648,26 +649,34 @@ qboolean CL_InternalConsolePrint( const char *text )
 			continue;
 		}
 
-		// count word length
-		for ( i = l = 0; l < consoleState.textWidthInChars; ++l )
+		if ( !wordLen )
 		{
-			if ( text[ i ] <= ' ' && text[ i ] >= 0 )
+			// count word length
+			for ( i = 0; ; ++wordLen )
 			{
-				break;
+				if ( text[ i ] <= ' ' && text[ i ] >= 0 )
+				{
+					break;
+				}
+				if ( Q_IsColorString( text + i ) )
+				{
+					i += 2;
+					continue;
+				}
+				if ( text[ i ] == Q_COLOR_ESCAPE && text[ i + 1 ] == Q_COLOR_ESCAPE )
+				{
+					++i;
+				}
+
+				i += Q_UTF8_Width( text + i );
 			}
 
-			if ( text[ i ] == Q_COLOR_ESCAPE && text[ i + 1 ] == Q_COLOR_ESCAPE )
+			// word wrap
+			if ( consoleState.horizontalCharOffset + wordLen >= consoleState.textWidthInChars
+			       && consoleState.horizontalCharOffset > 0 )
 			{
-				++i;
+				Con_Linefeed();
 			}
-
-			i += Q_UTF8_Width( text + i );
-		}
-
-		// word wrap
-		if ( l != consoleState.textWidthInChars && ( consoleState.horizontalCharOffset + l >= consoleState.textWidthInChars ) )
-		{
-			Con_Linefeed( );
 		}
 
 		switch ( c )
@@ -694,11 +703,14 @@ qboolean CL_InternalConsolePrint( const char *text )
 				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ch = Q_UTF8_CodePoint( text );
 				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ink = color;
 				++consoleState.horizontalCharOffset;
+				if ( wordLen > 0 )
+				{
+					--wordLen;
+				}
 
 				if ( consoleState.horizontalCharOffset >= consoleState.textWidthInChars )
 				{
-					Con_Linefeed( );
-					consoleState.horizontalCharOffset = 0;
+					Con_Linefeed();
 				}
 
 				break;
