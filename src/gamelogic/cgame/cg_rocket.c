@@ -252,6 +252,16 @@ void CG_Rocket_Init( void )
 	}
 
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_MAIN ].id, "open" );
+
+	// Check if we need to display a server connect/disconnect error
+	text[ 0 ] = '\0';
+	trap_Cvar_VariableStringBuffer( "com_errorMessage", text, sizeof( text ) );
+	if ( *text )
+	{
+		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ERROR ].id, "open" );
+		trap_Cvar_Set( "com_errorMessage", "" );
+	}
+
 	trap_Key_SetCatcher( KEYCATCH_UI );
 }
 
