@@ -19,7 +19,7 @@
 		</style>
 		<title>Connecting</title>
 	</head>
-	<body id="connecting">
+	<body id="connecting" nohide>
 		<div>
 			<connecting/>
 		</div>
