@@ -335,13 +335,6 @@ void Rocket_RocketDebug_f( void )
 	}
 }
 
-void Rocket_PrintKeys_f( void )
-{
-	for ( int i = 0; i < MAX_KEYS; ++i )
-	{
-		Com_Printf("%d -> %s\n", i, Key_KeynumToString(i));
-	}
-}
 
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
@@ -433,7 +426,7 @@ void Rocket_Init( void )
 
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
-	Cmd_AddCommand( "printkeys", Rocket_PrintKeys_f );
+
 	cg_draw2D = Cvar_Get( "cg_draw2D", "1", 0 );
 	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );
 }
