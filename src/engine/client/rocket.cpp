@@ -352,6 +352,8 @@ static RocketFocusManager fm;
 Rocket::Core::Context *menuContext = NULL;
 Rocket::Core::Context *hudContext = NULL;
 
+cvar_t *cg_draw2D;
+
 void Rocket_Init( void )
 {
 	char **fonts;
@@ -432,6 +434,7 @@ void Rocket_Init( void )
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
 	Cmd_AddCommand( "printkeys", Rocket_PrintKeys_f );
+	cg_draw2D = Cvar_Get( "cg_draw2D", "1", 0 );
 	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );
 }
 
@@ -483,7 +486,7 @@ void Rocket_Shutdown( void )
 
 void Rocket_Render( void )
 {
-	if ( hudContext )
+	if ( hudContext && cg_draw2D->integer )
 	{
 		hudContext->Render();
 	}
