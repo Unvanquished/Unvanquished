@@ -14,6 +14,7 @@
 		ui/armourybuy.rml armourybuy // ROCKETMENU_ARMOURYBUY
 		ui/alienevo.rml alienevo     // ROCKETMENU_ALIENEVOLVE
 		ui/chat.rml chat             // ROCKETMENU_CHAT
+		ui/error.rml error           // ROCKETMENU_ERROR
 	}
 	misc
 	{
