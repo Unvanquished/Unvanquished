@@ -420,17 +420,6 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_debugVoices,                 "cg_debugVoices",                 "0",            0                            },
 
-	// communication cvars set by the cgame to be read by ui
-	{ &ui_currentClass,                "ui_currentClass",                "0",            CVAR_ROM                     },
-	{ &ui_carriage,                    "ui_carriage",                    "",             CVAR_ROM                     },
-	{ &ui_dialog,                      "ui_dialog",                      "Text not set", CVAR_ROM                     },
-	{ &ui_voteActive,                  "ui_voteActive",                  "0",            CVAR_ROM                     },
-	{ &ui_humanTeamVoteActive,         "ui_humanTeamVoteActive",         "0",            CVAR_ROM                     },
-	{ &ui_alienTeamVoteActive,         "ui_alienTeamVoteActive",         "0",            CVAR_ROM                     },
-	{ &ui_unlockables,                 "ui_unlockables",                 "0 0",          CVAR_ROM                     },
-	{ &ui_momentumHalfLife,          "ui_momentumHalfLife",          "0",            CVAR_ROM                         },
-	{ &ui_unlockablesMinTime,          "ui_unlockablesMinTime",          "0",            CVAR_ROM                     },
-
 	{ &cg_debugRandom,                 "cg_debugRandom",                 "0",            0                            },
 
 	{ &cg_optimizePrediction,          "cg_optimizePrediction",          "1",            0                            },
