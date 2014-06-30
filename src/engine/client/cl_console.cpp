@@ -39,9 +39,12 @@ Maryland 20850 USA.
 #include "../qcommon/q_unicode.h"
 #include "../framework/LogSystem.h"
 
-int g_console_field_width = 78;
 
 #define CONSOLE_COLOR COLOR_WHITE //COLOR_BLACK
+#define DEFAULT_CONSOLE_WIDTH 78
+#define MAX_CONSOLE_WIDTH   1024
+
+int g_console_field_width = DEFAULT_CONSOLE_WIDTH;
 
 console_t consoleState;
 
@@ -85,9 +88,6 @@ cvar_t    *con_debug;
 #define ANIMATION_TYPE_SCROLL_DOWN 1
 #define ANIMATION_TYPE_FADE   2
 #define ANIMATION_TYPE_BOTH   3
-
-#define DEFAULT_CONSOLE_WIDTH 78
-#define MAX_CONSOLE_WIDTH   1024
 
 #define CON_LINE(line) ( ( (line) % consoleState.maxScrollbackLengthInLines ) * consoleState.textWidthInChars )
 
@@ -485,8 +485,8 @@ qboolean Con_CheckResize( void )
 
 		Q_strncpyz( prompt, con_prompt->string, sizeof( prompt ) );
 		Q_CleanStr( prompt );
-
-		g_console_field_width = consoleState.textWidthInChars - 8 - Q_UTF8_Strlen( prompt );
+		// 8 spaces for clock, 1 for cursor
+		g_console_field_width = consoleState.textWidthInChars - 9 - Q_UTF8_Strlen( prompt );
 		g_consoleField.SetWidth(g_console_field_width);
 	}
 
