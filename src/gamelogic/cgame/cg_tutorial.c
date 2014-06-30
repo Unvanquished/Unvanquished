@@ -393,8 +393,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 			case WP_SHOTGUN:
 			case WP_FLAMER:
 				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Find an Armoury and press %s for more ammo\n" ),
-				              CG_KeyNameForCommand( "buy ammo" ) ) );
+				          _( "Find an Armoury for more ammo\n" ) );
 				break;
 
 			case WP_LAS_GUN:
@@ -402,8 +401,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 			case WP_MASS_DRIVER:
 			case WP_LUCIFER_CANNON:
 				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Find an Armoury, Reactor, or Repeater and press %s for more ammo\n" ),
-				              CG_KeyNameForCommand( "buy ammo" ) ) );
+				          _( "Find an Armoury, Reactor, or Repeater for more ammo\n" ) );
 				break;
 
 			default:
@@ -491,15 +489,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	{
 		case BA_H_ARMOURY:
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to buy equipment upgrades at the %s. Sell your old weapon first!\n" ),
-			              CG_KeyNameForCommand( "+activate" ),
-			              _( BG_Buildable( cg.nearUsableBuildable )->humanName ) ) );
-			break;
-
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to refill your energy weapon's ammo at the %s\n" ),
+			          va( _( "Press %s to buy equipment upgrades at the %s\n" ),
 			              CG_KeyNameForCommand( "+activate" ),
 			              _( BG_Buildable( cg.nearUsableBuildable )->humanName ) ) );
 			break;
