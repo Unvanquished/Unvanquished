@@ -455,35 +455,26 @@ qboolean Con_CheckResize( void )
 		consoleState.textWidthInChars = textWidthInChars;
 		oldtotallines = consoleState.maxScrollbackLengthInLines;
 		consoleState.maxScrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
-		numlines = oldwidth < 0 ? 0 : oldtotallines;
 
-		if ( consoleState.maxScrollbackLengthInLines < numlines )
-		{
-			numlines = consoleState.maxScrollbackLengthInLines;
+		if ( oldtotallines > 0 && oldwidth > 0 && consoleState.usedScrollbackLengthInLines > 0 ) {
+
+			numlines = std::min( {consoleState.maxScrollbackLengthInLines, consoleState.usedScrollbackLengthInLines, oldtotallines} );
+			numchars = std::min( oldwidth, consoleState.textWidthInChars );
+
+			Com_Memcpy( buf, consoleState.text, sizeof( consoleState.text ) );
+			Con_Clear();
+
+			for ( i = 0; i < numlines; i++ ) {
+				conChar_t* destination = consoleState.text + ( consoleState.maxScrollbackLengthInLines - 1 - i ) * consoleState.textWidthInChars;
+				memcpy( destination,
+				    buf + ( ( consoleState.currentLine - i - 1 + oldtotallines ) % oldtotallines ) * oldwidth,
+				    numchars * sizeof( conChar_t ) );
+			}
+			consoleState.usedScrollbackLengthInLines = numlines;
+		} else {
+			Con_Clear();
 		}
-
-		numchars = oldwidth;
-
-		if ( consoleState.textWidthInChars < numchars )
-		{
-			numchars = consoleState.textWidthInChars;
-		}
-
-		Com_Memcpy( buf, consoleState.text, sizeof( consoleState.text ) );
-		Con_Clear();
-
-		for ( i = 0; i < numlines; i++ )
-		{
-			conChar_t* destination = consoleState.text + ( consoleState.maxScrollbackLengthInLines - 1 - i ) * consoleState.textWidthInChars;
-			memcpy( destination,
-			        buf + ( ( consoleState.currentLine - i + oldtotallines ) % oldtotallines ) * oldwidth,
-			        numchars * sizeof( conChar_t ) );
-
-			if( destination[0].ch )
-				consoleState.usedScrollbackLengthInLines++;
-		}
-
-		consoleState.currentLine = consoleState.maxScrollbackLengthInLines - 1;
+		consoleState.currentLine = consoleState.maxScrollbackLengthInLines;
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 		consoleState.scrollLineIndex = consoleState.currentLine;
 	}
