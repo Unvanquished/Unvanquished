@@ -1573,6 +1573,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_FS_DELETEFILE:
 			return FS_Delete( (char*) VMA( 1 ) );
 
+		case CG_FS_LOADPAK:
+			return FS_LoadPak( ( char * ) VMA( 1 ) );
+
 		case CG_SENDCONSOLECOMMAND:
 			Cmd::BufferCommandText( (char*) VMA( 1 ) );
 			return 0;

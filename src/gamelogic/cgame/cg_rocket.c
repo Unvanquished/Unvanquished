@@ -38,6 +38,7 @@ rocketInfo_t rocketInfo;
 
 vmCvar_t rocket_menuFile;
 vmCvar_t rocket_hudFile;
+vmCvar_t rocket_pak;
 
 typedef struct
 {
@@ -49,8 +50,9 @@ typedef struct
 
 static const cvarTable_t rocketCvarTable[] =
 {
-	{ &rocket_hudFile, "rocket_hudFile", "ui/rockethud.txt", CVAR_ARCHIVE },
-	{ &rocket_menuFile, "rocket_menuFile", "ui/rocket.txt", CVAR_ARCHIVE }
+	{ &rocket_hudFile, "rocket_hudFile", "ui/rockethud.txt", 0 },
+	{ &rocket_menuFile, "rocket_menuFile", "ui/rocket.txt", 0 },
+	{ &rocket_pak, "rocket_pak", "", 0 },
 };
 
 static const size_t rocketCvarTableSize = ARRAY_LEN( rocketCvarTable );
@@ -106,6 +108,15 @@ void CG_Rocket_Init( void )
 
 	trap_Rocket_RegisterProperty( "cell-color", "white", qfalse, qfalse, "color" );
 	trap_Rocket_RegisterProperty( "border-width", "0.5", qfalse, qfalse, "number" );
+
+	// Load custom rocket pak if necessary
+	if ( *rocket_pak.string )
+	{
+		if ( !trap_FS_LoadPak( rocket_pak.string ) )
+		{
+			Com_Error( ERR_DROP, "Unable to load custom UI pak: %s.", rocket_pak.string );
+		}
+	}
 
 	// Preload all the menu files...
 	len = trap_FS_FOpenFile( rocket_menuFile.string, &f, FS_READ );
