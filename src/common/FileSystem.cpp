@@ -2123,7 +2123,10 @@ void RefreshPaks()
 			return a.checksum > b.checksum;
 
 		// Prefer zip packages to directory packages
-		return b.type == PAK_ZIP;
+		if (b.type == PAK_ZIP && a.type != PAK_ZIP)
+			return true;
+
+		return false;
 	});
 }
 #endif
