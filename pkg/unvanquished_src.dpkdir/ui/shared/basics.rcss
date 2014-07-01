@@ -1,0 +1,99 @@
+/* Basic UI features and colour selection 
+ *
+ * NB UI colours are chosen elsewhere to.  Test after changes to see :)
+ */
+
+/* #### Basic text elements #### */
+body {
+
+	/* Global font defaults */
+	font-family: DejaVu Sans;
+	font-size: 14px;
+	color: #BBBBBB;
+}
+
+p {
+	display:block;
+	margin-bottom: 0.3em;
+}
+
+h1 {
+	display: block;
+	font-size: 20px;
+	font-weight: bold;
+	text-align: right;
+	color: #555555;
+
+	border-bottom: 1px #555555;
+}
+
+h2 {
+	display: block;
+	font-size: 16px;
+	margin-top: 1em;
+	color: #555555;
+}
+
+h3 {
+	display: block;
+	color:white;
+	height: 20px;
+}
+
+indent {
+	display:block;
+	margin-left: 1.5em;
+}
+
+/* #### Links #### */
+/* Inline */
+ilink {
+	color:#136D67;   /* Dark cyan */
+	
+	tab-index: auto;
+
+}
+ilink:hover{
+	color:#00F8FF;   /* Bright cyan */
+}
+
+/* Block, used in main menu */
+blink {
+	display: block;
+	
+	color:#999999;	
+	tab-index: auto;
+
+}
+blink:hover{
+	color:white;
+}
+
+
+
+/* ##### Scroll-bars #### */
+scrollbarvertical{
+	
+	width: 15px;
+	margin-right: -15px;
+	background-color: rgba(0,0,0,0);
+}
+
+scrollbarvertical sliderbar{
+	background-color: rgba( 40%,80%,80%,20%);
+	
+}
+
+/* #### Useful classes #### */
+
+.hidden{
+	display: none;
+}
+
+.right{
+	float:right;
+}
+
+.inline{
+	display: inline;
+}
