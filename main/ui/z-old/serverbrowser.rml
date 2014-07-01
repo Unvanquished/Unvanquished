@@ -1,0 +1,272 @@
+<rml>
+    <head>
+	<link type="text/rcss" href="css/rkt.rcss" />
+	<link type="text/rcss" href="css/unv.rcss" />
+        <title>Server Browser</title>
+        <style>
+#serverbrowser .close{
+	z-index:7;
+	margin-top:5%;
+	margin-left:6%;
+	width:auto;
+	max-width: 10%;
+	max-height: 10%;
+	padding:1%;
+	position:absolute;
+}
+
+
+#serverbrowser .connect{
+	z-index:7;
+	width:100%;
+	padding:5% 4%;
+	display:block;
+	margin:auto;
+	margin-top:3%;
+}
+body
+{
+	width:100%;
+	height:100%;
+	margin: auto;
+
+	text-align:center;
+}
+
+
+div#backdrop, div#backdrop div
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+}
+
+datagrid{
+	width:99%;
+	display:block;
+	font-size:0.8em;
+	text-align:left;
+	z-index:2;
+}
+
+datagridbody{
+	min-height: 50%;
+	max-height: 85%;
+	overflow-y: auto;
+}
+
+.trem-emoticon
+{
+	width:20px;
+	height:20px;
+}
+.label div{
+	display:block;
+	height:25px;
+}
+
+datagridcell{
+	padding-top:5px;
+	padding-bottom:2px;
+	color:white;
+}
+
+datagridcell:nth-child(2n) {
+	padding-left:30px;
+}
+datagridcell:nth-child(1n){
+	position:absolute;
+	left:0px;
+	display:block;
+}
+datagridheader{
+	background:#00000044;
+	margin-bottom:10px;
+	padding-bottom:5px;
+}
+datagridrow{
+	border-bottom-style:solid;
+	border-bottom-width:2px;
+	border-bottom-color:#86868655;
+}
+datagridrow:hover{
+	background:#86868655;
+}
+datagridrow:active{
+	background:#86868699;
+}
+
+datagridrow:selected{
+	background:#252424AA;
+}
+#misc{
+	text-align:center;
+}
+
+#misc .filter1{
+	text-align:left;
+	font-size:0.8em;
+	padding:5px 30px;
+	display:block;
+	width:100%;
+}
+
+#misc .filter1 div{
+	width:3em;
+	text-align:center;
+	float:left;
+}
+
+#misc .filter1 div input{
+	display:inline-block;
+	margin: 0px auto;
+}
+#misc .filter2{
+	text-align:left;
+	font-size:1em;
+	padding:5px 30px;
+	display:block;
+	width:100%;
+}
+#misc .filter2 label{
+	white-space: nowrap;
+	display:block;
+}
+#misc .filter2 input{
+	margin-left:0px;
+}
+
+#right{
+
+}
+
+#left{
+width:60%;
+margin-left:3.5%;
+}
+
+#right, #left{
+margin-top:6%;
+float:left;
+height:100%;
+padding:0% 2%;
+}
+
+
+
+#right{
+font-size:90%;
+width:25%;
+padding-top:2%;
+}
+
+.window panel {
+	overflow: hidden hidden;
+	height:65%;
+}
+
+.window datagridbody{
+	overflow:auto auto;
+}
+
+div#serverInfo datagrid
+{
+	height: 50%;
+}
+
+div.levelshot
+{
+	width: 100%;
+}
+
+img.levelshot
+{
+	width: 100%;
+}
+
+</style>
+    </head>
+    <body onshow="init_servers internet" id="serverbrowser">
+    	<button class="close menuButton" onClick="hide serverbrowser; show main">Back</button>
+		<div id="left" >
+		<tabset id="server" class="window">
+			<tab onClick="buildDS server_browser internet">Internet</tab>
+			<panel>
+				<p><span id="status"></span></p>
+				<button onClick="buildDS server_browser internet">Refresh</button>
+				<div class="servers">
+				<datagrid id="iServers" source="server_browser.internet">
+					<col fields="label" width="30px" class="label" formatter="ServerLabel"><div></div></col>
+					<col fields="name" width="45%" class="name" >Name:</col>
+					<col fields="map" width="15%" class="map"><button onClick="sortDS server_browser internet map">Map:</button></col>
+					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><button onClick="sortDS server_browser internet players">Players (Bots)</button></col>
+					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><button onClick="sortDS server_browser internet ping">Ping</button></col>
+				</datagrid>
+
+				</div>
+			</panel>
+			<tab onClick="init_servers local;buildDS server_browser local">LAN</tab>
+			<panel>
+				<p><span id="status"></span></p>
+				<button onClick="buildDS server_browser local">Refresh</button>
+				<div class="servers">
+				<datagrid source="server_browser.local">
+					<col fields="label" width="30px" class="label" formatter="ServerLabel"><div></div></col>
+					<col fields="name" width="45%" class="name" >Name:</col>
+					<col fields="map" width="15%" class="map"><button onClick="sortDS server_browser local map">Map:</button></col>
+					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><button onClick="sortDS server_browser local players">Players (Bots)</button></col>
+					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><button onClick="sortDS server_browser local ping">Ping</button></col>
+				</datagrid>
+				</div>
+			</panel>
+		</tabset>
+		</div>
+		<div id="right" >
+		<tabset id="misc" class="window">
+		<tab>Filter</tab>
+		<panel>
+			<h2>Show Servers with:</h2>
+			<div class="filter1">
+			Players:
+				<div>0-5<input type='checkbox' name="full" value="true"/></div>
+				<div>6-14<input type='checkbox' name="full" value="true"/></div>
+				<div>15+<input type='checkbox' name="full" value="true"/></div>
+				<div>Full<input type='checkbox' name="full" value="true"/></div>
+			</div>
+			<div class="filter1">
+			Free Slots:
+				<div>5><input type='checkbox' name="full" value="true"/></div>
+				<div>6-14<input type='checkbox' name="full" value="true"/></div>
+				<div>15+<input type='checkbox' name="full" value="true"/></div>
+				<div>Empty<input type='checkbox' name="full" value="true"/></div>
+			</div>
+
+			<div class="filter2">
+				<label>Server Name: </label><input type='text' name="filter" ontextinput="filterDS server_browser" />
+			</div>
+			<button class="menuButton" onClick="show serverinfo">Details</button>
+			<div class="levelshot">
+				<datasource_single source="server_browser.internet" targetid="iServers" fields="map" formatter="LevelShot" />
+			</div>
+
+		</panel>
+		</tabset>
+		<button class="connect menuButton" onClick="execDS server_browser internet">Connect</button>
+		</div>
+		<div id="backdrop">
+			<div id="background">
+				<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu" />
+			</div>
+			<div>
+				<img style="position: fixed; width: 50%; left: 30%; top: 350px;" src="/ui/assets/human.png"/>
+				<img style="position: fixed; width: 15%; left: 50%; top: 600px;" src="/ui/assets/dretch3.png"/>
+				<img style="position: fixed; width: 25%; left: 25%; top: 600px;" src="/ui/assets/dretch2.png"/>
+				<img style="position: fixed; width: 15%; left: 75%; top: 650px;" src="/ui/assets/dretch1.png"/>
+			</div>
+		</div>
+
+	</body>
+</rml>

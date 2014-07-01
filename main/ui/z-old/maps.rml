@@ -1,0 +1,109 @@
+<rml>
+	<head>
+		<title>Options</title>
+		<link type="text/rcss" href="css/unv.rcss" />
+		<style>
+			body
+			{
+				height:50%;
+				display:block;
+				width:50%;
+				margin:auto;
+				text-align:center;
+			}
+
+			.menuButton{
+				padding:1em;
+				font-size:.8em;
+				position:absolute;
+				top:-30px;
+				right:0px;
+				width:8%;
+			}
+			h1{
+				color:#83fff5;
+				width:100%;
+				position:absolute;
+				text-align:center;
+				top:-30px;
+				right:0px;
+			}
+
+			.mapwindow{
+				z-index: 0;
+				padding: 60px 70px;
+				margin:auto;
+				width: 100%;
+				display:block;
+				height:100%;
+/* 				color:#83fff5; */
+				background-decorator: tiled-box;
+				background-top-left-image: /ui/assets/window/top-left.png;
+				background-top-right-image: /ui/assets/window/top-right.png;
+				background-top-image: /ui/assets/window/top.png stretch;
+				background-bottom-left-image: /ui/assets/window/bottom-left.png;
+				background-bottom-right-image: /ui/assets/window/bottom-right.png;
+				background-bottom-image: /ui/assets/window/bottom.png stretch;
+				background-left-image: /ui/assets/window/left.png stretch;
+				background-center-image: /ui/assets/window/line.png stretch;
+				overflow: auto;
+			}
+			.maps{
+				width:200px;
+				height:auto;
+				display:block;
+				float:left;
+				margin:0.2em;
+			}
+			.maps .levelname{
+				display:block;
+				position:absolute;
+				
+				bottom:0px;
+				left:0px;
+				width:100%;
+				background:#000000aa;
+				text-align:center;
+				
+			}
+			.maps .levelshot{
+				width:100%;
+				
+			}
+			.maps .hovertext{
+				display:none;
+				
+				
+			}
+			.maps:hover .hovertext{
+				display:block;
+				position:absolute;
+				top:50%;
+				bottom:0px;
+				height:auto;
+				text-align:center;
+				margin-top:-.5em;
+			}
+			.maps{
+				background:#000;
+			}
+			.maps:hover .levelname,.maps:hover .levelshot{
+				opacity:0;
+			
+			}
+			
+
+		</style>
+	</head>
+	<body id="maps" onshow="buildDS mapList default">
+	<h1>Select Map</h1>
+	<button class="menuButton" onClick="close maps">Close</button>
+	
+	<div class="mapwindow">
+		
+		<datasource  source="mapList.default" fields="num" formatter="VoteMap" />
+		
+	</div>
+	
+	</body>
+</rml>
