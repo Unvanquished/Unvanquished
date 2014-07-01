@@ -1,0 +1,64 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="css/unv.rcss" />
+		<style>
+			body
+			{
+				width:70%;
+				height:60%;
+				display:block;
+				margin:auto;
+				margin-top:33%;
+				margin-right:5%;
+				text-align:center;
+			}
+
+			div.window{
+	z-index: 0;
+	padding: 60px 70px;
+	margin:auto;
+	width: 50%;
+	display:block;
+	min-height:40%;
+	color:#83fff5;
+	background-decorator: tiled-box;
+	background-top-left-image: /ui/assets/window/top-left.png;
+	background-top-right-image: /ui/assets/window/top-right.png;
+	background-top-image: /ui/assets/window/top.png stretch;
+	background-bottom-left-image: /ui/assets/window/bottom-left.png;
+	background-bottom-right-image: /ui/assets/window/bottom-right.png;
+	background-bottom-image: /ui/assets/window/bottom.png stretch;
+	background-left-image: /ui/assets/window/left.png stretch;
+	background-center-image: /ui/assets/window/line.png stretch;
+	overflow: auto;
+			}
+	.menuButton{
+		display:inline-block;
+		font-size:1em;
+		padding:0.3em;
+		width:40%;
+		margin:0px;
+		margin-top:1em;
+	}
+	input.hidden
+	{
+		 visibility:hidden;
+		 height:0px;
+		 width:0px;
+		 display:none;
+	}
+	input.text{
+		width:7em;
+	}
+
+		</style>
+	</head>
+	<body id="customresolution">
+	<div class="window options">
+	<h1>Custom Resolution</h1>
+	<div class="line"><label>Width:</label><input type="text" cvar="r_customWidth" /></div>
+	<div class="line"><label>Height:</label><input type="text" cvar="r_customHeight" /></div>
+	<button class="menuButton" onClick="exec vid_restart">Save</button><button class="menuButton" onClick="hide customresolution;show options">Close</button>
+	</div>
+	</body>
+</rml>

@@ -1,0 +1,31 @@
+{
+	main
+	{
+		ui/main.rml main             // ROCKETMENU_MAIN
+		ui/connecting.rml connecting // ROCKETMENU_CONNECTING
+		ui/loading.rml loading       // ROCKETMENU_LOADING
+		ui/download.rml download     // ROCKETMENU_DOWNLOADING
+		ui/ingame.rml ingame         // ROCKETMENU_INGAME_MENU
+		ui/teamselect.rml teamsel    // ROCKETMENU_TEAMSELECT
+		ui/humanspawn.rml humanspawn // ROCKETMENU_HUMANSPAWN
+		ui/alienspawn.rml alienspawn // ROCKETMENU_ALIENSPAWN
+		ui/alienbuild.rml alienbuild // ROCKETMENU_ALIENBUILD
+		ui/humanbuild.rml humanbuild // ROCKETMENU_HUMANBUILD
+		ui/armourybuy.rml armourybuy // ROCKETMENU_ARMOURYBUY
+		ui/alienevo.rml alienevo     // ROCKETMENU_ALIENEVOLVE
+		ui/chat.rml chat             // ROCKETMENU_CHAT
+	}
+	misc
+	{
+		ui/demos.rml
+		ui/options.rml
+		ui/serverbrowser.rml
+		ui/serverinfo.rml
+		ui/mods.rml
+		ui/help.rml
+		ui/dialogs/customresolution.rml
+		ui/dialogs/editplayer.rml
+		ui/dialogs/resolution.rml
+	}
+	cursor ui/cursor.rml
+}

@@ -1,0 +1,53 @@
+<template name="unvwindow" content="content">
+<head>
+	<link type="text/rcss" href="../css/rkt.rcss" />
+	<link type="text/rcss" href="../css/unv.rcss" />
+	<style>
+		body.window
+		{
+			padding: 80px 60px;
+			min-width: 250px;
+			max-width: 800px;
+
+			min-height: 135px;
+			max-height: 700px;
+		}
+		body
+		{
+			width: auto;
+			blur-decorator: image;
+			blur-image: /ui/assets/window/blur.png;
+			blur-z-index: 2;
+			background-decorator: tiled-box;
+			background-top-left-image: /ui/assets/window/top-left.png;
+			background-top-right-image: /ui/assets/window/top-right.png;
+			background-top-image: /ui/assets/window/top.png stretch;
+			background-bottom-left-image: /ui/assets/window/bottom-left.png;
+			background-bottom-right-image: /ui/assets/window/bottom-right.png;
+			background-bottom-image: /ui/assets/window/bottom.png stretch;
+			background-left-image: /ui/assets/window/left.png stretch;
+			background-center-image: /ui/assets/window/line.png stretch;
+			background-z-index: 0;
+			overflow: hidden auto;
+		}
+		button#x, button#x:hover
+		{
+			width: 35px;
+			height: 35px;
+			float: right;
+			background-image-src: /emoticons/cross_1x1.tga;
+			background-color-multiplier: rgba(255,255,255,122);
+		}
+		button#x:hover
+		{
+			background-color-multiplier: rgba(255,255,255,255);
+		}
+	</style>
+</head>
+<body class="window">
+	<div id="window">
+		<div id="content">
+		</div>
+	</div>
+</body>
+</template>

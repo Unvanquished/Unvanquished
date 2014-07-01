@@ -1,0 +1,30 @@
+<rml>
+    <head>
+        <title>Demos</title>
+        <link type="text/template" href="assets/window.rml" />
+        <style>
+        body
+        {
+			width: 50%;
+			height: 60%;
+			margin: auto;
+		}
+
+		div#content
+		{
+			overflow-y: auto;
+		}
+
+		div#title_bar div#icon
+		{
+			icon-image-s: 128px 179px;
+			icon-image-t: 152px 191px;
+		}
+        </style>
+    </head>
+    <body template="window" onload="buildDS demoList" id="demos">
+	<datagrid source="demoList.default">
+		<col fields="name" width="30%">Name:</col>
+	</datagrid>
+    </body>
+</rml>

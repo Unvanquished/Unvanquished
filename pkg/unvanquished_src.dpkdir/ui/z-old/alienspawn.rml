@@ -1,0 +1,71 @@
+<rml>
+	<head>
+		<title>Help</title>
+		<link type="text/template" href="templates/unvwindow.rml" />
+		<style>
+			body
+			{
+				width: 40%;
+				height: 30%;
+				margin: auto;
+			}
+
+			div
+			{
+				float: left;
+			}
+			div#list
+			{
+				width: 15%;
+				height: 100%;
+			}
+
+			div#info
+			{
+				float: right;
+				width: 70%;
+				height: 100%;
+				overflow-y: auto;
+			}
+
+			datagrid
+			{
+				width: 100%;
+				float: left;
+			}
+
+			datagridrow:selected
+			{
+				background: rgba(111,111,111,111);
+			}
+			div#buttons
+			{
+				float: right;
+				position: absolute;
+				height: 3%;
+				bottom: 0px;
+				right: 0px;
+			}
+			div#buttons button
+			{
+				position: relative;
+				float: right;
+				bottom: 0px;
+			}
+		</style>
+	</head>
+	<body id="alienspawn" template="unvwindow" onShow="buildDS alienSpawnClass default">
+		<div id="list">
+		<datagrid id="team"  source="alienSpawnClass.default">
+			<col fields="name" width="100%"/>
+		</datagrid>
+		</div>
+		<div id="info">
+		<datasource_single source="alienSpawnClass.default" fields="description" targetid="team" />
+		</div>
+		<div id='buttons'>
+			<button onClick="execDS alienSpawnClass default">Spawn</button>
+			<button onClick="hide alienspawn">Cancel</button>
+		</div>
+	</body>
+</rml>

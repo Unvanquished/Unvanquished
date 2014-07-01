@@ -1,0 +1,94 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="css/unv.rcss" />
+		<style>
+			body{
+				background:#000000CC;
+				width:100%;
+				height:100%;
+			}
+
+			div
+			{
+				font-family: Roboto;
+			}
+			div#sidebar, div#logo
+			{
+				position: fixed;
+				left: 0%;
+				width: 25%;
+				font-family: Roboto;
+				z-index: 3;
+				margin: auto 0;
+			}
+			div#sidebar
+			{
+				margin-top: 15%;
+				height: 50%;
+			}
+			button
+			{
+				color: #83fff5;
+				display: block;
+
+				max-width: 250px;
+				width: 60%;
+				padding:5%;
+				margin-left:10%;
+				font-size: 17;
+				text-align: center;
+				tab-index: auto;
+				background-decorator: image;
+				background-image: /ui/assets/buttons.png 0px 222px 311px 333px ;
+			}
+			button:hover
+			{
+				color: white;
+				background-image: /ui/assets/buttons.png 0px 0px 311px 111px;
+			}
+			button:active
+			{
+				color: white;
+				background-image: /ui/assets/buttons.png 0px 111px 311px 222px;
+			}
+			#sidebar .separator
+			{
+				display: block;
+				height: 15px;
+			}
+			#background-elements
+			{
+				position: absolute;
+				width: 100%;
+				height: 100%;
+			}
+			#mapmap{
+				width:70%;
+				height:70%;
+				display:block;
+				background:#FFFFFF44;
+				margin:auto;
+				margin-left:25%;
+			}
+			
+		</style>
+		<title>main</title>
+	</head>
+	<body id="ingame">
+		
+		<div id="sidebar">
+			<button class="menuButton" onClick="show overview">Overview</button>
+			<button class="menuButton" onClick="show serverinfo">Server</button>
+			<button class="menuButton" onClick="exec rocket ui/players.rml load;exec rocket players show">Players</button>
+			<button class="menuButton" onClick="exec rocket ui/maps.rml load;exec rocket maps show">Map</button>
+			<div class="separator"></div>
+			<button class="menuButton" onClick="show options">Options</button>
+			<button class="menuButton" onClick="show help">Guide</button>
+			<div class="separator"></div>
+			<button class="menuButton" onClick="exec disconnect">Disconnect</button>
+			<button class="menuButton" onClick="exec quit">Quit</button>
+		</div>
+		
+		<div id="mapmap">Big minimap Map ...Map</div>
+	</body>
+</rml>
