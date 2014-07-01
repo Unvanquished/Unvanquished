@@ -1760,7 +1760,7 @@ void CG_Rocket_DrawConnectText( void )
 
 	else
 	{
-		Q_strncpyz( rml, va( "Connecting to %s", rocketInfo.cstate.servername ), sizeof( rml ) );
+		Q_strncpyz( rml, va( "Connecting to %s <br/>", rocketInfo.cstate.servername ), sizeof( rml ) );
 	}
 
 	if ( rocketInfo.cstate.connState < CA_CONNECTED && *rocketInfo.cstate.messageString )
@@ -1795,7 +1795,7 @@ void CG_Rocket_DrawConnectText( void )
 
 	Q_strcat( rml, sizeof( rml ), s );
 
-	trap_Rocket_SetInnerRML( rml, RP_QUAKE );
+	trap_Rocket_SetInnerRML( rml, 0 );
 }
 
 void CG_Rocket_DrawClock( void )
@@ -2435,15 +2435,14 @@ static void CG_Rocket_DrawHostname( void )
 
 static void CG_Rocket_DrawDownloadName( void )
 {
-	static char oldDownload[ MAX_STRING_CHARS ];
 	char downloadName[ MAX_STRING_CHARS ];
 
 	trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof( downloadName ) );
 
-	if ( Q_stricmp( downloadName, oldDownload ) )
+	if ( Q_stricmp( downloadName, rocketInfo.downloadName ) )
 	{
-		Q_strncpyz( oldDownload, downloadName, sizeof( oldDownload ) );
-		trap_Rocket_SetInnerRML( oldDownload, RP_QUAKE );
+		Q_strncpyz( rocketInfo.downloadName, downloadName, sizeof( rocketInfo.downloadName ) );
+		trap_Rocket_SetInnerRML( rocketInfo.downloadName, RP_QUAKE );
 	}
 }
 
@@ -2453,6 +2452,11 @@ static void CG_Rocket_DrawDownloadTime( void )
 	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
 	float downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 	int xferRate;
+
+	if ( !*rocketInfo.downloadName )
+	{
+		return;
+	}
 
 	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
 	{
@@ -2484,6 +2488,11 @@ static void CG_Rocket_DrawDownloadTotalSize( void )
 	char totalSizeBuf[ MAX_STRING_CHARS ];
 	float downloadSize = trap_Cvar_VariableValue( "cl_downloadSize" );
 
+	if ( !*rocketInfo.downloadName )
+	{
+		return;
+	}
+
 	CG_ReadableSize( totalSizeBuf,  sizeof totalSizeBuf,  downloadSize );
 
 	trap_Rocket_SetInnerRML( totalSizeBuf, RP_QUAKE );
@@ -2493,6 +2502,11 @@ static void CG_Rocket_DrawDownloadCompletedSize( void )
 {
 	char dlSizeBuf[ MAX_STRING_CHARS ];
 	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
+
+	if ( !*rocketInfo.downloadName )
+	{
+		return;
+	}
 
 	CG_ReadableSize( dlSizeBuf,  sizeof dlSizeBuf,  downloadCount );
 
@@ -2505,6 +2519,11 @@ static void CG_Rocket_DrawDownloadSpeed( void )
 	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
 	float downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 	int xferRate;
+
+	if ( !*rocketInfo.downloadName )
+	{
+		return;
+	}
 
 	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
 	{

@@ -15,7 +15,9 @@
 		body
 		{
 			width: auto;
-
+			blur-decorator: image;
+			blur-image: /ui/assets/window/blur.png;
+			blur-z-index: 2;
 			background-decorator: tiled-box;
 			background-top-left-image: /ui/assets/window/top-left.png;
 			background-top-right-image: /ui/assets/window/top-right.png;
@@ -25,6 +27,7 @@
 			background-bottom-image: /ui/assets/window/bottom.png stretch;
 			background-left-image: /ui/assets/window/left.png stretch;
 			background-center-image: /ui/assets/window/line.png stretch;
+			background-z-index: 0;
 			overflow: hidden auto;
 		}
 		button#x, button#x:hover

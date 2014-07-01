@@ -642,6 +642,23 @@ void CG_OnPlayerUpgradeChange( void )
 
 /*
 =========================
+CG_OnMapRestart
+
+Called whenever the map is restarted
+via map_restart
+=========================
+*/
+void CG_OnMapRestart( void )
+{
+	// if scoreboard is showing, hide it
+	CG_HideScores_f();
+
+	// hide any other menus
+	trap_Rocket_DocumentAction( "", "blurall" );
+}
+
+/*
+=========================
 CG_Level2Zap
 =========================
 */

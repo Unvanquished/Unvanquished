@@ -1000,8 +1000,6 @@ char         *Sys_ConsoleInput( void );
 
 void         Sys_Sleep( int msec );
 
-qboolean     Sys_LowPhysicalMemory( void );
-
 typedef enum
 {
   DR_YES = 0,

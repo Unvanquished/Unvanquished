@@ -214,6 +214,12 @@ int trap_FS_Delete( const char *filename )
 	return syscallVM( CG_FS_DELETEFILE, filename );
 }
 
+qboolean trap_FS_LoadPak( const char* pak )
+{
+	return syscallVM( CG_FS_LOADPAK, pak );
+}
+
+
 //20.
 //Cbuf_AddText(VMA(1));
 void trap_SendConsoleCommand( const char *text )

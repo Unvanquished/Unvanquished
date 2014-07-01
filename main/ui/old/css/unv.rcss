@@ -1,6 +1,6 @@
 body
 {
-	font-family: DejaVu Sans;
+	font-family: Roboto Condensed;
 	font-size: 18;
 	font-weight: normal;
 	font-style: normal;
@@ -405,6 +405,9 @@ background-color:#227c77FF;
 	z-index: 0;
 	overflow:auto auto;
 	color:#83fff5;
+	blur-decorator: image;
+	blur-image: /ui/assets/window/blur.png;
+	blur-z-index: 2;
 	background-decorator: tiled-box;
 	background-top-left-image: /ui/assets/window/top-left.png;
 	background-top-right-image: /ui/assets/window/top-right.png;
@@ -414,13 +417,9 @@ background-color:#227c77FF;
 	background-bottom-image: /ui/assets/window/bottom.png stretch;
 	background-left-image: /ui/assets/window/left.png stretch;
 	background-center-image: /ui/assets/window/line.png stretch;
+	background-z-index: 0;
 	overflow: hidden auto;
 
-	/*
-	background:#073128cf;
-	border-style:solid;
-	border-width:2px;
-	border-color:#83fff555;*/
 }
 
 /* circlemenu */
@@ -548,6 +547,7 @@ circlemenu
 .infobox p.text{
 	background:#25252599;
 	padding:5px;
+	font-size: 0.9em;
 }
 
 

@@ -256,7 +256,7 @@ static void CG_CompleteGive( void )
 	unsigned               i = 0;
 	static const char give[][ 12 ] =
 	{
-		"all", "health", "funds", "stamina", "poison", "gas", "ammo", "momentum", "bp"
+		"all", "health", "funds", "stamina", "poison", "fuel", "ammo", "momentum", "bp"
 	};
 
 	for( i = 0; i < ARRAY_LEN( give ); i++ )
@@ -357,7 +357,7 @@ static void CG_ToggleMenu_f( void )
 }
 
 // FIXME: Don't hardcode scoreboard ID
-static void CG_ShowScores_f( void )
+void CG_ShowScores_f( void )
 {
 	if ( !cg.showScores )
 	{
@@ -372,7 +372,7 @@ static void CG_ShowScores_f( void )
 	}
 }
 
-static void CG_HideScores_f( void )
+void CG_HideScores_f( void )
 {
 	trap_Rocket_ShowScoreboard( "scoreboard", qfalse );
 	cg.showScores = qfalse;

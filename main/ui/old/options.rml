@@ -100,7 +100,7 @@
 			}
 		</style>
 	</head>
-	<body id="options" onload="buildDS languages">
+	<body id="options" onload="buildDS languages; buildDS alOutputs; buildDS voipInputs">
 		<tabset class="options window">
 		<tab>Player</tab>
 		<panel>
@@ -112,7 +112,7 @@
 			<div class="line"><label>Sticky Spectate:</label><input cvar="cg_stickySpec" type="checkbox" /></div>
 			<div class="line"><label>Tutorial Mode:</label><input cvar="cg_tutorial" type="checkbox" /></div>
 			<div class="line"><label>Disable Warning Dialogs:</label>
-			<select name="videoquality" cvar="cg_disableWarningDialogs">
+			<select  cvar="cg_disableWarningDialogs">
 				<option value="0">No</option>
 				<option value="1">Print To Console</option>
 				<option value="2">Yes</option>
@@ -196,14 +196,13 @@
 				<div class="line"><label>Centerview:</label><keybind cmd="centerview" /></div>
 				<div class="line"><label>Free Look:</label><input cvar="cl_freelook" type="checkbox" /></div>
 				<div class="line"><label>Mouse Sensitivity:</label><input type="range" min=" 1" max=" 30" step="0.01" cvar="sensitivity"/></div>
-				<div class="line"><label>Invert Mouse:</label><input cvar="ui_mousePitch" type="checkbox" /></div>
 				<div class="line"><label>Smooth Mouse:</label><input cvar="m_filter" type="checkbox" /></div>
 				<div class="line"><label>Auto Wallwalk Pitching:</label><input cvar="cg_wwFollow" type="checkbox" /></div>
 			</panel>
 			<tab>Move</tab>
 			<panel>
 				<div class="line"><label>Run / Walk:</label><keybind cmd="+speed" /></div>
-				<div class="line"><label>Sprint:</label><keybind cmd="+sprint" /></div>
+				<div class="line"><label>Sprint:</label><keybind cmd="+sprint" team="humans" /></div>
 				<div class="line"><label>Forward:</label><keybind cmd="+forward" /></div>
 				<div class="line"><label>Backpedal:</label><keybind cmd="+back" /></div>
 				<div class="line"><label>Move Left:</label><keybind cmd="+moveleft" /></div>
@@ -213,18 +212,19 @@
 				<div class="line"><label>Wallwalk:</label><keybind cmd="+movedown" team="aliens" /></div>
 				<div class="line"><label>Turn Left:</label><keybind cmd="+left" /></div>
 				<div class="line"><label>Turn Right:</label><keybind cmd="+right" /></div>
-				<div class="line"><label>Strafe:</label><keybind cmd="+strafe" /></div>
 			</panel>
 			<tab>Upgrades</tab>
 			<panel>
 				<div class="line"><label>Primary Attack:</label><keybind cmd="+attack" /></div>
 				<div class="line"><label>Secondary Attack:</label><keybind cmd="+attack2" /></div>
+				<div class="line"><label>Shoot Barb:</label><keybind cmd="+useitem" team="aliens" /></div>
 				<div class="line"><label>Previous Upgrade:</label><keybind cmd="weapprev" /></div>
 				<div class="line"><label>Next Upgrade:</label><keybind cmd="weapnext" /></div>
 				<div class="line"><label>Activate Upgrade:</label><keybind cmd="+useitem" /></div>
 				<div class="line"><label>Reload:</label><keybind cmd="-reload" team="humans" /></div>
 				<div class="line"><label>Use Medkit:</label><keybind cmd="-medkit" team="humans" /></div>
-				<div class="line"><label>Use Structure/Evolve:</label><keybind cmd="+activate" /></div>
+				<div class="line"><label>Use Structure:</label><keybind cmd="+activate" team="humans" /></div>
+				<div class="line"><label>Evolve:</label><keybind cmd="+activate" team="aliens" /></div>
 			</panel>
 			<tab>Chat &amp; Vote</tab>
 			<panel>
@@ -233,7 +233,6 @@
 				<div class="line"><label>Chat:</label><keybind cmd="messagemode_public" /></div>
 				<div class="line"><label>Team Chat:</label><keybind cmd="messagemode_team" /></div>
 				<div class="line"><label>Admin Chat:</label><keybind cmd="messagemode_admin" /></div>
-<!-- 				<div class="line"><label>IRC Chat:</label><keybind cmd="messagemode4" /></div> -->
 				<div class="line"><label>VoIP Chat:</label><keybind cmd="+voiprecord" /></div>
 				<div class="line"><label>Vote Yes:</label><keybind cmd="vote yes" /></div>
 				<div class="line"><label>Vote No:</label><keybind cmd="vote no" /></div>
@@ -258,7 +257,7 @@
 			<tab>Display</tab>
 			<panel>
 			<div class="line"><label>Quality:</label>
-			<select cvar="ui_glCustom">
+			<select cvar="ui_glCustom" onchange="graphicsqualitychanged">
 				<option value="0">High</option>
 				<option value="1">Intermediate</option>
 				<option value="5">Dlights, no fx</option>
@@ -351,8 +350,8 @@
 			<div class="line"><label>Music Volume:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.volume.music"/></div>
 			<div class="line"><label>Reverb Intensity:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.reverbIntensity"/></div>
 			<div class="line"><label>Doppler Intensity:</label><input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.dopplerExaggeration"/></div>
-			<div class="line"><label>OpenAL Device:</label><dataselect source="FILL ME IN"/></div>
-			<div class="line"><label>OpenAL Capture Device:</label><dataselect source="FILL ME IN"/></div>
+			<div class="line"><label>OpenAL Device:</label><dataselect source="alOutputs.default" fields="name" /></div>
+			<div class="line"><label>OpenAL Capture Device:</label><dataselect source="voipInputs.default" fields="name" /></div>
 			<div class="line"><label>Net Data Rate:</label>
 			<select cvar="rate">
 				<option value="2500">&lt;=28.8k</option>
