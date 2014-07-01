@@ -96,6 +96,8 @@ static int      stderr_fd;
 #define LOG_LINES      ( LINES - 4 )
 #define LOG_COLS       ( COLS - 3 )
 
+#define CURSES_NULL_COLOR -1
+
 /*
 ==================
 CON_SetColor
@@ -130,13 +132,18 @@ static void CON_SetColor( WINDOW *win, int color )
 		}
 	};
 
-	if ( !com_ansiColor || !com_ansiColor->integer )
+	if ( color == CURSES_NULL_COLOR || !com_ansiColor || !com_ansiColor->integer )
 	{
 		wattrset( win, COLOR_PAIR( 0 ) );
 	}
 	else if ( COLORS >= 256 && com_ansiColor->integer > 0 )
 	{
-		wattrset( win, COLOR_PAIR( color + 9 ) ); // hardwired below; see init_pair() calls
+#ifdef A_RGB  //macro producing color attribute for a 64-bit chtype in pdcurses
+		wattrset( win, A_RGB( (int)( g_color_table[color][0] * 31 ),
+		    (int)( g_color_table[color][1] * 31 ), (int)( g_color_table[color][2] * 31 ), 0, 0, 0 ) );
+#else
+		wattrset( win, COLOR_PAIR( color + 9 ) ); // hard-wired below; see init_pair() calls
+#endif
 	}
 	else
 	{
@@ -208,7 +215,7 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 	int         length = 0;
 	qboolean    noColour = qfalse;
 
-	CON_SetColor( win, 7 );
+	CON_SetColor( win, CURSES_NULL_COLOR );
 
 	while ( *msg )
 	{
@@ -227,14 +234,14 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 			if ( *msg == '\n' )
 			{
 				// Reset the color and then print a newline
-				CON_SetColor( win, 7 );
+				CON_SetColor( win, CURSES_NULL_COLOR );
 				waddch( win, '\n' );
 				msg++;
 			}
 			else
 			{
 				// Set the color
-				CON_SetColor( win, ColorIndex( * ( msg + 1 ) ) );
+				CON_SetColor( win, *( msg + 1 ) == COLOR_NULL ? CURSES_NULL_COLOR : ColorIndex( *( msg + 1 ) ) );
 
 				if ( stripcodes )
 				{
@@ -650,7 +657,7 @@ char *CON_Input( void )
 			case '\n':
 			case '\r':
 			case KEY_ENTER:
-				Com_Printf( PROMPT S_COLOR_WHITE "%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
+				Com_Printf( PROMPT S_COLOR_NULL "%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
 				input_field.RunCommand(com_consoleCommand->string);
 				werase( inputwin );
 				wnoutrefresh( inputwin );
