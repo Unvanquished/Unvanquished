@@ -1,0 +1,146 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<style>
+			
+			tab {
+				margin: 0.5em;
+				margin-bottom: 2em;
+				color:#136D67;   /* Dark cyan */
+				border-color: #136D67;   /* Dark cyan */
+				text-align: center;
+				
+				float:left;
+				width: 5em;
+				
+				border-style solid;
+				border-bottom: 1px solid;
+				
+
+			}
+			
+			tab:selected {
+				color: red;
+				color:#00F8FF;   /* Bright cyan */
+				border-color: #00F8FF;   /* Bright cyan */
+			}
+			
+			panel {
+				float:right;
+				width: 100%;
+			}
+			
+			half {
+				display:block;
+				padding:0;
+				float:left;
+				width:45%;
+			}
+			
+			half.left; {
+				margin-right:5%;
+			}
+			
+			half.right; {
+				margin-left:5%;
+			}
+			
+			
+					
+		</style>
+
+
+	</head>
+	<body id="options_graphics" template="window" style="width: 35em; height: 50em; margin: 10%;">
+		<h1> Graphics </h1>
+		
+		<tabset>
+			<tab> General </tab>
+			<panel>
+				<h2>Brightness</h2>
+				<row>
+					<input type="range" min="0" max="2" step="0.01" cvar="r_gamma" class="right"/>
+					<p class="inline"> 
+						Current gamma: <inlinecvar cvar="r_gamma" type="number" format="%.2f"/>
+						<ilink onclick="exec r_gamma 1"> (reset) </ilink>
+					</p>
+				</row>
+				
+				<h2> Video </h2>
+				<p>
+					If you break anything here, look on the Unvanquished 
+					wiki for "Running the Game" instructions.
+				</p>
+				<row>
+					<half class="left">
+						<input type="text" cvar="r_customwidth" class="right" style="width: 3em;"/> 
+						<h3>Width</h3>
+					</half>
+					<half class="right">
+						<input cvar="r_fullscreen" type="checkbox"  class="right"/>
+						<h3>Fullscreen</h3>
+					</half>
+				</row>
+				<row>
+					<half class="left">
+						<input type="text" cvar="r_customheight" class="right" style="width: 3em;"/> 
+						<h3>Height</h3>
+					</half>
+					<half class="right">
+						<input cvar="somethingsomething" type="checkbox"  class="right"/>
+						<h3>Vsync</h3>
+					</half>
+				</row>	
+				
+				<h2> Anti-aliasing</h2>
+				<p> AA fixes 'jagged edges', but can be very costly to your frame-rate.</p>
+				<p> 'FXAA' is a more efficient method to perform AA than the traditional methods, but it is not supported by all drivers.</p>
+				<row>
+					
+					<select cvar="r_ext_multisample" class="right">
+						<option value="0">None</option>
+						<option value="2">2×</option>
+						<option value="4">4×</option>
+						<option value="8">8×</option>
+						<option value="16">16×</option>
+					</select>
+					<h3> Multisampling level </h3>
+					
+				</row>
+				<row>
+					<input cvar="r_FXAA" type="checkbox" class="right" />
+					<h3> FXAA </h3>
+				</row>
+				
+				<p style="margin-top: 3em;"> 
+					Some changes will only take effect on the next match you play.
+					Alternatively you can <ilink> restart the video now.</ilink>
+				</p>
+				
+			</panel>
+			
+			<tab> Textures </tab>
+			<panel>
+				<p> Texture stuff </p>
+			</panel>
+			
+			<tab> Effects </tab>
+			<panel>
+				<p> Texture stuff </p>
+			</panel>
+			
+			<tab> Lighting</tab>
+			<panel>
+				<p> Texture stuff </p>
+			</panel>
+			
+			<tab> Misc</tab>
+			<panel>
+				<p> Texture stuff </p>
+			</panel>
+
+		
+		</tabset>
+	</body>
+</rml>

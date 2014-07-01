@@ -1,0 +1,153 @@
+<template name="window" content="content">
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<style>
+	
+		/* #### Dialog window #### */
+		window {
+			display:block;
+			z-index: 5;
+			
+			/* No support for resolutions below 1024x768 */
+			max-width: 1000px;
+			/* max-height: 700px; */
+			overflow: auto;
+			
+			font-family: DejaVu Sans;
+			color: #999999;
+			
+			padding: 1em;
+			
+			background-color: rgba( 10%,10%,10%, 80%);
+			border-style:solid;
+			border-width:1px;
+			border-color: rgba( 0%, 0%, 0%, 40%);
+			
+		}
+
+		closebutton {
+			display:block;
+			width:1em;
+			height:1em;
+			
+			position: absolute;
+			top: 0.5em;
+			left: 0.5em;
+			
+			background-decorator: image;
+			background-image:/ui/shared/close_cross.png;
+		}
+		
+		closebutton:hover {
+			background-image:/ui/shared/close_cross_hover;
+		}
+
+		row {
+			display: block;
+			width: 100%;
+			margin-top: 0.5em;
+			margin-bottom: 0.5em;
+		}
+		
+		
+		
+	
+
+		/* #### User-interface controls #### */
+
+		colorinput, dataselect, select {
+			display:block;
+			height: 20x;
+			width: 150px;
+			
+			background-color: black;
+			
+			border-width: 1px;
+			border-style: solid;
+			border-color:  #555555;
+		}
+
+
+		select selectarrow,
+		dataselect selectarrow
+		{
+			margin-right:0px;
+			margin-top:0px;
+			width:20px;
+			height:20px;
+			icon-decorator: image;
+			icon-image: /ui/shared/select.png;
+		}
+
+		input.checkbox
+		{
+			width:20px;
+			height:20px;
+			icon-decorator: image;
+			icon-image: /ui/shared/radio-check.png 444px 222px 666px 444px;
+		}
+		
+		
+		input.radio
+		{
+			
+			width:20px;
+			height:20px;
+			icon-decorator: image;
+			icon-image: /ui/shared/radio-check.png 444px 0px 666px 222px;
+		}
+
+		input.checkbox:hover,input.checkbox:checked:hover,
+		input.radio:hover, input.radio:checked:hover
+		{
+			icon-image-s: 222px 444px;
+		}
+
+		input.checkbox:active,input.checkbox:checked:active,
+		input.radio:active, input.radio:checked:active
+		{
+			icon-image-s: 0px 222px;
+		}
+
+		input.checkbox:checked,input.checkbox:checked:active,input.checkbox:checked:hover
+		{
+			icon-image-t: 666px 888px;
+		}
+
+		input.radio:checked, input.radio:checked:hover, input.radio.checked:active
+		{
+			icon-image-t: 444px 666px;
+		}
+
+		input.range{
+		
+		}
+		input.range slidertrack{
+			background:#83fff522;
+			border-style:solid;
+			border-width:1px;
+			border-color:#83fff555;
+			height: 8px;
+			margin-top: 5px;
+			width: 50px;
+		}
+		input.range sliderbar{
+			border-style:solid;
+			border-width:1px;
+			border-color:#83fff588;
+			background:#136D67;
+			height: 18px;
+			width: 10px;
+		}
+
+	</style>
+</head>
+<body>
+	<handle move_target="#document">
+		<window>
+			<closebutton onClick="hide #document" /> 
+			<div id="content"></div>
+		</window>
+	</handle>
+</body>
+</template>

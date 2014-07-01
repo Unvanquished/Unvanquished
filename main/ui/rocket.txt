@@ -1,0 +1,29 @@
+{
+	main
+	{
+		// Don't remove/add any entries, or daemon will fail to load
+		// Files don't have to actually exist, however
+		ui/main/main.rml main                // ROCKETMENU_MAIN ==================
+		ui/connecting.rml connecting         // ROCKETMENU_CONNECTING
+		ui/loading.rml loading               // ROCKETMENU_LOADING
+		ui/download.rml download             // ROCKETMENU_DOWNLOADING
+		ui/ingame/ingame.rml ingame          // ROCKETMENU_INGAME_MENU ===========
+		ui/teamselect.rml teamsel            // ROCKETMENU_TEAMSELECT
+		ui/ingame/human/spawn.rml humanspawn // ROCKETMENU_HUMANSPAWN ============
+		ui/alienspawn.rml alienspawn         // ROCKETMENU_ALIENSPAWN
+		ui/alienbuild.rml alienbuild         // ROCKETMENU_ALIENBUILD
+		ui/humanbuild.rml humanbuild         // ROCKETMENU_HUMANBUILD
+		ui/armourybuy.rml armourybuy         // ROCKETMENU_ARMOURYBUY
+		ui/alienevo.rml alienevo             // ROCKETMENU_ALIENEVOLVE
+		ui/chat.rml chat                     // ROCKETMENU_CHAT
+	}
+	misc
+	{
+		// Custom section.  Add and remove freely
+		ui/options/player.rml 
+		ui/options/fov.rml  
+		ui/options/graphics.rml
+		ui/shared/window.rml
+	}
+	cursor ui/shared/cursor.rml
+}
