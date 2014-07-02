@@ -2750,18 +2750,30 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
 			}
 		}
 
+		int bestLoader = -1;
+		const FS::PakInfo* bestPak = nullptr;
+
 		// try and find a suitable match using all the image formats supported
+		// prioritize with the pak priority
 		for ( i = 0; i < numImageLoaders; i++ )
 		{
-			char *altName = va( "%s.%s", filename, imageLoaders[ i ].ext );
+			std::string altName = Str::Format("%s.%s", filename, imageLoaders[i].ext);
+			const FS::PakInfo* pak = FS::PakPath::LocateFile(altName);
 
-			// load
-			imageLoaders[ i ].ImageLoader( altName, pic, width, height, numLayers, numMips, bits, alphaByte );
-
-			if ( *pic )
+			// We found a file and its pak is better than the best pak we have
+			// this relies on how the filesystem works internally and should be moved
+			// to a more explicit interface once there is one. (FIXME)
+			if ( pak != nullptr && (bestPak == nullptr || pak < bestPak ) )
 			{
-				break;
+				bestPak = pak;
+				bestLoader = i;
 			}
+		}
+
+		if ( bestLoader >= 0 )
+		{
+			char *altName = va( "%s.%s", filename, imageLoaders[ bestLoader ].ext );
+			imageLoaders[ bestLoader ].ImageLoader( altName, pic, width, height, numLayers, numMips, bits, alphaByte );
 		}
 	}
 }

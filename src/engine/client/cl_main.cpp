@@ -125,7 +125,6 @@ cvar_t *cl_autorecord;
 cvar_t *cl_motdString;
 
 cvar_t *cl_allowDownload;
-cvar_t *cl_wwwDownload;
 cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
@@ -2280,13 +2279,17 @@ void CL_Snd_Restart_f( void )
 	if( !cls.cgameStarted )
 	{
 		CL_ShutdownUI();
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		//TODO S_BeginRegistration()
 		CL_InitUI();
 	}
 	else
 	{
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		CL_Vid_Restart_f();
 	}
 }
@@ -2781,57 +2784,6 @@ void CL_DisconnectPacket( netadr_t from )
 
 /*
 ===================
-CL_MotdPacket
-
-===================
-*/
-void CL_MotdPacket( netadr_t from, const char *info )
-{
-	const char *v;
-	char w[BIG_INFO_VALUE];
-	char *ptr;
-
-	// if not from our server, ignore it
-	if ( !NET_CompareAdr( from, cls.updateServer ) )
-	{
-		Com_DPrintf( "MOTD packet from unexpected source\n" );
-		return;
-	}
-
-	Com_DPrintf( "MOTD packet: %s\n", info );
-
-	while ( *info != '\\' )
-	{
-		info++;
-	}
-
-	// check challenge
-	v = Info_ValueForKey( info, "challenge" );
-
-	if ( strcmp( v, cls.updateChallenge ) )
-	{
-		Com_DPrintf( "MOTD packet mismatched challenge: "
-		             "'%s' != '%s'\n", v, cls.updateChallenge );
-		return;
-	}
-
-	v = Info_ValueForKey( info, "motd" );
-	Q_strncpyz(w, v, sizeof(w));
-	ptr = w;
-
-	//replace all | with \n
-	while ( *ptr ) {
-		if( *ptr == '|' )
-			*ptr = '\n';
-		ptr++;
-	}
-
-	Q_strncpyz( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
-	Cvar_Set( "cl_newsString", w );
-}
-
-/*
-===================
 CL_PrintPackets
 an OOB message from server, with potential markups
 print OOB are the only messages we handle markups in
@@ -3281,22 +3233,20 @@ Responses to broadcasts, etc
 */
 void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 {
-	char *s;
-	char *c;
-
 	MSG_BeginReadingOOB( msg );
 	MSG_ReadLong( msg );  // skip the -1
 
-	s = MSG_ReadStringLine( msg );
+	Cmd::Args args(MSG_ReadStringLine( msg ));
 
-	Cmd_TokenizeString( s );
+	if ( args.Argc() < 1 )
+	{
+		return;
+	}
 
-	c = Cmd_Argv( 0 );
-
-	Com_DPrintf( "CL packet %s: %s\n", NET_AdrToStringwPort( from ), c );
+	Com_DPrintf( "CL packet %s: %s\n", NET_AdrToStringwPort( from ), args.Argv(0).c_str() );
 
 	// challenge from the server we are connecting to
-	if ( !Q_stricmp( c, "challengeResponse" ) )
+	if ( args.Argv(0) == "challengeResponse" )
 	{
 		if ( cls.state != CA_CONNECTING )
 		{
@@ -3304,8 +3254,12 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		}
 		else
 		{
+			if ( args.Argc() < 2 )
+			{
+				return;
+			}
 			// start sending challenge repsonse instead of challenge request packets
-			clc.challenge = atoi( Cmd_Argv( 1 ) );
+			clc.challenge = atoi(args.Argv(1).c_str());
 			cls.state = CA_CHALLENGING;
 			clc.connectPacketCount = 0;
 			clc.connectTime = -99999;
@@ -3320,7 +3274,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 
 	// server connection
-	if ( !Q_stricmp( c, "connectResponse" ) )
+	if ( args.Argv(0) == "connectResponse" )
 	{
 		if ( cls.state >= CA_CONNECTED )
 		{
@@ -3349,14 +3303,14 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 
 	// server responding to an info broadcast
-	if ( !Q_stricmp( c, "infoResponse" ) )
+	if ( args.Argv(0) == "infoResponse" )
 	{
 		CL_ServerInfoPacket( from, msg );
 		return;
 	}
 
 	// server responding to a get playerlist
-	if ( !Q_stricmp( c, "statusResponse" ) )
+	if ( args.Argv(0) == "statusResponse" )
 	{
 		CL_ServerStatusResponse( from, msg );
 		return;
@@ -3364,50 +3318,42 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 
 	// a disconnect message from the server, which will happen if the server
 	// dropped the connection but it is still getting packets from us
-	if ( !Q_stricmp( c, "disconnect" ) )
+	if ( args.Argv(0) == "disconnect" )
 	{
 		CL_DisconnectPacket( from );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_stricmp( c, "echo" ) )
+	if ( args.Argv(0) == "echo" && args.Argc() >= 2)
 	{
-		NET_OutOfBandPrint( NS_CLIENT, from, "%s", Cmd_Argv( 1 ) );
-		return;
-	}
-
-	// global MOTD from id
-	if ( !Q_stricmp( c, "motd" ) )
-	{
-		CL_MotdPacket( from, s );
+		NET_OutOfBandPrint( NS_CLIENT, from, "%s", args.Argv(1).c_str() );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_stricmp( c, "print" ) )
+	if ( args.Argv(0) == "print" )
 	{
 		CL_PrintPacket( from, msg );
 		return;
 	}
 
-	// NERVE - SMF - bugfix, make this compare first n chars so it doesn't bail if token is parsed incorrectly
 	// echo request from server
-	if ( !Q_strncmp( c, "getserversResponse", 18 ) )
+	if ( args.Argv(0) == "getserversResponse" )
 	{
 		CL_ServersResponsePacket( &from, msg, qfalse );
 		return;
 	}
 
 	// list of servers with both IPv4 and IPv6 addresses; sent back by a master server (extended)
-	if ( !Q_strncmp( c, "getserversExtResponseLinks", 26 ) )
+	if ( args.Argv(0) == "getserversExtResponseLinks" )
 	{
 		CL_ServerLinksResponsePacket( &from, msg );
 		return;
 	}
 
 	// list of servers sent back by a master server (extended)
-	if ( !Q_strncmp( c, "getserversExtResponse", 21 ) )
+	if ( args.Argv(0) == "getserversExtResponse" )
 	{
 		CL_ServersResponsePacket( &from, msg, qtrue );
 		return;
@@ -3875,7 +3821,9 @@ void CL_StartHunkUsers( void )
 	if ( !cls.soundStarted )
 	{
 		cls.soundStarted = qtrue;
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 	}
 
 	if ( !cls.soundRegistered )
@@ -4110,7 +4058,6 @@ void CL_Init( void )
 	cl_showMouseRate = Cvar_Get( "cl_showmouserate", "0", 0 );
 
 	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", 0 );
-	cl_wwwDownload = Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO  );
 
 	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", 0 );
 

@@ -126,10 +126,12 @@ namespace VM {
         public:
             ProxyCvar(CommonVMServices* services, std::string name, std::string description, int flags, std::string defaultValue)
             :CvarProxy(std::move(name), flags, std::move(defaultValue)), services(services) {
-                Register(std::move(description));
+                wasAdded = Register(std::move(description));
             }
             virtual ~ProxyCvar() {
-                Cvar::Unregister(name);
+                if (wasAdded) {
+                    Cvar::Unregister(name);
+                }
             }
 
             virtual Cvar::OnValueChangedResult OnValueChanged(Str::StringRef newValue) OVERRIDE {
@@ -139,6 +141,7 @@ namespace VM {
             }
 
         private:
+            bool wasAdded;
             CommonVMServices* services;
     };
 

@@ -542,7 +542,7 @@ void Cmd_Give_f( gentity_t *ent )
 	{
 		ADMP( QQ( N_( "usage: give [what]\n" ) ) );
 		ADMP( QQ( N_( "usage: valid choices are: all, health [amount], funds [amount], "
-		              "bp [amount], momentum [amount], stamina, poison, gas, ammo\n" ) ) );
+		              "bp [amount], momentum [amount], stamina, poison, fuel, ammo\n" ) ) );
 		return;
 	}
 
@@ -553,7 +553,7 @@ void Cmd_Give_f( gentity_t *ent )
 		give_all = qtrue;
 	}
 
-	if ( give_all || Q_strnicmp( name, "funds", 5 ) == 0 )
+	if ( give_all || Q_strnicmp( name, "funds", strlen("funds") ) == 0 )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
@@ -561,25 +561,17 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			amount = atof( name + 6 ) *
+			amount = atof( name + strlen("funds") ) *
 			          ( ent->client->pers.team == TEAM_ALIENS ? CREDITS_PER_EVO : 1.0f );
-
-			// clamp credits manually, as G_AddCreditToClient() expects a short int
-			if ( amount > 30000.0f )
-			{
-				amount = 30000.0f;
-			}
-			else if ( amount < 30000.0f )
-			{
-				amount = -30000.0f;
-			}
+			// clamp credits as G_AddCreditToClient() expects a short int
+			amount = Maths::clamp(amount, -30000.0f, 30000.0f);
 		}
 
 		G_AddCreditToClient( ent->client, ( short ) amount, qtrue );
 	}
 
 	// give bp
-	if ( Q_strnicmp( name, "bp", 2 ) == 0 )
+	if ( Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
@@ -587,7 +579,7 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			amount = atof( name + 3 );
+			amount = atof( name + strlen("bp") );
 		}
 
 		G_ModifyBuildPoints( (team_t) ent->client->pers.team, amount );
@@ -602,7 +594,7 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			amount = atof( name + strlen("momentum") + 1 );
+			amount = atof( name + strlen("momentum") );
 		}
 
 		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
@@ -611,10 +603,6 @@ void Cmd_Give_f( gentity_t *ent )
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
 			ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		if ( !( give_all || Q_strnicmp( name, "funds", 5 ) == 0 ) )
-		{
-			G_TriggerMenu( ent-g_entities, MN_CMD_ALIVE );
-		}
 		return;
 	}
 
@@ -627,10 +615,9 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			int amount = atoi( name + strlen("health") + 1 );
-			ent->health = Maths::clamp(amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ]);
+			int amount = atoi( name + strlen("health") );
+			ent->health = Maths::clamp(ent->health + amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ]);
 		}
-		return;
 	}
 
 	if ( give_all || Q_stricmp( name, "stamina" ) == 0 )
@@ -640,7 +627,7 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if ( give_all || Q_stricmp( name, "fuel" ) == 0 )
 	{
-		ent->client->ps.stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
+		G_RefillFuel(ent, qfalse);
 	}
 
 	if ( Q_stricmp( name, "poison" ) == 0 )
@@ -661,7 +648,6 @@ void Cmd_Give_f( gentity_t *ent )
 	if ( give_all || Q_stricmp( name, "ammo" ) == 0 )
 	{
 		G_RefillAmmo( ent, qfalse );
-		G_RefillFuel( ent, qfalse );
 	}
 }
 
@@ -2870,11 +2856,6 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 	else
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("You don't have the $1$\n") ), Quote( s ) ) );
-
-		if ( upgrade == UP_MEDKIT )
-		{
-			trap_SendServerCommand( ent - g_entities, "vcommand needhealth" );
-		}
 	}
 }
 
