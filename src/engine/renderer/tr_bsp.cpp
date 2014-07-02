@@ -3739,6 +3739,10 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	// calculate occlusion query volumes
 	for ( j = 0, out = &s_worldData.nodes[ 0 ]; j < s_worldData.numnodes; j++, out++ )
 	{
+		if ( out->contents != CONTENTS_NODE && !out->numMarkSurfaces )
+		{
+			continue; // don't need to build occlusion query volumes for this leaf because this leaf has no volume
+		}
 
 		Com_Memset( out->lastVisited, -1, sizeof( out->lastVisited ) );
 		Com_Memset( out->visible, qfalse, sizeof( out->visible ) );
