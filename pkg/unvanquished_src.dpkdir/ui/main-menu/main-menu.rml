@@ -104,7 +104,7 @@
 			<p onClick="exec ui_restart">/ui_restart</p>
 			
 			<p> == Bugs == </h3>
-			<p> Inline styles for &lt;dataselect&gt; do not work.  eg: lan </p>
+			<p> Inline styles for &lt;dataselect&gt; do not work. </p>
 			<p> Borders on any type of input-box have no effect </p>
 			<p> Mouse-position is horribly off in some drop-down menus </p>
 			<p> Colour input box (eg nickname) becomes unusable if you delete its contents.</p>
