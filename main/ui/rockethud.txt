@@ -1,14 +1,14 @@
 units
 {
-	ui/hud/humans/humans.rml
-	ui/hud/aliens/aliens.rml
-	ui/hud/common/overlay.rml
-	ui/hud/common/console.rml
-	ui/hud/common/base.rml
-	ui/hud/common/spectator.rml
-	ui/hud/aliens/barbs.rml
-	ui/hud/common/charge.rml
-	ui/scoreboard.rml
+	ui/in-game/human/hud.rml
+	ui/in-game/alien/hud.rml
+	ui/in-game/overlay.rml
+	ui/in-game/console.rml
+	ui/in-game/base.rml
+	ui/in-game/spectator.rml
+	ui/in-game/alien/barbs.rml
+	ui/in-game/alien/charge.rml
+	ui/in-game/scoreboard.rml
 }
 
 spectator_hud

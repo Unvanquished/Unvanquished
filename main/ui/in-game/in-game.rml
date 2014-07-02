@@ -85,7 +85,7 @@
 			}
 		</style>
 	</head>
-	<body id="main" class="mainmenu" nohide>
+	<body id="ingame" class="ingame">
 
 
 		<box class="version">
@@ -114,7 +114,6 @@
 			<p> Cursor-image is locked to (0,0) in the load-screen </p>
 			
 			
-			
 			<p> == Todo == </p>
 			<p> Finish remaining pages: Server listings, Start local game, Demo player, load screen, bot options </p>
 			<p> Better windowing behavior: show/hide whole menu + windows when user hits escape.  Don't let windows go below the main menu layer. </p>
@@ -133,7 +132,7 @@
 		<!-- HACK: Using shared/window.rml as a stylesheet rather than a template here -->
 		<window id="sidebar" class="sidebar" >
 			
-			<sidesection  id="sidebar_ingame" class="hidden">
+			<sidesection  id="sidebar_ingame">
 				<h1> Match menu </h1>
 				
 				<blocklink class="rightfloat" onClick="exec disconnect"> Leave match</blocklink>
@@ -158,7 +157,7 @@
 
 			</sidesection>	
 			
-			<sidesection id="sidebar_host" class="hidden">
+			<sidesection id="sidebar_host">
 				<h1> Host menu </h1>
 				
 				<blocklink class="rightfloat" onClick="exec disconnect"> Stop server </blocklink>

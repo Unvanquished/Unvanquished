@@ -7,9 +7,9 @@
 body {
 
 	/* Global font defaults */
-	font-family: DejaVu Sans;
+	font-family: Dejavu Sans;
 	font-size: 14px;
-	color: #BBBBBB;
+	color: #999999;
 }
 
 p {
@@ -17,21 +17,27 @@ p {
 	margin-bottom: 0.3em;
 }
 
+p.example {
+	font-size: 12px;
+	text-align: center;
+	color: #666666;
+}
+
 h1 {
 	display: block;
 	font-size: 20px;
 	font-weight: bold;
 	text-align: right;
-	color: #555555;
+	color: #666666;
 
-	border-bottom: 1px #555555;
+	border-bottom: 1px #666666;
 }
 
 h2 {
 	display: block;
 	font-size: 16px;
 	margin-top: 1em;
-	color: #555555;
+	color: #666666;
 }
 
 h3 {
@@ -45,6 +51,7 @@ indent {
 	margin-left: 1.5em;
 }
 
+
 /* #### Links #### */
 /* Inline */
 ilink {
@@ -57,15 +64,15 @@ ilink:hover{
 	color:#00F8FF;   /* Bright cyan */
 }
 
-/* Block, used in main menu */
-blink {
+/* Block-style link, used in main menu */
+blocklink {
 	display: block;
 	
 	color:#999999;	
 	tab-index: auto;
 
 }
-blink:hover{
+blocklink:hover{
 	color:white;
 }
 

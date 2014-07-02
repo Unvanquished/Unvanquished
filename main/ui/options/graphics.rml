@@ -2,35 +2,10 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
+		
 		<style>
 			
-			tab {
-				margin: 0.5em;
-				margin-bottom: 2em;
-				color:#136D67;   /* Dark cyan */
-				border-color: #136D67;   /* Dark cyan */
-				text-align: center;
-				
-				float:left;
-				width: 5em;
-				
-				border-style solid;
-				border-bottom: 1px solid;
-				
-
-			}
-			
-			tab:selected {
-				color: red;
-				color:#00F8FF;   /* Bright cyan */
-				border-color: #00F8FF;   /* Bright cyan */
-			}
-			
-			panel {
-				float:right;
-				width: 100%;
-			}
-			
+			/* Halving hack, as we don't have tables */
 			half {
 				display:block;
 				padding:0;
@@ -45,102 +20,273 @@
 			half.right; {
 				margin-left:5%;
 			}
-			
-			
-					
+
 		</style>
 
 
 	</head>
-	<body id="options_graphics" template="window" style="width: 35em; height: 50em; margin: 10%;">
+	<body id="options_graphics" template="window" style="width: 45em; margin: 10%;">
 		<h1> Graphics </h1>
 		
 		<tabset>
 			<tab> General </tab>
 			<panel>
-				<h2>Brightness</h2>
+				
+				
+				<h2> Comfort </h2>
+				
 				<row>
-					<input type="range" min="0" max="2" step="0.01" cvar="r_gamma" class="right"/>
+					<h3>Brightness</h3>
+					<input type="range" min="0" max="2" step="0.01" cvar="r_gamma"/>
 					<p class="inline"> 
-						Current gamma: <inlinecvar cvar="r_gamma" type="number" format="%.2f"/>
-						<ilink onclick="exec r_gamma 1"> (reset) </ilink>
+						Gamma: <inlinecvar cvar="r_gamma" type="number" format="%.2f"/>
+						<ilink onclick="exec reset r_gamma"> (reset) </ilink>
 					</p>
 				</row>
 				
 				<h2> Video </h2>
+				
 				<p>
-					If you break anything here, look on the Unvanquished 
-					wiki for "Running the Game" instructions.
+					Incorrect settings may prevent the game from working.  These settings can be overridden 
+					by passing command-line options:
 				</p>
+				<p class="example"> unvanquished +set r_customwidth 1024 +set r_customheight 768 </p>
+				<p> See the Unvanquished Wiki for more details. </p>
 				<row>
 					<half class="left">
-						<input type="text" cvar="r_customwidth" class="right" style="width: 3em;"/> 
+						<input type="text" cvar="r_customwidth" class="text" style="width: 3em;"/> 
 						<h3>Width</h3>
 					</half>
 					<half class="right">
-						<input cvar="r_fullscreen" type="checkbox"  class="right"/>
+						<input cvar="r_fullscreen" type="checkbox"/>
 						<h3>Fullscreen</h3>
 					</half>
 				</row>
 				<row>
 					<half class="left">
-						<input type="text" cvar="r_customheight" class="right" style="width: 3em;"/> 
+						<input type="text" cvar="r_customheight" class="text" style="width: 3em;"/> 
 						<h3>Height</h3>
 					</half>
 					<half class="right">
-						<input cvar="somethingsomething" type="checkbox"  class="right"/>
+						<input cvar="r_swapinterval" type="checkbox"/>
 						<h3>Vsync</h3>
 					</half>
 				</row>	
+				<p>
+					Vsync avoids 'tears' from appearing on your screen during fast movement,
+					but increases input latency and locks your framerate to set thresholds.
+				</p>
+				
 				
 				<h2> Anti-aliasing</h2>
 				<p> AA fixes 'jagged edges', but can be very costly to your frame-rate.</p>
-				<p> 'FXAA' is a more efficient method to perform AA than the traditional methods, but it is not supported by all drivers.</p>
 				<row>
-					
-					<select cvar="r_ext_multisample" class="right">
+					<h3> Multisampling level </h3>
+					<select cvar="r_ext_multisample">
 						<option value="0">None</option>
 						<option value="2">2×</option>
 						<option value="4">4×</option>
 						<option value="8">8×</option>
 						<option value="16">16×</option>
 					</select>
-					<h3> Multisampling level </h3>
+					<p> Higher levels make smoother edges. </p>
 					
 				</row>
 				<row>
-					<input cvar="r_FXAA" type="checkbox" class="right" />
 					<h3> FXAA </h3>
+					<input cvar="r_FXAA" type="checkbox"/>
+					<p> A more efficient AA method not supported by all drivers. </p>
 				</row>
 				
-				<p style="margin-top: 3em;"> 
-					Some changes will only take effect on the next match you play.
-					Alternatively you can <ilink> restart the video now.</ilink>
-				</p>
 				
 			</panel>
 			
 			<tab> Textures </tab>
 			<panel>
-				<p> Texture stuff </p>
+				<h2> General </h2>
+				<row>
+					<h3>Texture quality</h3>
+					<select cvar="r_picmip">
+						<option value="8">Disable textures, simple colours only.</option>
+						<option value="2">Low (1:4)</option>
+						<option value="1">Medium (1:2)</option>
+						<option value="0">Full (1:1)</option>
+					</select>
+					<p>Lower texture quality is useful for cards with limited VRAM</p>
+				</row>
+				<row>
+					<h3>Texture compression</h3>
+					<input cvar="r_ext_compressed_textures" type="checkbox" />
+					<p>TODO: Is this enforced anyway now?  Would anyone ever need to disable this?</p>
+				</row>
+				
+				<h2> Mip-mapping </h2>
+				<p> 
+					Mip-mapping makes distant surfaces look better by using lower-resolution textures for them.
+					This generally does not affect performance and should be left on.
+				</p>
+				<row>
+					<h3>Anisotropic mip-mapping</h3>
+					<select cvar="r_ext_texture_filter_anisotropic">
+						<option value="0">No</option>
+						<option value="2">2×</option>
+						<option value="4">4×</option>
+						<option value="8">8×</option>
+						<option value="16">16×</option>
+					</select>
+					<p>Generate better mip-maps for very-angled surfaces.</p>
+				</row>
+				<row>
+					<h3>Texture scaling filter</h3>
+					<select cvar="r_texturemode">
+						<option value="GL_LINEAR_MIPMAP_NEAREST">Bilinear</option>
+						<option value="GL_LINEAR_MIPMAP_LINEAR">Trilinear (better)</option>
+					</select>
+					<p>TODO: Does this even matter?  It will only minorly affect load-times.</p>
+				</row>
 			</panel>
 			
 			<tab> Effects </tab>
 			<panel>
-				<p> Texture stuff </p>
+				<h2>Effects</h2>
+				<p> 
+					These special effects are all optional and can be toggled without having to restart video. 
+					All of these effects will reduce your frame-rate.
+				</p>
+				<row>
+					<h3>Normal mapping</h3>
+					<input cvar="r_normalMapping" type="checkbox" />
+					<p>Fakes extra lighting detail on flat surfaces.</p>
+				</row>
+				<row>
+					<h3>Bloom</h3>
+					<input cvar="r_bloom" type="checkbox" />
+					<p>Makes bright objects glow.</p>
+				</row>
+				<row>
+					<h3>Rim-lighting</h3>
+					<input cvar="r_rimlighting" type="checkbox" />
+					<p>TODO: Explanation  </p>
+				</row>
+				<row>
+					<h3>Heat-haze</h3>
+					<input cvar="r_heatHaze" type="checkbox" />
+					<p>Blur and fuzzify when under bombardment.</p>
+				</row>
+				
+				<h2> Motion blur </h2>
+				<row>
+					<h3>Intensity</h3>
+					<select cvar="cg_motionblur">
+						<option value="0.08">High (0.08)</option>
+						<option value="0.05">Moderate (0.05)</option>
+						<option value="0.02">Low (0.02)</option>
+						<option value="0">Off</option>
+					</select>
+					<p>Level of blur.</p>
+				</row>
+				<row>
+					<h3>Minimum movement speed for blur to activate</h3>
+					<input type="range" min="10" max="1500" step="10" cvar="cg_motionblurMinSpeed"/>
+					<p class="inline"> 
+						Current: <inlinecvar cvar="cg_motionblurMinSpeed" type="number" format="%.0f"/>
+						<ilink onclick="exec reset cg_motionblurMinSpeed"> (reset) </ilink>
+					</p>
+				</row>
 			</panel>
 			
-			<tab> Lighting</tab>
+			<tab> Lighting and particles</tab>
 			<panel>
-				<p> Texture stuff </p>
+				<h2>Lights</h2>
+				<row>
+					<select cvar="r_vertexLighting">
+						<option value="0">Light Map (high)</option>
+						<option value="1">Vertex (low)</option>
+					</select>
+					<h3>Lighting system</h3>
+				</row>
+				<row>
+					<h3>Dynamic lights</h3>
+					<input cvar="r_dynamiclight" type="checkbox" />
+					<p>Lighting made by weapons and buildings.</p>
+				</row>
+				<row>
+					<select cvar="cg_shadows">
+						<option value="0">None</option>
+						<option value="1">Blobs (low)</option>
+						<option value="3">Exponential mapping</option>
+						<option value="5">Variance mapping</option>
+						<option value="6">Exponential + variance (high)</option>
+					</select>	
+					<h3>Shadows</h3>
+				</row>
+				
+				<h2>Particles</h2>
+				<row>
+					<h3>Light flares</h3>
+					<select cvar="cg_lightFlare">
+						<option value="0">Off</option>
+						<option value="1">No Fade</option>
+						<option value="2">Timed Fade</option>
+						<option value="3">Real Fade</option>
+					</select>
+					<p>Todo: desciption</p>
+				</row>
+				<row>
+					<h3>Particle physics</h3>
+					<input cvar="cg_bounceParticles" type="checkbox" />
+					<p>Allow particles to bounce off surfaces.</p>
+				</row>
+				<row>
+					<h3>Depth-sort particles</h3>
+					<input cvar="cg_depthSortParticles" type="checkbox" />
+					<p>Ensure over-lapping particles are rendered correctly.</p>
+				</row>
 			</panel>
 			
 			<tab> Misc</tab>
 			<panel>
-				<p> Texture stuff </p>
+				<row>
+					<h3>Range markers for buildables</h3>
+					<select cvar="cg_rangeMarkerBuildableTypes">
+						<option value="none">No Buildables</option>
+						<option value="all">All Buildables</option>
+						<option value="support">Support Buildables</option>
+						<option value="offensive">Offensive Buildables</option>
+						<option value="alien">Alien Buildables</option>
+						<option value="human">Human Buildables</option>
+						<option value="aliensupport">Alien Support Buildables</option>
+						<option value="humansupport">Human Support Buildables</option>
+						<option value="alienoffensive">Offensive Alien Buildables</option>
+						<option value="humanoffensive">Offensive Human Buildables</option>
+					</select>
+					<p></p>
+				</row>
+				<row>
+					<h3></h3>
+					
+					<p></p>
+				</row>
+				<row>
+					<h3></h3>
+					
+					<p></p>
+				</row>
+				<row>
+					<h3></h3>
+					
+					<p></p>
+				</row>
 			</panel>
 
 		
 		</tabset>
+		
+		<p style="clear: both;"> 
+			Note: Some changes will only take effect upon a video restart.
+			You can trigger this by playing a new match or by manually 
+			<ilink onClick="exec vid_restart"> restarting the video now.</ilink>
+		</p>
+		
 	</body>
 </rml>

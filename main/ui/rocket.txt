@@ -1,8 +1,9 @@
 {
 	main
 	{
+		// ######## Totalitarian Government Section ########
 		// Don't remove/add any entries, or daemon will fail to load
-		// Files don't have to actually exist, however
+		// These don't have to actually exist, however
 		ui/main-menu/main-menu.rml main             // ROCKETMENU_MAIN ==================
 		ui/transitions/connecting.rml connecting    // ROCKETMENU_CONNECTING ============
 		ui/transitions/loading.rml loading          // ROCKETMENU_LOADING ===============
@@ -16,14 +17,23 @@
 		ui/in-game/human/buy.rml armourybuy         // ROCKETMENU_ARMOURYBUY ============
 		ui/in-game/alien/evo.rml alienevo           // ROCKETMENU_ALIENEVOLVE ===========
 		ui/chat.rml chat                            // ROCKETMENU_CHAT
+		ui/error.rml error                          // ROCKETMENU_ERROR
 	}
 	misc
 	{
-		// Custom section.  Add and remove freely
+		// ######## Custom section.  Add and remove freely ########
+		ui/shared/window.rml
+		
 		ui/options/player.rml 
 		ui/options/fov.rml  
 		ui/options/graphics.rml
-		ui/shared/window.rml
+		ui/options/keys.rml
+		ui/options/mouse.rml
+		ui/options/sound.rml
+		ui/options/ui.rml
+		
+		ui/lore/help_textentry.rml
+		ui/lore/help_gameplay.rml
 	}
 	cursor ui/shared/cursor.rml
 }

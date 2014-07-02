@@ -1,0 +1,32 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		
+		<style>
+			in {
+				display:inline;
+			}
+		</style>
+
+
+	</head>
+	<body id="help_textentry" template="window" style="width: 32em; margin: 10%;">
+		<h1> Colour Codes and Symbols </h1>
+
+		<h2> Colours </h2>
+		<p> 
+			The caret symbol ^ followed by a number, letter or symbol changes the colour of your writing.  
+			Use ^* to reset colour back to default. 
+		</p>
+		
+		<p> Example: ^3Fred^1Baggins becomes <in style="color: #FFFF00;">Fred</in><in style="color: #FF0000;">Baggins</in> </p>
+
+		<p> TODO: list colours from unvanquished.net/wiki/index.php/Colours  </p>
+		
+		<h2> Symbols </h2>
+		<p> Various words inside square brackets [] yield pictures and emoticons.  </p>
+		<p> TODO: list symbols </p>
+		
+	</body>
+</rml>
