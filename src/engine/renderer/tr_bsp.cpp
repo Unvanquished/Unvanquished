@@ -3740,7 +3740,6 @@ static void R_LoadPlanes( lump_t *l )
 	cplane_t *out;
 	dplane_t *in;
 	int      count;
-	int      bits;
 
 	ri.Printf( PRINT_DEVELOPER, "...loading planes\n" );
 
@@ -3759,21 +3758,14 @@ static void R_LoadPlanes( lump_t *l )
 
 	for ( i = 0; i < count; i++, in++, out++ )
 	{
-		bits = 0;
-
 		for ( j = 0; j < 3; j++ )
 		{
 			out->normal[ j ] = LittleFloat( in->normal[ j ] );
-
-			if ( out->normal[ j ] < 0 )
-			{
-				bits |= 1 << j;
-			}
 		}
 
 		out->dist = LittleFloat( in->dist );
 		out->type = PlaneTypeForNormal( out->normal );
-		out->signbits = bits;
+		SetPlaneSignbits( out );
 	}
 }
 
