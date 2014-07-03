@@ -9,7 +9,7 @@
 			display:block;
 			z-index: 5;
 			overflow: auto;
-			padding: 1em;
+			padding: 1.5em;
 
 			background-color: rgba( 10%,10%,10%, 80%);
 			border-style:solid;

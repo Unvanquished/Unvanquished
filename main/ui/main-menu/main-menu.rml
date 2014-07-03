@@ -41,10 +41,12 @@
 				color: #FFFFFF00;
 				width: 30em;
 				display:block;
+				font-size: 14px;
 			}
 			box.debug:hover{
 				color: #aaddaa;
 			}
+			
 	 
 			/* Ugly table-like hacks to have two options side-by-side */
 			blocklink.rightfloat{
@@ -68,21 +70,30 @@
 				margin-bottom: 1em;
 			}
 			
-			/* Main sidebar */
+			/* Sidebar window sits inside box.sidebar for vertical alignment */
 			window.sidebar {
-				position:absolute; 
-				right:50px;
-				
-				width:20em; 
-				height:100%; 
-				
+				display: block;
+								
 				padding-top:0;
+				padding-bottom:0;
 			}
-			sidesection{
+			box.sidebar {
+				right:4%;
+				width:20em; 
+				max-height:80%;
+				margin-top:10%;
+				bottom: 10%;
+			}
+			sidesection {
 				display: block;
 				margin-top: 1em;
-				margin-bottom: 2em;
+				margin-bottom: 2em;	
 			}
+			img.logo {
+				width: 20em;
+			
+			}
+				
 		</style>
 	</head>
 	<body id="main" class="mainmenu" nohide>
@@ -103,7 +114,7 @@
 			<p onClick="exec screenshotPNG">/screenshotPNG</p>
 			<p onClick="exec ui_restart">/ui_restart</p>
 			
-			<p> == Bugs == </h3>
+			<p> == Bugs == </p>
 			<p> Inline styles for &lt;dataselect&gt; do not work. </p>
 			<p> Borders on any type of input-box have no effect </p>
 			<p> Mouse-position is horribly off in some drop-down menus </p>
@@ -120,7 +131,6 @@
 			<p> Better windowing behavior: show/hide whole menu + windows when user hits escape.  Don't let windows go below the main menu layer. </p>
 			<p> Use the same file for both the main menu and in-game, just switch the approprate class="" tags as neccesary. Similiarly hide host-control sections when not connected to a self-hosted game.</p>
 			<p> fov cvars: current behavior is to use defaults when set to 0 degrees.  Change to use the proper cvar default value system </p>
-			<p> Make the 'X' on the top of windows hide parent body </p>
 			<p> Test everything.  Finish descriptions for settings. </p>
 			<p> Get language select & translation working </p>
 			<p> Write instant-action code to join a random online server </p>
@@ -130,115 +140,120 @@
 			<p> In-game UI twiddling </p>
 		</box>
 		
-		<!-- HACK: Using shared/window.rml as a stylesheet rather than a template here -->
-		<window id="sidebar" class="sidebar" >
-			
-			<sidesection  id="sidebar_ingame" class="hidden">
-				<h1> Match menu </h1>
+		<box class="sidebar">
+			<mainsidebar>
 				
-				<blocklink class="rightfloat" onClick="exec disconnect"> Leave match</blocklink>
-				<blocklink class="leftalign" onClick="hide main">Resume action</blocklink>
+				<img class="logo" src="logo.png" style="color: rgba(100%,100%,100%,100%);" />
 				
+				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
+				<window id="sidebar" class="sidebar" >
 				
-				<h2> Teams </h2>
-				<indent>
-					<blocklink onClick="exec team alien"> Join aliens</blocklink>
-					<blocklink onClick="exec team human"> Join humans</blocklink>
-					<blocklink onClick="exec team spec"> Spectate </blocklink>
-				</indent>
-				
-				<h2> Call vote </h2>
-				<indent>
-					<blocklink> Next map </blocklink>
-					<blocklink> Change map</blocklink>
-					<blocklink> Extend timelimit </blocklink>
-					<blocklink> Admit defeat </blocklink>
-					<blocklink> Kick bots </blocklink>
-				</indent>
+					<sidesection  id="sidebar_ingame" class="hidden">
+						<h1> Match menu </h1>
+					
+						<blocklink class="rightfloat" onClick="exec disconnect"> Leave match</blocklink>
+						<blocklink class="leftalign" onClick="hide main">Resume action</blocklink>
+					
+					
+						<h2> Teams </h2>
+						<indent>
+							<blocklink onClick="exec team alien"> Join aliens</blocklink>
+							<blocklink onClick="exec team human"> Join humans</blocklink>
+							<blocklink onClick="exec team spec"> Spectate </blocklink>
+						</indent>
+					
+						<h2> Call vote </h2>
+						<indent>
+							<blocklink> Next map </blocklink>
+							<blocklink> Change map</blocklink>
+							<blocklink> Extend timelimit </blocklink>
+							<blocklink> Admit defeat </blocklink>
+							<blocklink> Kick bots </blocklink>
+						</indent>
 
-			</sidesection>	
-			
-			<sidesection id="sidebar_host" class="hidden">
-				<h1> Host menu </h1>
+					</sidesection>	
 				
-				<blocklink class="rightfloat" onClick="exec disconnect"> Stop server </blocklink>
-				<blocklink class="leftalign" onClick="exec pause">Pause server</blocklink>
+					<sidesection id="sidebar_host" class="hidden">
+						<h1> Host menu </h1>
+					
+						<blocklink class="rightfloat" onClick="exec disconnect"> Stop server </blocklink>
+						<blocklink class="leftalign" onClick="exec pause">Pause server</blocklink>
+					
+					
+						<h2>Configuration</h2>
+						<indent>
+							<blocklink> Access and publicity control </blocklink>
+							<blocklink> Bots </blocklink>
+							<blocklink> Physics </blocklink>
+						</indent>
+					
+						<h2>Map</h2>
+						<indent>
+							<blocklink>Change map</blocklink> 
+							<blocklink>Manage map rotation</blocklink> 
+							<blocklink>Choose default layout</blocklink>
+							<blocklink>Reset buildings to layout</blocklink>
+						</indent>
+					
+						<h2> Aliens </h2>
+						<indent>
+							<blocklink onClick="exec bot add Lavishment aliens"> Add an alien bot </blocklink>
+							<blocklink> Remove an alien bot </blocklink>
+							<blocklink> Toggle ability to build </blocklink> 
+						</indent>
+					
+						<h2> Humans </h2>
+						<indent>
+							<blocklink onClick="exec bot add Lavishment aliens"> Add a human bot </blocklink>
+							<blocklink> Remove a human bot </blocklink>
+							<blocklink> Toggle ability to build </blocklink> 
+						</indent>
+					
+						<h2> Players </h2>
+						<indent>
+							<blocklink>Disclipline: kick/ban/mute/nobuild</blocklink>
+						</indent>
 				
+					</sidesection>
 				
-				<h2>Configuration</h2>
-				<indent>
-					<blocklink> Access and publicity control </blocklink>
-					<blocklink> Bots </blocklink>
-					<blocklink> Physics </blocklink>
-				</indent>
-				
-				<h2>Map</h2>
-				<indent>
-					<blocklink>Change map</blocklink> 
-					<blocklink>Manage map rotation</blocklink> 
-					<blocklink>Choose default layout</blocklink>
-					<blocklink>Reset buildings to layout</blocklink>
-				</indent>
-				
-				<h2> Aliens </h2>
-				<indent>
-					<blocklink onClick="exec bot add Lavishment aliens"> Add an alien bot </blocklink>
-					<blocklink> Remove an alien bot </blocklink>
-					<blocklink> Toggle ability to build </blocklink> 
-				</indent>
-				
-				<h2> Humans </h2>
-				<indent>
-					<blocklink onClick="exec bot add Lavishment aliens"> Add a human bot </blocklink>
-					<blocklink> Remove a human bot </blocklink>
-					<blocklink> Toggle ability to build </blocklink> 
-				</indent>
-				
-				<h2> Players </h2>
-				<indent>
-					<blocklink>Disclipline: kick/ban/mute/nobuild</blocklink>
-				</indent>
-			
-			</sidesection>
-			
-			<sidesection  id="sidebar_main">
-				<h1>Main menu</h1>
-				
-				<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
-				<blocklink class="leftalign" onClick="exec devmap parpax"> Instant action </blocklink>
-				
-				
-				<h2> Play</h2>
-				<indent>
-					<blocklink onClick="show serverbrowser"> Server listings</blocklink>
-					<blocklink onClick="exec devmap parpax"> Start local/LAN game</blocklink>
-				<blocklink onClick="show demos"> Recorded demos </blocklink>
-				</indent>
-				
-				<h2> Options </h2>
-				<indent>
-					<blocklink onClick="show options_player"> Player </blocklink>
-					<blocklink onClick="show options_graphics"> Graphics </blocklink>
-					<blocklink onClick="show options_keys"> Key bindings </blocklink>
-					<blocklink onClick="show options_mouse"> Mouse and aim </blocklink>
-					<blocklink onClick="show options_sound"> Sound </blocklink>
-					<blocklink onClick="show options_ui"> User interface and HUD </blocklink>
-					<blocklink onClick="show options_fov"> Fields of view </blocklink>
-				</indent>
-							
-				<h2> Lore </h2>
-				<indent>
-					<blocklink onClick="show help_gameplay"> Gameplay guide </blocklink>
-					<blocklink onClick="show help_textentry"> Colour codes and symbols </blocklink>
-				</indent>
-				
-				
-				
-			</sidesection>
-							
-		</window>
-		
-		
+					<sidesection  id="sidebar_main">
+						
+					
+						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
+						<blocklink class="leftalign" onClick="exec devmap parpax"> Instant action </blocklink>
+					
+					
+						<h2> Play</h2>
+						<indent>
+							<blocklink onClick="show serverbrowser"> Server listings</blocklink>
+							<blocklink onClick="exec devmap parpax"> Start local/LAN game</blocklink>
+						<blocklink onClick="show demos"> Recorded demos </blocklink>
+						</indent>
+					
+						<h2> Options </h2>
+						<indent>
+							<blocklink onClick="show options_player"> Player </blocklink>
+							<blocklink onClick="show options_graphics"> Graphics </blocklink>
+							<blocklink onClick="show options_keys"> Key bindings </blocklink>
+							<blocklink onClick="show options_mouse"> Mouse and aim </blocklink>
+							<blocklink onClick="show options_sound"> Sound </blocklink>
+							<blocklink onClick="show options_ui"> User interface and HUD </blocklink>
+							<blocklink onClick="show options_fov"> Fields of view </blocklink>
+						</indent>
+								
+						<h2> Lore </h2>
+						<indent>
+							<blocklink onClick="show help_gameplay"> Gameplay guide </blocklink>
+							<blocklink onClick="show help_textentry"> Colour codes and symbols </blocklink>
+						</indent>
+					
+					
+					
+					</sidesection>
+								
+				</window>
+			</mainsidebar>
+		</box>
 	
 	</body>
 </rml>
