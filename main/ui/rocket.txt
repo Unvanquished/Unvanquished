@@ -34,6 +34,8 @@
 		
 		ui/lore/help_textentry.rml
 		ui/lore/help_gameplay.rml
+		
+		ui/gamechoice/serverbrowser.rml
 	}
 	cursor ui/shared/cursor.rml
 }
