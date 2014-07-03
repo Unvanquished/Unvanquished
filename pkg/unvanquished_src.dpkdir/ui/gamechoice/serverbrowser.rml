@@ -1,0 +1,97 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<style>
+			
+			/* Overall division into two halves */
+			tabs {
+				width: 8em;
+			}
+			panel {
+				width: 48em;
+			}
+
+
+			/* Datagrid for server list */
+			datagrid{
+				
+				height:30em;
+				width:100%;
+				display:block;
+			}
+
+			datagridbody{
+				overflow-y: auto;
+			}
+
+			.trem-emoticon
+			{
+				width:20px;
+				height:20px;
+			}
+
+			datagridcell{
+				padding:0.2em;
+			}
+
+			datagridheader{
+				margin-top: 1em;
+			}
+			
+			/* Alternate colours of each row */
+			datagridrow:nth-child(even) {
+				background-color: #333333;
+			}
+			datagridrow:nth-child(odd) {
+				background-color: #222222;
+			}
+			
+			datagridrow:hover{
+				background-color:#666666; 
+			}
+
+			datagridrow:selected{
+				background-color:#136D67;   /* Dark cyan */
+			}
+		</style>
+	</head>
+	<body id="serverbrowser" template="window" style="width: 60em; margin:10%;" onshow="init_servers internet;buildDS server_browser internet" >
+		
+		<h1>Server Listings</h1>
+		<tabset>
+			
+			<tab>Internet</tab>
+			<panel>
+				<datagrid id="iServers" source="server_browser.internet">
+					<col fields="label" width="30px" class="label" formatter="ServerLabel"></col>
+					<col fields="name" width="45%" class="name" >Name:</col>
+					<col fields="map" width="15%" class="map"><button onClick="sortDS server_browser internet map">Map:</button></col>
+					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><button onClick="sortDS server_browser internet players">Players (Bots)</button></col>
+					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><button onClick="sortDS server_browser internet ping">Ping</button></col>
+				</datagrid>
+		
+				<p><ilink onClick="buildDS server_browser internet">Refresh current list</ilink> or <ilink onClick="init_servers internet;buildDS server_browser internet">fetch a new master list</ilink></p>
+				<p><ilink onClick="execDS server_browser internet">Connect</ilink> to the selected server.</p>
+			</panel>
+			
+			<tab onClick="init_servers local;buildDS server_browser local">LAN</tab>
+			<panel>
+				<datagrid source="server_browser.local">
+					<col fields="label" width="30px" class="label" formatter="ServerLabel"></col>
+					<col fields="name" width="45%" class="name" >Name:</col>
+					<col fields="map" width="15%" class="map"><button onClick="sortDS server_browser local map">Map:</button></col>
+					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><button onClick="sortDS server_browser local players">Players (Bots)</button></col>
+					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><button onClick="sortDS server_browser local ping">Ping</button></col>
+				</datagrid>
+				
+				<p><ilink onClick="buildDS server_browser local">Refresh current list</ilink> or <ilink onClick="init_servers local;buildDS server_browser local">fetch a new master list</ilink></p>
+				<p><ilink onClick="execDS server_browser local">Connect</ilink> to the selected server.</p>
+			</panel>
+			
+		</tabset>
+		
+		
+
+	</body>
+</rml>
