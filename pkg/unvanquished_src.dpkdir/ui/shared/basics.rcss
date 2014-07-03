@@ -8,7 +8,7 @@ body {
 
 	/* Global font defaults */
 	font-family: Dejavu Sans;
-	font-size: 14px;
+	font-size: 16px;
 	color: #999999;
 }
 
@@ -18,14 +18,14 @@ p {
 }
 
 p.example {
-	font-size: 12px;
+	font-size: 16px;
 	text-align: center;
 	color: #666666;
 }
 
 h1 {
 	display: block;
-	font-size: 20px;
+	font-size: 25px;
 	font-weight: bold;
 	text-align: right;
 	color: #666666;
@@ -35,7 +35,7 @@ h1 {
 
 h2 {
 	display: block;
-	font-size: 16px;
+	font-size: 20px;
 	margin-top: 1em;
 	color: #666666;
 }
@@ -43,7 +43,6 @@ h2 {
 h3 {
 	display: block;
 	color:white;
-	height: 20px;
 }
 
 indent {
