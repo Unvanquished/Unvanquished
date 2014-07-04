@@ -46,7 +46,7 @@
 		<row>
 			<h3>Sticky spectate</h3>
 			<input cvar="cg_stickySpec" type="checkbox" />
-			<p>Keep spectating a player even if they die.</p>
+			<p>Keep spectating a player even if they die. NB Viech</p>
 		</row>
 		<row>
 			<h3>Static death camera</h3>

@@ -25,7 +25,7 @@
 		region.tutorial {
 			bottom: 21%;
 			text-align: left;
-			width: 30%;
+			width: 40%;
 			left: 0.5em;
 		}
 		region.crosshair {

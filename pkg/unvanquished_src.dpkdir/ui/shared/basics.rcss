@@ -18,7 +18,7 @@ p {
 }
 
 p.example {
-	font-size: 16px;
+	font-size: 15px;
 	text-align: center;
 	color: #666666;
 }
@@ -86,7 +86,12 @@ scrollbarvertical{
 }
 
 scrollbarvertical sliderbar{
-	background-color: rgba( 40%,80%,80%,50%);
+	background-color: #136D6788;   /* Dark cyan */
+	
+}
+
+scrollbarvertical sliderbar:hover{
+	background-color: #00F8FF44;   /* Bright cyan */
 	
 }
 
