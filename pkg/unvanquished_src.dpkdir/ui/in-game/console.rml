@@ -11,7 +11,8 @@
 		}
 
 		console_text {
-			font-size: 18; 
+			font-size: 18;
+			color: white;
 		}
 	</style>
 </head>
