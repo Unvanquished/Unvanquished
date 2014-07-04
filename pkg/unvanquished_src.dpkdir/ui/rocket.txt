@@ -41,6 +41,8 @@
 		
 		ui/server/general.rml
 		ui/server/bots.rml
+		
+		ui/in-game/callvote_draw.rml
 	}
 	cursor ui/shared/cursor.rml
 }
