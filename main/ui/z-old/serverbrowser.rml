@@ -258,7 +258,7 @@ img.levelshot
 		</div>
 		<div id="backdrop">
 			<div id="background">
-				<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu" />
+				<img style="height: 100%; width: 100%;" src="/ui/assets/background" />
 			</div>
 			<div>
 				<img style="position: fixed; width: 50%; left: 30%; top: 350px;" src="/ui/assets/human.png"/>
