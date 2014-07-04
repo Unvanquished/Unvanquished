@@ -8,7 +8,7 @@
 				height: 100%;
 			}
 			
-			levelshot {
+			.levelshot {
 				/* HACK: Pretend to be the background */
 				position: absolute;
 				top:0;
