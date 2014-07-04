@@ -97,7 +97,7 @@
 
 		</style>
 	</head>
-	<body id="main" class="mainmenu" nohide>
+	<body id="main" class="mainmenu" nohide onshow="play 3 sound/ui/heartbeat.ogg sound/ui/heartbeat1.ogg sound/ui/heartbeat2.ogg">
 
 
 		<box class="version">

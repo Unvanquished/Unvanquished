@@ -349,6 +349,30 @@ static void CG_Rocket_GraphicsQualityChanged( void )
 	}
 }
 
+static void CG_Rocket_EventPlay( void )
+{
+	const char *track = NULL;
+
+	// Specifying multiple files to randomly select between
+	if ( trap_Argc() > 2 )
+	{
+		int numSounds = atoi( CG_Argv( 1 ) );
+		if ( numSounds > 0 )
+		{
+			int selection = rand() % numSounds + 1;
+			track = CG_Argv( 1 + selection );
+			trap_S_StopBackgroundTrack();
+			trap_S_StartBackgroundTrack( track, track );
+		}
+	}
+	else
+	{
+		track = CG_Argv( 1 );
+		trap_S_StopBackgroundTrack();
+		trap_S_StartBackgroundTrack( track, track );
+	}
+}
+
 typedef struct
 {
 	const char *command;
@@ -369,6 +393,7 @@ static const eventCmd_t eventCmdList[] =
 	{ "hide", &CG_Rocket_EventHide },
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
+	{ "play", &CG_Rocket_EventPlay },
 	{ "setAttribute", &CG_Rocket_SetAttribute },
 	{ "setChatCommand", &CG_Rocket_SetChatCommand },
 	{ "setDataSelectValue", &CG_Rocket_SetDataSelectValue },
