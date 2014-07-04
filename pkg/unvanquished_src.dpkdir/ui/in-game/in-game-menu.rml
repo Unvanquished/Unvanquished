@@ -188,7 +188,7 @@
 						<h2>Map</h2>
 						<indent>
 							<blocklink onClick="show server_map">Change map</blocklink> 
-							<blocklink onClick="exec layout default">Reset match</blocklink>
+							<blocklink onClick="exec layoutLoad default">Reset match</blocklink>
 						</indent>
 					
 						<h2> Bots </h2>
@@ -213,8 +213,8 @@
 						<h2> Play</h2>
 						<indent>
 							<blocklink onClick="show serverbrowser"> Server listings</blocklink>
-							<blocklink onClick="exec devmap parpax"> Start local/LAN game</blocklink>
-						<blocklink onClick="show demos"> Recorded demos </blocklink>
+							<blocklink onClick="show createserver"> Start local/LAN game</blocklink>
+							<blocklink onClick="show demos"> Recorded demos </blocklink>
 						</indent>
 					
 						<h2> Options </h2>

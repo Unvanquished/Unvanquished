@@ -36,6 +36,8 @@
 		ui/lore/help_gameplay.rml
 		
 		ui/gamechoice/serverbrowser.rml
+		ui/gamechoice/map.rml
+		ui/gamechoice/createserver.rml
 		
 		ui/server/general.rml
 		ui/server/bots.rml
