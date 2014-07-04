@@ -23,25 +23,25 @@
 	{
 		// ######## Custom section.  Add and remove freely ########
 		ui/shared/window.rml
-		
-		ui/options/player.rml 
-		ui/options/fov.rml  
+
+		ui/options/player.rml
+		ui/options/fov.rml
 		ui/options/graphics.rml
 		ui/options/keys.rml
 		ui/options/mouse.rml
 		ui/options/sound.rml
 		ui/options/ui.rml
-		
+
 		ui/lore/help_textentry.rml
 		ui/lore/help_gameplay.rml
-		
+
 		ui/gamechoice/serverbrowser.rml
 		ui/gamechoice/map.rml
 		ui/gamechoice/createserver.rml
-		
+
 		ui/server/general.rml
 		ui/server/bots.rml
-		
+
 		ui/in-game/callvote_draw.rml
 	}
 	cursor ui/shared/cursor.rml
