@@ -1,6 +1,7 @@
 <rml>
 <head>
-<link type="text/rcss" href="css/unv.rcss"/>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
 <style>
 body
 {

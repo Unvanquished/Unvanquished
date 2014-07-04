@@ -1,7 +1,6 @@
 <rml>
 <head>
-	<link type="text/rcss" href="css/rkt.rcss" />
-	<link type="text/rcss" href="css/unv.rcss" />
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
 	<style>
 		body
 		{

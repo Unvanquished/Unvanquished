@@ -86,7 +86,7 @@ scrollbarvertical{
 }
 
 scrollbarvertical sliderbar{
-	background-color: rgba( 40%,80%,80%,20%);
+	background-color: rgba( 40%,80%,80%,50%);
 	
 }
 

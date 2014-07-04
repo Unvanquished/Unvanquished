@@ -58,21 +58,22 @@
 			
 		</style>
 	</head>
-	<body id="alienspawn" template="window" onShow="buildDS alienSpawnClass default">
+	
+	<body id="teamsel" template="window" onShow="buildDS teamList default">
 		
 		<box class="left">
-		<datagrid id="team"  source="alienSpawnClass.default">
+		<datagrid id="team"  source="teamList.default">
 			<col fields="name" width="100%"/>
 		</datagrid>
 		</box>
 		
 		<box class="right">
-			<datasource_single source="alienSpawnClass.default" fields="description" targetid="team" />
+			<datasource_single source="teamList.default" fields="description" targetid="team" />
 		</box>
 		
 		<buttonbar>
-			<button onClick="execDS alienSpawnClass default">Spawn</button>
-			<button onClick="hide alienspawn">Cancel</button>
+			<button onClick="execDS teamList default">Spawn</button>
+			<button onClick="hide teamsel">Cancel</button>
 		</buttonbar>
 		
 	</body>
