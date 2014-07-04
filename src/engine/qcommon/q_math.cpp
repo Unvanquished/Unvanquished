@@ -3836,10 +3836,3 @@ void TransEndLerp( transform_t *t )
 }
 #endif
 
-#if defined(_WIN32) && !defined(__MINGW32__)
-double rint( double x )
-{
-	return floor( x + 0.5 );
-}
-#endif
-
