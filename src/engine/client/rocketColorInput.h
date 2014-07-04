@@ -98,7 +98,7 @@ public:
 		{
 			Rocket::Core::Element* elem = event.GetTargetElement();
 
-			while ( ( elem = elem->GetParentNode() ) )
+			do
 			{
 				if ( elem == this )
 				{
@@ -107,7 +107,7 @@ public:
 					input->Focus();
 					break;
 				}
-			}
+			} while ( ( elem = elem->GetParentNode() ) );
 		}
 	}
 
