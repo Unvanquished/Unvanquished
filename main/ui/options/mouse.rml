@@ -14,7 +14,7 @@
 		<row>
 			<h3> Mouse sensitivity </h3>
 			<input type="range" min=" 0.5" max=" 20" step="0.01" cvar="sensitivity"/>
-			<p class="inline"> 
+			<p class="inline">
 				Current: <inlinecvar cvar="sensitivity" type="number" format="%.2f"/>
 				<ilink onclick="exec reset sensitivity"> (reset) </ilink>
 			</p>
@@ -25,8 +25,7 @@
 			<p>Smooth out sudden mouse movements</p>
 		</row>
 
-		
-		
+
+
 	</body>
 </rml>
-d	
