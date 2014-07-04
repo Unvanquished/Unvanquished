@@ -245,20 +245,6 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	return data;
 }
 
-#define MEM_THRESHOLD 96 * 1024 * 1024
-
-/*
-==================
-Sys_LowPhysicalMemory
-==================
-*/
-qboolean Sys_LowPhysicalMemory( void )
-{
-	MEMORYSTATUS stat;
-	GlobalMemoryStatus( &stat );
-	return ( stat.dwTotalPhys <= MEM_THRESHOLD ) ? qtrue : qfalse;
-}
-
 /*
 ==============
 Sys_Basename

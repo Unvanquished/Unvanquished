@@ -1,22 +1,22 @@
-0,models/players/human_naked/head
-1,models/players/human_naked/head
-2,gfx/null
-3,gfx/null
-4,models/players/human_naked/head
-5,models/players/human_naked/head
-6,models/players/human_naked/body
-7,models/players/human_naked/head
-8,gfx/null
-9,gfx/null
-10,gfx/null
-11,gfx/null
-12,gfx/null
-13,gfx/null
-14,gfx/null
-15,gfx/null
-16,gfx/null
-17,gfx/null
-18,gfx/null
-19,gfx/null
-20,gfx/null
-21,gfx/null
+0,models/players/human_naked/head // ???
+1,models/players/human_naked/head // ???
+2,models/players/human_light/armor  // shoe
+3,gfx/null  // knee pad
+4,models/players/human_naked/head // ???
+5,models/players/human_naked/head // ???
+6,models/players/human_naked/body // body
+7,models/players/human_naked/head // head
+8,gfx/null // knee pad
+9,models/players/human_light/armor // shoe
+10,models/players/human_light/armor // neck piece
+11,gfx/null  // helmet
+12,models/players/human_light/armor // boot piece
+13,models/players/human_light/armor // boot piece
+14,gfx/null // shoulder pad
+15,gfx/null // shoulder pad
+16,gfx/null // arm guard
+17,gfx/null // arm guard
+18,models/players/human_light/armor // crotch armor
+19,gfx/null // hip armor
+20,gfx/null // hip armor
+21,models/players/human_light/armor // chest armor

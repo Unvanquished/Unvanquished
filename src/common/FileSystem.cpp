@@ -1047,25 +1047,23 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 	loadedPaks.back().type = pak.type;
 	loadedPaks.back().path = pak.path;
 
-	// Update the list of files, but don't overwrite existing files to preserve sort order
+	// Update the list of files, but don't overwrite existing files, so the sort order is preserved
 	if (pak.type == PAK_DIR) {
 		auto dirRange = RawPath::ListFilesRecursive(pak.path, err);
 		if (HaveError(err))
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
-			if (*it == PAK_DEPS_FILE) {
-				hasDeps = true;
-				continue;
-			}
-			if (!Str::IsPrefix(pathPrefix, *it))
-				continue;
-			if (Str::IsSuffix("/", *it))
-				return;
+			if (!Str::IsSuffix("/", *it) && Str::IsPrefix(pathPrefix, *it)) {
+				if (*it == PAK_DEPS_FILE)
+					hasDeps = true;
+				else {
 #ifdef LIBSTDCXX_BROKEN_CXX11
-			fileMap.insert({*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0)});
+					fileMap.insert({*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0)});
 #else
-			fileMap.emplace(*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0));
+					fileMap.emplace(*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0));
 #endif
+				}
+			}
 			it.increment(err);
 			if (HaveError(err))
 				return;
@@ -1086,7 +1084,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		realChecksum = crc32(0, Z_NULL, 0);
 		zipFile.ForEachFile([&pak, &realChecksum, &pathPrefix, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
-			// Note that 'return' is effectively 'continue' , since we are in a lambda
+			// Note that 'return' is effectively 'continue' since we are in a lambda
 			if (filename == PAK_DEPS_FILE) {
 				hasDeps = true;
 				depsOffset = offset;
@@ -2185,7 +2183,10 @@ void RefreshPaks()
 			return a.checksum > b.checksum;
 
 		// Prefer zip packages to directory packages
-		return b.type == PAK_ZIP;
+		if (b.type == PAK_ZIP && a.type != PAK_ZIP)
+			return true;
+
+		return false;
 	});
 }
 #endif
