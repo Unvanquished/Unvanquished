@@ -22,8 +22,6 @@
 	misc
 	{
 		// ######## Custom section.  Add and remove freely ########
-		ui/shared/window.rml
-
 		ui/options/player.rml
 		ui/options/fov.rml
 		ui/options/graphics.rml
