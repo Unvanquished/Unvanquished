@@ -1,0 +1,11 @@
+<rml>
+<head>
+<link type="text/rcss" href="/ui/shared/basics.rcss" />
+<link type="text/template" href="/ui/shared/window.rml" />
+</head>
+<body id="error" template="window" style="width: 32em; margin: 10%;">
+<h1>Error!</h1>
+<p><cvarinline cvar="com_errorMessage"/></p>
+<button onClick="hide error">Ok</button>
+</body>
+</rml>
