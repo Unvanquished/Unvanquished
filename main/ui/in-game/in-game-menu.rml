@@ -132,7 +132,7 @@
 			<dataselect style="float:left;" source="languages.default" fields="name"/>
 		</box>
 		
-		<<box class="debug">
+		<box class="debug">
 			<p onClick="exec rocketDebug">/rocketDebug</p>
 			<p onClick="exec screenshotPNG">/screenshotPNG</p>
 			<p onClick="exec ui_restart">/ui_restart</p>

@@ -1,18 +1,17 @@
 <rml>
 <head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+
 	<style>
 		body {
-		width: 100%;
-		height: 100%;
+			width: 75%;
+			height: 30%;
+
+			padding: 1em;
 		}
 
 		console_text {
-		font-family: Roboto;
-		font-size: 16;
-		position: absolute;
-		top: 0px;
-		width: 75%;
-		height: 20%;
+			font-size: 18; 
 		}
 	</style>
 </head>

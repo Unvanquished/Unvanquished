@@ -45,7 +45,7 @@
 		<row>
 			<h3>Pounce charge-bar</h3>
 			<input cvar="cg_drawChargeBar" type="checkbox" />
-			<p>Alien punce-meter</p>
+			<p>Alien pounce-meter</p>
 		</row>
 		<row>
 			<h3>Lag-o-meter</h3>
