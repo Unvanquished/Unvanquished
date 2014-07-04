@@ -31,9 +31,9 @@
 				background-image:/ui/assets/mainmenu;
 			}
 			body.ingame {
-				background.color: #AAAAAAAA;
+				background-color: rgba(0%,0%,0%,0%);
 			}
-
+			
 			/* Floating boxes for misc info in the main menu */
 			box {
 				display: block;
@@ -42,7 +42,7 @@
 			}
 			box.version {
 				bottom:10px;
-				left:10px;
+				left:10px;	
 				display: none;
 			}
 			box.language {
@@ -51,7 +51,7 @@
 				font-size: 14px;
 				color: rgba( 100%, 100%, 100%, 50% );
 				width:20em;
-
+				
 				display:none; /* Until inline-CSS on controls is fixed */
 			}
 			box.debug{
@@ -65,8 +65,8 @@
 			box.debug:hover{
 				color: #aaddaa;
 			}
-
-
+			
+	 
 			/* Ugly table-like hacks to have two options side-by-side */
 			blocklink.rightfloat{
 				width: 10em;
@@ -78,22 +78,21 @@
 				margin-top:0.5em;
 				margin-left:0;
 			}
-
+			
 			/* Currently not used */
 			serverdetails{
 				display: block;
 				color: #999999;
 				font-size: 12px;
-
+				
 				margin-left:1.5em;
 				margin-bottom: 1em;
 			}
 			
 			/* innersidebar is grey box, sidebar holds this and the logo for scrolling */
 			window.innersidebar {
-
 				display: block;
-
+								
 				padding-top:0;
 				padding-bottom:0;
 				
@@ -105,62 +104,41 @@
 				width:20em; 
 				height:100%;
 				overflow: auto;
-
 			}
 			
 			/* Section under a H1 heading */
 			sidesection {
 				display: block;
 				margin-top: 1em;
-				margin-bottom: 2em;
+				margin-bottom: 2em;	
 			}
 			img.logo {
 				width: 20em;
 				margin-top:8em;
+			
 			}
-
+				
 		</style>
 	</head>
-	<body id="main" class="mainmenu" nohide onshow="play 3 sound/ui/heartbeat.ogg sound/ui/heartbeat1.ogg sound/ui/heartbeat2.ogg">
+	<body id="main" class="mainmenu" nohide>
 
 
 		<box class="version">
 			<p style="font-size: 30px;"> Unvanquished alpha 29</p>
 			<p> www.unvanquished.net  Unvanquished development </p>
 		</box>
-
+		
 		<box class="language">\
-			<!-- BUG this style does nothing -->
+			<!-- BUG this style does nothing --> 
 			<dataselect style="float:left;" source="languages.default" fields="name"/>
-		</box>
-
-		<box class="debug">
-			<p onClick="exec rocketDebug">/rocketDebug</p>
-			<p onClick="exec screenshotPNG">/screenshotPNG</p>
-			<p onClick="exec ui_restart">/ui_restart</p>
-
-			<p> == Bugs == </p>
-			<p> Inline styles for &lt;dataselect&gt; do not work. </p>
-			<p> Borders are glitchy: sometimes they simply don't work.</p>
-			<p> Mouse-position is off in some drop-down menus </p>
-			<p> Space taken up by a text sometimes "shimmies" around when its style is changed.  Eg mouseovers</p>
-			<p> Cursor-image is locked to (0,0) in the load-screen </p>
-
-			<p> == Todo == </p>
-			<p> fov cvars: current behavior is to use defaults when set to 0 degrees.  Change to use the proper cvar default value system </p>
-			<p> Test everything.  Finish descriptions for settings. </p>
-			<p> Generic "remove a bot from team" command </p>
-			<p> Get language select & translation working (once the UI is stable) </p>
-
 		</box>
 		
 		<sidebar>
 				
-
 				<img class="logo" src="logo.png" style="color: rgba(100%,100%,100%,100%);" />
-
+				
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
-				<window id="innersidebar" class="innersidebar" >
+				<window id="innersidebar" class="innersidebar">
 				
 					<sidesection  id="sidebar_ingame" class="hidden">
 						<h1> Match menu </h1>
@@ -174,25 +152,25 @@
 							<blocklink onClick="exec team spec;  hide ingame"> Spectate </blocklink>
 						</indent>
 
-						<h2> Democracy </h2>
-						<indent>
-							<p> Testing 123 </p>
-						</indent>
-						<blocklink class="rightfloat" onClick="exec vote no"> Vote no </blocklink>
-						<blocklink class="leftalign" onClick="exec vote yes"> Vote yes </blocklink>
-						<indent>
-							<blocklink onClick="show gamechoice_map"> Map </blocklink>
-							<blocklink onClick="exec callvote extend"> Extend timelimit </blocklink>
-							<blocklink onClick="exec callvote draw"> Call a draw </blocklink>
-							<blocklink onClick="exec callvote kickbots"> Kick bots </blocklink>
-						</indent>
-						
-						<h2> Team Voting </h2>
-						<blocklink class="rightfloat" onClick="exec teamvote no"> Vote no </blocklink>
-						<blocklink class="leftalign" onClick="exec teamvote yes">Vote yes </blocklink>
-						<indent>
-							<blocklink onClick="exec callteamvote admitdefeat"> Admit defeat </blocklink>
-						</indent>
+						<if cvar="g_allowVote" condition="==" value="1">
+							<h2> Democracy </h2>
+							<indent>
+								<blocklink class="fake"> 
+									Global vote: <ilink onClick="exec vote yes">yes</ilink> or 
+									<ilink onClick="exec vote no">no</ilink>
+								</blocklink>
+								<blocklink class="fake"> 
+									Team vote: <ilink onClick="exec teamvote yes">yes</ilink> or 
+									<ilink onClick="exec teamvote no">no</ilink>
+								</blocklink>
+								<blocklink onClick="exec callvote kickbots"> Kick bots </blocklink>
+								<blocklink onClick="show gamechoice_map"> Change map </blocklink>
+								<blocklink onClick="exec callvote extend"> Extend timelimit </blocklink>
+								<blocklink onClick="show callvote_draw"> Call a draw </blocklink>
+								<blocklink onClick="exec callteamvote admitdefeat"> Admit defeat </blocklink>
+							</indent>
+						</if>
+	
 					</sidesection>	
 					
 				
@@ -201,39 +179,28 @@
 						<blocklink class="rightfloat" onClick="exec disconnect"> Stop server </blocklink>
 						<blocklink class="leftalign" onClick="exec pause">Pause server</blocklink>
 					
-
 						<h2>Configuration</h2>
 						<indent>
-							<blocklink> Access and publicity control </blocklink>
-							<blocklink> Bots </blocklink>
-							<blocklink> Physics </blocklink>
-						</indent>
-
-						<h2>Map</h2>
-						<indent>
-							<blocklink>Change map</blocklink>
-							<blocklink>Manage map rotation</blocklink>
-							<blocklink>Choose default layout</blocklink>
-							<blocklink>Reset buildings to layout</blocklink>
-						</indent>
-
-						<h2> Aliens </h2>
-						<indent>
-							<blocklink onClick="exec bot add Lavishment aliens"> Add an alien bot </blocklink>
-							<blocklink> Remove an alien bot </blocklink>
-							<blocklink> Toggle ability to build </blocklink> 
+							<blocklink onClick="show server_general"> Server setup </blocklink>
+							<blocklink onClick="show server_bots"> Bots </blocklink>
 						</indent>
 					
-						<h2> Humans </h2>
+						<h2>Map</h2>
 						<indent>
-							<blocklink onClick="exec bot add Pulsifer humans"> Add a human bot </blocklink>
-							<blocklink> Remove a human bot </blocklink>
-							<blocklink> Toggle ability to build </blocklink> 
+							<blocklink onClick="show server_map">Change map</blocklink> 
+							<blocklink onClick="exec layoutLoad default">Reset match</blocklink>
 						</indent>
-
+					
+						<h2> Bots </h2>
+						<indent>
+							<blocklink onClick="exec bot add Lavishment aliens"> Add an alien bot </blocklink>
+							<blocklink onClick="exec bot add Pulsifer humans"> Add a human bot </blocklink>
+							<blocklink onClick="exec bot del all"> Remove all bots </blocklink>
+						</indent>
+					
 						<h2> Players </h2>
 						<indent>
-							<blocklink>Disclipline: kick/ban/mute/nobuild</blocklink>
+							<blocklink onClick="show server_discipline">Disclipline: kick/ban/mute/nobuild</blocklink>
 						</indent>
 					</sidesection>
 					
@@ -243,14 +210,13 @@
 						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
 						<blocklink class="leftalign" onClick="exec devmap parpax"> Instant action </blocklink>
 					
-
 						<h2> Play</h2>
 						<indent>
 							<blocklink onClick="show serverbrowser"> Server listings</blocklink>
-							<blocklink onClick="exec devmap parpax"> Start local/LAN game</blocklink>
-						<blocklink onClick="show demos"> Recorded demos </blocklink>
+							<blocklink onClick="show createserver"> Start local/LAN game</blocklink>
+							<blocklink onClick="show demos"> Recorded demos </blocklink>
 						</indent>
-
+					
 						<h2> Options </h2>
 						<indent>
 							<blocklink onClick="show options_player"> Player </blocklink>
@@ -261,20 +227,18 @@
 							<blocklink onClick="show options_ui"> User interface and HUD </blocklink>
 							<!-- <blocklink onClick="show options_fov"> Fields of view </blocklink> -->
 						</indent>
-
+								
 						<h2> Lore </h2>
 						<indent>
 							<blocklink onClick="show help_gameplay"> Gameplay guide </blocklink>
 							<blocklink onClick="show help_textentry"> Colour codes and symbols </blocklink>
 						</indent>
-
 					</sidesection>
-
+								
 				</window>
 	
 		</sidebar>
 	
-
 	</body>
 </rml>
 
