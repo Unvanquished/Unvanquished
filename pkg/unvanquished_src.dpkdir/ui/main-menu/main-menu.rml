@@ -78,6 +78,11 @@
 				margin-top:0.5em;
 				margin-left:0;
 			}
+			blocklink.leftversion{
+				margin-top:0.5em;
+				margin-left:0;
+			}
+
 			
 			/* Currently not used */
 			serverdetails{
@@ -208,7 +213,7 @@
 					<sidesection  id="sidebar_main">
 						<h1 class="hidden"> Main Menu </h1>
 						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
-						<blocklink class="leftalign" onClick="exec devmap parpax"> Instant action </blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.29 </blocklink>
 					
 						<h2> Play</h2>
 						<indent>

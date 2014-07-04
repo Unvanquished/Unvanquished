@@ -208,7 +208,8 @@
 					<sidesection  id="sidebar_main">
 						<h1> Main Menu </h1>
 						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
-						<blocklink class="leftalign" onClick="exec devmap parpax"> Instant action </blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.29 </blocklink>
+
 					
 						<h2> Play</h2>
 						<indent>
