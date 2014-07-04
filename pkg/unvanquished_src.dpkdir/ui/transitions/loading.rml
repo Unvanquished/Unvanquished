@@ -75,11 +75,11 @@
 			<progress_value src="overall" />
 		</percentage>
 
-		<!--
+
 		<barbox>
 			<progressbar src="overall" class="barValue"/>
 		</barbox>
-		-->
+
 
 	</body>
 </rml>
