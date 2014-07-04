@@ -119,11 +119,16 @@
 		
 		
 		location {
-			display: block;
 			font-size: 18px;
-			margin: 0.5em;
-			clear:both;
+			margin-right: 1em;
 			width: 100%;
+		}
+		
+		locationbox {
+			display: block;
+			clear: both;
+			width: 25em;
+			text-align: right;
 		}
 
 	</style>
@@ -152,7 +157,9 @@
 			<lagometer />
 		</statsbox>
 		
-		<location />
+		<locationbox>
+			<location />
+		</locationbox>
 		<p><votes /></p>
 		<p><votes_team /></p>
 	</region>
