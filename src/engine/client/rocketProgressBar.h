@@ -83,11 +83,11 @@ public:
 	void OnUpdate( void )
 	{
 		float newValue;
-		const char *str = GetAttribute<Rocket::Core::String>( "src", "" ).CString();
+		Rocket::Core::String str = GetAttribute<Rocket::Core::String>( "src", "" );
 
-		if ( *str )
+		if ( !str.Empty() )
 		{
-			Cmd_TokenizeString( str );
+			Cmd_TokenizeString( str.CString() );
 			newValue = _vmf( VM_Call( cgvm, CG_ROCKET_PROGRESSBARVALUE ) );
 
 			if ( newValue != value )
