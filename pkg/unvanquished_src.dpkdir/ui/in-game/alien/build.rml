@@ -1,7 +1,8 @@
 <rml>
 <head>
 	<link type="text/rcss" href="/ui/shared/basics.rcss" />
-		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+	<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+	<link type="text/rcss" href="/ui/shared/infobox.rcss" />
 <style>
 body
 {
@@ -83,7 +84,14 @@ body
 tabs {
 	display: none;
 }
-
+div.infobox {
+	position: absolute;
+	top: 40%;
+	right: 10%;
+	float: right;
+	width: 45%;
+	height: 50%;
+}
 </style>
 </head>
 <body id="alienbuild" class="circlemenu alien" onShow="buildDS alienBuildList default; buildDS alienBuildList upgrades">
@@ -92,14 +100,12 @@ tabs {
 <tab></tab>
 <panel>
 <circlemenu id="default" source="alienBuildList.default" fields="num" formatter="CMAlienBuildables" cancel="hide alienbuild"/>
-</panel>
-</tabset>
-
 <div class="infobox">
 <h2><datasource_single source="alienBuildList.default" fields="name" targetid="default" /></h2>
-
 <p class="text"><datasource_single source="alienBuildList.default" fields="description" targetid="default" /></p>
 </div>
+</panel>
+</tabset>
 </div>
 </body>
 </rml>
