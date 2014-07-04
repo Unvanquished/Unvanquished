@@ -74,7 +74,9 @@ blocklink {
 blocklink:hover{
 	color:white;
 }
-
+blocklink.fake:hover{
+	color:#999999;	
+}
 
 
 /* ##### Scroll-bars #### */
