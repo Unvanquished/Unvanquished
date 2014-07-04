@@ -78,8 +78,7 @@
 				</p>
 				
 				
-				<h2> Anti-aliasing</h2>
-				<p> AA fixes 'jagged edges', but can be very costly to your frame-rate.</p>
+
 				<row>
 					<h3> Multisampling level </h3>
 					<select cvar="r_ext_multisample">
@@ -89,14 +88,10 @@
 						<option value="8">8×</option>
 						<option value="16">16×</option>
 					</select>
-					<p> Higher levels make smoother edges. </p>
+					<p> Anti-aliasing smoothes out 'jaggy edges' but is very costly to your frame-rate. </p>
 					
 				</row>
-				<row>
-					<h3> FXAA </h3>
-					<input cvar="r_FXAA" type="checkbox"/>
-					<p> A more efficient AA method not supported by all drivers. </p>
-				</row>
+
 				
 				
 			</panel>

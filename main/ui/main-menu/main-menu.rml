@@ -1,5 +1,23 @@
 <rml>
 	<head>
+		<!--	
+			main-menu.rml and in-game.rml are essentially the same file with a few
+			small class variations to:
+			 (1) Make the background transparent for in-game, rather than a background image
+			 (2) Show the extra sidebar sections in-game 
+			 (3) Hide logo in-game
+			
+			Other importants tweaks ATM include:
+			  - omitting <h1>Title</h1> in the main-menu
+			  - removed nohide from body
+			  - body id
+			  
+			Possible idea: replace both in-game and main-menu with a single RML file and switch
+			classes on-the-fly.
+		
+		-->
+		
+		
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
 		<style>
@@ -70,20 +88,24 @@
 				margin-bottom: 1em;
 			}
 			
-			/* Sidebar window sits inside box.sidebar for vertical alignment */
-			window.sidebar {
+			/* innersidebar is grey box, sidebar holds this and the logo for scrolling */
+			window.innersidebar {
 				display: block;
 								
 				padding-top:0;
 				padding-bottom:0;
+				
 			}
-			box.sidebar {
+			sidebar {
+				display: block;
+				position: absolute;
 				right:4%;
 				width:20em; 
-				max-height:80%;
-				margin-top:10%;
-				bottom: 10%;
+				height:100%;
+				overflow: auto;
 			}
+			
+			/* Section under a H1 heading */
 			sidesection {
 				display: block;
 				margin-top: 1em;
@@ -91,6 +113,7 @@
 			}
 			img.logo {
 				width: 20em;
+				margin-top:8em;
 			
 			}
 				
@@ -120,40 +143,34 @@
 			<p> Mouse-position is horribly off in some drop-down menus </p>
 			<p> Colour input box (eg nickname) becomes unusable if you delete its contents.</p>
 			<p> Fonts are not being hinted. </p>
-			<p> Space taken up by a font sometimes changes slightly when its colour is changed.  eg: tabs, :hover</p>
-			<p> Sliders &lt;input type="range"&gt; don't update when their CVAR is changed.  eg: via reset buttons </p>
+			<p> Space taken up by a text sometimes "shimmies" around when its style is changed.  Eg mouseovers</p>
 			<p> Cursor-image is locked to (0,0) in the load-screen </p>
 			
 			
-			
 			<p> == Todo == </p>
-			<p> Finish remaining pages: Server listings, Start local game, Demo player, load screen, bot options </p>
-			<p> Better windowing behavior: show/hide whole menu + windows when user hits escape.  Don't let windows go below the main menu layer. </p>
 			<p> Use the same file for both the main menu and in-game, just switch the approprate class="" tags as neccesary. Similiarly hide host-control sections when not connected to a self-hosted game.</p>
 			<p> fov cvars: current behavior is to use defaults when set to 0 degrees.  Change to use the proper cvar default value system </p>
 			<p> Test everything.  Finish descriptions for settings. </p>
-			<p> Get language select & translation working </p>
 			<p> Write instant-action code to join a random online server </p>
 			<p> Generic "add a bot" and "remove a bot from team" commands with random names </p>
 			<p> Menu music & sound </p>
 			<p> Make sure language select & related boxes have their options populated before use </p>
 			<p> In-game UI twiddling </p>
+			<p> Get language select & translation working (once the UI is stable) </p>
+
 		</box>
 		
-		<box class="sidebar">
-			<mainsidebar>
+		<sidebar>
 				
 				<img class="logo" src="logo.png" style="color: rgba(100%,100%,100%,100%);" />
 				
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
-				<window id="sidebar" class="sidebar" >
+				<window id="innersidebar" class="innersidebar" >
 				
 					<sidesection  id="sidebar_ingame" class="hidden">
 						<h1> Match menu </h1>
-					
 						<blocklink class="rightfloat" onClick="exec disconnect"> Leave match</blocklink>
-						<blocklink class="leftalign" onClick="hide main">Resume action</blocklink>
-					
+						<blocklink class="leftalign" onClick="hide ingame">Resume action</blocklink>
 					
 						<h2> Teams </h2>
 						<indent>
@@ -161,7 +178,7 @@
 							<blocklink onClick="exec team human"> Join humans</blocklink>
 							<blocklink onClick="exec team spec"> Spectate </blocklink>
 						</indent>
-					
+
 						<h2> Call vote </h2>
 						<indent>
 							<blocklink> Next map </blocklink>
@@ -170,15 +187,13 @@
 							<blocklink> Admit defeat </blocklink>
 							<blocklink> Kick bots </blocklink>
 						</indent>
-
 					</sidesection>	
+					
 				
 					<sidesection id="sidebar_host" class="hidden">
 						<h1> Host menu </h1>
-					
 						<blocklink class="rightfloat" onClick="exec disconnect"> Stop server </blocklink>
 						<blocklink class="leftalign" onClick="exec pause">Pause server</blocklink>
-					
 					
 						<h2>Configuration</h2>
 						<indent>
@@ -213,15 +228,13 @@
 						<indent>
 							<blocklink>Disclipline: kick/ban/mute/nobuild</blocklink>
 						</indent>
-				
 					</sidesection>
+					
 				
 					<sidesection  id="sidebar_main">
-						
-					
+						<h1 class="hidden"> Main Menu </h1>
 						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
 						<blocklink class="leftalign" onClick="exec devmap parpax"> Instant action </blocklink>
-					
 					
 						<h2> Play</h2>
 						<indent>
@@ -246,14 +259,11 @@
 							<blocklink onClick="show help_gameplay"> Gameplay guide </blocklink>
 							<blocklink onClick="show help_textentry"> Colour codes and symbols </blocklink>
 						</indent>
-					
-					
-					
 					</sidesection>
 								
 				</window>
-			</mainsidebar>
-		</box>
+	
+		</sidebar>
 	
 	</body>
 </rml>
