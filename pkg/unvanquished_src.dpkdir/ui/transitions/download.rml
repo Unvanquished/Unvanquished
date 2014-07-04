@@ -78,7 +78,7 @@
 		</style>
 		<title>Connecting</title>
 	</head>
-	<body id="download">
+	<body id="download" nohide>
 		<p>
 		This Server requires additional files.</p>
 		<p>Please wait while downloading.</p>
