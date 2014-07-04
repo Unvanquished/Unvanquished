@@ -44,16 +44,6 @@
 		
 		<h2> Cosmetic </h2>
 		<row>
-			<h3>Sticky spectate</h3>
-			<input cvar="cg_stickySpec" type="checkbox" />
-			<p>Keep spectating a player even if they die. NB Viech</p>
-		</row>
-		<row>
-			<h3>Static death camera</h3>
-			<input cvar="cg_staticDeathCam" type="checkbox" />
-			<p>Don't follow the eyes of your killer when you die.</p>
-		</row>
-		<row>
 			<select cvar="cg_drawgun">
 				<option value="0">Disable</option>
 				<option value="1">Humans only</option>

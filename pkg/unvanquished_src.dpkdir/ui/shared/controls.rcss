@@ -2,9 +2,12 @@
  *  UI controls.  Checkboxes, text inputs, etc 
  */
 
-/* By default, float ALL CONTROLS to the right */
+/* By default, float ALL CONTROLS to the right and hide any overflow */
 colorinput, dataselect, select, input.text, input.checkbox, input.radio, input.range, keybind {
 	float: right;
+}
+selectvalue {
+	overflow: hidden;
 }
 
 
