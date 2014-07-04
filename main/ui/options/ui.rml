@@ -36,7 +36,7 @@
 		<h3>Crosshair Size</h3>
 			<select name="wwspeed" cvar="cg_crosshairSize">
 				<option value="0.5">Tiny</option>
-				<option value="0.75">Small Weapons Only</option>
+				<option value="0.75">Small</option>
 				<option value="1">Regular</option>
 				<option value="1.5">Huge</option>
 			</select>

@@ -68,10 +68,16 @@
 						<h3>Height</h3>
 					</half>
 					<half class="right">
-						<input cvar="r_swapinterval" type="checkbox"/>
-						<h3>Vsync</h3>
+						
 					</half>
 				</row>	
+				
+				<row>
+					<input cvar="r_swapinterval" type="checkbox"/>
+						<h3>Vsync</h3>
+				</row>
+				
+				
 				<p>
 					Vsync avoids 'tears' from appearing on your screen during fast movement,
 					but increases input latency and locks your framerate to set thresholds.
@@ -278,9 +284,7 @@
 		</tabset>
 		
 		<p style="clear: both;"> 
-			Note: Some changes will only take effect upon a video restart.
-			You can trigger this by playing a new match or by manually 
-			<ilink onClick="exec vid_restart"> restarting the video now.</ilink>
+			Note: Some changes will only take effect when you join your next match.
 		</p>
 		
 	</body>

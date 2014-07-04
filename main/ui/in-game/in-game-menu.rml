@@ -132,31 +132,26 @@
 			<dataselect style="float:left;" source="languages.default" fields="name"/>
 		</box>
 		
-		<box class="debug">
+		<<box class="debug">
 			<p onClick="exec rocketDebug">/rocketDebug</p>
 			<p onClick="exec screenshotPNG">/screenshotPNG</p>
 			<p onClick="exec ui_restart">/ui_restart</p>
-			
+
 			<p> == Bugs == </p>
 			<p> Inline styles for &lt;dataselect&gt; do not work. </p>
-			<p> Borders on any type of input-box have no effect </p>
-			<p> Mouse-position is horribly off in some drop-down menus </p>
-			<p> Colour input box (eg nickname) becomes unusable if you delete its contents.</p>
+			<p> Borders are glitchy: sometimes they simply don't work.</p>
+			<p> Mouse-position is off in some drop-down menus </p>
 			<p> Fonts are not being hinted. </p>
 			<p> Space taken up by a text sometimes "shimmies" around when its style is changed.  Eg mouseovers</p>
 			<p> Cursor-image is locked to (0,0) in the load-screen </p>
-			
-			
+
 			<p> == Todo == </p>
-			<p> Use the same file for both the main menu and in-game, just switch the approprate class="" tags as neccesary. Similiarly hide host-control sections when not connected to a self-hosted game.</p>
 			<p> fov cvars: current behavior is to use defaults when set to 0 degrees.  Change to use the proper cvar default value system </p>
 			<p> Test everything.  Finish descriptions for settings. </p>
-			<p> Write instant-action code to join a random online server </p>
-			<p> Generic "add a bot" and "remove a bot from team" commands with random names </p>
+			<p> Generic "remove a bot from team" command </p>
 			<p> Menu music & sound </p>
-			<p> Make sure language select & related boxes have their options populated before use </p>
-			<p> In-game UI twiddling </p>
 			<p> Get language select & translation working (once the UI is stable) </p>
+			<p> Cull everything in the UI that does not work before release </p>
 
 		</box>
 		
@@ -174,9 +169,9 @@
 					
 						<h2> Teams </h2>
 						<indent>
-							<blocklink onClick="exec team alien"> Join aliens</blocklink>
-							<blocklink onClick="exec team human"> Join humans</blocklink>
-							<blocklink onClick="exec team spec"> Spectate </blocklink>
+							<blocklink onClick="exec team alien; hide ingame"> Join aliens</blocklink>
+							<blocklink onClick="exec team human;  hide ingame"> Join humans</blocklink>
+							<blocklink onClick="exec team spec;  hide ingame"> Spectate </blocklink>
 						</indent>
 
 						<h2> Call vote </h2>
@@ -219,7 +214,7 @@
 					
 						<h2> Humans </h2>
 						<indent>
-							<blocklink onClick="exec bot add Lavishment aliens"> Add a human bot </blocklink>
+							<blocklink onClick="exec bot add Pulsifer humans"> Add a human bot </blocklink>
 							<blocklink> Remove a human bot </blocklink>
 							<blocklink> Toggle ability to build </blocklink> 
 						</indent>

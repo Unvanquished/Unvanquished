@@ -1,11 +1,11 @@
 units
 {
-	ui/in-game/human/hud.rml
-	ui/in-game/alien/hud.rml
+	ui/in-game/hud/human.rml
+	ui/in-game/hud/alien.rml
 	ui/in-game/overlay.rml
 	ui/in-game/console.rml
-	ui/in-game/base.rml
-	ui/in-game/spectator.rml
+	ui/in-game/hud/base.rml
+	ui/in-game/hud/spectator.rml
 	ui/in-game/alien/barbs.rml
 	ui/in-game/alien/charge.rml
 	ui/in-game/scoreboard.rml
@@ -13,7 +13,6 @@ units
 
 spectator_hud
 {
-	base
 	overlay
 	console
 	spectator_hud

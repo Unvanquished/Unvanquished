@@ -1,9 +1,10 @@
 <rml>
 	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+
 		<style>
 			body
 			{
-				font-family: Roboto;
 				font-size: 24;
 				width: 100%;
 				height: 100%;
@@ -239,49 +240,39 @@
 				background-decorator: image;
 				background-image: "/ui/assets/human/scanner";
 			}
-			minimap {
-				position: absolute;
-				color: #ffffff11;
-				right: 0px;
-				width: 7.5em;
-				height: 7.5em;
-				border-color: white;
-				border-left-width: 2px;
-				border-bottom-width: 2px;
-			}
+			
 	</style>
 	</head>
 	<body id="human_hud">
-	<if cvar="cg_minimapActive" condition="==" value="1">
-		<minimap />
-	</if>
-	<div id="hudbg">
-		<img id="right" src="/ui/assets/human/rightbg.tga"/>
-		<img id="left" src="/ui/assets/human/leftbg.tga"/>
-	</div>
-	<div id="gunstuff">
-		<div class="ammo"><weapon_icon/><ammo/><ammo_stack/></div>
-		<div class="clips"><img class="clip" src="/ui/assets/human/clip.tga"/>
-		<clips/><clip_stack/></div>
-		<div class="credits"><credits/> Credits</div>
-	</div>
-	<div id="bars">
-		<div class="stamina"><img class="stamina" src="/ui/assets/human/stamina.tga"/>
-		<progressbar class="stamina" src="stamina" /></div>
-		<div class="health"><img class="health" src="/ui/assets/neutral/cross.tga"/>
-		<health class="health" />
-		<progressbar class="health" src="health" /></div>
-	</div>
-	<div id="momentum">
-		<unlocked_items/>
-		<momentum_bar/>
-	</div>
-	<div id="items">
-		<usable_buildable src="/ui/assets/neutral/use"/>
-		<inventory />
-	</div>
-	<div id="scanner">
-		<scanner />
-	</div>
+				
+
+		<div id="hudbg">
+			<img id="right" src="/ui/assets/human/rightbg.tga"/>
+			<img id="left" src="/ui/assets/human/leftbg.tga"/>
+		</div>
+		<div id="gunstuff">
+			<div class="ammo"><weapon_icon/><ammo/><ammo_stack/></div>
+			<div class="clips"><img class="clip" src="/ui/assets/human/clip.tga"/>
+			<clips/><clip_stack/></div>
+			<div class="credits"><credits/> Credits</div>
+		</div>
+		<div id="bars">
+			<div class="stamina"><img class="stamina" src="/ui/assets/human/stamina.tga"/>
+			<progressbar class="stamina" src="stamina" /></div>
+			<div class="health"><img class="health" src="/ui/assets/neutral/cross.tga"/>
+			<health class="health" />
+			<progressbar class="health" src="health" /></div>
+		</div>
+		<div id="momentum">
+			<unlocked_items/>
+			<momentum_bar/>
+		</div>
+		<div id="items">
+			<usable_buildable src="/ui/assets/neutral/use"/>
+			<inventory />
+		</div>
+		<div id="scanner">
+			<scanner />
+		</div>
 	</body>
 </rml>

@@ -1,24 +1,15 @@
 <rml>
 	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+
 		<style>
 			body
 			{
-				font-family: Roboto;
 				font-size: 46;
 				width: 100%;
 				height: 100%;
 			}
-			speedometer
-			{
-				width: 100px;
-				height: 100px;
-				background-color: rgba(50,50,50,100);
-				color: rgba(255,0,0,191);
-			}
-			crosshair
-			{
-				color: red;
-			}
+
 			.speed_max, .speed_current
 			{
 				color: black;
@@ -172,17 +163,7 @@
 			#evos evos{
 				color:red;
 			}
-			minimap {
-				font-size: 24;
-				position: absolute;
-				color: red;
-				right: 0px;
-				width: 7.5em;
-				height: 7.5em;
-				border-color: red;
-				border-left-width: 2px;
-				border-bottom-width: 2px;
-			}
+			
 			unlocked_items
 			{
 				width: 100%;
@@ -220,9 +201,6 @@
 	</head>
 	<body id="alien_hud">
 		<alien_sense />
-		<if cvar="cg_minimapActive" condition="==" value="1">
-			<minimap />
-		</if>
 		<div id="momentum">
 			<unlocked_items/>
 			<momentum_bar/>

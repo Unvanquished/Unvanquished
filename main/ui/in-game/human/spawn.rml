@@ -5,67 +5,75 @@
 		<style>
 			body
 			{
-				width: 40%;
-				height: 30%;
+				width: 43em;
+				height: 10em;
 				margin: auto;
 			}
 
-			div
-			{
-				float: left;
+			box {
+				display: block;
+				float:left;
+				height: 10em;
 			}
-			div#list
-			{
-				width: 15%;
-				height: 100%;
+			box.left {
+				width: 10em;
 			}
-
-			div#info
-			{
-				float: right;
-				width: 70%;
-				height: 100%;
-				overflow-y: auto;
+			box.right {
+				width: 25em;
+				padding: 1em;
+				margin: 0.5em;
+				background-color: #00000055;
 			}
-
-			datagrid
-			{
-				width: 100%;
-				float: left;
-			}
-
+			
 			datagridrow:selected
 			{
 				background: rgba(111,111,111,111);
 			}
-			div#buttons
-			{
-				float: right;
-				position: absolute;
-				height: 3%;
-				bottom: 0px;
-				right: 0px;
+			
+			buttonbar {
+				clear: both;
+				display:block;
+				width: 100%;
 			}
-			div#buttons button
-			{
-				position: relative;
+			
+			button {
+				display: block;
 				float: right;
-				bottom: 0px;
+				width: 5em;
+				background-color: #136D67;   /* Dark cyan */
+				text-align: center;
+				padding: 0.3em;
+				margin: 0.5em;
+				
+				border-style: solid;
+				border-width: 1px;
+				border-color: #136D67;   /* Dark cyan */
 			}
+			
+			button:hover{
+				border-style: solid;
+				border-width: 1px;
+				border-color: #00F8FF;   /* Bright cyan */
+			}
+			
 		</style>
 	</head>
 	<body id="humanspawn" template="window" onShow="buildDS humanSpawnItems default">
-		<div id="list">
+		
+		<box class="left">
 		<datagrid id="team"  source="humanSpawnItems.default">
 			<col fields="name" width="100%"/>
 		</datagrid>
-		</div>
-		<div id="info">
-		<datasource_single source="humanSpawnItems.default" fields="description" targetid="team" />
-		</div>
-		<div id='buttons'>
+		</box>
+		
+		<box class="right">
+			<datasource_single source="humanSpawnItems.default" fields="description" targetid="team" />
+		</box>
+		
+		<buttonbar>
 			<button onClick="execDS humanSpawnItems default">Spawn</button>
 			<button onClick="hide humanspawn">Cancel</button>
-		</div>
+		</buttonbar>
+		
 	</body>
 </rml>
