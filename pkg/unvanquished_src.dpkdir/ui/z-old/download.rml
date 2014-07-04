@@ -29,7 +29,7 @@
 				font-family: Roboto;
 				font-size:1.5em;
 				background-decorator: image;
-				background-image:/ui/assets/mainmenu;
+				background-image:/ui/assets/background;
 
 			}
 			p,h1,h2{
@@ -94,7 +94,7 @@
 
 		<p id="tip">Pro Tip: Don't feed grangers after midnight.</p>
 		<div id="background">
-			<img src="/ui/assets/mainmenu.jpg" />
+			<img src="/ui/assets/background.jpg" />
 		</div>
 
 	</body>
