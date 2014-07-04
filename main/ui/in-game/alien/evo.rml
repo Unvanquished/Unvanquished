@@ -2,6 +2,7 @@
 <head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
 <style>
 body
 {
@@ -83,7 +84,14 @@ body
 tabs {
 	display: none;
 }
-
+div.infobox {
+	position: absolute;
+	top: 40%;
+	right: 10%;
+	float: right;
+	width: 45%;
+	height: 50%;
+}
 </style>
 </head>
 <body id="alienevo" class="circlemenu alien" onShow="buildDS alienEvolveList default; buildDS alienEvolveList upgrades">
@@ -92,14 +100,12 @@ tabs {
 <tab></tab>
 <panel>
 <circlemenu id="default" source="alienEvolveList.default" fields="num" formatter="CMAlienEvolve" cancel="hide alienevo"/>
-</panel>
-</tabset>
-
 <div class="infobox">
 <h2><datasource_single source="alienEvolveList.default" fields="name" targetid="default" /></h2>
-
 <p class="text"><datasource_single source="alienEvolveList.default" fields="description" targetid="default" /></p>
 </div>
+</panel>
+</tabset>
 </div>
 </body>
 </rml>

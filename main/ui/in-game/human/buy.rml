@@ -2,6 +2,7 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
 		<style>
 			body
 			{
@@ -83,6 +84,15 @@
 	display:none;
 }
 
+div.infobox {
+	position: absolute;
+	top: 40%;
+	right: 10%;
+	float: right;
+	width: 45%;
+	height: 50%;
+}
+
 
 		</style>
 	</head>
@@ -92,21 +102,20 @@
 		<tab>Weapons</tab>
 		<panel>
 			<circlemenu id="weapons" source="armouryBuyList.weapons" fields="num" formatter="CMArmouryBuyWeapons" cancel="hide armourybuy"/>
+			<div class="infobox">
+			<h2><datasource_single source="armouryBuyList.weapons" fields="name" targetid="weapons" /></h2>
+			<p><div class="attr">Price:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="price" targetid="weapons" /></div></p>
+			<p><div class="attr">Range:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponRange" targetid="weapons" /></div></p>
+			<p><div class="attr">Damage:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" /></div></p>
+			<p><div class="attr">Fire Rate:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" /></div></p>
+			<p class="text"><datasource_single source="armouryBuyList.weapons" fields="description" targetid="weapons" /></p>
+			</div>
 		</panel>
 		<tab>Upgrades</tab>
 		<panel>
 			<circlemenu source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" cancel="hide armourybuy"/>
 		</panel>
 	</tabset>
-
-	<div class="infobox">
-		<h2><datasource_single source="armouryBuyList.weapons" fields="name" targetid="weapons" /></h2>
-		<p><div class="attr">Price:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="price" targetid="weapons" /></div></p>
-		<p><div class="attr">Range:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponRange" targetid="weapons" /></div></p>
-		<p><div class="attr">Damage:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" /></div></p>
-		<p><div class="attr">Fire Rate:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" /></div></p>
-		<p class="text"><datasource_single source="armouryBuyList.weapons" fields="description" targetid="weapons" /></p>
-	</div>
 	</div>
 	</body>
 </rml>
