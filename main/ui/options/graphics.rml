@@ -73,20 +73,24 @@
 				</row>	
 				
 				<row>
-					<input cvar="r_swapinterval" type="checkbox"/>
-						<h3>Vsync</h3>
+					<select cvar="r_swapinterval">
+						<option value="0">Off</option>
+						<option value="-1">Forgiving Vsync</option>
+						<option value="1">Full Vsync</option>
+					</select>
+					<h3>Vsync</h3>
+					<p>
+						Vsync prevents 'visual tearing' but increases input latency.  Forgiving Vsync
+						only activates when the frame-rate is above the refresh-rate of the monitor.
+					</p>
 				</row>
 				
 				
-				<p>
-					Vsync avoids 'tears' from appearing on your screen during fast movement,
-					but increases input latency and locks your framerate to set thresholds.
-				</p>
+				
 				
 				
 
 				<row>
-					<h3> Multisampling level </h3>
 					<select cvar="r_ext_multisample">
 						<option value="0">None</option>
 						<option value="2">2×</option>
@@ -94,6 +98,7 @@
 						<option value="8">8×</option>
 						<option value="16">16×</option>
 					</select>
+					<h3> Multisampling level </h3>
 					<p> Anti-aliasing smoothes out 'jaggy edges' but is very costly to your frame-rate. </p>
 					
 				</row>
@@ -114,11 +119,6 @@
 						<option value="0">Full (1:1)</option>
 					</select>
 					<p>Lower texture quality is useful for cards with limited VRAM</p>
-				</row>
-				<row>
-					<h3>Texture compression</h3>
-					<input cvar="r_ext_compressed_textures" type="checkbox" />
-					<p>TODO: Is this enforced anyway now?  Would anyone ever need to disable this?</p>
 				</row>
 				
 				<h2> Mip-mapping </h2>

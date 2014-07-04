@@ -146,10 +146,10 @@
 			<p> Cursor-image is locked to (0,0) in the load-screen </p>
 
 			<p> == Todo == </p>
+			<p> Finish in-game dialogs and local-game setup</p>
 			<p> fov cvars: current behavior is to use defaults when set to 0 degrees.  Change to use the proper cvar default value system </p>
 			<p> Test everything.  Finish descriptions for settings. </p>
 			<p> Generic "remove a bot from team" command </p>
-			<p> Menu music & sound </p>
 			<p> Get language select & translation working (once the UI is stable) </p>
 			<p> Cull everything in the UI that does not work before release </p>
 
@@ -174,13 +174,21 @@
 							<blocklink onClick="exec team spec;  hide ingame"> Spectate </blocklink>
 						</indent>
 
-						<h2> Call vote </h2>
+						<h2> Global Voting </h2>
+						<blocklink class="rightfloat" onClick="exec vote no"> Vote no </blocklink>
+						<blocklink class="leftalign" onClick="exec vote yes"> Vote yes </blocklink>
 						<indent>
-							<blocklink> Next map </blocklink>
-							<blocklink> Change map</blocklink>
-							<blocklink> Extend timelimit </blocklink>
-							<blocklink> Admit defeat </blocklink>
-							<blocklink> Kick bots </blocklink>
+							<blocklink onClick="show gamechoice_map"> Map </blocklink>
+							<blocklink onClick="exec callvote extend"> Extend timelimit </blocklink>
+							<blocklink onClick="exec callvote draw"> Call a draw </blocklink>
+							<blocklink onClick="exec callvote kickbots"> Kick bots </blocklink>
+						</indent>
+						
+						<h2> Team Voting </h2>
+						<blocklink class="rightfloat" onClick="exec teamvote no"> Vote no </blocklink>
+						<blocklink class="leftalign" onClick="exec teamvote yes">Vote yes </blocklink>
+						<indent>
+							<blocklink onClick="exec callteamvote admitdefeat"> Admit defeat </blocklink>
 						</indent>
 					</sidesection>	
 					
