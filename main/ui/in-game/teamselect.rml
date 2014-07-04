@@ -30,31 +30,6 @@
 				background: rgba(111,111,111,111);
 			}
 			
-			buttonbar {
-				clear: both;
-				display:block;
-				width: 100%;
-			}
-			
-			button {
-				display: block;
-				float: right;
-				width: 5em;
-				background-color: #136D67;   /* Dark cyan */
-				text-align: center;
-				padding: 0.3em;
-				margin: 0.5em;
-				
-				border-style: solid;
-				border-width: 1px;
-				border-color: #136D67;   /* Dark cyan */
-			}
-			
-			button:hover{
-				border-style: solid;
-				border-width: 1px;
-				border-color: #00F8FF;   /* Bright cyan */
-			}
 			
 		</style>
 	</head>
