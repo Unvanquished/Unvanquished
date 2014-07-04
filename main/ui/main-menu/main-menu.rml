@@ -143,17 +143,14 @@
 			<p> Inline styles for &lt;dataselect&gt; do not work. </p>
 			<p> Borders are glitchy: sometimes they simply don't work.</p>
 			<p> Mouse-position is off in some drop-down menus </p>
-			<p> Fonts are not being hinted. </p>
 			<p> Space taken up by a text sometimes "shimmies" around when its style is changed.  Eg mouseovers</p>
 			<p> Cursor-image is locked to (0,0) in the load-screen </p>
 
 			<p> == Todo == </p>
-			<p> Finish in-game dialogs and local-game setup</p>
 			<p> fov cvars: current behavior is to use defaults when set to 0 degrees.  Change to use the proper cvar default value system </p>
 			<p> Test everything.  Finish descriptions for settings. </p>
 			<p> Generic "remove a bot from team" command </p>
 			<p> Get language select & translation working (once the UI is stable) </p>
-			<p> Cull everything in the UI that does not work before release </p>
 
 		</box>
 		
@@ -177,7 +174,10 @@
 							<blocklink onClick="exec team spec;  hide ingame"> Spectate </blocklink>
 						</indent>
 
-						<h2> Global Voting </h2>
+						<h2> Democracy </h2>
+						<indent>
+							<p> Testing 123 </p>
+						</indent>
 						<blocklink class="rightfloat" onClick="exec vote no"> Vote no </blocklink>
 						<blocklink class="leftalign" onClick="exec vote yes"> Vote yes </blocklink>
 						<indent>
@@ -259,7 +259,7 @@
 							<blocklink onClick="show options_mouse"> Mouse and aim </blocklink>
 							<blocklink onClick="show options_sound"> Sound </blocklink>
 							<blocklink onClick="show options_ui"> User interface and HUD </blocklink>
-							<blocklink onClick="show options_fov"> Fields of view </blocklink>
+							<!-- <blocklink onClick="show options_fov"> Fields of view </blocklink> -->
 						</indent>
 
 						<h2> Lore </h2>

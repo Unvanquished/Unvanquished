@@ -11,7 +11,7 @@
 		
 		<row>
 			<h3>Real-time clock</h3>
-			<select name="drawclock" cvar="cg_drawClock">
+			<select name="cg_drawClock" cvar="cg_drawClock">
 				<option value="0">No</option>
 				<option value="1">12 Hour</option>
 				<option value="2">24 Hour</option>
