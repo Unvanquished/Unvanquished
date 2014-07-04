@@ -4266,11 +4266,11 @@ void R_LoadLightGrid( lump_t *l )
 					gridPoint1->ambient[ 0 ] = floatToUnorm8( ambientColor[ 0 ] );
 					gridPoint1->ambient[ 1 ] = floatToUnorm8( ambientColor[ 1 ] );
 					gridPoint1->ambient[ 2 ] = floatToUnorm8( ambientColor[ 2 ] );
-					gridPoint1->lightVecX = floatToSnorm8( direction[ 0 ] );
+					gridPoint1->lightVecX = 128 + floatToSnorm8( direction[ 0 ] );
 					gridPoint2->directed[ 0 ] = floatToUnorm8( directedColor[ 0 ] );
 					gridPoint2->directed[ 1 ] = floatToUnorm8( directedColor[ 1 ] );
 					gridPoint2->directed[ 2 ] = floatToUnorm8( directedColor[ 2 ] );
-					gridPoint2->lightVecY = floatToSnorm8( direction[ 1 ] );
+					gridPoint2->lightVecY = 128 + floatToSnorm8( direction[ 1 ] );
 				}
 			}
 		}
