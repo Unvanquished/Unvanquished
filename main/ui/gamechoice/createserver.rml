@@ -11,7 +11,7 @@
 			levelshotbox {
 				display:block;
 				
-				<!-- Approx measurements.  Are all mapshots in 4:3? -->
+				/* Approx measurements.  Are all mapshots in 4:3? */
 				width: 38em;
 				height: 30em;
 			}
@@ -23,12 +23,16 @@
 		<levelshotbox>
 			<levelshot />
 		</levelshotbox>
-		<row>
-			<dataselect source="mapList.default" fields="name" cvar="ui_dialogCvar1"/>
-			<h3> Map </h3>
-		</row>
 		
-		<button onClick="exec map $ui_dialogCvar1$"> Start </button>
+		<form onsubmit='execForm "map $map$"'>
+			<row>
+				<dataselect source="mapList.default" fields="name" name="map" cvar="ui_dialogCvar1"/>
+				<h3> Map </h3>
+			</row>
 		
+			<input type="submit"> <button> Start </button>  </input>
+			
+			
+		</form>
 	</body>
 </rml>

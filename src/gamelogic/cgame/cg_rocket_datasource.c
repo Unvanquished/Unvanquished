@@ -1085,7 +1085,8 @@ void CG_Rocket_BuildMapList( const char *args )
 	{
 		char buf[ MAX_INFO_STRING ];
 		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
-		Info_SetValueForKey( buf, "name", rocketInfo.data.mapList[ i ].mapName, qfalse );
+		Info_SetValueForKey( buf, "fullName", rocketInfo.data.mapList[ i ].mapName, qfalse );
+		Info_SetValueForKey( buf, "name", rocketInfo.data.mapList[ i ].mapLoadName, qfalse );
 		Info_SetValueForKey( buf, "levelshot", va( "%d", rocketInfo.data.mapList[ i ].levelShot ), qfalse );
 
 		trap_Rocket_DSAddRow( "mapList", "default", buf );
