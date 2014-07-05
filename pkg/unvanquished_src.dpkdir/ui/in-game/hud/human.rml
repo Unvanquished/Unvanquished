@@ -178,7 +178,7 @@
 				height: 30%;
 				border-width: 1px;
 				background-color: #ffffff65;
-				color: #aaffffff;
+				color: #26707084;
 			}
 
 			unlocked_items
