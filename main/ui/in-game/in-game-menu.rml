@@ -152,24 +152,22 @@
 							<blocklink onClick="exec team spec;  hide ingame"> Spectate </blocklink>
 						</indent>
 
-						<if cvar="g_allowVote" condition="==" value="1">
-							<h2> Democracy </h2>
-							<indent>
-								<blocklink class="fake">
-									Global vote: <ilink onClick="exec vote yes">yes</ilink> or
-									<ilink onClick="exec vote no">no</ilink>
-								</blocklink>
-								<blocklink class="fake">
-									Team vote: <ilink onClick="exec teamvote yes">yes</ilink> or
-									<ilink onClick="exec teamvote no">no</ilink>
-								</blocklink>
-								<blocklink onClick="exec callvote kickbots"> Kick bots </blocklink>
-								<blocklink onClick="show callvote_map"> Change map </blocklink>
-								<blocklink onClick="exec callvote extend"> Extend timelimit </blocklink>
-								<blocklink onClick="show callvote_draw"> Call a draw </blocklink>
-								<blocklink onClick="exec callteamvote admitdefeat"> Admit defeat </blocklink>
-							</indent>
-						</if>
+						<h2> Democracy </h2>
+						<indent>
+							<blocklink class="fake">
+								Global vote: <ilink onClick="exec vote yes">yes</ilink> or
+								<ilink onClick="exec vote no">no</ilink>
+							</blocklink>
+							<blocklink class="fake">
+								Team vote: <ilink onClick="exec teamvote yes">yes</ilink> or
+								<ilink onClick="exec teamvote no">no</ilink>
+							</blocklink>
+							<blocklink onClick="exec callvote kickbots"> Kick bots </blocklink>
+							<blocklink onClick="show callvote_map"> Change map </blocklink>
+							<blocklink onClick="exec callvote extend"> Extend timelimit </blocklink>
+							<blocklink onClick="show callvote_draw"> Call a draw </blocklink>
+							<blocklink onClick="exec callteamvote admitdefeat"> Admit defeat </blocklink>
+						</indent>
 
 					</sidesection>
 
