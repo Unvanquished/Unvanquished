@@ -240,11 +240,11 @@
 				background-decorator: image;
 				background-image: "/ui/assets/human/scanner";
 			}
-			
+
 	</style>
 	</head>
 	<body id="human_hud">
-				
+
 
 		<div id="hudbg">
 			<img id="right" src="/ui/assets/human/rightbg.tga"/>
