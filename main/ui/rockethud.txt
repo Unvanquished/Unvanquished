@@ -1,6 +1,7 @@
 units
 {
 	ui/in-game/hud/human.rml
+	ui/in-game/human/jetpack.rml
 	ui/in-game/hud/alien.rml
 	ui/in-game/overlay.rml
 	ui/in-game/console.rml
@@ -21,6 +22,7 @@ spectator_hud
 
 human_hud
 {
+	jetpack
 	base
 	human_hud
 	overlay

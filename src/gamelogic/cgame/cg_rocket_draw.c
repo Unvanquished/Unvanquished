@@ -2522,6 +2522,13 @@ static void CG_Rocket_DrawDownloadSpeed( void )
 	}
 }
 
+static void CG_Rocket_HaveJetpck( void )
+{
+	qboolean jetpackInInventory = BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats );
+	trap_Rocket_SetClass( "active", jetpackInInventory );
+	trap_Rocket_SetClass( "inactive", !jetpackInInventory );
+}
+
 typedef struct
 {
 	const char *name;
@@ -2559,6 +2566,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "hostname", &CG_Rocket_DrawHostname, ELEMENT_ALL },
 	{ "inventory", &CG_DrawHumanInventory, ELEMENT_HUMANS },
 	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
+	{ "jetpack", &CG_Rocket_HaveJetpck, ELEMENT_HUMANS },
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
