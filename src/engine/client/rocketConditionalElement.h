@@ -189,17 +189,20 @@ private:
 
 	bool IsConditionValidLatched( void )
 	{
-		switch ( value.GetType() )
+		const char *str = get( cvar.CString() );
+		if ( str && *str )
 		{
-			case Rocket::Core::Variant::INT:
-				Compare( atoi( get( cvar.CString() ) ), value.Get<int>() );
-			case Rocket::Core::Variant::FLOAT:
-				Compare( atof( get( cvar.CString() ) ), value.Get<float>() );
-			default:
-				Compare( Q_stricmp( get( cvar.CString() ), value.Get< Rocket::Core::String >().CString() ), 0 );
+			switch ( value.GetType() )
+			{
+				case Rocket::Core::Variant::INT:
+					Compare( atoi( str ), value.Get<int>() );
+				case Rocket::Core::Variant::FLOAT:
+					Compare( atof( str ), value.Get<float>() );
+				default:
+					Compare( Q_stricmp( str, value.Get< Rocket::Core::String >().CString() ), 0 );
+			}
 		}
 
-		// Should never reach
 		return false;
 	}
 
