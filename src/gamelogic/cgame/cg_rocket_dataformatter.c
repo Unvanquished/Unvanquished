@@ -362,12 +362,13 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		Class = "active";
 		Icon = "<icon class=\"current\">\uf00c</icon><icon class=\"sell\">\uf0d6</icon>";
 	}
-	else if ( !BG_ClassUnlocked( alienClass ) || BG_ClassDisabled( alienClass ) || cost < 0 )
+	else if ( !BG_ClassUnlocked( alienClass ) || BG_ClassDisabled( alienClass ) )
 	{
 		Class = "locked";
 		Icon = "<icon>\uf023</icon>";
 	}
-	else if(cost == 0){
+	else if ( cost == -1 )
+	{
 
 		Class = "expensive";
 		Icon = "<icon>\uf0d6</icon>";
