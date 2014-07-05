@@ -48,7 +48,8 @@ static bind_t bindings[] =
                             N_( "Deconstruct Structure" ),                 { -1, -1 } },
 	{ "weapprev",       N_( "Previous Upgrade" ),                      { -1, -1 } },
 	{ "weapnext",       N_( "Next Upgrade" ),                          { -1, -1 } },
-	{ "toggleconsole",  N_( "Toggle Console" ),                        { -1, -1 } }
+	{ "toggleconsole",  N_( "Toggle Console" ),                        { -1, -1 } },
+	{ "itemact grenade", N_( "Throw a grenade" ),                      { -1, -1 } }
 };
 
 static const size_t numBindings = ARRAY_LEN( bindings );
@@ -463,10 +464,6 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		}
 	}
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Use %s and %s to select an upgrade\n" ),
-	              CG_KeyNameForCommand( "weapprev" ), CG_KeyNameForCommand( "weapnext" ) ) );
-
 	if ( upgrade == UP_NONE ||
 	     ( upgrade > UP_NONE && BG_Upgrade( upgrade )->usable ) )
 	{
@@ -508,6 +505,14 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s and any direction to sprint\n" ),
 	              CG_KeyNameForCommand( "+sprint" ) ) );
+
+	if ( BG_InventoryContainsUpgrade( UP_FIREBOMB, ps->stats ) ||
+		BG_InventoryContainsUpgrade( UP_GRENADE, ps->stats ) )
+	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to throw a grenade\n" ),
+			CG_KeyNameForCommand( "itemact grenade" )
+		));
+	}
 }
 
 /*
@@ -559,10 +564,6 @@ static void CG_SpectatorText( char *text, playerState_t *ps )
 			          va( _( "Press %s to stop following\n" ),
 			              CG_KeyNameForCommand( "+useitem" ) ) );
 		}
-
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Use %s and %s to change between players\n" ),
-		              CG_KeyNameForCommand( "weapprev" ), CG_KeyNameForCommand( "weapnext" ) ) );
 	}
 	else
 	{
