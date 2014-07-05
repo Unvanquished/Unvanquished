@@ -120,7 +120,7 @@
 
 			#health-icon{
 				position:absolute;
-				left:60px;
+				right:-1.3em;
 				top: 10px;
 				bottom:15%;
 				width:15%;
@@ -131,9 +131,11 @@
 			#health{
 				color:#f02119;
 				position:absolute;
-				left:20%;
+				left:15%;
+				width: 20%;
 				bottom:15%;
 				line-height:1.3em;
+				text-align: right;
 			}
 			#poison-icon{
 				position:absolute;
@@ -163,7 +165,7 @@
 			#evos evos{
 				color:red;
 			}
-			
+
 			unlocked_items
 			{
 				width: 100%;
