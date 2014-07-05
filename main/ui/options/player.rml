@@ -5,11 +5,11 @@
 
 	</head>
 	<body id="options_player"  template="window" style="width: 50em; margin: 10%;">
-		<h1>Player setup</h1>
-	
+		<h1>Player Setup</h1>
+
 		<h2> Personal </h2>
 		<row>
-			<colorinput type="text" cvar="name"/> 
+			<colorinput type="text" cvar="name"/>
 			<h3>Nickname</h3>
 			<p>Your name visible to others.  </p>
 			<p><ilink onClick="show help_textentry">Colours and symbols</ilink> can be used.</p>
@@ -23,8 +23,8 @@
 			<input cvar="cg_teamChatsOnly" type="checkbox" />
 			<h3>Show only team chat</h3>
 		</row>
-		
-		
+
+
 		<h2> Wall-walking </h2>
 		<row>
 			<h3>Auto-pitch</h3>
@@ -41,7 +41,7 @@
 			<h3> Pitch-speed</h3>
 			<p>How fast your view 'rotates' and 'twists' as you wall-walk.</p>
 		</row>
-		
+
 		<h2> Cosmetic </h2>
 		<row>
 			<select cvar="cg_drawgun">
