@@ -6,29 +6,10 @@
 	</head>
 	<body id="options_keys" template="window" style="width: 32em; margin: 10%;">
 		<h1> Key Bindings </h1>
-		
+
 		<p> Press Escape to cancel changing a key binding. </p>
 
 		<tabset>
-			<tab>Look</tab>
-			<panel>
-				<row>
-					<keybind cmd="+lookup" />
-					<p>Look Up:</p>
-				</row>
-				<row>
-					<keybind cmd="+lookdown" />
-					<p>Look Down:</p>
-				</row>
-				<row>
-					<keybind cmd="+mlook" />
-					<p>Mouse Look:</p>
-				</row>
-				<row>
-					<keybind cmd="centerview" />
-					<p>Centerview:</p>
-				</row>
-			</panel>
 			<tab>Move</tab>
 			<panel>
 				<row>
@@ -44,8 +25,8 @@
 					<p>Forward:</p>
 				</row>
 				<row>
-					<keybind cmd="+back" /><
-					p>Backpedal:</p>
+					<keybind cmd="+back" />
+					<p>Backpedal:</p>
 				</row>
 				<row>
 					<keybind cmd="+moveleft" />
@@ -60,7 +41,7 @@
 					<p>Jump:</p>
 				</row>
 				<row>
-					
+
 					<keybind cmd="+movedown" team="humans" />
 					<p>Crouch:</p>
 				</row>
@@ -68,15 +49,7 @@
 					<keybind cmd="+movedown" team="aliens" />
 					<p>Wallwalk:</p>
 				</row>
-				<row>
-					
-					<keybind cmd="+left" />
-					<p>Turn Left:</p>
-				</row>
-				<row>
-					<keybind cmd="+right" />
-					<p>Turn Right:</p>
-				</row>
+
 			</panel>
 			<tab>Abilities</tab>
 			<panel>
@@ -93,24 +66,16 @@
 					<p>Shoot Barb:</p>
 				</row>
 				<row>
-					<keybind cmd="weapprev" />
-					<p>Previous Upgrade:</p>
-				</row>
-				<row>
-					<keybind cmd="weapnext" />
-					<p>Next Upgrade:</p>
-				</row>
-				<row>
-					<keybind cmd="+useitem" />
-					<p>Activate Upgrade:</p>
-				</row>
-				<row>
-					<keybind cmd="-reload" team="humans" />
+					<keybind cmd="reload" team="humans" />
 					<p>Reload:</p>
 				</row>
 				<row>
-					<keybind cmd="-medkit" team="humans" />
+					<keybind cmd="itemact medkit" team="humans" />
 					<p>Use Medkit:</p>
+				</row>
+				<row>
+					<keybind cmd="itemact grenade" team="humans" />
+					<p>Throw grenade</p>
 				</row>
 				<row>
 					<keybind cmd="+activate" team="humans" />
@@ -128,19 +93,15 @@
 					<p>Gesture:</p>
 				</row>
 				<row>
-					<keybind cmd="+rally" />
-					<p>Rally:</p>
+					<keybind cmd="message_public" />
+					<p>Global Chat:</p>
 				</row>
 				<row>
-					<keybind cmd="messagemode_public" />
-					<p>Chat:</p>
-				</row>
-				<row>
-					<keybind cmd="messagemode_team" />
+					<keybind cmd="message_team" />
 					<p>Team Chat:</p>
 				</row>
 				<row>
-					<keybind cmd="messagemode_admin" />
+					<keybind cmd="message_admin" />
 					<p>Admin Chat:</p>
 				</row>
 				<row>
@@ -159,10 +120,6 @@
 					<keybind cmd="teamvote no" />
 					<p>Team Vote No:</p>
 				</row>
-				<row>
-					<keybind cmd="-vsay" />
-					<p>Voice Say Menu:</p>
-				</row>
 			</panel>
 			<tab>Misc</tab>
 			<panel>
@@ -171,25 +128,44 @@
 					<p>Show Scores:</p>
 				</row>
 				<row>
-					<keybind cmd="scoresUp" />
-					<p>Scroll Scores Up:</p>
-				</row>
-				<row>
-					<keybind cmd="scoresDown" />
-					<p>Scroll Score Down:</p>
-				</row>
-				<row>
 					<keybind cmd='modcase alt \"/deconstruct marked\" /deconstruct' />
 					<p>Deconstruct Structure:</p>
 				</row>
 				<row>
-					<keybind cmd="modcase shift /screenshotJPEG /screenshotPNG" />
+					<keybind cmd="modcase shift /screenshotPNG /screenshotJPEG" />
 					<p>Screenshot:</p>
 				</row>
 				<p> Hold shift when taking a screenshot to capture a PNG, otherwise shots are taken in JPEG. </p>
 			</panel>
+			<tab>Quake-look</tab>
+			<panel>
+				<row>
+					<keybind cmd="+lookup" />
+					<p>Look Up:</p>
+				</row>
+				<row>
+					<keybind cmd="+lookdown" />
+					<p>Look Down:</p>
+				</row>
+				<row>
+					<keybind cmd="+left" />
+					<p>Turn Left:</p>
+				</row>
+				<row>
+					<keybind cmd="+right" />
+					<p>Turn Right:</p>
+				</row>
+				<row>
+					<keybind cmd="+mlook" />
+					<p>Mouse Look:</p>
+				</row>
+				<row>
+					<keybind cmd="centerview" />
+					<p>Centerview:</p>
+				</row>
+			</panel>
 			</tabset>
-		
-		
+
+
 	</body>
 </rml>
