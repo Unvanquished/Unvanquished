@@ -183,7 +183,12 @@ public:
 					case Rocket::Core::Input::KI_RETURN:
 					case Rocket::Core::Input::KI_NUMPADENTER:
 					{
-						if ( text[0] == '/' || text[0] == '\\' )
+						if ( text.Empty() )
+						{
+							GetOwnerDocument()->Hide();
+							return;
+						}
+						else if ( text[0] == '/' || text[0] == '\\' )
 						{
 							Cmd::BufferCommandText( va( "%s\n", text.Substring( 1 ).CString() ) );
 							text.Clear();
