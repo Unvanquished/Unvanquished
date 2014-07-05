@@ -113,7 +113,12 @@ div.infobox {
 		</panel>
 		<tab>Upgrades</tab>
 		<panel>
-			<circlemenu source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" cancel="hide armourybuy"/>
+			<circlemenu id="upgrades" source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" cancel="hide armourybuy"/>
+			<div class="infobox">
+			<h2><datasource_single source="armouryBuyList.upgrades" fields="name" targetid="upgrades" /></h2>
+			<p><div class="attr">Price:</div><div class="bar"><datasource_single source="armouryBuyList.upgrades" fields="price" targetid="upgrades" /></div></p>
+			<p class="text"><datasource_single source="armouryBuyList.upgrades" fields="description" targetid="upgrades" /></p>
+			</div>
 		</panel>
 	</tabset>
 	</div>
