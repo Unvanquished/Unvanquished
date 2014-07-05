@@ -40,7 +40,10 @@ Maryland 20850 USA.
 class RocketConditionalElement : public Rocket::Core::Element
 {
 public:
-	RocketConditionalElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), condition( NOT_EQUAL ), dirty_value( false ) {}
+	RocketConditionalElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), condition( NOT_EQUAL ), dirty_value( false )
+	{
+		get = Cvar_VariableString;
+	}
 
 	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
@@ -85,13 +88,19 @@ public:
 
 			dirty_value = true;
 		}
+		if ( changed_attributes.find( "latched" ) != changed_attributes.end() )
+		{
+			latched_value = true;
+			get = Cvar_LatchedVariableString;
+		}
 	}
 
 	virtual void OnUpdate( void )
 	{
-		if ( dirty_value || ( !cvar.Empty() && cvar_value != Cvar_VariableString( cvar.CString() ) ) )
+		if ( dirty_value || ( !cvar.Empty() && cvar_value != get( cvar.CString() ) ) )
 		{
-			if ( IsConditionValid() )
+			if ( ( latched_value && IsConditionValidLatched() ) ||
+				( !latched_value && IsConditionValid() ) )
 			{
 				if ( !IsVisible() )
 				{
@@ -106,7 +115,7 @@ public:
 				}
 			}
 
-			cvar_value = Cvar_VariableString( cvar.CString() );
+			cvar_value = get( cvar.CString() );
 
 			if ( dirty_value )
 			{
@@ -178,11 +187,29 @@ private:
 		return false;
 	}
 
+	bool IsConditionValidLatched( void )
+	{
+		switch ( value.GetType() )
+		{
+			case Rocket::Core::Variant::INT:
+				Compare( atoi( get( cvar.CString() ) ), value.Get<int>() );
+			case Rocket::Core::Variant::FLOAT:
+				Compare( atof( get( cvar.CString() ) ), value.Get<float>() );
+			default:
+				Compare( Q_stricmp( get( cvar.CString() ), value.Get< Rocket::Core::String >().CString() ), 0 );
+		}
+
+		// Should never reach
+		return false;
+	}
+
 	Rocket::Core::String cvar;
 	Rocket::Core::String cvar_value;
 	Condition condition;
 	Rocket::Core::Variant value;
 	bool dirty_value;
+	bool latched_value;
+	char* ( *get )( const char *str );
 
 };
 #endif
