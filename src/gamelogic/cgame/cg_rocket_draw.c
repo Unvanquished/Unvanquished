@@ -2364,22 +2364,6 @@ void CG_Rocket_DrawPredictedRGSRate( void )
 	trap_Rocket_SetInnerRML( va( "^%c%+d%%", color, delta ), RP_QUAKE );
 }
 
-static void CG_Rocket_DrawPlayerFuelValue( void )
-{
-	int fuel, percent;
-
-	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
-	{
-		return;
-	}
-
-	fuel    = cg.snap->ps.stats[ STAT_FUEL ];
-	percent = ( int )( 100.0f * ( float )fuel / ( float )JETPACK_FUEL_MAX );
-
-
-	trap_Rocket_SetInnerRML( va( "%d", percent ), 0 );
-}
-
 static void CG_Rocket_DrawWarmup( void )
 {
 	int   sec = 0;
@@ -2570,7 +2554,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
 	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
 	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },
-	{ "fuel", &CG_Rocket_DrawPlayerFuelValue, ELEMENT_HUMANS },
 	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
 	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
 	{ "hostname", &CG_Rocket_DrawHostname, ELEMENT_ALL },
