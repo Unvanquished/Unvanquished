@@ -13,6 +13,7 @@ units
 
 spectator_hud
 {
+	base
 	overlay
 	console
 	spectator_hud
