@@ -50,7 +50,6 @@
 
 		minimap {
 			display: block;
-			color: red;
 			width: 12em;
 			height: 12em;
 			

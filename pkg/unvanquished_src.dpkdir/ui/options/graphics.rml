@@ -54,23 +54,25 @@
 				<p> See the Unvanquished Wiki for more details. </p>
 				
 				<row>
+					<!--
 					<select cvar="r_mode">
 						<option value="-2">Automatic</option>
 						<option value="-1">Manual</option>
 					</select>
+					-->
 					
 					<h3>Screen Resolution</h3>
-					<if cvar="r_mode" condition="==" value="-1" latched>
-						<half class="left">
-							<input type="text" cvar="r_customwidth" class="text" style="width: 3em;"/> 
-							<p>Width</p>
-						</half>
-						
-						<half class="right">
-							<input type="text" cvar="r_customheight" class="text" style="width: 3em;"/> 
-							<p>Height</p>
-						</half>
-					</if>
+					
+					<half class="left">
+						<input type="text" cvar="r_customwidth" class="text" style="width: 3em;"/> 
+						<p>Width</p>
+					</half>
+					
+					<half class="right">
+						<input type="text" cvar="r_customheight" class="text" style="width: 3em;"/> 
+						<p>Height</p>
+					</half>
+					
 				</row>
 				<row>
 					<input cvar="r_fullscreen" type="checkbox"/>
