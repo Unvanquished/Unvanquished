@@ -104,7 +104,7 @@ Cvar_VariableString
 */
 char* Cvar_LatchedVariableString(const char* name) {
     cvar_t* var = Cvar_FindVar(name);
-    return var ? var->latchedString : (char*)"";
+    return var && var->latchedString ? var->latchedString : (char*)"";
 }
 
 /*
