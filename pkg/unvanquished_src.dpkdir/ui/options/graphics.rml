@@ -50,26 +50,31 @@
 					Incorrect settings may prevent the game from working.  These settings can be overridden 
 					by passing command-line options:
 				</p>
-				<p class="example"> unvanquished +set r_customwidth 1024 +set r_customheight 768 </p>
+				<p class="example"> unvanquished +set r_mode 4 </p>
 				<p> See the Unvanquished Wiki for more details. </p>
+				
 				<row>
-					<half class="left">
-						<input type="text" cvar="r_customwidth" class="text" style="width: 3em;"/> 
-						<h3>Width</h3>
-					</half>
-					<half class="right">
-						<input cvar="r_fullscreen" type="checkbox"/>
-						<h3>Fullscreen</h3>
-					</half>
+					<select cvar="r_mode">
+						<option value="-2">Automatic</option>
+						<option value="-1">Manual</option>
+					</select>
+					
+					<h3>Screen Resolution</h3>
+					<if cvar="r_mode" condition="==" value="-1" latched>
+						<half class="left">
+							<input type="text" cvar="r_customwidth" class="text" style="width: 3em;"/> 
+							<p>Width</p>
+						</half>
+						
+						<half class="right">
+							<input type="text" cvar="r_customheight" class="text" style="width: 3em;"/> 
+							<p>Height</p>
+						</half>
+					</if>
 				</row>
 				<row>
-					<half class="left">
-						<input type="text" cvar="r_customheight" class="text" style="width: 3em;"/> 
-						<h3>Height</h3>
-					</half>
-					<half class="right">
-						
-					</half>
+					<input cvar="r_fullscreen" type="checkbox"/>
+					<h3>Fullscreen</h3>
 				</row>	
 				
 				<row>
@@ -103,7 +108,9 @@
 					
 				</row>
 
-				
+				<buttonbar>
+					<button onClick="exec vid_restart">Apply now</button>
+				</buttonbar>
 				
 			</panel>
 			
@@ -124,7 +131,7 @@
 				<h2> Mip-mapping </h2>
 				<p> 
 					Mip-mapping makes distant surfaces look better by using lower-resolution textures for them.
-					This generally does not affect performance and should be left on.
+					This generally does not affect performance.
 				</p>
 				<row>
 					<h3>Anisotropic mip-mapping</h3>
@@ -143,7 +150,7 @@
 						<option value="GL_LINEAR_MIPMAP_NEAREST">Bilinear</option>
 						<option value="GL_LINEAR_MIPMAP_LINEAR">Trilinear (better)</option>
 					</select>
-					<p>TODO: Does this even matter?  It will only minorly affect load-times.</p>
+					<p>Some hardware may have issues with the scaling filters</p>
 				</row>
 			</panel>
 			
@@ -167,28 +174,29 @@
 				<row>
 					<h3>Rim-lighting</h3>
 					<input cvar="r_rimlighting" type="checkbox" />
-					<p>TODO: Explanation  </p>
+					<p>Light the edges of models front behind.  Experimental. </p>
 				</row>
 				<row>
 					<h3>Heat-haze</h3>
 					<input cvar="r_heatHaze" type="checkbox" />
-					<p>Blur and fuzzify when under bombardment.</p>
+					<p>Blur the screen when under severe bombardment.</p>
 				</row>
 				
 				<h2> Motion blur </h2>
 				<row>
-					<h3>Intensity</h3>
+	
 					<select cvar="cg_motionblur">
 						<option value="0.08">High (0.08)</option>
 						<option value="0.05">Moderate (0.05)</option>
 						<option value="0.02">Low (0.02)</option>
 						<option value="0">Off</option>
 					</select>
-					<p>Level of blur.</p>
+					<h3>Intensity</h3>
+					<p>Level of motion-blur.</p>
 				</row>
 				<row>
-					<h3>Minimum movement speed for blur to activate</h3>
 					<input type="range" min="10" max="1500" step="10" cvar="cg_motionblurMinSpeed"/>
+					<h3>Minimum movement speed for motion-blur activation</h3>
 					<p class="inline"> 
 						Current: <inlinecvar cvar="cg_motionblurMinSpeed" type="number" format="%.0f"/>
 						<ilink onclick="exec reset cg_motionblurMinSpeed"> (reset) </ilink>
@@ -283,9 +291,6 @@
 		
 		</tabset>
 		
-		<p style="clear: both;"> 
-			Note: Some changes will only take effect when you join your next match.
-		</p>
 		
 	</body>
 </rml>
