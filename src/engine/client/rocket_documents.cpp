@@ -44,7 +44,6 @@ void Rocket_LoadDocument( const char *path )
 
 	if( document )
 	{
-		document->Hide();
 		document->RemoveReference();
 		menuContext->PullDocumentToFront( document ); // Ensure any duplicates will be found first.
 

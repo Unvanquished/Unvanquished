@@ -73,7 +73,6 @@ void Rocket_LoadUnit( const char *path )
 
 	if ( document )
 	{
-		document->Hide();
 		document->RemoveReference();
 		hudContext->PullDocumentToFront( document );
 
