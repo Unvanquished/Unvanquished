@@ -40,7 +40,8 @@
 		ui/server/general.rml
 		ui/server/bots.rml
 
-		ui/in-game/callvote_draw.rml
+		ui/in-game/callvotes/callvote_draw.rml
+		ui/in-game/callvotes/callvote_map.rml
 	}
 	cursor ui/shared/cursor.rml
 }
