@@ -3,12 +3,12 @@
 	<link type="text/rcss" href="/ui/shared/basics.rcss" />
 
 	<style>
-		
+
 		body{
 			width:100%;
 			height: 100%;
 		}
-		
+
 		/* Screen regions */
 		region {
 			position: fixed;
@@ -17,7 +17,7 @@
 		region.topright {
 			top:0;
 			right:0;
-			
+
 			text-align: right;
 			width: 25em;
 			height: 25em;
@@ -52,16 +52,16 @@
 			display: block;
 			width: 12em;
 			height: 12em;
-			
+
 			float:right;
-			
-			background-color: black; 
+
+			background-color: black;
 		}
 		statsbox {
 			display: block;
 			width: 10em;
 			height: 10em;
-			
+
 			float:right;
 		}
 		stat {
@@ -77,7 +77,7 @@
 			height: 5em;
 
 			text-align: center;
-			
+
 			background-color: #1E1E1E1E;
 		}
 
@@ -115,14 +115,14 @@
 			margin: auto auto;
 			padding: 5%;
 		}
-		
-		
+
+
 		location {
 			font-size: 18px;
 			margin-right: 1em;
 			width: 100%;
 		}
-		
+
 		locationbox {
 			display: block;
 			clear: both;
@@ -134,10 +134,10 @@
 </head>
 
 <body id="base">
-	
+
 	<region class="topright">
 		<minimap />
-		
+
 		<statsbox>
 			<if cvar="cg_drawTimer" condition="==" value="1">
 				<stat>Game <timer /></stat>
@@ -155,12 +155,14 @@
 			-->
 			<lagometer />
 		</statsbox>
-		
+
 		<locationbox>
 			<location />
 		</locationbox>
+
 		<p><votes /></p>
 		<p><votes_team /></p>
+
 	</region>
 
 
