@@ -206,6 +206,7 @@ static void CG_Rocket_EventExecForm( void )
 
 	if ( !*params )
 	{
+		Com_Printf( "^3WARNING: Invalid form submit.  No named values exist.\n" );
 		return;
 	}
 
