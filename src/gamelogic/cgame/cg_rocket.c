@@ -269,8 +269,8 @@ void CG_Rocket_Init( void )
 	trap_Cvar_VariableStringBuffer( "com_errorMessage", text, sizeof( text ) );
 	if ( *text )
 	{
+		trap_Cvar_Set( "ui_errorMessage", text );
 		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ERROR ].id, "open" );
-		trap_Cvar_Set( "com_errorMessage", "" );
 	}
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
