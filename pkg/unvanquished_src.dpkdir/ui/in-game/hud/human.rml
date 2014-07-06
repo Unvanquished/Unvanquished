@@ -182,15 +182,15 @@
 				width: 100%;
 				height: 30%;
 				border-width: 1px;
-				background-color: #ffffff65;
-				color: #26707084;
+				background-color: #00F8FF20; /* General bar color */
+				color: #00F8FFAA; /* Filled-section bar color */
 			}
 
 			unlocked_items
 			{
 				width: 100%;
 				height: 30%;
-				cell-color: #FFFFFF99;
+				cell-color: #00F8FF40;
 				border-width: 1px;
 				color: #aaffffff;
 			}
