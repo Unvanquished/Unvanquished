@@ -13,7 +13,7 @@
 			connecting
 			{
 				position: absolute;
-				display:block
+				display: block;
 				color: white;
 				width: 90%;
 				left: 5%;
