@@ -200,7 +200,6 @@ else()
   # Extra debug flags
   set_c_cxx_flag( "-g3" DEBUG )
   set_c_cxx_flag( "-g3" RELWITHDEBINFO )
-
   if( USE_DEBUG_OPTIMIZE )
     try_c_cxx_flag( OPTIMIZE_DEBUG "-Og" DEBUG )
   endif()
@@ -382,13 +381,11 @@ set( TOOLS_DIR ${MOUNT_DIR}/tools )
 set( LCC_DIR ${TOOLS_DIR}/lcc )
 set( LIB_DIR ${MOUNT_DIR}/libs )
 set( ROCKET_DIR ${LIB_DIR}/libRocket )
-
 if( CMAKE_CFG_INTDIR STREQUAL "." )
   set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
 else()
   set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
 endif()
-
 if( MSVC )
   set( DEPS_EXT ".zip" )
   if( ARCH STREQUAL "x86_64" )
@@ -774,18 +771,15 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/OggCodec.cpp
   ${ENGINE_DIR}/audio/OpusCodec.cpp
   ${ENGINE_DIR}/audio/WavCodec.cpp
-  )
-
-set( ROCKET_CLIENTLIST
-  ${MOUNT_DIR}/engine/client/rocket_dataformatter.cpp
-  ${MOUNT_DIR}/engine/client/rocket_textelements.cpp
-  ${MOUNT_DIR}/engine/client/rocket_documents.cpp
-  ${MOUNT_DIR}/engine/client/rocket_datagrid.cpp
-  ${MOUNT_DIR}/engine/client/rocket_element.cpp
-  ${MOUNT_DIR}/engine/client/rocket_events.cpp
-  ${MOUNT_DIR}/engine/client/rocket_keys.cpp
-  ${MOUNT_DIR}/engine/client/rocket_hud.cpp
-  ${MOUNT_DIR}/engine/client/rocket.cpp
+  ${ENGINE_DIR}/client/rocket_dataformatter.cpp
+  ${ENGINE_DIR}/client/rocket_textelements.cpp
+  ${ENGINE_DIR}/client/rocket_documents.cpp
+  ${ENGINE_DIR}/client/rocket_datagrid.cpp
+  ${ENGINE_DIR}/client/rocket_element.cpp
+  ${ENGINE_DIR}/client/rocket_events.cpp
+  ${ENGINE_DIR}/client/rocket_keys.cpp
+  ${ENGINE_DIR}/client/rocket_hud.cpp
+  ${ENGINE_DIR}/client/rocket.cpp
 )
 
 set( TTYCLIENTLIST
@@ -1411,7 +1405,6 @@ add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
 add_library( nacl-source-libs EXCLUDE_FROM_ALL ${LIBSRC_NACL} )
 add_library( engine-source-libs EXCLUDE_FROM_ALL ${LIBSRC_ENGINE} )
 set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
-set_source_files_properties( ${LIBSRC_BASE} ${LIBSRC_NACL} ${LIBSRC_ENGINE} PROPERTIES COMPILE_FLAGS "-fPIC" )
 
 set( LIBS_BASE base-source-libs ${LIBS_BASE} )
 set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
@@ -1679,9 +1672,6 @@ function( GAMEMODULE )
   endif()
 endfunction()
 
-
-
-
 if( BUILD_GAME_QVM )
   add_subdirectory( ${LCC_DIR} ${CMAKE_BINARY_DIR}/lcc )
 endif()
@@ -1713,7 +1703,7 @@ GAMEMODULE( NAME cgame
 ################################################################################
 
 if( BUILD_CLIENT )
-  add_executable( client WIN32 ${PCH_FILE} ${ENGINELIST} ${SHAREDLIST} ${CLIENTLIST} ${CLIENTBASELIST} ${RENDERERLIST} ${SERVERLIST} ${SDLLIST} ${WIN_RC} ${ROCKET_CLIENTLIST} )
+  add_executable( client WIN32 ${PCH_FILE} ${ENGINELIST} ${SHAREDLIST} ${CLIENTLIST} ${CLIENTBASELIST} ${RENDERERLIST} ${SERVERLIST} ${SDLLIST} ${WIN_RC} )
   if( USE_SMP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()

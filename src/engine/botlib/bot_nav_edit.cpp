@@ -31,7 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#define BOTS 1
 #include "../client/client.h"
 #include "../../libs/detour/DetourDebugDraw.h"
 #include "../../libs/detour/DebugDraw.h"
