@@ -142,7 +142,7 @@
 		<sidebar>
 				<!-- HACK: Add some extra spacing atop the main menu if the screen res is high enough -->
 				<if cvar="r_customheight" condition=">" value="850">
-					<hackyspacer />
+					<hackyspacer class="hidden"/>
 				</if>
 				<img class="logo" src="logo.png" style="color: rgba(100%,100%,100%,100%);" class="hidden"/>
 
