@@ -127,7 +127,9 @@
 <body id="base">
 
 	<region class="topright">
-		<minimap />
+		<if cvar="cg_minimapActive" condition="==" value="1">
+			<minimap />
+		</if>
 
 		<statsbox>
 			<if cvar="cg_drawTimer" condition="==" value="1">
