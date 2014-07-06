@@ -184,7 +184,7 @@
 				<row>
 					<input cvar="r_FXAA" type="checkbox" />
 					<h3>FXAA</h3>
-					<p> Fast approximate anti-aliasing.  Faster than full MSAA, but reduces image quality. </p>
+					<p> Fast approximate anti-aliasing.  Faster than full MSAA, but not as sharp. </p>
 				</row>
 
 				<h2> Motion blur </h2>
