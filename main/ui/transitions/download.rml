@@ -1,101 +1,75 @@
 <rml>
 	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<style>
-			div#background
-			{
-				z-index: -1;
-			}
-			div#background img
-			{
-				height: 100%;
-				width: 100%;
-				z-index: -1;
-			}
-			div#text
-			{
-				position: absolute;
-				width: 100%;
-				height: 100%;
-				color: white;
-				text-align: center;
-				vertical-align: middle;
-				margin-top: 50%;
-				font-size: 48;
-			}
 			body
 			{
 				width: 100%;
 				height: 100%;
-				font-family: Roboto;
-				font-size:1.5em;
-				background-decorator: image;
-				background-image:/ui/assets/background;
+				background-color: black;
 
 			}
-			p,h1,h2{
-				display:block;
-			}
-			#download{
-				text-align:center;
-				padding-top:20%;
-			}
-			h1{
-				margin-top:1em;
-				font-size:2em;
-				margin-bottom:.5em;
-			}
-			h2{
-				margin-top:1em;
-				font-size:150%;
-			}
-			p#tip{
-				margin-top:.5em;
-			}
-			.bar{
-				text-align:center;
-				width:90%;
-				display:inline-block;
-				height:1em;
-				background:#333;
-				border-style:solid;
-				border-width:1px;
-				border-color:#777;
-			}
-			progressbar
-			{
+
+			barbox {
+				display: block;
 				width: 100%;
-				image: /white;
-				z-index: 3;
+				height: 1em;
+
+				position: absolute;
+				left: 0;
+				bottom: 0px;
+
+				background-color: #00000000;
 			}
-			.bar .barValue {
-				left:0px;
-				position:absolute;
-				height:100%;
-				background:#BBBBBBAA;
-				display:block;
+
+			progressbar {
+				width: 100%;
+				height: 100%;
+				image: /white.png;
+			}
+
+			percentage {
+				display: block;
+				width: 5em;
+
+				position: absolute;
+				right: 2em;
+				bottom: 1em;
+
+				text-align: right;
+
+				color: white;
+				font-size: 18px;
+				font-weight: bold;
+			}
+			div.infobox {
+				font-size: 18px;
+				position: absolute;
+				width: 90%;
+				left: 5%;
+				bottom: 10em;
+
 			}
 
 		</style>
-		<title>Connecting</title>
 	</head>
 	<body id="download" nohide>
-		<p>
-		This Server requires additional files.</p>
-		<p>Please wait while downloading.</p>
 
-		<h2>Time left: <downloadTime/></h2>
-
-		<h1>Download: <downloadName/></h1>
-		<p>Download rate: <downloadSpeed/></p>
-		<p>Size: <downloadTotalSize/></p>
-
-		<p><progress_value src="download"/>%</p>
-		<div class="bar"><progressbar src="download" class="barValue" /></div>
-
-		<p id="tip">Pro Tip: Don't feed grangers after midnight.</p>
-		<div id="background">
-			<img src="/ui/assets/background.jpg" />
+		<div class="infobox">
+			<p>This Server requires additional files.  One moment while they're downloading.</p>
+			<p>Time left: <downloadTime/></p>
+			<p>Download rate: <downloadSpeed/></p>
+			<p>Size: <downloadTotalSize/></p>
+			<h1><downloadName/></h1>
 		</div>
+
+		<percentage>
+			<progress_value src="download" />
+		</percentage>
+
+		<barbox>
+			<progressbar src="download" class="barValue"/>
+		</barbox>
 
 	</body>
 </rml>
