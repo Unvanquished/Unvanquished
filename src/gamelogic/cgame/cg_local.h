@@ -1809,6 +1809,7 @@ extern vmCvar_t             cg_highPolyBuildableModels;
 extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
+extern vmCvar_t             ui_chatPromptColors;
 
 //
 // Rocket cvars

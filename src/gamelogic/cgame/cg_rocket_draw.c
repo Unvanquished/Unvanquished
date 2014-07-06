@@ -1875,7 +1875,7 @@ void CG_Rocket_DrawChatType( void )
 
 	if ( (size_t) cg.sayType < ARRAY_LEN( sayText ) )
 	{
-		if ( trap_Cvar_VariableValue( "ui_chatPromptColors" ) )
+		if ( ui_chatPromptColors.integer )
 		{
 			trap_Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, _( sayText[ cg.sayType ].prompt ) ), RP_QUAKE );
 		}
