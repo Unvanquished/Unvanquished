@@ -1,6 +1,6 @@
 <rml>
     <head>
-    
+
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
         <style>
         body
@@ -106,7 +106,7 @@
 			font-size:1.2em;
 			padding:0em 1em;
 			text-align:right;
-			background:#FFB70033;
+/* 			background:#FFB70033; */
 			color:#FFB700;
 			display:inline;
 

@@ -2157,7 +2157,7 @@ void CG_DrawBuildableStatus( void )
 
 	if ( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK )
 	{
-		CG_GhostBuildableStatus( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] );
+// 		CG_GhostBuildableStatus( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] );
         }
 }
 
