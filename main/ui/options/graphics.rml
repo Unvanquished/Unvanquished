@@ -182,6 +182,11 @@
 					<input cvar="r_heatHaze" type="checkbox" />
 					<p>Simulate air refraction in severe heat.</p>
 				</row>
+				<row>
+					<input cvar="r_FXAA" type="checkbox" />
+					<h3>FXAA</h3>
+					<p> Fast approximate anti-aliasing.  Faster than full MSAA, but reduces image quality. </p>
+				</row>
 
 				<h2> Motion blur </h2>
 				<row>
