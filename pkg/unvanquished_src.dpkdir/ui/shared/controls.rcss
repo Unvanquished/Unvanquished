@@ -14,11 +14,13 @@ selectvalue {
 /* #### Large input boxes. #### */
 colorinput, dataselect, select, input.text {
 	display:block;
-	height: 1.4em;
+	height: 1.5em;
+	padding-left: 0.5em;
+	vertical-align: middle;
 
 	width: 12em;
 
-	background-color: black;
+	background-color: rgba( 0%, 0%, 0%, 50%);
 
 	/* FIXME: Borders don't work here */
 	border-style: solid;
@@ -71,8 +73,8 @@ dataselect selectbox option:hover
 select selectarrow,
 dataselect selectarrow
 {
-	margin-right:0px;
-	margin-top:0px;
+	margin-right: 3px;
+	margin-top:3px;
 	width:20px;
 	height:20px;
 	icon-decorator: image;
@@ -88,8 +90,8 @@ dataselect selectarrow:hover
 /* #### Simple small-box controls #### */
 input.checkbox
 {
-	width:20px;
-	height:20px;
+	width:25px;
+	height:25px;
 	icon-decorator: image;
 	icon-image: /ui/shared/radio-check.png 444px 222px 666px 444px;
 }
