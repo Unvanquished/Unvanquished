@@ -144,6 +144,8 @@
 				top:-60%;
 				left:-1%;
 				color:#aaffffff;
+
+
 			}
 			health.health, health_cross{
 				color:#ff6562ff;
@@ -151,7 +153,9 @@
 			health_cross{
 				top:-40%;
 				left:1%;
-				width: 18%;
+				width: 2.4em;
+				height:2.4em;
+
 			}
 			img.stamina{
 				height:150%;
