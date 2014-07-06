@@ -214,8 +214,7 @@
 
 					<sidesection  id="sidebar_main">
 						<h1 class="hidden"> Main Menu </h1>
-						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
-						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.29 </blocklink>
+
 
 						<h2> Play</h2>
 						<indent>
@@ -240,6 +239,9 @@
 							<blocklink onClick="show help_gameplay"> Gameplay guide </blocklink>
 							<blocklink onClick="show help_textentry"> Colour codes and symbols </blocklink>
 						</indent>
+
+						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.29 </blocklink>
 					</sidesection>
 
 				</window>
