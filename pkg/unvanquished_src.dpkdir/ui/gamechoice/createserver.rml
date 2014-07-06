@@ -8,17 +8,21 @@
 				width: 100%;
 			}
 
-			levelshotbox {
-				display:block;
 
-				/* Approx measurements.  Are all mapshots in 4:3? */
-				width: 38em;
-				height: 30em;
-			}
 		</style>
 	</head>
 	<body template="window" id="createserver" onShow="buildDS mapList" style="width:40em; margin:10%;">
 		<h1> Start local/LAN game</h1>
+		<row>
+			<input type="text" cvar="sv_hostname" class="text" style="width:20em;"/>
+			<h3> Hostname </h3>
+		</row>
+		<row>
+			<input type="text" cvar="g_password" class="text" style="width:20em;"/>
+			<input cvar="g_needpass" type="checkbox" style="margin-right:1em;"/>
+			<h3> Password </h3>
+		</row>
+
 		<form onsubmit='execForm "map $map$"'>
 			<row>
 				<dataselect source="mapList.default" fields="name" name="map" cvar="ui_dialogCvar1"/>
@@ -28,8 +32,8 @@
 			<input type="submit"> <button> Start </button>  </input>
 		</form>
 
-		<levelshotbox>
-			<levelshot />
-		</levelshotbox>
+
+		<levelshot />
+
 	</body>
 </rml>
