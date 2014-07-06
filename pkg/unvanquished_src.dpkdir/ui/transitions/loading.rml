@@ -31,9 +31,6 @@
 				background-color: #00000000;
 			}
 
-
-
-
 			progressbar {
 				width: 100%;
 				height: 100%;

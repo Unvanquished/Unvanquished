@@ -1,5 +1,6 @@
 <rml>
 	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<style>
 
 			body
@@ -11,14 +12,14 @@
 			}
 			connecting
 			{
-				position: absolute
+				position: absolute;
+				display:block
 				color: white;
 				width: 90%;
 				left: 5%;
 				bottom: 10em;
 			}
 		</style>
-		<title>Connecting</title>
 	</head>
 	<body id="connecting" nohide>
 		<div>
