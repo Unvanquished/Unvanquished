@@ -1083,7 +1083,7 @@ void CG_Rocket_BuildMapList( const char *args )
 
 	for ( i = 0; i < rocketInfo.data.mapCount; ++i )
 	{
-		char buf[ MAX_INFO_STRING ];
+		char buf[ MAX_INFO_STRING ] = { 0 };
 		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
 		Info_SetValueForKey( buf, "fullName", rocketInfo.data.mapList[ i ].mapName, qfalse );
 		Info_SetValueForKey( buf, "name", rocketInfo.data.mapList[ i ].mapLoadName, qfalse );
