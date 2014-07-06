@@ -150,7 +150,7 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 	}
 	else if( BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) ){
 		Class = "active";
-		action =  va( "onClick='exec \"sell +%s\"'", BG_Weapon( weapon )->name );
+		action =  va( "onClick='exec \"sell %s\"'", BG_Weapon( weapon )->name );
 		Icon = "<icon class=\"current\">\uf00c</icon><icon class=\"sell\">\uf0d6</icon>";
 	}
 	else
