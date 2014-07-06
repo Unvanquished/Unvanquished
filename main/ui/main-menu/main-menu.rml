@@ -119,7 +119,12 @@
 			}
 			img.logo {
 				width: 20em;
-				margin-top:8em;
+				margin-top: 2em;
+			}
+
+			hackyspacer {
+				display:block;
+				height: 6em;
 
 			}
 
@@ -139,6 +144,10 @@
 		</box>
 
 		<sidebar>
+				<!-- HACK: Add some extra spacing atop the main menu if the screen res is high enough -->
+				<if cvar="r_customheight" condition=">" value="850">
+					<hackyspacer />
+				</if>
 
 				<img class="logo" src="logo.png" style="color: rgba(100%,100%,100%,100%);" />
 
@@ -239,6 +248,8 @@
 							<blocklink onClick="show help_gameplay"> Gameplay guide </blocklink>
 							<blocklink onClick="show help_textentry"> Colour codes and symbols </blocklink>
 						</indent>
+
+						<br />
 
 						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
 						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.29 </blocklink>
