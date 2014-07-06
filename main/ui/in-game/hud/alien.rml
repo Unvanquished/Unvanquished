@@ -189,8 +189,8 @@
 				height: 30%;
 				border-width: 1px;
 				border-color: #5C3333;
-				background-color: #3a2323;
-				color: #6e1b1c;
+				background-color: #3a232355;
+				color: #6e1b1cAA;
 			}
 			health, health_cross
 			{
