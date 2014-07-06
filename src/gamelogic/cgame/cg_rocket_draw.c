@@ -1862,17 +1862,27 @@ void CG_Rocket_DrawStaminaBolt( void )
 
 void CG_Rocket_DrawChatType( void )
 {
-	static const char *const sayText[] = {
-		NULL,
-		N_("Say: "),
-		N_("Team Say: "),
-		N_("Admin Say: "),
-		N_("Command: "),
+	static const struct {
+		char colour[4]; // ^n
+		char *prompt;
+	} sayText[] = {
+		{ "",   NULL },
+		{ "^2", N_("Say: ") },
+		{ "^5", N_("Team Say: ") },
+		{ "^6", N_("Admin Say: ") },
+		{ "",   N_("Command: ") },
 	};
 
 	if ( (size_t) cg.sayType < ARRAY_LEN( sayText ) )
 	{
-		trap_Rocket_SetInnerRML( _( sayText[ cg.sayType ] ), RP_QUAKE );
+		if ( trap_Cvar_VariableValue( "ui_chatPromptColors" ) )
+		{
+			trap_Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, _( sayText[ cg.sayType ].prompt ) ), RP_QUAKE );
+		}
+		else
+		{
+			trap_Rocket_SetInnerRML( _( sayText[ cg.sayType ].prompt ), RP_QUAKE );
+		}
 	}
 }
 
