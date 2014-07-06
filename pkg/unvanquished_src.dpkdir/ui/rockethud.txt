@@ -9,6 +9,7 @@ units
 	ui/in-game/hud/spectator.rml
 	ui/in-game/alien/barbs.rml
 	ui/in-game/alien/charge.rml
+	ui/in-game/alien/bp.rml
 	ui/in-game/scoreboard.rml
 }
 
@@ -72,4 +73,22 @@ level4_hud
 	overlay
 	console
 	charge
+}
+
+abuild_hud
+{
+	base
+	alien_hud
+	overlay
+	console
+	bp
+}
+
+abuildupg_hud
+{
+	base
+	alien_hud
+	overlay
+	console
+	bp
 }
