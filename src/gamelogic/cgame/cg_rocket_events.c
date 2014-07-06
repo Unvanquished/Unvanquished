@@ -166,24 +166,22 @@ static void CG_Rocket_SetChatCommand( void )
 {
 	const char *cmd = NULL;
 
-	if ( !cg.sayTextType )
+	switch ( cg.sayType )
 	{
-		return;
-	}
-
-	switch ( *cg.sayTextType )
-	{
-		case 'A':
-			cmd = "a";
-			break;
-
-		case 'P':
+		case SAY_TYPE_PUBLIC:
 			cmd = "say";
 			break;
 
-		case 'T':
+		case SAY_TYPE_TEAM:
 			cmd = "say_team";
 			break;
+
+		case SAY_TYPE_ADMIN:
+			cmd = "a";
+			break;
+
+		default:
+			return;
 	}
 
 	if ( cmd )
@@ -376,7 +374,7 @@ static void CG_Rocket_EventPlay( void )
 
 typedef struct
 {
-	const char *command;
+	const char *const command;
 	void ( *exec ) ( void );
 } eventCmd_t;
 

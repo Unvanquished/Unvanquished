@@ -1862,7 +1862,17 @@ void CG_Rocket_DrawStaminaBolt( void )
 
 void CG_Rocket_DrawChatType( void )
 {
-	trap_Rocket_SetInnerRML( cg.sayTextType, RP_QUAKE );
+	static const char *const sayText[] = {
+		NULL,
+		N_("Say: "),
+		N_("Team Say: "),
+		N_("Admin Say: "),
+	};
+
+	if ( (size_t) cg.sayType < ARRAY_LEN( sayText ) )
+	{
+		trap_Rocket_SetInnerRML( _( sayText[ cg.sayType ] ), RP_QUAKE );
+	}
 }
 
 #define MOMENTUM_BAR_MARKWIDTH 0.5f

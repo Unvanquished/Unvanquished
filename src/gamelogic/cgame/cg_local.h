@@ -978,6 +978,14 @@ typedef struct
 	qboolean drawFrontline;
 } cgBinaryShaderSetting_t;
 
+typedef enum
+{
+	SAY_TYPE_NONE,
+	SAY_TYPE_PUBLIC,
+	SAY_TYPE_TEAM,
+	SAY_TYPE_ADMIN,
+} sayType_t;
+
 #define NUM_BINARY_SHADERS 256
 
 typedef struct
@@ -1175,7 +1183,7 @@ typedef struct
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
-	char                    *sayTextType;
+	sayType_t               sayType;
 
 	// momentum
 	float                   momentumGained;

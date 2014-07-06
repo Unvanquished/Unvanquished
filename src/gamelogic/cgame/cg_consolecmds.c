@@ -335,19 +335,19 @@ static void CG_TestCGrade_f( void )
 
 static void CG_MessageAdmin_f( void )
 {
-	cg.sayTextType = "Admin Say: ";
+	cg.sayType = SAY_TYPE_ADMIN;
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessageTeam_f( void )
 {
-	cg.sayTextType = "Team Say: ";
+	cg.sayType = SAY_TYPE_TEAM;
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessagePublic_f( void )
 {
-	cg.sayTextType = "Public Say: ";
+	cg.sayType = SAY_TYPE_PUBLIC;
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
