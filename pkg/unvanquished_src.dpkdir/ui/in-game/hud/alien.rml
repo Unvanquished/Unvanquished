@@ -124,7 +124,7 @@
 				top: 10px;
 				bottom:15%;
 				width:15%;
-				height:auto;
+				height:100%;
 				width: 1.3em;
 				color:#ff0000ff;
 			}
@@ -192,7 +192,7 @@
 				background-color: #3a2323;
 				color: #6e1b1c;
 			}
-			health, img.health
+			health, health_cross
 			{
 				z-index: 1;
 			}
@@ -221,7 +221,7 @@
 
 			<div id="health">
 				<health />
-				<img class="health" id="health-icon" src="/ui/assets/neutral/cross.tga"/>
+				<health_cross class="health" id="health-icon"/>
 			</div>
 		</div>
 		<div id="right">
