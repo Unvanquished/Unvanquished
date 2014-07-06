@@ -20,6 +20,7 @@
 
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
+		<link type="text/rcss" href="/ui/shared/background.rcss" />
 		<style>
 			body {
 				width:100%;
@@ -127,7 +128,11 @@
 		</style>
 	</head>
 	<body id="ingame" class="ingame">
-
+		<img class="gradient" src="/ui/assets/bg" /> 
+		<img class="gradient black" src="/ui/assets/black" /> 
+		<img class="circles" src="/ui/assets/circles1" />
+		<img class="circles" src="/ui/assets/circles2" />
+		<img class="black2" src="/ui/assets/black2" />
 
 		<box class="version">
 			<p style="font-size: 30px;"> Unvanquished alpha 29</p>

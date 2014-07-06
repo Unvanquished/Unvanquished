@@ -20,16 +20,14 @@
 
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
+		<link type="text/rcss" href="/ui/shared/background.rcss" />
 		<style>
 			body {
 				width:100%;
 				height:100%;
 				z-index: -10;
 			}
-			body.mainmenu {
-				background-decorator: image;
-				background-image:/ui/assets/background;
-			}
+			
 			body.ingame {
 				background-color: rgba(0%,0%,0%,0%);
 			}
@@ -97,7 +95,7 @@
 			/* innersidebar is grey box, sidebar holds this and the logo for scrolling */
 			window.innersidebar {
 				display: block;
-
+				margin-top:20%;
 				padding-top:0;
 				padding-bottom:0;
 
@@ -131,7 +129,15 @@
 		</style>
 	</head>
 	<body id="main" class="mainmenu" nohide>
-
+		<img class="gradient" src="/ui/assets/bg" /> 
+		<img class="gradient black" src="/ui/assets/black" /> 
+		<img class="circles" src="/ui/assets/circles1" />
+		<img class="circles" src="/ui/assets/circles2" />
+		<img class="tyrant" src="/ui/assets/tyrant" />
+		<img class="human" src="/ui/assets/human" />
+		<img class="fog" src="/ui/assets/fog" />
+		<img class="black2" src="/ui/assets/black2" />
+		<img class="logo" src="/ui/assets/logo" /> 
 
 		<box class="version">
 			<p style="font-size: 30px;"> Unvanquished alpha 29</p>
@@ -149,7 +155,6 @@
 					<hackyspacer />
 				</if>
 
-				<img class="logo" src="logo.png" style="color: rgba(100%,100%,100%,100%);" />
 
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
 				<window id="innersidebar" class="innersidebar">
