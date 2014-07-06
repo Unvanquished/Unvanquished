@@ -6,9 +6,9 @@
 	</head>
 	<body id="options_ui" template="window" style="width: 32em; margin: 10%;">
 		<h1> User Interface </h1>
-		
-		
-		
+
+
+
 		<row>
 			<h3>Real-time clock</h3>
 			<select name="cg_drawClock" cvar="cg_drawClock">
@@ -48,10 +48,12 @@
 			<p>Alien pounce-meter</p>
 		</row>
 		<row>
-			<h3>Lag-o-meter</h3>
+			<!-- BUG: This should be a lag-o-meter, not a ping control -->
+			<h3>Show ping</h3>
 			<input cvar="cg_lagometer" type="checkbox" />
-			<p>Network-activity graph</p>
+			<p>Time that information takes to get to the server and back.</p>
 		</row>
+		<!--
 		<row>
 			<h3>Team Overlay</h3>
 			<select cvar="cg_drawTeamOverlay">
@@ -71,31 +73,24 @@
 			</select>
 			<p></p>
 		</row>
+		-->
 		<row>
-			<h3>Speed</h3>
-			<select cvar="cg_drawspeed">
-				<option value="0">No</option>
-				<option value="1">Text</option>
-				<option value="2">Graph</option>
-				<option value="3">Text + Graph</option>
-				<option value="5">Text No-Z</option>
-				<option value="6">Graph No-Z</option>
-				<option value="7">Text + Graph No-Z</option>
-			</select>
-			<p>Current movement speed</p>
+			<h3>Show movement speed</h3>
+			<input cvar="cg_drawSpeed" type="checkbox" />
+			<p>Current, maximum and graph of movement-speed</p>
 		</row>
 		<row>
 			<h3>Show FPS</h3>
 			<input cvar="cg_drawFPS" type="checkbox" />
 			<p>Frames-per-second</p>
 		</row>
-		
+
 		<row>
 			<h3>Show demo-recording state</h3>
 			<input cvar="cg_drawDemoState" type="checkbox" />
 			<p></p>
 		</row>
-		
-		
+
+
 	</body>
 </rml>
