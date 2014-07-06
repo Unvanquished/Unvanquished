@@ -196,6 +196,14 @@ public:
 							GetOwnerDocument()->Hide();
 							return;
 						}
+						else if ( cmd == "/" )
+						{
+							Cmd::BufferCommandText( va( "%s\n", text.CString() ) );
+							text.Clear();
+							UpdateText();
+							GetOwnerDocument()->Hide();
+							return;
+						}
 
 						if ( cmd.Empty() )
 						{

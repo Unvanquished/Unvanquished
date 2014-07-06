@@ -339,6 +339,12 @@ static void CG_MessageAdmin_f( void )
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
+static void CG_MessageCommand_f( void )
+{
+	cg.sayType = SAY_TYPE_COMMAND;
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+}
+
 static void CG_MessageTeam_f( void )
 {
 	cg.sayType = SAY_TYPE_TEAM;
@@ -414,6 +420,7 @@ static const struct
 	{ "lcp",              CG_CenterPrint_f,        0                },
 	{ "m",                0,                       CG_CompleteName  },
 	{ "message_admin",    CG_MessageAdmin_f,       0                },
+	{ "message_command",  CG_MessageCommand_f,     0                },
 	{ "message_public",   CG_MessagePublic_f,      0                },
 	{ "message_team",     CG_MessageTeam_f,        0                },
 	{ "mt",               0,                       CG_CompleteName  },

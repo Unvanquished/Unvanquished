@@ -1867,6 +1867,7 @@ void CG_Rocket_DrawChatType( void )
 		N_("Say: "),
 		N_("Team Say: "),
 		N_("Admin Say: "),
+		N_("Command: "),
 	};
 
 	if ( (size_t) cg.sayType < ARRAY_LEN( sayText ) )

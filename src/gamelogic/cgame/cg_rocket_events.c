@@ -180,6 +180,10 @@ static void CG_Rocket_SetChatCommand( void )
 			cmd = "a";
 			break;
 
+		case SAY_TYPE_COMMAND:
+			cmd = "/";
+			break;
+
 		default:
 			return;
 	}
