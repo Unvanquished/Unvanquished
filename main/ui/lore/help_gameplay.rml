@@ -13,11 +13,11 @@
 			height: 1em;
 			width: auto;
 		}
-		
+
 		</style>
 	</head>
 	<body template="window" id="help_gameplay" style="width:45em; margin: 10%;">
-	
+
 		<h1>Gameplay Guide</h1>
 		<tabset>
 			<tab>
@@ -33,6 +33,7 @@
 				at
 				<span class="red">20:00 UTC</span>
 				on the »Dev &amp; Testing Server«!
+				<br />
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/drill_1x1" />
@@ -46,9 +47,6 @@
 				<br />
 				Your team will start with a small pool of build points but more can be
     acquired by building a mining structure.
-				<br />
-				<br />
-				Read »Resource generation« for more.
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/leech_1x1" />
@@ -110,12 +108,7 @@
 				repeater to increase the available power.
     Be warned that repeaters will deal significant damage to close structures
     when they explode.
-			</panel>
-			<tab>
-				<img class="emoticon" src="/emoticons/ckit_2x1" />
-				Human building 2
-			</tab>
-			<panel>
+				<br />
 				When the power consumption in a region is too high, the smallest possible
     number of buildables will power down so that the other strucutres have
     enough energy to remain operational.
@@ -125,13 +118,8 @@
 				<img class="emoticon" src="/emoticons/drill_1x1" />
 				drill is the only buildable that requires a close repeater or
     reactor to work, since resources are transmitted via the power grid.
-				<br />
-				<br />
-				The
-				<img class="emoticon" src="/emoticons/basilisk_1x1" />
-				basilisk consumes power, too, so it can shut down
-    buildables by its presence. Improve the power supply with repeaters to
-    prevent this.
+
+
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/flamer_2x1" />
@@ -180,35 +168,11 @@
     75% health, at 25% health and when destroyed.
 			</panel>
 			<tab>
-				<img class="emoticon" src="/emoticons/dretch_1x1" />
-				Advanced dretch
-			</tab>
-			<panel>
-				The
-				<img class="emoticon" src="/emoticons/dretch_1x1" />
-				advanced dretch has a pounce ability. A pounce can be
-	started with ATTACK2.
-				<br />
-				<br />
-				After the pounce a cooldown period will set in. The cooldown is different
-    for forward, sidewards/backwards and off-wall pounces.
-				<br />
-				<br />
-				When moving forward or standing still, flat angles will result in greater
-    speed, so the pounce can be used to quickly get to the head of distant
-    enemies but it isn't well suited for getting high up. When strafing or
-    moving backwards, the dretch will dodge. When pouncing off a wall, it will
-    attempt to go to the surface you are aiming at.
-			</panel>
-			<tab>
 				<img class="emoticon" src="/emoticons/dev_1x1" />
 				Miscellaneous
 			</tab>
 			<panel>
 				The human dodge has been removed, stamina has been increased.
-				<br />
-				<br />
-				The grenade price has been increased (200 → 300).
 				<br />
 				<br />
 				All alien evo costs and gains have been doubled. The new maximum of evos
