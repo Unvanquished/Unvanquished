@@ -118,8 +118,7 @@
 				<h2> General </h2>
 				<row>
 
-					<select cvar="r_picmip">
-						<option value="8">Disable textures, simple colours only.</option>
+					<select cvar="r_picmip" style="width: 20em;">
 						<option value="2">Low (1:4)</option>
 						<option value="1">Medium (1:2)</option>
 						<option value="0">Full (1:1)</option>
@@ -225,7 +224,7 @@
 					<p>Lighting made by weapons and buildings.</p>
 				</row>
 				<row>
-					<select cvar="cg_shadows">
+					<select cvar="cg_shadows" style="width:20em;">
 						<option value="0">None</option>
 						<option value="1">Blobs (low)</option>
 						<option value="3">Exponential mapping</option>
@@ -253,7 +252,7 @@
 				<h2> Building markers </h2>
 				<row>
 					<h3>Building ranges</h3>
-					<select cvar="cg_rangeMarkerBuildableTypes">
+					<select cvar="cg_rangeMarkerBuildableTypes" style="width: 20em;">
 						<option value="none">No Buildables</option>
 						<option value="all">All Buildables</option>
 						<option value="support">Support Buildables</option>
