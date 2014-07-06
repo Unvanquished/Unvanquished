@@ -25,9 +25,9 @@
 		</row>
 
 
-		<h2> Wall-walking </h2>
+		<h2> Movement </h2>
 		<row>
-			<h3>Auto-pitch</h3>
+			<h3>Wall-walking auto-pitch</h3>
 			<input cvar="cg_wwFollow" type="checkbox" />
 			<p> Always 'twist' and 'rotate' the view when you wall-walk from one surface to another. </p>
 		</row>
@@ -38,8 +38,18 @@
 				<option value="300">Medium</option>
 				<option value="600">Slow</option>
 			</select>
-			<h3> Pitch-speed</h3>
+			<h3> Wall-walking pitch-speed</h3>
 			<p>How fast your view 'rotates' and 'twists' as you wall-walk.</p>
+		</row>
+		<row>
+			<h3> Wall-walking toggles </h3>
+			<input cvar="cg_wwToggle" type="checkbox" />
+			<p>'Tap key' instead of 'hold key' to activate. </p>
+		</row>
+		<row>
+			<h3> Sprint toggles </h3>
+			<input cvar="cg_sprintToggle" type="checkbox" />
+			<p>'Tap key' instead of 'hold key' to activate. </p>
 		</row>
 
 		<h2> Cosmetic </h2>
