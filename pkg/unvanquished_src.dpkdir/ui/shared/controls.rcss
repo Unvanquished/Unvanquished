@@ -154,17 +154,14 @@ input.range sliderbar:hover{
 
 
 /* #### Key-binding inputs #### */
-/* Same as <ilink>s */
 keybind {
 	width: 10em;
-	color:#136D67;   /* Dark cyan */
+	color:white;;
 
 	tab-index: auto;
 
 }
-ilink:hover{
-	color:#00F8FF;   /* Bright cyan */
-}
+
 
 
 /* #### Buttons #### */

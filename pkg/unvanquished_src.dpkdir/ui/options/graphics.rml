@@ -2,9 +2,9 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
-		
+
 		<style>
-			
+
 			/* Halving hack, as we don't have tables */
 			half {
 				display:block;
@@ -12,11 +12,11 @@
 				float:left;
 				width:45%;
 			}
-			
+
 			half.left; {
 				margin-right:5%;
 			}
-			
+
 			half.right; {
 				margin-left:5%;
 			}
@@ -27,32 +27,29 @@
 	</head>
 	<body id="options_graphics" template="window" style="width: 45em; margin: 10%;">
 		<h1> Graphics </h1>
-		
+
 		<tabset>
 			<tab> General </tab>
 			<panel>
-				
-				
+
+
 				<h2> Comfort </h2>
-				
+
 				<row>
 					<h3>Brightness</h3>
 					<input type="range" min="0" max="2" step="0.01" cvar="r_gamma"/>
-					<p class="inline"> 
+					<p class="inline">
 						Gamma: <inlinecvar cvar="r_gamma" type="number" format="%.2f"/>
 						<ilink onclick="exec reset r_gamma"> (reset) </ilink>
 					</p>
 				</row>
-				
+
 				<h2> Video </h2>
-				
+
 				<p>
-					Incorrect settings may prevent the game from working.  These settings can be overridden 
-					by passing command-line options:
+					These settings can also be changed in the game config files.  See the Unvanquished wiki for details.
 				</p>
-				<p class="example"> unvanquished +set r_mode 4 </p>
-				<p> See the Unvanquished Wiki for more details. </p>
-				
+
 				<row>
 					<!--
 					<select cvar="r_mode">
@@ -60,25 +57,25 @@
 						<option value="-1">Manual</option>
 					</select>
 					-->
-					
+
 					<h3>Screen Resolution</h3>
-					
+
 					<half class="left">
-						<input type="text" cvar="r_customwidth" class="text" style="width: 3em;"/> 
+						<input type="text" cvar="r_customwidth" class="text" style="width: 3em;"/>
 						<p>Width</p>
 					</half>
-					
+
 					<half class="right">
-						<input type="text" cvar="r_customheight" class="text" style="width: 3em;"/> 
+						<input type="text" cvar="r_customheight" class="text" style="width: 3em;"/>
 						<p>Height</p>
 					</half>
-					
+
 				</row>
 				<row>
 					<input cvar="r_fullscreen" type="checkbox"/>
 					<h3>Fullscreen</h3>
-				</row>	
-				
+				</row>
+
 				<row>
 					<select cvar="r_swapinterval">
 						<option value="0">Off</option>
@@ -91,11 +88,11 @@
 						only activates when the frame-rate is above the refresh-rate of the monitor.
 					</p>
 				</row>
-				
-				
-				
-				
-				
+
+
+
+
+
 
 				<row>
 					<select cvar="r_ext_multisample">
@@ -107,36 +104,37 @@
 					</select>
 					<h3> Multisampling level </h3>
 					<p> Anti-aliasing smoothes out 'jaggy edges' but is very costly to your frame-rate. </p>
-					
+
 				</row>
 
 				<buttonbar>
 					<button onClick="exec vid_restart">Apply now</button>
 				</buttonbar>
-				
+
 			</panel>
-			
+
 			<tab> Textures </tab>
 			<panel>
 				<h2> General </h2>
 				<row>
-					<h3>Texture quality</h3>
+
 					<select cvar="r_picmip">
 						<option value="8">Disable textures, simple colours only.</option>
 						<option value="2">Low (1:4)</option>
 						<option value="1">Medium (1:2)</option>
 						<option value="0">Full (1:1)</option>
 					</select>
+					<h3>Texture quality</h3>
 					<p>Lower texture quality is useful for cards with limited VRAM</p>
 				</row>
-				
+
 				<h2> Mip-mapping </h2>
-				<p> 
-					Mip-mapping makes distant surfaces look better by using lower-resolution textures for them.
+				<p>
+					Mip-mapping makes distant surfaces look better by using lower-resolution textures on them.
 					This generally does not affect performance.
 				</p>
 				<row>
-					<h3>Anisotropic mip-mapping</h3>
+
 					<select cvar="r_ext_texture_filter_anisotropic">
 						<option value="0">No</option>
 						<option value="2">2×</option>
@@ -144,51 +142,51 @@
 						<option value="8">8×</option>
 						<option value="16">16×</option>
 					</select>
-					<p>Generate better mip-maps for very-angled surfaces.</p>
+					<h3>Anisotropic mip-mapping</h3>
+					<p>Better interpretation of mip-maps on angled surfaces.</p>
 				</row>
 				<row>
-					<h3>Texture scaling filter</h3>
+
 					<select cvar="r_texturemode">
 						<option value="GL_LINEAR_MIPMAP_NEAREST">Bilinear</option>
 						<option value="GL_LINEAR_MIPMAP_LINEAR">Trilinear (better)</option>
 					</select>
-					<p>Some hardware may have issues with the scaling filters</p>
+					<h3>Texture scaling filter</h3>
 				</row>
 			</panel>
-			
+
 			<tab> Effects </tab>
 			<panel>
 				<h2>Effects</h2>
-				<p> 
-					These special effects are all optional and can be toggled without having to restart video. 
+				<p>
+					These special effects are all optional and can be toggled without having to restart video.
 					All of these effects will reduce your frame-rate.
 				</p>
 				<row>
 					<h3>Normal mapping</h3>
 					<input cvar="r_normalMapping" type="checkbox" />
-					<p>Fakes extra lighting detail on flat surfaces.</p>
+					<p>Simulates extra lighting detail on flat surfaces.</p>
 				</row>
 				<row>
 					<h3>Bloom</h3>
 					<input cvar="r_bloom" type="checkbox" />
-					<p>Makes bright objects glow.</p>
+					<p>Makes bright areas on your screen glow.</p>
 				</row>
 				<row>
 					<h3>Rim-lighting</h3>
 					<input cvar="r_rimlighting" type="checkbox" />
-					<p>Light the edges of models front behind.  Experimental. </p>
+					<p>Light the edges of models from behind.  Experimental. </p>
 				</row>
 				<row>
 					<h3>Heat-haze</h3>
 					<input cvar="r_heatHaze" type="checkbox" />
-					<p>Blur the screen when under severe bombardment.</p>
+					<p>Simulate air refraction in severe heat.</p>
 				</row>
-				
+
 				<h2> Motion blur </h2>
 				<row>
-	
 					<select cvar="cg_motionblur">
-						<option value="0.08">High (0.08)</option>
+						<option value="0.10">High (0.10)</option>
 						<option value="0.05">Moderate (0.05)</option>
 						<option value="0.02">Low (0.02)</option>
 						<option value="0">Off</option>
@@ -197,22 +195,22 @@
 					<p>Level of motion-blur.</p>
 				</row>
 				<row>
+					<h3>Minimum movement speed for motion-blur to activate</h3>
 					<input type="range" min="10" max="1500" step="10" cvar="cg_motionblurMinSpeed"/>
-					<h3>Minimum movement speed for motion-blur activation</h3>
-					<p class="inline"> 
+					<p class="inline">
 						Current: <inlinecvar cvar="cg_motionblurMinSpeed" type="number" format="%.0f"/>
 						<ilink onclick="exec reset cg_motionblurMinSpeed"> (reset) </ilink>
 					</p>
 				</row>
 			</panel>
-			
+
 			<tab> Lighting and particles</tab>
 			<panel>
 				<h2>Lights</h2>
 				<row>
 					<select cvar="r_vertexLighting">
-						<option value="0">Light Map (high)</option>
-						<option value="1">Vertex (low)</option>
+						<option value="0">Light Map (normal)</option>
+						<option value="1">Vertex (low, ugly)</option>
 					</select>
 					<h3>Lighting system</h3>
 				</row>
@@ -228,21 +226,11 @@
 						<option value="3">Exponential mapping</option>
 						<option value="5">Variance mapping</option>
 						<option value="6">Exponential + variance (high)</option>
-					</select>	
+					</select>
 					<h3>Shadows</h3>
 				</row>
-				
+
 				<h2>Particles</h2>
-				<row>
-					<h3>Light flares</h3>
-					<select cvar="cg_lightFlare">
-						<option value="0">Off</option>
-						<option value="1">No Fade</option>
-						<option value="2">Timed Fade</option>
-						<option value="3">Real Fade</option>
-					</select>
-					<p>Todo: desciption</p>
-				</row>
 				<row>
 					<h3>Particle physics</h3>
 					<input cvar="cg_bounceParticles" type="checkbox" />
@@ -254,11 +242,12 @@
 					<p>Ensure over-lapping particles are rendered correctly.</p>
 				</row>
 			</panel>
-			
+
 			<tab> Misc</tab>
 			<panel>
+				<h2> Building markers </h2>
 				<row>
-					<h3>Range markers for buildables</h3>
+					<h3>Building ranges</h3>
 					<select cvar="cg_rangeMarkerBuildableTypes">
 						<option value="none">No Buildables</option>
 						<option value="all">All Buildables</option>
@@ -275,24 +264,24 @@
 				</row>
 				<row>
 					<h3></h3>
-					
+
 					<p></p>
 				</row>
 				<row>
 					<h3></h3>
-					
+
 					<p></p>
 				</row>
 				<row>
 					<h3></h3>
-					
+
 					<p></p>
 				</row>
 			</panel>
 
-		
+
 		</tabset>
-		
-		
+
+
 	</body>
 </rml>
