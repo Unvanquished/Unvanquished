@@ -124,7 +124,7 @@
 
 		div.spec{
 			display:block;
-			line-height:.4em;
+			line-height:1em;
 			clear:both;
 			background:#00000033;
 		}
