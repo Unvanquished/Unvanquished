@@ -932,14 +932,6 @@ private:
 
 } // GCC bug workaround
 
-LoadedPakInfo::LoadedPakInfo()
-	: fd(-1) {}
-LoadedPakInfo::~LoadedPakInfo()
-{
-	if (fd != -1)
-		close(fd);
-}
-
 namespace PakPath {
 
 // List of loaded pak files
@@ -1049,6 +1041,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 
 	// Update the list of files, but don't overwrite existing files, so the sort order is preserved
 	if (pak.type == PAK_DIR) {
+		loadedPaks.back().fd = -1;
 		auto dirRange = RawPath::ListFilesRecursive(pak.path, err);
 		if (HaveError(err))
 			return;
@@ -1172,6 +1165,10 @@ void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_c
 void ClearPaks()
 {
 	fileMap.clear();
+	for (LoadedPakInfo& x: loadedPaks) {
+		if (x.fd != -1)
+			close(x.fd);
+	}
 	loadedPaks.clear();
 	FS::RefreshPaks();
 }
@@ -2018,6 +2015,7 @@ static std::string DefaultHomePath()
 void Initialize()
 {
 #ifdef BUILD_VM
+	// TODO: Need to clean up any existing open fds
 	VM::SendMsg<VM::FSInitializeMsg>(homePath, libPath, availablePaks, PakPath::loadedPaks, PakPath::fileMap);
 #else
 	Com_StartupVariable("fs_basepath");

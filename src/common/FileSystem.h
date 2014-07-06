@@ -241,10 +241,6 @@ struct PakInfo {
 
 // Information about a package that has been loaded
 struct LoadedPakInfo: public PakInfo {
-	// Constructor and destructor to make sure the fd is closed properly
-	LoadedPakInfo();
-	~LoadedPakInfo();
-
 	// Actual CRC32 checksum of the pak, derived from the pak contents. This is
 	// only valid for zip paks.
 	Util::optional<uint32_t> realChecksum;
