@@ -11,8 +11,10 @@ units
 	ui/in-game/alien/charge.rml
 	ui/in-game/alien/bp.rml
 	ui/in-game/scoreboard.rml
+	ui/in-game/hud/builder.rml
 }
 
+// Specs must be defined first. This is the base hud
 spectator_hud
 {
 	base
@@ -21,6 +23,7 @@ spectator_hud
 	spectator_hud
 }
 
+// Define base team huds
 human_hud
 {
 	jetpack
@@ -30,6 +33,25 @@ human_hud
 	console
 }
 
+alien_hud
+{
+	base
+	alien_hud
+	overlay
+	console
+}
+
+// Define individual weapons here
+ckit_hud
+{
+	jetpack
+	base
+	human_hud
+	overlay
+	console
+	builder
+}
+
 lcannon_hud
 {
 	base
@@ -37,14 +59,6 @@ lcannon_hud
 	overlay
 	console
 	charge
-}
-
-alien_hud
-{
-	base
-	alien_hud
-	overlay
-	console
 }
 
 level3_hud
@@ -82,6 +96,7 @@ abuild_hud
 	overlay
 	console
 	bp
+	builder
 }
 
 abuildupg_hud
@@ -91,4 +106,5 @@ abuildupg_hud
 	overlay
 	console
 	bp
+	builder
 }
