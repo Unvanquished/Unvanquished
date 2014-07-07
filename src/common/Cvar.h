@@ -28,11 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../engine/qcommon/q_shared.h"
-#include "String.h"
-#include <string>
-#include <functional>
-
 #ifndef COMMON_CVAR_H_
 #define COMMON_CVAR_H_
 
@@ -69,7 +64,7 @@ namespace Cvar {
      */
     class CvarProxy {
         public:
-            CvarProxy(std::string name, std::string description, int flags, std::string defaultValue);
+            CvarProxy(std::string name, int flags, std::string defaultValue);
 
             // Called when the value of the cvar changes, returns success=true if the new value
             // is valid, false otherwise. If true is returned, the description will be the new
@@ -83,10 +78,9 @@ namespace Cvar {
 
             // Will trigger another OnValueChanged after a roundtrip in the cvar system.
             void SetValue(std::string value);
-            void Register();
+            bool Register(std::string description);
 
         private:
-            std::string description;
             int flags;
             std::string defaultValue;
     };
@@ -127,10 +121,15 @@ namespace Cvar {
             virtual OnValueChangedResult Validate(const T& value);
             // Returns the new description of the cvar given the current value and the description
             // given at the creation of the cvar.
-            virtual std::string GetDescription(Str::StringRef value, Str::StringRef originalDescription);
+            virtual std::string GetAdditionalDescription();
+
+            void Register();
 
             T value;
             std::string description;
+
+        private:
+            std::string GetDescription();
     };
 
     /*
@@ -202,7 +201,7 @@ namespace Cvar {
 
         private:
             virtual OnValueChangedResult Validate(const value_type& value);
-            virtual std::string GetDescription(Str::StringRef value, Str::StringRef originalDescription);
+            virtual std::string GetAdditionalDescription();
 
             value_type min;
             value_type max;
@@ -231,7 +230,7 @@ namespace Cvar {
 
     // Engine calls available everywhere
 
-    void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
+    bool Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
     std::string GetValue(const std::string& cvarName);
     void SetValue(const std::string& cvarName, std::string value);
 
@@ -241,14 +240,14 @@ namespace Cvar {
 
     template<typename T>
     Cvar<T>::Cvar(std::string name, std::string description, int flags, value_type defaultValue)
-    : CvarProxy(std::move(name), GetDescription(SerializeCvarValue(defaultValue), description), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
+    : CvarProxy(std::move(name), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
         value = std::move(defaultValue);
-        CvarProxy::Register();
+        Register();
     }
 
     template<typename T>
     Cvar<T>::Cvar(NoRegisterTag, std::string name, std::string description, int flags, value_type defaultValue)
-    : CvarProxy(std::move(name), GetDescription(SerializeCvarValue(defaultValue), description), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
+    : CvarProxy(std::move(name), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
         value = std::move(defaultValue);
     }
 
@@ -274,7 +273,7 @@ namespace Cvar {
         if (Parse(text, value)) {
             OnValueChangedResult validationResult = Validate(value);
             if (validationResult.success) {
-                return {true, GetDescription(text, description)};
+                return {true, GetDescription()};
             } else {
                 return validationResult;
             }
@@ -294,10 +293,19 @@ namespace Cvar {
     }
 
     template<typename T>
-    std::string Cvar<T>::GetDescription(Str::StringRef value, Str::StringRef originalDescription) {
-        return Str::Format("\"%s\" - %s - %s", value, GetCvarTypeName<T>(), originalDescription);
+    std::string Cvar<T>::GetAdditionalDescription() {
+        return "";
     }
 
+    template<typename T>
+    void Cvar<T>::Register() {
+        CvarProxy::Register(GetDescription());
+    }
+
+    template<typename T>
+    std::string Cvar<T>::GetDescription() {
+        return Str::Format("%s - %s%s", GetCvarTypeName<T>(), description, GetAdditionalDescription());
+    }
 
     // Callback<Base>
 
@@ -306,7 +314,7 @@ namespace Cvar {
     Callback<Base>::Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args&& ... args)
     : Base(NoRegisterTag(), std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...),
     callback(callback) {
-        CvarProxy::Register();
+        Cvar<value_type>::Register();
     }
 
     template <typename Base>
@@ -332,7 +340,7 @@ namespace Cvar {
     template <typename ... Args>
     Modified<Base>::Modified(std::string name, std::string description, int flags, value_type defaultValue, Args ... args)
     : Base(NoRegisterTag(), std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...), modified(false) {
-        CvarProxy::Register();
+        Cvar<value_type>::Register();
     }
 
     template <typename Base>
@@ -365,7 +373,7 @@ namespace Cvar {
     template <typename ... Args>
     Range<Base>::Range(std::string name, std::string description, int flags, value_type defaultValue, value_type min, value_type max, Args ... args)
     : Base(NoRegisterTag(), std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...), min(min), max(max) {
-        CvarProxy::Register();
+        Cvar<value_type>::Register();
     }
 
     template <typename Base>
@@ -385,8 +393,8 @@ namespace Cvar {
     }
 
     template <typename Base>
-    std::string Range<Base>::GetDescription(Str::StringRef value, Str::StringRef originalDescription) {
-        return Base::GetDescription(value, Str::Format("%s - between %s and %s", originalDescription, SerializeCvarValue(min), SerializeCvarValue(max)));
+    std::string Range<Base>::GetAdditionalDescription() {
+        return Str::Format(" - between %s and %s", SerializeCvarValue(min), SerializeCvarValue(max));
     }
 
 }

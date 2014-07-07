@@ -31,14 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
-#include "../../common/Cvar.h"
-#include "../../common/IPC.h"
-#include "../../common/String.h"
-#include "../../common/FileSystem.h"
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-
 namespace VM {
 
 enum vmType_t {
@@ -56,12 +48,12 @@ struct VMParams {
 	VMParams(std::string name)
 		: logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
 		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NATIVE_EXE, 0, TYPE_END - 1),
-		  debugLoader("vm." + name + ".debugLoader", "make sel_ldr dump information to " + name + "-sel_ldr.log", Cvar::NONE, false) {
+		  debugLoader("vm." + name + ".debugLoader", "make sel_ldr dump information to " + name + "-sel_ldr.log", Cvar::NONE, 0, 0, 5) {
 	}
 
 	Cvar::Cvar<bool> logSyscalls;
 	Cvar::Range<Cvar::Cvar<int>> vmType;
-	Cvar::Cvar<bool> debugLoader;
+	Cvar::Range<Cvar::Cvar<int>> debugLoader;
 };
 
 // Base class for a virtual machine instance

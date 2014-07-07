@@ -212,13 +212,13 @@ namespace Audio {
 
     // Set the gain before the source is started to avoid having a few milliseconds of very lound sound
     void Sound::FinishSetup() {
-        currentGain = positionalGain * soundGain * effectsVolume.Get();
+        currentGain = positionalGain * soundGain * SliderToAmplitude(effectsVolume.Get());
         source->SetGain(currentGain);
     }
 
     void Sound::Update() {
         // Fade the Gain update to avoid "ticking" sounds when there is a gain discontinuity
-        float targetGain = positionalGain * soundGain * effectsVolume.Get();
+        float targetGain = positionalGain * soundGain * SliderToAmplitude(effectsVolume.Get());
 
         //TODO make it framerate independant and fade out in about 1/8 seconds ?
         if (currentGain > targetGain) {

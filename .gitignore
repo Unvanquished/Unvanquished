@@ -15,6 +15,7 @@ game-qvm-native.*
 ui-qvm-native.*
 vm
 main/*.pk3
+libROCKET_LIB.a
 Release
 Debug
 build
@@ -46,6 +47,7 @@ sel_ldr*
 #ignore external deps
 external_deps/*
 !external_deps/build.sh
+!external_deps/cygtar.py
 
 #never ignore these in subdirectories by accident
 !.gitattributes

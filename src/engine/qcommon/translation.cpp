@@ -43,13 +43,10 @@ extern "C" {
 #include "../../libs/tinygettext/tinygettext.hpp"
 #include "../../libs/tinygettext/file_system.hpp"
 
-#include <sstream>
-#include <iostream>
-
 using namespace tinygettext;
 
 // Ugly char buffer
-static char gettextbuffer[ 4 ][ MAX_STRING_CHARS ];
+static std::string gettextbuffer[ 4 ];
 static int num = -1;
 
 DictionaryManager trans_manager;
@@ -257,7 +254,9 @@ void Trans_SetLanguage( const char* lang )
 	trans_manager.set_language( bestLang );
 	trans_managergame.set_language( bestLang );
 
-	Com_Printf( _( "Set language to %s\n" ), bestLang.get_name().c_str() );
+	Cvar_Set( "language", bestLang.str().c_str() );
+
+	Com_Printf( _( "Set language to %s" ), bestLang.get_name().c_str() );
 }
 
 void Trans_UpdateLanguage_f( void )
@@ -291,9 +290,9 @@ void Trans_Init( void )
 	trans_encodings = Cvar_Get( "trans_encodings", "", CVAR_ROM );
 
 	// set tinygettext log callbacks
-	Log::set_log_error_callback( &Trans_Error );
-	Log::set_log_warning_callback( &Trans_Warning );
-	Log::set_log_info_callback( &Trans_Info );
+	tinygettext::Log::set_log_error_callback( &Trans_Error );
+	tinygettext::Log::set_log_warning_callback( &Trans_Warning );
+	tinygettext::Log::set_log_info_callback( &Trans_Info );
 
 	trans_manager.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );
 	trans_managergame.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );
@@ -306,9 +305,7 @@ void Trans_Init( void )
 	for( std::set<Language>::iterator p = langs.begin(); p != langs.end(); p++ )
 	{
 		Q_strcat( langList, sizeof( langList ), va( "\"%s\" ", p->get_name().c_str() ) );
-		Q_strcat( encList, sizeof( encList ), va( "\"%s%s%s\" ", p->get_language().c_str(),
-												  p->get_country().c_str()[0] ? "_" : "",
-												  p->get_country().c_str() ) );
+		Q_strcat( encList, sizeof( encList ), va( "\"%s\" ", p->str().c_str() ) );
 	}
 
 	Cvar_Set( "trans_languages", langList );
@@ -352,8 +349,8 @@ const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manage
 	}
 
 	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
+	gettextbuffer[ num ] = manager.get_dictionary().translate( msgid );
+	return gettextbuffer[ num ].c_str();
 }
 
 const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, DictionaryManager& manager )
@@ -364,8 +361,8 @@ const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, Dictio
 	}
 
 	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
+	gettextbuffer[ num ] = manager.get_dictionary().translate_ctxt( ctxt, msgid );
+	return gettextbuffer[ num ].c_str();
 }
 
 const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_plural, int number, DictionaryManager& manager )
@@ -386,8 +383,8 @@ const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_p
 	}
 
 	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_plural( msgid, msgid_plural, number ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
+	gettextbuffer[ num ] = manager.get_dictionary().translate_plural( msgid, msgid_plural, number );
+	return gettextbuffer[ num ].c_str();
 }
 
 const char* Trans_Gettext( const char *msgid )

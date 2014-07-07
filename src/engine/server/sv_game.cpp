@@ -35,7 +35,6 @@ Maryland 20850 USA.
 // sv_game.c -- interface to the game module
 
 #include "server.h"
-#include "../../common/Cvar.h"
 #include "../qcommon/crypto.h"
 #include "../framework/CommonVMServices.h"
 
@@ -383,7 +382,7 @@ SV_RestartGameProgs
 Called on a map_restart, but not on a map change
 ===================
 */
-void SV_RestartGameProgs( void )
+void SV_RestartGameProgs(Str::StringRef mapname)
 {
 	if ( !gvm )
 	{
@@ -396,6 +395,10 @@ void SV_RestartGameProgs( void )
 	gvm = nullptr;
 
 	gvm = SV_CreateGameVM();
+
+	gvm->GameStaticInit();
+
+	gvm->GameLoadMap(mapname);
 
 	SV_InitGameVM( qtrue );
 }
@@ -468,7 +471,7 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 
 static VM::VMParams gameParams("game");
 
-GameVM::GameVM(): VM::VMBase("game", gameParams), services(new VM::CommonVMServices(*this, "Game", Cmd::GAME))
+GameVM::GameVM(): VM::VMBase("game", gameParams), services(new VM::CommonVMServices(*this, "Game", Cmd::GAME_VM))
 {
 }
 

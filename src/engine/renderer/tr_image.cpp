@@ -1384,7 +1384,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			  GL_R32F : GL_ALPHA32F_ARB;
 		}
 	}
-	else if ( image->bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) )
+	else if ( IsImageCompressed( image->bits ) )
 	{
 		if( !GLEW_EXT_texture_compression_dxt1 &&
 		    !GLEW_EXT_texture_compression_s3tc ) {
@@ -2139,7 +2139,7 @@ static qboolean ParseHeightMap( char **text, byte **pic, int *width, int *height
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for heightMap\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: heightMap from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2193,7 +2193,7 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image for displaceMap\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: displaceMap from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2213,7 +2213,7 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image for displaceMap\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: displaceMap from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2267,7 +2267,7 @@ static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height,
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image ( specular ) for addGloss\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: addGloss from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2287,7 +2287,7 @@ static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height,
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image ( gloss ) for addGloss\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: addGloss from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2339,7 +2339,7 @@ static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *heigh
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image for addNormals\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: addNormals from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2359,7 +2359,7 @@ static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *heigh
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image for addNormals\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: addNormals from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2410,7 +2410,7 @@ static qboolean ParseInvertAlpha( char **text, byte **pic, int *width, int *heig
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for invertAlpha\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: invertAlpha from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2448,7 +2448,7 @@ static qboolean ParseInvertColor( char **text, byte **pic, int *width, int *heig
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for invertColor\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: invertColor from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2486,7 +2486,7 @@ static qboolean ParseMakeIntensity( char **text, byte **pic, int *width, int *he
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for makeIntensity\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: makeIntensity from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2527,7 +2527,7 @@ static qboolean ParseMakeAlpha( char **text, byte **pic, int *width, int *height
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for makeAlpha\n" );
 		return qfalse;
 	}
-	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+	if ( IsImageCompressed( *bits ) ) {
 		ri.Printf( PRINT_WARNING, "WARNING: makeAlpha from compressed image not supported\n" );
 		return qfalse;
 	}
@@ -2750,18 +2750,30 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
 			}
 		}
 
+		int bestLoader = -1;
+		const FS::PakInfo* bestPak = nullptr;
+
 		// try and find a suitable match using all the image formats supported
+		// prioritize with the pak priority
 		for ( i = 0; i < numImageLoaders; i++ )
 		{
-			char *altName = va( "%s.%s", filename, imageLoaders[ i ].ext );
+			std::string altName = Str::Format("%s.%s", filename, imageLoaders[i].ext);
+			const FS::PakInfo* pak = FS::PakPath::LocateFile(altName);
 
-			// load
-			imageLoaders[ i ].ImageLoader( altName, pic, width, height, numLayers, numMips, bits, alphaByte );
-
-			if ( *pic )
+			// We found a file and its pak is better than the best pak we have
+			// this relies on how the filesystem works internally and should be moved
+			// to a more explicit interface once there is one. (FIXME)
+			if ( pak != nullptr && (bestPak == nullptr || pak < bestPak ) )
 			{
-				break;
+				bestPak = pak;
+				bestLoader = i;
 			}
+		}
+
+		if ( bestLoader >= 0 )
+		{
+			char *altName = va( "%s.%s", filename, imageLoaders[ bestLoader ].ext );
+			imageLoaders[ bestLoader ].ImageLoader( altName, pic, width, height, numLayers, numMips, bits, alphaByte );
 		}
 	}
 }
@@ -3943,22 +3955,41 @@ void R_ShutdownImages( void )
 	FreeVertexHashTable( tr.cubeHashTable );
 }
 
-int RE_GetTextureId( const char *name )
+void RE_GetTextureSize( int textureID, int *width, int *height )
 {
-	int     i;
-	image_t *image;
+	image_t *baseImage;
+	shader_t *shader;
 
-	ri.Printf( PRINT_DEVELOPER, S_COLOR_YELLOW "RE_GetTextureId [%s].\n", name );
+	shader = R_GetShaderByHandle( textureID );
 
-	for ( i = 0; i < tr.images.currentElements; i++ )
+	assert( shader );
+	if ( !shader )
 	{
-		image = (image_t*) Com_GrowListElement( &tr.images, i );
-
-		if ( !strcmp( name, image->name ) )
-		{
-			return i;
-		}
+		return;
 	}
 
-	return -1;
+	baseImage = shader->stages[ 0 ]->bundle->image[ 0 ];
+	if ( !baseImage )
+	{
+		Com_DPrintf( S_COLOR_YELLOW "RE_GetTextureSize: shader %s is missing base image\n", shader->name );
+		return;
+	}
+
+	if ( width )
+	{
+		*width = baseImage->width;
+	}
+	if ( height )
+	{
+		*height = baseImage->height;
+	}
+}
+
+int numTextures = 0;
+
+qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
+{
+	const char *name = va( "rocket%d", numTextures++ );
+	R_SyncRenderThread();
+	return RE_RegisterShaderFromImage( name, R_CreateImage( name, &pic, width, height, 1, IF_NOCOMPRESSION | IF_NOPICMIP, FT_LINEAR, WT_CLAMP ) );
 }

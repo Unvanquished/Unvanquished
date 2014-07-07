@@ -120,6 +120,9 @@ void CG_SetInitialSnapshot( snapshot_t *snap )
 		// check for events
 		CG_CheckEvents( cent );
 	}
+
+	CG_OnPlayerUpgradeChange();
+	CG_OnPlayerWeaponChange( (weapon_t) cg.snap->ps.weapon );
 }
 
 /*
@@ -194,6 +197,17 @@ static void CG_TransitionSnapshot( void )
 		{
 			CG_TransitionPlayerState( ps, ops );
 		}
+
+		// Callbacks for changes in playerState like weapon/class/team
+		if ( ops->weapon != ps->weapon )
+		{
+			CG_OnPlayerWeaponChange( (weapon_t) ops->weapon );
+		}
+
+		if ( ops->stats[ STAT_ITEMS ] != ps->stats[ STAT_ITEMS ] )
+		{
+			CG_OnPlayerUpgradeChange();
+		}
 	}
 }
 
@@ -257,6 +271,7 @@ static void CG_SetNextSnap( snapshot_t *snap )
 	if ( ( cg.nextSnap->snapFlags ^ cg.snap->snapFlags ) & SNAPFLAG_SERVERCOUNT )
 	{
 		cg.nextFrameTeleport = qtrue;
+		CG_OnMapRestart();
 	}
 
 	// sort out solid entities

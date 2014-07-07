@@ -28,8 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/String.h"
-#include "../qcommon/q_shared.h"
+#include "../../common/Common.h"
 
 namespace Audio {
 

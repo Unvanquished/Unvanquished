@@ -8,12 +8,12 @@
 ############
 
 if [ $# -gt 2 ]; then
-    torrent_file="unvanquished_${3}_universal.torrent"
+    torrent_file="unvanquished_${3}.torrent"
 else
     torrent_file="current.torrent"
 fi
 
-torrent_url=http://unvanquished.net/unv-launcher/$torrent_file
+torrent_url=http://unvnet.net/unv-launcher/$torrent_file
 
 default_cache_dir=/tmp/unv-paks-cache
 last_assets_file=last-assets.txt

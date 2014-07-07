@@ -506,6 +506,18 @@ static void CG_Obituary( entityState_t *ent )
 
 		if ( message )
 		{
+			// shouldn't need to do this here, but it avoids
+			char attackerClassName[ 64 ];
+
+			if ( attackerClass == -1 )
+			{
+				*attackerClassName = 0;
+			}
+			else
+			{
+				Q_strncpyz( attackerClassName, _( BG_ClassModelConfig( attackerClass )->humanName ), sizeof( attackerClassName ) );
+			}
+
 			// Argument order: victim, attacker, [class,] [assistant]. Each has team tag first.
 			if ( messageSuicide && attacker == target )
 			{
@@ -515,7 +527,7 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				if ( attackerClass != -1 )
 				{
-					CG_Printf( messageAssisted, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, _( BG_ClassModelConfig( attackerClass )->humanName ), teamTag[ assistantTeam ], assistantName );
+					CG_Printf( messageAssisted, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, attackerClassName, teamTag[ assistantTeam ], assistantName );
 				}
 				else
 				{
@@ -524,7 +536,7 @@ static void CG_Obituary( entityState_t *ent )
 			}
 			else
 			{
-				CG_Printf( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, ( attackerClass != -1 ) ? _( BG_ClassModelConfig( attackerClass )->humanName ) : NULL );
+				CG_Printf( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, attackerClassName );
 			}
 
 			if ( attackerTeam == ci->team && attacker == cg.clientNum && attacker != target )
@@ -583,6 +595,66 @@ void CG_PainEvent( centity_t *cent, int health )
 	// save pain time for programitic twitch animation
 	cent->pe.painTime = cg.time;
 	cent->pe.painDirection ^= 1;
+}
+
+/*
+=========================
+CG_OnPlayerWeaponChange
+
+Called on weapon change
+=========================
+*/
+void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
+{
+	playerState_t *ps = &cg.snap->ps;
+
+	// Change the HUD to match the weapon. Close the old hud first
+	trap_Rocket_ShowHud( ps->weapon );
+
+	// Rebuild weapon lists if UI is in focus.
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	{
+		CG_Rocket_BuildArmourySellList( "default" );
+		CG_Rocket_BuildArmouryBuyList( "default" );
+	}
+
+}
+
+/*
+=========================
+CG_OnPlayerUpgradeChange
+
+Called on upgrade change
+=========================
+*/
+
+void CG_OnPlayerUpgradeChange( void )
+{
+	playerState_t *ps = &cg.snap->ps;
+
+	// Rebuild weapon lists if UI is in focus.
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	{
+		CG_Rocket_BuildArmourySellList( "default" );
+		CG_Rocket_BuildArmouryBuyList( "default" );
+	}
+}
+
+/*
+=========================
+CG_OnMapRestart
+
+Called whenever the map is restarted
+via map_restart
+=========================
+*/
+void CG_OnMapRestart( void )
+{
+	// if scoreboard is showing, hide it
+	CG_HideScores_f();
+
+	// hide any other menus
+	trap_Rocket_DocumentAction( "", "blurall" );
 }
 
 /*

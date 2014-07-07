@@ -28,18 +28,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "../framework/Resource.h"
+#include "../qcommon/qcommon.h"
+
 #ifndef AUDIO_AUDIO_PRIVATE_H_
 #define AUDIO_AUDIO_PRIVATE_H_
-
-#include <unordered_map>
-#include <memory>
-
-#include "../../common/Command.h"
-#include "../../common/Log.h"
-#include "../framework/Resource.h"
-
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
 
 namespace Audio {
 
@@ -69,6 +62,9 @@ namespace Audio {
 
     // There is only a small number of reverb slots because by default we can create only 4 AuxEffects
     CONSTEXPR int N_REVERB_SLOTS = 3;
+
+    // Tweaks the value given by the audio slider
+    float SliderToAmplitude(float slider);
 
     extern Log::Logger audioLogs;
 }

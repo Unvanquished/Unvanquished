@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "IPC.h"
+#include "Common.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -376,6 +376,11 @@ bool InternalRecvMsg(OSHandleType handle, Reader& reader)
 		char error[256];
 		NaClGetLastErrorString(error, sizeof(error));
 		Com_Error(ERR_DROP, "IPC: Failed to receive message: %s", error);
+	}
+
+	if (result == 0) {
+		FreeHandles(h);
+		Com_Error(ERR_DROP, "IPC: Socket closed by remote end");
 	}
 
 	if (result < (int)sizeof(NaClInternalHeader)) {

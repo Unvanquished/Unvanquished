@@ -38,14 +38,11 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "q_unicode.h"
 #include "qcommon.h"
-#include <setjmp.h>
 
 #include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
-#include "../../common/Cvar.h"
-#include "../../common/Log.h"
 
 // htons
 #ifdef _WIN32
@@ -1008,7 +1005,6 @@ void Hunk_ClearToMark( void )
 	hunk_high.permanent = hunk_high.temp = hunk_high.mark;
 }
 
-void CL_ShutdownUI( void );
 void SV_ShutdownGameProgs( void );
 
 /*
@@ -1022,7 +1018,6 @@ void Hunk_Clear( void )
 {
 #ifdef BUILD_CLIENT
 	CL_ShutdownCGame();
-	CL_ShutdownUI();
 #endif
 	SV_ShutdownGameProgs();
 #ifdef BUILD_CLIENT

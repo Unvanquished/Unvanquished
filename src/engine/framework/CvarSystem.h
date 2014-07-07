@@ -28,9 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Cvar.h"
-#include "../../common/Command.h"
-#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
 #ifndef FRAMEWORK_CVAR_SYSTEM_H_
@@ -79,7 +76,7 @@ namespace Cvar {
     bool ClearFlags(const std::string& cvarName, int flags);
 
     // Used by statically defined cvar.
-    void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
+    bool Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
     void Unregister(const std::string& cvarName);
 
     // Used by the C API
