@@ -163,7 +163,6 @@
 
 
 	<region class="tutorial">
-		<predictedMineEfficiency />
 		<tutorial />
 	</region>
 
