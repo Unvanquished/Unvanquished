@@ -1,0 +1,99 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+
+	</head>
+	<body id="options_fov" template="window" style="width: 30em; margin: 10%;">
+		<h1> Fields of View </h1>
+
+		<h2> Angles of view </h2>
+		<p> FOV = 'width' of player's vision, measured in degrees. </p>
+		<p>
+			Many players suffer mild 'motion sickness' from playing first-person shooters.
+			A higher FOV can help combat this.
+		</p>
+		<row>
+			<input type="range" min="80" max="140" step="1" cvar="cg_fov_human" class="right"/>
+			<h3>Humans</h3>
+			<p class="inline">
+				<inlinecvar cvar="cg_fov_human" type="number" format="%.0f"/> degrees
+				<ilink onclick="exec reset cg_fov_human">(reset)</ilink>
+			</p>
+		</row>
+		<row>
+			<input type="range" min="80" max="140" step="1" cvar="cg_fov_builder" class="right"/>
+			<h3>Granger</h3>
+			<p class="inline">
+				<inlinecvar cvar="cg_fov_builder" type="number" format="%.0f"/> degrees
+				<ilink onclick="exec reset cg_fov_builder">(reset)</ilink>
+			</p>
+		</row>
+		<row>
+			<input type="range" min="80" max="140" step="1" cvar="cg_fov_level0" class="right"/>
+			<h3>Dretch </h3>
+			<p class="inline">
+				<inlinecvar cvar="cg_fov_level0" type="number" format="%.0f"/> degrees
+				<ilink onclick="exec reset cg_fov_level0">(reset)</ilink>
+			</p>
+
+		</row>
+		<row>
+			<input type="range" min="80" max="140" step="1" cvar="cg_fov_level1" class="right"/>
+			<h3>Mantis</h3>
+			<p class="inline">
+				<inlinecvar cvar="cg_fov_level1" type="number" format="%.0f"/> degrees
+				<ilink onclick="exec reset cg_fov_level1">(reset)</ilink>
+			</p>
+		</row>
+		<row>
+			<input type="range" min="80" max="140" step="1" cvar="cg_fov_level2" class="right"/>
+			<h3>Marauder</h3>
+			<p class="inline">
+				<inlinecvar cvar="cg_fov_level2" type="number" format="%.0f"/> degrees
+				<ilink onclick="exec reset cg_fov_level2">(reset)</ilink>
+			</p>
+		</row>
+		<row>
+			<input type="range" min="80" max="140" step="1" cvar="cg_fov_level3" class="right"/>
+			<h3>Dragoon</h3>
+			<p class="inline">
+				<inlinecvar cvar="cg_fov_level3" type="number" format="%.0f"/> degrees
+				<ilink onclick="exec reset cg_fov_level3">(reset)</ilink>
+			</p>
+		</row>
+		<row>
+			<input type="range" min="80" max="140" step="1" cvar="cg_fov_level4" class="right"/>
+			<h3>Tyrant</h3>
+			<p class="inline">
+				<inlinecvar cvar="cg_fov_level4" type="number" format="%.0f"/> degrees
+				<ilink onclick="exec reset cg_fov_level4">(reset)</ilink>
+			</p>
+		</row>
+
+		<h2> View bobbing </h2>
+
+		<row>
+			<h3> Camera pitching</h3>
+			<select cvar="cg_runpitch" class="right">
+				<option value="0">Disabled</option>
+				<option value="0.001">Mild</option>
+				<option value="0.002">Default</option>
+				<option value="0.004">Strong</option>
+			</select>
+			<p>"Up and down" movement</p>
+		</row>
+
+		<row>
+			<h3> Camera rolling </h3>
+			<select cvar="cg_runroll" class="right">
+				<option value="0">Disabled</option>
+				<option value="0.002">Mild</option>
+				<option value="0.005">Default</option>
+				<option value="0.010">Strong</option>
+			</select>
+			<p>"Twisting" movement</p>
+		</row>
+
+	</body>
+</rml>

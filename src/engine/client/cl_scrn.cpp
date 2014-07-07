@@ -676,9 +676,6 @@ This will be called twice if rendering in stereo mode
 */
 void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 {
-#ifndef BUILD_TTY_CLIENT
-	extern qboolean mouseActive; // see sdl_input.c
-#endif
 	re.BeginFrame( stereoFrame );
 
 	// wide aspect ratio screens need to have the sides cleared
@@ -693,7 +690,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 		}
 	}
 
-	if ( uivm && !VM_Call( uivm, UI_IS_FULLSCREEN ) )
+	if ( cgvm )
 	{
 		switch ( cls.state )
 		{
@@ -707,16 +704,14 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 			case CA_DISCONNECTED:
 				// force menu up
 				Audio::StopAllSounds();
-				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
 				break;
 
 			case CA_CONNECTING:
 			case CA_CHALLENGING:
 			case CA_CONNECTED:
+			case CA_DOWNLOADING:
 				// connecting clients will only show the connection dialog
 				// refresh to update the time
-				VM_Call( uivm, UI_REFRESH, cls.realtime );
-				VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, qfalse );
 				break;
 
 			case CA_LOADING:
@@ -727,8 +722,6 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				// also draw the connection information, so it doesn't
 				// flash away too briefly on local or LAN games
 				//if (!com_sv_running->value || Cvar_VariableIntegerValue("sv_cheats")) // Ridah, don't draw useless text if not in dev mode
-				VM_Call( uivm, UI_REFRESH, cls.realtime );
-				VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, qtrue );
 				break;
 
 			case CA_ACTIVE:
@@ -741,21 +734,14 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				break;
 		}
 	}
+}
 
-	// the menu draws next
-	if ( cls.keyCatchers & KEYCATCH_UI && uivm )
-	{
-		VM_Call( uivm, UI_REFRESH, cls.realtime );
-	}
+void SCR_DrawConsoleAndPointer( void )
+{
+	extern qboolean mouseActive; // see sdl_input.c
 
 	// console draws next
 	Con_DrawConsole();
-#ifndef BUILD_TTY_CLIENT
-	if ( uivm && ( CL_UIOwnsMouse() || !mouseActive ) ) {
-		// TODO (after no compatibility needed with alpha 8): replace with UI_DRAW_CURSOR
-		VM_Call( uivm, UI_MOUSE_POSITION, qtrue );
-	}
-#endif
 }
 
 /*
@@ -787,7 +773,7 @@ void SCR_UpdateScreen( void )
 
 	// If there is no VM, there are also no rendering commands issued. Stop the renderer in
 	// that case.
-	if ( uivm || com_dedicated->integer )
+	if ( cgvm || com_dedicated->integer )
 	{
 		// XXX
 //		extern cvar_t* r_anaglyphMode;
@@ -795,11 +781,16 @@ void SCR_UpdateScreen( void )
 		if ( cls.glconfig.stereoEnabled )
 		{
 			SCR_DrawScreenField( STEREO_LEFT );
+			SCR_DrawConsoleAndPointer();
 			SCR_DrawScreenField( STEREO_RIGHT );
+			SCR_DrawConsoleAndPointer();
 		}
 		else
 		{
 			SCR_DrawScreenField( STEREO_CENTER );
+			VM_Call( cgvm, CG_ROCKET_FRAME );
+			Rocket_Render();
+			SCR_DrawConsoleAndPointer();
 		}
 
 		if ( com_speeds->integer )

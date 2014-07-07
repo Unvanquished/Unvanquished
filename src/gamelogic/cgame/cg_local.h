@@ -20,12 +20,15 @@ along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
+#ifndef CG_LOCAL_H
+#define CG_LOCAL_H
 
 #include "../../engine/qcommon/q_shared.h"
 #include "../../engine/renderer/tr_types.h"
 #include "../../engine/client/cg_api.h"
 #include "../shared/bg_public.h"
-#include "../ui/ui_shared.h"
+#include "../../engine/client/keycodes.h"
+#include "cg_ui.h"
 
 // future imports
 #ifndef Q3_VM
@@ -37,7 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // If you absolutely need something stored, it can either be kept
 // by the server in the server stored userinfos, or stashed in a cvar.
 
-#define FADE_TIME                      200
+#define FADE_TIME                      300
 #define DAMAGE_DEFLECT_TIME            100
 #define DAMAGE_RETURN_TIME             400
 #define DAMAGE_TIME                    500
@@ -975,6 +978,15 @@ typedef struct
 	qboolean drawFrontline;
 } cgBinaryShaderSetting_t;
 
+typedef enum
+{
+	SAY_TYPE_NONE,
+	SAY_TYPE_PUBLIC,
+	SAY_TYPE_TEAM,
+	SAY_TYPE_ADMIN,
+	SAY_TYPE_COMMAND,
+} sayType_t;
+
 #define NUM_BINARY_SHADERS 256
 
 typedef struct
@@ -1172,11 +1184,155 @@ typedef struct
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
+	sayType_t               sayType;
 
 	// momentum
 	float                   momentumGained;
 	int                     momentumGainedTime;
 } cg_t;
+
+typedef struct
+{
+	const char *path;
+	const char *id;
+} rocketMenu_t;
+
+#define MAX_SERVERS 2048
+#define MAX_RESOLUTIONS 32
+#define MAX_LANGUAGES 64
+#define MAX_INPUTS 16
+#define MAX_OUTPUTS 16
+#define MAX_MODS 64
+#define MAX_DEMOS 256
+#define MAX_MAPS 128
+
+typedef struct server_s
+{
+	char *name;
+	char *label;
+	int clients;
+	int bots;
+	int ping;
+	int maxClients;
+	char *mapName;
+	char *addr;
+} server_t;
+
+
+
+typedef struct resolution_s
+{
+	int width;
+	int height;
+} resolution_t;
+
+
+
+typedef struct language_s
+{
+	char *name;
+	char *lang;
+} language_t;
+
+
+
+typedef struct modInfo_s
+{
+	char *name;
+	char *description;
+} modInfo_t;
+
+typedef struct
+{
+	char *mapName;
+	char *mapLoadName;
+	char *imageName;
+	int        cinematic;
+	qhandle_t  levelShot;
+} mapInfo_t;
+
+typedef struct
+{
+	server_t servers[ AS_FAVORITES + 1 ][ MAX_SERVERS ];
+	int serverCount[ AS_FAVORITES + 1 ];
+	int serverIndex[ AS_FAVORITES + 1 ];
+	qboolean buildingServerInfo;
+	qboolean retrievingServers;
+
+	resolution_t resolutions[ MAX_RESOLUTIONS ];
+	int resolutionCount;
+	int resolutionIndex;
+
+	language_t languages[ MAX_LANGUAGES ];
+	int languageCount;
+	int languageIndex;
+
+	modInfo_t modList[ MAX_MODS ];
+	int modCount;
+	int modIndex;
+
+	char *voipInputs[ MAX_INPUTS ];
+	int voipInputsCount;
+	int voipInputIndex;
+
+	char *alOutputs[ MAX_OUTPUTS ];
+	int alOutputsCount;
+	int alOutputIndex;
+
+	int playerList[ NUM_TEAMS ][ MAX_CLIENTS ];
+	int playerCount[ NUM_TEAMS ];
+	int playerIndex[ NUM_TEAMS ];
+
+	char *demoList[ MAX_DEMOS ];
+	int demoCount;
+	int demoIndex;
+
+	mapInfo_t mapList[ MAX_MAPS ];
+	int mapCount;
+	int mapIndex;
+
+	int selectedTeamIndex;
+
+	int selectedHumanSpawnItem;
+
+	int selectedAlienSpawnClass;
+
+	int armouryBuyList[3][ ( WP_LUCIFER_CANNON - WP_BLASTER ) + UP_NUM_UPGRADES + 1 ];
+	int selectedArmouryBuyItem[3];
+	int armouryBuyListCount[3];
+
+	int armourySellList[ WP_NUM_WEAPONS + UP_NUM_UPGRADES ];
+	int selectedArmourySellItem;
+	int armourySellListCount;
+
+	int alienEvolveList[ PCL_NUM_CLASSES ];
+	int selectedAlienEvolve;
+	int alienEvolveListCount;
+
+	int humanBuildList[ BA_NUM_BUILDABLES ];
+	int selectedHumanBuild;
+	int humanBuildListCount;
+
+	int alienBuildList[ BA_NUM_BUILDABLES ];
+	int selectedAlienBuild;
+	int alienBuildListCount;
+} rocketDataSource_t;
+
+typedef struct
+{
+	int currentNetSrc;
+	int serversLastRefresh;
+	int serverStatusLastRefresh;
+	int scoresLastUpdate;
+	int realtime;
+	char downloadName[ MAX_STRING_CHARS ];
+	cgClientState_t cstate;
+	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
+	rocketMenu_t hud[ WP_NUM_WEAPONS ];
+	rocketDataSource_t data;
+} rocketInfo_t;
+
+extern rocketInfo_t rocketInfo;
 
 // all of the model, shader, and sound references that are
 // loaded at gamestate time are stored in cgMedia_t
@@ -1376,6 +1532,7 @@ typedef struct
 	float       screenXScale; // derived from glconfig
 	float       screenYScale;
 	float       screenXBias;
+	float       aspectScale;
 
 	int         serverCommandSequence; // reliable command stream counter
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
@@ -1471,6 +1628,17 @@ typedef enum
 
 typedef enum
 {
+	ELEMENT_ALL,
+	ELEMENT_GAME,
+	ELEMENT_LOADING,
+	ELEMENT_HUMANS,
+	ELEMENT_ALIENS,
+	ELEMENT_DEAD,
+	ELEMENT_BOTH,
+} rocketElementType_t;
+
+typedef enum
+{
   CG_ALTSHADER_DEFAULT, // must be first
   CG_ALTSHADER_UNPOWERED,
   CG_ALTSHADER_DEAD
@@ -1481,7 +1649,6 @@ typedef enum
 extern  cgs_t               cgs;
 extern  cg_t                cg;
 extern  centity_t           cg_entities[ MAX_GENTITIES ];
-extern  displayContextDef_t cgDC;
 
 extern  weaponInfo_t        cg_weapons[ 32 ];
 extern  upgradeInfo_t       cg_upgrades[ 32 ];
@@ -1642,12 +1809,20 @@ extern vmCvar_t             cg_highPolyBuildableModels;
 extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
+extern vmCvar_t             ui_chatPromptColors;
 
+//
+// Rocket cvars
+//
+
+extern vmCvar_t            rocket_hudFile;
+extern vmCvar_t            rocket_menuFile;
 //
 // cg_main.c
 //
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
+const char *CG_Args( void );
 
 void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 void QDECL NORETURN CG_Error( const char *msg, ... ) PRINTF_LIKE(1);
@@ -1661,7 +1836,6 @@ int        CG_CrosshairPlayer( void );
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, int chr, int flags );
 void       CG_MouseEvent( int x, int y );
-void       CG_SetScoreSelection( menuDef_t *menu );
 qboolean   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString( void );
 
@@ -1709,6 +1883,7 @@ void     CG_SetScissor( int x, int y, int w, int h );
 int      CG_DrawStrlen( const char *str );
 
 float    *CG_FadeColor( int startMsec, int totalMsec );
+float    CG_FadeAlpha( int startMsec, int totalMsec );
 void     CG_TileClear( void );
 void     CG_DrawRect( float x, float y, float width, float height, float size, const float *color );
 void     CG_DrawSides( float x, float y, float w, float h, float size );
@@ -1737,7 +1912,6 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float borderSize, float scale, vec4_t foreColor,
                    vec4_t backColor, qhandle_t shader, int textStyle );
 float      CG_GetValue( int ownerDraw );
-float      CG_ChargeProgress( void );
 void       CG_RunMenuScript( char **args );
 void       CG_SetPrintString( int type, const char *p );
 const char *CG_GetKillerText( void );
@@ -1810,6 +1984,9 @@ void CG_PredictPlayerState( void );
 void CG_CheckEvents( centity_t *cent );
 void CG_EntityEvent( centity_t *cent, vec3_t position );
 void CG_PainEvent( centity_t *cent, int health );
+void CG_OnPlayerWeaponChange( weapon_t oldWeapon );
+void CG_OnPlayerUpgradeChange( void );
+void CG_OnMapRestart( void );
 
 //
 // cg_ents.c
@@ -1850,14 +2027,15 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
-void CG_DrawHumanInventory(rectDef_t *rect, vec4_t backColor, vec4_t foreColor );
-void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle );
+void CG_DrawHumanInventory( void );
+void CG_DrawItemSelectText( void );
+float CG_ChargeProgress( void );
 
 //
 // cg_scanner.c
 //
 void CG_UpdateEntityPositions( void );
-void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color );
+void CG_Scanner( rectDef_t *rect );
 void CG_AlienSense( rectDef_t *rect );
 
 //
@@ -1888,7 +2066,9 @@ void CG_ProcessSnapshots( void );
 //
 qboolean CG_ConsoleCommand( void );
 void     CG_InitConsoleCommands( void );
-qboolean CG_RequestScores( void );
+void     CG_RequestScores( void );
+void     CG_HideScores_f( void );
+void     CG_ShowScores_f( void );
 
 //
 // cg_servercmds.c
@@ -1997,4 +2177,68 @@ typedef enum
 //
 // cg_utils.c
 //
-qboolean CG_ParseColor( byte *c, char **text_p );
+qboolean   CG_ParseColor( byte *c, char **text_p );
+const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
+void       CG_ReadableSize( char *buf, int bufsize, int value );
+void       CG_PrintTime( char *buf, int bufsize, int time );
+
+//
+// cg_rocket.c
+//
+
+void CG_Rocket_Init( void );
+void CG_Rocket_LoadHuds( void );
+void CG_Rocket_Frame( void );
+const char *CG_Rocket_GetTag();
+const char *CG_Rocket_GetAttribute( const char *attribute );
+int CG_StringToNetSource( const char *src );
+const char *CG_NetSourceToString( int netSrc );
+const char *CG_Rocket_QuakeToRML( const char *in );
+qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type );
+
+//
+// cg_rocket_events.c
+//
+void CG_Rocket_ProcessEvents( void );
+
+//
+// cg_rocket_dataformatter.c
+//
+void CG_Rocket_FormatData( int handle );
+void CG_Rocket_RegisterDataFormatters( void );
+
+//
+// cg_rocket_draw.c
+//
+void CG_Rocket_RenderElement( void );
+void CG_Rocket_RegisterElements( void );
+
+//
+// cg_rocket_datasource.c
+//
+void CG_Rocket_BuildDataSource( const char *dataSrc, const char *table );
+void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const char *sortBy );
+void CG_Rocket_CleanUpServerList( const char *table );
+void CG_Rocket_RegisterDataSources( void );
+void CG_Rocket_CleanUpDataSources( void );
+void CG_Rocket_ExecDataSource( const char *dataSource, const char *table );
+void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, int index );
+int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table );
+void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter );
+void CG_Rocket_BuildServerInfo( void );
+void CG_Rocket_BuildServerList( const char *args );
+void CG_Rocket_BuildArmourySellList( const char *table );
+void CG_Rocket_BuildArmouryBuyList( const char *table );
+void CG_Rocket_BuildPlayerList( const char *table );
+
+//
+// cg_rocket_progressbar.c
+//
+float CG_Rocket_ProgressBarValue( void );
+float CG_Rocket_ProgressBarValueByName( const char *name );
+//
+// cg_gameinfo.c
+//
+void CG_LoadArenas( void );
+#endif
+

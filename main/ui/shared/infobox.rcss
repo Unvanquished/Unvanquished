@@ -1,0 +1,49 @@
+/* infobx */
+
+.infobox p{
+	display:block;
+}
+
+.infobox h2{
+	position:absolute;
+	top:-2em;
+	margin:auto;
+	margin-left:-1em;
+	font-size:2em;
+	display:block;
+	text-align:center;
+}
+
+.infobox p.text{
+	background:#25252599;
+	padding:5px;
+	font-size: 0.9em;
+}
+
+
+.infobox .attr{
+	width:50%;
+	display:inline-block;
+	text-align:right;
+
+}
+.infobox .bar{
+	padding-bottom:0px;
+	text-align:center;
+	line-height:0.3em;
+	background:#252424;
+	width:40%;
+	margin-left:10%;
+	height:10px;
+	display:inline-block;
+}
+.infobox .barValue {
+	float:left;
+	height:10px;
+	width:10px;
+	background:#BBBBBBAA;
+	border-style:solid;
+	border-width:1px;
+	border-color:#86868633;
+	display:inline-block;
+}

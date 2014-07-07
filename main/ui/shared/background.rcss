@@ -1,0 +1,74 @@
+.gradient, .black, .black2, .fog, .human, .tyrant,.circles, .logo{
+
+    position:absolute;
+}
+
+body.mainmenu{
+	background-color:#000;
+}
+body.ingame{
+	background-color:#00000044;
+}
+.gradient{
+
+      width: 100%;
+      height:100%;
+      top:0px;
+      left:0px;
+      opacity: 1;
+      
+  }  
+  .black{
+    opacity:1;
+  }  
+.black2{
+      width: 100%;
+      height:40%;
+      bottom:0px;
+      left:0px;
+      opacity: .5;
+}
+body.ingame .black2{
+	opacity: .8;
+}
+
+    
+   .fog{
+
+     width:100%;
+       height:30%;
+       opacity: .7;
+       bottom:0px;
+       left:0px;
+   } 
+   
+   .human{
+
+     width:30%;
+       height:auto;
+       bottom:0px;
+       left:13%;   
+   }
+    .tyrant{
+     width:68%;
+       height:auto;
+       bottom:0px;
+       right:4%;   
+   }   
+   .circles{
+
+     width:100%;
+       height:auto;
+       left:0px;
+       bottom:0%;  
+       opacity:.6;
+   }
+    
+    .logo{
+		color: #69f3faee;
+        width:20%;
+       height:auto;
+       left:7%;
+       top:13%;  
+       opacity:.6;  
+    }

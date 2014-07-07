@@ -1,3 +1,4 @@
+
 /*
 ===========================================================================
 
@@ -121,6 +122,14 @@ int trap_Cvar_VariableIntegerValue( const char *var_name )
 {
 	return syscallVM( CG_CVAR_VARIABLEINTEGERVALUE, var_name );
 }
+
+float trap_Cvar_VariableValue( const char *var_name )
+{
+	floatint_t fi;
+	fi.i = syscallVM( CG_CVAR_VARIABLEVALUE, var_name );
+	return fi.f;
+}
+
 //08.
 //return Cmd_Argc();
 int trap_Argc( void )
@@ -204,6 +213,12 @@ int trap_FS_Delete( const char *filename )
 {
 	return syscallVM( CG_FS_DELETEFILE, filename );
 }
+
+qboolean trap_FS_LoadPak( const char* pak )
+{
+	return syscallVM( CG_FS_LOADPAK, pak );
+}
+
 
 //20.
 //Cbuf_AddText(VMA(1));
@@ -695,6 +710,11 @@ void trap_GetGameState( gameState_t *gamestate )
 	syscallVM( CG_GETGAMESTATE, gamestate );
 }
 
+void trap_GetClientState( cgClientState_t *cstate )
+{
+	syscallVM( CG_GETCLIENTSTATE, cstate );
+}
+
 //93.
 //CL_GetCurrentSnapshotNumber(VMA(1), VMA(2));
 void trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
@@ -1043,13 +1063,6 @@ void trap_R_RenderToTexture( int textureid, int x, int y, int w, int h )
 	syscallVM( CG_R_RENDERTOTEXTURE, textureid, x, y, w, h );
 }
 
-//159
-//return re.GetTextureId(VMA(1));
-int trap_R_GetTextureId( const char *name )
-{
-	return syscallVM( CG_R_GETTEXTUREID, name );
-}
-
 //160.
 //re.Finish();
 void trap_R_Finish( void )
@@ -1228,17 +1241,122 @@ void trap_R_ScissorEnable( qboolean enable )
 
 void trap_R_ScissorSet( int x, int y, int w, int h )
 {
-    syscallVM( CG_R_SCISSOR_SET, x, y, w, h );
+	syscallVM( CG_R_SCISSOR_SET, x, y, w, h );
+}
+
+void trap_LAN_LoadCachedServers( void )
+{
+	syscallVM( CG_LAN_LOADCACHEDSERVERS );
+}
+
+void trap_LAN_SaveCachedServers( void )
+{
+	syscallVM( CG_LAN_SAVECACHEDSERVERS );
+}
+
+int trap_LAN_AddServer( int source, const char *name, const char *addr )
+{
+	return syscallVM( CG_LAN_ADDSERVER, source, name, addr );
+}
+
+void trap_LAN_RemoveServer( int source, const char *addr )
+{
+	syscallVM( CG_LAN_REMOVESERVER, source, addr );
+}
+
+int trap_LAN_GetPingQueueCount( void )
+{
+	return syscallVM( CG_LAN_GETPINGQUEUECOUNT );
+}
+
+void trap_LAN_ClearPing( int n )
+{
+	syscallVM( CG_LAN_CLEARPING, n );
+}
+
+void trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime )
+{
+	syscallVM( CG_LAN_GETPING, n, buf, buflen, pingtime );
+}
+
+void trap_LAN_GetPingInfo( int n, char *buf, int buflen )
+{
+	syscallVM( CG_LAN_GETPINGINFO, n, buf, buflen );
+}
+
+int trap_LAN_GetServerCount( int source )
+{
+	return syscallVM( CG_LAN_GETSERVERCOUNT, source );
+}
+
+void trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen )
+{
+	syscallVM( CG_LAN_GETSERVERADDRESSSTRING, source, n, buf, buflen );
+}
+
+void trap_LAN_GetServerInfo( int source, int n, char *buf, int buflen )
+{
+	syscallVM( CG_LAN_GETSERVERINFO, source, n, buf, buflen );
+}
+
+int trap_LAN_GetServerPing( int source, int n )
+{
+	return syscallVM( CG_LAN_GETSERVERPING, source, n );
+}
+
+void trap_LAN_MarkServerVisible( int source, int n, qboolean visible )
+{
+	syscallVM( CG_LAN_MARKSERVERVISIBLE, source, n, visible );
+}
+
+int trap_LAN_ServerIsVisible( int source, int n )
+{
+	return syscallVM( CG_LAN_SERVERISVISIBLE, source, n );
+}
+
+qboolean trap_LAN_UpdateVisiblePings( int source )
+{
+	return syscallVM( CG_LAN_UPDATEVISIBLEPINGS, source );
+}
+
+void trap_LAN_ResetPings( int n )
+{
+	syscallVM( CG_LAN_RESETPINGS, n );
+}
+
+int trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int maxLen )
+{
+	return syscallVM( CG_LAN_SERVERSTATUS, serverAddress, serverStatus, maxLen );
+}
+
+qboolean trap_LAN_ServerIsInFavoriteList( int source, int n )
+{
+	return syscallVM( CG_LAN_SERVERISINFAVORITELIST, source, n );
+}
+
+qboolean trap_GetNews( qboolean force )
+{
+	return syscallVM( CG_GETNEWS, force );
+}
+
+int trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 )
+{
+	return syscallVM( CG_LAN_COMPARESERVERS, source, sortKey, sortDir, s1, s2 );
+}
+
+void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len )
+{
+	syscallVM( CG_R_GETSHADERNAMEFROMHANDLE, shader, out, len );
 }
 
 void trap_PrepareKeyUp( void )
 {
-    syscallVM( CG_PREPAREKEYUP );
+	syscallVM( CG_PREPAREKEYUP );
 }
 
 void trap_R_SetAltShaderTokens( const char *str )
 {
-    syscallVM( CG_R_SETALTSHADERTOKENS, str );
+	syscallVM( CG_R_SETALTSHADERTOKENS, str );
 }
 
 void trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
@@ -1259,4 +1377,187 @@ void trap_S_BeginRegistration( void )
 void trap_S_EndRegistration( void )
 {
 	syscallVM( CG_S_ENDREGISTRATION );
+}
+
+void trap_Rocket_Init( void )
+{
+	syscallVM( CG_ROCKET_INIT );
+}
+
+void trap_Rocket_Shutdown( void )
+{
+	syscallVM( CG_ROCKET_SHUTDOWN );
+}
+
+void trap_Rocket_LoadDocument( const char *path )
+{
+	syscallVM( CG_ROCKET_LOADDOCUMENT, path );
+}
+
+void trap_Rocket_LoadCursor( const char *path )
+{
+	syscallVM( CG_ROCKET_LOADCURSOR, path );
+}
+
+void trap_Rocket_DocumentAction( const char *name, const char *action )
+{
+	syscallVM( CG_ROCKET_DOCUMENTACTION, name, action );
+}
+
+qboolean trap_Rocket_GetEvent( void )
+{
+	return syscallVM( CG_ROCKET_GETEVENT );
+}
+
+void trap_Rocket_DeleteEvent( void )
+{
+	syscallVM( CG_ROCKET_DELELTEEVENT );
+}
+
+void trap_Rocket_RegisterDataSource( const char *name )
+{
+	syscallVM( CG_ROCKET_REGISTERDATASOURCE, name );
+}
+
+void trap_Rocket_DSAddRow( const char *name, const char *table, const char *data )
+{
+	syscallVM( CG_ROCKET_DSADDROW, name, table, data );
+}
+
+void trap_Rocket_DSChangeRow( const char *name, const char *table, int row, const char *data )
+{
+	syscallVM( CG_ROCKET_DSCHANGEROW, name, table, row, data );
+}
+
+void trap_Rocket_DSRemoveRow( const char *name, const char *table, int row )
+{
+	syscallVM( CG_ROCKET_DSREMOVEROW, name, table, row );
+}
+
+void trap_Rocket_DSClearTable( const char *name, const char *table )
+{
+	syscallVM( CG_ROCKET_DSCLEARTABLE, name, table );
+}
+
+void trap_Rocket_SetInnerRML( const char *RML, int parseFlags )
+{
+	syscallVM( CG_ROCKET_SETINNERRML, RML, parseFlags );
+}
+
+void trap_Rocket_GetAttribute( const char *attribute, char *out, int length )
+{
+	syscallVM( CG_ROCKET_GETATTRIBUTE, attribute, out, length );
+}
+
+void trap_Rocket_SetAttribute( const char *attribute, const char *value )
+{
+	syscallVM( CG_ROCKET_SETATTRIBUTE, attribute, value );
+}
+
+void trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type )
+{
+	syscallVM( CG_ROCKET_GETPROPERTY, name, out, len, type );
+}
+
+void trap_Rocket_SetProperty( const char *property, const char *value )
+{
+	syscallVM( CG_ROCKET_SETPROPERYBYID, property, value );
+}
+void trap_Rocket_GetEventParameters( char *params, int length )
+{
+	syscallVM( CG_ROCKET_GETEVENTPARAMETERS, params, length );
+}
+void trap_Rocket_RegisterDataFormatter( const char *name )
+{
+	syscallVM( CG_ROCKET_REGISTERDATAFORMATTER, name );
+}
+
+void trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength )
+{
+	syscallVM( CG_ROCKET_DATAFORMATTERRAWDATA, handle, name, nameLength, data, dataLength );
+}
+
+void trap_Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake )
+{
+	syscallVM( CG_ROCKET_DATAFORMATTERFORMATTEDDATA, handle, data, parseQuake );
+}
+
+void trap_Rocket_RegisterElement( const char *tag )
+{
+	syscallVM( CG_ROCKET_REGISTERELEMENT, tag );
+}
+
+void trap_Rocket_SetElementDimensions( float x, float y )
+{
+	syscallVM( CG_ROCKET_SETELEMENTDIMENSIONS, PASSFLOAT( x ), PASSFLOAT( y ) );
+}
+
+void trap_Rocket_GetElementTag( char *tag, int length )
+{
+	syscallVM( CG_ROCKET_GETELEMENTTAG, tag, length );
+}
+
+void trap_Rocket_GetElementAbsoluteOffset( float *x, float *y )
+{
+	syscallVM( CG_ROCKET_GETELEMENTABSOLUTEOFFSET, x, y );
+}
+
+void trap_Rocket_QuakeToRML( const char *in, char *out, int length )
+{
+	syscallVM( CG_ROCKET_QUAKETORML, in, out, length );
+}
+
+void trap_Rocket_SetClass( const char *in, qboolean activate )
+{
+	syscallVM( CG_ROCKET_SETCLASS, in, activate );
+}
+
+void trap_Rocket_InitializeHuds( int size )
+{
+	syscallVM( CG_ROCKET_INITHUDS, size );
+}
+
+void trap_Rocket_LoadUnit( const char *path )
+{
+	syscallVM( CG_ROCKET_LOADUNIT, path );
+}
+
+void trap_Rocket_AddUnitToHud( int weapon, const char *id )
+{
+	syscallVM( CG_ROCKET_ADDUNITTOHUD, weapon, id );
+}
+
+void trap_Rocket_ShowHud( int weapon )
+{
+	syscallVM( CG_ROCKET_SHOWHUD, weapon );
+}
+
+void trap_Rocket_ClearHud( int weapon )
+{
+	syscallVM( CG_ROCKET_CLEARHUD, weapon );
+}
+
+void trap_Rocket_AddTextElement( const char *text, const char *Class, float x, float y )
+{
+	syscallVM( CG_ROCKET_ADDTEXT, text, Class, PASSFLOAT( x ), PASSFLOAT( y ) );
+}
+
+void trap_Rocket_ClearText( void )
+{
+	syscallVM( CG_ROCKET_CLEARTEXT );
+}
+
+void trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs )
+{
+	syscallVM( CG_ROCKET_REGISTERPROPERTY, name, defaultValue, inherited, force_layout, parseAs );
+}
+
+void trap_Rocket_ShowScoreboard( const char *name, qboolean show )
+{
+	syscallVM( CG_ROCKET_SHOWSCOREBOARD, name, show );
+}
+
+void trap_Rocket_SetDataSelectIndex( int index )
+{
+	syscallVM( CG_ROCKET_SETDATASELECTINDEX, index );
 }

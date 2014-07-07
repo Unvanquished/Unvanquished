@@ -599,6 +599,66 @@ void CG_PainEvent( centity_t *cent, int health )
 
 /*
 =========================
+CG_OnPlayerWeaponChange
+
+Called on weapon change
+=========================
+*/
+void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
+{
+	playerState_t *ps = &cg.snap->ps;
+
+	// Change the HUD to match the weapon. Close the old hud first
+	trap_Rocket_ShowHud( ps->weapon );
+
+	// Rebuild weapon lists if UI is in focus.
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	{
+		CG_Rocket_BuildArmourySellList( "default" );
+		CG_Rocket_BuildArmouryBuyList( "default" );
+	}
+
+}
+
+/*
+=========================
+CG_OnPlayerUpgradeChange
+
+Called on upgrade change
+=========================
+*/
+
+void CG_OnPlayerUpgradeChange( void )
+{
+	playerState_t *ps = &cg.snap->ps;
+
+	// Rebuild weapon lists if UI is in focus.
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	{
+		CG_Rocket_BuildArmourySellList( "default" );
+		CG_Rocket_BuildArmouryBuyList( "default" );
+	}
+}
+
+/*
+=========================
+CG_OnMapRestart
+
+Called whenever the map is restarted
+via map_restart
+=========================
+*/
+void CG_OnMapRestart( void )
+{
+	// if scoreboard is showing, hide it
+	CG_HideScores_f();
+
+	// hide any other menus
+	trap_Rocket_DocumentAction( "", "blurall" );
+}
+
+/*
+=========================
 CG_Level2Zap
 =========================
 */

@@ -1988,7 +1988,6 @@ static inline byte floatToSnorm8(float f) {
 
 		int           numVerts;
 		srfVert_t     *verts;
-
 		VBO_t         *vbo;
 		IBO_t         *ibo;
 
@@ -3238,11 +3237,12 @@ static inline byte floatToSnorm8(float f) {
 					 wrapType_t wrapType );
 
 	image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
+	qhandle_t RE_GenerateTexture( const byte *pic, int width, int height );
 
 	image_t *R_AllocImage( const char *name, qboolean linkIntoHashTable );
 	void    R_UploadImage( const byte **dataArray, int numLayers, int numMips, image_t *image );
 
-	int     RE_GetTextureId( const char *name );
+	void    RE_GetTextureSize( int textureID, int *width, int *height );
 
 	void    R_InitFogTable( void );
 	float   R_FogFactor( float s, float t );
@@ -3263,6 +3263,7 @@ static inline byte floatToSnorm8(float f) {
 				 RegisterShaderFlags_t flags );
 	shader_t  *R_GetShaderByHandle( qhandle_t hShader );
 	shader_t  *R_FindShaderByName( const char *name );
+	const char *RE_GetShaderNameFromHandle( qhandle_t shader );
 	void      R_InitShaders( void );
 	void      R_ShaderList_f( void );
 	void      R_ShaderExp_f( void );
@@ -3788,6 +3789,17 @@ static inline byte floatToSnorm8(float f) {
 
 	typedef struct
 	{
+		int        commandId;
+		polyVert_t *verts;
+		int        numverts;
+		int        *indexes;
+		int        numIndexes;
+		shader_t   *shader;
+		int         translation[2];
+	} poly2dIndexedCommand_t;
+
+	typedef struct
+	{
 		int       commandId;
 		qboolean  enable;
 	} scissorEnableCommand_t;
@@ -3865,6 +3877,7 @@ static inline byte floatToSnorm8(float f) {
 	  RC_SET_COLOR,
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
+	  RC_2DPOLYSINDEXED,
 	  RC_SCISSORENABLE,
 	  RC_SCISSORSET,
 	  RC_ROTATED_PIC,
@@ -3899,6 +3912,7 @@ static inline byte floatToSnorm8(float f) {
 
 		srfPoly_t           *polys; //[MAX_POLYS];
 		polyVert_t          *polyVerts; //[MAX_POLYVERTS];
+		int                 *polyIndexes; //[MAX_POLYVERTS];
 		srfPolyBuffer_t     *polybuffers; //[MAX_POLYS];
 
 		decalProjector_t    decalProjectors[ MAX_DECAL_PROJECTORS ];
@@ -3931,6 +3945,7 @@ static inline byte floatToSnorm8(float f) {
 	    float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
 	    int gradientType );
 	void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
+	void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader );
 	void                                RE_ScissorEnable( qboolean enable );
 	void                                RE_ScissorSet( int x, int y, int w, int h );
 

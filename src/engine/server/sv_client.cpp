@@ -111,7 +111,7 @@ SV_DirectConnect
 A "connect" OOB command has been received
 ==================
 */
-void SV_DirectConnect( netadr_t from )
+void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 {
 	char                userinfo[ MAX_INFO_STRING ];
 	int                 i;
@@ -132,9 +132,14 @@ void SV_DirectConnect( netadr_t from )
 	const char          *country = NULL;
 #endif
 
+	if ( args.Argc() < 2 )
+	{
+		return;
+	}
+
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
 
-	Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
+	Q_strncpyz( userinfo, args.Argv(1).c_str(), sizeof( userinfo ) );
 
 	// DHM - Nerve :: Update Server allows any protocol to connect
 	// NOTE TTimo: but we might need to store the protocol around for potential non http/ftp clients
@@ -733,7 +738,7 @@ SV_StopDownload_f
 Abort a download if in progress
 ==================
 */
-void SV_StopDownload_f( client_t *cl )
+void SV_StopDownload_f( client_t *cl, const Cmd::Args& )
 {
 	if ( *cl->downloadName )
 	{
@@ -750,7 +755,7 @@ SV_DoneDownload_f
 Downloads are finished
 ==================
 */
-void SV_DoneDownload_f( client_t *cl )
+void SV_DoneDownload_f( client_t *cl, const Cmd::Args& )
 {
 	if ( cl->state == CS_ACTIVE )
 	{
@@ -770,9 +775,12 @@ The argument will be the last acknowledged block from the client, it should be
 the same as cl->downloadClientBlock
 ==================
 */
-void SV_NextDownload_f( client_t *cl )
+void SV_NextDownload_f( client_t *cl, const Cmd::Args& args )
 {
-	int block = atoi( Cmd_Argv( 1 ) );
+	int block;
+	if (args.Argc() < 2 or not Str::ParseInt(block, args.Argv(1))) {
+		return;
+	}
 
 	if ( block == cl->downloadClientBlock )
 	{
@@ -802,20 +810,24 @@ void SV_NextDownload_f( client_t *cl )
 SV_BeginDownload_f
 ==================
 */
-void SV_BeginDownload_f( client_t *cl )
+void SV_BeginDownload_f( client_t *cl, const Cmd::Args& args )
 {
 	// Kill any existing download
 	SV_CloseDownload( cl );
 
+	if (args.Argc() < 2) {
+		return;
+	}
+
 	//bani - stop us from printing dupe messages
-	if ( strcmp( cl->downloadName, Cmd_Argv( 1 ) ) )
+	if (args.Argv(1) != cl->downloadName)
 	{
 		cl->downloadnotify = DLNOTIFY_ALL;
 	}
 
 	// cl->downloadName is non-zero now, SV_WriteDownloadToClient will see this and open
 	// the file itself
-	Q_strncpyz( cl->downloadName, Cmd_Argv( 1 ), sizeof( cl->downloadName ) );
+	Q_strncpyz( cl->downloadName, args.Argv(1).c_str(), sizeof( cl->downloadName ) );
 }
 
 /*
@@ -823,9 +835,13 @@ void SV_BeginDownload_f( client_t *cl )
 SV_WWWDownload_f
 ==================
 */
-void SV_WWWDownload_f( client_t *cl )
+void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 {
-	char *subcmd = Cmd_Argv( 1 );
+	if (args.Argc() < 2) {
+		return;
+	}
+
+	const char *subcmd = args.Argv(1).c_str();
 
 	// only accept wwwdl commands for clients which we first flagged as wwwdl ourselves
 	if ( !cl->bWWWDl )
@@ -1014,68 +1030,56 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			}
 			std::string pakName = name + "_" + version + ".pk3";
 
-			if ( cl->bDlOK )
+			if ( !cl->bFallback )
 			{
-				if ( !cl->bFallback )
+				if ( success )
 				{
-					if ( success )
+					Q_strncpyz( cl->downloadURL, va("%s/%s", sv_wwwBaseURL->string, pakName.c_str()),
+								sizeof( cl->downloadURL ) );
+
+					//bani - prevent multiple download notifications
+					if ( cl->downloadnotify & DLNOTIFY_REDIRECT )
 					{
-						Q_strncpyz( cl->downloadURL, va("%s/%s", sv_wwwBaseURL->string, pakName.c_str()),
-						            sizeof( cl->downloadURL ) );
-
-						//bani - prevent multiple download notifications
-						if ( cl->downloadnotify & DLNOTIFY_REDIRECT )
-						{
-							cl->downloadnotify &= ~DLNOTIFY_REDIRECT;
-							Com_Printf(_( "Redirecting client '%s' to %s\n"), cl->name, cl->downloadURL );
-						}
-
-						// once cl->downloadName is set (and possibly we have our listening socket), let the client know
-						cl->bWWWDl = qtrue;
-						MSG_WriteByte( msg, svc_download );
-						MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
-						// compatible with legacy svc_download protocol: [size] [size bytes]
-						// download URL, size of the download file, download flags
-						MSG_WriteString( msg, cl->downloadURL );
-						MSG_WriteLong( msg, downloadSize );
-						download_flag = 0;
-
-						if ( sv_wwwDlDisconnected->integer )
-						{
-							download_flag |= ( 1 << DL_FLAG_DISCON );
-						}
-
-						MSG_WriteLong( msg, download_flag );  // flags
-						return;
+						cl->downloadnotify &= ~DLNOTIFY_REDIRECT;
+						Com_Printf(_( "Redirecting client '%s' to %s\n"), cl->name, cl->downloadURL );
 					}
-					else
+
+					// once cl->downloadName is set (and possibly we have our listening socket), let the client know
+					cl->bWWWDl = qtrue;
+					MSG_WriteByte( msg, svc_download );
+					MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
+					// compatible with legacy svc_download protocol: [size] [size bytes]
+					// download URL, size of the download file, download flags
+					MSG_WriteString( msg, cl->downloadURL );
+					MSG_WriteLong( msg, downloadSize );
+					download_flag = 0;
+
+					if ( sv_wwwDlDisconnected->integer )
 					{
-						// that should NOT happen - even regular download would fail then anyway
-						Com_Logf(LOG_ERROR, _( "Client '%s': couldn't extract file size for %s"), cl->name, cl->downloadName );
+						download_flag |= ( 1 << DL_FLAG_DISCON );
 					}
+
+					MSG_WriteLong( msg, download_flag );  // flags
+					return;
 				}
 				else
 				{
-					cl->bFallback = qfalse;
-					cl->bWWWDl = qtrue;
-
-					if ( SV_CheckFallbackURL( cl, pakName.c_str(), msg ) )
-					{
-						return;
-					}
-
-					Com_Logf(LOG_ERROR, _( "Client '%s': falling back to regular downloading for failed file %s"), cl->name,
-					            cl->downloadName );
+					// that should NOT happen - even regular download would fail then anyway
+					Com_Logf(LOG_ERROR, _( "Client '%s': couldn't extract file size for %s"), cl->name, cl->downloadName );
 				}
 			}
 			else
 			{
+				cl->bFallback = qfalse;
+				cl->bWWWDl = qtrue;
+
 				if ( SV_CheckFallbackURL( cl, pakName.c_str(), msg ) )
 				{
 					return;
 				}
 
-				Com_Printf(_( "Client '%s' is not configured for www download\n"), cl->name );
+				Com_Logf(LOG_ERROR, _( "Client '%s': falling back to regular downloading for failed file %s"), cl->name,
+							cl->downloadName );
 			}
 		}
 
@@ -1249,7 +1253,7 @@ SV_Disconnect_f
 The client is going to disconnect, so remove the connection immediately  FIXME: move to game?
 =================
 */
-static void SV_Disconnect_f( client_t *cl )
+static void SV_Disconnect_f( client_t *cl, const Cmd::Args& )
 {
 	SV_DropClient( cl, _("disconnected") );
 }
@@ -1354,21 +1358,6 @@ void SV_UserinfoChanged( client_t *cl )
 		Info_SetValueForKey( cl->userinfo, "geoip", NULL, qfalse );
 #endif
 	}
-
-	// TTimo
-	// download prefs of the client
-	val = Info_ValueForKey( cl->userinfo, "cl_wwwDownload" );
-	cl->bDlOK = qfalse;
-
-	if ( strlen( val ) )
-	{
-		i = atoi( val );
-
-		if ( i != 0 )
-		{
-			cl->bDlOK = qtrue;
-		}
-	}
 }
 
 /*
@@ -1376,10 +1365,13 @@ void SV_UserinfoChanged( client_t *cl )
 SV_UpdateUserinfo_f
 ==================
 */
-static void SV_UpdateUserinfo_f( client_t *cl )
+static void SV_UpdateUserinfo_f( client_t *cl, const Cmd::Args& args )
 {
-	//Q_strncpyz( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) );
-	Q_strncpyz( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) ); // FIXME QUOTING INFO
+	if (args.Argc() < 2) {
+		return;
+	}
+
+	Q_strncpyz(cl->userinfo, args.Argv(1).c_str(), sizeof(cl->userinfo)); // FIXME QUOTING INFO
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides
@@ -1406,17 +1398,20 @@ void SV_UpdateVoipIgnore( client_t *cl, const char *idstr, qboolean ignore )
 SV_Voip_f
 ==================
 */
-static void SV_Voip_f( client_t *cl )
+static void SV_Voip_f( client_t *cl, const Cmd::Args& args )
 {
-	const char *cmd = Cmd_Argv( 1 );
-
-	if ( strcmp( cmd, "ignore" ) == 0 )
-	{
-		SV_UpdateVoipIgnore( cl, Cmd_Argv( 2 ), qtrue );
+	if (args.Argc() < 2) {
+		return;
 	}
-	else if ( strcmp( cmd, "unignore" ) == 0 )
+	const char *cmd = args.Argv(1).c_str();
+
+	if ( strcmp( cmd, "ignore" ) == 0 and args.Argc() >= 3)
 	{
-		SV_UpdateVoipIgnore( cl, Cmd_Argv( 2 ), qfalse );
+		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), qtrue );
+	}
+	else if ( strcmp( cmd, "unignore" ) == 0 and args.Argc() >= 3)
+	{
+		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), qfalse );
 	}
 	else if ( strcmp( cmd, "muteall" ) == 0 )
 	{
@@ -1433,7 +1428,7 @@ static void SV_Voip_f( client_t *cl )
 typedef struct
 {
 	const char *name;
-	void ( *func )( client_t *cl );
+	void ( *func )( client_t *cl, const Cmd::Args& args );
 	qboolean allowedpostmapchange;
 } ucmd_t;
 
@@ -1449,7 +1444,7 @@ static ucmd_t ucmds[] =
 	{ "voip",       SV_Voip_f,            qfalse },
 #endif
 	{ "wwwdl",      SV_WWWDownload_f,     qfalse },
-	{ NULL,         NULL }
+	{ NULL,         NULL, qfalse}
 };
 
 /*
@@ -1460,51 +1455,25 @@ Also called by bot code
 ==================
 */
 
-// The value below is how many extra characters we reserve for every instance of '$' in a
-// ut_radio, say, or similar client command.  Some jump maps have very long $location
-// strings.  On these maps, it may be possible to crash the server if a carefully-crafted
-// client command is sent.  The constant below may require further tweaking.  For example,
-// a text of "$location" would have a total computed length of 25, because "$location" has
-// 9 characters, and we increment that by 16 for the '$'.
-#define STRLEN_INCREMENT_PER_DOLLAR_VAR 16
-
-// Don't allow more than this many dollared-strings (e.g. $location) in a client command
-// such as ut_radio and say.  Keep this value low for safety, in case some things like
-// $location expand to very large strings in some maps.  There is really no reason to have
-// more than 6 dollar vars (such as $weapon or $location) in things you tell other people.
-#define MAX_DOLLAR_VARS 6
-
-// When a radio text (as in "ut_radio 1 1 text") is sent, weird things start to happen
-// when the text gets to be greater than 118 in length.  When the text is really large the
-// server will crash.  There is an in-between gray zone above 118, but I don't really want
-// to go there.  This is the maximum length of radio text that can be sent, taking into
-// account increments due to presence of '$'.
-#define MAX_RADIO_STRLEN 118
-
-// Don't allow more than this text length in a command such as say.  I pulled this
-// value out of my ass because I don't really know exactly when problems start to happen.
-// This value takes into account increments due to the presence of '$'.
-#define MAX_SAY_STRLEN 256
-
 void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qboolean premaprestart )
 {
 	ucmd_t   *u;
 	qboolean bProcessed = qfalse;
 
 	Com_DPrintf( "EXCL: %s\n", s );
-	Cmd_TokenizeString( s );
+	Cmd::Args args(s);
 
-	// see if it is a server level command
-	for ( u = ucmds; u->name; u++ )
-	{
-		if ( !strcmp( Cmd_Argv( 0 ), u->name ) )
-		{
-			if ( premaprestart && !u->allowedpostmapchange )
-			{
+	if (args.Argc() == 0) {
+		return;
+	}
+
+	for (u = ucmds; u->name; u++) {
+		if (args.Argv(0) == u->name) {
+			if (premaprestart && !u->allowedpostmapchange) {
 				continue;
 			}
 
-			u->func( cl );
+			u->func(cl, args);
 			bProcessed = qtrue;
 			break;
 		}
@@ -1520,7 +1489,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 	}
 	else if ( !bProcessed )
 	{
-		Com_DPrintf( "client text ignored for %s^7: %s\n", cl->name, Cmd_Argv( 0 ) );
+		Com_DPrintf( "client text ignored for %s^7: %s\n", cl->name, args.Argv(0).c_str());
 	}
 }
 
