@@ -549,11 +549,16 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		{
 			glConfig.vidWidth = desktopMode.w;
 			glConfig.vidHeight = desktopMode.h;
+			Cvar_Set( "r_customwidth", va("%d", desktopMode.w ) );
+			Cvar_Set( "r_customheight", va("%d", desktopMode.h ) );
 		}
 		else
 		{
 			glConfig.vidWidth = 640;
 			glConfig.vidHeight = 480;
+			Cvar_Set( "r_customwidth", "640" );
+			Cvar_Set( "r_customheight", "480" );
+
 			ri.Printf( PRINT_ALL, "Cannot determine display resolution, assuming 640x480\n" );
 		}
 

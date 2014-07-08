@@ -858,7 +858,7 @@ static void R_LoadVisibility( lump_t *l )
 				// retrieve vis data for the cluster
 				index = ( ( j << 3 ) | k );
 				src2 = ( long * ) ( s_worldData.vis + index * s_worldData.clusterBytes );
-				
+
 				// OR this vis data with the current cluster's
 				for ( m = 0; m < ( s_worldData.clusterBytes / sizeof( long ) ); m++ )
 				{
@@ -3221,7 +3221,6 @@ static void R_CreateWorldVBO( void )
 		}
 	}
 
-	// create vbo and ibo
 	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
 	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR
 	                                 );
@@ -3352,7 +3351,7 @@ static void R_CreateWorldVBO( void )
 			VectorCopy( bounds[ 0 ], vboSurf->bounds[ 0 ] );
 			VectorCopy( bounds[ 1 ], vboSurf->bounds[ 1 ] );
 			SphereFromBounds( vboSurf->bounds[ 0 ], vboSurf->bounds[ 1 ], vboSurf->origin, &vboSurf->radius );
-	
+
 			mergedSurf->data = ( surfaceType_t * ) vboSurf;
 			mergedSurf->fogIndex = surf1->fogIndex;
 			mergedSurf->shader = surf1->shader;
@@ -4252,7 +4251,7 @@ void R_LoadLightGrid( lump_t *l )
 					VectorScale( ambientColor, scale, ambientColor );
 					VectorScale( directedColor, scale, directedColor );
 					VectorScale( direction, scale, direction );
-					
+
 					gridPoint1->ambient[ 0 ] = floatToUnorm8( ambientColor[ 0 ] );
 					gridPoint1->ambient[ 1 ] = floatToUnorm8( ambientColor[ 1 ] );
 					gridPoint1->ambient[ 2 ] = floatToUnorm8( ambientColor[ 2 ] );

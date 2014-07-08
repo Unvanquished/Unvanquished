@@ -1427,8 +1427,6 @@ void CL_ShutdownAll( void )
 	DL_Shutdown();
 	// shutdown CGame
 	CL_ShutdownCGame();
-	// shutdown UI
-	CL_ShutdownUI();
 
 	// Clear Faces
 	if ( re.UnregisterFont && cls.consoleFont )
@@ -1655,9 +1653,9 @@ void CL_Disconnect( qboolean showMainMenu )
 		clc.demofile = 0;
 	}
 
-	if ( uivm && showMainMenu )
+	if ( cgvm && showMainMenu )
 	{
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
+		Rocket_DocumentAction( "main", "show" );
 	}
 
 	SCR_StopCinematic();
@@ -1699,14 +1697,14 @@ void CL_Disconnect( qboolean showMainMenu )
 	// XreaL END
 
 	// show_bug.cgi?id=589
-	// don't try a restart if uivm is NULL, as we might be in the middle of a restart already
-	if ( uivm && cls.state > CA_DISCONNECTED )
+	// don't try a restart if rocket is NULL, as we might be in the middle of a restart already
+	if ( cgvm && cls.state > CA_DISCONNECTED )
 	{
 		// restart the UI
 		cls.state = CA_DISCONNECTED;
 
 		// shutdown the UI
-		CL_ShutdownUI();
+		Rocket_Shutdown();
 
 		// init the UI
 		CL_InitUI();
@@ -2186,8 +2184,6 @@ void CL_Vid_Restart_f( void )
 
 	// don't let them loop during the restart
 	Audio::StopAllSounds();
-	// shutdown the UI
-	CL_ShutdownUI();
 	// shutdown the CGame
 	CL_ShutdownCGame();
 	// clear the font cache
@@ -2243,9 +2239,7 @@ Restart the ui subsystem
 void CL_UI_Restart_f( void )
 {
 	// NERVE - SMF
-	// shutdown the UI
-	CL_ShutdownUI();
-
+	Rocket_Shutdown();
 	// init the UI
 	CL_InitUI();
 }
@@ -2278,12 +2272,10 @@ void CL_Snd_Restart_f( void )
 
 	if( !cls.cgameStarted )
 	{
-		CL_ShutdownUI();
 		if (!Audio::Init()) {
 			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
 		}
 		//TODO S_BeginRegistration()
-		CL_InitUI();
 	}
 	else
 	{
@@ -2644,7 +2636,7 @@ void CL_InitDownloads( void )
 		if ( *clc.downloadList )
 		{
 			// if autodownloading is not enabled on the server
-			cls.state = CA_CONNECTED;
+			cls.state = CA_DOWNLOADING;
 			CL_NextDownload();
 			return;
 		}
@@ -3621,13 +3613,6 @@ void CL_Frame( int msec )
 		return;
 	}
 
-	if ( uivm && cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
-	{
-		// if disconnected, bring up the menu
-		//S_StopAllSounds();
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
-	}
-
 	// if recording an avi, lock to a fixed fps
 	if ( CL_VideoRecording() && cl_aviFrameRate->integer && msec )
 	{
@@ -3670,7 +3655,7 @@ void CL_Frame( int msec )
 	CL_CheckTimeout();
 
 	// wwwdl download may survive a server disconnect
-	if ( ( cls.state == CA_CONNECTED && clc.bWWWDl ) || cls.bWWWDlDisconnected )
+	if ( ( cls.state == CA_DOWNLOADING && clc.bWWWDl ) || cls.bWWWDlDisconnected )
 	{
 		CL_WWWDownload();
 	}
@@ -3842,6 +3827,7 @@ void CL_StartHunkUsers( void )
 	if ( !cls.uiStarted )
 	{
 		cls.uiStarted = qtrue;
+
 		CL_InitUI();
 	}
 }
@@ -4214,7 +4200,6 @@ void CL_Shutdown( void )
 	}
 
 	Com_DPrintf( "----- CL_Shutdown -----\n" );
-
 	if ( recursive )
 	{
 		printf( "recursive shutdown\n" );
@@ -4231,7 +4216,6 @@ void CL_Shutdown( void )
 	CL_Disconnect( qtrue );
 
 	CL_ShutdownCGame();
-	CL_ShutdownUI();
 
 	Audio::Shutdown();
 	DL_Shutdown();

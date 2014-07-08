@@ -99,7 +99,17 @@ void Cvar_VariableStringBuffer(const char* name, char* buffer, int bufsize) {
 
 /*
 ============
-Cvar_VariableStringBuffer
+Cvar_VariableString
+============
+*/
+char* Cvar_LatchedVariableString(const char* name) {
+    cvar_t* var = Cvar_FindVar(name);
+    return var && var->latchedString ? var->latchedString : (char*)"";
+}
+
+/*
+============
+Cvar_LatchedVariableStringBuffer
 ============
 */
 void Cvar_LatchedVariableStringBuffer(const char* name, char* buffer, int bufsize) {
