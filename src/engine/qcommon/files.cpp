@@ -531,7 +531,7 @@ const char* FS_LoadedPaks()
 			continue;
 		if (info[0])
 			Q_strcat(info, sizeof(info), " ");
-		Q_strcat(info, sizeof(info), FS::MakePakName(x.name, x.version, x.checksum).c_str());
+		Q_strcat(info, sizeof(info), FS::MakePakName(x.name, x.version, x.realChecksum).c_str());
 	}
 	return info;
 }
