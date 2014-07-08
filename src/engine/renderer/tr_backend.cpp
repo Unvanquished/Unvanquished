@@ -6303,13 +6303,13 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
 		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 
-		tess.texCoords[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].st[ 0 ];
-		tess.texCoords[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].st[ 1 ];
+		tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
+		tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
 
-		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ];
+		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ];
+		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ];
+		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ];
 		tess.numVertexes++;
 	}
 
