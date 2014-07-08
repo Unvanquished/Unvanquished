@@ -1,0 +1,56 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+
+		<style>
+
+			/* TODO: find out why this is a subclass */
+			.levelshot {
+				width: 100%;
+			}
+
+			levelshotbox {
+				display:block;
+
+				/* Approx measurements.  Are all mapshots in 4:3? */
+				width: 38em;
+				height: 30em;
+			}
+
+			button {
+				width: 10em;
+			}
+
+		</style>
+
+	</head>
+	<body id="callvote_map" template="window" style="width: 40em; margin: 10%;" onShow='buildDS mapList' >
+		<h1> Change map </h1>
+
+
+		<form onsubmit='execForm "$action$ $map$"; hide'>
+			<row>
+				<select cvar="ui_dialogCvar2" name="action">
+					<option value="callvote nextmap">Vote: change nextmap</option>
+					<option value="callvote map">Vote: set current map</option>
+					<option value="map">Set current map (host) </option>
+				</select>
+				<h3> Method </h3>
+			</row>
+			<row>
+				<dataselect source="mapList.default" fields="name" name="map" cvar="ui_dialogCvar1"/>
+				<h3> Map </h3>
+			</row>
+
+			<input type="submit"> <button> Perform Action </button>  </input>
+
+		</form>
+
+		<levelshotbox>
+			<levelshot />
+		</levelshotbox>
+
+	</body>
+
+</rml>
