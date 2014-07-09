@@ -1405,7 +1405,7 @@ static void SV_Voip_f( client_t *cl, const Cmd::Args& args )
 	}
 	const char *cmd = args.Argv(1).c_str();
 
-	if ( strcmp( cmd, "ignore" ) == 0 and args.Argc >= 3)
+	if ( strcmp( cmd, "ignore" ) == 0 and args.Argc() >= 3)
 	{
 		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), qtrue );
 	}
