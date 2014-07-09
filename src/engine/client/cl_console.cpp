@@ -207,17 +207,6 @@ static INLINE void Con_Clear( void )
 }
 
 /*
-===================
-Con_ToggleMenu_f
-===================
-*/
-void Con_ToggleMenu_f( void )
-{
-	CL_KeyEvent( K_ESCAPE, qtrue, Sys_Milliseconds() );
-	CL_KeyEvent( K_ESCAPE, qfalse, Sys_Milliseconds() );
-}
-
-/*
 ================
 Con_Clear_f
 ================
@@ -540,7 +529,6 @@ void Con_Init( void )
 	g_consoleField.SetWidth(g_console_field_width);
 
 	Cmd_AddCommand( "toggleConsole", Con_ToggleConsole_f );
-	Cmd_AddCommand( "toggleMenu", Con_ToggleMenu_f );
 	Cmd_AddCommand( "clear", Con_Clear_f );
 	Cmd_AddCommand( "condump", Con_Dump_f );
 	Cmd_AddCommand( "search", Con_Search_f );
@@ -633,7 +621,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
 		Cmd_TokenizeString( Cmd::Escape(text).c_str() );
-		CL_GameConsoleText();
+		Rocket_AddConsoleText();
 		Cmd_RestoreCmdContext();
 	}
 

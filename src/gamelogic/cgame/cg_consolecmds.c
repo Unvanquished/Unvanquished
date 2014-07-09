@@ -64,66 +64,10 @@ static void CG_Viewpos_f( void )
 	           ( int ) cg.refdefViewAngles[ YAW ] );
 }
 
-qboolean CG_RequestScores( void )
+void CG_RequestScores( void )
 {
-	if ( cg.scoresRequestTime + 2000 < cg.time )
-	{
-		// the scores are more than two seconds out of data,
-		// so request new ones
 		cg.scoresRequestTime = cg.time;
 		trap_SendClientCommand( "score\n" );
-
-		return qtrue;
-	}
-	else
-	{
-		return qfalse;
-	}
-}
-
-extern menuDef_t *menuScoreboard;
-
-static void CG_scrollScoresDown_f( void )
-{
-	if ( menuScoreboard && cg.scoreBoardShowing )
-	{
-		Menu_ScrollFeeder( menuScoreboard, FEEDER_ALIENTEAM_LIST, qtrue );
-		Menu_ScrollFeeder( menuScoreboard, FEEDER_HUMANTEAM_LIST, qtrue );
-	}
-}
-
-static void CG_scrollScoresUp_f( void )
-{
-	if ( menuScoreboard && cg.scoreBoardShowing )
-	{
-		Menu_ScrollFeeder( menuScoreboard, FEEDER_ALIENTEAM_LIST, qfalse );
-		Menu_ScrollFeeder( menuScoreboard, FEEDER_HUMANTEAM_LIST, qfalse );
-	}
-}
-
-static void CG_ScoresDown_f( void )
-{
-	if ( !cg.showScores )
-	{
-		Menu_SetFeederSelection( menuScoreboard, FEEDER_ALIENTEAM_LIST, 0, NULL );
-		Menu_SetFeederSelection( menuScoreboard, FEEDER_HUMANTEAM_LIST, 0, NULL );
-		trap_PrepareKeyUp();
-		cg.showScores = qtrue;
-	}
-	else
-	{
-		cg.showScores = qfalse;
-		cg.numScores = 0;
-	}
-}
-
-static void CG_ScoresUp_f( void )
-{
-	if ( cg.showScores )
-	{
-		cg.showScores = qfalse;
-		cg.scoreFadeTime = cg.time;
-	}
 }
 
 void CG_ClientList_f( void )
@@ -166,28 +110,10 @@ void CG_ClientList_f( void )
 	Com_Printf(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
 }
 
-static void CG_ReloadHUD_f( void )
+static void CG_ReloadHud_f( void )
 {
-	char       buff[ 1024 ];
-	const char *hudSet;
-	UI_InitMemory();
-	String_Init();
-	Menu_Reset();
-
-	trap_Cvar_VariableStringBuffer( "cg_hudFiles", buff, sizeof( buff ) );
-	hudSet = buff;
-
-	if ( !cg_hudFilesEnable.integer || hudSet[ 0 ] == '\0' )
-	{
-		hudSet = "ui/hud.txt";
-	}
-
-	CG_LoadMenus( hudSet );
-}
-
-static void CG_UIMenu_f( void )
-{
-	trap_SendConsoleCommand( va( "menu %s\n", Quote( CG_Argv( 1 ) ) ) );
+	CG_Rocket_LoadHuds();
+	CG_OnPlayerWeaponChange( (weapon_t) cg.snap->ps.weapon );
 }
 
 static void CG_CompleteClass( void )
@@ -330,7 +256,7 @@ static void CG_CompleteGive( void )
 	unsigned               i = 0;
 	static const char give[][ 12 ] =
 	{
-		"all", "health", "funds", "stamina", "poison", "gas", "ammo", "momentum", "bp"
+		"all", "health", "funds", "stamina", "poison", "fuel", "ammo", "momentum", "bp"
 	};
 
 	for( i = 0; i < ARRAY_LEN( give ); i++ )
@@ -407,6 +333,59 @@ static void CG_TestCGrade_f( void )
 	cgs.gameGradingModels[ 0 ] = -1;
 }
 
+static void CG_MessageAdmin_f( void )
+{
+	cg.sayType = SAY_TYPE_ADMIN;
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+}
+
+static void CG_MessageCommand_f( void )
+{
+	cg.sayType = SAY_TYPE_COMMAND;
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+}
+
+static void CG_MessageTeam_f( void )
+{
+	cg.sayType = SAY_TYPE_TEAM;
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+}
+
+static void CG_MessagePublic_f( void )
+{
+	cg.sayType = SAY_TYPE_PUBLIC;
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+}
+
+static void CG_ToggleMenu_f( void )
+{
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_INGAME_MENU ].id, "show" );
+}
+
+// FIXME: Don't hardcode scoreboard ID
+void CG_ShowScores_f( void )
+{
+	if ( !cg.showScores )
+	{
+		CG_RequestScores();
+		trap_PrepareKeyUp();
+		cg.showScores = qtrue;
+	}
+	else
+	{
+		cg.showScores = qfalse;
+		cg.scoreBoardShowing = qfalse;
+	}
+}
+
+void CG_HideScores_f( void )
+{
+	trap_Rocket_ShowScoreboard( "scoreboard", qfalse );
+	cg.showScores = qfalse;
+	cg.scoreBoardShowing = qfalse;
+}
+
+
 static const struct
 {
 	const char *cmd;
@@ -414,8 +393,8 @@ static const struct
 	void ( *completer )( void );
 } commands[] =
 {
-	{ "+scores",          CG_ScoresDown_f,         0                },
-	{ "-scores",          CG_ScoresUp_f,           0                },
+	{ "+scores",           CG_ShowScores_f,        0                },
+	{ "-scores",           CG_HideScores_f,        0                },
 	{ "build",            0,                       CG_CompleteBuild },
 	{ "buy",              0,                       CG_CompleteBuy   },
 	{ "callteamvote",     0,                       CG_CompleteTeamVote },
@@ -440,6 +419,10 @@ static const struct
 	{ "kill",             0,                       0                },
 	{ "lcp",              CG_CenterPrint_f,        0                },
 	{ "m",                0,                       CG_CompleteName  },
+	{ "message_admin",    CG_MessageAdmin_f,       0                },
+	{ "message_command",  CG_MessageCommand_f,     0                },
+	{ "message_public",   CG_MessagePublic_f,      0                },
+	{ "message_team",     CG_MessageTeam_f,        0                },
 	{ "mt",               0,                       CG_CompleteName  },
 	{ "nextframe",        CG_TestModelNextFrame_f, 0                },
 	{ "nextskin",         CG_TestModelNextSkin_f,  0                },
@@ -448,13 +431,12 @@ static const struct
 	{ "prevframe",        CG_TestModelPrevFrame_f, 0                },
 	{ "prevskin",         CG_TestModelPrevSkin_f,  0                },
 	{ "reload",           0,                       0                },
-	{ "reloadhud",        CG_ReloadHUD_f,          0                },
+	{ "reloadHud",        CG_ReloadHud_f,          0                },
 	{ "say",              0,                       0                },
 	{ "say_team",         0,                       0                },
-	{ "scoresDown",       CG_scrollScoresDown_f,   0                },
-	{ "scoresUp",         CG_scrollScoresUp_f,     0                },
 	{ "sell",             0,                       CG_CompleteSell  },
 	{ "setviewpos",       0,                       0                },
+	{ "showScores",       CG_ShowScores_f,         0                },
 	{ "sizedown",         CG_SizeDown_f,           0                },
 	{ "sizeup",           CG_SizeUp_f,             0                },
 	{ "team",             0,                       0                },
@@ -464,12 +446,7 @@ static const struct
 	{ "testmodel",        CG_TestModel_f,          0                },
 	{ "testPS",           CG_TestPS_f,             0                },
 	{ "testTS",           CG_TestTS_f,             0                },
-	{ "ui_menu",          CG_UIMenu_f,             0                },
-	{ "ui_messagemode",   0,                       0                },
-	{ "ui_messagemode2",  0,                       0                },
-	{ "ui_messagemode3",  0,                       0                },
-	{ "ui_messagemode4",  0,                       0                },
-	{ "ui_messagemodeec", 0,                       0                },
+	{ "toggleMenu",       CG_ToggleMenu_f,         0                },
 	{ "unignore",         0,                       CG_CompleteName  },
 	{ "viewpos",          CG_Viewpos_f,            0                },
 	{ "vote",             0,                       0                },

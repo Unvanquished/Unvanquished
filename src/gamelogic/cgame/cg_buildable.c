@@ -1138,33 +1138,6 @@ void CG_GhostBuildable( int buildableInfo )
 	                     ? cgs.media.greenBuildShader
 	                     : cgs.media.redBuildShader;
 
-	// Draw predicted RGS efficiency
-	// TODO: Add fancy display for predicted RGS efficiency
-	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
-	{
-		char color;
-		int  delta = ps->stats[ STAT_PREDICTION ];
-
-		if ( delta < 0 )
-		{
-			color = COLOR_RED;
-		}
-		else if ( delta < 10 )
-		{
-			color = COLOR_ORANGE;
-		}
-		else if ( delta < 50 )
-		{
-			color = COLOR_YELLOW;
-		}
-		else
-		{
-			color = COLOR_GREEN;
-		}
-
-		CG_CenterPrint(va("^%c%+d%%", color, delta), 200, GIANTCHAR_WIDTH * 4 );
-	}
-
 	//rescale the model
 	scale = BG_BuildableModelConfig( buildable )->modelScale;
 
@@ -1306,7 +1279,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 			trap_R_SetColor( backColour );
 
-			CG_AlignText( &rect, text, scale, 0, 0, ALIGN_CENTER, VALIGN_CENTER, &tx, &ty );
 			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2, ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ), cgs.media.whiteShader );
 
 			trap_R_SetColor( NULL );
@@ -1316,7 +1288,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 			colour[2] = bs->foreColor[2];
 			colour[3] = bs->foreColor[3];
 
-			UI_Text_Paint( tx, ty, scale, colour, text, 0, ITEM_TEXTSTYLE_PLAIN );
+			// TODO: Draw text
 		}
 	}
 }
@@ -1936,7 +1908,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		{
 			float  barX, barY, barW, barH;
 			vec4_t barColor;
-			float levelRate  = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
+			//float levelRate  = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
 
 			barX = picX + pad;
 			barY = picY - ( 0.5f * picH ) + pad;
@@ -1950,9 +1922,10 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
 			trap_R_SetColor( NULL );
 
-			UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
-			               va("Mines %.1f BP/min", mineEfficiencyFrac * levelRate), 0,
-			               ITEM_TEXTSTYLE_PLAIN );
+			// TODO: Draw text using libRocket
+			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
+			//               va("Mines %.1f BP/min", mineEfficiencyFrac * levelRate), 0,
+			//               ITEM_TEXTSTYLE_PLAIN );
 		}
 
 		// draw stored BP
@@ -1960,7 +1933,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		{
 			float  barX, barY, barW, barH;
 			vec4_t barColor;
-			float buildPoints = (float)cg.predictedPlayerState.persistant[ PERS_BP ];
+			//float buildPoints = (float)cg.predictedPlayerState.persistant[ PERS_BP ];
 
 			barX = picX + ( showMineEfficiency ? ( ( 0.5f * picW ) + ( 0.5f * pad ) ) : pad );
 			barY = picY - ( 0.5f * picH ) + pad;
@@ -1975,9 +1948,10 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
 			trap_R_SetColor( NULL );
 
-			UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
-			               va("Stores %.0f BP", storedBPFrac * buildPoints ), 0,
-			               ITEM_TEXTSTYLE_PLAIN );
+			// TODO: Draw text using libRocket
+			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
+			//               va("Stores %.0f BP", storedBPFrac * buildPoints ), 0,
+			//               ITEM_TEXTSTYLE_PLAIN );
 		}
 
 		// draw separator
@@ -2245,7 +2219,7 @@ void CG_DrawBuildableStatus( void )
 
 	if ( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK )
 	{
-		CG_GhostBuildableStatus( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] );
+// 		CG_GhostBuildableStatus( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] );
         }
 }
 

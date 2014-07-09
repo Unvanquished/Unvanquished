@@ -708,7 +708,7 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 			{
 				frame = glState.vertexAttribsOldFrame;
 			}
-			
+
 			glVertexAttribPointer( i, layout->numComponents, layout->componentType, layout->normalize, layout->stride, BUFFER_OFFSET( layout->ofs + ( frame * layout->frameOffset ) ) );
 			glState.vertexAttribPointersSet |= bit;
 		}
@@ -749,12 +749,12 @@ static void SetViewportAndScissor( void )
 		c[1] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[2] );
 		c[2] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[0] );
 		c[3] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.origin ) - backEnd.viewParms.portalPlane.dist;
-		
+
 		q[0] = (c[0] < 0.0f ? -1.0f : 1.0f) / mat[0];
 		q[1] = (c[1] < 0.0f ? -1.0f : 1.0f) / mat[5];
 		q[2] = -1.0f;
 		q[3] = (1.0f + mat[10]) / mat[14];
-		
+
 		scale = 2.0f / (DotProduct( c, q ) + c[3] * q[3]);
 		mat[2]  = c[0] * scale;
 		mat[6]  = c[1] * scale;
@@ -1099,6 +1099,7 @@ static void RB_RenderOpaqueSurfacesIntoDepth( bool onlyWorld )
 
 	GL_CheckErrors();
 }
+
 
 /*
  * helper function for parallel split shadow mapping
@@ -1522,12 +1523,12 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				}
 
 				R_BindFBO( tr.shadowMapFBO[ light->shadowLOD ] );
-				if( shadowClip ) 
+				if( shadowClip )
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + cubeSide,
 							      tr.shadowClipCubeFBOImage[ light->shadowLOD ]->texnum, 0 );
-				} 
-				else 
+				}
+				else
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + cubeSide,
 							      tr.shadowCubeFBOImage[ light->shadowLOD ]->texnum, 0 );
@@ -1644,11 +1645,11 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GLimp_LogComment( "--- Rendering projective shadowMap ---\n" );
 
 				R_BindFBO( tr.shadowMapFBO[ light->shadowLOD ] );
-				if( shadowClip ) 
+				if( shadowClip )
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.shadowClipMapFBOImage[ light->shadowLOD ]->texnum, 0 );
-				} 
-				else 
+				}
+				else
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.shadowMapFBOImage[ light->shadowLOD ]->texnum, 0 );
 				}
@@ -1692,10 +1693,10 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 
 				R_BindFBO( tr.sunShadowMapFBO[ splitFrustumIndex ] );
 
-				if( shadowClip ) 
+				if( shadowClip )
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.sunShadowClipMapFBOImage[ splitFrustumIndex ]->texnum, 0 );
-				} 
+				}
 				else if ( !r_evsmPostProcess->integer )
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.sunShadowMapFBOImage[ splitFrustumIndex ]->texnum, 0 );
@@ -2042,7 +2043,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 
 							R_CalcFrustumNearCorners( splitFrustum, nearCorners );
 							R_CalcFrustumFarCorners( splitFrustum, farCorners );
-							
+
 							// draw outer surfaces
 							for ( j = 0; j < 4; j++ )
 							{
@@ -2128,7 +2129,7 @@ static void RB_BlurShadowMap( const trRefLight_t *light, int i )
 	{
 		return;
 	}
-		
+
 	fbos = ( light->l.rlType == RL_DIRECTIONAL ) ? tr.sunShadowMapFBO : tr.shadowMapFBO;
 	images = ( light->l.rlType == RL_DIRECTIONAL ) ? tr.sunShadowMapFBOImage : tr.shadowMapFBOImage;
 	index = ( light->l.rlType == RL_DIRECTIONAL ) ? i : light->shadowLOD;
@@ -2241,7 +2242,7 @@ static void RB_RenderInteractionsShadowMapped()
 
 	// render each light
 	iaFirst = NULL;
-	
+
 	while ( ( iaFirst = IterateLights( iaFirst ) ) )
 	{
 		backEnd.currentLight = light = iaFirst->light;
@@ -2862,7 +2863,7 @@ void RB_RenderGlobalFog()
 	gl_fogGlobalShader->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
 
 	// bind u_ColorMap
-	GL_BindToTMU( 0, tr.fogImage ); 
+	GL_BindToTMU( 0, tr.fogImage );
 
 	// bind u_DepthMap
 	GL_SelectTexture( 1 );
@@ -3042,8 +3043,8 @@ void RB_RenderMotionBlur( void )
 	gl_motionblurShader->BindProgram();
 	gl_motionblurShader->SetUniform_blurVec(tr.refdef.blurVec);
 
-	GL_BindToTMU( 0, tr.currentRenderImage ); 
-	GL_BindToTMU( 1, tr.depthRenderImage ); 
+	GL_BindToTMU( 0, tr.currentRenderImage );
+	GL_BindToTMU( 1, tr.depthRenderImage );
 
 	// draw quad
 	Tess_InstantQuad( quadVerts );
@@ -3136,7 +3137,7 @@ void RB_CameraPostFX( void )
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.occlusionRenderFBOImage->uploadWidth, tr.occlusionRenderFBOImage->uploadHeight );
 	}
 
-	GL_BindToTMU( 3, tr.colorGradeImage ); 
+	GL_BindToTMU( 3, tr.colorGradeImage );
 
 	// draw viewport
 	Tess_InstantQuad( backEnd.viewParms.viewportVerts );
@@ -3436,7 +3437,7 @@ void RB_RenderLightOcclusionQueries()
 		gl_genericShader->SetRequiredVertexPointers();
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		// don't write to the color buffer or depth buffer
@@ -3897,7 +3898,7 @@ void RB_RenderEntityOcclusionQueries()
 		gl_genericShader->SetRequiredVertexPointers();
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		// don't write to the color buffer or depth buffer
@@ -4079,11 +4080,11 @@ static void RB_RenderDebugUtils()
 		// set uniforms
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
-		
+
 		gl_genericShader->SetRequiredVertexPointers();
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		ia = NULL;
@@ -4251,7 +4252,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_Color( colorBlack );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; ia++, iaCount++ )
@@ -4377,7 +4378,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_Color( colorBlack );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		ent = backEnd.refdef.entities;
@@ -4461,7 +4462,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_Color( colorBlack );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.charsetImage ); 
+		GL_BindToTMU( 0, tr.charsetImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		ent = backEnd.refdef.entities;
@@ -4677,7 +4678,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		// set 2D virtual screen size
@@ -4789,7 +4790,7 @@ static void RB_RenderDebugUtils()
 			cubeProbe = ( cubemapProbe_t * ) Com_GrowListElement( &tr.cubeProbes, j );
 
 			// bind u_ColorMap
-			GL_BindToTMU( 0, cubeProbe->cubemap ); 
+			GL_BindToTMU( 0, cubeProbe->cubemap );
 
 			Tess_AddCubeWithNormals( cubeProbe->origin, mins, maxs, colorWhite );
 		}
@@ -4824,7 +4825,7 @@ static void RB_RenderDebugUtils()
 			gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 			// bind u_ColorMap
-			GL_BindToTMU( 0, tr.whiteImage ); 
+			GL_BindToTMU( 0, tr.whiteImage );
 			gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 			GL_CheckErrors();
@@ -4898,7 +4899,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		GL_CheckErrors();
@@ -4984,7 +4985,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		GL_CheckErrors();
@@ -5079,7 +5080,7 @@ static void RB_RenderDebugUtils()
 					GL_Cull( CT_TWO_SIDED );
 
 					// bind u_ColorMap
-					GL_BindToTMU( 0, tr.whiteImage ); 
+					GL_BindToTMU( 0, tr.whiteImage );
 					gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 					gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
@@ -5332,7 +5333,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		GL_CheckErrors();
@@ -5871,7 +5872,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// bind u_ColorMap
-	GL_BindToTMU( 0, tr.scratchImage[ client ] ); 
+	GL_BindToTMU( 0, tr.scratchImage[ client ] );
 	gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 	// if the scratchImage isn't in the format we want, specify it as a new texture
@@ -6257,6 +6258,73 @@ const void     *RB_Draw2dPolys( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
+const void     *RB_Draw2dPolysIndexed( const void *data )
+{
+	const poly2dIndexedCommand_t *cmd;
+	cullType_t            oldCullType;
+	shader_t              *shader;
+	int                   i;
+
+	cmd = ( const poly2dIndexedCommand_t * ) data;
+
+	if ( !backEnd.projection2D )
+	{
+		RB_SetGL2D();
+	}
+
+	shader = cmd->shader;
+	// HACK: Our shader system likes to cull things that we'd like shown
+	oldCullType = shader->cullType;
+	shader->cullType = CT_TWO_SIDED;
+
+	if ( shader != tess.surfaceShader )
+	{
+		if ( tess.numIndexes )
+		{
+			Tess_End();
+		}
+
+		backEnd.currentEntity = &backEnd.entity2D;
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+	}
+
+	Tess_CheckOverflow( cmd->numverts, cmd->numIndexes );
+
+	for ( i = 0; i < cmd->numIndexes; i++ )
+	{
+		tess.indexes[ tess.numIndexes + i ] = tess.numVertexes + cmd->indexes[ i ];
+	}
+	tess.numIndexes += cmd->numIndexes;
+	if ( tr.scissor.status )
+	{
+		GL_Scissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
+	}
+
+	for ( i = 0; i < cmd->numverts; i++ )
+	{
+		tess.xyz[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].xyz[ 0 ] + cmd->translation[ 0 ];
+		tess.xyz[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].xyz[ 1 ] + cmd->translation[ 1 ];
+		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
+		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
+
+		tess.texCoords[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].st[ 0 ];
+		tess.texCoords[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].st[ 1 ];
+
+		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0f );
+		tess.numVertexes++;
+	}
+
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
+	Tess_End();
+
+	shader->cullType = oldCullType;
+
+	return ( const void * )( cmd + 1 );
+}
+
 // NERVE - SMF
 
 /*
@@ -6596,7 +6664,7 @@ const void *RB_RunVisTests( const void *data )
 		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
 		Tess_UpdateVBOs( ATTR_POSITION );
@@ -6877,6 +6945,10 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_2DPOLYS:
 				data = RB_Draw2dPolys( data );
+				break;
+
+			case RC_2DPOLYSINDEXED:
+				data = RB_Draw2dPolysIndexed( data );
 				break;
 
 			case RC_ROTATED_PIC:

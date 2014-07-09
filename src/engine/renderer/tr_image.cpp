@@ -3955,22 +3955,41 @@ void R_ShutdownImages( void )
 	FreeVertexHashTable( tr.cubeHashTable );
 }
 
-int RE_GetTextureId( const char *name )
+void RE_GetTextureSize( int textureID, int *width, int *height )
 {
-	int     i;
-	image_t *image;
+	image_t *baseImage;
+	shader_t *shader;
 
-	ri.Printf( PRINT_DEVELOPER, S_COLOR_YELLOW "RE_GetTextureId [%s].\n", name );
+	shader = R_GetShaderByHandle( textureID );
 
-	for ( i = 0; i < tr.images.currentElements; i++ )
+	assert( shader );
+	if ( !shader )
 	{
-		image = (image_t*) Com_GrowListElement( &tr.images, i );
-
-		if ( !strcmp( name, image->name ) )
-		{
-			return i;
-		}
+		return;
 	}
 
-	return -1;
+	baseImage = shader->stages[ 0 ]->bundle->image[ 0 ];
+	if ( !baseImage )
+	{
+		Com_DPrintf( S_COLOR_YELLOW "RE_GetTextureSize: shader %s is missing base image\n", shader->name );
+		return;
+	}
+
+	if ( width )
+	{
+		*width = baseImage->width;
+	}
+	if ( height )
+	{
+		*height = baseImage->height;
+	}
+}
+
+int numTextures = 0;
+
+qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
+{
+	const char *name = va( "rocket%d", numTextures++ );
+	R_SyncRenderThread();
+	return RE_RegisterShaderFromImage( name, R_CreateImage( name, &pic, width, height, 1, IF_NOCOMPRESSION | IF_NOPICMIP, FT_LINEAR, WT_CLAMP ) );
 }

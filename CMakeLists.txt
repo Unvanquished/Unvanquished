@@ -357,7 +357,7 @@ endif()
 
 if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
   set( PythonInterp_FIND_VERSION 2 )
-  find_package( PythonInterp )
+  find_package( PythonInterp 2 )
   if( NOT PYTHONINTERP_FOUND )
     message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
   endif()
@@ -380,6 +380,7 @@ set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( TOOLS_DIR ${MOUNT_DIR}/tools )
 set( LCC_DIR ${TOOLS_DIR}/lcc )
 set( LIB_DIR ${MOUNT_DIR}/libs )
+set( ROCKET_DIR ${LIB_DIR}/libRocket )
 if( CMAKE_CFG_INTDIR STREQUAL "." )
   set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
 else()
@@ -748,7 +749,6 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/client/cl_net_chan.cpp
   ${ENGINE_DIR}/client/cl_parse.cpp
   ${ENGINE_DIR}/client/cl_scrn.cpp
-  ${ENGINE_DIR}/client/cl_ui.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
   ${ENGINE_DIR}/client/libmumblelink.cpp
   ${ENGINE_DIR}/client/libmumblelink.h
@@ -771,12 +771,22 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/OggCodec.cpp
   ${ENGINE_DIR}/audio/OpusCodec.cpp
   ${ENGINE_DIR}/audio/WavCodec.cpp
-  )
+  ${ENGINE_DIR}/client/rocket_dataformatter.cpp
+  ${ENGINE_DIR}/client/rocket_textelements.cpp
+  ${ENGINE_DIR}/client/rocket_documents.cpp
+  ${ENGINE_DIR}/client/rocket_datagrid.cpp
+  ${ENGINE_DIR}/client/rocket_element.cpp
+  ${ENGINE_DIR}/client/rocket_events.cpp
+  ${ENGINE_DIR}/client/rocket_keys.cpp
+  ${ENGINE_DIR}/client/rocket_hud.cpp
+  ${ENGINE_DIR}/client/rocket.cpp
+)
 
 set( TTYCLIENTLIST
     ${ENGINE_DIR}/null/null_input.cpp
     ${ENGINE_DIR}/null/null_renderer.cpp
     ${ENGINE_DIR}/null/NullAudio.cpp
+    ${ENGINE_DIR}/null/null_rocket.cpp
 )
 
 set( DEDSERVERLIST
@@ -823,8 +833,14 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_particles.c
   ${GAMELOGIC_DIR}/cgame/cg_tutorial.c
   ${GAMELOGIC_DIR}/cgame/cg_utils.c
-  ${GAMELOGIC_DIR}/ui/ui_shared.c
-  ${GAMELOGIC_DIR}/ui/ui_utf8.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_draw.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_events.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_datasource.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_progressbar.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.c
+  ${GAMELOGIC_DIR}/cgame/cg_gameinfo.c
+  ${GAMELOGIC_DIR}/cgame/cg_parseutils.c
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
 )
@@ -1119,7 +1135,7 @@ if( DEPS_DIR )
   # Download them if they not available
   if( NOT EXISTS ${DEPS_DIR} )
     get_filename_component( BASENAME ${DEPS_DIR} NAME )
-    set( REMOTE "http://www.unvanquished.net/unvanquished_deps/${BASENAME}${DEPS_EXT}" )
+    set( REMOTE "http://unvnet.net/unvanquished_deps/${BASENAME}${DEPS_EXT}" )
     message( STATUS "Downloading dependencies from '${REMOTE}'" )
     file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}${DEPS_EXT} SHOW_PROGRESS
       STATUS DOWNLOAD_RESULT LOG DOWNLOAD_LOG )
@@ -1248,6 +1264,14 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
 endif()
 mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR MINGW32_LIBRARY )
 mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
+
+# libRocket
+if( BUILD_CLIENT )
+  include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
+  add_subdirectory( ${ROCKET_DIR} )
+  add_definitions( -DSTATIC_LIB )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
+endif()
 
 # zlib
 find_package( ZLIB REQUIRED )
@@ -1673,17 +1697,6 @@ GAMEMODULE( NAME cgame
   NATIVE_FILES ${CGAMENATIVELIST}
   QVM_FILES ${CGAMEQVMLIST}
   QVM_ASM ${CGAMEASMLIST}
-)
-
-GAMEMODULE( NAME ui
-  COMPILE_DEF UI BUILD_VM BUILD_UI
-  FILES ${UILIST}
-  HAS_NACL 0
-  HAS_QVM 1
-  NACL_FILES ${UINACLLIST}
-  NATIVE_FILES ${UINATIVELIST}
-  QVM_FILES ${UIQVMLIST}
-  QVM_ASM ${UIASMLIST}
 )
 
 ################################################################################

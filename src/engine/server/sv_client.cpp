@@ -111,7 +111,7 @@ SV_DirectConnect
 A "connect" OOB command has been received
 ==================
 */
-void SV_DirectConnect( netadr_t from )
+void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 {
 	char                userinfo[ MAX_INFO_STRING ];
 	int                 i;
@@ -132,9 +132,14 @@ void SV_DirectConnect( netadr_t from )
 	const char          *country = NULL;
 #endif
 
+	if ( args.Argc() < 2 )
+	{
+		return;
+	}
+
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
 
-	Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
+	Q_strncpyz( userinfo, args.Argv(1).c_str(), sizeof( userinfo ) );
 
 	// DHM - Nerve :: Update Server allows any protocol to connect
 	// NOTE TTimo: but we might need to store the protocol around for potential non http/ftp clients
@@ -1400,7 +1405,7 @@ static void SV_Voip_f( client_t *cl, const Cmd::Args& args )
 	}
 	const char *cmd = args.Argv(1).c_str();
 
-	if ( strcmp( cmd, "ignore" ) == 0 and args.Argc >= 3)
+	if ( strcmp( cmd, "ignore" ) == 0 and args.Argc() >= 3)
 	{
 		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), qtrue );
 	}
