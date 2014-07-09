@@ -4798,7 +4798,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			break;
 	}
 
-	G_BaseClusteringsUpdate(built);
+	BaseClustering::Update(built);
 
 	return built;
 }

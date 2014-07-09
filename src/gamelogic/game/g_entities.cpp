@@ -161,7 +161,7 @@ void G_FreeEntity( gentity_t *entity )
 
 	if ( entity->s.eType == ET_BUILDABLE )
 	{
-		G_BaseClusteringsRemove(entity);
+		BaseClustering::Remove(entity);
 	}
 
 	memset( entity, 0, sizeof( *entity ) );
