@@ -1078,11 +1078,6 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 		realChecksum = crc32(0, Z_NULL, 0);
 		zipFile.ForEachFile([&pak, &realChecksum, &pathPrefix, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
 			// Note that 'return' is effectively 'continue' since we are in a lambda
-			if (filename == PAK_DEPS_FILE) {
-				hasDeps = true;
-				depsOffset = offset;
-				return;
-			}
 			if (!Str::IsPrefix(pathPrefix, filename))
 				return;
 			if (Str::IsSuffix("/", filename))
@@ -1092,6 +1087,11 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 				return;
 			}
 			realChecksum = crc32(*realChecksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
+			if (filename == PAK_DEPS_FILE) {
+				hasDeps = true;
+				depsOffset = offset;
+				return;
+			}
 #ifdef LIBSTDCXX_BROKEN_CXX11
 			fileMap.insert({filename, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
