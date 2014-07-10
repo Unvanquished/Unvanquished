@@ -702,8 +702,6 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				break;
 
 			case CA_DISCONNECTED:
-				// force menu up
-				Audio::StopAllSounds();
 				break;
 
 			case CA_CONNECTING:
