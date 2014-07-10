@@ -92,7 +92,7 @@ namespace Beacon //this should eventually become a class
 
 		VectorCopy( point, origin );
 		MoveTowardsRoom( origin, NULL );
-		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE );
+		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE, 0 );
 		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE );
 		Beacon::Propagate( beacon );
 	}
@@ -135,18 +135,12 @@ namespace Beacon //this should eventually become a class
 		VectorCopy( accumulator, origin );
 	}
 
-	////// Beacon::RemoveSimilar
-	// Remove beacons matching a pattern
-	void RemoveSimilar( vec3_t origin, beaconType_t type, int data, int team, int owner )
+	////// Beacon::FindSimilar
+	// Find beacons matching a pattern
+	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner, float radius )
 	{
-		int i;
-		gentity_t *ent;
-		float radius;
-
-		for( i = 0; i < level.num_entities; i++ )
+		for ( gentity_t *ent = NULL; (ent = G_IterateEntities(ent, NULL, true, 0, NULL)); )
 		{
-			ent = g_entities + i;
-
 			// conditions common to all beacons
 
 			if ( ent->s.eType != ET_BEACON )
@@ -175,28 +169,31 @@ namespace Beacon //this should eventually become a class
 			}
 			else
 			{
-				if ( BG_Beacon( type )->flags & BCF_ENTITY )
-					radius = 5.0;
-				else if ( BG_Beacon( type )->flags & BCF_BASE )
+				if ( radius <= 0 )
 				{
-					switch( type )
+					if ( BG_Beacon( type )->flags & BCF_ENTITY )
+						radius = 5.0;
+					else if ( BG_Beacon( type )->flags & BCF_BASE )
 					{
-						case BCT_BASE:
-						case BCT_BASE_ENEMY:
-							radius = BEACON_BASE_RANGE;
-							break;
+						switch( type )
+						{
+							case BCT_BASE:
+							case BCT_BASE_ENEMY:
+								radius = BEACON_BASE_RANGE;
+								break;
 
-						case BCT_OUTPOST:
-						case BCT_OUTPOST_ENEMY:
-							radius = BEACON_OUTPOST_RANGE;
-							break;
+							case BCT_OUTPOST:
+							case BCT_OUTPOST_ENEMY:
+								radius = BEACON_OUTPOST_RANGE;
+								break;
 
-						default:
-							radius = 400.0;
+							default:
+								radius = 400.0;
+						}
 					}
+					else
+						radius = 250.0;
 				}
-				else
-					radius = 250.0;
 
 				if ( Distance( ent->s.origin, origin ) > radius )
 					continue;
@@ -205,8 +202,18 @@ namespace Beacon //this should eventually become a class
 					continue;
 			}
 
-			Delete( ent );
+			return ent;
 		}
+
+		return NULL;
+	}
+
+	////// Beacon::RemoveSimilar
+	// Remove beacons matching a pattern
+	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner, float radius )
+	{
+		gentity_t *ent = FindSimilar(origin, type, data, team, owner, radius);
+		if ( ent ) Delete( ent );
 	}
 
 	////// Beacon::Propagate
@@ -348,6 +355,11 @@ namespace Beacon //this should eventually become a class
 				BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
 				data = ent->s.modelindex;
 				dead = ( ent->health <= 0 );
+				if ( ent->buildableTeam != team && ent->taggedByEnemy != team )
+				{
+					ent->taggedByEnemy = team;
+					BaseClustering::Touch(ent->buildableTeam);
+				}
 				break;
 
 			case ET_PLAYER:
@@ -392,7 +404,7 @@ namespace Beacon //this should eventually become a class
 				return;
 		}
 
-		RemoveSimilar( origin, BCT_TAG, data, team, owner );
+		RemoveSimilar( origin, BCT_TAG, data, team, owner, 0 );
 		beacon = New( origin, BCT_TAG, data, team, owner );
 
 		if( alien )

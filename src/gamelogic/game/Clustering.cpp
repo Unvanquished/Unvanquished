@@ -558,49 +558,85 @@ namespace Clustering {
 
 /**
  * @brief Uses EntityClusterings to keep track of the bases of both teams.
- * @todo This is in a proof of concept state, improve the integration in the beacon system.
  */
 namespace BaseClustering {
 	using namespace Clustering;
 
-	static std::map<team_t, EntityClustering>        bases;
-	static std::map<team_t, std::vector<gentity_t*>> beacons;
+	static std::map<team_t, EntityClustering>               bases;
+	static std::map<team_t, std::unordered_set<gentity_t*>> beacons;
 
 	/**
 	 * @brief Called after calls to Update and Remove.
-	 * @todo Keep beacons of clusters that don't change instead of recreating them.
-	 * @todo Allow explicit replacing of beacons without playing a sound.
 	 */
 	static void PostChangeHook(team_t team) {
-		// Remove all base beacons for the team
-		for (gentity_t* beacon : beacons[team]) Beacon::Delete(beacon);
-		beacons[team].clear();
+		std::unordered_set<gentity_t*> &teamBeacons = beacons[team];
+		std::unordered_set<gentity_t*> newBeacons;
 
 		// Add a beacon for every cluster
 		for (EntityClustering::cluster_type& cluster : bases[team]) {
 			const EntityClustering::point_type &center = cluster.GetCenter();
+			gentity_t *mean                            = cluster.GetMeanObject();
+			float averageDistance                      = cluster.GetAverageDistance();
+			float standardDeviation                    = cluster.GetStandardDeviation();
 
-			// Find out if it's an outpost or main base
-			beaconType_t type = BCT_OUTPOST;
+			// Find out if it's an outpost or main base and see if any of the inner structures is
+			// tagged by the enemy
+			team_t taggedByEnemy = TEAM_NONE;
+			beaconType_t type = BCT_OUTPOST, enemyType = BCT_OUTPOST_ENEMY;
 			for (const EntityClustering::cluster_type::record_type& record : cluster) {
+				gentity_t* ent = record.first;
+				float distance = record.second.Distance(center);
+
 				// TODO: Use G_IsMainStructure when merged.
-				if (record.first->s.modelindex == BA_A_OVERMIND ||
-					record.first->s.modelindex == BA_H_REACTOR) {
-					type = BCT_BASE;
-					break;
+				if (ent->s.modelindex == BA_A_OVERMIND || ent->s.modelindex == BA_H_REACTOR) {
+					type      = BCT_BASE;
+					enemyType = BCT_BASE_ENEMY;
+				}
+
+				if (ent->taggedByEnemy && distance <= averageDistance + standardDeviation) {
+					taggedByEnemy = ent->taggedByEnemy;
 				}
 			}
 
 			// Trace from mean buildable's origin towards cluster center, so that the beacon does
 			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
 			trace_t tr;
-			gentity_t *mean = cluster.GetMeanObject();
 			trap_Trace(&tr, mean->s.origin, NULL, NULL, center.coords, 0, MASK_SOLID);
 			Beacon::MoveTowardsRoom(tr.endpos, NULL);
-			gentity_t *beacon = Beacon::New(tr.endpos, type, 0, team, ENTITYNUM_NONE);
-			Beacon::Propagate(beacon);
-			beacons[team].push_back(beacon);
+
+			gentity_t *beacon;
+
+			// If a fitting beacon close to the target location already exists, move it silently,
+			// otherwise add a new one.
+			if ((beacon = Beacon::FindSimilar(center.coords, type, 0, team, 0, averageDistance))) {
+				VectorCopy(tr.endpos, beacon->s.origin);
+			} else {
+				beacon = Beacon::New(tr.endpos, type, 0, team, ENTITYNUM_NONE);
+				Beacon::Propagate(beacon);
+			}
+			newBeacons.insert(beacon);
+
+			// Add a second beacon for the enemy team if they tagged the base.
+			if (taggedByEnemy) {
+				if ((beacon = Beacon::FindSimilar(center.coords, enemyType, 0, taggedByEnemy, 0,
+				                                 averageDistance))) {
+					VectorCopy(tr.endpos, beacon->s.origin);
+				} else {
+					beacon = Beacon::New(tr.endpos, enemyType, 0, taggedByEnemy, ENTITYNUM_NONE);
+					Beacon::Propagate(beacon);
+				}
+				newBeacons.insert(beacon);
+			}
 		}
+
+		// Delete all orphaned base beacons.
+		for (gentity_t *beacon : teamBeacons) {
+			if (newBeacons.find(beacon) == newBeacons.end()) {
+				// TODO: Use verbose beacon unlinking as this base actually disappeared
+				Beacon::Delete(beacon);
+			}
+		}
+		teamBeacons.swap(newBeacons);
 	}
 
 	/**
@@ -621,11 +657,11 @@ namespace BaseClustering {
 			}
 
 			// Reset beacon lists
-			std::map<team_t, std::vector<gentity_t*>>::iterator teamBaseBeacons;
+			std::map<team_t, std::unordered_set<gentity_t*>>::iterator teamBaseBeacons;
 			if ((teamBaseBeacons = beacons.find(team)) != beacons.end()) {
 				teamBaseBeacons->second.clear();
 			} else {
-				beacons.insert(std::make_pair(team, std::vector<gentity_t*>()));
+				beacons.insert(std::make_pair(team, std::unordered_set<gentity_t*>()));
 			}
 		}
 	}
@@ -646,6 +682,13 @@ namespace BaseClustering {
 		EntityClustering& clusters = bases[ent->buildableTeam];
 		clusters.Remove(ent);
 		PostChangeHook(ent->buildableTeam);
+	}
+
+	/**
+	 * @brief Updates base beacons for a team as if structures changed.
+	 */
+	void Touch(team_t team) {
+		PostChangeHook(team);
 	}
 
 	/**
