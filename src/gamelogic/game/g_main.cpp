@@ -857,6 +857,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// add any fake entities
 	G_SpawnFakeEntities();
 
+	BaseClustering::Init();
+
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
 

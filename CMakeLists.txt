@@ -562,6 +562,7 @@ set( COMMONLIST
   ${COMMON_DIR}/Command.h
   ${COMMON_DIR}/Cvar.cpp
   ${COMMON_DIR}/Cvar.h
+  ${COMMON_DIR}/DisjointSets.h
   ${COMMON_DIR}/FileSystem.cpp
   ${COMMON_DIR}/FileSystem.h
   ${COMMON_DIR}/IPC.h
@@ -859,6 +860,7 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/VMMain.h
   ${GAMELOGIC_DIR}/game/g_active.cpp
   ${GAMELOGIC_DIR}/game/Beacon.cpp 
+  ${GAMELOGIC_DIR}/game/Clustering.cpp
   ${GAMELOGIC_DIR}/game/g_client.cpp
   ${GAMELOGIC_DIR}/game/g_cmds.cpp
   ${GAMELOGIC_DIR}/game/g_combat.cpp

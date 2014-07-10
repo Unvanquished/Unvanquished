@@ -145,15 +145,24 @@ void G_FreeEntity( gentity_t *entity )
 	}
 
 	if ( g_debugEntities.integer > 2 )
+	{
 		G_Printf(S_DEBUG "Freeing Entity %s\n", etos(entity));
+	}
 
 	if ( entity->obstacleHandle )
 	{
 		trap_BotRemoveObstacle( entity->obstacleHandle );
 	}
 
-	if( entity->eclass && entity->eclass->instanceCounter > 0)
+	if( entity->eclass && entity->eclass->instanceCounter > 0 )
+	{
 		entity->eclass->instanceCounter--;
+	}
+
+	if ( entity->s.eType == ET_BUILDABLE )
+	{
+		BaseClustering::Remove(entity);
+	}
 
 	memset( entity, 0, sizeof( *entity ) );
 	entity->classname = "freent";

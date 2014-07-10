@@ -44,7 +44,7 @@ const char        *G_quoted_admin_name( gentity_t *ent );
 namespace Beacon 
 {
 	void Think( gentity_t *ent );
-	gentity_t *New( vec3_t origin, beaconType_t type, int data, team_t team, int owner );
+	gentity_t *New( const vec3_t origin, beaconType_t type, int data, team_t team, int owner );
 	void NewArea( beaconType_t type, vec3_t point, team_t team );
 	void Delete( gentity_t *ent );
 	void MoveTowardsRoom( vec3_t origin, const vec3_t normal );
@@ -118,6 +118,14 @@ void              ClientDisconnect( int clientNum );
 void              ClientBegin( int clientNum );
 void              ClientAdminChallenge( int clientNum );
 
+// g_clustering.c
+namespace BaseClustering {
+	void Init();
+	void Update(gentity_t *ent);
+	void Remove(gentity_t *ent);
+	void Debug();
+}
+
 // g_cmds.c
 void              G_StopFollowing( gentity_t *ent );
 void              G_StopFromFollowing( gentity_t *ent );
@@ -135,7 +143,7 @@ void              G_UnEscapeString( const char *in, char *out, int len );
 void              G_SanitiseString( const char *in, char *out, int len );
 void              Cmd_PrivateMessage_f( gentity_t *ent );
 void              Cmd_ListMaps_f( gentity_t *ent );
-void              Cmd_Test_f( gentity_t *ent );
+void              Cmd_Test_f( gentity_t *player );
 void              Cmd_AdminMessage_f( gentity_t *ent );
 int               G_FloodLimited( gentity_t *ent );
 void              G_ListCommands( gentity_t *ent );
