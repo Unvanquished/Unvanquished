@@ -557,38 +557,27 @@ namespace Clustering {
 }
 
 /**
- * @brief A wrapper around EntityClusterings that keeps track of the bases of both teams.
+ * @brief Uses EntityClusterings to keep track of the bases of both teams.
  * @todo This is in a proof of concept state, improve the integration in the beacon system.
  */
 namespace BaseClustering {
 	using namespace Clustering;
 
-	static EntityClustering alienBases(2.5, EntityClustering::edgeVisPVS);
-	static EntityClustering humanBases(2.5, EntityClustering::edgeVisPVS);
+	static std::map<team_t, EntityClustering>        bases;
+	static std::map<team_t, std::vector<gentity_t*>> beacons;
 
 	/**
-	 * @brief Retrieves the clustering for a team.
-	 */
-	static inline EntityClustering* TeamClustering(team_t team) {
-		switch (team) {
-			case TEAM_ALIENS: return &alienBases;
-			case TEAM_HUMANS: return &humanBases;
-			default:          return NULL;
-		}
-	}
-
-	/**
-	 * @brief Retreives the clustering for the team that owns the entity.
-	 */
-	static inline EntityClustering* TeamClustering(gentity_t *ent) {
-		return TeamClustering(ent->buildableTeam);
-	}
-
-	/**
-	 * @brief Called after calls to Update and Remove (but not Clear).
+	 * @brief Called after calls to Update and Remove.
+	 * @todo Keep beacons of clusters that don't change instead of recreating them.
+	 * @todo Allow explicit replacing of beacons without playing a sound.
 	 */
 	static void PostChangeHook(team_t team) {
-		for (EntityClustering::cluster_type& cluster : *TeamClustering(team)) {
+		// Remove all base beacons for the team
+		for (gentity_t* beacon : beacons[team]) Beacon::Delete(beacon);
+		beacons[team].clear();
+
+		// Add a beacon for every cluster
+		for (EntityClustering::cluster_type& cluster : bases[team]) {
 			const EntityClustering::point_type &center = cluster.GetCenter();
 
 			// Find out if it's an outpost or main base
@@ -602,22 +591,15 @@ namespace BaseClustering {
 				}
 			}
 
-			// Approach 1: Spawn beacon at euclidean center of the cluster.
-			// The beacon can be inside walls which means RemoveSimiliar won't always work.
-			/*
-			Beacon::RemoveSimilar(center.coords, type, 0, team, ENTITYNUM_NONE);
-			Beacon::Propagate(Beacon::New(center.coords, type, 0, team, ENTITYNUM_NONE));
-			*/
-
-			// Approach 2: Trace from mean buildable's origin towards cluster center, so
-			// that the beacon does not spawn inside a wall. Then use MoveTowardsRoom on the
-			// trace results.
+			// Trace from mean buildable's origin towards cluster center, so that the beacon does
+			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
 			trace_t tr;
 			gentity_t *mean = cluster.GetMeanObject();
 			trap_Trace(&tr, mean->s.origin, NULL, NULL, center.coords, 0, MASK_SOLID);
 			Beacon::MoveTowardsRoom(tr.endpos, NULL);
-			Beacon::RemoveSimilar(tr.endpos, type, 0, team, ENTITYNUM_NONE);
-			Beacon::Propagate(Beacon::New(tr.endpos, type, 0, team, ENTITYNUM_NONE));
+			gentity_t *beacon = Beacon::New(tr.endpos, type, 0, team, ENTITYNUM_NONE);
+			Beacon::Propagate(beacon);
+			beacons[team].push_back(beacon);
 		}
 	}
 
@@ -625,46 +607,44 @@ namespace BaseClustering {
 	 * @brief Resets the clusterings.
 	 */
 	void Init() {
-		alienBases.Clear();
-		humanBases.Clear();
+		// Reset clusterings and beacon lists for both teams
+		for (int teamNum = TEAM_NONE + 1; teamNum < NUM_TEAMS; teamNum++) {
+			team_t team = (team_t)teamNum;
+
+			// Reset clusterings
+			std::map<team_t, EntityClustering>::iterator teamBases;
+			if ((teamBases = bases.find(team)) != bases.end()) {
+				teamBases->second.Clear();
+			} else {
+				bases.insert(std::make_pair(
+					team, EntityClustering(2.5, EntityClustering::edgeVisPVS)));
+			}
+
+			// Reset beacon lists
+			std::map<team_t, std::vector<gentity_t*>>::iterator teamBaseBeacons;
+			if ((teamBaseBeacons = beacons.find(team)) != beacons.end()) {
+				teamBaseBeacons->second.clear();
+			} else {
+				beacons.insert(std::make_pair(team, std::vector<gentity_t*>()));
+			}
+		}
 	}
 
 	/**
 	 * @brief Adds a buildable to the clusters or updates its location.
-	 * @todo Remove workarounds for base/outpost beacons.
 	 */
 	void Update(gentity_t *ent) {
-		EntityClustering *clusters = TeamClustering(ent);
-		if (!clusters) return;
-		clusters->Update(ent);
-
-		// When the main structure is built, an outpost beacon needs to be removed manually.
-		// The range of this is quite high so outpost beacons can be lost.
-		// TODO: Enneract: Unify the two beacon types a bit.
-		if (ent->s.modelindex == BA_A_OVERMIND || ent->s.modelindex == BA_H_REACTOR) {
-			Beacon::RemoveSimilar(ent->s.origin, BCT_OUTPOST, 0, ent->buildableTeam,
-								  ENTITYNUM_NONE);
-		}
-
+		EntityClustering& clusters = bases[ent->buildableTeam];
+		clusters.Update(ent);
 		PostChangeHook(ent->buildableTeam);
 	}
 
 	/**
 	 * @brief Removes a buildable from the clusters.
-	 * @todo Remove workarounds for base/outpost beacons.
 	 */
 	void Remove(gentity_t *ent) {
-		EntityClustering *clusters = TeamClustering(ent);
-		if (!clusters) return;
-		clusters->Remove(ent);
-
-		// When the main structure is removed, the base beacon needs to be removed manually.
-		// TODO: Enneract: Unify the two beacon types a bit.
-		if (ent->s.modelindex == BA_A_OVERMIND || ent->s.modelindex == BA_H_REACTOR) {
-			Beacon::RemoveSimilar(ent->s.origin, BCT_BASE, 0, ent->buildableTeam,
-								  ENTITYNUM_NONE);
-		}
-
+		EntityClustering& clusters = bases[ent->buildableTeam];
+		clusters.Remove(ent);
 		PostChangeHook(ent->buildableTeam);
 	}
 
@@ -676,7 +656,7 @@ namespace BaseClustering {
 			team_t team = (team_t)teamNum;
 			int clusterNum = 1;
 
-			for (EntityClustering::cluster_type cluster : *TeamClustering(team)) {
+			for (EntityClustering::cluster_type& cluster : bases[team]) {
 				const EntityClustering::point_type& center = cluster.GetCenter();
 
 				Com_Printf("%s base #%d (%lu buildings): Center: %.0f %.0f %.0f. "
