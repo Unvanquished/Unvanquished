@@ -27,7 +27,7 @@
 				height:100%;
 				z-index: -10;
 			}
-			
+
 			body.ingame {
 				background-color: rgba(0%,0%,0%,0%);
 			}
@@ -128,16 +128,16 @@
 
 		</style>
 	</head>
-	<body id="main" class="mainmenu" nohide>
-		<img class="gradient" src="/ui/assets/bg" /> 
-		<img class="gradient black" src="/ui/assets/black" /> 
+	<body id="main" class="mainmenu" nohide onfocus="play 3 sound/ui/heartbeat.ogg sound/ui/heartbeat1.ogg sound/ui/heartbeat2.ogg">
+		<img class="gradient" src="/ui/assets/bg" />
+		<img class="gradient black" src="/ui/assets/black" />
 		<img class="circles" src="/ui/assets/circles1" />
 		<img class="circles" src="/ui/assets/circles2" />
 		<img class="tyrant" src="/ui/assets/tyrant" />
 		<img class="human" src="/ui/assets/human" />
 		<img class="fog" src="/ui/assets/fog" />
 		<img class="black2" src="/ui/assets/black2" />
-		<img class="logo" src="/ui/assets/logo" /> 
+		<img class="logo" src="/ui/assets/logo" />
 
 		<box class="version">
 			<p style="font-size: 30px;"> Unvanquished alpha 29</p>
