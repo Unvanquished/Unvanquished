@@ -1255,8 +1255,6 @@ static const char *const eventnames[] =
   "EV_CLIPS_REFILL",    // weapon clips have been refilled
   "EV_FUEL_REFILL",     // jetpack fuel has been refilled
 
-  "EV_LEV2_ZAP",
-
   "EV_HIT", // notify client of a hit
 
   "EV_MOMENTUM" // notify client of generated momentum
