@@ -478,10 +478,15 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	int           statusLength;
 	int           playerLength;
 	char          infostring[ MAX_INFO_STRING ];
+	const char    *challenge = nullptr;
 
 	if ( args.Argc() < 2 )
 	{
-		return;
+		challenge = "";
+	}
+	else
+	{
+		challenge = args.Argv(1).c_str();
 	}
 
 	//bani - bugtraq 12534
