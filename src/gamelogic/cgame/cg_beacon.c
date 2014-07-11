@@ -526,6 +526,25 @@ const char *CG_BeaconText( const cbeacon_t *b )
 			text = _( BG_Buildable( b->data )->humanName );
 		}
 	}
+	else if ( b->type == BCT_BASE )
+	{
+		if     (  (b->flags & EF_BC_BASE_MAIN) &&  (b->flags & EF_BC_BASE_ENEMY) )
+		{
+			text = "MAIN ENEMY";
+		}
+		else if(  (b->flags & EF_BC_BASE_MAIN) && !(b->flags & EF_BC_BASE_ENEMY) )
+		{
+			text = "MAIN FRIENDLY";
+		}
+		else if( !(b->flags & EF_BC_BASE_MAIN) &&  (b->flags & EF_BC_BASE_ENEMY) )
+		{
+			text = "OUTPOST ENEMY";
+		}
+		else if( !(b->flags & EF_BC_BASE_MAIN) && !(b->flags & EF_BC_BASE_ENEMY) )
+		{
+			text = "OUTPOST FRIENDLY";
+		}
+	}
 	else
 		if( BG_Beacon( b->type )->text )
 			text = _( BG_Beacon( b->type )->text );

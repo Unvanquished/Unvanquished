@@ -366,9 +366,11 @@ typedef enum
 #define PF_JETPACK_ACTIVE   BIT(1)
 
 // for beacons:
-#define EF_BC_NO_TARGET          0x0008 // beacon lost its target
-#define EF_BC_TAG_ALIEN          0x0010 // tagged entity is an alien player
-#define EF_BC_TAG_HUMAN          0x0020 // tagged entity is a human player
+#define EF_BC_NO_TARGET     BIT(3) // beacon lost its target
+#define EF_BC_TAG_ALIEN     BIT(4) // tagged entity is an alien player
+#define EF_BC_TAG_HUMAN     BIT(5) // tagged entity is a human player
+#define EF_BC_BASE_MAIN     BIT(6) // whether a base is a main base
+#define EF_BC_BASE_ENEMY    BIT(7) // whether a base is from the enemy
 
 typedef enum
 {
@@ -1039,9 +1041,6 @@ typedef enum
 	BCT_ENEMY,
 	BCT_TAG,
 	BCT_BASE,
-	BCT_BASE_ENEMY,
-	BCT_OUTPOST,
-	BCT_OUTPOST_ENEMY,
 
 	//commands
 	BCT_ATTACK,

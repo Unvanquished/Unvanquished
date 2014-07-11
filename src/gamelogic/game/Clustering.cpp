@@ -582,21 +582,21 @@ namespace BaseClustering {
 			// Find out if it's an outpost or main base and see if any of the inner structures is
 			// tagged by the enemy
 			team_t taggedByEnemy = TEAM_NONE;
-			beaconType_t type = BCT_OUTPOST, enemyType = BCT_OUTPOST_ENEMY;
+			bool   mainBase      = false;
 			for (const EntityClustering::cluster_type::record_type& record : cluster) {
 				gentity_t* ent = record.first;
 				float distance = record.second.Distance(center);
 
 				// TODO: Use G_IsMainStructure when merged.
 				if (ent->s.modelindex == BA_A_OVERMIND || ent->s.modelindex == BA_H_REACTOR) {
-					type      = BCT_BASE;
-					enemyType = BCT_BASE_ENEMY;
+					mainBase = true;
 				}
 
 				if (ent->taggedByEnemy && distance <= averageDistance + standardDeviation) {
 					taggedByEnemy = ent->taggedByEnemy;
 				}
 			}
+			int eFlags = mainBase ? EF_BC_BASE_MAIN : 0;
 
 			// Trace from mean buildable's origin towards cluster center, so that the beacon does
 			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
@@ -608,23 +608,29 @@ namespace BaseClustering {
 
 			// If a fitting beacon close to the target location already exists, move it silently,
 			// otherwise add a new one.
-			if ((beacon = Beacon::FindSimilar(center.coords, type, 0, team, 0, averageDistance))) {
+			if ((beacon = Beacon::FindSimilar(center.coords, BCT_BASE, 0, team, 0,
+			                                  averageDistance, eFlags))) {
 				VectorCopy(tr.endpos, beacon->s.origin);
 			} else {
-				beacon = Beacon::New(tr.endpos, type, 0, team, ENTITYNUM_NONE);
+				beacon = Beacon::New(tr.endpos, BCT_BASE, 0, team, ENTITYNUM_NONE);
+				beacon->s.eFlags |= eFlags;
 				Beacon::Propagate(beacon);
 			}
 			newBeacons.insert(beacon);
 
 			// Add a second beacon for the enemy team if they tagged the base.
 			if (taggedByEnemy) {
-				if ((beacon = Beacon::FindSimilar(center.coords, enemyType, 0, taggedByEnemy, 0,
-				                                 averageDistance))) {
+				eFlags |= EF_BC_BASE_ENEMY;
+
+				if ((beacon = Beacon::FindSimilar(center.coords, BCT_BASE, 0, taggedByEnemy, 0,
+				                                  averageDistance, eFlags))) {
 					VectorCopy(tr.endpos, beacon->s.origin);
 				} else {
-					beacon = Beacon::New(tr.endpos, enemyType, 0, taggedByEnemy, ENTITYNUM_NONE);
+					beacon = Beacon::New(tr.endpos, BCT_BASE, 0, taggedByEnemy, ENTITYNUM_NONE);
+					beacon->s.eFlags |= eFlags;
 					Beacon::Propagate(beacon);
 				}
+
 				newBeacons.insert(beacon);
 			}
 		}

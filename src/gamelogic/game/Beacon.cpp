@@ -88,7 +88,7 @@ namespace Beacon //this should eventually become a class
 
 		VectorCopy( point, origin );
 		MoveTowardsRoom( origin, NULL );
-		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE, 0 );
+		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE, 0, 0 );
 		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE );
 		Beacon::Propagate( beacon );
 	}
@@ -138,7 +138,8 @@ namespace Beacon //this should eventually become a class
 	 * @brief Find beacon matching a pattern.
 	 * @return An ET_BEACON entity or NULL.
 	 */
-	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner, float radius )
+	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
+	                        float radius, int eFlags )
 	{
 		for ( gentity_t *ent = NULL; (ent = G_IterateEntities(ent, NULL, true, 0, NULL)); )
 		{
@@ -148,6 +149,12 @@ namespace Beacon //this should eventually become a class
 				continue;
 
 			if ( ent->s.modelindex != type )
+				continue;
+
+			if ( ( ent->s.eFlags & eFlags ) != eFlags )
+				continue;
+
+			if ( ( ent->s.eFlags | eFlags ) != ent->s.eFlags )
 				continue;
 
 			if( ent->s.generic1 != team )
@@ -189,9 +196,10 @@ namespace Beacon //this should eventually become a class
 	/**
 	 * @brief Remove beacon matching a pattern.
 	 */
-	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner, float radius )
+	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
+	                    float radius, int eFlags )
 	{
-		gentity_t *ent = FindSimilar(origin, type, data, team, owner, radius);
+		gentity_t *ent = FindSimilar(origin, type, data, team, owner, radius, eFlags );
 		if ( ent ) Delete( ent );
 	}
 
@@ -372,7 +380,7 @@ namespace Beacon //this should eventually become a class
 				return;
 		}
 
-		RemoveSimilar( origin, BCT_TAG, data, team, owner, 0 );
+		RemoveSimilar( origin, BCT_TAG, data, team, owner, 0, 0 );
 		beacon = New( origin, BCT_TAG, data, team, owner );
 
 		if( alien )
