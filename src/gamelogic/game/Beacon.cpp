@@ -37,9 +37,11 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Beacon //this should eventually become a class
 {
-	////// Beacon::Think
-	// Think function for all beacons
 	#define BEACON_THINKRATE 1000
+
+	/**
+	 * @brief Think function for all beacons.
+	 */
 	void Think( gentity_t *ent )
 	{
 		ent->nextthink = level.time + BEACON_THINKRATE;
@@ -48,8 +50,10 @@ namespace Beacon //this should eventually become a class
 			Delete( ent );
 	}
 
-	////// Beacon::New
-	// Create a new ET_BEACON entity
+	/**
+	 * @brief Create a new ET_BEACON entity.
+	 * @return A pointer to the new entity.
+	 */
 	gentity_t *New( const vec3_t origin, beaconType_t type, int data,
 	                team_t team, int owner )
 	{
@@ -74,9 +78,9 @@ namespace Beacon //this should eventually become a class
 		return ent;
 	}
 
-
-	////// Beacon::NewArea
-	// Create and set up an area beacon (i.e. "Defend")
+	/**
+	 * @brief Create and set up an area beacon (i.e. "Defend").
+	 */
 	void NewArea( beaconType_t type, vec3_t point, team_t team )
 	{
 		vec3_t origin;
@@ -89,8 +93,9 @@ namespace Beacon //this should eventually become a class
 		Beacon::Propagate( beacon );
 	}
 
-	////// Beacon::Delete
-	// Delete a beacon
+	/**
+	 * @brief Delete a beacon instantly, without playing a sound or effect.
+	 */
 	void Delete( gentity_t *ent )
 	{
 		if( !ent )
@@ -98,10 +103,12 @@ namespace Beacon //this should eventually become a class
 		G_FreeEntity( ent );
 	}
 
-	////// Beacon::MoveTowardsRoom
-	// Move a point towards empty space (away from map geometry)
-	// Normal is optional
 	#define BEACONS_MTR_SAMPLES 100
+
+	/**
+	 * @brief Move a point towards empty space (away from map geometry).
+	 * @param normal Optional direction to move towards.
+	 */
 	void MoveTowardsRoom( vec3_t origin, const vec3_t normal )
 	{
 		int i, j;
@@ -127,8 +134,10 @@ namespace Beacon //this should eventually become a class
 		VectorCopy( accumulator, origin );
 	}
 
-	////// Beacon::FindSimilar
-	// Find beacons matching a pattern
+	/**
+	 * @brief Find beacon matching a pattern.
+	 * @return An ET_BEACON entity or NULL.
+	 */
 	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner, float radius )
 	{
 		for ( gentity_t *ent = NULL; (ent = G_IterateEntities(ent, NULL, true, 0, NULL)); )
@@ -177,61 +186,48 @@ namespace Beacon //this should eventually become a class
 		return NULL;
 	}
 
-	////// Beacon::RemoveSimilar
-	// Remove beacons matching a pattern
+	/**
+	 * @brief Remove beacon matching a pattern.
+	 */
 	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner, float radius )
 	{
 		gentity_t *ent = FindSimilar(origin, type, data, team, owner, radius);
 		if ( ent ) Delete( ent );
 	}
 
-	////// Beacon::Propagate
-	// Sets the server entity fields so that the beacon is visible only by
-  // its team (and spectators).
+	/**
+	 * @brief Sets the entity fields so that the beacon is visible only by its team and spectators.
+	 */
 	void Propagate( gentity_t *ent )
 	{
-		int       i;
-		gclient_t *client;
-
 		ent->r.svFlags = SVF_BROADCAST | SVF_CLIENTMASK;
 		ent->r.loMask = 0;
 		ent->r.hiMask = 0;
 
-		for ( i = 0; i < MAX_CLIENTS; i++ )
-		{
-			client = g_entities[ i ].client;
+		int loMask, hiMask;
 
-			if ( !client )
-				continue;
+		G_TeamToClientmask( (team_t)ent->s.generic1, &loMask, &hiMask );
 
-			if ( client->pers.connected == CON_DISCONNECTED )
-				continue;
+		ent->r.loMask |= loMask;
+		ent->r.hiMask |= hiMask;
 
-			if ( client->pers.team != ent->s.generic1 && 
-					 client->pers.team != TEAM_NONE )
-				continue;
+		G_TeamToClientmask( TEAM_NONE, &loMask, &hiMask );
 
-			if ( i < 32 )
-				ent->r.loMask |= BIT( i );
-			else
-				ent->r.hiMask |= BIT( i );
-		}
+		ent->r.loMask |= loMask;
+		ent->r.hiMask |= hiMask;
 
 		trap_LinkEntity( ent );
 	}
 
-	////// Beacon::PropagateAll
-	// Runs G_PropagateBeacon for all beacons in the world
-	// Should be called everytime someone joins or leaves a team
+	/**
+	 * @brief Propagates all beacons in the world.
+	 *
+	 * Should be called everytime someone joins or leaves a team.
+	 */
 	void PropagateAll( void )
 	{
-		int i;
-		gentity_t *ent;
-
-		for ( i = MAX_CLIENTS - 1; i < level.num_entities; i++ )
+		for ( gentity_t *ent = NULL; (ent = G_IterateEntities( ent )); )
 		{
-			ent = g_entities + i;
-
 			if ( ent->s.eType != ET_BEACON )
 				continue;
 
@@ -239,9 +235,11 @@ namespace Beacon //this should eventually become a class
 		}
 	}
 
-	////// Beacon::RemoveOrphaned
-	// Remove all per-player beacons that belong to a player.
-	// Per-team beacons get their ownership cleared.
+	/**
+	 * @brief Remove all per-player beacons that belong to a player.
+	 *
+	 * Per-team beacons get their ownership cleared.
+	 */
 	void RemoveOrphaned( int clientNum )
 	{
 		int i;
@@ -264,8 +262,9 @@ namespace Beacon //this should eventually become a class
 		}
 	}
 
-	////// Beacon::UpdateTags
-	// Update tags attached to an entity
+	/**
+	 * @brief Update tags attached to an entity.
+	 */
 	void UpdateTags( gentity_t *ent )
 	{
 		// buildables are supposed to be static
@@ -278,8 +277,9 @@ namespace Beacon //this should eventually become a class
 			VectorCopy( ent->s.origin, ent->humanTag->s.origin );
 	}
 
-	////// Beacon::DetachTag
-	// Sets the "no target" flag and makes the tag expire soon.
+	/**
+	 * @brief Sets the "no target" flag and makes the tag expire soon.
+	 */
 	static void DetachTag( gentity_t *ent )
 	{
 		if( !ent )
@@ -289,8 +289,9 @@ namespace Beacon //this should eventually become a class
 		ent->s.time2 = level.time + 1500;
 	}
 
-	////// Beacon::DetachTags
-	// Calls DetachTag for all tags attached to an entity.
+	/**
+	 * @brief Calls DetachTag for all tags attached to an entity.
+	 */
 	void DetachTags( gentity_t *ent )
 	{
 		DetachTag( ent->alienTag );
@@ -299,8 +300,9 @@ namespace Beacon //this should eventually become a class
 		ent->humanTag = NULL;
 	}
 
-	////// Beacon::DeleteTags
-	// Immediately deletes all tags attached to an entity (skips all effects).
+	/**
+	 * @brief Immediately deletes all tags attached to an entity (skips all effects).
+	 */
 	void DeleteTags( gentity_t *ent )
 	{
 		Delete( ent->alienTag );
@@ -309,8 +311,9 @@ namespace Beacon //this should eventually become a class
 		ent->humanTag = NULL;
 	}
 
-	////// Beacon::Tag
-	// Tag an entity
+	/**
+	 * @brief Tags an entity.
+	 */
 	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent )
 	{
 		int i, data;
