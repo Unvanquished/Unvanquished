@@ -201,20 +201,13 @@ namespace Beacon //this should eventually become a class
 	void Propagate( gentity_t *ent )
 	{
 		ent->r.svFlags = SVF_BROADCAST | SVF_CLIENTMASK;
-		ent->r.loMask = 0;
-		ent->r.hiMask = 0;
 
-		int loMask, hiMask;
-
-		G_TeamToClientmask( (team_t)ent->s.generic1, &loMask, &hiMask );
-
-		ent->r.loMask |= loMask;
-		ent->r.hiMask |= hiMask;
+		G_TeamToClientmask( (team_t)ent->s.generic1, &ent->r.loMask, &ent->r.hiMask );
 
 		if ( BG_Beacon( ent->s.modelindex )->flags & BCF_SPECTATOR )
 		{
+			int loMask, hiMask;
 			G_TeamToClientmask( TEAM_NONE, &loMask, &hiMask );
-
 			ent->r.loMask |= loMask;
 			ent->r.hiMask |= hiMask;
 		}
