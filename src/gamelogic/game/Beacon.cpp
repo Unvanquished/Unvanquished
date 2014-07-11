@@ -211,10 +211,13 @@ namespace Beacon //this should eventually become a class
 		ent->r.loMask |= loMask;
 		ent->r.hiMask |= hiMask;
 
-		G_TeamToClientmask( TEAM_NONE, &loMask, &hiMask );
+		if ( BG_Beacon( ent->s.modelindex )->flags & BCF_SPECTATOR )
+		{
+			G_TeamToClientmask( TEAM_NONE, &loMask, &hiMask );
 
-		ent->r.loMask |= loMask;
-		ent->r.hiMask |= hiMask;
+			ent->r.loMask |= loMask;
+			ent->r.hiMask |= hiMask;
+		}
 
 		trap_LinkEntity( ent );
 	}
