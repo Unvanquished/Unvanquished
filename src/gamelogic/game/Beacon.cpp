@@ -215,8 +215,7 @@ namespace Beacon //this should eventually become a class
 		if ( BG_Beacon( ent->s.modelindex )->flags & BCF_SPECTATOR )
 		{
 			// Don't send tagged structures to spectators.
-			if ( ent->s.modelindex == BCT_TAG &&
-			     !(ent->s.eFlags & (EF_BC_TAG_ALIEN|EF_BC_TAG_HUMAN)) )
+			if ( ent->s.modelindex == BCT_TAG && !(ent->s.eFlags & EF_BC_TAG_PLAYER) )
 			{}
 			// Don't send tagged enemy bases to spectators.
 			else if ( ent->s.modelindex == BCT_BASE && (ent->s.eFlags & EF_BC_BASE_ENEMY) )
@@ -231,7 +230,7 @@ namespace Beacon //this should eventually become a class
 		}
 
 		// Don't send a tag to the tagged client itself.
-		if ( ent->s.modelindex == BCT_TAG && (ent->s.eFlags & (EF_BC_TAG_ALIEN|EF_BC_TAG_HUMAN)) )
+		if ( ent->s.modelindex == BCT_TAG && (ent->s.eFlags & EF_BC_TAG_PLAYER) )
 		{
 			int loMask, hiMask;
 			G_ClientnumToMask( ent->s.otherEntityNum, &loMask, &hiMask );
