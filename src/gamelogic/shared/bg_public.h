@@ -1042,7 +1042,6 @@ typedef enum
 	BCT_BASE_ENEMY,
 	BCT_OUTPOST,
 	BCT_OUTPOST_ENEMY,
-	BCT_AUTOBASE,
 
 	//commands
 	BCT_ATTACK,
@@ -1066,7 +1065,6 @@ typedef enum
 #define BCF_PRECISE       0x0010 // place exactly at crosshair
 #define BCF_ENTITY        0x0020 // place at an entity's center
 #define BCF_NO_UNCLUTTER  0x0040 // don't move it away from crosshair
-#define BCF_BASE          0x0080 // tags a group of buildings
 
 typedef struct
 {

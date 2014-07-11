@@ -44,14 +44,6 @@ namespace Beacon //this should eventually become a class
 	{
 		ent->nextthink = level.time + BEACON_THINKRATE;
 
-		if( !( ent->s.eFlags & EF_BC_NO_TARGET ) &&
-		    ( BG_Beacon( ent->s.modelindex )->flags & BCF_BASE ) )
-			if( !FindBase( (beaconType_t)ent->s.modelindex, (team_t)ent->s.generic1, ent->s.origin ) )
-			{
-				ent->nextthink = ent->s.time2 = level.time + 1500;
-				ent->s.eFlags |= EF_BC_NO_TARGET;
-			}
-
 		if ( ent->s.time2 && level.time > ent->s.time2 )
 			Delete( ent );
 	}
@@ -170,30 +162,7 @@ namespace Beacon //this should eventually become a class
 			else
 			{
 				if ( radius <= 0 )
-				{
-					if ( BG_Beacon( type )->flags & BCF_ENTITY )
-						radius = 5.0;
-					else if ( BG_Beacon( type )->flags & BCF_BASE )
-					{
-						switch( type )
-						{
-							case BCT_BASE:
-							case BCT_BASE_ENEMY:
-								radius = BEACON_BASE_RANGE;
-								break;
-
-							case BCT_OUTPOST:
-							case BCT_OUTPOST_ENEMY:
-								radius = BEACON_OUTPOST_RANGE;
-								break;
-
-							default:
-								radius = 400.0;
-						}
-					}
-					else
-						radius = 250.0;
-				}
+					radius = ( BG_Beacon( type )->flags & BCF_ENTITY ) ? 5.0f : 250.0f;
 
 				if ( Distance( ent->s.origin, origin ) > radius )
 					continue;
@@ -433,51 +402,5 @@ namespace Beacon //this should eventually become a class
 		}
 
 		Propagate( beacon );
-	}
-
-	////// Beacon::FindBase
-	// Look for a base for a base beacon
-	qboolean FindBase( beaconType_t type, team_t ownerTeam, vec3_t origin )
-	{
-		qboolean enemy, outpost;
-		team_t team;
-		float radius;
-		int i, count, list[ MAX_GENTITIES ];
-		vec3_t mins, maxs;
-		gentity_t *ent;
-
-		enemy = ( type == BCT_BASE_ENEMY ||
-		          type == BCT_OUTPOST_ENEMY );
-		outpost = ( type == BCT_OUTPOST ||
-		            type == BCT_OUTPOST_ENEMY );
-		team = ( ( ownerTeam == TEAM_ALIENS ) ^ enemy ? TEAM_ALIENS : TEAM_HUMANS );
-		radius = ( outpost ? BEACON_OUTPOST_RANGE : BEACON_BASE_RANGE );
-
-		for( i = 0; i < 3; i++ )
-			mins[ i ] = origin[ i ] - radius,
-			maxs[ i ] = origin[ i ] + radius;
-
-		count = trap_EntitiesInBox( mins, maxs, list, MAX_GENTITIES );
-
-		for( i = 0; i < count; i++ )
-		{
-			ent = g_entities + list[ i ];
-
-			if( ent->s.eType != ET_BUILDABLE )
-				continue;
-
-			if( !( ent->s.eFlags & EF_B_POWERED ) )
-				continue;
-
-			if( ent->health <= 0 )
-				continue;
-
-			if( (team_t)ent->buildableTeam != team )
-				continue;
-
-			return qtrue;
-		}
-
-		return qfalse;
 	}
 }
