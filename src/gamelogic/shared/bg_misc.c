@@ -933,7 +933,7 @@ static const beaconData_t bg_beaconsData[ ] =
 	{ BCT_OUTPOST_ENEMY, "outpost-enemy", BCF_RESERVED },
 	{ BCT_ATTACK,        "attack",        0 },
 	{ BCT_DEFEND,        "defend",        0 },
-	{ BCT_REPAIR,        "repair",        BCF_ENTITY },
+	{ BCT_REPAIR,        "repair",        0 },
 	{ BCT_HEALTH,        "health",        BCF_RESERVED },
 	{ BCT_AMMO,          "ammo",          BCF_RESERVED }
 };
