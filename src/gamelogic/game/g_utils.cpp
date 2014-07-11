@@ -762,6 +762,27 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 
 /*
 ===============
+G_ClientnumToMask
+
+Calculates loMask/hiMask as used by SVF_CLIENTMASK type events to match only the given client.
+===============
+*/
+void G_ClientnumToMask( int clientNum, int *loMask, int *hiMask )
+{
+	*loMask = *hiMask = 0;
+
+	if ( clientNum < 32 )
+	{
+		*loMask |= BIT( clientNum );
+	}
+	else
+	{
+		*hiMask |= BIT( clientNum - 32 );
+	}
+}
+
+/*
+===============
 G_TeamToClientmask
 
 Calculates loMask/hiMask as used by SVF_CLIENTMASK type events to match all clients in a team.

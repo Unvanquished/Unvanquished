@@ -292,6 +292,7 @@ qboolean          G_ClientIsLagging( gclient_t *client );
 void              G_TriggerMenu( int clientNum, dynMenu_t menu );
 void              G_TriggerMenuArgs( int clientNum, dynMenu_t menu, int arg );
 void              G_CloseMenus( int clientNum );
+void              G_ClientnumToMask( int clientNum, int *loMask, int *hiMask );
 void              G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
 void              G_FireThink( gentity_t *self );
 gentity_t         *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );

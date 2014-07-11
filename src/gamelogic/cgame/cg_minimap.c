@@ -464,6 +464,7 @@ make the arrow warp. That's why we wait until the fadeout is finished before
 fading it back in.
 ================
 */
+/*
 static void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
 {
     playerEntity_t* state = &mate->pe;
@@ -502,12 +503,14 @@ static void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
         }
     }
 }
+*/
 
 /*
 ================
 CG_MinimapDrawTeammates
 ================
 */
+/*
 static void CG_MinimapDrawTeammates( const minimap_t* m )
 {
     int ownTeam = cg.predictedPlayerState.persistant[ PERS_TEAM ];
@@ -537,6 +540,7 @@ static void CG_MinimapDrawTeammates( const minimap_t* m )
         }
     }
 }
+*/
 
 /*
 ================
@@ -679,7 +683,7 @@ void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
     {
         CG_MinimapDrawMap( m, z );
         CG_MinimapDrawPlayer( m );
-        CG_MinimapDrawTeammates( m );
+        //CG_MinimapDrawTeammates( m );
     }
     CG_EnableScissor( qfalse );
 

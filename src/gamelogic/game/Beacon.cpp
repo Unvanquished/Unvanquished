@@ -220,6 +220,15 @@ namespace Beacon //this should eventually become a class
 			ent->r.hiMask |= hiMask;
 		}
 
+		// Don't send a tag to the tagged client itself.
+		if ( ent->s.modelindex == BCT_TAG && (ent->s.eFlags & (EF_BC_TAG_ALIEN|EF_BC_TAG_HUMAN)) )
+		{
+			int loMask, hiMask;
+			G_ClientnumToMask( ent->s.otherEntityNum, &loMask, &hiMask );
+			ent->r.loMask &= ~loMask;
+			ent->r.hiMask &= ~hiMask;
+		}
+
 		trap_LinkEntity( ent );
 	}
 

@@ -4418,6 +4418,10 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 		other = g_entities + tr.entityNum;
 
+		// Friendly players are already tagged.
+		if ( other->client && other->client->pers.team == team )
+			goto invalid_beacon;
+
 		Beacon::Tag( other, team, ent->s.number, qfalse );
 		return;
 	}
