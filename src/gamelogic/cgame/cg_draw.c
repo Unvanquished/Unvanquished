@@ -4946,217 +4946,38 @@ static void CG_DrawWarmup( void )
 
 /*
 ==================
-CG_FormatLength
-
-Formats given length with three significant digits of precision
-and a proper SI unit.
-==================
-*/
-static const char *CG_FormatLength( float dist )
-{
-	char fmt[ ] = { '%', '.', 123, 'f', '%', 's', 'm', 0 };
-	const char *prefix;
-	float mult;
-	int prec;
-
-	dist *= 0.0381; // quake units to meters
-
-	if( dist > 1.0e+5 )
-		return "∞";
-	else if( dist > 1.0e+4 )
-		prefix = "k",
-		mult = 1.0e-3,
-		prec = 1;
-	else if( dist > 1.0e+3 )
-		prefix = "k",
-		mult = 1.0e-3,
-		prec = 2;
-	else if( dist > 1.0e+2 )
-		prefix = "",
-		mult = 1.0,
-		prec = 0;
-	else if( dist > 1.0e+1 )
-		prefix = "",
-		mult = 1.0,
-		prec = 1;
-	else if( dist > 1.0 )
-		prefix = "",
-		mult = 1.0,
-		prec = 2;
-	else if( dist > 1.0e-1 )
-		prefix = "m",
-		mult = 1.0e+3,
-		prec = 0;
-	else if( dist > 1.0e-2 )
-		prefix = "m",
-		mult = 1.0e+3,
-		prec = 1;
-	else if( dist > 1.0e-3 )
-		prefix = "m",
-		mult = 1.0e+3,
-		prec = 2;
-	else
-		prefix = "µ",
-		mult = 1.0e+3,
-		prec = 6;
-
-	fmt[ 2 ] = '0' + prec;
-
-	return va( fmt, dist * mult, prefix );
-}
-
-/*
-==================
 CG_DrawBeacon
 
 Draw a beacon on the HUD
 ==================
 */
-#define BEACON_SIZE     ( base * 0.1 ) 
-#define BEACON_SIZE_MAX ( base * 0.15 )
-#define BEACON_MARGIN   ( base * 0.14 )
 #define BEACON_LONGARROW_WIDTH ( base * 0.006 )
 #define BEACON_LONGARROW_DOT_SIZE ( base * 0.01 )
-#define BEACON_UNCLUTTER_RANGE ( base * 0.1 )
-#define BEACON_UNCLUTTER_RANGE_MAX ( base * 0.35 )
-#define BEACON_UNCLUTTER_RANGE_MIN ( base * 0.17 )
-#define BEACON_FONTSIZE ( base * 0.0004 )
 
-float LinearRemap( float value, float from_min, float from_max, float to_min, float to_max )
-{
-	return ( value - from_min ) / ( from_max - from_min ) * ( to_max - to_min ) + to_min;
-}
-
-// wrappers for 640x480 functions
-#define TextWidth( text, size ) ( UI_Text_Width( ( text ), ( size ) / cgDC.yscale ) * cgDC.xscale )
-#define TextHeight( text, size ) ( UI_Text_Height( ( text ), ( size ) / cgDC.yscale ) * cgDC.yscale )
-#define TextPaint( text, size, x, y, color ) \
-( UI_Text_Paint( ( x ) / cgDC.xscale, ( y ) / cgDC.yscale, ( size ) / cgDC.yscale, ( color ), ( text ), 0, ITEM_TEXTSTYLE_SHADOWED ) )
+#define LinearRemap(x,an,ap,bn,bp) ((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn)
 
 static void CG_DrawBeacon( cbeacon_t *b )
 {
-	qboolean front, clamped;
-	vec2_t pos2d_exact, pos2d, dir, delta;
-	float vw, vh, base, size, ts, tx, ty, tw, th, angle, offcenter, unclutter_range;
-	const char *text;
+	vec2_t delta;
+	float vw, vh, base, offset, angle;
 	vec4_t color;
-	clientInfo_t *ci;
 
 	vw = cgs.glconfig.vidWidth;
 	vh = cgs.glconfig.vidHeight;
-
-	// all sizes are a constant fraction of base
-	// substitues magic constants based on the 640x480 virtual screen
 	base = MIN( vw, vh );
 
-	switch( b->team )
-	{/*
-		FIXME: these colors are bullshit but white isn't much better
-		case TEAM_ALIENS:
-			Vector4Set( color, 1, 0, 0, 1 );
-			break;
+	Vector2Subtract( b->s->pos, b->pos_proj, delta );
+	offset = sqrt( delta[ 0 ] * delta[ 0 ] + delta[ 1 ] * delta[ 1 ] );
 
-		case TEAM_HUMANS:
-			Vector4Set( color, 0, 0, 1, 1 );
-			break;*/
-
-		default:
-			Vector4Set( color, 1, 1, 1, b->alpha * b->s->t_occlusion );
-			break;
-	}
-
-	front = CG_WorldToScreen( b->s->origin, pos2d_exact, pos2d_exact + 1 );
-	if( !front )
-		pos2d_exact[ 0 ] = 640.0 - pos2d_exact[ 0 ],
-		pos2d_exact[ 1 ] = 480.0 - pos2d_exact[ 1 ];
-	// convert from 640x480
-	pos2d_exact[ 0 ] *= vw / 640.0;
-	pos2d_exact[ 1 ] *= vh / 480.0;
-
-	if( !front || pos2d_exact[ 0 ] < BEACON_MARGIN || pos2d_exact[ 0 ] > vw - BEACON_MARGIN ||
-	              pos2d_exact[ 1 ] < BEACON_MARGIN || pos2d_exact[ 1 ] > vh - BEACON_MARGIN )
-	{
-		vec2_t screen[ 2 ], point;
-		Vector2Set( screen[ 0 ], (vec_t)BEACON_MARGIN, (vec_t)BEACON_MARGIN );
-		Vector2Set( screen[ 1 ], (vec_t)( vw - BEACON_MARGIN ), (vec_t)( vh - BEACON_MARGIN ) );
-		Vector2Set( point, (vec_t)vw / 2.0 , (vec_t)vh / 2.0 );
-		dir[ 0 ] = pos2d_exact[ 0 ] - point[ 0 ];
-		dir[ 1 ] = pos2d_exact[ 1 ] - point[ 1 ];
-		ProjectPointOntoRectangleOutwards( pos2d_exact, point, dir, (const vec2_t*)screen );
-		clamped = qtrue;
-	}
-	else
-		clamped = qfalse;
-
-	Vector2Copy( pos2d_exact, pos2d );
-
-	size = ( BEACON_SIZE * 300 / b->dist + 30 ) / 2;
-	if( size > BEACON_SIZE_MAX )
-		size = BEACON_SIZE_MAX;
-	size *= b->scale * cg_beaconHUDScale.value;
-	unclutter_range = size * 3;
-	size *= LinearRemap( b->s->t_highlight, 0, 1, 1, 1.5 );
-
-	if( !( BG_Beacon( b->type )->flags & BCF_NO_UNCLUTTER ) )
-	{
-		delta[ 0 ] = pos2d[ 0 ] - vw / 2.0;
-		delta[ 1 ] = pos2d[ 1 ] - vh / 2.0;
-
-		offcenter = sqrt( Square( delta[ 0 ] ) + Square( delta[ 1 ] ) );
-
-		b->s->unclutter = ( offcenter < unclutter_range );
-
-		if( b->s->unclutter )
-		{
-			float offset;
-
-			// avoid division by zero, should never happen anyway
-			if( delta[ 0 ] == 0.0 && delta[ 1 ] == 0.0 )
-				delta[ 0 ] = 1.0;
-
-			offset = sqrt( delta[ 0 ] * delta[ 0 ] + delta[ 1 ] * delta[ 1 ] );
-			delta[ 0 ] *= unclutter_range * cg_beaconHUDScale.value / offset;
-			delta[ 1 ] *= unclutter_range * cg_beaconHUDScale.value / offset;
-
-			pos2d[ 0 ] += delta[ 0 ];
-			pos2d[ 1 ] += delta[ 1 ];
-		}
-	}
-	else
-		b->s->unclutter = qfalse;
-
-	if( cg_lazyBeacons.integer )
-	{
-		if( b->s->old_hud )
-		{
-			int i;
-
-			for( i = 0; i < 2; i++ )
-				CG_ExponentialFade( b->s->oldpos2d + i, pos2d[ i ], cg_lazyBeaconsLambda.value );
-		}
-		else
-			Vector2Copy( pos2d, b->s->oldpos2d );
-
-		Vector2Copy( b->s->oldpos2d, pos2d );
-	}
-
-	if( b->dist < 500 )
-		color[ 3 ] *= LinearRemap( b->dist, 0, 500, 0.5, 1 );
-
-	trap_R_SetColor( color );
-
-	if( b->s->unclutter )
+	if( offset > base * 0.01 )
 	{
 		vec2_t midpoint;
-		vec_t offset;
 
-		delta[ 0 ] = pos2d[ 0 ] - pos2d_exact[ 0 ];
-		delta[ 1 ] = pos2d[ 1 ] - pos2d_exact[ 1 ];
+		Vector4Set( color, 1, 1, 1, b->alpha * MIN( 1.0, LinearRemap( offset, base * 0.01, base * 0.03, 0, 1 ) ) );
+		trap_R_SetColor( color );
 
-		midpoint[ 0 ] = pos2d[ 0 ] - delta[ 0 ] / 2.0;
-		midpoint[ 1 ] = pos2d[ 1 ] - delta[ 1 ] / 2.0;
-
-		offset = sqrt( delta[ 0 ] * delta[ 0 ] + delta[ 1 ] * delta[ 1 ] );
+		midpoint[ 0 ] = b->s->pos[ 0 ] - delta[ 0 ] / 2.0;
+		midpoint[ 1 ] = b->s->pos[ 1 ] - delta[ 1 ] / 2.0;
 
 		angle = 180.0 - atan2( delta[ 1 ], delta[ 0 ] ) * 180 / M_PI;
 
@@ -5167,87 +4988,38 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		                       cgs.media.beaconLongArrow,
 		                       angle );
 
-		trap_R_DrawStretchPic( pos2d_exact[ 0 ] - BEACON_LONGARROW_DOT_SIZE / 2 * cg_beaconHUDScale.value,
-		                       pos2d_exact[ 1 ] - BEACON_LONGARROW_DOT_SIZE / 2 * cg_beaconHUDScale.value,
+		trap_R_DrawStretchPic( b->pos_proj[ 0 ] - BEACON_LONGARROW_DOT_SIZE / 2 * cg_beaconHUDScale.value,
+		                       b->pos_proj[ 1 ] - BEACON_LONGARROW_DOT_SIZE / 2 * cg_beaconHUDScale.value,
 		                       BEACON_LONGARROW_DOT_SIZE  * cg_beaconHUDScale.value, BEACON_LONGARROW_DOT_SIZE  * cg_beaconHUDScale.value,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconLongArrowDot );
 	}
 
-	trap_R_DrawStretchPic( pos2d[ 0 ] - size/2,
-	                       pos2d[ 1 ] - size/2,
-	                       size, size,
+	Vector4Set( color, 1, 1, 1, b->alpha );
+	trap_R_SetColor( color );
+
+	trap_R_DrawStretchPic( b->s->pos[ 0 ] - b->size/2,
+	                       b->s->pos[ 1 ] - b->size/2,
+	                       b->size, b->size,
 	                       0, 0, 1, 1,
 	                       CG_BeaconIcon( b ) );
 
 	if( b->flags & EF_BC_NO_TARGET )
-		trap_R_DrawStretchPic( pos2d[ 0 ] - size/2 * 1.3,
-		                       pos2d[ 1 ] - size/2 * 1.3,
-		                       size * 1.3, size * 1.3,
+		trap_R_DrawStretchPic( b->s->pos[ 0 ] - b->size/2 * 1.3,
+		                       b->s->pos[ 1 ] - b->size/2 * 1.3,
+		                       b->size * 1.3, b->size * 1.3,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconNoTarget );
 
-	if ( clamped )
-		trap_R_DrawRotatedPic( pos2d[ 0 ] - size/2 * 1.5, 
-		                       pos2d[ 1 ] - size/2 * 1.5,
-		                       size * 1.5, size * 1.5,
+	if ( b->clamped )
+		trap_R_DrawRotatedPic( b->s->pos[ 0 ] - b->size/2 * 1.5, 
+		                       b->s->pos[ 1 ] - b->size/2 * 1.5,
+		                       b->size * 1.5, b->size * 1.5,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconIconArrow,
-		                       270.0 - ( angle = atan2( dir[ 1 ], dir[ 0 ] ) ) * 180 / M_PI );
-
-
-	text = CG_FormatLength( b->dist );
-	ts = BEACON_FONTSIZE;
-	tw = TextWidth( text, ts );
-	th = TextHeight( text, ts );
-	if( !clamped )
-		tx = pos2d[ 0 ] - tw/2,
-		ty = pos2d[ 1 ] - size/2;
-	else if( angle > - M_PI / 2.0 && angle < M_PI / 2.0 )
-		tx = pos2d[ 0 ] - size/2 - tw,
-		ty = pos2d[ 1 ] + th/2;
-	else
-		tx = pos2d[ 0 ] + size/2,
-		ty = pos2d[ 1 ] + th/2;
-
-	TextPaint( text, ts, tx, ty, color );
-
-	if( b->type != BCT_TIMER ) // timers show always show the text
-		color[ 3 ] *= LinearRemap( b->s->t_highlight, 0, 1, 0, 1 );
-
-	if ( !clamped && color[ 3 ] > 0.01f )
-	{
-		text = CG_BeaconText( b );
-
-		ts = BEACON_FONTSIZE * 1.3;
-		tw = TextWidth( text, ts );
-		th = TextHeight( text, ts );
-		pos2d[ 1 ] += size/2 + th/2;
-		TextPaint( text, ts, pos2d[ 0 ] - tw/2, pos2d[ 1 ], color );
-
-		if( b->owner != ENTITYNUM_NONE &&
-				b->owner >= 0 && b->owner < MAX_CLIENTS &&
-				!( BG_Beacon( b->type )->flags & BCF_RESERVED ) )
-		{
-			ci = cgs.clientinfo + b->owner;
-
-			if( ci->infoValid )
-			{
-				text = ci->name;
-
-				ts *= 0.8;
-				pos2d[ 1 ] += th/2;
-				tw = TextWidth( text, ts );
-				th = TextHeight( text, ts );
-				pos2d[ 1 ] += th/2;
-				TextPaint( text, ts, pos2d[ 0 ] - tw/2, pos2d[ 1 ], color );
-			}
-		}
-	}
+		                       270.0 - ( angle = atan2( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * 180 / M_PI );
 
 	trap_R_SetColor( NULL );
-
-	b->s->old_hud = qtrue;
 }
 
 //==================================================================================

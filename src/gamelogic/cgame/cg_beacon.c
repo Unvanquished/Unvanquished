@@ -99,12 +99,29 @@ Called every frame for every beacon.
 #define BEACON_FADEOUT 500
 #define BEACON_OCCLUSION_FADE_SPEED 14.0
 #define BEACON_HIGHLIGHT_FADE_SPEED 25.0
+#define BEACON_MARGIN ( base * 0.14f )
+
+#define LinearRemap(x,an,ap,bn,bp) ((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn)
+
 static void CG_RunBeacon( cbeacon_t *b )
 {
-	int delta, deltaout;
-	float tin, tout; // 0 on fade start, 1 on fade end
+	qboolean front;
+	float vw, vh, base;
+	int time_in, time_left;
+	float t_fadein, t_fadeout; // t_ stands for "parameter", not "time"
 	float target; // for exponential fades
 	trace_t tr;
+
+	vw = cgs.glconfig.vidWidth;
+	vh = cgs.glconfig.vidHeight;
+	base = MIN( vw, vh );
+
+	// reset animations
+	b->scale = 1.0;
+	b->alpha = 1.0;
+
+	time_in = cg.time - b->s->ctime; // time since creation
+	time_left = b->s->etime - cg.time; // time to expiration
 
 	// handle new beacons
 	if( !b->s->old )
@@ -117,48 +134,45 @@ static void CG_RunBeacon( cbeacon_t *b )
 		// note: old beacons will be treated by cgame as new if it's the
 		//       first time it sees them (e.g. after changing teams),
 		//       so omit the events if the event was created long time ago
-		if( cg.time - b->s->ctime < 1000 &&
+		if( time_in < 1000 &&
 		    !( b->flags & EF_BC_NO_TARGET ) )
 			if( BG_Beacon( b->type )->sound )
 				trap_S_StartLocalSound( BG_Beacon( b->type )->sound, CHAN_LOCAL_SOUND );
 	}
 
+	// detached
 	if( !( b->s->oldFlags & EF_BC_NO_TARGET ) &&
 	    ( b->flags & EF_BC_NO_TARGET ) )
 		trap_S_StartLocalSound( cgs.media.beaconTargetLostSound, CHAN_LOCAL_SOUND );
 
 	// fade in
-	delta = cg.time - b->s->ctime; // time since creation
-	if ( delta >= BEACON_FADEIN )
-		tin = 1.0;
+	if ( time_in >= BEACON_FADEIN )
+		t_fadein = 1.0;
 	else
-		tin = (float)delta / BEACON_FADEIN;
+		t_fadein = (float)time_in / BEACON_FADEIN;
+	b->scale *= Square( 1.0 - t_fadein ) + 1.0;
 
 	// fade out
-	deltaout = b->s->etime - cg.time; // time to expiration
-	if ( b->s->etime && deltaout < BEACON_FADEOUT )
-		tout = 1.0 - (float)deltaout / BEACON_FADEOUT;
+	if ( b->s->etime && time_left < BEACON_FADEOUT )
+		t_fadeout = 1.0 - (float)time_left / BEACON_FADEOUT;
 	else
-		tout = 0.0;
-
-	// animate scale and alpha with the fade parameters above
-	b->scale = Square( 1.0 - tin ) + 1.0;
-	b->alpha = 1.0 - tout;
+		t_fadeout = 0.0;
+	b->alpha *= 1.0 - t_fadeout;
 
 	// pulsation
-	if( b->type == BCT_HEALTH && delta > 600 )
-		b->scale *= 1.0 + Square( 1.0 - (float)( delta % 600 ) / 600.0 ) * 0.4;
+	if( b->type == BCT_HEALTH && time_in > 600 )
+		b->scale *= 1.0 + Square( 1.0 - (float)( time_in % 600 ) / 600.0 ) * 0.4;
 
 	// timer expired
 	if( b->type == BCT_TIMER )
 	{
 		float t;
 
-		if( delta >= BEACON_TIMER_TIME + BEACON_FADEIN )
+		if( time_in >= BEACON_TIMER_TIME + BEACON_FADEIN )
 			t = 1.0;
-		else if( delta >= BEACON_TIMER_TIME )
+		else if( time_in >= BEACON_TIMER_TIME )
 		{
-			t = (float)( delta - BEACON_TIMER_TIME ) / BEACON_FADEIN;
+			t = (float)( time_in - BEACON_TIMER_TIME ) / BEACON_FADEIN;
 			
 			if( !b->s->eventFired )
 			{
@@ -172,22 +186,150 @@ static void CG_RunBeacon( cbeacon_t *b )
 		b->scale *= Square( 1.0 - t ) * 2.0 + 1.0;
 	}
 
+	// fade when too close
+	if( b->dist < 500 )
+		b->alpha *= LinearRemap( b->dist, 0, 500, 0.5, 1 );
+
 	// occlusion fade
 	target = 1.0;
-	if ( !b->s->highlighted )
+	if ( !b->highlighted )
 	{
 		CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, b->s->origin, ENTITYNUM_NONE, CONTENTS_SOLID );
 		if ( tr.fraction < 0.99f )
-			target = 0.7;
+			target = 0;
 	}
 	CG_ExponentialFade( &b->s->t_occlusion, target, 10 );
+	b->alpha *= LinearRemap( b->s->t_occlusion, 0, 1, 0.5, 1 );
 
 	// highlight animation
-	target = ( ( b->s->highlighted || b->s->unclutter ) ? 1.0 : 0.0 );
+	target = ( b->highlighted ? 1.0 : 0.0 );
 	CG_ExponentialFade( &b->s->t_highlight, target, 20 );
+	b->scale *= LinearRemap( b->s->t_highlight, 0, 1, 1, 1.5 );
 
-	b->s->old = qtrue;
-	b->s->oldFlags = b->flags;
+	// calculate HUD size
+	#define BEACON_SIZE      ( 25.0 * base )
+	#define BEACON_SIZE_MIN  ( 0.029 * base )
+	#define BEACON_SIZE_MAX  ( 0.086 * base )
+
+	b->size = BEACON_SIZE / b->dist;
+	if( b->size > BEACON_SIZE_MAX )
+		b->size = BEACON_SIZE_MAX;
+	else if ( b->size < BEACON_SIZE_MIN )
+		b->size = BEACON_SIZE_MIN;
+	b->size *= b->scale * cg_beaconHUDScale.value;
+
+	// project onto screen
+	front = CG_WorldToScreen( b->s->origin, b->pos_proj, b->pos_proj + 1);
+
+	// CG_WorldToScreen flips the result if behind so correct it
+	if( !front )
+	{
+		b->pos_proj[ 0 ] = 640.0 - b->pos_proj[ 0 ],
+		b->pos_proj[ 1 ] = 480.0 - b->pos_proj[ 1 ];
+	}
+
+	// virtual 640x480 to real
+	b->pos_proj[ 0 ] *= vw / 640.0;
+	b->pos_proj[ 1 ] *= vh / 480.0;
+
+	// clamp to edges
+	if( !front || b->pos_proj[ 0 ] < BEACON_MARGIN + b->size/2 || b->pos_proj[ 0 ] > vw - BEACON_MARGIN - b->size/2 ||
+								b->pos_proj[ 1 ] < BEACON_MARGIN + b->size/2 || b->pos_proj[ 1 ] > vh - BEACON_MARGIN - b->size/2 )
+	{
+		vec2_t screen[ 2 ], point;
+		Vector2Set( screen[ 0 ], (vec_t)BEACON_MARGIN + b->size/2, (vec_t)BEACON_MARGIN + b->size/2 );
+		Vector2Set( screen[ 1 ], (vec_t)( vw - BEACON_MARGIN - b->size/2 ), (vec_t)( vh - BEACON_MARGIN - b->size/2 ) );
+		Vector2Set( point, (vec_t)vw / 2.0 , (vec_t)vh / 2.0 );
+		b->clamp_dir[ 0 ] = b->pos_proj[ 0 ] - point[ 0 ];
+		b->clamp_dir[ 1 ] = b->pos_proj[ 1 ] - point[ 1 ];
+		ProjectPointOntoRectangleOutwards( b->pos_proj, point, b->clamp_dir, (const vec2_t*)screen );
+		b->clamped = qtrue;
+	}
+	else
+		b->clamped = qfalse;
+}
+
+/*
+=============
+CG_BeaconDynamics
+=============
+*/
+
+void CG_BeaconDynamics( void )
+{
+#if 0 //doesn't work properly yet
+	float dt, r;
+	cbeacon_t *a, *b;
+	vec2_t delta;
+
+	dt = 0.001f * cg.frametime;
+
+	//calculate forces
+	for( a = cg.beacons; a < cg.beacons + cg.num_beacons; a++ )
+	{
+		Vector2Set( a->s->acc, 0, 0 );
+
+		//init if new
+		if( !a->s->old )
+		{
+			Vector2Copy( a->pos_proj, a->s->pos );
+			Vector2Set( a->s->vel, 0, 0 );
+			return;
+		}
+
+/*
+ * 		//spring
+		VEC2 delta[j] = x0[j] - x[j];
+		r = LEN( delta );
+		VEC2 a[j] += delta[j] * r;
+
+		//damping
+		r = LEN( v );
+		VEC2 a[j] += v[j] * -r * 0.9;
+
+		VEC2 v[j] += a[j] * dt;
+		VEC2 x[j] += v[j] * dt;*/
+
+		//spring
+		Vector2Subtract( a->s->pos, a->pos_proj, delta );
+		//r = sqrt( Square( delta[ 0 ] ) + Square( delta[ 1 ] ) );
+		a->s->acc[ 0 ] += delta[ 0 ] * -300.0f;
+		a->s->acc[ 1 ] += delta[ 1 ] * -300.0f;
+
+		//damping
+		r = sqrt( Square( a->s->vel[ 0 ] ) + Square( a->s->vel[ 1 ] ) );
+		a->s->acc[ 0 ] += a->s->vel[ 0 ] * -r * 0.02f;
+		a->s->acc[ 1 ] += a->s->vel[ 1 ] * -r * 0.02f;
+/*
+		//external forces
+		for( b = cg.beacons; b < cg.beacons + cg.num_beacons; b++ )
+		{
+			if( a == b )
+				continue;
+
+			Vector2Subtract( a->s->pos, b->s->pos, delta );
+			r = sqrt( Square( delta[ 0 ] ) + Square( delta[ 1 ] ) );
+
+			a->s->acc[ 0 ] += delta[ 0 ] / r * 150.0;
+			a->s->acc[ 1 ] += delta[ 1 ] / r * 150.0;
+		}*/
+	}
+
+	//integrate
+	for( a = cg.beacons; a < cg.beacons + cg.num_beacons; a++ )
+	{
+		a->s->vel[ 0 ] += a->s->acc[ 0 ] * dt;
+		a->s->vel[ 1 ] += a->s->acc[ 1 ] * dt;
+		a->s->pos[ 0 ] += a->s->vel[ 0 ] * dt;
+		a->s->pos[ 1 ] += a->s->vel[ 1 ] * dt;
+	}
+
+#else
+	cbeacon_t *b;
+
+	for( b = cg.beacons; b < cg.beacons + cg.num_beacons; b++ )
+		Vector2Copy( b->pos_proj, b->s->pos );
+#endif
 }
 
 /*
@@ -387,7 +529,7 @@ void CG_ListBeacons( void )
 	centity_t *cent;
 	cbeacon_t *beacon;
 	entityState_t *es;
-	vec3_t vdelta;
+	vec3_t delta;
 
 	cg.num_beacons = 0;
 
@@ -426,9 +568,9 @@ void CG_ListBeacons( void )
 		beacon->flags = es->eFlags;
 
 		// cache some stuff
-		VectorSubtract( beacon->s->origin, cg.refdef.vieworg, vdelta );
-		VectorNormalize( vdelta );
-		beacon->dot = DotProduct( vdelta, cg.refdef.viewaxis[ 0 ] );
+		VectorSubtract( beacon->s->origin, cg.refdef.vieworg, delta );
+		VectorNormalize( delta );
+		beacon->dot = DotProduct( delta, cg.refdef.viewaxis[ 0 ] );
 		beacon->dist = Distance( cg.predictedPlayerState.origin, beacon->s->origin );
 
 		cg.num_beacons++, beacon++;
@@ -438,18 +580,15 @@ void CG_ListBeacons( void )
 
 	qsort( cg.beacons, cg.num_beacons, sizeof( cbeacon_t ), CG_CompareBeaconsByDot );
 
-	if( cg.num_beacons )
-	{
-		cbeacon_t *last = cg.beacons + cg.num_beacons - 1;
-		last->s->highlighted = ( last->dot > 0.99f );
-	}
+	for( i = 0; i < cg.num_beacons; i++ )
+		CG_RunBeacon( cg.beacons + i );
+
+	CG_BeaconDynamics( );
 
 	for( i = 0; i < cg.num_beacons; i++ )
 	{
-		if( i != cg.num_beacons - 1 )
-			cg.beacons[ i ].s->highlighted = qfalse;
-
-		CG_RunBeacon( cg.beacons + i );
+		cg.beacons[ i ].s->old = qtrue;
+		cg.beacons[ i ].s->oldFlags = cg.beacons[ i ].flags;
 	}
 }
 
