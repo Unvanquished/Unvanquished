@@ -490,7 +490,7 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	}
 
 	//bani - bugtraq 12534
-	if ( !SV_VerifyChallenge( args.Argv(1).c_str() ) )
+	if ( !SV_VerifyChallenge( challenge ) )
 	{
 		return;
 	}
@@ -499,7 +499,7 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", args.Argv(1).c_str(), qfalse );
+	Info_SetValueForKey( infostring, "challenge", challenge, qfalse );
 
 	status[ 0 ] = 0;
 	statusLength = 0;
