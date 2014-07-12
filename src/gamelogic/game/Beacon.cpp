@@ -37,27 +37,23 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Beacon //this should eventually become a class
 {
-	////// Beacon::Think
-	// Think function for all beacons
 	#define BEACON_THINKRATE 1000
+
+	/**
+	 * @brief Think function for all beacons.
+	 */
 	void Think( gentity_t *ent )
 	{
 		ent->nextthink = level.time + BEACON_THINKRATE;
-
-		if( !( ent->s.eFlags & EF_BC_NO_TARGET ) &&
-		    ( BG_Beacon( ent->s.modelindex )->flags & BCF_BASE ) )
-			if( !FindBase( (beaconType_t)ent->s.modelindex, (team_t)ent->s.generic1, ent->s.origin ) )
-			{
-				ent->nextthink = ent->s.time2 = level.time + 1500;
-				ent->s.eFlags |= EF_BC_NO_TARGET;
-			}
 
 		if ( ent->s.time2 && level.time > ent->s.time2 )
 			Delete( ent );
 	}
 
-	////// Beacon::New
-	// Create a new ET_BEACON entity
+	/**
+	 * @brief Create a new ET_BEACON entity.
+	 * @return A pointer to the new entity.
+	 */
 	gentity_t *New( const vec3_t origin, beaconType_t type, int data,
 	                team_t team, int owner )
 	{
@@ -82,9 +78,9 @@ namespace Beacon //this should eventually become a class
 		return ent;
 	}
 
-
-	////// Beacon::NewArea
-	// Create and set up an area beacon (i.e. "Defend")
+	/**
+	 * @brief Create and set up an area beacon (i.e. "Defend").
+	 */
 	void NewArea( beaconType_t type, vec3_t point, team_t team )
 	{
 		vec3_t origin;
@@ -92,13 +88,14 @@ namespace Beacon //this should eventually become a class
 
 		VectorCopy( point, origin );
 		MoveTowardsRoom( origin, NULL );
-		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE, 0 );
+		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE, 0, 0 );
 		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE );
 		Beacon::Propagate( beacon );
 	}
 
-	////// Beacon::Delete
-	// Delete a beacon
+	/**
+	 * @brief Delete a beacon instantly, without playing a sound or effect.
+	 */
 	void Delete( gentity_t *ent )
 	{
 		if( !ent )
@@ -106,10 +103,12 @@ namespace Beacon //this should eventually become a class
 		G_FreeEntity( ent );
 	}
 
-	////// Beacon::MoveTowardsRoom
-	// Move a point towards empty space (away from map geometry)
-	// Normal is optional
 	#define BEACONS_MTR_SAMPLES 100
+
+	/**
+	 * @brief Move a point towards empty space (away from map geometry).
+	 * @param normal Optional direction to move towards.
+	 */
 	void MoveTowardsRoom( vec3_t origin, const vec3_t normal )
 	{
 		int i, j;
@@ -135,9 +134,12 @@ namespace Beacon //this should eventually become a class
 		VectorCopy( accumulator, origin );
 	}
 
-	////// Beacon::FindSimilar
-	// Find beacons matching a pattern
-	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner, float radius )
+	/**
+	 * @brief Find beacon matching a pattern.
+	 * @return An ET_BEACON entity or NULL.
+	 */
+	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
+	                        float radius, int eFlags )
 	{
 		for ( gentity_t *ent = NULL; (ent = G_IterateEntities(ent, NULL, true, 0, NULL)); )
 		{
@@ -147,6 +149,12 @@ namespace Beacon //this should eventually become a class
 				continue;
 
 			if ( ent->s.modelindex != type )
+				continue;
+
+			if ( ( ent->s.eFlags & eFlags ) != eFlags )
+				continue;
+
+			if ( ( ent->s.eFlags | eFlags ) != ent->s.eFlags )
 				continue;
 
 			if( ent->s.generic1 != team )
@@ -170,30 +178,7 @@ namespace Beacon //this should eventually become a class
 			else
 			{
 				if ( radius <= 0 )
-				{
-					if ( BG_Beacon( type )->flags & BCF_ENTITY )
-						radius = 5.0;
-					else if ( BG_Beacon( type )->flags & BCF_BASE )
-					{
-						switch( type )
-						{
-							case BCT_BASE:
-							case BCT_BASE_ENEMY:
-								radius = BEACON_BASE_RANGE;
-								break;
-
-							case BCT_OUTPOST:
-							case BCT_OUTPOST_ENEMY:
-								radius = BEACON_OUTPOST_RANGE;
-								break;
-
-							default:
-								radius = 400.0;
-						}
-					}
-					else
-						radius = 250.0;
-				}
+					radius = ( BG_Beacon( type )->flags & BCF_ENTITY ) ? 5.0f : 250.0f;
 
 				if ( Distance( ent->s.origin, origin ) > radius )
 					continue;
@@ -208,61 +193,63 @@ namespace Beacon //this should eventually become a class
 		return NULL;
 	}
 
-	////// Beacon::RemoveSimilar
-	// Remove beacons matching a pattern
-	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner, float radius )
+	/**
+	 * @brief Remove beacon matching a pattern.
+	 */
+	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
+	                    float radius, int eFlags )
 	{
-		gentity_t *ent = FindSimilar(origin, type, data, team, owner, radius);
+		gentity_t *ent = FindSimilar(origin, type, data, team, owner, radius, eFlags );
 		if ( ent ) Delete( ent );
 	}
 
-	////// Beacon::Propagate
-	// Sets the server entity fields so that the beacon is visible only by
-  // its team (and spectators).
+	/**
+	 * @brief Sets the entity fields so that the beacon is visible only by its team and spectators.
+	 */
 	void Propagate( gentity_t *ent )
 	{
-		int       i;
-		gclient_t *client;
-
 		ent->r.svFlags = SVF_BROADCAST | SVF_CLIENTMASK;
-		ent->r.loMask = 0;
-		ent->r.hiMask = 0;
 
-		for ( i = 0; i < MAX_CLIENTS; i++ )
+		G_TeamToClientmask( (team_t)ent->s.generic1, &ent->r.loMask, &ent->r.hiMask );
+
+		if ( BG_Beacon( ent->s.modelindex )->flags & BCF_SPECTATOR )
 		{
-			client = g_entities[ i ].client;
-
-			if ( !client )
-				continue;
-
-			if ( client->pers.connected == CON_DISCONNECTED )
-				continue;
-
-			if ( client->pers.team != ent->s.generic1 && 
-					 client->pers.team != TEAM_NONE )
-				continue;
-
-			if ( i < 32 )
-				ent->r.loMask |= BIT( i );
+			// Don't send tagged structures to spectators.
+			if ( ent->s.modelindex == BCT_TAG && !(ent->s.eFlags & EF_BC_TAG_PLAYER) )
+			{}
+			// Don't send tagged enemy bases to spectators.
+			else if ( ent->s.modelindex == BCT_BASE && (ent->s.eFlags & EF_BC_BASE_ENEMY) )
+			{}
 			else
-				ent->r.hiMask |= BIT( i );
+			{
+				int loMask, hiMask;
+				G_TeamToClientmask( TEAM_NONE, &loMask, &hiMask );
+				ent->r.loMask |= loMask;
+				ent->r.hiMask |= hiMask;
+			}
+		}
+
+		// Don't send a tag to the tagged client itself.
+		if ( ent->s.modelindex == BCT_TAG && (ent->s.eFlags & EF_BC_TAG_PLAYER) )
+		{
+			int loMask, hiMask;
+			G_ClientnumToMask( ent->s.otherEntityNum, &loMask, &hiMask );
+			ent->r.loMask &= ~loMask;
+			ent->r.hiMask &= ~hiMask;
 		}
 
 		trap_LinkEntity( ent );
 	}
 
-	////// Beacon::PropagateAll
-	// Runs G_PropagateBeacon for all beacons in the world
-	// Should be called everytime someone joins or leaves a team
+	/**
+	 * @brief Propagates all beacons in the world.
+	 *
+	 * Should be called everytime someone joins or leaves a team.
+	 */
 	void PropagateAll( void )
 	{
-		int i;
-		gentity_t *ent;
-
-		for ( i = MAX_CLIENTS - 1; i < level.num_entities; i++ )
+		for ( gentity_t *ent = NULL; (ent = G_IterateEntities( ent )); )
 		{
-			ent = g_entities + i;
-
 			if ( ent->s.eType != ET_BEACON )
 				continue;
 
@@ -270,9 +257,11 @@ namespace Beacon //this should eventually become a class
 		}
 	}
 
-	////// Beacon::RemoveOrphaned
-	// Remove all per-player beacons that belong to a player.
-	// Per-team beacons get their ownership cleared.
+	/**
+	 * @brief Remove all per-player beacons that belong to a player.
+	 *
+	 * Per-team beacons get their ownership cleared.
+	 */
 	void RemoveOrphaned( int clientNum )
 	{
 		int i;
@@ -295,8 +284,9 @@ namespace Beacon //this should eventually become a class
 		}
 	}
 
-	////// Beacon::UpdateTags
-	// Update tags attached to an entity
+	/**
+	 * @brief Update tags attached to an entity.
+	 */
 	void UpdateTags( gentity_t *ent )
 	{
 		// buildables are supposed to be static
@@ -309,8 +299,9 @@ namespace Beacon //this should eventually become a class
 			VectorCopy( ent->s.origin, ent->humanTag->s.origin );
 	}
 
-	////// Beacon::DetachTag
-	// Sets the "no target" flag and makes the tag expire soon.
+	/**
+	 * @brief Sets the "no target" flag and makes the tag expire soon.
+	 */
 	static void DetachTag( gentity_t *ent )
 	{
 		if( !ent )
@@ -320,8 +311,9 @@ namespace Beacon //this should eventually become a class
 		ent->s.time2 = level.time + 1500;
 	}
 
-	////// Beacon::DetachTags
-	// Calls DetachTag for all tags attached to an entity.
+	/**
+	 * @brief Calls DetachTag for all tags attached to an entity.
+	 */
 	void DetachTags( gentity_t *ent )
 	{
 		DetachTag( ent->alienTag );
@@ -330,8 +322,9 @@ namespace Beacon //this should eventually become a class
 		ent->humanTag = NULL;
 	}
 
-	////// Beacon::DeleteTags
-	// Immediately deletes all tags attached to an entity (skips all effects).
+	/**
+	 * @brief Immediately deletes all tags attached to an entity (skips all effects).
+	 */
 	void DeleteTags( gentity_t *ent )
 	{
 		Delete( ent->alienTag );
@@ -340,8 +333,9 @@ namespace Beacon //this should eventually become a class
 		ent->humanTag = NULL;
 	}
 
-	////// Beacon::Tag
-	// Tag an entity
+	/**
+	 * @brief Tags an entity.
+	 */
 	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent )
 	{
 		int i, data;
@@ -404,7 +398,7 @@ namespace Beacon //this should eventually become a class
 				return;
 		}
 
-		RemoveSimilar( origin, BCT_TAG, data, team, owner, 0 );
+		RemoveSimilar( origin, BCT_TAG, data, team, owner, 0, 0 );
 		beacon = New( origin, BCT_TAG, data, team, owner );
 
 		if( alien )
@@ -433,51 +427,5 @@ namespace Beacon //this should eventually become a class
 		}
 
 		Propagate( beacon );
-	}
-
-	////// Beacon::FindBase
-	// Look for a base for a base beacon
-	qboolean FindBase( beaconType_t type, team_t ownerTeam, vec3_t origin )
-	{
-		qboolean enemy, outpost;
-		team_t team;
-		float radius;
-		int i, count, list[ MAX_GENTITIES ];
-		vec3_t mins, maxs;
-		gentity_t *ent;
-
-		enemy = ( type == BCT_BASE_ENEMY ||
-		          type == BCT_OUTPOST_ENEMY );
-		outpost = ( type == BCT_OUTPOST ||
-		            type == BCT_OUTPOST_ENEMY );
-		team = ( ( ownerTeam == TEAM_ALIENS ) ^ enemy ? TEAM_ALIENS : TEAM_HUMANS );
-		radius = ( outpost ? BEACON_OUTPOST_RANGE : BEACON_BASE_RANGE );
-
-		for( i = 0; i < 3; i++ )
-			mins[ i ] = origin[ i ] - radius,
-			maxs[ i ] = origin[ i ] + radius;
-
-		count = trap_EntitiesInBox( mins, maxs, list, MAX_GENTITIES );
-
-		for( i = 0; i < count; i++ )
-		{
-			ent = g_entities + list[ i ];
-
-			if( ent->s.eType != ET_BUILDABLE )
-				continue;
-
-			if( !( ent->s.eFlags & EF_B_POWERED ) )
-				continue;
-
-			if( ent->health <= 0 )
-				continue;
-
-			if( (team_t)ent->buildableTeam != team )
-				continue;
-
-			return qtrue;
-		}
-
-		return qfalse;
 	}
 }

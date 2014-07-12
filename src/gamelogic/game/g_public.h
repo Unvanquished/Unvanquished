@@ -48,8 +48,8 @@ namespace Beacon
 	void NewArea( beaconType_t type, vec3_t point, team_t team );
 	void Delete( gentity_t *ent );
 	void MoveTowardsRoom( vec3_t origin, const vec3_t normal );
-	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner , float radius );
-	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner , float radius );
+	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner, float radius, int eFlags );
+	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner, float radius, int eFlags );
 	void Propagate( gentity_t *ent );
 	void PropagateAll( void );
 	void RemoveOrphaned( int clientNum );
@@ -57,7 +57,6 @@ namespace Beacon
 	void UpdateTags( gentity_t *ent );
 	void DetachTags( gentity_t *ent );
 	void DeleteTags( gentity_t *ent );
-	qboolean FindBase( beaconType_t type, team_t ownerTeam, vec3_t origin );
 }
 
 // g_buildable.c
@@ -293,6 +292,7 @@ qboolean          G_ClientIsLagging( gclient_t *client );
 void              G_TriggerMenu( int clientNum, dynMenu_t menu );
 void              G_TriggerMenuArgs( int clientNum, dynMenu_t menu, int arg );
 void              G_CloseMenus( int clientNum );
+void              G_ClientnumToMask( int clientNum, int *loMask, int *hiMask );
 void              G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
 void              G_FireThink( gentity_t *self );
 gentity_t         *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );

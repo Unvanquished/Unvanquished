@@ -926,15 +926,11 @@ static const beaconData_t bg_beaconsData[ ] =
 	{ BCT_POINTER,       "pointer",       BCF_PER_PLAYER | BCF_PRECISE | BCF_NO_UNCLUTTER },
 	{ BCT_TIMER,         "timer",         BCF_PER_PLAYER | BCF_NO_UNCLUTTER },
 	{ BCT_ENEMY,         "enemy",         0 },
-	{ BCT_TAG,           "tag",           BCF_ENTITY | BCF_DATA_UNIQUE },
-	{ BCT_BASE,          "base",          BCF_RESERVED | BCF_BASE | BCF_PER_TEAM },
-	{ BCT_BASE_ENEMY,    "base-enemy",    BCF_RESERVED | BCF_BASE | BCF_PER_TEAM },
-	{ BCT_OUTPOST,       "outpost",       BCF_RESERVED | BCF_BASE },
-	{ BCT_OUTPOST_ENEMY, "outpost-enemy", BCF_RESERVED | BCF_BASE },
-	{ BCT_AUTOBASE,      "autobase",      BCF_BASE },
+	{ BCT_TAG,           "tag",           BCF_ENTITY | BCF_DATA_UNIQUE | BCF_SPECTATOR },
+	{ BCT_BASE,          "base",          BCF_RESERVED | BCF_SPECTATOR },
 	{ BCT_ATTACK,        "attack",        0 },
 	{ BCT_DEFEND,        "defend",        0 },
-	{ BCT_REPAIR,        "repair",        BCF_ENTITY },
+	{ BCT_REPAIR,        "repair",        0 },
 	{ BCT_HEALTH,        "health",        BCF_RESERVED },
 	{ BCT_AMMO,          "ammo",          BCF_RESERVED }
 };

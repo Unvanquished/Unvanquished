@@ -327,6 +327,11 @@ gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, qboolean
 	return NULL;
 }
 
+gentity_t *G_IterateEntities( gentity_t *entity )
+{
+	return G_IterateEntities( entity, NULL, qtrue, 0, NULL );
+}
+
 gentity_t *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname )
 {
 	return G_IterateEntities( entity, classname, qtrue, 0, NULL );

@@ -4418,71 +4418,12 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 		other = g_entities + tr.entityNum;
 
+		// Friendly players are already tagged.
+		if ( other->client && other->client->pers.team == team )
+			goto invalid_beacon;
+
 		Beacon::Tag( other, team, ent->s.number, qfalse );
 		return;
-	}
-	else if ( BG_Beacon( type )->flags & BCF_BASE )
-	{
-		VectorCopy( tr.endpos, origin );
-		Beacon::MoveTowardsRoom( origin, tr.plane.normal );
-
-		if( type == BCT_AUTOBASE )
-		{
-			int i, count, list[ MAX_GENTITIES ], teamBias = 0;
-			vec3_t mins, maxs;
-			gentity_t *ent;
-			qboolean primary, foundAny = qfalse, foundPrimary = qfalse, enemy;
-
-			for( i = 0; i < 3; i++ )
-				mins[ i ] = origin[ i ] - BEACON_BASE_RANGE,
-				maxs[ i ] = origin[ i ] + BEACON_BASE_RANGE;
-
-			count = trap_EntitiesInBox( mins, maxs, list, MAX_GENTITIES );
-
-			for( i = 0; i < count; i++ )
-			{
-				ent = g_entities + list[ i ];
-
-				if( ent->s.eType != ET_BUILDABLE )
-					continue;
-
-				if( ent->health <= 0 )
-					continue;
-
-				if( !trap_InPVS( ent->s.origin, origin ) )
-					continue;
-
-				primary = ( ent->s.modelindex == BA_A_OVERMIND ||
-				            ent->s.modelindex == BA_H_REACTOR );
-
-				if( Distance( ent->s.origin, origin ) >
-				    ( primary ? BEACON_BASE_RANGE : BEACON_OUTPOST_RANGE ) )
-					continue;
-
-				if( primary )
-					foundPrimary = qtrue;
-				foundAny = qtrue;
-
-				if( ent->buildableTeam == TEAM_ALIENS )
-					teamBias--;
-				else
-					teamBias++;
-			}
-
-			if( !foundAny )
-				goto invalid_beacon;
-
-			enemy = ( ( teamBias >= 0 && team == TEAM_ALIENS ) ||
-			          ( teamBias < 0 && team == TEAM_HUMANS ) );
-
-			if( foundPrimary )
-				type = ( enemy ? BCT_BASE_ENEMY : BCT_BASE );
-			else
-				type = ( enemy ? BCT_OUTPOST_ENEMY : BCT_OUTPOST );
-		}
-		else
-			if( !Beacon::FindBase( type, team, origin ) )
-				goto invalid_beacon;
 	}
 	else
 	{
@@ -4490,7 +4431,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 		Beacon::MoveTowardsRoom( origin, tr.plane.normal );
 	}
 
-	Beacon::RemoveSimilar( origin, type, 0, team, ent->s.number, 0 );
+	Beacon::RemoveSimilar( origin, type, 0, team, ent->s.number, 0, 0 );
 	beacon = Beacon::New( origin, type, 0, team, ent->s.number );
 	Beacon::Propagate( beacon );
 	return;
