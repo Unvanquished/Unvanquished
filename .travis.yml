@@ -20,7 +20,7 @@ before_script:
   - sudo patch /usr/include/c++/4.6/condition_variable < libstdc++4.6-thread-fix.patch;
 
 script:
-  - sed -i s/POSITION_INDEPENDENT_CODE/COMPILE_FLAGS "-fPIC"/' CMakeLists.txt
+  - sed -i 's/POSITION_INDEPENDENT_CODE 1/COMPILE_FLAGS "-fPIC"/' CMakeLists.txt
   - mkdir build
   - cd build
   - CXXFLAGS="-D__extern_always_inline=inline" cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_SDL2=OFF ..
