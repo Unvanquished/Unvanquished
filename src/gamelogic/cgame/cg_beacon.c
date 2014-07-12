@@ -105,20 +105,19 @@ Called every frame for every beacon.
 
 static void CG_RunBeacon( cbeacon_t *b )
 {
-	qboolean front;
-	float vw, vh, base;
+	float vw, vh, base, target, alpha;
 	int time_in, time_left;
 	float t_fadein, t_fadeout; // t_ stands for "parameter", not "time"
-	float target; // for exponential fades
-	trace_t tr;
+	qboolean front;
+	//trace_t tr;
 
 	vw = cgs.glconfig.vidWidth;
 	vh = cgs.glconfig.vidHeight;
 	base = MIN( vw, vh );
 
 	// reset animations
-	b->scale = 1.0;
-	b->alpha = 1.0;
+	b->scale = cg_beaconHUDScale.value;
+	alpha = cg_beaconHUDAlpha.value;
 
 	time_in = cg.time - b->s->ctime; // time since creation
 	time_left = b->s->etime - cg.time; // time to expiration
@@ -127,7 +126,6 @@ static void CG_RunBeacon( cbeacon_t *b )
 	if( !b->s->old )
 	{
 		// clear static data (cg_ents already does memset zero but that won't work for floats)
-		b->s->t_occlusion = 1.0;
 		b->s->t_highlight = 0.0;
 
 		// creation events
@@ -157,7 +155,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 		t_fadeout = 1.0 - (float)time_left / BEACON_FADEOUT;
 	else
 		t_fadeout = 0.0;
-	b->alpha *= 1.0 - t_fadeout;
+	alpha *= 1.0 - t_fadeout;
 
 	// pulsation
 	if( b->type == BCT_HEALTH && time_in > 600 )
@@ -188,35 +186,46 @@ static void CG_RunBeacon( cbeacon_t *b )
 
 	// fade when too close
 	if( b->dist < 500 )
-		b->alpha *= LinearRemap( b->dist, 0, 500, 0.5, 1 );
+		alpha *= LinearRemap( b->dist, 0, 500, 0.5, 1 );
 
-	// occlusion fade
-	target = 1.0;
-	if ( !b->highlighted )
-	{
-		CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, b->s->origin, ENTITYNUM_NONE, CONTENTS_SOLID );
-		if ( tr.fraction < 0.99f )
-			target = 0;
-	}
-	CG_ExponentialFade( &b->s->t_occlusion, target, 10 );
-	b->alpha *= LinearRemap( b->s->t_occlusion, 0, 1, 0.5, 1 );
+	// highlight
+	b->highlighted =
+		( b == cg.beacons + cg.num_beacons - 1 &&
+		  sqrt( Square( b->pos_proj[ 0 ] - vw / 2 ) + Square( b->pos_proj[ 0 ] - vh / 2 )  ) < base * 0.1 );
 
 	// highlight animation
 	target = ( b->highlighted ? 1.0 : 0.0 );
 	CG_ExponentialFade( &b->s->t_highlight, target, 20 );
 	b->scale *= LinearRemap( b->s->t_highlight, 0, 1, 1, 1.5 );
 
-	// calculate HUD size
-	#define BEACON_SIZE      ( 25.0 * base )
-	#define BEACON_SIZE_MIN  ( 0.029 * base )
-	#define BEACON_SIZE_MAX  ( 0.086 * base )
+	// color
+	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE )
+		switch( b->team )
+		{
+			case TEAM_ALIENS:
+				VectorSet( b->color, 1, 0.5, 0.5 );
+				break;
+			case TEAM_HUMANS:
+				VectorSet( b->color, 0.5, 0.9, 1 );
+				break;
+			default:
+				VectorSet( b->color, 1.0, 0.9, 0.5 );
+				break;
+		}
+	else
+		VectorSet( b->color, 1, 1, 1 );
+	
+	b->color[ 3 ] = alpha;
 
-	b->size = BEACON_SIZE / b->dist;
+	// calculate HUD size
+	#define BEACON_SIZE_MIN  ( 0.025 * base )
+	#define BEACON_SIZE_MAX  ( 0.05 * base )
+	b->size = base  / sqrt( b->dist );
 	if( b->size > BEACON_SIZE_MAX )
 		b->size = BEACON_SIZE_MAX;
 	else if ( b->size < BEACON_SIZE_MIN )
 		b->size = BEACON_SIZE_MIN;
-	b->size *= b->scale * cg_beaconHUDScale.value;
+	b->size *= b->scale;
 
 	// project onto screen
 	front = CG_WorldToScreen( b->s->origin, b->pos_proj, b->pos_proj + 1);
@@ -257,79 +266,10 @@ CG_BeaconDynamics
 
 void CG_BeaconDynamics( void )
 {
-#if 0 //doesn't work properly yet
-	float dt, r;
-	cbeacon_t *a, *b;
-	vec2_t delta;
-
-	dt = 0.001f * cg.frametime;
-
-	//calculate forces
-	for( a = cg.beacons; a < cg.beacons + cg.num_beacons; a++ )
-	{
-		Vector2Set( a->s->acc, 0, 0 );
-
-		//init if new
-		if( !a->s->old )
-		{
-			Vector2Copy( a->pos_proj, a->s->pos );
-			Vector2Set( a->s->vel, 0, 0 );
-			return;
-		}
-
-/*
- * 		//spring
-		VEC2 delta[j] = x0[j] - x[j];
-		r = LEN( delta );
-		VEC2 a[j] += delta[j] * r;
-
-		//damping
-		r = LEN( v );
-		VEC2 a[j] += v[j] * -r * 0.9;
-
-		VEC2 v[j] += a[j] * dt;
-		VEC2 x[j] += v[j] * dt;*/
-
-		//spring
-		Vector2Subtract( a->s->pos, a->pos_proj, delta );
-		//r = sqrt( Square( delta[ 0 ] ) + Square( delta[ 1 ] ) );
-		a->s->acc[ 0 ] += delta[ 0 ] * -300.0f;
-		a->s->acc[ 1 ] += delta[ 1 ] * -300.0f;
-
-		//damping
-		r = sqrt( Square( a->s->vel[ 0 ] ) + Square( a->s->vel[ 1 ] ) );
-		a->s->acc[ 0 ] += a->s->vel[ 0 ] * -r * 0.02f;
-		a->s->acc[ 1 ] += a->s->vel[ 1 ] * -r * 0.02f;
-/*
-		//external forces
-		for( b = cg.beacons; b < cg.beacons + cg.num_beacons; b++ )
-		{
-			if( a == b )
-				continue;
-
-			Vector2Subtract( a->s->pos, b->s->pos, delta );
-			r = sqrt( Square( delta[ 0 ] ) + Square( delta[ 1 ] ) );
-
-			a->s->acc[ 0 ] += delta[ 0 ] / r * 150.0;
-			a->s->acc[ 1 ] += delta[ 1 ] / r * 150.0;
-		}*/
-	}
-
-	//integrate
-	for( a = cg.beacons; a < cg.beacons + cg.num_beacons; a++ )
-	{
-		a->s->vel[ 0 ] += a->s->acc[ 0 ] * dt;
-		a->s->vel[ 1 ] += a->s->acc[ 1 ] * dt;
-		a->s->pos[ 0 ] += a->s->vel[ 0 ] * dt;
-		a->s->pos[ 1 ] += a->s->vel[ 1 ] * dt;
-	}
-
-#else
 	cbeacon_t *b;
 
 	for( b = cg.beacons; b < cg.beacons + cg.num_beacons; b++ )
 		Vector2Copy( b->pos_proj, b->s->pos );
-#endif
 }
 
 /*

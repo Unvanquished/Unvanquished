@@ -643,9 +643,7 @@ typedef struct
 
 	//drawing
 	vec2_t        pos;
-	vec2_t        vel, acc;
 	qboolean      altIcon;
-	float         t_occlusion;
 	float         t_highlight;
 
 	vec3_t        origin;
@@ -673,7 +671,7 @@ typedef struct
 	vec2_t        pos_proj;
 	float         scale;
 	float         size;
-	float         alpha;
+	vec4_t        color;
 
 	qboolean      clamped;
 	vec2_t        clamp_dir;
@@ -1886,9 +1884,9 @@ extern vmCvar_t             cg_motionblurMinSpeed;
 extern vmCvar_t             ui_chatPromptColors;
 
 extern vmCvar_t             cg_beaconHUDScale;
+extern vmCvar_t             cg_beaconHUDAlpha;
 extern vmCvar_t             cg_beaconMapScale;
-extern vmCvar_t             cg_lazyBeacons;
-extern vmCvar_t             cg_lazyBeaconsLambda;
+extern vmCvar_t             cg_beaconDynamics;
 
 //
 // Rocket cvars

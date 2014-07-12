@@ -327,17 +327,15 @@ Draw a beacon on the HUD
 #define BEACON_LONGARROW_WIDTH ( base * 0.006 )
 #define BEACON_LONGARROW_DOT_SIZE ( base * 0.01 )
 
-#define LinearRemap(x,an,ap,bn,bp) ((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn)
+#define LinearRemap(x,an,ap,bn,bp) (((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn))
 
 static void CG_DrawBeacon( cbeacon_t *b )
 {
 	vec2_t delta;
-	float vw, vh, base, offset, angle;
+	float base, offset, angle;
 	vec4_t color;
 
-	vw = cgs.glconfig.vidWidth;
-	vh = cgs.glconfig.vidHeight;
-	base = MIN( vw, vh );
+	base = MIN( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight );
 
 	Vector2Subtract( b->s->pos, b->pos_proj, delta );
 	offset = sqrt( delta[ 0 ] * delta[ 0 ] + delta[ 1 ] * delta[ 1 ] );
@@ -346,7 +344,8 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	{
 		vec2_t midpoint;
 
-		Vector4Set( color, 1, 1, 1, b->alpha * MIN( 1.0, LinearRemap( offset, base * 0.01, base * 0.03, 0, 1 ) ) );
+		Vector4Copy( b->color, color );
+		color[ 3 ] *= MIN( 1.0, LinearRemap( offset, base * 0.01, base * 0.03, 0, 1 ) );
 		trap_R_SetColor( color );
 
 		midpoint[ 0 ] = b->s->pos[ 0 ] - delta[ 0 ] / 2.0;
@@ -368,8 +367,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		                       cgs.media.beaconLongArrowDot );
 	}
 
-	Vector4Set( color, 1, 1, 1, b->alpha );
-	trap_R_SetColor( color );
+	trap_R_SetColor( b->color );
 
 	trap_R_DrawStretchPic( b->s->pos[ 0 ] - b->size/2,
 	                       b->s->pos[ 1 ] - b->size/2,
@@ -391,6 +389,45 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconIconArrow,
 		                       270.0 - ( angle = atan2( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * 180 / M_PI );
+
+	{
+		float h, tw;
+		const char *p;
+		vec2_t pos, dir, rect[ 2 ];
+		int i, l;
+
+		h = b->size * 0.4;
+		p = va( "%d", (int)round( b->dist / 31.0 ) );
+		l = strlen( p );
+		tw = h * l;
+
+		if( !b->clamped )
+		{
+			pos[ 0 ] = b->s->pos[ 0 ];
+			pos[ 1 ] = b->s->pos[ 1 ] + b->size/2 + h/2;
+		}
+		else
+		{
+			rect[ 0 ][ 0 ] = b->s->pos[ 0 ] - b->size/2 - tw/2;
+			rect[ 1 ][ 0 ] = b->s->pos[ 0 ] + b->size/2 + tw/2;
+			rect[ 0 ][ 1 ] = b->s->pos[ 1 ] - b->size/2 - h/2;
+			rect[ 1 ][ 1 ] = b->s->pos[ 1 ] + b->size/2 + h/2;
+
+			for( i = 0; i < 2; i++ )
+				dir[ i ] = - b->clamp_dir[ i ];
+
+			ProjectPointOntoRectangleOutwards( pos, b->s->pos, dir, (const vec2_t*)rect );
+		}
+
+		pos[ 0 ] += -tw/2;
+
+		for( i = 0; i < l; i++ )
+			if( p[ i ] >= '0' && p[ i ] <= '9' )
+			{
+				trap_R_DrawStretchPic( pos[ 0 ], pos[ 1 ] - h/2, h, h, 0, 0, 1, 1, cgs.media.numberShaders[ p[ i ] - '0' ] );
+				pos[ 0 ] += h;
+			}
+	}
 
 	trap_R_SetColor( NULL );
 }

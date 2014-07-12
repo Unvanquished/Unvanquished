@@ -297,9 +297,9 @@ vmCvar_t        cg_fov_human;
 vmCvar_t        ui_chatPromptColors;
 
 vmCvar_t        cg_beaconHUDScale;
+vmCvar_t        cg_beaconHUDAlpha;
 vmCvar_t        cg_beaconMapScale;
-vmCvar_t        cg_lazyBeacons;
-vmCvar_t        cg_lazyBeaconsLambda;
+vmCvar_t        cg_beaconDynamics;
 
 typedef struct
 {
@@ -470,12 +470,12 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            0                            },
 	{ &cg_fov_human,                   "cg_fov_human",                   "0",            0                            },
 
-	{ &cg_beaconHUDScale,              "cg_beaconHUDScale",              "1",            CVAR_ARCHIVE                 },
-	{ &cg_beaconMapScale,              "cg_beaconMapScale",              "1",            CVAR_ARCHIVE                 },
-	{ &cg_lazyBeacons,                 "cg_lazyBeacons",                 "1",            CVAR_ARCHIVE                 },
-  	{ &cg_lazyBeaconsLambda,           "cg_lazyBeaconsLambda",           "20",           CVAR_ARCHIVE                 },
+	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            },
 
-	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            }
+	{ &cg_beaconHUDScale,              "cg_beaconHUDScale",              "1",            CVAR_ARCHIVE                 },
+	{ &cg_beaconHUDAlpha,              "cg_beaconHUDAlpha",              "1",            CVAR_ARCHIVE                 },
+	{ &cg_beaconMapScale,              "cg_beaconMapScale",              "1",            CVAR_ARCHIVE                 },
+	{ &cg_beaconDynamics,              "cg_beaconDynamics",              "1",            CVAR_ARCHIVE                 }
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
