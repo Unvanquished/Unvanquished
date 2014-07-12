@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.28.0"
+#define PRODUCT_VERSION         "0.29.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -1902,6 +1902,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void       Info_RemoveKey( char *s, const char *key , qboolean big );
 	void       Info_RemoveKey_big( char *s, const char *key );
 	void       Info_SetValueForKey( char *s, const char *key, const char *value , qboolean big );
+	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value );
 	qboolean   Info_Validate( const char *s );
 	void       Info_NextPair( const char **s, char *key, char *value );
 
@@ -2542,6 +2543,7 @@ void         ByteToDir( int b, vec3_t dir );
 	  CA_CONNECTING, // sending request packets to the server
 	  CA_CHALLENGING, // sending challenge packets to the server
 	  CA_CONNECTED, // netchan_t established, getting gamestate
+	  CA_DOWNLOADING, // downloading a file
 	  CA_LOADING, // only during cgame initialization, never during main loop
 	  CA_PRIMED, // got gamestate, waiting for first frame
 	  CA_ACTIVE, // game views should be displayed

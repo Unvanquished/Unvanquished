@@ -1,0 +1,21 @@
+<rml>
+	<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<style>
+		body
+		{
+			position: absolute;
+			top: 50%;
+			width: 100%;
+			background-color: rgba(40,40,40,40);
+		}
+		chatfield
+		{
+			color: #FFFFFFFF;
+		}
+	</style>
+	</head>
+	<body id="chat">
+	<chatType/> <chatfield onFocus="setChatCommand" />
+	</body>
+</rml>

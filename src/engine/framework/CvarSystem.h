@@ -76,7 +76,7 @@ namespace Cvar {
     bool ClearFlags(const std::string& cvarName, int flags);
 
     // Used by statically defined cvar.
-    void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
+    bool Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
     void Unregister(const std::string& cvarName);
 
     // Used by the C API

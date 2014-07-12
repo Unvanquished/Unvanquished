@@ -125,7 +125,6 @@ cvar_t *cl_autorecord;
 cvar_t *cl_motdString;
 
 cvar_t *cl_allowDownload;
-cvar_t *cl_wwwDownload;
 cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
@@ -1428,8 +1427,6 @@ void CL_ShutdownAll( void )
 	DL_Shutdown();
 	// shutdown CGame
 	CL_ShutdownCGame();
-	// shutdown UI
-	CL_ShutdownUI();
 
 	// Clear Faces
 	if ( re.UnregisterFont && cls.consoleFont )
@@ -1656,9 +1653,9 @@ void CL_Disconnect( qboolean showMainMenu )
 		clc.demofile = 0;
 	}
 
-	if ( uivm && showMainMenu )
+	if ( cgvm && showMainMenu )
 	{
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
+		Rocket_DocumentAction( "main", "show" );
 	}
 
 	SCR_StopCinematic();
@@ -1700,14 +1697,14 @@ void CL_Disconnect( qboolean showMainMenu )
 	// XreaL END
 
 	// show_bug.cgi?id=589
-	// don't try a restart if uivm is NULL, as we might be in the middle of a restart already
-	if ( uivm && cls.state > CA_DISCONNECTED )
+	// don't try a restart if rocket is NULL, as we might be in the middle of a restart already
+	if ( cgvm && cls.state > CA_DISCONNECTED )
 	{
 		// restart the UI
 		cls.state = CA_DISCONNECTED;
 
 		// shutdown the UI
-		CL_ShutdownUI();
+		Rocket_Shutdown();
 
 		// init the UI
 		CL_InitUI();
@@ -2187,8 +2184,6 @@ void CL_Vid_Restart_f( void )
 
 	// don't let them loop during the restart
 	Audio::StopAllSounds();
-	// shutdown the UI
-	CL_ShutdownUI();
 	// shutdown the CGame
 	CL_ShutdownCGame();
 	// clear the font cache
@@ -2244,9 +2239,7 @@ Restart the ui subsystem
 void CL_UI_Restart_f( void )
 {
 	// NERVE - SMF
-	// shutdown the UI
-	CL_ShutdownUI();
-
+	Rocket_Shutdown();
 	// init the UI
 	CL_InitUI();
 }
@@ -2279,14 +2272,16 @@ void CL_Snd_Restart_f( void )
 
 	if( !cls.cgameStarted )
 	{
-		CL_ShutdownUI();
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		//TODO S_BeginRegistration()
-		CL_InitUI();
 	}
 	else
 	{
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		CL_Vid_Restart_f();
 	}
 }
@@ -2641,7 +2636,7 @@ void CL_InitDownloads( void )
 		if ( *clc.downloadList )
 		{
 			// if autodownloading is not enabled on the server
-			cls.state = CA_CONNECTED;
+			cls.state = CA_DOWNLOADING;
 			CL_NextDownload();
 			return;
 		}
@@ -2777,57 +2772,6 @@ void CL_DisconnectPacket( netadr_t from )
 		Cvar_Set( "ui_connecting", "1" );
 		Cvar_Set( "ui_dl_running", "1" );
 	}
-}
-
-/*
-===================
-CL_MotdPacket
-
-===================
-*/
-void CL_MotdPacket( netadr_t from, const char *info )
-{
-	const char *v;
-	char w[BIG_INFO_VALUE];
-	char *ptr;
-
-	// if not from our server, ignore it
-	if ( !NET_CompareAdr( from, cls.updateServer ) )
-	{
-		Com_DPrintf( "MOTD packet from unexpected source\n" );
-		return;
-	}
-
-	Com_DPrintf( "MOTD packet: %s\n", info );
-
-	while ( *info != '\\' )
-	{
-		info++;
-	}
-
-	// check challenge
-	v = Info_ValueForKey( info, "challenge" );
-
-	if ( strcmp( v, cls.updateChallenge ) )
-	{
-		Com_DPrintf( "MOTD packet mismatched challenge: "
-		             "'%s' != '%s'\n", v, cls.updateChallenge );
-		return;
-	}
-
-	v = Info_ValueForKey( info, "motd" );
-	Q_strncpyz(w, v, sizeof(w));
-	ptr = w;
-
-	//replace all | with \n
-	while ( *ptr ) {
-		if( *ptr == '|' )
-			*ptr = '\n';
-		ptr++;
-	}
-
-	Q_strncpyz( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
-	Cvar_Set( "cl_newsString", w );
 }
 
 /*
@@ -3281,22 +3225,20 @@ Responses to broadcasts, etc
 */
 void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 {
-	char *s;
-	char *c;
-
 	MSG_BeginReadingOOB( msg );
 	MSG_ReadLong( msg );  // skip the -1
 
-	s = MSG_ReadStringLine( msg );
+	Cmd::Args args(MSG_ReadStringLine( msg ));
 
-	Cmd_TokenizeString( s );
+	if ( args.Argc() < 1 )
+	{
+		return;
+	}
 
-	c = Cmd_Argv( 0 );
-
-	Com_DPrintf( "CL packet %s: %s\n", NET_AdrToStringwPort( from ), c );
+	Com_DPrintf( "CL packet %s: %s\n", NET_AdrToStringwPort( from ), args.Argv(0).c_str() );
 
 	// challenge from the server we are connecting to
-	if ( !Q_stricmp( c, "challengeResponse" ) )
+	if ( args.Argv(0) == "challengeResponse" )
 	{
 		if ( cls.state != CA_CONNECTING )
 		{
@@ -3304,8 +3246,12 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		}
 		else
 		{
+			if ( args.Argc() < 2 )
+			{
+				return;
+			}
 			// start sending challenge repsonse instead of challenge request packets
-			clc.challenge = atoi( Cmd_Argv( 1 ) );
+			clc.challenge = atoi(args.Argv(1).c_str());
 			cls.state = CA_CHALLENGING;
 			clc.connectPacketCount = 0;
 			clc.connectTime = -99999;
@@ -3320,7 +3266,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 
 	// server connection
-	if ( !Q_stricmp( c, "connectResponse" ) )
+	if ( args.Argv(0) == "connectResponse" )
 	{
 		if ( cls.state >= CA_CONNECTED )
 		{
@@ -3349,14 +3295,14 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 
 	// server responding to an info broadcast
-	if ( !Q_stricmp( c, "infoResponse" ) )
+	if ( args.Argv(0) == "infoResponse" )
 	{
 		CL_ServerInfoPacket( from, msg );
 		return;
 	}
 
 	// server responding to a get playerlist
-	if ( !Q_stricmp( c, "statusResponse" ) )
+	if ( args.Argv(0) == "statusResponse" )
 	{
 		CL_ServerStatusResponse( from, msg );
 		return;
@@ -3364,50 +3310,42 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 
 	// a disconnect message from the server, which will happen if the server
 	// dropped the connection but it is still getting packets from us
-	if ( !Q_stricmp( c, "disconnect" ) )
+	if ( args.Argv(0) == "disconnect" )
 	{
 		CL_DisconnectPacket( from );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_stricmp( c, "echo" ) )
+	if ( args.Argv(0) == "echo" && args.Argc() >= 2)
 	{
-		NET_OutOfBandPrint( NS_CLIENT, from, "%s", Cmd_Argv( 1 ) );
-		return;
-	}
-
-	// global MOTD from id
-	if ( !Q_stricmp( c, "motd" ) )
-	{
-		CL_MotdPacket( from, s );
+		NET_OutOfBandPrint( NS_CLIENT, from, "%s", args.Argv(1).c_str() );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_stricmp( c, "print" ) )
+	if ( args.Argv(0) == "print" )
 	{
 		CL_PrintPacket( from, msg );
 		return;
 	}
 
-	// NERVE - SMF - bugfix, make this compare first n chars so it doesn't bail if token is parsed incorrectly
 	// echo request from server
-	if ( !Q_strncmp( c, "getserversResponse", 18 ) )
+	if ( args.Argv(0) == "getserversResponse" )
 	{
 		CL_ServersResponsePacket( &from, msg, qfalse );
 		return;
 	}
 
 	// list of servers with both IPv4 and IPv6 addresses; sent back by a master server (extended)
-	if ( !Q_strncmp( c, "getserversExtResponseLinks", 26 ) )
+	if ( args.Argv(0) == "getserversExtResponseLinks" )
 	{
 		CL_ServerLinksResponsePacket( &from, msg );
 		return;
 	}
 
 	// list of servers sent back by a master server (extended)
-	if ( !Q_strncmp( c, "getserversExtResponse", 21 ) )
+	if ( args.Argv(0) == "getserversExtResponse" )
 	{
 		CL_ServersResponsePacket( &from, msg, qtrue );
 		return;
@@ -3675,13 +3613,6 @@ void CL_Frame( int msec )
 		return;
 	}
 
-	if ( uivm && cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
-	{
-		// if disconnected, bring up the menu
-		//S_StopAllSounds();
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
-	}
-
 	// if recording an avi, lock to a fixed fps
 	if ( CL_VideoRecording() && cl_aviFrameRate->integer && msec )
 	{
@@ -3724,7 +3655,7 @@ void CL_Frame( int msec )
 	CL_CheckTimeout();
 
 	// wwwdl download may survive a server disconnect
-	if ( ( cls.state == CA_CONNECTED && clc.bWWWDl ) || cls.bWWWDlDisconnected )
+	if ( ( cls.state == CA_DOWNLOADING && clc.bWWWDl ) || cls.bWWWDlDisconnected )
 	{
 		CL_WWWDownload();
 	}
@@ -3875,7 +3806,9 @@ void CL_StartHunkUsers( void )
 	if ( !cls.soundStarted )
 	{
 		cls.soundStarted = qtrue;
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 	}
 
 	if ( !cls.soundRegistered )
@@ -3894,6 +3827,7 @@ void CL_StartHunkUsers( void )
 	if ( !cls.uiStarted )
 	{
 		cls.uiStarted = qtrue;
+
 		CL_InitUI();
 	}
 }
@@ -4110,7 +4044,6 @@ void CL_Init( void )
 	cl_showMouseRate = Cvar_Get( "cl_showmouserate", "0", 0 );
 
 	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", 0 );
-	cl_wwwDownload = Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO  );
 
 	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", 0 );
 
@@ -4267,7 +4200,6 @@ void CL_Shutdown( void )
 	}
 
 	Com_DPrintf( "----- CL_Shutdown -----\n" );
-
 	if ( recursive )
 	{
 		printf( "recursive shutdown\n" );
@@ -4284,7 +4216,6 @@ void CL_Shutdown( void )
 	CL_Disconnect( qtrue );
 
 	CL_ShutdownCGame();
-	CL_ShutdownUI();
 
 	Audio::Shutdown();
 	DL_Shutdown();
