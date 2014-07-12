@@ -775,8 +775,6 @@ void ExponentialFade( float *value, float target, float lambda, float timedelta 
 	*value = target + ( *value - target ) * exp( - lambda * timedelta );
 }
 
-//============================================================
-
 /*
  * ===============
  * LerpAngle
