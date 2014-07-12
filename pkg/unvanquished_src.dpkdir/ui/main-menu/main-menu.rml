@@ -128,7 +128,7 @@
 
 		</style>
 	</head>
-	<body id="main" class="mainmenu" nohide onfocus="play 3 sound/ui/heartbeat.ogg sound/ui/heartbeat1.ogg sound/ui/heartbeat2.ogg">
+	<body id="main" class="mainmenu" nohide onshow="play 3 sound/ui/heartbeat.ogg sound/ui/heartbeat1.ogg sound/ui/heartbeat2.ogg">
 		<img class="gradient" src="/ui/assets/bg" />
 		<img class="gradient black" src="/ui/assets/black" />
 		<img class="circles" src="/ui/assets/circles1" />
