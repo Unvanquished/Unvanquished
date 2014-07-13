@@ -160,7 +160,7 @@ void CG_Rocket_BuildServerInfo( void )
 		Q_strncpyz( name, start + 1, end - start );
 		start = end = NULL;
 		Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-		Info_SetValueForKeyRocket( buf, "name", name );
+		Info_SetValueForKeyRocket( buf, "name", name, qfalse );
 		Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 		Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
 		trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
@@ -189,7 +189,7 @@ void CG_Rocket_BuildServerInfo( void )
 				Q_strncpyz( name, start + 1, end - start );
 				start = end = NULL;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-				Info_SetValueForKeyRocket( buf, "name", name );
+				Info_SetValueForKeyRocket( buf, "name", name, qfalse );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
 				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
@@ -215,7 +215,7 @@ void CG_Rocket_BuildServerInfo( void )
 				Q_strncpyz( name, start + 1, end - start );
 				start = end = NULL;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-				Info_SetValueForKeyRocket( buf, "name", name );
+				Info_SetValueForKeyRocket( buf, "name", name, qfalse );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
 				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
