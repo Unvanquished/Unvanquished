@@ -271,6 +271,7 @@ static void CG_SetNextSnap( snapshot_t *snap )
 	if ( ( cg.nextSnap->snapFlags ^ cg.snap->snapFlags ) & SNAPFLAG_SERVERCOUNT )
 	{
 		cg.nextFrameTeleport = qtrue;
+		CG_OnMapRestart();
 	}
 
 	// sort out solid entities

@@ -694,7 +694,7 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 	char *p, *head;
 	int inputs = 0;
 
-	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
+	trap_Cvar_VariableStringBuffer( "audio.al.availableCaptureDevices", buf, sizeof( buf ) );
 	head = buf;
 
 	while ( ( p = strchr( head, '\n' ) ) )
@@ -747,7 +747,7 @@ void CG_Rocket_BuildAlOutputs( const char *args )
 	char *p, *head;
 	int outputs = 0;
 
-	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
+	trap_Cvar_VariableStringBuffer( "audio.al.availableDevices", buf, sizeof( buf ) );
 	head = buf;
 
 	while ( ( p = strchr( head, '\n' ) ) )
@@ -1083,9 +1083,10 @@ void CG_Rocket_BuildMapList( const char *args )
 
 	for ( i = 0; i < rocketInfo.data.mapCount; ++i )
 	{
-		char buf[ MAX_INFO_STRING ];
+		char buf[ MAX_INFO_STRING ] = { 0 };
 		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
-		Info_SetValueForKey( buf, "name", rocketInfo.data.mapList[ i ].mapName, qfalse );
+		Info_SetValueForKey( buf, "fullName", rocketInfo.data.mapList[ i ].mapName, qfalse );
+		Info_SetValueForKey( buf, "name", rocketInfo.data.mapList[ i ].mapLoadName, qfalse );
 		Info_SetValueForKey( buf, "levelshot", va( "%d", rocketInfo.data.mapList[ i ].levelShot ), qfalse );
 
 		trap_Rocket_DSAddRow( "mapList", "default", buf );
@@ -1610,13 +1611,14 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 
 		for ( i = 0; i < PCL_NUM_CLASSES; ++i )
 		{
-			if ( ( cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) ) > 0 )
+			if ( BG_Class( i )->team == TEAM_ALIENS )
 			{
 				buf[ 0 ] = '\0';
 
+				Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
 				Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, qfalse );
 				Info_SetValueForKey( buf, "description", BG_Class( i )->info, qfalse );
-				Info_SetValueForKey( buf, "price", va( "%d", cost / CREDITS_PER_EVO ), qfalse );
+				Info_SetValueForKey( buf, "price", va( "%d", BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) / CREDITS_PER_EVO ), qfalse );
 
 				trap_Rocket_DSAddRow( "alienEvolveList", "default", buf );
 
@@ -1666,13 +1668,11 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
 		{
-			if ( BG_Buildable( i )->team == TEAM_HUMANS &&
-			        BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
-			        !BG_BuildableDisabled( i ) &&
-			        BG_BuildableUnlocked( i ) )
+			if ( BG_Buildable( i )->team == TEAM_HUMANS )
 			{
 				buf[ 0 ] = '\0';
 
+				Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
 				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, qfalse );
 				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
 				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, qfalse );
@@ -1725,13 +1725,11 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
 		{
-			if ( BG_Buildable( i )->team == TEAM_ALIENS &&
-			        BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
-			        !BG_BuildableDisabled( i ) &&
-			        BG_BuildableUnlocked( i ) )
+			if ( BG_Buildable( i )->team == TEAM_ALIENS )
 			{
 				buf[ 0 ] = '\0';
 
+				Info_SetValueForKey( buf, "num", va( "%d", (int) i ), qfalse );
 				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, qfalse );
 				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
 				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, qfalse );

@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.28.0"
+#define PRODUCT_VERSION         "0.29.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -857,6 +857,9 @@ void         ByteToDir( int b, vec3_t dir );
 
 	void     RotateAroundDirection( vec3_t axis[ 3 ], float yaw );
 	void     MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
+
+	float    ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const vec2_t dir, const vec2_t bounds[ 2 ] );
+	void     ExponentialFade( float *value, float target, float lambda, float timedelta );
 
 // perpendicular vector could be replaced by this
 

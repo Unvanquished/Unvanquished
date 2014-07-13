@@ -107,7 +107,7 @@ static void CG_Rocket_DFVoteMap( int handle, const char *data )
 	int mapIndex = atoi( Info_ValueForKey( data, "1" ) );
 	if ( mapIndex < rocketInfo.data.mapCount )
 	{
-		trap_Rocket_DataFormatterFormattedData( handle, va("map: %s <br />levelshot: <img src='%s'/>", CG_Rocket_QuakeToRML( rocketInfo.data.mapList[ mapIndex ].mapName ), rocketInfo.data.mapList[ mapIndex ].imageName ) , qfalse );
+		trap_Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"exec set ui_dialogCvar1 %s;hide maps;exec rocket ui/dialogs/mapdialog.rml load; exec rocket mapdialog show\" class=\"maps\"><div class=\"levelname\">%s</div> <img class=\"levelshot\"src='/%s'/><div class=\"hovertext\">Start Vote</div> </button>", rocketInfo.data.mapList[ mapIndex ].mapLoadName, CG_Rocket_QuakeToRML( rocketInfo.data.mapList[ mapIndex ].mapName ), rocketInfo.data.mapList[ mapIndex ].imageName ) , qfalse );
 	}
 }
 
@@ -150,7 +150,7 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 	}
 	else if( BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) ){
 		Class = "active";
-		action =  va( "onClick='exec \"sell +%s\"'", BG_Weapon( weapon )->name );
+		action =  va( "onClick='exec \"sell %s\"'", BG_Weapon( weapon )->name );
 		Icon = "<icon class=\"current\">\uf00c</icon><icon class=\"sell\">\uf0d6</icon>";
 	}
 	else
@@ -288,6 +288,101 @@ static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 	}
 }
 
+static void CG_Rocket_DFCMAlienBuildables( int handle, const char *data )
+{
+	buildable_t buildable = ( buildable_t ) atoi( Info_ValueForKey( data, "1" ) );
+	const char *Class = "";
+	const char *Icon = "";
+	const char *action = "";
+	int value, valueMarked;
+
+	value = cg.snap->ps.persistant[ PERS_BP ];
+	valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
+
+	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
+	{
+		Class = "locked";
+		Icon = "<icon>\uf023</icon>";
+	}
+	else if ( BG_Buildable( buildable )->buildPoints > value + valueMarked )
+	{
+		Class = "expensive";
+		Icon = "<icon>\uf0d6</icon>";
+	}
+	else
+	{
+		Class = "available";
+		action = va( "onClick='exec \"build %s\"; hide %s'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_ALIENBUILD ].id );
+	}
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS alienBuildList default %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), qfalse );
+}
+
+static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
+{
+	buildable_t buildable = ( buildable_t ) atoi( Info_ValueForKey( data, "1" ) );
+	const char *Class = "";
+	const char *Icon = "";
+	const char *action = "";
+	int value, valueMarked;
+
+	value = cg.snap->ps.persistant[ PERS_BP ];
+	valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
+
+	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
+	{
+		Class = "locked";
+		Icon = "<icon>\uf023</icon>";
+	}
+	else if ( BG_Buildable( buildable )->buildPoints > value + valueMarked )
+	{
+		Class = "expensive";
+		Icon = "<icon>\uf0d6</icon>";
+	}
+	else
+	{
+		Class = "available";
+		action = va( "onClick='exec \"build %s\"; hide %s'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id );
+	}
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS humanBuildList default %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), qfalse );
+}
+
+static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
+{
+	class_t alienClass = (class_t) atoi( Info_ValueForKey( data, "1" ) );
+	const char *Class = "";
+	const char *Icon = "";
+	const char *action = "";
+	playerState_t *ps = &cg.snap->ps;
+	int cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass, cg.predictedPlayerState.persistant[ PERS_CREDIT ] );
+
+	if( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )
+	{
+		Class = "active";
+		Icon = "<icon class=\"current\">\uf00c</icon><icon class=\"sell\">\uf0d6</icon>";
+	}
+	else if ( !BG_ClassUnlocked( alienClass ) || BG_ClassDisabled( alienClass ) )
+	{
+		Class = "locked";
+		Icon = "<icon>\uf023</icon>";
+	}
+	else if ( cost == -1 )
+	{
+
+		Class = "expensive";
+		Icon = "<icon>\uf0d6</icon>";
+	}
+	else
+	{
+		Class = "available";
+		action =  va( "onClick='exec \"class %s\"; hide %s'", BG_Class( alienClass )->name, rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id );
+	}
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' onMouseover='setDS alienEvolveList alienClasss %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), qfalse );
+}
+
+
 typedef struct
 {
 	const char *name;
@@ -297,8 +392,11 @@ typedef struct
 static const dataFormatterCmd_t dataFormatterCmdList[] =
 {
 	{ "ClassName", &CG_Rocket_DFClassName },
+	{ "CMAlienBuildables", &CG_Rocket_DFCMAlienBuildables },
+	{ "CMAlienEvolve", &CG_Rocket_DFCMAlienEvolve },
 	{ "CMArmouryBuyUpgrades", &CG_Rocket_DFCMArmouryBuyUpgrade },
 	{ "CMArmouryBuyWeapons", &CG_Rocket_DFCMArmouryBuyWeapon },
+	{ "CMHumanBuildables", &CG_Rocket_DFCMHumanBuildables },
 	{ "GearOrReady", &CG_Rocket_DFGearOrReady },
 	{ "GWeaponDamage", &CG_Rocket_DFGWeaponDamage },
 	{ "GWeaponRange", &CG_Rocket_DFGWeaponRange },

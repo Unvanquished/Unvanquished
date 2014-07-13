@@ -200,7 +200,6 @@ else()
   # Extra debug flags
   set_c_cxx_flag( "-g3" DEBUG )
   set_c_cxx_flag( "-g3" RELWITHDEBINFO )
-
   if( USE_DEBUG_OPTIMIZE )
     try_c_cxx_flag( OPTIMIZE_DEBUG "-Og" DEBUG )
   endif()
@@ -358,7 +357,7 @@ endif()
 
 if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
   set( PythonInterp_FIND_VERSION 2 )
-  find_package( PythonInterp )
+  find_package( PythonInterp 2 )
   if( NOT PYTHONINTERP_FOUND )
     message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
   endif()
@@ -382,13 +381,11 @@ set( TOOLS_DIR ${MOUNT_DIR}/tools )
 set( LCC_DIR ${TOOLS_DIR}/lcc )
 set( LIB_DIR ${MOUNT_DIR}/libs )
 set( ROCKET_DIR ${LIB_DIR}/libRocket )
-
 if( CMAKE_CFG_INTDIR STREQUAL "." )
   set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
 else()
   set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
 endif()
-
 if( MSVC )
   set( DEPS_EXT ".zip" )
   if( ARCH STREQUAL "x86_64" )
@@ -774,18 +771,15 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/OggCodec.cpp
   ${ENGINE_DIR}/audio/OpusCodec.cpp
   ${ENGINE_DIR}/audio/WavCodec.cpp
-  )
-
-set( ROCKET_CLIENTLIST
-  ${MOUNT_DIR}/engine/client/rocket_dataformatter.cpp
-  ${MOUNT_DIR}/engine/client/rocket_textelements.cpp
-  ${MOUNT_DIR}/engine/client/rocket_documents.cpp
-  ${MOUNT_DIR}/engine/client/rocket_datagrid.cpp
-  ${MOUNT_DIR}/engine/client/rocket_element.cpp
-  ${MOUNT_DIR}/engine/client/rocket_events.cpp
-  ${MOUNT_DIR}/engine/client/rocket_keys.cpp
-  ${MOUNT_DIR}/engine/client/rocket_hud.cpp
-  ${MOUNT_DIR}/engine/client/rocket.cpp
+  ${ENGINE_DIR}/client/rocket_dataformatter.cpp
+  ${ENGINE_DIR}/client/rocket_textelements.cpp
+  ${ENGINE_DIR}/client/rocket_documents.cpp
+  ${ENGINE_DIR}/client/rocket_datagrid.cpp
+  ${ENGINE_DIR}/client/rocket_element.cpp
+  ${ENGINE_DIR}/client/rocket_events.cpp
+  ${ENGINE_DIR}/client/rocket_keys.cpp
+  ${ENGINE_DIR}/client/rocket_hud.cpp
+  ${ENGINE_DIR}/client/rocket.cpp
 )
 
 set( DUK_CLIENTLIST
@@ -1145,7 +1139,7 @@ if( DEPS_DIR )
   # Download them if they not available
   if( NOT EXISTS ${DEPS_DIR} )
     get_filename_component( BASENAME ${DEPS_DIR} NAME )
-    set( REMOTE "http://www.unvanquished.net/unvanquished_deps/${BASENAME}${DEPS_EXT}" )
+    set( REMOTE "http://unvnet.net/unvanquished_deps/${BASENAME}${DEPS_EXT}" )
     message( STATUS "Downloading dependencies from '${REMOTE}'" )
     file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}${DEPS_EXT} SHOW_PROGRESS
       STATUS DOWNLOAD_RESULT LOG DOWNLOAD_LOG )
@@ -1267,11 +1261,6 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
     endif()
   endif()
 
-  include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
-  set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
-  include_directories( ${LIB_DIR}/duktape )
-  set( LIBS_CLIENT ${LIBS_CLIENT} DUK_LIB )
-
   # Used by tinygettext to use SDL_iconv instead of base iconv
   if( WIN32 )
     add_definitions( -DHAVE_SDL )
@@ -1279,6 +1268,15 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
 endif()
 mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR MINGW32_LIBRARY )
 mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
+
+# libRocket & Duktape
+if( BUILD_CLIENT )
+  include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include ${LIB_DIR}/duktape )
+  add_subdirectory( ${ROCKET_DIR} )
+  add_subdirectory( ${LIB_DIR}/duktape )
+  add_definitions( -DSTATIC_LIB )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB DUK_LIB )
+endif()
 
 # zlib
 find_package( ZLIB REQUIRED )
@@ -1407,9 +1405,6 @@ elseif( NOT APPLE )
   include_directories( ${CURSESW_INCLUDE_DIR} )
   set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
 endif()
-
-add_subdirectory( ${ROCKET_DIR} )
-add_subdirectory( ${LIB_DIR}/duktape )
 
 # Builds the libs for which we include the source
 add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
@@ -1682,9 +1677,6 @@ function( GAMEMODULE )
     )
   endif()
 endfunction()
-
-
-
 
 if( BUILD_GAME_QVM )
   add_subdirectory( ${LCC_DIR} ${CMAKE_BINARY_DIR}/lcc )

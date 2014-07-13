@@ -256,13 +256,14 @@ namespace Cvar{
         cvarsInitialized = true;
     }
 
-    void Register(CvarProxy* cvar, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
+    bool Register(CvarProxy* cvar, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
         if (cvarsInitialized) {
             GetCvarMap()[name] = {cvar, "", 0, defaultValue};
             RegisterCvarRPC(name, std::move(description), flags, defaultValue);
         } else {
             GetCvarMap()[name] = {cvar, std::move(description), flags, defaultValue};
         }
+        return true;
     }
 
     std::string GetValue(const std::string& name) {

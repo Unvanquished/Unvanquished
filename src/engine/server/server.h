@@ -196,7 +196,6 @@ typedef struct client_s
 	int           downloadSendTime; // time we last got an ack from the client
 
 	// www downloading
-	qboolean bDlOK; // passed from cl_wwwDownload CVAR_USERINFO, whether this client supports www dl
 	char     downloadURL[ MAX_OSPATH ]; // the URL we redirected the client to
 	qboolean bWWWDl; // we have a www download going
 	qboolean bWWWing; // the client is doing an ftp/http download
@@ -444,7 +443,7 @@ void SV_SpawnServer( const char *server );
 //
 void SV_GetChallenge( netadr_t from );
 
-void SV_DirectConnect( netadr_t from );
+void SV_DirectConnect( netadr_t from, const Cmd::Args& args );
 
 void SV_ExecuteClientMessage( client_t *cl, msg_t *msg );
 void SV_UserinfoChanged( client_t *cl );

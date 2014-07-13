@@ -15,16 +15,10 @@ game-qvm-native.*
 ui-qvm-native.*
 vm
 main/*.pk3
-libglcpp-library.a
-libglsl_optimizer.a
-libmesa.a
 libROCKET_LIB.a
-build-32/*
-build-64/*
 Release
 Debug
 build
-
 *.vcxproj.user
 *.kdev4
 

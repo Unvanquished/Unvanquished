@@ -1760,7 +1760,7 @@ void CG_Rocket_DrawConnectText( void )
 
 	else
 	{
-		Q_strncpyz( rml, va( "Connecting to %s", rocketInfo.cstate.servername ), sizeof( rml ) );
+		Q_strncpyz( rml, va( "Connecting to %s <br/>", rocketInfo.cstate.servername ), sizeof( rml ) );
 	}
 
 	if ( rocketInfo.cstate.connState < CA_CONNECTED && *rocketInfo.cstate.messageString )
@@ -1795,7 +1795,7 @@ void CG_Rocket_DrawConnectText( void )
 
 	Q_strcat( rml, sizeof( rml ), s );
 
-	trap_Rocket_SetInnerRML( rml, RP_QUAKE );
+	trap_Rocket_SetInnerRML( rml, 0 );
 }
 
 void CG_Rocket_DrawClock( void )
@@ -1862,7 +1862,28 @@ void CG_Rocket_DrawStaminaBolt( void )
 
 void CG_Rocket_DrawChatType( void )
 {
-	trap_Rocket_SetInnerRML( cg.sayTextType, RP_QUAKE );
+	static const struct {
+		char colour[4]; // ^n
+		char *prompt;
+	} sayText[] = {
+		{ "",   NULL },
+		{ "^2", N_("Say: ") },
+		{ "^5", N_("Team Say: ") },
+		{ "^6", N_("Admin Say: ") },
+		{ "",   N_("Command: ") },
+	};
+
+	if ( (size_t) cg.sayType < ARRAY_LEN( sayText ) )
+	{
+		if ( ui_chatPromptColors.integer )
+		{
+			trap_Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, _( sayText[ cg.sayType ].prompt ) ), RP_QUAKE );
+		}
+		else
+		{
+			trap_Rocket_SetInnerRML( _( sayText[ cg.sayType ].prompt ), RP_QUAKE );
+		}
+	}
 }
 
 #define MOMENTUM_BAR_MARKWIDTH 0.5f
@@ -2364,22 +2385,6 @@ void CG_Rocket_DrawPredictedRGSRate( void )
 	trap_Rocket_SetInnerRML( va( "^%c%+d%%", color, delta ), RP_QUAKE );
 }
 
-static void CG_Rocket_DrawPlayerFuelValue( void )
-{
-	int fuel, percent;
-
-	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
-	{
-		return;
-	}
-
-	fuel    = cg.snap->ps.stats[ STAT_FUEL ];
-	percent = ( int )( 100.0f * ( float )fuel / ( float )JETPACK_FUEL_MAX );
-
-
-	trap_Rocket_SetInnerRML( va( "%d", percent ), 0 );
-}
-
 static void CG_Rocket_DrawWarmup( void )
 {
 	int   sec = 0;
@@ -2435,15 +2440,14 @@ static void CG_Rocket_DrawHostname( void )
 
 static void CG_Rocket_DrawDownloadName( void )
 {
-	static char oldDownload[ MAX_STRING_CHARS ];
 	char downloadName[ MAX_STRING_CHARS ];
 
 	trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof( downloadName ) );
 
-	if ( Q_stricmp( downloadName, oldDownload ) )
+	if ( Q_stricmp( downloadName, rocketInfo.downloadName ) )
 	{
-		Q_strncpyz( oldDownload, downloadName, sizeof( oldDownload ) );
-		trap_Rocket_SetInnerRML( oldDownload, RP_QUAKE );
+		Q_strncpyz( rocketInfo.downloadName, downloadName, sizeof( rocketInfo.downloadName ) );
+		trap_Rocket_SetInnerRML( rocketInfo.downloadName, RP_QUAKE );
 	}
 }
 
@@ -2453,6 +2457,11 @@ static void CG_Rocket_DrawDownloadTime( void )
 	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
 	float downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 	int xferRate;
+
+	if ( !*rocketInfo.downloadName )
+	{
+		return;
+	}
 
 	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
 	{
@@ -2484,6 +2493,11 @@ static void CG_Rocket_DrawDownloadTotalSize( void )
 	char totalSizeBuf[ MAX_STRING_CHARS ];
 	float downloadSize = trap_Cvar_VariableValue( "cl_downloadSize" );
 
+	if ( !*rocketInfo.downloadName )
+	{
+		return;
+	}
+
 	CG_ReadableSize( totalSizeBuf,  sizeof totalSizeBuf,  downloadSize );
 
 	trap_Rocket_SetInnerRML( totalSizeBuf, RP_QUAKE );
@@ -2493,6 +2507,11 @@ static void CG_Rocket_DrawDownloadCompletedSize( void )
 {
 	char dlSizeBuf[ MAX_STRING_CHARS ];
 	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
+
+	if ( !*rocketInfo.downloadName )
+	{
+		return;
+	}
 
 	CG_ReadableSize( dlSizeBuf,  sizeof dlSizeBuf,  downloadCount );
 
@@ -2506,6 +2525,11 @@ static void CG_Rocket_DrawDownloadSpeed( void )
 	float downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 	int xferRate;
 
+	if ( !*rocketInfo.downloadName )
+	{
+		return;
+	}
+
 	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
 	{
 		xferRate = downloadCount / ( ( rocketInfo.realtime - downloadTime ) / 1000 );
@@ -2517,6 +2541,13 @@ static void CG_Rocket_DrawDownloadSpeed( void )
 		xferRate = 0;
 		trap_Rocket_SetInnerRML( "0 KB/Sec", RP_QUAKE );
 	}
+}
+
+static void CG_Rocket_HaveJetpck( void )
+{
+	qboolean jetpackInInventory = BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats );
+	trap_Rocket_SetClass( "active", jetpackInInventory );
+	trap_Rocket_SetClass( "inactive", !jetpackInInventory );
 }
 
 typedef struct
@@ -2551,12 +2582,12 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
 	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
 	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },
-	{ "fuel", &CG_Rocket_DrawPlayerFuelValue, ELEMENT_HUMANS },
 	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
 	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
 	{ "hostname", &CG_Rocket_DrawHostname, ELEMENT_ALL },
 	{ "inventory", &CG_DrawHumanInventory, ELEMENT_HUMANS },
 	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
+	{ "jetpack", &CG_Rocket_HaveJetpck, ELEMENT_HUMANS },
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },

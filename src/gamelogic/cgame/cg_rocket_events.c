@@ -166,24 +166,26 @@ static void CG_Rocket_SetChatCommand( void )
 {
 	const char *cmd = NULL;
 
-	if ( !cg.sayTextType )
+	switch ( cg.sayType )
 	{
-		return;
-	}
-
-	switch ( *cg.sayTextType )
-	{
-		case 'A':
-			cmd = "a";
-			break;
-
-		case 'P':
+		case SAY_TYPE_PUBLIC:
 			cmd = "say";
 			break;
 
-		case 'T':
+		case SAY_TYPE_TEAM:
 			cmd = "say_team";
 			break;
+
+		case SAY_TYPE_ADMIN:
+			cmd = "a";
+			break;
+
+		case SAY_TYPE_COMMAND:
+			cmd = "/";
+			break;
+
+		default:
+			return;
 	}
 
 	if ( cmd )
@@ -206,6 +208,7 @@ static void CG_Rocket_EventExecForm( void )
 
 	if ( !*params )
 	{
+		Com_Printf( "^3WARNING: Invalid form submit.  No named values exist.\n" );
 		return;
 	}
 
@@ -251,9 +254,129 @@ static void CG_Rocket_SetDataSelectValue( void )
 
 }
 
+static void CG_Rocket_GraphicsQualityChanged( void )
+{
+	switch ( trap_Cvar_VariableIntegerValue( "ui_glCustom" ) )
+	{
+		case 0: // high quality
+			trap_Cvar_Set( "r_subdivisions", "4" );
+			trap_Cvar_Set( "r_vertexlighting", "0" );
+			trap_Cvar_Set( "r_picmip", "0" );
+			trap_Cvar_Set( "r_inGameVideo", "1" );
+			trap_Cvar_Set( "cg_shadows", "4" );
+			trap_Cvar_Set( "r_dynamiclight", "1" );
+			trap_Cvar_Set( "cg_bounceParticles", "1" );
+			trap_Cvar_Set( "r_normalMapping", "1" );
+			trap_Cvar_Set( "r_bloom", "1" );
+			trap_Cvar_Set( "r_rimlighting", "1" );
+			trap_Cvar_Set( "cg_motionblur", "0.05" );
+			trap_Cvar_Set( "r_ext_multisample", "8" );
+			trap_Cvar_Set( "r_ext_texture_filter_anisotropic", "8" );
+			trap_Cvar_Set( "r_heathaze", "1" );
+			trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
+			break;
+
+		case 1: // intermediate
+			trap_Cvar_Set( "r_subdivisions", "8" );
+			trap_Cvar_Set( "r_vertexlighting", "0" );
+			trap_Cvar_Set( "r_picmip", "0" );
+			trap_Cvar_Set( "r_inGameVideo", "1" );
+			trap_Cvar_Set( "cg_shadows", "1" );
+			trap_Cvar_Set( "r_dynamiclight", "1" );
+			trap_Cvar_Set( "cg_bounceParticles", "0" );
+			trap_Cvar_Set( "r_normalMapping", "1" );
+			trap_Cvar_Set( "r_bloom", "1" );
+			trap_Cvar_Set( "r_rimlighting", "1" );
+			trap_Cvar_Set( "cg_motionblur", "0" );
+			trap_Cvar_Set( "r_ext_multisample", "4" );
+			trap_Cvar_Set( "r_ext_texture_filter_anisotropic", "4" );
+			trap_Cvar_Set( "r_heathaze", "0" );
+			trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
+			break;
+
+		case 2: // fast
+			trap_Cvar_Set( "r_subdivisions", "12" );
+			trap_Cvar_Set( "r_vertexlighting", "0" );
+			trap_Cvar_Set( "r_picmip", "1" );
+			trap_Cvar_Set( "r_inGameVideo", "0" );
+			trap_Cvar_Set( "cg_shadows", "0" );
+			trap_Cvar_Set( "r_dynamiclight", "0" );
+			trap_Cvar_Set( "cg_bounceParticles", "0" );
+			trap_Cvar_Set( "r_normalMapping", "0" );
+			trap_Cvar_Set( "r_bloom", "1" );
+			trap_Cvar_Set( "r_rimlighting", "1" );
+			trap_Cvar_Set( "cg_motionblur", "0" );
+			trap_Cvar_Set( "r_ext_multisample", "2" );
+			trap_Cvar_Set( "r_ext_texture_filter_anisotropic", "2" );
+			trap_Cvar_Set( "r_heathaze", "0" );
+			trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
+			break;
+
+		case 3: // fastest
+			trap_Cvar_Set( "r_subdivisions", "20" );
+			trap_Cvar_Set( "r_vertexlighting", "1" );
+			trap_Cvar_Set( "r_picmip", "2" );
+			trap_Cvar_Set( "r_inGameVideo", "0" );
+			trap_Cvar_Set( "cg_shadows", "0" );
+			trap_Cvar_Set( "r_dynamiclight", "0" );
+			trap_Cvar_Set( "cg_bounceParticles", "0" );
+			trap_Cvar_Set( "r_normalMapping", "0" );
+			trap_Cvar_Set( "r_bloom", "0" );
+			trap_Cvar_Set( "r_rimlighting", "0" );
+			trap_Cvar_Set( "cg_motionblur", "0" );
+			trap_Cvar_Set( "r_ext_multisample", "0" );
+			trap_Cvar_Set( "r_ext_texture_filter_anisotropic", "0" );
+			trap_Cvar_Set( "r_heathaze", "0" );
+			trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
+			break;
+
+		// 4 is custom
+
+		case 5: // dlights, no shader effects
+			trap_Cvar_Set( "r_subdivisions", "20" );
+			trap_Cvar_Set( "r_vertexlighting", "0" );
+			trap_Cvar_Set( "r_picmip", "0" );
+			trap_Cvar_Set( "r_inGameVideo", "0" );
+			trap_Cvar_Set( "cg_shadows", "0" );
+			trap_Cvar_Set( "r_dynamiclight", "1" );
+			trap_Cvar_Set( "cg_bounceParticles", "0" );
+			trap_Cvar_Set( "r_normalMapping", "0" );
+			trap_Cvar_Set( "r_bloom", "0" );
+			trap_Cvar_Set( "r_rimlighting", "0" );
+			trap_Cvar_Set( "cg_motionblur", "0" );
+			trap_Cvar_Set( "r_ext_multisample", "0" );
+			trap_Cvar_Set( "r_ext_texture_filter_anisotropic", "0" );
+			trap_Cvar_Set( "r_heathaze", "0" );
+			trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
+			break;
+	}
+}
+
+static void CG_Rocket_EventPlay( void )
+{
+	const char *track = NULL;
+
+	// Specifying multiple files to randomly select between
+	if ( trap_Argc() > 2 )
+	{
+		int numSounds = atoi( CG_Argv( 1 ) );
+		if ( numSounds > 0 )
+		{
+			int selection = rand() % numSounds + 1;
+			track = CG_Argv( 1 + selection );
+			trap_S_StartBackgroundTrack( track, track );
+		}
+	}
+	else
+	{
+		track = CG_Argv( 1 );
+		trap_S_StartBackgroundTrack( track, track );
+	}
+}
+
 typedef struct
 {
-	const char *command;
+	const char *const command;
 	void ( *exec ) ( void );
 } eventCmd_t;
 
@@ -267,9 +390,11 @@ static const eventCmd_t eventCmdList[] =
 	{ "execForm", &CG_Rocket_EventExecForm },
 	{ "filterDS", &CG_Rocket_FilterDS },
 	{ "goto", &CG_Rocket_EventGoto },
+	{ "graphicsqualitychanged", &CG_Rocket_GraphicsQualityChanged },
 	{ "hide", &CG_Rocket_EventHide },
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
+	{ "play", &CG_Rocket_EventPlay },
 	{ "setAttribute", &CG_Rocket_SetAttribute },
 	{ "setChatCommand", &CG_Rocket_SetChatCommand },
 	{ "setDataSelectValue", &CG_Rocket_SetDataSelectValue },

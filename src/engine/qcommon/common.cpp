@@ -496,8 +496,7 @@ void Com_StartupVariable( const char *match )
 		if ( !match || !strcmp( s, match ) )
 		{
 			Cvar_Set( s, line[2].c_str() );
-			cv = Cvar_Get( s, "", 0 );
-			cv->flags |= CVAR_USER_CREATED;
+			cv = Cvar_Get( s, "", CVAR_USER_CREATED );
 			if (cv->flags & CVAR_ROM) {
 				com_consoleLines[i] = 0;
 			}

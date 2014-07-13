@@ -286,11 +286,11 @@ You or the server may be running older versions of the game."
 
 // NERVE - SMF - wolf multiplayer master servers
 #ifndef MASTER_SERVER_NAME
-# define MASTER_SERVER_NAME    "unvanquished.net"
+# define MASTER_SERVER_NAME    "unvnet.net"
 #endif
 
 #ifndef MOTD_SERVER_NAME
-# define MOTD_SERVER_NAME      "unvanquished.net"
+# define MOTD_SERVER_NAME      "unvnet.net"
 #endif
 
 #define PORT_MASTER             27950
@@ -999,8 +999,6 @@ char         *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
 
 void         Sys_Sleep( int msec );
-
-qboolean     Sys_LowPhysicalMemory( void );
 
 typedef enum
 {

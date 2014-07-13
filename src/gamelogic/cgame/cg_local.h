@@ -978,6 +978,15 @@ typedef struct
 	qboolean drawFrontline;
 } cgBinaryShaderSetting_t;
 
+typedef enum
+{
+	SAY_TYPE_NONE,
+	SAY_TYPE_PUBLIC,
+	SAY_TYPE_TEAM,
+	SAY_TYPE_ADMIN,
+	SAY_TYPE_COMMAND,
+} sayType_t;
+
 #define NUM_BINARY_SHADERS 256
 
 typedef struct
@@ -1175,7 +1184,7 @@ typedef struct
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
-	char                    *sayTextType;
+	sayType_t               sayType;
 
 	// momentum
 	float                   momentumGained;
@@ -1316,6 +1325,7 @@ typedef struct
 	int serverStatusLastRefresh;
 	int scoresLastUpdate;
 	int realtime;
+	char downloadName[ MAX_STRING_CHARS ];
 	cgClientState_t cstate;
 	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
@@ -1799,6 +1809,7 @@ extern vmCvar_t             cg_highPolyBuildableModels;
 extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
+extern vmCvar_t             ui_chatPromptColors;
 
 //
 // Rocket cvars
@@ -1975,6 +1986,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position );
 void CG_PainEvent( centity_t *cent, int health );
 void CG_OnPlayerWeaponChange( weapon_t oldWeapon );
 void CG_OnPlayerUpgradeChange( void );
+void CG_OnMapRestart( void );
 
 //
 // cg_ents.c
@@ -2055,6 +2067,8 @@ void CG_ProcessSnapshots( void );
 qboolean CG_ConsoleCommand( void );
 void     CG_InitConsoleCommands( void );
 void     CG_RequestScores( void );
+void     CG_HideScores_f( void );
+void     CG_ShowScores_f( void );
 
 //
 // cg_servercmds.c

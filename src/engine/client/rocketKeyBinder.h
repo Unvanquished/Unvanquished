@@ -91,6 +91,11 @@ public:
 		{
 			dirty_key = false;
 			key = Key_GetKey( cmd.CString(), team );
+			if ( key == -1 && team != DEFAULT_BINDING )
+			{
+				key = Key_GetKey( cmd.CString(), DEFAULT_BINDING );
+			}
+
 			SetInnerRML( key == -1 ? "Unbound" : Key_KeynumToString( key ) );
 		}
 	}

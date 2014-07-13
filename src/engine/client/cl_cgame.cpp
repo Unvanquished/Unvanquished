@@ -1573,6 +1573,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_FS_DELETEFILE:
 			return FS_Delete( (char*) VMA( 1 ) );
 
+		case CG_FS_LOADPAK:
+			return FS_LoadPak( ( char * ) VMA( 1 ) );
+
 		case CG_SENDCONSOLECOMMAND:
 			Cmd::BufferCommandText( (char*) VMA( 1 ) );
 			return 0;
@@ -2655,10 +2658,7 @@ void CL_InitCGame( void )
 	re.EndRegistration();
 
 	// make sure everything is paged in
-	if ( !Sys_LowPhysicalMemory() )
-	{
-		Com_TouchMemory();
-	}
+	Com_TouchMemory();
 
 	// Ridah, update the memory usage file
 	CL_UpdateLevelHunkUsage();
@@ -2667,10 +2667,6 @@ void CL_InitCGame( void )
 	IN_DropInputsForFrame();
 	CL_ClearKeys();
 	Key_ClearStates();
-
-//  if( cl_autorecord->integer ) {
-//      Cvar_Set( "g_synchronousClients", "1" );
-//  }
 }
 
 void CL_InitCGameCVars( void )

@@ -256,7 +256,7 @@ static void CG_CompleteGive( void )
 	unsigned               i = 0;
 	static const char give[][ 12 ] =
 	{
-		"all", "health", "funds", "stamina", "poison", "gas", "ammo", "momentum", "bp"
+		"all", "health", "funds", "stamina", "poison", "fuel", "ammo", "momentum", "bp"
 	};
 
 	for( i = 0; i < ARRAY_LEN( give ); i++ )
@@ -335,19 +335,25 @@ static void CG_TestCGrade_f( void )
 
 static void CG_MessageAdmin_f( void )
 {
-	cg.sayTextType = "Admin Say: ";
+	cg.sayType = SAY_TYPE_ADMIN;
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+}
+
+static void CG_MessageCommand_f( void )
+{
+	cg.sayType = SAY_TYPE_COMMAND;
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessageTeam_f( void )
 {
-	cg.sayTextType = "Team Say: ";
+	cg.sayType = SAY_TYPE_TEAM;
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessagePublic_f( void )
 {
-	cg.sayTextType = "Public Say: ";
+	cg.sayType = SAY_TYPE_PUBLIC;
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
@@ -357,7 +363,7 @@ static void CG_ToggleMenu_f( void )
 }
 
 // FIXME: Don't hardcode scoreboard ID
-static void CG_ShowScores_f( void )
+void CG_ShowScores_f( void )
 {
 	if ( !cg.showScores )
 	{
@@ -372,7 +378,7 @@ static void CG_ShowScores_f( void )
 	}
 }
 
-static void CG_HideScores_f( void )
+void CG_HideScores_f( void )
 {
 	trap_Rocket_ShowScoreboard( "scoreboard", qfalse );
 	cg.showScores = qfalse;
@@ -414,6 +420,7 @@ static const struct
 	{ "lcp",              CG_CenterPrint_f,        0                },
 	{ "m",                0,                       CG_CompleteName  },
 	{ "message_admin",    CG_MessageAdmin_f,       0                },
+	{ "message_command",  CG_MessageCommand_f,     0                },
 	{ "message_public",   CG_MessagePublic_f,      0                },
 	{ "message_team",     CG_MessageTeam_f,        0                },
 	{ "mt",               0,                       CG_CompleteName  },
