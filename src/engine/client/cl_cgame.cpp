@@ -2457,6 +2457,25 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_SetDataSelectIndex( args[ 1 ] );
 			return 0;
 
+		case CG_ROCKET_DYNHUD_CREATEELEMENT:
+			return Rocket_DynamicHud_CreateElement( ( const char * ) VMA( 1 ) );
+
+		case CG_ROCKET_DYNHUD_REMOVEELEMENT:
+			Rocket_DynamicHud_RemoveElement( args[ 1 ] );
+			return 0;
+
+		case CG_ROCKET_DYNHUD_SETPROPERTY:
+			Rocket_DynamicHud_SetProperty( args[ 1 ], ( const char * ) VMA( 2 ), ( const char * ) VMA( 3 ) );
+			return 0;
+
+		case CG_ROCKET_DYNHUD_SETATTRIBUTE:
+			Rocket_DynamicHud_SetAttribute( args[ 1 ], ( const char * ) VMA( 2 ), ( const char * ) VMA( 3 ) );
+			return 0;
+
+		case CG_ROCKET_DYNHUD_SETINNERRML:
+			Rocket_DynamicHud_SetInnerRML( args[ 1 ], ( const char * ) VMA( 2 ), args[ 3 ] );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes

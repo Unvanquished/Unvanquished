@@ -41,6 +41,7 @@ Maryland 20850 USA.
 
 extern Rocket::Core::Context *menuContext;
 extern Rocket::Core::Context *hudContext;
+extern Rocket::Core::Context *dynamicHudContext;
 
 class RocketEvent_t
 {

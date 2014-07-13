@@ -250,3 +250,8 @@ equ trap_Rocket_ClearText                 -486
 equ trap_Rocket_RegisterProperty          -487
 equ trap_Rocket_ShowScoreboard            -488
 equ trap_Rocket_SetDataSelectIndex        -489
+equ trap_Rocket_DynamicHud_CreateEement   -490
+equ trap_Rocket_DynamicHud_RemoveElement  -491
+equ trap_Rocket_DynamicHud_SetProperty    -492
+equ trap_Rocket_DynamicHud_SetAttribute   -493
+equ trap_Rocket_DynamicHud_SetInnerRML    -494

@@ -83,3 +83,8 @@ void Rocket_ClearText( void ) {}
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs ) {}
 void Rocket_ShowScoreboard( const char *name, bool show ) {}
 void Rocket_SetDataSelectIndex( int index ) {}
+int Rocket_DynamicHud_CreateElement( const char *tag ) { return 0; }
+void Rocket_DynamicHud_RemoveElement( int handle ) {}
+void Rocket_DynamicHud_SetProperty( int handle, const char *property, const char *value ) {}
+void Rocket_DynamicHud_SetAttribute( int handle, const char *attribute, const char *value ) {}
+void Rocket_DynamicHud_SetInnerRML( int handle, const char *RML, int parseFlags ) {}

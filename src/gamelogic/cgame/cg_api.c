@@ -1561,3 +1561,28 @@ void trap_Rocket_SetDataSelectIndex( int index )
 {
 	syscallVM( CG_ROCKET_SETDATASELECTINDEX, index );
 }
+
+int trap_Rocket_DynamicHud_CreateEement( const char *tag )
+{
+	syscallVM( CG_ROCKET_DYNHUD_CREATEELEMENT, tag );
+}
+
+void trap_Rocket_DynamicHud_RemoveElement( int handle )
+{
+	syscallVM( CG_ROCKET_DYNHUD_REMOVEELEMENT, handle );
+}
+
+void trap_Rocket_DynamicHud_SetProperty( int handle, const char *property, const char *value )
+{
+	syscallVM( CG_ROCKET_DYNHUD_SETPROPERTY, handle, property, value );
+}
+
+void trap_Rocket_DynamicHud_SetAttribute( int handle, const char *attribute, const char *value )
+{
+	syscallVM( CG_ROCKET_DYNHUD_SETATTRIBUTE, handle, attribute, value );
+}
+
+void trap_Rocket_DynamicHud_SetInnerRML( int handle, const char *RML, int parseFlags )
+{
+	syscallVM( CG_ROCKET_DYNHUD_SETINNERRML, handle, RML, parseFlags );
+}

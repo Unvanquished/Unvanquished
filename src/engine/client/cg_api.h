@@ -346,7 +346,12 @@ typedef enum cgameImport_s
   CG_ROCKET_CLEARTEXT,
   CG_ROCKET_REGISTERPROPERTY,
   CG_ROCKET_SHOWSCOREBOARD,
-  CG_ROCKET_SETDATASELECTINDEX
+  CG_ROCKET_SETDATASELECTINDEX,
+  CG_ROCKET_DYNHUD_CREATEELEMENT,
+  CG_ROCKET_DYNHUD_REMOVEELEMENT,
+  CG_ROCKET_DYNHUD_SETPROPERTY,
+  CG_ROCKET_DYNHUD_SETATTRIBUTE,
+  CG_ROCKET_DYNHUD_SETINNERRML
 } cgameImport_t;
 
 typedef enum
@@ -673,4 +678,9 @@ void            trap_Rocket_ClearText( void );
 void            trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
 void            trap_Rocket_ShowScoreboard( const char *name, qboolean show );
 void            trap_Rocket_SetDataSelectIndex( int index );
+int             trap_Rocket_DynamicHud_CreateEement( const char *tag );
+void            trap_Rocket_DynamicHud_RemoveElement( int handle );
+void            trap_Rocket_DynamicHud_SetProperty( int handle, const char *property, const char *value );
+void            trap_Rocket_DynamicHud_SetAttribute( int handle, const char *attribute, const char *value );
+void            trap_Rocket_DynamicHud_SetInnerRML( int handle, const char *RML, int parseFlags );
 #endif

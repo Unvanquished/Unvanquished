@@ -344,6 +344,7 @@ static RocketFocusManager fm;
 
 Rocket::Core::Context *menuContext = NULL;
 Rocket::Core::Context *hudContext = NULL;
+Rocket::Core::Context *dynamicHudContext = NULL;
 
 cvar_t *cg_draw2D;
 
@@ -397,8 +398,12 @@ void Rocket_Init( void )
 	menuContext->GetRootElement()->AddEventListener( "close", &fm );
 	menuContext->GetRootElement()->AddEventListener( "load", &fm );
 
-	// Create the HUD context
+	// Create the HUD contexts
 	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
+	dynamicHudContext = Rocket::Core::CreateContext( "dynamicHudContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
+
+	// Create base document for dhud
+	dynamicHudContext->CreateDocument()->RemoveReference();
 
 	// Add the event listener instancer
 	EventInstancer* event_instancer = new EventInstancer();
@@ -449,6 +454,11 @@ void Rocket_Shutdown( void )
 		hudContext = NULL;
 	}
 
+	if ( dynamicHudContext )
+	{
+		dynamicHudContext->RemoveReference();
+	}
+
 	Rocket::Core::Shutdown();
 
 	// Prevent memory leaks
@@ -482,6 +492,11 @@ void Rocket_Render( void )
 	if ( hudContext && cg_draw2D->integer )
 	{
 		hudContext->Render();
+	}
+
+	if ( dynamicHudContext && cg_draw2D->integer )
+	{
+		dynamicHudContext->Render();
 	}
 
 	// Render menus on top of the HUD

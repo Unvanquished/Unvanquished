@@ -773,6 +773,7 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/WavCodec.cpp
   ${ENGINE_DIR}/client/rocket_dataformatter.cpp
   ${ENGINE_DIR}/client/rocket_textelements.cpp
+  ${ENGINE_DIR}/client/rocket_dynamichud.cpp
   ${ENGINE_DIR}/client/rocket_documents.cpp
   ${ENGINE_DIR}/client/rocket_datagrid.cpp
   ${ENGINE_DIR}/client/rocket_element.cpp
