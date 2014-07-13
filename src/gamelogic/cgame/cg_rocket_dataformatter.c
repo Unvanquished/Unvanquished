@@ -141,17 +141,20 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 	if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
 	{
 		Class = "locked";
-		Icon = "<icon>\uf023</icon>";
+		//Padlock icon. UTF-8 encoding of \uf023
+		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
 	else if(BG_Weapon( weapon )->price > credits){
 
 		Class = "expensive";
-		Icon = "<icon>\uf0d6</icon>";
+		//$1 bill icon. UTF-8 encoding of \uf0d6
+		Icon = "<icon>\xEF\x83\x96</icon>";
 	}
 	else if( BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) ){
 		Class = "active";
 		action =  va( "onClick='exec \"sell %s\"'", BG_Weapon( weapon )->name );
-		Icon = "<icon class=\"current\">\uf00c</icon><icon class=\"sell\">\uf0d6</icon>";
+		//Check mark icon. UTF-8 encoding of \uf00c
+		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
 	else
 	{
@@ -302,12 +305,14 @@ static void CG_Rocket_DFCMAlienBuildables( int handle, const char *data )
 	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
 	{
 		Class = "locked";
-		Icon = "<icon>\uf023</icon>";
+		//Padlock icon. UTF-8 encoding of \uf023
+		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
 	else if ( BG_Buildable( buildable )->buildPoints > value + valueMarked )
 	{
 		Class = "expensive";
-		Icon = "<icon>\uf0d6</icon>";
+		//$1 bill icon. UTF-8 encoding of \uf0d6
+		Icon = "<icon>\xEF\x83\x96</icon>";
 	}
 	else
 	{
@@ -332,12 +337,14 @@ static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
 	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
 	{
 		Class = "locked";
-		Icon = "<icon>\uf023</icon>";
+		//Padlock icon. UTF-8 encoding of \uf023
+		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
 	else if ( BG_Buildable( buildable )->buildPoints > value + valueMarked )
 	{
 		Class = "expensive";
-		Icon = "<icon>\uf0d6</icon>";
+		//$1 bill icon. UTF-8 encoding of \uf0d6
+		Icon = "<icon>\xEF\x83\x96</icon>";
 	}
 	else
 	{
@@ -360,18 +367,21 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	if( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )
 	{
 		Class = "active";
-		Icon = "<icon class=\"current\">\uf00c</icon><icon class=\"sell\">\uf0d6</icon>";
+		//Check mark icon. UTF-8 encoding of \uf00c
+		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
 	else if ( !BG_ClassUnlocked( alienClass ) || BG_ClassDisabled( alienClass ) )
 	{
 		Class = "locked";
-		Icon = "<icon>\uf023</icon>";
+		//Padlock icon. UTF-8 encoding of \uf023
+		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
 	else if ( cost == -1 )
 	{
 
 		Class = "expensive";
-		Icon = "<icon>\uf0d6</icon>";
+		//$1 bill icon. UTF-8 encoding of \uf0d6
+		Icon = "<icon>\xEF\x83\x96</icon>";
 	}
 	else
 	{
