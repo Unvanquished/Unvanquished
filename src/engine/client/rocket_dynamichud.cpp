@@ -54,12 +54,18 @@ void Rocket_DynamicHud_RemoveElement( int handle )
 
 void Rocket_DynamicHud_SetProperty( int handle, const char *property, const char *value )
 {
-	elementMap[ handle ]->SetProperty( property, value );
+	if ( elementMap.find( handle) != elementMap.end() )
+	{
+		elementMap[ handle ]->SetProperty( property, value );
+	}
 }
 
 void Rocket_DynamicHud_SetAttribute( int handle, const char *attribute, const char *value )
 {
-	elementMap[ handle ]->SetAttribute( attribute, value );
+	if ( elementMap.find( handle) != elementMap.end() )
+	{
+		elementMap[ handle ]->SetAttribute( attribute, value );
+	}
 }
 
 // reduces an rml string to a common format so two rml strings can be compared
@@ -103,6 +109,9 @@ static inline void Rocket_SetInnerRMLGuarded( Rocket::Core::Element *e, const Ro
 
 void Rocket_DynamicHud_SetInnerRML( int handle, const char *RML, int parseFlags )
 {
-	Rocket::Core::String newRML = parseFlags  ? Rocket_QuakeToRML( RML, parseFlags ) : RML;
-	Rocket_SetInnerRMLGuarded( elementMap[ handle ], newRML );
+	if ( elementMap.find( handle) != elementMap.end() )
+	{
+		Rocket::Core::String newRML = parseFlags  ? Rocket_QuakeToRML( RML, parseFlags ) : RML;
+		Rocket_SetInnerRMLGuarded( elementMap[ handle ], newRML );
+	}
 }
