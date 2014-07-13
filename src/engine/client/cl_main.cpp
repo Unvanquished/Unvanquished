@@ -3669,6 +3669,9 @@ void CL_Frame( int msec )
 	// decide on the serverTime to render
 	CL_SetCGameTime();
 
+	// Update librocket
+	Rocket_Update();
+
 	// update the screen
 	SCR_UpdateScreen();
 
