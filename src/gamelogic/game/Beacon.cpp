@@ -183,7 +183,7 @@ namespace Beacon //this should eventually become a class
 	}
 
 	/**
-	 * @brief Find beacon matching a pattern.
+	 * @brief Find a beacon matching a pattern.
 	 * @return An ET_BEACON entity or NULL.
 	 */
 	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
@@ -242,13 +242,14 @@ namespace Beacon //this should eventually become a class
 	}
 
 	/**
-	 * @brief Remove beacon matching a pattern.
+	 * @brief Remove all beacons matching a pattern.
 	 */
 	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
 	                    float radius, int eFlags )
 	{
-		gentity_t *ent = FindSimilar(origin, type, data, team, owner, radius, eFlags );
-		if ( ent ) Delete( ent );
+		gentity_t *ent;
+		while ((ent = FindSimilar(origin, type, data, team, owner, radius, eFlags )))
+			Delete( ent );
 	}
 
 	/**
