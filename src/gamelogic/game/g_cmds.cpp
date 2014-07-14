@@ -4412,7 +4412,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 		Beacon::MoveTowardsRoom( origin, tr.plane.normal );
 	}
 
-	Beacon::RemoveSimilar( origin, type, 0, team, ent->s.number, 0, 0 );
+	Beacon::RemoveSimilar( origin, type, 0, team, ent->s.number, 0, 0, 0 );
 	beacon = Beacon::New( origin, type, 0, team, ent->s.number );
 	Beacon::Propagate( beacon );
 	return;

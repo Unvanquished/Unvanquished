@@ -608,8 +608,8 @@ namespace BaseClustering {
 
 			// If a fitting beacon close to the target location already exists, move it silently,
 			// otherwise add a new one.
-			if ((beacon = Beacon::FindSimilar(center.coords, BCT_BASE, 0, team, 0,
-			                                  averageDistance, eFlags))) {
+			if ((beacon = Beacon::FindSimilar(center.coords, BCT_BASE, 0, team, 0, averageDistance,
+			                                  eFlags, EF_BC_BASE_ALL))) {
 				VectorCopy(tr.endpos, beacon->s.origin);
 			} else {
 				beacon = Beacon::New(tr.endpos, BCT_BASE, 0, team, ENTITYNUM_NONE);
@@ -623,7 +623,7 @@ namespace BaseClustering {
 				eFlags |= EF_BC_BASE_ENEMY;
 
 				if ((beacon = Beacon::FindSimilar(center.coords, BCT_BASE, 0, taggedByEnemy, 0,
-				                                  averageDistance, eFlags))) {
+				                                  averageDistance, eFlags, EF_BC_BASE_ALL))) {
 					VectorCopy(tr.endpos, beacon->s.origin);
 				} else {
 					beacon = Beacon::New(tr.endpos, BCT_BASE, 0, taggedByEnemy, ENTITYNUM_NONE);

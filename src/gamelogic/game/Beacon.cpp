@@ -88,7 +88,7 @@ namespace Beacon //this should eventually become a class
 
 		VectorCopy( point, origin );
 		MoveTowardsRoom( origin, NULL );
-		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE, 0, 0 );
+		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE, 0, 0, 0 );
 		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE );
 		Beacon::Propagate( beacon );
 	}
@@ -189,7 +189,7 @@ namespace Beacon //this should eventually become a class
 	 * @return An ET_BEACON entity or NULL.
 	 */
 	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
-	                        float radius, int eFlags )
+	                        float radius, int eFlags, int eFlagsRelevant )
 	{
 		for ( gentity_t *ent = NULL; (ent = G_IterateEntities(ent, NULL, true, 0, NULL)); )
 		{
@@ -201,10 +201,7 @@ namespace Beacon //this should eventually become a class
 			if ( ent->s.modelindex != type )
 				continue;
 
-			if ( ( ent->s.eFlags & eFlags ) != eFlags )
-				continue;
-
-			if ( ( ent->s.eFlags | eFlags ) != ent->s.eFlags )
+			if ( ( ent->s.eFlags & eFlagsRelevant ) != ( eFlags & eFlagsRelevant ) )
 				continue;
 
 			if( ent->s.generic1 != team )
@@ -247,10 +244,10 @@ namespace Beacon //this should eventually become a class
 	 * @brief Remove all beacons matching a pattern.
 	 */
 	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
-	                    float radius, int eFlags )
+	                    float radius, int eFlags, int eFlagsRelevant )
 	{
 		gentity_t *ent;
-		while ((ent = FindSimilar(origin, type, data, team, owner, radius, eFlags )))
+		while ((ent = FindSimilar(origin, type, data, team, owner, radius, eFlags, eFlagsRelevant)))
 			Delete( ent );
 	}
 
@@ -449,7 +446,7 @@ namespace Beacon //this should eventually become a class
 				return;
 		}
 
-		RemoveSimilar( origin, BCT_TAG, data, team, owner, 0, 0 );
+		RemoveSimilar( origin, BCT_TAG, data, team, owner, 0, 0, 0 );
 		beacon = New( origin, BCT_TAG, data, team, owner );
 
 		if( alien )
