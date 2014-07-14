@@ -163,7 +163,11 @@ typedef int intptr_t;
 
 // vsnprintf is ISO/IEC 9899:1999
 // abstracting this to make it portable
-#ifdef _WIN32
+#ifdef _MSC_VER
+//vsnprintf is non-conformant in MSVC--fails to null-terminate in case of overflow
+#define Q_vsnprintf(dest, size, fmt, args) _vsnprintf_s( dest, size, _TRUNCATE, fmt, args )
+#define Q_snprintf(dest, size, fmt, ...) _snprintf_s( dest, size, _TRUNCATE, fmt, __VA_ARGS__ )
+#elif defined( _WIN32 )
 #define Q_vsnprintf _vsnprintf
 #define Q_snprintf  _snprintf
 #else
@@ -173,7 +177,7 @@ typedef int intptr_t;
 
 // msvc does not have roundf
 #ifdef _MSC_VER
-#define roundf( f ) ( floor( f + 0.5 ) )
+#define roundf( f ) ( floor( (f) + 0.5 ) )
 #endif
 
 #endif //Q3_VM
@@ -1902,7 +1906,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void       Info_RemoveKey( char *s, const char *key , qboolean big );
 	void       Info_RemoveKey_big( char *s, const char *key );
 	void       Info_SetValueForKey( char *s, const char *key, const char *value , qboolean big );
-	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value );
+	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value, qboolean big );
 	qboolean   Info_Validate( const char *s );
 	void       Info_NextPair( const char **s, char *key, char *value );
 

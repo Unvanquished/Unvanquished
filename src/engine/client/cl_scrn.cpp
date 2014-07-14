@@ -786,7 +786,9 @@ void SCR_UpdateScreen( void )
 		else
 		{
 			SCR_DrawScreenField( STEREO_CENTER );
+
 			VM_Call( cgvm, CG_ROCKET_FRAME );
+
 			Rocket_Render();
 			SCR_DrawConsoleAndPointer();
 		}

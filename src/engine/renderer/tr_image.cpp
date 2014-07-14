@@ -1974,7 +1974,6 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
 		return;
 	}
 
-	qboolean   orgNameFailed = qfalse;
 	int        i;
 	const char *ext;
 	char       filename[ MAX_QPATH ];
@@ -2014,7 +2013,6 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
 			{
 				// loader failed, most likely because the file isn't there;
 				// try again without the extension
-				orgNameFailed = qtrue;
 				COM_StripExtension3( token, filename, MAX_QPATH );
 			}
 			else
@@ -2023,32 +2021,32 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
 				return;
 			}
 		}
+	}
 
-		int bestLoader = -1;
-		const FS::PakInfo* bestPak = nullptr;
+	int bestLoader = -1;
+	const FS::PakInfo* bestPak = nullptr;
 
-		// try and find a suitable match using all the image formats supported
-		// prioritize with the pak priority
-		for ( i = 0; i < numImageLoaders; i++ )
+	// try and find a suitable match using all the image formats supported
+	// prioritize with the pak priority
+	for ( i = 0; i < numImageLoaders; i++ )
+	{
+		std::string altName = Str::Format("%s.%s", filename, imageLoaders[i].ext);
+		const FS::PakInfo* pak = FS::PakPath::LocateFile(altName);
+
+		// We found a file and its pak is better than the best pak we have
+		// this relies on how the filesystem works internally and should be moved
+		// to a more explicit interface once there is one. (FIXME)
+		if ( pak != nullptr && (bestPak == nullptr || pak < bestPak ) )
 		{
-			std::string altName = Str::Format("%s.%s", filename, imageLoaders[i].ext);
-			const FS::PakInfo* pak = FS::PakPath::LocateFile(altName);
-
-			// We found a file and its pak is better than the best pak we have
-			// this relies on how the filesystem works internally and should be moved
-			// to a more explicit interface once there is one. (FIXME)
-			if ( pak != nullptr && (bestPak == nullptr || pak < bestPak ) )
-			{
-				bestPak = pak;
-				bestLoader = i;
-			}
+			bestPak = pak;
+			bestLoader = i;
 		}
+	}
 
-		if ( bestLoader >= 0 )
-		{
-			char *altName = va( "%s.%s", filename, imageLoaders[ bestLoader ].ext );
-			imageLoaders[ bestLoader ].ImageLoader( altName, pic, width, height, numLayers, numMips, bits, alphaByte );
-		}
+	if ( bestLoader >= 0 )
+	{
+		char *altName = va( "%s.%s", filename, imageLoaders[ bestLoader ].ext );
+		imageLoaders[ bestLoader ].ImageLoader( altName, pic, width, height, numLayers, numMips, bits, alphaByte );
 	}
 }
 
