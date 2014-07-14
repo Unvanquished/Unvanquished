@@ -369,7 +369,7 @@ typedef enum
 #define EF_BC_NO_TARGET     BIT(3) // beacon lost its target
 #define EF_BC_TAG_ALIEN     BIT(4) // tagged entity is an alien player
 #define EF_BC_TAG_HUMAN     BIT(5) // tagged entity is a human player
-#define EF_BC_BASE_MAIN     BIT(6) // whether a base is a main base
+#define EF_BC_BASE_OUTPOST  BIT(6) // whether a base is a main base
 #define EF_BC_BASE_ENEMY    BIT(7) // whether a base is from the enemy
 #define EF_BC_TAG_PLAYER    (EF_BC_TAG_ALIEN|EF_BC_TAG_HUMAN)
 
@@ -1074,9 +1074,9 @@ typedef struct
 	const char    *name;
 	const char    *humanName;
 
-#ifdef BUILD_CGAME	
-	const char    *text;
-	qhandle_t     icon, altIcon;
+#ifdef BUILD_CGAME
+	const char    *text[ 4 ];
+	qhandle_t     icon[ 4 ];
 	sfxHandle_t   sound;
 #endif	
 

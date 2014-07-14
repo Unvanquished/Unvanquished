@@ -2413,6 +2413,7 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 	char        *token;
 	char        text_buffer[ 20000 ];
 	char        *text;
+	int         index;
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof( text_buffer ) ) )
 	{
@@ -2433,22 +2434,25 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 		else if ( !Q_stricmp( token, "text" ) )
 		{
 			PARSE( text, token );
-#ifdef BUILD_CGAME		
-			ba->text = BG_strdup( token );
+			index = atoi( token );
+			PARSE( text, token );
+#ifdef BUILD_CGAME
+			if( index < 0 || index >= 4 )
+				Com_Printf( S_ERROR "Invalid beacon icon index %i in %s\n", index, filename );
+			else
+				ba->text[ index ] = BG_strdup( token );
 #endif
 		}
 		else if ( !Q_stricmp( token, "icon" ) )
 		{
 			PARSE( text, token );
-#ifdef BUILD_CGAME
-			ba->icon = trap_R_RegisterShader( token, RSF_DEFAULT );
-#endif
-		}
-		else if ( !Q_stricmp( token, "altIcon" ) )
-		{
+			index = atoi( token );
 			PARSE( text, token );
 #ifdef BUILD_CGAME
-			ba->altIcon = trap_R_RegisterShader( token, RSF_DEFAULT );
+			if( index < 0 || index >= 4 )
+				Com_Printf( S_ERROR "Invalid beacon icon index %i in %s\n", index, filename );
+			else
+				ba->icon[ index ] = trap_R_RegisterShader( token, RSF_DEFAULT );
 #endif
 		}
 		else if ( !Q_stricmp( token, "sound" ) )

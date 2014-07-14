@@ -541,6 +541,9 @@ Figures out the icon shader for a beacon.
 */
 qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 {
+	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
+		return 0;
+
 	if ( b->type == BCT_TAG )
 	{
 		if( b->flags & EF_BC_TAG_ALIEN )
@@ -562,14 +565,23 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 			return cg_buildables[ b->data ].buildableIcon;
 		}
 	}
+	else if ( b->type == BCT_BASE )
+	{
+		int index = 0;
 
-	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
-		return 0;
+		if( b->flags & EF_BC_BASE_OUTPOST )
+			index |= 1;
+
+		if( b->flags & EF_BC_BASE_ENEMY )
+			index |= 2;
+
+		return BG_Beacon( b->type )->icon[ index ];
+	}
 
 	if ( b->s->altIcon )
-		return BG_Beacon( b->type )->altIcon;
+		return BG_Beacon( b->type )->icon[ 1 ];
 	else
-		return BG_Beacon( b->type )->icon;
+		return BG_Beacon( b->type )->icon[ 0 ];
 }
 
 /*
@@ -582,8 +594,11 @@ The returned string is localized.
 */
 const char *CG_BeaconText( const cbeacon_t *b )
 {
-	const char *text = "";
+	const char *text;
 
+	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
+		return "";
+	
 	if ( b->type == BCT_TAG )
 	{
 		if( b->flags & EF_BC_TAG_ALIEN )
@@ -607,36 +622,26 @@ const char *CG_BeaconText( const cbeacon_t *b )
 	}
 	else if ( b->type == BCT_BASE )
 	{
-		if     (  (b->flags & EF_BC_BASE_MAIN) &&  (b->flags & EF_BC_BASE_ENEMY) )
-		{
-			text = "MAIN ENEMY";
-		}
-		else if(  (b->flags & EF_BC_BASE_MAIN) && !(b->flags & EF_BC_BASE_ENEMY) )
-		{
-			text = "MAIN FRIENDLY";
-		}
-		else if( !(b->flags & EF_BC_BASE_MAIN) &&  (b->flags & EF_BC_BASE_ENEMY) )
-		{
-			text = "OUTPOST ENEMY";
-		}
-		else if( !(b->flags & EF_BC_BASE_MAIN) && !(b->flags & EF_BC_BASE_ENEMY) )
-		{
-			text = "OUTPOST FRIENDLY";
-		}
-	}
-	else
-		if( BG_Beacon( b->type )->text )
-			text = _( BG_Beacon( b->type )->text );
+		int index = 0;
 
-	if ( b->type == BCT_TIMER )
+		if( b->flags & EF_BC_BASE_OUTPOST )
+			index |= 1;
+
+		if( b->flags & EF_BC_BASE_ENEMY )
+			index |= 2;
+
+		text = BG_Beacon( b->type )->text[ index ];
+	}
+	else if ( b->type == BCT_TIMER )
 	{
 		float delta;
 		delta = 0.001f * ( cg.time - b->s->ctime - BEACON_TIMER_TIME );
-		return va( "T %c %.2fs", ( delta >= 0 ? '+' : '-' ), fabs( delta ) );
+		text = va( "T %c %.2fs", ( delta >= 0 ? '+' : '-' ), fabs( delta ) );
 	}
+	else
+		text = _( BG_Beacon( b->type )->text[ 0 ] );
 
-	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
-		return va( "INVALID(%d)", b->type );
-
-	return text;
+	if( text )
+		return text;
+	return "(null)";
 }

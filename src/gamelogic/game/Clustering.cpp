@@ -596,7 +596,7 @@ namespace BaseClustering {
 					taggedByEnemy = ent->taggedByEnemy;
 				}
 			}
-			int eFlags = mainBase ? EF_BC_BASE_MAIN : 0;
+			int eFlags = mainBase ? 0 : EF_BC_BASE_OUTPOST;
 
 			// Trace from mean buildable's origin towards cluster center, so that the beacon does
 			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
