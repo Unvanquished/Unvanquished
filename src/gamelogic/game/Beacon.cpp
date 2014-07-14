@@ -171,6 +171,8 @@ namespace Beacon //this should eventually become a class
 		vec3_t accumulator, end;
 		trace_t tr;
 
+		VectorClear( accumulator );
+
 		for ( i = 0; i < numvecs; i++ )
 		{
 			VectorMA( origin, 500, vecs[ i ], end );
