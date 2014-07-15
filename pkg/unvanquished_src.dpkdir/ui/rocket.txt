@@ -17,6 +17,7 @@
 		ui/in-game/human/buy.rml armourybuy         // ROCKETMENU_ARMOURYBUY ============
 		ui/in-game/alien/evo.rml alienevo           // ROCKETMENU_ALIENEVOLVE ===========
 		ui/in-game/chat.rml chat                    // ROCKETMENU_CHAT ==================
+		ui/in-game/beacons.rml beacons              // ROCKETMENU_BEACONS ===============
 		ui/error.rml error                          // ROCKETMENU_ERROR
 	}
 	misc
