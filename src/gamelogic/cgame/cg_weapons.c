@@ -1279,7 +1279,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	entityState_t *es = &cent->currentState;
 
 	// see if the animation sequence is switching
-	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( cg_weapons[ cent->currentState.weapon ].md5 && !lf->animation->handle ) )
+	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( cg_weapons[ es->weapon ].md5 && !lf->animation->handle ) )
 	{
 		CG_SetWeaponLerpFrameAnimation( (weapon_t) es->weapon, lf, es->weaponAnim );
 	}
@@ -1290,7 +1290,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	*now = lf->frame;
 	*backLerp = lf->backlerp;
 
-	if ( cg_weapons[ cent->currentState.weapon ].md5 )
+	if ( cg_weapons[ es->weapon ].md5 )
 	{
 		CG_BlendLerpFrame( lf );
 
