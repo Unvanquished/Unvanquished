@@ -371,7 +371,9 @@ typedef enum
 #define EF_BC_TAG_HUMAN     BIT(5) // tagged entity is a human player
 #define EF_BC_BASE_OUTPOST  BIT(6) // whether a base is a main base
 #define EF_BC_BASE_ENEMY    BIT(7) // whether a base is from the enemy
+
 #define EF_BC_TAG_PLAYER    (EF_BC_TAG_ALIEN|EF_BC_TAG_HUMAN)
+#define EF_BC_BASE_ALL      (EF_BC_BASE_ENEMY|EF_BC_BASE_OUTPOST)
 
 typedef enum
 {
