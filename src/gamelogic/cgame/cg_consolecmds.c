@@ -399,6 +399,10 @@ void CG_HideScores_f( void )
 	cg.scoreBoardShowing = qfalse;
 }
 
+void CG_BeaconMenu_f( void )
+{
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
+}
 
 static const struct
 {
@@ -410,6 +414,7 @@ static const struct
 	{ "+scores",           CG_ShowScores_f,        0                },
 	{ "-scores",           CG_HideScores_f,        0                },
 	{ "beacon",           0,                       CG_CompleteBeacon },
+	{ "beaconMenu",       CG_BeaconMenu_f,         0                },
 	{ "build",            0,                       CG_CompleteBuild },
 	{ "buy",              0,                       CG_CompleteBuy   },
 	{ "callteamvote",     0,                       CG_CompleteTeamVote },

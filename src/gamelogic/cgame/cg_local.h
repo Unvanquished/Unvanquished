@@ -1415,6 +1415,10 @@ typedef struct
 	int alienBuildList[ BA_NUM_BUILDABLES ];
 	int selectedAlienBuild;
 	int alienBuildListCount;
+
+	int beaconList[ NUM_BEACON_TYPES ];
+	int selectedBeacon;
+	int beaconListCount;
 } rocketDataSource_t;
 
 typedef struct

@@ -2413,7 +2413,9 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 	char        *token;
 	char        text_buffer[ 20000 ];
 	char        *text;
+#ifdef BUILD_CGAME
 	int         index;
+#endif
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof( text_buffer ) ) )
 	{
@@ -2434,7 +2436,9 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 		else if ( !Q_stricmp( token, "text" ) )
 		{
 			PARSE( text, token );
+#ifdef BUILD_CGAME
 			index = atoi( token );
+#endif
 			PARSE( text, token );
 #ifdef BUILD_CGAME
 			if( index < 0 || index >= 4 )
@@ -2443,10 +2447,20 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 				ba->text[ index ] = BG_strdup( token );
 #endif
 		}
+		else if ( !Q_stricmp( token, "desc" ) )
+		{
+			PARSE( text, token );
+#ifdef BUILD_CGAME
+			ba->desc = BG_strdup( token );
+			Com_Printf( "%s: %s\n", ba->name, ba->desc );
+#endif
+		}
 		else if ( !Q_stricmp( token, "icon" ) )
 		{
 			PARSE( text, token );
+#ifdef BUILD_CGAME
 			index = atoi( token );
+#endif
 			PARSE( text, token );
 #ifdef BUILD_CGAME
 			if( index < 0 || index >= 4 )
