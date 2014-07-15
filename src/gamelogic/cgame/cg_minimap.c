@@ -552,7 +552,7 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 	vec2_t offset, pos2d, dir;
 	qboolean clamped;
 
-	size *= b->scale;
+	size *= b->scale * cgs.bc.minimapScale;
 	
 	CG_WorldToMinimap( b->s->origin, offset );
 	pos2d[ 0 ] = - size/2 + offset[ 0 ];

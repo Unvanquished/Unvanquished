@@ -324,28 +324,23 @@ CG_DrawBeacon
 Draw a beacon on the HUD
 ==================
 */
-#define BEACON_LONGARROW_WIDTH ( base * 0.006 )
-#define BEACON_LONGARROW_DOT_SIZE ( base * 0.01 )
-
 #define LinearRemap(x,an,ap,bn,bp) (((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn))
 
 static void CG_DrawBeacon( cbeacon_t *b )
 {
 	vec2_t delta;
-	float base, offset, angle;
+	float offset, angle;
 	vec4_t color;
-
-	base = MIN( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight );
 
 	Vector2Subtract( b->s->pos, b->pos_proj, delta );
 	offset = sqrt( delta[ 0 ] * delta[ 0 ] + delta[ 1 ] * delta[ 1 ] );
 
-	if( offset > base * 0.01 )
+	if( offset > cgs.bc.arrowAlphaLow )
 	{
 		vec2_t midpoint;
 
 		Vector4Copy( b->color, color );
-		color[ 3 ] *= MIN( 1.0, LinearRemap( offset, base * 0.01, base * 0.03, 0, 1 ) );
+		color[ 3 ] *= MIN( 1.0, LinearRemap( offset, cgs.bc.arrowAlphaLow, cgs.bc.arrowAlphaHigh, 0, 1 ) );
 		trap_R_SetColor( color );
 
 		midpoint[ 0 ] = b->s->pos[ 0 ] - delta[ 0 ] / 2.0;
@@ -354,15 +349,15 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		angle = 180.0 - atan2( delta[ 1 ], delta[ 0 ] ) * 180 / M_PI;
 
 		trap_R_DrawRotatedPic( midpoint[ 0 ] - offset/2,
-		                       midpoint[ 1 ] - BEACON_LONGARROW_WIDTH / 2.0 * cg_beaconHUDScale.value,
-		                       offset, BEACON_LONGARROW_WIDTH * cg_beaconHUDScale.value,
+		                       midpoint[ 1 ] - cgs.bc.arrowWidth / 2.0 * cg_beaconHUDScale.value,
+		                       offset, cgs.bc.arrowWidth * cg_beaconHUDScale.value,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconLongArrow,
 		                       angle );
 
-		trap_R_DrawStretchPic( b->pos_proj[ 0 ] - BEACON_LONGARROW_DOT_SIZE / 2 * cg_beaconHUDScale.value,
-		                       b->pos_proj[ 1 ] - BEACON_LONGARROW_DOT_SIZE / 2 * cg_beaconHUDScale.value,
-		                       BEACON_LONGARROW_DOT_SIZE  * cg_beaconHUDScale.value, BEACON_LONGARROW_DOT_SIZE  * cg_beaconHUDScale.value,
+		trap_R_DrawStretchPic( b->pos_proj[ 0 ] - cgs.bc.arrowDotSize / 2 * cg_beaconHUDScale.value,
+		                       b->pos_proj[ 1 ] - cgs.bc.arrowDotSize / 2 * cg_beaconHUDScale.value,
+		                       cgs.bc.arrowDotSize * cg_beaconHUDScale.value, cgs.bc.arrowDotSize * cg_beaconHUDScale.value,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconLongArrowDot );
 	}
@@ -390,11 +385,16 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		                       cgs.media.beaconIconArrow,
 		                       270.0 - ( angle = atan2( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * 180 / M_PI );
 
+	if( b->s->t_highlight > 0.01 )
 	{
 		float h, tw;
 		const char *p;
 		vec2_t pos, dir, rect[ 2 ];
 		int i, l;
+
+		Vector4Copy( b->color, color );
+		color[ 3 ] *= b->s->t_highlight;
+		trap_R_SetColor( color );
 
 		h = b->size * 0.4;
 		p = va( "%d", (int)round( b->dist / 31.0 ) );

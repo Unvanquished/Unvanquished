@@ -35,6 +35,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../common/Maths.h"
 #endif
 
+// std::min is retarded
+#undef MIN
+#define MIN(a,b) ((a)<(b)?(a):(b))
+
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is no persistent data between levels on the client side.
 // If you absolutely need something stored, it can either be kept
@@ -678,6 +682,36 @@ typedef struct
 	qboolean      highlighted; //todo
 } cbeacon_t;
 
+typedef struct
+{
+	// behavior
+	int           fadeIn;
+	int           fadeOut;
+	float         highlightRadius;
+	float         highlightScale;
+	float         fadeDistance;
+	float         fadeMinAlpha;
+
+	// drawing
+	vec4_t        colorNeutral;
+	vec4_t        colorAlien;
+	vec4_t        colorHuman;
+	float         arrowWidth;
+	float         arrowDotSize;
+	float         arrowAlphaLow;
+	float         arrowAlphaHigh;
+
+	// HUD
+	float         hudSize;
+	float         hudMinSize;
+	float         hudMaxSize;
+	vec2_t        hudCenter;
+	vec2_t        hudRect[ 2 ];
+
+	// minimap
+	float         minimapScale;
+} beaconsConfig_t;
+
 //======================================================================
 
 // centity_t has a direct correspondence with gentity_t in the game, but
@@ -1253,6 +1287,7 @@ typedef struct
 	// beacons
 	cbeacon_t               beacons[ MAX_CBEACONS ];
 	int                     num_beacons;
+	cbeacon_t               *highlightedBeacon;
 } cg_t;
 
 typedef struct
@@ -1666,6 +1701,8 @@ typedef struct
 
 	voice_t      *voices;
 	clientList_t ignoreList;
+
+	beaconsConfig_t  bc;
 } cgs_t;
 
 typedef struct
@@ -2239,6 +2276,7 @@ const char *CG_TutorialText( void );
 // cg_beacon.c
 //
 
+void          CG_LoadBeaconsConfig( void );
 void          CG_ListBeacons( void );
 qhandle_t     CG_BeaconIcon( const cbeacon_t *b );
 const char    *CG_BeaconText( const cbeacon_t *b );

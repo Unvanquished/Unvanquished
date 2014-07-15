@@ -28,6 +28,106 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
 =============
+CG_LoadBeaconsConfig
+=============
+*/
+
+void CG_LoadBeaconsConfig( void )
+{
+	beaconsConfig_t  *bc = &cgs.bc;
+	const char       *path = "ui/in-game/beacons.cfg";
+	int              vw, vh, base, fd;
+	pc_token_t       token;
+
+	vw = cgs.glconfig.vidWidth;
+	vh = cgs.glconfig.vidHeight;
+	base = MIN( vw, vh );
+
+	memset( bc, 0, sizeof( beaconsConfig_t ) );
+
+	bc->hudCenter[ 0 ] = vw / 2;
+	bc->hudCenter[ 1 ] = vh / 2;
+
+	fd = trap_Parse_LoadSource( path );
+	if ( !fd )
+		return;
+
+	while ( 1 )
+	{
+		if( !trap_Parse_ReadToken( fd, &token ) )
+			break;
+
+#define READ_INT(x) \
+else if( !Q_stricmp( token.string, #x ) ) \
+{ \
+	if( !PC_Int_Parse( fd, &bc-> x ) ) \
+		break; \
+}
+
+#define READ_FLOAT(x) \
+else if( !Q_stricmp( token.string, #x ) ) \
+{ \
+	if( !PC_Float_Parse( fd, &bc-> x ) ) \
+		break; \
+}
+
+#define READ_FLOAT_S(x) \
+else if( !Q_stricmp( token.string, #x ) ) \
+{ \
+	if( !PC_Float_Parse( fd, &bc-> x ) ) \
+		break; \
+	bc-> x *= base; \
+}
+
+#define READ_COLOR(x) \
+else if( !Q_stricmp( token.string, #x ) ) \
+{ \
+	if( !PC_Color_Parse( fd, &bc-> x ) ) \
+		break; \
+}
+
+		READ_INT    ( fadeIn )
+		READ_INT    ( fadeOut )
+		READ_FLOAT_S( highlightRadius )
+		READ_FLOAT  ( highlightScale )
+		READ_FLOAT  ( fadeDistance )
+		READ_FLOAT  ( fadeMinAlpha )
+
+		READ_COLOR  ( colorNeutral )
+		READ_COLOR  ( colorAlien )
+		READ_COLOR  ( colorHuman )
+		READ_FLOAT_S( arrowWidth )
+		READ_FLOAT_S( arrowDotSize )
+		READ_FLOAT  ( arrowAlphaLow )
+		READ_FLOAT  ( arrowAlphaHigh )
+
+		READ_FLOAT_S( hudSize )
+		READ_FLOAT_S( hudMinSize )
+		READ_FLOAT_S( hudMaxSize )
+
+		READ_FLOAT  ( minimapScale )
+
+		else if( !Q_stricmp( token.string, "hudMargin" ) )
+		{
+			float margin;
+
+			if( !PC_Float_Parse( fd, &margin ) )
+				break;
+
+			margin *= base;
+
+			bc->hudRect[ 0 ][ 0 ] = margin;
+			bc->hudRect[ 1 ][ 0 ] = vw - margin;
+			bc->hudRect[ 0 ][ 1 ] = margin;
+			bc->hudRect[ 1 ][ 1 ] = vh - margin;
+		}
+	}
+
+	trap_Parse_FreeSource( fd  );
+}
+
+/*
+=============
 CG_NearestBuildable
 
 Returns the nearest _powered_ buildable of the given type (up to 3 types)
@@ -95,25 +195,15 @@ Handles all animations and sounds.
 Called every frame for every beacon.
 =============
 */
-#define BEACON_FADEIN 200
-#define BEACON_FADEOUT 500
-#define BEACON_OCCLUSION_FADE_SPEED 14.0
-#define BEACON_HIGHLIGHT_FADE_SPEED 25.0
-#define BEACON_MARGIN ( base * 0.14f )
-
 #define LinearRemap(x,an,ap,bn,bp) ((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn)
+#define Distance2(a,b) sqrt(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
 
 static void CG_RunBeacon( cbeacon_t *b )
 {
-	float vw, vh, base, target, alpha;
+	float target, alpha;
 	int time_in, time_left;
 	float t_fadein, t_fadeout; // t_ stands for "parameter", not "time"
 	qboolean front;
-	//trace_t tr;
-
-	vw = cgs.glconfig.vidWidth;
-	vh = cgs.glconfig.vidHeight;
-	base = MIN( vw, vh );
 
 	// reset animations
 	b->scale = cg_beaconHUDScale.value;
@@ -122,37 +212,36 @@ static void CG_RunBeacon( cbeacon_t *b )
 	time_in = cg.time - b->s->ctime; // time since creation
 	time_left = b->s->etime - cg.time; // time to expiration
 
-	// handle new beacons
 	if( !b->s->old )
 	{
-		// clear static data (cg_ents already does memset zero but that won't work for floats)
-		b->s->t_highlight = 0.0;
-
-		// creation events
-		// note: old beacons will be treated by cgame as new if it's the
-		//       first time it sees them (e.g. after changing teams),
-		//       so omit the events if the event was created long time ago
-		if( time_in < 1000 &&
-		    !( b->flags & EF_BC_NO_TARGET ) )
+		if( time_in > 1000 )
+			b->s->old = qtrue;
+		else
+		{
+			// creation events
 			if( BG_Beacon( b->type )->sound )
 				trap_S_StartLocalSound( BG_Beacon( b->type )->sound, CHAN_LOCAL_SOUND );
+		}
 	}
 
-	// detached
-	if( !( b->s->oldFlags & EF_BC_NO_TARGET ) &&
+	if( b->s->old &&
+	    !( b->s->oldFlags & EF_BC_NO_TARGET ) &&
 	    ( b->flags & EF_BC_NO_TARGET ) )
+	{
+		// detachment (a.k.a. target lost) events
 		trap_S_StartLocalSound( cgs.media.beaconTargetLostSound, CHAN_LOCAL_SOUND );
+	}
 
 	// fade in
-	if ( time_in >= BEACON_FADEIN )
+	if ( time_in >= cgs.bc.fadeIn )
 		t_fadein = 1.0;
 	else
-		t_fadein = (float)time_in / BEACON_FADEIN;
+		t_fadein = (float)time_in / cgs.bc.fadeIn;
 	b->scale *= Square( 1.0 - t_fadein ) + 1.0;
 
 	// fade out
-	if ( b->s->etime && time_left < BEACON_FADEOUT )
-		t_fadeout = 1.0 - (float)time_left / BEACON_FADEOUT;
+	if ( b->s->etime && time_left < cgs.bc.fadeOut )
+		t_fadeout = 1.0 - (float)time_left / cgs.bc.fadeOut;
 	else
 		t_fadeout = 0.0;
 	alpha *= 1.0 - t_fadeout;
@@ -166,11 +255,11 @@ static void CG_RunBeacon( cbeacon_t *b )
 	{
 		float t;
 
-		if( time_in >= BEACON_TIMER_TIME + BEACON_FADEIN )
+		if( time_in >= BEACON_TIMER_TIME + cgs.bc.fadeIn )
 			t = 1.0;
 		else if( time_in >= BEACON_TIMER_TIME )
 		{
-			t = (float)( time_in - BEACON_TIMER_TIME ) / BEACON_FADEIN;
+			t = (float)( time_in - BEACON_TIMER_TIME ) / cgs.bc.fadeIn;
 			
 			if( !b->s->eventFired )
 			{
@@ -185,46 +274,34 @@ static void CG_RunBeacon( cbeacon_t *b )
 	}
 
 	// fade when too close
-	if( b->dist < 500 )
-		alpha *= LinearRemap( b->dist, 0, 500, 0.5, 1 );
-
-	// highlight
-	b->highlighted =
-		( b == cg.beacons + cg.num_beacons - 1 &&
-		  sqrt( Square( b->pos_proj[ 0 ] - vw / 2 ) + Square( b->pos_proj[ 0 ] - vh / 2 )  ) < base * 0.1 );
-
-	// highlight animation
-	target = ( b->highlighted ? 1.0 : 0.0 );
-	CG_ExponentialFade( &b->s->t_highlight, target, 20 );
-	b->scale *= LinearRemap( b->s->t_highlight, 0, 1, 1, 1.5 );
+	if( b->dist < cgs.bc.fadeDistance )
+		alpha *= LinearRemap( b->dist, 0, cgs.bc.fadeDistance, cgs.bc.fadeMinAlpha, 1 );
 
 	// color
 	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE )
 		switch( b->team )
 		{
 			case TEAM_ALIENS:
-				VectorSet( b->color, 1, 0.5, 0.5 );
+				Vector4Copy( cgs.bc.colorAlien, b->color );
 				break;
 			case TEAM_HUMANS:
-				VectorSet( b->color, 0.5, 0.9, 1 );
+				Vector4Copy( cgs.bc.colorHuman, b->color );
 				break;
 			default:
-				VectorSet( b->color, 1.0, 0.9, 0.5 );
+				Vector4Copy( cgs.bc.colorNeutral, b->color );
 				break;
 		}
 	else
-		VectorSet( b->color, 1, 1, 1 );
+		Vector4Copy( cgs.bc.colorNeutral, b->color );
 	
-	b->color[ 3 ] = alpha;
+	b->color[ 3 ] *= alpha;
 
 	// calculate HUD size
-	#define BEACON_SIZE_MIN  ( 0.025 * base )
-	#define BEACON_SIZE_MAX  ( 0.05 * base )
-	b->size = base  / sqrt( b->dist );
-	if( b->size > BEACON_SIZE_MAX )
-		b->size = BEACON_SIZE_MAX;
-	else if ( b->size < BEACON_SIZE_MIN )
-		b->size = BEACON_SIZE_MIN;
+	b->size = cgs.bc.hudSize / sqrt( b->dist );
+	if( b->size > cgs.bc.hudMaxSize )
+		b->size = cgs.bc.hudMaxSize;
+	else if ( b->size < cgs.bc.hudMinSize )
+		b->size = cgs.bc.hudMinSize;
 	b->size *= b->scale;
 
 	// project onto screen
@@ -238,24 +315,43 @@ static void CG_RunBeacon( cbeacon_t *b )
 	}
 
 	// virtual 640x480 to real
-	b->pos_proj[ 0 ] *= vw / 640.0;
-	b->pos_proj[ 1 ] *= vh / 480.0;
+	b->pos_proj[ 0 ] *= cgs.glconfig.vidWidth / 640.0;
+	b->pos_proj[ 1 ] *= cgs.glconfig.vidHeight / 480.0;
 
 	// clamp to edges
-	if( !front || b->pos_proj[ 0 ] < BEACON_MARGIN + b->size/2 || b->pos_proj[ 0 ] > vw - BEACON_MARGIN - b->size/2 ||
-								b->pos_proj[ 1 ] < BEACON_MARGIN + b->size/2 || b->pos_proj[ 1 ] > vh - BEACON_MARGIN - b->size/2 )
+	if( !front ||
+	    b->pos_proj[ 0 ] < cgs.bc.hudRect[0][0] + b->size/2 ||
+	    b->pos_proj[ 0 ] > cgs.bc.hudRect[1][0] - b->size/2 ||
+	    b->pos_proj[ 1 ] < cgs.bc.hudRect[0][1] + b->size/2 ||
+	    b->pos_proj[ 1 ] > cgs.bc.hudRect[1][1] - b->size/2 )
 	{
-		vec2_t screen[ 2 ], point;
-		Vector2Set( screen[ 0 ], (vec_t)BEACON_MARGIN + b->size/2, (vec_t)BEACON_MARGIN + b->size/2 );
-		Vector2Set( screen[ 1 ], (vec_t)( vw - BEACON_MARGIN - b->size/2 ), (vec_t)( vh - BEACON_MARGIN - b->size/2 ) );
-		Vector2Set( point, (vec_t)vw / 2.0 , (vec_t)vh / 2.0 );
-		b->clamp_dir[ 0 ] = b->pos_proj[ 0 ] - point[ 0 ];
-		b->clamp_dir[ 1 ] = b->pos_proj[ 1 ] - point[ 1 ];
-		ProjectPointOntoRectangleOutwards( b->pos_proj, point, b->clamp_dir, (const vec2_t*)screen );
+		vec2_t screen[ 2 ];
+		Vector2Set( screen[ 0 ], cgs.bc.hudRect[0][0] + b->size/2,
+		                         cgs.bc.hudRect[0][1] + b->size/2 );
+		Vector2Set( screen[ 1 ], cgs.bc.hudRect[1][0] - b->size/2,
+		                         cgs.bc.hudRect[1][1] - b->size/2 );
+		Vector2Subtract( b->pos_proj, cgs.bc.hudCenter, b->clamp_dir );
+		ProjectPointOntoRectangleOutwards( b->pos_proj, cgs.bc.hudCenter, b->clamp_dir, (const vec2_t*)screen );
 		b->clamped = qtrue;
 	}
 	else
 		b->clamped = qfalse;
+
+	// highlight
+	if( b == cg.highlightedBeacon )
+	{
+		if( Distance2( b->pos_proj, cgs.bc.hudCenter ) <= cgs.bc.highlightRadius )
+			b->highlighted = qtrue;
+		else
+			cg.highlightedBeacon = NULL;
+	}
+	else
+		b->highlighted = qfalse;
+
+	// highlight animation
+	target = ( b->highlighted ? 1.0 : 0.0 );
+	CG_ExponentialFade( &b->s->t_highlight, target, 20 );
+	b->scale *= LinearRemap( b->s->t_highlight, 0, 1, 1, cgs.bc.highlightScale );
 }
 
 /*
@@ -315,7 +411,7 @@ static void CG_AddImplicitBeacon( cbeaconPersistent_t *bp, beaconType_t type )
 		if ( bp->old ) // invalid & old = start fading out
 		{
 			bp->fadingOut = qtrue;
-			bp->etime = cg.time + BEACON_FADEOUT;
+			bp->etime = cg.time + cgs.bc.fadeOut;
 		}
 		else
 		{
@@ -402,7 +498,7 @@ static void CG_ListImplicitBeacons( )
 			// renew if it's a different medistat
 			if ( entityNum != bp_health.oldEntityNum )
 			{
-				bp_health.old = qfalse;
+				//bp_health.old = qfalse;
 				// this is supposed to be uncommented but jumping smoothly
 				// from one medistat to another looks really interesting
 				//bp_health.old_hud = qfalse;
@@ -518,7 +614,12 @@ void CG_ListBeacons( void )
 			break;
 	}
 
+	if( !cg.num_beacons )
+		return;
+
 	qsort( cg.beacons, cg.num_beacons, sizeof( cbeacon_t ), CG_CompareBeaconsByDot );
+
+	cg.highlightedBeacon = cg.beacons + cg.num_beacons - 1;
 
 	for( i = 0; i < cg.num_beacons; i++ )
 		CG_RunBeacon( cg.beacons + i );

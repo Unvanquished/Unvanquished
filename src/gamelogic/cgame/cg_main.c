@@ -1875,6 +1875,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
 
 	CG_Rocket_LoadHuds();
+
+	CG_LoadBeaconsConfig();
+
 	CG_UpdateLoadingStep( LOAD_DONE );
 }
 
