@@ -155,6 +155,8 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 		png_set_packing( png );
 	}
 
+	png_set_interlace_handling( png );
+
 	// update structure with the above settings
 	png_read_update_info( png, info );
 

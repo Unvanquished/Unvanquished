@@ -2948,9 +2948,9 @@ void Info_SetValueForKey( char *s, const char *key, const char *value, qboolean 
 	strcat( s, newi );
 }
 
-void Info_SetValueForKeyRocket( char *s, const char *key, const char *value )
+void Info_SetValueForKeyRocket( char *s, const char *key, const char *value, qboolean big )
 {
-	int maxlen = BIG_INFO_STRING;
+	int maxlen = big ? BIG_INFO_STRING : MAX_INFO_STRING;
 	int slen = strlen( s );
 	static char newi[ BIG_INFO_STRING ];
 
