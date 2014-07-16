@@ -1065,8 +1065,6 @@ typedef enum
 #define BCF_ENTITY        0x0020 // place at an entity's center
 #define BCF_NO_UNCLUTTER  0x0040 // don't move it away from crosshair
 
-#define BCF_SPECTATOR     0x0080 // spectators see the beacon
-
 typedef struct
 {
 	beaconType_t  number;

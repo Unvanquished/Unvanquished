@@ -260,21 +260,18 @@ namespace Beacon //this should eventually become a class
 
 		G_TeamToClientmask( (team_t)ent->s.generic1, &ent->r.loMask, &ent->r.hiMask );
 
-		if ( BG_Beacon( ent->s.modelindex )->flags & BCF_SPECTATOR )
+		// Don't send enemy bases or tagged enemy entities to spectators.
+		if ( ent->s.eFlags & EF_BC_ENEMY )
+		{}
+		// Don't send tagged structures to spectators.
+		else if ( ent->s.modelindex == BCT_TAG && !(ent->s.eFlags & EF_BC_TAG_PLAYER) )
+		{}
+		else
 		{
-			// Don't send enemy bases or tagged enemy entities to spectators.
-			if ( ent->s.eFlags & EF_BC_ENEMY )
-			{}
-			// Don't send tagged structures to spectators.
-			else if ( ent->s.modelindex == BCT_TAG && !(ent->s.eFlags & EF_BC_TAG_PLAYER) )
-			{}
-			else
-			{
-				int loMask, hiMask;
-				G_TeamToClientmask( TEAM_NONE, &loMask, &hiMask );
-				ent->r.loMask |= loMask;
-				ent->r.hiMask |= hiMask;
-			}
+			int loMask, hiMask;
+			G_TeamToClientmask( TEAM_NONE, &loMask, &hiMask );
+			ent->r.loMask |= loMask;
+			ent->r.hiMask |= hiMask;
 		}
 
 		// Don't send a player tag to the tagged client itself.
