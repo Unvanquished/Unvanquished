@@ -1077,7 +1077,8 @@ typedef struct
 	const char    *text[ 4 ];
 	const char    *desc;
 	qhandle_t     icon[ 4 ];
-	sfxHandle_t   sound;
+	sfxHandle_t   inSound;
+	sfxHandle_t   outSound;
 #endif	
 
 	int           decayTime;

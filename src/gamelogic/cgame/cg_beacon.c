@@ -217,24 +217,22 @@ static void CG_RunBeacon( cbeacon_t *b )
 	time_in = cg.time - b->s->ctime; // time since creation
 	time_left = b->s->etime - cg.time; // time to expiration
 
+	// check creation
 	if( !b->s->old )
 	{
 		if( time_in > 1000 )
 			b->s->old = qtrue;
-		else
-		{
-			// creation events
-			if( BG_Beacon( b->type )->sound )
-				trap_S_StartLocalSound( BG_Beacon( b->type )->sound, CHAN_LOCAL_SOUND );
-		}
+		else if( BG_Beacon( b->type )->inSound )
+			trap_S_StartLocalSound( BG_Beacon( b->type )->inSound, CHAN_LOCAL_SOUND );
 	}
 
+	// check death
 	if( b->s->old &&
 	    !( b->s->oldFlags & EF_BC_DYING ) &&
 	    ( b->flags & EF_BC_DYING ) )
 	{
-		// detachment (a.k.a. target lost) events
-		trap_S_StartLocalSound( cgs.media.beaconTargetLostSound, CHAN_LOCAL_SOUND );
+		if( BG_Beacon( b->type )->outSound )
+			trap_S_StartLocalSound( BG_Beacon( b->type )->outSound, CHAN_LOCAL_SOUND );
 	}
 
 	// fade in
