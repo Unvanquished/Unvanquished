@@ -72,6 +72,7 @@ namespace Beacon //this should eventually become a class
 
 		ent = G_NewEntity( );
 		ent->s.eType = ET_BEACON;
+		ent->classname = "beacon";
 
 		ent->s.modelindex = type;
 		ent->s.modelindex2 = data;
