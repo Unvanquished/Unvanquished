@@ -230,8 +230,8 @@ static void CG_RunBeacon( cbeacon_t *b )
 	}
 
 	if( b->s->old &&
-	    !( b->s->oldFlags & EF_BC_NO_TARGET ) &&
-	    ( b->flags & EF_BC_NO_TARGET ) )
+	    !( b->s->oldFlags & EF_BC_DYING ) &&
+	    ( b->flags & EF_BC_DYING ) )
 	{
 		// detachment (a.k.a. target lost) events
 		trap_S_StartLocalSound( cgs.media.beaconTargetLostSound, CHAN_LOCAL_SOUND );

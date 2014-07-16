@@ -108,12 +108,22 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Delete a beacon instantly, without playing a sound or effect.
+	 * @param verbose Whether to play an effect or remove the entity immediately.
 	 */
-	void Delete( gentity_t *ent )
+	void Delete( gentity_t *ent, bool verbose )
 	{
 		if( !ent )
 			return;
-		G_FreeEntity( ent );
+
+		if( verbose )
+		{
+			ent->s.eFlags |= EF_BC_DYING;
+			ent->s.time2 = level.time + 1500;
+		}
+		else
+		{
+			G_FreeEntity( ent );
+		}
 	}
 
 	/**
@@ -388,26 +398,13 @@ namespace Beacon //this should eventually become a class
 	}
 
 	/**
-	 * @brief Sets the "no target" flag and makes the tag expire soon.
-	 */
-	static void DetachTag( gentity_t *ent )
-	{
-		if( !ent )
-			return;
-
-		ent->s.eFlags |= EF_BC_NO_TARGET;
-		ent->s.time2 = level.time + 1500;
-	}
-
-	/**
-	 * @brief Calls DetachTag for all tags attached to an entity.
+	 * @brief Deletes all tags attached to an entity (plays effects).
 	 */
 	void DetachTags( gentity_t *ent )
 	{
-		DetachTag( ent->alienTag );
-		ent->alienTag = NULL;
-		DetachTag( ent->humanTag );
-		ent->humanTag = NULL;
+		Delete( ent->alienTag, true );
+		Delete( ent->humanTag, true );
+		ent->alienTag = ent->humanTag = NULL;
 	}
 
 	/**
@@ -416,9 +413,8 @@ namespace Beacon //this should eventually become a class
 	void DeleteTags( gentity_t *ent )
 	{
 		Delete( ent->alienTag );
-		ent->alienTag = NULL;
 		Delete( ent->humanTag );
-		ent->humanTag = NULL;
+		ent->alienTag = ent->humanTag = NULL;
 	}
 
 	/**
@@ -512,7 +508,7 @@ namespace Beacon //this should eventually become a class
 			beacon->s.time2 = level.time + 35000;
 
 		if( dead )
-			DetachTag( beacon );
+			Delete( beacon, true );
 		else
 			*attachment = beacon;
 

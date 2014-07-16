@@ -366,7 +366,7 @@ typedef enum
 #define PF_JETPACK_ACTIVE   BIT(1)
 
 // for beacons:
-#define EF_BC_NO_TARGET     BIT(3) // beacon lost its target
+#define EF_BC_DYING         BIT(3) // beacon is fading out
 #define EF_BC_ENEMY         BIT(4) // entity/base is from the enemy
 #define EF_BC_TAG_PLAYER    BIT(5) // entity is a player
 #define EF_BC_BASE_OUTPOST  BIT(6) // base is an outpost
