@@ -385,50 +385,6 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		                       cgs.media.beaconIconArrow,
 		                       270.0 - ( angle = atan2( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * 180 / M_PI );
 
-	if( b->s->t_highlight > 0.01 )
-	{
-		float h, tw;
-		const char *p;
-		vec2_t pos, dir, rect[ 2 ];
-		int i, l;
-
-		Vector4Copy( b->color, color );
-		color[ 3 ] *= b->s->t_highlight;
-		trap_R_SetColor( color );
-
-		h = b->size * 0.4;
-		p = va( "%d", (int)round( b->dist / 31.0 ) );
-		l = strlen( p );
-		tw = h * l;
-
-		if( !b->clamped )
-		{
-			pos[ 0 ] = b->s->pos[ 0 ];
-			pos[ 1 ] = b->s->pos[ 1 ] + b->size/2 + h/2;
-		}
-		else
-		{
-			rect[ 0 ][ 0 ] = b->s->pos[ 0 ] - b->size/2 - tw/2;
-			rect[ 1 ][ 0 ] = b->s->pos[ 0 ] + b->size/2 + tw/2;
-			rect[ 0 ][ 1 ] = b->s->pos[ 1 ] - b->size/2 - h/2;
-			rect[ 1 ][ 1 ] = b->s->pos[ 1 ] + b->size/2 + h/2;
-
-			for( i = 0; i < 2; i++ )
-				dir[ i ] = - b->clamp_dir[ i ];
-
-			ProjectPointOntoRectangleOutwards( pos, b->s->pos, dir, (const vec2_t*)rect );
-		}
-
-		pos[ 0 ] += -tw/2;
-
-		for( i = 0; i < l; i++ )
-			if( p[ i ] >= '0' && p[ i ] <= '9' )
-			{
-				trap_R_DrawStretchPic( pos[ 0 ], pos[ 1 ] - h/2, h, h, 0, 0, 1, 1, cgs.media.numberShaders[ p[ i ] - '0' ] );
-				pos[ 0 ] += h;
-			}
-	}
-
 	trap_R_SetColor( NULL );
 }
 

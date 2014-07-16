@@ -472,10 +472,10 @@ static const cvarTable_t cvarTable[] =
 
 	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            },
 
-	{ &cg_beaconHUDScale,              "cg_beaconHUDScale",              "1",            CVAR_ARCHIVE                 },
-	{ &cg_beaconHUDAlpha,              "cg_beaconHUDAlpha",              "1",            CVAR_ARCHIVE                 },
-	{ &cg_beaconMapScale,              "cg_beaconMapScale",              "1",            CVAR_ARCHIVE                 },
-	{ &cg_beaconDynamics,              "cg_beaconDynamics",              "1",            CVAR_ARCHIVE                 }
+	{ &cg_beaconHUDScale,              "cg_beaconHUDScale",              "1",            0                            },
+	{ &cg_beaconHUDAlpha,              "cg_beaconHUDAlpha",              "0.35",         0                            },
+	{ &cg_beaconMapScale,              "cg_beaconMapScale",              "1",            0                            },
+	{ &cg_beaconDynamics,              "cg_beaconDynamics",              "1",            0                            }
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );

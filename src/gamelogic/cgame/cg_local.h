@@ -648,7 +648,7 @@ typedef struct
 	//drawing
 	vec2_t        pos;
 	qboolean      altIcon;
-	float         t_highlight;
+	float         t_occlusion;
 
 	vec3_t        origin;
 	int           ctime; // creation time
@@ -689,8 +689,10 @@ typedef struct
 	int           fadeOut;
 	float         highlightRadius;
 	float         highlightScale;
-	float         fadeDistance;
 	float         fadeMinAlpha;
+	float         fadeMaxAlpha;
+	float         fadeMinDist; //runtime
+	float         fadeMaxDist; //runtime
 
 	// drawing
 	vec4_t        colorNeutral;
@@ -705,8 +707,8 @@ typedef struct
 	float         hudSize;
 	float         hudMinSize;
 	float         hudMaxSize;
-	vec2_t        hudCenter;
-	vec2_t        hudRect[ 2 ];
+	vec2_t        hudCenter;    //runtime
+	vec2_t        hudRect[ 2 ]; //runtime
 
 	// minimap
 	float         minimapScale;

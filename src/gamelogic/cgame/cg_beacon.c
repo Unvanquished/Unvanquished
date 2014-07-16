@@ -90,8 +90,8 @@ else if( !Q_stricmp( token.string, #x ) ) \
 		READ_INT    ( fadeOut )
 		READ_FLOAT_S( highlightRadius )
 		READ_FLOAT  ( highlightScale )
-		READ_FLOAT  ( fadeDistance )
 		READ_FLOAT  ( fadeMinAlpha )
+		READ_FLOAT  ( fadeMaxAlpha )
 
 		READ_COLOR  ( colorNeutral )
 		READ_COLOR  ( colorAlien )
@@ -122,6 +122,9 @@ else if( !Q_stricmp( token.string, #x ) ) \
 			bc->hudRect[ 1 ][ 1 ] = vh - margin;
 		}
 	}
+
+	bc->fadeMinDist = Square( bc->hudSize / bc->hudMaxSize );
+	bc->fadeMaxDist = Square( bc->hudSize / bc->hudMinSize );
 
 	trap_Parse_FreeSource( fd  );
 }
@@ -273,9 +276,25 @@ static void CG_RunBeacon( cbeacon_t *b )
 		b->scale *= Square( 1.0 - t ) * 2.0 + 1.0;
 	}
 
-	// fade when too close
-	if( b->dist < cgs.bc.fadeDistance )
-		alpha *= LinearRemap( b->dist, 0, cgs.bc.fadeDistance, cgs.bc.fadeMinAlpha, 1 );
+	// occlusion effects
+	if ( b->type == BCT_TAG && ( b->flags & EF_BC_TAG_PLAYER ) )
+	{
+		trace_t tr;
+
+		CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, b->s->origin, ENTITYNUM_NONE, CONTENTS_SOLID );
+
+		target = ( ( tr.fraction > 1.0f - FLT_EPSILON ) ? 1.0 : 0.0 );
+		CG_ExponentialFade( &b->s->t_occlusion, target, 10 );
+		alpha *= LinearRemap( b->s->t_occlusion, 0, 1, 1, 0.5 );
+	}
+
+	// Fade out when too close. Span the same distance as the size change but fade linearly.
+	if( b->dist < cgs.bc.fadeMinDist )
+		alpha *= cgs.bc.fadeMinAlpha;
+	else if( b->dist > cgs.bc.fadeMaxDist )
+		alpha *= cgs.bc.fadeMaxAlpha;
+	else
+		alpha *= LinearRemap( b->dist, cgs.bc.fadeMinDist, cgs.bc.fadeMaxDist, cgs.bc.fadeMinAlpha, cgs.bc.fadeMaxAlpha );
 
 	// color
 	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE )
@@ -347,11 +366,6 @@ static void CG_RunBeacon( cbeacon_t *b )
 	}
 	else
 		b->highlighted = qfalse;
-
-	// highlight animation
-	target = ( b->highlighted ? 1.0 : 0.0 );
-	CG_ExponentialFade( &b->s->t_highlight, target, 20 );
-	b->scale *= LinearRemap( b->s->t_highlight, 0, 1, 1, cgs.bc.highlightScale );
 }
 
 /*
