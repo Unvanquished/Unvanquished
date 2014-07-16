@@ -44,6 +44,7 @@ const char        *G_quoted_admin_name( gentity_t *ent );
 namespace Beacon 
 {
 	void Think( gentity_t *ent );
+	void Move( gentity_t *ent, const vec3_t origin );
 	gentity_t *New( const vec3_t origin, beaconType_t type, int data, team_t team, int owner );
 	void NewArea( beaconType_t type, vec3_t point, team_t team );
 	void Delete( gentity_t *ent );

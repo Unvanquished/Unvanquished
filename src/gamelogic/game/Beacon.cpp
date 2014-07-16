@@ -51,6 +51,16 @@ namespace Beacon //this should eventually become a class
 	}
 
 	/**
+	 * @brief Move a beacon to a specified point in space.
+	 */
+	void Move( gentity_t *ent, const vec3_t origin )
+	{
+		VectorCopy( origin, ent->s.pos.trBase );
+		VectorCopy( origin, ent->r.currentOrigin );
+		VectorCopy( origin, ent->s.origin );
+	}
+
+	/**
 	 * @brief Create a new ET_BEACON entity.
 	 * @return A pointer to the new entity.
 	 */
@@ -63,7 +73,6 @@ namespace Beacon //this should eventually become a class
 		ent = G_NewEntity( );
 		ent->s.eType = ET_BEACON;
 
-		VectorCopy( origin, ent->s.origin );
 		ent->s.modelindex = type;
 		ent->s.modelindex2 = data;
 		ent->s.generic1 = team;
@@ -76,10 +85,7 @@ namespace Beacon //this should eventually become a class
 		ent->s.time2 = ( decayTime ? level.time + decayTime : 0 );
 
 		ent->s.pos.trType = TR_INTERPOLATE;
-		VectorCopy( origin, ent->s.pos.trBase );
-		VectorClear( ent->s.pos.trDelta );
-		VectorCopy( origin, ent->r.currentOrigin );
-		VectorCopy( origin, ent->s.origin );
+		Move( ent, origin );
 
 		return ent;
 	}
@@ -337,10 +343,7 @@ namespace Beacon //this should eventually become a class
 
 	static void UpdateTag( gentity_t *ent, gentity_t *parent )
 	{
-		VectorCopy( parent->s.origin, ent->s.pos.trBase );
-		VectorClear( ent->s.pos.trDelta );
-		VectorCopy( parent->s.origin, ent->r.currentOrigin );
-		VectorCopy( parent->s.origin, ent->s.origin );
+		Move( ent, parent->s.origin );
 
 		if( parent->client )
 		{
