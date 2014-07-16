@@ -612,7 +612,7 @@ void CG_ListBeacons( void )
 		beacon->s->ctime = es->time;
 		beacon->s->etime = es->time2;
 
-		VectorCopy( es->origin, beacon->s->origin );
+		VectorCopy( cent->lerpOrigin, beacon->s->origin );
 		beacon->type = (beaconType_t)es->modelindex;
 		beacon->data = es->modelindex2;
 		beacon->team = (team_t)es->generic1;

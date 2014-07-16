@@ -63,7 +63,6 @@ namespace Beacon //this should eventually become a class
 		ent = G_NewEntity( );
 		ent->s.eType = ET_BEACON;
 
-		VectorCopy( origin, ent->s.origin );
 		ent->s.modelindex = type;
 		ent->s.modelindex2 = data;
 		ent->s.generic1 = team;
@@ -74,6 +73,12 @@ namespace Beacon //this should eventually become a class
 		ent->s.time = level.time;
 		decayTime = BG_Beacon( type )->decayTime;
 		ent->s.time2 = ( decayTime ? level.time + decayTime : 0 );
+
+		ent->s.pos.trType = TR_INTERPOLATE;
+		VectorCopy( origin, ent->s.pos.trBase );
+		VectorClear( ent->s.pos.trDelta );
+		VectorCopy( origin, ent->r.currentOrigin );
+		VectorCopy( origin, ent->s.origin );
 
 		return ent;
 	}
@@ -332,6 +337,14 @@ namespace Beacon //this should eventually become a class
 		}
 	}
 
+	static void UpdateTag( gentity_t *ent, gentity_t *parent )
+	{
+		VectorCopy( parent->s.origin, ent->s.pos.trBase );
+		VectorClear( ent->s.pos.trDelta );
+		VectorCopy( parent->s.origin, ent->r.currentOrigin );
+		VectorCopy( parent->s.origin, ent->s.origin );
+	}
+
 	/**
 	 * @brief Update tags attached to an entity.
 	 */
@@ -342,9 +355,9 @@ namespace Beacon //this should eventually become a class
 			return;
 
 		if( ent->alienTag )
-			VectorCopy( ent->s.origin, ent->alienTag->s.origin );
+			UpdateTag( ent->alienTag, ent );
 		if( ent->humanTag )
-			VectorCopy( ent->s.origin, ent->humanTag->s.origin );
+			UpdateTag( ent->humanTag, ent );
 	}
 
 	/**
