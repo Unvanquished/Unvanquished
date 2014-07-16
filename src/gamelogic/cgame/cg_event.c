@@ -618,6 +618,7 @@ void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
 		CG_Rocket_BuildArmouryBuyList( "default" );
 	}
 
+	cg.predictedPlayerEntity.pe.weapon.animationNumber = -1; //force weapon lerpframe recalculation
 }
 
 /*
