@@ -254,13 +254,32 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Remove all beacons matching a pattern.
+	 * @return Number of beacons removed.
 	 */
-	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
-	                    float radius, int eFlags, int eFlagsRelevant )
+	int RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
+	                   float radius, int eFlags, int eFlagsRelevant )
 	{
 		gentity_t *ent;
+		int numRemoved = 0;
 		while ((ent = FindSimilar(origin, type, data, team, owner, radius, eFlags, eFlagsRelevant)))
+		{
 			Delete( ent );
+			numRemoved++;
+		}
+		return numRemoved;
+	}
+
+	/**
+	 * @brief Move a single beacon matching a pattern.
+	 * @return The moved beacon or NULL.
+	 */
+	gentity_t *MoveSimilar( const vec3_t from, const vec3_t to, beaconType_t type, int data,
+	                        int team, int owner, float radius, int eFlags, int eFlagsRelevant )
+	{
+		gentity_t *ent;
+		if ((ent = FindSimilar(from, type, data, team, owner, radius, eFlags, eFlagsRelevant)))
+			Move(ent, to);
+		return ent;
 	}
 
 	/**

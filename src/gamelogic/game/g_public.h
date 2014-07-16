@@ -51,8 +51,10 @@ namespace Beacon
 	void MoveTowardsRoom( vec3_t origin, const vec3_t normal );
 	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
 	                        float radius, int eFlags, int eFlagsRelevant );
-	void RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
-	                    float radius, int eFlags, int eFlagsRelevant );
+	int RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
+	                   float radius, int eFlags, int eFlagsRelevant );
+	gentity_t *MoveSimilar( const vec3_t from, const vec3_t to, beaconType_t type, int data,
+	                        int team, int owner, float radius, int eFlags, int eFlagsRelevant );
 	void Propagate( gentity_t *ent );
 	void PropagateAll( void );
 	void RemoveOrphaned( int clientNum );

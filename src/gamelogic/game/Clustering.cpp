@@ -608,24 +608,21 @@ namespace BaseClustering {
 
 			// If a fitting beacon close to the target location already exists, move it silently,
 			// otherwise add a new one.
-			if ((beacon = Beacon::FindSimilar(center.coords, BCT_BASE, 0, team, 0, averageDistance,
-			                                  eFlags, EF_BC_BASE_RELEVANT))) {
-				VectorCopy(tr.endpos, beacon->s.origin);
-			} else {
+			if (!(beacon = Beacon::MoveSimilar(center.coords, tr.endpos, BCT_BASE, 0, team, 0,
+			                                   averageDistance, eFlags, EF_BC_BASE_RELEVANT))) {
 				beacon = Beacon::New(tr.endpos, BCT_BASE, 0, team, ENTITYNUM_NONE);
 				beacon->s.eFlags |= eFlags;
 				Beacon::Propagate(beacon);
 			}
+
 			newBeacons.insert(beacon);
 
 			// Add a second beacon for the enemy team if they tagged the base.
 			if (taggedByEnemy) {
 				eFlags |= EF_BC_ENEMY;
 
-				if ((beacon = Beacon::FindSimilar(center.coords, BCT_BASE, 0, taggedByEnemy, 0,
-				                                  averageDistance, eFlags, EF_BC_BASE_RELEVANT))) {
-					VectorCopy(tr.endpos, beacon->s.origin);
-				} else {
+				if (!(beacon = Beacon::MoveSimilar(center.coords, tr.endpos, BCT_BASE, 0, team, 0,
+				                                   averageDistance, eFlags, EF_BC_BASE_RELEVANT))) {
 					beacon = Beacon::New(tr.endpos, BCT_BASE, 0, taggedByEnemy, ENTITYNUM_NONE);
 					beacon->s.eFlags |= eFlags;
 					Beacon::Propagate(beacon);
@@ -642,6 +639,7 @@ namespace BaseClustering {
 				Beacon::Delete(beacon);
 			}
 		}
+
 		teamBeacons.swap(newBeacons);
 	}
 
