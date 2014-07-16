@@ -216,8 +216,6 @@ namespace Beacon //this should eventually become a class
 	{
 		for ( gentity_t *ent = NULL; (ent = G_IterateEntities(ent, NULL, true, 0, NULL)); )
 		{
-			// conditions common to all beacons
-
 			if ( ent->s.eType != ET_BEACON )
 				continue;
 
@@ -234,18 +232,15 @@ namespace Beacon //this should eventually become a class
 			     ent->s.modelindex2 != data )
 				continue;
 
-			// conditions common to specific kinds of beacons
+			if ( ent->s.eFlags & EF_BC_DYING )
+				continue;
 
-			if( BG_Beacon( type )->flags & BCF_PER_TEAM )
-			{
-				// no new conditions
-			}
-			else if( BG_Beacon( type )->flags & BCF_PER_PLAYER )
+			if( BG_Beacon( type )->flags & BCF_PER_PLAYER )
 			{
 				if( ent->s.otherEntityNum != owner )
 					continue;
 			}
-			else
+			else if ( !( BG_Beacon( type )->flags & BCF_PER_TEAM ) )
 			{
 				if ( radius <= 0 )
 					radius = ( BG_Beacon( type )->flags & BCF_ENTITY ) ? 5.0f : 250.0f;
