@@ -827,8 +827,6 @@ void AGeneric_CreepRecede( gentity_t *self )
 	{
 		self->s.eFlags |= EF_DEAD;
 
-		G_RewardAttackers( self );
-
 		G_AddEvent( self, EV_BUILD_DESTROY, 0 );
 
 		if ( self->spawned )
@@ -871,6 +869,8 @@ void AGeneric_Blast( gentity_t *self )
 	//do a bit of radius damage
 	G_SelectiveRadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                         self->splashRadius, self, self->splashMethodOfDeath, TEAM_ALIENS );
+
+	G_RewardAttackers( self );
 
 	//pretty events and item cleanup
 	self->s.eFlags |= EF_NODRAW; //don't draw the model once it's destroyed
@@ -2407,9 +2407,10 @@ HGeneric_Disappear
 Called when a human buildable is destroyed before it is spawned.
 ================
 */
-void HGeneric_Disappear( gentity_t *self )
+void HGeneric_Cancel( gentity_t *self )
 {
 	self->timestamp = level.time;
+
 	G_RewardAttackers( self );
 
 	G_FreeEntity( self );
@@ -2448,7 +2449,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	else
 	{
 		// disappear immediately
-		self->think = HGeneric_Disappear;
+		self->think = HGeneric_Cancel;
 		self->nextthink = level.time;
 	}
 
