@@ -262,11 +262,11 @@ namespace Beacon //this should eventually become a class
 
 		if ( BG_Beacon( ent->s.modelindex )->flags & BCF_SPECTATOR )
 		{
-			// Don't send tagged structures to spectators.
-			if ( ent->s.modelindex == BCT_TAG && !(ent->s.eFlags & EF_BC_TAG_PLAYER) )
+			// Don't send enemy bases or tagged enemy entities to spectators.
+			if ( ent->s.eFlags & EF_BC_ENEMY )
 			{}
-			// Don't send tagged enemy bases to spectators.
-			else if ( ent->s.modelindex == BCT_BASE && (ent->s.eFlags & EF_BC_BASE_ENEMY) )
+			// Don't send tagged structures to spectators.
+			else if ( ent->s.modelindex == BCT_TAG && !(ent->s.eFlags & EF_BC_TAG_PLAYER) )
 			{}
 			else
 			{
@@ -277,7 +277,7 @@ namespace Beacon //this should eventually become a class
 			}
 		}
 
-		// Don't send a tag to the tagged client itself.
+		// Don't send a player tag to the tagged client itself.
 		if ( ent->s.modelindex == BCT_TAG && (ent->s.eFlags & EF_BC_TAG_PLAYER) )
 		{
 			int loMask, hiMask;
@@ -388,41 +388,50 @@ namespace Beacon //this should eventually become a class
 	{
 		int i, data;
 		vec3_t origin, mins, maxs;
-		qboolean dead, alien = qfalse, human = qfalse;
+		qboolean dead, player;
 		gentity_t *beacon, **attachment;
+		team_t targetTeam;
 
 		switch( ent->s.eType )
 		{
 			case ET_BUILDABLE:
+				targetTeam = ent->buildableTeam;
 				BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
 				data = ent->s.modelindex;
 				dead = ( ent->health <= 0 );
-				if ( ent->buildableTeam != team && ent->taggedByEnemy != team )
+				player = qfalse;
+
+				// if tagging an enemy structure, check whether the base shall be tagged, too
+				if ( targetTeam != team && ent->taggedByEnemy != team )
 				{
 					ent->taggedByEnemy = team;
 					BaseClustering::Touch(ent->buildableTeam);
 				}
+
 				break;
 
 			case ET_PLAYER:
+				targetTeam = (team_t)ent->client->pers.team;
 				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, NULL, NULL, NULL );
 				dead = ( ent->client && ent->client->ps.stats[ STAT_HEALTH ] <= 0 );
 				owner = ent->s.number;
-				switch( ent->client->pers.team )
+				player = qtrue;
+
+				// data is the class (aliens) or the weapon number (humans)
+				switch( targetTeam )
 				{
 					case TEAM_ALIENS:
-						alien = qtrue;
 						data = ent->client->ps.stats[ STAT_CLASS ];
 						break;
 
 					case TEAM_HUMANS:
-						human = qtrue;
 						data = BG_GetPlayerWeapon( &ent->client->ps );
 						break;
 
 					default:
 						return;
 				}
+
 				break;
 
 			default:
@@ -449,30 +458,23 @@ namespace Beacon //this should eventually become a class
 		RemoveSimilar( origin, BCT_TAG, data, team, owner, 0, 0, 0 );
 		beacon = New( origin, BCT_TAG, data, team, owner );
 
-		if( alien )
-		{
-			beacon->s.eFlags |= EF_BC_TAG_ALIEN;
-			beacon->s.time2 = level.time + 4000;
-		}
-		else if( human )
-		{
-			beacon->s.eFlags |= EF_BC_TAG_HUMAN;
-			beacon->s.time2 = level.time + 4000;
-		}
-		else
-			beacon->s.time2 = level.time + 35000;
+		if( player )
+			beacon->s.eFlags |= EF_BC_TAG_PLAYER;
+
+		if( team != targetTeam )
+			beacon->s.eFlags |= EF_BC_ENEMY;
 
 		if( permanent )
 			beacon->s.time2 = 0;
+		else if( player )
+			beacon->s.time2 = level.time + 4000;
+		else
+			beacon->s.time2 = level.time + 35000;
 
 		if( dead )
 			DetachTag( beacon );
 		else
-		{
-			//if( *attachment )
-			//	Delete( *attachment );
 			*attachment = beacon;
-		}
 
 		Propagate( beacon );
 	}

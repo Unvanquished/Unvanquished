@@ -297,22 +297,24 @@ static void CG_RunBeacon( cbeacon_t *b )
 		alpha *= LinearRemap( b->dist, cgs.bc.fadeMinDist, cgs.bc.fadeMaxDist, cgs.bc.fadeMinAlpha, cgs.bc.fadeMaxAlpha );
 
 	// color
-	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE )
-		switch( b->team )
-		{
-			case TEAM_ALIENS:
-				Vector4Copy( cgs.bc.colorAlien, b->color );
-				break;
-			case TEAM_HUMANS:
+	switch( b->team )
+	{
+		case TEAM_ALIENS:
+			if ( b->flags & EF_BC_ENEMY )
 				Vector4Copy( cgs.bc.colorHuman, b->color );
-				break;
-			default:
-				Vector4Copy( cgs.bc.colorNeutral, b->color );
-				break;
-		}
-	else
-		Vector4Copy( cgs.bc.colorNeutral, b->color );
-	
+			else
+				Vector4Copy( cgs.bc.colorAlien, b->color );
+			break;
+		case TEAM_HUMANS:
+			if ( b->flags & EF_BC_ENEMY )
+				Vector4Copy( cgs.bc.colorAlien, b->color );
+			else
+				Vector4Copy( cgs.bc.colorHuman, b->color );
+			break;
+		default:
+			Vector4Copy( cgs.bc.colorNeutral, b->color );
+			break;
+	}
 	b->color[ 3 ] *= alpha;
 
 	// calculate HUD size
@@ -661,17 +663,20 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 
 	if ( b->type == BCT_TAG )
 	{
-		if( b->flags & EF_BC_TAG_ALIEN )
+		if ( b->flags & EF_BC_TAG_PLAYER )
 		{
-			if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
-				return 0;
-			return cg_classes[ b->data ].classIcon;
-		}
-		else if( b->flags & EF_BC_TAG_HUMAN )
-		{
-			if( b->data <= WP_NONE || b->data >= WP_NUM_WEAPONS )
-				return 0;
-			return cg_weapons[ b->data ].weaponIcon;
+			if ( ( b->team == TEAM_ALIENS ) == ( ( b->flags & EF_BC_ENEMY ) == 0 ) )
+			{
+				if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
+					return 0;
+				return cg_classes[ b->data ].classIcon;
+			}
+			else
+			{
+				if( b->data <= WP_NONE || b->data >= WP_NUM_WEAPONS )
+					return 0;
+				return cg_weapons[ b->data ].weaponIcon;
+			}
 		}
 		else
 		{
@@ -687,7 +692,7 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 		if( b->flags & EF_BC_BASE_OUTPOST )
 			index |= 1;
 
-		if( b->flags & EF_BC_BASE_ENEMY )
+		if( b->flags & EF_BC_ENEMY )
 			index |= 2;
 
 		return BG_Beacon( b->type )->icon[ index ];
@@ -716,17 +721,20 @@ const char *CG_BeaconText( const cbeacon_t *b )
 	
 	if ( b->type == BCT_TAG )
 	{
-		if( b->flags & EF_BC_TAG_ALIEN )
+		if ( b->flags & EF_BC_TAG_PLAYER )
 		{
-			if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
-				return 0;
-			text = _( BG_ClassModelConfig( b->data )->humanName );
-		}
-		else if( b->flags & EF_BC_TAG_HUMAN )
-		{
-			if( b->data <= WP_NONE || b->data >= WP_NUM_WEAPONS )
-				return 0;
-			text = _( BG_Weapon( b->data )->humanName );
+			if ( ( b->team == TEAM_ALIENS ) == ( ( b->flags & EF_BC_ENEMY ) == 0 ) )
+			{
+				if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
+					return 0;
+				text = _( BG_ClassModelConfig( b->data )->humanName );
+			}
+			else
+			{
+				if( b->data <= WP_NONE || b->data >= WP_NUM_WEAPONS )
+					return 0;
+				text = _( BG_Weapon( b->data )->humanName );
+			}
 		}
 		else
 		{
@@ -742,7 +750,7 @@ const char *CG_BeaconText( const cbeacon_t *b )
 		if( b->flags & EF_BC_BASE_OUTPOST )
 			index |= 1;
 
-		if( b->flags & EF_BC_BASE_ENEMY )
+		if( b->flags & EF_BC_ENEMY )
 			index |= 2;
 
 		text = BG_Beacon( b->type )->text[ index ];
