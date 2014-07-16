@@ -559,6 +559,8 @@ namespace Clustering {
 	};
 }
 
+#define MININUM_BASE_RADIUS 128.0f
+
 /**
  * @brief Uses EntityClusterings to keep track of the bases of both teams.
  */
@@ -582,6 +584,8 @@ namespace BaseClustering {
 			float averageDistance                      = cluster.GetAverageDistance();
 			float standardDeviation                    = cluster.GetStandardDeviation();
 
+			float baseRadius = std::max(averageDistance + standardDeviation, MININUM_BASE_RADIUS);
+
 			// Find out if it's an outpost or main base and see if any of the inner structures is
 			// tagged by the enemy
 			team_t taggedByEnemy = TEAM_NONE;
@@ -595,7 +599,7 @@ namespace BaseClustering {
 					mainBase = true;
 				}
 
-				if (ent->taggedByEnemy && distance <= averageDistance + standardDeviation) {
+				if (ent->taggedByEnemy != TEAM_NONE && ent->health > 0 && distance < baseRadius ) {
 					taggedByEnemy = ent->taggedByEnemy;
 				}
 			}
@@ -612,8 +616,8 @@ namespace BaseClustering {
 			// If a fitting beacon close to the target location already exists, move it silently,
 			// otherwise add a new one.
 			if (!(beacon = Beacon::MoveSimilar(center.coords, tr.endpos, BCT_BASE, 0, team, 0,
-			                                   averageDistance, eFlags, EF_BC_BASE_RELEVANT))) {
-				beacon = Beacon::New(tr.endpos, BCT_BASE, 0, team, ENTITYNUM_NONE);
+			                                   baseRadius, eFlags, EF_BC_BASE_RELEVANT))) {
+				beacon = Beacon::New(tr.endpos, BCT_BASE, (int)baseRadius, team, ENTITYNUM_NONE);
 				beacon->s.eFlags |= eFlags;
 				Beacon::Propagate(beacon);
 			}
@@ -621,12 +625,14 @@ namespace BaseClustering {
 			newBeacons.insert(beacon);
 
 			// Add a second beacon for the enemy team if they tagged the base.
-			if (taggedByEnemy) {
+			if (taggedByEnemy != TEAM_NONE) {
 				eFlags |= EF_BC_ENEMY;
 
-				if (!(beacon = Beacon::MoveSimilar(center.coords, tr.endpos, BCT_BASE, 0, team, 0,
-				                                   averageDistance, eFlags, EF_BC_BASE_RELEVANT))) {
-					beacon = Beacon::New(tr.endpos, BCT_BASE, 0, taggedByEnemy, ENTITYNUM_NONE);
+				if (!(beacon = Beacon::MoveSimilar(center.coords, tr.endpos, BCT_BASE, 0,
+				                                   taggedByEnemy, 0, baseRadius, eFlags,
+				                                   EF_BC_BASE_RELEVANT))) {
+					beacon = Beacon::New(tr.endpos, BCT_BASE, (int)baseRadius, taggedByEnemy,
+					                     ENTITYNUM_NONE);
 					beacon->s.eFlags |= eFlags;
 					Beacon::Propagate(beacon);
 				}
@@ -638,8 +644,7 @@ namespace BaseClustering {
 		// Delete all orphaned base beacons.
 		for (gentity_t *beacon : teamBeacons) {
 			if (newBeacons.find(beacon) == newBeacons.end()) {
-				// TODO: Use verbose beacon unlinking as this base actually disappeared
-				Beacon::Delete(beacon);
+				Beacon::Delete(beacon, (level.matchTime > 1000));
 			}
 		}
 
