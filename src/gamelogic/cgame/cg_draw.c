@@ -340,6 +340,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		vec2_t midpoint;
 
 		Vector4Copy( b->color, color );
+		color[ 3 ] *= cgs.bc.hudAlpha;
 		color[ 3 ] *= MIN( 1.0, LinearRemap( offset, cgs.bc.arrowAlphaLow, cgs.bc.arrowAlphaHigh, 0, 1 ) );
 		trap_R_SetColor( color );
 
@@ -349,20 +350,22 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		angle = 180.0 - atan2( delta[ 1 ], delta[ 0 ] ) * 180 / M_PI;
 
 		trap_R_DrawRotatedPic( midpoint[ 0 ] - offset/2,
-		                       midpoint[ 1 ] - cgs.bc.arrowWidth / 2.0 * cg_beaconHUDScale.value,
-		                       offset, cgs.bc.arrowWidth * cg_beaconHUDScale.value,
+		                       midpoint[ 1 ] - cgs.bc.arrowWidth / 2.0 ,
+		                       offset, cgs.bc.arrowWidth,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconLongArrow,
 		                       angle );
 
-		trap_R_DrawStretchPic( b->pos_proj[ 0 ] - cgs.bc.arrowDotSize / 2 * cg_beaconHUDScale.value,
-		                       b->pos_proj[ 1 ] - cgs.bc.arrowDotSize / 2 * cg_beaconHUDScale.value,
-		                       cgs.bc.arrowDotSize * cg_beaconHUDScale.value, cgs.bc.arrowDotSize * cg_beaconHUDScale.value,
+		trap_R_DrawStretchPic( b->pos_proj[ 0 ] - cgs.bc.arrowDotSize / 2,
+		                       b->pos_proj[ 1 ] - cgs.bc.arrowDotSize / 2,
+		                       cgs.bc.arrowDotSize, cgs.bc.arrowDotSize,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconLongArrowDot );
 	}
 
-	trap_R_SetColor( b->color );
+	Vector4Copy( b->color, color );
+	color[ 3 ] *= cgs.bc.hudAlpha;
+	trap_R_SetColor( color );
 
 	trap_R_DrawStretchPic( b->s->pos[ 0 ] - b->size/2,
 	                       b->s->pos[ 1 ] - b->size/2,

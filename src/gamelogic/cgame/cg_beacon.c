@@ -104,8 +104,10 @@ else if( !Q_stricmp( token.string, #x ) ) \
 		READ_FLOAT_S( hudSize )
 		READ_FLOAT_S( hudMinSize )
 		READ_FLOAT_S( hudMaxSize )
+		READ_FLOAT  ( hudAlpha )
 
 		READ_FLOAT  ( minimapScale )
+		READ_FLOAT  ( minimapAlpha )
 
 		else if( !Q_stricmp( token.string, "hudMargin" ) )
 		{
@@ -209,8 +211,8 @@ static void CG_RunBeacon( cbeacon_t *b )
 	qboolean front;
 
 	// reset animations
-	b->scale = cg_beaconHUDScale.value;
-	alpha = cg_beaconHUDAlpha.value;
+	b->scale = 1.0;
+	alpha = 1.0;
 
 	time_in = cg.time - b->s->ctime; // time since creation
 	time_left = b->s->etime - cg.time; // time to expiration

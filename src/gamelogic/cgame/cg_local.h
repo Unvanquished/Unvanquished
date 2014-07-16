@@ -707,11 +707,13 @@ typedef struct
 	float         hudSize;
 	float         hudMinSize;
 	float         hudMaxSize;
+	float         hudAlpha;
 	vec2_t        hudCenter;    //runtime
 	vec2_t        hudRect[ 2 ]; //runtime
 
 	// minimap
 	float         minimapScale;
+	float         minimapAlpha;
 } beaconsConfig_t;
 
 //======================================================================
@@ -1925,11 +1927,6 @@ extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
 extern vmCvar_t             ui_chatPromptColors;
-
-extern vmCvar_t             cg_beaconHUDScale;
-extern vmCvar_t             cg_beaconHUDAlpha;
-extern vmCvar_t             cg_beaconMapScale;
-extern vmCvar_t             cg_beaconDynamics;
 
 //
 // Rocket cvars

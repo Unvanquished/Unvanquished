@@ -296,11 +296,6 @@ vmCvar_t        cg_fov_human;
 
 vmCvar_t        ui_chatPromptColors;
 
-vmCvar_t        cg_beaconHUDScale;
-vmCvar_t        cg_beaconHUDAlpha;
-vmCvar_t        cg_beaconMapScale;
-vmCvar_t        cg_beaconDynamics;
-
 typedef struct
 {
 	vmCvar_t   *vmCvar;
@@ -470,12 +465,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            0                            },
 	{ &cg_fov_human,                   "cg_fov_human",                   "0",            0                            },
 
-	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            },
-
-	{ &cg_beaconHUDScale,              "cg_beaconHUDScale",              "1",            0                            },
-	{ &cg_beaconHUDAlpha,              "cg_beaconHUDAlpha",              "0.35",         0                            },
-	{ &cg_beaconMapScale,              "cg_beaconMapScale",              "1",            0                            },
-	{ &cg_beaconDynamics,              "cg_beaconDynamics",              "1",            0                            }
+	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            }
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );

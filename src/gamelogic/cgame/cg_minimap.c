@@ -551,8 +551,9 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 {
 	vec2_t offset, pos2d, dir;
 	qboolean clamped;
+	vec4_t color;
 
-	size *= b->scale * cgs.bc.minimapScale;
+	size *= b->scale;
 	
 	CG_WorldToMinimap( b->s->origin, offset );
 	pos2d[ 0 ] = - size/2 + offset[ 0 ];
@@ -571,7 +572,10 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 	else
 		clamped = qfalse;
 
-	trap_R_SetColor( b->color );
+	Vector4Copy( b->color, color );
+	color[ 3 ] *= cgs.bc.minimapAlpha;
+	trap_R_SetColor( color );
+
 	trap_R_DrawRotatedPic( pos2d[ 0 ], pos2d[ 1 ], size, size, 0.0, 0.0, 1.0, 1.0, CG_BeaconIcon( b ), 0.0 );
 	if( b->flags & EF_BC_NO_TARGET )
 		trap_R_DrawStretchPic( pos2d[ 0 ] - size/2 * 0.3,
@@ -603,7 +607,7 @@ static void CG_MinimapDrawBeacons( const minimap_t* m, const rectDef_t *rect )
   vec2_t bounds[ 2 ], center;
 	int i;
 
-  size = CG_WorldToMinimapScale( BEACON_MINIMAP_SIZE ) * cg_beaconMapScale.value;
+  size = CG_WorldToMinimapScale( BEACON_MINIMAP_SIZE ) * cgs.bc.minimapScale;
 
   bounds[ 0 ][ 0 ] = rect->x + size * 0.25;
   bounds[ 0 ][ 1 ] = rect->y + size * 0.25;
