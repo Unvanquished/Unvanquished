@@ -161,6 +161,7 @@ void G_FreeEntity( gentity_t *entity )
 
 	if ( entity->s.eType == ET_BUILDABLE )
 	{
+		// It's possible that this happened before, but we need to be sure.
 		BaseClustering::Remove(entity);
 	}
 

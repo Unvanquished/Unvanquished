@@ -305,10 +305,11 @@ namespace Clustering {
 
 			/**
 			 * @brief Removes objects.
+			 * @return Whether the object was known.
 			 */
-			void Remove(const Data& data) {
+			bool Remove(const Data& data) {
 				// Check if we even know the object in O(n) to avoid unnecessary O(m) iteration.
-				if (records.find(data) == records.end()) return;
+				if (records.find(data) == records.end()) return false;
 
 				// Delete all edges that involve the object.
 				for (auto edge = edges.begin(); edge != edges.end(); ) {
@@ -324,6 +325,8 @@ namespace Clustering {
 
 				// Rebuild MST and clusters on next read access.
 				dirtyMST = true;
+
+				return true;
 			}
 
 			void Clear() {
@@ -684,8 +687,7 @@ namespace BaseClustering {
 	 */
 	void Remove(gentity_t *ent) {
 		EntityClustering& clusters = bases[ent->buildableTeam];
-		clusters.Remove(ent);
-		PostChangeHook(ent->buildableTeam);
+		if (clusters.Remove(ent)) PostChangeHook(ent->buildableTeam);
 	}
 
 	/**
