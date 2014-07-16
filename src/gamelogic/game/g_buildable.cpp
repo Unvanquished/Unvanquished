@@ -2392,11 +2392,10 @@ void HGeneric_Blast( gentity_t *self )
 	G_RadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                self->splashRadius, self, self->splashMethodOfDeath );
 
-	// begin freeing build points
 	G_RewardAttackers( self );
 
-	// turn into an explosion
-	self->s.eType = (entityType_t) ( ET_EVENTS + EV_HUMAN_BUILDABLE_EXPLOSION );
+	// explode
+	self->s.eFlags |= EF_NODRAW;
 	self->freeAfterEvent = qtrue;
 	G_AddEvent( self, EV_HUMAN_BUILDABLE_EXPLOSION, DirToByte( dir ) );
 }
