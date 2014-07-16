@@ -672,7 +672,7 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 	{
 		if ( b->flags & EF_BC_TAG_PLAYER )
 		{
-			if ( ( b->team == TEAM_ALIENS ) || ( b->flags & EF_BC_ENEMY ) )
+			if ( ( b->team == TEAM_ALIENS ) == !( b->flags & EF_BC_ENEMY ) )
 			{
 				if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
 					return 0;
@@ -730,7 +730,7 @@ const char *CG_BeaconText( const cbeacon_t *b )
 	{
 		if ( b->flags & EF_BC_TAG_PLAYER )
 		{
-			if ( ( b->team == TEAM_ALIENS ) || ( b->flags & EF_BC_ENEMY ) )
+			if ( ( b->team == TEAM_ALIENS ) == !( b->flags & EF_BC_ENEMY ) )
 			{
 				if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
 					return 0;
