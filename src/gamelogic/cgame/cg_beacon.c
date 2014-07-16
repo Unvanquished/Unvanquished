@@ -297,24 +297,29 @@ static void CG_RunBeacon( cbeacon_t *b )
 		alpha *= LinearRemap( b->dist, cgs.bc.fadeMinDist, cgs.bc.fadeMaxDist, cgs.bc.fadeMinAlpha, cgs.bc.fadeMaxAlpha );
 
 	// color
-	switch( b->team )
+	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE || b->type == BCT_TAG )
 	{
-		case TEAM_ALIENS:
-			if ( b->flags & EF_BC_ENEMY )
-				Vector4Copy( cgs.bc.colorHuman, b->color );
-			else
-				Vector4Copy( cgs.bc.colorAlien, b->color );
-			break;
-		case TEAM_HUMANS:
-			if ( b->flags & EF_BC_ENEMY )
-				Vector4Copy( cgs.bc.colorAlien, b->color );
-			else
-				Vector4Copy( cgs.bc.colorHuman, b->color );
-			break;
-		default:
-			Vector4Copy( cgs.bc.colorNeutral, b->color );
-			break;
+		switch( b->team )
+		{
+			case TEAM_ALIENS:
+				if ( b->flags & EF_BC_ENEMY )
+					Vector4Copy( cgs.bc.colorHuman, b->color );
+				else
+					Vector4Copy( cgs.bc.colorAlien, b->color );
+				break;
+			case TEAM_HUMANS:
+				if ( b->flags & EF_BC_ENEMY )
+					Vector4Copy( cgs.bc.colorAlien, b->color );
+				else
+					Vector4Copy( cgs.bc.colorHuman, b->color );
+				break;
+			default:
+				Vector4Copy( cgs.bc.colorNeutral, b->color );
+				break;
+		}
 	}
+	else
+		Vector4Copy( cgs.bc.colorNeutral, b->color );
 	b->color[ 3 ] *= alpha;
 
 	// calculate HUD size
