@@ -335,13 +335,16 @@ namespace Beacon //this should eventually become a class
 	void UpdateTags( gentity_t *ent )
 	{
 		// buildables are supposed to be static
-		if( ent->s.eType == ET_BUILDABLE )
+		if( !ent->client )
 			return;
 
 		if( ent->alienTag )
 			VectorCopy( ent->s.origin, ent->alienTag->s.origin );
 		if( ent->humanTag )
+		{
 			VectorCopy( ent->s.origin, ent->humanTag->s.origin );
+			ent->humanTag->s.modelindex2 = BG_GetPlayerWeapon( &ent->client->ps );
+		}
 	}
 
 	/**
