@@ -45,9 +45,10 @@ namespace Beacon
 {
 	void Think( gentity_t *ent );
 	void Move( gentity_t *ent, const vec3_t origin );
-	gentity_t *New( const vec3_t origin, beaconType_t type, int data, team_t team, int owner );
-	void NewArea( beaconType_t type, vec3_t point, team_t team );
-	void Delete( gentity_t *ent , bool verbose = false );
+	gentity_t *New( const vec3_t origin, beaconType_t type, int data, team_t team, int owner,
+	                beaconConflictHandler_t conflictHandler = BCH_NONE );
+	gentity_t *NewArea( beaconType_t type, const vec3_t point, team_t team );
+	void Delete( gentity_t *ent, bool verbose = false );
 	void MoveTowardsRoom( vec3_t origin );
 	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
 	                        float radius = 128.0f, int eFlags = 0, int eFlagsRelevant = 0 );

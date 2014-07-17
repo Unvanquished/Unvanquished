@@ -1054,6 +1054,13 @@ typedef enum
 	NUM_BEACON_TYPES
 } beaconType_t;
 
+typedef enum
+{
+	BCH_NONE,
+	BCH_REMOVE,
+	BCH_MOVE
+} beaconConflictHandler_t;
+
 // beacon flags
 #define BCF_RESERVED      0x0001 // generated automatically, not created by players
 

@@ -4415,8 +4415,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 	if ( !( flags & BCF_PRECISE ) )
 		Beacon::MoveTowardsRoom( tr.endpos );
 
-	Beacon::RemoveSimilar( tr.endpos, type, 0, team, ent->s.number );
-	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->s.number ) );
+	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->s.number, BCH_REMOVE ) );
 
 	return;
 

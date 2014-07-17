@@ -62,13 +62,27 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Create a new ET_BEACON entity.
+	 * @param conflictHandler How to handle existing similiar beacons.
 	 * @return A pointer to the new entity.
 	 */
 	gentity_t *New( const vec3_t origin, beaconType_t type, int data,
-	                team_t team, int owner )
+	                team_t team, int owner, beaconConflictHandler_t conflictHandler )
 	{
 		gentity_t *ent;
 		int decayTime;
+
+		switch( conflictHandler )
+		{
+			case BCH_MOVE:
+				return MoveSimilar( origin, origin, type, data, team, owner );
+
+			case BCH_REMOVE:
+				RemoveSimilar( origin, type, data, team, owner );
+				break;
+
+			default:
+				break;
+		}
 
 		ent = G_NewEntity( );
 		ent->s.eType = ET_BEACON;
@@ -93,17 +107,19 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Create and set up an area beacon (i.e. "Defend").
+	 * @return A pointer to the new beacon entity.
 	 */
-	void NewArea( beaconType_t type, vec3_t point, team_t team )
+	gentity_t *NewArea( beaconType_t type, const vec3_t point, team_t team )
 	{
 		vec3_t origin;
 		gentity_t *beacon;
 
 		VectorCopy( point, origin );
 		MoveTowardsRoom( origin );
-		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE );
-		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE );
+		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE, BCH_REMOVE );
 		Beacon::Propagate( beacon );
+
+		return beacon;
 	}
 
 	/**
