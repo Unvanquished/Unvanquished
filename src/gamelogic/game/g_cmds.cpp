@@ -4344,75 +4344,79 @@ Cmd_Beacon_f
 */
 void Cmd_Beacon_f( gentity_t *ent )
 {
-	char type_str[ 64 ];
+	char         type_str[ 64 ];
 	beaconType_t type;
+	team_t       team;
+	int          flags;
+	gentity_t    *traceEnt, *existingTag;
+	vec3_t       origin, end, forward;
+	trace_t      tr;
 	const beaconAttributes_t *battr;
-	team_t team;
-	int flags;
 
-	gentity_t *beacon, *other;
-	vec3_t origin, end, forward;
-	trace_t tr;
-
+	// Check usage.
 	if ( trap_Argc( ) < 2 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", QQ( N_("Usage: beacon [type]\n") ) ) );
+		trap_SendServerCommand( ent - g_entities,
+		                        va( "print_tr %s", QQ( N_("Usage: beacon [type]\n") ) ) );
 		return;
 	}
 
+	// Get arguments.
 	trap_Argv( 1, type_str, sizeof( type_str ) );
 
-	team  = (team_t)ent->client->pers.team;
 	battr = BG_BeaconByName( type_str );
+	type  = battr->number;
+	flags = battr->flags;
+	team  = (team_t)ent->client->pers.team;
 
-	if ( !battr || battr->flags & BCF_RESERVED )
+	// Check arguments.
+	if ( !battr || flags & BCF_RESERVED )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("Unknown beacon type $1$\n") ), Quote( type_str ) ) );
+		trap_SendServerCommand( ent - g_entities,
+		                        va( "print_tr %s %s", QQ( N_("Unknown beacon type $1$\n") ),
+		                            Quote( type_str ) ) );
 		return;
 	}
 
-	type = battr->number;
-
-	if( G_FloodLimited( ent ) )
-		return;
-
+	// Trace in view direction.
 	BG_GetClientViewOrigin( &ent->client->ps, origin );
 	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
 	VectorMA( origin, 65536, forward, end );
-
 	G_UnlaggedOn( ent, origin, 65536 );
 	trap_Trace( &tr, origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
 	G_UnlaggedOff( );
 
-	if ( tr.fraction > 0.99 )
-		goto invalid_beacon;
-
-	flags = BG_Beacon( type )->flags;
-
+	// Tag entities.
 	if ( flags & BCF_ENTITY )
 	{
 		if ( tr.entityNum == ENTITYNUM_NONE || tr.entityNum == ENTITYNUM_WORLD )
 			goto invalid_beacon;
 
-		other = &g_entities[ tr.entityNum ];
+		traceEnt = &g_entities[ tr.entityNum ];
 
 		// Friendly players are already tagged.
-		if ( other->client && other->client->pers.team == team )
+		if ( traceEnt->client && traceEnt->client->pers.team == team )
 			goto invalid_beacon;
 
-		Beacon::Tag( other, team, ent->s.number, qfalse );
+		existingTag = ( team == TEAM_ALIENS ) ? traceEnt->alienTag : traceEnt->humanTag;
 
+		// Only evaluate flood limit if the entity was already tagged.
+		if ( existingTag && G_FloodLimited( ent ) )
+			return;
+
+		Beacon::Tag( traceEnt, team, ent->s.number, qfalse );
 		return;
 	}
 
+	// Evaluate flood limit for all valid non-tag beacons.
+	if( G_FloodLimited( ent ) )
+		return;
+
 	if ( !( flags & BCF_PRECISE ) )
-	{
 		Beacon::MoveTowardsRoom( tr.endpos );
-	}
 
 	Beacon::RemoveSimilar( tr.endpos, type, 0, team, ent->s.number );
-	beacon = Beacon::New( tr.endpos, type, 0, team, ent->s.number );
-	Beacon::Propagate( beacon );
+	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->s.number ) );
 
 	return;
 
