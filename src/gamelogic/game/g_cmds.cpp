@@ -4348,6 +4348,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 	beaconType_t type;
 	const beaconAttributes_t *battr;
 	team_t team;
+	int flags;
 
 	gentity_t *beacon, *other;
 	vec3_t origin, end, forward;
@@ -4361,8 +4362,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	trap_Argv( 1, type_str, sizeof( type_str ) );
 
-	team = (team_t)ent->client->pers.team;
-
+	team  = (team_t)ent->client->pers.team;
 	battr = BG_BeaconByName( type_str );
 
 	if ( !battr || battr->flags & BCF_RESERVED )
@@ -4387,34 +4387,33 @@ void Cmd_Beacon_f( gentity_t *ent )
 	if ( tr.fraction > 0.99 )
 		goto invalid_beacon;
 
-	if ( BG_Beacon( type )->flags & BCF_PRECISE )
+	flags = BG_Beacon( type )->flags;
+
+	if ( flags & BCF_ENTITY )
 	{
-		VectorCopy( tr.endpos, origin );
-	}
-	else if ( BG_Beacon( type )->flags & BCF_ENTITY )
-	{
-		if ( tr.entityNum == ENTITYNUM_NONE ||
-		     tr.entityNum == ENTITYNUM_WORLD )
+		if ( tr.entityNum == ENTITYNUM_NONE || tr.entityNum == ENTITYNUM_WORLD )
 			goto invalid_beacon;
 
-		other = g_entities + tr.entityNum;
+		other = &g_entities[ tr.entityNum ];
 
 		// Friendly players are already tagged.
 		if ( other->client && other->client->pers.team == team )
 			goto invalid_beacon;
 
 		Beacon::Tag( other, team, ent->s.number, qfalse );
+
 		return;
 	}
-	else
+
+	if ( !( flags & BCF_PRECISE ) )
 	{
-		VectorCopy( tr.endpos, origin );
-		Beacon::MoveTowardsRoom( origin, tr.plane.normal );
+		Beacon::MoveTowardsRoom( tr.endpos );
 	}
 
-	Beacon::RemoveSimilar( origin, type, 0, team, ent->s.number, 0, 0, 0 );
-	beacon = Beacon::New( origin, type, 0, team, ent->s.number );
+	Beacon::RemoveSimilar( tr.endpos, type, 0, team, ent->s.number );
+	beacon = Beacon::New( tr.endpos, type, 0, team, ent->s.number );
 	Beacon::Propagate( beacon );
+
 	return;
 
 invalid_beacon:

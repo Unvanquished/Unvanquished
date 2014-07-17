@@ -609,7 +609,7 @@ namespace BaseClustering {
 			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
 			trace_t tr;
 			trap_Trace(&tr, mean->s.origin, NULL, NULL, center.coords, 0, MASK_SOLID);
-			Beacon::MoveTowardsRoom(tr.endpos, NULL);
+			Beacon::MoveTowardsRoom(tr.endpos);
 
 			gentity_t *beacon;
 

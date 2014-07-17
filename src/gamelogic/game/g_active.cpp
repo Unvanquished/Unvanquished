@@ -2001,6 +2001,9 @@ void ClientThink_real( gentity_t *self )
 		BG_PlayerStateToEntityState( &client->ps, &self->s, qtrue );
 	}
 
+	// update attached tags right after evaluating movement
+	Beacon::UpdateTags( self );
+
 	switch ( client->ps.weapon )
 	{
 		case WP_ALEVEL0:
@@ -2160,8 +2163,6 @@ void ClientThink_real( gentity_t *self )
 	{
 		client->ps.persistant[ PERS_BP ] = 0;
 	}
-
-	Beacon::UpdateTags( self );
 
 	// perform once-a-second actions
 	ClientTimerActions( self, msec );

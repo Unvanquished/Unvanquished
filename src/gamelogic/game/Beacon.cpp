@@ -100,8 +100,8 @@ namespace Beacon //this should eventually become a class
 		gentity_t *beacon;
 
 		VectorCopy( point, origin );
-		MoveTowardsRoom( origin, NULL );
-		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE, 0, 0, 0 );
+		MoveTowardsRoom( origin );
+		RemoveSimilar( origin, type, 0, team, ENTITYNUM_NONE );
 		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE );
 		Beacon::Propagate( beacon );
 	}
@@ -130,7 +130,7 @@ namespace Beacon //this should eventually become a class
 	 * @brief Move a point towards empty space (away from map geometry).
 	 * @param normal Optional direction to move towards.
 	 */
-	void MoveTowardsRoom( vec3_t origin, const vec3_t normal )
+	void MoveTowardsRoom( vec3_t origin )
 	{
 		static const vec3_t vecs[ 162 ] =
 		{
@@ -214,7 +214,9 @@ namespace Beacon //this should eventually become a class
 	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
 	                        float radius, int eFlags, int eFlagsRelevant )
 	{
-		for ( gentity_t *ent = NULL; (ent = G_IterateEntities(ent, NULL, true, 0, NULL)); )
+		int flags = BG_Beacon( type )->flags;
+
+		for ( gentity_t *ent = NULL; (ent = G_IterateEntities(ent)); )
 		{
 			if ( ent->s.eType != ET_BEACON )
 				continue;
@@ -228,23 +230,26 @@ namespace Beacon //this should eventually become a class
 			if( ent->s.generic1 != team )
 				continue;
 
-			if ( ( BG_Beacon( type )->flags & BCF_DATA_UNIQUE ) &&
-			     ent->s.modelindex2 != data )
+			if ( ( flags & BCF_DATA_UNIQUE ) && ent->s.modelindex2 != data )
 				continue;
 
 			if ( ent->s.eFlags & EF_BC_DYING )
 				continue;
 
-			if( BG_Beacon( type )->flags & BCF_PER_PLAYER )
+			if     ( flags & BCF_PER_TEAM )
+			{}
+			else if( flags & BCF_ENTITY )
+			{
+				if ( Distance( ent->s.origin, origin ) > FLT_EPSILON )
+					continue;
+			}
+			else if( flags & BCF_PER_PLAYER )
 			{
 				if( ent->s.otherEntityNum != owner )
 					continue;
 			}
-			else if ( !( BG_Beacon( type )->flags & BCF_PER_TEAM ) )
+			else
 			{
-				if ( radius <= 0 )
-					radius = ( BG_Beacon( type )->flags & BCF_ENTITY ) ? 5.0f : 250.0f;
-
 				if ( Distance( ent->s.origin, origin ) > radius )
 					continue;
 
@@ -486,7 +491,9 @@ namespace Beacon //this should eventually become a class
 				return;
 		}
 
-		RemoveSimilar( origin, BCT_TAG, data, team, owner, 0, 0, 0 );
+		if ( *attachment )
+			Delete( *attachment );
+
 		beacon = New( origin, BCT_TAG, data, team, owner );
 
 		if( player )
