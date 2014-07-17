@@ -1139,3 +1139,13 @@ int G_Heal( gentity_t *self, int amount )
 
 	return healed;
 }
+
+team_t G_Enemy( team_t team )
+{
+	switch ( team )
+	{
+		case TEAM_ALIENS: return TEAM_HUMANS;
+		case TEAM_HUMANS: return TEAM_ALIENS;
+		default:          return TEAM_NONE;
+	}
+}

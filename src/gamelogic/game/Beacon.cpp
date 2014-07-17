@@ -457,7 +457,7 @@ namespace Beacon //this should eventually become a class
 				if ( targetTeam != team && ent->taggedByEnemy != team )
 				{
 					ent->taggedByEnemy = team;
-					BaseClustering::Touch(ent->buildableTeam);
+					BaseClustering::TagStatusChange(ent);
 				}
 
 				break;
