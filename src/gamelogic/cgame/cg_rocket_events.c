@@ -364,14 +364,12 @@ static void CG_Rocket_EventPlay( void )
 		{
 			int selection = rand() % numSounds + 1;
 			track = CG_Argv( 1 + selection );
-			trap_S_StopBackgroundTrack();
 			trap_S_StartBackgroundTrack( track, track );
 		}
 	}
 	else
 	{
 		track = CG_Argv( 1 );
-		trap_S_StopBackgroundTrack();
 		trap_S_StartBackgroundTrack( track, track );
 	}
 }

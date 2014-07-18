@@ -2704,7 +2704,7 @@ void CL_CheckForResend( void )
 			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), qfalse );
 			Info_SetValueForKey( info, "pubkey", key, qfalse );
 
-			sprintf( data, "connect %s", Cmd_QuoteString( info ) );
+			Com_sprintf( data, sizeof(data), "connect %s", Cmd_QuoteString( info ) );
 
 			// EVEN BALANCE - T.RAY
 			pktlen = strlen( data );
@@ -3668,6 +3668,9 @@ void CL_Frame( int msec )
 
 	// decide on the serverTime to render
 	CL_SetCGameTime();
+
+	// Update librocket
+	Rocket_Update();
 
 	// update the screen
 	SCR_UpdateScreen();

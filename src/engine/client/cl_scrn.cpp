@@ -702,8 +702,6 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				break;
 
 			case CA_DISCONNECTED:
-				// force menu up
-				Audio::StopAllSounds();
 				break;
 
 			case CA_CONNECTING:
@@ -788,7 +786,9 @@ void SCR_UpdateScreen( void )
 		else
 		{
 			SCR_DrawScreenField( STEREO_CENTER );
+
 			VM_Call( cgvm, CG_ROCKET_FRAME );
+
 			Rocket_Render();
 			SCR_DrawConsoleAndPointer();
 		}
