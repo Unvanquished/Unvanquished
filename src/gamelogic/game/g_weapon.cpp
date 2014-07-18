@@ -1983,12 +1983,18 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 
 	switch ( upgrade )
 	{
+		case UP_GRENADE:  FireGrenade( self );  break;
+		case UP_FIREBOMB: FireFirebomb( self ); break;
+		default:                                break;
+	}
+
+	switch ( upgrade )
+	{
 		case UP_GRENADE:
-			FireGrenade( self );
-			break;
 		case UP_FIREBOMB:
-			FireFirebomb( self );
+			trap_SendServerCommand( self->client->ps.clientNum, "vcommand grenade" );
 			break;
+
 		default:
 			break;
 	}

@@ -281,7 +281,7 @@ namespace Cvar {
         return result;
     }
 
-    void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
+    bool Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
         CvarMap& cvars = GetCvarMap();
         cvarRecord_t* cvar;
 
@@ -289,7 +289,7 @@ namespace Cvar {
         if (it == cvars.end()) {
             if (!Cmd::IsValidCvarName(name)) {
                 Com_Printf(_("Invalid cvar name '%s'"), name.c_str());
-                return;
+                return false;
             }
 
             //Create the cvar and parse its default value
@@ -302,7 +302,7 @@ namespace Cvar {
         } else {
             cvar = it->second;
 
-            if (cvar->proxy) {
+            if (proxy && cvar->proxy) {
                 Com_Printf(_("Cvar %s cannot be registered twice\n"), name.c_str());
             }
 
@@ -336,6 +336,7 @@ namespace Cvar {
             }
         }
         GetCCvar(name, *cvar);
+        return true;
     }
 
     void Unregister(const std::string& cvarName) {

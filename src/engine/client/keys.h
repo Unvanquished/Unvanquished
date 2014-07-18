@@ -72,3 +72,4 @@ void            Key_ClearStates( void );
 int             Key_GetKey( const char *binding, int team );
 
 void            Key_SetTeam( int newTeam );
+int             Key_GetTeam( const char *arg, const char *cmd );

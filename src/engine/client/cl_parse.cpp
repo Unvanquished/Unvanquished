@@ -659,6 +659,7 @@ void CL_ParseDownload( msg_t *msg )
 			Com_DPrintf( "Server redirected download: %s\n", cls.downloadName );
 			clc.bWWWDl = qtrue; // activate wwwdl client loop
 			CL_AddReliableCommand( "wwwdl ack" );
+			cls.state = CA_DOWNLOADING;
 
 			// make sure the server is not trying to redirect us again on a bad checksum
 			if ( strstr( clc.badChecksumList, va( "@%s", cls.originalDownloadName ) ) )
