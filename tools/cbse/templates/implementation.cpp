@@ -4,6 +4,7 @@
 
 // Implementation of the base entity class
 
+// Constructor of entity
 Entity::Entity(MessageHandler *messageHandlers, const int* componentOffsets): messageHandlers(messageHandlers), componentOffsets(componentOffsets) {
 }
 
@@ -14,6 +15,8 @@ void Entity::SendMessage(int msg, const void* data) {
     }
 }
 
+// Entity helper functions to send message e.g.
+//   void Entity::Damage(int value);
 {% for message in messages %}
     void Entity::{{message.name}}({{message.get_function_args()}}) {
         {% if message.get_num_args() == 0 %}
@@ -25,6 +28,8 @@ void Entity::SendMessage(int msg, const void* data) {
     }
 {% endfor %}
 
+// Entity helper functions to get the components e.g.
+//   HealthComponent* GetHealthComponent();
 {% for component in components %}
     {{component.get_type_name()}}* Entity::Get{{component.get_type_name()}}() {
         int index = {{component.get_priority()}};
@@ -39,6 +44,8 @@ void Entity::SendMessage(int msg, const void* data) {
 
 // Implementation of the components
 
+// Component helper functions to change the attributes values e.g.
+//   void SetHealth(int value);
 {% for component in components %}
     {% for attrib in component.get_own_attribs() %}
         void {{component.get_base_type_name()}}::{{attrib.get_setter_name()}}({{attrib.typ}} value) {
@@ -49,7 +56,10 @@ void Entity::SendMessage(int msg, const void* data) {
 
 // Implementation of the entities
 
+
 {% for entity in entities %}
+    // The vtable of offset of components in an entity
+    // TODO: doesn't handle component inheritance?
     static int {{entity.get_type_name()}}componentOffsets[] = {
         {% for component in components %}
             {% if component in entity.get_components() %}
@@ -60,16 +70,21 @@ void Entity::SendMessage(int msg, const void* data) {
         {% endfor %}
     };
 
+    // The static message handlers put in the vtable
     {% for message in entity.get_messages_to_handle() %}
         void {{entity.get_message_handler_name(message)}}(Entity* _entity, const void* _data) {
+            // Cast the entity to the correct type (receive an Entity*)
             {{entity.get_type_name()}}* entity = ({{entity.get_type_name()}}*) _entity;
+
             {% if message.get_num_args == 0 %}
+                // No argument for the message, just call the handlers of all the components
                 {% for component in entity.get_components() %}
                     {% if message in component.get_messages_to_handle() %}
                         entity->{{component.get_variable_name()}}->{{message.get_handler_name()}}();
                     {% endif %}
                 {% endfor %}
             {% else %}
+                // Cast the message content to the right type (receive a const void*)
                 const {{message.get_tuple_type()}}* data = (const {{message.get_tuple_type()}}*) _data;
                 {% for component in entity.get_components() %}
                     {% if message in component.get_messages_to_handle() %}
@@ -80,6 +95,7 @@ void Entity::SendMessage(int msg, const void* data) {
         }
     {% endfor%}
 
+    // The vtable of message handlers for an entity
     static MessageHandler {{entity.get_type_name()}}messageHandlers[] = {
         {% for message in messages %}
             {% if message in entity.get_messages_to_handle() %}
@@ -90,9 +106,11 @@ void Entity::SendMessage(int msg, const void* data) {
         {% endfor%}
     };
 
+    // Fat constructor for the entity that initializes the components.
     {{entity.get_type_name()}}::{{entity.get_type_name()}}(): Entity(messageHandlers, componentOffsets)
     //TODO make sure it is in order
     {% for component in entity.get_components() %}
+        // Each component takes the entity it is in, its parameters, the shared attributes and the components it requires
         , {{component.get_variable_name()}}(new {{component.get_type_name()}}(
             this
             {% for param in component.get_param_names() %}
