@@ -1,0 +1,47 @@
+{
+	main
+	{
+		// ######## Totalitarian Government Section ########
+		// Don't remove/add any entries, or daemon will fail to load
+		// These don't have to actually exist, however
+		ui/main-menu/main-menu.rml main             // ROCKETMENU_MAIN ==================
+		ui/transitions/connecting.rml connecting    // ROCKETMENU_CONNECTING ============
+		ui/transitions/loading.rml loading          // ROCKETMENU_LOADING ===============
+		ui/transitions/download.rml download        // ROCKETMENU_DOWNLOADING ===========
+		ui/in-game/in-game-menu.rml ingame          // ROCKETMENU_INGAME_MENU ===========
+		ui/in-game/teamselect.rml teamsel           // ROCKETMENU_TEAMSELECT ============
+		ui/in-game/human/spawn.rml humanspawn       // ROCKETMENU_HUMANSPAWN ============
+		ui/in-game/alien/spawn.rml alienspawn       // ROCKETMENU_ALIENSPAWN ============
+		ui/in-game/alien/build.rml alienbuild       // ROCKETMENU_ALIENBUILD ============
+		ui/in-game/human/build.rml humanbuild       // ROCKETMENU_HUMANBUILD ============
+		ui/in-game/human/buy.rml armourybuy         // ROCKETMENU_ARMOURYBUY ============
+		ui/in-game/alien/evo.rml alienevo           // ROCKETMENU_ALIENEVOLVE ===========
+		ui/in-game/chat.rml chat                    // ROCKETMENU_CHAT ==================
+		ui/error.rml error                          // ROCKETMENU_ERROR
+	}
+	misc
+	{
+		// ######## Custom section.  Add and remove freely ########
+		ui/options/player.rml
+		ui/options/fov.rml
+		ui/options/graphics.rml
+		ui/options/keys.rml
+		ui/options/mouse.rml
+		ui/options/sound.rml
+		ui/options/ui.rml
+
+		ui/lore/help_textentry.rml
+		ui/lore/help_gameplay.rml
+
+		ui/gamechoice/serverbrowser.rml
+		ui/gamechoice/map.rml
+		ui/gamechoice/createserver.rml
+
+		ui/server/general.rml
+		ui/server/bots.rml
+
+		ui/in-game/callvotes/callvote_draw.rml
+		ui/in-game/callvotes/callvote_map.rml
+	}
+	cursor ui/shared/cursor.rml
+}

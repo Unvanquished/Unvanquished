@@ -1,0 +1,34 @@
+<rml>
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<style>
+		body
+		{
+			width: 100%;
+			height: 100%;
+		}
+
+		div#spawn
+		{
+			position: absolute;
+			top: 75%;
+			width: 50%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		spawnPos, numSpawns
+		{
+			width: 100%;
+			text-align: center;
+		}
+	</style>
+</head>
+<body id="spectator_hud">
+
+	<div id="spawn">
+		<spawnPos/><br/>
+		<numSpawns/>
+	</div>
+	
+</body>
+</rml>

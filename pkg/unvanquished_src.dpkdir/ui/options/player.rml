@@ -1,0 +1,71 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+
+	</head>
+	<body id="options_player"  template="window" style="width: 50em; margin: 10%;">
+		<h1>Player Setup</h1>
+
+		<h2> Personal </h2>
+		<row>
+			<colorinput type="text" cvar="name"/>
+			<h3>Nickname</h3>
+			<p>Your name visible to others.  </p>
+			<p><ilink onClick="show help_textentry">Colours and symbols</ilink> can be used.</p>
+		</row>
+		<row>
+			<h3>Tutorial mode</h3>
+			<input cvar="cg_tutorial" type="checkbox" />
+			<p>Display hints for key bindings on-screen.</p>
+		</row>
+		<row>
+			<input cvar="cg_teamChatsOnly" type="checkbox" />
+			<h3>Show only team chat</h3>
+		</row>
+
+
+		<h2> Movement </h2>
+		<row>
+			<h3>Wall-walking auto-pitch</h3>
+			<input cvar="cg_wwFollow" type="checkbox" />
+			<p> Always 'twist' and 'rotate' the view when you wall-walk from one surface to another. </p>
+		</row>
+		<row>
+			<select cvar="cg_wwSmoothTime">
+				<option value="0">Instant</option>
+				<option value="150">Fast</option>
+				<option value="300">Medium</option>
+				<option value="600">Slow</option>
+			</select>
+			<h3> Wall-walking pitch-speed</h3>
+			<p>How fast your view 'rotates' and 'twists' as you wall-walk.</p>
+		</row>
+		<row>
+			<h3> Wall-walking toggles </h3>
+			<input cvar="cg_wwToggle" type="checkbox" />
+			<p>'Tap key' instead of 'hold key' to activate. </p>
+		</row>
+		<row>
+			<h3> Sprint toggles </h3>
+			<input cvar="cg_sprintToggle" type="checkbox" />
+			<p>'Tap key' instead of 'hold key' to activate. </p>
+		</row>
+
+		<h2> Cosmetic </h2>
+		<row>
+			<select cvar="cg_drawgun">
+				<option value="0">Disable</option>
+				<option value="1">Humans only</option>
+				<option value="2">Humans and aliens</option>
+			</select>
+			<h3>First-person weapons</h3>
+			<p>Show gun, pincer, hand and mandible models in first-person.</p>
+		</row>
+		<row>
+			<h3> Left-handed mode </h3>
+			<input cvar="cg_mirrorgun" type="checkbox" />
+			<p>Mirror first-person gun models</p>
+		</row>
+	</body>
+</rml>

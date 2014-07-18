@@ -1,0 +1,55 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<style>
+			body
+			{
+				width: 43em;
+				height: 10em;
+				margin: auto;
+			}
+
+			box {
+				display: block;
+				float:left;
+				height: 10em;
+			}
+			box.left {
+				width: 10em;
+			}
+			box.right {
+				width: 25em;
+				padding: 1em;
+				margin: 0.5em;
+				background-color: #00000055;
+			}
+			
+			datagridrow:selected
+			{
+				background: rgba(111,111,111,111);
+			}
+			
+			
+		</style>
+	</head>
+	
+	<body id="teamsel" template="window" onShow="buildDS teamList default">
+		
+		<box class="left">
+		<datagrid id="team"  source="teamList.default">
+			<col fields="name" width="100%"/>
+		</datagrid>
+		</box>
+		
+		<box class="right">
+			<datasource_single source="teamList.default" fields="description" targetid="team" />
+		</box>
+		
+		<buttonbar>
+			<button onClick="execDS teamList default">Spawn</button>
+			<button onClick="hide teamsel">Cancel</button>
+		</buttonbar>
+		
+	</body>
+</rml>

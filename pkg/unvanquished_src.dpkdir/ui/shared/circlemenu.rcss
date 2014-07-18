@@ -1,0 +1,95 @@
+/* circlemenu */
+
+
+.circlemenu tab{
+	width: 8%;
+	color:#83fff5;
+	white-space: nowrap;
+
+	padding:5px 20px 0px 20px ;
+	margin:10px;
+}
+
+.circlemenu panel{
+	width:50%;
+	height:50%;
+}
+
+.circlemenu tab:selected{
+	font-size:2em;
+	border-bottom-style:solid;
+	border-bottom-width:3px;
+	border-bottom-color:#83fff5;
+}
+
+tabset.circlemenu tabs{
+	z-index: 1;
+	text-align:left;
+	position: absolute;
+	margin-top:30px;
+	padding-left:15%;
+}
+
+circlemenu
+{
+	display: block;
+	width: 100%;
+	margin-left:-17%;
+	margin-top:30px;
+	position:absolute;
+	height: 500px;
+	radius: 130px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.circlemenu button, .circlemenu button:hover
+{
+	margin-left:-20px;
+	display: block;
+	width:100px;
+	height:100px;
+	vertical-align: middle;
+	text-align:center;
+	icon-decorator: image;
+	icon-image: /ui/assets/circle.png;
+}
+.circlemenu button:hover, .circlemenu button:active, .circlemenu button:focus{
+	icon-image: /ui/assets/circle-hover.png;
+
+}
+
+.circlemenu button.disabled, .circlemenu button.disabled:hover,
+.circlemenu button.disabled:active, .circlemenu button.disabled:focus{
+	icon-image: /ui/assets/circle.png;
+	icon-color-multiplier: rgb(12,12,12);
+}
+
+.circlemenu icon{
+  display: inline-block;
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+
+}
+
+.circlemenu button.cancelButton{
+	width:180px;
+	height:180px;
+
+	line-height:170px;
+}
+
+.circlemenu button:hover
+{
+	background-color-multiplier: rgb(12,12,12);
+}
+
+.circlemenu button img
+{
+	display: block;
+	width: 50px;
+	height: 50px;
+	margin: auto;
+}
