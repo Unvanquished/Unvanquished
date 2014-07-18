@@ -294,7 +294,7 @@ static void PM_Friction( void )
 		drop += speed * pm_waterfriction * pm->waterlevel * pml.frametime;
 	}
 
-	if ( pm->ps->pm_type == PM_SPECTATOR )
+	if ( pm->ps->pm_type == PM_SPECTATOR || pm->ps->pm_type == PM_NOCLIP )
 	{
 		drop += speed * pm_spectatorfriction * pml.frametime;
 	}
@@ -827,7 +827,7 @@ static qboolean PM_CheckPounce( void )
 					VectorMA( pm->ps->origin, 10000.0f, pml.forward, traceTarget );
 
 					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, traceTarget,
-					           pm->ps->clientNum, MASK_SOLID );
+					           pm->ps->clientNum, MASK_SOLID, 0 );
 
 					foundTrajectory = ( trace.fraction < 1.0f );
 
@@ -1082,7 +1082,8 @@ static qboolean PM_CheckWallJump( void )
 
 	//trace into direction we are moving
 	VectorMA( pm->ps->origin, 0.25f, movedir, point );
-	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+	           pm->tracemask, 0 );
 
 	if ( trace.fraction < 1.0f &&
 	     !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
@@ -1697,43 +1698,40 @@ static void PM_WaterMove( void )
 	PM_SlideMove( qfalse );
 }
 
-static void PM_FlyMove( void )
+/**
+ * @brief Used for both free spectating and noclip mode
+ */
+static void PM_GhostMove( qboolean noclip )
 {
 	int    i;
-	vec3_t wishvel;
-	float  wishspeed;
-	vec3_t wishdir;
-	float  scale;
+	float  scale, wishspeed;
+	vec3_t wishvel, wishdir;
 
 	PM_Friction();
 
 	scale = PM_CmdScale( &pm->cmd, qtrue );
 
-	//
-	// user intentions
-	//
-	if ( !scale )
+	for ( i = 0; i < 3; i++ )
 	{
-		wishvel[ 0 ] = 0;
-		wishvel[ 1 ] = 0;
-		wishvel[ 2 ] = 0;
+		wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove +
+					   scale * pml.right[ i ]   * pm->cmd.rightmove;
 	}
-	else
-	{
-		for ( i = 0; i < 3; i++ )
-		{
-			wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
-		}
 
-		wishvel[ 2 ] += scale * pm->cmd.upmove;
-	}
+	wishvel[ 2 ] += scale * pm->cmd.upmove;
 
 	VectorCopy( wishvel, wishdir );
 	wishspeed = VectorNormalize( wishdir );
 
 	PM_Accelerate( wishdir, wishspeed, pm_flyaccelerate );
 
-	PM_StepSlideMove( qfalse, qfalse );
+	if ( noclip )
+	{
+		VectorMA( pm->ps->origin, pml.frametime, pm->ps->velocity, pm->ps->origin );
+	}
+	else
+	{
+		PM_StepSlideMove( qfalse, qfalse );
+	}
 }
 
 /*
@@ -2144,7 +2142,8 @@ static void PM_CheckLadder( void )
 
 	VectorMA( pm->ps->origin, 1.0f, forward, end );
 
-	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, end, pm->ps->clientNum, MASK_PLAYERSOLID );
+	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, end, pm->ps->clientNum,
+	           MASK_PLAYERSOLID, 0 );
 
 	if ( ( trace.fraction < 1.0f ) && ( trace.surfaceFlags & SURF_LADDER ) )
 	{
@@ -2184,73 +2183,6 @@ static void PM_DeadMove( void )
 		VectorNormalize( pm->ps->velocity );
 		VectorScale( pm->ps->velocity, forward, pm->ps->velocity );
 	}
-}
-
-/*
-===============
-PM_NoclipMove
-===============
-*/
-static void PM_NoclipMove( void )
-{
-	float  speed, drop, friction, control, newspeed;
-	int    i;
-	vec3_t wishvel;
-	float  fmove, smove;
-	vec3_t wishdir;
-	float  wishspeed;
-	float  scale;
-
-	// friction
-
-	speed = VectorLength( pm->ps->velocity );
-
-	if ( speed < 1 )
-	{
-		VectorCopy( vec3_origin, pm->ps->velocity );
-	}
-	else
-	{
-		drop = 0;
-
-		friction = pm_friction * 1.5; // extra friction
-		control = speed < pm_stopspeed ? pm_stopspeed : speed;
-		drop += control * friction * pml.frametime;
-
-		// scale the velocity
-		newspeed = speed - drop;
-
-		if ( newspeed < 0 )
-		{
-			newspeed = 0;
-		}
-
-		newspeed /= speed;
-
-		VectorScale( pm->ps->velocity, newspeed, pm->ps->velocity );
-	}
-
-	// accelerate
-	scale = PM_CmdScale( &pm->cmd, qtrue );
-
-	fmove = pm->cmd.forwardmove;
-	smove = pm->cmd.rightmove;
-
-	for ( i = 0; i < 3; i++ )
-	{
-		wishvel[ i ] = pml.forward[ i ] * fmove + pml.right[ i ] * smove;
-	}
-
-	wishvel[ 2 ] += pm->cmd.upmove;
-
-	VectorCopy( wishvel, wishdir );
-	wishspeed = VectorNormalize( wishdir );
-	wishspeed *= scale;
-
-	PM_Accelerate( wishdir, wishspeed, pm_accelerate );
-
-	// move
-	VectorMA( pm->ps->origin, pml.frametime, pm->ps->velocity, pm->ps->origin );
 }
 
 //============================================================================
@@ -2453,7 +2385,8 @@ static int PM_CorrectAllSolid( trace_t *trace )
 				point[ 0 ] += ( float ) i;
 				point[ 1 ] += ( float ) j;
 				point[ 2 ] += ( float ) k;
-				pm->trace( trace, point, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+				pm->trace( trace, point, pm->mins, pm->maxs, point, pm->ps->clientNum,
+				           pm->tracemask, 0 );
 
 				if ( !trace->allsolid )
 				{
@@ -2461,7 +2394,8 @@ static int PM_CorrectAllSolid( trace_t *trace )
 					point[ 1 ] = pm->ps->origin[ 1 ];
 					point[ 2 ] = pm->ps->origin[ 2 ] - 0.25;
 
-					pm->trace( trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+					pm->trace( trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+					           pm->tracemask, 0 );
 					pml.groundTrace = *trace;
 					return qtrue;
 				}
@@ -2501,7 +2435,7 @@ static void PM_GroundTraceMissed( void )
 		VectorCopy( pm->ps->origin, point );
 		point[ 2 ] -= 64.0f;
 
-		pm->trace( &trace, pm->ps->origin, NULL, NULL, point, pm->ps->clientNum, pm->tracemask );
+		pm->trace( &trace, pm->ps->origin, NULL, NULL, point, pm->ps->clientNum, pm->tracemask, 0 );
 
 		if ( trace.fraction == 1.0f )
 		{
@@ -2628,16 +2562,18 @@ static void PM_GroundClimbTrace( void )
 
 				// trace into direction we are moving
 				VectorMA( pm->ps->origin, 0.25f, moveDir, point );
-				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+				           pm->tracemask, 0 );
 
 				break;
 
 			case GCT_ATP_GROUND:
 				// trace straight down onto "ground" surface
-				// mask out CONTENTS_BODY to not hit other players and avoid the camera flipping out when
-				// wallwalkers touch
+				// mask out CONTENTS_BODY to not hit other players and avoid the camera flipping out
+				// when wallwalkers touch
 				VectorMA( pm->ps->origin, -0.25f, surfNormal, point );
-				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask & ~CONTENTS_BODY );
+				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+				           pm->tracemask, CONTENTS_BODY );
 
 				break;
 
@@ -2646,7 +2582,8 @@ static void PM_GroundClimbTrace( void )
 				{
 					// step down
 					VectorMA( pm->ps->origin, -STEPSIZE, surfNormal, point );
-					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+					           pm->tracemask, 0 );
 				}
 				else
 				{
@@ -2661,7 +2598,8 @@ static void PM_GroundClimbTrace( void )
 				{
 					VectorMA( pm->ps->origin, -16.0f, surfNormal, point );
 					VectorMA( point, -16.0f, moveDir, point );
-					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+					           pm->tracemask, 0 );
 				}
 				else
 				{
@@ -2675,7 +2613,8 @@ static void PM_GroundClimbTrace( void )
 				if ( velocityDir[ 2 ] > 0.2f ) // acos( 0.2f ) ~= 80°
 				{
 					VectorMA( pm->ps->origin, -16.0f, ceilingNormal, point );
-					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask & ~CONTENTS_BODY );
+					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+					           pm->tracemask, CONTENTS_BODY );
 					break;
 				}
 				else
@@ -2687,7 +2626,8 @@ static void PM_GroundClimbTrace( void )
 				// fall back so we don't have to modify PM_GroundTrace too much
 				VectorCopy( pm->ps->origin, point );
 				point[ 2 ] = pm->ps->origin[ 2 ] - 0.25f;
-				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+				           pm->tracemask, 0 );
 
 				break;
 		}
@@ -3056,7 +2996,8 @@ static void PM_GroundTrace( void )
 	point[ 1 ] = pm->ps->origin[ 1 ];
 	point[ 2 ] = pm->ps->origin[ 2 ] - 0.25f;
 
-	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+	           pm->tracemask, 0 );
 
 	pml.groundTrace = trace;
 
@@ -3084,7 +3025,8 @@ static void PM_GroundTrace( void )
 			point[ 0 ] = pm->ps->origin[ 0 ];
 			point[ 1 ] = pm->ps->origin[ 1 ];
 			point[ 2 ] = pm->ps->origin[ 2 ] - STEPSIZE;
-			pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+			pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+			           pm->tracemask, 0 );
 
 			//if we hit something
 			if ( trace.fraction < 1.0f )
@@ -3301,7 +3243,8 @@ static void PM_CheckDuck( void )
 		{
 			// try to stand up
 			pm->maxs[ 2 ] = PCmaxs[ 2 ];
-			pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask );
+			pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin,
+			           pm->ps->clientNum, pm->tracemask, 0 );
 
 			if ( !trace.allsolid )
 			{
@@ -4886,34 +4829,29 @@ void PmoveSingle( pmove_t *pmove )
 		pm->cmd.upmove = 0;
 	}
 
-	if ( pm->ps->pm_type == PM_SPECTATOR )
+	switch ( pm->ps->pm_type )
 	{
-		// update the viewangles
-		PM_UpdateViewAngles( pm->ps, &pm->cmd );
-		PM_CheckDuck();
-		PM_FlyMove();
-		PM_DropTimers();
-		return;
-	}
+		case PM_SPECTATOR:
+			PM_UpdateViewAngles( pm->ps, &pm->cmd );
+			PM_CheckDuck();
+			PM_GhostMove( qfalse );
+			PM_DropTimers();
+			return;
 
-	if ( pm->ps->pm_type == PM_NOCLIP )
-	{
-		PM_UpdateViewAngles( pm->ps, &pm->cmd );
-		PM_NoclipMove();
-		PM_SetViewheight();
-		PM_Weapon();
-		PM_DropTimers();
-		return;
-	}
+		case PM_NOCLIP:
+			PM_UpdateViewAngles( pm->ps, &pm->cmd );
+			PM_GhostMove( qtrue );
+			PM_SetViewheight();
+			PM_Weapon();
+			PM_DropTimers();
+			return;
 
-	if ( pm->ps->pm_type == PM_FREEZE )
-	{
-		return; // no movement at all
-	}
+		case PM_FREEZE:
+		case PM_INTERMISSION:
+			return;
 
-	if ( pm->ps->pm_type == PM_INTERMISSION )
-	{
-		return; // no movement at all
+		default:
+			break;
 	}
 
 	// set watertype, and waterlevel

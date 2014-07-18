@@ -2774,7 +2774,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		VectorCopy( es->pos.trBase, temp );
 		temp[ 2 ] -= 4096.0f;
 
-		CG_Trace( &tr, es->pos.trBase, NULL, NULL, temp, es->number, MASK_SOLID );
+		CG_Trace( &tr, es->pos.trBase, NULL, NULL, temp, es->number, MASK_SOLID, 0 );
 		VectorCopy( tr.endpos, origin );
 
 		size = 32.0f;
@@ -2885,7 +2885,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 	VectorCopy( cent->lerpOrigin, end );
 	VectorMA( cent->lerpOrigin, -SHADOW_DISTANCE, surfNormal, end );
 
-	trap_CM_BoxTrace( &trace, cent->lerpOrigin, end, mins, maxs, 0, MASK_PLAYERSOLID );
+	trap_CM_BoxTrace( &trace, cent->lerpOrigin, end, mins, maxs, 0, MASK_PLAYERSOLID, 0 );
 
 	// no shadow if too high
 	if ( trace.fraction == 1.0 || trace.startsolid || trace.allsolid )
@@ -2990,7 +2990,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 
 	// trace down to find the surface
 	trap_CM_BoxTrace( &trace, start, end, NULL, NULL, 0,
-	                  ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) );
+	                  ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ), 0 );
 
 	if ( trace.fraction == 1.0f )
 	{
@@ -3355,7 +3355,7 @@ void CG_Player( centity_t *cent )
 
 			VectorMA( cent->lerpOrigin, -TRACE_DEPTH, surfNormal, end );
 			VectorMA( cent->lerpOrigin, 1.0f, surfNormal, start );
-			CG_CapTrace( &tr, start, NULL, NULL, end, es->number, MASK_PLAYERSOLID );
+			CG_CapTrace( &tr, start, NULL, NULL, end, es->number, MASK_PLAYERSOLID, 0 );
 
 			// if the trace misses completely then just use body.origin
 			// apparently capsule traces are "smaller" than box traces
@@ -3570,7 +3570,7 @@ void CG_Player( centity_t *cent )
 
 		VectorMA( legs.origin, -TRACE_DEPTH, surfNormal, end );
 		VectorMA( legs.origin, 1.0f, surfNormal, start );
-		CG_CapTrace( &tr, start, mins, maxs, end, es->number, MASK_PLAYERSOLID );
+		CG_CapTrace( &tr, start, mins, maxs, end, es->number, MASK_PLAYERSOLID, 0 );
 
 		//if the trace misses completely then just use legs.origin
 		//apparently capsule traces are "smaller" than box traces

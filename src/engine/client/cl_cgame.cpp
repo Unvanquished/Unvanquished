@@ -1627,45 +1627,59 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_CM_TRANSFORMEDPOINTCONTENTS:
 			cls.nCgamePhysicsSyscalls ++;
-			return CM_TransformedPointContents( (float*) VMA( 1 ), args[ 2 ], (float*) VMA( 3 ), (float*) VMA( 4 ) );
+			return CM_TransformedPointContents( (float*) VMA( 1 ), args[ 2 ], (float*) VMA( 3 ),
+			                                    (float*) VMA( 4 ) );
 
 		case CG_CM_BOXTRACE:
 			cls.nCgamePhysicsSyscalls ++;
-			CM_BoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], TT_AABB );
+			CM_BoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ),
+			             (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], args[ 8 ],
+			             TT_AABB );
 			return 0;
 
 		case CG_CM_TRANSFORMEDBOXTRACE:
 			cls.nCgamePhysicsSyscalls ++;
-			CM_TransformedBoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], (float*) VMA( 8 ), (float*) VMA( 9 ), TT_AABB );
+			CM_TransformedBoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ),
+			                        (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ],
+			                        args[ 8 ], (float*) VMA( 9 ), (float*) VMA( 10 ), TT_AABB );
 			return 0;
 
 		case CG_CM_CAPSULETRACE:
 			cls.nCgamePhysicsSyscalls ++;
-			CM_BoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], TT_CAPSULE );
+			CM_BoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ),
+			             (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], args[ 8 ],
+			             TT_CAPSULE );
 			return 0;
 
 		case CG_CM_TRANSFORMEDCAPSULETRACE:
 			cls.nCgamePhysicsSyscalls ++;
-			CM_TransformedBoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], (float*) VMA( 8 ), (float*) VMA( 9 ), TT_CAPSULE );
+			CM_TransformedBoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ),
+			                        (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ],
+			                        args[ 8 ], (float*) VMA( 9 ), (float*) VMA( 10 ), TT_CAPSULE );
 			return 0;
 
 		case CG_CM_BISPHERETRACE:
 			cls.nCgamePhysicsSyscalls ++;
-			CM_BiSphereTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ] );
+			CM_BiSphereTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), VMF( 4 ),
+			                  VMF( 5 ), args[ 6 ], args[ 7 ], args[ 8 ] );
 			return 0;
 
 		case CG_CM_TRANSFORMEDBISPHERETRACE:
 			cls.nCgamePhysicsSyscalls ++;
-			CM_TransformedBiSphereTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ], (float*) VMA( 8 ) );
+			CM_TransformedBiSphereTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ),
+			                             VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ], args[ 8 ],
+			                             (float*) VMA( 8 ) );
 			return 0;
 
 		case CG_CM_MARKFRAGMENTS:
 			cls.nCgamePhysicsSyscalls ++;
-			return re.MarkFragments( args[ 1 ], (vec3_t*) VMA( 2 ), (float*) VMA( 3 ), args[ 4 ], (float*) VMA( 5 ), args[ 6 ], (markFragment_t*) VMA( 7 ) );
+			return re.MarkFragments( args[ 1 ], (vec3_t*) VMA( 2 ), (float*) VMA( 3 ), args[ 4 ],
+			                         (float*) VMA( 5 ), args[ 6 ], (markFragment_t*) VMA( 7 ) );
 
 		case CG_R_PROJECTDECAL:
 			cls.nCgameRenderSyscalls ++;
-			re.ProjectDecal( args[ 1 ], args[ 2 ], (vec3_t*) VMA( 3 ), (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ] );
+			re.ProjectDecal( args[ 1 ], args[ 2 ], (vec3_t*) VMA( 3 ), (float*) VMA( 4 ),
+			                 (float*) VMA( 5 ), args[ 6 ], args[ 7 ] );
 			return 0;
 
 		case CG_R_CLEARDECALS:

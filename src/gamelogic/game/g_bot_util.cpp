@@ -928,7 +928,8 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 				// try to find a position closer to the ground
 				BotGetTargetPos( target, targetPos );
 				VectorMA( targetPos, 600, invNormal, end );
-				trap_TraceNoEnts( &trace, targetPos, mins, maxs, end, target.ent->s.number, CONTENTS_SOLID );
+				trap_Trace( &trace, targetPos, mins, maxs, end, target.ent->s.number,
+				            CONTENTS_SOLID, MASK_ENTITY );
 				VectorCopy( trace.endpos, routeTarget->pos );
 			}
 		}
@@ -1166,7 +1167,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 	VectorSet( maxs, width, width, width );
 	VectorSet( mins, -width, -width, -height );
 
-	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT );
+	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0 );
 
 	if ( self->client->pers.team != BotGetEntityTeam( &g_entities[trace.entityNum] )
 		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
@@ -1195,14 +1196,8 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 		return qfalse;
 	}
 
-	if ( mask == CONTENTS_SOLID )
-	{
-		trap_TraceNoEnts( &trace, muzzle, NULL, NULL, targetPos, self->s.number, mask );
-	}
-	else
-	{
-		trap_Trace( &trace, muzzle, NULL, NULL, targetPos, self->s.number, mask );
-	}
+	trap_Trace( &trace, muzzle, NULL, NULL, targetPos, self->s.number, mask,
+	            ( mask == CONTENTS_SOLID ) ? MASK_ENTITY : 0 );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -1210,7 +1205,8 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 	}
 
 	//target is in range
-	if ( ( trace.entityNum == BotGetTargetEntityNumber( target ) || trace.fraction == 1.0f ) && !trace.startsolid )
+	if ( ( trace.entityNum == BotGetTargetEntityNumber( target ) || trace.fraction == 1.0f ) &&
+	     !trace.startsolid )
 	{
 		return qtrue;
 	}
@@ -1627,7 +1623,7 @@ void BotFireWeaponAI( gentity_t *self )
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetIdealAimLocation( self, self->botMind->goal, targetPos );
 
-	trap_Trace( &trace, muzzle, NULL, NULL, targetPos, -1, MASK_SHOT );
+	trap_Trace( &trace, muzzle, NULL, NULL, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = Distance( muzzle, trace.endpos );
 	switch ( self->s.weapon )
 	{

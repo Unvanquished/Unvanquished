@@ -67,11 +67,13 @@ gentity_t *G_TestEntityPosition( gentity_t *ent )
 
 	if ( ent->client )
 	{
-		trap_Trace( &tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs, ent->client->ps.origin, ent->s.number, ent->clipmask );
+		trap_Trace( &tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs, ent->client->ps.origin,
+		            ent->s.number, ent->clipmask, 0 );
 	}
 	else
 	{
-		trap_Trace( &tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, ent->s.pos.trBase, ent->s.number, ent->clipmask );
+		trap_Trace( &tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, ent->s.pos.trBase,
+		            ent->s.number, ent->clipmask, 0 );
 	}
 
 	if ( tr.startsolid )
@@ -1279,6 +1281,7 @@ void InitMover( gentity_t *ent )
 
 	ent->moverState = MOVER_POS1;
 	ent->s.eType = ET_MOVER;
+	ent->r.contents |= CONTENTS_MOVER;
 	VectorCopy( ent->restingPosition, ent->r.currentOrigin );
 	trap_LinkEntity( ent );
 
@@ -1345,6 +1348,7 @@ void InitRotator( gentity_t *ent )
 
 	ent->moverState = ROTATOR_POS1;
 	ent->s.eType = ET_MOVER;
+	ent->r.contents |= CONTENTS_MOVER;
 	VectorCopy( ent->restingPosition, ent->r.currentAngles );
 	trap_LinkEntity( ent );
 
@@ -1393,156 +1397,6 @@ void func_door_block( gentity_t *self, gentity_t *other )
 
 /*
 ================
-Touch_DoorTriggerSpectator
-================
-*/
-static void door_trigger_spectatorTouch( gentity_t *self, gentity_t *other, trace_t *trace )
-{
-	int    i, axis;
-	vec3_t origin, dir, angles;
-
-	axis = self->customNumber;
-	VectorClear( dir );
-
-	if ( fabs( other->s.origin[ axis ] - self->r.absmax[ axis ] ) <
-	     fabs( other->s.origin[ axis ] - self->r.absmin[ axis ] ) )
-	{
-		origin[ axis ] = self->r.absmin[ axis ] - 20;
-		dir[ axis ] = -1;
-	}
-	else
-	{
-		origin[ axis ] = self->r.absmax[ axis ] + 20;
-		dir[ axis ] = 1;
-	}
-
-	for ( i = 0; i < 3; i++ )
-	{
-		if ( i == axis )
-		{
-			continue;
-		}
-
-		origin[ i ] = ( self->r.absmin[ i ] + self->r.absmax[ i ] ) * 0.5;
-	}
-
-	vectoangles( dir, angles );
-	G_TeleportPlayer( other, origin, angles, 400.0f );
-}
-
-/*
-================
-manualDoorTriggerSpectator
-
-This effectively creates a temporary door auto trigger so manually
-triggers doors can be skipped by spectators
-================
-*/
-static void manualDoorTriggerSpectator( gentity_t *door, gentity_t *player )
-{
-	gentity_t *other;
-	gentity_t triggerHull;
-	int       best, i;
-	vec3_t    mins, maxs;
-
-	//don't skip a door that is already open
-	if ( door->moverState == MOVER_1TO2 ||
-	     door->moverState == MOVER_POS2 ||
-	     door->moverState == ROTATOR_1TO2 ||
-	     door->moverState == ROTATOR_POS2 ||
-	     door->moverState == MODEL_1TO2 ||
-	     door->moverState == MODEL_POS2 )
-	{
-		return;
-	}
-
-	// find the bounds of everything on the group
-	VectorCopy( door->r.absmin, mins );
-	VectorCopy( door->r.absmax, maxs );
-
-	for ( other = door->groupChain; other; other = other->groupChain )
-	{
-		AddPointToBounds( other->r.absmin, mins, maxs );
-		AddPointToBounds( other->r.absmax, mins, maxs );
-	}
-
-	// find the thinnest axis, which will be the one we expand
-	best = 0;
-
-	for ( i = 1; i < 3; i++ )
-	{
-		if ( maxs[ i ] - mins[ i ] < maxs[ best ] - mins[ best ] )
-		{
-			best = i;
-		}
-	}
-
-	maxs[ best ] += 60;
-	mins[ best ] -= 60;
-
-	VectorCopy( mins, triggerHull.r.absmin );
-	VectorCopy( maxs, triggerHull.r.absmax );
-	triggerHull.customNumber = best;
-
-	door_trigger_spectatorTouch( &triggerHull, player, NULL );
-}
-
-/*
-================
-manualTriggerSpectator
-
-Trip to skip the closest door targeted by trigger
-================
-*/
-void manualTriggerSpectator( gentity_t *sensor, gentity_t *player )
-{
-	gentity_t *currentTarget = NULL;
-	gentity_t *targets[ MAX_GENTITIES ];
-	int       i = 0, targetIndex = 0;
-	float     minDistance, currentDistance;
-
-
-
-	//restrict this hack to trigger_multiple only for now
-	if ( strcmp( sensor->classname, S_SENSOR_PLAYER ) )
-	{
-		return;
-	}
-
-	//create a list of door entities this trigger targets
-	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, sensor ) ) != NULL )
-	{
-		if ( !strcmp( currentTarget->classname, S_FUNC_DOOR ) )
-		{
-			targets[ i++ ] = currentTarget;
-		}
-	}
-
-	//if more than 0 targets
-	if ( i > 0 )
-	{
-		gentity_t *closest = NULL;
-		minDistance = 0; //will be set to something higher as long as closest is NULL yet
-
-		//pick the closest door
-		for ( targetIndex = 0; targetIndex < i; targetIndex++ )
-		{
-			currentDistance = DistanceSquared( player->r.currentOrigin, targets[ targetIndex ]->r.currentOrigin );
-
-			if ( closest == NULL || currentDistance < minDistance )
-			{
-				minDistance = currentDistance;
-				closest = targets[ targetIndex ];
-			}
-		}
-
-		//try and skip the door
-		manualDoorTriggerSpectator( closest, player );
-	}
-}
-
-/*
-================
 Touch_DoorTrigger
 ================
 */
@@ -1558,15 +1412,7 @@ void door_trigger_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 	groupState = GetMoverGroupState( self->parent );
 
-	if ( other->client && other->client->sess.spectatorState != SPECTATOR_NOT )
-	{
-		// if the door is not open and not opening
-		if ( groupState != MOVER_POS2 && groupState != MOVER_1TO2 )
-		{
-			door_trigger_spectatorTouch( self, other, trace );
-		}
-	}
-	else if ( groupState != MOVER_1TO2 )
+	if ( groupState != MOVER_1TO2 )
 	{
 		BinaryMover_act( self->parent, self, other );
 	}
@@ -1957,6 +1803,7 @@ void SP_func_door_model( gentity_t *self )
 
 	self->moverState = MODEL_POS1;
 	self->s.eType = ET_MODELDOOR;
+	self->r.contents |= CONTENTS_MOVER; // TODO: Check if this is the right thing to add the flag to
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	self->s.pos.trType = TR_STATIONARY;
 	self->s.pos.trTime = 0;
@@ -2550,6 +2397,9 @@ void SP_func_static( gentity_t *self )
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.origin, self->r.currentOrigin );
 
+	// HACK: Not really a mover, so unset the content flag
+	self->r.contents &= ~CONTENTS_MOVER;
+
 	// check if this func_static has a colorgrading texture
 	if( self->model[0] == '*' &&
 	    G_SpawnString( "gradingTexture", "", &gradingTexture ) ) {
@@ -2749,6 +2599,7 @@ void SP_func_spawn( gentity_t *self )
 {
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
   self->s.eType = ET_MOVER;
+  self->r.contents |= CONTENTS_MOVER;
   self->moverState = MOVER_POS1;
   VectorCopy( self->s.origin, self->restingPosition );
 
@@ -2818,6 +2669,7 @@ void SP_func_destructable( gentity_t *self )
 
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
   self->s.eType = ET_MOVER;
+  self->r.contents |= CONTENTS_MOVER;
   self->moverState = MOVER_POS1;
   VectorCopy( self->s.origin, self->restingPosition );
 

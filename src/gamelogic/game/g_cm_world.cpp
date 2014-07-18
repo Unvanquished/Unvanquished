@@ -221,7 +221,8 @@ qboolean G_CM_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity
 	angles = gEnt->r.currentAngles;
 
 	ch = G_CM_ClipHandleForEntity( gEnt );
-	CM_TransformedBoxTrace( &trace, vec3_origin, vec3_origin, mins, maxs, ch, -1, origin, angles, type );
+	CM_TransformedBoxTrace( &trace, vec3_origin, vec3_origin, mins, maxs, ch, MASK_ALL, 0, origin,
+	                        angles, type );
 
 	return trace.startsolid;
 }
@@ -709,6 +710,7 @@ typedef struct
 	trace_t     trace;
 	int         passEntityNum;
 	int         contentmask;
+	int         skipmask;
 	traceType_t collisionType;
 } moveclip_t;
 
@@ -718,8 +720,8 @@ G_CM_ClipToEntity
 
 ====================
 */
-void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum,
-                      int contentmask, traceType_t type )
+void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+                        const vec3_t end, int entityNum, int contentmask, traceType_t type )
 {
 	gentity_t *touch;
 	clipHandle_t   clipHandle;
@@ -748,8 +750,8 @@ void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, c
 		angles = vec3_origin; // boxes don't rotate
 	}
 
-	CM_TransformedBoxTrace( trace, ( float * ) start, ( float * ) end,
-	                        ( float * ) mins, ( float * ) maxs, clipHandle, contentmask, origin, angles, type );
+	CM_TransformedBoxTrace( trace, ( float * ) start, ( float * ) end, ( float * ) mins,
+	                        ( float * ) maxs, clipHandle, contentmask, 0, origin, angles, type );
 
 	if ( trace->fraction < 1 )
 	{
@@ -827,6 +829,11 @@ void G_CM_ClipMoveToEntities( moveclip_t *clip )
 			continue;
 		}
 
+		if ( clip->skipmask & touch->r.contents )
+		{
+			continue;
+		}
+
 		// might intersect, so do an exact clip
 		clipHandle = G_CM_ClipHandleForEntity( touch );
 
@@ -838,8 +845,8 @@ void G_CM_ClipMoveToEntities( moveclip_t *clip )
 			angles = vec3_origin; // boxes don't rotate
 		}
 
-		CM_TransformedBoxTrace( &trace, clip->start, clip->end,
-		                        clip->mins, clip->maxs, clipHandle, clip->contentmask, origin, angles, clip->collisionType );
+		CM_TransformedBoxTrace( &trace, clip->start, clip->end, clip->mins, clip->maxs, clipHandle,
+		                        clip->contentmask, 0, origin, angles, clip->collisionType );
 
 		if ( trace.allsolid )
 		{
@@ -874,8 +881,9 @@ Moves the given mins/maxs volume through the world from start to end.
 passEntityNum and entities owned by passEntityNum are explicitly not checked.
 ==================
 */
-void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const vec3_t maxs2, const vec3_t end, int passEntityNum,
-               int contentmask, traceType_t type )
+void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const vec3_t maxs2,
+                 const vec3_t end, int passEntityNum, int contentmask, int skipmask,
+                 traceType_t type )
 {
 	moveclip_t clip;
 	int        i;
@@ -894,22 +902,25 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const
     VectorCopy(mins2, mins);
     VectorCopy(maxs2, maxs);
 
-	if ( passEntityNum == -1 )
-		passEntityNum = ENTITYNUM_NONE;
-
 	memset( &clip, 0, sizeof( moveclip_t ) );
 
 	// clip to world
-	CM_BoxTrace( &clip.trace, start, end, mins, maxs, 0, contentmask, type );
+	// -------------
+
+	CM_BoxTrace( &clip.trace, start, end, mins, maxs, 0, contentmask, skipmask, type );
 	clip.trace.entityNum = clip.trace.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 
-	if ( clip.trace.fraction == 0 || passEntityNum == -2 )
+	if ( clip.trace.fraction == 0 )
 	{
 		*results = clip.trace;
 		return; // blocked immediately by the world
 	}
 
+	// clip to entities
+	// ----------------
+
 	clip.contentmask = contentmask;
+	clip.skipmask = skipmask;
 	clip.start = start;
 //  VectorCopy( clip.trace.endpos, clip.end );
 	VectorCopy( end, clip.end );

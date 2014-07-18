@@ -162,8 +162,7 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 
 	AngleVectors( cg.refdefViewAngles, view, NULL, NULL );
 	VectorMA( cg.refdef.vieworg, 64, view, point );
-	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL,
-	          point, ps->clientNum, MASK_SHOT );
+	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL, point, ps->clientNum, MASK_SHOT, 0 );
 
 	es = &cg_entities[ trace.entityNum ].currentState;
 

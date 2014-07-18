@@ -405,7 +405,7 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 
 	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
 
-	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT );
+	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
 	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f ) || g_entities[ trace.entityNum ].s.eType == ET_BUILDABLE )
 	{
 		return &g_entities[trace.entityNum];
@@ -442,7 +442,7 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
 
 	//make sure we are moving into a block
-	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT );
+	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
 	if ( trace.fraction >= 1.0f || blocker != &g_entities[trace.entityNum] )
 	{
 		return qfalse;
@@ -458,7 +458,7 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	playerMaxs[2] += jumpMagnitude;
 
 	//check if jumping will clear us of entity
-	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT );
+	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
 
 	//if we can jump over it, then jump
 	//note that we also test for a blocking barricade because barricades will collapse to let us through
@@ -517,7 +517,8 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t dir )
 		VectorMA( self->s.origin, BOT_OBSTACLE_AVOID_RANGE, forward, testPoint1 );
 
 		//test it
-		trap_Trace( &trace1, self->s.origin, playerMins, playerMaxs, testPoint1, self->s.number, MASK_SHOT );
+		trap_Trace( &trace1, self->s.origin, playerMins, playerMaxs, testPoint1, self->s.number,
+		            MASK_SHOT, 0 );
 
 		//check if unobstructed
 		if ( trace1.fraction >= 1.0f )
@@ -534,7 +535,8 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t dir )
 		VectorMA( self->s.origin, BOT_OBSTACLE_AVOID_RANGE, forward, testPoint2 );
 
 		//test it
-		trap_Trace( &trace2, self->s.origin, playerMins, playerMaxs, testPoint2, self->s.number, MASK_SHOT );
+		trap_Trace( &trace2, self->s.origin, playerMins, playerMaxs, testPoint2, self->s.number,
+		            MASK_SHOT, 0 );
 
 		//check if unobstructed
 		if ( trace2.fraction >= 1.0f )
@@ -601,7 +603,7 @@ qboolean BotOnLadder( gentity_t *self )
 	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
 	VectorMA( self->s.origin, 1.0f, forward, end );
 
-	trap_Trace( &trace, self->s.origin, mins, maxs, end, self->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &trace, self->s.origin, mins, maxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 
 	if ( trace.fraction < 1.0f && trace.surfaceFlags & SURF_LADDER )
 	{
@@ -686,7 +688,8 @@ void BotClampPos( gentity_t *self )
 	vec3_t mins, maxs;
 	VectorSet( origin, self->botMind->nav.pos[ 0 ], self->botMind->nav.pos[ 1 ], height );
 	BG_ClassBoundingBox( self->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
-	trap_Trace( &trace, self->client->ps.origin, mins, maxs, origin, self->client->ps.clientNum, MASK_PLAYERSOLID );
+	trap_Trace( &trace, self->client->ps.origin, mins, maxs, origin, self->client->ps.clientNum,
+	            MASK_PLAYERSOLID, 0 );
 	G_SetOrigin( self, trace.endpos );
 	VectorCopy( trace.endpos, self->client->ps.origin );
 }
