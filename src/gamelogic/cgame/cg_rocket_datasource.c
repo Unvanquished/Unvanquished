@@ -927,10 +927,10 @@ void CG_Rocket_BuildPlayerList( const char *args )
 	trap_Rocket_DSClearTable( "playerList", "aliens" );
 	trap_Rocket_DSClearTable( "playerList", "humans" );
 
-	for ( i = 0; i < MAX_CLIENTS; ++i )
+	for ( i = 0; i < cg.numScores; ++i )
 	{
-		ci = &cgs.clientinfo[ i ];
 		score = &cg.scores[ i ];
+		ci = &cgs.clientinfo[ score->client ];
 
 		if ( !ci->infoValid )
 		{
