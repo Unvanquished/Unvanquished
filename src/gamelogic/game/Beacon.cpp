@@ -433,6 +433,106 @@ namespace Beacon //this should eventually become a class
 		ent->alienTag = ent->humanTag = NULL;
 	}
 
+	qboolean EntityTaggable( int num )
+	{
+		gentity_t *ent;
+
+		if( num == ENTITYNUM_NONE ||
+		    num == ENTITYNUM_WORLD )
+			return false;
+
+		ent = g_entities + num;
+
+		switch( ent->s.eType )
+		{
+			case ET_BUILDABLE:
+				//...
+				return true;
+
+			case ET_PLAYER:
+				//...
+				return true;
+
+			default:
+				return false;
+		}
+	}
+
+	typedef struct
+	{
+		gentity_t *ent;
+		float dot;
+	} tagtrace_ent_t;
+
+	static int TagTrace_EntCmp( const void *a, const void *b )
+	{
+		return ( ( (const tagtrace_ent_t*)a )->dot < ( (const tagtrace_ent_t*)b )->dot );
+	}
+
+	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask )
+	{
+		// try a simple trace first
+		{
+			trace_t tr;
+
+			trap_Trace( &tr, begin, NULL, NULL, end, skip, mask );
+
+			if( EntityTaggable( tr.entityNum ) )
+				return g_entities + tr.entityNum;
+		}
+
+		// spherical section trace
+		{
+			tagtrace_ent_t list[ MAX_GENTITIES ];
+			int i, count = 0;
+			gentity_t *ent;
+			vec3_t seg, delta;
+			float dot;
+
+			VectorSubtract( end, begin, seg );
+
+			for( i = 0; i < level.num_entities; i++ )
+			{
+				ent = g_entities + i;
+
+				if( !ent->inuse )
+					continue;
+
+				if( !EntityTaggable( i ) )
+					continue;
+
+				if( !trap_InPVS( ent->s.origin, begin ) )
+					continue;
+
+				VectorSubtract( ent->s.origin, begin, delta );
+				dot = DotProduct( seg, delta ) / VectorLength( seg ) / VectorLength( delta );
+
+				if( dot < 0.9 )
+					continue;
+
+				// LOS
+				{
+					trace_t tr;
+					trap_Trace( &tr, begin, NULL, NULL, ent->s.origin, skip, mask );
+					if( tr.entityNum != i )
+						continue;
+				}
+
+				list[ count ].ent = ent;
+				list[ count++ ].dot = dot;
+			}
+
+			if( !count )
+				return NULL;
+
+			qsort( list, count, sizeof( tagtrace_ent_t ), TagTrace_EntCmp );
+
+			return list[ 0 ].ent;
+		}
+
+		return NULL;
+	}
+
 	/**
 	 * @brief Tags an entity.
 	 */

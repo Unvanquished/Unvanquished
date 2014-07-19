@@ -60,6 +60,7 @@ namespace Beacon
 	void Propagate( gentity_t *ent );
 	void PropagateAll( void );
 	void RemoveOrphaned( int clientNum );
+	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask );
 	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent );
 	void UpdateTags( gentity_t *ent );
 	void DetachTags( gentity_t *ent );
