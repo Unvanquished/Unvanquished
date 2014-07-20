@@ -1038,7 +1038,6 @@ typedef enum
 	BCT_TIMER,
 
 	//indicators
-	BCT_ENEMY,
 	BCT_TAG,
 	BCT_BASE,
 
@@ -1069,8 +1068,7 @@ typedef enum
 #define BCF_DATA_UNIQUE   0x0008 // data extends type
 
 #define BCF_PRECISE       0x0010 // place exactly at crosshair
-#define BCF_ENTITY        0x0020 // place at an entity's center
-#define BCF_NO_UNCLUTTER  0x0040 // don't move it away from crosshair
+#define BCF_IMPORTANT     0x0020 // display at 100% alpha
 
 typedef struct
 {

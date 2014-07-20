@@ -1295,7 +1295,7 @@ typedef struct
 	int                     num_beacons;
 	cbeacon_t               *highlightedBeacon;
 
-	int     tagScoreTime;
+	int                     tagScoreTime;
 } cg_t;
 
 typedef struct

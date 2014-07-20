@@ -302,12 +302,16 @@ static void CG_RunBeacon( cbeacon_t *b )
 	}
 
 	// Fade out when too close. Span the same distance as the size change but fade linearly.
-	if( b->dist < cgs.bc.fadeMinDist )
-		alpha *= cgs.bc.fadeMinAlpha;
-	else if( b->dist > cgs.bc.fadeMaxDist )
-		alpha *= cgs.bc.fadeMaxAlpha;
-	else
-		alpha *= LinearRemap( b->dist, cgs.bc.fadeMinDist, cgs.bc.fadeMaxDist, cgs.bc.fadeMinAlpha, cgs.bc.fadeMaxAlpha );
+	// Do not fade important beacons.
+	if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
+	{
+		if( b->dist < cgs.bc.fadeMinDist )
+			alpha *= cgs.bc.fadeMinAlpha;
+		else if( b->dist > cgs.bc.fadeMaxDist )
+			alpha *= cgs.bc.fadeMaxAlpha;
+		else
+			alpha *= LinearRemap( b->dist, cgs.bc.fadeMinDist, cgs.bc.fadeMaxDist, cgs.bc.fadeMinAlpha, cgs.bc.fadeMaxAlpha );
+	}
 
 	// color
 	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE || b->type == BCT_TAG )

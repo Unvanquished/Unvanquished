@@ -60,9 +60,6 @@
 						<p class="text" style="text-align: left;">
 							<datasource_single source="beaconList.default" fields="desc" targetid="default"/>
 						</p>
-						<p class="text">
-							Command: /beacon <datasource_single source="beaconList.default" fields="cmdname" targetid="default" />
-						</p>
 					</div>
 				</panel>
 			</tabset>

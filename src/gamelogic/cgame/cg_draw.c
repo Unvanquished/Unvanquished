@@ -340,7 +340,8 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		vec2_t midpoint;
 
 		Vector4Copy( b->color, color );
-		color[ 3 ] *= cgs.bc.hudAlpha;
+		if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
+			color[ 3 ] *= cgs.bc.hudAlpha;
 		color[ 3 ] *= MIN( 1.0, LinearRemap( offset, cgs.bc.arrowAlphaLow, cgs.bc.arrowAlphaHigh, 0, 1 ) );
 		trap_R_SetColor( color );
 
@@ -364,7 +365,9 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	}
 
 	Vector4Copy( b->color, color );
-	color[ 3 ] *= cgs.bc.hudAlpha;
+	// display important beacons at 100% opacity
+	if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
+		color[ 3 ] *= cgs.bc.hudAlpha;
 	trap_R_SetColor( color );
 
 	trap_R_DrawStretchPic( b->s->pos[ 0 ] - b->size/2,
@@ -387,6 +390,62 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconIconArrow,
 		                       270.0 - ( angle = atan2( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * 180 / M_PI );
+
+	if( b->type == BCT_TIMER )
+	{
+		int num;
+
+		num = BEACON_TIMER_TIME + b->s->ctime - cg.time;
+
+		if( num > 0 )
+		{
+			float h, tw;
+			const char *p;
+			vec2_t pos, dir, rect[ 2 ];
+			int i, l, frame;
+
+			h = b->size * 0.4;
+			p = va( "%d", num/100 );
+			l = strlen( p );
+			tw = h * l;
+
+			if( !b->clamped )
+			{
+				pos[ 0 ] = b->s->pos[ 0 ];
+				pos[ 1 ] = b->s->pos[ 1 ] + b->size/2 + h/2;
+			}
+			else
+			{
+				rect[ 0 ][ 0 ] = b->s->pos[ 0 ] - b->size/2 - tw/2;
+				rect[ 1 ][ 0 ] = b->s->pos[ 0 ] + b->size/2 + tw/2;
+				rect[ 0 ][ 1 ] = b->s->pos[ 1 ] - b->size/2 - h/2;
+				rect[ 1 ][ 1 ] = b->s->pos[ 1 ] + b->size/2 + h/2;
+
+				for( i = 0; i < 2; i++ )
+					dir[ i ] = - b->clamp_dir[ i ];
+
+				ProjectPointOntoRectangleOutwards( pos, b->s->pos, dir, (const vec2_t*)rect );
+			}
+
+			pos[ 0 ] -= tw/2;
+			pos[ 1 ] -= h/2;
+
+			for( i = 0; i < l; i++ )
+			{
+				if( p[ i ] >= '0' && p[ i ] <= '9' )
+					frame = p[ i ] - '0';
+				else if( p[ i ] == '-' )
+					frame = STAT_MINUS;
+				else
+					frame = -1;
+
+				if( frame != -1 )
+					trap_R_DrawStretchPic( pos[ 0 ], pos[ 1 ], h, h, 0, 0, 1, 1, cgs.media.numberShaders[ frame ] );
+
+				pos[ 0 ] += h;
+			}
+		}
+	}
 
 	trap_R_SetColor( NULL );
 }

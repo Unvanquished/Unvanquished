@@ -291,11 +291,6 @@ namespace Beacon //this should eventually become a class
 
 			if     ( flags & BCF_PER_TEAM )
 			{}
-			else if( flags & BCF_ENTITY )
-			{
-				if ( Distance( ent->s.origin, origin ) > FLT_EPSILON )
-					continue;
-			}
 			else if( flags & BCF_PER_PLAYER )
 			{
 				if( ent->s.otherEntityNum != owner )

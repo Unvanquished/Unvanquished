@@ -4383,46 +4383,23 @@ void Cmd_Beacon_f( gentity_t *ent )
 	BG_GetClientViewOrigin( &ent->client->ps, origin );
 	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
 	VectorMA( origin, 65536, forward, end );
+
 	G_UnlaggedOn( ent, origin, 65536 );
+	trap_Trace( &tr, origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+	G_UnlaggedOff( );
 
-	// Tag entities.
-	if ( flags & BCF_ENTITY )
-	{
-		traceEnt = Beacon::TagTrace( origin, end, ent->s.number, MASK_PLAYERSOLID, team, qfalse );
-
-		if ( !traceEnt )
-			goto invalid_beacon;
-
-		// Friendly players are already tagged.
-		if ( traceEnt->client && traceEnt->client->pers.team == team )
-			goto invalid_beacon;
-
-		existingTag = ( team == TEAM_ALIENS ) ? traceEnt->alienTag : traceEnt->humanTag;
-
-		// Only evaluate flood limit if the entity was already tagged.
-		if ( existingTag && G_FloodLimited( ent ) )
-			return;
-
-		Beacon::Tag( traceEnt, team, ent->s.number, qfalse );
-		goto out;
-	}
-	else
-		trap_Trace( &tr, origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
-
-	// Evaluate flood limit for all valid non-tag beacons.
+	// Evaluate flood limit.
 	if( G_FloodLimited( ent ) )
-		goto out;
+		return;
 
 	if ( !( flags & BCF_PRECISE ) )
 		Beacon::MoveTowardsRoom( tr.endpos );
 
 	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->s.number, BCH_REMOVE ) );
-	goto out;
+	return;
 
 invalid_beacon:
 	CP( "cp_tr " QQ(N_("Couldn't place beacon")) "\n" );
-out:
-	G_UnlaggedOff( );
 }
 
 /*
