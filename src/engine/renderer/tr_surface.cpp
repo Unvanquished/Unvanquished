@@ -1278,7 +1278,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 		tess.numBones = model->num_joints;
 		R_BindVBO( surf->vbo );
 		R_BindIBO( surf->ibo );
-		tess.vboVertexSkinning = model->blendIndexes && model->blendWeights ? qtrue : qfalse;
+		tess.vboVertexSkinning = qtrue;
 
 		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ((glIndex_t *)NULL) + surf->first_triangle * 3;
 		tess.multiDrawCounts[ tess.multiDrawPrimitives ] = surf->num_triangles * 3;

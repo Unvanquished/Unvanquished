@@ -2266,7 +2266,6 @@ static inline byte floatToSnorm8(float f) {
 		byte            *blendWeights;
 		byte            *colors;
 		int             *triangles;
-		float           *bounds;  // autocalculated bounds for models without animation
 
 		// skeleton data
 		int             *jointParents;
