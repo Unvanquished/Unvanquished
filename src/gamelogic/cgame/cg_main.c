@@ -1462,7 +1462,7 @@ static void CG_RegisterGraphics( void )
 	cgs.media.beaconLongArrow = trap_R_RegisterShader( "gfx/2d/beacon-longarrow", RSF_DEFAULT );
 	cgs.media.beaconLongArrowDot = trap_R_RegisterShader( "gfx/2d/beacon-longarrowdot", RSF_DEFAULT );
 	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacon-no-target", RSF_DEFAULT );
-
+	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacon-tagscore", RSF_DEFAULT );
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();

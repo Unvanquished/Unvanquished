@@ -37,17 +37,51 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Beacon //this should eventually become a class
 {
-	#define BEACON_THINKRATE 1000
-
 	/**
-	 * @brief Think function for all beacons.
+	 * @brief A meaningless think function for beacons (everything is now handled in Beacon::Frame).
 	 */
-	void Think( gentity_t *ent )
+	static void Think( gentity_t *ent )
 	{
-		ent->nextthink = level.time + BEACON_THINKRATE;
+		ent->nextthink = level.time + 1000000;
+	}
+	
+	/**
+	 * @brief Handles beacon expiration and tag score decay. Called every server frame.
+	 */
+	void Frame( void )
+	{
+		gentity_t *ent;
+		static int nextframe = 0;
 
-		if ( ent->s.time2 && level.time > ent->s.time2 )
-			Delete( ent );
+		if( nextframe > level.time )
+			return;
+
+		for( ent = g_entities; ent < g_entities + level.num_entities; ent++ )
+		{
+			if( !ent->inuse )
+				continue;
+
+			switch( ent->s.eType )
+			{
+				case ET_BUILDABLE:
+				case ET_PLAYER:
+					if( ent->tagScoreTime + 2000 < level.time )
+						ent->tagScore -= 50;
+					if( ent->tagScore < 0 )
+						ent->tagScore = 0;
+					break;
+
+				case ET_BEACON:
+					if ( ent->s.time2 && level.time > ent->s.time2 )
+						Delete( ent );
+					continue;
+
+				default:
+					break;
+			}
+		}
+
+		nextframe = level.time + 100;
 	}
 
 	/**
@@ -130,6 +164,9 @@ namespace Beacon //this should eventually become a class
 	{
 		if( !ent )
 			return;
+
+		if( ent->tagAttachment )
+			*ent->tagAttachment = NULL;
 
 		if( verbose )
 		{
@@ -420,7 +457,6 @@ namespace Beacon //this should eventually become a class
 	{
 		Delete( ent->alienTag, true );
 		Delete( ent->humanTag, true );
-		ent->alienTag = ent->humanTag = NULL;
 	}
 
 	/**
@@ -430,10 +466,23 @@ namespace Beacon //this should eventually become a class
 	{
 		Delete( ent->alienTag );
 		Delete( ent->humanTag );
-		ent->alienTag = ent->humanTag = NULL;
 	}
 
-	qboolean EntityTaggable( int num )
+	/**
+	 * @brief Reset a tag's expiration timer.
+	 */
+	static inline void RefreshTag( gentity_t *ent )
+	{
+		if( ent->s.eFlags & EF_BC_TAG_PLAYER )
+			ent->s.time2 = level.time + 4000;
+		else
+			ent->s.time2 = level.time + 35000;
+	}
+
+	/**
+	 * @brief Check if an entity can be tagged.
+	 */
+	static qboolean EntityTaggable( int num, team_t team = TEAM_NONE )
 	{
 		gentity_t *ent;
 
@@ -446,11 +495,19 @@ namespace Beacon //this should eventually become a class
 		switch( ent->s.eType )
 		{
 			case ET_BUILDABLE:
-				//...
+				if( ! (ent->s.eFlags & EF_B_SPAWNED ) )
+					return false;
+				if( ent->health <= 0 )
+					return false;
 				return true;
 
 			case ET_PLAYER:
-				//...
+				if( !ent->client )
+					return false;
+				// don't tag teammates
+				if( team != TEAM_NONE &&
+				    ent->client->pers.team == team )
+					return false;
 				return true;
 
 			default:
@@ -458,6 +515,7 @@ namespace Beacon //this should eventually become a class
 		}
 	}
 
+	//TODO: clean this mess
 	typedef struct
 	{
 		gentity_t *ent;
@@ -469,68 +527,70 @@ namespace Beacon //this should eventually become a class
 		return ( ( (const tagtrace_ent_t*)a )->dot < ( (const tagtrace_ent_t*)b )->dot );
 	}
 
-	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask )
+	/**
+	 * @brief Perform an approximate trace to find a taggable entity.
+	 * @param team           Team the caller belongs to.
+	 * @param refreshTagged  Refresh all already tagged entities's tags and exclude these entities from further consideration.
+	 */
+	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, qboolean refreshTagged )
 	{
-		// try a simple trace first
+		tagtrace_ent_t list[ MAX_GENTITIES ];
+		int i, count = 0;
+		gentity_t *ent;
+		vec3_t seg, delta;
+		float dot;
+
+		VectorSubtract( end, begin, seg );
+
+		for( i = 0; i < level.num_entities; i++ )
 		{
-			trace_t tr;
+			ent = g_entities + i;
 
-			trap_Trace( &tr, begin, NULL, NULL, end, skip, mask );
+			if( !ent->inuse )
+				continue;
 
-			if( EntityTaggable( tr.entityNum ) )
-				return g_entities + tr.entityNum;
-		}
+			if( !EntityTaggable( i, team ) )
+				continue;
 
-		// spherical section trace
-		{
-			tagtrace_ent_t list[ MAX_GENTITIES ];
-			int i, count = 0;
-			gentity_t *ent;
-			vec3_t seg, delta;
-			float dot;
+			if( !trap_InPVS( ent->s.origin, begin ) )
+				continue;
 
-			VectorSubtract( end, begin, seg );
+			VectorSubtract( ent->s.origin, begin, delta );
+			dot = DotProduct( seg, delta ) / VectorLength( seg ) / VectorLength( delta );
 
-			for( i = 0; i < level.num_entities; i++ )
+			if( dot < 0.9 )
+				continue;
+
+			// LOS
 			{
-				ent = g_entities + i;
-
-				if( !ent->inuse )
+				trace_t tr;
+				trap_Trace( &tr, begin, NULL, NULL, ent->s.origin, skip, mask );
+				if( tr.entityNum != i )
 					continue;
-
-				if( !EntityTaggable( i ) )
-					continue;
-
-				if( !trap_InPVS( ent->s.origin, begin ) )
-					continue;
-
-				VectorSubtract( ent->s.origin, begin, delta );
-				dot = DotProduct( seg, delta ) / VectorLength( seg ) / VectorLength( delta );
-
-				if( dot < 0.9 )
-					continue;
-
-				// LOS
-				{
-					trace_t tr;
-					trap_Trace( &tr, begin, NULL, NULL, ent->s.origin, skip, mask );
-					if( tr.entityNum != i )
-						continue;
-				}
-
-				list[ count ].ent = ent;
-				list[ count++ ].dot = dot;
 			}
 
-			if( !count )
-				return NULL;
+			if( refreshTagged )
+			{
+				gentity_t *existingTag;
 
-			qsort( list, count, sizeof( tagtrace_ent_t ), TagTrace_EntCmp );
+				existingTag = ( team == TEAM_ALIENS ) ? ent->alienTag : ent->humanTag;
+				if( existingTag )
+				{
+					RefreshTag( existingTag );
+					continue;
+				}
+			}
 
-			return list[ 0 ].ent;
+			list[ count ].ent = ent;
+			list[ count++ ].dot = dot;
 		}
 
-		return NULL;
+		if( !count )
+			return NULL;
+
+		qsort( list, count, sizeof( tagtrace_ent_t ), TagTrace_EntCmp );
+
+		return list[ 0 ].ent;
 	}
 
 	/**
@@ -611,6 +671,9 @@ namespace Beacon //this should eventually become a class
 			Delete( *attachment );
 
 		beacon = New( origin, BCT_TAG, data, team, owner );
+		beacon->tagAttachment = attachment;
+
+		ent->tagScore = 0;
 
 		if( player )
 			beacon->s.eFlags |= EF_BC_TAG_PLAYER;
@@ -620,10 +683,8 @@ namespace Beacon //this should eventually become a class
 
 		if( permanent )
 			beacon->s.time2 = 0;
-		else if( player )
-			beacon->s.time2 = level.time + 4000;
 		else
-			beacon->s.time2 = level.time + 35000;
+			RefreshTag( beacon );
 
 		if( dead )
 			Delete( beacon, true );

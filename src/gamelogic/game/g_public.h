@@ -43,7 +43,7 @@ const char        *G_quoted_admin_name( gentity_t *ent );
 // Beacon.cpp
 namespace Beacon 
 {
-	void Think( gentity_t *ent );
+	void Frame( void );
 	void Move( gentity_t *ent, const vec3_t origin );
 	gentity_t *New( const vec3_t origin, beaconType_t type, int data, team_t team, int owner,
 	                beaconConflictHandler_t conflictHandler = BCH_NONE );
@@ -60,7 +60,7 @@ namespace Beacon
 	void Propagate( gentity_t *ent );
 	void PropagateAll( void );
 	void RemoveOrphaned( int clientNum );
-	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask );
+	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, qboolean refreshTagged );
 	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent );
 	void UpdateTags( gentity_t *ent );
 	void DetachTags( gentity_t *ent );

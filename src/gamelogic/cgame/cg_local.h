@@ -710,6 +710,8 @@ typedef struct
 	float         hudAlpha;
 	vec2_t        hudCenter;    //runtime
 	vec2_t        hudRect[ 2 ]; //runtime
+	vec2_t        tagScorePos;  //runtime
+	float         tagScoreSize;
 
 	// minimap
 	float         minimapScale;
@@ -1292,6 +1294,8 @@ typedef struct
 	cbeacon_t               beacons[ MAX_CBEACONS ];
 	int                     num_beacons;
 	cbeacon_t               *highlightedBeacon;
+
+	int     tagScoreTime;
 } cg_t;
 
 typedef struct
@@ -1608,6 +1612,7 @@ typedef struct
 	qhandle_t   beaconLongArrow;
 	qhandle_t   beaconLongArrowDot;
 	qhandle_t   beaconNoTarget;
+	qhandle_t   beaconTagScore;
 
 	sfxHandle_t timerBeaconExpiredSound;
 } cgMedia_t;

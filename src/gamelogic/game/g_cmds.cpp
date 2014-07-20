@@ -4387,25 +4387,10 @@ void Cmd_Beacon_f( gentity_t *ent )
 	// Tag entities.
 	if ( flags & BCF_ENTITY )
 	{
-		traceEnt = Beacon::TagTrace( origin, end, ent->s.number, MASK_PLAYERSOLID );
+		traceEnt = Beacon::TagTrace( origin, end, ent->s.number, MASK_PLAYERSOLID, team, qfalse );
 
 		if ( !traceEnt )
 			goto invalid_beacon;
-
-		switch( traceEnt->s.eType )
-		{
-			case ET_BUILDABLE:
-				if( traceEnt->health < 0 )
-					goto invalid_beacon;
-				break;
-
-			case ET_PLAYER:
-				// ...
-				break;
-
-			default:
-				goto invalid_beacon;
-		}
 
 		// Friendly players are already tagged.
 		if ( traceEnt->client && traceEnt->client->pers.team == team )

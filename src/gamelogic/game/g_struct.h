@@ -419,6 +419,9 @@ struct gentity_s
 	botMemory_t *botMind;
 
 	gentity_t   *alienTag, *humanTag;
+	gentity_t   **tagAttachment;
+	int         tagScore;
+	int         tagScoreTime;
 };
 
 /**

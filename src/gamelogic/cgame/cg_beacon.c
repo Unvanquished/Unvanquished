@@ -123,6 +123,19 @@ else if( !Q_stricmp( token.string, #x ) ) \
 			bc->hudRect[ 0 ][ 1 ] = margin;
 			bc->hudRect[ 1 ][ 1 ] = vh - margin;
 		}
+		else if( !Q_stricmp( token.string, "tagScoreSize" ) )
+		{
+			float size;
+
+			if( !PC_Float_Parse( fd, &size ) )
+				break;
+
+			size *= base;
+
+			bc->tagScoreSize = size;
+			bc->tagScorePos[ 0 ] = bc->hudCenter[ 0 ] - size/2;
+			bc->tagScorePos[ 1 ] = bc->hudCenter[ 1 ] - size/2;
+		}
 	}
 
 	bc->fadeMinDist = Square( bc->hudSize / bc->hudMaxSize );

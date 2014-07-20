@@ -238,8 +238,8 @@ typedef enum
   STAT_FALLDIST,   // distance the player fell
   STAT_VIEWLOCK,   // direction to lock the view in
   STAT_PREDICTION, // predictions for current player action
-  STAT_FUEL        // humans: jetpack fuel
-  // netcode has space for 1 more
+  STAT_FUEL,       // humans: jetpack fuel
+  STAT_TAGSCORE    // tagging progress
 } statIndex_t;
 
 #define SCA_WALLCLIMBER     0x00000001

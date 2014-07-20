@@ -912,6 +912,31 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		{
 			G_FindFuel( ent );
 		}
+
+		// auto-tagging
+		{
+			gentity_t *other;
+			vec3_t origin, forward, end;
+
+			BG_GetClientViewOrigin( &client->ps, origin );
+			AngleVectors( client->ps.viewangles, forward, NULL, NULL );
+			VectorMA( origin, 65536, forward, end );
+			G_UnlaggedOn( ent, origin, 65536 );
+			other = Beacon::TagTrace( origin, end, ent->s.number, MASK_PLAYERSOLID, (team_t)client->pers.team, qtrue );
+			G_UnlaggedOff( );
+
+			if( other )
+			{
+				other->tagScore += 100;
+				other->tagScoreTime = level.time;
+				if( other->tagScore > 1000 )
+					Beacon::Tag( other, (team_t)client->pers.team, ent->s.number, qfalse );
+
+				client->ps.stats[ STAT_TAGSCORE ] = other->tagScore;
+			}
+			else
+				client->ps.stats[ STAT_TAGSCORE ] = 0;
+		}
 	}
 
 	while ( client->time1000 >= 1000 )
