@@ -4365,18 +4365,19 @@ void Cmd_Beacon_f( gentity_t *ent )
 	trap_Argv( 1, type_str, sizeof( type_str ) );
 
 	battr = BG_BeaconByName( type_str );
-	type  = battr->number;
-	flags = battr->flags;
-	team  = (team_t)ent->client->pers.team;
 
 	// Check arguments.
-	if ( !battr || flags & BCF_RESERVED )
+	if ( !battr || battr->flags & BCF_RESERVED )
 	{
 		trap_SendServerCommand( ent - g_entities,
 		                        va( "print_tr %s %s", QQ( N_("Unknown beacon type $1$\n") ),
 		                            Quote( type_str ) ) );
 		return;
 	}
+
+	type  = battr->number;
+	flags = battr->flags;
+	team  = (team_t)ent->client->pers.team;
 
 	// Trace in view direction.
 	BG_GetClientViewOrigin( &ent->client->ps, origin );
