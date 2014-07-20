@@ -685,9 +685,15 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 		switch( vertexarray->type ) {
 		case IQM_POSITION:
+			ClearBounds( IQModel->bounds[ 0 ], IQModel->bounds[ 1 ] );
 			Com_Memcpy( IQModel->positions,
 				    IQMPtr( header, vertexarray->offset ),
 				    n * sizeof(float) );
+			for( j = 0; j < n; j += vertexarray->size ) {
+				AddPointToBounds( &IQModel->positions[ j ],
+						  IQModel->bounds[ 0 ],
+						  IQModel->bounds[ 1 ] );
+			}
 			break;
 		case IQM_NORMAL:
 			Com_Memcpy( IQModel->normals,
@@ -882,14 +888,15 @@ static int R_CullIQM( trRefEntity_t *ent ) {
 		// no properly set skeleton so use the bounding box by the model instead by the animations
 		IQModel_t *model = tr.currentModel->iqm;
 		IQAnim_t  *anim = model->anims;
+		float     *bounds;
 
 		if ( !anim ) {
-			tr.pc.c_box_cull_md5_in++;
-			return CULL_IN;
+			bounds = model->bounds[0];
+		} else {
+			bounds = anim->bounds;
 		}
-
-		VectorScale( anim->bounds, ent->e.skeleton.scale, localBounds[ 0 ] );
-		VectorScale( anim->bounds + 3, ent->e.skeleton.scale, localBounds[ 1 ] );
+		VectorScale( bounds, ent->e.skeleton.scale, localBounds[ 0 ] );
+		VectorScale( bounds + 3, ent->e.skeleton.scale, localBounds[ 1 ] );
 	}
 	else
 	{

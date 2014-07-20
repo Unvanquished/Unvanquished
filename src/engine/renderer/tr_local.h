@@ -2293,6 +2293,8 @@ static inline float halfToFloat( int16_t in ) {
 		struct srfIQModel_s     *surfaces;
 		struct IQAnim_s         *anims;
 
+		vec3_t          bounds[2];
+
 		// vertex data
 		float           *positions;
 		int16_t         *texcoords;
