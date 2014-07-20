@@ -160,7 +160,7 @@ void CG_Rocket_BuildServerInfo( void )
 		Q_strncpyz( name, start + 1, end - start );
 		start = end = NULL;
 		Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-		Info_SetValueForKeyRocket( buf, "name", name );
+		Info_SetValueForKeyRocket( buf, "name", name, qfalse );
 		Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 		Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
 		trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
@@ -189,7 +189,7 @@ void CG_Rocket_BuildServerInfo( void )
 				Q_strncpyz( name, start + 1, end - start );
 				start = end = NULL;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-				Info_SetValueForKeyRocket( buf, "name", name );
+				Info_SetValueForKeyRocket( buf, "name", name, qfalse );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
 				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
@@ -215,7 +215,7 @@ void CG_Rocket_BuildServerInfo( void )
 				Q_strncpyz( name, start + 1, end - start );
 				start = end = NULL;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-				Info_SetValueForKeyRocket( buf, "name", name );
+				Info_SetValueForKeyRocket( buf, "name", name, qfalse );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
 				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
@@ -927,10 +927,10 @@ void CG_Rocket_BuildPlayerList( const char *args )
 	trap_Rocket_DSClearTable( "playerList", "aliens" );
 	trap_Rocket_DSClearTable( "playerList", "humans" );
 
-	for ( i = 0; i < MAX_CLIENTS; ++i )
+	for ( i = 0; i < cg.numScores; ++i )
 	{
-		ci = &cgs.clientinfo[ i ];
 		score = &cg.scores[ i ];
+		ci = &cgs.clientinfo[ score->client ];
 
 		if ( !ci->infoValid )
 		{
@@ -1010,8 +1010,8 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 
 	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_NONE ]; ++i )
 	{
-		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
 		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
+		ci = &cgs.clientinfo[ score->client ];
 
 		if ( !ci->infoValid )
 		{
@@ -1032,8 +1032,8 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 
 	for ( i = 0; i < rocketInfo.data.playerIndex[ TEAM_HUMANS ]; ++i )
 	{
-		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_HUMANS ][ i ] ];
-		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
+		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_HUMANS ][ i ] ];
+		ci = &cgs.clientinfo[ score->client ];
 
 		if ( !ci->infoValid )
 		{
@@ -1048,13 +1048,13 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
 		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
 		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
-		trap_Rocket_DSAddRow( "playerList", "spectators", buf );
+		trap_Rocket_DSAddRow( "playerList", "humans", buf );
 	}
 
-	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_NONE ]; ++i )
+	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_ALIENS ]; ++i )
 	{
-		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
-		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
+		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_ALIENS ][ i ] ];
+		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_ALIENS ][ i ] ];
 
 		if ( !ci->infoValid )
 		{
@@ -1070,7 +1070,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
 		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
 
-		trap_Rocket_DSAddRow( "playerList", "spectators", buf );
+		trap_Rocket_DSAddRow( "playerList", "aliens", buf );
 	}
 }
 

@@ -302,7 +302,7 @@ namespace Cvar {
         } else {
             cvar = it->second;
 
-            if (cvar->proxy) {
+            if (proxy && cvar->proxy) {
                 Com_Printf(_("Cvar %s cannot be registered twice\n"), name.c_str());
             }
 

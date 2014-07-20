@@ -163,7 +163,11 @@ typedef int intptr_t;
 
 // vsnprintf is ISO/IEC 9899:1999
 // abstracting this to make it portable
-#ifdef _WIN32
+#ifdef _MSC_VER
+//vsnprintf is non-conformant in MSVC--fails to null-terminate in case of overflow
+#define Q_vsnprintf(dest, size, fmt, args) _vsnprintf_s( dest, size, _TRUNCATE, fmt, args )
+#define Q_snprintf(dest, size, fmt, ...) _snprintf_s( dest, size, _TRUNCATE, fmt, __VA_ARGS__ )
+#elif defined( _WIN32 )
 #define Q_vsnprintf _vsnprintf
 #define Q_snprintf  _snprintf
 #else
@@ -173,7 +177,7 @@ typedef int intptr_t;
 
 // msvc does not have roundf
 #ifdef _MSC_VER
-#define roundf( f ) ( floor( f + 0.5 ) )
+#define roundf( f ) ( floor( (f) + 0.5 ) )
 #endif
 
 #endif //Q3_VM
@@ -858,6 +862,9 @@ void         ByteToDir( int b, vec3_t dir );
 	void     RotateAroundDirection( vec3_t axis[ 3 ], float yaw );
 	void     MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
 
+	float    ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const vec2_t dir, const vec2_t bounds[ 2 ] );
+	void     ExponentialFade( float *value, float target, float lambda, float timedelta );
+
 // perpendicular vector could be replaced by this
 
 //int       PlaneTypeForNormal( vec3_t normal );
@@ -1461,11 +1468,17 @@ void         ByteToDir( int b, vec3_t dir );
 		t = _mm_mul_ps( sseSwizzle( q, WWWW ), t );
 		return _mm_add_ps( _mm_add_ps( vec, t2 ), t );
 	}
+	STATIC_INLINE __m128 sseLoadVec3( const vec3_t vec ) {
+		__m128 v = _mm_load_ss( &vec[ 2 ] );
+		v = sseSwizzle( v, XXXX );
+		v = _mm_loadl_pi( v, (__m64 *)vec );
+		v = _mm_and_ps( v, mask_XYZ0() );
+		return v;
+	}
 	STATIC_INLINE void sseStoreVec3( __m128 in, vec3_t out ) {
-		__m128 old = _mm_loadu_ps( out );
-		old = _mm_or_ps( _mm_and_ps( in, mask_XYZ0() ),
-				 _mm_and_ps( old, mask_000W() ) );
-		_mm_storeu_ps( out, old );
+		_mm_storel_pi( (__m64 *)out, in );
+		__m128 v = sseSwizzle( in, ZZZZ );
+		_mm_store_ps( &out[ 2 ], v );
 	}
 	STATIC_INLINE void TransInit( transform_t *t ) {
 		__m128 u = unitQuat();
@@ -1576,8 +1589,7 @@ void         ByteToDir( int b, vec3_t dir );
 	}
 	STATIC_INLINE void TransAddTranslation( const vec3_t vec,
 						transform_t *t ) {
-		__m128 v = _mm_loadu_ps( vec );
-		v = _mm_and_ps( v, mask_XYZ0() );
+		__m128 v = sseLoadVec3( vec );
 		t->sseTransScale = _mm_add_ps( t->sseTransScale, v );
 	}
 	STATIC_INLINE void TransCombine( const transform_t *a,
@@ -1899,7 +1911,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void       Info_RemoveKey( char *s, const char *key , qboolean big );
 	void       Info_RemoveKey_big( char *s, const char *key );
 	void       Info_SetValueForKey( char *s, const char *key, const char *value , qboolean big );
-	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value );
+	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value, qboolean big );
 	qboolean   Info_Validate( const char *s );
 	void       Info_NextPair( const char **s, char *key, char *value );
 

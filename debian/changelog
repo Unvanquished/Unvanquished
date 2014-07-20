@@ -1,3 +1,9 @@
+unvanquished (0.29.0-2) unstable; urgency=low
+
+  * Fix pak checksum usage. (git master)
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Tue, 08 Jul 2014 12:23:35 +0100
+
 unvanquished (0.29.0-1) unstable; urgency=low
 
   * Release of alpha 29.

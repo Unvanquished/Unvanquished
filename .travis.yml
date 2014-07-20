@@ -8,12 +8,10 @@ compiler:
 install:
   - sudo sh -c 'echo deb http://unv-debs.moreofthesa.me.uk precise main >>/etc/apt/sources.list'
   - sudo apt-key adv --keyserver x-hkp://pool.sks-keyservers.net --recv-key 06AF4C14
+  - sudo sh -c 'echo deb http://ppa.launchpad.net/purplekarrot/ppa/ubuntu precise main >>/etc/apt/sources.list'
+  - sudo apt-key adv --keyserver x-hkp://pool.sks-keyservers.net --recv-key D4762858
   - sudo apt-get -qq update
-  - sudo apt-get -qq install libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libgeoip-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl1.2-dev libspeexdsp-dev libtheora-dev libvorbis-dev libopusfile-dev libxvidcore-dev nettle-dev zlib1g-dev
-  - wget http://ppa.launchpad.net/purplekarrot/cmake/ubuntu/pool/main/c/cmake/cmake-data_3.0.20140702_all.deb 
-  - wget http://ppa.launchpad.net/purplekarrot/cmake/ubuntu/pool/main/c/cmake/cmake_3.0.20140702_amd64.deb 
-  - sudo apt-get remove cmake-data cmake emacsen-common
-  - sudo dpkg --install cmake-data_3.0.20140702_all.deb cmake_3.0.20140702_amd64.deb 
+  - sudo apt-get -qq install libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libgeoip-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl1.2-dev libspeexdsp-dev libtheora-dev libvorbis-dev libopusfile-dev libxvidcore-dev nettle-dev zlib1g-dev cmake
 
 before_script:
   - wget http://clang.llvm.org/libstdc++4.6-clang11.patch;
@@ -22,7 +20,8 @@ before_script:
   - sudo patch /usr/include/c++/4.6/condition_variable < libstdc++4.6-thread-fix.patch;
 
 script:
-  - mkdir build
+  - sed -i 's/POSITION_INDEPENDENT_CODE 1/COMPILE_FLAGS "-fPIC"/' CMakeLists.txt
+  - mkdir -p build
   - cd build
   - CXXFLAGS="-D__extern_always_inline=inline" cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_SDL2=OFF ..
   - cmake --build .
