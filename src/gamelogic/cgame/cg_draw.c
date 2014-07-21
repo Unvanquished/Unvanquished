@@ -460,7 +460,8 @@ void CG_DrawTagScore( void )
 	float progress, lerp;
 	vec4_t color = { 1.0, 1.0, 1.0 };
 
-	if( !cg.predictedPlayerState.stats[ STAT_TAGSCORE ] )
+	if( !cg.predictedPlayerState.stats[ STAT_TAGSCORE ] ||
+	    cg.snap->ps.stats[ STAT_HEALTH ] <= 0 )
 		return;
 
 	lerp = LinearRemap( (float)( cg.time - cg.tagScoreTime ), 0.0, 100.0, -0.1, 0.0 );
