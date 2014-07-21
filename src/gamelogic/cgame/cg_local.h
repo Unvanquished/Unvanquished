@@ -987,6 +987,22 @@ typedef enum
 	SAY_TYPE_COMMAND,
 } sayType_t;
 
+
+#define WI_SAMPLES 50
+#define WI_CONV_WIDTH 200
+
+typedef struct
+{
+	int     init;
+	struct
+	{
+		int t; // sample time
+		vec3_t av;
+	}       avh[ WI_SAMPLES ]; // angular velocity history
+	int     hs; // history size
+	vec3_t  oa; // old angles
+} weaponInertia_t;
+
 #define NUM_BINARY_SHADERS 256
 
 typedef struct
@@ -1189,6 +1205,8 @@ typedef struct
 	// momentum
 	float                   momentumGained;
 	int                     momentumGainedTime;
+
+	weaponInertia_t         weaponInertia;
 } cg_t;
 
 typedef struct

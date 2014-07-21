@@ -1757,6 +1757,59 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 }
 
+
+/*
+==============
+CG_WeaponInertia
+
+Offset view weapon's position based on view's angular velocity.
+==============
+*/
+
+void CG_WeaponInertia( playerState_t *ps, vec3_t origin )
+{
+	weaponInertia_t *I = &cg.weaponInertia;
+	int i;
+	vec3_t av, cav; // angular velocity, convoluted angular velocity
+	float cs; // convolution samples
+
+	if( !I->init )
+		goto out;
+
+	for( i = 0; i < 3; i++ )
+		av[ i ] = AngleDelta( I->oa[ i ], ps->viewangles[ i ] ) / ( 0.001f * cg.frametime );
+
+	I->avh[ I->hs % WI_SAMPLES ].t = cg.time;
+	VectorCopy( av, I->avh[ I->hs % WI_SAMPLES ].av );
+	I->hs++;
+
+	VectorClear( cav );
+	for( cs = 0.0, i = 0; i < MIN( I->hs, WI_SAMPLES ); i++ )
+	{
+		float ct; // convolution kernel at this sample
+
+		if( I->avh[ i ].t + WI_CONV_WIDTH < cg.time )
+			continue;
+
+		ct = (float)( cg.time - I->avh[ i ].t ) / WI_CONV_WIDTH;
+		ct = pow( 1.0 - ct, 0.4 );
+
+		VectorMA( cav, ct, I->avh[ i ].av, cav );
+		cs += ct;
+	}
+
+	if( cs > 0.01f )
+	{
+		VectorScale( cav, 1.0 / cs, cav );
+		VectorMA( origin, atan( cav[ 0 ] * -0.0025f ) * 1.0f, cg.refdef.viewaxis[ 2 ], origin );
+		VectorMA( origin, atan( cav[ 1 ] * 0.002f ) * 1.6f, cg.refdef.viewaxis[ 1 ], origin );
+	}
+
+out:
+	VectorCopy( ps->viewangles, I->oa );
+	I->init = 1;
+}
+
 /*
 ==============
 CG_AddViewWeapon
@@ -1908,6 +1961,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 1 ],
 		          hand.origin );
 	}
+
+	CG_WeaponInertia( ps, hand.origin );
 
 	AnglesToAxis( angles, hand.axis );
 	if( cg_mirrorgun.integer ) {
