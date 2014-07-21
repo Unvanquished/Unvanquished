@@ -1909,6 +1909,9 @@ void CG_AddViewWeapon( playerState_t *ps )
 		          hand.origin );
 	}
 
+	angles[ YAW ] +=   ps->recoil[ 0 ] * RECOIL_WEAPON;
+	angles[ PITCH ] += ps->recoil[ 1 ] * RECOIL_WEAPON;
+
 	AnglesToAxis( angles, hand.axis );
 	if( cg_mirrorgun.integer ) {
 		hand.axis[1][0] = - hand.axis[1][0];

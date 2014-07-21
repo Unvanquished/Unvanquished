@@ -3764,9 +3764,6 @@ static void PM_TorsoAnimation( void )
 //////////////////////////////////////
 
 #define RECOIL_MAGIC1 5
-#define RECOIL_MAGIC2 10
-#define RECOIL_MAGIC2X -RECOIL_MAGIC2
-#define RECOIL_MAGIC2Y -RECOIL_MAGIC2
 #define RECOIL_MAGIC3 10.0
 
 #define LinearRemap(x,an,ap,bn,bp) ((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn)
@@ -3814,8 +3811,8 @@ void PM_ApplyRecoil( void )
 	pm->ps->recoil[ 0 ] += pm->ps->recoilVel[ 0 ] * pml.frametime;
 	pm->ps->recoil[ 1 ] += pm->ps->recoilVel[ 1 ] * pml.frametime;
 
-	pm->ps->viewangles[ YAW ]   += pm->ps->recoil[ 0 ] * RECOIL_MAGIC2X;
-	pm->ps->viewangles[ PITCH ] += pm->ps->recoil[ 1 ] * RECOIL_MAGIC2Y;
+	pm->ps->viewangles[ YAW ]   += pm->ps->recoil[ 0 ] * RECOIL_VIEW;
+	pm->ps->viewangles[ PITCH ] += pm->ps->recoil[ 1 ] * RECOIL_VIEW;
 
 	ExponentialFade( pm->ps->recoilVel,     0, RECOIL_MAGIC3, pml.frametime );
 	ExponentialFade( pm->ps->recoilVel + 1, 0, RECOIL_MAGIC3, pml.frametime );

@@ -387,6 +387,11 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod
 #define DEFAULT_MOMENTUM_DESTROY_MOD     "0.8"
 
+// recoil
+#define RECOIL_REAL   -10.0f
+#define RECOIL_VIEW   ( 0.1f * RECOIL_REAL )
+#define RECOIL_WEAPON ( 0.9f * RECOIL_REAL )
+
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 #define BUILDABLE_START_HEALTH_FRAC        0.25f
 
