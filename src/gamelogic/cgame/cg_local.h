@@ -993,13 +993,8 @@ typedef enum
 typedef struct
 {
 	int     init;
-	struct
-	{
-		int t; // sample time
-		vec3_t av;
-	}       avh[ WI_SAMPLES ]; // angular velocity history
-	int     hs; // history size
 	vec3_t  oa; // old angles
+	vec3_t  oav; // old angular velocity
 } weaponInertia_t;
 
 #define NUM_BINARY_SHADERS 256

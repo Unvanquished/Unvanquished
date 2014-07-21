@@ -1766,7 +1766,7 @@ Offset view weapon's position based on view's angular velocity.
 ==============
 */
 
-#define WI_CONV_WIDTH 200 //convolution kernel width (in ms)
+#define WI_LAMBDA 12.5f
 #define WI_X_LIMIT 1.6f
 #define WI_X_SCALE 0.002f
 #define WI_Y_LIMIT 1.0f
@@ -1776,50 +1776,25 @@ void CG_WeaponInertia( playerState_t *ps, vec3_t origin )
 {
 	weaponInertia_t *I = &cg.weaponInertia;
 	int i;
-	vec3_t av, cav; // angular velocity, convoluted angular velocity
-	float cs; // convolution samples
+	float dt;
+	vec3_t av;
 
 	if( !I->init )
 		goto out;
 
-	// calculate dA/dt (instantaneous angular velocity, "av")
-	// dA is the AngleDelta between this frame's and the last frame's ps->viewangles
+	dt = 0.001 * cg.frametime;
+
 	for( i = 0; i < 3; i++ )
-		av[ i ] = AngleDelta( I->oa[ i ], ps->viewangles[ i ] ) / ( 0.001f * cg.frametime );
-
-	// add to the history
-	I->avh[ I->hs % WI_SAMPLES ].t = cg.time;
-	VectorCopy( av, I->avh[ I->hs % WI_SAMPLES ].av );
-	I->hs++;
-
-	// convolute angular velocity with a special kernel to smooth it out
-	VectorClear( cav );
-	for( cs = 0.0, i = 0; i < MIN( I->hs, WI_SAMPLES ); i++ )
 	{
-		float ct; // convolution kernel at this sample
-
-		// point lies outside the kernel (ct=0), skip
-		if( I->avh[ i ].t + WI_CONV_WIDTH < cg.time )
-			continue;
-
-		// 0.0 for the latest sample, 1.0 for the oldest (WI_CONV_WIDTH old)
-		ct = (float)( cg.time - I->avh[ i ].t ) / WI_CONV_WIDTH;
-		ct = 2.0*ct*ct*ct - 3.0*ct*ct + 1;
-
-		// accumulate
-		VectorMA( cav, ct, I->avh[ i ].av, cav );
-		cs += ct;
+		av[ i ] = AngleDelta( I->oa[ i ], ps->viewangles[ i ] ) / dt;
+		ExponentialFade( I->oav + i, av[ i ], WI_LAMBDA, dt );
+		av[ i ] = I->oav[ i ];
 	}
-
-	// normalize & offset the gun
-	if( cs > 0.01f )
-	{
-		VectorScale( cav, 1.0 / cs, cav );
-		VectorMA( origin, atan( cav[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT,
-		          cg.refdef.viewaxis[ 2 ], origin );
-		VectorMA( origin, atan( cav[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT,
-		          cg.refdef.viewaxis[ 1 ], origin );
-	}
+	
+	VectorMA( origin, atan( av[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT,
+	          cg.refdef.viewaxis[ 2 ], origin );
+	VectorMA( origin, atan( av[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT,
+	          cg.refdef.viewaxis[ 1 ], origin );
 
 out:
 	VectorCopy( ps->viewangles, I->oa );
