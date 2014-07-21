@@ -474,6 +474,16 @@ namespace Beacon //this should eventually become a class
 			ent->s.time2 = level.time + 35000;
 	}
 
+	static inline bool CheckRefreshTag( gentity_t *ent, team_t team )
+	{
+		gentity_t *existingTag = ( team == TEAM_ALIENS ) ? ent->alienTag : ent->humanTag;
+
+		if( existingTag )
+			RefreshTag( existingTag );
+
+		return existingTag;
+	}
+
 	/**
 	 * @brief Check if an entity can be tagged.
 	 */
@@ -531,15 +541,30 @@ namespace Beacon //this should eventually become a class
 	{
 		tagtrace_ent_t list[ MAX_GENTITIES ];
 		int i, count = 0;
-		gentity_t *ent;
+		gentity_t *ent, *reticleEnt = NULL;
 		vec3_t seg, delta;
 		float dot;
 
 		VectorSubtract( end, begin, seg );
 
+		// Do a trace for bounding boxes under the reticle first, they are prefered
+		{
+			trace_t tr;
+			trap_Trace( &tr, begin, NULL, NULL, end, skip, mask );
+			if ( EntityTaggable( tr.entityNum, team ) )
+			{
+				reticleEnt = g_entities + tr.entityNum;
+				if ( !refreshTagged || !CheckRefreshTag( reticleEnt, team ) )
+					return reticleEnt;
+			}
+		}
+
 		for( i = 0; i < level.num_entities; i++ )
 		{
 			ent = g_entities + i;
+
+			if( ent == reticleEnt )
+				continue;
 
 			if( !ent->inuse )
 				continue;
@@ -564,17 +589,8 @@ namespace Beacon //this should eventually become a class
 					continue;
 			}
 
-			if( refreshTagged )
-			{
-				gentity_t *existingTag;
-
-				existingTag = ( team == TEAM_ALIENS ) ? ent->alienTag : ent->humanTag;
-				if( existingTag )
-				{
-					RefreshTag( existingTag );
-					continue;
-				}
-			}
+			if( refreshTagged && CheckRefreshTag( ent, team ) )
+				continue;
 
 			list[ count ].ent = ent;
 			list[ count++ ].dot = dot;
