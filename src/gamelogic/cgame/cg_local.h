@@ -1189,6 +1189,8 @@ typedef struct
 	// momentum
 	float                   momentumGained;
 	int                     momentumGainedTime;
+
+	float  recoilX, recoilY, recoilVX, recoilVY;
 } cg_t;
 
 typedef struct

@@ -2273,6 +2273,9 @@ void         ByteToDir( int b, vec3_t dir );
 		int damagePitch;
 		int damageCount;
 
+		vec2_t  recoil;
+		vec2_t  recoilVel;
+
 		int stats[ MAX_STATS ];
 		int persistant[ MAX_PERSISTANT ]; // stats that aren't cleared on death
 
@@ -2481,6 +2484,8 @@ void         ByteToDir( int b, vec3_t dir );
 		ET_MODELDOOR,
 		ET_LIGHTFLARE,
 		ET_LEV2_ZAP_CHAIN,
+		
+		ET_BEACON,
 
 		ET_EVENTS       // any of the EV_* events can be added freestanding
 		// by setting eType to ET_EVENTS + eventNum

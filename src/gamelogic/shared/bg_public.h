@@ -1191,6 +1191,11 @@ typedef struct
 	qboolean longRanged;
 
 	team_t   team;
+
+	qboolean usesRecoil;
+	float    recoil;
+	qboolean limitRecoilAngle;
+	float    maxRecoilAngle;
 } weaponAttributes_t;
 
 // upgrade record

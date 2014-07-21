@@ -2656,6 +2656,18 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 
 	wi = &cg_weapons[ weaponNum ];
 
+	if( es->clientNum == cg.predictedPlayerState.clientNum )
+	{
+		float angle, recoil;
+
+		recoil = trap_Cvar_VariableValue( "d3" );
+
+		angle = crandom() * 180.0;
+
+		cg.recoilVX += cos( angle ) * recoil;
+		cg.recoilVY += sin( angle ) * recoil;
+	}
+
 	// mark the entity as muzzle flashing, so when it is added it will
 	// append the flash to the weapon model
 	cent->muzzleFlashTime = cg.time;

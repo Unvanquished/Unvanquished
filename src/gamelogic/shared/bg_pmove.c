@@ -3759,6 +3759,71 @@ static void PM_TorsoAnimation( void )
 	}
 }
 
+//////////////////////////////////////
+//     Recoil  (EXPERIMENTAL!)      //
+//////////////////////////////////////
+
+#define RECOIL_MAGIC1 5
+#define RECOIL_MAGIC2 10
+#define RECOIL_MAGIC2X -RECOIL_MAGIC2
+#define RECOIL_MAGIC2Y -RECOIL_MAGIC2
+#define RECOIL_MAGIC3 10.0
+
+#define LinearRemap(x,an,ap,bn,bp) ((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn)
+
+// ^ +x
+// |
+// |     +y
+// +------>
+
+void PM_AddRecoil( void )
+{
+	const weaponAttributes_t *wa;
+	float rnd, angle, recoil;
+
+	wa = BG_Weapon( pm->ps->weapon );
+
+	if( !wa || !wa->usesRecoil )
+		return;
+
+	recoil = wa->recoil;
+
+	if( pm->ps->weapon == WP_CHAINGUN &&
+	    ( pm->ps->pm_flags & PMF_DUCKED ||
+	      BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) ) )
+		recoil *= 0.15f;
+
+	// generate a random number (from 0 to 1) based on a (shared) seed
+	// uses glibc's linear congruential generator
+	rnd = (float)( ( pm->cmd.serverTime * 1103515245 + 12345 ) & 2147483647 ) / 2147483647.0f;
+
+	if( wa->limitRecoilAngle )
+	{
+		angle = 90 + LinearRemap( rnd, 0.0, 1.0, -wa->maxRecoilAngle, +wa->maxRecoilAngle );
+		angle *= M_PI / 180.0f;
+	}
+	else
+		angle = LinearRemap( rnd, 0.0, 1.0, 0, 2.0f * M_PI );
+
+	pm->ps->recoilVel[ 0 ] += cos( angle ) * recoil;
+	pm->ps->recoilVel[ 1 ] += sin( angle ) * recoil;
+}
+
+void PM_ApplyRecoil( void )
+{
+	pm->ps->recoil[ 0 ] += pm->ps->recoilVel[ 0 ] * pml.frametime;
+	pm->ps->recoil[ 1 ] += pm->ps->recoilVel[ 1 ] * pml.frametime;
+
+	pm->ps->viewangles[ YAW ]   += pm->ps->recoil[ 0 ] * RECOIL_MAGIC2X;
+	pm->ps->viewangles[ PITCH ] += pm->ps->recoil[ 1 ] * RECOIL_MAGIC2Y;
+
+	ExponentialFade( pm->ps->recoilVel,     0, RECOIL_MAGIC3, pml.frametime );
+	ExponentialFade( pm->ps->recoilVel + 1, 0, RECOIL_MAGIC3, pml.frametime );
+	ExponentialFade( pm->ps->recoil,        0, RECOIL_MAGIC3, pml.frametime );
+	ExponentialFade( pm->ps->recoil + 1,    0, RECOIL_MAGIC3, pml.frametime );
+}
+
+
 /*
 ==============
 PM_Weapon
@@ -4258,6 +4323,7 @@ static void PM_Weapon( void )
 	{
 		pm->ps->generic1 = WPM_PRIMARY;
 		PM_AddEvent( EV_FIRE_WEAPON );
+		PM_AddRecoil();
 		addTime = BG_Weapon( pm->ps->weapon )->repeatRate1;
 	}
 
@@ -4413,22 +4479,6 @@ static void PM_Weapon( void )
 		if ( pm->ps->ammo < 0 )
 		{
 			pm->ps->ammo = 0;
-		}
-	}
-
-	//FIXME: predicted angles miss a problem??
-	if ( pm->ps->weapon == WP_CHAINGUN )
-	{
-		if ( pm->ps->pm_flags & PMF_DUCKED ||
-		     BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
-		{
-			pm->ps->delta_angles[ PITCH ] -= ANGLE2SHORT( ( ( random() * 0.5 ) - 0.125 ) * ( 30 / ( float ) addTime ) );
-			pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( ( ( random() * 0.5 ) - 0.25 ) * ( 30.0 / ( float ) addTime ) );
-		}
-		else
-		{
-			pm->ps->delta_angles[ PITCH ] -= ANGLE2SHORT( ( ( random() * 8 ) - 2 ) * ( 30.0 / ( float ) addTime ) );
-			pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( ( ( random() * 8 ) - 4 ) * ( 30.0 / ( float ) addTime ) );
 		}
 	}
 
@@ -4985,6 +5035,7 @@ void PmoveSingle( pmove_t *pmove )
 
 	// weapons
 	PM_Weapon();
+	PM_ApplyRecoil();
 
 	// torso animation
 	PM_TorsoAnimation();

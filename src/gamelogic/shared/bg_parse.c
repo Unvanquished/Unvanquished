@@ -1817,6 +1817,18 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 			wa->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
 		}
+		else if ( !Q_stricmp( token, "recoil" ) )
+		{
+			PARSE(text, token);
+			wa->recoil = atof( token );
+			wa->usesRecoil = qtrue;
+		}
+		else if ( !Q_stricmp( token, "maxRecoilAngle" ) )
+		{
+			PARSE(text, token);
+			wa->maxRecoilAngle = atof( token );
+			wa->limitRecoilAngle = qtrue;
+		}
 		else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != NULL )
 		{
 			BG_ParseConfigVar( var, &text, filename );
