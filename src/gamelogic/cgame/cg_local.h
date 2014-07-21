@@ -989,7 +989,6 @@ typedef enum
 
 
 #define WI_SAMPLES 50
-#define WI_CONV_WIDTH 200
 
 typedef struct
 {
