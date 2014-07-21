@@ -547,19 +547,19 @@ namespace Beacon //this should eventually become a class
 			if( !EntityTaggable( i, team ) )
 				continue;
 
-			if( !trap_InPVS( ent->s.origin, begin ) )
-				continue;
-
-			VectorSubtract( ent->s.origin, begin, delta );
+			VectorSubtract( ent->r.currentOrigin, begin, delta );
 			dot = DotProduct( seg, delta ) / VectorLength( seg ) / VectorLength( delta );
 
 			if( dot < 0.9 )
 				continue;
 
+			if( !trap_InPVS( ent->r.currentOrigin, begin ) )
+				continue;
+
 			// LOS
 			{
 				trace_t tr;
-				trap_Trace( &tr, begin, NULL, NULL, ent->s.origin, skip, mask );
+				trap_Trace( &tr, begin, NULL, NULL, ent->r.currentOrigin, skip, mask );
 				if( tr.entityNum != i )
 					continue;
 			}

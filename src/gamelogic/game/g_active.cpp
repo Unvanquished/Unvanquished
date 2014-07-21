@@ -922,7 +922,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			AngleVectors( client->ps.viewangles, forward, NULL, NULL );
 			VectorMA( origin, 65536, forward, end );
 			G_UnlaggedOn( ent, origin, 65536 );
-			other = Beacon::TagTrace( origin, end, ent->s.number, MASK_PLAYERSOLID, (team_t)client->pers.team, qtrue );
+			other = Beacon::TagTrace( origin, end, ent->s.number, MASK_SHOT, (team_t)client->pers.team, qtrue );
 			G_UnlaggedOff( );
 
 			if( other )
