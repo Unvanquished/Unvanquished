@@ -1878,7 +1878,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	// drop gun lower at higher fov
 	if ( cg.refdef.fov_y > 90 )
 	{
-		fovOffset = -0.4 * ( cg.refdef.fov_y - 90 );
+		fovOffset = 0.3 * ( cg.refdef.fov_y - 90 );
 	}
 	else
 	{
@@ -1890,12 +1890,12 @@ void CG_AddViewWeapon( playerState_t *ps )
 	// set up gun position
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
-	VectorMA( hand.origin, ( cg_gun_x.value + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
+	VectorMA( hand.origin, ( cg_gun_x.value + fovOffset + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
 	if( cg_mirrorgun.integer )
 		VectorMA( hand.origin, -( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
 	else
 		VectorMA( hand.origin, ( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
-	VectorMA( hand.origin, ( cg_gun_z.value + fovOffset + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
+	VectorMA( hand.origin, ( cg_gun_z.value + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
 	if ( weapon == WP_LUCIFER_CANNON && ps->stats[ STAT_MISC ] > 0 )
