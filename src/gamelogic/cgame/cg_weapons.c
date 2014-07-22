@@ -1757,6 +1757,50 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 }
 
+
+/*
+==============
+CG_WeaponInertia
+
+Offset view weapon's position based on view's angular velocity.
+==============
+*/
+
+#define WI_LAMBDA 12.5f
+#define WI_X_LIMIT 1.6f
+#define WI_X_SCALE 0.002f
+#define WI_Y_LIMIT 1.0f
+#define WI_Y_SCALE -0.0025f
+
+void CG_WeaponInertia( playerState_t *ps, vec3_t origin )
+{
+	weaponInertia_t *I = &cg.weaponInertia;
+	int i;
+	float dt;
+	vec3_t av;
+
+	if( !I->init )
+		goto out;
+
+	dt = 0.001 * cg.frametime;
+
+	for( i = 0; i < 3; i++ )
+	{
+		av[ i ] = AngleDelta( I->oa[ i ], ps->viewangles[ i ] ) / dt;
+		ExponentialFade( I->oav + i, av[ i ], WI_LAMBDA, dt );
+		av[ i ] = I->oav[ i ];
+	}
+	
+	VectorMA( origin, atan( av[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT,
+	          cg.refdef.viewaxis[ 2 ], origin );
+	VectorMA( origin, atan( av[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT,
+	          cg.refdef.viewaxis[ 1 ], origin );
+
+out:
+	VectorCopy( ps->viewangles, I->oa );
+	I->init = 1;
+}
+
 /*
 ==============
 CG_AddViewWeapon
@@ -1908,6 +1952,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 1 ],
 		          hand.origin );
 	}
+
+	CG_WeaponInertia( ps, hand.origin );
 
 	angles[ YAW ] +=   ps->recoil[ 0 ] * RECOIL_WEAPON;
 	angles[ PITCH ] += ps->recoil[ 1 ] * RECOIL_WEAPON;
@@ -2658,18 +2704,6 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 	}
 
 	wi = &cg_weapons[ weaponNum ];
-
-	if( es->clientNum == cg.predictedPlayerState.clientNum )
-	{
-		float angle, recoil;
-
-		recoil = trap_Cvar_VariableValue( "d3" );
-
-		angle = crandom() * 180.0;
-
-		cg.recoilVX += cos( angle ) * recoil;
-		cg.recoilVY += sin( angle ) * recoil;
-	}
 
 	// mark the entity as muzzle flashing, so when it is added it will
 	// append the flash to the weapon model
