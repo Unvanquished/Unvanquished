@@ -1919,15 +1919,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 		return;
 	}
 
-	// drop gun lower at higher fov
-	if ( cg.refdef.fov_y > 90 )
-	{
-		fovOffset = 0.3 * ( cg.refdef.fov_y - 90 );
-	}
-	else
-	{
-		fovOffset = 0;
-	}
+	fovOffset = -0.03f * cg.refdef.fov_y;
 
 	Com_Memset( &hand, 0, sizeof( hand ) );
 
