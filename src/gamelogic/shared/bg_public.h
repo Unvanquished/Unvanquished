@@ -1198,6 +1198,8 @@ typedef struct
 	float    recoilGamma;
 	float    recoilDelta;
 	float    recoilEpsilon;
+
+	qboolean fakeFireAnimation;
 } weaponAttributes_t;
 
 // upgrade record

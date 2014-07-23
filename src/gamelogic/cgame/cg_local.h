@@ -1202,7 +1202,7 @@ typedef struct
 
 	weaponInertia_t         weaponInertia;
 
-	float  recoilX, recoilY, recoilVX, recoilVY;
+	int                     weaponFireTime;
 } cg_t;
 
 typedef struct

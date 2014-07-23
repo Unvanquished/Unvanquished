@@ -1831,6 +1831,10 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 			PARSE(text, token);
 			wa->recoilEpsilon = atof( token );
 		}
+		else if ( !Q_stricmp( token, "fakeFireAnimation" ) )
+		{
+			wa->fakeFireAnimation = qtrue;
+		}
 		else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != NULL )
 		{
 			BG_ParseConfigVar( var, &text, filename );

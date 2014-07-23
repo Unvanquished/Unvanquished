@@ -643,29 +643,6 @@ void CG_OffsetFirstPersonView( void )
 	delta = DotProduct( predictedVelocity, cg.refdef.viewaxis[ 1 ] );
 	angles[ ROLL ] -= delta * cg_runroll.value;
 
-	// recoil
-	if(0)
-	{
-		float dt;
-		static int init = 0;
-
-		if( !init )
-			cg.recoilX = cg.recoilY = cg.recoilVX = cg.recoilVY = 0, init = 1;
-
-		dt = 1.0e-3 * cg.frametime;
-
-		cg.recoilX += cg.recoilVX * dt;
-		cg.recoilY += cg.recoilVY * dt;
-
-		angles[ PITCH ] += cg.recoilY * trap_Cvar_VariableValue( "d2" );
-		angles[ YAW ] += cg.recoilX * trap_Cvar_VariableValue( "d2" );
-
-		ExponentialFade( &cg.recoilVX, 0, trap_Cvar_VariableValue( "d1" ), dt );
-		ExponentialFade( &cg.recoilVY, 0, trap_Cvar_VariableValue( "d1" ), dt );
-		ExponentialFade( &cg.recoilX, 0, trap_Cvar_VariableValue( "d1" ), dt );
-		ExponentialFade( &cg.recoilY, 0, trap_Cvar_VariableValue( "d1" ), dt );
-	}
-
 	// add angles based on bob
 	// bob amount is class-dependent
 
