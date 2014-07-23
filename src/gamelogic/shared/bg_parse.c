@@ -1819,15 +1819,17 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		}
 		else if ( !Q_stricmp( token, "recoil" ) )
 		{
-			PARSE(text, token);
-			wa->recoil = atof( token );
 			wa->usesRecoil = qtrue;
-		}
-		else if ( !Q_stricmp( token, "maxRecoilAngle" ) )
-		{
 			PARSE(text, token);
-			wa->maxRecoilAngle = atof( token );
-			wa->limitRecoilAngle = qtrue;
+			wa->recoilAlpha = atof( token );
+			PARSE(text, token);
+			wa->recoilBeta = atof( token );
+			PARSE(text, token);
+			wa->recoilGamma = atof( token );
+			PARSE(text, token);
+			wa->recoilDelta = atof( token );
+			PARSE(text, token);
+			wa->recoilEpsilon = atof( token );
 		}
 		else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != NULL )
 		{

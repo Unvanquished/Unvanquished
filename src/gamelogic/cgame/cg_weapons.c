@@ -1947,8 +1947,17 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	CG_WeaponInertia( ps, hand.origin );
 
-	angles[ YAW ] +=   ps->recoil[ 0 ] * RECOIL_WEAPON;
-	angles[ PITCH ] += ps->recoil[ 1 ] * RECOIL_WEAPON;
+	{
+		const weaponAttributes_t *wa;
+
+		wa = BG_Weapon( weapon );
+
+		if( wa && wa->usesRecoil )
+		{
+			angles[ YAW ] +=   ps->recoil[ 0 ] * wa->recoilGamma;
+			angles[ PITCH ] += ps->recoil[ 1 ] * wa->recoilGamma;
+		}
+	}
 
 	AnglesToAxis( angles, hand.axis );
 	if( cg_mirrorgun.integer ) {

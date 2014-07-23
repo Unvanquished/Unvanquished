@@ -3759,20 +3759,13 @@ static void PM_TorsoAnimation( void )
 	}
 }
 
-//////////////////////////////////////
-//     Recoil  (EXPERIMENTAL!)      //
-//////////////////////////////////////
+/*
+==============
+PM_AddRecoil
 
-#define RECOIL_MAGIC1 5
-#define RECOIL_MAGIC3 10.0
-
-#define LinearRemap(x,an,ap,bn,bp) ((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn)
-
-// ^ +x
-// |
-// |     +y
-// +------>
-
+Add recoil to playerState based on used weapon
+==============
+*/
 void PM_AddRecoil( void )
 {
 	const weaponAttributes_t *wa;
@@ -3783,43 +3776,40 @@ void PM_AddRecoil( void )
 	if( !wa || !wa->usesRecoil )
 		return;
 
-	recoil = wa->recoil;
+	recoil = wa->recoilAlpha;
 
-	if( pm->ps->weapon == WP_CHAINGUN &&
-	    ( pm->ps->pm_flags & PMF_DUCKED ||
-	      BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) ) )
-		recoil *= 0.15f;
+	// recoil modifiers
+	switch( pm->ps->weapon )
+	{
+		case WP_CHAINGUN:
+			if( ( pm->ps->pm_flags & PMF_DUCKED ||
+						BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) ) )
+				recoil *= 0.33f;
+			break;
+
+		case WP_LUCIFER_CANNON:
+			if( pm->ps->generic1 == WPM_PRIMARY )
+				recoil *= (float)pm->ps->stats[ STAT_MISC ] / LCANNON_CHARGE_TIME_MAX;
+			else if( pm->ps->generic1 == WPM_SECONDARY )
+				recoil *= 0.1f;
+			break;
+	}
 
 	// generate a random number (from 0 to 1) based on a (shared) seed
 	// uses glibc's linear congruential generator
 	rnd = (float)( ( pm->cmd.serverTime * 1103515245 + 12345 ) & 2147483647 ) / 2147483647.0f;
 
-	if( wa->limitRecoilAngle )
+	if( wa->recoilDelta < 179.9f )
 	{
-		angle = 90 + LinearRemap( rnd, 0.0, 1.0, -wa->maxRecoilAngle, +wa->maxRecoilAngle );
+		angle = 90 + LinearRemap( rnd, 0.0, 1.0, -wa->recoilDelta, +wa->recoilDelta );
 		angle *= M_PI / 180.0f;
 	}
 	else
 		angle = LinearRemap( rnd, 0.0, 1.0, 0, 2.0f * M_PI );
 
-	pm->ps->recoilVel[ 0 ] += cos( angle ) * recoil;
-	pm->ps->recoilVel[ 1 ] += sin( angle ) * recoil;
+	pm->ps->recoilVel[ 0 ] += cos( angle ) * -recoil;
+	pm->ps->recoilVel[ 1 ] += sin( angle ) * -recoil;
 }
-
-void PM_ApplyRecoil( void )
-{
-	pm->ps->recoil[ 0 ] += pm->ps->recoilVel[ 0 ] * pml.frametime;
-	pm->ps->recoil[ 1 ] += pm->ps->recoilVel[ 1 ] * pml.frametime;
-
-	pm->ps->viewangles[ YAW ]   += pm->ps->recoil[ 0 ] * RECOIL_VIEW;
-	pm->ps->viewangles[ PITCH ] += pm->ps->recoil[ 1 ] * RECOIL_VIEW;
-
-	ExponentialFade( pm->ps->recoilVel,     0, RECOIL_MAGIC3, pml.frametime );
-	ExponentialFade( pm->ps->recoilVel + 1, 0, RECOIL_MAGIC3, pml.frametime );
-	ExponentialFade( pm->ps->recoil,        0, RECOIL_MAGIC3, pml.frametime );
-	ExponentialFade( pm->ps->recoil + 1,    0, RECOIL_MAGIC3, pml.frametime );
-}
-
 
 /*
 ==============
@@ -4290,6 +4280,7 @@ static void PM_Weapon( void )
 
 			pm->ps->generic1 = WPM_TERTIARY;
 			PM_AddEvent( EV_FIRE_WEAPON3 );
+			PM_AddRecoil();
 			addTime = BG_Weapon( pm->ps->weapon )->repeatRate3;
 		}
 		else
@@ -4306,6 +4297,7 @@ static void PM_Weapon( void )
 		{
 			pm->ps->generic1 = WPM_SECONDARY;
 			PM_AddEvent( EV_FIRE_WEAPON2 );
+			PM_AddRecoil();
 			addTime = BG_Weapon( pm->ps->weapon )->repeatRate2;
 		}
 		else
@@ -4332,6 +4324,7 @@ static void PM_Weapon( void )
 			case WP_ALEVEL0:
 				pm->ps->generic1 = WPM_PRIMARY;
 				PM_AddEvent( EV_FIRE_WEAPON );
+				PM_AddRecoil();
 				addTime = BG_Weapon( pm->ps->weapon )->repeatRate1;
 				break;
 
@@ -4339,6 +4332,7 @@ static void PM_Weapon( void )
 			case WP_ALEVEL3_UPG:
 				pm->ps->generic1 = WPM_SECONDARY;
 				PM_AddEvent( EV_FIRE_WEAPON2 );
+				PM_AddRecoil();
 				addTime = BG_Weapon( pm->ps->weapon )->repeatRate2;
 				break;
 
@@ -5032,7 +5026,12 @@ void PmoveSingle( pmove_t *pmove )
 
 	// weapons
 	PM_Weapon();
-	PM_ApplyRecoil();
+
+	// apply recoil added by PM_AddRecoil
+	// server has to do it _after_ firing so it can't be here
+#if !defined(BUILD_GAME)
+	BG_ApplyRecoil( pm->ps, pml.frametime );
+#endif
 
 	// torso animation
 	PM_TorsoAnimation();

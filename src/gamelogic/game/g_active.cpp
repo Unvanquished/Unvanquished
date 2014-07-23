@@ -2066,6 +2066,9 @@ void ClientThink_real( gentity_t *self )
 	// execute client events
 	ClientEvents( self, oldEventSequence );
 
+	// recoil
+	BG_ApplyRecoil( &self->client->ps, 0.001f * msec );
+
 	// link entity now, after any personal teleporters have been used
 	trap_LinkEntity( self );
 

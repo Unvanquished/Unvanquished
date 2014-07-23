@@ -557,10 +557,9 @@ static void FireBullet( gentity_t *self, float spread, int damage, int mod )
 	float     r, u;
 	gentity_t *target;
 
-	//r = random() * M_PI * 2.0f;
-	//u = sin( r ) * crandom() * spread * 16;
-	//r = cos( r ) * crandom() * spread * 16;
-	u = r = 0.0f; //testing
+	r = random() * M_PI * 2.0f;
+	u = sin( r ) * crandom() * spread * 16;
+	r = cos( r ) * crandom() * spread * 16;
 
 	VectorMA( muzzle, 8192 * 16, forward, end );
 	VectorMA( end, r, right, end );
@@ -1805,10 +1804,17 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 	if ( self->client )
 	{
 		vec3_t angles;
+		const weaponAttributes_t *wa;
+
 
 		VectorCopy( self->client->ps.viewangles, angles );
-		angles[ YAW ] += self->client->ps.recoil[ 0 ] * RECOIL_REAL;
-		angles[ PITCH ] += self->client->ps.recoil[ 1 ] * RECOIL_REAL;
+
+		wa = BG_Weapon( weapon );
+		if( wa && wa->usesRecoil )
+		{
+			angles[ YAW ] += self->client->ps.recoil[ 0 ];
+			angles[ PITCH ] += self->client->ps.recoil[ 1 ];
+		}
 
 		AngleVectors( angles, forward, right, up );
 		G_CalcMuzzlePoint( self, forward, right, up, muzzle );

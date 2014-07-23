@@ -2751,3 +2751,35 @@ const char *Trans_GenderContext( gender_t gender )
 			break;
 	}
 }
+
+
+/*
+==============
+BG_ApplyRecoil
+
+Offset viewangles based on recoil and fade the recoil
+==============
+*/
+
+#define RECOIL_MAGIC3 10.0 //lambda
+
+void BG_ApplyRecoil( playerState_t *ps, float dt )
+{
+	const weaponAttributes_t *wa;
+
+	wa = BG_Weapon( ps->weapon );
+
+	if( !wa || !wa->usesRecoil )
+		return;
+
+	ps->recoil[ 0 ] += ps->recoilVel[ 0 ] * dt;
+	ps->recoil[ 1 ] += ps->recoilVel[ 1 ] * dt;
+
+	ps->viewangles[ YAW ]   += ps->recoil[ 0 ] * wa->recoilBeta;
+	ps->viewangles[ PITCH ] += ps->recoil[ 1 ] * wa->recoilBeta;
+
+	ExponentialFade( ps->recoilVel,     0, RECOIL_MAGIC3, dt );
+	ExponentialFade( ps->recoilVel + 1, 0, RECOIL_MAGIC3, dt );
+	ExponentialFade( ps->recoil,        0, RECOIL_MAGIC3, dt );
+	ExponentialFade( ps->recoil + 1,    0, RECOIL_MAGIC3, dt );
+}

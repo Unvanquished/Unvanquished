@@ -1193,9 +1193,11 @@ typedef struct
 	team_t   team;
 
 	qboolean usesRecoil;
-	float    recoil;
-	qboolean limitRecoilAngle;
-	float    maxRecoilAngle;
+	float    recoilAlpha;
+	float    recoilBeta;
+	float    recoilGamma;
+	float    recoilDelta;
+	float    recoilEpsilon;
 } weaponAttributes_t;
 
 // upgrade record
@@ -1509,6 +1511,8 @@ char *Substring( const char *in, int start, int count );
 char *BG_strdup( const char *string );
 
 const char *Trans_GenderContext( gender_t gender );
+
+void BG_ApplyRecoil( playerState_t *ps, float dt );
 
 //==================================================================
 #endif /* BG_PUBLIC_H_ */
