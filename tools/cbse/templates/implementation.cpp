@@ -5,7 +5,7 @@
 // Implementation of the base entity class
 
 // Constructor of entity
-Entity::Entity(MessageHandler *messageHandlers, const int* componentOffsets): messageHandlers(messageHandlers), componentOffsets(componentOffsets) {
+Entity::Entity(const MessageHandler *messageHandlers, const int* componentOffsets): messageHandlers(messageHandlers), componentOffsets(componentOffsets) {
 }
 
 void Entity::SendMessage(int msg, const void* data) {
@@ -60,7 +60,7 @@ void Entity::SendMessage(int msg, const void* data) {
 {% for entity in entities %}
     // The vtable of offset of components in an entity
     // TODO: doesn't handle component inheritance?
-    int {{entity.get_type_name()}}::componentOffsets[] = {
+    const int {{entity.get_type_name()}}::componentOffsets[] = {
         {% for component in components %}
             {% if component in entity.get_components() %}
                 offsetof({{entity.get_type_name()}}, {{component.get_variable_name()}}),
@@ -95,13 +95,13 @@ void Entity::SendMessage(int msg, const void* data) {
 
             // The message is for an attribute change, update the value accordingly
             {% if message.is_attrib() %}
-                {{message.get_attrib().get_variable_name()}} = std::get<0>(*data);
+                entity->{{message.get_attrib().get_variable_name()}} = std::get<0>(*data);
             {% endif %}
         }
     {% endfor%}
 
     // The vtable of message handlers for an entity
-    MessageHandler {{entity.get_type_name()}}::messageHandlers[] = {
+    const MessageHandler {{entity.get_type_name()}}::messageHandlers[] = {
         {% for message in messages %}
             {% if message in entity.get_messages_to_handle() %}
                 {{entity.get_message_handler_name(message)}},
