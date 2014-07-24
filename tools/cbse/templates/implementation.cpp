@@ -108,7 +108,6 @@ void Entity::SendMessage(int msg, const void* data) {
 
     // Fat constructor for the entity that initializes the components.
     {{entity.get_type_name()}}::{{entity.get_type_name()}}(): Entity(messageHandlers, componentOffsets)
-    //TODO make sure it is in order
     {% for component in entity.get_components() %}
         // Each component takes the entity it is in, its parameters, the shared attributes and the components it requires
         , {{component.get_variable_name()}}(new {{component.get_type_name()}}(
@@ -125,5 +124,12 @@ void Entity::SendMessage(int msg, const void* data) {
         ))
     {% endfor %}
     {}
+
+    // The destructor of the entity destroys all the components in reverse order
+    {{entity.get_type_name()}}::~{{entity.get_type_name()}}() {
+        {% for component in entity.get_components()[::-1] %}
+            delete {{component.get_variable_name()}};
+        {% endfor %}
+    }
 
 {% endfor %}
