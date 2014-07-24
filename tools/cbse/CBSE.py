@@ -24,7 +24,7 @@ class Attribute:
         return 'Attribute({}, {})'.format(self.name, self.typ)
 
 class Message:
-    def __init__(self, name, args, attrib = False):
+    def __init__(self, name, args, attrib = None):
         self.name = name
         self.args = args
         self.args_list = list(self.args.items())
@@ -34,13 +34,13 @@ class Message:
         return len(self.args_list)
 
     def get_enum_name(self):
-        if not self.attrib:
+        if self.attrib == None:
             return 'MSG_' + self.name.upper()
         else:
             return 'ATTRIB_' + self.name.upper()
 
     def get_handler_name(self):
-        if not self.attrib:
+        if self.attrib == None:
             return 'On' + self.name
         else:
             return 'Attrib' + self.name
@@ -66,6 +66,12 @@ class Message:
 
     def get_arg_number(self):
         return len(self.args_list)
+
+    def is_attrib(self):
+        return self.attrib != None
+
+    def get_attrib(self):
+        return self.attrib
 
     def __repr__(self):
         return 'Message({}, {})'.format(self.name, self.args)
@@ -283,7 +289,7 @@ if __name__ == '__main__':
 
     messages = load_messages(definitions)
     for attribute in attribute_list:
-        message = Message(attribute.name, {"value": attribute.typ}, True)
+        message = Message(attribute.name, {"value": attribute.typ}, attribute)
         messages["attr_" + attribute.name] = message
         attribute.set_message(message)
     message_list = list(messages.values())
