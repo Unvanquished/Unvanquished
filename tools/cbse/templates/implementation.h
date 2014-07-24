@@ -35,7 +35,7 @@ typedef void (*MessageHandler)(Entity*, const void*);
 class Entity {
     public:
         // Entity takes as argument for the constructor both vtables
-        Entity(MessageHandler* messageHandlers, const int* componentOffsets);
+        Entity(const MessageHandler* messageHandlers, const int* componentOffsets);
 
         // This function should never actually be used directly, it dispatches
         // the messages to the right components
@@ -55,7 +55,7 @@ class Entity {
 
     private:
         // The vtables for the entity
-        void (**messageHandlers)(Entity*, const void*);
+        const MessageHandler* messageHandlers;
         const int* componentOffsets;
 };
 
@@ -121,16 +121,16 @@ class Entity {
 {% for entity in entities %}
     class {{entity.get_type_name()}}: public Entity {
             // The vtables for each entities are statically defined
-            static MessageHandler messageHandlers[];
-            static int componentOffsets[];
+            static const MessageHandler messageHandlers[];
+            static const int componentOffsets[];
 
+        public:
             // Definitions of the shared attributes e.g.
             //   int a_Health;
             {% for attribute in entity.get_attributes() %}
                 {{attribute.typ}} {{attribute.get_variable_name()}};
             {% endfor %}
 
-        public:
             // Default constructor
             {{entity.get_type_name()}}();
             ~{{entity.get_type_name()}}();
