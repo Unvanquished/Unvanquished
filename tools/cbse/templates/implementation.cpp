@@ -92,6 +92,11 @@ void Entity::SendMessage(int msg, const void* data) {
                     {% endif %}
                 {% endfor %}
             {% endif %}
+
+            // The message is for an attribute change, update the value accordingly
+            {% if message.is_attrib() %}
+                {{message.get_attrib().get_variable_name()}} = std::get<0>(*data);
+            {% endif %}
         }
     {% endfor%}
 
