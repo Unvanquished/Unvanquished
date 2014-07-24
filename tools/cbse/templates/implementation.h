@@ -121,8 +121,8 @@ class Entity {
 {% for entity in entities %}
     class {{entity.get_type_name()}}: public Entity {
             // The vtables for each entities are statically defined
-            static MessageHandler* messageHandlers;
-            static int* componentOffsets;
+            static MessageHandler messageHandlers[];
+            static int componentOffsets[];
 
             // Definitions of the shared attributes e.g.
             //   int a_Health;

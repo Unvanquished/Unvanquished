@@ -60,7 +60,7 @@ void Entity::SendMessage(int msg, const void* data) {
 {% for entity in entities %}
     // The vtable of offset of components in an entity
     // TODO: doesn't handle component inheritance?
-    static int {{entity.get_type_name()}}componentOffsets[] = {
+    int {{entity.get_type_name()}}::componentOffsets[] = {
         {% for component in components %}
             {% if component in entity.get_components() %}
                 offsetof({{entity.get_type_name()}}, {{component.get_variable_name()}}),
@@ -96,7 +96,7 @@ void Entity::SendMessage(int msg, const void* data) {
     {% endfor%}
 
     // The vtable of message handlers for an entity
-    static MessageHandler {{entity.get_type_name()}}messageHandlers[] = {
+    MessageHandler {{entity.get_type_name()}}::messageHandlers[] = {
         {% for message in messages %}
             {% if message in entity.get_messages_to_handle() %}
                 {{entity.get_message_handler_name(message)}},
