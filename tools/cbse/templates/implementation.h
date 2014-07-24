@@ -133,6 +133,7 @@ class Entity {
         public:
             // Default constructor
             {{entity.get_type_name()}}();
+            ~{{entity.get_type_name()}}();
 
             // Pointer to the components
             {% for component in entity.get_components() %}
