@@ -1136,6 +1136,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 				TransInitRotationQuat( model->bones[ i ].rotation, &bones[i] );
 				TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
 			}
+			TransInsScale( model->internalScale, &bones[ i ] );
 		}
 
 		// deform the vertices by the lerped bones
@@ -1180,6 +1181,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			{
 				TransInitScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
 			}
+			TransInsScale( model->internalScale, &bones[ i ] );
 		}
 
 		// deform the vertices by the lerped bones
@@ -1260,6 +1262,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 			TransInit( &bones[ i ] );
 		}
 		TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
+		TransInsScale( model->internalScale, &bones[ i ] );
 	}
 
 	if( surf->vbo && surf->ibo ) {
@@ -1484,6 +1487,7 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 			TransInverse( &tess.bones[ i ], &tess.bones[ i ] );
 			TransCombine( &tess.bones[ i ], &bone->t, &tess.bones[ i ] );
 			TransAddScale( backEnd.currentEntity->e.skeleton.scale, &tess.bones[ i ] );
+			TransInsScale( model->internalScale, &tess.bones[ i ] );
 		}
 	}
 	else

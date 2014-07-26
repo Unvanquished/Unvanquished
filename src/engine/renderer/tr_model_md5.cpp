@@ -538,6 +538,18 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			}
 		}
 	}
+	md5->internalScale = BoundsMaxExtent( md5->bounds[ 0 ], md5->bounds[ 1 ] );
+	if( md5->internalScale > 0.0f ) {
+		float invScale = 1.0f / md5->internalScale;
+
+		for ( i = 0, surf = md5->surfaces; i < md5->numSurfaces; i++, surf++ )
+		{
+			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
+			{
+				VectorScale( v->position, invScale, v->position );
+			}
+		}
+	}
 
 	// split the surfaces into VBO surfaces by the maximum number of GPU vertex skinning bones
 	Com_InitGrowList( &vboSurfaces, 10 );

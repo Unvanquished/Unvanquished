@@ -694,6 +694,16 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 						  IQModel->bounds[ 0 ],
 						  IQModel->bounds[ 1 ] );
 			}
+			IQModel->internalScale = BoundsMaxExtent( IQModel->bounds[ 0 ], IQModel->bounds[ 1 ] );
+			if( IQModel->internalScale > 0.0f ) {
+				float inverseScale = 1.0f / IQModel->internalScale;
+				for( j = 0; j < n; j += vertexarray->size ) {
+					VectorScale( &IQModel->positions[ j ],
+						     inverseScale,
+						     &IQModel->positions[ j ] );
+				}
+			}
+
 			break;
 		case IQM_NORMAL:
 			Com_Memcpy( IQModel->normals,

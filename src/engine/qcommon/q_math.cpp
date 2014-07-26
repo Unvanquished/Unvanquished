@@ -1170,6 +1170,18 @@ qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_
 	return qtrue;
 }
 
+float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs ) {
+	float result = Q_fabs( mins[0] );
+
+	result = MAX( result, Q_fabs( mins[ 1 ] ) );
+	result = MAX( result, Q_fabs( mins[ 2 ] ) );
+	result = MAX( result, Q_fabs( maxs[ 0 ] ) );
+	result = MAX( result, Q_fabs( maxs[ 1 ] ) );
+	result = MAX( result, Q_fabs( maxs[ 2 ] ) );
+
+	return result;
+}
+
 int VectorCompare( const vec3_t v1, const vec3_t v2 )
 {
 	if ( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] )

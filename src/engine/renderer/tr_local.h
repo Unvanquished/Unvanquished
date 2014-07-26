@@ -2219,6 +2219,7 @@ static inline float halfToFloat( int16_t in ) {
 		srfVBOMD5Mesh_t **vboSurfaces;
 
 		vec3_t          bounds[ 2 ];
+		float		internalScale;
 	} md5Model_t;
 
 	typedef enum
@@ -2294,6 +2295,7 @@ static inline float halfToFloat( int16_t in ) {
 		struct IQAnim_s         *anims;
 
 		vec3_t          bounds[2];
+		float		internalScale;
 
 		// vertex data
 		float           *positions;
