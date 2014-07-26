@@ -258,6 +258,21 @@ static void CG_Rocket_DFLevelShot( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<img class=\"levelshot\" src=\"/levelshots/%s\"/>", Info_ValueForKey( data, "1" ) ), qfalse );
 }
 
+static score_t *ScoreFromClientNum( int clientNum )
+{
+	int i = 0;
+
+	for ( i = 0; i < cg.numScores; ++i )
+	{
+		if ( cg.scores[ i ].client == clientNum )
+		{
+			return &cg.scores[ i ];
+		}
+	}
+
+	return NULL;
+}
+
 static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 {
 	int clientNum = atoi( Info_ValueForKey( data, "1" ) );
@@ -274,15 +289,15 @@ static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 	}
 	else
 	{
-		score_t *s = &cg.scores[ clientNum ];
+		score_t *s = ScoreFromClientNum( clientNum );
 		const char *rml = "";
 
-		if ( s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->weapon != WP_NONE )
+		if ( s && s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->weapon != WP_NONE )
 		{
 			rml = va( "<img src='/%s'/>", CG_GetShaderNameFromHandle( cg_weapons[ s->weapon ].weaponIcon ) );
 		}
 
-		if ( s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->team == TEAM_HUMANS && s->upgrade != UP_NONE )
+		if ( s && s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->team == TEAM_HUMANS && s->upgrade != UP_NONE )
 		{
 			rml = va( "%s<img src='/%s'/>", rml, CG_GetShaderNameFromHandle( cg_upgrades[ s->upgrade ].upgradeIcon ) );
 		}
