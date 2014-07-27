@@ -287,6 +287,7 @@ static void CON_Redraw( void )
 	// Delete any existing windows
 	if( logwin )
 	{
+#ifndef _WIN32
 		struct winsize winsz = { 0, };
 
 		ioctl( fileno( stdout ), TIOCGWINSZ, &winsz );
@@ -296,6 +297,8 @@ static void CON_Redraw( void )
 			return;
 		}
 		resizeterm( winsz.ws_row, winsz.ws_col );
+#endif
+
 		delwin( logwin );
 		delwin( borderwin );
 		delwin( inputwin );
