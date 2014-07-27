@@ -92,6 +92,17 @@
 			padding-left: 30px;
 		}
 
+		follow
+		{
+			position: absolute;
+			top: 60%;
+			margin-left: auto;
+			margin-right: auto;
+			width: 50%;
+			text-align: center;
+			font-size: 2em;
+		}
+
 
 
 
@@ -171,6 +182,7 @@
 		<crosshair/>
 		<crosshair_indicator/>
 		<crosshair_name/>
+		<follow/>
 	</region>
 
 	<if cvar="cg_drawSpeed" condition="!=" value="0">
