@@ -29,7 +29,7 @@ void VertexAnimation_P_N(	vec3 fromPosition, vec3 toPosition,
 	vec3 fromNormal = QuatTransVec( fromQTangent, vec3( 0.0, 0.0, 1.0 ) );
 	vec3 toNormal = QuatTransVec( toQTangent, vec3( 0.0, 0.0, 1.0 ) );
 
-	position.xyz = mix(fromPosition, toPosition, frac);
+	position.xyz = 512.0 * mix(fromPosition, toPosition, frac);
 	position.w = 1;
 
 	normal = normalize(mix(fromNormal, toNormal, frac));
@@ -51,7 +51,7 @@ void VertexAnimation_P_TBN(	vec3 fromPosition, vec3 toPosition,
 	fromTangent *= sign( fromQTangent.w );
 	toTangent *= sign( toQTangent.w );
 
-	position.xyz = mix(fromPosition, toPosition, frac);
+	position.xyz = 512.0 * mix(fromPosition, toPosition, frac);
 	position.w = 1;
 	
 	tangent = normalize(mix(fromTangent, toTangent, frac));
