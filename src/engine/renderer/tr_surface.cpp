@@ -1428,6 +1428,7 @@ void Tess_SurfaceVBOMDVMesh( srfVBOMDVMesh_t *surface )
 
 	tess.numIndexes = surface->numIndexes;
 	tess.numVertexes = surface->numVerts;
+	tess.vboVertexAnimation = qtrue;
 
 	refEnt = &backEnd.currentEntity->e;
 

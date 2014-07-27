@@ -3399,6 +3399,8 @@ static inline float halfToFloat( int16_t in ) {
 		int         numBones;
 		transform_t bones[ MAX_BONES ];
 
+		qboolean    vboVertexAnimation;
+
 		// info extracted from current shader or backend mode
 		void ( *stageIteratorFunc )( void );
 		void ( *stageIteratorFunc2 )( void );

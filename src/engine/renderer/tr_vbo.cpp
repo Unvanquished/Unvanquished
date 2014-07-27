@@ -326,7 +326,8 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 		{
 			if ( ( vbo->attribBits & ATTR_POSITION ) )
 			{
-				VERTEXCOPY( v, xyz, ATTR_INDEX_POSITION, float );
+				VectorScale( inData.xyz[ v ], 1.0f / 512.0f,
+					     ( float * )( outData + vbo->attribs[ ATTR_INDEX_POSITION ].ofs + v * vbo->attribs[ ATTR_INDEX_POSITION ].realStride ) );
 			}
 
 			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
