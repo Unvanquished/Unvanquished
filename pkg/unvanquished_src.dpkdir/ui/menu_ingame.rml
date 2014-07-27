@@ -1,154 +1,22 @@
 <rml>
 	<head>
-		<!--
-			main-menu.rml and in-game.rml are essentially the same file with a few
-			small class variations to:
-			 (1) Make the background transparent for in-game, rather than a background image
-			 (2) Show the extra sidebar sections in-game
-			 (3) Hide logo in-game
-
-			Other importants tweaks ATM include:
-			  - omitting <h1>Title</h1> in the main-menu
-			  - removed nohide from body
-			  - body id
-
-			Possible idea: replace both in-game and main-menu with a single RML file and switch
-			classes on-the-fly.
-
-		-->
-
-
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
-		<link type="text/rcss" href="/ui/shared/background.rcss" />
-		<style>
-			body {
-				width:100%;
-				height:100%;
-				z-index: -10;
-			}
-			body.mainmenu {
-				background-decorator: image;
-				background-image:/ui/assets/background;
-			}
-			body.ingame {
-				background-color: rgba(0%,0%,0%,0%);
-			}
-
-			/* Floating boxes for misc info in the main menu */
-			box {
-				display: block;
-				position: absolute;
-				color: rgba( 100%, 100%, 100%, 10% );
-			}
-			box.version {
-				bottom:10px;
-				left:10px;
-				display: none;
-			}
-			box.language {
-				bottom: 10px;
-				left: 10px;
-				font-size: 14px;
-				color: rgba( 100%, 100%, 100%, 50% );
-				width:20em;
-
-				display:none; /* Until inline-CSS on controls is fixed */
-			}
-			box.debug{
-				top: 10px;
-				left:10px;
-				color: #FFFFFF00;
-				width: 30em;
-				display:block;
-				font-size: 14px;
-			}
-			box.debug:hover{
-				color: #aaddaa;
-			}
-
-
-			/* Ugly table-like hacks to have two options side-by-side */
-			blocklink.rightfloat{
-				width: 10em;
-				text-align: right;
-				margin-top: 0.5em;
-				float:right;
-			}
-			blocklink.leftalign{
-				margin-top:0.5em;
-				margin-left:0;
-			}
-
-			/* Currently not used */
-			serverdetails{
-				display: block;
-				color: #999999;
-				font-size: 12px;
-
-				margin-left:1.5em;
-				margin-bottom: 1em;
-			}
-
-			/* innersidebar is grey box, sidebar holds this and the logo for scrolling */
-			window.innersidebar {
-				display: block;
-
-				padding-top:0;
-				padding-bottom:0;
-
-			}
-			sidebar {
-				display: block;
-				position: absolute;
-				right:4%;
-				width:20em;
-				height:100%;
-				overflow: auto;
-			}
-
-			/* Section under a H1 heading */
-			sidesection {
-				display: block;
-				margin-top: 1em;
-				margin-bottom: 2em;
-			}
-			img.logo {
-				width: 20em;
-				margin-top:8em;
-
-			}
-
-			hackyspacer {
-				display:block;
-				height: 6em;
-
-			}
-
-		</style>
+		<link type="text/rcss" href="menu.rcss" />
 	</head>
-	<body id="ingame" class="ingame">
-		<img class="gradient" src="/ui/assets/bg" /> 
-		<img class="gradient black" src="/ui/assets/black" /> 
-		<img class="circles" src="/ui/assets/circles1" />
-		<img class="circles" src="/ui/assets/circles2" />
-		<img class="black2" src="/ui/assets/black2" />
 
-		<box class="version">
-			<p style="font-size: 30px;"> Unvanquished alpha 29</p>
-			<p> www.unvanquished.net  Unvanquished development </p>
-		</box>
-
-		<box class="language">\
-			<!-- BUG this style does nothing -->
-			<dataselect style="float:left;" source="languages.default" fields="name"/>
-		</box>
+	<body id="ingame" class="ingame" >
+		<img class="gradient" src="/ui/assets/background/bg" />
+		<img class="gradient black" src="/ui/assets/background/black" />
+		<img class="circles" src="/ui/assets/background/circles1" />
+		<img class="circles" src="/ui/assets/background/circles2" />
+		<img class="tyrant" src="/ui/assets/background/tyrant" />
+		<img class="human" src="/ui/assets/background/human" />
+		<img class="fog" src="/ui/assets/background/fog" />
+		<img class="black2" src="/ui/assets/background/black2" />
+		<img class="logo" src="/ui/assets/logos/fuzzy_blue" />
 
 		<sidebar>
-				<!-- HACK: Add some extra spacing atop the main menu if the screen res is high enough -->
-				<if cvar="r_customheight" condition=">" value="850">
-					<hackyspacer class="hidden"/>
-				</if>
 				<img class="logo" src="logo.png" style="color: rgba(100%,100%,100%,100%);" class="hidden"/>
 
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
@@ -251,7 +119,7 @@
 						<br />
 
 						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
-						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.29 </blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;"> Alpha [VERSION] </blocklink>
 					</sidesection>
 
 				</window>

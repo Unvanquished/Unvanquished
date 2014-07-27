@@ -1,110 +1,110 @@
 units
 {
-	ui/in-game/hud/human.rml
-	ui/in-game/human/jetpack.rml
-	ui/in-game/hud/alien.rml
-	ui/in-game/overlay.rml
-	ui/in-game/console.rml
-	ui/in-game/hud/base.rml
-	ui/in-game/hud/spectator.rml
-	ui/in-game/alien/barbs.rml
-	ui/in-game/alien/charge.rml
-	ui/in-game/alien/bp.rml
-	ui/in-game/scoreboard.rml
-	ui/in-game/hud/builder.rml
+ui/hud_human.rml
+ui/hud_jetpack.rml
+ui/hud_alien.rml
+ui/hud_overlay.rml
+ui/hud_console.rml
+ui/hud_base.rml
+ui/hud_spectator.rml
+ui/hud_barbs.rml
+ui/hud_charge.rml
+ui/hud_bp.rml
+ui/ingame_scoreboard.rml
+ui/hud_builder.rml
 }
 
 // Specs must be defined first. This is the base hud
 spectator_hud
 {
-	base
-	overlay
-	console
+	hud_base
+	hud_overlay
+	hud_console
 	spectator_hud
 }
 
 // Define base team huds
 human_hud
 {
-	jetpack
-	base
+	hud_jetpack
+	hud_base
 	human_hud
-	overlay
-	console
+	hud_overlay
+	hud_console
 }
 
 alien_hud
 {
-	base
+	hud_base
 	alien_hud
-	overlay
-	console
+	hud_overlay
+	hud_console
 }
 
 // Define individual weapons here
 ckit_hud
 {
-	jetpack
-	base
+	hud_jetpack
+	hud_base
 	human_hud
-	overlay
-	console
-	builder
+	hud_overlay
+	hud_console
+	hud_builder
 }
 
 lcannon_hud
 {
-	base
+	hud_base
 	human_hud
-	overlay
-	console
-	charge
+	hud_overlay
+	hud_console
+	hud_charge
 }
 
 level3_hud
 {
-	base
+	hud_base
 	alien_hud
-	overlay
-	console
-	charge
+	hud_overlay
+	hud_console
+	hud_charge
 }
 
 level3upg_hud
 {
-	base
+	hud_base
 	alien_hud
-	barbs
-	overlay
-	console
-	charge
+	hud_barbs
+	hud_overlay
+	hud_console
+	hud_charge
 }
 
 level4_hud
 {
-	base
+	hud_base
 	alien_hud
-	overlay
-	console
-	charge
+	hud_overlay
+	hud_console
+	hud_charge
 }
 
 abuild_hud
 {
-	base
+	hud_base
 	alien_hud
-	overlay
-	console
-	bp
-	builder
+	hud_overlay
+	hud_console
+	hud_bp
+	hud_builder
 }
 
 abuildupg_hud
 {
-	base
+	hud_base
 	alien_hud
-	overlay
-	console
-	bp
-	builder
+	hud_overlay
+	hud_console
+	hud_bp
+	hud_builder
 }

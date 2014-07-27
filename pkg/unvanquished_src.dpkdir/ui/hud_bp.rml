@@ -1,0 +1,33 @@
+<rml>
+<head>
+<style>
+body
+{
+	height: 100%;
+	width: 100%;
+	font-family: DejaVu Sans;
+	font-size: 24;
+}
+div
+{
+	position: absolute;
+	right:1%;
+	bottom:3%;
+	text-align:right;
+	opacity: 0.5;
+	color: gray;
+
+
+}
+ammo
+{
+	color: red;
+}
+</style>
+</head>
+<body id="hud_bp">
+	<div>
+		<ammo/> build points
+	</div>
+</body>
+</rml>
