@@ -1757,6 +1757,50 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 }
 
+
+/*
+==============
+CG_WeaponInertia
+
+Offset view weapon's position based on view's angular velocity.
+==============
+*/
+
+#define WI_LAMBDA 12.5f
+#define WI_X_LIMIT 1.6f
+#define WI_X_SCALE 0.002f
+#define WI_Y_LIMIT 1.0f
+#define WI_Y_SCALE -0.0025f
+
+void CG_WeaponInertia( playerState_t *ps, vec3_t origin )
+{
+	weaponInertia_t *I = &cg.weaponInertia;
+	int i;
+	float dt;
+	vec3_t av;
+
+	if( !I->init )
+		goto out;
+
+	dt = 0.001 * cg.frametime;
+
+	for( i = 0; i < 3; i++ )
+	{
+		av[ i ] = AngleDelta( I->oa[ i ], ps->viewangles[ i ] ) / dt;
+		ExponentialFade( I->oav + i, av[ i ], WI_LAMBDA, dt );
+		av[ i ] = I->oav[ i ];
+	}
+	
+	VectorMA( origin, atan( av[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT,
+	          cg.refdef.viewaxis[ 2 ], origin );
+	VectorMA( origin, atan( av[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT,
+	          cg.refdef.viewaxis[ 1 ], origin );
+
+out:
+	VectorCopy( ps->viewangles, I->oa );
+	I->init = 1;
+}
+
 /*
 ==============
 CG_AddViewWeapon
@@ -1875,27 +1919,19 @@ void CG_AddViewWeapon( playerState_t *ps )
 		return;
 	}
 
-	// drop gun lower at higher fov
-	if ( cg.refdef.fov_y > 90 )
-	{
-		fovOffset = -0.4 * ( cg.refdef.fov_y - 90 );
-	}
-	else
-	{
-		fovOffset = 0;
-	}
+	fovOffset = -0.03f * cg.refdef.fov_y;
 
 	Com_Memset( &hand, 0, sizeof( hand ) );
 
 	// set up gun position
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
-	VectorMA( hand.origin, ( cg_gun_x.value + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
+	VectorMA( hand.origin, ( cg_gun_x.value + fovOffset + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
 	if( cg_mirrorgun.integer )
 		VectorMA( hand.origin, -( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
 	else
 		VectorMA( hand.origin, ( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
-	VectorMA( hand.origin, ( cg_gun_z.value + fovOffset + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
+	VectorMA( hand.origin, ( cg_gun_z.value + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
 	if ( weapon == WP_LUCIFER_CANNON && ps->stats[ STAT_MISC ] > 0 )
@@ -1908,6 +1944,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 1 ],
 		          hand.origin );
 	}
+
+	CG_WeaponInertia( ps, hand.origin );
 
 	AnglesToAxis( angles, hand.axis );
 	if( cg_mirrorgun.integer ) {

@@ -1746,6 +1746,10 @@ void CG_Rocket_DrawFollow( void )
 
 		trap_Rocket_SetInnerRML( buffer, RP_EMOTICONS );
 	}
+	else
+	{
+		trap_Rocket_SetInnerRML( "", 0 );
+	}
 }
 
 void CG_Rocket_DrawConnectText( void )

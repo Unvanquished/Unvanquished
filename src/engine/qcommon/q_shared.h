@@ -864,6 +864,7 @@ void         ByteToDir( int b, vec3_t dir );
 
 	float    ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const vec2_t dir, const vec2_t bounds[ 2 ] );
 	void     ExponentialFade( float *value, float target, float lambda, float timedelta );
+	#define  LinearRemap(x,an,ap,bn,bp) (((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn))
 
 // perpendicular vector could be replaced by this
 

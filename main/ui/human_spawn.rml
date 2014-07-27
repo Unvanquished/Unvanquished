@@ -30,11 +30,17 @@
 				background: rgba(111,111,111,111);
 			}
 
+			button#back
+			{
+				float: left;
+			}
+
 
 
 		</style>
 	</head>
 	<body id="human_spawn" template="window" onShow="buildDS humanSpawnItems default">
+
 
 		<box class="left">
 		<datagrid id="team"  source="humanSpawnItems.default">
@@ -47,6 +53,7 @@
 		</box>
 
 		<buttonbar>
+			<button id="back" onClick="hide humanspawn; show teamsel">Back</button>
 			<button onClick="execDS humanSpawnItems default">Spawn</button>
 			<button onClick="hide humanspawn">Cancel</button>
 		</buttonbar>
