@@ -7,7 +7,7 @@
 body {
 
 	/* Global font default size */
-	font-family: Dejavu Sans;
+	font-family: Roboto;
 	font-size: 16px;
 	color: #999999;
 }
@@ -26,6 +26,7 @@ p.example {
 h1 {
 	display: block;
 	font-size: 25px;
+	font-family: Dejavu Sans;
 	font-weight: bold;
 	text-align: right;
 	color: #666666;
@@ -43,6 +44,7 @@ h2 {
 h3 {
 	display: block;
 	color:white;
+	height: 1.5em; /* Same as input boxes */
 }
 
 indent {
