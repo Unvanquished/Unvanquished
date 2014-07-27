@@ -46,9 +46,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <curses.h>
 
 #ifdef BUILD_SERVER
-#define TITLE         S_COLOR_BLUE "---[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Server Console " S_COLOR_BLUE "]---"
+#define TITLE         S_COLOR_GREEN "[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Server Console " S_COLOR_GREEN "]"
 #else
-#define TITLE         S_COLOR_BLUE "---[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Console " S_COLOR_BLUE "]---"
+#define TITLE         S_COLOR_GREEN "[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Console " S_COLOR_GREEN "]"
 #endif
 #define PROMPT        S_COLOR_YELLOW "-> "
 #define INPUT_SCROLL  15
@@ -68,33 +68,19 @@ static Console::Field input_field(INT_MAX);
 static WINDOW   *borderwin;
 static WINDOW   *logwin;
 static WINDOW   *inputwin;
-static WINDOW   *scrollwin;
 static WINDOW   *clockwin;
 
 static char     logbuf[ LOG_BUF_SIZE ];
 static char     *insert = logbuf;
 static int      scrollline = 0;
 static int      lastline = 1;
+static bool     forceRedraw = false;
 
 #ifndef _WIN32
 static int      stderr_fd;
 #endif
 
-// The special characters look good on the win32 console but suck on other consoles
-#ifdef _WIN32
-#define SCRLBAR_CURSOR ACS_BLOCK
-#define SCRLBAR_LINE   ACS_VLINE
-#define SCRLBAR_UP     ACS_UARROW
-#define SCRLBAR_DOWN   ACS_DARROW
-#else
-#define SCRLBAR_CURSOR '#'
-#define SCRLBAR_LINE   ACS_VLINE
-#define SCRLBAR_UP     ACS_HLINE
-#define SCRLBAR_DOWN   ACS_HLINE
-#endif
-
-#define LOG_LINES      ( LINES - 4 )
-#define LOG_COLS       ( COLS - 3 )
+#define LOG_LINES      ( LINES - 3 )
 
 #define CURSES_NULL_COLOR -1
 
@@ -168,40 +154,6 @@ static INLINE void CON_UpdateCursor( void )
 	wmove( inputwin, 0, input_field.GetViewCursorPos() );
 	wnoutrefresh( inputwin );
 #endif
-}
-
-/*
-==================
-CON_DrawScrollBar
-==================
-*/
-static void CON_DrawScrollBar( void )
-{
-	int scroll;
-
-	if ( lastline <= LOG_LINES )
-	{
-		scroll = 0;
-	}
-	else
-	{
-		scroll = scrollline * ( LOG_LINES - 1 ) / ( lastline - LOG_LINES );
-	}
-
-	if ( com_ansiColor && !com_ansiColor->integer )
-	{
-		wbkgdset( scrollwin, SCRLBAR_LINE );
-	}
-	else
-	{
-		wbkgdset( scrollwin, SCRLBAR_LINE | COLOR_PAIR( 6 ) );
-	}
-
-	werase( scrollwin );
-	wbkgdset( scrollwin, ' ' );
-	CON_SetColor( scrollwin, 1 );
-	mvwaddch( scrollwin, scroll, 0, SCRLBAR_CURSOR );
-	wnoutrefresh( scrollwin );
 }
 
 /*
@@ -323,34 +275,94 @@ static void CON_UpdateClock( void )
 
 /*
 ==================
+CON_Redraw
+
+Redraw everything
+==================
+*/
+static void CON_Redraw( void )
+{
+	int col;
+
+	// Delete any existing windows
+	if( logwin )
+	{
+		struct winsize winsz = { 0, };
+
+		ioctl( fileno( stdout ), TIOCGWINSZ, &winsz );
+
+		if ( winsz.ws_col < 12 || winsz.ws_row < 5 )
+		{
+			return;
+		}
+		resizeterm( winsz.ws_row, winsz.ws_col );
+		delwin( logwin );
+		delwin( borderwin );
+		delwin( inputwin );
+		erase();
+		wnoutrefresh( stdscr );
+	}
+
+	// Create the log window
+	logwin = newpad( MAX_LOG_LINES, COLS );
+	scrollok( logwin, TRUE );
+	idlok( logwin, TRUE );
+	CON_ColorPrint( logwin, logbuf, qtrue );
+	getyx( logwin, lastline, col );
+	if ( col )
+	{
+		lastline++;
+	}
+	scrollline = lastline - LOG_LINES;
+	if ( scrollline < 0 )
+	{
+		scrollline = 0;
+	}
+	pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
+
+	// Create the input field
+	inputwin = newwin( 1, COLS - Q_PrintStrlen( PROMPT ) - 8, LINES - 1, Q_PrintStrlen( PROMPT ) + 8 );
+	input_field.SetWidth(COLS - Q_PrintStrlen( PROMPT ) - 9);
+	CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), qfalse );
+	CON_UpdateCursor();
+	wnoutrefresh( inputwin );
+
+	// Create the clock
+	clockwin = newwin( 1, 8, LINES - 1, 0 );
+	CON_UpdateClock();
+
+	// Create the border
+	CON_SetColor( stdscr, COLOR_GREEN );
+	for (int i = 0; i < COLS; i++) {
+		mvaddch(0, i, ACS_HLINE);
+		mvaddch(LINES - 2, i, ACS_HLINE);
+	}
+
+	// Display the title and input prompt
+	move( 0, ( COLS - Q_PrintStrlen( TITLE ) ) / 2 );
+	CON_ColorPrint( stdscr, TITLE, qtrue );
+	move( LINES - 1, 8 );
+	CON_ColorPrint( stdscr, PROMPT, qtrue );
+
+	wnoutrefresh( stdscr );
+	doupdate();
+}
+
+/*
+==================
 CON_Resize
 
 The window has just been resized, move everything back into place
 ==================
 */
-static void CON_Resize( void )
-{
 #ifndef _WIN32
-	struct winsize winsz = { 0, };
-
-	ioctl( fileno( stdout ), TIOCGWINSZ, &winsz );
-
-	if ( winsz.ws_col < 12 || winsz.ws_row < 5 )
-	{
-		return;
-	}
-
-	resizeterm( winsz.ws_row + 1, winsz.ws_col + 1 );
-	resizeterm( winsz.ws_row, winsz.ws_col );
-	delwin( logwin );
-	delwin( borderwin );
-	delwin( inputwin );
-	delwin( scrollwin );
-	erase();
-	wnoutrefresh( stdscr );
-	CON_Init();
-#endif
+static void CON_Resize( int sig )
+{
+	// Don't call Redraw() directly, because it is slow, and we might miss more
+	// resize signals while redrawing.
+	forceRedraw = true;
 }
+#endif
 
 /*
 ==================
@@ -361,14 +373,14 @@ void CON_Clear_f( void )
 {
 	if ( !curses_on )
 	{
-//              CON_Clear_TTY();
+		//CON_Clear_TTY();
 		return;
 	}
 
 	// Clear the log and the window
 	memset( logbuf, 0, sizeof( logbuf ) );
 	werase( logwin );
-	pnoutrefresh( logwin, scrollline, 0, 2, 1, LOG_LINES + 1, LOG_COLS + 1 );
+	pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 
 	// Move the cursor back to the input field
 	CON_UpdateCursor();
@@ -390,6 +402,8 @@ void CON_Shutdown( void )
 		return;
 	}
 
+	erase();
+	refresh();
 	endwin();
 	dump_logs = curses_on;
 	curses_on = qfalse;
@@ -449,8 +463,6 @@ Initialize the console in curses mode, fall back to tty mode on failure
 */
 void CON_Init( void )
 {
-	int col;
-
 #ifndef _WIN32
 	// If the process is backgrounded (running non-interactively),
 	// then SIGTTIN or SIGTTOU is emitted; if not caught, turns into a SIGSTP
@@ -469,19 +481,13 @@ void CON_Init( void )
 	if ( !curses_on )
 	{
 #ifndef _WIN32
-		SCREEN *test = newterm( NULL, stdout, stdin );
-
-		if ( !test )
-		{
-			CON_Init_TTY();
-			CON_Print_TTY( "Couldn't initialize curses, falling back to tty\n" );
-			return;
-		}
-
-		endwin();
-		delscreen( test );
+		// Enable more colors
+		const char* term = getenv("TERM");
+		if (!strncmp(term, "xterm", 5) || !strncmp(term, "screen", 6))
+			setenv("TERM", "xterm-256color", 1);
 		setlocale(LC_CTYPE, "");
 #endif
+
 		initscr();
 		cbreak();
 		noecho();
@@ -489,6 +495,7 @@ void CON_Init( void )
 		intrflush( stdscr, FALSE );
 		nodelay( stdscr, TRUE );
 		keypad( stdscr, TRUE );
+		meta( stdscr, TRUE );
 		wnoutrefresh( stdscr );
 
 		// Set up colors
@@ -518,82 +525,21 @@ void CON_Init( void )
 			}
 		}
 
+#ifdef SIGWINCH
+		// Catch window resizes
+		signal( SIGWINCH, CON_Resize );
+#endif
+
 		// Prevent bad libraries from messing up the console
 #ifndef _WIN32
 		stderr_fd = dup( STDERR_FILENO );
 		close( STDERR_FILENO );
 #endif
+
+		curses_on = qtrue;
 	}
 
-	// Create the border
-	borderwin = newwin( LOG_LINES + 2, LOG_COLS + 2, 1, 0 );
-	CON_SetColor( borderwin, 2 );
-	box( borderwin, 0, 0 );
-	wnoutrefresh( borderwin );
-
-	// Create the log window
-	logwin = newpad( MAX_LOG_LINES, LOG_COLS );
-	scrollok( logwin, TRUE );
-	idlok( logwin, TRUE );
-
-	if ( curses_on )
-	{
-		CON_ColorPrint( logwin, logbuf, qtrue );
-	}
-
-	getyx( logwin, lastline, col );
-
-	if ( col )
-	{
-		lastline++;
-	}
-
-	scrollline = lastline - LOG_LINES;
-
-	if ( scrollline < 0 )
-	{
-		scrollline = 0;
-	}
-
-	pnoutrefresh( logwin, scrollline, 0, 2, 1, LOG_LINES + 1, LOG_COLS + 1 );
-
-	// Create the scroll bar
-	scrollwin = newwin( LOG_LINES, 1, 2, COLS - 1 );
-	CON_DrawScrollBar();
-	CON_SetColor( stdscr, 3 );
-	mvaddch( 1, COLS - 1, SCRLBAR_UP );
-	mvaddch( LINES - 2, COLS - 1, SCRLBAR_DOWN );
-
-	// Create the input field
-	inputwin = newwin( 1, COLS - Q_PrintStrlen( PROMPT ) - 8, LINES - 1, Q_PrintStrlen( PROMPT ) + 8 );
-	input_field.SetWidth(COLS - Q_PrintStrlen( PROMPT ) - 9);
-
-	if ( curses_on )
-	{
-		CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), qfalse );
-	}
-
-	CON_UpdateCursor();
-	wnoutrefresh( inputwin );
-
-	// Create the clock
-	clockwin = newwin( 1, 8, LINES - 1, 0 );
-	CON_UpdateClock();
-
-	// Display the title and input prompt
-	move( 0, ( COLS - Q_PrintStrlen( TITLE ) ) / 2 );
-	CON_ColorPrint( stdscr, TITLE, qtrue );
-	move( LINES - 1, 8 );
-	CON_ColorPrint( stdscr, PROMPT, qtrue );
-	wnoutrefresh( stdscr );
-	doupdate();
-
-#ifdef SIGWINCH
-	// Catch window resizes
-	signal( SIGWINCH, ( sig_t ) CON_Resize );
-#endif
-
-	curses_on = qtrue;
+	CON_Redraw();
 }
 
 /*
@@ -618,7 +564,7 @@ char *CON_Input( void )
 
 	if ( com_ansiColor->modified )
 	{
-		CON_Resize();
+		CON_Redraw();
 		com_ansiColor->modified = qfalse;
 	}
 
@@ -638,7 +584,12 @@ char *CON_Input( void )
 		switch ( chr )
 		{
 			case ERR:
-				if ( num_chars > 1 )
+				if ( forceRedraw )
+				{
+					CON_Redraw();
+					forceRedraw = false;
+				}
+				else if ( num_chars > 1 )
 				{
 					werase( inputwin );
 
@@ -679,7 +630,7 @@ char *CON_Input( void )
 				continue;
 
 			case '\f':
-				CON_Resize();
+				forceRedraw = true;
 				continue;
 
 			case KEY_LEFT:
@@ -718,8 +669,7 @@ char *CON_Input( void )
 						scrollline = lastline - LOG_LINES;
 					}
 
-					pnoutrefresh( logwin, scrollline, 0, 2, 1, LOG_LINES + 1, LOG_COLS + 1 );
-					CON_DrawScrollBar();
+					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
 
 				continue;
@@ -734,8 +684,7 @@ char *CON_Input( void )
 						scrollline = 0;
 					}
 
-					pnoutrefresh( logwin, scrollline, 0, 2, 1, LOG_LINES + 1, LOG_COLS + 1 );
-					CON_DrawScrollBar();
+					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
 
 				continue;
@@ -892,7 +841,7 @@ void CON_Print( const char *msg )
 			scrollline = 0;
 		}
 
-		pnoutrefresh( logwin, scrollline, 0, 2, 1, LOG_LINES + 1, LOG_COLS + 1 );
+		pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 	}
 
 	// Add the message to the log buffer
@@ -905,9 +854,6 @@ void CON_Print( const char *msg )
 
 	strcpy( insert, msg );
 	insert += strlen( msg );
-
-	// Update the scrollbar
-	CON_DrawScrollBar();
 
 	// Move the cursor back to the input field
 	CON_UpdateCursor();
