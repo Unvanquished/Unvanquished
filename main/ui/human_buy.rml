@@ -21,11 +21,11 @@
   font-size:1.5em;
 }
 .circlemenu button.locked{
-	icon-image: /ui/assets/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle-gray.png;
 	icon-color-multiplier: rgb(70,70,70);
 }
 .circlemenu button.locked:hover{
-	icon-image: /ui/assets/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle-gray.png;
 	icon-color-multiplier: rgb(255,255,255);
 }
 .circlemenu button.locked:hover img,
@@ -44,11 +44,11 @@
 }
 
 .circlemenu button.expensive{
-	icon-image: /ui/assets/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle-gray.png;
 	icon-color-multiplier: rgb(70,30,30);
 }
 .circlemenu button.expensive:hover{
-	icon-image: /ui/assets/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle-gray.png;
 	icon-color-multiplier: rgb(255,0,0);
 
 }
@@ -70,11 +70,11 @@
 }
 
 .circlemenu button.active{
-	icon-image: /ui/assets/circle-hover.png;
+	icon-image: /ui/assets/circlemenu/circle-hover.png;
 	icon-color-multiplier: rgb(100,100,100);
 }
 .circlemenu button.active:hover{
-	icon-image: /ui/assets/circle-hover.png;
+	icon-image: /ui/assets/circlemenu/circle-hover.png;
 	icon-color-multiplier: rgb(255,255,255);
 }
 .circlemenu button.active icon{
@@ -96,7 +96,7 @@ div.infobox {
 
 		</style>
 	</head>
-	<body id="armourybuy" class="circlemenu human" onShow="buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades">
+	<body id="human_buy" class="circlemenu human" onShow="buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades">
 	<div id="foo">
 	<tabset class="circlemenu">
 		<tab>Weapons</tab>

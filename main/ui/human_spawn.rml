@@ -24,32 +24,32 @@
 				margin: 0.5em;
 				background-color: #00000055;
 			}
-			
+
 			datagridrow:selected
 			{
 				background: rgba(111,111,111,111);
 			}
-			
-			
-			
+
+
+
 		</style>
 	</head>
-	<body id="humanspawn" template="window" onShow="buildDS humanSpawnItems default">
-		
+	<body id="human_spawn" template="window" onShow="buildDS humanSpawnItems default">
+
 		<box class="left">
 		<datagrid id="team"  source="humanSpawnItems.default">
 			<col fields="name" width="100%"/>
 		</datagrid>
 		</box>
-		
+
 		<box class="right">
 			<datasource_single source="humanSpawnItems.default" fields="description" targetid="team" />
 		</box>
-		
+
 		<buttonbar>
 			<button onClick="execDS humanSpawnItems default">Spawn</button>
 			<button onClick="hide humanspawn">Cancel</button>
 		</buttonbar>
-		
+
 	</body>
 </rml>

@@ -21,11 +21,11 @@ body
 	font-size:1.5em;
 }
 .circlemenu button.locked{
-	icon-image: /ui/assets/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle-gray.png;
 	icon-color-multiplier: rgb(70,70,70);
 }
 .circlemenu button.locked:hover{
-	icon-image: /ui/assets/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle-gray.png;
 	icon-color-multiplier: rgb(255,255,255);
 }
 .circlemenu button.locked:hover img,
@@ -44,11 +44,11 @@ body
 }
 
 .circlemenu button.expensive{
-	icon-image: /ui/assets/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle-gray.png;
 	icon-color-multiplier: rgb(70,30,30);
 }
 .circlemenu button.expensive:hover{
-	icon-image: /ui/assets/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle-gray.png;
 	icon-color-multiplier: rgb(255,0,0);
 }
 
@@ -68,11 +68,11 @@ body
 }
 
 .circlemenu button.active{
-	icon-image: /ui/assets/circle-hover.png;
+	icon-image: /ui/assets/circlemenu/circle-hover.png;
 	icon-color-multiplier: rgb(100,100,100);
 }
 .circlemenu button.active:hover{
-	icon-image: /ui/assets/circle-hover.png;
+	icon-image: /ui/assets/circlemenu/circle-hover.png;
 	icon-color-multiplier: rgb(255,255,255);
 }
 .circlemenu button.active icon{
@@ -94,7 +94,7 @@ div.infobox {
 }
 </style>
 </head>
-<body id="alienevo" class="circlemenu alien" onShow="buildDS alienEvolveList default; buildDS alienEvolveList upgrades">
+<body id="alien_evo" class="circlemenu alien" onShow="buildDS alienEvolveList default; buildDS alienEvolveList upgrades">
 <div id="foo">
 <tabset class="circlemenu">
 <tab></tab>

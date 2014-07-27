@@ -201,7 +201,7 @@
 			}
 		</style>
 	</head>
-	<body id="alien_hud">
+	<body id="hud_alien">
 		<alien_sense />
 		<div id="momentum">
 			<unlocked_items/>

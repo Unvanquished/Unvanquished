@@ -18,7 +18,7 @@ div
 }
 </style>
 </head>
-<body id="builder">
+<body id="hud_builder">
 	<div id="mine">
 		<predictedMineEfficiency />
 	</div>
