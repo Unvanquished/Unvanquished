@@ -10,15 +10,8 @@
 		<img class="gradient black" src="/ui/assets/background/black" />
 		<img class="circles" src="/ui/assets/background/circles1" />
 		<img class="circles" src="/ui/assets/background/circles2" />
-		<img class="tyrant" src="/ui/assets/background/tyrant" />
-		<img class="human" src="/ui/assets/background/human" />
-		<img class="fog" src="/ui/assets/background/fog" />
-		<img class="black2" src="/ui/assets/background/black2" />
-		<img class="logo" src="/ui/assets/logos/fuzzy_blue" />
 
 		<sidebar>
-				<img class="logo" src="logo.png" style="color: rgba(100%,100%,100%,100%);" class="hidden"/>
-
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
 				<window id="innersidebar" class="innersidebar" >
 

@@ -6,6 +6,7 @@ body {
 
 body.ingame {
 	background-color: rgba(0%,0%,0%,0%);
+
 }
 
 
@@ -26,13 +27,11 @@ blocklink.leftversion{
 }
 
 
-/* innersidebar is grey box, sidebar holds this and the logo for scrolling */
+/* innersidebar is grey box, sidebar holds this for scrolling */
 window.innersidebar {
 	display: block;
-	margin-top:20%;
 	padding-top:0;
 	padding-bottom:0;
-
 }
 sidebar {
 	display: block;
