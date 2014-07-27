@@ -174,56 +174,6 @@ static qboolean R_AttributeTightlyPacked( const VBO_t *vbo, uint32_t attribute )
 	return layout->numComponents * R_GetSizeForType( layout->componentType ) == layout->realStride;
 }
 
-static uint32_t R_FindVertexSize( VBO_t *vbo, uint32_t attribBits, qboolean noLightCoords )
-{
-	uint32_t bits = attribBits & ~ATTR_INTERP_BITS;
-	uint32_t size = 0;
-	uint32_t attribute = 0;
-
-	while ( bits )
-	{
-		if ( ( bits & 1 ) )
-		{
-			size += R_GetAttribStorageSize( vbo, attribute, noLightCoords );
-		}
-		bits >>= 1;
-		attribute++;
-	}
-
-	return size;
-}
-
-static void R_SetAttributeLayoutsInterleaved( VBO_t *vbo, qboolean noLightCoords )
-{
-	uint32_t i;
-	uint32_t offset = 0;
-	uint32_t vertexSize = R_FindVertexSize( vbo, vbo->attribBits, noLightCoords );
-
-	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
-	{
-		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = vertexSize;
-
-		if ( R_AttributeTightlyPacked( vbo, i ) )
-		{
-			vbo->attribs[ i ].stride = 0;
-		}
-		else
-		{
-			vbo->attribs[ i ].stride = vbo->attribs[ i ].realStride;
-		}
-
-		vbo->attribs[ i ].frameOffset = 0;
-
-		if ( ( vbo->attribBits & BIT( i ) ) )
-		{
-			offset += R_GetAttribStorageSize( vbo, i, noLightCoords );
-		}
-	}
-
-	vbo->vertexesSize = vertexSize * vbo->vertexesNum;
-}
-
 static void R_SetAttributeLayoutsSeperate( VBO_t *vbo, qboolean noLightCoords )
 {
 	uint32_t i;
@@ -338,10 +288,6 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
 		R_SetAttributeLayoutsVertexAnimation( vbo, noLightCoords );
-	}
-	else if ( vbo->layout == VBO_LAYOUT_INTERLEAVED )
-	{
-		R_SetAttributeLayoutsInterleaved( vbo, noLightCoords );
 	}
 	else if ( vbo->layout == VBO_LAYOUT_SEPERATE )
 	{

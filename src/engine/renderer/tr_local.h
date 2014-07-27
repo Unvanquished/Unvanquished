@@ -656,7 +656,6 @@ static inline float halfToFloat( int16_t in ) {
 	typedef enum
 	{
 		VBO_LAYOUT_VERTEX_ANIMATION,
-		VBO_LAYOUT_INTERLEAVED,
 		VBO_LAYOUT_SEPERATE
 	} vboLayout_t;
 
