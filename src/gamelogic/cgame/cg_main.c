@@ -1458,11 +1458,11 @@ static void CG_RegisterGraphics( void )
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
 
-	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacon-arrow", RSF_DEFAULT );
-	cgs.media.beaconLongArrow = trap_R_RegisterShader( "gfx/2d/beacon-longarrow", RSF_DEFAULT );
-	cgs.media.beaconLongArrowDot = trap_R_RegisterShader( "gfx/2d/beacon-longarrowdot", RSF_DEFAULT );
-	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacon-no-target", RSF_DEFAULT );
-	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacon-tagscore", RSF_DEFAULT );
+	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacons/arrow", RSF_DEFAULT );
+	cgs.media.beaconLongArrow = trap_R_RegisterShader( "gfx/2d/beacons/longarrow", RSF_DEFAULT );
+	cgs.media.beaconLongArrowDot = trap_R_RegisterShader( "gfx/2d/beacons/longarrowdot", RSF_DEFAULT );
+	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacons/no-target", RSF_DEFAULT );
+	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacons/tagscore", RSF_DEFAULT );
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
