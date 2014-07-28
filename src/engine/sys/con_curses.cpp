@@ -335,7 +335,7 @@ static void CON_Redraw( void )
 	CON_UpdateClock();
 
 	// Create the border
-	CON_SetColor( stdscr, COLOR_GREEN );
+	CON_SetColor( stdscr, 2 );
 	for (int i = 0; i < COLS; i++) {
 		mvaddch(0, i, ACS_HLINE);
 		mvaddch(LINES - 2, i, ACS_HLINE);
@@ -674,6 +674,11 @@ char *CON_Input( void )
 
 					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
+				if (scrollline >= lastline - LOG_LINES) {
+					CON_SetColor(stdscr, 2);
+					for (int i = COLS - 7; i < COLS - 1; i++)
+						mvaddch(LINES - 2, i, ACS_HLINE);
+				}
 
 				continue;
 
@@ -688,6 +693,10 @@ char *CON_Input( void )
 					}
 
 					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
+				}
+				if (scrollline < lastline - LOG_LINES) {
+					CON_SetColor(stdscr, 1);
+					mvaddstr(LINES - 2, COLS - 7, "(more)");
 				}
 
 				continue;
