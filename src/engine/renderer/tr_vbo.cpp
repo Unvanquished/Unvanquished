@@ -204,77 +204,52 @@ static void R_SetAttributeLayoutsSeperate( VBO_t *vbo, qboolean noLightCoords )
 	vbo->vertexesSize = offset;
 }
 
-static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo, qboolean noLightCoords )
+static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 {
-	int32_t i;
-	uint32_t offset = 0;
-	uint32_t positionBits = ATTR_POSITION | ATTR_QTANGENT;
+	// interleaved position and qtangents per frame/vertex in part 1
+	const int sizePart1 = sizeof( i16vec4_t ) + sizeof( i16vec4_t );
+	// interleaved texcoords and colour in part 2
+	const int sizePart2 = sizeof( i16vec2_t ) + sizeof( u8vec4_t );
 
-	// seperate the position attributes for animation purposes
-	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
-	{
-		uint32_t bit = BIT( i );
-		if ( !( positionBits & bit ) )
-		{
-			continue;
-		}
+	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_SHORT;
+	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = 0;
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizePart1;
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizePart1;
+	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = sizePart1 * vbo->vertexesNum;
 
-		if ( !( vbo->attribBits & bit ) )
-		{
-			continue;
-		}
-
-		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i, noLightCoords );
-
-		if ( R_AttributeTightlyPacked( vbo, i ) )
-		{
-			vbo->attribs[ i ].stride = 0;
-		}
-		else
-		{
-			vbo->attribs[ i ].stride = vbo->attribs[ i ].realStride;
-		}
-
-		vbo->attribs[ i ].frameOffset = vbo->vertexesNum * vbo->attribs[ i ].realStride;
-
-		offset += vbo->framesNum * vbo->attribs[ i ].frameOffset;
-	}
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].componentType = GL_SHORT;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].normalize     = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs          = sizeof( i16vec4_t );
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].realStride   = sizePart1;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].stride       = sizePart1;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].frameOffset  = sizePart1 * vbo->vertexesNum;
 
 	// these use the same layout
 	vbo->attribs[ ATTR_INDEX_POSITION2 ] = vbo->attribs[ ATTR_INDEX_POSITION ];
 	vbo->attribs[ ATTR_INDEX_QTANGENT2 ] = vbo->attribs[ ATTR_INDEX_QTANGENT ];
 
-	// add the rest of the vertex attributes
-	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
-	{
-		uint32_t bit = BIT( i );
-		if ( ( ( positionBits | ATTR_INTERP_BITS ) & bit ) )
-		{
-			continue;
-		}
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].numComponents = 2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].componentType = GL_HALF_FLOAT;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs          = sizePart1 * vbo->vertexesNum * vbo->framesNum;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride   = sizePart2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride       = sizePart2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset  = 0;
 
-		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i, noLightCoords );
+	vbo->attribs[ ATTR_INDEX_COLOR ].numComponents   = 4;
+	vbo->attribs[ ATTR_INDEX_COLOR ].componentType   = GL_UNSIGNED_BYTE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].normalize       = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].ofs             = sizePart1 * vbo->vertexesNum * vbo->framesNum + sizeof( i16vec2_t );
+	vbo->attribs[ ATTR_INDEX_COLOR ].realStride      = sizePart2;
+	vbo->attribs[ ATTR_INDEX_COLOR ].stride          = sizePart2;
+	vbo->attribs[ ATTR_INDEX_COLOR ].frameOffset     = 0;
 
-		if ( R_AttributeTightlyPacked( vbo, i ) )
-		{
-			vbo->attribs[ i ].stride = 0;
-		}
-		else
-		{
-			vbo->attribs[ i ].stride = vbo->attribs[ i ].realStride;
-		}
-
-		vbo->attribs[ i ].frameOffset = 0;
-
-		if ( ( vbo->attribBits & bit ) )
-		{
-			offset += vbo->attribs[ i ].realStride * vbo->vertexesNum;
-		}
-	}
-
-	vbo->vertexesSize = offset;
+	// total size
+	vbo->vertexesSize = sizePart1 * vbo->vertexesNum * vbo->framesNum
+		+ sizePart2 * vbo->vertexesNum;
 }
 
 static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
@@ -287,7 +262,7 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
-		R_SetAttributeLayoutsVertexAnimation( vbo, noLightCoords );
+		R_SetAttributeLayoutsVertexAnimation( vbo );
 	}
 	else if ( vbo->layout == VBO_LAYOUT_SEPERATE )
 	{
@@ -326,8 +301,11 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 		{
 			if ( ( vbo->attribBits & ATTR_POSITION ) )
 			{
-				VectorScale( inData.xyz[ v ], 1.0f / 512.0f,
-					     ( float * )( outData + vbo->attribs[ ATTR_INDEX_POSITION ].ofs + v * vbo->attribs[ ATTR_INDEX_POSITION ].realStride ) );
+				vec4_t tmp;
+				VectorScale( inData.xyz[ v ], 1.0f / 512.0f, tmp);
+				tmp[4] = 1.0f; // unused
+				
+				floatToSnorm16( tmp, ( short * )( outData + vbo->attribs[ ATTR_INDEX_POSITION ].ofs + v * vbo->attribs[ ATTR_INDEX_POSITION ].realStride ) );
 			}
 
 			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
