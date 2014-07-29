@@ -803,7 +803,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 
 		vbo = R_CreateStaticVBO( "IQM surface VBO", vboData,
-					 VBO_LAYOUT_SEPERATE );
+					 VBO_LAYOUT_SKELETAL );
 
 		if( qtangentbuf ) {
 			ri.Hunk_FreeTempMemory( qtangentbuf );

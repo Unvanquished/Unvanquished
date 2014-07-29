@@ -22,6 +22,32 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_vbo.c
 #include "tr_local.h"
 
+// "templates" for VBO vertex data layouts
+
+// interleaved position and qtangents per frame/vertex in part 1
+struct fmtVertexAnim1 {
+	i16vec4_t position;
+	i16vec4_t qtangents;
+};
+const GLsizei sizeVertexAnim1 = sizeof( struct fmtVertexAnim1 );
+// interleaved texcoords and colour in part 2
+struct fmtVertexAnim2 {
+	i16vec2_t texcoord;
+	u8vec4_t  colour;
+};
+const GLsizei sizeVertexAnim2 = sizeof( struct fmtVertexAnim2 );
+
+// interleaved data: position, texcoord, colour, qtangent, bonefactors
+struct fmtSkeletal {
+	i16vec4_t position;
+	i16vec2_t texcoord;
+	u8vec4_t  colour;
+	i16vec4_t qtangents;
+	u16vec4_t boneFactors;
+};
+const GLsizei sizeSkeletal = sizeof( struct fmtSkeletal );
+
+
 static uint32_t R_DeriveAttrBits( vboData_t data )
 {
 	uint32_t stateBits = 0;
@@ -206,26 +232,25 @@ static void R_SetAttributeLayoutsSeperate( VBO_t *vbo, qboolean noLightCoords )
 
 static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 {
-	// interleaved position and qtangents per frame/vertex in part 1
-	const int sizePart1 = sizeof( i16vec4_t ) + sizeof( i16vec4_t );
-	// interleaved texcoords and colour in part 2
-	const int sizePart2 = sizeof( i16vec2_t ) + sizeof( u8vec4_t );
+	// part 1 is repeated for every frame
+	GLsizei sizePart1 = sizeVertexAnim1 * vbo->vertexesNum * vbo->framesNum;
+	GLsizei sizePart2 = sizeVertexAnim2 * vbo->vertexesNum;
 
 	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 4;
 	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_SHORT;
 	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_TRUE;
-	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = 0;
-	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizePart1;
-	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizePart1;
-	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = sizePart1 * vbo->vertexesNum;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = offsetof( struct fmtVertexAnim1, position );
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeVertexAnim1;
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeVertexAnim1;
+	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = sizeVertexAnim1 * vbo->vertexesNum;
 
 	vbo->attribs[ ATTR_INDEX_QTANGENT ].numComponents = 4;
 	vbo->attribs[ ATTR_INDEX_QTANGENT ].componentType = GL_SHORT;
 	vbo->attribs[ ATTR_INDEX_QTANGENT ].normalize     = GL_TRUE;
-	vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs          = sizeof( i16vec4_t );
-	vbo->attribs[ ATTR_INDEX_QTANGENT ].realStride   = sizePart1;
-	vbo->attribs[ ATTR_INDEX_QTANGENT ].stride       = sizePart1;
-	vbo->attribs[ ATTR_INDEX_QTANGENT ].frameOffset  = sizePart1 * vbo->vertexesNum;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs          = offsetof( struct fmtVertexAnim1, qtangents );
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].realStride   = sizeVertexAnim1;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].stride       = sizeVertexAnim1;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].frameOffset  = sizeVertexAnim1 * vbo->vertexesNum;
 
 	// these use the same layout
 	vbo->attribs[ ATTR_INDEX_POSITION2 ] = vbo->attribs[ ATTR_INDEX_POSITION ];
@@ -234,22 +259,67 @@ static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].numComponents = 2;
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].componentType = GL_HALF_FLOAT;
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].normalize     = GL_FALSE;
-	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs          = sizePart1 * vbo->vertexesNum * vbo->framesNum;
-	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride   = sizePart2;
-	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride       = sizePart2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs          = sizePart1 + offsetof( struct fmtVertexAnim2, texcoord );
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride   = sizeVertexAnim2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride       = sizeVertexAnim2;
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset  = 0;
 
 	vbo->attribs[ ATTR_INDEX_COLOR ].numComponents   = 4;
 	vbo->attribs[ ATTR_INDEX_COLOR ].componentType   = GL_UNSIGNED_BYTE;
 	vbo->attribs[ ATTR_INDEX_COLOR ].normalize       = GL_TRUE;
-	vbo->attribs[ ATTR_INDEX_COLOR ].ofs             = sizePart1 * vbo->vertexesNum * vbo->framesNum + sizeof( i16vec2_t );
-	vbo->attribs[ ATTR_INDEX_COLOR ].realStride      = sizePart2;
-	vbo->attribs[ ATTR_INDEX_COLOR ].stride          = sizePart2;
+	vbo->attribs[ ATTR_INDEX_COLOR ].ofs             = sizePart1 + offsetof( struct fmtVertexAnim2, colour );
+	vbo->attribs[ ATTR_INDEX_COLOR ].realStride      = sizeVertexAnim2;
+	vbo->attribs[ ATTR_INDEX_COLOR ].stride          = sizeVertexAnim2;
 	vbo->attribs[ ATTR_INDEX_COLOR ].frameOffset     = 0;
 
 	// total size
-	vbo->vertexesSize = sizePart1 * vbo->vertexesNum * vbo->framesNum
-		+ sizePart2 * vbo->vertexesNum;
+	vbo->vertexesSize = sizePart1 + sizePart2;
+}
+
+static void R_SetAttributeLayoutsSkeletal( VBO_t *vbo )
+{
+	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_SHORT;
+	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = offsetof( struct fmtSkeletal, position );
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = 0;
+
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].numComponents = 2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].componentType = GL_HALF_FLOAT;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs          = offsetof( struct fmtSkeletal, texcoord );
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride   = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride       = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset  = 0;
+
+	vbo->attribs[ ATTR_INDEX_COLOR ].numComponents   = 4;
+	vbo->attribs[ ATTR_INDEX_COLOR ].componentType   = GL_UNSIGNED_BYTE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].normalize       = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].ofs             = offsetof( struct fmtSkeletal, colour );
+	vbo->attribs[ ATTR_INDEX_COLOR ].realStride      = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_COLOR ].stride          = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_COLOR ].frameOffset     = 0;
+
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].componentType = GL_SHORT;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].normalize     = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs          = offsetof( struct fmtSkeletal, qtangents );
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].realStride   = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].stride       = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].frameOffset  = 0;
+
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].componentType = GL_UNSIGNED_SHORT;
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].ofs           = offsetof( struct fmtSkeletal, boneFactors );
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].realStride    = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].stride        = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].frameOffset   = 0;
+
+	// total size
+	vbo->vertexesSize = sizeSkeletal * vbo->vertexesNum;
 }
 
 static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
@@ -263,6 +333,10 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
 		R_SetAttributeLayoutsVertexAnimation( vbo );
+	}
+	else if ( vbo->layout == VBO_LAYOUT_SKELETAL )
+	{
+		R_SetAttributeLayoutsSkeletal( vbo );
 	}
 	else if ( vbo->layout == VBO_LAYOUT_SEPERATE )
 	{
@@ -297,26 +371,70 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
+		struct fmtVertexAnim1 *ptr = ( struct fmtVertexAnim1 * )outData;
+
 		for ( v = 0; v < vbo->framesNum * vbo->vertexesNum; v++ )
 		{
+
 			if ( ( vbo->attribBits & ATTR_POSITION ) )
 			{
 				vec4_t tmp;
 				VectorScale( inData.xyz[ v ], 1.0f / 512.0f, tmp);
 				tmp[4] = 1.0f; // unused
-				
-				floatToSnorm16( tmp, ( short * )( outData + vbo->attribs[ ATTR_INDEX_POSITION ].ofs + v * vbo->attribs[ ATTR_INDEX_POSITION ].realStride ) );
+
+				floatToSnorm16( tmp, ptr[ v ].position );
 			}
 
 			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
 			{
-				VERTEXCOPY( v, qtangent, ATTR_INDEX_QTANGENT, int16_t );
+				Vector4Copy( inData.qtangent[ v ], ptr[ v ].qtangents );
 			}
 		}
 	}
 
 	for ( v = 0; v < vbo->vertexesNum; v++ )
 	{
+		if ( vbo->layout == VBO_LAYOUT_SKELETAL ) {
+			struct fmtSkeletal *ptr = ( struct fmtSkeletal * )outData;
+			if ( ( vbo->attribBits & ATTR_POSITION ) )
+			{
+				vec4_t tmp;
+				VectorCopy( inData.xyz[ v ], tmp);
+				tmp[4] = 1.0f; // unused
+
+				floatToSnorm16( tmp, ptr[ v ].position );
+			}
+
+			if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
+			{
+				Vector2Copy( inData.st[ v ], ptr[ v ].texcoord );
+			}
+
+			if ( ( vbo->attribBits & ATTR_COLOR ) )
+			{
+				Vector4Copy( inData.color[ v ], ptr[ v ].colour );
+			}
+
+			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
+			{
+				Vector4Copy( inData.qtangent[ v ], ptr[ v ].qtangents );
+			}
+
+			if ( ( vbo->attribBits & ATTR_BONE_FACTORS ) )
+			{
+				uint32_t j;
+
+				ptr[ v ].boneFactors[ 0 ] = boneFactor( inData.boneIndexes[ v ][ 0 ],
+									1.0f - inData.boneWeights[ v ][ 0 ]);
+				for ( j = 1; j < 4; j++ ) {
+					ptr[ v ].boneFactors[ j ] = boneFactor( inData.boneIndexes[ v ][ j ],
+										inData.boneWeights[ v ][ j ] );
+				}
+			}
+
+			continue;
+		}
+
 		if ( vbo->layout != VBO_LAYOUT_VERTEX_ANIMATION )
 		{
 			if ( ( vbo->attribBits & ATTR_POSITION ) )
