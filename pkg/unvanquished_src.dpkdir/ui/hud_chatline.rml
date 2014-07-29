@@ -15,7 +15,7 @@
 		}
 	</style>
 	</head>
-	<body id="chat">
+	<body id="hud_chatline">
 	<chatType/> <chatfield onFocus="setChatCommand" />
 	</body>
 </rml>

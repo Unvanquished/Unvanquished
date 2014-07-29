@@ -55,7 +55,7 @@ img.logo {
 
 hackyspacer {
 	display:block;
-	height: 6em;
+	height: 12em;
 
 }
 

@@ -20,7 +20,7 @@
 		}
 	</style>
 </head>
-<body id="console">
+<body id="hud_messagebuffer">
 <console_text/>
 </body>
 </rml>
