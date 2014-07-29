@@ -135,7 +135,7 @@
 	</style>
 </head>
 
-<body id="hud_base">
+<body id="hud_basics">
 
 	<region class="topright">
 		<if cvar="cg_minimapActive" condition="==" value="1">
