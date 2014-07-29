@@ -2,22 +2,23 @@
 	main
 	{
 		// ######## Totalitarian Government Section ########
-		// Don't remove/add any entries, or daemon will fail to load
-		// These files don't have to actually exist, however
-		ui/menu_main.rml main             // ROCKETMENU_MAIN
-		ui/transition_connecting.rml connecting    // ROCKETMENU_CONNECTING
-		ui/transition_loading.rml loading          // ROCKETMENU_LOADING
-		ui/transition_downloading.rml download        // ROCKETMENU_DOWNLOADING
-		ui/menu_ingame.rml ingame          // ROCKETMENU_INGAME_MENU
-		ui/ingame_teamselect.rml teamsel           // ROCKETMENU_TEAMSELECT
-		ui/human_spawn.rml humanspawn       // ROCKETMENU_HUMANSPAWN
-		ui/alien_spawn.rml alienspawn       // ROCKETMENU_ALIENSPAWN
-		ui/alien_build.rml alienbuild       // ROCKETMENU_ALIENBUILD
-		ui/human_build.rml humanbuild       // ROCKETMENU_HUMANBUILD
-		ui/human_buy.rml armourybuy         // ROCKETMENU_ARMOURYBUY
-		ui/alien_evo.rml alienevo           // ROCKETMENU_ALIENEVOLVE
-		ui/ingame_chat.rml chat                    // ROCKETMENU_CHAT
-		ui/error.rml error                          // ROCKETMENU_ERROR
+		// Daemon crashes if any of these lines are missing, or if new lines
+		// are added. The files don't have to actually exist, however
+
+		ui/menu_main.rml main                     // ROCKETMENU_MAIN
+		ui/transition_connecting.rml connecting   // ROCKETMENU_CONNECTING
+		ui/transition_loading.rml loading         // ROCKETMENU_LOADING
+		ui/transition_downloading.rml download    // ROCKETMENU_DOWNLOADING
+		ui/menu_ingame.rml ingame                 // ROCKETMENU_INGAME_MENU
+		ui/ingame_teamselect.rml teamsel          // ROCKETMENU_TEAMSELECT
+		ui/human_spawn.rml humanspawn             // ROCKETMENU_HUMANSPAWN
+		ui/alien_spawn.rml alienspawn             // ROCKETMENU_ALIENSPAWN
+		ui/alien_build.rml alienbuild             // ROCKETMENU_ALIENBUILD
+		ui/human_build.rml humanbuild             // ROCKETMENU_HUMANBUILD
+		ui/human_buy.rml armourybuy               // ROCKETMENU_ARMOURYBUY
+		ui/alien_evo.rml alienevo                 // ROCKETMENU_ALIENEVOLVE
+		ui/ingame_chat.rml chat                   // ROCKETMENU_CHAT
+		ui/error.rml error                        // ROCKETMENU_ERROR
 	}
 	misc
 	{
