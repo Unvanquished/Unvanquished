@@ -1,20 +1,20 @@
 units
 {
-ui/hud_human.rml
-ui/hud_jetpack.rml
-ui/hud_alien.rml
-ui/hud_overlay.rml
-ui/hud_messagebuffer.rml
-ui/hud_basics.rml
-ui/hud_barbs.rml
-ui/hud_charge.rml
-ui/hud_bp.rml
-ui/ingame_scoreboard.rml
-ui/hud_builder.rml
+	ui/hud_human.rml
+	ui/hud_jetpack.rml
+	ui/hud_alien.rml
+	ui/hud_overlay.rml
+	ui/hud_messagebuffer.rml
+	ui/hud_basics.rml
+	ui/hud_barbs.rml
+	ui/hud_chargebar.rml
+	ui/hud_bp.rml
+	ui/hud_builder.rml
+	ui/ingame_scoreboard.rml
 }
 
-// Specs must be defined first. This is the basics hud
-spectator_hud
+// Specs must be defined first. This is the basic hud
+spectator.hudgroup
 {
 	hud_basics
 	hud_overlay
@@ -22,85 +22,60 @@ spectator_hud
 }
 
 // Define basics team huds
-human_hud
+human.hudgroup
 {
-	hud_jetpack
 	hud_basics
 	hud_overlay
 	hud_messagebuffer
+
+	hud_jetpack
+	hud_human
 }
 
-alien_hud
+alien.hudgroup
 {
 	hud_basics
 	hud_overlay
 	hud_messagebuffer
+
+	hud_alien
 }
 
 // Define individual weapons here
-ckit_hud
+ckit.hudgroup
 {
-	hud_jetpack
-	hud_basics
-	human_hud
-	hud_overlay
-	hud_messagebuffer
 	hud_builder
 }
 
-lcannon_hud
+lcannon.hudgroup
 {
-	hud_basics
-	human_hud
-	hud_overlay
-	hud_messagebuffer
-	hud_charge
+	hud_chargebar
 }
 
-level3_hud
+level3.hudgroup
 {
-	hud_basics
-	alien_hud
-	hud_overlay
-	hud_messagebuffer
-	hud_charge
+	hud_chargebar
 }
 
-level3upg_hud
+level3upg.hudgroup
 {
-	hud_basics
-	alien_hud
 	hud_barbs
-	hud_overlay
-	hud_messagebuffer
-	hud_charge
+	hud_chargebar
 }
 
-level4_hud
+level4.hudgroup
 {
-	hud_basics
-	alien_hud
-	hud_overlay
-	hud_messagebuffer
-	hud_charge
+	hud_chargebar
 }
 
-abuild_hud
+abuild.hudgroup
 {
-	hud_basics
-	alien_hud
-	hud_overlay
-	hud_messagebuffer
 	hud_bp
 	hud_builder
 }
 
-abuildupg_hud
+abuildupg.hudgroup
 {
-	hud_basics
-	alien_hud
-	hud_overlay
-	hud_messagebuffer
 	hud_bp
 	hud_builder
 }
