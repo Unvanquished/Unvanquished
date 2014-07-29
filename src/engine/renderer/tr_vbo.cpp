@@ -47,6 +47,15 @@ struct fmtSkeletal {
 };
 const GLsizei sizeSkeletal = sizeof( struct fmtSkeletal );
 
+// interleaved data: position, colour, qtangent, texcoord
+struct fmtStatic {
+	vec3_t    position;
+	u8vec4_t  colour;
+	i16vec4_t qtangents;
+	i16vec4_t texcoord;
+};
+const GLsizei sizeStatic = sizeof( struct fmtStatic );
+
 
 static uint32_t R_DeriveAttrBits( vboData_t data )
 {
@@ -322,6 +331,44 @@ static void R_SetAttributeLayoutsSkeletal( VBO_t *vbo )
 	vbo->vertexesSize = sizeSkeletal * vbo->vertexesNum;
 }
 
+static void R_SetAttributeLayoutsStatic( VBO_t *vbo )
+{
+	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 3;
+	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_FLOAT;
+	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = offsetof( struct fmtStatic, position );
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = 0;
+
+	vbo->attribs[ ATTR_INDEX_COLOR ].numComponents   = 4;
+	vbo->attribs[ ATTR_INDEX_COLOR ].componentType   = GL_UNSIGNED_BYTE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].normalize       = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].ofs             = offsetof( struct fmtStatic, colour );
+	vbo->attribs[ ATTR_INDEX_COLOR ].realStride      = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_COLOR ].stride          = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_COLOR ].frameOffset     = 0;
+
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].componentType = GL_SHORT;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].normalize     = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs           = offsetof( struct fmtStatic, qtangents );
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].realStride    = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].stride        = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].frameOffset   = 0;
+
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].componentType = GL_HALF_FLOAT;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs           = offsetof( struct fmtStatic, texcoord );
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride    = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride        = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset   = 0;
+
+	// total size
+	vbo->vertexesSize = sizeStatic * vbo->vertexesNum;
+}
+
 static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 {
 	uint32_t i;
@@ -337,6 +384,10 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 	else if ( vbo->layout == VBO_LAYOUT_SKELETAL )
 	{
 		R_SetAttributeLayoutsSkeletal( vbo );
+	}
+	else if ( vbo->layout == VBO_LAYOUT_STATIC )
+	{
+		R_SetAttributeLayoutsStatic( vbo );
 	}
 	else if ( vbo->layout == VBO_LAYOUT_SEPERATE )
 	{
@@ -430,6 +481,29 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 					ptr[ v ].boneFactors[ j ] = boneFactor( inData.boneIndexes[ v ][ j ],
 										inData.boneWeights[ v ][ j ] );
 				}
+			}
+
+			continue;
+		} else if ( vbo->layout == VBO_LAYOUT_STATIC ) {
+			struct fmtStatic *ptr = ( struct fmtStatic * )outData;
+			if ( ( vbo->attribBits & ATTR_POSITION ) )
+			{
+				VectorCopy( inData.xyz[ v ], ptr[ v ].position );
+			}
+
+			if ( ( vbo->attribBits & ATTR_COLOR ) )
+			{
+				Vector4Copy( inData.color[ v ], ptr[ v ].colour );
+			}
+
+			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
+			{
+				Vector4Copy( inData.qtangent[ v ], ptr[ v ].qtangents );
+			}
+
+			if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
+			{
+				Vector4Copy( inData.stpq[ v ], ptr[ v ].texcoord );
 			}
 
 			continue;
@@ -691,7 +765,7 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, 
 
 	Q_strncpyz( vbo->name, name, sizeof( vbo->name ) );
 
-	vbo->layout = VBO_LAYOUT_SEPERATE;
+	vbo->layout = VBO_LAYOUT_STATIC;
 	vbo->framesNum = 0;
 	vbo->vertexesNum = numVertexes;
 	vbo->attribBits = stateBits;
