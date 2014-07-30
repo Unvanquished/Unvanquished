@@ -50,6 +50,9 @@
 				color: white;
 				font-size: 18px;
 				font-weight: bold;
+				/* Dejavu has monospaced numbers, but Roboto does not
+				   This stops the the percentage number "jiggling" left and right */
+				font-family: Dejavu Sans;
 			}
 			div.infobox {
 				font-size: 18px;
