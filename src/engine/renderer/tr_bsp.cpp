@@ -3783,7 +3783,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 			triangles[ i ].indexes[ 2 ] = tess.indexes[ i * 3 + 2 ];
 		}
 
-		out->volumeVBO = R_CreateStaticVBO( va( "staticBspNode_VBO %i", j ), data, VBO_LAYOUT_SEPERATE );
+		out->volumeVBO = R_CreateStaticVBO( va( "staticBspNode_VBO %i", j ), data, VBO_LAYOUT_POSITION );
 
 		if ( j == 0 )
 		{

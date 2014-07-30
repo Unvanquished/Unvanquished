@@ -369,6 +369,20 @@ static void R_SetAttributeLayoutsStatic( VBO_t *vbo )
 	vbo->vertexesSize = sizeStatic * vbo->vertexesNum;
 }
 
+static void R_SetAttributeLayoutsPosition( VBO_t *vbo )
+{
+	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 3;
+	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_FLOAT;
+	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = 0;
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeof( vec3_t );
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeof( vec3_t );
+	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = 0;
+
+	// total size
+	vbo->vertexesSize = sizeof( vec3_t ) * vbo->vertexesNum;
+}
+
 static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 {
 	uint32_t i;
@@ -388,6 +402,10 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 	else if ( vbo->layout == VBO_LAYOUT_STATIC )
 	{
 		R_SetAttributeLayoutsStatic( vbo );
+	}
+	else if ( vbo->layout == VBO_LAYOUT_POSITION )
+	{
+		R_SetAttributeLayoutsPosition( vbo );
 	}
 	else if ( vbo->layout == VBO_LAYOUT_SEPERATE )
 	{
@@ -506,6 +524,13 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 				Vector4Copy( inData.stpq[ v ], ptr[ v ].texcoord );
 			}
 
+			continue;
+		} else if ( vbo->layout == VBO_LAYOUT_POSITION ) {
+			vec3_t *ptr = ( vec3_t * )outData;
+			if ( ( vbo->attribBits & ATTR_POSITION ) )
+			{
+				VectorCopy( inData.xyz[ v ], ptr[ v ] );
+			}
 			continue;
 		}
 
@@ -1030,7 +1055,7 @@ static void R_InitUnitCubeVBO( void )
 		VectorCopy( tess.xyz[ i ], data.xyz[ i ] );
 	}
 
-	tr.unitCubeVBO = R_CreateStaticVBO( "unitCube_VBO", data, VBO_LAYOUT_SEPERATE );
+	tr.unitCubeVBO = R_CreateStaticVBO( "unitCube_VBO", data, VBO_LAYOUT_POSITION );
 	tr.unitCubeIBO = R_CreateStaticIBO( "unitCube_IBO", tess.indexes, tess.numIndexes );
 
 	ri.Hunk_FreeTempMemory( data.xyz );
