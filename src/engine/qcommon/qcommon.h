@@ -286,11 +286,11 @@ You or the server may be running older versions of the game."
 
 // NERVE - SMF - wolf multiplayer master servers
 #ifndef MASTER_SERVER_NAME
-# define MASTER_SERVER_NAME    "unvnet.net"
+# define MASTER_SERVER_NAME    "master.unvanquished.net"
 #endif
 
 #ifndef MOTD_SERVER_NAME
-# define MOTD_SERVER_NAME      "unvnet.net"
+# define MOTD_SERVER_NAME      "master.unvanquished.net"
 #endif
 
 #define PORT_MASTER             27950
