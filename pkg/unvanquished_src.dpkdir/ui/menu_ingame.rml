@@ -6,10 +6,10 @@
 	</head>
 
 	<body id="ingame" class="ingame" >
-		<img class="gradient" src="/ui/assets/background/bg" />
-		<img class="gradient black" src="/ui/assets/background/black" />
-		<img class="circles" src="/ui/assets/background/circles1" />
-		<img class="circles" src="/ui/assets/background/circles2" />
+		<img class="gradient black" src="/ui/assets/black" />
+		<img class="circles" src="/ui/assets/circles1" />
+		<img class="circles" src="/ui/assets/circles2" />
+		<img class="black2" src="/ui/assets/black2" />
 
 		<sidebar>
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
