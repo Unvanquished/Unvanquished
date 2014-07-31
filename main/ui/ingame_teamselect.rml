@@ -24,32 +24,32 @@
 				margin: 0.5em;
 				background-color: #00000055;
 			}
-			
+
 			datagridrow:selected
 			{
 				background: rgba(111,111,111,111);
 			}
-			
-			
+
+
 		</style>
 	</head>
-	
-	<body id="teamsel" template="window" onShow="buildDS teamList default">
-		
+
+	<body id="ingame_teamselect" template="window" onShow="buildDS teamList default">
+
 		<box class="left">
 		<datagrid id="team"  source="teamList.default">
 			<col fields="name" width="100%"/>
 		</datagrid>
 		</box>
-		
+
 		<box class="right">
 			<datasource_single source="teamList.default" fields="description" targetid="team" />
 		</box>
-		
+
 		<buttonbar>
 			<button onClick="execDS teamList default">Spawn</button>
 			<button onClick="hide teamsel">Cancel</button>
 		</buttonbar>
-		
+
 	</body>
 </rml>

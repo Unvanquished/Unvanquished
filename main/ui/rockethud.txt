@@ -13,15 +13,15 @@ units
 	ui/ingame_scoreboard.rml
 }
 
-// Specs must be defined first. This is the basic hud
+// Default huds
+// TODO: Make these inheritable for the subclasses, so we don't need to copy+paste common elements
+
 spectator.hudgroup
 {
 	hud_basics
 	hud_overlay
 	hud_messagebuffer
 }
-
-// Define basics team huds
 human.hudgroup
 {
 	hud_basics
@@ -41,41 +41,85 @@ alien.hudgroup
 	hud_alien
 }
 
-// Define individual weapons here
+// Individual classes/weapons
 ckit.hudgroup
 {
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_jetpack
+	hud_human
+
 	hud_builder
 }
 
 lcannon.hudgroup
 {
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_jetpack
+	hud_human
+
 	hud_chargebar
 }
 
 level3.hudgroup
 {
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
 	hud_chargebar
 }
 
 level3upg.hudgroup
 {
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
 	hud_barbs
 	hud_chargebar
 }
 
 level4.hudgroup
 {
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
 	hud_chargebar
 }
 
 abuild.hudgroup
 {
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
 	hud_bp
 	hud_builder
 }
 
 abuildupg.hudgroup
 {
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
 	hud_bp
 	hud_builder
 }
