@@ -1,62 +1,53 @@
 <rml>
-	<head>
-		<link type="text/rcss" href="/ui/shared/basics.rcss" />
-		<link type="text/template" href="/ui/shared/window.rml" />
-		<style>
-			body
-			{
-				width: 43em;
-				height: 10em;
-				margin: auto;
-			}
-
-			box {
-				display: block;
-				float:left;
-				height: 10em;
-			}
-			box.left {
-				width: 10em;
-			}
-			box.right {
-				width: 25em;
-				padding: 1em;
-				margin: 0.5em;
-				background-color: #00000055;
-			}
-
-			datagridrow:selected
-			{
-				background: rgba(111,111,111,111);
-			}
-
-			button#back
-			{
-				float: left;
-			}
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/template" href="/ui/shared/window.rml" />
+	<style>
+		body
+		{
+			width: 30em;
+			height: 10em;
+			margin: auto;
+		}
 
 
+		button.rifle
+		{
+			width: 40%;
+			float: left;
+			margin-left: 0;
+		}
 
-		</style>
-	</head>
-	<body id="human_spawn" template="window" onShow="buildDS humanSpawnItems default">
+		button.ckit
+		{
+			width: 40%;
+			float: right;
+			margin-right: 0;
+		}
 
+		button.teamselect
+		{
+			width: 100%;
+			margin-left: auto;
+			margin-right: auto;
+		}
 
-		<box class="left">
-		<datagrid id="team"  source="humanSpawnItems.default">
-			<col fields="name" width="100%"/>
-		</datagrid>
-		</box>
+		p {
+			clear: both;
+		}
 
-		<box class="right">
-			<datasource_single source="humanSpawnItems.default" fields="description" targetid="team" />
-		</box>
+	</style>
+</head>
 
-		<buttonbar>
-			<button id="back" onClick="hide humanspawn; show teamsel">Back</button>
-			<button onClick="execDS humanSpawnItems default">Spawn</button>
-			<button onClick="hide humanspawn">Cancel</button>
-		</buttonbar>
+<body id="human_spawn" template="window">
+	<p> Choose your spawn class </p>
 
-	</body>
+	<button class="rifle" onClick="hide human_spawn; exec class rifle"> Rifle </button>
+	<button class="ckit"  onClick="hide human_spawn; exec class ckit"> Construction Kit </button>
+
+	<p> All weapons can be traded at the armoury. </p>
+
+	<button class="teamselect"  onClick="hide human_spawn; show ingame_teamselect"> Back to team selection </button>
+
+</body>
 </rml>
