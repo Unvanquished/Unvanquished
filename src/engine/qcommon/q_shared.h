@@ -1471,15 +1471,14 @@ void         ByteToDir( int b, vec3_t dir );
 	}
 	STATIC_INLINE __m128 sseLoadVec3( const vec3_t vec ) {
 		__m128 v = _mm_load_ss( &vec[ 2 ] );
-		v = sseSwizzle( v, XXXX );
+		v = sseSwizzle( v, YYXY );
 		v = _mm_loadl_pi( v, (__m64 *)vec );
-		v = _mm_and_ps( v, mask_XYZ0() );
 		return v;
 	}
 	STATIC_INLINE void sseStoreVec3( __m128 in, vec3_t out ) {
 		_mm_storel_pi( (__m64 *)out, in );
 		__m128 v = sseSwizzle( in, ZZZZ );
-		_mm_store_ps( &out[ 2 ], v );
+		_mm_store_ss( &out[ 2 ], v );
 	}
 	STATIC_INLINE void TransInit( transform_t *t ) {
 		__m128 u = unitQuat();
