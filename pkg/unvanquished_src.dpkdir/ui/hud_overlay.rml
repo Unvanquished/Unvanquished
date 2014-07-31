@@ -19,7 +19,7 @@
 </head>
 <body id="hud_overlay">
 <div>
-	(IAMA Overlay) <center_print/>
+	<center_print/>
 </div>
 </body>
 </rml>
