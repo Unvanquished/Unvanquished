@@ -1469,7 +1469,6 @@ void         ByteToDir( int b, vec3_t dir );
 		t = _mm_mul_ps( sseSwizzle( q, WWWW ), t );
 		return _mm_add_ps( _mm_add_ps( vec, t2 ), t );
 	}
-
 	STATIC_INLINE __m128 sseLoadVec3( const vec3_t vec ) {
 		__m128 v = _mm_load_ss( &vec[ 2 ] );
 		v = sseSwizzle( v, YYXY );
