@@ -1,60 +1,54 @@
 <rml>
-	<head>
-		<link type="text/rcss" href="/ui/shared/basics.rcss" />
-		<link type="text/template" href="/ui/shared/window.rml" />
-		<style>
-			body
-			{
-				width: 43em;
-				height: 10em;
-				margin: auto;
-			}
-
-			box {
-				display: block;
-				float:left;
-				height: 10em;
-			}
-			box.left {
-				width: 10em;
-			}
-			box.right {
-				width: 25em;
-				padding: 1em;
-				margin: 0.5em;
-				background-color: #00000055;
-			}
-
-			datagridrow:selected
-			{
-				background: rgba(111,111,111,111);
-			}
-
-			button#back
-			{
-				float: left;
-			}
-
-		</style>
-	</head>
-	<body id="alien_spawn" template="window" onShow="buildDS alienSpawnClass default">
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/template" href="/ui/shared/window.rml" />
+	<style>
+		body
+		{
+			width: 30em;
+			height: 10em;
+			margin: auto;
+		}
 
 
-		<box class="left">
-		<datagrid id="team"  source="alienSpawnClass.default">
-			<col fields="name" width="100%"/>
-		</datagrid>
-		</box>
+		button.dretch
+		{
+			width: 40%;
+			float: left;
+			margin-left: 0;
+		}
 
-		<box class="right">
-			<datasource_single source="alienSpawnClass.default" fields="description" targetid="team" />
-		</box>
+		button.builder
+		{
+			width: 40%;
+			float: right;
+			margin-right: 0;
+		}
 
-		<buttonbar>
-			<button id="back" onClick="hide humanspawn; show teamsel">Back</button>
-			<button onClick="execDS alienSpawnClass default">Spawn</button>
-			<button onClick="hide alienspawn">Cancel</button>
-		</buttonbar>
+		button.teamselect
+		{
+			width: 100%;
+			margin-left: auto;
+			margin-right: auto;
+		}
 
-	</body>
+		p {
+			clear: both;
+		}
+
+	</style>
+</head>
+
+<body id="alien_spawn" template="window">
+	<p> Choose your spawn class </p>
+
+	<button class="dretch"  onClick="hide alien_spawn; exec class level0"> Dretch </button>
+	<!-- FIXME: always spawn as the correct granger version -->
+	<button class="builder" onClick="hide alien_spawn; exec class builderupg; exec class builder"> Granger </button>
+
+	<p> You cannot evolve into a granger from another class</p>
+
+	<button class="teamselect"  onClick="hide alien_spawn; show ingame_teamselect"> Back to team selection </button>
+
+</body>
 </rml>
