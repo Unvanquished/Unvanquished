@@ -7,9 +7,12 @@
 	<body id="options_mouse" template="window" style="width: 32em; margin: 10%;">
 		<h1> Mouse and Aiming </h1>
 		<row>
-			<h3> Free look </h3>
-			<input cvar="cl_freelook" type="checkbox" />
-			<p>Turn off only if you are a Quake junkie.</p>
+			<h3>Y axis</h3>
+			<select cvar="m_pitch">
+				<option value="0.022">Normal</option>
+				<option value="-0.022">Inverted</option>
+			</select>
+			<p> Behavior of vertical mouse movement. </p>
 		</row>
 		<row>
 			<h3> Mouse sensitivity </h3>
@@ -23,6 +26,11 @@
 			<h3>Mouse filter</h3>
 			<input cvar="m_filter" type="checkbox" />
 			<p>Smooth out sudden mouse movements</p>
+		</row>
+		<row>
+			<h3> Free look </h3>
+			<input cvar="cl_freelook" type="checkbox" />
+			<p>Turn off only if you are a Quake junkie.</p>
 		</row>
 
 
