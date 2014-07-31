@@ -177,7 +177,7 @@ button {
 	display: block;
 	float: right;
 	width: 5em;
-	background-color: #136D67;   /* Dark cyan */
+	background-color: #0D4D48;   /* Darker cyan */
 	text-align: center;
 	padding: 0.3em;
 	margin: 0.5em;
@@ -186,7 +186,7 @@ button {
 }
 
 button:hover{
-	background-color: #1B9991;   /* MED cyan */
+	background-color: #178079;   /* MED cyan */
 }
 
 img.emoticon {
