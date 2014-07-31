@@ -1081,11 +1081,6 @@ void R_InitVBOs( void )
 
 	tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", SHADER_MAX_VERTEXES, attribs, VBO_LAYOUT_SEPERATE );
 
-	tess.vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset = sizeof( tess.xyz );
-	tess.vbo->attribs[ ATTR_INDEX_QTANGENT ].frameOffset = sizeof( tess.qtangents );
-	tess.vbo->attribs[ ATTR_INDEX_POSITION2 ].frameOffset = sizeof( tess.xyz );
-	tess.vbo->attribs[ ATTR_INDEX_QTANGENT2 ].frameOffset = sizeof( tess.qtangents );
-
 	tess.ibo = R_CreateDynamicIBO( "tessVertexArray_IBO", SHADER_MAX_INDEXES );
 
 	R_InitUnitCubeVBO();
@@ -1141,6 +1136,88 @@ void R_ShutdownVBOs( void )
 
 	Com_DestroyGrowList( &tr.vbos );
 	Com_DestroyGrowList( &tr.ibos );
+}
+
+/*
+==============
+Tess_UpdateVBOs
+
+Tr3B: update the default VBO to replace the client side vertex arrays
+==============
+*/
+void Tess_UpdateVBOs( uint32_t attribBits )
+{
+	if ( r_logFile->integer )
+	{
+		GLimp_LogComment( va( "--- Tess_UpdateVBOs( attribBits = %i ) ---\n", attribBits ) );
+	}
+
+	GL_CheckErrors();
+
+	// update the default VBO
+	if ( tess.numVertexes > 0 && tess.numVertexes <= SHADER_MAX_VERTEXES )
+	{
+		R_BindVBO( tess.vbo );
+
+		GL_CheckErrors();
+
+		assert( ( attribBits & ATTR_BITS ) != 0 );
+
+		GL_VertexAttribsState( attribBits );
+
+		if ( attribBits & ATTR_POSITION )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "glBufferSubData( ATTR_POSITION, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+			}
+
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_POSITION ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.xyz );
+		}
+
+		if ( attribBits & ATTR_TEXCOORD )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "glBufferSubData( ATTR_TEXCOORD, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+			}
+
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs, tess.numVertexes * sizeof( i16vec4_t ), tess.texCoords );
+		}
+
+		if ( attribBits & ATTR_QTANGENT )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "glBufferSubData( ATTR_QTANGENT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+			}
+
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs, tess.numVertexes * sizeof( i16vec4_t ), tess.qtangents );
+		}
+
+		if ( attribBits & ATTR_COLOR )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "glBufferSubData( ATTR_COLOR, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+			}
+
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * sizeof( u8vec4_t ), tess.colors );
+		}
+
+	}
+
+	GL_CheckErrors();
+
+	// update the default IBO
+	if ( tess.numIndexes > 0 && tess.numIndexes <= SHADER_MAX_INDEXES )
+	{
+		R_BindIBO( tess.ibo );
+
+		glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, tess.numIndexes * sizeof( glIndex_t ), tess.indexes );
+	}
+
+	GL_CheckErrors();
 }
 
 /*
