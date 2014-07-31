@@ -1,55 +1,74 @@
 <rml>
-	<head>
-		<link type="text/rcss" href="/ui/shared/basics.rcss" />
-		<link type="text/template" href="/ui/shared/window.rml" />
-		<style>
-			body
-			{
-				width: 43em;
-				height: 10em;
-				margin: auto;
-			}
-
-			box {
-				display: block;
-				float:left;
-				height: 10em;
-			}
-			box.left {
-				width: 10em;
-			}
-			box.right {
-				width: 25em;
-				padding: 1em;
-				margin: 0.5em;
-				background-color: #00000055;
-			}
-
-			datagridrow:selected
-			{
-				background: rgba(111,111,111,111);
-			}
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/template" href="/ui/shared/window.rml" />
+	<style>
+		body
+		{
+			width: 35em;
+			height: 20em;
+			margin: auto;
+		}
 
 
-		</style>
-	</head>
+		button.alien
+		{
+			width: 40%;
+			float: left;
+			margin-left: 0;
+			background-color: #6D131D;
 
-	<body id="ingame_teamselect" template="window" onShow="buildDS teamList default">
+		}
+		button.alien:hover
+		{
+			background-color: #91676C;
+		}
 
-		<box class="left">
-		<datagrid id="team"  source="teamList.default">
-			<col fields="name" width="100%"/>
-		</datagrid>
-		</box>
+		button.human
+		{
+			width: 40%;
+			float: right;
+			margin-right: 0;
+			background-color: #131F6D;
+		}
+		button.human:hover
+		{
+			background-color: #6771AD;
+		}
 
-		<box class="right">
-			<datasource_single source="teamList.default" fields="description" targetid="team" />
-		</box>
+		button.wide
+		{
+			width: 100%;
+			margin-left: auto;
+			margin-right: auto;
+		}
 
-		<buttonbar>
-			<button onClick="execDS teamList default">Spawn</button>
-			<button onClick="hide teamsel">Cancel</button>
-		</buttonbar>
+		p {
+			clear: both;
+		}
 
-	</body>
+	</style>
+</head>
+
+<body id="ingame_teamselect" template="window">
+
+	<button class="wide" onClick="hide ingame_teamselect; exec team auto"> Auto-select a team </button>
+
+	<p>
+		The Aliens' strength is in agility. They possess only short-ranged attacks, but can dance
+		around their opponents and quickly spread their creep.
+	</p>
+	<p>
+		The Humans are the masters of ranged technology. Although they are soft and weak, they more
+		than make up for it in upgrades.
+	</p>
+
+	<button class="alien" onClick="hide ingame_teamselect; exec team alien"> Join Aliens </button>
+	<button class="human" onClick="hide ingame_teamselect; exec team human"> Join Humans </button>
+
+	<p> Alternatively you can watch the game without playing.</p>
+
+	<button class="wide"  onClick="hide ingame_teamselect; exec team spec"> Spectate </button>
+
+</body>
 </rml>
