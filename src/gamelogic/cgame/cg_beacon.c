@@ -323,7 +323,8 @@ static void CG_RunBeacon( cbeacon_t *b )
 	}
 
 	// color
-	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE || b->type == BCT_TAG )
+	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE ||
+	    b->type == BCT_TAG || b->type == BCT_BASE )
 	{
 		switch( b->team )
 		{
