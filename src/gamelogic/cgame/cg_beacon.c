@@ -235,8 +235,18 @@ static void CG_RunBeacon( cbeacon_t *b )
 	{
 		if( time_in > 1000 )
 			b->s->old = qtrue;
-		else if( BG_Beacon( b->type )->inSound )
-			trap_S_StartLocalSound( BG_Beacon( b->type )->inSound, CHAN_LOCAL_SOUND );
+		else
+		{
+			if( b->type == BCT_TAG && !( b->flags & EF_BC_ENEMY ) )
+				goto no_in_sound;
+
+			if( b->type == BCT_TAG && b->owner == cg.predictedPlayerState.clientNum )
+				trap_S_StartLocalSound( cgs.media.ownedTagSound, CHAN_LOCAL_SOUND );
+			else if( BG_Beacon( b->type )->inSound )
+				trap_S_StartLocalSound( BG_Beacon( b->type )->inSound, CHAN_LOCAL_SOUND );
+
+			no_in_sound:;
+		}
 	}
 
 	// check death
@@ -678,33 +688,43 @@ CG_BeaconIcon
 Figures out the icon shader for a beacon.
 =============
 */
-qhandle_t CG_BeaconIcon( const cbeacon_t *b )
+qhandle_t CG_BeaconIcon( const cbeacon_t *b, qboolean hud )
 {
 	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
 		return 0;
 
 	if ( b->type == BCT_TAG )
 	{
-		if ( b->flags & EF_BC_TAG_PLAYER )
+		if ( b == cg.highlightedBeacon || !hud )
 		{
-			if ( ( b->team == TEAM_ALIENS ) == !( b->flags & EF_BC_ENEMY ) )
+			if ( b->flags & EF_BC_TAG_PLAYER )
 			{
-				if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
-					return 0;
-				return cg_classes[ b->data ].classIcon;
+				if ( ( b->team == TEAM_ALIENS ) == !( b->flags & EF_BC_ENEMY ) )
+				{
+					if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
+						return 0;
+					return cg_classes[ b->data ].classIcon;
+				}
+				else
+				{
+					if( b->data <= WP_NONE || b->data >= WP_NUM_WEAPONS )
+						return 0;
+					return cg_weapons[ b->data ].weaponIcon;
+				}
 			}
 			else
 			{
-				if( b->data <= WP_NONE || b->data >= WP_NUM_WEAPONS )
+				if( b->data <= BA_NONE || b->data >= BA_NUM_BUILDABLES )
 					return 0;
-				return cg_weapons[ b->data ].weaponIcon;
+				return cg_buildables[ b->data ].buildableIcon;
 			}
 		}
 		else
 		{
-			if( b->data <= BA_NONE || b->data >= BA_NUM_BUILDABLES )
-				return 0;
-			return cg_buildables[ b->data ].buildableIcon;
+			if ( b->flags & EF_BC_TAG_PLAYER )
+				return BG_Beacon( b->type )->icon[ 1 ];
+			else
+				return BG_Beacon( b->type )->icon[ 0 ];
 		}
 	}
 	else if ( b->type == BCT_BASE )

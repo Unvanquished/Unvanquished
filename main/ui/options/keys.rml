@@ -132,6 +132,10 @@
 					<p>Deconstruct Structure:</p>
 				</row>
 				<row>
+					<keybind cmd='beaconMenu' />
+					<p>Beacon menu:</p>
+				</row>
+				<row>
 					<keybind cmd="modcase shift /screenshotPNG /screenshotJPEG" />
 					<p>Screenshot:</p>
 				</row>

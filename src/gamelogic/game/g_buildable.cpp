@@ -4790,6 +4790,9 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		G_BuildLogSet( log, built );
 	}
 
+	if( builder->client )
+		Beacon::Tag( built, (team_t)builder->client->pers.team, builder->client->ps.clientNum, qtrue );
+
 	BaseClustering::Update(built);
 
 	return built;
@@ -4938,6 +4941,9 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 	G_SetOrigin( built, tr.endpos );
 
 	trap_LinkEntity( built );
+
+	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, ENTITYNUM_NONE, qtrue );
+
 	return built;
 }
 

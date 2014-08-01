@@ -576,7 +576,7 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 	color[ 3 ] *= cgs.bc.minimapAlpha;
 	trap_R_SetColor( color );
 
-	trap_R_DrawRotatedPic( pos2d[ 0 ], pos2d[ 1 ], size, size, 0.0, 0.0, 1.0, 1.0, CG_BeaconIcon( b ), 0.0 );
+	trap_R_DrawRotatedPic( pos2d[ 0 ], pos2d[ 1 ], size, size, 0.0, 0.0, 1.0, 1.0, CG_BeaconIcon( b, qfalse ), 0.0 );
 	if( b->flags & EF_BC_DYING )
 		trap_R_DrawStretchPic( pos2d[ 0 ] - size/2 * 0.3,
 		                       pos2d[ 1 ] - size/2 * 0.3,

@@ -2452,7 +2452,6 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 			PARSE( text, token );
 #ifdef BUILD_CGAME
 			ba->desc = BG_strdup( token );
-			Com_Printf( "%s: %s\n", ba->name, ba->desc );
 #endif
 		}
 		else if ( !Q_stricmp( token, "icon" ) )

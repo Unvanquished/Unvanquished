@@ -637,7 +637,6 @@ namespace Beacon //this should eventually become a class
 				targetTeam = (team_t)ent->client->pers.team;
 				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, NULL, NULL, NULL );
 				dead = ( ent->client && ent->client->ps.stats[ STAT_HEALTH ] <= 0 );
-				owner = ent->s.number;
 				player = qtrue;
 
 				// data is the class (aliens) or the weapon number (humans)

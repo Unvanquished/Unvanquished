@@ -1615,6 +1615,7 @@ typedef struct
 	qhandle_t   beaconTagScore;
 
 	sfxHandle_t timerBeaconExpiredSound;
+	sfxHandle_t ownedTagSound;
 } cgMedia_t;
 
 typedef struct
@@ -2285,7 +2286,7 @@ const char *CG_TutorialText( void );
 
 void          CG_LoadBeaconsConfig( void );
 void          CG_ListBeacons( void );
-qhandle_t     CG_BeaconIcon( const cbeacon_t *b );
+qhandle_t     CG_BeaconIcon( const cbeacon_t *b, qboolean hud );
 const char    *CG_BeaconText( const cbeacon_t *b );
 
 //
