@@ -342,7 +342,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		Vector4Copy( b->color, color );
 		if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
 			color[ 3 ] *= cgs.bc.hudAlpha;
-		color[ 3 ] *= MIN( 1.0, LinearRemap( offset, cgs.bc.arrowAlphaLow, cgs.bc.arrowAlphaHigh, 0, 1 ) );
+		color[ 3 ] *= MIN( 1.0f, LinearRemap( offset, cgs.bc.arrowAlphaLow, cgs.bc.arrowAlphaHigh, 0, 1 ) );
 		trap_R_SetColor( color );
 
 		midpoint[ 0 ] = b->s->pos[ 0 ] - delta[ 0 ] / 2.0;

@@ -24,31 +24,35 @@
 				margin: 0.5em;
 				background-color: #00000055;
 			}
-			
+
 			datagridrow:selected
 			{
 				background: rgba(111,111,111,111);
 			}
-		
-			
+			button#back
+			{
+				float: left;
+			}
+
 		</style>
 	</head>
 	<body id="alienspawn" template="window" onShow="buildDS alienSpawnClass default">
-		
+
 		<box class="left">
 		<datagrid id="team"  source="alienSpawnClass.default">
 			<col fields="name" width="100%"/>
 		</datagrid>
 		</box>
-		
+
 		<box class="right">
 			<datasource_single source="alienSpawnClass.default" fields="description" targetid="team" />
 		</box>
-		
+
 		<buttonbar>
+			<button id="back" onClick="hide humanspawn; show teamsel">Back</button>
 			<button onClick="execDS alienSpawnClass default">Spawn</button>
 			<button onClick="hide alienspawn">Cancel</button>
 		</buttonbar>
-		
+
 	</body>
 </rml>

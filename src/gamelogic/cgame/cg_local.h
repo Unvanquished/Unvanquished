@@ -35,10 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../common/Maths.h"
 #endif
 
-// std::min is retarded
-#undef MIN
-#define MIN(a,b) ((a)<(b)?(a):(b))
-
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is no persistent data between levels on the client side.
 // If you absolutely need something stored, it can either be kept
@@ -1087,6 +1083,13 @@ typedef enum
 	SAY_TYPE_COMMAND,
 } sayType_t;
 
+typedef struct
+{
+	int     init;
+	vec3_t  oa; // old angles
+	vec3_t  oav; // old angular velocity
+} weaponInertia_t;
+
 #define NUM_BINARY_SHADERS 256
 
 typedef struct
@@ -1289,6 +1292,8 @@ typedef struct
 	// momentum
 	float                   momentumGained;
 	int                     momentumGainedTime;
+
+	weaponInertia_t         weaponInertia;
 
 	// beacons
 	cbeacon_t               beacons[ MAX_CBEACONS ];
