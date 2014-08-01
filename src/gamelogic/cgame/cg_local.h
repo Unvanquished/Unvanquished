@@ -987,9 +987,6 @@ typedef enum
 	SAY_TYPE_COMMAND,
 } sayType_t;
 
-
-#define WI_SAMPLES 50
-
 typedef struct
 {
 	int     init;
