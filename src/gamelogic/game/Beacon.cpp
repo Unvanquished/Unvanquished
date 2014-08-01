@@ -468,6 +468,9 @@ namespace Beacon //this should eventually become a class
 	 */
 	static inline void RefreshTag( gentity_t *ent )
 	{
+		if( !ent->s.time2 )
+			return;
+
 		if( ent->s.eFlags & EF_BC_TAG_PLAYER )
 			ent->s.time2 = level.time + 4000;
 		else
