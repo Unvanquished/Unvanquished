@@ -324,7 +324,6 @@ CG_DrawBeacon
 Draw a beacon on the HUD
 ==================
 */
-#define LinearRemap(x,an,ap,bn,bp) (((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn))
 
 static void CG_DrawBeacon( cbeacon_t *b )
 {

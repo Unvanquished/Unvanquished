@@ -213,7 +213,6 @@ Handles all animations and sounds.
 Called every frame for every beacon.
 =============
 */
-#define LinearRemap(x,an,ap,bn,bp) ((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn)
 #define Distance2(a,b) sqrt(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
 
 static void CG_RunBeacon( cbeacon_t *b )
