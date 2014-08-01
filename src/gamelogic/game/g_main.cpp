@@ -857,6 +857,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// add any fake entities
 	G_SpawnFakeEntities();
 
+	BaseClustering::Init();
+
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
 
@@ -3009,6 +3011,7 @@ void G_RunFrame( int levelTime )
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );
 	G_UpdateZaps( msec );
+	Beacon::Frame( );
 
 	// log gameplay statistics
 	G_LogGameplayStats( LOG_GAMEPLAY_STATS_BODY );

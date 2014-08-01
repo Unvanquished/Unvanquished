@@ -464,6 +464,7 @@ make the arrow warp. That's why we wait until the fadeout is finished before
 fading it back in.
 ================
 */
+/*
 static void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
 {
     playerEntity_t* state = &mate->pe;
@@ -502,12 +503,14 @@ static void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
         }
     }
 }
+*/
 
 /*
 ================
 CG_MinimapDrawTeammates
 ================
 */
+/*
 static void CG_MinimapDrawTeammates( const minimap_t* m )
 {
     int ownTeam = cg.predictedPlayerState.persistant[ PERS_TEAM ];
@@ -536,6 +539,85 @@ static void CG_MinimapDrawTeammates( const minimap_t* m )
             CG_DrawMinimapObject( m->gfx.teamArrow, state->lastMinimapPos, state->lastMinimapAngle, 1.0, MINIMAP_TEAMMATE_DISPLAY_SIZE, state->minimapFading );
         }
     }
+}
+*/
+
+/*
+================
+CG_MinimapDrawBeacon
+================
+*/
+static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t center, const vec2_t *bounds )
+{
+	vec2_t offset, pos2d, dir;
+	qboolean clamped;
+	vec4_t color;
+
+	size *= b->scale;
+	
+	CG_WorldToMinimap( b->s->origin, offset );
+	pos2d[ 0 ] = - size/2 + offset[ 0 ];
+	pos2d[ 1 ] = - size/2 + offset[ 1 ];
+	
+	if( pos2d[ 0 ] < bounds[ 0 ][ 0 ] ||
+			pos2d[ 0 ] > bounds[ 1 ][ 0 ] ||
+			pos2d[ 1 ] < bounds[ 0 ][ 1 ] ||
+			pos2d[ 1 ] > bounds[ 1 ][ 1 ] )
+	{
+		clamped = qtrue;
+		
+		Vector2Subtract( pos2d, center, dir );
+		ProjectPointOntoRectangleOutwards( pos2d, center, dir, bounds );
+	}
+	else
+		clamped = qfalse;
+
+	Vector4Copy( b->color, color );
+	color[ 3 ] *= cgs.bc.minimapAlpha;
+	trap_R_SetColor( color );
+
+	trap_R_DrawRotatedPic( pos2d[ 0 ], pos2d[ 1 ], size, size, 0.0, 0.0, 1.0, 1.0, CG_BeaconIcon( b, qfalse ), 0.0 );
+	if( b->flags & EF_BC_DYING )
+		trap_R_DrawStretchPic( pos2d[ 0 ] - size/2 * 0.3,
+		                       pos2d[ 1 ] - size/2 * 0.3,
+		                       size * 1.3, size * 1.3,
+		                       0, 0, 1, 1,
+		                       cgs.media.beaconNoTarget );	
+	if( clamped )
+		trap_R_DrawRotatedPic( pos2d[ 0 ] - size * 0.25,
+		                       pos2d[ 1 ] - size * 0.25, 
+		                       size * 1.5, size * 1.5,
+		                       0.0, 0.0, 1.0, 1.0, 
+		                       cgs.media.beaconIconArrow,
+		                       270.0 - atan2( dir[ 1 ], dir[ 0 ] ) * 180 / M_PI );
+}
+
+/*
+================
+CG_MinimapDrawBeacons
+
+Precalculates some stuff for CG_MinimapDrawBeacon and calls the
+function for all cg.beacons.
+================
+*/
+#define BEACON_MINIMAP_SIZE 64
+static void CG_MinimapDrawBeacons( const minimap_t* m, const rectDef_t *rect )
+{
+  float size;
+  vec2_t bounds[ 2 ], center;
+	int i;
+
+  size = CG_WorldToMinimapScale( BEACON_MINIMAP_SIZE ) * cgs.bc.minimapScale;
+
+  bounds[ 0 ][ 0 ] = rect->x + size * 0.25;
+  bounds[ 0 ][ 1 ] = rect->y + size * 0.25;
+  bounds[ 1 ][ 0 ] = rect->x + rect->w - size * 1.25;
+  bounds[ 1 ][ 1 ] = rect->y + rect->h - size * 1.25;
+  center[ 0 ] = rect->x + rect->w / 2.0f;
+  center[ 1 ] = rect->y + rect->h / 2.0f;
+
+	for ( i = 0; i < cg.num_beacons; i++ )
+		CG_MinimapDrawBeacon( cg.beacons + i, size, center, (const vec2_t*)bounds );
 }
 
 //Entry points in the minimap code
@@ -601,12 +683,14 @@ void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
     CG_SetScissor( rect.x, rect.y, rect.w, rect.h );
     CG_EnableScissor( qtrue );
     {
-
         CG_MinimapDrawMap( m, z );
         CG_MinimapDrawPlayer( m );
-        CG_MinimapDrawTeammates( m );
+        //CG_MinimapDrawTeammates( m );
     }
     CG_EnableScissor( qfalse );
+
+		//(experimental) Draw beacons without the scissor
+    CG_MinimapDrawBeacons( m, &rect );
 
     //Reset the color for other hud elements
     trap_R_SetColor( NULL );
