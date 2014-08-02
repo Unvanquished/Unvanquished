@@ -658,8 +658,7 @@ static inline float halfToFloat( int16_t in ) {
 		VBO_LAYOUT_VERTEX_ANIMATION,
 		VBO_LAYOUT_SKELETAL,
 		VBO_LAYOUT_STATIC,
-		VBO_LAYOUT_POSITION,
-		VBO_LAYOUT_SEPERATE
+		VBO_LAYOUT_POSITION
 	} vboLayout_t;
 
 	typedef struct

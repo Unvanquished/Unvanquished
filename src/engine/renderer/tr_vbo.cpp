@@ -143,97 +143,6 @@ static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i, qboolean noL
 	}
 }
 
-static size_t R_GetSizeForType( GLenum type )
-{
-	switch( type )
-	{
-		case GL_INT:
-			return sizeof( int );
-		case GL_FLOAT:
-			return sizeof( float );
-		case GL_UNSIGNED_BYTE:
-			return sizeof( unsigned char );
-		case GL_BYTE:
-			return sizeof( signed char );
-		case GL_UNSIGNED_SHORT:
-			return sizeof( unsigned short );
-		case GL_SHORT:
-			return sizeof( short );
-		case GL_HALF_FLOAT:
-			return sizeof( int16_t );
-		default:
-			Com_Error( ERR_FATAL, "R_GetSizeForType: ERROR unknown type\n" );
-			return 0;
-	}
-}
-
-static size_t R_GetAttribStorageSize( const VBO_t *vbo, uint32_t attribute, qboolean noLightCoords )
-{
-	if ( vbo->usage == GL_STATIC_DRAW )
-	{
-		return vbo->attribs[ attribute ].numComponents * R_GetSizeForType( vbo->attribs[ attribute ].componentType );
-	}
-	else
-	{
-		if ( attribute == ATTR_INDEX_TEXCOORD )
-		{
-			if( noLightCoords )
-				return sizeof( i16vec2_t );
-			else
-				return sizeof( i16vec4_t );
-		}
-		else if ( attribute == ATTR_INDEX_COLOR )
-		{
-			return 4 * sizeof( byte );
-		}
-		else if ( attribute == ATTR_INDEX_QTANGENT )
-		{
-			return sizeof( i16vec4_t );
-		}
-		else
-		{
-			return sizeof( vec4_t );
-		}
-	}
-}
-
-static qboolean R_AttributeTightlyPacked( const VBO_t *vbo, uint32_t attribute )
-{
-	const vboAttributeLayout_t *layout = &vbo->attribs[ attribute ];
-
-	return layout->numComponents * R_GetSizeForType( layout->componentType ) == layout->realStride;
-}
-
-static void R_SetAttributeLayoutsSeperate( VBO_t *vbo, qboolean noLightCoords )
-{
-	uint32_t i;
-	uint32_t offset = 0;
-
-	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
-	{
-		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i, noLightCoords );
-
-		if ( R_AttributeTightlyPacked( vbo, i ) )
-		{
-			vbo->attribs[ i ].stride = 0;
-		}
-		else
-		{
-			vbo->attribs[ i ].stride = vbo->attribs[ i ].realStride;
-		}
-
-		vbo->attribs[ i ].frameOffset = 0;
-
-		if ( ( vbo->attribBits & BIT( i ) ) )
-		{
-			offset += vbo->vertexesNum * vbo->attribs[ i ].realStride;
-		}
-	}
-
-	vbo->vertexesSize = offset;
-}
-
 static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 {
 	// part 1 is repeated for every frame
@@ -402,10 +311,6 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 	{
 		R_SetAttributeLayoutsPosition( vbo );
 	}
-	else if ( vbo->layout == VBO_LAYOUT_SEPERATE )
-	{
-		R_SetAttributeLayoutsSeperate( vbo, noLightCoords );
-	}
 	else
 	{
 		ri.Error( ERR_DROP, S_COLOR_YELLOW "Unknown attribute layout for vbo: %s\n", vbo->name );
@@ -422,16 +327,6 @@ boneFactor( int index, float weight ) {
 static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 {
 	uint32_t v;
-
-#define VERTEXCOPY( v, attr, index, type ) \
-	do \
-	{ \
-		uint32_t j; \
-		type *tmp = ( type * ) ( outData + vbo->attribs[ index ].ofs + v * vbo->attribs[ index ].realStride ); \
-		const type *vert = inData.attr[ v ]; \
-		uint32_t len = ARRAY_LEN( *inData.attr ); \
-		for ( j = 0; j < len; j++ ) { tmp[ j ] = vert[ j ]; } \
-	} while ( 0 )
 
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
@@ -495,8 +390,6 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 										inData.boneWeights[ v ][ j ] );
 				}
 			}
-
-			continue;
 		} else if ( vbo->layout == VBO_LAYOUT_STATIC ) {
 			shaderVertex_t *ptr = ( shaderVertex_t * )outData;
 			if ( ( vbo->attribBits & ATTR_POSITION ) )
@@ -518,54 +411,23 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 			{
 				Vector4Copy( inData.stpq[ v ], ptr[ v ].texCoords );
 			}
-
-			continue;
 		} else if ( vbo->layout == VBO_LAYOUT_POSITION ) {
 			vec3_t *ptr = ( vec3_t * )outData;
 			if ( ( vbo->attribBits & ATTR_POSITION ) )
 			{
 				VectorCopy( inData.xyz[ v ], ptr[ v ] );
 			}
-			continue;
-		}
+		} else if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION ) {
+			struct fmtVertexAnim2 *ptr = ( struct fmtVertexAnim2 * )( outData + ( vbo->framesNum * vbo->vertexesNum ) * sizeVertexAnim1 );
 
-		if ( vbo->layout != VBO_LAYOUT_VERTEX_ANIMATION )
-		{
-			if ( ( vbo->attribBits & ATTR_POSITION ) )
+			if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
 			{
-				VERTEXCOPY( v, xyz, ATTR_INDEX_POSITION, float );
+				Vector2Copy( inData.st[ v ], ptr[ v ].texcoord );
 			}
 
-			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
+			if ( ( vbo->attribBits & ATTR_COLOR ) )
 			{
-				VERTEXCOPY( v, qtangent, ATTR_INDEX_QTANGENT, int16_t );
-			}
-		}
-
-		if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
-		{
-			if( inData.noLightCoords ) {
-				VERTEXCOPY( v, st, ATTR_INDEX_TEXCOORD, int16_t );
-			} else {
-				VERTEXCOPY( v, stpq, ATTR_INDEX_TEXCOORD, int16_t );
-			}
-		}
-
-		if ( ( vbo->attribBits & ATTR_COLOR ) )
-		{
-			VERTEXCOPY( v, color, ATTR_INDEX_COLOR, byte );
-		}
-
-		if ( ( vbo->attribBits & ATTR_BONE_FACTORS ) )
-		{
-			uint32_t j;
-			unsigned short *tmp = (unsigned short *) ( outData + vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].ofs + v * vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].realStride );
-
-			tmp[ 0 ] = boneFactor( inData.boneIndexes[ v ][ 0 ],
-					       1.0f - inData.boneWeights[ v ][ 0 ]);
-			for ( j = 1; j < 4; j++ ) {
-				tmp[ j ] = boneFactor( inData.boneIndexes[ v ][ j ],
-						       inData.boneWeights[ v ][ j ] );
+				Vector4Copy( inData.color[ v ], ptr[ v ].colour );
 			}
 		}
 	}
