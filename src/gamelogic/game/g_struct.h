@@ -202,6 +202,11 @@ struct gentity_s
 	int          nextBurnAction;
 	gentity_t    *fireStarter;
 
+	/**
+	 * The enemy team that tagged this buildable.
+	 */
+	team_t       taggedByEnemy;
+
 	/*
 	 * targets to aim at
 	 */
@@ -412,6 +417,11 @@ struct gentity_s
 
 	qhandle_t   obstacleHandle;
 	botMemory_t *botMind;
+
+	gentity_t   *alienTag, *humanTag;
+	gentity_t   **tagAttachment;
+	int         tagScore;
+	int         tagScoreTime;
 };
 
 /**

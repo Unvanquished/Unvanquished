@@ -58,6 +58,7 @@ static void G_WarnPrimaryUnderAttack( gentity_t *self )
 		self->attackTimer = level.time + PRIMARY_ATTACK_PERIOD; // don't spam
 		self->attackLastEvent = event;
 		G_BroadcastEvent( event, 0, attr->team );
+		Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
 	}
 
 	self->lastHealth = self->health;
@@ -826,8 +827,6 @@ void AGeneric_CreepRecede( gentity_t *self )
 	{
 		self->s.eFlags |= EF_DEAD;
 
-		G_RewardAttackers( self );
-
 		G_AddEvent( self, EV_BUILD_DESTROY, 0 );
 
 		if ( self->spawned )
@@ -871,6 +870,8 @@ void AGeneric_Blast( gentity_t *self )
 	G_SelectiveRadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                         self->splashRadius, self, self->splashMethodOfDeath, TEAM_ALIENS );
 
+	G_RewardAttackers( self );
+
 	//pretty events and item cleanup
 	self->s.eFlags |= EF_NODRAW; //don't draw the model once it's destroyed
 	G_AddEvent( self, EV_ALIEN_BUILDABLE_EXPLOSION, DirToByte( dir ) );
@@ -909,6 +910,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	{
 		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
 		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
+		Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
 	}
 
 	// fully grown and not blasted to smithereens
@@ -926,6 +928,9 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	}
 
 	G_LogDestruction( self, attacker, mod );
+
+	Beacon::DetachTags( self );
+	BaseClustering::Remove( self );
 }
 
 /*
@@ -2388,11 +2393,10 @@ void HGeneric_Blast( gentity_t *self )
 	G_RadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                self->splashRadius, self, self->splashMethodOfDeath );
 
-	// begin freeing build points
 	G_RewardAttackers( self );
 
-	// turn into an explosion
-	self->s.eType = (entityType_t) ( ET_EVENTS + EV_HUMAN_BUILDABLE_EXPLOSION );
+	// explode
+	self->s.eFlags |= EF_NODRAW;
 	self->freeAfterEvent = qtrue;
 	G_AddEvent( self, EV_HUMAN_BUILDABLE_EXPLOSION, DirToByte( dir ) );
 }
@@ -2404,9 +2408,10 @@ HGeneric_Disappear
 Called when a human buildable is destroyed before it is spawned.
 ================
 */
-void HGeneric_Disappear( gentity_t *self )
+void HGeneric_Cancel( gentity_t *self )
 {
 	self->timestamp = level.time;
+
 	G_RewardAttackers( self );
 
 	G_FreeEntity( self );
@@ -2445,7 +2450,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	else
 	{
 		// disappear immediately
-		self->think = HGeneric_Disappear;
+		self->think = HGeneric_Cancel;
 		self->nextthink = level.time;
 	}
 
@@ -2483,10 +2488,14 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		{
 			location->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
 			G_BroadcastEvent( EV_WARN_ATTACK, inBase ? 0 : ( watcher - level.gentities ), TEAM_HUMANS );
+			Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
 		}
 	}
 
 	G_LogDestruction( self, attacker, mod );
+
+	Beacon::DetachTags( self );
+	BaseClustering::Remove( self );
 }
 
 void HSpawn_Think( gentity_t *self )
@@ -4781,6 +4790,11 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		G_BuildLogSet( log, built );
 	}
 
+	if( builder->client )
+		Beacon::Tag( built, (team_t)builder->client->pers.team, builder->client->ps.clientNum, qtrue );
+
+	BaseClustering::Update(built);
+
 	return built;
 }
 
@@ -4927,6 +4941,9 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 	G_SetOrigin( built, tr.endpos );
 
 	trap_LinkEntity( built );
+
+	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, ENTITYNUM_NONE, qtrue );
+
 	return built;
 }
 

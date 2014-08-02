@@ -563,6 +563,7 @@ set( COMMONLIST
   ${COMMON_DIR}/Command.h
   ${COMMON_DIR}/Cvar.cpp
   ${COMMON_DIR}/Cvar.h
+  ${COMMON_DIR}/DisjointSets.h
   ${COMMON_DIR}/FileSystem.cpp
   ${COMMON_DIR}/FileSystem.h
   ${COMMON_DIR}/IPC.h
@@ -833,6 +834,7 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_particles.c
   ${GAMELOGIC_DIR}/cgame/cg_tutorial.c
   ${GAMELOGIC_DIR}/cgame/cg_utils.c
+  ${GAMELOGIC_DIR}/cgame/cg_beacon.c
   ${GAMELOGIC_DIR}/cgame/cg_rocket.c
   ${GAMELOGIC_DIR}/cgame/cg_rocket_draw.c
   ${GAMELOGIC_DIR}/cgame/cg_rocket_events.c
@@ -860,7 +862,7 @@ set( CGAMEASMLIST
 )
 
 set( GAMELIST
-  ${GAMELOGIC_DIR}/game/g_main.cpp
+  ${GAMELOGIC_DIR}/game/g_main.cpp #keep it first because vmMain must be the first function compiled in qvms
   ${GAMELOGIC_DIR}/shared/bg_misc.c
   ${GAMELOGIC_DIR}/shared/bg_parse.c
   ${GAMELOGIC_DIR}/shared/bg_pmove.c
@@ -873,6 +875,8 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/shared/VMMain.h
   ${GAMELOGIC_DIR}/game/g_active.cpp
+  ${GAMELOGIC_DIR}/game/Beacon.cpp 
+  ${GAMELOGIC_DIR}/game/Clustering.cpp
   ${GAMELOGIC_DIR}/game/g_client.cpp
   ${GAMELOGIC_DIR}/game/g_cmds.cpp
   ${GAMELOGIC_DIR}/game/g_combat.cpp

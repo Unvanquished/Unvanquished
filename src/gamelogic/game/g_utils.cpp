@@ -762,6 +762,27 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 
 /*
 ===============
+G_ClientnumToMask
+
+Calculates loMask/hiMask as used by SVF_CLIENTMASK type events to match only the given client.
+===============
+*/
+void G_ClientnumToMask( int clientNum, int *loMask, int *hiMask )
+{
+	*loMask = *hiMask = 0;
+
+	if ( clientNum < 32 )
+	{
+		*loMask |= BIT( clientNum );
+	}
+	else
+	{
+		*hiMask |= BIT( clientNum - 32 );
+	}
+}
+
+/*
+===============
 G_TeamToClientmask
 
 Calculates loMask/hiMask as used by SVF_CLIENTMASK type events to match all clients in a team.
@@ -1117,4 +1138,14 @@ int G_Heal( gentity_t *self, int amount )
 	}
 
 	return healed;
+}
+
+team_t G_Enemy( team_t team )
+{
+	switch ( team )
+	{
+		case TEAM_ALIENS: return TEAM_HUMANS;
+		case TEAM_HUMANS: return TEAM_ALIENS;
+		default:          return TEAM_NONE;
+	}
 }

@@ -464,7 +464,8 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_fov_level3,                  "cg_fov_level3",                  "0",            0                            },
 	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            0                            },
 	{ &cg_fov_human,                   "cg_fov_human",                   "0",            0                            },
-	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            },
+
+	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            }
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
@@ -1222,6 +1223,9 @@ static void CG_RegisterSounds( void )
 
 	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning.wav", qfalse );
 	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", qfalse );
+
+	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", qfalse );
+	cgs.media.ownedTagSound = trap_S_RegisterSound( "sound/feedback/beacon-tag-owned.ogg", qfalse );
 }
 
 //===================================================================================
@@ -1454,6 +1458,12 @@ static void CG_RegisterGraphics( void )
 
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
+
+	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacons/arrow", RSF_DEFAULT );
+	cgs.media.beaconLongArrow = trap_R_RegisterShader( "gfx/2d/beacons/longarrow", RSF_DEFAULT );
+	cgs.media.beaconLongArrowDot = trap_R_RegisterShader( "gfx/2d/beacons/longarrowdot", RSF_DEFAULT );
+	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacons/no-target", RSF_DEFAULT );
+	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacons/tagscore", RSF_DEFAULT );
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
@@ -1855,6 +1865,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
 
 	CG_Rocket_LoadHuds();
+
+	CG_LoadBeaconsConfig();
+
 	CG_UpdateLoadingStep( LOAD_DONE );
 }
 

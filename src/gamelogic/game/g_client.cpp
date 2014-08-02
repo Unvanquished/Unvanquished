@@ -1878,6 +1878,10 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
 
 	client->pers.infoChangeTime = level.time;
+
+	// (re)tag the client for its team
+	Beacon::DeleteTags( ent );
+	Beacon::Tag( ent, (team_t)ent->client->ps.persistant[ PERS_TEAM ], 0, true );
 }
 
 /*
@@ -1937,4 +1941,6 @@ void ClientDisconnect( int clientNum )
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "" );
 
 	CalculateRanks();
+
+	Beacon::PropagateAll();
 }
