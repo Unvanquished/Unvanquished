@@ -231,6 +231,7 @@ void       G_PrintEntityNameList( gentity_t *entity );
 
 //search, select, iterate
 gentity_t  *G_IterateEntities( gentity_t *entity, const char *classname, qboolean skipdisabled, size_t fieldofs, const char *match );
+gentity_t  *G_IterateEntities( gentity_t *entity );
 gentity_t  *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname );
 gentity_t  *G_IterateEntitiesWithField( gentity_t *entity, size_t fieldofs, const char *match );
 gentity_t  *G_IterateEntitiesWithinRadius( gentity_t *entity, vec3_t origin, float radius );

@@ -407,6 +407,22 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' onMouseover='setDS alienEvolveList alienClasss %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), qfalse );
 }
 
+static void CG_Rocket_DFCMBeacons( int handle, const char *data )
+{
+	beaconType_t bct = (beaconType_t)atoi( Info_ValueForKey( data, "1" ) );
+	const beaconAttributes_t *ba;
+	const char *icon, *action;
+
+	ba = BG_Beacon( bct );
+
+	if( !ba )
+		return;
+
+	icon = CG_GetShaderNameFromHandle( ba->icon[ 0 ] );
+	action = va( "onClick='exec \"beacon %s\"; hide beacons'", ba->name ); 
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='beacons' onMouseover='setDS beacons default %s' %s><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), action, icon ), qfalse );
+}
 
 typedef struct
 {
@@ -421,6 +437,7 @@ static const dataFormatterCmd_t dataFormatterCmdList[] =
 	{ "CMAlienEvolve", &CG_Rocket_DFCMAlienEvolve },
 	{ "CMArmouryBuyUpgrades", &CG_Rocket_DFCMArmouryBuyUpgrade },
 	{ "CMArmouryBuyWeapons", &CG_Rocket_DFCMArmouryBuyWeapon },
+	{ "CMBeacons", &CG_Rocket_DFCMBeacons },
 	{ "CMHumanBuildables", &CG_Rocket_DFCMHumanBuildables },
 	{ "GearOrReady", &CG_Rocket_DFGearOrReady },
 	{ "GWeaponDamage", &CG_Rocket_DFGWeaponDamage },

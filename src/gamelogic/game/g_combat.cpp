@@ -556,6 +556,8 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		i = ( i + 1 ) % 3;
 	}
 
+	Beacon::DetachTags( self );
+
 	trap_LinkEntity( self );
 
 	self->client->pers.infoChangeTime = level.time;

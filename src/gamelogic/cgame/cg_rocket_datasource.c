@@ -1832,6 +1832,70 @@ void CG_Rocket_ExecAlienSpawnList( const char *table )
 	}
 }
 
+//////// beacon shit
+
+
+void CG_Rocket_CleanUpBeaconList( const char *table )
+{
+	rocketInfo.data.selectedBeacon = -1;
+	rocketInfo.data.beaconListCount = 0;
+}
+
+void CG_Rocket_BuildBeaconList( const char *table )
+{
+	static char buf[ MAX_STRING_CHARS ];
+
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
+	{
+		return;
+	}
+
+	if ( !Q_stricmp( table, "default" ) )
+	{
+		int i;
+		const beaconAttributes_t *ba;
+
+		trap_Rocket_DSClearTable( "beaconList", "default" );
+		CG_Rocket_CleanUpBeaconList( "default" );
+
+		for ( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
+		{
+			ba = BG_Beacon( i );
+
+			if( ba->flags & BCF_RESERVED )
+				continue;
+
+			buf[ 0 ] = '\0';
+
+			Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
+			Info_SetValueForKey( buf, "name", ba->humanName, qfalse );
+			Info_SetValueForKey( buf, "desc", ba->desc, qfalse );
+
+			trap_Rocket_DSAddRow( "beaconList", "default", buf );
+
+			rocketInfo.data.beaconList[ rocketInfo.data.beaconListCount++ ] = i;
+		}
+	}
+}
+
+void CG_Rocket_SetBeaconList( const char *table, int index )
+{
+	rocketInfo.data.selectedBeacon = index;
+}
+
+void CG_Rocket_ExecBeaconList( const char *table )
+{
+	const beaconAttributes_t *ba;
+
+	ba = BG_Beacon( rocketInfo.data.beaconList[ rocketInfo.data.selectedBeacon ] );
+
+	if( !ba )
+		return;
+
+	trap_SendClientCommand( va( "beacon %s", ba->name ) );
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "hide" );
+}
+
 static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
@@ -1869,6 +1933,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &CG_Rocket_SetArmouryBuyList, &nullFilterFunc, &CG_Rocket_ExecArmouryBuyList, &nullGetFunc },
 	{ "armourySellList", &CG_Rocket_BuildArmourySellList, &nullSortFunc, &CG_Rocket_CleanUpArmourySellList, &CG_Rocket_SetArmourySellList, &nullFilterFunc, &CG_Rocket_ExecArmourySellList, &nullGetFunc },
+	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &CG_Rocket_CleanUpBeaconList, &CG_Rocket_SetBeaconList, &nullFilterFunc, &CG_Rocket_ExecBeaconList, &nullGetFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
 	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &CG_Rocket_CleanUpHumanBuildList, &CG_Rocket_SetHumanBuildList, &nullFilterFunc, &CG_Rocket_ExecHumanBuildList, &nullGetFunc },
 	{ "humanSpawnItems", &CG_Rocket_BuildHumanSpawnItems, &nullSortFunc, CG_Rocket_CleanUpHumanSpawnItems, &CG_Rocket_SetHumanSpawnItems, &nullFilterFunc, &CG_Rocket_ExecHumanSpawnItems, &nullGetFunc },

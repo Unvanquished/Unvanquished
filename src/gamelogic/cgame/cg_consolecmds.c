@@ -205,6 +205,20 @@ static void CG_CompleteSell( void )
 }
 
 
+static void CG_CompleteBeacon( void )
+{
+	int i;
+
+	for ( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
+	{
+		const beaconAttributes_t *item = BG_Beacon( i );
+		if ( !( item->flags & BCF_RESERVED ) )
+		{
+			trap_CompleteCallback( item->name );
+		}
+	}
+}
+
 static void CG_CompleteBuild( void )
 {
 	int i;
@@ -385,6 +399,10 @@ void CG_HideScores_f( void )
 	cg.scoreBoardShowing = qfalse;
 }
 
+void CG_BeaconMenu_f( void )
+{
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
+}
 
 static const struct
 {
@@ -395,6 +413,8 @@ static const struct
 {
 	{ "+scores",           CG_ShowScores_f,        0                },
 	{ "-scores",           CG_HideScores_f,        0                },
+	{ "beacon",           0,                       CG_CompleteBeacon },
+	{ "beaconMenu",       CG_BeaconMenu_f,         0                },
 	{ "build",            0,                       CG_CompleteBuild },
 	{ "buy",              0,                       CG_CompleteBuy   },
 	{ "callteamvote",     0,                       CG_CompleteTeamVote },
