@@ -586,18 +586,18 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 						iColor[ 2 ] = floatToUnorm8( c[ 2 ] );
 						iColor[ 3 ] = floatToUnorm8( c[ 3 ] );
 
-						VectorCopy( top, tess.xyz[ tess.numVertexes ] );
-						Vector4Copy( iColor, tess.colors[ tess.numVertexes ] );
+						VectorCopy( top, tess.verts[ tess.numVertexes ].xyz );
+						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 
-						VectorCopy( farCorners[( j + 1 ) % 4 ], tess.xyz[ tess.numVertexes ] );
-						Vector4Copy( iColor, tess.colors[ tess.numVertexes ] );
+						VectorCopy( farCorners[( j + 1 ) % 4 ], tess.verts[ tess.numVertexes ].xyz );
+						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 
-						VectorCopy( farCorners[ j ], tess.xyz[ tess.numVertexes ] );
-						Vector4Copy( iColor, tess.colors[ tess.numVertexes ] );
+						VectorCopy( farCorners[ j ], tess.verts[ tess.numVertexes ].xyz );
+						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 					}
@@ -727,7 +727,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		for ( i = 0; i < tess.numVertexes; i++ )
 		{
 			// transform to world space
-			MatrixTransformPoint( light->transformMatrix, tess.xyz[ i ], data.xyz[ i ] );
+			MatrixTransformPoint( light->transformMatrix, tess.verts[ i ].xyz, data.xyz[ i ] );
 		}
 		data.numVerts = tess.numVertexes;
 

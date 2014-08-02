@@ -3368,14 +3368,17 @@ static inline float halfToFloat( int16_t in ) {
 
 #define MAX_MULTIDRAW_PRIMITIVES 1000
 
+	typedef struct shaderVertex_s {
+		vec3_t    xyz;
+		u8vec4_t  color;
+		i16vec4_t qtangents;
+		i16vec4_t texCoords;
+	} shaderVertex_t;
+
 	typedef struct shaderCommands_s
 	{
-		vec4_t xyz[ SHADER_MAX_VERTEXES ];
-		i16vec4_t qtangents[ SHADER_MAX_VERTEXES ];
-		i16vec4_t texCoords[ SHADER_MAX_VERTEXES ];
-		u8vec4_t  colors[ SHADER_MAX_VERTEXES ];
-
-		glIndex_t   indexes[ SHADER_MAX_INDEXES ];
+		shaderVertex_t verts[ SHADER_MAX_VERTEXES ];
+		glIndex_t      indexes[ SHADER_MAX_INDEXES ];
 
 		VBO_t       *vbo;
 		IBO_t       *ibo;

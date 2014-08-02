@@ -3233,7 +3233,7 @@ void Tess_End()
 		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_INDEXES hit" );
 	}
 
-	if ( tess.xyz[ SHADER_MAX_VERTEXES - 1 ][ 0 ] != 0 )
+	if ( tess.verts[ SHADER_MAX_VERTEXES - 1 ].xyz[ 0 ] != 0.0f )
 	{
 		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_VERTEXES hit" );
 	}

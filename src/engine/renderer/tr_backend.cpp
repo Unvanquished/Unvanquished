@@ -5454,14 +5454,13 @@ void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
 		DebugDrawBegin(currentDebugDrawMode, currentDebugSize);
 	}
 
-	tess.xyz[ tess.numVertexes ][ 0 ] = pos[ 0 ];
-	tess.xyz[ tess.numVertexes ][ 1 ] = pos[ 1 ];
-	tess.xyz[ tess.numVertexes ][ 2 ] = pos[ 2 ];
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	Vector4Copy(colors, tess.colors[ tess.numVertexes ]);
+	tess.verts[ tess.numVertexes ].xyz[ 0 ] = pos[ 0 ];
+	tess.verts[ tess.numVertexes ].xyz[ 1 ] = pos[ 1 ];
+	tess.verts[ tess.numVertexes ].xyz[ 2 ] = pos[ 2 ];
+	Vector4Copy( colors, tess.verts[ tess.numVertexes ].color );
 	if( uv ) {
-		tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( uv[ 0 ] );
-		tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( uv[ 1 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( uv[ 0 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( uv[ 1 ] );
 	}
 	tess.indexes[ tess.numIndexes ] = tess.numVertexes;
 	tess.numVertexes++;
@@ -5909,36 +5908,32 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 
-	tess.xyz[ tess.numVertexes ][ 0 ] = x;
-	tess.xyz[ tess.numVertexes ][ 1 ] = y;
-	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( 0.5f / cols );
-	tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( 0.5f / rows );
+	tess.verts[ tess.numVertexes ].xyz[ 0 ] = x;
+	tess.verts[ tess.numVertexes ].xyz[ 1 ] = y;
+	tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
+	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.5f / cols );
+	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 0.5f / rows );
 	tess.numVertexes++;
 
-	tess.xyz[ tess.numVertexes ][ 0 ] = x + w;
-	tess.xyz[ tess.numVertexes ][ 1 ] = y;
-	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( ( cols - 0.5f ) / cols );
-	tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( 0.5f / rows );
+	tess.verts[ tess.numVertexes ].xyz[ 0 ] = x + w;
+	tess.verts[ tess.numVertexes ].xyz[ 1 ] = y;
+	tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
+	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( ( cols - 0.5f ) / cols );
+	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 0.5f / rows );
 	tess.numVertexes++;
 
-	tess.xyz[ tess.numVertexes ][ 0 ] = x + w;
-	tess.xyz[ tess.numVertexes ][ 1 ] = y + h;
-	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( ( cols - 0.5f ) / cols );
-	tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( ( rows - 0.5f ) / rows );
+	tess.verts[ tess.numVertexes ].xyz[ 0 ] = x + w;
+	tess.verts[ tess.numVertexes ].xyz[ 1 ] = y + h;
+	tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
+	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( ( cols - 0.5f ) / cols );
+	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( ( rows - 0.5f ) / rows );
 	tess.numVertexes++;
 
-	tess.xyz[ tess.numVertexes ][ 0 ] = x;
-	tess.xyz[ tess.numVertexes ][ 1 ] = y + h;
-	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( 0.5f / cols );
-	tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( ( rows - 0.5f ) / rows );
+	tess.verts[ tess.numVertexes ].xyz[ 0 ] = x;
+	tess.verts[ tess.numVertexes ].xyz[ 1 ] = y + h;
+	tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
+	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.5f / cols );
+	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( ( rows - 0.5f ) / rows );
 	tess.numVertexes++;
 
 	tess.indexes[ tess.numIndexes++ ] = 0;
@@ -6069,7 +6064,6 @@ RB_StretchPic
 */
 const void     *RB_StretchPic( const void *data )
 {
-	int                       i;
 	const stretchPicCommand_t *cmd;
 	shader_t                  *shader;
 	int                       numVerts, numIndexes;
@@ -6110,45 +6104,37 @@ const void     *RB_StretchPic( const void *data )
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	for ( i = 0; i < 4; i++ )
-	{
-		tess.colors[ numVerts + i ][ 0 ] = backEnd.color2D[ 0 ];
-		tess.colors[ numVerts + i ][ 1 ] = backEnd.color2D[ 1 ];
-		tess.colors[ numVerts + i ][ 2 ] = backEnd.color2D[ 2 ];
-		tess.colors[ numVerts + i ][ 3 ] = backEnd.color2D[ 3 ];
-	}
+	tess.verts[ numVerts ].xyz[ 0 ] = cmd->x;
+	tess.verts[ numVerts ].xyz[ 1 ] = cmd->y;
+	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
 
-	tess.xyz[ numVerts ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts ][ 2 ] = 0;
-	tess.xyz[ numVerts ][ 3 ] = 1;
+	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.texCoords[ numVerts ][ 0 ] = floatToHalf( cmd->s1 );
-	tess.texCoords[ numVerts ][ 1 ] = floatToHalf( cmd->t1 );
+	tess.verts[ numVerts + 1 ].xyz[ 0 ] = cmd->x + cmd->w;
+	tess.verts[ numVerts + 1 ].xyz[ 1 ] = cmd->y;
+	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
 
-	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 1 ][ 3 ] = 1;
+	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.texCoords[ numVerts + 1 ][ 0 ] = floatToHalf( cmd->s2 );
-	tess.texCoords[ numVerts + 1 ][ 1 ] = floatToHalf( cmd->t1 );
+	tess.verts[ numVerts + 2 ].xyz[ 0 ] = cmd->x + cmd->w;
+	tess.verts[ numVerts + 2 ].xyz[ 1 ] = cmd->y + cmd->h;
+	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 2 ].color );
 
-	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 2 ][ 3 ] = 1;
+	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
-	tess.texCoords[ numVerts + 2 ][ 0 ] = floatToHalf( cmd->s2 );
-	tess.texCoords[ numVerts + 2 ][ 1 ] = floatToHalf( cmd->t2 );
+	tess.verts[ numVerts + 3 ].xyz[ 0 ] = cmd->x;
+	tess.verts[ numVerts + 3 ].xyz[ 1 ] = cmd->y + cmd->h;
+	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 3 ].color );
 
-	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 3 ][ 3 ] = 1;
-
-	tess.texCoords[ numVerts + 3 ][ 0 ] = floatToHalf( cmd->s1 );
-	tess.texCoords[ numVerts + 3 ][ 1 ] = floatToHalf( cmd->t2 );
+	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
 
@@ -6235,18 +6221,14 @@ const void     *RB_Draw2dPolys( const void *data )
 
 	for ( i = 0; i < cmd->numverts; i++ )
 	{
-		tess.xyz[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].xyz[ 0 ];
-		tess.xyz[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].xyz[ 1 ];
-		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
+		tess.verts[ tess.numVertexes ].xyz[ 0 ] = cmd->verts[ i ].xyz[ 0 ];
+		tess.verts[ tess.numVertexes ].xyz[ 1 ] = cmd->verts[ i ].xyz[ 1 ];
+		tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
 
-		tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
-		tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
 
-		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ];
-		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ];
-		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ];
-		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ];
+		Vector4Copy( cmd->verts[ i ].modulate, tess.verts[ tess.numVertexes ].color );
 		tess.numVertexes++;
 	}
 
@@ -6298,18 +6280,14 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 
 	for ( i = 0; i < cmd->numverts; i++ )
 	{
-		tess.xyz[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].xyz[ 0 ] + cmd->translation[ 0 ];
-		tess.xyz[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].xyz[ 1 ] + cmd->translation[ 1 ];
-		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
+		tess.verts[ tess.numVertexes ].xyz[ 0 ] = cmd->verts[ i ].xyz[ 0 ] + cmd->translation[ 0 ];
+		tess.verts[ tess.numVertexes ].xyz[ 1 ] = cmd->verts[ i ].xyz[ 1 ] + cmd->translation[ 1 ];
+		tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
 
-		tess.texCoords[ tess.numVertexes ][ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
-		tess.texCoords[ tess.numVertexes ][ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
 
-		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ];
-		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ];
-		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ];
-		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ];
+		Vector4Copy( cmd->verts[ i ].modulate, tess.verts[ tess.numVertexes ].color );
 		tess.numVertexes++;
 	}
 
@@ -6369,11 +6347,6 @@ const void     *RB_RotatedPic( const void *data )
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 0 ] );
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 1 ] );
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 2 ] );
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 3 ] );
-
 	mx = cmd->x + ( cmd->w / 2 );
 	my = cmd->y + ( cmd->h / 2 );
 	cosA = cos( DEG2RAD( cmd->angle ) );
@@ -6383,37 +6356,37 @@ const void     *RB_RotatedPic( const void *data )
 	sw = sinA * ( cmd->w / 2 );
 	sh = sinA * ( cmd->h / 2 );
 
-	tess.xyz[ numVerts ][ 0 ] = mx - cw - sh;
-	tess.xyz[ numVerts ][ 1 ] = my + sw - ch;
-	tess.xyz[ numVerts ][ 2 ] = 0;
-	tess.xyz[ numVerts ][ 3 ] = 1;
+	tess.verts[ numVerts ].xyz[ 0 ] = mx - cw - sh;
+	tess.verts[ numVerts ].xyz[ 1 ] = my + sw - ch;
+	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
 
-	tess.texCoords[ numVerts ][ 0 ] = floatToHalf( cmd->s1 );
-	tess.texCoords[ numVerts ][ 1 ] = floatToHalf( cmd->t1 );
+	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.xyz[ numVerts + 1 ][ 0 ] = mx + cw - sh;
-	tess.xyz[ numVerts + 1 ][ 1 ] = my - sw - ch;
-	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 1 ][ 3 ] = 1;
+	tess.verts[ numVerts + 1 ].xyz[ 0 ] = mx + cw - sh;
+	tess.verts[ numVerts + 1 ].xyz[ 1 ] = my - sw - ch;
+	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
 
-	tess.texCoords[ numVerts + 1 ][ 0 ] = floatToHalf( cmd->s2 );
-	tess.texCoords[ numVerts + 1 ][ 1 ] = floatToHalf( cmd->t1 );
+	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.xyz[ numVerts + 2 ][ 0 ] = mx + cw + sh;
-	tess.xyz[ numVerts + 2 ][ 1 ] = my - sw + ch;
-	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 2 ][ 3 ] = 1;
+	tess.verts[ numVerts + 2 ].xyz[ 0 ] = mx + cw + sh;
+	tess.verts[ numVerts + 2 ].xyz[ 1 ] = my - sw + ch;
+	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 2 ].color );
 
-	tess.texCoords[ numVerts + 2 ][ 0 ] = floatToHalf( cmd->s2 );
-	tess.texCoords[ numVerts + 2 ][ 1 ] = floatToHalf( cmd->t2 );
+	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
-	tess.xyz[ numVerts + 3 ][ 0 ] = mx - cw + sh;
-	tess.xyz[ numVerts + 3 ][ 1 ] = my + sw + ch;
-	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 3 ][ 3 ] = 1;
+	tess.verts[ numVerts + 3 ].xyz[ 0 ] = mx - cw + sh;
+	tess.verts[ numVerts + 3 ].xyz[ 1 ] = my + sw + ch;
+	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 3 ].color );
 
-	tess.texCoords[ numVerts + 3 ][ 0 ] = floatToHalf( cmd->s1 );
-	tess.texCoords[ numVerts + 3 ][ 1 ] = floatToHalf( cmd->t2 );
+	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 
@@ -6432,7 +6405,6 @@ const void     *RB_StretchPicGradient( const void *data )
 	const stretchPicCommand_t *cmd;
 	shader_t                  *shader;
 	int                       numVerts, numIndexes;
-	int                       i;
 
 	cmd = ( const stretchPicCommand_t * ) data;
 
@@ -6468,46 +6440,38 @@ const void     *RB_StretchPicGradient( const void *data )
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 0 ] );
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 1 ] );
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
+	Vector4Copy( cmd->gradientColor, tess.verts[ numVerts + 2 ].color );
+	Vector4Copy( cmd->gradientColor, tess.verts[ numVerts + 3 ].color );
 
-	for ( i = 0; i < 4; i++ )
-	{
-		tess.colors[ numVerts + 2 ][ i ] = cmd->gradientColor[ i ];
-		tess.colors[ numVerts + 3 ][ i ] = cmd->gradientColor[ i ];
-	}
+	tess.verts[ numVerts ].xyz[ 0 ] = cmd->x;
+	tess.verts[ numVerts ].xyz[ 1 ] = cmd->y;
+	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
 
-	tess.xyz[ numVerts ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts ][ 2 ] = 0;
-	tess.xyz[ numVerts ][ 3 ] = 1;
+	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.texCoords[ numVerts ][ 0 ] = floatToHalf( cmd->s1 );
-	tess.texCoords[ numVerts ][ 1 ] = floatToHalf( cmd->t1 );
+	tess.verts[ numVerts + 1 ].xyz[ 0 ] = cmd->x + cmd->w;
+	tess.verts[ numVerts + 1 ].xyz[ 1 ] = cmd->y;
+	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
 
-	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 1 ][ 3 ] = 1;
+	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.texCoords[ numVerts + 1 ][ 0 ] = floatToHalf( cmd->s2 );
-	tess.texCoords[ numVerts + 1 ][ 1 ] = floatToHalf( cmd->t1 );
+	tess.verts[ numVerts + 2 ].xyz[ 0 ] = cmd->x + cmd->w;
+	tess.verts[ numVerts + 2 ].xyz[ 1 ] = cmd->y + cmd->h;
+	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
 
-	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 2 ][ 3 ] = 1;
+	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
-	tess.texCoords[ numVerts + 2 ][ 0 ] = floatToHalf( cmd->s2 );
-	tess.texCoords[ numVerts + 2 ][ 1 ] = floatToHalf( cmd->t2 );
+	tess.verts[ numVerts + 3 ].xyz[ 0 ] = cmd->x;
+	tess.verts[ numVerts + 3 ].xyz[ 1 ] = cmd->y + cmd->h;
+	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
 
-	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 3 ][ 3 ] = 1;
-
-	tess.texCoords[ numVerts + 3 ][ 0 ] = floatToHalf( cmd->s1 );
-	tess.texCoords[ numVerts + 3 ][ 1 ] = floatToHalf( cmd->t2 );
+	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 	return ( const void * )( cmd + 1 );
@@ -6617,22 +6581,18 @@ const void *RB_RunVisTests( const void *data )
 		VectorScale( backEnd.viewParms.orientation.axis[ 2 ],
 			     test->area, up );
 
-		tess.xyz[ 0 ][ 0 ] = center[ 0 ] + left[ 0 ] + up[ 0 ];
-		tess.xyz[ 0 ][ 1 ] = center[ 1 ] + left[ 1 ] + up[ 1 ];
-		tess.xyz[ 0 ][ 2 ] = center[ 2 ] + left[ 2 ] + up[ 2 ];
-		tess.xyz[ 0 ][ 3 ] = 1.0f;
-		tess.xyz[ 1 ][ 0 ] = center[ 0 ] - left[ 0 ] + up[ 0 ];
-		tess.xyz[ 1 ][ 1 ] = center[ 1 ] - left[ 1 ] + up[ 1 ];
-		tess.xyz[ 1 ][ 2 ] = center[ 2 ] - left[ 2 ] + up[ 2 ];
-		tess.xyz[ 1 ][ 3 ] = 1.0f;
-		tess.xyz[ 2 ][ 0 ] = center[ 0 ] - left[ 0 ] - up[ 0 ];
-		tess.xyz[ 2 ][ 1 ] = center[ 1 ] - left[ 1 ] - up[ 1 ];
-		tess.xyz[ 2 ][ 2 ] = center[ 2 ] - left[ 2 ] - up[ 2 ];
-		tess.xyz[ 2 ][ 3 ] = 1.0f;
-		tess.xyz[ 3 ][ 0 ] = center[ 0 ] + left[ 0 ] - up[ 0 ];
-		tess.xyz[ 3 ][ 1 ] = center[ 1 ] + left[ 1 ] - up[ 1 ];
-		tess.xyz[ 3 ][ 2 ] = center[ 2 ] + left[ 2 ] - up[ 2 ];
-		tess.xyz[ 3 ][ 3 ] = 1.0f;
+		tess.verts[ 0 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] + up[ 0 ];
+		tess.verts[ 0 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] + up[ 1 ];
+		tess.verts[ 0 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] + up[ 2 ];
+		tess.verts[ 1 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] + up[ 0 ];
+		tess.verts[ 1 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] + up[ 1 ];
+		tess.verts[ 1 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] + up[ 2 ];
+		tess.verts[ 2 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] - up[ 0 ];
+		tess.verts[ 2 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] - up[ 1 ];
+		tess.verts[ 2 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] - up[ 2 ];
+		tess.verts[ 3 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] - up[ 0 ];
+		tess.verts[ 3 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] - up[ 1 ];
+		tess.verts[ 3 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] - up[ 2 ];
 		tess.numVertexes = 4;
 
 		tess.indexes[ 0 ] = 0;

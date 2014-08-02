@@ -1390,9 +1390,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		Com_Memset( &backEnd, 0, sizeof( backEnd ) );
 		Com_Memset( &tess, 0, sizeof( tess ) );
 
-		if ( ( intptr_t ) tess.xyz & 15 )
+		if ( ( intptr_t ) tess.verts & 15 )
 		{
-			Com_DPrintf( "WARNING: tess.xyz not 16 byte aligned\n" );
+			Com_DPrintf( "WARNING: tess.verts not 16 byte aligned\n" );
 		}
 
 		// init function tables

@@ -3642,7 +3642,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	bspNode_t     *out;
 	int           numNodes, numLeafs;
 	vboData_t     data;
-	srfTriangle_t *triangles = NULL;
 	IBO_t         *volumeIBO;
 	vec3_t        mins, maxs;
 
@@ -3767,21 +3766,13 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 		if ( j == 0 )
 		{
 			data.xyz = (vec3_t*) ri.Hunk_AllocateTempMemory(tess.numVertexes * sizeof(*data.xyz));
-			triangles = (srfTriangle_t*) ri.Hunk_AllocateTempMemory((tess.numIndexes / 3) * sizeof(srfTriangle_t));
 		}
 
 		for ( i = 0; i < tess.numVertexes; i++ )
 		{
-			VectorCopy( tess.xyz[ i ], data.xyz[ i ] );
+			VectorCopy( tess.verts[ i ].xyz, data.xyz[ i ] );
 		}
 		data.numVerts = tess.numVertexes;
-
-		for ( i = 0; i < ( tess.numIndexes / 3 ); i++ )
-		{
-			triangles[ i ].indexes[ 0 ] = tess.indexes[ i * 3 + 0 ];
-			triangles[ i ].indexes[ 1 ] = tess.indexes[ i * 3 + 1 ];
-			triangles[ i ].indexes[ 2 ] = tess.indexes[ i * 3 + 2 ];
-		}
 
 		out->volumeVBO = R_CreateStaticVBO( va( "staticBspNode_VBO %i", j ), data, VBO_LAYOUT_POSITION );
 
@@ -3799,8 +3790,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	}
 
 //I'm unsure if Hunk_FreeTempMemory can handle NULL values.
-	if ( triangles ) { ri.Hunk_FreeTempMemory( triangles ); }
-
 	if ( data.xyz ) { ri.Hunk_FreeTempMemory( data.xyz ); }
 
 	tess.multiDrawPrimitives = 0;

@@ -48,13 +48,8 @@ struct fmtSkeletal {
 const GLsizei sizeSkeletal = sizeof( struct fmtSkeletal );
 
 // interleaved data: position, colour, qtangent, texcoord
-struct fmtStatic {
-	vec3_t    position;
-	u8vec4_t  colour;
-	i16vec4_t qtangents;
-	i16vec4_t texcoord;
-};
-const GLsizei sizeStatic = sizeof( struct fmtStatic );
+// -> struct shaderVertex_t in tr_local.h
+const GLsizei sizeShaderVertex = sizeof( shaderVertex_t );
 
 
 static uint32_t R_DeriveAttrBits( vboData_t data )
@@ -336,37 +331,37 @@ static void R_SetAttributeLayoutsStatic( VBO_t *vbo )
 	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 3;
 	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_FLOAT;
 	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_FALSE;
-	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = offsetof( struct fmtStatic, position );
-	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeStatic;
-	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = offsetof( shaderVertex_t, xyz );
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeShaderVertex;
 	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = 0;
 
 	vbo->attribs[ ATTR_INDEX_COLOR ].numComponents   = 4;
 	vbo->attribs[ ATTR_INDEX_COLOR ].componentType   = GL_UNSIGNED_BYTE;
 	vbo->attribs[ ATTR_INDEX_COLOR ].normalize       = GL_TRUE;
-	vbo->attribs[ ATTR_INDEX_COLOR ].ofs             = offsetof( struct fmtStatic, colour );
-	vbo->attribs[ ATTR_INDEX_COLOR ].realStride      = sizeStatic;
-	vbo->attribs[ ATTR_INDEX_COLOR ].stride          = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_COLOR ].ofs             = offsetof( shaderVertex_t, color );
+	vbo->attribs[ ATTR_INDEX_COLOR ].realStride      = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_COLOR ].stride          = sizeShaderVertex;
 	vbo->attribs[ ATTR_INDEX_COLOR ].frameOffset     = 0;
 
 	vbo->attribs[ ATTR_INDEX_QTANGENT ].numComponents = 4;
 	vbo->attribs[ ATTR_INDEX_QTANGENT ].componentType = GL_SHORT;
 	vbo->attribs[ ATTR_INDEX_QTANGENT ].normalize     = GL_TRUE;
-	vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs           = offsetof( struct fmtStatic, qtangents );
-	vbo->attribs[ ATTR_INDEX_QTANGENT ].realStride    = sizeStatic;
-	vbo->attribs[ ATTR_INDEX_QTANGENT ].stride        = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs           = offsetof( shaderVertex_t, qtangents );
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].realStride    = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].stride        = sizeShaderVertex;
 	vbo->attribs[ ATTR_INDEX_QTANGENT ].frameOffset   = 0;
 
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].numComponents = 4;
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].componentType = GL_HALF_FLOAT;
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].normalize     = GL_FALSE;
-	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs           = offsetof( struct fmtStatic, texcoord );
-	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride    = sizeStatic;
-	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride        = sizeStatic;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs           = offsetof( shaderVertex_t, texCoords );
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride    = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride        = sizeShaderVertex;
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset   = 0;
 
 	// total size
-	vbo->vertexesSize = sizeStatic * vbo->vertexesNum;
+	vbo->vertexesSize = sizeShaderVertex * vbo->vertexesNum;
 }
 
 static void R_SetAttributeLayoutsPosition( VBO_t *vbo )
@@ -503,15 +498,15 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 			continue;
 		} else if ( vbo->layout == VBO_LAYOUT_STATIC ) {
-			struct fmtStatic *ptr = ( struct fmtStatic * )outData;
+			shaderVertex_t *ptr = ( shaderVertex_t * )outData;
 			if ( ( vbo->attribBits & ATTR_POSITION ) )
 			{
-				VectorCopy( inData.xyz[ v ], ptr[ v ].position );
+				VectorCopy( inData.xyz[ v ], ptr[ v ].xyz );
 			}
 
 			if ( ( vbo->attribBits & ATTR_COLOR ) )
 			{
-				Vector4Copy( inData.color[ v ], ptr[ v ].colour );
+				Vector4Copy( inData.color[ v ], ptr[ v ].color );
 			}
 
 			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
@@ -521,7 +516,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 			if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
 			{
-				Vector4Copy( inData.stpq[ v ], ptr[ v ].texcoord );
+				Vector4Copy( inData.stpq[ v ], ptr[ v ].texCoords );
 			}
 
 			continue;
@@ -653,19 +648,18 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 
 	R_SetVBOAttributeLayouts( vbo, data.noLightCoords );
 
-	outData = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
-
-	R_CopyVertexData( vbo, outData, data );
-
 	glGenBuffers( 1, &vbo->vertexesVBO );
 
 	R_BindVBO( vbo );
-	glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, outData, vbo->usage );
+	glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
+	outData = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
+
+	R_CopyVertexData( vbo, outData, data );
+
+	glUnmapBuffer( GL_ARRAY_BUFFER );
 	R_BindNullVBO();
 
 	GL_CheckErrors();
-
-	ri.Hunk_FreeTempMemory( outData );
 
 	return vbo;
 }
@@ -1052,7 +1046,7 @@ static void R_InitUnitCubeVBO( void )
 
 	for ( i = 0; i < tess.numVertexes; i++ )
 	{
-		VectorCopy( tess.xyz[ i ], data.xyz[ i ] );
+		VectorCopy( tess.verts[ i ].xyz, data.xyz[ i ] );
 	}
 
 	tr.unitCubeVBO = R_CreateStaticVBO( "unitCube_VBO", data, VBO_LAYOUT_POSITION );
@@ -1079,7 +1073,7 @@ void R_InitVBOs( void )
 	Com_InitGrowList( &tr.vbos, 100 );
 	Com_InitGrowList( &tr.ibos, 100 );
 
-	tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", SHADER_MAX_VERTEXES, attribs, VBO_LAYOUT_SEPERATE );
+	tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", SHADER_MAX_VERTEXES, attribs, VBO_LAYOUT_STATIC );
 
 	tess.ibo = R_CreateDynamicIBO( "tessVertexArray_IBO", SHADER_MAX_INDEXES );
 
@@ -1165,46 +1159,12 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 
 		GL_VertexAttribsState( attribBits );
 
-		if ( attribBits & ATTR_POSITION )
+		if ( r_logFile->integer )
 		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "glBufferSubData( ATTR_POSITION, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
-			}
-
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_POSITION ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.xyz );
+			GLimp_LogComment( va( "glBufferSubData( vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 		}
 
-		if ( attribBits & ATTR_TEXCOORD )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "glBufferSubData( ATTR_TEXCOORD, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
-			}
-
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs, tess.numVertexes * sizeof( i16vec4_t ), tess.texCoords );
-		}
-
-		if ( attribBits & ATTR_QTANGENT )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "glBufferSubData( ATTR_QTANGENT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
-			}
-
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs, tess.numVertexes * sizeof( i16vec4_t ), tess.qtangents );
-		}
-
-		if ( attribBits & ATTR_COLOR )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "glBufferSubData( ATTR_COLOR, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
-			}
-
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * sizeof( u8vec4_t ), tess.colors );
-		}
-
+		glBufferSubData( GL_ARRAY_BUFFER, 0, tess.numVertexes * sizeof( shaderVertex_t ), tess.verts );
 	}
 
 	GL_CheckErrors();
