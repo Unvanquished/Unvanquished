@@ -1,110 +1,128 @@
 units
 {
-	ui/in-game/hud/human.rml
-	ui/in-game/human/jetpack.rml
-	ui/in-game/hud/alien.rml
-	ui/in-game/overlay.rml
-	ui/in-game/console.rml
-	ui/in-game/hud/base.rml
-	ui/in-game/hud/spectator.rml
-	ui/in-game/alien/barbs.rml
-	ui/in-game/alien/charge.rml
-	ui/in-game/alien/bp.rml
-	ui/in-game/scoreboard.rml
-	ui/in-game/hud/builder.rml
+	ui/hud_human.rml
+	ui/hud_jetpack.rml
+	ui/hud_alien.rml
+	ui/hud_overlay.rml
+	ui/hud_messagebuffer.rml
+	ui/hud_basics.rml
+	ui/hud_barbs.rml
+	ui/hud_chargebar.rml
+	ui/hud_bp.rml
+	ui/hud_builder.rml
+	ui/hud_spawnwait.rml
+	ui/ingame_scoreboard.rml
 }
 
-// Specs must be defined first. This is the base hud
-spectator_hud
+// Default huds
+// TODO: Make these inheritable for the subclasses, so we don't need to copy+paste common elements
+
+spectator.hudgroup
 {
-	base
-	overlay
-	console
-	spectator_hud
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_spawnwait
+}
+human.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_jetpack
+	hud_human
 }
 
-// Define base team huds
-human_hud
+alien.hudgroup
 {
-	jetpack
-	base
-	human_hud
-	overlay
-	console
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
 }
 
-alien_hud
+// Individual classes/weapons
+ckit.hudgroup
 {
-	base
-	alien_hud
-	overlay
-	console
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_jetpack
+	hud_human
+
+	hud_builder
 }
 
-// Define individual weapons here
-ckit_hud
+lcannon.hudgroup
 {
-	jetpack
-	base
-	human_hud
-	overlay
-	console
-	builder
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_jetpack
+	hud_human
+
+	hud_chargebar
 }
 
-lcannon_hud
+level3.hudgroup
 {
-	base
-	human_hud
-	overlay
-	console
-	charge
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_chargebar
 }
 
-level3_hud
+level3upg.hudgroup
 {
-	base
-	alien_hud
-	overlay
-	console
-	charge
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_barbs
+	hud_chargebar
 }
 
-level3upg_hud
+level4.hudgroup
 {
-	base
-	alien_hud
-	barbs
-	overlay
-	console
-	charge
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_chargebar
 }
 
-level4_hud
+abuild.hudgroup
 {
-	base
-	alien_hud
-	overlay
-	console
-	charge
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_bp
+	hud_builder
 }
 
-abuild_hud
+abuildupg.hudgroup
 {
-	base
-	alien_hud
-	overlay
-	console
-	bp
-	builder
-}
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
 
-abuildupg_hud
-{
-	base
-	alien_hud
-	overlay
-	console
-	bp
-	builder
+	hud_alien
+
+	hud_bp
+	hud_builder
 }

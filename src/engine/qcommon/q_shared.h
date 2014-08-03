@@ -1590,7 +1590,8 @@ void         ByteToDir( int b, vec3_t dir );
 	}
 	STATIC_INLINE void TransAddTranslation( const vec3_t vec,
 						transform_t *t ) {
-		__m128 v = sseLoadVec3( vec );
+		__m128 v = _mm_loadu_ps( vec );
+		v = _mm_and_ps( v, mask_XYZ0() );
 		t->sseTransScale = _mm_add_ps( t->sseTransScale, v );
 	}
 	STATIC_INLINE void TransCombine( const transform_t *a,
