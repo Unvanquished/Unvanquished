@@ -28,9 +28,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "Command.h"
-#include "Log.h"
+#include "Common.h"
 
+// FIXME: Code in common shouldn't depend on framework
+#include "../engine/framework/CommandSystem.h"
 #include "../engine/qcommon/qcommon.h"
 #include "../engine/framework/CvarSystem.h"
 

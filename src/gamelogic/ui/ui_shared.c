@@ -2624,8 +2624,15 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 		if ( !notColour && Q_IsColorString( s ) )
 		{
-			memcpy( newColor, g_color_table[ ColorIndex( * ( s + 1 ) ) ],
-				sizeof( newColor ) );
+			if (s[1] == COLOR_NULL)
+			{
+				memcpy(newColor, color, sizeof(newColor));
+			}
+			else
+			{
+				memcpy(newColor, g_color_table[ColorIndex(*(s + 1))],
+					sizeof(newColor));
+			}
 			newColor[ 3 ] = color[ 3 ];
 			DC->setColor( newColor );
 

@@ -36,9 +36,6 @@ Maryland 20850 USA.
 #include "../qcommon/q_unicode.h"
 #include "../framework/CommandSystem.h"
 
-#include "../../common/Maths.h"
-#include "../../common/String.h"
-
 /*
 
 key up events are sent even if in console mode
@@ -900,7 +897,7 @@ Assumes 'three' teams: spectators, aliens, humans
 */
 static const char *const teamName[] = { "default", "aliens", "humans", "others" };
 
-static int Key_GetTeam( const char *arg, const char *cmd )
+int Key_GetTeam( const char *arg, const char *cmd )
 {
 	static const struct {
 		char team;
@@ -1781,7 +1778,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	qboolean bypassMenu = qfalse; // NERVE - SMF
 	qboolean onlybinds = qfalse;
 
-	if ( !key )
+	if ( key < 1 )
 	{
 		return;
 	}
@@ -1913,20 +1910,28 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 				}
 				else
 				{
-					VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_INGAME );
+					Cmd::BufferCommandText( "toggleMenu" );
 				}
 			}
 			else
 			{
 				CL_Disconnect_f();
 				Audio::StopAllSounds();
-				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
 			}
 
 			return;
 		}
 
-		VM_Call( uivm, UI_KEY_EVENT, key, down );
+		Rocket_ProcessKeyInput( key, down );
+		return;
+	}
+
+	// Don't do anything if libRocket menus have focus
+	// Everything is handled by libRocket. Also we don't want
+	// to run any binds (since they won't be found).
+	if ( cls.keyCatchers & KEYCATCH_UI && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
+	{
+		Rocket_ProcessKeyInput( key, down );
 		return;
 	}
 
@@ -1941,14 +1946,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		// Handle any +commands which were invoked on the corresponding key-down
 		Cmd::BufferCommandText(va("keyup %d %d %u", plusCommand.check, key, time));
 
-		if ( cls.keyCatchers & KEYCATCH_UI && uivm )
-		{
-			if ( !onlybinds )
-			{
-				VM_Call( uivm, UI_KEY_EVENT, key, down );
-			}
-		}
-		else if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
+		if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
 		{
 			if ( !onlybinds )
 			{
@@ -1965,13 +1963,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		if ( !onlybinds )
 		{
 			Console_Key( key );
-		}
-	}
-	else if ( cls.keyCatchers & KEYCATCH_UI && !bypassMenu )
-	{
-		if ( !onlybinds )
-		{
-			VM_Call( uivm, UI_KEY_EVENT, key, down );
 		}
 	}
 	else if ( cls.keyCatchers & KEYCATCH_CGAME && !bypassMenu )
@@ -2037,14 +2028,12 @@ void CL_CharEvent( int c )
 	{
 		Field_CharEvent(g_consoleField, CL_UTF8_unpack(c));
 	}
-	else if ( cls.keyCatchers & KEYCATCH_UI )
-	{
-		VM_Call( uivm, UI_KEY_EVENT, c, KEYEVSTATE_DOWN | KEYEVSTATE_CHAR | KEYEVSTATE_SUP );
-	}
 	else if ( cls.state == CA_DISCONNECTED )
 	{
 		Field_CharEvent(g_consoleField, CL_UTF8_unpack(c));
 	}
+
+	Rocket_ProcessTextInput( c );
 }
 
 /*

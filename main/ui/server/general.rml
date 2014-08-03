@@ -1,0 +1,72 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+
+	</head>
+	<body id="server_general" template="window" style="width: 32em; margin: 10%;">
+		<h1> Server Settings </h1>
+		
+		<h2> General </h2>
+		<row>
+			<input cvar="g_friendlyFire" type="checkbox" />
+			<h3> Friendly fire</h3>
+		</row>
+		<row>
+			<input cvar="g_friendlyBuildableFire" type="checkbox" />
+			<h3> Friendly buildable fire</h3>
+		</row>
+		<row>
+			<input type="range" min="0" max="30" step="1" cvar="g_initialMineRate"/>
+			<h3> Initial mining rate</h3>
+			<p class="inline"> 
+				Current: <inlinecvar cvar="g_initialMineRate" type="number" format="%.0f"/>
+				<ilink onclick="exec reset g_initialMineRate"> (reset) </ilink>
+			</p>
+		</row>
+		<row>
+			<input cvar="g_allowVote" type="checkbox" />
+			<h3> Allow voting </h3>
+		</row>
+		<h2> Warmup </h2>
+		<row>
+			<input cvar="g_doWarmup" type="checkbox" />
+			<h3> Do warmups at every game start</h3>
+			<p> Gives players on slower computers time to join. </p>
+		</row>
+		
+		
+		<h2> Teams </h2>
+		<row>
+			<input cvar="g_alienAllowBuilding" type="checkbox" />
+			<h3> Allow alien building</h3>
+		</row>
+		<row>
+			<input cvar="g_humanAllowBuilding" type="checkbox" />
+			<h3> Allow human building</h3>
+		</row>
+		
+		
+		<h2> Physics </h2>
+		<row>
+			<input type="range" min="-100" max="2000" step="10" cvar="g_gravity"/>
+			<h3> Gravity</h3>
+			<p class="inline"> 
+				Current: <inlinecvar cvar="g_gravity" type="number" format="%.0f"/>
+				<ilink onclick="exec reset g_gravity"> (reset) </ilink>
+			</p>
+		</row>
+		<row>
+			<input cvar="g_dretchpunt" type="checkbox" />
+			<h3> Dretch-punt</h3>
+			<p> Dretches can be pounted out-of-the-way by large aliens. </p>
+		</row>
+		<row>
+			<input cvar="g_antiSpawnBlock" type="checkbox" />
+			<h3> Anti spawn-block</h3>
+			<p> Push slow people away from spawns</p>
+		</row>
+		
+		
+	</body>
+</rml>

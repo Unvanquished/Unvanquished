@@ -31,13 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../qcommon/q_shared.h"
 #include "BaseCommands.h"
 
-#include <vector>
-#include <unordered_map>
-
 #include "CommandSystem.h"
 #include "CvarSystem.h"
-#include "../../common/Command.h"
-#include "../../common/String.h"
 
 /**
  * Definition of most of the commands that provide scripting capabilities to the console
@@ -815,7 +810,7 @@ namespace Cmd {
                 }
 
                 //Modify or create an alias
-                const std::string& command = args.EscapedArgs(2);
+                const std::string& command = args.ConcatArgs(2);
 
                 auto iter = aliases.find(name);
                 if (iter != aliases.end()) {

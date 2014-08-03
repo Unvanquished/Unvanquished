@@ -1,0 +1,183 @@
+﻿<rml>
+	<head>
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<style>
+
+		panel {
+			width: 65%;
+			padding: 0.5em;
+		}
+		.emoticon
+		{
+			color: white;
+			height: 1em;
+			width: auto;
+		}
+
+		</style>
+	</head>
+	<body template="window" id="help_gameplay" style="width:45em; margin: 10%;">
+
+		<h1>Gameplay Guide</h1>
+		<tabset>
+			<tab>
+				<img class="emoticon" src="/emoticons/official_1x1" />
+				Welcome
+			</tab>
+			<panel>
+				In this section you will find a summary of major gameplay changes since Tremulous GPP.
+				<br />
+				<br />
+				Feel free to take part in our weekly development games, each
+				<span clas="red">Sunday</span>
+				at
+				<span class="red">20:00 UTC</span>
+				on the »Dev &amp; Testing Server«!
+				<br />
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/drill_1x1" />
+				Resources
+			</tab>
+			<panel>
+				Building a structure requires build points, which are now a one-time
+    payment – if the buildable gets destroyed, the build points spent on it
+    are lost.
+				<br />
+				<br />
+				Your team will start with a small pool of build points but more can be
+    acquired by building a mining structure.
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/leech_1x1" />
+				Resource generation
+			</tab>
+			<panel>
+				Build points are acquired via two structures – the human
+				<img class="emoticon" src="/emoticons/drill_1x1" />
+				drill and
+     the alien
+				<img class="emoticon" src="/emoticons/leech_1x1" />
+				leech. These buildings need to be spread out for
+    efficiency.
+				<br />
+				<br />
+				Builders will see another bar above the health bar of a resource generator
+     which represents its efficiency. A prediction will be shown when you
+    position the buildable.
+				<br />
+				<br />
+				The mine rate decreases over time, so that it gets increasingly harder to
+     acquire resources in a long lasting match. This replaces sudden death.
+				<br />
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/bsuit_1x1" />
+				Stages &amp; Momentum
+			</tab>
+			<panel>
+				Building and destroying structures as well as killing enemies earns your
+    team a new resource called momentum. If you gain enough momentum
+    new weapons, strucures or classes will be unlocked.
+				<br />
+				<br />
+				Momentum decreases exponentially over time so if you idle your team will
+	lose access to new items. Existing upgrades will remain functional.
+				<br />
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/ckit_2x1" />
+				Human building 1
+			</tab>
+			<panel>
+				The
+				<img class="emoticon" src="/emoticons/reactor_1x1" />
+				reactor now supplies power to every point on the map, but
+    there is a limited amount of energy per region. Human buildables will
+    compete for power and shut down if they don't get enough.
+				<br />
+				<br />
+				Human builders will see a new bar below the health bar of their
+    buildables, which shows the spare power a buildable can share with
+    potential neighbors.
+				<br />
+				<br />
+				If you want to place a greater number of buildables in an area, you can
+    build a
+				<img class="emoticon" src="/emoticons/repeater_1x1" />
+				repeater to increase the available power.
+    Be warned that repeaters will deal significant damage to close structures
+    when they explode.
+				<br />
+				When the power consumption in a region is too high, the smallest possible
+    number of buildables will power down so that the other strucutres have
+    enough energy to remain operational.
+				<br />
+				<br />
+				The
+				<img class="emoticon" src="/emoticons/drill_1x1" />
+				drill is the only buildable that requires a close repeater or
+    reactor to work, since resources are transmitted via the power grid.
+
+
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/flamer_2x1" />
+				Wildfire
+			</tab>
+			<panel>
+				Alien buildables can catch fire when they are hit with the
+				<img class="emoticon" src="/emoticons/flamer_2x1" />
+				flame
+    thrower or the
+				<img class="emoticon" src="/emoticons/grenade_1x1" />
+				firebomb.
+				<br />
+				<br />
+				If structures are built too close, the fire can jump over to the
+    unfortunate neighbors.
+				<br />
+				<br />
+				A small fire has a good chance to go out after a while but a group of
+    burning structures will keep itself hot enough for greater mayhem.
+				<br />
+				<br />
+				The
+				<img class="emoticon" src="/emoticons/advgranger_1x1" />
+				advanced granger's spit attack can be used to put out
+    fires.
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/lcannon_2x1" />
+				Under attack
+			</tab>
+			<panel>
+				Destroying buildings will trigger ‘under attack’ warnings for the owning
+    team if the buildings are in range of (for humans) the
+				<img class="emoticon" src="/emoticons/reactor_1x1" />
+				reactor
+    or a
+				<img class="emoticon" src="/emoticons/repeater_1x1" />
+				repeater or (for aliens) the
+				<img class="emoticon" src="/emoticons/overmind_1x1" />
+				Overmind.
+    The name of the location of the repeater will be given if available.
+				<br />
+				<br />
+				The reactor and the Overmind will issue warnings to the team when at
+    75% health, at 25% health and when destroyed.
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/dev_1x1" />
+				Miscellaneous
+			</tab>
+			<panel>
+				The human dodge has been removed, stamina has been increased.
+				<br />
+				<br />
+				All alien evo costs and gains have been doubled. The new maximum of evos
+    an alien can store is 20 (formerly 9).
+			</panel>
+		</tabset>
+	</body>
+</rml>

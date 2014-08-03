@@ -28,12 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "../qcommon/q_shared.h"
 #include "ConsoleField.h"
 #include "CommandSystem.h"
-#include "../../common/String.h"
-#include "../qcommon/q_shared.h"
-#include <locale>
-#include <algorithm>
 
 namespace Console {
 

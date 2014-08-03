@@ -1279,7 +1279,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	entityState_t *es = &cent->currentState;
 
 	// see if the animation sequence is switching
-	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( cg_weapons[ cent->currentState.weapon ].md5 && !lf->animation->handle ) )
+	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( cg_weapons[ es->weapon ].md5 && !lf->animation->handle ) )
 	{
 		CG_SetWeaponLerpFrameAnimation( (weapon_t) es->weapon, lf, es->weaponAnim );
 	}
@@ -1290,7 +1290,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	*now = lf->frame;
 	*backLerp = lf->backlerp;
 
-	if ( cg_weapons[ cent->currentState.weapon ].md5 )
+	if ( cg_weapons[ es->weapon ].md5 )
 	{
 		CG_BlendLerpFrame( lf );
 
@@ -1757,6 +1757,50 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 }
 
+
+/*
+==============
+CG_WeaponInertia
+
+Offset view weapon's position based on view's angular velocity.
+==============
+*/
+
+#define WI_LAMBDA 12.5f
+#define WI_X_LIMIT 1.6f
+#define WI_X_SCALE 0.002f
+#define WI_Y_LIMIT 1.0f
+#define WI_Y_SCALE -0.0025f
+
+void CG_WeaponInertia( playerState_t *ps, vec3_t origin )
+{
+	weaponInertia_t *I = &cg.weaponInertia;
+	int i;
+	float dt;
+	vec3_t av;
+
+	if( !I->init )
+		goto out;
+
+	dt = 0.001 * cg.frametime;
+
+	for( i = 0; i < 3; i++ )
+	{
+		av[ i ] = AngleDelta( I->oa[ i ], ps->viewangles[ i ] ) / dt;
+		ExponentialFade( I->oav + i, av[ i ], WI_LAMBDA, dt );
+		av[ i ] = I->oav[ i ];
+	}
+	
+	VectorMA( origin, atan( av[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT,
+	          cg.refdef.viewaxis[ 2 ], origin );
+	VectorMA( origin, atan( av[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT,
+	          cg.refdef.viewaxis[ 1 ], origin );
+
+out:
+	VectorCopy( ps->viewangles, I->oa );
+	I->init = 1;
+}
+
 /*
 ==============
 CG_AddViewWeapon
@@ -1875,27 +1919,19 @@ void CG_AddViewWeapon( playerState_t *ps )
 		return;
 	}
 
-	// drop gun lower at higher fov
-	if ( cg.refdef.fov_y > 90 )
-	{
-		fovOffset = -0.4 * ( cg.refdef.fov_y - 90 );
-	}
-	else
-	{
-		fovOffset = 0;
-	}
+	fovOffset = -0.03f * cg.refdef.fov_y;
 
 	Com_Memset( &hand, 0, sizeof( hand ) );
 
 	// set up gun position
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
-	VectorMA( hand.origin, ( cg_gun_x.value + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
+	VectorMA( hand.origin, ( cg_gun_x.value + fovOffset + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
 	if( cg_mirrorgun.integer )
 		VectorMA( hand.origin, -( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
 	else
 		VectorMA( hand.origin, ( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
-	VectorMA( hand.origin, ( cg_gun_z.value + fovOffset + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
+	VectorMA( hand.origin, ( cg_gun_z.value + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
 	if ( weapon == WP_LUCIFER_CANNON && ps->stats[ STAT_MISC ] > 0 )
@@ -1908,6 +1944,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 1 ],
 		          hand.origin );
 	}
+
+	CG_WeaponInertia( ps, hand.origin );
 
 	AnglesToAxis( angles, hand.axis );
 	if( cg_mirrorgun.integer ) {
@@ -1989,13 +2027,9 @@ static qboolean CG_UpgradeSelectable( upgrade_t upgrade )
 CG_DrawItemSelect
 ===================
 */
-void CG_DrawHumanInventory( rectDef_t *rect, vec4_t backColor, vec4_t foreColor )
+void CG_DrawHumanInventory( void )
 {
 	int           i;
-	float         x = rect->x;
-	float         y = rect->y;
-	float         width = rect->w;
-	float         height = rect->h;
 	float         iconWidth;
 	float         iconHeight;
 	int           items[ 64 ];
@@ -2004,7 +2038,14 @@ void CG_DrawHumanInventory( rectDef_t *rect, vec4_t backColor, vec4_t foreColor 
 	int           length;
 	qboolean      vertical;
 	playerState_t *ps;
-	vec4_t        localColor;
+	static char   RML[ MAX_STRING_CHARS ];
+
+	enum
+	{
+		USABLE,
+		NO_AMMO,
+		NOT_USABLE
+	};
 
 	ps = &cg.snap->ps;
 
@@ -2043,11 +2084,11 @@ void CG_DrawHumanInventory( rectDef_t *rect, vec4_t backColor, vec4_t foreColor 
 
 		if ( !ps->ammo && !ps->clips && !BG_Weapon( i )->infiniteAmmo )
 		{
-			colinfo[ numItems ] = 1;
+			colinfo[ numItems ] = NO_AMMO;
 		}
 		else
 		{
-			colinfo[ numItems ] = 0;
+			colinfo[ numItems ] = USABLE;
 		}
 
 		if ( i == cg.weaponSelect )
@@ -2078,7 +2119,7 @@ void CG_DrawHumanInventory( rectDef_t *rect, vec4_t backColor, vec4_t foreColor 
 
 		if ( !BG_Upgrade( i )->usable )
 		{
-			colinfo[ numItems ] = 2;
+			colinfo[ numItems ] = NOT_USABLE;
 		}
 
 		if ( i == cg.weaponSelect - 32 )
@@ -2097,89 +2138,45 @@ void CG_DrawHumanInventory( rectDef_t *rect, vec4_t backColor, vec4_t foreColor 
 		numItems++;
 	}
 
-	// compute the length of the display window and determine orientation
-	vertical = height > width;
+	// reset buffer
+	RML[ 0 ] = '\0';
 
-	if ( vertical )
+	Q_strncpyz( RML, "<div class='item_select'>", sizeof( RML ) );
+
+	// Build RML string
+	for ( i = 0; i < numItems; ++i )
 	{
-		iconWidth = width * cgDC.aspectScale;
-		iconHeight = width;
-		length = height / ( width * cgDC.aspectScale );
+		const char *rmlClass;
+		const char *src =  CG_GetShaderNameFromHandle( items[ i ] < 32 ? cg_weapons[ items[ i ] ].weaponIcon : cg_upgrades[ items[ i ] - 32 ].upgradeIcon );
+
+		switch( colinfo[ i ] )
+		{
+			case USABLE:
+				rmlClass = "usable";
+				break;
+
+			case NO_AMMO:
+				rmlClass = "no_ammo";
+				break;
+
+			case NOT_USABLE:
+			default:
+				rmlClass = "inactive";
+				break;
+		}
+
+		if ( cg.weaponSelect == items[ i ] || cg.weaponSelect - 32 == items[ i ] )
+		{
+			rmlClass = va( "%s selected", rmlClass );
+		}
+
+
+		Q_strcat( RML, sizeof( RML ), va( "<img class='%s' src='/%s' />", rmlClass, src ) );
 	}
-	else
-	{
-		iconWidth = height * cgDC.aspectScale;
-		iconHeight = height;
-		length = width / ( height * cgDC.aspectScale );
-	}
+	Q_strcat( RML, sizeof( RML ), "</div>" );
 
-	localColor[ 3 ] = 0.5f;
+	trap_Rocket_SetInnerRML( RML, qfalse );
 
-	// render icon ring
-	for ( i = 0; i < length; i++ )
-	{
-		int item = i - length / 2 + selectedItem;
-
-		if ( item < 0 )
-		{
-			item += length;
-		}
-		else if ( item >= length )
-		{
-			item -= length;
-		}
-
-		if ( item >= 0 && item < numItems )
-		{
-			switch ( colinfo[ item ] )
-			{
-				case 0:
-					VectorCopy( colorCyan, localColor );
-					break;
-
-				case 1:
-					VectorCopy( colorRed, localColor );
-					break;
-
-				case 2:
-					VectorCopy( colorMdGrey, localColor );
-					break;
-
-				default:
-					VectorCopy( foreColor, localColor );
-					break;
-			}
-
-			if ( item == selectedItem )
-			{
-				trap_R_SetColor( backColor );
-
-				CG_DrawPic( x, y, iconWidth, iconHeight, cgs.media.whiteShader );
-			}
-
-			trap_R_SetColor( localColor );
-
-			if ( items[ item ] < 32 )
-			{
-				CG_DrawPic( x, y, iconWidth, iconHeight, cg_weapons[ items[ item ] ].weaponIcon );
-			}
-			else
-			{
-				CG_DrawPic( x, y, iconWidth, iconHeight, cg_upgrades[ items[ item ] - 32 ].upgradeIcon );
-			}
-		}
-
-		if ( vertical )
-		{
-			y += iconHeight;
-		}
-		else
-		{
-			x += iconWidth;
-		}
-	}
-
-	trap_R_SetColor( NULL );
 }
 
 /*
@@ -2187,20 +2184,20 @@ void CG_DrawHumanInventory( rectDef_t *rect, vec4_t backColor, vec4_t foreColor 
 CG_DrawItemSelectText
 ===================
 */
-void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
+void CG_DrawItemSelectText( void )
 {
-	int        x, w;
 	const char *name;
-	float      *color;
+	float      alpha;
 
-	color = CG_FadeColor( cg.weaponSelectTime, WEAPON_SELECT_TIME );
+	alpha = CG_FadeAlpha( cg.weaponSelectTime, WEAPON_SELECT_TIME );
 
-	if ( !color )
+	if ( !alpha )
 	{
+		trap_Rocket_SetInnerRML( "&nbsp;", qfalse );
 		return;
 	}
 
-	trap_R_SetColor( color );
+
 
 	// draw the selected name
 	if ( cg.weaponSelect < 32 )
@@ -2210,9 +2207,7 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 		{
 			if ( ( name = cg_weapons[ cg.weaponSelect ].humanName ) )
 			{
-				w = UI_Text_Width( name, scale );
-				x = rect->x + rect->w / 2;
-				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, textStyle );
+				trap_Rocket_SetInnerRML( name, qfalse );
 			}
 		}
 	}
@@ -2223,14 +2218,12 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 		{
 			if ( ( name = cg_upgrades[ cg.weaponSelect - 32 ].humanName ) )
 			{
-				w = UI_Text_Width( name, scale );
-				x = rect->x + rect->w / 2;
-				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, textStyle );
+				trap_Rocket_SetInnerRML( name, qfalse );
 			}
 		}
 	}
 
-	trap_R_SetColor( NULL );
+	trap_Rocket_SetProperty( "opacity", va( "%f", alpha ) );
 }
 
 /*
@@ -2922,4 +2915,59 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin )
 		CG_ImpactMark( ma->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, qfalse,
 		               ma->impactMarkSize, qfalse );
 	}
+}
+
+float CG_ChargeProgress( void )
+{
+	float progress;
+	int   min = 0, max = 0;
+
+	if ( cg.snap->ps.weapon == WP_ALEVEL3 )
+	{
+		min = LEVEL3_POUNCE_TIME_MIN;
+		max = LEVEL3_POUNCE_TIME;
+	}
+	else if ( cg.snap->ps.weapon == WP_ALEVEL3_UPG )
+	{
+		min = LEVEL3_POUNCE_TIME_MIN;
+		max = LEVEL3_POUNCE_TIME_UPG;
+	}
+	else if ( cg.snap->ps.weapon == WP_ALEVEL4 )
+	{
+		if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_CHARGING )
+		{
+			min = 0;
+			max = LEVEL4_TRAMPLE_DURATION;
+		}
+		else
+		{
+			min = LEVEL4_TRAMPLE_CHARGE_MIN;
+			max = LEVEL4_TRAMPLE_CHARGE_MAX;
+		}
+	}
+	else if ( cg.snap->ps.weapon == WP_LUCIFER_CANNON )
+	{
+		min = LCANNON_CHARGE_TIME_MIN;
+		max = LCANNON_CHARGE_TIME_MAX;
+	}
+
+	if ( max - min <= 0.0f )
+	{
+		return 0.0f;
+	}
+
+	progress = ( ( float ) cg.predictedPlayerState.stats[ STAT_MISC ] - min ) /
+	( max - min );
+
+	if ( progress > 1.0f )
+	{
+		return 1.0f;
+	}
+
+	if ( progress < 0.0f )
+	{
+		return 0.0f;
+	}
+
+	return progress;
 }

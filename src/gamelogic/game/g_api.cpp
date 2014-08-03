@@ -20,11 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include <chrono>
 #include "g_local.h"
 #include "g_cm_world.h"
 #include "../shared/VMMain.h"
-#include "../../common/String.h"
 #include "../shared/CommonProxies.h"
 
 // This really should go in the common code

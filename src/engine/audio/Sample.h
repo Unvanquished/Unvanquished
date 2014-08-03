@@ -31,8 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AUDIO_SAMPLE_H_
 #define AUDIO_SAMPLE_H_
 
-#include "ALObjects.h"
-
 namespace Audio {
 
     //TODO remove once we have VM handles

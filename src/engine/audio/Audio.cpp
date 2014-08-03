@@ -206,7 +206,7 @@ namespace Audio {
         if ((muteWhenMinimized.Get() and com_minimized->integer) or (muteWhenUnfocused.Get() and com_unfocused->integer)) {
             AL::SetListenerGain(0.0f);
         } else {
-            AL::SetListenerGain(masterVolume.Get());
+            AL::SetListenerGain(SliderToAmplitude(masterVolume.Get()));
         }
 
         // Update the rest of the system
@@ -552,4 +552,31 @@ namespace Audio {
             }
     };
     static StopCaptureTestCmd stopCaptureTestRegistration;
+
+    // Additional utility functions
+
+    // Some volume slider-tweaking functions, full of heuristics and probably very slow for what they do.
+    static float PerceptualToAmplitude(float perceptual) {
+        // Conversion from a perceptual audio scale on [0, 1] to an amplitude scale on [0, 1]
+        // Assuming the decibel scale is perceptual, naming A the amplitude and B the perceived volume:
+        //     B = 3log_10(A + c) + d and A = 10^((B - d)/3) - c
+        // With c and d two constants such that the equation holds for A = B = 0 and A = B = 1.
+        // Solving gives us:
+        //     c = 10^(-d/3) and 10^((1-d)/3) - 10^(-d/3) = 1
+        // With Wofram Alpha we get:
+        //     d = 3log_10(10^(1/3) - 1) and c = 1 / (10^(1/3) - 1)
+        const float PERCEPTUAL_C = 0.866224835960518f;
+        const float PERCEPTUAL_D = 0.187108105667604f;
+
+        return std::pow(10.0f, (perceptual - PERCEPTUAL_D) / 3.0f) - PERCEPTUAL_C;
+    }
+
+    float SliderToAmplitude(float slider) {
+        // We want the users to control the perceptual volume but at the same time have more
+        // control over the small value than over bigger ones so we tweak the slider value
+        // first.
+        float perceptual = slider * slider;
+        return PerceptualToAmplitude(perceptual);
+    }
+
 }

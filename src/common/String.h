@@ -28,13 +28,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include <string>
-#include <algorithm>
-#include <stdint.h>
-#include "../libs/tinyformat/tinyformat.h"
-
 #ifndef COMMON_STRING_H_
 #define COMMON_STRING_H_
+
+#include "../libs/tinyformat/tinyformat.h"
 
 namespace Str {
 

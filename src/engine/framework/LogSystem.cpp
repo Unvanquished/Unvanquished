@@ -28,12 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "LogSystem.h"
-#include "../../common/String.h"
-
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include <mutex>
+#include "LogSystem.h"
 
 namespace Log {
 

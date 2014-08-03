@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "revision.h"
 #include "client.h"
-#include <unordered_map>
 
 #ifdef WIN32
 # include <winsock.h>
@@ -45,7 +44,6 @@ typedef SOCKET irc_socket_t;
 # include <sys/param.h>
 # include <sys/ioctl.h>
 # include <sys/uio.h>
-# include <errno.h>
 # include <pthread.h>
 typedef int irc_socket_t;
 # if !defined HAVE_CLOSESOCKET

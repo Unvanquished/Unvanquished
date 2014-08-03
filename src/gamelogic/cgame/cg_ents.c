@@ -282,7 +282,7 @@ static void CG_EntityEffects( centity_t *cent )
 	}
 
 	// constant light glow
-	if ( cent->currentState.constantLight )
+	if ( cent->currentState.constantLight && ( cent->currentState.eType == ET_MOVER || cent->currentState.eType == ET_MODELDOOR ) )
 	{
 		int cl;
 		int i, r, g, b;
@@ -1035,6 +1035,10 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 			cent->lfs.hTest = trap_RegisterVisTest();
 			break;
 
+		case ET_BEACON:
+			memset( &cent->beaconPersistent, 0, sizeof( cbeaconPersistent_t ) );
+			break;
+
 		default:
 			break;
 	}
@@ -1156,6 +1160,7 @@ static void CG_AddCEntity( centity_t *cent )
 		case ET_PUSHER:
 		case ET_TELEPORTER:
 		case ET_LOCATION:
+		case ET_BEACON:
 			break;
 
 		case ET_GENERAL:

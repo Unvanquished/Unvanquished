@@ -858,7 +858,7 @@ static void R_LoadVisibility( lump_t *l )
 				// retrieve vis data for the cluster
 				index = ( ( j << 3 ) | k );
 				src2 = ( long * ) ( s_worldData.vis + index * s_worldData.clusterBytes );
-				
+
 				// OR this vis data with the current cluster's
 				for ( m = 0; m < ( s_worldData.clusterBytes / sizeof( long ) ); m++ )
 				{
@@ -3072,7 +3072,6 @@ static void R_CreateWorldVBO( void )
 		}
 	}
 
-	// create vbo and ibo
 	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
 	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL |
 	                                ATTR_NORMAL | ATTR_COLOR );
@@ -3203,7 +3202,7 @@ static void R_CreateWorldVBO( void )
 			VectorCopy( bounds[ 0 ], vboSurf->bounds[ 0 ] );
 			VectorCopy( bounds[ 1 ], vboSurf->bounds[ 1 ] );
 			SphereFromBounds( vboSurf->bounds[ 0 ], vboSurf->bounds[ 1 ], vboSurf->origin, &vboSurf->radius );
-	
+
 			mergedSurf->data = ( surfaceType_t * ) vboSurf;
 			mergedSurf->fogIndex = surf1->fogIndex;
 			mergedSurf->shader = surf1->shader;
@@ -3477,10 +3476,8 @@ static void R_SetParent( bspNode_t *node, bspNode_t *parent )
 	R_SetParent( node->children[ 1 ], node );
 
 	// ydnar: surface bounds
-	AddPointToBounds( node->children[ 0 ]->surfMins, node->surfMins, node->surfMaxs );
-	AddPointToBounds( node->children[ 0 ]->surfMins, node->surfMins, node->surfMaxs );
-	AddPointToBounds( node->children[ 1 ]->surfMins, node->surfMins, node->surfMaxs );
-	AddPointToBounds( node->children[ 1 ]->surfMaxs, node->surfMins, node->surfMaxs );
+	BoundsAdd( node->surfMins, node->surfMaxs, node->children[ 0 ]->surfMins, node->children[ 0 ]->surfMaxs );
+	BoundsAdd( node->surfMins, node->surfMaxs, node->children[ 1 ]->surfMins, node->children[ 1 ]->surfMaxs );
 }
 
 /*
@@ -3742,7 +3739,6 @@ static void R_LoadPlanes( lump_t *l )
 	cplane_t *out;
 	dplane_t *in;
 	int      count;
-	int      bits;
 
 	ri.Printf( PRINT_DEVELOPER, "...loading planes\n" );
 
@@ -3761,21 +3757,14 @@ static void R_LoadPlanes( lump_t *l )
 
 	for ( i = 0; i < count; i++, in++, out++ )
 	{
-		bits = 0;
-
 		for ( j = 0; j < 3; j++ )
 		{
 			out->normal[ j ] = LittleFloat( in->normal[ j ] );
-
-			if ( out->normal[ j ] < 0 )
-			{
-				bits |= 1 << j;
-			}
 		}
 
 		out->dist = LittleFloat( in->dist );
 		out->type = PlaneTypeForNormal( out->normal );
-		out->signbits = bits;
+		SetPlaneSignbits( out );
 	}
 }
 
@@ -4109,7 +4098,7 @@ void R_LoadLightGrid( lump_t *l )
 					VectorScale( ambientColor, scale, ambientColor );
 					VectorScale( directedColor, scale, directedColor );
 					VectorScale( direction, scale, direction );
-					
+
 					gridPoint1->ambient[ 0 ] = floatToUnorm8( ambientColor[ 0 ] );
 					gridPoint1->ambient[ 1 ] = floatToUnorm8( ambientColor[ 1 ] );
 					gridPoint1->ambient[ 2 ] = floatToUnorm8( ambientColor[ 2 ] );

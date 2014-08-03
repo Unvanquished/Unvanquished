@@ -506,6 +506,18 @@ static void CG_Obituary( entityState_t *ent )
 
 		if ( message )
 		{
+			// shouldn't need to do this here, but it avoids
+			char attackerClassName[ 64 ];
+
+			if ( attackerClass == -1 )
+			{
+				*attackerClassName = 0;
+			}
+			else
+			{
+				Q_strncpyz( attackerClassName, _( BG_ClassModelConfig( attackerClass )->humanName ), sizeof( attackerClassName ) );
+			}
+
 			// Argument order: victim, attacker, [class,] [assistant]. Each has team tag first.
 			if ( messageSuicide && attacker == target )
 			{
@@ -515,7 +527,7 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				if ( attackerClass != -1 )
 				{
-					CG_Printf( messageAssisted, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, _( BG_ClassModelConfig( attackerClass )->humanName ), teamTag[ assistantTeam ], assistantName );
+					CG_Printf( messageAssisted, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, attackerClassName, teamTag[ assistantTeam ], assistantName );
 				}
 				else
 				{
@@ -524,7 +536,7 @@ static void CG_Obituary( entityState_t *ent )
 			}
 			else
 			{
-				CG_Printf( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, ( attackerClass != -1 ) ? _( BG_ClassModelConfig( attackerClass )->humanName ) : NULL );
+				CG_Printf( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, attackerClassName );
 			}
 
 			if ( attackerTeam == ci->team && attacker == cg.clientNum && attacker != target )
@@ -587,68 +599,66 @@ void CG_PainEvent( centity_t *cent, int health )
 
 /*
 =========================
-CG_Level2Zap
+CG_OnPlayerWeaponChange
+
+Called on weapon change
 =========================
 */
-static void CG_Level2Zap( entityState_t *es )
+void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
 {
-	int       i;
-	centity_t *source = NULL, *target = NULL;
+	playerState_t *ps = &cg.snap->ps;
 
-	if ( es->misc < 0 || es->misc >= MAX_CLIENTS )
+	// Change the HUD to match the weapon. Close the old hud first
+	trap_Rocket_ShowHud( ps->weapon );
+
+	// Rebuild weapon lists if UI is in focus.
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
-		return;
+		CG_Rocket_BuildArmourySellList( "default" );
+		CG_Rocket_BuildArmouryBuyList( "default" );
 	}
 
-	source = &cg_entities[ es->misc ];
+	// Reset weapon inertia data.
+	memset( &cg.weaponInertia, 0, sizeof( cg.weaponInertia ) );
 
-	for ( i = 0; i <= 2; i++ )
+	cg.predictedPlayerEntity.pe.weapon.animationNumber = -1; //force weapon lerpframe recalculation
+}
+
+/*
+=========================
+CG_OnPlayerUpgradeChange
+
+Called on upgrade change
+=========================
+*/
+
+void CG_OnPlayerUpgradeChange( void )
+{
+	playerState_t *ps = &cg.snap->ps;
+
+	// Rebuild weapon lists if UI is in focus.
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
-		switch ( i )
-		{
-			case 0:
-				if ( es->time <= 0 )
-				{
-					continue;
-				}
-
-				target = &cg_entities[ es->time ];
-				break;
-
-			case 1:
-				if ( es->time2 <= 0 )
-				{
-					continue;
-				}
-
-				target = &cg_entities[ es->time2 ];
-				break;
-
-			case 2:
-				if ( es->constantLight <= 0 )
-				{
-					continue;
-				}
-
-				target = &cg_entities[ es->constantLight ];
-				break;
-		}
-
-		if ( !CG_IsTrailSystemValid( &source->level2ZapTS[ i ] ) )
-		{
-			source->level2ZapTS[ i ] = CG_SpawnNewTrailSystem( cgs.media.level2ZapTS );
-		}
-
-		if ( CG_IsTrailSystemValid( &source->level2ZapTS[ i ] ) )
-		{
-			CG_SetAttachmentCent( &source->level2ZapTS[ i ]->frontAttachment, source );
-			CG_SetAttachmentCent( &source->level2ZapTS[ i ]->backAttachment, target );
-			CG_AttachToCent( &source->level2ZapTS[ i ]->frontAttachment );
-			CG_AttachToCent( &source->level2ZapTS[ i ]->backAttachment );
-		}
+		CG_Rocket_BuildArmourySellList( "default" );
+		CG_Rocket_BuildArmouryBuyList( "default" );
 	}
+}
 
-	source->level2ZapTime = cg.time;
+/*
+=========================
+CG_OnMapRestart
+
+Called whenever the map is restarted
+via map_restart
+=========================
+*/
+void CG_OnMapRestart( void )
+{
+	// if scoreboard is showing, hide it
+	CG_HideScores_f();
+
+	// hide any other menus
+	trap_Rocket_DocumentAction( "", "blurall" );
 }
 
 /*
@@ -1326,10 +1336,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				cg.spawnTime = cg.time;
 			}
 
-			break;
-
-		case EV_LEV2_ZAP:
-			CG_Level2Zap( es );
 			break;
 
 		case EV_HIT:

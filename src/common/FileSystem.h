@@ -25,18 +25,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef COMMON_FILESYSTEM_H_
 #define COMMON_FILESYSTEM_H_
 
-#include <system_error>
-#include <iterator>
-#include <vector>
-#include <string>
-#include <memory>
-#include <chrono>
-#include <unordered_map>
-#include "../../common/String.h"
-#include "../../common/Optional.h"
-#include "../../common/Command.h"
-#include "../../common/IPC.h"
-
 namespace FS {
 
 // File offset type. Using 64bit to allow large files.
@@ -233,17 +221,15 @@ enum pakType_t {
 
 // Information about a package
 struct PakInfo {
-
 	// Base name of the pak, may include directories
 	std::string name;
 
 	// Version of the pak
 	std::string version;
 
-	// CRC32 checksum of the pak, optional. This will always be set in a loaded
-	// pak, but not necessarily for available paks. Also it might be inaccurate
-	// for available paks if the checksum in the filename doesn't match the
-	// actual checksum.
+	// CRC32 checksum of the pak, if given in the pak filename. Note that it
+	// may not reflect the actual checksum of the pak. This is only valid for
+	// zip paks.
 	Util::optional<uint32_t> checksum;
 
 	// Type of pak
@@ -251,35 +237,48 @@ struct PakInfo {
 
 	// Full path to the pak
 	std::string path;
+};
+
+// Information about a package that has been loaded
+struct LoadedPakInfo: public PakInfo {
+	// Actual CRC32 checksum of the pak, derived from the pak contents. This is
+	// only valid for zip paks.
+	Util::optional<uint32_t> realChecksum;
 
 	// Time this pak was last updated. This is only valid for zip paks and
 	// reflects the timestamp at the time the pak was loaded.
 	std::chrono::system_clock::time_point timestamp;
 
-	// File handle of a loaded pak. This is only valid for zip paks that are
-	// loaded. Because the handle is used by multiple threads, you should use
-	// pread() to access it, which doesn't use the file position.
+	// File handle of a loaded pak. This is only valid for zip paks. Because the
+	// handle is used by multiple threads, you should use pread() to access it,
+	// which doesn't use the file position.
 	int fd;
 
+	// Prefix used to load this pak. This restricts the files loaded from this
+	// pak to only those that start with the prefix.
+	std::string pathPrefix;
 };
 
 // Operations which work on files that are in packages. Packages should be used
 // for read-only assets which can be distributed by auto-download.
 namespace PakPath {
 
-#ifndef BUILD_VM
 	// Load a pak into the namespace with all its dependencies
 	void LoadPak(const PakInfo& pak, std::error_code& err = throws());
+
+	// Load a subset of a pak, only loading subpaths starting with the given prefix
+	void LoadPakPrefix(const PakInfo& pak, Str::StringRef pathPrefix, std::error_code& err = throws());
 
 	// Load a pak into the namespace and verify its checksum but *don't* load its dependencies
 	void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err = throws());
 
+#ifndef BUILD_VM
 	// Remove all loaded paks
 	void ClearPaks();
 #endif
 
 	// Get a list of all the loaded paks
-	const std::vector<PakInfo>& GetLoadedPaks();
+	const std::vector<LoadedPakInfo>& GetLoadedPaks();
 
 	// Read an entire file into a string
 	std::string ReadFile(Str::StringRef path, std::error_code& err = throws());
@@ -291,7 +290,7 @@ namespace PakPath {
 	bool FileExists(Str::StringRef path);
 
 	// Get the pak a file is in, or null if the file does not exist
-	const PakInfo* LocateFile(Str::StringRef path);
+	const LoadedPakInfo* LocateFile(Str::StringRef path);
 
 	// Get the timestamp of a file
 	std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err = throws());

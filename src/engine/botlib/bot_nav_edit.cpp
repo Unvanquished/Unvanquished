@@ -31,13 +31,11 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-
 #include "../client/client.h"
 #include "../../libs/detour/DetourDebugDraw.h"
 #include "../../libs/detour/DebugDraw.h"
 #include "bot_navdraw.h"
 #include "nav.h"
-#include "../../common/Maths.h"
 
 #define DEFAULT_CONNECTION_SIZE 50
 static int connectionSize = DEFAULT_CONNECTION_SIZE;
@@ -230,7 +228,7 @@ void Cmd_NavEdit( void )
 
 		BotSaveOffMeshConnections( cmd.nav );
 	}
-	else 
+	else
 	{
 		Com_Printf( "%s", usage );
 	}
@@ -308,7 +306,7 @@ void Cmd_AddConnection( void )
 		{
 			return;
 		}
-		
+
 		if ( GetPointPointedTo( cmd.nav, cmd.pc.end ) )
 		{
 			cmd.nav->process.con.addConnection( cmd.pc );

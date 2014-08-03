@@ -6,7 +6,7 @@ set -e
 set -u
 
 # Dynamic libraries for inclusion in app bundle
-DEPS_VERSION=1
+DEPS_VERSION=2
 SDL2_VERSION=2.0.3
 GLEW_VERSION=1.10.0
 OPENAL_VERSION=1.15.1
@@ -45,7 +45,6 @@ make_universal daemon-tty 755
 make_universal sel_ldr 755
 make_universal game-nacl-native-exe 755
 make_universal cgame-qvm-native.so 644
-make_universal ui-qvm-native.so 644
 install -m 644 "${BUILD32_PATH}/irt_core-x86.nexe" "${DEST_PATH}/Contents/MacOS/irt_core-x86.nexe"
 install -m 644 "${BUILD64_PATH}/irt_core-x86_64.nexe" "${DEST_PATH}/Contents/MacOS/irt_core-x86_64.nexe"
 

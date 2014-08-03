@@ -732,7 +732,48 @@ void VectorRotate( vec3_t in, vec3_t matrix[ 3 ], vec3_t out )
 	out[ 2 ] = DotProduct( in, matrix[ 2 ] );
 }
 
+/*
+==================
+ProjectPointOntoRectangleOutwards
+
+Traces a ray from inside a rectangle and returns the point of
+intersection with the rectangle
+==================
+*/
+float ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const vec2_t dir, 
+                                         const vec2_t bounds[ 2 ] )
+{
+	float t, ty;
+	qboolean dsign[ 2 ];
+
+	dsign[ 0 ] = ( dir[ 0 ] < 0 );
+	dsign[ 1 ] = ( dir[ 1 ] < 0.0 );
+
+	t = ( bounds[ 1 - dsign[ 0 ] ][ 0 ] - point[ 0 ] ) / dir[ 0 ];
+	ty = ( bounds[ 1 - dsign[ 1 ] ][ 1 ] - point[ 1 ] ) / dir[ 1 ];
+
+	if( ty < t )
+		t = ty;
+
+	out[ 0 ] = point[ 0 ] + dir[ 0 ] * t;
+	out[ 1 ] = point[ 1 ] + dir[ 1 ] * t;
+
+	return t;
+}
+
 //============================================================
+
+/*
+=============
+ExponentialFade
+
+Fades one value towards another exponentially
+=============
+*/
+void ExponentialFade( float *value, float target, float lambda, float timedelta )
+{
+	*value = target + ( *value - target ) * exp( - lambda * timedelta );
+}
 
 /*
  * ===============
@@ -3833,13 +3874,6 @@ void TransAddWeight( float weight, const transform_t *a, transform_t *out )
 void TransEndLerp( transform_t *t )
 {
 	QuatNormalize( t->rot );
-}
-#endif
-
-#if defined(_WIN32) && !defined(__MINGW32__)
-double rint( double x )
-{
-	return floor( x + 0.5 );
 }
 #endif
 

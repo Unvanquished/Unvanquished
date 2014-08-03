@@ -376,6 +376,11 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		AddGLSLDefine( bufferExtra, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
 	}
 
+	if ( r_showEntityNormals->integer )
+	{
+		AddGLSLDefine( bufferExtra, "r_showEntityNormals", r_showEntityNormals->integer );
+	}
+
 	if ( glConfig2.vboVertexSkinningAvailable )
 	{
 		AddGLSLDefine( bufferExtra, "r_VertexSkinning", 1 );

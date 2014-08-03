@@ -23,9 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/vm_traps.h"
 #include "../botlib/bot_api.h"
-#include "../../common/CommonSyscalls.h"
-#include "../../common/IPC.h"
-#include <array>
 
 #define GAME_API_VERSION          1
 

@@ -38,14 +38,11 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "q_unicode.h"
 #include "qcommon.h"
-#include <setjmp.h>
 
 #include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
-#include "../../common/Cvar.h"
-#include "../../common/Log.h"
 
 // htons
 #ifdef _WIN32
@@ -499,8 +496,7 @@ void Com_StartupVariable( const char *match )
 		if ( !match || !strcmp( s, match ) )
 		{
 			Cvar_Set( s, line[2].c_str() );
-			cv = Cvar_Get( s, "", 0 );
-			cv->flags |= CVAR_USER_CREATED;
+			cv = Cvar_Get( s, "", CVAR_USER_CREATED );
 			if (cv->flags & CVAR_ROM) {
 				com_consoleLines[i] = 0;
 			}
@@ -1008,7 +1004,6 @@ void Hunk_ClearToMark( void )
 	hunk_high.permanent = hunk_high.temp = hunk_high.mark;
 }
 
-void CL_ShutdownUI( void );
 void SV_ShutdownGameProgs( void );
 
 /*
@@ -1022,7 +1017,6 @@ void Hunk_Clear( void )
 {
 #ifdef BUILD_CLIENT
 	CL_ShutdownCGame();
-	CL_ShutdownUI();
 #endif
 	SV_ShutdownGameProgs();
 #ifdef BUILD_CLIENT

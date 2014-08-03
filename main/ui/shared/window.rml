@@ -1,0 +1,101 @@
+<template name="window" content="content">
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/rcss" href="/ui/shared/controls.rcss" />
+	<style>
+
+		/* #### Dialog window #### */
+		window {
+			display:block;
+			z-index: 5;
+			overflow: auto;
+			padding: 1.5em;
+
+			background-color: rgba( 10%,10%,10%, 95%);
+			border-style:solid;
+			border-width:1px;
+			border-color: rgba( 0%, 0%, 0%, 40%);
+
+		}
+
+		closebutton {
+			display:block;
+			width:1em;
+			height:1em;
+
+			position: absolute;
+			top: 0.5em;
+			left: 0.5em;
+
+			background-decorator: image;
+			background-image:/ui/shared/close_cross.png;
+		}
+
+		closebutton:hover {
+			background-image:/ui/shared/close_cross_hover;
+		}
+
+		row {
+			display: block;
+			width: 100%;
+			margin-top: 0.5em;
+			margin-bottom: 0.5em;
+		}
+
+
+		/* #### Tabs #### */
+		tab {
+			display: inline;
+			clear: left;
+			float: left;
+
+			padding: 0.5em;
+			color:#136D67;   /* Dark cyan */
+			border-color: #136D67;   /* Dark cyan */
+
+			/*
+			text-align: center;
+
+			float:left;
+			width: 5em;
+
+			border-style: solid;
+			border-bottom: 1px;
+			*/
+
+
+		}
+		tab:selected {
+			color: red;
+			color:#00F8FF;   /* Bright cyan */
+			border-color: #00F8FF;   /* Bright cyan */
+		}
+
+		/* Vertical bar that tabs sit in */
+		tabs {
+			display: block;
+			float: left;
+			width: 30%;
+			margin-top: auto;
+			margin-bottom: auto;
+		}
+
+		/* Vertical bar that content sits in */
+		panel {
+			float:right;
+			width: 70%;
+		}
+		
+
+
+	</style>
+</head>
+<body>
+	<handle move_target="#document">
+		<window>
+			<closebutton onClick="hide" />
+			<div id="content"></div>
+		</window>
+	</handle>
+</body>
+</template>

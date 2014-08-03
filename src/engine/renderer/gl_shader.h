@@ -23,10 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef GL_SHADER_H
 #define GL_SHADER_H
 
-#include <vector>
-#include <queue>
-#include <string>
-
 #include "tr_local.h"
 
 #define LOG_GLSL_UNIFORMS 1

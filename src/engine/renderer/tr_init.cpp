@@ -100,11 +100,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_ext_half_float_pixel;
 	cvar_t      *r_ext_texture_float;
 	cvar_t      *r_ext_texture_rg;
-	cvar_t      *r_ext_stencil_wrap;
 	cvar_t      *r_ext_texture_filter_anisotropic;
-	cvar_t      *r_ext_stencil_two_side;
-	cvar_t      *r_ext_separate_stencil;
-	cvar_t      *r_ext_depth_bounds_test;
 	cvar_t      *r_ext_framebuffer_object;
 	cvar_t      *r_ext_packed_depth_stencil;
 	cvar_t      *r_ext_framebuffer_blit;
@@ -231,6 +227,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_showBatches;
 	cvar_t      *r_showLightMaps;
 	cvar_t      *r_showDeluxeMaps;
+	cvar_t      *r_showEntityNormals;
 	cvar_t      *r_showAreaPortals;
 	cvar_t      *r_showCubeProbes;
 	cvar_t      *r_showBspNodes;
@@ -867,17 +864,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 				GL_TextureMode( r_textureMode->string );
 			}
 		}
-		else
-		{
-			if ( GLEW_ARB_multitexture )
-			{
-				for ( i = glConfig.maxActiveTextures - 1; i >= 0; i-- )
-				{
-					GL_SelectTexture( i );
-					GL_TextureMode( r_textureMode->string );
-				}
-			}
-		}
 
 		GL_CheckErrors();
 
@@ -959,11 +945,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		ri.Printf( PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
 		ri.Printf( PRINT_DEVELOPER, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
 		ri.Printf( PRINT_DEVELOPER, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
-
-		if ( glConfig.driverType != GLDRV_OPENGL3 )
-		{
-			ri.Printf( PRINT_DEVELOPER, "GL_MAX_TEXTURE_UNITS: %d\n", glConfig.maxActiveTextures );
-		}
 
 		ri.Printf( PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersionString );
 
@@ -1114,11 +1095,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_ext_half_float_pixel = ri.Cvar_Get( "r_ext_half_float_pixel", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_float = ri.Cvar_Get( "r_ext_texture_float", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_rg = ri.Cvar_Get( "r_ext_texture_rg", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_ext_stencil_wrap = ri.Cvar_Get( "r_ext_stencil_wrap", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "4",  CVAR_LATCH | CVAR_ARCHIVE );
-		r_ext_stencil_two_side = ri.Cvar_Get( "r_ext_stencil_two_side", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_ext_separate_stencil = ri.Cvar_Get( "r_ext_separate_stencil", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_ext_depth_bounds_test = ri.Cvar_Get( "r_ext_depth_bounds_test", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_framebuffer_object = ri.Cvar_Get( "r_ext_framebuffer_object", "1",  CVAR_LATCH );
 		r_ext_packed_depth_stencil = ri.Cvar_Get( "r_ext_packed_depth_stencil", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_framebuffer_blit = ri.Cvar_Get( "r_ext_framebuffer_blit", "1", CVAR_CHEAT | CVAR_LATCH );
@@ -1375,6 +1352,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_showBatches = ri.Cvar_Get( "r_showBatches", "0", CVAR_CHEAT );
 		r_showLightMaps = ri.Cvar_Get( "r_showLightMaps", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_showDeluxeMaps = ri.Cvar_Get( "r_showDeluxeMaps", "0", CVAR_CHEAT | CVAR_SHADER );
+		r_showEntityNormals = ri.Cvar_Get( "r_showEntityNormals", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_showAreaPortals = ri.Cvar_Get( "r_showAreaPortals", "0", CVAR_CHEAT );
 		r_showCubeProbes = ri.Cvar_Get( "r_showCubeProbes", "0", CVAR_CHEAT );
 		r_showBspNodes = ri.Cvar_Get( "r_showBspNodes", "0", CVAR_CHEAT );
@@ -1466,6 +1444,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		backEndData[ 0 ] = ( backEndData_t * ) ri.Hunk_Alloc( sizeof( *backEndData[ 0 ] ), h_low );
 		backEndData[ 0 ]->polys = ( srfPoly_t * ) ri.Hunk_Alloc( r_maxPolys->integer * sizeof( srfPoly_t ), h_low );
 		backEndData[ 0 ]->polyVerts = ( polyVert_t * ) ri.Hunk_Alloc( r_maxPolyVerts->integer * sizeof( polyVert_t ), h_low );
+		backEndData[ 0 ]->polyIndexes = ( int * ) ri.Hunk_Alloc( r_maxPolyVerts->integer * sizeof( int ), h_low );
 		backEndData[ 0 ]->polybuffers = ( srfPolyBuffer_t * ) ri.Hunk_Alloc( r_maxPolys->integer * sizeof( srfPolyBuffer_t ), h_low );
 
 		if ( r_smp->integer )
@@ -1473,6 +1452,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			backEndData[ 1 ] = ( backEndData_t * ) ri.Hunk_Alloc( sizeof( *backEndData[ 1 ] ), h_low );
 			backEndData[ 1 ]->polys = ( srfPoly_t * ) ri.Hunk_Alloc( r_maxPolys->integer * sizeof( srfPoly_t ), h_low );
 			backEndData[ 1 ]->polyVerts = ( polyVert_t * ) ri.Hunk_Alloc( r_maxPolyVerts->integer * sizeof( polyVert_t ), h_low );
+			backEndData[ 1 ]->polyIndexes = ( int * ) ri.Hunk_Alloc( r_maxPolyVerts->integer * sizeof( int ), h_low );
 			backEndData[ 1 ]->polybuffers = ( srfPolyBuffer_t * ) ri.Hunk_Alloc( r_maxPolys->integer * sizeof( srfPolyBuffer_t ), h_low );
 		}
 		else
@@ -1736,7 +1716,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		re.purgeCache = RE_PurgeCache;
 
 		re.LoadDynamicShader = RE_LoadDynamicShader;
-		re.GetTextureId = RE_GetTextureId;
 		re.RenderToTexture = RE_RenderToTexture;
 		re.Finish = RE_Finish;
 		// ET END
@@ -1764,6 +1743,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		re.SetColorGrading = RE_SetColorGrading;
 
 		re.SetAltShaderTokens = R_SetAltShaderTokens;
+
+		re.GetTextureSize = RE_GetTextureSize;
+		re.Add2dPolysIndexed = RE_2DPolyiesIndexed;
+		re.GenerateTexture = RE_GenerateTexture;
+		re.ShaderNameFromHandle = RE_GetShaderNameFromHandle;
 
 		return &re;
 	}

@@ -404,16 +404,29 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 static qboolean CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon, clientInfo_t *ci, qboolean iqm )
 {
 	int handle, i;
+	char newModelName[ MAX_QPATH ];
 	static refSkeleton_t base, delta;
+
+	// special handling for human_(naked|light|medium)
+	if ( !Q_stricmp( modelName, "human_naked"   ) ||
+		!Q_stricmp( modelName, "human_light"   ) ||
+		!Q_stricmp( modelName, "human_medium" ) )
+	{
+		Q_strncpyz( newModelName, "human_nobsuit_common", sizeof( newModelName ) );
+	}
+	else
+	{
+		Q_strncpyz( newModelName, modelName, sizeof( newModelName ) );
+	}
 
 	if ( iqm )
 	{
-		handle = trap_R_RegisterAnimation( va( "models/players/%s/%s.iqm:%s_delta", modelName, modelName, BG_Weapon( weapon )->name ) );
+		handle = trap_R_RegisterAnimation( va( "models/players/%s/%s.iqm:%s_delta", newModelName, newModelName, BG_Weapon( weapon )->name ) );
 
 	}
 	else
 	{
-		handle = trap_R_RegisterAnimation( va( "models/players/%s/%s_delta.md5anim", modelName, BG_Weapon( weapon )->name ) );
+		handle = trap_R_RegisterAnimation( va( "models/players/%s/%s_delta.md5anim", newModelName, BG_Weapon( weapon )->name ) );
 	}
 
 	if ( !handle )

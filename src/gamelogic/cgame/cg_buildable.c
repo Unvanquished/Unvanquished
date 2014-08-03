@@ -1144,33 +1144,6 @@ void CG_GhostBuildable( int buildableInfo )
 	                     ? cgs.media.greenBuildShader
 	                     : cgs.media.redBuildShader;
 
-	// Draw predicted RGS efficiency
-	// TODO: Add fancy display for predicted RGS efficiency
-	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
-	{
-		char color;
-		int  delta = ps->stats[ STAT_PREDICTION ];
-
-		if ( delta < 0 )
-		{
-			color = COLOR_RED;
-		}
-		else if ( delta < 10 )
-		{
-			color = COLOR_ORANGE;
-		}
-		else if ( delta < 50 )
-		{
-			color = COLOR_YELLOW;
-		}
-		else
-		{
-			color = COLOR_GREEN;
-		}
-
-		CG_CenterPrint(va("^%c%+d%%", color, delta), 200, GIANTCHAR_WIDTH * 4 );
-	}
-
 	//rescale the model
 	scale = BG_BuildableModelConfig( buildable )->modelScale;
 
@@ -1312,7 +1285,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 			trap_R_SetColor( backColour );
 
-			CG_AlignText( &rect, text, scale, 0, 0, ALIGN_CENTER, VALIGN_CENTER, &tx, &ty );
 			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2, ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ), cgs.media.whiteShader );
 
 			trap_R_SetColor( NULL );
@@ -1322,7 +1294,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 			colour[2] = bs->foreColor[2];
 			colour[3] = bs->foreColor[3];
 
-			UI_Text_Paint( tx, ty, scale, colour, text, 0, ITEM_TEXTSTYLE_PLAIN );
+			// TODO: Draw text
 		}
 	}
 }
@@ -2191,7 +2163,7 @@ void CG_DrawBuildableStatus( void )
 
 	if ( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK )
 	{
-		CG_GhostBuildableStatus( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] );
+// 		CG_GhostBuildableStatus( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] );
         }
 }
 

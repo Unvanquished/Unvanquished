@@ -28,17 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "LineEditData.h"
-
-#include <string.h>
-#include <algorithm>
-#include <utility>
+#include "Common.h"
 
 //TODO: use a std::string instead of a fixed size char* ?
 //TODO: support MAJ-selection ?
 
 namespace Util {
-    LineEditData::LineEditData(int size, int scrollSize)
+    LineEditData::LineEditData(unsigned size, unsigned scrollSize)
     :scrollSize(scrollSize), width(size), scroll(0), cursor(0) {
     }
     const std::u32string& LineEditData::GetText() const {
@@ -68,7 +64,7 @@ namespace Util {
         buffer = std::move(text);
         cursor = buffer.size();
         if (cursor > width) {
-            scroll = cursor - width + scrollSize;
+            scroll = cursor - width + std::min(width - 1, scrollSize);
         } else
             scroll = 0;
     }
@@ -134,7 +130,7 @@ namespace Util {
     }
 
     void LineEditData::SetWidth(int width_) {
-        width = width_;
+        width = std::max(width_, 1);
         UpdateScroll();
     }
 
@@ -144,9 +140,9 @@ namespace Util {
 
     void LineEditData::UpdateScroll() {
         if (cursor < scroll) {
-            scroll = std::min(scroll - scrollSize, 0U);
+            scroll = scroll > scrollSize ? scroll - scrollSize : 0U;
         } else if (cursor > scroll + width) {
-            scroll = cursor - width + scrollSize;
+            scroll = cursor - width + std::min(width - 1, scrollSize);
         }
     }
 }

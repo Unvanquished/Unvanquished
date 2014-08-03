@@ -31,13 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COMMON_OPTIONAL_H_
 #define COMMON_OPTIONAL_H_
 
-#include "../engine/qcommon/q_shared.h"
-#include "Util.h"
-#include <type_traits>
-#include <initializer_list>
-#include <memory>
-#include <stdexcept>
-
 // optional class based on http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3793.html
 // The implementation is heavily based on experimental/optional in libc++, but
 // rewritten to work with older compilers.

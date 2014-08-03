@@ -72,7 +72,6 @@ extern  vmCvar_t g_allowVote;
 extern  vmCvar_t g_voteLimit;
 extern  vmCvar_t g_extendVotesPercent;
 extern  vmCvar_t g_extendVotesTime;
-extern  vmCvar_t g_extendVotesCount;
 extern  vmCvar_t g_kickVotesPercent;
 extern  vmCvar_t g_denyVotesPercent;
 extern  vmCvar_t g_mapVotesPercent;

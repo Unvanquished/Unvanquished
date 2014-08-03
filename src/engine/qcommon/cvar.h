@@ -109,6 +109,8 @@ int Cvar_VariableIntegerValue(const char *var_name);
 char *Cvar_VariableString(const char *var_name);
 void Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 
+// returns the latched value if there is one, and the current value otherwise
+char* Cvar_LatchedVariableString(const char* name);
 
 /**
  * returns the latched value if there is one, and the current value otherwise

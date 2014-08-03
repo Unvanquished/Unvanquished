@@ -36,6 +36,7 @@ static int r_numPolys;
 static int r_firstScenePoly;
 
 int        r_numPolyVerts;
+int        r_numPolyIndexes;
 
 int        r_firstScenePolybuffer;
 int        r_numPolybuffers;
@@ -82,6 +83,7 @@ void R_ToggleSmpFrame( void )
 	r_firstScenePoly = 0;
 
 	r_numPolyVerts = 0;
+	r_numPolyIndexes = 0;
 
 	r_numPolybuffers = 0;
 	r_firstScenePolybuffer = 0;
@@ -788,7 +790,7 @@ void R_UpdateVisTests( void )
 		}
 
 		// make sure these are testing the same thing
-		if ( VectorCompare( test->position, res->position ) && test->area == res->area && 
+		if ( VectorCompare( test->position, res->position ) && test->area == res->area &&
 			test->depthAdjust == res->depthAdjust )
 		{
 			test->lastResult = res->lastResult;
@@ -913,7 +915,7 @@ void RE_UnregisterVisTest( qhandle_t hTest )
 	{
 		return;
 	}
-	
+
 	tr.visTests[ hTest - 1 ].registered = qfalse;
 	tr.numVisTests--;
 }

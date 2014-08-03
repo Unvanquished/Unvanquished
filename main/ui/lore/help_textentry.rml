@@ -1,0 +1,67 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		
+		<style>
+			in {
+				display:inline;
+			}
+			
+			color {
+				display:block;
+				width:3em;
+				float:left;
+			}
+		</style>
+
+
+	</head>
+	<body id="help_textentry" template="window" style="width: 32em; margin: 10%;">
+		<h1> Colour Codes and Symbols </h1>
+
+		<p> 
+			Colours are used by typing their escape code starting with a caret (^) symbol.
+			Colour can be reset again to normal using ^*, or an actual caret can be typed
+			using ^^.
+		</p>
+		
+		<color style="color: #333333;">^0</color>
+		<color style="color: #FF0000;">^1</color>
+		<color style="color: #00FF00;">^2</color>
+		<color style="color: #FFFF00;">^3</color>
+		<color style="color: #0000FF;">^4</color>
+		<color style="color: #00FFFF;">^5</color>
+		<color style="color: #FF00FF;">^6</color>
+		<color style="color: #FFFFFF;">^7</color>
+		<color style="color: #FF7F00;">^8</color>
+		<color style="color: #7F7F7F;">^9</color>
+		<color style="color: #BFBFBF;">^:</color>
+		<color style="color: #BFBFBF;">^;</color>
+		<color style="color: #007F00;">^&lt;</color>
+		<color style="color: #7F7F00;">^=</color>
+		<color style="color: #00007F;">^></color>
+		<color style="color: #7F0000;">^?</color>
+		<color style="color: #7F3F00;">^@</color>
+		<color style="color: #FF9919;">^A</color>
+		<color style="color: #007F7F;">^B</color>
+		<color style="color: #7F007F;">^C</color>
+		<color style="color: #007FFF;">^D</color>
+		<color style="color: #7F00FF;">^E</color>
+		<color style="color: #3399CC;">^F</color>
+		<color style="color: #CCFFCC;">^G</color>
+		<color style="color: #006633;">^H</color>
+		<color style="color: #FF0033;">^I</color>
+		<color style="color: #B21919;">^J</color>
+		<color style="color: #993300;">^K</color>
+		<color style="color: #CC9933;">^L</color>
+		<color style="color: #999933;">^M</color>
+		<color style="color: #FFFFBF;">^N</color>
+		<color style="color: #FFFF7F;">^O</color>
+		
+		<p style="clear: both;"> 
+			Example: ^3Fred^1Baggins becomes <in style="color: #FFFF00;">Fred</in><in style="color: #FF0000;">Baggins</in> 
+		</p>
+		
+	</body>
+</rml>

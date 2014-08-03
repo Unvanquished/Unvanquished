@@ -28,9 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Log.h"
-#include <vector>
-
 #ifndef FRAMEWORK_LOG_SYSTEM_H_
 #define FRAMEWORK_LOG_SYSTEM_H_
 

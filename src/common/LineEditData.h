@@ -28,9 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include <string>
-#include <climits>
-
 #ifndef COMMON_LINE_EDIT_DATA_H_
 #define COMMON_LINE_EDIT_DATA_H_
 
@@ -39,9 +36,9 @@ namespace Util {
 
     class LineEditData {
         public:
-            static const int defaultScrollSize = 16;
+            static const unsigned defaultScrollSize = 16;
 
-            LineEditData(int size, int scrollSize = defaultScrollSize);
+            LineEditData(unsigned size, unsigned scrollSize = defaultScrollSize);
 
             const std::u32string& GetText() const;
             std::u32string& GetText();
@@ -73,7 +70,7 @@ namespace Util {
         private:
             void UpdateScroll();
             std::u32string buffer;
-            int scrollSize;
+            unsigned scrollSize;
             unsigned width;
             unsigned scroll;
             unsigned cursor;

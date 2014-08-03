@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AUDIO_AUDIO_H_
 #define AUDIO_AUDIO_H_
 
-#include "../../common/String.h"
+#include "../../common/Common.h"
 
 namespace Audio {
 

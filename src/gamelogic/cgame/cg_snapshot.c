@@ -120,6 +120,9 @@ void CG_SetInitialSnapshot( snapshot_t *snap )
 		// check for events
 		CG_CheckEvents( cent );
 	}
+
+	CG_OnPlayerUpgradeChange();
+	CG_OnPlayerWeaponChange( (weapon_t) cg.snap->ps.weapon );
 }
 
 /*
@@ -133,7 +136,7 @@ static void CG_TransitionSnapshot( void )
 {
 	centity_t  *cent;
 	snapshot_t *oldFrame;
-	int        i;
+	int        i, oldWeapon;
 
 	if ( !cg.snap )
 	{
@@ -158,6 +161,10 @@ static void CG_TransitionSnapshot( void )
 	// move nextSnap to snap and do the transitions
 	oldFrame = cg.snap;
 	cg.snap = cg.nextSnap;
+
+	// Need to store the previous weapon because BG_PlayerStateToEntityState might change it
+	// so the CG_OnPlayerWeaponChange callback is never called
+	oldWeapon = oldFrame->ps.weapon;
 
 	BG_PlayerStateToEntityState( &cg.snap->ps, &cg_entities[ cg.snap->ps.clientNum ].currentState, qfalse );
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = qfalse;
@@ -193,6 +200,17 @@ static void CG_TransitionSnapshot( void )
 		     cg_nopredict.integer || cg_synchronousClients.integer )
 		{
 			CG_TransitionPlayerState( ps, ops );
+		}
+
+		// Callbacks for changes in playerState like weapon/class/team
+		if ( oldWeapon != ps->weapon )
+		{
+			CG_OnPlayerWeaponChange( (weapon_t) ops->weapon );
+		}
+
+		if ( ops->stats[ STAT_ITEMS ] != ps->stats[ STAT_ITEMS ] )
+		{
+			CG_OnPlayerUpgradeChange();
 		}
 	}
 }
@@ -257,6 +275,7 @@ static void CG_SetNextSnap( snapshot_t *snap )
 	if ( ( cg.nextSnap->snapFlags ^ cg.snap->snapFlags ) & SNAPFLAG_SERVERCOUNT )
 	{
 		cg.nextFrameTeleport = qtrue;
+		CG_OnMapRestart();
 	}
 
 	// sort out solid entities
