@@ -278,7 +278,7 @@ void CG_Rocket_BuildServerList( const char *args )
 
 			if ( ping >= 0 || !Q_stricmp( args, "favorites" ) )
 			{
-				char addr[ 25 ];
+				char addr[ 50 ]; // long enough for IPv6 literal plus port no.
 				char mapname[ 256 ];
 				trap_LAN_GetServerInfo( netSrc, i, info, sizeof( info ) );
 

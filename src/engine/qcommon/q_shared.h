@@ -236,6 +236,8 @@ typedef int clipHandle_t;
 #define MAX_STRING_TOKENS 256 // max tokens resulting from Cmd_TokenizeString
 #define MAX_TOKEN_CHARS   1024 // max length of an individual token
 
+#define MAX_ADDR_CHARS    sizeof("[1111:2222:3333:4444:5555:6666:7777:8888]:99999")
+
 #define MAX_INFO_STRING   1024
 #define MAX_INFO_KEY      1024
 #define MAX_INFO_VALUE    1024
