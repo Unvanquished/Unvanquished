@@ -56,9 +56,8 @@
 			clear: both;
 		}
 
-
-
-		infoarea {
+		infoarea
+		{
 			display: block;
 			margin: 1em;
 			width: 100%;
@@ -69,7 +68,6 @@
 			display: block;
 			float: left;
 		}
-
 
 		datagridrow
 		{
@@ -141,7 +139,7 @@
 	<infoarea>
 		<infopiece style="text-align: left; width: 25em;">   <hostname/> </infopiece>
 		<infopiece style="text-align: center; width: 15em;"> Map: <levelname/>   </infopiece>
-		<infopiece style="text-align: right; width: 7em; ">  Time: <timer/>      </infopiece>
+		<infopiece style="text-align: right; width: 7em;">  Time: <timer/>      </infopiece>
 	</infoarea>
 
 </body>
