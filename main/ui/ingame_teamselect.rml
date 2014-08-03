@@ -52,7 +52,10 @@
 
 <body id="ingame_teamselect" template="window">
 
-	<button class="wide" onClick="hide ingame_teamselect; exec team auto"> Auto-select a team </button>
+	<button class="wide" onClick="hide ingame_teamselect; exec team auto" style="z-index: 10;">
+		<!-- High z-index, so we are placed 'ontop' of the drag-handle at the top of the window -->
+		Auto-select a team
+	</button>
 
 	<p>
 		The Aliens' strength is in agility. They possess only short-ranged attacks, but can dance
