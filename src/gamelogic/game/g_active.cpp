@@ -515,7 +515,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	pmove_t   pm;
 	gclient_t *client;
 	int       clientNum;
-	qboolean  attack1, following, queued;
+	qboolean  attack1, following, queued, attackReleased;
 	team_t    team;
 
 	client = ent->client;
@@ -525,6 +525,9 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 
 	attack1 = usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
 	          !usercmdButtonPressed( client->oldbuttons, BUTTON_ATTACK );
+
+	attackReleased = !usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
+		  usercmdButtonPressed( client->oldbuttons, BUTTON_ATTACK );
 
 	//if bot
 	if( ent->r.svFlags & SVF_BOT ) {
@@ -591,7 +594,9 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		{
 			G_StopFollowing( ent );
 		}
-
+	}
+	else if ( attackReleased )
+	{
 		if ( team == TEAM_NONE )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_TEAM );
@@ -605,6 +610,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 			G_TriggerMenu( client->ps.clientNum, MN_H_SPAWN );
 		}
 	}
+
 
 	// We are either not following anyone or following a spectator
 	if ( !following )
