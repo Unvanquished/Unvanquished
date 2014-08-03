@@ -1,0 +1,124 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<link type="text/rcss" href="menu.rcss" />
+	</head>
+
+	<body id="menu_ingame" class="ingame" >
+		<img class="gradient black" src="/ui/assets/black" />
+		<img class="circles" src="/ui/assets/circles1" />
+		<img class="circles" src="/ui/assets/circles2" />
+		<img class="black2" src="/ui/assets/black2" />
+
+		<sidebar>
+				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
+				<window id="innersidebar" class="innersidebar" >
+
+					<sidesection  id="sidebar_ingame">
+						<h1> Match menu </h1>
+						<blocklink class="rightfloat" onClick="exec disconnect"> Leave match</blocklink>
+						<blocklink class="leftalign" onClick="hide ingame">Resume action</blocklink>
+
+						<h2> Teams </h2>
+						<indent>
+							<blocklink onClick="exec team alien; hide ingame"> Join aliens</blocklink>
+							<blocklink onClick="exec team human;  hide ingame"> Join humans</blocklink>
+							<blocklink onClick="exec team spec;  hide ingame"> Spectate </blocklink>
+						</indent>
+
+						<h2> Democracy </h2>
+						<indent>
+							<blocklink class="fake">
+								Global vote: <ilink onClick="exec vote yes">yes</ilink> or
+								<ilink onClick="exec vote no">no</ilink>
+							</blocklink>
+							<blocklink class="fake">
+								Team vote: <ilink onClick="exec teamvote yes">yes</ilink> or
+								<ilink onClick="exec teamvote no">no</ilink>
+							</blocklink>
+							<blocklink onClick="exec callvote kickbots"> Kick bots </blocklink>
+							<!-- <blocklink onClick="show callvote_map"> Change map </blocklink> -->
+							<blocklink onClick="exec callvote extend"> Extend timelimit </blocklink>
+							<blocklink onClick="show callvote_draw"> Call a draw </blocklink>
+							<blocklink onClick="exec callteamvote admitdefeat"> Admit defeat </blocklink>
+						</indent>
+
+					</sidesection>
+
+					<if cvar="sv_running" condition="==" value="1">
+						<sidesection id="sidebar_host">
+							<h1> Host menu </h1>
+							<blocklink class="rightfloat" onClick="exec disconnect"> Stop server </blocklink>
+							<blocklink class="leftalign" onClick="exec pause">Pause server</blocklink>
+
+							<h2>Configuration</h2>
+							<indent>
+								<blocklink onClick="show server_general"> Server setup </blocklink>
+								<blocklink onClick="show server_bots"> Bots </blocklink>
+							</indent>
+
+							<h2>Map</h2>
+							<indent>
+								<!-- <blocklink onClick="show callvote_map">Change map</blocklink> -->
+								<blocklink onClick="exec layoutLoad default">Reset match</blocklink>
+							</indent>
+
+							<h2> Bots </h2>
+							<indent>
+								<blocklink onClick="exec bot add Lavishment aliens"> Add an alien bot </blocklink>
+								<blocklink onClick="exec bot add Pulsifer humans"> Add a human bot </blocklink>
+								<blocklink onClick="exec bot del all"> Remove all bots </blocklink>
+							</indent>
+
+							<!--
+							<h2> Players </h2>
+							<indent>
+								<blocklink onClick="show server_discipline">Disclipline: kick/ban/mute/nobuild</blocklink>
+							</indent>
+							-->
+						</sidesection>
+					</if>
+
+					<sidesection  id="sidebar_main">
+						<h1> Main Menu </h1>
+
+
+
+						<h2> Play</h2>
+						<indent>
+							<blocklink onClick="show serverbrowser"> Server listings</blocklink>
+							<blocklink onClick="show createserver"> Start local/LAN game</blocklink>
+							<!-- <blocklink onClick="show demos"> Recorded demos </blocklink> -->
+						</indent>
+
+						<h2> Options </h2>
+						<indent>
+							<blocklink onClick="show options_player"> Player </blocklink>
+							<blocklink onClick="show options_graphics"> Graphics </blocklink>
+							<blocklink onClick="show options_keys"> Key bindings </blocklink>
+							<blocklink onClick="show options_mouse"> Mouse and aim </blocklink>
+							<blocklink onClick="show options_sound"> Sound </blocklink>
+							<blocklink onClick="show options_ui"> User interface and HUD </blocklink>
+							<!-- <blocklink onClick="show options_fov"> Fields of view </blocklink> -->
+						</indent>
+
+						<h2> Lore </h2>
+						<indent>
+							<blocklink onClick="show help_gameplay"> Gameplay guide </blocklink>
+							<blocklink onClick="show help_textentry"> Colour codes and symbols </blocklink>
+						</indent>
+
+						<br />
+
+						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.30 </blocklink>
+					</sidesection>
+
+				</window>
+
+		</sidebar>
+
+	</body>
+</rml>
+
