@@ -1,181 +1,148 @@
 <rml>
-    <head>
-
-		<link type="text/rcss" href="/ui/shared/basics.rcss" />
-        <style>
-        body
-        {
-			width: 70%;
-			height: 80%;
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/template" href="/ui/shared/window.rml" />
+	<style>
+		body
+		{
+			/* TODO: Use a relative system, once tables are implemented */
+			width: 50em;
+			height: 40em;
 			margin: auto;
+
+			background-color: rgba( 10%, 10%, 10%, 70%);
 		}
 
-
-		#aliens,#humans{
-			width:50%;
-			height:65%;
-		}
-		#aliens{
-			background:#FF2B2610;
-			float:left;
-			border-right:1px;
-			border-color:#00000044;
-			margin-right:-1px;
-		}
-		#humans{
-			background:#26ABFF10;
-			float:right;
-		}
-		#infos{
+		half
+		{
 			display:block;
-			width:90%;
-			margin:auto;
-			padding:1em 0;
+			width: 50%;
+			float: left;
 		}
 
-		#infos div{
-			width: 25%;
-			display:inline-block;
-			text-align:center;
+		teambox {
+			display:block;
+			margin-left: 1em;
+			margin-right: 1em;
+			overflow: auto;
+		}
+		teambox.alien {
+			background-color: #FF2B2630;
+			width: 23em;
+			height: 25em;
+		}
+		teambox.human {
+			background-color: #26ABFF30;
+			width: 23em;
+			height: 25em;
+		}
+		teambox.spec {
+			background-color: rgba( 30%, 30%, 30%, 40%);
+			height: 3em;
+			padding: 0.5em;
+
 		}
 
-		#infos div:nth-child(1n){
-			text-align:left;
-			width:50%;
-		}
-		#infos div:nth-child(3n){
-			text-align:right;
-		}
-		datagridbody
+		teamname
 		{
-			overflow-y: auto;
+			display: block;
+			width: 100%;
+			font-size: 1.5em;
+			font-family: Dejavu Sans;
+			font-weight: bold;
+			text-align: center;
+			color: #666666;
 		}
 
 
-		div#title_bar div#icon
+
+		infoarea {
+			display: block;
+			margin: 1em;
+			width: 100%;
+			padding: 0.5em;
+		}
+		infopiece
 		{
-			icon-image-s: 128px 179px;
-			icon-image-t: 152px 191px;
+			display: block;
+			float: left;
 		}
 
-		div.container
+
+		datagridrow
 		{
-			color:#fff;
-			border-style: solid;
-			font-size:.8em;
-		}
-		h2{
-			width:50%;
-			display:inline-block;
-			text-align:center;
-			font-size:2em;
-		}
-		datagrid img
-		{
-			width: 23px;
-			height: 23px;
-			margin:auto;
-
-		}
-
-		div.window{
-			padding:0;
-			color:#fff;
+			height: 1.2em;
+			padding: 0.1em;
+			background: rgba( 50%, 50%, 50%, 50%);
 		}
 		datagridrow:nth-child(odd) {
-			background:#00000033;
+			background: rgba( 50%, 50%, 50%, 20%);
+		}
+
+		datagridcell {
+			text-align: center;
 		}
 		datagridcell:nth-child(1n){
-			text-align:center;
+			/* Icon cell */
+			padding: 0;
 		}
-		h2.alien{
-			color:#FF2B26BB;
-			background:#FF2B2611;
+		datagridcell:nth-child(2n){
+			/* Name cell */
+			padding: 0;
+			text-align: left;
 		}
-		h2.human{
-			color:#26ABFFBB;
-			background:#26ABFF11;
-		}
-
-		#spec{
-			position:relative;
-			display:block;
-		}
-
-		h2.spec{
-			font-size:1.2em;
-			padding:0em 1em;
-			text-align:right;
-/* 			background:#FFB70033; */
-			color:#FFB700;
-			display:inline;
-
-
-		}
-		div.playername{
-			text-align:left;
-			margin-left:.8em;
-			padding:.5em;
-			width:20%;
-		}
-		.score, .ping, .time, .num {
-			text-align:center;
+		/* Player weapon/class icons */
+		datagrid img
+		{
+			width: 1.2em;
+			height: 1.2em;
+			margin:auto;
 		}
 
-		div.spec{
-			display:block;
-			line-height:1em;
-			clear:both;
-			background:#00000033;
-		}
+	</style>
+</head>
+
+<body  id="scoreboard">
+
+	<half>
+		<teamname> Aliens </teamname>
+		<teambox class="alien">
+			<datagrid source="playerList.aliens" id="aliens">
+			<col fields="num" formatter="GearOrReady" width="10%"></col>
+			<col fields="num" formatter="PlayerName" width="55%">Name</col>
+			<col fields="score" width="15%">Score</col>
+			<col fields="ping" width="10%">Ping</col>
+			<col fields="time" width="10%">Time</col>
+		</datagrid>
+		</teambox>
+	</half>
+
+	<half>
+		<teamname> Humans </teamname>
+		<teambox class="human">
+			<datagrid source="playerList.humans" id="humans">
+				<col fields="num" formatter="GearOrReady" width="10%"></col>
+				<col fields="num" formatter="PlayerName" width="55%">Name</col>
+				<col fields="score" width="15%">Score</col>
+				<col fields="ping" width="10%">Ping</col>
+				<col fields="time" width="10%">Time</col>
+			</datagrid>
+		</teambox>
+	</half>
 
 
-		div.clear{
-			clear:both;
-			height:0px;
-			width:5px;
-			display:block;
-		}
-        </style>
-    </head>
-    <body onshow="" id="scoreboard">
-    <div class="window">
-    <h2 class="alien">Aliens</h2><h2 class="human">Humans</h2>
-	<div class="container">
-	<datagrid source="playerList.aliens" id="aliens">
-		<col fields="num" formatter="GearOrReady" width="15%"></col>
-		<col fields="num" formatter="PlayerName" width="50%">Name</col>
-		<col fields="score" width="15%">Score</col>
-		<col fields="ping" width="10%">Ping</col>
-		<col fields="time" width="10%">Time</col>
-	</datagrid>
-	</div>
-	<div class="container">
-	<datagrid source="playerList.humans" id="humans">
-		<col fields="num" formatter="GearOrReady" width="15%"></col>
-		<col fields="num" formatter="PlayerName" width="50%">Name</col>
-		<col fields="score" width="15%">Score</col>
-		<col fields="ping" width="10%">Ping</col>
-		<col fields="time" width="10%">Time</col>
-	</datagrid>
-	</div>
-	<div class="clear"></div>
-	<div class="container" id="spec">
-		<h2 class="spec">Spectators:</h2>
-		<div class="spec">
-			<datasource  source="playerList.spectators" fields="num" formatter="PlayerName" />
-		</div>
+	<teamname style="clear: both; padding-top: 1em;"> Spectators </teamname>
+	<teambox class="spec">
+		<datasource  source="playerList.spectators" fields="num" formatter="PlayerName" />
+	</teambox>
 
-	</div>
-<div id="infos">
+	<infoarea>
+		<infopiece style="text-align: left; width: 25em;">   <hostname/> </infopiece>
+		<infopiece style="text-align: center; width: 15em;"> Map: <levelname/>   </infopiece>
+		<infopiece style="text-align: right; width: 7em; ">  Time: <timer/>      </infopiece>
+	</infoarea>
 
+</body>
 
-    	<div>Server: <hostname/></div>
-		<div>Map: <levelname/></div>
-		<div>Time: <timer/></div>
-		    </div>
-
-    </div>
-
-    </body>
 </rml>
+
