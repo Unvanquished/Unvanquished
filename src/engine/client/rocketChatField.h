@@ -138,6 +138,8 @@ public:
 			else if ( event == "blur" || event == "hide" )
 			{
 				focus =  false;
+				text.Clear();
+				UpdateText();
 			}
 		}
 
