@@ -10,6 +10,7 @@ units
 	ui/hud_chargebar.rml
 	ui/hud_bp.rml
 	ui/hud_builder.rml
+	ui/hud_spawnwait.rml
 	ui/ingame_scoreboard.rml
 }
 
@@ -21,6 +22,8 @@ spectator.hudgroup
 	hud_basics
 	hud_overlay
 	hud_messagebuffer
+
+	hud_spawnwait
 }
 human.hudgroup
 {
