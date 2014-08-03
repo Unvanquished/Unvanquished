@@ -93,19 +93,20 @@
 			width: 20em;
 			height: 2em;
 
-			font-size: 2em;
+			font-size: 1.5em;
 
 		}
 
 		follow
 		{
+			display: block;
 			position: absolute;
-			top: 60%;
-			margin-left: auto;
-			margin-right: auto;
-			width: 50%;
+			bottom: 6em;
+			left: 0;
+			width: 100%;
 			text-align: center;
-			font-size: 2em;
+			font-size: 1.5em;
+			background-color: red;
 		}
 
 
