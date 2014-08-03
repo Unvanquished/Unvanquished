@@ -52,6 +52,8 @@
 			font-weight: bold;
 			text-align: center;
 			color: #666666;
+			padding-top: 0.5em;
+			clear: both;
 		}
 
 
@@ -131,7 +133,7 @@
 	</half>
 
 
-	<teamname style="clear: both; padding-top: 1em;"> Spectators </teamname>
+	<teamname> Spectators </teamname>
 	<teambox class="spec">
 		<datasource  source="playerList.spectators" fields="num" formatter="PlayerName" />
 	</teambox>
