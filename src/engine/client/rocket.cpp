@@ -494,6 +494,9 @@ void Rocket_Render( void )
 
 void Rocket_Update( void )
 {
+	// Mouse move is necessary to ensure the menus update, so fake one
+	Rocket_MouseMove( 0, 0 );
+
 	if ( menuContext )
 	{
 		menuContext->Update();

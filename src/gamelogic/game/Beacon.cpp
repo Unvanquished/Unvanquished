@@ -27,13 +27,14 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 #include "g_local.h"
 
 // beacon entityState fields:
-// eType          : ET_BEACON
-// otherEntityNum : creator
-// modelindex     : type
-// modelindex2    : additional data (e.g. buildable type for BCT_TAG)
-// generic1       : team
-// time           : creation time
-// time2          : expiration time (-1 if never)
+// eType           : ET_BEACON
+// otherEntityNum  : creator
+// otherEntityNum2 : tagged entity
+// modelindex      : type
+// modelindex2     : additional data (e.g. buildable type for BCT_TAG)
+// generic1        : team
+// time            : creation time
+// time2           : expiration time (-1 if never)
 
 namespace Beacon //this should eventually become a class
 {
@@ -368,7 +369,7 @@ namespace Beacon //this should eventually become a class
 		if ( ent->s.modelindex == BCT_TAG && (ent->s.eFlags & EF_BC_TAG_PLAYER) )
 		{
 			int loMask, hiMask;
-			G_ClientnumToMask( ent->s.otherEntityNum, &loMask, &hiMask );
+			G_ClientnumToMask( ent->s.otherEntityNum2, &loMask, &hiMask );
 			ent->r.loMask &= ~loMask;
 			ent->r.hiMask &= ~hiMask;
 		}
@@ -468,6 +469,9 @@ namespace Beacon //this should eventually become a class
 	 */
 	static inline void RefreshTag( gentity_t *ent )
 	{
+		if( !ent->s.time2 )
+			return;
+
 		if( ent->s.eFlags & EF_BC_TAG_PLAYER )
 			ent->s.time2 = level.time + 4000;
 		else
@@ -682,6 +686,7 @@ namespace Beacon //this should eventually become a class
 
 		beacon = New( origin, BCT_TAG, data, team, owner );
 		beacon->tagAttachment = attachment;
+		beacon->s.otherEntityNum2 = ent - g_entities;
 
 		ent->tagScore = 0;
 
