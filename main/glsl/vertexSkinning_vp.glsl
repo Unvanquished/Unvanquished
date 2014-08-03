@@ -38,7 +38,7 @@ void VertexSkinning_P_N(const vec3 inPosition,
 
 	ivec4 idx = 2 * ivec4( floor( attr_BoneFactors * scale ) );
 	vec4  weights = fract( attr_BoneFactors * scale );
-	weights.x = 1.0 - weights.x;
+	weights.x = 1.0 - weights.y - weights.z - weights.w;
 
 	vec4 quat = u_Bones[ idx.x ];
 	vec4 trans = u_Bones[ idx.x + 1 ];

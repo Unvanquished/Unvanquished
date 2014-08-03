@@ -292,7 +292,8 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 	}
 
 	// check and swap joints
-	if( IQM_CheckRange( header, header->ofs_joints,
+	if( header->num_joints != 0 &&
+	    IQM_CheckRange( header, header->ofs_joints,
 			    header->num_joints, sizeof(iqmJoint_t),
 			    mod_name, "joint" ) ) {
 		return qfalse;
@@ -467,6 +468,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	VBO_t                   *vbo;
 	IBO_t                   *ibo;
 	void                    *ptr;
+	u8vec4_t                *weights;
 
 	if( !LoadIQMFile( buffer, filesize, mod_name, &len_names ) ) {
 		return qfalse;
@@ -727,9 +729,13 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 				    n * sizeof(byte) );
 			break;
 		case IQM_BLENDWEIGHTS:
-			Com_Memcpy( IQModel->blendWeights,
-				    IQMPtr( header, vertexarray->offset ),
-				    n * sizeof(byte) );
+			weights = (u8vec4_t *)IQMPtr( header, vertexarray->offset );
+			for( j = 0; j < header->num_vertexes; j++ ) {
+				IQModel->blendWeights[ 4 * j + 0 ] = 255 - weights[ j ][ 1 ] - weights[ j ][ 2 ] - weights[ j ][ 3 ];
+				IQModel->blendWeights[ 4 * j + 1 ] = weights[ j ][ 1 ];
+				IQModel->blendWeights[ 4 * j + 2 ] = weights[ j ][ 2 ];
+				IQModel->blendWeights[ 4 * j + 3 ] = weights[ j ][ 3 ];
+			}
 			break;
 		case IQM_COLOR:
 			Com_Memcpy( IQModel->colors,
@@ -953,9 +959,15 @@ int R_ComputeIQMFogNum( trRefEntity_t *ent ) {
 		// no properly set skeleton so use the bounding box by the model instead by the animations
 		IQModel_t *model = tr.currentModel->iqm;
 		IQAnim_t  *anim = model->anims;
+		float     *bounds;
 
-		VectorCopy( anim->bounds, localBounds[ 0 ] );
-		VectorCopy( anim->bounds + 3, localBounds[ 1 ] );
+		if ( !anim ) {
+			bounds = model->bounds[0];
+		} else {
+			bounds = anim->bounds;
+		}
+		VectorScale( bounds, ent->e.skeleton.scale, localBounds[ 0 ] );
+		VectorScale( bounds + 3, ent->e.skeleton.scale, localBounds[ 1 ] );
 	}
 	else
 	{

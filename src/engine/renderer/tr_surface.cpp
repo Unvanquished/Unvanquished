@@ -1153,8 +1153,13 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 	}
 
 	if( surf->vbo && surf->ibo ) {
-		Com_Memcpy( tess.bones, bones, model->num_joints * sizeof(transform_t) );
-		tess.numBones = model->num_joints;
+		if( model->num_joints > 0 ) {
+			Com_Memcpy( tess.bones, bones, model->num_joints * sizeof(transform_t) );
+			tess.numBones = model->num_joints;
+		} else {
+			TransInitScale( model->internalScale * backEnd.currentEntity->e.skeleton.scale, &tess.bones[ 0 ] );
+			tess.numBones = 1;
+		}
 		R_BindVBO( surf->vbo );
 		R_BindIBO( surf->ibo );
 		tess.vboVertexSkinning = qtrue;
