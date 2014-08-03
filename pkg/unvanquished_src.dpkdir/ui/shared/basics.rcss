@@ -1,0 +1,114 @@
+/* Basic UI features and colour selection 
+ *
+ * NB UI colours are chosen elsewhere to.  Test after changes to see :)
+ */
+
+/* #### Basic text elements #### */
+body {
+
+	/* Global font defaults */
+	font-family: Dejavu Sans;
+	font-size: 16px;
+	color: #999999;
+}
+
+p {
+	display:block;
+	margin-bottom: 0.3em;
+}
+
+p.example {
+	font-size: 15px;
+	text-align: center;
+	color: #666666;
+}
+
+h1 {
+	display: block;
+	font-size: 25px;
+	font-weight: bold;
+	text-align: right;
+	color: #666666;
+
+	border-bottom: 1px #666666;
+}
+
+h2 {
+	display: block;
+	font-size: 20px;
+	margin-top: 1em;
+	color: #666666;
+}
+
+h3 {
+	display: block;
+	color:white;
+}
+
+indent {
+	display:block;
+	margin-left: 1.5em;
+}
+
+
+/* #### Links #### */
+/* Inline */
+ilink {
+	color:#136D67;   /* Dark cyan */
+	
+	tab-index: auto;
+
+}
+ilink:hover{
+	color:#00F8FF;   /* Bright cyan */
+}
+
+/* Block-style link, used in main menu */
+blocklink {
+	display: block;
+	
+	color:#999999;	
+	tab-index: auto;
+
+}
+blocklink:hover{
+	color:white;
+}
+blocklink.fake:hover{
+	color:#999999;	
+}
+
+
+/* ##### Scroll-bars #### */
+scrollbarvertical{
+	
+	width: 15px;
+	margin-right: -15px;
+	background-color: rgba(0,0,0,0);
+}
+
+scrollbarvertical sliderbar{
+	background-color: #136D6788;   /* Dark cyan */
+	
+}
+
+scrollbarvertical sliderbar:hover{
+	background-color: #00F8FF44;   /* Bright cyan */
+	
+}
+
+/* #### Useful classes #### */
+
+.hidden{
+	display: none;
+}
+
+.right{
+	float:right;
+}
+
+.inline{
+	display: inline;
+}
+
+

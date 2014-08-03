@@ -1,0 +1,158 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+
+	</head>
+	<body id="server_bots" template="window" style="width: 40em; margin: 10%;">
+		<h1> Bot Setup </h1>
+		
+		<tabset>
+			<tab>General</tab>
+			<panel>
+				<h2> Humanity </h2>
+				<row>
+					<input type="range" min="45" max="360" step="1" cvar="g_bot_fov"/>
+					<h3> Field of view </h3>
+					<p class="inline"> 
+						Current: <inlinecvar cvar="g_bot_fov" type="number" format="%.0f"/> degrees
+						<ilink onclick="exec reset g_bot_fov"> (reset) </ilink>
+					</p>
+				</row>
+				<row>
+					<input type="range" min="0" max="2000" step="10" cvar="g_bot_reactiontime"/>
+					<h3> Reaction time </h3>
+					<p class="inline"> 
+						Current: <inlinecvar cvar="g_bot_reactiontime" type="number" format="%.0f"/> msecs
+						<ilink onclick="exec reset g_bot_reactiontime"> (reset) </ilink>
+					</p>
+				</row>
+				
+				<h2> Behaviour </h2>
+				<row>
+					<input cvar="g_bot_attackStruct" type="checkbox" />
+					<h3> Attack structures </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_rush" type="checkbox" />
+					<h3> Rush </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_roam" type="checkbox" />
+					<h3> Roam </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_retreat" type="checkbox" />
+					<h3> Retreat </h3>
+				</row>
+				<row>
+					<input type="range" min="1" max="20" step="1" cvar="g_bot_numInGroup"/>
+					<h3> Group size</h3>
+					<p class="inline"> 
+						Current: <inlinecvar cvar="g_bot_numInGroup" type="number" format="%.0f"/> 
+						<ilink onclick="exec reset g_bot_numInGroup"> (reset) </ilink>
+					</p>
+				</row>
+			</panel>
+			
+			<tab> Humans </tab>
+			<panel>
+				<h2> Overall </h2>
+				<row>
+					<input cvar="g_bot_buy" type="checkbox" />
+					<h3> Human bots purchase weapons/items </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_repair" type="checkbox" />
+					<h3> Human bots repair buildings </h3>
+				</row>
+				
+				<h2> Individually </h2>
+				<row>
+					<input cvar="g_bot_rifle" type="checkbox" />
+					<h3> Rifle </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_shotgun" type="checkbox" />
+					<h3> Shotgun </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_lasgun" type="checkbox" />
+					<h3> Lasgun </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_chain" type="checkbox" />
+					<h3> Chaingun </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_flamer" type="checkbox" />
+					<h3> Flame-thrower </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_mdriver" type="checkbox" />
+					<h3> Mass driver </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_painsaw" type="checkbox" />
+					<h3> Pain-saw </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_prifle" type="checkbox" />
+					<h3> Plasma rifle </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_lcannon" type="checkbox" />
+					<h3> Lucifer cannon </h3>
+				</row>
+				
+			</panel>
+			
+			<tab> Aliens </tab>
+			<panel>
+				<h2> Overall </h2>
+				<row>
+					<input cvar="g_bot_evolve" type="checkbox" />
+					<h3> Alien bots evolve </h3>
+				</row>
+				
+				<h2> Individually </h2>
+				<row>
+					<input cvar="g_bot_level1" type="checkbox" />
+					<h3> Level 1 </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_level2" type="checkbox" />
+					<h3> Level 2 </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_level2upg" type="checkbox" />
+					<h3> Level 2 advanced </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_level3" type="checkbox" />
+					<h3> Level 3 </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_level3upg" type="checkbox" />
+					<h3> Level 3 advanced </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_level4" type="checkbox" />
+					<h3> Level 4 </h3>
+				</row>
+			</panel>
+			
+			<tab>Cheating</tab>
+			<panel>
+				<row>
+					<input cvar="g_bot_infinite_funds" type="checkbox" />
+					<h3> Infinite funds/evos </h3>
+				</row>
+			</panel>
+			
+			
+		</tabset>
+		
+		
+	</body>
+</rml>

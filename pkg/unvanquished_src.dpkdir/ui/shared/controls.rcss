@@ -1,0 +1,196 @@
+/*
+ *  UI controls.  Checkboxes, text inputs, etc
+ */
+
+/* By default, float ALL CONTROLS to the right and hide any overflow */
+colorinput, dataselect, select, input.text, input.checkbox, input.radio, input.range, keybind {
+	float: right;
+}
+selectvalue {
+	overflow: hidden;
+}
+
+
+/* #### Large input boxes. #### */
+colorinput, dataselect, select, input.text {
+	display:block;
+	height: 1.5em;
+	padding-left: 0.5em;
+	vertical-align: middle;
+
+	width: 12em;
+
+	background-color: rgba( 0%, 0%, 0%, 50%);
+
+	/* FIXME: Borders don't work here */
+	border-style: solid;
+	border-width: 1px;
+	border-color:  #FFFFFF;
+}
+
+colorinput:hover, dataselect:hover, select:hover, input.text:hover {
+	color: white;
+}
+
+
+/* #### Drop-down menu boxes #### */
+select selectbox option,
+dataselect selectbox option
+{
+	/* FIXME: Borders don't work here */
+	border-style: solid;
+	border-width: 1px;
+	border-color:  #FFFFFF;
+
+	padding: 2px;
+
+}
+
+/* Alternate shades of grey. */
+select selectbox option:nth-child(even),
+dataselect selectbox option:nth-child(even)
+{
+	background-color: #333333;
+}
+select selectbox option:nth-child(odd),
+dataselect selectbox option:nth-child(odd)
+{
+	background-color: #222222;
+}
+
+/* hover */
+select selectbox option:hover,
+dataselect selectbox option:hover
+{
+	background-color: #136D67;
+}
+
+
+
+
+
+/* #### Images for controls inside boxes #### */
+select selectarrow,
+dataselect selectarrow
+{
+	margin-right: 3px;
+	margin-top:3px;
+	width:20px;
+	height:20px;
+	icon-decorator: image;
+	icon-image: /ui/shared/select_dull.png;
+}
+select selectarrow:hover,
+dataselect selectarrow:hover
+{
+	icon-image: /ui/shared/select_hover.png;
+}
+
+
+/* #### Simple small-box controls #### */
+input.checkbox
+{
+	width:25px;
+	height:25px;
+	icon-decorator: image;
+	icon-image: /ui/shared/radio-check.png 444px 222px 666px 444px;
+}
+input.radio
+{
+
+	width:20px;
+	height:20px;
+	icon-decorator: image;
+	icon-image: /ui/shared/radio-check.png 444px 0px 666px 222px;
+}
+
+input.checkbox:hover,input.checkbox:checked:hover,
+input.radio:hover, input.radio:checked:hover
+{
+	icon-image-s: 222px 444px;
+}
+
+input.checkbox:active,input.checkbox:checked:active,
+input.radio:active, input.radio:checked:active
+{
+	icon-image-s: 0px 222px;
+}
+
+input.checkbox:checked,input.checkbox:checked:active,input.checkbox:checked:hover
+{
+	icon-image-t: 666px 888px;
+}
+
+input.radio:checked, input.radio:checked:hover, input.radio.checked:active
+{
+	icon-image-t: 444px 666px;
+}
+
+
+/* #### Sliders #### */
+
+input.range{
+
+}
+input.range slidertrack{
+	background:#83fff522;
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff555;
+	height: 8px;
+	margin-top: 5px;
+	width: 50px;
+}
+input.range sliderbar{
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff588;
+	background:#136D67;
+	height: 18px;
+	width: 10px;
+}
+input.range sliderbar:hover{
+	background:#00F8FF;   /* Bright cyan */
+
+}
+
+
+/* #### Key-binding inputs #### */
+keybind {
+	width: 10em;
+	color:white;;
+
+	tab-index: auto;
+
+}
+
+
+
+/* #### Buttons #### */
+buttonbar {
+	clear: both;
+	display:block;
+	width: 100%;
+}
+
+button {
+	display: block;
+	float: right;
+	width: 5em;
+	background-color: #136D67;   /* Dark cyan */
+	text-align: center;
+	padding: 0.3em;
+	margin: 0.5em;
+
+
+}
+
+button:hover{
+	background-color: #1B9991;   /* MED cyan */
+}
+
+img.emoticon {
+	height: 1em;
+	width: auto;
+}
+

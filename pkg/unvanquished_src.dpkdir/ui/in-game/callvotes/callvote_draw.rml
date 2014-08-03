@@ -1,0 +1,27 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+
+		<style>
+
+
+
+		</style>
+
+	</head>
+	<body id="callvote_draw" template="window" style="width: 35em; margin: 10%;">
+		<h1> Call a Vote for a Draw </h1>
+
+		<form onsubmit='execForm "callvote draw $reason$"; hide'>
+			<row>
+				<input type="text" cvar="ui_dialogCvar1" class="text" style="width: 25em;" name="reason"/>
+				<h3> Reason </h3>
+			</row>
+
+			<input type="submit"> <button> Call Vote </button>  </input>
+		</form>
+
+	</body>
+
+</rml>

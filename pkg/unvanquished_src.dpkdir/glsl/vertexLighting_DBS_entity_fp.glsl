@@ -264,6 +264,9 @@ void	main()
 	gl_FragColor = vec4(vec3(0.0, 1.0, 0.0), diffuse.a);
 #endif
 #endif
+
+// Debugging
+#if defined(r_showEntityNormals)
+	gl_FragColor = vec4(N, 1.0);
+#endif
 }
-
-
