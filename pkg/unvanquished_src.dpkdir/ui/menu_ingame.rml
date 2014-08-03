@@ -5,7 +5,7 @@
 		<link type="text/rcss" href="menu.rcss" />
 	</head>
 
-	<body id="ingame" class="ingame" >
+	<body id="menu_ingame" class="ingame" >
 		<img class="gradient black" src="/ui/assets/black" />
 		<img class="circles" src="/ui/assets/circles1" />
 		<img class="circles" src="/ui/assets/circles2" />
