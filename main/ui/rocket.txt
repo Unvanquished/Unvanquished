@@ -4,11 +4,11 @@
 		// ######## Totalitarian Government Section ########
 		// Daemon crashes if any of these lines are missing, or if new lines
 		// are added. The files don't have to actually exist, however
-		ui/menu_main.rml main                                  // ROCKETMENU_MAIN
+		ui/menu_main.rml menu_main                             // ROCKETMENU_MAIN
 		ui/transition_connecting.rml connecting                // ROCKETMENU_CONNECTING
 		ui/transition_loading.rml loading                      // ROCKETMENU_LOADING
 		ui/transition_downloading.rml download                 // ROCKETMENU_DOWNLOADING
-		ui/menu_ingame.rml ingame                              // ROCKETMENU_INGAME_MENU
+		ui/menu_ingame.rml menu_ingame                         // ROCKETMENU_INGAME_MENU
 		ui/ingame_teamselect.rml ingame_teamselect             // ROCKETMENU_TEAMSELECT
 		ui/human_spawn.rml human_spawn                         // ROCKETMENU_HUMANSPAWN
 		ui/alien_spawn.rml alien_spawn                         // ROCKETMENU_ALIENSPAWN
