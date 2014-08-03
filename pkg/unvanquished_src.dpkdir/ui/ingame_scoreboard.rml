@@ -113,8 +113,8 @@
 			<col fields="num" formatter="GearOrReady" width="10%"></col>
 			<col fields="num" formatter="PlayerName" width="55%">Name</col>
 			<col fields="score" width="15%">Score</col>
-			<col fields="ping" width="10%">Ping</col>
 			<col fields="time" width="10%">Time</col>
+			<col fields="ping" width="10%">Ping</col>
 		</datagrid>
 		</teambox>
 	</half>
