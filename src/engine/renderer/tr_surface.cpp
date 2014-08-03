@@ -1298,51 +1298,66 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD |
 	                   ATTR_NORMAL | ATTR_BINORMAL | ATTR_TANGENT;
 
-	// deform the vertices by the lerped bones
-	for ( i = 0; i < surf->num_vertexes; i++ )
-	{
-		int    idxIn = surf->first_vertex + i;
-		int    idxOut = tess.numVertexes + i;
-		const float weightFactor = 1.0f / 255.0f;
-		vec3_t tmp;
+	if( model->blendWeights && model->blendIndexes ) {
+		// deform the vertices by the lerped bones
+		for ( i = 0; i < surf->num_vertexes; i++ )
+		{
+			int    idxIn = surf->first_vertex + i;
+			int    idxOut = tess.numVertexes + i;
+			const float weightFactor = 1.0f / 255.0f;
+			vec3_t tmp;
 
-		if( model->blendWeights[ 4 * idxIn + 0 ] == 0 &&
-		    model->blendWeights[ 4 * idxIn + 1 ] == 0 &&
-		    model->blendWeights[ 4 * idxIn + 2 ] == 0 &&
-		    model->blendWeights[ 4 * idxIn + 3 ] == 0 )
-			model->blendWeights[ 4 * idxIn + 0 ] = 255;
+			if( model->blendWeights[ 4 * idxIn + 0 ] == 0 &&
+			    model->blendWeights[ 4 * idxIn + 1 ] == 0 &&
+			    model->blendWeights[ 4 * idxIn + 2 ] == 0 &&
+			    model->blendWeights[ 4 * idxIn + 3 ] == 0 )
+				model->blendWeights[ 4 * idxIn + 0 ] = 255;
 
-		VectorClear( tess.xyz[ idxOut ] );
-		VectorClear( tess.normals[ idxOut ] );
-		VectorClear( tess.tangents[ idxOut ] );
-		VectorClear( tess.binormals[ idxOut ] );
-		for ( j = 0; j < 4; j++ ) {
-			int bone = model->blendIndexes[ 4 * idxIn + j ];
-			float weight = weightFactor * model->blendWeights[ 4 * idxIn + j ];
+			VectorClear( tess.xyz[ idxOut ] );
+			VectorClear( tess.normals[ idxOut ] );
+			VectorClear( tess.tangents[ idxOut ] );
+			VectorClear( tess.binormals[ idxOut ] );
+			for ( j = 0; j < 4; j++ ) {
+				int bone = model->blendIndexes[ 4 * idxIn + j ];
+				float weight = weightFactor * model->blendWeights[ 4 * idxIn + j ];
 
-			TransformPoint( &bones[ bone ],
-					&model->positions[ 3 * idxIn ], tmp );
-			VectorMA( tess.xyz[ idxOut ], weight, tmp,
-				  tess.xyz[ idxOut ] );
-			TransformNormalVector( &bones[ bone ],
-					       &model->normals[ 3 * idxIn ], tmp );
-			VectorMA( tess.normals[ idxOut ], weight, tmp,
-				  tess.normals[ idxOut ] );
-			TransformNormalVector( &bones[ bone ],
-					       &model->tangents[ 3 * idxIn ], tmp );
-			VectorMA( tess.tangents[ idxOut ], weight, tmp,
-				  tess.tangents[ idxOut ] );
-			TransformNormalVector( &bones[ bone ],
-					       &model->bitangents[ 3 * idxIn ], tmp );
-			VectorMA( tess.binormals[ idxOut ], weight, tmp,
-				  tess.binormals[ idxOut ] );
+				TransformPoint( &bones[ bone ],
+						&model->positions[ 3 * idxIn ], tmp );
+				VectorMA( tess.xyz[ idxOut ], weight, tmp,
+					  tess.xyz[ idxOut ] );
+				TransformNormalVector( &bones[ bone ],
+						       &model->normals[ 3 * idxIn ], tmp );
+				VectorMA( tess.normals[ idxOut ], weight, tmp,
+					  tess.normals[ idxOut ] );
+				TransformNormalVector( &bones[ bone ],
+						       &model->tangents[ 3 * idxIn ], tmp );
+				VectorMA( tess.tangents[ idxOut ], weight, tmp,
+					  tess.tangents[ idxOut ] );
+				TransformNormalVector( &bones[ bone ],
+						       &model->bitangents[ 3 * idxIn ], tmp );
+				VectorMA( tess.binormals[ idxOut ], weight, tmp,
+					  tess.binormals[ idxOut ] );
+			}
+			VectorNormalize( tess.normals[ idxOut ] );
+			VectorNormalize( tess.tangents[ idxOut ] );
+			VectorNormalize( tess.binormals[ idxOut ] );
+
+			tess.texCoords[ idxOut ][ 0 ] = model->texcoords[ 2 * idxIn + 0 ];
+			tess.texCoords[ idxOut ][ 1 ] = model->texcoords[ 2 * idxIn + 1 ];
 		}
-		VectorNormalize( tess.normals[ idxOut ] );
-		VectorNormalize( tess.tangents[ idxOut ] );
-		VectorNormalize( tess.binormals[ idxOut ] );
+	} else {
+			int    idxIn = surf->first_vertex + i;
+			int    idxOut = tess.numVertexes + i;
+			const float weightFactor = 1.0f / 255.0f;
+			vec3_t tmp;
 
-		tess.texCoords[ idxOut ][ 0 ] = model->texcoords[ 2 * idxIn + 0 ];
-		tess.texCoords[ idxOut ][ 1 ] = model->texcoords[ 2 * idxIn + 1 ];
+			VectorCopy( &model->positions[ 3 * idxIn ], tess.xyz[ idxOut ] );
+			VectorCopy( &model->normals[ 3 * idxIn ], tess.normals[ idxOut ] );
+			VectorCopy( &model->tangents[ 3 * idxIn ], tess.tangents[ idxOut ] );
+			VectorCopy( &model->bitangents[ 3 * idxIn ], tess.binormals[ idxOut ] );
+
+			tess.texCoords[ idxOut ][ 0 ] = model->texcoords[ 2 * idxIn + 0 ];
+			tess.texCoords[ idxOut ][ 1 ] = model->texcoords[ 2 * idxIn + 1 ];
 	}
 
 	tess.numIndexes  += 3 * surf->num_triangles;
