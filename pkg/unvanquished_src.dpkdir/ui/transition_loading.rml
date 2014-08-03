@@ -55,11 +55,22 @@
 				   This stops the the percentage number "jiggling" left and right */
 				font-family: Dejavu Sans;
 			}
-			div.infobox {
-				font-size: 18px;
+			infobox {
+				display:block;
 				position: absolute;
-				left: 2em;
+				left: 0;
 				bottom: 10em;
+				text-align: center;
+			}
+
+			servername {
+				display: block;
+				font-size: 3em;
+			}
+
+			servermotd {
+				display: block;
+				font-size: 1.5em;
 			}
 
 		</style>
@@ -68,10 +79,12 @@
 	<body id="loading" nohide>
 
 		<levelshot/>
-		<div class="infobox">
-			<h2 class="servername"><hostname/></h2>
-			<div class="serverdescription"><motd/></div>
-		</div>
+
+		<infobox>
+			<servername><hostname/></servername>
+			<servermotd><motd/></servermotd>
+		</infobox>
+
 		<percentage>
 			<progress_value src="overall" />
 		</percentage>
