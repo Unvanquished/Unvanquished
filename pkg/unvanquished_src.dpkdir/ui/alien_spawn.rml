@@ -44,7 +44,7 @@
 
 	<button class="dretch"  onClick="hide alien_spawn; exec class level0"> Dretch </button>
 	<!-- FIXME: always spawn as the correct granger version -->
-	<button class="builder" onClick="hide alien_spawn; exec class builderupg; exec class builder"> Granger </button>
+	<button class="builder" onClick="hide alien_spawn; exec class builderupg builder"> Granger </button>
 
 	<p> You cannot evolve into a granger from another class</p>
 
