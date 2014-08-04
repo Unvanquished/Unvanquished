@@ -731,6 +731,7 @@ void         ByteToDir( int b, vec3_t dir );
 	qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
 	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
 	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
+	float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs );
 
 	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE

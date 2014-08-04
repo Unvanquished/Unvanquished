@@ -24,14 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 attribute vec3 		attr_Position;
 attribute vec2 		attr_TexCoord0;
-attribute vec3		attr_Tangent;
-attribute vec3		attr_Binormal;
-attribute vec3		attr_Normal;
+attribute vec4		attr_QTangent;
 
 attribute vec3 		attr_Position2;
-attribute vec3		attr_Tangent2;
-attribute vec3		attr_Binormal2;
-attribute vec3		attr_Normal2;
+attribute vec4		attr_QTangent2;
 
 uniform float		u_VertexInterpolation;
 uniform mat4		u_NormalTextureMatrix;
@@ -46,6 +42,11 @@ varying vec4		var_Tangent;
 varying vec4		var_Binormal;
 varying vec4		var_Normal;
 
+vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
+	vec3 tmp = 2.0 * cross( quat.xyz, vec );
+	return vec + quat.w * tmp + cross( quat.xyz, tmp );
+}
+
 void	main()
 {
 	vec4 position;
@@ -56,45 +57,44 @@ void	main()
 #if defined(USE_VERTEX_SKINNING)
 
 	#if defined(USE_NORMAL_MAPPING)
-	VertexSkinning_P_TBN(	attr_Position, attr_Tangent, attr_Binormal, attr_Normal,
-							position, tangent, binormal, normal);
+	VertexSkinning_P_TBN(	attr_Position, attr_QTangent,
+				position, tangent, binormal, normal);
 	#else
-	VertexSkinning_P_N(	attr_Position, attr_Normal,
-						position, normal);
+	VertexSkinning_P_N(	attr_Position, attr_QTangent,
+				position, normal);
 	#endif
 
 #elif defined(USE_VERTEX_ANIMATION)
 
 	#if defined(USE_NORMAL_MAPPING)
 	VertexAnimation_P_TBN(	attr_Position, attr_Position2,
-							attr_Tangent, attr_Tangent2,
-							attr_Binormal, attr_Binormal2,
-							attr_Normal, attr_Normal2,
-							u_VertexInterpolation,
-							position, tangent, binormal, normal);
+				attr_QTangent, attr_QTangent2,
+				u_VertexInterpolation,
+				position, tangent, binormal, normal);
 	#else
 	VertexAnimation_P_N(attr_Position, attr_Position2,
-						attr_Normal, attr_Normal2,
-						u_VertexInterpolation,
-						position, normal);
+			    attr_QTangent, attr_QTangent2,
+			    u_VertexInterpolation,
+			    position, normal);
 	#endif
 
 #else
 	position = vec4(attr_Position, 1.0);
 
 	#if defined(USE_NORMAL_MAPPING)
-	tangent = attr_Tangent;
-	binormal = attr_Binormal;
+	tangent = QuatTransVec( attr_QTangent, vec3( 1.0, 0.0, 0.0 ) );
+	binormal = QuatTransVec( attr_QTangent, vec3( 0.0, 1.0, 0.0 ) );
+	tangent *= sign( attr_QTangent.w );
 	#endif
 
-	normal = attr_Normal;
+	normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
 #endif
 
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
-								normal,
-								attr_TexCoord0.st,
-								u_Time);
+					normal,
+					attr_TexCoord0.st,
+					u_Time);
 #endif
 
 	// transform vertex position into homogenous clip-space

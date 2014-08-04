@@ -1140,6 +1140,7 @@ static void GLimp_InitExtensions( void )
 	// VAO and VBO
 	//REQUIRE_EXTENSION( ARB_vertex_array_object );
 	REQUIRE_EXTENSION( ARB_vertex_buffer_object );
+	REQUIRE_EXTENSION( ARB_half_float_vertex );
 
 	// FBO
 	glConfig2.framebufferObjectAvailable = qfalse;

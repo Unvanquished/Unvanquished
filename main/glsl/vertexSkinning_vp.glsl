@@ -21,96 +21,106 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // vertexSkinning_vp.glsl - GPU vertex skinning for skeletal meshes
 
-attribute vec4		attr_BoneIndexes;
-attribute vec4		attr_BoneWeights;
+attribute vec4		attr_BoneFactors;
 uniform int		u_VertexSkinning;
 // even elements are rotation quat, odd elements are translation + scale (in .w)
 uniform vec4		u_Bones[ 2 * MAX_GLSL_BONES ];
 
-vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
-	vec3 tmp = 2.0 * cross( quat.xyz, vec );
-	return vec + quat.w * tmp + cross( quat.xyz, tmp );
-}
+vec3 QuatTransVec(in vec4 quat, in vec3 vec);
 
 void VertexSkinning_P_N(const vec3 inPosition,
-			const vec3 inNormal,
+			const vec4 inQTangent,
 
 			out vec4 position,
 			out vec3 normal)
 {
-	ivec4 idx = 2 * ivec4( attr_BoneIndexes );
+	const float scale = 1.0 / 256.0;
+
+	ivec4 idx = 2 * ivec4( floor( attr_BoneFactors * scale ) );
+	vec4  weights = fract( attr_BoneFactors * scale );
+	weights.x = 1.0 - weights.y - weights.z - weights.w;
 
 	vec4 quat = u_Bones[ idx.x ];
 	vec4 trans = u_Bones[ idx.x + 1 ];
 
-	position.xyz = attr_BoneWeights.x * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
-	normal = attr_BoneWeights.x * (QuatTransVec( quat, inNormal ));
+	vec3 inNormal = QuatTransVec( inQTangent, vec3( 0.0, 0.0, 1.0 ) );
+
+	position.xyz = weights.x * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
+	normal = weights.x * (QuatTransVec( quat, inNormal ));
 
 	quat = u_Bones[ idx.y ];
 	trans = u_Bones[ idx.y + 1 ];
 
-	position.xyz += attr_BoneWeights.y * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
-	normal += attr_BoneWeights.y * (QuatTransVec( quat, inNormal ));
+	position.xyz += weights.y * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
+	normal += weights.y * (QuatTransVec( quat, inNormal ));
 
 	quat = u_Bones[ idx.z ];
 	trans = u_Bones[ idx.z + 1 ];
 
-	position.xyz += attr_BoneWeights.z * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
-	normal += attr_BoneWeights.z * (QuatTransVec( quat, inNormal ));
+	position.xyz += weights.z * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
+	normal += weights.z * (QuatTransVec( quat, inNormal ));
 
 	quat = u_Bones[ idx.w ];
 	trans = u_Bones[ idx.w + 1 ];
 
-	position.xyz += attr_BoneWeights.w * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
-	normal += attr_BoneWeights.w * (QuatTransVec( quat, inNormal ));
+	position.xyz += weights.w * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
+	normal += weights.w * (QuatTransVec( quat, inNormal ));
 
 	position.w = 1.0;
 	normal = normalize(normal);
 }
 
 void VertexSkinning_P_TBN(	const vec3 inPosition,
-				const vec3 inTangent,
-				const vec3 inBinormal,
-				const vec3 inNormal,
+				const vec4 inQTangent,
 
 				out vec4 position,
 				out vec3 tangent,
 				out vec3 binormal,
 				out vec3 normal)
 {
-	ivec4 idx = 2 * ivec4( attr_BoneIndexes );
+	const float scale = 1.0 / 256.0;
+
+	ivec4 idx = 2 * ivec4( floor( attr_BoneFactors * scale ) );
+	vec4  weights = fract( attr_BoneFactors * scale );
+	weights.x = 1.0 - weights.x;
 
 	vec4 quat = u_Bones[ idx.x ];
 	vec4 trans = u_Bones[ idx.x + 1 ];
 
-	position.xyz = attr_BoneWeights.x * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
-	normal = attr_BoneWeights.x * (QuatTransVec( quat, inNormal ));
-	tangent = attr_BoneWeights.x * (QuatTransVec( quat, inTangent ));
-	binormal = attr_BoneWeights.x * (QuatTransVec( quat, inBinormal ));
+	vec3 inTangent = QuatTransVec( inQTangent, vec3( 1.0, 0.0, 0.0 ) );
+	vec3 inBinormal = QuatTransVec( inQTangent, vec3( 0.0, 1.0, 0.0 ) );
+	vec3 inNormal = QuatTransVec( inQTangent, vec3( 0.0, 0.0, 1.0 ) );
+
+	inTangent *= sign( inQTangent.w );
+
+	position.xyz = weights.x * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
+	normal = weights.x * (QuatTransVec( quat, inNormal ));
+	tangent = weights.x * (QuatTransVec( quat, inTangent ));
+	binormal = weights.x * (QuatTransVec( quat, inBinormal ));
 	
 	quat = u_Bones[ idx.y ];
 	trans = u_Bones[ idx.y + 1 ];
 
-	position.xyz += attr_BoneWeights.y * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
-	normal += attr_BoneWeights.y * (QuatTransVec( quat, inNormal ));
-	tangent += attr_BoneWeights.y * (QuatTransVec( quat, inTangent ));
-	binormal += attr_BoneWeights.y * (QuatTransVec( quat, inBinormal ));
+	position.xyz += weights.y * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
+	normal += weights.y * (QuatTransVec( quat, inNormal ));
+	tangent += weights.y * (QuatTransVec( quat, inTangent ));
+	binormal += weights.y * (QuatTransVec( quat, inBinormal ));
 
 	quat = u_Bones[ idx.z ];
 	trans = u_Bones[ idx.z + 1 ];
 
-	position.xyz += attr_BoneWeights.z * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
-	normal += attr_BoneWeights.z * (QuatTransVec( quat, inNormal ));
-	tangent += attr_BoneWeights.z * (QuatTransVec( quat, inTangent ));
-	binormal += attr_BoneWeights.z * (QuatTransVec( quat, inBinormal ));
+	position.xyz += weights.z * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
+	normal += weights.z * (QuatTransVec( quat, inNormal ));
+	tangent += weights.z * (QuatTransVec( quat, inTangent ));
+	binormal += weights.z * (QuatTransVec( quat, inBinormal ));
 
 	quat = u_Bones[ idx.w ];
 	trans = u_Bones[ idx.w + 1 ];
 
-	position.xyz += attr_BoneWeights.w * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
-	normal += attr_BoneWeights.w * (QuatTransVec( quat, inNormal ));
-	tangent += attr_BoneWeights.w * (QuatTransVec( quat, inTangent ));
-	binormal += attr_BoneWeights.w * (QuatTransVec( quat, inBinormal ));
+	position.xyz += weights.w * (QuatTransVec( quat, inPosition ) * trans.w + trans.xyz);
+	normal += weights.w * (QuatTransVec( quat, inNormal ));
+	tangent += weights.w * (QuatTransVec( quat, inTangent ));
+	binormal += weights.w * (QuatTransVec( quat, inBinormal ));
 
 	position.w = 1.0;
 	normal = normalize(normal);

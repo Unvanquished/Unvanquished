@@ -162,8 +162,8 @@ float R_InterpolateLightGrid( world_t *w, int from[3], int to[3],
 
 				totalFactor += factor;
 
-				lightDir[ 0 ] += factor * snorm8ToFloat( gp1->lightVecX );
-				lightDir[ 1 ] += factor * snorm8ToFloat( gp2->lightVecY );
+				lightDir[ 0 ] += factor * snorm8ToFloat( gp1->lightVecX - 128 );
+				lightDir[ 1 ] += factor * snorm8ToFloat( gp2->lightVecY - 128 );
 				
 				ambientLight[ 0 ] += factor * unorm8ToFloat( gp1->ambient[ 0 ] );
 				ambientLight[ 1 ] += factor * unorm8ToFloat( gp1->ambient[ 1 ] );
@@ -580,19 +580,24 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 					for ( j = 0; j < 4; j++ )
 					{
 						const float *c = color ? color : colorCyan;
+						u8vec4_t iColor;
+						iColor[ 0 ] = floatToUnorm8( c[ 0 ] );
+						iColor[ 1 ] = floatToUnorm8( c[ 1 ] );
+						iColor[ 2 ] = floatToUnorm8( c[ 2 ] );
+						iColor[ 3 ] = floatToUnorm8( c[ 3 ] );
 
-						VectorCopy( top, tess.xyz[ tess.numVertexes ] );
-						Vector4Copy( c, tess.colors[ tess.numVertexes ] );
+						VectorCopy( top, tess.verts[ tess.numVertexes ].xyz );
+						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 
-						VectorCopy( farCorners[( j + 1 ) % 4 ], tess.xyz[ tess.numVertexes ] );
-						Vector4Copy( c, tess.colors[ tess.numVertexes ] );
+						VectorCopy( farCorners[( j + 1 ) % 4 ], tess.verts[ tess.numVertexes ].xyz );
+						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 
-						VectorCopy( farCorners[ j ], tess.xyz[ tess.numVertexes ] );
-						Vector4Copy( c, tess.colors[ tess.numVertexes ] );
+						VectorCopy( farCorners[ j ], tess.verts[ tess.numVertexes ].xyz );
+						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 					}
@@ -722,11 +727,11 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		for ( i = 0; i < tess.numVertexes; i++ )
 		{
 			// transform to world space
-			MatrixTransformPoint( light->transformMatrix, tess.xyz[ i ], data.xyz[ i ] );
+			MatrixTransformPoint( light->transformMatrix, tess.verts[ i ].xyz, data.xyz[ i ] );
 		}
 		data.numVerts = tess.numVertexes;
 
-		light->frustumVBO = R_CreateStaticVBO( "staticLightFrustum_VBO", data, VBO_LAYOUT_SEPERATE );
+		light->frustumVBO = R_CreateStaticVBO( "staticLightFrustum_VBO", data, VBO_LAYOUT_POSITION );
 		light->frustumIBO = R_CreateStaticIBO( "staticLightFrustum_IBO", tess.indexes, tess.numIndexes );
 
 		ri.Hunk_FreeTempMemory( data.xyz );
