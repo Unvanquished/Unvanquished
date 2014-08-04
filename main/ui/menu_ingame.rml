@@ -22,9 +22,9 @@
 
 						<h2> Teams </h2>
 						<indent>
-							<blocklink onClick="exec team alien; hide ingame"> Join aliens</blocklink>
-							<blocklink onClick="exec team human;  hide ingame"> Join humans</blocklink>
-							<blocklink onClick="exec team spec;  hide ingame"> Spectate </blocklink>
+							<blocklink onClick="exec team alien; hide ingame_menu"> Join aliens</blocklink>
+							<blocklink onClick="exec team human;  hide ingame_menu"> Join humans</blocklink>
+							<blocklink onClick="exec team spec;  hide ingame_menu"> Spectate </blocklink>
 						</indent>
 
 						<h2> Democracy </h2>
