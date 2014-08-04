@@ -166,32 +166,41 @@
 				color:red;
 			}
 
-			unlocked_items
-			{
-				width: 100%;
-				height: 30%;
-				cell-color: #703030;
-				border-width: 1px;
-				color: #931414;
-			}
+
 			div#momentum
 			{
 				position: absolute;
 				width: 40%;
-				height: 10%;
-				bottom: 0px;
+				height: 6%;
+				bottom: 2%;
 				margin-left: auto;
 				margin-right: auto;
+
+				vertical-align: bottom;
 			}
+
 			momentum_bar
 			{
 				width: 100%;
-				height: 30%;
-				border-width: 1px;
-				border-color: #5C3333;
-				background-color: #3a232355;
-				color: #6e1b1cAA;
+				height: 50%;
+				background-color: #3a232355; /* General bar color */
+				color: #6e1b1cAA; /* Filled-section bar color */
 			}
+
+			unlocked_items
+			{
+				width: 100%;
+				height: 50%;
+				/* Two-colour system. HACK
+					locked colour = CSS cell-color
+					unlocked colour = CSS color
+				 */
+				cell-color: #93141466;
+				color: #703030FF;
+
+				border-width: 0px;
+			}
+
 			health, health_cross
 			{
 				z-index: 1;

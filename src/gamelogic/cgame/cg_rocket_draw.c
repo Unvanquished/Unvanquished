@@ -2176,9 +2176,9 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 		vec4_t unlockedBg, lockedBg;
 
 		Vector4Copy( foreColour, unlockedBg );
-		unlockedBg[ 3 ] *= 0.5f;
+		unlockedBg[ 3 ] *= 0.0f;  // No background
 		Vector4Copy( backColour, lockedBg );
-		lockedBg[ 3 ] *= 0.5f;
+		lockedBg[ 3 ] *= 0.0f;  // No background
 
 		gap = vertical ? ( h - icons * ih ) : ( w - icons * iw );
 
