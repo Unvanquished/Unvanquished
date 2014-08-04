@@ -71,9 +71,10 @@
 
 		datagridrow
 		{
-			height: 1.2em;
+			height: 1.4em;
 			padding: 0.1em;
 			background: rgba( 50%, 50%, 50%, 50%);
+			color: white;  /* Default nickname starting colour */
 		}
 		datagridrow:nth-child(odd) {
 			background: rgba( 50%, 50%, 50%, 20%);
@@ -99,6 +100,8 @@
 			margin:auto;
 		}
 
+
+
 	</style>
 </head>
 
@@ -108,12 +111,12 @@
 		<teamname> Aliens </teamname>
 		<teambox class="alien">
 			<datagrid source="playerList.aliens" id="aliens">
-			<col fields="num" formatter="GearOrReady" width="10%"></col>
-			<col fields="num" formatter="PlayerName" width="55%">Name</col>
-			<col fields="score" width="15%">Score</col>
-			<col fields="time" width="10%">Time</col>
-			<col fields="ping" width="10%">Ping</col>
-		</datagrid>
+				<col fields="num" formatter="GearOrReady" width="8%"></col>
+				<col fields="num" formatter="PlayerName" width="57%">Name</col>
+				<col fields="score" width="10%">Score</col>
+				<col fields="time" width="10%">Time</col>
+				<col fields="ping">Ping</col>
+			</datagrid>
 		</teambox>
 	</half>
 
@@ -121,11 +124,11 @@
 		<teamname> Humans </teamname>
 		<teambox class="human">
 			<datagrid source="playerList.humans" id="humans">
-				<col fields="num" formatter="GearOrReady" width="10%"></col>
-				<col fields="num" formatter="PlayerName" width="55%">Name</col>
-				<col fields="score" width="15%">Score</col>
-				<col fields="ping" width="10%">Ping</col>
+				<col fields="num" formatter="GearOrReady" width="8%"></col>
+				<col fields="num" formatter="PlayerName" width="57%">Name</col>
+				<col fields="score" width="10%">Score</col>
 				<col fields="time" width="10%">Time</col>
+				<col fields="ping">Ping</col>
 			</datagrid>
 		</teambox>
 	</half>
