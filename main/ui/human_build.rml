@@ -1,8 +1,8 @@
 <rml>
 <head>
-<link type="text/rcss" href="/ui/shared/basics.rcss" />
-<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
-<link type="text/rcss" href="/ui/shared/infobox.rcss" />
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+	<link type="text/rcss" href="/ui/shared/infobox.rcss" />
 <style>
 body
 {
@@ -12,7 +12,6 @@ body
 	background:#00000066;
 	text-align:center;
 }
-
 .circlemenu icon{
 	display:inline-block;
 	position:absolute;
