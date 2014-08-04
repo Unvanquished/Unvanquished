@@ -28,7 +28,7 @@ body
 }
 .circlemenu button.locked:hover{
 	icon-image: /ui/assets/circlemenu/circle.png;
-	icon-color-multiplier: rgb(255,255,255);
+	icon-color-multiplier: rgb(140,140,140);
 }
 .circlemenu button.locked:hover img,
 .circlemenu button.locked:hover icon,
@@ -51,7 +51,7 @@ body
 }
 .circlemenu button.expensive:hover{
 	icon-image: /ui/assets/circlemenu/circle.png;
-	icon-color-multiplier: rgb(255,0,0);
+	icon-color-multiplier: rgb(140,0,140);
 }
 
 .circlemenu button.expensive img{
