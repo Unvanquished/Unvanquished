@@ -34,7 +34,7 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 // modelindex2     : additional data (e.g. buildable type for BCT_TAG)
 // generic1        : team
 // time            : creation time
-// time2           : expiration time (-1 if never)
+// time2           : expiration time (0 if never)
 
 namespace Beacon //this should eventually become a class
 {
@@ -467,15 +467,15 @@ namespace Beacon //this should eventually become a class
 	/**
 	 * @brief Reset a tag's expiration timer.
 	 */
-	static inline void RefreshTag( gentity_t *ent )
+	static inline void RefreshTag( gentity_t *ent, bool force=false )
 	{
-		if( !ent->s.time2 )
+		if( !force && !ent->s.time2 )
 			return;
 
 		if( ent->s.eFlags & EF_BC_TAG_PLAYER )
-			ent->s.time2 = level.time + 4000;
+			ent->s.time2 = level.time + 2000;
 		else
-			ent->s.time2 = level.time + 35000;
+			ent->s.time2 = level.time + 20000;
 	}
 
 	static inline bool CheckRefreshTag( gentity_t *ent, team_t team )
@@ -507,6 +507,8 @@ namespace Beacon //this should eventually become a class
 				if( ! (ent->s.eFlags & EF_B_SPAWNED ) )
 					return false;
 				if( ent->health <= 0 )
+					return false;
+				if( ent->buildableTeam == team )
 					return false;
 				return true;
 
@@ -699,7 +701,7 @@ namespace Beacon //this should eventually become a class
 		if( permanent )
 			beacon->s.time2 = 0;
 		else
-			RefreshTag( beacon );
+			RefreshTag( beacon, true );
 
 		if( dead )
 			Delete( beacon, true );
