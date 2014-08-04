@@ -13,7 +13,7 @@ else
     torrent_file="current.torrent"
 fi
 
-torrent_url=http://unvnet.net/unv-launcher/$torrent_file
+torrent_url=http://cdn.unvanquished.net/$torrent_file
 
 default_cache_dir=/tmp/unv-paks-cache
 last_assets_file=last-assets.txt
