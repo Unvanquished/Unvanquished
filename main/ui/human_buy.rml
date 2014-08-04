@@ -24,11 +24,11 @@
 	icon-color-multiplier: #83fff5;
 }
 .circlemenu button.locked{
-	icon-image: /ui/assets/circlemenu/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle.png;
 	icon-color-multiplier: rgb(70,70,70);
 }
 .circlemenu button.locked:hover{
-	icon-image: /ui/assets/circlemenu/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle.png;
 	icon-color-multiplier: rgb(255,255,255);
 }
 .circlemenu button.locked:hover img,
@@ -46,11 +46,11 @@
 }
 
 .circlemenu button.expensive{
-	icon-image: /ui/assets/circlemenu/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle.png;
 	icon-color-multiplier: rgb(70,30,30);
 }
 .circlemenu button.expensive:hover{
-	icon-image: /ui/assets/circlemenu/circle-gray.png;
+	icon-image: /ui/assets/circlemenu/circle.png;
 	icon-color-multiplier: rgb(255,0,0);
 
 }
