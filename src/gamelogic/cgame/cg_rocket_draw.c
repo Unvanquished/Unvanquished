@@ -1874,9 +1874,9 @@ void CG_Rocket_DrawChatType( void )
 {
 	static const struct {
 		char colour[4]; // ^n
-		char *prompt;
+		char prompt[12];
 	} sayText[] = {
-		{ "",   NULL },
+		{ "",   "" },
 		{ "^2", N_("Say: ") },
 		{ "^5", N_("Team Say: ") },
 		{ "^6", N_("Admin Say: ") },
@@ -1885,13 +1885,15 @@ void CG_Rocket_DrawChatType( void )
 
 	if ( (size_t) cg.sayType < ARRAY_LEN( sayText ) )
 	{
+		const char *prompt = _( sayText[ cg.sayType ].prompt );
+
 		if ( ui_chatPromptColors.integer )
 		{
-			trap_Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, _( sayText[ cg.sayType ].prompt ) ), RP_QUAKE );
+			trap_Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, prompt ), RP_QUAKE );
 		}
 		else
 		{
-			trap_Rocket_SetInnerRML( _( sayText[ cg.sayType ].prompt ), RP_QUAKE );
+			trap_Rocket_SetInnerRML( prompt, RP_QUAKE );
 		}
 	}
 }
