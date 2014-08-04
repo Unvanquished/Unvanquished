@@ -82,6 +82,7 @@ asset_ids=$(aria2c -S "$torrent_file"|grep '.*/pkg/.*\.pk3'|awk -F'|' '{print $1
 # download assets
 echo "Downloading assets..."
 aria2c \
+    --no-conf=true \
     --summary-interval=0 \
     --check-integrity=true \
     --seed-time=0 \
