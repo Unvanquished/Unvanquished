@@ -98,7 +98,7 @@ div.infobox {
 
 		</style>
 	</head>
-	<body id="human_buy" class="circlemenu human" onShow="buildDS armouryBuyList upgrades">
+	<body id="human_buy" class="circlemenu human" onShow="buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades">
 	<div id="foo">
 	<tabset class="circlemenu">
 		<tab>Weapons</tab>
