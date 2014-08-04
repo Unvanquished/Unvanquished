@@ -660,7 +660,7 @@ static void CG_Rocket_DrawUsableBuildable( void )
 	AngleVectors( cg.refdefViewAngles, view, NULL, NULL );
 	VectorMA( cg.refdef.vieworg, 64, view, point );
 	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL,
-	          point, cg.predictedPlayerState.clientNum, MASK_SHOT );
+	          point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
 
 	es = &cg_entities[ trace.entityNum ].currentState;
 
@@ -1032,7 +1032,7 @@ static void CG_ScanForCrosshairEntity( void )
 	VectorMA( start, 131072, cg.refdef.viewaxis[ 0 ], end );
 
 	CG_Trace( &trace, start, vec3_origin, vec3_origin, end,
-	          cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY );
+	          cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY, 0 );
 
 	// ignore special entities
 	if ( trace.entityNum > ENTITYNUM_MAX_NORMAL )

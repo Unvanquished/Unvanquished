@@ -306,44 +306,44 @@ int trap_CM_TransformedPointContents( const vec3_t p, clipHandle_t model, const 
 
 //32.
 //CM_BoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule */ qfalse);
-void trap_CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask )
+void trap_CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask )
 {
-	syscallVM( CG_CM_BOXTRACE, results, start, end, mins, maxs, model, brushmask );
+	syscallVM( CG_CM_BOXTRACE, results, start, end, mins, maxs, model, brushmask, skipmask );
 }
 
 //33.
 //CM_TransformedBoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], VMA(8), VMA(9), /*int capsule */ qfalse);
-void trap_CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, const vec3_t origin, const vec3_t angles )
+void trap_CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask, const vec3_t origin, const vec3_t angles )
 {
-	syscallVM( CG_CM_TRANSFORMEDBOXTRACE, results, start, end, mins, maxs, model, brushmask, origin, angles );
+	syscallVM( CG_CM_TRANSFORMEDBOXTRACE, results, start, end, mins, maxs, model, brushmask, skipmask, origin, angles );
 }
 
 //34.
 //CM_BoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule */ qtrue);
-void trap_CM_CapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask )
+void trap_CM_CapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask )
 {
-	syscallVM( CG_CM_CAPSULETRACE, results, start, end, mins, maxs, model, brushmask );
+	syscallVM( CG_CM_CAPSULETRACE, results, start, end, mins, maxs, model, brushmask, skipmask );
 }
 
 //35.
 //CM_TransformedBoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], VMA(8), VMA(9),  /*int capsule */ qtrue);
-void trap_CM_TransformedCapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, const vec3_t origin, const vec3_t angles )
+void trap_CM_TransformedCapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask, const vec3_t origin, const vec3_t angles )
 {
-	syscallVM( CG_CM_TRANSFORMEDCAPSULETRACE, results, start, end, mins, maxs, model, brushmask, origin, angles );
+	syscallVM( CG_CM_TRANSFORMEDCAPSULETRACE, results, start, end, mins, maxs, model, brushmask, skipmask, origin, angles );
 }
 
 //36.
 //CM_BiSphereTrace( VMA(1), VMA(2), VMA(3), VMF(4), VMF(5), args[6], args[7] );
-void trap_CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask )
+void trap_CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask, int skipmask )
 {
-	syscallVM( CG_CM_BISPHERETRACE, results, start, end, PASSFLOAT( startRad ), PASSFLOAT( endRad ), model, mask );
+	syscallVM( CG_CM_BISPHERETRACE, results, start, end, PASSFLOAT( startRad ), PASSFLOAT( endRad ), model, mask, skipmask );
 }
 
 //37.
 //CM_TransformedBiSphereTrace( VMA(1), VMA(2), VMA(3), VMF(4), VMF(5), args[6], args[7], VMA(8) );
-void trap_CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask, const vec3_t origin )
+void trap_CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask, int skipmask, const vec3_t origin )
 {
-	syscallVM( CG_CM_TRANSFORMEDBISPHERETRACE, results, start, end, PASSFLOAT( startRad ), PASSFLOAT( endRad ), model, mask, origin );
+	syscallVM( CG_CM_TRANSFORMEDBISPHERETRACE, results, start, end, PASSFLOAT( startRad ), PASSFLOAT( endRad ), model, mask, skipmask, origin );
 }
 
 //38.

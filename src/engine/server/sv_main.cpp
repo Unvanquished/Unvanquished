@@ -973,7 +973,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 		}
 
 		// make sure it is a valid, in sequence packet
-		if ( SV_Netchan_Process( cl, msg ) )
+		if ( Netchan_Process( &cl->netchan, msg ) )
 		{
 			// zombie clients still need to do the Netchan_Process
 			// to make sure they don't need to retransmit the final

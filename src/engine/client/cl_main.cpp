@@ -3394,7 +3394,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	if ( !CL_Netchan_Process( &clc.netchan, msg ) )
+	if ( !Netchan_Process( &clc.netchan, msg ) )
 	{
 		return; // out of order, duplicated, etc
 	}

@@ -5061,7 +5061,7 @@ qboolean G_admin_builder( gentity_t *ent )
 
 	VectorMA( start, 1000, forward, end );
 
-	trap_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == ET_BUILDABLE ) )
