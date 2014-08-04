@@ -419,7 +419,7 @@ static void CG_Rocket_DFCMBeacons( int handle, const char *data )
 		return;
 
 	icon = CG_GetShaderNameFromHandle( ba->icon[ 0 ] );
-	action = va( "onClick='exec \"beacon %s\"; hide beacons'", ba->name ); 
+	action = va( "onClick='exec \"beacon %s\"; hide ingame_beaconmenu'", ba->name );
 
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='beacons' onMouseover='setDS beacons default %s' %s><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), action, icon ), qfalse );
 }
