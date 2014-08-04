@@ -20,6 +20,9 @@ body
 	right:-20px;
 	font-size:1.5em;
 }
+.circlemenu button {
+	icon-color-multiplier: #83fff5;
+}
 .circlemenu button.locked{
 	icon-image: /ui/assets/circlemenu/circle-gray.png;
 	icon-color-multiplier: rgb(70,70,70);
