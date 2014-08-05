@@ -339,7 +339,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 			{
 				vec4_t tmp;
 				VectorScale( inData.xyz[ v ], 1.0f / 512.0f, tmp);
-				tmp[4] = 1.0f; // unused
+				tmp[3] = 1.0f; // unused
 
 				floatToSnorm16( tmp, ptr[ v ].position );
 			}
@@ -359,7 +359,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 			{
 				vec4_t tmp;
 				VectorCopy( inData.xyz[ v ], tmp);
-				tmp[4] = 1.0f; // unused
+				tmp[3] = 1.0f; // unused
 
 				floatToSnorm16( tmp, ptr[ v ].position );
 			}
