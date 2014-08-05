@@ -4539,7 +4539,7 @@ void Cmd_Donate_f( gentity_t *ent )
 		AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
 		VectorMA( ent->client->ps.origin, 8192 * 16, forward, end );
 
-		trap_Trace( &tr, ent->client->ps.origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+		trap_Trace( &tr, ent->client->ps.origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 		traceEnt = &g_entities[ tr.entityNum ];
 
 		if( tr.fraction < 1.0f && traceEnt->client && traceEnt->client->pers.team == team )
