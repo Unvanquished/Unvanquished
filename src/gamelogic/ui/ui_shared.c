@@ -9694,6 +9694,9 @@ const char *Gettext( const char *msgid )
 	static int index = -1;
 	char *buf;
 
+	if (!msgid || !*msgid)
+		return "";
+
 	index = ( index + 1 ) & 3;
 	buf = buffer[ index ];
 	trap_Gettext( buf, msgid, sizeof( buffer[ 0 ] ) );
@@ -9706,6 +9709,9 @@ const char *Pgettext( const char *ctxt, const char *msgid )
 	static int index = -1;
 	char *buf = buffer[ ++index ];
 
+	if (!msgid || !*msgid)
+		return "";
+
 	index &= 3;
 	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
 	return buf;
@@ -9716,6 +9722,9 @@ const char *GettextPlural( const char *msgid, const char *msgid2, int number )
 	static char buffer[ 4 ][ MAX_STRING_CHARS ];
 	static int index = -1;
 	char *buf;
+
+	if (!msgid || !*msgid)
+		return "";
 
 	index = ( index + 1 ) & 3;
 	buf = buffer[ index ];

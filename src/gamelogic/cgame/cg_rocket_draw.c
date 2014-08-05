@@ -477,71 +477,77 @@ static void CG_Rocket_DrawSpeedGraph( void )
 		return;
 	}
 
-	// grab info from libRocket
-	CG_GetRocketElementColor( color );
-	CG_GetRocketElementBGColor( backColor );
-	CG_GetRocketElementRect( &rect );
-
-	max = speedSamples[ maxSpeedSample ];
-
-	if ( max < SPEEDOMETER_MIN_RANGE )
+	if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_GRAPH )
 	{
-		max = SPEEDOMETER_MIN_RANGE;
-	}
+		// grab info from libRocket
+		CG_GetRocketElementColor( color );
+		CG_GetRocketElementBGColor( backColor );
+		CG_GetRocketElementRect( &rect );
 
-	trap_R_SetColor( backColor );
-	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
+		max = speedSamples[ maxSpeedSample ];
 
-	for ( i = 1; i < SPEEDOMETER_NUM_DISPLAYED_SAMPLES; i++ )
-	{
-		val = speedSamples[( oldestSpeedSample + i + SPEEDOMETER_NUM_SAMPLES -
-		                     SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
-
-		if ( val < SPEED_MED )
+		if ( max < SPEEDOMETER_MIN_RANGE )
 		{
-			VectorLerpTrem( val / SPEED_MED, slow, medium, color );
+			max = SPEEDOMETER_MIN_RANGE;
 		}
 
-		else if ( val < SPEED_FAST )
+		trap_R_SetColor( backColor );
+		CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
+
+		for ( i = 1; i < SPEEDOMETER_NUM_DISPLAYED_SAMPLES; i++ )
 		{
-			VectorLerpTrem( ( val - SPEED_MED ) / ( SPEED_FAST - SPEED_MED ),
-			                medium, fast, color );
+			val = speedSamples[( oldestSpeedSample + i + SPEEDOMETER_NUM_SAMPLES -
+					SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
+
+			if ( val < SPEED_MED )
+			{
+				VectorLerpTrem( val / SPEED_MED, slow, medium, color );
+			}
+
+			else if ( val < SPEED_FAST )
+			{
+				VectorLerpTrem( ( val - SPEED_MED ) / ( SPEED_FAST - SPEED_MED ),
+						medium, fast, color );
+			}
+
+			else
+			{
+				VectorCopy( fast, color );
+			}
+
+			trap_R_SetColor( color );
+			top = rect.y + ( 1 - val / max ) * rect.h;
+			CG_DrawPic( rect.x + ( i / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) * rect.w, top,
+				rect.w / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES, val * rect.h / max,
+				cgs.media.whiteShader );
+		}
+
+		trap_R_SetColor( NULL );
+	}
+
+	if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_TEXT )
+	{
+		// Add text to be configured via CSS
+		if ( cg.predictedPlayerState.clientNum == cg.clientNum )
+		{
+			vec3_t vel;
+			VectorCopy( cg.predictedPlayerState.velocity, vel );
+
+			if ( cg_drawSpeed.integer & SPEEDOMETER_IGNORE_Z )
+			{
+				vel[ 2 ] = 0;
+			}
+
+			val = VectorLength( vel );
 		}
 
 		else
 		{
-			VectorCopy( fast, color );
+			val = speedSamples[( oldestSpeedSample - 1 + SPEEDOMETER_NUM_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
 		}
 
-		trap_R_SetColor( color );
-		top = rect.y + ( 1 - val / max ) * rect.h;
-		CG_DrawPic( rect.x + ( i / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) * rect.w, top,
-		            rect.w / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES, val * rect.h / max,
-		            cgs.media.whiteShader );
+		trap_Rocket_SetInnerRML( va( "<span class='speed_max'>%d</span><span class='speed_current'>%d</span>", ( int ) speedSamples[ maxSpeedSampleInWindow ], ( int ) val ), 0 );
 	}
-
-	trap_R_SetColor( NULL );
-
-	// Add text to be configured via CSS
-	if ( cg.predictedPlayerState.clientNum == cg.clientNum )
-	{
-		vec3_t vel;
-		VectorCopy( cg.predictedPlayerState.velocity, vel );
-
-		if ( cg_drawSpeed.integer & SPEEDOMETER_IGNORE_Z )
-		{
-			vel[ 2 ] = 0;
-		}
-
-		val = VectorLength( vel );
-	}
-
-	else
-	{
-		val = speedSamples[( oldestSpeedSample - 1 + SPEEDOMETER_NUM_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
-	}
-
-	trap_Rocket_SetInnerRML( va( "<span class='speed_max'>%d</span><span class='speed_current'>%d</span>", ( int ) speedSamples[ maxSpeedSampleInWindow ], ( int ) val ), 0 );
 }
 
 static void CG_Rocket_DrawCreditsValue( void )
@@ -654,7 +660,7 @@ static void CG_Rocket_DrawUsableBuildable( void )
 	AngleVectors( cg.refdefViewAngles, view, NULL, NULL );
 	VectorMA( cg.refdef.vieworg, 64, view, point );
 	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL,
-	          point, cg.predictedPlayerState.clientNum, MASK_SHOT );
+	          point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
 
 	es = &cg_entities[ trace.entityNum ].currentState;
 
@@ -1026,7 +1032,7 @@ static void CG_ScanForCrosshairEntity( void )
 	VectorMA( start, 131072, cg.refdef.viewaxis[ 0 ], end );
 
 	CG_Trace( &trace, start, vec3_origin, vec3_origin, end,
-	          cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY );
+	          cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY, 0 );
 
 	// ignore special entities
 	if ( trace.entityNum > ENTITYNUM_MAX_NORMAL )
@@ -1746,6 +1752,10 @@ void CG_Rocket_DrawFollow( void )
 
 		trap_Rocket_SetInnerRML( buffer, RP_EMOTICONS );
 	}
+	else
+	{
+		trap_Rocket_SetInnerRML( "", 0 );
+	}
 }
 
 void CG_Rocket_DrawConnectText( void )
@@ -1864,9 +1874,9 @@ void CG_Rocket_DrawChatType( void )
 {
 	static const struct {
 		char colour[4]; // ^n
-		char *prompt;
+		char prompt[12];
 	} sayText[] = {
-		{ "",   NULL },
+		{ "",   "" },
 		{ "^2", N_("Say: ") },
 		{ "^5", N_("Team Say: ") },
 		{ "^6", N_("Admin Say: ") },
@@ -1875,13 +1885,15 @@ void CG_Rocket_DrawChatType( void )
 
 	if ( (size_t) cg.sayType < ARRAY_LEN( sayText ) )
 	{
+		const char *prompt = _( sayText[ cg.sayType ].prompt );
+
 		if ( ui_chatPromptColors.integer )
 		{
-			trap_Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, _( sayText[ cg.sayType ].prompt ) ), RP_QUAKE );
+			trap_Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, prompt ), RP_QUAKE );
 		}
 		else
 		{
-			trap_Rocket_SetInnerRML( _( sayText[ cg.sayType ].prompt ), RP_QUAKE );
+			trap_Rocket_SetInnerRML( prompt, RP_QUAKE );
 		}
 	}
 }
@@ -2166,9 +2178,9 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 		vec4_t unlockedBg, lockedBg;
 
 		Vector4Copy( foreColour, unlockedBg );
-		unlockedBg[ 3 ] *= 0.5f;
+		unlockedBg[ 3 ] *= 0.0f;  // No background
 		Vector4Copy( backColour, lockedBg );
-		lockedBg[ 3 ] *= 0.5f;
+		lockedBg[ 3 ] *= 0.0f;  // No background
 
 		gap = vertical ? ( h - icons * ih ) : ( w - icons * iw );
 

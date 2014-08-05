@@ -128,12 +128,11 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	memset( &data, 0, sizeof( data ) );
 
 	data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.xyz ) * vertexesNum );
-	data.normal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.normal ) * vertexesNum );
-	data.tangent = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.tangent ) * vertexesNum );
-	data.binormal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.binormal ) * vertexesNum );
+	data.qtangent = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * vertexesNum );
 	data.boneIndexes = ( int (*)[ 4 ] ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneIndexes ) * vertexesNum );
 	data.boneWeights = ( vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneWeights ) * vertexesNum );
-	data.st = ( vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.st ) * vertexesNum );
+	data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * vertexesNum );
+	data.noLightCoords = qtrue;
 	data.numVerts = vertexesNum;
 
 	indexes = ( glIndex_t * ) ri.Hunk_AllocateTempMemory( indexesNum * sizeof( glIndex_t ) );
@@ -166,12 +165,11 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	for ( j = 0; j < vertexesNum; j++ )
 	{
 		VectorCopy( surf->verts[ j ].position, data.xyz[ j ] );
-		VectorCopy( surf->verts[ j ].tangent, data.tangent[ j ] );
-		VectorCopy( surf->verts[ j ].normal, data.normal[ j ] );
-		VectorCopy( surf->verts[ j ].binormal, data.binormal[ j ] );
+		R_TBNtoQtangents( surf->verts[ j ].tangent, surf->verts[ j ].binormal,
+				  surf->verts[ j ].normal, data.qtangent[ j ] );
 		
-		data.st[ j ][ 0 ] = surf->verts[ j ].texCoords[ 0 ];
-		data.st[ j ][ 1 ] = surf->verts[ j ].texCoords[ 1 ];
+		data.st[ j ][ 0 ] = floatToHalf( surf->verts[ j ].texCoords[ 0 ] );
+		data.st[ j ][ 1 ] = floatToHalf( surf->verts[ j ].texCoords[ 1 ] );
 
 		for ( k = 0; k < MAX_WEIGHTS; k++ )
 		{
@@ -188,7 +186,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		}
 	}
 
-	vboSurf->vbo = R_CreateStaticVBO( va( "staticMD5Mesh_VBO %i", vboSurfaces->currentElements ), data, VBO_LAYOUT_SEPERATE );
+	vboSurf->vbo = R_CreateStaticVBO( va( "staticMD5Mesh_VBO %i", vboSurfaces->currentElements ), data, VBO_LAYOUT_SKELETAL );
 
 	vboSurf->ibo = R_CreateStaticIBO( va( "staticMD5Mesh_IBO %i", vboSurfaces->currentElements ), indexes, indexesNum );
 
@@ -196,8 +194,6 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	ri.Hunk_FreeTempMemory( data.st );
 	ri.Hunk_FreeTempMemory( data.boneWeights );
 	ri.Hunk_FreeTempMemory( data.boneIndexes );
-	ri.Hunk_FreeTempMemory( data.binormal );
-	ri.Hunk_FreeTempMemory( data.tangent );
-	ri.Hunk_FreeTempMemory( data.normal );
+	ri.Hunk_FreeTempMemory( data.qtangent );
 	ri.Hunk_FreeTempMemory( data.xyz );
 }

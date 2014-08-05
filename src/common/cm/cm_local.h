@@ -228,6 +228,7 @@ typedef struct
 	vec3_t      bounds[ 2 ]; // enclosing box of start and end surrounding by size
 	vec3_t      modelOrigin; // origin of the model tracing through
 	int         contents; // ored contents of the model tracing through
+	int         skipContents; // ored contents that shall be ignored
 	qboolean    isPoint; // optimized case
 	trace_t     trace; // returned from trace call
 	sphere_t    sphere; // sphere for oriendted capsule collision

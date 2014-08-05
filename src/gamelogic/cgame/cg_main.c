@@ -378,7 +378,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_stickySpec,                  "cg_stickySpec",                  "1",            CVAR_USERINFO | CVAR_ARCHIVE },
 	{ &cg_sprintToggle,                "cg_sprintToggle",                "0",            CVAR_USERINFO | CVAR_ARCHIVE },
 	{ &cg_unlagged,                    "cg_unlagged",                    "1",            CVAR_USERINFO                },
-	{ NULL,                            "cg_flySpeed",                    "600",          CVAR_USERINFO                },
+	{ NULL,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
 	{ &cg_depthSortParticles,          "cg_depthSortParticles",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_bounceParticles,             "cg_bounceParticles",             "0",            CVAR_ARCHIVE                 },
 	{ &cg_consoleLatency,              "cg_consoleLatency",              "3000",         0                            },
@@ -464,7 +464,8 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_fov_level3,                  "cg_fov_level3",                  "0",            0                            },
 	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            0                            },
 	{ &cg_fov_human,                   "cg_fov_human",                   "0",            0                            },
-	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            },
+
+	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            }
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
@@ -516,9 +517,12 @@ static void CG_SetPVars( void )
 	}
 
 	ps = &cg.snap->ps;
+
 	/* if we follow someone, the stats won't be about us, but the followed player instead */
 	if ( ( ps->pm_flags & PMF_FOLLOW ) )
-		return;
+	{
+	        return;
+	}
 
 	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->persistant[ PERS_TEAM ] ) );
 
@@ -549,142 +553,11 @@ static void CG_SetPVars( void )
 
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
-	switch ( ps->stats[ STAT_CLASS ] )
-	{
-		case PCL_ALIEN_BUILDER0:
-			trap_Cvar_Set( "p_classname", "Builder" );
-			break;
+	trap_Cvar_Set( "p_classname", BG_Class( ps->stats[ STAT_CLASS ] )->name );
 
-		case PCL_ALIEN_BUILDER0_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Builder" );
-			break;
-
-		case PCL_ALIEN_LEVEL0:
-			trap_Cvar_Set( "p_classname", "Dretch" );
-			break;
-
-		case PCL_ALIEN_LEVEL1:
-			trap_Cvar_Set( "p_classname", "Mantis" );
-			break;
-
-		case PCL_ALIEN_LEVEL2:
-			trap_Cvar_Set( "p_classname", "Marauder" );
-			break;
-
-		case PCL_ALIEN_LEVEL2_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Marauder" );
-			break;
-
-		case PCL_ALIEN_LEVEL3:
-			trap_Cvar_Set( "p_classname", "Dragoon" );
-			break;
-
-		case PCL_ALIEN_LEVEL3_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Dragoon" );
-			break;
-
-		case PCL_ALIEN_LEVEL4:
-			trap_Cvar_Set( "p_classname", "Tyrant" );
-			break;
-
-		case PCL_HUMAN_NAKED:
-			trap_Cvar_Set( "p_classname", "Naked Human" );
-			break;
-
-		case PCL_HUMAN_LIGHT:
-			trap_Cvar_Set( "p_classname", "Light Human" );
-			break;
-
-		case PCL_HUMAN_MEDIUM:
-			trap_Cvar_Set( "p_classname", "Medium Human" );
-			break;
-
-		case PCL_HUMAN_BSUIT:
-			trap_Cvar_Set( "p_classname", "Battlesuit" );
-			break;
-
-		case PCL_NONE: //used between death and spawn
-			trap_Cvar_Set( "p_classname", "Ghost" );
-			break;
-
-		default:
-			trap_Cvar_Set( "p_classname", "Unknown" );
-			break;
-	}
 
 	trap_Cvar_Set( "p_weapon", va( "%d", ps->stats[ STAT_WEAPON ] ) );
-
-	switch ( ps->stats[ STAT_WEAPON ] )
-	{
-		case WP_HBUILD:
-			trap_Cvar_Set( "p_weaponname", "Construction Kit" );
-			break;
-
-		case WP_BLASTER:
-			trap_Cvar_Set( "p_weaponname", "Blaster" );
-			break;
-
-		case WP_MACHINEGUN:
-			trap_Cvar_Set( "p_weaponname", "Machine Gun" );
-			break;
-
-		case WP_PAIN_SAW:
-			trap_Cvar_Set( "p_weaponname", "Painsaw" );
-			break;
-
-		case WP_SHOTGUN:
-			trap_Cvar_Set( "p_weaponname", "Shotgun" );
-			break;
-
-		case WP_LAS_GUN:
-			trap_Cvar_Set( "p_weaponname", "Laser Gun" );
-			break;
-
-		case WP_MASS_DRIVER:
-			trap_Cvar_Set( "p_weaponname", "Mass Driver" );
-			break;
-
-		case WP_CHAINGUN:
-			trap_Cvar_Set( "p_weaponname", "Chain Gun" );
-			break;
-
-		case WP_PULSE_RIFLE:
-			trap_Cvar_Set( "p_weaponname", "Pulse Rifle" );
-			break;
-
-		case WP_FLAMER:
-			trap_Cvar_Set( "p_weaponname", "Flame Thrower" );
-			break;
-
-		case WP_LUCIFER_CANNON:
-			trap_Cvar_Set( "p_weaponname", "Lucifier cannon" );
-			break;
-
-		case WP_ALEVEL0:
-			trap_Cvar_Set( "p_weaponname", "Teeth" );
-			break;
-
-		case WP_ABUILD:
-		case WP_ABUILD2:
-		case WP_ALEVEL1:
-		case WP_ALEVEL2:
-		case WP_ALEVEL2_UPG:
-		case WP_ALEVEL3:
-		case WP_ALEVEL3_UPG:
-		case WP_ALEVEL4:
-			trap_Cvar_Set( "p_weaponname", "Claws" );
-			break;
-
-		case WP_NONE:
-			trap_Cvar_Set( "p_weaponname", "Nothing" );
-			break;
-
-
-		default:
-			trap_Cvar_Set( "p_weaponname", "Unknown" );
-			break;
-	}
-
+	trap_Cvar_Set( "p_weaponname", BG_Weapon( ps->stats[ STAT_WEAPON ] )->humanName );
 	trap_Cvar_Set( "p_credits", va( "%d", ps->persistant[ PERS_CREDIT ] ) );
 	trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
 
@@ -1350,6 +1223,9 @@ static void CG_RegisterSounds( void )
 
 	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning.wav", qfalse );
 	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", qfalse );
+
+	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", qfalse );
+	cgs.media.ownedTagSound = trap_S_RegisterSound( "sound/feedback/beacon-tag-owned.ogg", qfalse );
 }
 
 //===================================================================================
@@ -1582,6 +1458,12 @@ static void CG_RegisterGraphics( void )
 
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
+
+	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacons/arrow", RSF_DEFAULT );
+	cgs.media.beaconLongArrow = trap_R_RegisterShader( "gfx/2d/beacons/longarrow", RSF_DEFAULT );
+	cgs.media.beaconLongArrowDot = trap_R_RegisterShader( "gfx/2d/beacons/longarrowdot", RSF_DEFAULT );
+	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacons/no-target", RSF_DEFAULT );
+	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacons/tagscore", RSF_DEFAULT );
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
@@ -1983,6 +1865,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
 
 	CG_Rocket_LoadHuds();
+
+	CG_LoadBeaconsConfig();
+
 	CG_UpdateLoadingStep( LOAD_DONE );
 }
 

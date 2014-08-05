@@ -586,8 +586,6 @@ void RE_RenderScene( const refdef_t *fd )
 		ri.Error( ERR_DROP, "R_RenderScene: NULL worldmodel" );
 	}
 
-	Com_Memcpy( tr.refdef.text, fd->text, sizeof( tr.refdef.text ) );
-
 	tr.refdef.x = fd->x;
 	tr.refdef.y = fd->y;
 	tr.refdef.width = fd->width;

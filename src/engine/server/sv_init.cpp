@@ -791,7 +791,7 @@ void SV_Init( void )
 	sv_dl_maxRate = Cvar_Get( "sv_dl_maxRate", "42000", 0 );
 
 	sv_wwwDownload = Cvar_Get( "sv_wwwDownload", "0", 0 );
-	sv_wwwBaseURL = Cvar_Get( "sv_wwwBaseURL", "", 0 );
+	sv_wwwBaseURL = Cvar_Get( "sv_wwwBaseURL", "dl.unvanquished.net/pkg", 0 );
 	sv_wwwDlDisconnected = Cvar_Get( "sv_wwwDlDisconnected", "0", 0 );
 	sv_wwwFallbackURL = Cvar_Get( "sv_wwwFallbackURL", "", 0 );
 

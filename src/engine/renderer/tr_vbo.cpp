@@ -22,6 +22,36 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_vbo.c
 #include "tr_local.h"
 
+// "templates" for VBO vertex data layouts
+
+// interleaved position and qtangents per frame/vertex in part 1
+struct fmtVertexAnim1 {
+	i16vec4_t position;
+	i16vec4_t qtangents;
+};
+const GLsizei sizeVertexAnim1 = sizeof( struct fmtVertexAnim1 );
+// interleaved texcoords and colour in part 2
+struct fmtVertexAnim2 {
+	i16vec2_t texcoord;
+	u8vec4_t  colour;
+};
+const GLsizei sizeVertexAnim2 = sizeof( struct fmtVertexAnim2 );
+
+// interleaved data: position, texcoord, colour, qtangent, bonefactors
+struct fmtSkeletal {
+	i16vec4_t position;
+	i16vec2_t texcoord;
+	u8vec4_t  colour;
+	i16vec4_t qtangents;
+	u16vec4_t boneFactors;
+};
+const GLsizei sizeSkeletal = sizeof( struct fmtSkeletal );
+
+// interleaved data: position, colour, qtangent, texcoord
+// -> struct shaderVertex_t in tr_local.h
+const GLsizei sizeShaderVertex = sizeof( shaderVertex_t );
+
+
 static uint32_t R_DeriveAttrBits( vboData_t data )
 {
 	uint32_t stateBits = 0;
@@ -31,19 +61,9 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 		stateBits |= ATTR_POSITION;
 	}
 
-	if ( data.binormal )
+	if ( data.qtangent )
 	{
-		stateBits |= ATTR_BINORMAL;
-	}
-
-	if ( data.tangent )
-	{
-		stateBits |= ATTR_TANGENT;
-	}
-
-	if ( data.normal )
-	{
-		stateBits |= ATTR_NORMAL;
+		stateBits |= ATTR_QTANGENT;
 	}
 
 	if ( data.color )
@@ -51,24 +71,14 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 		stateBits |= ATTR_COLOR;
 	}
 
-	if ( data.lightCoord )
-	{
-		stateBits |= ATTR_LIGHTCOORD;
-	}
-
 	if ( data.st )
 	{
 		stateBits |= ATTR_TEXCOORD;
 	}
 
-	if ( data.boneWeights )
+	if ( data.boneIndexes && data.boneWeights )
 	{
-		stateBits |= ATTR_BONE_WEIGHTS;
-	}
-
-	if ( data.boneIndexes )
-	{
-		stateBits |= ATTR_BONE_INDEXES;
+		stateBits |= ATTR_BONE_FACTORS;
 	}
 
 	if ( data.numFrames )
@@ -78,45 +88,52 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 			stateBits |= ATTR_POSITION2;
 		}
 
-		if ( data.normal )
+		if ( data.qtangent )
 		{
-			stateBits |= ATTR_NORMAL2;
-		}
-
-		if ( data.binormal )
-		{
-			stateBits |= ATTR_BINORMAL2;
-		}
-
-		if ( data.tangent )
-		{
-			stateBits |= ATTR_TANGENT2;
+			stateBits |= ATTR_QTANGENT2;
 		}
 	}
 
 	return stateBits;
 }
 
-static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i )
+static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i, qboolean noLightCoords )
 {
-	if ( i == ATTR_INDEX_BONE_INDEXES )
+	if ( i == ATTR_INDEX_BONE_FACTORS )
 	{
-		vbo->attribs[ i ].componentType = GL_INT;
+		vbo->attribs[ i ].componentType = GL_UNSIGNED_SHORT;
+	}
+	else if ( i == ATTR_INDEX_COLOR )
+	{
+		vbo->attribs[ i ].componentType = GL_UNSIGNED_BYTE;
+	}
+	else if ( i == ATTR_INDEX_TEXCOORD )
+	{
+		vbo->attribs[ i ].componentType = GL_HALF_FLOAT;
+	}
+	else if ( i == ATTR_INDEX_QTANGENT || i == ATTR_INDEX_QTANGENT2 )
+	{
+		vbo->attribs[ i ].componentType = GL_SHORT;
 	}
 	else
 	{
 		vbo->attribs[ i ].componentType = GL_FLOAT;
 	}
 
-	vbo->attribs[ i ].normalize = GL_FALSE;
-
-	if ( i == ATTR_INDEX_TEXCOORD || i == ATTR_INDEX_LIGHTCOORD )
+	if ( i == ATTR_INDEX_COLOR || i == ATTR_INDEX_QTANGENT || i == ATTR_INDEX_QTANGENT2 )
+	{
+		vbo->attribs[ i ].normalize = GL_TRUE;
+	}
+	else
+	{
+		vbo->attribs[ i ].normalize = GL_FALSE;
+	}
+	
+	if ( i == ATTR_INDEX_TEXCOORD && noLightCoords )
 	{
 		vbo->attribs[ i ].numComponents = 2;
 	}
-	else if ( i == ATTR_INDEX_POSITION || i == ATTR_INDEX_POSITION2 ||
-	     i == ATTR_INDEX_TANGENT2 || i == ATTR_INDEX_NORMAL2 || i == ATTR_INDEX_BINORMAL2 ||
-	     i == ATTR_INDEX_TANGENT || i == ATTR_INDEX_NORMAL || i == ATTR_INDEX_BINORMAL )
+	else if ( i == ATTR_INDEX_POSITION || i == ATTR_INDEX_POSITION2 )
 	{
 		vbo->attribs[ i ].numComponents = 3;
 	}
@@ -126,224 +143,173 @@ static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i )
 	}
 }
 
-static size_t R_GetSizeForType( GLenum type )
-{
-	switch( type )
-	{
-		case GL_INT:
-			return sizeof( int );
-		case GL_FLOAT:
-			return sizeof( float );
-		case GL_UNSIGNED_BYTE:
-			return sizeof( unsigned char );
-		case GL_BYTE:
-			return sizeof( signed char );
-		default:
-			Com_Error( ERR_FATAL, "R_GetSizeForType: ERROR unknown type\n" );
-			return 0;
-	}
-}
-
-static size_t R_GetAttribStorageSize( const VBO_t *vbo, uint32_t attribute )
-{
-	if ( vbo->usage == GL_STATIC_DRAW )
-	{
-		return vbo->attribs[ attribute ].numComponents * R_GetSizeForType( vbo->attribs[ attribute ].componentType );
-	}
-	else
-	{
-		if ( attribute == ATTR_INDEX_TEXCOORD || attribute == ATTR_INDEX_LIGHTCOORD )
-		{
-			return sizeof( vec2_t );
-		}
-		else
-		{
-			return sizeof( vec4_t );
-		}
-	}
-}
-
-static qboolean R_AttributeTightlyPacked( const VBO_t *vbo, uint32_t attribute )
-{
-	const vboAttributeLayout_t *layout = &vbo->attribs[ attribute ];
-
-	return layout->numComponents * R_GetSizeForType( layout->componentType ) == layout->realStride;
-}
-
-static uint32_t R_FindVertexSize( VBO_t *vbo, uint32_t attribBits )
-{
-	uint32_t bits = attribBits & ~ATTR_INTERP_BITS;
-	uint32_t size = 0;
-	uint32_t attribute = 0;
-
-	while ( bits )
-	{
-		if ( ( bits & 1 ) )
-		{
-			size += R_GetAttribStorageSize( vbo, attribute );
-		}
-		bits >>= 1;
-		attribute++;
-	}
-
-	return size;
-}
-
-static void R_SetAttributeLayoutsInterleaved( VBO_t *vbo )
-{
-	uint32_t i;
-	uint32_t offset = 0;
-	uint32_t vertexSize = R_FindVertexSize( vbo, vbo->attribBits );
-
-	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
-	{
-		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = vertexSize;
-
-		if ( R_AttributeTightlyPacked( vbo, i ) )
-		{
-			vbo->attribs[ i ].stride = 0;
-		}
-		else
-		{
-			vbo->attribs[ i ].stride = vbo->attribs[ i ].realStride;
-		}
-
-		vbo->attribs[ i ].frameOffset = 0;
-
-		if ( ( vbo->attribBits & BIT( i ) ) )
-		{
-			offset += R_GetAttribStorageSize( vbo, i );
-		}
-	}
-
-	vbo->vertexesSize = vertexSize * vbo->vertexesNum;
-}
-
-static void R_SetAttributeLayoutsSeperate( VBO_t *vbo )
-{
-	uint32_t i;
-	uint32_t offset = 0;
-
-	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
-	{
-		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i );
-
-		if ( R_AttributeTightlyPacked( vbo, i ) )
-		{
-			vbo->attribs[ i ].stride = 0;
-		}
-		else
-		{
-			vbo->attribs[ i ].stride = vbo->attribs[ i ].realStride;
-		}
-
-		vbo->attribs[ i ].frameOffset = 0;
-
-		if ( ( vbo->attribBits & BIT( i ) ) )
-		{
-			offset += vbo->vertexesNum * vbo->attribs[ i ].realStride;
-		}
-	}
-
-	vbo->vertexesSize = offset;
-}
-
 static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
 {
-	int32_t i;
-	uint32_t offset = 0;
-	uint32_t positionBits = ATTR_POSITION | ATTR_NORMAL | ATTR_TANGENT | ATTR_BINORMAL;
+	// part 1 is repeated for every frame
+	GLsizei sizePart1 = sizeVertexAnim1 * vbo->vertexesNum * vbo->framesNum;
+	GLsizei sizePart2 = sizeVertexAnim2 * vbo->vertexesNum;
 
-	// seperate the position attributes for animation purposes
-	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
-	{
-		uint32_t bit = BIT( i );
-		if ( !( positionBits & bit ) )
-		{
-			continue;
-		}
+	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_SHORT;
+	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = offsetof( struct fmtVertexAnim1, position );
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeVertexAnim1;
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeVertexAnim1;
+	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = sizeVertexAnim1 * vbo->vertexesNum;
 
-		if ( !( vbo->attribBits & bit ) )
-		{
-			continue;
-		}
-
-		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i );
-
-		if ( R_AttributeTightlyPacked( vbo, i ) )
-		{
-			vbo->attribs[ i ].stride = 0;
-		}
-		else
-		{
-			vbo->attribs[ i ].stride = vbo->attribs[ i ].realStride;
-		}
-
-		vbo->attribs[ i ].frameOffset = vbo->vertexesNum * vbo->attribs[ i ].realStride;
-
-		offset += vbo->framesNum * vbo->attribs[ i ].frameOffset;
-	}
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].componentType = GL_SHORT;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].normalize     = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs          = offsetof( struct fmtVertexAnim1, qtangents );
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].realStride   = sizeVertexAnim1;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].stride       = sizeVertexAnim1;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].frameOffset  = sizeVertexAnim1 * vbo->vertexesNum;
 
 	// these use the same layout
 	vbo->attribs[ ATTR_INDEX_POSITION2 ] = vbo->attribs[ ATTR_INDEX_POSITION ];
-	vbo->attribs[ ATTR_INDEX_NORMAL2 ] = vbo->attribs[ ATTR_INDEX_NORMAL ];
-	vbo->attribs[ ATTR_INDEX_TANGENT2 ] = vbo->attribs[ ATTR_INDEX_TANGENT ];
-	vbo->attribs[ ATTR_INDEX_BINORMAL2 ] = vbo->attribs[ ATTR_INDEX_BINORMAL ];
+	vbo->attribs[ ATTR_INDEX_QTANGENT2 ] = vbo->attribs[ ATTR_INDEX_QTANGENT ];
 
-	// add the rest of the vertex attributes
-	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
-	{
-		uint32_t bit = BIT( i );
-		if ( ( ( positionBits | ATTR_INTERP_BITS ) & bit ) )
-		{
-			continue;
-		}
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].numComponents = 2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].componentType = GL_HALF_FLOAT;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs          = sizePart1 + offsetof( struct fmtVertexAnim2, texcoord );
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride   = sizeVertexAnim2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride       = sizeVertexAnim2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset  = 0;
 
-		vbo->attribs[ i ].ofs = offset;
-		vbo->attribs[ i ].realStride = R_GetAttribStorageSize( vbo, i );
+	vbo->attribs[ ATTR_INDEX_COLOR ].numComponents   = 4;
+	vbo->attribs[ ATTR_INDEX_COLOR ].componentType   = GL_UNSIGNED_BYTE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].normalize       = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].ofs             = sizePart1 + offsetof( struct fmtVertexAnim2, colour );
+	vbo->attribs[ ATTR_INDEX_COLOR ].realStride      = sizeVertexAnim2;
+	vbo->attribs[ ATTR_INDEX_COLOR ].stride          = sizeVertexAnim2;
+	vbo->attribs[ ATTR_INDEX_COLOR ].frameOffset     = 0;
 
-		if ( R_AttributeTightlyPacked( vbo, i ) )
-		{
-			vbo->attribs[ i ].stride = 0;
-		}
-		else
-		{
-			vbo->attribs[ i ].stride = vbo->attribs[ i ].realStride;
-		}
-
-		vbo->attribs[ i ].frameOffset = 0;
-
-		if ( ( vbo->attribBits & bit ) )
-		{
-			offset += vbo->attribs[ i ].realStride * vbo->vertexesNum;
-		}
-	}
-
-	vbo->vertexesSize = offset;
+	// total size
+	vbo->vertexesSize = sizePart1 + sizePart2;
 }
 
-static void R_SetVBOAttributeLayouts( VBO_t *vbo )
+static void R_SetAttributeLayoutsSkeletal( VBO_t *vbo )
+{
+	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_SHORT;
+	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = offsetof( struct fmtSkeletal, position );
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = 0;
+
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].numComponents = 2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].componentType = GL_HALF_FLOAT;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs          = offsetof( struct fmtSkeletal, texcoord );
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride   = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride       = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset  = 0;
+
+	vbo->attribs[ ATTR_INDEX_COLOR ].numComponents   = 4;
+	vbo->attribs[ ATTR_INDEX_COLOR ].componentType   = GL_UNSIGNED_BYTE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].normalize       = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].ofs             = offsetof( struct fmtSkeletal, colour );
+	vbo->attribs[ ATTR_INDEX_COLOR ].realStride      = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_COLOR ].stride          = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_COLOR ].frameOffset     = 0;
+
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].componentType = GL_SHORT;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].normalize     = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs          = offsetof( struct fmtSkeletal, qtangents );
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].realStride   = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].stride       = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].frameOffset  = 0;
+
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].componentType = GL_UNSIGNED_SHORT;
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].ofs           = offsetof( struct fmtSkeletal, boneFactors );
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].realStride    = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].stride        = sizeSkeletal;
+	vbo->attribs[ ATTR_INDEX_BONE_FACTORS ].frameOffset   = 0;
+
+	// total size
+	vbo->vertexesSize = sizeSkeletal * vbo->vertexesNum;
+}
+
+static void R_SetAttributeLayoutsStatic( VBO_t *vbo )
+{
+	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 3;
+	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_FLOAT;
+	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = offsetof( shaderVertex_t, xyz );
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = 0;
+
+	vbo->attribs[ ATTR_INDEX_COLOR ].numComponents   = 4;
+	vbo->attribs[ ATTR_INDEX_COLOR ].componentType   = GL_UNSIGNED_BYTE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].normalize       = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_COLOR ].ofs             = offsetof( shaderVertex_t, color );
+	vbo->attribs[ ATTR_INDEX_COLOR ].realStride      = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_COLOR ].stride          = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_COLOR ].frameOffset     = 0;
+
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].componentType = GL_SHORT;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].normalize     = GL_TRUE;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].ofs           = offsetof( shaderVertex_t, qtangents );
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].realStride    = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].stride        = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_QTANGENT ].frameOffset   = 0;
+
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].componentType = GL_HALF_FLOAT;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs           = offsetof( shaderVertex_t, texCoords );
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride    = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride        = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset   = 0;
+
+	// total size
+	vbo->vertexesSize = sizeShaderVertex * vbo->vertexesNum;
+}
+
+static void R_SetAttributeLayoutsPosition( VBO_t *vbo )
+{
+	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 3;
+	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_FLOAT;
+	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = 0;
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeof( vec3_t );
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeof( vec3_t );
+	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = 0;
+
+	// total size
+	vbo->vertexesSize = sizeof( vec3_t ) * vbo->vertexesNum;
+}
+
+static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 {
 	uint32_t i;
 	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
 	{
-		R_SetVBOAttributeComponentType( vbo, i );
+		R_SetVBOAttributeComponentType( vbo, i, noLightCoords );
 	}
 
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
 		R_SetAttributeLayoutsVertexAnimation( vbo );
 	}
-	else if ( vbo->layout == VBO_LAYOUT_INTERLEAVED )
+	else if ( vbo->layout == VBO_LAYOUT_SKELETAL )
 	{
-		R_SetAttributeLayoutsInterleaved( vbo );
+		R_SetAttributeLayoutsSkeletal( vbo );
 	}
-	else if ( vbo->layout == VBO_LAYOUT_SEPERATE )
+	else if ( vbo->layout == VBO_LAYOUT_STATIC )
 	{
-		R_SetAttributeLayoutsSeperate( vbo );
+		R_SetAttributeLayoutsStatic( vbo );
+	}
+	else if ( vbo->layout == VBO_LAYOUT_POSITION )
+	{
+		R_SetAttributeLayoutsPosition( vbo );
 	}
 	else
 	{
@@ -351,94 +317,118 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo )
 	}
 }
 
+// index has to be in range 0-255, weight has to be >= 0 and < 1
+static inline unsigned short
+boneFactor( int index, float weight ) {
+	int scaledWeight = lrintf( weight * 256.0 );
+	return (unsigned short)( ( index << 8 ) | MIN( scaledWeight, 255 ) );
+}
+
 static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 {
 	uint32_t v;
 
-#define VERTEXCOPY( v, attr, index, type ) \
-	do \
-	{ \
-		uint32_t j; \
-		type *tmp = ( type * ) ( outData + vbo->attribs[ index ].ofs + v * vbo->attribs[ index ].realStride ); \
-		const type *vert = inData.attr[ v ]; \
-		uint32_t len = ARRAY_LEN( *inData.attr ); \
-		for ( j = 0; j < len; j++ ) { tmp[ j ] = vert[ j ]; } \
-	} while ( 0 )
-
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
+		struct fmtVertexAnim1 *ptr = ( struct fmtVertexAnim1 * )outData;
+
 		for ( v = 0; v < vbo->framesNum * vbo->vertexesNum; v++ )
 		{
+
 			if ( ( vbo->attribBits & ATTR_POSITION ) )
 			{
-				VERTEXCOPY( v, xyz, ATTR_INDEX_POSITION, float );
+				vec4_t tmp;
+				VectorScale( inData.xyz[ v ], 1.0f / 512.0f, tmp);
+				tmp[4] = 1.0f; // unused
+
+				floatToSnorm16( tmp, ptr[ v ].position );
 			}
 
-			if ( ( vbo->attribBits & ATTR_NORMAL ) )
+			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
 			{
-				VERTEXCOPY( v, normal, ATTR_INDEX_NORMAL, float );
-			}
-
-			if ( ( vbo->attribBits & ATTR_BINORMAL ) )
-			{
-				VERTEXCOPY( v, binormal, ATTR_INDEX_BINORMAL, float );
-			}
-
-			if ( ( vbo->attribBits & ATTR_TANGENT ) )
-			{
-				VERTEXCOPY( v, tangent, ATTR_INDEX_TANGENT, float );
+				Vector4Copy( inData.qtangent[ v ], ptr[ v ].qtangents );
 			}
 		}
 	}
 
 	for ( v = 0; v < vbo->vertexesNum; v++ )
 	{
-		if ( vbo->layout != VBO_LAYOUT_VERTEX_ANIMATION )
-		{
+		if ( vbo->layout == VBO_LAYOUT_SKELETAL ) {
+			struct fmtSkeletal *ptr = ( struct fmtSkeletal * )outData;
 			if ( ( vbo->attribBits & ATTR_POSITION ) )
 			{
-				VERTEXCOPY( v, xyz, ATTR_INDEX_POSITION, float );
+				vec4_t tmp;
+				VectorCopy( inData.xyz[ v ], tmp);
+				tmp[4] = 1.0f; // unused
+
+				floatToSnorm16( tmp, ptr[ v ].position );
 			}
 
-			if ( ( vbo->attribBits & ATTR_NORMAL ) )
+			if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
 			{
-				VERTEXCOPY( v, normal, ATTR_INDEX_NORMAL, float );
+				Vector2Copy( inData.st[ v ], ptr[ v ].texcoord );
 			}
 
-			if ( ( vbo->attribBits & ATTR_BINORMAL ) )
+			if ( ( vbo->attribBits & ATTR_COLOR ) )
 			{
-				VERTEXCOPY( v, binormal, ATTR_INDEX_BINORMAL, float );
+				Vector4Copy( inData.color[ v ], ptr[ v ].colour );
 			}
 
-			if ( ( vbo->attribBits & ATTR_TANGENT ) )
+			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
 			{
-				VERTEXCOPY( v, tangent, ATTR_INDEX_TANGENT, float );
+				Vector4Copy( inData.qtangent[ v ], ptr[ v ].qtangents );
 			}
-		}
 
-		if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
-		{
-			VERTEXCOPY( v, st, ATTR_INDEX_TEXCOORD, float );
-		}
+			if ( ( vbo->attribBits & ATTR_BONE_FACTORS ) )
+			{
+				uint32_t j;
 
-		if ( ( vbo->attribBits & ATTR_LIGHTCOORD ) )
-		{
-			VERTEXCOPY( v, lightCoord, ATTR_INDEX_LIGHTCOORD, float );
-		}
+				ptr[ v ].boneFactors[ 0 ] = boneFactor( inData.boneIndexes[ v ][ 0 ],
+									1.0f - inData.boneWeights[ v ][ 0 ]);
+				for ( j = 1; j < 4; j++ ) {
+					ptr[ v ].boneFactors[ j ] = boneFactor( inData.boneIndexes[ v ][ j ],
+										inData.boneWeights[ v ][ j ] );
+				}
+			}
+		} else if ( vbo->layout == VBO_LAYOUT_STATIC ) {
+			shaderVertex_t *ptr = ( shaderVertex_t * )outData;
+			if ( ( vbo->attribBits & ATTR_POSITION ) )
+			{
+				VectorCopy( inData.xyz[ v ], ptr[ v ].xyz );
+			}
 
-		if ( ( vbo->attribBits & ATTR_COLOR ) )
-		{
-			VERTEXCOPY( v, color, ATTR_INDEX_COLOR, float );
-		}
+			if ( ( vbo->attribBits & ATTR_COLOR ) )
+			{
+				Vector4Copy( inData.color[ v ], ptr[ v ].color );
+			}
 
-		if ( ( vbo->attribBits & ATTR_BONE_INDEXES ) )
-		{
-			VERTEXCOPY( v, boneIndexes, ATTR_INDEX_BONE_INDEXES, int );
-		}
+			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
+			{
+				Vector4Copy( inData.qtangent[ v ], ptr[ v ].qtangents );
+			}
 
-		if ( ( vbo->attribBits & ATTR_BONE_WEIGHTS ) )
-		{
-			VERTEXCOPY( v, boneWeights, ATTR_INDEX_BONE_WEIGHTS, float );
+			if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
+			{
+				Vector4Copy( inData.stpq[ v ], ptr[ v ].texCoords );
+			}
+		} else if ( vbo->layout == VBO_LAYOUT_POSITION ) {
+			vec3_t *ptr = ( vec3_t * )outData;
+			if ( ( vbo->attribBits & ATTR_POSITION ) )
+			{
+				VectorCopy( inData.xyz[ v ], ptr[ v ] );
+			}
+		} else if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION ) {
+			struct fmtVertexAnim2 *ptr = ( struct fmtVertexAnim2 * )( outData + ( vbo->framesNum * vbo->vertexesNum ) * sizeVertexAnim1 );
+
+			if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
+			{
+				Vector2Copy( inData.st[ v ], ptr[ v ].texcoord );
+			}
+
+			if ( ( vbo->attribBits & ATTR_COLOR ) )
+			{
+				Vector4Copy( inData.color[ v ], ptr[ v ].colour );
+			}
 		}
 	}
 
@@ -474,7 +464,7 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 	vbo->attribBits = stateBits;
 	vbo->usage = GL_DYNAMIC_DRAW;
 
-	R_SetVBOAttributeLayouts( vbo );
+	R_SetVBOAttributeLayouts( vbo, qfalse );
 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 
@@ -518,32 +508,32 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	vbo->attribBits = R_DeriveAttrBits( data );
 	vbo->usage = GL_STATIC_DRAW;
 
-	R_SetVBOAttributeLayouts( vbo );
-
-	outData = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
-
-	R_CopyVertexData( vbo, outData, data );
+	R_SetVBOAttributeLayouts( vbo, data.noLightCoords );
 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 
 	R_BindVBO( vbo );
-	glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, outData, vbo->usage );
+	glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
+	outData = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
+
+	R_CopyVertexData( vbo, outData, data );
+
+	glUnmapBuffer( GL_ARRAY_BUFFER );
 	R_BindNullVBO();
 
 	GL_CheckErrors();
 
-	ri.Hunk_FreeTempMemory( outData );
-
 	return vbo;
 }
 
-static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts )
+static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts, qboolean noLightCoords )
 {
 	uint32_t v;
 	vboData_t data;
 	memset( &data, 0, sizeof( data ) );
 	data.numVerts = vbo->vertexesNum;
 	data.numFrames = vbo->framesNum;
+	data.noLightCoords = noLightCoords;
 
 	for ( v = 0; v < vbo->vertexesNum; v++ )
 	{
@@ -557,58 +547,42 @@ static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts )
 			VectorCopy( vert->xyz, data.xyz[ v ] );
 		}
 
-		if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
+		if ( ( vbo->attribBits & ATTR_TEXCOORD ) && noLightCoords )
 		{
 			if ( !data.st )
 			{
-				data.st = ( vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.st ) * data.numVerts );
+				data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * data.numVerts );
 			}
-			data.st[ v ][ 0 ] = vert->st[ 0 ];
-			data.st[ v ][ 1 ] = vert->st[ 1 ];
+			data.st[ v ][ 0 ] = floatToHalf( vert->st[ 0 ] );
+			data.st[ v ][ 1 ] = floatToHalf( vert->st[ 1 ] );
 		}
 
-		if ( ( vbo->attribBits & ATTR_NORMAL ) )
+		if ( ( vbo->attribBits & ATTR_TEXCOORD ) && !noLightCoords )
 		{
-			if ( !data.normal )
+			if ( !data.stpq )
 			{
-				data.normal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.normal ) * data.numVerts );
+				data.stpq = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * data.numVerts );
 			}
-			VectorCopy( vert->normal, data.normal[ v ] );
+			data.stpq[ v ][ 0 ] = floatToHalf( vert->st[ 0 ] );
+			data.stpq[ v ][ 1 ] = floatToHalf( vert->st[ 1 ] );
+			data.stpq[ v ][ 2 ] = floatToHalf( vert->lightmap[ 0 ] );
+			data.stpq[ v ][ 3 ] = floatToHalf( vert->lightmap[ 1 ] );
 		}
 
-		if ( ( vbo->attribBits & ATTR_BINORMAL ) )
+		if ( ( vbo->attribBits & ATTR_QTANGENT ) )
 		{
-			if ( !data.binormal )
+			if ( !data.qtangent )
 			{
-				data.binormal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.binormal ) * data.numVerts );
+				data.qtangent = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.qtangent ) * data.numVerts );
 			}
-			VectorCopy( vert->binormal, data.binormal[ v ] );
-		}
-
-		if ( ( vbo->attribBits & ATTR_TANGENT ) )
-		{
-			if ( !data.tangent )
-			{
-				data.tangent = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.tangent ) * data.numVerts );
-			}
-			VectorCopy( vert->tangent, data.tangent[ v ] );
-		}
-
-		if ( ( vbo->attribBits & ATTR_LIGHTCOORD ) )
-		{
-			if ( !data.lightCoord )
-			{
-				data.lightCoord = ( vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.lightCoord ) * data.numVerts );
-			}
-			data.lightCoord[ v ][ 0 ] = vert->lightmap[ 0 ];
-			data.lightCoord[ v ][ 1 ] = vert->lightmap[ 1 ];
+			Vector4Copy( vert->qtangent, data.qtangent[ v ] );
 		}
 
 		if ( ( vbo->attribBits & ATTR_COLOR ) )
 		{
 			if ( !data.color )
 			{
-				data.color = ( vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.color ) * data.numVerts );
+				data.color = ( u8vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.color ) * data.numVerts );
 			}
 			Vector4Copy( vert->lightColor, data.color[ v ] );
 		}
@@ -624,24 +598,9 @@ static void R_FreeVBOData( vboData_t data )
 		ri.Hunk_FreeTempMemory( data.color );
 	}
 
-	if ( data.lightCoord )
+	if ( data.qtangent )
 	{
-		ri.Hunk_FreeTempMemory( data.lightCoord );
-	}
-
-	if ( data.tangent )
-	{
-		ri.Hunk_FreeTempMemory( data.tangent );
-	}
-
-	if ( data.binormal )
-	{
-		ri.Hunk_FreeTempMemory( data.binormal );
-	}
-
-	if ( data.normal )
-	{
-		ri.Hunk_FreeTempMemory( data.normal );
+		ri.Hunk_FreeTempMemory( data.qtangent );
 	}
 
 	if ( data.st )
@@ -687,15 +646,15 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, 
 
 	Q_strncpyz( vbo->name, name, sizeof( vbo->name ) );
 
-	vbo->layout = VBO_LAYOUT_SEPERATE;
+	vbo->layout = VBO_LAYOUT_STATIC;
 	vbo->framesNum = 0;
 	vbo->vertexesNum = numVertexes;
 	vbo->attribBits = stateBits;
 	vbo->usage = GL_STATIC_DRAW;
 
-	vboData = R_CreateVBOData( vbo, verts );
+	vboData = R_CreateVBOData( vbo, verts, qfalse );
 
-	R_SetVBOAttributeLayouts( vbo );
+	R_SetVBOAttributeLayouts( vbo, qfalse );
 	
 	data = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
 
@@ -949,10 +908,10 @@ static void R_InitUnitCubeVBO( void )
 
 	for ( i = 0; i < tess.numVertexes; i++ )
 	{
-		VectorCopy( tess.xyz[ i ], data.xyz[ i ] );
+		VectorCopy( tess.verts[ i ].xyz, data.xyz[ i ] );
 	}
 
-	tr.unitCubeVBO = R_CreateStaticVBO( "unitCube_VBO", data, VBO_LAYOUT_SEPERATE );
+	tr.unitCubeVBO = R_CreateStaticVBO( "unitCube_VBO", data, VBO_LAYOUT_POSITION );
 	tr.unitCubeIBO = R_CreateStaticIBO( "unitCube_IBO", tess.indexes, tess.numIndexes );
 
 	ri.Hunk_FreeTempMemory( data.xyz );
@@ -969,25 +928,14 @@ R_InitVBOs
 */
 void R_InitVBOs( void )
 {
-	uint32_t attribs = ATTR_POSITION | ATTR_TEXCOORD | ATTR_BINORMAL 
-	                   | ATTR_TANGENT | ATTR_NORMAL  | ATTR_LIGHTCOORD 
-	                   | ATTR_COLOR;
+	uint32_t attribs = ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR;
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitVBOs -------\n" );
 
 	Com_InitGrowList( &tr.vbos, 100 );
 	Com_InitGrowList( &tr.ibos, 100 );
 
-	tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", SHADER_MAX_VERTEXES, attribs, VBO_LAYOUT_SEPERATE );
-
-	tess.vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset = sizeof( tess.xyz );
-	tess.vbo->attribs[ ATTR_INDEX_TANGENT ].frameOffset = sizeof( tess.tangents );
-	tess.vbo->attribs[ ATTR_INDEX_BINORMAL ].frameOffset = sizeof( tess.binormals );
-	tess.vbo->attribs[ ATTR_INDEX_NORMAL ].frameOffset = sizeof( tess.normals );
-	tess.vbo->attribs[ ATTR_INDEX_POSITION2 ].frameOffset = sizeof( tess.xyz );
-	tess.vbo->attribs[ ATTR_INDEX_TANGENT2 ].frameOffset = sizeof( tess.tangents );
-	tess.vbo->attribs[ ATTR_INDEX_BINORMAL2 ].frameOffset = sizeof( tess.binormals );
-	tess.vbo->attribs[ ATTR_INDEX_NORMAL2 ].frameOffset = sizeof( tess.normals );
+	tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", SHADER_MAX_VERTEXES, attribs, VBO_LAYOUT_STATIC );
 
 	tess.ibo = R_CreateDynamicIBO( "tessVertexArray_IBO", SHADER_MAX_INDEXES );
 
@@ -997,7 +945,7 @@ void R_InitVBOs( void )
 	glGenBuffers( 1, &tr.colorGradePBO );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
 	glBufferData( GL_PIXEL_PACK_BUFFER,
-		      REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t),
+		      REF_COLORGRADEMAP_STORE_SIZE * sizeof(u8vec4_t),
 		      NULL, GL_STREAM_COPY );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
 
@@ -1044,6 +992,54 @@ void R_ShutdownVBOs( void )
 
 	Com_DestroyGrowList( &tr.vbos );
 	Com_DestroyGrowList( &tr.ibos );
+}
+
+/*
+==============
+Tess_UpdateVBOs
+
+Tr3B: update the default VBO to replace the client side vertex arrays
+==============
+*/
+void Tess_UpdateVBOs( uint32_t attribBits )
+{
+	if ( r_logFile->integer )
+	{
+		GLimp_LogComment( va( "--- Tess_UpdateVBOs( attribBits = %i ) ---\n", attribBits ) );
+	}
+
+	GL_CheckErrors();
+
+	// update the default VBO
+	if ( tess.numVertexes > 0 && tess.numVertexes <= SHADER_MAX_VERTEXES )
+	{
+		R_BindVBO( tess.vbo );
+
+		GL_CheckErrors();
+
+		assert( ( attribBits & ATTR_BITS ) != 0 );
+
+		GL_VertexAttribsState( attribBits );
+
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "glBufferSubData( vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+		}
+
+		glBufferSubData( GL_ARRAY_BUFFER, 0, tess.numVertexes * sizeof( shaderVertex_t ), tess.verts );
+	}
+
+	GL_CheckErrors();
+
+	// update the default IBO
+	if ( tess.numIndexes > 0 && tess.numIndexes <= SHADER_MAX_INDEXES )
+	{
+		R_BindIBO( tess.ibo );
+
+		glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, tess.numIndexes * sizeof( glIndex_t ), tess.indexes );
+	}
+
+	GL_CheckErrors();
 }
 
 /*

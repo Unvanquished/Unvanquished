@@ -101,7 +101,9 @@ qboolean  PM_SlideMove( qboolean gravity )
 		VectorMA( pm->ps->origin, time_left, pm->ps->velocity, end );
 
 		// see if we can make it there
-		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, end, pm->ps->clientNum, pm->tracemask );
+		// spectators ignore movers, so that they can noclip through doors
+		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, end, pm->ps->clientNum,
+		           pm->tracemask, ( pm->ps->pm_type == PM_SPECTATOR ) ? CONTENTS_MOVER : 0 );
 
 		if ( trace.allsolid )
 		{
@@ -345,11 +347,11 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 	VectorCopy( pm->ps->origin, start_o );
 	VectorCopy( pm->ps->velocity, start_v );
 
-	if ( PM_SlideMove( gravity ) == 0 )
+	if ( !PM_SlideMove( gravity ) )
 	{
 		VectorCopy( start_o, down );
 		VectorMA( down, -STEPSIZE, normal, down );
-		pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask );
+		pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
 
 		//we can step down
 		if ( trace.fraction > 0.01f && trace.fraction < 1.0f &&
@@ -367,7 +369,7 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 	{
 		VectorCopy( start_o, down );
 		VectorMA( down, -STEPSIZE, normal, down );
-		pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask );
+		pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
 
 		// never step up when you still have up velocity
 		if ( DotProduct( trace.plane.normal, pm->ps->velocity ) > 0.0f &&
@@ -389,7 +391,7 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 		VectorMA( up, STEPSIZE, normal, up );
 
 		// test the player position if they were a stepheight higher
-		pm->trace( &trace, start_o, pm->mins, pm->maxs, up, pm->ps->clientNum, pm->tracemask );
+		pm->trace( &trace, start_o, pm->mins, pm->maxs, up, pm->ps->clientNum, pm->tracemask, 0 );
 
 		if ( trace.allsolid )
 		{
@@ -423,7 +425,8 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 		// push down the final amount
 		VectorCopy( pm->ps->origin, down );
 		VectorMA( down, -stepSize, normal, down );
-		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask );
+		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, down, pm->ps->clientNum,
+		           pm->tracemask, 0 );
 
 		if ( !trace.allsolid )
 		{

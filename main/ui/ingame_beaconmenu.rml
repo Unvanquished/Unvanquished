@@ -1,0 +1,73 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
+		<style>
+			body
+			{
+				padding-top:10%;
+				width:100%;
+				height:100%;
+				background:#00000066;
+				text-align:center;
+			}
+
+			.circlemenu icon{
+				display:inline-block;
+				position:absolute;
+				bottom:20px;
+				right:-20px;
+				font-size:1.5em;
+			}
+
+			.circlemenu button{
+				position:relative;
+			}
+
+			.circlemenu button.active{
+				icon-image: /ui/assets/circle-hover.png;
+				icon-color-multiplier: rgb(100,100,100);
+			}
+			.circlemenu button.active:hover{
+				icon-image: /ui/assets/circle-hover.png;
+				icon-color-multiplier: rgb(255,255,255);
+			}
+			.circlemenu button.active icon{
+				color:#9AFFBD;
+			}
+
+			div.infobox {
+				position: absolute;
+				top: 40%;
+				right: 10%;
+				float: right;
+				width: 45%;
+				height: 50%;
+			}
+
+			.circlemenu button img
+			{
+				color: rgb(230,230,230);
+			}
+		</style>
+	</head>
+	<body id="ingame_beaconmenu" class="circlemenu" onShow="buildDS beaconList default">
+		<div id="foo">
+			<tabset class="circlemenu">
+				<tab>Beacons</tab>
+				<panel>
+					<circlemenu id="default" source="beaconList.default" fields="num" formatter="CMBeacons" cancel="hide beacons"/>
+					<div class="infobox">
+						<h2>
+							<datasource_single source="beaconList.default" fields="name" targetid="default"/>
+						</h2>
+						<p class="text" style="text-align: left;">
+							<datasource_single source="beaconList.default" fields="desc" targetid="default"/>
+						</p>
+					</div>
+				</panel>
+			</tabset>
+		</div>
+	</body>
+</rml>

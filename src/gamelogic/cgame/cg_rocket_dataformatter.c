@@ -141,17 +141,20 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 	if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
 	{
 		Class = "locked";
-		Icon = "<icon>\uf023</icon>";
+		//Padlock icon. UTF-8 encoding of \uf023
+		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
 	else if(BG_Weapon( weapon )->price > credits){
 
 		Class = "expensive";
-		Icon = "<icon>\uf0d6</icon>";
+		//$1 bill icon. UTF-8 encoding of \uf0d6
+		Icon = "<icon>\xEF\x83\x96</icon>";
 	}
 	else if( BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) ){
 		Class = "active";
 		action =  va( "onClick='exec \"sell %s\"'", BG_Weapon( weapon )->name );
-		Icon = "<icon class=\"current\">\uf00c</icon><icon class=\"sell\">\uf0d6</icon>";
+		//Check mark icon. UTF-8 encoding of \uf00c
+		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
 	else
 	{
@@ -255,6 +258,21 @@ static void CG_Rocket_DFLevelShot( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<img class=\"levelshot\" src=\"/levelshots/%s\"/>", Info_ValueForKey( data, "1" ) ), qfalse );
 }
 
+static score_t *ScoreFromClientNum( int clientNum )
+{
+	int i = 0;
+
+	for ( i = 0; i < cg.numScores; ++i )
+	{
+		if ( cg.scores[ i ].client == clientNum )
+		{
+			return &cg.scores[ i ];
+		}
+	}
+
+	return NULL;
+}
+
 static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 {
 	int clientNum = atoi( Info_ValueForKey( data, "1" ) );
@@ -271,15 +289,15 @@ static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 	}
 	else
 	{
-		score_t *s = &cg.scores[ clientNum ];
+		score_t *s = ScoreFromClientNum( clientNum );
 		const char *rml = "";
 
-		if ( s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->weapon != WP_NONE )
+		if ( s && s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->weapon != WP_NONE )
 		{
 			rml = va( "<img src='/%s'/>", CG_GetShaderNameFromHandle( cg_weapons[ s->weapon ].weaponIcon ) );
 		}
 
-		if ( s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->team == TEAM_HUMANS && s->upgrade != UP_NONE )
+		if ( s && s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->team == TEAM_HUMANS && s->upgrade != UP_NONE )
 		{
 			rml = va( "%s<img src='/%s'/>", rml, CG_GetShaderNameFromHandle( cg_upgrades[ s->upgrade ].upgradeIcon ) );
 		}
@@ -302,12 +320,14 @@ static void CG_Rocket_DFCMAlienBuildables( int handle, const char *data )
 	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
 	{
 		Class = "locked";
-		Icon = "<icon>\uf023</icon>";
+		//Padlock icon. UTF-8 encoding of \uf023
+		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
 	else if ( BG_Buildable( buildable )->buildPoints > value + valueMarked )
 	{
 		Class = "expensive";
-		Icon = "<icon>\uf0d6</icon>";
+		//$1 bill icon. UTF-8 encoding of \uf0d6
+		Icon = "<icon>\xEF\x83\x96</icon>";
 	}
 	else
 	{
@@ -332,12 +352,14 @@ static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
 	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
 	{
 		Class = "locked";
-		Icon = "<icon>\uf023</icon>";
+		//Padlock icon. UTF-8 encoding of \uf023
+		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
 	else if ( BG_Buildable( buildable )->buildPoints > value + valueMarked )
 	{
 		Class = "expensive";
-		Icon = "<icon>\uf0d6</icon>";
+		//$1 bill icon. UTF-8 encoding of \uf0d6
+		Icon = "<icon>\xEF\x83\x96</icon>";
 	}
 	else
 	{
@@ -360,18 +382,21 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	if( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )
 	{
 		Class = "active";
-		Icon = "<icon class=\"current\">\uf00c</icon><icon class=\"sell\">\uf0d6</icon>";
+		//Check mark icon. UTF-8 encoding of \uf00c
+		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
 	else if ( !BG_ClassUnlocked( alienClass ) || BG_ClassDisabled( alienClass ) )
 	{
 		Class = "locked";
-		Icon = "<icon>\uf023</icon>";
+		//Padlock icon. UTF-8 encoding of \uf023
+		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
 	else if ( cost == -1 )
 	{
 
 		Class = "expensive";
-		Icon = "<icon>\uf0d6</icon>";
+		//$1 bill icon. UTF-8 encoding of \uf0d6
+		Icon = "<icon>\xEF\x83\x96</icon>";
 	}
 	else
 	{
@@ -382,6 +407,22 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' onMouseover='setDS alienEvolveList alienClasss %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), qfalse );
 }
 
+static void CG_Rocket_DFCMBeacons( int handle, const char *data )
+{
+	beaconType_t bct = (beaconType_t)atoi( Info_ValueForKey( data, "1" ) );
+	const beaconAttributes_t *ba;
+	const char *icon, *action;
+
+	ba = BG_Beacon( bct );
+
+	if( !ba )
+		return;
+
+	icon = CG_GetShaderNameFromHandle( ba->icon[ 0 ] );
+	action = va( "onClick='exec \"beacon %s\"; hide ingame_beaconmenu'", ba->name );
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='beacons' onMouseover='setDS beacons default %s' %s><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), action, icon ), qfalse );
+}
 
 typedef struct
 {
@@ -396,6 +437,7 @@ static const dataFormatterCmd_t dataFormatterCmdList[] =
 	{ "CMAlienEvolve", &CG_Rocket_DFCMAlienEvolve },
 	{ "CMArmouryBuyUpgrades", &CG_Rocket_DFCMArmouryBuyUpgrade },
 	{ "CMArmouryBuyWeapons", &CG_Rocket_DFCMArmouryBuyWeapon },
+	{ "CMBeacons", &CG_Rocket_DFCMBeacons },
 	{ "CMHumanBuildables", &CG_Rocket_DFCMHumanBuildables },
 	{ "GearOrReady", &CG_Rocket_DFGearOrReady },
 	{ "GWeaponDamage", &CG_Rocket_DFGWeaponDamage },

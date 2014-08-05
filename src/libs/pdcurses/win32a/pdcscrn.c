@@ -977,6 +977,7 @@ or Rain or one's own programs.  */
 static int set_default_sizes_from_registry( const int n_cols, const int n_rows,
                const int xloc, const int yloc, const int menu_shown)
 {
+    return 1;
     DWORD is_new_key;
     HKEY hNewKey;
     long rval = RegCreateKeyEx( HKEY_CURRENT_USER, _T( "SOFTWARE\\PDCurses"),
@@ -1185,6 +1186,7 @@ static int keep_size_within_bounds( int *lines, int *cols)
 static int get_default_sizes_from_registry( int *n_cols, int *n_rows,
                                      int *xloc, int *yloc, int *menu_shown)
 {
+    return 1;
     TCHAR data[100];
     DWORD size_out = sizeof( data);
     HKEY hKey = 0;

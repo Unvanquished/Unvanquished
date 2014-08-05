@@ -2704,7 +2704,7 @@ void CL_CheckForResend( void )
 			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), qfalse );
 			Info_SetValueForKey( info, "pubkey", key, qfalse );
 
-			sprintf( data, "connect %s", Cmd_QuoteString( info ) );
+			Com_sprintf( data, sizeof(data), "connect %s", Cmd_QuoteString( info ) );
 
 			// EVEN BALANCE - T.RAY
 			pktlen = strlen( data );
@@ -3394,7 +3394,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	if ( !CL_Netchan_Process( &clc.netchan, msg ) )
+	if ( !Netchan_Process( &clc.netchan, msg ) )
 	{
 		return; // out of order, duplicated, etc
 	}
@@ -3668,6 +3668,9 @@ void CL_Frame( int msec )
 
 	// decide on the serverTime to render
 	CL_SetCGameTime();
+
+	// Update librocket
+	Rocket_Update();
 
 	// update the screen
 	SCR_UpdateScreen();
@@ -4050,7 +4053,7 @@ void CL_Init( void )
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
 
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", 0 );  // Arnout: double tap
-	m_pitch = Cvar_Get( "m_pitch", "0.022", 0 );
+	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
 	m_yaw = Cvar_Get( "m_yaw", "0.022", 0 );
 	m_forward = Cvar_Get( "m_forward", "0.25", 0 );
 	m_side = Cvar_Get( "m_side", "0.25", 0 );

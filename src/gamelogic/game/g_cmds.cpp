@@ -2378,17 +2378,16 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 	//compute a place up in the air to start the real trace
 	VectorCopy( newOrigin, temp );
 	temp[ 2 ] += nudgeHeight;
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->s.number, MASK_PLAYERSOLID, 0 );
 
 	//trace down to the ground so that we can evolve on slopes
 	VectorCopy( newOrigin, temp );
 	temp[ 2 ] += ( nudgeHeight * tr.fraction );
-	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0 );
 	VectorCopy( tr.endpos, newOrigin );
 
 	//make REALLY sure
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin,
-	            ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0 );
 
 	//check there is room to evolve
 	return ( !tr.startsolid && tr.fraction == 1.0f );
@@ -2694,7 +2693,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
 	VectorMA( viewOrigin, 100, forward, end );
-	trap_Trace( &trace, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &trace, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	buildable = &g_entities[ trace.entityNum ];
 
 	// check if target is valid
@@ -2793,7 +2792,7 @@ void Cmd_Ignite_f( gentity_t *player )
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
 	AngleVectors( player->client->ps.viewangles, forward, NULL, NULL );
 	VectorMA( viewOrigin, 100, forward, end );
-	trap_Trace( &trace, viewOrigin, NULL, NULL, end, player->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &trace, viewOrigin, NULL, NULL, end, player->s.number, MASK_PLAYERSOLID, 0 );
 	target = &g_entities[ trace.entityNum ];
 
 	if ( !target || target->s.eType != ET_BUILDABLE || target->buildableTeam != TEAM_ALIENS )
@@ -4658,7 +4657,7 @@ void Cmd_Donate_f( gentity_t *ent )
 Cmd_Test_f
 =================
 */
-void Cmd_Test_f( gentity_t *humanPlayer )
+void Cmd_Test_f( gentity_t *player )
 {
 }
 
@@ -4701,6 +4700,71 @@ void Cmd_Damage_f( gentity_t *ent )
 	point[ 2 ] += dz;
 	G_Damage( ent, NULL, NULL, NULL, point, damage,
 	          ( nonloc ? DAMAGE_NO_LOCDAMAGE : 0 ), MOD_TARGET_LASER );
+}
+
+/*
+=================
+Cmd_Beacon_f
+=================
+*/
+void Cmd_Beacon_f( gentity_t *ent )
+{
+	char         type_str[ 64 ];
+	beaconType_t type;
+	team_t       team;
+	int          flags;
+	gentity_t    *traceEnt, *existingTag;
+	vec3_t       origin, end, forward;
+	trace_t      tr;
+	const beaconAttributes_t *battr;
+
+	// Check usage.
+	if ( trap_Argc( ) < 2 )
+	{
+		trap_SendServerCommand( ent - g_entities,
+		                        va( "print_tr %s", QQ( N_("Usage: beacon [type]\n") ) ) );
+		return;
+	}
+
+	// Get arguments.
+	trap_Argv( 1, type_str, sizeof( type_str ) );
+
+	battr = BG_BeaconByName( type_str );
+
+	// Check arguments.
+	if ( !battr || battr->flags & BCF_RESERVED )
+	{
+		trap_SendServerCommand( ent - g_entities,
+		                        va( "print_tr %s %s", QQ( N_("Unknown beacon type $1$\n") ),
+		                            Quote( type_str ) ) );
+		return;
+	}
+
+	type  = battr->number;
+	flags = battr->flags;
+	team  = (team_t)ent->client->pers.team;
+
+	// Trace in view direction.
+	BG_GetClientViewOrigin( &ent->client->ps, origin );
+	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	VectorMA( origin, 65536, forward, end );
+
+	G_UnlaggedOn( ent, origin, 65536 );
+	trap_Trace( &tr, origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	G_UnlaggedOff( );
+
+	// Evaluate flood limit.
+	if( G_FloodLimited( ent ) )
+		return;
+
+	if ( !( flags & BCF_PRECISE ) )
+		Beacon::MoveTowardsRoom( tr.endpos );
+
+	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->s.number, BCH_REMOVE ) );
+	return;
+
+invalid_beacon:
+	CP( "cp_tr " QQ(N_("Couldn't place beacon")) "\n" );
 }
 
 /*
@@ -4782,6 +4846,7 @@ static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
 	{ "asay",            CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
+	{ "beacon",          CMD_TEAM | CMD_ALIVE,                Cmd_Beacon_f           },
 	{ "build",           CMD_TEAM | CMD_ALIVE,                Cmd_Build_f            },
 	{ "buy",             CMD_HUMAN | CMD_ALIVE,               Cmd_Buy_f              },
 	{ "callteamvote",    CMD_MESSAGE | CMD_TEAM,              Cmd_CallVote_f         },

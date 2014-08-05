@@ -951,6 +951,11 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 	srfTriangle_t    *tri;
 	int              numVerts, numTriangles;
 	int              realLightmapNum;
+	struct vertexComponent_t {
+		vec2_t stBounds[ 2 ];
+		int    minVertex;
+	} *components;
+	qboolean         updated;
 
 	// get lightmap
 	realLightmapNum = LittleLong( ds->lightmapNum );
@@ -999,6 +1004,8 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 	ClearBounds( cv->bounds[ 0 ], cv->bounds[ 1 ] );
 	verts += LittleLong( ds->firstVert );
 
+	components = (struct vertexComponent_t *)ri.Hunk_AllocateTempMemory( numVerts * sizeof( struct vertexComponent_t ) );
+
 	for ( i = 0; i < numVerts; i++ )
 	{
 		for ( j = 0; j < 3; j++ )
@@ -1009,10 +1016,15 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 		AddPointToBounds( cv->verts[ i ].xyz, cv->bounds[ 0 ], cv->bounds[ 1 ] );
 
+		components[ i ].minVertex = i;
+
 		for ( j = 0; j < 2; j++ )
 		{
 			cv->verts[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			cv->verts[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
+
+			components[ i ].stBounds[ 0 ][ j ] = cv->verts[ i ].st[ j ];
+			components[ i ].stBounds[ 1 ][ j ] = cv->verts[ i ].st[ j ];
 		}
 
 		cv->verts[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
@@ -1020,10 +1032,10 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
 	}
 
 	// copy triangles
@@ -1042,6 +1054,48 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		}
 	}
 
+	// compute strongly connected components and TC bounds per component
+	do {
+		updated = qfalse;
+
+		for( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ ) {
+			int minVertex = MIN( MIN( components[ tri->indexes[ 0 ] ].minVertex,
+						  components[ tri->indexes[ 1 ] ].minVertex ),
+					     components[ tri->indexes[ 2 ] ].minVertex );
+			for( j = 0; j < 3; j++ ) {
+				int vertex = tri->indexes[ j ];
+				if( components[ vertex ].minVertex != minVertex ) {
+					updated = qtrue;
+					components[ vertex ].minVertex = minVertex;
+					components[ minVertex ].stBounds[ 0 ][ 0 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 0 ],
+											  components[ vertex ].stBounds[ 0 ][ 0 ] );
+					components[ minVertex ].stBounds[ 0 ][ 1 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 1 ],
+											  components[ vertex ].stBounds[ 0 ][ 1 ] );
+					components[ minVertex ].stBounds[ 1 ][ 0 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 0 ],
+											  components[ vertex ].stBounds[ 1 ][ 0 ] );
+					components[ minVertex ].stBounds[ 1 ][ 1 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 1 ],
+											  components[ vertex ].stBounds[ 1 ][ 1 ] );
+				}
+			}
+		}
+	} while( updated );
+
+	// center texture coords
+	for( i = 0; i < numVerts; i++ ) {
+		if( components[ i ].minVertex == i ) {
+			for( j = 0; j < 2; j++ ) {
+				components[ i ].stBounds[ 0 ][ j ] = rintf( 0.5f * (components[ i ].stBounds[ 1 ][ j ] + components[ i ].stBounds[ 0 ][ j ]) );
+			}
+		}
+
+		for ( j = 0; j < 2; j++ )
+		{
+			cv->verts[ i ].st[ j ] -= components[ components[ i ].minVertex ].stBounds[ 0 ][ j ];
+		}
+	}
+
+	ri.Hunk_FreeTempMemory( components );
+
 	// take the plane information from the lightmap vector
 	for ( i = 0; i < 3; i++ )
 	{
@@ -1055,15 +1109,24 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 	surf->data = ( surfaceType_t * ) cv;
 
 	{
-		srfVert_t *dv[ 3 ];
+		srfVert_t *dv0, *dv1, *dv2;
+		vec3_t    tangent, binormal;
 
 		for ( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ )
 		{
-			dv[ 0 ] = &cv->verts[ tri->indexes[ 0 ] ];
-			dv[ 1 ] = &cv->verts[ tri->indexes[ 1 ] ];
-			dv[ 2 ] = &cv->verts[ tri->indexes[ 2 ] ];
+			dv0 = &cv->verts[ tri->indexes[ 0 ] ];
+			dv1 = &cv->verts[ tri->indexes[ 1 ] ];
+			dv2 = &cv->verts[ tri->indexes[ 2 ] ];
 
-			R_CalcTangentVectors( dv );
+			R_CalcTangents( tangent, binormal,
+					dv0->xyz, dv1->xyz, dv2->xyz,
+					dv0->st, dv1->st, dv2->st );
+			R_TBNtoQtangents( tangent, binormal, dv0->normal,
+					  dv0->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv1->normal,
+					  dv1->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv2->normal,
+					  dv2->qtangent );
 		}
 	}
 
@@ -1083,6 +1146,7 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 	int                  width, height, numPoints;
 	static srfVert_t     points[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ];
 	vec3_t               bounds[ 2 ];
+	vec2_t               stBounds[ 2 ], tcOffset;
 	vec3_t               tmpVec;
 	static surfaceType_t skipData = SF_SKIP;
 	int                  realLightmapNum;
@@ -1134,6 +1198,12 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 	verts += LittleLong( ds->firstVert );
 	numPoints = width * height;
 
+	// compute min/max texture coords on the fly
+	stBounds[ 0 ][ 0 ] =  99999.0f;
+	stBounds[ 0 ][ 1 ] =  99999.0f;
+	stBounds[ 1 ][ 0 ] = -99999.0f;
+	stBounds[ 1 ][ 1 ] = -99999.0f;
+
 	for ( i = 0; i < numPoints; i++ )
 	{
 		for ( j = 0; j < 3; j++ )
@@ -1146,6 +1216,9 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 		{
 			points[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			points[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
+
+			stBounds[ 0 ][ j ] = MIN( stBounds[ 0 ][ j ], points[ i ].st[ j ] );
+			stBounds[ 1 ][ j ] = MAX( stBounds[ 1 ][ j ], points[ i ].st[ j ] );
 		}
 
 		points[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
@@ -1153,10 +1226,24 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 
 		for ( j = 0; j < 4; j++ )
 		{
-			points[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			points[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( points[ i ].lightColor, points[ i ].lightColor );
+		R_ColorShiftLightingBytes( points[ i ].lightColor, points[ i ].lightColor );
+	}
+
+	// center texture coords
+	for( j = 0; j < 2; j++ ) {
+		tcOffset[ j ] = 0.5f * (stBounds[ 1 ][ j ] + stBounds[ 0 ][ j ]);
+		tcOffset[ j ] = rintf( tcOffset[ j ] );
+	}
+
+	for ( i = 0; i < numPoints; i++ )
+	{
+		for ( j = 0; j < 2; j++ )
+		{
+			points[ i ].st[ j ] -= tcOffset[ j ];
+		}
 	}
 
 	// pre-tesselate
@@ -1193,6 +1280,11 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 	int                  i, j;
 	int                  numVerts, numTriangles;
 	static surfaceType_t skipData = SF_SKIP;
+	struct vertexComponent_t {
+		vec2_t stBounds[ 2 ];
+		int    minVertex;
+	} *components;
+	qboolean         updated;
 
 	// get lightmap
 	surf->lightmapNum = -1; // FIXME LittleLong(ds->lightmapNum);
@@ -1238,8 +1330,12 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 	// copy vertexes
 	verts += LittleLong( ds->firstVert );
 
+	components = (struct vertexComponent_t *)ri.Hunk_AllocateTempMemory( numVerts * sizeof( struct vertexComponent_t ) );
+
 	for ( i = 0; i < numVerts; i++ )
 	{
+		components[ i ].minVertex = i;
+
 		for ( j = 0; j < 3; j++ )
 		{
 			cv->verts[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
@@ -1250,14 +1346,17 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 		{
 			cv->verts[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			cv->verts[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
+
+			components[ i ].stBounds[ 0 ][ j ] = cv->verts[ i ].st[ j ];
+			components[ i ].stBounds[ 1 ][ j ] = cv->verts[ i ].st[ j ];
 		}
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ] * ( 1.0f / 255.0f );
+			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingFloats( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
 	}
 
 	// copy triangles
@@ -1276,6 +1375,48 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 		}
 	}
 
+	// compute strongly connected components and TC bounds per component
+	do {
+		updated = qfalse;
+
+		for( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ ) {
+			int minVertex = MIN( MIN( components[ tri->indexes[ 0 ] ].minVertex,
+						  components[ tri->indexes[ 1 ] ].minVertex ),
+					     components[ tri->indexes[ 2 ] ].minVertex );
+			for( j = 0; j < 3; j++ ) {
+				int vertex = tri->indexes[ j ];
+				if( components[ vertex ].minVertex != minVertex ) {
+					updated = qtrue;
+					components[ vertex ].minVertex = minVertex;
+					components[ minVertex ].stBounds[ 0 ][ 0 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 0 ],
+											  components[ vertex ].stBounds[ 0 ][ 0 ] );
+					components[ minVertex ].stBounds[ 0 ][ 1 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 1 ],
+											  components[ vertex ].stBounds[ 0 ][ 1 ] );
+					components[ minVertex ].stBounds[ 1 ][ 0 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 0 ],
+											  components[ vertex ].stBounds[ 1 ][ 0 ] );
+					components[ minVertex ].stBounds[ 1 ][ 1 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 1 ],
+											  components[ vertex ].stBounds[ 1 ][ 1 ] );
+				}
+			}
+		}
+	} while( updated );
+
+	// center texture coords
+	for( i = 0; i < numVerts; i++ ) {
+		if( components[ i ].minVertex == i ) {
+			for( j = 0; j < 2; j++ ) {
+				components[ i ].stBounds[ 0 ][ j ] = rintf( 0.5f * (components[ i ].stBounds[ 1 ][ j ] + components[ i ].stBounds[ 0 ][ j ]) );
+			}
+		}
+
+		for ( j = 0; j < 2; j++ )
+		{
+			cv->verts[ i ].st[ j ] -= components[ components[ i ].minVertex ].stBounds[ 0 ][ j ];
+		}
+	}
+
+	ri.Hunk_FreeTempMemory( components );
+
 	// calc bounding box
 	// HACK: don't loop only through the vertices because they can contain bad data with .lwo models ...
 	ClearBounds( cv->bounds[ 0 ], cv->bounds[ 1 ] );
@@ -1289,15 +1430,24 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 	// Tr3B - calc tangent spaces
 	{
-		srfVert_t *dv[ 3 ];
+		srfVert_t *dv0, *dv1, *dv2;
+		vec3_t    tangent, binormal;
 
 		for ( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ )
 		{
-			dv[ 0 ] = &cv->verts[ tri->indexes[ 0 ] ];
-			dv[ 1 ] = &cv->verts[ tri->indexes[ 1 ] ];
-			dv[ 2 ] = &cv->verts[ tri->indexes[ 2 ] ];
+			dv0 = &cv->verts[ tri->indexes[ 0 ] ];
+			dv1 = &cv->verts[ tri->indexes[ 1 ] ];
+			dv2 = &cv->verts[ tri->indexes[ 2 ] ];
 
-			R_CalcTangentVectors( dv );
+			R_CalcTangents( tangent, binormal,
+					dv0->xyz, dv1->xyz, dv2->xyz,
+					dv0->st, dv1->st, dv2->st );
+			R_TBNtoQtangents( tangent, binormal, dv0->normal,
+					  dv0->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv1->normal,
+					  dv1->qtangent );
+			R_TBNtoQtangents( tangent, binormal, dv2->normal,
+					  dv2->qtangent );
 		}
 	}
 
@@ -2695,8 +2845,6 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 	for ( j = 0; j < 3; j++ )
 	{
 		out->xyz[ j ] = in->xyz[ j ];
-		out->tangent[ j ] = in->tangent[ j ];
-		out->binormal[ j ] = in->binormal[ j ];
 		out->normal[ j ] = in->normal[ j ];
 	}
 
@@ -2709,6 +2857,7 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 	for ( j = 0; j < 4; j++ )
 	{
 		out->lightColor[ j ] = in->lightColor[ j ];
+		out->qtangent[ j ] = in->qtangent[ j ];
 	}
 }
 
@@ -3073,8 +3222,8 @@ static void R_CreateWorldVBO( void )
 	}
 
 	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
-	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL |
-	                                ATTR_NORMAL | ATTR_COLOR );
+	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR
+	                                 );
 
 	s_worldData.ibo = R_CreateStaticIBO2( va( "staticWorld_IBO %i", 0 ), numTriangles, triangles );
 
@@ -3493,7 +3642,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	bspNode_t     *out;
 	int           numNodes, numLeafs;
 	vboData_t     data;
-	srfTriangle_t *triangles = NULL;
 	IBO_t         *volumeIBO;
 	vec3_t        mins, maxs;
 
@@ -3587,6 +3735,10 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	// calculate occlusion query volumes
 	for ( j = 0, out = &s_worldData.nodes[ 0 ]; j < s_worldData.numnodes; j++, out++ )
 	{
+		if ( out->contents != CONTENTS_NODE && !out->numMarkSurfaces )
+		{
+			continue; // don't need to build occlusion query volumes for this leaf because this leaf has no volume
+		}
 
 		Com_Memset( out->lastVisited, -1, sizeof( out->lastVisited ) );
 		Com_Memset( out->visible, qfalse, sizeof( out->visible ) );
@@ -3614,23 +3766,15 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 		if ( j == 0 )
 		{
 			data.xyz = (vec3_t*) ri.Hunk_AllocateTempMemory(tess.numVertexes * sizeof(*data.xyz));
-			triangles = (srfTriangle_t*) ri.Hunk_AllocateTempMemory((tess.numIndexes / 3) * sizeof(srfTriangle_t));
 		}
 
 		for ( i = 0; i < tess.numVertexes; i++ )
 		{
-			VectorCopy( tess.xyz[ i ], data.xyz[ i ] );
+			VectorCopy( tess.verts[ i ].xyz, data.xyz[ i ] );
 		}
 		data.numVerts = tess.numVertexes;
 
-		for ( i = 0; i < ( tess.numIndexes / 3 ); i++ )
-		{
-			triangles[ i ].indexes[ 0 ] = tess.indexes[ i * 3 + 0 ];
-			triangles[ i ].indexes[ 1 ] = tess.indexes[ i * 3 + 1 ];
-			triangles[ i ].indexes[ 2 ] = tess.indexes[ i * 3 + 2 ];
-		}
-
-		out->volumeVBO = R_CreateStaticVBO( va( "staticBspNode_VBO %i", j ), data, VBO_LAYOUT_SEPERATE );
+		out->volumeVBO = R_CreateStaticVBO( va( "staticBspNode_VBO %i", j ), data, VBO_LAYOUT_POSITION );
 
 		if ( j == 0 )
 		{
@@ -3646,8 +3790,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	}
 
 //I'm unsure if Hunk_FreeTempMemory can handle NULL values.
-	if ( triangles ) { ri.Hunk_FreeTempMemory( triangles ); }
-
 	if ( data.xyz ) { ri.Hunk_FreeTempMemory( data.xyz ); }
 
 	tess.multiDrawPrimitives = 0;
@@ -4062,8 +4204,8 @@ void R_LoadLightGrid( lump_t *l )
 				direction[ 1 ] = copysignf( 1.0f - fabs( X ), Y );
 			}
 		}
-		gridPoint1->lightVecX = floatToSnorm8( direction[ 0 ] );
-		gridPoint2->lightVecY = floatToSnorm8( direction[ 1 ] );
+		gridPoint1->lightVecX = 128 + floatToSnorm8( direction[ 0 ] );
+		gridPoint2->lightVecY = 128 + floatToSnorm8( direction[ 1 ] );
 	}
 
 	// fill in gridpoints with zero light (samples in walls) to avoid
@@ -4102,11 +4244,11 @@ void R_LoadLightGrid( lump_t *l )
 					gridPoint1->ambient[ 0 ] = floatToUnorm8( ambientColor[ 0 ] );
 					gridPoint1->ambient[ 1 ] = floatToUnorm8( ambientColor[ 1 ] );
 					gridPoint1->ambient[ 2 ] = floatToUnorm8( ambientColor[ 2 ] );
-					gridPoint1->lightVecX = floatToSnorm8( direction[ 0 ] );
+					gridPoint1->lightVecX = 128 + floatToSnorm8( direction[ 0 ] );
 					gridPoint2->directed[ 0 ] = floatToUnorm8( directedColor[ 0 ] );
 					gridPoint2->directed[ 1 ] = floatToUnorm8( directedColor[ 1 ] );
 					gridPoint2->directed[ 2 ] = floatToUnorm8( directedColor[ 2 ] );
-					gridPoint2->lightVecY = floatToSnorm8( direction[ 1 ] );
+					gridPoint2->lightVecY = 128 + floatToSnorm8( direction[ 1 ] );
 				}
 			}
 		}

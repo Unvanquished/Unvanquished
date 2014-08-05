@@ -622,6 +622,100 @@ typedef struct buildableCache_s
 
 //=================================================
 
+#define MAX_CBEACONS 50
+
+// the point of keeping the beacon data separately from centities is
+// to be able to handle virtual beacons (client-side beacons) without
+// having to add fake centities
+
+// static data belonging to a specific beacon
+// here's all beacon info that can't be deduced at will (e.g. because
+// it depends on past states)
+typedef struct
+{
+	qboolean  valid;
+	qboolean  old; // true if it's not the first time we see it
+	qboolean  old_hud;
+	int       oldFlags;
+	int       oldEntityNum; // BCT_HEALTH and BCT_AMMO
+	qboolean  eventFired; // BCT_TIMER
+	qboolean  fadingOut; // fading out client-side beacons
+
+	//drawing
+	vec2_t        pos;
+	qboolean      altIcon;
+	float         t_occlusion;
+
+	vec3_t        origin;
+	int           ctime; // creation time
+	int           etime; // expiration time, 0 if never expires
+} cbeaconPersistent_t;
+
+// all data here must be deduceable at any moment
+// can be cleared every frame
+typedef struct
+{
+	cbeaconPersistent_t  *s;
+
+	beaconType_t  type;
+	int           data;
+	team_t        team;
+	int           owner;
+	int           flags;
+
+	//cache
+	float         dot;
+	float         dist;
+
+	// drawing parameters
+	vec2_t        pos_proj;
+	float         scale;
+	float         size;
+	vec4_t        color;
+
+	qboolean      clamped;
+	vec2_t        clamp_dir;
+	qboolean      highlighted; //todo
+} cbeacon_t;
+
+typedef struct
+{
+	// behavior
+	int           fadeIn;
+	int           fadeOut;
+	float         highlightRadius;
+	float         highlightScale;
+	float         fadeMinAlpha;
+	float         fadeMaxAlpha;
+	float         fadeMinDist; //runtime
+	float         fadeMaxDist; //runtime
+
+	// drawing
+	vec4_t        colorNeutral;
+	vec4_t        colorAlien;
+	vec4_t        colorHuman;
+	float         arrowWidth;
+	float         arrowDotSize;
+	float         arrowAlphaLow;
+	float         arrowAlphaHigh;
+
+	// HUD
+	float         hudSize;
+	float         hudMinSize;
+	float         hudMaxSize;
+	float         hudAlpha;
+	vec2_t        hudCenter;    //runtime
+	vec2_t        hudRect[ 2 ]; //runtime
+	vec2_t        tagScorePos;  //runtime
+	float         tagScoreSize;
+
+	// minimap
+	float         minimapScale;
+	float         minimapAlpha;
+} beaconsConfig_t;
+
+//======================================================================
+
 // centity_t has a direct correspondence with gentity_t in the game, but
 // only the entityState_t is directly communicated to the cgame
 typedef struct centity_s
@@ -700,6 +794,13 @@ typedef struct centity_s
 	qboolean              valid;
 	qboolean              oldValid;
 	struct centity_s      *nextLocation;
+
+	cbeaconPersistent_t   beaconPersistent;
+	
+	// Content flags derived from the entity state
+	// HACK: This is not an exact copy of the content flags the server sees.
+	// If this is desired, it needs to be made part of entityState_t instead.
+	int                   contents;
 } centity_t;
 
 //======================================================================
@@ -987,6 +1088,13 @@ typedef enum
 	SAY_TYPE_COMMAND,
 } sayType_t;
 
+typedef struct
+{
+	int     init;
+	vec3_t  oa; // old angles
+	vec3_t  oav; // old angular velocity
+} weaponInertia_t;
+
 #define NUM_BINARY_SHADERS 256
 
 typedef struct
@@ -1189,6 +1297,15 @@ typedef struct
 	// momentum
 	float                   momentumGained;
 	int                     momentumGainedTime;
+
+	weaponInertia_t         weaponInertia;
+
+	// beacons
+	cbeacon_t               beacons[ MAX_CBEACONS ];
+	int                     num_beacons;
+	cbeacon_t               *highlightedBeacon;
+
+	int                     tagScoreTime;
 } cg_t;
 
 typedef struct
@@ -1316,6 +1433,10 @@ typedef struct
 	int alienBuildList[ BA_NUM_BUILDABLES ];
 	int selectedAlienBuild;
 	int alienBuildListCount;
+
+	int beaconList[ NUM_BEACON_TYPES ];
+	int selectedBeacon;
+	int beaconListCount;
 } rocketDataSource_t;
 
 typedef struct
@@ -1496,6 +1617,15 @@ typedef struct
 	qhandle_t   scopeShader;
 
 	animation_t jetpackAnims[ MAX_JETPACK_ANIMATIONS ];
+
+	qhandle_t   beaconIconArrow;
+	qhandle_t   beaconLongArrow;
+	qhandle_t   beaconLongArrowDot;
+	qhandle_t   beaconNoTarget;
+	qhandle_t   beaconTagScore;
+
+	sfxHandle_t timerBeaconExpiredSound;
+	sfxHandle_t ownedTagSound;
 } cgMedia_t;
 
 typedef struct
@@ -1594,6 +1724,8 @@ typedef struct
 
 	voice_t      *voices;
 	clientList_t ignoreList;
+
+	beaconsConfig_t  bc;
 } cgs_t;
 
 typedef struct
@@ -1872,6 +2004,7 @@ void     CG_DrawPlane( vec3_t origin, vec3_t down, vec3_t right, qhandle_t shade
 void     CG_AdjustFrom640( float *x, float *y, float *w, float *h );
 void     CG_FillRect( float x, float y, float width, float height, const float *color );
 void     CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
+void     CG_DrawRotatedPic( float x, float y, float width, float height, qhandle_t hShader, float angle );
 void     CG_DrawNoStretchPic( float x, float y, float width, float height, qhandle_t hShader );
 void     CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
                          vec4_t tcolor, float amount, qhandle_t hShader );
@@ -1895,6 +2028,9 @@ void     CG_DrawSphere( const vec3_t center, float radius, int customShader, con
 void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
                                qboolean a240, int customShader, const float *shaderRGBA );
 void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, vec4_t rgba );
+
+#define CG_ExponentialFade( value, target, lambda ) \
+ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001 );
 
 //
 // cg_draw.c
@@ -1966,16 +2102,15 @@ void CG_ModelDoor( centity_t *cent );
 // cg_predict.c
 //
 
-#define MAGIC_TRACE_HACK -2
-
 void CG_BuildSolidList( void );
 int  CG_PointContents( const vec3_t point, int passEntityNum );
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-               const vec3_t end, int skipNumber, int mask );
+               const vec3_t end, int skipNumber, int mask, int skipmask );
 void CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-                  const vec3_t end, int skipNumber, int mask );
+                  const vec3_t end, int skipNumber, int mask, int skipmask );
 void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
-                       const float startRadius, const float endRadius, int skipNumber, int mask );
+                       const float startRadius, const float endRadius, int skipNumber, int mask,
+                       int skipmask );
 void CG_PredictPlayerState( void );
 
 //
@@ -2153,6 +2288,15 @@ void          CG_DestroyTestTS_f( void );
 // cg_tutorial.c
 //
 const char *CG_TutorialText( void );
+
+//
+// cg_beacon.c
+//
+
+void          CG_LoadBeaconsConfig( void );
+void          CG_ListBeacons( void );
+qhandle_t     CG_BeaconIcon( const cbeacon_t *b, qboolean hud );
+const char    *CG_BeaconText( const cbeacon_t *b );
 
 //
 //===============================================

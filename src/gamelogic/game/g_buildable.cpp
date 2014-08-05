@@ -58,6 +58,7 @@ static void G_WarnPrimaryUnderAttack( gentity_t *self )
 		self->attackTimer = level.time + PRIMARY_ATTACK_PERIOD; // don't spam
 		self->attackLastEvent = event;
 		G_BroadcastEvent( event, 0, attr->team );
+		Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
 	}
 
 	self->lastHealth = self->health;
@@ -206,14 +207,14 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 		return NULL;
 	}
 
-	trap_Trace( &tr, origin, NULL, NULL, localOrigin, spawnNum, MASK_SHOT );
+	trap_Trace( &tr, origin, NULL, NULL, localOrigin, spawnNum, MASK_SHOT, 0 );
 
 	if ( tr.entityNum != ENTITYNUM_NONE )
 	{
 		return &g_entities[ tr.entityNum ];
 	}
 
-	trap_Trace( &tr, localOrigin, cmins, cmaxs, localOrigin, -1, MASK_PLAYERSOLID );
+	trap_Trace( &tr, localOrigin, cmins, cmaxs, localOrigin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
 
 	if ( tr.entityNum != ENTITYNUM_NONE )
 	{
@@ -826,8 +827,6 @@ void AGeneric_CreepRecede( gentity_t *self )
 	{
 		self->s.eFlags |= EF_DEAD;
 
-		G_RewardAttackers( self );
-
 		G_AddEvent( self, EV_BUILD_DESTROY, 0 );
 
 		if ( self->spawned )
@@ -871,6 +870,8 @@ void AGeneric_Blast( gentity_t *self )
 	G_SelectiveRadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                         self->splashRadius, self, self->splashMethodOfDeath, TEAM_ALIENS );
 
+	G_RewardAttackers( self );
+
 	//pretty events and item cleanup
 	self->s.eFlags |= EF_NODRAW; //don't draw the model once it's destroyed
 	G_AddEvent( self, EV_ALIEN_BUILDABLE_EXPLOSION, DirToByte( dir ) );
@@ -909,6 +910,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	{
 		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
 		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
+		Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
 	}
 
 	// fully grown and not blasted to smithereens
@@ -926,6 +928,9 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	}
 
 	G_LogDestruction( self, attacker, mod );
+
+	Beacon::DetachTags( self );
+	BaseClustering::Remove( self );
 }
 
 /*
@@ -1290,7 +1295,7 @@ void ABarricade_Shrink( gentity_t *self, qboolean shrink )
 		int     anim;
 
 		trap_Trace( &tr, self->s.origin, self->r.mins, self->r.maxs,
-		            self->s.origin, self->s.number, MASK_PLAYERSOLID );
+		            self->s.origin, self->s.number, MASK_PLAYERSOLID, 0 );
 
 		if ( tr.startsolid || tr.fraction < 1.0f )
 		{
@@ -1551,7 +1556,7 @@ static qboolean AHive_TargetValid( gentity_t *self, gentity_t *target, qboolean 
 	}
 
 	// check for clear line of sight
-	trap_Trace( &trace, tipOrigin, NULL, NULL, target->s.pos.trBase, self->s.number, MASK_SHOT );
+	trap_Trace( &trace, tipOrigin, NULL, NULL, target->s.pos.trBase, self->s.number, MASK_SHOT, 0 );
 
 	if ( trace.fraction == 1.0f || trace.entityNum != target->s.number )
 	{
@@ -1875,7 +1880,8 @@ qboolean ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 		return qfalse;
 	}
 
-	trap_Trace( &trace, self->s.pos.trBase, NULL, NULL, target->s.pos.trBase, self->s.number, MASK_SHOT );
+	trap_Trace( &trace, self->s.pos.trBase, NULL, NULL, target->s.pos.trBase, self->s.number,
+	            MASK_SHOT, 0 );
 
 	if ( trace.contents & CONTENTS_SOLID ) // can we see the target?
 	{
@@ -2388,11 +2394,10 @@ void HGeneric_Blast( gentity_t *self )
 	G_RadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                self->splashRadius, self, self->splashMethodOfDeath );
 
-	// begin freeing build points
 	G_RewardAttackers( self );
 
-	// turn into an explosion
-	self->s.eType = (entityType_t) ( ET_EVENTS + EV_HUMAN_BUILDABLE_EXPLOSION );
+	// explode
+	self->s.eFlags |= EF_NODRAW;
 	self->freeAfterEvent = qtrue;
 	G_AddEvent( self, EV_HUMAN_BUILDABLE_EXPLOSION, DirToByte( dir ) );
 }
@@ -2404,9 +2409,10 @@ HGeneric_Disappear
 Called when a human buildable is destroyed before it is spawned.
 ================
 */
-void HGeneric_Disappear( gentity_t *self )
+void HGeneric_Cancel( gentity_t *self )
 {
 	self->timestamp = level.time;
+
 	G_RewardAttackers( self );
 
 	G_FreeEntity( self );
@@ -2445,7 +2451,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	else
 	{
 		// disappear immediately
-		self->think = HGeneric_Disappear;
+		self->think = HGeneric_Cancel;
 		self->nextthink = level.time;
 	}
 
@@ -2483,10 +2489,14 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		{
 			location->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
 			G_BroadcastEvent( EV_WARN_ATTACK, inBase ? 0 : ( watcher - level.gentities ), TEAM_HUMANS );
+			Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
 		}
 	}
 
 	G_LogDestruction( self, attacker, mod );
+
+	Beacon::DetachTags( self );
+	BaseClustering::Remove( self );
 }
 
 void HSpawn_Think( gentity_t *self )
@@ -2933,7 +2943,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 		VectorSubtract( target->s.pos.trBase, self->s.pos.trBase, dir );
 		VectorNormalize( dir );
 		VectorMA( self->s.pos.trBase, TURRET_RANGE, dir, end );
-		trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT );
+		trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 
 		if ( tr.entityNum != ( target - g_entities ) )
 		{
@@ -3116,7 +3126,7 @@ static void HTurret_SetBaseDir( gentity_t *self )
 
 	// invert base direction if it reaches into a wall within the first damage zone
 	VectorMA( self->s.origin, ( float )TURRET_RANGE / ( float )TURRET_ZONES, dir, end );
-	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT );
+	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 
 	if ( tr.entityNum == ENTITYNUM_WORLD || g_entities[ tr.entityNum ].s.eType == ET_BUILDABLE )
 	{
@@ -3172,7 +3182,7 @@ static qboolean HTurret_TargetInReach( gentity_t *self )
 	// check if a precise shot would hit the target
 	AngleVectors( self->buildableAim, forward, NULL, NULL );
 	VectorMA( self->s.pos.trBase, TURRET_RANGE, forward, end );
-	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT );
+	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 
 	return ( tr.entityNum == ( self->target - g_entities ) );
 }
@@ -4385,8 +4395,8 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	BG_BuildableBoundingBox( buildable, mins, maxs );
 
 	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, trap_Trace, entity_origin, angles, &tr1 );
-	trap_Trace( &tr2, entity_origin, mins, maxs, entity_origin, -1, MASK_PLAYERSOLID ); // Setting entnum to -1 means that the player isn't ignored
-	trap_Trace( &tr3, ps->origin, NULL, NULL, entity_origin, ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr3, ps->origin, NULL, NULL, entity_origin, ent->s.number, MASK_PLAYERSOLID, 0 );
 
 	VectorCopy( entity_origin, origin );
 	*groundEntNum = tr1.entityNum;
@@ -4781,6 +4791,11 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		G_BuildLogSet( log, built );
 	}
 
+	if( builder->client )
+		Beacon::Tag( built, (team_t)builder->client->pers.team, builder->client->ps.clientNum, qtrue );
+
+	BaseClustering::Update(built);
+
 	return built;
 }
 
@@ -4908,7 +4923,8 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 	VectorScale( built->s.origin2, -4096.0f, dest );
 	VectorAdd( dest, built->s.origin, dest );
 
-	trap_Trace( &tr, built->s.origin, built->r.mins, built->r.maxs, dest, built->s.number, built->clipmask );
+	trap_Trace( &tr, built->s.origin, built->r.mins, built->r.maxs, dest, built->s.number,
+	            built->clipmask, 0 );
 
 	if ( tr.startsolid && !force )
 	{
@@ -4927,6 +4943,9 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 	G_SetOrigin( built, tr.endpos );
 
 	trap_LinkEntity( built );
+
+	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, ENTITYNUM_NONE, qtrue );
+
 	return built;
 }
 

@@ -333,7 +333,7 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, const float range,
 
 	// Trace box against entities
 	VectorMA( muzzle, range, forward, end );
-	trap_Trace( tr, muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY );
+	trap_Trace( tr, muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY, 0 );
 
 	if ( tr->entityNum != ENTITYNUM_NONE )
 	{
@@ -344,7 +344,7 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, const float range,
 	// The range is reduced according to the former trace so we don't hit something behind the
 	// current target.
 	VectorMA( muzzle, Distance( muzzle, tr->endpos ) + halfDiagonal, forward, end );
-	trap_Trace( tr, muzzle, NULL, NULL, end, ent->s.number, CONTENTS_SOLID );
+	trap_Trace( tr, muzzle, NULL, NULL, end, ent->s.number, CONTENTS_SOLID, 0 );
 
 	// In case we hit a different target, which can happen if two potential targets are close,
 	// switch to it, so we will end up with the target we were looking at.
@@ -568,12 +568,12 @@ static void FireBullet( gentity_t *self, float spread, int damage, int mod )
 	if ( self->client )
 	{
 		G_UnlaggedOn( self, muzzle, 8192 * 16 );
-		trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
+		trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 		G_UnlaggedOff();
 	}
 	else
 	{
-		trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
+		trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 	}
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -632,7 +632,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
 
-		trap_Trace( &tr, origin, NULL, NULL, end, self->s.number, MASK_SHOT );
+		trap_Trace( &tr, origin, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 		traceEnt = &g_entities[ tr.entityNum ];
 
 		// do the damage
@@ -682,7 +682,7 @@ static void FireMassdriver( gentity_t *self )
 	VectorMA( muzzle, 8192.0f * 16.0f, forward, end );
 
 	G_UnlaggedOn( self, muzzle, 8192.0f * 16.0f );
-	trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
+	trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 	G_UnlaggedOff();
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -767,7 +767,7 @@ static void HiveMissileThink( gentity_t *self )
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
 			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
-			            ent->r.currentOrigin, self->r.ownerNum, self->clipmask );
+			            ent->r.currentOrigin, self->r.ownerNum, self->clipmask, 0 );
 
 			if ( tr.entityNum != ENTITYNUM_WORLD )
 			{
@@ -931,7 +931,7 @@ static void FireLasgun( gentity_t *self )
 	VectorMA( muzzle, 8192 * 16, forward, end );
 
 	G_UnlaggedOn( self, muzzle, 8192 * 16 );
-	trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
+	trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 	G_UnlaggedOff();
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -1078,7 +1078,7 @@ static void FireTesla( gentity_t *self )
 	target[ 2 ] += self->target->r.maxs[ 2 ];
 
 	// Trace to the target entity
-	trap_Trace( &tr, origin, NULL, NULL, target, self->s.number, MASK_SHOT );
+	trap_Trace( &tr, origin, NULL, NULL, target, self->s.number, MASK_SHOT, 0 );
 
 	if ( tr.entityNum != self->target->s.number )
 	{
@@ -1129,7 +1129,7 @@ void G_CheckCkitRepair( gentity_t *self )
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorMA( viewOrigin, 100, forward, end );
 
-	trap_Trace( &tr, viewOrigin, NULL, NULL, end, self->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr, viewOrigin, NULL, NULL, end, self->s.number, MASK_PLAYERSOLID, 0 );
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->health > 0 &&
@@ -1336,7 +1336,7 @@ static void FindZapChainTargets( zap_t *zap )
 		{
 			// world-LOS check: trace against the world, ignoring other BODY entities
 			trap_Trace( &tr, ent->s.origin, NULL, NULL,
-			            enemy->s.origin, ent->s.number, CONTENTS_SOLID );
+			            enemy->s.origin, ent->s.number, CONTENTS_SOLID, 0 );
 
 			if ( tr.entityNum == ENTITYNUM_NONE )
 			{

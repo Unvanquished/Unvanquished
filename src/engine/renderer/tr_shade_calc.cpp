@@ -476,10 +476,8 @@ RB_CalcDeformVertexes
 void RB_CalcDeformVertexes( deformStage_t *ds )
 {
 	int    i;
-	vec3_t offset;
 	float  scale;
-	float  *xyz = ( float * ) tess.xyz;
-	float  *normal = ( float * ) tess.normals;
+	vec3_t tangent, binormal, normal;
 	float  *table;
 
 	if ( ds->deformationWave.frequency < 0 )
@@ -517,10 +515,12 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 
 		table = TableForFunc( ds->deformationWave.func );
 
-		for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+		for ( i = 0; i < tess.numVertexes; i++ )
 		{
-			float off = ( xyz[ 0 ] + xyz[ 1 ] + xyz[ 2 ] ) * ds->deformationSpread;
+			float off = ( tess.verts[ i ].xyz[ 0 ] + tess.verts[ i ].xyz[ 1 ] + tess.verts[ i ].xyz[ 2 ] ) * ds->deformationSpread;
 			float dot;
+
+			R_QtangentsToTBN( tess.verts[i].qtangents, tangent, binormal, normal );
 
 			scale = WAVEVALUE( table, ds->deformationWave.base,
 			                   ds->deformationWave.amplitude, ds->deformationWave.phase + off, ds->deformationWave.frequency );
@@ -534,7 +534,7 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 					scale *= -1;
 				}
 
-				VectorMA( xyz, dot * scale, worldUp, xyz );
+				VectorMA( tess.verts[ i ].xyz, dot * scale, worldUp, tess.verts[ i ].xyz );
 			}
 		}
 
@@ -549,31 +549,27 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 		{
 			scale = RB_EvalWaveForm( &ds->deformationWave );
 
-			for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+			for ( i = 0; i < tess.numVertexes; i++ )
 			{
-				VectorScale( normal, scale, offset );
+				R_QtangentsToTBN( tess.verts[ i ].qtangents, tangent, binormal, normal );
 
-				xyz[ 0 ] += offset[ 0 ];
-				xyz[ 1 ] += offset[ 1 ];
-				xyz[ 2 ] += offset[ 2 ];
+				VectorMA( tess.verts[ i ].xyz, scale, normal, tess.verts[ i ].xyz );
 			}
 		}
 		else
 		{
 			table = TableForFunc( ds->deformationWave.func );
 
-			for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+			for ( i = 0; i < tess.numVertexes; i++ )
 			{
-				float off = ( xyz[ 0 ] + xyz[ 1 ] + xyz[ 2 ] ) * ds->deformationSpread;
+				float off = ( tess.verts[ i ].xyz[ 0 ] + tess.verts[ i ].xyz[ 1 ] + tess.verts[ i ].xyz[ 2 ] ) * ds->deformationSpread;
 
 				scale = WAVEVALUE( table, ds->deformationWave.base,
 				                   ds->deformationWave.amplitude, ds->deformationWave.phase + off, ds->deformationWave.frequency );
 
-				VectorScale( normal, scale, offset );
+				R_QtangentsToTBN( tess.verts[ i ].qtangents, tangent, binormal, normal );
 
-				xyz[ 0 ] += offset[ 0 ];
-				xyz[ 1 ] += offset[ 1 ];
-				xyz[ 2 ] += offset[ 2 ];
+				VectorMA( tess.verts[ i ].xyz, scale, normal, tess.verts[ i ].xyz );
 			}
 		}
 }
@@ -589,28 +585,31 @@ void RB_CalcDeformNormals( deformStage_t *ds )
 {
 	int   i;
 	float scale;
-	float *xyz = ( float * ) tess.xyz;
-	float *normal = ( float * ) tess.normals;
+	vec3_t normal, tangent, binormal;
 
-	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+	for ( i = 0; i < tess.numVertexes; i++ )
 	{
+		R_QtangentsToTBN( tess.verts[ i ].qtangents, tangent, binormal, normal );
+
 		scale = 0.98f;
 		scale =
-		  R_NoiseGet4f( xyz[ 0 ] * scale, xyz[ 1 ] * scale, xyz[ 2 ] * scale,
+		  R_NoiseGet4f( tess.verts[ i ].xyz[ 0 ] * scale, tess.verts[ i ].xyz[ 1 ] * scale, tess.verts[ i ].xyz[ 2 ] * scale,
 		                backEnd.refdef.floatTime * ds->deformationWave.frequency );
 		normal[ 0 ] += ds->deformationWave.amplitude * scale;
 
 		scale = 0.98f;
-		scale = R_NoiseGet4f( 100 + xyz[ 0 ] * scale, xyz[ 1 ] * scale, xyz[ 2 ] * scale,
+		scale = R_NoiseGet4f( 100.0f + tess.verts[ i ].xyz[ 0 ] * scale, tess.verts[ i ].xyz[ 1 ] * scale, tess.verts[ i ].xyz[ 2 ] * scale,
 		                      backEnd.refdef.floatTime * ds->deformationWave.frequency );
 		normal[ 1 ] += ds->deformationWave.amplitude * scale;
 
 		scale = 0.98f;
-		scale = R_NoiseGet4f( 200 + xyz[ 0 ] * scale, xyz[ 1 ] * scale, xyz[ 2 ] * scale,
+		scale = R_NoiseGet4f( 200.0f + tess.verts[ i ].xyz[ 0 ] * scale, tess.verts[ i ].xyz[ 1 ] * scale, tess.verts[ i ].xyz[ 2 ] * scale,
 		                      backEnd.refdef.floatTime * ds->deformationWave.frequency );
 		normal[ 2 ] += ds->deformationWave.amplitude * scale;
 
 		VectorNormalizeFast( normal );
+
+		R_TBNtoQtangents( tangent, binormal, normal, tess.verts[ i ].qtangents );
 	}
 }
 
@@ -622,25 +621,23 @@ RB_CalcBulgeVertexes
 void RB_CalcBulgeVertexes( deformStage_t *ds )
 {
 	int         i;
-	const float *st = ( const float * ) tess.texCoords[ 0 ];
-	float       *xyz = ( float * ) tess.xyz;
-	float       *normal = ( float * ) tess.normals;
+	vec3_t      tangent, binormal, normal;
 	float       now;
 
 	now = backEnd.refdef.time * ds->bulgeSpeed * 0.001f;
 
-	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, st += 4, normal += 4 )
+	for ( i = 0; i < tess.numVertexes; i++ )
 	{
 		int   off;
 		float scale;
 
-		off = ( float )( FUNCTABLE_SIZE / ( M_PI * 2 ) ) * ( st[ 0 ] * ds->bulgeWidth + now );
+		R_QtangentsToTBN( tess.verts[ i ].qtangents, tangent, binormal, normal );
+
+		off = ( float )( FUNCTABLE_SIZE / ( M_PI * 2 ) ) * ( halfToFloat( tess.verts[ i ].texCoords[ 0 ] ) * ds->bulgeWidth + now );
 
 		scale = tr.sinTable[ off & FUNCTABLE_MASK ] * ds->bulgeHeight;
 
-		xyz[ 0 ] += normal[ 0 ] * scale;
-		xyz[ 1 ] += normal[ 1 ] * scale;
-		xyz[ 2 ] += normal[ 2 ] * scale;
+		VectorMA( tess.verts[ i ].xyz, scale, normal, tess.verts[ i ].xyz );
 	}
 }
 
@@ -654,7 +651,6 @@ A deformation that can move an entire surface along a wave path
 void RB_CalcMoveVertexes( deformStage_t *ds )
 {
 	int    i;
-	float  *xyz;
 	float  *table;
 	float  scale;
 	vec3_t offset;
@@ -666,95 +662,9 @@ void RB_CalcMoveVertexes( deformStage_t *ds )
 
 	VectorScale( ds->moveVector, scale, offset );
 
-	xyz = ( float * ) tess.xyz;
-
-	for ( i = 0; i < tess.numVertexes; i++, xyz += 4 )
+	for ( i = 0; i < tess.numVertexes; i++ )
 	{
-		VectorAdd( xyz, offset, xyz );
-	}
-}
-
-/*
-=============
-DeformText
-
-Change a polygon into a bunch of text polygons
-=============
-*/
-void DeformText( const char *text )
-{
-	int    i;
-	vec3_t origin, width, height;
-	int    len;
-	int    ch;
-	float  bottom, top;
-	vec3_t mid;
-
-	height[ 0 ] = 0;
-	height[ 1 ] = 0;
-	height[ 2 ] = -1;
-	CrossProduct( tess.normals[ 0 ], height, width );
-
-	// find the midpoint of the box
-	VectorClear( mid );
-	bottom = 999999;
-	top = -999999;
-
-	for ( i = 0; i < 4; i++ )
-	{
-		VectorAdd( tess.xyz[ i ], mid, mid );
-
-		if ( tess.xyz[ i ][ 2 ] < bottom )
-		{
-			bottom = tess.xyz[ i ][ 2 ];
-		}
-
-		if ( tess.xyz[ i ][ 2 ] > top )
-		{
-			top = tess.xyz[ i ][ 2 ];
-		}
-	}
-
-	VectorScale( mid, 0.25f, origin );
-
-	// determine the individual character size
-	height[ 0 ] = 0;
-	height[ 1 ] = 0;
-	height[ 2 ] = ( top - bottom ) * 0.5f;
-
-	VectorScale( width, height[ 2 ] * -0.75f, width );
-
-	// determine the starting position
-	len = strlen( text );
-	VectorMA( origin, ( len - 1 ), width, origin );
-
-	// clear the shader indexes
-	tess.multiDrawPrimitives = 0;
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
-
-	// draw each character
-	for ( i = 0; i < len; i++ )
-	{
-		ch = text[ i ];
-		ch &= 255;
-
-		if ( ch != ' ' )
-		{
-			int   row, col;
-			float frow, fcol, size;
-
-			row = ch >> 4;
-			col = ch & 15;
-
-			frow = row * 0.0625f;
-			fcol = col * 0.0625f;
-			size = 0.0625f;
-
-			Tess_AddQuadStampExt( origin, width, height, colorWhite, fcol, frow, fcol + size, frow + size );
-		}
-
-		VectorMA( origin, -2, width, origin );
+		VectorAdd( tess.verts[ i ].xyz, offset, tess.verts[ i ].xyz );
 	}
 }
 
@@ -817,7 +727,7 @@ static void AutospriteDeform( void )
 	for ( i = 0; i < oldVerts; i += 4 )
 	{
 		// find the midpoint
-		xyz = tess.xyz[ i ];
+		xyz = tess.verts[ i ].xyz;
 
 		mid[ 0 ] = 0.25f * ( xyz[ 0 ] + xyz[ 4 ] + xyz[ 8 ] + xyz[ 12 ] );
 		mid[ 1 ] = 0.25f * ( xyz[ 1 ] + xyz[ 5 ] + xyz[ 9 ] + xyz[ 13 ] );
@@ -854,7 +764,9 @@ static void AutospriteDeform( void )
 			VectorScale( up, axisLength, up );
 		}
 
-		Tess_AddQuadStamp( mid, left, up, tess.colors[ i ] );
+		vec4_t color;
+		unorm8ToFloat( tess.verts[ i ].color, color );
+		Tess_AddQuadStamp( mid, left, up, color );
 	}
 }
 
@@ -913,7 +825,7 @@ static void Autosprite2Deform( void )
 		float  *v1, *v2;
 
 		// find the midpoint
-		xyz = tess.xyz[ i ];
+		xyz = tess.verts[ i ].xyz;
 
 		// identify the two shortest edges
 		nums[ 0 ] = nums[ 1 ] = 0;
@@ -1088,17 +1000,6 @@ void Tess_DeformGeometry( void )
 
 			case DEFORM_AUTOSPRITE2:
 				Autosprite2Deform();
-				break;
-
-			case DEFORM_TEXT0:
-			case DEFORM_TEXT1:
-			case DEFORM_TEXT2:
-			case DEFORM_TEXT3:
-			case DEFORM_TEXT4:
-			case DEFORM_TEXT5:
-			case DEFORM_TEXT6:
-			case DEFORM_TEXT7:
-				DeformText( backEnd.refdef.text[ ds->deformation - DEFORM_TEXT0 ] );
 				break;
 
 			case DEFORM_SPRITE:

@@ -160,7 +160,7 @@ void CG_Rocket_BuildServerInfo( void )
 		Q_strncpyz( name, start + 1, end - start );
 		start = end = NULL;
 		Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-		Info_SetValueForKeyRocket( buf, "name", name );
+		Info_SetValueForKeyRocket( buf, "name", name, qfalse );
 		Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 		Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
 		trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
@@ -189,7 +189,7 @@ void CG_Rocket_BuildServerInfo( void )
 				Q_strncpyz( name, start + 1, end - start );
 				start = end = NULL;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-				Info_SetValueForKeyRocket( buf, "name", name );
+				Info_SetValueForKeyRocket( buf, "name", name, qfalse );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
 				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
@@ -215,7 +215,7 @@ void CG_Rocket_BuildServerInfo( void )
 				Q_strncpyz( name, start + 1, end - start );
 				start = end = NULL;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-				Info_SetValueForKeyRocket( buf, "name", name );
+				Info_SetValueForKeyRocket( buf, "name", name, qfalse );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
 				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
@@ -278,7 +278,7 @@ void CG_Rocket_BuildServerList( const char *args )
 
 			if ( ping >= 0 || !Q_stricmp( args, "favorites" ) )
 			{
-				char addr[ 25 ];
+				char addr[ 50 ]; // long enough for IPv6 literal plus port no.
 				char mapname[ 256 ];
 				trap_LAN_GetServerInfo( netSrc, i, info, sizeof( info ) );
 
@@ -927,10 +927,10 @@ void CG_Rocket_BuildPlayerList( const char *args )
 	trap_Rocket_DSClearTable( "playerList", "aliens" );
 	trap_Rocket_DSClearTable( "playerList", "humans" );
 
-	for ( i = 0; i < MAX_CLIENTS; ++i )
+	for ( i = 0; i < cg.numScores; ++i )
 	{
-		ci = &cgs.clientinfo[ i ];
 		score = &cg.scores[ i ];
+		ci = &cgs.clientinfo[ score->client ];
 
 		if ( !ci->infoValid )
 		{
@@ -1010,8 +1010,8 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 
 	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_NONE ]; ++i )
 	{
-		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
 		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
+		ci = &cgs.clientinfo[ score->client ];
 
 		if ( !ci->infoValid )
 		{
@@ -1032,8 +1032,8 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 
 	for ( i = 0; i < rocketInfo.data.playerIndex[ TEAM_HUMANS ]; ++i )
 	{
-		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_HUMANS ][ i ] ];
-		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
+		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_HUMANS ][ i ] ];
+		ci = &cgs.clientinfo[ score->client ];
 
 		if ( !ci->infoValid )
 		{
@@ -1048,13 +1048,13 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
 		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
 		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
-		trap_Rocket_DSAddRow( "playerList", "spectators", buf );
+		trap_Rocket_DSAddRow( "playerList", "humans", buf );
 	}
 
-	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_NONE ]; ++i )
+	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_ALIENS ]; ++i )
 	{
-		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
-		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
+		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_ALIENS ][ i ] ];
+		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_ALIENS ][ i ] ];
 
 		if ( !ci->infoValid )
 		{
@@ -1070,7 +1070,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
 		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
 
-		trap_Rocket_DSAddRow( "playerList", "spectators", buf );
+		trap_Rocket_DSAddRow( "playerList", "aliens", buf );
 	}
 }
 
@@ -1085,8 +1085,8 @@ void CG_Rocket_BuildMapList( const char *args )
 	{
 		char buf[ MAX_INFO_STRING ] = { 0 };
 		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
-		Info_SetValueForKey( buf, "fullName", rocketInfo.data.mapList[ i ].mapName, qfalse );
-		Info_SetValueForKey( buf, "name", rocketInfo.data.mapList[ i ].mapLoadName, qfalse );
+		Info_SetValueForKey( buf, "mapName", rocketInfo.data.mapList[ i ].mapName, qfalse );
+		Info_SetValueForKey( buf, "mapLoadName", rocketInfo.data.mapList[ i ].mapLoadName, qfalse );
 		Info_SetValueForKey( buf, "levelshot", va( "%d", rocketInfo.data.mapList[ i ].levelShot ), qfalse );
 
 		trap_Rocket_DSAddRow( "mapList", "default", buf );
@@ -1832,6 +1832,70 @@ void CG_Rocket_ExecAlienSpawnList( const char *table )
 	}
 }
 
+//////// beacon shit
+
+
+void CG_Rocket_CleanUpBeaconList( const char *table )
+{
+	rocketInfo.data.selectedBeacon = -1;
+	rocketInfo.data.beaconListCount = 0;
+}
+
+void CG_Rocket_BuildBeaconList( const char *table )
+{
+	static char buf[ MAX_STRING_CHARS ];
+
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
+	{
+		return;
+	}
+
+	if ( !Q_stricmp( table, "default" ) )
+	{
+		int i;
+		const beaconAttributes_t *ba;
+
+		trap_Rocket_DSClearTable( "beaconList", "default" );
+		CG_Rocket_CleanUpBeaconList( "default" );
+
+		for ( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
+		{
+			ba = BG_Beacon( i );
+
+			if( ba->flags & BCF_RESERVED )
+				continue;
+
+			buf[ 0 ] = '\0';
+
+			Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
+			Info_SetValueForKey( buf, "name", ba->humanName, qfalse );
+			Info_SetValueForKey( buf, "desc", ba->desc, qfalse );
+
+			trap_Rocket_DSAddRow( "beaconList", "default", buf );
+
+			rocketInfo.data.beaconList[ rocketInfo.data.beaconListCount++ ] = i;
+		}
+	}
+}
+
+void CG_Rocket_SetBeaconList( const char *table, int index )
+{
+	rocketInfo.data.selectedBeacon = index;
+}
+
+void CG_Rocket_ExecBeaconList( const char *table )
+{
+	const beaconAttributes_t *ba;
+
+	ba = BG_Beacon( rocketInfo.data.beaconList[ rocketInfo.data.selectedBeacon ] );
+
+	if( !ba )
+		return;
+
+	trap_SendClientCommand( va( "beacon %s", ba->name ) );
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "hide" );
+}
+
 static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
@@ -1869,6 +1933,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &CG_Rocket_SetArmouryBuyList, &nullFilterFunc, &CG_Rocket_ExecArmouryBuyList, &nullGetFunc },
 	{ "armourySellList", &CG_Rocket_BuildArmourySellList, &nullSortFunc, &CG_Rocket_CleanUpArmourySellList, &CG_Rocket_SetArmourySellList, &nullFilterFunc, &CG_Rocket_ExecArmourySellList, &nullGetFunc },
+	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &CG_Rocket_CleanUpBeaconList, &CG_Rocket_SetBeaconList, &nullFilterFunc, &CG_Rocket_ExecBeaconList, &nullGetFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
 	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &CG_Rocket_CleanUpHumanBuildList, &CG_Rocket_SetHumanBuildList, &nullFilterFunc, &CG_Rocket_ExecHumanBuildList, &nullGetFunc },
 	{ "humanSpawnItems", &CG_Rocket_BuildHumanSpawnItems, &nullSortFunc, CG_Rocket_CleanUpHumanSpawnItems, &CG_Rocket_SetHumanSpawnItems, &nullFilterFunc, &CG_Rocket_ExecHumanSpawnItems, &nullGetFunc },

@@ -49,7 +49,6 @@ make_universal daemon-tty 755
 make_universal sel_ldr 755
 make_universal game-nacl-native-exe 755
 make_universal cgame-qvm-native.so 644
-make_universal ui-qvm-native.so 644
 install -m 644 "${BUILD_PATH}/irt_core-${PKG_ARCH}.nexe" "${DEST_PATH}/Contents/MacOS/irt_core-${PKG_ARCH}.nexe"
 
 # Create a universal version of GLEW and OpenAL and add it to the bundle

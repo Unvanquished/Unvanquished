@@ -417,7 +417,8 @@ void CG_OffsetThirdPersonView( void )
 
 	// Trace a ray from the origin to the viewpoint to make sure the view isn't
 	// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
-	CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
+	CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum,
+	          MASK_SOLID, 0 );
 
 	if ( trace.fraction != 1.0f )
 	{
@@ -425,8 +426,8 @@ void CG_OffsetThirdPersonView( void )
 		view[ 2 ] += ( 1.0f - trace.fraction ) * 32;
 		// Try another trace to this position, because a tunnel may have the ceiling
 		// close enogh that this is poking out.
-
-		CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
+		CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum,
+		          MASK_SOLID, 0 );
 		VectorCopy( trace.endpos, view );
 	}
 
@@ -1070,7 +1071,8 @@ static void CG_DrawSurfNormal( void )
 
 	VectorMA( cg.refdef.vieworg, 8192, cg.refdef.viewaxis[ 0 ], end );
 
-	CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, end, cg.predictedPlayerState.clientNum, MASK_SOLID );
+	CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, end, cg.predictedPlayerState.clientNum,
+	          MASK_SOLID, 0 );
 
 	VectorCopy( tr.endpos, normal[ 0 ].xyz );
 	normal[ 0 ].st[ 0 ] = 0;
@@ -1594,7 +1596,7 @@ void CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs ) {
 	trap_R_LightForPoint( origin, ambientLight, directedLight, lightDir );
 	VectorMA( origin, 3.0f * maxLightDist, lightDir, lightPos );
 
-	CG_Trace( &tr, origin, traceMins, traceMaxs, lightPos, 0, MASK_OPAQUE );
+	CG_Trace( &tr, origin, traceMins, traceMaxs, lightPos, 0, MASK_OPAQUE, 0 );
 
 	if( !tr.startsolid ) {
 		VectorCopy( tr.endpos, lightPos );

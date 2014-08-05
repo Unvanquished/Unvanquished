@@ -1,0 +1,54 @@
+<rml>
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/template" href="/ui/shared/window.rml" />
+	<style>
+		body
+		{
+			width: 30em;
+			height: 10em;
+			margin: auto;
+		}
+
+
+		button.dretch
+		{
+			width: 40%;
+			float: left;
+			margin-left: 0;
+		}
+
+		button.builder
+		{
+			width: 40%;
+			float: right;
+			margin-right: 0;
+		}
+
+		button.teamselect
+		{
+			width: 100%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		p {
+			clear: both;
+		}
+
+	</style>
+</head>
+
+<body id="alien_spawn" template="window">
+	<p> Choose your spawn class </p>
+
+	<button class="dretch"  onClick="hide alien_spawn; exec class level0"> Dretch </button>
+	<!-- FIXME: always spawn as the correct granger version -->
+	<button class="builder" onClick="hide alien_spawn; exec class builderupg builder"> Granger </button>
+
+	<p> You cannot evolve into a granger from another class</p>
+
+	<button class="teamselect"  onClick="hide alien_spawn; show ingame_teamselect"> Back to team selection </button>
+
+</body>
+</rml>
