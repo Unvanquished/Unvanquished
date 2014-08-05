@@ -173,11 +173,11 @@ namespace Clustering {
 				return standardDeviation;
 			}
 
-			iter_type begin() const noexcept {
+			iter_type begin() const NOEXCEPT {
 				return records.begin();
 			}
 
-			iter_type end() const noexcept {
+			iter_type end() const NOEXCEPT {
 				return records.end();
 			}
 
