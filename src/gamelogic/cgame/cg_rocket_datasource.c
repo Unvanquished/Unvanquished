@@ -96,6 +96,8 @@ void CG_Rocket_BuildServerInfo( void )
 		return;
 	}
 
+	buf[0] = 0;
+
 	rocketInfo.serverStatusLastRefresh = rocketInfo.realtime;
 
 	if ( !rocketInfo.data.buildingServerInfo )
