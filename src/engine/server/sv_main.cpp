@@ -301,6 +301,23 @@ static void SV_ResolveMasterServers( void )
 
 /*
 ================
+SV_NET_Config
+
+Network connections being reconfigured. May need to redo some lookups.
+================
+*/
+void SV_NET_Config()
+{
+	int i;
+
+	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	{
+		challenges[ i ].type = masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
+	}
+}
+
+/*
+================
 SV_MasterHeartbeat
 
 Send a message to the masters every few minutes to
