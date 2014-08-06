@@ -412,6 +412,8 @@ void       SV_PrintTranslatedText( const char *text, qboolean broadcast, qboolea
 void       SV_AddOperatorCommands( void );
 void       SV_RemoveOperatorCommands( void );
 
+void       SV_NET_Config( void );
+
 void       SV_MasterHeartbeat( const char *hbname );
 void       SV_MasterShutdown( void );
 void       SV_MasterGameStat( const char *data );

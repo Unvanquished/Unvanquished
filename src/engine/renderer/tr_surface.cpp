@@ -499,7 +499,7 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.numIndexes = 0;
 	tess.attribsSet = 0;
 
-	Vector4Copy( quadVerts[ 0 ], tess.verts[ tess.numVertexes ].xyz );
+	VectorCopy( quadVerts[ 0 ], tess.verts[ tess.numVertexes ].xyz );
 	Vector4Set( tess.verts[ tess.numVertexes ].color, 255, 255, 255, 255 );
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.0f );
 	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 0.0f );
