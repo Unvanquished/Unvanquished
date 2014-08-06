@@ -1181,7 +1181,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT;
 
-	if( model->blendWeights && model->blendIndexes ) {
+	if( model->num_joints > 0 && model->blendWeights && model->blendIndexes ) {
 		// deform the vertices by the lerped bones
 		for ( i = 0; i < surf->num_vertexes; i++ )
 		{
@@ -1233,8 +1233,9 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 		{
 			int    idxIn = surf->first_vertex + i;
 			int    idxOut = tess.numVertexes + i;
+			float  scale = model->internalScale * backEnd.currentEntity->e.skeleton.scale;
 
-			VectorCopy( &model->positions[ 3 * idxIn ], tess.verts[ idxOut ].xyz );
+			VectorScale( &model->positions[ 3 * idxIn ], scale, tess.verts[ idxOut ].xyz );
 			R_TBNtoQtangents( &model->tangents[ 3 * idxIn ],
 					  &model->bitangents[ 3 * idxIn ],
 					  &model->normals[ 3 * idxIn ],
