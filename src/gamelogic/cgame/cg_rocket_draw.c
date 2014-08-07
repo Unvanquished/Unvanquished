@@ -1905,7 +1905,7 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 {
 	// data
 	rectDef_t     rect;
-	vec4_t        foreColor, backColor;
+	vec4_t        foreColor, backColor, lockedColor, unlockedColor;
 	playerState_t *ps;
 	float         momentum, rawFraction, fraction, glowFraction, glowOffset, borderSize;
 	int           threshold;
@@ -1923,6 +1923,8 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 	CG_GetRocketElementBGColor( backColor );
 	CG_GetRocketElementColor( foreColor );
 	trap_Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "locked-marker-color", &lockedColor, sizeof( lockedColor ), ROCKET_COLOR );
+	trap_Rocket_GetProperty( "unlocked-marker-color", &unlockedColor, sizeof( unlockedColor ), ROCKET_COLOR );
 
 
 	ps = &cg.predictedPlayerState;
@@ -2023,30 +2025,14 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 			fraction = 1.0f;
 		}
 
-		if ( unlocked )
-		{
-			color[ 0 ] = 1.0f;
-			color[ 1 ] = 1.0f;
-			color[ 2 ] = 0.0f;
-			color[ 3 ] = 1.0f;
-		}
-
-		else
-		{
-			color[ 0 ] = 0.0f;
-			color[ 1 ] = 1.0f;
-			color[ 2 ] = 0.0f;
-			color[ 3 ] = 1.0f;
-		}
-
 		if ( vertical )
 		{
-			CG_FillRect( x, y + h * ( 1.0f - fraction ), w, MOMENTUM_BAR_MARKWIDTH, color );
+			CG_FillRect( x, y + h * ( 1.0f - fraction ), w, MOMENTUM_BAR_MARKWIDTH, unlocked ? unlockedColor : lockedColor );
 		}
 
 		else
 		{
-			CG_FillRect( x + w * fraction, y, MOMENTUM_BAR_MARKWIDTH, h, color );
+			CG_FillRect( x + w * fraction, y, MOMENTUM_BAR_MARKWIDTH, h, unlocked ? unlockedColor : lockedColor );
 		}
 	}
 
