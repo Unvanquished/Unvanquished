@@ -41,6 +41,7 @@ Maryland 20850 USA.
 
 #include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
 
@@ -653,6 +654,25 @@ Com_GMTime
 int Com_GMTime( qtime_t *qtime )
 {
 	return internalTime( qtime, gmtime );
+}
+
+/*
+==============================================================================
+	Cheating
+==============================================================================
+*/
+
+void SetCheatMode(bool allowed)
+{
+	Cvar::SetCheatsAllowed(allowed);
+}
+
+//The server gives the sv_cheats cvar to the client, on 'off' it prevents the user from changing Cvar::CHEAT cvars
+Cvar::Callback<Cvar::Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in the current game", Cvar::SYSTEMINFO | Cvar::ROM, true, SetCheatMode);
+
+bool Com_AreCheatsAllowed()
+{
+	return cvar_cheats.Get();
 }
 
 /*

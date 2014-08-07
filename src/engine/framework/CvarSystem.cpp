@@ -38,9 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Cvar {
 
-    //The server gives the sv_cheats cvar to the client, on 'off' it prevents the user from changing Cvar::CHEAT cvars
-    void SetCheatMode(bool cheats);
-    Callback<Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in the current game", SYSTEMINFO | ROM, true, SetCheatMode);
 
     // A cvar is some info alongside a potential proxy for the cvar
     struct cvarRecord_t {
@@ -160,6 +157,7 @@ namespace Cvar {
     }
 
     typedef std::unordered_map<std::string, cvarRecord_t*, Str::IHash, Str::IEqual> CvarMap;
+    bool cheatsAllowed = true;
 
     // The order in which static global variables are initialized is undefined and cvar
     // can be registered before main. The first time this function is called the cvar map
@@ -227,7 +225,7 @@ namespace Cvar {
                     Com_Printf("SetValueROM called on non-ROM cvar '%s'\n", cvarName.c_str());
                 }
 
-                if (not *cvar_cheats && cvar->flags & CHEAT) {
+                if (not cheatsAllowed && cvar->flags & CHEAT) {
                     Com_Printf(_("%s is cheat-protected.\n"), cvarName.c_str());
                     return;
                 }
@@ -406,8 +404,10 @@ namespace Cvar {
         return false; // not found
     }
 
-    void SetCheatMode(bool cheats) {
-        if (cheats) {
+    void SetCheatsAllowed(bool allowed) {
+        cheatsAllowed = allowed;
+
+        if (cheatsAllowed) {
             return;
         }
 
