@@ -695,6 +695,7 @@ static void CG_Rocket_DrawLocation( void )
 
 	if ( cg.intermissionStarted )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -710,7 +711,7 @@ static void CG_Rocket_DrawLocation( void )
 		location = CG_ConfigString( CS_LOCATIONS );
 	}
 
-	trap_Rocket_SetInnerRML( va( "%s", location ), RP_QUAKE );
+	trap_Rocket_SetInnerRML( location, RP_QUAKE );
 }
 
 static void CG_Rocket_DrawTimer( void )
