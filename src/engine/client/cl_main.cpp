@@ -1524,7 +1524,7 @@ void CL_MapLoading( void )
 	{
 		// clear nextmap so the cinematic shutdown doesn't execute it
 		Cvar_Set( "sv_nextmap", "" );
-		CL_Disconnect( qtrue );
+		CL_Disconnect( qfalse );
 		Q_strncpyz( cls.servername, "localhost", sizeof( cls.servername ) );
 		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = CA_CHALLENGING; // so the connect screen is drawn
@@ -1662,6 +1662,11 @@ void CL_Disconnect( qboolean showMainMenu )
 
 	CL_SendDisconnect();
 
+	// allow cheats locally again
+	if (showMainMenu) {
+		Cvar::SetValueForce("sv_cheats", "1");
+	}
+
 	CL_ClearState();
 
 	// wipe the client connection
@@ -1671,9 +1676,6 @@ void CL_Disconnect( qboolean showMainMenu )
 	{
 		CL_ClearStaticDownload();
 	}
-
-	// allow cheats locally
-    Cvar::SetValueForce("sv_cheats", "1");
 
 	// Load map pk3s to allow menus to load levelshots
 	FS::PakPath::ClearPaks();
