@@ -252,7 +252,6 @@ static cvarTable_t gameCvarTable[] =
 	{ NULL,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, qfalse           },
 	{ &g_dedicated,                   "dedicated",                     "0",                                0,                                               0, qfalse           },
 	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, qfalse           },
-	{ &g_cheats,                      "sv_cheats",                     "",                                 0,                                               0, qfalse           },
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, qfalse           },
 	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                0,                                               0, qfalse           },
 	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, qfalse           },

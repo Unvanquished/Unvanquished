@@ -433,7 +433,7 @@ typedef IPC::SyncMessage<
 > GameStaticInitMsg;
 // GameInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, GAME_INIT>, int, int, bool>
+	IPC::Message<IPC::Id<VM::QVM, GAME_INIT>, int, int, bool, bool>
 > GameInitMsg;
 // GameShutdownMsg
 typedef IPC::SyncMessage<

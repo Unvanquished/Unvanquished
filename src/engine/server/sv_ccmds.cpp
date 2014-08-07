@@ -70,8 +70,8 @@ class MapCmd: public Cmd::StaticCmd {
                 Cvar::SetValue("g_layouts", layouts);
             }
 
-            SV_SpawnServer(mapName.c_str());
             Cvar::SetValueForce("sv_cheats", cheat ? "1" : "0");
+            SV_SpawnServer(mapName.c_str());
         }
 
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
