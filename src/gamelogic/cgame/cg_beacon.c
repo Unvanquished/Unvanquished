@@ -396,7 +396,10 @@ static void CG_RunBeacon( cbeacon_t *b )
 		if( Distance2( b->pos_proj, cgs.bc.hudCenter ) <= cgs.bc.highlightRadius )
 			b->highlighted = qtrue;
 		else
+		{
 			cg.highlightedBeacon = NULL;
+			b->highlighted = qfalse;
+		}
 	}
 	else
 		b->highlighted = qfalse;
@@ -695,7 +698,7 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b, qboolean hud )
 
 	if ( b->type == BCT_TAG )
 	{
-		if ( b == cg.highlightedBeacon || !hud )
+		if ( b->highlighted || !hud )
 		{
 			if ( b->flags & EF_BC_TAG_PLAYER )
 			{
