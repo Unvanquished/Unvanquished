@@ -329,17 +329,126 @@ void CL_ConfigstringModified( Cmd::Args& csCmd )
 
 /*
 ===================
+CL_HandleServerCommand
 CL_GetServerCommand
-
-Set up argc/argv for the given command
 ===================
 */
+bool CL_HandleServerCommand(Str::StringRef text) {
+	static char bigConfigString[ BIG_INFO_STRING ];
+	Cmd::Args args(text);
+
+	if (args.Argc() == 0) {
+		return qfalse;
+	}
+
+	auto cmd = args.Argv(0);
+	int argc = args.Argc();
+
+	if (cmd == "disconnect") {
+		// NERVE - SMF - allow server to indicate why they were disconnected
+		if (argc >= 2) {
+			Com_Error(ERR_SERVERDISCONNECT, "Server disconnected: %s", args.Argv(1).c_str());
+		} else {
+			Com_Error(ERR_SERVERDISCONNECT, "Server disconnected");
+		}
+	}
+
+	// bcs0 to bcs2 are used by the server to send info strings that are bigger than the size of a packet.
+	// See also SV_UpdateConfigStrings
+	// bcs0 starts a new big config string
+	// bcs1 continues it
+	// bcs2 finishes it and feeds it back as a new command sent by the server (bcs0 makes it a cs command)
+	if (cmd == "bcs0") {
+		if (argc >= 3) {
+			Com_sprintf(bigConfigString, BIG_INFO_STRING, "cs %s %s", args.Argv(1).c_str(), args.EscapedArgs(2).c_str());
+		}
+		return qfalse;
+	}
+
+	if (cmd == "bcs1") {
+		if (argc >= 3) {
+			const char* s = Cmd_QuoteString( args[2].c_str() );
+
+			if (strlen(bigConfigString) + strlen(s) >= BIG_INFO_STRING) {
+				Com_Error(ERR_DROP, "bcs exceeded BIG_INFO_STRING");
+			}
+
+			Q_strcat(bigConfigString, sizeof(bigConfigString), s);
+		}
+		return qfalse;
+	}
+
+	if (cmd == "bcs2") {
+		if (argc >= 3) {
+			const char* s = Cmd_QuoteString( args[2].c_str() );
+
+			if (strlen(bigConfigString) + strlen(s) + 1 >= BIG_INFO_STRING) {
+				Com_Error(ERR_DROP, "bcs exceeded BIG_INFO_STRING");
+			}
+
+			Q_strcat(bigConfigString, sizeof(bigConfigString), s);
+			Q_strcat(bigConfigString, sizeof(bigConfigString), "\"");
+			return CL_HandleServerCommand(bigConfigString);
+		}
+		return qfalse;
+	}
+
+	if (cmd == "cs") {
+		CL_ConfigstringModified(args);
+		Cmd_TokenizeString(text.c_str());
+		return qtrue;
+	}
+
+	if (cmd == "map_restart") {
+		// clear outgoing commands before passing
+		// the restart to the cgame
+		memset(cl.cmds, 0, sizeof(cl.cmds));
+		Cmd_TokenizeString(text.c_str());
+		return qtrue;
+	}
+
+	if (cmd == "popup") {
+		// direct server to client popup request, bypassing cgame
+		if (cls.state == CA_ACTIVE && !clc.demoplaying && argc >=1) {
+			Rocket_DocumentAction(args.Argv(1).c_str(), "open");
+		}
+		return qfalse;
+	}
+
+	if (cmd == "pubkey_decrypt") {
+		char         buffer[ MAX_STRING_CHARS ] = "pubkey_identify ";
+		unsigned int msg_len = MAX_STRING_CHARS - 16;
+		mpz_t        message;
+
+		if (argc == 1) {
+			Com_Printf("%s", _("^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n"));
+			return qfalse;
+		}
+
+		mpz_init_set_str(message, args.Argv(1).c_str(), 16);
+
+		if (rsa_decrypt(&private_key, &msg_len, (unsigned char *) buffer + 16, message)) {
+			nettle_mpz_set_str_256_u(message, msg_len, (unsigned char *) buffer + 16);
+			mpz_get_str(buffer + 16, 16, message);
+			CL_AddReliableCommand(buffer);
+		}
+
+		mpz_clear(message);
+		return qfalse;
+	}
+
+	Cmd_TokenizeString(text.c_str());
+	return qtrue;
+}
+
+// Get the server command, does client-specific handling
+// that may block the propagation of the command to cgame.
+// If the propagation is not blocked then it tokenizes the
+// command.
+// Returns false if the command was blacked.
 qboolean CL_GetServerCommand( int serverCommandNumber )
 {
 	const char  *s;
-	const char  *cmd;
-	static char bigConfigString[ BIG_INFO_STRING ];
-	int         argc;
 
 	// if we have irretrievably lost a reliable command, drop the connection
 	if ( serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS )
@@ -368,118 +477,7 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 		Com_Printf( "serverCommand: %i : %s\n", serverCommandNumber, s );
 	}
 
-rescan:
-	Cmd_TokenizeString( s );
-	Cmd::Args args(s);
-
-	if (args.Argc() == 0) {
-		return qfalse;
-	}
-
-	cmd = args[0].c_str();
-	argc = args.size();
-
-	if ( !strcmp( cmd, "disconnect" ) )
-	{
-		// NERVE - SMF - allow server to indicate why they were disconnected
-		if ( argc >= 2 )
-		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected: %s", args[1].c_str() );
-		}
-		else
-		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected" );
-		}
-	}
-
-	if ( !strcmp( cmd, "bcs0" ) )
-	{
-		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s %s", args[1].c_str(), Cmd_QuoteString( args[2].c_str() ) );
-		return qfalse;
-	}
-
-	if ( !strcmp( cmd, "bcs1" ) )
-	{
-		s = Cmd_QuoteString( args[2].c_str() );
-
-		if ( strlen( bigConfigString ) + strlen( s ) >= BIG_INFO_STRING )
-		{
-			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
-		}
-
-		Q_strcat( bigConfigString, sizeof( bigConfigString ), s );
-		return qfalse;
-	}
-
-	if ( !strcmp( cmd, "bcs2" ) )
-	{
-		s = Cmd_QuoteString( args[2].c_str() );
-
-		if ( strlen( bigConfigString ) + strlen( s ) + 1 >= BIG_INFO_STRING )
-		{
-			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
-		}
-
-		Q_strcat( bigConfigString, sizeof( bigConfigString ), s );
-		Q_strcat( bigConfigString, sizeof( bigConfigString ), "\"" );
-		s = bigConfigString;
-		goto rescan;
-	}
-
-	if ( !strcmp( cmd, "cs" ) )
-	{
-		CL_ConfigstringModified(args);
-		Cmd_TokenizeString( s );
-		return qtrue;
-	}
-
-	if ( !strcmp( cmd, "map_restart" ) )
-	{
-		// clear outgoing commands before passing
-		// the restart to the cgame
-		memset( cl.cmds, 0, sizeof( cl.cmds ) );
-		return qtrue;
-	}
-
-	if ( !strcmp( cmd, "popup" ) )
-	{
-		// direct server to client popup request, bypassing cgame
-		if ( cls.state == CA_ACTIVE && !clc.demoplaying )
-		{
-			Rocket_DocumentAction( Cmd_Argv(1), "open" );
-		}
-		return qfalse;
-	}
-
-	if ( !strcmp( cmd, "pubkey_decrypt" ) )
-	{
-		char         buffer[ MAX_STRING_CHARS ] = "pubkey_identify ";
-		unsigned int msg_len = MAX_STRING_CHARS - 16;
-		mpz_t        message;
-
-		if ( argc == 1 )
-		{
-			Com_Printf("%s", _( "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n" ));
-			return qfalse;
-		}
-
-		mpz_init_set_str( message, Cmd_Argv( 1 ), 16 );
-
-		if ( rsa_decrypt( &private_key, &msg_len, ( unsigned char * ) buffer + 16, message ) )
-		{
-			nettle_mpz_set_str_256_u( message, msg_len, ( unsigned char * ) buffer + 16 );
-			mpz_get_str( buffer + 16, 16, message );
-			CL_AddReliableCommand( buffer );
-		}
-
-		mpz_clear( message );
-		return qfalse;
-	}
-
-	// we may want to put a "connect to other server" command here
-
-	// cgame can now act on the command
-	return qtrue;
+	return CL_HandleServerCommand(s);
 }
 
 // DHM - Nerve :: Copied from server to here
