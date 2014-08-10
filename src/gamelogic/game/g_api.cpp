@@ -241,9 +241,9 @@ int trap_Milliseconds(void)
 	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
-void trap_SendConsoleCommand(int exec_when, const char *text)
+void trap_SendConsoleCommand(const char *text)
 {
-	VM::SendMsg<SendConsoleCommandMsg>(exec_when, text);
+	VM::SendMsg<SendConsoleCommandMsg>(text);
 }
 
 int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
