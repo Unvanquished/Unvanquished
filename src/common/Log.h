@@ -144,6 +144,9 @@ namespace Log {
     void CodeSourceNotice(std::string message);
     void CodeSourceDebug(std::string message);
 
+    // Engine calls available everywhere
+    void Dispatch(Log::Event event, int targetControl);
+
     // Implementation of templates
 
     // Logger
