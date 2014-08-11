@@ -250,3 +250,4 @@ equ trap_Rocket_ClearText                 -486
 equ trap_Rocket_RegisterProperty          -487
 equ trap_Rocket_ShowScoreboard            -488
 equ trap_Rocket_SetDataSelectIndex        -489
+equ trap_Rocket_LoadFont                  -490

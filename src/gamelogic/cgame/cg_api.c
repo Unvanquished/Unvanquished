@@ -1561,3 +1561,8 @@ void trap_Rocket_SetDataSelectIndex( int index )
 {
 	syscallVM( CG_ROCKET_SETDATASELECTINDEX, index );
 }
+
+void trap_Rocket_LoadFont( const char *font )
+{
+	syscallVM( CG_ROCKET_LOADFONT, font );
+}

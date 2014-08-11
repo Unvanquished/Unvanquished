@@ -367,24 +367,6 @@ void Rocket_Init( void )
 	// Set backup font
 	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
 
-	// Load all fonts in the fonts/ dir...
-	fonts = FS_ListFiles( "fonts/", ".ttf", &numFiles );
-	for ( int i = 0; i < numFiles; ++i )
-	{
-		Rocket::Core::FontDatabase::LoadFontFace( va( "fonts/%s", fonts[ i ] ) );
-	}
-
-	FS_FreeFileList( fonts );
-
-	// Now get all the otf fonts...
-	fonts = FS_ListFiles( "fonts/", ".otf", &numFiles );
-	for ( int i = 0; i < numFiles; ++i )
-	{
-		Rocket::Core::FontDatabase::LoadFontFace( va( "fonts/%s", fonts[ i ] ) );
-	}
-
-	FS_FreeFileList( fonts );
-
 	// Initialize keymap
 	Rocket_InitKeys();
 
@@ -660,4 +642,9 @@ void Rocket_SetActiveContext( int catcher )
 
 			break;
 	}
+}
+
+void Rocket_LoadFont( const char *font )
+{
+	Rocket::Core::FontDatabase::LoadFontFace( font );
 }
