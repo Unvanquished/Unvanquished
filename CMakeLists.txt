@@ -874,7 +874,7 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/shared/VMMain.h
   ${GAMELOGIC_DIR}/game/g_active.cpp
-  ${GAMELOGIC_DIR}/game/Beacon.cpp 
+  ${GAMELOGIC_DIR}/game/Beacon.cpp
   ${GAMELOGIC_DIR}/game/Clustering.cpp
   ${GAMELOGIC_DIR}/game/g_client.cpp
   ${GAMELOGIC_DIR}/game/g_cmds.cpp
@@ -1266,6 +1266,13 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
 endif()
 mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR MINGW32_LIBRARY )
 mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
+
+# Lua
+if( BUILD_CLIENT )
+  find_package( Lua REQUIRED )
+  include_directories( ${LUA_INCLUDE_DIR} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${LUA_LIBRARIES} )
+endif()
 
 # libRocket
 if( BUILD_CLIENT )

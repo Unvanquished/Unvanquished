@@ -409,6 +409,114 @@ set(Debugger_SRC_FILES
     ${ROCKET_DIR}/Source/Debugger/Geometry.cpp
 )
 
+set(LuaCore_HDR_FILES
+    ${ROCKET_DIR}/Source/Core/Lua/Colourb.h
+    ${ROCKET_DIR}/Source/Core/Lua/Colourf.h
+    ${ROCKET_DIR}/Source/Core/Lua/Context.h
+    ${ROCKET_DIR}/Source/Core/Lua/ContextDocumentsProxy.h
+    ${ROCKET_DIR}/Source/Core/Lua/Document.h
+    ${ROCKET_DIR}/Source/Core/Lua/Element.h
+    ${ROCKET_DIR}/Source/Core/Lua/ElementAttributesProxy.h
+    ${ROCKET_DIR}/Source/Core/Lua/ElementChildNodesProxy.h
+    ${ROCKET_DIR}/Source/Core/Lua/ElementInstancer.h
+    ${ROCKET_DIR}/Source/Core/Lua/ElementStyleProxy.h
+    ${ROCKET_DIR}/Source/Core/Lua/ElementText.h
+    ${ROCKET_DIR}/Source/Core/Lua/Event.h
+    ${ROCKET_DIR}/Source/Core/Lua/EventParametersProxy.h
+    ${ROCKET_DIR}/Source/Core/Lua/GlobalLuaFunctions.h
+    ${ROCKET_DIR}/Source/Core/Lua/Log.h
+    ${ROCKET_DIR}/Source/Core/Lua/LuaDocument.h
+    ${ROCKET_DIR}/Source/Core/Lua/LuaDocumentElementInstancer.h
+    ${ROCKET_DIR}/Source/Core/Lua/LuaElement.h
+    ${ROCKET_DIR}/Source/Core/Lua/LuaElementInstancer.h
+    ${ROCKET_DIR}/Source/Core/Lua/LuaEventListener.h
+    ${ROCKET_DIR}/Source/Core/Lua/LuaEventListenerInstancer.h
+    ${ROCKET_DIR}/Source/Core/Lua/precompiled.h
+    ${ROCKET_DIR}/Source/Core/Lua/Rocket.h
+    ${ROCKET_DIR}/Source/Core/Lua/RocketContextsProxy.h
+    ${ROCKET_DIR}/Source/Core/Lua/Vector2f.h
+    ${ROCKET_DIR}/Source/Core/Lua/Vector2i.h
+)
+
+set(LuaCore_PUB_HDR_FILES
+    ${ROCKET_DIR}/Include/Rocket/Core/Lua/Header.h
+    ${ROCKET_DIR}/Include/Rocket/Core/Lua/Interpreter.h
+    ${ROCKET_DIR}/Include/Rocket/Core/Lua/LuaType.h
+    ${ROCKET_DIR}/Include/Rocket/Core/Lua/Utilities.h
+)
+
+set(LuaCore_SRC_FILES
+    ${ROCKET_DIR}/Source/Core/Lua/Colourb.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Colourf.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Context.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/ContextDocumentsProxy.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Document.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Element.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/ElementAttributesProxy.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/ElementChildNodesProxy.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/ElementInstancer.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/ElementStyleProxy.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/ElementText.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Event.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/EventParametersProxy.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/GlobalLuaFunctions.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Interpreter.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Log.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/LuaDocument.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/LuaDocumentElementInstancer.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/LuaElementInstancer.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/LuaEventListener.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/LuaEventListenerInstancer.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/precompiled.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Rocket.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/RocketContextsProxy.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Utilities.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Vector2f.cpp
+    ${ROCKET_DIR}/Source/Core/Lua/Vector2i.cpp
+)
+
+set(LuaControls_HDR_FILES
+    ${ROCKET_DIR}/Source/Controls/Lua/As.h
+    ${ROCKET_DIR}/Source/Controls/Lua/DataFormatter.h
+    ${ROCKET_DIR}/Source/Controls/Lua/DataSource.h
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementDataGrid.h
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementDataGridRow.h
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementForm.h
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementFormControl.h
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementFormControlDataSelect.h
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementFormControlInput.h
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementFormControlSelect.h
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementFormControlTextArea.h
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementTabSet.h
+    ${ROCKET_DIR}/Source/Controls/Lua/LuaDataFormatter.h
+    ${ROCKET_DIR}/Source/Controls/Lua/LuaDataSource.h
+    ${ROCKET_DIR}/Source/Controls/Lua/precompiled.h
+    ${ROCKET_DIR}/Source/Controls/Lua/SelectOptionsProxy.h
+)
+
+set(LuaControls_PUB_HDR_FILES
+    ${ROCKET_DIR}/Include/Rocket/Controls/Lua/Controls.h
+    ${ROCKET_DIR}/Include/Rocket/Controls/Lua/Header.h
+)
+
+set(LuaControls_SRC_FILES
+    ${ROCKET_DIR}/Source/Controls/Lua/Controls.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/DataFormatter.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/DataSource.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementDataGrid.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementDataGridRow.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementForm.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementFormControl.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementFormControlDataSelect.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementFormControlInput.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementFormControlSelect.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementFormControlTextArea.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/ElementTabSet.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/LuaDataFormatter.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/LuaDataSource.cpp
+    ${ROCKET_DIR}/Source/Controls/Lua/SelectOptionsProxy.cpp
+)
+
 
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
@@ -420,6 +528,7 @@ find_package( Freetype REQUIRED )
 
 include_directories( ${ROCKET_DIR}/Include ${FREETYPE_INCLUDE_DIRS} )
 add_library( ROCKET_LIB STATIC ${Core_HDR_FILES} ${Core_PUB_HDR_FILES} ${Core_SRC_FILES} ${Controls_HDR_FILES} ${Controls_PUB_HDR_FILES} ${Controls_SRC_FILES}
-	${Debugger_HDR_FILES} ${Debugger_PUB_HDR_FILES} ${Debugger_SRC_FILES} )
+	${Debugger_HDR_FILES} ${Debugger_PUB_HDR_FILES} ${Debugger_SRC_FILES}
+	${LuaCore_HDR_FILES} ${LuaCore_PUB_HDR_FILES} ${LuaCore_SRC_FILES} ${LuaControls_HDR_FILES} ${LuaCore_PUB_HDR_FILES} ${LuaCore_SRC_FILES} )
 
 set_property( TARGET ROCKET_LIB PROPERTY COMPILE_DEFINITIONS STATIC_LIB )
