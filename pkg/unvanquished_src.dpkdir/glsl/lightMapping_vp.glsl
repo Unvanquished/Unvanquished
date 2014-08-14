@@ -23,11 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /* lightMapping_vp.glsl */
 
 attribute vec3 		attr_Position;
-attribute vec2 		attr_TexCoord0;
-attribute vec2 		attr_TexCoord1;
-attribute vec3		attr_Tangent;
-attribute vec3		attr_Binormal;
-attribute vec3		attr_Normal;
+attribute vec4 		attr_TexCoord0;
+attribute vec4		attr_QTangent;
 attribute vec4		attr_Color;
 
 uniform mat4		u_DiffuseTextureMatrix;
@@ -52,42 +49,41 @@ varying vec3		var_Normal;
 varying vec4		var_Color;
 
 
+vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
+	vec3 tmp = 2.0 * cross( quat.xyz, vec );
+	return vec + quat.w * tmp + cross( quat.xyz, tmp );
+}
 
 void	main()
 {
 	vec4 position = vec4(attr_Position, 1.0);
 
+	var_Normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
+
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
-								attr_Normal,
-								attr_TexCoord0.st,
-								u_Time);
+					var_Normal,
+					attr_TexCoord0.st,
+					u_Time);
 #endif
 
 	// transform vertex position into homogenous clip-space
-#if 1
 	gl_Position = u_ModelViewProjectionMatrix * position;
-#else
-	gl_Position.xy = vec4(attr_TexCoord1, 0.0, 1.0) * 2.0 - 1.0;
-	gl_Position.z = 0.0;
-	gl_Position.w = 1.0;
-#endif
-
 
 	// transform diffusemap texcoords
-	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
-	var_TexLight = attr_TexCoord1.st;
+	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0.xy, 0.0, 1.0)).st;
+	var_TexLight = attr_TexCoord0.zw;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(attr_TexCoord0.xy, 0.0, 1.0)).st;
 
 	// transform specularmap texcoords
-	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0.xy, 0.0, 1.0)).st;
 #endif
 
 #if defined(USE_GLOW_MAPPING)
-	var_TexDiffuseGlow.pq = (u_GlowTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexDiffuseGlow.pq = (u_GlowTextureMatrix * vec4(attr_TexCoord0.xy, 0.0, 1.0)).st;
 #endif
 
 #if 0
@@ -105,11 +101,11 @@ void	main()
 #else
 
 	var_Position = position.xyz;
-	var_Normal = attr_Normal.xyz;
 
 #if defined(USE_NORMAL_MAPPING)
-	var_Tangent = attr_Tangent.xyz;
-	var_Binormal = attr_Binormal.xyz;
+	var_Tangent = QuatTransVec( attr_QTangent, vec3( 1.0, 0.0, 0.0 ) );
+	var_Binormal = QuatTransVec( attr_QTangent, vec3( 0.0, 1.0, 0.0 ) );
+	var_Tangent *= sign( attr_QTangent.w );
 #endif
 
 #endif

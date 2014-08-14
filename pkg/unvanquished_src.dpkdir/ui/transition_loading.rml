@@ -1,0 +1,99 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
+		<style>
+
+			body {
+				width: 100%;
+				height: 100%;
+				z-index: 20; /* Stay ontop of all windows */
+			}
+
+			.levelshot {
+				/* HACK: Pretend to be the background */
+				position: absolute;
+				top:0;
+				left:0;
+				width: 100%;
+				height: 100%;
+				z-index: -1;
+			}
+
+			barbox {
+				display: block;
+				width: 100%;
+				height: 1em;
+
+				position: absolute;
+				left: 0;
+				bottom: 0px;
+
+				background-color: #00000000;
+			}
+
+			progressbar {
+				width: 100%;
+				height: 100%;
+				image: /white.png;
+			}
+
+			percentage {
+				display: block;
+				width: 5em;
+
+				position: absolute;
+				right: 2em;
+				bottom: 1em;
+
+				text-align: right;
+
+				color: white;
+				font-size: 18px;
+				font-weight: bold;
+				/* Dejavu has monospaced numbers, but Roboto does not
+				   This stops the the percentage number "jiggling" left and right */
+				font-family: Dejavu Sans;
+			}
+			infobox {
+				display:block;
+				position: absolute;
+				left: 0;
+				bottom: 10em;
+				text-align: center;
+			}
+
+			servername {
+				display: block;
+				font-size: 3em;
+			}
+
+			servermotd {
+				display: block;
+				font-size: 1.5em;
+			}
+
+		</style>
+		<title>Loading</title>
+	</head>
+	<body id="loading" nohide>
+
+		<levelshot/>
+
+		<infobox>
+			<servername><hostname/></servername>
+			<servermotd><motd/></servermotd>
+		</infobox>
+
+		<percentage>
+			<progress_value src="overall" />
+		</percentage>
+
+
+		<barbox>
+			<progressbar src="overall" class="barValue"/>
+		</barbox>
+
+
+	</body>
+</rml>
