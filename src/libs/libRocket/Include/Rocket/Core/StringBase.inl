@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -54,7 +54,7 @@ StringBase< T >::StringBase(const T* string_start, const T* string_end) : value(
 	if (length > 0)
 	{
 		Reserve(length);
-		Copy(value, string_start, length, true);
+		Copy(value, string_start, length, true);		
 	}
 }
 
@@ -74,8 +74,11 @@ StringBase< T >::StringBase(size_type count, const T character) : value((T*)loca
 }
 
 template< typename T >
-StringBase< T >::StringBase(size_type ROCKET_UNUSED(max_length), const T* ROCKET_UNUSED(fmt), ...) : value((T*)local_buffer), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
+StringBase< T >::StringBase(size_type ROCKET_UNUSED_PARAMETER(max_length), const T* ROCKET_UNUSED_PARAMETER(fmt), ...) : value((T*)local_buffer), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
+	ROCKET_UNUSED(max_length);
+	ROCKET_UNUSED(fmt);
+
 	value[0] = 0;
 	// Can't implement this at the base level, requires template specialisation
 	ROCKET_ERRORMSG("Not implemented.");
@@ -120,13 +123,13 @@ unsigned int StringBase< T >::Hash() const
 		// FNV-1 hash algorithm
 		unsigned char* bp = (unsigned char *)value;	// start of buffer
 		unsigned char* be = (unsigned char *)value + (length * sizeof(T));
-
+		
 		// FNV-1a hash each octet in the buffer
-		while (bp < be)
+		while (bp < be) 
 		{
 			// xor the bottom with the current octet
 			hash ^= *bp++;
-
+			
 			/* multiply by the 32 bit FNV magic prime mod 2^32 */
 			#if !defined(__GNUC__)
 				const unsigned int FNV_32_PRIME = ((unsigned int)16777619);
@@ -149,16 +152,16 @@ template< typename T >
 void StringBase< T >::Reserve(size_type size)
 {
 	size_type new_size = (size + 1) * sizeof(T);
-
+	
 	if (buffer_size >= new_size)
 		return;
-
+	
 	// Pad out to a block of 16 bytes
 	const int BLOCK_SIZE = 16;
 	new_size = (new_size+BLOCK_SIZE-1)&(~(BLOCK_SIZE-1));
-
+	
 	buffer_size = new_size;
-
+	
 	if (value == (T*)local_buffer)
 	{
 		T* new_value = (T*)realloc(NULL, buffer_size);
@@ -174,7 +177,7 @@ void StringBase< T >::Reserve(size_type size)
 template< typename T >
 typename StringBase< T >::size_type StringBase< T >::Find(const T* find, size_type offset) const
 {
-	return _Find(find, GetLength(find), offset);
+	return _Find(find, GetLength(find), offset);	
 }
 
 template< typename T >
@@ -186,7 +189,7 @@ typename StringBase< T >::size_type StringBase< T >::Find(const StringBase< T >&
 template< typename T >
 typename StringBase< T >::size_type StringBase< T >::RFind(const T* find, size_type offset) const
 {
-	return _RFind(find, GetLength(find), offset);
+	return _RFind(find, GetLength(find), offset);	
 }
 
 template< typename T >
@@ -209,7 +212,7 @@ StringBase< T > StringBase< T >::Replace(const StringBase< T >& find, const Stri
 
 template< typename T >
 StringBase< T > StringBase< T >::Substring(size_type start, size_type count) const
-{
+{	
 	// Ensure we're not going of bounds
 	if (count > length - start)
 		count = length - start;
@@ -248,7 +251,7 @@ StringBase< T >& StringBase< T >::Assign(const T* assign, size_type count)
 
 template< typename T >
 StringBase< T >& StringBase< T >::Assign(const T* assign, const T* end)
-{
+{	
 	return _Assign(assign, end - assign);
 }
 
@@ -293,8 +296,8 @@ void StringBase< T >::Erase(size_type index, size_type count)
 	else
 	{
 		size_type erase_amount = count < length - index ? count : length - index;
-
-		Copy(&value[index], &value[index + erase_amount], length - index - erase_amount, true);
+			
+		Copy(&value[index], &value[index + erase_amount], length - index - erase_amount, true);		
 
 		length -= erase_amount;
 
@@ -304,8 +307,11 @@ void StringBase< T >::Erase(size_type index, size_type count)
 }
 
 template< typename T >
-int StringBase< T >::FormatString(size_type ROCKET_UNUSED(max_length), const T* ROCKET_UNUSED(fmt), ...)
+int StringBase< T >::FormatString(size_type ROCKET_UNUSED_PARAMETER(max_length), const T* ROCKET_UNUSED_PARAMETER(fmt), ...)
 {
+	ROCKET_UNUSED(max_length);
+	ROCKET_UNUSED(fmt);
+
 	ROCKET_ERRORMSG("Not implemented.");
 	return -1;
 }
@@ -389,11 +395,11 @@ template< typename T >
 bool StringBase< T >::operator==(const T* compare) const
 {
 	size_type index = 0;
-
+	
 	while (index < length && compare[index] == value[index])
 		index++;
 
-	return index == length && compare[index] == '\0';
+	return index == length && compare[index] == '\0';	
 }
 
 template< typename T >
@@ -401,10 +407,10 @@ bool StringBase< T >::operator==(const StringBase< T >& compare) const
 {
 	if (length != compare.length)
 		return false;
-
+	
 	if (Hash() != compare.Hash())
 		return false;
-
+		
 	return (*this) == compare.value;
 }
 
@@ -445,7 +451,7 @@ bool StringBase< T >::operator<(const T* compare) const
 		// if the string we're comparing with still
 		// has data, then we're smaller
 		if (compare[index] != 0)
-			return true;
+			return true;		
 	}
 
 	return false;
@@ -465,7 +471,7 @@ StringBase< T >& StringBase< T >::operator=(const T* assign)
 
 template< typename T >
 StringBase< T >& StringBase< T >::operator=(const StringBase< T >& assign)
-{
+{	
 	StringBase< T >&out = Assign(assign);
 	out.hash = assign.hash;
 	return out;
@@ -473,37 +479,37 @@ StringBase< T >& StringBase< T >::operator=(const StringBase< T >& assign)
 
 template< typename T >
 StringBase< T > StringBase< T >::operator+(const T* add) const
-{
+{	
 	StringBase< T > combined(*this);
-	combined.Append(add);
-
+	combined.Append(add);	
+	
 	return combined;
 }
 
 template< typename T >
 StringBase< T > StringBase< T >::operator+(const StringBase< T >& add) const
-{
+{	
 	StringBase< T > combined(*this);
-	combined.Append(add);
-
+	combined.Append(add);	
+	
 	return combined;
 }
 
 template< typename T >
 StringBase< T >& StringBase< T >::operator+=(const T* add)
-{
+{	
 	return Append(add);
 }
 
 template< typename T >
 StringBase< T >& StringBase< T >::operator+=(const StringBase< T >& add)
-{
+{	
 	return _Append(add.CString(), add.length);
 }
 
 template< typename T >
 StringBase< T >& StringBase< T >::operator+=(const T& add)
-{
+{	
 	return Append(add);
 }
 
@@ -523,12 +529,12 @@ T& StringBase< T >::operator[](size_type index)
 
 template< typename T >
 typename StringBase< T >::size_type StringBase< T >::GetLength(const T* string) const
-{
+{	
 	const T* ptr = string;
 
 	while (*ptr)
 	{
-		ptr++;
+		ptr++;		
 	}
 
 	return ptr - string;
@@ -542,17 +548,17 @@ void StringBase< T >::Copy(T* target, const T* src, size_type length, bool termi
 	{
 		*target++ = *src++;
 	}
-
+	
 	if (terminate)
-	{
-		*target++ = 0;
+	{		
+		*target++ = 0;		
 	}
 }
 
 template< typename T >
 typename StringBase< T >::size_type StringBase< T >::_Find(const T* find, size_type find_length, size_type offset) const
 {
-	size_type needle_index = 0;
+	size_type needle_index = 0;	
 	size_type haystack_index = offset;
 
 	// If the find length is greater than the string we have, it can't be here
@@ -572,7 +578,7 @@ typename StringBase< T >::size_type StringBase< T >::_Find(const T* find, size_t
 			if (needle_index == find_length)
 				return haystack_index;
 		}
-		else
+		else		
 		{
 			// Advance haystack index by one and reset needle index.
 			haystack_index++;
@@ -588,7 +594,7 @@ typename StringBase< T >::size_type StringBase< T >::_RFind(const T* find, size_
 {
 	ROCKET_ASSERT(find_length > 0);
 
-	size_type needle_index = 0;
+	size_type needle_index = 0;	
 	size_type haystack_index = (offset < length ? offset : length) - find_length;
 
 	// If the find length is greater than the string we have, it can't be here
@@ -608,7 +614,7 @@ typename StringBase< T >::size_type StringBase< T >::_RFind(const T* find, size_
 			if (find[needle_index] == 0)
 				return haystack_index;
 		}
-		else
+		else		
 		{
 			if (haystack_index == 0)
 				return npos;
@@ -625,7 +631,7 @@ StringBase< T > StringBase< T >::_Replace(const T* find, size_type find_length, 
 {
 	StringBase< T > result;
 
-	size_type offset = 0;
+	size_type offset = 0;	
 	// Loop until we reach the end of the string
 	while (offset < Length())
 	{
@@ -643,7 +649,7 @@ StringBase< T > StringBase< T >::_Replace(const T* find, size_type find_length, 
 		// Advance the find position
 		offset = pos + find_length;
 	}
-
+	
 	hash = 0;
 
 	return result;
@@ -651,7 +657,7 @@ StringBase< T > StringBase< T >::_Replace(const T* find, size_type find_length, 
 
 template< typename T >
 StringBase< T >& StringBase< T >::_Append(const T* append, size_type append_length, size_type count)
-{
+{	
 	size_type add_length = count < append_length ? count : append_length;
 
 	if (add_length == 0)
@@ -660,15 +666,15 @@ StringBase< T >& StringBase< T >::_Append(const T* append, size_type append_leng
 	Reserve(length + add_length);
 	Copy(&value[length], append, add_length, true);
 	length += add_length;
-
+	
 	hash = 0;
-
+	
 	return *this;
 }
 
 template< typename T >
 StringBase< T >& StringBase< T >::_Assign(const T* assign, size_type assign_length, size_type count)
-{
+{		
 	size_type new_length = count < assign_length ? count : assign_length;
 
 	if (new_length == 0)
@@ -682,9 +688,9 @@ StringBase< T >& StringBase< T >::_Assign(const T* assign, size_type assign_leng
 	}
 
 	length = new_length;
-
+	
 	hash = 0;
-
+	
 	return *this;
 }
 
@@ -696,16 +702,16 @@ void StringBase< T >::_Insert(size_type index, const T* insert, size_type insert
 		Append(insert, count);
 		return;
 	}
-
+	
 	size_type add_length = count < insert_length ? count : insert_length;
 
 	Reserve(length + add_length);
-
+	
 	for (size_type i = length + 1; i > index; i--)
 		value[i + add_length - 1] = value[i - 1];
 
 	Copy(&value[index], insert, add_length);
 	length += add_length;
-
+	
 	hash = 0;
 }

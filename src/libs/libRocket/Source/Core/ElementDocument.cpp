@@ -287,8 +287,10 @@ bool ElementDocument::IsModal() const
 }
 
 // Default load script implementation
-void ElementDocument::LoadScript(Stream* ROCKET_UNUSED(stream), const String& ROCKET_UNUSED(source_name))
+void ElementDocument::LoadScript(Stream* ROCKET_UNUSED_PARAMETER(stream), const String& ROCKET_UNUSED_PARAMETER(source_name))
 {
+	ROCKET_UNUSED(stream);
+	ROCKET_UNUSED(source_name);
 }
 
 // Updates the layout if necessary.
@@ -369,6 +371,10 @@ void ElementDocument::OnUpdate()
 void ElementDocument::OnPropertyChange(const PropertyNameList& changed_properties)
 {
 	Element::OnPropertyChange(changed_properties);
+
+	// If the document's font-size has been changed, we need to dirty all rem properties.
+	if (changed_properties.find(FONT_SIZE) != changed_properties.end())
+		GetStyle()->DirtyRemProperties();
 
 	if (changed_properties.find(TOP) != changed_properties.end() ||
 		changed_properties.find(RIGHT) != changed_properties.end() ||

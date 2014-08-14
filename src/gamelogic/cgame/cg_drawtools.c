@@ -177,6 +177,19 @@ void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader 
 
 /*
 ================
+CG_DrawRotatedPic
+
+Coordinates are 640*480 virtual values
+=================
+*/
+void CG_DrawRotatedPic( float x, float y, float width, float height, qhandle_t hShader, float angle )
+{
+	CG_AdjustFrom640( &x, &y, &width, &height );
+	trap_R_DrawRotatedPic( x, y, width, height, 0, 0, 1, 1, hShader, angle );
+}
+
+/*
+================
 CG_DrawNoStretchPic
 
 Coordinates are 640*480 virtual values
@@ -451,6 +464,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 	float  xc, yc;
 	float  px, py;
 	float  z;
+	qboolean front = qtrue;
 
 	px = tan( cg.refdef.fov_x * M_PI / 360.0f );
 	py = tan( cg.refdef.fov_y * M_PI / 360.0f );
@@ -464,7 +478,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 
 	if ( z <= 0.001f )
 	{
-		return qfalse;
+		front = qfalse;
 	}
 
 	if ( x )
@@ -477,7 +491,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 		*y = 240.0f - DotProduct( trans, cg.refdef.viewaxis[ 2 ] ) * yc / ( z * py );
 	}
 
-	return qtrue;
+	return front;
 }
 
 /*

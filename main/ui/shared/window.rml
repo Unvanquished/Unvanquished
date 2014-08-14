@@ -28,11 +28,11 @@
 			left: 0.5em;
 
 			background-decorator: image;
-			background-image:/ui/shared/close_cross.png;
+			background-image:/ui/assets/widgets/close_cross.png;
 		}
 
 		closebutton:hover {
-			background-image:/ui/shared/close_cross_hover;
+			background-image:/ui/assets/widgets/close_cross_hover;
 		}
 
 		row {
@@ -85,17 +85,27 @@
 			float:right;
 			width: 70%;
 		}
-		
+
+		/* Drag handle.  Consume the top space of the window (where the H1 will be) */
+		handle {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 4em;
+		}
 
 
 	</style>
 </head>
 <body>
-	<handle move_target="#document">
-		<window>
-			<closebutton onClick="hide" />
-			<div id="content"></div>
-		</window>
-	</handle>
+
+	<window>
+		<handle move_target="#document" />
+		<closebutton onClick="hide" />  <!-- Defined after the handle, so it's "ontop" -->
+		<div id="content"></div>
+	</window>
+
 </body>
 </template>

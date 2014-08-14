@@ -195,7 +195,6 @@ void	main()
 
 #endif // USE_NORMAL_MAPPING
 
-
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
 
@@ -204,7 +203,6 @@ void	main()
 		discard;
 		return;
 	}
-
 
 // add Rim Lighting to highlight the edges
 #if defined(r_RimLighting)

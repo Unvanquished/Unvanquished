@@ -40,6 +40,33 @@ void              G_TouchTriggers( gentity_t *ent );
 const char        *G_admin_name( gentity_t *ent );
 const char        *G_quoted_admin_name( gentity_t *ent );
 
+// Beacon.cpp
+namespace Beacon 
+{
+	void Frame( void );
+	void Move( gentity_t *ent, const vec3_t origin );
+	gentity_t *New( const vec3_t origin, beaconType_t type, int data, team_t team, int owner,
+	                beaconConflictHandler_t conflictHandler = BCH_NONE );
+	gentity_t *NewArea( beaconType_t type, const vec3_t point, team_t team );
+	void Delete( gentity_t *ent, bool verbose = false );
+	void MoveTowardsRoom( vec3_t origin );
+	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
+	                        float radius = 128.0f, int eFlags = 0, int eFlagsRelevant = 0 );
+	int RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
+	                   float radius = 128.0f, int eFlags = 0, int eFlagsRelevant = 0 );
+	gentity_t *MoveSimilar( const vec3_t from, const vec3_t to, beaconType_t type, int data,
+	                        int team, int owner, float radius = 128.0f, int eFlags = 0,
+	                        int eFlagsRelevant = 0 );
+	void Propagate( gentity_t *ent );
+	void PropagateAll( void );
+	void RemoveOrphaned( int clientNum );
+	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, qboolean refreshTagged );
+	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent );
+	void UpdateTags( gentity_t *ent );
+	void DetachTags( gentity_t *ent );
+	void DeleteTags( gentity_t *ent );
+}
+
 // g_buildable.c
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
 gentity_t         *G_Reactor( void );
@@ -107,6 +134,15 @@ void              ClientDisconnect( int clientNum );
 void              ClientBegin( int clientNum );
 void              ClientAdminChallenge( int clientNum );
 
+// g_clustering.c
+namespace BaseClustering {
+	void Init();
+	void Update(gentity_t *ent);
+	void Remove(gentity_t *ent);
+	void TagStatusChange(gentity_t *ent);
+	void Debug();
+}
+
 // g_cmds.c
 void              G_StopFollowing( gentity_t *ent );
 void              G_StopFromFollowing( gentity_t *ent );
@@ -124,7 +160,7 @@ void              G_UnEscapeString( const char *in, char *out, int len );
 void              G_SanitiseString( const char *in, char *out, int len );
 void              Cmd_PrivateMessage_f( gentity_t *ent );
 void              Cmd_ListMaps_f( gentity_t *ent );
-void              Cmd_Test_f( gentity_t *ent );
+void              Cmd_Test_f( gentity_t *player );
 void              Cmd_AdminMessage_f( gentity_t *ent );
 int               G_FloodLimited( gentity_t *ent );
 void              G_ListCommands( gentity_t *ent );
@@ -272,6 +308,7 @@ qboolean          G_ClientIsLagging( gclient_t *client );
 void              G_TriggerMenu( int clientNum, dynMenu_t menu );
 void              G_TriggerMenuArgs( int clientNum, dynMenu_t menu, int arg );
 void              G_CloseMenus( int clientNum );
+void              G_ClientnumToMask( int clientNum, int *loMask, int *hiMask );
 void              G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
 void              G_FireThink( gentity_t *self );
 gentity_t         *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
@@ -283,6 +320,7 @@ int               G_Heal( gentity_t *self, int amount );
 bool              G_IsPlayableTeam( team_t team );
 bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
+team_t            G_Enemy( team_t team );
 
 // g_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );

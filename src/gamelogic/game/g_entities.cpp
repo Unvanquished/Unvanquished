@@ -145,15 +145,25 @@ void G_FreeEntity( gentity_t *entity )
 	}
 
 	if ( g_debugEntities.integer > 2 )
+	{
 		G_Printf(S_DEBUG "Freeing Entity %s\n", etos(entity));
+	}
 
 	if ( entity->obstacleHandle )
 	{
 		trap_BotRemoveObstacle( entity->obstacleHandle );
 	}
 
-	if( entity->eclass && entity->eclass->instanceCounter > 0)
+	if( entity->eclass && entity->eclass->instanceCounter > 0 )
+	{
 		entity->eclass->instanceCounter--;
+	}
+
+	if ( entity->s.eType == ET_BUILDABLE )
+	{
+		// It's possible that this happened before, but we need to be sure.
+		BaseClustering::Remove(entity);
+	}
 
 	memset( entity, 0, sizeof( *entity ) );
 	entity->classname = "freent";
@@ -316,6 +326,11 @@ gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, qboolean
 	}
 
 	return NULL;
+}
+
+gentity_t *G_IterateEntities( gentity_t *entity )
+{
+	return G_IterateEntities( entity, NULL, qtrue, 0, NULL );
 }
 
 gentity_t *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname )
@@ -915,7 +930,7 @@ qboolean G_IsVisible( gentity_t *start, gentity_t *end, int contents )
 	trace_t trace;
 
 	trap_Trace( &trace, start->s.pos.trBase, NULL, NULL, end->s.pos.trBase,
-	            start->s.number, contents );
+	            start->s.number, contents, 0 );
 
 	return trace.fraction >= 1.0f || trace.entityNum == end - g_entities;
 }

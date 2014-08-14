@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.29.0"
+#define PRODUCT_VERSION         "0.30.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -163,7 +163,11 @@ typedef int intptr_t;
 
 // vsnprintf is ISO/IEC 9899:1999
 // abstracting this to make it portable
-#ifdef _WIN32
+#ifdef _MSC_VER
+//vsnprintf is non-conformant in MSVC--fails to null-terminate in case of overflow
+#define Q_vsnprintf(dest, size, fmt, args) _vsnprintf_s( dest, size, _TRUNCATE, fmt, args )
+#define Q_snprintf(dest, size, fmt, ...) _snprintf_s( dest, size, _TRUNCATE, fmt, __VA_ARGS__ )
+#elif defined( _WIN32 )
 #define Q_vsnprintf _vsnprintf
 #define Q_snprintf  _snprintf
 #else
@@ -173,7 +177,7 @@ typedef int intptr_t;
 
 // msvc does not have roundf
 #ifdef _MSC_VER
-#define roundf( f ) ( floor( f + 0.5 ) )
+#define roundf( f ) ( floor( (f) + 0.5 ) )
 #endif
 
 #endif //Q3_VM
@@ -231,6 +235,8 @@ typedef int clipHandle_t;
 #define MAX_STRING_CHARS  1024 // max length of a string passed to Cmd_TokenizeString
 #define MAX_STRING_TOKENS 256 // max tokens resulting from Cmd_TokenizeString
 #define MAX_TOKEN_CHARS   1024 // max length of an individual token
+
+#define MAX_ADDR_CHARS    sizeof("[1111:2222:3333:4444:5555:6666:7777:8888]:99999")
 
 #define MAX_INFO_STRING   1024
 #define MAX_INFO_KEY      1024
@@ -725,6 +731,7 @@ void         ByteToDir( int b, vec3_t dir );
 	qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
 	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
 	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
+	float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs );
 
 	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
@@ -857,6 +864,10 @@ void         ByteToDir( int b, vec3_t dir );
 
 	void     RotateAroundDirection( vec3_t axis[ 3 ], float yaw );
 	void     MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
+
+	float    ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const vec2_t dir, const vec2_t bounds[ 2 ] );
+	void     ExponentialFade( float *value, float target, float lambda, float timedelta );
+	#define  LinearRemap(x,an,ap,bn,bp) (((x)-(an))/((ap)-(an))*((bp)-(bn))+(bn))
 
 // perpendicular vector could be replaced by this
 
@@ -1461,11 +1472,16 @@ void         ByteToDir( int b, vec3_t dir );
 		t = _mm_mul_ps( sseSwizzle( q, WWWW ), t );
 		return _mm_add_ps( _mm_add_ps( vec, t2 ), t );
 	}
+	STATIC_INLINE __m128 sseLoadVec3( const vec3_t vec ) {
+		__m128 v = _mm_load_ss( &vec[ 2 ] );
+		v = sseSwizzle( v, YYXY );
+		v = _mm_loadl_pi( v, (__m64 *)vec );
+		return v;
+	}
 	STATIC_INLINE void sseStoreVec3( __m128 in, vec3_t out ) {
-		__m128 old = _mm_loadu_ps( out );
-		old = _mm_or_ps( _mm_and_ps( in, mask_XYZ0() ),
-				 _mm_and_ps( old, mask_000W() ) );
-		_mm_storeu_ps( out, old );
+		_mm_storel_pi( (__m64 *)out, in );
+		__m128 v = sseSwizzle( in, ZZZZ );
+		_mm_store_ss( &out[ 2 ], v );
 	}
 	STATIC_INLINE void TransInit( transform_t *t ) {
 		__m128 u = unitQuat();
@@ -1899,7 +1915,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void       Info_RemoveKey( char *s, const char *key , qboolean big );
 	void       Info_RemoveKey_big( char *s, const char *key );
 	void       Info_SetValueForKey( char *s, const char *key, const char *value , qboolean big );
-	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value );
+	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value, qboolean big );
 	qboolean   Info_Validate( const char *s );
 	void       Info_NextPair( const char **s, char *key, char *value );
 
@@ -2469,6 +2485,8 @@ void         ByteToDir( int b, vec3_t dir );
 		ET_MODELDOOR,
 		ET_LIGHTFLARE,
 		ET_LEV2_ZAP_CHAIN,
+		
+		ET_BEACON,
 
 		ET_EVENTS       // any of the EV_* events can be added freestanding
 		// by setting eType to ET_EVENTS + eventNum

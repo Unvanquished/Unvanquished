@@ -331,7 +331,7 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
       continue;
 
     trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
-                e->r.currentOrigin, e->s.number, e->clipmask );
+                e->r.currentOrigin, e->s.number, e->clipmask, 0 );
 
     if( tr.entityNum != ENTITYNUM_NONE )
       G_Damage( e, ent, activator, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_CRUSH );
@@ -762,6 +762,27 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 
 /*
 ===============
+G_ClientnumToMask
+
+Calculates loMask/hiMask as used by SVF_CLIENTMASK type events to match only the given client.
+===============
+*/
+void G_ClientnumToMask( int clientNum, int *loMask, int *hiMask )
+{
+	*loMask = *hiMask = 0;
+
+	if ( clientNum < 32 )
+	{
+		*loMask |= BIT( clientNum );
+	}
+	else
+	{
+		*hiMask |= BIT( clientNum - 32 );
+	}
+}
+
+/*
+===============
 G_TeamToClientmask
 
 Calculates loMask/hiMask as used by SVF_CLIENTMASK type events to match all clients in a team.
@@ -1000,7 +1021,7 @@ qboolean G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bo
 	}
 
 	trap_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, NULL, NULL, to->s.origin,
-	            from->s.number, mask );
+	            from->s.number, mask, 0 );
 
 	// Also check for fraction in case the mask is chosen so that the trace skips the target entity
 	return ( trace.entityNum == to->s.number || trace.fraction == 1.0f );
@@ -1031,7 +1052,7 @@ qboolean G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 {
 	trace_t trace;
 
-	trap_Trace( &trace, point1, NULL, NULL, point2, ENTITYNUM_NONE, MASK_SOLID );
+	trap_Trace( &trace, point1, NULL, NULL, point2, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }
@@ -1163,5 +1184,15 @@ team_t G_IterateTeams( team_t team )
 	else
 	{
 		return nextTeam;
+	}
+}
+
+team_t G_Enemy( team_t team )
+{
+	switch ( team )
+	{
+		case TEAM_ALIENS: return TEAM_HUMANS;
+		case TEAM_HUMANS: return TEAM_ALIENS;
+		default:          return TEAM_NONE;
 	}
 }

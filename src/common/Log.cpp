@@ -30,14 +30,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Common.h"
 
-// FIXME: Code in common shouldn't depend on framework
-#include "../engine/framework/LogSystem.h"
-
 namespace Log {
 
     Logger::Logger(Str::StringRef name, Level defaultLevel)
-    :filterLevel("logs.logLevel." + name, "Log::Level - filters out the logs from '" + name + "' below the level specified", 0, defaultLevel) {
+    :filterLevel("logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel) {
     }
+
+    void Logger::DoWarnCode(std::function<void()> code) {
+        if (filterLevel.Get() <= LOG_WARNING) {
+            code();
+        }
+    };
+
+    void Logger::DoNoticeCode(std::function<void()> code) {
+        if (filterLevel.Get() <= LOG_NOTICE) {
+            code();
+        }
+    };
+
+    void Logger::DoDebugCode(std::function<void()> code) {
+        if (filterLevel.Get() <= LOG_DEBUG) {
+            code();
+        }
+    };
 
     bool ParseCvarValue(std::string value, Log::Level& result) {
         if (value == "error" or value == "err") {

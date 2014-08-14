@@ -1624,7 +1624,6 @@ void IN_Frame( void )
 	}
 
 	IN_ProcessEvents( dropInput );
-	Rocket_Update();
 
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );

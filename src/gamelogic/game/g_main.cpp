@@ -253,7 +253,6 @@ static cvarTable_t gameCvarTable[] =
 	{ NULL,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, qfalse           },
 	{ &g_dedicated,                   "dedicated",                     "0",                                0,                                               0, qfalse           },
 	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, qfalse           },
-	{ &g_cheats,                      "sv_cheats",                     "",                                 0,                                               0, qfalse           },
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, qfalse           },
 	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                0,                                               0, qfalse           },
 	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, qfalse           },
@@ -689,14 +688,12 @@ void G_MapConfigs( const char *mapname )
 		return;
 	}
 
-	trap_SendConsoleCommand( EXEC_APPEND,
-	                         va( "exec %s/default.cfg\n", Quote( g_mapConfigs.string ) ) );
+	trap_SendConsoleCommand( va( "exec %s/default.cfg\n", Quote( g_mapConfigs.string ) ) );
 
-	trap_SendConsoleCommand( EXEC_APPEND,
-	                         va( "exec %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
+	trap_SendConsoleCommand( va( "exec %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
 
 	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
-	trap_SendConsoleCommand( EXEC_APPEND, "maprestarted\n" );
+	trap_SendConsoleCommand( "maprestarted\n" );
 }
 
 /*
@@ -858,6 +855,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	// add any fake entities
 	G_SpawnFakeEntities();
+
+	BaseClustering::Init();
 
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
@@ -1728,11 +1727,11 @@ void ExitLevel( void )
 	if ( !Q_stricmp( currentMapName, g_nextMap.string ) )
 	{
 		trap_Cvar_Set( "g_layouts", g_nextMapLayouts.string );
-		trap_SendConsoleCommand( EXEC_APPEND, "map_restart" );
+		trap_SendConsoleCommand( "map_restart" );
 	}
 	else if ( G_MapExists( g_nextMap.string ) )
 	{
-		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
+		trap_SendConsoleCommand( va( "map %s %s\n", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
 	}
 	else if ( G_MapRotationActive() )
 	{
@@ -1740,7 +1739,7 @@ void ExitLevel( void )
 	}
 	else
 	{
-		trap_SendConsoleCommand( EXEC_APPEND, "map_restart\n" );
+		trap_SendConsoleCommand( "map_restart\n" );
 	}
 
 	trap_Cvar_Set( "g_nextMap", "" );
@@ -2518,8 +2517,7 @@ void G_ExecuteVote( team_t team )
 {
 	level.team[ team ].voteExecuteTime = 0;
 
-	trap_SendConsoleCommand( EXEC_APPEND, va( "%s\n",
-	                         level.team[ team ].voteString ) );
+	trap_SendConsoleCommand( va( "%s\n", level.team[ team ].voteString ) );
 
 	if ( !Q_stricmp( level.team[ team ].voteString, "map_restart" ) )
 	{
@@ -2925,6 +2923,7 @@ void G_RunFrame( int levelTime )
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );
 	G_UpdateZaps( msec );
+	Beacon::Frame( );
 
 	// log gameplay statistics
 	G_LogGameplayStats( LOG_GAMEPLAY_STATS_BODY );

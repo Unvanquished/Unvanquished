@@ -41,6 +41,7 @@ Maryland 20850 USA.
 
 #include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
 
@@ -496,8 +497,7 @@ void Com_StartupVariable( const char *match )
 		if ( !match || !strcmp( s, match ) )
 		{
 			Cvar_Set( s, line[2].c_str() );
-			cv = Cvar_Get( s, "", 0 );
-			cv->flags |= CVAR_USER_CREATED;
+			cv = Cvar_Get( s, "", CVAR_USER_CREATED );
 			if (cv->flags & CVAR_ROM) {
 				com_consoleLines[i] = 0;
 			}
@@ -654,6 +654,25 @@ Com_GMTime
 int Com_GMTime( qtime_t *qtime )
 {
 	return internalTime( qtime, gmtime );
+}
+
+/*
+==============================================================================
+	Cheating
+==============================================================================
+*/
+
+void SetCheatMode(bool allowed)
+{
+	Cvar::SetCheatsAllowed(allowed);
+}
+
+//The server gives the sv_cheats cvar to the client, on 'off' it prevents the user from changing Cvar::CHEAT cvars
+Cvar::Callback<Cvar::Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in the current game", Cvar::SYSTEMINFO | Cvar::ROM, true, SetCheatMode);
+
+bool Com_AreCheatsAllowed()
+{
+	return cvar_cheats.Get();
 }
 
 /*
@@ -1278,7 +1297,7 @@ EVENT LOOP
 ========================================================================
 */
 
-#define MAX_QUEUED_EVENTS  256
+#define MAX_QUEUED_EVENTS  1024
 #define MASK_QUEUED_EVENTS ( MAX_QUEUED_EVENTS - 1 )
 
 static sysEvent_t eventQueue[ MAX_QUEUED_EVENTS ];

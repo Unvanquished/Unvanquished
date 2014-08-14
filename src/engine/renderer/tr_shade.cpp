@@ -302,7 +302,7 @@ static void DrawTris()
 	GLimp_LogComment( "--- DrawTris ---\n" );
 
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
-	gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
+	gl_genericShader->SetVertexAnimation( tess.vboVertexAnimation );
 
 	gl_genericShader->DisableDeformVertexes();
 	gl_genericShader->DisableTCGenEnvironment();
@@ -461,7 +461,7 @@ static void Render_generic( int stage )
 
 	// choose right shader program ----------------------------------
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
-	gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
+	gl_genericShader->SetVertexAnimation( tess.vboVertexAnimation );
 
 	gl_genericShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 	gl_genericShader->SetTCGenEnvironment( pStage->tcGen_Environment );
@@ -522,7 +522,7 @@ static void Render_generic( int stage )
 	}
 
 	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
+	if ( tess.vboVertexAnimation )
 	{
 		gl_genericShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
@@ -563,7 +563,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
-	gl_vertexLightingShader_DBS_entity->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
+	gl_vertexLightingShader_DBS_entity->SetVertexAnimation( tess.vboVertexAnimation );
 
 	gl_vertexLightingShader_DBS_entity->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
@@ -602,7 +602,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	}
 
 	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
+	if ( tess.vboVertexAnimation )
 	{
 		gl_vertexLightingShader_DBS_entity->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
@@ -1200,7 +1200,7 @@ static void Render_shadowFill( int stage )
 	}
 
 	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
+	if ( tess.vboVertexAnimation )
 	{
 		gl_shadowFillShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
@@ -1347,7 +1347,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	}
 
 	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
+	if ( tess.vboVertexAnimation )
 	{
 		gl_forwardLightingShader_omniXYZ->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
@@ -1543,7 +1543,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	}
 
 	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
+	if ( tess.vboVertexAnimation )
 	{
 		gl_forwardLightingShader_projXYZ->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
@@ -1743,7 +1743,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	}
 
 	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
+	if ( tess.vboVertexAnimation )
 	{
 		gl_forwardLightingShader_directionalSun->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
@@ -1868,7 +1868,7 @@ static void Render_reflection_CB( int stage )
 	}
 
 	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
+	if ( tess.vboVertexAnimation )
 	{
 		gl_reflectionShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
@@ -2045,7 +2045,7 @@ static void Render_heatHaze( int stage )
 		}
 
 		// u_VertexInterpolation
-		if ( glState.vertexAttribsInterpolation > 0 )
+		if ( tess.vboVertexAnimation )
 		{
 			gl_genericShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 		}
@@ -2104,7 +2104,7 @@ static void Render_heatHaze( int stage )
 	}
 
 	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
+	if ( tess.vboVertexAnimation )
 	{
 		gl_heatHazeShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
@@ -2305,7 +2305,7 @@ static void Render_fog()
 	}
 
 	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
+	if ( tess.vboVertexAnimation )
 	{
 		gl_fogQuake3Shader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
@@ -3233,7 +3233,7 @@ void Tess_End()
 		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_INDEXES hit" );
 	}
 
-	if ( tess.xyz[ SHADER_MAX_VERTEXES - 1 ][ 0 ] != 0 )
+	if ( tess.verts[ SHADER_MAX_VERTEXES - 1 ].xyz[ 0 ] != 0.0f )
 	{
 		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_VERTEXES hit" );
 	}
@@ -3263,6 +3263,7 @@ void Tess_End()
 	}
 
 	tess.vboVertexSkinning = qfalse;
+	tess.vboVertexAnimation = qfalse;
 
 	// clear shader so we can tell we don't have any unclosed surfaces
 	tess.multiDrawPrimitives = 0;

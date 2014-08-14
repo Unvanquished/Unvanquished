@@ -245,8 +245,10 @@ ElementDataGrid* ElementDataGridRow::GetParentGrid()
 	return parent_grid;
 }
 
-void ElementDataGridRow::OnDataSourceDestroy(DataSource* ROCKET_UNUSED(_data_source))
+void ElementDataGridRow::OnDataSourceDestroy(DataSource* ROCKET_UNUSED_PARAMETER(data_source))
 {
+	ROCKET_UNUSED(data_source);
+
 	data_source->DetachListener(this);
 	data_source = NULL;
 
@@ -576,7 +578,7 @@ void ElementDataGridRow::LoadChildren(float time_slice)
 			any_dirty_children = true;
 			if (data_query_offset == -1)
 			{
-				data_query_offset = i;
+				data_query_offset = (int)i;
 				data_query_limit = 1;
 			}
 			else

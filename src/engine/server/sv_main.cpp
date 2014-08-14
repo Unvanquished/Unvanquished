@@ -301,6 +301,23 @@ static void SV_ResolveMasterServers( void )
 
 /*
 ================
+SV_NET_Config
+
+Network connections being reconfigured. May need to redo some lookups.
+================
+*/
+void SV_NET_Config()
+{
+	int i;
+
+	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	{
+		challenges[ i ].type = masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
+	}
+}
+
+/*
+================
 SV_MasterHeartbeat
 
 Send a message to the masters every few minutes to
@@ -478,23 +495,22 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	int           statusLength;
 	int           playerLength;
 	char          infostring[ MAX_INFO_STRING ];
-
-	if ( args.Argc() < 2 )
-	{
-		return;
-	}
+	const char    *challenge = nullptr;
 
 	//bani - bugtraq 12534
-	if ( !SV_VerifyChallenge( args.Argv(1).c_str() ) )
+	if ( args.Argc() > 1 && !SV_VerifyChallenge( args.Argv(1).c_str() ) )
 	{
 		return;
 	}
 
 	Q_strncpyz( infostring, Cvar_InfoString( CVAR_SERVERINFO, qfalse ), MAX_INFO_STRING );
 
-	// echo back the parameter to status. so master servers can use it as a challenge
-	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", args.Argv(1).c_str(), qfalse );
+	if ( args.Argc() > 1 )
+	{
+		// echo back the parameter to status. so master servers can use it as a challenge
+		// to prevent timed spoofed reply packets that add ghost servers
+		Info_SetValueForKey( infostring, "challenge", args.Argv(1).c_str(), qfalse );
+	}
 
 	status[ 0 ] = 0;
 	statusLength = 0;
@@ -974,7 +990,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 		}
 
 		// make sure it is a valid, in sequence packet
-		if ( SV_Netchan_Process( cl, msg ) )
+		if ( Netchan_Process( &cl->netchan, msg ) )
 		{
 			// zombie clients still need to do the Netchan_Process
 			// to make sure they don't need to retransmit the final

@@ -73,7 +73,7 @@ public:
 };
 
 /// Constructs a new libRocket element.
-Element::Element(const String& _tag) : absolute_offset(0, 0), relative_offset_base(0, 0), relative_offset_position(0, 0), scroll_offset(0, 0), content_offset(0, 0), content_box(0, 0), boxes(1)
+Element::Element(const String& _tag) : relative_offset_base(0, 0), relative_offset_position(0, 0), absolute_offset(0, 0), scroll_offset(0, 0), boxes(1), content_offset(0, 0), content_box(0, 0)
 {
 	tag = _tag.ToLower();
 	parent = NULL;
@@ -447,8 +447,10 @@ float Element::GetBaseline() const
 }
 
 // Gets the intrinsic dimensions of this element, if it is of a type that has an inherent size.
-bool Element::GetIntrinsicDimensions(Vector2f& ROCKET_UNUSED(dimensions))
+bool Element::GetIntrinsicDimensions(Vector2f& ROCKET_UNUSED_PARAMETER(dimensions))
 {
+	ROCKET_UNUSED(dimensions);
+
 	return false;
 }
 
@@ -783,7 +785,7 @@ float Element::GetClientHeight()
 // Returns the element from which all offset calculations are currently computed.
 Element* Element::GetOffsetParent()
 {
-	return parent;
+	return offset_parent;
 }
 
 // Gets the distance from this element's left border to its offset parent's left border.

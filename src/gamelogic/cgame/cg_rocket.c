@@ -108,6 +108,8 @@ void CG_Rocket_Init( void )
 
 	trap_Rocket_RegisterProperty( "cell-color", "white", qfalse, qfalse, "color" );
 	trap_Rocket_RegisterProperty( "border-width", "0.5", qfalse, qfalse, "number" );
+	trap_Rocket_RegisterProperty( "unlocked-marker-color", "green", qfalse, qfalse, "color" );
+	trap_Rocket_RegisterProperty( "locked-cell-color", "red", qfalse, qfalse, "color" );
 
 	// Load custom rocket pak if necessary
 	if ( *rocket_pak.string )
@@ -348,7 +350,7 @@ void CG_Rocket_LoadHuds( void )
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "human_hud" ) )
+		if ( !Q_stricmp( token, "human.hudgroup" ) )
 		{
 			// Clear old values
 			for ( i = WP_BLASTER; i <= WP_LUCIFER_CANNON; ++i )
@@ -390,7 +392,7 @@ void CG_Rocket_LoadHuds( void )
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "spectator_hud" ) )
+		if ( !Q_stricmp( token, "spectator.hudgroup" ) )
 		{
 			for ( i = WP_NONE; i < WP_NUM_WEAPONS; ++i )
 			{
@@ -426,7 +428,7 @@ void CG_Rocket_LoadHuds( void )
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "alien_hud" ) )
+		if ( !Q_stricmp( token, "alien.hudgroup" ) )
 		{
 			for ( i = WP_ALEVEL0; i <= WP_ALEVEL4; ++i )
 			{
@@ -469,7 +471,7 @@ void CG_Rocket_LoadHuds( void )
 
 		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; ++i )
 		{
-			if ( !Q_stricmp( token, va( "%s_hud", BG_Weapon( i )->name ) ) )
+			if ( !Q_stricmp( token, va( "%s.hudgroup", BG_Weapon( i )->name ) ) )
 			{
 				trap_Rocket_ClearHud( i );
 				while ( 1 )

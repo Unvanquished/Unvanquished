@@ -85,7 +85,7 @@ void Rocket_GetEventParameters( char *params, int length )
 
 		while ( event->Parameters.Iterate( index, key, value ) )
 		{
-			Info_SetValueForKeyRocket( params, key.CString(), value.CString() );
+			Info_SetValueForKeyRocket( params, key.CString(), value.CString(), qtrue );
 		}
 	}
 }

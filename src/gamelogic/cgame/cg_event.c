@@ -618,6 +618,10 @@ void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
 		CG_Rocket_BuildArmouryBuyList( "default" );
 	}
 
+	// Reset weapon inertia data.
+	memset( &cg.weaponInertia, 0, sizeof( cg.weaponInertia ) );
+
+	cg.predictedPlayerEntity.pe.weapon.animationNumber = -1; //force weapon lerpframe recalculation
 }
 
 /*
@@ -655,72 +659,6 @@ void CG_OnMapRestart( void )
 
 	// hide any other menus
 	trap_Rocket_DocumentAction( "", "blurall" );
-}
-
-/*
-=========================
-CG_Level2Zap
-=========================
-*/
-static void CG_Level2Zap( entityState_t *es )
-{
-	int       i;
-	centity_t *source = NULL, *target = NULL;
-
-	if ( es->misc < 0 || es->misc >= MAX_CLIENTS )
-	{
-		return;
-	}
-
-	source = &cg_entities[ es->misc ];
-
-	for ( i = 0; i <= 2; i++ )
-	{
-		switch ( i )
-		{
-			case 0:
-				if ( es->time <= 0 )
-				{
-					continue;
-				}
-
-				target = &cg_entities[ es->time ];
-				break;
-
-			case 1:
-				if ( es->time2 <= 0 )
-				{
-					continue;
-				}
-
-				target = &cg_entities[ es->time2 ];
-				break;
-
-			case 2:
-				if ( es->constantLight <= 0 )
-				{
-					continue;
-				}
-
-				target = &cg_entities[ es->constantLight ];
-				break;
-		}
-
-		if ( !CG_IsTrailSystemValid( &source->level2ZapTS[ i ] ) )
-		{
-			source->level2ZapTS[ i ] = CG_SpawnNewTrailSystem( cgs.media.level2ZapTS );
-		}
-
-		if ( CG_IsTrailSystemValid( &source->level2ZapTS[ i ] ) )
-		{
-			CG_SetAttachmentCent( &source->level2ZapTS[ i ]->frontAttachment, source );
-			CG_SetAttachmentCent( &source->level2ZapTS[ i ]->backAttachment, target );
-			CG_AttachToCent( &source->level2ZapTS[ i ]->frontAttachment );
-			CG_AttachToCent( &source->level2ZapTS[ i ]->backAttachment );
-		}
-	}
-
-	source->level2ZapTime = cg.time;
 }
 
 /*
@@ -1398,10 +1336,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				cg.spawnTime = cg.time;
 			}
 
-			break;
-
-		case EV_LEV2_ZAP:
-			CG_Level2Zap( es );
 			break;
 
 		case EV_HIT:

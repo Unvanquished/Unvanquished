@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /* heatHaze_vp.glsl */
 
 attribute vec3 		attr_Position;
-attribute vec3		attr_Normal;
+attribute vec4		attr_QTangent;
 attribute vec2 		attr_TexCoord0;
 
 attribute vec3 		attr_Position2;
-attribute vec3		attr_Normal2;
+attribute vec4		attr_QTangent2;
 
 uniform float		u_VertexInterpolation;
 
@@ -43,36 +43,41 @@ uniform float		u_DeformMagnitude;
 varying vec2		var_TexNormal;
 varying float		var_Deform;
 
+vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
+	vec3 tmp = 2.0 * cross( quat.xyz, vec );
+	return vec + quat.w * tmp + cross( quat.xyz, tmp );
+}
+
 void	main()
 {
 	vec4            deformVec;
-    float           d1, d2;
+	float           d1, d2;
 
 	vec4 position;
 	vec3 normal;
 
 #if defined(USE_VERTEX_SKINNING)
 
-	VertexSkinning_P_N(	attr_Position, attr_Normal,
-						position, normal);
+	VertexSkinning_P_N(	attr_Position, attr_QTangent,
+				position, normal);
 
 #elif defined(USE_VERTEX_ANIMATION)
 
 	VertexAnimation_P_N(attr_Position, attr_Position2,
-						attr_Normal, attr_Normal2,
-						u_VertexInterpolation,
-						position, normal);
+			    attr_QTangent, attr_QTangent2,
+			    u_VertexInterpolation,
+			    position, normal);
 
 #else
 	position = vec4(attr_Position, 1.0);
-	normal = attr_Normal;
+	normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
 #endif
 
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
-								normal,
-								attr_TexCoord0.st,
-								u_Time);
+					normal,
+					attr_TexCoord0.st,
+					u_Time);
 #endif
 
 	// transform vertex position into homogenous clip-space

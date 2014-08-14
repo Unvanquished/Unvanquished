@@ -282,7 +282,7 @@ static void CG_EntityEffects( centity_t *cent )
 	}
 
 	// constant light glow
-	if ( cent->currentState.constantLight )
+	if ( cent->currentState.constantLight && ( cent->currentState.eType == ET_MOVER || cent->currentState.eType == ET_MODELDOOR ) )
 	{
 		int cl;
 		int i, r, g, b;
@@ -988,7 +988,7 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 		BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, lastOrigin );
 
 		CG_Trace( &tr, lastOrigin, vec3_origin, vec3_origin, cent->lerpOrigin,
-		          cent->currentState.number, MASK_SHOT );
+		          cent->currentState.number, MASK_SHOT, 0 );
 
 		// don't let the projectile go through the floor
 		if ( tr.fraction < 1.0f )
@@ -1033,6 +1033,10 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 
 		case ET_LIGHTFLARE:
 			cent->lfs.hTest = trap_RegisterVisTest();
+			break;
+
+		case ET_BEACON:
+			memset( &cent->beaconPersistent, 0, sizeof( cbeaconPersistent_t ) );
 			break;
 
 		default:
@@ -1156,6 +1160,7 @@ static void CG_AddCEntity( centity_t *cent )
 		case ET_PUSHER:
 		case ET_TELEPORTER:
 		case ET_LOCATION:
+		case ET_BEACON:
 			break;
 
 		case ET_GENERAL:

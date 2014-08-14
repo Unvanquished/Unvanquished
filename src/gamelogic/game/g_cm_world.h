@@ -73,8 +73,9 @@ int G_CM_PointContents( const vec3_t p, int passEntityNum );
 
 // returns the CONTENTS_* value from the world and all entities at the given point.
 
-void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum,
-               int contentmask, traceType_t type );
+void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+                 const vec3_t end, int passEntityNum, int contentmask, int skipmask,
+                 traceType_t type );
 
 // mins and maxs are relative
 

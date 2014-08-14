@@ -478,17 +478,9 @@ void  G_TouchTriggers( gentity_t *ent )
 		}
 
 		// ignore most entities if a spectator
-		if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
+		if ( ent->client->sess.spectatorState != SPECTATOR_NOT && hit->s.eType != ET_TELEPORTER )
 		{
-			if ( hit->s.eType != ET_TELEPORTER &&
-			     // this is ugly but adding a new ET_? type will
-			     // most likely cause network incompatibilities
-			     hit->touch != door_trigger_touch )
-			{
-				//check for manually triggered doors
-				manualTriggerSpectator( hit, ent );
-				continue;
-			}
+			continue;
 		}
 
 		if ( !trap_EntityContact( mins, maxs, hit ) )
@@ -515,7 +507,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	pmove_t   pm;
 	gclient_t *client;
 	int       clientNum;
-	qboolean  attack1, following, queued;
+	qboolean  attack1, following, queued, attackReleased;
 	team_t    team;
 
 	client = ent->client;
@@ -525,6 +517,9 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 
 	attack1 = usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
 	          !usercmdButtonPressed( client->oldbuttons, BUTTON_ATTACK );
+
+	attackReleased = !usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
+		  usercmdButtonPressed( client->oldbuttons, BUTTON_ATTACK );
 
 	//if bot
 	if( ent->r.svFlags & SVF_BOT ) {
@@ -591,7 +586,9 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		{
 			G_StopFollowing( ent );
 		}
-
+	}
+	else if ( attackReleased )
+	{
 		if ( team == TEAM_NONE )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_TEAM );
@@ -605,6 +602,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 			G_TriggerMenu( client->ps.clientNum, MN_H_SPAWN );
 		}
 	}
+
 
 	// We are either not following anyone or following a spectator
 	if ( !following )
@@ -911,6 +909,31 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		if ( client->ps.stats[ STAT_FUEL ] < JETPACK_FUEL_REFUEL )
 		{
 			G_FindFuel( ent );
+		}
+
+		// auto-tagging
+		{
+			gentity_t *other;
+			vec3_t origin, forward, end;
+
+			BG_GetClientViewOrigin( &client->ps, origin );
+			AngleVectors( client->ps.viewangles, forward, NULL, NULL );
+			VectorMA( origin, 65536, forward, end );
+			G_UnlaggedOn( ent, origin, 65536 );
+			other = Beacon::TagTrace( origin, end, ent->s.number, MASK_SHOT, (team_t)client->pers.team, qtrue );
+			G_UnlaggedOff( );
+
+			if( other )
+			{
+				other->tagScore += 100;
+				other->tagScoreTime = level.time;
+				if( other->tagScore > 1000 )
+					Beacon::Tag( other, (team_t)client->pers.team, ent->s.number, qfalse );
+
+				client->ps.stats[ STAT_TAGSCORE ] = other->tagScore;
+			}
+			else
+				client->ps.stats[ STAT_TAGSCORE ] = 0;
 		}
 	}
 
@@ -1511,7 +1534,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
 
 	trap_Trace( &tr, ent->client->oldOrigin, ent->r.mins, ent->r.maxs,
-	            ent->client->ps.origin, ent->s.number,  MASK_PLAYERSOLID );
+	            ent->client->ps.origin, ent->s.number, MASK_PLAYERSOLID, 0 );
 
 	if ( tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS )
 	{
@@ -2005,6 +2028,9 @@ void ClientThink_real( gentity_t *self )
 		BG_PlayerStateToEntityState( &client->ps, &self->s, qtrue );
 	}
 
+	// update attached tags right after evaluating movement
+	Beacon::UpdateTags( self );
+
 	switch ( client->ps.weapon )
 	{
 		case WP_ALEVEL0:
@@ -2108,7 +2134,7 @@ void ClientThink_real( gentity_t *self )
 		// look for object infront of player
 		AngleVectors( client->ps.viewangles, view, NULL, NULL );
 		VectorMA( client->ps.origin, ENTITY_USE_RANGE, view, point );
-		trap_Trace( &trace, client->ps.origin, NULL, NULL, point, self->s.number, MASK_SHOT );
+		trap_Trace( &trace, client->ps.origin, NULL, NULL, point, self->s.number, MASK_SHOT, 0 );
 
 		ent = &g_entities[ trace.entityNum ];
 
