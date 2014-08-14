@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.29.0"
+#define PRODUCT_VERSION         "0.30.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -235,6 +235,8 @@ typedef int clipHandle_t;
 #define MAX_STRING_CHARS  1024 // max length of a string passed to Cmd_TokenizeString
 #define MAX_STRING_TOKENS 256 // max tokens resulting from Cmd_TokenizeString
 #define MAX_TOKEN_CHARS   1024 // max length of an individual token
+
+#define MAX_ADDR_CHARS    sizeof("[1111:2222:3333:4444:5555:6666:7777:8888]:99999")
 
 #define MAX_INFO_STRING   1024
 #define MAX_INFO_KEY      1024
@@ -729,6 +731,7 @@ void         ByteToDir( int b, vec3_t dir );
 	qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
 	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
 	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
+	float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs );
 
 	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
@@ -1589,7 +1592,8 @@ void         ByteToDir( int b, vec3_t dir );
 	}
 	STATIC_INLINE void TransAddTranslation( const vec3_t vec,
 						transform_t *t ) {
-		__m128 v = sseLoadVec3( vec );
+		__m128 v = _mm_loadu_ps( vec );
+		v = _mm_and_ps( v, mask_XYZ0() );
 		t->sseTransScale = _mm_add_ps( t->sseTransScale, v );
 	}
 	STATIC_INLINE void TransCombine( const transform_t *a,

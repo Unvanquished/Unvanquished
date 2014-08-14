@@ -8,7 +8,7 @@
 				height: 28px;
 				<!-- Add a simple image decorator onto the body element. -->
 				cursor-decorator: image;
-				cursor-image: cursor.png 0px 0px 61px 81px;
+				cursor-image: /ui/assets/cursor.png 0px 0px 61px 81px;
 			}
 		</style>
 	</head>

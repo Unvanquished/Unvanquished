@@ -209,7 +209,7 @@ typedef struct pmove_s
 	// these will be different functions during game and cgame
 	/*void    (*trace)( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );*/
 	void ( *trace )( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-	                 const vec3_t end, int passEntityNum, int contentMask );
+	                 const vec3_t end, int passEntityNum, int contentMask, int skipmask );
 
 	int ( *pointcontents )( const vec3_t point, int passEntityNum );
 } pmove_t;
@@ -1361,7 +1361,7 @@ void     BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 void     BG_GetClientViewOrigin( const playerState_t *ps, vec3_t viewOrigin );
 void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t mins, const vec3_t maxs,
                                                void ( *trace )( trace_t *, const vec3_t, const vec3_t,
-                                               const vec3_t, const vec3_t, int, int ),
+                                               const vec3_t, const vec3_t, int, int, int ),
                                                vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
 int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
@@ -1472,6 +1472,7 @@ void     UI_UpdateUnlockables( void );
 #define MASK_WATER       ( CONTENTS_WATER | CONTENTS_LAVA | CONTENTS_SLIME )
 #define MASK_OPAQUE      ( CONTENTS_SOLID | CONTENTS_SLIME | CONTENTS_LAVA )
 #define MASK_SHOT        ( CONTENTS_SOLID | CONTENTS_BODY )
+#define MASK_ENTITY      ( CONTENTS_MOVER )
 
 void     *BG_Alloc( int size );
 void     BG_InitMemory( void );

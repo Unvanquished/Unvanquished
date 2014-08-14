@@ -173,11 +173,11 @@ namespace Clustering {
 				return standardDeviation;
 			}
 
-			iter_type begin() const noexcept {
+			iter_type begin() const NOEXCEPT {
 				return records.begin();
 			}
 
-			iter_type end() const noexcept {
+			iter_type end() const NOEXCEPT {
 				return records.end();
 			}
 
@@ -638,7 +638,7 @@ namespace BaseClustering {
 			// Trace from mean buildable's origin towards cluster center, so that the beacon does
 			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
 			trace_t tr;
-			trap_Trace(&tr, mean->s.origin, NULL, NULL, center.coords, 0, MASK_SOLID);
+			trap_Trace(&tr, mean->s.origin, NULL, NULL, center.coords, 0, MASK_SOLID, 0);
 			Beacon::MoveTowardsRoom(tr.endpos);
 
 			// Prepare beacon flags.

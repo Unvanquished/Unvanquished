@@ -1524,7 +1524,7 @@ void CL_MapLoading( void )
 	{
 		// clear nextmap so the cinematic shutdown doesn't execute it
 		Cvar_Set( "sv_nextmap", "" );
-		CL_Disconnect( qtrue );
+		CL_Disconnect( qfalse );
 		Q_strncpyz( cls.servername, "localhost", sizeof( cls.servername ) );
 		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = CA_CHALLENGING; // so the connect screen is drawn
@@ -1662,6 +1662,11 @@ void CL_Disconnect( qboolean showMainMenu )
 
 	CL_SendDisconnect();
 
+	// allow cheats locally again
+	if (showMainMenu) {
+		Cvar::SetValueForce("sv_cheats", "1");
+	}
+
 	CL_ClearState();
 
 	// wipe the client connection
@@ -1671,9 +1676,6 @@ void CL_Disconnect( qboolean showMainMenu )
 	{
 		CL_ClearStaticDownload();
 	}
-
-	// allow cheats locally
-    Cvar::SetValueForce("sv_cheats", "1");
 
 	// Load map pk3s to allow menus to load levelshots
 	FS::PakPath::ClearPaks();
@@ -3394,7 +3396,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	if ( !CL_Netchan_Process( &clc.netchan, msg ) )
+	if ( !Netchan_Process( &clc.netchan, msg ) )
 	{
 		return; // out of order, duplicated, etc
 	}
@@ -3875,7 +3877,6 @@ qboolean CL_InitRef( )
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
 	ri.Cmd_Argc = Cmd_Argc;
 	ri.Cmd_Argv = Cmd_Argv;
-	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
 	ri.Cmd_QuoteString = Cmd_QuoteString;
 
 	ri.Printf = CL_RefPrintf;
@@ -4053,7 +4054,7 @@ void CL_Init( void )
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
 
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", 0 );  // Arnout: double tap
-	m_pitch = Cvar_Get( "m_pitch", "0.022", 0 );
+	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
 	m_yaw = Cvar_Get( "m_yaw", "0.022", 0 );
 	m_forward = Cvar_Get( "m_forward", "0.25", 0 );
 	m_side = Cvar_Get( "m_side", "0.25", 0 );

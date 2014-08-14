@@ -1053,7 +1053,7 @@ static void G_IssueMapChange( int index, int rotation )
 			trap_Cvar_Set( "g_layouts", map->layouts );
 		}
 
-		trap_SendConsoleCommand( EXEC_APPEND, "map_restart" );
+		trap_SendConsoleCommand( "map_restart" );
 
 
 	}
@@ -1063,11 +1063,11 @@ static void G_IssueMapChange( int index, int rotation )
 		// allow a manually defined g_layouts setting to override the maprotation
 		if ( !g_layouts.string[ 0 ] && map->layouts[ 0 ] )
 		{
-			trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( map->name ), Quote( map->layouts ) ) );
+			trap_SendConsoleCommand( va( "map %s %s\n", Quote( map->name ), Quote( map->layouts ) ) );
 		}
 		else
 		{
-			trap_SendConsoleCommand( EXEC_APPEND, va( "map %s\n", Quote( map->name ) ) );
+			trap_SendConsoleCommand( va( "map %s\n", Quote( map->name ) ) );
 		}
 	}
 
@@ -1076,7 +1076,7 @@ static void G_IssueMapChange( int index, int rotation )
 
 	if ( strlen( map->postCommand ) > 0 )
 	{
-		trap_SendConsoleCommand( EXEC_APPEND, map->postCommand );
+		trap_SendConsoleCommand( map->postCommand );
 	}
 }
 

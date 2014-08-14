@@ -56,10 +56,17 @@ namespace Log {
      * to be filtered by log level by subsystem. They are used like so
      * in a submodule "Foo" in a module "bar"
      *
-     *   static Logger fooLog("bar.foo"); //filters with the default filtering level
+     *   static Logger fooLog("bar.foo"); // filters with the default filtering level
      *
-     *   fooLog.Warn("%s %i", string, int); //"appends" the newline automatically
-     *   fooLog.Debug(<expensive formatting>); //if the log is filtered, no formatting occurs
+     *   fooLog.Warn("%s %i", string, int); // "appends" the newline automatically
+     *   fooLog.Debug(<expensive formatting>); // if the log is filtered, no formatting occurs
+     *
+     *   // However functions calls will still be performed.
+     *   // To run code depending on the logger state use the following:
+     *   fooLog.DoNoticeCode([&](){
+     *       ExpensiveCall();
+     *       fooLog.Notice("Printing the expensive expression %s", <the expression>);
+     *   });
      *
      * In addition the user/developer can control the filtering level with
      *   /set logs.logLevel.foo.bar {error, warning, info, debug}
@@ -81,6 +88,10 @@ namespace Log {
             template<typename ... Args>
             void Debug(Str::StringRef format, Args&& ... args);
 
+            void DoWarnCode(std::function<void()> code);
+            void DoNoticeCode(std::function<void()> code);
+            void DoDebugCode(std::function<void()> code);
+
         private:
             // the cvar logs.logLevel.<name>
             Cvar::Cvar<Level> filterLevel;
@@ -89,8 +100,8 @@ namespace Log {
     /*
      * When debugging a function or before a logger is introduced for
      * a module the following functions can be used for less typing.
-     * However it shouldn't stay in production code because it will
-     * cannot be filtered and will spoil the console.
+     * However it shouldn't stay in production code because it
+     * cannot be filtered and will clutter the console.
      */
 
     template<typename ... Args>
@@ -143,6 +154,10 @@ namespace Log {
     void CodeSourceWarn(std::string message);
     void CodeSourceNotice(std::string message);
     void CodeSourceDebug(std::string message);
+
+    // Engine calls available everywhere
+
+    void Dispatch(Log::Event event, int targetControl);
 
     // Implementation of templates
 

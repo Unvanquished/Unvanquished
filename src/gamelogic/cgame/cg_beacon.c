@@ -35,7 +35,7 @@ CG_LoadBeaconsConfig
 void CG_LoadBeaconsConfig( void )
 {
 	beaconsConfig_t  *bc = &cgs.bc;
-	const char       *path = "ui/in-game/beacons.cfg";
+	const char       *path = "ui/beacons.cfg";
 	int              vw, vh, base, fd;
 	pc_token_t       token;
 
@@ -285,7 +285,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 		else if( time_in >= BEACON_TIMER_TIME )
 		{
 			t = (float)( time_in - BEACON_TIMER_TIME ) / cgs.bc.fadeIn;
-			
+
 			if( !b->s->eventFired )
 			{
 				trap_S_StartLocalSound( cgs.media.timerBeaconExpiredSound, CHAN_LOCAL_SOUND );
@@ -303,7 +303,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 	{
 		trace_t tr;
 
-		CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, b->s->origin, ENTITYNUM_NONE, CONTENTS_SOLID );
+		CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, b->s->origin, ENTITYNUM_NONE, CONTENTS_SOLID, 0 );
 
 		target = ( ( tr.fraction > 1.0f - FLT_EPSILON ) ? 1.0 : 0.0 );
 		CG_ExponentialFade( &b->s->t_occlusion, target, 10 );
@@ -467,7 +467,7 @@ static void CG_AddImplicitBeacon( cbeaconPersistent_t *bp, beaconType_t type )
 			return;
 		}
 	}
-	
+
 	if ( bp->etime && bp->etime <= cg.time ) // expired
 	{
 		memset( bp, 0, sizeof( cbeaconPersistent_t ) );
@@ -534,7 +534,7 @@ static void CG_ListImplicitBeacons( )
 			}*/
 		}
 		else
-			entityNum = CG_NearestBuildable( BA_H_MEDISTAT, 0, 0, bp_health.origin );		
+			entityNum = CG_NearestBuildable( BA_H_MEDISTAT, 0, 0, bp_health.origin );
 
 		if ( entityNum != ENTITYNUM_NONE )
 		{
@@ -760,7 +760,7 @@ const char *CG_BeaconText( const cbeacon_t *b )
 
 	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
 		return "";
-	
+
 	if ( b->type == BCT_TAG )
 	{
 		if ( b->flags & EF_BC_TAG_PLAYER )

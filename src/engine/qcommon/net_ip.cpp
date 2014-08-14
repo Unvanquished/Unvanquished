@@ -35,6 +35,10 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
+#ifdef BUILD_SERVER
+#include "../server/server.h"
+#endif
+
 #ifdef _WIN32
 #       include <winsock2.h>
 #       include <ws2tcpip.h>
@@ -1968,6 +1972,9 @@ void NET_Config( qboolean enableNetworking )
 		{
 			NET_OpenIP();
 			NET_SetMulticast6();
+#ifdef BUILD_SERVER
+			SV_NET_Config();
+#endif
 		}
 	}
 }

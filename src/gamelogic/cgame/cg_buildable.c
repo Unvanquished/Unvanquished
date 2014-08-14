@@ -232,7 +232,8 @@ static void CG_Creep( centity_t *cent )
 	VectorScale( temp, -attr->creepSize, temp );
 	VectorAdd( temp, cent->lerpOrigin, temp );
 
-	CG_Trace( &tr, cent->lerpOrigin, NULL, NULL, temp, cent->currentState.number, MASK_PLAYERSOLID );
+	CG_Trace( &tr, cent->lerpOrigin, NULL, NULL, temp, cent->currentState.number,
+	          MASK_PLAYERSOLID, 0 );
 
 	if ( size > 0.0f && tr.fraction < 1.0f )
 	{
@@ -1044,8 +1045,7 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
 
 	VectorMA( inOrigin, -TRACE_DEPTH, normal, end );
 
-	CG_CapTrace( &tr, inOrigin, mins, maxs, end, skipNumber,
-	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
+	CG_CapTrace( &tr, inOrigin, mins, maxs, end, skipNumber, MASK_DEADSOLID, 0 );
 
 	fraction = tr.fraction;
 	if ( tr.startsolid )
@@ -1720,7 +1720,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		// look through up to 3 players and/or transparent buildables
 		for ( i = 0; i < 3; i++ )
 		{
-			CG_Trace( &tr, trOrigin, NULL, NULL, origin, entNum, MASK_SHOT );
+			CG_Trace( &tr, trOrigin, NULL, NULL, origin, entNum, MASK_SHOT, 0 );
 
 			if ( tr.entityNum == cent->currentState.number )
 			{
