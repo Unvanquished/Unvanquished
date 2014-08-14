@@ -1,0 +1,7 @@
+I AM A DUMMY FILE
+
+I'm working around a font/filesystem bug where an old Roboto Thin  (found in the alpha 0.25 package) overrides the normal Roboto font.  I do this by camping on it's filename (roboto.ttf) so it cannot load.
+
+Veyrdite, 2014-07-31
+
+(This is a bad hack)

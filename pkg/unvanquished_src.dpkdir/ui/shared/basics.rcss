@@ -1,4 +1,4 @@
-/* Basic UI features and colour selection 
+/* Basic UI features and colour selection
  *
  * NB UI colours are chosen elsewhere to.  Test after changes to see :)
  */
@@ -6,8 +6,8 @@
 /* #### Basic text elements #### */
 body {
 
-	/* Global font defaults */
-	font-family: Dejavu Sans;
+	/* Global font default size */
+	font-family: Roboto;
 	font-size: 16px;
 	color: #999999;
 }
@@ -26,6 +26,7 @@ p.example {
 h1 {
 	display: block;
 	font-size: 25px;
+	font-family: Dejavu Sans;
 	font-weight: bold;
 	text-align: right;
 	color: #666666;
@@ -43,6 +44,7 @@ h2 {
 h3 {
 	display: block;
 	color:white;
+	height: 1.5em; /* Same as input boxes */
 }
 
 indent {
@@ -55,7 +57,7 @@ indent {
 /* Inline */
 ilink {
 	color:#136D67;   /* Dark cyan */
-	
+
 	tab-index: auto;
 
 }
@@ -66,8 +68,8 @@ ilink:hover{
 /* Block-style link, used in main menu */
 blocklink {
 	display: block;
-	
-	color:#999999;	
+
+	color:#999999;
 	tab-index: auto;
 
 }
@@ -75,13 +77,13 @@ blocklink:hover{
 	color:white;
 }
 blocklink.fake:hover{
-	color:#999999;	
+	color:#999999;
 }
 
 
 /* ##### Scroll-bars #### */
 scrollbarvertical{
-	
+
 	width: 15px;
 	margin-right: -15px;
 	background-color: rgba(0,0,0,0);
@@ -89,12 +91,12 @@ scrollbarvertical{
 
 scrollbarvertical sliderbar{
 	background-color: #136D6788;   /* Dark cyan */
-	
+
 }
 
 scrollbarvertical sliderbar:hover{
 	background-color: #00F8FF44;   /* Bright cyan */
-	
+
 }
 
 /* #### Useful classes #### */
