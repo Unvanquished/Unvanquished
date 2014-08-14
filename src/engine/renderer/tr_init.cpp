@@ -1033,12 +1033,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		if ( glConfig.hardwareType == GLHW_ATI_DX10 )
 		{
 			ri.Printf( PRINT_DEVELOPER, "Using ATI DirectX 10 hardware features\n" );
-
-			if ( glConfig.driverType == GLDRV_MESA )
-			{
-				ri.Printf( PRINT_DEVELOPER, "^3Not using GPU vertex skinning: known to be broken with Radeon HD and Mesa\n" );
-				glConfig2.vboVertexSkinningAvailable = qfalse;
-			}
 		}
 
 		if ( glConfig.hardwareType == GLHW_NV_DX10 )
@@ -1396,9 +1390,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		Com_Memset( &backEnd, 0, sizeof( backEnd ) );
 		Com_Memset( &tess, 0, sizeof( tess ) );
 
-		if ( ( intptr_t ) tess.xyz & 15 )
+		if ( ( intptr_t ) tess.verts & 15 )
 		{
-			Com_DPrintf( "WARNING: tess.xyz not 16 byte aligned\n" );
+			Com_DPrintf( "WARNING: tess.verts not 16 byte aligned\n" );
 		}
 
 		// init function tables

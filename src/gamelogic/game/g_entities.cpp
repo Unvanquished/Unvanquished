@@ -930,7 +930,7 @@ qboolean G_IsVisible( gentity_t *start, gentity_t *end, int contents )
 	trace_t trace;
 
 	trap_Trace( &trace, start->s.pos.trBase, NULL, NULL, end->s.pos.trBase,
-	            start->s.number, contents );
+	            start->s.number, contents, 0 );
 
 	return trace.fraction >= 1.0f || trace.entityNum == end - g_entities;
 }

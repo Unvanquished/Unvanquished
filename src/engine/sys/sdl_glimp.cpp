@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sdl_icon.h"
 #include "SDL_syswm.h"
 #include "sdl2_compat.h"
+#include "../framework/CommandSystem.h"
 
 SDL_Window         *window = NULL;
 static SDL_GLContext glContext = NULL;
@@ -1140,6 +1141,7 @@ static void GLimp_InitExtensions( void )
 	// VAO and VBO
 	//REQUIRE_EXTENSION( ARB_vertex_array_object );
 	REQUIRE_EXTENSION( ARB_vertex_buffer_object );
+	REQUIRE_EXTENSION( ARB_half_float_vertex );
 
 	// FBO
 	glConfig2.framebufferObjectAvailable = qfalse;
@@ -1530,7 +1532,7 @@ void GLimp_HandleCvars( void )
 
 			if ( sdlToggled < 0 )
 			{
-				ri.Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
+				Cmd::BufferCommandText("vid_restart");
 			}
 
 			ri.IN_Restart();

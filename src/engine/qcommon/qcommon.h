@@ -692,6 +692,7 @@ qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clie
 
 void       Com_StartupVariable( const char *match );
 void       Com_SetRecommended( void );
+bool       Com_AreCheatsAllowed();
 
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise

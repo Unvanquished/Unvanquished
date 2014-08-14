@@ -52,16 +52,16 @@ circlemenu
 	vertical-align: middle;
 	text-align:center;
 	icon-decorator: image;
-	icon-image: /ui/assets/circle.png;
+	icon-image: /ui/assets/circlemenu/circle.png;
 }
 .circlemenu button:hover, .circlemenu button:active, .circlemenu button:focus{
-	icon-image: /ui/assets/circle-hover.png;
+	icon-image: /ui/assets/circlemenu/circle-hover.png;
 
 }
 
 .circlemenu button.disabled, .circlemenu button.disabled:hover,
 .circlemenu button.disabled:active, .circlemenu button.disabled:focus{
-	icon-image: /ui/assets/circle.png;
+	icon-image: /ui/assets/circlemenu/circle.png;
 	icon-color-multiplier: rgb(12,12,12);
 }
 
