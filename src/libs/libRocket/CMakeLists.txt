@@ -525,10 +525,11 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
 
 find_package( Freetype REQUIRED )
+find_package( Lua REQUIRED )
 
-include_directories( ${ROCKET_DIR}/Include ${FREETYPE_INCLUDE_DIRS} )
+include_directories( ${ROCKET_DIR}/Include ${FREETYPE_INCLUDE_DIRS} ${LUA_INCLUDE_DIR} )
 add_library( ROCKET_LIB STATIC ${Core_HDR_FILES} ${Core_PUB_HDR_FILES} ${Core_SRC_FILES} ${Controls_HDR_FILES} ${Controls_PUB_HDR_FILES} ${Controls_SRC_FILES}
 	${Debugger_HDR_FILES} ${Debugger_PUB_HDR_FILES} ${Debugger_SRC_FILES}
-	${LuaCore_HDR_FILES} ${LuaCore_PUB_HDR_FILES} ${LuaCore_SRC_FILES} ${LuaControls_HDR_FILES} ${LuaCore_PUB_HDR_FILES} ${LuaCore_SRC_FILES} )
+	${LuaCore_HDR_FILES} ${LuaCore_PUB_HDR_FILES} ${LuaCore_SRC_FILES} ${LuaControls_HDR_FILES} ${LuaCore_PUB_HDR_FILES} ${LuaControls_SRC_FILES} )
 
 set_property( TARGET ROCKET_LIB PROPERTY COMPILE_DEFINITIONS STATIC_LIB )

@@ -46,6 +46,8 @@ Maryland 20850 USA.
 #include <Rocket/Core/SystemInterface.h>
 #include <Rocket/Core/RenderInterface.h>
 #include <Rocket/Controls.h>
+#include <Rocket/Core/Lua/Interpreter.h>
+#include <Rocket/Controls/Lua/Controls.h>
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
 #include "rocketEventInstancer.h"
@@ -335,6 +337,10 @@ void Rocket_RocketDebug_f( void )
 	}
 }
 
+void Rocket_Lua_f( void )
+{
+	Rocket::Core::Lua::Interpreter::DoString( Cmd_Argv( 1 ), "commandline" );
+}
 
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
@@ -362,7 +368,12 @@ void Rocket_Init( void )
 		return;
 	}
 
+	// Initialize the controls plugin
 	Rocket::Controls::Initialise();
+
+	// Initialize Lua
+	Rocket::Core::Lua::Interpreter::Initialise();
+	Rocket::Controls::Lua::RegisterTypes(Rocket::Core::Lua::Interpreter::GetLuaState());
 
 	// Set backup font
 	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
@@ -414,7 +425,7 @@ void Rocket_Init( void )
 	Rocket::Core::Factory::RegisterElementInstancer( "datasource", new Rocket::Core::ElementInstancerGeneric< RocketDataSource >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "circlemenu", new Rocket::Core::ElementInstancerGeneric< RocketCircleMenu >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "keybind", new Rocket::Core::ElementInstancerGeneric< RocketKeyBinder >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
+// 	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "chatfield", new Rocket::Core::ElementInstancerGeneric< RocketChatField >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "misc_text", new Rocket::Core::ElementInstancerGeneric< RocketMiscText >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "input", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlInput >() )->RemoveReference();
@@ -426,6 +437,7 @@ void Rocket_Init( void )
 
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
+	Cmd_AddCommand( "lua", Rocket_Lua_f );
 
 	cg_draw2D = Cvar_Get( "cg_draw2D", "1", 0 );
 	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );

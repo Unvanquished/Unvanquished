@@ -1267,19 +1267,19 @@ endif()
 mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR MINGW32_LIBRARY )
 mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
 
-# Lua
-if( BUILD_CLIENT )
-  find_package( Lua REQUIRED )
-  include_directories( ${LUA_INCLUDE_DIR} )
-  set( LIBS_CLIENT ${LIBS_CLIENT} ${LUA_LIBRARIES} )
-endif()
-
 # libRocket
 if( BUILD_CLIENT )
   include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
   add_subdirectory( ${ROCKET_DIR} )
   add_definitions( -DSTATIC_LIB )
   set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
+endif()
+
+# Lua
+if( BUILD_CLIENT )
+  find_package( Lua REQUIRED )
+  include_directories( ${LUA_INCLUDE_DIR} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${LUA_LIBRARIES} )
 endif()
 
 # zlib
