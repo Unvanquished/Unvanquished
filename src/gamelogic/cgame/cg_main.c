@@ -1460,8 +1460,6 @@ static void CG_RegisterGraphics( void )
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
 
 	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacons/arrow", RSF_DEFAULT );
-	cgs.media.beaconLongArrow = trap_R_RegisterShader( "gfx/2d/beacons/longarrow", RSF_DEFAULT );
-	cgs.media.beaconLongArrowDot = trap_R_RegisterShader( "gfx/2d/beacons/longarrowdot", RSF_DEFAULT );
 	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacons/no-target", RSF_DEFAULT );
 	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacons/tagscore", RSF_DEFAULT );
 

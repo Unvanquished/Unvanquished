@@ -554,18 +554,18 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 	vec4_t color;
 
 	size *= b->scale;
-	
-	CG_WorldToMinimap( b->s->origin, offset );
+
+	CG_WorldToMinimap( b->origin, offset );
 	pos2d[ 0 ] = - size/2 + offset[ 0 ];
 	pos2d[ 1 ] = - size/2 + offset[ 1 ];
-	
+
 	if( pos2d[ 0 ] < bounds[ 0 ][ 0 ] ||
-			pos2d[ 0 ] > bounds[ 1 ][ 0 ] ||
-			pos2d[ 1 ] < bounds[ 0 ][ 1 ] ||
-			pos2d[ 1 ] > bounds[ 1 ][ 1 ] )
+	    pos2d[ 0 ] > bounds[ 1 ][ 0 ] ||
+	    pos2d[ 1 ] < bounds[ 0 ][ 1 ] ||
+	    pos2d[ 1 ] > bounds[ 1 ][ 1 ] )
 	{
 		clamped = qtrue;
-		
+
 		Vector2Subtract( pos2d, center, dir );
 		ProjectPointOntoRectangleOutwards( pos2d, center, dir, bounds );
 	}
@@ -582,12 +582,12 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 		                       pos2d[ 1 ] - size/2 * 0.3,
 		                       size * 1.3, size * 1.3,
 		                       0, 0, 1, 1,
-		                       cgs.media.beaconNoTarget );	
+		                       cgs.media.beaconNoTarget );
 	if( clamped )
 		trap_R_DrawRotatedPic( pos2d[ 0 ] - size * 0.25,
-		                       pos2d[ 1 ] - size * 0.25, 
+		                       pos2d[ 1 ] - size * 0.25,
 		                       size * 1.5, size * 1.5,
-		                       0.0, 0.0, 1.0, 1.0, 
+		                       0.0, 0.0, 1.0, 1.0,
 		                       cgs.media.beaconIconArrow,
 		                       270.0 - atan2( dir[ 1 ], dir[ 0 ] ) * 180 / M_PI );
 }
@@ -616,8 +616,8 @@ static void CG_MinimapDrawBeacons( const minimap_t* m, const rectDef_t *rect )
   center[ 0 ] = rect->x + rect->w / 2.0f;
   center[ 1 ] = rect->y + rect->h / 2.0f;
 
-	for ( i = 0; i < cg.num_beacons; i++ )
-		CG_MinimapDrawBeacon( cg.beacons + i, size, center, (const vec2_t*)bounds );
+	for ( i = 0; i < cg.beaconCount; i++ )
+		CG_MinimapDrawBeacon( cg.beacons[ i ], size, center, (const vec2_t*)bounds );
 }
 
 //Entry points in the minimap code
