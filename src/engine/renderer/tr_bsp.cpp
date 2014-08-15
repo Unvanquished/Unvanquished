@@ -3785,9 +3785,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 		{
 			out->volumeIBO = volumeIBO;
 		}
-
-		out->volumeVerts = tess.numVertexes;
-		out->volumeIndexes = tess.numIndexes;
 	}
 
 //I'm unsure if Hunk_FreeTempMemory can handle NULL values.
@@ -4903,13 +4900,6 @@ static void R_RecursivePrecacheInteractionNode( bspNode_t *node, trRefLight_t *l
 
 	do
 	{
-		// light already hit node
-		if ( node->lightCount == s_lightCount )
-		{
-			return;
-		}
-
-		node->lightCount = s_lightCount;
 
 		if ( node->contents != -1 )
 		{

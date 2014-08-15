@@ -5260,8 +5260,8 @@ static void RB_RenderDebugUtils()
 				GL_VertexAttribsState( ATTR_POSITION );
 
 				tess.multiDrawPrimitives = 0;
-				tess.numVertexes = node->volumeVerts;
-				tess.numIndexes = node->volumeIndexes;
+				tess.numVertexes = node->volumeVBO->vertexesNum;
+				tess.numIndexes = node->volumeIBO->indexesNum;
 
 				Tess_DrawElements();
 

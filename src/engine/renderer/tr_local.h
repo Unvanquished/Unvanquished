@@ -1927,7 +1927,7 @@ static inline float halfToFloat( int16_t in ) {
 		// common with leaf and node
 		int              contents; // -1 for nodes, to differentiate from leafs
 		int              visCounts[ MAX_VISCOUNTS ]; // node needs to be traversed if current
-		int              lightCount;
+
 		vec3_t           mins, maxs; // for bounding box culling
 		vec3_t           surfMins, surfMaxs; // ydnar: bounding box including surfaces
 		vec3_t           origin; // center of the bounding box
@@ -1945,8 +1945,6 @@ static inline float halfToFloat( int16_t in ) {
 
 		VBO_t            *volumeVBO;
 		IBO_t            *volumeIBO;
-		int              volumeVerts;
-		int              volumeIndexes;
 
 		uint32_t occlusionQueryObjects[ MAX_VIEWS ];
 		int      occlusionQuerySamples[ MAX_VIEWS ]; // visible fragment count

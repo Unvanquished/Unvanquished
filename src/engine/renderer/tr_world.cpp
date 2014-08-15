@@ -591,14 +591,6 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 			interactionBits &= ~IA_LIGHT;
 		}
 
-		// light already hit node
-		if ( node->lightCount == tr.lightCount )
-		{
-			return;
-		}
-
-		node->lightCount = tr.lightCount;
-
 		// if the bounding volume is outside the frustum, nothing
 		// inside can be visible OPTIMIZE: don't do this all the way to leafs?
 
@@ -1074,8 +1066,8 @@ static void DrawNode_r( bspNode_t *node, int planeBits )
 
 			GL_VertexAttribsState( ATTR_POSITION );
 
-			tess.numVertexes = node->volumeVerts;
-			tess.numIndexes = node->volumeIndexes;
+			tess.numVertexes = node->volumeVBO->vertexesNum;
+			tess.numIndexes = node->volumeIBO->indexesNum;
 
 			Tess_DrawElements();
 
@@ -1138,8 +1130,8 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 
 	GL_VertexAttribsState( ATTR_POSITION );
 
-	tess.numVertexes = node->volumeVerts;
-	tess.numIndexes = node->volumeIndexes;
+	tess.numVertexes = node->volumeVBO->vertexesNum;
+	tess.numIndexes = node->volumeIBO->indexesNum;
 
 	Tess_DrawElements();
 
@@ -1216,8 +1208,8 @@ static void IssueMultiOcclusionQueries( link_t *multiQueue, link_t *individualQu
 		GL_VertexAttribsState( ATTR_POSITION );
 
 		tess.multiDrawPrimitives = 0;
-		tess.numVertexes = node->volumeVerts;
-		tess.numIndexes = node->volumeIndexes;
+		tess.numVertexes = node->volumeVBO->vertexesNum;
+		tess.numIndexes = node->volumeIBO->indexesNum;
 
 		Tess_DrawElements();
 
@@ -1346,8 +1338,8 @@ static void TraverseNode( link_t *distanceQueue, bspNode_t *node )
 
 			GL_VertexAttribsState( ATTR_POSITION );
 
-			tess.numVertexes = node->volumeVerts;
-			tess.numIndexes = node->volumeIndexes;
+			tess.numVertexes = node->volumeVBO->vertexesNum;
+			tess.numIndexes = node->volumeIBO->indexesNum;
 
 			Tess_DrawElements();
 
