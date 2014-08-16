@@ -2927,15 +2927,25 @@ static int LeafSurfaceCompare( const void *a, const void *b )
 		return 1;
 	}
 
-	if ( aa->viewCount < bb->viewCount )
+	// sort by leaf
+	if ( aa->interactionBits < bb->interactionBits )
 	{
 		return -1;
 	}
-	else if ( aa->viewCount > bb->viewCount )
+	else if ( aa->interactionBits > bb->interactionBits )
 	{
 		return 1;
 	}
 
+	// sort by leaf marksurfaces index
+	if ( aa->lightCount < bb->lightCount )
+	{
+		return -1;
+	}
+	else if ( aa->lightCount > bb->lightCount )
+	{
+		return 1;
+	}
 	return 0;
 }
 
@@ -3011,80 +3021,87 @@ static void R_CreateWorldVBO( void )
 	for ( i = 0, surface = s_worldData.surfaces; i < s_worldData.numSurfaces; i++, surface++ )
 	{
 		surface->viewCount = -1;
+		surface->lightCount = -1;
+		surface->interactionBits = 0;
 	}
 
-	if ( r_mergeLeafSurfaces->integer )
+	// mark matching surfaces
+	for ( i = 0; i < s_worldData.numnodes - s_worldData.numDecisionNodes; i++ )
 	{
-		// mark matching surfaces
-		for ( i = 0; i < s_worldData.numnodes - s_worldData.numDecisionNodes; i++ )
+		bspNode_t *leaf = s_worldData.nodes + s_worldData.numDecisionNodes + i;
+
+		for ( j = 0; j < leaf->numMarkSurfaces; j++ )
 		{
-			bspNode_t *leaf = s_worldData.nodes + s_worldData.numDecisionNodes + i;
+			bspSurface_t *surf1;
+			shader_t *shader1;
+			int fogIndex1;
+			int lightMapNum1;
+			qboolean merged = qfalse;
+			surf1 = leaf->markSurfaces[ j ];
 
-			for ( j = 0; j < leaf->numMarkSurfaces; j++ )
+			if ( surf1->viewCount != -1 )
 			{
-				bspSurface_t *surf1;
-				shader_t *shader1;
-				int fogIndex1;
-				int lightMapNum1;
-				qboolean merged = qfalse;
-				surf1 = leaf->markSurfaces[ j ];
+				continue;
+			}
 
-				if ( surf1->viewCount != -1 )
+			if ( *surf1->data != SF_GRID && *surf1->data != SF_TRIANGLES && *surf1->data != SF_FACE )
+			{
+				continue;
+			}
+
+			shader1 = surf1->shader;
+
+			if ( shader1->isSky || shader1->isPortal || ShaderRequiresCPUDeforms( shader1 ) )
+			{
+				continue;
+			}
+
+			fogIndex1 = surf1->fogIndex;
+			lightMapNum1 = surf1->lightmapNum;
+			surf1->viewCount = surf1 - s_worldData.surfaces;
+			surf1->lightCount = j;
+			surf1->interactionBits = i;
+
+			for ( k = j + 1; k < leaf->numMarkSurfaces; k++ )
+			{
+				bspSurface_t *surf2;
+				shader_t *shader2;
+				int fogIndex2;
+				int lightMapNum2;
+
+				surf2 = leaf->markSurfaces[ k ];
+
+				if ( surf2->viewCount != -1 )
 				{
 					continue;
 				}
 
-				if ( *surf1->data != SF_GRID && *surf1->data != SF_TRIANGLES && *surf1->data != SF_FACE )
+				if ( *surf2->data != SF_GRID && *surf2->data != SF_TRIANGLES && *surf2->data != SF_FACE )
 				{
 					continue;
 				}
 
-				shader1 = surf1->shader;
-
-				if ( shader1->isSky || shader1->isPortal || ShaderRequiresCPUDeforms( shader1 ) )
+				shader2 = surf2->shader;
+				fogIndex2 = surf2->fogIndex;
+				lightMapNum2 = surf2->lightmapNum;
+				if ( shader1 != shader2 || fogIndex1 != fogIndex2 || lightMapNum1 != lightMapNum2 )
 				{
 					continue;
 				}
 
-				fogIndex1 = surf1->fogIndex;
-				lightMapNum1 = surf1->lightmapNum;
-				surf1->viewCount = surf1 - s_worldData.surfaces;
+				surf2->viewCount = surf1->viewCount;
+				surf2->lightCount = k;
+				surf2->interactionBits = i;
+				merged = qtrue;
+			}
 
-				for ( k = j + 1; k < leaf->numMarkSurfaces; k++ )
-				{
-					bspSurface_t *surf2;
-					shader_t *shader2;
-					int fogIndex2;
-					int lightMapNum2;
-
-					surf2 = leaf->markSurfaces[ k ];
-
-					if ( surf2->viewCount != -1 )
-					{
-						continue;
-					}
-
-					if ( *surf2->data != SF_GRID && *surf2->data != SF_TRIANGLES && *surf2->data != SF_FACE )
-					{
-						continue;
-					}
-
-					shader2 = surf2->shader;
-					fogIndex2 = surf2->fogIndex;
-					lightMapNum2 = surf2->lightmapNum;
-					if ( shader1 != shader2 || fogIndex1 != fogIndex2 || lightMapNum1 != lightMapNum2 )
-					{
-						continue;
-					}
-
-					surf2->viewCount = surf1->viewCount;
-					merged = qtrue;
-				}
-
-				if ( !merged )
-				{
-					surf1->viewCount = -1;
-				}
+			if ( !merged )
+			{
+				surf1->viewCount = -1;
+				surf1->lightCount = -1;
+				// don't clear the leaf number so 
+				// surfaces that arn't merged are placed
+				// closer to other leafs in the vbo
 			}
 		}
 	}
@@ -3403,7 +3420,10 @@ static void R_CreateWorldVBO( void )
 			srf->ibo = s_worldData.ibo;
 		}
 
+		// clear data used for sorting
 		surface->viewCount = -1;
+		surface->lightCount = -1;
+		surface->interactionBits = 0;
 	}
 
 	ri.Hunk_FreeTempMemory( surfaces );
