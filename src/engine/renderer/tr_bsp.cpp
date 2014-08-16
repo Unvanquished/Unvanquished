@@ -3037,7 +3037,7 @@ static void R_CreateWorldVBO( void )
 			int fogIndex1;
 			int lightMapNum1;
 			qboolean merged = qfalse;
-			surf1 = tr.world->markSurfaces[ leaf->firstMarkSurface + j ];
+			surf1 = s_worldData.markSurfaces[ leaf->firstMarkSurface + j ];
 
 			if ( surf1->viewCount != -1 )
 			{
@@ -3069,7 +3069,7 @@ static void R_CreateWorldVBO( void )
 				int fogIndex2;
 				int lightMapNum2;
 
-				surf2 = tr.world->markSurfaces[ leaf->firstMarkSurface + k ];
+				surf2 = s_worldData.markSurfaces[ leaf->firstMarkSurface + k ];
 
 				if ( surf2->viewCount != -1 )
 				{
@@ -4856,7 +4856,7 @@ static void R_RecursivePrecacheInteractionNode( bspNode_t *node, trRefLight_t *l
 		vec3_t       worldBounds[ 2 ];
 
 		// add the individual surfaces
-		mark = tr.world->markSurfaces + node->firstMarkSurface;
+		mark = s_worldData.markSurfaces + node->firstMarkSurface;
 		c = node->numMarkSurfaces;
 
 		while ( c-- )
