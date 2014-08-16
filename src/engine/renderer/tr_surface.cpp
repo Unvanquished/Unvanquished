@@ -166,10 +166,45 @@ static qboolean Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIn
 
 	Tess_CheckVBOAndIBO( vbo, ibo );
 
-	tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ( glIndex_t * ) BUFFER_OFFSET( firstIndex * sizeof( glIndex_t ) );
-	tess.multiDrawCounts[ tess.multiDrawPrimitives ] = numIndexes;
+	//lazy merge multidraws together
+	bool mergeBack = false;
+	bool mergeFront = false;
 
-	tess.multiDrawPrimitives++;
+	glIndex_t *firstIndexOffset = ( glIndex_t* ) BUFFER_OFFSET( firstIndex * sizeof( glIndex_t ) );
+
+	if ( tess.multiDrawPrimitives > 0 && r_mergeMultidraws->integer )
+	{
+		int lastPrimitive = tess.multiDrawPrimitives - 1;
+		glIndex_t *lastIndexOffset = firstIndexOffset + numIndexes;
+		glIndex_t *prevLastIndexOffset = tess.multiDrawIndexes[ lastPrimitive ] + tess.multiDrawCounts[ lastPrimitive ];
+
+		if ( firstIndexOffset == prevLastIndexOffset )
+		{
+			mergeFront = true;
+		}
+		else if ( lastIndexOffset == tess.multiDrawIndexes[ lastPrimitive ] )
+		{
+			mergeBack = true;
+		}
+	}
+
+	if ( mergeFront )
+	{
+		tess.multiDrawCounts[ tess.multiDrawPrimitives - 1 ] += numIndexes;
+	}
+	else if ( mergeBack )
+	{
+		tess.multiDrawIndexes[ tess.multiDrawPrimitives - 1 ] = firstIndexOffset;
+		tess.multiDrawCounts[ tess.multiDrawPrimitives - 1 ] += numIndexes;
+	}
+	else
+	{
+		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = firstIndexOffset;
+		tess.multiDrawCounts[ tess.multiDrawPrimitives ] = numIndexes;
+
+		tess.multiDrawPrimitives++;
+	}
+
 	return qtrue;
 }
 

@@ -3052,7 +3052,7 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_vboDeformVertexes;
 
 	extern cvar_t *r_mergeLeafSurfaces;
-
+	extern cvar_t *r_mergeMultidraws;
 	extern cvar_t *r_parallaxMapping;
 	extern cvar_t *r_parallaxDepthScale;
 
