@@ -244,7 +244,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_vboDeformVertexes;
 
 	cvar_t      *r_mergeLeafSurfaces;
-	cvar_t      *r_mergeMultidraws;
 	cvar_t      *r_parallaxMapping;
 	cvar_t      *r_parallaxDepthScale;
 
@@ -1182,7 +1181,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_vboDeformVertexes = ri.Cvar_Get( "r_vboDeformVertexes", "1",  CVAR_LATCH );
 
 		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "1",  CVAR_LATCH );
-		r_mergeMultidraws = ri.Cvar_Get( "r_mergeMultidraws", "1", CVAR_ARCHIVE );
 		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
 		r_dynamicLightOcclusionCulling = ri.Cvar_Get( "r_dynamicLightOcclusionCulling", "0", CVAR_CHEAT );
 		r_chcMaxPrevInvisNodesBatchSize = ri.Cvar_Get( "r_chcMaxPrevInvisNodesBatchSize", "50", CVAR_CHEAT );

@@ -172,7 +172,7 @@ static qboolean Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIn
 
 	glIndex_t *firstIndexOffset = ( glIndex_t* ) BUFFER_OFFSET( firstIndex * sizeof( glIndex_t ) );
 
-	if ( tess.multiDrawPrimitives > 0 && r_mergeMultidraws->integer )
+	if ( tess.multiDrawPrimitives > 0 )
 	{
 		int lastPrimitive = tess.multiDrawPrimitives - 1;
 		glIndex_t *lastIndexOffset = firstIndexOffset + numIndexes;
