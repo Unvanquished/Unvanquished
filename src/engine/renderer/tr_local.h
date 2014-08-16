@@ -387,8 +387,6 @@ static inline float halfToFloat( int16_t in ) {
 
 		int8_t       shadowLOD; // Level of Detail for shadow mapping
 
-		qboolean                  clipsNearPlane;
-
 		qboolean                  noOcclusionQueries;
 		uint32_t                  occlusionQueryObject;
 		uint32_t                  occlusionQuerySamples;
@@ -2905,7 +2903,7 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_nocull;
 	extern cvar_t *r_facePlaneCull; // enables culling of planar surfaces with back side test
 	extern cvar_t *r_nocurves;
-	extern cvar_t *r_noLightScissors;
+	extern cvar_t *r_lightScissors;
 	extern cvar_t *r_noLightVisCull;
 	extern cvar_t *r_noInteractionSort;
 	extern cvar_t *r_showcluster;

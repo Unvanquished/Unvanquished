@@ -1939,8 +1939,9 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 				    backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
-	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-				backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	interaction_t *iaFirst = light->firstInteraction;
+	GL_Scissor( iaFirst->scissorX, iaFirst->scissorY,
+				iaFirst->scissorWidth, iaFirst->scissorHeight );
 
 	// restore camera matrices
 	GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
@@ -2097,8 +2098,8 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 							GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 										    backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
-							GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-										backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+							GL_Scissor( iaFirst->scissorX, iaFirst->scissorY,
+								iaFirst->scissorWidth, iaFirst->scissorHeight );
 						}
 					}
 
