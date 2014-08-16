@@ -464,9 +464,9 @@ static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
 	}
 
 	// add the individual surfaces
-	mark = node->markSurfaces;
+	mark = tr.world->markSurfaces + node->firstMarkSurface;
 	c = node->numMarkSurfaces;
-	view = node->viewSurfaces;
+	view = tr.world->viewSurfaces + node->firstMarkSurface;
 
 	while ( c-- )
 	{
@@ -531,7 +531,7 @@ static void R_RecursiveWorldNode( bspNode_t *node, int planeBits, int decalBits 
 			}
 		}
 
-		InsertLink( &node->visChain, &tr.traversalStack );
+		backEndData[ tr.smpFrame ]->traversalList[ backEndData[ tr.smpFrame ]->traversalLength++ ] = node;
 
 		// ydnar: cull decals
 		if ( decalBits )
@@ -662,7 +662,7 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 		bspSurface_t *surf, **mark;
 
 		// add the individual surfaces
-		mark = node->markSurfaces;
+		mark = tr.world->markSurfaces + node->firstMarkSurface;
 		c = node->numMarkSurfaces;
 
 		while ( c-- )
@@ -925,59 +925,6 @@ static void R_MarkLeaves( void )
 	}
 }
 
-static void DrawLeaf( bspNode_t *node )
-{
-	// leaf node, so add mark surfaces
-	int          c;
-	bspSurface_t *surf, **mark;
-
-	tr.pc.c_leafs++;
-
-	// add to z buffer bounds
-	if ( node->mins[ 0 ] < tr.viewParms.visBounds[ 0 ][ 0 ] )
-	{
-		tr.viewParms.visBounds[ 0 ][ 0 ] = node->mins[ 0 ];
-	}
-
-	if ( node->mins[ 1 ] < tr.viewParms.visBounds[ 0 ][ 1 ] )
-	{
-		tr.viewParms.visBounds[ 0 ][ 1 ] = node->mins[ 1 ];
-	}
-
-	if ( node->mins[ 2 ] < tr.viewParms.visBounds[ 0 ][ 2 ] )
-	{
-		tr.viewParms.visBounds[ 0 ][ 2 ] = node->mins[ 2 ];
-	}
-
-	if ( node->maxs[ 0 ] > tr.viewParms.visBounds[ 1 ][ 0 ] )
-	{
-		tr.viewParms.visBounds[ 1 ][ 0 ] = node->maxs[ 0 ];
-	}
-
-	if ( node->maxs[ 1 ] > tr.viewParms.visBounds[ 1 ][ 1 ] )
-	{
-		tr.viewParms.visBounds[ 1 ][ 1 ] = node->maxs[ 1 ];
-	}
-
-	if ( node->maxs[ 2 ] > tr.viewParms.visBounds[ 1 ][ 2 ] )
-	{
-		tr.viewParms.visBounds[ 1 ][ 2 ] = node->maxs[ 2 ];
-	}
-
-	// add the individual surfaces
-	mark = node->viewSurfaces;
-	c = node->numMarkSurfaces;
-
-	while ( c-- )
-	{
-		// the surface may have already been added if it
-		// spans multiple leafs
-		surf = *mark;
-		R_AddWorldSurface( surf );
-		mark++;
-	}
-}
-
 /*
 =============
 R_AddWorldSurfaces
@@ -1016,7 +963,8 @@ void R_AddWorldSurfaces( void )
 		// determine which leaves are in the PVS / areamask
 		R_MarkLeaves();
 
-		ClearLink( &tr.traversalStack );
+		// clear traversal list
+		backEndData[ tr.smpFrame ]->traversalLength = 0;
 
 		// update visbounds and add surfaces that weren't cached with VBOs
 		R_RecursiveWorldNode( tr.world->nodes, FRUSTUM_CLIPALL, tr.refdef.decalBits );

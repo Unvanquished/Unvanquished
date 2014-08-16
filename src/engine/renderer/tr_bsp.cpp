@@ -3037,7 +3037,7 @@ static void R_CreateWorldVBO( void )
 			int fogIndex1;
 			int lightMapNum1;
 			qboolean merged = qfalse;
-			surf1 = leaf->markSurfaces[ j ];
+			surf1 = tr.world->markSurfaces[ leaf->firstMarkSurface + j ];
 
 			if ( surf1->viewCount != -1 )
 			{
@@ -3069,7 +3069,7 @@ static void R_CreateWorldVBO( void )
 				int fogIndex2;
 				int lightMapNum2;
 
-				surf2 = leaf->markSurfaces[ k ];
+				surf2 = tr.world->markSurfaces[ leaf->firstMarkSurface + k ];
 
 				if ( surf2->viewCount != -1 )
 				{
@@ -3695,23 +3695,20 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 			s_worldData.numClusters = out->cluster + 1;
 		}
 
-		out->markSurfaces = s_worldData.markSurfaces + LittleLong( inLeaf->firstLeafSurface );
-		out->viewSurfaces = s_worldData.viewSurfaces + LittleLong( inLeaf->firstLeafSurface );
+		out->firstMarkSurface = LittleLong( inLeaf->firstLeafSurface );
 		out->numMarkSurfaces = LittleLong( inLeaf->numLeafSurfaces );
 	}
 
 	// chain decendants and compute surface bounds
 	R_SetParent( s_worldData.nodes, NULL );
 
-	// calculate occlusion query volumes
-	for ( j = 0, out = &s_worldData.nodes[ 0 ]; j < s_worldData.numnodes; j++, out++ )
-	{
-		if ( out->contents != CONTENTS_NODE && !out->numMarkSurfaces )
-		{
-			continue; // don't need to build occlusion query volumes for this leaf because this leaf has no volume
-		}
+	backEndData[ 0 ]->traversalList = ( bspNode_t ** ) ri.Hunk_Alloc( sizeof( bspNode_t * ) * s_worldData.numnodes, h_low );
+	backEndData[ 0 ]->traversalLength = 0;
 
-		InitLink( &out->visChain, out );
+	if ( r_smp->integer )
+	{
+		backEndData[ 1 ]->traversalList = ( bspNode_t ** ) ri.Hunk_Alloc( sizeof( bspNode_t * ) * s_worldData.numnodes, h_low );
+		backEndData[ 1 ]->traversalLength = 0;
 	}
 }
 
@@ -4859,7 +4856,7 @@ static void R_RecursivePrecacheInteractionNode( bspNode_t *node, trRefLight_t *l
 		vec3_t       worldBounds[ 2 ];
 
 		// add the individual surfaces
-		mark = node->markSurfaces;
+		mark = tr.world->markSurfaces + node->firstMarkSurface;
 		c = node->numMarkSurfaces;
 
 		while ( c-- )
@@ -6969,10 +6966,6 @@ void RE_LoadWorldMap( const char *name )
 
 	// build cubemaps after the necessary vbo stuff is done
 	//R_BuildCubeMaps();
-
-	// never move this to RE_BeginFrame because we need it to set it here for the first frame
-	// but we need the information across 2 frames
-	ClearLink( &tr.traversalStack );
 
 	ri.FS_FreeFile( buffer );
 }

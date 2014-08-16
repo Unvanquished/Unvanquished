@@ -1929,8 +1929,6 @@ static inline float halfToFloat( int16_t in ) {
 		vec3_t           mins, maxs; // for bounding box culling
 		struct bspNode_s *parent;
 
-		link_t           visChain; // updated every visit
-
 		// node specific
 		cplane_t         *plane;
 		struct bspNode_s *children[ 2 ];
@@ -1939,9 +1937,8 @@ static inline float halfToFloat( int16_t in ) {
 		int          cluster;
 		int          area;
 
+		int          firstMarkSurface;
 		int          numMarkSurfaces;
-		bspSurface_t **markSurfaces;
-		bspSurface_t **viewSurfaces;
 	} bspNode_t;
 
 	typedef struct
@@ -2432,7 +2429,6 @@ static inline float halfToFloat( int16_t in ) {
 		int c_occlusionQueries;
 		int c_occlusionQueriesMulti;
 		int c_occlusionQueriesSaved;
-		int c_CHCTime;
 
 		int c_decalProjectors, c_decalTestSurfaces, c_decalClipSurfaces, c_decalSurfaces, c_decalSurfacesCreated;
 	} frontEndCounters_t;
@@ -2610,8 +2606,6 @@ static inline float halfToFloat( int16_t in ) {
 		int      visIndex;
 		int      visClusters[ MAX_VISCOUNTS ];
 		int      visCounts[ MAX_VISCOUNTS ]; // incremented every time a new vis cluster is entered
-
-		link_t   traversalStack;
 
 		int      frameCount; // incremented every frame
 		int      sceneCount; // incremented every scene
@@ -3956,6 +3950,9 @@ static inline float halfToFloat( int16_t in ) {
 		// the backend communicates to the frontend through visTestResult_t
 		int                 numVisTests;
 		visTestResult_t     visTests[ MAX_VISTESTS ];
+
+		bspNode_t			**traversalList;
+		int                 traversalLength;
 
 		renderCommandList_t commands;
 	} backEndData_t;

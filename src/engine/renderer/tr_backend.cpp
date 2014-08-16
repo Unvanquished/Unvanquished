@@ -5145,11 +5145,9 @@ static void RB_RenderDebugUtils()
 			}
 
 			// draw BSP nodes
-			sentinel = &tr.traversalStack;
-
-			for ( l = sentinel->next; l != sentinel; l = l->next )
+			for ( int j = 0; j < backEndData[ backEnd.smpFrame ]->traversalLength; j++ )
 			{
-				node = ( bspNode_t * ) l->data;
+				bspNode_t *node = backEndData[ backEnd.smpFrame ]->traversalList[ j ];
 
 				if ( node->contents != -1 )
 				{
