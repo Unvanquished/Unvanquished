@@ -2146,57 +2146,27 @@ void R_AddLightInteractions( void )
 			// ignore if not in PVS
 			if ( !r_noLightVisCull->integer )
 			{
-				if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
+				for ( l = light->leafs.next; l != &light->leafs; l = l->next )
 				{
-					int numVisibleLeafs = 0;
-
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
+					if ( !l || !l->data )
 					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visible[ tr.viewCount ] && ( tr.frameCount - leaf->lastVisited[ tr.viewCount ] ) <= r_chcMaxVisibleFrames->integer )
-						{
-							numVisibleLeafs++;
-						}
+						// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
+						break;
 					}
 
-					if ( numVisibleLeafs == 0 )
+					leaf = ( bspNode_t * ) l->data;
+
+					if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 					{
-						tr.pc.c_pvs_cull_light_out++;
-						light->cull = CULL_OUT;
-						continue;
+						light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
 					}
 				}
-				else
+
+				if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 				{
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
-					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
-						{
-							light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
-						}
-					}
-
-					if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
-					{
-						tr.pc.c_pvs_cull_light_out++;
-						light->cull = CULL_OUT;
-						continue;
-					}
+					tr.pc.c_pvs_cull_light_out++;
+					light->cull = CULL_OUT;
+					continue;
 				}
 			}
 
@@ -2361,53 +2331,25 @@ void R_AddLightBoundsToVisBounds( void )
 			// ignore if not in PVS
 			if ( !r_noLightVisCull->integer )
 			{
-				if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
+				for ( l = light->leafs.next; l != &light->leafs; l = l->next )
 				{
-					int numVisibleLeafs = 0;
-
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
+					if ( !l || !l->data )
 					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visible[ tr.viewCount ] && ( tr.frameCount - leaf->lastVisited[ tr.viewCount ] ) <= r_chcMaxVisibleFrames->integer )
-						{
-							numVisibleLeafs++;
-						}
+						// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
+						break;
 					}
 
-					if ( numVisibleLeafs == 0 )
+					leaf = ( bspNode_t * ) l->data;
+
+					if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 					{
-						continue;
+						light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
 					}
 				}
-				else
+
+				if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 				{
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
-					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
-						{
-							light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
-						}
-					}
-
-					if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
-					{
-						continue;
-					}
+					continue;
 				}
 			}
 

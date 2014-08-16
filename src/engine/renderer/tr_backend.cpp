@@ -5151,102 +5151,45 @@ static void RB_RenderDebugUtils()
 			{
 				node = ( bspNode_t * ) l->data;
 
-				if ( !r_dynamicBspOcclusionCulling->integer )
+				if ( node->contents != -1 )
 				{
-					if ( node->contents != -1 )
+					if ( r_showBspNodes->integer == 3 )
 					{
-						if ( r_showBspNodes->integer == 3 )
-						{
-							continue;
-						}
+						continue;
+					}
 
-						if ( node->numMarkSurfaces <= 0 )
-						{
-							continue;
-						}
+					if ( node->numMarkSurfaces <= 0 )
+					{
+						continue;
+					}
 
-						//if(node->shrinkedAABB)
-						//  gl_genericShader->SetUniform_Color(colorBlue);
-						//else
-						if ( node->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
-						{
-							gl_genericShader->SetUniform_Color( colorGreen );
-						}
-						else
-						{
-							gl_genericShader->SetUniform_Color( colorRed );
-						}
+					//if(node->shrinkedAABB)
+					//  gl_genericShader->SetUniform_Color(colorBlue);
+					//else
+					if ( node->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
+					{
+						gl_genericShader->SetUniform_Color( colorGreen );
 					}
 					else
 					{
-						if ( r_showBspNodes->integer == 2 )
-						{
-							continue;
-						}
-
-						if ( node->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
-						{
-							gl_genericShader->SetUniform_Color( colorYellow );
-						}
-						else
-						{
-							gl_genericShader->SetUniform_Color( colorBlue );
-						}
+						gl_genericShader->SetUniform_Color( colorRed );
 					}
 				}
 				else
 				{
-					if ( node->lastVisited[ backEnd.viewParms.viewCount ] != backEnd.viewParms.frameCount )
+					if ( r_showBspNodes->integer == 2 )
 					{
 						continue;
 					}
 
-					if ( r_showBspNodes->integer == 5 && node->lastQueried[ backEnd.viewParms.viewCount ] != backEnd.viewParms.frameCount )
+					if ( node->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 					{
-						continue;
-					}
-
-					if ( node->contents != -1 )
-					{
-						if ( r_showBspNodes->integer == 3 )
-						{
-							continue;
-						}
-
-						//if(node->occlusionQuerySamples[backEnd.viewParms.viewCount] > 0)
-						if ( node->visible[ backEnd.viewParms.viewCount ] )
-						{
-							gl_genericShader->SetUniform_Color( colorGreen );
-						}
-						else
-						{
-							gl_genericShader->SetUniform_Color( colorRed );
-						}
+						gl_genericShader->SetUniform_Color( colorYellow );
 					}
 					else
 					{
-						if ( r_showBspNodes->integer == 2 )
-						{
-							continue;
-						}
-
-						//if(node->occlusionQuerySamples[backEnd.viewParms.viewCount] > 0)
-						if ( node->visible[ backEnd.viewParms.viewCount ] )
-						{
-							gl_genericShader->SetUniform_Color( colorYellow );
-						}
-						else
-						{
-							gl_genericShader->SetUniform_Color( colorBlue );
-						}
+						gl_genericShader->SetUniform_Color( colorBlue );
 					}
-
-					if ( r_showBspNodes->integer == 4 )
-					{
-						gl_genericShader->SetUniform_Color( g_color_table[ ColorIndex( node->occlusionQueryNumbers[ backEnd.viewParms.viewCount ] ) ] );
-					}
-
-					GL_CheckErrors();
 				}
 
 				if ( node->contents != -1 )
@@ -5255,19 +5198,19 @@ static void RB_RenderDebugUtils()
 					GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
 				}
 
-				R_BindVBO( node->volumeVBO );
-				R_BindIBO( node->volumeIBO );
-
-				GL_VertexAttribsState( ATTR_POSITION );
-
+				tess.numVertexes = 0;
+				tess.numIndexes = 0;
 				tess.multiDrawPrimitives = 0;
-				tess.numVertexes = node->volumeVBO->vertexesNum;
-				tess.numIndexes = node->volumeIBO->indexesNum;
+
+				Tess_AddCube( vec3_origin, node->mins, node->maxs, colorWhite );
+
+				Tess_UpdateVBOs( ATTR_POSITION );
 
 				Tess_DrawElements();
 
 				tess.numIndexes = 0;
 				tess.numVertexes = 0;
+				tess.multiDrawPrimitives = 0;
 
 				if ( node->contents != -1 )
 				{

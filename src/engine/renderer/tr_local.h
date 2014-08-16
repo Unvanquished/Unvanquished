@@ -1927,26 +1927,9 @@ static inline float halfToFloat( int16_t in ) {
 		int              visCounts[ MAX_VISCOUNTS ]; // node needs to be traversed if current
 
 		vec3_t           mins, maxs; // for bounding box culling
-		vec3_t           surfMins, surfMaxs; // ydnar: bounding box including surfaces
-		vec3_t           origin; // center of the bounding box
 		struct bspNode_s *parent;
 
-		qboolean         visible[ MAX_VIEWS ];
-		int              lastVisited[ MAX_VIEWS ];
-		int              lastQueried[ MAX_VIEWS ];
-		qboolean         issueOcclusionQuery[ MAX_VIEWS ];
-
 		link_t           visChain; // updated every visit
-		link_t           occlusionQuery; // updated every visit
-		link_t           occlusionQuery2; // updated every visit
-		link_t           multiQuery; // CHC++: list of all nodes that are used by the same occlusion query
-
-		VBO_t            *volumeVBO;
-		IBO_t            *volumeIBO;
-
-		uint32_t occlusionQueryObjects[ MAX_VIEWS ];
-		int      occlusionQuerySamples[ MAX_VIEWS ]; // visible fragment count
-		int      occlusionQueryNumbers[ MAX_VIEWS ]; // for debugging
 
 		// node specific
 		cplane_t         *plane;
@@ -2629,8 +2612,6 @@ static inline float halfToFloat( int16_t in ) {
 		int      visCounts[ MAX_VISCOUNTS ]; // incremented every time a new vis cluster is entered
 
 		link_t   traversalStack;
-		link_t   occlusionQueryQueue;
-		link_t   occlusionQueryList;
 
 		int      frameCount; // incremented every frame
 		int      sceneCount; // incremented every scene
@@ -3056,7 +3037,6 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_parallaxMapping;
 	extern cvar_t *r_parallaxDepthScale;
 
-	extern cvar_t *r_dynamicBspOcclusionCulling;
 	extern cvar_t *r_dynamicEntityOcclusionCulling;
 	extern cvar_t *r_dynamicLightOcclusionCulling;
 	extern cvar_t *r_chcMaxPrevInvisNodesBatchSize;

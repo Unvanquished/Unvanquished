@@ -248,7 +248,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_parallaxMapping;
 	cvar_t      *r_parallaxDepthScale;
 
-	cvar_t      *r_dynamicBspOcclusionCulling;
 	cvar_t      *r_dynamicEntityOcclusionCulling;
 	cvar_t      *r_dynamicLightOcclusionCulling;
 	cvar_t      *r_chcMaxPrevInvisNodesBatchSize;
@@ -1184,7 +1183,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "1",  CVAR_LATCH );
 		r_mergeMultidraws = ri.Cvar_Get( "r_mergeMultidraws", "1", CVAR_ARCHIVE );
-		r_dynamicBspOcclusionCulling = ri.Cvar_Get( "r_dynamicBspOcclusionCulling", "0", 0 );
 		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
 		r_dynamicLightOcclusionCulling = ri.Cvar_Get( "r_dynamicLightOcclusionCulling", "0", CVAR_CHEAT );
 		r_chcMaxPrevInvisNodesBatchSize = ri.Cvar_Get( "r_chcMaxPrevInvisNodesBatchSize", "50", CVAR_CHEAT );
@@ -1552,19 +1550,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA )
 			{
 				glDeleteQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
-
-				if ( tr.world )
-				{
-					int       j;
-					bspNode_t *node;
-
-					for ( j = 0; j < tr.world->numnodes; j++ )
-					{
-						node = &tr.world->nodes[ j ];
-
-						glDeleteQueries( MAX_VIEWS, node->occlusionQueryObjects );
-					}
-				}
 			}
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )

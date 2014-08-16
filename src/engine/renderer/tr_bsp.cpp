@@ -3602,52 +3602,11 @@ static void R_SetParent( bspNode_t *node, bspNode_t *parent )
 
 	if ( node->contents != CONTENTS_NODE )
 	{
-		// add node surfaces to bounds
-		if ( node->numMarkSurfaces > 0 )
-		{
-			int          c;
-			bspSurface_t **mark;
-			srfGeneric_t *gen;
-			qboolean     mergedSurfBounds;
-
-			// add node surfaces to bounds
-			mark = node->markSurfaces;
-			c = node->numMarkSurfaces;
-			ClearBounds( node->surfMins, node->surfMaxs );
-			mergedSurfBounds = qfalse;
-
-			while ( c-- )
-			{
-				gen = ( srfGeneric_t * )( **mark ).data;
-
-				if ( gen->surfaceType != SF_FACE &&
-				     gen->surfaceType != SF_GRID && gen->surfaceType != SF_TRIANGLES )
-				{
-					continue;
-				}
-
-				AddPointToBounds( gen->bounds[ 0 ], node->surfMins, node->surfMaxs );
-				AddPointToBounds( gen->bounds[ 1 ], node->surfMins, node->surfMaxs );
-				mark++;
-				mergedSurfBounds = qtrue;
-			}
-
-			if ( !mergedSurfBounds )
-			{
-				VectorCopy( node->mins, node->surfMins );
-				VectorCopy( node->maxs, node->surfMaxs );
-			}
-		}
-
 		return;
 	}
 
 	R_SetParent( node->children[ 0 ], node );
 	R_SetParent( node->children[ 1 ], node );
-
-	// ydnar: surface bounds
-	BoundsAdd( node->surfMins, node->surfMaxs, node->children[ 0 ]->surfMins, node->children[ 0 ]->surfMaxs );
-	BoundsAdd( node->surfMins, node->surfMaxs, node->children[ 1 ]->surfMins, node->children[ 1 ]->surfMaxs );
 }
 
 /*
@@ -3663,8 +3622,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	bspNode_t     *out;
 	int           numNodes, numLeafs;
 	vboData_t     data;
-	IBO_t         *volumeIBO;
-	vec3_t        mins, maxs;
 
 	ri.Printf( PRINT_DEVELOPER, "...loading nodes and leaves\n" );
 
@@ -3699,10 +3656,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 			out->maxs[ j ] = LittleLong( in->maxs[ j ] );
 		}
 
-		// ydnar: surface bounds
-		VectorCopy( out->mins, out->surfMins );
-		VectorCopy( out->maxs, out->surfMaxs );
-
 		p = LittleLong( in->planeNum );
 		out->plane = s_worldData.planes + p;
 
@@ -3734,9 +3687,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 			out->maxs[ j ] = LittleLong( inLeaf->maxs[ j ] );
 		}
 
-		// ydnar: surface bounds
-		ClearBounds( out->surfMins, out->surfMaxs );
-
 		out->cluster = LittleLong( inLeaf->cluster );
 		out->area = LittleLong( inLeaf->area );
 
@@ -3761,58 +3711,8 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 			continue; // don't need to build occlusion query volumes for this leaf because this leaf has no volume
 		}
 
-		Com_Memset( out->lastVisited, -1, sizeof( out->lastVisited ) );
-		Com_Memset( out->visible, qfalse, sizeof( out->visible ) );
-
 		InitLink( &out->visChain, out );
-		InitLink( &out->occlusionQuery, out );
-		InitLink( &out->occlusionQuery2, out );
-
-		glGenQueries( MAX_VIEWS, out->occlusionQueryObjects );
-
-		tess.multiDrawPrimitives = 0;
-		tess.numIndexes = 0;
-		tess.numVertexes = 0;
-
-		VectorCopy( out->mins, mins );
-		VectorCopy( out->maxs, maxs );
-
-		for ( i = 0; i < 3; i++ )
-		{
-			out->origin[ i ] = ( mins[ i ] + maxs[ i ] ) * 0.5f;
-		}
-
-		Tess_AddCube( vec3_origin, mins, maxs, colorWhite );
-
-		if ( j == 0 )
-		{
-			data.xyz = (vec3_t*) ri.Hunk_AllocateTempMemory(tess.numVertexes * sizeof(*data.xyz));
-		}
-
-		for ( i = 0; i < tess.numVertexes; i++ )
-		{
-			VectorCopy( tess.verts[ i ].xyz, data.xyz[ i ] );
-		}
-		data.numVerts = tess.numVertexes;
-
-		out->volumeVBO = R_CreateStaticVBO( va( "staticBspNode_VBO %i", j ), data, VBO_LAYOUT_POSITION );
-
-		if ( j == 0 )
-		{
-			out->volumeIBO = volumeIBO = R_CreateStaticIBO( "staticBspNode_IBO", tess.indexes, tess.numIndexes );
-		}
-		else
-		{
-			out->volumeIBO = volumeIBO;
-		}
 	}
-
-//I'm unsure if Hunk_FreeTempMemory can handle NULL values.
-	if ( data.xyz ) { ri.Hunk_FreeTempMemory( data.xyz ); }
-
-	tess.multiDrawPrimitives = 0;
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
 }
 
 //=============================================================================
@@ -6629,12 +6529,16 @@ void R_BuildCubeMaps( void )
 				continue;
 			}
 
-			if ( FindVertexInHashTable( tr.cubeHashTable, node->origin, 256 ) == NULL )
+			vec3_t origin;
+			VectorAdd( node->maxs, node->mins, origin );
+			VectorScale( origin, 0.5, origin );
+
+			if ( FindVertexInHashTable( tr.cubeHashTable, origin, 256 ) == NULL )
 			{
 				cubeProbe = (cubemapProbe_t*) ri.Hunk_Alloc( sizeof( *cubeProbe ), h_high );
 				Com_AddToGrowList( &tr.cubeProbes, cubeProbe );
 
-				VectorCopy( node->origin, cubeProbe->origin );
+				VectorCopy( origin, cubeProbe->origin );
 
 				AddVertexToHashTable( tr.cubeHashTable, cubeProbe->origin, cubeProbe );
 			}
@@ -7069,8 +6973,6 @@ void RE_LoadWorldMap( const char *name )
 	// never move this to RE_BeginFrame because we need it to set it here for the first frame
 	// but we need the information across 2 frames
 	ClearLink( &tr.traversalStack );
-	ClearLink( &tr.occlusionQueryQueue );
-	ClearLink( &tr.occlusionQueryList );
 
 	ri.FS_FreeFile( buffer );
 }
