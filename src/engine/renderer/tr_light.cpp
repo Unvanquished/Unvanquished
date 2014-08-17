@@ -236,7 +236,7 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 	}
 
 	// compute z-component of direction
-	lightDir[ 2 ] = 1.0f - fabsf( lightDir[ 0 ] ) + fabsf( lightDir[ 1 ] );
+	lightDir[ 2 ] = 1.0f - fabsf( lightDir[ 0 ] ) - fabsf( lightDir[ 1 ] );
 	if( lightDir[ 2 ] < 0.0f ) {
 		float X = lightDir[ 0 ];
 		float Y = lightDir[ 1 ];

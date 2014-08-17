@@ -4109,6 +4109,33 @@ void R_LoadLightGrid( lump_t *l )
 		gridPoint2->directed[ 1 ] = floatToUnorm8( directedColor[ 1 ] );
 		gridPoint2->directed[ 2 ] = floatToUnorm8( directedColor[ 2 ] );
 
+		// Light direction vectors have to be stored in two bytes:
+		// First the vector is projected onto a unit octahedron, that means |x| + |y| + |z| = 1,
+		// then it is projected onto the x/y plane. The magnitude of z can be reconstructed by
+		// the above identity, but not the sign.
+		// Fortunately the identity implies |x| + |y| <= 1, so all vectors fall within a diamond
+		// shape within the unit square that covers exactly half of the area:
+		//
+		//           +-----+-----+
+		//           |    /|\    |
+		//           |   /#|#\   |
+		//           |  /##|##\  |
+		//           | /###|###\ |
+		//           |/####|####\|
+		//           +-----+-----+
+		//           |\####|####/|
+		//           | \###|###/ |
+		//           |  \##|##/  |
+		//           |   \#|#/   |
+		//           |    \|/    |
+		//           +-----+-----+
+		//
+		// If z >= 0, we keep just the x,y coordinates in the diamond, otherwise the point
+		// is flipped across the nearest diamond edge into one of the outer triangles.
+
+		// The interpolation in this format behaves quite good except when interpolating
+		// two points that are in different outer triangles.
+
 		scale = fabsf( direction[ 0 ] ) + fabsf( direction[ 1 ] ) + fabsf( direction[ 2 ] );
 		if( scale > 0.0f ) {
 			VectorScale( direction, 1.0f / scale, direction );
