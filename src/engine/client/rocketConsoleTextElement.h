@@ -70,7 +70,7 @@ public:
 			lines.pop_back();
 		}
 
-		while ( GetNumChildren() && atoi( GetFirstChild()->GetId().CString() ) + latency < time )
+		while ( HasChildNodes() && atoi( GetFirstChild()->GetId().CString() ) + latency < time )
 		{
 			RemoveChild( GetFirstChild() );
 			numLines--;
@@ -83,7 +83,7 @@ public:
 			lastTime = lines[ line ].time;
 
 			// Find out how many lines
-			while ( lines[ line ].time > lastTime )
+			while ( lines[ line ].time >= lastTime )
 			{
 				line++;
 			}
@@ -100,7 +100,7 @@ public:
 		}
 
 		// Calculate max lines when we have a child element with a fontface
-		if ( dirty_height && GetNumChildren() )
+		if ( dirty_height && HasChildNodes() )
 		{
 			const Rocket::Core::FontFaceHandle *font = GetFirstChild()->GetFontFaceHandle();
 			if ( font )
