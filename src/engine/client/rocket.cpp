@@ -603,11 +603,12 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				continue;
 			}
 
-			path =  va( "emoticons/%s_1x1.crn", emoticon.CString() );
+			// TODO: Dont hardcode the extension.
+			path =  va( "emoticons/%s.crn", emoticon.CString() );
 			if ( FS_FOpenFileRead( path, NULL, qtrue ) )
 			{
 				out.Erase( openBracket, closeBracket - openBracket + 1 );
-				path = va( "<img class='trem-emoticon' src='/emoticons/%s_1x1.crn' />", emoticon.CString() );
+				path = va( "<img class='trem-emoticon' src='/emoticons/%s' />", emoticon.CString() );
 				out.Insert( openBracket, path );
 				currentPosition = openBracket + strlen( path ) + 1;
 			}
