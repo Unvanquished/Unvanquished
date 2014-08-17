@@ -391,13 +391,13 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_FLAMER_SPLASH:
 				message = G_( "%s%s ^7was grilled by %s%s^7's flamer\n" );
 				messageAssisted = G_( "%s%s ^7was grilled by %s%s^7's flamer; %s%s^7 assisted\n" );
-				messageSuicide = G_( "%s%s ^7grilled self" );
+				messageSuicide = G_( "%s%s ^7was charred to a crisp" );
 				break;
 
 			case MOD_BURN:
 				message = G_( "%s%s ^7was burned by %s%s^7's fire\n" );
 				messageAssisted = G_( "%s%s ^7was burned by %s%s^7's fire; %s%s^7 assisted\n" );
-				messageSuicide = G_( "%s%s ^7burned self" );
+				messageSuicide = G_( "%s%s ^7was burned to death" );
 				break;
 
 			case MOD_LCANNON:
@@ -408,19 +408,19 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_LCANNON_SPLASH:
 				message = G_( "%s%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n" );
 				messageAssisted = G_( "%s%s ^7was caught in the fallout of %s%s^7's lucifer cannon; %s%s^7 assisted\n" );
-				messageSuicide = G_( "%s%s ^7was caught in the fallout of own lucifer cannon" );
+				messageSuicide = G_( "%s%s ^7was irradiated" );
 				break;
 
 			case MOD_GRENADE:
 				message = G_( "%s%s ^7couldn't escape %s%s^7's grenade\n" );
 				messageAssisted = G_( "%s%s ^7couldn't escape %s%s^7's grenade; %s%s^7 assisted\n" );
-				messageSuicide = G_( "%s%s ^7blew self up" );
+				messageSuicide = G_( "%s%s ^7was blown up" );
 				break;
 
 			case MOD_FIREBOMB:
 				message = G_( "%s%s ^7couldn't escape %s%s^7's firebomb\n" );
 				messageAssisted = G_( "%s%s ^7couldn't escape %s%s^7's firebomb; %s%s^7 assisted\n" );
-				messageSuicide = G_( "%s%s ^7incinerated self" );
+				messageSuicide = G_( "%s%s ^7was incinerated" );
 				break;
 
 			case MOD_ABUILDER_CLAW:
@@ -466,7 +466,7 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_LEVEL3_BOUNCEBALL:
 				message = G_( "%s%s ^7was sniped by %s%s^7's %s\n" );
 				messageAssisted = G_( "%s%s ^7was sniped by %s%s^7's %s^7; %s%s^7 assisted\n" );
-				messageSuicide = G_( "%s%s ^7sniped self" );
+				messageSuicide = G_( "%s%s ^7was barbed" );
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
@@ -500,7 +500,7 @@ static void CG_Obituary( entityState_t *ent )
 			default:
 				message = G_( "%s%s ^7was killed by %s%s\n" );
 				messageAssisted = G_( "%s%s ^7was killed by %s%s^7 and %s%s\n" );
-				messageSuicide = G_( "%s%s ^7killed self\n" );
+				messageSuicide = G_( "%s%s ^7committed suicide\n" );
 				break;
 		}
 
