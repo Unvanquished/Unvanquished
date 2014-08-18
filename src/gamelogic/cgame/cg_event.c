@@ -314,8 +314,8 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_SWARM:
-				message = G_( "%s%s ^7was hunted down by the swarm\n" );
-				messageAssisted = G_( "%s%s ^7was hunted down by the swarm; %s%s^7 assisted\n" );
+				message = G_( "%s%s ^7was consumed by the swarm\n" );
+				messageAssisted = G_( "%s%s ^7was consumed by the swarm; %s%s^7 assisted\n" );
 				break;
 
 			// Shouldn't happen
@@ -363,8 +363,8 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_CHAINGUN:
-				message = G_( "%s%s ^7was chaingunned by %s%s\n" );
-				messageAssisted = G_( "%s%s ^7was chaingunned by %s%s^7; %s%s^7 assisted\n" );
+				message = G_( "%s%s ^7was mowed down by %s%s\n" );
+				messageAssisted = G_( "%s%s ^7was mowed down by %s%s^7; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_SHOTGUN:
@@ -378,8 +378,8 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_MDRIVER:
-				message = G_( "%s%s ^7was mass driven by %s%s\n" );
-				messageAssisted = G_( "%s%s ^7was mass driven by %s%s^7; %s%s^7 assisted\n" );
+				message = G_( "%s%s ^7was sniped by %s%s\n" );
+				messageAssisted = G_( "%s%s ^7was sniped by %s%s^7; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_LASGUN:
@@ -401,13 +401,13 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_LCANNON:
-				message = G_( "%s%s ^7felt the full force of %s%s^7's lucifer cannon\n" );
-				messageAssisted = G_( "%s%s ^7felt the full force of %s%s^7's lucifer cannon; %s%s^7 assisted\n" );
+				message = G_( "%s%s ^7was annihilated by %s%s^7's lucifer cannon\n" );
+				messageAssisted = G_( "%s%s ^7was annihilated by %s%s^7's lucifer cannon; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_LCANNON_SPLASH:
-				message = G_( "%s%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n" );
-				messageAssisted = G_( "%s%s ^7was caught in the fallout of %s%s^7's lucifer cannon; %s%s^7 assisted\n" );
+				message = G_( "%s%s ^7was irradiated by %s%s^7's lucifer cannon\n" );
+				messageAssisted = G_( "%s%s ^7was irradiated by %s%s^7's lucifer cannon; %s%s^7 assisted\n" );
 				messageSuicide = G_( "%s%s ^7was irradiated" );
 				break;
 
@@ -434,20 +434,20 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_LEVEL1_CLAW:
-				message = G_( "%s%s ^7was swiped by %s%s^7's %s\n" );
-				messageAssisted = G_( "%s%s ^7was swiped by %s%s^7's %s^7; %s%s^7 assisted\n" );
+				message = G_( "%s%s ^7was sliced by %s%s^7's %s\n" );
+				messageAssisted = G_( "%s%s ^7was sliced by %s%s^7's %s^7; %s%s^7 assisted\n" );
 				attackerClass = PCL_ALIEN_LEVEL1;
 				break;
 
 			case MOD_LEVEL2_CLAW:
-				message = G_( "%s%s ^7was clawed by %s%s^7's %s\n" );
-				messageAssisted = G_( "%s%s ^7was clawed by %s%s^7's %s^7; %s%s^7 assisted\n" );
+				message = G_( "%s%s ^7was shredded by %s%s^7's %s\n" );
+				messageAssisted = G_( "%s%s ^7was shredded by %s%s^7's %s^7; %s%s^7 assisted\n" );
 				attackerClass = PCL_ALIEN_LEVEL2;
 				break;
 
 			case MOD_LEVEL2_ZAP:
-				message = G_( "%s%s ^7was zapped by %s%s^7's %s\n" );
-				messageAssisted = G_( "%s%s ^7was zapped by %s%s^7's %s^7; %s%s^7 assisted\n" );
+				message = G_( "%s%s ^7was electrocuted by %s%s^7's %s\n" );
+				messageAssisted = G_( "%s%s ^7was electrocuted by %s%s^7's %s^7; %s%s^7 assisted\n" );
 				attackerClass = PCL_ALIEN_LEVEL2;
 				break;
 
@@ -464,8 +464,8 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_LEVEL3_BOUNCEBALL:
-				message = G_( "%s%s ^7was sniped by %s%s^7's %s\n" );
-				messageAssisted = G_( "%s%s ^7was sniped by %s%s^7's %s^7; %s%s^7 assisted\n" );
+				message = G_( "%s%s ^7was barbed by %s%s^7's %s\n" );
+				messageAssisted = G_( "%s%s ^7was barbed by %s%s^7's %s^7; %s%s^7 assisted\n" );
 				messageSuicide = G_( "%s%s ^7was barbed" );
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
