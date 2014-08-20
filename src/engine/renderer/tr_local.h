@@ -3376,8 +3376,8 @@ static inline float halfToFloat( int16_t in ) {
 
 	typedef struct shaderCommands_s
 	{
-		shaderVertex_t verts[ SHADER_MAX_VERTEXES ];
-		glIndex_t      indexes[ SHADER_MAX_INDEXES ];
+		shaderVertex_t *verts;	 // at least SHADER_MAX_VERTEXES accessible
+		glIndex_t      *indexes; // at least SHADER_MAX_INDEXES accessible
 
 		VBO_t       *vbo;
 		IBO_t       *ibo;

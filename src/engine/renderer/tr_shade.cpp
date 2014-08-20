@@ -3228,16 +3228,6 @@ void Tess_End()
 		return;
 	}
 
-	if ( tess.indexes[ SHADER_MAX_INDEXES - 1 ] != 0 )
-	{
-		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_INDEXES hit" );
-	}
-
-	if ( tess.verts[ SHADER_MAX_VERTEXES - 1 ].xyz[ 0 ] != 0.0f )
-	{
-		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_VERTEXES hit" );
-	}
-
 	// for debugging of sort order issues, stop rendering after a given sort value
 	if ( r_debugSort->integer && r_debugSort->integer < tess.surfaceShader->sort )
 	{

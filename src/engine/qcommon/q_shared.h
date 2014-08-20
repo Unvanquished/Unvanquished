@@ -311,6 +311,9 @@ typedef int clipHandle_t;
 #define Com_Allocate malloc
 #define Com_Dealloc  free
 
+void *Com_Allocate_Aligned( size_t alignment, size_t size );
+void  Com_Free_Aligned( void *ptr );
+
 #define CIN_system   1
 #define CIN_loop     2
 #define CIN_hold     4

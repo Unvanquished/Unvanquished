@@ -339,7 +339,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 			{
 				vec4_t tmp;
 				VectorScale( inData.xyz[ v ], 1.0f / 512.0f, tmp);
-				tmp[4] = 1.0f; // unused
+				tmp[ 3 ] = 1.0f; // unused
 
 				floatToSnorm16( tmp, ptr[ v ].position );
 			}
@@ -359,7 +359,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 			{
 				vec4_t tmp;
 				VectorCopy( inData.xyz[ v ], tmp);
-				tmp[4] = 1.0f; // unused
+				tmp[ 3 ] = 1.0f; // unused
 
 				floatToSnorm16( tmp, ptr[ v ].position );
 			}
@@ -932,6 +932,9 @@ void R_InitVBOs( void )
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitVBOs -------\n" );
 
+	tess.verts = ( shaderVertex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_VERTEXES * sizeof( shaderVertex_t ) );
+	tess.indexes = ( glIndex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_INDEXES * sizeof( glIndex_t ) );
+
 	Com_InitGrowList( &tr.vbos, 100 );
 	Com_InitGrowList( &tr.ibos, 100 );
 
@@ -992,6 +995,9 @@ void R_ShutdownVBOs( void )
 
 	Com_DestroyGrowList( &tr.vbos );
 	Com_DestroyGrowList( &tr.ibos );
+
+	Com_Free_Aligned( tess.verts );
+	Com_Free_Aligned( tess.indexes );
 }
 
 /*
