@@ -1115,7 +1115,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 			glBufferSubData( GL_ARRAY_BUFFER, 0, tess.numVertexes * sizeof( shaderVertex_t ), tess.verts );
 		} else {
 			R_BindVBO( tess.vbo );
-			glFlushMappedBufferRange( GL_ARRAY_BUFFER, NULL,
+			glFlushMappedBufferRange( GL_ARRAY_BUFFER, 0,
 						  tess.numVertexes * sizeof( shaderVertex_t ) );
 			glUnmapBuffer( GL_ARRAY_BUFFER );
 			tess.vertexBase = tess.vertsWritten;
@@ -1135,7 +1135,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 			glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, tess.numIndexes * sizeof( glIndex_t ), tess.indexes );
 		} else {
 			R_BindIBO( tess.ibo );
-			glFlushMappedBufferRange( GL_ELEMENT_ARRAY_BUFFER, NULL,
+			glFlushMappedBufferRange( GL_ELEMENT_ARRAY_BUFFER, 0,
 						  tess.numIndexes * sizeof( glIndex_t ) );
 			glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
 			tess.indexBase = tess.indexesWritten;
