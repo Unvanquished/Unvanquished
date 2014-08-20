@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <GL/glew.h>
 
+#define DYN_BUFFER_SIZE ( 4 * 1024 * 1024 )
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
 
 typedef int8_t   i8vec4_t[ 4 ];
@@ -3378,6 +3379,8 @@ static inline float halfToFloat( int16_t in ) {
 	{
 		shaderVertex_t *verts;	 // at least SHADER_MAX_VERTEXES accessible
 		glIndex_t      *indexes; // at least SHADER_MAX_INDEXES accessible
+		uint32_t       vertsWritten, vertexBase;
+		uint32_t       indexesWritten, indexBase;
 
 		VBO_t       *vbo;
 		IBO_t       *ibo;
@@ -3412,6 +3415,10 @@ static inline float halfToFloat( int16_t in ) {
 
 		int           numSurfaceStages;
 		shaderStage_t **surfaceStages;
+
+		// preallocated host buffers for verts and indexes 
+		shaderVertex_t *vertsBuffer;
+		glIndex_t      *indexesBuffer;
 	} shaderCommands_t;
 
 	extern shaderCommands_t tess;
@@ -3462,6 +3469,7 @@ static inline float halfToFloat( int16_t in ) {
 	void Tess_AddCubeWithNormals( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color );
 
 	void Tess_InstantQuad( vec4_t quadVerts[ 4 ] );
+	void Tess_MapVBOs( qboolean forceCPU );
 	void Tess_UpdateVBOs( uint32_t attribBits );
 
 	void RB_ShowImages( void );

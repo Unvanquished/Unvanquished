@@ -3761,6 +3761,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 			out->origin[ i ] = ( mins[ i ] + maxs[ i ] ) * 0.5f;
 		}
 
+		Tess_MapVBOs( qtrue );
 		Tess_AddCube( vec3_origin, mins, maxs, colorWhite );
 
 		if ( j == 0 )
@@ -3784,6 +3785,9 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 		{
 			out->volumeIBO = volumeIBO;
 		}
+
+		tess.verts = NULL;
+		tess.indexes = NULL;
 
 		out->volumeVerts = tess.numVertexes;
 		out->volumeIndexes = tess.numIndexes;

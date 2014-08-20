@@ -687,8 +687,13 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 	{
 		uint32_t bit = BIT( i );
 		uint32_t frame = 0;
+		uint32_t base = 0;
 
-		if ( ( attribBits & bit ) && ( !( glState.vertexAttribPointersSet & bit ) || glState.vertexAttribsInterpolation >= 0 ) )
+		if( glState.currentVBO == tess.vbo ) {
+			base = tess.vertexBase * sizeof( shaderVertex_t );
+		}
+
+		if ( ( attribBits & bit ) != 0 )
 		{
 			const vboAttributeLayout_t *layout = &glState.currentVBO->attribs[ i ];
 
@@ -709,8 +714,7 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 				frame = glState.vertexAttribsOldFrame;
 			}
 
-			glVertexAttribPointer( i, layout->numComponents, layout->componentType, layout->normalize, layout->stride, BUFFER_OFFSET( layout->ofs + ( frame * layout->frameOffset ) ) );
-			glState.vertexAttribPointersSet |= bit;
+			glVertexAttribPointer( i, layout->numComponents, layout->componentType, layout->normalize, layout->stride, BUFFER_OFFSET( layout->ofs + ( frame * layout->frameOffset + base ) ) );
 		}
 	}
 }
@@ -6176,11 +6180,11 @@ const void     *RB_ScissorSet( const void *data )
 
 	if (tr.scissor.status )
 	{
-	    Tess_End();
-	    GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
+		Tess_End();
+		GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
 	}
 
-    return ( const void * )( cmd + 1 );
+	return ( const void * )( cmd + 1 );
 }
 
 const void     *RB_Draw2dPolys( const void *data )
@@ -6263,6 +6267,9 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
+	}
+
+	if( !tess.verts ) {
 		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
 	}
 
@@ -6292,7 +6299,6 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 	}
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
-	Tess_End();
 
 	shader->cullType = oldCullType;
 
@@ -6571,6 +6577,7 @@ const void *RB_RunVisTests( const void *data )
 			testState->running = qfalse;
 		}
 
+		Tess_MapVBOs( qfalse );
 		VectorSubtract( backEnd.orientation.viewOrigin,
 				test->position, diff );
 		VectorNormalize( diff );
@@ -6603,6 +6610,8 @@ const void *RB_RunVisTests( const void *data )
 		tess.indexes[ 5 ] = 3;
 		tess.numIndexes = 6;
 
+		Tess_UpdateVBOs( ATTR_POSITION );
+
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -6622,8 +6631,6 @@ const void *RB_RunVisTests( const void *data )
 		// bind u_ColorMap
 		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
-
-		Tess_UpdateVBOs( ATTR_POSITION );
 
 		GL_State( GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
 		glBeginQuery( GL_SAMPLES_PASSED, testState->hQueryRef );

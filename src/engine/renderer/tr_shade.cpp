@@ -200,7 +200,13 @@ void Tess_DrawElements()
 		}
 		else
 		{
-			glDrawRangeElements( GL_TRIANGLES, 0, tess.numVertexes, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
+			uint32_t base = 0;
+
+			if( glState.currentIBO == tess.ibo ) {
+				base = tess.indexBase * sizeof( glIndex_t );
+			}
+
+			glDrawRangeElements( GL_TRIANGLES, 0, tess.numVertexes, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( base ) );
 
 			backEnd.pc.c_drawElements++;
 
@@ -402,6 +408,8 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 		tess.surfaceShader = NULL;
 		tess.surfaceStages = NULL;
 	}
+
+	Tess_MapVBOs( ShaderRequiresCPUDeforms( state ) );
 
 	bool isSky = ( state != NULL && state->isSky != qfalse );
 

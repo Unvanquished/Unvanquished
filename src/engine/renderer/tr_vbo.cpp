@@ -899,6 +899,8 @@ static void R_InitUnitCubeVBO( void )
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 
+	Tess_MapVBOs( qtrue );
+
 	Tess_AddCube( vec3_origin, mins, maxs, colorWhite );
 
 	memset( &data, 0, sizeof( data ) );
@@ -919,7 +921,12 @@ static void R_InitUnitCubeVBO( void )
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.verts = NULL;
+	tess.indexes = NULL;
 }
+
+const int vertexCapacity = DYN_BUFFER_SIZE / sizeof( shaderVertex_t );
+const int indexCapacity = DYN_BUFFER_SIZE / sizeof( glIndex_t );
 
 /*
 ============
@@ -932,15 +939,24 @@ void R_InitVBOs( void )
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitVBOs -------\n" );
 
-	tess.verts = ( shaderVertex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_VERTEXES * sizeof( shaderVertex_t ) );
-	tess.indexes = ( glIndex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_INDEXES * sizeof( glIndex_t ) );
-
 	Com_InitGrowList( &tr.vbos, 100 );
 	Com_InitGrowList( &tr.ibos, 100 );
 
-	tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", SHADER_MAX_VERTEXES, attribs, VBO_LAYOUT_STATIC );
+	tess.vertsBuffer = ( shaderVertex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_VERTEXES * sizeof( shaderVertex_t ) );
+	tess.indexesBuffer = ( glIndex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_INDEXES * sizeof( glIndex_t ) );
+	if( !GLEW_ARB_map_buffer_range ) {
+		// use glBufferSubData to update VBO
+		tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", SHADER_MAX_VERTEXES, attribs, VBO_LAYOUT_STATIC );
 
-	tess.ibo = R_CreateDynamicIBO( "tessVertexArray_IBO", SHADER_MAX_INDEXES );
+		tess.ibo = R_CreateDynamicIBO( "tessVertexArray_IBO", SHADER_MAX_INDEXES );
+	} else {
+		// use glMapBufferRange to update VBO
+		tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", vertexCapacity, attribs, VBO_LAYOUT_STATIC );
+
+		tess.ibo = R_CreateDynamicIBO( "tessVertexArray_IBO", indexCapacity );
+		tess.vertsWritten = tess.indexesWritten = 0;
+	}
+
 
 	R_InitUnitCubeVBO();
 
@@ -967,6 +983,20 @@ void R_ShutdownVBOs( void )
 	IBO_t *ibo;
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_ShutdownVBOs -------\n" );
+
+	if( !GLEW_ARB_map_buffer_range ) {
+		// nothing
+	} else {
+		if( tess.verts != NULL && tess.verts != tess.vertsBuffer ) {
+			R_BindVBO( tess.vbo );
+			glUnmapBuffer( GL_ARRAY_BUFFER );
+		}
+
+		if( tess.indexes != NULL && tess.indexes != tess.indexesBuffer ) {
+			R_BindIBO( tess.ibo );
+			glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
+		}
+	}
 
 	R_BindNullVBO();
 	R_BindNullIBO();
@@ -996,8 +1026,58 @@ void R_ShutdownVBOs( void )
 	Com_DestroyGrowList( &tr.vbos );
 	Com_DestroyGrowList( &tr.ibos );
 
-	Com_Free_Aligned( tess.verts );
-	Com_Free_Aligned( tess.indexes );
+	Com_Free_Aligned( tess.vertsBuffer );
+	Com_Free_Aligned( tess.indexesBuffer );
+
+	tess.verts = tess.vertsBuffer = NULL;
+	tess.indexes = tess.indexesBuffer = NULL;
+}
+
+/*
+==============
+Tess_MapVBOs
+
+Map the default VBOs
+==============
+*/
+void Tess_MapVBOs( qboolean forceCPU ) {
+	if( forceCPU || !GLEW_ARB_map_buffer_range ) {
+		// use host buffers
+		tess.verts = tess.vertsBuffer;
+		tess.indexes = tess.indexesBuffer;
+
+		return;
+	}
+
+	if( tess.verts == NULL ) {
+		R_BindVBO( tess.vbo );
+
+		if( vertexCapacity - tess.vertsWritten < SHADER_MAX_VERTEXES ) {
+			// buffer is full, allocate a new one
+			glBufferData( GL_ARRAY_BUFFER, vertexCapacity * sizeof( shaderVertex_t ), NULL, GL_DYNAMIC_DRAW );
+			tess.vertsWritten = 0;
+		}
+		tess.verts = ( shaderVertex_t *) glMapBufferRange( 
+			GL_ARRAY_BUFFER, tess.vertsWritten * sizeof( shaderVertex_t ),
+			SHADER_MAX_VERTEXES * sizeof( shaderVertex_t ),
+			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT |
+			GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT );
+	}
+
+	if( tess.indexes == NULL ) {
+		R_BindIBO( tess.ibo );
+
+		if( indexCapacity - tess.indexesWritten < SHADER_MAX_INDEXES ) {
+			// buffer is full, allocate a new one
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, indexCapacity * sizeof( glIndex_t ), NULL, GL_DYNAMIC_DRAW );
+			tess.indexesWritten = 0;
+		}
+		tess.indexes = ( glIndex_t *) glMapBufferRange( 
+			GL_ELEMENT_ARRAY_BUFFER, tess.indexesWritten * sizeof( glIndex_t ),
+			SHADER_MAX_INDEXES * sizeof( glIndex_t ),
+			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT |
+			GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT );
+	}
 }
 
 /*
@@ -1019,8 +1099,6 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 	// update the default VBO
 	if ( tess.numVertexes > 0 && tess.numVertexes <= SHADER_MAX_VERTEXES )
 	{
-		R_BindVBO( tess.vbo );
-
 		GL_CheckErrors();
 
 		assert( ( attribBits & ATTR_BITS ) != 0 );
@@ -1032,7 +1110,19 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 			GLimp_LogComment( va( "glBufferSubData( vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 		}
 
-		glBufferSubData( GL_ARRAY_BUFFER, 0, tess.numVertexes * sizeof( shaderVertex_t ), tess.verts );
+		if( !GLEW_ARB_map_buffer_range ) {
+			R_BindVBO( tess.vbo );
+			glBufferSubData( GL_ARRAY_BUFFER, 0, tess.numVertexes * sizeof( shaderVertex_t ), tess.verts );
+		} else {
+			R_BindVBO( tess.vbo );
+			glFlushMappedBufferRange( GL_ARRAY_BUFFER, NULL,
+						  tess.numVertexes * sizeof( shaderVertex_t ) );
+			glUnmapBuffer( GL_ARRAY_BUFFER );
+			tess.vertexBase = tess.vertsWritten;
+			tess.vertsWritten += tess.numVertexes;
+
+			tess.verts = NULL;
+		}
 	}
 
 	GL_CheckErrors();
@@ -1040,9 +1130,19 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 	// update the default IBO
 	if ( tess.numIndexes > 0 && tess.numIndexes <= SHADER_MAX_INDEXES )
 	{
-		R_BindIBO( tess.ibo );
+		if( !GLEW_ARB_map_buffer_range ) {
+			R_BindIBO( tess.ibo );
+			glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, tess.numIndexes * sizeof( glIndex_t ), tess.indexes );
+		} else {
+			R_BindIBO( tess.ibo );
+			glFlushMappedBufferRange( GL_ELEMENT_ARRAY_BUFFER, NULL,
+						  tess.numIndexes * sizeof( glIndex_t ) );
+			glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
+			tess.indexBase = tess.indexesWritten;
+			tess.indexesWritten += tess.numIndexes;
 
-		glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, tess.numIndexes * sizeof( glIndex_t ), tess.indexes );
+			tess.indexes = NULL;
+		}
 	}
 
 	GL_CheckErrors();
