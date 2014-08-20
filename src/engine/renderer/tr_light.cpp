@@ -236,7 +236,7 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 	}
 
 	// compute z-component of direction
-	lightDir[ 2 ] = 1.0f - fabsf( lightDir[ 0 ] ) + fabsf( lightDir[ 1 ] );
+	lightDir[ 2 ] = 1.0f - fabsf( lightDir[ 0 ] ) - fabsf( lightDir[ 1 ] );
 	if( lightDir[ 2 ] < 0.0f ) {
 		float X = lightDir[ 0 ];
 		float Y = lightDir[ 1 ];
@@ -1098,25 +1098,51 @@ static void R_AddPointToLightScissor( trRefLight_t *light, const vec3_t world )
 	R_TransformWorldToClip( world, tr.viewParms.world.viewMatrix, tr.viewParms.projectionMatrix, eye, clip );
 	R_TransformClipToWindow( clip, &tr.viewParms, normalized, window );
 
-	if ( window[ 0 ] > light->scissor.coords[ 2 ] )
+	light->scissor.coords[ 0 ] = std::min( light->scissor.coords[ 0 ], ( int ) window[ 0 ] );
+	light->scissor.coords[ 1 ] = std::min( light->scissor.coords[ 1 ], ( int ) window[ 1 ] );
+	light->scissor.coords[ 2 ] = std::max( light->scissor.coords[ 2 ], ( int ) window[ 0 ] );
+	light->scissor.coords[ 3 ] = std::max( light->scissor.coords[ 3 ], ( int ) window[ 1 ] );
+}
+
+static int R_ClipEdgeToPlane( cplane_t plane, const vec3_t in_world1, const vec3_t in_world2, vec3_t out_world1, vec3_t out_world2 )
+{
+	vec3_t intersect;
+
+	// check edge to frustrum plane
+	int side1 = ( ( DotProduct( plane.normal, in_world1 ) - plane.dist ) >= 0.0 );
+	int side2 = ( ( DotProduct( plane.normal, in_world2 ) - plane.dist ) >= 0.0 );
+
+	int sides = side1 | ( side2 << 1 );
+
+	// edge completely behind plane
+	if ( !sides )
 	{
-		light->scissor.coords[ 2 ] = ( int ) window[ 0 ];
+		return 0;
 	}
 
-	if ( window[ 0 ] < light->scissor.coords[ 0 ] )
+	if ( !side1 || !side2 )
 	{
-		light->scissor.coords[ 0 ] = ( int ) window[ 0 ];
+		R_IntersectRayPlane( in_world1, in_world2, &plane, intersect );
 	}
 
-	if ( window[ 1 ] > light->scissor.coords[ 3 ] )
+	if ( !side1 )
 	{
-		light->scissor.coords[ 3 ] = ( int ) window[ 1 ];
+		VectorCopy( intersect, out_world1 );
+		VectorCopy( in_world2, out_world2 );
 	}
-
-	if ( window[ 1 ] < light->scissor.coords[ 1 ] )
+	else if ( !side2 )
 	{
-		light->scissor.coords[ 1 ] = ( int ) window[ 1 ];
+		VectorCopy( in_world1, out_world1 );
+		VectorCopy( intersect, out_world2 );
 	}
+	else
+	{
+		// edge doesn't intersect plane
+		VectorCopy( in_world1, out_world1 );
+		VectorCopy( in_world2, out_world2 );
+	}
+	
+	return sides;
 }
 
 /*
@@ -1124,54 +1150,53 @@ static void R_AddPointToLightScissor( trRefLight_t *light, const vec3_t world )
 R_AddEdgeToLightScissor
 =================
 */
-static void R_AddEdgeToLightScissor( trRefLight_t *light, vec3_t local1, vec3_t local2 )
+static void R_AddEdgeToLightScissor( trRefLight_t *light, const vec3_t in_world1, const vec3_t in_world2 )
 {
 	int      i;
-	vec3_t   intersect = { 0 };
-	vec3_t   world1, world2;
-	qboolean side1, side2;
 	cplane_t *frust;
+	vec3_t  clip1, clip2;
 
-	for ( i = 0; i < FRUSTUM_PLANES; i++ )
+	if ( r_lightScissors->integer == 1 )
 	{
-		R_LocalPointToWorld( local1, world1 );
-		R_LocalPointToWorld( local2, world2 );
-
-		frust = &tr.viewParms.frustums[ 0 ][ i ];
-
-		// check edge to frustrum plane
-		side1 = ( ( DotProduct( frust->normal, world1 ) - frust->dist ) >= 0.0 );
-		side2 = ( ( DotProduct( frust->normal, world2 ) - frust->dist ) >= 0.0 );
-
-		if ( glConfig2.occlusionQueryAvailable && i == FRUSTUM_NEAR )
+		// only clip against near plane
+		frust = &tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ];
+		int sides = R_ClipEdgeToPlane( *frust, in_world1, in_world2, clip1, clip2 );
+		if ( glConfig2.occlusionQueryAvailable && sides != 3 )
 		{
-			if ( !side1 || !side2 )
+			light->noOcclusionQueries = qtrue;
+		}
+		if ( !sides )
+		{
+			return;
+		}
+		R_AddPointToLightScissor( light, clip1 );
+		R_AddPointToLightScissor( light, clip2 );
+	}
+	else if ( r_lightScissors->integer == 2 )
+	{
+		// clip against all planes
+		for ( i = 0; i < FRUSTUM_PLANES; i++ )
+		{
+			frust = &tr.viewParms.frustums[ 0 ][ i ];
+
+			int sides = R_ClipEdgeToPlane( *frust, in_world1, in_world2, clip1, clip2 );
+
+			if ( glConfig2.occlusionQueryAvailable && i == FRUSTUM_NEAR )
 			{
-				light->noOcclusionQueries = qtrue;
+				if ( sides != 3 )
+				{
+					light->noOcclusionQueries = qtrue;
+				}
 			}
-		}
 
-		if ( !side1 && !side2 )
-		{
-			continue; // edge behind plane
-		}
+			if ( !sides )
+			{
+				continue; // edge behind plane
+			}
 
-		if ( !side1 || !side2 )
-		{
-			R_IntersectRayPlane( world1, world2, frust, intersect );
+			R_AddPointToLightScissor( light, clip1 );
+			R_AddPointToLightScissor( light, clip2 );
 		}
-
-		if ( !side1 )
-		{
-			VectorCopy( intersect, world1 );
-		}
-		else if ( !side2 )
-		{
-			VectorCopy( intersect, world2 );
-		}
-
-		R_AddPointToLightScissor( light, world1 );
-		R_AddPointToLightScissor( light, world2 );
 	}
 }
 
@@ -1192,32 +1217,21 @@ void R_SetupLightScissor( trRefLight_t *light )
 	light->scissor.coords[ 2 ] = tr.viewParms.viewportX + tr.viewParms.viewportWidth;
 	light->scissor.coords[ 3 ] = tr.viewParms.viewportY + tr.viewParms.viewportHeight;
 
-	light->clipsNearPlane = ( BoxOnPlaneSide( light->worldBounds[ 0 ], light->worldBounds[ 1 ], &tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ] ) == 3 );
-
 	if ( glConfig2.occlusionQueryAvailable )
 	{
 		light->noOcclusionQueries = qfalse;
 	}
 
-	// check if the light volume clips agains the near plane
-	if ( r_noLightScissors->integer || light->clipsNearPlane )
+	if ( r_lightScissors->integer == 0 )
 	{
 		if ( glConfig2.occlusionQueryAvailable )
 		{
 			light->noOcclusionQueries = qtrue;
 		}
-
 		return;
 	}
 
-	if ( !r_dynamicBspOcclusionCulling->integer )
-	{
-		// don't calculate the light scissors because there are up to 500 realtime lights in the view frustum
-		// that were not killed by the PVS
-		return;
-	}
-
-	// transform local light corners to world space -> eye space -> clip space -> window space
+	// transform world light corners to eye space -> clip space -> window space
 	// and extend the light scissor's mins maxs by resulting window coords
 	light->scissor.coords[ 0 ] = 100000000;
 	light->scissor.coords[ 1 ] = 100000000;
@@ -1229,54 +1243,54 @@ void R_SetupLightScissor( trRefLight_t *light )
 		case RL_OMNI:
 			{
 				// top plane
-				VectorSet( v1, light->localBounds[ 1 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 0 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->localBounds[ 1 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 1 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->localBounds[ 0 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 0 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->localBounds[ 0 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 1 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
 				// bottom plane
-				VectorSet( v1, light->localBounds[ 1 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 0 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->localBounds[ 1 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 1 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->localBounds[ 0 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 0 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->localBounds[ 0 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 1 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
 				// sides
-				VectorSet( v1, light->localBounds[ 0 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 0 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->localBounds[ 1 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 1 ][ 0 ], light->localBounds[ 1 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->localBounds[ 0 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 0 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->localBounds[ 1 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->localBounds[ 1 ][ 0 ], light->localBounds[ 0 ][ 1 ], light->localBounds[ 1 ][ 2 ] );
+				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
 				R_AddEdgeToLightScissor( light, v1, v2 );
 				break;
 			}
@@ -1285,7 +1299,12 @@ void R_SetupLightScissor( trRefLight_t *light )
 			{
 				int    j;
 				vec3_t farCorners[ 4 ];
-				const vec4_t *frustum = (const vec4_t *)light->localFrustum;
+				vec4_t frustum[ 6 ];
+				for ( j = 0; j < 6; j++ )
+				{
+					VectorCopy( light->frustum[ j ].normal, frustum[ j ] );
+					frustum[ j ][ 3 ] = light->frustum[ j ].dist;
+				}
 
 				R_CalcFrustumFarCorners( frustum, farCorners );
 
