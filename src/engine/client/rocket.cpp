@@ -527,7 +527,9 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 {
 	const char *p;
 	Rocket::Core::String out;
-	qboolean span = qfalse;
+	Rocket::Core::String spanstr;
+	bool span = false;
+	bool spanHasContent = false;
 
 	if ( !*in )
 	{
@@ -538,26 +540,44 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 	{
 		if ( *p == '<' )
 		{
+			if ( span && !spanHasContent )
+			{
+				spanHasContent = true;
+				out.Append( spanstr );
+			}
 			out.Append( "&lt;" );
 		}
 		else if ( *p == '>' )
 		{
+			if ( span && !spanHasContent )
+			{
+				spanHasContent = true;
+				out.Append( spanstr );
+			}
 			out.Append( "&gt;" );
 		}
 		else if ( *p == '&' )
 		{
+			if ( span && !spanHasContent )
+			{
+				spanHasContent = true;
+				out.Append( spanstr );
+			}
 			out.Append( "&amp;" );
 		}
 		else if ( *p == '\n' )
 		{
-			out.Append( span ? "</span><br />" : "<br />" );
-			span = qfalse;
+			out.Append( span && spanHasContent ? "</span><br />" : "<br />" );
+			span = false;
+			spanHasContent = false;
 		}
 		else if ( Q_IsColorString( p ) )
 		{
-			if ( span )
+			if ( span && spanHasContent )
 			{
 				out.Append( "</span>" );
+				span = false;
+				spanHasContent = false;
 			}
 
 			char rgb[32];
@@ -568,16 +588,24 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			          (int)( g_color_table[ code ][ 1 ] * 255 ),
 			          (int)( g_color_table[ code ][ 2 ] * 255 ) );
 
-			out.Append( rgb );
+			// don't add the span yet, because it might be empty
+			spanstr = rgb;
 
-			span = qtrue;
+			span = true;
+			spanHasContent = false;
 		}
 		else
 		{
+			if ( span && !spanHasContent )
+			{
+				out.Append( spanstr );
+				spanHasContent = true;
+			}
 			out.Append( *p );
 		}
 	}
-	if ( span )
+
+	if ( span && spanHasContent )
 	{
 		out.Append( "</span>" );
 	}

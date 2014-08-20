@@ -45,9 +45,14 @@
 				width: 45%;
 				height: 50%;
 			}
+
+			.circlemenu button img
+			{
+				color: rgb(230,230,230);
+			}
 		</style>
 	</head>
-	<body id="beacons" class="circlemenu" onShow="buildDS beaconList default"q>
+	<body id="ingame_beaconmenu" class="circlemenu" onShow="buildDS beaconList default">
 		<div id="foo">
 			<tabset class="circlemenu">
 				<tab>Beacons</tab>

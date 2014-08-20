@@ -117,8 +117,9 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 			break;
 
 		case GAME_INIT:
-			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart) {
+			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart, bool cheats) {
 				FS::Initialize();
+				g_cheats.integer = cheats;
 				G_InitGame(levelTime, randomSeed, restart);
 			});
 			break;
@@ -240,9 +241,9 @@ int trap_Milliseconds(void)
 	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
-void trap_SendConsoleCommand(int exec_when, const char *text)
+void trap_SendConsoleCommand(const char *text)
 {
-	VM::SendMsg<SendConsoleCommandMsg>(exec_when, text);
+	VM::SendMsg<SendConsoleCommandMsg>(text);
 }
 
 int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
@@ -326,7 +327,8 @@ qboolean trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_
 	return G_CM_EntityContact( mins, maxs, ent, TT_AABB );
 }
 
-void trap_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask)
+void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+                 const vec3_t end, int passEntityNum, int contentmask, int skipmask )
 {
 	vec3_t origin = {0.0f, 0.0f, 0.0f};
 	if (!mins) {
@@ -335,12 +337,7 @@ void trap_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const v
 	if (!maxs) {
 		mins = origin;
 	}
-	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, TT_AABB);
-}
-
-void trap_TraceNoEnts(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask)
-{
-	trap_Trace(results, start, mins, maxs, end, -2, contentmask);
+	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, skipmask, TT_AABB);
 }
 
 int trap_PointContents(const vec3_t point, int passEntityNum)

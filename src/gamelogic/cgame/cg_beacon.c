@@ -303,7 +303,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 	{
 		trace_t tr;
 
-		CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, b->s->origin, ENTITYNUM_NONE, CONTENTS_SOLID );
+		CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, b->s->origin, ENTITYNUM_NONE, CONTENTS_SOLID, 0 );
 
 		target = ( ( tr.fraction > 1.0f - FLT_EPSILON ) ? 1.0 : 0.0 );
 		CG_ExponentialFade( &b->s->t_occlusion, target, 10 );

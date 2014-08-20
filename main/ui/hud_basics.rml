@@ -19,7 +19,7 @@
 			right:0;
 
 			text-align: right;
-			width: 25em;
+			width: 50em;
 			height: 25em;
 		}
 		region.tutorial {
@@ -47,8 +47,6 @@
 			background-color: #1E1E1E1E;
 		}
 
-
-
 		minimap {
 			display: block;
 			width: 12em;
@@ -60,19 +58,15 @@
 		}
 		statsbox {
 			display: block;
-			width: 10em;
-			height: 10em;
+			width: 25em;
+			height: 12em;
+			padding: 0.5em;
 
 			float:right;
 		}
 		stat {
 			display: block;
-			margin: 0.5em;
-			margin-bottom: 0.3em;
-			font-size: 18px;
 		}
-
-
 
 		crosshair,
 		crosshair_indicator
@@ -82,6 +76,8 @@
 			margin: auto auto;
 			width: 100%;
 			height: auto;
+
+			color: #FFFFFF77;  /* Transparency */
 
 		}
 		crosshair_name
@@ -108,11 +104,6 @@
 			font-size: 1.5em;
 			background-color: red;
 		}
-
-
-
-
-
 		speedometer
 		{
 			width: 100%;
@@ -124,19 +115,13 @@
 			padding: 5%;
 		}
 
-
 		location {
-			font-size: 18px;
-			margin-right: 1em;
+			display: block;
+			font-size: 1.5em;
 			width: 100%;
+			height: 1.5em;
 		}
 
-		locationbox {
-			display: block;
-			clear: both;
-			width: 25em;
-			text-align: right;
-		}
 
 	</style>
 </head>
@@ -149,6 +134,8 @@
 		</if>
 
 		<statsbox>
+			<location />
+
 			<if cvar="cg_drawTimer" condition="==" value="1">
 				<stat>Game <timer /></stat>
 			</if>
@@ -169,9 +156,6 @@
 
 		</statsbox>
 
-		<locationbox>
-			<location />
-		</locationbox>
 
 		<p><votes /></p>
 		<p><votes_team /></p>

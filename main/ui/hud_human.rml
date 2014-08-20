@@ -171,28 +171,34 @@
 			{
 				position: absolute;
 				width: 40%;
-				height: 10%;
-				bottom: 0px;
+				height: 6%;
+				bottom: 2%;
 				margin-left: auto;
 				margin-right: auto;
+
+				vertical-align: bottom;
 			}
 
 			momentum_bar
 			{
 				width: 100%;
-				height: 30%;
-				border-width: 1px;
-				background-color: #00F8FF20; /* General bar color */
-				color: #00F8FFAA; /* Filled-section bar color */
+				height: 50%;
+				background-color: #6EFBFF20; /* General bar color */
+				color: #6EFBFF40; /* Filled-section bar color */
 			}
 
 			unlocked_items
 			{
 				width: 100%;
-				height: 30%;
-				cell-color: #00F8FF40;
-				border-width: 1px;
-				color: #aaffffff;
+				height: 50%;
+				/* Two-colour system. HACK
+					locked colour = CSS cell-color
+					unlocked colour = CSS color
+				 */
+				cell-color: #22888860;
+				color: #88FFFF90;
+
+				border-width: 0px;
 			}
 
 			usable_buildable

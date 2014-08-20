@@ -30,9 +30,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Common.h"
 
-// FIXME: Code in common shouldn't depend on framework
-#include "../engine/framework/CvarSystem.h"
-
 namespace Cvar {
 
     CvarProxy::CvarProxy(std::string name, int flags, std::string defaultValue)

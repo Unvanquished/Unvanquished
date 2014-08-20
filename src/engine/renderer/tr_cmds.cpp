@@ -53,10 +53,9 @@ void R_PerformanceCounters( void )
 		           backEnd.pc.c_occlusionQueriesLightsCulled,
 		           tr.pc.c_dlightInteractions + tr.pc.c_slightInteractions - backEnd.pc.c_occlusionQueriesInteractionsCulled );
 
-		ri.Printf( PRINT_ALL, "%i draws %i queries %i CHC++ ms %i vbos %i ibos %i verts %i tris\n",
+		ri.Printf( PRINT_ALL, "%i draws %i queries %i vbos %i ibos %i verts %i tris\n",
 		           backEnd.pc.c_drawElements,
 		           tr.pc.c_occlusionQueries,
-		           tr.pc.c_CHCTime,
 		           backEnd.pc.c_vboVertexBuffers, backEnd.pc.c_vboIndexBuffers,
 		           backEnd.pc.c_vboVertexes, backEnd.pc.c_vboIndexes / 3 );
 
@@ -128,8 +127,7 @@ void R_PerformanceCounters( void )
 	}
 	else if ( r_speeds->integer == RSPEEDS_CHC )
 	{
-		ri.Printf( PRINT_ALL, "%i CHC++ ms %i queries %i multi queries %i saved\n",
-		           tr.pc.c_CHCTime,
+		ri.Printf( PRINT_ALL, "%i queries %i multi queries %i saved\n",
 		           tr.pc.c_occlusionQueries,
 		           tr.pc.c_occlusionQueriesMulti,
 		           tr.pc.c_occlusionQueriesSaved );

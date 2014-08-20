@@ -331,7 +331,7 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
       continue;
 
     trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
-                e->r.currentOrigin, e->s.number, e->clipmask );
+                e->r.currentOrigin, e->s.number, e->clipmask, 0 );
 
     if( tr.entityNum != ENTITYNUM_NONE )
       G_Damage( e, ent, activator, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_CRUSH );
@@ -1020,7 +1020,7 @@ qboolean G_LineOfSight( const gentity_t *ent1, const gentity_t *ent2 )
 		return qfalse;
 	}
 
-	trap_Trace( &trace, ent1->s.origin, NULL, NULL, ent2->s.origin, ent1->s.number, MASK_SHOT );
+	trap_Trace( &trace, ent1->s.origin, NULL, NULL, ent2->s.origin, ent1->s.number, MASK_SHOT, 0 );
 
 	return ( trace.entityNum == ent2->s.number );
 }
@@ -1029,7 +1029,8 @@ qboolean G_LineOfSight( const vec3_t point1, const vec3_t point2, const gentity_
 {
 	trace_t trace;
 
-	trap_Trace( &trace, point1, NULL, NULL, point2, ignore ? ignore->s.number : -1, CONTENTS_SOLID );
+	trap_Trace( &trace, point1, NULL, NULL, point2, ignore ? ignore->s.number : ENTITYNUM_NONE,
+	            CONTENTS_SOLID, 0 );
 
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }
