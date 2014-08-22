@@ -83,13 +83,10 @@ public:
 			lastTime = lines[ line ].time;
 
 			// Find out how many lines
-			while ( lines[ line ].time >= lastTime )
-			{
-				line++;
-			}
+			while ( line < lines.size() && lines[ line++ ].time >= lastTime );
 
 			// Each line gets its own span element
-			for (; line >= 0; --line, numLines++ )
+			for (line = line - 1; line >= 0; --line, numLines++ )
 			{
 				Rocket::Core::Element *child = Rocket::Core::Factory::InstanceElement( this, "#text", "span", Rocket::Core::XMLAttributes() );
 				Rocket::Core::Factory::InstanceElementText( child, Rocket_QuakeToRML( lines[ line ].text.CString(), RP_EMOTICONS ));
