@@ -73,6 +73,12 @@
 				font-size: 1.5em;
 			}
 
+			.trem-emoticon {
+				color: white;
+				height: 1em;
+				width: auto;
+			}
+
 		</style>
 		<title>Loading</title>
 	</head>
