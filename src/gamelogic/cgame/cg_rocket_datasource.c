@@ -792,6 +792,7 @@ void CG_Rocket_SetAlOutputsOutput( const char *table, int index )
 {
 	rocketInfo.data.alOutputIndex = index;
 	trap_Cvar_Set( "audio.al.device", rocketInfo.data.alOutputs[ index ] );
+	trap_Cvar_AddFlags( "audio.al.device", CVAR_ARCHIVE );
 }
 
 void CG_Rocket_BuildAlOutputs( const char *args )
