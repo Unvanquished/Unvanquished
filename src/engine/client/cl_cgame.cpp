@@ -41,6 +41,7 @@ Maryland 20850 USA.
 #include "../qcommon/crypto.h"
 
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
@@ -1519,6 +1520,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_CVAR_VARIABLEVALUE:
 			cls.nCgameUselessSyscalls ++;
 			return FloatAsInt( Cvar_VariableValue( (char*) VMA( 1 ) ) );
+
+		case CG_CVAR_ADDFLAGS:
+			cls.nCgameUselessSyscalls ++;
+			Cvar::AddFlags( ( const char * ) VMA( 1 ), args[ 2 ] );
+			return 0;
 
 		case CG_ARGC:
 			cls.nCgameUselessSyscalls ++;

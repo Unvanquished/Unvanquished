@@ -130,6 +130,12 @@ float trap_Cvar_VariableValue( const char *var_name )
 	return fi.f;
 }
 
+void trap_Cvar_AddFlags(const char* var_name, int flags)
+{
+	syscallVM( CG_CVAR_ADDFLAGS, var_name, flags );
+}
+
+
 //08.
 //return Cmd_Argc();
 int trap_Argc( void )
