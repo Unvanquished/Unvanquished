@@ -791,20 +791,29 @@ static void AddToAlOutputs( char *name )
 void CG_Rocket_SetAlOutputsOutput( const char *table, int index )
 {
 	rocketInfo.data.alOutputIndex = index;
+	trap_Cvar_Set( "audio.al.device", rocketInfo.data.alOutputs[ index ] );
 }
 
 void CG_Rocket_BuildAlOutputs( const char *args )
 {
-	char buf[ MAX_STRING_CHARS ];
+	char buf[ MAX_STRING_CHARS ], currentDevice[ MAX_STRING_CHARS ];
 	char *p, *head;
 	int outputs = 0;
 
+	trap_Cvar_VariableStringBuffer( "audio.al.device", currentDevice, sizeof( currentDevice ) );
 	trap_Cvar_VariableStringBuffer( "audio.al.availableDevices", buf, sizeof( buf ) );
 	head = buf;
 
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
 		*p = '\0';
+
+		// Set current device
+		if ( !Q_stricmp( currentDevice, head ) )
+		{
+			rocketInfo.data.alOutputIndex = rocketInfo.data.alOutputsCount;
+		}
+
 		AddToAlOutputs( BG_strdup( head ) );
 		head = p + 1;
 	}
