@@ -97,12 +97,12 @@ public:
 			{
 				if ( event == "blur" && ( type != "checkbox" && type != "radio" ) )
 				{
-					Cvar::SetValue( cvar.CString(), GetValue().CString() );
+					SetCvarValueAndFlags( cvar, GetValue() );
 				}
 
 				else if ( event == "change" && type == "range" )
 				{
-					Cvar::SetValue( cvar.CString(), GetValue().CString() );
+					SetCvarValueAndFlags( cvar, GetValue() );
 				}
 
 				else if ( event == "click" && !IsDisabled() )
@@ -111,18 +111,18 @@ public:
 					{
 						if ( HasAttribute( "checked" ) )
 						{
-							Cvar::SetValue( cvar.CString(), "1" );
+							SetCvarValueAndFlags( cvar, "1" );
 						}
 
 						else
 						{
-							Cvar::SetValue( cvar.CString(), "0" );
+							SetCvarValueAndFlags( cvar, "0" );
 						}
 					}
 
 					else if ( type == "radio" )
 					{
-						Cvar::SetValue( cvar.CString(), GetValue().CString() );
+						SetCvarValueAndFlags( cvar, GetValue() );
 					}
 				}
 			}
@@ -171,6 +171,12 @@ public:
 	}
 
 private:
+	void SetCvarValueAndFlags( const Rocket::Core::String& cvar, const Rocket::Core::String& value )
+	{
+		Cvar::SetValue( cvar.CString(), value.CString() );
+		Cvar::AddFlags( cvar.CString(), Cvar::USER_ARCHIVE );
+	}
+
 	Rocket::Core::String cvar;
 	Rocket::Core::String type;
 	Rocket::Core::Element *owner;

@@ -1635,7 +1635,7 @@ qboolean G_admin_cmd_check( gentity_t *ent )
 				return qtrue;
 			}
 
-			trap_SendConsoleCommand( EXEC_APPEND, c->exec );
+			trap_SendConsoleCommand( c->exec );
 		}
 		else
 		{
@@ -3244,7 +3244,7 @@ qboolean G_admin_changemap( gentity_t *ent )
 	admin_log( map );
 	admin_log( layout );
 
-	trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s", Quote( map ), Quote( layout ) ) );
+	trap_SendConsoleCommand( va( "map %s %s", Quote( map ), Quote( layout ) ) );
 
 	level.restarted = qtrue;
 	G_MapLog_Result( 'M' );
@@ -4385,7 +4385,7 @@ qboolean G_admin_restart( gentity_t *ent )
 		trap_Cvar_Set( "g_lockTeamsAtStart", "1" );
 	}
 
-	trap_SendConsoleCommand( EXEC_APPEND, "map_restart" );
+	trap_SendConsoleCommand( "map_restart" );
 	G_MapLog_Result( 'R' );
 
 	AP( va( "print_tr %s %s %s %s %s %s %s %s", QQ( N_("^3restart: ^7map restarted by $1$ $2$$3t$$4$$5$$6t$$7$\n") ),
@@ -5412,7 +5412,7 @@ qboolean G_admin_l0( gentity_t *ent )
 		return qfalse;
 	}
 
-	trap_SendConsoleCommand( EXEC_APPEND, va( "setlevel %d 0;", id ) );
+	trap_SendConsoleCommand( va( "setlevel %d 0;", id ) );
 
 	AP( va( "print_tr %s %s %s", QQ( N_("^3l0: ^7name protection for $1$^7 removed by $2$\n") ),
 	        G_quoted_user_name( vic, a->name ),
@@ -5454,7 +5454,7 @@ qboolean G_admin_l1( gentity_t *ent )
 		return qfalse;
 	}
 
-	trap_SendConsoleCommand( EXEC_APPEND, va( "setlevel %d 1;", id ) );
+	trap_SendConsoleCommand( va( "setlevel %d 1;", id ) );
 
 	AP( va( "print_tr %s %s %s", QQ( N_("^3l1: ^7name protection for $1$^7 enabled by $2$\n") ),
 	        G_quoted_user_name( vic, a->name ),
@@ -5482,7 +5482,7 @@ qboolean G_admin_register( gentity_t *ent )
 		return qfalse;
 	}
 
-	trap_SendConsoleCommand( EXEC_APPEND, va( "setlevel %d %d;",
+	trap_SendConsoleCommand( va( "setlevel %d %d;",
 	                         ( int )( ent - g_entities ),
 	                         level ) );
 
@@ -5505,7 +5505,7 @@ qboolean G_admin_unregister( gentity_t *ent )
 		return qfalse;
 	}
 
-	trap_SendConsoleCommand( EXEC_APPEND, va( "setlevel %d 0;",
+	trap_SendConsoleCommand( va( "setlevel %d 0;",
 	                         ( int )( ent - g_entities ) ) );
 
 	AP( va( "print_tr %s %s", QQ( N_("^3unregister: ^7$1$^7 is now an unprotected name\n") ),

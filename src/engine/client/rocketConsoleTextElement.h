@@ -70,7 +70,7 @@ public:
 			lines.pop_back();
 		}
 
-		while ( GetNumChildren() && atoi( GetFirstChild()->GetId().CString() ) + latency < time )
+		while ( HasChildNodes() && atoi( GetFirstChild()->GetId().CString() ) + latency < time )
 		{
 			RemoveChild( GetFirstChild() );
 			numLines--;
@@ -83,13 +83,13 @@ public:
 			lastTime = lines[ line ].time;
 
 			// Find out how many lines
-			while ( lines[ line ].time > lastTime )
+			while ( line < lines.size() && lines[ line ].time >= lastTime )
 			{
 				line++;
 			}
 
 			// Each line gets its own span element
-			for (; line >= 0; --line, numLines++ )
+			for (line = line - 1; line >= 0; --line, numLines++ )
 			{
 				Rocket::Core::Element *child = Rocket::Core::Factory::InstanceElement( this, "#text", "span", Rocket::Core::XMLAttributes() );
 				Rocket::Core::Factory::InstanceElementText( child, Rocket_QuakeToRML( lines[ line ].text.CString(), RP_EMOTICONS ));
@@ -100,7 +100,7 @@ public:
 		}
 
 		// Calculate max lines when we have a child element with a fontface
-		if ( dirty_height && GetNumChildren() )
+		if ( dirty_height && HasChildNodes() )
 		{
 			const Rocket::Core::FontFaceHandle *font = GetFirstChild()->GetFontFaceHandle();
 			if ( font )

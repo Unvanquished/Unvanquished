@@ -1084,20 +1084,22 @@ void ASpawn_Think( gentity_t *self )
 			// If it's part of the map, kill self.
 			if ( ent->s.eType == ET_BUILDABLE )
 			{
-				if ( ent->builtBy && ent->builtBy->slot >= 0 ) // don't queue the bp from this
+				if ( ent->builtBy && ent->builtBy->slot >= 0 )
 				{
-					G_Damage( ent, NULL, g_entities + ent->builtBy->slot, NULL, NULL, 10000, 0, MOD_SUICIDE );
+					G_Damage( ent, NULL, g_entities + ent->builtBy->slot, NULL, NULL, 10000,
+					          DAMAGE_NO_PROTECTION, MOD_SUICIDE );
 				}
 				else
 				{
-					G_Damage( ent, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
+					G_Damage( ent, NULL, NULL, NULL, NULL, 10000, DAMAGE_NO_PROTECTION,
+					          MOD_SUICIDE );
 				}
 
 				G_SetBuildableAnim( self, BANIM_SPAWN1, qtrue );
 			}
 			else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER )
 			{
-				G_Damage( self, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
+				G_Damage( self, NULL, NULL, NULL, NULL, 10000, DAMAGE_NO_PROTECTION, MOD_SUICIDE );
 				return;
 			}
 			else if( g_antiSpawnBlock.integer &&
@@ -1108,7 +1110,7 @@ void ASpawn_Think( gentity_t *self )
 
 			if ( ent->s.eType == ET_CORPSE )
 			{
-				G_FreeEntity( ent );  //quietly remove
+				G_FreeEntity( ent );
 			}
 		}
 		else

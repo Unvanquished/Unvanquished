@@ -176,7 +176,7 @@ typedef IPC::Message<IPC::Id<VM::QVM, G_PRINT>, std::string> PrintMsg;
 typedef IPC::Message<IPC::Id<VM::QVM, G_ERROR>, std::string> ErrorMsg;
 // LogMsg TODO
 // SendConsoleCommandMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_CONSOLE_COMMAND>, int, std::string> SendConsoleCommandMsg;
+typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_CONSOLE_COMMAND>, std::string> SendConsoleCommandMsg;
 
 // FSFOpenFileMsg
 typedef IPC::SyncMessage<

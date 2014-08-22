@@ -327,14 +327,52 @@ void CG_Rocket_BuildServerList( const char *args )
 
 static int ServerListCmpByPing( const void *one, const void *two )
 {
-	server_t *a = ( server_t * ) one;
-	server_t *b = ( server_t * ) two;
+	server_t* a = ( server_t* ) one;
+	server_t* b = ( server_t* ) two;
 
 	if ( a->ping > b->ping ) return 1;
 
 	if ( b->ping > a->ping ) return -1;
 
 	if ( a->ping == b->ping )  return 0;
+
+	return 0; // silence compiler
+}
+
+static int ServerListCmpByName( const void* one, const void* two )
+{
+	static char cleanName1[ MAX_STRING_CHARS ] = { 0 };
+	static char cleanName2[ MAX_STRING_CHARS ] = { 0 };
+	server_t* a = ( server_t* ) one;
+	server_t* b = ( server_t* ) two;
+
+	Q_strncpyz( cleanName1, a->name, sizeof( cleanName1 ) );
+	Q_strncpyz( cleanName2, b->name, sizeof( cleanName2 ) );
+
+	Q_CleanStr( cleanName1 );
+	Q_CleanStr( cleanName2 );
+
+	return Q_stricmp( cleanName1, cleanName2 );
+}
+
+static int ServerListCmpByMap( const void* one, const void* two )
+{
+	server_t* a = ( server_t* ) one;
+	server_t* b = ( server_t* ) two;
+
+	return Q_stricmp( a->mapName, b->mapName );
+}
+
+static int ServerListCmpByPlayers( const void* one, const void* two )
+{
+	server_t* a = ( server_t* ) one;
+	server_t* b = ( server_t* ) two;
+
+	if ( a->clients > b->clients ) return 1;
+
+	if ( b->clients > a->clients ) return -1;
+
+	if ( a->clients == b->clients )  return 0;
 
 	return 0; // silence compiler
 }
@@ -348,6 +386,18 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 	if ( !Q_stricmp( sortBy, "ping" ) )
 	{
 		qsort( rocketInfo.data.servers[ netSrc ], rocketInfo.data.serverCount[ netSrc ], sizeof( server_t ), &ServerListCmpByPing );
+	}
+	else if ( !Q_stricmp( sortBy, "name" ) )
+	{
+		qsort( rocketInfo.data.servers[ netSrc ], rocketInfo.data.serverCount[ netSrc ], sizeof( server_t ), &ServerListCmpByName );
+	}
+	else if ( !Q_stricmp( sortBy, "players" ) )
+	{
+		qsort( rocketInfo.data.servers[ netSrc ], rocketInfo.data.serverCount[ netSrc ], sizeof( server_t ), &ServerListCmpByPlayers );
+	}
+	else if ( !Q_stricmp( sortBy, "map" ) )
+	{
+		qsort( rocketInfo.data.servers[ netSrc ], rocketInfo.data.serverCount[ netSrc ], sizeof( server_t ), &ServerListCmpByMap );
 	}
 
 	trap_Rocket_DSClearTable( "server_browser", name );
@@ -741,20 +791,29 @@ static void AddToAlOutputs( char *name )
 void CG_Rocket_SetAlOutputsOutput( const char *table, int index )
 {
 	rocketInfo.data.alOutputIndex = index;
+	trap_Cvar_Set( "audio.al.device", rocketInfo.data.alOutputs[ index ] );
 }
 
 void CG_Rocket_BuildAlOutputs( const char *args )
 {
-	char buf[ MAX_STRING_CHARS ];
+	char buf[ MAX_STRING_CHARS ], currentDevice[ MAX_STRING_CHARS ];
 	char *p, *head;
 	int outputs = 0;
 
+	trap_Cvar_VariableStringBuffer( "audio.al.device", currentDevice, sizeof( currentDevice ) );
 	trap_Cvar_VariableStringBuffer( "audio.al.availableDevices", buf, sizeof( buf ) );
 	head = buf;
 
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
 		*p = '\0';
+
+		// Set current device
+		if ( !Q_stricmp( currentDevice, head ) )
+		{
+			rocketInfo.data.alOutputIndex = rocketInfo.data.alOutputsCount;
+		}
+
 		AddToAlOutputs( BG_strdup( head ) );
 		head = p + 1;
 	}
