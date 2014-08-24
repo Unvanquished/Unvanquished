@@ -35,14 +35,11 @@ added to the sorting list.
 This will also allow mirrors on both sides of a model without recursion.
 ================
 */
-static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *frontFace )
+static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader )
 {
 	srfGeneric_t *gen;
 	int          cull;
 	float        d;
-
-	// force to non-front facing
-	*frontFace = 0;
 
 	// allow culling to be disabled
 	if ( r_nocull->integer )
@@ -69,11 +66,6 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 	{
 		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )gen;
 		d = DotProduct( tr.orientation.viewOrigin, srf->plane.normal ) - srf->plane.dist;
-
-		if ( d > 0.0f )
-		{
-			*frontFace = 1;
-		}
 
 		// don't cull exactly on the plane, because there are levels of rounding
 		// through the BSP, ICD, and hardware that may cause pixel gaps if an
@@ -303,8 +295,6 @@ R_AddWorldSurface
 */
 static qboolean R_AddWorldSurface( bspSurface_t *surf )
 {
-	int      frontFace;
-
 	if ( surf->viewCount == tr.viewCountNoReset )
 	{
 		return qfalse;
@@ -313,7 +303,7 @@ static qboolean R_AddWorldSurface( bspSurface_t *surf )
 	surf->viewCount = tr.viewCountNoReset;
 
 	// try to cull before lighting or adding
-	if ( R_CullSurface( surf->data, surf->shader, &frontFace ) )
+	if ( R_CullSurface( surf->data, surf->shader ) )
 	{
 		return qtrue;
 	}
@@ -337,8 +327,6 @@ R_AddBrushModelSurface
 */
 static void R_AddBrushModelSurface( bspSurface_t *surf, int fogIndex )
 {
-	int frontFace;
-
 	if ( surf->viewCount == tr.viewCountNoReset )
 	{
 		return; // already in this view
@@ -347,7 +335,7 @@ static void R_AddBrushModelSurface( bspSurface_t *surf, int fogIndex )
 	surf->viewCount = tr.viewCountNoReset;
 
 	// try to cull before lighting or adding
-	if ( R_CullSurface( surf->data, surf->shader, &frontFace ) )
+	if ( R_CullSurface( surf->data, surf->shader ) )
 	{
 		return;
 	}
