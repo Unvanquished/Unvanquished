@@ -851,9 +851,9 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	{
 		// update locals
 		entity = drawSurf->entity;
-		shader = tr.sortedShaders[ drawSurf->shaderNum ];
-		lightmapNum = drawSurf->lightmapNum;
-		fogNum = drawSurf->fogNum;
+		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
+		lightmapNum = drawSurf->lightmapNum();
+		fogNum = drawSurf->fogNum();
 
 		if( entity == &tr.worldEntity ) {
 			if( !( drawSurfFilter & DRAWSURFACES_WORLD ) )
@@ -1001,7 +1001,7 @@ static void RB_RenderOpaqueSurfacesIntoDepth( bool onlyWorld )
 	{
 		// update locals
 		entity = drawSurf->entity;
-		shader = tr.sortedShaders[ drawSurf->shaderNum ];
+		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
 		alphaTest = shader->alphaTest;
 
 		// skip all translucent surfaces that don't matter for this pass

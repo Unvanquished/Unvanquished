@@ -156,6 +156,18 @@ static inline float halfToFloat( int16_t in ) {
 // shouldn't matter
 #define MAX_VISTESTS          256
 
+#define MAX_MOD_KNOWN      1024
+#define MAX_ANIMATIONFILES 4096
+
+#define MAX_LIGHTMAPS      256
+#define MAX_SKINS          1024
+
+#define MAX_DRAWSURFS      0x10000
+#define DRAWSURF_MASK      ( MAX_DRAWSURFS - 1 )
+
+#define MAX_INTERACTIONS   MAX_DRAWSURFS * 8
+#define INTERACTION_MASK   ( MAX_INTERACTIONS - 1 )
+
 	typedef enum
 	{
 	  RSPEEDS_GENERAL = 1,
@@ -1603,14 +1615,84 @@ static inline float halfToFloat( int16_t in ) {
 	  SF_MAX = 0x7fffffff // partially (together, fully) ensures that sizeof(surfaceType_t) == sizeof(int)
 	} surfaceType_t;
 
+
+	// drawSurf components are packed into a single 64bit integer for
+	// efficient sorting
+	// sort by:
+	// 1. shaderNum
+	// 2. lightmapNum
+	// 3. entityNum
+	// 4. fogNum
+	// 5. index
+
+	static const uint64_t SORT_INDEX_BITS = 16;
+	static const uint64_t SORT_FOGNUM_BITS = 13;
+	static const uint64_t SORT_ENTITYNUM_BITS = 10;
+	static const uint64_t SORT_LIGHTMAP_BITS = 9;
+	static const uint64_t SORT_SHADER_BITS = 16;
+
+	static_assert( SORT_SHADER_BITS +
+		SORT_LIGHTMAP_BITS +
+		SORT_ENTITYNUM_BITS +
+		SORT_FOGNUM_BITS +
+		SORT_INDEX_BITS == 64, "invalid number of drawSurface sort bits" );
+
+	static const uint64_t SORT_FOGNUM_SHIFT = SORT_INDEX_BITS;
+	static const uint64_t SORT_ENTITYNUM_SHIFT = SORT_FOGNUM_BITS + SORT_FOGNUM_SHIFT;
+	static const uint64_t SORT_LIGHTMAP_SHIFT = SORT_ENTITYNUM_BITS + SORT_ENTITYNUM_SHIFT;
+	static const uint64_t SORT_SHADER_SHIFT = SORT_LIGHTMAP_BITS + SORT_LIGHTMAP_SHIFT;
+
+#define MASKBITS( b ) ( 1 << b ) - 1
+	static const uint32_t SORT_INDEX_MASK = MASKBITS( SORT_INDEX_BITS );
+	static const uint32_t SORT_FOGNUM_MASK = MASKBITS( SORT_FOGNUM_BITS );
+	static const uint32_t SORT_ENTITYNUM_MASK = MASKBITS( SORT_ENTITYNUM_BITS );
+	static const uint32_t SORT_LIGHTMAP_MASK = MASKBITS( SORT_LIGHTMAP_BITS );
+	static const uint32_t SORT_SHADER_MASK = MASKBITS( SORT_SHADER_BITS );
+
+	static_assert( SORT_INDEX_MASK >= MAX_DRAWSURFS - 1, "not enough index bits" );
+
+	// need space for 0 fog (no fog), in addition to MAX_MAP_FOGS
+	static_assert( SORT_FOGNUM_MASK >= MAX_MAP_FOGS, "not enough fognum bits" );
+
+	// need space for tr.worldEntity, in addition to MAX_REF_ENTITIES
+	static_assert( SORT_ENTITYNUM_MASK >= MAX_REF_ENTITIES, "not enough entity bits" );
+
+	// need space for -1 lightmap (no lightmap) in addition to MAX_LIGHTMAPS
+	static_assert( SORT_LIGHTMAP_MASK >= MAX_LIGHTMAPS, "not enough lightmap bits" );
+
+	static_assert( SORT_SHADER_MASK >= MAX_SHADERS - 1, "not enough qshader bits" );
+
 	typedef struct drawSurf_s
 	{
 		trRefEntity_t *entity;
 		surfaceType_t *surface; // any of surface*_t
-		uint32_t      shaderNum;
-		int16_t       lightmapNum;
-		int16_t       fogNum;
-		uint32_t      addedIndex; // index of the drawSurf in the array before sorting
+		uint64_t      sort;
+
+		inline int index() const {
+			return int( ( sort & SORT_INDEX_MASK ) );
+		}
+		inline int entityNum() const {
+			return int( ( sort >> SORT_ENTITYNUM_SHIFT ) & SORT_ENTITYNUM_MASK ) - 1;
+		}
+		inline int fogNum() const {
+			return int( ( sort >> SORT_FOGNUM_SHIFT ) & SORT_FOGNUM_MASK );
+		}
+		inline int lightmapNum() const {
+			return int( ( sort >> SORT_LIGHTMAP_SHIFT ) & SORT_LIGHTMAP_MASK ) - 1;
+		}
+		inline int shaderNum() const {
+			return int( sort >> SORT_SHADER_SHIFT );
+		}
+
+		inline void setSort( int shaderNum, int lightmapNum, int entityNum, int fogNum, int index ) {
+			entityNum = entityNum + 1; //world entity is -1
+			lightmapNum = lightmapNum + 1; //no lightmap is -1
+			sort = uint64_t( index & SORT_INDEX_MASK ) |
+				( uint64_t( fogNum & SORT_FOGNUM_MASK ) << SORT_FOGNUM_SHIFT ) |
+				( uint64_t( entityNum & SORT_ENTITYNUM_MASK ) << SORT_ENTITYNUM_SHIFT ) |
+				( uint64_t( lightmapNum & SORT_LIGHTMAP_MASK ) << SORT_LIGHTMAP_SHIFT ) |
+				( uint64_t( shaderNum & SORT_SHADER_MASK ) << SORT_SHADER_SHIFT );
+		}
 	} drawSurf_t;
 
 	typedef enum
@@ -2380,18 +2462,6 @@ static inline float halfToFloat( int16_t in ) {
 
 //====================================================
 	extern refimport_t ri;
-
-#define MAX_MOD_KNOWN      1024
-#define MAX_ANIMATIONFILES 4096
-
-#define MAX_LIGHTMAPS      256
-#define MAX_SKINS          1024
-
-#define MAX_DRAWSURFS      0x10000
-#define DRAWSURF_MASK      ( MAX_DRAWSURFS - 1 )
-
-#define MAX_INTERACTIONS   MAX_DRAWSURFS * 8
-#define INTERACTION_MASK   ( MAX_INTERACTIONS - 1 )
 
 	extern int gl_filter_min, gl_filter_max;
 
