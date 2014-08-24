@@ -566,7 +566,8 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.indexes[ tess.numIndexes++ ] = 2;
 	tess.indexes[ tess.numIndexes++ ] = 3;
 
-	Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
+	Tess_UpdateVBOs( );
+	GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
 
 	Tess_DrawElements();
 

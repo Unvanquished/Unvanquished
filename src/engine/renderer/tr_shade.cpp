@@ -2646,7 +2646,8 @@ void Tess_StageIteratorDebug()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( tess.attribsSet );
+		Tess_UpdateVBOs( );
+		GL_VertexAttribsState( tess.attribsSet );
 	}
 
 	Tess_DrawElements();
@@ -2740,7 +2741,7 @@ void Tess_StageIteratorGeneric()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( tess.attribsSet );
+		Tess_UpdateVBOs( );
 	}
 
 	// set face culling appropriately
@@ -2931,7 +2932,7 @@ void Tess_StageIteratorDepthFill()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD );
+		Tess_UpdateVBOs( );
 	}
 
 	// set face culling appropriately
@@ -3021,7 +3022,7 @@ void Tess_StageIteratorShadowFill()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD );
+		Tess_UpdateVBOs( );
 	}
 
 	// set face culling appropriately
@@ -3111,7 +3112,7 @@ void Tess_StageIteratorLighting()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( tess.attribsSet );
+		Tess_UpdateVBOs( );
 	}
 
 	// set OpenGL state for lighting

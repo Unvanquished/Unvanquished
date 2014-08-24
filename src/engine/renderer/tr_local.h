@@ -3439,7 +3439,7 @@ static inline float halfToFloat( int16_t in ) {
 
 	void Tess_InstantQuad( vec4_t quadVerts[ 4 ] );
 	void Tess_MapVBOs( qboolean forceCPU );
-	void Tess_UpdateVBOs( uint32_t attribBits );
+	void Tess_UpdateVBOs( void );
 
 	void RB_ShowImages( void );
 
@@ -3837,12 +3837,6 @@ static inline float halfToFloat( int16_t in ) {
 	typedef struct
 	{
 		int       commandId;
-		qboolean  enable;
-	} scissorEnableCommand_t;
-
-	typedef struct
-	{
-		int       commandId;
 		int       x;
 		int       y;
 		int       w;
@@ -3914,7 +3908,6 @@ static inline float halfToFloat( int16_t in ) {
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
 	  RC_2DPOLYSINDEXED,
-	  RC_SCISSORENABLE,
 	  RC_SCISSORSET,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added

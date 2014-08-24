@@ -1087,11 +1087,11 @@ Tess_UpdateVBOs
 Tr3B: update the default VBO to replace the client side vertex arrays
 ==============
 */
-void Tess_UpdateVBOs( uint32_t attribBits )
+void Tess_UpdateVBOs( void )
 {
 	if ( r_logFile->integer )
 	{
-		GLimp_LogComment( va( "--- Tess_UpdateVBOs( attribBits = %i ) ---\n", attribBits ) );
+		GLimp_LogComment( va( "--- Tess_UpdateVBOs( ) ---\n" ) );
 	}
 
 	GL_CheckErrors();
@@ -1100,10 +1100,6 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 	if ( tess.numVertexes > 0 && tess.numVertexes <= SHADER_MAX_VERTEXES )
 	{
 		GL_CheckErrors();
-
-		assert( ( attribBits & ATTR_BITS ) != 0 );
-
-		GL_VertexAttribsState( attribBits );
 
 		if ( r_logFile->integer )
 		{
