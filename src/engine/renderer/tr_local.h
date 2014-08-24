@@ -2400,8 +2400,7 @@ static inline float halfToFloat( int16_t in ) {
 	*/
 	typedef struct
 	{
-		int c_box_cull_in, c_box_cull_out;
-		int c_sphere_cull_in, c_sphere_cull_out;
+		int c_box_cull_in, c_box_cull_clip, c_box_cull_out;
 		int c_plane_cull_in, c_plane_cull_out;
 
 		int c_sphere_cull_mdv_in, c_sphere_cull_mdv_clip, c_sphere_cull_mdv_out;

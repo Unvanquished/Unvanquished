@@ -38,7 +38,6 @@ This will also allow mirrors on both sides of a model without recursion.
 static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader )
 {
 	srfGeneric_t *gen;
-	int          cull;
 	float        d;
 
 	// allow culling to be disabled
@@ -90,43 +89,29 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader )
 		tr.pc.c_plane_cull_in++;
 	}
 
-	if ( *surface == SF_VBO_MESH )
+	int cull;
+
+	if ( tr.currentEntity != &tr.worldEntity )
 	{
-		if ( tr.currentEntity != &tr.worldEntity )
-		{
-			cull = R_CullLocalBox( gen->bounds );
-		}
-		else
-		{
-			cull = R_CullBox( gen->bounds );
-		}
-
-		if ( cull == CULL_OUT )
-		{
-			tr.pc.c_box_cull_out++;
-			return qtrue;
-		}
-
-		tr.pc.c_box_cull_in++;
+		cull = R_CullLocalBox( gen->bounds );
 	}
 	else
 	{
-		if ( tr.currentEntity != &tr.worldEntity )
-		{
-			cull = R_CullLocalPointAndRadius( gen->origin, gen->radius );
-		}
-		else
-		{
-			cull = R_CullPointAndRadius( gen->origin, gen->radius );
-		}
+		cull = R_CullBox( gen->bounds );
+	}
 
-		if ( cull == CULL_OUT )
-		{
-			tr.pc.c_sphere_cull_out++;
-			return qtrue;
-		}
-
-		tr.pc.c_sphere_cull_in++;
+	if ( cull == CULL_OUT )
+	{
+		tr.pc.c_box_cull_out++;
+		return qtrue;
+	}
+	else if ( cull == CULL_CLIP )
+	{
+		tr.pc.c_box_cull_clip++;
+	}
+	else
+	{
+		tr.pc.c_box_cull_in++;
 	}
 
 	// must be visible
