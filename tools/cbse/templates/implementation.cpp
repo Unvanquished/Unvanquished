@@ -1,6 +1,9 @@
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 
 #include <tuple>
+#include "ComponentInclude.h"
+
+#define myoffsetof(st, m) static_cast<int>((size_t)(&((st *)0)->m))
 
 // Implementation of the base entity class
 
@@ -63,7 +66,7 @@ void Entity::SendMessage(int msg, const void* data) {
     const int {{entity.get_type_name()}}::componentOffsets[] = {
         {% for component in components %}
             {% if component in entity.get_components() %}
-                offsetof({{entity.get_type_name()}}, {{component.get_variable_name()}}),
+                myoffsetof({{entity.get_type_name()}}, {{component.get_variable_name()}}),
             {% else %}
                 0,
             {% endif %}

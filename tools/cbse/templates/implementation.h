@@ -101,7 +101,6 @@ class Entity {
 
             // Components have helper function to change the shared attributes values e.g.
             //   SetHealth(float value);
-            // TODO I don't think there is any code that actually change the attributes yet.
             {% for attrib in component.get_own_attribs() %}
                 void {{attrib.get_setter_name()}}({{attrib.typ}} value);
             {% endfor %}
