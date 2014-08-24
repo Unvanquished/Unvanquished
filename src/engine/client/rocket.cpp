@@ -47,6 +47,7 @@ Maryland 20850 USA.
 #include <Rocket/Core/RenderInterface.h>
 #include <Rocket/Controls.h>
 #include <Rocket/Core/Lua/Interpreter.h>
+#include <Rocket/Core/Lua/LuaType.h>
 #include <Rocket/Controls/Lua/Controls.h>
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
@@ -69,8 +70,9 @@ Maryland 20850 USA.
 #include "rocketColorInput.h"
 #include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
-#include "client.h"
 #include <Rocket/Debugger.h>
+#include "lua/Cvar.h"
+#include "client.h"
 
 extern "C"
 {
@@ -374,6 +376,7 @@ void Rocket_Init( void )
 	// Initialize Lua
 	Rocket::Core::Lua::Interpreter::Initialise();
 	Rocket::Controls::Lua::RegisterTypes(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cvar>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 
 	// Set backup font
 	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
