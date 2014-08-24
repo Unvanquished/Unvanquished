@@ -63,4 +63,5 @@ public:
 };
 
 Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
+void Rocket_AddEvent( RocketEvent_t *event );
 #endif
