@@ -782,6 +782,8 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/rocket.cpp
   ${ENGINE_DIR}/client/lua/Cvar.cpp
   ${ENGINE_DIR}/client/lua/Cvar.h
+  ${ENGINE_DIR}/client/lua/Cmd.cpp
+  ${ENGINE_DIR}/client/lua/Cmd.h
 )
 
 set( TTYCLIENTLIST

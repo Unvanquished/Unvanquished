@@ -72,6 +72,7 @@ Maryland 20850 USA.
 #include "rocketCvarInlineElement.h"
 #include <Rocket/Debugger.h>
 #include "lua/Cvar.h"
+#include "lua/Cmd.h"
 #include "client.h"
 
 extern "C"
@@ -377,6 +378,7 @@ void Rocket_Init( void )
 	Rocket::Core::Lua::Interpreter::Initialise();
 	Rocket::Controls::Lua::RegisterTypes(Rocket::Core::Lua::Interpreter::GetLuaState());
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cvar>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cmd>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 
 	// Set backup font
 	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
