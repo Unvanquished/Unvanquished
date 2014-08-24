@@ -293,11 +293,11 @@ static void R_AddDecalSurface( bspSurface_t *surf, int decalBits )
 R_AddWorldSurface
 ======================
 */
-static qboolean R_AddWorldSurface( bspSurface_t *surf )
+static qboolean R_AddWorldSurface( bspSurface_t *surf, int fogIndex )
 {
 	if ( surf->viewCount == tr.viewCountNoReset )
 	{
-		return qfalse;
+		return qfalse; // already in this view
 	}
 
 	surf->viewCount = tr.viewCountNoReset;
@@ -308,7 +308,7 @@ static qboolean R_AddWorldSurface( bspSurface_t *surf )
 		return qtrue;
 	}
 
-	R_AddDrawSurf( surf->data, surf->shader, surf->lightmapNum, surf->fogIndex );
+	R_AddDrawSurf( surf->data, surf->shader, surf->lightmapNum, fogIndex );
 	return qtrue;
 }
 
@@ -319,29 +319,6 @@ static qboolean R_AddWorldSurface( bspSurface_t *surf )
 
 =============================================================
 */
-
-/*
-======================
-R_AddBrushModelSurface
-======================
-*/
-static void R_AddBrushModelSurface( bspSurface_t *surf, int fogIndex )
-{
-	if ( surf->viewCount == tr.viewCountNoReset )
-	{
-		return; // already in this view
-	}
-
-	surf->viewCount = tr.viewCountNoReset;
-
-	// try to cull before lighting or adding
-	if ( R_CullSurface( surf->data, surf->shader ) )
-	{
-		return;
-	}
-
-	R_AddDrawSurf( surf->data, surf->shader, surf->lightmapNum, fogIndex );
-}
 
 /*
 =================
@@ -400,7 +377,7 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 
 	for ( i = 0; i < bspModel->numSurfaces; i++ )
 	{
-		R_AddBrushModelSurface( bspModel->firstSurface + i, fogNum );
+		R_AddWorldSurface( bspModel->firstSurface + i, fogNum );
 	}
 }
 
@@ -460,7 +437,7 @@ static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
 	{
 		// the surface may have already been added if it
 		// spans multiple leafs
-		if ( R_AddWorldSurface( *view ) )
+		if ( R_AddWorldSurface( *view, (*view)->fogIndex ) )
 		{
 			R_AddDecalSurface( *mark, decalBits );
 		}
