@@ -330,10 +330,15 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	float angle;
 	vec4_t color;
 
+	if( b->type == BCT_TAG && b->clamped )
+		return;
+
 	Vector4Copy( b->color, color );
+
 	// display important beacons at 100% opacity
 	if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
 		color[ 3 ] *= cgs.bc.hudAlpha;
+
 	trap_R_SetColor( color );
 
 	trap_R_DrawStretchPic( b->pos[ 0 ] - b->size/2,

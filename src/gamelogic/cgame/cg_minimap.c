@@ -566,6 +566,9 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 	{
 		clamped = qtrue;
 
+		if( b->type == BCT_TAG )
+			return;
+
 		Vector2Subtract( pos2d, center, dir );
 		ProjectPointOntoRectangleOutwards( pos2d, center, dir, bounds );
 	}

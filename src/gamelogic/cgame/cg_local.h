@@ -679,6 +679,8 @@ typedef struct
 	vec4_t        colorNeutral;
 	vec4_t        colorAlien;
 	vec4_t        colorHuman;
+	float         fadeInAlpha;
+	float         fadeInScale;
 
 	// HUD
 	float         hudSize;

@@ -96,6 +96,8 @@ else if( !Q_stricmp( token.string, #x ) ) \
 		READ_COLOR  ( colorNeutral )
 		READ_COLOR  ( colorAlien )
 		READ_COLOR  ( colorHuman )
+		READ_FLOAT  ( fadeInAlpha )
+		READ_FLOAT  ( fadeInScale )
 
 		READ_FLOAT_S( hudSize )
 		READ_FLOAT_S( hudMinSize )
@@ -184,7 +186,9 @@ static void CG_RunBeacon( cbeacon_t *b )
 		t_fadein = 1.0;
 	else
 		t_fadein = (float)time_in / cgs.bc.fadeIn;
-	b->scale *= Square( 1.0 - t_fadein ) + 1.0;
+
+	b->scale *= LinearRemap( t_fadein, 0.0f, 1.0f, cgs.bc.fadeInScale, 1.0f );
+	alpha *= LinearRemap( t_fadein, 0.0f, 1.0f, cgs.bc.fadeInAlpha, 1.0f );
 
 	// fade out
 	if ( b->etime && time_left < cgs.bc.fadeOut )
@@ -271,6 +275,9 @@ static void CG_RunBeacon( cbeacon_t *b )
 		Vector4Copy( cgs.bc.colorNeutral, b->color );
 	b->color[ 3 ] *= alpha;
 
+	if( b->color[ 3 ] > 1.0f )
+		b->color[ 3 ] = 1.0f;
+
 	// calculate HUD size
 	b->size = cgs.bc.hudSize / sqrt( b->dist );
 	if( b->size > cgs.bc.hudMaxSize )
@@ -336,12 +343,12 @@ Used for qsort
 */
 static int CG_CompareBeaconsByDot( const void *a, const void *b )
 {
-	return ( (const cbeacon_t*)a )->dot > ( (const cbeacon_t*)b )->dot;
+	return ( *(const cbeacon_t**)a )->dot > ( *(const cbeacon_t**)b )->dot;
 }
 
 static int CG_CompareBeaconsByDist( const void *a, const void *b )
 {
-	return ( (const cbeacon_t*)a )->dist > ( (const cbeacon_t*)b )->dist;
+	return ( *(const cbeacon_t**)a )->dist > ( *(const cbeacon_t**)b )->dist;
 }
 
 
@@ -401,38 +408,51 @@ void CG_ListBeacons( void )
 			break;
 	}
 
-/*
-
-			int pcl = (class_t)( ( es->misc >> 8 ) & 0xFF );
-
-			if( cg.predictedPlayerState.persistant[ PERS_TEAM ] != TEAM_ALIENS )
-				continue;
-
-			if( BG_Class( pcl )->team != TEAM_HUMANS )
-				continue;
-
-			beacon->s = &cent->beaconPersistent;
-
-			beacon->s->valid = qtrue;
-			beacon->s->ctime = 0;
-			beacon->s->etime = 0;
-
-			VectorCopy( cent->lerpOrigin, beacon->s->origin );
-			beacon->type = BCT_TAG;
-			beacon->data = es->weapon;
-			beacon->team = TEAM_HUMANS;
-			beacon->owner = es->otherEntityNum;
-			beacon->flags = EF_BC_TAG_PLAYER;
-		*/
-
 	if( !cg.beaconCount )
 		return;
 
-//TODO:
-//qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t ), CG_CompareBeaconsByDist );
-// nearest arm, medi, booster
+	{
+		const playerState_t *ps = &cg.predictedPlayerState;
+		int tofind, team = ps->persistant[ PERS_TEAM ];
+		qboolean lowammo, energy;
 
-	//qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CG_CompareBeaconsByDot );
+		lowammo = BG_PlayerLowAmmo( ps, &energy );
+
+		qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CG_CompareBeaconsByDist );
+
+		for( i = 0, tofind = 3; i < cg.beaconCount && tofind; i++ )
+		{
+			b = cg.beacons[ i ];
+
+			if( b->type != BCT_TAG )
+				continue;
+
+			if( b->flags & EF_BC_DYING )
+				continue;
+
+			if( tofind & 1 )
+				if( ( team == TEAM_ALIENS && b->data == BA_A_BOOSTER ) ||
+						( team == TEAM_HUMANS && b->data == BA_H_MEDISTAT ) )
+				{
+					if( ps->stats[ STAT_HEALTH ] < ps->stats[ STAT_MAX_HEALTH ] / 2 )
+						b->type = BCT_HEALTH;
+					tofind &= ~1;
+				}
+
+			if( tofind & 2 )
+				if( team == TEAM_HUMANS &&
+				    ( b->data == BA_H_ARMOURY ||
+				      ( energy &&
+				        ( b->data == BA_H_REPEATER || b->data == BA_H_REACTOR ) ) ) )
+				{
+					if( lowammo )
+						b->type = BCT_AMMO;
+					tofind &= ~2;
+				}
+		}
+	}
+
+	qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CG_CompareBeaconsByDot );
 
 	cg.highlightedBeacon = cg.beacons[ cg.beaconCount - 1 ];
 
