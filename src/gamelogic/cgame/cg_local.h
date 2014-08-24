@@ -624,6 +624,13 @@ typedef struct buildableCache_s
 
 #define MAX_CBEACONS 50
 
+// the point of keeping the beacon data separately from centities is
+// to be able to handle virtual beacons (client-side beacons) without
+// having to add fake centities
+
+// static data belonging to a specific beacon
+// here's all beacon info that can't be deduced at will (e.g. because
+// it depends on past states)
 typedef struct
 {
 	qboolean      inuse;
@@ -680,8 +687,6 @@ typedef struct
 	float         hudAlpha;
 	vec2_t        hudCenter;    //runtime
 	vec2_t        hudRect[ 2 ]; //runtime
-	vec2_t        tagScorePos;  //runtime
-	float         tagScoreSize;
 
 	// minimap
 	float         minimapScale;
@@ -1597,7 +1602,6 @@ typedef struct
 	qhandle_t   beaconTagScore;
 
 	sfxHandle_t timerBeaconExpiredSound;
-	sfxHandle_t ownedTagSound;
 } cgMedia_t;
 
 typedef struct

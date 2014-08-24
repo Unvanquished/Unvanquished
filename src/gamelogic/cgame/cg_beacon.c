@@ -119,19 +119,6 @@ else if( !Q_stricmp( token.string, #x ) ) \
 			bc->hudRect[ 0 ][ 1 ] = margin;
 			bc->hudRect[ 1 ][ 1 ] = vh - margin;
 		}
-		else if( !Q_stricmp( token.string, "tagScoreSize" ) )
-		{
-			float size;
-
-			if( !PC_Float_Parse( fd, &size ) )
-				break;
-
-			size *= base;
-
-			bc->tagScoreSize = size;
-			bc->tagScorePos[ 0 ] = bc->hudCenter[ 0 ] - size/2;
-			bc->tagScorePos[ 1 ] = bc->hudCenter[ 1 ] - size/2;
-		}
 		else
 			Com_Printf( "^3WARNING: bad keyword \"%s\" in \"%s\"\n", token.string, path );
 	}
@@ -176,9 +163,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 			if( b->type == BCT_TAG && !( b->flags & EF_BC_ENEMY ) )
 				goto no_in_sound;
 
-			if( b->type == BCT_TAG && b->owner == cg.predictedPlayerState.clientNum )
-				trap_S_StartLocalSound( cgs.media.ownedTagSound, CHAN_LOCAL_SOUND );
-			else if( BG_Beacon( b->type )->inSound )
+			if( BG_Beacon( b->type )->inSound )
 				trap_S_StartLocalSound( BG_Beacon( b->type )->inSound, CHAN_LOCAL_SOUND );
 
 			no_in_sound:;

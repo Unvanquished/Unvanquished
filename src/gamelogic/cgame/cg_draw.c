@@ -416,38 +416,6 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	trap_R_SetColor( NULL );
 }
 
-/*
-==================
-CG_DrawTagScore
-==================
-*/
-void CG_DrawTagScore( void )
-{
-	float progress, lerp;
-	vec4_t color = { 1.0, 1.0, 1.0 };
-
-	if( !cg.predictedPlayerState.stats[ STAT_TAGSCORE ] ||
-	    cg.snap->ps.stats[ STAT_HEALTH ] <= 0 )
-		return;
-
-	lerp = LinearRemap( (float)( cg.time - cg.tagScoreTime ), 0.0, 100.0, -0.1, 0.0 );
-
-	progress = (float)cg.predictedPlayerState.stats[ STAT_TAGSCORE ] / 1000 + lerp;
-
-	if( progress < 0.25 )
-		return;
-
-	color[ 3 ] = LinearRemap( progress, 0.25, 1.0, 0.0, 1.0 );
-
-	trap_R_SetColor( color );
-	trap_R_DrawRotatedPic( cgs.bc.tagScorePos[ 0 ], cgs.bc.tagScorePos[ 1 ],
-	                       cgs.bc.tagScoreSize, cgs.bc.tagScoreSize,
-	                       0, 0, 1, 1,
-	                       cgs.media.beaconTagScore,
-	                       progress * -360.0 );
-	trap_R_SetColor( NULL );
-}
-
 //==================================================================================
 
 /*
@@ -482,8 +450,6 @@ static void CG_Draw2D( void )
 	// draw beacons on HUD
 	for( i = 0; i < cg.beaconCount; i++ )
 		CG_DrawBeacon( cg.beacons[ i ] );
-
-	CG_DrawTagScore( );
 
 	if ( cg.zoomed )
 	{
