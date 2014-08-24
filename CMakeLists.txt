@@ -784,6 +784,8 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/lua/Cvar.h
   ${ENGINE_DIR}/client/lua/Cmd.cpp
   ${ENGINE_DIR}/client/lua/Cmd.h
+  ${ENGINE_DIR}/client/lua/Events.cpp
+  ${ENGINE_DIR}/client/lua/Events.h
 )
 
 set( TTYCLIENTLIST
