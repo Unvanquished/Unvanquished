@@ -18,6 +18,6 @@
 	</style>
 	</head>
 	<body id="ingame_chat">
-	<chatType/> <chatfield onFocus="setChatCommand" />
+	<chatType/> <chatfield onFocus='Events.pushevent("setChatCommand", event)' />
 	</body>
 </rml>

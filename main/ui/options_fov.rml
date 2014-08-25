@@ -18,7 +18,7 @@
 			<h3>Humans</h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_human" type="number" format="%.0f"/> degrees
-				<ilink onclick="exec reset cg_fov_human">(reset)</ilink>
+				<ilink onclick='Events.pushevent("exec reset cg_fov_human", event)'>(reset)</ilink>
 			</p>
 		</row>
 		<row>
@@ -26,7 +26,7 @@
 			<h3>Granger</h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_builder" type="number" format="%.0f"/> degrees
-				<ilink onclick="exec reset cg_fov_builder">(reset)</ilink>
+				<ilink onclick='Events.pushevent("exec reset cg_fov_builder", event)'>(reset)</ilink>
 			</p>
 		</row>
 		<row>
@@ -34,7 +34,7 @@
 			<h3>Dretch </h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_level0" type="number" format="%.0f"/> degrees
-				<ilink onclick="exec reset cg_fov_level0">(reset)</ilink>
+				<ilink onclick='Events.pushevent("exec reset cg_fov_level0", event)'>(reset)</ilink>
 			</p>
 
 		</row>
@@ -43,7 +43,7 @@
 			<h3>Mantis</h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_level1" type="number" format="%.0f"/> degrees
-				<ilink onclick="exec reset cg_fov_level1">(reset)</ilink>
+				<ilink onclick='Events.pushevent("exec reset cg_fov_level1", event)'>(reset)</ilink>
 			</p>
 		</row>
 		<row>
@@ -51,7 +51,7 @@
 			<h3>Marauder</h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_level2" type="number" format="%.0f"/> degrees
-				<ilink onclick="exec reset cg_fov_level2">(reset)</ilink>
+				<ilink onclick='Events.pushevent("exec reset cg_fov_level2", event)'>(reset)</ilink>
 			</p>
 		</row>
 		<row>
@@ -59,7 +59,7 @@
 			<h3>Dragoon</h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_level3" type="number" format="%.0f"/> degrees
-				<ilink onclick="exec reset cg_fov_level3">(reset)</ilink>
+				<ilink onclick='Events.pushevent("exec reset cg_fov_level3", event)'>(reset)</ilink>
 			</p>
 		</row>
 		<row>
@@ -67,7 +67,7 @@
 			<h3>Tyrant</h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_level4" type="number" format="%.0f"/> degrees
-				<ilink onclick="exec reset cg_fov_level4">(reset)</ilink>
+				<ilink onclick='Events.pushevent("exec reset cg_fov_level4", event)'>(reset)</ilink>
 			</p>
 		</row>
 

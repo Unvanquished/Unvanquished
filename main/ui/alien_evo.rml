@@ -97,7 +97,7 @@ div.infobox {
 }
 </style>
 </head>
-<body id="alien_evo" class="circlemenu alien" onShow="buildDS alienEvolveList default; buildDS alienEvolveList upgrades">
+<body id="alien_evo" class="circlemenu alien" onShow='Events.pushevent("buildDS alienEvolveList default; buildDS alienEvolveList upgrades", event)'>
 <div id="foo">
 <tabset class="circlemenu">
 <tab></tab>

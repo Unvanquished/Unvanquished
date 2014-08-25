@@ -418,11 +418,6 @@ void Rocket_Init( void )
 	// Create the HUD context
 	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
 
-	// Add the event listener instancer
-	EventInstancer* event_instancer = new EventInstancer();
-	Rocket::Core::Factory::RegisterEventListenerInstancer( event_instancer );
-	event_instancer->RemoveReference();
-
 	// Add custom client elements
 	Rocket::Core::Factory::RegisterElementInstancer( "datagrid", new Rocket::Core::ElementInstancerGeneric< SelectableDataGrid >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "progressbar", new Rocket::Core::ElementInstancerGeneric< RocketProgressBar >() )->RemoveReference();

@@ -4,7 +4,7 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 
 	</head>
-	<body id="options_sound" template="window" style="width: 32em; margin: 10%;" onLoad="buildDS alOutputs">
+	<body id="options_sound" template="window" style="width: 32em; margin: 10%;" onLoad='Events.pushevent("buildDS alOutputs", event)'>
 		<h1> Sound </h1>
 		<row>
 			<h3>Global volume</h3>
