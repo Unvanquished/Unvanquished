@@ -1089,10 +1089,7 @@ Tr3B: update the default VBO to replace the client side vertex arrays
 */
 void Tess_UpdateVBOs( void )
 {
-	if ( r_logFile->integer )
-	{
-		GLimp_LogComment( va( "--- Tess_UpdateVBOs( ) ---\n" ) );
-	}
+	GLimp_LogComment( "--- Tess_UpdateVBOs( ) ---\n" );
 
 	GL_CheckErrors();
 
