@@ -1423,26 +1423,24 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 
 	model = srf->md5Model;
 
-	if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
+	tess.vboVertexSkinning = qtrue;
+	tess.numBones = srf->numBoneRemap;
+
+	for ( i = 0; i < srf->numBoneRemap; i++ )
 	{
-		tess.vboVertexSkinning = qtrue;
-		tess.numBones = srf->numBoneRemap;
+		refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ];
 
-		for ( i = 0; i < srf->numBoneRemap; i++ )
+		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
-			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ];
-
 			TransInitRotationQuat( model->bones[ srf->boneRemapInverse[ i ] ].rotation, &tess.bones[ i ] );
 			TransAddTranslation( model->bones[ srf->boneRemapInverse[ i ] ].origin, &tess.bones[ i ] );
 			TransInverse( &tess.bones[ i ], &tess.bones[ i ] );
 			TransCombine( &tess.bones[ i ], &bone->t, &tess.bones[ i ] );
-			TransAddScale( backEnd.currentEntity->e.skeleton.scale, &tess.bones[ i ] );
-			TransInsScale( model->internalScale, &tess.bones[ i ] );
+		} else {
+			TransInit( &tess.bones[ i ] );
 		}
-	}
-	else
-	{
-		tess.vboVertexSkinning = qfalse;
+		TransAddScale( backEnd.currentEntity->e.skeleton.scale, &tess.bones[ i ] );
+		TransInsScale( model->internalScale, &tess.bones[ i ] );
 	}
 
 	Tess_End();
