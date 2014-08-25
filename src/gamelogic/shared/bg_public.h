@@ -1304,6 +1304,7 @@ typedef struct
 	int            speed;
 	float          lag;
 	int            flags;
+	qboolean       doKnockback;
 
 	// display
 	qhandle_t      model;

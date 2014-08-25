@@ -2179,7 +2179,7 @@ void HGeneric_Blast( gentity_t *self )
 	self->timestamp = level.time;
 
 	G_RadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
-	                self->splashRadius, self, self->splashMethodOfDeath );
+	                self->splashRadius, self, DAMAGE_KNOCKBACK, self->splashMethodOfDeath );
 
 	G_RewardAttackers( self );
 

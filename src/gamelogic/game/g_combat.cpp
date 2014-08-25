@@ -1110,7 +1110,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// do knockback against clients
-	if ( client && !( damageFlags & DAMAGE_NO_KNOCKBACK ) && dir )
+	if ( client && ( damageFlags & DAMAGE_KNOCKBACK ) && dir )
 	{
 		// scale knockback by weapon
 		if ( inflictor->s.weapon != WP_NONE )
@@ -1124,12 +1124,6 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 
 		// apply generic damage to knockback modifier
 		knockback *= DAMAGE_TO_KNOCKBACK;
-
-		// HACK: Too much knockback from falling makes you bounce and looks silly
-		if ( mod == MOD_FALLING )
-		{
-			knockback = MIN( knockback, MAX_FALLDMG_KNOCKBACK );
-		}
 
 		G_KnockbackByDir( target, dir, knockback, qfalse );
 	}
@@ -1500,18 +1494,16 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 		{
 			hitClient = qtrue;
 
-			// don't do knockback, since an attack that spares one team is most likely
-			// not based on kinetic energy
 			G_Damage( ent, NULL, attacker, NULL, origin, ( int ) points,
-			          DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE | DAMAGE_NO_KNOCKBACK, mod );
+			          DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE, mod );
 		}
 	}
 
 	return hitClient;
 }
 
-qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
-                         float radius, gentity_t *ignore, int mod )
+qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage,
+                         float radius, gentity_t *ignore, int dflags, int mod )
 {
 	float     points, dist;
 	gentity_t *ent;
@@ -1585,7 +1577,7 @@ qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 			VectorNormalize( dir );
 			hitClient = qtrue;
 			G_Damage( ent, NULL, attacker, dir, origin,
-			          ( int ) points, DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE, mod );
+			          ( int ) points, ( DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE | dflags ), mod );
 		}
 	}
 
