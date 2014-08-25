@@ -966,7 +966,7 @@ static GLenum debugTypes[] =
 #define DEBUG_CALLBACK_CALL
 #endif
 static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
-                                       GLenum severity, GLsizei length, const GLchar *message, void *userParam )
+                                       GLenum severity, GLsizei length, const GLchar *message, const void *userParam )
 {
 	const char *debugTypeName;
 	const char *debugSeverity;
@@ -1077,7 +1077,7 @@ static void GLimp_InitExtensions( void )
 
 	if ( LOAD_EXTENSION_WITH_CVAR(ARB_debug_output, r_glDebugProfile) )
 	{
-		glDebugMessageCallbackARB( GLimp_DebugCallback, NULL );
+		glDebugMessageCallbackARB( (GLDEBUGPROCARB)GLimp_DebugCallback, NULL );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB );
 	}
 
