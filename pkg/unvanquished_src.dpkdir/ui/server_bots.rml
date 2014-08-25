@@ -16,7 +16,7 @@
 					<h3> Field of view </h3>
 					<p class="inline"> 
 						Current: <inlinecvar cvar="g_bot_fov" type="number" format="%.0f"/> degrees
-						<ilink onclick="exec reset g_bot_fov"> (reset) </ilink>
+						<ilink onclick='Events.pushevent("exec reset g_bot_fov", event)'> (reset) </ilink>
 					</p>
 				</row>
 				<row>
@@ -24,7 +24,7 @@
 					<h3> Reaction time </h3>
 					<p class="inline"> 
 						Current: <inlinecvar cvar="g_bot_reactiontime" type="number" format="%.0f"/> msecs
-						<ilink onclick="exec reset g_bot_reactiontime"> (reset) </ilink>
+						<ilink onclick='Events.pushevent("exec reset g_bot_reactiontime", event)'> (reset) </ilink>
 					</p>
 				</row>
 				
@@ -50,7 +50,7 @@
 					<h3> Group size</h3>
 					<p class="inline"> 
 						Current: <inlinecvar cvar="g_bot_numInGroup" type="number" format="%.0f"/> 
-						<ilink onclick="exec reset g_bot_numInGroup"> (reset) </ilink>
+						<ilink onclick='Events.pushevent("exec reset g_bot_numInGroup", event)'> (reset) </ilink>
 					</p>
 				</row>
 			</panel>

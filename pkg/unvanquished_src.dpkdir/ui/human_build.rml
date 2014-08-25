@@ -96,7 +96,7 @@ div.infobox {
 }
 </style>
 </head>
-<body id="human_build" class="circlemenu human" onShow="buildDS humanBuildList default; buildDS humanBuildList upgrades">
+<body id="human_build" class="circlemenu human" onShow='Events.pushevent("buildDS humanBuildList default; buildDS humanBuildList upgrades", event)'>
 <div id="foo">
 <tabset class="circlemenu">
 <tab></tab>
