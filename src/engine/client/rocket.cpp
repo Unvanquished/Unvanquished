@@ -385,24 +385,6 @@ void Rocket_Init( void )
 	// Set backup font
 	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
 
-	// Load all fonts in the fonts/ dir...
-	fonts = FS_ListFiles( "fonts/", ".ttf", &numFiles );
-	for ( int i = 0; i < numFiles; ++i )
-	{
-		Rocket::Core::FontDatabase::LoadFontFace( va( "fonts/%s", fonts[ i ] ) );
-	}
-
-	FS_FreeFileList( fonts );
-
-	// Now get all the otf fonts...
-	fonts = FS_ListFiles( "fonts/", ".otf", &numFiles );
-	for ( int i = 0; i < numFiles; ++i )
-	{
-		Rocket::Core::FontDatabase::LoadFontFace( va( "fonts/%s", fonts[ i ] ) );
-	}
-
-	FS_FreeFileList( fonts );
-
 	// Initialize keymap
 	Rocket_InitKeys();
 
@@ -541,7 +523,9 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 {
 	const char *p;
 	Rocket::Core::String out;
-	qboolean span = qfalse;
+	Rocket::Core::String spanstr;
+	bool span = false;
+	bool spanHasContent = false;
 
 	if ( !*in )
 	{
@@ -552,26 +536,44 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 	{
 		if ( *p == '<' )
 		{
+			if ( span && !spanHasContent )
+			{
+				spanHasContent = true;
+				out.Append( spanstr );
+			}
 			out.Append( "&lt;" );
 		}
 		else if ( *p == '>' )
 		{
+			if ( span && !spanHasContent )
+			{
+				spanHasContent = true;
+				out.Append( spanstr );
+			}
 			out.Append( "&gt;" );
 		}
 		else if ( *p == '&' )
 		{
+			if ( span && !spanHasContent )
+			{
+				spanHasContent = true;
+				out.Append( spanstr );
+			}
 			out.Append( "&amp;" );
 		}
 		else if ( *p == '\n' )
 		{
-			out.Append( span ? "</span><br />" : "<br />" );
-			span = qfalse;
+			out.Append( span && spanHasContent ? "</span><br />" : "<br />" );
+			span = false;
+			spanHasContent = false;
 		}
 		else if ( Q_IsColorString( p ) )
 		{
-			if ( span )
+			if ( span && spanHasContent )
 			{
 				out.Append( "</span>" );
+				span = false;
+				spanHasContent = false;
 			}
 
 			char rgb[32];
@@ -582,16 +584,24 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			          (int)( g_color_table[ code ][ 1 ] * 255 ),
 			          (int)( g_color_table[ code ][ 2 ] * 255 ) );
 
-			out.Append( rgb );
+			// don't add the span yet, because it might be empty
+			spanstr = rgb;
 
-			span = qtrue;
+			span = true;
+			spanHasContent = false;
 		}
 		else
 		{
+			if ( span && !spanHasContent )
+			{
+				out.Append( spanstr );
+				spanHasContent = true;
+			}
 			out.Append( *p );
 		}
 	}
-	if ( span )
+
+	if ( span && spanHasContent )
 	{
 		out.Append( "</span>" );
 	}
@@ -635,11 +645,12 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				continue;
 			}
 
-			path =  va( "emoticons/%s_1x1.crn", emoticon.CString() );
+			// TODO: Dont hardcode the extension.
+			path =  va( "emoticons/%s.crn", emoticon.CString() );
 			if ( FS_FOpenFileRead( path, NULL, qtrue ) )
 			{
 				out.Erase( openBracket, closeBracket - openBracket + 1 );
-				path = va( "<img class='trem-emoticon' src='/emoticons/%s_1x1.crn' />", emoticon.CString() );
+				path = va( "<img class='trem-emoticon' src='/emoticons/%s' />", emoticon.CString() );
 				out.Insert( openBracket, path );
 				currentPosition = openBracket + strlen( path ) + 1;
 			}
@@ -674,4 +685,9 @@ void Rocket_SetActiveContext( int catcher )
 
 			break;
 	}
+}
+
+void Rocket_LoadFont( const char *font )
+{
+	Rocket::Core::FontDatabase::LoadFontFace( font );
 }

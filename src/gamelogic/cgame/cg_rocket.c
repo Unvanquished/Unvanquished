@@ -262,6 +262,35 @@ void CG_Rocket_Init( void )
 
 			continue;
 		}
+
+		if ( !Q_stricmp( token, "fonts" ) )
+		{
+			token = COM_Parse2( &text_p );
+
+			if ( *token != '{' )
+			{
+				Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFile.string, *token );
+			}
+
+			while ( 1 )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( *token == '}' )
+				{
+					break;
+				}
+
+				if ( !*token )
+				{
+					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting closing '}'.", rocket_menuFile.string );
+				}
+
+				trap_Rocket_LoadFont( token );
+			}
+
+			continue;
+		}
 	}
 
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_MAIN ].id, "open" );

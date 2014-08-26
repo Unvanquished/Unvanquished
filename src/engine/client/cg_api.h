@@ -126,6 +126,7 @@ typedef enum cgameImport_s
   CG_CVAR_LATCHEDVARIABLESTRINGBUFFER,
   CG_CVAR_VARIABLEINTEGERVALUE,
   CG_CVAR_VARIABLEVALUE,
+  CG_CVAR_ADDFLAGS,
   CG_ARGC,
   CG_ARGV,
   CG_ESCAPED_ARGS,
@@ -347,7 +348,8 @@ typedef enum cgameImport_s
   CG_ROCKET_CLEARTEXT,
   CG_ROCKET_REGISTERPROPERTY,
   CG_ROCKET_SHOWSCOREBOARD,
-  CG_ROCKET_SETDATASELECTINDEX
+  CG_ROCKET_SETDATASELECTINDEX,
+  CG_ROCKET_LOADFONT
 } cgameImport_t;
 
 typedef enum
@@ -432,6 +434,7 @@ void            trap_Cvar_VariableStringBuffer( const char *var_name, char *buff
 void            trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 int             trap_Cvar_VariableIntegerValue( const char *var_name );
 float           trap_Cvar_VariableValue( const char *var_name );
+void            trap_Cvar_AddFlags( const char *var_name, int flags );
 int             trap_Argc( void );
 void            trap_Argv( int n, char *buffer, int bufferLength );
 void            trap_EscapedArgs( char *buffer, int bufferLength );
@@ -674,4 +677,5 @@ void            trap_Rocket_ClearText( void );
 void            trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
 void            trap_Rocket_ShowScoreboard( const char *name, qboolean show );
 void            trap_Rocket_SetDataSelectIndex( int index );
+void            trap_Rocket_LoadFont( const char *font );
 #endif

@@ -130,6 +130,12 @@ float trap_Cvar_VariableValue( const char *var_name )
 	return fi.f;
 }
 
+void trap_Cvar_AddFlags(const char* var_name, int flags)
+{
+	syscallVM( CG_CVAR_ADDFLAGS, var_name, flags );
+}
+
+
 //08.
 //return Cmd_Argc();
 int trap_Argc( void )
@@ -1560,4 +1566,9 @@ void trap_Rocket_ShowScoreboard( const char *name, qboolean show )
 void trap_Rocket_SetDataSelectIndex( int index )
 {
 	syscallVM( CG_ROCKET_SETDATASELECTINDEX, index );
+}
+
+void trap_Rocket_LoadFont( const char *font )
+{
+	syscallVM( CG_ROCKET_LOADFONT, font );
 }

@@ -90,6 +90,7 @@ public:
 			else if ( this == event.GetTargetElement() && event == "change" )
 			{
 				Cvar::SetValue( cvar.CString(), GetValue().CString() );
+				Cvar::AddFlags( cvar.CString(), Cvar::USER_ARCHIVE );
 			}
 		}
 	}

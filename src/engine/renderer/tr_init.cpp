@@ -74,7 +74,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_facePlaneCull;
 	cvar_t      *r_showcluster;
 	cvar_t      *r_nocurves;
-	cvar_t      *r_noLightScissors;
+	cvar_t      *r_lightScissors;
 	cvar_t      *r_noLightVisCull;
 	cvar_t      *r_noInteractionSort;
 	cvar_t      *r_dynamicLight;
@@ -247,7 +247,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_parallaxMapping;
 	cvar_t      *r_parallaxDepthScale;
 
-	cvar_t      *r_dynamicBspOcclusionCulling;
 	cvar_t      *r_dynamicEntityOcclusionCulling;
 	cvar_t      *r_dynamicLightOcclusionCulling;
 	cvar_t      *r_chcMaxPrevInvisNodesBatchSize;
@@ -1182,7 +1181,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_vboDeformVertexes = ri.Cvar_Get( "r_vboDeformVertexes", "1",  CVAR_LATCH );
 
 		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "1",  CVAR_LATCH );
-		r_dynamicBspOcclusionCulling = ri.Cvar_Get( "r_dynamicBspOcclusionCulling", "0", 0 );
 		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
 		r_dynamicLightOcclusionCulling = ri.Cvar_Get( "r_dynamicLightOcclusionCulling", "0", CVAR_CHEAT );
 		r_chcMaxPrevInvisNodesBatchSize = ri.Cvar_Get( "r_chcMaxPrevInvisNodesBatchSize", "50", CVAR_CHEAT );
@@ -1206,7 +1204,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_debugSort = ri.Cvar_Get( "r_debugSort", "0", CVAR_CHEAT );
 
 		r_nocurves = ri.Cvar_Get( "r_nocurves", "0", CVAR_CHEAT );
-		r_noLightScissors = ri.Cvar_Get( "r_noLightScissors", "0", CVAR_CHEAT );
+		r_lightScissors = ri.Cvar_Get( "r_lightScissors", "1", CVAR_ARCHIVE );
+		AssertCvarRange( r_lightScissors, 0, 2, qtrue );
+
 		r_noLightVisCull = ri.Cvar_Get( "r_noLightVisCull", "0", CVAR_CHEAT );
 		r_noInteractionSort = ri.Cvar_Get( "r_noInteractionSort", "0", CVAR_CHEAT );
 		r_dynamicLight = ri.Cvar_Get( "r_dynamicLight", "1", CVAR_ARCHIVE );
@@ -1548,19 +1548,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA )
 			{
 				glDeleteQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
-
-				if ( tr.world )
-				{
-					int       j;
-					bspNode_t *node;
-
-					for ( j = 0; j < tr.world->numnodes; j++ )
-					{
-						node = &tr.world->nodes[ j ];
-
-						glDeleteQueries( MAX_VIEWS, node->occlusionQueryObjects );
-					}
-				}
 			}
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
