@@ -36,7 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #else
 #include <unistd.h>
-#include <dlfcn.h>
 #include <signal.h>
 #endif
 #if defined(_WIN32) || defined(BUILD_CLIENT)
@@ -83,50 +82,6 @@ void Error(Str::StringRef message)
 #endif
 
 	exit(1);
-}
-
-void DynamicLib::Close()
-{
-	if (!handle)
-		return;
-
-#ifdef _WIN32
-	FreeLibrary(static_cast<HMODULE>(handle));
-#else
-	dlclose(handle);
-#endif
-}
-
-DynamicLib DynamicLib::Load(Str::StringRef filename, std::string& errorString)
-{
-#ifdef _WIN32
-	void* handle = LoadLibraryW(Str::UTF8To16(filename).c_str());
-	if (!handle)
-		errorString = Win32StrError(GetLastError());
-#else
-	void* handle = dlopen(filename.c_str(), RTLD_NOW);
-	if (!handle)
-		errorString = dlerror();
-#endif
-
-	DynamicLib out;
-	out.handle = handle;
-	return out;
-}
-
-void* DynamicLib::InternalLoadSym(Str::StringRef sym, std::string& errorString)
-{
-#ifdef _WIN32
-	void* p = reinterpret_cast<void*>(reinterpret_cast<intptr_t>(GetProcAddress(static_cast<HMODULE>(handle), sym.c_str())));
-	if (!p)
-		errorString = Win32StrError(GetLastError());
-	return p;
-#else
-	void* p = dlsym(handle, sym.c_str());
-	if (!p)
-		errorString = dlerror();
-	return p;
-#endif
 }
 
 // Command line arguments

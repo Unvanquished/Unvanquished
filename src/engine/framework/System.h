@@ -39,55 +39,6 @@ namespace Sys {
 // Cleanly exit the engine, shutting down all subsystems.
 NORETURN void Quit();
 
-// Class representing a loadable .dll/.so
-class DynamicLib {
-public:
-	DynamicLib()
-		: handle(nullptr) {}
-
-	// DynamicLibs are noncopyable but movable
-	DynamicLib(const DynamicLib&) = delete;
-	DynamicLib& operator=(const DynamicLib&) = delete;
-	DynamicLib(DynamicLib&& other)
-		: handle(other.handle)
-	{
-		other.handle = nullptr;
-	}
-	DynamicLib& operator=(DynamicLib&& other)
-	{
-		std::swap(handle, other.handle);
-		return *this;
-	}
-
-	// Check if a DynamicLib is open
-	explicit operator bool() const
-	{
-		return handle != nullptr;
-	}
-
-	// Close a DynamicLib
-	void Close();
-	~DynamicLib()
-	{
-		Close();
-	}
-
-	// Load a DynamicLib, returns an empty DynamicLib on error
-	static DynamicLib Load(Str::StringRef filename, std::string& errorString);
-
-	// Load a symbol from the DynamicLib
-	template<typename T> T LoadSym(Str::StringRef sym, std::string& errorString)
-	{
-		return reinterpret_cast<T>(reinterpret_cast<intptr_t>(InternalLoadSym(sym, errorString)));
-	}
-
-private:
-	void* InternalLoadSym(Str::StringRef sym, std::string& errorString);
-
-	// OS-specific handle
-	void* handle;
-};
-
 } // namespace Sys
 
 #endif // FRAMEWORK_SYSTEM_H_

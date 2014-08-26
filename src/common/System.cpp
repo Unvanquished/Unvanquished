@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #else
 #include <unistd.h>
+#include <dlfcn.h>
 #include <signal.h>
 #endif
 
@@ -186,7 +187,7 @@ static const char *WindowsExceptionString(DWORD code)
 		return "Unknown exception";
 	}
 }
-static LONG CALLBACK CrashHandler(PEXCEPTION_POINTERS ExceptionInfo)
+static LONG WINAPI CrashHandler(PEXCEPTION_POINTERS ExceptionInfo)
 {
 	static bool enteredHandler = false;
 	if (enteredHandler)
@@ -199,7 +200,7 @@ static LONG CALLBACK CrashHandler(PEXCEPTION_POINTERS ExceptionInfo)
 }
 void SetupCrashHandler()
 {
-	AddVectoredExceptionHandler(1, CrashHandler);
+	SetUnhandledExceptionFilter(CrashHandler);
 }
 #else
 static void CrashHandler(int sig)
@@ -223,6 +224,52 @@ void SetupCrashHandler()
 		sigaction(sig, &sa, nullptr);
 }
 #endif
+
+#ifndef __native_client__
+void DynamicLib::Close()
+{
+	if (!handle)
+		return;
+
+#ifdef _WIN32
+	FreeLibrary(static_cast<HMODULE>(handle));
+#else
+	dlclose(handle);
+#endif
+}
+
+DynamicLib DynamicLib::Load(Str::StringRef filename, std::string& errorString)
+{
+#ifdef _WIN32
+	void* handle = LoadLibraryW(Str::UTF8To16(filename).c_str());
+	if (!handle)
+		errorString = Win32StrError(GetLastError());
+#else
+	void* handle = dlopen(filename.c_str(), RTLD_NOW);
+	if (!handle)
+		errorString = dlerror();
+#endif
+
+	DynamicLib out;
+	out.handle = handle;
+	return out;
+}
+
+void* DynamicLib::InternalLoadSym(Str::StringRef sym, std::string& errorString)
+{
+#ifdef _WIN32
+	void* p = reinterpret_cast<void*>(reinterpret_cast<intptr_t>(GetProcAddress(static_cast<HMODULE>(handle), sym.c_str())));
+	if (!p)
+		errorString = Win32StrError(GetLastError());
+	return p;
+#else
+	void* p = dlsym(handle, sym.c_str());
+	if (!p)
+		errorString = dlerror();
+	return p;
+#endif
+}
+#endif // __native_client__
 
 } // namespace Sys
 
