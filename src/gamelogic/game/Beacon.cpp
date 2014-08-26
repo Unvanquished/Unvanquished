@@ -477,8 +477,6 @@ namespace Beacon //this should eventually become a class
 
 		if( ent->s.eFlags & EF_BC_TAG_PLAYER )
 			ent->s.time2 = level.time + 2000;
-		else
-			ent->s.time2 = level.time + 20000;
 	}
 
 	static inline bool CheckRefreshTag( gentity_t *ent, team_t team )
