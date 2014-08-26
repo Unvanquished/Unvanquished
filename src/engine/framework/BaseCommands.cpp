@@ -810,7 +810,7 @@ namespace Cmd {
                 }
 
                 //Modify or create an alias
-                const std::string& command = args.EscapedArgs(2);
+                const std::string& command = args.ConcatArgs(2);
 
                 auto iter = aliases.find(name);
                 if (iter != aliases.end()) {

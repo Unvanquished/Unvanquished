@@ -41,7 +41,6 @@ RB_ProjectionShadowDeform
 */
 void RB_ProjectionShadowDeform( void )
 {
-	float  *xyz;
 	int    i;
 	float  h;
 	vec3_t ground;
@@ -49,8 +48,6 @@ void RB_ProjectionShadowDeform( void )
 	float  groundDist;
 	float  d;
 	vec3_t lightDir;
-
-	xyz = ( float * ) tess.xyz;
 
 	ground[ 0 ] = backEnd.orientation.axis[ 0 ][ 2 ];
 	ground[ 1 ] = backEnd.orientation.axis[ 1 ][ 2 ];
@@ -74,12 +71,10 @@ void RB_ProjectionShadowDeform( void )
 	light[ 1 ] = lightDir[ 1 ] * d;
 	light[ 2 ] = lightDir[ 2 ] * d;
 
-	for ( i = 0; i < tess.numVertexes; i++, xyz += 4 )
+	for ( i = 0; i < tess.numVertexes; i++ )
 	{
-		h = DotProduct( xyz, ground ) + groundDist;
+		h = DotProduct( tess.verts[ i ].xyz, ground ) + groundDist;
 
-		xyz[ 0 ] -= light[ 0 ] * h;
-		xyz[ 1 ] -= light[ 1 ] * h;
-		xyz[ 2 ] -= light[ 2 ] * h;
+		VectorMA( tess.verts[ i ].xyz, -h, light, tess.verts[ i ].xyz );
 	}
 }

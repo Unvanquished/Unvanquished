@@ -441,12 +441,6 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 	fromCost = BG_Class( from )->cost;
 	toCost = BG_Class( to )->cost;
 
-	// don't allow devolving
-	if ( toCost < fromCost )
-	{
-		return -1;
-	}
-
 	// classes w/o a cost are for spawning only
 	if ( toCost == 0 )
 	{
@@ -460,8 +454,13 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 		return -1;
 	}
 
-	// evolving between classes of euqal cost costs one evo
-	evolveCost = MAX( toCost - fromCost, CREDITS_PER_EVO );
+	// don't allow devolving
+	if ( toCost <= fromCost )
+	{
+		return -1;
+	}
+
+	evolveCost = toCost - fromCost;
 
 	if ( credits < evolveCost )
 	{
@@ -913,6 +912,91 @@ meansOfDeath_t BG_MeansOfDeathByName( const char *name )
 
 ////////////////////////////////////////////////////////////////////////////////
 
+typedef struct
+{
+	beaconType_t  number;
+	const char*   name;
+	int           flags;
+} beaconData_t;
+
+static const beaconAttributes_t nullBeacon = { BCT_NONE };
+
+static const beaconData_t bg_beaconsData[ ] =
+{
+	{ BCT_POINTER,       "pointer",       BCF_IMPORTANT | BCF_PER_PLAYER | BCF_PRECISE },
+	{ BCT_TIMER,         "timer",         BCF_IMPORTANT | BCF_PER_PLAYER },
+	{ BCT_TAG,           "tag",           BCF_RESERVED },
+	{ BCT_BASE,          "base",          BCF_RESERVED },
+	{ BCT_ATTACK,        "attack",        0 },
+	{ BCT_DEFEND,        "defend",        0 },
+	{ BCT_REPAIR,        "repair",        0 },
+	{ BCT_HEALTH,        "health",        BCF_RESERVED },
+	{ BCT_AMMO,          "ammo",          BCF_RESERVED }
+};
+
+static const size_t bg_numBeacons = ARRAY_LEN( bg_beaconsData );
+static beaconAttributes_t bg_beacons[ ARRAY_LEN( bg_beaconsData ) ];
+
+/*
+================
+BG_BeaconByName
+================
+*/
+const beaconAttributes_t *BG_BeaconByName( const char *name )
+{
+	int i;
+
+	for ( i = 0; i < bg_numBeacons; i++ )
+		if ( !Q_stricmp( bg_beacons[ i ].name, name ) )
+			return bg_beacons + i;
+
+	return NULL;
+}
+
+/*
+================
+BG_Beacon
+================
+*/
+const beaconAttributes_t *BG_Beacon( int index )
+{
+	if( index > BCT_NONE && index < NUM_BEACON_TYPES )
+		return bg_beacons + index - 1;
+
+	return &nullBeacon;
+}
+
+/*
+===============
+BG_InitBeaconAttributes
+===============
+*/
+void BG_InitBeaconAttributes( void )
+{
+	int i;
+	const beaconData_t *bd;
+	beaconAttributes_t *ba;
+
+	for ( i = 0; i < bg_numBeacons; i++ )
+	{
+		bd = bg_beaconsData + i;
+		ba = bg_beacons + i;
+
+		Com_Memset( ba, 0, sizeof( beaconAttributes_t ) );
+
+		ba->number = bd->number;
+		ba->name = bd->name;
+		ba->flags = bd->flags;
+
+		BG_ParseBeaconAttributeFile( va( "configs/beacons/%s.beacon.cfg", bd->name ), ba );
+	}
+
+	//hardcoded
+	bg_beacons[ BCT_TIMER - 1 ].decayTime = BEACON_TIMER_TIME + 1000;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 /*
 ================
 BG_InitAllConfigs
@@ -931,6 +1015,7 @@ void BG_InitAllConfigs( void )
 	BG_InitWeaponAttributes();
 	BG_InitUpgradeAttributes();
 	BG_InitMissileAttributes();
+	BG_InitBeaconAttributes();
 
 	BG_CheckConfigVars();
 
@@ -1018,6 +1103,20 @@ void BG_UnloadAllConfigs( void )
                 BG_Free( (char *)ua->info );
             }
         }
+    }
+
+    for ( i = 0; i < bg_numBeacons; i++ )
+    {
+		    beaconAttributes_t *ba = bg_beacons + i;
+
+		    if ( ba )
+		    {
+				    BG_Free( (char *)ba->humanName );
+
+#ifdef BUILD_CGAME
+						BG_Free( (char *)ba->text );
+#endif
+		    }
     }
 }
 
@@ -1255,8 +1354,6 @@ static const char *const eventnames[] =
   "EV_AMMO_REFILL",     // ammo for clipless weapon has been refilled
   "EV_CLIPS_REFILL",    // weapon clips have been refilled
   "EV_FUEL_REFILL",     // jetpack fuel has been refilled
-
-  "EV_LEV2_ZAP",
 
   "EV_HIT", // notify client of a hit
 
@@ -1861,7 +1958,7 @@ Find a place to build a buildable
 void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
     const vec3_t mins, const vec3_t maxs,
     void ( *trace )( trace_t *, const vec3_t, const vec3_t,
-                     const vec3_t, const vec3_t, int, int ),
+                     const vec3_t, const vec3_t, int, int, int ),
     vec3_t outOrigin, vec3_t outAngles, trace_t *tr )
 {
 	vec3_t aimDir, forward, entityOrigin, targetOrigin;
@@ -1890,7 +1987,7 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 	VectorMA( targetOrigin, -128, playerNormal, targetOrigin );
 
 	// The mask is MASK_DEADSOLID on purpose to avoid collisions with other entities
-	( *trace )( tr, entityOrigin, mins, maxs, targetOrigin, ps->clientNum, MASK_DEADSOLID );
+	( *trace )( tr, entityOrigin, mins, maxs, targetOrigin, ps->clientNum, MASK_DEADSOLID, 0 );
 	VectorCopy( tr->endpos, outOrigin );
 	vectoangles( forward, outAngles );
 }
@@ -1979,6 +2076,42 @@ weapon_t BG_GetPlayerWeapon( playerState_t *ps )
 	}
 
 	return (weapon_t) ps->weapon;
+}
+
+/*
+=================
+BG_PlayerLowAmmo
+
+Checks if a player is running low on ammo
+Also returns whether the gun uses energy or not
+=================
+*/
+qboolean BG_PlayerLowAmmo( playerState_t *ps, qboolean *energy )
+{
+  int weapon;
+	const weaponAttributes_t *wattr;
+
+	// look for the primary weapon
+	for( weapon = WP_NONE + 1; weapon < WP_NUM_WEAPONS; weapon++ )
+		if( weapon != WP_BLASTER )
+			if( BG_InventoryContainsWeapon( weapon, ps->stats ) )
+				goto found;
+
+	return qfalse; // got only blaster
+
+found:
+
+	wattr = BG_Weapon( weapon );
+
+	if( wattr->infiniteAmmo )
+		return qfalse;
+
+	*energy = wattr->usesEnergy;
+
+	if( wattr->maxClips )
+		return ( ps->clips <= wattr->maxClips * 0.25 );
+
+	return ( ps->ammo <= wattr->maxAmmo * 0.25 );
 }
 
 /*

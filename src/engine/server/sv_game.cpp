@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include "server.h"
 #include "../qcommon/crypto.h"
 #include "../framework/CommonVMServices.h"
+#include "../framework/CommandSystem.h"
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
@@ -382,7 +383,7 @@ SV_RestartGameProgs
 Called on a map_restart, but not on a map change
 ===================
 */
-void SV_RestartGameProgs( void )
+void SV_RestartGameProgs(Str::StringRef mapname)
 {
 	if ( !gvm )
 	{
@@ -395,6 +396,10 @@ void SV_RestartGameProgs( void )
 	gvm = nullptr;
 
 	gvm = SV_CreateGameVM();
+
+	gvm->GameStaticInit();
+
+	gvm->GameLoadMap(mapname);
 
 	SV_InitGameVM( qtrue );
 }
@@ -500,7 +505,7 @@ void GameVM::GameStaticInit()
 
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 {
-	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart);
+	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart, Com_AreCheatsAllowed());
 }
 
 void GameVM::GameShutdown(qboolean restart)
@@ -628,8 +633,8 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		Com_Error(ERR_DROP, "trap_Log not implemented");
 
 	case G_SEND_CONSOLE_COMMAND:
-		IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](int when, std::string text) {
-			Cbuf_ExecuteText(when, text.c_str());
+		IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](std::string text) {
+			Cmd::BufferCommandText(text);
 		});
 		break;
 

@@ -209,7 +209,7 @@ typedef struct pmove_s
 	// these will be different functions during game and cgame
 	/*void    (*trace)( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );*/
 	void ( *trace )( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-	                 const vec3_t end, int passEntityNum, int contentMask );
+	                 const vec3_t end, int passEntityNum, int contentMask, int skipmask );
 
 	int ( *pointcontents )( const vec3_t point, int passEntityNum );
 } pmove_t;
@@ -238,8 +238,8 @@ typedef enum
   STAT_FALLDIST,   // distance the player fell
   STAT_VIEWLOCK,   // direction to lock the view in
   STAT_PREDICTION, // predictions for current player action
-  STAT_FUEL        // humans: jetpack fuel
-  // netcode has space for 1 more
+  STAT_FUEL,       // humans: jetpack fuel
+  STAT_TAGSCORE    // tagging progress
 } statIndex_t;
 
 #define SCA_WALLCLIMBER     0x00000001
@@ -364,6 +364,15 @@ typedef enum
 // entityState_t->modelIndex2 "public flags" when used for client entities
 #define PF_JETPACK_ENABLED  BIT(0)
 #define PF_JETPACK_ACTIVE   BIT(1)
+
+// for beacons:
+#define EF_BC_DYING         BIT(3) // beacon is fading out
+#define EF_BC_ENEMY         BIT(4) // entity/base is from the enemy
+#define EF_BC_TAG_PLAYER    BIT(5) // entity is a player
+#define EF_BC_BASE_OUTPOST  BIT(6) // base is an outpost
+
+#define EF_BC_TAG_RELEVANT  (EF_BC_ENEMY|EF_BC_TAG_PLAYER)   // relevant flags for tags
+#define EF_BC_BASE_RELEVANT (EF_BC_ENEMY|EF_BC_BASE_OUTPOST) // relevant flags for bases
 
 typedef enum
 {
@@ -623,8 +632,6 @@ typedef enum
   EV_AMMO_REFILL,     // ammo for clipless weapon has been refilled
   EV_CLIPS_REFILL,    // weapon clips have been refilled
   EV_FUEL_REFILL,     // jetpack fuel has been refilled
-
-  EV_LEV2_ZAP,
 
   EV_HIT, // notify client of a hit
 
@@ -1020,6 +1027,70 @@ typedef enum
 
 //---------------------------------------------------------
 
+#define BEACON_TIMER_TIME 3500
+
+typedef enum
+{
+	BCT_NONE,
+
+	//local
+	BCT_POINTER,
+	BCT_TIMER,
+
+	//indicators
+	BCT_TAG,
+	BCT_BASE,
+
+	//commands
+	BCT_ATTACK,
+	BCT_DEFEND,
+	BCT_REPAIR,
+
+	//implicit
+	BCT_HEALTH,
+	BCT_AMMO,
+	
+	NUM_BEACON_TYPES
+} beaconType_t;
+
+typedef enum
+{
+	BCH_NONE,
+	BCH_REMOVE,
+	BCH_MOVE
+} beaconConflictHandler_t;
+
+// beacon flags
+#define BCF_RESERVED      0x0001 // generated automatically, not created by players
+
+#define BCF_PER_PLAYER    0x0002 // one beacon per player
+#define BCF_PER_TEAM      0x0004 // one beacon per team
+#define BCF_DATA_UNIQUE   0x0008 // data extends type
+
+#define BCF_PRECISE       0x0010 // place exactly at crosshair
+#define BCF_IMPORTANT     0x0020 // display at 100% alpha
+
+typedef struct
+{
+	beaconType_t  number;
+	int           flags;
+
+	const char    *name;
+	const char    *humanName;
+
+#ifdef BUILD_CGAME
+	const char    *text[ 4 ];
+	const char    *desc;
+	qhandle_t     icon[ 4 ];
+	sfxHandle_t   inSound;
+	sfxHandle_t   outSound;
+#endif	
+
+	int           decayTime;
+} beaconAttributes_t;
+
+//---------------------------------------------------------
+
 // player class record
 typedef struct
 {
@@ -1287,11 +1358,12 @@ void     BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 void     BG_GetClientViewOrigin( const playerState_t *ps, vec3_t viewOrigin );
 void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t mins, const vec3_t maxs,
                                                void ( *trace )( trace_t *, const vec3_t, const vec3_t,
-                                               const vec3_t, const vec3_t, int, int ),
+                                               const vec3_t, const vec3_t, int, int, int ),
                                                vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
 int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
+qboolean                    BG_PlayerLowAmmo( playerState_t *ps, qboolean *energy );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );
 int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count );
@@ -1329,6 +1401,9 @@ const upgradeAttributes_t *BG_Upgrade( int upgrade );
 const missileAttributes_t *BG_MissileByName( const char *name );
 const missileAttributes_t *BG_Missile( int missile );
 
+const beaconAttributes_t  *BG_BeaconByName( const char *name );
+const beaconAttributes_t  *BG_Beacon( int index );
+
 meansOfDeath_t            BG_MeansOfDeathByName( const char *name );
 
 void                      BG_InitAllConfigs( void );
@@ -1346,6 +1421,7 @@ void                      BG_ParseWeaponAttributeFile( const char *filename, wea
 void                      BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua );
 void                      BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma );
 void                      BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma );
+void                      BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba );
 
 // bg_teamprogress.c
 #define NUM_UNLOCKABLES WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES
@@ -1393,6 +1469,7 @@ void     UI_UpdateUnlockables( void );
 #define MASK_WATER       ( CONTENTS_WATER | CONTENTS_LAVA | CONTENTS_SLIME )
 #define MASK_OPAQUE      ( CONTENTS_SOLID | CONTENTS_SLIME | CONTENTS_LAVA )
 #define MASK_SHOT        ( CONTENTS_SOLID | CONTENTS_BODY )
+#define MASK_ENTITY      ( CONTENTS_MOVER )
 
 void     *BG_Alloc( int size );
 void     BG_InitMemory( void );

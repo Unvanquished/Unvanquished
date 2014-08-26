@@ -1,0 +1,77 @@
+<rml>
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/template" href="/ui/shared/window.rml" />
+	<style>
+		body
+		{
+			width: 35em;
+			height: 20em;
+			margin: auto;
+		}
+
+
+		button.alien
+		{
+			width: 40%;
+			float: left;
+			margin-left: 0;
+			background-color: #6D131D;
+
+		}
+		button.alien:hover
+		{
+			background-color: #91676C;
+		}
+
+		button.human
+		{
+			width: 40%;
+			float: right;
+			margin-right: 0;
+			background-color: #131F6D;
+		}
+		button.human:hover
+		{
+			background-color: #6771AD;
+		}
+
+		button.wide
+		{
+			width: 100%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		p {
+			clear: both;
+		}
+
+	</style>
+</head>
+
+<body id="ingame_teamselect" template="window">
+
+	<button class="wide" onClick="hide ingame_teamselect; exec team auto" style="z-index: 10;">
+		<!-- High z-index, so we are placed 'ontop' of the drag-handle at the top of the window -->
+		Auto-select a team
+	</button>
+
+	<p>
+		Aliens are highly mobile and possess a wide variety of movement-based attacks.
+		They are sturdy, but must rely on stealth and evasion.
+	</p>
+	<p>
+		Humans can equip themselves with an assortment of weapons and equipment.
+		They are flexible and lethal at a distance, but fragile.
+	</p>
+
+	<button class="alien" onClick="hide ingame_teamselect; exec team alien"> Join Aliens </button>
+	<button class="human" onClick="hide ingame_teamselect; exec team human"> Join Humans </button>
+
+	<p> Alternatively you can watch the game without playing.</p>
+
+	<button class="wide"  onClick="hide ingame_teamselect; exec team spec"> Spectate </button>
+
+</body>
+</rml>

@@ -42,6 +42,8 @@ CG_BuildSolidList
 When a new cg.snap has been set, this function builds a sublist
 of the entities that are actually solid, to make for more
 efficient collision detection
+
+It also adds content flags to allow for more specific traces in synchronized code.
 ====================
 */
 void CG_BuildSolidList( void )
@@ -77,6 +79,20 @@ void CG_BuildSolidList( void )
 
 		if ( cent->nextState.solid && ent->eType != ET_MISSILE )
 		{
+			cent->contents |= CONTENTS_SOLID;
+
+			// retreive some content flags from the entity type
+			switch ( ent->eType )
+			{
+				case ET_MOVER:
+				case ET_MODELDOOR:
+					cent->contents |= CONTENTS_MOVER;
+					break;
+
+				default:
+					break;
+			}
+
 			cg_solidEntities[ cg_numSolidEntities ] = cent;
 			cg_numSolidEntities++;
 			continue;
@@ -92,9 +108,9 @@ CG_ClipMoveToEntities
 */
 static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
                                    const vec3_t maxs, const vec3_t end, int skipNumber,
-                                   int mask, trace_t *tr, traceType_t collisionType )
+                                   int mask, int skipmask, trace_t *tr, traceType_t collisionType )
 {
-	int           i, j, x, zd, zu;
+	int           i, x, zd, zu;
 	trace_t       trace;
 	entityState_t *ent;
 	clipHandle_t  cmodel;
@@ -102,17 +118,6 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	vec3_t        bmins, bmaxs;
 	vec3_t        origin, angles;
 	centity_t     *cent;
-
-	//SUPAR HACK
-	//this causes a trace to collide with the local player
-	if ( skipNumber == MAGIC_TRACE_HACK )
-	{
-		j = cg_numSolidEntities + 1;
-	}
-	else
-	{
-		j = cg_numSolidEntities;
-	}
 
 	// calculate bounding box of the trace
 	ClearBounds( tmins, tmaxs );
@@ -123,7 +128,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	if( maxs )
 		VectorAdd( maxs, tmaxs, tmaxs );
 
-	for ( i = 0; i < j; i++ )
+	for ( i = 0; i < cg_numSolidEntities; i++ )
 	{
 		if ( i < cg_numSolidEntities )
 		{
@@ -137,6 +142,16 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		ent = &cent->currentState;
 
 		if ( ent->number == skipNumber )
+		{
+			continue;
+		}
+
+		if ( !( cent->contents & mask ) )
+		{
+			continue;
+		}
+
+		if ( cent->contents & skipmask )
 		{
 			continue;
 		}
@@ -179,20 +194,20 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		switch ( collisionType )
 		{
 		case TT_CAPSULE:
-			trap_CM_TransformedCapsuleTrace( &trace, start, end,
-			                                 mins, maxs, cmodel,  mask, origin, angles );
+			trap_CM_TransformedCapsuleTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask,
+			                                 origin, angles );
 			break;
 
 		case TT_AABB:
-			trap_CM_TransformedBoxTrace( &trace, start, end,
-			                             mins, maxs, cmodel,  mask, origin, angles );
+			trap_CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask,
+			                             origin, angles );
 			break;
 
 		case TT_BISPHERE:
 			assert( maxs != NULL );
 			assert( mins != NULL );
-			trap_CM_TransformedBiSphereTrace( &trace, start, end,
-			                                  mins[ 0 ], maxs[ 0 ], cmodel, mask, origin );
+			trap_CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
+			                                  mask, skipmask, origin );
 			break;
 
 		default: // Shouldn't Happen
@@ -232,15 +247,15 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 CG_Trace
 ================
 */
-void  CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-                int skipNumber, int mask )
+void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+               const vec3_t end, int skipNumber, int mask, int skipmask )
 {
 	trace_t t;
 
-	trap_CM_BoxTrace( &t, start, end, mins, maxs, 0, mask );
+	trap_CM_BoxTrace( &t, start, end, mins, maxs, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, &t, TT_AABB );
+	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, TT_AABB );
 
 	*result = t;
 }
@@ -250,15 +265,15 @@ void  CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const ve
 CG_CapTrace
 ================
 */
-void  CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-                   int skipNumber, int mask )
+void  CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+                   const vec3_t end, int skipNumber, int mask, int skipmask )
 {
 	trace_t t;
 
-	trap_CM_CapsuleTrace( &t, start, end, mins, maxs, 0, mask );
+	trap_CM_CapsuleTrace( &t, start, end, mins, maxs, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, &t, TT_CAPSULE );
+	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, TT_CAPSULE );
 
 	*result = t;
 }
@@ -269,7 +284,8 @@ CG_BiSphereTrace
 ================
 */
 void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
-                       const float startRadius, const float endRadius, int skipNumber, int mask )
+                       const float startRadius, const float endRadius, int skipNumber, int mask,
+                       int skipmask )
 {
 	trace_t t;
 	vec3_t  mins, maxs;
@@ -277,10 +293,10 @@ void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
 	mins[ 0 ] = startRadius;
 	maxs[ 0 ] = endRadius;
 
-	trap_CM_BiSphereTrace( &t, start, end, startRadius, endRadius, 0, mask );
+	trap_CM_BiSphereTrace( &t, start, end, startRadius, endRadius, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, &t, TT_BISPHERE );
+	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, TT_BISPHERE );
 
 	*result = t;
 }
@@ -445,7 +461,7 @@ static void CG_TouchTriggerPrediction( void )
 		}
 
 		trap_CM_BoxTrace( &trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin,
-		                  cg_pmove.mins, cg_pmove.maxs, cmodel, -1 );
+		                  cg_pmove.mins, cg_pmove.maxs, cmodel, MASK_ALL, 0 );
 
 		if ( !trace.startsolid )
 		{

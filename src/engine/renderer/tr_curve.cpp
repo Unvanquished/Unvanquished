@@ -53,10 +53,10 @@ static void LerpSurfaceVert( srfVert_t *a, srfVert_t *b, srfVert_t *out )
 	out->lightmap[ 0 ] = 0.5f * ( a->lightmap[ 0 ] + b->lightmap[ 0 ] );
 	out->lightmap[ 1 ] = 0.5f * ( a->lightmap[ 1 ] + b->lightmap[ 1 ] );
 
-	out->lightColor[ 0 ] = ( a->lightColor[ 0 ] + b->lightColor[ 0 ] ) * 0.5f;
-	out->lightColor[ 1 ] = ( a->lightColor[ 1 ] + b->lightColor[ 1 ] ) * 0.5f;
-	out->lightColor[ 2 ] = ( a->lightColor[ 2 ] + b->lightColor[ 2 ] ) * 0.5f;
-	out->lightColor[ 3 ] = ( a->lightColor[ 3 ] + b->lightColor[ 3 ] ) * 0.5f;
+	out->lightColor[ 0 ] = floatToUnorm8( unorm8ToFloat( a->lightColor[ 0 ] ) * 0.5f + unorm8ToFloat( b->lightColor[ 0 ] ) * 0.5f );
+	out->lightColor[ 1 ] = floatToUnorm8( unorm8ToFloat( a->lightColor[ 1 ] ) * 0.5f + unorm8ToFloat( b->lightColor[ 1 ] ) * 0.5f );
+	out->lightColor[ 2 ] = floatToUnorm8( unorm8ToFloat( a->lightColor[ 2 ] ) * 0.5f + unorm8ToFloat( b->lightColor[ 2 ] ) * 0.5f );
+	out->lightColor[ 3 ] = floatToUnorm8( unorm8ToFloat( a->lightColor[ 3 ] ) * 0.5f + unorm8ToFloat( b->lightColor[ 3 ] ) * 0.5f );
 }
 
 /*
@@ -123,8 +123,8 @@ Handles all the complicated wrapping and degenerate cases
 static void MakeMeshNormals( int width, int height, srfVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ] )
 {
 	int        i, j, k, dist;
-	vec3_t     normal;
-	vec3_t     sum;
+	vec3_t     tangent, binormal, normal;
+	vec3_t     sum, sumTangents, sumBinormals;
 	int        count;
 	vec3_t     base;
 	vec3_t     delta;
@@ -132,6 +132,7 @@ static void MakeMeshNormals( int width, int height, srfVert_t ctrl[ MAX_GRID_SIZ
 	srfVert_t  *dv;
 	vec3_t     around[ 8 ], temp;
 	qboolean   good[ 8 ];
+	vec2_t     st[8];
 	qboolean   wrapWidth, wrapHeight;
 	float      len;
 	static int neighbors[ 8 ][ 2 ] =
@@ -232,12 +233,15 @@ static void MakeMeshNormals( int width, int height, srfVert_t ctrl[ MAX_GRID_SIZ
 					{
 						good[ k ] = qtrue;
 						VectorCopy( temp, around[ k ] );
+						Vector2Copy( ctrl[ y ][ x ].st, st[ k ] );
 						break; // good edge
 					}
 				}
 			}
 
 			VectorClear( sum );
+			VectorClear( sumTangents );
+			VectorClear( sumBinormals );
 
 			for ( k = 0; k < 8; k++ )
 			{
@@ -253,44 +257,26 @@ static void MakeMeshNormals( int width, int height, srfVert_t ctrl[ MAX_GRID_SIZ
 					continue;
 				}
 
+				R_CalcTangents( tangent, binormal,
+						vec3_origin, around[ k ], around[ ( k + 1 ) & 7 ],
+						dv->st, st[ k ], st[ ( k + 1 ) & 7 ] );
+
 				VectorAdd( normal, sum, sum );
+				VectorAdd( tangent, sumTangents, sumTangents );
+				VectorAdd( binormal, sumBinormals, sumBinormals );
 				count++;
 			}
 
 			if ( count == 0 )
 			{
-				count = 1;
+				VectorSet( dv->normal, 0.0f, 0.0f, 1.0f );
+			} else {
+				VectorNormalize2( sum, dv->normal );
 			}
 
-			VectorNormalize2( sum, dv->normal );
+			R_TBNtoQtangents( sumTangents, sumBinormals, dv->normal,
+					  dv->qtangent );
 		}
-	}
-}
-
-static void MakeMeshTangentVectors( int width, int height, srfVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ], int numTriangles,
-                                    srfTriangle_t triangles[ SHADER_MAX_TRIANGLES ] )
-{
-	int              i, j;
-	srfVert_t        *dv[ 3 ];
-	srfTriangle_t    *tri;
-	srfVert_t        *ctrl2[ MAX_GRID_SIZE * MAX_GRID_SIZE ];
-
-	// FIXME: use more elegant way
-	for ( i = 0; i < width; i++ )
-	{
-		for ( j = 0; j < height; j++ )
-		{
-			ctrl2[ j * width + i ] = &ctrl[ j ][ i ];
-		}
-	}
-
-	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
-	{
-		dv[ 0 ] = ctrl2[ tri->indexes[ 0 ] ];
-		dv[ 1 ] = ctrl2[ tri->indexes[ 1 ] ];
-		dv[ 2 ] = ctrl2[ tri->indexes[ 2 ] ];
-
-		R_CalcTangentVectors( dv );
 	}
 }
 
@@ -705,10 +691,6 @@ srfGridMesh_t  *R_SubdividePatchToGrid( int width, int height, srfVert_t points[
 
 	// calculate normals
 	MakeMeshNormals( width, height, gridctrl );
-	MakeMeshTangentVectors( width, height, gridctrl, numTriangles, gridtriangles );
-
-	// calculate tangent spaces
-	//MakeTangentSpaces(width, height, ctrl, numTriangles, triangles);
 
 	return R_CreateSurfaceGridMesh( width, height, gridctrl, errorTable, numTriangles, gridtriangles );
 }
@@ -776,10 +758,6 @@ srfGridMesh_t  *R_GridInsertColumn( srfGridMesh_t *grid, int column, int row, ve
 
 	// calculate normals
 	MakeMeshNormals( width, height, gridctrl );
-	MakeMeshTangentVectors( width, height, gridctrl, numTriangles, gridtriangles );
-
-	// calculate tangent spaces
-	//MakeTangentSpaces(width, height, ctrl, numTriangles, triangles);
 
 	VectorCopy( grid->lodOrigin, lodOrigin );
 	lodRadius = grid->lodRadius;
@@ -854,7 +832,6 @@ srfGridMesh_t  *R_GridInsertRow( srfGridMesh_t *grid, int row, int column, vec3_
 
 	// calculate normals
 	MakeMeshNormals( width, height, gridctrl );
-	MakeMeshTangentVectors( width, height, gridctrl, numTriangles, gridtriangles );
 
 	VectorCopy( grid->lodOrigin, lodOrigin );
 	lodRadius = grid->lodRadius;

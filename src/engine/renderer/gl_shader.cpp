@@ -376,6 +376,11 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		AddGLSLDefine( bufferExtra, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
 	}
 
+	if ( r_showEntityNormals->integer )
+	{
+		AddGLSLDefine( bufferExtra, "r_showEntityNormals", r_showEntityNormals->integer );
+	}
+
 	if ( glConfig2.vboVertexSkinningAvailable )
 	{
 		AddGLSLDefine( bufferExtra, "r_VertexSkinning", 1 );
@@ -905,12 +910,7 @@ bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( size_t permutati
 
 uint32_t        GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes() const
 {
-	uint32_t attribs = ATTR_NORMAL | ATTR_POSITION2 | ATTR_NORMAL2;
-
-	if ( r_normalMapping->integer )
-	{
-		attribs |= ATTR_TANGENT2 | ATTR_BINORMAL2;
-	}
+	uint32_t attribs = ATTR_POSITION2 | ATTR_QTANGENT2;
 
 	return attribs;
 }
@@ -1081,7 +1081,7 @@ void GLShader::SetRequiredVertexPointers()
 }
 
 GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
-	GLShader( "generic", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager ),
+	GLShader( "generic", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_ColorTextureMatrix( this ),
 	u_ViewOrigin( this ),
 	u_AlphaThreshold( this ),
@@ -1116,7 +1116,7 @@ void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram 
 }
 
 GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
-	GLShader( "lightMapping", ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_NORMAL, manager ),
+	GLShader( "lightMapping", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
@@ -1167,7 +1167,7 @@ void GLShader_lightMapping::SetShaderProgramUniforms( shaderProgram_t *shaderPro
 }
 
 GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShaderManager *manager ) :
-	GLShader( "vertexLighting_DBS_entity", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager ),
+	GLShader( "vertexLighting_DBS_entity", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
@@ -1229,7 +1229,7 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderManager *manager ) :
 	GLShader( "vertexLighting_DBS_world",
-	          ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL | ATTR_COLOR,
+	          ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR,
 		  manager
 	        ),
 	u_DiffuseTextureMatrix( this ),
@@ -1284,7 +1284,7 @@ void GLShader_vertexLighting_DBS_world::SetShaderProgramUniforms( shaderProgram_
 }
 
 GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderManager *manager ):
-	GLShader("forwardLighting_omniXYZ", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager),
+	GLShader("forwardLighting_omniXYZ", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
@@ -1350,7 +1350,7 @@ void GLShader_forwardLighting_omniXYZ::SetShaderProgramUniforms( shaderProgram_t
 }
 
 GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderManager *manager ):
-	GLShader("forwardLighting_projXYZ", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager),
+	GLShader("forwardLighting_projXYZ", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
@@ -1418,7 +1418,7 @@ void GLShader_forwardLighting_projXYZ::SetShaderProgramUniforms( shaderProgram_t
 }
 
 GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun( GLShaderManager *manager ):
-	GLShader("forwardLighting_directionalSun", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager),
+	GLShader("forwardLighting_directionalSun", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
@@ -1495,7 +1495,7 @@ void GLShader_forwardLighting_directionalSun::SetShaderProgramUniforms( shaderPr
 }
 
 GLShader_shadowFill::GLShader_shadowFill( GLShaderManager *manager ) :
-	GLShader( "shadowFill", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager ),
+	GLShader( "shadowFill", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_ColorTextureMatrix( this ),
 	u_ViewOrigin( this ),
 	u_AlphaThreshold( this ),
@@ -1530,7 +1530,7 @@ void GLShader_shadowFill::SetShaderProgramUniforms( shaderProgram_t *shaderProgr
 }
 
 GLShader_reflection::GLShader_reflection( GLShaderManager *manager ):
-	GLShader("reflection", "reflection_CB", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager ),
+	GLShader("reflection", "reflection_CB", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_NormalTextureMatrix( this ),
 	u_ViewOrigin( this ),
 	u_ModelMatrix( this ),
@@ -1584,7 +1584,7 @@ void GLShader_skybox::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 }
 
 GLShader_fogQuake3::GLShader_fogQuake3( GLShaderManager *manager ) :
-	GLShader( "fogQuake3", ATTR_POSITION | ATTR_NORMAL, manager ),
+	GLShader( "fogQuake3", ATTR_POSITION | ATTR_QTANGENT, manager ),
 	u_ModelMatrix( this ),
 	u_ModelViewProjectionMatrix( this ),
 	u_Color( this ),
@@ -1635,7 +1635,7 @@ void GLShader_fogGlobal::SetShaderProgramUniforms( shaderProgram_t *shaderProgra
 }
 
 GLShader_heatHaze::GLShader_heatHaze( GLShaderManager *manager ) :
-	GLShader( "heatHaze", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager ),
+	GLShader( "heatHaze", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_NormalTextureMatrix( this ),
 	u_ViewOrigin( this ),
 	u_DeformMagnitude( this ),
@@ -1764,7 +1764,7 @@ void GLShader_debugShadowMap::SetShaderProgramUniforms( shaderProgram_t *shaderP
 }
 
 GLShader_depthToColor::GLShader_depthToColor( GLShaderManager *manager ) :
-	GLShader( "depthToColor", ATTR_POSITION | ATTR_NORMAL, manager ),
+	GLShader( "depthToColor", ATTR_POSITION | ATTR_QTANGENT, manager ),
 	u_ModelViewProjectionMatrix( this ),
 	u_Bones( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this )
@@ -1800,7 +1800,7 @@ void GLShader_lightVolume_omni::SetShaderProgramUniforms( shaderProgram_t *shade
 }
 
 GLShader_liquid::GLShader_liquid( GLShaderManager *manager ) :
-	GLShader( "liquid", ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL
+	GLShader( "liquid", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT
 		, manager ),
 	u_NormalTextureMatrix( this ),
 	u_ViewOrigin( this ),

@@ -1,0 +1,47 @@
+<rml>
+<head>
+<link type="text/rcss" href="/ui/shared/basics.rcss" />
+<style>
+body
+{
+	width: 100%;
+	height: 100%;
+}
+div#mine
+{
+	position: absolute;
+	text-align: center;
+	width: 10%;
+	margin-top: 30%;
+	margin-left: auto;
+	margin-right: auto;
+}
+div#timer
+{
+	position: absolute;
+	width: 40%;
+	height: 3%;
+	bottom: 2%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+progressbar
+{
+	width: 100%;
+	height: 100%;
+	image: /white;
+	orientation: left;
+	color: #aaffffff;
+}
+</style>
+</head>
+<body id="hud_builder">
+	<div id="mine">
+		<predictedMineEfficiency />
+	</div>
+	<div>
+		<progressbar src="btimer"/>
+	</div>
+</body>
+</rml>

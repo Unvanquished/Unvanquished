@@ -209,7 +209,7 @@ typedef struct
 typedef struct
 {
 	short xyz[ 3 ];
-	short normal;
+	unsigned short normal;
 } md3XyzNormal_t;
 
 typedef struct

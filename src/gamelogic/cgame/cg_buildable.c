@@ -231,7 +231,8 @@ static void CG_Creep( centity_t *cent )
 	VectorScale( temp, -attr->creepSize, temp );
 	VectorAdd( temp, cent->lerpOrigin, temp );
 
-	CG_Trace( &tr, cent->lerpOrigin, NULL, NULL, temp, cent->currentState.number, MASK_PLAYERSOLID );
+	CG_Trace( &tr, cent->lerpOrigin, NULL, NULL, temp, cent->currentState.number,
+	          MASK_PLAYERSOLID, 0 );
 
 	if ( size > 0.0f && tr.fraction < 1.0f )
 	{
@@ -1038,8 +1039,7 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
 
 	VectorMA( inOrigin, -TRACE_DEPTH, normal, end );
 
-	CG_CapTrace( &tr, inOrigin, mins, maxs, end, skipNumber,
-	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
+	CG_CapTrace( &tr, inOrigin, mins, maxs, end, skipNumber, MASK_DEADSOLID, 0 );
 
 	fraction = tr.fraction;
 	if ( tr.startsolid )
@@ -1137,33 +1137,6 @@ void CG_GhostBuildable( int buildableInfo )
 	ent.customShader = ( SB_BUILDABLE_TO_IBE( buildableInfo ) == IBE_NONE )
 	                     ? cgs.media.greenBuildShader
 	                     : cgs.media.redBuildShader;
-
-	// Draw predicted RGS efficiency
-	// TODO: Add fancy display for predicted RGS efficiency
-	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
-	{
-		char color;
-		int  delta = ps->stats[ STAT_PREDICTION ];
-
-		if ( delta < 0 )
-		{
-			color = COLOR_RED;
-		}
-		else if ( delta < 10 )
-		{
-			color = COLOR_ORANGE;
-		}
-		else if ( delta < 50 )
-		{
-			color = COLOR_YELLOW;
-		}
-		else
-		{
-			color = COLOR_GREEN;
-		}
-
-		CG_CenterPrint(va("^%c%+d%%", color, delta), 200, GIANTCHAR_WIDTH * 4 );
-	}
 
 	//rescale the model
 	scale = BG_BuildableModelConfig( buildable )->modelScale;
@@ -1306,7 +1279,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 			trap_R_SetColor( backColour );
 
-			CG_AlignText( &rect, text, scale, 0, 0, ALIGN_CENTER, VALIGN_CENTER, &tx, &ty );
 			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2, ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ), cgs.media.whiteShader );
 
 			trap_R_SetColor( NULL );
@@ -1316,7 +1288,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 			colour[2] = bs->foreColor[2];
 			colour[3] = bs->foreColor[3];
 
-			UI_Text_Paint( tx, ty, scale, colour, text, 0, ITEM_TEXTSTYLE_PLAIN );
+			// TODO: Draw text
 		}
 	}
 }
@@ -1742,7 +1714,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		// look through up to 3 players and/or transparent buildables
 		for ( i = 0; i < 3; i++ )
 		{
-			CG_Trace( &tr, trOrigin, NULL, NULL, origin, entNum, MASK_SHOT );
+			CG_Trace( &tr, trOrigin, NULL, NULL, origin, entNum, MASK_SHOT, 0 );
 
 			if ( tr.entityNum == cent->currentState.number )
 			{
@@ -2185,7 +2157,7 @@ void CG_DrawBuildableStatus( void )
 
 	if ( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK )
 	{
-		CG_GhostBuildableStatus( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] );
+// 		CG_GhostBuildableStatus( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] );
         }
 }
 

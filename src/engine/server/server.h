@@ -196,7 +196,6 @@ typedef struct client_s
 	int           downloadSendTime; // time we last got an ack from the client
 
 	// www downloading
-	qboolean bDlOK; // passed from cl_wwwDownload CVAR_USERINFO, whether this client supports www dl
 	char     downloadURL[ MAX_OSPATH ]; // the URL we redirected the client to
 	qboolean bWWWDl; // we have a www download going
 	qboolean bWWWing; // the client is doing an ftp/http download
@@ -413,6 +412,8 @@ void       SV_PrintTranslatedText( const char *text, qboolean broadcast, qboolea
 void       SV_AddOperatorCommands( void );
 void       SV_RemoveOperatorCommands( void );
 
+void       SV_NET_Config( void );
+
 void       SV_MasterHeartbeat( const char *hbname );
 void       SV_MasterShutdown( void );
 void       SV_MasterGameStat( const char *data );
@@ -444,7 +445,7 @@ void SV_SpawnServer( const char *server );
 //
 void SV_GetChallenge( netadr_t from );
 
-void SV_DirectConnect( netadr_t from );
+void SV_DirectConnect( netadr_t from, const Cmd::Args& args );
 
 void SV_ExecuteClientMessage( client_t *cl, msg_t *msg );
 void SV_UserinfoChanged( client_t *cl );
@@ -496,7 +497,7 @@ sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
 GameVM         *SV_CreateGameVM( void );
 void           SV_InitGameProgs(Str::StringRef mapname);
 void           SV_ShutdownGameProgs( void );
-void           SV_RestartGameProgs( void );
+void           SV_RestartGameProgs(Str::StringRef mapname);
 qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
 int            SV_LoadTag( const char *mod_name );

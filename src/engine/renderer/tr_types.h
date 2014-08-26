@@ -356,9 +356,6 @@ typedef struct
 	// 1 bits will prevent the associated area from rendering at all
 	byte areamask[ MAX_MAP_AREA_BYTES ];
 
-	// text messages for deform text shaders
-	char text[ MAX_RENDER_STRINGS ][ MAX_RENDER_STRING_LENGTH ];
-
 //----(SA)  added (needed to pass fog infos into the portal sky scene)
 	glfog_t glfog;
 //----(SA)  end
@@ -439,7 +436,7 @@ typedef struct
 	char                 extensions_string[ MAX_STRING_CHARS * 4 ]; // TTimo - bumping, some cards have a big extension string
 
 	int                  maxTextureSize; // queried from GL
-	int                  maxActiveTextures; // multitexture ability
+	int                  unused;
 
 	int                  colorBits, depthBits, stencilBits;
 
@@ -493,7 +490,7 @@ typedef struct
 	qboolean vboVertexSkinningAvailable;
 	int      maxVertexSkinningBones;
 
-	qboolean texture3DAvailable;
+	qboolean unused_texture3DAvailable;
 	qboolean textureNPOTAvailable;
 
 	qboolean drawBuffersAvailable;
@@ -502,9 +499,9 @@ typedef struct
 	qboolean textureRGAvailable;
 	int      maxDrawBuffers;
 
-	qboolean vertexArrayObjectAvailable;
+	qboolean unused_vertexArrayObjectAvailable;
 
-	qboolean stencilWrapAvailable;
+	qboolean unused_stencilWrapAvailable;
 
 	float    maxTextureAnisotropy;
 	qboolean textureAnisotropyAvailable;

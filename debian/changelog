@@ -1,3 +1,29 @@
+unvanquished (0.30.0-1) unstable; urgency=low
+
+  * Release of alpha 30.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 04 Aug 2014 23:48:55 +0100
+
+unvanquished (0.29.0-2) unstable; urgency=low
+
+  * Fix pak checksum usage. (git master)
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Tue, 08 Jul 2014 12:23:35 +0100
+
+unvanquished (0.29.0-1) unstable; urgency=low
+
+  * Release of alpha 29.
+  * Update server config & map rotation.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 07 Jul 2014 18:45:18 +0100
+
+unvanquished (0.28.0-1) unstable; urgency=low
+
+  * Release of alpha 28.
+  * Ubuntu have fixed their broken libsdl2-dev; drop the workaround.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 01 Jun 2014 14:38:35 +0100
+
 unvanquished (0.27.2-1) unstable; urgency=low
 
   * Release of alpha 27.2.

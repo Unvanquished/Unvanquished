@@ -188,15 +188,6 @@ float CL_KeyState( kbutton_t *key )
 		key->downtime = com_frameTime;
 	}
 
-#if 0
-
-	if ( msec )
-	{
-		Com_Printf("%i ", msec );
-	}
-
-#endif
-
 	val = ( float ) msec / frame_msec;
 
 	if ( val < 0 )
@@ -238,7 +229,7 @@ void IN_Help( void )
 {
 	if ( cls.state == CA_ACTIVE && !clc.demoplaying )
 	{
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_HELP );  // startup help system
+		Rocket_DocumentAction( "Help", "open" );
 	}
 }
 
@@ -412,11 +403,6 @@ void CL_KeyMove( usercmd_t *cmd )
 	}
 }
 
-qboolean CL_UIOwnsMouse( void )
-{
-	return ( ( cls.keyCatchers & KEYCATCH_UI ) && !( cls.keyCatchers & KEYCATCH_CONSOLE ) && !Cvar_VariableValue( "ui_hideCursor" ) );
-}
-
 /*
 =================
 CL_MouseEvent
@@ -424,13 +410,13 @@ CL_MouseEvent
 */
 void CL_MouseEvent( int dx, int dy, int time )
 {
-	if ( CL_UIOwnsMouse() )
-	{
-		VM_Call( uivm, UI_MOUSE_EVENT, dx, dy );
-	}
-	else if ( cls.keyCatchers & KEYCATCH_CGAME )
+	if ( cls.keyCatchers & KEYCATCH_CGAME )
 	{
 		VM_Call( cgvm, CG_MOUSE_EVENT, dx, dy );
+	}
+	else if ( cls.keyCatchers & KEYCATCH_UI )
+	{
+		Rocket_MouseMove( dx, dy );
 	}
 	else
 	{
@@ -884,6 +870,31 @@ qboolean CL_ReadyToSendPacket( void )
 }
 
 /*
+================
+CL_WriteBinaryMessage
+================
+*/
+static void CL_WriteBinaryMessage( msg_t *msg )
+{
+	if ( !clc.binaryMessageLength )
+	{
+		return;
+	}
+
+	MSG_Uncompressed( msg );
+
+	if ( ( msg->cursize + clc.binaryMessageLength ) >= msg->maxsize )
+	{
+		clc.binaryMessageOverflowed = qtrue;
+		return;
+	}
+
+	MSG_WriteData( msg, clc.binaryMessage, clc.binaryMessageLength );
+	clc.binaryMessageLength = 0;
+	clc.binaryMessageOverflowed = qfalse;
+}
+
+/*
 ===================
 CL_WritePacket
 
@@ -1074,7 +1085,9 @@ void CL_WritePacket( void )
 		Com_Printf("%i ", buf.cursize );
 	}
 
-	CL_Netchan_Transmit( &clc.netchan, &buf );
+	MSG_WriteByte( &buf, clc_EOF );
+	CL_WriteBinaryMessage( &buf );
+	Netchan_Transmit( &clc.netchan, buf.cursize, buf.data );
 
 	// clients never really should have messages large enough
 	// to fragment, but in case they do, fire them all off
@@ -1088,7 +1101,7 @@ void CL_WritePacket( void )
 			Com_Printf( "WARNING: unsent fragments (not supposed to happen!)" );
 		}
 
-		CL_Netchan_TransmitNextFragment( &clc.netchan );
+		Netchan_TransmitNextFragment( &clc.netchan );
 	}
 }
 

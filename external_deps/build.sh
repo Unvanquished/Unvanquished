@@ -637,8 +637,11 @@ setup_linux64() {
 if [ "${#}" -lt "2" ]; then
 	echo "usage: ${0} <platform> <package[s]...>"
 	echo "Script to build dependencies for platforms which do not provide them"
-	echo "Platforms: msvc32 msvc64 mingw32 mingw64 macosx32 macosx64"
+	echo "Platforms: msvc32 msvc64 mingw32 mingw64 macosx32 macosx64 linux32 linux64"
 	echo "Packages: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile naclsdk"
+	echo "Virtual packages:"
+	echo "  install - create a stripped down version of the built packages that CMake can use"
+	echo "  package - create a zip/tarball of the dependencies so they can be distributed"
 	echo
 	echo "Packages requires for each platform:"
 	echo "Linux native compile: naclsdk (and possibly others depending on what packages your distribution provides)"

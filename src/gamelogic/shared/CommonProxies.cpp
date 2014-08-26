@@ -72,7 +72,7 @@ namespace Cmd {
         std::string description;
     };
 
-    typedef std::unordered_map<std::string, CommandRecord> CommandMap;
+    typedef std::unordered_map<std::string, CommandRecord, Str::IHash, Str::IEqual> CommandMap;
 
     CommandMap& GetCommandMap() {
         static CommandMap map;
@@ -256,13 +256,14 @@ namespace Cvar{
         cvarsInitialized = true;
     }
 
-    void Register(CvarProxy* cvar, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
+    bool Register(CvarProxy* cvar, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
         if (cvarsInitialized) {
             GetCvarMap()[name] = {cvar, "", 0, defaultValue};
             RegisterCvarRPC(name, std::move(description), flags, defaultValue);
         } else {
             GetCvarMap()[name] = {cvar, std::move(description), flags, defaultValue};
         }
+        return true;
     }
 
     std::string GetValue(const std::string& name) {
@@ -318,8 +319,8 @@ namespace Cvar{
 class VMCvarProxy : public Cvar::CvarProxy {
     public:
         VMCvarProxy(Str::StringRef name, int flags, Str::StringRef defaultValue)
-        : Cvar::CvarProxy(name, "a vmCvar_t", flags, defaultValue), modificationCount(0), value(defaultValue) {
-            Register();
+        : Cvar::CvarProxy(name, flags, defaultValue), modificationCount(0), value(defaultValue) {
+            Register("");
         }
 
         virtual Cvar::OnValueChangedResult OnValueChanged(Str::StringRef newValue) OVERRIDE {

@@ -53,10 +53,9 @@ void R_PerformanceCounters( void )
 		           backEnd.pc.c_occlusionQueriesLightsCulled,
 		           tr.pc.c_dlightInteractions + tr.pc.c_slightInteractions - backEnd.pc.c_occlusionQueriesInteractionsCulled );
 
-		ri.Printf( PRINT_ALL, "%i draws %i queries %i CHC++ ms %i vbos %i ibos %i verts %i tris\n",
+		ri.Printf( PRINT_ALL, "%i draws %i queries %i vbos %i ibos %i verts %i tris\n",
 		           backEnd.pc.c_drawElements,
 		           tr.pc.c_occlusionQueries,
-		           tr.pc.c_CHCTime,
 		           backEnd.pc.c_vboVertexBuffers, backEnd.pc.c_vboIndexBuffers,
 		           backEnd.pc.c_vboVertexes, backEnd.pc.c_vboIndexes / 3 );
 
@@ -70,11 +69,6 @@ void R_PerformanceCounters( void )
 		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout %i bin %i bout\n",
 		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out,
 		           tr.pc.c_box_cull_in, tr.pc.c_box_cull_out );
-
-		ri.Printf( PRINT_ALL, "(patch) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
-		           tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip,
-		           tr.pc.c_sphere_cull_patch_out, tr.pc.c_box_cull_patch_in,
-		           tr.pc.c_box_cull_patch_clip, tr.pc.c_box_cull_patch_out );
 
 		ri.Printf( PRINT_ALL, "(mdv) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
 		           tr.pc.c_sphere_cull_mdv_in, tr.pc.c_sphere_cull_mdv_clip,
@@ -128,8 +122,7 @@ void R_PerformanceCounters( void )
 	}
 	else if ( r_speeds->integer == RSPEEDS_CHC )
 	{
-		ri.Printf( PRINT_ALL, "%i CHC++ ms %i queries %i multi queries %i saved\n",
-		           tr.pc.c_CHCTime,
+		ri.Printf( PRINT_ALL, "%i queries %i multi queries %i saved\n",
 		           tr.pc.c_occlusionQueries,
 		           tr.pc.c_occlusionQueriesMulti,
 		           tr.pc.c_occlusionQueriesSaved );
@@ -551,6 +544,7 @@ RE_2DPolyies
 =============
 */
 extern int r_numPolyVerts;
+extern int r_numPolyIndexes;
 
 void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 {
@@ -575,6 +569,42 @@ void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 	cmd->shader = R_GetShaderByHandle( hShader );
 
 	r_numPolyVerts += numverts;
+}
+
+void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader )
+{
+	poly2dIndexedCommand_t *cmd;
+
+	if ( r_numPolyVerts + numverts > r_maxPolyVerts->integer )
+	{
+		return;
+	}
+
+	if ( r_numPolyIndexes + numindexes > r_maxPolyVerts->integer )
+	{
+		return;
+	}
+
+	cmd = (poly2dIndexedCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->commandId = RC_2DPOLYSINDEXED;
+	cmd->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numPolyVerts ];
+	cmd->numverts = numverts;
+	memcpy( cmd->verts, verts, sizeof( polyVert_t ) * numverts );
+	cmd->shader = R_GetShaderByHandle( hShader );
+	cmd->indexes = &backEndData[ tr.smpFrame ]->polyIndexes[ r_numPolyIndexes ];
+	memcpy( cmd->indexes, indexes, sizeof( int ) * numindexes );
+	cmd->numIndexes = numindexes;
+	cmd->translation[ 0 ] = trans_x;
+	cmd->translation[ 1 ] = trans_y;
+
+	r_numPolyVerts += numverts;
+	r_numPolyIndexes += numindexes;
 }
 
 /*
@@ -688,10 +718,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 		gradientColor = colorWhite;
 	}
 
-	cmd->gradientColor[ 0 ] = gradientColor[ 0 ] * 255;
-	cmd->gradientColor[ 1 ] = gradientColor[ 1 ] * 255;
-	cmd->gradientColor[ 2 ] = gradientColor[ 2 ] * 255;
-	cmd->gradientColor[ 3 ] = gradientColor[ 3 ] * 255;
+	floatToUnorm8( gradientColor, cmd->gradientColor );
 	cmd->gradientType = gradientType;
 }
 

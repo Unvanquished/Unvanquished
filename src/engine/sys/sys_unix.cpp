@@ -338,20 +338,6 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 #endif // !MACOSX
 
-#define MEM_THRESHOLD 96 * 1024 * 1024
-
-/*
-==================
-Sys_LowPhysicalMemory
-
-TODO
-==================
-*/
-qboolean Sys_LowPhysicalMemory( void )
-{
-	return qfalse;
-}
-
 /*
 ==================
 Sys_Basename

@@ -195,7 +195,6 @@ void	main()
 
 #endif // USE_NORMAL_MAPPING
 
-
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
 
@@ -204,7 +203,6 @@ void	main()
 		discard;
 		return;
 	}
-
 
 // add Rim Lighting to highlight the edges
 #if defined(r_RimLighting)
@@ -264,6 +262,9 @@ void	main()
 	gl_FragColor = vec4(vec3(0.0, 1.0, 0.0), diffuse.a);
 #endif
 #endif
+
+// Debugging
+#if defined(r_showEntityNormals)
+	gl_FragColor = vec4(N, 1.0);
+#endif
 }
-
-

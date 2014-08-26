@@ -290,39 +290,41 @@ else()
 
     # Use gcc-ar and gcc-ranlib instead of ar and ranlib so that we can use
     # slim LTO objects. This requires a recent version of GCC and binutils.
-    if( USE_SLIM_LTO )
-      string(REGEX MATCH "^([0-9]+.[0-9]+)" _version
-         "${CMAKE_CXX_COMPILER_VERSION}")
-      get_filename_component(COMPILER_BASENAME "${CMAKE_C_COMPILER}" NAME)
-      if (COMPILER_BASENAME MATCHES "^(.+-)g?cc(-[0-9]+\\.[0-9]+\\.[0-9]+)?(\\.exe)?$")
-        set(TOOLCHAIN_PREFIX ${CMAKE_MATCH_1})
+    if( ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU )
+      if( USE_SLIM_LTO )
+        string(REGEX MATCH "^([0-9]+.[0-9]+)" _version
+           "${CMAKE_CXX_COMPILER_VERSION}")
+        get_filename_component(COMPILER_BASENAME "${CMAKE_C_COMPILER}" NAME)
+        if (COMPILER_BASENAME MATCHES "^(.+-)g?cc(-[0-9]+\\.[0-9]+\\.[0-9]+)?(\\.exe)?$")
+          set(TOOLCHAIN_PREFIX ${CMAKE_MATCH_1})
+        endif()
+
+        find_program(GCC_AR NAMES
+          "${TOOLCHAIN_PREFIX}gcc-ar"
+          "${TOOLCHAIN_PREFIX}gcc-ar-${_version}"
+          DOC "gcc provided wrapper for ar which adds the --plugin option"
+        )
+
+        find_program(GCC_RANLIB NAMES
+          "${TOOLCHAIN_PREFIX}gcc-ranlib"
+          "${TOOLCHAIN_PREFIX}gcc-ranlib-${_version}"
+          DOC "gcc provided wrapper for ranlib which adds the --plugin option"
+        )
+
+        mark_as_advanced( GCC_AR GCC_RANLIB )
+
+        # Override standard ar and ranlib with the gcc- versions
+        if( GCC_AR )
+          set( CMAKE_AR ${GCC_AR} )
+        endif()
+        if( GCC_RANLIB )
+          set( CMAKE_RANLIB ${GCC_RANLIB} )
+        endif()
+
+        try_c_cxx_flag( NO_FAT_LTO_OBJECTS "-fno-fat-lto-objects" )
+      else()
+        try_c_cxx_flag( FAT_LTO_OBJECTS "-ffat-lto-objects" )
       endif()
-
-      find_program(GCC_AR NAMES
-        "${TOOLCHAIN_PREFIX}gcc-ar"
-        "${TOOLCHAIN_PREFIX}gcc-ar-${_version}"
-        DOC "gcc provided wrapper for ar which adds the --plugin option"
-      )
-
-      find_program(GCC_RANLIB NAMES
-        "${TOOLCHAIN_PREFIX}gcc-ranlib"
-        "${TOOLCHAIN_PREFIX}gcc-ranlib-${_version}"
-        DOC "gcc provided wrapper for ranlib which adds the --plugin option"
-      )
-
-      mark_as_advanced( GCC_AR GCC_RANLIB )
-
-      # Override standard ar and ranlib with the gcc- versions
-      if( GCC_AR )
-        set( CMAKE_AR ${GCC_AR} )
-      endif()
-      if( GCC_RANLIB )
-        set( CMAKE_RANLIB ${GCC_RANLIB} )
-      endif()
-
-      try_c_cxx_flag( NO_FAT_LTO_OBJECTS "-fno-fat-lto-objects" )
-    else()
-      try_c_cxx_flag( FAT_LTO_OBJECTS "-ffat-lto-objects" )
     endif()
   endif()
 
@@ -355,7 +357,7 @@ endif()
 
 if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
   set( PythonInterp_FIND_VERSION 2 )
-  find_package( PythonInterp )
+  find_package( PythonInterp 2 )
   if( NOT PYTHONINTERP_FOUND )
     message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
   endif()
@@ -378,6 +380,7 @@ set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( TOOLS_DIR ${MOUNT_DIR}/tools )
 set( LCC_DIR ${TOOLS_DIR}/lcc )
 set( LIB_DIR ${MOUNT_DIR}/libs )
+set( ROCKET_DIR ${LIB_DIR}/libRocket )
 if( CMAKE_CFG_INTDIR STREQUAL "." )
   set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
 else()
@@ -502,6 +505,11 @@ function( ADD_PRECOMPILED_HEADER Target Header )
       set( Defs ${Defs} -I${Def} )
     endforeach()
 
+    # Specify minimum OSX version
+    if( APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET )
+      set( Flags ${Flags} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} )
+    endif()
+
     # Compiler-specific PCH support
     if( CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
       add_custom_command( OUTPUT "${OBJ_DIR}/${Target}.h.gch"
@@ -555,6 +563,7 @@ set( COMMONLIST
   ${COMMON_DIR}/Command.h
   ${COMMON_DIR}/Cvar.cpp
   ${COMMON_DIR}/Cvar.h
+  ${COMMON_DIR}/DisjointSets.h
   ${COMMON_DIR}/FileSystem.cpp
   ${COMMON_DIR}/FileSystem.h
   ${COMMON_DIR}/IPC.h
@@ -738,10 +747,8 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/client/keycodes.h
   ${ENGINE_DIR}/client/keys.h
   ${ENGINE_DIR}/client/cl_main.cpp
-  ${ENGINE_DIR}/client/cl_net_chan.cpp
   ${ENGINE_DIR}/client/cl_parse.cpp
   ${ENGINE_DIR}/client/cl_scrn.cpp
-  ${ENGINE_DIR}/client/cl_ui.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
   ${ENGINE_DIR}/client/libmumblelink.cpp
   ${ENGINE_DIR}/client/libmumblelink.h
@@ -764,12 +771,22 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/OggCodec.cpp
   ${ENGINE_DIR}/audio/OpusCodec.cpp
   ${ENGINE_DIR}/audio/WavCodec.cpp
-  )
+  ${ENGINE_DIR}/client/rocket_dataformatter.cpp
+  ${ENGINE_DIR}/client/rocket_textelements.cpp
+  ${ENGINE_DIR}/client/rocket_documents.cpp
+  ${ENGINE_DIR}/client/rocket_datagrid.cpp
+  ${ENGINE_DIR}/client/rocket_element.cpp
+  ${ENGINE_DIR}/client/rocket_events.cpp
+  ${ENGINE_DIR}/client/rocket_keys.cpp
+  ${ENGINE_DIR}/client/rocket_hud.cpp
+  ${ENGINE_DIR}/client/rocket.cpp
+)
 
 set( TTYCLIENTLIST
     ${ENGINE_DIR}/null/null_input.cpp
     ${ENGINE_DIR}/null/null_renderer.cpp
     ${ENGINE_DIR}/null/NullAudio.cpp
+    ${ENGINE_DIR}/null/null_rocket.cpp
 )
 
 set( DEDSERVERLIST
@@ -816,8 +833,15 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_particles.c
   ${GAMELOGIC_DIR}/cgame/cg_tutorial.c
   ${GAMELOGIC_DIR}/cgame/cg_utils.c
-  ${GAMELOGIC_DIR}/ui/ui_shared.c
-  ${GAMELOGIC_DIR}/ui/ui_utf8.c
+  ${GAMELOGIC_DIR}/cgame/cg_beacon.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_draw.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_events.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_datasource.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_progressbar.c
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.c
+  ${GAMELOGIC_DIR}/cgame/cg_gameinfo.c
+  ${GAMELOGIC_DIR}/cgame/cg_parseutils.c
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
 )
@@ -837,7 +861,7 @@ set( CGAMEASMLIST
 )
 
 set( GAMELIST
-  ${GAMELOGIC_DIR}/game/g_main.c #keep it first because vmMain must be the first function compiled in qvms
+  ${GAMELOGIC_DIR}/game/g_main.cpp #keep it first because vmMain must be the first function compiled in qvms
   ${GAMELOGIC_DIR}/shared/bg_misc.c
   ${GAMELOGIC_DIR}/shared/bg_parse.c
   ${GAMELOGIC_DIR}/shared/bg_pmove.c
@@ -849,39 +873,41 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/shared/VMMain.h
-  ${GAMELOGIC_DIR}/game/g_active.c
-  ${GAMELOGIC_DIR}/game/g_client.c
-  ${GAMELOGIC_DIR}/game/g_cmds.c
-  ${GAMELOGIC_DIR}/game/g_combat.c
-  ${GAMELOGIC_DIR}/game/g_confidence.c
-  ${GAMELOGIC_DIR}/game/g_entities.c
-  ${GAMELOGIC_DIR}/game/g_physics.c
-  ${GAMELOGIC_DIR}/game/g_buildable.c
-  ${GAMELOGIC_DIR}/game/g_missile.c
-  ${GAMELOGIC_DIR}/game/g_session.c
-  ${GAMELOGIC_DIR}/game/g_spawn_afx.c
-  ${GAMELOGIC_DIR}/game/g_spawn_ctrl.c
-  ${GAMELOGIC_DIR}/game/g_spawn_fx.c
-  ${GAMELOGIC_DIR}/game/g_spawn_game.c
-  ${GAMELOGIC_DIR}/game/g_spawn_generic.c
-  ${GAMELOGIC_DIR}/game/g_spawn_gfx.c
-  ${GAMELOGIC_DIR}/game/g_spawn_mover.c
-  ${GAMELOGIC_DIR}/game/g_spawn_position.c
-  ${GAMELOGIC_DIR}/game/g_spawn_sensor.c
-  ${GAMELOGIC_DIR}/game/g_spawn_shared.c
-  ${GAMELOGIC_DIR}/game/g_spawn.c
-  ${GAMELOGIC_DIR}/game/g_svcmds.c
-  ${GAMELOGIC_DIR}/game/g_team.c
-  ${GAMELOGIC_DIR}/game/g_utils.c
-  ${GAMELOGIC_DIR}/game/g_maprotation.c
-  ${GAMELOGIC_DIR}/game/g_weapon.c
-  ${GAMELOGIC_DIR}/game/g_admin.c
-  ${GAMELOGIC_DIR}/game/g_namelog.c
-  ${GAMELOGIC_DIR}/game/g_bot.c
-  ${GAMELOGIC_DIR}/game/g_bot_ai.c
-  ${GAMELOGIC_DIR}/game/g_bot_nav.c
-  ${GAMELOGIC_DIR}/game/g_bot_parse.c
-  ${GAMELOGIC_DIR}/game/g_bot_util.c
+  ${GAMELOGIC_DIR}/game/g_active.cpp
+  ${GAMELOGIC_DIR}/game/Beacon.cpp 
+  ${GAMELOGIC_DIR}/game/Clustering.cpp
+  ${GAMELOGIC_DIR}/game/g_client.cpp
+  ${GAMELOGIC_DIR}/game/g_cmds.cpp
+  ${GAMELOGIC_DIR}/game/g_combat.cpp
+  ${GAMELOGIC_DIR}/game/g_confidence.cpp
+  ${GAMELOGIC_DIR}/game/g_entities.cpp
+  ${GAMELOGIC_DIR}/game/g_physics.cpp
+  ${GAMELOGIC_DIR}/game/g_buildable.cpp
+  ${GAMELOGIC_DIR}/game/g_missile.cpp
+  ${GAMELOGIC_DIR}/game/g_session.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_afx.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_ctrl.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_fx.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_game.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_generic.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_gfx.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_mover.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_position.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_sensor.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn_shared.cpp
+  ${GAMELOGIC_DIR}/game/g_spawn.cpp
+  ${GAMELOGIC_DIR}/game/g_svcmds.cpp
+  ${GAMELOGIC_DIR}/game/g_team.cpp
+  ${GAMELOGIC_DIR}/game/g_utils.cpp
+  ${GAMELOGIC_DIR}/game/g_maprotation.cpp
+  ${GAMELOGIC_DIR}/game/g_weapon.cpp
+  ${GAMELOGIC_DIR}/game/g_admin.cpp
+  ${GAMELOGIC_DIR}/game/g_namelog.cpp
+  ${GAMELOGIC_DIR}/game/g_bot.cpp
+  ${GAMELOGIC_DIR}/game/g_bot_ai.cpp
+  ${GAMELOGIC_DIR}/game/g_bot_nav.cpp
+  ${GAMELOGIC_DIR}/game/g_bot_parse.cpp
+  ${GAMELOGIC_DIR}/game/g_bot_util.cpp
   ${GAMELOGIC_DIR}/game/g_cm_world.cpp
   ${GAMELOGIC_DIR}/game/g_cm_world.h
   ${ENGINE_DIR}/server/g_api.h
@@ -1111,7 +1137,7 @@ if( DEPS_DIR )
   # Download them if they not available
   if( NOT EXISTS ${DEPS_DIR} )
     get_filename_component( BASENAME ${DEPS_DIR} NAME )
-    set( REMOTE "http://www.unvanquished.net/unvanquished_deps/${BASENAME}${DEPS_EXT}" )
+    set( REMOTE "http://dl.unvanquished.net/deps/${BASENAME}${DEPS_EXT}" )
     message( STATUS "Downloading dependencies from '${REMOTE}'" )
     file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}${DEPS_EXT} SHOW_PROGRESS
       STATUS DOWNLOAD_RESULT LOG DOWNLOAD_LOG )
@@ -1240,6 +1266,14 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
 endif()
 mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR MINGW32_LIBRARY )
 mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
+
+# libRocket
+if( BUILD_CLIENT )
+  include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
+  add_subdirectory( ${ROCKET_DIR} )
+  add_definitions( -DSTATIC_LIB )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
+endif()
 
 # zlib
 find_package( ZLIB REQUIRED )
@@ -1395,7 +1429,7 @@ function( GAMEMODULE )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
-      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};VM_IN_PROCESS"
+      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h )
   endif()
@@ -1665,17 +1699,6 @@ GAMEMODULE( NAME cgame
   NATIVE_FILES ${CGAMENATIVELIST}
   QVM_FILES ${CGAMEQVMLIST}
   QVM_ASM ${CGAMEASMLIST}
-)
-
-GAMEMODULE( NAME ui
-  COMPILE_DEF UI BUILD_VM BUILD_UI
-  FILES ${UILIST}
-  HAS_NACL 0
-  HAS_QVM 1
-  NACL_FILES ${UINACLLIST}
-  NATIVE_FILES ${UINATIVELIST}
-  QVM_FILES ${UIQVMLIST}
-  QVM_ASM ${UIASMLIST}
 )
 
 ################################################################################

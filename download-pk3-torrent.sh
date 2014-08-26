@@ -13,7 +13,7 @@ else
     torrent_file="current.torrent"
 fi
 
-torrent_url=http://unvanquished.net/unv-launcher/$torrent_file
+torrent_url=http://cdn.unvanquished.net/$torrent_file
 
 default_cache_dir=/tmp/unv-paks-cache
 last_assets_file=last-assets.txt
@@ -82,6 +82,7 @@ asset_ids=$(aria2c -S "$torrent_file"|grep '.*/pkg/.*\.pk3'|awk -F'|' '{print $1
 # download assets
 echo "Downloading assets..."
 aria2c \
+    --no-conf=true \
     --summary-interval=0 \
     --check-integrity=true \
     --seed-time=0 \

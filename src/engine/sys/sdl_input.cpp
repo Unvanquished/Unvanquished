@@ -672,15 +672,7 @@ void IN_DeactivateMouse( qboolean showCursor )
 		SDL_SetWindowGrab( window, SDL_FALSE );
 		SDL_SetRelativeMouseMode( SDL_FALSE );
 
-		if ( uivm )
-		{
-			// TODO (after no compatibility needed with alpha 9): remove argument
-			int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
-			int cursorx = mousepos & 0xFFFF;
-			int cursory = mousepos >> 16;
-			SDL_WarpMouseInWindow( window, cursorx, cursory );
-		}
-
+		IN_GobbleMotionEvents();
 		mouseActive = qfalse;
 	}
 }
@@ -1495,14 +1487,6 @@ static void IN_ProcessEvents( qboolean dropInput )
 						}
 #endif
 					}
-					else if ( uivm )
-					{
-						// TODO (after no compatibility needed with alpha 8): remove argument
-						int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
-						int cursorx = mousepos & 0xFFFF;
-						int cursory = mousepos >> 16;
-						VM_Call( uivm, UI_MOUSE_EVENT, e.motion.x - cursorx, e.motion.y - cursory );
-					}
 				}
 				break;
 
@@ -1645,9 +1629,9 @@ void IN_Frame( void )
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
 	if ( ( !cls.glconfig.isFullscreen || SDL_VERSION_ATLEAST( 2, 0, 0 ) ) &&
-	     ( cls.keyCatchers & KEYCATCH_CONSOLE || ( CL_UIOwnsMouse() && !in_uigrab->integer ) ) )
+	     ( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
-		// Console is down, or UI is up, in windowed mode
+		// Console is down in windowed mode
 		IN_DeactivateMouse( qfalse );
 	}
 	else if ( ( !cls.glconfig.isFullscreen || SDL_VERSION_ATLEAST( 2, 0, 0 ) ) && loading )
@@ -1657,7 +1641,7 @@ void IN_Frame( void )
 	}
 	else if ( !( SDL_GetWindowFlags( window ) & SDL_WINDOW_INPUT_FOCUS ) )
 	{
-		// Window not got focus
+		// Window doesn't have focus
 		IN_DeactivateMouse( qfalse );
 	}
 	else if ( com_minimized->integer )

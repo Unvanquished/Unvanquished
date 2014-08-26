@@ -1,22 +1,22 @@
-0,models/players/human_light/head
-1,models/players/human_light/head
-2,models/players/human_light/armor
-3,models/players/human_light/armor
-4,models/players/human_light/head
-5,models/players/human_light/head
-6,models/players/human_light/body
-7,models/players/human_light/head
-8,models/players/human_light/armor
-9,models/players/human_light/armor
-10,models/players/human_light/armor
-11,models/players/human_light/helmet
-12,models/players/human_light/armor
-13,models/players/human_light/armor
-14,models/players/human_light/armor
-15,models/players/human_light/armor
-16,models/players/human_light/armor
-17,models/players/human_light/armor
-18,models/players/human_light/armor
-19,models/players/human_light/armor
-20,models/players/human_light/armor
-21,models/players/human_light/armor
+0,models/players/human_light/head // ???
+1,models/players/human_light/head // ???
+2,models/players/human_light/armor // shoe
+3,models/players/human_light/armor // knee pad
+4,models/players/human_light/head // ???
+5,models/players/human_light/head // ???
+6,models/players/human_light/body // body
+7,models/players/human_light/head // head
+8,models/players/human_light/armor // knee pad
+9,models/players/human_light/armor // shoe
+10,models/players/human_light/armor // neck piece
+11,models/players/human_light/helmet // helmet
+12,models/players/human_light/armor // boot piece
+13,models/players/human_light/armor // boot piece
+14,models/players/human_light/armor // shoulder pad
+15,models/players/human_light/armor // shoulder pad
+16,gfx/null // arm guard
+17,gfx/null // arm guard
+18,models/players/human_light/armor // crotch armor
+19,gfx/null // hip armor
+20,gfx/null // hip armor
+21,models/players/human_light/armor // chest armor

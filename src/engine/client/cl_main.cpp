@@ -125,7 +125,6 @@ cvar_t *cl_autorecord;
 cvar_t *cl_motdString;
 
 cvar_t *cl_allowDownload;
-cvar_t *cl_wwwDownload;
 cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
@@ -670,20 +669,6 @@ void CL_CaptureVoip( void )
 				Com_DPrintf( "VoIP: Send %d frames, %d bytes, %f power\n",
 				             speexFrames, wpos, clc.voipPower );
 
-#if 0
-				static FILE *encio = NULL;
-
-				if ( encio == NULL ) { encio = fopen( "voip-outgoing-encoded.bin", "wb" ); }
-
-				if ( encio != NULL ) { fwrite( clc.voipOutgoingData, wpos, 1, encio ); fflush( encio ); }
-
-				static FILE *decio = NULL;
-
-				if ( decio == NULL ) { decio = fopen( "voip-outgoing-decoded.bin", "wb" ); }
-
-				if ( decio != NULL ) { fwrite( sampbuffer, speexFrames * clc.speexFrameSize * 2, 1, decio ); fflush( decio ); }
-
-#endif
 			}
 		}
 	}
@@ -1442,8 +1427,6 @@ void CL_ShutdownAll( void )
 	DL_Shutdown();
 	// shutdown CGame
 	CL_ShutdownCGame();
-	// shutdown UI
-	CL_ShutdownUI();
 
 	// Clear Faces
 	if ( re.UnregisterFont && cls.consoleFont )
@@ -1541,7 +1524,7 @@ void CL_MapLoading( void )
 	{
 		// clear nextmap so the cinematic shutdown doesn't execute it
 		Cvar_Set( "sv_nextmap", "" );
-		CL_Disconnect( qtrue );
+		CL_Disconnect( qfalse );
 		Q_strncpyz( cls.servername, "localhost", sizeof( cls.servername ) );
 		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = CA_CHALLENGING; // so the connect screen is drawn
@@ -1670,14 +1653,19 @@ void CL_Disconnect( qboolean showMainMenu )
 		clc.demofile = 0;
 	}
 
-	if ( uivm && showMainMenu )
+	if ( cgvm && showMainMenu )
 	{
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
+		Rocket_DocumentAction( "main", "show" );
 	}
 
 	SCR_StopCinematic();
 
 	CL_SendDisconnect();
+
+	// allow cheats locally again
+	if (showMainMenu) {
+		Cvar::SetValueForce("sv_cheats", "1");
+	}
 
 	CL_ClearState();
 
@@ -1688,9 +1676,6 @@ void CL_Disconnect( qboolean showMainMenu )
 	{
 		CL_ClearStaticDownload();
 	}
-
-	// allow cheats locally
-    Cvar::SetValueForce("sv_cheats", "1");
 
 	// Load map pk3s to allow menus to load levelshots
 	FS::PakPath::ClearPaks();
@@ -1714,14 +1699,14 @@ void CL_Disconnect( qboolean showMainMenu )
 	// XreaL END
 
 	// show_bug.cgi?id=589
-	// don't try a restart if uivm is NULL, as we might be in the middle of a restart already
-	if ( uivm && cls.state > CA_DISCONNECTED )
+	// don't try a restart if rocket is NULL, as we might be in the middle of a restart already
+	if ( cgvm && cls.state > CA_DISCONNECTED )
 	{
 		// restart the UI
 		cls.state = CA_DISCONNECTED;
 
 		// shutdown the UI
-		CL_ShutdownUI();
+		Rocket_Shutdown();
 
 		// init the UI
 		CL_InitUI();
@@ -2201,8 +2186,6 @@ void CL_Vid_Restart_f( void )
 
 	// don't let them loop during the restart
 	Audio::StopAllSounds();
-	// shutdown the UI
-	CL_ShutdownUI();
 	// shutdown the CGame
 	CL_ShutdownCGame();
 	// clear the font cache
@@ -2258,9 +2241,7 @@ Restart the ui subsystem
 void CL_UI_Restart_f( void )
 {
 	// NERVE - SMF
-	// shutdown the UI
-	CL_ShutdownUI();
-
+	Rocket_Shutdown();
 	// init the UI
 	CL_InitUI();
 }
@@ -2293,14 +2274,16 @@ void CL_Snd_Restart_f( void )
 
 	if( !cls.cgameStarted )
 	{
-		CL_ShutdownUI();
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		//TODO S_BeginRegistration()
-		CL_InitUI();
 	}
 	else
 	{
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 		CL_Vid_Restart_f();
 	}
 }
@@ -2655,7 +2638,7 @@ void CL_InitDownloads( void )
 		if ( *clc.downloadList )
 		{
 			// if autodownloading is not enabled on the server
-			cls.state = CA_CONNECTED;
+			cls.state = CA_DOWNLOADING;
 			CL_NextDownload();
 			return;
 		}
@@ -2723,7 +2706,7 @@ void CL_CheckForResend( void )
 			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), qfalse );
 			Info_SetValueForKey( info, "pubkey", key, qfalse );
 
-			sprintf( data, "connect %s", Cmd_QuoteString( info ) );
+			Com_sprintf( data, sizeof(data), "connect %s", Cmd_QuoteString( info ) );
 
 			// EVEN BALANCE - T.RAY
 			pktlen = strlen( data );
@@ -2791,57 +2774,6 @@ void CL_DisconnectPacket( netadr_t from )
 		Cvar_Set( "ui_connecting", "1" );
 		Cvar_Set( "ui_dl_running", "1" );
 	}
-}
-
-/*
-===================
-CL_MotdPacket
-
-===================
-*/
-void CL_MotdPacket( netadr_t from, const char *info )
-{
-	const char *v;
-	char w[BIG_INFO_VALUE];
-	char *ptr;
-
-	// if not from our server, ignore it
-	if ( !NET_CompareAdr( from, cls.updateServer ) )
-	{
-		Com_DPrintf( "MOTD packet from unexpected source\n" );
-		return;
-	}
-
-	Com_DPrintf( "MOTD packet: %s\n", info );
-
-	while ( *info != '\\' )
-	{
-		info++;
-	}
-
-	// check challenge
-	v = Info_ValueForKey( info, "challenge" );
-
-	if ( strcmp( v, cls.updateChallenge ) )
-	{
-		Com_DPrintf( "MOTD packet mismatched challenge: "
-		             "'%s' != '%s'\n", v, cls.updateChallenge );
-		return;
-	}
-
-	v = Info_ValueForKey( info, "motd" );
-	Q_strncpyz(w, v, sizeof(w));
-	ptr = w;
-
-	//replace all | with \n
-	while ( *ptr ) {
-		if( *ptr == '|' )
-			*ptr = '\n';
-		ptr++;
-	}
-
-	Q_strncpyz( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
-	Cvar_Set( "cl_newsString", w );
 }
 
 /*
@@ -3295,22 +3227,20 @@ Responses to broadcasts, etc
 */
 void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 {
-	char *s;
-	char *c;
-
 	MSG_BeginReadingOOB( msg );
 	MSG_ReadLong( msg );  // skip the -1
 
-	s = MSG_ReadStringLine( msg );
+	Cmd::Args args(MSG_ReadStringLine( msg ));
 
-	Cmd_TokenizeString( s );
+	if ( args.Argc() < 1 )
+	{
+		return;
+	}
 
-	c = Cmd_Argv( 0 );
-
-	Com_DPrintf( "CL packet %s: %s\n", NET_AdrToStringwPort( from ), c );
+	Com_DPrintf( "CL packet %s: %s\n", NET_AdrToStringwPort( from ), args.Argv(0).c_str() );
 
 	// challenge from the server we are connecting to
-	if ( !Q_stricmp( c, "challengeResponse" ) )
+	if ( args.Argv(0) == "challengeResponse" )
 	{
 		if ( cls.state != CA_CONNECTING )
 		{
@@ -3318,8 +3248,12 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		}
 		else
 		{
+			if ( args.Argc() < 2 )
+			{
+				return;
+			}
 			// start sending challenge repsonse instead of challenge request packets
-			clc.challenge = atoi( Cmd_Argv( 1 ) );
+			clc.challenge = atoi(args.Argv(1).c_str());
 			cls.state = CA_CHALLENGING;
 			clc.connectPacketCount = 0;
 			clc.connectTime = -99999;
@@ -3334,7 +3268,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 
 	// server connection
-	if ( !Q_stricmp( c, "connectResponse" ) )
+	if ( args.Argv(0) == "connectResponse" )
 	{
 		if ( cls.state >= CA_CONNECTED )
 		{
@@ -3363,14 +3297,14 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 
 	// server responding to an info broadcast
-	if ( !Q_stricmp( c, "infoResponse" ) )
+	if ( args.Argv(0) == "infoResponse" )
 	{
 		CL_ServerInfoPacket( from, msg );
 		return;
 	}
 
 	// server responding to a get playerlist
-	if ( !Q_stricmp( c, "statusResponse" ) )
+	if ( args.Argv(0) == "statusResponse" )
 	{
 		CL_ServerStatusResponse( from, msg );
 		return;
@@ -3378,50 +3312,42 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 
 	// a disconnect message from the server, which will happen if the server
 	// dropped the connection but it is still getting packets from us
-	if ( !Q_stricmp( c, "disconnect" ) )
+	if ( args.Argv(0) == "disconnect" )
 	{
 		CL_DisconnectPacket( from );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_stricmp( c, "echo" ) )
+	if ( args.Argv(0) == "echo" && args.Argc() >= 2)
 	{
-		NET_OutOfBandPrint( NS_CLIENT, from, "%s", Cmd_Argv( 1 ) );
-		return;
-	}
-
-	// global MOTD from id
-	if ( !Q_stricmp( c, "motd" ) )
-	{
-		CL_MotdPacket( from, s );
+		NET_OutOfBandPrint( NS_CLIENT, from, "%s", args.Argv(1).c_str() );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_stricmp( c, "print" ) )
+	if ( args.Argv(0) == "print" )
 	{
 		CL_PrintPacket( from, msg );
 		return;
 	}
 
-	// NERVE - SMF - bugfix, make this compare first n chars so it doesn't bail if token is parsed incorrectly
 	// echo request from server
-	if ( !Q_strncmp( c, "getserversResponse", 18 ) )
+	if ( args.Argv(0) == "getserversResponse" )
 	{
 		CL_ServersResponsePacket( &from, msg, qfalse );
 		return;
 	}
 
 	// list of servers with both IPv4 and IPv6 addresses; sent back by a master server (extended)
-	if ( !Q_strncmp( c, "getserversExtResponseLinks", 26 ) )
+	if ( args.Argv(0) == "getserversExtResponseLinks" )
 	{
 		CL_ServerLinksResponsePacket( &from, msg );
 		return;
 	}
 
 	// list of servers sent back by a master server (extended)
-	if ( !Q_strncmp( c, "getserversExtResponse", 21 ) )
+	if ( args.Argv(0) == "getserversExtResponse" )
 	{
 		CL_ServersResponsePacket( &from, msg, qtrue );
 		return;
@@ -3470,7 +3396,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	if ( !CL_Netchan_Process( &clc.netchan, msg ) )
+	if ( !Netchan_Process( &clc.netchan, msg ) )
 	{
 		return; // out of order, duplicated, etc
 	}
@@ -3689,13 +3615,6 @@ void CL_Frame( int msec )
 		return;
 	}
 
-	if ( uivm && cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
-	{
-		// if disconnected, bring up the menu
-		//S_StopAllSounds();
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
-	}
-
 	// if recording an avi, lock to a fixed fps
 	if ( CL_VideoRecording() && cl_aviFrameRate->integer && msec )
 	{
@@ -3738,7 +3657,7 @@ void CL_Frame( int msec )
 	CL_CheckTimeout();
 
 	// wwwdl download may survive a server disconnect
-	if ( ( cls.state == CA_CONNECTED && clc.bWWWDl ) || cls.bWWWDlDisconnected )
+	if ( ( cls.state == CA_DOWNLOADING && clc.bWWWDl ) || cls.bWWWDlDisconnected )
 	{
 		CL_WWWDownload();
 	}
@@ -3751,6 +3670,9 @@ void CL_Frame( int msec )
 
 	// decide on the serverTime to render
 	CL_SetCGameTime();
+
+	// Update librocket
+	Rocket_Update();
 
 	// update the screen
 	SCR_UpdateScreen();
@@ -3773,169 +3695,6 @@ void CL_Frame( int msec )
 
 	cls.framecount++;
 }
-
-//============================================================================
-// Ridah, startup-caching system
-typedef struct
-{
-	char name[ MAX_QPATH ];
-	int  hits;
-	int  lastSetIndex;
-} cacheItem_t;
-typedef enum
-{
-  CACHE_SOUNDS,
-  CACHE_MODELS,
-  CACHE_IMAGES,
-
-  CACHE_NUMGROUPS
-} cacheGroup_t;
-static cacheItem_t cacheGroups[ CACHE_NUMGROUPS ] =
-{
-	{ { 's', 'o', 'u', 'n', 'd', 0 }, CACHE_SOUNDS },
-	{ { 'm', 'o', 'd', 'e', 'l', 0 }, CACHE_MODELS },
-	{ { 'i', 'm', 'a', 'g', 'e', 0 }, CACHE_IMAGES },
-};
-
-#define MAX_CACHE_ITEMS 4096
-#define CACHE_HIT_RATIO 0.75 // if hit on this percentage of maps, it'll get cached
-
-static int         cacheIndex;
-static cacheItem_t cacheItems[ CACHE_NUMGROUPS ][ MAX_CACHE_ITEMS ];
-
-static void CL_Cache_StartGather_f( void )
-{
-	cacheIndex = 0;
-	memset( cacheItems, 0, sizeof( cacheItems ) );
-
-	Cvar_Set( "cl_cacheGathering", "1" );
-}
-
-static void CL_Cache_UsedFile_f( void )
-{
-	char        groupStr[ MAX_QPATH ];
-	char        itemStr[ MAX_QPATH ];
-	int         i, group, len;
-	cacheItem_t *item;
-
-	if ( Cmd_Argc() < 2 )
-	{
-		Com_Error( ERR_DROP, "usedfile without enough parameters" );
-	}
-
-	Q_strncpyz( groupStr, Cmd_Argv( 1 ), MAX_QPATH );
-	Q_strncpyz( itemStr, Cmd_Argv( 2 ), MAX_QPATH );
-
-	len = sizeof( itemStr ) - strlen( itemStr );
-
-	for ( i = 3; i < Cmd_Argc() && len > 0; i++ )
-	{
-		strncat( itemStr, " ", len-- );
-		strncat( itemStr, Cmd_Argv( i ), len );
-		len -= strlen( Cmd_Argv( i ) );
-	}
-
-	Q_strlwr( itemStr );
-
-	// find the cache group
-	for ( i = 0; i < CACHE_NUMGROUPS; i++ )
-	{
-		if ( !Q_strncmp( groupStr, cacheGroups[ i ].name, MAX_QPATH ) )
-		{
-			break;
-		}
-	}
-
-	if ( i == CACHE_NUMGROUPS )
-	{
-		Com_Error( ERR_DROP, "usedfile without a valid cache group" );
-	}
-
-	// see if it's already there
-	group = i;
-
-	for ( i = 0, item = cacheItems[ group ]; i < MAX_CACHE_ITEMS; i++, item++ )
-	{
-		if ( !item->name[ 0 ] )
-		{
-			// didn't find it, so add it here
-			Q_strncpyz( item->name, itemStr, MAX_QPATH );
-
-			if ( cacheIndex > 9999 )
-			{
-				// hack, but yeh
-				item->hits = cacheIndex;
-			}
-			else
-			{
-				item->hits++;
-			}
-
-			item->lastSetIndex = cacheIndex;
-			break;
-		}
-
-		if ( item->name[ 0 ] == itemStr[ 0 ] && !Q_strncmp( item->name, itemStr, MAX_QPATH ) )
-		{
-			if ( item->lastSetIndex != cacheIndex )
-			{
-				item->hits++;
-				item->lastSetIndex = cacheIndex;
-			}
-
-			break;
-		}
-	}
-}
-
-static void CL_Cache_SetIndex_f( void )
-{
-	if ( Cmd_Argc() < 2 )
-	{
-		Com_Error( ERR_DROP, "setindex needs an index" );
-	}
-
-	cacheIndex = atoi( Cmd_Argv( 1 ) );
-}
-
-static void CL_Cache_MapChange_f( void )
-{
-	cacheIndex++;
-}
-
-static void CL_Cache_EndGather_f( void )
-{
-	// save the frequently used files to the cache list file
-	int  i, j, handle, cachePass;
-	char filename[ MAX_QPATH ];
-
-	cachePass = ( int ) floor( ( float ) cacheIndex * CACHE_HIT_RATIO );
-
-	for ( i = 0; i < CACHE_NUMGROUPS; i++ )
-	{
-		Q_strncpyz( filename, cacheGroups[ i ].name, MAX_QPATH );
-		Q_strcat( filename, MAX_QPATH, ".cache" );
-
-		handle = FS_FOpenFileWrite( filename );
-
-		for ( j = 0; j < MAX_CACHE_ITEMS; j++ )
-		{
-			// if it's a valid filename, and it's been hit enough times, cache it
-			if ( cacheItems[ i ][ j ].hits >= cachePass && strstr( cacheItems[ i ][ j ].name, "/" ) )
-			{
-				FS_Write( cacheItems[ i ][ j ].name, strlen( cacheItems[ i ][ j ].name ), handle );
-				FS_Write( "\n", 1, handle );
-			}
-		}
-
-		FS_FCloseFile( handle );
-	}
-
-	Cvar_Set( "cl_cacheGathering", "0" );
-}
-
-// done.
-//============================================================================
 
 /*
 ================
@@ -4052,7 +3811,9 @@ void CL_StartHunkUsers( void )
 	if ( !cls.soundStarted )
 	{
 		cls.soundStarted = qtrue;
-		Audio::Init();
+		if (!Audio::Init()) {
+			Com_Error(ERR_FATAL, "Couldn't initialize the audio subsystem.");
+		}
 	}
 
 	if ( !cls.soundRegistered )
@@ -4071,6 +3832,7 @@ void CL_StartHunkUsers( void )
 	if ( !cls.uiStarted )
 	{
 		cls.uiStarted = qtrue;
+
 		CL_InitUI();
 	}
 }
@@ -4115,7 +3877,6 @@ qboolean CL_InitRef( )
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
 	ri.Cmd_Argc = Cmd_Argc;
 	ri.Cmd_Argv = Cmd_Argv;
-	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
 	ri.Cmd_QuoteString = Cmd_QuoteString;
 
 	ri.Printf = CL_RefPrintf;
@@ -4287,14 +4048,13 @@ void CL_Init( void )
 	cl_showMouseRate = Cvar_Get( "cl_showmouserate", "0", 0 );
 
 	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", 0 );
-	cl_wwwDownload = Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO  );
 
 	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", 0 );
 
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
 
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", 0 );  // Arnout: double tap
-	m_pitch = Cvar_Get( "m_pitch", "0.022", 0 );
+	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
 	m_yaw = Cvar_Get( "m_yaw", "0.022", 0 );
 	m_forward = Cvar_Get( "m_forward", "0.25", 0 );
 	m_side = Cvar_Get( "m_side", "0.25", 0 );
@@ -4404,13 +4164,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "irc_quit", CL_IRCInitiateShutdown );
 	Cmd_AddCommand( "irc_say", CL_IRCSay );
 
-	// Ridah, startup-caching system
-	Cmd_AddCommand( "cache_startgather", CL_Cache_StartGather_f );
-	Cmd_AddCommand( "cache_usedfile", CL_Cache_UsedFile_f );
-	Cmd_AddCommand( "cache_setindex", CL_Cache_SetIndex_f );
-	Cmd_AddCommand( "cache_mapchange", CL_Cache_MapChange_f );
-	Cmd_AddCommand( "cache_endgather", CL_Cache_EndGather_f );
-
 	Cmd_AddCommand( "updatehunkusage", CL_UpdateLevelHunkUsage );
 	Cmd_AddCommand( "updatescreen", SCR_UpdateScreen );
 	// done.
@@ -4451,7 +4204,6 @@ void CL_Shutdown( void )
 	}
 
 	Com_DPrintf( "----- CL_Shutdown -----\n" );
-
 	if ( recursive )
 	{
 		printf( "recursive shutdown\n" );
@@ -4468,7 +4220,6 @@ void CL_Shutdown( void )
 	CL_Disconnect( qtrue );
 
 	CL_ShutdownCGame();
-	CL_ShutdownUI();
 
 	Audio::Shutdown();
 	DL_Shutdown();
@@ -4501,13 +4252,6 @@ void CL_Shutdown( void )
 	Cmd_RemoveCommand( "serverstatus" );
 	Cmd_RemoveCommand( "showip" );
 	Cmd_RemoveCommand( "model" );
-
-	// Ridah, startup-caching system
-	Cmd_RemoveCommand( "cache_startgather" );
-	Cmd_RemoveCommand( "cache_usedfile" );
-	Cmd_RemoveCommand( "cache_setindex" );
-	Cmd_RemoveCommand( "cache_mapchange" );
-	Cmd_RemoveCommand( "cache_endgather" );
 
 	Cmd_RemoveCommand( "updatehunkusage" );
 	Cmd_RemoveCommand( "wav_record" );

@@ -20,6 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#ifndef CGAPI_H
+#define CGAPI_H
+
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/vm_traps.h"
 #include "../renderer/tr_types.h"
@@ -57,6 +61,58 @@ typedef struct
 	int           serverCommandSequence; // snapshot becomes current
 } snapshot_t;
 
+typedef enum {
+	ROCKET_STRING,
+	ROCKET_FLOAT,
+	ROCKET_INT,
+	ROCKET_COLOR
+} rocketVarType_t;
+
+typedef enum {
+	ROCKETMENU_MAIN,
+	ROCKETMENU_CONNECTING,
+	ROCKETMENU_LOADING,
+	ROCKETMENU_DOWNLOADING,
+	ROCKETMENU_INGAME_MENU,
+	ROCKETMENU_TEAMSELECT,
+	ROCKETMENU_HUMANSPAWN,
+	ROCKETMENU_ALIENSPAWN,
+	ROCKETMENU_ALIENBUILD,
+	ROCKETMENU_HUMANBUILD,
+	ROCKETMENU_ARMOURYBUY,
+	ROCKETMENU_ALIENEVOLVE,
+	ROCKETMENU_CHAT,
+	ROCKETMENU_BEACONS,
+	ROCKETMENU_ERROR,
+	ROCKETMENU_NUM_TYPES
+} rocketMenuType_t;
+
+typedef enum {
+	RP_QUAKE = 1 << 0,
+	RP_EMOTICONS = 1 << 1,
+} rocketInnerRMLParseTypes_t;
+
+typedef struct
+{
+	connstate_t connState;
+	int         connectPacketCount;
+	int         clientNum;
+	char        servername[ MAX_STRING_CHARS ];
+	char        updateInfoString[ MAX_STRING_CHARS ];
+	char        messageString[ MAX_STRING_CHARS ];
+} cgClientState_t;
+
+typedef enum
+{
+	SORT_HOST,
+	SORT_MAP,
+	SORT_CLIENTS,
+	SORT_PING,
+	SORT_GAME,
+	SORT_FILTERS,
+	SORT_FAVOURITES
+} serverSortField_t;
+
 typedef enum cgameImport_s
 {
   CG_PRINT = FIRST_VM_SYSCALL,
@@ -69,6 +125,7 @@ typedef enum cgameImport_s
   CG_CVAR_VARIABLESTRINGBUFFER,
   CG_CVAR_LATCHEDVARIABLESTRINGBUFFER,
   CG_CVAR_VARIABLEINTEGERVALUE,
+  CG_CVAR_VARIABLEVALUE,
   CG_ARGC,
   CG_ARGV,
   CG_ESCAPED_ARGS,
@@ -81,6 +138,7 @@ typedef enum cgameImport_s
   CG_FS_FCLOSEFILE,
   CG_FS_GETFILELIST,
   CG_FS_DELETEFILE,
+  CG_FS_LOADPAK,
   CG_SENDCONSOLECOMMAND,
   CG_ADDCOMMAND,
   CG_REMOVECOMMAND,
@@ -150,6 +208,7 @@ typedef enum cgameImport_s
   CG_R_LERPTAG,
   CG_GETGLCONFIG,
   CG_GETGAMESTATE,
+  CG_GETCLIENTSTATE,
   CG_GETCURRENTSNAPSHOTNUMBER,
   CG_GETSNAPSHOT,
   CG_GETSERVERCOMMAND,
@@ -195,7 +254,6 @@ typedef enum cgameImport_s
   CG_GETHUNKDATA,
   CG_R_LOADDYNAMICSHADER,
   CG_R_RENDERTOTEXTURE,
-  CG_R_GETTEXTUREID,
   CG_R_FINISH,
   CG_GETDEMONAME,
   CG_R_LIGHTFORPOINT,
@@ -226,12 +284,70 @@ typedef enum cgameImport_s
   CG_CM_DISTANCETOMODEL,
   CG_R_SCISSOR_ENABLE,
   CG_R_SCISSOR_SET,
+  CG_LAN_LOADCACHEDSERVERS,
+  CG_LAN_SAVECACHEDSERVERS,
+  CG_LAN_ADDSERVER,
+  CG_LAN_REMOVESERVER,
+  CG_LAN_GETPINGQUEUECOUNT,
+  CG_LAN_CLEARPING,
+  CG_LAN_GETPING,
+  CG_LAN_GETPINGINFO,
+  CG_LAN_GETSERVERCOUNT,
+  CG_LAN_GETSERVERADDRESSSTRING,
+  CG_LAN_GETSERVERINFO,
+  CG_LAN_GETSERVERPING,
+  CG_LAN_MARKSERVERVISIBLE,
+  CG_LAN_SERVERISVISIBLE,
+  CG_LAN_UPDATEVISIBLEPINGS,
+  CG_LAN_RESETPINGS,
+  CG_LAN_SERVERSTATUS,
+  CG_LAN_SERVERISINFAVORITELIST,
+  CG_GETNEWS,
+  CG_LAN_COMPARESERVERS,
+  CG_R_GETSHADERNAMEFROMHANDLE,
   CG_PREPAREKEYUP,
   CG_R_SETALTSHADERTOKENS,
   CG_S_UPDATEENTITYVELOCITY,
   CG_S_SETREVERB,
   CG_S_BEGINREGISTRATION,
-  CG_S_ENDREGISTRATION
+  CG_S_ENDREGISTRATION,
+  CG_ROCKET_INIT,
+  CG_ROCKET_SHUTDOWN,
+  CG_ROCKET_LOADDOCUMENT,
+  CG_ROCKET_LOADCURSOR,
+  CG_ROCKET_DOCUMENTACTION,
+  CG_ROCKET_GETEVENT,
+  CG_ROCKET_DELELTEEVENT,
+  CG_ROCKET_REGISTERDATASOURCE,
+  CG_ROCKET_DSADDROW,
+  CG_ROCKET_DSCHANGEROW,
+  CG_ROCKET_DSREMOVEROW,
+  CG_ROCKET_DSCLEARTABLE,
+  CG_ROCKET_SETINNERRML,
+  CG_ROCKET_GETATTRIBUTE,
+  CG_ROCKET_SETATTRIBUTE,
+  CG_ROCKET_GETPROPERTY,
+  CG_ROCKET_SETPROPERYBYID,
+  CG_ROCKET_GETEVENTPARAMETERS,
+  CG_ROCKET_REGISTERDATAFORMATTER,
+  CG_ROCKET_DATAFORMATTERRAWDATA,
+  CG_ROCKET_DATAFORMATTERFORMATTEDDATA,
+  CG_ROCKET_REGISTERELEMENT,
+  CG_ROCKET_SETELEMENTDIMENSIONS,
+  CG_ROCKET_GETELEMENTTAG,
+  CG_ROCKET_GETELEMENTABSOLUTEOFFSET,
+  CG_ROCKET_QUAKETORML,
+  CG_ROCKET_SETCLASS,
+  CG_ROCKET_INITHUDS,
+  CG_ROCKET_LOADUNIT,
+  CG_ROCKET_ADDUNITTOHUD,
+  CG_ROCKET_SHOWHUD,
+  CG_ROCKET_CLEARHUD,
+  CG_ROCKET_ADDTEXT,
+  CG_ROCKET_CLEARTEXT,
+  CG_ROCKET_REGISTERPROPERTY,
+  CG_ROCKET_SHOWSCOREBOARD,
+  CG_ROCKET_SETDATASELECTINDEX
 } cgameImport_t;
 
 typedef enum
@@ -289,6 +405,21 @@ typedef enum
 
   CG_INIT_CVARS,
 // registers cvars only then shuts down; call instead of CG_INIT for this purpose
+
+  CG_INIT_ROCKET,
+// Inits libRocket in the game.
+
+  CG_ROCKET_FRAME,
+// Rocket runs through a frame, including event processing
+
+  CG_ROCKET_FORMATDATA,
+// Rocket wants some data formatted
+
+  CG_ROCKET_RENDERELEMENT,
+// Rocket wants an element renderered
+
+  CG_ROCKET_PROGRESSBARVALUE
+// Rocket wants to query the value of a progress bar
 } cgameExport_t;
 
 void            trap_Print( const char *string );
@@ -300,6 +431,7 @@ void            trap_Cvar_Set( const char *var_name, const char *value );
 void            trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 void            trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 int             trap_Cvar_VariableIntegerValue( const char *var_name );
+float           trap_Cvar_VariableValue( const char *var_name );
 int             trap_Argc( void );
 void            trap_Argv( int n, char *buffer, int bufferLength );
 void            trap_EscapedArgs( char *buffer, int bufferLength );
@@ -312,6 +444,7 @@ void            trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void            trap_FS_FCloseFile( fileHandle_t f );
 int             trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 int             trap_FS_Delete( const char *filename );
+qboolean            trap_FS_LoadPak( const char *pak );
 void            trap_SendConsoleCommand( const char *text );
 void            trap_AddCommand( const char *cmdName );
 void            trap_RemoveCommand( const char *cmdName );
@@ -324,12 +457,12 @@ clipHandle_t    trap_CM_TempBoxModel( const vec3_t mins, const vec3_t maxs );
 clipHandle_t    trap_CM_TempCapsuleModel( const vec3_t mins, const vec3_t maxs );
 int             trap_CM_PointContents( const vec3_t p, clipHandle_t model );
 int             trap_CM_TransformedPointContents( const vec3_t p, clipHandle_t model, const vec3_t origin, const vec3_t angles );
-void            trap_CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask );
-void            trap_CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, const vec3_t origin, const vec3_t angles );
-void            trap_CM_CapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask );
-void            trap_CM_TransformedCapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, const vec3_t origin, const vec3_t angles );
-void            trap_CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask );
-void            trap_CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask, const vec3_t origin );
+void            trap_CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask );
+void            trap_CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask, const vec3_t origin, const vec3_t angles );
+void            trap_CM_CapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask );
+void            trap_CM_TransformedCapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask, const vec3_t origin, const vec3_t angles );
+void            trap_CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask, int skipmask );
+void            trap_CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask, int skipmask, const vec3_t origin );
 int             trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 void            trap_R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime );
 void            trap_R_ClearDecals( void );
@@ -395,6 +528,7 @@ void            trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs
 int             trap_R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
 void            trap_GetGlconfig( glconfig_t *glconfig );
 void            trap_GetGameState( gameState_t *gamestate );
+void            trap_GetClientState( cgClientState_t *cstate );
 void            trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime );
 qboolean        trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot );
 qboolean        trap_GetServerCommand( int serverCommandNumber );
@@ -442,7 +576,6 @@ qboolean        trap_R_inPVVS( const vec3_t p1, const vec3_t p2 );
 void            trap_GetHunkData( int *hunkused, int *hunkexpected );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
 void            trap_R_RenderToTexture( int textureid, int x, int y, int w, int h );
-int             trap_R_GetTextureId( const char *name );
 void            trap_R_Finish( void );
 void            trap_GetDemoName( char *buffer, int size );
 void            trap_S_StartSoundVControl( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx, int volume );
@@ -474,17 +607,71 @@ void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
 float           trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
 void            trap_SetColorGrading( int slot, qhandle_t hShader );
-
 float           trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model );
-
 void            trap_R_ScissorEnable( qboolean enable );
 void            trap_R_ScissorSet( int x, int y, int w, int h );
-
+void            trap_LAN_LoadCachedServers( void );
+void            trap_LAN_SaveCachedServers( void );
+int             trap_LAN_AddServer( int source, const char *name, const char *addr );
+void            trap_LAN_RemoveServer( int source, const char *addr );
+int             trap_LAN_GetPingQueueCount( void );
+void            trap_LAN_ClearPing( int n );
+void            trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime );
+void            trap_LAN_GetPingInfo( int n, char *buf, int buflen );
+int             trap_LAN_GetServerCount( int source );
+void            trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen );
+void            trap_LAN_GetServerInfo( int source, int n, char *buf, int buflen );
+int             trap_LAN_GetServerPing( int source, int n );
+void            trap_LAN_MarkServerVisible( int source, int n, qboolean visible );
+int             trap_LAN_ServerIsVisible( int source, int n );
+qboolean        trap_LAN_UpdateVisiblePings( int source );
+void            trap_LAN_ResetPings( int n );
+int             trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int maxLen );
+qboolean        trap_LAN_ServerIsInFavoriteList( int source, int n );
+qboolean        trap_GetNews( qboolean force );
+int             trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 );
+void            trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len );
 void            trap_PrepareKeyUp( void );
-
 void            trap_R_SetAltShaderTokens( const char * );
-
 void            trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity );
 void            trap_S_SetReverb( int slotNum, const char* presetName, float ratio );
 void            trap_S_BeginRegistration( void );
 void            trap_S_EndRegistration( void );
+void            trap_Rocket_Init( void );
+void            trap_Rocket_Shutdown( void );
+void            trap_Rocket_LoadDocument( const char *path );
+void            trap_Rocket_LoadCursor( const char *path );
+void            trap_Rocket_DocumentAction( const char *name, const char *action );
+qboolean        trap_Rocket_GetEvent( void );
+void            trap_Rocket_DeleteEvent( void );
+void            trap_Rocket_RegisterDataSource( const char *name );
+void            trap_Rocket_DSAddRow( const char *name, const char *table, const char *data );
+void            trap_Rocket_DSChangeRow( const char *name, const char *table, int row, const char *data );
+void            trap_Rocket_DSRemoveRow( const char *name, const char *table, int row );
+void            trap_Rocket_DSClearTable( const char *name, const char *table );
+void            trap_Rocket_SetInnerRML( const char *RML, int parseFlags );
+void            trap_Rocket_GetAttribute( const char *attribute, char *out, int length );
+void            trap_Rocket_SetAttribute( const char *attribute, const char *value );
+void            trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
+void            trap_Rocket_SetProperty( const char *property, const char *value );
+void            trap_Rocket_GetEventParameters( char *params, int length );
+void            trap_Rocket_RegisterDataFormatter( const char *name );
+void            trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
+void            trap_Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake );
+void            trap_Rocket_RegisterElement( const char *tag );
+void            trap_Rocket_SetElementDimensions( float x, float y );
+void            trap_Rocket_GetElementTag( char *tag, int length );
+void            trap_Rocket_GetElementAbsoluteOffset( float *x, float *y );
+void            trap_Rocket_QuakeToRML( const char *in, char *out, int length );
+void            trap_Rocket_SetClass( const char *in, qboolean activate );
+void            trap_Rocket_InitializeHuds( int size );
+void            trap_Rocket_LoadUnit( const char *path );
+void            trap_Rocket_AddUnitToHud( int weapon, const char *id );
+void            trap_Rocket_ShowHud( int weapon );
+void            trap_Rocket_ClearHud( int weapon );
+void            trap_Rocket_AddTextElement( const char *text, const char *Class, float x, float y );
+void            trap_Rocket_ClearText( void );
+void            trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
+void            trap_Rocket_ShowScoreboard( const char *name, qboolean show );
+void            trap_Rocket_SetDataSelectIndex( int index );
+#endif

@@ -161,8 +161,6 @@ typedef struct
 	qboolean( *LoadDynamicShader )( const char *shadername, const char *shadertext );
 
 	void ( *RenderToTexture )( int textureid, int x, int y, int w, int h );
-
-	int ( *GetTextureId )( const char *imagename );
 	void ( *Finish )( void );
 
 	// XreaL BEGIN
@@ -196,6 +194,11 @@ typedef struct
 	void ( *ScissorSet ) ( int x, int y, int w, int h );
 
 	void ( *SetAltShaderTokens ) ( const char * );
+
+	void ( *GetTextureSize )( int textureID, int *width, int *height );
+	void ( *Add2dPolysIndexed )( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader );
+	qhandle_t ( *GenerateTexture )( const byte *pic, int width, int height );
+	const char *( *ShaderNameFromHandle )( qhandle_t shader );
 } refexport_t;
 
 //
@@ -240,7 +243,6 @@ typedef struct
 	int ( *Cmd_Argc )( void );
 	char            *( *Cmd_Argv )( int i );
 
-	void ( *Cmd_ExecuteText )( int exec_when, const char *text );
 	const char *( *Cmd_QuoteString )( const char *text );
 
 	int ( *Cvar_VariableIntegerValue )( const char *var_name );

@@ -63,6 +63,9 @@ namespace Audio {
     // There is only a small number of reverb slots because by default we can create only 4 AuxEffects
     CONSTEXPR int N_REVERB_SLOTS = 3;
 
+    // Tweaks the value given by the audio slider
+    float SliderToAmplitude(float slider);
+
     extern Log::Logger audioLogs;
 }
 

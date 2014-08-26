@@ -51,18 +51,19 @@ char         *CM_EntityString( void );
 int          CM_PointContents( const vec3_t p, clipHandle_t model );
 int          CM_TransformedPointContents( const vec3_t p, clipHandle_t model, const vec3_t origin, const vec3_t angles );
 
-void         CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
-                          vec3_t mins, vec3_t maxs, clipHandle_t model, int brushmask, traceType_t type );
+void         CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end, vec3_t mins,
+                          vec3_t maxs, clipHandle_t model, int brushmask, int skipmask,
+                          traceType_t type );
 void         CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
-                                     const vec3_t mins, const vec3_t maxs,
-                                     clipHandle_t model, int brushmask, const vec3_t origin, const vec3_t angles, traceType_t type );
+                                     const vec3_t mins, const vec3_t maxs, clipHandle_t model,
+                                     int brushmask, int skipmask, const vec3_t origin,
+                                     const vec3_t angles, traceType_t type );
 void         CM_BiSphereTrace( trace_t *results, const vec3_t start,
                                const vec3_t end, float startRad, float endRad,
-                               clipHandle_t model, int mask );
-void         CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start,
-    const vec3_t end, float startRad, float endRad,
-    clipHandle_t model, int mask,
-    const vec3_t origin );
+                               clipHandle_t model, int mask, int skipmask );
+void         CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end,
+                                          float startRad, float endRad, clipHandle_t model,
+                                          int mask, int skipmask, const vec3_t origin );
 
 float CM_DistanceToModel( const vec3_t loc, clipHandle_t model );
 

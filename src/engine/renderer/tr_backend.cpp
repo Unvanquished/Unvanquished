@@ -615,7 +615,7 @@ void GL_VertexAttribsState( uint32_t stateBits )
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		stateBits |= ( ATTR_BONE_INDEXES | ATTR_BONE_WEIGHTS );
+		stateBits |= ATTR_BONE_FACTORS;
 	}
 
 	GL_VertexAttribPointers( stateBits );
@@ -680,7 +680,7 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		attribBits |= ( ATTR_BONE_INDEXES | ATTR_BONE_WEIGHTS );
+		attribBits |= ATTR_BONE_FACTORS;
 	}
 
 	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
@@ -708,7 +708,7 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 			{
 				frame = glState.vertexAttribsOldFrame;
 			}
-			
+
 			glVertexAttribPointer( i, layout->numComponents, layout->componentType, layout->normalize, layout->stride, BUFFER_OFFSET( layout->ofs + ( frame * layout->frameOffset ) ) );
 			glState.vertexAttribPointersSet |= bit;
 		}
@@ -749,12 +749,12 @@ static void SetViewportAndScissor( void )
 		c[1] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[2] );
 		c[2] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[0] );
 		c[3] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.origin ) - backEnd.viewParms.portalPlane.dist;
-		
+
 		q[0] = (c[0] < 0.0f ? -1.0f : 1.0f) / mat[0];
 		q[1] = (c[1] < 0.0f ? -1.0f : 1.0f) / mat[5];
 		q[2] = -1.0f;
 		q[3] = (1.0f + mat[10]) / mat[14];
-		
+
 		scale = 2.0f / (DotProduct( c, q ) + c[3] * q[3]);
 		mat[2]  = c[0] * scale;
 		mat[6]  = c[1] * scale;
@@ -1099,6 +1099,7 @@ static void RB_RenderOpaqueSurfacesIntoDepth( bool onlyWorld )
 
 	GL_CheckErrors();
 }
+
 
 /*
  * helper function for parallel split shadow mapping
@@ -1522,12 +1523,12 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				}
 
 				R_BindFBO( tr.shadowMapFBO[ light->shadowLOD ] );
-				if( shadowClip ) 
+				if( shadowClip )
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + cubeSide,
 							      tr.shadowClipCubeFBOImage[ light->shadowLOD ]->texnum, 0 );
-				} 
-				else 
+				}
+				else
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + cubeSide,
 							      tr.shadowCubeFBOImage[ light->shadowLOD ]->texnum, 0 );
@@ -1644,11 +1645,11 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GLimp_LogComment( "--- Rendering projective shadowMap ---\n" );
 
 				R_BindFBO( tr.shadowMapFBO[ light->shadowLOD ] );
-				if( shadowClip ) 
+				if( shadowClip )
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.shadowClipMapFBOImage[ light->shadowLOD ]->texnum, 0 );
-				} 
-				else 
+				}
+				else
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.shadowMapFBOImage[ light->shadowLOD ]->texnum, 0 );
 				}
@@ -1692,10 +1693,10 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 
 				R_BindFBO( tr.sunShadowMapFBO[ splitFrustumIndex ] );
 
-				if( shadowClip ) 
+				if( shadowClip )
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.sunShadowClipMapFBOImage[ splitFrustumIndex ]->texnum, 0 );
-				} 
+				}
 				else if ( !r_evsmPostProcess->integer )
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.sunShadowMapFBOImage[ splitFrustumIndex ]->texnum, 0 );
@@ -1938,8 +1939,9 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 				    backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
-	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-				backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	interaction_t *iaFirst = light->firstInteraction;
+	GL_Scissor( iaFirst->scissorX, iaFirst->scissorY,
+				iaFirst->scissorWidth, iaFirst->scissorHeight );
 
 	// restore camera matrices
 	GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
@@ -2042,7 +2044,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 
 							R_CalcFrustumNearCorners( splitFrustum, nearCorners );
 							R_CalcFrustumFarCorners( splitFrustum, farCorners );
-							
+
 							// draw outer surfaces
 							for ( j = 0; j < 4; j++ )
 							{
@@ -2096,8 +2098,8 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 							GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 										    backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
-							GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-										backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+							GL_Scissor( iaFirst->scissorX, iaFirst->scissorY,
+								iaFirst->scissorWidth, iaFirst->scissorHeight );
 						}
 					}
 
@@ -2128,7 +2130,7 @@ static void RB_BlurShadowMap( const trRefLight_t *light, int i )
 	{
 		return;
 	}
-		
+
 	fbos = ( light->l.rlType == RL_DIRECTIONAL ) ? tr.sunShadowMapFBO : tr.shadowMapFBO;
 	images = ( light->l.rlType == RL_DIRECTIONAL ) ? tr.sunShadowMapFBOImage : tr.shadowMapFBOImage;
 	index = ( light->l.rlType == RL_DIRECTIONAL ) ? i : light->shadowLOD;
@@ -2241,7 +2243,7 @@ static void RB_RenderInteractionsShadowMapped()
 
 	// render each light
 	iaFirst = NULL;
-	
+
 	while ( ( iaFirst = IterateLights( iaFirst ) ) )
 	{
 		backEnd.currentLight = light = iaFirst->light;
@@ -2862,7 +2864,7 @@ void RB_RenderGlobalFog()
 	gl_fogGlobalShader->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
 
 	// bind u_ColorMap
-	GL_BindToTMU( 0, tr.fogImage ); 
+	GL_BindToTMU( 0, tr.fogImage );
 
 	// bind u_DepthMap
 	GL_SelectTexture( 1 );
@@ -3042,8 +3044,8 @@ void RB_RenderMotionBlur( void )
 	gl_motionblurShader->BindProgram();
 	gl_motionblurShader->SetUniform_blurVec(tr.refdef.blurVec);
 
-	GL_BindToTMU( 0, tr.currentRenderImage ); 
-	GL_BindToTMU( 1, tr.depthRenderImage ); 
+	GL_BindToTMU( 0, tr.currentRenderImage );
+	GL_BindToTMU( 1, tr.depthRenderImage );
 
 	// draw quad
 	Tess_InstantQuad( quadVerts );
@@ -3136,7 +3138,7 @@ void RB_CameraPostFX( void )
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.occlusionRenderFBOImage->uploadWidth, tr.occlusionRenderFBOImage->uploadHeight );
 	}
 
-	GL_BindToTMU( 3, tr.colorGradeImage ); 
+	GL_BindToTMU( 3, tr.colorGradeImage );
 
 	// draw viewport
 	Tess_InstantQuad( backEnd.viewParms.viewportVerts );
@@ -3436,7 +3438,7 @@ void RB_RenderLightOcclusionQueries()
 		gl_genericShader->SetRequiredVertexPointers();
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		// don't write to the color buffer or depth buffer
@@ -3897,7 +3899,7 @@ void RB_RenderEntityOcclusionQueries()
 		gl_genericShader->SetRequiredVertexPointers();
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		// don't write to the color buffer or depth buffer
@@ -4079,11 +4081,11 @@ static void RB_RenderDebugUtils()
 		// set uniforms
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
-		
+
 		gl_genericShader->SetRequiredVertexPointers();
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		ia = NULL;
@@ -4251,7 +4253,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_Color( colorBlack );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; ia++, iaCount++ )
@@ -4377,7 +4379,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_Color( colorBlack );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		ent = backEnd.refdef.entities;
@@ -4461,7 +4463,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_Color( colorBlack );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.charsetImage ); 
+		GL_BindToTMU( 0, tr.charsetImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		ent = backEnd.refdef.entities;
@@ -4677,7 +4679,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		// set 2D virtual screen size
@@ -4789,7 +4791,7 @@ static void RB_RenderDebugUtils()
 			cubeProbe = ( cubemapProbe_t * ) Com_GrowListElement( &tr.cubeProbes, j );
 
 			// bind u_ColorMap
-			GL_BindToTMU( 0, cubeProbe->cubemap ); 
+			GL_BindToTMU( 0, cubeProbe->cubemap );
 
 			Tess_AddCubeWithNormals( cubeProbe->origin, mins, maxs, colorWhite );
 		}
@@ -4824,7 +4826,7 @@ static void RB_RenderDebugUtils()
 			gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 			// bind u_ColorMap
-			GL_BindToTMU( 0, tr.whiteImage ); 
+			GL_BindToTMU( 0, tr.whiteImage );
 			gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 			GL_CheckErrors();
@@ -4898,7 +4900,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		GL_CheckErrors();
@@ -4984,7 +4986,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		GL_CheckErrors();
@@ -5079,7 +5081,7 @@ static void RB_RenderDebugUtils()
 					GL_Cull( CT_TWO_SIDED );
 
 					// bind u_ColorMap
-					GL_BindToTMU( 0, tr.whiteImage ); 
+					GL_BindToTMU( 0, tr.whiteImage );
 					gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 					gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
@@ -5143,108 +5145,49 @@ static void RB_RenderDebugUtils()
 			}
 
 			// draw BSP nodes
-			sentinel = &tr.traversalStack;
-
-			for ( l = sentinel->next; l != sentinel; l = l->next )
+			for ( int j = 0; j < backEndData[ backEnd.smpFrame ]->traversalLength; j++ )
 			{
-				node = ( bspNode_t * ) l->data;
+				bspNode_t *node = backEndData[ backEnd.smpFrame ]->traversalList[ j ];
 
-				if ( !r_dynamicBspOcclusionCulling->integer )
+				if ( node->contents != -1 )
 				{
-					if ( node->contents != -1 )
+					if ( r_showBspNodes->integer == 3 )
 					{
-						if ( r_showBspNodes->integer == 3 )
-						{
-							continue;
-						}
+						continue;
+					}
 
-						if ( node->numMarkSurfaces <= 0 )
-						{
-							continue;
-						}
+					if ( node->numMarkSurfaces <= 0 )
+					{
+						continue;
+					}
 
-						//if(node->shrinkedAABB)
-						//  gl_genericShader->SetUniform_Color(colorBlue);
-						//else
-						if ( node->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
-						{
-							gl_genericShader->SetUniform_Color( colorGreen );
-						}
-						else
-						{
-							gl_genericShader->SetUniform_Color( colorRed );
-						}
+					//if(node->shrinkedAABB)
+					//  gl_genericShader->SetUniform_Color(colorBlue);
+					//else
+					if ( node->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
+					{
+						gl_genericShader->SetUniform_Color( colorGreen );
 					}
 					else
 					{
-						if ( r_showBspNodes->integer == 2 )
-						{
-							continue;
-						}
-
-						if ( node->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
-						{
-							gl_genericShader->SetUniform_Color( colorYellow );
-						}
-						else
-						{
-							gl_genericShader->SetUniform_Color( colorBlue );
-						}
+						gl_genericShader->SetUniform_Color( colorRed );
 					}
 				}
 				else
 				{
-					if ( node->lastVisited[ backEnd.viewParms.viewCount ] != backEnd.viewParms.frameCount )
+					if ( r_showBspNodes->integer == 2 )
 					{
 						continue;
 					}
 
-					if ( r_showBspNodes->integer == 5 && node->lastQueried[ backEnd.viewParms.viewCount ] != backEnd.viewParms.frameCount )
+					if ( node->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 					{
-						continue;
-					}
-
-					if ( node->contents != -1 )
-					{
-						if ( r_showBspNodes->integer == 3 )
-						{
-							continue;
-						}
-
-						//if(node->occlusionQuerySamples[backEnd.viewParms.viewCount] > 0)
-						if ( node->visible[ backEnd.viewParms.viewCount ] )
-						{
-							gl_genericShader->SetUniform_Color( colorGreen );
-						}
-						else
-						{
-							gl_genericShader->SetUniform_Color( colorRed );
-						}
+						gl_genericShader->SetUniform_Color( colorYellow );
 					}
 					else
 					{
-						if ( r_showBspNodes->integer == 2 )
-						{
-							continue;
-						}
-
-						//if(node->occlusionQuerySamples[backEnd.viewParms.viewCount] > 0)
-						if ( node->visible[ backEnd.viewParms.viewCount ] )
-						{
-							gl_genericShader->SetUniform_Color( colorYellow );
-						}
-						else
-						{
-							gl_genericShader->SetUniform_Color( colorBlue );
-						}
+						gl_genericShader->SetUniform_Color( colorBlue );
 					}
-
-					if ( r_showBspNodes->integer == 4 )
-					{
-						gl_genericShader->SetUniform_Color( g_color_table[ ColorIndex( node->occlusionQueryNumbers[ backEnd.viewParms.viewCount ] ) ] );
-					}
-
-					GL_CheckErrors();
 				}
 
 				if ( node->contents != -1 )
@@ -5253,19 +5196,19 @@ static void RB_RenderDebugUtils()
 					GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
 				}
 
-				R_BindVBO( node->volumeVBO );
-				R_BindIBO( node->volumeIBO );
-
-				GL_VertexAttribsState( ATTR_POSITION );
-
+				tess.numVertexes = 0;
+				tess.numIndexes = 0;
 				tess.multiDrawPrimitives = 0;
-				tess.numVertexes = node->volumeVerts;
-				tess.numIndexes = node->volumeIndexes;
+
+				Tess_AddCube( vec3_origin, node->mins, node->maxs, colorWhite );
+
+				Tess_UpdateVBOs( ATTR_POSITION );
 
 				Tess_DrawElements();
 
 				tess.numIndexes = 0;
 				tess.numVertexes = 0;
+				tess.multiDrawPrimitives = 0;
 
 				if ( node->contents != -1 )
 				{
@@ -5332,7 +5275,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		GL_CheckErrors();
@@ -5438,13 +5381,12 @@ void DebugDrawDepthMask(qboolean state)
 }
 
 void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
-	vec4_t colors = {
-		static_cast<vec_t>(color & 0xFF),
-		static_cast<vec_t>((color >> 8) & 0xFF),
-		static_cast<vec_t>((color >> 16) & 0xFF),
-		static_cast<vec_t>((color >> 24) & 0xFF)
+	u8vec4_t colors = {
+		static_cast<byte>(color & 0xFF),
+		static_cast<byte>((color >> 8) & 0xFF),
+		static_cast<byte>((color >> 16) & 0xFF),
+		static_cast<byte>((color >> 24) & 0xFF)
 	};
-	Vector4Scale(colors, 1.0f/255.0f, colors);
 
 	//we have reached the maximum number of verts we can batch
 	if( tess.numVertexes == maxDebugVerts ) {
@@ -5454,14 +5396,13 @@ void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
 		DebugDrawBegin(currentDebugDrawMode, currentDebugSize);
 	}
 
-	tess.xyz[ tess.numVertexes ][ 0 ] = pos[ 0 ];
-	tess.xyz[ tess.numVertexes ][ 1 ] = pos[ 1 ];
-	tess.xyz[ tess.numVertexes ][ 2 ] = pos[ 2 ];
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	Vector4Copy(colors, tess.colors[ tess.numVertexes ]);
+	tess.verts[ tess.numVertexes ].xyz[ 0 ] = pos[ 0 ];
+	tess.verts[ tess.numVertexes ].xyz[ 1 ] = pos[ 1 ];
+	tess.verts[ tess.numVertexes ].xyz[ 2 ] = pos[ 2 ];
+	Vector4Copy( colors, tess.verts[ tess.numVertexes ].color );
 	if( uv ) {
-		tess.texCoords[ tess.numVertexes ][ 0 ] = uv[ 0 ];
-		tess.texCoords[ tess.numVertexes ][ 1 ] = uv[ 1 ];
+		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( uv[ 0 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( uv[ 1 ] );
 	}
 	tess.indexes[ tess.numIndexes ] = tess.numVertexes;
 	tess.numVertexes++;
@@ -5853,7 +5794,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 
 	RB_SetGL2D();
 
-	glVertexAttrib4f( ATTR_INDEX_NORMAL, 0, 0, 1, 1 );
+	glVertexAttrib4f( ATTR_INDEX_QTANGENT, 0.0f, 0.0f, 0.0f, 1.0f );
 	glVertexAttrib4f( ATTR_INDEX_COLOR, tr.identityLight, tr.identityLight, tr.identityLight, 1 );
 
 	gl_genericShader->DisableVertexSkinning();
@@ -5871,7 +5812,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// bind u_ColorMap
-	GL_BindToTMU( 0, tr.scratchImage[ client ] ); 
+	GL_BindToTMU( 0, tr.scratchImage[ client ] );
 	gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 	// if the scratchImage isn't in the format we want, specify it as a new texture
@@ -5909,36 +5850,32 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 
-	tess.xyz[ tess.numVertexes ][ 0 ] = x;
-	tess.xyz[ tess.numVertexes ][ 1 ] = y;
-	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = 0.5f / cols;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 0.5f / rows;
+	tess.verts[ tess.numVertexes ].xyz[ 0 ] = x;
+	tess.verts[ tess.numVertexes ].xyz[ 1 ] = y;
+	tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
+	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.5f / cols );
+	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 0.5f / rows );
 	tess.numVertexes++;
 
-	tess.xyz[ tess.numVertexes ][ 0 ] = x + w;
-	tess.xyz[ tess.numVertexes ][ 1 ] = y;
-	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = ( cols - 0.5f ) / cols;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 0.5f / rows;
+	tess.verts[ tess.numVertexes ].xyz[ 0 ] = x + w;
+	tess.verts[ tess.numVertexes ].xyz[ 1 ] = y;
+	tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
+	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( ( cols - 0.5f ) / cols );
+	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 0.5f / rows );
 	tess.numVertexes++;
 
-	tess.xyz[ tess.numVertexes ][ 0 ] = x + w;
-	tess.xyz[ tess.numVertexes ][ 1 ] = y + h;
-	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = ( cols - 0.5f ) / cols;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = ( rows - 0.5f ) / rows;
+	tess.verts[ tess.numVertexes ].xyz[ 0 ] = x + w;
+	tess.verts[ tess.numVertexes ].xyz[ 1 ] = y + h;
+	tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
+	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( ( cols - 0.5f ) / cols );
+	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( ( rows - 0.5f ) / rows );
 	tess.numVertexes++;
 
-	tess.xyz[ tess.numVertexes ][ 0 ] = x;
-	tess.xyz[ tess.numVertexes ][ 1 ] = y + h;
-	tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = 0.5f / cols;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = ( rows - 0.5f ) / rows;
+	tess.verts[ tess.numVertexes ].xyz[ 0 ] = x;
+	tess.verts[ tess.numVertexes ].xyz[ 1 ] = y + h;
+	tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
+	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.5f / cols );
+	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( ( rows - 0.5f ) / rows );
 	tess.numVertexes++;
 
 	tess.indexes[ tess.numIndexes++ ] = 0;
@@ -6006,10 +5943,7 @@ const void     *RB_SetColor( const void *data )
 
 	cmd = ( const setColorCommand_t * ) data;
 
-	backEnd.color2D[ 0 ] = cmd->color[ 0 ];
-	backEnd.color2D[ 1 ] = cmd->color[ 1 ];
-	backEnd.color2D[ 2 ] = cmd->color[ 2 ];
-	backEnd.color2D[ 3 ] = cmd->color[ 3 ];
+	floatToUnorm8( cmd->color, backEnd.color2D );
 
 	return ( const void * )( cmd + 1 );
 }
@@ -6054,7 +5988,7 @@ const void *RB_SetColorGrading( const void *data )
 		{
 			glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i + cmd->slot * REF_COLORGRADEMAP_SIZE,
 			                 REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE, 1,
-			                 GL_RGBA, GL_UNSIGNED_BYTE, ( ( color4ub_t * ) NULL ) + REF_COLORGRADEMAP_SIZE );
+			                 GL_RGBA, GL_UNSIGNED_BYTE, ( ( u8vec4_t * ) NULL ) + REF_COLORGRADEMAP_SIZE );
 		}
 
 		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
@@ -6072,7 +6006,6 @@ RB_StretchPic
 */
 const void     *RB_StretchPic( const void *data )
 {
-	int                       i;
 	const stretchPicCommand_t *cmd;
 	shader_t                  *shader;
 	int                       numVerts, numIndexes;
@@ -6113,45 +6046,37 @@ const void     *RB_StretchPic( const void *data )
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	for ( i = 0; i < 4; i++ )
-	{
-		tess.colors[ numVerts + i ][ 0 ] = backEnd.color2D[ 0 ];
-		tess.colors[ numVerts + i ][ 1 ] = backEnd.color2D[ 1 ];
-		tess.colors[ numVerts + i ][ 2 ] = backEnd.color2D[ 2 ];
-		tess.colors[ numVerts + i ][ 3 ] = backEnd.color2D[ 3 ];
-	}
+	tess.verts[ numVerts ].xyz[ 0 ] = cmd->x;
+	tess.verts[ numVerts ].xyz[ 1 ] = cmd->y;
+	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
 
-	tess.xyz[ numVerts ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts ][ 2 ] = 0;
-	tess.xyz[ numVerts ][ 3 ] = 1;
+	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.texCoords[ numVerts ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts ][ 1 ] = cmd->t1;
+	tess.verts[ numVerts + 1 ].xyz[ 0 ] = cmd->x + cmd->w;
+	tess.verts[ numVerts + 1 ].xyz[ 1 ] = cmd->y;
+	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
 
-	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 1 ][ 3 ] = 1;
+	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.texCoords[ numVerts + 1 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 1 ][ 1 ] = cmd->t1;
+	tess.verts[ numVerts + 2 ].xyz[ 0 ] = cmd->x + cmd->w;
+	tess.verts[ numVerts + 2 ].xyz[ 1 ] = cmd->y + cmd->h;
+	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 2 ].color );
 
-	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 2 ][ 3 ] = 1;
+	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
-	tess.texCoords[ numVerts + 2 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 2 ][ 1 ] = cmd->t2;
+	tess.verts[ numVerts + 3 ].xyz[ 0 ] = cmd->x;
+	tess.verts[ numVerts + 3 ].xyz[ 1 ] = cmd->y + cmd->h;
+	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 3 ].color );
 
-	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 3 ][ 3 ] = 1;
-
-	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
+	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
 
@@ -6238,22 +6163,81 @@ const void     *RB_Draw2dPolys( const void *data )
 
 	for ( i = 0; i < cmd->numverts; i++ )
 	{
-		tess.xyz[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].xyz[ 0 ];
-		tess.xyz[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].xyz[ 1 ];
-		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
-		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
+		tess.verts[ tess.numVertexes ].xyz[ 0 ] = cmd->verts[ i ].xyz[ 0 ];
+		tess.verts[ tess.numVertexes ].xyz[ 1 ] = cmd->verts[ i ].xyz[ 1 ];
+		tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
 
-		tess.texCoords[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].st[ 0 ];
-		tess.texCoords[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].st[ 1 ];
+		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
 
-		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ] * ( 1.0 / 255.0f );
-		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0f );
+		Vector4Copy( cmd->verts[ i ].modulate, tess.verts[ tess.numVertexes ].color );
 		tess.numVertexes++;
 	}
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
+	return ( const void * )( cmd + 1 );
+}
+
+const void     *RB_Draw2dPolysIndexed( const void *data )
+{
+	const poly2dIndexedCommand_t *cmd;
+	cullType_t            oldCullType;
+	shader_t              *shader;
+	int                   i;
+
+	cmd = ( const poly2dIndexedCommand_t * ) data;
+
+	if ( !backEnd.projection2D )
+	{
+		RB_SetGL2D();
+	}
+
+	shader = cmd->shader;
+	// HACK: Our shader system likes to cull things that we'd like shown
+	oldCullType = shader->cullType;
+	shader->cullType = CT_TWO_SIDED;
+
+	if ( shader != tess.surfaceShader )
+	{
+		if ( tess.numIndexes )
+		{
+			Tess_End();
+		}
+
+		backEnd.currentEntity = &backEnd.entity2D;
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+	}
+
+	Tess_CheckOverflow( cmd->numverts, cmd->numIndexes );
+
+	for ( i = 0; i < cmd->numIndexes; i++ )
+	{
+		tess.indexes[ tess.numIndexes + i ] = tess.numVertexes + cmd->indexes[ i ];
+	}
+	tess.numIndexes += cmd->numIndexes;
+	if ( tr.scissor.status )
+	{
+		GL_Scissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
+	}
+
+	for ( i = 0; i < cmd->numverts; i++ )
+	{
+		tess.verts[ tess.numVertexes ].xyz[ 0 ] = cmd->verts[ i ].xyz[ 0 ] + cmd->translation[ 0 ];
+		tess.verts[ tess.numVertexes ].xyz[ 1 ] = cmd->verts[ i ].xyz[ 1 ] + cmd->translation[ 1 ];
+		tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
+
+		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
+
+		Vector4Copy( cmd->verts[ i ].modulate, tess.verts[ tess.numVertexes ].color );
+		tess.numVertexes++;
+	}
+
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
+	Tess_End();
+
+	shader->cullType = oldCullType;
+
 	return ( const void * )( cmd + 1 );
 }
 
@@ -6305,11 +6289,6 @@ const void     *RB_RotatedPic( const void *data )
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 0 ] );
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 1 ] );
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 2 ] );
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 3 ] );
-
 	mx = cmd->x + ( cmd->w / 2 );
 	my = cmd->y + ( cmd->h / 2 );
 	cosA = cos( DEG2RAD( cmd->angle ) );
@@ -6319,37 +6298,37 @@ const void     *RB_RotatedPic( const void *data )
 	sw = sinA * ( cmd->w / 2 );
 	sh = sinA * ( cmd->h / 2 );
 
-	tess.xyz[ numVerts ][ 0 ] = mx - cw - sh;
-	tess.xyz[ numVerts ][ 1 ] = my + sw - ch;
-	tess.xyz[ numVerts ][ 2 ] = 0;
-	tess.xyz[ numVerts ][ 3 ] = 1;
+	tess.verts[ numVerts ].xyz[ 0 ] = mx - cw - sh;
+	tess.verts[ numVerts ].xyz[ 1 ] = my + sw - ch;
+	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
 
-	tess.texCoords[ numVerts ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts ][ 1 ] = cmd->t1;
+	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.xyz[ numVerts + 1 ][ 0 ] = mx + cw - sh;
-	tess.xyz[ numVerts + 1 ][ 1 ] = my - sw - ch;
-	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 1 ][ 3 ] = 1;
+	tess.verts[ numVerts + 1 ].xyz[ 0 ] = mx + cw - sh;
+	tess.verts[ numVerts + 1 ].xyz[ 1 ] = my - sw - ch;
+	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
 
-	tess.texCoords[ numVerts + 1 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 1 ][ 1 ] = cmd->t1;
+	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.xyz[ numVerts + 2 ][ 0 ] = mx + cw + sh;
-	tess.xyz[ numVerts + 2 ][ 1 ] = my - sw + ch;
-	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 2 ][ 3 ] = 1;
+	tess.verts[ numVerts + 2 ].xyz[ 0 ] = mx + cw + sh;
+	tess.verts[ numVerts + 2 ].xyz[ 1 ] = my - sw + ch;
+	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 2 ].color );
 
-	tess.texCoords[ numVerts + 2 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 2 ][ 1 ] = cmd->t2;
+	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
-	tess.xyz[ numVerts + 3 ][ 0 ] = mx - cw + sh;
-	tess.xyz[ numVerts + 3 ][ 1 ] = my + sw + ch;
-	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 3 ][ 3 ] = 1;
+	tess.verts[ numVerts + 3 ].xyz[ 0 ] = mx - cw + sh;
+	tess.verts[ numVerts + 3 ].xyz[ 1 ] = my + sw + ch;
+	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 3 ].color );
 
-	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
+	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 
@@ -6368,7 +6347,6 @@ const void     *RB_StretchPicGradient( const void *data )
 	const stretchPicCommand_t *cmd;
 	shader_t                  *shader;
 	int                       numVerts, numIndexes;
-	int                       i;
 
 	cmd = ( const stretchPicCommand_t * ) data;
 
@@ -6404,46 +6382,38 @@ const void     *RB_StretchPicGradient( const void *data )
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 0 ] );
-	Vector4Copy( backEnd.color2D, tess.colors[ numVerts + 1 ] );
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
+	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
+	Vector4Copy( cmd->gradientColor, tess.verts[ numVerts + 2 ].color );
+	Vector4Copy( cmd->gradientColor, tess.verts[ numVerts + 3 ].color );
 
-	for ( i = 0; i < 4; i++ )
-	{
-		tess.colors[ numVerts + 2 ][ i ] = cmd->gradientColor[ i ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 3 ][ i ] = cmd->gradientColor[ i ] * ( 1.0f / 255.0f );
-	}
+	tess.verts[ numVerts ].xyz[ 0 ] = cmd->x;
+	tess.verts[ numVerts ].xyz[ 1 ] = cmd->y;
+	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
 
-	tess.xyz[ numVerts ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts ][ 2 ] = 0;
-	tess.xyz[ numVerts ][ 3 ] = 1;
+	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.texCoords[ numVerts ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts ][ 1 ] = cmd->t1;
+	tess.verts[ numVerts + 1 ].xyz[ 0 ] = cmd->x + cmd->w;
+	tess.verts[ numVerts + 1 ].xyz[ 1 ] = cmd->y;
+	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
 
-	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 1 ][ 3 ] = 1;
+	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
 
-	tess.texCoords[ numVerts + 1 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 1 ][ 1 ] = cmd->t1;
+	tess.verts[ numVerts + 2 ].xyz[ 0 ] = cmd->x + cmd->w;
+	tess.verts[ numVerts + 2 ].xyz[ 1 ] = cmd->y + cmd->h;
+	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
 
-	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 2 ][ 3 ] = 1;
+	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
+	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
-	tess.texCoords[ numVerts + 2 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 2 ][ 1 ] = cmd->t2;
+	tess.verts[ numVerts + 3 ].xyz[ 0 ] = cmd->x;
+	tess.verts[ numVerts + 3 ].xyz[ 1 ] = cmd->y + cmd->h;
+	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
 
-	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
-	tess.xyz[ numVerts + 3 ][ 3 ] = 1;
-
-	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
+	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
+	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 	return ( const void * )( cmd + 1 );
@@ -6553,22 +6523,18 @@ const void *RB_RunVisTests( const void *data )
 		VectorScale( backEnd.viewParms.orientation.axis[ 2 ],
 			     test->area, up );
 
-		tess.xyz[ 0 ][ 0 ] = center[ 0 ] + left[ 0 ] + up[ 0 ];
-		tess.xyz[ 0 ][ 1 ] = center[ 1 ] + left[ 1 ] + up[ 1 ];
-		tess.xyz[ 0 ][ 2 ] = center[ 2 ] + left[ 2 ] + up[ 2 ];
-		tess.xyz[ 0 ][ 3 ] = 1.0f;
-		tess.xyz[ 1 ][ 0 ] = center[ 0 ] - left[ 0 ] + up[ 0 ];
-		tess.xyz[ 1 ][ 1 ] = center[ 1 ] - left[ 1 ] + up[ 1 ];
-		tess.xyz[ 1 ][ 2 ] = center[ 2 ] - left[ 2 ] + up[ 2 ];
-		tess.xyz[ 1 ][ 3 ] = 1.0f;
-		tess.xyz[ 2 ][ 0 ] = center[ 0 ] - left[ 0 ] - up[ 0 ];
-		tess.xyz[ 2 ][ 1 ] = center[ 1 ] - left[ 1 ] - up[ 1 ];
-		tess.xyz[ 2 ][ 2 ] = center[ 2 ] - left[ 2 ] - up[ 2 ];
-		tess.xyz[ 2 ][ 3 ] = 1.0f;
-		tess.xyz[ 3 ][ 0 ] = center[ 0 ] + left[ 0 ] - up[ 0 ];
-		tess.xyz[ 3 ][ 1 ] = center[ 1 ] + left[ 1 ] - up[ 1 ];
-		tess.xyz[ 3 ][ 2 ] = center[ 2 ] + left[ 2 ] - up[ 2 ];
-		tess.xyz[ 3 ][ 3 ] = 1.0f;
+		tess.verts[ 0 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] + up[ 0 ];
+		tess.verts[ 0 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] + up[ 1 ];
+		tess.verts[ 0 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] + up[ 2 ];
+		tess.verts[ 1 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] + up[ 0 ];
+		tess.verts[ 1 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] + up[ 1 ];
+		tess.verts[ 1 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] + up[ 2 ];
+		tess.verts[ 2 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] - up[ 0 ];
+		tess.verts[ 2 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] - up[ 1 ];
+		tess.verts[ 2 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] - up[ 2 ];
+		tess.verts[ 3 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] - up[ 0 ];
+		tess.verts[ 3 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] - up[ 1 ];
+		tess.verts[ 3 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] - up[ 2 ];
 		tess.numVertexes = 4;
 
 		tess.indexes[ 0 ] = 0;
@@ -6596,7 +6562,7 @@ const void *RB_RunVisTests( const void *data )
 		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
+		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
 		Tess_UpdateVBOs( ATTR_POSITION );
@@ -6877,6 +6843,10 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_2DPOLYS:
 				data = RB_Draw2dPolys( data );
+				break;
+
+			case RC_2DPOLYSINDEXED:
+				data = RB_Draw2dPolysIndexed( data );
 				break;
 
 			case RC_ROTATED_PIC:

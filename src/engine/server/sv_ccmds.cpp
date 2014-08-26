@@ -59,19 +59,19 @@ class MapCmd: public Cmd::StaticCmd {
             const std::string& mapName = args.Argv(1);
 
             //Make sure the map exists to avoid typos that would kill the game
-            if (!FS::FindPak(va("map-%s", mapName.c_str()))) {
-                Print(_("Can't find map %s"), mapName.c_str());
+            if (!FS::FindPak("map-" + mapName)) {
+                Print(_("Can't find map %s"), mapName);
                 return;
             }
 
             //Gets the layout list from the command but do not override if there is nothing
             std::string layouts = args.ConcatArgs(2);
             if (not layouts.empty()) {
-                Cvar_Set("g_layouts", layouts.c_str());
+                Cvar::SetValue("g_layouts", layouts);
             }
 
-            SV_SpawnServer(mapName.c_str());
             Cvar::SetValueForce("sv_cheats", cheat ? "1" : "0");
+            SV_SpawnServer(mapName.c_str());
         }
 
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
@@ -175,7 +175,7 @@ static void SV_MapRestart_f( void )
 
 	Cvar_Set( "sv_serverRestarting", "1" );
 
-	SV_RestartGameProgs();
+	SV_RestartGameProgs(Cvar_VariableString("mapname"));
 
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
@@ -412,7 +412,6 @@ void SV_AddOperatorCommands( void )
 		Cmd_AddCommand( "heartbeat",   SV_Heartbeat_f );
 		Cmd_AddCommand( "killserver",  SV_KillServer_f );
 		Cmd_AddCommand( "map_restart", SV_MapRestart_f );
-		//Cmd_AddCommand( "sectorlist",  SV_SectorList_f );
 		Cmd_AddCommand( "serverinfo",  SV_Serverinfo_f );
 		Cmd_AddCommand( "status",      SV_Status_f );
 		Cmd_AddCommand( "systeminfo",  SV_Systeminfo_f );
@@ -432,7 +431,6 @@ void SV_RemoveOperatorCommands( void )
 	Cmd_RemoveCommand( "killserver" );
 	Cmd_RemoveCommand( "map_restart" );
 	Cmd_RemoveCommand( "say" );
-	Cmd_RemoveCommand( "sectorlist" );
 	Cmd_RemoveCommand( "serverinfo" );
 	Cmd_RemoveCommand( "status" );
 	Cmd_RemoveCommand( "systeminfo" );

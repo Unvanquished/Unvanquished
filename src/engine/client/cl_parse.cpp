@@ -659,6 +659,7 @@ void CL_ParseDownload( msg_t *msg )
 			Com_DPrintf( "Server redirected download: %s\n", cls.downloadName );
 			clc.bWWWDl = qtrue; // activate wwwdl client loop
 			CL_AddReliableCommand( "wwwdl ack" );
+			cls.state = CA_DOWNLOADING;
 
 			// make sure the server is not trying to redirect us again on a bad checksum
 			if ( strstr( clc.badChecksumList, va( "@%s", cls.originalDownloadName ) ) )
@@ -987,21 +988,6 @@ void CL_ParseVoip( msg_t *msg )
 		speex_bits_read_from( &clc.speexDecoderBits[ sender ], encoded, len );
 		speex_decode_int( clc.speexDecoder[ sender ],
 		                  &clc.speexDecoderBits[ sender ], decoded + written );
-
-#if 0
-		static FILE *encio = NULL;
-
-		if ( encio == NULL ) { encio = fopen( "voip-incoming-encoded.bin", "wb" ); }
-
-		if ( encio != NULL ) { fwrite( encoded, len, 1, encio ); fflush( encio ); }
-
-		static FILE *decio = NULL;
-
-		if ( decio == NULL ) { decio = fopen( "voip-incoming-decoded.bin", "wb" ); }
-
-		if ( decio != NULL ) { fwrite( decoded + written, clc.speexFrameSize * 2, 1, decio ); fflush( decio ); }
-
-#endif
 
 		written += clc.speexFrameSize;
 	}

@@ -1,0 +1,96 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+
+	</head>
+	<body id="options_ui" template="window" style="width: 32em; margin: 10%;">
+		<h1> User Interface </h1>
+
+
+
+		<row>
+			<h3>Real-time clock</h3>
+			<select name="cg_drawClock" cvar="cg_drawClock">
+				<option value="0">No</option>
+				<option value="1">12 Hour</option>
+				<option value="2">24 Hour</option>
+			</select>
+			<p> Show the time in real-life </p>
+		</row>
+		<row>
+			<h3>Game-time clock</h3>
+			<input cvar="cg_drawTimer" type="checkbox" />
+			<p> Show how long a match has lasted </p>
+		</row>
+		<row>
+			<h3>Crosshair Visiblity</h3>
+			<select name="drawcrosshair" cvar="cg_drawCrosshair">
+				<option value="0">Never</option>
+				<option value="1">Ranged Weapons Only</option>
+				<option value="2">Always</option>
+			</select>
+			<p></p>
+		</row>
+		<row>
+		<h3>Crosshair Size</h3>
+			<select name="wwspeed" cvar="cg_crosshairSize">
+				<option value="0.5">Tiny</option>
+				<option value="0.75">Small</option>
+				<option value="1">Regular</option>
+				<option value="1.5">Huge</option>
+			</select>
+			<p></p>
+		</row>
+		<row>
+			<h3>Pounce charge-bar</h3>
+			<input cvar="cg_drawChargeBar" type="checkbox" />
+			<p>Alien pounce-meter</p>
+		</row>
+		<row>
+			<!-- BUG: This should be a lag-o-meter, not a ping control -->
+			<h3>Show ping</h3>
+			<input cvar="cg_lagometer" type="checkbox" />
+			<p>Time that information takes to get to the server and back.</p>
+		</row>
+		<!--
+		<row>
+			<h3>Team Overlay</h3>
+			<select cvar="cg_drawTeamOverlay">
+				<option value="0">Off</option>
+				<option value="1">All Teammates</option>
+				<option value="2">Support Teammates</option>
+				<option value="3">Nearby Teammates</option>
+			</select>
+			<p>Team-member status info during gameplay</p>
+		</row>
+		<row>
+			<h3>Sort Team Overlay</h3>
+			<select cvar="cg_teamOverlaySortMode">
+				<option value="0">No sorting</option>
+				<option value="1">By score</option>
+				<option value="2">By weapon/class</option>
+			</select>
+			<p></p>
+		</row>
+		-->
+		<row>
+			<h3>Show movement speed</h3>
+			<input cvar="cg_drawSpeed" type="checkbox" />
+			<p>Current, maximum and graph of movement-speed</p>
+		</row>
+		<row>
+			<h3>Show FPS</h3>
+			<input cvar="cg_drawFPS" type="checkbox" />
+			<p>Frames-per-second</p>
+		</row>
+
+		<row>
+			<h3>Show demo-recording state</h3>
+			<input cvar="cg_drawDemoState" type="checkbox" />
+			<p></p>
+		</row>
+
+
+	</body>
+</rml>

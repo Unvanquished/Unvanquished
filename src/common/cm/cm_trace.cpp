@@ -396,6 +396,11 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf )
 			continue;
 		}
 
+		if ( b->contents & tw->skipContents )
+		{
+			continue;
+		}
+
 		CM_TestBoxInBrush( tw, b );
 
 		if ( tw->trace.allsolid )
@@ -422,6 +427,11 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf )
 		surface->checkcount = cm.checkcount;
 
 		if ( !( surface->contents & tw->contents ) )
+		{
+			continue;
+		}
+
+		if ( surface->contents & tw->skipContents )
 		{
 			continue;
 		}
@@ -1449,6 +1459,11 @@ void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 			continue;
 		}
 
+		if ( b->contents & tw->skipContents )
+		{
+			continue;
+		}
+
 		b->collided = qfalse;
 
 		if ( !CM_BoundsIntersect( tw->bounds[ 0 ], tw->bounds[ 1 ], b->bounds[ 0 ], b->bounds[ 1 ] ) )
@@ -1487,6 +1502,11 @@ void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 			continue;
 		}
 
+		if ( surface->contents & tw->skipContents )
+		{
+			continue;
+		}
+
 		if ( !CM_BoundsIntersect( tw->bounds[ 0 ], tw->bounds[ 1 ], surface->sc->bounds[ 0 ], surface->sc->bounds[ 1 ] ) )
 		{
 			continue;
@@ -1520,6 +1540,11 @@ void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 				continue;
 			}
 
+			if ( b->contents & tw->skipContents )
+			{
+				continue;
+			}
+
 			CM_ProximityToBrush( tw, b );
 
 			if ( !tw->trace.lateralFraction )
@@ -1538,6 +1563,11 @@ void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 			}
 
 			if ( !( surface->contents & tw->contents ) )
+			{
+				continue;
+			}
+
+			if ( surface->contents & tw->skipContents )
 			{
 				continue;
 			}
@@ -2031,9 +2061,9 @@ static void CM_TraceThroughTree( traceWork_t *tw, int num, float p1f, float p2f,
 CM_Trace
 ==================
 */
-static void CM_Trace( trace_t *results, const vec3_t start,
-                      const vec3_t end, vec3_t mins, vec3_t maxs,
-                      clipHandle_t model, const vec3_t origin, int brushmask, traceType_t type, sphere_t *sphere )
+static void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, vec3_t mins,
+                      vec3_t maxs, clipHandle_t model, const vec3_t origin, int brushmask,
+                      int skipmask, traceType_t type, sphere_t *sphere )
 {
 	int         i;
 	traceWork_t tw;
@@ -2072,6 +2102,7 @@ static void CM_Trace( trace_t *results, const vec3_t start,
 
 	// set basic parms
 	tw.contents = brushmask;
+	tw.skipContents = skipmask;
 
 	// adjust so that mins and maxs are always symetric, which
 	// avoids some complications with plane expanding of rotated
@@ -2298,10 +2329,10 @@ static void CM_Trace( trace_t *results, const vec3_t start,
 CM_BoxTrace
 ==================
 */
-void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
-                  vec3_t mins, vec3_t maxs, clipHandle_t model, int brushmask, traceType_t type )
+void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end, vec3_t mins, vec3_t maxs,
+                  clipHandle_t model, int brushmask, int skipmask, traceType_t type )
 {
-	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, type, NULL );
+	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, skipmask, type, NULL );
 }
 
 /*
@@ -2313,8 +2344,9 @@ rotating entities
 ==================
 */
 void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
-                             const vec3_t mins, const vec3_t maxs,
-                             clipHandle_t model, int brushmask, const vec3_t origin, const vec3_t angles, traceType_t type )
+                             const vec3_t mins, const vec3_t maxs, clipHandle_t model,
+                             int brushmask, int skipmask, const vec3_t origin, const vec3_t angles,
+                             traceType_t type )
 {
 	trace_t  trace;
 	vec3_t   start_l, end_l;
@@ -2393,7 +2425,8 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 	}
 
 	// sweep the box through the model
-	CM_Trace( &trace, start_l, end_l, symetricSize[ 0 ], symetricSize[ 1 ], model, origin, brushmask, type, &sphere );
+	CM_Trace( &trace, start_l, end_l, symetricSize[ 0 ], symetricSize[ 1 ], model, origin,
+			  brushmask, skipmask, type, &sphere );
 
 	// if the bmodel was rotated and there was a collision
 	if ( rotated && trace.fraction != 1.0 )
@@ -2417,8 +2450,8 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 CM_BiSphereTrace
 ==================
 */
-void CM_BiSphereTrace( trace_t *results, const vec3_t start,
-                       const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask )
+void CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad,
+                       float endRad, clipHandle_t model, int mask, int skipmask )
 {
 	int         i;
 	traceWork_t tw;
@@ -2448,6 +2481,7 @@ void CM_BiSphereTrace( trace_t *results, const vec3_t start,
 
 	// set basic parms
 	tw.contents = mask;
+	tw.skipContents = skipmask;
 
 	VectorCopy( start, tw.start );
 	VectorCopy( end, tw.end );
@@ -2522,9 +2556,9 @@ Handles offseting and rotation of the end points for moving and
 rotating entities
 ==================
 */
-void CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start,
-                                  const vec3_t end, float startRad, float endRad,
-                                  clipHandle_t model, int mask, const vec3_t origin )
+void CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end,
+                                  float startRad, float endRad, clipHandle_t model, int mask,
+                                  int skipmask, const vec3_t origin )
 {
 	trace_t trace;
 	vec3_t  start_l, end_l;
@@ -2533,7 +2567,7 @@ void CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start,
 	VectorSubtract( start, origin, start_l );
 	VectorSubtract( end, origin, end_l );
 
-	CM_BiSphereTrace( &trace, start_l, end_l, startRad, endRad, model, mask );
+	CM_BiSphereTrace( &trace, start_l, end_l, startRad, endRad, model, mask, skipmask );
 
 	// re-calculate the end position of the trace because the trace.endpos
 	// calculated by CM_BiSphereTrace could be rotated and have an offset

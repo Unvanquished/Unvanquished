@@ -73,6 +73,16 @@ static void CG_ParseScores( void )
 
 		cg.scores[ i ].team = cgs.clientinfo[ cg.scores[ i ].client ].team;
 	}
+	if ( cg.showScores )
+	{
+		CG_Rocket_BuildPlayerList( NULL );
+
+		if ( !cg.scoreBoardShowing )
+		{
+			trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
+			cg.scoreBoardShowing = qtrue;
+		}
+	}
 }
 
 /*
@@ -312,6 +322,10 @@ static void CG_ConfigStringModified( void )
 	else if ( num == CS_INTERMISSION )
 	{
 		cg.intermissionStarted = atoi( str );
+		if ( cg.intermissionStarted )
+		{
+			CG_ShowScores_f();
+		}
 	}
 	else if ( num >= CS_MODELS && num < CS_MODELS + MAX_MODELS )
 	{
@@ -393,9 +407,9 @@ static void CG_MapRestart( void )
 CG_Menu
 ==============
 */
-void CG_Menu( int menu, int arg )
+void CG_Menu( int menuType, int arg )
 {
-	const char   *cmd; // command to send
+	int          menu = -1; // Menu to open
 	const char   *longMsg = NULL; // command parameter
 	const char   *shortMsg = NULL; // non-modal version of message
 	const char   *dialog;
@@ -415,42 +429,39 @@ void CG_Menu( int menu, int arg )
 			dialog = "menu tremulous_default_dialog\n";
 	}
 
-	cmd = dialog;
-
-	switch ( menu )
+	switch ( menuType )
 	{
 	        case MN_WELCOME:
-	                cmd = "menu ingame_help\n";
 	                type = DT_INTERACTIVE;
 	                break;
 
 		case MN_TEAM:
-			cmd = "menu tremulous_teamselect\n";
+			menu = ROCKETMENU_TEAMSELECT;
 			type = DT_INTERACTIVE;
 			break;
 
 		case MN_A_CLASS:
-			cmd = "menu tremulous_alienclass\n";
+			menu = ROCKETMENU_ALIENSPAWN;
 			type = DT_INTERACTIVE;
 			break;
 
 		case MN_H_SPAWN:
-			cmd = "menu tremulous_humanitem\n";
+			menu = ROCKETMENU_HUMANSPAWN;
 			type = DT_INTERACTIVE;
 			break;
 
 		case MN_A_BUILD:
-			cmd = "menu tremulous_alienbuild\n";
+			menu = ROCKETMENU_ALIENBUILD;
 			type = DT_INTERACTIVE;
 			break;
 
 		case MN_H_BUILD:
-			cmd = "menu tremulous_humanbuild\n";
+			menu = ROCKETMENU_HUMANBUILD;
 			type = DT_INTERACTIVE;
 			break;
 
 		case MN_H_ARMOURY:
-			cmd = "menu tremulous_humanarmoury\n";
+			menu = ROCKETMENU_ARMOURYBUY;
 			type = DT_INTERACTIVE;
 			break;
 
@@ -764,7 +775,7 @@ void CG_Menu( int menu, int arg )
 			               va( "%d %d", cg.snap->ps.stats[ STAT_CLASS ],
 			                   cg.snap->ps.persistant[ PERS_CREDIT ] ) );
 
-			cmd = "menu tremulous_alienupgrade\n";
+			menu = ROCKETMENU_ALIENEVOLVE;
 			type = DT_INTERACTIVE;
 			break;
 
@@ -806,56 +817,17 @@ void CG_Menu( int menu, int arg )
 			Com_Printf(_( "cgame: debug: no such menu %d\n"), menu );
 	}
 
-	switch ( type )
+	if ( menu > 0 )
 	{
-		case DT_BUILD:
-		case DT_ARMOURYEVOLVE:
-			// menu open? we need to use the modal dbox
-			// menu closed? we want to centre print
-			if ( !trap_Cvar_VariableIntegerValue( "ui_menuIsOpen" ) )
-			{
-				cmd = NULL;
-				// only a short message? make the long message the same
-				longMsg = longMsg ? longMsg : shortMsg;
-                        }
-		default:
-			break;
-	}
-
-	if ( type == DT_ARMOURYEVOLVE && cg_disableUpgradeDialogs.integer )
-	{
-		return;
-	}
-
-	if ( type == DT_BUILD && cg_disableBuildDialogs.integer )
-	{
-		return;
-	}
-
-	if ( type == DT_COMMAND && cg_disableCommandDialogs.integer )
-	{
-		return;
-	}
-
-	if ( cmd && cmd != dialog )
-	{
-		trap_SendConsoleCommand( cmd );
+		trap_Rocket_DocumentAction( rocketInfo.menu[ menu ].id, "show" );
 	}
 	else if ( longMsg && cg_disableWarningDialogs.integer == 0 )
 	{
-		if ( cmd )
-		{
-			trap_Cvar_Set( "ui_dialog", longMsg );
-			trap_SendConsoleCommand( cmd );
-		}
-		else
-		{
-			CG_CenterPrint( longMsg, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+		CG_CenterPrint( longMsg, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 
-			if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
-			{
-				CG_Printf( "%s\n", shortMsg );
-			}
+		if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
+		{
+			CG_Printf( "%s\n", shortMsg );
 		}
 	}
 	else if ( shortMsg && cg_disableWarningDialogs.integer < 2 )

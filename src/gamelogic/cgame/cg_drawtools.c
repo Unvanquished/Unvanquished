@@ -177,6 +177,19 @@ void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader 
 
 /*
 ================
+CG_DrawRotatedPic
+
+Coordinates are 640*480 virtual values
+=================
+*/
+void CG_DrawRotatedPic( float x, float y, float width, float height, qhandle_t hShader, float angle )
+{
+	CG_AdjustFrom640( &x, &y, &width, &height );
+	trap_R_DrawRotatedPic( x, y, width, height, 0, 0, 1, 1, hShader, angle );
+}
+
+/*
+================
 CG_DrawNoStretchPic
 
 Coordinates are 640*480 virtual values
@@ -401,6 +414,46 @@ float *CG_FadeColor( int startMsec, int totalMsec )
 }
 
 /*
+=============
+CG_FadeAlpha
+=============
+*/
+float CG_FadeAlpha( int startMsec, int totalMsec )
+{
+	float         fade;
+	int           t;
+
+	if ( startMsec == 0 )
+	{
+		return 0;
+	}
+
+	t = cg.time - startMsec;
+
+	if ( t >= totalMsec )
+	{
+		return 0;
+	}
+
+	// fade out
+	if ( totalMsec - t < FADE_TIME )
+	{
+		fade = ( totalMsec - t ) * 1.0 / FADE_TIME;
+	}
+	// fade in
+	else if ( t < FADE_TIME )
+	{
+		fade = ( t * 1.0f ) / FADE_TIME;
+	}
+	else
+	{
+		fade = 1.0;
+	}
+
+	return fade;
+}
+
+/*
 ================
 CG_WorldToScreen
 ================
@@ -411,6 +464,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 	float  xc, yc;
 	float  px, py;
 	float  z;
+	qboolean front = qtrue;
 
 	px = tan( cg.refdef.fov_x * M_PI / 360.0f );
 	py = tan( cg.refdef.fov_y * M_PI / 360.0f );
@@ -424,7 +478,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 
 	if ( z <= 0.001f )
 	{
-		return qfalse;
+		front = qfalse;
 	}
 
 	if ( x )
@@ -437,7 +491,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 		*y = 240.0f - DotProduct( trans, cg.refdef.viewaxis[ 2 ] ) * yc / ( z * py );
 	}
 
-	return qtrue;
+	return front;
 }
 
 /*

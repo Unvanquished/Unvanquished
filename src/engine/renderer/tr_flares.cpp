@@ -220,4 +220,3 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 
 	f->eyeZ = eye[ 2 ];
 }
-

@@ -46,74 +46,67 @@ surfaceType_t entitySurface = SF_ENTITY;
 
 /*
 =============
-R_CalcTangentSpace
+R_CalcFaceNormal
 =============
 */
-void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
-                         const vec3_t v0, const vec3_t v1, const vec3_t v2, const vec2_t t0, const vec2_t t1, const vec2_t t2 )
+void R_CalcFaceNormal( vec3_t normal,
+		       const vec3_t v0, const vec3_t v1, const vec3_t v2 )
 {
-	vec3_t cp, u, v;
-	vec3_t faceNormal;
-
-	VectorSet( u, v1[ 0 ] - v0[ 0 ], t1[ 0 ] - t0[ 0 ], t1[ 1 ] - t0[ 1 ] );
-	VectorSet( v, v2[ 0 ] - v0[ 0 ], t2[ 0 ] - t0[ 0 ], t2[ 1 ] - t0[ 1 ] );
-
-	CrossProduct( u, v, cp );
-
-	if ( fabs( cp[ 0 ] ) > 10e-6 )
-	{
-		tangent[ 0 ] = -cp[ 1 ] / cp[ 0 ];
-		binormal[ 0 ] = -cp[ 2 ] / cp[ 0 ];
-	}
-
-	u[ 0 ] = v1[ 1 ] - v0[ 1 ];
-	v[ 0 ] = v2[ 1 ] - v0[ 1 ];
-
-	CrossProduct( u, v, cp );
-
-	if ( fabs( cp[ 0 ] ) > 10e-6 )
-	{
-		tangent[ 1 ] = -cp[ 1 ] / cp[ 0 ];
-		binormal[ 1 ] = -cp[ 2 ] / cp[ 0 ];
-	}
-
-	u[ 0 ] = v1[ 2 ] - v0[ 2 ];
-	v[ 0 ] = v2[ 2 ] - v0[ 2 ];
-
-	CrossProduct( u, v, cp );
-
-	if ( fabs( cp[ 0 ] ) > 10e-6 )
-	{
-		tangent[ 2 ] = -cp[ 1 ] / cp[ 0 ];
-		binormal[ 2 ] = -cp[ 2 ] / cp[ 0 ];
-	}
-
-	VectorNormalize( tangent );
-	VectorNormalize( binormal );
+	vec3_t u, v;
 
 	// compute the face normal based on vertex points
 	VectorSubtract( v2, v0, u );
 	VectorSubtract( v1, v0, v );
-	CrossProduct( u, v, faceNormal );
+	CrossProduct( u, v, normal );
 
-	VectorNormalize( faceNormal );
-
-	// Gram-Schmidt orthogonalize
-	//tangent[a] = (t - n * Dot(n, t)).Normalize();
-	VectorMA( tangent, -DotProduct( faceNormal, tangent ), faceNormal, tangent );
-	VectorNormalize( tangent );
-
-	VectorCopy( faceNormal, normal );
+	VectorNormalize( normal );
 }
 
-void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
-                             const vec3_t v0, const vec3_t v1, const vec3_t v2, const vec2_t t0, const vec2_t t1, const vec2_t t2 )
+
+/*
+=============
+R_CalcTangents
+=============
+*/
+void R_CalcTangents( vec3_t tangent, vec3_t binormal,
+		     const vec3_t v0, const vec3_t v1, const vec3_t v2,
+		     const vec2_t t0, const vec2_t t1, const vec2_t t2 )
+{
+	vec3_t dpx, dpy;
+	vec2_t dtx, dty;
+	float scale;
+
+	VectorSubtract( v1, v0, dpx );
+	VectorSubtract( v2, v0, dpy );
+	Vector2Subtract( t1, t0, dtx );
+	Vector2Subtract( t2, t0, dty );
+
+	scale = dty[ 1 ] * dtx[ 0 ] - dtx[ 1 ] * dty[ 0 ];
+
+	VectorScale( dpx, scale * dty[ 1 ], tangent );
+	VectorMA( tangent, -scale * dtx[ 1 ], dpy, tangent );
+	VectorScale( dpx, -scale * dty[ 0 ], binormal );
+	VectorMA( binormal, scale * dtx[ 0 ], dpy, binormal );
+
+	VectorNormalize( tangent );
+	VectorNormalize( binormal );
+}
+
+void R_CalcTangents( vec3_t tangent, vec3_t binormal,
+		     const vec3_t v0, const vec3_t v1, const vec3_t v2,
+		     const i16vec2_t t0, const i16vec2_t t1, const i16vec2_t t2 )
 {
 	vec3_t cp, u, v;
-	vec3_t faceNormal;
+	vec2_t t0f, t1f, t2f;
 
-	VectorSet( u, v1[ 0 ] - v0[ 0 ], t1[ 0 ] - t0[ 0 ], t1[ 1 ] - t0[ 1 ] );
-	VectorSet( v, v2[ 0 ] - v0[ 0 ], t2[ 0 ] - t0[ 0 ], t2[ 1 ] - t0[ 1 ] );
+	t0f[ 0 ] = halfToFloat( t0[ 0 ] );
+	t0f[ 1 ] = halfToFloat( t0[ 1 ] );
+	t1f[ 0 ] = halfToFloat( t1[ 0 ] );
+	t1f[ 1 ] = halfToFloat( t1[ 1 ] );
+	t2f[ 0 ] = halfToFloat( t2[ 0 ] );
+	t2f[ 1 ] = halfToFloat( t2[ 1 ] );
+	VectorSet( u, v1[ 0 ] - v0[ 0 ], t1f[ 0 ] - t0f[ 0 ], t1f[ 1 ] - t0f[ 1 ] );
+	VectorSet( v, v2[ 0 ] - v0[ 0 ], t2f[ 0 ] - t0f[ 0 ], t2f[ 1 ] - t0f[ 1 ] );
 
 	CrossProduct( u, v, cp );
 
@@ -147,69 +140,180 @@ void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
 
 	VectorNormalizeFast( tangent );
 	VectorNormalizeFast( binormal );
-
-	// compute the face normal based on vertex points
-	VectorSubtract( v2, v0, u );
-	VectorSubtract( v1, v0, v );
-	CrossProduct( u, v, faceNormal );
-
-	VectorNormalizeFast( faceNormal );
-
-	// Gram-Schmidt orthogonalize
-	//tangent[a] = (t - n * Dot(n, t)).Normalize();
-	VectorMA( tangent, -DotProduct( faceNormal, tangent ), faceNormal, tangent );
-	VectorNormalizeFast( tangent );
-
-	VectorCopy( faceNormal, normal );
 }
 
-qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] )
+
+void R_QtangentsToTBN( const i16vec4_t qtangent, vec3_t tangent,
+		       vec3_t binormal, vec3_t normal )
 {
-	int    i;
-	float  bb, s, t;
-	vec3_t bary;
+	vec4_t quat;
+	const vec3_t x = { 1.0f, 0.0f, 0.0f };
+	const vec3_t y = { 0.0f, 1.0f, 0.0f };
+	const vec3_t z = { 0.0f, 0.0f, 1.0f };
 
-	/* calculate barycentric basis for the triangle */
-	bb = ( dv[ 1 ]->st[ 0 ] - dv[ 0 ]->st[ 0 ] ) * ( dv[ 2 ]->st[ 1 ] - dv[ 0 ]->st[ 1 ] ) - ( dv[ 2 ]->st[ 0 ] - dv[ 0 ]->st[ 0 ] ) * ( dv[ 1 ]->st[ 1 ] - dv[ 0 ]->st[ 1 ] );
+	snorm16ToFloat( qtangent, quat );
+	QuatTransformVector( quat, x, tangent );
+	QuatTransformVector( quat, y, binormal );
+	QuatTransformVector( quat, z, normal );
 
-	if ( fabs( bb ) < 0.00000001f )
-	{
-		return qfalse;
+	if( quat[ 3 ] < 0.0f ) {
+		VectorNegate( tangent, tangent );
+	}
+}
+
+void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
+		       const vec3_t normal, i16vec4_t qtangent )
+{
+	vec3_t tangent2, binormal2, normal2;
+	vec4_t q;
+	qboolean flipped = qfalse;
+	float trace, scale, dot;
+	vec3_t mid, tangent3, binormal3;
+
+	// orthogonalize the input vectors
+	// preserve normal vector as precise as possible
+	if( VectorLengthSquared( normal ) < 0.001f ) {
+		// degenerate case, compute new normal
+		CrossProduct( tangent, binormal, normal2 );
+		VectorNormalizeFast( normal2 );
+	} else {
+		VectorCopy( normal, normal2 );
 	}
 
-	/* do each vertex */
-	for ( i = 0; i < 3; i++ )
-	{
-		// calculate s tangent vector
-		s = dv[ i ]->st[ 0 ] + 10.0f;
-		t = dv[ i ]->st[ 1 ];
-		bary[ 0 ] = ( ( dv[ 1 ]->st[ 0 ] - s ) * ( dv[ 2 ]->st[ 1 ] - t ) - ( dv[ 2 ]->st[ 0 ] - s ) * ( dv[ 1 ]->st[ 1 ] - t ) ) / bb;
-		bary[ 1 ] = ( ( dv[ 2 ]->st[ 0 ] - s ) * ( dv[ 0 ]->st[ 1 ] - t ) - ( dv[ 0 ]->st[ 0 ] - s ) * ( dv[ 2 ]->st[ 1 ] - t ) ) / bb;
-		bary[ 2 ] = ( ( dv[ 0 ]->st[ 0 ] - s ) * ( dv[ 1 ]->st[ 1 ] - t ) - ( dv[ 1 ]->st[ 0 ] - s ) * ( dv[ 0 ]->st[ 1 ] - t ) ) / bb;
+	// project tangent and binormal onto the normal orthogonal plane
+	VectorMA(tangent, -DotProduct(normal2, tangent), normal2, tangent2 );
+	VectorMA(binormal, -DotProduct(normal2, binormal), normal2, binormal2 );
 
-		dv[ i ]->tangent[ 0 ] = bary[ 0 ] * dv[ 0 ]->xyz[ 0 ] + bary[ 1 ] * dv[ 1 ]->xyz[ 0 ] + bary[ 2 ] * dv[ 2 ]->xyz[ 0 ];
-		dv[ i ]->tangent[ 1 ] = bary[ 0 ] * dv[ 0 ]->xyz[ 1 ] + bary[ 1 ] * dv[ 1 ]->xyz[ 1 ] + bary[ 2 ] * dv[ 2 ]->xyz[ 1 ];
-		dv[ i ]->tangent[ 2 ] = bary[ 0 ] * dv[ 0 ]->xyz[ 2 ] + bary[ 1 ] * dv[ 1 ]->xyz[ 2 ] + bary[ 2 ] * dv[ 2 ]->xyz[ 2 ];
+	// check for several degenerate cases
+	if( VectorLengthSquared( tangent2 ) < 0.001f ) {
+		if( VectorLengthSquared( binormal2 ) < 0.001f ) {
+			PerpendicularVector( tangent2, normal2 );
+			CrossProduct( normal2, tangent2, binormal2 );
+		} else {
+			VectorNormalizeFast( binormal2 );
+			CrossProduct( binormal2, normal2, tangent2 );
+		}
+	} else {
+		VectorNormalizeFast( tangent2 );
+		if( VectorLengthSquared( binormal2 ) < 0.001f ) {
+			CrossProduct( normal2, tangent2, binormal2 );
+		} else {
+			// compute mid vector and project into mid-orthogonal plane
+			VectorNormalizeFast( binormal2 );
+			VectorAdd( tangent2, binormal2, mid );
+			if( VectorLengthSquared( mid ) < 0.001f ) {
+				CrossProduct( binormal2, normal2, mid );
+			} else {
+				VectorNormalizeFast( mid );
+			}
 
-		VectorSubtract( dv[ i ]->tangent, dv[ i ]->xyz, dv[ i ]->tangent );
-		VectorNormalize( dv[ i ]->tangent );
+			VectorMA(tangent2, -DotProduct(mid, tangent2), mid, tangent3 );
+			VectorMA(binormal2, -DotProduct(mid, binormal2), mid, binormal3 );
+			
+			if( VectorLengthSquared( tangent3 ) < 0.001f ) {
+				CrossProduct( mid, normal2, tangent3 );
+				VectorNegate( tangent3, binormal3 );
+			}
 
-		// calculate t tangent vector
-		s = dv[ i ]->st[ 0 ];
-		t = dv[ i ]->st[ 1 ] + 10.0f;
-		bary[ 0 ] = ( ( dv[ 1 ]->st[ 0 ] - s ) * ( dv[ 2 ]->st[ 1 ] - t ) - ( dv[ 2 ]->st[ 0 ] - s ) * ( dv[ 1 ]->st[ 1 ] - t ) ) / bb;
-		bary[ 1 ] = ( ( dv[ 2 ]->st[ 0 ] - s ) * ( dv[ 0 ]->st[ 1 ] - t ) - ( dv[ 0 ]->st[ 0 ] - s ) * ( dv[ 2 ]->st[ 1 ] - t ) ) / bb;
-		bary[ 2 ] = ( ( dv[ 0 ]->st[ 0 ] - s ) * ( dv[ 1 ]->st[ 1 ] - t ) - ( dv[ 1 ]->st[ 0 ] - s ) * ( dv[ 0 ]->st[ 1 ] - t ) ) / bb;
+			VectorNormalizeFast( tangent3 );
+			VectorNormalizeFast( binormal3 );
 
-		dv[ i ]->binormal[ 0 ] = bary[ 0 ] * dv[ 0 ]->xyz[ 0 ] + bary[ 1 ] * dv[ 1 ]->xyz[ 0 ] + bary[ 2 ] * dv[ 2 ]->xyz[ 0 ];
-		dv[ i ]->binormal[ 1 ] = bary[ 0 ] * dv[ 0 ]->xyz[ 1 ] + bary[ 1 ] * dv[ 1 ]->xyz[ 1 ] + bary[ 2 ] * dv[ 2 ]->xyz[ 1 ];
-		dv[ i ]->binormal[ 2 ] = bary[ 0 ] * dv[ 0 ]->xyz[ 2 ] + bary[ 1 ] * dv[ 1 ]->xyz[ 2 ] + bary[ 2 ] * dv[ 2 ]->xyz[ 2 ];
+			VectorAdd( mid, tangent3, tangent2 );
+			VectorAdd( mid, binormal3, binormal2 );
 
-		VectorSubtract( dv[ i ]->binormal, dv[ i ]->xyz, dv[ i ]->binormal );
-		VectorNormalize( dv[ i ]->binormal );
+			VectorNormalizeFast( tangent2 );
+			VectorNormalizeFast( binormal2 );
+		}
 	}
 
-	return qtrue;
+	// assert( fabs(DotProduct( tangent2, tangent2 ) - 1.0f) < 0.01f );
+	// assert( fabs(DotProduct( binormal2, binormal2 ) - 1.0f) < 0.01f );
+	// assert( fabs(DotProduct( normal2, normal2 ) - 1.0f) < 0.01f );
+	// assert( fabs(DotProduct( tangent2, binormal2 ) ) < 0.01f );
+	// assert( fabs(DotProduct( tangent2, normal2 ) ) < 0.01f );
+	// assert( fabs(DotProduct( binormal2, normal2 ) ) < 0.01f );
+
+	// check of orientation
+	CrossProduct( binormal2, normal2, tangent3 );
+	dot = DotProduct( tangent2, tangent3 );
+	if( dot < 0.0f ) {
+		flipped = qtrue;
+		VectorNegate( tangent2, tangent2 );
+	}
+
+	if ( ( trace = tangent2[ 0 ] + binormal2[ 1 ] + normal2[ 2 ] ) > 0.0f )
+	{
+		trace += 1.0f;
+		scale = 0.5f * Q_rsqrt( trace );
+
+		q[ 3 ] = trace * scale;
+		q[ 2 ] = ( tangent2 [ 1 ] - binormal2[ 0 ] ) * scale;
+		q[ 1 ] = ( normal2  [ 0 ] - tangent2 [ 2 ] ) * scale;
+		q[ 0 ] = ( binormal2[ 2 ] - normal2  [ 1 ] ) * scale;
+	}
+
+	else if ( tangent2[ 0 ] > binormal2[ 1 ] && tangent2[ 0 ] > normal2[ 2 ] )
+	{
+		trace = tangent2[ 0 ] - binormal2[ 1 ] - normal2[ 2 ] + 1.0f;
+		scale = 0.5f * Q_rsqrt( trace );
+
+		q[ 0 ] = trace * scale;
+		q[ 1 ] = ( tangent2 [ 1 ] + binormal2[ 0 ] ) * scale;
+		q[ 2 ] = ( normal2  [ 0 ] + tangent2 [ 2 ] ) * scale;
+		q[ 3 ] = ( binormal2[ 2 ] - normal2  [ 1 ] ) * scale;
+	}
+
+	else if ( binormal2[ 1 ] > normal2[ 2 ] )
+	{
+		trace = -tangent2[ 0 ] + binormal2[ 1 ] - normal2[ 2 ] + 1.0f;
+		scale = 0.5f * Q_rsqrt( trace );
+
+		q[ 1 ] = trace * scale;
+		q[ 0 ] = ( tangent2 [ 1 ] + binormal2[ 0 ] ) * scale;
+		q[ 3 ] = ( normal2  [ 0 ] - tangent2 [ 2 ] ) * scale;
+		q[ 2 ] = ( binormal2[ 2 ] + normal2  [ 1 ] ) * scale;
+	}
+
+	else
+	{
+		trace = -tangent2[ 0 ] - binormal2[ 1 ] + normal2[ 2 ] + 1.0f;
+		scale = 0.5f * Q_rsqrt( trace );
+
+		q[ 2 ] = trace * scale;
+		q[ 3 ] = ( tangent2 [ 1 ] - binormal2[ 0 ] ) * scale;
+		q[ 0 ] = ( normal2  [ 0 ] + tangent2 [ 2 ] ) * scale;
+		q[ 1 ] = ( binormal2[ 2 ] + normal2  [ 1 ] ) * scale;
+	}
+
+	if( q[ 3 ] < 0.0f ) {
+		q[ 0 ] = -q[ 0 ];
+		q[ 1 ] = -q[ 1 ];
+		q[ 2 ] = -q[ 2 ];
+		q[ 3 ] = -q[ 3 ];
+	}
+
+	floatToSnorm16( q, qtangent );
+
+	if( qtangent[ 3 ] == 0 ) {
+		qtangent[ 3 ] = 1;
+	} 
+	if( flipped ) {
+		qtangent[ 0 ] = -qtangent[ 0 ];
+		qtangent[ 1 ] = -qtangent[ 1 ];
+		qtangent[ 2 ] = -qtangent[ 2 ];
+		qtangent[ 3 ] = -qtangent[ 3 ];
+	}
+
+	if (0) {
+		vec3_t T, B, N;
+		R_QtangentsToTBN( qtangent, T, B, N );
+		assert( Distance( N, normal2 ) < 0.01f );
+		if( flipped ) {
+			VectorNegate( T, T );
+		}
+		assert( Distance( T, tangent2 ) < 0.01f );
+		assert( Distance( B, binormal2 ) < 0.01f );
+	}
 }
 
 /*
@@ -1385,7 +1489,7 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 		int          j;
 		unsigned int pointFlags = 0;
 
-		R_TransformModelToClip( tess.xyz[ i ], tr.orientation.modelViewMatrix, tr.viewParms.projectionMatrix, eye, clip );
+		R_TransformModelToClip( tess.verts[ i ].xyz, tr.orientation.modelViewMatrix, tr.viewParms.projectionMatrix, eye, clip );
 
 		for ( j = 0; j < 3; j++ )
 		{
@@ -1421,8 +1525,9 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 		vec3_t normal;
 		float  dot;
 		float  len;
+		vec3_t qnormal, qtangent, qbinormal;
 
-		VectorSubtract( tess.xyz[ tess.indexes[ i ] ], tr.orientation.viewOrigin, normal );
+		VectorSubtract( tess.verts[ tess.indexes[ i ] ].xyz, tr.orientation.viewOrigin, normal );
 
 		len = VectorLengthSquared( normal );  // lose the sqrt
 
@@ -1431,7 +1536,10 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 			shortest = len;
 		}
 
-		if ( ( dot = DotProduct( normal, tess.normals[ tess.indexes[ i ] ] ) ) >= 0 )
+		R_QtangentsToTBN( tess.verts[ tess.indexes[ i ] ].qtangents,
+				  qtangent, qbinormal, qnormal );
+
+		if ( ( dot = DotProduct( normal, qnormal ) ) >= 0 )
 		{
 			numTriangles--;
 		}
@@ -2038,57 +2146,27 @@ void R_AddLightInteractions( void )
 			// ignore if not in PVS
 			if ( !r_noLightVisCull->integer )
 			{
-				if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
+				for ( l = light->leafs.next; l != &light->leafs; l = l->next )
 				{
-					int numVisibleLeafs = 0;
-
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
+					if ( !l || !l->data )
 					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visible[ tr.viewCount ] && ( tr.frameCount - leaf->lastVisited[ tr.viewCount ] ) <= r_chcMaxVisibleFrames->integer )
-						{
-							numVisibleLeafs++;
-						}
+						// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
+						break;
 					}
 
-					if ( numVisibleLeafs == 0 )
+					leaf = ( bspNode_t * ) l->data;
+
+					if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 					{
-						tr.pc.c_pvs_cull_light_out++;
-						light->cull = CULL_OUT;
-						continue;
+						light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
 					}
 				}
-				else
+
+				if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 				{
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
-					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
-						{
-							light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
-						}
-					}
-
-					if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
-					{
-						tr.pc.c_pvs_cull_light_out++;
-						light->cull = CULL_OUT;
-						continue;
-					}
+					tr.pc.c_pvs_cull_light_out++;
+					light->cull = CULL_OUT;
+					continue;
 				}
 			}
 
@@ -2253,53 +2331,25 @@ void R_AddLightBoundsToVisBounds( void )
 			// ignore if not in PVS
 			if ( !r_noLightVisCull->integer )
 			{
-				if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
+				for ( l = light->leafs.next; l != &light->leafs; l = l->next )
 				{
-					int numVisibleLeafs = 0;
-
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
+					if ( !l || !l->data )
 					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visible[ tr.viewCount ] && ( tr.frameCount - leaf->lastVisited[ tr.viewCount ] ) <= r_chcMaxVisibleFrames->integer )
-						{
-							numVisibleLeafs++;
-						}
+						// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
+						break;
 					}
 
-					if ( numVisibleLeafs == 0 )
+					leaf = ( bspNode_t * ) l->data;
+
+					if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 					{
-						continue;
+						light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
 					}
 				}
-				else
+
+				if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 				{
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
-					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
-						{
-							light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
-						}
-					}
-
-					if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
-					{
-						continue;
-					}
+					continue;
 				}
 			}
 

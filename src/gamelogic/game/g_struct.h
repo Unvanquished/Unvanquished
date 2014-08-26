@@ -202,6 +202,11 @@ struct gentity_s
 	int          nextBurnAction;
 	gentity_t    *fireStarter;
 
+	/**
+	 * The enemy team that tagged this buildable.
+	 */
+	team_t       taggedByEnemy;
+
 	/*
 	 * targets to aim at
 	 */
@@ -388,7 +393,7 @@ struct gentity_s
 	vec3_t      buildableAim; // aim vector for buildables
 
 	// turret
-	qboolean    turretHasFastLoader; // a turret upgrade (currently unused)
+	//qboolean    turretHasFastLoader; // a turret upgrade (currently unused)
 	int         turretNextShot;
 	int         turretSuccessiveShots;
 	int         turretLastShotAtTarget;
@@ -412,6 +417,11 @@ struct gentity_s
 
 	qhandle_t   obstacleHandle;
 	botMemory_t *botMind;
+
+	gentity_t   *alienTag, *humanTag;
+	gentity_t   **tagAttachment;
+	int         tagScore;
+	int         tagScoreTime;
 };
 
 /**
@@ -692,8 +702,6 @@ struct level_locals_s
 	int      snd_fry; // sound index for standing in lava
 
 	int      warmupModificationCount; // for detecting if g_warmup is changed
-
-	int  extend_vote_count;
 
 	// spawn variables
 	qboolean spawning; // the G_Spawn*() functions are valid

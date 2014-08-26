@@ -11,10 +11,9 @@ Makefile
 cmake_install.cmake
 daemon*
 cgame-qvm-native.*
-game-qvm-native.*
-ui-qvm-native.*
 vm
 main/*.pk3
+libROCKET_LIB.a
 Release
 Debug
 build

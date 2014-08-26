@@ -286,11 +286,11 @@ You or the server may be running older versions of the game."
 
 // NERVE - SMF - wolf multiplayer master servers
 #ifndef MASTER_SERVER_NAME
-# define MASTER_SERVER_NAME    "unvanquished.net"
+# define MASTER_SERVER_NAME    "master.unvanquished.net"
 #endif
 
 #ifndef MOTD_SERVER_NAME
-# define MOTD_SERVER_NAME      "unvanquished.net"
+# define MOTD_SERVER_NAME      "master.unvanquished.net"
 #endif
 
 #define PORT_MASTER             27950
@@ -692,6 +692,7 @@ qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clie
 
 void       Com_StartupVariable( const char *match );
 void       Com_SetRecommended( void );
+bool       Com_AreCheatsAllowed();
 
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise
@@ -999,8 +1000,6 @@ char         *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
 
 void         Sys_Sleep( int msec );
-
-qboolean     Sys_LowPhysicalMemory( void );
 
 typedef enum
 {

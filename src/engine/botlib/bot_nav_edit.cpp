@@ -31,7 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-
 #include "../client/client.h"
 #include "../../libs/detour/DetourDebugDraw.h"
 #include "../../libs/detour/DebugDraw.h"
@@ -55,7 +54,8 @@ bool GetPointPointedTo( NavData_t *nav, rVec &p )
 	AngleVectors( cl.snap.ps.viewangles, forward, NULL, NULL );
 	VectorMA( cl.snap.ps.origin, 8096, forward, end );
 
-	CM_BoxTrace( &trace, cl.snap.ps.origin, end, NULL, NULL, 0, CONTENTS_SOLID | CONTENTS_PLAYERCLIP, TT_AABB );
+	CM_BoxTrace( &trace, cl.snap.ps.origin, end, NULL, NULL, 0,
+	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP, 0, TT_AABB );
 
 	pos = qVec( trace.endpos );
 	if ( dtStatusFailed( nav->query->findNearestPoly( pos, extents, &nav->filter, &nearRef, p ) ) )
@@ -229,7 +229,7 @@ void Cmd_NavEdit( void )
 
 		BotSaveOffMeshConnections( cmd.nav );
 	}
-	else 
+	else
 	{
 		Com_Printf( "%s", usage );
 	}
@@ -307,7 +307,7 @@ void Cmd_AddConnection( void )
 		{
 			return;
 		}
-		
+
 		if ( GetPointPointedTo( cmd.nav, cmd.pc.end ) )
 		{
 			cmd.nav->process.con.addConnection( cmd.pc );

@@ -25,14 +25,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
-#include "../ui/ui_shared.h"
-// display context for new ui stuff
-displayContextDef_t cgDC;
-
 void                CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 void                CG_RegisterCvars( void );
 void                CG_Shutdown( void );
 static char         *CG_VoIPString( void );
+int                 FloatAsInt( float f );
 
 /*
 ================
@@ -100,6 +97,25 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 		case CG_COMPLETE_COMMAND:
 			CG_CompleteCommand( arg0 );
 			return 0;
+
+		case CG_INIT_ROCKET:
+			CG_Rocket_Init();
+			return 0;
+
+		case CG_ROCKET_FRAME:
+			CG_Rocket_Frame();
+			return 0;
+
+		case CG_ROCKET_FORMATDATA:
+			CG_Rocket_FormatData( arg0 );
+			return 0;
+
+		case CG_ROCKET_RENDERELEMENT:
+			CG_Rocket_RenderElement();
+			return 0;
+
+		case CG_ROCKET_PROGRESSBARVALUE:
+			return FloatAsInt( CG_Rocket_ProgressBarValue() );
 
 		default:
 			CG_Error( "vmMain(): unknown cgame command %i", command );
@@ -278,6 +294,8 @@ vmCvar_t        cg_fov_level3;
 vmCvar_t        cg_fov_level4;
 vmCvar_t        cg_fov_human;
 
+vmCvar_t        ui_chatPromptColors;
+
 typedef struct
 {
 	vmCvar_t   *vmCvar;
@@ -360,7 +378,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_stickySpec,                  "cg_stickySpec",                  "1",            CVAR_USERINFO | CVAR_ARCHIVE },
 	{ &cg_sprintToggle,                "cg_sprintToggle",                "0",            CVAR_USERINFO | CVAR_ARCHIVE },
 	{ &cg_unlagged,                    "cg_unlagged",                    "1",            CVAR_USERINFO                },
-	{ NULL,                            "cg_flySpeed",                    "600",          CVAR_USERINFO                },
+	{ NULL,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
 	{ &cg_depthSortParticles,          "cg_depthSortParticles",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_bounceParticles,             "cg_bounceParticles",             "0",            CVAR_ARCHIVE                 },
 	{ &cg_consoleLatency,              "cg_consoleLatency",              "3000",         0                            },
@@ -404,17 +422,6 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_debugVoices,                 "cg_debugVoices",                 "0",            0                            },
 
-	// communication cvars set by the cgame to be read by ui
-	{ &ui_currentClass,                "ui_currentClass",                "0",            CVAR_ROM                     },
-	{ &ui_carriage,                    "ui_carriage",                    "",             CVAR_ROM                     },
-	{ &ui_dialog,                      "ui_dialog",                      "Text not set", CVAR_ROM                     },
-	{ &ui_voteActive,                  "ui_voteActive",                  "0",            CVAR_ROM                     },
-	{ &ui_humanTeamVoteActive,         "ui_humanTeamVoteActive",         "0",            CVAR_ROM                     },
-	{ &ui_alienTeamVoteActive,         "ui_alienTeamVoteActive",         "0",            CVAR_ROM                     },
-	{ &ui_unlockables,                 "ui_unlockables",                 "0 0",          CVAR_ROM                     },
-	{ &ui_momentumHalfLife,          "ui_momentumHalfLife",          "0",            CVAR_ROM                         },
-	{ &ui_unlockablesMinTime,          "ui_unlockablesMinTime",          "0",            CVAR_ROM                     },
-
 	{ &cg_debugRandom,                 "cg_debugRandom",                 "0",            0                            },
 
 	{ &cg_optimizePrediction,          "cg_optimizePrediction",          "1",            0                            },
@@ -457,6 +464,8 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_fov_level3,                  "cg_fov_level3",                  "0",            0                            },
 	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            0                            },
 	{ &cg_fov_human,                   "cg_fov_human",                   "0",            0                            },
+
+	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            }
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
@@ -477,6 +486,15 @@ void CG_RegisterCvars( void )
 		                    cv->defaultString, cv->cvarFlags );
 	}
 }
+
+int FloatAsInt( float f )
+{
+	floatint_t fi;
+
+	fi.f = f;
+	return fi.i;
+}
+
 
 /*
 ===============
@@ -499,9 +517,12 @@ static void CG_SetPVars( void )
 	}
 
 	ps = &cg.snap->ps;
+
 	/* if we follow someone, the stats won't be about us, but the followed player instead */
 	if ( ( ps->pm_flags & PMF_FOLLOW ) )
-		return;
+	{
+	        return;
+	}
 
 	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->persistant[ PERS_TEAM ] ) );
 
@@ -532,142 +553,11 @@ static void CG_SetPVars( void )
 
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
-	switch ( ps->stats[ STAT_CLASS ] )
-	{
-		case PCL_ALIEN_BUILDER0:
-			trap_Cvar_Set( "p_classname", "Builder" );
-			break;
+	trap_Cvar_Set( "p_classname", BG_Class( ps->stats[ STAT_CLASS ] )->name );
 
-		case PCL_ALIEN_BUILDER0_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Builder" );
-			break;
-
-		case PCL_ALIEN_LEVEL0:
-			trap_Cvar_Set( "p_classname", "Dretch" );
-			break;
-
-		case PCL_ALIEN_LEVEL1:
-			trap_Cvar_Set( "p_classname", "Mantis" );
-			break;
-
-		case PCL_ALIEN_LEVEL2:
-			trap_Cvar_Set( "p_classname", "Marauder" );
-			break;
-
-		case PCL_ALIEN_LEVEL2_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Marauder" );
-			break;
-
-		case PCL_ALIEN_LEVEL3:
-			trap_Cvar_Set( "p_classname", "Dragoon" );
-			break;
-
-		case PCL_ALIEN_LEVEL3_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Dragoon" );
-			break;
-
-		case PCL_ALIEN_LEVEL4:
-			trap_Cvar_Set( "p_classname", "Tyrant" );
-			break;
-
-		case PCL_HUMAN_NAKED:
-			trap_Cvar_Set( "p_classname", "Naked Human" );
-			break;
-
-		case PCL_HUMAN_LIGHT:
-			trap_Cvar_Set( "p_classname", "Light Human" );
-			break;
-
-		case PCL_HUMAN_MEDIUM:
-			trap_Cvar_Set( "p_classname", "Medium Human" );
-			break;
-
-		case PCL_HUMAN_BSUIT:
-			trap_Cvar_Set( "p_classname", "Battlesuit" );
-			break;
-
-		case PCL_NONE: //used between death and spawn
-			trap_Cvar_Set( "p_classname", "Ghost" );
-			break;
-
-		default:
-			trap_Cvar_Set( "p_classname", "Unknown" );
-			break;
-	}
 
 	trap_Cvar_Set( "p_weapon", va( "%d", ps->stats[ STAT_WEAPON ] ) );
-
-	switch ( ps->stats[ STAT_WEAPON ] )
-	{
-		case WP_HBUILD:
-			trap_Cvar_Set( "p_weaponname", "Construction Kit" );
-			break;
-
-		case WP_BLASTER:
-			trap_Cvar_Set( "p_weaponname", "Blaster" );
-			break;
-
-		case WP_MACHINEGUN:
-			trap_Cvar_Set( "p_weaponname", "Machine Gun" );
-			break;
-
-		case WP_PAIN_SAW:
-			trap_Cvar_Set( "p_weaponname", "Painsaw" );
-			break;
-
-		case WP_SHOTGUN:
-			trap_Cvar_Set( "p_weaponname", "Shotgun" );
-			break;
-
-		case WP_LAS_GUN:
-			trap_Cvar_Set( "p_weaponname", "Laser Gun" );
-			break;
-
-		case WP_MASS_DRIVER:
-			trap_Cvar_Set( "p_weaponname", "Mass Driver" );
-			break;
-
-		case WP_CHAINGUN:
-			trap_Cvar_Set( "p_weaponname", "Chain Gun" );
-			break;
-
-		case WP_PULSE_RIFLE:
-			trap_Cvar_Set( "p_weaponname", "Pulse Rifle" );
-			break;
-
-		case WP_FLAMER:
-			trap_Cvar_Set( "p_weaponname", "Flame Thrower" );
-			break;
-
-		case WP_LUCIFER_CANNON:
-			trap_Cvar_Set( "p_weaponname", "Lucifier cannon" );
-			break;
-
-		case WP_ALEVEL0:
-			trap_Cvar_Set( "p_weaponname", "Teeth" );
-			break;
-
-		case WP_ABUILD:
-		case WP_ABUILD2:
-		case WP_ALEVEL1:
-		case WP_ALEVEL2:
-		case WP_ALEVEL2_UPG:
-		case WP_ALEVEL3:
-		case WP_ALEVEL3_UPG:
-		case WP_ALEVEL4:
-			trap_Cvar_Set( "p_weaponname", "Claws" );
-			break;
-
-		case WP_NONE:
-			trap_Cvar_Set( "p_weaponname", "Nothing" );
-			break;
-
-
-		default:
-			trap_Cvar_Set( "p_weaponname", "Unknown" );
-			break;
-	}
-
+	trap_Cvar_Set( "p_weaponname", BG_Weapon( ps->stats[ STAT_WEAPON ] )->humanName );
 	trap_Cvar_Set( "p_credits", va( "%d", ps->persistant[ PERS_CREDIT ] ) );
 	trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
 
@@ -1042,6 +932,20 @@ const char *CG_Argv( int arg )
 	return buffer;
 }
 
+/*
+================
+CG_Args
+================
+*/
+const char *CG_Args( void )
+{
+	static char buffer[ MAX_STRING_CHARS ];
+
+	trap_LiteralArgs( buffer, sizeof( buffer ) );
+
+	return buffer;
+}
+
 //========================================================================
 
 static const char *choose( const char *first, ... )
@@ -1319,6 +1223,9 @@ static void CG_RegisterSounds( void )
 
 	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning.wav", qfalse );
 	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", qfalse );
+
+	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", qfalse );
+	cgs.media.ownedTagSound = trap_S_RegisterSound( "sound/feedback/beacon-tag-owned.ogg", qfalse );
 }
 
 //===================================================================================
@@ -1552,6 +1459,12 @@ static void CG_RegisterGraphics( void )
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
 
+	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacons/arrow", RSF_DEFAULT );
+	cgs.media.beaconLongArrow = trap_R_RegisterShader( "gfx/2d/beacons/longarrow", RSF_DEFAULT );
+	cgs.media.beaconLongArrowDot = trap_R_RegisterShader( "gfx/2d/beacons/longarrowdot", RSF_DEFAULT );
+	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacons/no-target", RSF_DEFAULT );
+	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacons/tagscore", RSF_DEFAULT );
+
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
 
@@ -1781,498 +1694,6 @@ void CG_StartMusic( void )
 	trap_S_StartBackgroundTrack( parm1, parm2 );
 }
 
-//
-// ==============================
-// HUD stuff (mission pack)
-// ==============================
-//
-char *CG_GetMenuBuffer( const char *filename )
-{
-	int          len;
-	fileHandle_t f;
-	static char  buf[ MAX_MENUFILE ];
-
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-
-	if ( !f )
-	{
-		trap_Print( va( S_COLOR_RED "menu file not found: %s, using default\n", filename ) );
-		return NULL;
-	}
-
-	if ( len >= MAX_MENUFILE )
-	{
-		trap_Print( va( S_COLOR_RED "menu file too large: %s is %i, max allowed is %i\n",
-		                filename, len, MAX_MENUFILE ) );
-		trap_FS_FCloseFile( f );
-		return NULL;
-	}
-
-	trap_FS_Read( buf, len, f );
-	buf[ len ] = 0;
-	trap_FS_FCloseFile( f );
-
-	return buf;
-}
-
-qboolean CG_Asset_Parse( int handle )
-{
-	pc_token_t token;
-	const char *tempStr;
-	const char *fallbackFont = "fonts/unifont.ttf";
-
-	if ( !trap_Parse_ReadToken( handle, &token ) )
-	{
-		return qfalse;
-	}
-
-	if ( Q_stricmp( token.string, "{" ) != 0 )
-	{
-		return qfalse;
-	}
-
-	while ( 1 )
-	{
-		if ( !trap_Parse_ReadToken( handle, &token ) )
-		{
-			return qfalse;
-		}
-
-		if ( Q_stricmp( token.string, "}" ) == 0 )
-		{
-			return qtrue;
-		}
-
-		// fallback font
-		if ( Q_stricmp( token.string, "fallbackfont" ) == 0 )
-		{
-			if ( !PC_String_Parse( handle, &fallbackFont ) )
-			{
-				return qfalse;
-			}
-			continue;
-		}
-
-		// font
-		if ( Q_stricmp( token.string, "font" ) == 0 )
-		{
-			int pointSize;
-
-			if ( !PC_String_Parse( handle, &tempStr ) || !PC_Int_Parse( handle, &pointSize ) )
-			{
-				return qfalse;
-			}
-
-			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.textFont );
-			continue;
-		}
-
-		// smallFont
-		if ( Q_stricmp( token.string, "smallFont" ) == 0 )
-		{
-			int pointSize;
-
-			if ( !PC_String_Parse( handle, &tempStr ) || !PC_Int_Parse( handle, &pointSize ) )
-			{
-				return qfalse;
-			}
-
-			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.smallFont );
-			continue;
-		}
-
-		// font
-		if ( Q_stricmp( token.string, "bigfont" ) == 0 )
-		{
-			int pointSize;
-
-			if ( !PC_String_Parse( handle, &tempStr ) || !PC_Int_Parse( handle, &pointSize ) )
-			{
-				return qfalse;
-			}
-
-			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.bigFont );
-			continue;
-		}
-
-		// gradientbar
-		if ( Q_stricmp( token.string, "gradientbar" ) == 0 )
-		{
-			if ( !PC_String_Parse( handle, &tempStr ) )
-			{
-				return qfalse;
-			}
-
-			cgDC.Assets.gradientBar = trap_R_RegisterShader(tempStr,
-									(RegisterShaderFlags_t) RSF_NOMIP);
-			continue;
-		}
-
-		// enterMenuSound
-		if ( Q_stricmp( token.string, "menuEnterSound" ) == 0 )
-		{
-			if ( !PC_String_Parse( handle, &tempStr ) )
-			{
-				return qfalse;
-			}
-
-			cgDC.Assets.menuEnterSound = trap_S_RegisterSound( tempStr, qfalse );
-			continue;
-		}
-
-		// exitMenuSound
-		if ( Q_stricmp( token.string, "menuExitSound" ) == 0 )
-		{
-			if ( !PC_String_Parse( handle, &tempStr ) )
-			{
-				return qfalse;
-			}
-
-			cgDC.Assets.menuExitSound = trap_S_RegisterSound( tempStr, qfalse );
-			continue;
-		}
-
-		// itemFocusSound
-		if ( Q_stricmp( token.string, "itemFocusSound" ) == 0 )
-		{
-			if ( !PC_String_Parse( handle, &tempStr ) )
-			{
-				return qfalse;
-			}
-
-			cgDC.Assets.itemFocusSound = trap_S_RegisterSound( tempStr, qfalse );
-			continue;
-		}
-
-		// menuBuzzSound
-		if ( Q_stricmp( token.string, "menuBuzzSound" ) == 0 )
-		{
-			if ( !PC_String_Parse( handle, &tempStr ) )
-			{
-				return qfalse;
-			}
-
-			cgDC.Assets.menuBuzzSound = trap_S_RegisterSound( tempStr, qfalse );
-			continue;
-		}
-
-		if ( Q_stricmp( token.string, "cursor" ) == 0 )
-		{
-			if ( !PC_String_Parse( handle, &cgDC.Assets.cursorStr ) )
-			{
-				return qfalse;
-			}
-
-			cgDC.Assets.cursor = trap_R_RegisterShader(cgDC.Assets.cursorStr,
-								   (RegisterShaderFlags_t) RSF_NOMIP);
-			continue;
-		}
-
-		if ( Q_stricmp( token.string, "fadeClamp" ) == 0 )
-		{
-			if ( !PC_Float_Parse( handle, &cgDC.Assets.fadeClamp ) )
-			{
-				return qfalse;
-			}
-
-			continue;
-		}
-
-		if ( Q_stricmp( token.string, "fadeCycle" ) == 0 )
-		{
-			if ( !PC_Int_Parse( handle, &cgDC.Assets.fadeCycle ) )
-			{
-				return qfalse;
-			}
-
-			continue;
-		}
-
-		if ( Q_stricmp( token.string, "fadeAmount" ) == 0 )
-		{
-			if ( !PC_Float_Parse( handle, &cgDC.Assets.fadeAmount ) )
-			{
-				return qfalse;
-			}
-
-			continue;
-		}
-
-		if ( Q_stricmp( token.string, "shadowX" ) == 0 )
-		{
-			if ( !PC_Float_Parse( handle, &cgDC.Assets.shadowX ) )
-			{
-				return qfalse;
-			}
-
-			continue;
-		}
-
-		if ( Q_stricmp( token.string, "shadowY" ) == 0 )
-		{
-			if ( !PC_Float_Parse( handle, &cgDC.Assets.shadowY ) )
-			{
-				return qfalse;
-			}
-
-			continue;
-		}
-
-		if ( Q_stricmp( token.string, "shadowColor" ) == 0 )
-		{
-			if ( !PC_Color_Parse( handle, &cgDC.Assets.shadowColor ) )
-			{
-				return qfalse;
-			}
-
-			cgDC.Assets.shadowFadeClamp = cgDC.Assets.shadowColor[ 3 ];
-			continue;
-		}
-	}
-
-	return qfalse;
-}
-
-void CG_ParseMenu( const char *menuFile )
-{
-	pc_token_t token;
-	int        handle;
-
-	handle = trap_Parse_LoadSource( menuFile );
-
-	if ( !handle )
-	{
-		handle = trap_Parse_LoadSource( "ui/testhud.menu" );
-	}
-
-	if ( !handle )
-	{
-		return;
-	}
-
-	while ( 1 )
-	{
-		if ( !trap_Parse_ReadToken( handle, &token ) )
-		{
-			break;
-		}
-
-		//if ( Q_stricmp( token, "{" ) ) {
-		//  Com_Printf(_( "Missing { in menu file\n" ));
-		//  break;
-		//}
-
-		//if ( menuCount == MAX_MENUS ) {
-		//  Com_Printf(_( "Too many menus!\n" ));
-		//  break;
-		//}
-
-		if ( token.string[ 0 ] == '}' )
-		{
-			break;
-		}
-
-		if ( Q_stricmp( token.string, "assetGlobalDef" ) == 0 )
-		{
-			if ( CG_Asset_Parse( handle ) )
-			{
-				continue;
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		if ( Q_stricmp( token.string, "menudef" ) == 0 )
-		{
-			// start a new menu
-			Menu_New( handle );
-		}
-	}
-
-	trap_Parse_FreeSource( handle );
-}
-
-qboolean CG_Load_Menu( char **p )
-{
-	char *token;
-
-	token = COM_ParseExt( p, qtrue );
-
-	if ( token[ 0 ] != '{' )
-	{
-		return qfalse;
-	}
-
-	while ( 1 )
-	{
-		token = COM_ParseExt( p, qtrue );
-
-		if ( Q_stricmp( token, "}" ) == 0 )
-		{
-			return qtrue;
-		}
-
-		if ( !token || token[ 0 ] == 0 )
-		{
-			return qfalse;
-		}
-
-		CG_ParseMenu( token );
-	}
-
-	return qfalse;
-}
-
-void CG_LoadMenus( const char *menuFile )
-{
-	char         *token;
-	char         *p;
-	int          len;
-	fileHandle_t f;
-	static char  buf[ MAX_MENUDEFFILE ];
-	char         assetScale[ 20 ];
-
-	len = trap_FS_FOpenFile( menuFile, &f, FS_READ );
-
-	if ( !f )
-	{
-		Com_Printf( S_COLOR_YELLOW  "menu file not found: %s, using default\n", menuFile );
-		len = trap_FS_FOpenFile( "ui/hud.txt", &f, FS_READ );
-
-		if ( !f )
-		{
-			trap_Error( S_COLOR_RED "default menu file not found: ui/hud.txt, unable to continue!" );
-		}
-	}
-
-	if ( len >= MAX_MENUDEFFILE )
-	{
-		trap_FS_FCloseFile( f );
-		trap_Error( va( S_COLOR_RED "menu file too large: %s is %i, max allowed is %i",
-		                menuFile, len, MAX_MENUDEFFILE ) );
-	}
-
-	trap_FS_Read( buf, len, f );
-	buf[ len ] = 0;
-	trap_FS_FCloseFile( f );
-
-	COM_Compress( buf );
-
-	Menu_Reset();
-
-	trap_Cvar_VariableStringBuffer( "ui_assetScale", assetScale, sizeof( assetScale ) );
-	trap_Parse_AddGlobalDefine( va( "ASSET_SCALE %f", assetScale[ 0 ] ? atof( assetScale ) : 1.0f ) );
-
-	p = buf;
-
-	while ( 1 )
-	{
-		token = COM_ParseExt( &p, qtrue );
-
-		if ( !token || token[ 0 ] == 0 || token[ 0 ] == '}' )
-		{
-			break;
-		}
-
-		if ( Q_stricmp( token, "}" ) == 0 )
-		{
-			break;
-		}
-
-		if ( Q_stricmp( token, "loadmenu" ) == 0 )
-		{
-			if ( CG_Load_Menu( &p ) )
-			{
-				continue;
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-}
-
-static qboolean CG_OwnerDrawHandleKey( int ownerDraw, int key )
-{
-	Q_UNUSED(ownerDraw);
-	Q_UNUSED(key);
-	return qfalse;
-}
-
-static int CG_FeederCount( int feederID )
-{
-	int i, count = 0;
-
-	if ( feederID == FEEDER_ALIENTEAM_LIST )
-	{
-		for ( i = 0; i < cg.numScores; i++ )
-		{
-			if ( cg.scores[ i ].team == TEAM_ALIENS )
-			{
-				count++;
-			}
-		}
-	}
-	else if ( feederID == FEEDER_HUMANTEAM_LIST )
-	{
-		for ( i = 0; i < cg.numScores; i++ )
-		{
-			if ( cg.scores[ i ].team == TEAM_HUMANS )
-			{
-				count++;
-			}
-		}
-	}
-
-	return count;
-}
-
-void CG_SetScoreSelection( menuDef_t *menu )
-{
-	playerState_t *ps = &cg.snap->ps;
-	int           i, alien, human;
-	int           feeder;
-
-	alien = human = 0;
-
-	for ( i = 0; i < cg.numScores; i++ )
-	{
-		if ( cg.scores[ i ].team == TEAM_ALIENS )
-		{
-			alien++;
-		}
-		else if ( cg.scores[ i ].team == TEAM_HUMANS )
-		{
-			human++;
-		}
-
-		if ( ps->clientNum == cg.scores[ i ].client )
-		{
-			cg.selectedScore = i;
-		}
-	}
-
-	if ( menu == NULL )
-	{
-		// just interested in setting the selected score
-		return;
-	}
-
-	feeder = FEEDER_ALIENTEAM_LIST;
-	i = alien;
-
-	if ( cg.scores[ cg.selectedScore ].team == TEAM_HUMANS )
-	{
-		feeder = FEEDER_HUMANTEAM_LIST;
-		i = human;
-	}
-
-	Menu_SetFeederSelection( menu, feeder, i, NULL );
-}
-
 // FIXME: might need to cache this info
 static clientInfo_t *CG_InfoFromScoreIndex( int index, int team, int *scoreIndex )
 {
@@ -2306,297 +1727,6 @@ qboolean CG_ClientIsReady( int clientNum )
 	return Com_ClientListContains( &ready, clientNum );
 }
 
-static const char *CG_FeederItemText( int feederID, int index, int column, qhandle_t *handle )
-{
-	int          scoreIndex = 0;
-	clientInfo_t *info = NULL;
-	int          team = -1;
-	score_t      *sp = NULL;
-	qboolean     showIcons = qfalse;
-
-	*handle = -1;
-
-	if ( feederID == FEEDER_ALIENTEAM_LIST )
-	{
-		team = TEAM_ALIENS;
-	}
-	else if ( feederID == FEEDER_HUMANTEAM_LIST )
-	{
-		team = TEAM_HUMANS;
-	}
-
-	info = CG_InfoFromScoreIndex( index, team, &scoreIndex );
-	sp = &cg.scores[ scoreIndex ];
-
-	if ( cg.intermissionStarted && CG_ClientIsReady( sp->client ) )
-	{
-		showIcons = qfalse;
-	}
-	else if ( cg.snap->ps.pm_type == PM_SPECTATOR ||
-	          cg.snap->ps.pm_type == PM_NOCLIP ||
-	          cg.snap->ps.pm_flags & PMF_FOLLOW ||
-	          team == cg.snap->ps.persistant[ PERS_TEAM ] ||
-	          cg.intermissionStarted )
-	{
-		showIcons = qtrue;
-	}
-
-	if ( info && info->infoValid )
-	{
-		switch ( column )
-		{
-			case 0:
-				if ( showIcons )
-				{
-					if ( sp->weapon != WP_NONE )
-					{
-						*handle = cg_weapons[ sp->weapon ].weaponIcon;
-					}
-				}
-
-				break;
-
-			case 1:
-				if ( showIcons )
-				{
-					if ( sp->team == TEAM_HUMANS && sp->upgrade != UP_NONE )
-					{
-						*handle = cg_upgrades[ sp->upgrade ].upgradeIcon;
-					}
-				}
-
-				break;
-
-			case 2:
-				if ( cg.intermissionStarted && CG_ClientIsReady( sp->client ) )
-				{
-					return "Ready";
-				}
-
-				break;
-
-			case 3:
-				return va( S_COLOR_WHITE "%s", info->name );
-
-			case 4:
-				return va( "%d", sp->score );
-
-			case 5:
-				return va( "%4d", sp->time );
-
-			case 6:
-				if ( sp->ping == -1 )
-				{
-					return "";
-				}
-
-				return va( "%4d", sp->ping );
-		}
-	}
-
-	return "";
-}
-
-static qhandle_t CG_FeederItemImage( int feederID, int index )
-{
-	Q_UNUSED(feederID);
-	Q_UNUSED(index);
-	return 0;
-}
-
-static void CG_FeederSelection( int feederID, int index )
-{
-	int i, count;
-	int team = ( feederID == FEEDER_ALIENTEAM_LIST ) ? TEAM_ALIENS : TEAM_HUMANS;
-	count = 0;
-
-	for ( i = 0; i < cg.numScores; i++ )
-	{
-		if ( cg.scores[ i ].team == team )
-		{
-			if ( index == count )
-			{
-				cg.selectedScore = i;
-			}
-
-			count++;
-		}
-	}
-}
-
-static float CG_Cvar_Get( const char *cvar )
-{
-	char buff[ 128 ];
-
-	memset( buff, 0, sizeof( buff ) );
-	trap_Cvar_VariableStringBuffer( cvar, buff, sizeof( buff ) );
-	return atof( buff );
-}
-
-static int CG_OwnerDrawWidth( int ownerDraw, float scale )
-{
-	switch ( ownerDraw )
-	{
-		case CG_KILLER:
-			return UI_Text_Width( CG_GetKillerText(), scale );
-	}
-
-	return 0;
-}
-
-static int CG_PlayCinematic( const char *name, float x, float y, float w, float h )
-{
-	return trap_CIN_PlayCinematic( name, x, y, w, h, CIN_loop );
-}
-
-static void CG_StopCinematic( int handle )
-{
-	trap_CIN_StopCinematic( handle );
-}
-
-static void CG_DrawCinematic( int handle, float x, float y, float w, float h )
-{
-	trap_CIN_SetExtents( handle, x, y, w, h );
-	trap_CIN_DrawCinematic( handle );
-}
-
-static void CG_RunCinematicFrame( int handle )
-{
-	trap_CIN_RunCinematic( handle );
-}
-
-// hack to prevent warning
-static qboolean CG_OwnerDrawVisible( int parameter )
-{
-	Q_UNUSED(parameter);
-	return qfalse;
-}
-
-/*
-=================
-CG_LoadHudMenu
-=================
-*/
-void CG_LoadHudMenu( void )
-{
-	char       buff[ 1024 ];
-	const char *hudSet;
-
-	cgDC.aspectScale = ( ( 640.0f * cgs.glconfig.vidHeight ) /
-	                     ( 480.0f * cgs.glconfig.vidWidth ) );
-	cgDC.xscale = cgs.glconfig.vidWidth / 640.0f;
-	cgDC.yscale = cgs.glconfig.vidHeight / 480.0f;
-
-	cgDC.smallFontScale = CG_Cvar_Get( "ui_smallFont" );
-	cgDC.bigFontScale = CG_Cvar_Get( "ui_bigFont" );
-
-	cgDC.registerShader = &trap_R_RegisterShader;
-	cgDC.setColor = &trap_R_SetColor;
-	cgDC.drawHandlePic = &CG_DrawPic;
-	cgDC.drawNoStretchPic = &CG_DrawNoStretchPic;
-	cgDC.drawStretchPic = &trap_R_DrawStretchPic;
-	cgDC.registerModel = &trap_R_RegisterModel;
-	cgDC.modelBounds = &trap_R_ModelBounds;
-	cgDC.fillRect = &CG_FillRect;
-	cgDC.drawRect = &CG_DrawRect;
-	cgDC.drawSides = &CG_DrawSides;
-	cgDC.drawTopBottom = &CG_DrawTopBottom;
-	cgDC.clearScene = &trap_R_ClearScene;
-	cgDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
-	cgDC.renderScene = &trap_R_RenderScene;
-	cgDC.registerFont = &trap_R_RegisterFont;
-	cgDC.glyph = &UI_R_Glyph;
-	cgDC.glyphChar = &UI_R_GlyphChar;
-	cgDC.freeCachedGlyphs = &UI_R_UnregisterFont;
-
-	cgDC.ownerDrawItem = &CG_OwnerDraw;
-	cgDC.getValue = &CG_GetValue;
-	cgDC.ownerDrawVisible = &CG_OwnerDrawVisible;
-	cgDC.runScript = &CG_RunMenuScript;
-	cgDC.setCVar = trap_Cvar_Set;
-	cgDC.getCVarString = trap_Cvar_VariableStringBuffer;
-	cgDC.getCVarLatchedString = trap_Cvar_LatchedVariableStringBuffer;
-	cgDC.getCVarValue = CG_Cvar_Get;
-	cgDC.setOverstrikeMode = &trap_Key_SetOverstrikeMode;
-	cgDC.getOverstrikeMode = &trap_Key_GetOverstrikeMode;
-	cgDC.startLocalSound = &trap_S_StartLocalSound;
-	cgDC.ownerDrawHandleKey = &CG_OwnerDrawHandleKey;
-	cgDC.feederCount = &CG_FeederCount;
-	cgDC.feederItemImage = &CG_FeederItemImage;
-	cgDC.feederItemText = &CG_FeederItemText;
-	cgDC.feederSelection = &CG_FeederSelection;
-	//cgDC.setBinding           = &trap_Key_SetBinding;
-	//cgDC.getBindingBuf        = &trap_Key_GetBindingBuf;
-	//cgDC.keynumToStringBuf    = &trap_Key_KeynumToStringBuf;
-	//cgDC.executeText          = &trap_Cmd_ExecuteText;
-	cgDC.Error = &Com_Error;
-	cgDC.Print = &Com_Printf;
-	cgDC.ownerDrawWidth = &CG_OwnerDrawWidth;
-	//cgDC.ownerDrawText        = &CG_OwnerDrawText;
-	//cgDC.Pause                = &CG_Pause;
-	cgDC.registerSound = &trap_S_RegisterSound;
-	cgDC.startBackgroundTrack = &trap_S_StartBackgroundTrack;
-	cgDC.stopBackgroundTrack = &trap_S_StopBackgroundTrack;
-	cgDC.playCinematic = &CG_PlayCinematic;
-	cgDC.stopCinematic = &CG_StopCinematic;
-	cgDC.drawCinematic = &CG_DrawCinematic;
-	cgDC.runCinematicFrame = &CG_RunCinematicFrame;
-
-	Init_Display( &cgDC );
-
-	Menu_Reset();
-
-	trap_Cvar_VariableStringBuffer( "cg_hudFiles", buff, sizeof( buff ) );
-	hudSet = buff;
-
-	if ( !cg_hudFilesEnable.integer || hudSet[ 0 ] == '\0' )
-	{
-		hudSet = "ui/hud.txt";
-	}
-
-	CG_LoadMenus( hudSet );
-}
-
-void CG_AssetCache( void )
-{
-	int i;
-
-	cgDC.Assets.gradientBar = trap_R_RegisterShader(ASSET_GRADIENTBAR,
-							(RegisterShaderFlags_t) RSF_NOMIP);
-	cgDC.Assets.scrollBar = trap_R_RegisterShader(ASSET_SCROLLBAR,
-						      (RegisterShaderFlags_t) RSF_NOMIP);
-	cgDC.Assets.scrollBarArrowDown = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWDOWN,
-							       (RegisterShaderFlags_t) RSF_NOMIP);
-	cgDC.Assets.scrollBarArrowUp = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWUP,
-							     (RegisterShaderFlags_t) RSF_NOMIP);
-	cgDC.Assets.scrollBarArrowLeft = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWLEFT,
-							       (RegisterShaderFlags_t) RSF_NOMIP);
-	cgDC.Assets.scrollBarArrowRight = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWRIGHT,
-								(RegisterShaderFlags_t) RSF_NOMIP);
-	cgDC.Assets.scrollBarThumb = trap_R_RegisterShader(ASSET_SCROLL_THUMB,
-							   (RegisterShaderFlags_t) RSF_NOMIP);
-	cgDC.Assets.sliderBar = trap_R_RegisterShader(ASSET_SLIDER_BAR,
-						      (RegisterShaderFlags_t) RSF_NOMIP);
-	cgDC.Assets.sliderThumb = trap_R_RegisterShader(ASSET_SLIDER_THUMB,
-							(RegisterShaderFlags_t) RSF_NOMIP);
-
-	if ( cg_emoticons.integer )
-	{
-		cgDC.Assets.emoticonCount = BG_LoadEmoticons( cgDC.Assets.emoticons,
-		                            MAX_EMOTICONS );
-	}
-	else
-	{
-		cgDC.Assets.emoticonCount = 0;
-	}
-
-	for ( i = 0; i < cgDC.Assets.emoticonCount; i++ )
-	{
-		cgDC.Assets.emoticons[ i ].shader = trap_R_RegisterShader(va("emoticons/%s_%dx1", cgDC.Assets.emoticons[i].name, cgDC.Assets.emoticons[i].width),
-									  (RegisterShaderFlags_t) RSF_NOMIP);
-	}
-}
-
 /*
 =================
 CG_Init
@@ -2626,6 +1756,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	trap_GetGlconfig( &cgs.glconfig );
 	cgs.screenXScale = cgs.glconfig.vidWidth / 640.0f;
 	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0f;
+	cgs.aspectScale = ( ( 640.0f * cgs.glconfig.vidHeight ) /
+	( 480.0f * cgs.glconfig.vidWidth ) );
 
 	// load a few needed things before we do any screen updates
 	trap_R_SetAltShaderTokens( "unpowered,destroyed" );
@@ -2635,9 +1767,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	cgs.media.outlineShader = trap_R_RegisterShader("outline",
 							(RegisterShaderFlags_t) RSF_DEFAULT);
 
-	// Dynamic memory
-	BG_InitMemory();
-
 	BG_InitAllowedGameElements();
 
 	// Initialize item locking state
@@ -2646,13 +1775,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_RegisterCvars();
 
 	CG_InitConsoleCommands();
-
-	String_Init();
-
 	trap_S_BeginRegistration();
 
-	CG_AssetCache();
-	CG_LoadHudMenu();
 
 	cg.weaponSelect = WP_NONE;
 
@@ -2686,6 +1810,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	// load the new map
 	trap_CM_LoadMap( va( "maps/%s.bsp", cgs.mapname) );
+	CG_InitMinimap();
 
 	srand( serverMessageNum * serverCommandSequence ^ clientNum );
 
@@ -2727,8 +1852,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	CG_InitMarkPolys();
 
-	CG_InitMinimap();
-
 	trap_S_EndRegistration();
 
 	// Make sure we have update values (scores)
@@ -2740,6 +1863,10 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	trap_S_ClearLoopingSounds( qtrue );
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
+
+	CG_Rocket_LoadHuds();
+
+	CG_LoadBeaconsConfig();
 
 	CG_UpdateLoadingStep( LOAD_DONE );
 }
@@ -2755,8 +1882,8 @@ void CG_Shutdown( void )
 {
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
-	UIS_Shutdown();
-
+	CG_Rocket_CleanUpDataSources();
+	trap_Rocket_Shutdown();
 	BG_UnloadAllConfigs();
 }
 

@@ -301,6 +301,23 @@ static void SV_ResolveMasterServers( void )
 
 /*
 ================
+SV_NET_Config
+
+Network connections being reconfigured. May need to redo some lookups.
+================
+*/
+void SV_NET_Config()
+{
+	int i;
+
+	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	{
+		challenges[ i ].type = masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
+	}
+}
+
+/*
+================
 SV_MasterHeartbeat
 
 Send a message to the masters every few minutes to
@@ -468,7 +485,7 @@ and all connected players.  Used for getting detailed information after
 the simple info query.
 ================
 */
-void SVC_Status( netadr_t from )
+void SVC_Status( netadr_t from, const Cmd::Args& args )
 {
 	char          player[ 1024 ];
 	char          status[ MAX_MSGLEN ];
@@ -478,18 +495,22 @@ void SVC_Status( netadr_t from )
 	int           statusLength;
 	int           playerLength;
 	char          infostring[ MAX_INFO_STRING ];
+	const char    *challenge = nullptr;
 
 	//bani - bugtraq 12534
-	if ( !SV_VerifyChallenge( Cmd_Argv( 1 ) ) )
+	if ( args.Argc() > 1 && !SV_VerifyChallenge( args.Argv(1).c_str() ) )
 	{
 		return;
 	}
 
 	Q_strncpyz( infostring, Cvar_InfoString( CVAR_SERVERINFO, qfalse ), MAX_INFO_STRING );
 
-	// echo back the parameter to status. so master servers can use it as a challenge
-	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), qfalse );
+	if ( args.Argc() > 1 )
+	{
+		// echo back the parameter to status. so master servers can use it as a challenge
+		// to prevent timed spoofed reply packets that add ghost servers
+		Info_SetValueForKey( infostring, "challenge", args.Argv(1).c_str(), qfalse );
+	}
 
 	status[ 0 ] = 0;
 	statusLength = 0;
@@ -525,14 +546,17 @@ Responds with a short info message that should be enough to determine
 if a user is interested in a server to do a full status
 ================
 */
-void SVC_Info( netadr_t from )
+void SVC_Info( netadr_t from, const Cmd::Args& args )
 {
 	int  i, count, botCount;
 	char infostring[ MAX_INFO_STRING ];
 
-	const char *challenge;
+	if ( args.Argc() < 2 )
+	{
+		return;
+	}
 
-	challenge = Cmd_Argv( 1 );
+	const char *challenge = args.Argv(1).c_str();
 
 	/*
 	 * Check whether Cmd_Argv(1) has a sane length. This was not done in the original Quake3 version which led
@@ -787,7 +811,7 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
         std::string buffer;
 };
 
-void SVC_RemoteCommand( netadr_t from, msg_t *msg )
+void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 {
 	qboolean     valid;
 	unsigned int time;
@@ -802,22 +826,22 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 	// TTimo - show_bug.cgi?id=534
 	time = Com_Milliseconds();
 
-	if ( time < ( lasttime + 500 ) )
+	if ( time < ( lasttime + 500 ) || args.Argc() < 3 )
 	{
 		return;
 	}
 
 	lasttime = time;
 
-	if ( !strlen( sv_rconPassword->string ) || strcmp( Cmd_Argv( 1 ), sv_rconPassword->string ) )
+	if ( !strlen( sv_rconPassword->string ) || args.Argv(1) != sv_rconPassword->string )
 	{
 		valid = qfalse;
-		Com_Printf(_( "Bad rcon from %s:\n%s\n"), NET_AdrToString( from ), Cmd_Argv( 2 ) );
+		Com_Printf(_( "Bad rcon from %s:\n%s\n"), NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
 	else
 	{
 		valid = qtrue;
-		Com_Printf(_( "Rcon from %s:\n%s\n"), NET_AdrToString( from ), Cmd_Argv( 2 ) );
+		Com_Printf(_( "Rcon from %s:\n%s\n"), NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
 
 	// start redirecting all print outputs to the packet
@@ -839,7 +863,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 	}
 	else
 	{
-		Cmd::ExecuteCommand(Cmd::GetCurrentArgs().EscapedArgs(2), true, &env);
+		Cmd::ExecuteCommand(args.EscapedArgs(2), true, &env);
 	}
 
 	env.Flush();
@@ -857,9 +881,6 @@ connectionless packets.
 */
 void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 {
-	char *s;
-	char *c;
-
 	MSG_BeginReadingOOB( msg );
 	MSG_ReadLong( msg );  // skip the -1 marker
 
@@ -868,38 +889,40 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		Huff_Decompress( msg, 12 );
 	}
 
-	s = MSG_ReadStringLine( msg );
+	Cmd::Args args(MSG_ReadStringLine( msg ));
 
-	Cmd_TokenizeString( s );
+	if ( args.Argc() <= 0 )
+	{
+		return;
+	}
 
-	c = Cmd_Argv( 0 );
-	Com_DPrintf( "SV packet %s : %s\n", NET_AdrToString( from ), c );
+	Com_DPrintf( "SV packet %s : %s\n", NET_AdrToString( from ), args.Argv(0).c_str() );
 
-	if ( !Q_stricmp( c, "getstatus" ) )
+	if ( args.Argv(0) == "getstatus" )
 	{
 		if ( SV_CheckDRDoS( from ) ) { return; }
 
-		SVC_Status( from );
+		SVC_Status( from, args );
 	}
-	else if ( !Q_stricmp( c, "getinfo" ) )
+	else if ( args.Argv(0) == "getinfo" )
 	{
 		if ( SV_CheckDRDoS( from ) ) { return; }
 
-		SVC_Info( from );
+		SVC_Info( from, args );
 	}
-	else if ( !Q_stricmp( c, "getchallenge" ) )
+	else if ( args.Argv(0) == "getchallenge" )
 	{
 		SV_GetChallenge( from );
 	}
-	else if ( !Q_stricmp( c, "connect" ) )
+	else if ( args.Argv(0) == "connect" )
 	{
-		SV_DirectConnect( from );
+		SV_DirectConnect( from, args );
 	}
-	else if ( !Q_stricmp( c, "rcon" ) )
+	else if ( args.Argv(0) == "rcon" )
 	{
-		SVC_RemoteCommand( from, msg );
+		SVC_RemoteCommand( from, args );
 	}
-	else if ( !Q_stricmp( c, "disconnect" ) )
+	else if ( args.Argv(0) == "disconnect" )
 	{
 		// if a client starts up a local server, we may see some spurious
 		// server disconnect messages when their new server sees our final
@@ -907,7 +930,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 	else
 	{
-		Com_DPrintf( "bad connectionless packet from %s:\n%s\n", NET_AdrToString( from ), s );
+		Com_DPrintf( "bad connectionless packet from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(0).c_str() );
 	}
 }
 
@@ -967,7 +990,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 		}
 
 		// make sure it is a valid, in sequence packet
-		if ( SV_Netchan_Process( cl, msg ) )
+		if ( Netchan_Process( &cl->netchan, msg ) )
 		{
 			// zombie clients still need to do the Netchan_Process
 			// to make sure they don't need to retransmit the final

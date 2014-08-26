@@ -1,0 +1,76 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<style>
+			body
+			{
+				width: 100%;
+				height: 100%;
+				background-color: black;
+				z-index: 20; /* Stay ontop of all windows */
+
+			}
+
+			barbox {
+				display: block;
+				width: 100%;
+				height: 1em;
+
+				position: absolute;
+				left: 0;
+				bottom: 0px;
+
+				background-color: #00000000;
+			}
+
+			progressbar {
+				width: 100%;
+				height: 100%;
+				image: /white.png;
+			}
+
+			percentage {
+				display: block;
+				width: 5em;
+
+				position: absolute;
+				right: 2em;
+				bottom: 1em;
+
+				text-align: right;
+
+				color: white;
+				font-size: 18px;
+				font-weight: bold;
+			}
+			div.infobox {
+				font-size: 18px;
+				position: absolute;
+				width: 90%;
+				left: 5%;
+				bottom: 10em;
+
+			}
+
+		</style>
+	</head>
+	<body id="download" nohide>
+
+		<div class="infobox">
+			<p>Additional files are required. Please be patient while they download.</p>
+			<p>Time left: <downloadTime/></p>
+			<p>Download rate: <downloadSpeed/></p>
+			<p>Size: <downloadTotalSize/></p>
+			<h1><downloadName/></h1>
+		</div>
+
+		<percentage>
+			<progress_value src="download" />
+		</percentage>
+
+		<barbox>
+			<progressbar src="download" class="barValue"/>
+		</barbox>
+
+	</body>
+</rml>

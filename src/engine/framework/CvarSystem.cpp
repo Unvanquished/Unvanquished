@@ -38,9 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Cvar {
 
-    //The server gives the sv_cheats cvar to the client, on 'off' it prevents the user from changing Cvar::CHEAT cvars
-    void SetCheatMode(bool cheats);
-    Callback<Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in the current game", SYSTEMINFO | ROM, true, SetCheatMode);
 
     // A cvar is some info alongside a potential proxy for the cvar
     struct cvarRecord_t {
@@ -160,6 +157,7 @@ namespace Cvar {
     }
 
     typedef std::unordered_map<std::string, cvarRecord_t*, Str::IHash, Str::IEqual> CvarMap;
+    bool cheatsAllowed = true;
 
     // The order in which static global variables are initialized is undefined and cvar
     // can be registered before main. The first time this function is called the cvar map
@@ -227,7 +225,7 @@ namespace Cvar {
                     Com_Printf("SetValueROM called on non-ROM cvar '%s'\n", cvarName.c_str());
                 }
 
-                if (not *cvar_cheats && cvar->flags & CHEAT) {
+                if (not cheatsAllowed && cvar->flags & CHEAT) {
                     Com_Printf(_("%s is cheat-protected.\n"), cvarName.c_str());
                     return;
                 }
@@ -281,7 +279,7 @@ namespace Cvar {
         return result;
     }
 
-    void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
+    bool Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
         CvarMap& cvars = GetCvarMap();
         cvarRecord_t* cvar;
 
@@ -289,7 +287,7 @@ namespace Cvar {
         if (it == cvars.end()) {
             if (!Cmd::IsValidCvarName(name)) {
                 Com_Printf(_("Invalid cvar name '%s'"), name.c_str());
-                return;
+                return false;
             }
 
             //Create the cvar and parse its default value
@@ -302,7 +300,7 @@ namespace Cvar {
         } else {
             cvar = it->second;
 
-            if (cvar->proxy) {
+            if (proxy && cvar->proxy) {
                 Com_Printf(_("Cvar %s cannot be registered twice\n"), name.c_str());
             }
 
@@ -336,6 +334,7 @@ namespace Cvar {
             }
         }
         GetCCvar(name, *cvar);
+        return true;
     }
 
     void Unregister(const std::string& cvarName) {
@@ -405,8 +404,10 @@ namespace Cvar {
         return false; // not found
     }
 
-    void SetCheatMode(bool cheats) {
-        if (cheats) {
+    void SetCheatsAllowed(bool allowed) {
+        cheatsAllowed = allowed;
+
+        if (cheatsAllowed) {
             return;
         }
 
