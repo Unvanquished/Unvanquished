@@ -147,6 +147,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 	int time_in, time_left;
 	float t_fadein, t_fadeout; // t_ stands for "parameter", not "time"
 	qboolean front;
+	const beaconAttributes_t *ba = BG_Beacon( b->type );
 
 	// reset animations
 	b->scale = 1.0;
@@ -162,13 +163,8 @@ static void CG_RunBeacon( cbeacon_t *b )
 			b->old = qtrue;
 		else
 		{
-			if( b->type == BCT_TAG && !( b->flags & EF_BC_ENEMY ) )
-				goto no_in_sound;
-
-			if( BG_Beacon( b->type )->inSound )
-				trap_S_StartLocalSound( BG_Beacon( b->type )->inSound, CHAN_LOCAL_SOUND );
-
-			no_in_sound:;
+			if( ba->inSound && ( b->type != BCT_TAG || ( b->flags & EF_BC_ENEMY ) ) )
+				trap_S_StartLocalSound( ba->inSound, CHAN_LOCAL_SOUND );
 		}
 	}
 
@@ -177,8 +173,8 @@ static void CG_RunBeacon( cbeacon_t *b )
 	    !( b->oldFlags & EF_BC_DYING ) &&
 	    ( b->flags & EF_BC_DYING ) )
 	{
-		if( BG_Beacon( b->type )->outSound )
-			trap_S_StartLocalSound( BG_Beacon( b->type )->outSound, CHAN_LOCAL_SOUND );
+		if( ba->outSound )
+			trap_S_StartLocalSound( ba->outSound, CHAN_LOCAL_SOUND );
 	}
 
 	// fade in
@@ -238,7 +234,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 
 	// Fade out when too close. Span the same distance as the size change but fade linearly.
 	// Do not fade important beacons.
-	if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
+	if( !( ba->flags & BCF_IMPORTANT ) )
 	{
 		if( b->dist < cgs.bc.fadeMinDist )
 			alpha *= cgs.bc.fadeMinAlpha;
