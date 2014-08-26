@@ -962,99 +962,99 @@ static void IRC_HandleError( void )
 			return;
 
 		case WSANOTINITIALISED:
-			Com_Printf("%s", _( "Unable to initialise socket.\n" ));
+			Com_Printf( "Unable to initialise socket.\n" );
 			break;
 
 		case WSAEAFNOSUPPORT:
-			Com_Printf("%s", _( "The specified address family is not supported.\n" ));
+			Com_Printf( "The specified address family is not supported.\n" );
 			break;
 
 		case WSAEADDRNOTAVAIL:
-			Com_Printf("%s", _( "Specified address is not available from the local machine.\n" ));
+			Com_Printf( "Specified address is not available from the local machine.\n" );
 			break;
 
 		case WSAECONNREFUSED:
-			Com_Printf("%s", _( "The attempt to connect was forcefully rejected.\n" ));
+			Com_Printf( "The attempt to connect was forcefully rejected.\n" );
 			break;
 
 		case WSAEDESTADDRREQ:
-			Com_Printf("%s", _( "address destination address is required.\n" ));
+			Com_Printf( "address destination address is required.\n" );
 			break;
 
 		case WSAEFAULT:
-			Com_Printf("%s", _( "The namelen argument is incorrect.\n" ));
+			Com_Printf( "The namelen argument is incorrect.\n" );
 			break;
 
 		case WSAEINVAL:
-			Com_Printf("%s", _( "The socket is not already bound to an address.\n" ));
+			Com_Printf( "The socket is not already bound to an address.\n" );
 			break;
 
 		case WSAEISCONN:
-			Com_Printf("%s", _( "The socket is already connected.\n" ));
+			Com_Printf( "The socket is already connected.\n" );
 			break;
 
 		case WSAEADDRINUSE:
-			Com_Printf("%s", _( "The specified address is already in use.\n" ));
+			Com_Printf( "The specified address is already in use.\n" );
 			break;
 
 		case WSAEMFILE:
-			Com_Printf("%s", _( "No more file descriptors are available.\n" ));
+			Com_Printf( "No more file descriptors are available.\n" );
 			break;
 
 		case WSAENOBUFS:
-			Com_Printf("%s", _( "No buffer space available. The socket cannot be created.\n" ));
+			Com_Printf( "No buffer space available. The socket cannot be created.\n" );
 			break;
 
 		case WSAEPROTONOSUPPORT:
-			Com_Printf("%s", _( "The specified protocol is not supported.\n" ));
+			Com_Printf( "The specified protocol is not supported.\n" );
 			break;
 
 		case WSAEPROTOTYPE:
-			Com_Printf("%s", _( "The specified protocol is the wrong type for this socket.\n" ));
+			Com_Printf( "The specified protocol is the wrong type for this socket.\n" );
 			break;
 
 		case WSAENETUNREACH:
-			Com_Printf("%s", _( "The network can't be reached from this host at this time.\n" ));
+			Com_Printf( "The network can't be reached from this host at this time.\n" );
 			break;
 
 		case WSAENOTSOCK:
-			Com_Printf("%s", _( "The descriptor is not a socket.\n" ));
+			Com_Printf( "The descriptor is not a socket.\n" );
 			break;
 
 		case WSAETIMEDOUT:
-			Com_Printf("%s", _( "Attempt timed out without establishing a connection.\n" ));
+			Com_Printf( "Attempt timed out without establishing a connection.\n" );
 			break;
 
 		case WSAESOCKTNOSUPPORT:
-			Com_Printf("%s", _( "Socket type is not supported in this address family.\n" ));
+			Com_Printf( "Socket type is not supported in this address family.\n" );
 			break;
 
 		case WSAENETDOWN:
-			Com_Printf("%s", _( "Network subsystem failure.\n" ));
+			Com_Printf( "Network subsystem failure.\n" );
 			break;
 
 		case WSAHOST_NOT_FOUND:
-			Com_Printf("%s", _( "Authoritative Answer Host not found.\n" ));
+			Com_Printf( "Authoritative Answer Host not found.\n" );
 			break;
 
 		case WSATRY_AGAIN:
-			Com_Printf("%s", _( "Non-Authoritative Host not found or SERVERFAIL.\n" ));
+			Com_Printf( "Non-Authoritative Host not found or SERVERFAIL.\n" );
 			break;
 
 		case WSANO_RECOVERY:
-			Com_Printf("%s", _( "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n" ));
+			Com_Printf( "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n" );
 			break;
 
 		case WSANO_DATA:
-			Com_Printf("%s", _( "Valid name, no data record of requested type.\n" ));
+			Com_Printf( "Valid name, no data record of requested type.\n" );
 			break;
 
 		case WSAEINPROGRESS:
-			Com_Printf("%s", _( "address blocking Windows Sockets operation is in progress.\n" ));
+			Com_Printf( "address blocking Windows Sockets operation is in progress.\n" );
 			break;
 
 		default:
-			Com_Printf("%s", _( "Unknown connection error.\n" ));
+			Com_Printf( "Unknown connection error.\n" );
 			break;
 	}
 
@@ -2296,7 +2296,7 @@ static int IRC_AttemptConnection( void )
 	IRC_ThreadStatus = IRC_THREAD_SETNICK;
 
 	CHECK_SHUTDOWN_CLOSE;
-	Com_Printf("%s", _( "…Connected to IRC server\n" ));
+	Com_Printf( "…Connected to IRC server\n" );
 	return IRC_CMD_SUCCESS;
 }
 
