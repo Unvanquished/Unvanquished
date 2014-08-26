@@ -176,7 +176,7 @@ void R_BoxSurfaces_r( bspNode_t *node, vec3_t mins, vec3_t maxs, surfaceType_t *
 	}
 
 	// add the individual surfaces
-	mark = node->markSurfaces;
+	mark = tr.world->markSurfaces + node->firstMarkSurface;
 	c = node->numMarkSurfaces;
 
 	while ( c-- )

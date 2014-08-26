@@ -53,10 +53,9 @@ void R_PerformanceCounters( void )
 		           backEnd.pc.c_occlusionQueriesLightsCulled,
 		           tr.pc.c_dlightInteractions + tr.pc.c_slightInteractions - backEnd.pc.c_occlusionQueriesInteractionsCulled );
 
-		ri.Printf( PRINT_ALL, "%i draws %i queries %i CHC++ ms %i vbos %i ibos %i verts %i tris\n",
+		ri.Printf( PRINT_ALL, "%i draws %i queries %i vbos %i ibos %i verts %i tris\n",
 		           backEnd.pc.c_drawElements,
 		           tr.pc.c_occlusionQueries,
-		           tr.pc.c_CHCTime,
 		           backEnd.pc.c_vboVertexBuffers, backEnd.pc.c_vboIndexBuffers,
 		           backEnd.pc.c_vboVertexes, backEnd.pc.c_vboIndexes / 3 );
 
@@ -70,11 +69,6 @@ void R_PerformanceCounters( void )
 		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout %i bin %i bout\n",
 		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out,
 		           tr.pc.c_box_cull_in, tr.pc.c_box_cull_out );
-
-		ri.Printf( PRINT_ALL, "(patch) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
-		           tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip,
-		           tr.pc.c_sphere_cull_patch_out, tr.pc.c_box_cull_patch_in,
-		           tr.pc.c_box_cull_patch_clip, tr.pc.c_box_cull_patch_out );
 
 		ri.Printf( PRINT_ALL, "(mdv) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
 		           tr.pc.c_sphere_cull_mdv_in, tr.pc.c_sphere_cull_mdv_clip,
@@ -128,8 +122,7 @@ void R_PerformanceCounters( void )
 	}
 	else if ( r_speeds->integer == RSPEEDS_CHC )
 	{
-		ri.Printf( PRINT_ALL, "%i CHC++ ms %i queries %i multi queries %i saved\n",
-		           tr.pc.c_CHCTime,
+		ri.Printf( PRINT_ALL, "%i queries %i multi queries %i saved\n",
 		           tr.pc.c_occlusionQueries,
 		           tr.pc.c_occlusionQueriesMulti,
 		           tr.pc.c_occlusionQueriesSaved );
