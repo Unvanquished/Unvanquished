@@ -937,6 +937,23 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			else
 				client->ps.stats[ STAT_TAGSCORE ] = 0;
 		}
+
+		// remove orphaned tags for enemy structures when the structure's death was confirmed
+		{
+			gentity_t *other = NULL;
+			while ( ( other = G_IterateEntities( other ) ) )
+			{
+				if ( other->s.eType == ET_BEACON &&
+				     other->s.modelindex == BCT_TAG &&
+				     ( other->s.eFlags & EF_BC_ENEMY ) &&
+				     !other->tagAttachment &&
+				     ent->client->pers.team == other->s.generic1 &&
+				     G_LineOfSight( ent->s.origin, other->s.origin, ent ) )
+				{
+					Beacon::Delete( other, true );
+				}
+			}
+		}
 	}
 
 	while ( client->time1000 >= 1000 )

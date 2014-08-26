@@ -51,17 +51,14 @@ namespace Beacon //this should eventually become a class
 	 */
 	void Frame( void )
 	{
-		gentity_t *ent;
+		gentity_t *ent = NULL;
 		static int nextframe = 0;
 
 		if( nextframe > level.time )
 			return;
 
-		for( ent = g_entities; ent < g_entities + level.num_entities; ent++ )
+		while ( ( ent = G_IterateEntities( ent ) ) )
 		{
-			if( !ent->inuse )
-				continue;
-
 			switch( ent->s.eType )
 			{
 				case ET_BUILDABLE:
@@ -171,9 +168,12 @@ namespace Beacon //this should eventually become a class
 
 		if( verbose )
 		{
-			ent->s.eFlags |= EF_BC_DYING;
-			ent->s.time2 = level.time + 1500;
-			BaseClustering::Remove( ent );
+			if ( !( ent->s.eFlags & EF_BC_DYING ) )
+			{
+				ent->s.eFlags |= EF_BC_DYING;
+				ent->s.time2 = level.time + 1500;
+				BaseClustering::Remove( ent );
+			}
 		}
 		else
 		{
@@ -451,11 +451,34 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Deletes all tags attached to an entity (plays effects).
+	 *
+	 * Deletion is deferred for the enemy team's buildable tags until their death was confirmed.
 	 */
 	void DetachTags( gentity_t *ent )
 	{
-		Delete( ent->alienTag, true );
-		Delete( ent->humanTag, true );
+		if ( ent->alienTag  )
+		{
+			if ( ( ent->alienTag->s.eFlags & EF_BC_ENEMY ) &&
+			     !( ent->alienTag->s.eFlags & EF_BC_TAG_PLAYER ) )
+			{
+				ent->alienTag->tagAttachment = NULL;
+				ent->alienTag = NULL;
+			}
+			else
+				Delete( ent->alienTag, true );
+		}
+
+		if ( ent->humanTag  )
+		{
+			if ( ( ent->humanTag->s.eFlags & EF_BC_ENEMY ) &&
+			     !( ent->humanTag->s.eFlags & EF_BC_TAG_PLAYER ) )
+			{
+				ent->humanTag->tagAttachment = NULL;
+				ent->humanTag = NULL;
+			}
+			else
+				Delete( ent->humanTag, true );
+		}
 	}
 
 	/**
