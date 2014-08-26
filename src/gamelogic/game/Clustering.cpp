@@ -615,7 +615,7 @@ namespace BaseClustering {
 		team_t team  = GetInformedTeam(layer);
 		bool   enemy = MarksEnemyBase(layer);
 
-		// Add a beacon for every cluster
+		// Add a beacon for every cluster.
 		for (EntityClustering::cluster_type& cluster : bases[layer]) {
 			const EntityClustering::point_type &center = cluster.GetCenter();
 			gentity_t *mean                            = cluster.GetMeanObject();
@@ -630,7 +630,7 @@ namespace BaseClustering {
 				gentity_t* ent = record.first;
 
 				// TODO: Use G_IsMainStructure when merged.
-				if (ent->s.modelindex == BA_A_OVERMIND || ent->s.modelindex == BA_H_REACTOR) {
+				if (ent->s.modelindex2 == BA_A_OVERMIND || ent->s.modelindex2 == BA_H_REACTOR) {
 					mainBase = true;
 				}
 			}
@@ -697,45 +697,21 @@ namespace BaseClustering {
 	}
 
 	/**
-	 * @brief Adds a buildable to the clusterings or updates its location.
+	 * @brief Adds a buildable beacon to the clusterings or updates its location.
 	 */
-	void Update(gentity_t *ent) {
-		baseClusteringLayer_t layer = GetClusteringLayer(ent->buildableTeam, false);
-		bases[layer].Update(ent);
+	void Update(gentity_t *beacon) {
+		baseClusteringLayer_t layer =
+			GetClusteringLayer((team_t)beacon->s.generic1, (beacon->s.eFlags & EF_BC_ENEMY));
+		bases[layer].Update(beacon);
 		PostChangeHook(layer);
-
-		if (ent->taggedByEnemy) {
-			layer = GetClusteringLayer(ent->taggedByEnemy, true);
-			bases[layer].Update(ent);
-			PostChangeHook(layer);
-		}
 	}
 
 	/**
-	 * @brief Removes a buildable from the clusterings.
+	 * @brief Removes a buildable beacon from the clusterings.
 	 */
-	void Remove(gentity_t *ent) {
-		baseClusteringLayer_t layer = GetClusteringLayer(ent->buildableTeam, false);
-		if (bases[layer].Remove(ent)) PostChangeHook(layer);
-
-		if (ent->taggedByEnemy) {
-			layer = GetClusteringLayer(ent->taggedByEnemy, true);
-			if (bases[layer].Remove(ent)) PostChangeHook(layer);
-		}
-	}
-
-	/**
-	 * @brief Handle the change of a buildable's tagged-by-enemy state.
-	 */
-	void TagStatusChange(gentity_t *ent) {
-		baseClusteringLayer_t layer;
-		if (ent->taggedByEnemy) {
-			layer = GetClusteringLayer(ent->taggedByEnemy, true);
-			bases[layer].Update(ent);
-			PostChangeHook(layer);
-		} else {
-			layer = GetClusteringLayer(G_Enemy(ent->buildableTeam), true);
-			if (bases[layer].Remove(ent)) PostChangeHook(layer);
-		}
+	void Remove(gentity_t *beacon) {
+		baseClusteringLayer_t layer =
+			GetClusteringLayer((team_t)beacon->s.generic1, (beacon->s.eFlags & EF_BC_ENEMY));
+		if (bases[layer].Remove(beacon)) PostChangeHook(layer);
 	}
 }

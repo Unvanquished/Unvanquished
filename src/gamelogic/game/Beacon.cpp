@@ -173,9 +173,12 @@ namespace Beacon //this should eventually become a class
 		{
 			ent->s.eFlags |= EF_BC_DYING;
 			ent->s.time2 = level.time + 1500;
+			BaseClustering::Remove( ent );
 		}
 		else
 		{
+			// BaseClustering::Remove will be called inside G_FreeEntity since we need to be sure
+			// that it happens no matter how the beacon was destroyed.
 			G_FreeEntity( ent );
 		}
 	}
@@ -612,6 +615,8 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Tags an entity.
+	 * @todo Don't create a new beacon entity if retagged since that triggers regeneration of base
+	 *       clusterings.
 	 */
 	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent )
 	{
@@ -629,14 +634,6 @@ namespace Beacon //this should eventually become a class
 				data = ent->s.modelindex;
 				dead = ( ent->health <= 0 );
 				player = qfalse;
-
-				// if tagging an enemy structure, check whether the base shall be tagged, too
-				if ( targetTeam != team && ent->taggedByEnemy != team )
-				{
-					ent->taggedByEnemy = team;
-					BaseClustering::TagStatusChange(ent);
-				}
-
 				break;
 
 			case ET_PLAYER:
@@ -706,7 +703,10 @@ namespace Beacon //this should eventually become a class
 		if( dead )
 			Delete( beacon, true );
 		else
+		{
 			*attachment = beacon;
+			if ( ent->s.eType == ET_BUILDABLE ) BaseClustering::Update( beacon );
+		}
 
 		Propagate( beacon );
 	}
