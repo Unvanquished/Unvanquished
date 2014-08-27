@@ -35,7 +35,11 @@ typedef void (*MessageHandler)(Entity*, const void*);
 class Entity {
     public:
         // Entity takes as argument for the constructor both vtables
-        Entity(const MessageHandler* messageHandlers, const int* componentOffsets);
+        Entity(const MessageHandler* messageHandlers, const int* componentOffsets
+            {% for attrib in general.common_entity_attributes %}
+                ,{{attrib.get_declaration()}}
+            {% endfor %}
+        );
 
         // This function should never actually be used directly, it dispatches
         // the messages to the right components
@@ -57,6 +61,11 @@ class Entity {
         // The vtables for the entity
         const MessageHandler* messageHandlers;
         const int* componentOffsets;
+
+    public:
+        {% for attrib in general.common_entity_attributes %}
+            {{attrib.get_declaration()}};
+        {% endfor %}
 };
 
 // Component definitions
@@ -131,7 +140,11 @@ class Entity {
             {% endfor %}
 
             // Default constructor
-            {{entity.get_type_name()}}();
+            {{entity.get_type_name()}}(
+                {% for (i, attrib) in enumerate(general.common_entity_attributes) %}
+                    {% if i != 0 %}, {% endif %} {{attrib.get_declaration()}}
+                {% endfor %}
+            );
             ~{{entity.get_type_name()}}();
 
             // Pointer to the components

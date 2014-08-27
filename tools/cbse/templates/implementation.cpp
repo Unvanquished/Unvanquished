@@ -8,7 +8,15 @@
 // Implementation of the base entity class
 
 // Constructor of entity
-Entity::Entity(const MessageHandler *messageHandlers, const int* componentOffsets): messageHandlers(messageHandlers), componentOffsets(componentOffsets) {
+Entity::Entity(const MessageHandler *messageHandlers, const int* componentOffsets
+    {% for attrib in general.common_entity_attributes %}
+        ,{{attrib.get_declaration()}}
+    {% endfor %}
+): messageHandlers(messageHandlers), componentOffsets(componentOffsets)
+    {% for attrib in general.common_entity_attributes %}
+        ,{{attrib.get_initializer()}}
+    {% endfor %}
+{
 }
 
 void Entity::SendMessage(int msg, const void* data) {
@@ -115,7 +123,15 @@ void Entity::SendMessage(int msg, const void* data) {
     };
 
     // Fat constructor for the entity that initializes the components.
-    {{entity.get_type_name()}}::{{entity.get_type_name()}}(): Entity(messageHandlers, componentOffsets)
+    {{entity.get_type_name()}}::{{entity.get_type_name()}}(
+        {% for (i, attrib) in enumerate(general.common_entity_attributes) %}
+            {% if i != 0 %}, {% endif %} {{attrib.get_declaration()}}
+        {% endfor %}
+    ): Entity(messageHandlers, componentOffsets
+        {% for attrib in general.common_entity_attributes %}
+            ,{{attrib.get_name()}}
+        {% endfor %}
+    )
     {% for component in entity.get_components() %}
         // Each component takes the entity it is in, its parameters, the shared attributes and the components it requires
         , {{component.get_variable_name()}}(new {{component.get_type_name()}}(
