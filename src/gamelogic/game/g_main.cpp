@@ -1015,6 +1015,10 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... 
 
 	trap_Error( text );
 }
+void Sys::Error(Str::StringRef message)
+{
+	trap_Error( message.c_str() );
+}
 
 void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 {

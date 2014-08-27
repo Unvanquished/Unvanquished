@@ -218,12 +218,17 @@ static void CrashHandler(int sig)
 }
 void SetupCrashHandler()
 {
+#ifdef __native_client__
+	for (int sig: {SIGILL, SIGFPE, SIGSEGV, SIGABRT, SIGBUS, SIGTRAP})
+		signal(sig, CrashHandler);
+#else
 	struct sigaction sa;
 	sa.sa_flags = 0;
 	sa.sa_handler = CrashHandler;
 	sigemptyset(&sa.sa_mask);
 	for (int sig: {SIGILL, SIGFPE, SIGSEGV, SIGABRT, SIGBUS, SIGTRAP})
 		sigaction(sig, &sa, nullptr);
+#endif
 }
 #endif
 
