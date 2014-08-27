@@ -93,21 +93,6 @@ struct NaClInternalHeader {
 
 namespace IPC {
 
-// Windows equivalent of strerror
-#ifdef _WIN32
-static std::string Win32StrError(uint32_t error)
-{
-	std::string out;
-	char* message;
-	if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<char *>(&message), 0, NULL)) {
-		out = message;
-		LocalFree(message);
-	} else
-		out = Str::Format("Unknown error 0x%08lx", error);
-	return out;
-}
-#endif
-
 void CloseDesc(const Desc& desc)
 {
 #ifdef __native_client__
@@ -477,7 +462,7 @@ void SharedMemory::Map()
 	if (base == nullptr) {
 		NaClClose(handle);
 		handle = INVALID_HANDLE;
-		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %zu: %s", size, Win32StrError(GetLastError()).c_str());
+		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %zu: %s", size, Sys::Win32StrError(GetLastError()).c_str());
 	}
 #else
 	base = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, handle, 0);

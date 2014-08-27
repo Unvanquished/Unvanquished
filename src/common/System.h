@@ -64,6 +64,7 @@ NORETURN void Error(Str::StringRef errorMessage);
 
 // Throw a DropErr with the given message, which normally will drop to the main menu
 class DropErr: public std::runtime_error {
+public:
 	DropErr(const char* message)
 		: std::runtime_error(message) {}
 	DropErr(const std::string& message)
@@ -124,7 +125,7 @@ public:
 	}
 
 	// Load a DynamicLib, returns an empty DynamicLib on error
-	static DynamicLib Load(Str::StringRef filename, std::string& errorString);
+	static DynamicLib Open(Str::StringRef filename, std::string& errorString);
 
 	// Load a symbol from the DynamicLib
 	template<typename T> T LoadSym(Str::StringRef sym, std::string& errorString)

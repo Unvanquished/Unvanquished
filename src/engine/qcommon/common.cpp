@@ -349,6 +349,10 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 
 	Sys_Error( "%s", com_errorMessage );
 }
+void Sys::Error(Str::StringRef message)
+{
+	Com_Error( ERR_FATAL, "%s", message.c_str() );
+}
 
 // *INDENT-OFF*
 //bani - moved

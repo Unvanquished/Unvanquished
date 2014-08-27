@@ -73,7 +73,7 @@ SteadyClock::time_point SleepUntil(SteadyClock::time_point time)
 	static NTSTATUS WINAPI (*pNtDelayExecution)(BOOLEAN alertable, const LARGE_INTEGER *timeout);
 	if (!pNtQueryTimerResolution) {
 		std::string errorString;
-		static DynamicLib ntdll = DynamicLib::Load("ntdll.dll", errorString);
+		static DynamicLib ntdll = DynamicLib::Open("ntdll.dll", errorString);
 		if (!ntdll)
 			Sys::Error("Failed to load ntdll.dll: %s", errorString);
 		pNtQueryTimerResolution = ntdll.LoadSym<decltype(pNtQueryTimerResolution)>("NtQueryTimerResolution", errorString);
@@ -238,7 +238,7 @@ void DynamicLib::Close()
 #endif
 }
 
-DynamicLib DynamicLib::Load(Str::StringRef filename, std::string& errorString)
+DynamicLib DynamicLib::Open(Str::StringRef filename, std::string& errorString)
 {
 #ifdef _WIN32
 	void* handle = LoadLibraryW(Str::UTF8To16(filename).c_str());

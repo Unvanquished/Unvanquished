@@ -96,11 +96,11 @@ public:
 		std::thread thread;
 		std::mutex mutex;
 		std::condition_variable condition;
-		void* sharedLibHandle;
+		Sys::DynamicLib sharedLib;
 		bool running;
 
 		InProcessInfo()
-			: sharedLibHandle(nullptr), running(false) {}
+			: running(false) {}
 	};
 
 protected:

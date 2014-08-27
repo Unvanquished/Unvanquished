@@ -575,6 +575,8 @@ set( COMMONLIST
   ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/String.cpp
   ${COMMON_DIR}/String.h
+  ${COMMON_DIR}/System.cpp
+  ${COMMON_DIR}/System.h
   ${COMMON_DIR}/cm/cm_load.cpp
   ${COMMON_DIR}/cm/cm_trisoup.cpp
   ${COMMON_DIR}/cm/cm_patch.cpp

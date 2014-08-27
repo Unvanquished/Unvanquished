@@ -37,6 +37,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "Log.h"
 #include "LineEditData.h"
 #include "Maths.h"
+#include "System.h"
 #include "IPC.h"
 #include "FileSystem.h"
 #include "CommonSyscalls.h"

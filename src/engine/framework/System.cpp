@@ -204,13 +204,15 @@ ALIGN_STACK int main(int argc, char** argv)
 	// Don't let SDL set the timer resolution. We do that manually in Sys::Sleep.
 	SDL_SetHint(SDL_HINT_TIMER_RESOLUTION, "0");
 
-	// Mark the process as DPI-aware on Vista and above
-	HMODULE user32 = LoadLibrary("user32.dll");
-	if (user32) {
-		FARPROC pSetProcessDPIAware = GetProcAddress(user32, "SetProcessDPIAware");
-		if (pSetProcessDPIAware)
-			pSetProcessDPIAware();
-		FreeLibrary(user32);
+	// Mark the process as DPI-aware on Vista and above, ignore any errors
+	{
+		std::string errorString;
+		Sys::DynamicLib user32 = Sys::DynamicLib::Open("user32.dll", errorString);
+		if (user32) {
+			FARPROC pSetProcessDPIAware = user32.LoadSym<FARPROC>("SetProcessDPIAware", errorString);
+			if (pSetProcessDPIAware)
+				pSetProcessDPIAware();
+		}
 	}
 #else
 	Sys::StartSignalThread();

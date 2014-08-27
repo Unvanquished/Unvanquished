@@ -61,33 +61,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace VM {
 
-// Windows equivalent of strerror
-#ifdef _WIN32
-static std::string Win32StrError(uint32_t error)
-{
-	std::string out;
-	char* message;
-	if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<char *>(&message), 0, NULL)) {
-		out = message;
-		LocalFree(message);
-	} else
-		out = Str::Format("Unknown error 0x%08lx", error);
-	return out;
-}
-#endif
-
 // Platform-specific code to load a module
 static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem, FS::File stderrRedirect = FS::File())
 {
 #ifdef _WIN32
 	// Inherit the socket in the child process
 	if (!SetHandleInformation(pair.second.GetHandle(), HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
-		Com_Error(ERR_DROP, "VM: Could not make socket inheritable: %s", Win32StrError(GetLastError()).c_str());
+		Com_Error(ERR_DROP, "VM: Could not make socket inheritable: %s", Sys::Win32StrError(GetLastError()).c_str());
 
 	// Inherit the stderr redirect in the child process
 	HANDLE stderrRedirectHandle = stderrRedirect ? reinterpret_cast<HANDLE>(_get_osfhandle(fileno(stderrRedirect.GetHandle()))) : NULL;
 	if (stderrRedirect && !SetHandleInformation(stderrRedirectHandle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
-		Com_Error(ERR_DROP, "VM: Could not make stderr redirect inheritable: %s", Win32StrError(GetLastError()).c_str());
+		Com_Error(ERR_DROP, "VM: Could not make stderr redirect inheritable: %s", Sys::Win32StrError(GetLastError()).c_str());
 
 	// Escape command line arguments
 	std::string cmdline;
@@ -129,12 +114,12 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	// Create a job object to ensure the process is terminated if the parent dies
 	HANDLE job = CreateJobObject(NULL, NULL);
 	if (!job)
-		Com_Error(ERR_DROP, "VM: Could not create job object: %s", Win32StrError(GetLastError()).c_str());
+		Com_Error(ERR_DROP, "VM: Could not create job object: %s", Sys::Win32StrError(GetLastError()).c_str());
 	JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
 	memset(&jeli, 0, sizeof(jeli));
 	jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
 	if (!SetInformationJobObject(job, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
-		Com_Error(ERR_DROP, "VM: Could not set job object information: %s", Win32StrError(GetLastError()).c_str());
+		Com_Error(ERR_DROP, "VM: Could not set job object information: %s", Sys::Win32StrError(GetLastError()).c_str());
 
 	STARTUPINFOW startupInfo;
 	PROCESS_INFORMATION processInfo;
@@ -146,7 +131,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	startupInfo.cb = sizeof(startupInfo);
 	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
-		Com_Error(ERR_DROP, "VM: Could not create child process: %s", Win32StrError(GetLastError()).c_str());
+		Com_Error(ERR_DROP, "VM: Could not create child process: %s", Sys::Win32StrError(GetLastError()).c_str());
 	}
 
 	if (!AssignProcessToJobObject(job, processInfo.hProcess)) {
@@ -154,7 +139,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 		CloseHandle(job);
 		CloseHandle(processInfo.hThread);
 		CloseHandle(processInfo.hProcess);
-		Com_Error(ERR_DROP, "VM: Could not assign process to job object: %s", Win32StrError(GetLastError()).c_str());
+		Com_Error(ERR_DROP, "VM: Could not assign process to job object: %s", Sys::Win32StrError(GetLastError()).c_str());
 	}
 
 #ifndef _WIN64
@@ -343,16 +328,14 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 
 	Com_Printf("Loading VM module %s...\n", filename.c_str());
 
-	void* handle = Sys_LoadLibrary(filename.c_str());
-	if (!handle) {
-		Com_Error(ERR_DROP, "VM: Failed to load shared library VM %s: %s", filename.c_str(), Sys_LibraryError());
-	}
-	inProcess.sharedLibHandle = handle;
+	std::string errorString;
+	inProcess.sharedLib = Sys::DynamicLib::Open(filename, errorString);
+	if (!inProcess.sharedLib)
+		Com_Error(ERR_DROP, "VM: Failed to load shared library VM %s: %s", filename.c_str(), errorString.c_str());
 
-	int (*vmMain)(int, const char**) = (int (*)(int, const char**))(Sys_LoadFunction(handle, "main"));
-	if (!vmMain) {
-		Com_Error(ERR_DROP, "VM: Could not find main function in shared library VM %s", filename.c_str());
-	}
+	auto vmMain = inProcess.sharedLib.LoadSym<int (*)(int, const char**)>("main", errorString);
+	if (!vmMain)
+		Com_Error(ERR_DROP, "VM: Could not find main function in shared library VM %s: %s", filename.c_str(), errorString.c_str());
 
 	std::string vmSocketArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
 
@@ -434,11 +417,7 @@ void VMBase::FreeInProcessVM() {
 		}
 	}
 
-	if (inProcess.sharedLibHandle) {
-		Sys_UnloadLibrary(inProcess.sharedLibHandle);
-		inProcess.sharedLibHandle = nullptr;
-	}
-
+	inProcess.sharedLib.Close();
 	inProcess.running = false;
 }
 
