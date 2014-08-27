@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // g_utils.c -- misc utility functions for game module
 
 #include "g_local.h"
+#include "IgnitableComponent.h"
 
 typedef struct
 {
@@ -815,135 +816,6 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 
 /*
 ===============
-G_FireThink
-
-Run by fire entities and burning buildables.
-===============
-*/
-void G_FireThink( gentity_t *self )
-{
-	char descr[ 64 ];
-
-	if ( g_debugFire.integer )
-	{
-		BG_BuildEntityDescription( descr, sizeof( descr ), &self->s );
-	}
-	else
-	{
-		descr[ 0 ] = '\0';
-	}
-
-	// damage self
-	if ( self->takedamage )
-	{
-		if ( self->nextBurnDamage < level.time )
-		{
-			if ( g_debugFire.integer )
-			{
-				Com_Printf( "%s ^3took burn damage^7.", descr );
-			}
-
-			G_Damage( self, self, self->fireStarter, NULL, NULL, BURN_SELFDAMAGE, 0, MOD_BURN );
-
-			self->nextBurnDamage = level.time + BURN_SELFDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
-		}
-	}
-
-	// damage close players
-	if ( self->nextBurnSplashDamage < level.time )
-	{
-		qboolean hit;
-
-		hit = G_SelectiveRadiusDamage( self->s.origin, self->fireStarter, BURN_SPLDAMAGE,
-		                               BURN_SPLDAMAGE_RADIUS, self, MOD_BURN, TEAM_NONE );
-
-		if ( hit && g_debugFire.integer ) Com_Printf( "%s ^8dealt burn damage^7.", descr );
-
-		self->nextBurnSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
-	}
-
-	// evaluate chances to stop burning or ignite close alien buildables
-	if ( self->nextBurnAction < level.time )
-	{
-		gentity_t *neighbor;
-		float     burnStopChance = BURN_STOP_CHANCE;
-
-		// lower burn stop chance if there are other burning entities nearby
-		neighbor = NULL;
-		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_STOP_RADIUS ) ) )
-		{
-			if ( neighbor == self ) continue;
-
-			if ( neighbor->onFire && neighbor->health > 0 )
-			{
-				float frac = Distance( self->s.origin, neighbor->s.origin ) / (float)BURN_STOP_RADIUS;
-				float mod  = frac * 1.0f + ( 1.0f - frac ) * BURN_STOP_CHANCE;
-
-				burnStopChance *= mod;
-			}
-		}
-
-		// attempt to stop burning
-		if ( random() < burnStopChance )
-		{
-			if ( g_debugFire.integer )
-			{
-				Com_Printf( "%s has chance to stop burning of %.2f → ^1stop^7", descr, burnStopChance );
-			}
-
-			switch ( self->s.eType )
-			{
-				case ET_BUILDABLE: self->onFire = qfalse; break;
-				case ET_FIRE:      G_FreeEntity( self );  break;
-				default:                                  break;
-			}
-
-			return;
-		}
-		else if ( g_debugFire.integer )
-		{
-			Com_Printf( "%s has chance to stop burning of %.2f → ^2continue^7", descr, burnStopChance );
-		}
-
-		// attempt to ignite close alien buildables
-		neighbor = NULL;
-		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_SPREAD_RADIUS ) ) )
-		{
-			float chance;
-
-			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_ALIENS ) continue;
-			if ( neighbor == self ) continue;
-
-			chance = 1.0f - ( Distance( self->s.origin, neighbor->s.origin ) / (float)BURN_SPREAD_RADIUS );
-
-			if ( random() < chance && G_LineOfSight( self, neighbor ) )
-			{
-				if ( g_debugFire.integer )
-				{
-					Com_Printf( "%s has chance to ignite a neighbour of %.2f → ^2ignite^7", descr, chance );
-				}
-
-				G_IgniteBuildable( neighbor, self->fireStarter );
-			}
-			else if ( g_debugFire.integer )
-			{
-				Com_Printf( "%s has chance to ignite a neighbour of %.2f → failed or no los", descr, chance );
-			}
-		}
-
-		self->nextBurnAction = level.time + BURN_ACTION_PERIOD * BURN_PERIODS_RAND_MOD;
-	}
-
-	// HACK: Assume that all non-ET_FIRE entities that can catch fire will think frequently enough.
-	// TODO: Add support for multiple think functions with individual timers.
-	if ( self->s.eType == ET_FIRE )
-	{
-		self->nextthink = level.time;
-	}
-}
-
-/*
-===============
 G_SpawnFire
 ===============
 */
@@ -978,15 +850,11 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	fire->s.eType   = ET_FIRE;
 	fire->clipmask  = 0;
 
-	// thinking
-	fire->think                = G_FireThink;
-	fire->nextthink            = level.time;
-	fire->nextBurnSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
-	fire->nextBurnAction       = level.time + BURN_ACTION_PERIOD    * BURN_PERIODS_RAND_MOD;
+	fire->entity = new FireEntity(fire);
+	fire->entity->GetIgnitableComponent()->Ignite(fireStarter);
 
 	// attacker
 	fire->r.ownerNum  = fireStarter->s.number;
-	fire->fireStarter = fireStarter;
 
 	// normal
 	VectorNormalize( normal ); // make sure normal is a direction

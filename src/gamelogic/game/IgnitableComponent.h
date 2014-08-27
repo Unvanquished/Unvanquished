@@ -22,47 +22,32 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#ifndef G_LOCAL_H_
-#define G_LOCAL_H_
+#ifndef GAME_IGNITABLE_COMPONENT_H_
+#define GAME_IGNITABLE_COMPONENT_H_
 
-// engine headers
-#include "../../engine/qcommon/q_shared.h"
-#include "../../engine/server/g_api.h"
-#include "../../engine/botlib/bot_types.h"
-
-// shared gamelogic (bg) headers
-#include "../shared/bg_public.h"
-
-// macros and common constants
-#include "g_definitions.h"
-
-// type definitions
-#include "g_typedef.h"
-
-// topic function headers and definitions
-#include "g_admin.h"
-#include "g_bot.h"
-#include "g_entities.h"
-
-struct gentity_s;
-// definition of Entity
+#include "g_local.h"
 #include "Components.h"
 
-// struct definitions
-#include "g_struct.h"
+class IgnitableComponent: public IgnitableComponentBase {
+public:
+	IgnitableComponent(Entity* entity, bool alwaysOnFire);
+	~IgnitableComponent();
 
-// function headers
-#include "g_public.h"
+	void OnDoNetCode();
 
-// trapcall headers
-#include "g_trapcalls.h"
+	void Ignite(gentity_t* igniter);
+	void PutOut(int immunityTime);
+	bool Think();
 
-// externalized fields
-#include "g_extern.h"
+private:
+	float DistanceToIgnitable(IgnitableComponent* other);
 
-// future imports
-#ifndef Q3_VM
-#include "../../common/Maths.h"
-#endif
+	gentity_t* igniter = nullptr;
+	bool onFire;
+	int fireImmunityUntil;
+	int nextBurnDamage;
+	int nextBurnSplashDamage;
+	int nextBurnAction;
+};
 
-#endif // G_LOCAL_H_
+#endif //GAME_IGNITABLE_COMPONENT_H_

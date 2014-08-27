@@ -97,6 +97,9 @@ struct gentity_s
 	// EXPECTS THE FIELDS IN THAT ORDER!
 	//================================
 
+	// New style entity
+	Entity* entity;
+
 	struct gclient_s *client; // NULL if not a client
 
 	qboolean     inuse;
@@ -191,16 +194,6 @@ struct gentity_s
 	 */
 	float        mineRate;
 	float        mineEfficiency;
-
-	/**
-	 * Alien buildables can burn, which is a lot of fun if they are close.
-	 */
-	qboolean     onFire;
-	int          fireImmunityUntil;
-	int          nextBurnDamage;
-	int          nextBurnSplashDamage;
-	int          nextBurnAction;
-	gentity_t    *fireStarter;
 
 	/**
 	 * The enemy team that tagged this buildable.

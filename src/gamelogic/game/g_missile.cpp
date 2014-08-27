@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
+#include "IgnitableComponent.h"
 
 // -----------
 // definitions
@@ -246,15 +247,17 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 	else if ( !strcmp( ent->classname, "slowblob" ) )
 	{
+		IgnitableComponent* ignitable;
 		if ( other->client && other->client->pers.team == TEAM_HUMANS )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
 			other->client->lastSlowTime = level.time;
 		}
-		else if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
+		else if ((ignitable = ent->entity->GetIgnitableComponent()))
 		{
-			other->onFire = qfalse;
-			other->fireImmunityUntil = level.time + ABUILDER_BLOB_FIRE_IMMUNITY;
+			//Ok that's not really nice but doing it otherwise would require a rework of how missile
+			//set things on fire and I don't want to do that right now
+			ignitable->PutOut(ABUILDER_BLOB_FIRE_IMMUNITY);
 			doDamage = qfalse;
 		}
 		else if ( other->s.number == ENTITYNUM_WORLD )
