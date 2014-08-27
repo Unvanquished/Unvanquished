@@ -524,8 +524,8 @@ void SV_SpawnServer( const char *server )
 	// shut down the existing game if it is running
 	SV_ShutdownGameProgs();
 
-	PrintBanner(_( "Server Initialization" ))
-	Com_Printf(_( "Server: %s\n"), server );
+	PrintBanner( "Server Initialization" )
+	Com_Printf( "Server: %s\n", server );
 
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
@@ -863,7 +863,7 @@ void SV_Shutdown( const char *finalmsg )
 		return;
 	}
 
-	PrintBanner(_( "Server Shutdown" ))
+	PrintBanner( "Server Shutdown" )
 
 	NET_LeaveMulticast6();
 
