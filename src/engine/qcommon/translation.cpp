@@ -311,7 +311,7 @@ void Trans_Init( void )
 	Cvar_Set( "trans_languages", langList );
 	Cvar_Set( "trans_encodings", encList );
 
-	Com_Printf( "Loaded %lu language%s\n", langs.size(), ( langs.size() == 1 ? "" : "s" ) );
+	Com_Printf( "Loaded %lu language%s\n", ( unsigned long ) langs.size(), ( langs.size() == 1 ? "" : "s" ) );
 }
 
 void Trans_LoadDefaultLanguage( void )
