@@ -492,7 +492,7 @@ namespace Audio {
 
     class ALInfoCmd : public Cmd::StaticCmd {
         public:
-            ALInfoCmd(): StaticCmd("printALInfo", Cmd::AUDIO, N_("Prints information about OpenAL")) {
+            ALInfoCmd(): StaticCmd("printALInfo", Cmd::AUDIO, "Prints information about OpenAL") {
             }
 
             virtual void Run(const Cmd::Args&) const OVERRIDE {
@@ -503,7 +503,7 @@ namespace Audio {
 
     class ListSamplesCmd : public Cmd::StaticCmd {
         public:
-            ListSamplesCmd(): StaticCmd("listAudioSamples", Cmd::AUDIO, N_("Lists all the loaded sound samples")) {
+            ListSamplesCmd(): StaticCmd("listAudioSamples", Cmd::AUDIO, "Lists all the loaded sound samples") {
             }
 
             virtual void Run(const Cmd::Args&) const OVERRIDE {
@@ -521,7 +521,7 @@ namespace Audio {
 
     class StopSoundsCmd : public Cmd::StaticCmd {
         public:
-            StopSoundsCmd(): StaticCmd("stopSounds", Cmd::AUDIO, N_("Stops the music and the looping sounds")) {
+            StopSoundsCmd(): StaticCmd("stopSounds", Cmd::AUDIO, "Stops the music and the looping sounds") {
             }
 
             virtual void Run(const Cmd::Args&) const OVERRIDE {
@@ -533,7 +533,7 @@ namespace Audio {
 
     class StartCaptureTestCmd : public Cmd::StaticCmd {
         public:
-            StartCaptureTestCmd(): StaticCmd("startSoundCaptureTest", Cmd::AUDIO, N_("Starts testing the sound capture")) {
+            StartCaptureTestCmd(): StaticCmd("startSoundCaptureTest", Cmd::AUDIO, "Starts testing the sound capture") {
             }
 
             virtual void Run(const Cmd::Args&) const OVERRIDE {
@@ -544,7 +544,7 @@ namespace Audio {
 
     class StopCaptureTestCmd : public Cmd::StaticCmd {
         public:
-            StopCaptureTestCmd(): StaticCmd("stopSoundCaptureTest", Cmd::AUDIO, N_("Stops the testing of the sound capture")) {
+            StopCaptureTestCmd(): StaticCmd("stopSoundCaptureTest", Cmd::AUDIO, "Stops the testing of the sound capture") {
             }
 
             virtual void Run(const Cmd::Args&) const OVERRIDE {
