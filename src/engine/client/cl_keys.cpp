@@ -929,7 +929,7 @@ int Key_GetTeam( const char *arg, const char *cmd )
 
 		if ( t != CLIP( t ) )
 		{
-			Com_Printf( _("^3%s:^7 %d is not a valid team number\n"), cmd, t );
+			Com_Printf( "^3%s:^7 %d is not a valid team number\n", cmd, t );
 			return -1;
 		}
 
@@ -948,7 +948,7 @@ int Key_GetTeam( const char *arg, const char *cmd )
 	}
 
 fail:
-	Com_Printf( _("^3%s:^7 '%s^7' is not a valid team name\n"), cmd, arg );
+	Com_Printf( "^3%s:^7 '%s^7' is not a valid team name\n", cmd, arg );
 	return -1;
 }
 
@@ -1072,7 +1072,7 @@ void Key_Unbind_f( void )
 
 	if ( b < 2 || b > 3 )
 	{
-		Cmd_PrintUsage(_("[<team>] <key>"), _("remove commands from a key"));
+		Cmd_PrintUsage("[<team>] <key>", "remove commands from a key");
 		return;
 	}
 
@@ -1090,7 +1090,7 @@ void Key_Unbind_f( void )
 
 	if ( b == -1 )
 	{
-		Com_Printf(_( "\"%s\" isn't a valid key\n"), Cmd_Argv( 1 ) );
+		Com_Printf( "\"%s\" isn't a valid key\n", Cmd_Argv( 1 ) );
 		return;
 	}
 
@@ -1130,7 +1130,7 @@ void Key_Bind_f( void )
 
 	if ( c < 2 + teambind )
 	{
-		Cmd_PrintUsage( teambind ? _("<team> <key> [<command>]") : _("<key> [<command>]"), _("attach a command to a key"));
+		Cmd_PrintUsage( teambind ? "<team> <key> [<command>]" : "<key> [<command>]", "attach a command to a key");
 		return;
 	}
 	else if ( c > 2 + teambind )
@@ -1153,7 +1153,7 @@ void Key_Bind_f( void )
 
 	if ( b == -1 )
 	{
-		Com_Printf(_( "\"%s\" isn't a valid key\n"), key );
+		Com_Printf( "\"%s\" isn't a valid key\n", key );
 		return;
 	}
 
@@ -1169,7 +1169,7 @@ void Key_Bind_f( void )
 			}
 			else
 			{
-				Com_Printf(_( "\"%s\"[%s] is not bound\n"), key, teamName[ team ] );
+				Com_Printf( "\"%s\"[%s] is not bound\n", key, teamName[ team ] );
 			}
 		}
 		else
@@ -1188,7 +1188,7 @@ void Key_Bind_f( void )
 
 			if ( !bound )
 			{
-				Com_Printf(_( "\"%s\" is not bound\n"), key );
+				Com_Printf( "\"%s\" is not bound\n", key );
 			}
 		}
 
@@ -1223,7 +1223,7 @@ void Key_EditBind_f( void )
 
 	if ( b < 2 || b > 3 )
 	{
-		Cmd_PrintUsage(_("[<team>] <key>"), NULL);
+		Cmd_PrintUsage("[<team>] <key>", NULL);
 		return;
 	}
 
@@ -1242,7 +1242,7 @@ void Key_EditBind_f( void )
 
 	if ( b == -1 )
 	{
-		Com_Printf(_( "\"%s\" isn't a valid key\n"), key );
+		Com_Printf( "\"%s\" isn't a valid key\n", key );
 		return;
 	}
 
@@ -1596,7 +1596,7 @@ static modifierMask_t getModifierMask( const char *mods )
 
 				if ( ( mask.down & mask.up ) & modifierKeys[ i ].bit )
 				{
-					Com_Printf(_( "can't have %s both pressed and not pressed\n"), modifierKeys[ i ].name );
+					Com_Printf( "can't have %s both pressed and not pressed\n", modifierKeys[ i ].name );
 					return none;
 				}
 
@@ -1617,7 +1617,7 @@ static modifierMask_t getModifierMask( const char *mods )
 
 		if ( !modifierKeys[ i ].bit )
 		{
-			Com_Printf(_( "unknown modifier key name in \"%s\"\n"), mods );
+			Com_Printf( "unknown modifier key name in \"%s\"\n", mods );
 			return none;
 		}
 	}
@@ -1681,7 +1681,7 @@ void Key_ModCase_f( void )
 
 	if ( argc < 3 )
 	{
-		Cmd_PrintUsage(_( "<modifiers> <command> [<modifiers> <command>] … [<command>]"), NULL );
+		Cmd_PrintUsage( "<modifiers> <command> [<modifiers> <command>] … [<command>]", NULL );
 		return;
 	}
 
