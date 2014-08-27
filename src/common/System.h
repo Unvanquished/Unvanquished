@@ -47,7 +47,11 @@ public:
 	static time_point now() NOEXCEPT;
 };
 #else
+# ifdef LIBSTDCXX_BROKEN_CXX11
+typedef std::chrono::monotonic_clock SteadyClock;
+# else
 typedef std::chrono::steady_clock SteadyClock;
+# endif
 #endif
 typedef std::chrono::system_clock RealClock;
 
