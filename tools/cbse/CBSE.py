@@ -366,10 +366,10 @@ if __name__ == '__main__':
         'enumerate': enumerate
     }
 
-    if args.declaration[0] != None:
+    if args.declaration != None:
         implementation_h_template = template_env.get_template('implementation.h')
         args.declaration[0].write(my_filter(implementation_h_template.render(**template_params)))
 
-    if args.implementation[0] != None:
+    if args.implementation != None:
         implementation_cpp_template = template_env.get_template('implementation.cpp')
         args.implementation[0].write(my_filter(implementation_cpp_template.render(**template_params)))

@@ -19,6 +19,9 @@ Entity::Entity(const MessageHandler *messageHandlers, const int* componentOffset
 {
 }
 
+Entity::~Entity() {
+}
+
 void Entity::SendMessage(int msg, const void* data) {
     MessageHandler handler = messageHandlers[msg];
     if (handler) {
