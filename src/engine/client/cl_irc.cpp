@@ -1355,11 +1355,11 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 			if ( has_nick )
 			{
-				fmt_string = _("^5-> ^7%s^5 has entered the channel.\n");
+				fmt_string = "^5-> ^7%s^5 has entered the channel.\n";
 			}
 			else
 			{
-				fmt_string = _("^2Joined IRC chat.\n");
+				fmt_string = "^2Joined IRC chat.\n";
 			}
 
 			break;
@@ -1372,11 +1372,11 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 			if ( has_message )
 			{
-				fmt_string = _("^5<- ^7%s^5 has left the channel: %s.\n");
+				fmt_string = "^5<- ^7%s^5 has left the channel: %s.\n";
 			}
 			else
 			{
-				fmt_string = _("^5<- ^7%s^5 has left the channel.\n");
+				fmt_string = "^5<- ^7%s^5 has left the channel.\n";
 			}
 
 			break;
@@ -1390,17 +1390,17 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 				if ( has_message )
 				{
-					fmt_string = _("^5<- ^7%s^5 has quit: %s.\n");
+					fmt_string = "^5<- ^7%s^5 has quit: %s.\n";
 				}
 				else
 				{
-					fmt_string = _("^5<- ^7%s^5 has quit.\n");
+					fmt_string = "^5<- ^7%s^5 has quit.\n";
 				}
 			}
 			else
 			{
 				has_message = qtrue;
-				fmt_string = _("^2Quit IRC chat: %s.\n");
+				fmt_string = "^2Quit IRC chat: %s.\n";
 			}
 
 			break;
@@ -1410,11 +1410,11 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 			if ( IRC_EventIsSelf( event ) )
 			{
-				fmt_string = _("^2Kicked by ^7%s^2: %s.\n");
+				fmt_string = "^2Kicked by ^7%s^2: %s.\n";
 			}
 			else
 			{
-				fmt_string = _("^5<- ^7%s^5 has been kicked: %s.\n");
+				fmt_string = "^5<- ^7%s^5 has been kicked: %s.\n";
 			}
 
 			break;
@@ -1424,18 +1424,18 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 			if ( IRC_EventIsSelf( event ) )
 			{
-				fmt_string = _("^2** ^7%s^2 is now known as ^7%s^2.\n");
+				fmt_string = "^2** ^7%s^2 is now known as ^7%s^2.\n";
 			}
 			else
 			{
-				fmt_string = _("^5** ^7%s^5 is now known as ^7%s^5.\n");
+				fmt_string = "^5** ^7%s^5 is now known as ^7%s^5.\n";
 			}
 
 			break;
 
 		default:
 			has_nick = has_message = qfalse;
-			fmt_string = _("unknown message received\n");
+			fmt_string = "unknown message received\n";
 			break;
 	}
 
@@ -1994,7 +1994,7 @@ void CL_IRCSay( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Cmd_PrintUsage(_("<text>"), NULL);
+		Cmd_PrintUsage("<text>", NULL);
 		return;
 	}
 

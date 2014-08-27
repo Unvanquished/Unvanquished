@@ -1522,7 +1522,7 @@ static void Key_CompleteEditbind( char *args, int argNum )
 Helper functions for Cmd_If_f & Cmd_ModCase_f
 ===============
 */
-static const char modifierList[] = N_("shift, ctrl, alt, command/cmd, mode, super, compose, menu; ! negates; e.g. shift,!alt");
+static const char modifierList[] = "shift, ctrl, alt, command/cmd, mode, super, compose, menu; ! negates; e.g. shift,!alt";
 
 static const struct
 {
