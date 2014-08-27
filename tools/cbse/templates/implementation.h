@@ -15,6 +15,9 @@
  * vtable containing the offset of the components, if any, for each entity.
  */
 
+#ifndef COMPONENTS_H_
+#define COMPONENTS_H_
+
 enum {
     {% for message in messages%}
         {{message.get_enum_name()}},
@@ -40,6 +43,7 @@ class Entity {
                 ,{{attrib.get_declaration()}}
             {% endfor %}
         );
+        virtual ~Entity();
 
         // This function should never actually be used directly, it dispatches
         // the messages to the right components
@@ -145,7 +149,7 @@ class Entity {
                     {% if i != 0 %}, {% endif %} {{attrib.get_declaration()}}
                 {% endfor %}
             );
-            ~{{entity.get_type_name()}}();
+            virtual ~{{entity.get_type_name()}}();
 
             // Pointer to the components
             {% for component in entity.get_components() %}
@@ -153,3 +157,5 @@ class Entity {
             {% endfor %}
     };
 {% endfor %}
+
+#endif //COMPONENTS_H_
