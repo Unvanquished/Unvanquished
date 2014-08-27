@@ -1,7 +1,7 @@
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 
 #include <tuple>
-#include "ComponentInclude.h"
+#include "ComponentImplementationInclude.h"
 
 #define myoffsetof(st, m) static_cast<int>((size_t)(&((st *)0)->m))
 
@@ -157,3 +157,6 @@ void Entity::SendMessage(int msg, const void* data) {
     }
 
 {% endfor %}
+
+#undef myoffsetof
+
