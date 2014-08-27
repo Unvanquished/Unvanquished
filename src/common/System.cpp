@@ -33,8 +33,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #else
 #include <unistd.h>
-#include <dlfcn.h>
 #include <signal.h>
+#ifndef __native_client__
+#include <dlfcn.h>
+#endif
 #endif
 
 namespace Sys {
