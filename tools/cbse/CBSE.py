@@ -2,6 +2,21 @@
 
 import jinja2
 import yaml
+from collections import namedtuple
+
+class CommonAttribute:
+    def __init__(self, name, typ):
+        self.name = name
+        self.typ = typ
+
+    def get_declaration(self):
+        return self.typ + " " + self.name
+
+    def get_initializer(self):
+        return self.name + "(" + self.name + ")"
+
+    def get_name(self):
+        return self.name
 
 class Attribute:
     def __init__(self, name, typ):
@@ -213,6 +228,13 @@ class Entity:
 
 #############################################################################
 
+def load_general(definitions):
+    defs = definitions['general']
+    common_entity_attributes = []
+    for attrib in defs['common_entity_attributes']:
+        common_entity_attributes.append(CommonAttribute(attrib['name'], attrib['type']))
+    return namedtuple('general', 'common_entity_attributes')(common_entity_attributes)
+
 def load_attributes(definitions):
     attribs = {}
     for (name, typ) in definitions['attributes'].items():
@@ -249,7 +271,7 @@ def load_entities(definitions):
         entities[name] = Entity(name, kwargs['components'])
     return entities
 
-#############################################################################
+############################################################################
 
 def topo_sort_components(components):
     sorted_components = []
@@ -284,6 +306,8 @@ if __name__ == '__main__':
     f.close()
 
     # Load everything from the file
+    general = load_general(definitions)
+
     attributes = load_attributes(definitions)
     attribute_list = list(attributes.values())
 
@@ -315,10 +339,12 @@ if __name__ == '__main__':
     template_env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
 
     template_params = {
+        'general': general,
         'attributes': attribute_list,
         'messages': message_list,
         'components': component_list,
-        'entities': entity_list
+        'entities': entity_list,
+        'enumerate': enumerate
     }
 
     implementation_h_template = template_env.get_template('implementation.h')

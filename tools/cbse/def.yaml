@@ -1,3 +1,8 @@
+general:
+    common_entity_attributes:
+        - name: number
+          type: int
+
 attributes:
     Health: int
     Temp1: float
