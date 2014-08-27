@@ -366,7 +366,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	{
 		int num;
 
-		num = BEACON_TIMER_TIME + b->ctime - cg.time;
+		num = ( BEACON_TIMER_TIME + b->ctime - cg.time ) / 100;
 
 		if( num > 0 )
 		{
@@ -376,7 +376,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 			int i, l, frame;
 
 			h = b->size * 0.4;
-			p = va( "%d", num/100 );
+			p = va( "%d", num );
 			l = strlen( p );
 			tw = h * l;
 

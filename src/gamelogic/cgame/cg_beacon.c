@@ -88,7 +88,6 @@ else if( !Q_stricmp( token.string, #x ) ) \
 
 		READ_INT    ( fadeIn )
 		READ_INT    ( fadeOut )
-		READ_FLOAT_S( highlightRadius )
 		READ_FLOAT  ( highlightScale )
 		READ_FLOAT  ( fadeMinAlpha )
 		READ_FLOAT  ( fadeMaxAlpha )
@@ -120,6 +119,15 @@ else if( !Q_stricmp( token.string, #x ) ) \
 			bc->hudRect[ 1 ][ 0 ] = vw - margin;
 			bc->hudRect[ 0 ][ 1 ] = margin;
 			bc->hudRect[ 1 ][ 1 ] = vh - margin;
+		}
+		else if( !Q_stricmp( token.string, "highlightAngle" ) )
+		{
+			float angle;
+
+			if( !PC_Float_Parse( fd, &angle ) )
+				break;
+
+			bc->highlightAngle = cos( angle / 180.0 * M_PI );
 		}
 		else
 			Com_Printf( "^3WARNING: bad keyword \"%s\" in \"%s\"\n", token.string, path );
@@ -314,34 +322,15 @@ static void CG_RunBeacon( cbeacon_t *b )
 	}
 	else
 		b->clamped = qfalse;
-
-	// highlight
-	if( b == cg.highlightedBeacon )
-	{
-		if( Distance2( b->pos, cgs.bc.hudCenter ) <= cgs.bc.highlightRadius )
-			b->highlighted = qtrue;
-		else
-		{
-			cg.highlightedBeacon = NULL;
-			b->highlighted = qfalse;
-		}
-	}
-	else
-		b->highlighted = qfalse;
 }
 
 /*
 =============
-CG_CompareBeaconsBy*
+CG_CompareBeaconsByDot
 
-Used for qsort
+Used by qsort
 =============
 */
-static int CG_CompareBeaconsByDot( const void *a, const void *b )
-{
-	return ( *(const cbeacon_t**)a )->dot > ( *(const cbeacon_t**)b )->dot;
-}
-
 static int CG_CompareBeaconsByDist( const void *a, const void *b )
 {
 	return ( *(const cbeacon_t**)a )->dist > ( *(const cbeacon_t**)b )->dist;
@@ -364,6 +353,9 @@ void CG_ListBeacons( void )
 	entityState_t *es;
 	cbeacon_t *b;
 	vec3_t delta;
+	float hl_dist = 1.0e20;
+
+	cg.highlightedBeacon = NULL;
 
 	for( cg.beaconCount = 0, i = 0; i < cg.snap->numEntities; i++ )
 	{
@@ -399,6 +391,12 @@ void CG_ListBeacons( void )
 		b->dot = DotProduct( delta, cg.refdef.viewaxis[ 0 ] );
 		b->dist = Distance( cg.predictedPlayerState.origin, b->origin );
 
+		if( b->dist < hl_dist && b->dot > cgs.bc.highlightAngle )
+		{
+			cg.highlightedBeacon = b;
+			hl_dist = b->dist;
+		}
+
 		cg.beacons[ cg.beaconCount ] = b;
 		if( ++cg.beaconCount >= MAX_CBEACONS )
 			break;
@@ -407,14 +405,15 @@ void CG_ListBeacons( void )
 	if( !cg.beaconCount )
 		return;
 
+	qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CG_CompareBeaconsByDist );
+
+	//mark the nearest booster/medistat if low hp and mark the nearest armoury if low ammo
 	{
 		const playerState_t *ps = &cg.predictedPlayerState;
 		int tofind, team = ps->persistant[ PERS_TEAM ];
 		qboolean lowammo, energy;
 
 		lowammo = BG_PlayerLowAmmo( ps, &energy );
-
-		qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CG_CompareBeaconsByDist );
 
 		for( i = 0, tofind = 3; i < cg.beaconCount && tofind; i++ )
 		{
@@ -423,7 +422,8 @@ void CG_ListBeacons( void )
 			if( b->type != BCT_TAG )
 				continue;
 
-			if( b->flags & EF_BC_DYING )
+			if( ( b->flags & EF_BC_TAG_PLAYER ) ||
+			    ( b->flags & EF_BC_DYING ) )
 				continue;
 
 			if( tofind & 1 )
@@ -447,10 +447,6 @@ void CG_ListBeacons( void )
 				}
 		}
 	}
-
-	qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CG_CompareBeaconsByDot );
-
-	cg.highlightedBeacon = cg.beacons[ cg.beaconCount - 1 ];
 
 	for( i = 0; i < cg.beaconCount; i++ )
 		CG_RunBeacon( cg.beacons[ i ] );
@@ -476,7 +472,7 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b, qboolean hud )
 
 	if ( b->type == BCT_TAG )
 	{
-		if ( b->highlighted || !hud )
+		if ( b == cg.highlightedBeacon || !hud )
 		{
 			if ( b->flags & EF_BC_TAG_PLAYER )
 			{

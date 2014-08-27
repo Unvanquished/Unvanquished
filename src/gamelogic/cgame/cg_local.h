@@ -660,7 +660,6 @@ typedef struct
 
 	qboolean      clamped;
 	vec2_t        clamp_dir;
-	qboolean      highlighted;
 } cbeacon_t;
 
 typedef struct
@@ -668,7 +667,7 @@ typedef struct
 	// behavior
 	int           fadeIn;
 	int           fadeOut;
-	float         highlightRadius;
+	float         highlightAngle; //angle in config, its cosine on runtime
 	float         highlightScale;
 	float         fadeMinAlpha;
 	float         fadeMaxAlpha;
