@@ -179,7 +179,7 @@ namespace Cvar {
                 cvarRecord_t* var = cvars[name];
 
                 if (args.Argc() < 2) {
-                    Print(_("\"%s\" - %s^7 - default: \"%s^7\""), name.c_str(), var->description.c_str(), var->resetValue.c_str());
+                    Print("\"%s\" - %s^7 - default: \"%s^7\"", name.c_str(), var->description.c_str(), var->resetValue.c_str());
                 } else {
                     //TODO forward the print part of the environment
                     SetValue(name, args.Argv(1));
@@ -501,7 +501,7 @@ namespace Cvar {
 
             void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() < 2) {
-                    PrintUsage(args, _("<variable> <value>"),"");
+                    PrintUsage(args, "<variable> <value>","");
                     return;
                 }
 
@@ -523,14 +523,14 @@ namespace Cvar {
         private:
             int flags;
     };
-    static SetCmd SetCmdRegistration("set", N_("sets the value of a cvar"), 0);
-    static SetCmd SetuCmdRegistration("setu", N_("sets the value of a cvar"), USERINFO);
-    static SetCmd SetsCmdRegistration("sets", N_("sets the value of a cvar"), SERVERINFO);
-    static SetCmd SetaCmdRegistration("seta", N_("sets the value of a cvar and marks the cvar as archived"), USER_ARCHIVE);
+    static SetCmd SetCmdRegistration("set", "sets the value of a cvar", 0);
+    static SetCmd SetuCmdRegistration("setu", "sets the value of a cvar", USERINFO);
+    static SetCmd SetsCmdRegistration("sets", "sets the value of a cvar", SERVERINFO);
+    static SetCmd SetaCmdRegistration("seta", "sets the value of a cvar and marks the cvar as archived", USER_ARCHIVE);
 
     class ResetCmd: public Cmd::StaticCmd {
         public:
-            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets the named variables")) {
+            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, "resets the named variables") {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
@@ -538,7 +538,7 @@ namespace Cvar {
                 bool clearArchive = true;
 
                 if (argc < 2) {
-                    PrintUsage(args, _("<variable>…"), "");
+                    PrintUsage(args, "<variable>…", "");
                     return;
                 }
 
@@ -586,7 +586,7 @@ namespace Cvar {
 
     class ListCvars: public Cmd::StaticCmd {
         public:
-            ListCvars(): Cmd::StaticCmd("listCvars", Cmd::BASE, N_("lists variables")) {
+            ListCvars(): Cmd::StaticCmd("listCvars", Cmd::BASE, "lists variables") {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
@@ -672,7 +672,7 @@ namespace Cvar {
 
                 // FIXME: translation
                 static const std::initializer_list<Cmd::CompletionItem> flags = {
-                    {"-raw", N_("display colour controls")},
+                    {"-raw", "display colour controls"},
                 };
 
                 // command only allows one switch
