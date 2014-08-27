@@ -3,6 +3,7 @@
 import jinja2
 import yaml
 from collections import namedtuple
+import argparse, sys
 
 class CommonAttribute:
     def __init__(self, name, typ):
@@ -297,15 +298,33 @@ def topo_sort_components(components):
 
     return sorted_components
 
-def my_print(text):
-    print('\n'.join(filter(lambda line: line.strip() != '', text.split('\n'))))
+def my_filter(text):
+    return '\n'.join(filter(lambda line: line.strip() != '', text.split('\n')))
+
+def my_open_read(filename):
+    if filename == "-":
+        return sys.stdin
+    else:
+        return open(filename, "r")
+
+def my_open_write(filename):
+    if filename == "-":
+        return sys.stdout
+    else:
+        return open(filename, "w")
 
 if __name__ == '__main__':
-    f = open('def.yaml')
-    definitions = yaml.load(f.read())
-    f.close()
+    parser = argparse.ArgumentParser(description="Outputs C++ plumbing code for the gamelogic given a component definitions.")
+    parser.add_argument('definitions', metavar='DEFS', nargs=1, type=my_open_read, help ="The definitions to use, - for stdin.")
+    parser.add_argument('-d', '--declaration', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the declaration of the plumbing (.h), - for stdout.")
+    parser.add_argument('-i', '--implementation', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the implementation of the plumbing (.cpp), - for stdout.")
+
+    args = parser.parse_args()
 
     # Load everything from the file
+    definitions = yaml.load(args.definitions[0])
+    args.definitions[0].close()
+
     general = load_general(definitions)
 
     attributes = load_attributes(definitions)
@@ -347,16 +366,10 @@ if __name__ == '__main__':
         'enumerate': enumerate
     }
 
-    implementation_h_template = template_env.get_template('implementation.h')
-    my_print(implementation_h_template.render(**template_params))
+    if args.declaration[0] != None:
+        implementation_h_template = template_env.get_template('implementation.h')
+        args.declaration[0].write(my_filter(implementation_h_template.render(**template_params)))
 
-    print()
-    print()
-    print()
-    print("// AND NOW FOR THE .CPP")
-    print()
-    print()
-    print()
-
-    implementation_cpp_template = template_env.get_template('implementation.cpp')
-    my_print(implementation_cpp_template.render(**template_params))
+    if args.implementation[0] != None:
+        implementation_cpp_template = template_env.get_template('implementation.cpp')
+        args.implementation[0].write(my_filter(implementation_cpp_template.render(**template_params)))
