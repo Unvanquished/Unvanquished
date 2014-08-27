@@ -191,10 +191,8 @@ static const char *WindowsExceptionString(DWORD code)
 }
 static LONG WINAPI CrashHandler(PEXCEPTION_POINTERS ExceptionInfo)
 {
-	static bool enteredHandler = false;
-	if (enteredHandler)
-		_exit(-1);
-	enteredHandler = true;
+	// Reset handler so that any future errors cause a crash
+	SetUnhandledExceptionFilter(NULL);
 
 	// TODO: backtrace
 
@@ -207,11 +205,6 @@ void SetupCrashHandler()
 #else
 static void CrashHandler(int sig)
 {
-	static bool enteredHandler = false;
-	if (enteredHandler)
-		_exit(-1);
-	enteredHandler = true;
-
 	// TODO: backtrace
 
 	Sys::Error("Caught signal %d: %s", sig, strsignal(sig));
@@ -223,7 +216,7 @@ void SetupCrashHandler()
 		signal(sig, CrashHandler);
 #else
 	struct sigaction sa;
-	sa.sa_flags = 0;
+	sa.sa_flags = SA_RESETHAND;
 	sa.sa_handler = CrashHandler;
 	sigemptyset(&sa.sa_mask);
 	for (int sig: {SIGILL, SIGFPE, SIGSEGV, SIGABRT, SIGBUS, SIGTRAP})
