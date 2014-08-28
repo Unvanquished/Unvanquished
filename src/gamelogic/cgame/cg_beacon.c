@@ -489,7 +489,7 @@ void CG_ListBeacons( void )
 		{
 			t_alpha = 1;
 			br->name = CG_BeaconText( b );
-			CG_FormatSI( br->distance, sizeof( br->distance ), b->dist * 0.0254, 3, "m" );
+			Com_sprintf( br->distance, sizeof( br->distance ), "%im", (int)round( b->dist * 0.0254 ) );
 
 			// TODO: br->info
 
