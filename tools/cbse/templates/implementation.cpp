@@ -86,11 +86,11 @@ void Entity::SendMessage(int msg, const void* data) {
 
     // The static message handlers put in the vtable
     {% for message in entity.get_messages_to_handle() %}
-        void {{entity.get_message_handler_name(message)}}(Entity* _entity, const void* _data) {
+        void {{entity.get_message_handler_name(message)}}(Entity* _entity, const void* {% if message.get_num_args() > 0 %} _data {% endif %} ) {
             // Cast the entity to the correct type (receive an Entity*)
             {{entity.get_type_name()}}* entity = ({{entity.get_type_name()}}*) _entity;
 
-            {% if message.get_num_args == 0 %}
+            {% if message.get_num_args() == 0 %}
                 // No argument for the message, just call the handlers of all the components
                 {% for component in entity.get_components() %}
                     {% if message in component.get_messages_to_handle() %}
