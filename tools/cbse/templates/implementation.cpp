@@ -49,7 +49,7 @@ void Entity::SendMessage(int msg, const void* data) {
         int index = {{component.get_priority()}};
         int offset = componentOffsets[index];
         if (offset) {
-            return ({{component.get_type_name()}}*) (((char*) this) + offset);
+            return *({{component.get_type_name()}}**) (((char*) this) + offset);
         } else {
             return nullptr;
         }
