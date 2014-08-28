@@ -76,7 +76,7 @@ class Entity {
 
 {% for component in components %}
     class {{component.get_base_type_name()}} {
-        private:
+        public:
             // Every component has a pointer back to the entity (say to be able to send back messages etc.)
             Entity* entity;
 
