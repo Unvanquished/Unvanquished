@@ -269,6 +269,8 @@ def load_components(definitions):
 def load_entities(definitions):
     entities = {}
     for (name, kwargs) in definitions['entities'].items():
+        if not 'components' in kwargs or kwargs['components'] == None:
+            kwargs['components'] = {}
         entities[name] = Entity(name, kwargs['components'])
     return entities
 
