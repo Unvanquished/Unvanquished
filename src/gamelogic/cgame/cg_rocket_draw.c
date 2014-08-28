@@ -1253,6 +1253,38 @@ void CG_Rocket_DrawCenterPrint( void )
 	trap_Rocket_SetProperty( "opacity", va( "%f", CG_FadeAlpha( cg.centerPrintTime, CENTER_PRINT_DURATION ) ) );
 }
 
+
+void CG_Rocket_DrawBeaconAge( void )
+{
+	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.ageAlpha ) );
+	trap_Rocket_SetInnerRML( cg.beaconRocket.age, 0 );
+}
+
+void CG_Rocket_DrawBeaconDistance( void )
+{
+	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.distance ) );
+	trap_Rocket_SetInnerRML( cg.beaconRocket.distance, 0 );
+}
+
+void CG_Rocket_DrawBeaconInfo( void )
+{
+	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.infoAlpha ) );
+	trap_Rocket_SetInnerRML( cg.beaconRocket.info, 0 );
+}
+
+void CG_Rocket_DrawBeaconName( void )
+{
+	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.alpha ) );
+	trap_Rocket_SetInnerRML( cg.beaconRocket.name, 0 );
+}
+
+void CG_Rocket_DrawBeaconOwner( void )
+{
+	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.ownerAlpha ) );
+	trap_Rocket_SetInnerRML( cg.beaconRocket.owner, RP_QUAKE | RP_EMOTICONS );
+}
+
+
 void CG_Rocket_DrawPlayerHealth( void )
 {
 	static int lastHealth = 0;
@@ -2563,6 +2595,11 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "ammo", &CG_Rocket_DrawAmmo, ELEMENT_BOTH },
 	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
 	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
+	{ "beacon_age", &CG_Rocket_DrawBeaconAge, ELEMENT_GAME },
+	{ "beacon_distance", &CG_Rocket_DrawBeaconDistance, ELEMENT_GAME },
+	{ "beacon_info", &CG_Rocket_DrawBeaconInfo, ELEMENT_GAME },
+	{ "beacon_name", &CG_Rocket_DrawBeaconName, ELEMENT_GAME },
+	{ "beacon_owner", &CG_Rocket_DrawBeaconOwner, ELEMENT_GAME },
 	{ "center_print", &CG_Rocket_DrawCenterPrint, ELEMENT_GAME },
 	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },

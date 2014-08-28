@@ -26,15 +26,26 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "g_local.h"
 
-// beacon entityState fields:
-// eType           : ET_BEACON
-// otherEntityNum  : creator
-// otherEntityNum2 : tagged entity
-// modelindex      : type
-// modelindex2     : additional data (e.g. buildable type for BCT_TAG)
-// generic1        : team
-// time            : creation time
-// time2           : expiration time (0 if never)
+// entityState_t   | cbeacon_t    | description
+// ----------------+--------------+-------------
+// eType           | n/a          | always ET_BEACON
+// otherEntityNum  | target       | tagged entity's number
+// otherEntityNum2 | owner        | beacon's owner (ENTITYNUM_NONE if none, ENTITYNUM_WORLD if auto)
+// modelindex      | type         | beacon's type (BCT_*)
+// modelindex2     | data         | additional data (e.g. buildable type for BCT_TAG)
+// generic1        | team         | beacon's team
+// time            | ctime        | creation time
+// time2           | etime        | expiration time
+// apos.trTime     | mtime        | modification (update) time
+
+#define bc_target otherEntityNum
+#define bc_owner otherEntityNum2
+#define bc_type modelindex
+#define bc_data modelindex2
+#define bc_team generic1
+#define bc_ctime time
+#define bc_etime time2
+#define bc_mtime apos.trTime
 
 namespace Beacon //this should eventually become a class
 {
@@ -45,7 +56,7 @@ namespace Beacon //this should eventually become a class
 	{
 		ent->nextthink = level.time + 1000000;
 	}
-	
+
 	/**
 	 * @brief Handles beacon expiration and tag score decay. Called every server frame.
 	 */
@@ -70,7 +81,7 @@ namespace Beacon //this should eventually become a class
 					break;
 
 				case ET_BEACON:
-					if ( ent->s.time2 && level.time > ent->s.time2 )
+					if ( ent->s.bc_etime && level.time > ent->s.bc_etime )
 						Delete( ent );
 					continue;
 
@@ -120,16 +131,17 @@ namespace Beacon //this should eventually become a class
 		ent->s.eType = ET_BEACON;
 		ent->classname = "beacon";
 
-		ent->s.modelindex = type;
-		ent->s.modelindex2 = data;
-		ent->s.generic1 = team;
-		ent->s.otherEntityNum = owner;
+		ent->s.bc_type = type;
+		ent->s.bc_data = data;
+		ent->s.bc_team = team;
+		ent->s.bc_owner = owner;
 		ent->think = Think;
 		ent->nextthink = level.time;
 
-		ent->s.time = level.time;
+		ent->s.bc_ctime = level.time;
+		ent->s.bc_mtime = level.time;
 		decayTime = BG_Beacon( type )->decayTime;
-		ent->s.time2 = ( decayTime ? level.time + decayTime : 0 );
+		ent->s.bc_etime = ( decayTime ? level.time + decayTime : 0 );
 
 		ent->s.pos.trType = TR_INTERPOLATE;
 		Move( ent, origin );
@@ -148,7 +160,7 @@ namespace Beacon //this should eventually become a class
 
 		VectorCopy( point, origin );
 		MoveTowardsRoom( origin );
-		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE, BCH_REMOVE );
+		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_WORLD, BCH_REMOVE );
 		Beacon::Propagate( beacon );
 
 		return beacon;
@@ -171,7 +183,7 @@ namespace Beacon //this should eventually become a class
 			if ( !( ent->s.eFlags & EF_BC_DYING ) )
 			{
 				ent->s.eFlags |= EF_BC_DYING;
-				ent->s.time2 = level.time + 1500;
+				ent->s.bc_etime = level.time + 1500;
 				BaseClustering::Remove( ent );
 			}
 		}
@@ -278,16 +290,16 @@ namespace Beacon //this should eventually become a class
 			if ( ent->s.eType != ET_BEACON )
 				continue;
 
-			if ( ent->s.modelindex != type )
+			if ( ent->s.bc_type != type )
 				continue;
 
 			if ( ( ent->s.eFlags & eFlagsRelevant ) != ( eFlags & eFlagsRelevant ) )
 				continue;
 
-			if( ent->s.generic1 != team )
+			if( ent->s.bc_team != team )
 				continue;
 
-			if ( ( flags & BCF_DATA_UNIQUE ) && ent->s.modelindex2 != data )
+			if ( ( flags & BCF_DATA_UNIQUE ) && ent->s.bc_data != data )
 				continue;
 
 			if ( ent->s.eFlags & EF_BC_DYING )
@@ -297,7 +309,7 @@ namespace Beacon //this should eventually become a class
 			{}
 			else if( flags & BCF_PER_PLAYER )
 			{
-				if( ent->s.otherEntityNum != owner )
+				if( ent->s.bc_owner != owner )
 					continue;
 			}
 			else
@@ -352,7 +364,7 @@ namespace Beacon //this should eventually become a class
 	{
 		ent->r.svFlags = SVF_BROADCAST | SVF_CLIENTMASK;
 
-		G_TeamToClientmask( (team_t)ent->s.generic1, &ent->r.loMask, &ent->r.hiMask );
+		G_TeamToClientmask( (team_t)ent->s.bc_team, &ent->r.loMask, &ent->r.hiMask );
 
 		// Don't send enemy bases or tagged enemy entities to spectators.
 		if ( ent->s.eFlags & EF_BC_ENEMY )
@@ -369,10 +381,10 @@ namespace Beacon //this should eventually become a class
 		}
 
 		// Don't send a player tag to the tagged client itself.
-		if ( ent->s.modelindex == BCT_TAG && (ent->s.eFlags & EF_BC_TAG_PLAYER) )
+		if ( ent->s.bc_type == BCT_TAG && (ent->s.eFlags & EF_BC_TAG_PLAYER) )
 		{
 			int loMask, hiMask;
-			G_ClientnumToMask( ent->s.otherEntityNum2, &loMask, &hiMask );
+			G_ClientnumToMask( ent->s.bc_target, &loMask, &hiMask );
 			ent->r.loMask &= ~loMask;
 			ent->r.hiMask &= ~hiMask;
 		}
@@ -413,13 +425,10 @@ namespace Beacon //this should eventually become a class
 			if ( ent->s.eType != ET_BEACON )
 				continue;
 
-			if ( ent->s.otherEntityNum != clientNum )
+			if ( ent->s.bc_owner != clientNum )
 				continue;
 
-			if ( BG_Beacon( ent->s.modelindex )->flags & BCF_PER_PLAYER )
-				Delete( ent );
-			else
-				ent->s.otherEntityNum = ENTITYNUM_NONE;
+			Delete( ent );
 		}
 	}
 
@@ -430,7 +439,7 @@ namespace Beacon //this should eventually become a class
 		if( parent->client )
 		{
 			if( parent->client->pers.team == TEAM_HUMANS )
-				ent->s.modelindex2 = BG_GetPlayerWeapon( &parent->client->ps );
+				ent->s.bc_data = BG_GetPlayerWeapon( &parent->client->ps );
 		}
 	}
 
@@ -495,11 +504,13 @@ namespace Beacon //this should eventually become a class
 	 */
 	static inline void RefreshTag( gentity_t *ent, bool force=false )
 	{
-		if( !force && !ent->s.time2 )
+		ent->s.bc_mtime = level.time;
+
+		if( !force && !ent->s.bc_etime )
 			return;
 
 		if( ent->s.eFlags & EF_BC_TAG_PLAYER )
-			ent->s.time2 = level.time + 2000;
+			ent->s.bc_etime = level.time + 2000;
 	}
 
 	static inline bool CheckRefreshTag( gentity_t *ent, team_t team )
@@ -528,8 +539,6 @@ namespace Beacon //this should eventually become a class
 		switch( ent->s.eType )
 		{
 			case ET_BUILDABLE:
-				if( ! (ent->s.eFlags & EF_B_SPAWNED ) )
-					return false;
 				if( ent->health <= 0 )
 					return false;
 				if( ent->buildableTeam == team )
@@ -706,7 +715,7 @@ namespace Beacon //this should eventually become a class
 
 		beacon = New( origin, BCT_TAG, data, team, owner );
 		beacon->tagAttachment = attachment;
-		beacon->s.otherEntityNum2 = ent - g_entities;
+		beacon->s.bc_target = ent - g_entities;
 
 		ent->tagScore = 0;
 
@@ -717,7 +726,7 @@ namespace Beacon //this should eventually become a class
 			beacon->s.eFlags |= EF_BC_ENEMY;
 
 		if( permanent )
-			beacon->s.time2 = 0;
+			beacon->s.bc_etime = 0;
 		else
 			RefreshTag( beacon, true );
 

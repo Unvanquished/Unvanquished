@@ -643,9 +643,12 @@ typedef struct
 	int           oldFlags;
 	int           ctime;
 	int           etime;
+	int           mtime;
 	int           data;
 	team_t        team;
 	int           owner;
+
+	float         priority;
 
 	// cache
 	float         dot;
@@ -686,6 +689,7 @@ typedef struct
 	float         hudMinSize;
 	float         hudMaxSize;
 	float         hudAlpha;
+	float         hudAlphaImportant;
 	vec2_t        hudCenter;    //runtime
 	vec2_t        hudRect[ 2 ]; //runtime
 
@@ -693,6 +697,23 @@ typedef struct
 	float         minimapScale;
 	float         minimapAlpha;
 } beaconsConfig_t;
+
+// strings to display on the libRocket HUD
+typedef struct
+{
+	const char  *name;
+	float        alpha;
+	char         distance[ 48 ];
+
+	char         info[ 128 ];
+	float        infoAlpha;
+
+	char         age[ 48 ];
+	float        ageAlpha;
+
+	char         owner[ 128 ];
+	float        ownerAlpha;
+} beaconRocket_t;
 
 //======================================================================
 
@@ -1284,6 +1305,7 @@ typedef struct
 	cbeacon_t               *beacons[ MAX_CBEACONS ];
 	int                     beaconCount;
 	cbeacon_t               *highlightedBeacon;
+	beaconRocket_t          beaconRocket;
 
 	int                     tagScoreTime;
 } cg_t;
@@ -2302,6 +2324,7 @@ qboolean   CG_ParseColor( byte *c, char **text_p );
 const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
 void       CG_ReadableSize( char *buf, int bufsize, int value );
 void       CG_PrintTime( char *buf, int bufsize, int time );
+void CG_FormatSI( char *buf, int size, float num, int sf, const char *unit );
 
 //
 // cg_rocket.c

@@ -927,9 +927,9 @@ static const beaconData_t bg_beaconsData[ ] =
 	{ BCT_TIMER,         "timer",         BCF_IMPORTANT | BCF_PER_PLAYER },
 	{ BCT_TAG,           "tag",           BCF_RESERVED },
 	{ BCT_BASE,          "base",          BCF_RESERVED },
-	{ BCT_ATTACK,        "attack",        0 },
-	{ BCT_DEFEND,        "defend",        0 },
-	{ BCT_REPAIR,        "repair",        0 },
+	{ BCT_ATTACK,        "attack",        BCF_IMPORTANT },
+	{ BCT_DEFEND,        "defend",        BCF_IMPORTANT },
+	{ BCT_REPAIR,        "repair",        BCF_IMPORTANT },
 	{ BCT_HEALTH,        "health",        BCF_RESERVED },
 	{ BCT_AMMO,          "ammo",          BCF_RESERVED }
 };

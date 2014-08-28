@@ -26,6 +26,16 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "cg_local.h"
 
+// keep in sync with ../game/Beacon.cpp
+#define bc_target otherEntityNum
+#define bc_owner otherEntityNum2
+#define bc_type modelindex
+#define bc_data modelindex2
+#define bc_team generic1
+#define bc_ctime time
+#define bc_etime time2
+#define bc_mtime apos.trTime
+
 /*
 =============
 CG_LoadBeaconsConfig
@@ -102,6 +112,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
 		READ_FLOAT_S( hudMinSize )
 		READ_FLOAT_S( hudMaxSize )
 		READ_FLOAT  ( hudAlpha )
+		READ_FLOAT  ( hudAlphaImportant )
 
 		READ_FLOAT  ( minimapScale )
 		READ_FLOAT  ( minimapAlpha )
@@ -353,7 +364,6 @@ void CG_ListBeacons( void )
 	entityState_t *es;
 	cbeacon_t *b;
 	vec3_t delta;
-	float hl_dist = 1.0e20;
 
 	cg.highlightedBeacon = NULL;
 
@@ -369,18 +379,19 @@ void CG_ListBeacons( void )
 					es->modelindex >= NUM_BEACON_TYPES )
 				continue;
 
-			if( es->time2 && es->time2 <= cg.time ) //expired
+			if( es->bc_etime && es->bc_etime <= cg.time ) //expired
 				continue;
 
 			b->inuse = qtrue;
-			b->ctime = es->time;
-			b->etime = es->time2;
+			b->ctime = es->bc_ctime;
+			b->etime = es->bc_etime;
+			b->mtime = es->bc_mtime;
 
 			VectorCopy( cent->lerpOrigin, b->origin );
-			b->type = (beaconType_t)es->modelindex;
-			b->data = es->modelindex2;
-			b->team = (team_t)es->generic1;
-			b->owner = es->otherEntityNum;
+			b->type = (beaconType_t)es->bc_type;
+			b->data = es->bc_data;
+			b->team = (team_t)es->bc_team;
+			b->owner = es->bc_owner;
 			b->flags = es->eFlags;
 		}
 		else
@@ -391,11 +402,16 @@ void CG_ListBeacons( void )
 		b->dot = DotProduct( delta, cg.refdef.viewaxis[ 0 ] );
 		b->dist = Distance( cg.predictedPlayerState.origin, b->origin );
 
-		if( b->dist < hl_dist && b->dot > cgs.bc.highlightAngle )
-		{
+		if( ( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) ||
+		    b->type == BCT_BASE )
+			b->priority = -b->dist;
+		else
+			b->priority = -10.0 * b->dist * 6500.0;
+
+		if( b->dot > cgs.bc.highlightAngle &&
+		   ( !cg.highlightedBeacon ||
+		     b->priority > cg.highlightedBeacon->priority) )
 			cg.highlightedBeacon = b;
-			hl_dist = b->dist;
-		}
 
 		cg.beacons[ cg.beaconCount ] = b;
 		if( ++cg.beaconCount >= MAX_CBEACONS )
@@ -455,6 +471,69 @@ void CG_ListBeacons( void )
 	{
 		cg.beacons[ i ]->old = qtrue;
 		cg.beacons[ i ]->oldFlags = cg.beacons[ i ]->flags;
+	}
+
+	//update cg.beaconRocket
+	{
+		beaconRocket_t * const br = &cg.beaconRocket;
+		float t_alpha, t_infoAlpha, t_ageAlpha, t_ownerAlpha; //targets
+
+		b = cg.highlightedBeacon;
+
+		t_alpha = 0;
+		t_infoAlpha = 0;
+		t_ageAlpha = 0;
+		t_ownerAlpha = 0;
+
+		if( b )
+		{
+			t_alpha = 1;
+			br->name = CG_BeaconText( b );
+			CG_FormatSI( br->distance, sizeof( br->distance ), b->dist * 0.0254, 3, "m" );
+
+			// TODO: br->info
+
+			// friendly tags are always permanent so don't set age for them
+			// don't display age for base beacons either as it wouldn't be too useful
+			if( !( b->type == BCT_TAG && !( b->flags & EF_BC_ENEMY ) ) &&
+			    !( b->type == BCT_BASE ) )
+			{
+				int age;
+
+				t_ageAlpha = 1;
+				age = cg.time - b->mtime;
+
+				if( age < 1000 )
+					Com_sprintf( br->age, sizeof( br->age ), "&lt;1s ago" );
+				else if( age < 60000 )
+					Com_sprintf( br->age, sizeof( br->age ), "%is ago", age / 1000 );
+				else
+					Com_sprintf( br->age, sizeof( br->age ), "%im%is ago", age / 60000, ( age / 1000 ) % 60 );
+			}
+
+			if( BG_Beacon( b->type )->flags & BCF_IMPORTANT )
+			{
+				if( b->owner >= 0 && b->owner < MAX_CLIENTS &&
+				    cgs.clientinfo[ b->owner ].name )
+				{
+					t_ownerAlpha = 1;
+					Com_sprintf( br->owner, sizeof( br->owner ), "by ^7%s", cgs.clientinfo[ b->owner ].name );
+				}
+				else if( b->owner == ENTITYNUM_WORLD )
+				{
+					t_ownerAlpha = 1;
+					Q_strncpyz( br->owner, "(automatic)", sizeof( br->owner ) );
+				}
+			}
+		}
+
+		if( !br->name )
+			br->name = "";
+
+		CG_ExponentialFade( &br->alpha, t_alpha, 10 );
+		CG_ExponentialFade( &br->infoAlpha, t_infoAlpha, 10 );
+		CG_ExponentialFade( &br->ageAlpha, t_ageAlpha, 10 );
+		CG_ExponentialFade( &br->ownerAlpha, t_ownerAlpha, 10 );
 	}
 }
 
@@ -525,60 +604,46 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b, qboolean hud )
 CG_BeaconText
 
 Figures out the text for a beacon.
-The returned string is localized.
 =============
 */
 const char *CG_BeaconText( const cbeacon_t *b )
 {
 	const char *text;
 
-	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
-		return "";
+	if( b->type <= BCT_NONE || b->type > NUM_BEACON_TYPES )
+		return "b->type out of range";
 
-	if ( b->type == BCT_TAG )
+	switch( b->type )
 	{
-		if ( b->flags & EF_BC_TAG_PLAYER )
-		{
-			if ( ( b->team == TEAM_ALIENS ) == !( b->flags & EF_BC_ENEMY ) )
+		case BCT_TAG:
+			if( b->flags & EF_BC_TAG_PLAYER )
 			{
-				if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
-					return 0;
-				text = _( BG_ClassModelConfig( b->data )->humanName );
+				if( ( b->team == TEAM_ALIENS ) == !( b->flags & EF_BC_ENEMY ) )
+					text = BG_Class( b->data )->name;
+				else
+					text = BG_Weapon( b->data )->humanName;
 			}
 			else
+				text = BG_Buildable( b->data )->humanName;
+			break;
+
+		case BCT_BASE:
 			{
-				if( b->data <= WP_NONE || b->data >= WP_NUM_WEAPONS )
-					return 0;
-				text = _( BG_Weapon( b->data )->humanName );
+				int index = 0;
+
+				if( b->flags & EF_BC_BASE_OUTPOST )
+					index |= 1;
+
+				if( b->flags & EF_BC_ENEMY )
+					index |= 2;
+
+				text = BG_Beacon( b->type )->text[ index ];
 			}
-		}
-		else
-		{
-			if( b->data <= BA_NONE || b->data >= BA_NUM_BUILDABLES )
-				return 0;
-			text = _( BG_Buildable( b->data )->humanName );
-		}
-	}
-	else if ( b->type == BCT_BASE )
-	{
-		int index = 0;
+			break;
 
-		if( b->flags & EF_BC_BASE_OUTPOST )
-			index |= 1;
-
-		if( b->flags & EF_BC_ENEMY )
-			index |= 2;
-
-		text = BG_Beacon( b->type )->text[ index ];
+		default:
+			text = BG_Beacon( b->type )->text[ 0 ];
 	}
-	else if ( b->type == BCT_TIMER )
-	{
-		float delta;
-		delta = 0.001f * ( cg.time - b->ctime - BEACON_TIMER_TIME );
-		text = va( "T %c %.2fs", ( delta >= 0 ? '+' : '-' ), fabs( delta ) );
-	}
-	else
-		text = _( BG_Beacon( b->type )->text[ 0 ] );
 
 	if( text )
 		return text;
