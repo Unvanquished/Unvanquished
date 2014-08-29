@@ -338,60 +338,6 @@ enum clc_ops_e
 /*
 ==============================================================
 
-VIRTUAL MACHINE
-
-==============================================================
-*/
-
-// See also vm_traps.h for syscalls common to all VMs
-
-typedef struct vm_s vm_t;
-
-typedef enum
-{
-  VMI_NATIVE,
-  VMI_BYTECODE,
-  VMI_COMPILED
-} vmInterpret_t;
-
-void VM_Init( void );
-
-vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ), vmInterpret_t interpret );
-
-// module should be bare: "cgame", not "cgame.dll", "vm/cgame.qvm"
-
-void           VM_Free( vm_t *vm );
-void           VM_Clear( void );
-void           VM_Forced_Unload_Start( void );
-void           VM_Forced_Unload_Done( void );
-vm_t           *VM_Restart( vm_t *vm );
-
-ATTRIBUTE_NO_SANITIZE_ADDRESS intptr_t QDECL VM_Call( vm_t *vm, int callNum, ... );
-ATTRIBUTE_NO_SANITIZE_ADDRESS intptr_t QDECL VM_DllSyscall( intptr_t arg, ... );
-
-void           VM_Debug( int level );
-
-void           *VM_ArgPtr( intptr_t intValue );
-void           *VM_ExplicitArgPtr( vm_t *vm, intptr_t intValue );
-
-void VM_CheckBlock( intptr_t buf, size_t n, const char *fail );
-void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const char *fail );
-
-intptr_t       VM_SystemCall( intptr_t *args ); // common system calls
-
-#define VMA(x) VM_ArgPtr(args[ x ])
-static INLINE float _vmf( intptr_t x )
-{
-    floatint_t fi;
-    fi.i = ( int ) x;
-    return fi.f;
-}
-
-#define VMF(x) _vmf(args[ x ])
-
-/*
-==============================================================
-
 CMD
 
 Command text buffering and command execution

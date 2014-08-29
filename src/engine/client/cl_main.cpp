@@ -169,7 +169,7 @@ cvar_t             *cl_cgameSyscallStats;
 clientActive_t     cl;
 clientConnection_t clc;
 clientStatic_t     cls;
-vm_t               *cgvm;
+CGameVM *cgvm;
 
 // Structure containing functions exported from refresh DLL
 refexport_t        re;
@@ -1709,7 +1709,7 @@ void CL_Disconnect( qboolean showMainMenu )
 		Rocket_Shutdown();
 
 		// init the UI
-		CL_InitUI();
+		cgvm = CL_InitUI();
 	}
 	else
 	{
@@ -2243,7 +2243,7 @@ void CL_UI_Restart_f( void )
 	// NERVE - SMF
 	Rocket_Shutdown();
 	// init the UI
-	CL_InitUI();
+	cgvm = CL_InitUI();
 }
 
 /*
@@ -3833,7 +3833,7 @@ void CL_StartHunkUsers( void )
 	{
 		cls.uiStarted = qtrue;
 
-		CL_InitUI();
+		cgvm = CL_InitUI();
 	}
 }
 

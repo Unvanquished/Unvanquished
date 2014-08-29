@@ -1877,10 +1877,6 @@ void Com_Init( char *commandLine )
 	Com_RandomBytes( ( byte * )&qport, sizeof( int ) );
 	Netchan_Init( qport & 0xffff );
 
-	VM_Init();
-	// Ignore any errors
-	VM_Forced_Unload_Start();
-
 	SV_Init();
 	Console::LoadHistory();
 

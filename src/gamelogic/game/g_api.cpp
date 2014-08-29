@@ -25,67 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../shared/VMMain.h"
 #include "../shared/CommonProxies.h"
 
-// This really should go in the common code
-static IPC::Channel GetRootChannel(int argc, char** argv)
-{
-	const char* channel;
-	if (argc == 1) {
-		channel = getenv("ROOT_SOCKET");
-		if (!channel) {
-			fprintf(stderr, "Environment variable ROOT_SOCKET not found\n");
-			VM::Exit();
-		}
-	} else {
-		channel = argv[1];
-	}
-
-	char* end;
-	IPC::OSHandleType h = (IPC::OSHandleType)strtol(channel, &end, 10);
-	if (channel == end || *end != '\0') {
-		fprintf(stderr, "Environment variable ROOT_SOCKET does not contain a valid handle\n");
-		VM::Exit();
-	}
-
-	return IPC::Channel(IPC::Socket::FromHandle(h));
-}
-
-class ExitException{};
-
-void VM::Exit() {
-  throw ExitException();
-}
-
-IPC::Channel VM::rootChannel;
-
-static IPC::SharedMemory shmRegion;
-
-DLLEXPORT int main(int argc, char** argv)
-{
-	try {
-		VM::rootChannel = GetRootChannel(argc, argv);
-
-		// Send syscall ABI version, also acts as a sign that the module loaded
-		IPC::Writer writer;
-		writer.Write<uint32_t>(GAME_API_VERSION);
-		VM::rootChannel.SendMsg(writer);
-
-		// Allocate entities and clients shared memory region
-		shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
-		char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
-		g_entities = reinterpret_cast<gentity_t*>(shmBase);
-		g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
-
-		// Start main loop
-		while (true) {
-			IPC::Reader reader = VM::rootChannel.RecvMsg();
-			uint32_t id = reader.Read<uint32_t>();
-			VM::VMMain(id, std::move(reader));
-		}
-	} catch (ExitException e) {
-		return 0;
-	}
-}
-
 //HACK: NaCl doesn't support messages bigger than 128k so for now
 //we send it by small chunks
 
@@ -103,8 +42,23 @@ void G_FinishMapLoad(std::string name)
 	G_CM_ClearWorld();
 }
 
-void VM::VMMain(uint32_t id, IPC::Reader reader)
-{
+static IPC::SharedMemory shmRegion;
+
+// Symbols required by the shared VMMain code
+
+int VM::VM_API_VERSION = GAME_API_VERSION;
+
+void VM::VMInit() {
+    // Allocate entities and clients shared memory region
+    shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
+    char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
+    g_entities = reinterpret_cast<gentity_t*>(shmBase);
+    g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
+
+}
+
+void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
+
 	int major = id >> 16;
 	int minor = id & 0xffff;
 	if (major == VM::QVM) {
@@ -210,6 +164,8 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 		G_Error("unhandled VM major syscall number %i", major);
 	}
 }
+
+// Definition of the VM->Engine calls
 
 void trap_Print(const char *string)
 {

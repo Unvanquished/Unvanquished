@@ -1950,7 +1950,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		{
 			if ( !onlybinds )
 			{
-				VM_Call( cgvm, CG_KEY_EVENT, key, down );
+				cgvm->CGameKeyEvent(key, down);
 			}
 		}
 
@@ -1971,7 +1971,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		{
 			if ( !onlybinds )
 			{
-				VM_Call( cgvm, CG_KEY_EVENT, key, down );
+				cgvm->CGameKeyEvent(key, down);
 			}
 		}
 	}

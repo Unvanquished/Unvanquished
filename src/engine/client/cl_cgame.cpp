@@ -40,6 +40,7 @@ Maryland 20850 USA.
 #include "libmumblelink.h"
 #include "../qcommon/crypto.h"
 
+#include "../framework/CommonVMServices.h"
 #include "../framework/CommandSystem.h"
 
 #define __(x) Trans_GettextGame(x)
@@ -225,26 +226,6 @@ void CL_CGameStats( void )
 			);
 		cls.nCgameSyscalls = cls.nCgameRenderSyscalls = cls.nCgamePhysicsSyscalls = cls.nCgameUselessSyscalls = cls.nCgameSoundSyscalls = 0;
 	}
-}
-/*
-=====================
-CL_CompleteCgameCommand
-=====================
-*/
-void CL_CompleteCgameCommand( char *args, int argNum )
-{
-	VM_Call( cgvm, CG_COMPLETE_COMMAND, argNum );
-}
-
-/*
-==============
-CL_AddCgameCommand
-==============
-*/
-void CL_AddCgameCommand( const char *cmdName )
-{
-	Cmd_AddCommand( cmdName, CL_GameCommandHandler );
-	Cmd_SetCommandCompletionFunc( cmdName, CL_CompleteCgameCommand );
 }
 
 /*
@@ -585,10 +566,9 @@ void CL_ShutdownCGame( void )
 	}
 
 	Rocket_Shutdown();
-	VM_Call( cgvm, CG_SHUTDOWN );
-	VM_Free( cgvm );
-	cgvm = NULL;
-	Cmd_RemoveCommandsByFunc( CL_GameCommandHandler );
+	cgvm->CGameShutdown();
+	delete cgvm;
+	cgvm = nullptr;
 }
 
 //
@@ -1469,6 +1449,7 @@ The cgame module is making a system call
 */
 intptr_t CL_CgameSystemCalls( intptr_t *args )
 {
+	/*
 	cls.nCgameSyscalls ++;
 
 	switch ( args[ 0 ] )
@@ -1502,13 +1483,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_CVAR_VARIABLESTRINGBUFFER:
 			cls.nCgameUselessSyscalls ++;
-			VM_CheckBlock( args[2], args[3], "CVARVSB" );
 			Cvar_VariableStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_CVAR_LATCHEDVARIABLESTRINGBUFFER:
 			cls.nCgameUselessSyscalls ++;
-			VM_CheckBlock( args[2], args[3], "CVARLVSB" );
 			Cvar_LatchedVariableStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1526,19 +1505,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ARGV:
 			cls.nCgameUselessSyscalls ++;
-			VM_CheckBlock( args[2], args[3], "ARGV" );
 			Cmd_ArgvBuffer( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_ESCAPED_ARGS:
 			cls.nCgameUselessSyscalls ++;
-			VM_CheckBlock( args[1], args[2], "ARGS" );
 			Cmd_EscapedArgsBuffer( (char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_LITERAL_ARGS:
 			cls.nCgameUselessSyscalls ++;
-			VM_CheckBlock( args[1], args[2], "LARGS" );
 			Cmd_LiteralArgsBuffer((char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
@@ -1552,12 +1528,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return FS_Game_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
 
 		case CG_FS_READ:
-			VM_CheckBlock( args[1], args[2], "FSREAD" );
 			FS_Read( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case CG_FS_WRITE:
-			VM_CheckBlock( args[1], args[2], "FSWRITE" );
 			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
 
 		case CG_FS_FCLOSEFILE:
@@ -1565,7 +1539,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_FS_GETFILELIST:
-			VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
 		case CG_FS_DELETEFILE:
@@ -2006,7 +1979,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GET_ENTITY_TOKEN:
-			VM_CheckBlock( args[1], args[2], "GETET" );
 			return re.GetEntityToken( (char*) VMA( 1 ), args[ 2 ] );
 
 		case CG_INGAME_POPUP:
@@ -2021,7 +1993,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_KEY_GETBINDINGBUF:
-			VM_CheckBlock( args[3], args[4], "KEYGBB" );
 			Key_GetBindingBuf( args[ 1 ], args[ 2 ], (char*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
@@ -2051,7 +2022,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_KEY_KEYNUMTOSTRINGBUF:
 			cls.nCgameUselessSyscalls ++;
-			VM_CheckBlock( args[2], args[3], "KEYNTSB" );
 			Key_KeynumToStringBuf( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -2092,7 +2062,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GETDEMONAME:
-			VM_CheckBlock( args[1], args[2], "GETDM" );
 			CL_DemoName( (char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
@@ -2133,7 +2102,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GETCLIPBOARDDATA:
-			VM_CheckBlock( args[1], args[2], "GETCLIP" );
 
 			if ( cl_allowPaste->integer )
 			{
@@ -2147,25 +2115,21 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_QUOTESTRING:
 			cls.nCgameUselessSyscalls ++;
-			VM_CheckBlock( args[ 2 ], args[ 3 ], "QUOTE" );
 			Cmd_QuoteStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_GETTEXT:
 			cls.nCgameUselessSyscalls ++;
-			VM_CheckBlock( args[ 1 ], args[ 3 ], "CGGETTEXT" );
 			Q_strncpyz( (char*) VMA(1), __( (char*) VMA( 2 ) ), args[3] );
 			return 0;
 
 		case CG_PGETTEXT:
 			cls.nCgameUselessSyscalls ++;
-			VM_CheckBlock( args[ 1 ], args[ 4 ], "CGPGETTEXT" );
 			Q_strncpyz( (char*) VMA( 1 ), C__( (char*) VMA( 2 ), (char*) VMA( 3 ) ), args[ 4 ] );
 			return 0;
 
 		case CG_GETTEXT_PLURAL:
 			cls.nCgameUselessSyscalls ++;
-			VM_CheckBlock( args[ 1 ], args[ 5 ], "CGGETTEXTP" );
 			Q_strncpyz( (char*) VMA( 1 ), P__( (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] ), args[ 5 ] );
 			return 0;
 
@@ -2285,12 +2249,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_LAN_GETPING:
-			VM_CheckBlock( args[2], args[3], "UILANGP" );
 			LAN_GetPing( args[ 1 ], (char *)VMA( 2 ), args[ 3 ], (int*) VMA( 4 ) );
 			return 0;
 
 		case CG_LAN_GETPINGINFO:
-			VM_CheckBlock( args[2], args[3], "UILANGPI" );
 			LAN_GetPingInfo( args[ 1 ], (char *) VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -2298,12 +2260,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return LAN_GetServerCount( args[ 1 ] );
 
 		case CG_LAN_GETSERVERADDRESSSTRING:
-			VM_CheckBlock( args[3], args[4], "UILANGSAS" );
 			LAN_GetServerAddressString( args[ 1 ], args[ 2 ], (char *) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case CG_LAN_GETSERVERINFO:
-			VM_CheckBlock( args[3], args[4], "UILANGSI" );
 			LAN_GetServerInfo( args[ 1 ], args[ 2 ], (char *) VMA( 3 ), args[ 4 ] );
 			return 0;
 
@@ -2325,7 +2285,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_LAN_SERVERSTATUS:
-			VM_CheckBlock( args[2], args[3], "UILANGSS" );
 			return LAN_GetServerStatus( (char *) VMA( 1 ), (char *) VMA( 2 ), args[ 3 ] );
 
 		case CG_LAN_SERVERISINFAVORITELIST:
@@ -2473,7 +2432,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
 	}
-
+*/
 	return 0;
 }
 
@@ -2611,16 +2570,18 @@ Start the cgame so we can load rocket
 =============
 */
 
-void CL_InitUI( void )
+CGameVM* CL_InitUI( void )
 {
-	cgvm = VM_Create("cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue("vm_cgame"));
+    CGameVM* vm = new CGameVM();
 
-	if ( !cgvm )
-	{
-		Com_Error( ERR_DROP, "VM_Create on cgame failed" );
-	}
+    if (vm->Start()) {
+        return vm;
+    }
+    delete vm;
 
-	VM_Call( cgvm, CG_INIT_ROCKET );
+	Com_Error(ERR_DROP, "Couldn't load the cgame VM");
+
+	return nullptr;
 }
 
 
@@ -2655,7 +2616,7 @@ void CL_InitCGame( void )
 	// use the lastExecutedServerCommand instead of the serverCommandSequence
 	// otherwise server commands sent just before a gamestate are dropped
 	//bani - added clc.demoplaying, since some mods need this at init time, and drawactiveframe is too late for them
-	VM_Call( cgvm, CG_INIT, clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum, clc.demoplaying );
+	cgvm->CGameInit(clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum, clc.demoplaying);
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -2682,7 +2643,7 @@ void CL_InitCGame( void )
 }
 
 void CL_InitCGameCVars( void )
-{
+{/* TODO I don't understand that
 	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue( "vm_cgame" ) );
 
 	if ( !cgv_vm )
@@ -2692,7 +2653,7 @@ void CL_InitCGameCVars( void )
 
 	VM_Call( cgv_vm, CG_INIT_CVARS );
 
-	VM_Free( cgv_vm );
+	VM_Free( cgv_vm );*/
 }
 
 /*
@@ -2702,24 +2663,9 @@ CL_GameCommandHandler
 */
 void CL_GameCommandHandler( void )
 {
+	/* TODO this will be useless
 	VM_Call( cgvm, CG_CONSOLE_COMMAND );
-}
-
-/*
-====================
-CL_GameCommand
-
-See if the current console command is claimed by the cgame
-====================
-*/
-qboolean CL_GameConsoleText( void )
-{
-	if ( !cgvm )
-	{
-		return qfalse;
-	}
-
-	return VM_Call( cgvm, CG_CONSOLE_TEXT );
+	*/
 }
 
 /*
@@ -2729,15 +2675,7 @@ CL_CGameRendering
 */
 void CL_CGameRendering( stereoFrame_t stereo )
 {
-	/*  static int x = 0;
-	        if(!((++x) % 20)) {
-	                Com_Printf( "numtraces: %i\n", numtraces / 20 );
-	                numtraces = 0;
-	        } else {
-	        }*/
-
-	VM_Call( cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying );
-	VM_Debug( 0 );
+	cgvm->CGameDrawActiveFrame(cl.serverTime, stereo, clc.demoplaying);
 }
 
 /*
@@ -3120,4 +3058,131 @@ void  CL_OnTeamChanged( int newTeam )
 	 * to e.g. execute team specific configs, like cg_<team>Config did previously, but with less dependency on the cgame
 	 */
 	Cmd::BufferCommandText( "exec -f " TEAMCONFIG_NAME );
+}
+
+static VM::VMParams cgameParams("cgame");
+
+CGameVM::CGameVM(): VM::VMBase("cgame", cgameParams), services(new VM::CommonVMServices(*this, "CGame", Cmd::CGAME_VM))
+{
+}
+
+bool CGameVM::Start()
+{
+    int version = this->Create();
+
+    if (version < 0)
+    {
+        return false;
+    }
+
+	if ( version != CGAME_API_VERSION ) {
+		Com_Error( ERR_DROP, "CGame ABI mismatch, expected %d, got %d", CGAME_API_VERSION, version );
+    }
+
+    return true;
+}
+
+CGameVM::~CGameVM()
+{
+    this->Free();
+}
+
+void CGameVM::CGameStaticInit()
+{
+	this->SendMsg<CGameStaticInitMsg>();
+}
+
+void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum, int demoplaying)
+{
+	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum, demoplaying);
+}
+
+void CGameVM::CGameShutdown()
+{
+	this->SendMsg<CGameShutdownMsg>();
+}
+
+void CGameVM::CGameDrawActiveFrame(int serverTime, stereoFrame_t stereoView, bool demoPlayback)
+{
+	this->SendMsg<CGameDrawActiveFrameMsg>(serverTime, stereoView, demoPlayback);
+}
+
+int CGameVM::CGameCrosshairPlayer()
+{
+	int player;
+	this->SendMsg<CGameCrosshairPlayerMsg>(player);
+	return player;
+}
+
+void CGameVM::CGameKeyEvent(int key, bool down)
+{
+	this->SendMsg<CGameKeyEventMsg>(key, down);
+}
+
+void CGameVM::CGameMouseEvent(int dx, int dy)
+{
+	this->SendMsg<CGameMouseEventMsg>(dx, dy);
+}
+
+std::vector<std::string> CGameVM::CGameVoipString()
+{
+	std::vector<std::string> strings;
+	this->SendMsg<CGameVoipStringMsg>(strings);
+	return std::move(strings);
+}
+
+void CGameVM::CGameInitCvars()
+{
+	this->SendMsg<CGameInitCvarsMsg>();
+}
+
+void CGameVM::CGameRocketInit()
+{
+	this->SendMsg<CGameRocketInitMsg>();
+}
+
+void CGameVM::CGameRocketFrame()
+{
+	this->SendMsg<CGameRocketFrameMsg>();
+}
+
+void CGameVM::CGameRocketFormatData(int handle)
+{
+	this->SendMsg<CGameRocketFormatDataMsg>(handle);
+}
+
+void CGameVM::CGameRocketRenderElement()
+{
+	this->SendMsg<CGameRocketRenderElementMsg>();
+}
+
+float CGameVM::CGameRocketProgressbarValue()
+{
+	float value;
+	this->SendMsg<CGameRocketProgressbarValueMsg>(value);
+	return value;
+}
+
+void CGameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
+{
+	int major = id >> 16;
+	int minor = id & 0xffff;
+	if (major == VM::QVM) {
+		this->QVMSyscall(minor, reader, channel);
+
+    } else if (major < VM::LAST_COMMON_SYSCALL) {
+        services->Syscall(major, minor, std::move(reader), channel);
+
+    } else {
+		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
+	}
+}
+
+void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
+{
+	switch (index) {
+		//TODO please fill me
+	default:
+		Com_Error(ERR_DROP, "Bad game system trap: %d", index);
+	}
 }

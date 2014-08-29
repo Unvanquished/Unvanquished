@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
-#include "../qcommon/vm_traps.h"
 #include "../botlib/bot_api.h"
 
 #define GAME_API_VERSION          1
@@ -107,7 +106,7 @@ typedef struct
 // game-module-to-engine calls
 typedef enum gameImport_s
 {
-  G_PRINT = FIRST_VM_SYSCALL,
+  G_PRINT,
   G_ERROR,
   G_LOG,
   G_SEND_CONSOLE_COMMAND,
@@ -428,6 +427,7 @@ typedef enum
   GAME_MESSAGERECEIVED, // void ()( int clientNum, const char *buffer, int bufferSize, int commandTime );
 } gameExport_t;
 
+// GameStaticInitMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_STATIC_INIT>>
 > GameStaticInitMsg;

@@ -412,7 +412,7 @@ void CL_MouseEvent( int dx, int dy, int time )
 {
 	if ( cls.keyCatchers & KEYCATCH_CGAME )
 	{
-		VM_Call( cgvm, CG_MOUSE_EVENT, dx, dy );
+		cgvm->CGameMouseEvent(dx, dy);
 	}
 	else if ( cls.keyCatchers & KEYCATCH_UI )
 	{

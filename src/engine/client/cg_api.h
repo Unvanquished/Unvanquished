@@ -25,10 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "../qcommon/q_shared.h"
-#include "../qcommon/vm_traps.h"
 #include "../renderer/tr_types.h"
 
-#define CGAME_IMPORT_API_VERSION 3
+#define CGAME_API_VERSION 3
 
 #define CMD_BACKUP               64
 #define CMD_MASK                 ( CMD_BACKUP - 1 )
@@ -115,7 +114,7 @@ typedef enum
 
 typedef enum cgameImport_s
 {
-  CG_PRINT = FIRST_VM_SYSCALL,
+  CG_PRINT,
   CG_ERROR,
   CG_LOG,
   CG_MILLISECONDS,
@@ -352,6 +351,8 @@ typedef enum cgameImport_s
 
 typedef enum
 {
+  CG_STATIC_INIT,
+
   CG_INIT,
 //  void CG_Init( int serverMessageNum, int serverCommandSequence )
   // called when the level loads or when the renderer is restarted
@@ -365,28 +366,13 @@ typedef enum
 //  void (*CG_Shutdown)( void );
   // oportunity to flush and close any open files
 
-  CG_CONSOLE_COMMAND,
-//  qboolean (*CG_ConsoleCommand)( void );
-  // a console command has been issued locally that is not recognized by the
-  // main game system.
-  // use Cmd_Argc() / Cmd_Argv() to read the command, return qfalse if the
-  // command is not known to the game
-
   CG_DRAW_ACTIVE_FRAME,
 //  void (*CG_DrawActiveFrame)( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
   // Generates and draws a game scene and status information at the given time.
   // If demoPlayback is set, local movement prediction will not be enabled
 
-  CG_CONSOLE_TEXT,
-//	void (*CG_ConsoleText)( void );
-  //  pass text that has been printed to the console to cgame
-  //  use Cmd_Argc() / Cmd_Argv() to read it
-
   CG_CROSSHAIR_PLAYER,
 //  int (*CG_CrosshairPlayer)( void );
-
-  CG_UNUSED_EXPORT_1,
-//  UNUSED
 
   CG_KEY_EVENT,
 //  void    (*CG_KeyEvent)( int key, qboolean down );
@@ -398,29 +384,87 @@ typedef enum
 // char *(*CG_VoIPString)( void );
 // returns a string of comma-delimited clientnums based on cl_voipSendTarget
 
-  CG_COMPLETE_COMMAND,
-// char (*CG_CompleteCommand)( int argNum );
-// will callback on all availible completions
-// use Cmd_Argc() / Cmd_Argv() to read the command
-
   CG_INIT_CVARS,
 // registers cvars only then shuts down; call instead of CG_INIT for this purpose
 
-  CG_INIT_ROCKET,
+  CG_ROCKET_VM_INIT,
 // Inits libRocket in the game.
 
   CG_ROCKET_FRAME,
 // Rocket runs through a frame, including event processing
 
-  CG_ROCKET_FORMATDATA,
+  CG_ROCKET_FORMAT_DATA,
 // Rocket wants some data formatted
 
-  CG_ROCKET_RENDERELEMENT,
+  CG_ROCKET_RENDER_ELEMENT,
 // Rocket wants an element renderered
 
-  CG_ROCKET_PROGRESSBARVALUE
+  CG_ROCKET_PROGRESSBAR_VALUE
 // Rocket wants to query the value of a progress bar
 } cgameExport_t;
+
+// CGameStaticInitMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_STATIC_INIT>>
+> CGameStaticInitMsg;
+// CGameInitMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_INIT>, int, int, int, bool>
+> CGameInitMsg;
+// CGameShutdownMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_SHUTDOWN>>
+> CGameShutdownMsg;
+// CGameDrawActiveFrameMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_DRAW_ACTIVE_FRAME>, int, stereoFrame_t, bool>
+> CGameDrawActiveFrameMsg;
+// CGameCrosshairPlayerMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_CROSSHAIR_PLAYER>>,
+	IPC::Reply<int>
+> CGameCrosshairPlayerMsg;
+// CGameKeyEventMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_KEY_EVENT>, int, bool>
+> CGameKeyEventMsg;
+// CGameMouseEventMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_EVENT>, int, int>
+> CGameMouseEventMsg;
+// CGameVoipStringMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_VOIP_STRING>>,
+	IPC::Reply<std::vector<std::string>>
+> CGameVoipStringMsg;
+// CGameInitCvarsMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_INIT_CVARS>>
+> CGameInitCvarsMsg;
+
+//TODO Check all rocket calls
+// CGameRocketInitMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_VM_INIT>>
+> CGameRocketInitMsg;
+// CGameRocketFrameMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FRAME>>
+> CGameRocketFrameMsg;
+// CGameRocketFormatDataMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FORMAT_DATA>, int>
+> CGameRocketFormatDataMsg;
+// CGameRocketRenderElementMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_RENDER_ELEMENT>>
+> CGameRocketRenderElementMsg;
+// CGameRocketProgressbarValueMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_PROGRESSBAR_VALUE>>,
+	IPC::Reply<float>
+> CGameRocketProgressbarValueMsg;
+
 
 void            trap_Print( const char *string );
 void NORETURN   trap_Error( const char *string );

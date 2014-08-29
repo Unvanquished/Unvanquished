@@ -43,6 +43,7 @@ Maryland 20850 USA.
 #include "keys.h"
 #include "../audio/Audio.h"
 #include "../client/cg_api.h"
+#include "../framework/VirtualMachine.h"
 
 #if defined(USE_VOIP) && !defined(BUILD_SERVER)
 #include <speex/speex.h>
@@ -420,7 +421,40 @@ extern clientStatic_t cls;
 
 //=============================================================================
 
-extern vm_t                   *cgvm; // interface to the cgame module
+namespace VM {
+    class CommonVMServices;
+}
+
+class CGameVM: public VM::VMBase {
+public:
+	CGameVM();
+    virtual ~CGameVM();
+	bool Start();
+
+	void CGameStaticInit();
+	void CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum, int demoplaying);
+    void CGameShutdown();
+    void CGameDrawActiveFrame(int serverTime, stereoFrame_t stereoView, bool demoPlayback);
+    int CGameCrosshairPlayer();
+    void CGameKeyEvent(int key, bool down);
+    void CGameMouseEvent(int dx, int dy);
+    std::vector<std::string> CGameVoipString();
+    void CGameInitCvars();
+
+    void CGameRocketInit();
+    void CGameRocketFrame();
+    void CGameRocketFormatData(int handle);
+    void CGameRocketRenderElement();
+    float CGameRocketProgressbarValue();
+
+private:
+	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
+	void QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel);
+
+    std::unique_ptr<VM::CommonVMServices> services;
+};
+
+extern CGameVM *cgvm;
 
 extern refexport_t            re; // interface to refresh library
 
@@ -859,7 +893,7 @@ void     CL_OnTeamChanged( int newTeam );
 //
 // cl_ui.c
 //
-void CL_InitUI( void );
+CGameVM* CL_InitUI( void );
 void CL_ShutdownUI( void );
 int  Key_GetCatcher( void );
 void Key_SetCatcher( int catcher );
