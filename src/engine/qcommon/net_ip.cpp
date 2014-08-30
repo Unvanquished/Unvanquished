@@ -1065,7 +1065,7 @@ SOCKET NET_IPSocket( const char *net_interface, int port, struct sockaddr_in *bi
 
 	*err = 0;
 
-	Com_Printf(_( "Opening IP socket: %s:%s\n"), net_interface ? net_interface : "0.0.0.0", port ? va( "%i", port ) : "*" );
+	Com_Printf( "Opening IP socket: %s:%s\n", net_interface ? net_interface : "0.0.0.0", port ? va( "%i", port ) : "*" );
 
 	if ( ( newsocket = socket( PF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == INVALID_SOCKET )
 	{
@@ -1150,7 +1150,7 @@ SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *
 	*err = 0;
 
 	// Print the name in brackets if there is a colon:
-	Com_Printf(_( "Opening IP6 socket: %s%s%s:%s\n"), brackets ? "[" : "", net_interface ? net_interface : "[::]", brackets ? "]" : "", port ? va( "%i", port ) : "*" );
+	Com_Printf( "Opening IP6 socket: %s%s%s:%s\n", brackets ? "[" : "", net_interface ? net_interface : "[::]", brackets ? "]" : "", port ? va( "%i", port ) : "*" );
 
 	if ( ( newsocket = socket( PF_INET6, SOCK_DGRAM, IPPROTO_UDP ) ) == INVALID_SOCKET )
 	{
@@ -1353,7 +1353,7 @@ void NET_OpenSocks( int port )
 
 	usingSocks = qfalse;
 
-	Com_Printf(_( "Opening connection to SOCKS server.\n" ));
+	Com_Printf( "Opening connection to SOCKS server.\n" );
 
 	if ( ( socks_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ) ) == INVALID_SOCKET )
 	{
@@ -1645,7 +1645,7 @@ static void NET_GetLocalAddress( void )
 		return;
 	}
 
-	Com_Printf(_( "Hostname: %s\n"), hostname );
+	Com_Printf( "Hostname: %s\n", hostname );
 
 	memset( &hint, 0, sizeof( hint ) );
 

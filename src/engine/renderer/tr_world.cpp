@@ -35,14 +35,11 @@ added to the sorting list.
 This will also allow mirrors on both sides of a model without recursion.
 ================
 */
-static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *frontFace )
+static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader )
 {
 	srfGeneric_t *gen;
 	int          cull;
 	float        d;
-
-	// force to non-front facing
-	*frontFace = 0;
 
 	// allow culling to be disabled
 	if ( r_nocull->integer )
@@ -69,11 +66,6 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 	{
 		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )gen;
 		d = DotProduct( tr.orientation.viewOrigin, srf->plane.normal ) - srf->plane.dist;
-
-		if ( d > 0.0f )
-		{
-			*frontFace = 1;
-		}
 
 		// don't cull exactly on the plane, because there are levels of rounding
 		// through the BSP, ICD, and hardware that may cause pixel gaps if an
@@ -301,24 +293,22 @@ static void R_AddDecalSurface( bspSurface_t *surf, int decalBits )
 R_AddWorldSurface
 ======================
 */
-static qboolean R_AddWorldSurface( bspSurface_t *surf )
+static qboolean R_AddWorldSurface( bspSurface_t *surf, int fogIndex )
 {
-	int      frontFace;
-
 	if ( surf->viewCount == tr.viewCountNoReset )
 	{
-		return qfalse;
+		return qfalse; // already in this view
 	}
 
 	surf->viewCount = tr.viewCountNoReset;
 
 	// try to cull before lighting or adding
-	if ( R_CullSurface( surf->data, surf->shader, &frontFace ) )
+	if ( R_CullSurface( surf->data, surf->shader ) )
 	{
 		return qtrue;
 	}
 
-	R_AddDrawSurf( surf->data, surf->shader, surf->lightmapNum, surf->fogIndex );
+	R_AddDrawSurf( surf->data, surf->shader, surf->lightmapNum, fogIndex );
 	return qtrue;
 }
 
@@ -329,31 +319,6 @@ static qboolean R_AddWorldSurface( bspSurface_t *surf )
 
 =============================================================
 */
-
-/*
-======================
-R_AddBrushModelSurface
-======================
-*/
-static void R_AddBrushModelSurface( bspSurface_t *surf, int fogIndex )
-{
-	int frontFace;
-
-	if ( surf->viewCount == tr.viewCountNoReset )
-	{
-		return; // already in this view
-	}
-
-	surf->viewCount = tr.viewCountNoReset;
-
-	// try to cull before lighting or adding
-	if ( R_CullSurface( surf->data, surf->shader, &frontFace ) )
-	{
-		return;
-	}
-
-	R_AddDrawSurf( surf->data, surf->shader, surf->lightmapNum, fogIndex );
-}
 
 /*
 =================
@@ -412,7 +377,7 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 
 	for ( i = 0; i < bspModel->numSurfaces; i++ )
 	{
-		R_AddBrushModelSurface( bspModel->firstSurface + i, fogNum );
+		R_AddWorldSurface( bspModel->firstSurface + i, fogNum );
 	}
 }
 
@@ -472,7 +437,7 @@ static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
 	{
 		// the surface may have already been added if it
 		// spans multiple leafs
-		if ( R_AddWorldSurface( *view ) )
+		if ( R_AddWorldSurface( *view, (*view)->fogIndex ) )
 		{
 			R_AddDecalSurface( *mark, decalBits );
 		}

@@ -962,99 +962,99 @@ static void IRC_HandleError( void )
 			return;
 
 		case WSANOTINITIALISED:
-			Com_Printf("%s", _( "Unable to initialise socket.\n" ));
+			Com_Printf( "Unable to initialise socket.\n" );
 			break;
 
 		case WSAEAFNOSUPPORT:
-			Com_Printf("%s", _( "The specified address family is not supported.\n" ));
+			Com_Printf( "The specified address family is not supported.\n" );
 			break;
 
 		case WSAEADDRNOTAVAIL:
-			Com_Printf("%s", _( "Specified address is not available from the local machine.\n" ));
+			Com_Printf( "Specified address is not available from the local machine.\n" );
 			break;
 
 		case WSAECONNREFUSED:
-			Com_Printf("%s", _( "The attempt to connect was forcefully rejected.\n" ));
+			Com_Printf( "The attempt to connect was forcefully rejected.\n" );
 			break;
 
 		case WSAEDESTADDRREQ:
-			Com_Printf("%s", _( "address destination address is required.\n" ));
+			Com_Printf( "address destination address is required.\n" );
 			break;
 
 		case WSAEFAULT:
-			Com_Printf("%s", _( "The namelen argument is incorrect.\n" ));
+			Com_Printf( "The namelen argument is incorrect.\n" );
 			break;
 
 		case WSAEINVAL:
-			Com_Printf("%s", _( "The socket is not already bound to an address.\n" ));
+			Com_Printf( "The socket is not already bound to an address.\n" );
 			break;
 
 		case WSAEISCONN:
-			Com_Printf("%s", _( "The socket is already connected.\n" ));
+			Com_Printf( "The socket is already connected.\n" );
 			break;
 
 		case WSAEADDRINUSE:
-			Com_Printf("%s", _( "The specified address is already in use.\n" ));
+			Com_Printf( "The specified address is already in use.\n" );
 			break;
 
 		case WSAEMFILE:
-			Com_Printf("%s", _( "No more file descriptors are available.\n" ));
+			Com_Printf( "No more file descriptors are available.\n" );
 			break;
 
 		case WSAENOBUFS:
-			Com_Printf("%s", _( "No buffer space available. The socket cannot be created.\n" ));
+			Com_Printf( "No buffer space available. The socket cannot be created.\n" );
 			break;
 
 		case WSAEPROTONOSUPPORT:
-			Com_Printf("%s", _( "The specified protocol is not supported.\n" ));
+			Com_Printf( "The specified protocol is not supported.\n" );
 			break;
 
 		case WSAEPROTOTYPE:
-			Com_Printf("%s", _( "The specified protocol is the wrong type for this socket.\n" ));
+			Com_Printf( "The specified protocol is the wrong type for this socket.\n" );
 			break;
 
 		case WSAENETUNREACH:
-			Com_Printf("%s", _( "The network can't be reached from this host at this time.\n" ));
+			Com_Printf( "The network can't be reached from this host at this time.\n" );
 			break;
 
 		case WSAENOTSOCK:
-			Com_Printf("%s", _( "The descriptor is not a socket.\n" ));
+			Com_Printf( "The descriptor is not a socket.\n" );
 			break;
 
 		case WSAETIMEDOUT:
-			Com_Printf("%s", _( "Attempt timed out without establishing a connection.\n" ));
+			Com_Printf( "Attempt timed out without establishing a connection.\n" );
 			break;
 
 		case WSAESOCKTNOSUPPORT:
-			Com_Printf("%s", _( "Socket type is not supported in this address family.\n" ));
+			Com_Printf( "Socket type is not supported in this address family.\n" );
 			break;
 
 		case WSAENETDOWN:
-			Com_Printf("%s", _( "Network subsystem failure.\n" ));
+			Com_Printf( "Network subsystem failure.\n" );
 			break;
 
 		case WSAHOST_NOT_FOUND:
-			Com_Printf("%s", _( "Authoritative Answer Host not found.\n" ));
+			Com_Printf( "Authoritative Answer Host not found.\n" );
 			break;
 
 		case WSATRY_AGAIN:
-			Com_Printf("%s", _( "Non-Authoritative Host not found or SERVERFAIL.\n" ));
+			Com_Printf( "Non-Authoritative Host not found or SERVERFAIL.\n" );
 			break;
 
 		case WSANO_RECOVERY:
-			Com_Printf("%s", _( "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n" ));
+			Com_Printf( "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n" );
 			break;
 
 		case WSANO_DATA:
-			Com_Printf("%s", _( "Valid name, no data record of requested type.\n" ));
+			Com_Printf( "Valid name, no data record of requested type.\n" );
 			break;
 
 		case WSAEINPROGRESS:
-			Com_Printf("%s", _( "address blocking Windows Sockets operation is in progress.\n" ));
+			Com_Printf( "address blocking Windows Sockets operation is in progress.\n" );
 			break;
 
 		default:
-			Com_Printf("%s", _( "Unknown connection error.\n" ));
+			Com_Printf( "Unknown connection error.\n" );
 			break;
 	}
 
@@ -1064,7 +1064,7 @@ static void IRC_HandleError( void )
 #elif defined __linux__ || defined MACOS_X || defined __FreeBSD__ || defined __OpenBSD__
 static void IRC_HandleError( void )
 {
-	Com_Printf( "IRC: %s: %s\n", _( "socket connection error"), strerror( errno ) );
+	Com_Printf( "IRC: %s: %s\n", "socket connection error", strerror( errno ) );
 }
 
 #endif
@@ -1355,11 +1355,11 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 			if ( has_nick )
 			{
-				fmt_string = _("^5-> ^7%s^5 has entered the channel.\n");
+				fmt_string = "^5-> ^7%s^5 has entered the channel.\n";
 			}
 			else
 			{
-				fmt_string = _("^2Joined IRC chat.\n");
+				fmt_string = "^2Joined IRC chat.\n";
 			}
 
 			break;
@@ -1372,11 +1372,11 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 			if ( has_message )
 			{
-				fmt_string = _("^5<- ^7%s^5 has left the channel: %s.\n");
+				fmt_string = "^5<- ^7%s^5 has left the channel: %s.\n";
 			}
 			else
 			{
-				fmt_string = _("^5<- ^7%s^5 has left the channel.\n");
+				fmt_string = "^5<- ^7%s^5 has left the channel.\n";
 			}
 
 			break;
@@ -1390,17 +1390,17 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 				if ( has_message )
 				{
-					fmt_string = _("^5<- ^7%s^5 has quit: %s.\n");
+					fmt_string = "^5<- ^7%s^5 has quit: %s.\n";
 				}
 				else
 				{
-					fmt_string = _("^5<- ^7%s^5 has quit.\n");
+					fmt_string = "^5<- ^7%s^5 has quit.\n";
 				}
 			}
 			else
 			{
 				has_message = qtrue;
-				fmt_string = _("^2Quit IRC chat: %s.\n");
+				fmt_string = "^2Quit IRC chat: %s.\n";
 			}
 
 			break;
@@ -1410,11 +1410,11 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 			if ( IRC_EventIsSelf( event ) )
 			{
-				fmt_string = _("^2Kicked by ^7%s^2: %s.\n");
+				fmt_string = "^2Kicked by ^7%s^2: %s.\n";
 			}
 			else
 			{
-				fmt_string = _("^5<- ^7%s^5 has been kicked: %s.\n");
+				fmt_string = "^5<- ^7%s^5 has been kicked: %s.\n";
 			}
 
 			break;
@@ -1424,18 +1424,18 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 			if ( IRC_EventIsSelf( event ) )
 			{
-				fmt_string = _("^2** ^7%s^2 is now known as ^7%s^2.\n");
+				fmt_string = "^2** ^7%s^2 is now known as ^7%s^2.\n";
 			}
 			else
 			{
-				fmt_string = _("^5** ^7%s^5 is now known as ^7%s^5.\n");
+				fmt_string = "^5** ^7%s^5 is now known as ^7%s^5.\n";
 			}
 
 			break;
 
 		default:
 			has_nick = has_message = qfalse;
-			fmt_string = _("unknown message received\n");
+			fmt_string = "unknown message received\n";
 			break;
 	}
 
@@ -1532,11 +1532,11 @@ static int IRCH_ServerError( void )
 
 	if ( IRC_ReceivedMessage.arg_count == 1 )
 	{
-		Com_Printf("IRC: %s: %s\n", _( "server error" ), IRC_String( arg_values[ 0 ] ));
+		Com_Printf("IRC: %s: %s\n", "server error" , IRC_String( arg_values[ 0 ] ));
 	}
 	else
 	{
-		Com_Printf("IRC: %s\n", _( "server error" ));
+		Com_Printf("IRC: %s\n", "server error" );
 	}
 
 	return IRC_CMD_RETRY;
@@ -1594,7 +1594,7 @@ static int IRCH_NickError( void )
 	}
 	else
 	{
-		Com_Printf("…IRC: %s\n", _( "got spurious nickname error" ));
+		Com_Printf("…IRC: %s\n", "got spurious nickname error" );
 	}
 
 	return IRC_CMD_SUCCESS;
@@ -1994,13 +1994,13 @@ void CL_IRCSay( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Cmd_PrintUsage(_("<text>"), NULL);
+		Cmd_PrintUsage("<text>", NULL);
 		return;
 	}
 
 	if ( IRC_ThreadStatus != IRC_THREAD_JOINED )
 	{
-		Com_Printf("IRC: %s\n", _( "Not connected" ));
+		Com_Printf("IRC: %s\n", "Not connected" );
 		return;
 	}
 
@@ -2022,7 +2022,7 @@ void CL_IRCSay( void )
 
 	if ( !send_result )
 	{
-		Com_Printf("IRC: %s\n", _( "flood detected, message not sent" ));
+		Com_Printf("IRC: %s\n", "flood detected, message not sent" );
 	}
 }
 
@@ -2218,21 +2218,21 @@ static int IRC_AttemptConnection( void )
 	int                port;
 
 	CHECK_SHUTDOWN;
-	Com_Printf("…IRC: %s\n", _( "connecting to server" ));
+	Com_Printf("…IRC: %s\n", "connecting to server" );
 
 	// Force players to use a non-default name
 	Q_strncpyz( name, Cvar_VariableString( "name" ), sizeof( name ) );
 
 	if ( !Q_strnicmp( name, "player", 7 ) )
 	{
-		Com_Printf("…IRC: %s\n", _( "rejected due to unset player name" ));
+		Com_Printf("…IRC: %s\n", "rejected due to unset player name" );
 		return IRC_CMD_FATAL;
 	}
 
 	// Prepare USER record
 	if ( !IRC_InitialiseUser( name ) )
 	{
-		Com_Printf("…IRC: %s\n", _( "rejected due to mostly unusable player name" ));
+		Com_Printf("…IRC: %s\n", "rejected due to mostly unusable player name" );
 		return IRC_CMD_FATAL;
 	}
 
@@ -2241,7 +2241,7 @@ static int IRC_AttemptConnection( void )
 
 	if ( ( host = gethostbyname( host_name ) ) == NULL )
 	{
-		Com_Printf("…IRC: %s\n", _( "unknown server" ));
+		Com_Printf("…IRC: %s\n", "unknown server" );
 		return IRC_CMD_FATAL;
 	}
 
@@ -2259,7 +2259,7 @@ static int IRC_AttemptConnection( void )
 
 	if ( port <= 0 || port >= 65536 )
 	{
-		Com_Printf("IRC: %s\n", _( "invalid port number, defaulting to 6667" ));
+		Com_Printf("IRC: %s\n", "invalid port number, defaulting to 6667" );
 		port = 6667;
 	}
 
@@ -2272,7 +2272,7 @@ static int IRC_AttemptConnection( void )
 	if ( ( connect( IRC_Socket, ( struct sockaddr * ) &address, sizeof( address ) ) ) != 0 )
 	{
 		closesocket( IRC_Socket );
-		Com_Printf("…IRC: %s\n", _( "connection refused" ));
+		Com_Printf("…IRC: %s\n", "connection refused" );
 		return IRC_CMD_RETRY;
 	}
 
@@ -2296,7 +2296,7 @@ static int IRC_AttemptConnection( void )
 	IRC_ThreadStatus = IRC_THREAD_SETNICK;
 
 	CHECK_SHUTDOWN_CLOSE;
-	Com_Printf("%s", _( "…Connected to IRC server\n" ));
+	Com_Printf( "…Connected to IRC server\n" );
 	return IRC_CMD_SUCCESS;
 }
 
@@ -2497,7 +2497,7 @@ static void IRC_Thread( void )
 	IRC_MainLoop();
 
 	// Clean up
-	Com_Printf("…IRC: %s\n", _( "disconnected from server" ));
+	Com_Printf("…IRC: %s\n", "disconnected from server" );
 	IRC_FlushDEQueue();
 	IRC_SetThreadDead();
 }
@@ -2660,7 +2660,7 @@ void CL_InitIRC( void )
 {
 	if ( IRC_ThreadStatus != IRC_THREAD_DEAD )
 	{
-		Com_Printf("…IRC: %s\n", _( "thread is already running" ));
+		Com_Printf("…IRC: %s\n", "thread is already running" );
 		return;
 	}
 
