@@ -339,6 +339,9 @@ namespace PakPath {
 // Operations which work on raw OS paths. Note that no validation on file names is performed
 namespace RawPath {
 
+	// Create all directories leading to (but not including) a filename
+	void CreatePathTo(Str::StringRef path, std::error_code& err = throws());
+
 	// Open a file for reading/writing/appending/editing
 	File OpenRead(Str::StringRef path, std::error_code& err = throws());
 	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
@@ -454,7 +457,13 @@ namespace HomePath {
 } // namespace HomePath
 
 // Initialize the filesystem and the main paths
+#ifdef BUILD_VM
 void Initialize();
+#else
+std::string DefaultBasePath();
+std::string DefaultHomePath();
+void Initialize(Str::StringRef homePath, const std::vector<std::string>& paths);
+#endif
 
 // Flush write buffers for all open files, useful in case of an unclean shutdown
 void FlushAll();

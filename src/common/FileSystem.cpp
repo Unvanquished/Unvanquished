@@ -1457,8 +1457,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 #ifndef BUILD_VM
 namespace RawPath {
 
-// Create all directories leading to a filename
-static void CreatePath(Str::StringRef path, std::error_code& err)
+void CreatePathTo(Str::StringRef path, std::error_code& err)
 {
 #ifdef _WIN32
 	std::wstring buffer = Str::UTF8To16(path);
@@ -1518,7 +1517,7 @@ static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 	FILE* fd = my_fopen(path, mode);
 	if (!fd && mode != MODE_READ && errno == ENOENT) {
 		// Create the directories and try again
-		CreatePath(path, err);
+		CreatePathTo(path, err);
 		if (HaveError(err))
 			return {};
 		fd = my_fopen(path, mode);
@@ -1944,7 +1943,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 
 #ifndef BUILD_VM
 // Determine path to the executable, default to current directory
-static std::string DefaultBasePath()
+std::string DefaultBasePath()
 {
 #ifdef _WIN32
 	wchar_t buffer[MAX_PATH];
@@ -1992,7 +1991,7 @@ static std::string DefaultBasePath()
 }
 
 // Determine path to user settings directory
-static std::string DefaultHomePath()
+std::string DefaultHomePath()
 {
 #ifdef _WIN32
 	wchar_t buffer[MAX_PATH];
@@ -2012,31 +2011,28 @@ static std::string DefaultHomePath()
 }
 #endif // BUILD_VM
 
+#ifdef BUILD_VM
 void Initialize()
 {
-#ifdef BUILD_VM
-	// TODO: Need to clean up any existing open fds
+	// Make sure we don't leak fds if Initialize is called more than once
+	for (LoadedPakInfo& x: loadedPaks) {
+		if (x.fd != -1)
+			close(x.fd);
+	}
+
 	VM::SendMsg<VM::FSInitializeMsg>(homePath, libPath, availablePaks, PakPath::loadedPaks, PakPath::fileMap);
+}
 #else
-	Com_StartupVariable("fs_basepath");
-	Com_StartupVariable("fs_extrapath");
-	Com_StartupVariable("fs_homepath");
-	Com_StartupVariable("fs_libpath");
-	Com_StartupVariable("fs_extrapaks");
-	Com_StartupVariable("fs_basepak");
-
-	std::string defaultBasePath = DefaultBasePath();
-	std::string defaultHomePath = DefaultHomePath();
-	libPath = Cvar_Get("fs_libpath", defaultBasePath.c_str(), CVAR_INIT)->string;
-	homePath = Cvar_Get("fs_homepath", defaultHomePath.c_str(), CVAR_INIT)->string;
-	const char* basePath = Cvar_Get("fs_basepath", defaultBasePath.c_str(), CVAR_INIT)->string;
-	const char* extraPath = Cvar_Get("fs_extrapath", "", CVAR_INIT)->string;
-
-	if (basePath != homePath)
-		pakPaths.push_back(Path::Build(basePath, "pkg"));
-	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
-		pakPaths.push_back(Path::Build(extraPath, "pkg"));
+void Initialize(Str::StringRef homePath, const std::vector<std::string>& paths)
+{
+	// Insert the homepath last so it overrides other paths
+	for (std::string& path: paths) {
+		// This test isn't precise, but it doesn't matter if paths are duplicated
+		if (path != FS::homePath)
+			pakPaths.push_back(Path::Build(path, "pkg"));
+	}
 	pakPaths.push_back(Path::Build(homePath, "pkg"));
+	FS::homePath = homePath;
 	isInitialized = true;
 
 	Com_Printf("Home path: %s\n", homePath.c_str());

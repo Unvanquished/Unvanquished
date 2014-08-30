@@ -37,7 +37,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Sys {
 
 // Cleanly exit the engine, shutting down all subsystems.
-NORETURN void Quit();
+NORETURN void Quit(Str::StringRef message = "Server quit");
+
+// Process incoming commands from other instances
+void ReadSingletonSocket();
 
 } // namespace Sys
 
