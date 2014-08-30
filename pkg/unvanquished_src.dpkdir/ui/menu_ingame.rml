@@ -103,7 +103,7 @@
 							<!-- <blocklink onClick='Events.pushevent("show options_fov", event)'> Fields of view </blocklink> -->
 						</indent>
 
-						<h2> Lore </h2>
+						<h2> Help </h2>
 						<indent>
 							<blocklink onClick='Events.pushevent("show help_gameplay", event)'> Gameplay guide </blocklink>
 							<blocklink onClick='Events.pushevent("show help_textentry", event)'> Colour codes and symbols </blocklink>
