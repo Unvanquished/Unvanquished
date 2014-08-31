@@ -920,7 +920,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			AngleVectors( client->ps.viewangles, forward, NULL, NULL );
 			VectorMA( origin, 65536, forward, end );
 			G_UnlaggedOn( ent, origin, 65536 );
-			other = Beacon::TagTrace( origin, end, ent->s.number, MASK_SHOT, (team_t)client->pers.team, qtrue );
+			other = Beacon::TagTrace( origin, end, ent->s.number, MASK_SHOT,
+			                          (team_t)client->pers.team, qtrue );
 			G_UnlaggedOff( );
 
 			if( other )
@@ -928,12 +929,30 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				other->tagScore += 100;
 				other->tagScoreTime = level.time;
 				if( other->tagScore > 1000 )
-					Beacon::Tag( other, (team_t)client->pers.team, ent->s.number, qfalse );
+					Beacon::Tag( other, (team_t)client->pers.team, ent->s.number,
+					             ( other->s.eType == ET_BUILDABLE ) );
 
 				client->ps.stats[ STAT_TAGSCORE ] = other->tagScore;
 			}
 			else
 				client->ps.stats[ STAT_TAGSCORE ] = 0;
+		}
+
+		// remove orphaned tags for enemy structures when the structure's death was confirmed
+		{
+			gentity_t *other = NULL;
+			while ( ( other = G_IterateEntities( other ) ) )
+			{
+				if ( other->s.eType == ET_BEACON &&
+				     other->s.modelindex == BCT_TAG &&
+				     ( other->s.eFlags & EF_BC_ENEMY ) &&
+				     !other->tagAttachment &&
+				     ent->client->pers.team == other->s.generic1 &&
+				     G_LineOfSight( ent, other ) )
+				{
+					Beacon::Delete( other, true );
+				}
+			}
 		}
 	}
 

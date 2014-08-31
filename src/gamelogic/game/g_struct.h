@@ -203,11 +203,6 @@ struct gentity_s
 	int          nextBurnAction;
 	gentity_t    *fireStarter;
 
-	/**
-	 * The enemy team that tagged this buildable.
-	 */
-	team_t       taggedByEnemy;
-
 	/*
 	 * targets to aim at
 	 */

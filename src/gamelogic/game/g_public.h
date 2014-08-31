@@ -137,9 +137,8 @@ void              ClientAdminChallenge( int clientNum );
 // g_clustering.c
 namespace BaseClustering {
 	void Init();
-	void Update(gentity_t *ent);
-	void Remove(gentity_t *ent);
-	void TagStatusChange(gentity_t *ent);
+	void Update(gentity_t *beacon);
+	void Remove(gentity_t *beacon);
 	void Debug();
 }
 

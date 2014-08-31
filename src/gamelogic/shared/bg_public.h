@@ -1049,7 +1049,7 @@ typedef enum
 	//implicit
 	BCT_HEALTH,
 	BCT_AMMO,
-	
+
 	NUM_BEACON_TYPES
 } beaconType_t;
 
@@ -1084,7 +1084,7 @@ typedef struct
 	qhandle_t     icon[ 4 ];
 	sfxHandle_t   inSound;
 	sfxHandle_t   outSound;
-#endif	
+#endif
 
 	int           decayTime;
 } beaconAttributes_t;
@@ -1344,7 +1344,7 @@ void     BG_BuildEntityDescription( char *str, size_t size, entityState_t *es );
 qboolean BG_IsMainStructure( entityState_t *es );
 
 qboolean BG_WeaponIsFull(int weapon, int ammo, int clips );
-qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
+qboolean BG_InventoryContainsWeapon( int weapon, const int stats[] );
 int      BG_SlotsForInventory( int stats[] );
 void     BG_AddUpgradeToInventory( int item, int stats[] );
 void     BG_RemoveUpgradeFromInventory( int item, int stats[] );
@@ -1363,7 +1363,7 @@ void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t m
 int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
-qboolean                    BG_PlayerLowAmmo( playerState_t *ps, qboolean *energy );
+qboolean                    BG_PlayerLowAmmo( const playerState_t *ps, qboolean *energy );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );
 int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count );
