@@ -1559,10 +1559,10 @@ GAMEMODULE( NAME game
   FILES ${GAMELIST}
 )
 
-#GAMEMODULE( NAME cgame
-#  COMPILE_DEF BUILD_VM BUILD_CGAME
-#  FILES ${CGAMELIST}
-#)
+GAMEMODULE( NAME cgame
+  COMPILE_DEF BUILD_VM BUILD_CGAME
+  FILES ${CGAMELIST}
+)
 
 ################################################################################
 # Engine

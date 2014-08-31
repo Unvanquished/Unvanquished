@@ -85,9 +85,6 @@ void CG_Rocket_Init( void )
 
 	oldConnState = CA_UNINITIALIZED;
 
-	// Version check...
-	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
-
 	// Init Rocket
 	trap_Rocket_Init();
 

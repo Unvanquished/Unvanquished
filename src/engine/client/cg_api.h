@@ -26,8 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../qcommon/q_shared.h"
 #include "../renderer/tr_types.h"
+#include "../../common/cm/cm_public.h"
 
-#define CGAME_API_VERSION 3
+#define CGAME_API_VERSION 1
 
 #define CMD_BACKUP               64
 #define CMD_MASK                 ( CMD_BACKUP - 1 )
@@ -114,48 +115,10 @@ typedef enum
 
 typedef enum cgameImport_s
 {
-  CG_PRINT,
-  CG_ERROR,
-  CG_LOG,
-  CG_MILLISECONDS,
-  CG_CVAR_REGISTER,
-  CG_CVAR_UPDATE,
-  CG_CVAR_SET,
-  CG_CVAR_VARIABLESTRINGBUFFER,
-  CG_CVAR_LATCHEDVARIABLESTRINGBUFFER,
-  CG_CVAR_VARIABLEINTEGERVALUE,
-  CG_CVAR_VARIABLEVALUE,
-  CG_ARGC,
-  CG_ARGV,
-  CG_ESCAPED_ARGS,
-  CG_LITERAL_ARGS,
   CG_GETDEMOSTATE,
   CG_GETDEMOPOS,
-  CG_FS_FOPENFILE,
-  CG_FS_READ,
-  CG_FS_WRITE,
-  CG_FS_FCLOSEFILE,
-  CG_FS_GETFILELIST,
-  CG_FS_DELETEFILE,
-  CG_FS_LOADPAK,
-  CG_SENDCONSOLECOMMAND,
-  CG_ADDCOMMAND,
-  CG_REMOVECOMMAND,
   CG_SENDCLIENTCOMMAND,
   CG_UPDATESCREEN,
-  CG_CM_LOADMAP,
-  CG_CM_NUMINLINEMODELS,
-  CG_CM_INLINEMODEL,
-  CG_CM_TEMPBOXMODEL,
-  CG_CM_TEMPCAPSULEMODEL,
-  CG_CM_POINTCONTENTS,
-  CG_CM_TRANSFORMEDPOINTCONTENTS,
-  CG_CM_BOXTRACE,
-  CG_CM_TRANSFORMEDBOXTRACE,
-  CG_CM_CAPSULETRACE,
-  CG_CM_TRANSFORMEDCAPSULETRACE,
-  CG_CM_BISPHERETRACE,
-  CG_CM_TRANSFORMEDBISPHERETRACE,
   CG_CM_MARKFRAGMENTS,
   CG_R_PROJECTDECAL,
   CG_R_CLEARDECALS,
@@ -494,19 +457,19 @@ void            trap_AddCommand( const char *cmdName );
 void            trap_RemoveCommand( const char *cmdName );
 void            trap_SendClientCommand( const char *s );
 void            trap_UpdateScreen( void );
-void            trap_CM_LoadMap( const char *mapname );
-int             trap_CM_NumInlineModels( void );
-clipHandle_t    trap_CM_InlineModel( int index );
-clipHandle_t    trap_CM_TempBoxModel( const vec3_t mins, const vec3_t maxs );
-clipHandle_t    trap_CM_TempCapsuleModel( const vec3_t mins, const vec3_t maxs );
-int             trap_CM_PointContents( const vec3_t p, clipHandle_t model );
-int             trap_CM_TransformedPointContents( const vec3_t p, clipHandle_t model, const vec3_t origin, const vec3_t angles );
-void            trap_CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask );
-void            trap_CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask, const vec3_t origin, const vec3_t angles );
-void            trap_CM_CapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask );
-void            trap_CM_TransformedCapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end, const vec3_t mins, const vec3_t maxs, clipHandle_t model, int brushmask, int skipmask, const vec3_t origin, const vec3_t angles );
-void            trap_CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask, int skipmask );
-void            trap_CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask, int skipmask, const vec3_t origin );
+#define trap_CM_LoadMap(a) CM_LoadMap(a, nullptr, false)
+#define trap_CM_NumInlineModels CM_NumInlineModels
+#define trap_CM_InlineModel CM_InlineModel
+#define trap_CM_TempBoxModel(...) CM_TempBoxModel(__VA_ARGS__, false)
+#define trap_CM_TempCapsuleModel(...) CM_TempBoxModel(__VA_ARGS__, true)
+#define trap_CM_PointContents CM_PointContents
+#define trap_CM_TransformedPointContents CM_TransformedPointContents
+#define trap_CM_BoxTrace(...) CM_BoxTrace(__VA_ARGS__, TT_AABB)
+#define trap_CM_TransformedBoxTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, TT_AABB)
+#define trap_CM_CapsuleTrace(...) CM_BoxTrace(__VA_ARGS__, TT_CAPSULE)
+#define trap_CM_TransformedCapsuleTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, TT_CAPSULE)
+#define trap_CM_BiSphereTrace CM_BiSphereTrace
+#define trap_CM_TransformedBiSphereTrace CM_TransformedBiSphereTrace
 int             trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 void            trap_R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime );
 void            trap_R_ClearDecals( void );

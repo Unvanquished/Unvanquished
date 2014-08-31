@@ -250,7 +250,11 @@ void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 {
 	trace_t t;
 
-	trap_CM_BoxTrace( &t, start, end, mins, maxs, 0, mask, skipmask );
+	vec3_t mymins, mymaxs;
+	VectorCopy(mins, mymins);
+	VectorCopy(maxs, mymaxs);
+
+	trap_CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, TT_AABB );
@@ -268,7 +272,11 @@ void  CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const
 {
 	trace_t t;
 
-	trap_CM_CapsuleTrace( &t, start, end, mins, maxs, 0, mask, skipmask );
+	vec3_t mymins, mymaxs;
+	VectorCopy(mins, mymins);
+	VectorCopy(maxs, mymaxs);
+
+	trap_CM_CapsuleTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, TT_CAPSULE );

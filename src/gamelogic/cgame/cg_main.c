@@ -53,17 +53,12 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 			return 0;
 
 		case CG_INIT_CVARS:
-			trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 			CG_RegisterCvars();
 			CG_Shutdown();
 			return 0;
 
 		case CG_SHUTDOWN:
 			CG_Shutdown();
-			return 0;
-
-		case CG_CONSOLE_TEXT:
-			CG_AddNotifyText();
 			return 0;
 
 		case CG_DRAW_ACTIVE_FRAME:
@@ -91,11 +86,7 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 		case CG_VOIP_STRING:
 			return ( intptr_t ) CG_VoIPString();
 
-		case CG_COMPLETE_COMMAND:
-			CG_CompleteCommand( arg0 );
-			return 0;
-
-		case CG_INIT_ROCKET:
+		case CG_ROCKET_VM_INIT:
 			CG_Rocket_Init();
 			return 0;
 
@@ -103,15 +94,15 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 			CG_Rocket_Frame();
 			return 0;
 
-		case CG_ROCKET_FORMATDATA:
+		case CG_ROCKET_FORMAT_DATA:
 			CG_Rocket_FormatData( arg0 );
 			return 0;
 
-		case CG_ROCKET_RENDERELEMENT:
+		case CG_ROCKET_RENDER_ELEMENT:
 			CG_Rocket_RenderElement();
 			return 0;
 
-		case CG_ROCKET_PROGRESSBARVALUE:
+		case CG_ROCKET_PROGRESSBAR_VALUE:
 			return FloatAsInt( CG_Rocket_ProgressBarValue() );
 
 		default:
@@ -821,6 +812,7 @@ void CG_RemoveNotifyLine( void )
 /*
 =================
 CG_AddNotifyText
+TODO TODO this can be removed, as well as all its dependencies
 =================
 */
 void CG_AddNotifyText( void )
@@ -1736,7 +1728,6 @@ Will perform callbacks to make the loading info screen update.
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 {
 	const char *s;
-	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 
 	// clear everything
 	memset( &cgs, 0, sizeof( cgs ) );
