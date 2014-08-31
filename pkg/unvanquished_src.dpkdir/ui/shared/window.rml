@@ -98,8 +98,21 @@
 
 
 	</style>
+	<script>
+	function detectEscape(event, document)
+		if event.parameters["key_identifier"] == rocket.key_identifier.ESCAPE then
+			if document.context.documents["menu_ingame"].style["visibility"] == "hidden" then
+				document:Hide()
+			else
+				for k,v in pairs(document.context.documents) do
+					v:Hide()
+				end
+			end
+		end
+	end
+	</script>
 </head>
-<body>
+<body onkeydown="detectEscape(event, document)">
 
 	<window>
 		<handle move_target="#document" />

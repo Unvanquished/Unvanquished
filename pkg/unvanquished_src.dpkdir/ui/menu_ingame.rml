@@ -3,9 +3,22 @@
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
 		<link type="text/rcss" href="menu.rcss" />
+		<script>
+		function detectEscape(event, document)
+			if event.parameters["key_identifier"] == rocket.key_identifier.ESCAPE then
+				if document.context.documents["menu_ingame"].style["visibility"] == "hidden" then
+					document:Hide()
+				else
+					for k,v in pairs(document.context.documents) do
+						v:Hide()
+					end
+				end
+			end
+		end
+		</script>
 	</head>
 
-	<body id="menu_ingame" class="ingame" >
+	<body id="menu_ingame" class="ingame" onkeydown="detectEscape(event, document)" >
 		<img class="gradient black" src="/ui/assets/black" />
 		<img class="circles" src="/ui/assets/circles1" />
 		<img class="circles" src="/ui/assets/circles2" />
