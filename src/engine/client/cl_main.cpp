@@ -169,7 +169,7 @@ cvar_t             *cl_cgameSyscallStats;
 clientActive_t     cl;
 clientConnection_t clc;
 clientStatic_t     cls;
-std::unique_ptr<CGameVM> cgvm;
+CGameVM            cgvm;
 
 // Structure containing functions exported from refresh DLL
 refexport_t        re;
@@ -1653,7 +1653,7 @@ void CL_Disconnect( qboolean showMainMenu )
 		clc.demofile = 0;
 	}
 
-	if ( cgvm && showMainMenu )
+	if ( cgvm.IsActive() && showMainMenu )
 	{
 		Rocket_DocumentAction( "main", "show" );
 	}
@@ -1700,7 +1700,7 @@ void CL_Disconnect( qboolean showMainMenu )
 
 	// show_bug.cgi?id=589
 	// don't try a restart if rocket is NULL, as we might be in the middle of a restart already
-	if ( cgvm && cls.state > CA_DISCONNECTED )
+	if ( cgvm.IsActive() && cls.state > CA_DISCONNECTED )
 	{
 		// restart the UI
 		cls.state = CA_DISCONNECTED;
@@ -1709,7 +1709,7 @@ void CL_Disconnect( qboolean showMainMenu )
 		Rocket_Shutdown();
 
 		// init the UI
-		cgvm = CL_InitUI();
+		cgvm.Start();
 	}
 	else
 	{
@@ -2243,7 +2243,7 @@ void CL_UI_Restart_f( void )
 	// NERVE - SMF
 	Rocket_Shutdown();
 	// init the UI
-	cgvm = CL_InitUI();
+	cgvm.Start();
 }
 
 /*
@@ -3833,7 +3833,7 @@ void CL_StartHunkUsers( void )
 	{
 		cls.uiStarted = qtrue;
 
-		cgvm = CL_InitUI();
+		cgvm.Start();
 	}
 }
 

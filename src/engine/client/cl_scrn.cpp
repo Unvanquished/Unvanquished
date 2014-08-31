@@ -690,7 +690,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 		}
 	}
 
-	if ( cgvm )
+	if ( cgvm.IsActive() )
 	{
 		switch ( cls.state )
 		{
@@ -771,7 +771,7 @@ void SCR_UpdateScreen( void )
 
 	// If there is no VM, there are also no rendering commands issued. Stop the renderer in
 	// that case.
-	if ( cgvm || com_dedicated->integer )
+	if ( cgvm.IsActive() || com_dedicated->integer )
 	{
 		// XXX
 //		extern cvar_t* r_anaglyphMode;
@@ -787,7 +787,7 @@ void SCR_UpdateScreen( void )
 		{
 			SCR_DrawScreenField( STEREO_CENTER );
 
-			cgvm->CGameRocketFrame();
+			cgvm.CGameRocketFrame();
 
 			Rocket_Render();
 			SCR_DrawConsoleAndPointer();

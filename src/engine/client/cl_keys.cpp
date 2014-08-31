@@ -1946,11 +1946,11 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		// Handle any +commands which were invoked on the corresponding key-down
 		Cmd::BufferCommandText(va("keyup %d %d %u", plusCommand.check, key, time));
 
-		if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
+		if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm.IsActive() )
 		{
 			if ( !onlybinds )
 			{
-				cgvm->CGameKeyEvent(key, down);
+				cgvm.CGameKeyEvent(key, down);
 			}
 		}
 
@@ -1967,11 +1967,11 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	}
 	else if ( cls.keyCatchers & KEYCATCH_CGAME && !bypassMenu )
 	{
-		if ( cgvm )
+		if ( cgvm.IsActive() )
 		{
 			if ( !onlybinds )
 			{
-				cgvm->CGameKeyEvent(key, down);
+				cgvm.CGameKeyEvent(key, down);
 			}
 		}
 	}

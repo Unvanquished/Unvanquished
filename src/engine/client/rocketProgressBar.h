@@ -82,7 +82,7 @@ public:
 		if ( !source.Empty() )
 		{
 			Cmd_TokenizeString( source.CString() );
-			newValue = cgvm->CGameRocketProgressbarValue();
+			newValue = cgvm.CGameRocketProgressbarValue();
 
 			if ( newValue != value )
 			{

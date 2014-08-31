@@ -58,7 +58,7 @@ public:
 		{
 			Info_SetValueForKeyRocket( data, va( "%u", ( uint32_t ) i+1 ), raw_data[ i ].CString(), qtrue );
 		}
-		cgvm->CGameRocketFormatData(handle);
+		cgvm.CGameRocketFormatData(handle);
 		formatted_data = out;
 	}
 };

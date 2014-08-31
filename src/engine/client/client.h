@@ -44,6 +44,7 @@ Maryland 20850 USA.
 #include "../audio/Audio.h"
 #include "../client/cg_api.h"
 #include "../framework/VirtualMachine.h"
+#include "../framework/CommonVMServices.h"
 
 #if defined(USE_VOIP) && !defined(BUILD_SERVER)
 #include <speex/speex.h>
@@ -421,15 +422,10 @@ extern clientStatic_t cls;
 
 //=============================================================================
 
-namespace VM {
-	class CommonVMServices;
-}
-
 class CGameVM: public VM::VMBase {
 public:
 	CGameVM();
-	virtual ~CGameVM();
-	bool Start();
+	void Start();
 
 	void CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum, int demoplaying);
 	void CGameShutdown();
@@ -450,10 +446,10 @@ private:
 	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
 	void QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel);
 
-	std::unique_ptr<VM::CommonVMServices> services;
+	VM::CommonVMServices services;
 };
 
-extern std::unique_ptr<CGameVM> cgvm;
+extern CGameVM                cgvm;
 
 extern refexport_t            re; // interface to refresh library
 
@@ -892,7 +888,6 @@ void     CL_OnTeamChanged( int newTeam );
 //
 // cl_ui.c
 //
-std::unique_ptr<CGameVM> CL_InitUI( void );
 void CL_ShutdownUI( void );
 int  Key_GetCatcher( void );
 void Key_SetCatcher( int catcher );

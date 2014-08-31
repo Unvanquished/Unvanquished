@@ -309,10 +309,6 @@ typedef struct
 
 //=============================================================================
 
-namespace VM {
-    class CommonVMServices;
-}
-
 class GameVM: public VM::VMBase {
 public:
 	GameVM();

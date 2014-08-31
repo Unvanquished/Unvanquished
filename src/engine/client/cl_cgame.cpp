@@ -560,14 +560,14 @@ void CL_ShutdownCGame( void )
 	cls.keyCatchers &= ~KEYCATCH_CGAME;
 	cls.cgameStarted = qfalse;
 
-	if ( !cgvm )
+	if ( !cgvm.IsActive() )
 	{
 		return;
 	}
 
 	Rocket_Shutdown();
-	cgvm->CGameShutdown();
-	cgvm = nullptr;
+	cgvm.CGameShutdown();
+	cgvm.Free();
 }
 
 //
@@ -2562,28 +2562,6 @@ void CL_UpdateLevelHunkUsage( void )
 }
 
 /*
-=============
-CL_InitUI
-
-Start the cgame so we can load rocket
-=============
-*/
-
-std::unique_ptr<CGameVM> CL_InitUI( void )
-{
-	auto vm = std::unique_ptr<CGameVM>(new CGameVM());
-
-	if (vm->Start()) {
-		return vm;
-	}
-	Com_Error(ERR_DROP, "Couldn't load the cgame VM");
-
-	return nullptr;
-}
-
-
-
-/*
 ====================
 CL_InitCGame
 
@@ -2613,7 +2591,7 @@ void CL_InitCGame( void )
 	// use the lastExecutedServerCommand instead of the serverCommandSequence
 	// otherwise server commands sent just before a gamestate are dropped
 	//bani - added clc.demoplaying, since some mods need this at init time, and drawactiveframe is too late for them
-	cgvm->CGameInit(clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum, clc.demoplaying);
+	cgvm.CGameInit(clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum, clc.demoplaying);
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -2672,7 +2650,7 @@ CL_CGameRendering
 */
 void CL_CGameRendering( stereoFrame_t stereo )
 {
-	cgvm->CGameDrawActiveFrame(cl.serverTime, stereo, clc.demoplaying);
+	cgvm.CGameDrawActiveFrame(cl.serverTime, stereo, clc.demoplaying);
 }
 
 /*
@@ -3020,7 +2998,7 @@ CL_GetTag
 */
 qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * orientation )
 {
-	if ( !cgvm )
+	if ( !cgvm.IsActive() )
 	{
 		return qfalse;
 	}
@@ -3057,31 +3035,17 @@ void  CL_OnTeamChanged( int newTeam )
 	Cmd::BufferCommandText( "exec -f " TEAMCONFIG_NAME );
 }
 
-static VM::VMParams cgameParams("cgame");
-
-CGameVM::CGameVM(): VM::VMBase("cgame", cgameParams), services(new VM::CommonVMServices(*this, "CGame", Cmd::CGAME_VM))
+CGameVM::CGameVM(): VM::VMBase("cgame"), services(*this, "CGame", Cmd::CGAME_VM)
 {
 }
 
-bool CGameVM::Start()
+void CGameVM::Start()
 {
-	int version = this->Create();
-
-	if (version < 0)
-	{
-		return false;
-	}
-
+	uint32_t version = this->Create();
 	if ( version != CGAME_API_VERSION ) {
 		Com_Error( ERR_DROP, "CGame ABI mismatch, expected %d, got %d", CGAME_API_VERSION, version );
 	}
 
-	return true;
-}
-
-CGameVM::~CGameVM()
-{
-	this->Free();
 }
 
 void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum, int demoplaying)
@@ -3163,7 +3127,7 @@ void CGameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 		this->QVMSyscall(minor, reader, channel);
 
 	} else if (major < VM::LAST_COMMON_SYSCALL) {
-		services->Syscall(major, minor, std::move(reader), channel);
+		services.Syscall(major, minor, std::move(reader), channel);
 
 	} else {
 		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);

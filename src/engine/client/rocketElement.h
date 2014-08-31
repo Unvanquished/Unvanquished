@@ -152,7 +152,7 @@ public:
 	{
 		activeElement = this;
 
-		cgvm->CGameRocketRenderElement();
+		cgvm.CGameRocketRenderElement();
 
 		// Render text on top
 		Rocket::Core::Element::OnRender();
