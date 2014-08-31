@@ -351,6 +351,8 @@ typedef enum cgameImport_s
 
 typedef enum
 {
+  CG_STATIC_INIT,
+
   CG_INIT,
 //  void CG_Init( int serverMessageNum, int serverCommandSequence )
   // called when the level loads or when the renderer is restarted
@@ -401,6 +403,10 @@ typedef enum
 // Rocket wants to query the value of a progress bar
 } cgameExport_t;
 
+// CGameStaticInitMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_STATIC_INIT>>
+> CGameStaticInitMsg;
 // CGameInitMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_INIT>, int, int, int, bool>

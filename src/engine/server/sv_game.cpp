@@ -450,7 +450,13 @@ void GameVM::Start()
 	uint32_t version = this->Create();
 	if ( version != GAME_API_VERSION ) {
 		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
-    }
+	}
+	this->GameStaticInit();
+}
+
+void GameVM::GameStaticInit()
+{
+	this->SendMsg<GameStaticInitMsg>();
 }
 
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)

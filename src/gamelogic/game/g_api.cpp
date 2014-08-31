@@ -63,6 +63,12 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
 	int minor = id & 0xffff;
 	if (major == VM::QVM) {
 		switch (minor) {
+		case GAME_STATIC_INIT:
+			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [](){
+				VM::InitializeProxies();
+				VM::VMInit();
+			});
+			break;
 		case GAME_INIT:
 			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart, bool cheats) {
 				FS::Initialize();

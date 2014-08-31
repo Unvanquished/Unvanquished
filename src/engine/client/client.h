@@ -427,6 +427,7 @@ public:
 	CGameVM();
 	void Start();
 
+	void CGameStaticInit();
 	void CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum, int demoplaying);
 	void CGameShutdown();
 	void CGameDrawActiveFrame(int serverTime, stereoFrame_t stereoView, bool demoPlayback);

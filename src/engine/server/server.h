@@ -314,6 +314,7 @@ public:
 	GameVM();
 	void Start();
 
+	void GameStaticInit();
 	void GameInit(int levelTime, int randomSeed, qboolean restart);
 	void GameShutdown(qboolean restart);
 	void GameLoadMap(Str::StringRef name);

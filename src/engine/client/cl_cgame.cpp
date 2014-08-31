@@ -3045,7 +3045,12 @@ void CGameVM::Start()
 	if ( version != CGAME_API_VERSION ) {
 		Com_Error( ERR_DROP, "CGame ABI mismatch, expected %d, got %d", CGAME_API_VERSION, version );
 	}
+	this->CGameStaticInit();
+}
 
+void CGameVM::CGameStaticInit()
+{
+	this->SendMsg<CGameStaticInitMsg>();
 }
 
 void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum, int demoplaying)

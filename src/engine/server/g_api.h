@@ -387,6 +387,8 @@ typedef IPC::Message<IPC::Id<VM::QVM, BOT_UPDATE_OBSTACLES>> BotUpdateObstaclesM
 // engine-to-game-module calls
 typedef enum
 {
+  GAME_STATIC_INIT,
+
   GAME_INIT, // void ()( int levelTime, int randomSeed, qboolean restart );
   // the first call to the game module
 
@@ -425,6 +427,10 @@ typedef enum
   GAME_MESSAGERECEIVED, // void ()( int clientNum, const char *buffer, int bufferSize, int commandTime );
 } gameExport_t;
 
+// GameStaticInitMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, GAME_STATIC_INIT>>
+> GameStaticInitMsg;
 // GameInitMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_INIT>, int, int, bool, bool>

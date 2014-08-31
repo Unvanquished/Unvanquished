@@ -70,9 +70,6 @@ DLLEXPORT int main(int argc, char** argv) {
 		writer.Write<uint32_t>(VM::VM_API_VERSION);
 		VM::rootChannel.SendMsg(writer);
 
-		VM::InitializeProxies();
-		VM::VMInit();
-
 		// Start main loop
 		while (true) {
 			IPC::Reader reader = VM::rootChannel.RecvMsg();
