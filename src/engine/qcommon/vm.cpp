@@ -1145,7 +1145,7 @@ void VM_VmInfo_f( void )
 	vm_t *vm;
 	int  i;
 
-	Com_Printf(_( "Registered virtual machines:\n" ));
+	Com_Printf( "Registered virtual machines:\n" );
 
 	for ( i = 0; i < MAX_VM; i++ )
 	{

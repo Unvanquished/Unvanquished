@@ -421,7 +421,7 @@ bool CL_HandleServerCommand(Str::StringRef text) {
 		mpz_t        message;
 
 		if (argc == 1) {
-			Com_Printf("%s", _("^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n"));
+			Com_Printf("%s", "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n");
 			return qfalse;
 		}
 
@@ -1291,7 +1291,7 @@ static int LAN_ServerIsVisible( int source, int n )
 
 		if ( Cmd_Argc() == 1 )
 		{
-			Com_Log(LOG_ERROR, _( "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" ));
+			Com_Log(LOG_ERROR, "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" );
 			return qfalse;
 		}
 
@@ -2875,7 +2875,7 @@ void CL_FirstSnapshot( void )
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
-		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application okay\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
+		Com_Printf("%s", ret == 0 ? "Mumble: Linking to Mumble application okay\n" : "Mumble: Linking to Mumble application failed\n" );
 	}
 
 #ifdef USE_VOIP

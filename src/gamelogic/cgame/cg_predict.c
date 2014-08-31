@@ -77,7 +77,7 @@ void CG_BuildSolidList( void )
 			continue;
 		}
 
-		if ( cent->nextState.solid && ent->eType != ET_MISSILE )
+		if ( ent->eType != ET_MISSILE )
 		{
 			cent->contents |= CONTENTS_SOLID;
 
@@ -110,7 +110,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
                                    const vec3_t maxs, const vec3_t end, int skipNumber,
                                    int mask, int skipmask, trace_t *tr, traceType_t collisionType )
 {
-	int           i, x, zd, zu;
+	int           i;
 	trace_t       trace;
 	entityState_t *ent;
 	clipHandle_t  cmodel;
@@ -156,28 +156,26 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			continue;
 		}
 
-		if ( ent->solid == SOLID_BMODEL )
+		if ( ent->eFlags & EF_BMODEL )
 		{
-			// special value for bmodel
 			cmodel = trap_CM_InlineModel( ent->modelindex );
 			VectorCopy( cent->lerpAngles, angles );
 			BG_EvaluateTrajectory( &cent->currentState.pos, cg.physicsTime, origin );
 		}
 		else
 		{
-			// encoded bbox
-			x = ( ent->solid & 255 );
-			zd = ( ( ent->solid >> 8 ) & 255 );
-			zu = ( ( ent->solid >> 16 ) & 255 ) - 32;
-
-			bmins[ 0 ] = bmins[ 1 ] = -x;
-			bmaxs[ 0 ] = bmaxs[ 1 ] = x;
-			bmins[ 2 ] = -zd;
-			bmaxs[ 2 ] = zu;
-
-			if ( i == cg_numSolidEntities )
+			switch( ent->eType )
 			{
-				BG_ClassBoundingBox( ( ent->misc >> 8 ) & 0xFF, bmins, bmaxs, NULL, NULL, NULL );
+				case ET_PLAYER:
+					BG_ClassBoundingBox( ( ent->misc >> 8 ) & 0xFF, bmins, bmaxs, NULL, NULL, NULL );
+					break;
+
+				case ET_BUILDABLE:
+					BG_BuildableBoundingBox( ent->modelindex, bmins, bmaxs );
+					break;
+
+				default:
+					continue;
 			}
 
 			VectorAdd( cent->lerpOrigin, bmins, bmins );
@@ -327,7 +325,7 @@ int   CG_PointContents( const vec3_t point, int passEntityNum )
 			continue;
 		}
 
-		if ( ent->solid != SOLID_BMODEL ) // special value for bmodel
+		if ( !( ent->eFlags & EF_BMODEL ) ) // special value for bmodel
 		{
 			continue;
 		}
@@ -448,7 +446,7 @@ static void CG_TouchTriggerPrediction( void )
 		cent = cg_triggerEntities[ i ];
 		ent = &cent->currentState;
 
-		if ( ent->solid != SOLID_BMODEL )
+		if ( !( ent->eFlags & EF_BMODEL ) )
 		{
 			continue;
 		}

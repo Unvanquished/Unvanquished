@@ -82,6 +82,8 @@ void Rocket_LoadUnit( const char *path )
 		{
 			other->Close();
 		}
+
+		document->Hide();
 	}
 }
 

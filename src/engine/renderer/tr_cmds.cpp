@@ -70,11 +70,6 @@ void R_PerformanceCounters( void )
 		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out,
 		           tr.pc.c_box_cull_in, tr.pc.c_box_cull_out );
 
-		ri.Printf( PRINT_ALL, "(patch) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
-		           tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip,
-		           tr.pc.c_sphere_cull_patch_out, tr.pc.c_box_cull_patch_in,
-		           tr.pc.c_box_cull_patch_clip, tr.pc.c_box_cull_patch_out );
-
 		ri.Printf( PRINT_ALL, "(mdv) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
 		           tr.pc.c_sphere_cull_mdv_in, tr.pc.c_sphere_cull_mdv_clip,
 		           tr.pc.c_sphere_cull_mdv_out, tr.pc.c_box_cull_mdv_in, tr.pc.c_box_cull_mdv_clip, tr.pc.c_box_cull_mdv_out );

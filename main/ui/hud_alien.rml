@@ -63,7 +63,7 @@
 				position: absolute;
 				image: /ui/assets/alien/bar-l.png;
 				orientation: left;
-				width: 80%;
+				width: 65%;
 				height: auto;
 				left: 0px;
 				bottom: 0px;
@@ -73,7 +73,7 @@
 				position: absolute;
 				image: /ui/assets/alien/bar-r.png;
 				orientation: right;
-				width: 80%;
+				width: 65%;
 				height: auto;
 				right: 0px;
 				bottom: 0px;

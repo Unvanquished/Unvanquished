@@ -188,13 +188,13 @@ void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location )
 	case LOG_OFF:
 		return;
 	case LOG_WARN:
-		Com_Printf(_("^3Warning: ^7%s\n"), event->message);
+		Com_Printf("^3Warning: ^7%s\n", event->message);
 		break;
 	case LOG_ERROR:
-		Com_Printf(_("^1Error: ^7%s\n"), event->message);
+		Com_Printf("^1Error: ^7%s\n", event->message);
 		break;
 	case LOG_DEBUG:
-		Com_Printf(_("Debug: %s\n"), event->message);
+		Com_Printf("Debug: %s\n", event->message);
 		break;
 	case LOG_TRACE:
 		Com_Printf("Trace: %s\n", event->message);
@@ -1685,7 +1685,7 @@ static void Com_Freeze_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "freeze <seconds>\n" ));
+		Com_Printf( "freeze <seconds>\n" );
 		return;
 	}
 
@@ -1729,13 +1729,13 @@ void Com_SetRecommended( void )
 
 	if ( goodVideo )
 	{
-		Com_Printf(_( "Found high quality video and slow CPU\n" ));
+		Com_Printf( "Found high quality video and slow CPU\n" );
 		Cmd::BufferCommandText("preset preset_fast.cfg");
 		Cvar_Set( "com_recommended", "2" );
 	}
 	else
 	{
-		Com_Printf(_( "Found low quality video and slow CPU\n" ));
+		Com_Printf( "Found low quality video and slow CPU\n" );
 		Cmd::BufferCommandText("preset preset_fastest.cfg");
 		Cvar_Set( "com_recommended", "3" );
 	}
@@ -2032,7 +2032,7 @@ void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandl
 
 	if ( !f )
 	{
-		Com_Printf(_( "Couldn't write %s.\n"), filename );
+		Com_Printf( "Couldn't write %s.\n", filename );
 		return;
 	}
 
@@ -2087,13 +2087,13 @@ void Com_WriteConfig_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage(_("<filename>"), NULL);
+		Cmd_PrintUsage("<filename>", NULL);
 		return;
 	}
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	Com_Printf(_( "Writing %s.\n"), filename );
+	Com_Printf( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename, Cvar_WriteVariables );
 }
 
@@ -2111,13 +2111,13 @@ void Com_WriteBindings_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage(_("<filename>"), NULL);
+		Cmd_PrintUsage("<filename>", NULL);
 		return;
 	}
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	Com_Printf(_( "Writing %s.\n"), filename );
+	Com_Printf( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename, Key_WriteBindings );
 }
 #endif
@@ -2394,12 +2394,12 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 		{
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( watchdogThreshold.Get() - 4 ) * 1000 )
 			{
-				Com_Log( LOG_WARN, _( "watchdog will trigger in 4 seconds" ));
+				Com_Log( LOG_WARN, "watchdog will trigger in 4 seconds" );
 				watchWarn = qtrue;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > watchdogThreshold.Get() * 1000 )
 			{
-				Com_Printf(_( "Idle server with no map — triggering watchdog\n" ));
+				Com_Printf( "Idle server with no map — triggering watchdog\n" );
 				watchdogTime = 0;
 				watchWarn = qfalse;
 

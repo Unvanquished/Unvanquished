@@ -103,7 +103,7 @@
 							<!-- <blocklink onClick="show options_fov"> Fields of view </blocklink> -->
 						</indent>
 
-						<h2> Lore </h2>
+						<h2> Help </h2>
 						<indent>
 							<blocklink onClick="show help_gameplay"> Gameplay guide </blocklink>
 							<blocklink onClick="show help_textentry"> Colour codes and symbols </blocklink>
