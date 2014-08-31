@@ -369,7 +369,7 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 	return std::move(pair.first);
 }
 
-int VMBase::Create()
+uint32_t VMBase::Create()
 {
 	type = static_cast<vmType_t>(params.vmType.Get());
 

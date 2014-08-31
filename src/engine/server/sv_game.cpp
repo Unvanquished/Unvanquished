@@ -267,7 +267,7 @@ SV_GameBinaryMessageReceived
 */
 void SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime )
 {
-	gvm->GameMessageRecieved( cno, buf, buflen, commandTime );
+	gvm.GameMessageRecieved( cno, buf, buflen, commandTime );
 }
 
 //==============================================
@@ -313,13 +313,13 @@ Called every time a map changes
 */
 void SV_ShutdownGameProgs( void )
 {
-	if ( !gvm )
+	if ( !gvm.IsActive() )
 	{
 		return;
 	}
 
-	gvm->GameShutdown( qfalse );
-    gvm = nullptr;
+	gvm.GameShutdown( qfalse );
+    gvm.Free();
 
 	if ( sv_newGameShlib->string[ 0 ] )
 	{
@@ -351,27 +351,7 @@ static void SV_InitGameVM( qboolean restart )
 
 	// use the current msec count for a random seed
 	// init for this gamestate
-	gvm->GameInit( sv.time, Com_Milliseconds(), restart );
-}
-
-/*
-===================
-SV_CreateGameVM
-
-Load a QVM vm or fails and try to load a NaCl vm
-===================
-*/
-std::unique_ptr<GameVM> SV_CreateGameVM( void )
-{
-    auto vm = std::unique_ptr<GameVM>(new GameVM());
-
-    if (vm->Start()) {
-        return vm;
-    }
-
-	Com_Error(ERR_DROP, "Couldn't load the game VM");
-
-	return nullptr;
+	gvm.GameInit( sv.time, Com_Milliseconds(), restart );
 }
 
 /*
@@ -383,16 +363,16 @@ Called on a map_restart, but not on a map change
 */
 void SV_RestartGameProgs(Str::StringRef mapname)
 {
-	if ( !gvm )
+	if ( !gvm.IsActive() )
 	{
 		return;
 	}
 
-	gvm->GameShutdown( qtrue );
+	gvm.GameShutdown( qtrue );
 
-	gvm = SV_CreateGameVM();
+	gvm.Start();
 
-	gvm->GameLoadMap(mapname);
+	gvm.GameLoadMap(mapname);
 
 	SV_InitGameVM( qtrue );
 }
@@ -410,9 +390,9 @@ void SV_InitGameProgs(Str::StringRef mapname)
 	sv.num_tags = 0;
 
 	// load the game module
-	gvm = SV_CreateGameVM();
+	gvm.Start();
 
-	gvm->GameLoadMap(mapname);
+	gvm.GameLoadMap(mapname);
 
 	SV_InitGameVM( qfalse );
 }
@@ -461,32 +441,16 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 #endif
 }
 
-static VM::VMParams gameParams("game");
-
-GameVM::GameVM(): VM::VMBase("game", gameParams), services(new VM::CommonVMServices(*this, "Game", Cmd::GAME_VM))
+GameVM::GameVM(): VM::VMBase("game"), services(*this, "Game", Cmd::GAME_VM)
 {
 }
 
-bool GameVM::Start()
+void GameVM::Start()
 {
-    int version = this->Create();
-
-    if (version < 0)
-    {
-        return false;
-    }
-
+	uint32_t version = this->Create();
 	if ( version != GAME_API_VERSION ) {
 		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
     }
-
-
-    return true;
-}
-
-GameVM::~GameVM()
-{
-    this->Free();
 }
 
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
@@ -593,7 +557,7 @@ void GameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 		this->QVMSyscall(minor, reader, channel);
 
     } else if (major < VM::LAST_COMMON_SYSCALL) {
-        services->Syscall(major, minor, std::move(reader), channel);
+        services.Syscall(major, minor, std::move(reader), channel);
 
     } else {
 		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);

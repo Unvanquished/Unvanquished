@@ -40,6 +40,7 @@ Maryland 20850 USA.
 #include "../botlib/bot_api.h"
 #include "../server/g_api.h"
 #include "../framework/VirtualMachine.h"
+#include "../framework/CommonVMServices.h"
 
 //=============================================================================
 
@@ -315,8 +316,7 @@ namespace VM {
 class GameVM: public VM::VMBase {
 public:
 	GameVM();
-    virtual ~GameVM();
-	bool Start();
+	void Start();
 
 	void GameInit(int levelTime, int randomSeed, qboolean restart);
 	void GameShutdown(qboolean restart);
@@ -338,14 +338,14 @@ private:
 
 	IPC::SharedMemory shmRegion;
 
-    std::unique_ptr<VM::CommonVMServices> services;
+    VM::CommonVMServices services;
 };
 
 //=============================================================================
 
 extern serverStatic_t svs; // persistent server info across maps
 extern server_t       sv; // cleared each map
-extern std::unique_ptr<GameVM> gvm; // game virtual machine
+extern GameVM         gvm; // game virtual machine
 
 extern cvar_t         *sv_fps;
 extern cvar_t         *sv_timeout;

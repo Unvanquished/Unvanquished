@@ -59,12 +59,12 @@ struct VMParams {
 // Base class for a virtual machine instance
 class VMBase {
 public:
-	VMBase(std::string name, VMParams& params)
-		: processHandle(IPC::INVALID_HANDLE), name(name), params(params) {}
+	VMBase(std::string name)
+		: processHandle(IPC::INVALID_HANDLE), name(name), params(name) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
-	// by the module.
-	int Create();
+	// by the module. This will automatically free any existing VM.
+	uint32_t Create();
 
 	// Free the VM
 	void Free();
@@ -123,7 +123,7 @@ private:
 
 	vmType_t type;
 
-	VMParams& params;
+	VMParams params;
 
 	// Logging the syscalls
 	FS::File syscallLogFile;

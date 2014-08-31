@@ -624,7 +624,7 @@ void SV_SpawnServer( const char *server )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		gvm->GameRunFrame( sv.time );
+		gvm.GameRunFrame( sv.time );
 		svs.time += FRAMETIME;
 		sv.time += FRAMETIME;
 	}
@@ -651,7 +651,7 @@ void SV_SpawnServer( const char *server )
 			}
 
 			// connect the client again
-			denied = gvm->GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
+			denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
 
 			if ( denied )
 			{
@@ -681,14 +681,14 @@ void SV_SpawnServer( const char *server )
 					client->deltaMessage = -1;
 					client->nextSnapshotTime = svs.time; // generate a snapshot immediately
 
-					gvm->GameClientBegin( i );
+					gvm.GameClientBegin( i );
 				}
 			}
 		}
 	}
 
 	// run another frame to allow things to look at all the players
-	gvm->GameRunFrame( sv.time );
+	gvm.GameRunFrame( sv.time );
 	svs.time += FRAMETIME;
 	sv.time += FRAMETIME;
 
