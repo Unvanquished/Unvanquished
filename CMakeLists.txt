@@ -533,25 +533,14 @@ endfunction()
 # File lists
 ################################################################################
 
-set( SHAREDLIST_H
-  ${ENGINE_DIR}/qcommon/q_shared.h
-  ${ENGINE_DIR}/qcommon/q_unicode.h
-  ${ENGINE_DIR}/qcommon/unicode_data.h
-  ${ENGINE_DIR}/qcommon/logging.h
-)
-
-set( SHAREDLIST_C
-  ${ENGINE_DIR}/qcommon/q_shared.c
-  ${ENGINE_DIR}/qcommon/q_unicode.c
-  ${ENGINE_DIR}/qcommon/q_math.c
-  ${SHAREDLIST_H}
-)
-
 set( SHAREDLIST
   ${ENGINE_DIR}/qcommon/q_shared.cpp
   ${ENGINE_DIR}/qcommon/q_unicode.cpp
   ${ENGINE_DIR}/qcommon/q_math.cpp
-  ${SHAREDLIST_H}
+  ${ENGINE_DIR}/qcommon/q_shared.h
+  ${ENGINE_DIR}/qcommon/q_unicode.h
+  ${ENGINE_DIR}/qcommon/unicode_data.h
+  ${ENGINE_DIR}/qcommon/logging.h
 )
 
 set( COMMONLIST

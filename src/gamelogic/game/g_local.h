@@ -56,9 +56,4 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 // externalized fields
 #include "g_extern.h"
 
-// future imports
-#ifndef Q3_VM
-#include "../../common/Maths.h"
-#endif
-
 #endif // G_LOCAL_H_

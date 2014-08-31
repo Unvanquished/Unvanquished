@@ -89,7 +89,7 @@ void Svcmd_EntityFire_f( void )
 }
 
 
-STATIC_INLINE void PrintEntityOverviewLine( gentity_t *entity )
+static inline void PrintEntityOverviewLine( gentity_t *entity )
 {
 	G_Printf( "%3i: %15s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s%s\n",
 			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,

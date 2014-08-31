@@ -3143,16 +3143,6 @@ int CG_AmbientLight( vec3_t point )
 
 /*
 ===============
-Statics for CG_Player & CG_Corpse
-These are QVM-only to keep locals down below 32K
-===============
-*/
-#ifdef Q3_VM
-static refEntity_t legs, torso, body, head;
-#endif
-
-/*
-===============
 CG_Player
 ===============
 */
@@ -3162,9 +3152,7 @@ void CG_Player( centity_t *cent )
 
 	// NOTE: legs is used for nonsegmented models
 	//       this helps reduce code to be changed
-#ifndef Q3_VM
 	refEntity_t legs, torso, body, head;
-#endif
 
 	int           clientNum;
 	int           renderfx;
@@ -3713,9 +3701,7 @@ CG_Corpse
 */
 void CG_Corpse( centity_t *cent )
 {
-#ifndef Q3_VM
 	refEntity_t   legs, torso, head;
-#endif
 	clientInfo_t  *ci;
 	entityState_t *es = &cent->currentState;
 	int           corpseNum;
