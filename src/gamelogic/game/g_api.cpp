@@ -25,23 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../shared/VMMain.h"
 #include "../shared/CommonProxies.h"
 
-//HACK: NaCl doesn't support messages bigger than 128k so for now
-//we send it by small chunks
-
-std::vector<char> mapData;
-
-void G_LoadMapChunk(std::vector<char> data)
-{
-	mapData.insert(mapData.end(), data.begin(), data.end());
-}
-
-void G_FinishMapLoad(std::string name)
-{
-	CM_LoadMap(name.c_str(), mapData.data(), false);
-	mapData.clear();
-	G_CM_ClearWorld();
-}
-
 static IPC::SharedMemory shmRegion;
 
 // Symbols required by the shared VMMain code
@@ -49,12 +32,23 @@ static IPC::SharedMemory shmRegion;
 int VM::VM_API_VERSION = GAME_API_VERSION;
 
 void VM::VMInit() {
-    // Allocate entities and clients shared memory region
-    shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
-    char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
-    g_entities = reinterpret_cast<gentity_t*>(shmBase);
-    g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
+	// Allocate entities and clients shared memory region
+	shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
+	char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
+	g_entities = reinterpret_cast<gentity_t*>(shmBase);
+	g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
 
+	// Load the map collision data
+	std::string mapName = Cvar::GetValue("mapname");
+	std::string mapFile = "maps/" + mapName + ".bsp";
+	std::string mapData;
+	try {
+		mapData = FS::PakPath::ReadFile(mapFile);
+	} catch (std::system_error& err) {
+		Com_Error(ERR_DROP, "Could not load %s", mapFile.c_str());
+	}
+	CM_LoadMap(mapName.c_str(), mapData.data(), false);
+	G_CM_ClearWorld();
 }
 
 void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
@@ -66,12 +60,12 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
 		case GAME_STATIC_INIT:
 			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [](){
 				VM::InitializeProxies();
+				FS::Initialize();
 				VM::VMInit();
 			});
 			break;
 		case GAME_INIT:
 			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart, bool cheats) {
-				FS::Initialize();
 				g_cheats.integer = cheats;
 				G_InitGame(levelTime, randomSeed, restart);
 			});
@@ -80,18 +74,6 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
 		case GAME_SHUTDOWN:
 			IPC::HandleMsg<GameShutdownMsg>(VM::rootChannel, std::move(reader), [](bool restart) {
 				G_ShutdownGame(restart);
-			});
-			break;
-
-		case GAME_LOADMAP:
-			IPC::HandleMsg<GameLoadMapMsg>(VM::rootChannel, std::move(reader), [](std::string name) {
-				G_FinishMapLoad(std::move(name));
-			});
-			break;
-
-		case GAME_LOADMAPCHUNK:
-			IPC::HandleMsg<GameLoadMapChunkMsg>(VM::rootChannel, std::move(reader), [](std::vector<char> data) {
-				G_LoadMapChunk(std::move(data));
 			});
 			break;
 

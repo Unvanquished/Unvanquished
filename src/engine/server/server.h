@@ -317,7 +317,6 @@ public:
 	void GameStaticInit();
 	void GameInit(int levelTime, int randomSeed, qboolean restart);
 	void GameShutdown(qboolean restart);
-	void GameLoadMap(Str::StringRef name);
 	qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot);
 	void GameClientBegin(int clientNum);
 	void GameClientUserInfoChanged(int clientNum);

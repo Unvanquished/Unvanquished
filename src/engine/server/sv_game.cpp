@@ -372,8 +372,6 @@ void SV_RestartGameProgs(Str::StringRef mapname)
 
 	gvm.Start();
 
-	gvm.GameLoadMap(mapname);
-
 	SV_InitGameVM( qtrue );
 }
 
@@ -391,8 +389,6 @@ void SV_InitGameProgs(Str::StringRef mapname)
 
 	// load the game module
 	gvm.Start();
-
-	gvm.GameLoadMap(mapname);
 
 	SV_InitGameVM( qfalse );
 }
@@ -471,31 +467,6 @@ void GameVM::GameShutdown(qboolean restart)
 
 	// Release the shared memory region
 	this->shmRegion.Close();
-}
-
-void GameVM::GameLoadMap(Str::StringRef name)
-{
-	char* buffer;
-	std::string filename = "maps/" + name + ".bsp";
-	int length = FS_ReadFile( filename.c_str(), ( void ** ) &buffer );
-
-	if ( !buffer )
-	{
-		Com_Error( ERR_DROP, "Couldn't load %s", name.c_str() );
-	}
-
-	char* origBuffer = buffer;
-	char* bufferEnd = buffer + length;
-
-	while (buffer < bufferEnd)
-	{
-		this->SendMsg<GameLoadMapChunkMsg>(std::vector<char>(buffer, std::min(buffer + (64 << 10), bufferEnd)));
-		buffer += 64 << 10;
-	}
-
-	this->SendMsg<GameLoadMapMsg>(name);
-
-	FS_FreeFile( origBuffer );
 }
 
 qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)

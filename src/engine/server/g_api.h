@@ -345,9 +345,6 @@ typedef enum
   GAME_SHUTDOWN, // void ()( void );
   // the last call to the game module
 
-  GAME_LOADMAP,
-  GAME_LOADMAPCHUNK,
-
   GAME_CLIENT_CONNECT, // const char * ()( int clientNum, qboolean firstTime, qboolean isBot );
   // return NULL if the client is allowed to connect,
   //  otherwise return a text string describing the reason for the denial
@@ -389,12 +386,6 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_SHUTDOWN>, bool>
 > GameShutdownMsg;
-// GameLoadMapChunkMsg
-typedef IPC::Message<IPC::Id<VM::QVM, GAME_LOADMAPCHUNK>, std::vector<char>> GameLoadMapChunkMsg;
-// GameLoadMapMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, GAME_LOADMAP>, std::string>
-> GameLoadMapMsg;
 // GameClientConnectMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_CLIENT_CONNECT>, int, bool, int>,
