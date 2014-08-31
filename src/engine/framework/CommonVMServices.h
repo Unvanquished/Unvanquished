@@ -76,6 +76,9 @@ namespace VM {
 
             // Log Related
             void HandleLogSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel);
+
+            // Common common QVM syscalls
+            void HandleCommonQVMSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel);
     };
 }
 

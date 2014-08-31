@@ -106,18 +106,6 @@ typedef struct
 // game-module-to-engine calls
 typedef enum gameImport_s
 {
-  G_PRINT,
-  G_ERROR,
-  G_LOG,
-  G_SEND_CONSOLE_COMMAND,
-
-  G_FS_FOPEN_FILE,
-  G_FS_READ,
-  G_FS_WRITE,
-  G_FS_RENAME,
-  G_FS_FCLOSE_FILE,
-  G_FS_GET_FILE_LIST,
-  G_FS_FIND_PAK,
 
   G_LOCATE_GAME_DATA1,
   G_LOCATE_GAME_DATA2,
@@ -168,44 +156,6 @@ typedef enum gameImport_s
   BOT_REMOVE_OBSTACLE,
   BOT_UPDATE_OBSTACLES
 } gameImport_t;
-
-// PrintMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_PRINT>, std::string> PrintMsg;
-// ErrorMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_ERROR>, std::string> ErrorMsg;
-// LogMsg TODO
-// SendConsoleCommandMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_CONSOLE_COMMAND>, std::string> SendConsoleCommandMsg;
-
-// FSFOpenFileMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_FS_FOPEN_FILE>, std::string, bool, int>,
-	IPC::Reply<int, int>
-> FSFOpenFileMsg;
-// FSReadMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_FS_READ>, int, int>,
-	IPC::Reply<std::string>
-> FSReadMsg;
-// FSWriteMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_FS_WRITE>, int, std::string>,
-    IPC::Reply<int>
-> FSWriteMsg;
-// FSRenameMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_FS_RENAME>, std::string, std::string> FSRenameMsg;
-// FSFCloseFile
-typedef IPC::Message<IPC::Id<VM::QVM, G_FS_FCLOSE_FILE>, int> FSFCloseFileMsg;
-// FSGetFileListMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_FS_GET_FILE_LIST>, std::string, std::string, int>,
-    IPC::Reply<int, std::string>
-> FSGetFileListMsg;
-// FSFindPakMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, G_FS_FIND_PAK>, std::string>,
-	IPC::Reply<bool>
-> FSFindPakMsg;
 
 // LocateGameData
 typedef IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA1>, IPC::SharedMemory, int, int, int> LocateGameDataMsg1;

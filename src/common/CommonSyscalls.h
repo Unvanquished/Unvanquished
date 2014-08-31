@@ -33,14 +33,70 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace VM {
 
-    typedef enum {
-      QVM,
-      COMMAND,
-      CVAR,
-      LOG,
-      FILESYSTEM,
-      LAST_COMMON_SYSCALL
-    } gameServices_t;
+    enum {
+        QVM,
+        QVM_COMMON,
+        COMMAND,
+        CVAR,
+        LOG,
+        FILESYSTEM,
+        LAST_COMMON_SYSCALL
+    };
+
+    // Common QVM syscalls
+    // TODO kill them or move them somewhere else?
+    enum {
+        QVM_COMMON_PRINT,
+        QVM_COMMON_ERROR,
+        QVM_COMMON_LOG,
+        QVM_COMMON_SEND_CONSOLE_COMMAND,
+
+        QVM_COMMON_FS_FOPEN_FILE,
+        QVM_COMMON_FS_READ,
+        QVM_COMMON_FS_WRITE,
+        QVM_COMMON_FS_RENAME,
+        QVM_COMMON_FS_FCLOSE_FILE,
+        QVM_COMMON_FS_GET_FILE_LIST,
+        QVM_COMMON_FS_FIND_PAK
+    };
+
+    // PrintMsg
+    typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_PRINT>, std::string> PrintMsg;
+    // ErrorMsg
+    typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_ERROR>, std::string> ErrorMsg;
+    // LogMsg TODO
+    // SendConsoleCommandMsg
+    typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_SEND_CONSOLE_COMMAND>, std::string> SendConsoleCommandMsg;
+
+    // FSFOpenFileMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_FOPEN_FILE>, std::string, bool, int>,
+        IPC::Reply<int, int>
+    > FSFOpenFileMsg;
+    // FSReadMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_READ>, int, int>,
+        IPC::Reply<std::string>
+    > FSReadMsg;
+    // FSWriteMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_WRITE>, int, std::string>,
+        IPC::Reply<int>
+    > FSWriteMsg;
+    // FSRenameMsg
+    typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_RENAME>, std::string, std::string> FSRenameMsg;
+    // FSFCloseFile
+    typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_FCLOSE_FILE>, int> FSFCloseFileMsg;
+    // FSGetFileListMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_GET_FILE_LIST>, std::string, std::string, int>,
+        IPC::Reply<int, std::string>
+    > FSGetFileListMsg;
+    // FSFindPakMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_FIND_PAK>, std::string>,
+        IPC::Reply<bool>
+    > FSFindPakMsg;
 
     // Command-Related Syscall Definitions
 

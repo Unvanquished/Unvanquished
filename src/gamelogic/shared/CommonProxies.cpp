@@ -421,3 +421,91 @@ namespace VM {
         }
     }
 }
+
+// Defintion of some additional trap_* that are common to all VMs
+
+void trap_Print(const char *string)
+{
+	VM::SendMsg<VM::PrintMsg>(string);
+}
+
+void NORETURN trap_Error(const char *string)
+{
+	static bool recursiveError = false;
+	if (recursiveError)
+		VM::Exit();
+	recursiveError = true;
+	VM::SendMsg<VM::ErrorMsg>(string);
+	VM::Exit(); // Amanieu: Need to implement proper error handling
+}
+
+void trap_Log(log_event_t *event)
+{
+	Com_Error(ERR_DROP, "trap_Log not implemented");
+}
+
+int trap_Milliseconds(void)
+{
+#ifdef LIBSTDCXX_BROKEN_CXX11
+	auto duration = std::chrono::monotonic_clock::now().time_since_epoch();
+#else
+	auto duration = std::chrono::steady_clock::now().time_since_epoch();
+#endif
+	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+}
+
+void trap_SendConsoleCommand(const char *text)
+{
+	VM::SendMsg<VM::SendConsoleCommandMsg>(text);
+}
+
+int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
+{
+	int ret, handle;
+	VM::SendMsg<VM::FSFOpenFileMsg>(qpath, f != NULL, mode, ret, handle);
+	if (f)
+		*f = handle;
+	return ret;
+}
+
+void trap_FS_Read(void *buffer, int len, fileHandle_t f)
+{
+	std::string res;
+	VM::SendMsg<VM::FSReadMsg>(f, len, res);
+	memcpy(buffer, res.c_str(), std::min((int)res.size() + 1, len));
+}
+
+int trap_FS_Write(const void *buffer, int len, fileHandle_t f)
+{
+	int res;
+	std::string text((const char*)buffer, len);
+	VM::SendMsg<VM::FSWriteMsg>(f, text, res);
+	return res;
+}
+
+void trap_FS_Rename(const char *from, const char *to)
+{
+	VM::SendMsg<VM::FSRenameMsg>(from, to);
+}
+
+void trap_FS_FCloseFile(fileHandle_t f)
+{
+	VM::SendMsg<VM::FSFCloseFileMsg>(f);
+}
+
+int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize)
+{
+	int res;
+	std::string text;
+	VM::SendMsg<VM::FSGetFileListMsg>(path, extension, bufsize, res, text);
+	memcpy(listbuf, text.c_str(), std::min((int)text.size() + 1, bufsize));
+	return res;
+}
+
+qboolean trap_FindPak(const char *name)
+{
+	bool res;
+	VM::SendMsg<VM::FSFindPakMsg>(name, res);
+	return res;
+}
+

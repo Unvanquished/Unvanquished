@@ -200,6 +200,83 @@ namespace VM {
         }
     }
 
+    // Common common QVM syscalls
+    void CommonVMServices::HandleCommonQVMSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
+        switch (minor) {
+            case QVM_COMMON_PRINT:
+                IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](std::string text) {
+                    Com_Printf("%s", text.c_str());
+                });
+                break;
+
+            case QVM_COMMON_ERROR:
+                IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](std::string text) {
+                    Com_Error(ERR_DROP, "%s", text.c_str());
+                });
+                break;
+
+            case QVM_COMMON_LOG:
+                Com_Error(ERR_DROP, "trap_Log not implemented");
+
+            case QVM_COMMON_SEND_CONSOLE_COMMAND:
+                IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](std::string text) {
+                    Cmd::BufferCommandText(text);
+                });
+                break;
+
+            case QVM_COMMON_FS_FOPEN_FILE:
+                IPC::HandleMsg<FSFOpenFileMsg>(channel, std::move(reader), [this](std::string filename, bool open, int fsMode, int& success, int& handle) {
+                    fsMode_t mode = static_cast<fsMode_t>(fsMode);
+                    success = FS_Game_FOpenFileByMode(filename.c_str(), open ? &handle : NULL, mode);
+                });
+                break;
+
+            case QVM_COMMON_FS_READ:
+                IPC::HandleMsg<FSReadMsg>(channel, std::move(reader), [this](int handle, int len, std::string& res) {
+                    std::unique_ptr<char[]> buffer(new char[len]);
+                    buffer[0] = '\0';
+                    FS_Read(buffer.get(), len, handle);
+                    res.assign(buffer.get(), len);
+                });
+                break;
+
+            case QVM_COMMON_FS_WRITE:
+                IPC::HandleMsg<FSWriteMsg>(channel, std::move(reader), [this](int handle, std::string text, int& res) {
+                    res = FS_Write(text.c_str(), text.size(), handle);
+                });
+                break;
+
+            case QVM_COMMON_FS_RENAME:
+                IPC::HandleMsg<FSRenameMsg>(channel, std::move(reader), [this](std::string from, std::string to) {
+                    FS_Rename(from.c_str(), to.c_str());
+                });
+                break;
+
+            case QVM_COMMON_FS_FCLOSE_FILE:
+                IPC::HandleMsg<FSFCloseFileMsg>(channel, std::move(reader), [this](int handle) {
+                    FS_FCloseFile(handle);
+                });
+                break;
+
+            case QVM_COMMON_FS_GET_FILE_LIST:
+                IPC::HandleMsg<FSGetFileListMsg>(channel, std::move(reader), [this](std::string path, std::string extension, int len, int& intRes, std::string& res) {
+                    std::unique_ptr<char[]> buffer(new char[len]);
+                    buffer[0] = '\0';
+                    intRes = FS_GetFileList(path.c_str(), extension.c_str(), buffer.get(), len);
+                    res.assign(buffer.get(), len);
+                });
+                break;
+
+            case QVM_COMMON_FS_FIND_PAK:
+                IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
+                    found = FS::FindPak(pakName);
+                });
+                break;
+            default:
+                Com_Error(ERR_DROP, "Bad log syscall number '%d' for VM '%s'", minor, vmName.c_str());
+        }
+    }
+
     // Misc, Dispatch
 
     CommonVMServices::CommonVMServices(VMBase& vm, Str::StringRef vmName, int commandFlag)
@@ -214,6 +291,10 @@ namespace VM {
 
     void CommonVMServices::Syscall(int major, int minor, IPC::Reader reader, IPC::Channel& channel) {
         switch (major) {
+            case QVM_COMMON:
+                HandleCommonQVMSyscall(minor, reader, channel);
+                break;
+
             case COMMAND:
                 HandleCommandSyscall(minor, reader, channel);
                 break;
