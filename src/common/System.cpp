@@ -123,6 +123,18 @@ SteadyClock::time_point SleepUntil(SteadyClock::time_point time)
 
 void Drop(Str::StringRef message)
 {
+	// Transform into a fatal error if too many errors are generated in quick
+	// succession.
+	static Sys::SteadyClock::time_point lastError;
+	Sys::SteadyClock::time_point now = Sys::SteadyClock::now();
+	static int errorCount = 0;
+	if (now - lastError < std::chrono::milliseconds(100)) {
+		if (++errorCount > 3)
+			Sys::Error(message);
+	} else
+		errorCount = 0;
+	lastError = now;
+
 	throw DropErr(message.c_str());
 }
 

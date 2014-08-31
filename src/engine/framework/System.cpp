@@ -39,10 +39,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 #include <unistd.h>
 #include <signal.h>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #endif
 #if defined(_WIN32) || defined(BUILD_CLIENT)
 #include <SDL.h>
@@ -50,9 +50,215 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Sys {
 
+#ifdef _WIN32
+static HANDLE singletonSocket;
+#else
+static int singletonSocket;
+#endif
+static std::string singletonSocketPath;
+
+// Get the path of a singleton socket
+static std::string GetSingletonSocketPath()
+{
+	// Use the hash of the homepath to identify instances sharing a homepath
+	const std::string& homePath = FS::GetHomePath();
+	char homePathHash[33] = "";
+	Com_MD5Buffer(homePath.data(), homePath.size(), homePathHash, sizeof(homePathHash));
+#ifdef _WIN32
+	return std::string("\\\\.\\pipe\\" PRODUCT_NAME "-") + homePathHash;
+#else
+	// We use a temporary directory rather that using the homepath because
+	// socket paths are limited to about 100 characters. This also avoids issues
+	// when the homepath is on a network filesystem.
+	return std::string("/tmp/." PRODUCT_NAME_LOWER "-") + homePathHash + "/socket";
+#endif
+}
+
+// Create a socket to listen for commands from other instances
+static void CreateSingletonSocket()
+{
+#ifdef _WIN32
+	singletonSocket = CreateNamedPipeA(singletonSocketPath.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE, PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT, PIPE_UNLIMITED_INSTANCES, 4096, 4096, 1000, NULL);
+	if (singletonSocket == INVALID_HANDLE_VALUE)
+		Sys::Error("Could not create singleton socket: %s", Sys::Win32StrError(GetLastError()));
+#else
+	// Delete any stale sockets
+	std::string dirName = FS::Path::DirName(singletonSocketPath);
+	unlink(singletonSocketPath.c_str());
+	rmdir(dirName.c_str());
+	mkdir(dirName.c_str(), 0700);
+
+	singletonSocket = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (singletonSocket == -1)
+		Sys::Error("Could not create singleton socket: %s", strerror(errno));
+
+	if (fcntl(singletonSocket, F_SETFL, fcntl(singletonSocket, F_GETFL) | O_NONBLOCK) == -1)
+		Sys::Error("Could not make socket non-blocking: %s", strerror(errno));
+
+	struct sockaddr_un addr;
+	addr.sun_family = AF_UNIX;
+	Q_strncpyz(addr.sun_path, singletonSocketPath.c_str(), sizeof(addr.sun_path));
+	if (bind(singletonSocket, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) == -1)
+		Sys::Error("Could not bind singleton socket: %s", strerror(errno));
+
+	if (listen(singletonSocket, SOMAXCONN) == -1)
+		Sys::Error("Could not listen on singleton socket: %s", strerror(errno));
+#endif
+}
+
+// Try to connect to an existing socket to send our commands to an existing instance
+static bool ConnectSingletonSocket()
+{
+#ifdef _WIN32
+	while (true) {
+		singletonSocket = CreateFileA(singletonSocketPath.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+		if (singletonSocket != INVALID_HANDLE_VALUE)
+			break;
+		if (GetLastError() != ERROR_PIPE_BUSY) {
+			if (GetLastError() != ERROR_FILE_NOT_FOUND)
+				Log::Warn("Could not connect to existing instance: %s", Sys::Win32StrError(GetLastError()));
+			return false;
+		}
+		WaitNamedPipeA(singletonSocketPath.c_str(), NMPWAIT_WAIT_FOREVER);
+	}
+
+	return true;
+#else
+	singletonSocket = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (singletonSocket == -1)
+		Sys::Error("Could not create socket: %s", strerror(errno));
+
+	struct sockaddr_un addr;
+	addr.sun_family = AF_UNIX;
+	Q_strncpyz(addr.sun_path, singletonSocketPath.c_str(), sizeof(addr.sun_path));
+	if (connect(singletonSocket, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) == -1) {
+		if (errno != ENOENT)
+			Log::Warn("Could not connect to existing instance: %s", strerror(errno));
+		close(singletonSocket);
+		return false;
+	}
+
+	return true;
+#endif
+}
+
+// Send commands to the existing instance
+static void WriteSingletonSocket(Str::StringRef commands)
+{
+#ifdef _WIN32
+	DWORD result = 0;
+	if (!WriteFile(singletonSocket, commands.data(), commands.size(), &result, NULL))
+		Log::Warn("Could not send commands through socket: %s", Sys::Win32StrError(GetLastError()));
+	else if (result != commands.size())
+		Log::Warn("Could not send commands through socket: Short write");
+#else
+	ssize_t result = write(singletonSocket, commands.data(), commands.size());
+	if (result == -1 || static_cast<size_t>(result) != commands.size())
+		Log::Warn("Could not send commands through socket: %s", result == -1 ? strerror(errno) : "Short write");
+#endif
+}
+
+// Handle any commands sent by other instances
+#ifdef _WIN32
+static void ReadSingletonSocketCommands()
+{
+	std::string commands;
+	char buffer[4096];
+	while (true) {
+		DWORD result = 0;
+		if (!ReadFile(singletonSocket, buffer, sizeof(buffer), &result, NULL)) {
+			if (GetLastError() != ERROR_NO_DATA && GetLastError() != ERROR_BROKEN_PIPE) {
+				Log::Warn("Singleton socket ReadFile() failed: %s", Sys::Win32StrError(GetLastError()));
+				return;
+			} else
+				break;
+		}
+		if (result == 0)
+			break;
+		commands.append(buffer, result);
+	}
+
+	Cmd::BufferCommandText(commands);
+}
+#else
+static void ReadSingletonSocketCommands(int sock)
+{
+	std::string commands;
+	char buffer[4096];
+	while (true) {
+		ssize_t result = read(sock, buffer, sizeof(buffer));
+		if (result == -1) {
+			Log::Warn("Singleton socket read() failed: %s", strerror(errno));
+			return;
+		}
+		if (result == 0)
+			break;
+		commands.append(buffer, result);
+	}
+
+	Cmd::BufferCommandText(commands);
+}
+#endif
+void ReadSingletonSocket()
+{
+#ifdef _WIN32
+	while (true) {
+		if (ConnectNamedPipe(singletonSocket, NULL))
+			continue;
+		if (GetLastError() == ERROR_PIPE_CONNECTED) {
+			// Switch the pipe to blocking mode to read the message
+			DWORD mode = PIPE_READMODE_BYTE | PIPE_WAIT;
+			SetNamedPipeHandleState(singletonSocket, &mode, NULL, NULL);
+
+			ReadSingletonSocketCommands();
+
+			// Switch the pipe back to non-blocking mode to handle connections
+			mode = PIPE_READMODE_BYTE | PIPE_NOWAIT;
+			SetNamedPipeHandleState(singletonSocket, &mode, NULL, NULL);
+			DisconnectNamedPipe(singletonSocket);
+		} else {
+			if (GetLastError() != ERROR_PIPE_LISTENING)
+				Log::Warn("Singleton socket ConnectNamedPipe() failed: %s", Sys::Win32StrError(GetLastError()));
+			return;
+		}
+	}
+#else
+	while (true) {
+		int sock = accept(singletonSocket, NULL, NULL);
+		if (sock == -1) {
+			if (errno != EAGAIN)
+				Log::Warn("Singleton socket accept() failed: %s", strerror(errno));
+			return;
+		}
+
+		// Make the socket blocking and read all of the data at once
+		if (fcntl(singletonSocket, F_SETFL, fcntl(singletonSocket, F_GETFL) & ~O_NONBLOCK) == -1)
+			Sys::Error("Could not make socket blocking: %s", strerror(errno));
+		ReadSingletonSocketCommands(sock);
+		close(sock);
+	}
+#endif
+}
+
+static void CloseSingletonSocket()
+{
+#ifdef _WIN32
+	CloseHandle(singletonSocket);
+#else
+	std::string dirName = FS::Path::DirName(singletonSocketPath);
+	unlink(singletonSocketPath.c_str());
+	rmdir(dirName.c_str());
+#endif
+}
+
 // Common code for fatal and non-fatal exit
+// TODO: Handle shutdown requests coming from multiple threads
+// TODO: Dump log files & other stuff
 static void Shutdown(bool error, Str::StringRef message)
 {
+	// Stop accepting commands from other instances
+	CloseSingletonSocket();
+
 	CL_Shutdown();
 	SV_Shutdown(error ? va("Server fatal crashed: %s\n", message.c_str()) : va("%s\n", message.c_str()));
 	Com_Shutdown();
@@ -107,8 +313,11 @@ static void SignalThread()
 	// Queue a quit command to be executed next frame
 	Cmd::BufferCommandText("quit");
 
-	// Now let the thread exit, which will cause all future instances of these
-	// signals to be ignored since they are blocked in all threads.
+	// Sleep a bit, and wait for a signal again. If we still haven't shut down
+	// by then, trigger an error.
+	sleep(2);
+	sigwait(&sigset, &sig);
+	Sys::Error("Forcing shutdown from signal: %s", strsignal(sig));
 }
 static void StartSignalThread()
 {
@@ -121,208 +330,13 @@ static void StartSignalThread()
 	pthread_sigmask(SIG_BLOCK, &sigset, nullptr);
 
 	// Start the signal thread
-	std::thread(SignalThread).detach();
-}
-#endif
-
-#ifdef _WIN32
-static HANDLE singletonSocket;
-#else
-static int singletonSocket;
-#endif
-
-// Get the path of a singleton socket
-static std::string GetSingletonSocketPath()
-{
-	// Use the hash of the homepath to identify instances sharing a homepath
-	const std::string& homePath = FS::GetHomePath();
-	char homePathHash[33] = "";
-	Com_MD5Buffer(homePath.data(), homePath.size(), homePathHash, sizeof(homePathHash));
-#ifdef _WIN32
-	return std::string("\\\\.\\pipe\\") + homePathHash;
-#else
-	// We use a temporary directory rather that using the homepath because
-	// socket paths are limited to about 100 characters.
-	return std::string("/tmp/." PRODUCT_NAME_LOWER "-") + homePathHash + "/socket";
-#endif
-}
-
-// Try to create a socket to listen for commands from other instances
-static bool CreateSingletonSocket(Str::StringRef socketPath)
-{
-#ifdef _WIN32
-	singletonSocket = CreateNamedPipeA(socketPath.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE, PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT, PIPE_UNLIMITED_INSTANCES, 4096, 4096, 1000, NULL);
-	if (!singletonSocket) {
-		if (GetLastError() == ERROR_ACCESS_DENIED)
-			Log::Notice("Existing instance detected");
-		else
-			Sys::Error("Could not create singleton socket: %s", Sys::Win32StrError(GetLastError()));
-		return false;
-	}
-	return true;
-#else
-	// Make sure the socket is only accessible by the current user
-	mode_t oldMode = umask(0700);
 	try {
-		FS::RawPath::CreatePathTo(socketPath);
+		std::thread(SignalThread).detach();
 	} catch (std::system_error& err) {
-		Sys::Error("Could not create temporary directory for singleton socket: %s", err.what());
+		Sys::Error("Could not create signal handling thread: %s", err.what());
 	}
-	umask(oldMode);
-
-	singletonSocket = socket(AF_UNIX, SOCK_STREAM, 0);
-	if (singletonSocket == -1)
-		Sys::Error("Could not create singleton socket: %s", strerror(errno));
-
-	if (fcntl(singletonSocket, F_SETFL, fcntl(singletonSocket, F_GETFL) | O_NONBLOCK) == -1)
-		Sys::Error("Could not make socket non-blocking: %s", strerror(errno));
-
-	struct sockaddr_un addr;
-	addr.sun_family = AF_UNIX;
-	Q_strncpyz(addr.sun_path, socketPath.c_str(), sizeof(addr.sun_path));
-	if (bind(singletonSocket, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) == -1) {
-		if (errno == EADDRINUSE)
-			Log::Notice("Existing instance detected");
-		else
-			Sys::Error("Could not bind singleton socket: %s", strerror(errno));
-		close(singletonSocket);
-		return false;
-	}
-
-	if (listen(singletonSocket, SOMAXCONN) == -1)
-		Sys::Error("Could not listen on singleton socket: %s", strerror(errno));
-
-	return true;
-#endif
-}
-
-// Try to connect to an existing socket to send our commands to an existing instance
-static void WriteSingletonSocket(Str::StringRef socketPath, Str::StringRef commands)
-{
-#ifdef _WIN32
-	HANDLE sock;
-	while (true) {
-		sock = CreateFileA(socketPath.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, SECURITY_SQOS_PRESENT | SECURITY_ANONYMOUS, NULL);
-		if (sock != INVALID_HANDLE_VALUE)
-			break;
-		if (GetLastError() != ERROR_PIPE_BUSY) {
-			Log::Warn("Could not create socket: %s", Sys::Win32StrError(GetLastError()));
-			return;
-		}
-		WaitNamedPipeA(socketPath.c_str(), NMPWAIT_WAIT_FOREVER);
-	}
-
-	DWORD result = 0;
-	if (!WriteFile(sock, commands.data(), commands.size(), NULL, NULL))
-		Log::Warn("Could not send commands through socket: %s", Sys::Win32StrError(GetLastError()));
-	else if (result != commands.size())
-		Log::Warn("Could not send commands through socket: Short write");
-
-	CloseHandle(sock);
-#else
-	int sock = socket(AF_UNIX, SOCK_STREAM, 0);
-	if (sock == -1) {
-		Log::Warn("Could not create socket: %s", strerror(errno));
-		return;
-	}
-
-	struct sockaddr_un addr;
-	addr.sun_family = AF_UNIX;
-	Q_strncpyz(addr.sun_path, socketPath.c_str(), sizeof(addr.sun_path));
-	if (connect(sock, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) == -1) {
-		Log::Warn("Could not connect to existing instance: %s", strerror(errno));
-		close(sock);
-		return;
-	}
-
-	ssize_t result = write(sock, commands.data(), commands.size());
-	if (result == -1 || static_cast<size_t>(result) != commands.size())
-		Log::Warn("Could not send commands through socket: %s", result == -1 ? strerror(errno) : "Short write");
-
-	close(sock);
-#endif
-}
-
-// Handle any commands sent by other instances
-#ifdef _WIN32
-static void ReadSingletonSocketCommands()
-{
-	// Switch the pipe to blocking mode to read the message
-	DWORD mode = PIPE_READMODE_BYTE | PIPE_WAIT;
-	SetNamedPipeHandleState(singletonSocket, &mode, NULL, NULL);
-
-	std::string commands;
-	char buffer[4096];
-	while (true) {
-		DWORD result = 0;
-		if (!ReadFile(singletonSocket, buffer, sizeof(buffer), &result, NULL)) {
-			Log::Warn("Singleton socket ReadFile() failed: %s", Sys::Win32StrError(GetLastError()));
-			commands.clear();
-			break;
-		}
-		if (result == 0)
-			break;
-		commands.append(buffer, result);
-	}
-
-	Cmd::BufferCommandText(commands);
-
-	// Switch the pipe back to non-blocking mode to handle connections
-	mode = PIPE_READMODE_BYTE | PIPE_NOWAIT;
-	SetNamedPipeHandleState(singletonSocket, &mode, NULL, NULL);
-	DisconnectNamedPipe(singletonSocket);
-}
-#else
-static void ReadSingletonSocketCommands(int sock)
-{
-	std::string commands;
-	char buffer[4096];
-	while (true) {
-		ssize_t result = read(sock, buffer, sizeof(buffer));
-		if (result == -1) {
-			Log::Warn("Singleton socket read() failed: %s", strerror(errno));
-			return;
-		}
-		if (result == 0)
-			break;
-		commands.append(buffer, result);
-	}
-
-	Cmd::BufferCommandText(commands);
 }
 #endif
-void ReadSingletonSocket()
-{
-#ifdef _WIN32
-	while (true) {
-		if (ConnectNamedPipe(singletonSocket, NULL))
-			continue;
-		switch (GetLastError()) {
-		case ERROR_PIPE_LISTENING:
-			// No more incoming connections
-			return;
-		case ERROR_PIPE_CONNECTED:
-			// A client is connected
-			ReadSingletonSocketCommands();
-			break;
-		default:
-			Log::Warn("Singleton socket ConnectNamedPipe() failed: %s", Sys::Win32StrError(GetLastError()));
-			return;
-		}
-	}
-#else
-	while (true) {
-		int sock = accept(singletonSocket, NULL, NULL);
-		if (sock == -1) {
-			if (errno != EAGAIN)
-				Log::Warn("Singleton socket accept() failed: %s", strerror(errno));
-			return;
-		}
-
-		ReadSingletonSocketCommands(sock);
-	}
-#endif
-}
 
 // Command line arguments
 struct cmdlineArgs_t {
@@ -340,7 +354,7 @@ struct cmdlineArgs_t {
 	std::vector<std::string> paths;
 
 	std::unordered_map<std::string, std::string> cvars;
-	std::vector<std::string> commands;
+	std::string commands;
 };
 
 // Parse the command line arguments
@@ -356,14 +370,16 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 		// A + indicate the start of a command that should be run on startup
 		if (argv[i][0] == '+') {
 			foundCommands = true;
-			cmdlineArgs.commands.push_back(argv[i] + 1);
+			if (!cmdlineArgs.commands.empty())
+				cmdlineArgs.commands.push_back('\n');
+			cmdlineArgs.commands.append(argv[i] + 1);
 			continue;
 		}
 
 		// Anything after a + is a parameter for that command
 		if (foundCommands) {
-			cmdlineArgs.commands.back().push_back(' ');
-			cmdlineArgs.commands.back().append(Cmd::Escape(argv[i]));
+			cmdlineArgs.commands.push_back(' ');
+			cmdlineArgs.commands.append(Cmd::Escape(argv[i]));
 			continue;
 		}
 
@@ -371,7 +387,7 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 		// applies if no +commands have been given. Any arguments after the URI
 		// are discarded.
 		if (Str::IsIPrefix(URI_SCHEME, argv[i])) {
-			cmdlineArgs.commands.push_back("connect " + Cmd::Escape(argv[i]));
+			cmdlineArgs.commands = "connect " + Cmd::Escape(argv[i]);
 			if (i != argc - 1)
 				Log::Warn("Ignoring extraneous arguments after URI");
 			return;
@@ -470,6 +486,9 @@ static void Init(int argc, char** argv)
 		if (!setlocale(LC_CTYPE, locale.c_str()))
 			Log::Warn("Could not set locale to UTF-8, unicode characters may not display correctly");
 	}
+
+	// Enable S3TC on Mesa even if libtxc-dxtn is not available
+	putenv("force_s3tc_enable=true");
 #endif
 
 	// Initialize the console
@@ -485,15 +504,22 @@ static void Init(int argc, char** argv)
 
 	// Look for an existing instance of the engine running on the same homepath.
 	// If there is one, forward any +commands to it and exit.
-	std::string socketPath = GetSingletonSocketPath();
-	if (!CreateSingletonSocket(socketPath)) {
+	singletonSocketPath = GetSingletonSocketPath();
+	if (ConnectSingletonSocket()) {
+		Log::Notice("Existing instance found");
 		if (!cmdlineArgs.commands.empty()) {
 			Log::Notice("Forwarding commands to existing instance");
-			WriteSingletonSocket(socketPath, std::accumulate(cmdlineArgs.commands.begin(), cmdlineArgs.commands.end(), std::string()));
+			WriteSingletonSocket(cmdlineArgs.commands);
 		} else
 			Log::Notice("No commands given, exiting...");
+#ifdef _WIN32
+		CloseHandle(singletonSocket);
+#else
+		close(singletonSocket);
+#endif
 		exit(0);
 	}
+	CreateSingletonSocket();
 
 	// Load the base paks
 	// TODO: cvar names and FS_* stuff needs to be properly integrated
@@ -502,6 +528,7 @@ static void Init(int argc, char** argv)
 	FS_LoadBasePak();
 
 	// Load configuration files
+	CL_InitKeyCommands(); // for binds
 #ifndef BUILD_SERVER
 	Cmd::BufferCommandText("preset default.cfg");
 #endif
@@ -522,6 +549,14 @@ static void Init(int argc, char** argv)
 
 	// Load the console history
 	Console::LoadHistory();
+
+	// Legacy initialization code, needs to be replaced
+	// TODO: eventually move all of Com_Init into here
+	Com_Init("");
+
+	// Buffer the commands that were specified on the command line so they are
+	// executed in the first frame.
+	Cmd::BufferCommandText(cmdlineArgs.commands);
 }
 
 } // namespace Sys
@@ -538,6 +573,32 @@ static void Init(int argc, char** argv)
 // invoked by SDLmain.
 ALIGN_STACK int main(int argc, char** argv)
 {
-	Sys::Init(argc, argv);
-	return 0;
+	// Initialize the engine. Any errors here are fatal.
+	try {
+		Sys::Init(argc, argv);
+	} catch (Sys::DropErr& err) {
+		Sys::Error("Error during initialization: %s", err.what());
+	} catch (std::exception& err) {
+		Sys::Error("Unhandled exception (%s): %s", typeid(err).name(), err.what());
+	}
+
+	// Run the engine frame in a loop. First try to handle an error by returning
+	// to the menu, but make the error fatal if the shutdown code fails.
+	try {
+		while (true) {
+			try {
+				Com_Frame(IN_Frame, IN_FrameEnd);
+			} catch (Sys::DropErr& err) {
+				// TODO: FS_LoadBasePak
+				Log::Error(err.what());
+				SV_Shutdown(va("********************\nServer crashed: %s\n********************\n", err.what()));
+				CL_Disconnect(qtrue);
+				CL_FlushMemory();
+			}
+		}
+	} catch (Sys::DropErr& err) {
+		Sys::Error("Error during error handling: %s", err.what());
+	} catch (std::exception& err) {
+		Sys::Error("Unhandled exception (%s): %s", typeid(err).name(), err.what());
+	}
 }

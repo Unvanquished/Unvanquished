@@ -54,7 +54,6 @@ called before and after a stdout or stderr output
 =============================================================
 */
 
-extern qboolean       stdinIsATTY;
 static qboolean       stdin_active;
 // general flag to tell about tty console mode
 static qboolean       ttycon_on = qfalse;
@@ -215,6 +214,9 @@ void CON_Init_TTY( void )
 	// Make stdin reads non-blocking
 	fcntl( STDIN_FILENO, F_SETFL, fcntl( STDIN_FILENO, F_GETFL, 0 ) | O_NONBLOCK );
 
+	const char *term = getenv( "TERM" );
+	bool stdinIsATTY = isatty( STDIN_FILENO ) &&
+	                   !( term && ( !strcmp( term, "raw" ) || !strcmp( term, "dumb" ) ) );
 	if ( !stdinIsATTY )
 	{
 		Com_Printf( "tty console mode disabled\n" );

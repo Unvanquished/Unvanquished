@@ -44,6 +44,7 @@ Maryland 20850 USA.
 #include "../framework/CvarSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
+#include "../framework/System.h"
 
 // htons
 #ifdef _WIN32
@@ -67,7 +68,6 @@ Maryland 20850 USA.
 jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire frame
 
 static fileHandle_t logfile;
-static FILE         *pipefile;
 
 cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
@@ -349,10 +349,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 
 	Sys_Error( "%s", com_errorMessage );
 }
-void Sys::Error(Str::StringRef message)
-{
-	Com_Error( ERR_FATAL, "%s", message.c_str() );
-}
 
 // *INDENT-OFF*
 //bani - moved
@@ -372,23 +368,7 @@ void NORETURN Com_Quit_f( void )
 {
 	// don't try to shutdown if we are in a recursive error
 	char *p = Cmd_Args();
-
-	if ( !com_errorEntered )
-	{
-		// Some VMs might execute "quit" command directly,
-		// which would trigger an unload of active VM error.
-		// Sys_Quit will kill this process anyways, so
-		// a corrupt call stack makes no difference
-		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
-//bani
-#ifdef BUILD_CLIENT
-		CL_ShutdownCGame();
-#endif
-		CL_Shutdown();
-		Com_Shutdown();
-	}
-
-	Sys_Quit();
+	Sys::Quit(p[0] ? p : "Server quit");
 }
 
 /*
@@ -1715,18 +1695,6 @@ void Com_SetRecommended( void )
 Com_Init
 =================
 */
-
-
-#ifndef _WIN32
-# ifdef BUILD_SERVER
-	const char* defaultPipeFilename = "svpipe";
-# else
-	const char* defaultPipeFilename = "pipe";
-# endif
-#else
-	const char* defaultPipeFilename = "";
-#endif
-
 void Com_Init( char *commandLine )
 {
 	char              *s;
@@ -1760,42 +1728,7 @@ void Com_Init( char *commandLine )
 	s = va( "%d", pid );
 	com_pid = Cvar_Get( "com_pid", s, CVAR_ROM );
 
-	// done early so bind command exists
-	CL_InitKeyCommands();
-
-	FS::Initialize();
-	FS_LoadBasePak();
-#ifndef BUILD_SERVER
-	// Load map pk3s to allow menus to load levelshots
-	FS_LoadAllMaps();
-#endif
-
 	Trans_Init();
-
-#ifndef BUILD_SERVER
-	Cmd::BufferCommandText("preset default.cfg");
-#endif
-
-#ifdef BUILD_CLIENT
-	// skip the q3config.cfg if "safe" is on the command line
-	if ( !Com_SafeMode() )
-	{
-		Cmd::BufferCommandText("exec -f " CONFIG_NAME);
-		Cmd::BufferCommandText("exec -f " KEYBINDINGS_NAME);
-		Cmd::BufferCommandText("exec -f " AUTOEXEC_NAME);
-	}
-#else
-	Cmd::BufferCommandText("exec -f " CONFIG_NAME);
-#endif
-
-	// ydnar: reset crashed state
-	Cmd::BufferCommandText("set com_crashed 0");
-
-	// execute the queued commands
-	Cmd::ExecuteCommandBuffer();
-
-	// override anything from the config files with command line args
-	Com_StartupVariable( NULL );
 
 #ifdef BUILD_SERVER
 	// TTimo: default to Internet dedicated, not LAN dedicated
@@ -1886,7 +1819,6 @@ void Com_Init( char *commandLine )
 	VM_Forced_Unload_Start();
 
 	SV_Init();
-	Console::LoadHistory();
 
 	com_dedicated->modified = qfalse;
 
@@ -1899,12 +1831,6 @@ void Com_Init( char *commandLine )
 	// command line it will still be able to count on com_frameTime
 	// being random enough for a serverid
 	com_frameTime = Com_Milliseconds();
-
-	// add + commands from command line
-	if ( !Com_AddStartupCommands() )
-	{
-		// if the user didn't give any commands, run default action
-	}
 
 	CL_StartHunkUsers();
 
@@ -1920,72 +1846,8 @@ void Com_Init( char *commandLine )
 		   } */
 	}
 
-	if (defaultPipeFilename[0])
-	{
-		std::string ospath = FS::Path::Build(FS::GetHomePath(), defaultPipeFilename);
-		pipefile = Sys_Mkfifo(ospath.c_str());
-		if (!pipefile)
-		{
-			Com_Printf( S_WARNING "Could not create new pipefile at %s. "
-			"pipefile will not be used.\n", ospath.c_str() );
-		}
-	}
 	com_fullyInitialized = qtrue;
 	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
-}
-
-/*
-===============
-Com_ReadFromPipe
-
-Read whatever is in the pipe, and if a line gets accumulated, executed it
-===============
-*/
-void Com_ReadFromPipe( void )
-{
-	static char buf[ MAX_STRING_CHARS ];
-	static int  numAccd = 0;
-	int         numNew;
-
-	if ( !pipefile )
-	{
-		return;
-	}
-
-	while ( ( numNew = fread( buf + numAccd, 1, sizeof( buf ) - 1 - numAccd, pipefile ) ) > 0 )
-	{
-		char *brk = NULL; // will point to after the last CR/LF character, if any
-		int i;
-
-		for ( i = numAccd; i < numAccd + numNew; ++i )
-		{
-			if( buf[ i ] == '\0' )
-				buf[ i ] = '\n';
-			if( buf[ i ] == '\n' || buf[ i ] == '\r' )
-				brk = &buf[ i + 1 ];
-		}
-
-		numAccd += numNew;
-
-		if ( brk )
-		{
-			char tmp = *brk;
-			*brk = '\0';
-			Cmd::BufferCommandText(buf);
-			*brk = tmp;
-
-			numAccd -= brk - buf;
-			memmove( buf, brk, numAccd );
-		}
-		else if ( numAccd >= sizeof( buf ) - 1 ) // there are no CR/LF characters, but the buffer is full
-		{
-			// unfortunately, this command line gets chopped
-			//  (but Cbuf_ExecuteText() chops long command lines at (MAX_STRING_CHARS - 1) anyway)
-			buf[ sizeof( buf ) - 1 ] = '\0';
-			Cmd::BufferCommandText(buf);
-			numAccd = 0;
-		}
-	}
 }
 
 //==================================================================
@@ -2423,8 +2285,6 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	// old net chan encryption key
 	//key = lastTime * 0x87243987;
 
-	Com_ReadFromPipe();
-
 	com_frameNumber++;
 }
 
@@ -2439,12 +2299,6 @@ void Com_Shutdown()
 	{
 		FS_FCloseFile( logfile );
 		logfile = 0;
-	}
-
-	if ( pipefile )
-	{
-		fclose( pipefile );
-		FS_Delete( defaultPipeFilename );
 	}
 
 	FS::FlushAll();
