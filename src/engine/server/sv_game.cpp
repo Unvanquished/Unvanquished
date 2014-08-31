@@ -392,8 +392,6 @@ void SV_RestartGameProgs(Str::StringRef mapname)
 
 	gvm = SV_CreateGameVM();
 
-	gvm->GameStaticInit();
-
 	gvm->GameLoadMap(mapname);
 
 	SV_InitGameVM( qtrue );
@@ -413,8 +411,6 @@ void SV_InitGameProgs(Str::StringRef mapname)
 
 	// load the game module
 	gvm = SV_CreateGameVM();
-
-	gvm->GameStaticInit();
 
 	gvm->GameLoadMap(mapname);
 
@@ -491,11 +487,6 @@ bool GameVM::Start()
 GameVM::~GameVM()
 {
     this->Free();
-}
-
-void GameVM::GameStaticInit()
-{
-	this->SendMsg<GameStaticInitMsg>();
 }
 
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)

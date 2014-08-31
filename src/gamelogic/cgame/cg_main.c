@@ -62,9 +62,6 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 			CG_Shutdown();
 			return 0;
 
-		case CG_CONSOLE_COMMAND:
-			return CG_ConsoleCommand();
-
 		case CG_CONSOLE_TEXT:
 			CG_AddNotifyText();
 			return 0;

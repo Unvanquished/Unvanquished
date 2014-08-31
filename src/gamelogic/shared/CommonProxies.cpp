@@ -28,15 +28,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-//TODO we need to include headers in this order
-//#include "../../engine/qcommon/q_shared.h"
-//#include "bg_public.h"
-
-// We only do game for now but later have a common list of game services
-#include "../game/g_local.h"
-
 #include "../../common/Common.h"
 #include "VMMain.h"
+
+// The old console command handler that should be defined in all VMs
+void ConsoleCommand();
 
 const char* Trans_Gettext(const char* text) {
     return text;
@@ -151,7 +147,7 @@ namespace Cmd {
                 break;
 
             default:
-                G_Error("Unhandled engine command syscall %i", minor);
+                Com_Error(ERR_DROP, "Unhandled engine command syscall %i", minor);
         }
     }
 }
@@ -303,7 +299,7 @@ namespace Cvar{
                 break;
 
             default:
-                G_Error("Unhandled engine cvar syscall %i", minor);
+                Com_Error(ERR_DROP, "Unhandled engine cvar syscall %i", minor);
         }
     }
 }
@@ -421,7 +417,7 @@ namespace VM {
                 break;
 
             default:
-                G_Error("Unhandled common VM syscall major number %i", major);
+                Com_Error(ERR_DROP, "Unhandled common VM syscall major number %i", major);
         }
     }
 }

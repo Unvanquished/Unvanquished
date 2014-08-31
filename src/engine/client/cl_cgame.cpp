@@ -3084,11 +3084,6 @@ CGameVM::~CGameVM()
 	this->Free();
 }
 
-void CGameVM::CGameStaticInit()
-{
-	this->SendMsg<CGameStaticInitMsg>();
-}
-
 void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum, int demoplaying)
 {
 	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum, demoplaying);

@@ -2199,7 +2199,7 @@ void CG_ProcessSnapshots( void );
 //
 // cg_consolecmds.c
 //
-qboolean CG_ConsoleCommand( void );
+qboolean ConsoleCommand( void );
 void     CG_InitConsoleCommands( void );
 void     CG_RequestScores( void );
 void     CG_HideScores_f( void );

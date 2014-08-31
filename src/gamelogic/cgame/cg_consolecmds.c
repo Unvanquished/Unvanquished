@@ -481,13 +481,13 @@ static const struct
 
 /*
 =================
-CG_ConsoleCommand
+ConsoleCommand
 
 The string has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
 =================
 */
-qboolean CG_ConsoleCommand( void )
+qboolean ConsoleCommand( void )
 {
 	char buffer[BIG_INFO_STRING];
 	consoleCommand_t *cmd;

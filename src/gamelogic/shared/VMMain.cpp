@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "VMMain.h"
+#include "CommonProxies.h"
 
 IPC::Channel VM::rootChannel;
 
@@ -68,6 +69,9 @@ DLLEXPORT int main(int argc, char** argv) {
 		IPC::Writer writer;
 		writer.Write<uint32_t>(VM::VM_API_VERSION);
 		VM::rootChannel.SendMsg(writer);
+
+		VM::InitializeProxies();
+		VM::VMInit();
 
 		// Start main loop
 		while (true) {
