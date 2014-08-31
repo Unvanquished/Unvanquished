@@ -511,14 +511,21 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	R_SetVBOAttributeLayouts( vbo, data.noLightCoords );
 
 	glGenBuffers( 1, &vbo->vertexesVBO );
-
 	R_BindVBO( vbo );
-	glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
-	outData = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
 
-	R_CopyVertexData( vbo, outData, data );
+	if( GLEW_ARB_buffer_storage ) {
+		outData = (byte *)ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
+		R_CopyVertexData( vbo, outData, data );
+		glBufferStorage( GL_ARRAY_BUFFER, vbo->vertexesSize,
+				 outData, 0 );
+		ri.Hunk_FreeTempMemory( outData );
+	} else {
+		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
+		outData = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
+		R_CopyVertexData( vbo, outData, data );
+		glUnmapBuffer( GL_ARRAY_BUFFER );
+	}
 
-	glUnmapBuffer( GL_ARRAY_BUFFER );
 	R_BindNullVBO();
 
 	GL_CheckErrors();
@@ -656,19 +663,26 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, 
 
 	R_SetVBOAttributeLayouts( vbo, qfalse );
 	
-	data = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
-
-	R_CopyVertexData( vbo, data, vboData );
-
 	glGenBuffers( 1, &vbo->vertexesVBO );
-
 	R_BindVBO( vbo );
-	glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, data, vbo->usage );
-	R_BindNullVBO();
 
+	if( GLEW_ARB_buffer_storage ) {
+		data = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
+		R_CopyVertexData( vbo, data, vboData );
+		glBufferStorage( GL_ARRAY_BUFFER, vbo->vertexesSize,
+				 data, 0 );
+		ri.Hunk_FreeTempMemory( data );
+	} else {
+		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize,
+			      NULL, vbo->usage );
+		data = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
+		R_CopyVertexData( vbo, data, vboData );
+		glUnmapBuffer( GL_ARRAY_BUFFER );
+	}
+
+	R_BindNullVBO();
 	GL_CheckErrors();
 
-	ri.Hunk_FreeTempMemory( data );
 	R_FreeVBOData( vboData );
 
 	return vbo;
@@ -743,7 +757,11 @@ IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes )
 	glGenBuffers( 1, &ibo->indexesVBO );
 
 	R_BindIBO( ibo );
-	glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, indexes, GL_STATIC_DRAW );
+	if( GLEW_ARB_buffer_storage ) {
+		glBufferStorage( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, indexes, 0 );
+	} else {
+		glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, indexes, GL_STATIC_DRAW );
+	}
 	R_BindNullIBO();
 
 	GL_CheckErrors();
