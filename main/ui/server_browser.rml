@@ -36,10 +36,10 @@
 			<panel>
 				<datagrid id="iServers" source="server_browser.internet">
 					<col fields="label" width="30px" class="label" formatter="ServerLabel"></col>
-					<col fields="name" width="45%" class="name" ><ilink onClick="sortDS server_browser internet name">Name:</ilink></col>
-					<col fields="map" width="15%" class="map"><ilink onClick="sortDS server_browser internet map">Map:</ilink></col>
-					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><ilink onClick="sortDS server_browser internet players">Players (Bots)</ilink></col>
-					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><ilink onClick="sortDS server_browser internet ping">Ping</ilink></col>
+					<col fields="name" width="45%" class="name" ><ilink onClick='Events.pushevent("sortDS server_browser internet name", event)'>Name:</ilink></col>
+					<col fields="map" width="15%" class="map"><ilink onClick='Events.pushevent("sortDS server_browser internet map", event)'>Map:</ilink></col>
+					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><ilink onClick='Events.pushevent("sortDS server_browser internet players", event)'>Players (Bots)</ilink></col>
+					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><ilink onClick='Events.pushevent("sortDS server_browser internet ping", event)'>Ping</ilink></col>
 				</datagrid>
 
 				<buttonbar>
