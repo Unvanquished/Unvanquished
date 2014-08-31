@@ -513,13 +513,16 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	glGenBuffers( 1, &vbo->vertexesVBO );
 	R_BindVBO( vbo );
 
+#ifdef GLEW_ARB_buffer_storage
 	if( GLEW_ARB_buffer_storage ) {
 		outData = (byte *)ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
 		R_CopyVertexData( vbo, outData, data );
 		glBufferStorage( GL_ARRAY_BUFFER, vbo->vertexesSize,
 				 outData, 0 );
 		ri.Hunk_FreeTempMemory( outData );
-	} else {
+	} else
+#endif
+	{
 		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
 		outData = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
 		R_CopyVertexData( vbo, outData, data );
@@ -666,13 +669,16 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 	R_BindVBO( vbo );
 
+#ifdef GLEW_ARB_buffer_storage
 	if( GLEW_ARB_buffer_storage ) {
 		data = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
 		R_CopyVertexData( vbo, data, vboData );
 		glBufferStorage( GL_ARRAY_BUFFER, vbo->vertexesSize,
 				 data, 0 );
 		ri.Hunk_FreeTempMemory( data );
-	} else {
+	} else
+#endif
+	{
 		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize,
 			      NULL, vbo->usage );
 		data = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
@@ -757,9 +763,12 @@ IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes )
 	glGenBuffers( 1, &ibo->indexesVBO );
 
 	R_BindIBO( ibo );
+#ifdef GLEW_ARB_buffer_storage
 	if( GLEW_ARB_buffer_storage ) {
 		glBufferStorage( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, indexes, 0 );
-	} else {
+	} else
+#endif
+	{
 		glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, indexes, GL_STATIC_DRAW );
 	}
 	R_BindNullIBO();
