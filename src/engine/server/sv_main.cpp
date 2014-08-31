@@ -42,7 +42,7 @@ cvar_t         *sv_voip;
 
 serverStatic_t svs; // persistent server info
 server_t       sv; // local server
-GameVM         *gvm = nullptr; // game virtual machine
+std::unique_ptr<GameVM> gvm = nullptr; // game virtual machine
 
 cvar_t         *sv_fps; // time rate for running non-clients
 cvar_t         *sv_timeout; // seconds without any message

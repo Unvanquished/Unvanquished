@@ -319,7 +319,6 @@ void SV_ShutdownGameProgs( void )
 	}
 
 	gvm->GameShutdown( qfalse );
-	delete gvm;
     gvm = nullptr;
 
 	if ( sv_newGameShlib->string[ 0 ] )
@@ -362,14 +361,13 @@ SV_CreateGameVM
 Load a QVM vm or fails and try to load a NaCl vm
 ===================
 */
-GameVM* SV_CreateGameVM( void )
+std::unique_ptr<GameVM> SV_CreateGameVM( void )
 {
-    GameVM* vm = new GameVM();
+    auto vm = std::unique_ptr<GameVM>(new GameVM());
 
     if (vm->Start()) {
         return vm;
     }
-    delete vm;
 
 	Com_Error(ERR_DROP, "Couldn't load the game VM");
 
@@ -391,9 +389,6 @@ void SV_RestartGameProgs(Str::StringRef mapname)
 	}
 
 	gvm->GameShutdown( qtrue );
-
-	delete gvm;
-	gvm = nullptr;
 
 	gvm = SV_CreateGameVM();
 

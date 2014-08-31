@@ -567,7 +567,6 @@ void CL_ShutdownCGame( void )
 
 	Rocket_Shutdown();
 	cgvm->CGameShutdown();
-	delete cgvm;
 	cgvm = nullptr;
 }
 
@@ -2570,15 +2569,13 @@ Start the cgame so we can load rocket
 =============
 */
 
-CGameVM* CL_InitUI( void )
+std::unique_ptr<CGameVM> CL_InitUI( void )
 {
-    CGameVM* vm = new CGameVM();
+	auto vm = std::unique_ptr<CGameVM>(new CGameVM());
 
-    if (vm->Start()) {
-        return vm;
-    }
-    delete vm;
-
+	if (vm->Start()) {
+		return vm;
+	}
 	Com_Error(ERR_DROP, "Couldn't load the cgame VM");
 
 	return nullptr;
@@ -3068,23 +3065,23 @@ CGameVM::CGameVM(): VM::VMBase("cgame", cgameParams), services(new VM::CommonVMS
 
 bool CGameVM::Start()
 {
-    int version = this->Create();
+	int version = this->Create();
 
-    if (version < 0)
-    {
-        return false;
-    }
+	if (version < 0)
+	{
+		return false;
+	}
 
 	if ( version != CGAME_API_VERSION ) {
 		Com_Error( ERR_DROP, "CGame ABI mismatch, expected %d, got %d", CGAME_API_VERSION, version );
-    }
+	}
 
-    return true;
+	return true;
 }
 
 CGameVM::~CGameVM()
 {
-    this->Free();
+	this->Free();
 }
 
 void CGameVM::CGameStaticInit()
@@ -3170,10 +3167,10 @@ void CGameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 	if (major == VM::QVM) {
 		this->QVMSyscall(minor, reader, channel);
 
-    } else if (major < VM::LAST_COMMON_SYSCALL) {
-        services->Syscall(major, minor, std::move(reader), channel);
+	} else if (major < VM::LAST_COMMON_SYSCALL) {
+		services->Syscall(major, minor, std::move(reader), channel);
 
-    } else {
+	} else {
 		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
 	}
 }

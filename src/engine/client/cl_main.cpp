@@ -169,7 +169,7 @@ cvar_t             *cl_cgameSyscallStats;
 clientActive_t     cl;
 clientConnection_t clc;
 clientStatic_t     cls;
-CGameVM *cgvm;
+std::unique_ptr<CGameVM> cgvm;
 
 // Structure containing functions exported from refresh DLL
 refexport_t        re;

@@ -38,7 +38,7 @@ namespace VM {
 	// Functions each specific gamelogic should implement
 	void VMInit();
 	void VMHandleSyscall(uint32_t id, IPC::Reader reader);
-    extern int VM_API_VERSION;
+	extern int VM_API_VERSION;
 
 	void NORETURN Exit();
 

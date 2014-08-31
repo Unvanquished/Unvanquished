@@ -346,7 +346,7 @@ private:
 
 extern serverStatic_t svs; // persistent server info across maps
 extern server_t       sv; // cleared each map
-extern GameVM         *gvm; // game virtual machine
+extern std::unique_ptr<GameVM> gvm; // game virtual machine
 
 extern cvar_t         *sv_fps;
 extern cvar_t         *sv_timeout;
@@ -494,7 +494,7 @@ playerState_t  *SV_GameClientNum( int num );
 
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
-GameVM         *SV_CreateGameVM( void );
+std::unique_ptr<GameVM> SV_CreateGameVM( void );
 void           SV_InitGameProgs(Str::StringRef mapname);
 void           SV_ShutdownGameProgs( void );
 void           SV_RestartGameProgs(Str::StringRef mapname);
