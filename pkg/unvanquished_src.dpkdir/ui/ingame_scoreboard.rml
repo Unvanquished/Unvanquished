@@ -99,6 +99,18 @@
 			height: 1.2em;
 			margin:auto;
 		}
+		datagridheader {
+			display: none;
+		}
+
+		datagridcolumn {
+			text-align: left;
+			margin: 0.1em;
+		}
+
+		div.playername {
+			margin: 0.3em;
+		}
 
 
 
@@ -115,7 +127,7 @@
 				<col fields="num" formatter="PlayerName" width="57%">Name</col>
 				<col fields="score" width="10%">Score</col>
 				<col fields="time" width="10%">Time</col>
-				<col fields="ping">Ping</col>
+				<col fields="ping" width="10%">Ping</col>
 			</datagrid>
 		</teambox>
 	</half>
@@ -128,7 +140,7 @@
 				<col fields="num" formatter="PlayerName" width="57%">Name</col>
 				<col fields="score" width="10%">Score</col>
 				<col fields="time" width="10%">Time</col>
-				<col fields="ping">Ping</col>
+				<col fields="ping" widht="10%">Ping</col>
 			</datagrid>
 		</teambox>
 	</half>
