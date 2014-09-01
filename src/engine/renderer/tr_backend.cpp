@@ -6111,6 +6111,7 @@ const void     *RB_ScissorSet( const void *data )
 
 	Tess_End();
 	GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
+	tess.surfaceShader = NULL;
 
 	return ( const void * )( cmd + 1 );
 }
