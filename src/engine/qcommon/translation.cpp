@@ -256,7 +256,7 @@ void Trans_SetLanguage( const char* lang )
 
 	Cvar_Set( "language", bestLang.str().c_str() );
 
-	Com_Printf( _( "Set language to %s" ), bestLang.get_name().c_str() );
+	Com_Printf( "Set language to %s" , bestLang.get_name().c_str() );
 }
 
 void Trans_UpdateLanguage_f( void )
@@ -311,7 +311,7 @@ void Trans_Init( void )
 	Cvar_Set( "trans_languages", langList );
 	Cvar_Set( "trans_encodings", encList );
 
-	Com_Printf( P_( "Loaded %u language\n", "Loaded %u languages\n", langs.size() ), ( int )langs.size() );
+	Com_Printf( "Loaded %lu language%s\n", ( unsigned long ) langs.size(), ( langs.size() == 1 ? "" : "s" ) );
 }
 
 void Trans_LoadDefaultLanguage( void )

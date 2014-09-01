@@ -47,7 +47,7 @@ namespace Console {
         fileHandle_t f = FS_SV_FOpenFileWrite(HISTORY_FILE);
 
         if (!f) {
-            Com_Printf(_("Couldn't write %s.\n"), HISTORY_FILE);
+            Com_Printf("Couldn't write %s.\n", HISTORY_FILE);
             return;
         }
 
@@ -64,7 +64,7 @@ namespace Console {
         int len = FS_SV_FOpenFileRead(HISTORY_FILE, &f);
 
         if (!f) {
-            Com_Printf(_("Couldn't read %s.\n"), HISTORY_FILE);
+            Com_Printf("Couldn't read %s.\n", HISTORY_FILE);
             return;
         }
 

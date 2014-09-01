@@ -637,21 +637,21 @@ qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
 class WhichCmd: public Cmd::StaticCmd {
 public:
 	WhichCmd()
-		: Cmd::StaticCmd("which", Cmd::SYSTEM, N_("shows which pak a file is in")) {}
+		: Cmd::StaticCmd("which", Cmd::SYSTEM, "shows which pak a file is in") {}
 
 	void Run(const Cmd::Args& args) const OVERRIDE
 	{
 		if (args.Argc() != 2) {
-			PrintUsage(args, _("<file>"), "");
+			PrintUsage(args, "<file>", "");
 			return;
 		}
 
 		const std::string& filename = args.Argv(1);
 		const FS::LoadedPakInfo* pak = FS::PakPath::LocateFile(filename);
 		if (pak)
-			Print(_( "File \"%s\" found in \"%s\""), filename, pak->path);
+			Print( "File \"%s\" found in \"%s\"", filename, pak->path);
 		else
-			Print(_("File not found: \"%s\""), filename);
+			Print("File not found: \"%s\"", filename);
 	}
 
 	Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE
@@ -668,7 +668,7 @@ static WhichCmd WhichCmdRegistration;
 class ListPathsCmd: public Cmd::StaticCmd {
 public:
 	ListPathsCmd()
-		: Cmd::StaticCmd("listPaths", Cmd::SYSTEM, N_("list filesystem search paths")) {}
+		: Cmd::StaticCmd("listPaths", Cmd::SYSTEM, "list filesystem search paths") {}
 
 	void Run(const Cmd::Args& args) const OVERRIDE
 	{
@@ -681,7 +681,7 @@ static ListPathsCmd ListPathsCmdRegistration;
 
 class DirCmd: public Cmd::StaticCmd {
 public:
-	DirCmd(): Cmd::StaticCmd("dir", Cmd::SYSTEM, N_("list all files in a given directory with the option to pass a filter")) {}
+	DirCmd(): Cmd::StaticCmd("dir", Cmd::SYSTEM, "list all files in a given directory with the option to pass a filter") {}
 
 	void Run(const Cmd::Args& args) const OVERRIDE
 	{
