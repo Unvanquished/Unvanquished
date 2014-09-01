@@ -57,7 +57,7 @@
 	<body id="download" nohide>
 
 		<div class="infobox">
-			<p>This Server requires additional files.  One moment while they're downloading.</p>
+			<p>Additional files are required. Please be patient while they download.</p>
 			<p>Time left: <downloadTime/></p>
 			<p>Download rate: <downloadSpeed/></p>
 			<p>Size: <downloadTotalSize/></p>
