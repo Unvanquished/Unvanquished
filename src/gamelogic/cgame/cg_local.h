@@ -796,7 +796,7 @@ typedef struct centity_s
 	struct centity_s      *nextLocation;
 
 	cbeaconPersistent_t   beaconPersistent;
-	
+
 	// Content flags derived from the entity state
 	// HACK: This is not an exact copy of the content flags the server sees.
 	// If this is desired, it needs to be made part of entityState_t instead.
@@ -1179,7 +1179,6 @@ typedef struct
 	int      teamScores[ 2 ];
 	score_t  scores[ MAX_CLIENTS ];
 	qboolean showScores;
-	qboolean scoreBoardShowing;
 	int      scoreFadeTime;
 	char     killerName[ MAX_NAME_LENGTH ];
 	char     spectatorList[ MAX_STRING_CHARS ]; // list of names
