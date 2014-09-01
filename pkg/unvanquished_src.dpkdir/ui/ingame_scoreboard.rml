@@ -140,7 +140,7 @@
 				<col fields="num" formatter="PlayerName" width="57%">Name</col>
 				<col fields="score" width="10%">Score</col>
 				<col fields="time" width="10%">Time</col>
-				<col fields="ping" widht="10%">Ping</col>
+				<col fields="ping" width="10%">Ping</col>
 			</datagrid>
 		</teambox>
 	</half>
