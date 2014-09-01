@@ -642,6 +642,18 @@ void CL_MouseMove( usercmd_t *cmd )
 }
 
 /*
+
+*/
+void CL_ClearCmdButtons( void )
+{
+	for ( int i = 0; i < USERCMD_BUTTONS; ++i )
+	{
+		kb[ KB_BUTTONS + i ].active = qfalse;
+		kb[ KB_BUTTONS + i ].wasPressed = qfalse;
+	}
+}
+
+/*
 ==============
 CL_CmdButtons
 ==============

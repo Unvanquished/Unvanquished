@@ -629,6 +629,7 @@ typedef enum
 } kbuttons_t;
 
 void CL_ClearKeys( void );
+void CL_ClearCmdButtons( void );
 
 void CL_InitInput( void );
 void CL_SendCmd( void );
