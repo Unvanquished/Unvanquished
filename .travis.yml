@@ -36,4 +36,3 @@ notifications:
 branches:
   except:
     - debian
-    - engine-upgrade/sys_rewrite

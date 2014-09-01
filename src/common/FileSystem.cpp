@@ -2021,7 +2021,7 @@ std::string DefaultHomePath()
 void Initialize()
 {
 	// Make sure we don't leak fds if Initialize is called more than once
-	for (LoadedPakInfo& x: loadedPaks) {
+	for (LoadedPakInfo& x: FS::PakPath::loadedPaks) {
 		if (x.fd != -1)
 			close(x.fd);
 	}
@@ -2046,8 +2046,8 @@ void Initialize(Str::StringRef homePath, const std::vector<std::string>& paths)
 		Com_Printf("Pak path: %s\n", x.c_str());
 
 	RefreshPaks();
-#endif
 }
+#endif
 
 void FlushAll()
 {

@@ -78,11 +78,12 @@ static std::string GetSingletonSocketPath()
 static void CreateSingletonSocket()
 {
 #ifdef _WIN32
-	singletonSocket = CreateNamedPipeA(singletonSocketPath.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE, PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT, PIPE_UNLIMITED_INSTANCES, 4096, 4096, 1000, NULL);
+	singletonSocket = CreateNamedPipeA(singletonSocketPath.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE, PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, 1, 4096, 4096, 1000, NULL);
 	if (singletonSocket == INVALID_HANDLE_VALUE)
 		Sys::Error("Could not create singleton socket: %s", Sys::Win32StrError(GetLastError()));
 #else
 	// Delete any stale sockets
+	// TODO: this isn't atomic and can lead to race conditions
 	std::string dirName = FS::Path::DirName(singletonSocketPath);
 	unlink(singletonSocketPath.c_str());
 	rmdir(dirName.c_str());
@@ -92,8 +93,8 @@ static void CreateSingletonSocket()
 	if (singletonSocket == -1)
 		Sys::Error("Could not create singleton socket: %s", strerror(errno));
 
-	if (fcntl(singletonSocket, F_SETFL, fcntl(singletonSocket, F_GETFL) | O_NONBLOCK) == -1)
-		Sys::Error("Could not make socket non-blocking: %s", strerror(errno));
+	// Set socket permissions. This doesn't work on all systems, but it doesn't hurt.
+	fchmod(singletonSocket, 0600);
 
 	struct sockaddr_un addr;
 	addr.sun_family = AF_UNIX;
@@ -203,37 +204,28 @@ void ReadSingletonSocket()
 {
 #ifdef _WIN32
 	while (true) {
-		if (ConnectNamedPipe(singletonSocket, NULL))
-			continue;
-		if (GetLastError() == ERROR_PIPE_CONNECTED) {
-			// Switch the pipe to blocking mode to read the message
-			DWORD mode = PIPE_READMODE_BYTE | PIPE_WAIT;
-			SetNamedPipeHandleState(singletonSocket, &mode, NULL, NULL);
+		if (!ConnectNamedPipe(singletonSocket, NULL)) {
+			Log::Warn("Singleton socket ConnectNamedPipe() failed: %s", Sys::Win32StrError(GetLastError()));
 
-			ReadSingletonSocketCommands();
-
-			// Switch the pipe back to non-blocking mode to handle connections
-			mode = PIPE_READMODE_BYTE | PIPE_NOWAIT;
-			SetNamedPipeHandleState(singletonSocket, &mode, NULL, NULL);
-			DisconnectNamedPipe(singletonSocket);
-		} else {
-			if (GetLastError() != ERROR_PIPE_LISTENING)
-				Log::Warn("Singleton socket ConnectNamedPipe() failed: %s", Sys::Win32StrError(GetLastError()));
+			// Stop handling incoming commands if an error occured
+			CloseHandle(singletonSocket);
 			return;
 		}
+
+		ReadSingletonSocketCommands();
+		DisconnectNamedPipe(singletonSocket);
 	}
 #else
 	while (true) {
 		int sock = accept(singletonSocket, NULL, NULL);
 		if (sock == -1) {
-			if (errno != EAGAIN)
-				Log::Warn("Singleton socket accept() failed: %s", strerror(errno));
+			Log::Warn("Singleton socket accept() failed: %s", strerror(errno));
+
+			// Stop handling incoming commands if an error occured
+			close(singletonSocket);
 			return;
 		}
 
-		// Make the socket blocking and read all of the data at once
-		if (fcntl(singletonSocket, F_SETFL, fcntl(singletonSocket, F_GETFL) & ~O_NONBLOCK) == -1)
-			Sys::Error("Could not make socket blocking: %s", strerror(errno));
 		ReadSingletonSocketCommands(sock);
 		close(sock);
 	}
@@ -341,15 +333,17 @@ static void StartSignalThread()
 // Command line arguments
 struct cmdlineArgs_t {
 	// The Windows client defaults to curses off because of performance issues
+	cmdlineArgs_t()
+		: reset_config(false), use_basepath(true),
 #if defined(_WIN32) && defined(BUILD_CLIENT)
-	bool use_curses = false;
+	use_curses(false) {}
 #else
-	bool use_curses = true;
+	use_curses(true) {}
 #endif
 
-	bool reset_config = false;
-
-	bool use_basepath = true;
+	bool reset_config;
+	bool use_basepath;
+	bool use_curses;
 	std::string homepath = FS::DefaultHomePath();
 	std::vector<std::string> paths;
 
@@ -358,7 +352,7 @@ struct cmdlineArgs_t {
 };
 
 // Parse the command line arguments
-#ifdef DEDICATED
+#ifdef BUILD_SERVER
 #define HELP_URL ""
 #else
 #define HELP_URL " [" URI_SCHEME "ADDRESS[:PORT]]"
@@ -383,6 +377,7 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 			continue;
 		}
 
+#ifndef BUILD_SERVER
 		// If a URI is given, transform it into a /connect command. This only
 		// applies if no +commands have been given. Any arguments after the URI
 		// are discarded.
@@ -392,6 +387,7 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 				Log::Warn("Ignoring extraneous arguments after URI");
 			return;
 		}
+#endif
 
 		if (!strcmp(argv[i], "--help")) {
 			fprintf(stderr, PRODUCT_NAME " " PRODUCT_VERSION "\n"
@@ -519,7 +515,14 @@ static void Init(int argc, char** argv)
 #endif
 		exit(0);
 	}
+
+	// Create the singleton socket and a thread to watch it
 	CreateSingletonSocket();
+	try {
+		std::thread(ReadSingletonSocket).detach();
+	} catch (std::system_error& err) {
+		Sys::Error("Could not create singleton socket thread: %s", err.what());
+	}
 
 	// Load the base paks
 	// TODO: cvar names and FS_* stuff needs to be properly integrated
@@ -601,4 +604,7 @@ ALIGN_STACK int main(int argc, char** argv)
 	} catch (std::exception& err) {
 		Sys::Error("Unhandled exception (%s): %s", typeid(err).name(), err.what());
 	}
+
+	// To make the compiler happy
+	return 0;
 }
