@@ -189,8 +189,3 @@ button:hover{
 	background-color: #178079;   /* MED cyan */
 }
 
-img.emoticon {
-	height: 1em;
-	width: auto;
-}
-
