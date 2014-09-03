@@ -253,6 +253,106 @@ qboolean trap_GetNews( qboolean force )
 	return res;
 }
 
+// All Sounds
+
+void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )
+{
+	std::array<float, 3> myorigin;
+	VectorCopy(origin, myorigin.data());
+	VM::SendMsg<Audio::StartSoundMsg>(myorigin, entityNum, sfx);
+}
+
+void trap_S_StartLocalSound( sfxHandle_t sfx, int )
+{
+	VM::SendMsg<Audio::StartLocalSoundMsg>(sfx);
+}
+
+void trap_S_ClearLoopingSounds( qboolean )
+{
+	VM::SendMsg<Audio::ClearLoopingSoundsMsg>();
+}
+
+void trap_S_ClearSounds( qboolean )
+{
+	VM::SendMsg<Audio::ClearSoundsMsg>();
+}
+
+void trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
+{
+	if (origin) {
+		trap_S_UpdateEntityPosition(entityNum, origin);
+	}
+	if (velocity) {
+		trap_S_UpdateEntityVelocity(entityNum, velocity);
+	}
+	VM::SendMsg<Audio::AddLoopingSoundMsg>(entityNum, sfx);
+}
+
+void trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
+{
+	trap_S_AddLoopingSound(entityNum, origin, velocity, sfx);
+}
+
+void trap_S_StopLoopingSound( int entityNum )
+{
+	VM::SendMsg<Audio::StopLoopingSoundMsg>(entityNum);
+}
+
+void trap_S_UpdateEntityPosition( int entityNum, const vec3_t origin )
+{
+	std::array<float, 3> myposition;
+	VectorCopy(origin, myposition.data());
+	VM::SendMsg<Audio::UpdateEntityPositionMsg>(entityNum, myposition);
+}
+
+void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int )
+{
+	if (origin) {
+		trap_S_UpdateEntityPosition(entityNum, origin);
+	}
+	std::array<float, 9> myaxis;
+	memcpy(myaxis.data(), axis, sizeof(float) * 9);
+	VM::SendMsg<Audio::RespatializeMsg>(entityNum, myaxis);
+}
+
+sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean)
+{
+	int sfx;
+	VM::SendMsg<Audio::RegisterSoundMsg>(sample, sfx);
+	return sfx;
+}
+
+void trap_S_StartBackgroundTrack( const char *intro, const char *loop )
+{
+	VM::SendMsg<Audio::StartBackgroundTrackMsg>(intro, loop);
+}
+
+void trap_S_StopBackgroundTrack( void )
+{
+	VM::SendMsg<Audio::StopBackgroundTrackMsg>();
+}
+
+void trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
+{
+	std::array<float, 3> myvelocity;
+	VectorCopy(velocity, myvelocity.data());
+	VM::SendMsg<Audio::UpdateEntityVelocityMsg>(entityNum, myvelocity);
+}
+
+void trap_S_SetReverb( int slotNum, const char* name, float ratio )
+{
+	VM::SendMsg<Audio::SetReverbMsg>(slotNum, name, ratio);
+}
+
+void trap_S_BeginRegistration( void )
+{
+	VM::SendMsg<Audio::BeginRegistrationMsg>();
+}
+
+void trap_S_EndRegistration( void )
+{
+	VM::SendMsg<Audio::EndRegistrationMsg>();
+}
 
 
 //39.
@@ -267,114 +367,6 @@ void trap_R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4
 void trap_R_ClearDecals( void )
 {
     syscallVM( CG_R_CLEARDECALS );
-}
-
-//41.
-//S_StartSound(VMA(1), args[2], args[3], args[4], args[5]);
-void trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx )
-{
-    syscallVM( CG_S_STARTSOUND, origin, entityNum, entchannel, sfx, 127 );
-}
-
-//43.
-//S_StartLocalSound(args[1], args[2], args[3]);
-void trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum )
-{
-    syscallVM( CG_S_STARTLOCALSOUND, sfx, channelNum, 127 );
-}
-
-//44.
-//S_ClearLoopingSounds();
-//S_ClearLoopingSounds(args[1]);
-void trap_S_ClearLoopingSounds( qboolean killall )
-{
-    syscallVM( CG_S_CLEARLOOPINGSOUNDS, killall );
-}
-
-//45.
-// if(args[1] == 0) {
-//	S_ClearSounds(qtrue, qfalse);
-//} else if(args[1] == 1) {
-//	S_ClearSounds(qtrue, qtrue);
-//}
-void trap_S_ClearSounds( qboolean killmusic )
-{
-    syscallVM( CG_S_CLEARSOUNDS, killmusic );
-}
-
-//46.
-//S_AddLoopingSound(VMA(1), VMA(2), args[3], args[4], args[5], args[6]);
-//S_AddLoopingSound( args[1], VMA(2), VMA(3), args[4] );
-void trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
-{
-    syscallVM( CG_S_ADDLOOPINGSOUND, entityNum, origin, velocity, sfx );
-}
-
-//47.
-//S_AddRealLoopingSound(VMA(1), VMA(2), args[3], args[4], args[5], args[6]);
-//S_AddRealLoopingSound( args[1], VMA(2), VMA(3), args[4] );
-void trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
-{
-    syscallVM( CG_S_ADDREALLOOPINGSOUND, entityNum, origin, velocity, sfx );
-}
-
-//48.
-//S_StopLoopingSound( args[1] );
-void trap_S_StopLoopingSound( int entityNum )
-{
-    syscallVM( CG_S_STOPLOOPINGSOUND, entityNum );
-}
-
-//49.
-//S_StopEntStreamingSound(args[1]);
-void trap_S_StopStreamingSound( int entityNum )
-{
-    syscallVM( CG_S_STOPSTREAMINGSOUND, entityNum );
-}
-
-//50.
-//S_UpdateEntityPosition(args[1], VMA(2));
-void trap_S_UpdateEntityPosition( int entityNum, const vec3_t origin )
-{
-    syscallVM( CG_S_UPDATEENTITYPOSITION, entityNum, origin );
-}
-
-//54.
-//S_Respatialize(args[1], VMA(2), VMA(3), args[4]);
-void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int inwater )
-{
-    syscallVM( CG_S_RESPATIALIZE, entityNum, origin, axis, inwater );
-}
-
-//55.
-//return S_RegisterSound(VMA(1), args[2]);
-sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
-{
-    //CG_DrawInformation(qtrue);
-    Q_UNUSED(compressed);
-    return syscallVM( CG_S_REGISTERSOUND, sample, qfalse /* compressed */ );
-}
-
-//56.
-//S_StartBackgroundTrack(VMA(1), VMA(2), args[3]);
-//S_StartBackgroundTrack(VMA(1), VMA(2));
-void trap_S_StartBackgroundTrack( const char *intro, const char *loop )
-{
-    syscallVM( CG_S_STARTBACKGROUNDTRACK, intro, loop );
-}
-
-//57.
-//S_FadeStreamingSound(VMF(1), args[2], args[3]);
-void trap_S_FadeBackgroundTrack( float targetvol, int time, int num )
-{
-    syscallVM( CG_S_FADESTREAMINGSOUND, PASSFLOAT( targetvol ), time, num );
-}
-
-//58.
-//return S_StartStreamingSound(VMA(1), VMA(2), args[3], args[4], args[5]);
-int trap_S_StartStreamingSound( const char *intro, const char *loop, int entnum, int channel, int attenuation )
-{
-    return syscallVM( CG_S_STARTSTREAMINGSOUND, intro, loop, entnum, channel, attenuation );
 }
 
 //59.
@@ -705,13 +697,6 @@ int trap_PC_UnReadToken( int handle )
     return syscallVM( CG_PC_UNREAD_TOKEN, handle );
 }
 
-//123
-//S_StopBackgroundTrack();
-void trap_S_StopBackgroundTrack( void )
-{
-    syscallVM( CG_S_STOPBACKGROUNDTRACK );
-}
-
 //126.
 //return CIN_PlayCinematic(VMA(1), args[2], args[3], args[4], args[5], args[6]);
 int trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits )
@@ -825,13 +810,6 @@ int trap_Parse_SourceFileAndLine( int handle, char *filename, int *line )
 void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 {
     syscallVM( CG_KEY_KEYNUMTOSTRINGBUF, keynum, buf, buflen );
-}
-
-//151.
-//S_FadeAllSounds(VMF(1), args[2], args[3]);
-void trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds )
-{
-    syscallVM( CG_S_FADEALLSOUNDS, PASSFLOAT( targetvol ), time, stopsounds );
 }
 
 //152.
@@ -1086,26 +1064,6 @@ void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len 
 void trap_R_SetAltShaderTokens( const char *str )
 {
     syscallVM( CG_R_SETALTSHADERTOKENS, str );
-}
-
-void trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
-{
-    syscallVM( CG_S_UPDATEENTITYVELOCITY, entityNum, velocity );
-}
-
-void trap_S_SetReverb( int slotNum, const char* name, float ratio )
-{
-    syscallVM( CG_S_SETREVERB, slotNum, name, PASSFLOAT(ratio) );
-}
-
-void trap_S_BeginRegistration( void )
-{
-    syscallVM( CG_S_BEGINREGISTRATION );
-}
-
-void trap_S_EndRegistration( void )
-{
-    syscallVM( CG_S_ENDREGISTRATION );
 }
 
 void trap_Rocket_Init( void )

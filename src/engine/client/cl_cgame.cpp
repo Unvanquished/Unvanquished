@@ -1453,85 +1453,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.ClearDecals();
 			return 0;
 
-		case CG_S_STARTSOUND:
-			cls.nCgameSoundSyscalls ++;
-			Audio::StartSound( args[ 2 ], (float*) VMA( 1 ), args[ 4 ] );
-			return 0;
-
-		case CG_S_STARTLOCALSOUND:
-			cls.nCgameSoundSyscalls ++;
-			Audio::StartLocalSound( args[ 1 ] );
-			return 0;
-
-		case CG_S_CLEARLOOPINGSOUNDS:
-			cls.nCgameSoundSyscalls ++;
-			Audio::ClearAllLoopingSounds();
-			return 0;
-
-		case CG_S_CLEARSOUNDS:
-			cls.nCgameSoundSyscalls ++;
-			return 0;
-
-		case CG_S_ADDLOOPINGSOUND:
-		case CG_S_ADDREALLOOPINGSOUND:
-			cls.nCgameSoundSyscalls ++;
-			if( args[ 2 ] )
-			{
-				Audio::UpdateEntityPosition( args[ 1 ], (float*) VMA( 2 ) );
-			}
-			if( args[ 3 ] )
-			{
-				Audio::UpdateEntityVelocity( args[ 1 ], (float*) VMA( 3 ) );
-			}
-
-			Audio::AddEntityLoopingSound( args[ 1 ], args[ 4 ]);
-			return 0;
-
-		case CG_S_STOPLOOPINGSOUND:
-			cls.nCgameSoundSyscalls ++;
-			Audio::ClearLoopingSoundsForEntity( args[ 1 ] );
-			return 0;
-
-		case CG_S_STOPSTREAMINGSOUND:
-			cls.nCgameSoundSyscalls ++;
-			// FIXME
-			//S_StopEntStreamingSound(args[1]);
-			return 0;
-
-		case CG_S_UPDATEENTITYPOSITION:
-			cls.nCgameSoundSyscalls ++;
-			Audio::UpdateEntityPosition( args[ 1 ], (float*) VMA( 2 ) );
-			return 0;
-
-		case CG_S_RESPATIALIZE:
-			cls.nCgameSoundSyscalls ++;
-			if (args[ 1 ] >= 0 and args[ 1 ] < MAX_GENTITIES) {
-				Audio::UpdateEntityPosition( args[ 1 ], (float*) VMA( 2 ));
-			}
-			Audio::UpdateListener(args[ 1 ], (vec3_t*) VMA( 3 ) );
-			return 0;
-
-		case CG_S_REGISTERSOUND:
-			cls.nCgameSoundSyscalls ++;
-			return Audio::RegisterSFX( (char*) VMA( 1 ) );
-
-		case CG_S_STARTBACKGROUNDTRACK:
-			cls.nCgameSoundSyscalls ++;
-			Audio::StartMusic( (char*) VMA( 1 ), (char*) VMA( 2 ) );
-			return 0;
-
-		case CG_S_FADESTREAMINGSOUND:
-			cls.nCgameSoundSyscalls ++;
-			// FIXME
-			//S_FadeStreamingSound(VMF(1), args[2], args[3]); //----(SA)  added music/all-streaming options
-			return 0;
-
-		case CG_S_STARTSTREAMINGSOUND:
-			cls.nCgameSoundSyscalls ++;
-			// FIXME
-			//return S_StartStreamingSound(VMA(1), VMA(2), args[3], args[4], args[5]);
-			return 0;
-
 		case CG_R_LOADWORLDMAP:
 			cls.nCgameRenderSyscalls ++;
 			re.SetWorldVisData( CM_ClusterPVS( -1 ) );
@@ -1695,11 +1616,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_SetOverstrikeMode( args[ 1 ] );
 			return 0;
 
-		case CG_S_STOPBACKGROUNDTRACK:
-			cls.nCgameSoundSyscalls ++;
-			Audio::StopMusic();
-			return 0;
-
 		case CG_CIN_PLAYCINEMATIC:
 			return CIN_PlayCinematic( (char*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ] );
 
@@ -1764,12 +1680,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_KEY_KEYNUMTOSTRINGBUF:
 			cls.nCgameUselessSyscalls ++;
 			Key_KeynumToStringBuf( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case CG_S_FADEALLSOUNDS:
-			cls.nCgameSoundSyscalls ++;
-			// FIXME
-			//S_FadeAllSounds(VMF(1), args[2], args[3]);
 			return 0;
 
 		case CG_R_INPVS:
@@ -2082,25 +1992,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.SetAltShaderTokens( ( const char * )VMA(1) );
 			return 0;
 
-		case CG_S_UPDATEENTITYVELOCITY:
-			cls.nCgameSoundSyscalls ++;
-			Audio::UpdateEntityVelocity( args[ 1 ], (float*) VMA( 2 ) );
-			return 0;
-
-		case CG_S_SETREVERB:
-			cls.nCgameSoundSyscalls ++;
-			Audio::SetReverb( args[ 1 ], (const char*) VMA( 2 ), VMF( 3 ) );
-			return 0;
-
-		case CG_S_BEGINREGISTRATION:
-			cls.nCgameSoundSyscalls ++;
-			Audio::BeginRegistration();
-			return 0;
-
-		case CG_S_ENDREGISTRATION:
-			cls.nCgameSoundSyscalls ++;
-			Audio::EndRegistration();
-			return 0;
 		case CG_ROCKET_REGISTERPROPERTY:
 			Rocket_RegisterProperty( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ), args[ 3 ], args[ 4 ], ( const char * ) VMA( 5 ) );
 			return 0;
@@ -3009,6 +2900,96 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		case CG_GETNEWS:
 			IPC::HandleMsg<GetNewsMsg>(channel, std::move(reader), [this] (bool force, bool& res) {
 				res = GetNews(force);
+			});
+			break;
+
+		case CG_S_STARTSOUND:
+			IPC::HandleMsg<Audio::StartSoundMsg>(channel, std::move(reader), [this] (std::array<float, 3> origin, int entityNum, int sfx) {
+				Audio::StartSound(entityNum, origin.data(), sfx);
+			});
+			break;
+
+		case CG_S_STARTLOCALSOUND:
+			IPC::HandleMsg<Audio::StartLocalSoundMsg>(channel, std::move(reader), [this] (int sfx) {
+				Audio::StartLocalSound(sfx);
+			});
+			break;
+
+		case CG_S_CLEARLOOPINGSOUNDS:
+			IPC::HandleMsg<Audio::ClearLoopingSoundsMsg>(channel, std::move(reader), [this] {
+				Audio::ClearAllLoopingSounds();
+			});
+			break;
+
+		case CG_S_CLEARSOUNDS:
+			IPC::HandleMsg<Audio::ClearSoundsMsg>(channel, std::move(reader), [this] {
+				Audio::ClearAllLoopingSounds();
+			});
+			break;
+
+		case CG_S_ADDLOOPINGSOUND:
+			IPC::HandleMsg<Audio::AddLoopingSoundMsg>(channel, std::move(reader), [this] (int entityNum, int sfx) {
+				Audio::AddEntityLoopingSound(entityNum, sfx);
+			});
+			break;
+
+		case CG_S_STOPLOOPINGSOUND:
+			IPC::HandleMsg<Audio::StopLoopingSoundMsg>(channel, std::move(reader), [this] (int entityNum) {
+				Audio::ClearLoopingSoundsForEntity(entityNum);
+			});
+			break;
+
+		case CG_S_UPDATEENTITYPOSITION:
+			IPC::HandleMsg<Audio::UpdateEntityPositionMsg>(channel, std::move(reader), [this] (int entityNum, std::array<float, 3> position) {
+				Audio::UpdateEntityPosition(entityNum, position.data());
+			});
+			break;
+
+		case CG_S_RESPATIALIZE:
+			IPC::HandleMsg<Audio::RespatializeMsg>(channel, std::move(reader), [this] (int entityNum, std::array<float, 9> axis) {
+				Audio::UpdateListener(entityNum, (vec3_t*) axis.data());
+			});
+			break;
+
+		case CG_S_REGISTERSOUND:
+			IPC::HandleMsg<Audio::RegisterSoundMsg>(channel, std::move(reader), [this] (std::string sample, int& handle) {
+				handle = Audio::RegisterSFX(sample.c_str());
+			});
+			break;
+
+		case CG_S_STARTBACKGROUNDTRACK:
+			IPC::HandleMsg<Audio::StartBackgroundTrackMsg>(channel, std::move(reader), [this] (std::string intro, std::string loop) {
+				Audio::StartMusic(intro.c_str(), loop.c_str());
+			});
+			break;
+
+		case CG_S_STOPBACKGROUNDTRACK:
+			IPC::HandleMsg<Audio::StopBackgroundTrackMsg>(channel, std::move(reader), [this] {
+				Audio::StopMusic();
+			});
+			break;
+
+		case CG_S_UPDATEENTITYVELOCITY:
+			IPC::HandleMsg<Audio::UpdateEntityVelocityMsg>(channel, std::move(reader), [this] (int entityNum, std::array<float, 3> velocity) {
+				Audio::UpdateEntityVelocity(entityNum, velocity.data());
+			});
+			break;
+
+		case CG_S_SETREVERB:
+			IPC::HandleMsg<Audio::SetReverbMsg>(channel, std::move(reader), [this] (int slotNum, std::string name, float ratio) {
+				Audio::SetReverb(slotNum, name.c_str(), ratio);
+			});
+			break;
+
+		case CG_S_BEGINREGISTRATION:
+			IPC::HandleMsg<Audio::BeginRegistrationMsg>(channel, std::move(reader), [this] {
+				Audio::BeginRegistration();
+			});
+			break;
+
+		case CG_S_ENDREGISTRATION:
+			IPC::HandleMsg<Audio::EndRegistrationMsg>(channel, std::move(reader), [this] {
+				Audio::EndRegistration();
 			});
 			break;
 

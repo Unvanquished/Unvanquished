@@ -151,17 +151,12 @@ typedef enum cgameImport_s
   CG_S_CLEARLOOPINGSOUNDS,
   CG_S_CLEARSOUNDS,
   CG_S_ADDLOOPINGSOUND,
-  CG_S_ADDREALLOOPINGSOUND,
   CG_S_STOPLOOPINGSOUND,
-  CG_S_STOPSTREAMINGSOUND,
   CG_S_UPDATEENTITYPOSITION,
   CG_S_RESPATIALIZE,
   CG_S_REGISTERSOUND,
   CG_S_STARTBACKGROUNDTRACK,
-  CG_S_FADESTREAMINGSOUND,
-  CG_S_STARTSTREAMINGSOUND,
   CG_S_STOPBACKGROUNDTRACK,
-  CG_S_FADEALLSOUNDS,
   CG_S_UPDATEENTITYVELOCITY,
   CG_S_SETREVERB,
   CG_S_BEGINREGISTRATION,
@@ -452,6 +447,43 @@ typedef IPC::SyncMessage<
 	IPC::Reply<bool>
 > GetNewsMsg;
 
+// All Sounds
+
+namespace Audio {
+	// StartSoundMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTSOUND>, std::array<float, 3>, int, int> StartSoundMsg;
+	// StartLocalSoundMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTLOCALSOUND>, int> StartLocalSoundMsg;
+	// ClearLoopingSoundsMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_CLEARLOOPINGSOUNDS>> ClearLoopingSoundsMsg;
+	// ClearSoundsMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_CLEARSOUNDS>> ClearSoundsMsg;
+	// AddLoopingSoundMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_ADDLOOPINGSOUND>, int, int> AddLoopingSoundMsg;
+	// StopLoopingSoundMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STOPLOOPINGSOUND>, int> StopLoopingSoundMsg;
+	// UpdateEntityPositionMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYPOSITION>, int, std::array<float, 3>> UpdateEntityPositionMsg;
+	// RespatializeMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_RESPATIALIZE>, int, std::array<float, 9>> RespatializeMsg;
+	// RegisterSoundMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_S_REGISTERSOUND>, std::string>,
+		IPC::Reply<int>
+	> RegisterSoundMsg;
+	// StartBackgroundTrackMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTBACKGROUNDTRACK>, std::string, std::string> StartBackgroundTrackMsg;
+	// StopBackgroundTrackMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STOPBACKGROUNDTRACK>> StopBackgroundTrackMsg;
+	// UpdateEntityVelocityMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYVELOCITY>, int, std::array<float, 3>> UpdateEntityVelocityMsg;
+	// SetReverbMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_SETREVERB>, int, std::string, float> SetReverbMsg;
+	// BeginRegistrationMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_BEGINREGISTRATION>> BeginRegistrationMsg;
+	// EndRegistrationMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_ENDREGISTRATION>> EndRegistrationMsg;
+}
 
 typedef enum
 {
@@ -639,7 +671,6 @@ int             trap_S_GetCurrentSoundTime( void );
 void            trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int inwater );
 sfxHandle_t     trap_S_RegisterSound( const char *sample, qboolean compressed );
 void            trap_S_StartBackgroundTrack( const char *intro, const char *loop );
-void            trap_S_FadeBackgroundTrack( float targetvol, int time, int num );
 int             trap_S_StartStreamingSound( const char *intro, const char *loop, int entnum, int channel, int attenuation );
 void            trap_R_LoadWorldMap( const char *mapname );
 qhandle_t       trap_R_RegisterModel( const char *name );
@@ -717,7 +748,6 @@ int             trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
 int             trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
 void            trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
 void            trap_CG_TranslateString( const char *string, char *buf );
-void            trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean        trap_R_inPVVS( const vec3_t p1, const vec3_t p2 );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
