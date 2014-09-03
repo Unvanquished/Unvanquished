@@ -236,27 +236,12 @@ typedef enum cgameImport_s
   CG_INGAME_POPUP,
   CG_INGAME_CLOSEPOPUP,
 
-  // Parse
-  CG_PC_ADD_GLOBAL_DEFINE,
-  CG_PC_LOAD_SOURCE,
-  CG_PC_FREE_SOURCE,
-  CG_PC_READ_TOKEN,
-  CG_PC_SOURCE_FILE_AND_LINE,
-  CG_PC_UNREAD_TOKEN,
-
   // Cinematic
   CG_CIN_PLAYCINEMATIC,
   CG_CIN_STOPCINEMATIC,
   CG_CIN_RUNCINEMATIC,
   CG_CIN_DRAWCINEMATIC,
   CG_CIN_SETEXTENTS,
-
-  // Parse, bis
-  CG_PARSE_ADD_GLOBAL_DEFINE,
-  CG_PARSE_LOAD_SOURCE,
-  CG_PARSE_FREE_SOURCE,
-  CG_PARSE_READ_TOKEN,
-  CG_PARSE_SOURCE_FILE_AND_LINE,
 
   // Lan
   CG_LAN_LOADCACHEDSERVERS,
@@ -722,12 +707,6 @@ void            trap_Key_SetCatcher( int catcher );
 int             trap_Key_GetKey( const char *binding );
 qboolean        trap_Key_GetOverstrikeMode( void );
 void            trap_Key_SetOverstrikeMode( qboolean state );
-int             trap_PC_AddGlobalDefine( const char *define );
-int             trap_PC_LoadSource( const char *filename );
-int             trap_PC_FreeSource( int handle );
-int             trap_PC_ReadToken( int handle, pc_token_t *pc_token );
-int             trap_PC_SourceFileAndLine( int handle, char *filename, int *line );
-int             trap_PC_UnReadToken( int handle );
 void            trap_S_StopBackgroundTrack( void );
 int             trap_RealTime( qtime_t *qtime );
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );

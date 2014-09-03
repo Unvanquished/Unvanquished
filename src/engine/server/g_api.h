@@ -133,12 +133,6 @@ typedef enum gameImport_s
   G_GM_TIME,
   G_GET_TIME_STRING,
 
-  G_PARSE_ADD_GLOBAL_DEFINE,
-  G_PARSE_LOAD_SOURCE,
-  G_PARSE_FREE_SOURCE,
-  G_PARSE_READ_TOKEN,
-  G_PARSE_SOURCE_FILE_AND_LINE,
-
   BOT_ALLOCATE_CLIENT,
   BOT_FREE_CLIENT,
   BOT_GET_CONSOLE_MESSAGE,
@@ -243,32 +237,6 @@ typedef IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_TIME_STRING>, int, std::string, qtime_t>,
     IPC::Reply<std::string>
 > GetTimeStringMsg;
-
-//ParseAddGlobalDefineMsg
-typedef IPC::SyncMessage<
-    IPC::Message<IPC::Id<VM::QVM, G_PARSE_ADD_GLOBAL_DEFINE>, std::string>,
-    IPC::Reply<int>
-> ParseAddGlobalDefineMsg;
-//ParseLoadSourceMsg
-typedef IPC::SyncMessage<
-    IPC::Message<IPC::Id<VM::QVM, G_PARSE_LOAD_SOURCE>, std::string>,
-    IPC::Reply<int>
-> ParseLoadSourceMsg;
-//ParseFreeSourceMsg
-typedef IPC::SyncMessage<
-    IPC::Message<IPC::Id<VM::QVM, G_PARSE_FREE_SOURCE>, int>,
-    IPC::Reply<int>
-> ParseFreeSourceMsg;
-//ParseReadTokenMsg
-typedef IPC::SyncMessage<
-    IPC::Message<IPC::Id<VM::QVM, G_PARSE_READ_TOKEN>, int>,
-    IPC::Reply<int, pc_token_t>
-> ParseReadTokenMsg;
-//ParseSourceFileAndLineMsg
-typedef IPC::SyncMessage<
-    IPC::Message<IPC::Id<VM::QVM, G_PARSE_SOURCE_FILE_AND_LINE>, int>,
-    IPC::Reply<int, std::string, int>
-> ParseSourceFileAndLineMsg;
 
 // BotAllocateClientMsg
 typedef IPC::SyncMessage<

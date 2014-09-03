@@ -655,48 +655,6 @@ void trap_Key_SetOverstrikeMode( qboolean state )
 //116
 //return FloatAsInt(acos(VMF(1)));
 
-//117
-//return botlib_export->PC_AddGlobalDefine(VMA(1));
-int trap_PC_AddGlobalDefine( const char *define )
-{
-    return syscallVM( CG_PC_ADD_GLOBAL_DEFINE, define );
-}
-
-//118
-//return botlib_export->PC_LoadSourceHandle(VMA(1));
-int trap_PC_LoadSource( const char *filename )
-{
-    return syscallVM( CG_PC_LOAD_SOURCE, filename );
-}
-
-//119
-//return botlib_export->PC_FreeSourceHandle(args[1]);
-int trap_PC_FreeSource( int handle )
-{
-    return syscallVM( CG_PC_FREE_SOURCE, handle );
-}
-
-//120
-//return botlib_export->PC_ReadTokenHandle(args[1], VMA(2));
-int trap_PC_ReadToken( int handle, pc_token_t *pc_token )
-{
-    return syscallVM( CG_PC_READ_TOKEN, handle, pc_token );
-}
-
-//121
-//return botlib_export->PC_SourceFileAndLine(args[1], VMA(2), VMA(3));
-int trap_PC_SourceFileAndLine( int handle, char *filename, int *line )
-{
-    return syscallVM( CG_PC_SOURCE_FILE_AND_LINE, handle, filename, line );
-}
-
-//122.
-//botlib_export->PC_UnreadLastTokenHandle(args[1]);
-int trap_PC_UnReadToken( int handle )
-{
-    return syscallVM( CG_PC_UNREAD_TOKEN, handle );
-}
-
 //126.
 //return CIN_PlayCinematic(VMA(1), args[2], args[3], args[4], args[5], args[6]);
 int trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits )
@@ -768,41 +726,6 @@ void trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
 void trap_Key_SetBinding( int keynum, int team, const char *binding )
 {
     syscallVM( CG_KEY_SETBINDING, keynum, team, binding );
-}
-
-//143.
-//return Parse_AddGlobalDefine(VMA(1));
-int trap_Parse_AddGlobalDefine( const char *define )
-{
-    return syscallVM( CG_PARSE_ADD_GLOBAL_DEFINE, define );
-}
-
-//144.
-//return Parse_LoadSourceHandle(VMA(1));
-int trap_Parse_LoadSource( const char *filename )
-{
-    return syscallVM( CG_PARSE_LOAD_SOURCE, filename );
-}
-
-//145.
-//return Parse_FreeSourceHandle(args[1]);
-int trap_Parse_FreeSource( int handle )
-{
-    return syscallVM( CG_PARSE_FREE_SOURCE, handle );
-}
-
-//146.
-//return Parse_ReadTokenHandle( args[1], VMA(2) );
-int trap_Parse_ReadToken( int handle, pc_token_t *pc_token )
-{
-    return syscallVM( CG_PARSE_READ_TOKEN, handle, pc_token );
-}
-
-//147.
-//return Parse_SourceFileAndLine(args[1], VMA(2), VMA(3));
-int trap_Parse_SourceFileAndLine( int handle, char *filename, int *line )
-{
-    return syscallVM( CG_PARSE_SOURCE_FILE_AND_LINE, handle, filename, line );
 }
 
 //148.

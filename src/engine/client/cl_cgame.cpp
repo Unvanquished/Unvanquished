@@ -1657,26 +1657,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_SetBinding( args[ 1 ], args[ 2 ], (char*) VMA( 3 ) ); // FIXME BIND
 			return 0;
 
-		case CG_PARSE_ADD_GLOBAL_DEFINE:
-			cls.nCgameUselessSyscalls ++;
-			return Parse_AddGlobalDefine( (char*) VMA( 1 ) );
-
-		case CG_PARSE_LOAD_SOURCE:
-			cls.nCgameUselessSyscalls ++;
-			return Parse_LoadSourceHandle( (char*) VMA( 1 ) );
-
-		case CG_PARSE_FREE_SOURCE:
-			cls.nCgameUselessSyscalls ++;
-			return Parse_FreeSourceHandle( args[ 1 ] );
-
-		case CG_PARSE_READ_TOKEN:
-			cls.nCgameUselessSyscalls ++;
-			return Parse_ReadTokenHandle( args[ 1 ], (pc_token_t*) VMA( 2 ) );
-
-		case CG_PARSE_SOURCE_FILE_AND_LINE:
-			cls.nCgameUselessSyscalls ++;
-			return Parse_SourceFileAndLine( args[ 1 ], (char*) VMA( 2 ), (int*) VMA( 3 ) );
-
 		case CG_KEY_KEYNUMTOSTRINGBUF:
 			cls.nCgameUselessSyscalls ++;
 			Key_KeynumToStringBuf( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );

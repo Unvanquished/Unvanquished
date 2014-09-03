@@ -509,3 +509,40 @@ qboolean trap_FindPak(const char *name)
 	return res;
 }
 
+int trap_Parse_AddGlobalDefine(const char *define)
+{
+	int res;
+	VM::SendMsg<VM::ParseAddGlobalDefineMsg>(define, res);
+	return res;
+}
+
+int trap_Parse_LoadSource(const char *filename)
+{
+	int res;
+	VM::SendMsg<VM::ParseLoadSourceMsg>(filename, res);
+	return res;
+}
+
+int trap_Parse_FreeSource(int handle)
+{
+	int res;
+	VM::SendMsg<VM::ParseFreeSourceMsg>(handle, res);
+	return res;
+}
+
+int trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
+{
+	int res;
+	VM::SendMsg<VM::ParseReadTokenMsg>(handle, res, *pc_token);
+	return res;
+}
+
+int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
+{
+	int res;
+	std::string filename2;
+	VM::SendMsg<VM::ParseSourceFileAndLineMsg>(handle, res, filename2, *line);
+	Q_strncpyz(filename, filename2.c_str(), 128);
+	return res;
+}
+

@@ -368,43 +368,6 @@ void trap_GetTimeString(char *buffer, int size, const char *format, const qtime_
 	Q_strncpyz(buffer, text.c_str(), size);
 }
 
-int trap_Parse_AddGlobalDefine(const char *define)
-{
-	int res;
-	VM::SendMsg<ParseAddGlobalDefineMsg>(define, res);
-	return res;
-}
-
-int trap_Parse_LoadSource(const char *filename)
-{
-	int res;
-	VM::SendMsg<ParseLoadSourceMsg>(filename, res);
-	return res;
-}
-
-int trap_Parse_FreeSource(int handle)
-{
-	int res;
-	VM::SendMsg<ParseFreeSourceMsg>(handle, res);
-	return res;
-}
-
-int trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
-{
-	int res;
-	VM::SendMsg<ParseReadTokenMsg>(handle, res, *pc_token);
-	return res;
-}
-
-int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
-{
-	int res;
-	std::string filename2;
-	VM::SendMsg<ParseSourceFileAndLineMsg>(handle, res, filename2, *line);
-	Q_strncpyz(filename, filename2.c_str(), 128);
-	return res;
-}
-
 void trap_QuoteString(const char *str, char *buffer, int size)
 {
 	Q_strncpyz(buffer, Cmd::Escape(str).c_str(), size);
