@@ -774,14 +774,14 @@ set( SDLLIST
 )
 
 set( GAMESHAREDLIST
-  ${GAMELOGIC_DIR}/shared/bg_misc.c
-  ${GAMELOGIC_DIR}/shared/bg_parse.c
-  ${GAMELOGIC_DIR}/shared/bg_pmove.c
-  ${GAMELOGIC_DIR}/shared/bg_slidemove.c
-  ${GAMELOGIC_DIR}/shared/bg_alloc.c
-  ${GAMELOGIC_DIR}/shared/bg_voice.c
-  ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
-  ${GAMELOGIC_DIR}/shared/bg_utilities.c
+  ${GAMELOGIC_DIR}/shared/bg_misc.cpp
+  ${GAMELOGIC_DIR}/shared/bg_parse.cpp
+  ${GAMELOGIC_DIR}/shared/bg_pmove.cpp
+  ${GAMELOGIC_DIR}/shared/bg_slidemove.cpp
+  ${GAMELOGIC_DIR}/shared/bg_alloc.cpp
+  ${GAMELOGIC_DIR}/shared/bg_voice.cpp
+  ${GAMELOGIC_DIR}/shared/bg_teamprogress.cpp
+  ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
   ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/shared/VMMain.cpp
@@ -790,39 +790,39 @@ set( GAMESHAREDLIST
 
 set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_api.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_consolecmds.c
-  ${GAMELOGIC_DIR}/cgame/cg_buildable.c
-  ${GAMELOGIC_DIR}/cgame/cg_animation.c
-  ${GAMELOGIC_DIR}/cgame/cg_animmapobj.c
-  ${GAMELOGIC_DIR}/cgame/cg_draw.c
-  ${GAMELOGIC_DIR}/cgame/cg_drawtools.c
-  ${GAMELOGIC_DIR}/cgame/cg_ents.c
-  ${GAMELOGIC_DIR}/cgame/cg_event.c
-  ${GAMELOGIC_DIR}/cgame/cg_main.c
-  ${GAMELOGIC_DIR}/cgame/cg_marks.c
-  ${GAMELOGIC_DIR}/cgame/cg_minimap.c
-  ${GAMELOGIC_DIR}/cgame/cg_players.c
-  ${GAMELOGIC_DIR}/cgame/cg_playerstate.c
-  ${GAMELOGIC_DIR}/cgame/cg_predict.c
-  ${GAMELOGIC_DIR}/cgame/cg_servercmds.c
-  ${GAMELOGIC_DIR}/cgame/cg_snapshot.c
-  ${GAMELOGIC_DIR}/cgame/cg_view.c
-  ${GAMELOGIC_DIR}/cgame/cg_weapons.c
-  ${GAMELOGIC_DIR}/cgame/cg_scanner.c
-  ${GAMELOGIC_DIR}/cgame/cg_attachment.c
-  ${GAMELOGIC_DIR}/cgame/cg_trails.c
-  ${GAMELOGIC_DIR}/cgame/cg_particles.c
-  ${GAMELOGIC_DIR}/cgame/cg_tutorial.c
-  ${GAMELOGIC_DIR}/cgame/cg_utils.c
-  ${GAMELOGIC_DIR}/cgame/cg_beacon.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_draw.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_events.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_datasource.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_progressbar.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.c
-  ${GAMELOGIC_DIR}/cgame/cg_gameinfo.c
-  ${GAMELOGIC_DIR}/cgame/cg_parseutils.c
+  ${GAMELOGIC_DIR}/cgame/cg_consolecmds.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_buildable.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_animation.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_animmapobj.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_draw.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_drawtools.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_ents.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_event.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_main.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_marks.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_minimap.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_players.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_playerstate.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_predict.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_servercmds.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_snapshot.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_view.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_weapons.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_scanner.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_attachment.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_trails.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_particles.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_tutorial.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_utils.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_beacon.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_draw.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_events.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_datasource.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_progressbar.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_parseutils.cpp
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
   ${GAMESHAREDLIST}
@@ -1051,10 +1051,6 @@ set( NACLLIST_MODULE
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_sendmsg.c
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
 )
-
-# HACK: Force the compilation of EVERYTHING in C++
-file( GLOB_RECURSE EVERYTHING_C "src/engine/*.c" "src/gamelogic/*.c" )
-set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 
 ################################################################################
 # Libraries
