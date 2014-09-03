@@ -1428,17 +1428,6 @@ void Key_SetCatcher( int catcher )
 	Rocket_SetActiveContext( catcher );
 }
 
-
-static int FloatAsInt( float f )
-{
-	floatint_t fi;
-
-	fi.f = f;
-	return fi.i;
-}
-
-//static int numtraces = 0;
-
 /*
 ====================
 CL_CgameSystemCalls
@@ -1453,199 +1442,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 	switch ( args[ 0 ] )
 	{
-		case CG_PRINT:
-			Com_Printf( "%s", ( char * ) VMA( 1 ) );
-			return 0;
-
-		case CG_ERROR:
-			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
-			return 0; //silence warning and have a fallback behavior if Com_Error behavior changes
-
-		case CG_LOG:
-			Com_LogEvent( (log_event_t*) VMA( 1 ), NULL );
-			return 0;
-
-		case CG_MILLISECONDS:
-			return Sys_Milliseconds();
-
-		case CG_CVAR_REGISTER:
-			Cvar_Register( (vmCvar_t*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case CG_CVAR_UPDATE:
-			Cvar_Update( (vmCvar_t*) VMA( 1 ) );
-			return 0;
-
-		case CG_CVAR_SET:
-			Cvar_Set( (char*) VMA( 1 ), (char*) VMA( 2 ) );
-			return 0;
-
-		case CG_CVAR_VARIABLESTRINGBUFFER:
-			cls.nCgameUselessSyscalls ++;
-			Cvar_VariableStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case CG_CVAR_LATCHEDVARIABLESTRINGBUFFER:
-			cls.nCgameUselessSyscalls ++;
-			Cvar_LatchedVariableStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case CG_CVAR_VARIABLEINTEGERVALUE:
-			cls.nCgameUselessSyscalls ++;
-			return Cvar_VariableIntegerValue( (char*) VMA( 1 ) );
-
-		case CG_CVAR_VARIABLEVALUE:
-			cls.nCgameUselessSyscalls ++;
-			return FloatAsInt( Cvar_VariableValue( (char*) VMA( 1 ) ) );
-
-		case CG_ARGC:
-			cls.nCgameUselessSyscalls ++;
-			return Cmd_Argc();
-
-		case CG_ARGV:
-			cls.nCgameUselessSyscalls ++;
-			Cmd_ArgvBuffer( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case CG_ESCAPED_ARGS:
-			cls.nCgameUselessSyscalls ++;
-			Cmd_EscapedArgsBuffer( (char*) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case CG_LITERAL_ARGS:
-			cls.nCgameUselessSyscalls ++;
-			Cmd_LiteralArgsBuffer((char*) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case CG_GETDEMOSTATE:
-			return CL_DemoState();
-
-		case CG_GETDEMOPOS:
-			return CL_DemoPos();
-
-		case CG_FS_FOPENFILE:
-			return FS_Game_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
-
-		case CG_FS_READ:
-			FS_Read( VMA( 1 ), args[ 2 ], args[ 3 ] );
-			return 0;
-
-		case CG_FS_WRITE:
-			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
-
-		case CG_FS_FCLOSEFILE:
-			FS_FCloseFile( args[ 1 ] );
-			return 0;
-
-		case CG_FS_GETFILELIST:
-			return FS_GetFileList( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
-
-		case CG_FS_DELETEFILE:
-			return FS_Delete( (char*) VMA( 1 ) );
-
-		case CG_FS_LOADPAK:
-			return FS_LoadPak( ( char * ) VMA( 1 ) );
-
-		case CG_SENDCONSOLECOMMAND:
-			Cmd::BufferCommandText( (char*) VMA( 1 ) );
-			return 0;
-
-		case CG_ADDCOMMAND:
-			CL_AddCgameCommand( (char*) VMA( 1 ) );
-			return 0;
-
-		case CG_REMOVECOMMAND:
-			Cmd_RemoveCommand( (char*) VMA( 1 ) );
-			return 0;
-
-		case CG_COMPLETE_CALLBACK:
-			Cmd_OnCompleteMatch((char*) VMA(1));
-			return 0;
-
-		case CG_SENDCLIENTCOMMAND:
-			CL_AddReliableCommand( (char*) VMA( 1 ) );
-			return 0;
-
-		case CG_UPDATESCREEN:
-			SCR_UpdateScreen();
-			return 0;
-
-		case CG_CM_LOADMAP:
-			cls.nCgamePhysicsSyscalls ++;
-			CL_CM_LoadMap( (char*) VMA( 1 ) );
-			return 0;
-
-		case CG_CM_NUMINLINEMODELS:
-			cls.nCgamePhysicsSyscalls ++;
-			return CM_NumInlineModels();
-
-		case CG_CM_INLINEMODEL:
-			cls.nCgamePhysicsSyscalls ++;
-			return CM_InlineModel( args[ 1 ] );
-
-		case CG_CM_TEMPBOXMODEL:
-			cls.nCgamePhysicsSyscalls ++;
-			return CM_TempBoxModel( (float*) VMA( 1 ), (float*) VMA( 2 ), qfalse );
-
-		case CG_CM_TEMPCAPSULEMODEL:
-			cls.nCgamePhysicsSyscalls ++;
-			return CM_TempBoxModel( (float*) VMA( 1 ), (float*) VMA( 2 ), qtrue );
-
-		case CG_CM_POINTCONTENTS:
-			cls.nCgamePhysicsSyscalls ++;
-			return CM_PointContents( (float*) VMA( 1 ), args[ 2 ] );
-
-		case CG_CM_TRANSFORMEDPOINTCONTENTS:
-			cls.nCgamePhysicsSyscalls ++;
-			return CM_TransformedPointContents( (float*) VMA( 1 ), args[ 2 ], (float*) VMA( 3 ),
-			                                    (float*) VMA( 4 ) );
-
-		case CG_CM_BOXTRACE:
-			cls.nCgamePhysicsSyscalls ++;
-			CM_BoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ),
-			             (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], args[ 8 ],
-			             TT_AABB );
-			return 0;
-
-		case CG_CM_TRANSFORMEDBOXTRACE:
-			cls.nCgamePhysicsSyscalls ++;
-			CM_TransformedBoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ),
-			                        (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ],
-			                        args[ 8 ], (float*) VMA( 9 ), (float*) VMA( 10 ), TT_AABB );
-			return 0;
-
-		case CG_CM_CAPSULETRACE:
-			cls.nCgamePhysicsSyscalls ++;
-			CM_BoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ),
-			             (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], args[ 8 ],
-			             TT_CAPSULE );
-			return 0;
-
-		case CG_CM_TRANSFORMEDCAPSULETRACE:
-			cls.nCgamePhysicsSyscalls ++;
-			CM_TransformedBoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ),
-			                        (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ],
-			                        args[ 8 ], (float*) VMA( 9 ), (float*) VMA( 10 ), TT_CAPSULE );
-			return 0;
-
-		case CG_CM_BISPHERETRACE:
-			cls.nCgamePhysicsSyscalls ++;
-			CM_BiSphereTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), VMF( 4 ),
-			                  VMF( 5 ), args[ 6 ], args[ 7 ], args[ 8 ] );
-			return 0;
-
-		case CG_CM_TRANSFORMEDBISPHERETRACE:
-			cls.nCgamePhysicsSyscalls ++;
-			CM_TransformedBiSphereTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ),
-			                             VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ], args[ 8 ],
-			                             (float*) VMA( 8 ) );
-			return 0;
-
-		case CG_CM_MARKFRAGMENTS:
-			cls.nCgamePhysicsSyscalls ++;
-			return re.MarkFragments( args[ 1 ], (vec3_t*) VMA( 2 ), (float*) VMA( 3 ), args[ 4 ],
-			                         (float*) VMA( 5 ), args[ 6 ], (markFragment_t*) VMA( 7 ) );
-
 		case CG_R_PROJECTDECAL:
 			cls.nCgameRenderSyscalls ++;
 			re.ProjectDecal( args[ 1 ], args[ 2 ], (vec3_t*) VMA( 3 ), (float*) VMA( 4 ),
@@ -1809,9 +1605,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.AddAdditiveLightToScene( (float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ) );
 			return 0;
 
-		case CG_FS_SEEK:
-			return FS_Seek( args[ 1 ], args[ 2 ], args[ 3 ] );
-
 		case CG_R_ADDCORONATOSCENE:
 			cls.nCgameRenderSyscalls ++;
 			re.AddCoronaToScene( (float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ] );
@@ -1882,46 +1675,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameRenderSyscalls ++;
 			return re.LerpTag( (orientation_t*) VMA( 1 ), (refEntity_t*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
-		case CG_GETGLCONFIG:
-			CL_GetGlconfig( (glconfig_t*) VMA( 1 ) );
-			return 0;
-
-		case CG_GETGAMESTATE:
-			CL_GetGameState( (gameState_t*) VMA( 1 ) );
-			return 0;
-
-		case CG_GETCLIENTSTATE:
-			GetClientState( (cgClientState_t*) VMA( 1 ) );
-			return 0;
-
-		case CG_GETCURRENTSNAPSHOTNUMBER:
-			CL_GetCurrentSnapshotNumber( (int*) VMA( 1 ), (int*) VMA( 2 ) );
-			return 0;
-
-		case CG_GETSNAPSHOT:
-			return CL_GetSnapshot( args[ 1 ], (snapshot_t*) VMA( 2 ) );
-
-		case CG_GETSERVERCOMMAND:
-			return CL_GetServerCommand( args[ 1 ] );
-
-		case CG_GETCURRENTCMDNUMBER:
-			return CL_GetCurrentCmdNumber();
-
-		case CG_GETUSERCMD:
-			return CL_GetUserCmd( args[ 1 ], (usercmd_t*) VMA( 2 ) );
-
-		case CG_SETUSERCMDVALUE:
-			CL_SetUserCmdValue( args[ 1 ], args[ 2 ], VMF( 3 ), args[ 4 ] );
-			return 0;
-
-		case CG_SETCLIENTLERPORIGIN:
-			CL_SetClientLerpOrigin( VMF( 1 ), VMF( 2 ), VMF( 3 ) );
-			return 0;
-
-		case CG_MEMORY_REMAINING:
-			cls.nCgameUselessSyscalls ++;
-			return Hunk_MemoryRemaining();
-
 		case CG_KEY_ISDOWN:
 			return Key_IsDown( args[ 1 ] );
 
@@ -1947,14 +1700,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Audio::StopMusic();
 			return 0;
 
-		case CG_REAL_TIME:
-			return Com_RealTime( (qtime_t*) VMA( 1 ) );
-
-		case CG_SNAPVECTOR:
-			cls.nCgameUselessSyscalls ++;
-			SnapVector( (float*) VMA( 1 ) );
-			return 0;
-
 		case CG_CIN_PLAYCINEMATIC:
 			return CIN_PlayCinematic( (char*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ] );
 
@@ -1976,9 +1721,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameRenderSyscalls ++;
 			re.RemapShader( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ) );
 			return 0;
-
-		case CG_GET_ENTITY_TOKEN:
-			return re.GetEntityToken( (char*) VMA( 1 ), args[ 2 ] );
 
 		case CG_INGAME_POPUP:
 			if ( cls.state == CA_ACTIVE && !clc.demoplaying )
@@ -2038,11 +1780,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameRenderSyscalls ++;
 			return re.inPVVS( (float*) VMA( 1 ), (float*) VMA( 2 ) );
 
-		case CG_GETHUNKDATA:
-			cls.nCgameUselessSyscalls ++;
-			Com_GetHunkInfo( (int*) VMA( 1 ), (int*) VMA( 2 ) );
-			return 0;
-
 			//bani - dynamic shaders
 		case CG_R_LOADDYNAMICSHADER:
 			cls.nCgameRenderSyscalls ++;
@@ -2058,10 +1795,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_FINISH:
 			cls.nCgameRenderSyscalls ++;
 			re.Finish();
-			return 0;
-
-		case CG_GETDEMONAME:
-			CL_DemoName( (char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_R_LIGHTFORPOINT:
@@ -2096,42 +1829,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameRenderSyscalls ++;
 			return re.AnimFrameRate( args[ 1 ] );
 
-		case CG_REGISTER_BUTTON_COMMANDS:
-			CL_RegisterButtonCommands( (char*) VMA( 1 ) );
-			return 0;
-
-		case CG_GETCLIPBOARDDATA:
-
-			if ( cl_allowPaste->integer )
-			{
-				CL_GetClipboardData( (char*) VMA(1), args[2], (clipboard_t) args[3] );
-			}
-			else
-			{
-				( (char *) VMA( 1 ) )[0] = '\0';
-			}
-			return 0;
-
-		case CG_QUOTESTRING:
-			cls.nCgameUselessSyscalls ++;
-			Cmd_QuoteStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case CG_GETTEXT:
-			cls.nCgameUselessSyscalls ++;
-			Q_strncpyz( (char*) VMA(1), __( (char*) VMA( 2 ) ), args[3] );
-			return 0;
-
-		case CG_PGETTEXT:
-			cls.nCgameUselessSyscalls ++;
-			Q_strncpyz( (char*) VMA( 1 ), C__( (char*) VMA( 2 ), (char*) VMA( 3 ) ), args[ 4 ] );
-			return 0;
-
-		case CG_GETTEXT_PLURAL:
-			cls.nCgameUselessSyscalls ++;
-			Q_strncpyz( (char*) VMA( 1 ), P__( (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] ), args[ 5 ] );
-			return 0;
-
 		case CG_R_GLYPH:
 			cls.nCgameRenderSyscalls ++;
 			re.GlyphVM( args[1], (char*) VMA(2), (glyphInfo_t*) VMA(3) );
@@ -2145,10 +1842,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_UREGISTERFONT:
 			cls.nCgameRenderSyscalls ++;
 			re.UnregisterFontVM( args[1] );
-			return 0;
-
-		case CG_NOTIFY_TEAMCHANGE:
-			CL_OnTeamChanged( args[1] );
 			return 0;
 
 		case CG_REGISTERVISTEST:
@@ -2289,9 +1982,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_LAN_SERVERISINFAVORITELIST:
 			return LAN_ServerIsInFavoriteList( args[ 1 ], args[ 2 ] );
 
-		case CG_GETNEWS:
-			return GetNews( args[ 1 ] );
-
 		case CG_LAN_COMPARESERVERS:
 			return LAN_CompareServers( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ] );
 
@@ -2385,10 +2075,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ROCKET_CLEARTEXT:
 			Rocket_ClearText();
-			return 0;
-
-		case CG_PREPAREKEYUP:
-			IN_PrepareKeyUp();
 			return 0;
 
 		case CG_R_SETALTSHADERTOKENS:
@@ -3142,7 +2828,190 @@ void CGameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
-		//TODO please fill me
+		case CG_GETDEMOSTATE:
+			IPC::HandleMsg<GetDemoStateMsg>(channel, std::move(reader), [this] (int& res) {
+				res = CL_DemoState();
+			});
+			break;
+		case CG_FS_SEEK:
+			IPC::HandleMsg<FSSeekMsg>(channel, std::move(reader), [this] (int f, long offset, int origin) {
+				FS_Seek(f, offset, origin);
+			});
+			break;
+		case CG_GETDEMOPOS:
+			IPC::HandleMsg<GetDemoPosMsg>(channel, std::move(reader), [this] (int& res) {
+				res = CL_DemoPos();
+			});
+			break;
+		case CG_SENDCLIENTCOMMAND:
+			IPC::HandleMsg<SendClientCommandMsg>(channel, std::move(reader), [this] (std::string command) {
+				CL_AddReliableCommand(command.c_str());
+			});
+			break;
+		case CG_UPDATESCREEN:
+			IPC::HandleMsg<UpdateScreenMsg>(channel, std::move(reader), [this]  {
+				SCR_UpdateScreen();
+			});
+			break;
+
+		case CG_CM_MARKFRAGMENTS:
+			// TODO wow this is very ugly and expensive, find something better?
+			// plus we have a lot of const casts for the vector buffers
+			IPC::HandleMsg<CMMarkFragmentsMsg>(channel, std::move(reader), [this] (std::vector<std::array<float, 3>> points, std::array<float, 3> projection, int maxPoints, int maxFragments, std::vector<std::array<float, 3>>& pointBuffer, std::vector<markFragment_t>& fragmentBuffer) {
+				pointBuffer.resize(maxPoints);
+				fragmentBuffer.resize(maxFragments);
+				re.MarkFragments(points.size(), (vec3_t*)points.data(), projection.data(), maxPoints, (float*) pointBuffer.data(), maxFragments, (markFragment_t*) fragmentBuffer.data());
+			});
+			break;
+
+		case CG_REAL_TIME:
+			IPC::HandleMsg<RealTimeMsg>(channel, std::move(reader), [this] (int& res, qtime_t& time) {
+				res = Com_RealTime(&time);
+			});
+			break;
+
+		case CG_GETGLCONFIG:
+			IPC::HandleMsg<GetGLConfigMsg>(channel, std::move(reader), [this] (glconfig_t& config) {
+				CL_GetGlconfig(&config);
+			});
+			break;
+
+		case CG_GETGAMESTATE:
+			IPC::HandleMsg<GetGameStateMsg>(channel, std::move(reader), [this] (gameState_t& state) {
+				CL_GetGameState(&state);
+			});
+			break;
+
+		case CG_GETCLIENTSTATE:
+			IPC::HandleMsg<GetClientStateMsg>(channel, std::move(reader), [this] (cgClientState_t& state) {
+				GetClientState(&state);
+			});
+			break;
+
+		case CG_GETCURRENTSNAPSHOTNUMBER:
+			IPC::HandleMsg<GetCurrentSnapshotNumberMsg>(channel, std::move(reader), [this] (int& number, int& serverTime) {
+				CL_GetCurrentSnapshotNumber(&number, &serverTime);
+			});
+			break;
+
+		case CG_GETSNAPSHOT:
+			IPC::HandleMsg<GetSnapshotMsg>(channel, std::move(reader), [this] (int number, bool& res, snapshot_t& snapshot) {
+				res = CL_GetSnapshot(number, &snapshot);
+			});
+			break;
+
+		case CG_GETSERVERCOMMAND:
+			IPC::HandleMsg<GetServerCommandMsg>(channel, std::move(reader), [this] (int number, bool& res) {
+				res = CL_GetServerCommand(number);
+			});
+			break;
+
+		case CG_GETCURRENTCMDNUMBER:
+			IPC::HandleMsg<GetCurrentCmdNumberMsg>(channel, std::move(reader), [this] (int& number) {
+				number = CL_GetCurrentCmdNumber();
+			});
+			break;
+
+		case CG_GETUSERCMD:
+			IPC::HandleMsg<GetUserCmdMsg>(channel, std::move(reader), [this] (int number, bool& res, usercmd_t& cmd) {
+				res = CL_GetUserCmd(number, &cmd);
+			});
+			break;
+
+		case CG_SETUSERCMDVALUE:
+			IPC::HandleMsg<SetUserCmdValueMsg>(channel, std::move(reader), [this] (int stateValue, int flags, float scale, int mpIdentClient) {
+				CL_SetUserCmdValue(stateValue, flags, scale, mpIdentClient);
+			});
+			break;
+
+		case CG_SETCLIENTLERPORIGIN:
+			IPC::HandleMsg<SetClientLerpOriginMsg>(channel, std::move(reader), [this] (float x, float y, float z) {
+				CL_SetClientLerpOrigin(x, y, z);
+			});
+			break;
+
+		case CG_GET_ENTITY_TOKEN:
+			IPC::HandleMsg<GetEntityTokenMsg>(channel, std::move(reader), [this] (int len, bool& res, std::string& token) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				res = re.GetEntityToken(buffer.get(), len);
+				token.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_GETDEMONAME:
+			IPC::HandleMsg<GetDemoNameMsg>(channel, std::move(reader), [this] (int len, std::string& name) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				CL_DemoName(buffer.get(), len);
+				name.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_REGISTER_BUTTON_COMMANDS:
+			IPC::HandleMsg<RegisterButtonCommandsMsg>(channel, std::move(reader), [this] (std::string commands) {
+				CL_RegisterButtonCommands(commands.c_str());
+			});
+			break;
+
+		case CG_GETCLIPBOARDDATA:
+			IPC::HandleMsg<GetClipboardDataMsg>(channel, std::move(reader), [this] (int len, int type, std::string& data) {
+				if (cl_allowPaste->integer) {
+					std::unique_ptr<char[]> buffer(new char[len]);
+					CL_GetClipboardData(buffer.get(), len, (clipboard_t)type);
+					data.assign(buffer.get(), len);
+				}
+			});
+			break;
+
+		case CG_QUOTESTRING:
+			IPC::HandleMsg<QuoteStringMsg>(channel, std::move(reader), [this] (int len, std::string input, std::string& output) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				Cmd_QuoteStringBuffer(input.c_str(), buffer.get(), len);
+				output.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_GETTEXT:
+			IPC::HandleMsg<GettextMsg>(channel, std::move(reader), [this] (int len, std::string input, std::string& output) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				Q_strncpyz(buffer.get(), __(input.c_str()), len);
+				output.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_PGETTEXT:
+			IPC::HandleMsg<PGettextMsg>(channel, std::move(reader), [this] (int len, std::string context, std::string input, std::string& output) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				Q_strncpyz(buffer.get(), C__(context.c_str(), input.c_str()), len);
+				output.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_GETTEXT_PLURAL:
+			IPC::HandleMsg<GettextPluralMsg>(channel, std::move(reader), [this] (int len, std::string input1, std::string input2, int number, std::string& output) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				Q_strncpyz(buffer.get(), P__(input1.c_str(), input2.c_str(), number), len);
+				output.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_NOTIFY_TEAMCHANGE:
+			IPC::HandleMsg<NotifyTeamChangeMsg>(channel, std::move(reader), [this] (int team) {
+				CL_OnTeamChanged(team);
+			});
+			break;
+
+		case CG_PREPAREKEYUP:
+			IPC::HandleMsg<PrepareKeyUpMsg>(channel, std::move(reader), [this] {
+				IN_PrepareKeyUp();
+			});
+			break;
+
+		case CG_GETNEWS:
+			IPC::HandleMsg<GetNewsMsg>(channel, std::move(reader), [this] (bool force, bool& res) {
+				res = GetNews(force);
+			});
+			break;
+
 	default:
 		Com_Error(ERR_DROP, "Bad game system trap: %d", index);
 	}

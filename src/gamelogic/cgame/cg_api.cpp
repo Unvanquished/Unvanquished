@@ -49,17 +49,7 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
 
 #define syscallVM(...) 0
 
-int trap_GetDemoState( void )
-{
-}
-
-int trap_GetDemoPos( void )
-{
-}
-
-qboolean trap_FS_LoadPak( const char *pak )
-{
-}
+// TODO non-syscalls, implement them at some point
 
 void trap_EscapedArgs( char *buffer, int bufferLength )
 {
@@ -73,26 +63,197 @@ float trap_Cvar_VariableValue( const char *var_name )
 {
 }
 
-//23.
-//CL_AddReliableCommand(VMA(1));
+qboolean trap_FS_LoadPak( const char *pak )
+{
+}
+
+// All Miscs
+
+int trap_GetDemoState( void )
+{
+	int state;
+	VM::SendMsg<GetDemoStateMsg>(state);
+	return state;
+}
+
+void trap_GS_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin )
+{
+	VM::SendMsg<FSSeekMsg>(f, offset, origin);
+}
+
+
+int trap_GetDemoPos( void )
+{
+	int pos;
+	VM::SendMsg<GetDemoPosMsg>(pos);
+	return pos;
+}
+
 void trap_SendClientCommand( const char *s )
 {
-    syscallVM( CG_SENDCLIENTCOMMAND, s );
+	VM::SendMsg<SendClientCommandMsg>(s);
 }
 
-//24.
-//SCR_UpdateScreen();
 void trap_UpdateScreen( void )
 {
-    syscallVM( CG_UPDATESCREEN );
+	VM::SendMsg<UpdateScreenMsg>();
 }
 
-//38.
-//return re.MarkFragments(args[1], VMA(2), VMA(3), args[4], VMA(5), args[6], VMA(7));
 int trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer )
 {
-    return syscallVM( CG_CM_MARKFRAGMENTS, numPoints, points, projection, maxPoints, pointBuffer, maxFragments, fragmentBuffer );
+	std::vector<std::array<float, 3>> mypoints(numPoints);
+	std::array<float, 3> myproj;
+	memcpy((float*)mypoints.data(), points, sizeof(float) * 3 * numPoints);
+	VectorCopy(projection, myproj.data());
+
+	std::vector<std::array<float, 3>> mypointBuffer;
+	std::vector<markFragment_t> myfragmentBuffer;
+	VM::SendMsg<CMMarkFragmentsMsg>(mypoints, myproj, maxPoints, maxFragments, mypointBuffer, myfragmentBuffer);
+
+	memcpy(pointBuffer, mypointBuffer.data(), sizeof(float) * 3 * maxPoints);
+	memcpy(fragmentBuffer, myfragmentBuffer.data(), sizeof(markFragment_t) * maxFragments);
+	return 0;
 }
+
+int trap_RealTime( qtime_t *qtime )
+{
+	int res;
+	VM::SendMsg<RealTimeMsg>(res, *qtime);
+	return res;
+}
+
+void trap_GetGlconfig( glconfig_t *glconfig )
+{
+	VM::SendMsg<GetGLConfigMsg>(*glconfig);
+}
+
+void trap_GetGameState( gameState_t *gamestate )
+{
+	VM::SendMsg<GetGameStateMsg>(*gamestate);
+}
+
+void trap_GetClientState( cgClientState_t *cstate )
+{
+	VM::SendMsg<GetClientStateMsg>(*cstate);
+}
+
+void trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
+{
+	VM::SendMsg<GetCurrentSnapshotNumberMsg>(*snapshotNumber, *serverTime);
+}
+
+qboolean trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
+{
+	bool res;
+	VM::SendMsg<GetSnapshotMsg>(snapshotNumber, res, *snapshot);
+	return res;
+}
+
+qboolean trap_GetServerCommand( int serverCommandNumber )
+{
+	bool res;
+	VM::SendMsg<GetServerCommandMsg>(serverCommandNumber, res);
+	return res;
+}
+
+int trap_GetCurrentCmdNumber( void )
+{
+	int res;
+	VM::SendMsg<GetCurrentCmdNumberMsg>(res);
+	return res;
+}
+
+qboolean trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
+{
+	bool res;
+	VM::SendMsg<GetUserCmdMsg>(cmdNumber, res, *ucmd);
+	return res;
+}
+
+void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient )
+{
+	VM::SendMsg<SetUserCmdValueMsg>(stateValue, flags, sensitivityScale, mpIdentClient);
+}
+
+void trap_SetClientLerpOrigin( float x, float y, float z )
+{
+	VM::SendMsg<SetClientLerpOriginMsg>(x, y, z);
+}
+
+qboolean trap_GetEntityToken( char *buffer, int bufferSize )
+{
+	bool res;
+	std::string token;
+	VM::SendMsg<GetEntityTokenMsg>(bufferSize, res, token);
+	Q_strncpyz(buffer, token.c_str(), bufferSize);
+	return res;
+}
+
+void trap_GetDemoName( char *buffer, int size )
+{
+	std::string name;
+	VM::SendMsg<GetDemoNameMsg>(size, name);
+	Q_strncpyz(buffer, name.c_str(), size);
+}
+
+void trap_RegisterButtonCommands( const char *cmds )
+{
+	VM::SendMsg<RegisterButtonCommandsMsg>(cmds);
+}
+
+void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
+{
+	std::string data;
+	VM::SendMsg<GetClipboardDataMsg>(bufsize, clip, data);
+	Q_strncpyz(buf, data.c_str(), bufsize);
+}
+
+void trap_QuoteString( const char *str, char *buffer, int size )
+{
+	std::string quoted;
+	VM::SendMsg<QuoteStringMsg>(size, str, quoted);
+	Q_strncpyz(buffer, quoted.c_str(), size);
+}
+
+void trap_Gettext( char *buffer, const char *msgid, int bufferLength )
+{
+	std::string result;
+	VM::SendMsg<GettextMsg>(bufferLength, msgid, result);
+	Q_strncpyz(buffer, result.c_str(), bufferLength);
+}
+
+void trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength )
+{
+	std::string result;
+	VM::SendMsg<PGettextMsg>(bufferLength, ctxt, msgid, result);
+	Q_strncpyz(buffer, result.c_str(), bufferLength);
+}
+
+void trap_GettextPlural( char *buffer, const char *msgid, const char *msgid2, int number, int bufferLength )
+{
+	std::string result;
+	VM::SendMsg<GettextPluralMsg>(bufferLength, msgid, msgid2, number, result);
+	Q_strncpyz(buffer, result.c_str(), bufferLength);
+}
+
+void trap_notify_onTeamChange( int newTeam )
+{
+	VM::SendMsg<NotifyTeamChangeMsg>(newTeam);
+}
+
+void trap_PrepareKeyUp( void )
+{
+	VM::SendMsg<PrepareKeyUpMsg>();
+}
+
+qboolean trap_GetNews( qboolean force )
+{
+	bool res;
+	VM::SendMsg<GetNewsMsg>(force, res);
+	return res;
+}
+
+
 
 //39.
 //re.ProjectDecal(args[1], args[2], VMA(3), VMA(4), VMA(5), args[6], args[7]);
@@ -332,13 +493,6 @@ void trap_R_AddAdditiveLightToScene( const vec3_t org, float intensity, float r,
     syscallVM( CG_R_ADDADDITIVELIGHTTOSCENE, org, PASSFLOAT( intensity ), PASSFLOAT( r ), PASSFLOAT( g ), PASSFLOAT( b ) );
 }
 
-//76.
-//return FS_Seek( args[1], args[2], args[3] );
-void trap_GS_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin )
-{
-    syscallVM( CG_FS_SEEK, f, offset, origin );
-}
-
 //77.
 //re.AddCoronaToScene(VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6], args[7]);
 void trap_R_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible )
@@ -435,81 +589,6 @@ void trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs )
 int trap_R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
 {
     return syscallVM( CG_R_LERPTAG, tag, refent, tagName, startIndex );
-}
-
-//91.
-//CL_GetGlconfig(VMA(1));
-void trap_GetGlconfig( glconfig_t *glconfig )
-{
-    syscallVM( CG_GETGLCONFIG, glconfig );
-}
-
-//92.
-//CL_GetGameState(VMA(1));
-void trap_GetGameState( gameState_t *gamestate )
-{
-    syscallVM( CG_GETGAMESTATE, gamestate );
-}
-
-void trap_GetClientState( cgClientState_t *cstate )
-{
-    syscallVM( CG_GETCLIENTSTATE, cstate );
-}
-
-//93.
-//CL_GetCurrentSnapshotNumber(VMA(1), VMA(2));
-void trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
-{
-    syscallVM( CG_GETCURRENTSNAPSHOTNUMBER, snapshotNumber, serverTime );
-}
-
-//94.
-//return CL_GetSnapshot(args[1], VMA(2));
-qboolean trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
-{
-    return syscallVM( CG_GETSNAPSHOT, snapshotNumber, snapshot );
-}
-
-//95.
-//return CL_GetServerCommand(args[1]);
-qboolean trap_GetServerCommand( int serverCommandNumber )
-{
-    return syscallVM( CG_GETSERVERCOMMAND, serverCommandNumber );
-}
-
-//96.
-//return CL_GetCurrentCmdNumber();
-int trap_GetCurrentCmdNumber( void )
-{
-    return syscallVM( CG_GETCURRENTCMDNUMBER );
-}
-
-//97.
-//return CL_GetUserCmd(args[1], VMA(2));
-qboolean trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
-{
-    return syscallVM( CG_GETUSERCMD, cmdNumber, ucmd );
-}
-
-//98.
-//CL_SetUserCmdValue(args[1], args[2], VMF(3), args[4]);
-void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient )
-{
-    syscallVM( CG_SETUSERCMDVALUE, stateValue, flags, PASSFLOAT( sensitivityScale ), mpIdentClient );
-}
-
-//99.
-//CL_SetClientLerpOrigin(VMF(1), VMF(2), VMF(3));
-void trap_SetClientLerpOrigin( float x, float y, float z )
-{
-    syscallVM( CG_SETCLIENTLERPORIGIN, PASSFLOAT( x ), PASSFLOAT( y ), PASSFLOAT( z ) );
-}
-
-//100.
-//return Hunk_MemoryRemaining();
-int trap_MemoryRemaining( void )
-{
-    return syscallVM( CG_MEMORY_REMAINING );
 }
 
 //101.
@@ -633,20 +712,6 @@ void trap_S_StopBackgroundTrack( void )
     syscallVM( CG_S_STOPBACKGROUNDTRACK );
 }
 
-//124.
-//return Com_RealTime(VMA(1));
-int trap_RealTime( qtime_t *qtime )
-{
-    return syscallVM( CG_REAL_TIME, qtime );
-}
-
-//125.
-//Q_SnapVector(VMA(1));
-void trap_SnapVector( float *v )
-{
-    syscallVM( CG_SNAPVECTOR, v );
-}
-
 //126.
 //return CIN_PlayCinematic(VMA(1), args[2], args[3], args[4], args[5], args[6]);
 int trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits )
@@ -687,13 +752,6 @@ void trap_CIN_SetExtents( int handle, int x, int y, int w, int h )
 void trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset )
 {
     syscallVM( CG_R_REMAP_SHADER, oldShader, newShader, timeOffset );
-}
-
-//138.
-//return re.GetEntityToken(VMA(1), args[2]);
-qboolean trap_GetEntityToken( char *buffer, int bufferSize )
-{
-    return syscallVM( CG_GET_ENTITY_TOKEN, buffer, bufferSize );
 }
 
 //139.
@@ -783,13 +841,6 @@ qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
     return syscallVM( CG_R_INPVS, p1, p2 );
 }
 
-//153.
-//Com_GetHunkInfo(VMA(1), VMA(2));
-void trap_GetHunkData( int *hunkused, int *hunkexpected )
-{
-    syscallVM( CG_GETHUNKDATA, hunkused, hunkexpected );
-}
-
 //157.
 //return re.LoadDynamicShader(VMA(1), VMA(2));
 qboolean trap_R_LoadDynamicShader( const char *shadername, const char *shadertext )
@@ -809,13 +860,6 @@ void trap_R_RenderToTexture( int textureid, int x, int y, int w, int h )
 void trap_R_Finish( void )
 {
     syscallVM( CG_R_FINISH );
-}
-
-//161.
-//CL_DemoName( VMA(1), args[2] );
-void trap_GetDemoName( char *buffer, int size )
-{
-    syscallVM( CG_GETDEMONAME, buffer, size );
 }
 
 //162.
@@ -878,12 +922,6 @@ void trap_CompleteCallback( const char *complete )
     syscallVM( CG_COMPLETE_CALLBACK, complete );
 }
 
-//173.
-void trap_RegisterButtonCommands( const char *cmds )
-{
-    syscallVM( CG_REGISTER_BUTTON_COMMANDS, cmds );
-}
-
 //174.
 void trap_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
 {
@@ -902,46 +940,11 @@ void trap_R_UnregisterFont( fontHandle_t font )
     syscallVM( CG_R_UREGISTERFONT, font );
 }
 
-//177.
-//GetClipboardData(VMA(1), args[2], args[3]);
-void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
-{
-    syscallVM( CG_GETCLIPBOARDDATA, buf, bufsize, clip );
-}
-
-//178.
-void trap_QuoteString( const char *str, char *buffer, int size )
-{
-    syscallVM( CG_QUOTESTRING, str, buffer, size );
-}
-
-//179.
-void trap_Gettext( char *buffer, const char *msgid, int bufferLength )
-{
-    syscallVM( CG_GETTEXT, buffer, msgid, bufferLength );
-}
-
-//180.
-void trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength )
-{
-    syscallVM( CG_PGETTEXT, buffer, ctxt, msgid, bufferLength );
-}
-
-void trap_GettextPlural( char *buffer, const char *msgid, const char *msgid2, int number, int bufferLength )
-{
-    syscallVM( CG_GETTEXT_PLURAL, buffer, msgid, msgid2, number, bufferLength );
-}
-
 //181.
 //return re.inPVVS(VMA(1), VMA(2));
 qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
 {
     return syscallVM( CG_R_INPVVS, p1, p2 );
-}
-
-void trap_notify_onTeamChange( int newTeam )
-{
-    syscallVM( CG_NOTIFY_TEAMCHANGE, newTeam );
 }
 
 qhandle_t trap_RegisterVisTest( void )
@@ -968,11 +971,6 @@ void trap_UnregisterVisTest( qhandle_t hTest )
 void trap_SetColorGrading( int slot, qhandle_t hShader )
 {
     syscallVM( CG_SETCOLORGRADING, slot, hShader );
-}
-
-float trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model )
-{
-    return syscallVM( CG_CM_DISTANCETOMODEL, loc, model );
 }
 
 void trap_R_ScissorEnable( qboolean enable )
@@ -1075,11 +1073,6 @@ qboolean trap_LAN_ServerIsInFavoriteList( int source, int n )
     return syscallVM( CG_LAN_SERVERISINFAVORITELIST, source, n );
 }
 
-qboolean trap_GetNews( qboolean force )
-{
-    return syscallVM( CG_GETNEWS, force );
-}
-
 int trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 )
 {
     return syscallVM( CG_LAN_COMPARESERVERS, source, sortKey, sortDir, s1, s2 );
@@ -1088,11 +1081,6 @@ int trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s
 void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len )
 {
     syscallVM( CG_R_GETSHADERNAMEFROMHANDLE, shader, out, len );
-}
-
-void trap_PrepareKeyUp( void )
-{
-    syscallVM( CG_PREPAREKEYUP );
 }
 
 void trap_R_SetAltShaderTokens( const char *str )

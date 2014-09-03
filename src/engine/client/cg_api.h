@@ -115,13 +115,37 @@ typedef enum
 
 typedef enum cgameImport_s
 {
+  // Misc
   CG_GETDEMOSTATE,
+  CG_FS_SEEK,
   CG_GETDEMOPOS,
   CG_SENDCLIENTCOMMAND,
   CG_UPDATESCREEN,
   CG_CM_MARKFRAGMENTS,
-  CG_R_PROJECTDECAL,
-  CG_R_CLEARDECALS,
+  CG_REAL_TIME,
+  CG_GETGLCONFIG,
+  CG_GETGAMESTATE,
+  CG_GETCLIENTSTATE,
+  CG_GETCURRENTSNAPSHOTNUMBER,
+  CG_GETSNAPSHOT,
+  CG_GETSERVERCOMMAND,
+  CG_GETCURRENTCMDNUMBER,
+  CG_GETUSERCMD,
+  CG_SETUSERCMDVALUE,
+  CG_SETCLIENTLERPORIGIN,
+  CG_GET_ENTITY_TOKEN,
+  CG_GETDEMONAME,
+  CG_REGISTER_BUTTON_COMMANDS,
+  CG_GETCLIPBOARDDATA,
+  CG_QUOTESTRING,
+  CG_GETTEXT,
+  CG_PGETTEXT,
+  CG_GETTEXT_PLURAL,
+  CG_NOTIFY_TEAMCHANGE,
+  CG_PREPAREKEYUP,
+  CG_GETNEWS,
+
+  // Sound
   CG_S_STARTSOUND,
   CG_S_STARTLOCALSOUND,
   CG_S_CLEARLOOPINGSOUNDS,
@@ -136,6 +160,24 @@ typedef enum cgameImport_s
   CG_S_STARTBACKGROUNDTRACK,
   CG_S_FADESTREAMINGSOUND,
   CG_S_STARTSTREAMINGSOUND,
+  CG_S_STOPBACKGROUNDTRACK,
+  CG_S_FADEALLSOUNDS,
+  CG_S_UPDATEENTITYVELOCITY,
+  CG_S_SETREVERB,
+  CG_S_BEGINREGISTRATION,
+  CG_S_ENDREGISTRATION,
+
+  // Renderer
+  CG_R_SETALTSHADERTOKENS,
+  CG_R_GETSHADERNAMEFROMHANDLE,
+  CG_R_SCISSOR_ENABLE,
+  CG_R_SCISSOR_SET,
+  CG_R_INPVVS,
+  CG_R_GLYPH,
+  CG_R_GLYPHCHAR,
+  CG_R_UREGISTERFONT,
+  CG_R_PROJECTDECAL,
+  CG_R_CLEARDECALS,
   CG_R_LOADWORLDMAP,
   CG_R_REGISTERMODEL,
   CG_R_REGISTERSKIN,
@@ -143,8 +185,6 @@ typedef enum cgameImport_s
   CG_R_GETMODELSHADER,
   CG_R_REGISTERSHADER,
   CG_R_REGISTERFONT,
-  CG_UNUSED_IMPORT_1,
-  CG_UNUSED_IMPORT_2,
   CG_R_CLEARSCENE,
   CG_R_ADDREFENTITYTOSCENE,
   CG_R_ADDREFLIGHTSTOSCENE,
@@ -153,7 +193,6 @@ typedef enum cgameImport_s
   CG_R_ADDPOLYBUFFERTOSCENE,
   CG_R_ADDLIGHTTOSCENE,
   CG_R_ADDADDITIVELIGHTTOSCENE,
-  CG_FS_SEEK,
   CG_R_ADDCORONATOSCENE,
   CG_R_SETFOG,
   CG_R_SETGLOBALFOG,
@@ -168,56 +207,11 @@ typedef enum cgameImport_s
   CG_R_DRAW2DPOLYS,
   CG_R_MODELBOUNDS,
   CG_R_LERPTAG,
-  CG_GETGLCONFIG,
-  CG_GETGAMESTATE,
-  CG_GETCLIENTSTATE,
-  CG_GETCURRENTSNAPSHOTNUMBER,
-  CG_GETSNAPSHOT,
-  CG_GETSERVERCOMMAND,
-  CG_GETCURRENTCMDNUMBER,
-  CG_GETUSERCMD,
-  CG_SETUSERCMDVALUE,
-  CG_SETCLIENTLERPORIGIN,
-  CG_MEMORY_REMAINING,
-  CG_KEY_ISDOWN,
-  CG_KEY_GETCATCHER,
-  CG_KEY_SETCATCHER,
-  CG_KEY_GETKEY,
-  CG_KEY_GETOVERSTRIKEMODE,
-  CG_KEY_SETOVERSTRIKEMODE,
-  CG_PC_ADD_GLOBAL_DEFINE,
-  CG_PC_LOAD_SOURCE,
-  CG_PC_FREE_SOURCE,
-  CG_PC_READ_TOKEN,
-  CG_PC_SOURCE_FILE_AND_LINE,
-  CG_PC_UNREAD_TOKEN,
-  CG_S_STOPBACKGROUNDTRACK,
-  CG_REAL_TIME,
-  CG_SNAPVECTOR,
-  CG_CIN_PLAYCINEMATIC,
-  CG_CIN_STOPCINEMATIC,
-  CG_CIN_RUNCINEMATIC,
-  CG_CIN_DRAWCINEMATIC,
-  CG_CIN_SETEXTENTS,
   CG_R_REMAP_SHADER,
-  CG_GET_ENTITY_TOKEN,
-  CG_INGAME_POPUP,
-  CG_INGAME_CLOSEPOPUP,
-  CG_KEY_GETBINDINGBUF,
-  CG_KEY_SETBINDING,
-  CG_PARSE_ADD_GLOBAL_DEFINE,
-  CG_PARSE_LOAD_SOURCE,
-  CG_PARSE_FREE_SOURCE,
-  CG_PARSE_READ_TOKEN,
-  CG_PARSE_SOURCE_FILE_AND_LINE,
-  CG_KEY_KEYNUMTOSTRINGBUF,
-  CG_S_FADEALLSOUNDS,
   CG_R_INPVS,
-  CG_GETHUNKDATA,
   CG_R_LOADDYNAMICSHADER,
   CG_R_RENDERTOTEXTURE,
   CG_R_FINISH,
-  CG_GETDEMONAME,
   CG_R_LIGHTFORPOINT,
   CG_R_REGISTERANIMATION,
   CG_R_CHECKSKELETON,
@@ -226,26 +220,50 @@ typedef enum cgameImport_s
   CG_R_BONEINDEX,
   CG_R_ANIMNUMFRAMES,
   CG_R_ANIMFRAMERATE,
-  CG_COMPLETE_CALLBACK,
-  CG_REGISTER_BUTTON_COMMANDS,
-  CG_GETCLIPBOARDDATA,
-  CG_QUOTESTRING,
-  CG_GETTEXT,
-  CG_R_GLYPH,
-  CG_R_GLYPHCHAR,
-  CG_R_UREGISTERFONT,
-  CG_PGETTEXT,
-  CG_R_INPVVS,
-  CG_NOTIFY_TEAMCHANGE,
-  CG_GETTEXT_PLURAL,
   CG_REGISTERVISTEST,
   CG_ADDVISTESTTOSCENE,
   CG_CHECKVISIBILITY,
   CG_UNREGISTERVISTEST,
   CG_SETCOLORGRADING,
-  CG_CM_DISTANCETOMODEL,
-  CG_R_SCISSOR_ENABLE,
-  CG_R_SCISSOR_SET,
+
+  // Keys
+  CG_KEY_ISDOWN,
+  CG_KEY_GETCATCHER,
+  CG_KEY_SETCATCHER,
+  CG_KEY_GETKEY,
+  CG_KEY_GETOVERSTRIKEMODE,
+  CG_KEY_SETOVERSTRIKEMODE,
+  CG_KEY_GETBINDINGBUF,
+  CG_KEY_SETBINDING,
+  CG_KEY_KEYNUMTOSTRINGBUF,
+
+  // Not sure
+  CG_INGAME_POPUP,
+  CG_INGAME_CLOSEPOPUP,
+
+  // Parse
+  CG_PC_ADD_GLOBAL_DEFINE,
+  CG_PC_LOAD_SOURCE,
+  CG_PC_FREE_SOURCE,
+  CG_PC_READ_TOKEN,
+  CG_PC_SOURCE_FILE_AND_LINE,
+  CG_PC_UNREAD_TOKEN,
+
+  // Cinematic
+  CG_CIN_PLAYCINEMATIC,
+  CG_CIN_STOPCINEMATIC,
+  CG_CIN_RUNCINEMATIC,
+  CG_CIN_DRAWCINEMATIC,
+  CG_CIN_SETEXTENTS,
+
+  // Parse, bis
+  CG_PARSE_ADD_GLOBAL_DEFINE,
+  CG_PARSE_LOAD_SOURCE,
+  CG_PARSE_FREE_SOURCE,
+  CG_PARSE_READ_TOKEN,
+  CG_PARSE_SOURCE_FILE_AND_LINE,
+
+  // Lan
   CG_LAN_LOADCACHEDSERVERS,
   CG_LAN_SAVECACHEDSERVERS,
   CG_LAN_ADDSERVER,
@@ -264,15 +282,9 @@ typedef enum cgameImport_s
   CG_LAN_RESETPINGS,
   CG_LAN_SERVERSTATUS,
   CG_LAN_SERVERISINFAVORITELIST,
-  CG_GETNEWS,
   CG_LAN_COMPARESERVERS,
-  CG_R_GETSHADERNAMEFROMHANDLE,
-  CG_PREPAREKEYUP,
-  CG_R_SETALTSHADERTOKENS,
-  CG_S_UPDATEENTITYVELOCITY,
-  CG_S_SETREVERB,
-  CG_S_BEGINREGISTRATION,
-  CG_S_ENDREGISTRATION,
+
+  // Rocket
   CG_ROCKET_INIT,
   CG_ROCKET_SHUTDOWN,
   CG_ROCKET_LOADDOCUMENT,
@@ -311,6 +323,135 @@ typedef enum cgameImport_s
   CG_ROCKET_SHOWSCOREBOARD,
   CG_ROCKET_SETDATASELECTINDEX
 } cgameImport_t;
+
+// All Miscs
+
+// GetDemoStateMsg TODO send it at the beginning of the frame
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMOSTATE>>,
+	IPC::Reply<int>
+> GetDemoStateMsg;
+// FSSeekMsg
+typedef IPC::Message<IPC::Id<VM::QVM, CG_FS_SEEK>, int, long, int> FSSeekMsg;
+// GetDemoPosMsg TODO send it at the beginning of the frame
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMOPOS>>,
+	IPC::Reply<int>
+> GetDemoPosMsg;
+// SendClientCommandMsg TODO really sync?
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_SENDCLIENTCOMMAND>, std::string>
+> SendClientCommandMsg;
+// UpdateScreenMsg TODO really sync?
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_UPDATESCREEN>>
+> UpdateScreenMsg;
+// CMMarkFragmentsMsg TODO can move to VM too ?
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_CM_MARKFRAGMENTS>, std::vector<std::array<float, 3>>, std::array<float, 3>, int, int>,
+	IPC::Reply<std::vector<std::array<float, 3>>, std::vector<markFragment_t>>
+> CMMarkFragmentsMsg;
+// RealTimeMsg TODO do with nacl API
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_REAL_TIME>>,
+	IPC::Reply<int, qtime_t>
+> RealTimeMsg;
+// GetGLConfigMsg TODO send it only once?
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETGLCONFIG>>,
+	IPC::Reply<glconfig_t>
+> GetGLConfigMsg;
+// GetGameStateMsg TODO send it only once or per frame?
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETGAMESTATE>>,
+	IPC::Reply<gameState_t>
+> GetGameStateMsg;
+// GetClientStateMsg TODO send it only once or per frame?
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETCLIENTSTATE>>,
+	IPC::Reply<cgClientState_t>
+> GetClientStateMsg;
+// TODO send all snapshots at the beginning of the frame
+// GetCurrentSnapshotNumberMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETCURRENTSNAPSHOTNUMBER>>,
+	IPC::Reply<int, int>
+> GetCurrentSnapshotNumberMsg;
+// GetSnapshotMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETSNAPSHOT>, int>,
+	IPC::Reply<bool, snapshot_t>
+> GetSnapshotMsg;
+// GetServerCommandMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETSERVERCOMMAND>, int>,
+	IPC::Reply<bool>
+> GetServerCommandMsg;
+// GetCurrentCmdNumberMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETCURRENTCMDNUMBER>>,
+	IPC::Reply<int>
+> GetCurrentCmdNumberMsg;
+// GetUserCmdMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETUSERCMD>, int>,
+	IPC::Reply<bool, usercmd_t>
+> GetUserCmdMsg;
+// SetUserCmdValueMsg TODO check it is async
+typedef IPC::Message<IPC::Id<VM::QVM, CG_SETUSERCMDVALUE>, int, int, float, int> SetUserCmdValueMsg;
+// SetClientLerpOriginMsg TODO check it is async
+typedef IPC::Message<IPC::Id<VM::QVM, CG_SETCLIENTLERPORIGIN>, float, float, float> SetClientLerpOriginMsg;
+// GetEntityTokenMsg TODO what?
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GET_ENTITY_TOKEN>, int>,
+	IPC::Reply<bool, std::string>
+> GetEntityTokenMsg;
+// GetDemoNameMsg TODO send only once per frame?
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMONAME>, int>,
+	IPC::Reply<std::string>
+> GetDemoNameMsg;
+// RegisterButtonCommandsMsg TODO check it is async
+typedef IPC::Message<IPC::Id<VM::QVM, CG_REGISTER_BUTTON_COMMANDS>, std::string> RegisterButtonCommandsMsg;
+// GetClipboardDataMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETCLIPBOARDDATA>, int, int>,
+	IPC::Reply<std::string>
+> GetClipboardDataMsg;
+// QuoteStringMsg TODO using Command.h for that ?
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_QUOTESTRING>, int, std::string>,
+	IPC::Reply<std::string>
+> QuoteStringMsg;
+// GettextMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETTEXT>, int, std::string>,
+	IPC::Reply<std::string>
+> GettextMsg;
+// PGettextMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_PGETTEXT>, int, std::string, std::string>,
+	IPC::Reply<std::string>
+> PGettextMsg;
+// GettextPluralMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETTEXT_PLURAL>, int, std::string, std::string, int>,
+	IPC::Reply<std::string>
+> GettextPluralMsg;
+// NotifyTeamChangeMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_NOTIFY_TEAMCHANGE>, int>
+> NotifyTeamChangeMsg;
+// PrepareKeyUpMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_PREPAREKEYUP>>
+> PrepareKeyUpMsg;
+// GetNewsMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_GETNEWS>, bool>,
+	IPC::Reply<bool>
+> GetNewsMsg;
+
 
 typedef enum
 {
@@ -470,6 +611,7 @@ void            trap_UpdateScreen( void );
 #define trap_CM_TransformedCapsuleTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, TT_CAPSULE)
 #define trap_CM_BiSphereTrace CM_BiSphereTrace
 #define trap_CM_TransformedBiSphereTrace CM_TransformedBiSphereTrace
+#define trap_CM_DistanceToModel CM_DistanceToModel
 int             trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 void            trap_R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime );
 void            trap_R_ClearDecals( void );
@@ -543,7 +685,6 @@ int             trap_GetCurrentCmdNumber( void );
 qboolean        trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd );
 void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient );
 void            trap_SetClientLerpOrigin( float x, float y, float z );
-int             trap_MemoryRemaining( void );
 qboolean        trap_Key_IsDown( int keynum );
 int             trap_Key_GetCatcher( void );
 void            trap_Key_SetCatcher( int catcher );
@@ -558,7 +699,6 @@ int             trap_PC_SourceFileAndLine( int handle, char *filename, int *line
 int             trap_PC_UnReadToken( int handle );
 void            trap_S_StopBackgroundTrack( void );
 int             trap_RealTime( qtime_t *qtime );
-void            trap_SnapVector( float *v );
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status        trap_CIN_StopCinematic( int handle );
 e_status        trap_CIN_RunCinematic( int handle );
@@ -580,7 +720,6 @@ void            trap_CG_TranslateString( const char *string, char *buf );
 void            trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean        trap_R_inPVVS( const vec3_t p1, const vec3_t p2 );
-void            trap_GetHunkData( int *hunkused, int *hunkexpected );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
 void            trap_R_RenderToTexture( int textureid, int x, int y, int w, int h );
 void            trap_R_Finish( void );
@@ -614,7 +753,6 @@ void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
 float           trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
 void            trap_SetColorGrading( int slot, qhandle_t hShader );
-float           trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model );
 void            trap_R_ScissorEnable( qboolean enable );
 void            trap_R_ScissorSet( int x, int y, int w, int h );
 void            trap_LAN_LoadCachedServers( void );
