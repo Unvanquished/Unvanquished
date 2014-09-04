@@ -1141,6 +1141,7 @@ void CG_Rocket_BuildMapList( const char *args )
 	int i;
 
 	trap_Rocket_DSClearTable( "mapList", "default" );
+	trap_FS_LoadAllMapMetadata();
 	CG_LoadArenas();
 
 	for ( i = 0; i < rocketInfo.data.mapCount; ++i )
@@ -1149,7 +1150,6 @@ void CG_Rocket_BuildMapList( const char *args )
 		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
 		Info_SetValueForKey( buf, "mapName", rocketInfo.data.mapList[ i ].mapName, qfalse );
 		Info_SetValueForKey( buf, "mapLoadName", rocketInfo.data.mapList[ i ].mapLoadName, qfalse );
-		Info_SetValueForKey( buf, "levelshot", va( "%d", rocketInfo.data.mapList[ i ].levelShot ), qfalse );
 
 		trap_Rocket_DSAddRow( "mapList", "default", buf );
 	}
@@ -1162,7 +1162,6 @@ void CG_Rocket_CleanUpMapList( const char *args )
 
 	for ( i = 0; i < rocketInfo.data.mapCount; ++i )
 	{
-		BG_Free( rocketInfo.data.mapList[ i ].imageName );
 		BG_Free( rocketInfo.data.mapList[ i ].mapLoadName );
 		BG_Free( rocketInfo.data.mapList[ i ].mapName );
 	}

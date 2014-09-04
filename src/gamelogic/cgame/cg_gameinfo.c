@@ -169,19 +169,18 @@ void CG_LoadArenas( void )
 	char *dirptr;
 	int  i, n;
 	int  dirlen;
-	char *type;
 
 	cg_numArenas = 0;
 	rocketInfo.data.mapCount = 0;
 
 	// get all arenas from .arena files
-	numdirs = trap_FS_GetFileList( "scripts", ".arena", dirlist, sizeof( dirlist ) );
+	numdirs = trap_FS_GetFileList( "meta", ".arena", dirlist, sizeof( dirlist ) );
 	dirptr = dirlist;
 
 	for ( i = 0; i < numdirs; i++, dirptr += dirlen + 1 )
 	{
 		dirlen = strlen( dirptr );
-		strcpy( filename, "scripts/" );
+		strcpy( filename, "meta/" );
 		strcat( filename, dirptr );
 		CG_LoadArenasFromFile( filename );
 	}
@@ -190,16 +189,8 @@ void CG_LoadArenas( void )
 
 	for ( n = 0; n < cg_numArenas; n++ )
 	{
-		// determine type
-		type = Info_ValueForKey( cg_arenaInfos[ n ], "type" );
-		// if no type specified, it will be treated as "ffa"
-
-		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].cinematic = -1;
 		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapLoadName = BG_strdup( Info_ValueForKey( cg_arenaInfos[ n ], "map" ) );
 		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapName = BG_strdup( Info_ValueForKey( cg_arenaInfos[ n ], "longname" ) );
-		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].levelShot = -1;
-		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].imageName = BG_strdup( va( "levelshots/%s", rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapLoadName ) );
-
 		rocketInfo.data.mapCount++;
 
 		if ( rocketInfo.data.mapCount >= MAX_MAPS )

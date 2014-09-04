@@ -25,7 +25,7 @@
 
 		<form onsubmit='execForm "map $map$"'>
 			<row>
-				<dataselect source="mapList.default" fields="mapLoadName" name="map" cvar="ui_dialogCvar1"/>
+				<dataselect source="mapList.default" fields="mapName" valuefields="mapLoadName" name="map" cvar="ui_dialogCvar1"/>
 				<h3> Map </h3>
 			</row>
 

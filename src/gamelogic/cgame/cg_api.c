@@ -225,6 +225,12 @@ qboolean trap_FS_LoadPak( const char* pak )
 	return syscallVM( CG_FS_LOADPAK, pak );
 }
 
+void trap_FS_LoadAllMapMetadata ( void )
+{
+	syscallVM( CG_FS_LOADMAPMETADATA );
+}
+
+
 
 //20.
 //Cbuf_AddText(VMA(1));

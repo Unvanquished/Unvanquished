@@ -1362,9 +1362,6 @@ typedef struct
 {
 	char *mapName;
 	char *mapLoadName;
-	char *imageName;
-	int        cinematic;
-	qhandle_t  levelShot;
 } mapInfo_t;
 
 typedef struct

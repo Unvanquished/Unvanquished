@@ -565,11 +565,18 @@ void FS_LoadBasePak()
 	}
 }
 
-void FS_LoadAllMaps()
+void FS_LoadAllMapMetadata()
 {
+	std::unordered_set<std::string> maps;
 	for (auto& x: FS::GetAvailablePaks()) {
-		if (Str::IsPrefix("map-", x.name))
-			FS_LoadPak(x.name.c_str());
+		if (Str::IsPrefix("map-", x.name) && maps.find(x.name) == maps.end())
+			maps.insert(x.name);
+	}
+
+	for (auto& x: maps) {
+		try {
+			FS::PakPath::LoadPakPrefix(*FS::FindPak(x), "meta/");
+		} catch (std::system_error& err) {} // ignore and move on
 	}
 }
 

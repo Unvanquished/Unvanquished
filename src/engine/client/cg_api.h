@@ -140,6 +140,7 @@ typedef enum cgameImport_s
   CG_FS_GETFILELIST,
   CG_FS_DELETEFILE,
   CG_FS_LOADPAK,
+  CG_FS_LOADMAPMETADATA,
   CG_SENDCONSOLECOMMAND,
   CG_ADDCOMMAND,
   CG_REMOVECOMMAND,
@@ -447,7 +448,8 @@ void            trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void            trap_FS_FCloseFile( fileHandle_t f );
 int             trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 int             trap_FS_Delete( const char *filename );
-qboolean            trap_FS_LoadPak( const char *pak );
+qboolean        trap_FS_LoadPak( const char *pak );
+void            trap_FS_LoadAllMapMetadata( void );
 void            trap_SendConsoleCommand( const char *text );
 void            trap_AddCommand( const char *cmdName );
 void            trap_RemoveCommand( const char *cmdName );

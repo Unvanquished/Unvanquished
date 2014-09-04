@@ -1580,6 +1580,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_FS_LOADPAK:
 			return FS_LoadPak( ( char * ) VMA( 1 ) );
 
+		case CG_FS_LOADMAPMETADATA:
+			FS_LoadAllMapMetadata();
+			return 0;
+
 		case CG_SENDCONSOLECOMMAND:
 			Cmd::BufferCommandText( (char*) VMA( 1 ) );
 			return 0;
