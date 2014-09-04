@@ -1677,7 +1677,6 @@ void CL_Disconnect( qboolean showMainMenu )
 		CL_ClearStaticDownload();
 	}
 
-	// Load map pk3s to allow menus to load levelshots
 	FS::PakPath::ClearPaks();
 	FS_LoadBasePak();
 
