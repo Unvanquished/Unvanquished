@@ -272,11 +272,6 @@ void trap_S_ClearLoopingSounds( qboolean )
 	VM::SendMsg<Audio::ClearLoopingSoundsMsg>();
 }
 
-void trap_S_ClearSounds( qboolean )
-{
-	VM::SendMsg<Audio::ClearSoundsMsg>();
-}
-
 void trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
 {
 	if (origin) {

@@ -149,7 +149,6 @@ typedef enum cgameImport_s
   CG_S_STARTSOUND,
   CG_S_STARTLOCALSOUND,
   CG_S_CLEARLOOPINGSOUNDS,
-  CG_S_CLEARSOUNDS,
   CG_S_ADDLOOPINGSOUND,
   CG_S_STOPLOOPINGSOUND,
   CG_S_UPDATEENTITYPOSITION,
@@ -441,8 +440,6 @@ namespace Audio {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTLOCALSOUND>, int> StartLocalSoundMsg;
 	// ClearLoopingSoundsMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_CLEARLOOPINGSOUNDS>> ClearLoopingSoundsMsg;
-	// ClearSoundsMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_CLEARSOUNDS>> ClearSoundsMsg;
 	// AddLoopingSoundMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_ADDLOOPINGSOUND>, int, int> AddLoopingSoundMsg;
 	// StopLoopingSoundMsg
@@ -635,15 +632,8 @@ void            trap_R_ClearDecals( void );
 void            trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx );
 void            trap_S_StartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx, int flags );
 void            trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum );
-
-//void trap_S_ClearLoopingSounds(void);
 void            trap_S_ClearLoopingSounds( qboolean killall );
-void            trap_S_ClearSounds( qboolean killmusic );
-
-//void trap_S_AddLoopingSound(const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx, int volume, int soundTime);
 void            trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
-
-//void trap_S_AddRealLoopingSound(const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx, int range, int volume, int soundTime);
 void            trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
 void            trap_S_StopLoopingSound( int entityNum );
 void            trap_S_StopStreamingSound( int entityNum );

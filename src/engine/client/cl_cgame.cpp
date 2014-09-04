@@ -2901,12 +2901,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_S_CLEARSOUNDS:
-			IPC::HandleMsg<Audio::ClearSoundsMsg>(channel, std::move(reader), [this] {
-				Audio::ClearAllLoopingSounds();
-			});
-			break;
-
 		case CG_S_ADDLOOPINGSOUND:
 			IPC::HandleMsg<Audio::AddLoopingSoundMsg>(channel, std::move(reader), [this] (int entityNum, int sfx) {
 				Audio::AddEntityLoopingSound(entityNum, sfx);
