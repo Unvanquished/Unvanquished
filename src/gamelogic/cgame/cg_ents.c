@@ -1035,10 +1035,6 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 			cent->lfs.hTest = trap_RegisterVisTest();
 			break;
 
-		case ET_BEACON:
-			memset( &cent->beaconPersistent, 0, sizeof( cbeaconPersistent_t ) );
-			break;
-
 		default:
 			break;
 	}

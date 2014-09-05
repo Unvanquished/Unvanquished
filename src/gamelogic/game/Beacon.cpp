@@ -51,17 +51,14 @@ namespace Beacon //this should eventually become a class
 	 */
 	void Frame( void )
 	{
-		gentity_t *ent;
+		gentity_t *ent = NULL;
 		static int nextframe = 0;
 
 		if( nextframe > level.time )
 			return;
 
-		for( ent = g_entities; ent < g_entities + level.num_entities; ent++ )
+		while ( ( ent = G_IterateEntities( ent ) ) )
 		{
-			if( !ent->inuse )
-				continue;
-
 			switch( ent->s.eType )
 			{
 				case ET_BUILDABLE:
@@ -171,11 +168,17 @@ namespace Beacon //this should eventually become a class
 
 		if( verbose )
 		{
-			ent->s.eFlags |= EF_BC_DYING;
-			ent->s.time2 = level.time + 1500;
+			if ( !( ent->s.eFlags & EF_BC_DYING ) )
+			{
+				ent->s.eFlags |= EF_BC_DYING;
+				ent->s.time2 = level.time + 1500;
+				BaseClustering::Remove( ent );
+			}
 		}
 		else
 		{
+			// BaseClustering::Remove will be called inside G_FreeEntity since we need to be sure
+			// that it happens no matter how the beacon was destroyed.
 			G_FreeEntity( ent );
 		}
 	}
@@ -448,11 +451,34 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Deletes all tags attached to an entity (plays effects).
+	 *
+	 * Deletion is deferred for the enemy team's buildable tags until their death was confirmed.
 	 */
 	void DetachTags( gentity_t *ent )
 	{
-		Delete( ent->alienTag, true );
-		Delete( ent->humanTag, true );
+		if ( ent->alienTag  )
+		{
+			if ( ( ent->alienTag->s.eFlags & EF_BC_ENEMY ) &&
+			     !( ent->alienTag->s.eFlags & EF_BC_TAG_PLAYER ) )
+			{
+				ent->alienTag->tagAttachment = NULL;
+				ent->alienTag = NULL;
+			}
+			else
+				Delete( ent->alienTag, true );
+		}
+
+		if ( ent->humanTag  )
+		{
+			if ( ( ent->humanTag->s.eFlags & EF_BC_ENEMY ) &&
+			     !( ent->humanTag->s.eFlags & EF_BC_TAG_PLAYER ) )
+			{
+				ent->humanTag->tagAttachment = NULL;
+				ent->humanTag = NULL;
+			}
+			else
+				Delete( ent->humanTag, true );
+		}
 	}
 
 	/**
@@ -474,8 +500,6 @@ namespace Beacon //this should eventually become a class
 
 		if( ent->s.eFlags & EF_BC_TAG_PLAYER )
 			ent->s.time2 = level.time + 2000;
-		else
-			ent->s.time2 = level.time + 20000;
 	}
 
 	static inline bool CheckRefreshTag( gentity_t *ent, team_t team )
@@ -612,6 +636,8 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Tags an entity.
+	 * @todo Don't create a new beacon entity if retagged since that triggers regeneration of base
+	 *       clusterings.
 	 */
 	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent )
 	{
@@ -629,14 +655,6 @@ namespace Beacon //this should eventually become a class
 				data = ent->s.modelindex;
 				dead = ( ent->health <= 0 );
 				player = qfalse;
-
-				// if tagging an enemy structure, check whether the base shall be tagged, too
-				if ( targetTeam != team && ent->taggedByEnemy != team )
-				{
-					ent->taggedByEnemy = team;
-					BaseClustering::TagStatusChange(ent);
-				}
-
 				break;
 
 			case ET_PLAYER:
@@ -706,7 +724,10 @@ namespace Beacon //this should eventually become a class
 		if( dead )
 			Delete( beacon, true );
 		else
+		{
 			*attachment = beacon;
+			if ( ent->s.eType == ET_BUILDABLE ) BaseClustering::Update( beacon );
+		}
 
 		Propagate( beacon );
 	}

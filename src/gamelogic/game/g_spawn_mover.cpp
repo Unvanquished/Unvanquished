@@ -2620,7 +2620,8 @@ void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *at
 	self->takedamage = qfalse;
 	trap_UnlinkEntity( self );
 
-	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self, MOD_TRIGGER_HURT );
+	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self,
+	                DAMAGE_KNOCKBACK, MOD_TRIGGER_HURT );
 }
 
 
