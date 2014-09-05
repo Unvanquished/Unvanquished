@@ -497,6 +497,7 @@ void         FS_FreeFileList( char **list );
 qboolean     FS_FileExists( const char *file );
 
 int          FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
+int          FS_GetFileListRecursive( const char* path, const char* extension, char* listBuf, int bufSize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );

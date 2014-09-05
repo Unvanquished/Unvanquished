@@ -522,6 +522,51 @@ int FS_GetFileList(const char* path, const char* extension, char* listBuf, int b
 	return numFiles;
 }
 
+int FS_GetFileListRecursive(const char* path, const char* extension, char* listBuf, int bufSize)
+{
+	// Mods are not yet supported in the new filesystem
+	if (!strcmp(path, "$modlist"))
+		return 0;
+
+	int numFiles = 0;
+	bool dirsOnly = extension && !strcmp(extension, "/");
+
+	try {
+		for (const std::string& x: FS::PakPath::ListFilesRecursive(path)) {
+			if (extension && !Str::IsSuffix(extension, x))
+				continue;
+			if (dirsOnly != (x.back() == '/'))
+				continue;
+			int length = x.size() + (x.back() != '/');
+			if (bufSize < length)
+				return numFiles;
+			memcpy(listBuf, x.c_str(), length);
+			listBuf[length - 1] = '\0';
+			listBuf += length;
+			bufSize -= length;
+			numFiles++;
+		}
+	} catch (std::system_error&) {}
+	try {
+		for (const std::string& x: FS::HomePath::ListFiles(FS::Path::Build("game", path))) {
+			if (extension && !Str::IsSuffix(extension, x))
+				continue;
+			if (dirsOnly != (x.back() == '/'))
+				continue;
+			int length = x.size() + (x.back() != '/');
+			if (bufSize < length)
+				return numFiles;
+			memcpy(listBuf, x.c_str(), length);
+			listBuf[length - 1] = '\0';
+			listBuf += length;
+			bufSize -= length;
+			numFiles++;
+		}
+	} catch (std::system_error&) {}
+
+	return numFiles;
+}
+
 const char* FS_LoadedPaks()
 {
 	static char info[BIG_INFO_STRING];
@@ -575,7 +620,7 @@ void FS_LoadAllMapMetadata()
 
 	for (auto& x: maps) {
 		try {
-			FS::PakPath::LoadPakPrefix(*FS::FindPak(x), "meta/");
+			FS::PakPath::LoadPakPrefix(*FS::FindPak(x), va("meta/%s/", x.substr(4).c_str()));
 		} catch (std::system_error& err) {} // ignore and move on
 	}
 }

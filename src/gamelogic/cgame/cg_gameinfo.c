@@ -173,8 +173,8 @@ void CG_LoadArenas( void )
 	cg_numArenas = 0;
 	rocketInfo.data.mapCount = 0;
 
-	// get all arenas from .arena files
-	numdirs = trap_FS_GetFileList( "meta", ".arena", dirlist, sizeof( dirlist ) );
+	// get all directories from meta
+	numdirs = trap_FS_GetFileListRecursive( "meta", ".arena", dirlist, sizeof( dirlist ) );
 	dirptr = dirlist;
 
 	for ( i = 0; i < numdirs; i++, dirptr += dirlen + 1 )

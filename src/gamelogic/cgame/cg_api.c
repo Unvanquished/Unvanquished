@@ -213,6 +213,12 @@ int trap_FS_GetFileList( const char *path, const char *extension, char *listbuf,
 	return syscallVM( CG_FS_GETFILELIST, path, extension, listbuf, bufsize );
 }
 
+int trap_FS_GetFileListRecursive( const char *path, const char *extension, char *listbuf, int bufsize )
+{
+	return syscallVM( CG_FS_GETFILELISTRECURSIVE, path, extension, listbuf, bufsize );
+}
+
+
 //19.
 //return FS_Delete(VMA(1));
 int trap_FS_Delete( const char *filename )

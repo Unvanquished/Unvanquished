@@ -1574,6 +1574,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
+		case CG_FS_GETFILELISTRECURSIVE:
+			VM_CheckBlock( args[3], args[4], "FSGFL" );
+			return FS_GetFileListRecursive( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
+
+
 		case CG_FS_DELETEFILE:
 			return FS_Delete( (char*) VMA( 1 ) );
 

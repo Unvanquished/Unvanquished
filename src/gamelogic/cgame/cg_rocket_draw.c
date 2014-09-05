@@ -1211,14 +1211,14 @@ static void CG_Rocket_DrawLevelshot( void )
 		return;
 	}
 
-	trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s' />", rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName ), 0 );
+	trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName, rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName ), 0 );
 }
 
 static void CG_Rocket_DrawMapLoadingLevelshot( void )
 {
 	if ( rocketInfo.cstate.connState >= CA_LOADING )
 	{
-		trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s' />", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), 0 );
+		trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ), Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), 0 );
 	}
 }
 

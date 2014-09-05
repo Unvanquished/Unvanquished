@@ -138,6 +138,7 @@ typedef enum cgameImport_s
   CG_FS_WRITE,
   CG_FS_FCLOSEFILE,
   CG_FS_GETFILELIST,
+  CG_FS_GETFILELISTRECURSIVE,
   CG_FS_DELETEFILE,
   CG_FS_LOADPAK,
   CG_FS_LOADMAPMETADATA,
@@ -447,6 +448,7 @@ void            trap_FS_Read( void *buffer, int len, fileHandle_t f );
 void            trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void            trap_FS_FCloseFile( fileHandle_t f );
 int             trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
+int             trap_FS_GetFileListRecursive( const char *path, const char *extension, char *listbuf, int bufsize );
 int             trap_FS_Delete( const char *filename );
 qboolean        trap_FS_LoadPak( const char *pak );
 void            trap_FS_LoadAllMapMetadata( void );
