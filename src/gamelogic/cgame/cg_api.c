@@ -226,9 +226,9 @@ int trap_FS_Delete( const char *filename )
 	return syscallVM( CG_FS_DELETEFILE, filename );
 }
 
-qboolean trap_FS_LoadPak( const char* pak )
+qboolean trap_FS_LoadPak( const char* pak, const char* prefix )
 {
-	return syscallVM( CG_FS_LOADPAK, pak );
+	return syscallVM( CG_FS_LOADPAK, pak, prefix );
 }
 
 void trap_FS_LoadAllMapMetadata ( void )

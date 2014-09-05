@@ -1583,7 +1583,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return FS_Delete( (char*) VMA( 1 ) );
 
 		case CG_FS_LOADPAK:
-			return FS_LoadPak( ( char * ) VMA( 1 ) );
+			try {
+				FS::PakPath::LoadPakPrefix( *FS::FindPak( ( const char * ) VMA( 1 ) ), ( const char * ) VMA( 2 ) );
+			} catch (std::system_error& err) {
+				return 0;
+			}
+			return 1;
 
 		case CG_FS_LOADMAPMETADATA:
 			FS_LoadAllMapMetadata();
