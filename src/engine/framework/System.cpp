@@ -43,6 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/stat.h>
+#include <sys/file.h>
 #endif
 #if defined(_WIN32) || defined(BUILD_CLIENT)
 #include <SDL.h>
@@ -50,10 +51,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Sys {
 
+// Allow a client and a server to share the same homepath
+#ifdef BUILD_SERVER
+#define SERVER_SUFFIX "-server"
+#else
+#define SERVER_SUFFIX ""
+#endif
+
 #ifdef _WIN32
 static HANDLE singletonSocket;
 #else
 static int singletonSocket;
+static FS::File lockFile;
 #endif
 static std::string singletonSocketPath;
 
@@ -65,12 +74,12 @@ static std::string GetSingletonSocketPath()
 	char homePathHash[33] = "";
 	Com_MD5Buffer(homePath.data(), homePath.size(), homePathHash, sizeof(homePathHash));
 #ifdef _WIN32
-	return std::string("\\\\.\\pipe\\" PRODUCT_NAME "-") + homePathHash;
+	return std::string("\\\\.\\pipe\\" PRODUCT_NAME SERVER_SUFFIX "-") + homePathHash;
 #else
 	// We use a temporary directory rather that using the homepath because
 	// socket paths are limited to about 100 characters. This also avoids issues
 	// when the homepath is on a network filesystem.
-	return std::string("/tmp/." PRODUCT_NAME_LOWER "-") + homePathHash + "/socket";
+	return std::string("/tmp/." PRODUCT_NAME_LOWER SERVER_SUFFIX "-") + homePathHash + "/socket";
 #endif
 }
 
@@ -82,19 +91,34 @@ static void CreateSingletonSocket()
 	if (singletonSocket == INVALID_HANDLE_VALUE)
 		Sys::Error("Could not create singleton socket: %s", Sys::Win32StrError(GetLastError()));
 #else
+	// Grab a lock to avoid race conditions. This lock is automatically released when
+	// the process quits, but it may remain if the homepath is on a network filesystem.
+	// We restrict the permissions to owner-only to prevent other users from grabbing
+	// an exclusive lock (which only requires read access).
+	mode_t oldMask = umask(0700);
+	try {
+		lockFile = FS::HomePath::OpenWrite("lock" SERVER_SUFFIX);
+		if (flock(fileno(lockFile.GetHandle()), LOCK_EX | LOCK_NB) == -1)
+			throw std::system_error(errno, std::generic_category());
+		umask(oldMask);
+	} catch (std::system_error& err) {
+		umask(oldMask);
+		Sys::Error("Could not acquire singleton lock: %s\n"
+		           "If you are sure no other instance is running, delete %s", err.what(), FS::Path::Build(FS::GetHomePath(), "lock" SERVER_SUFFIX));
+	}
+
 	// Delete any stale sockets
-	// TODO: this isn't atomic and can lead to race conditions
 	std::string dirName = FS::Path::DirName(singletonSocketPath);
 	unlink(singletonSocketPath.c_str());
 	rmdir(dirName.c_str());
-	mkdir(dirName.c_str(), 0700);
 
 	singletonSocket = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (singletonSocket == -1)
 		Sys::Error("Could not create singleton socket: %s", strerror(errno));
 
-	// Set socket permissions. This doesn't work on all systems, but it doesn't hurt.
+	// Set socket permissions to only be accessible to the current user
 	fchmod(singletonSocket, 0600);
+	mkdir(dirName.c_str(), 0700);
 
 	struct sockaddr_un addr;
 	addr.sun_family = AF_UNIX;
@@ -240,6 +264,9 @@ static void CloseSingletonSocket()
 	std::string dirName = FS::Path::DirName(singletonSocketPath);
 	unlink(singletonSocketPath.c_str());
 	rmdir(dirName.c_str());
+	try {
+		FS::HomePath::DeleteFile("lock" SERVER_SUFFIX);
+	} catch (std::system_error&) {}
 #endif
 }
 
@@ -473,14 +500,18 @@ static void Init(int argc, char** argv)
 
 	// Force a UTF-8 locale for LC_CTYPE so that terminals can output unicode
 	// characters. We keep all other locale facets as "C".
-	if (!setlocale(LC_CTYPE, "C.UTF-8") || !setlocale(LC_CTYPE, "en_US.UTF-8")) {
+	if (!setlocale(LC_CTYPE, "C.UTF-8") || !setlocale(LC_CTYPE, "UTF-8") || !setlocale(LC_CTYPE, "en_US.UTF-8")) {
 		// Try using the user's locale with UTF-8
-		std::string locale = setlocale(LC_CTYPE, NULL);
-		size_t dot = locale.rfind('.');
-		if (dot != std::string::npos)
-			locale.replace(dot, locale.size() - dot, ".UTF-8");
-		if (!setlocale(LC_CTYPE, locale.c_str()))
-			Log::Warn("Could not set locale to UTF-8, unicode characters may not display correctly");
+		std::string locale = setlocale(LC_CTYPE, "");
+		if (!Str::IsSuffix(".UTF-8", locale)) {
+			size_t dot = locale.rfind('.');
+			if (dot != std::string::npos)
+				locale.replace(dot, locale.size() - dot, ".UTF-8");
+			if (!setlocale(LC_CTYPE, locale.c_str())) {
+				setlocale(LC_CTYPE, "C");
+				Log::Warn("Could not set locale to UTF-8, unicode characters may not display correctly");
+			}
+		}
 	}
 
 	// Enable S3TC on Mesa even if libtxc-dxtn is not available
@@ -592,8 +623,9 @@ ALIGN_STACK int main(int argc, char** argv)
 			try {
 				Com_Frame(IN_Frame, IN_FrameEnd);
 			} catch (Sys::DropErr& err) {
-				// TODO: FS_LoadBasePak
 				Log::Error(err.what());
+				FS::PakPath::ClearPaks();
+				FS_LoadBasePak();
 				SV_Shutdown(va("********************\nServer crashed: %s\n********************\n", err.what()));
 				CL_Disconnect(qtrue);
 				CL_FlushMemory();

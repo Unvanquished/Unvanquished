@@ -217,6 +217,10 @@ void SetupCrashHandler()
 #else
 static void CrashHandler(int sig)
 {
+	// Remove signal handlers to avoid recursive signals
+	for (int sig: {SIGILL, SIGFPE, SIGSEGV, SIGABRT, SIGBUS, SIGTRAP})
+		signal(sig, SIG_DFL);
+
 	// TODO: backtrace
 
 	Sys::Error("Caught signal %d: %s", sig, strsignal(sig));
@@ -228,7 +232,7 @@ void SetupCrashHandler()
 		signal(sig, CrashHandler);
 #else
 	struct sigaction sa;
-	sa.sa_flags = SA_RESETHAND;
+	sa.sa_flags = SA_RESETHAND | SA_NODEFER;
 	sa.sa_handler = CrashHandler;
 	sigemptyset(&sa.sa_mask);
 	for (int sig: {SIGILL, SIGFPE, SIGSEGV, SIGABRT, SIGBUS, SIGTRAP})
