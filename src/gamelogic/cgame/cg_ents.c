@@ -522,6 +522,8 @@ static void CG_Missile( centity_t *cent )
 				}
 			}
 		}
+
+		ent.skeleton.scale = 1.0f;
 	}
 
 	//only refresh if there is something to display

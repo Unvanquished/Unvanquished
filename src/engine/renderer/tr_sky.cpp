@@ -572,7 +572,8 @@ static void DrawSkyBox( shader_t *shader )
 		// only add indexes for first stage
 		FillCloudySkySide( sky_mins_subd, sky_maxs_subd, qtrue );
 	}
-	Tess_UpdateVBOs( tess.attribsSet );
+	Tess_UpdateVBOs( );
+	GL_VertexAttribsState( tess.attribsSet );
 
 	Tess_DrawElements();
 }

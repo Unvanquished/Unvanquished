@@ -687,8 +687,16 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 	{
 		uint32_t bit = BIT( i );
 		uint32_t frame = 0;
+		uint32_t base = 0;
 
-		if ( ( attribBits & bit ) && ( !( glState.vertexAttribPointersSet & bit ) || glState.vertexAttribsInterpolation >= 0 ) )
+		if( glState.currentVBO == tess.vbo ) {
+			base = tess.vertexBase * sizeof( shaderVertex_t );
+		}
+
+		if ( ( attribBits & bit ) != 0 &&
+		     ( !( glState.vertexAttribPointersSet & bit ) ||
+		       glState.vertexAttribsInterpolation >= 0 ||
+		       glState.currentVBO == tess.vbo ) )
 		{
 			const vboAttributeLayout_t *layout = &glState.currentVBO->attribs[ i ];
 
@@ -709,7 +717,7 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 				frame = glState.vertexAttribsOldFrame;
 			}
 
-			glVertexAttribPointer( i, layout->numComponents, layout->componentType, layout->normalize, layout->stride, BUFFER_OFFSET( layout->ofs + ( frame * layout->frameOffset ) ) );
+			glVertexAttribPointer( i, layout->numComponents, layout->componentType, layout->normalize, layout->stride, BUFFER_OFFSET( layout->ofs + ( frame * layout->frameOffset + base ) ) );
 			glState.vertexAttribPointersSet |= bit;
 		}
 	}
@@ -2069,7 +2077,8 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 							Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
 							Tess_AddQuadStamp2( quadVerts, colorGreen );
 
-							Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
+							Tess_UpdateVBOs( );
+							GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR );
 							Tess_DrawElements();
 
 							// draw light volume
@@ -3189,7 +3198,8 @@ static void RenderLightOcclusionVolume( trRefLight_t *light )
 
 		R_TessLight( light, NULL );
 
-		Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
+		Tess_UpdateVBOs( );
+		GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR );
 		Tess_DrawElements();
 	}
 
@@ -4343,7 +4353,8 @@ static void RB_RenderDebugUtils()
 				Tess_AddCube( vec3_origin, entity->localBounds[ 0 ], entity->localBounds[ 1 ], lightColor );
 			}
 
-			Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
+			Tess_UpdateVBOs( );
+			GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR );
 			Tess_DrawElements();
 
 			tess.multiDrawPrimitives = 0;
@@ -4423,7 +4434,8 @@ static void RB_RenderDebugUtils()
 
 			Tess_AddCube( vec3_origin, mins, maxs, colorWhite );
 
-			Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
+			Tess_UpdateVBOs( );
+			GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR );
 			Tess_DrawElements();
 
 			tess.multiDrawPrimitives = 0;
@@ -4579,7 +4591,8 @@ static void RB_RenderDebugUtils()
 					MatrixTransformPoint( backEnd.orientation.transformMatrix, skel->bones[ j ].t.trans, worldOrigins[ j ] );
 				}
 
-				Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
+				Tess_UpdateVBOs( );
+				GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
 
 				Tess_DrawElements();
 
@@ -4639,7 +4652,8 @@ static void RB_RenderDebugUtils()
 							Tess_AddQuadStampExt( origin, left, up, colorWhite, fcol, frow, fcol + size, frow + size );
 						}
 
-						Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
+						Tess_UpdateVBOs( );
+						GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
 
 						Tess_DrawElements();
 
@@ -4966,9 +4980,6 @@ static void RB_RenderDebugUtils()
 
 	if ( r_showBspNodes->integer )
 	{
-		bspNode_t *node;
-		link_t    *l, *sentinel;
-
 		if ( ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL ) ) || !tr.world )
 		{
 			return;
@@ -5124,7 +5135,8 @@ static void RB_RenderDebugUtils()
 					Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
 					Tess_AddQuadStamp2( quadVerts, colorGreen );
 
-					Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
+					Tess_UpdateVBOs( );
+					GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR );
 					Tess_DrawElements();
 
 					gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
@@ -5202,7 +5214,8 @@ static void RB_RenderDebugUtils()
 
 				Tess_AddCube( vec3_origin, node->mins, node->maxs, colorWhite );
 
-				Tess_UpdateVBOs( ATTR_POSITION );
+				Tess_UpdateVBOs( );
+				GL_VertexAttribsState( ATTR_POSITION );
 
 				Tess_DrawElements();
 
@@ -5411,7 +5424,8 @@ void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
 
 void DebugDrawEnd( void ) {
 
-	Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
+	Tess_UpdateVBOs( );
+	GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
 
 	if ( glState.currentVBO && glState.currentIBO )
 	{
@@ -5885,7 +5899,8 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.indexes[ tess.numIndexes++ ] = 2;
 	tess.indexes[ tess.numIndexes++ ] = 3;
 
-	Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD );
+	Tess_UpdateVBOs( );
+	GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD );
 
 	Tess_DrawElements();
 
@@ -6083,28 +6098,6 @@ const void     *RB_StretchPic( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
-const void     *RB_ScissorEnable( const void *data )
-{
-	const scissorEnableCommand_t *cmd;
-
-	cmd = ( const scissorEnableCommand_t * ) data;
-
-	tr.scissor.status = cmd->enable;
-
-	if ( !cmd->enable )
-	{
-		Tess_End();
-		GL_Scissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-	}
-	else
-	{
-		Tess_End();
-		GL_Scissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
-	}
-
-	return ( const void * )( cmd + 1 );
-}
-
 const void     *RB_ScissorSet( const void *data )
 {
 	const scissorSetCommand_t *cmd;
@@ -6116,13 +6109,11 @@ const void     *RB_ScissorSet( const void *data )
 	tr.scissor.w = cmd->w;
 	tr.scissor.h = cmd->h;
 
-	if (tr.scissor.status )
-	{
-	    Tess_End();
-	    GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
-	}
+	Tess_End();
+	GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
+	tess.surfaceShader = NULL;
 
-    return ( const void * )( cmd + 1 );
+	return ( const void * )( cmd + 1 );
 }
 
 const void     *RB_Draw2dPolys( const void *data )
@@ -6205,6 +6196,9 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
+	}
+
+	if( !tess.verts ) {
 		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
 	}
 
@@ -6234,7 +6228,6 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 	}
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
-	Tess_End();
 
 	shader->cullType = oldCullType;
 
@@ -6513,6 +6506,7 @@ const void *RB_RunVisTests( const void *data )
 			testState->running = qfalse;
 		}
 
+		Tess_MapVBOs( qfalse );
 		VectorSubtract( backEnd.orientation.viewOrigin,
 				test->position, diff );
 		VectorNormalize( diff );
@@ -6545,6 +6539,9 @@ const void *RB_RunVisTests( const void *data )
 		tess.indexes[ 5 ] = 3;
 		tess.numIndexes = 6;
 
+		Tess_UpdateVBOs( );
+		GL_VertexAttribsState( ATTR_POSITION );
+
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -6564,8 +6561,6 @@ const void *RB_RunVisTests( const void *data )
 		// bind u_ColorMap
 		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
-
-		Tess_UpdateVBOs( ATTR_POSITION );
 
 		GL_State( GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
 		glBeginQuery( GL_SAMPLES_PASSED, testState->hQueryRef );
@@ -6887,10 +6882,6 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_FINISH:
 				data = RB_Finish( data );
-				break;
-
-			case RC_SCISSORENABLE:
-				data = RB_ScissorEnable( data );
 				break;
 
 			case RC_SCISSORSET:
