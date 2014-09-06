@@ -1046,16 +1046,14 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 		if (HaveError(err))
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
-			if (!Str::IsSuffix("/", *it) && Str::IsPrefix(pathPrefix, *it)) {
-				if (*it == PAK_DEPS_FILE)
-					hasDeps = true;
-				else {
+			if (*it == PAK_DEPS_FILE)
+				hasDeps = true;
+			else if (!Str::IsSuffix("/", *it) && Str::IsPrefix(pathPrefix, *it)) {
 #ifdef LIBSTDCXX_BROKEN_CXX11
-					fileMap.insert({*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0)});
+				fileMap.insert({*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0)});
 #else
-					fileMap.emplace(*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0));
+				fileMap.emplace(*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0));
 #endif
-				}
 			}
 			it.increment(err);
 			if (HaveError(err))
@@ -1078,7 +1076,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 		realChecksum = crc32(0, Z_NULL, 0);
 		zipFile.ForEachFile([&pak, &realChecksum, &pathPrefix, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
 			// Note that 'return' is effectively 'continue' since we are in a lambda
-			if (!Str::IsPrefix(pathPrefix, filename))
+			if (!Str::IsPrefix(pathPrefix, filename) && filename != PAK_DEPS_FILE)
 				return;
 			if (Str::IsSuffix("/", filename))
 				return;

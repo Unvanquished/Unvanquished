@@ -41,6 +41,7 @@ Maryland 20850 USA.
 #include "../qcommon/crypto.h"
 
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
@@ -1520,6 +1521,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameUselessSyscalls ++;
 			return FloatAsInt( Cvar_VariableValue( (char*) VMA( 1 ) ) );
 
+		case CG_CVAR_ADDFLAGS:
+			cls.nCgameUselessSyscalls ++;
+			Cvar::AddFlags( ( const char * ) VMA( 1 ), args[ 2 ] );
+			return 0;
+
 		case CG_ARGC:
 			cls.nCgameUselessSyscalls ++;
 			return Cmd_Argc();
@@ -1568,11 +1574,25 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
+		case CG_FS_GETFILELISTRECURSIVE:
+			VM_CheckBlock( args[3], args[4], "FSGFL" );
+			return FS_GetFileListRecursive( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
+
+
 		case CG_FS_DELETEFILE:
 			return FS_Delete( (char*) VMA( 1 ) );
 
 		case CG_FS_LOADPAK:
-			return FS_LoadPak( ( char * ) VMA( 1 ) );
+			try {
+				FS::PakPath::LoadPakPrefix( *FS::FindPak( ( const char * ) VMA( 1 ) ), ( const char * ) VMA( 2 ) );
+			} catch (std::system_error& err) {
+				return 0;
+			}
+			return 1;
+
+		case CG_FS_LOADMAPMETADATA:
+			FS_LoadAllMapMetadata();
+			return 0;
 
 		case CG_SENDCONSOLECOMMAND:
 			Cmd::BufferCommandText( (char*) VMA( 1 ) );
@@ -2467,6 +2487,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ROCKET_SETDATASELECTINDEX:
 			Rocket_SetDataSelectIndex( args[ 1 ] );
+			return 0;
+
+		case CG_ROCKET_LOADFONT:
+			Rocket_LoadFont( ( const char * ) VMA( 1 ) );
 			return 0;
 
 		default:

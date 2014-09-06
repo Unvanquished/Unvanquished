@@ -279,10 +279,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if (code != ERR_FATAL) {
 		FS::PakPath::ClearPaks();
 		FS_LoadBasePak();
-#ifndef BUILD_SERVER
-		// Load map pk3s to allow menus to load levelshots
-		FS_LoadAllMaps();
-#endif
 	}
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
@@ -1761,10 +1757,6 @@ void Com_Init( char *commandLine )
 
 	FS::Initialize();
 	FS_LoadBasePak();
-#ifndef BUILD_SERVER
-	// Load map pk3s to allow menus to load levelshots
-	FS_LoadAllMaps();
-#endif
 
 	Trans_Init();
 

@@ -1160,7 +1160,6 @@ typedef struct
 	int      teamScores[ 2 ];
 	score_t  scores[ MAX_CLIENTS ];
 	qboolean showScores;
-	qboolean scoreBoardShowing;
 	int      scoreFadeTime;
 	char     killerName[ MAX_NAME_LENGTH ];
 	char     spectatorList[ MAX_STRING_CHARS ]; // list of names
@@ -1344,9 +1343,6 @@ typedef struct
 {
 	char *mapName;
 	char *mapLoadName;
-	char *imageName;
-	int        cinematic;
-	qhandle_t  levelShot;
 } mapInfo_t;
 
 typedef struct
