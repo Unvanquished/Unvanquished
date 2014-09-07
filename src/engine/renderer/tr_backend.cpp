@@ -6047,6 +6047,10 @@ const void     *RB_StretchPic( const void *data )
 		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
 	}
 
+	if( !tess.indexes ) {
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+	}
+
 	Tess_CheckOverflow( 4, 6 );
 	numVerts = tess.numVertexes;
 	numIndexes = tess.numIndexes;
@@ -6268,6 +6272,10 @@ const void     *RB_RotatedPic( const void *data )
 		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
 	}
 
+	if( !tess.indexes ) {
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+	}
+
 	Tess_CheckOverflow( 4, 6 );
 	numVerts = tess.numVertexes;
 	numIndexes = tess.numIndexes;
@@ -6358,6 +6366,10 @@ const void     *RB_StretchPicGradient( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+	}
+
+	if( !tess.indexes ) {
 		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
 	}
 
