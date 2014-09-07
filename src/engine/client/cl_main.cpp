@@ -1653,11 +1653,6 @@ void CL_Disconnect( qboolean showMainMenu )
 		clc.demofile = 0;
 	}
 
-	if ( cgvm && showMainMenu )
-	{
-		Rocket_DocumentAction( "main", "show" );
-	}
-
 	SCR_StopCinematic();
 
 	CL_SendDisconnect();
@@ -1704,7 +1699,7 @@ void CL_Disconnect( qboolean showMainMenu )
 		cls.state = CA_DISCONNECTED;
 
 		// shutdown the UI
-		Rocket_Shutdown();
+		CL_ShutdownCGame();
 
 		// init the UI
 		CL_InitUI();
