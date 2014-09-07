@@ -109,7 +109,7 @@ void CG_Rocket_Init( void )
 	trap_Rocket_RegisterProperty( "cell-color", "white", qfalse, qfalse, "color" );
 	trap_Rocket_RegisterProperty( "border-width", "0.5", qfalse, qfalse, "number" );
 	trap_Rocket_RegisterProperty( "unlocked-marker-color", "green", qfalse, qfalse, "color" );
-	trap_Rocket_RegisterProperty( "locked-cell-color", "red", qfalse, qfalse, "color" );
+	trap_Rocket_RegisterProperty( "locked-marker-color", "red", qfalse, qfalse, "color" );
 
 	// Load custom rocket pak if necessary
 	if ( *rocket_pak.string )
