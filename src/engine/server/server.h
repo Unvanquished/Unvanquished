@@ -312,10 +312,10 @@ namespace VM {
     class CommonVMServices;
 }
 
-class GameVM: public VM::VMBase {
+class SGameVM: public VM::VMBase {
 public:
-	GameVM();
-    virtual ~GameVM();
+	SGameVM();
+    virtual ~SGameVM();
 	bool Start();
 
 	void GameStaticInit();
@@ -346,7 +346,7 @@ private:
 
 extern serverStatic_t svs; // persistent server info across maps
 extern server_t       sv; // cleared each map
-extern GameVM         *gvm; // game virtual machine
+extern SGameVM        *gvm; // game virtual machine
 
 extern cvar_t         *sv_fps;
 extern cvar_t         *sv_timeout;
@@ -494,7 +494,7 @@ playerState_t  *SV_GameClientNum( int num );
 
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
-GameVM         *SV_CreateGameVM( void );
+SGameVM        *SV_CreateGameVM( void );
 void           SV_InitGameProgs(Str::StringRef mapname);
 void           SV_ShutdownGameProgs( void );
 void           SV_RestartGameProgs(Str::StringRef mapname);

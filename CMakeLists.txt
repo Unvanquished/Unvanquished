@@ -860,8 +860,8 @@ set( CGAMEASMLIST
   ${GAMELOGIC_DIR}/cgame/cg_api.asm
 )
 
-set( GAMELIST
-  ${GAMELOGIC_DIR}/game/g_main.cpp #keep it first because vmMain must be the first function compiled in qvms
+set( SGAMELIST
+  ${GAMELOGIC_DIR}/sgame/g_main.cpp #keep it first because vmMain must be the first function compiled in qvms
   ${GAMELOGIC_DIR}/shared/bg_misc.c
   ${GAMELOGIC_DIR}/shared/bg_parse.c
   ${GAMELOGIC_DIR}/shared/bg_pmove.c
@@ -873,54 +873,54 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/shared/VMMain.h
-  ${GAMELOGIC_DIR}/game/g_active.cpp
-  ${GAMELOGIC_DIR}/game/Beacon.cpp 
-  ${GAMELOGIC_DIR}/game/Clustering.cpp
-  ${GAMELOGIC_DIR}/game/g_client.cpp
-  ${GAMELOGIC_DIR}/game/g_cmds.cpp
-  ${GAMELOGIC_DIR}/game/g_combat.cpp
-  ${GAMELOGIC_DIR}/game/g_momentum.cpp
-  ${GAMELOGIC_DIR}/game/g_entities.cpp
-  ${GAMELOGIC_DIR}/game/g_physics.cpp
-  ${GAMELOGIC_DIR}/game/g_buildable.cpp
-  ${GAMELOGIC_DIR}/game/g_buildpoints.cpp
-  ${GAMELOGIC_DIR}/game/g_missile.cpp
-  ${GAMELOGIC_DIR}/game/g_session.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_afx.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_ctrl.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_fx.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_game.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_generic.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_gfx.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_mover.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_position.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_sensor.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_shared.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn.cpp
-  ${GAMELOGIC_DIR}/game/g_svcmds.cpp
-  ${GAMELOGIC_DIR}/game/g_team.cpp
-  ${GAMELOGIC_DIR}/game/g_utils.cpp
-  ${GAMELOGIC_DIR}/game/g_maprotation.cpp
-  ${GAMELOGIC_DIR}/game/g_weapon.cpp
-  ${GAMELOGIC_DIR}/game/g_admin.cpp
-  ${GAMELOGIC_DIR}/game/g_namelog.cpp
-  ${GAMELOGIC_DIR}/game/Components.cpp
-  ${GAMELOGIC_DIR}/game/Components.h
-  ${GAMELOGIC_DIR}/game/ComponentImplementationInclude.h
-  ${GAMELOGIC_DIR}/game/IgnitableComponent.cpp
-  ${GAMELOGIC_DIR}/game/IgnitableComponent.h
-  ${GAMELOGIC_DIR}/game/g_bot.cpp
-  ${GAMELOGIC_DIR}/game/g_bot_ai.cpp
-  ${GAMELOGIC_DIR}/game/g_bot_nav.cpp
-  ${GAMELOGIC_DIR}/game/g_bot_parse.cpp
-  ${GAMELOGIC_DIR}/game/g_bot_util.cpp
-  ${GAMELOGIC_DIR}/game/g_cm_world.cpp
-  ${GAMELOGIC_DIR}/game/g_cm_world.h
+  ${GAMELOGIC_DIR}/sgame/g_active.cpp
+  ${GAMELOGIC_DIR}/sgame/Beacon.cpp 
+  ${GAMELOGIC_DIR}/sgame/Clustering.cpp
+  ${GAMELOGIC_DIR}/sgame/g_client.cpp
+  ${GAMELOGIC_DIR}/sgame/g_cmds.cpp
+  ${GAMELOGIC_DIR}/sgame/g_combat.cpp
+  ${GAMELOGIC_DIR}/sgame/g_momentum.cpp
+  ${GAMELOGIC_DIR}/sgame/g_entities.cpp
+  ${GAMELOGIC_DIR}/sgame/g_physics.cpp
+  ${GAMELOGIC_DIR}/sgame/g_buildable.cpp
+  ${GAMELOGIC_DIR}/sgame/g_buildpoints.cpp
+  ${GAMELOGIC_DIR}/sgame/g_missile.cpp
+  ${GAMELOGIC_DIR}/sgame/g_session.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn_afx.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn_ctrl.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn_fx.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn_game.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn_generic.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn_gfx.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn_mover.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn_position.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn_sensor.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn_shared.cpp
+  ${GAMELOGIC_DIR}/sgame/g_spawn.cpp
+  ${GAMELOGIC_DIR}/sgame/g_svcmds.cpp
+  ${GAMELOGIC_DIR}/sgame/g_team.cpp
+  ${GAMELOGIC_DIR}/sgame/g_utils.cpp
+  ${GAMELOGIC_DIR}/sgame/g_maprotation.cpp
+  ${GAMELOGIC_DIR}/sgame/g_weapon.cpp
+  ${GAMELOGIC_DIR}/sgame/g_admin.cpp
+  ${GAMELOGIC_DIR}/sgame/g_namelog.cpp
+  ${GAMELOGIC_DIR}/sgame/Components.cpp
+  ${GAMELOGIC_DIR}/sgame/Components.h
+  ${GAMELOGIC_DIR}/sgame/ComponentImplementationInclude.h
+  ${GAMELOGIC_DIR}/sgame/IgnitableComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/IgnitableComponent.h
+  ${GAMELOGIC_DIR}/sgame/g_bot.cpp
+  ${GAMELOGIC_DIR}/sgame/g_bot_ai.cpp
+  ${GAMELOGIC_DIR}/sgame/g_bot_nav.cpp
+  ${GAMELOGIC_DIR}/sgame/g_bot_parse.cpp
+  ${GAMELOGIC_DIR}/sgame/g_bot_util.cpp
+  ${GAMELOGIC_DIR}/sgame/g_cm_world.cpp
+  ${GAMELOGIC_DIR}/sgame/g_cm_world.h
   ${ENGINE_DIR}/server/g_api.h
 )
 
-set( GAMENACLLIST
-  ${GAMELOGIC_DIR}/game/g_api.cpp
+set( SGAMENACLLIST
+  ${GAMELOGIC_DIR}/sgame/g_api.cpp
   ${COMMONLIST}
 )
 
@@ -1422,7 +1422,7 @@ set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
 # Game logic
 ################################################################################
 
-# Function to setup all the Game/Cgame/UI libraries
+# Function to setup all the sgame/cgame/ui libraries
 include( CMakeParseArguments )
 function( GAMEMODULE )
   # ParseArguments setup
@@ -1637,7 +1637,7 @@ function( GAMEMODULE )
       set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir/${CMAKE_CFG_INTDIR} )
     endif()
 
-    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM_ABI)
+    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/sgame -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM_ABI)
     foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
       set( QVM_COMPILE_OPTIONS ${QVM_COMPILE_OPTIONS} -D${DEF} )
     endforeach()
@@ -1685,15 +1685,15 @@ if( BUILD_GAME_QVM )
   add_subdirectory( ${LCC_DIR} ${CMAKE_BINARY_DIR}/lcc )
 endif()
 
-GAMEMODULE( NAME game
+GAMEMODULE( NAME sgame
   COMPILE_DEF BUILD_VM BUILD_GAME
   HAS_NACL 1
   HAS_QVM 0
-  FILES ${GAMELIST}
-  NACL_FILES ${GAMENACLLIST}
-  NATIVE_FILES ${GAMENATIVELIST}
-  QVM_FILES ${GAMEQVMLIST}
-  QVM_ASM ${GAMEASMLIST}
+  FILES ${SGAMELIST}
+  NACL_FILES ${SGAMENACLLIST}
+  NATIVE_FILES ${SGAMENATIVELIST}
+  QVM_FILES ${SGAMEQVMLIST}
+  QVM_ASM ${SGAMEASMLIST}
 )
 
 GAMEMODULE( NAME cgame

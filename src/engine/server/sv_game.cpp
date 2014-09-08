@@ -362,16 +362,16 @@ SV_CreateGameVM
 Load a QVM vm or fails and try to load a NaCl vm
 ===================
 */
-GameVM* SV_CreateGameVM( void )
+SGameVM* SV_CreateGameVM( void )
 {
-    GameVM* vm = new GameVM();
+    SGameVM* vm = new SGameVM();
 
     if (vm->Start()) {
         return vm;
     }
     delete vm;
 
-	Com_Error(ERR_DROP, "Couldn't load the game VM");
+	Com_Error(ERR_DROP, "Couldn't load the server-side gamelogic VM");
 
 	return nullptr;
 }
@@ -470,13 +470,13 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 #endif
 }
 
-static VM::VMParams gameParams("game");
+static VM::VMParams gameParams("sgame");
 
-GameVM::GameVM(): VM::VMBase("game", gameParams), services(new VM::CommonVMServices(*this, "Game", Cmd::GAME_VM))
+SGameVM::SGameVM(): VM::VMBase("sgame", gameParams), services(new VM::CommonVMServices(*this, "SGame", Cmd::SGAME_VM))
 {
 }
 
-bool GameVM::Start()
+bool SGameVM::Start()
 {
     int version = this->Create();
 
@@ -493,22 +493,22 @@ bool GameVM::Start()
     return true;
 }
 
-GameVM::~GameVM()
+SGameVM::~SGameVM()
 {
     this->Free();
 }
 
-void GameVM::GameStaticInit()
+void SGameVM::GameStaticInit()
 {
 	this->SendMsg<GameStaticInitMsg>();
 }
 
-void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
+void SGameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 {
 	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart, Com_AreCheatsAllowed());
 }
 
-void GameVM::GameShutdown(qboolean restart)
+void SGameVM::GameShutdown(qboolean restart)
 {
 	//TODO ignore errors
 	this->SendMsg<GameShutdownMsg>(restart);
@@ -517,7 +517,7 @@ void GameVM::GameShutdown(qboolean restart)
 	this->shmRegion.Close();
 }
 
-void GameVM::GameLoadMap(Str::StringRef name)
+void SGameVM::GameLoadMap(Str::StringRef name)
 {
 	char* buffer;
 	std::string filename = "maps/" + name + ".bsp";
@@ -542,7 +542,7 @@ void GameVM::GameLoadMap(Str::StringRef name)
 	FS_FreeFile( origBuffer );
 }
 
-qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
+qboolean SGameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
 {
 	bool denied;
 	std::string sentReason;
@@ -554,52 +554,52 @@ qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qbo
 	return denied;
 }
 
-void GameVM::GameClientBegin(int clientNum)
+void SGameVM::GameClientBegin(int clientNum)
 {
 	this->SendMsg<GameClientBeginMsg>(clientNum);
 }
 
-void GameVM::GameClientUserInfoChanged(int clientNum)
+void SGameVM::GameClientUserInfoChanged(int clientNum)
 {
 	this->SendMsg<GameClientUserinfoChangedMsg>(clientNum);
 }
 
-void GameVM::GameClientDisconnect(int clientNum)
+void SGameVM::GameClientDisconnect(int clientNum)
 {
 	this->SendMsg<GameClientDisconnectMsg>(clientNum);
 }
 
-void GameVM::GameClientCommand(int clientNum, const char* command)
+void SGameVM::GameClientCommand(int clientNum, const char* command)
 {
 	this->SendMsg<GameClientCommandMsg>(clientNum, command);
 }
 
-void GameVM::GameClientThink(int clientNum)
+void SGameVM::GameClientThink(int clientNum)
 {
 	this->SendMsg<GameClientThinkMsg>(clientNum);
 }
 
-void GameVM::GameRunFrame(int levelTime)
+void SGameVM::GameRunFrame(int levelTime)
 {
 	this->SendMsg<GameRunFrameMsg>(levelTime);
 }
 
-qboolean GameVM::GameSnapshotCallback(int entityNum, int clientNum)
+qboolean SGameVM::GameSnapshotCallback(int entityNum, int clientNum)
 {
 	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
 }
 
-void GameVM::BotAIStartFrame(int levelTime)
+void SGameVM::BotAIStartFrame(int levelTime)
 {
 	Com_Error(ERR_DROP, "GameVM::BotAIStartFrame not implemented");
 }
 
-void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
+void SGameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
 {
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-void GameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
+void SGameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 {
 	int major = id >> 16;
 	int minor = id & 0xffff;
@@ -614,7 +614,7 @@ void GameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 	}
 }
 
-void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
+void SGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
 	case G_PRINT:

@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include "bg_public.h"
 
 // We only do game for now but later have a common list of game services
-#include "../game/g_local.h"
+#include "../sgame/g_local.h"
 
 #include "../../common/Common.h"
 #include "VMMain.h"
