@@ -37,3 +37,4 @@ branches:
   except:
     - debian
     - engine-upgrade/sound
+    - cbse
