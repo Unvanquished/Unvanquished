@@ -224,7 +224,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	close(pipefds[0]);
 	if (count) {
 		waitpid(pid, NULL, 0);
-		Com_Error(ERR_DROP, "VM: Failed to exec: %s", strerror(err));
+		Com_Error(ERR_DROP, "VM: Failed to exec %s: %s", args[0], strerror(err));
 	}
 
 	return std::make_pair(pid, std::move(pair.first));
