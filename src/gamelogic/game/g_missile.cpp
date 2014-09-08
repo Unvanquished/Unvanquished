@@ -149,6 +149,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	gentity_t *other, *attacker, *neighbor;
 	qboolean  doDamage = qtrue, returnAfterDamage = qfalse;
 	vec3_t    dir;
+	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
 
 	other = &g_entities[ trace->entityNum ];
 	attacker = &g_entities[ ent->r.ownerNum ];
@@ -319,9 +320,11 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			dir[ 2 ] = 1; // stepped on a grenade
 		}
 
+		int dflags = DAMAGE_NO_LOCDAMAGE;
+		if ( ma->doKnockback ) dflags |= DAMAGE_KNOCKBACK;
+
 		G_Damage( other, ent, attacker, dir, ent->s.origin,
-				  roundf( ent->damage * MissileTimeDmgMod( ent ) ),
-				  DAMAGE_NO_LOCDAMAGE, ent->methodOfDeath );
+				  roundf( ent->damage * MissileTimeDmgMod( ent ) ), dflags, ent->methodOfDeath );
 	}
 
 	if ( returnAfterDamage )
@@ -360,7 +363,8 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	{
 		G_RadiusDamage( trace->endpos, ent->parent,
 		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
-		                ent->splashRadius, other, ent->splashMethodOfDeath );
+		                ent->splashRadius, other, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
+		                ent->splashMethodOfDeath );
 	}
 
 	trap_LinkEntity( ent );
@@ -374,6 +378,7 @@ void G_ExplodeMissile( gentity_t *ent )
 {
 	vec3_t dir;
 	vec3_t origin;
+	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
 
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 	SnapVector( origin );
@@ -393,7 +398,8 @@ void G_ExplodeMissile( gentity_t *ent )
 	{
 		G_RadiusDamage( ent->r.currentOrigin, ent->parent,
 		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
-		                ent->splashRadius, ent, ent->splashMethodOfDeath );
+		                ent->splashRadius, ent, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
+		                ent->splashMethodOfDeath );
 	}
 
 	trap_LinkEntity( ent );
@@ -486,7 +492,7 @@ void G_RunMissile( gentity_t *ent )
 	if ( ent->flightSplashDamage )
 	{
 		G_RadiusDamage( tr.endpos, ent->parent, ent->flightSplashDamage, ent->flightSplashRadius,
-		                ent->parent, ent->splashMethodOfDeath );
+		                ent->parent, 0, ent->splashMethodOfDeath );
 	}
 
 	// check think function after bouncing
@@ -511,6 +517,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, v
 
 	// generic
 	m->s.eType             = ET_MISSILE;
+	m->s.modelindex        = missile;
 	m->r.ownerNum          = parent->s.number;
 	m->parent              = parent;
 	m->target              = target;

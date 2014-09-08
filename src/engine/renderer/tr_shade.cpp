@@ -200,7 +200,13 @@ void Tess_DrawElements()
 		}
 		else
 		{
-			glDrawRangeElements( GL_TRIANGLES, 0, tess.numVertexes, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
+			uint32_t base = 0;
+
+			if( glState.currentIBO == tess.ibo ) {
+				base = tess.indexBase * sizeof( glIndex_t );
+			}
+
+			glDrawRangeElements( GL_TRIANGLES, 0, tess.numVertexes, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( base ) );
 
 			backEnd.pc.c_drawElements++;
 
@@ -402,6 +408,8 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 		tess.surfaceShader = NULL;
 		tess.surfaceStages = NULL;
 	}
+
+	Tess_MapVBOs( ShaderRequiresCPUDeforms( state ) );
 
 	bool isSky = ( state != NULL && state->isSky != qfalse );
 
@@ -2638,7 +2646,8 @@ void Tess_StageIteratorDebug()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( tess.attribsSet );
+		Tess_UpdateVBOs( );
+		GL_VertexAttribsState( tess.attribsSet );
 	}
 
 	Tess_DrawElements();
@@ -2732,7 +2741,7 @@ void Tess_StageIteratorGeneric()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( tess.attribsSet );
+		Tess_UpdateVBOs( );
 	}
 
 	// set face culling appropriately
@@ -2923,7 +2932,7 @@ void Tess_StageIteratorDepthFill()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD );
+		Tess_UpdateVBOs( );
 	}
 
 	// set face culling appropriately
@@ -3013,7 +3022,7 @@ void Tess_StageIteratorShadowFill()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD );
+		Tess_UpdateVBOs( );
 	}
 
 	// set face culling appropriately
@@ -3103,7 +3112,7 @@ void Tess_StageIteratorLighting()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( tess.attribsSet );
+		Tess_UpdateVBOs( );
 	}
 
 	// set OpenGL state for lighting
@@ -3226,16 +3235,6 @@ void Tess_End()
 	if ( ( tess.numIndexes == 0 || tess.numVertexes == 0 ) && tess.multiDrawPrimitives == 0 )
 	{
 		return;
-	}
-
-	if ( tess.indexes[ SHADER_MAX_INDEXES - 1 ] != 0 )
-	{
-		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_INDEXES hit" );
-	}
-
-	if ( tess.verts[ SHADER_MAX_VERTEXES - 1 ].xyz[ 0 ] != 0.0f )
-	{
-		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_VERTEXES hit" );
 	}
 
 	// for debugging of sort order issues, stop rendering after a given sort value

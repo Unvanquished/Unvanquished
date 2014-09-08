@@ -383,12 +383,13 @@ void CG_ShowScores_f( void )
 	{
 		CG_RequestScores();
 		trap_PrepareKeyUp();
+
+		trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
 		cg.showScores = qtrue;
 	}
 	else
 	{
 		cg.showScores = qfalse;
-		cg.scoreBoardShowing = qfalse;
 	}
 }
 
@@ -396,7 +397,6 @@ void CG_HideScores_f( void )
 {
 	trap_Rocket_ShowScoreboard( "scoreboard", qfalse );
 	cg.showScores = qfalse;
-	cg.scoreBoardShowing = qfalse;
 }
 
 void CG_BeaconMenu_f( void )

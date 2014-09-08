@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <GL/glew.h>
 
+#define DYN_BUFFER_SIZE ( 4 * 1024 * 1024 )
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
 
 typedef int8_t   i8vec4_t[ 4 ];
@@ -386,8 +387,6 @@ static inline float halfToFloat( int16_t in ) {
 		float        sphereRadius; // calculated from localBounds
 
 		int8_t       shadowLOD; // Level of Detail for shadow mapping
-
-		qboolean                  clipsNearPlane;
 
 		qboolean                  noOcclusionQueries;
 		uint32_t                  occlusionQueryObject;
@@ -1927,30 +1926,9 @@ static inline float halfToFloat( int16_t in ) {
 		// common with leaf and node
 		int              contents; // -1 for nodes, to differentiate from leafs
 		int              visCounts[ MAX_VISCOUNTS ]; // node needs to be traversed if current
-		int              lightCount;
+
 		vec3_t           mins, maxs; // for bounding box culling
-		vec3_t           surfMins, surfMaxs; // ydnar: bounding box including surfaces
-		vec3_t           origin; // center of the bounding box
 		struct bspNode_s *parent;
-
-		qboolean         visible[ MAX_VIEWS ];
-		int              lastVisited[ MAX_VIEWS ];
-		int              lastQueried[ MAX_VIEWS ];
-		qboolean         issueOcclusionQuery[ MAX_VIEWS ];
-
-		link_t           visChain; // updated every visit
-		link_t           occlusionQuery; // updated every visit
-		link_t           occlusionQuery2; // updated every visit
-		link_t           multiQuery; // CHC++: list of all nodes that are used by the same occlusion query
-
-		VBO_t            *volumeVBO;
-		IBO_t            *volumeIBO;
-		int              volumeVerts;
-		int              volumeIndexes;
-
-		uint32_t occlusionQueryObjects[ MAX_VIEWS ];
-		int      occlusionQuerySamples[ MAX_VIEWS ]; // visible fragment count
-		int      occlusionQueryNumbers[ MAX_VIEWS ]; // for debugging
 
 		// node specific
 		cplane_t         *plane;
@@ -1960,9 +1938,8 @@ static inline float halfToFloat( int16_t in ) {
 		int          cluster;
 		int          area;
 
+		int          firstMarkSurface;
 		int          numMarkSurfaces;
-		bspSurface_t **markSurfaces;
-		bspSurface_t **viewSurfaces;
 	} bspNode_t;
 
 	typedef struct
@@ -2427,8 +2404,6 @@ static inline float halfToFloat( int16_t in ) {
 		int c_sphere_cull_in, c_sphere_cull_out;
 		int c_plane_cull_in, c_plane_cull_out;
 
-		int c_sphere_cull_patch_in, c_sphere_cull_patch_clip, c_sphere_cull_patch_out;
-		int c_box_cull_patch_in, c_box_cull_patch_clip, c_box_cull_patch_out;
 		int c_sphere_cull_mdv_in, c_sphere_cull_mdv_clip, c_sphere_cull_mdv_out;
 		int c_box_cull_mdv_in, c_box_cull_mdv_clip, c_box_cull_mdv_out;
 		int c_box_cull_md5_in, c_box_cull_md5_clip, c_box_cull_md5_out;
@@ -2453,7 +2428,6 @@ static inline float halfToFloat( int16_t in ) {
 		int c_occlusionQueries;
 		int c_occlusionQueriesMulti;
 		int c_occlusionQueriesSaved;
-		int c_CHCTime;
 
 		int c_decalProjectors, c_decalTestSurfaces, c_decalClipSurfaces, c_decalSurfaces, c_decalSurfacesCreated;
 	} frontEndCounters_t;
@@ -2631,10 +2605,6 @@ static inline float halfToFloat( int16_t in ) {
 		int      visIndex;
 		int      visClusters[ MAX_VISCOUNTS ];
 		int      visCounts[ MAX_VISCOUNTS ]; // incremented every time a new vis cluster is entered
-
-		link_t   traversalStack;
-		link_t   occlusionQueryQueue;
-		link_t   occlusionQueryList;
 
 		int      frameCount; // incremented every frame
 		int      sceneCount; // incremented every scene
@@ -2907,7 +2877,7 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_nocull;
 	extern cvar_t *r_facePlaneCull; // enables culling of planar surfaces with back side test
 	extern cvar_t *r_nocurves;
-	extern cvar_t *r_noLightScissors;
+	extern cvar_t *r_lightScissors;
 	extern cvar_t *r_noLightVisCull;
 	extern cvar_t *r_noInteractionSort;
 	extern cvar_t *r_showcluster;
@@ -3056,11 +3026,9 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_vboDeformVertexes;
 
 	extern cvar_t *r_mergeLeafSurfaces;
-
 	extern cvar_t *r_parallaxMapping;
 	extern cvar_t *r_parallaxDepthScale;
 
-	extern cvar_t *r_dynamicBspOcclusionCulling;
 	extern cvar_t *r_dynamicEntityOcclusionCulling;
 	extern cvar_t *r_dynamicLightOcclusionCulling;
 	extern cvar_t *r_chcMaxPrevInvisNodesBatchSize;
@@ -3376,8 +3344,10 @@ static inline float halfToFloat( int16_t in ) {
 
 	typedef struct shaderCommands_s
 	{
-		shaderVertex_t verts[ SHADER_MAX_VERTEXES ];
-		glIndex_t      indexes[ SHADER_MAX_INDEXES ];
+		shaderVertex_t *verts;	 // at least SHADER_MAX_VERTEXES accessible
+		glIndex_t      *indexes; // at least SHADER_MAX_INDEXES accessible
+		uint32_t       vertsWritten, vertexBase;
+		uint32_t       indexesWritten, indexBase;
 
 		VBO_t       *vbo;
 		IBO_t       *ibo;
@@ -3412,6 +3382,10 @@ static inline float halfToFloat( int16_t in ) {
 
 		int           numSurfaceStages;
 		shaderStage_t **surfaceStages;
+
+		// preallocated host buffers for verts and indexes 
+		shaderVertex_t *vertsBuffer;
+		glIndex_t      *indexesBuffer;
 	} shaderCommands_t;
 
 	extern shaderCommands_t tess;
@@ -3462,7 +3436,8 @@ static inline float halfToFloat( int16_t in ) {
 	void Tess_AddCubeWithNormals( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color );
 
 	void Tess_InstantQuad( vec4_t quadVerts[ 4 ] );
-	void Tess_UpdateVBOs( uint32_t attribBits );
+	void Tess_MapVBOs( qboolean forceCPU );
+	void Tess_UpdateVBOs( void );
 
 	void RB_ShowImages( void );
 
@@ -3860,12 +3835,6 @@ static inline float halfToFloat( int16_t in ) {
 	typedef struct
 	{
 		int       commandId;
-		qboolean  enable;
-	} scissorEnableCommand_t;
-
-	typedef struct
-	{
-		int       commandId;
 		int       x;
 		int       y;
 		int       w;
@@ -3937,7 +3906,6 @@ static inline float halfToFloat( int16_t in ) {
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
 	  RC_2DPOLYSINDEXED,
-	  RC_SCISSORENABLE,
 	  RC_SCISSORSET,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
@@ -3980,6 +3948,9 @@ static inline float halfToFloat( int16_t in ) {
 		// the backend communicates to the frontend through visTestResult_t
 		int                 numVisTests;
 		visTestResult_t     visTests[ MAX_VISTESTS ];
+
+		bspNode_t			**traversalList;
+		int                 traversalLength;
 
 		renderCommandList_t commands;
 	} backEndData_t;

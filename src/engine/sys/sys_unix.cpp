@@ -927,9 +927,9 @@ qboolean Sys_IsNumLockDown( void )
 
 	if ( dpy == 0 )
 	{
-		Com_Printf( _("ERROR: cannot determine numlock state as we couldn't\n" 
+		Com_Printf( "ERROR: cannot determine numlock state as we couldn't\n" 
 		              "grab your non-standard (e.g. not ':0') X display.\n"
-		              "ensure the 'DISPLAY' environment variable is set.\n") );
+		              "ensure the 'DISPLAY' environment variable is set.\n" );
 		return qtrue;
 	}
 	else

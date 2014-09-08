@@ -104,7 +104,8 @@ div.infobox {
 <circlemenu id="default" source="humanBuildList.default" fields="num" formatter="CMHumanBuildables" cancel="hide humanbuild"/>
 <div class="infobox">
 <h2><datasource_single source="humanBuildList.default" fields="name" targetid="default" /></h2>
-<p class="text"><datasource_single source="humanBuildList.default" fields="description" targetid="default" /></p>
+<p class="text">Price: <datasource_single source="humanBuildList.default" fields="cost" targetid="default" /><br/>
+<datasource_single source="humanBuildList.default" fields="description" targetid="default" /></p>
 </div>
 </panel>
 </tabset>

@@ -52,7 +52,7 @@ class MapCmd: public Cmd::StaticCmd {
 
         void Run(const Cmd::Args& args) const OVERRIDE {
             if (args.Argc() < 2) {
-                PrintUsage(args, _("<mapname> (layoutname)"), _("loads a new map"));
+                PrintUsage(args, "<mapname> (layoutname)", "loads a new map");
                 return;
             }
 
@@ -60,7 +60,7 @@ class MapCmd: public Cmd::StaticCmd {
 
             //Make sure the map exists to avoid typos that would kill the game
             if (!FS::FindPak("map-" + mapName)) {
-                Print(_("Can't find map %s"), mapName);
+                Print("Can't find map %s", mapName);
                 return;
             }
 
@@ -70,8 +70,8 @@ class MapCmd: public Cmd::StaticCmd {
                 Cvar::SetValue("g_layouts", layouts);
             }
 
-            SV_SpawnServer(mapName.c_str());
             Cvar::SetValueForce("sv_cheats", cheat ? "1" : "0");
+            SV_SpawnServer(mapName.c_str());
         }
 
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
@@ -92,8 +92,8 @@ class MapCmd: public Cmd::StaticCmd {
     private:
         bool cheat;
 };
-static MapCmd MapCmdRegistration("map", N_("starts a new map"), false);
-static MapCmd DevmapCmdRegistration("devmap", N_("starts a new map with cheats enabled"), true);
+static MapCmd MapCmdRegistration("map", "starts a new map", false);
+static MapCmd DevmapCmdRegistration("devmap", "starts a new map with cheats enabled", true);
 
 void MSG_PrioritiseEntitystateFields( void );
 void MSG_PrioritisePlayerStateFields( void );
@@ -130,7 +130,7 @@ static void SV_MapRestart_f( void )
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf(_( "Server is not running.\n" ));
+		Com_Printf( "Server is not running.\n" );
 		return;
 	}
 
@@ -150,7 +150,7 @@ static void SV_MapRestart_f( void )
 	{
 		char mapname[ MAX_QPATH ];
 
-		Com_Printf(_( "sv_maxclients variable change — restarting.\n" ));
+		Com_Printf( "sv_maxclients variable change — restarting.\n" );
 		// restart the map the slow way
 		Q_strncpyz( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
 
@@ -262,7 +262,7 @@ static void SV_Status_f( void )
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf(_( "Server is not running.\n" ));
+		Com_Printf( "Server is not running.\n" );
 		return;
 	}
 
@@ -360,11 +360,11 @@ static void SV_Serverinfo_f( void )
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf(_( "Server is not running.\n" ));
+		Com_Printf( "Server is not running.\n" );
 		return;
 	}
 
-	Com_Printf(_( "Server info settings:\n" ));
+	Com_Printf( "Server info settings:\n" );
 	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, qfalse ) );
 }
 
@@ -380,11 +380,11 @@ static void SV_Systeminfo_f( void )
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf(_( "Server is not running.\n" ));
+		Com_Printf( "Server is not running.\n" );
 		return;
 	}
 
-	Com_Printf(_( "System info settings:\n" ));
+	Com_Printf( "System info settings:\n" );
 	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, qfalse ) );
 }
 

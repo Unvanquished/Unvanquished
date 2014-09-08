@@ -35,7 +35,7 @@ int              trap_Cvar_VariableIntegerValue( const char *var_name );
 void             trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 int              trap_Argc( void );
 void             trap_Argv( int n, char *buffer, int bufferLength );
-void             trap_SendConsoleCommand( int exec_when, const char *text );
+void             trap_SendConsoleCommand( const char *text );
 int              trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void             trap_FS_Read( void *buffer, int len, fileHandle_t f );
 int              trap_FS_Write( const void *buffer, int len, fileHandle_t f );

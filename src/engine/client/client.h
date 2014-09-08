@@ -629,6 +629,7 @@ typedef enum
 } kbuttons_t;
 
 void CL_ClearKeys( void );
+void CL_ClearCmdButtons( void );
 
 void CL_InitInput( void );
 void CL_SendCmd( void );
@@ -945,4 +946,5 @@ void Rocket_ClearText( void );
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
 void Rocket_ShowScoreboard( const char *name, bool show );
 void Rocket_SetDataSelectIndex( int index );
+void Rocket_LoadFont( const char *font );
 #endif

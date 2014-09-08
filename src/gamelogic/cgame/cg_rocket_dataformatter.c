@@ -107,7 +107,7 @@ static void CG_Rocket_DFVoteMap( int handle, const char *data )
 	int mapIndex = atoi( Info_ValueForKey( data, "1" ) );
 	if ( mapIndex < rocketInfo.data.mapCount )
 	{
-		trap_Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"exec set ui_dialogCvar1 %s;hide maps;exec rocket ui/dialogs/mapdialog.rml load; exec rocket mapdialog show\" class=\"maps\"><div class=\"levelname\">%s</div> <img class=\"levelshot\"src='/%s'/><div class=\"hovertext\">Start Vote</div> </button>", rocketInfo.data.mapList[ mapIndex ].mapLoadName, CG_Rocket_QuakeToRML( rocketInfo.data.mapList[ mapIndex ].mapName ), rocketInfo.data.mapList[ mapIndex ].imageName ) , qfalse );
+		trap_Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"exec set ui_dialogCvar1 %s;hide maps;exec rocket ui/dialogs/mapdialog.rml load; exec rocket mapdialog show\" class=\"maps\"><div class=\"levelname\">%s</div> <img class=\"levelshot\"src='/meta/%s/%s'/><div class=\"hovertext\">Start Vote</div> </button>", rocketInfo.data.mapList[ mapIndex ].mapLoadName, CG_Rocket_QuakeToRML( rocketInfo.data.mapList[ mapIndex ].mapName ), rocketInfo.data.mapList[ mapIndex ].mapLoadName, rocketInfo.data.mapList[ mapIndex ].mapLoadName ) , qfalse );
 	}
 }
 
@@ -168,20 +168,37 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 {
 	upgrade_t upgrade = (upgrade_t) atoi( Info_ValueForKey( data, "1" ) );
-	const char *Class;
-	qboolean disabled = qfalse;
+	const char *Class = "";
+	const char *Icon = "";
+	const char *action = "";
+	playerState_t *ps = &cg.snap->ps;
+	int credits = ps->persistant[ PERS_CREDIT ];
 
-	if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) || BG_InventoryContainsUpgrade( upgrade, cg.predictedPlayerState.stats ) )
+	if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
 	{
-		Class = "armourybuy disabled";
-		disabled = qtrue;
+		Class = "locked";
+		//Padlock icon. UTF-8 encoding of \uf023
+		Icon = "<icon>\xEF\x80\xA3</icon>";
+	}
+	else if(BG_Upgrade( upgrade )->price > credits){
+
+		Class = "expensive";
+		//$1 bill icon. UTF-8 encoding of \uf0d6
+		Icon = "<icon>\xEF\x83\x96</icon>";
+	}
+	else if( BG_InventoryContainsUpgrade( upgrade, cg.predictedPlayerState.stats ) ){
+		Class = "active";
+		action =  va( "onClick='exec \"sell %s\"'", BG_Upgrade( upgrade )->name );
+		//Check mark icon. UTF-8 encoding of \uf00c
+		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
 	else
 	{
-		Class = "armourybuy";
+		Class = "available";
+		action =  va( "onClick='exec \"buy +%s\"'", BG_Upgrade( upgrade )->name );
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS armouryBuyList upgrades %s' %s><img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), disabled ? va( "onClick='exec \"sell %s'", BG_Upgrade( upgrade )->name ) : va( "onClick='exec \"buy +%s'", BG_Upgrade( upgrade )->name ), CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon ) ), qfalse );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='setDS armouryBuyList upgrades %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon)), qfalse );
 }
 
 static void CG_Rocket_DFGWeaponDamage( int handle, const char *data )

@@ -41,15 +41,6 @@
 #include "client.h"
 #include "rocket.h"
 
-enum
-{
-	START,
-	PROGRESS,
-	END,
-	DECORATION,
-	NUM_GEOMETRIES
-};
-
 typedef enum
 {
 	LEFT,
@@ -61,9 +52,13 @@ typedef enum
 class RocketProgressBar : public Rocket::Core::Element
 {
 public:
-	RocketProgressBar( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_geometry( true ), orientation( LEFT ), value( 0.0f ), shader( 0 )
+	RocketProgressBar( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 )
 	{
-		Com_Memset( color, 1, sizeof( color ) );
+		// Default to white
+		for (int i = 0; i < ARRAY_LEN( color ); ++i )
+		{
+			color[ i ] = 1.0f;
+		}
 	}
 
 	~RocketProgressBar() {}
@@ -71,7 +66,7 @@ public:
 	// Get current value
 	float GetValue( void ) const
 	{
-		return GetAttribute<float>( "value", 0.0f );
+		return value;
 	}
 
 	void SetValue( const float value )
@@ -80,14 +75,13 @@ public:
 	}
 
 
-	void OnUpdate( void )
+	void Update( void )
 	{
 		float newValue;
-		Rocket::Core::String str = GetAttribute<Rocket::Core::String>( "src", "" );
 
-		if ( !str.Empty() )
+		if ( !source.Empty() )
 		{
-			Cmd_TokenizeString( str.CString() );
+			Cmd_TokenizeString( source.CString() );
 			newValue = _vmf( VM_Call( cgvm, CG_ROCKET_PROGRESSBARVALUE ) );
 
 			if ( newValue != value )
@@ -105,7 +99,7 @@ public:
 			return;
 		}
 
-		OnUpdate(); // When loading maps, Render() is called multiple times without updating.
+		Update();
 		Rocket::Core::Vector2f position = GetAbsoluteOffset();
 
 		// Vertical meter
@@ -203,8 +197,6 @@ public:
 			{
 				orientation = RIGHT;
 			}
-
-			dirty_geometry = true;
 		}
 	}
 
@@ -215,8 +207,11 @@ public:
 		if ( changed_attributes.find( "value" ) != changed_attributes.end() )
 		{
 			value = Com_Clamp( 0.0f, 1.0f, GetAttribute<float>( "value", 0.0f ) );
+		}
 
-			dirty_geometry = true;
+		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
+		{
+			source = GetAttribute<Rocket::Core::String>( "src", "" );
 		}
 	}
 
@@ -325,11 +320,11 @@ public:
 	}
 
 private:
-	bool dirty_geometry; // Rebuild geometry
 	progressBarOrientation_t orientation; // Direction progressbar grows
 	float value; // current value
 	qhandle_t shader;
 	vec4_t color;
 	Rocket::Core::Vector2f dimensions;
+	Rocket::Core::String source;
 };
 #endif
