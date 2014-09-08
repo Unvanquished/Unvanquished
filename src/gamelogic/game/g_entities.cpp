@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #include "g_local.h"
 #include "g_entities.h"
 
+static EmptyEntity emptyEntity(nullptr);
+
 /*
 =================================================================================
 
@@ -45,6 +47,7 @@ basic gentity lifecycle handling
 
 void G_InitGentity( gentity_t *entity )
 {
+	entity->entity = &emptyEntity;
 	entity->inuse = qtrue;
 	entity->enabled = qtrue;
 	entity->classname = "noclass";
@@ -165,7 +168,13 @@ void G_FreeEntity( gentity_t *entity )
 		BaseClustering::Remove(entity);
 	}
 
+	if (entity->entity != &emptyEntity)
+	{
+		delete entity->entity;
+	}
+
 	memset( entity, 0, sizeof( *entity ) );
+	entity->entity = &emptyEntity;
 	entity->classname = "freent";
 	entity->freetime = level.time;
 	entity->inuse = qfalse;

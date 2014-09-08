@@ -22,47 +22,10 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#ifndef G_LOCAL_H_
-#define G_LOCAL_H_
+#ifndef GAME_COMPONENT_IMPLEMENTATION_INCLUDE_H_
+#define GAME_COMPONENT_IMPLEMENTATION_INCLUDE_H_
 
-// engine headers
-#include "../../engine/qcommon/q_shared.h"
-#include "../../engine/server/g_api.h"
-#include "../../engine/botlib/bot_types.h"
-
-// shared gamelogic (bg) headers
-#include "../shared/bg_public.h"
-
-// macros and common constants
-#include "g_definitions.h"
-
-// type definitions
-#include "g_typedef.h"
-
-// topic function headers and definitions
-#include "g_admin.h"
-#include "g_bot.h"
-#include "g_entities.h"
-
-struct gentity_s;
-// definition of Entity
 #include "Components.h"
+#include "IgnitableComponent.h"
 
-// struct definitions
-#include "g_struct.h"
-
-// function headers
-#include "g_public.h"
-
-// trapcall headers
-#include "g_trapcalls.h"
-
-// externalized fields
-#include "g_extern.h"
-
-// future imports
-#ifndef Q3_VM
-#include "../../common/Maths.h"
-#endif
-
-#endif // G_LOCAL_H_
+#endif //GAME_COMPONENT_IMPLEMENTATION_INCLUDE_H_

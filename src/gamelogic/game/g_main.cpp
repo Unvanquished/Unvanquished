@@ -2915,6 +2915,8 @@ void G_RunFrame( int levelTime )
 	// save position information for all active clients
 	G_UnlaggedStore();
 
+	G_IgnitableThink();
+
 	G_CountSpawns();
 	G_SetHumanBuildablePowerState();
 	G_MineBuildPoints();
@@ -2924,6 +2926,13 @@ void G_RunFrame( int levelTime )
 	G_SpawnClients( TEAM_HUMANS );
 	G_UpdateZaps( msec );
 	Beacon::Frame( );
+
+	ent = &g_entities[0];
+	for ( i = 0; i < level.num_entities; i++, ent++ ) {
+		if (ent->entity) {
+			ent->entity->DoNetCode();
+		}
+	}
 
 	// log gameplay statistics
 	G_LogGameplayStats( LOG_GAMEPLAY_STATS_BODY );

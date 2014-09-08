@@ -904,6 +904,11 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_weapon.cpp
   ${GAMELOGIC_DIR}/game/g_admin.cpp
   ${GAMELOGIC_DIR}/game/g_namelog.cpp
+  ${GAMELOGIC_DIR}/game/Components.cpp
+  ${GAMELOGIC_DIR}/game/Components.h
+  ${GAMELOGIC_DIR}/game/ComponentImplementationInclude.h
+  ${GAMELOGIC_DIR}/game/IgnitableComponent.cpp
+  ${GAMELOGIC_DIR}/game/IgnitableComponent.h
   ${GAMELOGIC_DIR}/game/g_bot.cpp
   ${GAMELOGIC_DIR}/game/g_bot_ai.cpp
   ${GAMELOGIC_DIR}/game/g_bot_nav.cpp

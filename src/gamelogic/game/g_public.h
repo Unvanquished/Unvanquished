@@ -341,4 +341,8 @@ void              G_ClearPlayerZapEffects( gentity_t *player );
 void              G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode );
 void              G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
 
+// Components
+
+void G_IgnitableThink();
+
 #endif // G_PUBLIC_H_

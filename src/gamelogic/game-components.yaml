@@ -1,0 +1,32 @@
+general:
+    common_entity_attributes:
+        - name: oldEnt
+          type: struct gentity_s*
+
+attributes:
+    Dummy: int
+
+messages:
+    DoNetCode:
+
+components:
+    Ignitable:
+        parameters:
+            alwaysOnFire: bool
+        messages:
+            - DoNetCode
+
+entities:
+    Empty:
+        components:
+
+    Fire:
+        components:
+            Ignitable:
+                alwaysOnFire: "true"
+
+    AlienBuildable:
+        components:
+            Ignitable:
+                alwaysOnFire: "false"
+

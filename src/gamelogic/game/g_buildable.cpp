@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
+#include "IgnitableComponent.h"
 
 #define PRIMARY_ATTACK_PERIOD 7500
 #define NEARBY_ATTACK_PERIOD  15000
@@ -775,40 +776,10 @@ Sets an alien buildable on fire.
 */
 void G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter )
 {
-	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_ALIENS )
-	{
-		return;
-	}
+	IgnitableComponent* ignitable = self->entity->GetIgnitableComponent();
 
-	if ( !self->onFire && level.time > self->fireImmunityUntil )
-	{
-		if ( g_debugFire.integer )
-		{
-			char selfDescr[ 64 ], fireStarterDescr[ 64 ];
-			BG_BuildEntityDescription( selfDescr, sizeof( selfDescr ), &self->s );
-			BG_BuildEntityDescription( fireStarterDescr, sizeof( fireStarterDescr ), &fireStarter->s );
-			Com_Printf("%s ^2ignited^7 %s.", fireStarterDescr, selfDescr);
-		}
-
-		self->onFire               = qtrue;
-		self->fireStarter          = fireStarter;
-		self->nextBurnDamage       = level.time + BURN_SELFDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
-		self->nextBurnSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD  * BURN_PERIODS_RAND_MOD;
-		self->nextBurnAction       = level.time + BURN_ACTION_PERIOD     * BURN_PERIODS_RAND_MOD;
-	}
-	else if ( self->onFire )
-	{
-		if ( g_debugFire.integer )
-		{
-			char selfDescr[ 64 ], fireStarterDescr[ 64 ];
-			BG_BuildEntityDescription( selfDescr, sizeof( selfDescr ), &self->s );
-			BG_BuildEntityDescription( fireStarterDescr, sizeof( fireStarterDescr ), &fireStarter->s );
-			Com_Printf("%s ^2reset burning action timer of^7 %s.", fireStarterDescr, selfDescr);
-		}
-
-		// always reset the action timer
-		// this leads to prolonged burning but slow spread in burning groups
-		self->nextBurnAction = level.time + BURN_ACTION_PERIOD * BURN_PERIODS_RAND_MOD;
+	if (ignitable) {
+		ignitable->Ignite(fireStarter);
 	}
 }
 
@@ -829,12 +800,6 @@ void AGeneric_Think( gentity_t *self )
 
 	// slow down close humans
 	AGeneric_CreepSlow( self );
-
-	// burn if on fire
-	if ( self->onFire )
-	{
-		G_FireThink( self );
-	}
 }
 
 /*
@@ -3356,11 +3321,6 @@ void G_BuildableThink( gentity_t *ent, int msec )
 		ent->s.eFlags |= EF_B_MARKED;
 	}
 
-	if ( ent->onFire )
-	{
-		ent->s.eFlags |= EF_B_ONFIRE;
-	}
-
 	// Check if this buildable is touching any triggers
 	G_BuildableTouchTriggers( ent );
 
@@ -4368,6 +4328,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			built->die = AGeneric_Die;
 			built->think = ASpawn_Think;
 			built->pain = AGeneric_Pain;
+			built->entity = new AlienBuildableEntity(built);
 			break;
 
 		case BA_A_BARRICADE:
@@ -4376,6 +4337,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			built->pain = ABarricade_Pain;
 			built->touch = ABarricade_Touch;
 			built->shrunkTime = 0;
+			built->entity = new AlienBuildableEntity(built);
 			ABarricade_Shrink( built, qtrue );
 			break;
 
@@ -4384,36 +4346,42 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			built->think = ABooster_Think;
 			built->pain = AGeneric_Pain;
 			built->touch = ABooster_Touch;
+			built->entity = new AlienBuildableEntity(built);
 			break;
 
 		case BA_A_ACIDTUBE:
 			built->die = AGeneric_Die;
 			built->think = AAcidTube_Think;
 			built->pain = AGeneric_Pain;
+			built->entity = new AlienBuildableEntity(built);
 			break;
 
 		case BA_A_HIVE:
 			built->die = AGeneric_Die;
 			built->think = AHive_Think;
 			built->pain = AHive_Pain;
+			built->entity = new AlienBuildableEntity(built);
 			break;
 
 		case BA_A_TRAPPER:
 			built->die = AGeneric_Die;
 			built->think = ATrapper_Think;
 			built->pain = AGeneric_Pain;
+			built->entity = new AlienBuildableEntity(built);
 			break;
 
 		case BA_A_LEECH:
 			built->die = ALeech_Die;
 			built->think = ALeech_Think;
 			built->pain = AGeneric_Pain;
+			built->entity = new AlienBuildableEntity(built);
 			break;
 
 		case BA_A_OVERMIND:
 			built->die = AOvermind_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
+			built->entity = new AlienBuildableEntity(built);
 			break;
 
 		case BA_H_SPAWN:
