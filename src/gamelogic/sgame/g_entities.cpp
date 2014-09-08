@@ -45,9 +45,17 @@ basic gentity lifecycle handling
 =================================================================================
 */
 
-void G_InitGentity( gentity_t *entity )
+/**
+ * @brief Every entity slot is initialized like this, including the world and none
+ */
+void G_InitGentityMinimal( gentity_t *entity )
 {
 	entity->entity = &emptyEntity;
+}
+
+void G_InitGentity( gentity_t *entity )
+{
+	G_InitGentityMinimal( entity );
 	entity->inuse = qtrue;
 	entity->enabled = qtrue;
 	entity->classname = "noclass";

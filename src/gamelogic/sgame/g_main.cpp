@@ -816,6 +816,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	memset( g_entities, 0, MAX_GENTITIES * sizeof( g_entities[ 0 ] ) );
 	level.gentities = g_entities;
 
+	// initilize special entities so they don't need to be special cased in the CBSE code later on
+	G_InitGentityMinimal( g_entities + ENTITYNUM_NONE );
+	G_InitGentityMinimal( g_entities + ENTITYNUM_WORLD );
+
 	// initialize all clients for this game
 	level.maxclients = g_maxclients.integer;
 	memset( g_clients, 0, MAX_CLIENTS * sizeof( g_clients[ 0 ] ) );
