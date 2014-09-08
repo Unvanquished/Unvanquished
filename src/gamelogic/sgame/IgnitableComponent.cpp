@@ -29,7 +29,8 @@ static Log::Logger fireLogger("sgame.fire");
 
 static std::set<IgnitableComponent*> ignitables;
 
-IgnitableComponent::IgnitableComponent(Entity* entity, bool alwaysOnFire): IgnitableComponentBase(entity, alwaysOnFire), onFire(false), fireImmunityUntil(0) {
+IgnitableComponent::IgnitableComponent(Entity* entity, bool alwaysOnFire) :
+    IgnitableComponentBase(entity, alwaysOnFire), onFire(false), fireImmunityUntil(0) {
 	ignitables.insert(this);
 }
 
@@ -40,6 +41,8 @@ IgnitableComponent::~IgnitableComponent() {
 void IgnitableComponent::OnDoNetCode() {
 	if (onFire) {
 		entity->oldEnt->s.eFlags |= EF_B_ONFIRE;
+	} else {
+		entity->oldEnt->s.eFlags &= ~EF_B_ONFIRE;
 	}
 }
 
