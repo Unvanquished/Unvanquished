@@ -47,12 +47,12 @@ class Entity {
 
         // This function should never actually be used directly, it dispatches
         // the messages to the right components
-        void SendMessage(int msg, const void* data);
+        bool SendMessage(int msg, const void* data);
 
-        // Handy functions to send a specific message to the components of Entity e.g.
-        //   void Damage(int amount);
+        // Handy functions to send a specific message to the components of Entity e.g. (returns true if the message was handled)
+        //   bool Damage(int amount);
         {% for message in messages %}
-            void {{message.name}}({{message.get_function_args()}});
+            bool {{message.name}}({{message.get_function_args()}});
         {% endfor %}
 
         // Getter for the different components, returns nullptr if it doesn't have the component e.g.

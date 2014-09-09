@@ -22,22 +22,24 @@ Entity::Entity(const MessageHandler *messageHandlers, const int* componentOffset
 Entity::~Entity() {
 }
 
-void Entity::SendMessage(int msg, const void* data) {
+bool Entity::SendMessage(int msg, const void* data) {
     MessageHandler handler = messageHandlers[msg];
     if (handler) {
         handler(this, data);
+        return true;
     }
+    return false;
 }
 
 // Entity helper functions to send message e.g.
 //   void Entity::Damage(int value);
 {% for message in messages %}
-    void Entity::{{message.name}}({{message.get_function_args()}}) {
+    bool Entity::{{message.name}}({{message.get_function_args()}}) {
         {% if message.get_num_args() == 0 %}
-            SendMessage({{message.get_enum_name()}}, nullptr);
+            return SendMessage({{message.get_enum_name()}}, nullptr);
         {% else %}
             {{message.get_tuple_type()}} data({{message.get_args_names()}});
-            SendMessage({{message.get_enum_name()}}, &data);
+            return SendMessage({{message.get_enum_name()}}, &data);
         {% endif %}
     }
 {% endfor %}
