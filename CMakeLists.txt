@@ -909,6 +909,8 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/ComponentImplementationInclude.h
   ${GAMELOGIC_DIR}/sgame/IgnitableComponent.cpp
   ${GAMELOGIC_DIR}/sgame/IgnitableComponent.h
+  ${GAMELOGIC_DIR}/sgame/DeferedFreeingComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/DeferedFreeingComponent.h
   ${GAMELOGIC_DIR}/sgame/g_bot.cpp
   ${GAMELOGIC_DIR}/sgame/g_bot_ai.cpp
   ${GAMELOGIC_DIR}/sgame/g_bot_nav.cpp

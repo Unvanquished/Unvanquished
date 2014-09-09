@@ -65,4 +65,7 @@ struct gentity_s;
 #include "../../common/Maths.h"
 #endif
 
+// components
+#include "ComponentImplementationInclude.h"
+
 #endif // G_LOCAL_H_

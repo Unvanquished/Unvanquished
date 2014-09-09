@@ -7,14 +7,33 @@ attributes:
     Dummy: int
 
 messages:
-    DoNetCode:
+    PrepareNetCode:
+
+    FreeAt:
+        freeTime: int
+
+    Think:
+        timeDelta: int
+
+    Ignite:
+        fireStarter: struct gentity_s*
+
+    Extinguish:
+        immunityTime: int
 
 components:
+    DeferedFreeing:
+        messages:
+            - FreeAt
+
     Ignitable:
         parameters:
             alwaysOnFire: bool
         messages:
-            - DoNetCode
+            - PrepareNetCode
+            - Think
+            - Ignite
+            - Extinguish
 
 entities:
     Empty:
@@ -24,9 +43,11 @@ entities:
         components:
             Ignitable:
                 alwaysOnFire: "true"
+            DeferedFreeing:
 
     AlienBuildable:
         components:
             Ignitable:
                 alwaysOnFire: "false"
 
+# vi:ts=4:et:ai

@@ -22,29 +22,19 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 ===========================================================================
 */
 
-#ifndef SGAME_IGNITABLE_COMPONENT_H_
-#define SGAME_IGNITABLE_COMPONENT_H_
+#include "DeferedFreeingComponent.h"
 
-#include "g_local.h"
+DeferedFreeingComponent::DeferedFreeingComponent(Entity* entity) :
+	DeferedFreeingComponentBase(entity), freeTime(DONT_FREE)
+{}
 
-class IgnitableComponent: public IgnitableComponentBase {
-public:
-	IgnitableComponent(Entity* entity, bool alwaysOnFire);
+// TODO: Allow messages to take arbitrary types as parameters
+//void DeferedFreeingComponent::OnFreeAt(DeferedFreeingComponent::freeTime_t freeTime) {
+void DeferedFreeingComponent::OnFreeAt(int freeTime) {
+	this->freeTime = freeTime;
+}
 
-	void OnPrepareNetCode();
-	void OnIgnite(gentity_t* fireStarter);
-	void OnExtinguish(int immunityTime);
-	void OnThink(int timeDelta);
-
-private:
-	float DistanceToIgnitable(IgnitableComponent* other);
-
-	gentity_t* fireStarter = nullptr;
-	bool onFire;
-	int immuneUntil;
-	int nextSelfDamage;
-	int nextSplashDamage;
-	int nextStatusAction;
-};
-
-#endif //SGAME_IGNITABLE_COMPONENT_H_
+//inline DeferedFreeingComponent::freeTime_t DeferedFreeingComponent::GetFreeTime() {
+int DeferedFreeingComponent::GetFreeTime() {
+	return freeTime;
+}

@@ -81,7 +81,6 @@ qboolean          G_FindCreep( gentity_t *self );
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
 void              G_BuildableThink( gentity_t *ent, int msec );
 qboolean          G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
-void              G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter );
 void              G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
 itemBuildError_t  G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal, int *groundEntNum );
 qboolean          G_BuildIfValid( gentity_t *ent, buildable_t buildable );
@@ -320,6 +319,7 @@ bool              G_IsPlayableTeam( team_t team );
 bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
 team_t            G_Enemy( team_t team );
+float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
 
 // g_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );

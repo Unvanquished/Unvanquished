@@ -22,29 +22,34 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 ===========================================================================
 */
 
-#ifndef SGAME_IGNITABLE_COMPONENT_H_
-#define SGAME_IGNITABLE_COMPONENT_H_
+#ifndef SGAME_FREEABLE_COMPONENT_H_
+#define SGAME_FREEABLE_COMPONENT_H_
 
-#include "g_local.h"
+#include "Components.h"
 
-class IgnitableComponent: public IgnitableComponentBase {
+class DeferedFreeingComponent: public DeferedFreeingComponentBase {
 public:
-	IgnitableComponent(Entity* entity, bool alwaysOnFire);
+	DeferedFreeingComponent(Entity* entity);
 
-	void OnPrepareNetCode();
-	void OnIgnite(gentity_t* fireStarter);
-	void OnExtinguish(int immunityTime);
-	void OnThink(int timeDelta);
+	typedef enum {
+		DONT_FREE,
+		FREE_AFTER_GROUP_THINKING,
+		FREE_AFTER_ALL_THINKING,
+	} freeTime_t;
+
+	// TODO: Allow messages to take arbitrary types as parameters
+	//void OnFreeAt(freeTime_t freeTime);
+	void OnFreeAt(int freeTime);
+
+	/**
+	 * @return When to free the parent entity.
+	 */
+	//freeTime_t GetFreeTime();
+	int GetFreeTime();
 
 private:
-	float DistanceToIgnitable(IgnitableComponent* other);
-
-	gentity_t* fireStarter = nullptr;
-	bool onFire;
-	int immuneUntil;
-	int nextSelfDamage;
-	int nextSplashDamage;
-	int nextStatusAction;
+	//freeTime_t freeTime;
+	int freeTime;
 };
 
-#endif //SGAME_IGNITABLE_COMPONENT_H_
+#endif //SGAME_FREEABLE_COMPONENT_H_

@@ -2791,7 +2791,7 @@ void Cmd_Ignite_f( gentity_t *player )
 		return;
 	}
 
-	G_IgniteBuildable( target, player );
+	target->entity->Ignite( player );
 }
 
 /*

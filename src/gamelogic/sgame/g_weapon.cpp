@@ -881,7 +881,7 @@ static void FirebombMissileThink( gentity_t *self )
 		if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_ALIENS &&
 		     G_LineOfSight( self, neighbor ) )
 		{
-				G_IgniteBuildable( neighbor, self->parent );
+			neighbor->entity->Ignite( self->parent );
 		}
 	}
 

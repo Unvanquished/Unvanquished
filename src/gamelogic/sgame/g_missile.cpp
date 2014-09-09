@@ -185,50 +185,39 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 	else if ( !strcmp( ent->classname, "flamer" ) )
 	{
-		// ignite alien buildables on direct hit
-		if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
+		// ignite stuff on direct hit
+		if ( random() < FLAMER_IGNITE_CHANCE )
 		{
-			if ( random() < FLAMER_IGNITE_CHANCE )
-			{
-				G_IgniteBuildable( other, ent->parent );
-			}
+			other->entity->Ignite( ent->parent );
 		}
 
-		// ignite alien buildables in radius
+		// ignite stuff in radius
 		neighbor = NULL;
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) ) )
 		{
-			// we already handled other, since it might not always be in FLAMER_IGNITE_RADIUS due to BBOX sizes
+			// We already handled other, since it might not always be in FLAMER_IGNITE_RADIUS due to
+			// BBOX sizes.
 			if ( neighbor == other )
 			{
 				continue;
 			}
 
-			if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_ALIENS )
+			if ( random() < FLAMER_IGNITE_SPLCHANCE )
 			{
-				if ( random() < FLAMER_IGNITE_SPLCHANCE )
-				{
-					G_IgniteBuildable( neighbor, ent->parent );
-				}
+				neighbor->entity->Ignite( ent->parent );
 			}
 		}
 
 		// set the environment on fire
-		if ( other->s.number == ENTITYNUM_WORLD )
+		if ( other->s.number == ENTITYNUM_WORLD && random() < FLAMER_LEAVE_FIRE_CHANCE )
 		{
-			if ( random() < FLAMER_LEAVE_FIRE_CHANCE )
-			{
-				G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
-			}
+			G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
 		}
 	}
 	else if ( !strcmp( ent->classname, "firebomb_sub" ) )
 	{
-		// ignite alien buildables on direct hit
-		if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
-		{
-			G_IgniteBuildable( other, ent->parent );
-		}
+		// ignite stuff on direct hit
+		other->entity->Ignite( ent->parent );
 
 		// set the environment on fire
 		if ( other->s.number == ENTITYNUM_WORLD )
@@ -248,31 +237,34 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 	else if ( !strcmp( ent->classname, "slowblob" ) )
 	{
-		IgnitableComponent* ignitable;
+		// put out fires in range
+		neighbor = NULL;
+		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
+		                                                    ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
+		{
+			// TODO: Free fire entities inside their ignitable components instead of doing it here,
+			//       if possible.
+			if ( neighbor->s.eType == ET_FIRE )
+			{
+				G_FreeEntity( neighbor );
+			}
+			else
+			{
+				neighbor->entity->Extinguish(ABUILDER_BLOB_FIRE_IMMUNITY);
+			}
+		}
+
+		// slow humans
 		if ( other->client && other->client->pers.team == TEAM_HUMANS )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
 			other->client->lastSlowTime = level.time;
 		}
-		else if ((ignitable = ent->entity->GetIgnitableComponent()))
+
+		// don't do friendly fire
+		if ( !G_OnSameTeam( ent, other ) )
 		{
-			//Ok that's not really nice but doing it otherwise would require a rework of how missile
-			//set things on fire and I don't want to do that right now
-			ignitable->PutOut(ABUILDER_BLOB_FIRE_IMMUNITY);
 			doDamage = qfalse;
-		}
-		else if ( other->s.number == ENTITYNUM_WORLD )
-		{
-			// put out floor fires in range
-			neighbor = NULL;
-			while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
-			                                                  ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
-			{
-				if ( neighbor->s.eType == ET_FIRE )
-				{
-					G_FreeEntity( neighbor );
-				}
-			}
 		}
 	}
 	else if ( !strcmp( ent->classname, "hive" ) )

@@ -769,22 +769,6 @@ void AGeneric_CreepCheck( gentity_t *self )
 
 /*
 ================
-G_IgniteBuildable
-
-Sets an alien buildable on fire.
-================
-*/
-void G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter )
-{
-	IgnitableComponent* ignitable = self->entity->GetIgnitableComponent();
-
-	if (ignitable) {
-		ignitable->Ignite(fireStarter);
-	}
-}
-
-/*
-================
 AGeneric_Think
 
 A generic think function for Alien buildables

@@ -851,10 +851,10 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	fire->clipmask  = 0;
 
 	fire->entity = new FireEntity(fire);
-	fire->entity->GetIgnitableComponent()->Ignite(fireStarter);
+	fire->entity->Ignite(fireStarter);
 
 	// attacker
-	fire->r.ownerNum  = fireStarter->s.number;
+	fire->r.ownerNum = fireStarter->s.number;
 
 	// normal
 	VectorNormalize( normal ); // make sure normal is a direction
@@ -1055,6 +1055,7 @@ team_t G_IterateTeams( team_t team )
 	}
 }
 
+// TODO: Add TeamComponent
 team_t G_Enemy( team_t team )
 {
 	switch ( team )
@@ -1063,4 +1064,9 @@ team_t G_Enemy( team_t team )
 		case TEAM_HUMANS: return TEAM_ALIENS;
 		default:          return TEAM_NONE;
 	}
+}
+
+// TODO: Add LocationComponent
+float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
+	return Distance(ent1->s.origin, ent2->s.origin);
 }

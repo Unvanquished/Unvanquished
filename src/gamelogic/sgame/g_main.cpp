@@ -2654,31 +2654,35 @@ void CheckCvars( void )
 G_RunThink
 
 Runs thinking code for this frame if necessary
+// TODO: Convert entirely to CBSE style thinking.
 =============
 */
 void G_RunThink( gentity_t *ent )
 {
-	float thinktime;
+	// new style thinking
+	// TODO: As soon as every component comes with a list of all entity/component instaces that
+	//       use it, group think calls by component type.
+	ent->entity->Think( level.time - level.previousTime );
 
-	thinktime = ent->nextthink;
-
-	if ( thinktime <= 0 )
+	// TODO: After grouping together think calls by component type, handle the defered freeing
+	//       correctly. Right now we simply lie about its semantics by treating everything
+	//       except DONT_FREE as "free after the entity's component thinkers were called".
+	DeferedFreeingComponent *deferedFreeing;
+	if ( ( deferedFreeing = ent->entity->GetDeferedFreeingComponent() ) )
 	{
-		return;
+		if ( deferedFreeing->GetFreeTime() != DeferedFreeingComponent::DONT_FREE )
+		{
+			G_FreeEntity( ent );
+			return;
+		}
 	}
 
-	if ( thinktime > level.time )
-	{
-		return;
-	}
-
+	// old style thinking
+	// TODO: Replace this kind of thinking entirely with CBSE.
+	float thinktime = ent->nextthink;
+	if ( thinktime <= 0 || thinktime > level.time ) return;
 	ent->nextthink = 0;
-
-	if ( !ent->think )
-	{
-		G_Error( "NULL ent->think" );
-	}
-
+	if ( !ent->think ) G_Error( "NULL ent->think" );
 	ent->think( ent );
 }
 
@@ -2805,24 +2809,18 @@ void G_RunFrame( int levelTime )
 	// generate public-key messages
 	G_admin_pubkey();
 
-
 	// get any cvar changes
 	G_UpdateCvars();
 	CheckCvars();
+
 	// now we are done spawning
 	level.spawning = qfalse;
 
-	//
 	// go through all allocated objects
-	//
 	ent = &g_entities[ 0 ];
-
 	for ( i = 0; i < level.num_entities; i++, ent++ )
 	{
-		if ( !ent->inuse )
-		{
-			continue;
-		}
+		if ( !ent->inuse ) continue;
 
 		// clear events that are too old
 		if ( level.time - ent->eventTime > EVENT_VALID_MSEC )
@@ -2854,55 +2852,56 @@ void G_RunFrame( int levelTime )
 		}
 
 		// temporary entities don't think
-		if ( ent->freeAfterEvent )
-		{
-			continue;
-		}
+		if ( ent->freeAfterEvent ) continue;
 
 		// calculate the acceleration of this entity
-		if ( ent->evaluateAcceleration )
-		{
-			G_EvaluateAcceleration( ent, msec );
-		}
+		if ( ent->evaluateAcceleration ) G_EvaluateAcceleration( ent, msec );
 
-		if ( !ent->r.linked && ent->neverFree )
-		{
-			continue;
-		}
+		if ( !ent->r.linked && ent->neverFree ) continue;
 
-		if ( ent->s.eType == ET_MISSILE )
+		// think/run entitiy by type
+		switch ( ent->s.eType )
 		{
-			G_RunMissile( ent );
-			continue;
-		}
+			case ET_MISSILE:
+				G_RunMissile( ent );
+				continue;
 
-		if ( ent->s.eType == ET_BUILDABLE )
-		{
-			G_BuildableThink( ent, msec );
-			continue;
-		}
+			case ET_BUILDABLE:
+				G_BuildableThink( ent, msec );
+				continue;
 
-		if ( ent->s.eType == ET_CORPSE || ent->physicsObject )
-		{
-			G_Physics( ent, msec );
-			continue;
-		}
+			case ET_CORPSE:
+				G_Physics( ent, msec );
+				continue;
 
-		if ( ent->s.eType == ET_MOVER )
-		{
-			G_RunMover( ent );
-			continue;
-		}
+			case ET_MOVER:
+				G_RunMover( ent );
+				continue;
 
-		if ( i < MAX_CLIENTS )
-		{
-			G_RunClient( ent );
-			continue;
-		}
+			default:
+				if ( ent->physicsObject )
+				{
+					G_Physics( ent, msec );
+					continue;
+				}
+				else if ( i < MAX_CLIENTS )
+				{
+					G_RunClient( ent );
+					continue;
+				}
+				else
+				{
+					G_RunThink( ent );
 
-		G_RunThink( ent );
-		/* think() before you act() */
-		G_RunAct( ent );
+					// allow entities to free themselves before acting
+					if ( ent->inuse )
+					{
+						// TODO: Is this even used/necessary?
+						//       Why do only randomly chose entities do this?
+						G_RunAct( ent );
+					}
+				}
+		}
 	}
 
 	// perform final fixups on the players
@@ -2919,8 +2918,6 @@ void G_RunFrame( int levelTime )
 	// save position information for all active clients
 	G_UnlaggedStore();
 
-	G_IgnitableThink();
-
 	G_CountSpawns();
 	G_SetHumanBuildablePowerState();
 	G_MineBuildPoints();
@@ -2934,7 +2931,7 @@ void G_RunFrame( int levelTime )
 	ent = &g_entities[0];
 	for ( i = 0; i < level.num_entities; i++, ent++ ) {
 		if (ent->entity) {
-			ent->entity->DoNetCode();
+			ent->entity->PrepareNetCode();
 		}
 	}
 
