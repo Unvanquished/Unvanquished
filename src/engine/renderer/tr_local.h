@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <GL/glew.h>
 
 #define DYN_BUFFER_SIZE ( 4 * 1024 * 1024 )
+#define DYN_BUFFER_SEGMENTS 4
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
 
 typedef int8_t   i8vec4_t[ 4 ];
@@ -3342,6 +3343,16 @@ static inline float halfToFloat( int16_t in ) {
 		i16vec4_t texCoords;
 	} shaderVertex_t;
 
+#ifdef GLEW_ARB_sync
+	typedef struct glRingbuffer_s {
+		void           *baseAddr;
+		GLsizei        elementSize;
+		GLsizei        segmentElements;
+		int            activeSegment;
+		GLsync         syncs[ DYN_BUFFER_SEGMENTS ];
+	} glRingbuffer_t;
+#endif
+
 	typedef struct shaderCommands_s
 	{
 		shaderVertex_t *verts;	 // at least SHADER_MAX_VERTEXES accessible
@@ -3386,6 +3397,11 @@ static inline float halfToFloat( int16_t in ) {
 		// preallocated host buffers for verts and indexes 
 		shaderVertex_t *vertsBuffer;
 		glIndex_t      *indexesBuffer;
+
+#ifdef GLEW_ARB_sync
+		glRingbuffer_t  vertexRB;
+		glRingbuffer_t  indexRB;
+#endif
 	} shaderCommands_t;
 
 	extern shaderCommands_t tess;

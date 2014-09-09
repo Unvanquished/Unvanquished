@@ -434,6 +434,72 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 }
 
+#if defined( GLEW_ARB_buffer_storage ) && defined( GLEW_ARB_sync )
+/*
+============
+R_InitRingbuffer
+============
+*/
+static void R_InitRingbuffer( GLenum target, GLsizei elementSize,
+			      GLsizei segmentElements, glRingbuffer_t *rb ) {
+	GLsizei totalSize = elementSize * segmentElements * DYN_BUFFER_SEGMENTS;
+	int i;
+
+	glBufferStorage( target, totalSize, NULL,
+			 GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT );
+	rb->baseAddr = glMapBufferRange( target, 0, totalSize,
+					 GL_MAP_WRITE_BIT |
+					 GL_MAP_PERSISTENT_BIT |
+					 GL_MAP_FLUSH_EXPLICIT_BIT );
+	rb->elementSize = elementSize;
+	rb->segmentElements = segmentElements;
+	rb->activeSegment = 0;
+	for( i = 1; i < DYN_BUFFER_SEGMENTS; i++ ) {
+		rb->syncs[ i ] = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
+	}
+}
+
+/*
+============
+R_RotateRingbuffer
+============
+*/
+static GLsizei R_RotateRingbuffer( glRingbuffer_t *rb ) {
+	rb->syncs[ rb->activeSegment ] = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
+
+	rb->activeSegment++;
+	if( rb->activeSegment >= DYN_BUFFER_SEGMENTS )
+		rb->activeSegment = 0;
+
+	// wait until next segment is ready in 1 sec intervals
+	while( glClientWaitSync( rb->syncs[ rb->activeSegment ], GL_SYNC_FLUSH_COMMANDS_BIT,
+				 10000000 ) == GL_TIMEOUT_EXPIRED ) {
+		ri.Printf( PRINT_WARNING, "long wait for GL buffer" );
+	};
+
+	return rb->activeSegment * rb->segmentElements;
+}
+
+/*
+============
+R_ShutdownRingbuffer
+============
+*/
+static void R_ShutdownRingbuffer( GLenum target, glRingbuffer_t *rb ) {
+	int i;
+
+	glUnmapBuffer( target );
+	rb->baseAddr = NULL;
+
+	for( i = 0; i < DYN_BUFFER_SEGMENTS; i++ ) {
+		if( i == rb->activeSegment )
+			continue;
+
+		glDeleteSync( rb->syncs[ i ] );
+	}
+}
+#endif
+
 VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits, vboLayout_t layout )
 {
 	VBO_t *vbo;
@@ -469,7 +535,15 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 	glGenBuffers( 1, &vbo->vertexesVBO );
 
 	R_BindVBO( vbo );
-	glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
+#if defined( GLEW_ARB_buffer_storage ) && defined( GLEW_ARB_sync )
+	if( GLEW_ARB_buffer_storage && GLEW_ARB_sync ) {
+		R_InitRingbuffer( GL_ARRAY_BUFFER, sizeof( shaderVertex_t ),
+				  numVertexes, &tess.vertexRB );
+	} else
+#endif
+	{
+		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
+	}
 	R_BindNullVBO();
 
 	GL_CheckErrors();
@@ -722,7 +796,15 @@ IBO_t *R_CreateDynamicIBO( const char *name, int numIndexes )
 	glGenBuffers( 1, &ibo->indexesVBO );
 
 	R_BindIBO( ibo );
-	glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, NULL, GL_DYNAMIC_DRAW );
+#if defined( GLEW_ARB_buffer_storage ) && defined( GLEW_ARB_sync )
+	if( GLEW_ARB_buffer_storage && GLEW_ARB_sync ) {
+		R_InitRingbuffer( GL_ELEMENT_ARRAY_BUFFER, sizeof( glIndex_t ),
+				  numIndexes, &tess.indexRB );
+	} else
+#endif
+	{
+		glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, NULL, GL_DYNAMIC_DRAW );
+	}
 	R_BindNullIBO();
 
 	GL_CheckErrors();
@@ -971,17 +1053,20 @@ void R_InitVBOs( void )
 
 	tess.vertsBuffer = ( shaderVertex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_VERTEXES * sizeof( shaderVertex_t ) );
 	tess.indexesBuffer = ( glIndex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_INDEXES * sizeof( glIndex_t ) );
-	if( !GLEW_ARB_map_buffer_range ) {
-		// use glBufferSubData to update VBO
-		tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", SHADER_MAX_VERTEXES, attribs, VBO_LAYOUT_STATIC );
-
-		tess.ibo = R_CreateDynamicIBO( "tessVertexArray_IBO", SHADER_MAX_INDEXES );
-	} else {
+#ifdef GLEW_ARB_map_buffer_range
+	if( GLEW_ARB_map_buffer_range ) {
 		// use glMapBufferRange to update VBO
 		tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", vertexCapacity, attribs, VBO_LAYOUT_STATIC );
 
 		tess.ibo = R_CreateDynamicIBO( "tessVertexArray_IBO", indexCapacity );
 		tess.vertsWritten = tess.indexesWritten = 0;
+	} else
+#endif
+	{
+		// use glBufferSubData to update VBO
+		tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", SHADER_MAX_VERTEXES, attribs, VBO_LAYOUT_STATIC );
+
+		tess.ibo = R_CreateDynamicIBO( "tessVertexArray_IBO", SHADER_MAX_INDEXES );
 	}
 
 
@@ -1013,7 +1098,16 @@ void R_ShutdownVBOs( void )
 
 	if( !GLEW_ARB_map_buffer_range ) {
 		// nothing
-	} else {
+	}
+#if defined( GLEW_ARB_buffer_storage ) && defined( GLEW_ARB_sync )
+	else if( GLEW_ARB_buffer_storage && GLEW_ARB_sync ) {
+		R_BindVBO( tess.vbo );
+		R_ShutdownRingbuffer( GL_ARRAY_BUFFER, &tess.vertexRB );
+		R_BindIBO( tess.ibo );
+		R_ShutdownRingbuffer( GL_ELEMENT_ARRAY_BUFFER, &tess.indexRB );
+	}
+#endif
+	else {
 		if( tess.verts != NULL && tess.verts != tess.vertsBuffer ) {
 			R_BindVBO( tess.vbo );
 			glUnmapBuffer( GL_ARRAY_BUFFER );
@@ -1079,31 +1173,53 @@ void Tess_MapVBOs( qboolean forceCPU ) {
 	if( tess.verts == NULL ) {
 		R_BindVBO( tess.vbo );
 
-		if( vertexCapacity - tess.vertsWritten < SHADER_MAX_VERTEXES ) {
-			// buffer is full, allocate a new one
-			glBufferData( GL_ARRAY_BUFFER, vertexCapacity * sizeof( shaderVertex_t ), NULL, GL_DYNAMIC_DRAW );
-			tess.vertsWritten = 0;
+#if defined( GLEW_ARB_buffer_storage ) && defined( GL_ARB_sync )
+		if( GLEW_ARB_buffer_storage && GL_ARB_sync ) {
+			GLsizei segmentEnd = (tess.vertexRB.activeSegment + 1) * tess.vertexRB.segmentElements;
+			if( tess.vertsWritten + SHADER_MAX_VERTEXES > segmentEnd ) {
+				tess.vertsWritten = R_RotateRingbuffer( &tess.vertexRB );
+			}
+			tess.verts = ( shaderVertex_t * )tess.vertexRB.baseAddr + tess.vertsWritten;
+		} else
+#endif
+		{
+			if( vertexCapacity - tess.vertsWritten < SHADER_MAX_VERTEXES ) {
+				// buffer is full, allocate a new one
+				glBufferData( GL_ARRAY_BUFFER, vertexCapacity * sizeof( shaderVertex_t ), NULL, GL_DYNAMIC_DRAW );
+				tess.vertsWritten = 0;
+			}
+			tess.verts = ( shaderVertex_t *) glMapBufferRange( 
+				GL_ARRAY_BUFFER, tess.vertsWritten * sizeof( shaderVertex_t ),
+				SHADER_MAX_VERTEXES * sizeof( shaderVertex_t ),
+				GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT |
+				GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT );
 		}
-		tess.verts = ( shaderVertex_t *) glMapBufferRange( 
-			GL_ARRAY_BUFFER, tess.vertsWritten * sizeof( shaderVertex_t ),
-			SHADER_MAX_VERTEXES * sizeof( shaderVertex_t ),
-			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT |
-			GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT );
 	}
 
 	if( tess.indexes == NULL ) {
 		R_BindIBO( tess.ibo );
 
-		if( indexCapacity - tess.indexesWritten < SHADER_MAX_INDEXES ) {
-			// buffer is full, allocate a new one
-			glBufferData( GL_ELEMENT_ARRAY_BUFFER, indexCapacity * sizeof( glIndex_t ), NULL, GL_DYNAMIC_DRAW );
-			tess.indexesWritten = 0;
+#if defined( GLEW_ARB_buffer_storage ) && defined( GL_ARB_sync )
+		if( GLEW_ARB_buffer_storage && GL_ARB_sync ) {
+			GLsizei segmentEnd = (tess.indexRB.activeSegment + 1) * tess.indexRB.segmentElements;
+			if( tess.indexesWritten + SHADER_MAX_INDEXES > segmentEnd ) {
+				tess.indexesWritten = R_RotateRingbuffer( &tess.indexRB );
+			}
+			tess.indexes = ( glIndex_t * )tess.indexRB.baseAddr + tess.indexesWritten;
+		} else
+#endif
+		{
+			if( indexCapacity - tess.indexesWritten < SHADER_MAX_INDEXES ) {
+				// buffer is full, allocate a new one
+				glBufferData( GL_ELEMENT_ARRAY_BUFFER, indexCapacity * sizeof( glIndex_t ), NULL, GL_DYNAMIC_DRAW );
+				tess.indexesWritten = 0;
+			}
+			tess.indexes = ( glIndex_t *) glMapBufferRange( 
+				GL_ELEMENT_ARRAY_BUFFER, tess.indexesWritten * sizeof( glIndex_t ),
+				SHADER_MAX_INDEXES * sizeof( glIndex_t ),
+				GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT |
+				GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT );
 		}
-		tess.indexes = ( glIndex_t *) glMapBufferRange( 
-			GL_ELEMENT_ARRAY_BUFFER, tess.indexesWritten * sizeof( glIndex_t ),
-			SHADER_MAX_INDEXES * sizeof( glIndex_t ),
-			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT |
-			GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_FLUSH_EXPLICIT_BIT );
 	}
 }
 
@@ -1123,6 +1239,8 @@ void Tess_UpdateVBOs( void )
 	// update the default VBO
 	if ( tess.numVertexes > 0 && tess.numVertexes <= SHADER_MAX_VERTEXES )
 	{
+		GLsizei size = tess.numVertexes * sizeof( shaderVertex_t );
+
 		GL_CheckErrors();
 
 		if ( r_logFile->integer )
@@ -1132,12 +1250,22 @@ void Tess_UpdateVBOs( void )
 
 		if( !GLEW_ARB_map_buffer_range ) {
 			R_BindVBO( tess.vbo );
-			glBufferSubData( GL_ARRAY_BUFFER, 0, tess.numVertexes * sizeof( shaderVertex_t ), tess.verts );
+			glBufferSubData( GL_ARRAY_BUFFER, 0, size, tess.verts );
 		} else {
 			R_BindVBO( tess.vbo );
-			glFlushMappedBufferRange( GL_ARRAY_BUFFER, 0,
-						  tess.numVertexes * sizeof( shaderVertex_t ) );
-			glUnmapBuffer( GL_ARRAY_BUFFER );
+#if defined( GLEW_ARB_buffer_storage ) && defined( GL_ARB_sync )
+			if( GLEW_ARB_buffer_storage && GL_ARB_sync ) {
+				GLsizei offset = tess.vertexBase * sizeof( shaderVertex_t );
+
+				glFlushMappedBufferRange( GL_ARRAY_BUFFER,
+							  offset, size );
+			} else
+#endif
+			{
+				glFlushMappedBufferRange( GL_ARRAY_BUFFER,
+							  0, size );
+				glUnmapBuffer( GL_ARRAY_BUFFER );
+			}
 			tess.vertexBase = tess.vertsWritten;
 			tess.vertsWritten += tess.numVertexes;
 
@@ -1150,14 +1278,27 @@ void Tess_UpdateVBOs( void )
 	// update the default IBO
 	if ( tess.numIndexes > 0 && tess.numIndexes <= SHADER_MAX_INDEXES )
 	{
+		GLsizei size = tess.numIndexes * sizeof( glIndex_t );
+
 		if( !GLEW_ARB_map_buffer_range ) {
 			R_BindIBO( tess.ibo );
-			glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, tess.numIndexes * sizeof( glIndex_t ), tess.indexes );
+			glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, size,
+					 tess.indexes );
 		} else {
 			R_BindIBO( tess.ibo );
-			glFlushMappedBufferRange( GL_ELEMENT_ARRAY_BUFFER, 0,
-						  tess.numIndexes * sizeof( glIndex_t ) );
-			glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
+#if defined( GLEW_ARB_buffer_storage ) && defined( GL_ARB_sync )
+			if( GLEW_ARB_buffer_storage && GL_ARB_sync ) {
+				GLsizei offset = tess.indexBase * sizeof( glIndex_t );
+
+				glFlushMappedBufferRange( GL_ELEMENT_ARRAY_BUFFER,
+							  offset, size );
+			} else
+#endif
+			{
+				glFlushMappedBufferRange( GL_ELEMENT_ARRAY_BUFFER,
+							  0, size );
+				glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
+			}
 			tess.indexBase = tess.indexesWritten;
 			tess.indexesWritten += tess.numIndexes;
 
