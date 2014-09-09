@@ -57,7 +57,7 @@ class Message:
 
     def get_handler_name(self):
         if self.attrib == None:
-            return 'On' + self.name
+            return 'Handle' + self.name
         else:
             return 'Attrib' + self.name
 
