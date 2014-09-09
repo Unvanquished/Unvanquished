@@ -96,10 +96,8 @@ else if( !Q_stricmp( token.string, #x ) ) \
 		READ_COLOR  ( colorNeutral )
 		READ_COLOR  ( colorAlien )
 		READ_COLOR  ( colorHuman )
-		READ_FLOAT_S( arrowWidth )
-		READ_FLOAT_S( arrowDotSize )
-		READ_FLOAT  ( arrowAlphaLow )
-		READ_FLOAT  ( arrowAlphaHigh )
+		READ_FLOAT  ( fadeInAlpha )
+		READ_FLOAT  ( fadeInScale )
 
 		READ_FLOAT_S( hudSize )
 		READ_FLOAT_S( hudMinSize )
@@ -123,86 +121,14 @@ else if( !Q_stricmp( token.string, #x ) ) \
 			bc->hudRect[ 0 ][ 1 ] = margin;
 			bc->hudRect[ 1 ][ 1 ] = vh - margin;
 		}
-		else if( !Q_stricmp( token.string, "tagScoreSize" ) )
-		{
-			float size;
-
-			if( !PC_Float_Parse( fd, &size ) )
-				break;
-
-			size *= base;
-
-			bc->tagScoreSize = size;
-			bc->tagScorePos[ 0 ] = bc->hudCenter[ 0 ] - size/2;
-			bc->tagScorePos[ 1 ] = bc->hudCenter[ 1 ] - size/2;
-		}
+		else
+			Com_Printf( "^3WARNING: bad keyword \"%s\" in \"%s\"\n", token.string, path );
 	}
 
 	bc->fadeMinDist = Square( bc->hudSize / bc->hudMaxSize );
 	bc->fadeMaxDist = Square( bc->hudSize / bc->hudMinSize );
 
 	trap_Parse_FreeSource( fd  );
-}
-
-/*
-=============
-CG_NearestBuildable
-
-Returns the nearest _powered_ buildable of the given type (up to 3 types)
-and its origin. If a is -1 then return the nearest alien builable.
-Ideally this function should take the actual route length into account
-and not just the straight line distance.
-
-FIXME: Make it take a func as an argument instead of a weird spam of ints.
-       Probably will need lambda functions or else it'll be even messier.
-=============
-*/
-static int CG_NearestBuildable( int a, int b, int c, vec3_t origin )
-{
-	int i;
-	centity_t *cent;
-	entityState_t *es, *nearest = NULL;
-	float distance, minDistance = 1.0e20;
-
-	for ( i = 0; i < cg.snap->numEntities; i++ )
-	{
-		cent = cg_entities + cg.snap->entities[ i ].number;
-		es = &cent->currentState;
-
-		if( es->eType != ET_BUILDABLE )
-			continue;
-
-		if( !( es->eFlags & EF_B_POWERED ) )
-			continue;
-
-		if( a == -1 )
-		{
-			if( BG_Buildable( es->modelindex )->team != TEAM_ALIENS )
-				continue;
-		}
-		else
-			if( !( es->modelindex == a ||
-		       ( b && es->modelindex == b ) ||
-		       ( c && es->modelindex == c ) ) )
-				continue;
-
-		if( ( distance = Distance( cg.predictedPlayerState.origin, es->origin ) ) < minDistance )
-			minDistance = distance,
-			nearest = es;
-	}
-
-	if( nearest && origin )
-	{
-		vec3_t mins, maxs;
-		BG_BuildableBoundingBox( nearest->modelindex, mins, maxs );
-		for( i = 0; i < 3; i++ )
-			origin[ i ] = cg_entities[ nearest->number ].lerpOrigin[ i ] + ( mins[ i ] + maxs[ i ] ) / 2.0;
-	}
-
-	if( nearest )
-		return nearest->number;
-	else
-		return ENTITYNUM_NONE;
 }
 
 /*
@@ -221,40 +147,34 @@ static void CG_RunBeacon( cbeacon_t *b )
 	int time_in, time_left;
 	float t_fadein, t_fadeout; // t_ stands for "parameter", not "time"
 	qboolean front;
+	const beaconAttributes_t *ba = BG_Beacon( b->type );
 
 	// reset animations
 	b->scale = 1.0;
 	alpha = 1.0;
 
-	time_in = cg.time - b->s->ctime; // time since creation
-	time_left = b->s->etime - cg.time; // time to expiration
+	time_in = cg.time - b->ctime; // time since creation
+	time_left = b->etime - cg.time; // time to expiration
 
 	// check creation
-	if( !b->s->old )
+	if( !b->old )
 	{
-		if( time_in > 1000 )
-			b->s->old = qtrue;
+		if( time_in > 1000 ) //TODO: take time since entering the game into account
+			b->old = qtrue;
 		else
 		{
-			if( b->type == BCT_TAG && !( b->flags & EF_BC_ENEMY ) )
-				goto no_in_sound;
-
-			if( b->type == BCT_TAG && b->owner == cg.predictedPlayerState.clientNum )
-				trap_S_StartLocalSound( cgs.media.ownedTagSound, CHAN_LOCAL_SOUND );
-			else if( BG_Beacon( b->type )->inSound )
-				trap_S_StartLocalSound( BG_Beacon( b->type )->inSound, CHAN_LOCAL_SOUND );
-
-			no_in_sound:;
+			if( ba->inSound && ( b->type != BCT_TAG || ( b->flags & EF_BC_ENEMY ) ) )
+				trap_S_StartLocalSound( ba->inSound, CHAN_LOCAL_SOUND );
 		}
 	}
 
 	// check death
-	if( b->s->old &&
-	    !( b->s->oldFlags & EF_BC_DYING ) &&
+	if( b->old &&
+	    !( b->oldFlags & EF_BC_DYING ) &&
 	    ( b->flags & EF_BC_DYING ) )
 	{
-		if( BG_Beacon( b->type )->outSound )
-			trap_S_StartLocalSound( BG_Beacon( b->type )->outSound, CHAN_LOCAL_SOUND );
+		if( ba->outSound )
+			trap_S_StartLocalSound( ba->outSound, CHAN_LOCAL_SOUND );
 	}
 
 	// fade in
@@ -262,10 +182,12 @@ static void CG_RunBeacon( cbeacon_t *b )
 		t_fadein = 1.0;
 	else
 		t_fadein = (float)time_in / cgs.bc.fadeIn;
-	b->scale *= Square( 1.0 - t_fadein ) + 1.0;
+
+	b->scale *= LinearRemap( t_fadein, 0.0f, 1.0f, cgs.bc.fadeInScale, 1.0f );
+	alpha *= LinearRemap( t_fadein, 0.0f, 1.0f, cgs.bc.fadeInAlpha, 1.0f );
 
 	// fade out
-	if ( b->s->etime && time_left < cgs.bc.fadeOut )
+	if ( b->etime && time_left < cgs.bc.fadeOut )
 		t_fadeout = 1.0 - (float)time_left / cgs.bc.fadeOut;
 	else
 		t_fadeout = 0.0;
@@ -286,10 +208,10 @@ static void CG_RunBeacon( cbeacon_t *b )
 		{
 			t = (float)( time_in - BEACON_TIMER_TIME ) / cgs.bc.fadeIn;
 
-			if( !b->s->eventFired )
+			if( !b->eventFired )
 			{
 				trap_S_StartLocalSound( cgs.media.timerBeaconExpiredSound, CHAN_LOCAL_SOUND );
-				b->s->eventFired = qtrue;
+				b->eventFired = qtrue;
 			}
 		}
 		else
@@ -303,16 +225,16 @@ static void CG_RunBeacon( cbeacon_t *b )
 	{
 		trace_t tr;
 
-		CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, b->s->origin, ENTITYNUM_NONE, CONTENTS_SOLID, 0 );
+		CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, b->origin, ENTITYNUM_NONE, CONTENTS_SOLID, 0 );
 
 		target = ( ( tr.fraction > 1.0f - FLT_EPSILON ) ? 1.0 : 0.0 );
-		CG_ExponentialFade( &b->s->t_occlusion, target, 10 );
-		alpha *= LinearRemap( b->s->t_occlusion, 0, 1, 1, 0.5 );
+		CG_ExponentialFade( &b->t_occlusion, target, 10 );
+		alpha *= LinearRemap( b->t_occlusion, 0, 1, 1, 0.5 );
 	}
 
 	// Fade out when too close. Span the same distance as the size change but fade linearly.
 	// Do not fade important beacons.
-	if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
+	if( !( ba->flags & BCF_IMPORTANT ) )
 	{
 		if( b->dist < cgs.bc.fadeMinDist )
 			alpha *= cgs.bc.fadeMinAlpha;
@@ -349,6 +271,9 @@ static void CG_RunBeacon( cbeacon_t *b )
 		Vector4Copy( cgs.bc.colorNeutral, b->color );
 	b->color[ 3 ] *= alpha;
 
+	if( b->color[ 3 ] > 1.0f )
+		b->color[ 3 ] = 1.0f;
+
 	// calculate HUD size
 	b->size = cgs.bc.hudSize / sqrt( b->dist );
 	if( b->size > cgs.bc.hudMaxSize )
@@ -358,33 +283,33 @@ static void CG_RunBeacon( cbeacon_t *b )
 	b->size *= b->scale;
 
 	// project onto screen
-	front = CG_WorldToScreen( b->s->origin, b->pos_proj, b->pos_proj + 1);
+	front = CG_WorldToScreen( b->origin, b->pos, b->pos + 1);
 
 	// CG_WorldToScreen flips the result if behind so correct it
 	if( !front )
 	{
-		b->pos_proj[ 0 ] = 640.0 - b->pos_proj[ 0 ],
-		b->pos_proj[ 1 ] = 480.0 - b->pos_proj[ 1 ];
+		b->pos[ 0 ] = 640.0 - b->pos[ 0 ],
+		b->pos[ 1 ] = 480.0 - b->pos[ 1 ];
 	}
 
 	// virtual 640x480 to real
-	b->pos_proj[ 0 ] *= cgs.glconfig.vidWidth / 640.0;
-	b->pos_proj[ 1 ] *= cgs.glconfig.vidHeight / 480.0;
+	b->pos[ 0 ] *= cgs.glconfig.vidWidth / 640.0;
+	b->pos[ 1 ] *= cgs.glconfig.vidHeight / 480.0;
 
 	// clamp to edges
 	if( !front ||
-	    b->pos_proj[ 0 ] < cgs.bc.hudRect[0][0] + b->size/2 ||
-	    b->pos_proj[ 0 ] > cgs.bc.hudRect[1][0] - b->size/2 ||
-	    b->pos_proj[ 1 ] < cgs.bc.hudRect[0][1] + b->size/2 ||
-	    b->pos_proj[ 1 ] > cgs.bc.hudRect[1][1] - b->size/2 )
+	    b->pos[ 0 ] < cgs.bc.hudRect[0][0] + b->size/2 ||
+	    b->pos[ 0 ] > cgs.bc.hudRect[1][0] - b->size/2 ||
+	    b->pos[ 1 ] < cgs.bc.hudRect[0][1] + b->size/2 ||
+	    b->pos[ 1 ] > cgs.bc.hudRect[1][1] - b->size/2 )
 	{
 		vec2_t screen[ 2 ];
 		Vector2Set( screen[ 0 ], cgs.bc.hudRect[0][0] + b->size/2,
 		                         cgs.bc.hudRect[0][1] + b->size/2 );
 		Vector2Set( screen[ 1 ], cgs.bc.hudRect[1][0] - b->size/2,
 		                         cgs.bc.hudRect[1][1] - b->size/2 );
-		Vector2Subtract( b->pos_proj, cgs.bc.hudCenter, b->clamp_dir );
-		ProjectPointOntoRectangleOutwards( b->pos_proj, cgs.bc.hudCenter, b->clamp_dir, (const vec2_t*)screen );
+		Vector2Subtract( b->pos, cgs.bc.hudCenter, b->clamp_dir );
+		ProjectPointOntoRectangleOutwards( b->pos, cgs.bc.hudCenter, b->clamp_dir, (const vec2_t*)screen );
 		b->clamped = qtrue;
 	}
 	else
@@ -393,10 +318,13 @@ static void CG_RunBeacon( cbeacon_t *b )
 	// highlight
 	if( b == cg.highlightedBeacon )
 	{
-		if( Distance2( b->pos_proj, cgs.bc.hudCenter ) <= cgs.bc.highlightRadius )
+		if( Distance2( b->pos, cgs.bc.hudCenter ) <= cgs.bc.highlightRadius )
 			b->highlighted = qtrue;
 		else
+		{
 			cg.highlightedBeacon = NULL;
+			b->highlighted = qfalse;
+		}
 	}
 	else
 		b->highlighted = qfalse;
@@ -404,199 +332,21 @@ static void CG_RunBeacon( cbeacon_t *b )
 
 /*
 =============
-CG_BeaconDynamics
-=============
-*/
-
-void CG_BeaconDynamics( void )
-{
-	cbeacon_t *b;
-
-	for( b = cg.beacons; b < cg.beacons + cg.num_beacons; b++ )
-		Vector2Copy( b->pos_proj, b->s->pos );
-}
-
-/*
-=============
-CG_CompareBeaconsByDot
+CG_CompareBeaconsBy*
 
 Used for qsort
 =============
 */
 static int CG_CompareBeaconsByDot( const void *a, const void *b )
 {
-	return ( (const cbeacon_t*)a )->dot > ( (const cbeacon_t*)b )->dot;
+	return ( *(const cbeacon_t**)a )->dot > ( *(const cbeacon_t**)b )->dot;
 }
 
-/*
-=============
-CG_AddImplicitBeacon
-
-Checks a cbeacon_t and copies it to cg.beacons if valid
-This is to be used for client-side beacons (e.g. personal waypoint)
-=============
-*/
-static void CG_AddImplicitBeacon( cbeaconPersistent_t *bp, beaconType_t type )
+static int CG_CompareBeaconsByDist( const void *a, const void *b )
 {
-	cbeacon_t *beacon;
-	vec3_t vdelta;
-
-	if ( cg.num_beacons >= MAX_CBEACONS )
-		return;
-
-	beacon = cg.beacons + cg.num_beacons;
-
-	if ( bp->fadingOut ) // invalid but give it time to fade out
-	{
-		if ( cg.time >= bp->etime )
-		{
-			memset( bp, 0, sizeof( cbeaconPersistent_t ) );
-			return;
-		}
-	}
-	else if ( !bp->valid ) // invalid
-	{
-		if ( bp->old ) // invalid & old = start fading out
-		{
-			bp->fadingOut = qtrue;
-			bp->etime = cg.time + cgs.bc.fadeOut;
-		}
-		else
-		{
-			memset( bp, 0, sizeof( cbeaconPersistent_t ) );
-			return;
-		}
-	}
-
-	if ( bp->etime && bp->etime <= cg.time ) // expired
-	{
-		memset( bp, 0, sizeof( cbeaconPersistent_t ) );
-		return;
-	}
-
-	beacon->type = type;
-	beacon->s = bp;
-
-	// cache some stuff
-	VectorSubtract( beacon->s->origin, cg.refdef.vieworg, vdelta );
-	VectorNormalize( vdelta );
-	beacon->dot = DotProduct( vdelta, cg.refdef.viewaxis[ 0 ] );
-	beacon->dist = Distance( cg.predictedPlayerState.origin, beacon->s->origin );
-
-	cg.num_beacons++;
+	return ( *(const cbeacon_t**)a )->dist > ( *(const cbeacon_t**)b )->dist;
 }
 
-/*
-=============
-CG_ListImplicitBeacons
-
-Figures out all implicit beacons and adds them to cg.beacons
-=============
-*/
-static void CG_ListImplicitBeacons( )
-{
-	// every implicit beacon must have its very own cbeaconPeristent that
-	// is kept between frames, but cbeacon_t can be shared
-	static cbeaconPersistent_t bp_health = { qfalse, qfalse };
-	static cbeaconPersistent_t bp_ammo = { qfalse, qfalse };
-	playerState_t *ps;
-	int entityNum;
-	qboolean energy;
-
-	ps = &cg.predictedPlayerState;
-
-	bp_health.valid = qfalse;
-	bp_ammo.valid = qfalse;
-
-	// need to be in-game to get any personal beacons
-	if ( cg.snap->ps.pm_type == PM_INTERMISSION ||
-			 cg.snap->ps.pm_type == PM_DEAD ||
-	     ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
-	{
-		memset( &bp_health, 0, sizeof( cbeaconPersistent_t ) );
-		memset( &bp_ammo, 0, sizeof( cbeaconPersistent_t ) );
-		return;
-	}
-
-	// health
-	if ( ps->stats[ STAT_HEALTH ] < ps->stats[ STAT_MAX_HEALTH ] / 2 )
-	{
-		bp_health.altIcon = qfalse;
-
-		if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS )
-		{
-			bp_health.altIcon = qtrue;
-			entityNum = CG_NearestBuildable( BA_A_BOOSTER, 0, 0, bp_health.origin );
-			/*if( entityNum == ENTITYNUM_NONE )
-			{
-				entityNum = CG_NearestBuildable( -1, 0, 0, bp_health.origin );
-				bp_health.altIcon = qfalse;
-			}*/
-		}
-		else
-			entityNum = CG_NearestBuildable( BA_H_MEDISTAT, 0, 0, bp_health.origin );
-
-		if ( entityNum != ENTITYNUM_NONE )
-		{
-			// keep it alive
-			bp_health.valid = qtrue;
-			bp_health.fadingOut = qfalse;
-			bp_health.etime = 0;
-
-			// renew if it's a different medistat
-			if ( entityNum != bp_health.oldEntityNum )
-			{
-				//bp_health.old = qfalse;
-				// this is supposed to be uncommented but jumping smoothly
-				// from one medistat to another looks really interesting
-				//bp_health.old_hud = qfalse;
-			}
-
-			// initialize if new/renewed
-			if ( !bp_health.old )
-			{
-				bp_health.ctime = cg.time;
-				bp_health.etime = 0;
-			}
-		}
-
-		bp_health.oldEntityNum = entityNum;
-	}
-
-	// ammo
-	if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS &&
-	     BG_PlayerLowAmmo( ps, &energy ) )
-	{
-		if ( energy )
-			entityNum = CG_NearestBuildable( BA_H_ARMOURY, BA_H_REACTOR, BA_H_REPEATER, bp_ammo.origin );
-		else
-			entityNum = CG_NearestBuildable( BA_H_ARMOURY, 0, 0, bp_ammo.origin );
-
-		if ( entityNum != ENTITYNUM_NONE )
-		{
-			// keep it alive
-			bp_ammo.valid = qtrue;
-			bp_ammo.fadingOut = qfalse;
-			bp_ammo.etime = 0;
-
-			// renew if it's a different medistat
-			if ( entityNum != bp_ammo.oldEntityNum )
-				bp_ammo.old = qfalse;
-
-			// initialize if new/renewed
-			if ( !bp_ammo.old )
-			{
-				bp_ammo.ctime = cg.time;
-				bp_ammo.etime = 0;
-			}
-		}
-
-		bp_ammo.oldEntityNum = entityNum;
-	}
-
-	CG_AddImplicitBeacon( &bp_health, BCT_HEALTH );
-	CG_AddImplicitBeacon( &bp_ammo, BCT_AMMO );
-}
 
 /*
 =============
@@ -611,73 +361,104 @@ void CG_ListBeacons( void )
 {
 	int i;
 	centity_t *cent;
-	cbeacon_t *beacon;
 	entityState_t *es;
+	cbeacon_t *b;
 	vec3_t delta;
 
-	cg.num_beacons = 0;
-
-	// add all client-side beacons to cg.beacons
-	CG_ListImplicitBeacons();
-
-	beacon = cg.beacons + cg.num_beacons;
-
-	// add all ET_BEACONs to cg.beacons
-	for ( i = 0; i < cg.snap->numEntities; i++ )
+	for( cg.beaconCount = 0, i = 0; i < cg.snap->numEntities; i++ )
 	{
 		cent = cg_entities + cg.snap->entities[ i ].number;
 		es = &cent->currentState;
+		b = &cent->beacon;
 
-		if( es->eType != ET_BEACON )
-			continue;
+		if( es->eType == ET_BEACON )
+		{
+			if( es->modelindex <= BCT_NONE ||
+					es->modelindex >= NUM_BEACON_TYPES )
+				continue;
 
-		if( es->modelindex <= BCT_NONE ||
-				es->modelindex >= NUM_BEACON_TYPES )
-			continue;
+			if( es->time2 && es->time2 <= cg.time ) //expired
+				continue;
 
-		if( es->time2 && es->time2 <= cg.time ) //expired
-			continue;
+			b->inuse = qtrue;
+			b->ctime = es->time;
+			b->etime = es->time2;
 
-		beacon->s = &cent->beaconPersistent;
+			VectorCopy( cent->lerpOrigin, b->origin );
+			b->type = (beaconType_t)es->modelindex;
+			b->data = es->modelindex2;
+			b->team = (team_t)es->generic1;
+			b->owner = es->otherEntityNum;
+			b->flags = es->eFlags;
+		}
+		else
+			continue; //TODO: alien radar
 
-		beacon->s->valid = qtrue;
-		beacon->s->ctime = es->time;
-		beacon->s->etime = es->time2;
-
-		VectorCopy( cent->lerpOrigin, beacon->s->origin );
-		beacon->type = (beaconType_t)es->modelindex;
-		beacon->data = es->modelindex2;
-		beacon->team = (team_t)es->generic1;
-		beacon->owner = es->otherEntityNum;
-		beacon->flags = es->eFlags;
-
-		// cache some stuff
-		VectorSubtract( beacon->s->origin, cg.refdef.vieworg, delta );
+		VectorSubtract( b->origin, cg.refdef.vieworg, delta );
 		VectorNormalize( delta );
-		beacon->dot = DotProduct( delta, cg.refdef.viewaxis[ 0 ] );
-		beacon->dist = Distance( cg.predictedPlayerState.origin, beacon->s->origin );
+		b->dot = DotProduct( delta, cg.refdef.viewaxis[ 0 ] );
+		b->dist = Distance( cg.predictedPlayerState.origin, b->origin );
 
-		cg.num_beacons++, beacon++;
-		if( cg.num_beacons >= MAX_CBEACONS )
+		cg.beacons[ cg.beaconCount ] = b;
+		if( ++cg.beaconCount >= MAX_CBEACONS )
 			break;
 	}
 
-	if( !cg.num_beacons )
+	if( !cg.beaconCount )
 		return;
 
-	qsort( cg.beacons, cg.num_beacons, sizeof( cbeacon_t ), CG_CompareBeaconsByDot );
-
-	cg.highlightedBeacon = cg.beacons + cg.num_beacons - 1;
-
-	for( i = 0; i < cg.num_beacons; i++ )
-		CG_RunBeacon( cg.beacons + i );
-
-	CG_BeaconDynamics( );
-
-	for( i = 0; i < cg.num_beacons; i++ )
 	{
-		cg.beacons[ i ].s->old = qtrue;
-		cg.beacons[ i ].s->oldFlags = cg.beacons[ i ].flags;
+		const playerState_t *ps = &cg.predictedPlayerState;
+		int tofind, team = ps->persistant[ PERS_TEAM ];
+		qboolean lowammo, energy;
+
+		lowammo = BG_PlayerLowAmmo( ps, &energy );
+
+		qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CG_CompareBeaconsByDist );
+
+		for( i = 0, tofind = 3; i < cg.beaconCount && tofind; i++ )
+		{
+			b = cg.beacons[ i ];
+
+			if( b->type != BCT_TAG )
+				continue;
+
+			if( b->flags & EF_BC_DYING )
+				continue;
+
+			if( tofind & 1 )
+				if( ( team == TEAM_ALIENS && b->data == BA_A_BOOSTER ) ||
+						( team == TEAM_HUMANS && b->data == BA_H_MEDISTAT ) )
+				{
+					if( ps->stats[ STAT_HEALTH ] < ps->stats[ STAT_MAX_HEALTH ] / 2 )
+						b->type = BCT_HEALTH;
+					tofind &= ~1;
+				}
+
+			if( tofind & 2 )
+				if( team == TEAM_HUMANS &&
+				    ( b->data == BA_H_ARMOURY ||
+				      ( energy &&
+				        ( b->data == BA_H_REPEATER || b->data == BA_H_REACTOR ) ) ) )
+				{
+					if( lowammo )
+						b->type = BCT_AMMO;
+					tofind &= ~2;
+				}
+		}
+	}
+
+	qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CG_CompareBeaconsByDot );
+
+	cg.highlightedBeacon = cg.beacons[ cg.beaconCount - 1 ];
+
+	for( i = 0; i < cg.beaconCount; i++ )
+		CG_RunBeacon( cg.beacons[ i ] );
+
+	for( i = 0; i < cg.beaconCount; i++ )
+	{
+		cg.beacons[ i ]->old = qtrue;
+		cg.beacons[ i ]->oldFlags = cg.beacons[ i ]->flags;
 	}
 }
 
@@ -695,7 +476,7 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b, qboolean hud )
 
 	if ( b->type == BCT_TAG )
 	{
-		if ( b == cg.highlightedBeacon || !hud )
+		if ( b->highlighted || !hud )
 		{
 			if ( b->flags & EF_BC_TAG_PLAYER )
 			{
@@ -740,10 +521,7 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b, qboolean hud )
 		return BG_Beacon( b->type )->icon[ index ];
 	}
 
-	if ( b->s->altIcon )
-		return BG_Beacon( b->type )->icon[ 1 ];
-	else
-		return BG_Beacon( b->type )->icon[ 0 ];
+	return BG_Beacon( b->type )->icon[ 0 ];
 }
 
 /*
@@ -800,7 +578,7 @@ const char *CG_BeaconText( const cbeacon_t *b )
 	else if ( b->type == BCT_TIMER )
 	{
 		float delta;
-		delta = 0.001f * ( cg.time - b->s->ctime - BEACON_TIMER_TIME );
+		delta = 0.001f * ( cg.time - b->ctime - BEACON_TIMER_TIME );
 		text = va( "T %c %.2fs", ( delta >= 0 ? '+' : '-' ), fabs( delta ) );
 	}
 	else

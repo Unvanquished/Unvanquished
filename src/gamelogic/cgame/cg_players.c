@@ -370,7 +370,11 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 
 	if ( !ci->animations[ anim ].handle )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
+		if ( cg_debugAnim.integer )
+		{
+			Com_Printf( "Failed to load animation file %s\n", filename );
+		}
+
 		return qfalse;
 	}
 

@@ -109,12 +109,13 @@ void CG_Rocket_Init( void )
 	trap_Rocket_RegisterProperty( "cell-color", "white", qfalse, qfalse, "color" );
 	trap_Rocket_RegisterProperty( "border-width", "0.5", qfalse, qfalse, "number" );
 	trap_Rocket_RegisterProperty( "unlocked-marker-color", "green", qfalse, qfalse, "color" );
-	trap_Rocket_RegisterProperty( "locked-cell-color", "red", qfalse, qfalse, "color" );
+	trap_Rocket_RegisterProperty( "locked-marker-color", "red", qfalse, qfalse, "color" );
 
 	// Load custom rocket pak if necessary
 	if ( *rocket_pak.string )
 	{
-		if ( !trap_FS_LoadPak( rocket_pak.string ) )
+		// Only load stuff from ui/
+		if ( !trap_FS_LoadPak( rocket_pak.string, "ui/" ) )
 		{
 			Com_Error( ERR_DROP, "Unable to load custom UI pak: %s.", rocket_pak.string );
 		}
@@ -258,6 +259,35 @@ void CG_Rocket_Init( void )
 
 				trap_Rocket_LoadDocument( token );
 
+			}
+
+			continue;
+		}
+
+		if ( !Q_stricmp( token, "fonts" ) )
+		{
+			token = COM_Parse2( &text_p );
+
+			if ( *token != '{' )
+			{
+				Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFile.string, *token );
+			}
+
+			while ( 1 )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( *token == '}' )
+				{
+					break;
+				}
+
+				if ( !*token )
+				{
+					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting closing '}'.", rocket_menuFile.string );
+				}
+
+				trap_Rocket_LoadFont( token );
 			}
 
 			continue;

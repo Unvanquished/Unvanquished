@@ -1213,8 +1213,6 @@ typedef struct
 	qboolean    transparentTest;
 	qboolean    uniqueTest;
 
-	int         value;
-
 	float       radarFadeOut;
 } buildableAttributes_t;
 
@@ -1307,6 +1305,7 @@ typedef struct
 	int            speed;
 	float          lag;
 	int            flags;
+	qboolean       doKnockback;
 
 	// display
 	qhandle_t      model;
@@ -1343,9 +1342,10 @@ typedef struct
 qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
                                 vec2_t angles, vec3_t dir1, vec3_t dir2 );
 void     BG_BuildEntityDescription( char *str, size_t size, entityState_t *es );
+qboolean BG_IsMainStructure( entityState_t *es );
 
 qboolean BG_WeaponIsFull(int weapon, int ammo, int clips );
-qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
+qboolean BG_InventoryContainsWeapon( int weapon, const int stats[] );
 int      BG_SlotsForInventory( int stats[] );
 void     BG_AddUpgradeToInventory( int item, int stats[] );
 void     BG_RemoveUpgradeFromInventory( int item, int stats[] );
@@ -1364,7 +1364,7 @@ void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t m
 int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
-qboolean                    BG_PlayerLowAmmo( playerState_t *ps, qboolean *energy );
+qboolean                    BG_PlayerLowAmmo( const playerState_t *ps, qboolean *energy );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );
 int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count );

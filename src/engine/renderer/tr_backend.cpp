@@ -4272,6 +4272,8 @@ static void RB_RenderDebugUtils()
 			light = ia->light;
 			surface = ia->surface;
 
+			Tess_MapVBOs( qfalse );
+
 			if ( entity != &tr.worldEntity )
 			{
 				// set up the transformation matrix
@@ -4416,6 +4418,8 @@ static void RB_RenderDebugUtils()
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
 
+			Tess_MapVBOs( qfalse );
+
 			if ( r_dynamicEntityOcclusionCulling->integer )
 			{
 				if ( !ent->occlusionQuerySamples )
@@ -4544,6 +4548,7 @@ static void RB_RenderDebugUtils()
 				static vec3_t worldOrigins[ MAX_BONES ];
 
 				GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
+				Tess_MapVBOs( qfalse );
 
 				for ( j = 0; j < skel->numBones; j++ )
 				{
@@ -4615,6 +4620,8 @@ static void RB_RenderDebugUtils()
 						vec3_t left, up;
 						float  radius;
 						vec3_t origin;
+
+						Tess_MapVBOs( qfalse );
 
 						// calculate the xyz locations for the four corners
 						radius = 0.4;
@@ -4919,10 +4926,10 @@ static void RB_RenderDebugUtils()
 
 		GL_CheckErrors();
 
-		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
-
 		for ( z = 0; z < tr.world->lightGridBounds[ 2 ]; z++ ) {
 			for ( y = 0; y < tr.world->lightGridBounds[ 1 ]; y++ ) {
+				Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
+
 				for ( x = 0; x < tr.world->lightGridBounds[ 0 ]; x++ ) {
 					vec3_t origin;
 					vec3_t ambientColor;
@@ -5101,6 +5108,8 @@ static void RB_RenderDebugUtils()
 					tess.numIndexes = 0;
 					tess.numVertexes = 0;
 
+					Tess_MapVBOs( qfalse );
+
 					for ( j = 0; j < 6; j++ )
 					{
 						VectorCopy( backEnd.viewParms.frustums[ 0 ][ j ].normal, splitFrustum[ j ] );
@@ -5211,6 +5220,8 @@ static void RB_RenderDebugUtils()
 				tess.numVertexes = 0;
 				tess.numIndexes = 0;
 				tess.multiDrawPrimitives = 0;
+
+				Tess_MapVBOs( qfalse );
 
 				Tess_AddCube( vec3_origin, node->mins, node->maxs, colorWhite );
 
@@ -5333,6 +5344,8 @@ void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 	{
 		Tess_End();
 	}
+
+	Tess_MapVBOs( qfalse );
 
 	const vec4_t colorClear = { 0, 0, 0, 0 };
 	currentDebugDrawMode = mode;
@@ -6047,6 +6060,10 @@ const void     *RB_StretchPic( const void *data )
 		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
 	}
 
+	if( !tess.indexes ) {
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+	}
+
 	Tess_CheckOverflow( 4, 6 );
 	numVerts = tess.numVertexes;
 	numIndexes = tess.numIndexes;
@@ -6268,6 +6285,10 @@ const void     *RB_RotatedPic( const void *data )
 		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
 	}
 
+	if( !tess.indexes ) {
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+	}
+
 	Tess_CheckOverflow( 4, 6 );
 	numVerts = tess.numVertexes;
 	numIndexes = tess.numIndexes;
@@ -6358,6 +6379,10 @@ const void     *RB_StretchPicGradient( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+	}
+
+	if( !tess.indexes ) {
 		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
 	}
 

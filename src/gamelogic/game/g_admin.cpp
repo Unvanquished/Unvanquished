@@ -202,20 +202,8 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
-		"listmaps",     0,                   qtrue,  NULL,
-		N_("display a list of available maps on the server"),
-		N_("(^5mapname^7)")
-	},
-
-	{
 		"listplayers",  G_admin_listplayers, qtrue,  "listplayers",
 		N_("display a list of players, their client numbers and their levels"),
-		""
-	},
-
-	{
-		"listrotation", 0,                   qtrue,  NULL,
-		N_("display the active map rotation"),
 		""
 	},
 
