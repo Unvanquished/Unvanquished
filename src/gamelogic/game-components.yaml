@@ -4,13 +4,21 @@ general:
           type: struct gentity_s*
 
 messages:
+    # Make all components export their networked state
     PrepareNetCode:
+
+    # Sent unconditionally once every frame
+    Think:
+        timeDelta: int
+
+    #
+    # Component-affine messages
+    # Every component can listen to them but few (and atleast one) will
+    # TODO: Define them inside their affine component's definition below
+    #
 
     FreeAt:
         freeTime: int
-
-    Think:
-        timeDelta: int
 
     Ignite:
         fireStarter: struct gentity_s*

@@ -51,22 +51,22 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 		nextStatusAction  = level.time + BURN_ACTION_PERIOD     * BURN_PERIODS_RAND_MOD;
 
 		fireLogger.DoDebugCode([&]{
-				char selfDescr[64], fireStarterDescr[64];
-				BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity->oldEnt->s);
-				BG_BuildEntityDescription(fireStarterDescr, sizeof(fireStarterDescr), &fireStarter->s);
-				fireLogger.Debug("%s ^2ignited^7 %s.", fireStarterDescr, selfDescr);
-				});
+			char selfDescr[64], fireStarterDescr[64];
+			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity->oldEnt->s);
+			BG_BuildEntityDescription(fireStarterDescr, sizeof(fireStarterDescr), &fireStarter->s);
+			fireLogger.Debug("%s ^2ignited^7 %s.", fireStarterDescr, selfDescr);
+		});
 	} else {
 		// Reset the status action timer to refresh an existing fire.
 		// This leads to prolonged burning but slow spread in burning groups.
 		nextStatusAction = level.time + BURN_ACTION_PERIOD * BURN_PERIODS_RAND_MOD;
 
 		fireLogger.DoDebugCode([&]{
-				char selfDescr[64], fireStarterDescr[64];
-				BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity->oldEnt->s);
-				BG_BuildEntityDescription(fireStarterDescr, sizeof(fireStarterDescr), &fireStarter->s);
-				fireLogger.Debug("%s ^2reset burning action timer of^7 %s.", fireStarterDescr, selfDescr);
-				});
+			char selfDescr[64], fireStarterDescr[64];
+			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity->oldEnt->s);
+			BG_BuildEntityDescription(fireStarterDescr, sizeof(fireStarterDescr), &fireStarter->s);
+			fireLogger.Debug("%s ^2reset burning action timer of^7 %s.", fireStarterDescr, selfDescr);
+		});
 	}
 }
 
@@ -80,8 +80,8 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 
 	char descr[64] = {0};
 	fireLogger.DoDebugCode([&]{
-			BG_BuildEntityDescription(descr, sizeof(descr), &entity->oldEnt->s);
-			});
+		BG_BuildEntityDescription(descr, sizeof(descr), &entity->oldEnt->s);
+	});
 
 	// Damage self.
 	if (nextSelfDamage < level.time) {
@@ -168,7 +168,7 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → ^2try ignite^7",
 					                 descr, chance);
 				} else {
-					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → ^2not ignitable^7",
+					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → not ignitable",
 					                 descr, chance);
 				}
 			} else {
