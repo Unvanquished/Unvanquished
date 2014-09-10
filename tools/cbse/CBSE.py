@@ -242,7 +242,19 @@ def topo_sort_components(components):
     return sorted_components
 
 def my_filter(text):
-    return '\n'.join(filter(lambda line: line.strip() != '', text.split('\n')))
+    lines = []
+    for line in text.split('\n'):
+        # Remove all blank lines
+        if line.strip() == '':
+            continue
+        # Remove the "template" comments
+        if line.strip().startswith("//*"):
+            continue
+        # Handle the command comments
+        if line.strip().startswith("//%"):
+            pass
+        lines.append(line)
+    return '\n'.join(lines)
 
 def my_open_read(filename):
     if filename == "-":
