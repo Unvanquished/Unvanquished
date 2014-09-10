@@ -86,7 +86,7 @@ class Entity {
             int index = detail::ComponentPriority<T>::value;
             int offset = componentOffsets[index];
             if (offset) {
-                return **(T**) (((char*) this) + offset);
+                return *(T*) (((char*) this) + offset);
             } else {
                 return nullptr;
             }
@@ -165,6 +165,10 @@ class Entity {
 {% endfor %}
 
 //% L
+
+#include "ComponentImplementationInclude.h"
+
+//% L
 // Entity definitions
 //% L
 
@@ -192,9 +196,9 @@ class Entity {
 
             //% L
 
-            //* Pointer to the components
+            //* The components
             {% for component in entity.get_components() %}
-                {{component.get_type_name()}}* {{component.get_variable_name()}};
+                {{component.get_type_name()}} {{component.get_variable_name()}};
             {% endfor %}
     };
     //% L

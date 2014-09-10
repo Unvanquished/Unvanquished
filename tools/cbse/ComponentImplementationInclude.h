@@ -1,5 +1,3 @@
-#include "Components.h"
-
 class HealthComponent : public HealthComponentBase {
 public:
     HealthComponent(Entity& entity, int maxHealth, int startHealth): HealthComponentBase(entity, maxHealth, startHealth) {
