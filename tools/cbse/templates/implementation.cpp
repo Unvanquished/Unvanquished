@@ -1,8 +1,8 @@
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 //% L
 
+#include "Components.h"
 #include <tuple>
-#include "ComponentImplementationInclude.h"
 
 //% L
 
@@ -90,7 +90,7 @@ bool Entity::SendMessage(int msg, const void* data) {
                 //* No argument for the message, just call the handlers of all the components
                 {% for component in entity.get_components() %}
                     {% if message in component.get_messages_to_handle() %}
-                        entity->{{component.get_variable_name()}}->{{message.get_handler_name()}}();
+                        entity->{{component.get_variable_name()}}.{{message.get_handler_name()}}();
                     {% endif %}
                 {% endfor %}
             {% else %}
@@ -98,7 +98,7 @@ bool Entity::SendMessage(int msg, const void* data) {
                 const {{message.get_tuple_type()}}* data = (const {{message.get_tuple_type()}}*) _data;
                 {% for component in entity.get_components() %}
                     {% if message in component.get_messages_to_handle() %}
-                        entity->{{component.get_variable_name()}}->{{message.get_handler_name()}}({{message.get_unpacked_tuple_args('*data')}});
+                        entity->{{component.get_variable_name()}}.{{message.get_handler_name()}}({{message.get_unpacked_tuple_args('*data')}});
                     {% endif %}
                 {% endfor %}
             {% endif %}
@@ -132,7 +132,7 @@ bool Entity::SendMessage(int msg, const void* data) {
     )
     {% for component in entity.get_components() %}
         //* Each component takes the entity it is in, its parameters and the components it requires
-        , {{component.get_variable_name()}}(new {{component.get_type_name()}}(
+        , {{component.get_variable_name()}}(
             *this
             {% for param in component.get_param_names() %}
                 , {{entity.get_params()[component.name][param]}}
@@ -140,7 +140,7 @@ bool Entity::SendMessage(int msg, const void* data) {
             {% for required in component.get_required_components() %}
                 , *{{required.get_variable_name()}}
             {% endfor %}
-        ))
+        )
     {% endfor %}
     {}
 
@@ -148,9 +148,6 @@ bool Entity::SendMessage(int msg, const void* data) {
 
     //* The destructor of the entity destroys all the components in reverse order
     {{entity.get_type_name()}}::~{{entity.get_type_name()}}() {
-        {% for component in entity.get_components()[::-1] %}
-            delete {{component.get_variable_name()}};
-        {% endfor %}
     }
     //% L
 {% endfor %}
