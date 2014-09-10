@@ -242,16 +242,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
 		                                                    ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
 		{
-			// TODO: Free fire entities inside their ignitable components instead of doing it here,
-			//       if possible.
-			if ( neighbor->s.eType == ET_FIRE )
-			{
-				G_FreeEntity( neighbor );
-			}
-			else
-			{
-				neighbor->entity->Extinguish(ABUILDER_BLOB_FIRE_IMMUNITY);
-			}
+			neighbor->entity->Extinguish( ABUILDER_BLOB_FIRE_IMMUNITY );
 		}
 
 		// slow humans

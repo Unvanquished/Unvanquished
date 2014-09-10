@@ -91,6 +91,10 @@ void IgnitableComponent::HandleExtinguish(int immunityTime) {
 
 	onFire      = false;
 	immuneUntil = level.time + immunityTime;
+
+	if (alwaysOnFire) {
+		entity->FreeAt(DeferedFreeingComponent::FREE_AFTER_GROUP_THINKING);
+	}
 }
 
 void IgnitableComponent::HandleThink(int timeDelta) {
@@ -156,11 +160,7 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 			fireLogger.Debug("%s has chance to stop burning of %.2f → stop",
 			                 descr, burnStopChance);
 
-			onFire = false;
-
-			if (alwaysOnFire) {
-				entity->FreeAt(DeferedFreeingComponent::FREE_AFTER_GROUP_THINKING);
-			}
+			entity->Extinguish(0);
 
 			return;
 		} else {
