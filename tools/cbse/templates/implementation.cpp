@@ -60,16 +60,6 @@ bool Entity::SendMessage(int msg, const void* data) {
 
 // Implementation of the components
 
-// Component helper functions to change the attributes values e.g.
-//   void SetHealth(int value);
-{% for component in components %}
-    {% for attrib in component.get_own_attribs() %}
-        void {{component.get_base_type_name()}}::{{attrib.get_setter_name()}}({{attrib.typ}} value) {
-            entity->SendMessage({{attrib.get_message().get_enum_name()}}, new {{attrib.typ}}(value));
-        }
-    {% endfor %}
-{% endfor %}
-
 // Implementation of the entities
 
 
@@ -108,11 +98,6 @@ bool Entity::SendMessage(int msg, const void* data) {
                     {% endif %}
                 {% endfor %}
             {% endif %}
-
-            // The message is for an attribute change, update the value accordingly
-            {% if message.is_attrib() %}
-                entity->{{message.get_attrib().get_variable_name()}} = std::get<0>(*data);
-            {% endif %}
         }
     {% endfor%}
 
@@ -138,14 +123,11 @@ bool Entity::SendMessage(int msg, const void* data) {
         {% endfor %}
     )
     {% for component in entity.get_components() %}
-        // Each component takes the entity it is in, its parameters, the shared attributes and the components it requires
+        // Each component takes the entity it is in, its parameters and the components it requires
         , {{component.get_variable_name()}}(new {{component.get_type_name()}}(
             this
             {% for param in component.get_param_names() %}
                 , {{entity.get_params()[component.name][param]}}
-            {% endfor %}
-            {% for attrib in component.get_attribs() %}
-                , {{attrib.get_variable_name()}}
             {% endfor %}
             {% for required in component.get_required_components() %}
                 , {{required.get_variable_name()}}

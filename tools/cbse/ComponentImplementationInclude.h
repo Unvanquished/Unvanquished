@@ -2,14 +2,12 @@
 
 class HealthComponent : public HealthComponentBase {
 public:
-    HealthComponent(Entity* entity, int maxHealth, int startHealth, const int& Health): HealthComponentBase(entity, maxHealth, startHealth, Health) {
+    HealthComponent(Entity* entity, int maxHealth, int startHealth): HealthComponentBase(entity, maxHealth, startHealth) {
     }
 
     void HandleHeal(int amount) {
     }
     void HandleDamage(int amount) {
-    }
-    void AttribHealth(int health) {
     }
 };
 class MonsterDieComponent : public MonsterDieComponentBase {

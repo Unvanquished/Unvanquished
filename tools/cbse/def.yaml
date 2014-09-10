@@ -3,11 +3,6 @@ general:
         - name: number
           type: int
 
-attributes:
-    Health: int
-    Temp1: float
-    Temp2: float
-
 messages:
     Heal:
         amount: int
@@ -24,8 +19,6 @@ components:
         parameters:
             maxHealth: int
             startHealth: int
-        attributes:
-            - Health
         messages:
             - Heal
             - Damage
@@ -37,8 +30,6 @@ components:
             - Comp2
         inherits:
             - Comp3
-        attributes:
-            - Temp2
         messages:
             - Foo1
             - Foo2
@@ -48,13 +39,9 @@ components:
     Comp2:
         messages:
             - Foo3
-        attributes:
-            - Health
     Comp3:
         messages:
             - Foo2
-        attributes:
-            - Temp1
 
 entities:
     MyMonster:

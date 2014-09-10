@@ -87,12 +87,6 @@ class Entity {
                 const {{declaration}};
             {% endfor %}
 
-            // Has a reference to the shared attributes e.g.
-            //   const int& Health;
-            {% for declaration in component.get_own_attrib_declarations() %}
-                {{declaration}};
-            {% endfor %}
-
             // Has a pointer to the other components it requires e.g.
             //   HealthComponent* const r_CompComponent
             {% for declaration in component.get_own_required_component_declarations() %}
@@ -100,23 +94,15 @@ class Entity {
             {% endfor %}
 
         public:
-            // The constructor takes the default values, shared attributes and required components
+            // The constructor takes the default values and required components
             {{component.get_base_type_name()}}(
                 Entity* entity
                 {% for declaration in component.get_param_declarations() %},{{declaration}}{% endfor %}
-                {% for declaration in component.get_attrib_declarations() %},{{declaration}}{% endfor %}
                 {% for declaration in component.get_required_component_declarations() %},{{declaration}}{% endfor %}
             ): entity(entity)
             {% for name in component.get_own_param_names() %},{{name}}({{name}}){% endfor %}
-            {% for name in component.get_own_attrib_names() %},{{name}}({{name}}){% endfor %}
             {% for name in component.get_own_required_component_names() %},{{name}}({{name}}){% endfor %}
             {}
-
-            // Components have helper function to change the shared attributes values e.g.
-            //   SetHealth(float value);
-            {% for attrib in component.get_own_attribs() %}
-                void {{attrib.get_setter_name()}}({{attrib.typ}} value);
-            {% endfor %}
 
             // Components have getters to access the components they require quickly e.g.
             //   HealthComponent* GetHealthComponent();
@@ -137,12 +123,6 @@ class Entity {
             static const int componentOffsets[];
 
         public:
-            // Definitions of the shared attributes e.g.
-            //   int a_Health;
-            {% for attribute in entity.get_attributes() %}
-                {{attribute.typ}} {{attribute.get_variable_name()}};
-            {% endfor %}
-
             // Default constructor
             {{entity.get_type_name()}}(
                 {% for (i, attrib) in enumerate(general.common_entity_attributes) %}
