@@ -55,21 +55,6 @@ bool Entity::SendMessage(int msg, const void* data) {
 {% endfor %}
 
 //% L
-//* Entity helper functions to get the components e.g.
-//*   HealthComponent* GetHealthComponent();
-{% for component in components %}
-    {{component.get_type_name()}}* Entity::Get{{component.get_type_name()}}() {
-        int index = {{component.get_priority()}};
-        int offset = componentOffsets[index];
-        if (offset) {
-            return *({{component.get_type_name()}}**) (((char*) this) + offset);
-        } else {
-            return nullptr;
-        }
-    }
-{% endfor %}
-
-//% L
 // Implementation of the entities
 //% L
 
