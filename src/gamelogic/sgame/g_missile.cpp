@@ -192,11 +192,11 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		}
 
 		// ignite stuff in radius
+		// TODO: Iterate over all ignitable entities only
 		neighbor = NULL;
-		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) ) )
+		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
+		                                                    FLAMER_IGNITE_RADIUS ) ) )
 		{
-			// We already handled other, since it might not always be in FLAMER_IGNITE_RADIUS due to
-			// BBOX sizes.
 			if ( neighbor == other )
 			{
 				continue;
@@ -227,6 +227,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 	else if ( !strcmp( ent->classname, "lockblob" ) )
 	{
+		// lock humans in place
 		if ( other->client && other->client->pers.team == TEAM_HUMANS )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
@@ -237,12 +238,19 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 	else if ( !strcmp( ent->classname, "slowblob" ) )
 	{
+		// put out fires on direct hit
+		other->entity->Extinguish( ABUILDER_BLOB_FIRE_IMMUNITY );
+
 		// put out fires in range
+		// TODO: Iterate over all ignitable entities only
 		neighbor = NULL;
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
 		                                                    ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
 		{
-			neighbor->entity->Extinguish( ABUILDER_BLOB_FIRE_IMMUNITY );
+			if ( neighbor != other )
+			{
+				neighbor->entity->Extinguish( ABUILDER_BLOB_FIRE_IMMUNITY );
+			}
 		}
 
 		// slow humans
