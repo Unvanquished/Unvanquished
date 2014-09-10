@@ -82,11 +82,11 @@ class Entity {
 
         //* Getter for the different components, returns nullptr if it doesn't have the component e.g.
         //*   HealthComponent* GetHealthComponent();
-        template<typename T> T& Get() {
+        template<typename T> T* Get() {
             int index = detail::ComponentPriority<T>::value;
             int offset = componentOffsets[index];
             if (offset) {
-                return *(T*) (((char*) this) + offset);
+                return (T*) (((char*) this) + offset);
             } else {
                 return nullptr;
             }
