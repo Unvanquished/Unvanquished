@@ -39,6 +39,18 @@ class Entity;
 typedef void (*MessageHandler)(Entity*, const void*);
 
 //% L
+
+namespace detail {
+    template<typename T> struct ComponentPriority;
+
+    {% for component in components %}
+        template<> struct ComponentPriority<{{component.get_type_name()}}> {
+            static const int value = {{component.get_priority()}};
+        };
+    {% endfor %}
+};
+
+//% L
 // Base entity class
 //% L
 
@@ -70,9 +82,15 @@ class Entity {
 
         //* Getter for the different components, returns nullptr if it doesn't have the component e.g.
         //*   HealthComponent* GetHealthComponent();
-        {% for component in components %}
-            {{component.get_type_name()}}* Get{{component.get_type_name()}}();
-        {% endfor %}
+        template<typename T> T& Get() {
+            int index = detail::ComponentPriority<T>::value;
+            int offset = componentOffsets[index];
+            if (offset) {
+                return **(T**) (((char*) this) + offset);
+            } else {
+                return nullptr;
+            }
+        }
 
         //% L
 
