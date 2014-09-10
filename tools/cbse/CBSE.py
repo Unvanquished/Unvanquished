@@ -132,11 +132,11 @@ class Component:
         return self.requires
 
     def get_required_component_declarations(self):
-        return list(map(lambda c: c.get_type_name() + '* const r_' + c.get_type_name(), self.requires))
+        return list(map(lambda c: c.get_type_name() + '& r_' + c.get_type_name(), self.requires))
 
     def get_own_required_component_declarations(self):
         #TODO
-        return list(map(lambda c: c.get_type_name() + '* const r_' + c.get_type_name(), self.requires))
+        return list(map(lambda c: c.get_type_name() + '& r_' + c.get_type_name(), self.requires))
 
     def get_required_component_names(self):
         return list(map(lambda c: 'r_' + c.get_type_name(), self.requires))
