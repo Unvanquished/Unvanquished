@@ -17,22 +17,30 @@
 #ifndef COMPONENTS_H_
 #define COMPONENTS_H_
 
+//% LL
+
 enum {
     {% for message in messages%}
         {{message.get_enum_name()}},
     {% endfor %}
 };
 
+//% L
 // Component forward declarations
+//% L
 
 {% for component in components %}
     class {{component.get_type_name()}};
 {% endfor %}
 
+//% L
+
 class Entity;
 typedef void (*MessageHandler)(Entity*, const void*);
 
+//% L
 // Base entity class
+//% L
 
 class Entity {
     public:
@@ -44,9 +52,13 @@ class Entity {
         );
         virtual ~Entity();
 
+        //% L
+
         //* This function should never actually be used directly, it dispatches
         //* the messages to the right components
         bool SendMessage(int msg, const void* data);
+
+        //% L
 
         //* Handy functions to send a specific message to the components of Entity e.g. (returns true if the message was handled)
         //*   bool Damage(int amount);
@@ -54,16 +66,22 @@ class Entity {
             bool {{message.name}}({{message.get_function_args()}});
         {% endfor %}
 
+        //% L
+
         //* Getter for the different components, returns nullptr if it doesn't have the component e.g.
         //*   HealthComponent* GetHealthComponent();
         {% for component in components %}
             {{component.get_type_name()}}* Get{{component.get_type_name()}}();
         {% endfor %}
 
+        //% L
+
     private:
         //* The vtables for the entity
         const MessageHandler* messageHandlers;
         const int* componentOffsets;
+
+        //% L
 
     public:
         {% for attrib in general.common_entity_attributes %}
@@ -71,13 +89,20 @@ class Entity {
         {% endfor %}
 };
 
+//% L
 // Component definitions
 
 {% for component in components %}
+    //% L
+    // Definition of {{component.get_base_type_name()}}
+    //% L
+
     class {{component.get_base_type_name()}} {
         public:
             //* Every component has a pointer back to the entity (say to be able to send back messages etc.)
             Entity* entity;
+
+            //% L
 
         protected:
             //* Contains as a value its default parameters e.g.
@@ -86,11 +111,15 @@ class Entity {
                 const {{declaration}};
             {% endfor %}
 
+            //% L
+
             //* Has a pointer to the other components it requires e.g.
             //*   HealthComponent* const r_CompComponent
             {% for declaration in component.get_own_required_component_declarations() %}
                 {{declaration}};
             {% endfor %}
+
+            //% L
 
         public:
             //* The constructor takes the default values and required components
@@ -103,23 +132,36 @@ class Entity {
             {% for name in component.get_own_required_component_names() %},{{name}}({{name}}){% endfor %}
             {}
 
+            //% L
+
             //* Components have getters to access the components they require quickly e.g.
             //*   HealthComponent* GetHealthComponent();
             {% for required in component.get_own_required_components() %}
                 {{required.get_type_name()}}* Get{{required.get_type_name()}}() {
                     return r_{{required.get_type_name()}};
                 }
+                //%L
             {% endfor %}
     };
+    //% L
 {% endfor %}
 
+//% L
 // Entity definitions
+//% L
 
 {% for entity in entities %}
+
+    //% L
+    // Definition of {{entity.get_type_name()}}
+    //% L
+
     class {{entity.get_type_name()}}: public Entity {
             //* The vtables for each entities are statically defined
             static const MessageHandler messageHandlers[];
             static const int componentOffsets[];
+
+            //% L
 
         public:
             //* Default constructor
@@ -130,11 +172,16 @@ class Entity {
             );
             virtual ~{{entity.get_type_name()}}();
 
+            //% L
+
             //* Pointer to the components
             {% for component in entity.get_components() %}
                 {{component.get_type_name()}}* {{component.get_variable_name()}};
             {% endfor %}
     };
+    //% L
 {% endfor %}
+
+//% LL
 
 #endif //COMPONENTS_H_

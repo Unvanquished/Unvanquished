@@ -1,11 +1,16 @@
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
+//% L
 
 #include <tuple>
 #include "ComponentImplementationInclude.h"
 
+//% L
+
 #define myoffsetof(st, m) static_cast<int>((size_t)(&((st *)0)->m))
 
+//% L
 // Implementation of the base entity class
+//% L
 
 //* Constructor of entity
 Entity::Entity(const MessageHandler *messageHandlers, const int* componentOffsets
@@ -19,8 +24,12 @@ Entity::Entity(const MessageHandler *messageHandlers, const int* componentOffset
 {
 }
 
+//% L
+
 Entity::~Entity() {
 }
+
+//% L
 
 bool Entity::SendMessage(int msg, const void* data) {
     MessageHandler handler = messageHandlers[msg];
@@ -31,6 +40,7 @@ bool Entity::SendMessage(int msg, const void* data) {
     return false;
 }
 
+//% L
 //* Entity helper functions to send message e.g.
 //*   void Entity::Damage(int value);
 {% for message in messages %}
@@ -44,6 +54,7 @@ bool Entity::SendMessage(int msg, const void* data) {
     }
 {% endfor %}
 
+//% L
 //* Entity helper functions to get the components e.g.
 //*   HealthComponent* GetHealthComponent();
 {% for component in components %}
@@ -58,12 +69,16 @@ bool Entity::SendMessage(int msg, const void* data) {
     }
 {% endfor %}
 
-// Implementation of the components
-
+//% L
 // Implementation of the entities
-
+//% L
 
 {% for entity in entities %}
+
+    //% L
+    // Implementation of {{entity.get_type_name()}}
+    //% L    
+
     //* The vtable of offset of components in an entity
     //* TODO: doesn't handle component inheritance?
     const int {{entity.get_type_name()}}::componentOffsets[] = {
@@ -76,11 +91,15 @@ bool Entity::SendMessage(int msg, const void* data) {
         {% endfor %}
     };
 
+    //% L
+
     //* The static message handlers put in the vtable
     {% for message in entity.get_messages_to_handle() %}
         void {{entity.get_message_handler_name(message)}}(Entity* _entity, const void* {% if message.get_num_args() > 0 %} _data {% endif %} ) {
             //* Cast the entity to the correct type (receive an Entity*)
             {{entity.get_type_name()}}* entity = ({{entity.get_type_name()}}*) _entity;
+
+            //% L
 
             {% if message.get_num_args() == 0 %}
                 //* No argument for the message, just call the handlers of all the components
@@ -101,6 +120,8 @@ bool Entity::SendMessage(int msg, const void* data) {
         }
     {% endfor%}
 
+    //% L
+
     //* The vtable of message handlers for an entity
     const MessageHandler {{entity.get_type_name()}}::messageHandlers[] = {
         {% for message in messages %}
@@ -111,6 +132,8 @@ bool Entity::SendMessage(int msg, const void* data) {
             {% endif %}
         {% endfor%}
     };
+
+    //% L
 
     //* Fat constructor for the entity that initializes the components.
     {{entity.get_type_name()}}::{{entity.get_type_name()}}(
@@ -136,14 +159,18 @@ bool Entity::SendMessage(int msg, const void* data) {
     {% endfor %}
     {}
 
+    //% L
+
     //* The destructor of the entity destroys all the components in reverse order
     {{entity.get_type_name()}}::~{{entity.get_type_name()}}() {
         {% for component in entity.get_components()[::-1] %}
             delete {{component.get_variable_name()}};
         {% endfor %}
     }
-
+    //% L
 {% endfor %}
+
+//% L
 
 #undef myoffsetof
 
