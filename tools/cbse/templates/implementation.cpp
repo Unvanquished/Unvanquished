@@ -133,12 +133,12 @@ bool Entity::SendMessage(int msg, const void* data) {
     {% for component in entity.get_components() %}
         //* Each component takes the entity it is in, its parameters and the components it requires
         , {{component.get_variable_name()}}(new {{component.get_type_name()}}(
-            this
+            *this
             {% for param in component.get_param_names() %}
                 , {{entity.get_params()[component.name][param]}}
             {% endfor %}
             {% for required in component.get_required_components() %}
-                , {{required.get_variable_name()}}
+                , *{{required.get_variable_name()}}
             {% endfor %}
         ))
     {% endfor %}

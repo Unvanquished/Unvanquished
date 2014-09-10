@@ -1,6 +1,6 @@
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 
-//* Message and attribute change enum list used to tag each message sent to an entity with its 'type'.
+//* Message and enum list used to tag each message sent to an entity with its 'type'.
 //* Components could have been implemented using multiple (virtual?) inheritance except:
 //*  - We want to be able to allocate them in different pools and we would need ugly
 //*  new operator overloads to do that.
@@ -20,7 +20,7 @@
 //% LL
 
 enum {
-    {% for message in messages%}
+    {% for message in messages %}
         {{message.get_enum_name()}},
     {% endfor %}
 };
@@ -117,8 +117,8 @@ class Entity {
 
     class {{component.get_base_type_name()}} {
         public:
-            //* Every component has a pointer back to the entity (say to be able to send back messages etc.)
-            Entity* entity;
+            //* Every component has a reference back to the entity (say to be able to send back messages etc.)
+            Entity& entity;
 
             //% L
 
@@ -142,7 +142,7 @@ class Entity {
         public:
             //* The constructor takes the default values and required components
             {{component.get_base_type_name()}}(
-                Entity* entity
+                Entity& entity
                 {% for declaration in component.get_param_declarations() %},{{declaration}}{% endfor %}
                 {% for declaration in component.get_required_component_declarations() %},{{declaration}}{% endfor %}
             ): entity(entity)
@@ -155,7 +155,7 @@ class Entity {
             //* Components have getters to access the components they require quickly e.g.
             //*   HealthComponent* GetHealthComponent();
             {% for required in component.get_own_required_components() %}
-                {{required.get_type_name()}}* Get{{required.get_type_name()}}() {
+                {{required.get_type_name()}}& Get{{required.get_type_name()}}() {
                     return r_{{required.get_type_name()}};
                 }
                 //%L
