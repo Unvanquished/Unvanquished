@@ -24,7 +24,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 #include "DeferedFreeingComponent.h"
 
-DeferedFreeingComponent::DeferedFreeingComponent(Entity* entity) :
+DeferedFreeingComponent::DeferedFreeingComponent(Entity &entity) :
 	DeferedFreeingComponentBase(entity), freeTime(DONT_FREE)
 {}
 

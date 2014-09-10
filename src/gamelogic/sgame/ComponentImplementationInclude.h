@@ -25,8 +25,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #ifndef SGAME_COMPONENT_IMPLEMENTATION_INCLUDE_H_
 #define SGAME_COMPONENT_IMPLEMENTATION_INCLUDE_H_
 
-#include "Components.h"
 #include "IgnitableComponent.h"
 #include "DeferedFreeingComponent.h"
 
-#endif //SGAME_COMPONENT_IMPLEMENTATION_INCLUDE_H_
+#endif // SGAME_COMPONENT_IMPLEMENTATION_INCLUDE_H_

@@ -2668,7 +2668,7 @@ void G_RunThink( gentity_t *ent )
 	//       correctly. Right now we simply lie about its semantics by treating everything
 	//       except DONT_FREE as "free after the entity's component thinkers were called".
 	DeferedFreeingComponent *deferedFreeing;
-	if ( ( deferedFreeing = ent->entity->GetDeferedFreeingComponent() ) )
+	if ( ( deferedFreeing = ent->entity->Get<DeferedFreeingComponent>() ) )
 	{
 		if ( deferedFreeing->GetFreeTime() != DeferedFreeingComponent::DONT_FREE )
 		{
