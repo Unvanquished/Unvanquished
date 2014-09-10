@@ -252,7 +252,12 @@ def my_filter(text):
             continue
         # Handle the command comments
         if line.strip().startswith("//%"):
-            pass
+            #look at the characters stream after the //%
+            for char in line.strip()[3:]:
+                if char == 'L':
+                    lines.append('')
+            continue
+
         lines.append(line)
     return '\n'.join(lines)
 
