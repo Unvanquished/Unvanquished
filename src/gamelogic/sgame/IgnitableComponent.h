@@ -31,10 +31,10 @@ class IgnitableComponent: public IgnitableComponentBase {
 public:
 	IgnitableComponent(Entity* entity, bool alwaysOnFire);
 
-	void OnPrepareNetCode();
-	void OnIgnite(gentity_t* fireStarter);
-	void OnExtinguish(int immunityTime);
-	void OnThink(int timeDelta);
+	void HandlePrepareNetCode();
+	void HandleIgnite(gentity_t* fireStarter);
+	void HandleExtinguish(int immunityTime);
+	void HandleThink(int timeDelta);
 
 private:
 	float DistanceToIgnitable(IgnitableComponent* other);

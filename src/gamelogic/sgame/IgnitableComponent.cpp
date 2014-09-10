@@ -30,7 +30,7 @@ IgnitableComponent::IgnitableComponent(Entity* entity, bool alwaysOnFire) :
     IgnitableComponentBase(entity, alwaysOnFire), onFire(false), immuneUntil(0)
 {}
 
-void IgnitableComponent::OnPrepareNetCode() {
+void IgnitableComponent::HandlePrepareNetCode() {
 	if (onFire) {
 		entity->oldEnt->s.eFlags |= EF_B_ONFIRE;
 	} else {
@@ -38,7 +38,7 @@ void IgnitableComponent::OnPrepareNetCode() {
 	}
 }
 
-void IgnitableComponent::OnIgnite(gentity_t* fireStarter) {
+void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 	if (level.time < immuneUntil) return;
 
 	// Start a new fire or refresh an existing one.
@@ -70,12 +70,12 @@ void IgnitableComponent::OnIgnite(gentity_t* fireStarter) {
 	}
 }
 
-void IgnitableComponent::OnExtinguish(int immunityTime) {
+void IgnitableComponent::HandleExtinguish(int immunityTime) {
 	onFire      = false;
 	immuneUntil = level.time + immunityTime;
 }
 
-void IgnitableComponent::OnThink(int timeDelta) {
+void IgnitableComponent::HandleThink(int timeDelta) {
 	if (not onFire) return;
 
 	char descr[64] = {0};
@@ -116,10 +116,10 @@ void IgnitableComponent::OnThink(int timeDelta) {
 		// TODO: Once there is a global list of all entity/component instances that use a given
 		//       component, iterate over that instead. For now we just iterate over all (g)entities
 		//       since component-local data structures aren't really the way it should be.
-		gentity_t *otherGentity = NULL;
-		while ((otherGentity = G_IterateEntitiesWithinRadius(otherGentity, entity->oldEnt->s.origin,
+		gentity_t *otherOldEnt = NULL;
+		while ((otherOldEnt = G_IterateEntitiesWithinRadius(otherOldEnt, entity->oldEnt->s.origin,
 				BURN_STOP_RADIUS))) {
-			Entity *otherEntity = otherGentity->entity;
+			Entity *otherEntity = otherOldEnt->entity;
 
 			if (otherEntity == entity) continue;
 
@@ -127,7 +127,7 @@ void IgnitableComponent::OnThink(int timeDelta) {
 
 			if (!ignitableComponent || !ignitableComponent->onFire) continue;
 
-			float frac = G_Distance(entity->oldEnt, otherGentity) / BURN_STOP_RADIUS;
+			float frac = G_Distance(entity->oldEnt, otherOldEnt) / BURN_STOP_RADIUS;
 			float mod  = frac * 1.0f + ( 1.0f - frac ) * BURN_STOP_CHANCE;
 
 			burnStopChance *= mod;
@@ -154,23 +154,23 @@ void IgnitableComponent::OnThink(int timeDelta) {
 		// TODO: Once there is a global list of all entity/component instances that use a given
 		//       component, iterate over that instead. For now we just iterate over all (g)entities
 		//       since component-local data structures aren't really the way it should be.
-		otherGentity = NULL;
-		while ((otherGentity = G_IterateEntitiesWithinRadius(otherGentity, entity->oldEnt->s.origin,
+		otherOldEnt = NULL;
+		while ((otherOldEnt = G_IterateEntitiesWithinRadius(otherOldEnt, entity->oldEnt->s.origin,
 				BURN_SPREAD_RADIUS))) {
-			Entity *otherEntity = otherGentity->entity;
+			Entity *other = otherOldEnt->entity;
 
-			if (otherEntity == entity) continue;
+			if (other == entity) continue;
 
-			float chance = 1.0f - G_Distance(entity->oldEnt, otherGentity) / BURN_SPREAD_RADIUS;
+			float chance = 1.0f - G_Distance(entity->oldEnt, otherOldEnt) / BURN_SPREAD_RADIUS;
 
-			if (random() < chance && G_LineOfSight(entity->oldEnt, otherGentity)) {
-				otherEntity->Ignite(fireStarter);
-
-				// TODO: As soon as messages can return values (if its handler is called directly,
-				//       otherwise the message helper returns true/false, see issue tracker for
-				//       details), only print the debug line if the ignite message is handled.
-				fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → ^2try ignite^7",
-				                 descr, chance);
+			if (random() < chance && G_LineOfSight(entity->oldEnt, otherOldEnt)) {
+				if (other->Ignite(fireStarter)) {
+					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → ^2try ignite^7",
+					                 descr, chance);
+				} else {
+					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → ^2not ignitable^7",
+					                 descr, chance);
+				}
 			} else {
 				fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → failed or no los",
 				                 descr, chance);

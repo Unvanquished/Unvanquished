@@ -39,7 +39,7 @@ public:
 
 	// TODO: Allow messages to take arbitrary types as parameters
 	//void OnFreeAt(freeTime_t freeTime);
-	void OnFreeAt(int freeTime);
+	void HandleFreeAt(int freeTime);
 
 	/**
 	 * @return When to free the parent entity.

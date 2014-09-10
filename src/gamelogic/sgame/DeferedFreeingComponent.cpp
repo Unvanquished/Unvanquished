@@ -30,7 +30,7 @@ DeferedFreeingComponent::DeferedFreeingComponent(Entity* entity) :
 
 // TODO: Allow messages to take arbitrary types as parameters
 //void DeferedFreeingComponent::OnFreeAt(DeferedFreeingComponent::freeTime_t freeTime) {
-void DeferedFreeingComponent::OnFreeAt(int freeTime) {
+void DeferedFreeingComponent::HandleFreeAt(int freeTime) {
 	this->freeTime = freeTime;
 }
 
