@@ -39,7 +39,17 @@ void IgnitableComponent::HandlePrepareNetCode() {
 }
 
 void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
-	if (level.time < immuneUntil) return;
+	if (level.time < immuneUntil) {
+		fireLogger.DoDebugCode([&]{
+			char selfDescr[64];
+			if (onFire) {
+				BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity->oldEnt->s);
+				fireLogger.Debug("%s was immune against fire.", selfDescr);
+			}
+		});
+
+		return;
+	}
 
 	// Start a new fire or refresh an existing one.
 	if (not onFire) {
@@ -54,7 +64,7 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 			char selfDescr[64], fireStarterDescr[64];
 			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity->oldEnt->s);
 			BG_BuildEntityDescription(fireStarterDescr, sizeof(fireStarterDescr), &fireStarter->s);
-			fireLogger.Debug("%s ^2ignited^7 %s.", fireStarterDescr, selfDescr);
+			fireLogger.Debug("%s ignited %s.", fireStarterDescr, selfDescr);
 		});
 	} else {
 		// Reset the status action timer to refresh an existing fire.
@@ -65,12 +75,20 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 			char selfDescr[64], fireStarterDescr[64];
 			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity->oldEnt->s);
 			BG_BuildEntityDescription(fireStarterDescr, sizeof(fireStarterDescr), &fireStarter->s);
-			fireLogger.Debug("%s ^2reset burning action timer of^7 %s.", fireStarterDescr, selfDescr);
+			fireLogger.Debug("%s reset burning action timer of %s.", fireStarterDescr, selfDescr);
 		});
 	}
 }
 
 void IgnitableComponent::HandleExtinguish(int immunityTime) {
+	fireLogger.DoDebugCode([&]{
+		char selfDescr[64];
+		if (onFire) {
+			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity->oldEnt->s);
+			fireLogger.Debug("%s was extinquished.", selfDescr);
+		}
+	});
+
 	onFire      = false;
 	immuneUntil = level.time + immunityTime;
 }
@@ -90,7 +108,7 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 		// TODO: Replace with a damage message.
 		if (entity->oldEnt->takedamage) {
 			G_Damage( entity->oldEnt, entity->oldEnt, fireStarter, NULL, NULL, BURN_SELFDAMAGE, 0, MOD_BURN );
-			fireLogger.Debug("%s ^3took burn damage^7.", descr);
+			fireLogger.Debug("%s took burn damage.", descr);
 		}
 	}
 
@@ -102,7 +120,7 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 				BURN_SPLDAMAGE_RADIUS, entity->oldEnt, MOD_BURN, TEAM_NONE );
 
 		if (hit) {
-			fireLogger.Debug("%s ^8dealt burn damage^7.", descr);
+			fireLogger.Debug("%s dealt burn damage.", descr);
 		}
 	}
 
@@ -135,7 +153,7 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 
 		// Attempt to stop burning.
 		if (random() < burnStopChance) {
-			fireLogger.Debug("%s has chance to stop burning of %.2f → ^1stop^7",
+			fireLogger.Debug("%s has chance to stop burning of %.2f → stop",
 			                 descr, burnStopChance);
 
 			onFire = false;
@@ -146,7 +164,7 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 
 			return;
 		} else {
-			fireLogger.Debug("%s has chance to stop burning of %.2f → ^2continue^7",
+			fireLogger.Debug("%s has chance to stop burning of %.2f → continue",
 			                 descr, burnStopChance);
 		}
 
@@ -165,7 +183,7 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 
 			if (random() < chance && G_LineOfSight(entity->oldEnt, otherOldEnt)) {
 				if (other->Ignite(fireStarter)) {
-					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → ^2try ignite^7",
+					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → try to ignite",
 					                 descr, chance);
 				} else {
 					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → not ignitable",

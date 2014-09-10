@@ -2778,20 +2778,18 @@ void Cmd_Ignite_f( gentity_t *player )
 {
 	vec3_t    viewOrigin, forward, end;
 	trace_t   trace;
-	gentity_t *target;
 
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
 	AngleVectors( player->client->ps.viewangles, forward, NULL, NULL );
-	VectorMA( viewOrigin, 100, forward, end );
+	VectorMA( viewOrigin, 1000, forward, end );
 	trap_Trace( &trace, viewOrigin, NULL, NULL, end, player->s.number, MASK_PLAYERSOLID, 0 );
-	target = &g_entities[ trace.entityNum ];
 
-	if ( !target || target->s.eType != ET_BUILDABLE || target->buildableTeam != TEAM_ALIENS )
-	{
-		return;
+	if ( trace.entityNum == ENTITYNUM_WORLD ) {
+		G_SpawnFire( trace.endpos, trace.plane.normal, player );
+	} else {
+		g_entities[ trace.entityNum ].entity->Ignite( player );
 	}
 
-	target->entity->Ignite( player );
 }
 
 /*
