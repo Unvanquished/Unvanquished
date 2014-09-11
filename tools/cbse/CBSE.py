@@ -297,9 +297,22 @@ def my_open_write(filename):
     else:
         return open(filename, "w")
 
+def make_components_h(output_file, template_params):
+    implementation_h_template = template_env.get_template('Components.h')
+    output_file.write(my_filter(implementation_h_template.render(**template_params)))
+
+def make_components_cpp(output_file, template_params):
+    implementation_cpp_template = template_env.get_template('Components.cpp')
+    output_file.write(my_filter(implementation_cpp_template.render(**template_params)))
+
+def make_include_helper_cpp(output_file, template_params):
+    includehelper_cpp_template = template_env.get_template('ComponentImplementationInclude.h')
+    output_file.write(my_filter(includehelper_cpp_template.render(**template_params)))
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Outputs C++ plumbing code for the gamelogic given a component definitions.")
     parser.add_argument('definitions', metavar='DEFS', nargs=1, type=my_open_read, help ="The definitions to use, - for stdin.")
+    parser.add_argument('-o', '--source-output-dir', nargs=1, default=None, metavar='DIR', type=str, help="The directory in which to ouput all the files necessary for the compilation")
     parser.add_argument('-d', '--declaration', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the declaration of the plumbing (.h), - for stdout.")
     parser.add_argument('-i', '--implementation', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the implementation of the plumbing (.cpp), - for stdout.")
     parser.add_argument('-s', '--skeleton-dir', nargs=1, default=None, metavar="DIR", help="The output directory for the component implementation skeleton files.")
@@ -345,16 +358,21 @@ if __name__ == '__main__':
     }
 
     if args.declaration != None:
-        implementation_h_template = template_env.get_template('Components.h')
-        args.declaration[0].write(my_filter(implementation_h_template.render(**template_params)))
+        make_components_h(args.declaration[0], template_params)
 
     if args.implementation != None:
-        implementation_cpp_template = template_env.get_template('Components.cpp')
-        args.implementation[0].write(my_filter(implementation_cpp_template.render(**template_params)))
+        make_components_cpp(args.implementation[0], template_params)
 
     if args.include_helper != None:
-        includehelper_cpp_template = template_env.get_template('ComponentImplementationInclude.h')
-        args.include_helper[0].write(my_filter(includehelper_cpp_template.render(**template_params)))
+        make_include_helper_cpp(args.include_helper[0], template_params)
+
+    if args.source_output_dir != None:
+        with open(args.source_output_dir[0] + os.path.sep + "Components.h", "w") as outfile:
+            make_components_h(outfile, template_params)
+        with open(args.source_output_dir[0] + os.path.sep + "Components.cpp", "w") as outfile:
+            make_components_cpp(outfile, template_params)
+        with open(args.source_output_dir[0] + os.path.sep + "ComponentImplementationInclude.h", "w") as outfile:
+            make_include_helper_cpp(outfile, template_params)
 
     if args.skeleton_dir != None:
         for component in component_list:
