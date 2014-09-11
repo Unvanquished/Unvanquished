@@ -303,6 +303,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--declaration', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the declaration of the plumbing (.h), - for stdout.")
     parser.add_argument('-i', '--implementation', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the implementation of the plumbing (.cpp), - for stdout.")
     parser.add_argument('-s', '--skeleton-dir', nargs=1, default=None, metavar="DIR", help="The output directory for the component implementation skeleton files.")
+    parser.add_argument('-l', '--include-helper', nargs=1, default=None, metavar="FILE",type=my_open_write, help="The output file for a header that includes all the other component implementation headers.")
 
     args = parser.parse_args()
 
@@ -350,6 +351,10 @@ if __name__ == '__main__':
     if args.implementation != None:
         implementation_cpp_template = template_env.get_template('Components.cpp')
         args.implementation[0].write(my_filter(implementation_cpp_template.render(**template_params)))
+
+    if args.include_helper != None:
+        includehelper_cpp_template = template_env.get_template('ComponentImplementationInclude.h')
+        args.include_helper[0].write(my_filter(includehelper_cpp_template.render(**template_params)))
 
     if args.skeleton_dir != None:
         for component in component_list:
