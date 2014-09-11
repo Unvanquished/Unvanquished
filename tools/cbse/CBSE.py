@@ -4,6 +4,7 @@ import jinja2
 import yaml
 from collections import namedtuple
 import argparse, sys
+import os.path
 
 class CommonAttribute:
     def __init__(self, name, typ):
@@ -26,6 +27,9 @@ class Message:
         self.args_list = list(self.args.items())
         self.attrib = attrib
 
+    def get_name(self):
+        return self.name
+
     def get_num_args(self):
         return len(self.args_list)
 
@@ -47,11 +51,21 @@ class Message:
             args.append(arg[1] + ' ' + arg[0])
         return ', '.join(args)
 
+    def get_handler_declaration(self):
+        return self.get_handler_name() + '(' + self.get_function_args() + ')'
+
+    def get_return_type(self):
+        return 'void';
+
     def get_tuple_type(self):
         if self.args_list == []:
             return 'std::nullptr_t'
         return 'std::tuple<{}>'.format(', '.join(list(zip(*self.args_list))[1]))
 
+    def get_arg_names(self):
+        return [arg[0] for arg in self.args_list]
+
+    # TODO: Rename to something that doesn't clash as much with get_arg_names
     def get_args_names(self):
         if self.args_list == []:
             return ''
@@ -95,6 +109,9 @@ class Component:
         for inherit in self.inherits:
             fun(inherit)
 
+    def get_name(self):
+        return self.name
+
     def get_type_name(self):
         return self.name + "Component"
 
@@ -116,6 +133,12 @@ class Component:
     def get_own_param_declarations(self):
         #TODO
         return list(map(lambda p: p[1] + ' ' + p[0], self.param_list))
+
+    def get_constructor_declaration(self):
+        return self.get_type_name() + '(Entity *entity' + ', '.join([''] + self.get_param_declarations()) + ')'
+
+    def get_super_call(self):
+        return self.get_base_type_name() + '(entity' + ', '.join([''] + list(map(lambda p: p[0], self.param_list))) + ')'
 
     def get_param_names(self):
         return list(map(lambda p: p[0], self.param_list))
@@ -185,6 +208,7 @@ def load_general(definitions):
         common_entity_attributes.append(CommonAttribute(attrib['name'], attrib['type']))
     return namedtuple('general', 'common_entity_attributes')(common_entity_attributes)
 
+# TODO: Maintain message parameter order
 def load_messages(definitions):
     messages = {}
     for (name, args) in definitions['messages'].items():
@@ -278,6 +302,7 @@ if __name__ == '__main__':
     parser.add_argument('definitions', metavar='DEFS', nargs=1, type=my_open_read, help ="The definitions to use, - for stdin.")
     parser.add_argument('-d', '--declaration', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the declaration of the plumbing (.h), - for stdout.")
     parser.add_argument('-i', '--implementation', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the implementation of the plumbing (.cpp), - for stdout.")
+    parser.add_argument('-s', '--skeleton-dir', nargs=1, default=None, metavar="DIR", help="The output directory for the component implementation skeleton files.")
 
     args = parser.parse_args()
 
@@ -319,9 +344,23 @@ if __name__ == '__main__':
     }
 
     if args.declaration != None:
-        implementation_h_template = template_env.get_template('implementation.h')
+        implementation_h_template = template_env.get_template('Components.h')
         args.declaration[0].write(my_filter(implementation_h_template.render(**template_params)))
 
     if args.implementation != None:
-        implementation_cpp_template = template_env.get_template('implementation.cpp')
+        implementation_cpp_template = template_env.get_template('Components.cpp')
         args.implementation[0].write(my_filter(implementation_cpp_template.render(**template_params)))
+
+    if args.skeleton_dir != None:
+        for component in component_list:
+            template_params['component'] = component
+
+            template = template_env.get_template('Component.cpp')
+            with open(args.skeleton_dir[0] + os.path.sep + component.get_type_name() + ".cpp", "w") as outfile:
+                outfile.write(my_filter(template.render(**template_params)))
+
+            template = template_env.get_template('Component.h')
+            with open(args.skeleton_dir[0] + os.path.sep + component.get_type_name() + ".h", "w") as outfile:
+                outfile.write(my_filter(template.render(**template_params)))
+
+# vi:ts=4:et:ai
