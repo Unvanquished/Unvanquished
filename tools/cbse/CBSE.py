@@ -305,9 +305,9 @@ def make_components_cpp(output_file, template_params):
     implementation_cpp_template = template_env.get_template('Components.cpp')
     output_file.write(my_filter(implementation_cpp_template.render(**template_params)))
 
-def make_include_helper_cpp(output_file, template_params):
-    includehelper_cpp_template = template_env.get_template('ComponentImplementationInclude.h')
-    output_file.write(my_filter(includehelper_cpp_template.render(**template_params)))
+def make_components_entities_h(output_file, template_params):
+    components_entities_template = template_env.get_template('ComponentsEntities.h')
+    output_file.write(my_filter(components_entities_template.render(**template_params)))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Outputs C++ plumbing code for the gamelogic given a component definitions.")
@@ -315,6 +315,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--source-output-dir', nargs=1, default=None, metavar='DIR', type=str, help="The directory in which to ouput all the files necessary for the compilation")
     parser.add_argument('-d', '--declaration', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the declaration of the plumbing (.h), - for stdout.")
     parser.add_argument('-i', '--implementation', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the implementation of the plumbing (.cpp), - for stdout.")
+    parser.add_argument('-e', '--entities', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the implementation of the entities definitions (.h), - for stdout.")
     parser.add_argument('-s', '--skeleton-dir', nargs=1, default=None, metavar="DIR", help="The output directory for the component implementation skeleton files.")
     parser.add_argument('-l', '--include-helper', nargs=1, default=None, metavar="FILE",type=my_open_write, help="The output file for a header that includes all the other component implementation headers.")
 
@@ -363,16 +364,16 @@ if __name__ == '__main__':
     if args.implementation != None:
         make_components_cpp(args.implementation[0], template_params)
 
-    if args.include_helper != None:
-        make_include_helper_cpp(args.include_helper[0], template_params)
+    if args.entities != None:
+        make_components_entities_h(args.entities[0], template_params)
 
     if args.source_output_dir != None:
         with open(args.source_output_dir[0] + os.path.sep + "Components.h", "w") as outfile:
             make_components_h(outfile, template_params)
         with open(args.source_output_dir[0] + os.path.sep + "Components.cpp", "w") as outfile:
             make_components_cpp(outfile, template_params)
-        with open(args.source_output_dir[0] + os.path.sep + "ComponentImplementationInclude.h", "w") as outfile:
-            make_include_helper_cpp(outfile, template_params)
+        with open(args.source_output_dir[0] + os.path.sep + "ComponentsEntities.h", "w") as outfile:
+            make_components_entities_h(outfile, template_params)
 
     if args.skeleton_dir != None:
         for component in component_list:

@@ -2,6 +2,7 @@
 //% L
 
 #include "Components.h"
+#include "ComponentsEntities.h"
 #include <tuple>
 
 //% L
