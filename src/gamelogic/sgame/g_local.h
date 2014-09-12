@@ -44,10 +44,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "g_bot.h"
 #include "g_entities.h"
 
-struct gentity_s;
-// definition of Entity
-#include "Components.h"
-
 // struct definitions
 #include "g_struct.h"
 

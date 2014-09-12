@@ -88,6 +88,8 @@ struct entityClass_s
 	gentityConfig_t config;
 };
 
+class Entity;
+
 struct gentity_s
 {
 	entityState_t  s; // communicated by server to clients
