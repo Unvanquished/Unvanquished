@@ -7,8 +7,8 @@
 
 //% L
 
-#include "Components.h"
-#include "ComponentImplementationInclude.h"
+#include "{{files['declaration']}}"
+#include "{{files['includehelper']}}"
 
 //% L
 // Entity definitions

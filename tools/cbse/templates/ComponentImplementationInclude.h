@@ -4,7 +4,7 @@
 #define COMPONENT_IMPLEMENTATION_INCLUDE_H_
 //%L
 {% for component in components %}
-#include "{{component.get_type_name()}}.h"
+#include "{{dirs['components']}}/{{component.get_type_name()}}.h"
 {% endfor %}
 //%L
 #endif // COMPONENT_IMPLEMENTATION_INCLUDE_H_

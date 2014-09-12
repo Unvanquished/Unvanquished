@@ -1,8 +1,8 @@
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 //% L
 
-#include "Components.h"
-#include "ComponentsEntities.h"
+#include "{{files['declaration']}}"
+#include "{{files['entities']}}"
 #include <tuple>
 
 //% L
