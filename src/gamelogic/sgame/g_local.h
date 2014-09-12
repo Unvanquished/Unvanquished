@@ -44,10 +44,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "g_bot.h"
 #include "g_entities.h"
 
-struct gentity_s;
-// definition of Entity
-#include "Components.h"
-
 // struct definitions
 #include "g_struct.h"
 
@@ -64,8 +60,5 @@ struct gentity_s;
 #ifndef Q3_VM
 #include "../../common/Maths.h"
 #endif
-
-// components
-#include "ComponentImplementationInclude.h"
 
 #endif // G_LOCAL_H_

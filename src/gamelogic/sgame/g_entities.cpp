@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "g_local.h"
 #include "g_entities.h"
+#include "ComponentsEntities.h"
 
 static EmptyEntity emptyEntity(nullptr);
 
