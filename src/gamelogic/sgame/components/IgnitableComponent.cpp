@@ -23,7 +23,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 */
 
 //#include "IgnitableComponent.h"
-#include "ComponentImplementationInclude.h" // Needs to access other components.
+#include "../ComponentImplementationInclude.h" // Needs to access other components.
 
 static Log::Logger fireLogger("sgame.fire");
 
