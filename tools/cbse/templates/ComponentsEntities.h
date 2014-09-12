@@ -8,12 +8,7 @@
 //% L
 
 #include "Components.h"
-
-//% L
-
-{% for component in components %}
-    #include "{{component.get_type_name()}}.h"
-{% endfor %}
+#include "ComponentImplementationInclude.h"
 
 //% L
 // Entity definitions
