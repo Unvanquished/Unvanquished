@@ -309,6 +309,10 @@ def make_components_entities_h(output_file, template_params):
     components_entities_template = template_env.get_template('ComponentsEntities.h')
     output_file.write(my_filter(components_entities_template.render(**template_params)))
 
+def make_include_helper_cpp(output_file, template_params):
+    includehelper_cpp_template = template_env.get_template('ComponentImplementationInclude.h')
+    output_file.write(my_filter(includehelper_cpp_template.render(**template_params)))
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Outputs C++ plumbing code for the gamelogic given a component definitions.")
     parser.add_argument('definitions', metavar='DEFS', nargs=1, type=my_open_read, help ="The definitions to use, - for stdin.")
@@ -367,6 +371,9 @@ if __name__ == '__main__':
     if args.entities != None:
         make_components_entities_h(args.entities[0], template_params)
 
+    if args.include_helper != None:
+        make_include_helper_cpp(args.include_helper[0], template_params)
+
     if args.source_output_dir != None:
         with open(args.source_output_dir[0] + os.path.sep + "Components.h", "w") as outfile:
             make_components_h(outfile, template_params)
@@ -374,6 +381,8 @@ if __name__ == '__main__':
             make_components_cpp(outfile, template_params)
         with open(args.source_output_dir[0] + os.path.sep + "ComponentsEntities.h", "w") as outfile:
             make_components_entities_h(outfile, template_params)
+        with open(args.source_output_dir[0] + os.path.sep + "ComponentImplementationInclude.h", "w") as outfile:
+            make_include_helper_cpp(outfile, template_params)
 
     if args.skeleton_dir != None:
         for component in component_list:
