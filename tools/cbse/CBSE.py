@@ -297,31 +297,14 @@ def my_open_write(filename):
     else:
         return open(filename, "w")
 
-def make_components_h(output_file, template_params):
-    implementation_h_template = template_env.get_template('Components.h')
-    output_file.write(my_filter(implementation_h_template.render(**template_params)))
-
-def make_components_cpp(output_file, template_params):
-    implementation_cpp_template = template_env.get_template('Components.cpp')
-    output_file.write(my_filter(implementation_cpp_template.render(**template_params)))
-
-def make_components_entities_h(output_file, template_params):
-    components_entities_template = template_env.get_template('ComponentsEntities.h')
-    output_file.write(my_filter(components_entities_template.render(**template_params)))
-
-def make_include_helper_cpp(output_file, template_params):
-    includehelper_cpp_template = template_env.get_template('ComponentImplementationInclude.h')
-    output_file.write(my_filter(includehelper_cpp_template.render(**template_params)))
+def render(input_file, output_file, template_params):
+    template = template_env.get_template(input_file)
+    output_file.write(my_filter(template.render(**template_params)))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Outputs C++ plumbing code for the gamelogic given a component definitions.")
     parser.add_argument('definitions', metavar='DEFS', nargs=1, type=my_open_read, help ="The definitions to use, - for stdin.")
-    parser.add_argument('-o', '--source-output-dir', nargs=1, default=None, metavar='DIR', type=str, help="The directory in which to ouput all the files necessary for the compilation")
-    parser.add_argument('-d', '--declaration', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the declaration of the plumbing (.h), - for stdout.")
-    parser.add_argument('-i', '--implementation', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the implementation of the plumbing (.cpp), - for stdout.")
-    parser.add_argument('-e', '--entities', nargs=1, default=None, metavar="FILE", type=my_open_write, help="The output file for the implementation of the entities definitions (.h), - for stdout.")
-    parser.add_argument('-s', '--skeleton-dir', nargs=1, default=None, metavar="DIR", help="The output directory for the component implementation skeleton files.")
-    parser.add_argument('-l', '--include-helper', nargs=1, default=None, metavar="FILE",type=my_open_write, help="The output file for a header that includes all the other component implementation headers.")
+    parser.add_argument('-o', '--output-dir', nargs=1, default=None, metavar='DIR', type=str, help="Output directory for the generated source files.")
 
     args = parser.parse_args()
 
@@ -345,6 +328,7 @@ if __name__ == '__main__':
         component.gather_component_dependencies(components)
 
     sorted_components = topo_sort_components(component_list)
+
     for (i, component) in enumerate(sorted_components):
         component.priority = i
         component.gather_dependencies(messages, components)
@@ -354,46 +338,70 @@ if __name__ == '__main__':
 
     template_env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
 
+    infiles = {
+        'declaration':    'Components.h',
+        'implementation': 'Components.cpp',
+        'entities':       'ComponentsEntities.h',
+        'includehelper':  'ComponentImplementationInclude.h',
+        'skeleton_cpp':   'Component.cpp',
+        'skeleton_h':     'Component.h'
+    }
+
+    outfiles = {
+        'declaration':    'Components.h',
+        'implementation': 'Components.cpp',
+        'entities':       'ComponentsEntities.h',
+        'includehelper':  'ComponentImplementationInclude.h'
+    }
+
+    outdirs = {
+        'components': 'components',
+        'skeletons':  'skel'
+    }
+
     template_params = {
         'general': general,
         'messages': message_list,
         'components': component_list,
         'entities': entity_list,
-        'enumerate': enumerate
+        'enumerate': enumerate,
+        'files': outfiles,
+        'dirs': outdirs
     }
 
-    if args.declaration != None:
-        make_components_h(args.declaration[0], template_params)
+    if args.output_dir != None:
+        outdir = args.output_dir[0] + os.path.sep
 
-    if args.implementation != None:
-        make_components_cpp(args.implementation[0], template_params)
+        with open(outdir + outfiles['declaration'], "w") as outfile:
+            render(infiles['declaration'], outfile, template_params)
 
-    if args.entities != None:
-        make_components_entities_h(args.entities[0], template_params)
+        with open(outdir + outfiles['implementation'], "w") as outfile:
+            render(infiles['implementation'], outfile, template_params)
 
-    if args.include_helper != None:
-        make_include_helper_cpp(args.include_helper[0], template_params)
+        with open(outdir + outfiles['entities'], "w") as outfile:
+            render(infiles['entities'], outfile, template_params)
 
-    if args.source_output_dir != None:
-        with open(args.source_output_dir[0] + os.path.sep + "Components.h", "w") as outfile:
-            make_components_h(outfile, template_params)
-        with open(args.source_output_dir[0] + os.path.sep + "Components.cpp", "w") as outfile:
-            make_components_cpp(outfile, template_params)
-        with open(args.source_output_dir[0] + os.path.sep + "ComponentsEntities.h", "w") as outfile:
-            make_components_entities_h(outfile, template_params)
-        with open(args.source_output_dir[0] + os.path.sep + "ComponentImplementationInclude.h", "w") as outfile:
-            make_include_helper_cpp(outfile, template_params)
+        with open(outdir + outfiles['includehelper'], "w") as outfile:
+            render(infiles['includehelper'], outfile, template_params)
 
-    if args.skeleton_dir != None:
+        outdir += outdirs['components'] + os.path.sep
+
+        if not os.path.isdir(outdir):
+            os.mkdir(outdir)
+
+        outdir += outdirs['skeletons'] + os.path.sep
+
+        if not os.path.isdir(outdir):
+            os.mkdir(outdir)
+
+        # TODO: Copy skeletons to target if that doesn't exist
         for component in component_list:
             template_params['component'] = component
 
-            template = template_env.get_template('Component.cpp')
-            with open(args.skeleton_dir[0] + os.path.sep + component.get_type_name() + ".cpp", "w") as outfile:
-                outfile.write(my_filter(template.render(**template_params)))
+            with open(outdir + component.get_type_name() + ".cpp", "w") as outfile:
+                render(infiles['skeleton_cpp'], outfile, template_params)
 
-            template = template_env.get_template('Component.h')
-            with open(args.skeleton_dir[0] + os.path.sep + component.get_type_name() + ".h", "w") as outfile:
-                outfile.write(my_filter(template.render(**template_params)))
+            with open(outdir + component.get_type_name() + ".h", "w") as outfile:
+                render(infiles['skeleton_h'], outfile, template_params)
 
 # vi:ts=4:et:ai

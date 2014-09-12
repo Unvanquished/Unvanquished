@@ -4,8 +4,7 @@
 #ifndef {{component.get_name().upper()}}_COMPONENT_H_
 #define {{component.get_name().upper()}}_COMPONENT_H_
 //%L
-//* TODO: Add include from parameter.
-// TODO: Include header that provides the component base classes.
+#include "../{{files['declaration']}}"
 //%L
 class {{component.get_type_name()}}: public {{component.get_base_type_name()}} {
 //* TODO: Uncomment after changing message handler visibility to protected.
