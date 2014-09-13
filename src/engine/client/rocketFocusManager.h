@@ -63,11 +63,12 @@ public:
 		if ( anyVisible && ! ( cls.keyCatchers & KEYCATCH_UI ) )
 		{
 			Key_SetCatcher( KEYCATCH_UI );
+			CL_ClearCmdButtons();
+			Key_ClearStates();
+			CL_ClearKeys();
 		}
 		else if ( !anyVisible && cls.keyCatchers && cls.state >= CA_PRIMED )
 		{
-			Key_ClearStates();
-			CL_ClearKeys();
 			Key_SetCatcher( 0 );
 		}
 	}

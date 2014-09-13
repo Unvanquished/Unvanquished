@@ -84,7 +84,7 @@
 	</head>
 	<body id="loading" nohide>
 
-		<levelshot/>
+		<levelshot_loading/>
 
 		<infobox>
 			<servername><hostname/></servername>

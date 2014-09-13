@@ -213,6 +213,12 @@ int trap_FS_GetFileList( const char *path, const char *extension, char *listbuf,
 	return syscallVM( CG_FS_GETFILELIST, path, extension, listbuf, bufsize );
 }
 
+int trap_FS_GetFileListRecursive( const char *path, const char *extension, char *listbuf, int bufsize )
+{
+	return syscallVM( CG_FS_GETFILELISTRECURSIVE, path, extension, listbuf, bufsize );
+}
+
+
 //19.
 //return FS_Delete(VMA(1));
 int trap_FS_Delete( const char *filename )
@@ -220,10 +226,16 @@ int trap_FS_Delete( const char *filename )
 	return syscallVM( CG_FS_DELETEFILE, filename );
 }
 
-qboolean trap_FS_LoadPak( const char* pak )
+qboolean trap_FS_LoadPak( const char* pak, const char* prefix )
 {
-	return syscallVM( CG_FS_LOADPAK, pak );
+	return syscallVM( CG_FS_LOADPAK, pak, prefix );
 }
+
+void trap_FS_LoadAllMapMetadata ( void )
+{
+	syscallVM( CG_FS_LOADMAPMETADATA );
+}
+
 
 
 //20.

@@ -920,7 +920,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			AngleVectors( client->ps.viewangles, forward, NULL, NULL );
 			VectorMA( origin, 65536, forward, end );
 			G_UnlaggedOn( ent, origin, 65536 );
-			other = Beacon::TagTrace( origin, end, ent->s.number, MASK_SHOT, (team_t)client->pers.team, qtrue );
+			other = Beacon::TagTrace( origin, end, ent->s.number, MASK_SHOT,
+			                          (team_t)client->pers.team, qtrue );
 			G_UnlaggedOff( );
 
 			if( other )
@@ -928,12 +929,30 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				other->tagScore += 100;
 				other->tagScoreTime = level.time;
 				if( other->tagScore > 1000 )
-					Beacon::Tag( other, (team_t)client->pers.team, ent->s.number, qfalse );
+					Beacon::Tag( other, (team_t)client->pers.team, ent->s.number,
+					             ( other->s.eType == ET_BUILDABLE ) );
 
 				client->ps.stats[ STAT_TAGSCORE ] = other->tagScore;
 			}
 			else
 				client->ps.stats[ STAT_TAGSCORE ] = 0;
+		}
+
+		// remove orphaned tags for enemy structures when the structure's death was confirmed
+		{
+			gentity_t *other = NULL;
+			while ( ( other = G_IterateEntities( other ) ) )
+			{
+				if ( other->s.eType == ET_BEACON &&
+				     other->s.modelindex == BCT_TAG &&
+				     ( other->s.eFlags & EF_BC_ENEMY ) &&
+				     !other->tagAttachment &&
+				     ent->client->pers.team == other->s.generic1 &&
+				     G_LineOfSight( ent, other ) )
+				{
+					Beacon::Delete( other, true );
+				}
+			}
 		}
 	}
 
@@ -1550,7 +1569,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
  */
 static int FindAlienHealthSource( gentity_t *self )
 {
-	int       ret = 0;
+	int       ret = 0, closeTeammates = 0;
 	float     distance, minBoosterDistance = FLT_MAX;
 	qboolean  needsHealing;
 	gentity_t *ent;
@@ -1572,19 +1591,23 @@ static int FindAlienHealthSource( gentity_t *self )
 
 		distance = Distance( ent->s.origin, self->s.origin );
 
-		if ( ent->client && self != ent && distance < REGEN_BOOST_RANGE )
+		if ( ent->client && self != ent && distance < REGEN_TEAMMATE_RANGE &&
+		     G_LineOfSight( self, ent, MASK_SOLID, false ) )
 		{
+			closeTeammates++;
+
 			switch ( ent->client->ps.stats[ STAT_CLASS ] )
 			{
 				// Group healing
 				default:
-					ret |= SS_HEALING_2X;
+					ret |= ( closeTeammates > 1 ) ? SS_HEALING_4X : SS_HEALING_2X;
 					break;
 			}
 		}
 		else if ( ent->s.eType == ET_BUILDABLE && ent->spawned && ent->powered )
 		{
-			if ( ent->s.modelindex == BA_A_BOOSTER && ent->powered && distance < REGEN_BOOST_RANGE )
+			if ( ent->s.modelindex == BA_A_BOOSTER && ent->powered &&
+			     distance < REGEN_BOOSTER_RANGE )
 			{
 				// Booster healing
 				ret |= SS_HEALING_8X;

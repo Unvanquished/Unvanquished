@@ -614,17 +614,11 @@ RE_ScissorEnable
 */
 void RE_ScissorEnable( qboolean enable )
 {
-	scissorEnableCommand_t *cmd;
-
-	cmd = (scissorEnableCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
-
-	if ( !cmd )
-	{
-		return;
+	// scissor disable sets scissor to full screen
+	// scissor enable is a no-op
+	if( !enable ) {
+		RE_ScissorSet( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 	}
-
-	cmd->commandId = RC_SCISSORENABLE;
-	cmd->enable = enable;
 }
 
 /*

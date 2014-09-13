@@ -279,10 +279,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if (code != ERR_FATAL) {
 		FS::PakPath::ClearPaks();
 		FS_LoadBasePak();
-#ifndef BUILD_SERVER
-		// Load map pk3s to allow menus to load levelshots
-		FS_LoadAllMaps();
-#endif
 	}
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
@@ -833,6 +829,42 @@ void Com_TouchMemory( void )
 
 /*
 =================
+Com_Allocate_Aligned
+
+Aligned Memory Allocations for Posix and Win32
+=================
+*/
+void *Com_Allocate_Aligned( size_t alignment, size_t size )
+{
+#ifdef _WIN32
+	return _aligned_malloc( size, alignment );
+#else
+	void *ptr;
+	if( !posix_memalign( &ptr, alignment, size ) )
+		return ptr;
+	else
+		return NULL;
+#endif
+}
+
+/*
+=================
+Com_Free_Aligned
+
+Free Aligned Memory for Posix and Win32
+=================
+*/
+void Com_Free_Aligned( void *ptr )
+{
+#ifdef _WIN32
+	_aligned_free( ptr );
+#else
+	free( ptr );
+#endif
+}
+
+/*
+=================
 Hunk_Log
 =================
 */
@@ -965,15 +997,14 @@ void Com_InitHunkMemory( void )
 		s_hunkTotal = cv->integer * 1024 * 1024;
 	}
 
-	s_hunkData = ( byte * ) malloc( s_hunkTotal + 31 );
+	// cacheline aligned
+	s_hunkData = ( byte * ) Com_Allocate_Aligned( 64, s_hunkTotal );
 
 	if ( !s_hunkData )
 	{
 		Com_Error( ERR_FATAL, "Hunk data failed to allocate %iMB", s_hunkTotal / ( 1024 * 1024 ) );
 	}
 
-	// cacheline align
-	s_hunkData = ( byte * )( ( ( intptr_t ) s_hunkData + 31 ) & ~31 );
 	Hunk_Clear();
 
 	Cmd_AddCommand( "meminfo", Com_Meminfo_f );
@@ -1761,10 +1792,6 @@ void Com_Init( char *commandLine )
 
 	FS::Initialize();
 	FS_LoadBasePak();
-#ifndef BUILD_SERVER
-	// Load map pk3s to allow menus to load levelshots
-	FS_LoadAllMaps();
-#endif
 
 	Trans_Init();
 
