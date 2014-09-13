@@ -167,48 +167,28 @@ typedef enum cgameImport_s
   CG_R_SCISSOR_ENABLE,
   CG_R_SCISSOR_SET,
   CG_R_INPVVS,
-  CG_R_GLYPH,
-  CG_R_GLYPHCHAR,
-  CG_R_UREGISTERFONT,
-  CG_R_PROJECTDECAL,
-  CG_R_CLEARDECALS,
   CG_R_LOADWORLDMAP,
   CG_R_REGISTERMODEL,
   CG_R_REGISTERSKIN,
-  CG_R_GETSKINMODEL,
-  CG_R_GETMODELSHADER,
   CG_R_REGISTERSHADER,
   CG_R_REGISTERFONT,
   CG_R_CLEARSCENE,
   CG_R_ADDREFENTITYTOSCENE,
-  CG_R_ADDREFLIGHTSTOSCENE,
   CG_R_ADDPOLYTOSCENE,
   CG_R_ADDPOLYSTOSCENE,
-  CG_R_ADDPOLYBUFFERTOSCENE,
   CG_R_ADDLIGHTTOSCENE,
   CG_R_ADDADDITIVELIGHTTOSCENE,
-  CG_R_ADDCORONATOSCENE,
-  CG_R_SETFOG,
-  CG_R_SETGLOBALFOG,
   CG_R_RENDERSCENE,
-  CG_R_SAVEVIEWPARMS,
-  CG_R_RESTOREVIEWPARMS,
   CG_R_SETCOLOR,
   CG_R_SETCLIPREGION,
   CG_R_DRAWSTRETCHPIC,
   CG_R_DRAWROTATEDPIC,
-  CG_R_DRAWSTRETCHPIC_GRADIENT,
-  CG_R_DRAW2DPOLYS,
   CG_R_MODELBOUNDS,
   CG_R_LERPTAG,
   CG_R_REMAP_SHADER,
   CG_R_INPVS,
-  CG_R_LOADDYNAMICSHADER,
-  CG_R_RENDERTOTEXTURE,
-  CG_R_FINISH,
   CG_R_LIGHTFORPOINT,
   CG_R_REGISTERANIMATION,
-  CG_R_CHECKSKELETON,
   CG_R_BUILDSKELETON,
   CG_R_BLENDSKELETON,
   CG_R_BONEINDEX,
@@ -627,8 +607,6 @@ void            trap_UpdateScreen( void );
 #define trap_CM_TransformedBiSphereTrace CM_TransformedBiSphereTrace
 #define trap_CM_DistanceToModel CM_DistanceToModel
 int             trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
-void            trap_R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime );
-void            trap_R_ClearDecals( void );
 void            trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx );
 void            trap_S_StartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx, int flags );
 void            trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum );
@@ -650,35 +628,21 @@ int             trap_S_StartStreamingSound( const char *intro, const char *loop,
 void            trap_R_LoadWorldMap( const char *mapname );
 qhandle_t       trap_R_RegisterModel( const char *name );
 qhandle_t       trap_R_RegisterSkin( const char *name );
-qboolean        trap_R_GetSkinModel( qhandle_t skinid, const char *type, char *name );
-qhandle_t       trap_R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );
 qhandle_t       trap_R_RegisterShader( const char *name, RegisterShaderFlags_t flags );
 void            trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
-void            trap_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
-void            trap_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
-void            trap_R_UnregisterFont( fontHandle_t );
 
 void            trap_R_ClearScene( void );
 void            trap_R_AddRefEntityToScene( const refEntity_t *re );
-void            trap_R_AddRefLightToScene( const refLight_t *light );
 void            trap_R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts );
 void            trap_R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys );
-void            trap_R_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer );
 void            trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags );
 void            trap_R_AddAdditiveLightToScene( const vec3_t org, float intensity, float r, float g, float b );
 void            trap_GS_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin );
-void            trap_R_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
-void            trap_R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density );
-void            trap_R_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 void            trap_R_RenderScene( const refdef_t *fd );
-void            trap_R_SaveViewParms( void );
-void            trap_R_RestoreViewParms( void );
 void            trap_R_SetColor( const float *rgba );
 void            trap_R_SetClipRegion( const float *region );
 void            trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
 void            trap_R_DrawRotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );
-void            trap_R_DrawStretchPicGradient( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType );
-void            trap_R_Add2dPolys( polyVert_t *verts, int numverts, qhandle_t hShader );
 void            trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs );
 int             trap_R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
 void            trap_GetGlconfig( glconfig_t *glconfig );
@@ -720,14 +684,10 @@ void            trap_CG_TranslateString( const char *string, char *buf );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean        trap_R_inPVVS( const vec3_t p1, const vec3_t p2 );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
-void            trap_R_RenderToTexture( int textureid, int x, int y, int w, int h );
-void            trap_R_Finish( void );
 void            trap_GetDemoName( char *buffer, int size );
-void            trap_S_StartSoundVControl( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx, int volume );
 int             trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
 qhandle_t       trap_R_RegisterAnimation( const char *name );
-int             trap_R_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim );
 int             trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin );
 int             trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac );
 int             trap_R_BoneIndex( qhandle_t hModel, const char *boneName );

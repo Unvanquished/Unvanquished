@@ -349,233 +349,188 @@ void trap_S_EndRegistration( void )
 	VM::SendMsg<Audio::EndRegistrationMsg>();
 }
 
+// All renderer
 
-//39.
-//re.ProjectDecal(args[1], args[2], VMA(3), VMA(4), VMA(5), args[6], args[7]);
-void trap_R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime )
-{
-    syscallVM( CG_R_PROJECTDECAL, hShader, numPoints, points, projection, color, lifeTime, fadeTime );
-}
-
-//40.
-//re.ClearDecals();
-void trap_R_ClearDecals( void )
-{
-    syscallVM( CG_R_CLEARDECALS );
-}
-
-//59.
-//re.LoadWorld(VMA(1));
 void trap_R_LoadWorldMap( const char *mapname )
 {
-    //CG_DrawInformation(qtrue);
-
     syscallVM( CG_R_LOADWORLDMAP, mapname );
 }
 
-//60.
-//return re.RegisterModel(VMA(1));
 qhandle_t trap_R_RegisterModel( const char *name )
 {
-    //CG_DrawInformation(qtrue);
-
     return syscallVM( CG_R_REGISTERMODEL, name );
 }
 
-//61.
-//return re.RegisterSkin(VMA(1));
 qhandle_t trap_R_RegisterSkin( const char *name )
 {
-    //CG_DrawInformation(qtrue);
-
     return syscallVM( CG_R_REGISTERSKIN, name );
 }
 
-//62.
-//return re.GetSkinModel(args[1], VMA(2), VMA(3));
-qboolean trap_R_GetSkinModel( qhandle_t skinid, const char *type, char *name )
-{
-    return syscallVM( CG_R_GETSKINMODEL, skinid, type, name );
-}
-
-//63.
-//return re.GetShaderFromModel(args[1], args[2], args[3]);
-qhandle_t trap_R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap )
-{
-    return syscallVM( CG_R_GETMODELSHADER, modelid, surfnum, withlightmap );
-}
-
-//64.
-//return re.RegisterShader(VMA(1), args[2]);
 qhandle_t trap_R_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 {
-    //CG_DrawInformation(qtrue);
-
     return syscallVM( CG_R_REGISTERSHADER, name, flags );
 }
 
-//65.
-//re.RegisterFont(VMA(1), args[2], VMA(3));
 void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
 {
-    //CG_DrawInformation(qtrue);
-
-    /**/
     syscallVM( CG_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
 }
 
-//68.
-//re.ClearScene();
 void trap_R_ClearScene( void )
 {
     syscallVM( CG_R_CLEARSCENE );
 }
 
-//69.
-//re.AddRefEntityToScene(VMA(1));
 void trap_R_AddRefEntityToScene( const refEntity_t *re )
 {
     syscallVM( CG_R_ADDREFENTITYTOSCENE, re );
 }
 
-//70.
-//re.AddRefLightToScene(VMA(1));
-void trap_R_AddRefLightToScene( const refLight_t *light )
-{
-    syscallVM( CG_R_ADDREFLIGHTSTOSCENE, light );
-}
-
-//71.
-//re.AddPolyToScene(args[1], args[2], VMA(3));
 void trap_R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts )
 {
     syscallVM( CG_R_ADDPOLYTOSCENE, hShader, numVerts, verts );
 }
 
-//72.
-//re.AddPolysToScene(args[1], args[2], VMA(3), args[4]);
 void trap_R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
 {
     syscallVM( CG_R_ADDPOLYSTOSCENE, hShader, numVerts, verts, numPolys );
 }
 
-//73.
-//re.AddPolyBufferToScene(VMA(1));
-void trap_R_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer )
-{
-    syscallVM( CG_R_ADDPOLYBUFFERTOSCENE, pPolyBuffer );
-}
-
-//74.
-//re.AddLightToScene(VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), args[7], args[8]);
 void trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
 {
     syscallVM( CG_R_ADDLIGHTTOSCENE, org, PASSFLOAT( radius ), PASSFLOAT( intensity ), PASSFLOAT( r ), PASSFLOAT( g ), PASSFLOAT( b ), hShader, flags );
 }
 
-//75.
-//re.AddAdditiveLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
 void trap_R_AddAdditiveLightToScene( const vec3_t org, float intensity, float r, float g, float b )
 {
     syscallVM( CG_R_ADDADDITIVELIGHTTOSCENE, org, PASSFLOAT( intensity ), PASSFLOAT( r ), PASSFLOAT( g ), PASSFLOAT( b ) );
 }
 
-//77.
-//re.AddCoronaToScene(VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6], args[7]);
-void trap_R_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible )
-{
-    syscallVM( CG_R_ADDCORONATOSCENE, org, PASSFLOAT( r ), PASSFLOAT( g ), PASSFLOAT( b ), PASSFLOAT( scale ), id, visible );
-}
-
-//78.
-//re.SetFog(args[1], args[2], args[3], VMF(4), VMF(5), VMF(6), VMF(7));
-void trap_R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density )
-{
-    syscallVM( CG_R_SETFOG, fogvar, var1, var2, PASSFLOAT( r ), PASSFLOAT( g ), PASSFLOAT( b ), PASSFLOAT( density ) );
-}
-
-//79.
-//re.SetGlobalFog(args[1], args[2], VMF(3), VMF(4), VMF(5), VMF(6));
-void trap_R_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque )
-{
-    syscallVM( CG_R_SETGLOBALFOG, restore, duration, PASSFLOAT( r ), PASSFLOAT( g ), PASSFLOAT( b ), PASSFLOAT( depthForOpaque ) );
-}
-
-//80.
-//re.RenderScene(VMA(1));
 void trap_R_RenderScene( const refdef_t *fd )
 {
     syscallVM( CG_R_RENDERSCENE, fd );
 }
 
-//81.
-//re.SaveViewParms();
-void trap_R_SaveViewParms( void )
-{
-    syscallVM( CG_R_SAVEVIEWPARMS );
-}
-
-//82.
-//re.RestoreViewParms();
-void trap_R_RestoreViewParms( void )
-{
-    syscallVM( CG_R_RESTOREVIEWPARMS );
-}
-
-//83.
-//re.SetColor(VMA(1));
 void trap_R_SetColor( const float *rgba )
 {
     syscallVM( CG_R_SETCOLOR, rgba );
 }
 
-//84.
-//re.SetClipRegion( VMA(1) );
 void trap_R_SetClipRegion( const float *region )
 {
     syscallVM( CG_R_SETCLIPREGION, region );
 }
 
-//85.
-//re.DrawStretchPic(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9]);
 void trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader )
 {
     syscallVM( CG_R_DRAWSTRETCHPIC, PASSFLOAT( x ), PASSFLOAT( y ), PASSFLOAT( w ), PASSFLOAT( h ), PASSFLOAT( s1 ), PASSFLOAT( t1 ), PASSFLOAT( s2 ), PASSFLOAT( t2 ), hShader );
 }
 
-//86.
-//re.DrawRotatedPic(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9], VMF(10));
 void trap_R_DrawRotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle )
 {
     syscallVM( CG_R_DRAWROTATEDPIC, PASSFLOAT( x ), PASSFLOAT( y ), PASSFLOAT( w ), PASSFLOAT( h ), PASSFLOAT( s1 ), PASSFLOAT( t1 ), PASSFLOAT( s2 ), PASSFLOAT( t2 ), hShader, PASSFLOAT( angle ) );
 }
 
-//87.
-//re.DrawStretchPicGradient(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9], VMA(10), args[11]);
-void trap_R_DrawStretchPicGradient( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType )
-{
-    syscallVM( CG_R_DRAWSTRETCHPIC_GRADIENT, PASSFLOAT( x ), PASSFLOAT( y ), PASSFLOAT( w ), PASSFLOAT( h ), PASSFLOAT( s1 ), PASSFLOAT( t1 ), PASSFLOAT( s2 ), PASSFLOAT( t2 ), hShader, gradientColor, gradientType );
-}
-
-//88.
-//re.Add2dPolys(VMA(1), args[2], args[3]);
-void trap_R_Add2dPolys( polyVert_t *verts, int numverts, qhandle_t hShader )
-{
-    syscallVM( CG_R_DRAW2DPOLYS, verts, numverts, hShader );
-}
-
-//89.
-//re.ModelBounds(args[1], VMA(2), VMA(3));
 void trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs )
 {
     syscallVM( CG_R_MODELBOUNDS, model, mins, maxs );
 }
 
-//90.
-//return re.LerpTag(VMA(1), VMA(2), VMA(3), args[4]);
 int trap_R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
 {
     return syscallVM( CG_R_LERPTAG, tag, refent, tagName, startIndex );
+}
+
+void trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset )
+{
+    syscallVM( CG_R_REMAP_SHADER, oldShader, newShader, timeOffset );
+}
+
+qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
+{
+    return syscallVM( CG_R_INPVS, p1, p2 );
+}
+
+int trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
+{
+    return syscallVM( CG_R_LIGHTFORPOINT, point, ambientLight, directedLight, lightDir );
+}
+
+qhandle_t trap_R_RegisterAnimation( const char *name )
+{
+    return syscallVM( CG_R_REGISTERANIMATION, name );
+}
+
+int trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin )
+{
+    return syscallVM( CG_R_BUILDSKELETON, skel, anim, startFrame, endFrame, PASSFLOAT( frac ), clearOrigin );
+}
+
+int trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
+{
+    return syscallVM( CG_R_BLENDSKELETON, skel, blend, PASSFLOAT( frac ) );
+}
+
+int trap_R_BoneIndex( qhandle_t hModel, const char *boneName )
+{
+    return syscallVM( CG_R_BONEINDEX, hModel, boneName );
+}
+
+int trap_R_AnimNumFrames( qhandle_t hAnim )
+{
+    return syscallVM( CG_R_ANIMNUMFRAMES, hAnim );
+}
+
+int trap_R_AnimFrameRate( qhandle_t hAnim )
+{
+    return syscallVM( CG_R_ANIMFRAMERATE, hAnim );
+}
+
+qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
+{
+    return syscallVM( CG_R_INPVVS, p1, p2 );
+}
+
+qhandle_t trap_RegisterVisTest( void )
+{
+    return syscallVM( CG_REGISTERVISTEST );
+}
+
+void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, float area )
+{
+    syscallVM( CG_ADDVISTESTTOSCENE, hTest, pos, PASSFLOAT( depthAdjust ),
+            PASSFLOAT( area ) );
+}
+
+float trap_CheckVisibility( qhandle_t hTest )
+{
+    return syscallVM( CG_CHECKVISIBILITY, hTest );
+}
+
+void trap_UnregisterVisTest( qhandle_t hTest )
+{
+    syscallVM( CG_UNREGISTERVISTEST, hTest );
+}
+
+void trap_SetColorGrading( int slot, qhandle_t hShader )
+{
+    syscallVM( CG_SETCOLORGRADING, slot, hShader );
+}
+
+void trap_R_ScissorEnable( qboolean enable )
+{
+    syscallVM( CG_R_SCISSOR_ENABLE, enable );
+}
+
+void trap_R_ScissorSet( int x, int y, int w, int h )
+{
+    syscallVM( CG_R_SCISSOR_SET, x, y, w, h );
+}
+
+//172.
+void trap_CompleteCallback( const char *complete )
+{
+    syscallVM( CG_COMPLETE_CALLBACK, complete );
 }
 
 //101.
@@ -620,36 +575,6 @@ void trap_Key_SetOverstrikeMode( qboolean state )
     syscallVM( CG_KEY_SETOVERSTRIKEMODE, state );
 }
 
-//107.
-//return (int)memset(VMA(1), args[2], args[3]);
-
-//108.
-//return (int)memcpy(VMA(1), VMA(2), args[3]);
-
-//109.
-//return (int)strncpy(VMA(1), VMA(2), args[3]);
-
-//110
-//return FloatAsInt(sin(VMF(1)));
-
-//111
-//return FloatAsInt(cos(VMF(1)));
-
-//112
-//return FloatAsInt(atan2(VMF(1), VMF(2)));
-
-//113
-//return FloatAsInt(sqrt(VMF(1)));
-
-//114
-//return FloatAsInt(floor(VMF(1)));
-
-//115
-//return FloatAsInt(ceil(VMF(1)));
-
-//116
-//return FloatAsInt(acos(VMF(1)));
-
 //126.
 //return CIN_PlayCinematic(VMA(1), args[2], args[3], args[4], args[5], args[6]);
 int trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits )
@@ -683,13 +608,6 @@ void trap_CIN_DrawCinematic( int handle )
 void trap_CIN_SetExtents( int handle, int x, int y, int w, int h )
 {
     syscallVM( CG_CIN_SETEXTENTS, handle, x, y, w, h );
-}
-
-//131.
-//re.RemapShader(VMA(1), VMA(2), VMA(3));
-void trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset )
-{
-    syscallVM( CG_R_REMAP_SHADER, oldShader, newShader, timeOffset );
 }
 
 //139.
@@ -728,155 +646,6 @@ void trap_Key_SetBinding( int keynum, int team, const char *binding )
 void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 {
     syscallVM( CG_KEY_KEYNUMTOSTRINGBUF, keynum, buf, buflen );
-}
-
-//152.
-//return re.inPVS(VMA(1), VMA(2));
-qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
-{
-    return syscallVM( CG_R_INPVS, p1, p2 );
-}
-
-//157.
-//return re.LoadDynamicShader(VMA(1), VMA(2));
-qboolean trap_R_LoadDynamicShader( const char *shadername, const char *shadertext )
-{
-    return syscallVM( CG_R_LOADDYNAMICSHADER, shadername, shadertext );
-}
-
-//158.
-//re.RenderToTexture(args[1], args[2], args[3], args[4], args[5]);
-void trap_R_RenderToTexture( int textureid, int x, int y, int w, int h )
-{
-    syscallVM( CG_R_RENDERTOTEXTURE, textureid, x, y, w, h );
-}
-
-//160.
-//re.Finish();
-void trap_R_Finish( void )
-{
-    syscallVM( CG_R_FINISH );
-}
-
-//162.
-void trap_S_StartSoundVControl( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx, int volume )
-{
-    syscallVM( CG_S_STARTSOUND, origin, entityNum, entchannel, sfx, volume );
-}
-
-//163.
-int trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
-{
-    return syscallVM( CG_R_LIGHTFORPOINT, point, ambientLight, directedLight, lightDir );
-}
-
-//165.
-qhandle_t trap_R_RegisterAnimation( const char *name )
-{
-    return syscallVM( CG_R_REGISTERANIMATION, name );
-}
-
-//166.
-int trap_R_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim )
-{
-    return syscallVM( CG_R_CHECKSKELETON, skel, hModel, hAnim );
-}
-
-//167.
-int trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin )
-{
-    return syscallVM( CG_R_BUILDSKELETON, skel, anim, startFrame, endFrame, PASSFLOAT( frac ), clearOrigin );
-}
-
-//168.
-int trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
-{
-    return syscallVM( CG_R_BLENDSKELETON, skel, blend, PASSFLOAT( frac ) );
-}
-
-//169.
-int trap_R_BoneIndex( qhandle_t hModel, const char *boneName )
-{
-    return syscallVM( CG_R_BONEINDEX, hModel, boneName );
-}
-
-//170.
-int trap_R_AnimNumFrames( qhandle_t hAnim )
-{
-    return syscallVM( CG_R_ANIMNUMFRAMES, hAnim );
-}
-
-//171.
-int trap_R_AnimFrameRate( qhandle_t hAnim )
-{
-    return syscallVM( CG_R_ANIMFRAMERATE, hAnim );
-}
-
-//172.
-void trap_CompleteCallback( const char *complete )
-{
-    syscallVM( CG_COMPLETE_CALLBACK, complete );
-}
-
-//174.
-void trap_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
-{
-    syscallVM( CG_R_GLYPH, font, str, glyph );
-}
-
-//175.
-void trap_R_GlyphChar( fontHandle_t font, int ch, glyphInfo_t *glyph )
-{
-    syscallVM( CG_R_GLYPHCHAR, font, ch, glyph );
-}
-
-//176.
-void trap_R_UnregisterFont( fontHandle_t font )
-{
-    syscallVM( CG_R_UREGISTERFONT, font );
-}
-
-//181.
-//return re.inPVVS(VMA(1), VMA(2));
-qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
-{
-    return syscallVM( CG_R_INPVVS, p1, p2 );
-}
-
-qhandle_t trap_RegisterVisTest( void )
-{
-    return syscallVM( CG_REGISTERVISTEST );
-}
-
-void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, float area )
-{
-    syscallVM( CG_ADDVISTESTTOSCENE, hTest, pos, PASSFLOAT( depthAdjust ),
-            PASSFLOAT( area ) );
-}
-
-float trap_CheckVisibility( qhandle_t hTest )
-{
-    return syscallVM( CG_CHECKVISIBILITY, hTest );
-}
-
-void trap_UnregisterVisTest( qhandle_t hTest )
-{
-    syscallVM( CG_UNREGISTERVISTEST, hTest );
-}
-
-void trap_SetColorGrading( int slot, qhandle_t hShader )
-{
-    syscallVM( CG_SETCOLORGRADING, slot, hShader );
-}
-
-void trap_R_ScissorEnable( qboolean enable )
-{
-    syscallVM( CG_R_SCISSOR_ENABLE, enable );
-}
-
-void trap_R_ScissorSet( int x, int y, int w, int h )
-{
-    syscallVM( CG_R_SCISSOR_SET, x, y, w, h );
 }
 
 void trap_LAN_LoadCachedServers( void )

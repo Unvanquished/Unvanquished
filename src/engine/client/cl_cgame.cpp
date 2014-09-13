@@ -1442,17 +1442,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 	switch ( args[ 0 ] )
 	{
-		case CG_R_PROJECTDECAL:
-			cls.nCgameRenderSyscalls ++;
-			re.ProjectDecal( args[ 1 ], args[ 2 ], (vec3_t*) VMA( 3 ), (float*) VMA( 4 ),
-			                 (float*) VMA( 5 ), args[ 6 ], args[ 7 ] );
-			return 0;
-
-		case CG_R_CLEARDECALS:
-			cls.nCgameRenderSyscalls ++;
-			re.ClearDecals();
-			return 0;
-
 		case CG_R_LOADWORLDMAP:
 			cls.nCgameRenderSyscalls ++;
 			re.SetWorldVisData( CM_ClusterPVS( -1 ) );
@@ -1466,16 +1455,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_REGISTERSKIN:
 			cls.nCgameRenderSyscalls ++;
 			return re.RegisterSkin( (char*) VMA( 1 ) );
-
-			//----(SA)  added
-		case CG_R_GETSKINMODEL:
-			cls.nCgameRenderSyscalls ++;
-			return re.GetSkinModel( args[ 1 ], (char*) VMA( 2 ), (char*) VMA( 3 ) );
-
-		case CG_R_GETMODELSHADER:
-			cls.nCgameRenderSyscalls ++;
-			return re.GetShaderFromModel( args[ 1 ], args[ 2 ], args[ 3 ] );
-			//----(SA)  end
 
 		case CG_R_REGISTERSHADER:
 			cls.nCgameRenderSyscalls ++;
@@ -1496,11 +1475,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.AddRefEntityToScene( (refEntity_t*) VMA( 1 ) );
 			return 0;
 
-		case CG_R_ADDREFLIGHTSTOSCENE:
-			cls.nCgameRenderSyscalls ++;
-			re.AddRefLightToScene( (refLight_t*) VMA( 1 ) );
-			return 0;
-
 		case CG_R_ADDPOLYTOSCENE:
 			cls.nCgameRenderSyscalls ++;
 			re.AddPolyToScene( args[ 1 ], args[ 2 ], (polyVert_t*) VMA( 3 ) );
@@ -1509,11 +1483,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_ADDPOLYSTOSCENE:
 			cls.nCgameRenderSyscalls ++;
 			re.AddPolysToScene( args[ 1 ], args[ 2 ], (polyVert_t*) VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case CG_R_ADDPOLYBUFFERTOSCENE:
-			cls.nCgameRenderSyscalls ++;
-			re.AddPolyBufferToScene( (polyBuffer_t*) VMA( 1 ) );
 			return 0;
 
 		case CG_R_ADDLIGHTTOSCENE:
@@ -1526,34 +1495,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.AddAdditiveLightToScene( (float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ) );
 			return 0;
 
-		case CG_R_ADDCORONATOSCENE:
-			cls.nCgameRenderSyscalls ++;
-			re.AddCoronaToScene( (float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ] );
-			return 0;
-
-		case CG_R_SETFOG:
-			cls.nCgameRenderSyscalls ++;
-			re.SetFog( args[ 1 ], args[ 2 ], args[ 3 ], VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ) );
-			return 0;
-
-		case CG_R_SETGLOBALFOG:
-			cls.nCgameRenderSyscalls ++;
-			re.SetGlobalFog( args[ 1 ], args[ 2 ], VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ) );
-			return 0;
-
 		case CG_R_RENDERSCENE:
 			cls.nCgameRenderSyscalls ++;
 			re.RenderScene( (refdef_t*) VMA( 1 ) );
-			return 0;
-
-		case CG_R_SAVEVIEWPARMS:
-			cls.nCgameRenderSyscalls ++;
-			re.SaveViewParms();
-			return 0;
-
-		case CG_R_RESTOREVIEWPARMS:
-			cls.nCgameRenderSyscalls ++;
-			re.RestoreViewParms();
 			return 0;
 
 		case CG_R_SETCOLOR:
@@ -1575,16 +1519,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_DRAWROTATEDPIC:
 			cls.nCgameRenderSyscalls ++;
 			re.DrawRotatedPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[ 9 ], VMF( 10 ) );
-			return 0;
-
-		case CG_R_DRAWSTRETCHPIC_GRADIENT:
-			cls.nCgameRenderSyscalls ++;
-			re.DrawStretchPicGradient( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[ 9 ], (float*) VMA( 10 ), args[ 11 ] );
-			return 0;
-
-		case CG_R_DRAW2DPOLYS:
-			cls.nCgameRenderSyscalls ++;
-			re.Add2dPolys( (polyVert_t*) VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case CG_R_MODELBOUNDS:
@@ -1670,23 +1604,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameRenderSyscalls ++;
 			return re.inPVVS( (float*) VMA( 1 ), (float*) VMA( 2 ) );
 
-			//bani - dynamic shaders
-		case CG_R_LOADDYNAMICSHADER:
-			cls.nCgameRenderSyscalls ++;
-			return re.LoadDynamicShader( (char*) VMA( 1 ), (char*) VMA( 2 ) );
-
-			// fretn - render to texture
-		case CG_R_RENDERTOTEXTURE:
-			cls.nCgameRenderSyscalls ++;
-			re.RenderToTexture( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ] );
-			return 0;
-
-		//bani - flush gl rendering buffers
-		case CG_R_FINISH:
-			cls.nCgameRenderSyscalls ++;
-			re.Finish();
-			return 0;
-
 		case CG_R_LIGHTFORPOINT:
 			cls.nCgameRenderSyscalls ++;
 			return re.LightForPoint( (float*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ) );
@@ -1694,10 +1611,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_REGISTERANIMATION:
 			cls.nCgameRenderSyscalls ++;
 			return re.RegisterAnimation( (char*) VMA( 1 ) );
-
-		case CG_R_CHECKSKELETON:
-			cls.nCgameRenderSyscalls ++;
-			return re.CheckSkeleton( (refSkeleton_t*) VMA( 1 ), args[ 2 ], args[ 3 ] );
 
 		case CG_R_BUILDSKELETON:
 			cls.nCgameRenderSyscalls ++;
@@ -1718,21 +1631,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_ANIMFRAMERATE:
 			cls.nCgameRenderSyscalls ++;
 			return re.AnimFrameRate( args[ 1 ] );
-
-		case CG_R_GLYPH:
-			cls.nCgameRenderSyscalls ++;
-			re.GlyphVM( args[1], (char*) VMA(2), (glyphInfo_t*) VMA(3) );
-			return 0;
-
-		case CG_R_GLYPHCHAR:
-			cls.nCgameRenderSyscalls ++;
-			re.GlyphCharVM( args[1], args[2], (glyphInfo_t*) VMA(3) );
-			return 0;
-
-		case CG_R_UREGISTERFONT:
-			cls.nCgameRenderSyscalls ++;
-			re.UnregisterFontVM( args[1] );
-			return 0;
 
 		case CG_REGISTERVISTEST:
 			return re.RegisterVisTest();
