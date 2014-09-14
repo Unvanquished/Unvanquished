@@ -201,38 +201,13 @@ typedef enum cgameImport_s
   CG_SETCOLORGRADING,
 
   // Keys
-  CG_KEY_ISDOWN,
   CG_KEY_GETCATCHER,
   CG_KEY_SETCATCHER,
-  CG_KEY_GETKEY,
-  CG_KEY_GETOVERSTRIKEMODE,
-  CG_KEY_SETOVERSTRIKEMODE,
   CG_KEY_GETBINDINGBUF,
-  CG_KEY_SETBINDING,
   CG_KEY_KEYNUMTOSTRINGBUF,
 
-// Not sure
-  CG_INGAME_POPUP,
-  CG_INGAME_CLOSEPOPUP,
-
-  // Cinematic
-  CG_CIN_PLAYCINEMATIC,
-  CG_CIN_STOPCINEMATIC,
-  CG_CIN_RUNCINEMATIC,
-  CG_CIN_DRAWCINEMATIC,
-  CG_CIN_SETEXTENTS,
-
   // Lan
-  CG_LAN_LOADCACHEDSERVERS,
-  CG_LAN_SAVECACHEDSERVERS,
-  CG_LAN_ADDSERVER,
-  CG_LAN_REMOVESERVER,
-  CG_LAN_GETPINGQUEUECOUNT,
-  CG_LAN_CLEARPING,
-  CG_LAN_GETPING,
-  CG_LAN_GETPINGINFO,
   CG_LAN_GETSERVERCOUNT,
-  CG_LAN_GETSERVERADDRESSSTRING,
   CG_LAN_GETSERVERINFO,
   CG_LAN_GETSERVERPING,
   CG_LAN_MARKSERVERVISIBLE,
@@ -240,8 +215,6 @@ typedef enum cgameImport_s
   CG_LAN_UPDATEVISIBLEPINGS,
   CG_LAN_RESETPINGS,
   CG_LAN_SERVERSTATUS,
-  CG_LAN_SERVERISINFAVORITELIST,
-  CG_LAN_COMPARESERVERS,
 
   // Rocket
   CG_ROCKET_INIT,
@@ -253,8 +226,6 @@ typedef enum cgameImport_s
   CG_ROCKET_DELELTEEVENT,
   CG_ROCKET_REGISTERDATASOURCE,
   CG_ROCKET_DSADDROW,
-  CG_ROCKET_DSCHANGEROW,
-  CG_ROCKET_DSREMOVEROW,
   CG_ROCKET_DSCLEARTABLE,
   CG_ROCKET_SETINNERRML,
   CG_ROCKET_GETATTRIBUTE,
@@ -266,7 +237,6 @@ typedef enum cgameImport_s
   CG_ROCKET_DATAFORMATTERRAWDATA,
   CG_ROCKET_DATAFORMATTERFORMATTEDDATA,
   CG_ROCKET_REGISTERELEMENT,
-  CG_ROCKET_SETELEMENTDIMENSIONS,
   CG_ROCKET_GETELEMENTTAG,
   CG_ROCKET_GETELEMENTABSOLUTEOFFSET,
   CG_ROCKET_QUAKETORML,
@@ -786,12 +756,8 @@ int             trap_GetCurrentCmdNumber( void );
 qboolean        trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd );
 void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient );
 void            trap_SetClientLerpOrigin( float x, float y, float z );
-qboolean        trap_Key_IsDown( int keynum );
 int             trap_Key_GetCatcher( void );
 void            trap_Key_SetCatcher( int catcher );
-int             trap_Key_GetKey( const char *binding );
-qboolean        trap_Key_GetOverstrikeMode( void );
-void            trap_Key_SetOverstrikeMode( qboolean state );
 void            trap_S_StopBackgroundTrack( void );
 int             trap_RealTime( qtime_t *qtime );
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
@@ -804,7 +770,6 @@ qboolean        trap_GetEntityToken( char *buffer, int bufferSize );
 void            trap_UI_Popup( int arg0 );
 void            trap_UI_ClosePopup( const char *arg0 );
 void            trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen );
-void            trap_Key_SetBinding( int keynum, int team, const char *binding );
 int             trap_Parse_AddGlobalDefine( const char *define );
 int             trap_Parse_LoadSource( const char *filename );
 int             trap_Parse_FreeSource( int handle );
@@ -845,16 +810,7 @@ void            trap_UnregisterVisTest( qhandle_t hTest );
 void            trap_SetColorGrading( int slot, qhandle_t hShader );
 void            trap_R_ScissorEnable( qboolean enable );
 void            trap_R_ScissorSet( int x, int y, int w, int h );
-void            trap_LAN_LoadCachedServers( void );
-void            trap_LAN_SaveCachedServers( void );
-int             trap_LAN_AddServer( int source, const char *name, const char *addr );
-void            trap_LAN_RemoveServer( int source, const char *addr );
-int             trap_LAN_GetPingQueueCount( void );
-void            trap_LAN_ClearPing( int n );
-void            trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime );
-void            trap_LAN_GetPingInfo( int n, char *buf, int buflen );
 int             trap_LAN_GetServerCount( int source );
-void            trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen );
 void            trap_LAN_GetServerInfo( int source, int n, char *buf, int buflen );
 int             trap_LAN_GetServerPing( int source, int n );
 void            trap_LAN_MarkServerVisible( int source, int n, qboolean visible );
@@ -862,9 +818,7 @@ int             trap_LAN_ServerIsVisible( int source, int n );
 qboolean        trap_LAN_UpdateVisiblePings( int source );
 void            trap_LAN_ResetPings( int n );
 int             trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int maxLen );
-qboolean        trap_LAN_ServerIsInFavoriteList( int source, int n );
 qboolean        trap_GetNews( qboolean force );
-int             trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 );
 void            trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len );
 void            trap_PrepareKeyUp( void );
 void            trap_R_SetAltShaderTokens( const char * );
@@ -881,8 +835,6 @@ qboolean        trap_Rocket_GetEvent( void );
 void            trap_Rocket_DeleteEvent( void );
 void            trap_Rocket_RegisterDataSource( const char *name );
 void            trap_Rocket_DSAddRow( const char *name, const char *table, const char *data );
-void            trap_Rocket_DSChangeRow( const char *name, const char *table, int row, const char *data );
-void            trap_Rocket_DSRemoveRow( const char *name, const char *table, int row );
 void            trap_Rocket_DSClearTable( const char *name, const char *table );
 void            trap_Rocket_SetInnerRML( const char *RML, int parseFlags );
 void            trap_Rocket_GetAttribute( const char *attribute, char *out, int length );
@@ -894,7 +846,6 @@ void            trap_Rocket_RegisterDataFormatter( const char *name );
 void            trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
 void            trap_Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake );
 void            trap_Rocket_RegisterElement( const char *tag );
-void            trap_Rocket_SetElementDimensions( float x, float y );
 void            trap_Rocket_GetElementTag( char *tag, int length );
 void            trap_Rocket_GetElementAbsoluteOffset( float *x, float *y );
 void            trap_Rocket_QuakeToRML( const char *in, char *out, int length );

@@ -1442,9 +1442,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 	switch ( args[ 0 ] )
 	{
-		case CG_KEY_ISDOWN:
-			return Key_IsDown( args[ 1 ] );
-
 		case CG_KEY_GETCATCHER:
 			return Key_GetCatcher();
 
@@ -1452,50 +1449,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_SetCatcher( args[ 1 ] );
 			return 0;
 
-		case CG_KEY_GETKEY:
-			return Key_GetKey( (char*) VMA( 1 ), 0 ); // FIXME BIND
-
-		case CG_KEY_GETOVERSTRIKEMODE:
-			return Key_GetOverstrikeMode();
-
-		case CG_KEY_SETOVERSTRIKEMODE:
-			Key_SetOverstrikeMode( args[ 1 ] );
-			return 0;
-
-		case CG_CIN_PLAYCINEMATIC:
-			return CIN_PlayCinematic( (char*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ] );
-
-		case CG_CIN_STOPCINEMATIC:
-			return CIN_StopCinematic( args[ 1 ] );
-
-		case CG_CIN_RUNCINEMATIC:
-			return CIN_RunCinematic( args[ 1 ] );
-
-		case CG_CIN_DRAWCINEMATIC:
-			CIN_DrawCinematic( args[ 1 ] );
-			return 0;
-
-		case CG_CIN_SETEXTENTS:
-			CIN_SetExtents( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ] );
-			return 0;
-
-		case CG_INGAME_POPUP:
-			if ( cls.state == CA_ACTIVE && !clc.demoplaying )
-			{
-				Rocket_DocumentAction( (const char *) VMA( 1 ), "open" );
-			}
-
-			return 0;
-
-		case CG_INGAME_CLOSEPOPUP:
-			return 0;
-
 		case CG_KEY_GETBINDINGBUF:
 			Key_GetBindingBuf( args[ 1 ], args[ 2 ], (char*) VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case CG_KEY_SETBINDING:
-			Key_SetBinding( args[ 1 ], args[ 2 ], (char*) VMA( 3 ) ); // FIXME BIND
 			return 0;
 
 		case CG_KEY_KEYNUMTOSTRINGBUF:
@@ -1546,42 +1501,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_DSAddRow( (const char *) VMA(1), (const char *) VMA(2), (const char *) VMA(3) );
 			return 0;
 
-		case CG_LAN_LOADCACHEDSERVERS:
-			LAN_LoadCachedServers();
-			return 0;
-
-		case CG_LAN_SAVECACHEDSERVERS:
-			LAN_SaveServersToCache();
-			return 0;
-
-		case CG_LAN_ADDSERVER:
-			return LAN_AddServer( args[ 1 ], (const char *) VMA( 2 ), (const char *) VMA( 3 ) );
-
-		case CG_LAN_REMOVESERVER:
-			LAN_RemoveServer( args[ 1 ], (const char *) VMA( 2 ) );
-			return 0;
-
-		case CG_LAN_GETPINGQUEUECOUNT:
-			return LAN_GetPingQueueCount();
-
-		case CG_LAN_CLEARPING:
-			LAN_ClearPing( args[ 1 ] );
-			return 0;
-
-		case CG_LAN_GETPING:
-			LAN_GetPing( args[ 1 ], (char *)VMA( 2 ), args[ 3 ], (int*) VMA( 4 ) );
-			return 0;
-
-		case CG_LAN_GETPINGINFO:
-			LAN_GetPingInfo( args[ 1 ], (char *) VMA( 2 ), args[ 3 ] );
-			return 0;
-
 		case CG_LAN_GETSERVERCOUNT:
 			return LAN_GetServerCount( args[ 1 ] );
-
-		case CG_LAN_GETSERVERADDRESSSTRING:
-			LAN_GetServerAddressString( args[ 1 ], args[ 2 ], (char *) VMA( 3 ), args[ 4 ] );
-			return 0;
 
 		case CG_LAN_GETSERVERINFO:
 			LAN_GetServerInfo( args[ 1 ], args[ 2 ], (char *) VMA( 3 ), args[ 4 ] );
@@ -1606,12 +1527,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_LAN_SERVERSTATUS:
 			return LAN_GetServerStatus( (char *) VMA( 1 ), (char *) VMA( 2 ), args[ 3 ] );
-
-		case CG_LAN_SERVERISINFAVORITELIST:
-			return LAN_ServerIsInFavoriteList( args[ 1 ], args[ 2 ] );
-
-		case CG_LAN_COMPARESERVERS:
-			return LAN_CompareServers( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ] );
 
 		case CG_ROCKET_DSCLEARTABLE:
 			Rocket_DSClearTable( (const char *) VMA(1), (const char *) VMA(2) );
@@ -1651,10 +1566,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ROCKET_REGISTERELEMENT:
 			Rocket_RegisterElement( (const char *) VMA(1) );
-			return 0;
-
-		case CG_ROCKET_SETELEMENTDIMENSIONS:
-			Rocket_SetElementDimensions( VMF(1), VMF(2) );
 			return 0;
 
 		case CG_ROCKET_GETELEMENTTAG:

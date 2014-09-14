@@ -67,6 +67,10 @@ qboolean trap_FS_LoadPak( const char *pak )
 {
 }
 
+void trap_CompleteCallback( const char *complete )
+{
+}
+
 // All Miscs
 
 int trap_GetDemoState( void )
@@ -596,175 +600,33 @@ void trap_SetColorGrading( int slot, qhandle_t hShader )
 	VM::SendMsg<Render::SetColorGradingMsg>(slot, hShader);
 }
 
-//172.
-void trap_CompleteCallback( const char *complete )
-{
-    syscallVM( CG_COMPLETE_CALLBACK, complete );
-}
+// All keys
 
-//101.
-//return Key_IsDown(args[1]);
-qboolean trap_Key_IsDown( int keynum )
-{
-    return syscallVM( CG_KEY_ISDOWN, keynum );
-}
-
-//102.
-//return Key_GetCatcher();
 int trap_Key_GetCatcher( void )
 {
     return syscallVM( CG_KEY_GETCATCHER );
 }
 
-//103.
-//Key_SetCatcher(args[1]);
 void trap_Key_SetCatcher( int catcher )
 {
     syscallVM( CG_KEY_SETCATCHER, catcher );
 }
 
-//104.
-//return Key_GetKey(VMA(1));
-int trap_Key_GetKey( const char *binding )
-{
-    return syscallVM( CG_KEY_GETKEY, binding );
-}
-
-//105.
-//return Key_GetOverstrikeMode();
-qboolean trap_Key_GetOverstrikeMode( void )
-{
-    return syscallVM( CG_KEY_GETOVERSTRIKEMODE );
-}
-
-//106.
-//Key_SetOverstrikeMode(args[1]);
-void trap_Key_SetOverstrikeMode( qboolean state )
-{
-    syscallVM( CG_KEY_SETOVERSTRIKEMODE, state );
-}
-
-//126.
-//return CIN_PlayCinematic(VMA(1), args[2], args[3], args[4], args[5], args[6]);
-int trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits )
-{
-    return syscallVM( CG_CIN_PLAYCINEMATIC, arg0, xpos, ypos, width, height, bits );
-}
-
-//127.
-//return CIN_StopCinematic(args[1]);
-e_status trap_CIN_StopCinematic( int handle )
-{
-    return (e_status) syscallVM( CG_CIN_STOPCINEMATIC, handle );
-}
-
-//128.
-//return CIN_RunCinematic(args[1]);
-e_status trap_CIN_RunCinematic( int handle )
-{
-    return (e_status) syscallVM( CG_CIN_RUNCINEMATIC, handle );
-}
-
-//129.
-//CIN_DrawCinematic(args[1]);
-void trap_CIN_DrawCinematic( int handle )
-{
-    syscallVM( CG_CIN_DRAWCINEMATIC, handle );
-}
-
-//130.
-//CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
-void trap_CIN_SetExtents( int handle, int x, int y, int w, int h )
-{
-    syscallVM( CG_CIN_SETEXTENTS, handle, x, y, w, h );
-}
-
-//139.
-//if(cls.state == CA_ACTIVE && !clc.demoplaying) {
-//	if(uivm) {
-//		VM_Call(uivm, UI_SET_ACTIVE_MENU, args[1]);
-//	}
-//}
-void trap_UI_Popup( int arg0 )
-{
-    syscallVM( CG_INGAME_POPUP, arg0 );
-}
-
-//140.
-void trap_UI_ClosePopup( const char *arg0 )
-{
-    syscallVM( CG_INGAME_CLOSEPOPUP, arg0 );
-}
-
-//141.
-//Key_GetBindingBuf(args[1], VMA(2), args[3]);
 void trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
 {
     syscallVM( CG_KEY_GETBINDINGBUF, keynum, team, buf, buflen );
 }
 
-//142.
-//Key_SetBinding(args[1], VMA(2));
-void trap_Key_SetBinding( int keynum, int team, const char *binding )
-{
-    syscallVM( CG_KEY_SETBINDING, keynum, team, binding );
-}
-
-//148.
-//Key_KeynumToStringBuf(args[1], VMA(2), args[3]);
 void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 {
     syscallVM( CG_KEY_KEYNUMTOSTRINGBUF, keynum, buf, buflen );
 }
 
-void trap_LAN_LoadCachedServers( void )
-{
-    syscallVM( CG_LAN_LOADCACHEDSERVERS );
-}
-
-void trap_LAN_SaveCachedServers( void )
-{
-    syscallVM( CG_LAN_SAVECACHEDSERVERS );
-}
-
-int trap_LAN_AddServer( int source, const char *name, const char *addr )
-{
-    return syscallVM( CG_LAN_ADDSERVER, source, name, addr );
-}
-
-void trap_LAN_RemoveServer( int source, const char *addr )
-{
-    syscallVM( CG_LAN_REMOVESERVER, source, addr );
-}
-
-int trap_LAN_GetPingQueueCount( void )
-{
-    return syscallVM( CG_LAN_GETPINGQUEUECOUNT );
-}
-
-void trap_LAN_ClearPing( int n )
-{
-    syscallVM( CG_LAN_CLEARPING, n );
-}
-
-void trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime )
-{
-    syscallVM( CG_LAN_GETPING, n, buf, buflen, pingtime );
-}
-
-void trap_LAN_GetPingInfo( int n, char *buf, int buflen )
-{
-    syscallVM( CG_LAN_GETPINGINFO, n, buf, buflen );
-}
+// All LAN
 
 int trap_LAN_GetServerCount( int source )
 {
     return syscallVM( CG_LAN_GETSERVERCOUNT, source );
-}
-
-void trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen )
-{
-    syscallVM( CG_LAN_GETSERVERADDRESSSTRING, source, n, buf, buflen );
 }
 
 void trap_LAN_GetServerInfo( int source, int n, char *buf, int buflen )
@@ -802,15 +664,7 @@ int trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int ma
     return syscallVM( CG_LAN_SERVERSTATUS, serverAddress, serverStatus, maxLen );
 }
 
-qboolean trap_LAN_ServerIsInFavoriteList( int source, int n )
-{
-    return syscallVM( CG_LAN_SERVERISINFAVORITELIST, source, n );
-}
-
-int trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 )
-{
-    return syscallVM( CG_LAN_COMPARESERVERS, source, sortKey, sortDir, s1, s2 );
-}
+// All rocket
 
 void trap_Rocket_Init( void )
 {
@@ -855,16 +709,6 @@ void trap_Rocket_RegisterDataSource( const char *name )
 void trap_Rocket_DSAddRow( const char *name, const char *table, const char *data )
 {
     syscallVM( CG_ROCKET_DSADDROW, name, table, data );
-}
-
-void trap_Rocket_DSChangeRow( const char *name, const char *table, int row, const char *data )
-{
-    syscallVM( CG_ROCKET_DSCHANGEROW, name, table, row, data );
-}
-
-void trap_Rocket_DSRemoveRow( const char *name, const char *table, int row )
-{
-    syscallVM( CG_ROCKET_DSREMOVEROW, name, table, row );
 }
 
 void trap_Rocket_DSClearTable( const char *name, const char *table )
@@ -918,11 +762,6 @@ void trap_Rocket_DataFormatterFormattedData( int handle, const char *data, qbool
 void trap_Rocket_RegisterElement( const char *tag )
 {
     syscallVM( CG_ROCKET_REGISTERELEMENT, tag );
-}
-
-void trap_Rocket_SetElementDimensions( float x, float y )
-{
-    syscallVM( CG_ROCKET_SETELEMENTDIMENSIONS, PASSFLOAT( x ), PASSFLOAT( y ) );
 }
 
 void trap_Rocket_GetElementTag( char *tag, int length )
