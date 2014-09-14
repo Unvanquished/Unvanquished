@@ -2446,86 +2446,86 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-        // All keys
+		// All keys
 
-        case CG_KEY_GETCATCHER:
+		case CG_KEY_GETCATCHER:
 			IPC::HandleMsg<Key::GetCatcherMsg>(channel, std::move(reader), [this] (int& catcher) {
-               catcher = Key_GetCatcher();
+				catcher = Key_GetCatcher();
 			});
 			break;
 
-        case CG_KEY_SETCATCHER:
+		case CG_KEY_SETCATCHER:
 			IPC::HandleMsg<Key::SetCatcherMsg>(channel, std::move(reader), [this] (int catcher) {
-               Key_SetCatcher(catcher);
+				Key_SetCatcher(catcher);
 			});
 			break;
 
-        case CG_KEY_GETBINDINGBUF:
+		case CG_KEY_GETBINDINGBUF:
 			IPC::HandleMsg<Key::GetBindingBufMsg>(channel, std::move(reader), [this] (int keynum, int team, int len, std::string& result) {
 				std::unique_ptr<char[]> buffer(new char[len]);
-                Key_GetBindingBuf(keynum, team, buffer.get(), len);
+				Key_GetBindingBuf(keynum, team, buffer.get(), len);
 				result.assign(buffer.get(), len);
 			});
 			break;
 
-        case CG_KEY_KEYNUMTOSTRINGBUF:
+		case CG_KEY_KEYNUMTOSTRINGBUF:
 			IPC::HandleMsg<Key::KeyNumToStringMsg>(channel, std::move(reader), [this] (int keynum, int len, std::string& result) {
 				std::unique_ptr<char[]> buffer(new char[len]);
-                Key_KeynumToStringBuf(keynum, buffer.get(), len);
+				Key_KeynumToStringBuf(keynum, buffer.get(), len);
 				result.assign(buffer.get(), len);
 			});
 			break;
 
-        // All LAN
+			// All LAN
 
-        case CG_LAN_GETSERVERCOUNT:
+		case CG_LAN_GETSERVERCOUNT:
 			IPC::HandleMsg<LAN::GetServerCountMsg>(channel, std::move(reader), [this] (int source, int& count) {
-                count = LAN_GetServerCount(source);
+				count = LAN_GetServerCount(source);
 			});
 			break;
 
-        case CG_LAN_GETSERVERINFO:
+		case CG_LAN_GETSERVERINFO:
 			IPC::HandleMsg<LAN::GetServerInfoMsg>(channel, std::move(reader), [this] (int source, int n, int len, std::string& info) {
 				std::unique_ptr<char[]> buffer(new char[len]);
-                LAN_GetServerInfo(source, n, buffer.get(), len);
+				LAN_GetServerInfo(source, n, buffer.get(), len);
 				info.assign(buffer.get(), len);
 			});
 			break;
 
-        case CG_LAN_GETSERVERPING:
+		case CG_LAN_GETSERVERPING:
 			IPC::HandleMsg<LAN::GetServerPingMsg>(channel, std::move(reader), [this] (int source, int n, int& ping) {
-                ping = LAN_GetServerPing(source, n);
+				ping = LAN_GetServerPing(source, n);
 			});
 			break;
 
-        case CG_LAN_MARKSERVERVISIBLE:
+		case CG_LAN_MARKSERVERVISIBLE:
 			IPC::HandleMsg<LAN::MarkServerVisibleMsg>(channel, std::move(reader), [this] (int source, int n, bool visible) {
-                LAN_MarkServerVisible(source, n, visible);
+				LAN_MarkServerVisible(source, n, visible);
 			});
 			break;
 
-        case CG_LAN_SERVERISVISIBLE:
+		case CG_LAN_SERVERISVISIBLE:
 			IPC::HandleMsg<LAN::ServerIsVisibleMsg>(channel, std::move(reader), [this] (int source, int n, bool& visible) {
-                visible = LAN_ServerIsVisible(source, n);
+				visible = LAN_ServerIsVisible(source, n);
 			});
 			break;
 
-        case CG_LAN_UPDATEVISIBLEPINGS:
+		case CG_LAN_UPDATEVISIBLEPINGS:
 			IPC::HandleMsg<LAN::UpdateVisiblePingsMsg>(channel, std::move(reader), [this] (int source, bool& res) {
-			    res = LAN_UpdateVisiblePings(source);
+				res = LAN_UpdateVisiblePings(source);
 			});
 			break;
 
-        case CG_LAN_RESETPINGS:
+		case CG_LAN_RESETPINGS:
 			IPC::HandleMsg<LAN::ResetPingsMsg>(channel, std::move(reader), [this] (int n) {
-                LAN_ResetPings(n);
+				LAN_ResetPings(n);
 			});
 			break;
 
-        case CG_LAN_SERVERSTATUS:
+		case CG_LAN_SERVERSTATUS:
 			IPC::HandleMsg<LAN::ServerStatusMsg>(channel, std::move(reader), [this] (std::string serverAddress, int len, std::string& status, int& res) {
 				std::unique_ptr<char[]> buffer(new char[len]);
-                res = LAN_GetServerStatus(serverAddress.c_str(), buffer.get(), len);
+				res = LAN_GetServerStatus(serverAddress.c_str(), buffer.get(), len);
 				status.assign(buffer.get(), len);
 			});
 			break;
