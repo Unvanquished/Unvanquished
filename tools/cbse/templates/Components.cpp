@@ -131,4 +131,4 @@ const MessageHandler {{entity.get_type_name()}}::messageHandlers[] = {
 //%L
 #undef myoffsetof
 
-//* vi:ts=4:ai:filetype=jinja:
+//* vi:ai:filetype=jinja:
