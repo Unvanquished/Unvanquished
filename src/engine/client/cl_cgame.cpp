@@ -1442,94 +1442,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 	switch ( args[ 0 ] )
 	{
-		case CG_R_LOADWORLDMAP:
-			cls.nCgameRenderSyscalls ++;
-			re.SetWorldVisData( CM_ClusterPVS( -1 ) );
-			re.LoadWorld( (char*) VMA( 1 ) );
-			return 0;
-
-		case CG_R_REGISTERMODEL:
-			cls.nCgameRenderSyscalls ++;
-			return re.RegisterModel( (char*) VMA( 1 ) );
-
-		case CG_R_REGISTERSKIN:
-			cls.nCgameRenderSyscalls ++;
-			return re.RegisterSkin( (char*) VMA( 1 ) );
-
-		case CG_R_REGISTERSHADER:
-			cls.nCgameRenderSyscalls ++;
-			return re.RegisterShader( (char*) VMA( 1 ), (RegisterShaderFlags_t) args[ 2 ] );
-
-		case CG_R_REGISTERFONT:
-			cls.nCgameRenderSyscalls ++;
-			re.RegisterFontVM( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ], (fontMetrics_t*) VMA( 4 ) );
-			return 0;
-
-		case CG_R_CLEARSCENE:
-			cls.nCgameRenderSyscalls ++;
-			re.ClearScene();
-			return 0;
-
-		case CG_R_ADDREFENTITYTOSCENE:
-			cls.nCgameRenderSyscalls ++;
-			re.AddRefEntityToScene( (refEntity_t*) VMA( 1 ) );
-			return 0;
-
-		case CG_R_ADDPOLYTOSCENE:
-			cls.nCgameRenderSyscalls ++;
-			re.AddPolyToScene( args[ 1 ], args[ 2 ], (polyVert_t*) VMA( 3 ) );
-			return 0;
-
-		case CG_R_ADDPOLYSTOSCENE:
-			cls.nCgameRenderSyscalls ++;
-			re.AddPolysToScene( args[ 1 ], args[ 2 ], (polyVert_t*) VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case CG_R_ADDLIGHTTOSCENE:
-			cls.nCgameRenderSyscalls ++;
-			re.AddLightToScene( (float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[ 7 ], args[ 8 ] );
-			return 0;
-
-		case CG_R_ADDADDITIVELIGHTTOSCENE:
-			cls.nCgameRenderSyscalls ++;
-			re.AddAdditiveLightToScene( (float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ) );
-			return 0;
-
-		case CG_R_RENDERSCENE:
-			cls.nCgameRenderSyscalls ++;
-			re.RenderScene( (refdef_t*) VMA( 1 ) );
-			return 0;
-
-		case CG_R_SETCOLOR:
-			cls.nCgameRenderSyscalls ++;
-			re.SetColor( (float*) VMA( 1 ) );
-			return 0;
-
-			// Tremulous
-		case CG_R_SETCLIPREGION:
-			cls.nCgameRenderSyscalls ++;
-			re.SetClipRegion( (float*) VMA( 1 ) );
-			return 0;
-
-		case CG_R_DRAWSTRETCHPIC:
-			cls.nCgameRenderSyscalls ++;
-			re.DrawStretchPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[ 9 ] );
-			return 0;
-
-		case CG_R_DRAWROTATEDPIC:
-			cls.nCgameRenderSyscalls ++;
-			re.DrawRotatedPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[ 9 ], VMF( 10 ) );
-			return 0;
-
-		case CG_R_MODELBOUNDS:
-			cls.nCgameRenderSyscalls ++;
-			re.ModelBounds( args[ 1 ], (float*) VMA( 2 ), (float*) VMA( 3 ) );
-			return 0;
-
-		case CG_R_LERPTAG:
-			cls.nCgameRenderSyscalls ++;
-			return re.LerpTag( (orientation_t*) VMA( 1 ), (refEntity_t*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
-
 		case CG_KEY_ISDOWN:
 			return Key_IsDown( args[ 1 ] );
 
@@ -1567,11 +1479,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			CIN_SetExtents( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ] );
 			return 0;
 
-		case CG_R_REMAP_SHADER:
-			cls.nCgameRenderSyscalls ++;
-			re.RemapShader( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ) );
-			return 0;
-
 		case CG_INGAME_POPUP:
 			if ( cls.state == CA_ACTIVE && !clc.demoplaying )
 			{
@@ -1596,76 +1503,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_KeynumToStringBuf( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
-		case CG_R_INPVS:
-			cls.nCgameRenderSyscalls ++;
-			return re.inPVS( (float*) VMA( 1 ), (float*) VMA( 2 ) );
-
-		case CG_R_INPVVS:
-			cls.nCgameRenderSyscalls ++;
-			return re.inPVVS( (float*) VMA( 1 ), (float*) VMA( 2 ) );
-
-		case CG_R_LIGHTFORPOINT:
-			cls.nCgameRenderSyscalls ++;
-			return re.LightForPoint( (float*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ) );
-
-		case CG_R_REGISTERANIMATION:
-			cls.nCgameRenderSyscalls ++;
-			return re.RegisterAnimation( (char*) VMA( 1 ) );
-
-		case CG_R_BUILDSKELETON:
-			cls.nCgameRenderSyscalls ++;
-			return re.BuildSkeleton( (refSkeleton_t*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], VMF( 5 ), args[ 6 ] );
-
-		case CG_R_BLENDSKELETON:
-			cls.nCgameRenderSyscalls ++;
-			return re.BlendSkeleton( (refSkeleton_t*) VMA( 1 ), (refSkeleton_t*) VMA( 2 ), VMF( 3 ) );
-
-		case CG_R_BONEINDEX:
-			cls.nCgameRenderSyscalls ++;
-			return re.BoneIndex( args[ 1 ], (char*) VMA( 2 ) );
-
-		case CG_R_ANIMNUMFRAMES:
-			cls.nCgameRenderSyscalls ++;
-			return re.AnimNumFrames( args[ 1 ] );
-
-		case CG_R_ANIMFRAMERATE:
-			cls.nCgameRenderSyscalls ++;
-			return re.AnimFrameRate( args[ 1 ] );
-
-		case CG_REGISTERVISTEST:
-			return re.RegisterVisTest();
-
-		case CG_ADDVISTESTTOSCENE:
-			re.AddVisTestToScene( args[1], (float*) VMA(2), VMF(3), VMF(4) );
-			return 0;
-
-		case CG_CHECKVISIBILITY:
-			cls.nCgameRenderSyscalls ++;
-			return FloatAsInt( re.CheckVisibility( args[1] ) );
-
-		case CG_UNREGISTERVISTEST:
-			cls.nCgameRenderSyscalls ++;
-			re.UnregisterVisTest( args[1] );
-			return 0;
-
-		case CG_SETCOLORGRADING:
-			cls.nCgameRenderSyscalls ++;
-			re.SetColorGrading( args[1], args[2] );
-			return 0;
-
 		case CG_CM_DISTANCETOMODEL:
 			cls.nCgamePhysicsSyscalls ++;
 			return FloatAsInt( CM_DistanceToModel( (float*) VMA(1), args[2] ) );
-
-		case CG_R_SCISSOR_ENABLE:
-			cls.nCgameRenderSyscalls ++;
-			re.ScissorEnable( args[1] );
-			return 0;
-
-		case CG_R_SCISSOR_SET:
-			cls.nCgameRenderSyscalls ++;
-			re.ScissorSet( args[1], args[2], args[3], args[4] );
-			return 0;
 
 		case CG_R_GETSHADERNAMEFROMHANDLE:
 			Q_strncpyz( (char *) VMA( 2 ), re.ShaderNameFromHandle( args[ 1 ] ), args[ 3 ] );
@@ -1863,11 +1703,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ROCKET_CLEARTEXT:
 			Rocket_ClearText();
-			return 0;
-
-		case CG_R_SETALTSHADERTOKENS:
-			cls.nCgameRenderSyscalls ++;
-			re.SetAltShaderTokens( ( const char * )VMA(1) );
 			return 0;
 
 		case CG_ROCKET_REGISTERPROPERTY:
@@ -2781,6 +2616,8 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
+		// All sounds
+
 		case CG_S_STARTSOUND:
 			IPC::HandleMsg<Audio::StartSoundMsg>(channel, std::move(reader), [this] (std::array<float, 3> origin, int entityNum, int sfx) {
 				Audio::StartSound(entityNum, origin.data(), sfx);
@@ -2862,6 +2699,226 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		case CG_S_ENDREGISTRATION:
 			IPC::HandleMsg<Audio::EndRegistrationMsg>(channel, std::move(reader), [this] {
 				Audio::EndRegistration();
+			});
+			break;
+
+		// All renderer
+
+		case CG_R_SETALTSHADERTOKENS:
+			IPC::HandleMsg<Render::SetAltShaderTokenMsg>(channel, std::move(reader), [this] (std::string tokens) {
+				re.SetAltShaderTokens(tokens.c_str());
+			});
+			break;
+
+		case CG_R_SCISSOR_ENABLE:
+			IPC::HandleMsg<Render::ScissorEnableMsg>(channel, std::move(reader), [this] (bool enable) {
+				re.ScissorEnable(enable);
+			});
+			break;
+
+		case CG_R_SCISSOR_SET:
+			IPC::HandleMsg<Render::ScissorSetMsg>(channel, std::move(reader), [this] (int x, int y, int w, int h) {
+				re.ScissorSet(x, y, w, h);
+			});
+			break;
+
+		case CG_R_INPVVS:
+			IPC::HandleMsg<Render::InPVVSMsg>(channel, std::move(reader), [this] (std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
+				res = re.inPVVS(p1.data(), p2.data());
+			});
+			break;
+
+		case CG_R_LOADWORLDMAP:
+			IPC::HandleMsg<Render::LoadWorldMapMsg>(channel, std::move(reader), [this] (std::string mapName) {
+				re.SetWorldVisData(CM_ClusterPVS(-1));
+				re.LoadWorld(mapName.c_str());
+			});
+			break;
+
+		case CG_R_REGISTERMODEL:
+			IPC::HandleMsg<Render::RegisterModelMsg>(channel, std::move(reader), [this] (std::string name, int& handle) {
+				handle = re.RegisterModel(name.c_str());
+			});
+			break;
+
+		case CG_R_REGISTERSKIN:
+			IPC::HandleMsg<Render::RegisterSkinMsg>(channel, std::move(reader), [this] (std::string name, int& handle) {
+				handle = re.RegisterSkin(name.c_str());
+			});
+			break;
+
+		case CG_R_REGISTERSHADER:
+			IPC::HandleMsg<Render::RegisterShaderMsg>(channel, std::move(reader), [this] (std::string name, int flags, int& handle) {
+				handle = re.RegisterShader(name.c_str(), (RegisterShaderFlags) flags);
+			});
+			break;
+
+		case CG_R_REGISTERFONT:
+			IPC::HandleMsg<Render::RegisterFontMsg>(channel, std::move(reader), [this] (std::string name, std::string fallbackName, int pointSize, fontMetrics_t& font) {
+				re.RegisterFontVM(name.c_str(), fallbackName.c_str(), pointSize, &font);
+			});
+			break;
+
+		case CG_R_CLEARSCENE:
+			IPC::HandleMsg<Render::ClearSceneMsg>(channel, std::move(reader), [this] {
+				re.ClearScene();
+			});
+			break;
+
+		case CG_R_ADDREFENTITYTOSCENE:
+			IPC::HandleMsg<Render::AddRefEntityToSceneMsg>(channel, std::move(reader), [this] (refEntity_t entity) {
+				re.AddRefEntityToScene(&entity);
+			});
+			break;
+
+		case CG_R_ADDPOLYTOSCENE:
+			IPC::HandleMsg<Render::AddPolyToSceneMsg>(channel, std::move(reader), [this] (int shader, std::vector<polyVert_t> verts) {
+				re.AddPolyToScene(shader, verts.size(), verts.data());
+			});
+			break;
+
+		case CG_R_ADDPOLYSTOSCENE:
+			IPC::HandleMsg<Render::AddPolysToSceneMsg>(channel, std::move(reader), [this] (int shader, std::vector<polyVert_t> verts, int numPolys) {
+				re.AddPolysToScene(shader, verts.size(), verts.data(), numPolys);
+			});
+			break;
+
+		case CG_R_ADDLIGHTTOSCENE:
+			IPC::HandleMsg<Render::AddLightToSceneMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, float radius, float intensity, float r, float g, float b, int shader, int flags) {
+				re.AddLightToScene(point.data(), radius, intensity, r, g, b, shader, flags);
+			});
+			break;
+
+		case CG_R_ADDADDITIVELIGHTTOSCENE:
+			IPC::HandleMsg<Render::AddAdditiveLightToSceneMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, float intensity, float r, float g, float b) {
+				re.AddAdditiveLightToScene(point.data(), intensity, r, g, b);
+			});
+			break;
+
+		case CG_R_RENDERSCENE:
+			IPC::HandleMsg<Render::RenderSceneMsg>(channel, std::move(reader), [this] (refdef_t rd) {
+				re.RenderScene(&rd);
+			});
+			break;
+
+		case CG_R_SETCOLOR:
+			IPC::HandleMsg<Render::SetColorMsg>(channel, std::move(reader), [this] (std::array<float, 4> color) {
+				re.SetColor(color.data());
+			});
+			break;
+
+		case CG_R_SETCLIPREGION:
+			IPC::HandleMsg<Render::SetClipRegionMsg>(channel, std::move(reader), [this] (std::array<float, 4> region) {
+				re.SetClipRegion(region.data());
+			});
+			break;
+
+		case CG_R_DRAWSTRETCHPIC:
+			IPC::HandleMsg<Render::DrawStretchPicMsg>(channel, std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader) {
+				re.DrawStretchPic(x, y, w, h, s1, t1, s2, t2, shader);
+			});
+			break;
+
+		case CG_R_DRAWROTATEDPIC:
+			IPC::HandleMsg<Render::DrawRotatedPicMsg>(channel, std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader, float angle) {
+				re.DrawRotatedPic(x, y, w, h, s1, t1, s2, t2, shader, angle);
+			});
+			break;
+
+		case CG_R_MODELBOUNDS:
+			IPC::HandleMsg<Render::ModelBoundsMsg>(channel, std::move(reader), [this] (int handle, std::array<float, 3>& mins, std::array<float, 3>& maxs) {
+				re.ModelBounds(handle, mins.data(), maxs.data());
+			});
+			break;
+
+		case CG_R_LERPTAG:
+			IPC::HandleMsg<Render::LerpTagMsg>(channel, std::move(reader), [this] (refEntity_t entity, std::string tagName, int startIndex, orientation_t& tag, int& res) {
+				res = re.LerpTag(&tag, &entity, tagName.c_str(), startIndex);
+			});
+			break;
+
+		case CG_R_REMAP_SHADER:
+			IPC::HandleMsg<Render::RemapShaderMsg>(channel, std::move(reader), [this] (std::string oldShader, std::string newShader, std::string timeOffset) {
+				re.RemapShader(oldShader.c_str(), newShader.c_str(), timeOffset.c_str());
+			});
+			break;
+
+		case CG_R_INPVS:
+			IPC::HandleMsg<Render::InPVSMsg>(channel, std::move(reader), [this] (std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
+				res = re.inPVS(p1.data(), p2.data());
+			});
+			break;
+
+		case CG_R_LIGHTFORPOINT:
+			IPC::HandleMsg<Render::LightForPointMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, std::array<float, 3>& ambient, std::array<float, 3>& directed, std::array<float, 3>& dir, int res) {
+				res = re.LightForPoint(point.data(), ambient.data(), directed.data(), dir.data());
+			});
+			break;
+
+		case CG_R_REGISTERANIMATION:
+			IPC::HandleMsg<Render::RegisterAnimationMsg>(channel, std::move(reader), [this] (std::string name, int& handle) {
+				handle = re.RegisterAnimation(name.c_str());
+			});
+			break;
+
+		case CG_R_BUILDSKELETON:
+			IPC::HandleMsg<Render::BuildSkeletonMsg>(channel, std::move(reader), [this] (int anim, int startFrame, int endFrame, float frac, bool clearOrigin, refSkeleton_t& skel, int& res) {
+				res = re.BuildSkeleton(&skel, anim, startFrame, endFrame, frac, clearOrigin);
+			});
+			break;
+
+		case CG_R_BLENDSKELETON:
+			IPC::HandleMsg<Render::BlendSkeletonMsg>(channel, std::move(reader), [this] (refSkeleton_t skel1, refSkeleton_t skel2, float frac, refSkeleton_t& resSkel, int& res) {
+				memcpy(&resSkel, &skel1, sizeof(refSkeleton_t));
+				res = re.BlendSkeleton(&resSkel, &skel2, frac);
+			});
+			break;
+
+		case CG_R_BONEINDEX:
+			IPC::HandleMsg<Render::BoneIndexMsg>(channel, std::move(reader), [this] (int model, std::string boneName, int& index) {
+				index = re.BoneIndex(model, boneName.c_str());
+			});
+			break;
+
+		case CG_R_ANIMNUMFRAMES:
+			IPC::HandleMsg<Render::AnimNumFramesMsg>(channel, std::move(reader), [this] (int anim, int& res) {
+				res = re.AnimNumFrames(anim);
+			});
+			break;
+
+		case CG_R_ANIMFRAMERATE:
+			IPC::HandleMsg<Render::AnimFrameRateMsg>(channel, std::move(reader), [this] (int anim, int& res) {
+				res = re.AnimFrameRate(anim);
+			});
+			break;
+
+		case CG_REGISTERVISTEST:
+			IPC::HandleMsg<Render::RegisterVisTestMsg>(channel, std::move(reader), [this] (int& handle) {
+				handle = re.RegisterVisTest();
+			});
+			break;
+
+		case CG_ADDVISTESTTOSCENE:
+			IPC::HandleMsg<Render::AddVisTestToSceneMsg>(channel, std::move(reader), [this] (int handle, std::array<float, 3> pos, float depthAdjust, float area) {
+				re.AddVisTestToScene(handle, pos.data(), depthAdjust, area);
+			});
+			break;
+
+		case CG_CHECKVISIBILITY:
+			IPC::HandleMsg<Render::CheckVisibilityMsg>(channel, std::move(reader), [this] (int handle, float& res) {
+				res = re.CheckVisibility(handle);
+			});
+			break;
+
+		case CG_UNREGISTERVISTEST:
+			IPC::HandleMsg<Render::UnregisterVisTestMsg>(channel, std::move(reader), [this] (int handle) {
+				re.UnregisterVisTest(handle);
+			});
+			break;
+
+		case CG_SETCOLORGRADING:
+			IPC::HandleMsg<Render::SetColorGradingMsg>(channel, std::move(reader), [this] (int slot, int shader) {
+				re.SetColorGrading(slot, shader);
 			});
 			break;
 

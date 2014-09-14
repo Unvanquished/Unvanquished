@@ -351,180 +351,249 @@ void trap_S_EndRegistration( void )
 
 // All renderer
 
-void trap_R_LoadWorldMap( const char *mapname )
+void trap_R_SetAltShaderTokens( const char *str )
 {
-    syscallVM( CG_R_LOADWORLDMAP, mapname );
+	VM::SendMsg<Render::SetAltShaderTokenMsg>(str);
 }
 
-qhandle_t trap_R_RegisterModel( const char *name )
+void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len )
 {
-    return syscallVM( CG_R_REGISTERMODEL, name );
-}
-
-qhandle_t trap_R_RegisterSkin( const char *name )
-{
-    return syscallVM( CG_R_REGISTERSKIN, name );
-}
-
-qhandle_t trap_R_RegisterShader( const char *name, RegisterShaderFlags_t flags )
-{
-    return syscallVM( CG_R_REGISTERSHADER, name, flags );
-}
-
-void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
-{
-    syscallVM( CG_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
-}
-
-void trap_R_ClearScene( void )
-{
-    syscallVM( CG_R_CLEARSCENE );
-}
-
-void trap_R_AddRefEntityToScene( const refEntity_t *re )
-{
-    syscallVM( CG_R_ADDREFENTITYTOSCENE, re );
-}
-
-void trap_R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts )
-{
-    syscallVM( CG_R_ADDPOLYTOSCENE, hShader, numVerts, verts );
-}
-
-void trap_R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
-{
-    syscallVM( CG_R_ADDPOLYSTOSCENE, hShader, numVerts, verts, numPolys );
-}
-
-void trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
-{
-    syscallVM( CG_R_ADDLIGHTTOSCENE, org, PASSFLOAT( radius ), PASSFLOAT( intensity ), PASSFLOAT( r ), PASSFLOAT( g ), PASSFLOAT( b ), hShader, flags );
-}
-
-void trap_R_AddAdditiveLightToScene( const vec3_t org, float intensity, float r, float g, float b )
-{
-    syscallVM( CG_R_ADDADDITIVELIGHTTOSCENE, org, PASSFLOAT( intensity ), PASSFLOAT( r ), PASSFLOAT( g ), PASSFLOAT( b ) );
-}
-
-void trap_R_RenderScene( const refdef_t *fd )
-{
-    syscallVM( CG_R_RENDERSCENE, fd );
-}
-
-void trap_R_SetColor( const float *rgba )
-{
-    syscallVM( CG_R_SETCOLOR, rgba );
-}
-
-void trap_R_SetClipRegion( const float *region )
-{
-    syscallVM( CG_R_SETCLIPREGION, region );
-}
-
-void trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader )
-{
-    syscallVM( CG_R_DRAWSTRETCHPIC, PASSFLOAT( x ), PASSFLOAT( y ), PASSFLOAT( w ), PASSFLOAT( h ), PASSFLOAT( s1 ), PASSFLOAT( t1 ), PASSFLOAT( s2 ), PASSFLOAT( t2 ), hShader );
-}
-
-void trap_R_DrawRotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle )
-{
-    syscallVM( CG_R_DRAWROTATEDPIC, PASSFLOAT( x ), PASSFLOAT( y ), PASSFLOAT( w ), PASSFLOAT( h ), PASSFLOAT( s1 ), PASSFLOAT( t1 ), PASSFLOAT( s2 ), PASSFLOAT( t2 ), hShader, PASSFLOAT( angle ) );
-}
-
-void trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs )
-{
-    syscallVM( CG_R_MODELBOUNDS, model, mins, maxs );
-}
-
-int trap_R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
-{
-    return syscallVM( CG_R_LERPTAG, tag, refent, tagName, startIndex );
-}
-
-void trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset )
-{
-    syscallVM( CG_R_REMAP_SHADER, oldShader, newShader, timeOffset );
-}
-
-qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
-{
-    return syscallVM( CG_R_INPVS, p1, p2 );
-}
-
-int trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
-{
-    return syscallVM( CG_R_LIGHTFORPOINT, point, ambientLight, directedLight, lightDir );
-}
-
-qhandle_t trap_R_RegisterAnimation( const char *name )
-{
-    return syscallVM( CG_R_REGISTERANIMATION, name );
-}
-
-int trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin )
-{
-    return syscallVM( CG_R_BUILDSKELETON, skel, anim, startFrame, endFrame, PASSFLOAT( frac ), clearOrigin );
-}
-
-int trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
-{
-    return syscallVM( CG_R_BLENDSKELETON, skel, blend, PASSFLOAT( frac ) );
-}
-
-int trap_R_BoneIndex( qhandle_t hModel, const char *boneName )
-{
-    return syscallVM( CG_R_BONEINDEX, hModel, boneName );
-}
-
-int trap_R_AnimNumFrames( qhandle_t hAnim )
-{
-    return syscallVM( CG_R_ANIMNUMFRAMES, hAnim );
-}
-
-int trap_R_AnimFrameRate( qhandle_t hAnim )
-{
-    return syscallVM( CG_R_ANIMFRAMERATE, hAnim );
-}
-
-qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
-{
-    return syscallVM( CG_R_INPVVS, p1, p2 );
-}
-
-qhandle_t trap_RegisterVisTest( void )
-{
-    return syscallVM( CG_REGISTERVISTEST );
-}
-
-void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, float area )
-{
-    syscallVM( CG_ADDVISTESTTOSCENE, hTest, pos, PASSFLOAT( depthAdjust ),
-            PASSFLOAT( area ) );
-}
-
-float trap_CheckVisibility( qhandle_t hTest )
-{
-    return syscallVM( CG_CHECKVISIBILITY, hTest );
-}
-
-void trap_UnregisterVisTest( qhandle_t hTest )
-{
-    syscallVM( CG_UNREGISTERVISTEST, hTest );
-}
-
-void trap_SetColorGrading( int slot, qhandle_t hShader )
-{
-    syscallVM( CG_SETCOLORGRADING, slot, hShader );
+	std::string result;
+	VM::SendMsg<Render::GetShaderNameFromHandleMsg>(shader, len, result);
+	Q_strncpyz(out, result.c_str(), len);
 }
 
 void trap_R_ScissorEnable( qboolean enable )
 {
-    syscallVM( CG_R_SCISSOR_ENABLE, enable );
+	VM::SendMsg<Render::ScissorEnableMsg>(enable);
 }
 
 void trap_R_ScissorSet( int x, int y, int w, int h )
 {
-    syscallVM( CG_R_SCISSOR_SET, x, y, w, h );
+	VM::SendMsg<Render::ScissorSetMsg>(x, y, w, h);
+}
+
+qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
+{
+	bool res;
+	std::array<float, 3> myp1, myp2;
+	VectorCopy(p1, myp1.data());
+	VectorCopy(p2, myp2.data());
+	VM::SendMsg<Render::InPVVSMsg>(myp1, myp2, res);
+	return res;
+}
+
+void trap_R_LoadWorldMap( const char *mapname )
+{
+	VM::SendMsg<Render::LoadWorldMapMsg>(mapname);
+}
+
+qhandle_t trap_R_RegisterModel( const char *name )
+{
+	int handle;
+	VM::SendMsg<Render::RegisterModelMsg>(name, handle);
+	return handle;
+}
+
+qhandle_t trap_R_RegisterSkin( const char *name )
+{
+	int handle;
+	VM::SendMsg<Render::RegisterSkinMsg>(name, handle);
+	return handle;
+}
+
+qhandle_t trap_R_RegisterShader( const char *name, RegisterShaderFlags_t flags )
+{
+	int handle;
+	VM::SendMsg<Render::RegisterShaderMsg>(name, flags, handle);
+	return handle;
+}
+
+void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
+{
+	VM::SendMsg<Render::RegisterFontMsg>(fontName, fallbackName, pointSize, *font);
+}
+
+void trap_R_ClearScene( void )
+{
+	VM::SendMsg<Render::ClearSceneMsg>();
+}
+
+void trap_R_AddRefEntityToScene( const refEntity_t *re )
+{
+	VM::SendMsg<Render::AddRefEntityToSceneMsg>(*re);
+}
+
+void trap_R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts )
+{
+	std::vector<polyVert_t> myverts(numVerts);
+	memcpy(myverts.data(), verts, numVerts * sizeof(polyVert_t));
+	VM::SendMsg<Render::AddPolyToSceneMsg>(hShader, myverts);
+}
+
+void trap_R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
+{
+	std::vector<polyVert_t> myverts(numVerts);
+	memcpy(myverts.data(), verts, numVerts * sizeof(polyVert_t));
+	VM::SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numPolys);
+}
+
+void trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
+{
+	std::array<float, 3> myorg;
+	VectorCopy(org, myorg.data());
+	VM::SendMsg<Render::AddLightToSceneMsg>(myorg, radius, intensity, r, g, b, hShader, flags);
+}
+
+void trap_R_AddAdditiveLightToScene( const vec3_t org, float intensity, float r, float g, float b )
+{
+	std::array<float, 3> myorg;
+	VectorCopy(org, myorg.data());
+	VM::SendMsg<Render::AddAdditiveLightToSceneMsg>(myorg, intensity, r, g, b);
+}
+
+void trap_R_RenderScene( const refdef_t *fd )
+{
+	VM::SendMsg<Render::RenderSceneMsg>(*fd);
+}
+
+void trap_R_SetColor( const float *rgba )
+{
+	std::array<float, 4> myrgba;
+	memcpy(myrgba.data(), rgba, 4 * sizeof(float));
+	VM::SendMsg<Render::SetColorMsg>(myrgba);
+}
+
+void trap_R_SetClipRegion( const float *region )
+{
+	std::array<float, 4> myregion;
+	memcpy(myregion.data(), region, 4 * sizeof(float));
+	VM::SendMsg<Render::SetClipRegionMsg>(myregion);
+}
+
+void trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader )
+{
+	VM::SendMsg<Render::DrawStretchPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader);
+}
+
+void trap_R_DrawRotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle )
+{
+	VM::SendMsg<Render::DrawRotatedPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader, angle);
+}
+
+void trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs )
+{
+	std::array<float, 3> mymins, mymaxs;
+	VM::SendMsg<Render::ModelBoundsMsg>(model, mymins, mymaxs);
+	VectorCopy(mymins.data(), mins);
+	VectorCopy(mymaxs.data(), maxs);
+}
+
+int trap_R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
+{
+	int result;
+	VM::SendMsg<Render::LerpTagMsg>(*refent, tagName, startIndex, *tag, result);
+	return result;
+}
+
+void trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset )
+{
+	VM::SendMsg<Render::RemapShaderMsg>(oldShader, newShader, timeOffset);
+}
+
+qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
+{
+	bool res;
+	std::array<float, 3> myp1, myp2;
+	VectorCopy(p1, myp1.data());
+	VectorCopy(p2, myp2.data());
+	VM::SendMsg<Render::InPVSMsg>(myp1, myp2, res);
+	return res;
+}
+
+int trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
+{
+	int result;
+	std::array<float, 3> mypoint, myambient, mydirected, mydir;
+	VectorCopy(point, mypoint.data());
+	VM::SendMsg<Render::LightForPointMsg>(mypoint, myambient, mydirected, mydir, result);
+	VectorCopy(myambient.data(), ambientLight);
+	VectorCopy(mydirected.data(), directedLight);
+	VectorCopy(mydir.data(), lightDir);
+	return result;
+}
+
+qhandle_t trap_R_RegisterAnimation( const char *name )
+{
+	int handle;
+	VM::SendMsg<Render::RegisterAnimationMsg>(name, handle);
+	return handle;
+}
+
+int trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin )
+{
+	int result;
+	VM::SendMsg<Render::BuildSkeletonMsg>(anim, startFrame, endFrame, frac, clearOrigin, *skel, result);
+	return result;
+}
+
+int trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
+{
+	int result;
+	VM::SendMsg<Render::BlendSkeletonMsg>(*skel, *blend, frac, *skel, result);
+	return result;
+}
+
+int trap_R_BoneIndex( qhandle_t hModel, const char *boneName )
+{
+	int index;
+	VM::SendMsg<Render::BoneIndexMsg>(hModel, boneName, index);
+	return index;
+}
+
+int trap_R_AnimNumFrames( qhandle_t hAnim )
+{
+	int n;
+	VM::SendMsg<Render::AnimNumFramesMsg>(hAnim, n);
+	return n;
+}
+
+int trap_R_AnimFrameRate( qhandle_t hAnim )
+{
+	int n;
+	VM::SendMsg<Render::AnimFrameRateMsg>(hAnim, n);
+	return n;
+}
+
+qhandle_t trap_RegisterVisTest( void )
+{
+	int handle;
+	VM::SendMsg<Render::RegisterVisTestMsg>(handle);
+	return handle;
+}
+
+void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, float area )
+{
+	std::array<float, 3> mypos;
+	VectorCopy(pos, mypos.data());
+	VM::SendMsg<Render::AddVisTestToSceneMsg>(hTest, mypos, depthAdjust, area);
+}
+
+float trap_CheckVisibility( qhandle_t hTest )
+{
+	float result;
+	VM::SendMsg<Render::CheckVisibilityMsg>(hTest, result);
+	return result;
+}
+
+void trap_UnregisterVisTest( qhandle_t hTest )
+{
+	VM::SendMsg<Render::UnregisterVisTestMsg>(hTest);
+}
+
+void trap_SetColorGrading( int slot, qhandle_t hShader )
+{
+	VM::SendMsg<Render::SetColorGradingMsg>(slot, hShader);
 }
 
 //172.
@@ -741,16 +810,6 @@ qboolean trap_LAN_ServerIsInFavoriteList( int source, int n )
 int trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 )
 {
     return syscallVM( CG_LAN_COMPARESERVERS, source, sortKey, sortDir, s1, s2 );
-}
-
-void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len )
-{
-    syscallVM( CG_R_GETSHADERNAMEFROMHANDLE, shader, out, len );
-}
-
-void trap_R_SetAltShaderTokens( const char *str )
-{
-    syscallVM( CG_R_SETALTSHADERTOKENS, str );
 }
 
 void trap_Rocket_Init( void )

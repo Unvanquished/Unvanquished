@@ -211,7 +211,7 @@ typedef enum cgameImport_s
   CG_KEY_SETBINDING,
   CG_KEY_KEYNUMTOSTRINGBUF,
 
-  // Not sure
+// Not sure
   CG_INGAME_POPUP,
   CG_INGAME_CLOSEPOPUP,
 
@@ -445,6 +445,137 @@ namespace Audio {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_BEGINREGISTRATION>> BeginRegistrationMsg;
 	// EndRegistrationMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_ENDREGISTRATION>> EndRegistrationMsg;
+}
+
+namespace Render {
+	// SetAltShaderTokenMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETALTSHADERTOKENS>, std::string> SetAltShaderTokenMsg;
+	// GetShaderNameFromHandleMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_GETSHADERNAMEFROMHANDLE>, int, int>,
+		IPC::Reply<std::string>
+	> GetShaderNameFromHandleMsg;
+	// ScissorEnableMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SCISSOR_ENABLE>, bool> ScissorEnableMsg;
+	// ScissorSetMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SCISSOR_SET>, int, int, int, int> ScissorSetMsg;
+	// InPVVSMsg //TODO not a renderer call, handle in CM in the VM?
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_INPVVS>, std::array<float, 3>, std::array<float, 3>>,
+		IPC::Reply<bool>
+	> InPVVSMsg;
+	// LoadWorldMapMsg //TODO is it realy async?
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_LOADWORLDMAP>, std::string> LoadWorldMapMsg;
+	// RegisterModelMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERMODEL>, std::string>,
+		IPC::Reply<int>
+	> RegisterModelMsg;
+	// RegisterSkinMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERSKIN>, std::string>,
+		IPC::Reply<int>
+	> RegisterSkinMsg;
+	// RegisterShaderMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERSHADER>, std::string, int>,
+		IPC::Reply<int>
+	> RegisterShaderMsg;
+	// RegisterFontMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERFONT>, std::string, std::string, int>,
+		IPC::Reply<fontMetrics_t>
+	> RegisterFontMsg;
+	// ClearSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_CLEARSCENE>> ClearSceneMsg;
+	// AddRefEntityToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDREFENTITYTOSCENE>, refEntity_t> AddRefEntityToSceneMsg;
+	// AddPolyToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYTOSCENE>, int, std::vector<polyVert_t>> AddPolyToSceneMsg;
+	// AddPolysToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYSTOSCENE>, int, std::vector<polyVert_t>, int> AddPolysToSceneMsg;
+	// AddLightToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDLIGHTTOSCENE>, std::array<float, 3>, float, float, float, float, float, int, int> AddLightToSceneMsg;
+	// AddAdditiveLightToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDADDITIVELIGHTTOSCENE>, std::array<float, 3>, float, float, float, float> AddAdditiveLightToSceneMsg;
+	// RenderSceneMsg //TODO check async
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RENDERSCENE>, refdef_t> RenderSceneMsg;
+	// SetColorMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, std::array<float, 4>> SetColorMsg;
+	// SetClipRegionMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCLIPREGION>, std::array<float, 4>> SetClipRegionMsg;
+	// DrawStretchPicMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWSTRETCHPIC>, float, float, float, float, float, float, float, float, int> DrawStretchPicMsg;
+	// DrawRotatedPicMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWROTATEDPIC>, float, float, float, float, float, float, float, float, int, float> DrawRotatedPicMsg;
+	// ModelBoundsMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_MODELBOUNDS>, int>,
+		IPC::Reply<std::array<float, 3>, std::array<float, 3>>
+	> ModelBoundsMsg;
+	// LerpTagMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_LERPTAG>, refEntity_t, std::string, int>,
+		IPC::Reply<orientation_t, int>
+	> LerpTagMsg;
+	// RemapShaderMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_REMAP_SHADER>, std::string, std::string, std::string> RemapShaderMsg;
+	// InPVSMsg //TODO not a renderer call, handle in CM in the VM?
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_INPVS>, std::array<float, 3>, std::array<float, 3>>,
+		IPC::Reply<bool>
+	> InPVSMsg;
+	// LightForPointMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_LIGHTFORPOINT>, std::array<float, 3>>,
+		IPC::Reply<std::array<float, 3>, std::array<float, 3>, std::array<float, 3>, int>
+	> LightForPointMsg;
+	// RegisterAnimationMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERANIMATION>, std::string>,
+		IPC::Reply<int>
+	> RegisterAnimationMsg;
+	// BuildSkeletonMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_BUILDSKELETON>, int, int, int, float, bool>,
+		IPC::Reply<refSkeleton_t, int>
+	> BuildSkeletonMsg;
+	// BlendSkeletonMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_BLENDSKELETON>, refSkeleton_t, refSkeleton_t, float>,
+		IPC::Reply<refSkeleton_t, int>
+	> BlendSkeletonMsg;
+	// BoneIndexMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_BONEINDEX>, int, std::string>,
+		IPC::Reply<int>
+	> BoneIndexMsg;
+	// AnimNumFramesMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_ANIMNUMFRAMES>, int>,
+		IPC::Reply<int>
+	> AnimNumFramesMsg;
+	// AnimFrameRateMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_ANIMFRAMERATE>, int>,
+		IPC::Reply<int>
+	> AnimFrameRateMsg;
+	// RegisterVisTestMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_REGISTERVISTEST>>,
+		IPC::Reply<int>
+	> RegisterVisTestMsg;
+	// AddVisTextToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_ADDVISTESTTOSCENE>, int, std::array<float, 3>, float, float> AddVisTestToSceneMsg;
+	// CheckVisibilityMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_CHECKVISIBILITY>, int>,
+		IPC::Reply<float>
+	> CheckVisibilityMsg;
+	// UnregisterVisTestMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_UNREGISTERVISTEST>, int> UnregisterVisTestMsg;
+	// SetColorGradingMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_SETCOLORGRADING>, int, int> SetColorGradingMsg;
 }
 
 typedef enum
