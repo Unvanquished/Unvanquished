@@ -363,7 +363,7 @@ void trap_R_SetAltShaderTokens( const char *str )
 void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len )
 {
 	std::string result;
-	VM::SendMsg<Render::GetShaderNameFromHandleMsg>(shader, len, result);
+	VM::SendMsg<Render::GetShaderNameFromHandleMsg>(shader, result);
 	Q_strncpyz(out, result.c_str(), len);
 }
 
@@ -604,22 +604,28 @@ void trap_SetColorGrading( int slot, qhandle_t hShader )
 
 int trap_Key_GetCatcher( void )
 {
-    return syscallVM( CG_KEY_GETCATCHER );
+	int result;
+	VM::SendMsg<Key::GetCatcherMsg>(result);
+	return result;
 }
 
 void trap_Key_SetCatcher( int catcher )
 {
-    syscallVM( CG_KEY_SETCATCHER, catcher );
+	VM::SendMsg<Key::SetCatcherMsg>(catcher);
 }
 
 void trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
 {
-    syscallVM( CG_KEY_GETBINDINGBUF, keynum, team, buf, buflen );
+	std::string result;
+	VM::SendMsg<Key::GetBindingBufMsg>(keynum, team, buflen, result);
+	Q_strncpyz(buf, result.c_str(), buflen);
 }
 
 void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 {
-    syscallVM( CG_KEY_KEYNUMTOSTRINGBUF, keynum, buf, buflen );
+	std::string result;
+	VM::SendMsg<Key::KeyNumToStringMsg>(keynum, buflen, result);
+	Q_strncpyz(buf, result.c_str(), buflen);
 }
 
 // All LAN

@@ -1442,29 +1442,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 	switch ( args[ 0 ] )
 	{
-		case CG_KEY_GETCATCHER:
-			return Key_GetCatcher();
-
-		case CG_KEY_SETCATCHER:
-			Key_SetCatcher( args[ 1 ] );
-			return 0;
-
-		case CG_KEY_GETBINDINGBUF:
-			Key_GetBindingBuf( args[ 1 ], args[ 2 ], (char*) VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case CG_KEY_KEYNUMTOSTRINGBUF:
-			cls.nCgameUselessSyscalls ++;
-			Key_KeynumToStringBuf( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
-			return 0;
-
 		case CG_CM_DISTANCETOMODEL:
 			cls.nCgamePhysicsSyscalls ++;
 			return FloatAsInt( CM_DistanceToModel( (float*) VMA(1), args[2] ) );
-
-		case CG_R_GETSHADERNAMEFROMHANDLE:
-			Q_strncpyz( (char *) VMA( 2 ), re.ShaderNameFromHandle( args[ 1 ] ), args[ 3 ] );
-			return 0;
 
 		case CG_ROCKET_INIT:
 			Rocket_Init();
@@ -2621,6 +2601,12 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
+		case CG_R_GETSHADERNAMEFROMHANDLE:
+			IPC::HandleMsg<Render::GetShaderNameFromHandleMsg>(channel, std::move(reader), [this] (int handle, std::string& name) {
+			    name = re.ShaderNameFromHandle(handle);
+			});
+			break;
+
 		case CG_R_SCISSOR_ENABLE:
 			IPC::HandleMsg<Render::ScissorEnableMsg>(channel, std::move(reader), [this] (bool enable) {
 				re.ScissorEnable(enable);
@@ -2830,6 +2816,36 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		case CG_SETCOLORGRADING:
 			IPC::HandleMsg<Render::SetColorGradingMsg>(channel, std::move(reader), [this] (int slot, int shader) {
 				re.SetColorGrading(slot, shader);
+			});
+			break;
+
+        // All keys
+
+        case CG_KEY_GETCATCHER:
+			IPC::HandleMsg<Key::GetCatcherMsg>(channel, std::move(reader), [this] (int& catcher) {
+               catcher = Key_GetCatcher();
+			});
+			break;
+
+        case CG_KEY_SETCATCHER:
+			IPC::HandleMsg<Key::SetCatcherMsg>(channel, std::move(reader), [this] (int catcher) {
+               Key_SetCatcher(catcher);
+			});
+			break;
+
+        case CG_KEY_GETBINDINGBUF:
+			IPC::HandleMsg<Key::GetBindingBufMsg>(channel, std::move(reader), [this] (int keynum, int team, int len, std::string& result) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+                Key_GetBindingBuf(keynum, team, buffer.get(), len);
+				result.assign(buffer.get(), len);
+			});
+			break;
+
+        case CG_KEY_KEYNUMTOSTRINGBUF:
+			IPC::HandleMsg<Key::KeyNumToStringMsg>(channel, std::move(reader), [this] (int keynum, int len, std::string& result) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+                Key_KeynumToStringBuf(keynum, buffer.get(), len);
+				result.assign(buffer.get(), len);
 			});
 			break;
 

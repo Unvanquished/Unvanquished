@@ -422,7 +422,7 @@ namespace Render {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETALTSHADERTOKENS>, std::string> SetAltShaderTokenMsg;
 	// GetShaderNameFromHandleMsg
 	typedef IPC::SyncMessage<
-		IPC::Message<IPC::Id<VM::QVM, CG_R_GETSHADERNAMEFROMHANDLE>, int, int>,
+		IPC::Message<IPC::Id<VM::QVM, CG_R_GETSHADERNAMEFROMHANDLE>, int>,
 		IPC::Reply<std::string>
 	> GetShaderNameFromHandleMsg;
 	// ScissorEnableMsg
@@ -546,6 +546,26 @@ namespace Render {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_UNREGISTERVISTEST>, int> UnregisterVisTestMsg;
 	// SetColorGradingMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_SETCOLORGRADING>, int, int> SetColorGradingMsg;
+}
+
+namespace Key {
+	// GetCatcherMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_KEY_GETCATCHER>>,
+		IPC::Reply<int>
+	> GetCatcherMsg;
+	// SetCatcherMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_SETCATCHER>, int> SetCatcherMsg;
+	// GetBindingBufMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_KEY_GETBINDINGBUF>, int, int, int>,
+		IPC::Reply<std::string>
+	> GetBindingBufMsg;
+	// KeyNumToStringMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_KEY_GETBINDINGBUF>, int, int>,
+		IPC::Reply<std::string>
+	> KeyNumToStringMsg;
 }
 
 typedef enum
