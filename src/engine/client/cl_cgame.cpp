@@ -1309,7 +1309,7 @@ qboolean LAN_UpdateVisiblePings( int source )
  * LAN_GetServerStatus
  * ====================
  */
-int LAN_GetServerStatus( char *serverAddress, char *serverStatus, int maxLen )
+int LAN_GetServerStatus( const char *serverAddress, char *serverStatus, int maxLen )
 {
 	return CL_ServerStatus( serverAddress, serverStatus, maxLen );
 }
@@ -1480,33 +1480,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_ROCKET_DSADDROW:
 			Rocket_DSAddRow( (const char *) VMA(1), (const char *) VMA(2), (const char *) VMA(3) );
 			return 0;
-
-		case CG_LAN_GETSERVERCOUNT:
-			return LAN_GetServerCount( args[ 1 ] );
-
-		case CG_LAN_GETSERVERINFO:
-			LAN_GetServerInfo( args[ 1 ], args[ 2 ], (char *) VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case CG_LAN_GETSERVERPING:
-			return LAN_GetServerPing( args[ 1 ], args[ 2 ] );
-
-		case CG_LAN_MARKSERVERVISIBLE:
-			LAN_MarkServerVisible( args[ 1 ], args[ 2 ], args[ 3 ] );
-			return 0;
-
-		case CG_LAN_SERVERISVISIBLE:
-			return LAN_ServerIsVisible( args[ 1 ], args[ 2 ] );
-
-		case CG_LAN_UPDATEVISIBLEPINGS:
-			return LAN_UpdateVisiblePings( args[ 1 ] );
-
-		case CG_LAN_RESETPINGS:
-			LAN_ResetPings( args[ 1 ] );
-			return 0;
-
-		case CG_LAN_SERVERSTATUS:
-			return LAN_GetServerStatus( (char *) VMA( 1 ), (char *) VMA( 2 ), args[ 3 ] );
 
 		case CG_ROCKET_DSCLEARTABLE:
 			Rocket_DSClearTable( (const char *) VMA(1), (const char *) VMA(2) );
@@ -2846,6 +2819,60 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 				std::unique_ptr<char[]> buffer(new char[len]);
                 Key_KeynumToStringBuf(keynum, buffer.get(), len);
 				result.assign(buffer.get(), len);
+			});
+			break;
+
+        // All LAN
+
+        case CG_LAN_GETSERVERCOUNT:
+			IPC::HandleMsg<LAN::GetServerCountMsg>(channel, std::move(reader), [this] (int source, int& count) {
+                count = LAN_GetServerCount(source);
+			});
+			break;
+
+        case CG_LAN_GETSERVERINFO:
+			IPC::HandleMsg<LAN::GetServerInfoMsg>(channel, std::move(reader), [this] (int source, int n, int len, std::string& info) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+                LAN_GetServerInfo(source, n, buffer.get(), len);
+				info.assign(buffer.get(), len);
+			});
+			break;
+
+        case CG_LAN_GETSERVERPING:
+			IPC::HandleMsg<LAN::GetServerPingMsg>(channel, std::move(reader), [this] (int source, int n, int& ping) {
+                ping = LAN_GetServerPing(source, n);
+			});
+			break;
+
+        case CG_LAN_MARKSERVERVISIBLE:
+			IPC::HandleMsg<LAN::MarkServerVisibleMsg>(channel, std::move(reader), [this] (int source, int n, bool visible) {
+                LAN_MarkServerVisible(source, n, visible);
+			});
+			break;
+
+        case CG_LAN_SERVERISVISIBLE:
+			IPC::HandleMsg<LAN::ServerIsVisibleMsg>(channel, std::move(reader), [this] (int source, int n, bool& visible) {
+                visible = LAN_ServerIsVisible(source, n);
+			});
+			break;
+
+        case CG_LAN_UPDATEVISIBLEPINGS:
+			IPC::HandleMsg<LAN::UpdateVisiblePingsMsg>(channel, std::move(reader), [this] (int source, bool& res) {
+			    res = LAN_UpdateVisiblePings(source);
+			});
+			break;
+
+        case CG_LAN_RESETPINGS:
+			IPC::HandleMsg<LAN::ResetPingsMsg>(channel, std::move(reader), [this] (int n) {
+                LAN_ResetPings(n);
+			});
+			break;
+
+        case CG_LAN_SERVERSTATUS:
+			IPC::HandleMsg<LAN::ServerStatusMsg>(channel, std::move(reader), [this] (std::string serverAddress, int len, std::string& status, int& res) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+                res = LAN_GetServerStatus(serverAddress.c_str(), buffer.get(), len);
+				status.assign(buffer.get(), len);
 			});
 			break;
 

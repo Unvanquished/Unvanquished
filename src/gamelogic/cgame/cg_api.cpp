@@ -632,42 +632,56 @@ void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 
 int trap_LAN_GetServerCount( int source )
 {
-    return syscallVM( CG_LAN_GETSERVERCOUNT, source );
+	int count;
+	VM::SendMsg<LAN::GetServerCountMsg>(source, count);
+	return count;
 }
 
 void trap_LAN_GetServerInfo( int source, int n, char *buf, int buflen )
 {
-    syscallVM( CG_LAN_GETSERVERINFO, source, n, buf, buflen );
+	std::string info;
+	VM::SendMsg<LAN::GetServerInfoMsg>(source, n, buflen, info);
+	Q_strncpyz(buf, info.c_str(), buflen);
 }
 
 int trap_LAN_GetServerPing( int source, int n )
 {
-    return syscallVM( CG_LAN_GETSERVERPING, source, n );
+	int ping;
+	VM::SendMsg<LAN::GetServerPingMsg>(source, n, ping);
+	return ping;
 }
 
 void trap_LAN_MarkServerVisible( int source, int n, qboolean visible )
 {
-    syscallVM( CG_LAN_MARKSERVERVISIBLE, source, n, visible );
+	VM::SendMsg<LAN::MarkServerVisibleMsg>(source, n, visible);
 }
 
 int trap_LAN_ServerIsVisible( int source, int n )
 {
-    return syscallVM( CG_LAN_SERVERISVISIBLE, source, n );
+	bool visible;
+	VM::SendMsg<LAN::ServerIsVisibleMsg>(source, n, visible);
+	return visible;
 }
 
 qboolean trap_LAN_UpdateVisiblePings( int source )
 {
-    return syscallVM( CG_LAN_UPDATEVISIBLEPINGS, source );
+	bool res;
+	VM::SendMsg<LAN::UpdateVisiblePingsMsg>(source, res);
+	return res;
 }
 
 void trap_LAN_ResetPings( int n )
 {
-    syscallVM( CG_LAN_RESETPINGS, n );
+	VM::SendMsg<LAN::ResetPingsMsg>(n);
 }
 
 int trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int maxLen )
 {
-    return syscallVM( CG_LAN_SERVERSTATUS, serverAddress, serverStatus, maxLen );
+	std::string status;
+	int res;
+	VM::SendMsg<LAN::ServerStatusMsg>(serverAddress, maxLen, status, res);
+	Q_strncpyz(serverStatus, status.c_str(), maxLen);
+	return res;
 }
 
 // All rocket

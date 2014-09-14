@@ -568,6 +568,43 @@ namespace Key {
 	> KeyNumToStringMsg;
 }
 
+namespace LAN {
+	// GetServerCountMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_LAN_GETSERVERCOUNT>, int>,
+		IPC::Reply<int>
+	> GetServerCountMsg;
+	// GetServerInfoMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_LAN_GETSERVERINFO>, int, int, int>,
+		IPC::Reply<std::string>
+	> GetServerInfoMsg;
+	// GetServerPingMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_LAN_GETSERVERPING>, int, int>,
+		IPC::Reply<int>
+	> GetServerPingMsg;
+	// MarkServerVisibleMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_LAN_MARKSERVERVISIBLE>, int, int, bool> MarkServerVisibleMsg;
+	// ServerIsVisibleMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_LAN_SERVERISVISIBLE>, int, int>,
+		IPC::Reply<bool>
+	> ServerIsVisibleMsg;
+	// UpdateVisiblePingsMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_LAN_UPDATEVISIBLEPINGS>, int>,
+		IPC::Reply<bool>
+	> UpdateVisiblePingsMsg;
+	// ResetPingsMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_LAN_RESETPINGS>, int> ResetPingsMsg;
+	// ServerStatusMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_LAN_SERVERSTATUS>, std::string, int>,
+		IPC::Reply<std::string, int>
+	> ServerStatusMsg;
+}
+
 typedef enum
 {
   CG_STATIC_INIT,
