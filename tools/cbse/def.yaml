@@ -5,12 +5,15 @@ general:
 
 messages:
     Heal:
-        amount: int
+        - name: amount
+          type: int
     Damage:
-        amount: int
+        - name: amount
+          type : int
     Die:
     Foo1:
-        value: float
+        - name: value
+          type: float
     Foo2:
     Foo3:
 
