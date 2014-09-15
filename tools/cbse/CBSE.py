@@ -21,33 +21,25 @@ class CommonAttribute:
         return self.name
 
 class Message:
-    def __init__(self, name, args, attrib = None):
+    def __init__(self, name, args):
         self.name = name
         self.args = args
-        self.args_list = list(self.args.items())
-        self.attrib = attrib
 
     def get_name(self):
         return self.name
 
     def get_num_args(self):
-        return len(self.args_list)
+        return len(self.args)
 
     def get_enum_name(self):
-        if self.attrib == None:
-            return 'MSG_' + self.name.upper()
-        else:
-            return 'ATTRIB_' + self.name.upper()
+        return 'MSG_' + self.name.upper()
 
     def get_handler_name(self):
-        if self.attrib == None:
             return 'Handle' + self.name
-        else:
-            return 'Attrib' + self.name
 
     def get_function_args(self):
         args = []
-        for arg in self.args_list:
+        for arg in self.args:
             args.append(arg[1] + ' ' + arg[0])
         return ', '.join(args)
 
@@ -58,24 +50,24 @@ class Message:
         return 'void';
 
     def get_tuple_type(self):
-        if self.args_list == []:
+        if self.args == []:
             return 'std::nullptr_t'
-        return 'std::tuple<{}>'.format(', '.join(list(zip(*self.args_list))[1]))
+        return 'std::tuple<{}>'.format(', '.join(list(zip(*self.args))[1]))
 
     def get_arg_names(self):
-        return [arg[0] for arg in self.args_list]
+        return [arg[0] for arg in self.args]
 
     # TODO: Rename to something that doesn't clash as much with get_arg_names
     def get_args_names(self):
-        if self.args_list == []:
+        if self.args == []:
             return ''
-        return ', '.join(map(str, list(zip(*self.args_list))[0]))
+        return ', '.join(map(str, list(zip(*self.args))[0]))
 
     def get_unpacked_tuple_args(self, tuple_name):
-        return ', '.join(['std::get<' + str(i) + '>(' + tuple_name +')' for i in range(len(self.args_list))])
+        return ', '.join(['std::get<' + str(i) + '>(' + tuple_name +')' for i in range(len(self.args))])
 
     def get_arg_number(self):
-        return len(self.args_list)
+        return len(self.args)
 
     def is_attrib(self):
         return self.attrib != None
@@ -208,13 +200,12 @@ def load_general(definitions):
         common_entity_attributes.append(CommonAttribute(attrib['name'], attrib['type']))
     return namedtuple('general', 'common_entity_attributes')(common_entity_attributes)
 
-# TODO: Maintain message parameter order
 def load_messages(definitions):
     messages = {}
     for (name, args) in definitions['messages'].items():
         if args == None:
-            args = {}
-        messages[name] = Message(name, args)
+            args = []
+        messages[name] = Message(name, [(arg['name'], arg['type']) for arg in args])
     return messages
 
 def load_components(definitions):
