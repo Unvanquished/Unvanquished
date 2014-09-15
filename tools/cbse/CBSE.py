@@ -296,6 +296,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Outputs C++ plumbing code for the gamelogic given a component definitions.")
     parser.add_argument('definitions', metavar='DEFS', nargs=1, type=my_open_read, help ="The definitions to use, - for stdin.")
     parser.add_argument('-o', '--output-dir', nargs=1, default=None, metavar='DIR', type=str, help="Output directory for the generated source files.")
+    parser.add_argument('--no-include-helper', dest='include_helper', const=False, default=True, action='store_const', help="Skip the generation of the include helpers")
 
     args = parser.parse_args()
 
@@ -372,8 +373,9 @@ if __name__ == '__main__':
         with open(outdir + outfiles['entities'], "w") as outfile:
             render(infiles['entities'], outfile, template_params)
 
-        with open(outdir + outfiles['includehelper'], "w") as outfile:
-            render(infiles['includehelper'], outfile, template_params)
+        if args.include_helper:
+            with open(outdir + outfiles['includehelper'], "w") as outfile:
+                render(infiles['includehelper'], outfile, template_params)
 
         outdir += outdirs['components'] + os.path.sep
 
