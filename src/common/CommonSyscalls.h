@@ -94,7 +94,7 @@ namespace VM {
         IPC::Reply<int>
     > FSWriteMsg;
     // FSSeekMsg
-    typedef IPC::Message<IPC::Id<VM::QVM, QVM_COMMON_FS_SEEK>, int, long, int> FSSeekMsg;
+    typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_SEEK>, int, long, int> FSSeekMsg;
     // FSRenameMsg
     typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_RENAME>, std::string, std::string> FSRenameMsg;
     // FSFCloseFile
@@ -126,27 +126,27 @@ namespace VM {
 
     //ParseAddGlobalDefineMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC::Id<VM::QVM, QVM_COMMON_PARSE_ADD_GLOBAL_DEFINE>, std::string>,
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_PARSE_ADD_GLOBAL_DEFINE>, std::string>,
         IPC::Reply<int>
     > ParseAddGlobalDefineMsg;
     //ParseLoadSourceMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC::Id<VM::QVM, QVM_COMMON_PARSE_LOAD_SOURCE>, std::string>,
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_PARSE_LOAD_SOURCE>, std::string>,
         IPC::Reply<int>
     > ParseLoadSourceMsg;
     //ParseFreeSourceMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC::Id<VM::QVM, QVM_COMMON_PARSE_FREE_SOURCE>, int>,
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_PARSE_FREE_SOURCE>, int>,
         IPC::Reply<int>
     > ParseFreeSourceMsg;
     //ParseReadTokenMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC::Id<VM::QVM, QVM_COMMON_PARSE_READ_TOKEN>, int>,
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_PARSE_READ_TOKEN>, int>,
         IPC::Reply<int, pc_token_t>
     > ParseReadTokenMsg;
     //ParseSourceFileAndLineMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC::Id<VM::QVM, QVM_COMMON_PARSE_SOURCE_FILE_AND_LINE>, int>,
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_PARSE_SOURCE_FILE_AND_LINE>, int>,
         IPC::Reply<int, std::string, int>
     > ParseSourceFileAndLineMsg;
 

@@ -73,9 +73,17 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
 			break;
 
 		case GAME_SHUTDOWN:
-			IPC::HandleMsg<GameShutdownMsg>(VM::rootChannel, std::move(reader), [](bool restart) {
-				G_ShutdownGame(restart);
-			});
+			{
+				bool exit = false;
+				IPC::HandleMsg<GameShutdownMsg>(VM::rootChannel, std::move(reader), [&](bool restart) {
+					G_ShutdownGame(restart);
+					exit = !restart;
+				});
+
+				if (exit ) {
+					VM::Exit();
+				}
+			}
 			break;
 
 		case GAME_CLIENT_CONNECT:
