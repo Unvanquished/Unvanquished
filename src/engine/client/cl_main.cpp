@@ -1703,6 +1703,7 @@ void CL_Disconnect( qboolean showMainMenu )
 
 		// init the UI
 		cgvm.Start();
+		cgvm.CGameRocketInit();
 	}
 	else
 	{
@@ -2237,6 +2238,7 @@ void CL_UI_Restart_f( void )
 	Rocket_Shutdown();
 	// init the UI
 	cgvm.Start();
+	cgvm.CGameRocketInit();
 }
 
 /*
@@ -3825,6 +3827,7 @@ void CL_StartHunkUsers( void )
 		cls.uiStarted = qtrue;
 
 		cgvm.Start();
+		cgvm.CGameRocketInit();
 	}
 }
 
