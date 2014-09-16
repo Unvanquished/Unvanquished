@@ -420,6 +420,9 @@ void trap_Cvar_Register(vmCvar_t *cvar, const char *varName, const char *value, 
 }
 
 void trap_Cvar_Set(const char *varName, const char *value) {
+    if (!value) {
+        value = "";
+    }
     Cvar::SetValue(varName, value);
 }
 

@@ -1897,8 +1897,8 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		// All sounds
 
 		case CG_S_STARTSOUND:
-			IPC::HandleMsg<Audio::StartSoundMsg>(channel, std::move(reader), [this] (std::array<float, 3> origin, int entityNum, int sfx) {
-				Audio::StartSound(entityNum, origin.data(), sfx);
+			IPC::HandleMsg<Audio::StartSoundMsg>(channel, std::move(reader), [this] (bool isPositional, std::array<float, 3> origin, int entityNum, int sfx) {
+				Audio::StartSound(entityNum, (isPositional ? origin.data() : nullptr), sfx);
 			});
 			break;
 

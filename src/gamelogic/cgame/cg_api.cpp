@@ -317,9 +317,11 @@ qboolean trap_GetNews( qboolean force )
 
 void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )
 {
-	std::array<float, 3> myorigin;
-	VectorCopy(origin, myorigin.data());
-	VM::SendMsg<Audio::StartSoundMsg>(myorigin, entityNum, sfx);
+	std::array<float, 3> myorigin = {{0.0f, 0.0f, 0.0f}};
+	if (origin) {
+		VectorCopy(origin, myorigin.data());
+	}
+	VM::SendMsg<Audio::StartSoundMsg>(!!origin, myorigin, entityNum, sfx);
 }
 
 void trap_S_StartLocalSound( sfxHandle_t sfx, int )

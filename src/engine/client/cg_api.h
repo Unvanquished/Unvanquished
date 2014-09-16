@@ -383,7 +383,7 @@ typedef IPC::SyncMessage<
 
 namespace Audio {
 	// StartSoundMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTSOUND>, std::array<float, 3>, int, int> StartSoundMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTSOUND>, bool, std::array<float, 3>, int, int> StartSoundMsg;
 	// StartLocalSoundMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTLOCALSOUND>, int> StartLocalSoundMsg;
 	// ClearLoopingSoundsMsg
