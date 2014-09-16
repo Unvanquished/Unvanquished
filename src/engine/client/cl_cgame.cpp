@@ -1773,21 +1773,19 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 				res = CL_DemoState();
 			});
 			break;
-		case CG_FS_SEEK:
-			IPC::HandleMsg<FSSeekMsg>(channel, std::move(reader), [this] (int f, long offset, int origin) {
-				FS_Seek(f, offset, origin);
-			});
-			break;
+
 		case CG_GETDEMOPOS:
 			IPC::HandleMsg<GetDemoPosMsg>(channel, std::move(reader), [this] (int& res) {
 				res = CL_DemoPos();
 			});
 			break;
+
 		case CG_SENDCLIENTCOMMAND:
 			IPC::HandleMsg<SendClientCommandMsg>(channel, std::move(reader), [this] (std::string command) {
 				CL_AddReliableCommand(command.c_str());
 			});
 			break;
+
 		case CG_UPDATESCREEN:
 			IPC::HandleMsg<UpdateScreenMsg>(channel, std::move(reader), [this]  {
 				SCR_UpdateScreen();

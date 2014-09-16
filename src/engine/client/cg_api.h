@@ -117,7 +117,6 @@ typedef enum cgameImport_s
 {
   // Misc
   CG_GETDEMOSTATE,
-  CG_FS_SEEK,
   CG_GETDEMOPOS,
   CG_SENDCLIENTCOMMAND,
   CG_UPDATESCREEN,
@@ -260,8 +259,6 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMOSTATE>>,
 	IPC::Reply<int>
 > GetDemoStateMsg;
-// FSSeekMsg
-typedef IPC::Message<IPC::Id<VM::QVM, CG_FS_SEEK>, int, long, int> FSSeekMsg;
 // GetDemoPosMsg TODO send it at the beginning of the frame
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMOPOS>>,

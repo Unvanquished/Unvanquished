@@ -47,24 +47,6 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
 
 // Definition of the VM->Engine calls
 
-// TODO non-syscalls, implement them at some point
-
-void trap_EscapedArgs( char *buffer, int bufferLength )
-{
-}
-
-void trap_LiteralArgs( char *buffer, int bufferLength )
-{
-}
-
-float trap_Cvar_VariableValue( const char *var_name )
-{
-}
-
-qboolean trap_FS_LoadPak( const char *pak )
-{
-}
-
 // All Miscs
 
 int trap_GetDemoState( void )
@@ -73,12 +55,6 @@ int trap_GetDemoState( void )
 	VM::SendMsg<GetDemoStateMsg>(state);
 	return state;
 }
-
-void trap_GS_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin )
-{
-	VM::SendMsg<FSSeekMsg>(f, offset, origin);
-}
-
 
 int trap_GetDemoPos( void )
 {

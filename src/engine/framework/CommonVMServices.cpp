@@ -246,6 +246,12 @@ namespace VM {
                 });
                 break;
 
+            case QVM_COMMON_FS_SEEK:
+                IPC::HandleMsg<VM::FSSeekMsg>(channel, std::move(reader), [this] (int f, long offset, int origin) {
+                    FS_Seek(f, offset, origin);
+                });
+                break;
+
             case QVM_COMMON_FS_RENAME:
                 IPC::HandleMsg<FSRenameMsg>(channel, std::move(reader), [this](std::string from, std::string to) {
                     FS_Rename(from.c_str(), to.c_str());
@@ -270,6 +276,12 @@ namespace VM {
             case QVM_COMMON_FS_FIND_PAK:
                 IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
                     found = FS::FindPak(pakName);
+                });
+                break;
+
+            case QVM_COMMON_FS_LOAD_PAK:
+                IPC::HandleMsg<FSLoadPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
+                    found = FS_LoadPak(pakName.c_str());
                 });
                 break;
 

@@ -239,6 +239,18 @@ void trap_Argv(int n, char *buffer, int bufferLength) {
     }
 }
 
+void trap_EscapedArgs( char *buffer, int bufferLength ) {
+	const Cmd::Args* args = argStack.back();
+	std::string res = args->EscapedArgs(0);
+	Q_strncpyz( buffer, res.c_str(), bufferLength );
+}
+
+void trap_LiteralArgs( char *buffer, int bufferLength ) {
+	const Cmd::Args* args = argStack.back();
+	std::string res = args->ConcatArgs(0);
+	Q_strncpyz( buffer, res.c_str(), bufferLength );
+}
+
 namespace Cmd {
 
     // We also provide an API to manipulate the stack for example when the VM asks for commands to be tokenized
@@ -418,6 +430,15 @@ int trap_Cvar_VariableIntegerValue(const char *varName) {
     return 0;
 }
 
+float trap_Cvar_VariableValue(const char *varName) {
+    std::string value = Cvar::GetValue(varName);
+    float res;
+    if (Str::ToFloat(value, res)) {
+        return res;
+    }
+    return 0.0;
+}
+
 void trap_Cvar_VariableStringBuffer(const char *varName, char *buffer, int bufsize) {
     std::string value = Cvar::GetValue(varName);
     Q_strncpyz(buffer, value.c_str(), bufsize);
@@ -519,6 +540,11 @@ int trap_FS_Write(const void *buffer, int len, fileHandle_t f)
 	return res;
 }
 
+void trap_GS_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin )
+{
+	VM::SendMsg<VM::FSSeekMsg>(f, offset, origin);
+}
+
 void trap_FS_Rename(const char *from, const char *to)
 {
 	VM::SendMsg<VM::FSRenameMsg>(from, to);
@@ -542,6 +568,13 @@ qboolean trap_FindPak(const char *name)
 {
 	bool res;
 	VM::SendMsg<VM::FSFindPakMsg>(name, res);
+	return res;
+}
+
+qboolean trap_FS_LoadPak( const char *pak )
+{
+	bool res;
+	VM::SendMsg<VM::FSFindPakMsg>(pak, res);
 	return res;
 }
 

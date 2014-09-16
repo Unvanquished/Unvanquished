@@ -54,10 +54,12 @@ namespace VM {
         QVM_COMMON_FS_FOPEN_FILE,
         QVM_COMMON_FS_READ,
         QVM_COMMON_FS_WRITE,
+        QVM_COMMON_FS_SEEK,
         QVM_COMMON_FS_RENAME,
         QVM_COMMON_FS_FCLOSE_FILE,
         QVM_COMMON_FS_GET_FILE_LIST,
         QVM_COMMON_FS_FIND_PAK,
+        QVM_COMMON_FS_LOAD_PAK,
 
         QVM_COMMON_PARSE_ADD_GLOBAL_DEFINE,
         QVM_COMMON_PARSE_LOAD_SOURCE,
@@ -89,6 +91,8 @@ namespace VM {
         IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_WRITE>, int, std::string>,
         IPC::Reply<int>
     > FSWriteMsg;
+    // FSSeekMsg
+    typedef IPC::Message<IPC::Id<VM::QVM, QVM_COMMON_FS_SEEK>, int, long, int> FSSeekMsg;
     // FSRenameMsg
     typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_RENAME>, std::string, std::string> FSRenameMsg;
     // FSFCloseFile
@@ -103,6 +107,11 @@ namespace VM {
         IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_FIND_PAK>, std::string>,
         IPC::Reply<bool>
     > FSFindPakMsg;
+    // FSLoadPakMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_LOAD_PAK>, std::string>,
+        IPC::Reply<bool>
+    > FSLoadPakMsg;
 
     //ParseAddGlobalDefineMsg
     typedef IPC::SyncMessage<
