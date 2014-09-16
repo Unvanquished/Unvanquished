@@ -926,3 +926,7 @@ void trap_Rocket_SetDataSelectIndex( int index )
 	VM::SendMsg<Rocket::SetDataSelectIndexMsg>(index);
 }
 
+void trap_Rocket_LoadFont( const char *font )
+{
+	VM::SendMsg<Rocket::LoadFontMsg>(font);
+}

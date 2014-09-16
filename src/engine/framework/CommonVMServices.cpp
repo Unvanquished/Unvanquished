@@ -159,6 +159,10 @@ namespace VM {
                 SetCvar(reader, channel);
                 break;
 
+            case ADD_CVAR_FLAGS:
+				AddCvarFlags(reader, channel);
+				break;
+
             default:
                 Com_Error(ERR_DROP, "Bad cvar syscall number '%d' for VM '%s'", minor, vmName.c_str());
         }
@@ -183,6 +187,13 @@ namespace VM {
         IPC::HandleMsg<SetCvarMsg>(channel, std::move(reader), [this](std::string name, std::string value){
             //TODO check it is only touching allowed cvars?
             Cvar::SetValue(name, value);
+        });
+    }
+
+    void CommonVMServices::AddCvarFlags(IPC::Reader& reader, IPC::Channel& channel) {
+        IPC::HandleMsg<AddCvarFlagsMsg>(channel, std::move(reader), [this](std::string name, int flags, bool& exists){
+            //TODO check it is only touching allowed cvars?
+            exists = Cvar::AddFlags(name, flags);
         });
     }
 
@@ -273,6 +284,15 @@ namespace VM {
                 });
                 break;
 
+            case QVM_COMMON_FS_GET_FILE_LIST_RECURSIVE:
+                IPC::HandleMsg<FSGetFileListRecursiveMsg>(channel, std::move(reader), [this](std::string path, std::string extension, int len, int& intRes, std::string& res) {
+                    std::unique_ptr<char[]> buffer(new char[len]);
+                    buffer[0] = '\0';
+                    intRes = FS_GetFileListRecursive(path.c_str(), extension.c_str(), buffer.get(), len);
+                    res.assign(buffer.get(), len);
+                });
+                break;
+
             case QVM_COMMON_FS_FIND_PAK:
                 IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
                     found = FS::FindPak(pakName);
@@ -280,8 +300,19 @@ namespace VM {
                 break;
 
             case QVM_COMMON_FS_LOAD_PAK:
-                IPC::HandleMsg<FSLoadPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
-                    found = FS_LoadPak(pakName.c_str());
+                IPC::HandleMsg<FSLoadPakMsg>(channel, std::move(reader), [this](std::string pakName, std::string prefix, bool& found) {
+					found = true;
+					try {
+						FS::PakPath::LoadPakPrefix(*FS::FindPak(pakName), prefix);
+					} catch (std::system_error& err) {
+						found = false;
+					}
+                });
+                break;
+
+            case QVM_COMMON_FS_LOAD_MAP_METADATA:
+                IPC::HandleMsg<FSLoadMapMetadataMsg>(channel, std::move(reader), [this] {
+                    FS_LoadAllMapMetadata();
                 });
                 break;
 

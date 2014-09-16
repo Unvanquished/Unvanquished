@@ -58,8 +58,10 @@ namespace VM {
         QVM_COMMON_FS_RENAME,
         QVM_COMMON_FS_FCLOSE_FILE,
         QVM_COMMON_FS_GET_FILE_LIST,
+        QVM_COMMON_FS_GET_FILE_LIST_RECURSIVE,
         QVM_COMMON_FS_FIND_PAK,
         QVM_COMMON_FS_LOAD_PAK,
+        QVM_COMMON_FS_LOAD_MAP_METADATA,
 
         QVM_COMMON_PARSE_ADD_GLOBAL_DEFINE,
         QVM_COMMON_PARSE_LOAD_SOURCE,
@@ -102,6 +104,11 @@ namespace VM {
         IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_GET_FILE_LIST>, std::string, std::string, int>,
         IPC::Reply<int, std::string>
     > FSGetFileListMsg;
+    // FSGetFileListRecursiveMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_GET_FILE_LIST_RECURSIVE>, std::string, std::string, int>,
+        IPC::Reply<int, std::string>
+    > FSGetFileListRecursiveMsg;
     // FSFindPakMsg
     typedef IPC::SyncMessage<
         IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_FIND_PAK>, std::string>,
@@ -109,9 +116,13 @@ namespace VM {
     > FSFindPakMsg;
     // FSLoadPakMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_LOAD_PAK>, std::string>,
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_LOAD_PAK>, std::string, std::string>,
         IPC::Reply<bool>
     > FSLoadPakMsg;
+    // FSLoadMapMetadataMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_LOAD_MAP_METADATA>>
+    > FSLoadMapMetadataMsg;
 
     //ParseAddGlobalDefineMsg
     typedef IPC::SyncMessage<
@@ -177,7 +188,8 @@ namespace VM {
     enum EngineCvarMessages {
         REGISTER_CVAR,
         GET_CVAR,
-        SET_CVAR
+        SET_CVAR,
+        ADD_CVAR_FLAGS
     };
 
     // RegisterCvarMsg
@@ -193,6 +205,11 @@ namespace VM {
     typedef IPC::SyncMessage<
         IPC::Message<IPC::Id<CVAR, SET_CVAR>, std::string, std::string>
     > SetCvarMsg;
+    // SetCvarMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<CVAR, ADD_CVAR_FLAGS>, std::string, int>,
+        IPC::Reply<bool>
+    > AddCvarFlagsMsg;
 
     enum VMCvarMessages {
         ON_VALUE_CHANGED

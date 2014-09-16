@@ -42,6 +42,7 @@ Maryland 20850 USA.
 
 #include "../framework/CommonVMServices.h"
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
@@ -2539,6 +2540,12 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		case CG_ROCKET_SETDATASELECTINDEX:
 			IPC::HandleMsg<Rocket::SetDataSelectIndexMsg>(channel, std::move(reader), [this] (int index) {
 				Rocket_SetDataSelectIndex(index);
+			});
+			break;
+
+		case CG_ROCKET_LOADFONT:
+			IPC::HandleMsg<Rocket::LoadFontMsg>(channel, std::move(reader), [this] (std::string font) {
+				Rocket_LoadFont(font.c_str());
 			});
 			break;
 

@@ -628,49 +628,34 @@ typedef struct buildableCache_s
 // it depends on past states)
 typedef struct
 {
-	qboolean  valid;
-	qboolean  old; // true if it's not the first time we see it
-	qboolean  old_hud;
-	int       oldFlags;
-	int       oldEntityNum; // BCT_HEALTH and BCT_AMMO
-	qboolean  eventFired; // BCT_TIMER
-	qboolean  fadingOut; // fading out client-side beacons
-
-	//drawing
-	vec2_t        pos;
-	qboolean      altIcon;
-	float         t_occlusion;
-
-	vec3_t        origin;
-	int           ctime; // creation time
-	int           etime; // expiration time, 0 if never expires
-} cbeaconPersistent_t;
-
-// all data here must be deduceable at any moment
-// can be cleared every frame
-typedef struct
-{
-	cbeaconPersistent_t  *s;
+	qboolean      inuse;
+	qboolean      old;
+	qboolean      eventFired;
 
 	beaconType_t  type;
+	vec3_t        origin;
+	int           flags;
+	int           oldFlags;
+	int           ctime;
+	int           etime;
 	int           data;
 	team_t        team;
 	int           owner;
-	int           flags;
 
-	//cache
+	// cache
 	float         dot;
 	float         dist;
 
-	// drawing parameters
-	vec2_t        pos_proj;
+	// drawing
+	vec2_t        pos;
 	float         scale;
 	float         size;
 	vec4_t        color;
+	float         t_occlusion;
 
 	qboolean      clamped;
 	vec2_t        clamp_dir;
-	qboolean      highlighted; //todo
+	qboolean      highlighted;
 } cbeacon_t;
 
 typedef struct
@@ -689,10 +674,8 @@ typedef struct
 	vec4_t        colorNeutral;
 	vec4_t        colorAlien;
 	vec4_t        colorHuman;
-	float         arrowWidth;
-	float         arrowDotSize;
-	float         arrowAlphaLow;
-	float         arrowAlphaHigh;
+	float         fadeInAlpha;
+	float         fadeInScale;
 
 	// HUD
 	float         hudSize;
@@ -701,8 +684,6 @@ typedef struct
 	float         hudAlpha;
 	vec2_t        hudCenter;    //runtime
 	vec2_t        hudRect[ 2 ]; //runtime
-	vec2_t        tagScorePos;  //runtime
-	float         tagScoreSize;
 
 	// minimap
 	float         minimapScale;
@@ -790,8 +771,8 @@ typedef struct centity_s
 	qboolean              oldValid;
 	struct centity_s      *nextLocation;
 
-	cbeaconPersistent_t   beaconPersistent;
-	
+	cbeacon_t             beacon;
+
 	// Content flags derived from the entity state
 	// HACK: This is not an exact copy of the content flags the server sees.
 	// If this is desired, it needs to be made part of entityState_t instead.
@@ -1174,7 +1155,6 @@ typedef struct
 	int      teamScores[ 2 ];
 	score_t  scores[ MAX_CLIENTS ];
 	qboolean showScores;
-	qboolean scoreBoardShowing;
 	int      scoreFadeTime;
 	char     killerName[ MAX_NAME_LENGTH ];
 	char     spectatorList[ MAX_STRING_CHARS ]; // list of names
@@ -1296,8 +1276,8 @@ typedef struct
 	weaponInertia_t         weaponInertia;
 
 	// beacons
-	cbeacon_t               beacons[ MAX_CBEACONS ];
-	int                     num_beacons;
+	cbeacon_t               *beacons[ MAX_CBEACONS ];
+	int                     beaconCount;
 	cbeacon_t               *highlightedBeacon;
 
 	int                     tagScoreTime;
@@ -1358,9 +1338,6 @@ typedef struct
 {
 	char *mapName;
 	char *mapLoadName;
-	char *imageName;
-	int        cinematic;
-	qhandle_t  levelShot;
 } mapInfo_t;
 
 typedef struct
@@ -1614,13 +1591,10 @@ typedef struct
 	animation_t jetpackAnims[ MAX_JETPACK_ANIMATIONS ];
 
 	qhandle_t   beaconIconArrow;
-	qhandle_t   beaconLongArrow;
-	qhandle_t   beaconLongArrowDot;
 	qhandle_t   beaconNoTarget;
 	qhandle_t   beaconTagScore;
 
 	sfxHandle_t timerBeaconExpiredSound;
-	sfxHandle_t ownedTagSound;
 } cgMedia_t;
 
 typedef struct

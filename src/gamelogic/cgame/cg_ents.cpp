@@ -522,6 +522,8 @@ static void CG_Missile( centity_t *cent )
 				}
 			}
 		}
+
+		ent.skeleton.scale = 1.0f;
 	}
 
 	//only refresh if there is something to display
@@ -1033,10 +1035,6 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 
 		case ET_LIGHTFLARE:
 			cent->lfs.hTest = trap_RegisterVisTest();
-			break;
-
-		case ET_BEACON:
-			memset( &cent->beaconPersistent, 0, sizeof( cbeaconPersistent_t ) );
 			break;
 
 		default:

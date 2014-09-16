@@ -320,6 +320,12 @@ namespace Cvar{
         VM::SendMsg<VM::SetCvarMsg>(name, value);
     }
 
+    bool AddFlags(const std::string& name, int flags) {
+        bool exists;
+        VM::SendMsg<VM::AddCvarFlagsMsg>(name, flags, exists);
+        return exists;
+    }
+
     // Syscalls called by the engine
 
     void CallOnValueChangedSyscall(IPC::Reader& reader, IPC::Channel& channel) {
@@ -444,6 +450,10 @@ void trap_Cvar_VariableStringBuffer(const char *varName, char *buffer, int bufsi
     Q_strncpyz(buffer, value.c_str(), bufsize);
 }
 
+void trap_Cvar_AddFlags(const char* varName, int flags) {
+    Cvar::AddFlags(varName, flags);
+}
+
 // Log related commands
 
 namespace Log {
@@ -564,6 +574,15 @@ int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, 
 	return res;
 }
 
+int trap_FS_GetFileListRecursive(const char *path, const char *extension, char *listbuf, int bufsize)
+{
+	int res;
+	std::string text;
+	VM::SendMsg<VM::FSGetFileListRecursiveMsg>(path, extension, bufsize, res, text);
+	memcpy(listbuf, text.c_str(), std::min((int)text.size() + 1, bufsize));
+	return res;
+}
+
 qboolean trap_FindPak(const char *name)
 {
 	bool res;
@@ -571,11 +590,16 @@ qboolean trap_FindPak(const char *name)
 	return res;
 }
 
-qboolean trap_FS_LoadPak( const char *pak )
+qboolean trap_FS_LoadPak( const char *pak, const char* prefix )
 {
 	bool res;
-	VM::SendMsg<VM::FSFindPakMsg>(pak, res);
+	VM::SendMsg<VM::FSLoadPakMsg>(pak, prefix, res);
 	return res;
+}
+
+void trap_FS_LoadAllMapMetadata( void )
+{
+	VM::SendMsg<VM::FSLoadMapMetadataMsg>();
 }
 
 int trap_Parse_AddGlobalDefine(const char *define)

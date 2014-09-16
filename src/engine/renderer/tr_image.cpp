@@ -1431,8 +1431,10 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			{
 				if ( glConfig.driverType == GLDRV_OPENGL3 || glConfig2.framebufferObjectAvailable )
 				{
-					glGenerateMipmapEXT( image->type );
-					glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
+					if( image->type != GL_TEXTURE_CUBE_MAP || i == 5 ) {
+						glGenerateMipmapEXT( image->type );
+						glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
+					}
 				}
 				else if ( glConfig2.generateMipmapAvailable )
 				{

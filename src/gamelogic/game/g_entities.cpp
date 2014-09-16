@@ -159,7 +159,7 @@ void G_FreeEntity( gentity_t *entity )
 		entity->eclass->instanceCounter--;
 	}
 
-	if ( entity->s.eType == ET_BUILDABLE )
+	if ( entity->s.eType == ET_BEACON && entity->s.modelindex == BCT_TAG )
 	{
 		// It's possible that this happened before, but we need to be sure.
 		BaseClustering::Remove(entity);

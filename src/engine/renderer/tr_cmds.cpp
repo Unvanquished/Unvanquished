@@ -66,9 +66,9 @@ void R_PerformanceCounters( void )
 	}
 	else if ( r_speeds->integer == RSPEEDS_CULLING )
 	{
-		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout %i bin %i bout\n",
-		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out,
-		           tr.pc.c_box_cull_in, tr.pc.c_box_cull_out );
+		ri.Printf( PRINT_ALL, "(gen) %i pin %i pout %i bin %i bclip %i bout\n",
+		           tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out, tr.pc.c_box_cull_in,
+		           tr.pc.c_box_cull_clip, tr.pc.c_box_cull_out );
 
 		ri.Printf( PRINT_ALL, "(mdv) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
 		           tr.pc.c_sphere_cull_mdv_in, tr.pc.c_sphere_cull_mdv_clip,
@@ -614,17 +614,11 @@ RE_ScissorEnable
 */
 void RE_ScissorEnable( qboolean enable )
 {
-	scissorEnableCommand_t *cmd;
-
-	cmd = (scissorEnableCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
-
-	if ( !cmd )
-	{
-		return;
+	// scissor disable sets scissor to full screen
+	// scissor enable is a no-op
+	if( !enable ) {
+		RE_ScissorSet( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 	}
-
-	cmd->commandId = RC_SCISSORENABLE;
-	cmd->enable = enable;
 }
 
 /*

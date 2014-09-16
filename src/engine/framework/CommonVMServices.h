@@ -70,6 +70,7 @@ namespace VM {
             void RegisterCvar(IPC::Reader& reader, IPC::Channel& channel);
             void GetCvar(IPC::Reader& reader, IPC::Channel& channel);
             void SetCvar(IPC::Reader& reader, IPC::Channel& channel);
+            void AddCvarFlags(IPC::Reader& reader, IPC::Channel& channel);
 
             class ProxyCvar;
             std::vector<std::unique_ptr<ProxyCvar>> registeredCvars;

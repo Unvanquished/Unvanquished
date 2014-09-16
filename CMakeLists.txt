@@ -832,10 +832,11 @@ set( CGAMELIST
 set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_active.cpp
   ${GAMELOGIC_DIR}/game/g_api.cpp
+  ${GAMELOGIC_DIR}/game/g_buildpoints.cpp
   ${GAMELOGIC_DIR}/game/g_client.cpp
   ${GAMELOGIC_DIR}/game/g_cmds.cpp
   ${GAMELOGIC_DIR}/game/g_combat.cpp
-  ${GAMELOGIC_DIR}/game/g_confidence.cpp
+  ${GAMELOGIC_DIR}/game/g_momentum.cpp
   ${GAMELOGIC_DIR}/game/g_entities.cpp
   ${GAMELOGIC_DIR}/game/g_physics.cpp
   ${GAMELOGIC_DIR}/game/g_buildable.cpp

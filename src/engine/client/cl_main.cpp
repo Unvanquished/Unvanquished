@@ -1653,11 +1653,6 @@ void CL_Disconnect( qboolean showMainMenu )
 		clc.demofile = 0;
 	}
 
-	if ( cgvm.IsActive() && showMainMenu )
-	{
-		Rocket_DocumentAction( "main", "show" );
-	}
-
 	SCR_StopCinematic();
 
 	CL_SendDisconnect();
@@ -1677,10 +1672,8 @@ void CL_Disconnect( qboolean showMainMenu )
 		CL_ClearStaticDownload();
 	}
 
-	// Load map pk3s to allow menus to load levelshots
 	FS::PakPath::ClearPaks();
 	FS_LoadBasePak();
-	FS_LoadAllMaps();
 
 #ifdef USE_VOIP
 	// not connected to voip server anymore.
@@ -1706,7 +1699,7 @@ void CL_Disconnect( qboolean showMainMenu )
 		cls.state = CA_DISCONNECTED;
 
 		// shutdown the UI
-		Rocket_Shutdown();
+		CL_ShutdownCGame();
 
 		// init the UI
 		cgvm.Start();

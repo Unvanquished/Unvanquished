@@ -249,7 +249,8 @@ typedef enum cgameImport_s
   CG_ROCKET_CLEARTEXT,
   CG_ROCKET_REGISTERPROPERTY,
   CG_ROCKET_SHOWSCOREBOARD,
-  CG_ROCKET_SETDATASELECTINDEX
+  CG_ROCKET_SETDATASELECTINDEX,
+  CG_ROCKET_LOADFONT
 } cgameImport_t;
 
 // All Miscs
@@ -750,6 +751,10 @@ namespace Rocket {
 	typedef IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETDATASELECTINDEX>, int>
 	> SetDataSelectIndexMsg;
+	// LoadFontMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_LOADFONT>, std::string>
+	> LoadFontMsg;
 }
 
 typedef enum
@@ -863,6 +868,7 @@ void            trap_Cvar_VariableStringBuffer( const char *var_name, char *buff
 void            trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 int             trap_Cvar_VariableIntegerValue( const char *var_name );
 float           trap_Cvar_VariableValue( const char *var_name );
+void            trap_Cvar_AddFlags( const char *var_name, int flags );
 int             trap_Argc( void );
 void            trap_Argv( int n, char *buffer, int bufferLength );
 void            trap_EscapedArgs( char *buffer, int bufferLength );
@@ -874,8 +880,10 @@ void            trap_FS_Read( void *buffer, int len, fileHandle_t f );
 void            trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void            trap_FS_FCloseFile( fileHandle_t f );
 int             trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
+int             trap_FS_GetFileListRecursive( const char *path, const char *extension, char *listbuf, int bufsize );
 int             trap_FS_Delete( const char *filename );
-qboolean            trap_FS_LoadPak( const char *pak );
+qboolean        trap_FS_LoadPak( const char *pak, const char *prefix );
+void            trap_FS_LoadAllMapMetadata( void );
 void            trap_SendConsoleCommand( const char *text );
 void            trap_AddCommand( const char *cmdName );
 void            trap_RemoveCommand( const char *cmdName );
@@ -1048,4 +1056,5 @@ void            trap_Rocket_ClearText( void );
 void            trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
 void            trap_Rocket_ShowScoreboard( const char *name, qboolean show );
 void            trap_Rocket_SetDataSelectIndex( int index );
+void            trap_Rocket_LoadFont( const char *font );
 #endif

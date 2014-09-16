@@ -534,6 +534,7 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.numIndexes = 0;
 	tess.attribsSet = 0;
 
+	Tess_MapVBOs( qfalse );
 	VectorCopy( quadVerts[ 0 ], tess.verts[ tess.numVertexes ].xyz );
 	Vector4Set( tess.verts[ tess.numVertexes ].color, 255, 255, 255, 255 );
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.0f );
@@ -565,7 +566,8 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.indexes[ tess.numIndexes++ ] = 2;
 	tess.indexes[ tess.numIndexes++ ] = 3;
 
-	Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
+	Tess_UpdateVBOs( );
+	GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
 
 	Tess_DrawElements();
 
@@ -1216,7 +1218,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT;
 
-	if( model->blendWeights && model->blendIndexes ) {
+	if( model->num_joints > 0 && model->blendWeights && model->blendIndexes ) {
 		// deform the vertices by the lerped bones
 		for ( i = 0; i < surf->num_vertexes; i++ )
 		{
@@ -1268,8 +1270,9 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 		{
 			int    idxIn = surf->first_vertex + i;
 			int    idxOut = tess.numVertexes + i;
+			float  scale = model->internalScale * backEnd.currentEntity->e.skeleton.scale;
 
-			VectorCopy( &model->positions[ 3 * idxIn ], tess.verts[ idxOut ].xyz );
+			VectorScale( &model->positions[ 3 * idxIn ], scale, tess.verts[ idxOut ].xyz );
 			R_TBNtoQtangents( &model->tangents[ 3 * idxIn ],
 					  &model->bitangents[ 3 * idxIn ],
 					  &model->normals[ 3 * idxIn ],
@@ -1420,26 +1423,24 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 
 	model = srf->md5Model;
 
-	if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
+	tess.vboVertexSkinning = qtrue;
+	tess.numBones = srf->numBoneRemap;
+
+	for ( i = 0; i < srf->numBoneRemap; i++ )
 	{
-		tess.vboVertexSkinning = qtrue;
-		tess.numBones = srf->numBoneRemap;
+		refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ];
 
-		for ( i = 0; i < srf->numBoneRemap; i++ )
+		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
-			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ];
-
 			TransInitRotationQuat( model->bones[ srf->boneRemapInverse[ i ] ].rotation, &tess.bones[ i ] );
 			TransAddTranslation( model->bones[ srf->boneRemapInverse[ i ] ].origin, &tess.bones[ i ] );
 			TransInverse( &tess.bones[ i ], &tess.bones[ i ] );
 			TransCombine( &tess.bones[ i ], &bone->t, &tess.bones[ i ] );
-			TransAddScale( backEnd.currentEntity->e.skeleton.scale, &tess.bones[ i ] );
-			TransInsScale( model->internalScale, &tess.bones[ i ] );
+		} else {
+			TransInit( &tess.bones[ i ] );
 		}
-	}
-	else
-	{
-		tess.vboVertexSkinning = qfalse;
+		TransAddScale( backEnd.currentEntity->e.skeleton.scale, &tess.bones[ i ] );
+		TransInsScale( model->internalScale, &tess.bones[ i ] );
 	}
 
 	Tess_End();
