@@ -223,7 +223,7 @@ typedef enum cgameImport_s
   CG_ROCKET_LOADCURSOR,
   CG_ROCKET_DOCUMENTACTION,
   CG_ROCKET_GETEVENT,
-  CG_ROCKET_DELELTEEVENT,
+  CG_ROCKET_DELETEEVENT,
   CG_ROCKET_REGISTERDATASOURCE,
   CG_ROCKET_DSADDROW,
   CG_ROCKET_DSCLEARTABLE,
@@ -231,7 +231,7 @@ typedef enum cgameImport_s
   CG_ROCKET_GETATTRIBUTE,
   CG_ROCKET_SETATTRIBUTE,
   CG_ROCKET_GETPROPERTY,
-  CG_ROCKET_SETPROPERYBYID,
+  CG_ROCKET_SETPROPERTYBYID,
   CG_ROCKET_GETEVENTPARAMETERS,
   CG_ROCKET_REGISTERDATAFORMATTER,
   CG_ROCKET_DATAFORMATTERRAWDATA,
@@ -603,6 +603,156 @@ namespace LAN {
 		IPC::Message<IPC::Id<VM::QVM, CG_LAN_SERVERSTATUS>, std::string, int>,
 		IPC::Reply<std::string, int>
 	> ServerStatusMsg;
+}
+
+namespace Rocket {
+	// TODO all of these are declared as sync but some might be async
+	// it is not really important as librocket will be moved to nacl
+
+	// InitMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_INIT>>
+	> InitMsg;
+	// ShutdownMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SHUTDOWN>>
+	> ShutdownMsg;
+	// LoadDocumentMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_LOADDOCUMENT>, std::string>
+	> LoadDocumentMsg;
+	// LoadCursorMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_LOADCURSOR>, std::string>
+	> LoadCursorMsg;
+	// DocumentActionMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DOCUMENTACTION>, std::string, std::string>
+	> DocumentActionMsg;
+	// GetEventMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETEVENT>>,
+		IPC::Reply<bool>
+	> GetEventMsg;
+	// DeleteEventMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DELETEEVENT>>
+	> DeleteEventMsg;
+	// RegisterDataSourceMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_REGISTERDATASOURCE>, std::string>
+	> RegisterDataSourceMsg;
+	// DSAddRowMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DSADDROW>, std::string, std::string, std::string>
+	> DSAddRowMsg;
+	// DSClearTableMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DSCLEARTABLE>, std::string, std::string>
+		> DSClearTableMsg;
+	// SetInnerRMLMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETINNERRML>, std::string, int>
+	> SetInnerRMLMsg;
+	// GetAttributeMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETATTRIBUTE>, std::string, int>,
+		IPC::Reply<std::string>
+	> GetAttributeMsg;
+	// SetAttributeMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETATTRIBUTE>, std::string, std::string>
+	> SetAttributeMsg;
+	// GetPropertyMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETPROPERTY>, std::string, int, int>,
+		IPC::Reply<std::string>
+	> GetPropertyMsg;
+	// SetPropertyMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETPROPERTYBYID>, std::string, std::string>
+	> SetPropertyMsg;
+	// GetEventParametersMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETEVENTPARAMETERS>, int>,
+		IPC::Reply<std::string>
+	> GetEventParametersMsg;
+	// RegisterDataFormatterMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_REGISTERDATAFORMATTER>, std::string>
+	> RegisterDataFormatterMsg;
+	// DataFormatterDataMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DATAFORMATTERRAWDATA>, int, int, int>,
+		IPC::Reply<std::string, std::string>
+	> DataFormatterDataMsg;
+	// DataFormatterFormattedDataMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DATAFORMATTERFORMATTEDDATA>, int, std::string, bool>
+	> DataFormatterFormattedDataMsg;
+	// RegisterElementMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_REGISTERELEMENT>, std::string>
+	> RegisterElementMsg;
+	// GetElementTagMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETELEMENTTAG>, int>,
+		IPC::Reply<std::string>
+	> GetElementTagMsg;
+	// GetElementAbsoluteOffsetMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETELEMENTABSOLUTEOFFSET>>,
+		IPC::Reply<float, float>
+	> GetElementAbsoluteOffsetMsg;
+	// QuakeToRMLMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_QUAKETORML>, std::string, int>,
+		IPC::Reply<std::string>
+	> QuakeToRMLMsg;
+	// SetClassMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETCLASS>, std::string, bool>
+	> SetClassMsg;
+	// InitHUDsMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_INITHUDS>, int>
+	> InitHUDsMsg;
+	// LoadUnitMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_LOADUNIT>, std::string>
+	> LoadUnitMsg;
+	// AddUnitToHUDMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_ADDUNITTOHUD>, int, std::string>
+	> AddUnitToHUDMsg;
+	// ShowHUDMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SHOWHUD>, int>
+	> ShowHUDMsg;
+	// ClearHUDMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_CLEARHUD>, int>
+	> ClearHUDMsg;
+	// AddTextMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_ADDTEXT>, std::string, std::string, float, float>
+	> AddTextMsg;
+	// ClearTextMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_CLEARTEXT>>
+	> ClearTextMsg;
+	// RegisterPropertyMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_REGISTERPROPERTY>, std::string, std::string, bool, bool, std::string>
+	> RegisterPropertyMsg;
+	// ShowScoreboardMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SHOWSCOREBOARD>, std::string, bool>
+	> ShowScoreboardMsg;
+	// SetDataSelectIndexMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETDATASELECTINDEX>, int>
+	> SetDataSelectIndexMsg;
 }
 
 typedef enum

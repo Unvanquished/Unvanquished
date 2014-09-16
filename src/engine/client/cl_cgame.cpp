@@ -1084,167 +1084,6 @@ void Key_SetCatcher( int catcher )
 
 /*
 ====================
-CL_CgameSystemCalls
-
-The cgame module is making a system call
-====================
-*/
-intptr_t CL_CgameSystemCalls( intptr_t *args )
-{
-	/*
-	cls.nCgameSyscalls ++;
-
-	switch ( args[ 0 ] )
-	{
-		case CG_CM_DISTANCETOMODEL:
-			cls.nCgamePhysicsSyscalls ++;
-			return FloatAsInt( CM_DistanceToModel( (float*) VMA(1), args[2] ) );
-
-		case CG_ROCKET_INIT:
-			Rocket_Init();
-			return 0;
-
-		case CG_ROCKET_SHUTDOWN:
-			Rocket_Shutdown();
-			return 0;
-
-		case CG_ROCKET_LOADDOCUMENT:
-			Rocket_LoadDocument( (const char *) VMA(1) );
-			return 0;
-
-		case CG_ROCKET_LOADCURSOR:
-			Rocket_LoadCursor( (const char *) VMA(1) );
-			return 0;
-
-		case CG_ROCKET_DOCUMENTACTION:
-			Rocket_DocumentAction( (const char *) VMA(1), (const char *) VMA(2) );
-			return 0;
-
-		case CG_ROCKET_GETEVENT:
-			return Rocket_GetEvent();
-
-		case CG_ROCKET_DELELTEEVENT:
-			Rocket_DeleteEvent();
-			return 0;
-
-		case CG_ROCKET_REGISTERDATASOURCE:
-			Rocket_RegisterDataSource( (const char *) VMA(1) );
-			return 0;
-
-		case CG_ROCKET_DSADDROW:
-			Rocket_DSAddRow( (const char *) VMA(1), (const char *) VMA(2), (const char *) VMA(3) );
-			return 0;
-
-		case CG_ROCKET_DSCLEARTABLE:
-			Rocket_DSClearTable( (const char *) VMA(1), (const char *) VMA(2) );
-			return 0;
-
-		case CG_ROCKET_SETINNERRML:
-			Rocket_SetInnerRML( "", "", (const char *) VMA(1), args[2] );
-			return 0;
-
-		case CG_ROCKET_GETEVENTPARAMETERS:
-			Rocket_GetEventParameters( (char *) VMA(1), args[2] );
-			return 0;
-
-		case CG_ROCKET_REGISTERDATAFORMATTER:
-			Rocket_RegisterDataFormatter( (const char *) VMA(1) );
-			return 0;
-
-		case CG_ROCKET_DATAFORMATTERRAWDATA:
-			Rocket_DataFormatterRawData( args[1], (char *) VMA(2), args[3], (char *) VMA(4), args[5] );
-			return 0;
-
-		case CG_ROCKET_DATAFORMATTERFORMATTEDDATA:
-			Rocket_DataFormatterFormattedData( args[1], (const char *) VMA(2), args[3] );
-			return 0;
-
-		case CG_ROCKET_GETATTRIBUTE:
-			Rocket_GetAttribute( "", "", (const char *) VMA(1), (char *) VMA(2), args[3] );
-			return 0;
-
-		case CG_ROCKET_SETATTRIBUTE:
-			Rocket_SetAttribute( "", "", (const char *) VMA(1), (const char *) VMA(2) );
-			return 0;
-
-		case CG_ROCKET_GETPROPERTY:
-			Rocket_GetProperty( (const char *) VMA(1), VMA(2), args[ 3 ], (rocketVarType_t) args[ 4 ] );
-			return 0;
-
-		case CG_ROCKET_REGISTERELEMENT:
-			Rocket_RegisterElement( (const char *) VMA(1) );
-			return 0;
-
-		case CG_ROCKET_GETELEMENTTAG:
-			Rocket_GetElementTag( (char *)VMA(1), args[ 2 ] );
-			return 0;
-
-		case CG_ROCKET_GETELEMENTABSOLUTEOFFSET:
-			Rocket_GetElementAbsoluteOffset( (float*) VMA(1), (float*) VMA(2) );
-			return 0;
-
-		case CG_ROCKET_QUAKETORML:
-			Rocket_QuakeToRMLBuffer( (const char *) VMA(1), (char *) VMA(2), args[3] );
-			return 0;
-
-		case CG_ROCKET_SETCLASS:
-			Rocket_SetClass( (const char *) VMA(1), args[ 2 ] );
-			return 0;
-
-		case CG_ROCKET_SETPROPERYBYID:
-			Rocket_SetPropertyById( "", (const char *) VMA(1), (const char *) VMA(2) );
-			return 0;
-
-		case CG_ROCKET_INITHUDS:
-			Rocket_InitializeHuds( args[1] );
-			return 0;
-
-		case CG_ROCKET_LOADUNIT:
-			Rocket_LoadUnit( (const char *) VMA(1) );
-			return 0;
-
-		case CG_ROCKET_ADDUNITTOHUD:
-			Rocket_AddUnitToHud( args[1], (const char *) VMA(2) );
-			return 0;
-
-		case CG_ROCKET_SHOWHUD:
-			Rocket_ShowHud( args[1] );
-			return 0;
-
-		case CG_ROCKET_CLEARHUD:
-			Rocket_ClearHud( args[1] );
-			return 0;
-
-		case CG_ROCKET_ADDTEXT:
-			Rocket_AddTextElement( ( const char * ) VMA(1), ( const char *) VMA(2), VMF(3), VMF(4) );
-			return 0;
-
-		case CG_ROCKET_CLEARTEXT:
-			Rocket_ClearText();
-			return 0;
-
-		case CG_ROCKET_REGISTERPROPERTY:
-			Rocket_RegisterProperty( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ), args[ 3 ], args[ 4 ], ( const char * ) VMA( 5 ) );
-			return 0;
-
-		case CG_ROCKET_SHOWSCOREBOARD:
-			Rocket_ShowScoreboard( ( const char * ) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case CG_ROCKET_SETDATASELECTINDEX:
-			Rocket_SetDataSelectIndex( args[ 1 ] );
-			return 0;
-
-		default:
-			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
-			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
-	}
-*/
-	return 0;
-}
-
-/*
-====================
 CL_UpdateLevelHunkUsage
 
   This updates the "hunkusage.dat" file with the current map and its hunk usage count
@@ -2527,6 +2366,226 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 				std::unique_ptr<char[]> buffer(new char[len]);
 				res = LAN_GetServerStatus(serverAddress.c_str(), buffer.get(), len);
 				status.assign(buffer.get(), len);
+			});
+			break;
+
+		// All rocket
+
+		case CG_ROCKET_INIT:
+			IPC::HandleMsg<Rocket::InitMsg>(channel, std::move(reader), [this] {
+				Rocket_Init();
+			});
+			break;
+
+		case CG_ROCKET_SHUTDOWN:
+			IPC::HandleMsg<Rocket::ShutdownMsg>(channel, std::move(reader), [this] {
+				Rocket_Shutdown();
+			});
+			break;
+
+		case CG_ROCKET_LOADDOCUMENT:
+			IPC::HandleMsg<Rocket::LoadDocumentMsg>(channel, std::move(reader), [this] (std::string path) {
+				Rocket_LoadDocument(path.c_str());
+			});
+			break;
+
+		case CG_ROCKET_LOADCURSOR:
+			IPC::HandleMsg<Rocket::LoadCursorMsg>(channel, std::move(reader), [this] (std::string path) {
+				Rocket_LoadCursor(path.c_str());
+			});
+			break;
+
+		case CG_ROCKET_DOCUMENTACTION:
+			IPC::HandleMsg<Rocket::DocumentActionMsg>(channel, std::move(reader), [this] (std::string name, std::string action) {
+				Rocket_DocumentAction(name.c_str(), action.c_str());
+			});
+			break;
+
+		case CG_ROCKET_GETEVENT:
+			IPC::HandleMsg<Rocket::GetEventMsg>(channel, std::move(reader), [this] (bool& got) {
+				got = Rocket_GetEvent();
+			});
+			break;
+
+		case CG_ROCKET_DELETEEVENT:
+			IPC::HandleMsg<Rocket::DeleteEventMsg>(channel, std::move(reader), [this] {
+				Rocket_DeleteEvent();
+			});
+			break;
+
+		case CG_ROCKET_REGISTERDATASOURCE:
+			IPC::HandleMsg<Rocket::RegisterDataSourceMsg>(channel, std::move(reader), [this] (std::string name) {
+				Rocket_RegisterDataSource(name.c_str());
+			});
+			break;
+
+		case CG_ROCKET_DSADDROW:
+			IPC::HandleMsg<Rocket::DSAddRowMsg>(channel, std::move(reader), [this] (std::string name, std::string table, std::string data) {
+				Rocket_DSAddRow(name.c_str(), table.c_str(), data.c_str());
+			});
+			break;
+
+		case CG_ROCKET_DSCLEARTABLE:
+			IPC::HandleMsg<Rocket::DSClearTableMsg>(channel, std::move(reader), [this] (std::string name, std::string table) {
+				Rocket_DSClearTable(name.c_str(), table.c_str());
+			});
+			break;
+
+		case CG_ROCKET_SETINNERRML:
+			IPC::HandleMsg<Rocket::SetInnerRMLMsg>(channel, std::move(reader), [this] (std::string rml, int flags) {
+				Rocket_SetInnerRML( "", "", rml.c_str(), flags);
+			});
+			break;
+
+		case CG_ROCKET_GETATTRIBUTE:
+			IPC::HandleMsg<Rocket::GetAttributeMsg>(channel, std::move(reader), [this] (std::string attribute, int len, std::string& result) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				Rocket_GetAttribute( "", "", attribute.c_str(), buffer.get(), len);
+				result.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_ROCKET_SETATTRIBUTE:
+			IPC::HandleMsg<Rocket::SetAttributeMsg>(channel, std::move(reader), [this] (std::string attribute, std::string value) {
+				Rocket_SetAttribute("", "", attribute.c_str(), value.c_str());
+			});
+			break;
+
+		case CG_ROCKET_GETPROPERTY:
+			IPC::HandleMsg<Rocket::GetPropertyMsg>(channel, std::move(reader), [this] (std::string property, int type, int len, std::string& result) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				Rocket_GetProperty(property.c_str(), buffer.get(), len, (rocketVarType_t)type);
+				result.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_ROCKET_SETPROPERTYBYID:
+			IPC::HandleMsg<Rocket::SetPropertyMsg>(channel, std::move(reader), [this] (std::string property, std::string value) {
+				Rocket_SetPropertyById("", property.c_str(), value.c_str());
+			});
+			break;
+
+		case CG_ROCKET_GETEVENTPARAMETERS:
+			IPC::HandleMsg<Rocket::GetEventParametersMsg>(channel, std::move(reader), [this] (int len, std::string& result) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				Rocket_GetEventParameters(buffer.get(), len);
+				result.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_ROCKET_REGISTERDATAFORMATTER:
+			IPC::HandleMsg<Rocket::RegisterDataFormatterMsg>(channel, std::move(reader), [this] (std::string name) {
+				Rocket_RegisterDataFormatter(name.c_str());
+			});
+			break;
+
+		case CG_ROCKET_DATAFORMATTERRAWDATA:
+			IPC::HandleMsg<Rocket::DataFormatterDataMsg>(channel, std::move(reader), [this] (int handle, int nameLength, int dataLength, std::string& name, std::string& data) {
+				std::unique_ptr<char[]> nameBuffer(new char[nameLength]);
+				std::unique_ptr<char[]> dataBuffer(new char[dataLength]);
+				Rocket_DataFormatterRawData(handle, nameBuffer.get(), nameLength, dataBuffer.get(), dataLength);
+				name.assign(nameBuffer.get(), nameLength);
+				data.assign(dataBuffer.get(), dataLength);
+			});
+			break;
+
+		case CG_ROCKET_DATAFORMATTERFORMATTEDDATA:
+			IPC::HandleMsg<Rocket::DataFormatterFormattedDataMsg>(channel, std::move(reader), [this] (int handle, std::string data, bool parseQuake) {
+				Rocket_DataFormatterFormattedData(handle, data.c_str(), parseQuake);
+			});
+			break;
+
+		case CG_ROCKET_REGISTERELEMENT:
+			IPC::HandleMsg<Rocket::RegisterElementMsg>(channel, std::move(reader), [this] (std::string tag) {
+				Rocket_RegisterElement(tag.c_str());
+			});
+			break;
+
+		case CG_ROCKET_GETELEMENTTAG:
+			IPC::HandleMsg<Rocket::GetElementTagMsg>(channel, std::move(reader), [this] (int len, std::string& result) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				Rocket_GetElementTag(buffer.get(), len);
+				result.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_ROCKET_GETELEMENTABSOLUTEOFFSET:
+			IPC::HandleMsg<Rocket::GetElementAbsoluteOffsetMsg>(channel, std::move(reader), [this] (float& x, float& y) {
+				Rocket_GetElementAbsoluteOffset(&x, &y);
+			});
+			break;
+
+		case CG_ROCKET_QUAKETORML:
+			IPC::HandleMsg<Rocket::QuakeToRMLMsg>(channel, std::move(reader), [this] (std::string input, int len, std::string& result) {
+				std::unique_ptr<char[]> buffer(new char[len]);
+				Rocket_QuakeToRMLBuffer(input.c_str(), buffer.get(), len);
+				result.assign(buffer.get(), len);
+			});
+			break;
+
+		case CG_ROCKET_SETCLASS:
+			IPC::HandleMsg<Rocket::SetClassMsg>(channel, std::move(reader), [this] (std::string Class, bool activate) {
+				Rocket_SetClass(Class.c_str(), activate);
+			});
+			break;
+
+		case CG_ROCKET_INITHUDS:
+			IPC::HandleMsg<Rocket::InitHUDsMsg>(channel, std::move(reader), [this] (int size) {
+				Rocket_InitializeHuds(size);
+			});
+			break;
+
+		case CG_ROCKET_LOADUNIT:
+			IPC::HandleMsg<Rocket::LoadUnitMsg>(channel, std::move(reader), [this] (std::string path) {
+				Rocket_LoadUnit(path.c_str());
+			});
+			break;
+
+		case CG_ROCKET_ADDUNITTOHUD:
+			IPC::HandleMsg<Rocket::AddUnitToHUDMsg>(channel, std::move(reader), [this] (int weapon, std::string id) {
+				Rocket_AddUnitToHud(weapon, id.c_str());
+			});
+			break;
+
+		case CG_ROCKET_SHOWHUD:
+			IPC::HandleMsg<Rocket::ShowHUDMsg>(channel, std::move(reader), [this] (int weapon) {
+				Rocket_ShowHud(weapon);
+			});
+			break;
+
+		case CG_ROCKET_CLEARHUD:
+			IPC::HandleMsg<Rocket::ClearHUDMsg>(channel, std::move(reader), [this] (int weapon) {
+				Rocket_ClearHud(weapon);
+			});
+			break;
+
+		case CG_ROCKET_ADDTEXT:
+			IPC::HandleMsg<Rocket::AddTextMsg>(channel, std::move(reader), [this] (std::string text, std::string Class, float x, float y) {
+				Rocket_AddTextElement(text.c_str(), Class.c_str(), x, y);
+			});
+			break;
+
+		case CG_ROCKET_CLEARTEXT:
+			IPC::HandleMsg<Rocket::ClearTextMsg>(channel, std::move(reader), [this] {
+				Rocket_ClearText();
+			});
+			break;
+
+		case CG_ROCKET_REGISTERPROPERTY:
+			IPC::HandleMsg<Rocket::RegisterPropertyMsg>(channel, std::move(reader), [this] (std::string name, std::string defaultValue, bool inherited, bool forceLayout, std::string parseAs) {
+				Rocket_RegisterProperty(name.c_str(), defaultValue.c_str(), inherited, forceLayout, parseAs.c_str());
+			});
+			break;
+
+		case CG_ROCKET_SHOWSCOREBOARD:
+			IPC::HandleMsg<Rocket::ShowScoreboardMsg>(channel, std::move(reader), [this] (std::string name, bool show) {
+				Rocket_ShowScoreboard(name.c_str(), show);
+			});
+			break;
+
+		case CG_ROCKET_SETDATASELECTINDEX:
+			IPC::HandleMsg<Rocket::SetDataSelectIndexMsg>(channel, std::move(reader), [this] (int index) {
+				Rocket_SetDataSelectIndex(index);
 			});
 			break;
 
