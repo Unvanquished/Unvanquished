@@ -1707,7 +1707,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_ParseServerinfo();
 
 	// load the new map
-	trap_CM_LoadMap( va( "maps/%s.bsp", cgs.mapname) );
+	trap_CM_LoadMap(cgs.mapname);
 	CG_InitMinimap();
 
 	srand( serverMessageNum * serverCommandSequence ^ clientNum );

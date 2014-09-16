@@ -588,18 +588,7 @@ void SV_SpawnServer( const char *server )
 	if (!FS_LoadPak(va("map-%s", server)))
 		Com_Error(ERR_DROP, "Could not load map pak\n");
 
-	void* buffer;
-	const char* name = va( "maps/%s.bsp", server );
-	FS_ReadFile( name, ( void ** ) &buffer );
-
-	if ( !buffer )
-	{
-		Com_Error( ERR_DROP, "Couldn't load %s", name );
-	}
-
-	CM_LoadMap( name, buffer, qfalse );
-
-	FS_FreeFile( buffer );
+	CM_LoadMap(server);
 
 	// set serverinfo visible name
 	Cvar_Set( "mapname", server );

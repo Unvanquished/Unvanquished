@@ -40,14 +40,7 @@ void VM::VMInit() {
 
 	// Load the map collision data
 	std::string mapName = Cvar::GetValue("mapname");
-	std::string mapFile = "maps/" + mapName + ".bsp";
-	std::string mapData;
-	try {
-		mapData = FS::PakPath::ReadFile(mapFile);
-	} catch (std::system_error& err) {
-		Com_Error(ERR_DROP, "Could not load %s", mapFile.c_str());
-	}
-	CM_LoadMap(mapName.c_str(), mapData.data(), false);
+	CM_LoadMap(mapName);
 	G_CM_ClearWorld();
 }
 

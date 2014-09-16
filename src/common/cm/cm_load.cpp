@@ -909,21 +909,19 @@ CM_LoadMap
 Loads in the map and all submodels
 ==================
 */
-void CM_LoadMap( const char *name, const void* buffer, qboolean clientload )
+void CM_LoadMap(Str::StringRef name)
 {
 	int             i;
 	dheader_t       header;
 
-	if ( !name || !name[ 0 ] )
-	{
-		Com_Error( ERR_DROP, "CM_LoadMap: NULL name" );
-	}
+	cmLog.Debug( "CM_LoadMap(%s)\n", name);
 
-	cmLog.Debug( "CM_LoadMap( %s, %i )\n", name, clientload );
-
-	if ( !strcmp( cm.name, name ) && clientload )
-	{
-		return;
+	std::string mapFile = "maps/" + name + ".bsp";
+	std::string mapData;
+	try {
+		mapData = FS::PakPath::ReadFile(mapFile);
+	} catch (std::system_error& err) {
+		Com_Error(ERR_DROP, "Could not load %s", mapFile.c_str());
 	}
 
 	// free old stuff
@@ -940,7 +938,7 @@ void CM_LoadMap( const char *name, const void* buffer, qboolean clientload )
 		return;
 	}
 
-	header = * ( dheader_t * ) buffer;
+	header = * ( dheader_t * ) mapData.data();
 
 	for ( i = 0; i < sizeof( dheader_t ) / 4; i++ )
 	{
@@ -950,10 +948,10 @@ void CM_LoadMap( const char *name, const void* buffer, qboolean clientload )
 	if ( header.version != BSP_VERSION && header.version != BSP_VERSION_Q3 )
 	{
 		Com_Error( ERR_DROP, "CM_LoadMap: %s has wrong version number (%i should be %i for ET or %i for Q3)",
-		           name, header.version, BSP_VERSION, BSP_VERSION_Q3 );
+		           name.c_str(), header.version, BSP_VERSION, BSP_VERSION_Q3 );
 	}
 
-	cmod_base = ( byte * ) buffer;
+	cmod_base = ( byte * ) mapData.data();
 
 	// load into heap
 	CMod_LoadShaders( &header.lumps[ LUMP_SHADERS ] );
@@ -974,12 +972,6 @@ void CM_LoadMap( const char *name, const void* buffer, qboolean clientload )
 	CM_InitBoxHull();
 
 	CM_FloodAreaConnections();
-
-	// allow this to be cached if it is loaded by the server
-	if ( !clientload )
-	{
-		Q_strncpyz( cm.name, name, sizeof( cm.name ) );
-	}
 }
 
 /*

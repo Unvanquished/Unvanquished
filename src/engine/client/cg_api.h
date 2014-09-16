@@ -889,7 +889,7 @@ void            trap_AddCommand( const char *cmdName );
 void            trap_RemoveCommand( const char *cmdName );
 void            trap_SendClientCommand( const char *s );
 void            trap_UpdateScreen( void );
-#define trap_CM_LoadMap(a) CM_LoadMap(a, nullptr, false)
+#define trap_CM_LoadMap(a) CM_LoadMap(a)
 #define trap_CM_NumInlineModels CM_NumInlineModels
 #define trap_CM_InlineModel CM_InlineModel
 #define trap_CM_TempBoxModel(...) CM_TempBoxModel(__VA_ARGS__, false)

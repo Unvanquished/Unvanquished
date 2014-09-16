@@ -499,39 +499,6 @@ void CL_SetExpectedHunkUsage( const char *mapname )
 
 /*
 ====================
-CL_CM_LoadMap
-
-Just adds default parameters that cgame doesn't need to know about
-====================
-*/
-void CL_CM_LoadMap( const char *mapname )
-{
-	// DHM - Nerve :: If we are not running the server, then set expected usage here
-	if ( !com_sv_running->integer )
-	{
-		CL_SetExpectedHunkUsage( mapname );
-	}
-	else
-	{
-		// TTimo
-		// catch here when a local server is started to avoid outdated com_errorDiagnoseIP
-		Cvar_Set( "com_errorDiagnoseIP", "" );
-	}
-	void* buffer;
-	FS_ReadFile( mapname, ( void ** ) &buffer );
-
-	if ( !buffer )
-	{
-		Com_Error( ERR_DROP, "Couldn't load %s", mapname );
-	}
-
-	CM_LoadMap( mapname, buffer, qtrue );
-
-	FS_FreeFile( buffer );
-}
-
-/*
-====================
 CL_ShutdownCGame
 ====================
 */
