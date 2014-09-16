@@ -561,7 +561,7 @@ namespace Key {
 	> GetBindingBufMsg;
 	// KeyNumToStringMsg
 	typedef IPC::SyncMessage<
-		IPC::Message<IPC::Id<VM::QVM, CG_KEY_GETBINDINGBUF>, int, int>,
+		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYNUMTOSTRINGBUF>, int, int>,
 		IPC::Reply<std::string>
 	> KeyNumToStringMsg;
 }

@@ -118,6 +118,7 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 IPC::HandleMsg<CGameRocketProgressbarValueMsg>(VM::rootChannel, std::move(reader), [] (float& value) {
                     CG_Rocket_ProgressBarValue();
                 });
+                break;
 
             default:
                 CG_Error("VMMain(): unknown cgame command %i", minor);
@@ -518,8 +519,10 @@ void trap_R_RenderScene( const refdef_t *fd )
 
 void trap_R_SetColor( const float *rgba )
 {
-	std::array<float, 4> myrgba;
-	memcpy(myrgba.data(), rgba, 4 * sizeof(float));
+	std::array<float, 4> myrgba = {{1.0f, 1.0f, 1.0f, 1.0f}};
+	if (rgba) {
+		memcpy(myrgba.data(), rgba, 4 * sizeof(float));
+	}
 	VM::SendMsg<Render::SetColorMsg>(myrgba);
 }
 
