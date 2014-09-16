@@ -208,27 +208,6 @@ void CL_SetClientLerpOrigin( float x, float y, float z )
 }
 
 /*
-==================
-CL_CGameStats
-==================
-*/
-void CL_CGameStats( void )
-{
-	int nFrames = cl_cgameSyscallStats->integer;
-
-	if (nFrames > 0 && cls.framecount % nFrames == 0 && cls.nCgameSyscalls != 0) {
-		Com_Printf("Average over %i frames: %f syscalls (R: %f CM: %f U: %f S: %f)\n", nFrames,
-				float(cls.nCgameSyscalls) / nFrames,
-				float(cls.nCgameRenderSyscalls) / nFrames,
-				float(cls.nCgamePhysicsSyscalls) / nFrames,
-				float(cls.nCgameUselessSyscalls) / nFrames,
-				float(cls.nCgameSoundSyscalls) / nFrames
-			);
-		cls.nCgameSyscalls = cls.nCgameRenderSyscalls = cls.nCgamePhysicsSyscalls = cls.nCgameUselessSyscalls = cls.nCgameSoundSyscalls = 0;
-	}
-}
-
-/*
 =====================
 CL_ConfigstringModified
 =====================

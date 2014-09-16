@@ -363,12 +363,6 @@ typedef struct
 	int      voipTime;
 	int      voipSender;
 
-	int      nCgameSyscalls;
-	int      nCgameRenderSyscalls;
-	int      nCgamePhysicsSyscalls;
-	int      nCgameUselessSyscalls;
-	int      nCgameSoundSyscalls;
-
 	// master server sequence information
 	int          numMasterPackets;
 	unsigned int receivedMasterPackets; // bitfield
@@ -872,7 +866,6 @@ void          Cin_OGM_Shutdown( void );
 //
 // cl_cgame.c
 //
-void     CL_CGameStats( void );
 void     CL_InitCGame( void );
 void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );

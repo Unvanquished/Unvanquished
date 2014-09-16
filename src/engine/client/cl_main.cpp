@@ -3691,8 +3691,6 @@ void CL_Frame( int msec )
 
 	Con_RunConsole();
 
-	CL_CGameStats();
-
 	cls.framecount++;
 }
 
