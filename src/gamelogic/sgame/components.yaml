@@ -9,7 +9,8 @@ messages:
 
     # Sent unconditionally once every frame
     Think:
-        timeDelta: int
+        - name: timeDelta
+          type: int
 
     #
     # Component-affine messages
@@ -18,13 +19,16 @@ messages:
     #
 
     FreeAt:
-        freeTime: int
+        - name: freeTime
+          type: int
 
     Ignite:
-        fireStarter: struct gentity_s*
+        - name: fireStarter
+          type: struct gentity_s*
 
     Extinguish:
-        immunityTime: int
+        - name: immunityTime
+          type: int
 
 components:
     DeferedFreeing:
