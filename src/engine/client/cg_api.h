@@ -783,13 +783,6 @@ typedef enum
   CG_MOUSE_EVENT,
 //  void    (*CG_MouseEvent)( int dx, int dy );
 
-  CG_VOIP_STRING,
-// char *(*CG_VoIPString)( void );
-// returns a string of comma-delimited clientnums based on cl_voipSendTarget
-
-  CG_INIT_CVARS,
-// registers cvars only then shuts down; call instead of CG_INIT for this purpose
-
   CG_ROCKET_VM_INIT,
 // Inits libRocket in the game.
 
@@ -812,7 +805,7 @@ typedef IPC::SyncMessage<
 > CGameStaticInitMsg;
 // CGameInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_INIT>, int, int, int, bool>
+	IPC::Message<IPC::Id<VM::QVM, CG_INIT>, int, int, int>
 > CGameInitMsg;
 // CGameShutdownMsg
 typedef IPC::SyncMessage<
@@ -835,15 +828,6 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_EVENT>, int, int>
 > CGameMouseEventMsg;
-// CGameVoipStringMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_VOIP_STRING>>,
-	IPC::Reply<std::vector<std::string>>
-> CGameVoipStringMsg;
-// CGameInitCvarsMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_INIT_CVARS>>
-> CGameInitCvarsMsg;
 
 //TODO Check all rocket calls
 // CGameRocketInitMsg

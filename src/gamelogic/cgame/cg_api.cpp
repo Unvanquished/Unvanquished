@@ -37,12 +37,96 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int VM::VM_API_VERSION = CGAME_API_VERSION;
 
-void VM::VMInit() {
-    // Nothing to do right now
-}
+void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
+void CG_RegisterCvars( void );
+void CG_Shutdown( void );
 
 void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
-    // Nothing here, TODO
+    int major = id >> 16;
+    int minor = id & 0xffff;
+    if (major == VM::QVM) {
+        switch (minor) {
+            case CG_STATIC_INIT:
+                IPC::HandleMsg<CGameStaticInitMsg>(VM::rootChannel, std::move(reader), [] {
+                    VM::InitializeProxies();
+                    FS::Initialize();
+                    });
+                break;
+
+            case CG_INIT:
+                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int serverCommandSequence, int clientNum) {
+                    CG_Init(serverMessageNum, serverCommandSequence, clientNum);
+                });
+                break;
+
+            case CG_SHUTDOWN:
+                IPC::HandleMsg<CGameShutdownMsg>(VM::rootChannel, std::move(reader), [] {
+                    CG_Shutdown();
+                });
+                break;
+
+            case CG_DRAW_ACTIVE_FRAME:
+                IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, stereoFrame_t stereoView, bool demoPlayback) {
+                    CG_DrawActiveFrame(serverTime, stereoView, demoPlayback);
+                });
+                break;
+
+            case CG_CROSSHAIR_PLAYER:
+                IPC::HandleMsg<CGameCrosshairPlayerMsg>(VM::rootChannel, std::move(reader), [] (int& player) {
+                    player = CG_CrosshairPlayer();
+                });
+                break;
+
+            case CG_KEY_EVENT:
+                IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, std::move(reader), [] (int key, bool down) {
+                    CG_KeyEvent(key, 0, down);
+                });
+                break;
+
+            case CG_MOUSE_EVENT:
+                IPC::HandleMsg<CGameMouseEventMsg>(VM::rootChannel, std::move(reader), [] (int dx, int dy) {
+                    // TODO don't we care about that?
+                });
+                break;
+
+            case CG_ROCKET_VM_INIT:
+                IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, std::move(reader), [] {
+                    CG_Rocket_Init();
+                });
+                break;
+
+            case CG_ROCKET_FRAME:
+                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), [] {
+                    CG_Rocket_Frame();
+                });
+                break;
+
+            case CG_ROCKET_FORMAT_DATA:
+                IPC::HandleMsg<CGameRocketFormatDataMsg>(VM::rootChannel, std::move(reader), [] (int handle) {
+                    CG_Rocket_FormatData(handle);
+                });
+                break;
+
+            case CG_ROCKET_RENDER_ELEMENT:
+                IPC::HandleMsg<CGameRocketRenderElementMsg>(VM::rootChannel, std::move(reader), [] {
+                    CG_Rocket_RenderElement();
+                });
+                break;
+
+            case CG_ROCKET_PROGRESSBAR_VALUE:
+                IPC::HandleMsg<CGameRocketProgressbarValueMsg>(VM::rootChannel, std::move(reader), [] (float& value) {
+                    CG_Rocket_ProgressBarValue();
+                });
+
+            default:
+                CG_Error("VMMain(): unknown cgame command %i", minor);
+
+        }
+    } else if (major < VM::LAST_COMMON_SYSCALL) {
+        VM::HandleCommonSyscall(major, minor, std::move(reader), VM::rootChannel);
+    } else {
+        CG_Error("unhandled VM major syscall number %i", major);
+    }
 }
 
 // Definition of the VM->Engine calls

@@ -422,14 +422,14 @@ public:
 	void Start();
 
 	void CGameStaticInit();
-	void CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum, int demoplaying);
+	void CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum);
 	void CGameShutdown();
 	void CGameDrawActiveFrame(int serverTime, stereoFrame_t stereoView, bool demoPlayback);
 	int CGameCrosshairPlayer();
 	void CGameKeyEvent(int key, bool down);
 	void CGameMouseEvent(int dx, int dy);
-	std::vector<std::string> CGameVoipString();
-	void CGameInitCvars();
+	//std::vector<std::string> CGameVoipString();
+	//void CGameInitCvars();
 
 	void CGameRocketInit();
 	void CGameRocketFrame();

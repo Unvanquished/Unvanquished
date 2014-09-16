@@ -21,96 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// cg_main.c -- initialization and primary entry point for cgame
+// cg_main.c -- initialization for cgame
 
 #include "cg_local.h"
-
-void                CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
-void                CG_RegisterCvars( void );
-void                CG_Shutdown( void );
-static char         *CG_VoIPString( void );
-int                 FloatAsInt( float f );
-
-/*
-================
-vmMain
-
-This is the only way control passes into the module.
-This must be the very first function compiled into the .q3vm file
-================
-*/
-EXTERN_C Q_EXPORT
-intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
-                 int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11 )
-{
-	Q_UNUSED(arg3); Q_UNUSED(arg4);  Q_UNUSED(arg5);
-	Q_UNUSED(arg6); Q_UNUSED(arg7);  Q_UNUSED(arg8);
-	Q_UNUSED(arg9); Q_UNUSED(arg10); Q_UNUSED(arg11);
-	switch ( command )
-	{
-		case CG_INIT:
-			CG_Init( arg0, arg1, arg2 );
-			return 0;
-
-		case CG_INIT_CVARS:
-			CG_RegisterCvars();
-			CG_Shutdown();
-			return 0;
-
-		case CG_SHUTDOWN:
-			CG_Shutdown();
-			return 0;
-
-		case CG_DRAW_ACTIVE_FRAME:
-			CG_DrawActiveFrame( arg0, (stereoFrame_t) arg1, arg2 );
-			return 0;
-
-		case CG_CROSSHAIR_PLAYER:
-			return CG_CrosshairPlayer();
-
-		case CG_KEY_EVENT:
-			if ( arg1 & KEYEVSTATE_CHAR )
-			{
-				CG_KeyEvent( 0, arg0, arg1 );
-			}
-			else
-			{
-				CG_KeyEvent( arg0, 0, arg1 );
-			}
-			return 0;
-
-		case CG_MOUSE_EVENT:
-			// cgame doesn't care where the cursor is
-			return 0;
-
-		case CG_VOIP_STRING:
-			return ( intptr_t ) CG_VoIPString();
-
-		case CG_ROCKET_VM_INIT:
-			CG_Rocket_Init();
-			return 0;
-
-		case CG_ROCKET_FRAME:
-			CG_Rocket_Frame();
-			return 0;
-
-		case CG_ROCKET_FORMAT_DATA:
-			CG_Rocket_FormatData( arg0 );
-			return 0;
-
-		case CG_ROCKET_RENDER_ELEMENT:
-			CG_Rocket_RenderElement();
-			return 0;
-
-		case CG_ROCKET_PROGRESSBAR_VALUE:
-			return FloatAsInt( CG_Rocket_ProgressBarValue() );
-
-		default:
-			CG_Error( "vmMain(): unknown cgame command %i", command );
-	}
-
-	return -1;
-}
 
 cg_t            cg;
 cgs_t           cgs;

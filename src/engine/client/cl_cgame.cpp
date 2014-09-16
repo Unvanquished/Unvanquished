@@ -1217,7 +1217,7 @@ void CL_InitCGame( void )
 	// use the lastExecutedServerCommand instead of the serverCommandSequence
 	// otherwise server commands sent just before a gamestate are dropped
 	//bani - added clc.demoplaying, since some mods need this at init time, and drawactiveframe is too late for them
-	cgvm.CGameInit(clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum, clc.demoplaying);
+	cgvm.CGameInit(clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum);
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -1255,18 +1255,6 @@ void CL_InitCGameCVars( void )
 	VM_Call( cgv_vm, CG_INIT_CVARS );
 
 	VM_Free( cgv_vm );*/
-}
-
-/*
-====================
-CL_GameCommandHandler
-====================
-*/
-void CL_GameCommandHandler( void )
-{
-	/* TODO this will be useless
-	VM_Call( cgvm, CG_CONSOLE_COMMAND );
-	*/
 }
 
 /*
@@ -1679,9 +1667,9 @@ void CGameVM::CGameStaticInit()
 	this->SendMsg<CGameStaticInitMsg>();
 }
 
-void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum, int demoplaying)
+void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum)
 {
-	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum, demoplaying);
+	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum);
 }
 
 void CGameVM::CGameShutdown()
@@ -1709,18 +1697,6 @@ void CGameVM::CGameKeyEvent(int key, bool down)
 void CGameVM::CGameMouseEvent(int dx, int dy)
 {
 	this->SendMsg<CGameMouseEventMsg>(dx, dy);
-}
-
-std::vector<std::string> CGameVM::CGameVoipString()
-{
-	std::vector<std::string> strings;
-	this->SendMsg<CGameVoipStringMsg>(strings);
-	return std::move(strings);
-}
-
-void CGameVM::CGameInitCvars()
-{
-	this->SendMsg<CGameInitCvarsMsg>();
 }
 
 void CGameVM::CGameRocketInit()
