@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // The old console command handler that should be defined in all VMs
 void ConsoleCommand();
+void CompleteCommand(int);
 
 const char* Trans_Gettext(const char* text) {
     return text;
@@ -160,6 +161,20 @@ namespace Cmd {
 // This vector is used as a stack of Cmd::Args for when commands are called recursively.
 static std::vector<const Cmd::Args*> argStack;
 
+// The complete trap calls worked by tokenizing the args in trap_Argc and trap_Argv
+// then it called the completion syscall CompleteCommand that called trap_CompleteCallback
+// with the potential values. Our new system returns a vector of candidates so we fake the
+// trap_CompleteCallback call to add the candidate to our vector
+Cmd::CompletionResult completeMatches;
+std::string completedPrefix;
+
+void trap_CompleteCallback( const char *complete ) {
+    // The callback is called for each valid arg, without filtering so do it here
+    if (Str::IsIPrefix(completedPrefix, complete)) {
+        completeMatches.push_back({complete, ""});
+    }
+}
+
 // A proxy command added instead of the string when the VM registers a command? It will just
 // setup the args right and call the command Dispatcher
 class TrapProxyCommand: public Cmd::CmdBase {
@@ -171,6 +186,27 @@ class TrapProxyCommand: public Cmd::CmdBase {
             argStack.push_back(&args);
             ConsoleCommand();
             argStack.pop_back();
+        }
+
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+            static char buffer[4096];
+
+            completedPrefix = prefix;
+            completeMatches.clear();
+
+            //Completing an empty arg, we add a space to mimic the old autocompletion behavior
+            if (args.Argc() == argNum) {
+                Q_strncpyz(buffer, (args.ConcatArgs(0) + " ").c_str(), sizeof(buffer));
+            } else {
+                Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), sizeof(buffer));
+            }
+
+            //Some completion handlers expect tokenized arguments
+            argStack.push_back(&args);
+            CompleteCommand(argNum);
+            argStack.pop_back();
+
+            return completeMatches;
         }
 };
 

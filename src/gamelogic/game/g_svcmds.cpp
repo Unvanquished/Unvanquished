@@ -757,6 +757,10 @@ qboolean  ConsoleCommand( void )
 	return qtrue;
 }
 
+void CompleteCommand(int)
+{
+}
+
 void G_RegisterCommands( void )
 {
 	int i;

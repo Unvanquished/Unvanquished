@@ -65,10 +65,6 @@ qboolean trap_FS_LoadPak( const char *pak )
 {
 }
 
-void trap_CompleteCallback( const char *complete )
-{
-}
-
 // All Miscs
 
 int trap_GetDemoState( void )

@@ -541,14 +541,14 @@ void CG_InitConsoleCommands( void )
 
 /*
 =================
-CG_CompleteCommand
+CompleteCommand
 
 The command has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
 =================
 */
 
-void CG_CompleteCommand( int argNum )
+void CompleteCommand( int argNum )
 {
 	const char *cmd;
 	unsigned i;
