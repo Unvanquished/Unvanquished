@@ -250,9 +250,15 @@ void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 {
 	trace_t t;
 
-	vec3_t mymins, mymaxs;
-	VectorCopy(mins, mymins);
-	VectorCopy(maxs, mymaxs);
+	vec3_t mymins = {0.0f, 0.0f, 0.0f};
+	vec3_t mymaxs = {0.0f, 0.0f, 0.0f};
+
+	if (mins) {
+		VectorCopy(mins, mymins);
+	}
+	if (maxs) {
+		VectorCopy(maxs, mymaxs);
+	}
 
 	trap_CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
