@@ -85,11 +85,13 @@ public:
 	template<typename Msg, typename... Args> void SendMsg(Args&&... args)
 	{
 		// Marking lambda as mutable to work around a bug in gcc 4.6
-        LogMessage(false, Msg::id);
+		LogMessage(false, true, Msg::id);
 		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, IPC::Reader reader) mutable {
+			LogMessage(true, true, id);
 			Syscall(id, std::move(reader), rootChannel);
-            LogMessage(true, id);
+			LogMessage(true, false, id);
 		}, std::forward<Args>(args)...);
+		LogMessage(false, false, Msg::id);
 	}
 
 	struct InProcessInfo {
@@ -128,7 +130,7 @@ private:
 	// Logging the syscalls
 	FS::File syscallLogFile;
 
-	void LogMessage(bool vmToEngine, int id);
+	void LogMessage(bool vmToEngine, bool start, int id);
 };
 
 } // namespace VM

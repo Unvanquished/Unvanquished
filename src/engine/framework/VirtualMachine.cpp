@@ -442,16 +442,17 @@ void VMBase::FreeInProcessVM() {
 	inProcess.running = false;
 }
 
-void VMBase::LogMessage(bool vmToEngine, int id)
+void VMBase::LogMessage(bool vmToEngine, bool start, int id)
 {
 	if (syscallLogFile) {
 		int minor = id & 0xffff;
 		int major = id >> 16;
 
-		const char* direction = vmToEngine ? "V -> E" : "E -> V";
-
+		const char* direction = vmToEngine ? "V->E" : "E->V";
+		const char* extremity = start ? "start" : "end";
+		uint64_t ns = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		try {
-			syscallLogFile.Printf("%s (%i, %i)\n", direction, major, minor);
+			syscallLogFile.Printf("%s %s %s %s %s\n", direction, extremity, major, minor, ns);
 		} catch (std::system_error& err) {
 			Log::Warn("Error while writing the VM syscall log: %s", err.what());
 		}
