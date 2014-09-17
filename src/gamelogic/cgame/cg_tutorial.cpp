@@ -587,6 +587,9 @@ const char *CG_TutorialText( void )
 	static char   text[ MAX_TUTORIAL_TEXT ];
 	static int    refreshBindings = 0;
 
+	// TODO TODO TODO kangz: I disabled this function violently because CG_GetBindings makes too many syscalls, see #448
+	return "";
+
 	text[ 0 ] = '\0';
 	ps = &cg.snap->ps;
 
