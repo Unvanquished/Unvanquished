@@ -5,6 +5,7 @@ import yaml
 from collections import namedtuple
 import argparse, sys
 import os.path
+import re
 
 class CommonAttribute:
     def __init__(self, name, typ):
@@ -256,21 +257,39 @@ def topo_sort_components(components):
 
     return sorted_components
 
+def remove_indentation(line, n):
+    for _ in range(n):
+        if line.startswith('    '):
+            line = line[4:]
+        elif line.startswith('\t'):
+            line = line[1:]
+    return line
+
+blockstart = re.compile('^\s*{%\s*(if|for).*$')
+blockend = re.compile('^\s*{%\s*end(if|for).*$')
+
+def preprocess(lines):
+    # Remove the trailing newline
+    lines = [line[0:-1] for line in lines]
+
+    # Compute the current indentation level of the template blocks and remove their indentation
+    result = []
+    indentation_level = 0
+    for line in lines:
+        if blockstart.match(line) != None:
+            indentation_level += 1
+        elif blockend.match(line) != None:
+            indentation_level -=1
+
+        result.append(remove_indentation(line, indentation_level))
+
+    return '\n'.join(result)
+
 def my_filter(text):
     lines = []
     for line in text.split('\n'):
-        # Remove all blank lines
-        if line.strip() == '':
-            continue
         # Remove the "template" comments
         if line.strip().startswith("//*"):
-            continue
-        # Handle the command comments
-        if line.strip().startswith("//%"):
-            #look at the characters stream after the //%
-            for char in line.strip()[3:]:
-                if char == 'L':
-                    lines.append('')
             continue
 
         lines.append(line)
@@ -289,7 +308,8 @@ def my_open_write(filename):
         return open(filename, "w")
 
 def render(input_file, output_file, template_params):
-    template = template_env.get_template(input_file)
+    template_text = preprocess(open('templates' + os.path.sep + input_file).readlines())
+    template = jinja2.Template(template_text, trim_blocks=True, lstrip_blocks=True) 
     output_file.write(my_filter(template.render(**template_params)))
 
 if __name__ == '__main__':
@@ -327,8 +347,6 @@ if __name__ == '__main__':
 
     for entity in entity_list:
         entity.gather_components(components)
-
-    template_env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
 
     infiles = {
         'declaration':    'Components.h',
