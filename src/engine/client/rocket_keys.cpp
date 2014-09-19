@@ -217,11 +217,24 @@ KeyModifier Rocket_GetKeyModifiers( void )
 	return static_cast< KeyModifier >( mod );
 }
 
+static bool wasDownBefore = false;
 void Rocket_ProcessMouseClick( int button, qboolean down )
 {
 	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
 	{
 		return;
+	}
+
+	if ( !down && !wasDownBefore )
+	{
+		return;
+	} else if ( !down && wasDownBefore )
+	{
+		wasDownBefore = false;
+	}
+	else if ( down )
+	{
+		wasDownBefore = true;
 	}
 
 	int idx = 0;
