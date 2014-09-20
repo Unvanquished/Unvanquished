@@ -6213,6 +6213,7 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
 	}
 
 	if( !tess.verts ) {
