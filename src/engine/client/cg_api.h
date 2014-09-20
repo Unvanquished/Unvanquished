@@ -214,6 +214,7 @@ typedef enum cgameImport_s
   CG_LAN_UPDATEVISIBLEPINGS,
   CG_LAN_RESETPINGS,
   CG_LAN_SERVERSTATUS,
+  CG_LAN_RESETSERVERSTATUS,
 
   // Rocket
   CG_ROCKET_INIT,
@@ -601,6 +602,8 @@ namespace LAN {
 		IPC::Message<IPC::Id<VM::QVM, CG_LAN_SERVERSTATUS>, std::string, int>,
 		IPC::Reply<std::string, int>
 	> ServerStatusMsg;
+	// ResetServerStatusMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_LAN_RESETSERVERSTATUS>> ResetServerStatusMsg;
 }
 
 namespace Rocket {
@@ -1014,6 +1017,7 @@ int             trap_LAN_ServerIsVisible( int source, int n );
 qboolean        trap_LAN_UpdateVisiblePings( int source );
 void            trap_LAN_ResetPings( int n );
 int             trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int maxLen );
+void            trap_LAN_ResetServerStatus( void );
 qboolean        trap_GetNews( qboolean force );
 void            trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len );
 void            trap_PrepareKeyUp( void );

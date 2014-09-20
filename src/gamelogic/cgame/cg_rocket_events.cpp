@@ -71,7 +71,7 @@ static void CG_Rocket_InitServers( void )
 {
 	const char *src = CG_Argv( 1 );
 	trap_LAN_ResetPings( CG_StringToNetSource( src ) );
-	trap_LAN_ServerStatus( NULL, NULL, 0 );
+	trap_LAN_ResetServerStatus();
 
 	if ( !Q_stricmp( src, "internet" ) )
 	{

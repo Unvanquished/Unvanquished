@@ -2291,6 +2291,12 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
+		case CG_LAN_RESETSERVERSTATUS:
+			IPC::HandleMsg<LAN::ResetServerStatusMsg>(channel, std::move(reader), [this] {
+				LAN_GetServerStatus(nullptr, nullptr, 0);
+			});
+			break;
+
 		// All rocket
 
 		case CG_ROCKET_INIT:

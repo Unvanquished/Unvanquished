@@ -746,6 +746,10 @@ int trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int ma
 	return res;
 }
 
+void trap_LAN_ResetServerStatus( void )
+{
+	VM::SendMsg<LAN::ResetServerStatusMsg>();
+}
 // All rocket
 
 void trap_Rocket_Init( void )

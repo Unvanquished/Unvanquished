@@ -145,7 +145,7 @@ void CG_Rocket_BuildServerInfo( void )
 
 		if ( !start )
 		{
-			trap_LAN_ServerStatus( NULL, NULL, 0 );
+			trap_LAN_ResetServerStatus();
 			rocketInfo.data.buildingServerInfo = qfalse;
 			return;
 		}
@@ -154,7 +154,7 @@ void CG_Rocket_BuildServerInfo( void )
 
 		if ( !end )
 		{
-			trap_LAN_ServerStatus( NULL, NULL, 0 );
+			trap_LAN_ResetServerStatus();
 			rocketInfo.data.buildingServerInfo = qfalse;
 			return;
 		}
@@ -224,7 +224,7 @@ void CG_Rocket_BuildServerInfo( void )
 			}
 		}
 
-		trap_LAN_ServerStatus( NULL, NULL, 0 );
+		trap_LAN_ResetServerStatus();
 		rocketInfo.data.buildingServerInfo = qfalse;
 	}
 
