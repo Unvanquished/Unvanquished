@@ -225,16 +225,19 @@ void Rocket_ProcessMouseClick( int button, qboolean down )
 		return;
 	}
 
-	if ( !down && !wasDownBefore )
+	if ( button == K_MOUSE1 )
 	{
-		return;
-	} else if ( !down && wasDownBefore )
-	{
-		wasDownBefore = false;
-	}
-	else if ( down )
-	{
-		wasDownBefore = true;
+		if ( !down && !wasDownBefore )
+		{
+			return;
+		} else if ( !down && wasDownBefore )
+		{
+			wasDownBefore = false;
+		}
+		else if ( down )
+		{
+			wasDownBefore = true;
+		}
 	}
 
 	int idx = 0;
