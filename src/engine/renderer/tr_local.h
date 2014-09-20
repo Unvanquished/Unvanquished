@@ -2969,6 +2969,8 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_ext_framebuffer_blit;
 	extern cvar_t *r_extx_framebuffer_mixed_formats;
 	extern cvar_t *r_ext_generate_mipmap;
+	extern cvar_t *r_arb_buffer_storage;
+	extern cvar_t *r_arb_map_buffer_range;
 
 	extern cvar_t *r_nobind; // turns off binding to appropriate textures
 	extern cvar_t *r_collapseStages;

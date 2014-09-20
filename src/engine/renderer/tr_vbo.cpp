@@ -514,7 +514,7 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	R_BindVBO( vbo );
 
 #ifdef GLEW_ARB_buffer_storage
-	if( GLEW_ARB_buffer_storage ) {
+	if( glConfig2.bufferStorageAvailable ) {
 		outData = (byte *)ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
 		R_CopyVertexData( vbo, outData, data );
 		glBufferStorage( GL_ARRAY_BUFFER, vbo->vertexesSize,
@@ -670,7 +670,7 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, 
 	R_BindVBO( vbo );
 
 #ifdef GLEW_ARB_buffer_storage
-	if( GLEW_ARB_buffer_storage ) {
+	if( glConfig2.bufferStorageAvailable ) {
 		data = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
 		R_CopyVertexData( vbo, data, vboData );
 		glBufferStorage( GL_ARRAY_BUFFER, vbo->vertexesSize,
@@ -764,7 +764,7 @@ IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes )
 
 	R_BindIBO( ibo );
 #ifdef GLEW_ARB_buffer_storage
-	if( GLEW_ARB_buffer_storage ) {
+	if( glConfig2.bufferStorageAvailable ) {
 		glBufferStorage( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, indexes, 0 );
 	} else
 #endif
@@ -971,7 +971,7 @@ void R_InitVBOs( void )
 
 	tess.vertsBuffer = ( shaderVertex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_VERTEXES * sizeof( shaderVertex_t ) );
 	tess.indexesBuffer = ( glIndex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_INDEXES * sizeof( glIndex_t ) );
-	if( !GLEW_ARB_map_buffer_range ) {
+	if( !glConfig2.mapBufferRangeAvailable ) {
 		// use glBufferSubData to update VBO
 		tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", SHADER_MAX_VERTEXES, attribs, VBO_LAYOUT_STATIC );
 
@@ -1011,7 +1011,7 @@ void R_ShutdownVBOs( void )
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_ShutdownVBOs -------\n" );
 
-	if( !GLEW_ARB_map_buffer_range ) {
+	if( !glConfig2.mapBufferRangeAvailable ) {
 		// nothing
 	} else {
 		if( tess.verts != NULL && tess.verts != tess.vertsBuffer ) {
@@ -1068,7 +1068,7 @@ Map the default VBOs
 ==============
 */
 void Tess_MapVBOs( qboolean forceCPU ) {
-	if( forceCPU || !GLEW_ARB_map_buffer_range ) {
+	if( forceCPU || !glConfig2.mapBufferRangeAvailable ) {
 		// use host buffers
 		tess.verts = tess.vertsBuffer;
 		tess.indexes = tess.indexesBuffer;
@@ -1130,7 +1130,7 @@ void Tess_UpdateVBOs( void )
 			GLimp_LogComment( va( "glBufferSubData( vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 		}
 
-		if( !GLEW_ARB_map_buffer_range ) {
+		if( !glConfig2.mapBufferRangeAvailable ) {
 			R_BindVBO( tess.vbo );
 			glBufferSubData( GL_ARRAY_BUFFER, 0, tess.numVertexes * sizeof( shaderVertex_t ), tess.verts );
 		} else {
@@ -1150,7 +1150,7 @@ void Tess_UpdateVBOs( void )
 	// update the default IBO
 	if ( tess.numIndexes > 0 && tess.numIndexes <= SHADER_MAX_INDEXES )
 	{
-		if( !GLEW_ARB_map_buffer_range ) {
+		if( !glConfig2.mapBufferRangeAvailable ) {
 			R_BindIBO( tess.ibo );
 			glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, tess.numIndexes * sizeof( glIndex_t ), tess.indexes );
 		} else {
