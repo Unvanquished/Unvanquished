@@ -115,8 +115,10 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 break;
 
             case CG_ROCKET_PROGRESSBAR_VALUE:
-                IPC::HandleMsg<CGameRocketProgressbarValueMsg>(VM::rootChannel, std::move(reader), [] (float& value) {
+                IPC::HandleMsg<CGameRocketProgressbarValueMsg>(VM::rootChannel, std::move(reader), [] (std::string source, float& value) {
+					Cmd::PushArgs(source);
                     CG_Rocket_ProgressBarValue();
+					Cmd::PopArgs();
                 });
                 break;
 
@@ -209,10 +211,10 @@ qboolean trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 	return res;
 }
 
-qboolean trap_GetServerCommand( int serverCommandNumber )
+qboolean trap_GetServerCommand( int serverCommandNumber, std::string& cmdText )
 {
 	bool res;
-	VM::SendMsg<GetServerCommandMsg>(serverCommandNumber, res);
+	VM::SendMsg<GetServerCommandMsg>(serverCommandNumber, res, cmdText);
 	return res;
 }
 
@@ -771,10 +773,10 @@ void trap_Rocket_DocumentAction( const char *name, const char *action )
 	VM::SendMsg<Rocket::DocumentActionMsg>(name, action);
 }
 
-qboolean trap_Rocket_GetEvent( void )
+qboolean trap_Rocket_GetEvent(std::string& cmdText)
 {
 	bool result;
-	VM::SendMsg<Rocket::GetEventMsg>(result);
+	VM::SendMsg<Rocket::GetEventMsg>(result, cmdText);
 	return result;
 }
 

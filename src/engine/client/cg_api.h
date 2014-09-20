@@ -312,7 +312,7 @@ typedef IPC::SyncMessage<
 // GetServerCommandMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETSERVERCOMMAND>, int>,
-	IPC::Reply<bool>
+	IPC::Reply<bool, std::string>
 > GetServerCommandMsg;
 // GetCurrentCmdNumberMsg
 typedef IPC::SyncMessage<
@@ -630,7 +630,7 @@ namespace Rocket {
 	// GetEventMsg
 	typedef IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETEVENT>>,
-		IPC::Reply<bool>
+		IPC::Reply<bool, std::string>
 	> GetEventMsg;
 	// DeleteEventMsg
 	typedef IPC::SyncMessage<
@@ -853,7 +853,7 @@ typedef IPC::SyncMessage<
 > CGameRocketRenderElementMsg;
 // CGameRocketProgressbarValueMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_PROGRESSBAR_VALUE>>,
+	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_PROGRESSBAR_VALUE>, std::string>,
 	IPC::Reply<float>
 > CGameRocketProgressbarValueMsg;
 
@@ -947,7 +947,7 @@ void            trap_GetGameState( gameState_t *gamestate );
 void            trap_GetClientState( cgClientState_t *cstate );
 void            trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime );
 qboolean        trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot );
-qboolean        trap_GetServerCommand( int serverCommandNumber );
+qboolean        trap_GetServerCommand( int serverCommandNumber, std::string& cmdText );
 int             trap_GetCurrentCmdNumber( void );
 qboolean        trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd );
 void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient );
@@ -1027,7 +1027,7 @@ void            trap_Rocket_Shutdown( void );
 void            trap_Rocket_LoadDocument( const char *path );
 void            trap_Rocket_LoadCursor( const char *path );
 void            trap_Rocket_DocumentAction( const char *name, const char *action );
-qboolean        trap_Rocket_GetEvent( void );
+qboolean        trap_Rocket_GetEvent(std::string& cmdText);
 void            trap_Rocket_DeleteEvent( void );
 void            trap_Rocket_RegisterDataSource( const char *name );
 void            trap_Rocket_DSAddRow( const char *name, const char *table, const char *data );

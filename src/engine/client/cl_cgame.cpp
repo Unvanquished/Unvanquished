@@ -356,7 +356,6 @@ bool CL_HandleServerCommand(Str::StringRef text) {
 
 	if (cmd == "cs") {
 		CL_ConfigstringModified(args);
-		Cmd_TokenizeString(text.c_str());
 		return qtrue;
 	}
 
@@ -364,7 +363,6 @@ bool CL_HandleServerCommand(Str::StringRef text) {
 		// clear outgoing commands before passing
 		// the restart to the cgame
 		memset(cl.cmds, 0, sizeof(cl.cmds));
-		Cmd_TokenizeString(text.c_str());
 		return qtrue;
 	}
 
@@ -398,16 +396,15 @@ bool CL_HandleServerCommand(Str::StringRef text) {
 		return qfalse;
 	}
 
-	Cmd_TokenizeString(text.c_str());
 	return qtrue;
 }
 
 // Get the server command, does client-specific handling
 // that may block the propagation of the command to cgame.
-// If the propagation is not blocked then it tokenizes the
-// command.
-// Returns false if the command was blacked.
-qboolean CL_GetServerCommand( int serverCommandNumber )
+// If the propagation is not blocked then it puts the command
+// in cmdText.
+// Returns false if the command was blocked.
+qboolean CL_GetServerCommand( int serverCommandNumber, std::string& cmdText )
 {
 	const char  *s;
 
@@ -438,7 +435,11 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 		Com_Printf( "serverCommand: %i : %s\n", serverCommandNumber, s );
 	}
 
-	return CL_HandleServerCommand(s);
+	if (CL_HandleServerCommand(s)) {
+		cmdText = s;
+		return true;
+	}
+	return false;
 }
 
 // DHM - Nerve :: Copied from server to here
@@ -1687,10 +1688,10 @@ void CGameVM::CGameRocketRenderElement()
 	this->SendMsg<CGameRocketRenderElementMsg>();
 }
 
-float CGameVM::CGameRocketProgressbarValue()
+float CGameVM::CGameRocketProgressbarValue(Str::StringRef source)
 {
 	float value;
-	this->SendMsg<CGameRocketProgressbarValueMsg>(value);
+	this->SendMsg<CGameRocketProgressbarValueMsg>(source, value);
 	return value;
 }
 
@@ -1783,8 +1784,8 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_GETSERVERCOMMAND:
-			IPC::HandleMsg<GetServerCommandMsg>(channel, std::move(reader), [this] (int number, bool& res) {
-				res = CL_GetServerCommand(number);
+			IPC::HandleMsg<GetServerCommandMsg>(channel, std::move(reader), [this] (int number, bool& res, std::string& cmdText) {
+				res = CL_GetServerCommand(number, cmdText);
 			});
 			break;
 
@@ -2323,8 +2324,8 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_GETEVENT:
-			IPC::HandleMsg<Rocket::GetEventMsg>(channel, std::move(reader), [this] (bool& got) {
-				got = Rocket_GetEvent();
+			IPC::HandleMsg<Rocket::GetEventMsg>(channel, std::move(reader), [this] (bool& got, std::string& cmdText) {
+				got = Rocket_GetEvent(cmdText);
 			});
 			break;
 

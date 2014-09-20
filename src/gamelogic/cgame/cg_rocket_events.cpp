@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "cg_local.h"
+#include "../shared/CommonProxies.h"
 
 
 static void CG_Rocket_EventOpen( void )
@@ -105,7 +106,6 @@ static void CG_Rocket_EventExec( void )
 static void CG_Rocket_SortDS( void )
 {
 	char name[ 100 ], table[ 100 ], sortBy[ 100 ];
-	char *p;
 
 	Q_strncpyz( name, CG_Argv( 1 ), sizeof( name ) );
 	Q_strncpyz( table, CG_Argv( 2 ), sizeof( table ) );
@@ -197,7 +197,6 @@ static void CG_Rocket_SetChatCommand( void )
 static void CG_Rocket_EventExecForm( void )
 {
 	static char params[ BIG_INFO_STRING ];
-	static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
 	char cmd[ MAX_STRING_CHARS ]  = { 0 };
 	char Template[ MAX_STRING_CHARS ];
 	char *k = Template;
@@ -412,19 +411,20 @@ static int eventCmdCmp( const void *a, const void *b )
 
 void CG_Rocket_ProcessEvents( void )
 {
-	char *tail, *head;
 	eventCmd_t *cmd;
+	std::string cmdText;
 
 	// Get the even command
-	while ( trap_Rocket_GetEvent() )
+	while ( trap_Rocket_GetEvent(cmdText) )
 	{
+		Cmd::PushArgs(cmdText);
 		cmd = (eventCmd_t*) bsearch( CG_Argv( 0 ), eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
 
 		if ( cmd )
 		{
 			cmd->exec();
 		}
-
+		Cmd::PopArgs();
 		trap_Rocket_DeleteEvent();
 	}
 
