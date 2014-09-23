@@ -70,12 +70,11 @@ void	main()
 	vec3 tangent, binormal, normal;
 
 	QTangentToTBN( attr_QTangent, tangent, binormal, normal );
-#if defined(USE_DEFORM_VERTEXES)
+
 	position = DeformPosition2(	position,
 					normal,
 					attr_TexCoord0.st,
 					u_Time);
-#endif
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;

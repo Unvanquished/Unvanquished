@@ -90,12 +90,10 @@ void	main()
 	normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
 #endif
 
-#if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
 					normal,
 					attr_TexCoord0.st,
 					u_Time);
-#endif
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;

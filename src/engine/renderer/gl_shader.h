@@ -613,7 +613,6 @@ protected:
 	  USE_FRUSTUM_CLIPPING,
 	  USE_VERTEX_SKINNING,
 	  USE_VERTEX_ANIMATION,
-	  USE_DEFORM_VERTEXES,
 	  USE_TCGEN_ENVIRONMENT,
 	  USE_TCGEN_LIGHTMAP,
 	  USE_NORMAL_MAPPING,
@@ -809,62 +808,6 @@ public:
 		else
 		{
 			DisableVertexAnimation();
-		}
-	}
-};
-
-class GLCompileMacro_USE_DEFORM_VERTEXES :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_DEFORM_VERTEXES( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_DEFORM_VERTEXES";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return USE_DEFORM_VERTEXES;
-	}
-
-	bool HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
-
-	uint32_t        GetRequiredVertexAttributes() const
-	{
-		return ATTR_QTANGENT;
-	}
-
-	void EnableDeformVertexes()
-	{
-		if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-
-	void DisableDeformVertexes()
-	{
-		DisableMacro();
-	}
-
-	void SetDeformVertexes( bool enable )
-	{
-		if ( enable && ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer ) )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
 		}
 	}
 };
@@ -2327,7 +2270,6 @@ class GLShader_generic :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
 	public GLCompileMacro_USE_TCGEN_LIGHTMAP
 {
@@ -2352,7 +2294,6 @@ class GLShader_lightMapping :
 	public u_ModelViewProjectionMatrix,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_GLOW_MAPPING
@@ -2385,7 +2326,6 @@ class GLShader_vertexLighting_DBS_entity :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_REFLECTIVE_SPECULAR,
@@ -2417,7 +2357,6 @@ class GLShader_vertexLighting_DBS_world :
 	public u_LightGridOrigin,
 	public u_LightGridScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_GLOW_MAPPING
@@ -2456,7 +2395,6 @@ class GLShader_forwardLighting_omniXYZ :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -2496,7 +2434,6 @@ class GLShader_forwardLighting_projXYZ :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -2538,7 +2475,6 @@ class GLShader_forwardLighting_directionalSun :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -2566,7 +2502,6 @@ class GLShader_shadowFill :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_LIGHT_DIRECTIONAL
 {
 public:
@@ -2586,7 +2521,6 @@ class GLShader_reflection :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING //,
 {
 public:
@@ -2623,7 +2557,6 @@ class GLShader_fogQuake3 :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_EYE_OUTSIDE
 {
 public:
@@ -2662,8 +2595,7 @@ class GLShader_heatHaze :
 	public u_VertexInterpolation,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
-	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES
+	public GLCompileMacro_USE_VERTEX_ANIMATION
 {
 public:
 	GLShader_heatHaze( GLShaderManager *manager );

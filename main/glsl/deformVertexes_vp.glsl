@@ -24,8 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 uniform float		u_DeformParms[MAX_SHADER_DEFORM_PARMS];
 
-#if !defined(GLDRV_MESA)
-
 float triangle(float x)
 {
 	return 1.0 - abs( 4.0 * fract( x + 0.25 ) - 2.0 );
@@ -129,7 +127,3 @@ vec4 DeformPosition2(	const vec4 pos,
 
 	return deformed;
 }
-
-
-#endif // !defined(GLDRV_MESA)
-
