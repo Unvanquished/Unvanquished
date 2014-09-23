@@ -1228,6 +1228,7 @@ static void GLimp_InitExtensions( void )
 	}
 
 	glConfig2.mapBufferRangeAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_map_buffer_range, r_arb_map_buffer_range );
+	glConfig2.syncAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_sync, r_arb_sync );
 
 	GL_CheckErrors();
 }
