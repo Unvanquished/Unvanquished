@@ -2235,8 +2235,6 @@ static void Render_fog()
 	gl_fogQuake3Shader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_fogQuake3Shader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
-	gl_fogQuake3Shader->SetMacro_EYE_OUTSIDE( eyeT < 0 );
-
 	gl_fogQuake3Shader->BindProgram();
 
 	gl_fogQuake3Shader->SetUniform_FogDistanceVector( fogDistanceVector );

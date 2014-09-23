@@ -620,7 +620,6 @@ protected:
 	  USE_REFLECTIVE_SPECULAR,
 	  USE_SHADOWING,
 	  TWOSIDED,
-	  EYE_OUTSIDE,
 	  BRIGHTPASS_FILTER,
 	  LIGHT_DIRECTIONAL,
 	  USE_GBUFFER,
@@ -1073,48 +1072,6 @@ public:
 	void SetMacro_TWOSIDED( cullType_t cullType )
 	{
 		if ( cullType == CT_TWO_SIDED || cullType == CT_BACK_SIDED )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
-class GLCompileMacro_EYE_OUTSIDE :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_EYE_OUTSIDE( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "EYE_OUTSIDE";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return EYE_OUTSIDE;
-	}
-
-	void EnableMacro_EYE_OUTSIDE()
-	{
-		EnableMacro();
-	}
-
-	void DisableMacro_EYE_OUTSIDE()
-	{
-		DisableMacro();
-	}
-
-	void SetMacro_EYE_OUTSIDE( bool enable )
-	{
-		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -2556,8 +2513,7 @@ class GLShader_fogQuake3 :
 	public u_FogEyeT,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
-	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_EYE_OUTSIDE
+	public GLCompileMacro_USE_VERTEX_ANIMATION
 {
 public:
 	GLShader_fogQuake3( GLShaderManager *manager );

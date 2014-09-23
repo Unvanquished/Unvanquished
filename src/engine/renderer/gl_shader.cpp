@@ -1540,8 +1540,7 @@ GLShader_fogQuake3::GLShader_fogQuake3( GLShaderManager *manager ) :
 	u_FogEyeT( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
-	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_EYE_OUTSIDE( this )
+	GLCompileMacro_USE_VERTEX_ANIMATION( this )
 {
 }
 
