@@ -536,11 +536,14 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 
 	R_BindVBO( vbo );
 
+#if defined( GLEW_ARB_buffer_storage ) && defined( GLEW_ARB_sync )
 	if( glConfig2.bufferStorageAvailable &&
 	    glConfig2.syncAvailable ) {
 		R_InitRingbuffer( GL_ARRAY_BUFFER, sizeof( shaderVertex_t ),
 				  numVertexes, &tess.vertexRB );
-	} else {
+	} else
+#endif
+	{
 		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
 	}
 	R_BindNullVBO();
@@ -586,13 +589,16 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	glGenBuffers( 1, &vbo->vertexesVBO );
 	R_BindVBO( vbo );
 
+#ifdef GLEW_ARB_buffer_storage
 	if( glConfig2.bufferStorageAvailable ) {
 		outData = (byte *)ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
 		R_CopyVertexData( vbo, outData, data );
 		glBufferStorage( GL_ARRAY_BUFFER, vbo->vertexesSize,
 				 outData, 0 );
 		ri.Hunk_FreeTempMemory( outData );
-	} else {
+	} else
+#endif
+	{
 		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
 		outData = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
 		R_CopyVertexData( vbo, outData, data );
@@ -739,13 +745,16 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 	R_BindVBO( vbo );
 
+#ifdef GLEW_ARB_buffer_storage
 	if( glConfig2.bufferStorageAvailable ) {
 		data = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
 		R_CopyVertexData( vbo, data, vboData );
 		glBufferStorage( GL_ARRAY_BUFFER, vbo->vertexesSize,
 				 data, 0 );
 		ri.Hunk_FreeTempMemory( data );
-	} else {
+	} else
+#endif
+	{
 		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize,
 			      NULL, vbo->usage );
 		data = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
@@ -840,9 +849,12 @@ IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes )
 
 	R_BindIBO( ibo );
 
+#ifdef GLEW_ARB_buffer_storage
 	if( glConfig2.bufferStorageAvailable ) {
 		glBufferStorage( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, indexes, 0 );
-	} else {
+	} else
+#endif
+	{
 		glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, indexes, GL_STATIC_DRAW );
 	}
 	R_BindNullIBO();
