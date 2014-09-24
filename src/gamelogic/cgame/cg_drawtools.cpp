@@ -231,7 +231,7 @@ CG_ClearClipRegion
 */
 void CG_ClearClipRegion( void )
 {
-	trap_R_SetClipRegion( NULL );
+	trap_R_ResetClipRegion();
 }
 
 /*

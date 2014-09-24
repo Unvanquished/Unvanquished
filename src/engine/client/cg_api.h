@@ -180,6 +180,7 @@ typedef enum cgameImport_s
   CG_R_RENDERSCENE,
   CG_R_SETCOLOR,
   CG_R_SETCLIPREGION,
+  CG_R_RESETCLIPREGION,
   CG_R_DRAWSTRETCHPIC,
   CG_R_DRAWROTATEDPIC,
   CG_R_MODELBOUNDS,
@@ -473,6 +474,8 @@ namespace Render {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, std::array<float, 4>> SetColorMsg;
 	// SetClipRegionMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCLIPREGION>, std::array<float, 4>> SetClipRegionMsg;
+	// ResetClipRegionMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RESETCLIPREGION>> ResetClipRegionMsg;
 	// DrawStretchPicMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWSTRETCHPIC>, float, float, float, float, float, float, float, float, int> DrawStretchPicMsg;
 	// DrawRotatedPicMsg
@@ -941,6 +944,7 @@ void            trap_GS_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin 
 void            trap_R_RenderScene( const refdef_t *fd );
 void            trap_R_SetColor( const float *rgba );
 void            trap_R_SetClipRegion( const float *region );
+void            trap_R_ResetClipRegion( void );
 void            trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
 void            trap_R_DrawRotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );
 void            trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs );

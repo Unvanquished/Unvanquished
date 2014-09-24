@@ -537,6 +537,11 @@ void trap_R_SetClipRegion( const float *region )
 	VM::SendMsg<Render::SetClipRegionMsg>(myregion);
 }
 
+void trap_R_ResetClipRegion( void )
+{
+	VM::SendMsg<Render::ResetClipRegionMsg>();
+}
+
 void trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader )
 {
 	VM::SendMsg<Render::DrawStretchPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader);

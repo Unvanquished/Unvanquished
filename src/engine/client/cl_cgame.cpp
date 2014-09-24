@@ -2100,6 +2100,12 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
+		case CG_R_RESETCLIPREGION:
+			IPC::HandleMsg<Render::ResetClipRegionMsg>(channel, std::move(reader), [this] {
+				re.SetClipRegion(nullptr);
+			});
+			break;
+
 		case CG_R_DRAWSTRETCHPIC:
 			IPC::HandleMsg<Render::DrawStretchPicMsg>(channel, std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader) {
 				re.DrawStretchPic(x, y, w, h, s1, t1, s2, t2, shader);
