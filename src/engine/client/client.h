@@ -441,7 +441,7 @@ private:
 	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
 	void QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel);
 
-	VM::CommonVMServices services;
+	std::unique_ptr<VM::CommonVMServices> services;
 };
 
 extern CGameVM                cgvm;

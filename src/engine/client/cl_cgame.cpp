@@ -1618,12 +1618,13 @@ void  CL_OnTeamChanged( int newTeam )
 	Cmd::BufferCommandText( "exec -f " TEAMCONFIG_NAME );
 }
 
-CGameVM::CGameVM(): VM::VMBase("cgame"), services(*this, "CGame", Cmd::CGAME_VM)
+CGameVM::CGameVM(): VM::VMBase("cgame"), services(nullptr)
 {
 }
 
 void CGameVM::Start()
 {
+	services = std::unique_ptr<VM::CommonVMServices>(new VM::CommonVMServices(*this, "CGame", Cmd::CGAME_VM));
 	uint32_t version = this->Create();
 	if ( version != CGAME_API_VERSION ) {
 		Com_Error( ERR_DROP, "CGame ABI mismatch, expected %d, got %d", CGAME_API_VERSION, version );
@@ -1644,6 +1645,7 @@ void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int cli
 void CGameVM::CGameShutdown()
 {
 	this->SendMsg<CGameShutdownMsg>();
+	services = nullptr;
 }
 
 void CGameVM::CGameDrawActiveFrame(int serverTime, stereoFrame_t stereoView, bool demoPlayback)
@@ -1703,7 +1705,7 @@ void CGameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 		this->QVMSyscall(minor, reader, channel);
 
 	} else if (major < VM::LAST_COMMON_SYSCALL) {
-		services.Syscall(major, minor, std::move(reader), channel);
+		services->Syscall(major, minor, std::move(reader), channel);
 
 	} else {
 		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
