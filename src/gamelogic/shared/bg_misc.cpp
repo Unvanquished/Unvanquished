@@ -1114,7 +1114,7 @@ void BG_UnloadAllConfigs( void )
 				    BG_Free( (char *)ba->humanName );
 
 #ifdef BUILD_CGAME
-						BG_Free( (char *)ba->text );
+						BG_Free( (char *)ba->text[0] );
 #endif
 		    }
     }
