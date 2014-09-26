@@ -22,8 +22,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 ===========================================================================
 */
 
-//#include "IgnitableComponent.h"
-#include "../CBSEComponents.h" // Needs to access other components.
+#include "IgnitableComponent.h"
 
 static Log::Logger fireLogger("sgame.fire");
 
