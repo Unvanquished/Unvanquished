@@ -1,3 +1,4 @@
 mkdir -p test
-./CBSE.py def.yaml -o test --no-include-helper
-clang++ -std=c++11 -c test/Components.cpp -o /dev/null
+./CBSE.py def.yaml -o test
+cp test/components/skel/* test/components/
+c++ -std=c++11 -c test/CBSEBackend.cpp -o /dev/null

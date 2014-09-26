@@ -308,15 +308,18 @@ def my_open_write(filename):
         return open(filename, "w")
 
 def render(input_file, output_file, template_params):
-    template_text = preprocess(open('templates' + os.path.sep + input_file).readlines())
+    template_text = preprocess(open(input_file).readlines())
     template = jinja2.Template(template_text, trim_blocks=True, lstrip_blocks=True) 
     output_file.write(my_filter(template.render(**template_params)))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Outputs C++ plumbing code for the gamelogic given a component definitions.")
-    parser.add_argument('definitions', metavar='DEFS', nargs=1, type=my_open_read, help ="The definitions to use, - for stdin.")
-    parser.add_argument('-o', '--output-dir', nargs=1, default=None, metavar='DIR', type=str, help="Output directory for the generated source files.")
-    parser.add_argument('--no-include-helper', dest='include_helper', const=False, default=True, action='store_const', help="Skip the generation of the include helpers")
+    parser = argparse.ArgumentParser(
+        description="Outputs C++ plumbing code for the gamelogic given a component/entity definition file.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument('definitions', metavar='DEFINITION_FILE', nargs=1, type=my_open_read, help ="The definitions to use, - for stdin.")
+    parser.add_argument('-t', '--template-dir', default="templates", type=str, help="Directory with template files.")
+    parser.add_argument('-o', '--output-dir', default=None, type=str, help="Output directory for the generated source files.")
 
     args = parser.parse_args()
 
@@ -357,7 +360,7 @@ if __name__ == '__main__':
         'entities':     'Entities.h'
     }
 
-    # Dependency chain: Entities -> Components -> Backend
+    # Dependency chain: Entities -> Components -> Backend (?)
     outfiles = {
         'backend':     'CBSEBackend.h',
         'backend_cpp': 'CBSEBackend.cpp',
@@ -381,20 +384,20 @@ if __name__ == '__main__':
     }
 
     if args.output_dir != None:
-        outdir = args.output_dir[0] + os.path.sep
+        outdir = args.output_dir + os.path.sep
+        template_dir = args.template_dir + os.path.sep
 
         with open(outdir + outfiles['backend'], "w") as outfile:
-            render(infiles['backend'], outfile, template_params)
+            render(template_dir + infiles['backend'], outfile, template_params)
 
         with open(outdir + outfiles['backend_cpp'], "w") as outfile:
-            render(infiles['backend_cpp'], outfile, template_params)
+            render(template_dir + infiles['backend_cpp'], outfile, template_params)
 
         with open(outdir + outfiles['entities'], "w") as outfile:
-            render(infiles['entities'], outfile, template_params)
+            render(template_dir + infiles['entities'], outfile, template_params)
 
-        if args.include_helper:
-            with open(outdir + outfiles['components'], "w") as outfile:
-                render(infiles['components'], outfile, template_params)
+        with open(outdir + outfiles['components'], "w") as outfile:
+            render(template_dir + infiles['components'], outfile, template_params)
 
         outdir += outdirs['components'] + os.path.sep
 
@@ -411,9 +414,9 @@ if __name__ == '__main__':
             template_params['component'] = component
 
             with open(outdir + component.get_type_name() + ".h", "w") as outfile:
-                render(infiles['skeleton'], outfile, template_params)
+                render(template_dir + infiles['skeleton'], outfile, template_params)
 
             with open(outdir + component.get_type_name() + ".cpp", "w") as outfile:
-                render(infiles['skeleton_cpp'], outfile, template_params)
+                render(template_dir + infiles['skeleton_cpp'], outfile, template_params)
 
 # vi:ts=4:et:ai
