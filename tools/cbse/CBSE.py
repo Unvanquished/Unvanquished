@@ -128,7 +128,7 @@ class Component:
         return list(map(lambda p: p[1] + ' ' + p[0], self.param_list))
 
     def get_constructor_declaration(self):
-        return self.get_type_name() + '(Entity *entity' + ', '.join([''] + self.get_param_declarations()) + ')'
+        return self.get_type_name() + '(Entity &entity' + ', '.join([''] + self.get_param_declarations()) + ')'
 
     def get_super_call(self):
         return self.get_base_type_name() + '(entity' + ', '.join([''] + list(map(lambda p: p[0], self.param_list))) + ')'
