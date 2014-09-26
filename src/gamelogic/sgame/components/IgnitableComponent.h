@@ -25,7 +25,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #ifndef IGNITABLE_COMPONENT_H_
 #define IGNITABLE_COMPONENT_H_
 
-#include "../Components.h"
+#include "../CBSEBackend.h"
 
 #include "../g_local.h"
 

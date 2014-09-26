@@ -904,9 +904,10 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/g_weapon.cpp
   ${GAMELOGIC_DIR}/sgame/g_admin.cpp
   ${GAMELOGIC_DIR}/sgame/g_namelog.cpp
-  ${GAMELOGIC_DIR}/sgame/Components.cpp
-  ${GAMELOGIC_DIR}/sgame/Components.h
-  ${GAMELOGIC_DIR}/sgame/ComponentImplementationInclude.h
+  ${GAMELOGIC_DIR}/sgame/CBSEBackend.cpp
+  ${GAMELOGIC_DIR}/sgame/CBSEBackend.h
+  ${GAMELOGIC_DIR}/sgame/CBSEComponents.h
+  ${GAMELOGIC_DIR}/sgame/CBSEEntities.h
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
   ${GAMELOGIC_DIR}/sgame/components/DeferedFreeingComponent.cpp

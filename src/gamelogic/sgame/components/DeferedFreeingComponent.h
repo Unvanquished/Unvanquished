@@ -25,7 +25,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #ifndef DEFEREDFREEING_COMPONENT_H_
 #define DEFEREDFREEING_COMPONENT_H_
 
-#include "../Components.h"
+#include "../CBSEBackend.h"
 
 class DeferedFreeingComponent: public DeferedFreeingComponentBase {
 
