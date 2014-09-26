@@ -3,8 +3,7 @@
 #ifndef COMPONENTS_ENTITIES_H_
 #define COMPONENTS_ENTITIES_H_
 
-#include "{{files['declaration']}}"
-#include "{{files['includehelper']}}"
+#include "{{files['components']}}"
 
 // Entity definitions
 
