@@ -10,32 +10,34 @@
 
 {% for entity in entities %}
 
-    // Definition of {{entity.get_type_name()}}
+	// Definition of {{entity.get_type_name()}}
 
-    class {{entity.get_type_name()}}: public Entity {
-        private:
-            //* The vtables for each entities are statically defined
-            static const MessageHandler messageHandlers[];
-            static const int componentOffsets[];
+	class {{entity.get_type_name()}}: public Entity {
+		private:
+			//* The vtables for each entities are statically defined
+			static const MessageHandler messageHandlers[];
+			static const int componentOffsets[];
 
-        public:
-            //* Default constructor
-            {{entity.get_type_name()}}(
-                {%- for (i, attrib) in enumerate(general.common_entity_attributes) -%}
-                    {%- if i != 0 -%}
-                        ,
-                    {%- endif -%}
-                    {{attrib.get_declaration()}}
-                {%- endfor -%}
-            );
-            virtual ~{{entity.get_type_name()}}();
+		public:
+			//* Default constructor
+			{{entity.get_type_name()}}(
+				{%- for (i, attrib) in enumerate(general.common_entity_attributes) -%}
+					{%- if i != 0 -%}
+						,
+					{%- endif -%}
+					{{attrib.get_declaration()}}
+				{%- endfor -%}
+			);
+			virtual ~{{entity.get_type_name()}}();
 
-            //* The components
-            {% for component in entity.get_components() %}
-                {{component.get_type_name()}} {{component.get_variable_name()}};
-            {% endfor %}
-    };
+			//* The components
+			{% for component in entity.get_components() %}
+				{{component.get_type_name()}} {{component.get_variable_name()}};
+			{% endfor %}
+	};
 
 {% endfor %}
 
 #endif // COMPONENTS_ENTITIES_H_
+
+//* vi:ai:ts=4:filetype=jinja
