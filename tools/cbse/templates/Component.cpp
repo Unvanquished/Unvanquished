@@ -8,7 +8,9 @@
 {}
 
 {% for message in component.get_messages_to_handle() %}
-    {{message.get_return_type()}} {{component.get_type_name()}}::{{message.get_handler_declaration()}} {
-        // TODO: Implement {{component.get_type_name()}}::{{message.get_name()}}
-    }
+	{{message.get_return_type()}} {{component.get_type_name()}}::{{message.get_handler_declaration()}} {
+		// TODO: Implement {{component.get_type_name()}}::{{message.get_name()}}
+	}
 {% endfor %}
+
+//* vi:ai:ts=4:filetype=jinja
