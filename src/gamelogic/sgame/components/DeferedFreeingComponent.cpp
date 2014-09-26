@@ -24,17 +24,14 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 #include "DeferedFreeingComponent.h"
 
-DeferedFreeingComponent::DeferedFreeingComponent(Entity &entity) :
-	DeferedFreeingComponentBase(entity), freeTime(DONT_FREE)
+DeferedFreeingComponent::DeferedFreeingComponent(Entity &entity)
+	: DeferedFreeingComponentBase(entity), freeTime(DONT_FREE)
 {}
 
-// TODO: Allow messages to take arbitrary types as parameters
-//void DeferedFreeingComponent::OnFreeAt(DeferedFreeingComponent::freeTime_t freeTime) {
 void DeferedFreeingComponent::HandleFreeAt(int freeTime) {
 	this->freeTime = freeTime;
 }
 
-//inline DeferedFreeingComponent::freeTime_t DeferedFreeingComponent::GetFreeTime() {
 int DeferedFreeingComponent::GetFreeTime() {
 	return freeTime;
 }

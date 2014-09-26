@@ -27,8 +27,8 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 static Log::Logger fireLogger("sgame.fire");
 
-IgnitableComponent::IgnitableComponent(Entity &entity, bool alwaysOnFire) :
-    IgnitableComponentBase(entity, alwaysOnFire), onFire(false), immuneUntil(0)
+IgnitableComponent::IgnitableComponent(Entity &entity, bool alwaysOnFire)
+	: IgnitableComponentBase(entity, alwaysOnFire), onFire(false), immuneUntil(0)
 {}
 
 void IgnitableComponent::HandlePrepareNetCode() {
@@ -39,7 +39,7 @@ void IgnitableComponent::HandlePrepareNetCode() {
 	}
 }
 
-void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
+void IgnitableComponent::HandleIgnite(struct gentity_s* fireStarter) {
 	if (level.time < immuneUntil) {
 		fireLogger.DoDebugCode([&]{
 			char selfDescr[64];
