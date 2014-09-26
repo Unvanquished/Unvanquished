@@ -349,19 +349,20 @@ if __name__ == '__main__':
         entity.gather_components(components)
 
     infiles = {
-        'declaration':    'Components.h',
-        'implementation': 'Components.cpp',
-        'entities':       'ComponentsEntities.h',
-        'includehelper':  'ComponentImplementationInclude.h',
-        'skeleton_cpp':   'Component.cpp',
-        'skeleton_h':     'Component.h'
+        'backend':      'Backend.h',
+        'backend_cpp':  'Backend.cpp',
+        'skeleton':     'Component.h',
+        'skeleton_cpp': 'Component.cpp',
+        'components':   'Components.h',
+        'entities':     'Entities.h'
     }
 
+    # Dependency chain: Entities -> Components -> Backend
     outfiles = {
-        'declaration':    'Components.h',
-        'implementation': 'Components.cpp',
-        'entities':       'ComponentsEntities.h',
-        'includehelper':  'ComponentImplementationInclude.h'
+        'backend':     'CBSEBackend.h',
+        'backend_cpp': 'CBSEBackend.cpp',
+        'components':  'CBSEComponents.h',
+        'entities':    'CBSEEntities.h'
     }
 
     outdirs = {
@@ -382,18 +383,18 @@ if __name__ == '__main__':
     if args.output_dir != None:
         outdir = args.output_dir[0] + os.path.sep
 
-        with open(outdir + outfiles['declaration'], "w") as outfile:
-            render(infiles['declaration'], outfile, template_params)
+        with open(outdir + outfiles['backend'], "w") as outfile:
+            render(infiles['backend'], outfile, template_params)
 
-        with open(outdir + outfiles['implementation'], "w") as outfile:
-            render(infiles['implementation'], outfile, template_params)
+        with open(outdir + outfiles['backend_cpp'], "w") as outfile:
+            render(infiles['backend_cpp'], outfile, template_params)
 
         with open(outdir + outfiles['entities'], "w") as outfile:
             render(infiles['entities'], outfile, template_params)
 
         if args.include_helper:
-            with open(outdir + outfiles['includehelper'], "w") as outfile:
-                render(infiles['includehelper'], outfile, template_params)
+            with open(outdir + outfiles['components'], "w") as outfile:
+                render(infiles['components'], outfile, template_params)
 
         outdir += outdirs['components'] + os.path.sep
 
@@ -409,10 +410,10 @@ if __name__ == '__main__':
         for component in component_list:
             template_params['component'] = component
 
+            with open(outdir + component.get_type_name() + ".h", "w") as outfile:
+                render(infiles['skeleton'], outfile, template_params)
+
             with open(outdir + component.get_type_name() + ".cpp", "w") as outfile:
                 render(infiles['skeleton_cpp'], outfile, template_params)
-
-            with open(outdir + component.get_type_name() + ".h", "w") as outfile:
-                render(infiles['skeleton_h'], outfile, template_params)
 
 # vi:ts=4:et:ai

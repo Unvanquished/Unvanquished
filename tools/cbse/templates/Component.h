@@ -4,7 +4,7 @@
 #ifndef {{component.get_name().upper()}}_COMPONENT_H_
 #define {{component.get_name().upper()}}_COMPONENT_H_
 
-#include "../{{files['declaration']}}"
+#include "../{{files['backend']}}"
 
 class {{component.get_type_name()}}: public {{component.get_base_type_name()}} {
 //* TODO: Uncomment after changing message handler visibility to protected.
