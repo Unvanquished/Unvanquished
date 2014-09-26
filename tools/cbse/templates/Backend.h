@@ -119,6 +119,7 @@ class Entity {
 // ////////////////////////// //
 // Base component definitions //
 // ////////////////////////// //
+//* TODO: Move to Components.h
 
 {% for component in components %}
 	/** Base class of {{component.get_type_name()}}. */
