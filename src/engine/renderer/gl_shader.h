@@ -619,7 +619,6 @@ protected:
 	  USE_REFLECTIVE_SPECULAR,
 	  USE_SHADOWING,
 	  TWOSIDED,
-	  BRIGHTPASS_FILTER,
 	  LIGHT_DIRECTIONAL,
 	  USE_GBUFFER,
 	  USE_GLOW_MAPPING
@@ -1029,48 +1028,6 @@ public:
 	void SetMacro_TWOSIDED( cullType_t cullType )
 	{
 		if ( cullType == CT_TWO_SIDED || cullType == CT_BACK_SIDED )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
-class GLCompileMacro_BRIGHTPASS_FILTER :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_BRIGHTPASS_FILTER( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "BRIGHTPASS_FILTER";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return BRIGHTPASS_FILTER;
-	}
-
-	void EnableMacro_BRIGHTPASS_FILTER()
-	{
-		EnableMacro();
-	}
-
-	void DisableMacro_BRIGHTPASS_FILTER()
-	{
-		DisableMacro();
-	}
-
-	void SetMacro_BRIGHTPASS_FILTER( bool enable )
-	{
-		if ( enable )
 		{
 			EnableMacro();
 		}
