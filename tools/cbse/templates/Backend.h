@@ -121,12 +121,35 @@ class Entity {
 // ////////////////////////// //
 //* TODO: Move to Components.h
 
+template<typename C> class AllComponents {
+		std::set<C*>& all;
+
+	public:
+		AllComponents(std::set<C*>& all): all(all) {}
+
+		typename std::set<C*>::iterator begin() {
+			return all.begin();
+		}
+
+		typename std::set<C*>::iterator end() {
+			return all.end();
+		}
+};
+
 {% for component in components %}
 	/** Base class of {{component.get_type_name()}}. */
 	class {{component.get_base_type_name()}} {
 		public:
 			/** A reference to the entity that owns the component instance. Allows sending back messages. */
 			Entity& entity;
+
+		private:
+			static std::set<{{component.get_type_name()}}*> allSet;
+
+		public:
+			static AllComponents<{{component.get_type_name()}}> GetAll() {
+				return {allSet};
+			}
 
 		protected:
 			{% for declaration in component.get_own_param_declarations() %}
@@ -161,7 +184,14 @@ class Entity {
 			{%- for name in component.get_own_required_component_names() -%}
 				, {{name}}({{name}})
 			{%- endfor -%}
-			{}
+			{
+				allSet.insert(({{component.get_type_name()}}*)((char*) this - (char*) ({{component.get_base_type_name()}}*) ({{component.get_type_name()}}*) nullptr));
+			}
+
+			~{{component.get_base_type_name()}}() {
+				allSet.erase(({{component.get_type_name()}}*)((char*) this - (char*) ({{component.get_base_type_name()}}*) ({{component.get_type_name()}}*) nullptr));
+			}
+
 			{% for required in component.get_own_required_components() %}
 
 				/**

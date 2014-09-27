@@ -50,6 +50,11 @@ bool Entity::SendMessage(int msg, const void* data) {
 	}
 
 {% endfor %}
+
+{% for component in components %}
+	std::set<{{component.get_type_name()}}*> {{component.get_base_type_name()}}::allSet;
+{% endfor %}
+
 // ////////////////////// //
 // Entity implementations //
 // ////////////////////// //
@@ -91,6 +96,7 @@ bool Entity::SendMessage(int msg, const void* data) {
 		}
 
 	{% endfor%}
+
 	// {{entity.get_type_name()}}'s message dispatcher vtable.
 	const MessageHandler {{entity.get_type_name()}}::messageHandlers[] = {
 		{% for message in messages %}
