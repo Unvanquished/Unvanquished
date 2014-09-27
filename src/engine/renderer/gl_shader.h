@@ -610,7 +610,6 @@ protected:
 // It also works regardless of RTTI is enabled or not.
 	enum EGLCompileMacro
 	{
-	  USE_FRUSTUM_CLIPPING,
 	  USE_VERTEX_SKINNING,
 	  USE_VERTEX_ANIMATION,
 	  USE_TCGEN_ENVIRONMENT,
@@ -672,48 +671,6 @@ public:
 	}
 
 	virtual ~GLCompileMacro() {}
-};
-
-class GLCompileMacro_USE_FRUSTUM_CLIPPING :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_FRUSTUM_CLIPPING( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_FRUSTUM_CLIPPING";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return USE_FRUSTUM_CLIPPING;
-	}
-
-	void EnableFrustumClipping()
-	{
-		EnableMacro();
-	}
-
-	void DisableFrustumClipping()
-	{
-		DisableMacro();
-	}
-
-	void SetFrustumClipping( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
 };
 
 class GLCompileMacro_USE_VERTEX_SKINNING :
