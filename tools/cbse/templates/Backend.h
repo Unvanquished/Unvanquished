@@ -205,6 +205,29 @@ template<typename C> class AllComponents {
 
 {% endfor %}
 
+// ////////////////////////// //
+// Definitions of ForEntities //
+// ////////////////////////// //
+
+template <typename Component1> bool HasComponents(Entity* ent) {
+    return ent->Get<Component1>() != nullptr;
+}
+
+template <typename Component1, typename ... Components> bool HasComponents(Entity* ent) {
+    return HasComponents<Component1>(ent) && HasComponents<Components...>(ent);
+}
+
+template <typename Component1, typename ... Components, typename FuncType>
+void ForEntities(FuncType f) {
+    for(auto* component1: Component1::GetAll()) {
+        Entity& ent = component1->entity;
+
+        if (HasComponents<Component1, Components...>(ent)) {
+            f(ent, *component1, *ent.Get<Components>()...);
+        }
+    }
+}
+
 #endif //COMPONENTS_H_
 
 //* vi:ai:ts=4:filetype=jinja
