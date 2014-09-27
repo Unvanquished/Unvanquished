@@ -620,7 +620,6 @@ protected:
 	  USE_SHADOWING,
 	  TWOSIDED,
 	  LIGHT_DIRECTIONAL,
-	  USE_GBUFFER,
 	  USE_GLOW_MAPPING
 	};
 
@@ -1110,48 +1109,6 @@ public:
 	}
 
 	void SetShadowing( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
-class GLCompileMacro_USE_GBUFFER :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_GBUFFER( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_GBUFFER";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return USE_GBUFFER;
-	}
-
-	void EnableMacro_USE_GBUFFER()
-	{
-		EnableMacro();
-	}
-
-	void DisableMacro_USE_GBUFFER()
-	{
-		DisableMacro();
-	}
-
-	void SetMacro_USE_GBUFFER( bool enable )
 	{
 		if ( enable )
 		{
