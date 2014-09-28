@@ -121,7 +121,7 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 		nextSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
 
 		bool hit = G_SelectiveRadiusDamage( entity.oldEnt->s.origin, fireStarter, BURN_SPLDAMAGE,
-				BURN_SPLDAMAGE_RADIUS, entity.oldEnt, MOD_BURN, TEAM_NONE );
+			BURN_SPLDAMAGE_RADIUS, entity.oldEnt, MOD_BURN, TEAM_NONE );
 
 		if (hit) {
 			fireLogger.Debug("%s dealt burn damage.", descr);
@@ -135,25 +135,16 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 		float burnStopChance = BURN_STOP_CHANCE;
 
 		// Lower burn stop chance if there are other burning entities nearby.
-		// TODO: Once there is a global list of all entity/component instances that use a given
-		//       component, iterate over that instead. For now we just iterate over all (g)entities
-		//       since component-local data structures aren't really the way it should be.
-		gentity_t *otherOldEnt = NULL;
-		while ((otherOldEnt = G_IterateEntitiesWithinRadius(otherOldEnt, entity.oldEnt->s.origin,
-				BURN_STOP_RADIUS))) {
-			Entity *otherEntity = otherOldEnt->entity;
+		ForEntities<IgnitableComponent>([&](Entity &other, IgnitableComponent &ignitable){
+			if (&other == &entity) return;
+			if (!ignitable.onFire) return;
+			if (G_Distance(other.oldEnt, entity.oldEnt) > BURN_STOP_RADIUS) return;
 
-			if (otherEntity == &entity) continue;
-
-			IgnitableComponent *ignitableComponent = otherEntity->Get<IgnitableComponent>();
-
-			if (!ignitableComponent || !ignitableComponent->onFire) continue;
-
-			float frac = G_Distance(entity.oldEnt, otherOldEnt) / BURN_STOP_RADIUS;
+			float frac = G_Distance(entity.oldEnt, other.oldEnt) / BURN_STOP_RADIUS;
 			float mod  = frac * 1.0f + ( 1.0f - frac ) * BURN_STOP_CHANCE;
 
 			burnStopChance *= mod;
-		}
+		});
 
 		// Attempt to stop burning.
 		if (random() < burnStopChance) {
@@ -169,20 +160,15 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 		}
 
 		// Attempt to ignite close ignitables.
-		// TODO: Once there is a global list of all entity/component instances that use a given
-		//       component, iterate over that instead. For now we just iterate over all (g)entities
-		//       since component-local data structures aren't really the way it should be.
-		otherOldEnt = NULL;
-		while ((otherOldEnt = G_IterateEntitiesWithinRadius(otherOldEnt, entity.oldEnt->s.origin,
-				BURN_SPREAD_RADIUS))) {
-			Entity *other = otherOldEnt->entity;
+		ForEntities<IgnitableComponent>([&](Entity &other, IgnitableComponent &ignitable){
+			if (&other == &entity) return;
 
-			if (other == &entity) continue;
+			float chance = 1.0f - G_Distance(entity.oldEnt, other.oldEnt) / BURN_SPREAD_RADIUS;
 
-			float chance = 1.0f - G_Distance(entity.oldEnt, otherOldEnt) / BURN_SPREAD_RADIUS;
+			if (chance <= 0.0f) return; // distance > spread radius
 
-			if (random() < chance && G_LineOfSight(entity.oldEnt, otherOldEnt)) {
-				if (other->Ignite(fireStarter)) {
+			if (random() < chance && G_LineOfSight(entity.oldEnt, other.oldEnt)) {
+				if (other.Ignite(fireStarter)) {
 					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → try to ignite",
 					                 descr, chance);
 				} else {
@@ -193,6 +179,6 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 				fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → failed or no los",
 				                 descr, chance);
 			}
-		}
+		});
 	}
 }
