@@ -1,5 +1,12 @@
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 
+/*
+This file contains:
+	- Implementation of the base entity.
+	- Helper functions for sending messages to entities.
+	- Implementations of the specific entities, including necessary helpers.
+*/
+
 #include "{{files['backend']}}"
 #include "{{files['entities']}}"
 #include <tuple>
@@ -15,10 +22,11 @@ Entity::Entity(const MessageHandler *messageHandlers, const int* componentOffset
 	{%- for attrib in general.common_entity_attributes -%}
 		, {{attrib.get_declaration()}}
 	{%- endfor -%})
-		: messageHandlers(messageHandlers), componentOffsets(componentOffsets)
+	: messageHandlers(messageHandlers), componentOffsets(componentOffsets)
 	{%- for attrib in general.common_entity_attributes -%}
 		, {{attrib.get_initializer()}}
 	{%- endfor %}
+
 {}
 
 // Base entity deconstructor.
@@ -38,8 +46,8 @@ bool Entity::SendMessage(int msg, const void* data) {
 // /////////////// //
 // Message helpers //
 // /////////////// //
-
 {% for message in messages %}
+
 	bool Entity::{{message.name}}({{message.get_function_args()}}) {
 		{% if message.get_num_args() == 0 %}
 			return SendMessage({{message.get_enum_name()}}, nullptr);
@@ -48,7 +56,6 @@ bool Entity::SendMessage(int msg, const void* data) {
 			return SendMessage({{message.get_enum_name()}}, &data);
 		{% endif %}
 	}
-
 {% endfor %}
 
 {% for component in components %}
@@ -58,8 +65,12 @@ bool Entity::SendMessage(int msg, const void* data) {
 // ////////////////////// //
 // Entity implementations //
 // ////////////////////// //
-
+//* TODO: Move to new file Entities.cpp?
 {% for entity in entities %}
+
+	// {{entity.get_type_name()}}
+	// ---------
+
 	// {{entity.get_type_name()}}'s component offset vtable.
 	//* TODO: doesn't handle component inheritance?
 	const int {{entity.get_type_name()}}::componentOffsets[] = {
@@ -71,8 +82,8 @@ bool Entity::SendMessage(int msg, const void* data) {
 			{% endif %}
 		{% endfor %}
 	};
-
 	{% for message in entity.get_messages_to_handle() %}
+
 		// {{entity.get_type_name()}}'s {{message.get_name()}} message dispatcher.
 		void {{entity.get_message_handler_name(message)}}(Entity* _entity, const void* {% if message.get_num_args() > 0 %} _data{% endif %}) {
 			//* Cast the entity to the correct type (receive an Entity*)
@@ -94,7 +105,6 @@ bool Entity::SendMessage(int msg, const void* data) {
 				{% endfor %}
 			{% endif %}
 		}
-
 	{% endfor%}
 
 	// {{entity.get_type_name()}}'s message dispatcher vtable.
@@ -105,7 +115,7 @@ bool Entity::SendMessage(int msg, const void* data) {
 			{% else %}
 				nullptr,
 			{% endif %}
-		{% endfor%}
+		{% endfor %}
 	};
 
 	// {{entity.get_type_name()}}'s constructor.
@@ -114,14 +124,14 @@ bool Entity::SendMessage(int msg, const void* data) {
 			{%- if i != 0 -%}
 				,
 			{%- endif -%}
-				{{attrib.get_declaration()}}
-			{%- endfor -%})
-				: Entity(messageHandlers, componentOffsets
-			{%- for attrib in general.common_entity_attributes -%}
-				, {{attrib.get_name()}}
-			{%- endfor -%})
-			{%- for component in entity.get_components() -%}
-				, {{component.get_variable_name()}}(*this
+			{{attrib.get_declaration()}}
+		{%- endfor -%})
+		: Entity(messageHandlers, componentOffsets
+		{%- for attrib in general.common_entity_attributes -%}
+			, {{attrib.get_name()}}
+		{%- endfor -%})
+		{%- for component in entity.get_components() -%}
+			, {{component.get_variable_name()}}(*this
 			{%- for param in component.get_param_names() -%}
 				, {{entity.get_params()[component.name][param]}}
 			{%- endfor -%}
@@ -129,13 +139,13 @@ bool Entity::SendMessage(int msg, const void* data) {
 				, *{{required.get_variable_name()}}
 			{%- endfor -%})
 		{%- endfor %}
+
 	{}
 
 	// {{entity.get_type_name()}}'s deconstructor.
 	//* Destroys all the components in reverse order.
 	{{entity.get_type_name()}}::~{{entity.get_type_name()}}()
 	{}
-
 {% endfor %}
 
 #undef myoffsetof
