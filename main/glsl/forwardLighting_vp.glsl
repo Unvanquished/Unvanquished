@@ -73,6 +73,7 @@ void	main()
 	vec3 tangent;
 	vec3 binormal;
 	vec3 normal;
+	vec2 texCoord;
 
 #if defined(USE_VERTEX_SKINNING)
 
@@ -110,10 +111,12 @@ void	main()
 	normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
 #endif
 
-	position = DeformPosition2(	position,
-					normal,
-					attr_TexCoord0.st,
-					u_Time);
+	texCoord = attr_TexCoord0;
+
+	DeformVertex( position,
+		      normal,
+		      texCoord.st,
+		      u_Time);
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
@@ -132,14 +135,14 @@ void	main()
 	var_TexAttenuation = u_LightAttenuationMatrix * position;
 
 	// transform diffusemap texcoords
-	var_TexDiffuse.xy = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexDiffuse.xy = (u_DiffuseTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexNormal.xy = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormal.xy = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
-	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexSpecular = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 #endif
 
 	// assign color

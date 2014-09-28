@@ -60,6 +60,7 @@ void	main()
 {
 	vec4 position;
 	vec3 normal;
+	vec2 texCoord;
 
 #if defined(USE_VERTEX_SKINNING)
 
@@ -78,10 +79,12 @@ void	main()
 	normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
 #endif
 
-	position = DeformPosition2(	position,
-					normal,
-					attr_TexCoord0.st,
-					u_Time);
+	texCoord = attr_TexCoord0;
+
+	DeformVertex( position,
+		      normal,
+		      texCoord,
+		      u_Time);
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
