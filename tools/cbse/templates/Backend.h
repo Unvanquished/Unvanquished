@@ -209,12 +209,12 @@ template<typename C> class AllComponents {
 // Definitions of ForEntities //
 // ////////////////////////// //
 
-template <typename Component1> bool HasComponents(Entity* ent) {
-    return ent->Get<Component1>() != nullptr;
+template <typename Component1> bool HasComponents(Entity& ent) {
+    return ent.Get<Component1>() != nullptr;
 }
 
-template <typename Component1, typename ... Components> bool HasComponents(Entity* ent) {
-    return HasComponents<Component1>(ent) && HasComponents<Components...>(ent);
+template <typename Component1, typename Component2, typename ... Components> bool HasComponents(Entity& ent) {
+    return HasComponents<Component1>(ent) && HasComponents<Component2, Components...>(ent);
 }
 
 template <typename Component1, typename ... Components, typename FuncType>
