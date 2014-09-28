@@ -320,6 +320,7 @@ if __name__ == '__main__':
     parser.add_argument('definitions', metavar='DEFINITION_FILE', nargs=1, type=my_open_read, help ="The definitions to use, - for stdin.")
     parser.add_argument('-t', '--template-dir', default="templates", type=str, help="Directory with template files.")
     parser.add_argument('-o', '--output-dir', default=None, type=str, help="Output directory for the generated source files.")
+    parser.add_argument('-c', '--copy-skel', action="store_true", help="Copy skeleton files in place if the file doesn't exist.")
 
     args = parser.parse_args()
 
@@ -399,24 +400,41 @@ if __name__ == '__main__':
         with open(outdir + outfiles['components'], "w") as outfile:
             render(template_dir + infiles['components'], outfile, template_params)
 
-        outdir += outdirs['components'] + os.path.sep
+        compdir = outdir + outdirs['components'] + os.path.sep
 
-        if not os.path.isdir(outdir):
-            os.mkdir(outdir)
+        if not os.path.isdir(compdir):
+            os.mkdir(compdir)
 
-        outdir += outdirs['skeletons'] + os.path.sep
+        skeldir = compdir + outdirs['skeletons'] + os.path.sep
 
-        if not os.path.isdir(outdir):
-            os.mkdir(outdir)
+        if not os.path.isdir(skeldir):
+            os.mkdir(skeldir)
 
-        # TODO: Copy skeletons to target if that doesn't exist
         for component in component_list:
             template_params['component'] = component
 
-            with open(outdir + component.get_type_name() + ".h", "w") as outfile:
+            basename = component.get_type_name() + ".h"
+
+            with open(skeldir + basename, "w") as outfile:
                 render(template_dir + infiles['skeleton'], outfile, template_params)
 
-            with open(outdir + component.get_type_name() + ".cpp", "w") as outfile:
+            if args.copy_skel and not os.path.exists(compdir + basename):
+                print("Adding new file " + compdir + basename + ".", file=sys.stderr)
+                # TODO: Is there really no file copy in python?
+                with open(skeldir + basename, "r") as infile:
+                    with open(compdir + basename, "w") as outfile:
+                        outfile.write(infile.read())
+
+            basename = component.get_type_name() + ".cpp"
+
+            with open(skeldir + basename, "w") as outfile:
                 render(template_dir + infiles['skeleton_cpp'], outfile, template_params)
+
+            if args.copy_skel and not os.path.exists(compdir + basename):
+                print("Adding new file " + compdir + basename + ".", file=sys.stderr)
+                # TODO: Is there really no file copy in python?
+                with open(skeldir + basename, "r") as infile:
+                    with open(compdir + basename, "w") as outfile:
+                        outfile.write(infile.read())
 
 # vi:ts=4:et:ai
