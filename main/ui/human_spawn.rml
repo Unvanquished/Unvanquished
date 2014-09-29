@@ -42,7 +42,7 @@
 <body id="human_spawn" template="window">
 	<p> Choose your spawn class </p>
 
-	<button class="rifle" onClick="hide human_spawn; exec class rifle"> Rifle </button>
+	<button class="rifle" onClick="hide human_spawn; exec class rifle"> SMG </button>
 	<button class="ckit"  onClick="hide human_spawn; exec class ckit"> Construction Kit </button>
 
 	<p> All weapons can be traded at the armoury. </p>
