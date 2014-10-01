@@ -25,7 +25,15 @@ div#timer
 	margin-left: auto;
 	margin-right: auto;
 }
-
+div#rate
+{
+	position: absolute;
+	font-size: 24;
+	height: 1.5em;
+	bottom: 0em;
+	left: 0em;
+	margin-left: 1em;;
+}
 progressbar
 {
 	width: 100%;
@@ -42,6 +50,9 @@ progressbar
 	</div>
 	<div>
 		<progressbar src="btimer"/>
+	</div>
+	<div id="rate">
+		Mine Rate: <mine_rate/>
 	</div>
 </body>
 </rml>
