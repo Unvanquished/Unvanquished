@@ -11,7 +11,7 @@
 
 	</head>
 	<body id="callvote_draw" template="window" style="width: 35em; margin: 10%;">
-		<h1> Call a Vote for a Draw </h1>
+		<h1> Call a vote for a draw </h1>
 
 		<form onsubmit='execForm "callvote draw $reason$"; hide'>
 			<row>

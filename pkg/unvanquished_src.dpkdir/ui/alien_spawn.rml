@@ -40,13 +40,13 @@
 </head>
 
 <body id="alien_spawn" template="window">
-	<p> Choose your spawn class </p>
+	<p> Choose your starting form: </p>
 
 	<button class="dretch"  onClick="hide alien_spawn; exec class level0"> Dretch </button>
 	<!-- FIXME: always spawn as the correct granger version -->
 	<button class="builder" onClick="hide alien_spawn; exec class builderupg builder"> Granger </button>
 
-	<p> You cannot evolve into a granger from another class</p>
+	<p> You cannot morph into a granger from another form.</p>
 
 	<button class="teamselect"  onClick="hide alien_spawn; show ingame_teamselect"> Back to team selection </button>
 
