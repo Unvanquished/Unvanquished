@@ -40,12 +40,12 @@
 </head>
 
 <body id="human_spawn" template="window">
-	<p> Choose your spawn class </p>
+	<p> Choose your starting equipment: </p>
 
 	<button class="rifle" onClick="hide human_spawn; exec class rifle"> SMG </button>
 	<button class="ckit"  onClick="hide human_spawn; exec class ckit"> Construction Kit </button>
 
-	<p> All weapons can be traded at the armoury. </p>
+	<p> All weapons can be traded at the armory. </p>
 
 	<button class="teamselect"  onClick="hide human_spawn; show ingame_teamselect"> Back to team selection </button>
 
