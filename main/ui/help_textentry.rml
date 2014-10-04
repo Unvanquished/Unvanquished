@@ -18,11 +18,11 @@
 
 	</head>
 	<body id="help_textentry" template="window" style="width: 32em; margin: 10%;">
-		<h1> Colour Codes and Symbols </h1>
+		<h1> Color Codes and Symbols </h1>
 
 		<p> 
-			Colours are used by typing their escape code starting with a caret (^) symbol.
-			Colour can be reset again to normal using ^*, or an actual caret can be typed
+			Colors are used by typing their escape code starting with a caret (^) symbol.
+			Color can be reset again to normal using ^*, or an actual caret can be typed
 			using ^^.
 		</p>
 		

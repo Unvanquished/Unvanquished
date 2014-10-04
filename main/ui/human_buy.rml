@@ -25,11 +25,11 @@
 }
 .circlemenu button.locked{
 	icon-image: /ui/assets/circlemenu/circle.png;
-	icon-color-multiplier: rgb(70,70,70);
+	icon-color-multiplier: rgb(0,100,100);
 }
 .circlemenu button.locked:hover{
 	icon-image: /ui/assets/circlemenu/circle.png;
-	icon-color-multiplier: rgb(140,140,140);
+	icon-color-multiplier: rgb(0,120,120);
 }
 .circlemenu button.locked:hover img,
 .circlemenu button.locked:hover icon,
@@ -47,11 +47,11 @@
 
 .circlemenu button.expensive{
 	icon-image: /ui/assets/circlemenu/circle.png;
-	icon-color-multiplier: rgb(70,30,30);
+	icon-color-multiplier: rgb(0,150,150);
 }
 .circlemenu button.expensive:hover{
 	icon-image: /ui/assets/circlemenu/circle.png;
-	icon-color-multiplier: rgb(140,60,60);
+	icon-color-multiplier: rgb(0,170,170);
 
 }
 
@@ -62,7 +62,7 @@
 	opacity:1;
 }
 .circlemenu button.expensive icon{
-	color:#C5000A;
+	color:#0A00C5;
 
 	opacity:.7;
 }
@@ -73,11 +73,11 @@
 
 .circlemenu button.active{
 	icon-image: /ui/assets/circlemenu/circle-hover.png;
-	icon-color-multiplier: rgb(100,100,100);
+	icon-color-multiplier: rgb(0,200,200);
 }
 .circlemenu button.active:hover{
 	icon-image: /ui/assets/circlemenu/circle-hover.png;
-	icon-color-multiplier: rgb(255,255,255);
+	icon-color-multiplier: rgb(0,220,220);
 }
 .circlemenu button.active icon{
 	color:#9AFFBD;
