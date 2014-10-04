@@ -46,7 +46,7 @@
 	<!-- FIXME: always spawn as the correct granger version -->
 	<button class="builder" onClick="hide alien_spawn; exec class builderupg builder"> Granger </button>
 
-	<p> You cannot morph into a granger from another form.</p>
+	<p> Dretches are a stealthy attack form, and grangers are the alien construction form. You cannot morph into a granger from another form.</p>
 
 	<button class="teamselect"  onClick="hide alien_spawn; show ingame_teamselect"> Back to team selection </button>
 
