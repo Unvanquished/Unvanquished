@@ -1463,7 +1463,7 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 	}
 
 	tr.currentEntity = drawSurf->entity;
-	shader = tr.sortedShaders[ drawSurf->shaderNum ];
+	shader = tr.sortedShaders[ drawSurf->shaderNum() ];
 
 	// rotate if necessary
 	if ( tr.currentEntity != &tr.worldEntity )
@@ -1688,91 +1688,21 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int lightmapNum, i
 
 	drawSurf->entity = tr.currentEntity;
 	drawSurf->surface = surface;
-	drawSurf->shaderNum = shader->sortedIndex;
-	drawSurf->lightmapNum = lightmapNum;
-	drawSurf->fogNum = fogNum;
-	drawSurf->addedIndex = index;
+
+	int entityNum;
+
+	if ( tr.currentEntity == &tr.worldEntity )
+	{
+		entityNum = -1;
+	}
+	else
+	{
+		entityNum = tr.currentEntity - tr.refdef.entities;
+	}
+
+	drawSurf->setSort( shader->sortedIndex, lightmapNum, entityNum, fogNum, index );
 
 	tr.refdef.numDrawSurfs++;
-}
-
-/*
-=================
-DrawSurfCompare
-compare function for qsort()
-=================
-*/
-static int DrawSurfCompare( const void *ai, const void *bi )
-{
-	drawSurf_t *a = ( drawSurf_t * ) ai;
-	drawSurf_t *b = ( drawSurf_t * ) bi;
-
-	// by shader
-	if ( a->shaderNum < b->shaderNum )
-	{
-		return -1;
-	}
-
-	else if ( a->shaderNum > b->shaderNum )
-	{
-		return 1;
-	}
-
-	// by lightmap
-	if ( a->lightmapNum < b->lightmapNum )
-	{
-		return -1;
-	}
-
-	else if ( a->lightmapNum > b->lightmapNum )
-	{
-		return 1;
-	}
-
-	// by entity
-	if ( a->entity == &tr.worldEntity && b->entity != &tr.worldEntity )
-	{
-		return -1;
-	}
-
-	else if ( a->entity != &tr.worldEntity && b->entity == &tr.worldEntity )
-	{
-		return 1;
-	}
-
-	else if ( a->entity < b->entity )
-	{
-		return -1;
-	}
-
-	else if ( a->entity > b->entity )
-	{
-		return 1;
-	}
-
-	// by fog
-	if ( a->fogNum < b->fogNum )
-	{
-		return -1;
-	}
-
-	else if ( a->fogNum > b->fogNum )
-	{
-		return 1;
-	}
-
-	// emulate a stable sort algorithm by comparing
-	// the original position of the drawSurfs in the array
-	if ( a->addedIndex < b->addedIndex )
-	{
-		return -1;
-	}
-	else if ( a->addedIndex > b->addedIndex )
-	{
-		return 1;
-	}
-
-	return 0;
 }
 
 /*
@@ -1816,14 +1746,16 @@ static void R_SortDrawSurfs( void )
 		ia->next = NULL;
 	}
 
-	// sort the drawsurfs by sort type, then orientation, then shader
-	qsort( tr.viewParms.drawSurfs, tr.viewParms.numDrawSurfs, sizeof( drawSurf_t ), DrawSurfCompare );
+	std::sort( tr.viewParms.drawSurfs, tr.viewParms.drawSurfs + tr.viewParms.numDrawSurfs,
+	           []( const drawSurf_t &a, const drawSurf_t &b ) {
+	               return a.sort < b.sort;
+	           } );
 
 	// check for any pass through drawing, which
 	// may cause another view to be rendered first
 	for ( i = 0, drawSurf = tr.viewParms.drawSurfs; i < tr.viewParms.numDrawSurfs; i++, drawSurf++ )
 	{
-		shader = tr.sortedShaders[ drawSurf->shaderNum ];
+		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
 
 		if ( shader->sort > SS_PORTAL )
 		{
@@ -2146,57 +2078,27 @@ void R_AddLightInteractions( void )
 			// ignore if not in PVS
 			if ( !r_noLightVisCull->integer )
 			{
-				if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
+				for ( l = light->leafs.next; l != &light->leafs; l = l->next )
 				{
-					int numVisibleLeafs = 0;
-
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
+					if ( !l || !l->data )
 					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visible[ tr.viewCount ] && ( tr.frameCount - leaf->lastVisited[ tr.viewCount ] ) <= r_chcMaxVisibleFrames->integer )
-						{
-							numVisibleLeafs++;
-						}
+						// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
+						break;
 					}
 
-					if ( numVisibleLeafs == 0 )
+					leaf = ( bspNode_t * ) l->data;
+
+					if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 					{
-						tr.pc.c_pvs_cull_light_out++;
-						light->cull = CULL_OUT;
-						continue;
+						light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
 					}
 				}
-				else
+
+				if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 				{
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
-					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
-						{
-							light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
-						}
-					}
-
-					if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
-					{
-						tr.pc.c_pvs_cull_light_out++;
-						light->cull = CULL_OUT;
-						continue;
-					}
+					tr.pc.c_pvs_cull_light_out++;
+					light->cull = CULL_OUT;
+					continue;
 				}
 			}
 
@@ -2361,53 +2263,25 @@ void R_AddLightBoundsToVisBounds( void )
 			// ignore if not in PVS
 			if ( !r_noLightVisCull->integer )
 			{
-				if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
+				for ( l = light->leafs.next; l != &light->leafs; l = l->next )
 				{
-					int numVisibleLeafs = 0;
-
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
+					if ( !l || !l->data )
 					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visible[ tr.viewCount ] && ( tr.frameCount - leaf->lastVisited[ tr.viewCount ] ) <= r_chcMaxVisibleFrames->integer )
-						{
-							numVisibleLeafs++;
-						}
+						// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
+						break;
 					}
 
-					if ( numVisibleLeafs == 0 )
+					leaf = ( bspNode_t * ) l->data;
+
+					if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 					{
-						continue;
+						light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
 					}
 				}
-				else
+
+				if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 				{
-					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
-					{
-						if ( !l || !l->data )
-						{
-							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
-							break;
-						}
-
-						leaf = ( bspNode_t * ) l->data;
-
-						if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
-						{
-							light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
-						}
-					}
-
-					if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
-					{
-						continue;
-					}
+					continue;
 				}
 			}
 

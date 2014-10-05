@@ -695,6 +695,7 @@ static void CG_Rocket_DrawLocation( void )
 
 	if ( cg.intermissionStarted )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -710,7 +711,7 @@ static void CG_Rocket_DrawLocation( void )
 		location = CG_ConfigString( CS_LOCATIONS );
 	}
 
-	trap_Rocket_SetInnerRML( va( "%s", location ), RP_QUAKE );
+	trap_Rocket_SetInnerRML( location, RP_QUAKE );
 }
 
 static void CG_Rocket_DrawTimer( void )
@@ -1203,29 +1204,22 @@ static void CG_Rocket_DrawMomentum( void )
 
 static void CG_Rocket_DrawLevelshot( void )
 {
-	qhandle_t shader;
+	const char *map;
 
-	if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) && rocketInfo.cstate.connState < CA_CONNECTED )
+	if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) )
 	{
 		return;
 	}
 
-	if ( rocketInfo.cstate.connState < CA_CONNECTED )
+	trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName, rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName ), 0 );
+}
+
+static void CG_Rocket_DrawMapLoadingLevelshot( void )
+{
+	if ( rocketInfo.cstate.connState >= CA_LOADING )
 	{
-		shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot;
-
-		if ( ( shader == -1 || !shader ) && *rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].imageName )
-		{
-			shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot = trap_R_RegisterShader( rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].imageName, RSF_NOMIP );
-		}
+		trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ), Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), 0 );
 	}
-
-	else
-	{
-		shader = trap_R_RegisterShader( va( "levelshots/%s", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), RSF_NOMIP );
-	}
-
-	trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/%s' />", CG_GetShaderNameFromHandle( shader ) ), 0 );
 }
 
 
@@ -1905,7 +1899,7 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 {
 	// data
 	rectDef_t     rect;
-	vec4_t        foreColor, backColor;
+	vec4_t        foreColor, backColor, lockedColor, unlockedColor;
 	playerState_t *ps;
 	float         momentum, rawFraction, fraction, glowFraction, glowOffset, borderSize;
 	int           threshold;
@@ -1923,6 +1917,8 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 	CG_GetRocketElementBGColor( backColor );
 	CG_GetRocketElementColor( foreColor );
 	trap_Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "locked-marker-color", &lockedColor, sizeof( lockedColor ), ROCKET_COLOR );
+	trap_Rocket_GetProperty( "unlocked-marker-color", &unlockedColor, sizeof( unlockedColor ), ROCKET_COLOR );
 
 
 	ps = &cg.predictedPlayerState;
@@ -2023,30 +2019,14 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 			fraction = 1.0f;
 		}
 
-		if ( unlocked )
-		{
-			color[ 0 ] = 1.0f;
-			color[ 1 ] = 1.0f;
-			color[ 2 ] = 0.0f;
-			color[ 3 ] = 1.0f;
-		}
-
-		else
-		{
-			color[ 0 ] = 0.0f;
-			color[ 1 ] = 1.0f;
-			color[ 2 ] = 0.0f;
-			color[ 3 ] = 1.0f;
-		}
-
 		if ( vertical )
 		{
-			CG_FillRect( x, y + h * ( 1.0f - fraction ), w, MOMENTUM_BAR_MARKWIDTH, color );
+			CG_FillRect( x, y + h * ( 1.0f - fraction ), w, MOMENTUM_BAR_MARKWIDTH, unlocked ? unlockedColor : lockedColor );
 		}
 
 		else
 		{
-			CG_FillRect( x + w * fraction, y, MOMENTUM_BAR_MARKWIDTH, h, color );
+			CG_FillRect( x + w * fraction, y, MOMENTUM_BAR_MARKWIDTH, h, unlocked ? unlockedColor : lockedColor );
 		}
 	}
 
@@ -2603,6 +2583,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
+	{ "levelshot_loading", &CG_Rocket_DrawMapLoadingLevelshot, ELEMENT_ALL },
 	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_ALL },

@@ -55,47 +55,6 @@ static cmdContext_t cmd;
 /*
 =============================================================================
 
-                                                COMMAND BUFFER
-
-=============================================================================
-*/
-
-/*
-============
-Cbuf_ExecuteText
-============
-*/
-void Cbuf_ExecuteText( int exec_when, const char *text )
-{
-	switch ( exec_when )
-	{
-		case EXEC_NOW:
-			if ( text && strlen( text ) > 0 )
-			{
-				Cmd::ExecuteCommand(text, true);
-			}
-			else
-			{
-				Cmd::ExecuteCommandBuffer();
-			}
-			break;
-
-		case EXEC_INSERT:
-			Cmd::BufferCommandTextAfter(text, true);
-			break;
-
-		case EXEC_APPEND:
-			Cmd::BufferCommandText(text, true);
-			break;
-
-		default:
-			Com_Error( ERR_FATAL, "Cbuf_ExecuteText: bad exec_when" );
-	}
-}
-
-/*
-=============================================================================
-
                                         COMMAND EXECUTION
 
 =============================================================================
@@ -130,11 +89,11 @@ void Cmd_PrintUsage( const char *syntax, const char *description )
 {
 	if(!description)
 	{
-		Com_Printf( "%s: %s %s\n", _("usage"), Cmd_Argv( 0 ), syntax );
+		Com_Printf( "%s: %s %s\n", "usage", Cmd_Argv( 0 ), syntax );
 	}
 	else
 	{
-		Com_Printf( "%s: %s %s — %s\n", _("usage"),  Cmd_Argv( 0 ), syntax, description );
+		Com_Printf( "%s: %s %s — %s\n", "usage",  Cmd_Argv( 0 ), syntax, description );
 	}
 }
 

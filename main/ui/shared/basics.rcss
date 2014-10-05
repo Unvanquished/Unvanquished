@@ -114,3 +114,9 @@ scrollbarvertical sliderbar:hover{
 }
 
 
+img.trem-emoticon {
+	height: 1.21em;
+	width: auto;
+	margin-top: auto;
+	margin-bottom: auto;
+}

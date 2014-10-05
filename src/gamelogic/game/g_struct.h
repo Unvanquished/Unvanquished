@@ -191,6 +191,7 @@ struct gentity_s
 	 */
 	float        mineRate;
 	float        mineEfficiency;
+	float        acquiredBuildPoints;
 
 	/**
 	 * Alien buildables can burn, which is a lot of fun if they are close.
@@ -201,11 +202,6 @@ struct gentity_s
 	int          nextBurnSplashDamage;
 	int          nextBurnAction;
 	gentity_t    *fireStarter;
-
-	/**
-	 * The enemy team that tagged this buildable.
-	 */
-	team_t       taggedByEnemy;
 
 	/*
 	 * targets to aim at
@@ -279,6 +275,7 @@ struct gentity_s
 
 	int          lastHealth;
 	int          health;
+	float        deconHealthFrac;
 
 	float        speed;
 
@@ -808,6 +805,8 @@ struct level_locals_s
 		int              numSamples;
 		int              numAliveClients;
 		float            buildPoints;
+		float            acquiredBuildPoints;
+		float            mainStructAcquiredBP;
 		float            mineEfficiency;
 		int              kills;
 		spawnQueue_t     spawnQueue;

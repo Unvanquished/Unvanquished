@@ -617,10 +617,9 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		TEAM = 1 << 8,
 		BUILDWEAPON = 1 << 9,
 		BUILDTIME = 1 << 10,
-		VALUE = 1 << 11,
-		RADAR = 1 << 12,
-		POWERCONSUMPTION = 1 << 13,
-		UNLOCKTHRESHOLD = 1 << 14,
+		RADAR = 1 << 11,
+		POWERCONSUMPTION = 1 << 12,
+		UNLOCKTHRESHOLD = 1 << 13,
 		STRIPPEDUNLOCKTHRESHOLD = 1 << 31
 	};
 
@@ -807,14 +806,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		{
 			ba->uniqueTest = qtrue;
 		}
-		else if ( !Q_stricmp( token, "reward" ) )
-		{
-			PARSE(text, token);
-
-			ba->value = atoi(token);
-
-			defined |= VALUE;
-		}
 		else if ( !Q_stricmp( token, "radarFadeOut" ) )
 		{
 			PARSE(text, token);
@@ -848,7 +839,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 	else if ( !( defined & TEAM) ) { token = "team"; }
 	else if ( !( defined & BUILDWEAPON) ) { token = "buildWeapon"; }
 	else if ( !( defined & BUILDTIME) ) { token = "buildTime"; }
-	else if ( !( defined & VALUE) ) { token = "reward"; }
 	else if ( !( defined & RADAR) ) { token = "radarFadeOut"; }
 	else if ( !( defined & NORMAL) ) { token = "minNormal"; }
 
@@ -2025,7 +2015,8 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		LAG                   = 1 << 10,
 		BOUNCE_FULL           = 1 << 11,
 		BOUNCE_HALF           = 1 << 12,
-		BOUNCE_NO_SOUND       = 1 << 13
+		BOUNCE_NO_SOUND       = 1 << 13,
+		KNOCKBACK             = 1 << 14
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -2118,6 +2109,11 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		{
 			ma->flags |= EF_NO_BOUNCE_SOUND;
 			defined |= BOUNCE_NO_SOUND;
+		}
+		else if ( !Q_stricmp( token, "doKnockback" ) )
+		{
+			ma->doKnockback = qtrue;
+			defined |= KNOCKBACK;
 		}
 		/*else if( (var = BG_FindConfigVar( va( "m_%s_%s", ma->name, token ) ) ) != NULL )
 		{

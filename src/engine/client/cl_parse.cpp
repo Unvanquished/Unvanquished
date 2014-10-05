@@ -635,7 +635,7 @@ void CL_ParseDownload( msg_t *msg )
 
 	if ( !*cls.downloadTempName )
 	{
-		Com_Printf("%s", _( "Server sending download, but no download was requested\n" ));
+		Com_Printf( "Server sending download, but no download was requested\n" );
 		CL_AddReliableCommand( "stopdl" );
 		return;
 	}
@@ -664,7 +664,7 @@ void CL_ParseDownload( msg_t *msg )
 			// make sure the server is not trying to redirect us again on a bad checksum
 			if ( strstr( clc.badChecksumList, va( "@%s", cls.originalDownloadName ) ) )
 			{
-				Com_Printf(_( "refusing redirect to %s by server (bad checksum)\n"), cls.downloadName );
+				Com_Printf( "refusing redirect to %s by server (bad checksum)\n", cls.downloadName );
 				CL_AddReliableCommand( "wwwdl fail" );
 				clc.bWWWDlAborting = qtrue;
 				return;
@@ -678,7 +678,7 @@ void CL_ParseDownload( msg_t *msg )
 				// we count on server sending us a gamestate to start up clean again
 				CL_AddReliableCommand( "wwwdl fail" );
 				clc.bWWWDlAborting = qtrue;
-				Com_Printf(_( "Failed to initialize download for '%s'\n"), cls.downloadName );
+				Com_Printf( "Failed to initialize download for '%s'\n", cls.downloadName );
 			}
 
 			// Check for a disconnected download
@@ -737,7 +737,7 @@ void CL_ParseDownload( msg_t *msg )
 
 		if ( !clc.download )
 		{
-			Com_Printf(_( "Could not create %s\n"), cls.downloadTempName );
+			Com_Printf( "Could not create %s\n", cls.downloadTempName );
 			CL_AddReliableCommand( "stopdl" );
 			CL_NextDownload();
 			return;

@@ -246,7 +246,7 @@ static void SV_ResolveMasterServers( void )
 
 			if ( netenabled & NET_ENABLEV4 )
 			{
-				Com_Printf(_( "Resolving %s (IPv4)\n"), sv_master[ i ]->string );
+				Com_Printf( "Resolving %s (IPv4)\n", sv_master[ i ]->string );
 				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv4, NA_IP );
 
 				if ( res == 2 )
@@ -257,17 +257,17 @@ static void SV_ResolveMasterServers( void )
 
 				if ( res )
 				{
-					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv4 ) );
+					Com_Printf( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv4 ) );
 				}
 				else
 				{
-					Com_Printf(_( "%s has no IPv4 address.\n"), sv_master[ i ]->string );
+					Com_Printf( "%s has no IPv4 address.\n", sv_master[ i ]->string );
 				}
 			}
 
 			if ( netenabled & NET_ENABLEV6 )
 			{
-				Com_Printf(_( "Resolving %s (IPv6)\n"), sv_master[ i ]->string );
+				Com_Printf( "Resolving %s (IPv6)\n", sv_master[ i ]->string );
 				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv6, NA_IP6 );
 
 				if ( res == 2 )
@@ -278,11 +278,11 @@ static void SV_ResolveMasterServers( void )
 
 				if ( res )
 				{
-					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv6 ) );
+					Com_Printf( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv6 ) );
 				}
 				else
 				{
-					Com_Printf(_( "%s has no IPv6 address.\n"), sv_master[ i ]->string );
+					Com_Printf( "%s has no IPv6 address.\n", sv_master[ i ]->string );
 				}
 			}
 
@@ -290,7 +290,7 @@ static void SV_ResolveMasterServers( void )
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
-				Com_Printf(_( "Couldn't resolve address: %s\n"), sv_master[ i ]->string );
+				Com_Printf( "Couldn't resolve address: %s\n", sv_master[ i ]->string );
 				Cvar_Set( sv_master[ i ]->name, "" );
 				sv_master[ i ]->modified = qfalse;
 				continue;
@@ -362,7 +362,7 @@ void SV_MasterHeartbeat( const char *hbname )
 			continue;
 		}
 
-		Com_Printf(_( "Sending heartbeat to %s\n"), sv_master[ i ]->string );
+		Com_Printf( "Sending heartbeat to %s\n", sv_master[ i ]->string );
 
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
@@ -414,12 +414,12 @@ void SV_MasterGameStat( const char *data )
 		return; // only dedicated servers send stats
 	}
 
-	Com_Printf(_( "Resolving %s\n"), MASTER_SERVER_NAME );
+	Com_Printf( "Resolving %s\n", MASTER_SERVER_NAME );
 
 	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &adr, NA_UNSPEC ) )
 	{
 		case 0:
-			Com_Printf(_( "Couldn't resolve master address: %s\n"), MASTER_SERVER_NAME );
+			Com_Printf( "Couldn't resolve master address: %s\n", MASTER_SERVER_NAME );
 			return;
 
 		case 2:
@@ -429,10 +429,10 @@ void SV_MasterGameStat( const char *data )
 			break;
 	}
 
-	Com_Printf(_( "%s resolved to %s\n"), MASTER_SERVER_NAME,
+	Com_Printf( "%s resolved to %s\n", MASTER_SERVER_NAME,
 	            NET_AdrToStringwPort( adr ) );
 
-	Com_Printf(_( "Sending gamestat to %s\n"), MASTER_SERVER_NAME );
+	Com_Printf( "Sending gamestat to %s\n", MASTER_SERVER_NAME );
 	NET_OutOfBandPrint( NS_SERVER, adr, "gamestat %s", data );
 }
 
@@ -751,7 +751,7 @@ qboolean SV_CheckDRDoS( netadr_t from )
 	{
 		if ( lastGlobalLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
-			Com_Printf(_( "Detected flood of getinfo/getstatus connectionless packets\n" ));
+			Com_Printf( "Detected flood of getinfo/getstatus connectionless packets\n" );
 			lastGlobalLogTime = svs.time;
 		}
 
@@ -762,7 +762,7 @@ qboolean SV_CheckDRDoS( netadr_t from )
 	{
 		if ( lastSpecificLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
-			Com_Printf(_( "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet\n"),
+			Com_Printf( "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet\n",
 			            exactFrom.ip[ 0 ], exactFrom.ip[ 1 ], exactFrom.ip[ 2 ], exactFrom.ip[ 3 ] );
 			lastSpecificLogTime = svs.time;
 		}
@@ -836,12 +836,12 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	if ( !strlen( sv_rconPassword->string ) || args.Argv(1) != sv_rconPassword->string )
 	{
 		valid = qfalse;
-		Com_Printf(_( "Bad rcon from %s:\n%s\n"), NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
+		Com_Printf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
 	else
 	{
 		valid = qtrue;
-		Com_Printf(_( "Rcon from %s:\n%s\n"), NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
+		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
 
 	// start redirecting all print outputs to the packet
@@ -855,11 +855,11 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 
 	if ( !strlen( sv_rconPassword->string ) )
 	{
-		env.Print(_( "No rconpassword set on the server." ));
+		env.Print( "No rconpassword set on the server." );
 	}
 	else if ( !valid )
 	{
-		env.Print(_( "Bad rconpassword." ));
+		env.Print( "Bad rconpassword." );
 	}
 	else
 	{
@@ -1368,7 +1368,7 @@ void SV_Frame( int msec )
 		svs.currentFrameIndex++;
 
 		//if( svs.currentFrameIndex % 50 == 0 )
-		//  Com_Printf(_( "currentFrameIndex: %i\n"), svs.currentFrameIndex );
+		//  Com_Printf( "currentFrameIndex: %i\n", svs.currentFrameIndex );
 
 		if ( svs.currentFrameIndex == SERVER_PERFORMANCECOUNTER_FRAMES )
 		{
@@ -1400,7 +1400,7 @@ void SV_Frame( int msec )
 				svs.serverLoad = ( averageFrameTime / ( float ) frameMsec ) * 100;
 			}
 
-			//Com_Printf(_( "serverload: %i (%i/%i)\n"), svs.serverLoad, averageFrameTime, frameMsec );
+			//Com_Printf( "serverload: %i (%i/%i)\n", svs.serverLoad, averageFrameTime, frameMsec );
 
 			svs.totalFrameTime = 0;
 			svs.currentFrameIndex = 0;

@@ -370,7 +370,11 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 
 	if ( !ci->animations[ anim ].handle )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
+		if ( cg_debugAnim.integer )
+		{
+			Com_Printf( "Failed to load animation file %s\n", filename );
+		}
+
 		return qfalse;
 	}
 
@@ -1838,7 +1842,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 	if ( lf->animation )
 	{
-		if ( !trap_R_BuildSkeleton( &legsSkeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
+		if ( !trap_R_BuildSkeleton( &legsSkeleton, lf->animation->handle, anim->numFrames - 1, anim->numFrames - 1, 0, lf->animation->clearOrigin ) )
 		{
 			CG_Printf( "Can't build lf->skeleton\n" );
 		}

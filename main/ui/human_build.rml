@@ -24,11 +24,11 @@ body
 }
 .circlemenu button.locked{
 	icon-image: /ui/assets/circlemenu/circle-hover.png;
-	icon-color-multiplier: rgb(70,70,70);
+	icon-color-multiplier: rgb(0,100,100);
 }
 .circlemenu button.locked:hover{
 	icon-image: /ui/assets/circlemenu/circle-hover.png;
-	icon-color-multiplier: rgb(255,255,255);
+	icon-color-multiplier: rgb(0,120,120);
 }
 .circlemenu button.locked:hover img,
 .circlemenu button.locked:hover icon,
@@ -47,11 +47,11 @@ body
 
 .circlemenu button.expensive{
 	icon-image: /ui/assets/circlemenu/circle-hover.png;
-	icon-color-multiplier: rgb(70,30,30);
+	icon-color-multiplier: rgb(0,150,150);
 }
 .circlemenu button.expensive:hover{
 	icon-image: /ui/assets/circlemenu/circle-hover.png;
-	icon-color-multiplier: rgb(255,0,0);
+	icon-color-multiplier: rgb(0,170,170);
 }
 
 .circlemenu button.expensive img{
@@ -61,7 +61,7 @@ body
 	opacity:1;
 }
 .circlemenu button.expensive icon{
-	color:#C5000A;
+	color:#0A00C5;
 	opacity:.7;
 }
 
@@ -71,11 +71,11 @@ body
 
 .circlemenu button.active{
 	icon-image: /ui/assets/circlemenu/circle-hover.png;
-	icon-color-multiplier: rgb(100,100,100);
+	icon-color-multiplier: rgb(0,200,200);
 }
 .circlemenu button.active:hover{
 	icon-image: /ui/assets/circlemenu/circle-hover.png;
-	icon-color-multiplier: rgb(255,255,255);
+	icon-color-multiplier: rgb(0,220,220);
 }
 .circlemenu button.active icon{
 	color:#9AFFBD;
@@ -104,7 +104,8 @@ div.infobox {
 <circlemenu id="default" source="humanBuildList.default" fields="num" formatter="CMHumanBuildables" cancel="hide humanbuild"/>
 <div class="infobox">
 <h2><datasource_single source="humanBuildList.default" fields="name" targetid="default" /></h2>
-<p class="text"><datasource_single source="humanBuildList.default" fields="description" targetid="default" /></p>
+<p class="text">Price: <datasource_single source="humanBuildList.default" fields="cost" targetid="default" /><br/>
+<datasource_single source="humanBuildList.default" fields="description" targetid="default" /></p>
 </div>
 </panel>
 </tabset>

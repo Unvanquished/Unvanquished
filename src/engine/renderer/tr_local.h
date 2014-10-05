@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <GL/glew.h>
 
+#define DYN_BUFFER_SIZE ( 4 * 1024 * 1024 )
+#define DYN_BUFFER_SEGMENTS 4
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
 
 typedef int8_t   i8vec4_t[ 4 ];
@@ -154,6 +156,18 @@ static inline float halfToFloat( int16_t in ) {
 // results may be delayed, but for visual effect like flares this
 // shouldn't matter
 #define MAX_VISTESTS          256
+
+#define MAX_MOD_KNOWN      1024
+#define MAX_ANIMATIONFILES 4096
+
+#define MAX_LIGHTMAPS      256
+#define MAX_SKINS          1024
+
+#define MAX_DRAWSURFS      0x10000
+#define DRAWSURF_MASK      ( MAX_DRAWSURFS - 1 )
+
+#define MAX_INTERACTIONS   MAX_DRAWSURFS * 8
+#define INTERACTION_MASK   ( MAX_INTERACTIONS - 1 )
 
 	typedef enum
 	{
@@ -386,8 +400,6 @@ static inline float halfToFloat( int16_t in ) {
 		float        sphereRadius; // calculated from localBounds
 
 		int8_t       shadowLOD; // Level of Detail for shadow mapping
-
-		qboolean                  clipsNearPlane;
 
 		qboolean                  noOcclusionQueries;
 		uint32_t                  occlusionQueryObject;
@@ -1604,14 +1616,84 @@ static inline float halfToFloat( int16_t in ) {
 	  SF_MAX = 0x7fffffff // partially (together, fully) ensures that sizeof(surfaceType_t) == sizeof(int)
 	} surfaceType_t;
 
+
+	// drawSurf components are packed into a single 64bit integer for
+	// efficient sorting
+	// sort by:
+	// 1. shaderNum
+	// 2. lightmapNum
+	// 3. entityNum
+	// 4. fogNum
+	// 5. index
+
+	static const uint64_t SORT_INDEX_BITS = 16;
+	static const uint64_t SORT_FOGNUM_BITS = 13;
+	static const uint64_t SORT_ENTITYNUM_BITS = 10;
+	static const uint64_t SORT_LIGHTMAP_BITS = 9;
+	static const uint64_t SORT_SHADER_BITS = 16;
+
+	static_assert( SORT_SHADER_BITS +
+		SORT_LIGHTMAP_BITS +
+		SORT_ENTITYNUM_BITS +
+		SORT_FOGNUM_BITS +
+		SORT_INDEX_BITS == 64, "invalid number of drawSurface sort bits" );
+
+	static const uint64_t SORT_FOGNUM_SHIFT = SORT_INDEX_BITS;
+	static const uint64_t SORT_ENTITYNUM_SHIFT = SORT_FOGNUM_BITS + SORT_FOGNUM_SHIFT;
+	static const uint64_t SORT_LIGHTMAP_SHIFT = SORT_ENTITYNUM_BITS + SORT_ENTITYNUM_SHIFT;
+	static const uint64_t SORT_SHADER_SHIFT = SORT_LIGHTMAP_BITS + SORT_LIGHTMAP_SHIFT;
+
+#define MASKBITS( b ) ( 1 << b ) - 1
+	static const uint32_t SORT_INDEX_MASK = MASKBITS( SORT_INDEX_BITS );
+	static const uint32_t SORT_FOGNUM_MASK = MASKBITS( SORT_FOGNUM_BITS );
+	static const uint32_t SORT_ENTITYNUM_MASK = MASKBITS( SORT_ENTITYNUM_BITS );
+	static const uint32_t SORT_LIGHTMAP_MASK = MASKBITS( SORT_LIGHTMAP_BITS );
+	static const uint32_t SORT_SHADER_MASK = MASKBITS( SORT_SHADER_BITS );
+
+	static_assert( SORT_INDEX_MASK >= MAX_DRAWSURFS - 1, "not enough index bits" );
+
+	// need space for 0 fog (no fog), in addition to MAX_MAP_FOGS
+	static_assert( SORT_FOGNUM_MASK >= MAX_MAP_FOGS, "not enough fognum bits" );
+
+	// need space for tr.worldEntity, in addition to MAX_REF_ENTITIES
+	static_assert( SORT_ENTITYNUM_MASK >= MAX_REF_ENTITIES, "not enough entity bits" );
+
+	// need space for -1 lightmap (no lightmap) in addition to MAX_LIGHTMAPS
+	static_assert( SORT_LIGHTMAP_MASK >= MAX_LIGHTMAPS, "not enough lightmap bits" );
+
+	static_assert( SORT_SHADER_MASK >= MAX_SHADERS - 1, "not enough qshader bits" );
+
 	typedef struct drawSurf_s
 	{
 		trRefEntity_t *entity;
 		surfaceType_t *surface; // any of surface*_t
-		uint32_t      shaderNum;
-		int16_t       lightmapNum;
-		int16_t       fogNum;
-		uint32_t      addedIndex; // index of the drawSurf in the array before sorting
+		uint64_t      sort;
+
+		inline int index() const {
+			return int( ( sort & SORT_INDEX_MASK ) );
+		}
+		inline int entityNum() const {
+			return int( ( sort >> SORT_ENTITYNUM_SHIFT ) & SORT_ENTITYNUM_MASK ) - 1;
+		}
+		inline int fogNum() const {
+			return int( ( sort >> SORT_FOGNUM_SHIFT ) & SORT_FOGNUM_MASK );
+		}
+		inline int lightmapNum() const {
+			return int( ( sort >> SORT_LIGHTMAP_SHIFT ) & SORT_LIGHTMAP_MASK ) - 1;
+		}
+		inline int shaderNum() const {
+			return int( sort >> SORT_SHADER_SHIFT );
+		}
+
+		inline void setSort( int shaderNum, int lightmapNum, int entityNum, int fogNum, int index ) {
+			entityNum = entityNum + 1; //world entity is -1
+			lightmapNum = lightmapNum + 1; //no lightmap is -1
+			sort = uint64_t( index & SORT_INDEX_MASK ) |
+				( uint64_t( fogNum & SORT_FOGNUM_MASK ) << SORT_FOGNUM_SHIFT ) |
+				( uint64_t( entityNum & SORT_ENTITYNUM_MASK ) << SORT_ENTITYNUM_SHIFT ) |
+				( uint64_t( lightmapNum & SORT_LIGHTMAP_MASK ) << SORT_LIGHTMAP_SHIFT ) |
+				( uint64_t( shaderNum & SORT_SHADER_MASK ) << SORT_SHADER_SHIFT );
+		}
 	} drawSurf_t;
 
 	typedef enum
@@ -1927,30 +2009,9 @@ static inline float halfToFloat( int16_t in ) {
 		// common with leaf and node
 		int              contents; // -1 for nodes, to differentiate from leafs
 		int              visCounts[ MAX_VISCOUNTS ]; // node needs to be traversed if current
-		int              lightCount;
+
 		vec3_t           mins, maxs; // for bounding box culling
-		vec3_t           surfMins, surfMaxs; // ydnar: bounding box including surfaces
-		vec3_t           origin; // center of the bounding box
 		struct bspNode_s *parent;
-
-		qboolean         visible[ MAX_VIEWS ];
-		int              lastVisited[ MAX_VIEWS ];
-		int              lastQueried[ MAX_VIEWS ];
-		qboolean         issueOcclusionQuery[ MAX_VIEWS ];
-
-		link_t           visChain; // updated every visit
-		link_t           occlusionQuery; // updated every visit
-		link_t           occlusionQuery2; // updated every visit
-		link_t           multiQuery; // CHC++: list of all nodes that are used by the same occlusion query
-
-		VBO_t            *volumeVBO;
-		IBO_t            *volumeIBO;
-		int              volumeVerts;
-		int              volumeIndexes;
-
-		uint32_t occlusionQueryObjects[ MAX_VIEWS ];
-		int      occlusionQuerySamples[ MAX_VIEWS ]; // visible fragment count
-		int      occlusionQueryNumbers[ MAX_VIEWS ]; // for debugging
 
 		// node specific
 		cplane_t         *plane;
@@ -1960,9 +2021,8 @@ static inline float halfToFloat( int16_t in ) {
 		int          cluster;
 		int          area;
 
+		int          firstMarkSurface;
 		int          numMarkSurfaces;
-		bspSurface_t **markSurfaces;
-		bspSurface_t **viewSurfaces;
 	} bspNode_t;
 
 	typedef struct
@@ -2404,18 +2464,6 @@ static inline float halfToFloat( int16_t in ) {
 //====================================================
 	extern refimport_t ri;
 
-#define MAX_MOD_KNOWN      1024
-#define MAX_ANIMATIONFILES 4096
-
-#define MAX_LIGHTMAPS      256
-#define MAX_SKINS          1024
-
-#define MAX_DRAWSURFS      0x10000
-#define DRAWSURF_MASK      ( MAX_DRAWSURFS - 1 )
-
-#define MAX_INTERACTIONS   MAX_DRAWSURFS * 8
-#define INTERACTION_MASK   ( MAX_INTERACTIONS - 1 )
-
 	extern int gl_filter_min, gl_filter_max;
 
 	/*
@@ -2423,12 +2471,9 @@ static inline float halfToFloat( int16_t in ) {
 	*/
 	typedef struct
 	{
-		int c_box_cull_in, c_box_cull_out;
-		int c_sphere_cull_in, c_sphere_cull_out;
+		int c_box_cull_in, c_box_cull_clip, c_box_cull_out;
 		int c_plane_cull_in, c_plane_cull_out;
 
-		int c_sphere_cull_patch_in, c_sphere_cull_patch_clip, c_sphere_cull_patch_out;
-		int c_box_cull_patch_in, c_box_cull_patch_clip, c_box_cull_patch_out;
 		int c_sphere_cull_mdv_in, c_sphere_cull_mdv_clip, c_sphere_cull_mdv_out;
 		int c_box_cull_mdv_in, c_box_cull_mdv_clip, c_box_cull_mdv_out;
 		int c_box_cull_md5_in, c_box_cull_md5_clip, c_box_cull_md5_out;
@@ -2453,7 +2498,6 @@ static inline float halfToFloat( int16_t in ) {
 		int c_occlusionQueries;
 		int c_occlusionQueriesMulti;
 		int c_occlusionQueriesSaved;
-		int c_CHCTime;
 
 		int c_decalProjectors, c_decalTestSurfaces, c_decalClipSurfaces, c_decalSurfaces, c_decalSurfacesCreated;
 	} frontEndCounters_t;
@@ -2631,10 +2675,6 @@ static inline float halfToFloat( int16_t in ) {
 		int      visIndex;
 		int      visClusters[ MAX_VISCOUNTS ];
 		int      visCounts[ MAX_VISCOUNTS ]; // incremented every time a new vis cluster is entered
-
-		link_t   traversalStack;
-		link_t   occlusionQueryQueue;
-		link_t   occlusionQueryList;
 
 		int      frameCount; // incremented every frame
 		int      sceneCount; // incremented every scene
@@ -2907,7 +2947,7 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_nocull;
 	extern cvar_t *r_facePlaneCull; // enables culling of planar surfaces with back side test
 	extern cvar_t *r_nocurves;
-	extern cvar_t *r_noLightScissors;
+	extern cvar_t *r_lightScissors;
 	extern cvar_t *r_noLightVisCull;
 	extern cvar_t *r_noInteractionSort;
 	extern cvar_t *r_showcluster;
@@ -2930,6 +2970,9 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_ext_framebuffer_blit;
 	extern cvar_t *r_extx_framebuffer_mixed_formats;
 	extern cvar_t *r_ext_generate_mipmap;
+	extern cvar_t *r_arb_buffer_storage;
+	extern cvar_t *r_arb_map_buffer_range;
+	extern cvar_t *r_arb_sync;
 
 	extern cvar_t *r_nobind; // turns off binding to appropriate textures
 	extern cvar_t *r_collapseStages;
@@ -3056,11 +3099,9 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_vboDeformVertexes;
 
 	extern cvar_t *r_mergeLeafSurfaces;
-
 	extern cvar_t *r_parallaxMapping;
 	extern cvar_t *r_parallaxDepthScale;
 
-	extern cvar_t *r_dynamicBspOcclusionCulling;
 	extern cvar_t *r_dynamicEntityOcclusionCulling;
 	extern cvar_t *r_dynamicLightOcclusionCulling;
 	extern cvar_t *r_chcMaxPrevInvisNodesBatchSize;
@@ -3374,10 +3415,22 @@ static inline float halfToFloat( int16_t in ) {
 		i16vec4_t texCoords;
 	} shaderVertex_t;
 
+#ifdef GLEW_ARB_sync
+	typedef struct glRingbuffer_s {
+		void           *baseAddr;
+		GLsizei        elementSize;
+		GLsizei        segmentElements;
+		int            activeSegment;
+		GLsync         syncs[ DYN_BUFFER_SEGMENTS ];
+	} glRingbuffer_t;
+#endif
+
 	typedef struct shaderCommands_s
 	{
-		shaderVertex_t verts[ SHADER_MAX_VERTEXES ];
-		glIndex_t      indexes[ SHADER_MAX_INDEXES ];
+		shaderVertex_t *verts;	 // at least SHADER_MAX_VERTEXES accessible
+		glIndex_t      *indexes; // at least SHADER_MAX_INDEXES accessible
+		uint32_t       vertsWritten, vertexBase;
+		uint32_t       indexesWritten, indexBase;
 
 		VBO_t       *vbo;
 		IBO_t       *ibo;
@@ -3412,6 +3465,15 @@ static inline float halfToFloat( int16_t in ) {
 
 		int           numSurfaceStages;
 		shaderStage_t **surfaceStages;
+
+		// preallocated host buffers for verts and indexes 
+		shaderVertex_t *vertsBuffer;
+		glIndex_t      *indexesBuffer;
+
+#ifdef GLEW_ARB_sync
+		glRingbuffer_t  vertexRB;
+		glRingbuffer_t  indexRB;
+#endif
 	} shaderCommands_t;
 
 	extern shaderCommands_t tess;
@@ -3462,7 +3524,8 @@ static inline float halfToFloat( int16_t in ) {
 	void Tess_AddCubeWithNormals( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color );
 
 	void Tess_InstantQuad( vec4_t quadVerts[ 4 ] );
-	void Tess_UpdateVBOs( uint32_t attribBits );
+	void Tess_MapVBOs( qboolean forceCPU );
+	void Tess_UpdateVBOs( void );
 
 	void RB_ShowImages( void );
 
@@ -3860,12 +3923,6 @@ static inline float halfToFloat( int16_t in ) {
 	typedef struct
 	{
 		int       commandId;
-		qboolean  enable;
-	} scissorEnableCommand_t;
-
-	typedef struct
-	{
-		int       commandId;
 		int       x;
 		int       y;
 		int       w;
@@ -3937,7 +3994,6 @@ static inline float halfToFloat( int16_t in ) {
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
 	  RC_2DPOLYSINDEXED,
-	  RC_SCISSORENABLE,
 	  RC_SCISSORSET,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
@@ -3980,6 +4036,9 @@ static inline float halfToFloat( int16_t in ) {
 		// the backend communicates to the frontend through visTestResult_t
 		int                 numVisTests;
 		visTestResult_t     visTests[ MAX_VISTESTS ];
+
+		bspNode_t			**traversalList;
+		int                 traversalLength;
 
 		renderCommandList_t commands;
 	} backEndData_t;

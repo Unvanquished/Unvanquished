@@ -34,3 +34,13 @@ chmod +x "${SOURCE_PATH}/download-pk3.sh"
 TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
 sed "/<key>CFBundleVersion<\/key>/{N;s|<string>[^<]*</string>|<string>${VERSION}</string>|}" "${SOURCE_PATH}/macosx/Info.plist" > "${TMP_FILE}"
 mv "${TMP_FILE}" "${SOURCE_PATH}/macosx/Info.plist"
+
+# Update menu_main.rml
+TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
+sed "/blocklink.*Alpha/s/Alpha \([0-9\\.]\+\)/Alpha ${VERSION_SHORT}/" "${SOURCE_PATH}/main/ui/menu_main.rml" > ${TMP_FILE}
+mv "${TMP_FILE}" "${SOURCE_PATH}/main/ui/menu_main.rml"
+
+# Update m# Update menu_main.rml
+TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
+sed "/blocklink.*Alpha/s/Alpha \([0-9\\.]\+\)/Alpha ${VERSION_SHORT}/" "${SOURCE_PATH}/main/ui/menu_ingame.rml" > ${TMP_FILE}
+mv "${TMP_FILE}" "${SOURCE_PATH}/main/ui/menu_ingame.rml"

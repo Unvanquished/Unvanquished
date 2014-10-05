@@ -1120,7 +1120,7 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 
 	MSG_WriteByte( msg, lc );  // # of changes
 
-//  Com_Printf(_( "Delta for ent %i: "), to->number );
+//  Com_Printf( "Delta for ent %i: ", to->number );
 
 	for ( i = 0, field = entityStateFields; i < lc; i++, field++ )
 	{
@@ -1155,7 +1155,7 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 					MSG_WriteBits( msg, 0, 1 );
 					MSG_WriteBits( msg, trunc + FLOAT_INT_BIAS, FLOAT_INT_BITS );
 //                  if ( print ) {
-//                      Com_Printf(_( "%s:%i "), field->name, trunc );
+//                      Com_Printf( "%s:%i ", field->name, trunc );
 //                  }
 				}
 				else
@@ -1164,7 +1164,7 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 					MSG_WriteBits( msg, 1, 1 );
 					MSG_WriteBits( msg, *toF, 32 );
 //                  if ( print ) {
-//                      Com_Printf(_( "%s:%f "), field->name, *(float *)toF );
+//                      Com_Printf( "%s:%f ", field->name, *(float *)toF );
 //                  }
 				}
 			}
@@ -1181,13 +1181,13 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 				// integer
 				MSG_WriteBits( msg, *toF, field->bits );
 //              if ( print ) {
-//                  Com_Printf(_( "%s:%i "), field->name, *toF );
+//                  Com_Printf( "%s:%i ", field->name, *toF );
 //              }
 			}
 		}
 	}
 
-//  Com_Printf(_( "\n" ));
+//  Com_Printf( "\n" );
 
 	/*
 	        c = msg->cursize - c;
@@ -1198,7 +1198,7 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 	                } else {
 	                        endBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS;
 	                }
-	                Com_Printf(_( " (%i bits)\n"), endBit - startBit  );
+	                Com_Printf( " (%i bits)\n", endBit - startBit  );
 	        }
 	*/
 }
@@ -1632,7 +1632,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 				MSG_WriteBits( msg, 0, 1 );
 				MSG_WriteBits( msg, trunc + FLOAT_INT_BIAS, FLOAT_INT_BITS );
 //              if ( print ) {
-//                  Com_Printf(_( "%s:%i "), field->name, trunc );
+//                  Com_Printf( "%s:%i ", field->name, trunc );
 //              }
 			}
 			else
@@ -1641,7 +1641,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 				MSG_WriteBits( msg, 1, 1 );
 				MSG_WriteBits( msg, *toF, 32 );
 //              if ( print ) {
-//                  Com_Printf(_( "%s:%f "), field->name, *(float *)toF );
+//                  Com_Printf( "%s:%f ", field->name, *(float *)toF );
 //              }
 			}
 		}
@@ -1650,7 +1650,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 			// integer
 			MSG_WriteBits( msg, *toF, field->bits );
 //          if ( print ) {
-//              Com_Printf(_( "%s:%i "), field->name, *toF );
+//              Com_Printf( "%s:%i ", field->name, *toF );
 //          }
 		}
 	}

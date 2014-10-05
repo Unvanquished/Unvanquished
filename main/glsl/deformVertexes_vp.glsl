@@ -24,8 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 uniform float		u_DeformParms[MAX_SHADER_DEFORM_PARMS];
 
-#if !defined(GLDRV_MESA)
-
 float triangle(float x)
 {
 	return 1.0 - abs( 4.0 * fract( x + 0.25 ) - 2.0 );
@@ -61,16 +59,14 @@ float WaveValue(float func, float base, float amplitude, float phase, float freq
 	return base + d * amplitude;
 }
 
-vec4 DeformPosition2(	const vec4 pos,
-						const vec3 normal,
-						const vec2 st,
-						float time)
+void DeformVertex( inout vec4 pos,
+		   inout vec3 normal,
+		   inout vec2 st,
+		   in    float time)
 {
 
 	int i, deformOfs = 0;
 	int numDeforms = int(u_DeformParms[deformOfs++]);
-
-	vec4 deformed = pos;
 
 	for(i = 0; i < numDeforms; i++)
 	{
@@ -91,7 +87,7 @@ vec4 DeformPosition2(	const vec4 pos,
 			float scale = WaveValue(func, base, amplitude, phase + off, freq, time);
 			vec3 offset = normal * scale;
 
-			deformed.xyz += offset;
+			pos.xyz += offset;
 		}
 		else if(deformGen == DEFORM_BULGE)
 		{
@@ -105,7 +101,7 @@ vec4 DeformPosition2(	const vec4 pos,
 			float scale = sin(off) * bulgeHeight;
 			vec3 offset = normal * scale;
 
-			deformed.xyz += offset;
+			pos.xyz += offset;
 		}
 		else if(deformGen == DEFORM_MOVE)
 		{
@@ -123,13 +119,7 @@ vec4 DeformPosition2(	const vec4 pos,
 			float scale = WaveValue(func, base, amplitude, phase, freq, time);
 			vec3 offset = move * scale;
 
-			deformed.xyz += offset;
+			pos.xyz += offset;
 		}
 	}
-
-	return deformed;
 }
-
-
-#endif // !defined(GLDRV_MESA)
-

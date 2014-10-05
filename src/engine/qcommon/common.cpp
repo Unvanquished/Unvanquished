@@ -41,6 +41,7 @@ Maryland 20850 USA.
 
 #include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
 
@@ -187,13 +188,13 @@ void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location )
 	case LOG_OFF:
 		return;
 	case LOG_WARN:
-		Com_Printf(_("^3Warning: ^7%s\n"), event->message);
+		Com_Printf("^3Warning: ^7%s\n", event->message);
 		break;
 	case LOG_ERROR:
-		Com_Printf(_("^1Error: ^7%s\n"), event->message);
+		Com_Printf("^1Error: ^7%s\n", event->message);
 		break;
 	case LOG_DEBUG:
-		Com_Printf(_("Debug: %s\n"), event->message);
+		Com_Printf("Debug: %s\n", event->message);
 		break;
 	case LOG_TRACE:
 		Com_Printf("Trace: %s\n", event->message);
@@ -278,10 +279,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if (code != ERR_FATAL) {
 		FS::PakPath::ClearPaks();
 		FS_LoadBasePak();
-#ifndef BUILD_SERVER
-		// Load map pk3s to allow menus to load levelshots
-		FS_LoadAllMaps();
-#endif
 	}
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
@@ -657,6 +654,25 @@ int Com_GMTime( qtime_t *qtime )
 
 /*
 ==============================================================================
+	Cheating
+==============================================================================
+*/
+
+void SetCheatMode(bool allowed)
+{
+	Cvar::SetCheatsAllowed(allowed);
+}
+
+//The server gives the sv_cheats cvar to the client, on 'off' it prevents the user from changing Cvar::CHEAT cvars
+Cvar::Callback<Cvar::Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in the current game", Cvar::SYSTEMINFO | Cvar::ROM, true, SetCheatMode);
+
+bool Com_AreCheatsAllowed()
+{
+	return cvar_cheats.Get();
+}
+
+/*
+==============================================================================
 
 Goals:
         reproducable without history effects -- no out of memory errors on weird map to map changes
@@ -813,6 +829,42 @@ void Com_TouchMemory( void )
 
 /*
 =================
+Com_Allocate_Aligned
+
+Aligned Memory Allocations for Posix and Win32
+=================
+*/
+void *Com_Allocate_Aligned( size_t alignment, size_t size )
+{
+#ifdef _WIN32
+	return _aligned_malloc( size, alignment );
+#else
+	void *ptr;
+	if( !posix_memalign( &ptr, alignment, size ) )
+		return ptr;
+	else
+		return NULL;
+#endif
+}
+
+/*
+=================
+Com_Free_Aligned
+
+Free Aligned Memory for Posix and Win32
+=================
+*/
+void Com_Free_Aligned( void *ptr )
+{
+#ifdef _WIN32
+	_aligned_free( ptr );
+#else
+	free( ptr );
+#endif
+}
+
+/*
+=================
 Hunk_Log
 =================
 */
@@ -945,15 +997,14 @@ void Com_InitHunkMemory( void )
 		s_hunkTotal = cv->integer * 1024 * 1024;
 	}
 
-	s_hunkData = ( byte * ) malloc( s_hunkTotal + 31 );
+	// cacheline aligned
+	s_hunkData = ( byte * ) Com_Allocate_Aligned( 64, s_hunkTotal );
 
 	if ( !s_hunkData )
 	{
 		Com_Error( ERR_FATAL, "Hunk data failed to allocate %iMB", s_hunkTotal / ( 1024 * 1024 ) );
 	}
 
-	// cacheline align
-	s_hunkData = ( byte * )( ( ( intptr_t ) s_hunkData + 31 ) & ~31 );
 	Hunk_Clear();
 
 	Cmd_AddCommand( "meminfo", Com_Meminfo_f );
@@ -1630,7 +1681,7 @@ static void Com_Freeze_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "freeze <seconds>\n" ));
+		Com_Printf( "freeze <seconds>\n" );
 		return;
 	}
 
@@ -1674,13 +1725,13 @@ void Com_SetRecommended( void )
 
 	if ( goodVideo )
 	{
-		Com_Printf(_( "Found high quality video and slow CPU\n" ));
+		Com_Printf( "Found high quality video and slow CPU\n" );
 		Cmd::BufferCommandText("preset preset_fast.cfg");
 		Cvar_Set( "com_recommended", "2" );
 	}
 	else
 	{
-		Com_Printf(_( "Found low quality video and slow CPU\n" ));
+		Com_Printf( "Found low quality video and slow CPU\n" );
 		Cmd::BufferCommandText("preset preset_fastest.cfg");
 		Cvar_Set( "com_recommended", "3" );
 	}
@@ -1741,10 +1792,6 @@ void Com_Init( char *commandLine )
 
 	FS::Initialize();
 	FS_LoadBasePak();
-#ifndef BUILD_SERVER
-	// Load map pk3s to allow menus to load levelshots
-	FS_LoadAllMaps();
-#endif
 
 	Trans_Init();
 
@@ -1977,7 +2024,7 @@ void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandl
 
 	if ( !f )
 	{
-		Com_Printf(_( "Couldn't write %s.\n"), filename );
+		Com_Printf( "Couldn't write %s.\n", filename );
 		return;
 	}
 
@@ -2032,13 +2079,13 @@ void Com_WriteConfig_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage(_("<filename>"), NULL);
+		Cmd_PrintUsage("<filename>", NULL);
 		return;
 	}
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	Com_Printf(_( "Writing %s.\n"), filename );
+	Com_Printf( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename, Cvar_WriteVariables );
 }
 
@@ -2056,13 +2103,13 @@ void Com_WriteBindings_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage(_("<filename>"), NULL);
+		Cmd_PrintUsage("<filename>", NULL);
 		return;
 	}
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	Com_Printf(_( "Writing %s.\n"), filename );
+	Com_Printf( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename, Key_WriteBindings );
 }
 #endif
@@ -2339,12 +2386,12 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 		{
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( watchdogThreshold.Get() - 4 ) * 1000 )
 			{
-				Com_Log( LOG_WARN, _( "watchdog will trigger in 4 seconds" ));
+				Com_Log( LOG_WARN, "watchdog will trigger in 4 seconds" );
 				watchWarn = qtrue;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > watchdogThreshold.Get() * 1000 )
 			{
-				Com_Printf(_( "Idle server with no map — triggering watchdog\n" ));
+				Com_Printf( "Idle server with no map — triggering watchdog\n" );
 				watchdogTime = 0;
 				watchWarn = qfalse;
 

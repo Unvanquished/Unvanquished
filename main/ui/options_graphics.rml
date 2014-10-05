@@ -79,13 +79,14 @@
 				<row>
 					<select cvar="r_swapinterval">
 						<option value="0">Off</option>
-						<option value="-1">Forgiving Vsync</option>
+						<option value="-1">Flexible Vsync</option>
 						<option value="1">Full Vsync</option>
 					</select>
 					<h3>Vsync</h3>
 					<p>
-						Vsync prevents 'visual tearing' but increases input latency.  Forgiving Vsync
-						only activates when the frame-rate is above the refresh-rate of the monitor.
+						Vsync prevents 'visual tearing' but increases input latency.  Flexible Vsync
+						only activates when the frame-rate is above the refresh-rate of the monitor, 
+						avoiding stuttering when the FPS drops.  
 					</p>
 				</row>
 
@@ -253,16 +254,16 @@
 				<row>
 					<h3>Building ranges</h3>
 					<select cvar="cg_rangeMarkerBuildableTypes" style="width: 20em;">
-						<option value="none">No Buildables</option>
-						<option value="all">All Buildables</option>
-						<option value="support">Support Buildables</option>
-						<option value="offensive">Offensive Buildables</option>
-						<option value="alien">Alien Buildables</option>
-						<option value="human">Human Buildables</option>
-						<option value="aliensupport">Alien Support Buildables</option>
-						<option value="humansupport">Human Support Buildables</option>
-						<option value="alienoffensive">Offensive Alien Buildables</option>
-						<option value="humanoffensive">Offensive Human Buildables</option>
+						<option value="none">None (disabled)</option>
+						<option value="all">All structures</option>
+						<option value="support">Support structures</option>
+						<option value="offensive">Offensive structures</option>
+						<option value="alien">Alien structures</option>
+						<option value="human">Human structures</option>
+						<option value="aliensupport">Alien support structures</option>
+						<option value="humansupport">Human support structures</option>
+						<option value="alienoffensive">Offensive alien structures</option>
+						<option value="humanoffensive">Offensive human structures</option>
 					</select>
 					<p></p>
 				</row>

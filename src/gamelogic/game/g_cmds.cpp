@@ -582,7 +582,8 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = atof( name + strlen("bp") );
 		}
 
-		G_ModifyBuildPoints( (team_t) ent->client->pers.team, amount );
+		G_ModifyBuildPoints( (team_t)ent->client->pers.team, amount );
+		G_MarkBuildPointsMined( (team_t)ent->client->pers.team, amount );
 	}
 
 	// give momentum
@@ -4837,7 +4838,7 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 
 	ent->client->pers.pubkey_authenticated = 1;
 	G_admin_authlog( ent );
-	G_admin_cmdlist( ent );
+	G_ListCommands( ent );
 	CP( "cp_tr " QQ(N_("^2Pubkey authenticated")) "\n" );
 }
 

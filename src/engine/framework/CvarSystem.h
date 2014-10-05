@@ -68,7 +68,7 @@ namespace Cvar {
     void SetValueForce(const std::string& cvarName, std::string value);
     std::string GetValue(const std::string& cvarName);
 
-    //Returns a list of cvars matching the prefix as well as their description
+    // Returns a list of cvars matching the prefix as well as their description
     Cmd::CompletionResult Complete(Str::StringRef prefix);
 
     // Alter flags, returns true if the variable exists
@@ -84,6 +84,8 @@ namespace Cvar {
     void WriteVariables(fileHandle_t f);
     char* InfoString(int flag, bool big);
     void SetValueCProxy(const std::string& cvarName, std::string value);
+
+    void SetCheatsAllowed(bool allowed);
 
     //Kept as a reference for cvar flags
 
