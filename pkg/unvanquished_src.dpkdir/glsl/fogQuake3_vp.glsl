@@ -60,6 +60,7 @@ void	main()
 {
 	vec4 position;
 	vec3 normal;
+	vec2 texCoord;
 
 #if defined(USE_VERTEX_SKINNING)
 
@@ -78,12 +79,12 @@ void	main()
 	normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
 #endif
 
-#if defined(USE_DEFORM_VERTEXES)
-	position = DeformPosition2(	position,
-					normal,
-					attr_TexCoord0.st,
-					u_Time);
-#endif
+	texCoord = attr_TexCoord0;
+
+	DeformVertex( position,
+		      normal,
+		      texCoord,
+		      u_Time);
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
@@ -96,25 +97,28 @@ void	main()
 	float t = dot(position.xyz, u_FogDepthVector.xyz) + u_FogDepthVector.w;
 
 	// partially clipped fogs use the T axis
-#if defined(EYE_OUTSIDE)
-	if(t < 1.0)
+	if(u_FogEyeT < 0.0)
 	{
-		t = 1.0 / 32.0;	// point is outside, so no fogging
+		if(t < 1.0)
+		{
+			t = 1.0 / 32.0;	// point is outside, so no fogging
+		}
+		else
+		{
+			t = 1.0 / 32.0 + 30.0 / 32.0 * t / (t - u_FogEyeT);	// cut the distance at the fog plane
+		}
 	}
 	else
 	{
-		t = 1.0 / 32.0 + 30.0 / 32.0 * t / (t - u_FogEyeT);	// cut the distance at the fog plane
+		if(t < 0.0)
+		{
+			t = 1.0 / 32.0;	// point is outside, so no fogging
+		}
+		else
+		{
+			t = 31.0 / 32.0;
+		}
 	}
-#else
-	if(t < 0.0)
-	{
-		t = 1.0 / 32.0;	// point is outside, so no fogging
-	}
-	else
-	{
-		t = 31.0 / 32.0;
-	}
-#endif
 
 	var_Tex = vec2(s, t);
 
