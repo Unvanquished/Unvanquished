@@ -734,7 +734,6 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/botlib/bot_debug.cpp
   ${ENGINE_DIR}/botlib/bot_nav_edit.cpp
   ${ENGINE_DIR}/client/cg_api.h
-  ${ENGINE_DIR}/client/ui_api.h
   ${ENGINE_DIR}/client/client.h
   ${ENGINE_DIR}/client/cin_ogm.cpp
   ${ENGINE_DIR}/client/cl_avi.cpp
@@ -874,7 +873,7 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/shared/VMMain.h
   ${GAMELOGIC_DIR}/game/g_active.cpp
-  ${GAMELOGIC_DIR}/game/Beacon.cpp 
+  ${GAMELOGIC_DIR}/game/Beacon.cpp
   ${GAMELOGIC_DIR}/game/Clustering.cpp
   ${GAMELOGIC_DIR}/game/g_client.cpp
   ${GAMELOGIC_DIR}/game/g_cmds.cpp
