@@ -184,6 +184,9 @@ public:
 	int         numIndicies;
 	qhandle_t   shader;
 
+	VBO_t      *vbo;
+	IBO_t      *ibo;
+
 	RocketCompiledGeometry( Rocket::Core::Vertex *verticies, int numVerticies, int *_indices, int _numIndicies, qhandle_t shader ) : numVerts( numVerticies ), numIndicies( _numIndicies )
 	{
 		this->verts = createVertexArray( verticies, numVerticies );
@@ -192,6 +195,21 @@ public:
 		Com_Memcpy( indices, _indices, _numIndicies * sizeof( int ) );
 
 		this->shader = shader;
+
+
+
+		vboData.xyz = (vec3_t *)IQModel->positions;
+		vboData.qtangent = qtangentbuf;
+		vboData.numFrames = 0;
+		vboData.color = (u8vec4_t *)IQModel->colors;
+		vboData.st = (i16vec2_t *)IQModel->texcoords;
+		vboData.noLightCoords = qtrue;
+		vboData.boneIndexes = (int (*)[4])indexbuf;
+		vboData.boneWeights = (vec4_t *)weightbuf;
+		vboData.numVerts = IQModel->num_vertexes;
+
+
+		vbo = R_CreateStaticVBO( "LibRocket static mesh VBO", vboData, VBO_LAYOUT_STATIC );
 	}
 
 	~RocketCompiledGeometry()
