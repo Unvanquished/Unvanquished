@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -65,11 +65,11 @@ public:
 		{
 			Rocket::Core::Log::Message(Rocket::Core::Log::LT_ERROR, "Field %s not found in query", field_name.CString());
 			return default_value;
-		}		
-		
+		}
+
 		T return_value = default_value;
 
-		GetInto((*itr).second, return_value);			
+		GetInto((*itr).second, return_value);
 
 		return return_value;
 	}
@@ -82,10 +82,10 @@ public:
 		{
 			Rocket::Core::Log::Message(Rocket::Core::Log::LT_ERROR, "Field %s not found in query", field_name.CString());
 			return false;
-		}		
+		}
 
-		return GetInto((*itr).second, value);		
-	}	
+		return GetInto((*itr).second, value);
+	}
 
 	template< typename T >
 	T Get(const size_t field_index, const T& default_value) const
@@ -124,9 +124,9 @@ private:
 
 	typedef std::vector< Rocket::Core::StringList > Rows;
 	Rows rows;
-	typedef std::map< Rocket::Core::String, size_t > FieldIndices;
+	typedef std::unordered_map< Rocket::Core::String, size_t, Rocket::Core::StringHash > FieldIndices;
 	FieldIndices field_indices;
-	
+
 	void LoadRow();
 };
 

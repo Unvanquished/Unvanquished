@@ -106,7 +106,7 @@ public:
 
 private:
 	typedef std::unordered_map< String, PropertyDefinition*, StringHash > PropertyMap;
-	typedef std::map< String, PropertyShorthandDefinition* > ShorthandMap;
+	typedef std::unordered_map< String, PropertyShorthandDefinition*, StringHash > ShorthandMap;
 
 	PropertyMap properties;
 	ShorthandMap shorthands;

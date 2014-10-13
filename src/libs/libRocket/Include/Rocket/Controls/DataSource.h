@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,7 +31,7 @@
 #include <Rocket/Controls/Header.h>
 #include <Rocket/Core/String.h>
 #include <list>
-#include <map>
+#include <unordered_map>
 
 namespace Rocket {
 namespace Controls {
@@ -96,7 +96,7 @@ class ROCKETCONTROLS_API DataSource
 		void NotifyRowChange(const Rocket::Core::String& table);
 
 		/// Helper function for building a result set.
-		typedef std::map< Rocket::Core::String, Rocket::Core::String > RowMap;
+		typedef std::unordered_map< Rocket::Core::String, Rocket::Core::String, Rocket::Core::StringHash > RowMap;
 		void BuildRowEntries(Rocket::Core::StringList& row, const RowMap& row_map, const Rocket::Core::StringList& columns);
 
 	private:

@@ -36,7 +36,7 @@ namespace Core {
 
 class ElementStyleCache;
 
-typedef std::map<String, int> PropCounter;
+typedef std::unordered_map<String, int, StringHash > PropCounter;
 
 /**
 	Manages an element's style and property information.

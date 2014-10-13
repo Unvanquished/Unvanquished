@@ -260,7 +260,7 @@ private:
 	// The time the last click occured.
 	float last_click_time;
 
-	typedef std::map< String, ElementDocument* > CursorMap;
+	typedef std::unordered_map< String, ElementDocument*, StringHash > CursorMap;
 	CursorMap cursors;
 	ElementReference default_cursor;
 	ElementReference active_cursor;

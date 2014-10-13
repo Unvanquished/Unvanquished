@@ -151,7 +151,7 @@ private:
 	FontGlyphMap glyphs;
 
 	typedef std::map< const FontEffect*, FontFaceLayer* > FontLayerMap;
-	typedef std::map< String, FontFaceLayer* > FontLayerCache;
+	typedef std::unordered_map< String, FontFaceLayer*, StringHash > FontLayerCache;
 	typedef std::vector< FontFaceLayer* > LayerConfiguration;
 	typedef std::vector< LayerConfiguration > LayerConfigurationList;
 

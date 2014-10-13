@@ -85,7 +85,7 @@ private:
 	typedef std::vector< DecoratorHandle > DecoratorList;
 	typedef std::pair< PseudoClassList, int > PseudoClassDecoratorIndex;
 	typedef std::vector< PseudoClassDecoratorIndex > PseudoClassDecoratorIndexList;
-	typedef std::map< String, PseudoClassDecoratorIndexList > DecoratorIndex;
+	typedef std::unordered_map< String, PseudoClassDecoratorIndexList, StringHash > DecoratorIndex;
 
 	// The element this decorator belongs to
 	Element* element;
