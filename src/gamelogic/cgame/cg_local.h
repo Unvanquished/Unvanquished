@@ -1911,6 +1911,7 @@ extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
 extern vmCvar_t             ui_chatPromptColors;
+extern vmCvar_t             cg_spawnEffects;
 
 //
 // Rocket cvars

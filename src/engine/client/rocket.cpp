@@ -70,10 +70,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include <Rocket/Debugger.h>
 
-extern "C"
-{
-	#include <SDL.h>
-}
+#include <SDL.h>
 
 
 class DaemonFileInterface : public Rocket::Core::FileInterface

@@ -2020,7 +2020,6 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 
 							gl_genericShader->DisableVertexSkinning();
 							gl_genericShader->DisableVertexAnimation();
-							gl_genericShader->DisableDeformVertexes();
 							gl_genericShader->DisableTCGenEnvironment();
 
 							gl_genericShader->BindProgram();
@@ -3431,7 +3430,6 @@ void RB_RenderLightOcclusionQueries()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
@@ -3892,7 +3890,6 @@ void RB_RenderEntityOcclusionQueries()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
@@ -4079,7 +4076,6 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
@@ -4248,7 +4244,6 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
@@ -4377,7 +4372,6 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
@@ -4465,7 +4459,6 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
@@ -4686,7 +4679,6 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
@@ -4784,8 +4776,6 @@ static void RB_RenderDebugUtils()
 		gl_reflectionShader->SetVertexSkinning( false );
 		gl_reflectionShader->SetVertexAnimation( false );
 
-		gl_reflectionShader->SetDeformVertexes( false );
-
 		gl_reflectionShader->SetNormalMapping( false );
 
 		gl_reflectionShader->BindProgram();
@@ -4824,7 +4814,6 @@ static void RB_RenderDebugUtils()
 
 			gl_genericShader->DisableVertexSkinning();
 			gl_genericShader->DisableVertexAnimation();
-			gl_genericShader->DisableDeformVertexes();
 			gl_genericShader->DisableTCGenEnvironment();
 
 			gl_genericShader->BindProgram();
@@ -4898,7 +4887,6 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
@@ -4993,7 +4981,6 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
@@ -5279,7 +5266,6 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
@@ -5372,7 +5358,6 @@ void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
-	gl_genericShader->DisableDeformVertexes();
 	gl_genericShader->DisableTCGenEnvironment();
 	gl_genericShader->DisableTCGenLightmap();
 	gl_genericShader->BindProgram();
@@ -5825,7 +5810,6 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
-	gl_genericShader->DisableDeformVertexes();
 	gl_genericShader->DisableTCGenEnvironment();
 
 	gl_genericShader->BindProgram();
@@ -6212,6 +6196,7 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
 	}
 
 	if( !tess.verts ) {
@@ -6568,7 +6553,6 @@ const void *RB_RunVisTests( const void *data )
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 		gl_genericShader->DisableTCGenLightmap();
 
@@ -6663,7 +6647,6 @@ void RB_ShowImages( void )
 
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
-	gl_genericShader->DisableDeformVertexes();
 	gl_genericShader->DisableTCGenEnvironment();
 
 	gl_genericShader->BindProgram();

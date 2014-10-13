@@ -186,6 +186,7 @@ vmCvar_t        cg_highPolyBuildableModels;
 vmCvar_t        cg_highPolyWeaponModels;
 vmCvar_t        cg_motionblur;
 vmCvar_t        cg_motionblurMinSpeed;
+vmCvar_t        cg_spawnEffects;
 
 vmCvar_t        cg_fov_builder;
 vmCvar_t        cg_fov_level0;
@@ -358,6 +359,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_LATCH                   },
 	{ &cg_motionblur,                  "cg_motionblur",                  "0.05",         CVAR_ARCHIVE                 },
 	{ &cg_motionblurMinSpeed,          "cg_motionblurMinSpeed",          "600",          0                            },
+	{ &cg_spawnEffects,                "cg_spawnEffects",                "1",            0                            },
 	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            0                            },
 	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            0                            },
 	{ &cg_fov_level1,                  "cg_fov_level1",                  "0",            0                            },

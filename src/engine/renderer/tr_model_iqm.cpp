@@ -897,29 +897,29 @@ R_CullIQM
 */
 static int R_CullIQM( trRefEntity_t *ent ) {
 	vec3_t     localBounds[ 2 ];
+	float      scale = ent->e.skeleton.scale;
+	IQModel_t *model = tr.currentModel->iqm;
+	IQAnim_t  *anim = model->anims;
+	float     *bounds;
 
-	if ( ent->e.skeleton.type == SK_INVALID ||
-	     VectorCompareEpsilon( ent->e.skeleton.bounds[0], vec3_origin, 0.001f) )
-	{
-		// no properly set skeleton so use the bounding box by the model instead by the animations
-		IQModel_t *model = tr.currentModel->iqm;
-		IQAnim_t  *anim = model->anims;
-		float     *bounds;
+	// use the bounding box by the model
+	bounds = model->bounds[0];
+	VectorCopy( bounds, localBounds[ 0 ] );
+	VectorCopy( bounds + 3, localBounds[ 1 ] );
 
-		if ( !anim ) {
-			bounds = model->bounds[0];
-		} else {
-			bounds = anim->bounds;
-		}
-		VectorScale( bounds, ent->e.skeleton.scale, localBounds[ 0 ] );
-		VectorScale( bounds + 3, ent->e.skeleton.scale, localBounds[ 1 ] );
+	if ( anim ) {
+		// merge bounding box provided by the animation
+		bounds = anim->bounds;
+		BoundsAdd( localBounds[ 0 ], localBounds[ 1 ],
+			   anim->bounds, anim->bounds + 3 );
 	}
-	else
-	{
-		// copy a bounding box in the current coordinate system provided by skeleton
-		VectorScale( ent->e.skeleton.bounds[0], ent->e.skeleton.scale, localBounds[ 0 ] );
-		VectorScale( ent->e.skeleton.bounds[1], ent->e.skeleton.scale, localBounds[ 1 ] );
-	}
+
+	// merge bounding box provided by skeleton
+	BoundsAdd( localBounds[ 0 ], localBounds[ 1 ],
+		   ent->e.skeleton.bounds[ 0 ], ent->e.skeleton.bounds[ 1 ] );
+
+	VectorScale( localBounds[0], scale, localBounds[ 0 ] );
+	VectorScale( localBounds[1], scale, localBounds[ 1 ] );
 
 	switch ( R_CullLocalBox( localBounds ) )
 	{
