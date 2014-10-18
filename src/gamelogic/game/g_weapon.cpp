@@ -1395,23 +1395,6 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 		zap->targets[ 0 ] = target;
 		zap->numTargets = 1;
 
-		// the zap chains only through living entities
-		if ( target->health > 0 )
-		{
-			G_Damage( target, creator, creator, forward, target->s.origin, LEVEL2_AREAZAP_DMG,
-			          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP );
-
-			FindZapChainTargets( zap );
-
-			for ( i = 1; i < zap->numTargets; i++ )
-			{
-				G_Damage( zap->targets[ i ], target, zap->creator, forward, target->s.origin,
-				          LEVEL2_AREAZAP_DMG * ( 1 - powf( ( zap->distances[ i ] /
-				                                 LEVEL2_AREAZAP_CHAIN_RANGE ), LEVEL2_AREAZAP_CHAIN_FALLOFF ) ) + 1,
-				          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP );
-			}
-		}
-
 		zap->effectChannel = G_NewEntity();
 		zap->effectChannel->s.eType = ET_LEV2_ZAP_CHAIN;
 		zap->effectChannel->classname = "lev2zapchain";
@@ -1421,6 +1404,11 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 	}
 }
 
+static int ZapDamageForTime( int damage,  int msec )
+{
+	return damage * ( ( float ) msec / LEVEL2_AREAZAP_TIME );
+}
+
 void G_UpdateZaps( int msec )
 {
 	int   i, j;
@@ -1428,6 +1416,9 @@ void G_UpdateZaps( int msec )
 
 	for ( i = 0; i < MAX_ZAPS; i++ )
 	{
+		gentity_t *target, *traceEnt;
+		trace_t   tr;
+
 		zap = &zaps[ i ];
 
 		if ( !zap->used )
@@ -1437,6 +1428,15 @@ void G_UpdateZaps( int msec )
 
 		zap->timeToLive -= msec;
 
+		G_CalcMuzzlePoint( zap->creator, forward, right, up, muzzle );
+		G_WideTrace( &tr, zap->creator, LEVEL2_AREAZAP_RANGE, LEVEL2_AREAZAP_WIDTH, LEVEL2_AREAZAP_WIDTH, &traceEnt );
+
+		if ( !traceEnt || traceEnt != zap->targets[ 0 ] )
+		{
+			Com_Printf("Miss");
+			zap->timeToLive = -1;
+		}
+
 		// first, the disappearance of players is handled immediately in G_ClearPlayerZapEffects()
 
 		// the deconstruction or gibbing of a directly targeted buildable destroys the whole zap effect
@@ -1445,6 +1445,26 @@ void G_UpdateZaps( int msec )
 			G_FreeEntity( zap->effectChannel );
 			zap->used = qfalse;
 			continue;
+		}
+
+		// the zap chains only through living entities
+		target = zap->targets[ 0 ];
+
+		if ( target && target->health > 0 )
+		{
+			G_Damage( target, zap->creator, zap->creator, forward, target->s.origin, ZapDamageForTime( LEVEL2_AREAZAP_DMG, msec ),
+			          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP );
+
+			zap->numTargets = 1;
+			FindZapChainTargets( zap );
+
+			for ( i = 1; i < zap->numTargets; i++ )
+			{
+				G_Damage( zap->targets[ i ], target, zap->creator, forward, target->s.origin,
+				          ZapDamageForTime( LEVEL2_AREAZAP_DMG * ( 1 - powf( ( zap->distances[ i ] /
+				                            LEVEL2_AREAZAP_CHAIN_RANGE ), LEVEL2_AREAZAP_CHAIN_FALLOFF ) ) + 1, msec ),
+				          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP );
+			}
 		}
 
 		// the deconstruction or gibbing of chained buildables destroy the appropriate beams
