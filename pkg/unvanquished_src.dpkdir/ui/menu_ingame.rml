@@ -18,7 +18,7 @@
 					<sidesection  id="sidebar_ingame">
 						<h1> Match menu </h1>
 						<blocklink class="rightfloat" onClick="exec disconnect"> Leave match</blocklink>
-						<blocklink class="leftalign" onClick="hide ingame">Resume action</blocklink>
+						<blocklink class="leftalign" onClick="hide menu_ingame">Resume action</blocklink>
 
 						<h2> Teams </h2>
 						<indent>
