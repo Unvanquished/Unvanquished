@@ -31,7 +31,7 @@
 					<sidesection  id="sidebar_ingame">
 						<h1> Match menu </h1>
 						<blocklink class="rightfloat" onClick='Events.pushevent("exec disconnect", event)'> Leave match</blocklink>
-						<blocklink class="leftalign" onClick='Events.pushevent("hide ingame", event)'>Resume action</blocklink>
+						<blocklink class="leftalign" onClick='Events.pushevent("hide menu_ingame", event)'>Resume action</blocklink>
 
 						<h2> Teams </h2>
 						<indent>
@@ -125,7 +125,7 @@
 						<br />
 
 						<blocklink class="rightfloat" onClick='Events.pushevent("exec quit", event)'> Quit game</blocklink>
-						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.30 </blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.32 </blocklink>
 					</sidesection>
 
 				</window>

@@ -254,16 +254,16 @@
 				<row>
 					<h3>Building ranges</h3>
 					<select cvar="cg_rangeMarkerBuildableTypes" style="width: 20em;">
-						<option value="none">No Buildables</option>
-						<option value="all">All Buildables</option>
-						<option value="support">Support Buildables</option>
-						<option value="offensive">Offensive Buildables</option>
-						<option value="alien">Alien Buildables</option>
-						<option value="human">Human Buildables</option>
-						<option value="aliensupport">Alien Support Buildables</option>
-						<option value="humansupport">Human Support Buildables</option>
-						<option value="alienoffensive">Offensive Alien Buildables</option>
-						<option value="humanoffensive">Offensive Human Buildables</option>
+						<option value="none">None (disabled)</option>
+						<option value="all">All structures</option>
+						<option value="support">Support structures</option>
+						<option value="offensive">Offensive structures</option>
+						<option value="alien">Alien structures</option>
+						<option value="human">Human structures</option>
+						<option value="aliensupport">Alien support structures</option>
+						<option value="humansupport">Human support structures</option>
+						<option value="alienoffensive">Offensive alien structures</option>
+						<option value="humanoffensive">Offensive human structures</option>
 					</select>
 					<p></p>
 				</row>
