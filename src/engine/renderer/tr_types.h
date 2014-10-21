@@ -495,6 +495,9 @@ typedef struct
 
 	qboolean generateMipmapAvailable;
 	qboolean getProgramBinaryAvailable;
+	qboolean bufferStorageAvailable;
+	qboolean mapBufferRangeAvailable;
+	qboolean syncAvailable;
 } glconfig2_t;
 // XreaL END
 

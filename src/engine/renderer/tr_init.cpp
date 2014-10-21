@@ -106,6 +106,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_ext_framebuffer_blit;
 	cvar_t      *r_extx_framebuffer_mixed_formats;
 	cvar_t      *r_ext_generate_mipmap;
+	cvar_t      *r_arb_buffer_storage;
+	cvar_t      *r_arb_map_buffer_range;
+	cvar_t      *r_arb_sync;
 
 	cvar_t      *r_ignoreGLErrors;
 	cvar_t      *r_logFile;
@@ -1094,6 +1097,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_ext_framebuffer_blit = ri.Cvar_Get( "r_ext_framebuffer_blit", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_extx_framebuffer_mixed_formats = ri.Cvar_Get( "r_extx_framebuffer_mixed_formats", "1",  CVAR_LATCH );
 		r_ext_generate_mipmap = ri.Cvar_Get( "r_ext_generate_mipmap", "1", CVAR_CHEAT | CVAR_LATCH );
+		r_arb_buffer_storage = ri.Cvar_Get( "r_arb_buffer_storage", "1", CVAR_CHEAT | CVAR_LATCH );
+		r_arb_map_buffer_range = ri.Cvar_Get( "r_arb_map_buffer_range", "1", CVAR_CHEAT | CVAR_LATCH );
+		r_arb_sync = ri.Cvar_Get( "r_arb_sync", "1", CVAR_CHEAT | CVAR_LATCH );
 
 		r_collapseStages = ri.Cvar_Get( "r_collapseStages", "1", CVAR_LATCH | CVAR_CHEAT );
 		r_picmip = ri.Cvar_Get( "r_picmip", "0",  CVAR_LATCH | CVAR_ARCHIVE );

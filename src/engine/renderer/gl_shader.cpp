@@ -194,7 +194,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	}
 
 	std::string bufferExtra;
-	
+
 	bufferExtra.reserve( 4096 );
 
 	if( glConfig2.textureRGAvailable ) {
@@ -238,7 +238,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	}
 
 	AddGLSLDefine( bufferExtra, "r_NPOTScale", npotWidthScale, npotHeightScale );
-		
+
 	if ( glConfig.driverType == GLDRV_MESA )
 	{
 		AddGLSLDefine( bufferExtra, "GLDRV_MESA", 1 );
@@ -666,9 +666,6 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 
 		fragmentHeader += "#define varying in\n";
 
-		fragmentHeader += "out vec4 out_Color;\n";
-		fragmentHeader += "#define gl_FragColor out_Color\n";
-
 		vertexHeader += "#define textureCube texture\n";
 		vertexHeader += "#define texture2D texture\n";
 		vertexHeader += "#define texture2DProj textureProj\n";
@@ -915,11 +912,6 @@ uint32_t        GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes
 	return attribs;
 }
 
-bool GLCompileMacro_USE_DEFORM_VERTEXES::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
-{
-	return ( glConfig.driverType != GLDRV_OPENGL3 || !r_vboDeformVertexes->integer );
-}
-
 bool GLCompileMacro_USE_PARALLAX_MAPPING::MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
 	bool foundUSE_NORMAL_MAPPING = false;
@@ -1094,7 +1086,6 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_TCGEN_ENVIRONMENT( this ),
 	GLCompileMacro_USE_TCGEN_LIGHTMAP( this )
 {
@@ -1102,12 +1093,7 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 
 void GLShader_generic::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation ";
-
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1130,7 +1116,6 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 	u_ModelViewProjectionMatrix( this ),
 	u_DepthScale( this ),
 	GLDeformStage( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_GLOW_MAPPING( this )//,
@@ -1140,10 +1125,7 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 
 void GLShader_lightMapping::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "deformVertexes ";
 }
 
 void GLShader_lightMapping::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1186,7 +1168,6 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this ),
@@ -1197,12 +1178,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 
 void GLShader_vertexLighting_DBS_entity::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation ";
-
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_vertexLighting_DBS_entity::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1248,7 +1224,6 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	u_LightGridOrigin( this ),
 	u_LightGridScale( this ),
 	GLDeformStage( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_GLOW_MAPPING( this )//,
@@ -1258,10 +1233,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 
 void GLShader_vertexLighting_DBS_world::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "deformVertexes ";
 }
 void GLShader_vertexLighting_DBS_world::BuildShaderFragmentLibNames( std::string& fragmentInlines )
 {
@@ -1309,7 +1281,6 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderMana
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_SHADOWING( this )  //,
@@ -1319,12 +1290,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderMana
 
 void GLShader_forwardLighting_omniXYZ::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation ";
-
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_forwardLighting_omniXYZ::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1376,7 +1342,6 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderMana
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_SHADOWING( this )  //,
@@ -1386,12 +1351,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderMana
 
 void GLShader_forwardLighting_projXYZ::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation ";
-
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_forwardLighting_projXYZ::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1446,7 +1406,6 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_SHADOWING( this )  //,
@@ -1456,12 +1415,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 
 void GLShader_forwardLighting_directionalSun::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation ";
-
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_forwardLighting_directionalSun::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1509,19 +1463,13 @@ GLShader_shadowFill::GLShader_shadowFill( GLShaderManager *manager ) :
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_LIGHT_DIRECTIONAL( this )
 {
 }
 
 void GLShader_shadowFill::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation ";
-
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_shadowFill::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1540,7 +1488,6 @@ GLShader_reflection::GLShader_reflection( GLShaderManager *manager ):
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
@@ -1548,12 +1495,7 @@ GLShader_reflection::GLShader_reflection( GLShaderManager *manager ):
 
 void GLShader_reflection::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation ";
-
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_reflection::BuildShaderCompileMacros( std::string& compileMacros )
@@ -1595,20 +1537,13 @@ GLShader_fogQuake3::GLShader_fogQuake3( GLShaderManager *manager ) :
 	u_FogEyeT( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
-	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
-	GLCompileMacro_EYE_OUTSIDE( this )
+	GLCompileMacro_USE_VERTEX_ANIMATION( this )
 {
 }
 
 void GLShader_fogQuake3::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation ";
-
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_fogQuake3::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1649,19 +1584,13 @@ GLShader_heatHaze::GLShader_heatHaze( GLShaderManager *manager ) :
 	u_VertexInterpolation( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
-	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_DEFORM_VERTEXES( this )
+	GLCompileMacro_USE_VERTEX_ANIMATION( this )
 {
 }
 
 void GLShader_heatHaze::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation ";
-
-	if(glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer)
-	{
-		vertexInlines += "deformVertexes ";
-	}
+	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_heatHaze::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )

@@ -76,10 +76,7 @@ Maryland 20850 USA.
 #include "lua/Events.h"
 #include "client.h"
 
-extern "C"
-{
-	#include <SDL.h>
-}
+#include <SDL.h>
 
 
 class DaemonFileInterface : public Rocket::Core::FileInterface

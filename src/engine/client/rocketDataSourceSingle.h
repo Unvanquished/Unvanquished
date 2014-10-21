@@ -36,10 +36,7 @@ Maryland 20850 USA.
 #ifndef ROCKETDATASOURCESINGLE_H
 #define ROCKETDATASOURCESINGLE_H
 
-extern "C"
-{
 #include "client.h"
-}
 
 #include <Rocket/Core.h>
 #include <Rocket/Controls.h>

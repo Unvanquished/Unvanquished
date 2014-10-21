@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.31.0"
+#define PRODUCT_VERSION         "0.32.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -836,7 +836,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void  AxisCopy( vec3_t in[ 3 ], vec3_t out[ 3 ] );
 
 	void  SetPlaneSignbits( struct cplane_s *out );
-	int   BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *plane );
+	int   BoxOnPlaneSide( const vec3_t emins, const vec3_t emaxs, const struct cplane_s *plane );
 
 	float AngleMod( float a );
 	float LerpAngle( float from, float to, float frac );

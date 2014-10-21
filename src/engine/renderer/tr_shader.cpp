@@ -4892,9 +4892,9 @@ static void FixRenderCommandList( int newShader )
 
 						for ( i = 0, drawSurf = dv_cmd->viewParms.drawSurfs; i < dv_cmd->viewParms.numDrawSurfs; i++, drawSurf++ )
 						{
-							if ( drawSurf->shaderNum >= newShader )
+							if ( drawSurf->shaderNum() >= newShader )
 							{
-								drawSurf->shaderNum++;
+								drawSurf->setSort( drawSurf->shaderNum() + 1, drawSurf->lightmapNum(), drawSurf->entityNum(), drawSurf->fogNum(), drawSurf->index() );
 							}
 						}
 
