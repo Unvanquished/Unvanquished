@@ -197,6 +197,7 @@ vmCvar_t        cg_fov_level4;
 vmCvar_t        cg_fov_human;
 
 vmCvar_t        ui_chatPromptColors;
+vmCvar_t        cg_sayCommand;
 
 typedef struct
 {
@@ -368,7 +369,9 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            0                            },
 	{ &cg_fov_human,                   "cg_fov_human",                   "0",            0                            },
 
-	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            }
+	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            },
+
+	{ &cg_sayCommand,                  "cg_sayCommand",                   "",            0                            }
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );

@@ -2617,9 +2617,8 @@ static int elementRenderCmdCmp( const void *a, const void *b )
 	return Q_stricmp( ( const char * ) a, ( ( elementRenderCmd_t * ) b )->name );
 }
 
-void CG_Rocket_RenderElement( void )
+void CG_Rocket_RenderElement( const char *tag )
 {
-	const char *tag = CG_Rocket_GetTag();
 	elementRenderCmd_t *cmd;
 
 	cmd = ( elementRenderCmd_t * ) bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );

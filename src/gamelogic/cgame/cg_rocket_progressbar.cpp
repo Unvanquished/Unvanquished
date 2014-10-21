@@ -194,12 +194,12 @@ static int progressBarCmdCmp( const void *a, const void *b )
 	return Q_stricmp( ( const char * ) a, ( ( progressBarCmd_t * ) b )->command );
 }
 
-float CG_Rocket_ProgressBarValue( void )
+float CG_Rocket_ProgressBarValue( Str::StringRef name )
 {
 	progressBarCmd_t *cmd;
 
 	// Get the progressbar command
-	cmd = ( progressBarCmd_t * ) bsearch( CG_Argv( 0 ), progressBarCmdList, progressBarCmdListCount, sizeof( progressBarCmd_t ), progressBarCmdCmp );
+	cmd = ( progressBarCmd_t * ) bsearch( name.c_str(), progressBarCmdList, progressBarCmdListCount, sizeof( progressBarCmd_t ), progressBarCmdCmp );
 
 	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
 	{

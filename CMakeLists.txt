@@ -822,6 +822,15 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.cpp
   ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
   ${GAMELOGIC_DIR}/cgame/cg_parseutils.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_dataformatter.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_textelements.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_documents.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_datagrid.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_element.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_events.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_keys.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_hud.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket.cpp
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
   ${GAMESHAREDLIST}
@@ -1197,6 +1206,7 @@ if( BUILD_CLIENT )
   add_subdirectory( ${ROCKET_DIR} )
   add_definitions( -DSTATIC_LIB )
   set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
+  set( LIBS_CGAME ${LIBS_CGAME} ROCKET_LIB )
 endif()
 
 # zlib
@@ -1275,6 +1285,7 @@ if( BUILD_CLIENT )
   find_package( Freetype REQUIRED )
   include_directories( ${FREETYPE_INCLUDE_DIRS} )
   set( LIBS_CLIENT ${LIBS_CLIENT} ${FREETYPE_LIBRARIES} )
+  set( LIBS_CGAME ${LIBS_CGAME} ${FREETYPE_LIBRARIES} )
 endif()
 
 # GLEW
@@ -1347,10 +1358,11 @@ function( GAMEMODULE )
   set( oneValueArgs NAME )
   set( multiValueArgs COMPILE_DEF FILES )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  string( TOUPPER ${GAMEMODULE_NAME} UPPER_NAME )
 
   if( BUILD_GAME_NACL_NATIVE_DLL )
     add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} ${LIBS_${UPPER_NAME}} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"

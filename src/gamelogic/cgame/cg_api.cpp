@@ -110,15 +110,13 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
 
             case CG_ROCKET_RENDER_ELEMENT:
                 IPC::HandleMsg<CGameRocketRenderElementMsg>(VM::rootChannel, std::move(reader), [] {
-                    CG_Rocket_RenderElement();
+                    // TODO: Remove
                 });
                 break;
 
             case CG_ROCKET_PROGRESSBAR_VALUE:
                 IPC::HandleMsg<CGameRocketProgressbarValueMsg>(VM::rootChannel, std::move(reader), [] (std::string source, float& value) {
-					Cmd::PushArgs(source);
-                    CG_Rocket_ProgressBarValue();
-					Cmd::PopArgs();
+			// TODO: Delete
                 });
                 break;
 

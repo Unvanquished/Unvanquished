@@ -42,7 +42,7 @@ Maryland 20850 USA.
 #include <Rocket/Core/Texture.h>
 
 #include <queue>
-#include "client.h"
+#include "../cg_local.h"
 #include "rocket.h"
 
 Rocket::Core::Element *activeElement = NULL;
@@ -152,7 +152,7 @@ public:
 	{
 		activeElement = this;
 
-		cgvm.CGameRocketRenderElement();
+		CG_Rocket_RenderElement( GetTagName().CString() );
 
 		// Render text on top
 		Rocket::Core::Element::OnRender();
