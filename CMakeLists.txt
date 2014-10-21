@@ -832,8 +832,6 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_active.cpp
   ${GAMELOGIC_DIR}/game/g_api.cpp
   ${GAMELOGIC_DIR}/game/g_buildpoints.cpp
-  ${GAMELOGIC_DIR}/game/Beacon.cpp
-  ${GAMELOGIC_DIR}/game/Clustering.cpp
   ${GAMELOGIC_DIR}/game/g_client.cpp
   ${GAMELOGIC_DIR}/game/g_cmds.cpp
   ${GAMELOGIC_DIR}/game/g_combat.cpp
