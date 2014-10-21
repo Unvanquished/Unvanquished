@@ -1736,5 +1736,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		re.GenerateTexture = RE_GenerateTexture;
 		re.ShaderNameFromHandle = RE_GetShaderNameFromHandle;
 
+		re.RegisterStaticPolysVBO = RE_RegisterStaticPolysVBO;
+		re.UnregisterStaticPolysVBO = RE_UnregisterStaticPolysVBO;
+		re.RenderStaticPolysVBO = RE_RenderStaticPolysVBO;
+
 		return &re;
 	}

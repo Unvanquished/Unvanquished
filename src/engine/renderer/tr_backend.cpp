@@ -675,7 +675,7 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get a call to va() every frame!
-		GLimp_LogComment( va( "--- GL_VertexAttribPointers( %s ) ---\n", glState.currentVBO->name ) );
+		GLimp_LogComment( va( "--- GL_VertexAttribPointers( %s ) ---\n", glState.currentVBO->GetName() ) );
 	}
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
@@ -698,7 +698,7 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 		       glState.vertexAttribsInterpolation >= 0 ||
 		       glState.currentVBO == tess.vbo ) )
 		{
-			const vboAttributeLayout_t *layout = &glState.currentVBO->attribs[ i ];
+			const vboAttributeLayout_t *layout = &glState.currentVBO->GetAttribs()[ i ];
 
 			if ( r_logFile->integer )
 			{
@@ -2086,8 +2086,8 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 								gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
 								gl_genericShader->SetUniform_Color( colorYellow );
 
-								R_BindVBO( light->frustumVBO );
-								R_BindIBO( light->frustumIBO );
+								light->frustumVBO->Bind();
+								light->frustumIBO->Bind();
 
 								GL_VertexAttribsState( ATTR_POSITION );
 
@@ -3174,8 +3174,8 @@ static void RenderLightOcclusionVolume( trRefLight_t *light )
 		GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-		R_BindVBO( light->frustumVBO );
-		R_BindIBO( light->frustumIBO );
+		light->frustumVBO->Bind();
+		light->frustumIBO->Bind();
 
 		GL_VertexAttribsState( ATTR_POSITION );
 
@@ -3660,14 +3660,14 @@ static void RenderEntityOcclusionVolume( trRefEntity_t *entity )
 	GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	R_BindVBO( tr.unitCubeVBO );
-	R_BindIBO( tr.unitCubeIBO );
+	tr.unitCubeVBO->Bind();
+	tr.unitCubeIBO->Bind();
 
 	GL_VertexAttribsState( ATTR_POSITION );
 
 	tess.multiDrawPrimitives = 0;
-	tess.numVertexes = tr.unitCubeVBO->vertexesNum;
-	tess.numIndexes = tr.unitCubeIBO->indexesNum;
+	tess.numVertexes = tr.unitCubeVBO->GetVertexesNum();
+	tess.numIndexes = tr.unitCubeIBO->GetIndexesNum();
 
 	Tess_DrawElements();
 
@@ -4165,8 +4165,8 @@ static void RB_RenderDebugUtils()
 				gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 				gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 
-				R_BindVBO( light->frustumVBO );
-				R_BindIBO( light->frustumIBO );
+				light->frustumVBO->Bind();
+				light->frustumIBO->Bind();
 
 				GL_VertexAttribsState( ATTR_POSITION );
 
@@ -6236,6 +6236,66 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
+const void     *RB_DrawStaticVBO( const void *data )
+{
+	const renderVBOCommand_t *cmd;
+	cullType_t            oldCullType;
+	shader_t              *shader;
+
+	cmd = ( const renderVBOCommand_t * ) data;
+
+	Tess_End();
+
+	// TODO: rename everywhere RenderVBO to RenderVBO2D
+	if ( !backEnd.projection2D )
+	{
+		RB_SetGL2D();
+	}
+	
+	shader = cmd->shader;
+	// HACK: Our shader system likes to cull things that we'd like shown
+	oldCullType = shader->cullType;
+	shader->cullType = CT_TWO_SIDED;
+	backEnd.currentEntity = &backEnd.entity2D;
+
+	Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+
+	cmd->vbo->Bind();
+	cmd->ibo->Bind();
+
+	tess.numVertexes = cmd->vbo->GetVertexesNum();
+	tess.numIndexes = cmd->ibo->GetIndexesNum();
+
+	if ( tr.scissor.status )
+	{
+		GL_Scissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
+	}
+
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
+
+	matrix_t proj;
+	matrix_t mm;
+	matrix_t newM;
+	MatrixCopy( glState.projectionMatrix[ glState.stackIndex ], proj );
+	MatrixIdentity( newM );
+	newM[ 12 ] = cmd->translation[ 0 ];
+	newM[ 13 ] = cmd->translation[ 1 ];
+	MatrixMultiply( glState.modelViewMatrix[ glState.stackIndex ], newM, mm );
+
+	GL_PushMatrix();
+	GL_LoadProjectionMatrix( proj );
+	GL_LoadModelViewMatrix( mm );
+
+	Tess_End();
+
+	GL_PopMatrix();
+	shader->cullType = oldCullType;
+	tess.vbo->Bind();
+	tess.ibo->Bind();
+
+	return ( const void * )( cmd + 1 );
+}
+
 // NERVE - SMF
 
 /*
@@ -6850,6 +6910,10 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_2DPOLYSINDEXED:
 				data = RB_Draw2dPolysIndexed( data );
+				break;
+
+			case RC_STATICVBO:
+				data = RB_DrawStaticVBO( data );
 				break;
 
 			case RC_ROTATED_PIC:

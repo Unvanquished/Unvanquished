@@ -3239,11 +3239,9 @@ static void R_CreateWorldVBO( void )
 		}
 	}
 
-	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
-	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR
-	                                 );
-
-	s_worldData.ibo = R_CreateStaticIBO2( va( "staticWorld_IBO %i", 0 ), numTriangles, triangles );
+	s_worldData.vbo = new VBO( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
+	                           ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR );
+	s_worldData.ibo = new IBO( va( "staticWorld_IBO %i", 0 ), numTriangles, triangles );
 
 	if ( r_mergeLeafSurfaces->integer )
 	{
@@ -5339,7 +5337,7 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 			}
 
 			vboSurf->vbo = s_worldData.vbo;
-			vboSurf->ibo = R_CreateStaticIBO2( va( "staticLightMesh_IBO %i", c_vboLightSurfaces ), numTriangles, triangles );
+			vboSurf->ibo = new IBO( va( "staticLightMesh_IBO %i", c_vboLightSurfaces ), numTriangles, triangles );
 
 			ri.Hunk_FreeTempMemory( triangles );
 
@@ -5721,7 +5719,7 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 			}
 
 			vboSurf->vbo = s_worldData.vbo;
-			vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowMesh_IBO %i", c_vboLightSurfaces ), numTriangles, triangles );
+			vboSurf->ibo = new IBO( va( "staticShadowMesh_IBO %i", c_vboLightSurfaces ), numTriangles, triangles );
 
 			ri.Hunk_FreeTempMemory( triangles );
 
@@ -6085,7 +6083,7 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 				}
 
 				vboSurf->vbo = s_worldData.vbo;
-				vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowPyramidMesh_IBO %i", c_vboShadowSurfaces ), numTriangles, triangles );
+				vboSurf->ibo = new IBO( va( "staticShadowPyramidMesh_IBO %i", c_vboShadowSurfaces ), numTriangles, triangles );
 
 				ri.Hunk_FreeTempMemory( triangles );
 

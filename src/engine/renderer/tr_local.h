@@ -36,13 +36,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DYN_BUFFER_SEGMENTS 4
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
 
-typedef int8_t   i8vec4_t[ 4 ];
-typedef uint8_t  u8vec4_t[ 4 ];
-typedef int16_t  i16vec4_t [ 4 ];
-typedef uint16_t u16vec4_t [ 4 ];
-typedef int16_t  i16vec2_t [ 2 ];
-typedef uint16_t u16vec2_t [ 2 ];
-
 // GL conversion helpers
 static inline float unorm8ToFloat(byte unorm8) {
 	return unorm8 * (1.0f / 255.0f);
@@ -111,14 +104,6 @@ static inline void snorm16ToFloat( const i16vec4_t in, vec4_t out )
 	out[ 3 ] = snorm16ToFloat( in[ 3 ] );
 }
 
-static inline int16_t floatToHalf( float in ) {
-	static float scale = powf(2.0f, 15 - 127);
-	floatint_t fi;
-
-	fi.f = in * scale;
-	
-	return (int16_t)(((fi.ui & 0x80000000) >> 16) | ((fi.ui & 0x0fffe000) >> 13));
-}
 static inline float halfToFloat( int16_t in ) {
 	static float scale = powf(2.0f, 127 - 15);
 	floatint_t fi;
@@ -368,6 +353,9 @@ static inline float halfToFloat( int16_t in ) {
 		return l->prev;
 	}
 
+	class VBO;
+	class IBO;
+
 // a trRefLight_t has all the information passed in by
 // the client game, as well as some locally derived info
 	typedef struct trRefLight_s
@@ -411,9 +399,8 @@ static inline float halfToFloat( int16_t in ) {
 
 		frustum_t                 frustum;
 		vec4_t                    localFrustum[ 6 ];
-		struct VBO_s              *frustumVBO;
-
-		struct IBO_s              *frustumIBO;
+		VBO                       *frustumVBO;
+		IBO                       *frustumIBO;
 
 		uint16_t                  frustumIndexes;
 		uint16_t                  frustumVerts;
@@ -673,46 +660,8 @@ static inline float halfToFloat( int16_t in ) {
 		VBO_LAYOUT_POSITION
 	} vboLayout_t;
 
-	typedef struct
-	{
-		vec3_t *xyz;
-		i16vec4_t *qtangent;
-		u8vec4_t *color;
-		union { i16vec2_t *st; i16vec4_t *stpq; };
-		int    (*boneIndexes)[ 4 ];
-		vec4_t *boneWeights;
-
-		int	numFrames;
-		int     numVerts;
-		qboolean noLightCoords;
-	} vboData_t;
-
-	typedef struct VBO_s
-	{
-		char     name[ MAX_QPATH ];
-
-		uint32_t vertexesVBO;
-
-		uint32_t vertexesSize; // total amount of memory data allocated for this vbo
-
-		uint32_t vertexesNum;
-		uint32_t framesNum; // number of frames for vertex animation
-
-		vboAttributeLayout_t attribs[ ATTR_INDEX_MAX ]; // info for buffer manipulation
-
-		vboLayout_t layout;
-		uint32_t attribBits;
-		GLenum      usage;
-	} VBO_t;
-
-	typedef struct IBO_s
-	{
-		char     name[ MAX_QPATH ];
-
-		uint32_t indexesVBO;
-		uint32_t indexesSize; // amount of memory data allocated for all triangles in bytes
-		uint32_t indexesNum;
-	} IBO_t;
+	typedef std::pair< VBO*, IBO* > VBO_IBO_Pair;
+	typedef std::unordered_map< int, VBO_IBO_Pair > VBO_IBO_Map;
 
 //===============================================================================
 
@@ -1869,8 +1818,8 @@ static inline float halfToFloat( int16_t in ) {
 		int firstTriangle;
 
 		// static render data
-		VBO_t *vbo; // points to bsp model VBO
-		IBO_t *ibo;
+		VBO *vbo; // points to bsp model VBO
+		IBO *ibo;
 	} srfGridMesh_t;
 
 	typedef struct srfSurfaceFace_s : srfGeneric_s
@@ -1889,8 +1838,8 @@ static inline float halfToFloat( int16_t in ) {
 		int firstTriangle;
 
 		// static render data
-		VBO_t *vbo; // points to bsp model VBO
-		IBO_t *ibo;
+		VBO *vbo; // points to bsp model VBO
+		IBO *ibo;
 	} srfSurfaceFace_t;
 
 // misc_models in maps are turned into direct geometry by xmap
@@ -1908,8 +1857,8 @@ static inline float halfToFloat( int16_t in ) {
 		int firstTriangle;
 
 		// static render data
-		VBO_t *vbo; // points to bsp model VBO
-		IBO_t *ibo;
+		VBO *vbo; // points to bsp model VBO
+		IBO *ibo;
 	} srfTriangles_t;
 
 	typedef struct srfVBOMesh_s : srfGeneric_s
@@ -1925,8 +1874,8 @@ static inline float halfToFloat( int16_t in ) {
 		int numVerts;
 
 		// static render data
-		VBO_t *vbo;
-		IBO_t *ibo;
+		VBO *vbo;
+		IBO *ibo;
 	} srfVBOMesh_t;
 
 	typedef struct srfVBOMD5Mesh_s
@@ -1948,8 +1897,8 @@ static inline float halfToFloat( int16_t in ) {
 		int numVerts;
 
 		// static render data
-		VBO_t *vbo;
-		IBO_t *ibo;
+		VBO *vbo;
+		IBO *ibo;
 	} srfVBOMD5Mesh_t;
 
 	typedef struct srfVBOMDVMesh_s
@@ -1965,8 +1914,8 @@ static inline float halfToFloat( int16_t in ) {
 		int numVerts;
 
 		// static render data
-		VBO_t *vbo;
-		IBO_t *ibo;
+		VBO *vbo;
+		IBO *ibo;
 	} srfVBOMDVMesh_t;
 
 	extern void ( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] )( void * );
@@ -2080,8 +2029,8 @@ static inline float halfToFloat( int16_t in ) {
 
 		int           numVerts;
 		srfVert_t     *verts;
-		VBO_t         *vbo;
-		IBO_t         *ibo;
+		VBO           *vbo;
+		IBO           *ibo;
 
 		int           numTriangles;
 		srfTriangle_t *triangles;
@@ -2398,8 +2347,8 @@ static inline float halfToFloat( int16_t in ) {
 		int             first_vertex, num_vertexes;
 		int             first_triangle, num_triangles;
 
-		VBO_t *vbo;
-		IBO_t *ibo;
+		VBO   *vbo;
+		IBO   *ibo;
 	} srfIQModel_t;
 
 	typedef struct
@@ -2545,8 +2494,8 @@ static inline float halfToFloat( int16_t in ) {
 		uint32_t        vertexAttribsOldFrame; // offset for VBO vertex animations
 		shaderProgram_t *currentProgram;
 		FBO_t           *currentFBO;
-		VBO_t           *currentVBO;
-		IBO_t           *currentIBO;
+		VBO             *currentVBO;
+		IBO             *currentIBO;
 	} glstate_t;
 
 	typedef struct
@@ -2745,8 +2694,8 @@ static inline float halfToFloat( int16_t in ) {
 		FBO_t *sunShadowMapFBO[ MAX_SHADOWMAPS ];
 
 		// vertex buffer objects
-		VBO_t *unitCubeVBO;
-		IBO_t *unitCubeIBO;
+		VBO *unitCubeVBO;
+		IBO *unitCubeIBO;
 
 		// internal shaders
 		shader_t *defaultShader;
@@ -2825,9 +2774,6 @@ static inline float halfToFloat( int16_t in ) {
 
 		GLuint          vao;
 
-		growList_t      vbos;
-		growList_t      ibos;
-
 		byte            *cubeTemp[ 6 ]; // 6 textures for cubemap storage
 		growList_t      cubeProbes; // all cubemaps in a linear growing list
 		vertexHash_t    **cubeHashTable; // hash table for faster access
@@ -2869,6 +2815,7 @@ static inline float halfToFloat( int16_t in ) {
 
 	extern backEndState_t backEnd;
 	extern trGlobals_t    tr;
+	extern VBO_IBO_Map    vbo_ibo_pairs; // outside of TR, containers are broken by memset
 	extern glconfig_t     glConfig; // outside of TR since it shouldn't be cleared during ref re-init
 	extern glconfig2_t    glConfig2;
 
@@ -3432,8 +3379,8 @@ static inline float halfToFloat( int16_t in ) {
 		uint32_t       vertsWritten, vertexBase;
 		uint32_t       indexesWritten, indexBase;
 
-		VBO_t       *vbo;
-		IBO_t       *ibo;
+		VBO         *vbo;
+		IBO         *ibo;
 
 		stageVars_t svars;
 
@@ -3694,21 +3641,85 @@ static inline float halfToFloat( int16_t in ) {
 
 	============================================================
 	*/
-	VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout );
-	VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *vertexes, uint32_t stateBits );
-
-	IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes );
-	IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, srfTriangle_t *triangles );
-
-	void  R_BindVBO( VBO_t *vbo );
-	void  R_BindNullVBO( void );
-
-	void  R_BindIBO( IBO_t *ibo );
-	void  R_BindNullIBO( void );
 
 	void  R_InitVBOs( void );
 	void  R_ShutdownVBOs( void );
 	void  R_VBOList_f( void );
+
+	class VBO
+	{
+		private:
+		void LoadStatic( vboData_t vboData );
+		void AddToList();
+		void CopyVertexData( byte *outData, vboData_t inData );
+		vboData_t CreateVBOData( const srfVert_t *verts, qboolean noLightCoords );
+
+		protected:
+		char        name[ MAX_QPATH ];
+		uint32_t    handle; // gl buffer handle
+		uint32_t    size; // total amount of memory data allocated for this vbo
+		uint32_t    vertexesNum;
+		uint32_t    framesNum; // number of frames for vertex animation
+
+		vboAttributeLayout_t attribs[ ATTR_INDEX_MAX ]; // info for buffer manipulation
+
+		vboLayout_t layout;
+		uint32_t    attribBits;
+		GLenum      usage;
+
+		static std::list<VBO*> all;
+		std::list<VBO*>::iterator all_iter; // iterator pointing to this VBO in list
+
+		void SetAttributeLayouts( qboolean noLightCoords );
+		void SetAttributeComponentType( uint32_t i, qboolean noLightCoords );
+		void SetAttributeLayoutsVertexAnimation();
+		void SetAttributeLayoutsSkeletal();
+		void SetAttributeLayoutsStatic();
+		void SetAttributeLayoutsPosition();
+
+		public:
+		VBO( const char *name, int numVertexes, uint32_t stateBits, vboLayout_t layout ); // CreateDynamicVBO
+		VBO( const char *name, vboData_t data, vboLayout_t layout ); // CreateStaticVBO
+		VBO( const char *name, int numVertexes, srfVert_t *vertexes, uint32_t stateBits ); // CreateStaticVBO2
+		~VBO();
+		void Bind();  // R_BindVBO
+		static void KillAll();
+		static void BindNull();
+		static void ReportList();
+		uint32_t GetHandle() const { return handle; };
+		const char* GetName() const { return name; };
+		const vboAttributeLayout_t* GetAttribs() const { return attribs; };
+		uint32_t GetVertexesNum() const { return vertexesNum; };
+	};
+
+	class IBO
+	{
+		private:
+		void LoadStatic( glIndex_t *indexes );
+		void AddToList();
+
+		protected:
+		char     name[ MAX_QPATH ];
+
+		uint32_t handle; // gl buffer handle
+		uint32_t size; // amount of memory data allocated for all triangles in bytes
+		uint32_t indexesNum;
+
+		static std::list<IBO*> all;
+		std::list<IBO*>::iterator all_iter; // iterator pointing to this IBO in list
+
+		public:
+		IBO( const char *name, int numIndexes ); // CreateDynamicIBO
+		IBO( const char *name, glIndex_t *indexes, int numIndexes ); // CreateStaticIBO
+		IBO( const char *name, int numTriangles, srfTriangle_t *triangles ); // CreateStaticIBO2
+		~IBO();
+		void Bind(); // R_BindIBO
+		static void KillAll();
+		static void BindNull();
+		static void ReportList();
+		uint32_t GetHandle() const { return handle; };
+		uint32_t GetIndexesNum() const { return indexesNum; };
+	};
 
 	/*
 	============================================================
@@ -3922,6 +3933,15 @@ static inline float halfToFloat( int16_t in ) {
 
 	typedef struct
 	{
+		int        commandId;
+		VBO        *vbo;
+		IBO        *ibo;
+		shader_t   *shader;
+		vec2_t     translation;
+	} renderVBOCommand_t;
+
+	typedef struct
+	{
 		int       commandId;
 		int       x;
 		int       y;
@@ -3994,6 +4014,7 @@ static inline float halfToFloat( int16_t in ) {
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
 	  RC_2DPOLYSINDEXED,
+	  RC_STATICVBO,
 	  RC_SCISSORSET,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
@@ -4064,6 +4085,11 @@ static inline float halfToFloat( int16_t in ) {
 	    int gradientType );
 	void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
 	void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader );
+
+	qhandle_t                           RE_RegisterStaticPolysVBO( vboData_t vboData, glIndex_t *iboData, int _numIndices );
+	void                                RE_UnregisterStaticPolysVBO( qhandle_t hVBO );
+	void                                RE_RenderStaticPolysVBO( qhandle_t hVBO, qhandle_t hShader, vec2_t translation );
+
 	void                                RE_ScissorEnable( qboolean enable );
 	void                                RE_ScissorSet( int x, int y, int w, int h );
 

@@ -345,9 +345,8 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			vboSurf->numIndexes = surf->numTriangles * 3;
 			vboSurf->numVerts = surf->numVerts;
 
-			vboSurf->ibo = R_CreateStaticIBO2( va( "staticMD3Mesh_IBO %s", surf->name ), surf->numTriangles, surf->triangles );
-
-			vboSurf->vbo = R_CreateStaticVBO( va( "staticMD3Mesh_VBO '%s'", surf->name ), data, VBO_LAYOUT_VERTEX_ANIMATION );
+			vboSurf->ibo = new IBO( va( "staticMD3Mesh_IBO %s", surf->name ), surf->numTriangles, surf->triangles );
+			vboSurf->vbo = new VBO( va( "staticMD3Mesh_VBO '%s'", surf->name ), data, VBO_LAYOUT_VERTEX_ANIMATION );
 			
 			ri.Hunk_FreeTempMemory( data.st );
 			ri.Hunk_FreeTempMemory( data.qtangent );

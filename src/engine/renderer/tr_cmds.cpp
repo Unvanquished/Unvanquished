@@ -607,6 +607,58 @@ void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int num
 	r_numPolyIndexes += numindexes;
 }
 
+qhandle_t RE_RegisterStaticPolysVBO( vboData_t vboData, glIndex_t *iboData, int _numIndices )
+{
+	VBO *vbo = new VBO( "Registered static VBO", vboData, VBO_LAYOUT_STATIC );
+	IBO *ibo = new IBO( "Registered static IBO", iboData, _numIndices );
+	VBO_IBO_Map::const_iterator it = vbo_ibo_pairs.find( vbo->GetHandle() );
+	if ( it != vbo_ibo_pairs.end() )
+	{
+		// this handle already allocated
+		ri.Error( ERR_DROP, "RegisterStaticPolysVBO: this VBO handle is already allocated" );
+	}
+	vbo_ibo_pairs[ vbo->GetHandle() ] = std::make_pair(vbo, ibo);
+	return vbo->GetHandle();
+}
+
+void RE_UnregisterStaticPolysVBO( qhandle_t hVBO )
+{
+	VBO_IBO_Map::iterator it = vbo_ibo_pairs.find( hVBO );
+	if ( it == vbo_ibo_pairs.end() )
+	{
+		ri.Error( ERR_DROP, "UnregisterStaticPolysVBO: can't unregister unexistent VBO handle" );
+	}
+	VBO_IBO_Pair p = it->second;
+	delete p.first;
+	delete p.second;
+	vbo_ibo_pairs.erase( it );
+}
+
+void RE_RenderStaticPolysVBO( qhandle_t hVBO, qhandle_t hShader, vec2_t translation )
+{
+	renderVBOCommand_t *cmd;
+
+	cmd = ( renderVBOCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
+	if ( !cmd )
+	{
+		return;
+	}
+
+	VBO_IBO_Map::const_iterator it = vbo_ibo_pairs.find( hVBO );
+	if ( it == vbo_ibo_pairs.end() )
+	{
+		ri.Error( ERR_DROP, "RenderStaticPolysVBO: can't resolve unexistent VBO handle" );
+	}
+	VBO_IBO_Pair p = it->second;
+
+	cmd->commandId = RC_STATICVBO;
+	cmd->vbo = p.first;
+	cmd->ibo = p.second;
+	cmd->shader = R_GetShaderByHandle( hShader );
+	cmd->translation[0] = translation[0];
+	cmd->translation[1] = translation[1];
+}
+
 /*
 ================
 RE_ScissorEnable

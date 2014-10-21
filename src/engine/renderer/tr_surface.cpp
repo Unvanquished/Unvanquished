@@ -57,14 +57,14 @@ void Tess_EndBegin( void )
 Tess_CheckVBOAndIBO
 ==============
 */
-static void Tess_CheckVBOAndIBO( VBO_t *vbo, IBO_t *ibo )
+static void Tess_CheckVBOAndIBO( VBO *vbo, IBO *ibo )
 {
 	if ( glState.currentVBO != vbo || glState.currentIBO != ibo || tess.multiDrawPrimitives >= MAX_MULTIDRAW_PRIMITIVES )
 	{
 		Tess_EndBegin();
 
-		R_BindVBO( vbo );
-		R_BindIBO( ibo );
+		vbo->Bind();
+		ibo->Bind();
 	}
 }
 
@@ -152,7 +152,7 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 	tess.attribsSet =  ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR | ATTR_QTANGENT;
 }
 
-static qboolean Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIndexes, int firstIndex )
+static qboolean Tess_SurfaceVBO( VBO *vbo, IBO *ibo, int numVerts, int numIndexes, int firstIndex )
 {
 	if ( !vbo || !ibo )
 	{
@@ -1197,8 +1197,8 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 			TransInitScale( model->internalScale * backEnd.currentEntity->e.skeleton.scale, &tess.bones[ 0 ] );
 			tess.numBones = 1;
 		}
-		R_BindVBO( surf->vbo );
-		R_BindIBO( surf->ibo );
+		surf->vbo->Bind();
+		surf->ibo->Bind();
 		tess.vboVertexSkinning = qtrue;
 
 		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ((glIndex_t *)NULL) + surf->first_triangle * 3;
@@ -1372,8 +1372,8 @@ void Tess_SurfaceVBOMDVMesh( srfVBOMDVMesh_t *surface )
 
 	Tess_EndBegin();
 
-	R_BindVBO( surface->vbo );
-	R_BindIBO( surface->ibo );
+	surface->vbo->Bind();
+	surface->ibo->Bind();
 
 	tess.numIndexes = surface->numIndexes;
 	tess.numVertexes = surface->numVerts;
@@ -1415,8 +1415,8 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 
 	Tess_EndBegin();
 
-	R_BindVBO( srf->vbo );
-	R_BindIBO( srf->ibo );
+	srf->vbo->Bind();
+	srf->ibo->Bind();
 
 	tess.numIndexes = srf->numIndexes;
 	tess.numVertexes = srf->numVerts;

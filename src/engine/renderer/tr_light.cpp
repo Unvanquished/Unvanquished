@@ -731,8 +731,8 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		}
 		data.numVerts = tess.numVertexes;
 
-		light->frustumVBO = R_CreateStaticVBO( "staticLightFrustum_VBO", data, VBO_LAYOUT_POSITION );
-		light->frustumIBO = R_CreateStaticIBO( "staticLightFrustum_IBO", tess.indexes, tess.numIndexes );
+		light->frustumVBO = new VBO( "staticLightFrustum_VBO", data, VBO_LAYOUT_POSITION );
+		light->frustumIBO = new IBO( "staticLightFrustum_IBO", tess.indexes, tess.numIndexes );
 
 		ri.Hunk_FreeTempMemory( data.xyz );
 

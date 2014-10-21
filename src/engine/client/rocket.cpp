@@ -178,44 +178,60 @@ static polyVert_t *createVertexArray( Rocket::Core::Vertex *vertices, int count 
 class RocketCompiledGeometry
 {
 public:
-	polyVert_t *verts;
-	int         numVerts;
-	int        *indices;
-	int         numIndicies;
+	qhandle_t   vibo;
 	qhandle_t   shader;
 
-	VBO_t      *vbo;
-	IBO_t      *ibo;
-
-	RocketCompiledGeometry( Rocket::Core::Vertex *verticies, int numVerticies, int *_indices, int _numIndicies, qhandle_t shader ) : numVerts( numVerticies ), numIndicies( _numIndicies )
+	RocketCompiledGeometry( Rocket::Core::Vertex *verticies, int numVerticies, int *_indices, int _numIndicies, qhandle_t shader ) : shader( shader )
 	{
-		this->verts = createVertexArray( verticies, numVerticies );
+		Rocket::Core::Vertex *rock = verticies;
+		vec3_t* xyz = (vec3_t*) Z_Malloc( sizeof(vec3_t) * numVerticies );
+		u8vec4_t* color = (u8vec4_t*) Z_Malloc( sizeof(u8vec4_t) * numVerticies );
+		i16vec4_t* st = (i16vec4_t*) Z_Malloc( sizeof(i16vec4_t) * numVerticies );
+		glIndex_t* iboData = (glIndex_t*) Z_Malloc( sizeof(glIndex_t) * _numIndicies );
 
-		this->indices = ( int * ) Z_Malloc( sizeof( int ) * _numIndicies );
-		Com_Memcpy( indices, _indices, _numIndicies * sizeof( int ) );
-
-		this->shader = shader;
-
-
-
-		vboData.xyz = (vec3_t *)IQModel->positions;
-		vboData.qtangent = qtangentbuf;
-		vboData.numFrames = 0;
-		vboData.color = (u8vec4_t *)IQModel->colors;
-		vboData.st = (i16vec2_t *)IQModel->texcoords;
+		vboData_t vboData;
+		vboData.xyz = xyz;
+		vboData.qtangent = nullptr;
+		vboData.color = color;
+		vboData.stpq = st;
 		vboData.noLightCoords = qtrue;
-		vboData.boneIndexes = (int (*)[4])indexbuf;
-		vboData.boneWeights = (vec4_t *)weightbuf;
-		vboData.numVerts = IQModel->num_vertexes;
+		vboData.boneIndexes = nullptr;
+		vboData.boneWeights = nullptr;
+		vboData.numVerts = numVerticies;
+		vboData.numFrames = 0;
 
+		for ( int i = 0; i < numVerticies; i++, xyz++, color++, st++, rock++ ){
+			(*xyz)[0] = rock->position.x;
+			(*xyz)[1] = rock->position.y;
+			(*xyz)[2] = 0;
+			(*color)[0] = rock->colour.red;
+			(*color)[1] = rock->colour.green;
+			(*color)[2] = rock->colour.blue;
+			(*color)[3] = rock->colour.alpha;
+			(*st)[0] = floatToHalf( rock->tex_coord.x );
+			(*st)[1] = floatToHalf( rock->tex_coord.y );
+			(*st)[2] = floatToHalf( 0.0 );
+			(*st)[3] = floatToHalf( 0.0 );
+		}
 
-		vbo = R_CreateStaticVBO( "LibRocket static mesh VBO", vboData, VBO_LAYOUT_STATIC );
+		glIndex_t *ib = iboData;
+		int *p = _indices;
+		// TODO: replace with memcpy
+		for (int i = 0; i < _numIndicies; i++, p++, ib++ ){
+			*ib = *p;
+		}
+
+		vibo = re.RegisterStaticPolysVBO( vboData, iboData, _numIndicies );
+
+		Z_Free( vboData.xyz );
+		Z_Free( vboData.color );
+		Z_Free( vboData.stpq );
+		Z_Free( iboData );
 	}
 
 	~RocketCompiledGeometry()
 	{
-		Z_Free( verts );
-		Z_Free( indices );
+		re.UnregisterStaticPolysVBO( vibo );
 	}
 };
 
@@ -248,8 +264,10 @@ public:
 	void RenderCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry, const Rocket::Core::Vector2f &translation )
 	{
 		RocketCompiledGeometry *g = ( RocketCompiledGeometry * ) geometry;
-
-		re.Add2dPolysIndexed( g->verts, g->numVerts, g->indices, g->numIndicies, translation.x, translation.y, g->shader );
+		vec2_t trans;
+		trans[0] = translation.x;
+		trans[1] = translation.y;
+		re.RenderStaticPolysVBO( g->vibo, g->shader, trans );
 	}
 
 	void ReleaseCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry )

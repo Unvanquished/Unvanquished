@@ -41,6 +41,40 @@ Maryland 20850 USA.
 
 #define REF_API_VERSION 10
 
+typedef int8_t   i8vec4_t[ 4 ];
+typedef uint8_t  u8vec4_t[ 4 ];
+typedef int16_t  i16vec4_t [ 4 ];
+typedef uint16_t u16vec4_t [ 4 ];
+typedef int16_t  i16vec2_t [ 2 ];
+typedef uint16_t u16vec2_t [ 2 ];
+
+typedef struct
+{
+	vec3_t *xyz;
+	i16vec4_t *qtangent;
+	u8vec4_t *color;
+	union {
+		i16vec2_t *st;
+		i16vec4_t *stpq;
+	};
+	int    (*boneIndexes)[ 4 ];
+	vec4_t *boneWeights;
+
+	int	numFrames;
+	int     numVerts;
+	qboolean noLightCoords;
+} vboData_t;
+
+static inline int16_t floatToHalf( float in ) {
+	static float scale = powf(2.0f, 15 - 127);
+	floatint_t fi;
+
+	fi.f = in * scale;
+	
+	return (int16_t)(((fi.ui & 0x80000000) >> 16) | ((fi.ui & 0x0fffe000) >> 13));
+}
+
+
 // *INDENT-OFF*
 
 //
@@ -199,6 +233,10 @@ typedef struct
 	void ( *Add2dPolysIndexed )( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader );
 	qhandle_t ( *GenerateTexture )( const byte *pic, int width, int height );
 	const char *( *ShaderNameFromHandle )( qhandle_t shader );
+
+	qhandle_t ( *RegisterStaticPolysVBO )( vboData_t vboData, glIndex_t *iboData, int _numIndices );
+	void ( *UnregisterStaticPolysVBO )( qhandle_t hVBO );
+	void ( *RenderStaticPolysVBO )( qhandle_t hVBO, qhandle_t hShader, vec2_t translation );
 } refexport_t;
 
 //
