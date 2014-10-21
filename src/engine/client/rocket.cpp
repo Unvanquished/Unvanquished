@@ -184,6 +184,7 @@ public:
 	RocketCompiledGeometry( Rocket::Core::Vertex *verticies, int numVerticies, int *_indices, int _numIndicies, qhandle_t shader ) : shader( shader )
 	{
 		Rocket::Core::Vertex *rock = verticies;
+		// TODO: no need to zero memory
 		vec3_t* xyz = (vec3_t*) Z_Malloc( sizeof(vec3_t) * numVerticies );
 		u8vec4_t* color = (u8vec4_t*) Z_Malloc( sizeof(u8vec4_t) * numVerticies );
 		i16vec4_t* st = (i16vec4_t*) Z_Malloc( sizeof(i16vec4_t) * numVerticies );

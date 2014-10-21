@@ -687,6 +687,7 @@ VBO::VBO( const char *name, int numVertexes, srfVert_t *verts, unsigned int stat
 
 VBO::~VBO()
 {
+	R_SyncRenderThread();
 	all.erase(all_iter);
 	if ( handle )
 	{
@@ -696,6 +697,8 @@ VBO::~VBO()
 
 IBO::~IBO()
 {
+
+	R_SyncRenderThread();
 	all.erase(all_iter);
 	if ( handle )
 	{
