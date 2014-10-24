@@ -87,21 +87,6 @@ typedef int intptr_t;
 
 #define EXTERN_C extern "C"
 
-// for visibility of some functions in system headers
-#undef _GNU_SOURCE
-#undef _BSD_SOURCE
-#undef _XOPEN_SOURCE_EXTENDED
-#define _GNU_SOURCE
-#define _BSD_SOURCE
-#define _XOPEN_SOURCE_EXTENDED
-#if !(defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__))
-// defining the following breaks things on BSD-esque OSes
-#undef _XOPEN_SOURCE
-#undef _POSIX_C_SOURCE
-#define _XOPEN_SOURCE 500
-#define _POSIX_C_SOURCE 200112L
-#endif
-
 // C standard library headers
 #include <assert.h>
 #include <ctype.h>
