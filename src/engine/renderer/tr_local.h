@@ -1162,6 +1162,9 @@ static inline float halfToFloat( int16_t in ) {
 		qboolean        privatePolygonOffset; // set for decals and other items that must be offset
 		float           privatePolygonOffsetValue;
 
+		qboolean        hasDepthFade; // for soft particles
+		float           depthFadeValue;
+
 		expression_t    refractionIndexExp;
 
 		expression_t    specularExponentMin;
@@ -2611,6 +2614,7 @@ static inline float halfToFloat( int16_t in ) {
 		backEndCounters_t pc;
 		visTestQueries_t  visTestQueries[ MAX_VISTESTS ];
 		qboolean          isHyperspace;
+		qboolean          depthRenderImageValid;
 		trRefEntity_t     *currentEntity;
 		trRefLight_t      *currentLight; // only used when lighting interactions
 		qboolean          skyRenderedThisView; // flag for drawing sun
