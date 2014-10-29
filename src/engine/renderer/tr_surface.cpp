@@ -591,17 +591,17 @@ static void Tess_SurfaceSprite( void )
 
 	GLimp_LogComment( "--- Tess_SurfaceSprite ---\n" );
 
-	//	backend.viewParms.
-	//		vec3_t pvsOrigin
-
-	// calculate the xyz locations for the four corners
 	radius = backEnd.currentEntity->e.radius;
 
 	VectorSubtract( backEnd.currentEntity->e.origin, backEnd.viewParms.pvsOrigin, delta );
-	VectorNormalize( delta );
+
+	if( VectorNormalize( delta ) < 1.0e-5 )
+		return;
 
 	CrossProduct( backEnd.viewParms.orientation.axis[ 2 ], delta, left );
-	VectorNormalize( left );
+
+	if( VectorNormalize( left ) < 1.0e-5 )
+		VectorSet( left, 1, 0, 0 );
 
 	if( backEnd.currentEntity->e.rotation != 0 )
 		RotatePointAroundVector( left, delta, left, backEnd.currentEntity->e.rotation );
