@@ -583,6 +583,8 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 Tess_SurfaceSprite
 ==============
 */
+#define NORMAL_EPSILON 0.0001
+
 static void Tess_SurfaceSprite( void )
 {
 	vec3_t delta, left, up;
@@ -595,12 +597,12 @@ static void Tess_SurfaceSprite( void )
 
 	VectorSubtract( backEnd.currentEntity->e.origin, backEnd.viewParms.pvsOrigin, delta );
 
-	if( VectorNormalize( delta ) < 1.0e-5 )
+	if( VectorNormalize( delta ) < NORMAL_EPSILON )
 		return;
 
 	CrossProduct( backEnd.viewParms.orientation.axis[ 2 ], delta, left );
 
-	if( VectorNormalize( left ) < 1.0e-5 )
+	if( VectorNormalize( left ) < NORMAL_EPSILON )
 		VectorSet( left, 1, 0, 0 );
 
 	if( backEnd.currentEntity->e.rotation != 0 )
