@@ -583,42 +583,38 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 Tess_SurfaceSprite
 ==============
 */
+#define NORMAL_EPSILON 0.0001
+
 static void Tess_SurfaceSprite( void )
 {
-	vec3_t left, up;
+	vec3_t delta, left, up;
 	float  radius;
 	vec4_t color;
 
 	GLimp_LogComment( "--- Tess_SurfaceSprite ---\n" );
 
-	// calculate the xyz locations for the four corners
 	radius = backEnd.currentEntity->e.radius;
 
-	if ( backEnd.currentEntity->e.rotation == 0 )
-	{
-		VectorScale( backEnd.viewParms.orientation.axis[ 1 ], radius, left );
-		VectorScale( backEnd.viewParms.orientation.axis[ 2 ], radius, up );
-	}
-	else
-	{
-		float s, c;
-		float ang;
+	VectorSubtract( backEnd.currentEntity->e.origin, backEnd.viewParms.pvsOrigin, delta );
 
-		ang = M_PI * backEnd.currentEntity->e.rotation / 180;
-		s = sin( ang );
-		c = cos( ang );
+	if( VectorNormalize( delta ) < NORMAL_EPSILON )
+		return;
 
-		VectorScale( backEnd.viewParms.orientation.axis[ 1 ], c * radius, left );
-		VectorMA( left, -s * radius, backEnd.viewParms.orientation.axis[ 2 ], left );
+	CrossProduct( backEnd.viewParms.orientation.axis[ 2 ], delta, left );
 
-		VectorScale( backEnd.viewParms.orientation.axis[ 2 ], c * radius, up );
-		VectorMA( up, s * radius, backEnd.viewParms.orientation.axis[ 1 ], up );
-	}
+	if( VectorNormalize( left ) < NORMAL_EPSILON )
+		VectorSet( left, 1, 0, 0 );
+
+	if( backEnd.currentEntity->e.rotation != 0 )
+		RotatePointAroundVector( left, delta, left, backEnd.currentEntity->e.rotation );
+
+	CrossProduct( delta, left, up );
+
+	VectorScale( left, radius, left );
+	VectorScale( up, radius, up );
 
 	if ( backEnd.viewParms.isMirror )
-	{
 		VectorSubtract( vec3_origin, left, left );
-	}
 
 	color[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
 	color[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );
