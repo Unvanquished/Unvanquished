@@ -20,8 +20,8 @@ div#timer
 {
 	position: absolute;
 	width: 40%;
-	height: 3%;
-	bottom: 2%;
+	height: 0.8em;
+	bottom: 0%;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -40,7 +40,6 @@ progressbar
 	height: 100%;
 	image: /white;
 	orientation: left;
-	color: #aaffffff;
 }
 </style>
 </head>
@@ -48,7 +47,7 @@ progressbar
 	<div id="mine">
 		<predictedMineEfficiency />
 	</div>
-	<div>
+	<div id="timer">
 		<progressbar src="btimer"/>
 	</div>
 	<div id="rate">
