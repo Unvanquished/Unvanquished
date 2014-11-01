@@ -1042,7 +1042,7 @@ static void RequireExt( bool hasExt, const char* name )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_%s", name );
+		ri.Error( ERR_FATAL, "...GL_%s not found\n", name );
 	}
 }
 

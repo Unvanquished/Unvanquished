@@ -192,10 +192,10 @@ typedef struct attachment_s
 
 #define MAX_PS_SHADER_FRAMES      32
 #define MAX_PS_MODELS             8
-#define MAX_EJECTORS_PER_SYSTEM   4
-#define MAX_PARTICLES_PER_EJECTOR 4
+#define MAX_EJECTORS_PER_SYSTEM   16
+#define MAX_PARTICLES_PER_EJECTOR 16
 
-#define MAX_BASEPARTICLE_SYSTEMS  192
+#define MAX_BASEPARTICLE_SYSTEMS  512
 #define MAX_BASEPARTICLE_EJECTORS MAX_BASEPARTICLE_SYSTEMS * MAX_EJECTORS_PER_SYSTEM
 #define MAX_BASEPARTICLES         MAX_BASEPARTICLE_EJECTORS * MAX_PARTICLES_PER_EJECTOR
 
@@ -1916,6 +1916,7 @@ extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
 extern vmCvar_t             ui_chatPromptColors;
+extern vmCvar_t             cg_spawnEffects;
 
 //
 // Rocket cvars

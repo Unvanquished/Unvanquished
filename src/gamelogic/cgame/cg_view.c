@@ -1387,7 +1387,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
 
 	//the player has spawned once and is dead or in the intermission
-	if ( health <= 0 || (playing && cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )
+	if ( cg_spawnEffects.integer && ( health <= 0 || (playing && cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) ) )
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;

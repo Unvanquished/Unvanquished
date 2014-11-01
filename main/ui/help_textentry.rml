@@ -2,12 +2,12 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
-		
+
 		<style>
 			in {
 				display:inline;
 			}
-			
+
 			color {
 				display:block;
 				width:3em;
@@ -18,14 +18,14 @@
 
 	</head>
 	<body id="help_textentry" template="window" style="width: 32em; margin: 10%;">
-		<h1> Color Codes and Symbols </h1>
+		<h1> Colour Codes and Symbols </h1>
 
-		<p> 
-			Colors are used by typing their escape code starting with a caret (^) symbol.
-			Color can be reset again to normal using ^*, or an actual caret can be typed
+		<p>
+			Colours are used by typing their escape code starting with a caret (^) symbol.
+			Colour can be reset again to normal using ^*, or an actual caret can be typed
 			using ^^.
 		</p>
-		
+
 		<color style="color: #333333;">^0</color>
 		<color style="color: #FF0000;">^1</color>
 		<color style="color: #00FF00;">^2</color>
@@ -58,10 +58,10 @@
 		<color style="color: #999933;">^M</color>
 		<color style="color: #FFFFBF;">^N</color>
 		<color style="color: #FFFF7F;">^O</color>
-		
-		<p style="clear: both;"> 
-			Example: ^3Fred^1Baggins becomes <in style="color: #FFFF00;">Fred</in><in style="color: #FF0000;">Baggins</in> 
+
+		<p style="clear: both;">
+			Example: ^3Fred^1Baggins becomes <in style="color: #FFFF00;">Fred</in><in style="color: #FF0000;">Baggins</in>
 		</p>
-		
+
 	</body>
 </rml>

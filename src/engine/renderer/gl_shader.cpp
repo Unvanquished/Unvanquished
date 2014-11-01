@@ -194,7 +194,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	}
 
 	std::string bufferExtra;
-	
+
 	bufferExtra.reserve( 4096 );
 
 	if( glConfig2.textureRGAvailable ) {
@@ -238,7 +238,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	}
 
 	AddGLSLDefine( bufferExtra, "r_NPOTScale", npotWidthScale, npotHeightScale );
-		
+
 	if ( glConfig.driverType == GLDRV_MESA )
 	{
 		AddGLSLDefine( bufferExtra, "GLDRV_MESA", 1 );
@@ -665,9 +665,6 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 		vertexHeader += "#define varying out\n";
 
 		fragmentHeader += "#define varying in\n";
-
-		fragmentHeader += "out vec4 out_Color;\n";
-		fragmentHeader += "#define gl_FragColor out_Color\n";
 
 		vertexHeader += "#define textureCube texture\n";
 		vertexHeader += "#define texture2D texture\n";
