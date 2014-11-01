@@ -29,7 +29,7 @@ varying vec2		var_Tex;
 varying vec4		var_Color;
 
 #if defined(USE_DEPTH_FADE)
-varying float           var_FadeDepth;
+varying vec2            var_FadeDepth;
 uniform sampler2D       u_DepthMap;
 #endif
 
@@ -39,7 +39,8 @@ void	main()
 
 #if defined(USE_DEPTH_FADE)
 	float depth = texture2D(u_DepthMap, gl_FragCoord.xy * r_FBufScale * r_NPOTScale).x;
-	color.a *= smoothstep(gl_FragCoord.z, var_FadeDepth, depth);
+	float fadeDepth = 0.5 * var_FadeDepth.x / var_FadeDepth.y + 0.5;
+	color.a *= smoothstep(gl_FragCoord.z, fadeDepth, depth);
 #endif
 
 
