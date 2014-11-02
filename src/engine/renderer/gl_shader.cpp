@@ -678,6 +678,10 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	{
 		vertexHeader += "#version 120\n";
 		fragmentHeader += "#version 120\n";
+
+		// add implementation of GLSL 1.30 smoothstep() function
+		vertexHeader += "float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }";
+		fragmentHeader += "float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }";
 	}
 
 	// permutation macros
@@ -1078,16 +1082,19 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	u_ViewOrigin( this ),
 	u_AlphaThreshold( this ),
 	u_ModelMatrix( this ),
+	u_ProjectionMatrixTranspose( this ),
 	u_ModelViewProjectionMatrix( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
 	u_Bones( this ),
 	u_VertexInterpolation( this ),
+	u_DepthScale( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
 	GLCompileMacro_USE_TCGEN_ENVIRONMENT( this ),
-	GLCompileMacro_USE_TCGEN_LIGHTMAP( this )
+	GLCompileMacro_USE_TCGEN_LIGHTMAP( this ),
+	GLCompileMacro_USE_DEPTH_FADE( this )
 {
 }
 
@@ -1099,6 +1106,7 @@ void GLShader_generic::BuildShaderVertexLibNames( std::string& vertexInlines )
 void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ColorMap" ), 0 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 1 );
 }
 
 GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :

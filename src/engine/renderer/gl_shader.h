@@ -620,7 +620,8 @@ protected:
 	  USE_SHADOWING,
 	  TWOSIDED,
 	  LIGHT_DIRECTIONAL,
-	  USE_GLOW_MAPPING
+	  USE_GLOW_MAPPING,
+	  USE_DEPTH_FADE
 	};
 
 public:
@@ -1151,6 +1152,48 @@ public:
 	}
 
 	void SetGlowMapping( bool enable )
+	{
+		if ( enable )
+		{
+			EnableMacro();
+		}
+		else
+		{
+			DisableMacro();
+		}
+	}
+};
+
+class GLCompileMacro_USE_DEPTH_FADE :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_DEPTH_FADE( GLShader *shader ) :
+		GLCompileMacro( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_DEPTH_FADE";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_DEPTH_FADE;
+	}
+
+	void EnableMacro_USE_DEPTH_FADE()
+	{
+		EnableMacro();
+	}
+
+	void DisableMacro_USE_DEPTH_FADE()
+	{
+		DisableMacro();
+	}
+
+	void SetDepthFade( bool enable )
 	{
 		if ( enable )
 		{
@@ -2090,16 +2133,19 @@ class GLShader_generic :
 	public u_ViewOrigin,
 	public u_AlphaThreshold,
 	public u_ModelMatrix,
+ 	public u_ProjectionMatrixTranspose,
 	public u_ModelViewProjectionMatrix,
 	public u_ColorModulate,
 	public u_Color,
 	public u_Bones,
 	public u_VertexInterpolation,
+	public u_DepthScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
-	public GLCompileMacro_USE_TCGEN_LIGHTMAP
+	public GLCompileMacro_USE_TCGEN_LIGHTMAP,
+	public GLCompileMacro_USE_DEPTH_FADE
 {
 public:
 	GLShader_generic( GLShaderManager *manager );

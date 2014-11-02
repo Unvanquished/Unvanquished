@@ -543,7 +543,7 @@ template<uint16_t Major, uint16_t Minor> struct Id {
 class Channel {
 public:
 	Channel()
-		: counter(0), handlingAsyncMsg(false) {}
+		: counter(0) {}
 	Channel(Socket socket)
 		: socket(std::move(socket)), counter(0) {}
 	Channel(Channel&& other)
@@ -608,9 +608,6 @@ private:
 	Socket socket;
 	uint32_t counter;
 	std::unordered_map<uint32_t, Reader> replies;
-
-public:
-	bool handlingAsyncMsg;
 };
 
 // Asynchronous message which does not wait for a reply
@@ -686,9 +683,6 @@ template<typename Func, typename Msg, typename Reply, typename... Args> void Sen
 	typedef SyncMessage<Msg, Reply> Message;
 	static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value + std::tuple_size<typename Message::Outputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
-	if (channel.handlingAsyncMsg)
-		Com_Error(ERR_DROP, "Attempting to send a SyncMessage while handling a Message");
-
 	Writer writer;
 	writer.Write<uint32_t>(Message::id);
 	uint32_t key = channel.GenMsgKey();
@@ -710,17 +704,13 @@ template<typename Func, typename Msg, typename Reply, typename... Args> void Sen
 }
 
 // Implementations of HandleMsg for Message and SyncMessage
-template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel& channel, Message<Id, MsgArgs...>, IPC::Reader reader, Func&& func)
+template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel&, Message<Id, MsgArgs...>, IPC::Reader reader, Func&& func)
 {
 	typedef Message<Id, MsgArgs...> Message;
 
 	typename MapTuple<typename Message::Inputs>::type inputs;
 	FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs, reader);
-
-	bool old = channel.handlingAsyncMsg;
-	channel.handlingAsyncMsg = true;
 	Util::apply(std::forward<Func>(func), std::move(inputs));
-	channel.handlingAsyncMsg = old;
 }
 template<typename Func, typename Msg, typename Reply> void HandleMsg(Channel& channel, SyncMessage<Msg, Reply>, IPC::Reader reader, Func&& func)
 {
