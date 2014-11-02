@@ -33,12 +33,21 @@
 #include <stdarg.h>
 #include <string.h>
 #include <vector>
+#include <functional>
 
 namespace Rocket {
 namespace Core {
 
 typedef StringBase< char > String;
 typedef std::vector< String > StringList;
+
+struct StringHash
+{
+	size_t operator() (const String& s) const
+	{
+		return s.Hash();
+	}
+};
 
 // Template specialisation of the constructor and FormatString() methods that use variable argument lists.
 template<>
