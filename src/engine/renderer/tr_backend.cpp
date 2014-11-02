@@ -1552,6 +1552,7 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, shadowMapResolutions[ light->shadowLOD ], shadowMapResolutions[ light->shadowLOD ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+				backEnd.depthRenderImageValid = qfalse;
 
 				switch ( cubeSide )
 				{
@@ -1672,6 +1673,7 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, shadowMapResolutions[ light->shadowLOD ], shadowMapResolutions[ light->shadowLOD ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+				backEnd.depthRenderImageValid = qfalse;
 
 				GL_LoadProjectionMatrix( light->projectionMatrix );
 				break;
@@ -1724,6 +1726,7 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, sunShadowMapResolutions[ splitFrustumIndex ], sunShadowMapResolutions[ splitFrustumIndex ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+				backEnd.depthRenderImageValid = qfalse;
 
 				VectorCopy( tr.sunDirection, lightDirection );
 
@@ -2878,8 +2881,11 @@ void RB_RenderGlobalFog()
 	GL_SelectTexture( 1 );
 
 	// depth texture is not bound to a FBO
-	GL_Bind( tr.depthRenderImage );
-	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
+	if( !backEnd.depthRenderImageValid ) {
+		GL_Bind( tr.depthRenderImage );
+		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
+		backEnd.depthRenderImageValid = qtrue;
+	}
 
 	// set 2D virtual screen size
 	GL_PushMatrix();
@@ -3044,10 +3050,13 @@ void RB_RenderMotionBlur( void )
 			     tr.currentRenderImage->uploadWidth,
 			     tr.currentRenderImage->uploadHeight );
 
-	GL_Bind( tr.depthRenderImage );
-	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
-			     tr.depthRenderImage->uploadWidth,
-			     tr.depthRenderImage->uploadHeight );
+	if( !backEnd.depthRenderImageValid ) {
+		GL_Bind( tr.depthRenderImage );
+		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+				     tr.depthRenderImage->uploadWidth,
+				     tr.depthRenderImage->uploadHeight );
+		backEnd.depthRenderImageValid = qtrue;
+	}
 
 	gl_motionblurShader->BindProgram();
 	gl_motionblurShader->SetUniform_blurVec(tr.refdef.blurVec);
@@ -5627,6 +5636,7 @@ static void RB_RenderView( void )
 	}
 
 	glClear( clearBits );
+	backEnd.depthRenderImageValid = qfalse;
 
 	if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
 	{
@@ -6611,6 +6621,7 @@ const void     *RB_DrawBuffer( const void *data )
 //      GL_ClearColor(1, 0, 0.5, 1);
 		GL_ClearColor( 0, 0, 0, 1 );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		backEnd.depthRenderImageValid = qfalse;
 	}
 
 	glState.finishCalled = qfalse;

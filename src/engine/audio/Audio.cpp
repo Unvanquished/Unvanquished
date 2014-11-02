@@ -553,6 +553,48 @@ namespace Audio {
     };
     static StopCaptureTestCmd stopCaptureTestRegistration;
 
+    // Play the sounds from the filenames specified as arguments of the command
+    class PlaySoundCmd : public Cmd::StaticCmd {
+        public:
+            PlaySoundCmd(): StaticCmd("playSound", Cmd::AUDIO, "Play a sound") {
+            }
+
+            virtual void Run(const Cmd::Args& args) const OVERRIDE {
+                for (int i = 1; i < args.Argc(); i++) {
+                  sfxHandle_t soundHandle = RegisterSFX( args.Argv(i) );
+                  StartLocalSound( soundHandle );
+                }
+            }
+    };
+    static PlaySoundCmd playSoundRegistration;
+
+    // Play the music from the filename specified as argument of the command
+    class PlayMusicCmd : public Cmd::StaticCmd {
+        public:
+            PlayMusicCmd(): StaticCmd("playMusic", Cmd::AUDIO, "Play music") {
+            }
+
+            virtual void Run(const Cmd::Args& args) const OVERRIDE {
+                if (args.Argc() >= 2) {
+                  StartMusic( args.Argv(1) , "");
+                }
+            }
+    };
+    static PlayMusicCmd playMusicRegistration;
+
+    // Stop the current music
+    class StopMusicCmd : public Cmd::StaticCmd {
+        public:
+            StopMusicCmd(): StaticCmd("stopMusic", Cmd::AUDIO, "Stop music") {
+            }
+
+            virtual void Run(const Cmd::Args& args) const OVERRIDE {
+                StopMusic();
+            }
+    };
+    static StopMusicCmd stopMusicRegistration;
+
+
     // Additional utility functions
 
     // Some volume slider-tweaking functions, full of heuristics and probably very slow for what they do.

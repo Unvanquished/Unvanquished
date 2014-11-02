@@ -1851,6 +1851,7 @@ void CG_Rocket_DrawTutorial( void )
 {
 	if ( !cg_tutorial.integer )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
