@@ -2082,6 +2082,26 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 				stage->noFog = qtrue;
 			}
 		}
+		else if ( !Q_stricmp( token, "depthFade" ) )
+		{
+			token = COM_ParseExt2( text, qfalse );
+
+			if ( !token[ 0 ] )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: missing parameter for 'depthFade' keyword in shader '%s'\n", shader.name );
+				return qfalse;
+			}
+
+			stage->hasDepthFade = qtrue;
+			stage->depthFadeValue = atof( token );
+
+			if ( stage->depthFadeValue <= 0.0f )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: depthFade parameter <= 0 in '%s'\n", shader.name );
+				stage->depthFadeValue = 1.0f;
+			}
+
+		}
 		// blendfunc <srcFactor> <dstFactor>
 		// or blendfunc <add|filter|blend>
 		else if ( !Q_stricmp( token, "blendfunc" ) )

@@ -7,6 +7,20 @@ gfx/sprites/acid_3
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbGen    vertex
 		alphaGen  vertex
+		depthFade 100.0
+	}
+}
+
+gfx/sprites/boosterspore
+{
+	cull none
+	entityMergable
+	{
+		map gfx/sprites/boosterspore
+		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbGen    vertex
+		alphaGen  vertex
+		depthFade 100.0
 	}
 }
 
