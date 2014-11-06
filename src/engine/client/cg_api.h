@@ -670,7 +670,7 @@ namespace Rocket {
 	// GetPropertyMsg
 	typedef IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETPROPERTY>, std::string, int, int>,
-		IPC::Reply<std::string>
+		IPC::Reply<std::vector<char>>
 	> GetPropertyMsg;
 	// SetPropertyMsg
 	typedef IPC::SyncMessage<
@@ -1043,7 +1043,7 @@ void            trap_Rocket_DSClearTable( const char *name, const char *table );
 void            trap_Rocket_SetInnerRML( const char *RML, int parseFlags );
 void            trap_Rocket_GetAttribute( const char *attribute, char *out, int length );
 void            trap_Rocket_SetAttribute( const char *attribute, const char *value );
-void            trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
+void            trap_Rocket_GetProperty( const char *name, void *out, size_t len, rocketVarType_t type );
 void            trap_Rocket_SetProperty( const char *property, const char *value );
 void            trap_Rocket_GetEventParameters( char *params, int length );
 void            trap_Rocket_RegisterDataFormatter( const char *name );

@@ -2388,10 +2388,10 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_GETPROPERTY:
-			IPC::HandleMsg<Rocket::GetPropertyMsg>(channel, std::move(reader), [this] (std::string property, int type, int len, std::string& result) {
+			IPC::HandleMsg<Rocket::GetPropertyMsg>(channel, std::move(reader), [this] (std::string property, int type, int len, std::vector<char>& result) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Rocket_GetProperty(property.c_str(), buffer.get(), len, (rocketVarType_t)type);
-				result.assign(buffer.get(), len);
+				result.assign(buffer.get(), buffer.get() + len);
 			});
 			break;
 

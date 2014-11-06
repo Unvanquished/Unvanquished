@@ -826,11 +826,11 @@ void trap_Rocket_SetAttribute( const char *attribute, const char *value )
 	VM::SendMsg<Rocket::SetAttributeMsg>(attribute, value);
 }
 
-void trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type )
+void trap_Rocket_GetProperty( const char *name, void *out, size_t len, rocketVarType_t type )
 {
-	std::string result;
+	std::vector<char> result;
 	VM::SendMsg<Rocket::GetPropertyMsg>(name, type, len, result);
-	Q_strncpyz((char*)out, result.c_str(), len);
+	memcpy(out, result.data(), std::min(len, result.size()));
 }
 
 void trap_Rocket_SetProperty( const char *property, const char *value )
