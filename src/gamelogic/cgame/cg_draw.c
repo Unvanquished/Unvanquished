@@ -734,14 +734,6 @@ void CG_DrawActive( stereoFrame_t stereoView )
 			separation = 0;
 			break;
 
-		case STEREO_LEFT:
-			separation = -cg_stereoSeparation.value / 2;
-			break;
-
-		case STEREO_RIGHT:
-			separation = cg_stereoSeparation.value / 2;
-			break;
-
 		default:
 			separation = 0;
 			CG_Error( "CG_DrawActive: Undefined stereoView" );

@@ -1820,7 +1820,6 @@ extern  vmCvar_t            cg_thirdPersonShoulderViewMode;
 extern  vmCvar_t            cg_staticDeathCam;
 extern  vmCvar_t            cg_thirdPersonPitchFollow;
 extern  vmCvar_t            cg_thirdPersonRange;
-extern  vmCvar_t            cg_stereoSeparation;
 extern  vmCvar_t            cg_lagometer;
 extern  vmCvar_t            cg_drawSpeed;
 extern  vmCvar_t            cg_maxSpeedTimeWindow;
