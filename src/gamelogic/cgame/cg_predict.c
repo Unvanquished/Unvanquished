@@ -110,7 +110,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
                                    const vec3_t maxs, const vec3_t end, int skipNumber,
                                    int mask, int skipmask, trace_t *tr, traceType_t collisionType )
 {
-	int           i;
+	int           i, x, zd, zu;
 	trace_t       trace;
 	entityState_t *ent;
 	clipHandle_t  cmodel;
@@ -327,7 +327,7 @@ int   CG_PointContents( const vec3_t point, int passEntityNum )
 			continue;
 		}
 
-		if ( !( ent->eFlags & EF_BMODEL ) ) // special value for bmodel
+		if ( ent->solid != SOLID_BMODEL ) // special value for bmodel
 		{
 			continue;
 		}
@@ -448,7 +448,7 @@ static void CG_TouchTriggerPrediction( void )
 		cent = cg_triggerEntities[ i ];
 		ent = &cent->currentState;
 
-		if ( !( ent->eFlags & EF_BMODEL ) )
+		if ( ent->solid != SOLID_BMODEL )
 		{
 			continue;
 		}
