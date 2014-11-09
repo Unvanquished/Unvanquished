@@ -238,7 +238,7 @@ Also called by event processing code
 */
 void CG_SetEntitySoundPosition( centity_t *cent )
 {
-	if ( cent->currentState.eFlags & EF_BMODEL )
+	if ( cent->currentState.solid == SOLID_BMODEL )
 	{
 		vec3_t origin;
 		float  *v;
