@@ -85,6 +85,8 @@ namespace Cmd {
     void RemoveCommand(const std::string& name);
     // Removes all the commands with the given flag
     void RemoveFlaggedCommands(int flag);
+    // Removes all the commands registered with the same handler
+    void RemoveSameCommands(const CmdBase& cmd);
 
     //TODO: figure out a way to make this convenient for non-main threads
     // Executes a raw command string as a single command. Must be called by the main thread.

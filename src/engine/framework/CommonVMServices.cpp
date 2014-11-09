@@ -361,7 +361,7 @@ namespace VM {
 
     CommonVMServices::~CommonVMServices() {
         //FIXME or iterate over the commands we registered, or add Cmd::RemoveByProxy()
-        Cmd::RemoveFlaggedCommands(commandFlag);
+        Cmd::RemoveSameCommands(*commandProxy.get());
         //TODO unregesiter cvars
     }
 
