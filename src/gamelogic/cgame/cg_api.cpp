@@ -117,7 +117,7 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
             case CG_ROCKET_PROGRESSBAR_VALUE:
                 IPC::HandleMsg<CGameRocketProgressbarValueMsg>(VM::rootChannel, std::move(reader), [] (std::string source, float& value) {
 					Cmd::PushArgs(source);
-                    CG_Rocket_ProgressBarValue();
+					value = CG_Rocket_ProgressBarValue();
 					Cmd::PopArgs();
                 });
                 break;
