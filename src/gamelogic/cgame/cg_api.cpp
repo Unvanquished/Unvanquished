@@ -174,7 +174,7 @@ int trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t pro
 
 	memcpy(pointBuffer, mypointBuffer.data(), sizeof(float) * 3 * maxPoints);
 	memcpy(fragmentBuffer, myfragmentBuffer.data(), sizeof(markFragment_t) * maxFragments);
-	return 0;
+	return myfragmentBuffer.size();
 }
 
 int trap_RealTime( qtime_t *qtime )
