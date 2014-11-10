@@ -2066,8 +2066,8 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_R_ADDPOLYSTOSCENE:
-			IPC::HandleMsg<Render::AddPolysToSceneMsg>(channel, std::move(reader), [this] (int shader, std::vector<polyVert_t> verts, int numPolys) {
-				re.AddPolysToScene(shader, verts.size(), verts.data(), numPolys);
+			IPC::HandleMsg<Render::AddPolysToSceneMsg>(channel, std::move(reader), [this] (int shader, std::vector<polyVert_t> verts, int numVerts, int numPolys) {
+				re.AddPolysToScene(shader, numVerts, verts.data(), numPolys);
 			});
 			break;
 

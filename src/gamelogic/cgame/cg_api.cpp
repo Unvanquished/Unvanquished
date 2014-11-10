@@ -497,9 +497,9 @@ void trap_R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *v
 
 void trap_R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
 {
-	std::vector<polyVert_t> myverts(numVerts);
-	memcpy(myverts.data(), verts, numVerts * sizeof(polyVert_t));
-	VM::SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numPolys);
+	std::vector<polyVert_t> myverts(numVerts * numPolys);
+	memcpy(myverts.data(), verts, numVerts * numPolys * sizeof(polyVert_t));
+	VM::SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numVerts, numPolys);
 }
 
 void trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )

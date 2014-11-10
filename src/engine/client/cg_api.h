@@ -463,7 +463,7 @@ namespace Render {
 	// AddPolyToSceneMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYTOSCENE>, int, std::vector<polyVert_t>> AddPolyToSceneMsg;
 	// AddPolysToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYSTOSCENE>, int, std::vector<polyVert_t>, int> AddPolysToSceneMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYSTOSCENE>, int, std::vector<polyVert_t>, int, int> AddPolysToSceneMsg;
 	// AddLightToSceneMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDLIGHTTOSCENE>, std::array<float, 3>, float, float, float, float, float, int, int> AddLightToSceneMsg;
 	// AddAdditiveLightToSceneMsg
