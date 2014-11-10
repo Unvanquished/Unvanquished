@@ -173,7 +173,7 @@ int trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t pro
 	VM::SendMsg<CMMarkFragmentsMsg>(mypoints, myproj, maxPoints, maxFragments, mypointBuffer, myfragmentBuffer);
 
 	memcpy(pointBuffer, mypointBuffer.data(), sizeof(float) * 3 * maxPoints);
-	memcpy(fragmentBuffer, myfragmentBuffer.data(), sizeof(markFragment_t) * maxFragments);
+	memcpy(fragmentBuffer, myfragmentBuffer.data(), sizeof(markFragment_t) * myfragmentBuffer.size());
 	return myfragmentBuffer.size();
 }
 
