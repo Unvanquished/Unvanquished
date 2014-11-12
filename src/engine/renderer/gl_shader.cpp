@@ -648,6 +648,7 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	// header of the glsl shader
 	std::string vertexHeader;
 	std::string fragmentHeader;
+	std::string miscText;
 
 	if ( glConfig2.shadingLanguageVersion != 120 )
 	{
@@ -675,8 +676,7 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 		fragmentHeader += "#version 120\n";
 
 		// add implementation of GLSL 1.30 smoothstep() function
-		vertexHeader += "float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }";
-		fragmentHeader += "float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }";
+		miscText += "float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }\n";
 	}
 
 	// permutation macros
@@ -702,8 +702,8 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	}
 
 	// add them
-	std::string vertexShaderTextWithMacros = vertexHeader + macrosString + shader->_vertexShaderText;
-	std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + shader->_fragmentShaderText;
+	std::string vertexShaderTextWithMacros = vertexHeader + macrosString + miscText +  shader->_vertexShaderText;
+	std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + miscText + shader->_fragmentShaderText;
 	CompileGPUShader( program->program, shader->GetName().c_str(), vertexShaderTextWithMacros.c_str(), vertexShaderTextWithMacros.length(), GL_VERTEX_SHADER );
 	CompileGPUShader( program->program, shader->GetName().c_str(), fragmentShaderTextWithMacros.c_str(), fragmentShaderTextWithMacros.length(), GL_FRAGMENT_SHADER );
 	BindAttribLocations( program->program );
