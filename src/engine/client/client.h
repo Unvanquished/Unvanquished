@@ -424,7 +424,7 @@ public:
 	void CGameStaticInit();
 	void CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum);
 	void CGameShutdown();
-	void CGameDrawActiveFrame(int serverTime, stereoFrame_t stereoView, bool demoPlayback);
+	void CGameDrawActiveFrame(int serverTime, bool demoPlayback);
 	int CGameCrosshairPlayer();
 	void CGameKeyEvent(int key, bool down);
 	void CGameMouseEvent(int dx, int dy);
@@ -872,7 +872,7 @@ void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
 void     CL_GameCommandHandler( void );
 qboolean CL_GameConsoleText( void );
-void     CL_CGameRendering( stereoFrame_t stereo );
+void     CL_CGameRendering( void );
 void     CL_SetCGameTime( void );
 void     CL_FirstSnapshot( void );
 void     CL_ShaderStateChanged( void );

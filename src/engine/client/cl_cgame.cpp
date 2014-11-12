@@ -1231,9 +1231,9 @@ void CL_InitCGameCVars( void )
 CL_CGameRendering
 =====================
 */
-void CL_CGameRendering( stereoFrame_t stereo )
+void CL_CGameRendering( void )
 {
-	cgvm.CGameDrawActiveFrame(cl.serverTime, stereo, clc.demoplaying);
+	cgvm.CGameDrawActiveFrame(cl.serverTime, clc.demoplaying);
 }
 
 /*
@@ -1648,9 +1648,9 @@ void CGameVM::CGameShutdown()
 	services = nullptr;
 }
 
-void CGameVM::CGameDrawActiveFrame(int serverTime, stereoFrame_t stereoView, bool demoPlayback)
+void CGameVM::CGameDrawActiveFrame(int serverTime,  bool demoPlayback)
 {
-	this->SendMsg<CGameDrawActiveFrameMsg>(serverTime, stereoView, demoPlayback);
+	this->SendMsg<CGameDrawActiveFrameMsg>(serverTime, demoPlayback);
 }
 
 int CGameVM::CGameCrosshairPlayer()
@@ -2246,7 +2246,7 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-			// All LAN
+		// All LAN
 
 		case CG_LAN_GETSERVERCOUNT:
 			IPC::HandleMsg<LAN::GetServerCountMsg>(channel, std::move(reader), [this] (int source, int& count) {

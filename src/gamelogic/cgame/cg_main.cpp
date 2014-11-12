@@ -84,7 +84,6 @@ vmCvar_t        cg_thirdPersonShoulderViewMode;
 vmCvar_t        cg_staticDeathCam;
 vmCvar_t        cg_thirdPersonPitchFollow;
 vmCvar_t        cg_thirdPersonRange;
-vmCvar_t        cg_stereoSeparation;
 vmCvar_t        cg_lagometer;
 vmCvar_t        cg_drawSpeed;
 vmCvar_t        cg_maxSpeedTimeWindow;
@@ -210,7 +209,6 @@ static const cvarTable_t cvarTable[] =
 {
 	{ &cg_drawGun,                     "cg_drawGun",                     "1",            CVAR_ARCHIVE                 },
 	{ &cg_viewsize,                    "cg_viewsize",                    "100",          0                            },
-	{ &cg_stereoSeparation,            "cg_stereoSeparation",            "0.4",          0                            },
 	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_LATCH | CVAR_ARCHIVE    },
 	{ &cg_playerShadows,               "cg_playerShadows",               "1",            0                            },
 	{ &cg_buildableShadows,            "cg_buildableShadows",            "0",            0                            },

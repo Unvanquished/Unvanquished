@@ -1265,7 +1265,7 @@ void Con_RunAnimatedConsole( void )
 /*
 ==================
 Con_DrawConsole
-runs each render-frame (possibly twice with stereo enabled)
+runs each render-frame
 ==================
 */
 void Con_DrawConsole( void )

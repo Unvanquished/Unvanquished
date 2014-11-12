@@ -781,7 +781,7 @@ typedef enum
   // oportunity to flush and close any open files
 
   CG_DRAW_ACTIVE_FRAME,
-//  void (*CG_DrawActiveFrame)( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+//  void (*CG_DrawActiveFrame)( int serverTime, qboolean demoPlayback );
   // Generates and draws a game scene and status information at the given time.
   // If demoPlayback is set, local movement prediction will not be enabled
 
@@ -824,7 +824,7 @@ typedef IPC::SyncMessage<
 > CGameShutdownMsg;
 // CGameDrawActiveFrameMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_DRAW_ACTIVE_FRAME>, int, stereoFrame_t, bool>
+	IPC::Message<IPC::Id<VM::QVM, CG_DRAW_ACTIVE_FRAME>, int, bool>
 > CGameDrawActiveFrameMsg;
 // CGameCrosshairPlayerMsg
 typedef IPC::SyncMessage<

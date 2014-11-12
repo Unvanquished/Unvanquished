@@ -67,8 +67,8 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 break;
 
             case CG_DRAW_ACTIVE_FRAME:
-                IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, stereoFrame_t stereoView, bool demoPlayback) {
-                    CG_DrawActiveFrame(serverTime, stereoView, demoPlayback);
+                IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, bool demoPlayback) {
+                    CG_DrawActiveFrame(serverTime, demoPlayback);
                 });
                 break;
 

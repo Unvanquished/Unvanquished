@@ -1417,8 +1417,6 @@ static inline float halfToFloat( int16_t in ) {
 		vec3_t        viewaxis[ 3 ]; // transformation matrix
 		vec3_t        blurVec;
 
-		stereoFrame_t stereoFrame;
-
 		int           time; // time in milliseconds for shader effects and other time dependent rendering issues
 		int           rdflags; // RDF_NOWORLDMODEL, etc
 
@@ -1575,8 +1573,6 @@ static inline float halfToFloat( int16_t in ) {
 
 		int                  numInteractions;
 		struct interaction_s *interactions;
-
-		stereoFrame_t        stereoFrame;
 	} viewParms_t;
 
 	/*
@@ -2904,7 +2900,6 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_depthbits; // number of desired depth bits
 	extern cvar_t *r_colorbits; // number of desired color bits, only relevant for fullscreen
 	extern cvar_t *r_alphabits; // number of desired depth bits
-	extern cvar_t *r_stereo; // desired pixelformat stereo flag
 
 	extern cvar_t *r_ext_multisample;  // desired number of MSAA samples
 
@@ -3277,7 +3272,7 @@ static inline float halfToFloat( int16_t in ) {
 	void      RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
 	void      RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
 
-	void      RE_BeginFrame( stereoFrame_t stereoFrame );
+	void      RE_BeginFrame( void );
 	qboolean  RE_BeginRegistration( glconfig_t *glconfig, glconfig2_t *glconfig2 );
 	void      RE_LoadWorldMap( const char *mapname );
 	void      RE_SetWorldVisData( const byte *vis );
@@ -4071,7 +4066,7 @@ static inline float halfToFloat( int16_t in ) {
 	void                                RE_ScissorEnable( qboolean enable );
 	void                                RE_ScissorSet( int x, int y, int w, int h );
 
-	void                                RE_BeginFrame( stereoFrame_t stereoFrame );
+	void                                RE_BeginFrame( void );
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 
 	void                                LoadTGA( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
