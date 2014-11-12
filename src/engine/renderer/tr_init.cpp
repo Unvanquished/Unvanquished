@@ -224,7 +224,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_showLightScissors;
 	cvar_t      *r_showLightBatches;
 	cvar_t      *r_showLightGrid;
-	cvar_t      *r_showOcclusionQueries;
 	cvar_t      *r_showBatches;
 	cvar_t      *r_showLightMaps;
 	cvar_t      *r_showDeluxeMaps;
@@ -247,13 +246,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_mergeLeafSurfaces;
 	cvar_t      *r_parallaxMapping;
 	cvar_t      *r_parallaxDepthScale;
-
-	cvar_t      *r_dynamicEntityOcclusionCulling;
-	cvar_t      *r_dynamicLightOcclusionCulling;
-	cvar_t      *r_chcMaxPrevInvisNodesBatchSize;
-	cvar_t      *r_chcMaxVisibleFrames;
-	cvar_t      *r_chcVisibilityThreshold;
-	cvar_t      *r_chcIgnoreLeaves;
 
 	cvar_t      *r_reflectionMapping;
 	cvar_t      *r_highQualityNormalMapping;
@@ -1183,12 +1175,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_vboDeformVertexes = ri.Cvar_Get( "r_vboDeformVertexes", "1",  CVAR_LATCH );
 
 		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "1",  CVAR_LATCH );
-		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
-		r_dynamicLightOcclusionCulling = ri.Cvar_Get( "r_dynamicLightOcclusionCulling", "0", CVAR_CHEAT );
-		r_chcMaxPrevInvisNodesBatchSize = ri.Cvar_Get( "r_chcMaxPrevInvisNodesBatchSize", "50", CVAR_CHEAT );
-		r_chcMaxVisibleFrames = ri.Cvar_Get( "r_chcMaxVisibleFrames", "10", CVAR_CHEAT );
-		r_chcVisibilityThreshold = ri.Cvar_Get( "r_chcVisibilityThreshold", "20", CVAR_CHEAT );
-		r_chcIgnoreLeaves = ri.Cvar_Get( "r_chcIgnoreLeaves", "0", CVAR_CHEAT );
 
 		r_evsmPostProcess = ri.Cvar_Get( "r_evsmPostProcess", "0",  CVAR_LATCH );
 
@@ -1344,7 +1330,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_showLightScissors = ri.Cvar_Get( "r_showLightScissors", "0", CVAR_CHEAT );
 		r_showLightBatches = ri.Cvar_Get( "r_showLightBatches", "0", CVAR_CHEAT );
 		r_showLightGrid = ri.Cvar_Get( "r_showLightGrid", "0", CVAR_CHEAT );
-		r_showOcclusionQueries = ri.Cvar_Get( "r_showOcclusionQueries", "0", CVAR_CHEAT );
 		r_showBatches = ri.Cvar_Get( "r_showBatches", "0", CVAR_CHEAT );
 		r_showLightMaps = ri.Cvar_Get( "r_showLightMaps", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_showDeluxeMaps = ri.Cvar_Get( "r_showDeluxeMaps", "0", CVAR_CHEAT | CVAR_SHADER );
@@ -1486,11 +1471,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			AssertCvarRange( r_ext_texture_filter_anisotropic, 0, glConfig2.maxTextureAnisotropy, qfalse );
 		}
 
-		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA )
-		{
-			glGenQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
-		}
-
 		R_InitVisTests();
 
 		GL_CheckErrors();
@@ -1545,11 +1525,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			{
 				glDeleteVertexArrays( 1, &tr.vao );
 				tr.vao = 0;
-			}
-
-			if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA )
-			{
-				glDeleteQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 			}
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
