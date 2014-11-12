@@ -361,11 +361,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		AddGLSLDefine( bufferExtra, "r_precomputedLighting", 1 );
 	}
 
-	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA )
-	{
-		AddGLSLDefine( bufferExtra, "r_heatHazeFix", 1 );
-	}
-
 	if ( r_showLightMaps->integer )
 	{
 		AddGLSLDefine( bufferExtra, "r_showLightMaps", r_showLightMaps->integer );
@@ -1605,11 +1600,6 @@ void GLShader_heatHaze::SetShaderProgramUniforms( shaderProgram_t *shaderProgram
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_NormalMap" ), 0 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_CurrentMap" ), 1 );
-
-	if(r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ContrastMap" ), 2 );
-	}
 }
 
 GLShader_screen::GLShader_screen( GLShaderManager *manager ) :

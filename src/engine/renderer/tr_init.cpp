@@ -87,7 +87,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_compressNormalMaps;
 	cvar_t      *r_exportTextures;
 	cvar_t      *r_heatHaze;
-	cvar_t      *r_heatHazeFix;
 	cvar_t      *r_noMarksOnTrisurfs;
 	cvar_t      *r_recompileShaders;
 	cvar_t      *r_lazyShaders;
@@ -1126,7 +1125,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_compressNormalMaps = ri.Cvar_Get( "r_compressNormalMaps", "0", CVAR_LATCH );
 		r_exportTextures = ri.Cvar_Get( "r_exportTextures", "0", 0 );
 		r_heatHaze = ri.Cvar_Get( "r_heatHaze", "0", CVAR_ARCHIVE );
-		r_heatHazeFix = ri.Cvar_Get( "r_heatHazeFix", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_noMarksOnTrisurfs = ri.Cvar_Get( "r_noMarksOnTrisurfs", "1", CVAR_CHEAT );
 		r_recompileShaders = ri.Cvar_Get( "r_recompileShaders", "0", 0 );
 		r_lazyShaders = ri.Cvar_Get( "r_lazyShaders", "0", 0 );
