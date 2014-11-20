@@ -70,7 +70,7 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 			return 0;
 
 		case CG_DRAW_ACTIVE_FRAME:
-			CG_DrawActiveFrame( arg0, (stereoFrame_t) arg1, arg2 );
+			CG_DrawActiveFrame( arg0, arg1 );
 			return 0;
 
 		case CG_CROSSHAIR_PLAYER:
@@ -183,7 +183,6 @@ vmCvar_t        cg_thirdPersonShoulderViewMode;
 vmCvar_t        cg_staticDeathCam;
 vmCvar_t        cg_thirdPersonPitchFollow;
 vmCvar_t        cg_thirdPersonRange;
-vmCvar_t        cg_stereoSeparation;
 vmCvar_t        cg_lagometer;
 vmCvar_t        cg_drawSpeed;
 vmCvar_t        cg_maxSpeedTimeWindow;
@@ -285,6 +284,7 @@ vmCvar_t        cg_highPolyBuildableModels;
 vmCvar_t        cg_highPolyWeaponModels;
 vmCvar_t        cg_motionblur;
 vmCvar_t        cg_motionblurMinSpeed;
+vmCvar_t        cg_spawnEffects;
 
 vmCvar_t        cg_fov_builder;
 vmCvar_t        cg_fov_level0;
@@ -308,7 +308,6 @@ static const cvarTable_t cvarTable[] =
 {
 	{ &cg_drawGun,                     "cg_drawGun",                     "1",            CVAR_ARCHIVE                 },
 	{ &cg_viewsize,                    "cg_viewsize",                    "100",          0                            },
-	{ &cg_stereoSeparation,            "cg_stereoSeparation",            "0.4",          0                            },
 	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_LATCH | CVAR_ARCHIVE    },
 	{ &cg_playerShadows,               "cg_playerShadows",               "1",            0                            },
 	{ &cg_buildableShadows,            "cg_buildableShadows",            "0",            0                            },
@@ -457,6 +456,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_LATCH                   },
 	{ &cg_motionblur,                  "cg_motionblur",                  "0.05",         CVAR_ARCHIVE                 },
 	{ &cg_motionblurMinSpeed,          "cg_motionblurMinSpeed",          "600",          0                            },
+	{ &cg_spawnEffects,                "cg_spawnEffects",                "1",            0                            },
 	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            0                            },
 	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            0                            },
 	{ &cg_fov_level1,                  "cg_fov_level1",                  "0",            0                            },
@@ -1225,7 +1225,6 @@ static void CG_RegisterSounds( void )
 	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", qfalse );
 
 	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", qfalse );
-	cgs.media.ownedTagSound = trap_S_RegisterSound( "sound/feedback/beacon-tag-owned.ogg", qfalse );
 }
 
 //===================================================================================
@@ -1460,8 +1459,6 @@ static void CG_RegisterGraphics( void )
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
 
 	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacons/arrow", RSF_DEFAULT );
-	cgs.media.beaconLongArrow = trap_R_RegisterShader( "gfx/2d/beacons/longarrow", RSF_DEFAULT );
-	cgs.media.beaconLongArrowDot = trap_R_RegisterShader( "gfx/2d/beacons/longarrowdot", RSF_DEFAULT );
 	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacons/no-target", RSF_DEFAULT );
 	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacons/tagscore", RSF_DEFAULT );
 

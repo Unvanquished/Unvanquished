@@ -200,7 +200,13 @@ void Tess_DrawElements()
 		}
 		else
 		{
-			glDrawRangeElements( GL_TRIANGLES, 0, tess.numVertexes, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
+			uint32_t base = 0;
+
+			if( glState.currentIBO == tess.ibo ) {
+				base = tess.indexBase * sizeof( glIndex_t );
+			}
+
+			glDrawRangeElements( GL_TRIANGLES, 0, tess.numVertexes, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( base ) );
 
 			backEnd.pc.c_drawElements++;
 
@@ -304,9 +310,9 @@ static void DrawTris()
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( tess.vboVertexAnimation );
 
-	gl_genericShader->DisableDeformVertexes();
 	gl_genericShader->DisableTCGenEnvironment();
 	gl_genericShader->DisableTCGenLightmap();
+	gl_genericShader->DisableMacro_USE_DEPTH_FADE();
 
 	gl_genericShader->BindProgram();
 
@@ -342,11 +348,8 @@ static void DrawTris()
 	}
 
 	// u_DeformGen
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
 
 	// bind u_ColorMap
 	GL_BindToTMU( 0, tr.whiteImage ); 
@@ -402,6 +405,8 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 		tess.surfaceShader = NULL;
 		tess.surfaceStages = NULL;
 	}
+
+	Tess_MapVBOs( ShaderRequiresCPUDeforms( state ) );
 
 	bool isSky = ( state != NULL && state->isSky != qfalse );
 
@@ -459,13 +464,29 @@ static void Render_generic( int stage )
 
 	GL_State( pStage->stateBits );
 
+	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+		// depth buffer may change
+		backEnd.depthRenderImageValid = qfalse;
+	}
+
 	// choose right shader program ----------------------------------
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( tess.vboVertexAnimation );
 
-	gl_genericShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 	gl_genericShader->SetTCGenEnvironment( pStage->tcGen_Environment );
 	gl_genericShader->SetTCGenLightmap( pStage->tcGen_Lightmap );
+
+	if( pStage->hasDepthFade ) {
+		gl_genericShader->EnableMacro_USE_DEPTH_FADE();
+
+		if( !backEnd.depthRenderImageValid ) {
+			GL_Bind( tr.depthRenderImage );
+			glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
+			backEnd.depthRenderImageValid = qtrue;
+		}
+	} else {
+		gl_genericShader->DisableMacro_USE_DEPTH_FADE();
+	}
 
 	gl_genericShader->BindProgram();
 	// end choose right shader program ------------------------------
@@ -528,16 +549,20 @@ static void Render_generic( int stage )
 	}
 
 	// u_DeformGen
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
 
 	// bind u_ColorMap
 	GL_SelectTexture( 0 );
 	BindAnimatedImage( &pStage->bundle[ TB_COLORMAP ] );
 	gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
+
+	if( pStage->hasDepthFade ) {
+		gl_genericShader->SetUniform_DepthScale( pStage->depthFadeValue );
+		gl_genericShader->SetUniform_ProjectionMatrixTranspose( glState.projectionMatrix[ glState.stackIndex ] );
+		GL_SelectTexture( 1 );
+		GL_Bind( tr.depthRenderImage );
+	}
 
 	gl_genericShader->SetRequiredVertexPointers();
 
@@ -558,14 +583,17 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	GL_State( stateBits );
 
+	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+		// depth buffer may change
+		backEnd.depthRenderImageValid = qfalse;
+	}
+
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
 	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_vertexLightingShader_DBS_entity->SetVertexAnimation( tess.vboVertexAnimation );
-
-	gl_vertexLightingShader_DBS_entity->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_vertexLightingShader_DBS_entity->SetNormalMapping( normalMapping );
 	gl_vertexLightingShader_DBS_entity->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
@@ -608,11 +636,8 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	}
 
 	// u_DeformGen
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_vertexLightingShader_DBS_entity->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_vertexLightingShader_DBS_entity->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_vertexLightingShader_DBS_entity->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_vertexLightingShader_DBS_entity->SetUniform_Time( backEnd.refdef.floatTime );
 
 	if ( r_parallaxMapping->integer && tess.surfaceShader->parallax )
 	{
@@ -777,8 +802,6 @@ static void Render_vertexLighting_DBS_world( int stage )
 	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
-	gl_vertexLightingShader_DBS_world->SetDeformVertexes( tess.surfaceShader->numDeforms );
-
 	gl_vertexLightingShader_DBS_world->SetNormalMapping( normalMapping );
 	gl_vertexLightingShader_DBS_world->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 	gl_vertexLightingShader_DBS_world->SetGlowMapping( glowMapping );
@@ -795,11 +818,8 @@ static void Render_vertexLighting_DBS_world( int stage )
 	GL_CheckErrors();
 
 	// u_DeformGen
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_vertexLightingShader_DBS_world->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_vertexLightingShader_DBS_world->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_vertexLightingShader_DBS_world->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_vertexLightingShader_DBS_world->SetUniform_Time( backEnd.refdef.floatTime );
 
 	// u_ColorModulate
 	switch ( pStage->rgbGen )
@@ -830,6 +850,11 @@ static void Render_vertexLighting_DBS_world( int stage )
 	}
 
 	GL_State( stateBits );
+
+	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+		// depth buffer may change
+		backEnd.depthRenderImageValid = qfalse;
+	}
 
 	gl_vertexLightingShader_DBS_world->SetUniform_ColorModulate( colorGen, alphaGen );
 
@@ -957,6 +982,11 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	GL_State( stateBits );
 
+	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+		// depth buffer may change
+		backEnd.depthRenderImageValid = qfalse;
+	}
+
 	if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] == NULL )
 	{
 		normalMapping = false;
@@ -968,9 +998,6 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	}
 
 	// choose right shader program ----------------------------------
-
-	gl_lightMappingShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
-
 	gl_lightMappingShader->SetNormalMapping( normalMapping );
 	gl_lightMappingShader->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 	gl_lightMappingShader->SetGlowMapping( glowMapping );
@@ -982,11 +1009,8 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	// now we are ready to set the shader program uniforms
 
 	// u_DeformGen
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_lightMappingShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_lightMappingShader->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_lightMappingShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_lightMappingShader->SetUniform_Time( backEnd.refdef.floatTime );
 
 	gl_lightMappingShader->SetUniform_ViewOrigin( backEnd.viewParms.orientation.origin );  // in world space
 
@@ -1086,10 +1110,14 @@ static void Render_depthFill( int stage )
 
 	GL_State( stateBits );
 
+	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+		// depth buffer may change
+		backEnd.depthRenderImageValid = qfalse;
+	}
+
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
-	gl_genericShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 	gl_genericShader->SetTCGenEnvironment( pStage->tcGen_Environment );
 
 	gl_genericShader->BindProgram();
@@ -1122,11 +1150,8 @@ static void Render_depthFill( int stage )
 	}
 
 	// u_DeformGen
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
 
 	// bind u_ColorMap
 	if ( tess.surfaceShader->alphaTest )
@@ -1163,10 +1188,14 @@ static void Render_shadowFill( int stage )
 
 	GL_State( stateBits );
 
+	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+		// depth buffer may change
+		backEnd.depthRenderImageValid = qfalse;
+	}
+
 	gl_shadowFillShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_shadowFillShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
-	gl_shadowFillShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 	gl_shadowFillShader->SetMacro_LIGHT_DIRECTIONAL( backEnd.currentLight->l.rlType == RL_DIRECTIONAL );
 
 	gl_shadowFillShader->BindProgram();
@@ -1206,11 +1235,8 @@ static void Render_shadowFill( int stage )
 	}
 
 	// u_DeformGen
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_shadowFillShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_shadowFillShader->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_shadowFillShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_shadowFillShader->SetUniform_Time( backEnd.refdef.floatTime );
 
 	// bind u_ColorMap
 	if ( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 )
@@ -1245,11 +1271,11 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
+	backEnd.depthRenderImageValid = qfalse;
+
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_omniXYZ->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_forwardLightingShader_omniXYZ->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
-
-	gl_forwardLightingShader_omniXYZ->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_forwardLightingShader_omniXYZ->SetNormalMapping( normalMapping );
 	gl_forwardLightingShader_omniXYZ->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
@@ -1352,11 +1378,8 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 		gl_forwardLightingShader_omniXYZ->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_forwardLightingShader_omniXYZ->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_forwardLightingShader_omniXYZ->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_forwardLightingShader_omniXYZ->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_forwardLightingShader_omniXYZ->SetUniform_Time( backEnd.refdef.floatTime );
 
 	GL_CheckErrors();
 
@@ -1442,11 +1465,11 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
+	backEnd.depthRenderImageValid = qfalse;
+
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_projXYZ->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_forwardLightingShader_projXYZ->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
-
-	gl_forwardLightingShader_projXYZ->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_forwardLightingShader_projXYZ->SetNormalMapping( normalMapping );
 	gl_forwardLightingShader_projXYZ->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
@@ -1548,11 +1571,8 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 		gl_forwardLightingShader_projXYZ->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_forwardLightingShader_projXYZ->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_forwardLightingShader_projXYZ->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_forwardLightingShader_projXYZ->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_forwardLightingShader_projXYZ->SetUniform_Time( backEnd.refdef.floatTime );
 
 	GL_CheckErrors();
 
@@ -1638,11 +1658,11 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
+	backEnd.depthRenderImageValid = qfalse;
+
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_directionalSun->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_forwardLightingShader_directionalSun->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
-
-	gl_forwardLightingShader_directionalSun->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_forwardLightingShader_directionalSun->SetNormalMapping( normalMapping );
 	gl_forwardLightingShader_directionalSun->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
@@ -1748,11 +1768,8 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 		gl_forwardLightingShader_directionalSun->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_forwardLightingShader_directionalSun->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_forwardLightingShader_directionalSun->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_forwardLightingShader_directionalSun->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_forwardLightingShader_directionalSun->SetUniform_Time( backEnd.refdef.floatTime );
 
 	GL_CheckErrors();
 
@@ -1842,13 +1859,16 @@ static void Render_reflection_CB( int stage )
 
 	GL_State( pStage->stateBits );
 
+	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+		// depth buffer may change
+		backEnd.depthRenderImageValid = qfalse;
+	}
+
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
 	gl_reflectionShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_reflectionShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
-
-	gl_reflectionShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_reflectionShader->SetNormalMapping( normalMapping );
 
@@ -1931,6 +1951,11 @@ static void Render_screen( int stage )
 
 	GL_State( pStage->stateBits );
 
+	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+		// depth buffer may change
+		backEnd.depthRenderImageValid = qfalse;
+	}
+
 	gl_screenShader->BindProgram();
 
 	{
@@ -1956,6 +1981,11 @@ static void Render_portal( int stage )
 	GLimp_LogComment( "--- Render_portal ---\n" );
 
 	GL_State( pStage->stateBits );
+
+	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+		// depth buffer may change
+		backEnd.depthRenderImageValid = qfalse;
+	}
 
 	// enable shader, set arrays
 	gl_portalShader->BindProgram();
@@ -1987,90 +2017,6 @@ static void Render_heatHaze( int stage )
 
 	GLimp_LogComment( "--- Render_heatHaze ---\n" );
 
-	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable /*&& glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10*/ && glConfig.driverType != GLDRV_MESA )
-	{
-		FBO_t    *previousFBO;
-		uint32_t stateBits;
-
-		GLimp_LogComment( "--- HEATHAZE FIX BEGIN ---\n" );
-
-		// capture current color buffer for u_CurrentMap
-
-		previousFBO = glState.currentFBO;
-
-		// copy depth of the main context to occlusionRenderFBO
-		glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, 0 );
-		glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.occlusionRenderFBO->frameBuffer );
-		glBlitFramebufferEXT( 0, 0, glConfig.vidWidth, glConfig.vidHeight,
-							  0, 0, glConfig.vidWidth, glConfig.vidHeight,
-							  GL_DEPTH_BUFFER_BIT,
-							  GL_NEAREST );
-
-		R_BindFBO( tr.occlusionRenderFBO );
-		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.occlusionRenderFBOImage->texnum, 0 );
-
-		// clear color buffer
-		glClear( GL_COLOR_BUFFER_BIT );
-
-		// remove blend mode
-		stateBits = pStage->stateBits;
-		stateBits &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_DEPTHMASK_TRUE );
-
-		GL_State( stateBits );
-
-		// choose right shader program ----------------------------------
-		gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
-		gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
-
-		gl_genericShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
-		gl_genericShader->SetTCGenEnvironment( false );
-
-		gl_genericShader->BindProgram();
-		// end choose right shader program ------------------------------
-
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
-		// u_ColorModulate
-		gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
-
-		// u_Color
-		gl_genericShader->SetUniform_Color( colorRed );
-
-		gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
-		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-		// u_Bones
-		if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
-		{
-			gl_genericShader->SetUniform_Bones( tess.numBones, tess.bones );
-		}
-
-		// u_VertexInterpolation
-		if ( tess.vboVertexAnimation )
-		{
-			gl_genericShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
-		}
-
-		// u_DeformGen
-		if ( tess.surfaceShader->numDeforms )
-		{
-			gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-			gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
-		}
-
-		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
-
-		gl_genericShader->SetRequiredVertexPointers();
-
-		Tess_DrawElements();
-
-		R_BindFBO( previousFBO );
-
-		GL_CheckErrors();
-
-		GLimp_LogComment( "--- HEATHAZE FIX END ---\n" );
-	}
-
 	// remove alpha test
 	stateBits = pStage->stateBits;
 	stateBits &= ~GLS_ATEST_BITS;
@@ -2081,8 +2027,6 @@ static void Render_heatHaze( int stage )
 	// choose right shader program ----------------------------------
 	gl_heatHazeShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_heatHazeShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
-
-	gl_heatHazeShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_heatHazeShader->BindProgram();
 
@@ -2122,12 +2066,6 @@ static void Render_heatHaze( int stage )
 
 	GL_BindToTMU( 1, tr.currentRenderImage );
 	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
-
-	// bind u_ContrastMap
-	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && glConfig.driverType != GLDRV_MESA )
-	{
-		GL_BindToTMU( 2, tr.occlusionRenderFBOImage ); 
-	}
 
 	gl_heatHazeShader->SetRequiredVertexPointers();
 
@@ -2282,10 +2220,6 @@ static void Render_fog()
 	gl_fogQuake3Shader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_fogQuake3Shader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
-	gl_fogQuake3Shader->SetDeformVertexes( tess.surfaceShader->numDeforms );
-
-	gl_fogQuake3Shader->SetMacro_EYE_OUTSIDE( eyeT < 0 );
-
 	gl_fogQuake3Shader->BindProgram();
 
 	gl_fogQuake3Shader->SetUniform_FogDistanceVector( fogDistanceVector );
@@ -2310,12 +2244,8 @@ static void Render_fog()
 		gl_fogQuake3Shader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
-	// u_DeformGen
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_fogQuake3Shader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_fogQuake3Shader->SetUniform_Time( backEnd.refdef.floatTime );
-	}
+	gl_fogQuake3Shader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
+	gl_fogQuake3Shader->SetUniform_Time( backEnd.refdef.floatTime );
 
 	// bind u_ColorMap
 	GL_BindToTMU( 0, tr.fogImage ); 
@@ -2638,7 +2568,8 @@ void Tess_StageIteratorDebug()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( tess.attribsSet );
+		Tess_UpdateVBOs( );
+		GL_VertexAttribsState( tess.attribsSet );
 	}
 
 	Tess_DrawElements();
@@ -2732,7 +2663,7 @@ void Tess_StageIteratorGeneric()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( tess.attribsSet );
+		Tess_UpdateVBOs( );
 	}
 
 	// set face culling appropriately
@@ -2923,7 +2854,7 @@ void Tess_StageIteratorDepthFill()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD );
+		Tess_UpdateVBOs( );
 	}
 
 	// set face culling appropriately
@@ -3013,7 +2944,7 @@ void Tess_StageIteratorShadowFill()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD );
+		Tess_UpdateVBOs( );
 	}
 
 	// set face culling appropriately
@@ -3103,7 +3034,7 @@ void Tess_StageIteratorLighting()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		Tess_UpdateVBOs( tess.attribsSet );
+		Tess_UpdateVBOs( );
 	}
 
 	// set OpenGL state for lighting
@@ -3226,16 +3157,6 @@ void Tess_End()
 	if ( ( tess.numIndexes == 0 || tess.numVertexes == 0 ) && tess.multiDrawPrimitives == 0 )
 	{
 		return;
-	}
-
-	if ( tess.indexes[ SHADER_MAX_INDEXES - 1 ] != 0 )
-	{
-		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_INDEXES hit" );
-	}
-
-	if ( tess.verts[ SHADER_MAX_VERTEXES - 1 ].xyz[ 0 ] != 0.0f )
-	{
-		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_VERTEXES hit" );
 	}
 
 	// for debugging of sort order issues, stop rendering after a given sort value

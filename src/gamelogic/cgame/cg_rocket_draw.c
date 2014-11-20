@@ -1204,29 +1204,22 @@ static void CG_Rocket_DrawMomentum( void )
 
 static void CG_Rocket_DrawLevelshot( void )
 {
-	qhandle_t shader;
+	const char *map;
 
-	if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) && rocketInfo.cstate.connState < CA_CONNECTED )
+	if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) )
 	{
 		return;
 	}
 
-	if ( rocketInfo.cstate.connState < CA_CONNECTED )
+	trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName, rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName ), 0 );
+}
+
+static void CG_Rocket_DrawMapLoadingLevelshot( void )
+{
+	if ( rocketInfo.cstate.connState >= CA_LOADING )
 	{
-		shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot;
-
-		if ( ( shader == -1 || !shader ) && *rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].imageName )
-		{
-			shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot = trap_R_RegisterShader( rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].imageName, RSF_NOMIP );
-		}
+		trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ), Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), 0 );
 	}
-
-	else
-	{
-		shader = trap_R_RegisterShader( va( "levelshots/%s", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), RSF_NOMIP );
-	}
-
-	trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/%s' />", CG_GetShaderNameFromHandle( shader ) ), 0 );
 }
 
 
@@ -1858,6 +1851,7 @@ void CG_Rocket_DrawTutorial( void )
 {
 	if ( !cg_tutorial.integer )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2590,6 +2584,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
+	{ "levelshot_loading", &CG_Rocket_DrawMapLoadingLevelshot, ELEMENT_ALL },
 	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_ALL },

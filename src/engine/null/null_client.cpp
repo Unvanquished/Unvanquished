@@ -85,7 +85,7 @@ qboolean UI_GameCommand( void )
 
 void CL_ForwardCommandToServer( const char *cmd )
 {
-	Com_Printf(_( "Unknown command \"%s\"\n"), cmd );
+	Com_Printf( "Unknown command \"%s\"\n", cmd );
 }
 
 void CL_ConsolePrint( std::string text )

@@ -175,7 +175,8 @@ extern int   LEVEL4_CRUSH_REPEAT;
  */
 
 #define ALIENSENSE_RANGE         1000.0f
-#define REGEN_BOOST_RANGE        200.0f
+#define REGEN_BOOSTER_RANGE      200.0f
+#define REGEN_TEAMMATE_RANGE     300.0f
 
 #define ALIEN_POISON_TIME        10000
 #define ALIEN_POISON_DMG         5
@@ -380,6 +381,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_INITIAL_MINE_RATE          "8"     // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"    // in min
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
+#define DEFAULT_BP_LOSS_FRAC               "0.5"
 
 // momentum
 #define MOMENTUM_MAX                     300.0f
@@ -392,6 +394,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MOMENTUM_BUILD_MOD       "0.6"
 #define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod
 #define DEFAULT_MOMENTUM_DESTROY_MOD     "0.8"
+#define MAIN_STRUCTURE_MOMENTUM_VALUE    20    // momentum reward for destroying OM/RC
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 #define BUILDABLE_START_HEALTH_FRAC        0.25f

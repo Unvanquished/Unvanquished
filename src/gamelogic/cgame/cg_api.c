@@ -130,6 +130,12 @@ float trap_Cvar_VariableValue( const char *var_name )
 	return fi.f;
 }
 
+void trap_Cvar_AddFlags(const char* var_name, int flags)
+{
+	syscallVM( CG_CVAR_ADDFLAGS, var_name, flags );
+}
+
+
 //08.
 //return Cmd_Argc();
 int trap_Argc( void )
@@ -207,6 +213,12 @@ int trap_FS_GetFileList( const char *path, const char *extension, char *listbuf,
 	return syscallVM( CG_FS_GETFILELIST, path, extension, listbuf, bufsize );
 }
 
+int trap_FS_GetFileListRecursive( const char *path, const char *extension, char *listbuf, int bufsize )
+{
+	return syscallVM( CG_FS_GETFILELISTRECURSIVE, path, extension, listbuf, bufsize );
+}
+
+
 //19.
 //return FS_Delete(VMA(1));
 int trap_FS_Delete( const char *filename )
@@ -214,10 +226,16 @@ int trap_FS_Delete( const char *filename )
 	return syscallVM( CG_FS_DELETEFILE, filename );
 }
 
-qboolean trap_FS_LoadPak( const char* pak )
+qboolean trap_FS_LoadPak( const char* pak, const char* prefix )
 {
-	return syscallVM( CG_FS_LOADPAK, pak );
+	return syscallVM( CG_FS_LOADPAK, pak, prefix );
 }
+
+void trap_FS_LoadAllMapMetadata ( void )
+{
+	syscallVM( CG_FS_LOADMAPMETADATA );
+}
+
 
 
 //20.
@@ -1560,4 +1578,9 @@ void trap_Rocket_ShowScoreboard( const char *name, qboolean show )
 void trap_Rocket_SetDataSelectIndex( int index )
 {
 	syscallVM( CG_ROCKET_SETDATASELECTINDEX, index );
+}
+
+void trap_Rocket_LoadFont( const char *font )
+{
+	syscallVM( CG_ROCKET_LOADFONT, font );
 }

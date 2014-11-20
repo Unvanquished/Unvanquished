@@ -1732,7 +1732,7 @@ BG_InventoryContainsWeapon
 Does the player hold a weapon?
 ========================
 */
-qboolean BG_InventoryContainsWeapon( int weapon, int stats[] )
+qboolean BG_InventoryContainsWeapon( int weapon, const int stats[] )
 {
 	// humans always have a blaster
 	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
@@ -2089,7 +2089,7 @@ Checks if a player is running low on ammo
 Also returns whether the gun uses energy or not
 =================
 */
-qboolean BG_PlayerLowAmmo( playerState_t *ps, qboolean *energy )
+qboolean BG_PlayerLowAmmo( const playerState_t *ps, qboolean *energy )
 {
   int weapon;
 	const weaponAttributes_t *wattr;

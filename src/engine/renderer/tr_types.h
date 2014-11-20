@@ -64,8 +64,6 @@ Maryland 20850 USA.
 #define RF_SHADOW_PLANE  0x000040 // use refEntity->shadowPlane
 #define RF_WRAP_FRAMES   0x000080 // mod the model frames by the maxframes to allow continuous
 // animation without needing to know the frame count
-#define RF_HILIGHT       0x000100 // more than RF_MINLIGHT.  For when an object is "Highlighted" (looked at/training identification/etc)
-#define RF_BLINK         0x000200 // eyes in 'blink' state
 #define RF_FORCENOLOD    0x000400
 #define RF_SWAPCULL      0x000800 // swap CT_FRONT_SIDED and CT_BACK_SIDED
 
@@ -129,13 +127,6 @@ typedef enum
   RT_MAX_REF_ENTITY_TYPE
 } refEntityType_t;
 
-#define ZOMBIEFX_FADEOUT_TIME 10000
-
-#define REFLAG_ONLYHAND       1 // only draw hand surfaces
-#define REFLAG_FORCE_LOD      8 // force a low lod
-#define REFLAG_ORIENT_LOD     16 // on LOD switch, align the model to the player's camera
-#define REFLAG_DEAD_LOD       32 // allow the LOD to go lower than recommended
-
 // XreaL BEGIN
 
 // RB: defining any of the following macros would break the compatibility to old ET mods
@@ -187,22 +178,14 @@ typedef struct
 	float     shadowPlane; // projection shadows go here, stencils go slightly lower
 
 	vec3_t    axis[ 3 ]; // rotation vectors
-	vec3_t    torsoAxis[ 3 ]; // rotation vectors for torso section of skeletal animation
 	qboolean  nonNormalizedAxes; // axis are not normalized, i.e. they have scale
 	vec3_t    origin; // also used as MODEL_BEAM's "from"
 	int       frame; // also used as MODEL_BEAM's diameter
-	qhandle_t frameModel;
-	int       torsoFrame; // skeletal torso can have frame independent of legs frame
-	qhandle_t torsoFrameModel;
 
 	// previous data for frame interpolation
 	vec3_t    oldorigin; // also used as MODEL_BEAM's "to"
 	int       oldframe;
-	qhandle_t oldframeModel;
-	int       oldTorsoFrame;
-	qhandle_t oldTorsoFrameModel;
 	float     backlerp; // 0.0 = current, 1.0 = old
-	float     torsoBacklerp;
 
 	// texturing
 	int       skinNum; // inline skin index
@@ -225,8 +208,6 @@ typedef struct
 	int   fadeStartTime, fadeEndTime;
 
 	float hilightIntensity; //----(SA)  added
-
-	int   reFlags;
 
 	int   entityNum; // currentState.number, so we can attach rendering effects to specific entities (Zombie)
 
@@ -362,13 +343,6 @@ typedef struct
 	vec4_t  gradingWeights;
 } refdef_t;
 
-typedef enum
-{
-  STEREO_CENTER,
-  STEREO_LEFT,
-  STEREO_RIGHT
-} stereoFrame_t;
-
 // XreaL BEGIN
 
 // cg_shadows modes
@@ -467,7 +441,6 @@ typedef struct
 	// synonymous with "does rendering consume the entire screen?", therefore
 	// a Win32 ICD that used CDS will have this set to TRUE
 	qboolean isFullscreen;
-	qboolean stereoEnabled;
 	qboolean smpActive; // dual processor
 } glconfig_t;
 
@@ -514,6 +487,9 @@ typedef struct
 
 	qboolean generateMipmapAvailable;
 	qboolean getProgramBinaryAvailable;
+	qboolean bufferStorageAvailable;
+	qboolean mapBufferRangeAvailable;
+	qboolean syncAvailable;
 } glconfig2_t;
 // XreaL END
 

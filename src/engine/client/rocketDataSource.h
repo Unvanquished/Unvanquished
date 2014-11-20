@@ -65,89 +65,6 @@ public:
 		dirty_query = true;
 	}
 
-	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimensions )
-	{
-		const Rocket::Core::Property *property;
-
-		dimensions.x = dimensions.y = -1;
-
-		property = GetProperty( "width" );
-
-		// Absolute unit. We can use it as is
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
-		{
-			dimensions.x = property->value.Get<float>();
-		}
-
-		else
-		{
-			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
-			stack.push( this );
-
-			while ( ( parent = parent->GetParentNode() ) )
-			{
-				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
-				{
-					dimensions.x = base_size;
-					while ( !stack.empty() )
-					{
-						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
-
-						stack.pop();
-					}
-					break;
-				}
-
-				stack.push( parent );
-			}
-		}
-
-		property = GetProperty( "height" );
-
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
-		{
-			dimensions.y = property->value.Get<float>();
-		}
-
-		else
-		{
-			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
-			stack.push( this );
-
-			while ( ( parent = parent->GetParentNode() ) )
-			{
-				if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
-				{
-					dimensions.y = base_size;
-					while ( !stack.empty() )
-					{
-						dimensions.y = stack.top()->ResolveProperty( "height", dimensions.y );
-
-						stack.pop();
-					}
-					break;
-				}
-
-				stack.push( parent );
-			}
-		}
-
-		// Return the calculated dimensions. If this changes the size of the element, it will result in
-		// a 'resize' event which is caught below and will regenerate the geometry.
-
-		if ( this->dimensions != dimensions )
-		{
-			this->dimensions = dimensions;
-			dirty_layout = true;
-		}
-
-		return true;
-	}
-
 	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
 		Rocket::Core::Element::OnAttributeChange( changed_attributes );
@@ -168,21 +85,6 @@ public:
 			formatter = Rocket::Controls::DataFormatter::GetDataFormatter( GetAttribute( "formatter" )->Get<Rocket::Core::String>() );
 			dirty_query = true;
 		}
-	}
-
-	void OnPropertyChange( const Rocket::Core::PropertyNameList &changed_properties )
-	{
-		Rocket::Core::Element::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "width" ) != changed_properties.end() || changed_properties.find( "height" ) != changed_properties.end() )
-		{
-			dirty_layout = true;
-		}
-
-		if ( changed_properties.find( "radius" ) != changed_properties.end() )
-		{
-			radius = GetProperty( "radius" )->Get<float>();
-		}
-
 	}
 
 	void OnRowAdd( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_added, int num_rows_added )
@@ -206,38 +108,9 @@ public:
 	}
 
 
-	// Checks if parents are visible as well
-	bool IsTreeVisible( void )
-	{
-		if ( IsVisible() )
-		{
-			Rocket::Core::Element *parent = this;
-
-			while ( ( parent = parent->GetParentNode() ) )
-			{
-				if ( !parent->IsVisible() )
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		else
-		{
-			return false;
-		}
-	}
-
-
-
 	void OnUpdate( void )
 	{
-		// Only do layout if element is visible
-		// Positions calcs are not correct if element
-		// is not visible.
-		if ( dirty_query && IsTreeVisible() )
+		if ( dirty_query )
 		{
 			dirty_query = false;
 
@@ -246,8 +119,6 @@ public:
 
 				RemoveChild( GetFirstChild() );
 			}
-
-			//AddCancelbutton();
 
 			Rocket::Controls::DataQuery query( data_source, data_table, csvFields, 0, -1 );
 			int index = 0;
@@ -284,11 +155,9 @@ public:
 						out.Append( raw_data[ i ] );
 					}
 				}
-				Rocket::Core::Factory::InstanceElementText( this, out );
-				//Rocket::Core::Factory::InstanceElementText( this, out );
-			}
 
-			//LayoutChildren();
+				Rocket::Core::Factory::InstanceElementText( this, out );
+			}
 		}
 	}
 

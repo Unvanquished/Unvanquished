@@ -738,7 +738,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_A_BOOSTER:
-			*range = REGEN_BOOST_RANGE;
+			*range = REGEN_BOOSTER_RANGE;
 			shc = SHC_YELLOW;
 			break;
 
@@ -1355,7 +1355,7 @@ static void CG_BuildableParticleEffects( centity_t *cent )
 
 /*
 ==================
-CG_BuildableStatusParse
+CG_Parse
 ==================
 */
 void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
@@ -1625,11 +1625,12 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthFrac, powerUsageFrac = 0, totalPowerFrac = 0, mineEfficiencyFrac = 0;
-	int           health, powerUsage = 0, totalPower = 0, mineEfficiency = 0;
+	float         healthFrac, powerUsageFrac = 0, totalPowerFrac = 0, mineEfficiencyFrac = 0,
+	              storedBPFrac = 0;
+	int           health, powerUsage = 0, totalPower = 0;
 	float         x, y;
 	vec4_t        color;
-	qboolean      powered, marked, showMineEfficiency, showPower;
+	qboolean      powered, marked, showMineEfficiency, showStoredBP, showPower;
 	trace_t       tr;
 	float         d;
 	buildStat_t   *bs;
@@ -1785,25 +1786,37 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 	// find out what data we want to display
 	showMineEfficiency = ( attr->number == BA_A_LEECH || attr->number == BA_H_DRILL );
-	showPower          = ( attr->team == TEAM_HUMANS && attr->powerConsumption > 0 );
+	showStoredBP = showMineEfficiency ||
+	               ( attr->number == BA_A_OVERMIND || attr->number == BA_H_REACTOR );
+	showPower = ( attr->team == TEAM_HUMANS && attr->powerConsumption > 0 );
 
 	// calculate mine efficiency bar size
 	if ( showMineEfficiency )
 	{
-		mineEfficiency      = es->weaponAnim;
-		mineEfficiencyFrac = (float)mineEfficiency / 100.0f;
+		mineEfficiencyFrac = (float)es->weaponAnim / 255.0f;
 
-		if ( mineEfficiency > 0 && mineEfficiencyFrac < 0.01f )
-		{
-			mineEfficiencyFrac = 0.01f;
-		}
-		else if ( mineEfficiencyFrac < 0.0f )
+		if ( mineEfficiencyFrac < 0.0f )
 		{
 			mineEfficiencyFrac = 0.0f;
 		}
 		else if ( mineEfficiencyFrac > 1.0f )
 		{
 			mineEfficiencyFrac = 1.0f;
+		}
+	}
+
+	// calculate stored build points bar size
+	if ( showStoredBP )
+	{
+		storedBPFrac = (float)es->weapon / 255.0f;
+
+		if ( storedBPFrac < 0.0f )
+		{
+			storedBPFrac = 0.0f;
+		}
+		else if ( storedBPFrac > 1.0f )
+		{
+			storedBPFrac = 1.0f;
 		}
 	}
 
@@ -1843,13 +1856,14 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		float  picW = bs->frameWidth;
 		float  picX = x;
 		float  picY = y;
-		float  scale;
+		float  scale, pad;
 		float  subH, subY;
 		float  clipX, clipY, clipW, clipH;
 		vec4_t frameColor;
 
 		// this is fudged to get the width/height in the cfg to be more realistic
 		scale = ( picH / d ) * 3;
+		pad   = bs->healthPadding * scale;
 
 		powered = es->eFlags & EF_B_POWERED;
 		marked = es->eFlags & EF_B_MARKED;
@@ -1876,7 +1890,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			frameColor[ 3 ] = color[ 3 ];
 			trap_R_SetColor( frameColor );
 
-			if ( showMineEfficiency )
+			if ( showMineEfficiency || showStoredBP )
 			{
 				CG_SetClipRegion( picX, picY - 0.5f * picH, picW, 0.5f * picH );
 				CG_DrawPic( picX, picY - 0.5f * picH, picW, picH, bs->frameShader );
@@ -1896,23 +1910,71 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 
 		// draw mine rate bar
-		if ( showMineEfficiency && mineEfficiency > 0 )
+		if ( showMineEfficiency )
 		{
 			float  barX, barY, barW, barH;
 			vec4_t barColor;
+			//float levelRate  = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
 
-			barX = picX + ( bs->healthPadding * scale );
-			barY = picY - ( 0.5f * picH ) + ( bs->healthPadding * scale );
-			barH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
-			barW = ( picW * mineEfficiencyFrac ) - ( bs->healthPadding * 2.0f * scale );
+			barX = picX + pad;
+			barY = picY - ( 0.5f * picH ) + pad;
+			barW = ( 0.5f * picW * mineEfficiencyFrac ) - ( 1.5f * pad );
+			barH = ( 0.5f * picH ) - pad;
 
 			DepletionColorFade( barColor, mineEfficiencyFrac, bs );
 			barColor[ 3 ] = color[ 3 ];
 
 			trap_R_SetColor( barColor );
-
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
+			trap_R_SetColor( NULL );
 
+			// TODO: Draw text using libRocket
+			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
+			//               va("Mines %.1f BP/min", mineEfficiencyFrac * levelRate), 0,
+			//               ITEM_TEXTSTYLE_PLAIN );
+		}
+
+		// draw stored BP
+		if ( showStoredBP )
+		{
+			float  barX, barY, barW, barH;
+			vec4_t barColor;
+			//float buildPoints = (float)cg.predictedPlayerState.persistant[ PERS_BP ];
+
+			barX = picX + ( showMineEfficiency ? ( ( 0.5f * picW ) + ( 0.5f * pad ) ) : pad );
+			barY = picY - ( 0.5f * picH ) + pad;
+			barW = ( ( showMineEfficiency ? 0.5f : 1.0f ) * picW * storedBPFrac ) -
+			       ( ( showMineEfficiency ? 1.5f : 2.0f ) * pad );
+			barH = ( 0.5f * picH ) - pad;
+
+			HealthColorFade( barColor, 1.0f - storedBPFrac, bs );
+			barColor[ 3 ] = color[ 3 ];
+
+			trap_R_SetColor( barColor );
+			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
+			trap_R_SetColor( NULL );
+
+			// TODO: Draw text using libRocket
+			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
+			//               va("Stores %.0f BP", storedBPFrac * buildPoints ), 0,
+			//               ITEM_TEXTSTYLE_PLAIN );
+		}
+
+		// draw separator
+		if ( showMineEfficiency && showStoredBP )
+		{
+			float  sepX, sepY, sepW, sepH;
+			vec4_t separatorColor;
+
+			sepX = picX + ( 0.5f * picW ) - ( 0.5f * pad );
+			sepY = picY - ( 0.5f * picH ) + pad;
+			sepW = pad;
+			sepH = ( 0.5f * picH ) - pad;
+
+			Vector4Copy( colorBlack, separatorColor );
+
+			trap_R_SetColor( separatorColor );
+			CG_DrawPic( sepX, sepY, sepW, sepH, cgs.media.whiteShader );
 			trap_R_SetColor( NULL );
 		}
 

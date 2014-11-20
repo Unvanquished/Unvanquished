@@ -56,7 +56,6 @@ public:
 		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
 		{
 			cvar = GetAttribute< Rocket::Core::String >( "cvar",  "" );
-			cvar_value = Cvar_VariableString( cvar.CString() );
 			dirty_value = true;
 		}
 
@@ -72,11 +71,13 @@ public:
 			{
 				type = STRING;
 			}
+			dirty_value = true;
 		}
 
 		if ( changed_attributes.find( "format" ) != changed_attributes.end() )
 		{
 			format = GetAttribute<Rocket::Core::String>( "format", "" );
+			dirty_value = true;
 		}
 	}
 
@@ -84,21 +85,21 @@ public:
 	{
 		if ( dirty_value || ( !cvar.Empty() && cvar_value != Cvar_VariableString( cvar.CString() ) ) )
 		{
-			cvar_value = Cvar_VariableString( cvar.CString() );
+			Rocket::Core::String value = cvar_value = Cvar_VariableString( cvar.CString() );
 
 			if (!format.Empty())
 			{
 				if (type == NUMBER)
 				{
-					cvar_value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), Cvar_VariableValue(cvar.CString()));
+					value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), Cvar_VariableValue(cvar.CString()));
 				}
 				else
 				{
-					cvar_value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), Cvar_VariableString(cvar.CString()));
+					value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), Cvar_VariableString(cvar.CString()));
 				}
 			}
 
-			SetInnerRML( cvar_value );
+			SetInnerRML( value );
 			dirty_value = false;
 		}
 	}

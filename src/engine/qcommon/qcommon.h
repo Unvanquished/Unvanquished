@@ -497,6 +497,7 @@ void         FS_FreeFileList( char **list );
 qboolean     FS_FileExists( const char *file );
 
 int          FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
+int          FS_GetFileListRecursive( const char* path, const char* extension, char* listBuf, int bufSize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
@@ -580,7 +581,7 @@ const char* FS_LoadedPaks();
 
 bool     FS_LoadPak( const char *name );
 void     FS_LoadBasePak();
-void     FS_LoadAllMaps();
+void     FS_LoadAllMapMetadata();
 bool     FS_LoadServerPaks( const char* paks );
 
 // shutdown and restart the filesystem so changes to fs_gamedir can take effect

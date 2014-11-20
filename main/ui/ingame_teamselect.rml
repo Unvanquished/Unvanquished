@@ -58,12 +58,12 @@
 	</button>
 
 	<p>
-		The Aliens' strength is in agility. They possess only short-ranged attacks, but can dance
-		around their opponents and quickly spread their creep.
+		Aliens are highly mobile and possess a wide variety of movement-based attacks.
+		They are sturdy, but must rely on stealth and evasion.
 	</p>
 	<p>
-		The Humans are the masters of ranged technology. Although they are soft and weak, they more
-		than make up for it in upgrades.
+		Humans can equip themselves with an assortment of weapons and equipment.
+		They are flexible and lethal at a distance, but fragile.
 	</p>
 
 	<button class="alien" onClick="hide ingame_teamselect; exec team alien"> Join Aliens </button>

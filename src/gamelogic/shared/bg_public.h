@@ -335,41 +335,42 @@ typedef enum
 #define EF_DEAD             0x0001 // don't draw a foe marker over players with EF_DEAD
 #define EF_TELEPORT_BIT     0x0002 // toggled every time the origin abruptly changes
 #define EF_PLAYER_EVENT     0x0004 // only used for eType > ET_EVENTS
+#define EF_BMODEL           0x0008
 
 // for missiles:
-#define EF_BOUNCE           0x0008 // for missiles
-#define EF_BOUNCE_HALF      0x0010 // for missiles
-#define EF_NO_BOUNCE_SOUND  0x0020 // for missiles
+#define EF_BOUNCE           0x0016 // for missiles
+#define EF_BOUNCE_HALF      0x0020 // for missiles
+#define EF_NO_BOUNCE_SOUND  0x0040 // for missiles
 
 // buildable flags:
-#define EF_B_SPAWNED        0x0008
-#define EF_B_POWERED        0x0010
-#define EF_B_MARKED         0x0020
-#define EF_B_ONFIRE         0x0040
+#define EF_B_SPAWNED        0x0016
+#define EF_B_POWERED        0x0020
+#define EF_B_MARKED         0x0040
+#define EF_B_ONFIRE         0x0080
 
 // for players
-#define EF_POWER_AVAILABLE  0x0010
-#define EF_WARN_CHARGE      0x0020 // Lucifer Cannon is about to overcharge
-#define EF_WALLCLIMB        0x0040 // wall walking
-#define EF_WALLCLIMBCEILING 0x0080 // wall walking ceiling hack
-#define EF_NODRAW           0x0100 // may have an event, but no model (unspawned items)
-#define EF_FIRING           0x0200 // for lightning gun
-#define EF_FIRING2          0x0400 // alt fire
-#define EF_FIRING3          0x0800 // third fire
-#define EF_MOVER_STOP       0x1000 // will push otherwise
-#define EF_UNUSED_1         0x2000 // UNUSED
-#define EF_CONNECTION       0x4000 // draw a connection trouble sprite
-#define EF_BLOBLOCKED       0x8000 // caught by a trapper
+#define EF_POWER_AVAILABLE  0x0020
+#define EF_WARN_CHARGE      0x0040 // Lucifer Cannon is about to overcharge
+#define EF_WALLCLIMB        0x0080 // wall walking
+#define EF_WALLCLIMBCEILING 0x0100 // wall walking ceiling hack
+#define EF_NODRAW           0x0200 // may have an event, but no model (unspawned items)
+#define EF_FIRING           0x0400 // for lightning gun
+#define EF_FIRING2          0x0800 // alt fire
+#define EF_FIRING3          0x1000 // third fire
+#define EF_MOVER_STOP       0x2000 // will push otherwise
+#define EF_UNUSED_1         0x4000 // UNUSED
+#define EF_CONNECTION       0x8000 // draw a connection trouble sprite
+#define EF_BLOBLOCKED       0x10000 // caught by a trapper
 
 // entityState_t->modelIndex2 "public flags" when used for client entities
 #define PF_JETPACK_ENABLED  BIT(0)
 #define PF_JETPACK_ACTIVE   BIT(1)
 
 // for beacons:
-#define EF_BC_DYING         BIT(3) // beacon is fading out
-#define EF_BC_ENEMY         BIT(4) // entity/base is from the enemy
-#define EF_BC_TAG_PLAYER    BIT(5) // entity is a player
-#define EF_BC_BASE_OUTPOST  BIT(6) // base is an outpost
+#define EF_BC_DYING         BIT(4) // beacon is fading out
+#define EF_BC_ENEMY         BIT(5) // entity/base is from the enemy
+#define EF_BC_TAG_PLAYER    BIT(6) // entity is a player
+#define EF_BC_BASE_OUTPOST  BIT(7) // base is an outpost
 
 #define EF_BC_TAG_RELEVANT  (EF_BC_ENEMY|EF_BC_TAG_PLAYER)   // relevant flags for tags
 #define EF_BC_BASE_RELEVANT (EF_BC_ENEMY|EF_BC_BASE_OUTPOST) // relevant flags for bases
@@ -1052,7 +1053,7 @@ typedef enum
 	//implicit
 	BCT_HEALTH,
 	BCT_AMMO,
-	
+
 	NUM_BEACON_TYPES
 } beaconType_t;
 
@@ -1087,7 +1088,7 @@ typedef struct
 	qhandle_t     icon[ 4 ];
 	sfxHandle_t   inSound;
 	sfxHandle_t   outSound;
-#endif	
+#endif
 
 	int           decayTime;
 } beaconAttributes_t;
@@ -1215,8 +1216,6 @@ typedef struct
 	qboolean    transparentTest;
 	qboolean    uniqueTest;
 
-	int         value;
-
 	float       radarFadeOut;
 } buildableAttributes_t;
 
@@ -1309,6 +1308,7 @@ typedef struct
 	int            speed;
 	float          lag;
 	int            flags;
+	qboolean       doKnockback;
 
 	// display
 	qhandle_t      model;
@@ -1345,9 +1345,10 @@ typedef struct
 qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
                                 vec2_t angles, vec3_t dir1, vec3_t dir2 );
 void     BG_BuildEntityDescription( char *str, size_t size, entityState_t *es );
+qboolean BG_IsMainStructure( entityState_t *es );
 
 qboolean BG_WeaponIsFull(int weapon, int ammo, int clips );
-qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
+qboolean BG_InventoryContainsWeapon( int weapon, const int stats[] );
 int      BG_SlotsForInventory( int stats[] );
 void     BG_AddUpgradeToInventory( int item, int stats[] );
 void     BG_RemoveUpgradeFromInventory( int item, int stats[] );
@@ -1366,7 +1367,7 @@ void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t m
 int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
-qboolean                    BG_PlayerLowAmmo( playerState_t *ps, qboolean *energy );
+qboolean                    BG_PlayerLowAmmo( const playerState_t *ps, qboolean *energy );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );
 int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count );

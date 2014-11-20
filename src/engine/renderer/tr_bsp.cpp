@@ -2927,15 +2927,25 @@ static int LeafSurfaceCompare( const void *a, const void *b )
 		return 1;
 	}
 
-	if ( aa->viewCount < bb->viewCount )
+	// sort by leaf
+	if ( aa->interactionBits < bb->interactionBits )
 	{
 		return -1;
 	}
-	else if ( aa->viewCount > bb->viewCount )
+	else if ( aa->interactionBits > bb->interactionBits )
 	{
 		return 1;
 	}
 
+	// sort by leaf marksurfaces index
+	if ( aa->lightCount < bb->lightCount )
+	{
+		return -1;
+	}
+	else if ( aa->lightCount > bb->lightCount )
+	{
+		return 1;
+	}
 	return 0;
 }
 
@@ -3011,80 +3021,87 @@ static void R_CreateWorldVBO( void )
 	for ( i = 0, surface = s_worldData.surfaces; i < s_worldData.numSurfaces; i++, surface++ )
 	{
 		surface->viewCount = -1;
+		surface->lightCount = -1;
+		surface->interactionBits = 0;
 	}
 
-	if ( r_mergeLeafSurfaces->integer )
+	// mark matching surfaces
+	for ( i = 0; i < s_worldData.numnodes - s_worldData.numDecisionNodes; i++ )
 	{
-		// mark matching surfaces
-		for ( i = 0; i < s_worldData.numnodes - s_worldData.numDecisionNodes; i++ )
+		bspNode_t *leaf = s_worldData.nodes + s_worldData.numDecisionNodes + i;
+
+		for ( j = 0; j < leaf->numMarkSurfaces; j++ )
 		{
-			bspNode_t *leaf = s_worldData.nodes + s_worldData.numDecisionNodes + i;
+			bspSurface_t *surf1;
+			shader_t *shader1;
+			int fogIndex1;
+			int lightMapNum1;
+			qboolean merged = qfalse;
+			surf1 = s_worldData.markSurfaces[ leaf->firstMarkSurface + j ];
 
-			for ( j = 0; j < leaf->numMarkSurfaces; j++ )
+			if ( surf1->viewCount != -1 )
 			{
-				bspSurface_t *surf1;
-				shader_t *shader1;
-				int fogIndex1;
-				int lightMapNum1;
-				qboolean merged = qfalse;
-				surf1 = leaf->markSurfaces[ j ];
+				continue;
+			}
 
-				if ( surf1->viewCount != -1 )
+			if ( *surf1->data != SF_GRID && *surf1->data != SF_TRIANGLES && *surf1->data != SF_FACE )
+			{
+				continue;
+			}
+
+			shader1 = surf1->shader;
+
+			if ( shader1->isSky || shader1->isPortal || ShaderRequiresCPUDeforms( shader1 ) )
+			{
+				continue;
+			}
+
+			fogIndex1 = surf1->fogIndex;
+			lightMapNum1 = surf1->lightmapNum;
+			surf1->viewCount = surf1 - s_worldData.surfaces;
+			surf1->lightCount = j;
+			surf1->interactionBits = i;
+
+			for ( k = j + 1; k < leaf->numMarkSurfaces; k++ )
+			{
+				bspSurface_t *surf2;
+				shader_t *shader2;
+				int fogIndex2;
+				int lightMapNum2;
+
+				surf2 = s_worldData.markSurfaces[ leaf->firstMarkSurface + k ];
+
+				if ( surf2->viewCount != -1 )
 				{
 					continue;
 				}
 
-				if ( *surf1->data != SF_GRID && *surf1->data != SF_TRIANGLES && *surf1->data != SF_FACE )
+				if ( *surf2->data != SF_GRID && *surf2->data != SF_TRIANGLES && *surf2->data != SF_FACE )
 				{
 					continue;
 				}
 
-				shader1 = surf1->shader;
-
-				if ( shader1->isSky || shader1->isPortal || ShaderRequiresCPUDeforms( shader1 ) )
+				shader2 = surf2->shader;
+				fogIndex2 = surf2->fogIndex;
+				lightMapNum2 = surf2->lightmapNum;
+				if ( shader1 != shader2 || fogIndex1 != fogIndex2 || lightMapNum1 != lightMapNum2 )
 				{
 					continue;
 				}
 
-				fogIndex1 = surf1->fogIndex;
-				lightMapNum1 = surf1->lightmapNum;
-				surf1->viewCount = surf1 - s_worldData.surfaces;
+				surf2->viewCount = surf1->viewCount;
+				surf2->lightCount = k;
+				surf2->interactionBits = i;
+				merged = qtrue;
+			}
 
-				for ( k = j + 1; k < leaf->numMarkSurfaces; k++ )
-				{
-					bspSurface_t *surf2;
-					shader_t *shader2;
-					int fogIndex2;
-					int lightMapNum2;
-
-					surf2 = leaf->markSurfaces[ k ];
-
-					if ( surf2->viewCount != -1 )
-					{
-						continue;
-					}
-
-					if ( *surf2->data != SF_GRID && *surf2->data != SF_TRIANGLES && *surf2->data != SF_FACE )
-					{
-						continue;
-					}
-
-					shader2 = surf2->shader;
-					fogIndex2 = surf2->fogIndex;
-					lightMapNum2 = surf2->lightmapNum;
-					if ( shader1 != shader2 || fogIndex1 != fogIndex2 || lightMapNum1 != lightMapNum2 )
-					{
-						continue;
-					}
-
-					surf2->viewCount = surf1->viewCount;
-					merged = qtrue;
-				}
-
-				if ( !merged )
-				{
-					surf1->viewCount = -1;
-				}
+			if ( !merged )
+			{
+				surf1->viewCount = -1;
+				surf1->lightCount = -1;
+				// don't clear the leaf number so 
+				// surfaces that arn't merged are placed
+				// closer to other leafs in the vbo
 			}
 		}
 	}
@@ -3403,7 +3420,10 @@ static void R_CreateWorldVBO( void )
 			srf->ibo = s_worldData.ibo;
 		}
 
+		// clear data used for sorting
 		surface->viewCount = -1;
+		surface->lightCount = -1;
+		surface->interactionBits = 0;
 	}
 
 	ri.Hunk_FreeTempMemory( surfaces );
@@ -3582,52 +3602,11 @@ static void R_SetParent( bspNode_t *node, bspNode_t *parent )
 
 	if ( node->contents != CONTENTS_NODE )
 	{
-		// add node surfaces to bounds
-		if ( node->numMarkSurfaces > 0 )
-		{
-			int          c;
-			bspSurface_t **mark;
-			srfGeneric_t *gen;
-			qboolean     mergedSurfBounds;
-
-			// add node surfaces to bounds
-			mark = node->markSurfaces;
-			c = node->numMarkSurfaces;
-			ClearBounds( node->surfMins, node->surfMaxs );
-			mergedSurfBounds = qfalse;
-
-			while ( c-- )
-			{
-				gen = ( srfGeneric_t * )( **mark ).data;
-
-				if ( gen->surfaceType != SF_FACE &&
-				     gen->surfaceType != SF_GRID && gen->surfaceType != SF_TRIANGLES )
-				{
-					continue;
-				}
-
-				AddPointToBounds( gen->bounds[ 0 ], node->surfMins, node->surfMaxs );
-				AddPointToBounds( gen->bounds[ 1 ], node->surfMins, node->surfMaxs );
-				mark++;
-				mergedSurfBounds = qtrue;
-			}
-
-			if ( !mergedSurfBounds )
-			{
-				VectorCopy( node->mins, node->surfMins );
-				VectorCopy( node->maxs, node->surfMaxs );
-			}
-		}
-
 		return;
 	}
 
 	R_SetParent( node->children[ 0 ], node );
 	R_SetParent( node->children[ 1 ], node );
-
-	// ydnar: surface bounds
-	BoundsAdd( node->surfMins, node->surfMaxs, node->children[ 0 ]->surfMins, node->children[ 0 ]->surfMaxs );
-	BoundsAdd( node->surfMins, node->surfMaxs, node->children[ 1 ]->surfMins, node->children[ 1 ]->surfMaxs );
 }
 
 /*
@@ -3643,8 +3622,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	bspNode_t     *out;
 	int           numNodes, numLeafs;
 	vboData_t     data;
-	IBO_t         *volumeIBO;
-	vec3_t        mins, maxs;
 
 	ri.Printf( PRINT_DEVELOPER, "...loading nodes and leaves\n" );
 
@@ -3679,10 +3656,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 			out->maxs[ j ] = LittleLong( in->maxs[ j ] );
 		}
 
-		// ydnar: surface bounds
-		VectorCopy( out->mins, out->surfMins );
-		VectorCopy( out->maxs, out->surfMaxs );
-
 		p = LittleLong( in->planeNum );
 		out->plane = s_worldData.planes + p;
 
@@ -3714,9 +3687,6 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 			out->maxs[ j ] = LittleLong( inLeaf->maxs[ j ] );
 		}
 
-		// ydnar: surface bounds
-		ClearBounds( out->surfMins, out->surfMaxs );
-
 		out->cluster = LittleLong( inLeaf->cluster );
 		out->area = LittleLong( inLeaf->area );
 
@@ -3725,77 +3695,21 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 			s_worldData.numClusters = out->cluster + 1;
 		}
 
-		out->markSurfaces = s_worldData.markSurfaces + LittleLong( inLeaf->firstLeafSurface );
-		out->viewSurfaces = s_worldData.viewSurfaces + LittleLong( inLeaf->firstLeafSurface );
+		out->firstMarkSurface = LittleLong( inLeaf->firstLeafSurface );
 		out->numMarkSurfaces = LittleLong( inLeaf->numLeafSurfaces );
 	}
 
 	// chain decendants and compute surface bounds
 	R_SetParent( s_worldData.nodes, NULL );
 
-	// calculate occlusion query volumes
-	for ( j = 0, out = &s_worldData.nodes[ 0 ]; j < s_worldData.numnodes; j++, out++ )
+	backEndData[ 0 ]->traversalList = ( bspNode_t ** ) ri.Hunk_Alloc( sizeof( bspNode_t * ) * s_worldData.numnodes, h_low );
+	backEndData[ 0 ]->traversalLength = 0;
+
+	if ( r_smp->integer )
 	{
-		if ( out->contents != CONTENTS_NODE && !out->numMarkSurfaces )
-		{
-			continue; // don't need to build occlusion query volumes for this leaf because this leaf has no volume
-		}
-
-		Com_Memset( out->lastVisited, -1, sizeof( out->lastVisited ) );
-		Com_Memset( out->visible, qfalse, sizeof( out->visible ) );
-
-		InitLink( &out->visChain, out );
-		InitLink( &out->occlusionQuery, out );
-		InitLink( &out->occlusionQuery2, out );
-
-		glGenQueries( MAX_VIEWS, out->occlusionQueryObjects );
-
-		tess.multiDrawPrimitives = 0;
-		tess.numIndexes = 0;
-		tess.numVertexes = 0;
-
-		VectorCopy( out->mins, mins );
-		VectorCopy( out->maxs, maxs );
-
-		for ( i = 0; i < 3; i++ )
-		{
-			out->origin[ i ] = ( mins[ i ] + maxs[ i ] ) * 0.5f;
-		}
-
-		Tess_AddCube( vec3_origin, mins, maxs, colorWhite );
-
-		if ( j == 0 )
-		{
-			data.xyz = (vec3_t*) ri.Hunk_AllocateTempMemory(tess.numVertexes * sizeof(*data.xyz));
-		}
-
-		for ( i = 0; i < tess.numVertexes; i++ )
-		{
-			VectorCopy( tess.verts[ i ].xyz, data.xyz[ i ] );
-		}
-		data.numVerts = tess.numVertexes;
-
-		out->volumeVBO = R_CreateStaticVBO( va( "staticBspNode_VBO %i", j ), data, VBO_LAYOUT_POSITION );
-
-		if ( j == 0 )
-		{
-			out->volumeIBO = volumeIBO = R_CreateStaticIBO( "staticBspNode_IBO", tess.indexes, tess.numIndexes );
-		}
-		else
-		{
-			out->volumeIBO = volumeIBO;
-		}
-
-		out->volumeVerts = tess.numVertexes;
-		out->volumeIndexes = tess.numIndexes;
+		backEndData[ 1 ]->traversalList = ( bspNode_t ** ) ri.Hunk_Alloc( sizeof( bspNode_t * ) * s_worldData.numnodes, h_low );
+		backEndData[ 1 ]->traversalLength = 0;
 	}
-
-//I'm unsure if Hunk_FreeTempMemory can handle NULL values.
-	if ( data.xyz ) { ri.Hunk_FreeTempMemory( data.xyz ); }
-
-	tess.multiDrawPrimitives = 0;
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
 }
 
 //=============================================================================
@@ -4194,6 +4108,33 @@ void R_LoadLightGrid( lump_t *l )
 		gridPoint2->directed[ 0 ] = floatToUnorm8( directedColor[ 0 ] );
 		gridPoint2->directed[ 1 ] = floatToUnorm8( directedColor[ 1 ] );
 		gridPoint2->directed[ 2 ] = floatToUnorm8( directedColor[ 2 ] );
+
+		// Light direction vectors have to be stored in two bytes:
+		// First the vector is projected onto a unit octahedron, that means |x| + |y| + |z| = 1,
+		// then it is projected onto the x/y plane. The magnitude of z can be reconstructed by
+		// the above identity, but not the sign.
+		// Fortunately the identity implies |x| + |y| <= 1, so all vectors fall within a diamond
+		// shape within the unit square that covers exactly half of the area:
+		//
+		//           +-----+-----+
+		//           |    /|\    |
+		//           |   /#|#\   |
+		//           |  /##|##\  |
+		//           | /###|###\ |
+		//           |/####|####\|
+		//           +-----+-----+
+		//           |\####|####/|
+		//           | \###|###/ |
+		//           |  \##|##/  |
+		//           |   \#|#/   |
+		//           |    \|/    |
+		//           +-----+-----+
+		//
+		// If z >= 0, we keep just the x,y coordinates in the diamond, otherwise the point
+		// is flipped across the nearest diamond edge into one of the outer triangles.
+
+		// The interpolation in this format behaves quite good except when interpolating
+		// two points that are in different outer triangles.
 
 		scale = fabsf( direction[ 0 ] ) + fabsf( direction[ 1 ] ) + fabsf( direction[ 2 ] );
 		if( scale > 0.0f ) {
@@ -4903,13 +4844,6 @@ static void R_RecursivePrecacheInteractionNode( bspNode_t *node, trRefLight_t *l
 
 	do
 	{
-		// light already hit node
-		if ( node->lightCount == s_lightCount )
-		{
-			return;
-		}
-
-		node->lightCount = s_lightCount;
 
 		if ( node->contents != -1 )
 		{
@@ -4949,7 +4883,7 @@ static void R_RecursivePrecacheInteractionNode( bspNode_t *node, trRefLight_t *l
 		vec3_t       worldBounds[ 2 ];
 
 		// add the individual surfaces
-		mark = node->markSurfaces;
+		mark = s_worldData.markSurfaces + node->firstMarkSurface;
 		c = node->numMarkSurfaces;
 
 		while ( c-- )
@@ -6619,12 +6553,16 @@ void R_BuildCubeMaps( void )
 				continue;
 			}
 
-			if ( FindVertexInHashTable( tr.cubeHashTable, node->origin, 256 ) == NULL )
+			vec3_t origin;
+			VectorAdd( node->maxs, node->mins, origin );
+			VectorScale( origin, 0.5, origin );
+
+			if ( FindVertexInHashTable( tr.cubeHashTable, origin, 256 ) == NULL )
 			{
 				cubeProbe = (cubemapProbe_t*) ri.Hunk_Alloc( sizeof( *cubeProbe ), h_high );
 				Com_AddToGrowList( &tr.cubeProbes, cubeProbe );
 
-				VectorCopy( node->origin, cubeProbe->origin );
+				VectorCopy( origin, cubeProbe->origin );
 
 				AddVertexToHashTable( tr.cubeHashTable, cubeProbe->origin, cubeProbe );
 			}
@@ -6799,7 +6737,7 @@ void R_BuildCubeMaps( void )
 			tr.refdef.pixelTargetWidth = REF_CUBEMAP_SIZE;
 			tr.refdef.pixelTargetHeight = REF_CUBEMAP_SIZE;
 
-			RE_BeginFrame( STEREO_CENTER );
+			RE_BeginFrame();
 			RE_RenderScene( &rf );
 			RE_EndFrame( &ii, &jj );
 
@@ -7055,12 +6993,6 @@ void RE_LoadWorldMap( const char *name )
 
 	// build cubemaps after the necessary vbo stuff is done
 	//R_BuildCubeMaps();
-
-	// never move this to RE_BeginFrame because we need it to set it here for the first frame
-	// but we need the information across 2 frames
-	ClearLink( &tr.traversalStack );
-	ClearLink( &tr.occlusionQueryQueue );
-	ClearLink( &tr.occlusionQueryList );
 
 	ri.FS_FreeFile( buffer );
 }
