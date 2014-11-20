@@ -69,6 +69,17 @@ lcannon.hudgroup
 	hud_chargebar
 }
 
+level1.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_chargebar
+}
+
 level3.hudgroup
 {
 	hud_basics
