@@ -2301,7 +2301,7 @@ void       CG_PrintTime( char *buf, int bufsize, int time );
 
 void CG_Rocket_Init( void );
 void CG_Rocket_LoadHuds( void );
-void CG_Rocket_Frame( void );
+void CG_Rocket_Frame( cgClientState_t state );
 const char *CG_Rocket_GetTag();
 const char *CG_Rocket_GetAttribute( const char *attribute );
 int CG_StringToNetSource( const char *src );

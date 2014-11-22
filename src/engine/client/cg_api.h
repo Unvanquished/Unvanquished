@@ -119,7 +119,6 @@ typedef enum cgameImport_s
   CG_SENDCLIENTCOMMAND,
   CG_UPDATESCREEN,
   CG_CM_MARKFRAGMENTS,
-  CG_GETCLIENTSTATE,
   CG_GETCURRENTSNAPSHOTNUMBER,
   CG_GETSNAPSHOT,
   CG_GETSERVERCOMMAND,
@@ -264,11 +263,6 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_CM_MARKFRAGMENTS>, std::vector<std::array<float, 3>>, std::array<float, 3>, int, int>,
 	IPC::Reply<std::vector<std::array<float, 3>>, std::vector<markFragment_t>>
 > CMMarkFragmentsMsg;
-// GetClientStateMsg TODO send it only once or per frame?
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETCLIENTSTATE>>,
-	IPC::Reply<cgClientState_t>
-> GetClientStateMsg;
 // TODO send all snapshots at the beginning of the frame
 // GetCurrentSnapshotNumberMsg
 typedef IPC::SyncMessage<
@@ -811,7 +805,7 @@ typedef IPC::SyncMessage<
 > CGameRocketInitMsg;
 // CGameRocketFrameMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FRAME>>
+	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FRAME>, cgClientState_t>
 > CGameRocketFrameMsg;
 // CGameRocketFormatDataMsg
 typedef IPC::SyncMessage<
@@ -911,7 +905,6 @@ void            trap_R_DrawStretchPic( float x, float y, float w, float h, float
 void            trap_R_DrawRotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );
 void            trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs );
 int             trap_R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
-void            trap_GetClientState( cgClientState_t *cstate );
 void            trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime );
 qboolean        trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot );
 qboolean        trap_GetServerCommand( int serverCommandNumber, std::string& cmdText );

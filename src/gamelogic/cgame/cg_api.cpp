@@ -95,9 +95,7 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 break;
 
             case CG_ROCKET_FRAME:
-                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), [] {
-                    CG_Rocket_Frame();
-                });
+                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), CG_Rocket_Frame);
                 break;
 
             case CG_ROCKET_FORMAT_DATA:
@@ -159,11 +157,6 @@ int trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t pro
 	memcpy(pointBuffer, mypointBuffer.data(), sizeof(float) * 3 * maxPoints);
 	memcpy(fragmentBuffer, myfragmentBuffer.data(), sizeof(markFragment_t) * myfragmentBuffer.size());
 	return myfragmentBuffer.size();
-}
-
-void trap_GetClientState( cgClientState_t *cstate )
-{
-	VM::SendMsg<GetClientStateMsg>(*cstate);
 }
 
 void trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )

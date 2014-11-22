@@ -459,21 +459,6 @@ void CL_ShutdownCGame( void )
 
 /*
  * ====================
- * GetClientState
- * ====================
- */
-static void GetClientState( cgClientState_t *state )
-{
-	state->connectPacketCount = clc.connectPacketCount;
-	state->connState = cls.state;
-	Q_strncpyz( state->servername, cls.servername, sizeof( state->servername ) );
-	Q_strncpyz( state->updateInfoString, cls.updateInfoString, sizeof( state->updateInfoString ) );
-	Q_strncpyz( state->messageString, clc.serverMessage, sizeof( state->messageString ) );
-	state->clientNum = cl.snap.ps.clientNum;
-}
-
-/*
- * ====================
  * LAN_LoadCachedServers
  * ====================
  */
@@ -1612,7 +1597,14 @@ void CGameVM::CGameRocketInit()
 
 void CGameVM::CGameRocketFrame()
 {
-	this->SendMsg<CGameRocketFrameMsg>();
+	cgClientState_t state;
+	state.connectPacketCount = clc.connectPacketCount;
+	state.connState = cls.state;
+	Q_strncpyz( state.servername, cls.servername, sizeof( state.servername ) );
+	Q_strncpyz( state.updateInfoString, cls.updateInfoString, sizeof( state.updateInfoString ) );
+	Q_strncpyz( state.messageString, clc.serverMessage, sizeof( state.messageString ) );
+	state.clientNum = cl.snap.ps.clientNum;
+	this->SendMsg<CGameRocketFrameMsg>(state);
 }
 
 void CGameVM::CGameRocketFormatData(int handle)
@@ -1670,12 +1662,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 				fragmentBuffer.resize(maxFragments);
 				int numFragments = re.MarkFragments(points.size(), (vec3_t*)points.data(), projection.data(), maxPoints, (float*) pointBuffer.data(), maxFragments, (markFragment_t*) fragmentBuffer.data());
 				fragmentBuffer.resize(numFragments);
-			});
-			break;
-
-		case CG_GETCLIENTSTATE:
-			IPC::HandleMsg<GetClientStateMsg>(channel, std::move(reader), [this] (cgClientState_t& state) {
-				GetClientState(&state);
 			});
 			break;
 

@@ -569,9 +569,9 @@ const char *CG_NetSourceToString( int netSrc )
 }
 
 
-void CG_Rocket_Frame( void )
+void CG_Rocket_Frame( cgClientState_t state )
 {
-	trap_GetClientState( &rocketInfo.cstate );
+	rocketInfo.cstate = state;
 	rocketInfo.realtime = trap_Milliseconds();
 
 	if ( oldConnState != rocketInfo.cstate.connState )
