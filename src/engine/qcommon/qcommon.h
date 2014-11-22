@@ -625,14 +625,6 @@ unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
 int        Com_FilterPath( const char *filter, char *name, int casesensitive );
-int        Com_RealTime( qtime_t *qtime );
-int        Com_GMTime( qtime_t *qtime );
-// Com_Time: client gets local time, server gets GMT
-#ifdef BUILD_SERVER
-#define Com_Time(t) Com_GMTime(t)
-#else
-#define Com_Time(t) Com_RealTime(t)
-#endif
 qboolean   Com_SafeMode( void );
 
 qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );

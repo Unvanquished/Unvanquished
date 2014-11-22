@@ -1750,12 +1750,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_REAL_TIME:
-			IPC::HandleMsg<RealTimeMsg>(channel, std::move(reader), [this] (int& res, qtime_t& time) {
-				res = Com_RealTime(&time);
-			});
-			break;
-
 		case CG_GETGLCONFIG:
 			IPC::HandleMsg<GetGLConfigMsg>(channel, std::move(reader), [this] (glconfig_t& config) {
 				CL_GetGlconfig(&config);

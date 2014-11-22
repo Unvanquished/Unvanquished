@@ -177,13 +177,6 @@ int trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t pro
 	return myfragmentBuffer.size();
 }
 
-int trap_RealTime( qtime_t *qtime )
-{
-	int res;
-	VM::SendMsg<RealTimeMsg>(res, *qtime);
-	return res;
-}
-
 void trap_GetGlconfig( glconfig_t *glconfig )
 {
 	VM::SendMsg<GetGLConfigMsg>(*glconfig);

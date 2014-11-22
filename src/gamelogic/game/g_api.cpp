@@ -351,18 +351,6 @@ void trap_GetPlayerPubkey(int clientNum, char *pubkey, int size)
 	Q_strncpyz(pubkey, pubkey2.c_str(), size);
 }
 
-int trap_GMTime(qtime_t *qtime)
-{
-	int res;
-	if (qtime) {
-		VM::SendMsg<GMTimeMsg>(res, *qtime);
-	} else {
-		qtime_t t;
-		VM::SendMsg<GMTimeMsg>(res, t);
-	}
-	return res;
-}
-
 void trap_GetTimeString(char *buffer, int size, const char *format, const qtime_t *tm)
 {
 	std::string text;

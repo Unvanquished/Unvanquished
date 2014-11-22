@@ -121,7 +121,6 @@ typedef enum cgameImport_s
   CG_SENDCLIENTCOMMAND,
   CG_UPDATESCREEN,
   CG_CM_MARKFRAGMENTS,
-  CG_REAL_TIME,
   CG_GETGLCONFIG,
   CG_GETGAMESTATE,
   CG_GETCLIENTSTATE,
@@ -280,11 +279,6 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_CM_MARKFRAGMENTS>, std::vector<std::array<float, 3>>, std::array<float, 3>, int, int>,
 	IPC::Reply<std::vector<std::array<float, 3>>, std::vector<markFragment_t>>
 > CMMarkFragmentsMsg;
-// RealTimeMsg TODO do with nacl API
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_REAL_TIME>>,
-	IPC::Reply<int, qtime_t>
-> RealTimeMsg;
 // GetGLConfigMsg TODO send it only once?
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETGLCONFIG>>,
@@ -962,7 +956,6 @@ void            trap_SetClientLerpOrigin( float x, float y, float z );
 int             trap_Key_GetCatcher( void );
 void            trap_Key_SetCatcher( int catcher );
 void            trap_S_StopBackgroundTrack( void );
-int             trap_RealTime( qtime_t *qtime );
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status        trap_CIN_StopCinematic( int handle );
 e_status        trap_CIN_RunCinematic( int handle );

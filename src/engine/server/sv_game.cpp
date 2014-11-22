@@ -692,12 +692,6 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		});
 		break;
 
-	case G_GM_TIME:
-		IPC::HandleMsg<GMTimeMsg>(channel, std::move(reader), [this](int& res, qtime_t& time) {
-			res = Com_GMTime(&time);
-		});
-		break;
-
 	case G_GET_TIME_STRING:
 		IPC::HandleMsg<GetTimeStringMsg>(channel, std::move(reader), [this](int len, std::string format, const qtime_t& time, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);

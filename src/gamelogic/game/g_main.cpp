@@ -748,7 +748,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 			G_LogPrintf( "------------------------------------------------------------\n" );
 			G_LogPrintf( "InitGame: %s\n", serverinfo );
 
-			trap_GMTime( &qt );
+			Com_GMTime( &qt );
 			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i Z\n",
 			             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 			             qt.tm_hour, qt.tm_min, qt.tm_sec );
@@ -766,7 +766,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		char    logfile[ 128 ], mapname[ 64 ];
 		qtime_t qt;
 
-		trap_GMTime( &qt );
+		Com_GMTime( &qt );
 		trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 
 		Com_sprintf( logfile, sizeof( logfile ),
@@ -1922,7 +1922,7 @@ static void G_LogGameplayStats( int state )
 			qtime_t t;
 
 			trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
-			trap_GMTime( &t );
+			Com_GMTime( &t );
 
 			Com_sprintf( logline, sizeof( logline ),
 			             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"

@@ -1208,7 +1208,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	if ( client->pers.admin )
 	{
-		trap_GMTime( &client->pers.admin->lastSeen );
+		Com_GMTime( &client->pers.admin->lastSeen );
 	}
 
 	// check for admin ban
