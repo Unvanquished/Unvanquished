@@ -137,20 +137,6 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
 
 // All Miscs
 
-int trap_GetDemoState( void )
-{
-	int state;
-	VM::SendMsg<GetDemoStateMsg>(state);
-	return state;
-}
-
-int trap_GetDemoPos( void )
-{
-	int pos;
-	VM::SendMsg<GetDemoPosMsg>(pos);
-	return pos;
-}
-
 void trap_SendClientCommand( const char *s )
 {
 	VM::SendMsg<SendClientCommandMsg>(s);
@@ -242,13 +228,6 @@ qboolean trap_GetEntityToken( char *buffer, int bufferSize )
 	VM::SendMsg<GetEntityTokenMsg>(bufferSize, res, token);
 	Q_strncpyz(buffer, token.c_str(), bufferSize);
 	return res;
-}
-
-void trap_GetDemoName( char *buffer, int size )
-{
-	std::string name;
-	VM::SendMsg<GetDemoNameMsg>(size, name);
-	Q_strncpyz(buffer, name.c_str(), size);
 }
 
 void trap_RegisterButtonCommands( const char *cmds )

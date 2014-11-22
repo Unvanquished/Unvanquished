@@ -116,8 +116,6 @@ typedef enum
 typedef enum cgameImport_s
 {
   // Misc
-  CG_GETDEMOSTATE,
-  CG_GETDEMOPOS,
   CG_SENDCLIENTCOMMAND,
   CG_UPDATESCREEN,
   CG_CM_MARKFRAGMENTS,
@@ -132,7 +130,6 @@ typedef enum cgameImport_s
   CG_SETUSERCMDVALUE,
   CG_SETCLIENTLERPORIGIN,
   CG_GET_ENTITY_TOKEN,
-  CG_GETDEMONAME,
   CG_REGISTER_BUTTON_COMMANDS,
   CG_GETCLIPBOARDDATA,
   CG_QUOTESTRING,
@@ -256,16 +253,6 @@ typedef enum cgameImport_s
 
 // All Miscs
 
-// GetDemoStateMsg TODO send it at the beginning of the frame
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMOSTATE>>,
-	IPC::Reply<int>
-> GetDemoStateMsg;
-// GetDemoPosMsg TODO send it at the beginning of the frame
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMOPOS>>,
-	IPC::Reply<int>
-> GetDemoPosMsg;
 // SendClientCommandMsg TODO really sync?
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_SENDCLIENTCOMMAND>, std::string>
@@ -329,11 +316,6 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GET_ENTITY_TOKEN>, int>,
 	IPC::Reply<bool, std::string>
 > GetEntityTokenMsg;
-// GetDemoNameMsg TODO send only once per frame?
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMONAME>, int>,
-	IPC::Reply<std::string>
-> GetDemoNameMsg;
 // RegisterButtonCommandsMsg TODO check it is async
 typedef IPC::Message<IPC::Id<VM::QVM, CG_REGISTER_BUTTON_COMMANDS>, std::string> RegisterButtonCommandsMsg;
 // GetClipboardDataMsg
@@ -873,8 +855,6 @@ int             trap_Argc( void );
 void            trap_Argv( int n, char *buffer, int bufferLength );
 void            trap_EscapedArgs( char *buffer, int bufferLength );
 void            trap_LiteralArgs( char *buffer, int bufferLength );
-int             trap_GetDemoState( void );
-int             trap_GetDemoPos( void );
 int             trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void            trap_FS_Read( void *buffer, int len, fileHandle_t f );
 void            trap_FS_Write( const void *buffer, int len, fileHandle_t f );
@@ -976,7 +956,6 @@ void            trap_CG_TranslateString( const char *string, char *buf );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean        trap_R_inPVVS( const vec3_t p1, const vec3_t p2 );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
-void            trap_GetDemoName( char *buffer, int size );
 int             trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
 qhandle_t       trap_R_RegisterAnimation( const char *name );

@@ -1715,18 +1715,6 @@ void CGameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
-		case CG_GETDEMOSTATE:
-			IPC::HandleMsg<GetDemoStateMsg>(channel, std::move(reader), [this] (int& res) {
-				res = CL_DemoState();
-			});
-			break;
-
-		case CG_GETDEMOPOS:
-			IPC::HandleMsg<GetDemoPosMsg>(channel, std::move(reader), [this] (int& res) {
-				res = CL_DemoPos();
-			});
-			break;
-
 		case CG_SENDCLIENTCOMMAND:
 			IPC::HandleMsg<SendClientCommandMsg>(channel, std::move(reader), [this] (std::string command) {
 				CL_AddReliableCommand(command.c_str());
@@ -1815,14 +1803,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 				std::unique_ptr<char[]> buffer(new char[len]);
 				res = re.GetEntityToken(buffer.get(), len);
 				token.assign(buffer.get(), len);
-			});
-			break;
-
-		case CG_GETDEMONAME:
-			IPC::HandleMsg<GetDemoNameMsg>(channel, std::move(reader), [this] (int len, std::string& name) {
-				std::unique_ptr<char[]> buffer(new char[len]);
-				CL_DemoName(buffer.get(), len);
-				name.assign(buffer.get(), len);
 			});
 			break;
 
