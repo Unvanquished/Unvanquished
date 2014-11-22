@@ -2092,12 +2092,8 @@ void         ByteToDir( int b, vec3_t dir );
 #define RESERVED_CONFIGSTRINGS 2 // game can't modify below this, only the system can
 
 #define MAX_GAMESTATE_CHARS    16000
-	typedef struct
-	{
-		int  stringOffsets[ MAX_CONFIGSTRINGS ];
-		char stringData[ MAX_GAMESTATE_CHARS ];
-		int  dataCount;
-	} gameState_t;
+
+typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 
 #define REF_FORCE_DLIGHT       ( 1 << 31 ) // RF, passed in through overdraw parameter, force this dlight under all conditions
 #define REF_JUNIOR_DLIGHT      ( 1 << 30 ) // (SA) this dlight does not light surfaces.  it only affects dynamic light grid

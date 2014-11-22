@@ -246,11 +246,11 @@ static void CG_ConfigStringModified( void )
 	const char *str;
 	int        num;
 
+	// update the config string state with the new data, keeping in sync
+	// with the config strings in the engine.
+	// The engine already checked the inputs
 	num = atoi( CG_Argv( 1 ) );
-
-	// get the gamestate from the client system, which will have the
-	// new configstring already integrated
-	trap_GetGameState( &cgs.gameState );
+	cgs.gameState[num] = CG_Argv(2);
 
 	// look up the individual string that was modified
 	str = CG_ConfigString( num );

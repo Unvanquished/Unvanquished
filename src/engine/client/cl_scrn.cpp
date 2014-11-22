@@ -613,16 +613,14 @@ void SCR_DrawVoipSender( void )
 			return; // client has VoIP support disabled.
 		}
 
-		switch ( atoi( Info_ValueForKey(cl.gameState.stringData +
-			cl.gameState.stringOffsets[CS_PLAYERS + cls.voipSender], "t") ) )
+		switch ( atoi( Info_ValueForKey(cl.gameState[CS_PLAYERS + cls.voipSender].c_str(), "t") ) )
 		{
 			case TEAM_ALIENS: teamColor = '1'; break;
 			case TEAM_HUMANS: teamColor = '4'; break;
 			default: teamColor = '3';
 		}
 
-		sprintf( string, "VoIP: ^%c%s", teamColor, Info_ValueForKey(cl.gameState.stringData +
-		cl.gameState.stringOffsets[CS_PLAYERS + cls.voipSender], "t" ) );
+		sprintf( string, "VoIP: ^%c%s", teamColor, Info_ValueForKey(cl.gameState[CS_PLAYERS + cls.voipSender].c_str(), "t" ) );
 
 		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
 		{

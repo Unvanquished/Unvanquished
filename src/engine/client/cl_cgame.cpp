@@ -59,16 +59,6 @@ void Key_GetBindingByString( const char *binding, int team, int *key1, int *key2
 
 /*
 ====================
-CL_GetGameState
-====================
-*/
-void CL_GetGameState( gameState_t *gs )
-{
-	*gs = cl.gameState;
-}
-
-/*
-====================
 CL_GetUserCmd
 ====================
 */
@@ -205,71 +195,23 @@ CL_ConfigstringModified
 */
 void CL_ConfigstringModified( Cmd::Args& csCmd )
 {
-	const char  *old, *s;
-	int         i, index;
-	const char  *dup;
-	gameState_t oldGs;
-	int         len;
-
 	if (csCmd.Argc() < 3) {
 		Com_Error( ERR_DROP, "CL_ConfigstringModified: wrong command received" );
 	}
 
-	index = atoi( csCmd.Argv(1).c_str() );
+	int index = atoi( csCmd.Argv(1).c_str() );
 
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
 		Com_Error( ERR_DROP, "CL_ConfigstringModified: bad index %i", index );
 	}
 
-//  s = Cmd_Argv(2);
-	// get everything after "cs <num>"
-	//s = Cmd_ArgsFrom( 2 );
-	s = csCmd.Argv(2).c_str();
-
-	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
-
-	if ( !strcmp( old, s ) )
+	if ( cl.gameState[index] == csCmd.Argv(2) )
 	{
-		return; // unchanged
+		return;
 	}
 
-	// build the new gameState_t
-	oldGs = cl.gameState;
-
-	memset( &cl.gameState, 0, sizeof( cl.gameState ) );
-
-	// leave the first 0 for uninitialized strings
-	cl.gameState.dataCount = 1;
-
-	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
-	{
-		if ( i == index )
-		{
-			dup = s;
-		}
-		else
-		{
-			dup = oldGs.stringData + oldGs.stringOffsets[ i ];
-		}
-
-		if ( !dup[ 0 ] )
-		{
-			continue; // leave with the default empty string
-		}
-
-		len = strlen( dup );
-
-		if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS )
-		{
-			Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS exceeded" );
-		}
-
-		// append it to the gameState string buffer
-		cl.gameState.stringOffsets[ i ] = cl.gameState.dataCount;
-		memcpy( cl.gameState.stringData + cl.gameState.dataCount, dup, len + 1 );
-		cl.gameState.dataCount += len + 1;
-	}
+	cl.gameState[index] = csCmd.Argv(2);
 
 	if ( index == CS_SYSTEMINFO )
 	{
@@ -284,7 +226,7 @@ CL_HandleServerCommand
 CL_GetServerCommand
 ===================
 */
-bool CL_HandleServerCommand(Str::StringRef text) {
+bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 	static char bigConfigString[ BIG_INFO_STRING ];
 	Cmd::Args args(text);
 
@@ -339,7 +281,8 @@ bool CL_HandleServerCommand(Str::StringRef text) {
 
 			Q_strcat(bigConfigString, sizeof(bigConfigString), s);
 			Q_strcat(bigConfigString, sizeof(bigConfigString), "\"");
-			return CL_HandleServerCommand(bigConfigString);
+			newText = bigConfigString;
+			return CL_HandleServerCommand(bigConfigString, newText);
 		}
 		return qfalse;
 	}
@@ -425,10 +368,12 @@ qboolean CL_GetServerCommand( int serverCommandNumber, std::string& cmdText )
 		Com_Printf( "serverCommand: %i : %s\n", serverCommandNumber, s );
 	}
 
-	if (CL_HandleServerCommand(s)) {
-		cmdText = s;
+	cmdText = s;
+	if (CL_HandleServerCommand(s, cmdText)) {
 		return true;
 	}
+
+	cmdText = "";
 	return false;
 }
 
@@ -1165,7 +1110,7 @@ void CL_InitCGame( void )
 	Con_Close();
 
 	// find the current mapname
-	info = cl.gameState.stringData + cl.gameState.stringOffsets[ CS_SERVERINFO ];
+	info = cl.gameState[ CS_SERVERINFO ].c_str();
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
@@ -1629,7 +1574,7 @@ void CGameVM::CGameStaticInit()
 
 void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum)
 {
-	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum, cls.glconfig);
+	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum, cls.glconfig, cl.gameState);
 }
 
 void CGameVM::CGameShutdown()
@@ -1725,12 +1670,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 				fragmentBuffer.resize(maxFragments);
 				int numFragments = re.MarkFragments(points.size(), (vec3_t*)points.data(), projection.data(), maxPoints, (float*) pointBuffer.data(), maxFragments, (markFragment_t*) fragmentBuffer.data());
 				fragmentBuffer.resize(numFragments);
-			});
-			break;
-
-		case CG_GETGAMESTATE:
-			IPC::HandleMsg<GetGameStateMsg>(channel, std::move(reader), [this] (gameState_t& state) {
-				CL_GetGameState(&state);
 			});
 			break;
 

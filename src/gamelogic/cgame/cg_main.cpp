@@ -1569,7 +1569,7 @@ const char *CG_ConfigString( int index )
 		CG_Error( "CG_ConfigString: bad index: %i", index );
 	}
 
-	return cgs.gameState.stringData + cgs.gameState.stringOffsets[ index ];
+	return cgs.gameState[index].c_str();
 }
 
 //==================================================================
@@ -1635,12 +1635,12 @@ Will perform callbacks to make the loading info screen update.
 =================
 */
 
-void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, glconfig_t& gl)
+void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, glconfig_t gl, GameStateCSs gameState)
 {
 	const char *s;
 
 	// clear everything
-	memset( &cgs, 0, sizeof( cgs ) );
+	cgs = cgs_t();
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
 
@@ -1680,8 +1680,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, gl
 
 	// old servers
 
-	// get the gamestate from the client system
-	trap_GetGameState( &cgs.gameState );
+	cgs.gameState = gameState;
 
 	// copy vote display strings so they don't show up blank if we see
 	// the same one directly after connecting
