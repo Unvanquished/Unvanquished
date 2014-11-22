@@ -69,16 +69,6 @@ void CL_GetGameState( gameState_t *gs )
 
 /*
 ====================
-CL_GetGlconfig
-====================
-*/
-void CL_GetGlconfig( glconfig_t *glconfig )
-{
-	*glconfig = cls.glconfig;
-}
-
-/*
-====================
 CL_GetUserCmd
 ====================
 */
@@ -1639,7 +1629,7 @@ void CGameVM::CGameStaticInit()
 
 void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum)
 {
-	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum);
+	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum, cls.glconfig);
 }
 
 void CGameVM::CGameShutdown()
@@ -1735,12 +1725,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 				fragmentBuffer.resize(maxFragments);
 				int numFragments = re.MarkFragments(points.size(), (vec3_t*)points.data(), projection.data(), maxPoints, (float*) pointBuffer.data(), maxFragments, (markFragment_t*) fragmentBuffer.data());
 				fragmentBuffer.resize(numFragments);
-			});
-			break;
-
-		case CG_GETGLCONFIG:
-			IPC::HandleMsg<GetGLConfigMsg>(channel, std::move(reader), [this] (glconfig_t& config) {
-				CL_GetGlconfig(&config);
 			});
 			break;
 

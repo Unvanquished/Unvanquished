@@ -1635,7 +1635,7 @@ Will perform callbacks to make the loading info screen update.
 =================
 */
 
-void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
+void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, glconfig_t& gl)
 {
 	const char *s;
 
@@ -1651,7 +1651,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	cgs.serverCommandSequence = serverCommandSequence;
 
 	// get the rendering configuration from the client system
-	trap_GetGlconfig( &cgs.glconfig );
+	cgs.glconfig = gl;
 	cgs.screenXScale = cgs.glconfig.vidWidth / 640.0f;
 	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0f;
 	cgs.aspectScale = ( ( 640.0f * cgs.glconfig.vidHeight ) /

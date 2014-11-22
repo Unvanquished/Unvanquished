@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int VM::VM_API_VERSION = CGAME_API_VERSION;
 
-void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
+void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, glconfig_t& gl );
 void CG_RegisterCvars( void );
 void CG_Shutdown( void );
 
@@ -54,8 +54,8 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 break;
 
             case CG_INIT:
-                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int serverCommandSequence, int clientNum) {
-                    CG_Init(serverMessageNum, serverCommandSequence, clientNum);
+                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int serverCommandSequence, int clientNum, glconfig_t gl) {
+                    CG_Init(serverMessageNum, serverCommandSequence, clientNum, gl);
                 });
                 break;
 
@@ -161,11 +161,6 @@ int trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t pro
 	memcpy(pointBuffer, mypointBuffer.data(), sizeof(float) * 3 * maxPoints);
 	memcpy(fragmentBuffer, myfragmentBuffer.data(), sizeof(markFragment_t) * myfragmentBuffer.size());
 	return myfragmentBuffer.size();
-}
-
-void trap_GetGlconfig( glconfig_t *glconfig )
-{
-	VM::SendMsg<GetGLConfigMsg>(*glconfig);
 }
 
 void trap_GetGameState( gameState_t *gamestate )
