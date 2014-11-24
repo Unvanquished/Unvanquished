@@ -334,7 +334,7 @@ private:
 
 	IPC::SharedMemory shmRegion;
 
-    VM::CommonVMServices services;
+	std::unique_ptr<VM::CommonVMServices> services;
 };
 
 //=============================================================================

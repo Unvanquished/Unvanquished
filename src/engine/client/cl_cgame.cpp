@@ -1564,7 +1564,10 @@ void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int cli
 
 void CGameVM::CGameShutdown()
 {
-	this->SendMsg<CGameShutdownMsg>();
+	if (!services->HasVMErrored()) {
+		this->SendMsg<CGameShutdownMsg>();
+	}
+	this->Free();
 	services = nullptr;
 }
 

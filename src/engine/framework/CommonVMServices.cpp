@@ -222,6 +222,7 @@ namespace VM {
 
             case QVM_COMMON_ERROR:
                 IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](std::string text) {
+                    vmErrored = true;
                     Com_Error(ERR_DROP, "%s", text.c_str());
                 });
                 break;
@@ -353,7 +354,7 @@ namespace VM {
     // Misc, Dispatch
 
     CommonVMServices::CommonVMServices(VMBase& vm, Str::StringRef vmName, int commandFlag)
-    :vmName(vmName), vm(vm), commandFlag(commandFlag), commandProxy(new ProxyCmd(*this, commandFlag)) {
+    :vmName(vmName), vm(vm), vmErrored(false), commandProxy(new ProxyCmd(*this, commandFlag)) {
     }
 
     CommonVMServices::~CommonVMServices() {
@@ -387,6 +388,10 @@ namespace VM {
             default:
                 Com_Error(ERR_DROP, "Unhandled common engine syscall major number %i", major);
         }
+    }
+
+    bool CommonVMServices::HasVMErrored() const {
+        return vmErrored;
     }
 
     VMBase& CommonVMServices::GetVM() {

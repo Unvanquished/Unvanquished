@@ -547,10 +547,11 @@ public:
 	Channel(Socket socket)
 		: socket(std::move(socket)), counter(0) {}
 	Channel(Channel&& other)
-		: socket(std::move(other.socket)) {}
+		: socket(std::move(other.socket)), handlingAsyncMsg(other.handlingAsyncMsg) {}
 	Channel& operator=(Channel&& other)
 	{
 		std::swap(socket, other.socket);
+		handlingAsyncMsg = other.handlingAsyncMsg;
 		return *this;
 	}
 	explicit operator bool() const
