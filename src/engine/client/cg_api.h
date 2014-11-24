@@ -57,8 +57,8 @@ typedef struct
 	int           numEntities; // all of the entities that need to be presented
 	entityState_t entities[ MAX_ENTITIES_IN_SNAPSHOT ]; // at the time of this snapshot
 
-	int           numServerCommands; // text based server commands to execute when this
-	int           serverCommandSequence; // snapshot becomes current
+	// text based server commands to execute when this snapshot becomes current
+	int           serverCommandSequence;
 } snapshot_t;
 
 typedef enum {
