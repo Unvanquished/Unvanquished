@@ -48,7 +48,6 @@ namespace VM {
     enum {
         QVM_COMMON_PRINT,
         QVM_COMMON_ERROR,
-        QVM_COMMON_LOG,
         QVM_COMMON_SEND_CONSOLE_COMMAND,
 
         QVM_COMMON_FS_FOPEN_FILE,

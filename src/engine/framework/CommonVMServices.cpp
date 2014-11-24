@@ -226,9 +226,6 @@ namespace VM {
                 });
                 break;
 
-            case QVM_COMMON_LOG:
-                Com_Error(ERR_DROP, "trap_Log not implemented");
-
             case QVM_COMMON_SEND_CONSOLE_COMMAND:
                 IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](std::string text) {
                     Cmd::BufferCommandText(text);

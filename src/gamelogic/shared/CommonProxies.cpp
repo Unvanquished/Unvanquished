@@ -509,11 +509,6 @@ void NORETURN trap_Error(const char *string)
 	VM::Exit(); // Amanieu: Need to implement proper error handling
 }
 
-void trap_Log(log_event_t *event)
-{
-	Com_Error(ERR_DROP, "trap_Log not implemented");
-}
-
 int trap_Milliseconds(void)
 {
 #ifdef LIBSTDCXX_BROKEN_CXX11
