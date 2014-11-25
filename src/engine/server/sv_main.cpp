@@ -175,7 +175,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 	{
 		SV_PrintTranslatedText( ( const char * ) message, qtrue, qfalse );
 	}
-	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr_p ", 9 ) )
+	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr_p ", 11 ) )
 	{
 		SV_PrintTranslatedText( ( const char * ) message, qtrue, qtrue );
 	}
