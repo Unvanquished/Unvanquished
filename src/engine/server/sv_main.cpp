@@ -495,7 +495,6 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	int           statusLength;
 	int           playerLength;
 	char          infostring[ MAX_INFO_STRING ];
-	const char    *challenge = nullptr;
 
 	//bani - bugtraq 12534
 	if ( args.Argc() > 1 && !SV_VerifyChallenge( args.Argv(1).c_str() ) )
