@@ -514,7 +514,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	// this will remove the body, among other things
 	gvm->GameClientDisconnect( drop - svs.clients );
 
-	if ( ( drop->gentity && ( drop->gentity->r.svFlags & SVF_BOT ) ) || drop->netchan.remoteAddress.type == NA_BOT )
+	if ( SV_IsBot(drop) )
 	{
 		SV_BotFreeClient( drop - svs.clients );
 	}

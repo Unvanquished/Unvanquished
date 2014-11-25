@@ -507,10 +507,10 @@ void           SV_GameCommandHandler( void );
 //
 // sv_bot.c
 //
-int  SV_BotAllocateClient( int clientNum );
+int  SV_BotAllocateClient( void );
 void SV_BotFreeClient( int clientNum );
+bool SV_IsBot( const client_t* client );
 
-int  SV_BotGetSnapshotEntity( int client, int ent );
 int  SV_BotGetConsoleMessage( int client, char *buf, int size );
 
 //============================================================

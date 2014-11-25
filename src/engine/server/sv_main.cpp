@@ -196,7 +196,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		}
 
 		// Ridah, don't need to send messages to AI
-		if ( client->gentity && client->gentity->r.svFlags & SVF_BOT )
+		if ( SV_IsBot(client) )
 		{
 			continue;
 		}
@@ -583,7 +583,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			if ( svs.clients[ i ].gentity && ( svs.clients[ i ].gentity->r.svFlags & SVF_BOT ) )
+			if ( SV_IsBot(&svs.clients[ i ]) )
 			{
 				++botCount;
 			}
@@ -1041,7 +1041,7 @@ void SV_CalcPings( void )
 			continue;
 		}
 
-		if ( cl->gentity->r.svFlags & SVF_BOT )
+		if ( SV_IsBot(cl) )
 		{
 			cl->ping = 0;
 			continue;

@@ -323,7 +323,7 @@ typedef IPC::SyncMessage<
 
 // BotAllocateClientMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, BOT_ALLOCATE_CLIENT>, int>,
+	IPC::Message<IPC::Id<VM::QVM, BOT_ALLOCATE_CLIENT>>,
 	IPC::Reply<int>
 > BotAllocateClientMsg;
 // BotFreeClientMsg

@@ -226,7 +226,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	}
 
 	// find what clientNum to use for bot
-	clientNum = trap_BotAllocateClient( 0 );
+	clientNum = trap_BotAllocateClient();
 
 	if ( clientNum < 0 )
 	{
