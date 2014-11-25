@@ -294,9 +294,6 @@ qboolean RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Ou
 
 	tr.worldEntity.e.nonNormalizedAxes = qfalse;
 
-	// RB: world will be never ignored by occusion query test
-	tr.worldEntity.occlusionQuerySamples = 1;
-
 	tr.registered = qtrue;
 
 	// NOTE: this sucks, for some reason the first stretch pic is never drawn

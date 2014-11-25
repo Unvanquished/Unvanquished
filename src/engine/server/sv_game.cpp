@@ -708,8 +708,8 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case BOT_ALLOCATE_CLIENT:
-		IPC::HandleMsg<BotAllocateClientMsg>(channel, std::move(reader), [this](int input, int& output) {
-			output = SV_BotAllocateClient(input);
+		IPC::HandleMsg<BotAllocateClientMsg>(channel, std::move(reader), [this](int& output) {
+			output = SV_BotAllocateClient();
 		});
 		break;
 

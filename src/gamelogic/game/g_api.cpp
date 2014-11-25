@@ -363,10 +363,10 @@ void trap_QuoteString(const char *str, char *buffer, int size)
 	Q_strncpyz(buffer, Cmd::Escape(str).c_str(), size);
 }
 
-int trap_BotAllocateClient(int clientNum)
+int trap_BotAllocateClient( void )
 {
 	int res;
-	VM::SendMsg<BotAllocateClientMsg>(clientNum, res);
+	VM::SendMsg<BotAllocateClientMsg>(res);
 	return res;
 }
 

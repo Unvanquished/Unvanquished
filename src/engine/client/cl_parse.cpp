@@ -488,9 +488,16 @@ void CL_SystemInfoChanged( void )
 	// in some cases, outdated cp commands might get sent with this news serverId
 	cl.serverId = atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
 
-	// don't set any vars when playing a demo
+	// don't set any vars when playing a demo, but load the map
 	if ( clc.demoplaying )
 	{
+		const char *mapname, *info;
+
+		// find the current mapname
+		info = cl.gameState[ CS_SERVERINFO ].c_str();
+		mapname = Info_ValueForKey( info, "mapname" );
+		FS_LoadPak( va( "map-%s", mapname ) );
+
 		return;
 	}
 

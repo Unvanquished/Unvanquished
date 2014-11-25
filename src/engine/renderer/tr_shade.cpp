@@ -2016,92 +2016,6 @@ static void Render_heatHaze( int stage )
 
 	GLimp_LogComment( "--- Render_heatHaze ---\n" );
 
-	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable /*&& glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10*/ && glConfig.driverType != GLDRV_MESA )
-	{
-		FBO_t    *previousFBO;
-		uint32_t stateBits;
-
-		GLimp_LogComment( "--- HEATHAZE FIX BEGIN ---\n" );
-
-		// capture current color buffer for u_CurrentMap
-
-		previousFBO = glState.currentFBO;
-
-		// copy depth of the main context to occlusionRenderFBO
-		glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, 0 );
-		glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.occlusionRenderFBO->frameBuffer );
-		glBlitFramebufferEXT( 0, 0, glConfig.vidWidth, glConfig.vidHeight,
-							  0, 0, glConfig.vidWidth, glConfig.vidHeight,
-							  GL_DEPTH_BUFFER_BIT,
-							  GL_NEAREST );
-
-		R_BindFBO( tr.occlusionRenderFBO );
-		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.occlusionRenderFBOImage->texnum, 0 );
-
-		// clear color buffer
-		glClear( GL_COLOR_BUFFER_BIT );
-
-		// remove blend mode
-		stateBits = pStage->stateBits;
-		stateBits &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_DEPTHMASK_TRUE );
-
-		GL_State( stateBits );
-
-		if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
-			// depth buffer may change
-			backEnd.depthRenderImageValid = qfalse;
-		}
-
-		// choose right shader program ----------------------------------
-		gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
-		gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
-
-		gl_genericShader->SetTCGenEnvironment( false );
-		gl_genericShader->DisableMacro_USE_DEPTH_FADE();
-
-		gl_genericShader->BindProgram();
-		// end choose right shader program ------------------------------
-
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
-		// u_ColorModulate
-		gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
-
-		// u_Color
-		gl_genericShader->SetUniform_Color( colorRed );
-
-		gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
-		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-		// u_Bones
-		if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
-		{
-			gl_genericShader->SetUniform_Bones( tess.numBones, tess.bones );
-		}
-
-		// u_VertexInterpolation
-		if ( tess.vboVertexAnimation )
-		{
-			gl_genericShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
-		}
-
-		// u_DeformGen
-		gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
-
-		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage ); 
-
-		gl_genericShader->SetRequiredVertexPointers();
-
-		Tess_DrawElements();
-
-		R_BindFBO( previousFBO );
-
-		GL_CheckErrors();
-
-		GLimp_LogComment( "--- HEATHAZE FIX END ---\n" );
-	}
-
 	// remove alpha test
 	stateBits = pStage->stateBits;
 	stateBits &= ~GLS_ATEST_BITS;
@@ -2151,12 +2065,6 @@ static void Render_heatHaze( int stage )
 
 	GL_BindToTMU( 1, tr.currentRenderImage );
 	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
-
-	// bind u_ContrastMap
-	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && glConfig.driverType != GLDRV_MESA )
-	{
-		GL_BindToTMU( 2, tr.occlusionRenderFBOImage ); 
-	}
 
 	gl_heatHazeShader->SetRequiredVertexPointers();
 

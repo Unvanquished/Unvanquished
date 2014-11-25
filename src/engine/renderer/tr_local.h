@@ -138,8 +138,6 @@ static inline float halfToFloat( int16_t in ) {
 #define MAX_SHADER_TABLES     1024
 #define MAX_SHADER_STAGES     16
 
-#define MAX_OCCLUSION_QUERIES 4096
-
 #define MAX_FBOS              64
 
 #define MAX_VISCOUNTS         5
@@ -178,7 +176,6 @@ static inline float halfToFloat( int16_t in ) {
 	  RSPEEDS_SHADOWCUBE_CULLING,
 	  RSPEEDS_FOG,
 	  RSPEEDS_FLARES,
-	  RSPEEDS_OCCLUSION_QUERIES,
 	  RSPEEDS_SHADING_TIMES,
 	  RSPEEDS_CHC,
 	  RSPEEDS_NEAR_FAR,
@@ -401,11 +398,6 @@ static inline float halfToFloat( int16_t in ) {
 
 		int8_t       shadowLOD; // Level of Detail for shadow mapping
 
-		qboolean                  noOcclusionQueries;
-		uint32_t                  occlusionQueryObject;
-		uint32_t                  occlusionQuerySamples;
-		link_t                    multiQuery; // CHC++: list of all nodes that are used by the same occlusion query
-
 		int                       restrictInteractionFirst;
 		int                       restrictInteractionLast;
 
@@ -462,12 +454,6 @@ static inline float halfToFloat( int16_t in ) {
 		vec3_t       localBounds[ 2 ];
 		vec3_t       worldBounds[ 2 ]; // only set when not completely culled. use them for light interactions
 		vec3_t       worldCorners[ 8 ];
-
-		// GPU occlusion culling
-		qboolean noOcclusionQueries;
-		uint32_t occlusionQueryObject;
-		uint32_t occlusionQuerySamples;
-		link_t   multiQuery; // CHC++: list of all nodes that are used by the same occlusion query
 	} trRefEntity_t;
 
 	typedef struct
@@ -1749,9 +1735,6 @@ static inline float halfToFloat( int16_t in ) {
 
 		int16_t              scissorX, scissorY, scissorWidth, scissorHeight;
 
-		uint32_t             occlusionQuerySamples; // visible fragment count
-		qboolean             noOcclusionQueries;
-
 		struct interaction_s *next;
 	} interaction_t;
 
@@ -2494,10 +2477,6 @@ static inline float halfToFloat( int16_t in ) {
 		int c_dlightSurfacesCulled;
 		int c_dlightInteractions;
 
-		int c_occlusionQueries;
-		int c_occlusionQueriesMulti;
-		int c_occlusionQueriesSaved;
-
 		int c_decalProjectors, c_decalTestSurfaces, c_decalClipSurfaces, c_decalSurfaces, c_decalSurfacesCreated;
 	} frontEndCounters_t;
 
@@ -2569,17 +2548,6 @@ static inline float halfToFloat( int16_t in ) {
 		int   c_flareAdds;
 		int   c_flareTests;
 		int   c_flareRenders;
-
-		int   c_occlusionQueries;
-		int   c_occlusionQueriesMulti;
-		int   c_occlusionQueriesSaved;
-		int   c_occlusionQueriesAvailable;
-		int   c_occlusionQueriesLightsCulled;
-		int   c_occlusionQueriesEntitiesCulled;
-		int   c_occlusionQueriesLeafsCulled;
-		int   c_occlusionQueriesInteractionsCulled;
-		int   c_occlusionQueriesResponseTime;
-		int   c_occlusionQueriesFetchTime;
 
 		int   c_forwardAmbientTime;
 		int   c_forwardLightingTime;
@@ -2855,8 +2823,6 @@ static inline float halfToFloat( int16_t in ) {
 		float         inverseSawToothTable[ FUNCTABLE_SIZE ];
 		float         fogTable[ FOG_TABLE_SIZE ];
 
-		uint32_t       occlusionQueryObjects[ MAX_OCCLUSION_QUERIES ];
-		int            numUsedOcclusionQueryObjects;
 		scissorState_t scissor;
 	} trGlobals_t;
 
@@ -2932,7 +2898,6 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_compressNormalMaps;
 	extern cvar_t *r_exportTextures;
 	extern cvar_t *r_heatHaze;
-	extern cvar_t *r_heatHazeFix;
 	extern cvar_t *r_noMarksOnTrisurfs;
 	extern cvar_t *r_recompileShaders;
 	extern cvar_t *r_lazyShaders; // 0: build all shaders on program start 1: delay shader build until first map load 2: delay shader build until needed
@@ -3077,7 +3042,6 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_showLightScissors;
 	extern cvar_t *r_showLightBatches;
 	extern cvar_t *r_showLightGrid;
-	extern cvar_t *r_showOcclusionQueries;
 	extern cvar_t *r_showBatches;
 	extern cvar_t *r_showLightMaps; // render lightmaps only
 	extern cvar_t *r_showDeluxeMaps;
@@ -3100,13 +3064,6 @@ static inline float halfToFloat( int16_t in ) {
 	extern cvar_t *r_mergeLeafSurfaces;
 	extern cvar_t *r_parallaxMapping;
 	extern cvar_t *r_parallaxDepthScale;
-
-	extern cvar_t *r_dynamicEntityOcclusionCulling;
-	extern cvar_t *r_dynamicLightOcclusionCulling;
-	extern cvar_t *r_chcMaxPrevInvisNodesBatchSize;
-	extern cvar_t *r_chcMaxVisibleFrames;
-	extern cvar_t *r_chcVisibilityThreshold;
-	extern cvar_t *r_chcIgnoreLeaves;
 
 	extern cvar_t *r_reflectionMapping;
 	extern cvar_t *r_highQualityNormalMapping;

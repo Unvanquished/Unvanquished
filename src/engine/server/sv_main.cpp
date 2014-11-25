@@ -175,7 +175,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 	{
 		SV_PrintTranslatedText( ( const char * ) message, qtrue, qfalse );
 	}
-	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr_p ", 9 ) )
+	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr_p ", 11 ) )
 	{
 		SV_PrintTranslatedText( ( const char * ) message, qtrue, qtrue );
 	}
@@ -196,7 +196,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		}
 
 		// Ridah, don't need to send messages to AI
-		if ( client->gentity && client->gentity->r.svFlags & SVF_BOT )
+		if ( SV_IsBot(client) )
 		{
 			continue;
 		}
@@ -495,7 +495,6 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	int           statusLength;
 	int           playerLength;
 	char          infostring[ MAX_INFO_STRING ];
-	const char    *challenge = nullptr;
 
 	//bani - bugtraq 12534
 	if ( args.Argc() > 1 && !SV_VerifyChallenge( args.Argv(1).c_str() ) )
@@ -583,7 +582,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			if ( svs.clients[ i ].gentity && ( svs.clients[ i ].gentity->r.svFlags & SVF_BOT ) )
+			if ( SV_IsBot(&svs.clients[ i ]) )
 			{
 				++botCount;
 			}
@@ -1041,7 +1040,7 @@ void SV_CalcPings( void )
 			continue;
 		}
 
-		if ( cl->gentity->r.svFlags & SVF_BOT )
+		if ( SV_IsBot(cl) )
 		{
 			cl->ping = 0;
 			continue;

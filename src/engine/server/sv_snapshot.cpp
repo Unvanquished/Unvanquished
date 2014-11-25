@@ -1003,7 +1003,7 @@ void SV_SendClientSnapshot( client_t *client )
 
 	// bots need to have their snapshots built, but
 	// those are queried directly without needing to be sent
-	if ( client->gentity && client->gentity->r.svFlags & SVF_BOT )
+	if ( SV_IsBot(client) )
 	{
 		return;
 	}
@@ -1076,7 +1076,7 @@ void SV_SendClientMessages( void )
 
 		// RF, needed to insert this otherwise bots would cause error drops in sv_net_chan.c:
 		// --> "netchan queue is not properly initialized in SV_Netchan_TransmitNextFragment\n"
-		if ( c->gentity && c->gentity->r.svFlags & SVF_BOT )
+		if ( SV_IsBot(c) )
 		{
 			continue;
 		}
