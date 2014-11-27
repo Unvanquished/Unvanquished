@@ -1786,11 +1786,17 @@ void CG_WeaponInertia( playerState_t *ps, vec3_t origin )
 
 	for( i = 0; i < 3; i++ )
 	{
+		if ( Q_isnan( I->oav[ i ] ) )
+		{
+			I->oav[ i ] = 0;
+			Com_Printf( "^3WARNING: ^7I->oav[%d] is NaN. Please let a developer know about this!", i );
+		}
+		
 		av[ i ] = AngleDelta( I->oa[ i ], ps->viewangles[ i ] ) / dt;
 		ExponentialFade( I->oav + i, av[ i ], WI_LAMBDA, dt );
 		av[ i ] = I->oav[ i ];
 	}
-	
+
 	VectorMA( origin, atan( av[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT,
 	          cg.refdef.viewaxis[ 2 ], origin );
 	VectorMA( origin, atan( av[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT,
@@ -2922,7 +2928,12 @@ float CG_ChargeProgress( void )
 	float progress;
 	int   min = 0, max = 0;
 
-	if ( cg.snap->ps.weapon == WP_ALEVEL3 )
+	if ( cg.snap->ps.weapon ==  WP_ALEVEL1 )
+	{
+		min = 0;
+		max = LEVEL1_POUNCE_COOLDOWN;
+	}
+	else if ( cg.snap->ps.weapon == WP_ALEVEL3 )
 	{
 		min = LEVEL3_POUNCE_TIME_MIN;
 		max = LEVEL3_POUNCE_TIME;

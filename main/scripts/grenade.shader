@@ -45,6 +45,7 @@ gfx/grenade/smoke
 		blendFunc blend
 		rgbGen vertex
 		alphaGen vertex
+		depthFade 30.0
 	}
 }
 

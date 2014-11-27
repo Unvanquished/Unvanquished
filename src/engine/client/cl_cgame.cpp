@@ -41,6 +41,7 @@ Maryland 20850 USA.
 #include "../qcommon/crypto.h"
 
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
@@ -421,7 +422,7 @@ bool CL_HandleServerCommand(Str::StringRef text) {
 		mpz_t        message;
 
 		if (argc == 1) {
-			Com_Printf("%s", _("^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n"));
+			Com_Printf("%s", "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n");
 			return qfalse;
 		}
 
@@ -1291,7 +1292,7 @@ static int LAN_ServerIsVisible( int source, int n )
 
 		if ( Cmd_Argc() == 1 )
 		{
-			Com_Log(LOG_ERROR, _( "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" ));
+			Com_Log(LOG_ERROR, "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" );
 			return qfalse;
 		}
 
@@ -1520,6 +1521,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameUselessSyscalls ++;
 			return FloatAsInt( Cvar_VariableValue( (char*) VMA( 1 ) ) );
 
+		case CG_CVAR_ADDFLAGS:
+			cls.nCgameUselessSyscalls ++;
+			Cvar::AddFlags( ( const char * ) VMA( 1 ), args[ 2 ] );
+			return 0;
+
 		case CG_ARGC:
 			cls.nCgameUselessSyscalls ++;
 			return Cmd_Argc();
@@ -1568,11 +1574,25 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
+		case CG_FS_GETFILELISTRECURSIVE:
+			VM_CheckBlock( args[3], args[4], "FSGFL" );
+			return FS_GetFileListRecursive( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
+
+
 		case CG_FS_DELETEFILE:
 			return FS_Delete( (char*) VMA( 1 ) );
 
 		case CG_FS_LOADPAK:
-			return FS_LoadPak( ( char * ) VMA( 1 ) );
+			try {
+				FS::PakPath::LoadPakPrefix( *FS::FindPak( ( const char * ) VMA( 1 ) ), ( const char * ) VMA( 2 ) );
+			} catch (std::system_error& err) {
+				return 0;
+			}
+			return 1;
+
+		case CG_FS_LOADMAPMETADATA:
+			FS_LoadAllMapMetadata();
+			return 0;
 
 		case CG_SENDCONSOLECOMMAND:
 			Cmd::BufferCommandText( (char*) VMA( 1 ) );
@@ -2469,6 +2489,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_SetDataSelectIndex( args[ 1 ] );
 			return 0;
 
+		case CG_ROCKET_LOADFONT:
+			Rocket_LoadFont( ( const char * ) VMA( 1 ) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
@@ -2727,7 +2751,7 @@ qboolean CL_GameConsoleText( void )
 CL_CGameRendering
 =====================
 */
-void CL_CGameRendering( stereoFrame_t stereo )
+void CL_CGameRendering( void )
 {
 	/*  static int x = 0;
 	        if(!((++x) % 20)) {
@@ -2736,7 +2760,7 @@ void CL_CGameRendering( stereoFrame_t stereo )
 	        } else {
 	        }*/
 
-	VM_Call( cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying );
+	VM_Call( cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, clc.demoplaying );
 	VM_Debug( 0 );
 }
 
@@ -2875,7 +2899,7 @@ void CL_FirstSnapshot( void )
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
-		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application okay\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
+		Com_Printf("%s", ret == 0 ? "Mumble: Linking to Mumble application okay\n" : "Mumble: Linking to Mumble application failed\n" );
 	}
 
 #ifdef USE_VOIP

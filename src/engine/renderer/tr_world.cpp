@@ -35,10 +35,9 @@ added to the sorting list.
 This will also allow mirrors on both sides of a model without recursion.
 ================
 */
-static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader )
+static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int planeBits )
 {
 	srfGeneric_t *gen;
-	int          cull;
 	float        d;
 
 	// allow culling to be disabled
@@ -90,8 +89,10 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader )
 		tr.pc.c_plane_cull_in++;
 	}
 
-	if ( *surface == SF_VBO_MESH )
+	if ( planeBits )
 	{
+		cullResult_t cull;
+
 		if ( tr.currentEntity != &tr.worldEntity )
 		{
 			cull = R_CullLocalBox( gen->bounds );
@@ -106,27 +107,14 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader )
 			tr.pc.c_box_cull_out++;
 			return qtrue;
 		}
-
-		tr.pc.c_box_cull_in++;
-	}
-	else
-	{
-		if ( tr.currentEntity != &tr.worldEntity )
+		else if ( cull == CULL_CLIP )
 		{
-			cull = R_CullLocalPointAndRadius( gen->origin, gen->radius );
+			tr.pc.c_box_cull_clip++;
 		}
 		else
 		{
-			cull = R_CullPointAndRadius( gen->origin, gen->radius );
+			tr.pc.c_box_cull_in++;
 		}
-
-		if ( cull == CULL_OUT )
-		{
-			tr.pc.c_sphere_cull_out++;
-			return qtrue;
-		}
-
-		tr.pc.c_sphere_cull_in++;
 	}
 
 	// must be visible
@@ -293,7 +281,7 @@ static void R_AddDecalSurface( bspSurface_t *surf, int decalBits )
 R_AddWorldSurface
 ======================
 */
-static qboolean R_AddWorldSurface( bspSurface_t *surf, int fogIndex )
+static qboolean R_AddWorldSurface( bspSurface_t *surf, int fogIndex, int planeBits )
 {
 	if ( surf->viewCount == tr.viewCountNoReset )
 	{
@@ -303,7 +291,7 @@ static qboolean R_AddWorldSurface( bspSurface_t *surf, int fogIndex )
 	surf->viewCount = tr.viewCountNoReset;
 
 	// try to cull before lighting or adding
-	if ( R_CullSurface( surf->data, surf->shader ) )
+	if ( R_CullSurface( surf->data, surf->shader, planeBits ) )
 	{
 		return qtrue;
 	}
@@ -345,13 +333,6 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 		ent->localBounds[ 1 ][ i ] = bspModel->bounds[ 1 ][ i ];
 	}
 
-	ent->cull = R_CullLocalBox( bspModel->bounds );
-
-	if ( ent->cull == CULL_OUT )
-	{
-		return;
-	}
-
 	// setup world bounds for intersection tests
 	ClearBounds( ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
 
@@ -370,6 +351,13 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 	VectorAdd( ent->worldBounds[ 0 ], ent->worldBounds[ 1 ], boundsCenter );
 	VectorScale( boundsCenter, 0.5f, boundsCenter );
 
+	ent->cull = R_CullBox( ent->worldBounds );
+
+	if ( ent->cull == CULL_OUT )
+	{
+		return;
+	}
+
 	// Tr3B: BSP inline models should always use vertex lighting
 	R_SetupEntityLighting( &tr.refdef, ent, boundsCenter );
 
@@ -377,7 +365,7 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 
 	for ( i = 0; i < bspModel->numSurfaces; i++ )
 	{
-		R_AddWorldSurface( bspModel->firstSurface + i, fogNum );
+		R_AddWorldSurface( bspModel->firstSurface + i, fogNum, FRUSTUM_CLIPALL );
 	}
 }
 
@@ -389,7 +377,7 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 =============================================================
 */
 
-static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
+static void R_AddLeafSurfaces( bspNode_t *node, int decalBits, int planeBits )
 {
 	int          c;
 	bspSurface_t **mark;
@@ -437,7 +425,7 @@ static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
 	{
 		// the surface may have already been added if it
 		// spans multiple leafs
-		if ( R_AddWorldSurface( *view, (*view)->fogIndex ) )
+		if ( R_AddWorldSurface( *view, ( *view )->fogIndex, planeBits ) )
 		{
 			R_AddDecalSurface( *mark, decalBits );
 		}
@@ -471,7 +459,7 @@ static void R_RecursiveWorldNode( bspNode_t *node, int planeBits, int decalBits 
 		}
 
 		// if the bounding volume is outside the frustum, nothing
-		// inside can be visible OPTIMIZE: don't do this all the way to leafs?
+		// inside can be visible
 		if ( !r_nocull->integer )
 		{
 			int i;
@@ -533,7 +521,7 @@ static void R_RecursiveWorldNode( bspNode_t *node, int planeBits, int decalBits 
 	if ( node->numMarkSurfaces )
 	{
 		// ydnar: moved off to separate function
-		R_AddLeafSurfaces( node, decalBits );
+		R_AddLeafSurfaces( node, decalBits, planeBits );
 	}
 }
 
@@ -870,7 +858,7 @@ static void R_MarkLeaves( void )
 				tr.world->skyNodes[ tr.world->numSkyNodes++ ] = leaf;
 			}
 
-			R_AddLeafSurfaces( leaf, 0 );
+			R_AddLeafSurfaces( leaf, 0, FRUSTUM_CLIPALL );
 			continue;
 		}
 
@@ -920,7 +908,7 @@ void R_AddWorldSurfaces( void )
 
 		for ( i = 0, node = tr.world->skyNodes; i < tr.world->numSkyNodes; i++, node++ )
 		{
-			R_AddLeafSurfaces( *node, 0 );  // no decals on skybox nodes
+			R_AddLeafSurfaces( *node, 0, FRUSTUM_CLIPALL );  // no decals on skybox nodes
 		}
 	}
 	else

@@ -1042,7 +1042,7 @@ static void RequireExt( bool hasExt, const char* name )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_%s", name );
+		ri.Error( ERR_FATAL, "...GL_%s not found\n", name );
 	}
 }
 
@@ -1205,6 +1205,30 @@ static void GLimp_InitExtensions( void )
 		ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary not found\n");
 		glConfig2.getProgramBinaryAvailable = qfalse;
 	}
+
+#ifdef GLEW_ARB_buffer_storage
+	if ( GLEW_ARB_buffer_storage )
+	{
+		if ( r_arb_buffer_storage->integer )
+		{
+			ri.Printf( PRINT_ALL, "...using GL_ARB_buffer_storage\n" );
+			glConfig2.bufferStorageAvailable = qtrue;
+		}
+		else
+		{
+			ri.Printf( PRINT_ALL, "...ignoring GL_ARB_buffer_storage\n" );
+			glConfig2.bufferStorageAvailable = qfalse;
+		}
+	}
+	else
+#endif
+	{
+		ri.Printf( PRINT_ALL, "...GL_ARB_buffer_storage not found\n" );
+		glConfig2.bufferStorageAvailable = qfalse;
+	}
+
+	glConfig2.mapBufferRangeAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_map_buffer_range, r_arb_map_buffer_range );
+	glConfig2.syncAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_sync, r_arb_sync );
 
 	GL_CheckErrors();
 }

@@ -629,6 +629,7 @@ typedef enum
 } kbuttons_t;
 
 void CL_ClearKeys( void );
+void CL_ClearCmdButtons( void );
 
 void CL_InitInput( void );
 void CL_SendCmd( void );
@@ -848,7 +849,7 @@ void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
 void     CL_GameCommandHandler( void );
 qboolean CL_GameConsoleText( void );
-void     CL_CGameRendering( stereoFrame_t stereo );
+void     CL_CGameRendering( void );
 void     CL_SetCGameTime( void );
 void     CL_FirstSnapshot( void );
 void     CL_ShaderStateChanged( void );
@@ -945,4 +946,5 @@ void Rocket_ClearText( void );
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
 void Rocket_ShowScoreboard( const char *name, bool show );
 void Rocket_SetDataSelectIndex( int index );
+void Rocket_LoadFont( const char *font );
 #endif

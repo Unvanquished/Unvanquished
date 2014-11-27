@@ -534,6 +534,7 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.numIndexes = 0;
 	tess.attribsSet = 0;
 
+	Tess_MapVBOs( qfalse );
 	VectorCopy( quadVerts[ 0 ], tess.verts[ tess.numVertexes ].xyz );
 	Vector4Set( tess.verts[ tess.numVertexes ].color, 255, 255, 255, 255 );
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.0f );
@@ -565,7 +566,8 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.indexes[ tess.numIndexes++ ] = 2;
 	tess.indexes[ tess.numIndexes++ ] = 3;
 
-	Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
+	Tess_UpdateVBOs( );
+	GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
 
 	Tess_DrawElements();
 
@@ -581,42 +583,38 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 Tess_SurfaceSprite
 ==============
 */
+#define NORMAL_EPSILON 0.0001
+
 static void Tess_SurfaceSprite( void )
 {
-	vec3_t left, up;
+	vec3_t delta, left, up;
 	float  radius;
 	vec4_t color;
 
 	GLimp_LogComment( "--- Tess_SurfaceSprite ---\n" );
 
-	// calculate the xyz locations for the four corners
 	radius = backEnd.currentEntity->e.radius;
 
-	if ( backEnd.currentEntity->e.rotation == 0 )
-	{
-		VectorScale( backEnd.viewParms.orientation.axis[ 1 ], radius, left );
-		VectorScale( backEnd.viewParms.orientation.axis[ 2 ], radius, up );
-	}
-	else
-	{
-		float s, c;
-		float ang;
+	VectorSubtract( backEnd.currentEntity->e.origin, backEnd.viewParms.pvsOrigin, delta );
 
-		ang = M_PI * backEnd.currentEntity->e.rotation / 180;
-		s = sin( ang );
-		c = cos( ang );
+	if( VectorNormalize( delta ) < NORMAL_EPSILON )
+		return;
 
-		VectorScale( backEnd.viewParms.orientation.axis[ 1 ], c * radius, left );
-		VectorMA( left, -s * radius, backEnd.viewParms.orientation.axis[ 2 ], left );
+	CrossProduct( backEnd.viewParms.orientation.axis[ 2 ], delta, left );
 
-		VectorScale( backEnd.viewParms.orientation.axis[ 2 ], c * radius, up );
-		VectorMA( up, s * radius, backEnd.viewParms.orientation.axis[ 1 ], up );
-	}
+	if( VectorNormalize( left ) < NORMAL_EPSILON )
+		VectorSet( left, 1, 0, 0 );
+
+	if( backEnd.currentEntity->e.rotation != 0 )
+		RotatePointAroundVector( left, delta, left, backEnd.currentEntity->e.rotation );
+
+	CrossProduct( delta, left, up );
+
+	VectorScale( left, radius, left );
+	VectorScale( up, radius, up );
 
 	if ( backEnd.viewParms.isMirror )
-	{
 		VectorSubtract( vec3_origin, left, left );
-	}
 
 	color[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
 	color[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );
@@ -1216,7 +1214,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT;
 
-	if( model->blendWeights && model->blendIndexes ) {
+	if( model->num_joints > 0 && model->blendWeights && model->blendIndexes ) {
 		// deform the vertices by the lerped bones
 		for ( i = 0; i < surf->num_vertexes; i++ )
 		{
@@ -1268,8 +1266,9 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 		{
 			int    idxIn = surf->first_vertex + i;
 			int    idxOut = tess.numVertexes + i;
+			float  scale = model->internalScale * backEnd.currentEntity->e.skeleton.scale;
 
-			VectorCopy( &model->positions[ 3 * idxIn ], tess.verts[ idxOut ].xyz );
+			VectorScale( &model->positions[ 3 * idxIn ], scale, tess.verts[ idxOut ].xyz );
 			R_TBNtoQtangents( &model->tangents[ 3 * idxIn ],
 					  &model->bitangents[ 3 * idxIn ],
 					  &model->normals[ 3 * idxIn ],
@@ -1420,26 +1419,24 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 
 	model = srf->md5Model;
 
-	if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
+	tess.vboVertexSkinning = qtrue;
+	tess.numBones = srf->numBoneRemap;
+
+	for ( i = 0; i < srf->numBoneRemap; i++ )
 	{
-		tess.vboVertexSkinning = qtrue;
-		tess.numBones = srf->numBoneRemap;
+		refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ];
 
-		for ( i = 0; i < srf->numBoneRemap; i++ )
+		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
-			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ];
-
 			TransInitRotationQuat( model->bones[ srf->boneRemapInverse[ i ] ].rotation, &tess.bones[ i ] );
 			TransAddTranslation( model->bones[ srf->boneRemapInverse[ i ] ].origin, &tess.bones[ i ] );
 			TransInverse( &tess.bones[ i ], &tess.bones[ i ] );
 			TransCombine( &tess.bones[ i ], &bone->t, &tess.bones[ i ] );
-			TransAddScale( backEnd.currentEntity->e.skeleton.scale, &tess.bones[ i ] );
-			TransInsScale( model->internalScale, &tess.bones[ i ] );
+		} else {
+			TransInit( &tess.bones[ i ] );
 		}
-	}
-	else
-	{
-		tess.vboVertexSkinning = qfalse;
+		TransAddScale( backEnd.currentEntity->e.skeleton.scale, &tess.bones[ i ] );
+		TransInsScale( model->internalScale, &tess.bones[ i ] );
 	}
 
 	Tess_End();

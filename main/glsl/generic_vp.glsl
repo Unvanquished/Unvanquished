@@ -42,6 +42,12 @@ uniform vec4		u_Color;
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
+#if defined(USE_DEPTH_FADE)
+uniform float           u_DepthScale;
+varying vec2            var_FadeDepth;
+uniform mat4		u_ProjectionMatrixTranspose;
+#endif
+
 varying vec2		var_Tex;
 varying vec4		var_Color;
 
@@ -54,6 +60,7 @@ void	main()
 {
 	vec4 position;
 	vec3 normal;
+	vec4 texCoord;
 
 #if defined(USE_VERTEX_SKINNING)
 
@@ -72,18 +79,17 @@ void	main()
 	normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
 #endif
 
-#if defined(USE_DEFORM_VERTEXES)
-	position = DeformPosition2(	position,
-					normal,
-					attr_TexCoord0.st,
-					u_Time);
-#endif
+	texCoord = attr_TexCoord0;
+
+	DeformVertex( position,
+		      normal,
+		      texCoord.xy,
+		      u_Time);
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
 
 	// transform texcoords
-	vec4 texCoord;
 #if defined(USE_TCGEN_ENVIRONMENT)
 	{
 		// TODO: Explain why only the rotational part of u_ModelMatrix is relevant
@@ -95,15 +101,22 @@ void	main()
 
 		vec3 reflected = normal * 2.0 * d - viewer;
 
-		texCoord.s = 0.5 + reflected.y * 0.5;
-		texCoord.t = 0.5 - reflected.z * 0.5;
-		texCoord.q = 0;
+		texCoord.x = 0.5 + reflected.y * 0.5;
+		texCoord.y = 0.5 - reflected.z * 0.5;
+		texCoord.z = 0;
 		texCoord.w = 1;
 	}
 #elif defined(USE_TCGEN_LIGHTMAP)
-	texCoord = vec4(attr_TexCoord0.zw, 0.0, 1.0);
+	texCoord = vec4(texCoord.zw, 0.0, 1.0);
 #else
-	texCoord = vec4(attr_TexCoord0.xy, 0.0, 1.0);
+	texCoord = vec4(texCoord.xy, 0.0, 1.0);
+#endif
+
+#if defined(USE_DEPTH_FADE)
+	// compute z of end of fading effect
+	vec4 fadeDepth = vec4(0.0, 0.0, -u_DepthScale, 0.0) * u_ProjectionMatrixTranspose;
+	fadeDepth += gl_Position;
+	var_FadeDepth = fadeDepth.zw;
 #endif
 
 	var_Tex = (u_ColorTextureMatrix * texCoord).st;

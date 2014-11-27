@@ -76,12 +76,6 @@ static void CG_ParseScores( void )
 	if ( cg.showScores )
 	{
 		CG_Rocket_BuildPlayerList( NULL );
-
-		if ( !cg.scoreBoardShowing )
-		{
-			trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
-			cg.scoreBoardShowing = qtrue;
-		}
 	}
 }
 

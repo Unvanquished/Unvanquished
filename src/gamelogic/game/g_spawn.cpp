@@ -1057,6 +1057,11 @@ void SP_worldspawn( void )
 	if(G_SpawnString( "gradingTexture", "", &s ))
 		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
 
+	if(G_SpawnString( "colorGrade", "", &s )) {
+		Com_Printf("^3Warning: ^7\"colorGrade\" deprecated. Please use \"gradingTexture\"");
+		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
+	}
+
 	if(G_SpawnString( "reverbIntensity", "", &s ))
 		sscanf( s, "%f", &reverbIntensity );
 	if(G_SpawnString( "reverbEffect", "", &s ))

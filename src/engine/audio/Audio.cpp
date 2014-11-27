@@ -492,7 +492,7 @@ namespace Audio {
 
     class ALInfoCmd : public Cmd::StaticCmd {
         public:
-            ALInfoCmd(): StaticCmd("printALInfo", Cmd::AUDIO, N_("Prints information about OpenAL")) {
+            ALInfoCmd(): StaticCmd("printALInfo", Cmd::AUDIO, "Prints information about OpenAL") {
             }
 
             virtual void Run(const Cmd::Args&) const OVERRIDE {
@@ -503,7 +503,7 @@ namespace Audio {
 
     class ListSamplesCmd : public Cmd::StaticCmd {
         public:
-            ListSamplesCmd(): StaticCmd("listAudioSamples", Cmd::AUDIO, N_("Lists all the loaded sound samples")) {
+            ListSamplesCmd(): StaticCmd("listAudioSamples", Cmd::AUDIO, "Lists all the loaded sound samples") {
             }
 
             virtual void Run(const Cmd::Args&) const OVERRIDE {
@@ -521,7 +521,7 @@ namespace Audio {
 
     class StopSoundsCmd : public Cmd::StaticCmd {
         public:
-            StopSoundsCmd(): StaticCmd("stopSounds", Cmd::AUDIO, N_("Stops the music and the looping sounds")) {
+            StopSoundsCmd(): StaticCmd("stopSounds", Cmd::AUDIO, "Stops the music and the looping sounds") {
             }
 
             virtual void Run(const Cmd::Args&) const OVERRIDE {
@@ -533,7 +533,7 @@ namespace Audio {
 
     class StartCaptureTestCmd : public Cmd::StaticCmd {
         public:
-            StartCaptureTestCmd(): StaticCmd("startSoundCaptureTest", Cmd::AUDIO, N_("Starts testing the sound capture")) {
+            StartCaptureTestCmd(): StaticCmd("startSoundCaptureTest", Cmd::AUDIO, "Starts testing the sound capture") {
             }
 
             virtual void Run(const Cmd::Args&) const OVERRIDE {
@@ -544,7 +544,7 @@ namespace Audio {
 
     class StopCaptureTestCmd : public Cmd::StaticCmd {
         public:
-            StopCaptureTestCmd(): StaticCmd("stopSoundCaptureTest", Cmd::AUDIO, N_("Stops the testing of the sound capture")) {
+            StopCaptureTestCmd(): StaticCmd("stopSoundCaptureTest", Cmd::AUDIO, "Stops the testing of the sound capture") {
             }
 
             virtual void Run(const Cmd::Args&) const OVERRIDE {
@@ -552,6 +552,73 @@ namespace Audio {
             }
     };
     static StopCaptureTestCmd stopCaptureTestRegistration;
+
+    // Play the sounds from the filenames specified as arguments of the command
+    class PlaySoundCmd : public Cmd::StaticCmd {
+        public:
+            PlaySoundCmd(): StaticCmd("playSound", Cmd::AUDIO, "Plays the given sound effects") {
+            }
+
+            virtual void Run(const Cmd::Args& args) const OVERRIDE {
+                if (args.Argc() == 1) {
+                    PrintUsage(args, "/playSound <file> [<file>…]", "play sound files");
+                    return;
+                }
+
+                for (int i = 1; i < args.Argc(); i++) {
+                    sfxHandle_t soundHandle = RegisterSFX(args.Argv(i));
+                    StartLocalSound(soundHandle);
+                }
+            }
+
+            virtual Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+                if (argNum >= 1) {
+                    //TODO have a list of supported extensions somewhere and use that?
+                    return FS::PakPath::CompleteFilename(prefix, "", "", true, false);
+                }
+
+                return {};
+            }
+    };
+    static PlaySoundCmd playSoundRegistration;
+
+    // Play the music from the filename specified as argument of the command
+    class PlayMusicCmd : public Cmd::StaticCmd {
+        public:
+            PlayMusicCmd(): StaticCmd("playMusic", Cmd::AUDIO, "Plays a music") {
+            }
+
+            virtual void Run(const Cmd::Args& args) const OVERRIDE {
+                if (args.Argc() == 2) {
+                    StartMusic( args.Argv(1) , "");
+                } else {
+                    PrintUsage(args, "/playMusic <file>", "play a music file");
+                }
+            }
+
+            virtual Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+                if (argNum == 1) {
+                    //TODO have a list of supported extensions somewhere and use that?
+                    return FS::PakPath::CompleteFilename(prefix, "", "", true, false);
+                }
+
+                return {};
+            }
+    };
+    static PlayMusicCmd playMusicRegistration;
+
+    // Stop the current music
+    class StopMusicCmd : public Cmd::StaticCmd {
+        public:
+            StopMusicCmd(): StaticCmd("stopMusic", Cmd::AUDIO, "Stops the currently playing music") {
+            }
+
+            virtual void Run(const Cmd::Args& args) const OVERRIDE {
+                StopMusic();
+            }
+    };
+    static StopMusicCmd stopMusicRegistration;
+
 
     // Additional utility functions
 

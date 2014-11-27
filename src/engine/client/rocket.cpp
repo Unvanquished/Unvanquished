@@ -70,10 +70,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include <Rocket/Debugger.h>
 
-extern "C"
-{
-	#include <SDL.h>
-}
+#include <SDL.h>
 
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
@@ -367,24 +364,6 @@ void Rocket_Init( void )
 	// Set backup font
 	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
 
-	// Load all fonts in the fonts/ dir...
-	fonts = FS_ListFiles( "fonts/", ".ttf", &numFiles );
-	for ( int i = 0; i < numFiles; ++i )
-	{
-		Rocket::Core::FontDatabase::LoadFontFace( va( "fonts/%s", fonts[ i ] ) );
-	}
-
-	FS_FreeFileList( fonts );
-
-	// Now get all the otf fonts...
-	fonts = FS_ListFiles( "fonts/", ".otf", &numFiles );
-	for ( int i = 0; i < numFiles; ++i )
-	{
-		Rocket::Core::FontDatabase::LoadFontFace( va( "fonts/%s", fonts[ i ] ) );
-	}
-
-	FS_FreeFileList( fonts );
-
 	// Initialize keymap
 	Rocket_InitKeys();
 
@@ -649,11 +628,12 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				continue;
 			}
 
-			path =  va( "emoticons/%s_1x1.crn", emoticon.CString() );
+			// TODO: Dont hardcode the extension.
+			path =  va( "emoticons/%s.crn", emoticon.CString() );
 			if ( FS_FOpenFileRead( path, NULL, qtrue ) )
 			{
 				out.Erase( openBracket, closeBracket - openBracket + 1 );
-				path = va( "<img class='trem-emoticon' src='/emoticons/%s_1x1.crn' />", emoticon.CString() );
+				path = va( "<img class='trem-emoticon' src='/emoticons/%s' />", emoticon.CString() );
 				out.Insert( openBracket, path );
 				currentPosition = openBracket + strlen( path ) + 1;
 			}
@@ -688,4 +668,9 @@ void Rocket_SetActiveContext( int catcher )
 
 			break;
 	}
+}
+
+void Rocket_LoadFont( const char *font )
+{
+	Rocket::Core::FontDatabase::LoadFontFace( font );
 }

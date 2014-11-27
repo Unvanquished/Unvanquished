@@ -327,64 +327,36 @@ Draw a beacon on the HUD
 
 static void CG_DrawBeacon( cbeacon_t *b )
 {
-	vec2_t delta;
-	float offset, angle;
+	float angle;
 	vec4_t color;
 
-	Vector2Subtract( b->s->pos, b->pos_proj, delta );
-	offset = sqrt( delta[ 0 ] * delta[ 0 ] + delta[ 1 ] * delta[ 1 ] );
-
-	if( offset > cgs.bc.arrowAlphaLow )
-	{
-		vec2_t midpoint;
-
-		Vector4Copy( b->color, color );
-		if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
-			color[ 3 ] *= cgs.bc.hudAlpha;
-		color[ 3 ] *= MIN( 1.0f, LinearRemap( offset, cgs.bc.arrowAlphaLow, cgs.bc.arrowAlphaHigh, 0, 1 ) );
-		trap_R_SetColor( color );
-
-		midpoint[ 0 ] = b->s->pos[ 0 ] - delta[ 0 ] / 2.0;
-		midpoint[ 1 ] = b->s->pos[ 1 ] - delta[ 1 ] / 2.0;
-
-		angle = 180.0 - atan2( delta[ 1 ], delta[ 0 ] ) * 180 / M_PI;
-
-		trap_R_DrawRotatedPic( midpoint[ 0 ] - offset/2,
-		                       midpoint[ 1 ] - cgs.bc.arrowWidth / 2.0 ,
-		                       offset, cgs.bc.arrowWidth,
-		                       0, 0, 1, 1,
-		                       cgs.media.beaconLongArrow,
-		                       angle );
-
-		trap_R_DrawStretchPic( b->pos_proj[ 0 ] - cgs.bc.arrowDotSize / 2,
-		                       b->pos_proj[ 1 ] - cgs.bc.arrowDotSize / 2,
-		                       cgs.bc.arrowDotSize, cgs.bc.arrowDotSize,
-		                       0, 0, 1, 1,
-		                       cgs.media.beaconLongArrowDot );
-	}
+	if( b->type == BCT_TAG && b->clamped )
+		return;
 
 	Vector4Copy( b->color, color );
+
 	// display important beacons at 100% opacity
 	if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
 		color[ 3 ] *= cgs.bc.hudAlpha;
+
 	trap_R_SetColor( color );
 
-	trap_R_DrawStretchPic( b->s->pos[ 0 ] - b->size/2,
-	                       b->s->pos[ 1 ] - b->size/2,
+	trap_R_DrawStretchPic( b->pos[ 0 ] - b->size/2,
+	                       b->pos[ 1 ] - b->size/2,
 	                       b->size, b->size,
 	                       0, 0, 1, 1,
 	                       CG_BeaconIcon( b, qtrue ) );
 
 	if( b->flags & EF_BC_DYING )
-		trap_R_DrawStretchPic( b->s->pos[ 0 ] - b->size/2 * 1.3,
-		                       b->s->pos[ 1 ] - b->size/2 * 1.3,
+		trap_R_DrawStretchPic( b->pos[ 0 ] - b->size/2 * 1.3,
+		                       b->pos[ 1 ] - b->size/2 * 1.3,
 		                       b->size * 1.3, b->size * 1.3,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconNoTarget );
 
 	if ( b->clamped )
-		trap_R_DrawRotatedPic( b->s->pos[ 0 ] - b->size/2 * 1.5, 
-		                       b->s->pos[ 1 ] - b->size/2 * 1.5,
+		trap_R_DrawRotatedPic( b->pos[ 0 ] - b->size/2 * 1.5,
+		                       b->pos[ 1 ] - b->size/2 * 1.5,
 		                       b->size * 1.5, b->size * 1.5,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconIconArrow,
@@ -394,7 +366,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	{
 		int num;
 
-		num = BEACON_TIMER_TIME + b->s->ctime - cg.time;
+		num = BEACON_TIMER_TIME + b->ctime - cg.time;
 
 		if( num > 0 )
 		{
@@ -410,20 +382,20 @@ static void CG_DrawBeacon( cbeacon_t *b )
 
 			if( !b->clamped )
 			{
-				pos[ 0 ] = b->s->pos[ 0 ];
-				pos[ 1 ] = b->s->pos[ 1 ] + b->size/2 + h/2;
+				pos[ 0 ] = b->pos[ 0 ];
+				pos[ 1 ] = b->pos[ 1 ] + b->size/2 + h/2;
 			}
 			else
 			{
-				rect[ 0 ][ 0 ] = b->s->pos[ 0 ] - b->size/2 - tw/2;
-				rect[ 1 ][ 0 ] = b->s->pos[ 0 ] + b->size/2 + tw/2;
-				rect[ 0 ][ 1 ] = b->s->pos[ 1 ] - b->size/2 - h/2;
-				rect[ 1 ][ 1 ] = b->s->pos[ 1 ] + b->size/2 + h/2;
+				rect[ 0 ][ 0 ] = b->pos[ 0 ] - b->size/2 - tw/2;
+				rect[ 1 ][ 0 ] = b->pos[ 0 ] + b->size/2 + tw/2;
+				rect[ 0 ][ 1 ] = b->pos[ 1 ] - b->size/2 - h/2;
+				rect[ 1 ][ 1 ] = b->pos[ 1 ] + b->size/2 + h/2;
 
 				for( i = 0; i < 2; i++ )
 					dir[ i ] = - b->clamp_dir[ i ];
 
-				ProjectPointOntoRectangleOutwards( pos, b->s->pos, dir, (const vec2_t*)rect );
+				ProjectPointOntoRectangleOutwards( pos, b->pos, dir, (const vec2_t*)rect );
 			}
 
 			pos[ 0 ] -= tw/2;
@@ -446,38 +418,6 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		}
 	}
 
-	trap_R_SetColor( NULL );
-}
-
-/*
-==================
-CG_DrawTagScore
-==================
-*/
-void CG_DrawTagScore( void )
-{
-	float progress, lerp;
-	vec4_t color = { 1.0, 1.0, 1.0 };
-
-	if( !cg.predictedPlayerState.stats[ STAT_TAGSCORE ] ||
-	    cg.snap->ps.stats[ STAT_HEALTH ] <= 0 )
-		return;
-
-	lerp = LinearRemap( (float)( cg.time - cg.tagScoreTime ), 0.0, 100.0, -0.1, 0.0 );
-
-	progress = (float)cg.predictedPlayerState.stats[ STAT_TAGSCORE ] / 1000 + lerp;
-
-	if( progress < 0.25 )
-		return;
-
-	color[ 3 ] = LinearRemap( progress, 0.25, 1.0, 0.0, 1.0 );
-
-	trap_R_SetColor( color );
-	trap_R_DrawRotatedPic( cgs.bc.tagScorePos[ 0 ], cgs.bc.tagScorePos[ 1 ],
-	                       cgs.bc.tagScoreSize, cgs.bc.tagScoreSize,
-	                       0, 0, 1, 1,
-	                       cgs.media.beaconTagScore,
-	                       progress * -360.0 );
 	trap_R_SetColor( NULL );
 }
 
@@ -513,10 +453,8 @@ static void CG_Draw2D( void )
 	CG_ListBeacons();
 
 	// draw beacons on HUD
-	for( i = 0; i < cg.num_beacons; i++ )
-		CG_DrawBeacon( cg.beacons + i );
-
-	CG_DrawTagScore( );
+	for( i = 0; i < cg.beaconCount; i++ )
+		CG_DrawBeacon( cg.beacons[ i ] );
 
 	if ( cg.zoomed )
 	{
@@ -779,58 +717,21 @@ CG_DrawActive
 Perform all drawing needed to completely fill the screen
 =====================
 */
-void CG_DrawActive( stereoFrame_t stereoView )
+void CG_DrawActive( void )
 {
-	float  separation;
-	vec3_t baseOrg;
-
 	// optionally draw the info screen instead
 	if ( !cg.snap )
 	{
 		return;
 	}
 
-	switch ( stereoView )
-	{
-		case STEREO_CENTER:
-			separation = 0;
-			break;
-
-		case STEREO_LEFT:
-			separation = -cg_stereoSeparation.value / 2;
-			break;
-
-		case STEREO_RIGHT:
-			separation = cg_stereoSeparation.value / 2;
-			break;
-
-		default:
-			separation = 0;
-			CG_Error( "CG_DrawActive: Undefined stereoView" );
-	}
-
 	// clear around the rendered view if sized down
 	CG_TileClear();
-
-	// offset vieworg appropriately if we're doing stereo separation
-	VectorCopy( cg.refdef.vieworg, baseOrg );
-
-	if ( separation != 0 )
-	{
-		VectorMA( cg.refdef.vieworg, -separation, cg.refdef.viewaxis[ 1 ],
-		          cg.refdef.vieworg );
-	}
 
 	CG_DrawBinaryShadersFinalPhases();
 
 	// draw 3D view
 	trap_R_RenderScene( &cg.refdef );
-
-	// restore original viewpoint if running stereo
-	if ( separation != 0 )
-	{
-		VectorCopy( baseOrg, cg.refdef.vieworg );
-	}
 
 	// first person blend blobs, done after AnglesToAxis
 	if ( !cg.renderingThirdPerson )

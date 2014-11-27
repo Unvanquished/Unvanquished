@@ -520,7 +520,7 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 	{
 		SendMeleeHitEvent( self, traceEnt, &tr );
 
-		G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, mod );
+		G_Damage( traceEnt, self, self, forward, tr.endpos, damage, 0, mod );
 	}
 
 	return traceEnt;
@@ -699,7 +699,8 @@ static void FireMassdriver( gentity_t *self )
 
 	if ( target->takedamage )
 	{
-		G_Damage( target, self, self, forward, tr.endpos, MDRIVER_DMG, 0, MOD_MDRIVER );
+		G_Damage( target, self, self, forward, tr.endpos, MDRIVER_DMG, DAMAGE_KNOCKBACK,
+		          MOD_MDRIVER );
 	}
 }
 
@@ -975,7 +976,7 @@ static void FirePainsaw( gentity_t *self )
 	// not really a "ranged" weapon, but this is still the right call
 	SendRangedHitEvent( self, target, &tr );
 
-	G_Damage( target, self, self, forward, tr.endpos, PAINSAW_DAMAGE, DAMAGE_NO_KNOCKBACK, MOD_PAINSAW );
+	G_Damage( target, self, self, forward, tr.endpos, PAINSAW_DAMAGE, 0, MOD_PAINSAW );
 }
 
 /*
@@ -1278,8 +1279,7 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
 
-	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK,
-	          MOD_LEVEL0_BITE );
+	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, 0, MOD_LEVEL0_BITE );
 
 	self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
 
@@ -1398,10 +1398,8 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 		// the zap chains only through living entities
 		if ( target->health > 0 )
 		{
-			G_Damage( target, creator, creator, forward,
-			          target->s.origin, LEVEL2_AREAZAP_DMG,
-			          DAMAGE_NO_KNOCKBACK | DAMAGE_NO_LOCDAMAGE,
-			          MOD_LEVEL2_ZAP );
+			G_Damage( target, creator, creator, forward, target->s.origin, LEVEL2_AREAZAP_DMG,
+			          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP );
 
 			FindZapChainTargets( zap );
 
@@ -1410,8 +1408,7 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 				G_Damage( zap->targets[ i ], target, zap->creator, forward, target->s.origin,
 				          LEVEL2_AREAZAP_DMG * ( 1 - powf( ( zap->distances[ i ] /
 				                                 LEVEL2_AREAZAP_CHAIN_RANGE ), LEVEL2_AREAZAP_CHAIN_FALLOFF ) ) + 1,
-				          DAMAGE_NO_KNOCKBACK | DAMAGE_NO_LOCDAMAGE,
-				          MOD_LEVEL2_ZAP );
+				          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP );
 			}
 		}
 

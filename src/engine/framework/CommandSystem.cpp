@@ -122,12 +122,12 @@ namespace Cmd {
         CommandMap& commands = GetCommandMap();
 
         if (!IsValidCmdName(name)) {
-            commandLog.Warn(_("Cmd::AddCommand: Invalid command name '%s'"), name);
+            commandLog.Warn("Cmd::AddCommand: Invalid command name '%s'", name);
             return;
         }
 
         if (!commands.insert({std::move(name), commandRecord_t{std::move(description), &cmd}}).second) {
-            commandLog.Warn(_("Cmd::AddCommand: %s already defined"), name);
+            commandLog.Warn("Cmd::AddCommand: %s already defined", name);
         }
     }
 

@@ -238,7 +238,7 @@ Also called by event processing code
 */
 void CG_SetEntitySoundPosition( centity_t *cent )
 {
-	if ( cent->currentState.solid == SOLID_BMODEL )
+	if ( cent->currentState.eFlags & EF_BMODEL )
 	{
 		vec3_t origin;
 		float  *v;
@@ -522,6 +522,8 @@ static void CG_Missile( centity_t *cent )
 				}
 			}
 		}
+
+		ent.skeleton.scale = 1.0f;
 	}
 
 	//only refresh if there is something to display
@@ -555,7 +557,7 @@ static void CG_Mover( centity_t *cent )
 	ent.skinNum = ( cg.time >> 6 ) & 1;
 
 	// get the model, either as a bmodel or a modelindex
-	if ( s1->solid == SOLID_BMODEL )
+	if ( s1->eFlags & SOLID_BMODEL )
 	{
 		ent.hModel = cgs.inlineDrawModel[ s1->modelindex ];
 	}
@@ -1035,10 +1037,6 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 			cent->lfs.hTest = trap_RegisterVisTest();
 			break;
 
-		case ET_BEACON:
-			memset( &cent->beaconPersistent, 0, sizeof( cbeaconPersistent_t ) );
-			break;
-
 		default:
 			break;
 	}
@@ -1319,7 +1317,6 @@ void CG_AddPacketEntities( void )
 	{
 		for ( num = 0; num < cg.snap->numEntities; num++ )
 		{
-			float         x, zd, zu;
 			vec3_t        mins, maxs;
 			entityState_t *es;
 
@@ -1329,17 +1326,15 @@ void CG_AddPacketEntities( void )
 			switch ( es->eType )
 			{
 				case ET_MISSILE:
-				case ET_CORPSE:
-					x = ( es->solid & 255 );
-					zd = ( ( es->solid >> 8 ) & 255 );
-					zu = ( ( es->solid >> 16 ) & 255 ) - 32;
+					{
+						const missileAttributes_t *ma;
 
-					mins[ 0 ] = mins[ 1 ] = -x;
-					maxs[ 0 ] = maxs[ 1 ] = x;
-					mins[ 2 ] = -zd;
-					maxs[ 2 ] = zu;
+						ma = BG_Missile( es->weapon );
+						mins[ 0 ] = mins[ 1 ] = mins[ 2 ] = -ma->size;
+						maxs[ 0 ] = maxs[ 1 ] = maxs[ 2 ] = +ma->size;
 
-					CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
+						CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
+					}
 					break;
 
 				default:
