@@ -132,13 +132,13 @@ public:
 	static DynamicLib Open(Str::StringRef filename, std::string& errorString);
 
 	// Load a symbol from the DynamicLib
-	template<typename T> T LoadSym(Str::StringRef sym, std::string& errorString)
+	template<typename T> T* LoadSym(Str::StringRef sym, std::string& errorString)
 	{
-		return reinterpret_cast<T>(reinterpret_cast<intptr_t>(InternalLoadSym(sym, errorString)));
+		return reinterpret_cast<T*>(InternalLoadSym(sym, errorString));
 	}
 
 private:
-	void* InternalLoadSym(Str::StringRef sym, std::string& errorString);
+	intptr_t InternalLoadSym(Str::StringRef sym, std::string& errorString);
 
 	// OS-specific handle
 	void* handle;

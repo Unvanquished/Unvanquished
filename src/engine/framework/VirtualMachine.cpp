@@ -333,7 +333,7 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 	if (!inProcess.sharedLib)
 		Com_Error(ERR_DROP, "VM: Failed to load shared library VM %s: %s", filename.c_str(), errorString.c_str());
 
-	auto vmMain = inProcess.sharedLib.LoadSym<int (*)(int, const char**)>("main", errorString);
+	auto vmMain = inProcess.sharedLib.LoadSym<int(int, const char**)>("main", errorString);
 	if (!vmMain)
 		Com_Error(ERR_DROP, "VM: Could not find main function in shared library VM %s: %s", filename.c_str(), errorString.c_str());
 

@@ -490,7 +490,7 @@ static void Init(int argc, char** argv)
 	std::string errorString;
 	Sys::DynamicLib user32 = Sys::DynamicLib::Open("user32.dll", errorString);
 	if (user32) {
-		auto pSetProcessDPIAware = user32.LoadSym<BOOL (WINAPI*)()>("SetProcessDPIAware", errorString);
+		auto pSetProcessDPIAware = user32.LoadSym<BOOL WINAPI()>("SetProcessDPIAware", errorString);
 		if (pSetProcessDPIAware)
 			pSetProcessDPIAware();
 	}

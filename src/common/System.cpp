@@ -72,19 +72,19 @@ SteadyClock::time_point SleepUntil(SteadyClock::time_point time)
 	// Load ntdll.dll functions
 	static NTSTATUS WINAPI (*pNtQueryTimerResolution)(ULONG* min_resolution, ULONG* max_resolution, ULONG* current_resolution);
 	static NTSTATUS WINAPI (*pNtSetTimerResolution)(ULONG resolution, BOOLEAN set_resolution, ULONG* current_resolution);
-	static NTSTATUS WINAPI (*pNtDelayExecution)(BOOLEAN alertable, const LARGE_INTEGER *timeout);
+	static NTSTATUS WINAPI (*pNtDelayExecution)(BOOLEAN alertable, const LARGE_INTEGER* timeout);
 	if (!pNtQueryTimerResolution) {
 		std::string errorString;
 		static DynamicLib ntdll = DynamicLib::Open("ntdll.dll", errorString);
 		if (!ntdll)
 			Sys::Error("Failed to load ntdll.dll: %s", errorString);
-		pNtQueryTimerResolution = ntdll.LoadSym<decltype(pNtQueryTimerResolution)>("NtQueryTimerResolution", errorString);
+		pNtQueryTimerResolution = ntdll.LoadSym<NTSTATUS WINAPI(ULONG*, ULONG*, ULONG*)>("NtQueryTimerResolution", errorString);
 		if (!pNtQueryTimerResolution)
 			Sys::Error("Failed to load NtQueryTimerResolution from ntdll.dll: %s", errorString);
-		pNtSetTimerResolution = ntdll.LoadSym<decltype(pNtSetTimerResolution)>("NtSetTimerResolution", errorString);
+		pNtSetTimerResolution = ntdll.LoadSym<NTSTATUS WINAPI(ULONG, BOOLEAN, ULONG*)>("NtSetTimerResolution", errorString);
 		if (!pNtSetTimerResolution)
 			Sys::Error("Failed to load NtSetTimerResolution from ntdll.dll: %s", errorString);
-		pNtDelayExecution = ntdll.LoadSym<decltype(pNtDelayExecution)>("NtDelayExecution", errorString);
+		pNtDelayExecution = ntdll.LoadSym<NTSTATUS WINAPI(BOOLEAN, const LARGE_INTEGER*)>("NtDelayExecution", errorString);
 		if (!pNtDelayExecution)
 			Sys::Error("Failed to load NtDelayExecution from ntdll.dll: %s", errorString);
 	}
@@ -271,15 +271,15 @@ DynamicLib DynamicLib::Open(Str::StringRef filename, std::string& errorString)
 	return out;
 }
 
-void* DynamicLib::InternalLoadSym(Str::StringRef sym, std::string& errorString)
+intptr_t DynamicLib::InternalLoadSym(Str::StringRef sym, std::string& errorString)
 {
 #ifdef _WIN32
-	void* p = reinterpret_cast<void*>(reinterpret_cast<intptr_t>(GetProcAddress(static_cast<HMODULE>(handle), sym.c_str())));
+	intptr_t p = reinterpret_cast<intptr_t>(GetProcAddress(static_cast<HMODULE>(handle), sym.c_str()));
 	if (!p)
 		errorString = Win32StrError(GetLastError());
 	return p;
 #else
-	void* p = dlsym(handle, sym.c_str());
+	intptr_t p = reinterpret_cast<intptr_t>(dlsym(handle, sym.c_str()));
 	if (!p)
 		errorString = dlerror();
 	return p;
