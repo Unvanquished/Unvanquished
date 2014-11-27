@@ -153,7 +153,7 @@ verify_md5sums()
           echo "$filename"
         fi
       fi
-    done < $CACHE/md5sums
+    done < "$CACHE/md5sums"
   )
 }
 
