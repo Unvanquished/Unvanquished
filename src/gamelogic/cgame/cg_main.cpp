@@ -1640,7 +1640,10 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, gl
 	const char *s;
 
 	// clear everything
-	cgs = cgs_t();
+	// reset cgs in-place to avoid creating a huge struct on stack (caused a stack overflow)
+	// this is equivalent to cgs = cgs_t()
+	cgs.~cgs_t();
+	new(&cgs) cgs_t();
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
 
