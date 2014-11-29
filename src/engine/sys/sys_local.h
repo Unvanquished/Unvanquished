@@ -39,15 +39,9 @@ Maryland 20850 USA.
 #include <SDL_version.h>
 
 // Require a minimum version of SDL
-#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 #define MINSDL_MAJOR 2
 #define MINSDL_MINOR 0
 #define MINSDL_PATCH 0
-#else
-#define MINSDL_MAJOR 1
-#define MINSDL_MINOR 2
-#define MINSDL_PATCH 10
-#endif
 
 #endif
 
