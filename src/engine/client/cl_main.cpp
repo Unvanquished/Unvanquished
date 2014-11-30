@@ -886,7 +886,6 @@ void CL_Record( const char *name )
 	byte          bufData[ MAX_MSGLEN ];
 	entityState_t *ent;
 	entityState_t nullstate;
-	char          *s;
 	int           len;
 
 	// open the demo file
@@ -921,15 +920,14 @@ void CL_Record( const char *name )
 	// configstrings
 	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
 	{
-		if ( !cl.gameState.stringOffsets[ i ] )
+		if ( cl.gameState[i].empty() )
 		{
 			continue;
 		}
 
-		s = cl.gameState.stringData + cl.gameState.stringOffsets[ i ];
 		MSG_WriteByte( &buf, svc_configstring );
 		MSG_WriteShort( &buf, i );
-		MSG_WriteBigString( &buf, s );
+		MSG_WriteBigString( &buf, cl.gameState[i].c_str() );
 	}
 
 	// baselines
@@ -1327,48 +1325,6 @@ static DemoCmd DemoCmdRegistration;
 
 /*
 ==================
-CL_DemoState
-
-Returns the current state of the demo system
-==================
-*/
-demoState_t CL_DemoState( void )
-{
-	if ( clc.demoplaying )
-	{
-		return DS_PLAYBACK;
-	}
-	else if ( clc.demorecording )
-	{
-		return DS_RECORDING;
-	}
-	else
-	{
-		return DS_NONE;
-	}
-}
-
-/*
-==================
-CL_DemoPos
-
-Returns the current position of the demo
-==================
-*/
-int CL_DemoPos( void )
-{
-	if ( clc.demoplaying || clc.demorecording )
-	{
-		return FS_FTell( clc.demofile );
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-/*
-==================
 CL_NextDemo
 
 Called when a demo or cinematic finishes
@@ -1391,25 +1347,6 @@ void CL_NextDemo( void )
 	Cvar_Set( "nextdemo", "" );
 	Cmd::BufferCommandTextAfter(v, true);
 	Cmd::ExecuteCommandBuffer();
-}
-
-/*
-==================
-CL_DemoName
-
-Returns the name of the demo
-==================
-*/
-void CL_DemoName( char *buffer, int size )
-{
-	if ( clc.demoplaying || clc.demorecording )
-	{
-		Q_strncpyz( buffer, clc.demoName, size );
-	}
-	else if ( size >= 1 )
-	{
-		buffer[ 0 ] = '\0';
-	}
 }
 
 //======================================================================
@@ -1516,7 +1453,7 @@ void CL_MapLoading( void )
 		cls.state = CA_CONNECTED; // so the connect screen is drawn
 		memset( cls.updateInfoString, 0, sizeof( cls.updateInfoString ) );
 		memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
-		memset( &cl.gameState, 0, sizeof( cl.gameState ) );
+		cl.gameState.fill("");
 		clc.lastPacketSentTime = -9999;
 		SCR_UpdateScreen();
 	}
@@ -1547,7 +1484,7 @@ Called before parsing a gamestate
 */
 void CL_ClearState( void )
 {
-	Com_Memset( &cl, 0, sizeof( cl ) );
+	cl = clientActive_t();
 }
 
 /*
@@ -2301,14 +2238,12 @@ void CL_Configstrings_f( void )
 
 	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
 	{
-		ofs = cl.gameState.stringOffsets[ i ];
-
-		if ( !ofs )
+		if (cl.gameState[i].empty())
 		{
 			continue;
 		}
 
-		Com_Printf( "%4i: %s\n", i, cl.gameState.stringData + ofs );
+		Com_Printf( "%4i: %s\n", i, cl.gameState[i].c_str() );
 	}
 }
 

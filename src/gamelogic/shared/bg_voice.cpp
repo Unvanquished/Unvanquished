@@ -383,7 +383,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 		}
 		else
 		{
-			voiceTracks->next = (voiceTrack_t*) BG_Alloc( sizeof( voiceCmd_t ) );
+			voiceTracks->next = (voiceTrack_t*) BG_Alloc( sizeof( voiceTrack_t ) );
 			voiceTracks = voiceTracks->next;
 		}
 

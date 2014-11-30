@@ -160,6 +160,18 @@ namespace Cmd {
         }
     }
 
+    void RemoveSameCommands(const CmdBase& cmd) {
+        CommandMap& commands = GetCommandMap();
+
+        for (auto it = commands.cbegin(); it != commands.cend();) {
+            if (it->second.cmd == &cmd) {
+                commands.erase(it ++);
+            } else {
+                ++ it;
+            }
+        }
+    }
+
     bool CommandExists(const std::string& name) {
         CommandMap& commands = GetCommandMap();
 

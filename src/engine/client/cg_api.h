@@ -57,8 +57,8 @@ typedef struct
 	int           numEntities; // all of the entities that need to be presented
 	entityState_t entities[ MAX_ENTITIES_IN_SNAPSHOT ]; // at the time of this snapshot
 
-	int           numServerCommands; // text based server commands to execute when this
-	int           serverCommandSequence; // snapshot becomes current
+	// text based server commands to execute when this snapshot becomes current
+	int           serverCommandSequence;
 } snapshot_t;
 
 typedef enum {
@@ -116,15 +116,9 @@ typedef enum
 typedef enum cgameImport_s
 {
   // Misc
-  CG_GETDEMOSTATE,
-  CG_GETDEMOPOS,
   CG_SENDCLIENTCOMMAND,
   CG_UPDATESCREEN,
   CG_CM_MARKFRAGMENTS,
-  CG_REAL_TIME,
-  CG_GETGLCONFIG,
-  CG_GETGAMESTATE,
-  CG_GETCLIENTSTATE,
   CG_GETCURRENTSNAPSHOTNUMBER,
   CG_GETSNAPSHOT,
   CG_GETSERVERCOMMAND,
@@ -133,7 +127,6 @@ typedef enum cgameImport_s
   CG_SETUSERCMDVALUE,
   CG_SETCLIENTLERPORIGIN,
   CG_GET_ENTITY_TOKEN,
-  CG_GETDEMONAME,
   CG_REGISTER_BUTTON_COMMANDS,
   CG_GETCLIPBOARDDATA,
   CG_QUOTESTRING,
@@ -257,16 +250,6 @@ typedef enum cgameImport_s
 
 // All Miscs
 
-// GetDemoStateMsg TODO send it at the beginning of the frame
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMOSTATE>>,
-	IPC::Reply<int>
-> GetDemoStateMsg;
-// GetDemoPosMsg TODO send it at the beginning of the frame
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMOPOS>>,
-	IPC::Reply<int>
-> GetDemoPosMsg;
 // SendClientCommandMsg TODO really sync?
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_SENDCLIENTCOMMAND>, std::string>
@@ -280,26 +263,6 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_CM_MARKFRAGMENTS>, std::vector<std::array<float, 3>>, std::array<float, 3>, int, int>,
 	IPC::Reply<std::vector<std::array<float, 3>>, std::vector<markFragment_t>>
 > CMMarkFragmentsMsg;
-// RealTimeMsg TODO do with nacl API
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_REAL_TIME>>,
-	IPC::Reply<int, qtime_t>
-> RealTimeMsg;
-// GetGLConfigMsg TODO send it only once?
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETGLCONFIG>>,
-	IPC::Reply<glconfig_t>
-> GetGLConfigMsg;
-// GetGameStateMsg TODO send it only once or per frame?
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETGAMESTATE>>,
-	IPC::Reply<gameState_t>
-> GetGameStateMsg;
-// GetClientStateMsg TODO send it only once or per frame?
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETCLIENTSTATE>>,
-	IPC::Reply<cgClientState_t>
-> GetClientStateMsg;
 // TODO send all snapshots at the beginning of the frame
 // GetCurrentSnapshotNumberMsg
 typedef IPC::SyncMessage<
@@ -335,11 +298,6 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GET_ENTITY_TOKEN>, int>,
 	IPC::Reply<bool, std::string>
 > GetEntityTokenMsg;
-// GetDemoNameMsg TODO send only once per frame?
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETDEMONAME>, int>,
-	IPC::Reply<std::string>
-> GetDemoNameMsg;
 // RegisterButtonCommandsMsg TODO check it is async
 typedef IPC::Message<IPC::Id<VM::QVM, CG_REGISTER_BUTTON_COMMANDS>, std::string> RegisterButtonCommandsMsg;
 // GetClipboardDataMsg
@@ -463,7 +421,7 @@ namespace Render {
 	// AddPolyToSceneMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYTOSCENE>, int, std::vector<polyVert_t>> AddPolyToSceneMsg;
 	// AddPolysToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYSTOSCENE>, int, std::vector<polyVert_t>, int> AddPolysToSceneMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYSTOSCENE>, int, std::vector<polyVert_t>, int, int> AddPolysToSceneMsg;
 	// AddLightToSceneMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDLIGHTTOSCENE>, std::array<float, 3>, float, float, float, float, float, int, int> AddLightToSceneMsg;
 	// AddAdditiveLightToSceneMsg
@@ -670,7 +628,7 @@ namespace Rocket {
 	// GetPropertyMsg
 	typedef IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETPROPERTY>, std::string, int, int>,
-		IPC::Reply<std::string>
+		IPC::Reply<std::vector<char>>
 	> GetPropertyMsg;
 	// SetPropertyMsg
 	typedef IPC::SyncMessage<
@@ -781,7 +739,7 @@ typedef enum
   // oportunity to flush and close any open files
 
   CG_DRAW_ACTIVE_FRAME,
-//  void (*CG_DrawActiveFrame)( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+//  void (*CG_DrawActiveFrame)( int serverTime, qboolean demoPlayback );
   // Generates and draws a game scene and status information at the given time.
   // If demoPlayback is set, local movement prediction will not be enabled
 
@@ -816,7 +774,7 @@ typedef IPC::SyncMessage<
 > CGameStaticInitMsg;
 // CGameInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_INIT>, int, int, int>
+	IPC::Message<IPC::Id<VM::QVM, CG_INIT>, int, int, int, glconfig_t, GameStateCSs>
 > CGameInitMsg;
 // CGameShutdownMsg
 typedef IPC::SyncMessage<
@@ -824,7 +782,7 @@ typedef IPC::SyncMessage<
 > CGameShutdownMsg;
 // CGameDrawActiveFrameMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_DRAW_ACTIVE_FRAME>, int, stereoFrame_t, bool>
+	IPC::Message<IPC::Id<VM::QVM, CG_DRAW_ACTIVE_FRAME>, int, bool>
 > CGameDrawActiveFrameMsg;
 // CGameCrosshairPlayerMsg
 typedef IPC::SyncMessage<
@@ -847,7 +805,7 @@ typedef IPC::SyncMessage<
 > CGameRocketInitMsg;
 // CGameRocketFrameMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FRAME>>
+	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FRAME>, cgClientState_t>
 > CGameRocketFrameMsg;
 // CGameRocketFormatDataMsg
 typedef IPC::SyncMessage<
@@ -879,8 +837,6 @@ int             trap_Argc( void );
 void            trap_Argv( int n, char *buffer, int bufferLength );
 void            trap_EscapedArgs( char *buffer, int bufferLength );
 void            trap_LiteralArgs( char *buffer, int bufferLength );
-int             trap_GetDemoState( void );
-int             trap_GetDemoPos( void );
 int             trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void            trap_FS_Read( void *buffer, int len, fileHandle_t f );
 void            trap_FS_Write( const void *buffer, int len, fileHandle_t f );
@@ -949,9 +905,6 @@ void            trap_R_DrawStretchPic( float x, float y, float w, float h, float
 void            trap_R_DrawRotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );
 void            trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs );
 int             trap_R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
-void            trap_GetGlconfig( glconfig_t *glconfig );
-void            trap_GetGameState( gameState_t *gamestate );
-void            trap_GetClientState( cgClientState_t *cstate );
 void            trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime );
 qboolean        trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot );
 qboolean        trap_GetServerCommand( int serverCommandNumber, std::string& cmdText );
@@ -962,7 +915,6 @@ void            trap_SetClientLerpOrigin( float x, float y, float z );
 int             trap_Key_GetCatcher( void );
 void            trap_Key_SetCatcher( int catcher );
 void            trap_S_StopBackgroundTrack( void );
-int             trap_RealTime( qtime_t *qtime );
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status        trap_CIN_StopCinematic( int handle );
 e_status        trap_CIN_RunCinematic( int handle );
@@ -983,7 +935,6 @@ void            trap_CG_TranslateString( const char *string, char *buf );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean        trap_R_inPVVS( const vec3_t p1, const vec3_t p2 );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
-void            trap_GetDemoName( char *buffer, int size );
 int             trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
 qhandle_t       trap_R_RegisterAnimation( const char *name );
@@ -1043,7 +994,7 @@ void            trap_Rocket_DSClearTable( const char *name, const char *table );
 void            trap_Rocket_SetInnerRML( const char *RML, int parseFlags );
 void            trap_Rocket_GetAttribute( const char *attribute, char *out, int length );
 void            trap_Rocket_SetAttribute( const char *attribute, const char *value );
-void            trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
+void            trap_Rocket_GetProperty( const char *name, void *out, size_t len, rocketVarType_t type );
 void            trap_Rocket_SetProperty( const char *property, const char *value );
 void            trap_Rocket_GetEventParameters( char *params, int length );
 void            trap_Rocket_RegisterDataFormatter( const char *name );

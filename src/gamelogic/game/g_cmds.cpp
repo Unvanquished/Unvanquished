@@ -907,7 +907,7 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	// Cannot join a team for a while after a locking putteam.
-	t = trap_GMTime( NULL );
+	t = Com_GMTime( NULL );
 
 	if ( team != TEAM_NONE && ( specOnly = G_admin_match_spec( ent ) ) )
 	{

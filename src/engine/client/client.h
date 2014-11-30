@@ -118,6 +118,7 @@ extern int g_console_field_width;
 
 typedef struct
 {
+	GameStateCSs gameState; // configstrings
 	int timeoutcount; // it requres several frames in a timeout condition
 	// to disconnect, preventing debugging breaks from
 	// causing immediate disconnects on continue
@@ -132,7 +133,6 @@ typedef struct
 	// cleared when CL_AdjustTimeDelta looks at it
 	qboolean     newSnapshots; // set on parse of any valid packet
 
-	gameState_t  gameState; // configstrings
 	char         mapname[ MAX_QPATH ]; // extracted from CS_SERVERINFO
 
 	int          parseEntitiesNum; // index (not anded off) into cl_parse_entities[]
@@ -424,7 +424,7 @@ public:
 	void CGameStaticInit();
 	void CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum);
 	void CGameShutdown();
-	void CGameDrawActiveFrame(int serverTime, stereoFrame_t stereoView, bool demoPlayback);
+	void CGameDrawActiveFrame(int serverTime, bool demoPlayback);
 	int CGameCrosshairPlayer();
 	void CGameKeyEvent(int key, bool down);
 	void CGameMouseEvent(int dx, int dy);
@@ -593,9 +593,6 @@ void        CL_Snd_Restart_f( void );
 void        CL_NextDemo( void );
 void        CL_ReadDemoMessage( void );
 void        CL_StartDemoLoop( void );
-demoState_t CL_DemoState( void );
-int         CL_DemoPos( void );
-void        CL_DemoName( char *buffer, int size );
 
 void        CL_InitDownloads( void );
 void        CL_NextDownload( void );
@@ -872,7 +869,7 @@ void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
 void     CL_GameCommandHandler( void );
 qboolean CL_GameConsoleText( void );
-void     CL_CGameRendering( stereoFrame_t stereo );
+void     CL_CGameRendering( void );
 void     CL_SetCGameTime( void );
 void     CL_FirstSnapshot( void );
 void     CL_ShaderStateChanged( void );

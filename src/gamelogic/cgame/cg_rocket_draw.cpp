@@ -1812,7 +1812,7 @@ void CG_Rocket_DrawClock( void )
 		return;
 	}
 
-	trap_RealTime( &qt );
+	Com_RealTime( &qt );
 
 	if ( cg_drawClock.integer == 2 )
 	{

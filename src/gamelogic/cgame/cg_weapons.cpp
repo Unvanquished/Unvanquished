@@ -1782,6 +1782,12 @@ void CG_WeaponInertia( playerState_t *ps, vec3_t origin )
 
 	for( i = 0; i < 3; i++ )
 	{
+		if ( Q_isnan( I->oav[ i ] ) )
+		{
+			I->oav[ i ] = 0;
+			Com_Printf( "^3WARNING: ^7I->oav[%d] is NaN. Please let a developer know about this!", i );
+		}
+		
 		av[ i ] = AngleDelta( I->oa[ i ], ps->viewangles[ i ] ) / dt;
 		ExponentialFade( I->oav + i, av[ i ], WI_LAMBDA, dt );
 		av[ i ] = I->oav[ i ];

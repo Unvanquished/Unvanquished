@@ -361,11 +361,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		AddGLSLDefine( bufferExtra, "r_precomputedLighting", 1 );
 	}
 
-	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA )
-	{
-		AddGLSLDefine( bufferExtra, "r_heatHazeFix", 1 );
-	}
-
 	if ( r_showLightMaps->integer )
 	{
 		AddGLSLDefine( bufferExtra, "r_showLightMaps", r_showLightMaps->integer );
@@ -653,6 +648,7 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	// header of the glsl shader
 	std::string vertexHeader;
 	std::string fragmentHeader;
+	std::string miscText;
 
 	if ( glConfig2.shadingLanguageVersion != 120 )
 	{
@@ -678,6 +674,9 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	{
 		vertexHeader += "#version 120\n";
 		fragmentHeader += "#version 120\n";
+
+		// add implementation of GLSL 1.30 smoothstep() function
+		miscText += "float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }\n";
 	}
 
 	// permutation macros
@@ -703,8 +702,8 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	}
 
 	// add them
-	std::string vertexShaderTextWithMacros = vertexHeader + macrosString + shader->_vertexShaderText;
-	std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + shader->_fragmentShaderText;
+	std::string vertexShaderTextWithMacros = vertexHeader + macrosString + miscText +  shader->_vertexShaderText;
+	std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + miscText + shader->_fragmentShaderText;
 	CompileGPUShader( program->program, shader->GetName().c_str(), vertexShaderTextWithMacros.c_str(), vertexShaderTextWithMacros.length(), GL_VERTEX_SHADER );
 	CompileGPUShader( program->program, shader->GetName().c_str(), fragmentShaderTextWithMacros.c_str(), fragmentShaderTextWithMacros.length(), GL_FRAGMENT_SHADER );
 	BindAttribLocations( program->program );
@@ -1078,16 +1077,19 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	u_ViewOrigin( this ),
 	u_AlphaThreshold( this ),
 	u_ModelMatrix( this ),
+	u_ProjectionMatrixTranspose( this ),
 	u_ModelViewProjectionMatrix( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
 	u_Bones( this ),
 	u_VertexInterpolation( this ),
+	u_DepthScale( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
 	GLCompileMacro_USE_TCGEN_ENVIRONMENT( this ),
-	GLCompileMacro_USE_TCGEN_LIGHTMAP( this )
+	GLCompileMacro_USE_TCGEN_LIGHTMAP( this ),
+	GLCompileMacro_USE_DEPTH_FADE( this )
 {
 }
 
@@ -1099,6 +1101,7 @@ void GLShader_generic::BuildShaderVertexLibNames( std::string& vertexInlines )
 void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ColorMap" ), 0 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 1 );
 }
 
 GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
@@ -1597,11 +1600,6 @@ void GLShader_heatHaze::SetShaderProgramUniforms( shaderProgram_t *shaderProgram
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_NormalMap" ), 0 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_CurrentMap" ), 1 );
-
-	if(r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ContrastMap" ), 2 );
-	}
 }
 
 GLShader_screen::GLShader_screen( GLShaderManager *manager ) :

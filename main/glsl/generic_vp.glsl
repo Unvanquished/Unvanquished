@@ -42,6 +42,12 @@ uniform vec4		u_Color;
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
+#if defined(USE_DEPTH_FADE)
+uniform float           u_DepthScale;
+varying vec2            var_FadeDepth;
+uniform mat4		u_ProjectionMatrixTranspose;
+#endif
+
 varying vec2		var_Tex;
 varying vec4		var_Color;
 
@@ -104,6 +110,13 @@ void	main()
 	texCoord = vec4(texCoord.zw, 0.0, 1.0);
 #else
 	texCoord = vec4(texCoord.xy, 0.0, 1.0);
+#endif
+
+#if defined(USE_DEPTH_FADE)
+	// compute z of end of fading effect
+	vec4 fadeDepth = vec4(0.0, 0.0, -u_DepthScale, 0.0) * u_ProjectionMatrixTranspose;
+	fadeDepth += gl_Position;
+	var_FadeDepth = fadeDepth.zw;
 #endif
 
 	var_Tex = (u_ColorTextureMatrix * texCoord).st;

@@ -59,26 +59,6 @@ void Key_GetBindingByString( const char *binding, int team, int *key1, int *key2
 
 /*
 ====================
-CL_GetGameState
-====================
-*/
-void CL_GetGameState( gameState_t *gs )
-{
-	*gs = cl.gameState;
-}
-
-/*
-====================
-CL_GetGlconfig
-====================
-*/
-void CL_GetGlconfig( glconfig_t *glconfig )
-{
-	*glconfig = cls.glconfig;
-}
-
-/*
-====================
 CL_GetUserCmd
 ====================
 */
@@ -215,71 +195,23 @@ CL_ConfigstringModified
 */
 void CL_ConfigstringModified( Cmd::Args& csCmd )
 {
-	const char  *old, *s;
-	int         i, index;
-	const char  *dup;
-	gameState_t oldGs;
-	int         len;
-
 	if (csCmd.Argc() < 3) {
 		Com_Error( ERR_DROP, "CL_ConfigstringModified: wrong command received" );
 	}
 
-	index = atoi( csCmd.Argv(1).c_str() );
+	int index = atoi( csCmd.Argv(1).c_str() );
 
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
 		Com_Error( ERR_DROP, "CL_ConfigstringModified: bad index %i", index );
 	}
 
-//  s = Cmd_Argv(2);
-	// get everything after "cs <num>"
-	//s = Cmd_ArgsFrom( 2 );
-	s = csCmd.Argv(2).c_str();
-
-	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
-
-	if ( !strcmp( old, s ) )
+	if ( cl.gameState[index] == csCmd.Argv(2) )
 	{
-		return; // unchanged
+		return;
 	}
 
-	// build the new gameState_t
-	oldGs = cl.gameState;
-
-	memset( &cl.gameState, 0, sizeof( cl.gameState ) );
-
-	// leave the first 0 for uninitialized strings
-	cl.gameState.dataCount = 1;
-
-	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
-	{
-		if ( i == index )
-		{
-			dup = s;
-		}
-		else
-		{
-			dup = oldGs.stringData + oldGs.stringOffsets[ i ];
-		}
-
-		if ( !dup[ 0 ] )
-		{
-			continue; // leave with the default empty string
-		}
-
-		len = strlen( dup );
-
-		if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS )
-		{
-			Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS exceeded" );
-		}
-
-		// append it to the gameState string buffer
-		cl.gameState.stringOffsets[ i ] = cl.gameState.dataCount;
-		memcpy( cl.gameState.stringData + cl.gameState.dataCount, dup, len + 1 );
-		cl.gameState.dataCount += len + 1;
-	}
+	cl.gameState[index] = csCmd.Argv(2);
 
 	if ( index == CS_SYSTEMINFO )
 	{
@@ -294,7 +226,7 @@ CL_HandleServerCommand
 CL_GetServerCommand
 ===================
 */
-bool CL_HandleServerCommand(Str::StringRef text) {
+bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 	static char bigConfigString[ BIG_INFO_STRING ];
 	Cmd::Args args(text);
 
@@ -349,7 +281,8 @@ bool CL_HandleServerCommand(Str::StringRef text) {
 
 			Q_strcat(bigConfigString, sizeof(bigConfigString), s);
 			Q_strcat(bigConfigString, sizeof(bigConfigString), "\"");
-			return CL_HandleServerCommand(bigConfigString);
+			newText = bigConfigString;
+			return CL_HandleServerCommand(bigConfigString, newText);
 		}
 		return qfalse;
 	}
@@ -435,10 +368,12 @@ qboolean CL_GetServerCommand( int serverCommandNumber, std::string& cmdText )
 		Com_Printf( "serverCommand: %i : %s\n", serverCommandNumber, s );
 	}
 
-	if (CL_HandleServerCommand(s)) {
-		cmdText = s;
+	cmdText = s;
+	if (CL_HandleServerCommand(s, cmdText)) {
 		return true;
 	}
+
+	cmdText = "";
 	return false;
 }
 
@@ -521,21 +456,6 @@ void CL_ShutdownCGame( void )
 //
 // libRocket UI stuff
 //
-
-/*
- * ====================
- * GetClientState
- * ====================
- */
-static void GetClientState( cgClientState_t *state )
-{
-	state->connectPacketCount = clc.connectPacketCount;
-	state->connState = cls.state;
-	Q_strncpyz( state->servername, cls.servername, sizeof( state->servername ) );
-	Q_strncpyz( state->updateInfoString, cls.updateInfoString, sizeof( state->updateInfoString ) );
-	Q_strncpyz( state->messageString, clc.serverMessage, sizeof( state->messageString ) );
-	state->clientNum = cl.snap.ps.clientNum;
-}
 
 /*
  * ====================
@@ -1175,7 +1095,7 @@ void CL_InitCGame( void )
 	Con_Close();
 
 	// find the current mapname
-	info = cl.gameState.stringData + cl.gameState.stringOffsets[ CS_SERVERINFO ];
+	info = cl.gameState[ CS_SERVERINFO ].c_str();
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
@@ -1231,9 +1151,9 @@ void CL_InitCGameCVars( void )
 CL_CGameRendering
 =====================
 */
-void CL_CGameRendering( stereoFrame_t stereo )
+void CL_CGameRendering( void )
 {
-	cgvm.CGameDrawActiveFrame(cl.serverTime, stereo, clc.demoplaying);
+	cgvm.CGameDrawActiveFrame(cl.serverTime, clc.demoplaying);
 }
 
 /*
@@ -1639,18 +1559,21 @@ void CGameVM::CGameStaticInit()
 
 void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum)
 {
-	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum);
+	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum, cls.glconfig, cl.gameState);
 }
 
 void CGameVM::CGameShutdown()
 {
-	this->SendMsg<CGameShutdownMsg>();
+	if (!services->HasVMErrored()) {
+		this->SendMsg<CGameShutdownMsg>();
+	}
+	this->Free();
 	services = nullptr;
 }
 
-void CGameVM::CGameDrawActiveFrame(int serverTime, stereoFrame_t stereoView, bool demoPlayback)
+void CGameVM::CGameDrawActiveFrame(int serverTime,  bool demoPlayback)
 {
-	this->SendMsg<CGameDrawActiveFrameMsg>(serverTime, stereoView, demoPlayback);
+	this->SendMsg<CGameDrawActiveFrameMsg>(serverTime, demoPlayback);
 }
 
 int CGameVM::CGameCrosshairPlayer()
@@ -1677,7 +1600,14 @@ void CGameVM::CGameRocketInit()
 
 void CGameVM::CGameRocketFrame()
 {
-	this->SendMsg<CGameRocketFrameMsg>();
+	cgClientState_t state;
+	state.connectPacketCount = clc.connectPacketCount;
+	state.connState = cls.state;
+	Q_strncpyz( state.servername, cls.servername, sizeof( state.servername ) );
+	Q_strncpyz( state.updateInfoString, cls.updateInfoString, sizeof( state.updateInfoString ) );
+	Q_strncpyz( state.messageString, clc.serverMessage, sizeof( state.messageString ) );
+	state.clientNum = cl.snap.ps.clientNum;
+	this->SendMsg<CGameRocketFrameMsg>(state);
 }
 
 void CGameVM::CGameRocketFormatData(int handle)
@@ -1715,18 +1645,6 @@ void CGameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
-		case CG_GETDEMOSTATE:
-			IPC::HandleMsg<GetDemoStateMsg>(channel, std::move(reader), [this] (int& res) {
-				res = CL_DemoState();
-			});
-			break;
-
-		case CG_GETDEMOPOS:
-			IPC::HandleMsg<GetDemoPosMsg>(channel, std::move(reader), [this] (int& res) {
-				res = CL_DemoPos();
-			});
-			break;
-
 		case CG_SENDCLIENTCOMMAND:
 			IPC::HandleMsg<SendClientCommandMsg>(channel, std::move(reader), [this] (std::string command) {
 				CL_AddReliableCommand(command.c_str());
@@ -1745,31 +1663,8 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			IPC::HandleMsg<CMMarkFragmentsMsg>(channel, std::move(reader), [this] (std::vector<std::array<float, 3>> points, std::array<float, 3> projection, int maxPoints, int maxFragments, std::vector<std::array<float, 3>>& pointBuffer, std::vector<markFragment_t>& fragmentBuffer) {
 				pointBuffer.resize(maxPoints);
 				fragmentBuffer.resize(maxFragments);
-				re.MarkFragments(points.size(), (vec3_t*)points.data(), projection.data(), maxPoints, (float*) pointBuffer.data(), maxFragments, (markFragment_t*) fragmentBuffer.data());
-			});
-			break;
-
-		case CG_REAL_TIME:
-			IPC::HandleMsg<RealTimeMsg>(channel, std::move(reader), [this] (int& res, qtime_t& time) {
-				res = Com_RealTime(&time);
-			});
-			break;
-
-		case CG_GETGLCONFIG:
-			IPC::HandleMsg<GetGLConfigMsg>(channel, std::move(reader), [this] (glconfig_t& config) {
-				CL_GetGlconfig(&config);
-			});
-			break;
-
-		case CG_GETGAMESTATE:
-			IPC::HandleMsg<GetGameStateMsg>(channel, std::move(reader), [this] (gameState_t& state) {
-				CL_GetGameState(&state);
-			});
-			break;
-
-		case CG_GETCLIENTSTATE:
-			IPC::HandleMsg<GetClientStateMsg>(channel, std::move(reader), [this] (cgClientState_t& state) {
-				GetClientState(&state);
+				int numFragments = re.MarkFragments(points.size(), (vec3_t*)points.data(), projection.data(), maxPoints, (float*) pointBuffer.data(), maxFragments, (markFragment_t*) fragmentBuffer.data());
+				fragmentBuffer.resize(numFragments);
 			});
 			break;
 
@@ -1820,14 +1715,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 				std::unique_ptr<char[]> buffer(new char[len]);
 				res = re.GetEntityToken(buffer.get(), len);
 				token.assign(buffer.get(), len);
-			});
-			break;
-
-		case CG_GETDEMONAME:
-			IPC::HandleMsg<GetDemoNameMsg>(channel, std::move(reader), [this] (int len, std::string& name) {
-				std::unique_ptr<char[]> buffer(new char[len]);
-				CL_DemoName(buffer.get(), len);
-				name.assign(buffer.get(), len);
 			});
 			break;
 
@@ -2065,8 +1952,8 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_R_ADDPOLYSTOSCENE:
-			IPC::HandleMsg<Render::AddPolysToSceneMsg>(channel, std::move(reader), [this] (int shader, std::vector<polyVert_t> verts, int numPolys) {
-				re.AddPolysToScene(shader, verts.size(), verts.data(), numPolys);
+			IPC::HandleMsg<Render::AddPolysToSceneMsg>(channel, std::move(reader), [this] (int shader, std::vector<polyVert_t> verts, int numVerts, int numPolys) {
+				re.AddPolysToScene(shader, numVerts, verts.data(), numPolys);
 			});
 			break;
 
@@ -2245,7 +2132,7 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-			// All LAN
+		// All LAN
 
 		case CG_LAN_GETSERVERCOUNT:
 			IPC::HandleMsg<LAN::GetServerCountMsg>(channel, std::move(reader), [this] (int source, int& count) {
@@ -2388,10 +2275,10 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_GETPROPERTY:
-			IPC::HandleMsg<Rocket::GetPropertyMsg>(channel, std::move(reader), [this] (std::string property, int type, int len, std::string& result) {
+			IPC::HandleMsg<Rocket::GetPropertyMsg>(channel, std::move(reader), [this] (std::string property, int type, int len, std::vector<char>& result) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Rocket_GetProperty(property.c_str(), buffer.get(), len, (rocketVarType_t)type);
-				result.assign(buffer.get(), len);
+				result.assign(buffer.get(), buffer.get() + len);
 			});
 			break;
 

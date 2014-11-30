@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.32.0"
+#define PRODUCT_VERSION         "0.33.1"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -77,21 +77,6 @@ Maryland 20850 USA.
 #define Q_UNUSED(x) (void)(x)
 
 #define EXTERN_C extern "C"
-
-// for visibility of some functions in system headers
-#undef _GNU_SOURCE
-#undef _BSD_SOURCE
-#undef _XOPEN_SOURCE_EXTENDED
-#define _GNU_SOURCE
-#define _BSD_SOURCE
-#define _XOPEN_SOURCE_EXTENDED
-#if !(defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__))
-// defining the following breaks things on BSD-esque OSes
-#undef _XOPEN_SOURCE
-#undef _POSIX_C_SOURCE
-#define _XOPEN_SOURCE 500
-#define _POSIX_C_SOURCE 200112L
-#endif
 
 // C standard library headers
 #include <assert.h>
@@ -2107,12 +2092,8 @@ void         ByteToDir( int b, vec3_t dir );
 #define RESERVED_CONFIGSTRINGS 2 // game can't modify below this, only the system can
 
 #define MAX_GAMESTATE_CHARS    16000
-	typedef struct
-	{
-		int  stringOffsets[ MAX_CONFIGSTRINGS ];
-		char stringData[ MAX_GAMESTATE_CHARS ];
-		int  dataCount;
-	} gameState_t;
+
+typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 
 #define REF_FORCE_DLIGHT       ( 1 << 31 ) // RF, passed in through overdraw parameter, force this dlight under all conditions
 #define REF_JUNIOR_DLIGHT      ( 1 << 30 ) // (SA) this dlight does not light surfaces.  it only affects dynamic light grid
@@ -2530,18 +2511,27 @@ typedef struct
 // real time
 //=============================================
 
-	typedef struct qtime_s
-	{
-		int tm_sec; /* seconds after the minute - [0,59] */
-		int tm_min; /* minutes after the hour - [0,59] */
-		int tm_hour; /* hours since midnight - [0,23] */
-		int tm_mday; /* day of the month - [1,31] */
-		int tm_mon; /* months since January - [0,11] */
-		int tm_year; /* years since 1900 */
-		int tm_wday; /* days since Sunday - [0,6] */
-		int tm_yday; /* days since January 1 - [0,365] */
-		int tm_isdst; /* daylight savings time flag */
-	} qtime_t;
+typedef struct qtime_s
+{
+    int tm_sec; /* seconds after the minute - [0,59] */
+    int tm_min; /* minutes after the hour - [0,59] */
+    int tm_hour; /* hours since midnight - [0,23] */
+    int tm_mday; /* day of the month - [1,31] */
+    int tm_mon; /* months since January - [0,11] */
+    int tm_year; /* years since 1900 */
+    int tm_wday; /* days since Sunday - [0,6] */
+    int tm_yday; /* days since January 1 - [0,365] */
+    int tm_isdst; /* daylight savings time flag */
+} qtime_t;
+
+int        Com_RealTime( qtime_t *qtime );
+int        Com_GMTime( qtime_t *qtime );
+// Com_Time: client gets local time, server gets GMT
+#ifdef BUILD_SERVER
+#define Com_Time(t) Com_GMTime(t)
+#else
+#define Com_Time(t) Com_RealTime(t)
+#endif
 
 // server browser sources
 #define AS_LOCAL     0

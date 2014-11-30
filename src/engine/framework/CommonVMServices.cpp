@@ -222,12 +222,10 @@ namespace VM {
 
             case QVM_COMMON_ERROR:
                 IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](std::string text) {
+                    vmErrored = true;
                     Com_Error(ERR_DROP, "%s", text.c_str());
                 });
                 break;
-
-            case QVM_COMMON_LOG:
-                Com_Error(ERR_DROP, "trap_Log not implemented");
 
             case QVM_COMMON_SEND_CONSOLE_COMMAND:
                 IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](std::string text) {
@@ -356,12 +354,12 @@ namespace VM {
     // Misc, Dispatch
 
     CommonVMServices::CommonVMServices(VMBase& vm, Str::StringRef vmName, int commandFlag)
-    :vmName(vmName), vm(vm), commandFlag(commandFlag), commandProxy(new ProxyCmd(*this, commandFlag)) {
+    :vmName(vmName), vm(vm), vmErrored(false), commandProxy(new ProxyCmd(*this, commandFlag)) {
     }
 
     CommonVMServices::~CommonVMServices() {
         //FIXME or iterate over the commands we registered, or add Cmd::RemoveByProxy()
-        Cmd::RemoveFlaggedCommands(commandFlag);
+        Cmd::RemoveSameCommands(*commandProxy.get());
         //TODO unregesiter cvars
     }
 
@@ -390,6 +388,10 @@ namespace VM {
             default:
                 Com_Error(ERR_DROP, "Unhandled common engine syscall major number %i", major);
         }
+    }
+
+    bool CommonVMServices::HasVMErrored() const {
+        return vmErrored;
     }
 
     VMBase& CommonVMServices::GetVM() {

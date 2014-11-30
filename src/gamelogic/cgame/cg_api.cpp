@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int VM::VM_API_VERSION = CGAME_API_VERSION;
 
-void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
+void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, glconfig_t gl, GameStateCSs gameState );
 void CG_RegisterCvars( void );
 void CG_Shutdown( void );
 
@@ -54,9 +54,7 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 break;
 
             case CG_INIT:
-                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int serverCommandSequence, int clientNum) {
-                    CG_Init(serverMessageNum, serverCommandSequence, clientNum);
-                });
+                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), CG_Init);
                 break;
 
             case CG_SHUTDOWN:
@@ -67,8 +65,8 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 break;
 
             case CG_DRAW_ACTIVE_FRAME:
-                IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, stereoFrame_t stereoView, bool demoPlayback) {
-                    CG_DrawActiveFrame(serverTime, stereoView, demoPlayback);
+                IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, bool demoPlayback) {
+                    CG_DrawActiveFrame(serverTime, demoPlayback);
                 });
                 break;
 
@@ -97,9 +95,7 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 break;
 
             case CG_ROCKET_FRAME:
-                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), [] {
-                    CG_Rocket_Frame();
-                });
+                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), CG_Rocket_Frame);
                 break;
 
             case CG_ROCKET_FORMAT_DATA:
@@ -135,20 +131,6 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
 
 // All Miscs
 
-int trap_GetDemoState( void )
-{
-	int state;
-	VM::SendMsg<GetDemoStateMsg>(state);
-	return state;
-}
-
-int trap_GetDemoPos( void )
-{
-	int pos;
-	VM::SendMsg<GetDemoPosMsg>(pos);
-	return pos;
-}
-
 void trap_SendClientCommand( const char *s )
 {
 	VM::SendMsg<SendClientCommandMsg>(s);
@@ -171,30 +153,8 @@ int trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t pro
 	VM::SendMsg<CMMarkFragmentsMsg>(mypoints, myproj, maxPoints, maxFragments, mypointBuffer, myfragmentBuffer);
 
 	memcpy(pointBuffer, mypointBuffer.data(), sizeof(float) * 3 * maxPoints);
-	memcpy(fragmentBuffer, myfragmentBuffer.data(), sizeof(markFragment_t) * maxFragments);
-	return 0;
-}
-
-int trap_RealTime( qtime_t *qtime )
-{
-	int res;
-	VM::SendMsg<RealTimeMsg>(res, *qtime);
-	return res;
-}
-
-void trap_GetGlconfig( glconfig_t *glconfig )
-{
-	VM::SendMsg<GetGLConfigMsg>(*glconfig);
-}
-
-void trap_GetGameState( gameState_t *gamestate )
-{
-	VM::SendMsg<GetGameStateMsg>(*gamestate);
-}
-
-void trap_GetClientState( cgClientState_t *cstate )
-{
-	VM::SendMsg<GetClientStateMsg>(*cstate);
+	memcpy(fragmentBuffer, myfragmentBuffer.data(), sizeof(markFragment_t) * myfragmentBuffer.size());
+	return myfragmentBuffer.size();
 }
 
 void trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
@@ -247,13 +207,6 @@ qboolean trap_GetEntityToken( char *buffer, int bufferSize )
 	VM::SendMsg<GetEntityTokenMsg>(bufferSize, res, token);
 	Q_strncpyz(buffer, token.c_str(), bufferSize);
 	return res;
-}
-
-void trap_GetDemoName( char *buffer, int size )
-{
-	std::string name;
-	VM::SendMsg<GetDemoNameMsg>(size, name);
-	Q_strncpyz(buffer, name.c_str(), size);
 }
 
 void trap_RegisterButtonCommands( const char *cmds )
@@ -495,9 +448,9 @@ void trap_R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *v
 
 void trap_R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
 {
-	std::vector<polyVert_t> myverts(numVerts);
-	memcpy(myverts.data(), verts, numVerts * sizeof(polyVert_t));
-	VM::SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numPolys);
+	std::vector<polyVert_t> myverts(numVerts * numPolys);
+	memcpy(myverts.data(), verts, numVerts * numPolys * sizeof(polyVert_t));
+	VM::SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numVerts, numPolys);
 }
 
 void trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
@@ -824,11 +777,11 @@ void trap_Rocket_SetAttribute( const char *attribute, const char *value )
 	VM::SendMsg<Rocket::SetAttributeMsg>(attribute, value);
 }
 
-void trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type )
+void trap_Rocket_GetProperty( const char *name, void *out, size_t len, rocketVarType_t type )
 {
-	std::string result;
+	std::vector<char> result;
 	VM::SendMsg<Rocket::GetPropertyMsg>(name, type, len, result);
-	Q_strncpyz((char*)out, result.c_str(), len);
+	memcpy(out, result.data(), std::min(len, result.size()));
 }
 
 void trap_Rocket_SetProperty( const char *property, const char *value )

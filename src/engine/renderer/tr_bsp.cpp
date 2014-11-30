@@ -6736,7 +6736,7 @@ void R_BuildCubeMaps( void )
 			tr.refdef.pixelTargetWidth = REF_CUBEMAP_SIZE;
 			tr.refdef.pixelTargetHeight = REF_CUBEMAP_SIZE;
 
-			RE_BeginFrame( STEREO_CENTER );
+			RE_BeginFrame();
 			RE_RenderScene( &rf );
 			RE_EndFrame( &ii, &jj );
 

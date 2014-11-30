@@ -130,7 +130,6 @@ typedef enum gameImport_s
   G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )
   G_GEN_FINGERPRINT,
   G_GET_PLAYER_PUBKEY,
-  G_GM_TIME,
   G_GET_TIME_STRING,
 
   BOT_ALLOCATE_CLIENT,
@@ -227,11 +226,6 @@ typedef IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_PLAYER_PUBKEY>, int, int>,
     IPC::Reply<std::string>
 > GetPlayerPubkeyMsg;
-//GMTimeMsg
-typedef IPC::SyncMessage<
-    IPC::Message<IPC::Id<VM::QVM, G_GM_TIME>>,
-    IPC::Reply<int, qtime_t>
-> GMTimeMsg;
 // GetTimeStringMsg
 typedef IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_TIME_STRING>, int, std::string, qtime_t>,
@@ -240,7 +234,7 @@ typedef IPC::SyncMessage<
 
 // BotAllocateClientMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, BOT_ALLOCATE_CLIENT>, int>,
+	IPC::Message<IPC::Id<VM::QVM, BOT_ALLOCATE_CLIENT>>,
 	IPC::Reply<int>
 > BotAllocateClientMsg;
 // BotFreeClientMsg

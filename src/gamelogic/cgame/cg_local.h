@@ -1626,7 +1626,7 @@ typedef struct
 // all clients to begin playing instantly
 typedef struct
 {
-	gameState_t gameState; // gamestate from server
+	GameStateCSs gameState; // gamestate from server
 	glconfig_t  glconfig; // rendering configuration
 	float       screenXScale; // derived from glconfig
 	float       screenYScale;
@@ -1815,7 +1815,6 @@ extern  vmCvar_t            cg_thirdPersonShoulderViewMode;
 extern  vmCvar_t            cg_staticDeathCam;
 extern  vmCvar_t            cg_thirdPersonPitchFollow;
 extern  vmCvar_t            cg_thirdPersonRange;
-extern  vmCvar_t            cg_stereoSeparation;
 extern  vmCvar_t            cg_lagometer;
 extern  vmCvar_t            cg_drawSpeed;
 extern  vmCvar_t            cg_maxSpeedTimeWindow;
@@ -1961,7 +1960,7 @@ void     CG_TestModelPrevSkin_f( void );
 void     CG_AddBufferedSound( sfxHandle_t sfx );
 qboolean CG_CullBox(vec3_t mins, vec3_t maxs);
 qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
-void     CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+void     CG_DrawActiveFrame( int serverTime, qboolean demoPlayback );
 void     CG_OffsetFirstPersonView( void );
 void     CG_OffsetThirdPersonView( void );
 void     CG_OffsetShoulderView( void );
@@ -2012,7 +2011,7 @@ void CG_AddLagometerFrameInfo( void );
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed( void );
 void CG_CenterPrint( const char *str, int y, int charWidth );
-void CG_DrawActive( stereoFrame_t stereoView );
+void CG_DrawActive( void );
 void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float text_y, int ownerDraw, int ownerDrawFlags,
                    int align, int textalign, int textvalign,
@@ -2303,7 +2302,7 @@ void       CG_PrintTime( char *buf, int bufsize, int time );
 
 void CG_Rocket_Init( void );
 void CG_Rocket_LoadHuds( void );
-void CG_Rocket_Frame( void );
+void CG_Rocket_Frame( cgClientState_t state );
 const char *CG_Rocket_GetTag();
 const char *CG_Rocket_GetAttribute( const char *attribute );
 int CG_StringToNetSource( const char *src );

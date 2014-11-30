@@ -476,6 +476,18 @@ void SV_FreeClient( client_t *client )
 	client->queuedVoipPackets = 0;
 #endif
 
+	// see if we already have a challenge for this IP address
+	challenge_t* challenge = &svs.challenges[ 0 ];
+
+	for (int i = 0; i < MAX_CHALLENGES; i++, challenge++)
+	{
+		if ( NET_CompareAdr( client->netchan.remoteAddress, challenge->adr ) )
+		{
+			challenge->connected = qfalse;
+			break;
+		}
+	}
+
 	SV_Netchan_FreeQueue( client );
 	SV_CloseDownload( client );
 }
@@ -491,83 +503,41 @@ or crashing -- SV_FinalCommand() will handle that
 */
 void SV_DropClient( client_t *drop, const char *reason )
 {
-	int         i;
-	challenge_t *challenge;
-	qboolean    isBot = qfalse;
-
 	if ( drop->state == CS_ZOMBIE )
 	{
 		return; // already dropped
 	}
-
-	if ( drop->gentity && ( drop->gentity->r.svFlags & SVF_BOT ) )
-	{
-		isBot = qtrue;
-	}
-	else
-	{
-		if ( drop->netchan.remoteAddress.type == NA_BOT )
-		{
-			isBot = qtrue;
-		}
-	}
-
-	if ( !isBot )
-	{
-		// see if we already have a challenge for this IP address
-		challenge = &svs.challenges[ 0 ];
-
-		for ( i = 0; i < MAX_CHALLENGES; i++, challenge++ )
-		{
-			if ( NET_CompareAdr( drop->netchan.remoteAddress, challenge->adr ) )
-			{
-				challenge->connected = qfalse;
-				break;
-			}
-		}
-
-		// Kill any download
-		SV_CloseDownload( drop );
-	}
-
-	// Free all allocated data on the client structure
-	SV_FreeClient( drop );
-
-	if ( !isBot )
-	{
-		// tell everyone why they got dropped
-
-		// Gordon: we want this displayed elsewhere now
-		SV_SendServerCommand( NULL, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
-	}
-
 	Com_DPrintf( "Going to CS_ZOMBIE for %s\n", drop->name );
 	drop->state = CS_ZOMBIE; // become free in a few seconds
-
-	if ( drop->download )
-	{
-		drop->download = nullptr;
-	}
 
 	// call the prog function for removing a client
 	// this will remove the body, among other things
 	gvm.GameClientDisconnect( drop - svs.clients );
 
-	// add the disconnect command
-	SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
-
-	if ( drop->netchan.remoteAddress.type == NA_BOT )
+	if ( SV_IsBot(drop) )
 	{
 		SV_BotFreeClient( drop - svs.clients );
+	}
+	else
+	{
+		// tell everyone why they got dropped
+		// Gordon: we want this displayed elsewhere now
+		SV_SendServerCommand( NULL, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
+
+		// add the disconnect command
+		SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
 	}
 
 	// nuke user info
 	SV_SetUserinfo( drop - svs.clients, "" );
 
+	SV_FreeClient( drop );
+
 	// if this was the last client on the server, send a heartbeat
 	// to the master so it is known the server is empty
 	// send a heartbeat now so the master will get up to date info
 	// if there is already a slot for this IP address, reuse it
+	int i;
 	for ( i = 0; i < sv_maxclients->integer; i++ )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )

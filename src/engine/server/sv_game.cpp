@@ -437,16 +437,18 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 #endif
 }
 
-GameVM::GameVM(): VM::VMBase("game"), services(*this, "Game", Cmd::GAME_VM)
-{
+GameVM::GameVM(): VM::VMBase("game"), services(nullptr){
 }
 
 void GameVM::Start()
 {
+	services = std::unique_ptr<VM::CommonVMServices>(new VM::CommonVMServices(*this, "Game", Cmd::GAME_VM));
+
 	uint32_t version = this->Create();
 	if ( version != GAME_API_VERSION ) {
 		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
 	}
+
 	this->GameStaticInit();
 }
 
@@ -462,8 +464,12 @@ void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 
 void GameVM::GameShutdown(qboolean restart)
 {
-	//TODO ignore errors
-	this->SendMsg<GameShutdownMsg>(restart);
+	if (!services->HasVMErrored()) {
+		this->SendMsg<GameShutdownMsg>(restart);
+	} else {
+		this->Free();
+		services = nullptr;
+	}
 
 	// Release the shared memory region
 	this->shmRegion.Close();
@@ -534,7 +540,7 @@ void GameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 		this->QVMSyscall(minor, reader, channel);
 
     } else if (major < VM::LAST_COMMON_SYSCALL) {
-        services.Syscall(major, minor, std::move(reader), channel);
+        services->Syscall(major, minor, std::move(reader), channel);
 
     } else {
 		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
@@ -692,12 +698,6 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		});
 		break;
 
-	case G_GM_TIME:
-		IPC::HandleMsg<GMTimeMsg>(channel, std::move(reader), [this](int& res, qtime_t& time) {
-			res = Com_GMTime(&time);
-		});
-		break;
-
 	case G_GET_TIME_STRING:
 		IPC::HandleMsg<GetTimeStringMsg>(channel, std::move(reader), [this](int len, std::string format, const qtime_t& time, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
@@ -708,8 +708,8 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case BOT_ALLOCATE_CLIENT:
-		IPC::HandleMsg<BotAllocateClientMsg>(channel, std::move(reader), [this](int input, int& output) {
-			output = SV_BotAllocateClient(input);
+		IPC::HandleMsg<BotAllocateClientMsg>(channel, std::move(reader), [this](int& output) {
+			output = SV_BotAllocateClient();
 		});
 		break;
 
