@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VMMain.h"
 
 // The old console command handler that should be defined in all VMs
-void ConsoleCommand();
+qboolean ConsoleCommand();
 void CompleteCommand(int);
 
 const char* Trans_Gettext(const char* text) {
