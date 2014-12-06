@@ -545,12 +545,13 @@ public:
 	Channel()
 		: counter(0), handlingAsyncMsg(false) {}
 	Channel(Socket socket)
-		: socket(std::move(socket)), counter(0) {}
+		: socket(std::move(socket)), counter(0), handlingAsyncMsg(false) {}
 	Channel(Channel&& other)
-		: socket(std::move(other.socket)), handlingAsyncMsg(other.handlingAsyncMsg) {}
+		: socket(std::move(other.socket)), counter(0), handlingAsyncMsg(false) {}
 	Channel& operator=(Channel&& other)
 	{
 		std::swap(socket, other.socket);
+		counter = other.counter;
 		handlingAsyncMsg = other.handlingAsyncMsg;
 		return *this;
 	}
