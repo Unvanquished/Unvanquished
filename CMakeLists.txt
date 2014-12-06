@@ -743,15 +743,6 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/OggCodec.cpp
   ${ENGINE_DIR}/audio/OpusCodec.cpp
   ${ENGINE_DIR}/audio/WavCodec.cpp
-  ${ENGINE_DIR}/client/rocket_dataformatter.cpp
-  ${ENGINE_DIR}/client/rocket_textelements.cpp
-  ${ENGINE_DIR}/client/rocket_documents.cpp
-  ${ENGINE_DIR}/client/rocket_datagrid.cpp
-  ${ENGINE_DIR}/client/rocket_element.cpp
-  ${ENGINE_DIR}/client/rocket_events.cpp
-  ${ENGINE_DIR}/client/rocket_keys.cpp
-  ${ENGINE_DIR}/client/rocket_hud.cpp
-  ${ENGINE_DIR}/client/rocket.cpp
 )
 
 set( TTYCLIENTLIST

@@ -1922,7 +1922,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 			return;
 		}
 
-		Rocket_ProcessKeyInput( key, down );
+		// TODO: Rocket: Inject into rocket
 		return;
 	}
 
@@ -1931,7 +1931,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	// to run any binds (since they won't be found).
 	if ( cls.keyCatchers & KEYCATCH_UI && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
-		Rocket_ProcessKeyInput( key, down );
+		// TODO: Rocket: inject into rocket
 		return;
 	}
 
@@ -2033,7 +2033,7 @@ void CL_CharEvent( int c )
 		Field_CharEvent(g_consoleField, CL_UTF8_unpack(c));
 	}
 
-	Rocket_ProcessTextInput( c );
+	// TODO: INject TextInput into rocket
 }
 
 /*

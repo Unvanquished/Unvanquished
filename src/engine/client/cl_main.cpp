@@ -2172,7 +2172,6 @@ Restart the ui subsystem
 void CL_UI_Restart_f( void )
 {
 	// NERVE - SMF
-	Rocket_Shutdown();
 	// init the UI
 	cgvm.Start();
 	cgvm.CGameRocketInit();
@@ -3600,9 +3599,6 @@ void CL_Frame( int msec )
 
 	// decide on the serverTime to render
 	CL_SetCGameTime();
-
-	// Update librocket
-	Rocket_Update();
 
 	// update the screen
 	SCR_UpdateScreen();

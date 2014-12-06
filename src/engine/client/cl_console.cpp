@@ -612,7 +612,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 	{
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
-		Rocket_AddConsoleText(text);
+		// TODO: Rocket
 	}
 
 	color = ColorIndex( CONSOLE_COLOR );
