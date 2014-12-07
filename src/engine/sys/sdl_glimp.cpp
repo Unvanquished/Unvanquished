@@ -23,7 +23,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <SDL.h>
 
 #ifdef SMP
-#include <SDL_thread.h>
+#       include <SDL_thread.h>
+#if     defined( SDL_VIDEO_DRIVER_X11 ) && !SDL_VERSION_ATLEAST( 2, 0, 0 )
+#       include <X11/Xlib.h>
+#endif
 #endif
 
 #include "../renderer/tr_local.h"
@@ -31,11 +34,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../sys/sys_local.h"
 #include "sdl_icon.h"
 #include "SDL_syswm.h"
+#include "sdl2_compat.h"
 #include "../framework/CommandSystem.h"
 
 SDL_Window         *window = NULL;
 static SDL_GLContext glContext = NULL;
-static int colorBits = 0;
 
 #ifdef SMP
 static void GLimp_SetCurrentContext( qboolean enable )
@@ -102,6 +105,10 @@ qboolean GLimp_SpawnRenderThread( void ( *function )( void ) )
 		Com_Printf( "WARNING: You enable r_smp at your own risk!\n" );
 		warned = qtrue;
 	}
+
+#if !defined( MACOS_X ) && !defined( WIN32 ) && !defined ( SDL_VIDEO_DRIVER_X11 ) && !SDL_VERSION_ATLEAST( 2, 0, 0 )
+	return qfalse; /* better safe than sorry for now. */
+#endif
 
 	if ( renderThread != NULL ) /* hopefully just a zombie at this point... */
 	{
@@ -727,7 +734,11 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, samples ? 1 : 0 );
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, samples );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+			SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, r_swapInterval->integer );
+#endif
 
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 			if ( !r_glAllowSoftware->integer )
 			{
 				SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
@@ -755,6 +766,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 					SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
 				}
 			}
+#endif
 			window = SDL_CreateWindow( CLIENT_WINDOW_TITLE, x, y, glConfig.vidWidth, glConfig.vidHeight, flags );
 
 			if ( !window )
@@ -772,7 +784,9 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 				ri.Printf( PRINT_DEVELOPER, "SDL_GL_CreateContext failed: %s\n", SDL_GetError() );
 				continue;
 			}
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 			SDL_GL_SetSwapInterval( r_swapInterval->integer );
+#endif
 			SDL_ShowCursor( 0 );
 
 			glConfig.colorBits = testColorBits;
@@ -824,6 +838,10 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		ri.Printf( PRINT_ALL, "Using enhanced (GL3) Renderer in GL 3.x mode...\n" );
 		glConfig.driverType = GLDRV_OPENGL3;
 	}
+#if defined( SMP ) && !SDL_VERSION_ATLEAST( 2, 0, 0 )
+	// setup context for SDL_GL_MakeCurrent
+	SDL_GL_GetCurrentContext();
+#endif
 	GLimp_DetectAvailableModes();
 
 	glstring = ( char * ) glGetString( GL_RENDERER );
@@ -1271,6 +1289,10 @@ qboolean GLimp_Init( void )
 		ri.Cvar_Set( "com_abnormalExit", "0" );
 	}
 
+#if defined( SMP ) && defined( SDL_VIDEO_DRIVER_X11 ) && !SDL_VERSION_ATLEAST( 2, 0, 0 )
+	XInitThreads();
+#endif
+
 	// Create the window and set up the context
 	if ( GLimp_StartDriverAndSetMode( r_mode->integer, r_fullscreen->integer, qfalse ) )
 	{
@@ -1501,6 +1523,7 @@ Should only be called by the main thread
 */
 void GLimp_HandleCvars( void )
 {
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	if ( r_swapInterval->modified )
 	{
 		AssertCvarRange( r_swapInterval, -1, 1, qtrue );
@@ -1508,6 +1531,7 @@ void GLimp_HandleCvars( void )
 		SDL_GL_SetSwapInterval( r_swapInterval->integer );
 		r_swapInterval->modified = qfalse;
 	}
+#endif
 
 	if ( r_fullscreen->modified )
 	{
