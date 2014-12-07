@@ -31,7 +31,7 @@ case "$(uname -s)" in
 esac
 
 # Version of Unvanquished for which this script is built
-VERSION=0.33
+VERSION=0.34
 
 # Option flags
 RUN_DOWNLOAD=1
