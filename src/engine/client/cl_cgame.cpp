@@ -2751,7 +2751,7 @@ qboolean CL_GameConsoleText( void )
 CL_CGameRendering
 =====================
 */
-void CL_CGameRendering( stereoFrame_t stereo )
+void CL_CGameRendering( void )
 {
 	/*  static int x = 0;
 	        if(!((++x) % 20)) {
@@ -2760,7 +2760,7 @@ void CL_CGameRendering( stereoFrame_t stereo )
 	        } else {
 	        }*/
 
-	VM_Call( cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying );
+	VM_Call( cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, clc.demoplaying );
 	VM_Debug( 0 );
 }
 

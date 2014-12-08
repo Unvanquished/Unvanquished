@@ -717,58 +717,21 @@ CG_DrawActive
 Perform all drawing needed to completely fill the screen
 =====================
 */
-void CG_DrawActive( stereoFrame_t stereoView )
+void CG_DrawActive( void )
 {
-	float  separation;
-	vec3_t baseOrg;
-
 	// optionally draw the info screen instead
 	if ( !cg.snap )
 	{
 		return;
 	}
 
-	switch ( stereoView )
-	{
-		case STEREO_CENTER:
-			separation = 0;
-			break;
-
-		case STEREO_LEFT:
-			separation = -cg_stereoSeparation.value / 2;
-			break;
-
-		case STEREO_RIGHT:
-			separation = cg_stereoSeparation.value / 2;
-			break;
-
-		default:
-			separation = 0;
-			CG_Error( "CG_DrawActive: Undefined stereoView" );
-	}
-
 	// clear around the rendered view if sized down
 	CG_TileClear();
-
-	// offset vieworg appropriately if we're doing stereo separation
-	VectorCopy( cg.refdef.vieworg, baseOrg );
-
-	if ( separation != 0 )
-	{
-		VectorMA( cg.refdef.vieworg, -separation, cg.refdef.viewaxis[ 1 ],
-		          cg.refdef.vieworg );
-	}
 
 	CG_DrawBinaryShadersFinalPhases();
 
 	// draw 3D view
 	trap_R_RenderScene( &cg.refdef );
-
-	// restore original viewpoint if running stereo
-	if ( separation != 0 )
-	{
-		VectorCopy( baseOrg, cg.refdef.vieworg );
-	}
 
 	// first person blend blobs, done after AnglesToAxis
 	if ( !cg.renderingThirdPerson )

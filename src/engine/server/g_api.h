@@ -216,7 +216,9 @@ typedef IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA2>, int, int, int> Locat
 typedef IPC::Message<IPC::Id<VM::QVM, G_ADJUST_AREA_PORTAL_STATE>, int, bool> AdjustAreaPortalStateMsg;
 
 // DropClientMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_DROP_CLIENT>, int, std::string> DropClientMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, G_DROP_CLIENT>, int, std::string>
+> DropClientMsg;
 // SendServerCommandMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_SERVER_COMMAND>, int, std::string> SendServerCommandMsg;
 // SetConfigStringMsg
@@ -323,7 +325,7 @@ typedef IPC::SyncMessage<
 
 // BotAllocateClientMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, BOT_ALLOCATE_CLIENT>, int>,
+	IPC::Message<IPC::Id<VM::QVM, BOT_ALLOCATE_CLIENT>>,
 	IPC::Reply<int>
 > BotAllocateClientMsg;
 // BotFreeClientMsg

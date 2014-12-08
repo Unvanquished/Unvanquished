@@ -46,16 +46,14 @@ void R_PerformanceCounters( void )
 		           backEnd.pc.c_views, backEnd.pc.c_portals, backEnd.pc.c_batches, backEnd.pc.c_surfaces, tr.pc.c_leafs,
 		           backEnd.pc.c_vertexes, backEnd.pc.c_indexes / 3 );
 
-		ri.Printf( PRINT_ALL, "%i lights %i bout %i pvsout %i queryout %i interactions\n",
-		           tr.pc.c_dlights + tr.pc.c_slights - backEnd.pc.c_occlusionQueriesLightsCulled,
+		ri.Printf( PRINT_ALL, "%i lights %i bout %i pvsout %i interactions\n",
+		           tr.pc.c_dlights + tr.pc.c_slights,
 		           tr.pc.c_box_cull_light_out,
 		           tr.pc.c_pvs_cull_light_out,
-		           backEnd.pc.c_occlusionQueriesLightsCulled,
-		           tr.pc.c_dlightInteractions + tr.pc.c_slightInteractions - backEnd.pc.c_occlusionQueriesInteractionsCulled );
+		           tr.pc.c_dlightInteractions + tr.pc.c_slightInteractions );
 
-		ri.Printf( PRINT_ALL, "%i draws %i queries %i vbos %i ibos %i verts %i tris\n",
+		ri.Printf( PRINT_ALL, "%i draws %i vbos %i ibos %i verts %i tris\n",
 		           backEnd.pc.c_drawElements,
-		           tr.pc.c_occlusionQueries,
 		           backEnd.pc.c_vboVertexBuffers, backEnd.pc.c_vboIndexBuffers,
 		           backEnd.pc.c_vboVertexes, backEnd.pc.c_vboIndexes / 3 );
 
@@ -103,29 +101,10 @@ void R_PerformanceCounters( void )
 		ri.Printf( PRINT_ALL, "flare adds:%i tests:%i renders:%i\n",
 		           backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders );
 	}
-	else if ( r_speeds->integer == RSPEEDS_OCCLUSION_QUERIES )
-	{
-		ri.Printf( PRINT_ALL, "occlusion queries:%i multi:%i saved:%i culled lights:%i culled entities:%i culled leafs:%i response time:%i fetch time:%i\n",
-		           backEnd.pc.c_occlusionQueries,
-		           backEnd.pc.c_occlusionQueriesMulti,
-		           backEnd.pc.c_occlusionQueriesSaved,
-		           backEnd.pc.c_occlusionQueriesLightsCulled,
-		           backEnd.pc.c_occlusionQueriesEntitiesCulled,
-		           backEnd.pc.c_occlusionQueriesLeafsCulled,
-		           backEnd.pc.c_occlusionQueriesResponseTime,
-		           backEnd.pc.c_occlusionQueriesFetchTime );
-	}
 	else if ( r_speeds->integer == RSPEEDS_SHADING_TIMES )
 	{
 		ri.Printf( PRINT_ALL, "forward shading times: ambient:%i lighting:%i\n", backEnd.pc.c_forwardAmbientTime,
 			           backEnd.pc.c_forwardLightingTime );
-	}
-	else if ( r_speeds->integer == RSPEEDS_CHC )
-	{
-		ri.Printf( PRINT_ALL, "%i queries %i multi queries %i saved\n",
-		           tr.pc.c_occlusionQueries,
-		           tr.pc.c_occlusionQueriesMulti,
-		           tr.pc.c_occlusionQueriesSaved );
 	}
 	else if ( r_speeds->integer == RSPEEDS_NEAR_FAR )
 	{
@@ -721,12 +700,9 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 /*
 ====================
 RE_BeginFrame
-
-If running in stereo, RE_BeginFrame will be called twice
-for each RE_EndFrame
 ====================
 */
-void RE_BeginFrame( stereoFrame_t stereoFrame )
+void RE_BeginFrame( void )
 {
 	drawBufferCommand_t *cmd;
 
@@ -846,36 +822,13 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 
 	cmd->commandId = RC_DRAW_BUFFER;
 
-	if ( glConfig.stereoEnabled )
+	if ( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) )
 	{
-		if ( stereoFrame == STEREO_LEFT )
-		{
-			cmd->buffer = ( int ) GL_BACK_LEFT;
-		}
-		else if ( stereoFrame == STEREO_RIGHT )
-		{
-			cmd->buffer = ( int ) GL_BACK_RIGHT;
-		}
-		else
-		{
-			ri.Error( ERR_FATAL, "RE_BeginFrame: Stereo is enabled, but stereoFrame was %i", stereoFrame );
-		}
+		cmd->buffer = ( int ) GL_FRONT;
 	}
 	else
 	{
-		if ( stereoFrame != STEREO_CENTER )
-		{
-			ri.Error( ERR_FATAL, "RE_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame );
-		}
-
-		if ( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) )
-		{
-			cmd->buffer = ( int ) GL_FRONT;
-		}
-		else
-		{
-			cmd->buffer = ( int ) GL_BACK;
-		}
+		cmd->buffer = ( int ) GL_BACK;
 	}
 }
 

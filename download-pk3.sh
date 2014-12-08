@@ -31,7 +31,7 @@ case "$(uname -s)" in
 esac
 
 # Version of Unvanquished for which this script is built
-VERSION=0.33
+VERSION=0.34
 
 # Option flags
 RUN_DOWNLOAD=1
@@ -143,7 +143,17 @@ verify_md5sums()
   (
     set -e
     cd "$DEST_DIR"
-    md5sum --quiet -c "$CACHE/md5sums" 2>/dev/null
+    while read record; do
+      filename=`echo "$record" | sed 's/^.* [ *]//'`
+      sum=`echo "$record" | cut -d" " -f1`
+      if [ ! -f $filename ]; then
+        echo "$filename"
+      else
+        if [ "`md5sum $filename | cut -d" " -f1`" != "$sum" ]; then
+          echo "$filename"
+        fi
+      fi
+    done < "$CACHE/md5sums"
   )
 }
 
