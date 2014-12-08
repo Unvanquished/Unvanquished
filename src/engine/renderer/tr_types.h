@@ -343,13 +343,6 @@ typedef struct
 	vec4_t  gradingWeights;
 } refdef_t;
 
-typedef enum
-{
-  STEREO_CENTER,
-  STEREO_LEFT,
-  STEREO_RIGHT
-} stereoFrame_t;
-
 // XreaL BEGIN
 
 // cg_shadows modes
@@ -448,7 +441,6 @@ typedef struct
 	// synonymous with "does rendering consume the entire screen?", therefore
 	// a Win32 ICD that used CDS will have this set to TRUE
 	qboolean isFullscreen;
-	qboolean stereoEnabled;
 	qboolean smpActive; // dual processor
 } glconfig_t;
 

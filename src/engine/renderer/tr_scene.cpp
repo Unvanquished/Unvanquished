@@ -707,8 +707,6 @@ void RE_RenderScene( const refdef_t *fd )
 	parms.fovX = tr.refdef.fov_x;
 	parms.fovY = tr.refdef.fov_y;
 
-	parms.stereoFrame = tr.refdef.stereoFrame;
-
 	VectorCopy( fd->vieworg, parms.orientation.origin );
 	VectorCopy( fd->viewaxis[ 0 ], parms.orientation.axis[ 0 ] );
 	VectorCopy( fd->viewaxis[ 1 ], parms.orientation.axis[ 1 ] );

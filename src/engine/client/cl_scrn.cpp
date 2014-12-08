@@ -670,13 +670,11 @@ void SCR_Init( void )
 /*
 ==================
 SCR_DrawScreenField
-
-This will be called twice if rendering in stereo mode
 ==================
 */
-void SCR_DrawScreenField( stereoFrame_t stereoFrame )
+void SCR_DrawScreenField( void )
 {
-	re.BeginFrame( stereoFrame );
+	re.BeginFrame();
 
 	// wide aspect ratio screens need to have the sides cleared
 	// unless they are displaying game renderings
@@ -715,7 +713,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 			case CA_LOADING:
 			case CA_PRIMED:
 				// draw the game information screen and loading progress
-				CL_CGameRendering( stereoFrame );
+				CL_CGameRendering();
 
 				// also draw the connection information, so it doesn't
 				// flash away too briefly on local or LAN games
@@ -723,7 +721,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				break;
 
 			case CA_ACTIVE:
-				CL_CGameRendering( stereoFrame );
+				CL_CGameRendering();
 				SCR_DrawDemoRecording();
 #ifdef USE_VOIP
 				SCR_DrawVoipMeter();
@@ -773,25 +771,12 @@ void SCR_UpdateScreen( void )
 	// that case.
 	if ( cgvm || com_dedicated->integer )
 	{
-		// XXX
-//		extern cvar_t* r_anaglyphMode;
-		// if running in stereo, we need to draw the frame twice
-		if ( cls.glconfig.stereoEnabled )
-		{
-			SCR_DrawScreenField( STEREO_LEFT );
-			SCR_DrawConsoleAndPointer();
-			SCR_DrawScreenField( STEREO_RIGHT );
-			SCR_DrawConsoleAndPointer();
-		}
-		else
-		{
-			SCR_DrawScreenField( STEREO_CENTER );
+		SCR_DrawScreenField();
 
-			VM_Call( cgvm, CG_ROCKET_FRAME );
+		VM_Call( cgvm, CG_ROCKET_FRAME );
 
-			Rocket_Render();
-			SCR_DrawConsoleAndPointer();
-		}
+		Rocket_Render();
+		SCR_DrawConsoleAndPointer();
 
 		if ( com_speeds->integer )
 		{

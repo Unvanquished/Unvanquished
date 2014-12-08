@@ -129,7 +129,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h, float s1, float 
 void RE_2DPolyies( polyVert_t *polys, int numverts, qhandle_t hShader ) { }
 void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty ) { }
 void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty ) { }
-void RE_BeginFrame( stereoFrame_t stereoFrame ) { }
+void RE_BeginFrame( void ) { }
 void RE_EndFrame( int *frontEndMsec, int *backEndMsec ) { }
 int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer )
 {

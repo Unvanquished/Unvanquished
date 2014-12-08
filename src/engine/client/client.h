@@ -849,7 +849,7 @@ void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
 void     CL_GameCommandHandler( void );
 qboolean CL_GameConsoleText( void );
-void     CL_CGameRendering( stereoFrame_t stereo );
+void     CL_CGameRendering( void );
 void     CL_SetCGameTime( void );
 void     CL_FirstSnapshot( void );
 void     CL_ShaderStateChanged( void );
