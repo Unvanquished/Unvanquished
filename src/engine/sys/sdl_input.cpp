@@ -1554,12 +1554,12 @@ void IN_Frame( void )
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
-	if ( !cls.glconfig.isFullscreen && cls.keyCatchers & KEYCATCH_CONSOLE )
+	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		// Console is down in windowed mode
 		IN_DeactivateMouse( qfalse );
 	}
-	else if ( !cls.glconfig.isFullscreen && loading )
+	else if ( loading )
 	{
 		// Loading in windowed mode
 		IN_DeactivateMouse( qtrue );
