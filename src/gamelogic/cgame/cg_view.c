@@ -536,8 +536,7 @@ void CG_OffsetShoulderView( void )
 // this causes a compiler bug on mac MrC compiler
 static void CG_StepOffset( void )
 {
-	float         steptime;
-	int           timeDelta;
+	float         steptime, timeDelta;
 	vec3_t        normal;
 	playerState_t *ps = &cg.predictedPlayerState;
 
@@ -546,14 +545,15 @@ static void CG_StepOffset( void )
 	steptime = BG_Class( ps->stats[ STAT_CLASS ] )->steptime;
 
 	// smooth out stair climbing
-	timeDelta = cg.time - cg.stepTime;
+	timeDelta = (cg.time - cg.playerCent->pe.stepTime) + cg.timeFraction;
 
-	if ( timeDelta < steptime )
-	{
-		float stepChange = cg.stepChange
+	if ( cg.playerPredicted && timeDelta < steptime ) {
+		float stepChange = cg.playerCent->pe.stepChange
 		                   * ( steptime - timeDelta ) / steptime;
-
 		VectorMA( cg.refdef.vieworg, -stepChange, normal, cg.refdef.vieworg );
+	} else if ( !cg.playerPredicted && timeDelta < 200 ) {
+		cg.refdef.vieworg[2] -= cg.playerCent->pe.stepChange 
+			* (200 - timeDelta) / 200;
 	}
 }
 
@@ -568,20 +568,21 @@ void CG_OffsetFirstPersonView( void )
 	float         *origin;
 	float         *angles;
 	float         bob;
-	float         ratio;
 	float         delta;
 	float         speed;
 	float         f;
 	vec3_t        predictedVelocity;
-	int           timeDelta;
+	float           timeDelta;
 	float         bob2;
 	vec3_t        normal, baseOrigin;
 	playerState_t *ps = &cg.predictedPlayerState;
+	
+	centity_t		*cent = cg.playerCent;
+	playerEntity_t	*pe = &cent->pe;
 
 	BG_GetClientNormal( ps, normal );
 
-	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
-	{
+	if ( cg.snap->ps.pm_type == PM_INTERMISSION || !cent ) {
 		return;
 	}
 
@@ -591,19 +592,24 @@ void CG_OffsetFirstPersonView( void )
 	VectorCopy( origin, baseOrigin );
 
 	// if dead, fix the angle and don't add any kick
-	if ( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 )
-	{
+	if ( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 || cent->currentState.eFlags & EF_DEAD ) {
 		angles[ ROLL ] = 40;
 		angles[ PITCH ] = -15;
-		angles[ YAW ] = cg.snap->ps.stats[ STAT_VIEWLOCK ];
-		origin[ 2 ] += cg.predictedPlayerState.viewheight;
+		if ( !cg.playerPredicted ) {
+			//entTODO: prolly change DEAD_VIEWHEIGHT to -16?
+			origin[2] += DEAD_VIEWHEIGHT;
+			angles[YAW] = 0;
+		} else {
+			angles[ YAW ] = cg.snap->ps.stats[ STAT_VIEWLOCK ];
+			origin[ 2 ] += cg.predictedPlayerState.viewheight;
+		}
 		return;
 	}
 
 	// add angles based on damage kick
-	if ( cg.damageTime )
+	if ( cg.damageTime && cg.playerPredicted )
 	{
-		ratio = cg.time - cg.damageTime;
+		float ratio = (cg.time - cg.damageTime) + cg.timeFraction;
 
 		if ( ratio < DAMAGE_DEFLECT_TIME )
 		{
@@ -636,7 +642,7 @@ void CG_OffsetFirstPersonView( void )
 #endif
 
 	// add angles based on velocity
-	VectorCopy( cg.predictedPlayerState.velocity, predictedVelocity );
+	VectorCopy( cent->currentState.pos.trDelta, predictedVelocity );
 
 	delta = DotProduct( predictedVelocity, cg.refdef.viewaxis[ 0 ] );
 	angles[ PITCH ] += delta * cg_runpitch.value;
@@ -647,7 +653,7 @@ void CG_OffsetFirstPersonView( void )
 	// add angles based on bob
 	// bob amount is class-dependent
 
-	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT || !cg.playerPredicted )
 	{
 		bob2 = 0.0f;
 	}
@@ -706,7 +712,7 @@ void CG_OffsetFirstPersonView( void )
 #define LEVEL3_FEEDBACK 20.0f
 
 	//provide some feedback for pouncing
-	if ( ( cg.predictedPlayerState.weapon == WP_ALEVEL3 ||
+	if ( cg.playerPredicted && ( cg.predictedPlayerState.weapon == WP_ALEVEL3 ||
 	       cg.predictedPlayerState.weapon == WP_ALEVEL3_UPG ) &&
 	     cg.predictedPlayerState.stats[ STAT_MISC ] > 0 )
 	{
@@ -733,7 +739,7 @@ void CG_OffsetFirstPersonView( void )
 #define STRUGGLE_TIME 250
 
 	//allow the player to struggle a little whilst grabbed
-	if ( cg.predictedPlayerState.pm_type == PM_GRABBED )
+	if ( cg.playerPredicted && cg.predictedPlayerState.pm_type == PM_GRABBED )
 	{
 		vec3_t    forward, right, up;
 		usercmd_t cmd;
@@ -805,22 +811,23 @@ void CG_OffsetFirstPersonView( void )
 	}
 
 	// this *feels* more realisitic for humans <- this comment feels very descriptive
-	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
+	if ( cg.playerPredicted && cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 	     cg.predictedPlayerState.pm_type == PM_NORMAL )
 	{
 		angles[ PITCH ] += cg.bobfracsin * bob2 * 0.5;
 	}
 
 	// add view height
-	VectorMA( origin, ps->viewheight, normal, origin );
+	if (cg.playerPredicted)
+		VectorMA( origin, ps->viewheight, normal, origin );
+	else
+		origin[2] += pe->viewHeight;
 
 	// smooth out duck height changes
-	timeDelta = cg.time - cg.duckTime;
-
-	if ( timeDelta < DUCK_TIME )
-	{
-		cg.refdef.vieworg[ 2 ] -= cg.duckChange
-		                          * ( DUCK_TIME - timeDelta ) / DUCK_TIME;
+	timeDelta = (cg.time - pe->duckTime) + cg.timeFraction;
+	if ( timeDelta >= 0 && timeDelta < DUCK_TIME) {
+		cg.refdef.vieworg[2] -= pe->duckChange 
+			* (DUCK_TIME - timeDelta) / DUCK_TIME;
 	}
 
 	// add bob height
@@ -831,21 +838,20 @@ void CG_OffsetFirstPersonView( void )
 		bob = 6;
 	}
 
-	VectorMA( origin, bob, normal, origin );
+	if (cg.playerPredicted)
+		VectorMA( origin, bob, normal, origin );
+	else
+		origin[2] += bob;
 
 	// add fall height
-	delta = cg.time - cg.landTime;
-
-	if ( delta < LAND_DEFLECT_TIME )
-	{
+	delta = (cg.time - pe->landTime) + cg.timeFraction;
+	if ( delta < LAND_DEFLECT_TIME ) {
 		f = delta / LAND_DEFLECT_TIME;
-		cg.refdef.vieworg[ 2 ] += cg.landChange * f;
-	}
-	else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
-	{
+		origin[2] += pe->landChange * f;
+	} else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
 		delta -= LAND_DEFLECT_TIME;
 		f = 1.0 - ( delta / LAND_RETURN_TIME );
-		cg.refdef.vieworg[ 2 ] += cg.landChange * f;
+		origin[2] += pe->landChange * f;
 	}
 
 	// add step offset
@@ -861,9 +867,6 @@ CG_CalcFov
 Fixed fov at intermissions, otherwise account for fov variable and zooms.
 ====================
 */
-#define WAVE_AMPLITUDE 1.0f
-#define WAVE_FREQUENCY 0.4f
-
 #define FOVWARPTIME    400.0f
 #define BASE_FOV_Y     73.739792f // atan2( 3, 4 / tan( 90 ) )
 #define MAX_FOV_Y      120.0f
@@ -1628,7 +1631,7 @@ CG_CalcViewValues
 Sets cg.refdef view values
 ===============
 */
-static int CG_CalcViewValues( void )
+int CG_CalcViewValues( void )
 {
 	playerState_t *ps;
 
@@ -1856,7 +1859,7 @@ CG_DrawActiveFrame
 Generates and draws a game scene and status information at the given time.
 =================
 */
-void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback )
+void CG_DrawActiveFrame( int serverTime, int demoPlayback )
 {
 	int inwater;
 
@@ -1872,6 +1875,11 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback )
 
 	// clear all the render lists
 	trap_R_ClearScene();
+	
+#ifdef MME_FX
+	//Prepare for new FX
+	trap_FX_Begin( cg.time, 0 );
+#endif
 
 	// set up cg.snap and possibly cg.nextSnap
 	CG_ProcessSnapshots();
@@ -1882,15 +1890,23 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback )
 	{
 		return;
 	}
-
+	CG_PreparePacketEntities( );
 	// let the client system know what our weapon and zoom settings are
 	trap_SetUserCmdValue( cg.weaponSelect, 0, cg.zoomSensitivity, 0 );
 
 	// this counter will be bumped for every valid scene we generate
 	cg.clientFrame++;
+	cg.playerCent = &cg.predictedPlayerEntity;
+	cg.playerPredicted = qtrue;
 
 	// update cg.predictedPlayerState
 	CG_PredictPlayerState();
+	
+	// generate and add the entity from the playerstate
+	BG_PlayerStateToEntityState( &cg.predictedPlayerState, &cg.predictedPlayerEntity.currentState, qfalse );
+	cg.predictedPlayerEntity.currentValid = qtrue;
+	VectorCopy( cg.predictedPlayerEntity.currentState.pos.trBase, cg.predictedPlayerEntity.lerpOrigin );
+	VectorCopy( cg.predictedPlayerEntity.currentState.apos.trBase, cg.predictedPlayerEntity.lerpAngles );
 
 	// update unlockables data (needs valid predictedPlayerState)
 	CG_UpdateUnlockables( &cg.predictedPlayerState );

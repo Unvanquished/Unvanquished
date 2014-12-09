@@ -351,7 +351,7 @@ Generates cg.predictedPlayerState by interpolating between
 cg.snap->player_state and cg.nextFrame->player_state
 ========================
 */
-static void CG_InterpolatePlayerState( qboolean grabAngles )
+void CG_InterpolatePlayerState( qboolean grabAngles )
 {
 	float         f;
 	int           i;
@@ -387,7 +387,7 @@ static void CG_InterpolatePlayerState( qboolean grabAngles )
 		return;
 	}
 
-	f = ( float )( cg.time - prev->serverTime ) / ( next->serverTime - prev->serverTime );
+	f = (cg.timeFraction + ( cg.time - prev->serverTime )) / ( next->serverTime - prev->serverTime );
 
 	i = next->ps.bobCycle;
 

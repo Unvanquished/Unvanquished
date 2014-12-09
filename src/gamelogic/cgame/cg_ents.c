@@ -495,7 +495,7 @@ static void CG_Missile( centity_t *cent )
 		// spin as it moves
 		if ( es->pos.trType != TR_STATIONARY && ma->rotates )
 		{
-			RotateAroundDirection( ent.axis, cg.time / 4 );
+			RotateAroundDirection( ent.axis, 0.25f * cg.timeFraction + (float)((cg.time) % (360 * 4)) * 0.25f );
 		}
 		else
 		{
@@ -760,7 +760,7 @@ static void CG_LightFlare( centity_t *cent )
 		{
 			if ( cent->lfs.lastTime + es->time > cg.time )
 			{
-				ratio = ( float )( cg.time - cent->lfs.lastTime ) / es->time;
+				ratio = ((cg.time - cent->lfs.lastTime) + cg.timeFraction) / es->time;
 			}
 		}
 
@@ -769,7 +769,7 @@ static void CG_LightFlare( centity_t *cent )
 		{
 			if ( cent->lfs.lastTime + es->time > cg.time )
 			{
-				ratio = ( float )( cg.time - cent->lfs.lastTime ) / es->time;
+				ratio = ((cg.time - cent->lfs.lastTime) + cg.timeFraction) / es->time;
 				ratio = 1.0f - ratio;
 			}
 			else
@@ -937,7 +937,7 @@ CG_CalcEntityLerpPositions
 
 ===============
 */
-static void CG_CalcEntityLerpPositions( centity_t *cent )
+void CG_CalcEntityLerpPositions( centity_t *cent )
 {
 	// this will be set to how far forward projectiles will be extrapolated
 	int timeshift = 0;
@@ -977,10 +977,15 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 	}
 
 	// just use the current frame and evaluate as best we can
-	BG_EvaluateTrajectory( &cent->currentState.pos,
-	                       ( cg.time + timeshift ), cent->lerpOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos,
-	                       ( cg.time + timeshift ), cent->lerpAngles );
+	if (cg.demoPlayback != 2) {
+		BG_EvaluateTrajectory( &cent->currentState.pos,
+							   ( cg.time + timeshift ), cent->lerpOrigin );
+		BG_EvaluateTrajectory( &cent->currentState.apos,
+							   ( cg.time + timeshift ), cent->lerpAngles );
+	} else {
+		demoNowTrajectory( &cent->currentState.pos, cent->lerpOrigin );
+		demoNowTrajectory( &cent->currentState.apos, cent->lerpAngles );
+	}
 
 	if ( timeshift )
 	{
@@ -1219,6 +1224,36 @@ static void CG_AddCEntity( centity_t *cent )
 	}
 }
 
+
+void CG_PreparePacketEntities( void ) {
+	// set cg.frameInterpolation
+	if ( cg.nextSnap ) {
+		int		delta;
+
+		delta = (cg.nextSnap->serverTime - cg.snap->serverTime);
+		if ( delta == 0 ) {
+			cg.frameInterpolation = 0;
+		} else {
+			cg.frameInterpolation = (float)( (cg.time  - cg.snap->serverTime) + cg.timeFraction ) / delta;
+		}
+	} else {
+		cg.frameInterpolation = 0;	// actually, it should never be used, because 
+									// no entities should be marked as interpolating
+	}
+
+	// the auto-rotating items will all have the same axis
+	cg.autoAngles[0] = 0;
+	cg.autoAngles[1] = (( cg.time & 2047 ) + cg.timeFraction) * 360 / 2048.0;
+	cg.autoAngles[2] = 0;
+
+	cg.autoAnglesFast[0] = 0;
+	cg.autoAnglesFast[1] = (( cg.time & 1023 ) + + cg.timeFraction) * 360 / 1024.0f;
+	cg.autoAnglesFast[2] = 0;
+
+	AnglesToAxis( cg.autoAngles, cg.autoAxis );
+	AnglesToAxis( cg.autoAnglesFast, cg.autoAxisFast );
+}
+
 /*
 ===============
 CG_AddPacketEntities
@@ -1230,40 +1265,6 @@ void CG_AddPacketEntities( void )
 	int           num;
 	centity_t     *cent;
 	playerState_t *ps;
-
-	// set cg.frameInterpolation
-	if ( cg.nextSnap )
-	{
-		int delta;
-
-		delta = ( cg.nextSnap->serverTime - cg.snap->serverTime );
-
-		if ( delta == 0 )
-		{
-			cg.frameInterpolation = 0;
-		}
-		else
-		{
-			cg.frameInterpolation = ( float )( cg.time - cg.snap->serverTime ) / delta;
-		}
-	}
-	else
-	{
-		cg.frameInterpolation = 0; // actually, it should never be used, because
-		// no entities should be marked as interpolating
-	}
-
-	// the auto-rotating items will all have the same axis
-	cg.autoAngles[ 0 ] = 0;
-	cg.autoAngles[ 1 ] = ( cg.time & 2047 ) * 360 / 2048.0;
-	cg.autoAngles[ 2 ] = 0;
-
-	cg.autoAnglesFast[ 0 ] = 0;
-	cg.autoAnglesFast[ 1 ] = ( cg.time & 1023 ) * 360 / 1024.0f;
-	cg.autoAnglesFast[ 2 ] = 0;
-
-	AnglesToAxis( cg.autoAngles, cg.autoAxis );
-	AnglesToAxis( cg.autoAnglesFast, cg.autoAxisFast );
 
 	// generate and add the entity from the playerstate
 	ps = &cg.predictedPlayerState;

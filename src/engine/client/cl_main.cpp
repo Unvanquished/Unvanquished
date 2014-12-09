@@ -88,6 +88,7 @@ cvar_t *cl_shownuments; // DHM - Nerve
 cvar_t *cl_showSend;
 cvar_t *cl_showServerCommands; // NERVE - SMF
 cvar_t *cl_timedemo;
+cvar_t *cl_avidemo;
 
 cvar_t *cl_aviFrameRate;
 cvar_t *cl_forceavidemo;
@@ -1253,11 +1254,20 @@ class DemoCmd: public Cmd::StaticCmd {
         }
 
         void Run(const Cmd::Args& args) const OVERRIDE {
+			char		name[MAX_OSPATH], testName[MAX_OSPATH];
+			char		*ext;
+			qboolean	haveConvert;
+			cvar_t		*fs_game;
+
             if (args.Argc() != 2) {
                 PrintUsage(args, "<demoname>", "starts playing a demo file");
                 return;
             }
-
+			
+			fs_game = Cvar_FindVar ("fs_game" );
+			if (!fs_game)
+				return;
+			haveConvert = mme_demoConvert->integer && !Q_stricmp( fs_game->string, "mme" );
             // make sure a local server is killed
             Cvar_Set( "sv_killserver", "1" );
             CL_Disconnect( qtrue );
@@ -1269,9 +1279,27 @@ class DemoCmd: public Cmd::StaticCmd {
 
             const char* arg = fileName.c_str();
             int prot_ver = PROTOCOL_VERSION - 1;
+			
+			Q_strncpyz( testName, Cmd_Argv(1), sizeof( testName ) );
+			// check for an extension .dm_?? (?? is protocol)
+			ext = testName + strlen(testName) - 6;
+			if ((strlen(name) > 6) && (ext[0] == '.') && ((ext[1] == 'd') || (ext[1] == 'D')) && ((ext[2] == 'm') || (ext[2] == 'M')) && (ext[3] == '_'))
+			{
+				ext[0] = 0;	
+			}
+
+			Cvar_Set( "mme_demoFileName", testName );
+
+			if ( haveConvert ) {
+				Com_sprintf (name, MAX_OSPATH, "mmedemos/%s.mme", testName );
+				if (FS_FileExists( name )) {
+					if (demoPlay( name ))
+						return;
+				}
+			}
 
             char extension[32];
-            char name[ MAX_OSPATH ];
+//			char name[ MAX_OSPATH ];
             while (prot_ver <= PROTOCOL_VERSION && !clc.demofile) {
                 Com_sprintf(extension, sizeof(extension), ".dm_%d", prot_ver );
 
@@ -1288,7 +1316,20 @@ class DemoCmd: public Cmd::StaticCmd {
 
             if (!clc.demofile) {
                 Com_Error(ERR_DROP, "couldn't open %s", name);
-            }
+            } else if ( haveConvert ) {
+				char mmeName[MAX_OSPATH];
+
+				FS_FCloseFile( clc.demofile );
+				clc.demofile = 0;
+
+				Com_sprintf( mmeName, sizeof( mmeName ), "mmedemos/%s", testName );
+				demoConvert( name, mmeName, mme_demoSmoothen->integer );
+				Q_strcat( mmeName , sizeof( mmeName ), ".mme" );
+				if (demoPlay( mmeName ))
+					return;
+				Com_Printf("Can't seem to play demo %s\n", testName );
+
+			}
 
             Q_strncpyz(clc.demoName, arg, sizeof(clc.demoName));
 
@@ -1651,6 +1692,10 @@ void CL_Disconnect( qboolean showMainMenu )
 	{
 		FS_FCloseFile( clc.demofile );
 		clc.demofile = 0;
+	}
+	
+	if (clc.newDemoPlayer) {
+		demoStop( );
 	}
 
 	SCR_StopCinematic();
@@ -3607,9 +3652,39 @@ void CL_Frame( int msec )
 	{
 		return;
 	}
-
+	
 	// if recording an avi, lock to a fixed fps
-	if ( CL_VideoRecording() && cl_aviFrameRate->integer && msec )
+	if ( cl_avidemo->integer && msec) {
+		// save the current screen
+		if ( cls.state == CA_ACTIVE || cl_forceavidemo->integer) {
+			float frameTime, fps;
+			int blurFrames = Cvar_VariableIntegerValue("mme_blurFrames");
+			char shotName[MAX_OSPATH];
+			Com_sprintf( shotName, sizeof( shotName ), "screenshots/%s/shot", mme_demoFileName->string );
+			if (blurFrames < 1)
+				blurFrames = 1;
+			else if (blurFrames > 256)
+				blurFrames = 256;
+			// fixed time for next frame'
+			fps = cl_avidemo->value * com_timescale->value * (float)blurFrames;
+//			if ( fps > 1000.0f)
+//				fps = 1000.0f;
+			frameTime = (1000.0f / fps);
+			if (frameTime < 0) {
+				frameTime = 0;
+			}
+			//TODO use mme_depthFocus
+//			re.Capture( shotName, fps, 0, 0 );
+			frameTime += clc.aviDemoRemain;
+			msec = (int)frameTime;
+			clc.aviDemoRemain = frameTime - msec;
+			/* Signal this frame to be recorded */
+//			S_MMERecord( shotName, 1.0f / fps );
+		}
+	}
+	
+	// if recording an avi, lock to a fixed fps
+	else if ( CL_VideoRecording() && cl_aviFrameRate->integer && msec )
 	{
 		// XreaL BEGIN
 		if ( !CL_VideoRecording() )
@@ -3648,6 +3723,9 @@ void CL_Frame( int msec )
 	// if we haven't gotten a packet in a long time,
 	// drop the connection
 	CL_CheckTimeout();
+	
+	// MME:
+	CL_MME_CheckCvarChanges();
 
 	// wwwdl download may survive a server disconnect
 	if ( ( cls.state == CA_DOWNLOADING && clc.bWWWDl ) || cls.bWWWDlDisconnected )
@@ -3662,7 +3740,11 @@ void CL_Frame( int msec )
 	CL_CheckForResend();
 
 	// decide on the serverTime to render
-	CL_SetCGameTime();
+	if ( !clc.newDemoPlayer ) {
+		CL_SetCGameTime();
+	} else {
+		CL_DemoSetCGameTime();
+	}
 
 	// Update librocket
 	Rocket_Update();
@@ -4007,6 +4089,7 @@ void CL_Init( void )
 	cl_autorecord = Cvar_Get( "cl_autorecord", "0", CVAR_TEMP );
 
 	cl_timedemo = Cvar_Get( "timedemo", "0", 0 );
+	cl_avidemo = Cvar_Get ("cl_avidemo", "0", 0);
 	cl_forceavidemo = Cvar_Get( "cl_forceavidemo", "0", 0 );
 	cl_aviFrameRate = Cvar_Get( "cl_aviFrameRate", "25", 0 );
 
@@ -4124,6 +4207,17 @@ void CL_Init( void )
 
 	// cgame might not be initialized before menu is used
 	Cvar_Get( "cg_viewsize", "100", 0 );
+	
+
+	// MME cvars
+	mme_saveWav = Cvar_Get ("mme_saveWav", "0", CVAR_ARCHIVE );
+	mme_anykeystopsdemo = Cvar_Get ("mme_anykeystopsdemo", "0", CVAR_ARCHIVE );
+	mme_gameOverride = Cvar_Get ("mme_gameOverride", "", 0 );
+	mme_demoConvert = Cvar_Get ("mme_demoConvert", "1", CVAR_ARCHIVE );
+	mme_demoListQuit = Cvar_Get ("mme_demoListQuit", "", CVAR_ARCHIVE );
+	mme_demoSmoothen = Cvar_Get ("mme_demoSmoothen", "1", CVAR_ARCHIVE );
+	mme_demoFileName = Cvar_Get ("mme_demoFileName", "", CVAR_TEMP | CVAR_NORESTART );
+	mme_demoStartProject = Cvar_Get ("mme_demoStartProject", "", CVAR_TEMP );
 
 	cl_allowPaste = Cvar_Get( "cl_allowPaste", "1", 0 );
 
@@ -4170,6 +4264,12 @@ void CL_Init( void )
 	Cmd_AddCommand( "video", CL_Video_f );
 	Cmd_AddCommand( "stopvideo", CL_StopVideo_f );
 // XreaL END
+	
+	// MME commands
+//	Cmd_AddCommand ("csList", CL_CSList_f);
+	Cmd_AddCommand ("mmeDemo", CL_MMEDemo_f);
+	Cmd_AddCommand ("demoList", CL_DemoList_f);
+	Cmd_AddCommand ("demoListNext", CL_DemoListNext_f );
 
 	SCR_Init();
 

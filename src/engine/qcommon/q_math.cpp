@@ -888,9 +888,20 @@ float AngleNormalize180( float angle )
  * returns the normalized delta from angle1 to angle2
  * =================
  */
-float AngleDelta( float angle1, float angle2 )
-{
+float AngleDelta( float angle1, float angle2 ) {
 	return AngleNormalize180( angle1 - angle2 );
+}
+
+void LerpAngles( const vec3_t from, const vec3_t to, vec3_t out, float lerp ) {
+	out[0] = LerpAngle( from[0], to[0], lerp );
+	out[1] = LerpAngle( from[1], to[1], lerp );
+	out[2] = LerpAngle( from[2], to[2], lerp );
+}
+
+void LerpOrigin( const vec3_t from, const vec3_t to, vec3_t out, float lerp ) {
+	vec3_t delta;
+	VectorSubtract( to, from, delta );
+	VectorMA( from, lerp, delta, out );
 }
 
 /*

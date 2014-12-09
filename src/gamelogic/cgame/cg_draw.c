@@ -212,7 +212,7 @@ void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
 	}
 }
 
-void CG_MouseEvent( int x, int y )
+/*void CG_MouseEvent( int x, int y )
 {
 	int n;
 
@@ -245,7 +245,7 @@ void CG_MouseEvent( int x, int y )
 	{
 		cgs.cursorY = 480;
 	}
-}
+}*/
 
 void CG_KeyEvent( int key, int chr, int flags )
 {
@@ -428,7 +428,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 CG_Draw2D
 =================
 */
-static void CG_Draw2D( void )
+void CG_Draw2D( void )
 {
 	int i;
 
@@ -497,7 +497,7 @@ static void CG_ScalePainBlendTCs( float *s1, float *t1, float *s2, float *t2 )
 CG_PainBlend
 ===============
 */
-static void CG_PainBlend( void )
+void CG_PainBlend( void )
 {
 	vec4_t    color;
 	int       damage;
@@ -639,7 +639,7 @@ void CG_ResetPainBlend( void )
 CG_DrawBinaryShadersFinalPhases
 ================
 */
-static void CG_DrawBinaryShadersFinalPhases( void )
+void CG_DrawBinaryShadersFinalPhases( void )
 {
 	float      ss;
 	char       str[ 20 ];

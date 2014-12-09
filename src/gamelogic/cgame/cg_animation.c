@@ -131,11 +131,11 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 	// calculate current lerp value
 	if ( lf->frameTime == lf->oldFrameTime )
 	{
-		lf->backlerp = 0;
+		lf->backlerp = 0.0f;
 	}
 	else
 	{
-		lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
+		lf->backlerp = 1.0f - ((cg.time - lf->oldFrameTime) + cg.timeFraction) / (lf->frameTime - lf->oldFrameTime);
 	}
 }
 
@@ -243,11 +243,11 @@ void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, qboolean animChanged )
 	// calculate current lerp value
 	if ( lf->frameTime == lf->oldFrameTime )
 	{
-		lf->backlerp = 0;
+		lf->backlerp = 0.0f;
 	}
 	else
 	{
-		lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
+		lf->backlerp = 1.0f - ((cg.time - lf->oldFrameTime) + cg.timeFraction) / (lf->frameTime - lf->oldFrameTime);
 	}
 }
 

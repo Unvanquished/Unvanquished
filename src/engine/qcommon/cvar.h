@@ -136,6 +136,9 @@ char *Cvar_InfoString(int bit, qboolean big);
 
 void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
 
+// MME: make Cvar_FindCvar public
+cvar_t *Cvar_FindVar( const char *var_name );
+
 /**
  *  whenever a cvar is modified, its flags will be OR'd into this, so
  *  a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,

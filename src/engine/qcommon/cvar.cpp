@@ -48,7 +48,7 @@ int           cvar_modifiedFlags;
 Cvar_FindVar
 ============
 */
-static cvar_t* Cvar_FindVar(const char* name) {
+cvar_t* Cvar_FindVar(const char* name) {
     return Cvar::FindCCvar(name);
 }
 

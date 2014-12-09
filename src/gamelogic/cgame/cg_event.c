@@ -688,6 +688,8 @@ An entity has an event value
 also called by CG_CheckPlayerstateEvents
 ==============
 */
+void CG_DemoEntityEvent( const centity_t *cent );
+
 void CG_EntityEvent( centity_t *cent, vec3_t position )
 {
 	entityState_t *es;
@@ -696,6 +698,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 	const char    *s;
 	int           clientNum;
 	clientInfo_t  *ci;
+	playerEntity_t *pe;
 	int           steptime;
 
 	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
@@ -708,6 +711,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 	}
 
 	es = &cent->currentState;
+	pe = &cent->pe;
 	event = es->event & ~EV_EVENT_BITS;
 
 	if ( cg_debugEvents.integer )
@@ -720,6 +724,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 	{
 		return;
 	}
+	
+	CG_DemoEntityEvent( cent );
 
 	clientNum = es->clientNum;
 
@@ -804,40 +810,22 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_FALL_SHORT:
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.landSound );
-
-			if ( clientNum == cg.predictedPlayerState.clientNum )
-			{
-				// smooth landing z changes
-				cg.landChange = -8;
-				cg.landTime = cg.time;
-			}
-
+			pe->landChange = -8;
+			pe->landTime = cg.time;
 			break;
 
 		case EV_FALL_MEDIUM:
 			// use a general pain sound
 			trap_S_StartSound( NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*pain100_1.wav" ) );
-
-			if ( clientNum == cg.predictedPlayerState.clientNum )
-			{
-				// smooth landing z changes
-				cg.landChange = -16;
-				cg.landTime = cg.time;
-			}
-
+			pe->landChange = -16;
+			pe->landTime = cg.time;
 			break;
 
 		case EV_FALL_FAR:
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*fall1.wav" ) );
 			cent->pe.painTime = cg.time; // don't play a pain sound right after this
-
-			if ( clientNum == cg.predictedPlayerState.clientNum )
-			{
-				// smooth landing z changes
-				cg.landChange = -24;
-				cg.landTime = cg.time;
-			}
-
+			pe->landChange = -24;
+			pe->landTime = cg.time;
 			break;
 
 		case EV_FALLING:
@@ -857,11 +845,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				int   delta;
 				int   step;
 
-				if ( clientNum != cg.predictedPlayerState.clientNum )
-				{
-					break;
-				}
-
 				// if we are interpolating, we don't need to smooth steps
 				if ( cg.demoPlayback || ( cg.snap->ps.pm_flags & PMF_FOLLOW ) ||
 				     cg_nopredict.integer || cg_synchronousClients.integer )
@@ -870,11 +853,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				}
 
 				// check for stepping up before a previous step is completed
-				delta = cg.time - cg.stepTime;
+				delta = cg.time - pe->stepTime;
 
 				if ( delta < steptime )
 				{
-					oldStep = cg.stepChange * ( steptime - delta ) / steptime;
+					oldStep = pe->stepChange * ( steptime - delta ) / steptime;
 				}
 				else
 				{
@@ -885,24 +868,24 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				if ( event >= EV_STEPDN_4 )
 				{
 					step = 4 * ( event - EV_STEPDN_4 + 1 );
-					cg.stepChange = oldStep - step;
+					pe->stepChange = oldStep - step;
 				}
 				else
 				{
 					step = 4 * ( event - EV_STEP_4 + 1 );
-					cg.stepChange = oldStep + step;
+					pe->stepChange = oldStep + step;
 				}
 
-				if ( cg.stepChange > MAX_STEP_CHANGE )
+				if ( pe->stepChange > MAX_STEP_CHANGE )
 				{
-					cg.stepChange = MAX_STEP_CHANGE;
+					pe->stepChange = MAX_STEP_CHANGE;
 				}
-				else if ( cg.stepChange < -MAX_STEP_CHANGE )
+				else if ( pe->stepChange < -MAX_STEP_CHANGE )
 				{
-					cg.stepChange = -MAX_STEP_CHANGE;
+					pe->stepChange = -MAX_STEP_CHANGE;
 				}
 
-				cg.stepTime = cg.time;
+				pe->stepTime = cg.time;
 				break;
 			}
 

@@ -381,17 +381,16 @@ void CG_TileClear( void )
 CG_FadeColor
 ================
 */
-float *CG_FadeColor( int startMsec, int totalMsec )
-{
+float *CG_FadeColor( int startMsec, int totalMsec ) {
 	static vec4_t color;
-	int           t;
+	float         t;
 
 	if ( startMsec == 0 )
 	{
 		return NULL;
 	}
 
-	t = cg.time - startMsec;
+	t = (cg.time - startMsec) + cg.timeFraction;
 
 	if ( t >= totalMsec )
 	{
@@ -418,17 +417,15 @@ float *CG_FadeColor( int startMsec, int totalMsec )
 CG_FadeAlpha
 =============
 */
-float CG_FadeAlpha( int startMsec, int totalMsec )
-{
-	float         fade;
-	int           t;
+float CG_FadeAlpha( int startMsec, int totalMsec ) {
+	float fade, t;
 
 	if ( startMsec == 0 )
 	{
 		return 0;
 	}
 
-	t = cg.time - startMsec;
+	t = (cg.time - startMsec) + cg.timeFraction;
 
 	if ( t >= totalMsec )
 	{

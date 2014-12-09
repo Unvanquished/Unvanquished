@@ -67,6 +67,19 @@ static void CG_TransitionEntity( centity_t *cent )
 	if ( !cent->interpolate )
 	{
 		CG_ResetEntity( cent );
+	} else {
+		int newHeight;
+		int maxs = ((cent->currentState.solid >> 16) & 255) - 32;
+		if ( maxs > 16 )
+			newHeight = DEFAULT_VIEWHEIGHT;
+		else
+			newHeight = CROUCH_VIEWHEIGHT;
+
+		if ( newHeight != cent->pe.viewHeight ) {
+			cent->pe.duckTime = cg.snap->serverTime;
+			cent->pe.duckChange = newHeight - cent->pe.viewHeight;
+			cent->pe.viewHeight = newHeight;
+		}
 	}
 
 	// clear the next state.  if will be set by the next CG_SetNextSnap
@@ -139,7 +152,7 @@ CG_TransitionSnapshot
 The transition point from snap to nextSnap has passed
 ===================
 */
-static void CG_TransitionSnapshot( void )
+void CG_TransitionSnapshot( void )
 {
 	centity_t  *cent;
 	snapshot_t *oldFrame;
@@ -229,7 +242,7 @@ CG_SetNextSnap
 A new snapshot has just been read in from the client system.
 ===================
 */
-static void CG_SetNextSnap( snapshot_t *snap )
+void CG_SetNextSnap( snapshot_t *snap )
 {
 	int           num;
 	entityState_t *es;
@@ -299,7 +312,7 @@ times if the client system fails to return a
 valid snapshot.
 ========================
 */
-static snapshot_t *CG_ReadNextSnapshot( void )
+snapshot_t *CG_ReadNextSnapshot( void )
 {
 	qboolean   r;
 	snapshot_t *dest;
