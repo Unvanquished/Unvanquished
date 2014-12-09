@@ -476,15 +476,19 @@ void SV_FreeClient( client_t *client )
 	client->queuedVoipPackets = 0;
 #endif
 
-	// see if we already have a challenge for this IP address
-	challenge_t* challenge = &svs.challenges[ 0 ];
-
-	for (int i = 0; i < MAX_CHALLENGES; i++, challenge++)
-	{
-		if ( NET_CompareAdr( client->netchan.remoteAddress, challenge->adr ) )
+	// NA_BOT happens to be the default value for address types (value 0) and are
+	// never for clients that send challenges. For NA_BOT, skip the checks for
+	// challenges as it makes NET_CompareAdr yell at us.
+	if (client->netchan.remoteAddress.type != NA_BOT) {
+		// see if we already have a challenge for this IP address
+		challenge_t* challenge = &svs.challenges[ 0 ];
+		for (int i = 0; i < MAX_CHALLENGES; i++, challenge++)
 		{
-			challenge->connected = qfalse;
-			break;
+			if ( NET_CompareAdr( client->netchan.remoteAddress, challenge->adr ) )
+			{
+				challenge->connected = qfalse;
+				break;
+			}
 		}
 	}
 
