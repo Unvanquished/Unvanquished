@@ -640,15 +640,7 @@ void SV_SpawnServer( const char *server )
 			qboolean denied;
 			char reason[ MAX_STRING_CHARS ];
 
-			if ( svs.clients[ i ].netchan.remoteAddress.type == NA_BOT )
-			{
-
-				isBot = qtrue;
-			}
-			else
-			{
-				isBot = qfalse;
-			}
+			isBot = SV_IsBot(&svs.clients[i]);
 
 			// connect the client again
 			denied = gvm->GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
