@@ -51,7 +51,7 @@ int SV_BotAllocateClient( void )
 	// find a free client slot which was occupied by a bot (doesn't matter which)
 	for ( i = firstSlot, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
-		if ( cl->state == CS_FREE && SV_IsBot(cl) )
+		if ( cl->state == CS_FREE && cl->netchan.remoteAddress.type == NA_BOT )
 		{
 			break;
 		}

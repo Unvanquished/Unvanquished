@@ -346,7 +346,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 			{
 				cl = &svs.clients[ i ];
 
-				if ( cl->netchan.remoteAddress.type == NA_BOT )
+				if ( SV_IsBot(cl) )
 				{
 					count++;
 				}
