@@ -1280,6 +1280,8 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	country = Info_ValueForKey( userinfo, "geoip" );
 	Q_strncpyz( client->pers.country, country, sizeof( client->pers.country ) );
 
+	G_SendClientPmoveParams(clientNum);
+
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
