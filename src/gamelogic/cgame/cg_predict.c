@@ -669,7 +669,7 @@ void CG_PredictPlayerState( void )
 	}
 
 	// non-predicting local movement will grab the latest angles
-	if ( cg_nopredict.integer || cg_synchronousClients.integer )
+	if ( cg_nopredict.integer || cg.pmoveParams.synchronous )
 	{
 		CG_InterpolatePlayerState( qtrue );
 		return;
@@ -739,18 +739,9 @@ void CG_PredictPlayerState( void )
 		cg.physicsTime = cg.snap->serverTime;
 	}
 
-	if ( pmove_msec.integer < 8 )
-	{
-		trap_Cvar_Set( "pmove_msec", "8" );
-	}
-	else if ( pmove_msec.integer > 33 )
-	{
-		trap_Cvar_Set( "pmove_msec", "33" );
-	}
-
-	cg_pmove.pmove_fixed = pmove_fixed.integer; // | cg_pmove_fixed.integer;
-	cg_pmove.pmove_msec = pmove_msec.integer;
-	cg_pmove.pmove_accurate = pmove_accurate.integer;
+	cg_pmove.pmove_fixed = cg.pmoveParams.fixed; // | cg_pmove_fixed.integer;
+	cg_pmove.pmove_msec = cg.pmoveParams.msec;
+	cg_pmove.pmove_accurate = cg.pmoveParams.accurate;
 
 	// Like the comments described above, a player's state is entirely
 	// re-predicted from the last valid snapshot every client frame, which
@@ -956,8 +947,8 @@ void CG_PredictPlayerState( void )
 
 		if ( cg_pmove.pmove_fixed )
 		{
-			cg_pmove.cmd.serverTime = ( ( cg_pmove.cmd.serverTime + pmove_msec.integer - 1 ) /
-			                            pmove_msec.integer ) * pmove_msec.integer;
+			cg_pmove.cmd.serverTime = ( ( cg_pmove.cmd.serverTime + cg.pmoveParams.msec - 1 ) /
+			                            cg.pmoveParams.msec ) * cg.pmoveParams.msec;
 		}
 
 		if ( !cg_optimizePrediction.integer )
