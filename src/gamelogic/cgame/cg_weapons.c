@@ -1356,13 +1356,12 @@ CG_CalculateWeaponPosition
 */
 static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 {
-	float        scale;
-	int          delta;
-	float        fracsin;
-	float        bob;
+	float scale, delta, fracsin;	
 	weaponInfo_t *weapon;
+	float bob = 0.0f;
+	playerEntity_t *pe = &cg.playerCent->pe;
 
-	weapon = &cg_weapons[ cg.predictedPlayerState.weapon ];
+	weapon = &cg_weapons[ cg.playerCent->currentState.weapon ];
 
 	VectorCopy( cg.refdef.vieworg, origin );
 	VectorCopy( cg.refdefViewAngles, angles );
@@ -1379,9 +1378,10 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 
 	// gun angles from bobbing
 	// bob amount is class-dependent
-	bob = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob;
+	if (cg.playerPredicted)
+		bob = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob;
 
-	if ( bob != 0 )
+	if ( bob != 0.0f )
 	{
 		angles[ ROLL ] += scale * cg.bobfracsin * 0.005;
 		angles[ YAW ] += scale * cg.bobfracsin * 0.01;
@@ -1393,21 +1393,18 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 		// drop the weapon when landing
 		if ( !weapon->noDrift )
 		{
-			delta = cg.time - cg.landTime;
-
-			if ( delta < LAND_DEFLECT_TIME )
-			{
-				origin[ 2 ] += cg.landChange * 0.25 * delta / LAND_DEFLECT_TIME;
-			}
-			else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
-			{
-				origin[ 2 ] += cg.landChange * 0.25 *
-				               ( LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta ) / LAND_RETURN_TIME;
+			delta = (cg.time - pe->landTime) + cg.timeFraction;
+			if ( delta < LAND_DEFLECT_TIME ) {
+				origin[2] += (pe->landChange*0.25 * delta / LAND_DEFLECT_TIME);
+			} else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
+				origin[2] += (pe->landChange*0.25 * 
+					(LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME);
 			}
 
 			// idle drift
 			scale = cg.xyspeed + 40;
-			fracsin = sin( cg.time * 0.001 );
+
+			fracsin = sin( cg.time * 0.001 + cg.timeFraction * 0.001 );
 			angles[ ROLL ] += scale * fracsin * 0.01;
 			angles[ YAW ] += scale * fracsin * 0.01;
 			angles[ PITCH ] += scale * fracsin * 0.01;
@@ -1422,13 +1419,10 @@ CG_MachinegunSpinAngle
 */
 #define   SPIN_SPEED 0.9
 #define   COAST_TIME 1000
-static float CG_MachinegunSpinAngle( centity_t *cent, qboolean firing )
-{
-	int   delta;
-	float angle;
-	float speed;
+static float CG_MachinegunSpinAngle( centity_t *cent, qboolean firing ) {
+	float delta, angle, speed;
 
-	delta = cg.time - cent->pe.barrelTime;
+	delta = (cg.time - cent->pe.barrelTime) + cg.timeFraction;
 
 	if ( cent->pe.barrelSpinning )
 	{
@@ -1441,7 +1435,7 @@ static float CG_MachinegunSpinAngle( centity_t *cent, qboolean firing )
 			delta = COAST_TIME;
 		}
 
-		speed = 0.5 * ( SPIN_SPEED + ( float )( COAST_TIME - delta ) / COAST_TIME );
+		speed = 0.5f * ( SPIN_SPEED + ( float )( COAST_TIME - delta ) / COAST_TIME );
 		angle = cent->pe.barrelAngle + delta * speed;
 	}
 
@@ -1464,7 +1458,7 @@ The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
 */
-void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent )
+void CG_AddPlayerWeapon( refEntity_t *parent, qboolean firstPerson, centity_t *cent )
 {
 #ifdef Q3_VM
     static refEntity_t gun, barrel, flash; // here to keep locals below 32K
@@ -1517,7 +1511,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	gun.shadowPlane = parent->shadowPlane;
 	gun.renderfx = parent->renderfx;
 
-	if ( ps )
+	if ( firstPerson )
 	{
 		gun.shaderRGBA[ 0 ] = 255;
 		gun.shaderRGBA[ 1 ] = 255;
@@ -1544,7 +1538,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 	}
 
-	if ( !ps )
+	if ( !firstPerson )
 	{
 		gun.hModel = weapon->weaponModel3rdPerson;
 
@@ -1558,9 +1552,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		gun.hModel = weapon->weaponModel;
 	}
 
-	noGunModel = ( ( !ps || cg.renderingThirdPerson ) && weapon->disableIn3rdPerson ) || !gun.hModel;
+	noGunModel = ( ( !firstPerson || cg.renderingThirdPerson ) && weapon->disableIn3rdPerson ) || !gun.hModel;
 
-	if ( !ps )
+	if ( !firstPerson )
 	{
 		// add weapon ready sound
 		if ( firing && weapon->wim[ weaponMode ].firingSound )
@@ -1578,14 +1572,14 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	if ( weaponNum == WP_LUCIFER_CANNON && ( cent->currentState.eFlags & EF_WARN_CHARGE ) )
 	{
 		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin,
-		                        vec3_origin, ps ? cgs.media.lCannonWarningSound :
+		                        vec3_origin, firstPerson ? cgs.media.lCannonWarningSound :
 		                        cgs.media.lCannonWarningSound2 );
 	}
 
 	if ( !noGunModel )
 	{
 		CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
-		if ( ps )
+		if ( firstPerson )
 		{
 			CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
 		}
@@ -1595,7 +1589,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 			gun.skeleton = gunSkeleton;
 
-			if ( weapon->rotationBone[ 0 ] && ps )
+			if ( weapon->rotationBone[ 0 ] && firstPerson )
 			{
 				int    boneIndex = trap_R_BoneIndex( gun.hModel, weapon->rotationBone );
 				quat_t rotation;
@@ -1617,7 +1611,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 		trap_R_AddRefEntityToScene( &gun );
 
-		if ( !ps )
+		if ( !firstPerson )
 		{
 			barrel.hModel = weapon->barrelModel3rdPerson;
 
@@ -1651,7 +1645,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
 	{
-		if ( ps || cg.renderingThirdPerson ||
+		if ( firstPerson || cg.renderingThirdPerson ||
 		     cent->currentState.number != cg.predictedPlayerState.clientNum )
 		{
 			if ( noGunModel )
@@ -1685,7 +1679,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	flash.shadowPlane = parent->shadowPlane;
 	flash.renderfx = parent->renderfx;
 
-	if ( !ps )
+	if ( !firstPerson )
 	{
 		flash.hModel = weapon->flashModel3rdPerson;
 
@@ -1718,7 +1712,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		trap_R_AddRefEntityToScene( &flash );
 	}
 
-	if ( ps || cg.renderingThirdPerson ||
+	if ( firstPerson || cg.renderingThirdPerson ||
 	     cent->currentState.number != cg.predictedPlayerState.clientNum )
 	{
 		if ( weapon->wim[ weaponMode ].muzzleParticleSystem && cent->muzzlePsTrigger )
@@ -1789,8 +1783,9 @@ void CG_WeaponInertia( playerState_t *ps, vec3_t origin )
 		if ( Q_isnan( I->oav[ i ] ) )
 		{
 			I->oav[ i ] = 0;
+			Com_Printf( "^3WARNING: ^7I->oav[%d] is NaN. Please let a developer know about this!", i );
 		}
-
+		
 		av[ i ] = AngleDelta( I->oa[ i ], ps->viewangles[ i ] ) / dt;
 		ExponentialFade( I->oav + i, av[ i ], WI_LAMBDA, dt );
 		av[ i ] = I->oav[ i ];
@@ -1806,26 +1801,14 @@ out:
 	I->init = 1;
 }
 
-/*
-==============
-CG_AddViewWeapon
-
-Add the weapon, and flash for the player's view
-==============
-*/
-
-#define WEAPON_CLICK_REPEAT 500
-
-void CG_AddViewWeapon( playerState_t *ps )
-{
+void CG_AddViewWeaponDirect( centity_t *cent, int stats ) {
 	refEntity_t  hand;
-	centity_t    *cent;
 	clientInfo_t *ci;
 	float        fovOffset;
 	vec3_t       angles;
 	weaponInfo_t *wi;
-	weapon_t     weapon = (weapon_t) ps->weapon;
-	weaponMode_t weaponMode = (weaponMode_t) ps->generic1;
+	weapon_t     weapon = (weapon_t) cent->currentState.weapon;
+	weaponMode_t weaponMode = (weaponMode_t) cent->currentState.generic1;
 	qboolean     drawGun = qtrue;
 
 	// no weapon carried - can't draw it
@@ -1861,24 +1844,6 @@ void CG_AddViewWeapon( playerState_t *ps )
 		Com_Printf( S_WARNING "CG_AddViewWeapon: weapon %d (%s) "
 		            "is not registered\n", weapon, BG_Weapon( weapon )->name );
 		return;
-	}
-
-	cent = &cg.predictedPlayerEntity; // &cg_entities[cg.snap->ps.clientNum];
-
-	if ( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
-	{
-		return;
-	}
-
-	if ( ps->pm_type == PM_INTERMISSION )
-	{
-		return;
-	}
-
-	// draw a prospective buildable infront of the player
-	if ( ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK ) > BA_NONE )
-	{
-		CG_GhostBuildable( ps->stats[ STAT_BUILDABLE ] );
 	}
 
 	// no gun if in third person view
@@ -1939,18 +1904,19 @@ void CG_AddViewWeapon( playerState_t *ps )
 	VectorMA( hand.origin, ( cg_gun_z.value + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
-	if ( weapon == WP_LUCIFER_CANNON && ps->stats[ STAT_MISC ] > 0 )
+	if ( cg.playerPredicted && weapon == WP_LUCIFER_CANNON && stats > 0 )
 	{
 		float fraction;
 
-		fraction = ( float ) ps->stats[ STAT_MISC ] / LCANNON_CHARGE_TIME_MAX;
+		fraction = ( float ) stats / LCANNON_CHARGE_TIME_MAX;
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 0 ],
 		          hand.origin );
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 1 ],
 		          hand.origin );
 	}
 
-	CG_WeaponInertia( ps, hand.origin );
+	//entFIXME: it seems not working at all
+//	CG_WeaponInertia( ps, hand.origin );
 
 	AnglesToAxis( angles, hand.axis );
 	if( cg_mirrorgun.integer ) {
@@ -1983,8 +1949,24 @@ void CG_AddViewWeapon( playerState_t *ps )
 	// add everything onto the hand
 	if ( weapon )
 	{
-		CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity );
+		CG_AddPlayerWeapon( &hand, qtrue, &cg.predictedPlayerEntity );
 	}
+}
+
+/*
+==============
+CG_AddViewWeapon
+
+Add the weapon, and flash for the player's view
+==============
+*/
+void CG_AddViewWeapon( playerState_t *ps ) {
+	if ( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT || ps->pm_type == PM_INTERMISSION )
+		return;
+	// draw a prospective buildable infront of the player
+	if ( ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK ) > BA_NONE )
+		CG_GhostBuildable( ps->stats[ STAT_BUILDABLE ] );
+	CG_AddViewWeaponDirect( &cg.predictedPlayerEntity, ps->stats[ STAT_MISC ] );
 }
 
 /*

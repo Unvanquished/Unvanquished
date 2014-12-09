@@ -63,14 +63,20 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 			return 0;
 
 		case CG_CONSOLE_COMMAND:
-			return CG_ConsoleCommand();
-
+			if (cg.demoPlayback == 2)
+				return CG_DemosConsoleCommand();
+			else
+				return CG_ConsoleCommand();
 		case CG_CONSOLE_TEXT:
 			CG_AddNotifyText();
 			return 0;
 
 		case CG_DRAW_ACTIVE_FRAME:
-			CG_DrawActiveFrame( arg0, arg1 );
+			if (arg1 == 2) {
+				CG_DemosDrawActiveFrame( arg0 );
+			} else {
+				CG_DrawActiveFrame( arg0, arg1 );
+			}
 			return 0;
 
 		case CG_CROSSHAIR_PLAYER:
@@ -89,6 +95,8 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 
 		case CG_MOUSE_EVENT:
 			// cgame doesn't care where the cursor is
+			if (cg.demoPlayback == 2)
+				CG_MouseEvent(arg0, arg1);
 			return 0;
 
 		case CG_VOIP_STRING:
@@ -186,6 +194,7 @@ vmCvar_t        cg_thirdPersonRange;
 vmCvar_t        cg_lagometer;
 vmCvar_t        cg_drawSpeed;
 vmCvar_t        cg_maxSpeedTimeWindow;
+vmCvar_t        cg_synchronousClients;
 vmCvar_t        cg_stats;
 vmCvar_t        cg_paused;
 vmCvar_t        cg_blood;
@@ -200,6 +209,9 @@ vmCvar_t        cg_noVoiceText;
 vmCvar_t        cg_hudFiles;
 vmCvar_t        cg_hudFilesEnable;
 vmCvar_t        cg_smoothClients;
+vmCvar_t        pmove_fixed;
+vmCvar_t        pmove_msec;
+vmCvar_t        pmove_accurate;
 vmCvar_t        cg_timescaleFadeEnd;
 vmCvar_t        cg_timescaleFadeSpeed;
 vmCvar_t        cg_timescale;
@@ -291,6 +303,50 @@ vmCvar_t        cg_fov_level4;
 vmCvar_t        cg_fov_human;
 
 vmCvar_t        ui_chatPromptColors;
+
+vmCvar_t	mov_Obituaries;
+vmCvar_t	mov_chatBeep;
+vmCvar_t	mov_fragFormat;
+vmCvar_t	mov_fragOnly;
+vmCvar_t	mov_gameType;
+vmCvar_t	mov_debug;
+vmCvar_t	mov_captureCamera;
+vmCvar_t	mov_captureName;
+vmCvar_t	mov_captureFPS;
+
+vmCvar_t	mov_filterMask;
+vmCvar_t	mov_stencilMask;
+vmCvar_t	mov_seekInterval;
+vmCvar_t	mov_musicFile;
+vmCvar_t	mov_musicStart;
+vmCvar_t	mov_chaseRange;
+vmCvar_t	mov_fontName;
+vmCvar_t	mov_fontSize;
+vmCvar_t	mov_teamSkins;
+
+vmCvar_t	mov_gridOffset;
+vmCvar_t	mov_gridWidth;
+vmCvar_t	mov_gridStep;
+vmCvar_t	mov_gridRange;
+vmCvar_t	mov_gridColor;
+vmCvar_t	mov_hudOverlay;
+
+vmCvar_t	mov_deltaYaw;
+vmCvar_t	mov_deltaPitch;
+vmCvar_t	mov_deltaRoll;
+
+vmCvar_t	mov_ratioFix;
+vmCvar_t	mov_rewardCount;
+vmCvar_t	mov_bobScale;
+vmCvar_t	mov_wallhack;
+vmCvar_t	mov_smoothCamPos;
+
+vmCvar_t	mov_hitSounds;
+vmCvar_t	mov_chatBox;
+vmCvar_t	mov_chatBoxHeight;
+vmCvar_t	mov_chatBoxScale;
+
+vmCvar_t	mme_demoFileName;
 
 typedef struct
 {
@@ -427,11 +483,15 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_paused,                      "cl_paused",                      "0",            CVAR_ROM                     },
 	{ &cg_blood,                       "com_blood",                      "1",            0                            },
+	{ &cg_synchronousClients,          "g_synchronousClients",           "0",            CVAR_SYSTEMINFO              }, // communicated by systeminfo
 	{ &cg_timescaleFadeEnd,            "cg_timescaleFadeEnd",            "1",            CVAR_CHEAT                   },
 	{ &cg_timescaleFadeSpeed,          "cg_timescaleFadeSpeed",          "0",            CVAR_CHEAT                   },
 	{ &cg_timescale,                   "timescale",                      "1",            0                            },
 	{ &cg_smoothClients,               "cg_smoothClients",               "0",            CVAR_USERINFO                },
 
+	{ &pmove_fixed,                    "pmove_fixed",                    "0",            CVAR_SYSTEMINFO              },
+	{ &pmove_msec,                     "pmove_msec",                     "8",            CVAR_SYSTEMINFO              },
+	{ &pmove_accurate,                 "pmove_accurate",                 "0",            CVAR_SYSTEMINFO              },
 	{ &cg_noTaunt,                     "cg_noTaunt",                     "0",            0                            },
 
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO                },
@@ -457,7 +517,52 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            0                            },
 	{ &cg_fov_human,                   "cg_fov_human",                   "0",            0                            },
 
-	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            }
+	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            },
+
+	{ &mov_Obituaries,		"mov_Obituaries",		"1",				CVAR_ARCHIVE	},
+	{ &mov_chatBeep,		"mov_chatBeep",			"1",				CVAR_ARCHIVE	},
+	{ &mov_fragFormat, "mov_fragFormat", "You fragged %t%n%p place with %s",  CVAR_ARCHIVE},
+	{ &mov_fragOnly,		"mov_fragOnly",			"0",				CVAR_ARCHIVE	},
+	{ &mov_gameType,		"mov_gameType",			"0",				CVAR_ARCHIVE	},
+	{ &mov_debug,			"mov_debug",			"0",				CVAR_ARCHIVE	},
+	{ &mov_filterMask,		"mov_filterMask",		"0",				CVAR_ARCHIVE	},
+	{ &mov_stencilMask,		"mov_stencilMask",		"0",				CVAR_ARCHIVE	},
+	{ &mov_seekInterval,	"mov_seekInterval",		"4",				CVAR_ARCHIVE	},
+	{ &mov_deltaYaw,		"mov_deltaYaw",			"0",				CVAR_ARCHIVE	},
+	{ &mov_deltaPitch,		"mov_deltaPitch",		"0",				CVAR_ARCHIVE	},
+	{ &mov_deltaRoll,		"mov_deltaRoll",		"0",				CVAR_ARCHIVE	},
+
+	{ &mov_ratioFix,		"mov_ratioFix",			"1",				CVAR_ARCHIVE	},
+	{ &mov_rewardCount,		"mov_rewardCount",		"10",				CVAR_ARCHIVE	},
+	{ &mov_bobScale,		"mov_bobScale",			"1.0",				CVAR_ARCHIVE	},
+	{ &mov_wallhack,		"mov_wallhack",			"0",				CVAR_ARCHIVE	},
+	{ &mov_smoothCamPos,	"mov_smoothCamPos",		"0",				CVAR_ARCHIVE	},
+
+	{ &mov_hitSounds,		"mov_hitSounds",		"1",				CVAR_ARCHIVE	},
+	{ &mov_chatBox,			"mov_chatBox",			"10000",			CVAR_ARCHIVE	},
+	{ &mov_chatBoxHeight,	"mov_chatBoxHeight",	"350",				CVAR_ARCHIVE	},
+	{ &mov_chatBoxScale,	"mov_chatBoxScale",		"1.0",				CVAR_ARCHIVE	},
+
+	/* Copy over some cvar's from the renderer */
+//	{ &mme_blurFrames,		"mme_blurFrames",		"",					0				},
+//	{ &mme_blurOverlap,		"mme_blurOverlap",		"",					0				},
+	{ &mme_demoFileName,	"mme_demoFileName",		"",					0				},
+
+	{ &mov_captureCamera,	"mov_captureCamera",	"0",				CVAR_ARCHIVE	},
+	{ &mov_captureName,		"mov_captureName",		"",					CVAR_TEMP		},
+	{ &mov_captureFPS,		"mov_captureFPS",		"25",				CVAR_ARCHIVE	},
+	{ &mov_musicFile,		"mov_musicFile",		"",					CVAR_TEMP		},
+	{ &mov_musicStart,		"mov_musicStart",		"0",				CVAR_TEMP		},
+	{ &mov_chaseRange,		"mov_chaseRange",		"20",				CVAR_ARCHIVE	},
+	{ &mov_fontName,		"mov_fontName",			"",					CVAR_ARCHIVE	},
+	{ &mov_fontSize,		"mov_fontSize",			"20",				CVAR_ARCHIVE	},
+	{ &mov_teamSkins,		"mov_teamSkins",		"1",				CVAR_ARCHIVE	},
+	{ &mov_gridOffset,		"mov_gridOffset",		"0 0 0",			CVAR_ARCHIVE	},
+	{ &mov_gridWidth,		"mov_gridWidth",		"0.2",				CVAR_ARCHIVE	},
+	{ &mov_gridStep,		"mov_gridStep",			"0",				CVAR_ARCHIVE	},
+	{ &mov_gridRange,		"mov_gridRange",		"500",				CVAR_ARCHIVE	},
+	{ &mov_gridColor,		"mov_gridColor",		"x222222",			CVAR_ARCHIVE	},
+	{ &mov_hudOverlay,		"mov_hudOverlay",		"",					CVAR_ARCHIVE	},
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
@@ -772,6 +877,13 @@ void CG_UpdateCvars( void )
 	CG_UpdateBuildableRangeMarkerMask();
 }
 
+float CG_Cvar_Get(const char *cvar) {
+	char buff[128];
+	memset(buff, 0, sizeof(buff));
+	trap_Cvar_VariableStringBuffer(cvar, buff, sizeof(buff));
+	return atof(buff);
+}
+
 int CG_CrosshairPlayer( void )
 {
 	if ( cg.time > ( cg.crosshairClientTime + 1000 ) )
@@ -991,11 +1103,11 @@ CG_UpdateLoadingProgress
 ======================
 */
 
-enum {
+typedef enum {
 	LOADBAR_MEDIA,
 	LOADBAR_CHARACTER_MODELS,
 	LOADBAR_BUILDABLES
-} typedef loadingBar_t;
+} loadingBar_t;
 
 static void CG_UpdateLoadingProgress( loadingBar_t progressBar, float progress, const char *label )
 {
@@ -1027,7 +1139,7 @@ static void CG_UpdateMediaFraction( float newFract )
 	trap_UpdateScreen();
 }
 
-enum {
+typedef enum {
 	LOAD_START = 1,
 	LOAD_TRAILS,
 	LOAD_PARTICLES,
@@ -1041,7 +1153,7 @@ enum {
 	LOAD_BUILDINGS,
 	LOAD_REMAINING,
 	LOAD_DONE
-} typedef cgLoadingStep_t;
+} cgLoadingStep_t;
 
 static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 {
@@ -1734,14 +1846,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	memset( &cgs, 0, sizeof( cgs ) );
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
-
-	// Set up the pmove params with sensible default values, the server params will
-	// be communicated with the "pmove_params" server commands.
-	// These values are the same as the default values of the servers to preserve
-	// compatibility with official Alpha 34 servers, but shouldn't be necessary anymore for Alpha 35
-	cg.pmoveParams.fixed = cg.pmoveParams.synchronous = 0;
-	cg.pmoveParams.accurate = 1;
-	cg.pmoveParams.msec = 8;
 
 	CG_UpdateLoadingStep( LOAD_START );
 	cg.clientNum = clientNum;

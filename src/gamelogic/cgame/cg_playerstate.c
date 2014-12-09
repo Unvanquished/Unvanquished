@@ -333,13 +333,12 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 	// run events
 	CG_CheckPlayerstateEvents( ps, ops );
 
+	cg.predictedPlayerEntity.pe.viewHeight = ps->viewheight;
 	// smooth the ducking viewheight change
-	if ( ps->viewheight != ops->viewheight )
-	{
-		cg.duckChange = ps->viewheight - ops->viewheight;
-		cg.duckTime = cg.time;
+	if ( ps->viewheight != ops->viewheight ) {
+		cg.predictedPlayerEntity.pe.duckChange = ps->viewheight - ops->viewheight;
+		cg.predictedPlayerEntity.pe.duckTime = cg.time;
 	}
-
 	// changed team
 	if ( ps->persistant[ PERS_TEAM ] != ops->persistant[ PERS_TEAM ] )
 	{

@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.34.0"
+#define PRODUCT_VERSION         "0.33.1"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -833,6 +833,11 @@ void         ByteToDir( int b, vec3_t dir );
 	float AngleNormalize360( float angle );
 	float AngleNormalize180( float angle );
 	float AngleDelta( float angle1, float angle2 );
+
+	void LerpOrigin( const vec3_t from, const vec3_t to, vec3_t out, float lerp );
+	void LerpAngles( const vec3_t from, const vec3_t to, vec3_t out, float lerp );
+
+
 	float AngleBetweenVectors( const vec3_t a, const vec3_t b );
 	void  AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
 
@@ -2095,10 +2100,11 @@ void         ByteToDir( int b, vec3_t dir );
 
 // in order from highest priority to lowest
 // if none of the catchers are active, bound key strings will be executed
-#define KEYCATCH_CONSOLE 0x0001
-#define KEYCATCH_UI      0x0002
-#define KEYCATCH_MESSAGE 0x0004
-#define KEYCATCH_CGAME   0x0008
+#define KEYCATCH_CONSOLE		0x0001
+#define KEYCATCH_UI				0x0002
+#define KEYCATCH_MESSAGE		0x0004
+#define KEYCATCH_CGAME			0x0008
+#define	KEYCATCH_CGAMEEXEC		0x2000
 
 #define KEYEVSTATE_DOWN 1
 #define KEYEVSTATE_CHAR 2

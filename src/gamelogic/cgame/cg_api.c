@@ -396,7 +396,11 @@ void trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_
 //S_StartLocalSound(args[1], args[2], args[3]);
 void trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 {
-	syscallVM( CG_S_STARTLOCALSOUND, sfx, channelNum, 127 );
+	//announcer is always hearable, rite?
+	if ( channelNum == CHAN_ANNOUNCER )
+		syscallVM( CG_S_STARTSOUND, 0, ENTITYNUM_NONE, CHAN_ANNOUNCER, sfx, 127 );
+	else
+		syscallVM( CG_S_STARTLOCALSOUND, sfx, channelNum, 127 );
 }
 
 //44.
@@ -1584,3 +1588,53 @@ void trap_Rocket_LoadFont( const char *font )
 {
 	syscallVM( CG_ROCKET_LOADFONT, font );
 }
+
+/* New MME Syscalls */
+
+void trap_MME_Capture( const char *baseName, float fps, float focus, float radius ) {
+	syscallVM( CG_MME_CAPTURE, baseName, PASSFLOAT(fps), PASSFLOAT( focus ), PASSFLOAT( radius ) );
+}
+void trap_MME_BlurInfo( int* total, int* index ) {
+	syscallVM( CG_MME_BLURINFO, total, index );
+}
+
+int trap_MME_SeekTime( int seekTime ) {
+	return syscallVM( CG_MME_SEEKTIME, seekTime );
+}
+void trap_MME_Music( const char *musicName, float time, float length ) {
+	syscallVM( CG_MME_MUSIC, musicName, PASSFLOAT(time), PASSFLOAT( length ) );
+}
+int trap_MME_DemoInfo( mmeDemoInfo_t *info ) {
+	return syscallVM( CG_MME_DEMOINFO, info );
+}
+void trap_MME_TimeFraction( float timeFraction ) {
+	syscallVM( CG_MME_TIMEFRACTION, PASSFLOAT(timeFraction) );
+}
+void trap_S_UpdateScale( float scale ) {
+	syscallVM( CG_S_UPDATE_SCALE, PASSFLOAT(scale) );
+}
+void trap_SCR_DrawString( int x, int y, float size, const char *string, const float *setColor, qboolean forceColor ) {
+	syscallVM( CG_SCR_DRAWSTRING, x, y, PASSFLOAT(size), string, setColor, forceColor );
+}
+
+//entTODO: port mme fx system
+#ifdef MME_FX
+void trap_FX_Reset(  void) {
+	syscallVM( CG_FX_RESET );
+}
+void trap_FX_Begin( int time, float fraction ) {
+	syscallVM( CG_FX_BEGIN, time, PASSFLOAT( fraction ) );
+}
+void trap_FX_End( void ) {
+	syscallVM( CG_FX_END );
+}
+fxHandle_t trap_FX_Register( const char *name ) {
+	return syscallVM( CG_FX_REGISTER, name );
+}
+void trap_FX_Run( fxHandle_t handle, const fxParent_t *parent, const void *key ) {
+	syscallVM( CG_FX_RUN, handle, parent, key );
+}
+void trap_FX_VibrateView( float scale, vec3_t origin, vec3_t angles ) {
+	syscallVM( CG_FX_VIBRATEVIEW, PASSFLOAT( scale ), origin, angles );
+}
+#endif

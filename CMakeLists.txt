@@ -770,6 +770,9 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/OggCodec.cpp
   ${ENGINE_DIR}/audio/OpusCodec.cpp
   ${ENGINE_DIR}/audio/WavCodec.cpp
+  ${ENGINE_DIR}/client/demos/cl_demos.c
+  ${ENGINE_DIR}/client/demos/cl_demos.h
+  ${ENGINE_DIR}/client/demos/cl_mme.c
   ${ENGINE_DIR}/client/rocket_dataformatter.cpp
   ${ENGINE_DIR}/client/rocket_textelements.cpp
   ${ENGINE_DIR}/client/rocket_documents.cpp
@@ -809,6 +812,8 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/shared/bg_voice.c
   ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
   ${GAMELOGIC_DIR}/shared/bg_utilities.c
+  ${GAMELOGIC_DIR}/shared/demos/bg_demos.c
+  ${GAMELOGIC_DIR}/shared/demos/bg_demos.h
   ${GAMELOGIC_DIR}/cgame/cg_consolecmds.c
   ${GAMELOGIC_DIR}/cgame/cg_buildable.c
   ${GAMELOGIC_DIR}/cgame/cg_animation.c
@@ -841,6 +846,19 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.c
   ${GAMELOGIC_DIR}/cgame/cg_gameinfo.c
   ${GAMELOGIC_DIR}/cgame/cg_parseutils.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_camera.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_capture.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_dof.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_fov.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos.h
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_hud.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_line.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_lists.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_math.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_math.h
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_move.c
+  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_script.c
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
 )
@@ -869,6 +887,8 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/bg_voice.c
   ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
   ${GAMELOGIC_DIR}/shared/bg_utilities.c
+  ${GAMELOGIC_DIR}/shared/demos/bg_demos.c
+  ${GAMELOGIC_DIR}/shared/demos/bg_demos.h
   ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/shared/VMMain.h

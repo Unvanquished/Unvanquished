@@ -249,6 +249,7 @@ typedef struct
 	qboolean     demowaiting; // don't record until a non-delta message is received
 	qboolean     firstDemoFrameSkipped;
 	fileHandle_t demofile;
+	qboolean	newDemoPlayer;
 
 #if defined(USE_VOIP) && !defined(BUILD_SERVER)
 	qboolean voipEnabled;
@@ -285,7 +286,8 @@ typedef struct
 	qboolean     waverecording;
 	fileHandle_t wavefile;
 	int          wavetime;
-
+	
+	float		aviDemoRemain;		// Used for accurate fps recording
 	int          timeDemoFrames; // counter of rendered frames
 	int          timeDemoStart; // cls.realtime before first frame
 	int          timeDemoBaseTime; // each frame will be at this time + frameNum * 50
@@ -546,7 +548,29 @@ extern  cvar_t *cl_voipShowSender;
 extern  cvar_t *cl_voip;
 #endif
 
+
+// MME cvars
+extern	cvar_t	*mme_anykeystopsdemo;
+extern	cvar_t	*mme_saveWav;
+extern	cvar_t	*mme_gameOverride;
+extern	cvar_t	*mme_demoConvert;
+extern	cvar_t	*mme_demoSmoothen;
+extern	cvar_t	*mme_demoFileName;
+extern  cvar_t	*mme_demoListQuit;
+extern	cvar_t	*mme_demoStartProject;
+void CL_MMEInit( void );
+
 //=================================================
+// cl_demos
+void CL_PlayDemo_f( void );
+void CL_MMEDemo_f( void );
+void CL_DemoList_f( void );
+void CL_DemoListNext_f( void );
+void CL_DemoShutDown( void );
+void CL_DemoSetCGameTime( void );
+void demoConvert( const char *oldName, const char *newName, qboolean smoothen );
+qboolean demoPlay( const char *fileName );
+void demoStop( void );
 
 //
 // cl_main
@@ -874,6 +898,12 @@ void LAN_SaveServersToCache( void );
 void     CL_Netchan_Transmit( netchan_t *chan, msg_t *msg );  //int length, const byte *data );
 void     CL_Netchan_TransmitNextFragment( netchan_t *chan );
 qboolean CL_Netchan_Process( netchan_t *chan, msg_t *msg );
+
+
+//
+// cl_mme.c
+//
+void CL_MME_CheckCvarChanges(void);
 
 // XreaL BEGIN
 

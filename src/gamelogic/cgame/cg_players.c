@@ -2136,27 +2136,25 @@ static void CG_SwingAngles( float destination, float swingTolerance, float clamp
 CG_AddPainTwitch
 =================
 */
-static void CG_AddPainTwitch( centity_t *cent, vec3_t torsoAngles )
-{
-	int   t;
-	float f;
+static void CG_AddPainTwitch( centity_t *cent, vec3_t torsoAngles ) {
+	float f, t;
 
-	t = cg.time - cent->pe.painTime;
+	t = (cg.time - cent->pe.painTime) + cg.timeFraction;
 
 	if ( t >= PAIN_TWITCH_TIME )
 	{
 		return;
 	}
 
-	f = 1.0 - ( float ) t / PAIN_TWITCH_TIME;
+	f = 1.0f - t / PAIN_TWITCH_TIME;
 
 	if ( cent->pe.painDirection )
 	{
-		torsoAngles[ ROLL ] += 20 * f;
+		torsoAngles[ ROLL ] += 20.0f * f;
 	}
 	else
 	{
-		torsoAngles[ ROLL ] -= 20 * f;
+		torsoAngles[ ROLL ] -= 20.0f * f;
 	}
 }
 
@@ -2406,7 +2404,7 @@ static void CG_PlayerWWSmoothing( centity_t *cent, vec3_t in[ 3 ], vec3_t out[ 3
 		//if this op has time remaining, perform it
 		if ( cg.time < cent->pe.sList[ i ].time + MODEL_WWSMOOTHTIME )
 		{
-			stLocal = 1.0f - ( ( ( cent->pe.sList[ i ].time + MODEL_WWSMOOTHTIME ) - cg.time ) / MODEL_WWSMOOTHTIME );
+			stLocal = 1.0f - ( ( (( cent->pe.sList[ i ].time + MODEL_WWSMOOTHTIME ) - cg.time ) - cg.timeFraction) / MODEL_WWSMOOTHTIME );
 			sFraction = - ( cos( stLocal * M_PI ) + 1.0f ) / 2.0f;
 
 			RotatePointAroundVector( outAxis[ 0 ], cent->pe.sList[ i ].rotAxis,
@@ -3471,7 +3469,7 @@ void CG_Player( centity_t *cent )
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE )
 		{
-			CG_AddPlayerWeapon( &body, NULL, cent );
+			CG_AddPlayerWeapon( &body, 0, cent );
 		}
 
 		CG_PlayerUpgrades( cent, &body );
@@ -3676,11 +3674,11 @@ void CG_Player( centity_t *cent )
 	{
 		if ( !ci->nonsegmented )
 		{
-			CG_AddPlayerWeapon( &torso, NULL, cent );
+			CG_AddPlayerWeapon( &torso, 0, cent );
 		}
 		else
 		{
-			CG_AddPlayerWeapon( &legs, NULL, cent );
+			CG_AddPlayerWeapon( &legs, 0, cent );
 		}
 	}
 

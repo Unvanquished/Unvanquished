@@ -185,7 +185,7 @@ void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t di
 
 static void CG_Creep( centity_t *cent )
 {
-	int     msec;
+	float   msec;
 	float   size, frac;
 	trace_t tr;
 	vec3_t  temp;
@@ -199,7 +199,7 @@ static void CG_Creep( centity_t *cent )
 	{
 		int scaleUpTime = attr->buildTime;
 
-		msec = cg.time - time;
+		msec = (cg.time - time) + cg.timeFraction;
 
 		if ( msec >= 0 && msec < scaleUpTime )
 		{
@@ -212,7 +212,7 @@ static void CG_Creep( centity_t *cent )
 	}
 	else
 	{
-		msec = cg.time + time;
+		msec = (cg.time + time) + cg.timeFraction;
 
 		if ( msec >= 0 && msec < CREEP_SCALEDOWN_TIME )
 		{
@@ -2371,7 +2371,7 @@ void CG_Buildable( centity_t *cent )
 		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
 
 		float realScale = spawned ? scale :
-			scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
+			scale * (float) sin ( 0.5f * ((cg.time - es->time) + cg.timeFraction) / buildable->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET )

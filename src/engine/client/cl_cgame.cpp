@@ -47,6 +47,13 @@ Maryland 20850 USA.
 #define C__(x, y) Trans_PgettextGame(x, y)
 #define P__(x, y, c) Trans_GettextGamePlural(x, y, c)
 
+extern void demoGetSnapshotNumber( int *snapNumber, int *serverTime );
+extern qboolean demoGetSnapshot( int snapNumber, snapshot_t *snap );
+extern qboolean demoGetServerCommand( int cmdNumber );
+extern void demoRenderFrame( void );
+extern int demoSeek( int seekTime );
+extern int demoInfo( mmeDemoInfo_t* info );
+
 // NERVE - SMF
 void                   Key_GetBindingBuf( int keynum, int team, char *buf, int buflen );
 void                   Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
@@ -1468,6 +1475,7 @@ CL_CgameSystemCalls
 The cgame module is making a system call
 ====================
 */
+extern void SCR_DrawStringExt( int x, int y, float size, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape );
 intptr_t CL_CgameSystemCalls( intptr_t *args )
 {
 	cls.nCgameSyscalls ++;
@@ -1943,14 +1951,23 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GETCURRENTSNAPSHOTNUMBER:
-			CL_GetCurrentSnapshotNumber( (int*) VMA( 1 ), (int*) VMA( 2 ) );
+			if (clc.newDemoPlayer) 
+				demoGetSnapshotNumber( (int*) VMA(1), (int*) VMA(2) );
+			else
+				CL_GetCurrentSnapshotNumber( (int*) VMA( 1 ), (int*) VMA( 2 ) );
 			return 0;
 
 		case CG_GETSNAPSHOT:
-			return CL_GetSnapshot( args[ 1 ], (snapshot_t*) VMA( 2 ) );
+			if (clc.newDemoPlayer) 
+				return demoGetSnapshot( args[1], (snapshot_t*) VMA(2) );
+			else
+				return CL_GetSnapshot( args[ 1 ], (snapshot_t*) VMA( 2 ) );
 
 		case CG_GETSERVERCOMMAND:
-			return CL_GetServerCommand( args[ 1 ] );
+			if (clc.newDemoPlayer)
+				return demoGetServerCommand( args[1] );
+			else 
+				return CL_GetServerCommand( args[ 1 ] );
 
 		case CG_GETCURRENTCMDNUMBER:
 			return CL_GetCurrentCmdNumber();
@@ -2493,6 +2510,66 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_LoadFont( ( const char * ) VMA( 1 ) );
 			return 0;
 
+		case CG_MME_CAPTURE:
+			//entTODO: add capture options
+//			re.Capture( VMA(1), VMF(2), VMF(3), VMF(4) );
+//			re.CaptureStereo( (char *)VMA(1), VMF(2), VMF(3), VMF(4) );
+//			S_MMERecord( VMA(1), 1.0f / VMF(2) );
+			return 0;
+		case CG_MME_BLURINFO:
+			//entTODO: add capture options
+//			re.BlurInfo( VMA(1), VMA(2) );
+			return 0;
+		case CG_MME_SEEKTIME:
+			return demoSeek( args[1] );
+		case CG_MME_DEMOINFO:
+			return demoInfo( (mmeDemoInfo_t *)VMA(1) );
+
+		case CG_MME_MUSIC:
+			//entTODO: rewrite sound code
+//			S_MMEMusic( VMA(1), VMF(2), VMF(3) );
+			return 0; 		
+
+		case CG_MME_TIMEFRACTION:
+			//entTODO: smooth the renderer
+//			re.TimeFraction(VMF(1));
+			return 0;
+	
+		case CG_S_UPDATE_SCALE:
+			//entTODO: rewrite sound code
+//			S_UpdateScale(VMF(1));
+			return 0;
+		
+/*		case CG_KEY_GETOVERSTRIKEMODE:
+			return Key_GetOverstrikeMode();
+		case CG_KEY_SETOVERSTRIKEMODE:
+			Key_SetOverstrikeMode( args[1] );
+			return 0;
+		case CG_GETCLIPBOARDDATA:
+			GetClipboardData( VMA(1), args[2] );
+			return 0;*/
+		case CG_SCR_DRAWSTRING:
+			SCR_DrawStringExt(args[1], args[2], VMF(3), (const char *)VMA(4), (float *)VMA(5), (qboolean)args[6], qfalse);
+			return 0;
+#ifdef MME_FX
+		case CG_FX_RESET:
+			FX_Reset();
+			return 0;
+		case CG_FX_BEGIN:
+			FX_Begin( args[1], VMF( 2 ) );
+			return 0;
+		case CG_FX_END:
+			FX_End();
+			return 0;
+		case CG_FX_REGISTER:
+			return FX_Register( VMA(1) );
+		case CG_FX_RUN:
+			FX_Run( args[1], VMA(2), args[3] );
+			return 0;
+		case CG_FX_VIBRATEVIEW:
+			FX_VibrateView( VMF(1), VMA(2), VMA(3) );
+			return 0;
+#endif
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
@@ -2760,7 +2837,11 @@ void CL_CGameRendering( void )
 	        } else {
 	        }*/
 
-	VM_Call( cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, clc.demoplaying );
+	if (clc.newDemoPlayer) {
+		demoRenderFrame();
+	} else {
+		VM_Call( cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, clc.demoplaying );
+	}
 	VM_Debug( 0 );
 }
 

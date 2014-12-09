@@ -579,6 +579,14 @@ typedef struct
 	lerpFrame_t legs, torso, nonseg, weapon, jetpack;
 	int         painTime;
 	int         painDirection; // flip from 0 to 1
+	
+	int			viewHeight;
+	int			stepTime;
+	float		stepChange;
+	int			landTime;
+	float		landChange;
+	int			duckTime;
+	float		duckChange;
 
 	// machinegun spinning
 	float    barrelAngle;
@@ -697,6 +705,7 @@ typedef struct
 
 //======================================================================
 
+void demoNowTrajectory( const trajectory_t *tr, vec3_t result );
 // centity_t has a direct correspondence with gentity_t in the game, but
 // only the entityState_t is directly communicated to the cgame
 typedef struct centity_s
@@ -1084,7 +1093,7 @@ typedef struct
 
 	int      clientNum;
 
-	qboolean demoPlayback;
+	int			demoPlayback;
 	qboolean loading; // don't defer players at initial startup
 	qboolean intermissionStarted;
 
@@ -1101,18 +1110,21 @@ typedef struct
 
 	qboolean thisFrameTeleport;
 	qboolean nextFrameTeleport;
+	
+	float		frametime;		// cg.time - cg.oldTime
+	float		timeFraction, oldTimeFraction;
 
-	int      frametime; // cg.time - cg.oldTime
-
-	int      time; // this is the time value that the client
-	// is rendering at.
+	int			time;	// this is the time value that the client
+					// is rendering at.
 	int      oldTime; // time at last frame, used for missile trails and prediction checking
 
 	int      physicsTime; // either cg.snap->time or cg.nextSnap->time
 
 	qboolean mapRestart; // set on a map restart to set back the weapon
 
-	qboolean renderingThirdPerson; // during deaths, chasecams, etc
+	qboolean	renderingThirdPerson;		// during deaths, chasecams, etc
+	qboolean	playerPredicted;
+	centity_t		*playerCent;
 
 	// prediction state
 	qboolean      hyperspace; // true if prediction has hit a trigger_teleport
@@ -1126,14 +1138,14 @@ typedef struct
 	int           eventSequence;
 	int           predictableEvents[ MAX_PREDICTED_EVENTS ];
 
-	float         stepChange; // for stair up smoothing
-	int           stepTime;
+//	float         stepChange; // for stair up smoothing
+//	int           stepTime;
 
-	float         duckChange; // for duck viewheight smoothing
-	int           duckTime;
+//	float         duckChange; // for duck viewheight smoothing
+//	int           duckTime;
 
-	float         landChange; // for landing hard
-	int           landTime;
+//	float         landChange; // for landing hard
+//	int           landTime;
 
 	// input state sent to server
 	int weaponSelect;
@@ -1286,14 +1298,6 @@ typedef struct
 	cbeacon_t               *highlightedBeacon;
 
 	int                     tagScoreTime;
-
-	// pmove params
-	struct {
-		int synchronous;
-		int fixed;
-		int msec;
-		int accurate;
-	} pmoveParams;
 } cg_t;
 
 typedef struct
@@ -1831,6 +1835,7 @@ extern  vmCvar_t            cg_thirdPersonRange;
 extern  vmCvar_t            cg_lagometer;
 extern  vmCvar_t            cg_drawSpeed;
 extern  vmCvar_t            cg_maxSpeedTimeWindow;
+extern  vmCvar_t            cg_synchronousClients;
 extern  vmCvar_t            cg_stats;
 extern  vmCvar_t            cg_paused;
 extern  vmCvar_t            cg_blood;
@@ -1841,6 +1846,9 @@ extern  vmCvar_t            cg_noVoiceText;
 extern  vmCvar_t            cg_hudFiles;
 extern  vmCvar_t            cg_hudFilesEnable;
 extern  vmCvar_t            cg_smoothClients;
+extern  vmCvar_t            pmove_fixed;
+extern  vmCvar_t            pmove_accurate;
+extern  vmCvar_t            pmove_msec;
 extern  vmCvar_t            cg_timescaleFadeEnd;
 extern  vmCvar_t            cg_timescaleFadeSpeed;
 extern  vmCvar_t            cg_timescale;
@@ -1921,6 +1929,45 @@ extern vmCvar_t             cg_motionblurMinSpeed;
 extern vmCvar_t             ui_chatPromptColors;
 extern vmCvar_t             cg_spawnEffects;
 
+extern	vmCvar_t		mov_Obituaries;
+extern	vmCvar_t		mov_fragFormat;
+extern	vmCvar_t		mov_chatBeep;
+extern	vmCvar_t		mov_debug;
+extern	vmCvar_t		mov_filterMask;
+extern	vmCvar_t		mov_stencilMask;
+extern	vmCvar_t		mov_captureFPS;
+extern	vmCvar_t		mov_captureName;
+extern	vmCvar_t		mov_captureCamera;
+extern	vmCvar_t		mov_seekInterval;
+extern	vmCvar_t		mov_musicFile;
+extern	vmCvar_t		mov_musicStart;
+extern	vmCvar_t		mov_chaseRange;
+extern	vmCvar_t		mov_teamSkins;
+
+extern vmCvar_t			mov_gridOffset;
+extern vmCvar_t			mov_gridWidth;
+extern vmCvar_t			mov_gridStep;
+extern vmCvar_t			mov_gridRange;
+extern vmCvar_t			mov_gridColor;
+extern vmCvar_t			mov_hudOverlay;
+
+extern	vmCvar_t		mov_deltaYaw;
+extern	vmCvar_t		mov_deltaPitch;
+extern	vmCvar_t		mov_deltaRoll;
+
+extern	vmCvar_t		mov_ratioFix;
+extern	vmCvar_t		mov_rewardCount;
+extern	vmCvar_t		mov_bobScale;
+extern	vmCvar_t		mov_wallhack;
+extern	vmCvar_t		mov_smoothCamPos;
+
+extern	vmCvar_t		mov_hitSounds;
+extern	vmCvar_t		mov_chatBox;
+extern	vmCvar_t		mov_chatBoxHeight;
+extern	vmCvar_t		mov_chatBoxScale;
+
+extern	vmCvar_t		mme_demoFileName;
+
 //
 // Rocket cvars
 //
@@ -1958,6 +2005,11 @@ void       CG_RegisterGrading( int slot, const char *str );
 //
 // cg_view.c
 //
+#define WAVE_AMPLITUDE	1.0f
+#define WAVE_FREQUENCY	0.4f
+
+#define MME_FOV			107.0f
+
 void     CG_addSmoothOp( vec3_t rotAxis, float rotAngle, float timeMod );
 void     CG_TestModel_f( void );
 void     CG_TestGun_f( void );
@@ -1968,7 +2020,7 @@ void     CG_TestModelPrevSkin_f( void );
 void     CG_AddBufferedSound( sfxHandle_t sfx );
 qboolean CG_CullBox(vec3_t mins, vec3_t maxs);
 qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
-void     CG_DrawActiveFrame( int serverTime, qboolean demoPlayback );
+void     CG_DrawActiveFrame( int serverTime, int demoPlayback );
 void     CG_OffsetFirstPersonView( void );
 void     CG_OffsetThirdPersonView( void );
 void     CG_OffsetShoulderView( void );
@@ -2106,6 +2158,8 @@ void CG_OnMapRestart( void );
 //
 void CG_DrawBoundingBox( int type, vec3_t origin, vec3_t mins, vec3_t maxs );
 void CG_SetEntitySoundPosition( centity_t *cent );
+void CG_CalcEntityLerpPositions( centity_t *cent );
+void CG_PreparePacketEntities( void );
 void CG_AddPacketEntities( void );
 void CG_Beam( centity_t *cent );
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out,
@@ -2139,7 +2193,8 @@ void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin );
 void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
-void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
+void CG_AddViewWeaponDirect( centity_t *cent, int stats );
+void CG_AddPlayerWeapon( refEntity_t *parent, qboolean firstPerson, centity_t *cent );
 void CG_DrawHumanInventory( void );
 void CG_DrawItemSelectText( void );
 float CG_ChargeProgress( void );
@@ -2363,4 +2418,11 @@ float CG_Rocket_ProgressBarValueByName( const char *name );
 //
 void CG_LoadArenas( void );
 #endif
+
+
+//MME
+void CG_DemosDrawActiveFrame( int serverTime );
+qboolean CG_DemosConsoleCommand( void );
+void CG_MouseEvent(int dx, int dy);
+
 
