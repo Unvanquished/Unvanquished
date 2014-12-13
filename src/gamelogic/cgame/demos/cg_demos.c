@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "cg_demos.h" 
+#include "cg_demos.h"
 
 demoMain_t demo;
 
@@ -63,7 +63,7 @@ static void CG_DemosUpdatePlayer( void ) {
 		delta = (int)demo.play.fraction;
 		demo.play.time += delta;
 		demo.play.fraction -= delta;
-	
+
 		if (demo.deltaRight) {
 			int interval = mov_seekInterval.value * 1000;
 			int rem = demo.play.time % interval;
@@ -115,7 +115,7 @@ static int demoSetupView( void) {
 	case viewChase:
 		if ( demo.chase.cent && demo.chase.distance < mov_chaseRange.value ) {
 			centity_t *cent = demo.chase.cent;
-			
+
 			if ( cent->currentState.number < MAX_CLIENTS ) {
 				cg.playerCent = cent;
 				cg.playerPredicted = cent == &cg.predictedPlayerEntity;
@@ -185,7 +185,7 @@ static int demoSetupView( void) {
 	}
 	if ( demo.dof.locked ) {
 		if (!behindView) {
-			demo.viewFocus = demo.dof.focus;		
+			demo.viewFocus = demo.dof.focus;
 			demo.viewRadius = demo.dof.radius;
 		} else {
 			demo.viewFocus = 0.002f;		// no matter what value, just not less or equal zero
@@ -216,7 +216,7 @@ static int demoSetupView( void) {
 
 	cg.refdef.fov_x = demo.viewFov;
 	cg.refdef.fov_y = atan2( cg.refdef.height, (cg.refdef.width / tan( demo.viewFov / 360 * M_PI )) ) * 360 / M_PI;
-	
+
 	contents = CG_PointContents( cg.refdef.vieworg, -1 );
 	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ){
 		double v = WAVE_AMPLITUDE * sin(((double)cg.time + (double)cg.timeFraction) / 1000.0 * WAVE_FREQUENCY * M_PI * 2);
@@ -282,7 +282,7 @@ void demoProcessSnapShots( qboolean hadSkip ) {
 			cent->currentValid = qtrue;
 			if (cent->currentState.eType > ET_EVENTS)
 				cent->previousEvent = 1;
-			else 
+			else
 				cent->previousEvent = cent->currentState.event;
 		}
 		// Need this check because the initial weapon for spec isn't always WP_NONE
@@ -329,7 +329,7 @@ void CG_DemosDrawActiveFrame( int serverTime ) {
 	}
 
 	cg.demoPlayback = 2;
-	
+
 	// if we are only updating the screen as a loading
 	// pacifier, don't even try to read snapshots
 	if ( cg.loading ) {
@@ -368,7 +368,7 @@ void CG_DemosDrawActiveFrame( int serverTime ) {
 	/* Handle the music */
 	if ( demo.play.paused ) {
 		if ( lastMusicStart >= 0)
-			demoSynchMusic( -1, 0 ); 
+			demoSynchMusic( -1, 0 );
 	} else {
 		int musicStart = (demo.play.time - mov_musicStart.value * 1000 );
 		if ( musicStart <= 0 ) {
@@ -475,7 +475,7 @@ void CG_DemosDrawActiveFrame( int serverTime ) {
 	}
 	/* Make sure the random seed is the same each time we hit this frame */
 	srand( (cg.time % 10000000) + cg.timeFraction * 1000);
-	/* Prepare to render the screen */		
+	/* Prepare to render the screen */
 	trap_Rocket_ClearText();
 	CG_NotifyHooks();
 	trap_S_ClearLoopingSounds(qfalse);
@@ -498,11 +498,11 @@ void CG_DemosDrawActiveFrame( int serverTime ) {
 	cg.predictedPlayerEntity.currentValid = qtrue;
 	VectorCopy( cg.predictedPlayerEntity.currentState.pos.trBase, cg.predictedPlayerEntity.lerpOrigin );
 	VectorCopy( cg.predictedPlayerEntity.currentState.apos.trBase, cg.predictedPlayerEntity.lerpAngles );
-	
+
 	// update unlockables data (needs valid predictedPlayerState)
 	CG_UpdateUnlockables( &cg.predictedPlayerState );
 	// update cvars (needs valid unlockables data)
-	CG_UpdateCvars();	
+	CG_UpdateCvars();
 	// update speedometer
 	CG_AddSpeed();
 
@@ -517,14 +517,14 @@ void CG_DemosDrawActiveFrame( int serverTime ) {
 	CG_AddPacketEntities();
 	CG_AddMarks();
 	CG_AddParticles ();
-	
+
 	if ( cg.playerCent == &cg.predictedPlayerEntity ) {
 		CG_AddViewWeapon( &cg.predictedPlayerState  );
 	} else if ( cg.playerCent && cg.playerCent->currentState.number < MAX_CLIENTS )  {
 		CG_AddViewWeaponDirect( cg.playerCent, 0 );
 	}
 	trap_S_UpdateEntityPosition(ENTITYNUM_NONE, cg.refdef.vieworg);
-		
+
 	cg.refdef.time = cg.time;
 	memcpy( cg.refdef.areamask, cg.snap->areamask, sizeof( cg.refdef.areamask ) );
 	/* Render some extra demo related stuff */
@@ -564,7 +564,7 @@ void CG_DemosDrawActiveFrame( int serverTime ) {
 
 		}
 	}
-	
+
 	if (frameSpeed > 5)
 		frameSpeed = 5;
 
@@ -585,14 +585,14 @@ void CG_DemosDrawActiveFrame( int serverTime ) {
 		trap_Cvar_Set("r_stereoSeparation", va("%f", -stereoSep));
 	trap_MME_TimeFraction(cg.timeFraction);
 	CG_DrawBinaryShadersFinalPhases();
-	trap_R_RenderScene( &cg.refdef );	
+	trap_R_RenderScene( &cg.refdef );
 	// first person blend blobs, done after AnglesToAxis
 	if ( !cg.renderingThirdPerson ) {
 		CG_PainBlend();
 	}
 	if ( demo.viewType == viewChase && cg.playerCent && ( cg.playerCent->currentState.number < MAX_CLIENTS ) )
 		CG_Draw2D();
-	
+
 //	CG_DrawSmallString( 0, 0, va( "height %d", cg.playerCent->pe.viewHeight ), 1 );
 
 	if (captureFrame) {
@@ -609,7 +609,7 @@ void CG_DemosDrawActiveFrame( int serverTime ) {
 		Com_Printf( "Capturing ended\n" );
 		if (demo.autoLoad) {
 			trap_SendConsoleCommand( "disconnect\n" );
-		} 
+		}
 		demo.capture.active = qfalse;
 	}
 }
@@ -621,12 +621,12 @@ void CG_DemosAddLog(const char *fmt, ...) {
 	demo.log.lastline++;
 	if (demo.log.lastline >= LOGLINES)
 		demo.log.lastline = 0;
-	
+
 	demo.log.times[demo.log.lastline] = demo.serverTime;
 	dest = demo.log.lines[demo.log.lastline];
 
 	va_start ( argptr, fmt );
-	_vsnprintf( dest, sizeof(demo.log.lines[0]), fmt, argptr );
+	Q_vsnprintf( dest, sizeof(demo.log.lines[0]), fmt, argptr );
 	va_end (argptr);
 //	Com_Printf("%s\n", dest);
 }
@@ -641,7 +641,7 @@ static void demoViewCommand_f(void) {
 	} else if (!Q_stricmp(cmd, "prev")) {
 		if (demo.viewType == 0)
 			vT = viewLast - 1;
-		else 
+		else
 			vT--;
 		demo.viewType = (demoViewType_t)vT;
 	} else if (!Q_stricmp(cmd, "next")) {
@@ -797,7 +797,7 @@ void demoPlaybackInit(void) {
 	demo.move.acceleration = 8;
 	demo.move.friction = 8;
 	demo.move.speed = 400;
-	
+
 	demo.line.locked = qfalse;
 	demo.line.offset = 0;
 	demo.line.speed = 1.0f;
@@ -813,11 +813,11 @@ void demoPlaybackInit(void) {
 	VectorClear( demo.chase.origin );
 	VectorClear( demo.chase.angles );
 	VectorClear( demo.chase.velocity );
-	
+
 	demo.chase.distance = 0;
 	demo.chase.locked = qfalse;
 	demo.chase.target = -1;
-	
+
 	demo.dof.focus = 256.0f;
 	demo.dof.radius = 5.0f;
 	demo.dof.target = -1;

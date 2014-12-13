@@ -1257,17 +1257,13 @@ class DemoCmd: public Cmd::StaticCmd {
 			char		name[MAX_OSPATH], testName[MAX_OSPATH];
 			char		*ext;
 			qboolean	haveConvert;
-			cvar_t		*fs_game;
 
             if (args.Argc() != 2) {
                 PrintUsage(args, "<demoname>", "starts playing a demo file");
                 return;
             }
-			
-			fs_game = Cvar_FindVar ("fs_game" );
-			if (!fs_game)
-				return;
-			haveConvert = mme_demoConvert->integer && !Q_stricmp( fs_game->string, "mme" );
+
+		haveConvert = mme_demoConvert->integer;
             // make sure a local server is killed
             Cvar_Set( "sv_killserver", "1" );
             CL_Disconnect( qtrue );
@@ -1279,13 +1275,13 @@ class DemoCmd: public Cmd::StaticCmd {
 
             const char* arg = fileName.c_str();
             int prot_ver = PROTOCOL_VERSION - 1;
-			
+
 			Q_strncpyz( testName, Cmd_Argv(1), sizeof( testName ) );
 			// check for an extension .dm_?? (?? is protocol)
 			ext = testName + strlen(testName) - 6;
 			if ((strlen(name) > 6) && (ext[0] == '.') && ((ext[1] == 'd') || (ext[1] == 'D')) && ((ext[2] == 'm') || (ext[2] == 'M')) && (ext[3] == '_'))
 			{
-				ext[0] = 0;	
+				ext[0] = 0;
 			}
 
 			Cvar_Set( "mme_demoFileName", testName );
@@ -1693,7 +1689,7 @@ void CL_Disconnect( qboolean showMainMenu )
 		FS_FCloseFile( clc.demofile );
 		clc.demofile = 0;
 	}
-	
+
 	if (clc.newDemoPlayer) {
 		demoStop( );
 	}
@@ -3652,7 +3648,7 @@ void CL_Frame( int msec )
 	{
 		return;
 	}
-	
+
 	// if recording an avi, lock to a fixed fps
 	if ( cl_avidemo->integer && msec) {
 		// save the current screen
@@ -3682,7 +3678,7 @@ void CL_Frame( int msec )
 //			S_MMERecord( shotName, 1.0f / fps );
 		}
 	}
-	
+
 	// if recording an avi, lock to a fixed fps
 	else if ( CL_VideoRecording() && cl_aviFrameRate->integer && msec )
 	{
@@ -3723,7 +3719,7 @@ void CL_Frame( int msec )
 	// if we haven't gotten a packet in a long time,
 	// drop the connection
 	CL_CheckTimeout();
-	
+
 	// MME:
 	CL_MME_CheckCvarChanges();
 
@@ -4207,7 +4203,7 @@ void CL_Init( void )
 
 	// cgame might not be initialized before menu is used
 	Cvar_Get( "cg_viewsize", "100", 0 );
-	
+
 
 	// MME cvars
 	mme_saveWav = Cvar_Get ("mme_saveWav", "0", CVAR_ARCHIVE );
@@ -4264,7 +4260,7 @@ void CL_Init( void )
 	Cmd_AddCommand( "video", CL_Video_f );
 	Cmd_AddCommand( "stopvideo", CL_StopVideo_f );
 // XreaL END
-	
+
 	// MME commands
 //	Cmd_AddCommand ("csList", CL_CSList_f);
 	Cmd_AddCommand ("mmeDemo", CL_MMEDemo_f);

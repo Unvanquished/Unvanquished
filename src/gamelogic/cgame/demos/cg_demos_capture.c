@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "cg_demos.h" 
+#include "cg_demos.h"
 
 void demoSaveLine( fileHandle_t fileHandle, const char *fmt, ... ) {
 	va_list		argptr;
@@ -28,27 +28,27 @@ void demoSaveLine( fileHandle_t fileHandle, const char *fmt, ... ) {
 	int len;
 
 	va_start ( argptr, fmt );
-	len = _vsnprintf ( buf, sizeof(buf), fmt, argptr );
+	len = Q_vsnprintf ( buf, sizeof(buf), fmt, argptr );
 	va_end ( argptr );
 	trap_FS_Write( buf, len, fileHandle );
 }
 
 static qboolean captureParseStart( BG_XMLParse_t *parse,const char *line, void *data) {
-	if (!line[0]) 
+	if (!line[0])
 		return BG_XMLError( parse, "start has empty line" );
 	demo.capture.start = atoi( line );
 	return qtrue;
 }
 
 static qboolean captureParseEnd( BG_XMLParse_t *parse,const char *line, void *data) {
-	if (!line[0]) 
+	if (!line[0])
 		return BG_XMLError( parse, "end has empty line" );
 	demo.capture.end = atoi( line );
 	return qtrue;
 }
 
 static qboolean captureParseSpeed( BG_XMLParse_t *parse,const char *line, void *data) {
-	if (!line[0]) 
+	if (!line[0])
 		return BG_XMLError( parse, "speed has empty line" );
 	demo.play.speed = atof( line );
 	return qtrue;
@@ -237,7 +237,7 @@ void captureSave( fileHandle_t fileHandle ) {
 			}
 			break;
 		default:
-			if (cvarIndex < (sizeof(cvarName) -1) ) 
+			if (cvarIndex < (sizeof(cvarName) -1) )
 				cvarName[ cvarIndex++ ] = listParse[0];
 			break;
 		}
@@ -257,7 +257,7 @@ void captureSave( fileHandle_t fileHandle ) {
 		const char* name;
 		const char* line;
 		switch ( i ) {
-		case 0:	
+		case 0:
 			name = "red";
 			line = cgs.redOverride;
 			break;
@@ -369,7 +369,7 @@ static qboolean demoCheckProjectList( const char *list, const char *demoName, co
 
 	while (1) {
 		char c;
-		
+
 		trap_FS_Read( &c, 1, fileHandle );
 lastOne:
 		--fileSize;
@@ -386,7 +386,7 @@ lastOne:
 		case '\t':
 			if (haveQuote && c != '"') {
 				if (index < (sizeof(word)-1)) {
-	              word[index++] = c;  
+	              word[index++] = c;
 				}
 				break;
 			}
@@ -408,7 +408,7 @@ lastOne:
 			break;
 		default:
 			if (index < (sizeof(word)-1)) {
-              word[index++] = c;  
+              word[index++] = c;
 			}
 			break;
 		}
@@ -500,7 +500,7 @@ void demoCaptureCommand_f(void) {
 	} else if (!Q_stricmp(cmd, "jpg") || !Q_stricmp(cmd, "tga") || !Q_stricmp(cmd, "png") || !Q_stricmp(cmd, "avi")){
 		demo.capture.active = qtrue;
 		demo.capture.locked = qfalse;
-		
+
 		trap_Cvar_Set( "mme_screenShotFormat", cmd );
 		cmd = CG_Argv(2);
 		trap_Cvar_Set( "mov_captureFPS", cmd);
@@ -512,7 +512,7 @@ void demoCaptureCommand_f(void) {
 		cmd = CG_Argv(3);
 		if (!cmd[0]) {
 			cmd = "default";
-		} 
+		}
 		trap_Cvar_Set( "mov_captureName", cmd );
 		trap_Cvar_Update( &mov_captureName );
 		CG_DemosAddLog( "Capturing at %0.2ffps to %s", mov_captureFPS.value, cmd );

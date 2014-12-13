@@ -850,7 +850,7 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/demos/cg_demos_camera.c
   ${GAMELOGIC_DIR}/cgame/demos/cg_demos_capture.c
   ${GAMELOGIC_DIR}/cgame/demos/cg_demos_dof.c
-  ${GAMELOGIC_DIR}/cgame/demos/cg_demos_fov.c
+#   ${GAMELOGIC_DIR}/cgame/demos/cg_demos_fov.c
   ${GAMELOGIC_DIR}/cgame/demos/cg_demos.h
   ${GAMELOGIC_DIR}/cgame/demos/cg_demos_hud.c
   ${GAMELOGIC_DIR}/cgame/demos/cg_demos_line.c
