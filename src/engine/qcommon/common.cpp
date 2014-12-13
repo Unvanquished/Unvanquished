@@ -1441,6 +1441,9 @@ int Com_EventLoop( void )
 	byte       bufData[ MAX_MSGLEN ];
 	msg_t      buf;
 
+	int        mouseX = 0, mouseY = 0, mouseTime = 0;
+	bool       mouseHaveEvent = false;
+
 	MSG_Init( &buf, bufData, sizeof( bufData ) );
 
 	while ( 1 )
@@ -1450,6 +1453,10 @@ int Com_EventLoop( void )
 		// if no more events are available
 		if ( ev.evType == SE_NONE )
 		{
+			if ( mouseHaveEvent ){
+				CL_MouseEvent( mouseX, mouseY, mouseTime );
+			}
+
 			// manually send packet events for the loopback channel
 			while ( NET_GetLoopPacket( NS_CLIENT, &evFrom, &buf ) )
 			{
@@ -1500,7 +1507,10 @@ int Com_EventLoop( void )
 				break;
 
 			case SE_MOUSE:
-				CL_MouseEvent( ev.evValue, ev.evValue2, ev.evTime );
+				mouseHaveEvent = true;
+				mouseX += ev.evValue;
+				mouseY += ev.evValue2;
+				mouseTime += ev.evTime;
 				break;
 
 			case SE_JOYSTICK_AXIS:

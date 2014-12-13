@@ -43,38 +43,19 @@ SV_BotAllocateClient
 */
 int SV_BotAllocateClient( void )
 {
-	int      i;
-	// Never use the first slot otherwise: if a bot connect before the first client game supposedly won't start
-	int      firstSlot = std::max( 1, sv_privateClients->integer );
-	client_t *cl;
-
-	// find a free client slot which was occupied by a bot (doesn't matter which)
-	for ( i = firstSlot, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
-	{
-		if ( cl->state == CS_FREE && SV_IsBot(cl) )
-		{
+	int i;
+	for (i = std::max(1, sv_privateClients->integer); i < sv_maxclients->integer; i++) {
+		if (svs.clients[i].state == CS_FREE) {
 			break;
 		}
 	}
 
-	// find any free client slot
-	if ( i == sv_maxclients->integer )
-	{
-		for ( i = firstSlot, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
-		{
-			if ( cl->state == CS_FREE )
-			{
-				break;
-			}
-		}
-	}
-
-	if ( i >= sv_maxclients->integer )
-	{
+	if (i >= sv_maxclients->integer) {
 		return -1;
 	}
 
-	cl->gentity = SV_GentityNum( i );
+	client_t* cl = svs.clients + i;
+	cl->gentity = SV_GentityNum(i);
 	cl->gentity->s.number = i;
 	cl->state = CS_ACTIVE;
 	cl->lastPacketTime = svs.time;

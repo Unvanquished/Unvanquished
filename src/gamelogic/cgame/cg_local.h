@@ -1281,6 +1281,14 @@ typedef struct
 	cbeacon_t               *highlightedBeacon;
 
 	int                     tagScoreTime;
+
+	// pmove params
+	struct {
+		int synchronous;
+		int fixed;
+		int msec;
+		int accurate;
+	} pmoveParams;
 } cg_t;
 
 typedef struct
@@ -1818,7 +1826,6 @@ extern  vmCvar_t            cg_thirdPersonRange;
 extern  vmCvar_t            cg_lagometer;
 extern  vmCvar_t            cg_drawSpeed;
 extern  vmCvar_t            cg_maxSpeedTimeWindow;
-extern  vmCvar_t            cg_synchronousClients;
 extern  vmCvar_t            cg_stats;
 extern  vmCvar_t            cg_paused;
 extern  vmCvar_t            cg_blood;
@@ -1829,9 +1836,6 @@ extern  vmCvar_t            cg_noVoiceText;
 extern  vmCvar_t            cg_hudFiles;
 extern  vmCvar_t            cg_hudFilesEnable;
 extern  vmCvar_t            cg_smoothClients;
-extern  vmCvar_t            pmove_fixed;
-extern  vmCvar_t            pmove_accurate;
-extern  vmCvar_t            pmove_msec;
 extern  vmCvar_t            cg_timescaleFadeEnd;
 extern  vmCvar_t            cg_timescaleFadeSpeed;
 extern  vmCvar_t            cg_timescale;

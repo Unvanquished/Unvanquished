@@ -1000,7 +1000,7 @@ static void CG_Rocket_DrawLagometer( void )
 
 	trap_R_SetColor( NULL );
 
-	if ( cg_nopredict.integer || cg_synchronousClients.integer )
+	if ( cg_nopredict.integer || cg.pmoveParams.synchronous )
 	{
 		ping = "snc";
 	}
