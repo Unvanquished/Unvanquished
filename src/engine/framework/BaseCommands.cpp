@@ -143,7 +143,7 @@ namespace Cmd {
                 ExecuteAfter(Str::Format("set arg_count %d", args.Argc() - start));
 
                 for (int i = start; i < args.Argc(); i++) {
-                    ExecuteAfter(Str::Format("set arg_%d %s", i, Cmd::Escape(args.Argv(i + start - 1))));
+                    ExecuteAfter(Str::Format("set arg_%d %s", i - start, Cmd::Escape(args.Argv(i))));
                 }
             }
 
