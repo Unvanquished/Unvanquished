@@ -801,7 +801,6 @@ Sets up the modelview matrix for a given viewParm
 void R_RotateForViewer( void )
 {
 	matrix_t transformMatrix;
-	matrix_t viewMatrix;
 
 	Com_Memset( &tr.orientation, 0, sizeof( tr.orientation ) );
 	tr.orientation.axis[ 0 ][ 0 ] = 1;
@@ -819,10 +818,7 @@ void R_RotateForViewer( void )
 
 	// convert from our right handed coordinate system (looking down X)
 	// to OpenGL's right handed coordinate system (looking down -Z)
-	MatrixMultiply( quakeToOpenGLMatrix, tr.orientation.viewMatrix2, viewMatrix );
-	{
-		MatrixCopy( viewMatrix, tr.orientation.viewMatrix );
-	}
+	MatrixMultiply( quakeToOpenGLMatrix, tr.orientation.viewMatrix2, tr.orientation.viewMatrix );
 
 	MatrixCopy( tr.orientation.viewMatrix, tr.orientation.modelViewMatrix );
 
@@ -2496,12 +2492,9 @@ void R_RenderView( viewParms_t *parms )
 
 	R_AddLightInteractions();
 
-	if( tr.refdef.blurVec[0] != 0.0f ||
-	    tr.refdef.blurVec[1] != 0.0f ||
-	    tr.refdef.blurVec[2] != 0.0f ) {
-		MatrixTransformNormal2( tr.orientation.viewMatrix,
-					tr.refdef.blurVec );
-	}
+	// Transform the blur vector in view space, FIXME for some we need reason invert its Z component
+	MatrixTransformNormal2( tr.viewParms.world.viewMatrix, tr.refdef.blurVec );
+	tr.refdef.blurVec[2] *= -1;
 
 	tr.viewParms.drawSurfs = tr.refdef.drawSurfs + firstDrawSurf;
 	tr.viewParms.numDrawSurfs = tr.refdef.numDrawSurfs - firstDrawSurf;
