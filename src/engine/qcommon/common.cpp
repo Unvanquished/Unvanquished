@@ -2325,6 +2325,8 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	}
 	else
 	{
+		Cmd::DelayFrame();
+		Cmd::ExecuteCommandBuffer();
 		timeAfter = Sys_Milliseconds();
 	}
 
