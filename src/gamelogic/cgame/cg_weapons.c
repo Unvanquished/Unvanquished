@@ -2391,7 +2391,11 @@ static qboolean CalcMuzzlePoint( int entityNum, vec3_t muzzle )
 {
 	vec3_t    forward;
 	centity_t *cent;
-	int       anim;
+
+	if ( entityNum < 0 || entityNum >= MAX_ENTITIES )
+	{
+		return qfalse;
+	}
 
 	if ( entityNum == cg.snap->ps.clientNum )
 	{
@@ -2399,6 +2403,7 @@ static qboolean CalcMuzzlePoint( int entityNum, vec3_t muzzle )
 		muzzle[ 2 ] += cg.snap->ps.viewheight;
 		AngleVectors( cg.snap->ps.viewangles, forward, NULL, NULL );
 		VectorMA( muzzle, 14, forward, muzzle );
+
 		return qtrue;
 	}
 
@@ -2409,21 +2414,14 @@ static qboolean CalcMuzzlePoint( int entityNum, vec3_t muzzle )
 		return qfalse;
 	}
 
-	VectorCopy( cent->currentState.pos.trBase, muzzle );
-
-	AngleVectors( cent->currentState.apos.trBase, forward, NULL, NULL );
-	anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
-
-	if ( anim == LEGS_WALKCR || anim == LEGS_IDLECR )
+	if ( cent->muzzlePS && CG_Attached( &cent->muzzlePS->attachment ) )
 	{
-		muzzle[ 2 ] += CROUCH_VIEWHEIGHT;
+		CG_AttachmentPoint( &cent->muzzlePS->attachment, muzzle );
 	}
 	else
 	{
-		muzzle[ 2 ] += DEFAULT_VIEWHEIGHT;
+		return qfalse;
 	}
-
-	VectorMA( muzzle, 14, forward, muzzle );
 
 	return qtrue;
 }
@@ -2534,7 +2532,7 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 	}
 }
 
-static void DrawTracer( vec3_t source, vec3_t dest )
+static void DrawTracer( vec3_t source, vec3_t dest, float chance, float length, float width )
 {
 	vec3_t     forward, right;
 	polyVert_t verts[ 4 ];
@@ -2542,6 +2540,11 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	float      len, begin, end;
 	vec3_t     start, finish;
 	vec3_t     midpoint;
+
+	if ( random() >= chance )
+	{
+		return;
+	}
 
 	// tracer
 	VectorSubtract( dest, source, forward );
@@ -2554,7 +2557,7 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	}
 
 	begin = 50 + random() * ( len - 60 );
-	end = begin + cg_tracerLength.value;
+	end = begin + length;
 
 	if ( end > len )
 	{
@@ -2571,7 +2574,7 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	VectorMA( right, -line[ 0 ], cg.refdef.viewaxis[ 2 ], right );
 	VectorNormalize( right );
 
-	VectorMA( finish, cg_tracerWidth.value, right, verts[ 0 ].xyz );
+	VectorMA( finish, width, right, verts[ 0 ].xyz );
 	verts[ 0 ].st[ 0 ] = 0;
 	verts[ 0 ].st[ 1 ] = 1;
 	verts[ 0 ].modulate[ 0 ] = 255;
@@ -2579,7 +2582,7 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	verts[ 0 ].modulate[ 2 ] = 255;
 	verts[ 0 ].modulate[ 3 ] = 255;
 
-	VectorMA( finish, -cg_tracerWidth.value, right, verts[ 1 ].xyz );
+	VectorMA( finish, -width, right, verts[ 1 ].xyz );
 	verts[ 1 ].st[ 0 ] = 1;
 	verts[ 1 ].st[ 1 ] = 0;
 	verts[ 1 ].modulate[ 0 ] = 255;
@@ -2587,7 +2590,7 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	verts[ 1 ].modulate[ 2 ] = 255;
 	verts[ 1 ].modulate[ 3 ] = 255;
 
-	VectorMA( start, -cg_tracerWidth.value, right, verts[ 2 ].xyz );
+	VectorMA( start, -width, right, verts[ 2 ].xyz );
 	verts[ 2 ].st[ 0 ] = 1;
 	verts[ 2 ].st[ 1 ] = 1;
 	verts[ 2 ].modulate[ 0 ] = 255;
@@ -2595,7 +2598,7 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	verts[ 2 ].modulate[ 2 ] = 255;
 	verts[ 2 ].modulate[ 3 ] = 255;
 
-	VectorMA( start, cg_tracerWidth.value, right, verts[ 3 ].xyz );
+	VectorMA( start, width, right, verts[ 3 ].xyz );
 	verts[ 3 ].st[ 0 ] = 0;
 	verts[ 3 ].st[ 1 ] = 0;
 	verts[ 3 ].modulate[ 0 ] = 255;
@@ -2749,7 +2752,7 @@ void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 	weapon_t         weapon;
 	weaponMode_t     weaponMode;
 	int              victimNum, attackerNum, psCharge;
-	vec3_t           normal, tracerStart;
+	vec3_t           normal, muzzle;
 	weaponInfoMode_t *wim;
 	centity_t        *victim;
 
@@ -2794,15 +2797,10 @@ void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 	}
 
 	// tracer
-	if ( attackerNum >= 0 && attackerNum < MAX_CLIENTS && cg_tracerChance.value > 0 )
+	if ( CalcMuzzlePoint( attackerNum, muzzle ) )
 	{
-		if ( CalcMuzzlePoint( attackerNum, tracerStart ) )
-		{
-			if ( random() < cg_tracerChance.value )
-			{
-				DrawTracer( tracerStart, origin );
-			}
-		}
+		DrawTracer( muzzle, origin, cg_tracerChance.value, cg_tracerLength.value,
+		            cg_tracerWidth.value );
 	}
 }
 
@@ -2811,7 +2809,7 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	weapon_t         weapon;
 	weaponMode_t     weaponMode;
 	int              attackerNum, psCharge;
-	vec3_t           normal, tracerStart;
+	vec3_t           normal, muzzle;
 	weaponInfoMode_t *wim;
 
 	// retrieve data from event
@@ -2842,15 +2840,10 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	}
 
 	// tracer
-	if ( attackerNum >= 0 && attackerNum < MAX_CLIENTS && cg_tracerChance.value > 0 )
+	if ( CalcMuzzlePoint( attackerNum, muzzle ) )
 	{
-		if ( CalcMuzzlePoint( attackerNum, tracerStart ) )
-		{
-			if ( random() < cg_tracerChance.value )
-			{
-				DrawTracer( tracerStart, origin );
-			}
-		}
+		DrawTracer( muzzle, origin, cg_tracerChance.value, cg_tracerLength.value,
+		            cg_tracerWidth.value );
 	}
 }
 
