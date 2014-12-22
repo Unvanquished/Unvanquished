@@ -52,13 +52,12 @@ MuzzleFlashTurret
 		{
 			model models/weapons/shells/rifle-shell.md3
 
-			// TODO: Update
-			displacement 0 0 0 0
+			displacement -8 -45 -2 0
 
 			velocityType      static_transform
 			velocityDir       linear
 			velocityMagnitude 200~100
-			velocity          -1.0 -0.4 0.0 ~20
+			velocity          -1.0 0.0 0.2 ~10
 
 			// gravity
 			accelerationType      static
