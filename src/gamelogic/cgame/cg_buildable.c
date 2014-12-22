@@ -1123,7 +1123,7 @@ void CG_GhostBuildable( int buildableInfo )
 		CG_DrawBuildableRangeMarker( buildable, entity_origin, tr.plane.normal, 1.0f );
 	}
 
-	CG_PositionAndOrientateBuildable( ps->viewangles, entity_origin, tr.plane.normal, ps->clientNum,
+	CG_PositionAndOrientateBuildable( angles, entity_origin, tr.plane.normal, ps->clientNum,
 	                                  mins, maxs, ent.axis, ent.origin );
 
 	//offset on the Z axis if required
