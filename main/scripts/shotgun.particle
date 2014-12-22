@@ -131,37 +131,6 @@ ShotgunMuzzleFlash
   {
     particle
     {
-      displacement		8 0 0 ~3
-
-      velocityType		cent
-      velocityDir		linear
-      velocityMagnitude		2500
-      velocity			1 0 0 ~10
-
-      accelerationType		static
-      accelerationDir   	linear
-      accelerationMagnitude	500
-      acceleration		0 0 -1 0
-
-      parentVelocityFraction 0.0
-
-      radius 0 50 15
-      alpha 0 1.0 1.0
-      bounce 0
-      rotation 0 0 50
-      lifeTime 90
-
-      childTrailSystem		shotgunsparks
-    }
-
-    count 5~50%
-    delay 0
-    period 0 1 4~10%
-  }
-  ejector
-  {
-    particle
-    {
       shader sync gfx/weapons/flash
 
       displacement 3 0 0 ~0.0

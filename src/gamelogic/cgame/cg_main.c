@@ -1138,7 +1138,6 @@ static void CG_RegisterSounds( void )
 	cgs.media.alienL4ChargePrepare = trap_S_RegisterSound( "sound/player/level4/charge_prepare.wav", qtrue );
 	cgs.media.alienL4ChargeStart = trap_S_RegisterSound( "sound/player/level4/charge_start.wav", qtrue );
 
-	cgs.media.tracerSound = trap_S_RegisterSound( "sound/weapons/tracer.wav", qfalse );
 	cgs.media.selectSound = trap_S_RegisterSound( "sound/weapons/change.wav", qfalse );
 	cgs.media.turretSpinupSound = trap_S_RegisterSound( "sound/buildables/mgturret/spinup.wav", qfalse );
 	cgs.media.weaponEmptyClick = trap_S_RegisterSound( "sound/weapons/click.wav", qfalse );

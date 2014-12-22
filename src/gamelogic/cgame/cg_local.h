@@ -1503,7 +1503,6 @@ typedef struct
 	qhandle_t disconnectSound;
 
 	// sounds
-	sfxHandle_t tracerSound;
 	sfxHandle_t weaponEmptyClick;
 	sfxHandle_t selectSound;
 	sfxHandle_t footsteps[ FOOTSTEP_TOTAL ][ 4 ];
