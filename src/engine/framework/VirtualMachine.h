@@ -33,16 +33,62 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace VM {
 
+/*
+ * To better support mods the gamelogic is treated like any other asset and can
+ * be downloaded from a server. However it is considered untrusted code so we
+ * need to run it in a sandbox. We use NaCl to provide the sandboxing and but that
+ * means that the gamelogic is in another process and that we have to use IPC and
+ * shared memory to communicate with it.
+ *
+ * The gamelogic can be compiled to and ran from several executable formats that
+ * will all start at the "main" function whose first job will be to retrieve the
+ * root socket handle to communicate with the engine. The different executable
+ * formats are:
+ *  - A native shared library loaded at runtime and started in the engine process,
+ * this shared lib exports a "main" function pointer which is called by the
+ * engine, providing a handle to the root socket in argv[1]. Because the gamelogic
+ * lives in the same process as the engine, any leaks in the gamelogic will be
+ * engine leaks. However because it is in the same process, it is easier to debug
+ * as the debugger doesn't automatically attach to child process.
+ *  - An NaCl executable started in a new sandboxed process. The "main" function is
+ * ran first and the root socket handle is given via an environment variable. This
+ * is how the gamelogic when we do not trust the code as it won't be able to access
+ * anything apart from the file handles the engine gives it. When the NaCl gamelogic
+ * exits the OS will clean up any leaks for us. It is also slightly slower than
+ * native format (no SSE and code alignement constraints).
+ *  - A native executable started in a new process, obviously the "main" function
+ * is the first one ran. The root socket handle is given in argv[1]. It doesn't
+ * provide sandboxing like the nacl executable but the OS will still clean up any
+ * leak for us.
+ *
+ * TL;DR
+ * - Native DLL: no sandboxing, no cleaning up but debuger support. Use for dev.
+ * - NaCl exe: sandboxing, no leaks, slightly slower, hard to debug. Use for regular players.
+ * - Native exe: no sandboxing, no loaks, hard to debug. Might be used by server owners for perf.
+ */
 enum vmType_t {
+    // Loads the VM as an executable from the hompath, potentially from a pk3
+    // USE THIS BY DEFAULT FOR PROD
 	TYPE_NACL,
+    // Same as above will ask sel_ldr to open a gdb server on port 4014?
 	TYPE_NACL_DEBUG,
+
+    // Loads the VM as a native exe from the libpath
 	TYPE_NATIVE_EXE,
+    // Same as above but opens it on a gdb server on port 4014, you will need to connect and run it with "r"
 	TYPE_NATIVE_EXE_DEBUG,
+
+    // Loads the VM as a native DLL from the libpath
+    // USE THIS FOR DEVELOPMENT
 	TYPE_NATIVE_DLL,
+
+    // Loads the VM as an nacl executable from the libpath
 	TYPE_NACL_LIBPATH,
+    // Same as above, with the debugger
 	TYPE_NACL_LIBPATH_DEBUG,
 	TYPE_END
 };
+
 
 struct VMParams {
 	VMParams(std::string name)
