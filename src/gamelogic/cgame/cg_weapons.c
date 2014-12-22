@@ -2794,7 +2794,7 @@ void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 	}
 
 	// tracer
-	if ( attackerNum >= 0 && cg_tracerChance.value > 0 )
+	if ( attackerNum >= 0 && attackerNum < MAX_CLIENTS && cg_tracerChance.value > 0 )
 	{
 		if ( CalcMuzzlePoint( attackerNum, tracerStart ) )
 		{
@@ -2842,7 +2842,7 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	}
 
 	// tracer
-	if ( attackerNum >= 0 && cg_tracerChance.value > 0 )
+	if ( attackerNum >= 0 && attackerNum < MAX_CLIENTS && cg_tracerChance.value > 0 )
 	{
 		if ( CalcMuzzlePoint( attackerNum, tracerStart ) )
 		{
