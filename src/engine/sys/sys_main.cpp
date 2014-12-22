@@ -42,7 +42,6 @@ Maryland 20850 USA.
 
 #if defined(_WIN32) || defined(BUILD_CLIENT)
 #include <SDL.h>
-#include "sdl2_compat.h"
 #endif
 
 #include "sys_local.h"
