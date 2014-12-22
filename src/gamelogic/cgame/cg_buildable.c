@@ -2255,7 +2255,7 @@ void CG_Buildable( centity_t *cent )
 	float         rotAngle;
 	const buildableAttributes_t *buildable = BG_Buildable( es->modelindex );
 	team_t        team = buildable->team;
-	float         scale, yaw;
+	float         scale, yaw, roll;
 	int           health;
 
 	//must be before EF_NODRAW check
@@ -2413,19 +2413,24 @@ void CG_Buildable( centity_t *cent )
 			vec3_t   p1, p2;
 			float    yaw, pitch;
 
-			//FIXME: Don't hard code bones to specific assets. Soon, I should put bone names in
-			// .cfg so we can change it should the rig change.
-
 			yaw   = es->angles2[ YAW ] - es->angles[ YAW ];
 			pitch = es->angles2[ PITCH ];
+			roll  = Q_clamp( ( 1.0f / TURRET_ATTACK_PERIOD ) *
+			                 120.0f * ( cg.time - cent->muzzleFlashTime ), 0.0f, 120.0f );
 
-			// The roll of bone_platform is the turret's yaw.
+			// TODO: Access bones by name instead of number.
+
+			// The roll of Bone_platform is the turret's yaw.
 			QuatFromAngles( rotation, 0, 0, yaw );
 			QuatMultiply0( ent.skeleton.bones[ 1 ].t.rot, rotation );
 
-			// The roll of bone_gatlin is the turret's pitch.
+			// The roll of Bone_gatlin is the turret's pitch.
 			QuatFromAngles( rotation, 0, 0, pitch );
 			QuatMultiply0( ent.skeleton.bones[ 2 ].t.rot, rotation );
+
+			// The roll of Bone_barrel is the barrel's roll.
+			QuatFromAngles( rotation, 0, 0, roll );
+			QuatMultiply0( ent.skeleton.bones[ 3 ].t.rot, rotation );
 
 			// transform bounds so they more accurately reflect the turret's new trasnformation
 			MatrixFromAngles( mat, pitch, yaw, 0 );
@@ -2452,14 +2457,14 @@ void CG_Buildable( centity_t *cent )
 		ent.altShaderIndex = CG_ALTSHADER_UNPOWERED;
 	}
 
-	//add to refresh list
+	// add to refresh list
 	trap_R_AddRefEntityToScene( &ent );
 
 	CrossProduct( surfNormal, refNormal, xNormal );
 	VectorNormalize( xNormal );
 	rotAngle = RAD2DEG( acos( DotProduct( surfNormal, refNormal ) ) );
 
-	//turret barrel bit
+	// MD3 turret special treatment part 1. TODO: Remove.
 	if ( cg_buildables[ es->modelindex ].models[ 1 ] )
 	{
 		refEntity_t turretBarrel;
@@ -2505,7 +2510,7 @@ void CG_Buildable( centity_t *cent )
 		trap_R_AddRefEntityToScene( &turretBarrel );
 	}
 
-	//turret barrel bit
+	// MD3 turret special treatment part 2. TODO: Remove.
 	if ( cg_buildables[ es->modelindex ].models[ 2 ] )
 	{
 		refEntity_t turretTop;
@@ -2555,11 +2560,12 @@ void CG_Buildable( centity_t *cent )
 		trap_R_AddRefEntityToScene( &turretTop );
 	}
 
-	//weapon effects for turrets
+	// weapon effects
 	if ( es->eFlags & EF_FIRING )
 	{
 		weaponInfo_t *wi = &cg_weapons[ es->weapon ];
 
+		// muzzle flash
 		if ( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem )
 		{
 			// spawn muzzle ps if necessary
@@ -2571,14 +2577,22 @@ void CG_Buildable( centity_t *cent )
 			// update muzzle ps position
 			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
 			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "tag_flash" );
+				if ( cg_buildables[ es->modelindex ].md5 )
+				{
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "Bone_fire" );
+				}
+				else
+				{
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "tag_flash" );
+				}
+
 				CG_AttachToTag( &cent->muzzlePS->attachment );
 			}
 		}
 
+		// dynamic light
 		if ( cg.time - cent->muzzleFlashTime < MUZZLE_FLASH_TIME || ( weapon_t )es->weapon == WP_TESLAGEN )
 		{
-			// add dynamic light
 			if ( wi->wim[ WPM_PRIMARY ].flashDlight )
 			{
 				trap_R_AddLightToScene( cent->lerpOrigin, wi->wim[ WPM_PRIMARY ].flashDlight,
@@ -2626,7 +2640,7 @@ void CG_Buildable( centity_t *cent )
 	// set particle effect to fire if buildable is burning
 	CG_OnFire( cent );
 
-	//smoke etc for damaged buildables
+	// smoke etc for damaged buildables
 	CG_BuildableParticleEffects( cent );
 
 	// draw range marker if enabled
