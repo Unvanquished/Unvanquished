@@ -3091,6 +3091,11 @@ void HTurret_Think( gentity_t *self )
 		{
 			HTurret_Shoot( self );
 		}
+		else
+		{
+			// keep the flag enabled in between shots
+			self->s.eFlags |= EF_FIRING;
+		}
 	}
 	else
 	{
