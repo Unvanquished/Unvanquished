@@ -868,7 +868,8 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 		MAXS = 1 << 3,
 		ZOFFSET = 1 << 4,
 		OLDSCALE = 1 << 5,
-		OLDOFFSET = 1 << 6
+		OLDOFFSET = 1 << 6,
+		MODELYAW = 1 << 7
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -922,6 +923,14 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 			bc->modelScale = scale;
 
 			defined |= MODELSCALE;
+		}
+		else if ( !Q_stricmp( token, "yaw" ) )
+		{
+			float yaw;
+			PARSE(text, token);
+			yaw = atof( token );
+			bc->yaw = yaw;
+			defined |= MODELYAW;
 		}
 		else if ( !Q_stricmp( token, "mins" ) )
 		{
@@ -985,6 +994,9 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 	else if ( !( defined & MAXS ) ) { token = "maxs"; }
 	else if ( !( defined & ZOFFSET ) ) { token = "zOffset"; }
 	else { token = ""; }
+
+	// Default values
+	if ( !( defined & MODELYAW ) ) { bc->yaw = 0.0f; }
 
 	if ( strlen( token ) > 0 )
 	{

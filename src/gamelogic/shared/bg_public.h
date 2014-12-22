@@ -1220,6 +1220,7 @@ typedef struct
 	char   models[ MAX_BUILDABLE_MODELS ][ MAX_QPATH ];
 
 	float  modelScale;
+	float  yaw;
 	vec3_t mins;
 	vec3_t maxs;
 	float  zOffset;

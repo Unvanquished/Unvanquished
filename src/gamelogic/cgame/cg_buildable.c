@@ -1107,7 +1107,7 @@ void CG_GhostBuildable( int buildableInfo )
 	vec3_t        angles, entity_origin;
 	vec3_t        mins, maxs;
 	trace_t       tr;
-	float         scale;
+	float         scale, yaw;
 	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK ); // assumed not BA_NONE
 
 	ps = &cg.predictedPlayerState;
@@ -1127,7 +1127,8 @@ void CG_GhostBuildable( int buildableInfo )
 	                                  mins, maxs, ent.axis, ent.origin );
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( buildable )->zOffset : BG_BuildableModelConfig( buildable )->oldOffset, tr.plane.normal, ent.origin );
+	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( buildable )->zOffset
+		: BG_BuildableModelConfig( buildable )->oldOffset, tr.plane.normal, ent.origin );
 
 	VectorCopy( ent.origin, ent.lightingOrigin );
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
@@ -1138,14 +1139,11 @@ void CG_GhostBuildable( int buildableInfo )
 	                     ? cgs.media.greenBuildShader
 	                     : cgs.media.redBuildShader;
 
-	//rescale the model
-	scale = BG_BuildableModelConfig( buildable )->modelScale;
+	// TODO: Merge the scaling and rotation of (non-)ghost buildables.
 
-	if ( cg_buildables[ buildable ].md5 )
-	{
-		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
-		CG_TransformSkeleton( &ent.skeleton, scale );
-	}
+	// Rescale model according to config.
+	scale = cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( buildable )->modelScale
+	                                           : BG_BuildableModelConfig( buildable )->oldScale;
 
 	if ( scale != 1.0f )
 	{
@@ -1158,6 +1156,23 @@ void CG_GhostBuildable( int buildableInfo )
 	else
 	{
 		ent.nonNormalizedAxes = qfalse;
+	}
+
+	// Rotate model according to config.
+	yaw = BG_BuildableModelConfig( buildable )->yaw;
+
+	if ( yaw != 0.0f )
+	{
+		vec3_t up;
+		VectorNormalize2( ent.axis[ 2 ], up );
+		RotatePointAroundVector( ent.axis[ 0 ], up, ent.axis[ 0 ], yaw );
+		RotatePointAroundVector( ent.axis[ 1 ], up, ent.axis[ 1 ], yaw );
+	}
+
+	if ( cg_buildables[ buildable ].md5 )
+	{
+		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
+		CG_TransformSkeleton( &ent.skeleton, scale );
 	}
 
 	// add to refresh list
@@ -2240,7 +2255,7 @@ void CG_Buildable( centity_t *cent )
 	float         rotAngle;
 	const buildableAttributes_t *buildable = BG_Buildable( es->modelindex );
 	team_t        team = buildable->team;
-	float         scale;
+	float         scale, yaw;
 	int           health;
 
 	//must be before EF_NODRAW check
@@ -2339,8 +2354,11 @@ void CG_Buildable( centity_t *cent )
 
 	CG_BuildableAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
 
-	//rescale the model
-	scale = cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( es->modelindex )->modelScale : BG_BuildableModelConfig( es->modelindex )->oldScale;
+	// TODO: Merge the scaling and rotation of (non-)ghost buildables.
+
+	// Rescale model according to config.
+	scale = cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( es->modelindex )->modelScale
+	                                           : BG_BuildableModelConfig( es->modelindex )->oldScale;
 
 	if ( scale != 1.0f )
 	{
@@ -2355,6 +2373,17 @@ void CG_Buildable( centity_t *cent )
 		ent.nonNormalizedAxes = qfalse;
 	}
 
+	// Rotate model according to config.
+	yaw = BG_BuildableModelConfig( es->modelindex )->yaw;
+
+	if ( yaw != 0.0f )
+	{
+		vec3_t up;
+		VectorNormalize2( ent.axis[ 2 ], up );
+		RotatePointAroundVector( ent.axis[ 0 ], up, ent.axis[ 0 ], yaw );
+		RotatePointAroundVector( ent.axis[ 1 ], up, ent.axis[ 1 ], yaw );
+	}
+
 	// add inverse shadow map
 	if ( cg_shadows.integer > SHADOWING_BLOB && cg_buildableShadows.integer )
 	{
@@ -2366,9 +2395,11 @@ void CG_Buildable( centity_t *cent )
 		ent.customShader = cgs.media.redBuildShader;
 	}
 
+	// TODO: Rename condition as this is true for iqm models, too.
 	if ( cg_buildables[ es->modelindex ].md5 )
 	{
-		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
+		// If buildable has spawned or is a human buildable, don't alter the size
+		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
 
 		float realScale = spawned ? scale :
 			scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
@@ -2380,18 +2411,24 @@ void CG_Buildable( centity_t *cent )
 			matrix_t mat;
 			vec3_t   nBounds[ 2 ];
 			vec3_t   p1, p2;
+			float    yaw, pitch;
 
 			//FIXME: Don't hard code bones to specific assets. Soon, I should put bone names in
 			// .cfg so we can change it should the rig change.
 
-			QuatFromAngles( rotation, 0, 0, -es->angles2[ YAW ] + es->angles[ YAW ] );
+			yaw   = es->angles2[ YAW ] - es->angles[ YAW ];
+			pitch = es->angles2[ PITCH ];
+
+			// The roll of bone_platform is the turret's yaw.
+			QuatFromAngles( rotation, 0, 0, yaw );
 			QuatMultiply0( ent.skeleton.bones[ 1 ].t.rot, rotation );
 
-			QuatFromAngles( rotation, 0, 0, es->angles2[ PITCH ] );
+			// The roll of bone_gatlin is the turret's pitch.
+			QuatFromAngles( rotation, 0, 0, pitch );
 			QuatMultiply0( ent.skeleton.bones[ 2 ].t.rot, rotation );
 
 			// transform bounds so they more accurately reflect the turret's new trasnformation
-			MatrixFromAngles( mat, es->angles2[ PITCH ], es->angles2[ YAW ] - es->angles[ YAW ], 0 );
+			MatrixFromAngles( mat, pitch, yaw, 0 );
 
 			MatrixTransformNormal( mat, ent.skeleton.bounds[ 0 ], p1 );
 			MatrixTransformNormal( mat, ent.skeleton.bounds[ 1 ], p2 );
