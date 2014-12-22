@@ -78,12 +78,12 @@ dataselect selectarrow
 	width:20px;
 	height:20px;
 	icon-decorator: image;
-	icon-image: /ui/assets/widgets/select_dull.png;
+	icon-image: /ui/assets/widgets/select_dull;
 }
 select selectarrow:hover,
 dataselect selectarrow:hover
 {
-	icon-image: /ui/assets/widgets/select_hover.png;
+	icon-image: /ui/assets/widgets/select_hover;
 }
 
 
@@ -93,7 +93,9 @@ input.checkbox
 	width:25px;
 	height:25px;
 	icon-decorator: image;
-	icon-image: /ui/assets/widgets/radio-check.png 444px 222px 666px 444px;
+	icon-image: /ui/assets/widgets/radio-check;
+	icon-image-s: 444px 666px;
+	icon-image-t: 222px 444px;
 }
 input.radio
 {
@@ -101,7 +103,7 @@ input.radio
 	width:20px;
 	height:20px;
 	icon-decorator: image;
-	icon-image: /ui/assets/widgets/radio-check.png 444px 0px 666px 222px;
+	icon-image: /ui/assets/widgets/radio-check 444px 0px 666px 222px;
 }
 
 input.checkbox:hover,input.checkbox:checked:hover,

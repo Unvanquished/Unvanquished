@@ -87,7 +87,6 @@ vmCvar_t        cg_thirdPersonRange;
 vmCvar_t        cg_lagometer;
 vmCvar_t        cg_drawSpeed;
 vmCvar_t        cg_maxSpeedTimeWindow;
-vmCvar_t        cg_synchronousClients;
 vmCvar_t        cg_stats;
 vmCvar_t        cg_paused;
 vmCvar_t        cg_blood;
@@ -102,9 +101,6 @@ vmCvar_t        cg_noVoiceText;
 vmCvar_t        cg_hudFiles;
 vmCvar_t        cg_hudFilesEnable;
 vmCvar_t        cg_smoothClients;
-vmCvar_t        pmove_fixed;
-vmCvar_t        pmove_msec;
-vmCvar_t        pmove_accurate;
 vmCvar_t        cg_timescaleFadeEnd;
 vmCvar_t        cg_timescaleFadeSpeed;
 vmCvar_t        cg_timescale;
@@ -333,15 +329,11 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_paused,                      "cl_paused",                      "0",            CVAR_ROM                     },
 	{ &cg_blood,                       "com_blood",                      "1",            0                            },
-	{ &cg_synchronousClients,          "g_synchronousClients",           "0",            CVAR_SYSTEMINFO              }, // communicated by systeminfo
 	{ &cg_timescaleFadeEnd,            "cg_timescaleFadeEnd",            "1",            CVAR_CHEAT                   },
 	{ &cg_timescaleFadeSpeed,          "cg_timescaleFadeSpeed",          "0",            CVAR_CHEAT                   },
 	{ &cg_timescale,                   "timescale",                      "1",            0                            },
 	{ &cg_smoothClients,               "cg_smoothClients",               "0",            CVAR_USERINFO                },
 
-	{ &pmove_fixed,                    "pmove_fixed",                    "0",            CVAR_SYSTEMINFO              },
-	{ &pmove_msec,                     "pmove_msec",                     "8",            CVAR_SYSTEMINFO              },
-	{ &pmove_accurate,                 "pmove_accurate",                 "0",            CVAR_SYSTEMINFO              },
 	{ &cg_noTaunt,                     "cg_noTaunt",                     "0",            0                            },
 
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO                },
@@ -1649,6 +1641,14 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, gl
 	new(&cgs) cgs_t();
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
+
+	// Set up the pmove params with sensible default values, the server params will
+	// be communicated with the "pmove_params" server commands.
+	// These values are the same as the default values of the servers to preserve
+	// compatibility with official Alpha 34 servers, but shouldn't be necessary anymore for Alpha 35
+	cg.pmoveParams.fixed = cg.pmoveParams.synchronous = 0;
+	cg.pmoveParams.accurate = 1;
+	cg.pmoveParams.msec = 8;
 
 	CG_UpdateLoadingStep( LOAD_START );
 	cg.clientNum = clientNum;

@@ -238,7 +238,7 @@ Also called by event processing code
 */
 void CG_SetEntitySoundPosition( centity_t *cent )
 {
-	if ( cent->currentState.eFlags & EF_BMODEL )
+	if ( cent->currentState.solid == SOLID_BMODEL )
 	{
 		vec3_t origin;
 		float  *v;
@@ -557,7 +557,7 @@ static void CG_Mover( centity_t *cent )
 	ent.skinNum = ( cg.time >> 6 ) & 1;
 
 	// get the model, either as a bmodel or a modelindex
-	if ( s1->eFlags & SOLID_BMODEL )
+	if ( s1->solid == SOLID_BMODEL )
 	{
 		ent.hModel = cgs.inlineDrawModel[ s1->modelindex ];
 	}
@@ -1317,6 +1317,7 @@ void CG_AddPacketEntities( void )
 	{
 		for ( num = 0; num < cg.snap->numEntities; num++ )
 		{
+			float         x, zd, zu;
 			vec3_t        mins, maxs;
 			entityState_t *es;
 
@@ -1326,15 +1327,17 @@ void CG_AddPacketEntities( void )
 			switch ( es->eType )
 			{
 				case ET_MISSILE:
-					{
-						const missileAttributes_t *ma;
+				case ET_CORPSE:
+					x = ( es->solid & 255 );
+					zd = ( ( es->solid >> 8 ) & 255 );
+					zu = ( ( es->solid >> 16 ) & 255 ) - 32;
 
-						ma = BG_Missile( es->weapon );
-						mins[ 0 ] = mins[ 1 ] = mins[ 2 ] = -ma->size;
-						maxs[ 0 ] = maxs[ 1 ] = maxs[ 2 ] = +ma->size;
+					mins[ 0 ] = mins[ 1 ] = -x;
+					maxs[ 0 ] = maxs[ 1 ] = x;
+					mins[ 2 ] = -zd;
+					maxs[ 2 ] = zu;
 
-						CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
-					}
+					CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 					break;
 
 				default:

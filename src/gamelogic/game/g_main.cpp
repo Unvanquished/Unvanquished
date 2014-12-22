@@ -268,10 +268,10 @@ static cvarTable_t gameCvarTable[] =
 	// server: network related
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO,                                 0, qtrue            },
 	{ &g_smoothClients,               "g_smoothClients",               "1",                                0,                                               0, qfalse           },
-	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &pmove_accurate,                "pmove_accurate",                "1",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
+	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                0,                                               0, qfalse           },
+	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                0,                                               0, qfalse           },
+	{ &pmove_msec,                    "pmove_msec",                    "8",                                0,                                               0, qfalse           },
+	{ &pmove_accurate,                "pmove_accurate",                "1",                                0,                                               0, qfalse           },
 	{ &g_floodMaxDemerits,            "g_floodMaxDemerits",            "5000",                             0,                                               0, qfalse           },
 	{ &g_floodMinTime,                "g_floodMinTime",                "2000",                             0,                                               0, qfalse           },
 
@@ -873,6 +873,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	G_FindEntityGroups();
 	G_InitSetEntities();
 
+	G_CheckPmoveParamChanges();
+
 	G_InitDamageLocations();
 
 	G_InitMapRotations();
@@ -1034,6 +1036,37 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 	va_end( argptr );
 
 	trap_Print( text );
+}
+
+void G_CheckPmoveParamChanges() {
+	if ( pmove_msec.integer < 8 )
+	{
+		trap_Cvar_Set( "pmove_msec", "8" );
+	}
+	else if ( pmove_msec.integer > 33 )
+	{
+		trap_Cvar_Set( "pmove_msec", "33" );
+	}
+
+	if(not level.pmoveParams.initialized or
+			level.pmoveParams.synchronous != g_synchronousClients.integer or
+			level.pmoveParams.msec != pmove_msec.integer or
+			level.pmoveParams.fixed != pmove_fixed.integer or
+			level.pmoveParams.accurate != pmove_accurate.integer) {
+		level.pmoveParams.initialized = true;
+		level.pmoveParams.synchronous = g_synchronousClients.integer;
+		level.pmoveParams.msec = pmove_msec.integer;
+		level.pmoveParams.fixed = pmove_fixed.integer;
+		level.pmoveParams.accurate = pmove_accurate.integer;
+		G_SendClientPmoveParams(-1);
+	}
+}
+void G_SendClientPmoveParams(int client) {
+	trap_SendServerCommand(client, va("pmove_params %i %i %i %i",
+		level.pmoveParams.synchronous,
+		level.pmoveParams.fixed,
+		level.pmoveParams.msec,
+		level.pmoveParams.accurate));
 }
 
 /*
@@ -2807,6 +2840,8 @@ void G_RunFrame( int levelTime )
 	CheckCvars();
 	// now we are done spawning
 	level.spawning = qfalse;
+
+	G_CheckPmoveParamChanges();
 
 	//
 	// go through all allocated objects

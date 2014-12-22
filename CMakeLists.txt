@@ -61,7 +61,6 @@ cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT
 option( USE_LTO "Use link-time optimization for release builds" 0 )
 cmake_dependent_option( USE_SLIM_LTO "Generate slim LTO objects, improves build times" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0 )
 option( USE_HARDENING "Use stack protection and other hardening flags" 0 )
-option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
 option( USE_WEXTRA "Enable extra compilation warnings" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
@@ -574,7 +573,6 @@ set( COMMONLIST
 )
 
 set( RENDERERLIST
-  ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sdl_glimp.cpp
   ${ENGINE_DIR}/renderer/gl_shader.cpp
   ${ENGINE_DIR}/renderer/tr_animation.cpp
@@ -759,7 +757,6 @@ set( DEDSERVERLIST
 
 set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.cpp
-  ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sys_local.h
 )
 
@@ -1165,22 +1162,12 @@ set( LIBSRC_NACL ${LIBSRC_NACL} ${NACLLIST_NATIVE} )
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
-  if( USE_SDL2 )
-    find_package( SDL2 REQUIRED )
-    include_directories( ${SDL2_INCLUDE_DIR} )
-    if( WIN32 )
-      set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL2_LIBRARY} )
-    else()
-      set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL2_LIBRARY} )
-    endif()
+  find_package( SDL2 REQUIRED )
+  include_directories( ${SDL2_INCLUDE_DIR} )
+  if( WIN32 )
+    set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL2_LIBRARY} )
   else()
-    find_package( SDL REQUIRED )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    if( WIN32 )
-      set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL_LIBRARY} )
-    else()
-      set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
-    endif()
+    set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL2_LIBRARY} )
   endif()
 
   # Used by tinygettext to use SDL_iconv instead of base iconv
@@ -1188,7 +1175,6 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
     add_definitions( -DHAVE_SDL )
   endif()
 endif()
-mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR MINGW32_LIBRARY )
 mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
 
 # libRocket

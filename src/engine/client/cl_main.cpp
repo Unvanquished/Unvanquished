@@ -1727,7 +1727,6 @@ void CL_RequestMotd( void )
 	             "%i", ( ( rand() << 16 ) ^ rand() ) ^ Com_Milliseconds() );
 
 	Info_SetValueForKey( info, "challenge", cls.updateChallenge, qfalse );
-	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string, qfalse );
 	Info_SetValueForKey( info, "version", com_version->string, qfalse );
 
 	NET_OutOfBandPrint( NS_CLIENT, cls.updateServer, "getmotd%s", info );
