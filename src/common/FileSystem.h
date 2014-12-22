@@ -465,7 +465,7 @@ void Initialize();
 #else
 std::string DefaultBasePath();
 std::string DefaultHomePath();
-void Initialize(Str::StringRef homePath, const std::vector<std::string>& paths);
+void Initialize(Str::StringRef homePath, Str::StringRef libPath, const std::vector<std::string>& paths);
 #endif
 
 // Flush write buffers for all open files, useful in case of an unclean shutdown

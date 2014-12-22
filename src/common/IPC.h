@@ -33,31 +33,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace IPC {
 
-// Operating system handle type
-#ifdef _WIN32
-// HANDLE is defined as void* in windows.h
-// Note that the NaCl code uses -1 instead of 0 to represent invalid handles
-typedef void* OSHandleType;
-const OSHandleType INVALID_HANDLE = reinterpret_cast<void*>(-1);
-#else
-typedef int OSHandleType;
-const OSHandleType INVALID_HANDLE = -1;
-#endif
-
 // IPC descriptor which can be sent over a socket. You should treat this as an
 // opaque type and not access any of the fields directly.
-#ifdef __native_client__
-typedef int Desc;
-#else
 struct Desc {
-	OSHandleType handle;
+	Sys::OSHandle handle;
+#ifndef __native_client__
 	int type;
 	union {
 		uint64_t size;
 		int32_t flags;
 	};
-};
 #endif
+};
 void CloseDesc(const Desc& desc);
 
 // Simple file handle wrapper, does *not* close handle on destruction
@@ -71,24 +58,24 @@ enum FileOpenMode {
 class FileHandle {
 public:
 	FileHandle()
-		: handle(INVALID_HANDLE) {}
-	FileHandle(OSHandleType handle, FileOpenMode mode)
+		: handle(Sys::INVALID_HANDLE) {}
+	FileHandle(Sys::OSHandle handle, FileOpenMode mode)
 		: handle(handle), mode(mode) {}
 	explicit operator bool() const
 	{
-		return handle != INVALID_HANDLE;
+		return Sys::IsValidHandle(handle);
 	}
 
 	Desc GetDesc() const;
 	static FileHandle FromDesc(const Desc& desc);
 
-	OSHandleType GetHandle() const
+	Sys::OSHandle GetHandle() const
 	{
 		return handle;
 	}
 
 private:
-	OSHandleType handle;
+	Sys::OSHandle handle;
 	FileOpenMode mode;
 };
 
@@ -98,11 +85,11 @@ class Writer;
 class Socket {
 public:
 	Socket()
-		: handle(INVALID_HANDLE) {}
+		: handle(Sys::INVALID_HANDLE) {}
 	Socket(Socket&& other) NOEXCEPT
 		: handle(other.handle)
 	{
-		other.handle = INVALID_HANDLE;
+		other.handle = Sys::INVALID_HANDLE;
 	}
 	Socket& operator=(Socket&& other) NOEXCEPT
 	{
@@ -115,25 +102,25 @@ public:
 	}
 	explicit operator bool() const
 	{
-		return handle != INVALID_HANDLE;
+		return Sys::IsValidHandle(handle);
 	}
 
 	void Close();
 
-	OSHandleType GetHandle() const
+	Sys::OSHandle GetHandle() const
 	{
 		return handle;
 	}
-	OSHandleType ReleaseHandle()
+	Sys::OSHandle ReleaseHandle()
 	{
-		OSHandleType out = handle;
-		handle = INVALID_HANDLE;
+		Sys::OSHandle out = handle;
+		handle = Sys::INVALID_HANDLE;
 		return out;
 	}
 
 	Desc GetDesc() const;
 	static Socket FromDesc(const Desc& desc);
-	static Socket FromHandle(OSHandleType handle);
+	static Socket FromHandle(Sys::OSHandle handle);
 
 	void SendMsg(const Writer& writer) const;
 	Reader RecvMsg() const;
@@ -141,18 +128,18 @@ public:
 	static std::pair<Socket, Socket> CreatePair();
 
 private:
-	OSHandleType handle;
+	Sys::OSHandle handle;
 };
 
 // Shared memory area, can be sent over a socket
 class SharedMemory {
 public:
 	SharedMemory()
-		: handle(INVALID_HANDLE) {}
+		: handle(Sys::INVALID_HANDLE) {}
 	SharedMemory(SharedMemory&& other) NOEXCEPT
 		: handle(other.handle), base(other.base), size(other.size)
 	{
-		other.handle = INVALID_HANDLE;
+		other.handle = Sys::INVALID_HANDLE;
 	}
 	SharedMemory& operator=(SharedMemory&& other) NOEXCEPT
 	{
@@ -167,7 +154,7 @@ public:
 	}
 	explicit operator bool() const
 	{
-		return handle != INVALID_HANDLE;
+		return Sys::IsValidHandle(handle);
 	}
 
 	void Close();
@@ -187,8 +174,7 @@ public:
 	}
 
 private:
-	void Map();
-	OSHandleType handle;
+	Sys::OSHandle handle;
 	void* base;
 	size_t size;
 };
@@ -206,7 +192,7 @@ public:
 	void WriteSize(size_t size)
 	{
 		if (size > std::numeric_limits<uint32_t>::max())
-			Com_Error(ERR_DROP, "IPC: Size out of range in message");
+			Sys::Drop("IPC: Size out of range in message");
 		Write<uint32_t>(size);
 	}
 	template<typename T, typename Arg> void Write(Arg&& value)
@@ -260,7 +246,7 @@ public:
 			memcpy(p, data.data() + pos, len);
 			pos += len;
 		} else
-			Com_Error(ERR_DROP, "IPC: Unexpected end of message");
+			Sys::Drop("IPC: Unexpected end of message");
 	}
 	template<typename T> size_t ReadSize()
 	{
@@ -268,7 +254,7 @@ public:
 		uint32_t size;
 		ReadData(&size, sizeof(uint32_t));
 		if (size > std::numeric_limits<uint32_t>::max() / sizeof(T))
-			Com_Error(ERR_DROP, "IPC: Size out of range in message");
+			Sys::Drop("IPC: Size out of range in message");
 		return size;
 	}
 	const void* ReadInline(size_t len)
@@ -278,7 +264,7 @@ public:
 			pos += len;
 			return out;
 		} else
-			Com_Error(ERR_DROP, "IPC: Unexpected end of message");
+			Sys::Drop("IPC: Unexpected end of message");
 	}
 	template<typename T> decltype(SerializeTraits<T>::Read(std::declval<Reader&>())) Read()
 	{
@@ -289,7 +275,7 @@ public:
 		if (handles_pos <= handles.size())
 			return handles[handles_pos++];
 		else
-			Com_Error(ERR_DROP, "IPC: Unexpected end of message");
+			Sys::Drop("IPC: Unexpected end of message");
 	}
 
 	std::vector<char>& GetData()

@@ -63,6 +63,7 @@ static HANDLE singletonSocket;
 #else
 static int singletonSocket;
 static FS::File lockFile;
+static bool haveSingletonLock = false;
 #endif
 static std::string singletonSocketPath;
 
@@ -95,17 +96,17 @@ static void CreateSingletonSocket()
 	// the process quits, but it may remain if the homepath is on a network filesystem.
 	// We restrict the permissions to owner-only to prevent other users from grabbing
 	// an exclusive lock (which only requires read access).
-	mode_t oldMask = umask(0700);
 	try {
+		mode_t oldMask = umask(0077);
 		lockFile = FS::HomePath::OpenWrite("lock" SERVER_SUFFIX);
+		umask(oldMask);
 		if (flock(fileno(lockFile.GetHandle()), LOCK_EX | LOCK_NB) == -1)
 			throw std::system_error(errno, std::generic_category());
-		umask(oldMask);
 	} catch (std::system_error& err) {
-		umask(oldMask);
 		Sys::Error("Could not acquire singleton lock: %s\n"
 		           "If you are sure no other instance is running, delete %s", err.what(), FS::Path::Build(FS::GetHomePath(), "lock" SERVER_SUFFIX));
 	}
+	haveSingletonLock = true;
 
 	// Delete any stale sockets
 	std::string dirName = FS::Path::DirName(singletonSocketPath);
@@ -261,6 +262,8 @@ static void CloseSingletonSocket()
 #ifdef _WIN32
 	CloseHandle(singletonSocket);
 #else
+	if (!haveSingletonLock)
+		return;
 	std::string dirName = FS::Path::DirName(singletonSocketPath);
 	unlink(singletonSocketPath.c_str());
 	rmdir(dirName.c_str());
@@ -278,9 +281,16 @@ static void Shutdown(bool error, Str::StringRef message)
 	// Stop accepting commands from other instances
 	CloseSingletonSocket();
 
-	CL_Shutdown();
-	SV_Shutdown(error ? va("Server fatal crashed: %s\n", message.c_str()) : va("%s\n", message.c_str()));
-	Com_Shutdown();
+	// Catch any errors in one stage of shutdown and just skip to the next one
+	try {
+		CL_Shutdown();
+	} catch (Sys::DropErr&) {}
+	try {
+		SV_Shutdown(error ? va("Server fatal crashed: %s\n", message.c_str()) : va("%s\n", message.c_str()));
+	} catch (Sys::DropErr&) {}
+	try {
+		Com_Shutdown();
+	} catch (Sys::DropErr&) {}
 
 	// Always run CON_Shutdown, because it restores the terminal to a usable state.
 	CON_Shutdown();
@@ -308,11 +318,11 @@ void Error(Str::StringRef message)
 
 	Log::Error(message);
 
-	Shutdown(true, message);
-
 #if defined(_WIN32) || defined(BUILD_CLIENT)
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PRODUCT_NAME, message.c_str(), nullptr);
 #endif
+
+	Shutdown(true, message);
 
 	exit(1);
 }
@@ -371,7 +381,8 @@ struct cmdlineArgs_t {
 	bool reset_config;
 	bool use_basepath;
 	bool use_curses;
-	std::string homepath = FS::DefaultHomePath();
+	std::string homePath = FS::DefaultHomePath();
+	std::string libPath = FS::DefaultBasePath();
 	std::vector<std::string> paths;
 
 	std::unordered_map<std::string, std::string> cvars;
@@ -444,13 +455,19 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 			}
 			cmdlineArgs.paths.push_back(argv[i + 1]);
 			i++;
+		} else if (!strcmp(argv[i], "-libpath")) {
+			if (i == argc - 1) {
+				Log::Warn("Missing argument for -libpath");
+				continue;
+			}
+			cmdlineArgs.libPath = argv[i + 1];
+			i++;
 		} else if (!strcmp(argv[i], "-homepath")) {
 			if (i == argc - 1) {
 				Log::Warn("Missing argument for -homepath");
 				continue;
 			}
-			cmdlineArgs.homepath = argv[i + 1];
-			cmdlineArgs.paths.push_back(argv[i + 1]);
+			cmdlineArgs.homePath = argv[i + 1];
 			i++;
 		} else if (!strcmp(argv[i], "-resetconfig")) {
 			cmdlineArgs.reset_config = true;
@@ -527,7 +544,7 @@ static void Init(int argc, char** argv)
 	// Initialize the filesystem
 	if (cmdlineArgs.use_basepath)
 		cmdlineArgs.paths.insert(cmdlineArgs.paths.begin(), FS::DefaultBasePath());
-	FS::Initialize(cmdlineArgs.homepath, cmdlineArgs.paths);
+	FS::Initialize(cmdlineArgs.homePath, cmdlineArgs.libPath, cmdlineArgs.paths);
 
 	// Look for an existing instance of the engine running on the same homepath.
 	// If there is one, forward any +commands to it and exit.
@@ -614,6 +631,8 @@ ALIGN_STACK int main(int argc, char** argv)
 		Sys::Error("Error during initialization: %s", err.what());
 	} catch (std::exception& err) {
 		Sys::Error("Unhandled exception (%s): %s", typeid(err).name(), err.what());
+	} catch (...) {
+		Sys::Error("Unhandled exception of unknown type");
 	}
 
 	// Run the engine frame in a loop. First try to handle an error by returning
@@ -635,8 +654,7 @@ ALIGN_STACK int main(int argc, char** argv)
 		Sys::Error("Error during error handling: %s", err.what());
 	} catch (std::exception& err) {
 		Sys::Error("Unhandled exception (%s): %s", typeid(err).name(), err.what());
+	} catch (...) {
+		Sys::Error("Unhandled exception of unknown type");
 	}
-
-	// To make the compiler happy
-	return 0;
 }

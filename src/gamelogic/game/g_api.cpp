@@ -40,7 +40,7 @@ static IPC::Channel GetRootChannel(int argc, char** argv)
 	}
 
 	char* end;
-	IPC::OSHandleType h = (IPC::OSHandleType)strtol(channel, &end, 10);
+	Sys::OSHandle h = (Sys::OSHandle)strtol(channel, &end, 10);
 	if (channel == end || *end != '\0') {
 		fprintf(stderr, "Environment variable ROOT_SOCKET does not contain a valid handle\n");
 		VM::Exit();
@@ -223,7 +223,9 @@ void NORETURN trap_Error(const char *string)
 		VM::Exit();
 	recursiveError = true;
 	VM::SendMsg<ErrorMsg>(string);
-	VM::Exit(); // Amanieu: Need to implement proper error handling
+
+	// The SendMsg should never return, but in case it does, just exit the VM
+	VM::Exit();
 }
 
 void trap_Log(log_event_t *event)

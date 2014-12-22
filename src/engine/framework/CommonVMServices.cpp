@@ -61,7 +61,7 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Bad command syscall number '%d' for VM '%s'", minor, vmName.c_str());
+                Sys::Drop("Bad command syscall number '%d' for VM '%s'", minor, vmName);
         }
     }
 
@@ -160,7 +160,7 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Bad cvar syscall number '%d' for VM '%s'", minor, vmName.c_str());
+                Sys::Drop("Bad cvar syscall number '%d' for VM '%s'", minor, vmName);
         }
     }
 
@@ -196,7 +196,7 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Bad log syscall number '%d' for VM '%s'", minor, vmName.c_str());
+                Sys::Drop("Bad log syscall number '%d' for VM '%s'", minor, vmName);
         }
     }
 
@@ -231,7 +231,7 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Unhandled common engine syscall major number %i", major);
+                Sys::Drop("Unhandled common engine syscall major number %i", major);
         }
     }
 

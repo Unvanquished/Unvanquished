@@ -56,7 +56,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mach-o/dyld.h>
 #endif
 
-Log::Logger fsLogs(VM_STRING_PREFIX "fs");
+Log::Logger fsLogs(VM_STRING_PREFIX "fs", Log::LOG_NOTICE);
 
 // SerializeTraits for PakInfo/LoadedPakInfo
 namespace IPC {
@@ -1037,7 +1037,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 	}
 
 	// Add the pak to the list of loaded paks
-	Com_Printf("Loading pak '%s'...\n", pak.path.c_str());
+	fsLogs.Notice("Loading pak '%s'...", pak.path.c_str());
 	loadedPaks.emplace_back();
 	loadedPaks.back().name = pak.name;
 	loadedPaks.back().version = pak.version;
@@ -1505,7 +1505,9 @@ static void CreatePathTo(Str::StringRef path, std::error_code& err)
 			return;
 		}
 #else
-		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST) {
+		// Create the directory as private to the current user by default. The
+		// user can relax the permissions later if he wishes.
+		if (mkdir(buffer.data(), 0700) != 0 && errno != EEXIST) {
 			SetErrorCodeSystem(err);
 			return;
 		}
@@ -2027,7 +2029,7 @@ void Initialize()
 	VM::SendMsg<VM::FSInitializeMsg>(homePath, libPath, availablePaks, PakPath::loadedPaks, PakPath::fileMap);
 }
 #else
-void Initialize(Str::StringRef homePath, const std::vector<std::string>& paths)
+void Initialize(Str::StringRef homePath, Str::StringRef libPath, const std::vector<std::string>& paths)
 {
 	// Insert the homepath last so it overrides other paths
 	for (const std::string& path: paths) {
@@ -2037,11 +2039,12 @@ void Initialize(Str::StringRef homePath, const std::vector<std::string>& paths)
 	}
 	pakPaths.push_back(Path::Build(homePath, "pkg"));
 	FS::homePath = homePath;
+	FS::libPath = libPath;
 	isInitialized = true;
 
-	Com_Printf("Home path: %s\n", homePath.c_str());
+	fsLogs.Notice("Home path: %s", homePath.c_str());
 	for (std::string& x: pakPaths)
-		Com_Printf("Pak path: %s\n", x.c_str());
+		fsLogs.Notice("Pak path: %s", x.c_str());
 
 	RefreshPaks();
 }
@@ -2430,7 +2433,7 @@ void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& chann
 		break;
 
 	default:
-		Com_Error(ERR_DROP, "Bad filesystem syscall number '%d' for VM '%s'", minor, vmName.c_str());
+		Sys::Drop("Bad filesystem syscall number '%d' for VM '%s'", minor, vmName);
 	}
 }
 #endif

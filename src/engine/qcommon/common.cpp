@@ -116,10 +116,7 @@ int      com_frameNumber;
 int      com_expectedhunkusage;
 int      com_hunkusedvalue;
 
-qboolean com_errorEntered;
 qboolean com_fullyInitialized;
-
-char     com_errorMessage[ MAXPRINTMSG ];
 
 void     Com_WriteConfig_f( void );
 void     Com_WriteBindings_f( void );
@@ -270,80 +267,17 @@ do the appropriate things.
 // *INDENT-OFF*
 void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 {
-	va_list    argptr;
-	static int lastErrorTime;
-	static int errorCount;
-	int        currentTime;
-
-	// make sure we can get at our local stuff
-	if (code != ERR_FATAL) {
-		FS::PakPath::ClearPaks();
-		FS_LoadBasePak();
-	}
-
-	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
-	currentTime = Sys_Milliseconds();
-
-	if ( currentTime - lastErrorTime < 100 )
-	{
-		if ( ++errorCount > 3 )
-		{
-			code = ERR_FATAL;
-		}
-	}
-	else
-	{
-		errorCount = 0;
-	}
-
-	lastErrorTime = currentTime;
-
-	if ( com_errorEntered )
-	{
-		char buf[ 4096 ];
-
-		va_start( argptr, fmt );
-		Q_vsnprintf( buf, sizeof( buf ), fmt, argptr );
-		va_end( argptr );
-
-		Sys_Error( "recursive error '%s' after: %s", buf, com_errorMessage );
-	}
-
-	com_errorEntered = qtrue;
+	char buf[ 4096 ];
+	va_list argptr;
 
 	va_start( argptr, fmt );
-	Q_vsnprintf( com_errorMessage, sizeof( com_errorMessage ), fmt, argptr );
+	Q_vsnprintf( buf, sizeof( buf ), fmt, argptr );
 	va_end( argptr );
 
-	Cvar_Set("com_errorMessage", com_errorMessage);
-
-	if ( code == ERR_SERVERDISCONNECT )
-	{
-		Com_Printf( S_COLOR_WHITE "%s\n", com_errorMessage );
-		SV_Shutdown( "Server disconnected" );
-		CL_Disconnect( qtrue );
-		CL_FlushMemory();
-		com_errorEntered = qfalse;
-		longjmp( abortframe, -1 );
-	}
-	else if ( code == ERR_DROP )
-	{
-		Com_Printf( S_COLOR_ORANGE "%s\n", com_errorMessage );
-		SV_Shutdown( va( "********************\nServer crashed: %s\n********************\n", com_errorMessage ) );
-		CL_Disconnect( qtrue );
-		CL_FlushMemory();
-		com_errorEntered = qfalse;
-		longjmp( abortframe, -1 );
-	}
+	if ( code == ERR_FATAL )
+		Sys::Error( buf );
 	else
-	{
-		CL_Shutdown();
-		SV_Shutdown( va( "Server fatal crashed: %s\n", com_errorMessage ) );
-	}
-
-	Com_Shutdown();
-
-	Sys_Error( "%s", com_errorMessage );
+		Sys::Drop( buf );
 }
 
 // *INDENT-OFF*

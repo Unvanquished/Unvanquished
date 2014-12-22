@@ -94,6 +94,25 @@ std::string Win32StrError(uint32_t error);
 // Initialize crash handling for the current process
 void SetupCrashHandler();
 
+// Operating system handle type
+#ifdef _WIN32
+// HANDLE is defined as void* in windows.h, but we don't want to include that
+// everywhere. Windows also has 2 different invalid handle values: 0 and -1
+typedef void* OSHandle;
+const OSHandle INVALID_HANDLE = reinterpret_cast<void*>(-1);
+inline bool IsValidHandle(OSHandle handle)
+{
+	return handle != NULL && handle != INVALID_HANDLE;
+}
+#else
+typedef int OSHandle;
+const OSHandle INVALID_HANDLE = -1;
+inline bool IsValidHandle(OSHandle handle)
+{
+	return handle != -1;
+}
+#endif
+
 #ifndef __native_client__
 // Class representing a loadable .dll/.so
 class DynamicLib {

@@ -173,7 +173,10 @@ typedef enum gameImport_s
 // PrintMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_PRINT>, std::string> PrintMsg;
 // ErrorMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_ERROR>, std::string> ErrorMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, G_ERROR>, std::string>,
+	IPC::Reply<>
+> ErrorMsg;
 // LogMsg TODO
 // SendConsoleCommandMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_CONSOLE_COMMAND>, std::string> SendConsoleCommandMsg;

@@ -510,8 +510,10 @@ void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 
 void GameVM::GameShutdown(qboolean restart)
 {
-	//TODO ignore errors
-	this->SendMsg<GameShutdownMsg>(restart);
+	// Ignore errors when shutting down
+	try {
+		this->SendMsg<GameShutdownMsg>(restart);
+	} catch (Sys::DropErr&) {}
 
 	// Release the shared memory region
 	this->shmRegion.Close();

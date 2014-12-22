@@ -60,7 +60,7 @@ struct VMParams {
 class VMBase {
 public:
 	VMBase(std::string name, VMParams& params)
-		: processHandle(IPC::INVALID_HANDLE), name(name), params(params) {}
+		: processHandle(Sys::INVALID_HANDLE), name(name), params(params) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module.
@@ -72,7 +72,7 @@ public:
 	// Check if the VM is active
 	bool IsActive() const
 	{
-		return processHandle != IPC::INVALID_HANDLE || inProcess.thread.joinable();
+		return Sys::IsValidHandle(processHandle) || inProcess.thread.joinable();
 	}
 
 	// Make sure the VM is closed on exit
@@ -111,7 +111,7 @@ private:
 	void FreeInProcessVM();
 
 	// Used for the NaCl VMs
-	IPC::OSHandleType processHandle;
+	Sys::OSHandle processHandle;
 
 	// Used by the native, in process VMs
 	InProcessInfo inProcess;
