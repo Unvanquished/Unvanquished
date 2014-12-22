@@ -3019,10 +3019,7 @@ void HTurret_Think( gentity_t *self )
 {
 	qboolean gotValidTarget;
 
-	//HGeneric_Think( self );
 	self->nextthink = level.time + TURRET_THINK_PERIOD;
-
-	IdlePowerState( self );
 
 	// disable muzzle flash for now
 	self->s.eFlags &= ~EF_FIRING;
@@ -3032,7 +3029,7 @@ void HTurret_Think( gentity_t *self )
 		return;
 	}
 
-	// adjust yaw according to power state
+	// adjust pitch according to power state
 	if ( !self->powered )
 	{
 		self->turretDisabled = qtrue;
@@ -4501,7 +4498,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	VectorCopy( angles, built->s.angles );
 	built->s.angles[ PITCH ] = 0.0f;
 	built->s.angles2[ YAW ] = angles[ YAW ];
-	built->s.angles2[ PITCH ] = TURRET_PITCH_CAP;
+	built->s.angles2[ PITCH ] = 0.0f; // Neutral pitch since this is how the ghost buildable looks.
 	built->physicsBounce = attr->bounce;
 
 	built->s.groundEntityNum = groundEntNum;
