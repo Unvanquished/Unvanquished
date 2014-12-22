@@ -4312,8 +4312,8 @@ G_Build
 Spawns a buildable
 ================
 */
-static gentity_t *Build( gentity_t *builder, buildable_t buildable,
-                         const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum )
+static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t origin,
+                         const vec3_t normal, const vec3_t angles, int groundEntNum )
 {
 	gentity_t  *built;
 	char       readable[ MAX_STRING_CHARS ];
@@ -4359,8 +4359,11 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	if ( builder->client && g_cheats.integer )
 	{
 		built->health = attr->health;
+
+		// HACK: This causes animation issues and can result in built->creationTime < 0.
 		built->creationTime -= attr->buildTime;
 	}
+
 	built->s.time = built->creationTime;
 
 	//things that vary for each buildable that aren't in the dbase
@@ -4518,8 +4521,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built->s.generic1 = MAX( built->health, 0 );
 
 	built->powered = qtrue;
-	built->s.eFlags |= EF_B_POWERED;
 
+	built->s.eFlags |= EF_B_POWERED;
 	built->s.eFlags &= ~EF_B_SPAWNED;
 
 	VectorCopy( normal, built->s.origin2 );
@@ -4528,7 +4531,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 	G_SetIdleBuildableAnim( built, ( buildableAnimNumber_t )attr->idleAnim );
 
-	if ( built->builtBy )
+	// HACK: Play construct animation only for non-turrets as turrets are completely code-controlled.
+	if ( built->builtBy && buildable != BA_H_MGTURRET )
 	{
 		G_SetBuildableAnim( built, BANIM_CONSTRUCT1, qtrue );
 	}
@@ -4681,8 +4685,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 		VectorSet( normal, 0.0f, 0.0f, 1.0f );
 	}
 
-	built = Build( ent, buildable, ent->s.pos.trBase,
-	                 normal, ent->s.angles, ENTITYNUM_NONE );
+	built = Build( ent, buildable, ent->s.pos.trBase, normal, ent->s.angles, ENTITYNUM_NONE );
 
 	built->takedamage = qtrue;
 	built->spawned = qtrue; //map entities are already spawned
