@@ -458,6 +458,7 @@ typedef enum
 	MIS_LOCKBLOB,
 	MIS_SLOWBLOB,
 	MIS_BOUNCEBALL,
+	MIS_ROCKET,
 
 	MIS_NUM_MISSILES
 } missile_t;

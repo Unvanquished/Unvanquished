@@ -807,6 +807,20 @@ static void FireHive( gentity_t *self )
 /*
 ======================================================================
 
+ROCKET POD
+
+======================================================================
+*/
+
+// TODO: Add tracking/pathfinding
+static void FireRocket( gentity_t *self )
+{
+	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, NULL, G_ExplodeMissile, level.time + 10000 );
+}
+
+/*
+======================================================================
+
 BLASTER PISTOL
 
 ======================================================================
@@ -1838,11 +1852,11 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_ROCKETPOD:
-					FireBullet( self, TURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
+					FireRocket( self );
 					break;
 
 				case WP_MGTURRET:
-					FireBullet( self, TURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
+					FireBullet( self, MGTURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
 					break;
 
 				case WP_ABUILD:

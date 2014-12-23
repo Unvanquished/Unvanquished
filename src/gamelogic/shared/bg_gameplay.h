@@ -272,17 +272,19 @@ extern float REACTOR_BASESIZE;
 extern float REPEATER_BASESIZE;
 
 #define TURRET_THINK_PERIOD   25  // doesn't affect damage or turn speed directly, just their precision
-#define TURRET_ATTACK_PERIOD  125
-#define TURRET_RANGE          400
-#define TURRET_SPREAD         200
-#define TURRET_ZONES          3   // range is divided into this amount of zones (disks) with equal width
-#define TURRET_ZONE_DAMAGE    { 4, 3, 2 } // damage for each of the TURRET_ZONES zones
 #define TURRET_PITCH_CAP      30  // in degrees
 #define TURRET_PITCH_SPEED    160 // in degrees per second
 #define TURRET_YAW_SPEED      120 // in degrees per second
 #define TURRET_GIVEUP_TARGET  500 // in ms, time until turret stops tracking a target after losing los
 
-#define ROCKETPOD_RANGE       1000
+#define MGTURRET_ATTACK_PERIOD  125
+#define MGTURRET_RANGE          400
+#define MGTURRET_SPREAD         200
+#define MGTURRET_ZONES          3   // range is divided into this amount of zones (disks) with equal width
+#define MGTURRET_ZONE_DAMAGE    { 4, 3, 2 } // damage for each of the TURRET_ZONES zones
+
+#define ROCKETPOD_RANGE         2000
+#define ROCKETPOD_ATTACK_PERIOD 500
 
 extern float REACTOR_ATTACK_RANGE;
 extern int   REACTOR_ATTACK_REPEAT;

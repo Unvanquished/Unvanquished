@@ -2617,13 +2617,13 @@ void HMedistat_Think( gentity_t *self )
 
 static int HTurret_DistanceToZone( float distance )
 {
-	const float zoneWidth = ( float )TURRET_RANGE / ( float )TURRET_ZONES;
+	const float zoneWidth = ( float )MGTURRET_RANGE / ( float )MGTURRET_ZONES;
 
 	int zone = ( int )( distance / zoneWidth );
 
-	if ( zone >= TURRET_ZONES )
+	if ( zone >= MGTURRET_ZONES )
 	{
-		return TURRET_ZONES - 1;
+		return MGTURRET_ZONES - 1;
 	}
 	else
 	{
@@ -2712,7 +2712,8 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 	*/
 }
 
-static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolean newTarget )
+static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolean newTarget,
+                                     float range )
 {
 	trace_t tr;
 	vec3_t  dir, end;
@@ -2722,7 +2723,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	     || target->health <= 0
 	     || G_OnSameTeam( self, target )
 	     || target->flags & FL_NOTARGET
-	     || Distance( self->s.origin, target->s.origin ) > TURRET_RANGE )
+	     || Distance( self->s.origin, target->s.origin ) > range )
 	{
 		if ( g_debugTurrets.integer > 0 && self->target )
 		{
@@ -2738,7 +2739,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 		// check if target could be hit with a precise shot
 		VectorSubtract( target->s.pos.trBase, self->s.pos.trBase, dir );
 		VectorNormalize( dir );
-		VectorMA( self->s.pos.trBase, TURRET_RANGE, dir, end );
+		VectorMA( self->s.pos.trBase, range, dir, end );
 		trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 
 		if ( tr.entityNum != ( target - g_entities ) )
@@ -2766,7 +2767,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	return qtrue;
 }
 
-static qboolean HTurret_FindTarget( gentity_t *self )
+static qboolean HTurret_FindTarget( gentity_t *self, float range )
 {
 	gentity_t *neighbour = NULL;
 	gentity_t *validTargets[ MAX_GENTITIES ];
@@ -2782,9 +2783,10 @@ static qboolean HTurret_FindTarget( gentity_t *self )
 	self->turretLastShotAtTarget = 0;
 
 	// find all potential targets
-	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin, TURRET_RANGE )); )
+	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
+	                                                                     range )); )
 	{
-		if ( HTurret_TargetValid( self, neighbour, qtrue ) )
+		if ( HTurret_TargetValid( self, neighbour, qtrue, range ) )
 		{
 		     validTargets[ validTargetNum++ ] = neighbour;
 		}
@@ -2932,7 +2934,7 @@ static void HTurret_SetBaseDir( gentity_t *self )
 	VectorNormalize( dir );
 
 	// invert base direction if it reaches into a wall within the first damage zone
-	VectorMA( self->s.origin, ( float )TURRET_RANGE / ( float )TURRET_ZONES, dir, end );
+	VectorMA( self->s.origin, ( float )MGTURRET_RANGE / ( float )MGTURRET_ZONES, dir, end );
 	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 
 	if ( tr.entityNum == ENTITYNUM_WORLD || g_entities[ tr.entityNum ].s.eType == ET_BUILDABLE )
@@ -2976,7 +2978,37 @@ static void HTurret_LowerPitch( gentity_t *self )
 	VectorNormalize( self->turretDirToTarget );
 }
 
-static qboolean HTurret_TargetInReach( gentity_t *self )
+void HTurret_PreBlast( gentity_t *self )
+{
+	HTurret_LowerPitch( self );
+
+	// Enter regular blast state as soon as the barrel is lowered.
+	if ( !HTurret_MoveHeadToTarget( self ) )
+	{
+		self->think = HGeneric_Blast;
+		self->nextthink = level.time + HUMAN_DETONATION_RAND_DELAY;
+	}
+	else
+	{
+		self->nextthink = level.time + TURRET_THINK_PERIOD;
+	}
+}
+
+void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+{
+	if ( self->target )
+	{
+		self->target->numTrackedBy--;
+	}
+
+	HGeneric_Die( self, inflictor, attacker, mod );
+
+	// Do some last movements before entering blast state.
+	self->think = HTurret_PreBlast;
+	self->nextthink = level.time;
+}
+
+static qboolean HTurret_TargetInReach( gentity_t *self, float range )
 {
 	trace_t tr;
 	vec3_t  forward, end;
@@ -2988,15 +3020,15 @@ static qboolean HTurret_TargetInReach( gentity_t *self )
 
 	// check if a precise shot would hit the target
 	AngleVectors( self->buildableAim, forward, NULL, NULL );
-	VectorMA( self->s.pos.trBase, TURRET_RANGE, forward, end );
+	VectorMA( self->s.pos.trBase, range, forward, end );
 	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 
 	return ( tr.entityNum == ( self->target - g_entities ) );
 }
 
-static void HTurret_Shoot( gentity_t *self )
+static void HMGTurret_Shoot( gentity_t *self )
 {
-	const int zoneDamage[] = TURRET_ZONE_DAMAGE;
+	const int zoneDamage[] = MGTURRET_ZONE_DAMAGE;
 	int       zone;
 
 	// if turret doesn't have the fast loader upgrade, pause after three shots
@@ -3018,21 +3050,20 @@ static void HTurret_Shoot( gentity_t *self )
 	if ( g_debugTurrets.integer > 1 )
 	{
 		const static char color[] = {'1', '8', '3', '2'};
-		Com_Printf( "Turret %d: Shooting at %d: ^%cZone %d/%d → %d damage\n",
+		Com_Printf( "MGTurret %d: Shooting at %d: ^%cZone %d/%d → %d damage\n",
 		            self->s.number, self->target->s.number, color[zone], zone + 1,
-		            TURRET_ZONES, self->turretCurrentDamage );
+		            MGTURRET_ZONES, self->turretCurrentDamage );
 	}
 
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
-	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 	G_FireWeapon( self, WP_MGTURRET, WPM_PRIMARY );
 
 	self->turretSuccessiveShots++;
 	self->turretLastShotAtTarget = level.time;
-	self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
+	self->turretNextShot = level.time + MGTURRET_ATTACK_PERIOD;
 }
 
-void HTurret_Think( gentity_t *self )
+void HMGTurret_Think( gentity_t *self )
 {
 	qboolean gotValidTarget;
 
@@ -3071,17 +3102,17 @@ void HTurret_Think( gentity_t *self )
 	HTurret_SetBaseDir( self );
 
 	// check for valid target
-	if ( HTurret_TargetValid( self, self->target, qfalse ) )
+	if ( HTurret_TargetValid( self, self->target, qfalse, MGTURRET_RANGE ) )
 	{
 		gotValidTarget = qtrue;
 	}
 	else
 	{
-		gotValidTarget = HTurret_FindTarget( self );
+		gotValidTarget = HTurret_FindTarget( self, MGTURRET_RANGE );
 
 		if ( gotValidTarget && g_debugTurrets.integer > 0 )
 		{
-			Com_Printf( "Turret %d: New target %d.\n", self->s.number, self->target->s.number );
+			Com_Printf( "MGTurret %d: New target %d.\n", self->s.number, self->target->s.number );
 		}
 	}
 
@@ -3096,7 +3127,7 @@ void HTurret_Think( gentity_t *self )
 	}
 
 	// shoot if target in reach
-	if ( HTurret_TargetInReach( self ) )
+	if ( HTurret_TargetInReach( self, MGTURRET_RANGE ) )
 	{
 		// if the target's origin is visible, aim for it first
 		if ( G_LineOfFire( self, self->target ) )
@@ -3106,7 +3137,7 @@ void HTurret_Think( gentity_t *self )
 
 		if ( self->turretNextShot < level.time )
 		{
-			HTurret_Shoot( self );
+			HMGTurret_Shoot( self );
 		}
 		else
 		{
@@ -3123,35 +3154,115 @@ void HTurret_Think( gentity_t *self )
 	}
 }
 
-void HTurret_PreBlast( gentity_t *self )
+static void HRocketpod_Shoot( gentity_t *self )
 {
-	HTurret_LowerPitch( self );
+	self->s.eFlags |= EF_FIRING;
 
-	// Enter regular blast state as soon as the barrel is lowered.
-	if ( !HTurret_MoveHeadToTarget( self ) )
+	if ( g_debugTurrets.integer > 1 )
 	{
-		self->think = HGeneric_Blast;
-		self->nextthink = level.time + HUMAN_DETONATION_RAND_DELAY;
+		Com_Printf( "Rocketpod %d: Shooting at %d\n", self->s.number, self->target->s.number );
+	}
+
+	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
+	G_FireWeapon( self, WP_ROCKETPOD, WPM_PRIMARY );
+
+	self->turretSuccessiveShots++;
+	self->turretLastShotAtTarget = level.time;
+	self->turretNextShot = level.time + ROCKETPOD_ATTACK_PERIOD;
+}
+
+// TODO: Allow pod to shoot over buildables in a non-straight trajectory
+void HRocketpod_Think( gentity_t *self )
+{
+	qboolean gotValidTarget;
+
+	self->nextthink = level.time + TURRET_THINK_PERIOD;
+
+	// disable muzzle flash for now
+	self->s.eFlags &= ~EF_FIRING;
+
+	if ( !self->spawned )
+	{
+		return;
+	}
+
+	// adjust pitch according to power state
+	if ( !self->powered )
+	{
+		self->turretDisabled = qtrue;
+		self->turretSuccessiveShots = 0;
+
+		HTurret_LowerPitch( self );
+		HTurret_MoveHeadToTarget( self );
+
+		return;
 	}
 	else
 	{
-		self->nextthink = level.time + TURRET_THINK_PERIOD;
-	}
-}
+		if ( self->turretDisabled )
+		{
+			HTurret_ResetPitch( self );
+		}
 
-void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
-{
-	if ( self->target )
+		self->turretDisabled = qfalse;
+	}
+
+	// set turret base direction
+	HTurret_SetBaseDir( self );
+
+	// check for valid target
+	if ( HTurret_TargetValid( self, self->target, qfalse, ROCKETPOD_RANGE ) )
 	{
-		self->target->numTrackedBy--;
+		gotValidTarget = qtrue;
+	}
+	else
+	{
+		gotValidTarget = HTurret_FindTarget( self, ROCKETPOD_RANGE );
+
+		if ( gotValidTarget && g_debugTurrets.integer > 0 )
+		{
+			Com_Printf( "Rocketpod %d: New target %d.\n", self->s.number, self->target->s.number );
+		}
 	}
 
-	HGeneric_Die( self, inflictor, attacker, mod );
+	// adjust target direction
+	if ( gotValidTarget )
+	{
+		HTurret_TrackTarget( self );
+	}
+	else if ( !self->turretLastSeenATarget )
+	{
+		HTurret_ResetDirection( self );
+	}
 
-	// Do some last movements before entering blast state.
-	self->think = HTurret_PreBlast;
-	self->nextthink = level.time;
+	// shoot if target in reach
+	if ( HTurret_TargetInReach( self, ROCKETPOD_RANGE ) )
+	{
+		// if the target's origin is visible, aim for it first
+		if ( G_LineOfFire( self, self->target ) )
+		{
+			HTurret_MoveHeadToTarget( self );
+		}
+
+		if ( self->turretNextShot < level.time )
+		{
+			HRocketpod_Shoot( self );
+		}
+		else
+		{
+			// keep the flag enabled in between shots
+			self->s.eFlags |= EF_FIRING;
+		}
+	}
+	else
+	{
+		// move head towards target
+		HTurret_MoveHeadToTarget( self );
+
+		self->turretSuccessiveShots = 0;
+	}
 }
+
 
 void HDrill_Think( gentity_t *self )
 {
@@ -4407,13 +4518,13 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 
 		case BA_H_MGTURRET:
 			built->die = HTurret_Die;
-			built->think = HTurret_Think;
+			built->think = HMGTurret_Think;
 			break;
 
 		case BA_H_ROCKETPOD:
 			// TODO: Use own thinkers.
 			built->die = HTurret_Die;
-			built->think = HTurret_Think;
+			built->think = HRocketpod_Think;
 			break;
 
 		case BA_H_ARMOURY:

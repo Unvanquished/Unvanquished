@@ -760,7 +760,8 @@ static const missileData_t bg_missilesData[] =
   { MIS_HIVE,         "hive"         },
   { MIS_LOCKBLOB,     "lockblob"     },
   { MIS_SLOWBLOB,     "slowblob"     },
-  { MIS_BOUNCEBALL,   "bounceball"   }
+  { MIS_BOUNCEBALL,   "bounceball"   },
+  { MIS_ROCKET,       "rocket"       }
 };
 
 static const size_t              bg_numMissiles = ARRAY_LEN( bg_missilesData );
