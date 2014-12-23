@@ -2615,7 +2615,7 @@ void HMedistat_Think( gentity_t *self )
 	}
 }
 
-static int HTurret_DistanceToZone( float distance )
+static int HMGTurret_DistanceToZone( float distance )
 {
 	const float zoneWidth = ( float )MGTURRET_RANGE / ( float )MGTURRET_ZONES;
 
@@ -2633,7 +2633,7 @@ static int HTurret_DistanceToZone( float distance )
 
 static gentity_t *cmpTurret = NULL;
 
-static int HTurret_CompareTargets( const void *first, const void *second )
+static int HMGTurret_CompareTargets( const void *first, const void *second )
 {
 	gentity_t *a, *b;
 
@@ -2645,7 +2645,7 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 	a = ( gentity_t * )first;
 	b = ( gentity_t * )second;
 
-	// Always prefer target that isn't yet targeted.
+	// Prefer target that isn't yet targeted.
 	// This makes group attacks more and dretch spam less efficient.
 	{
 		if ( a->numTrackedBy == 0 && b->numTrackedBy > 0 )
@@ -2657,6 +2657,26 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 			return 1;
 		}
 	}
+
+	// Prefer the target that is in a line of sight.
+	// This prevents the turret from keeping a lock on a target behind cover.
+	// (For the MG turret, do so after the already-targeted check so that such a lock is kept if all
+	// other valid targets are being dealt with. This results in suppressive fire against targets
+	// behind cover as long as it's safe for the turret to do so.)
+	{
+		bool los2a = G_LineOfFire( cmpTurret, a );
+		bool los2b = G_LineOfFire( cmpTurret, b );
+
+		if ( los2a && !los2b )
+		{
+			return -1;
+		}
+		else if ( los2b && !los2a )
+		{
+			return 1;
+		}
+	}
+
 
 	// Prefer target that can be aimed at more quickly.
 	// This makes the turret spend less time tracking enemies.
@@ -2680,23 +2700,39 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 			return 1;
 		}
 	}
+}
 
-	/*
-	// Prefer smaller distance. Use zones so close targets with different hit ranges are treated equally.
-	// Note that one target can't hide the other, since the other wouldn't be valid.
+static int HRocketpod_CompareTargets( const void *first, const void *second )
+{
+	gentity_t *a, *b;
+
+	if ( !cmpTurret )
 	{
-		int ad = HTurret_DistanceToZone( Distance( cmpTurret->s.origin, a->s.origin ) );
-		int bd = HTurret_DistanceToZone( Distance( cmpTurret->s.origin, b->s.origin ) );
+		return 0;
+	}
 
-		if ( ad < bd )
+	a = ( gentity_t * )first;
+	b = ( gentity_t * )second;
+
+	// Prefer the target that is in a line of sight.
+	// This prevents the turret from keeping a lock on a target behind cover.
+	{
+		bool los2a = G_LineOfFire( cmpTurret, a );
+		bool los2b = G_LineOfFire( cmpTurret, b );
+
+		if ( los2a && !los2b )
 		{
 			return -1;
 		}
-		else if ( bd < ad )
+		else if ( los2b && !los2a )
 		{
 			return 1;
 		}
 	}
+
+	// TODO: Extend strategy. Ideas:
+	//       - Consider what target is safer to shoot at (splash damage).
+	//       - Consider an "ideal" distance.
 
 	// Tie breaker is random decision, so clients on lower slots don't get shot at more often.
 	{
@@ -2709,7 +2745,6 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 			return 1;
 		}
 	}
-	*/
 }
 
 static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolean newTarget,
@@ -2723,7 +2758,8 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	     || target->health <= 0
 	     || G_OnSameTeam( self, target )
 	     || target->flags & FL_NOTARGET
-	     || Distance( self->s.origin, target->s.origin ) > range )
+	     || Distance( self->s.origin, target->s.origin ) > range
+	     || !trap_InPVS( self->s.origin, target->s.origin ) )
 	{
 		if ( g_debugTurrets.integer > 0 && self->target )
 		{
@@ -2767,7 +2803,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	return qtrue;
 }
 
-static qboolean HTurret_FindTarget( gentity_t *self, float range )
+static qboolean HTurret_FindTarget( gentity_t *self, float range, __compar_fn_t cmp )
 {
 	gentity_t *neighbour = NULL;
 	gentity_t *validTargets[ MAX_GENTITIES ];
@@ -2796,7 +2832,7 @@ static qboolean HTurret_FindTarget( gentity_t *self, float range )
 	{
 		// search best target
 		cmpTurret = self;
-		qsort( validTargets, validTargetNum, sizeof( gentity_t* ), HTurret_CompareTargets );
+		qsort( validTargets, validTargetNum, sizeof( gentity_t* ), cmp );
 
 		self->target = validTargets[ 0 ];
 		self->target->numTrackedBy++;
@@ -3044,7 +3080,7 @@ static void HMGTurret_Shoot( gentity_t *self )
 
 	self->s.eFlags |= EF_FIRING;
 
-	zone = HTurret_DistanceToZone( Distance( self->s.pos.trBase, self->target->s.pos.trBase ) );
+	zone = HMGTurret_DistanceToZone( Distance( self->s.pos.trBase, self->target->s.pos.trBase ) );
 	self->turretCurrentDamage = zoneDamage[ zone ];
 
 	if ( g_debugTurrets.integer > 1 )
@@ -3108,7 +3144,7 @@ void HMGTurret_Think( gentity_t *self )
 	}
 	else
 	{
-		gotValidTarget = HTurret_FindTarget( self, MGTURRET_RANGE );
+		gotValidTarget = HTurret_FindTarget( self, MGTURRET_RANGE, HMGTurret_CompareTargets );
 
 		if ( gotValidTarget && g_debugTurrets.integer > 0 )
 		{
@@ -3217,7 +3253,7 @@ void HRocketpod_Think( gentity_t *self )
 	}
 	else
 	{
-		gotValidTarget = HTurret_FindTarget( self, ROCKETPOD_RANGE );
+		gotValidTarget = HTurret_FindTarget( self, ROCKETPOD_RANGE, HRocketpod_CompareTargets );
 
 		if ( gotValidTarget && g_debugTurrets.integer > 0 )
 		{
