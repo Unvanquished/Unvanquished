@@ -36,7 +36,7 @@ namespace VM {
 /*
  * To better support mods the gamelogic is treated like any other asset and can
  * be downloaded from a server. However it is considered untrusted code so we
- * need to run it in a sandbox. We use NaCl to provide the sandboxing and but that
+ * need to run it in a sandbox. We use NaCl to provide the sandboxing which
  * means that the gamelogic is in another process and that we have to use IPC and
  * shared memory to communicate with it.
  *
@@ -52,10 +52,10 @@ namespace VM {
  * as the debugger doesn't automatically attach to child process.
  *  - An NaCl executable started in a new sandboxed process. The "main" function is
  * ran first and the root socket handle is given via an environment variable. This
- * is how the gamelogic when we do not trust the code as it won't be able to access
- * anything apart from the file handles the engine gives it. When the NaCl gamelogic
- * exits the OS will clean up any leaks for us. It is also slightly slower than
- * native format (no SSE and code alignement constraints).
+ * is how the gamelogic is ran when we do not trust the code as it won't be able to
+ * access anything apart from the file handles the engine gives it. When the NaCl
+ * gamelogic exits the OS will clean up any leaks for us. It is also slightly slower
+ * than native format (no SSE and code alignement constraints).
  *  - A native executable started in a new process, obviously the "main" function
  * is the first one ran. The root socket handle is given in argv[1]. It doesn't
  * provide sandboxing like the nacl executable but the OS will still clean up any
@@ -64,27 +64,27 @@ namespace VM {
  * TL;DR
  * - Native DLL: no sandboxing, no cleaning up but debuger support. Use for dev.
  * - NaCl exe: sandboxing, no leaks, slightly slower, hard to debug. Use for regular players.
- * - Native exe: no sandboxing, no loaks, hard to debug. Might be used by server owners for perf.
+ * - Native exe: no sandboxing, no leaks, hard to debug. Might be used by server owners for perf.
  */
 enum vmType_t {
-    // Loads the VM as an executable from the hompath, potentially from a pk3
-    // USE THIS BY DEFAULT FOR PROD
+	// Loads the VM as an executable from the hompath, potentially from a pk3
+	// USE THIS BY DEFAULT FOR PROD
 	TYPE_NACL,
-    // Same as above will ask sel_ldr to open a gdb server on port 4014?
+	// Same as above will ask sel_ldr to open a gdb server on port 4014?
 	TYPE_NACL_DEBUG,
 
-    // Loads the VM as a native exe from the libpath
+	// Loads the VM as a native exe from the libpath
 	TYPE_NATIVE_EXE,
-    // Same as above but opens it on a gdb server on port 4014, you will need to connect and run it with "r"
+	// Same as above but opens it on a gdb server on port 4014, you will need to connect and run it with "c	"
 	TYPE_NATIVE_EXE_DEBUG,
 
-    // Loads the VM as a native DLL from the libpath
-    // USE THIS FOR DEVELOPMENT
+	// Loads the VM as a native DLL from the libpath
+	// USE THIS FOR DEVELOPMENT
 	TYPE_NATIVE_DLL,
 
-    // Loads the VM as an nacl executable from the libpath
+	// Loads the VM as an nacl executable from the libpath, for freshly compiled NaCl VMs (no need to put it in a pk3)
 	TYPE_NACL_LIBPATH,
-    // Same as above, with the debugger
+	// Same as above, with the debugger
 	TYPE_NACL_LIBPATH_DEBUG,
 	TYPE_END
 };
