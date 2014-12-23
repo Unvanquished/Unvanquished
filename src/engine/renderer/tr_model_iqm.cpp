@@ -907,11 +907,10 @@ static int R_CullIQM( trRefEntity_t *ent ) {
 	VectorCopy( bounds, localBounds[ 0 ] );
 	VectorCopy( bounds + 3, localBounds[ 1 ] );
 
-	if ( anim ) {
+	if ( anim && ( bounds = anim->bounds ) ) {
 		// merge bounding box provided by the animation
-		bounds = anim->bounds;
 		BoundsAdd( localBounds[ 0 ], localBounds[ 1 ],
-			   anim->bounds, anim->bounds + 3 );
+			   bounds, bounds + 3 );
 	}
 
 	// merge bounding box provided by skeleton
