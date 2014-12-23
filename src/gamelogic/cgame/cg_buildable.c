@@ -91,7 +91,7 @@ static const int animLoading[] = {
 
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_SPAWN
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TESLAGEN
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_ROCKETPOD
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_ARMOURY
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_H_MEDISTAT
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DRILL
@@ -687,7 +687,7 @@ void CG_InitBuildables( void )
 		trap_UpdateScreen();
 	}
 
-	cgs.media.teslaZapTS = CG_RegisterTrailSystem( "models/buildables/tesla/zap" );
+	cgs.media.teslaZapTS = CG_RegisterTrailSystem( "teslaZapTS" );
 }
 
 /*
@@ -741,8 +741,8 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			shc = SHC_ORANGE;
 			break;
 
-		case BA_H_TESLAGEN:
-			*range = TESLAGEN_RANGE;
+		case BA_H_ROCKETPOD:
+			*range = ROCKETPOD_RANGE;
 			shc = SHC_RED;
 			break;
 
@@ -770,7 +770,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 		// HACK: Assumes certain trapper attributes
 		*rmType = RM_SPHERICAL_CONE_64;
 	}
-	else if ( bType == BA_H_MGTURRET )
+	else if ( bType == BA_H_MGTURRET || bType == BA_H_ROCKETPOD )
 	{
 		// HACK: Assumes TURRET_PITCH_CAP == 30
 		*rmType = RM_SPHERICAL_CONE_240;
@@ -1073,7 +1073,7 @@ static void CG_DrawBuildableRangeMarker( buildable_t buildable, const vec3_t ori
 
 		rgba[3] *= opacity;
 
-		if ( buildable == BA_A_HIVE || buildable == BA_H_TESLAGEN )
+		if ( buildable == BA_A_HIVE )
 		{
 			VectorMA( origin, BG_BuildableModelConfig( buildable )->maxs[ 2 ], normal, localOrigin );
 		}
@@ -2255,7 +2255,7 @@ void CG_Buildable( centity_t *cent )
 	float         rotAngle;
 	const buildableAttributes_t *buildable = BG_Buildable( es->modelindex );
 	team_t        team = buildable->team;
-	float         scale, yaw, roll;
+	float         scale, yaw;
 	int           health;
 
 	//must be before EF_NODRAW check
@@ -2405,34 +2405,40 @@ void CG_Buildable( centity_t *cent )
 			scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
 
-		if( es->modelindex == BA_H_MGTURRET )
+		if( es->modelindex == BA_H_MGTURRET || es->modelindex == BA_H_ROCKETPOD )
 		{
 			quat_t   rotation;
 			matrix_t mat;
 			vec3_t   nBounds[ 2 ];
 			vec3_t   p1, p2;
-			float    yaw, pitch;
+			float    yaw, pitch, roll;
 
 			yaw   = es->angles2[ YAW ] - es->angles[ YAW ];
 			pitch = es->angles2[ PITCH ];
-			roll  = Q_clamp( ( 1.0f / TURRET_ATTACK_PERIOD ) *
-			                 120.0f * ( cg.time - cent->muzzleFlashTime ), 0.0f, 120.0f );
 
-			// TODO: Access bones by name instead of number.
+			// TODO: Access bones by name instead of by number.
 
-			// The roll of Bone_platform is the turret's yaw.
+			// The roll of Bone_platform is the turrets' yaw.
 			QuatFromAngles( rotation, 0, 0, yaw );
 			QuatMultiply0( ent.skeleton.bones[ 1 ].t.rot, rotation );
 
-			// The roll of Bone_gatlin is the turret's pitch.
+			// The roll of Bone_gatlin is the turrets' pitch.
 			QuatFromAngles( rotation, 0, 0, pitch );
 			QuatMultiply0( ent.skeleton.bones[ 2 ].t.rot, rotation );
 
-			// The roll of Bone_barrel is the barrel's roll.
-			QuatFromAngles( rotation, 0, 0, roll );
-			QuatMultiply0( ent.skeleton.bones[ 3 ].t.rot, rotation );
+			// The roll of Bone_barrel is the mgturret's barrel roll.
+			if ( es->modelindex == BA_H_MGTURRET )
+			{
+				roll  = Q_clamp( ( 1.0f / TURRET_ATTACK_PERIOD ) *
+				        120.0f * ( cg.time - cent->muzzleFlashTime ), 0.0f, 120.0f );
 
-			// transform bounds so they more accurately reflect the turret's new trasnformation
+				QuatFromAngles( rotation, 0, 0, roll );
+				QuatMultiply0( ent.skeleton.bones[ 3 ].t.rot, rotation );
+			}
+
+			// TODO: Add support for rocketpod levers.
+
+			// transform bounds so they more accurately reflect the turrets' new transformation
 			MatrixFromAngles( mat, pitch, yaw, 0 );
 
 			MatrixTransformNormal( mat, ent.skeleton.bounds[ 0 ], p1 );
@@ -2591,7 +2597,7 @@ void CG_Buildable( centity_t *cent )
 		}
 
 		// dynamic light
-		if ( cg.time - cent->muzzleFlashTime < MUZZLE_FLASH_TIME || ( weapon_t )es->weapon == WP_TESLAGEN )
+		if ( cg.time - cent->muzzleFlashTime < MUZZLE_FLASH_TIME )
 		{
 			if ( wi->wim[ WPM_PRIMARY ].flashDlight )
 			{

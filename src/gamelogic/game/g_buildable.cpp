@@ -2211,7 +2211,7 @@ void HGeneric_Cancel( gentity_t *self )
 void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	// HACK: Don't use a death animation for turrets as it just substracts from the current pitch.
-	if ( self->s.modelindex != BA_H_MGTURRET )
+	if ( self->s.modelindex != BA_H_MGTURRET && self->s.modelindex != BA_H_ROCKETPOD )
 	{
 		G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 		G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
@@ -3153,64 +3153,6 @@ void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	self->nextthink = level.time;
 }
 
-void HTeslaGen_Think( gentity_t *self )
-{
-	gentity_t *ent;
-
-	self->nextthink = level.time + 150;
-
-	IdlePowerState( self );
-
-	if ( !self->spawned )
-	{
-		return;
-	}
-
-	if ( !self->powered )
-	{
-		self->s.eFlags &= ~EF_FIRING;
-		self->nextthink = level.time + POWER_REFRESH_TIME;
-
-		return;
-	}
-
-	if ( self->timestamp < level.time )
-	{
-		vec3_t muzzle;
-
-		// Stop firing effect for now
-		self->s.eFlags &= ~EF_FIRING;
-
-		// Move the muzzle from the entity origin up a bit to fire over turrets
-		VectorMA( self->s.origin, self->r.maxs[ 2 ], self->s.origin2, muzzle );
-
-		// Attack nearby Aliens
-		for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, muzzle, TESLAGEN_RANGE ) ); )
-		{
-			// TODO: Replace this with IsAliveEnemy helper
-			if ( !ent->client ||
-			     ent->client->pers.team != TEAM_ALIENS ||
-			     ent->health <= 0 ||
-			     ent->flags & FL_NOTARGET )
-			{
-				continue;
-			}
-
-			self->target = ent;
-			G_FireWeapon( self, WP_TESLAGEN, WPM_PRIMARY );
-			self->target = NULL;
-		}
-
-		if ( self->s.eFlags & EF_FIRING )
-		{
-			G_AddEvent( self, EV_FIRE_WEAPON, 0 );
-			//G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
-
-			self->timestamp = level.time + TESLAGEN_REPEAT;
-		}
-	}
-}
-
 void HDrill_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 1000;
@@ -3512,7 +3454,7 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 		BA_A_OVERMIND,
 
 		BA_H_MGTURRET,
-		BA_H_TESLAGEN,
+		BA_H_ROCKETPOD,
 		BA_H_MEDISTAT,
 		BA_H_ARMOURY,
 		BA_H_SPAWN,
@@ -4468,9 +4410,10 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->think = HTurret_Think;
 			break;
 
-		case BA_H_TESLAGEN:
-			built->die = HGeneric_Die;
-			built->think = HTeslaGen_Think;
+		case BA_H_ROCKETPOD:
+			// TODO: Use own thinkers.
+			built->die = HTurret_Die;
+			built->think = HTurret_Think;
 			break;
 
 		case BA_H_ARMOURY:
@@ -4569,7 +4512,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	G_SetIdleBuildableAnim( built, ( buildableAnimNumber_t )attr->idleAnim );
 
 	// HACK: Play construct animation only for non-turrets as turrets are completely code-controlled.
-	if ( built->builtBy && buildable != BA_H_MGTURRET )
+	if ( built->builtBy && buildable != BA_H_MGTURRET && buildable != BA_H_ROCKETPOD )
 	{
 		G_SetBuildableAnim( built, BANIM_CONSTRUCT1, qtrue );
 	}

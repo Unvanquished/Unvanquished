@@ -767,7 +767,7 @@ typedef struct centity_s
 	trailSystem_t         *level2ZapTS[ LEVEL2_AREAZAP_MAX_TARGETS ];
 	int                   level2ZapTime;
 
-	trailSystem_t         *muzzleTS; //used for the tesla and reactor
+	trailSystem_t         *muzzleTS;
 	int                   muzzleTSDeathTime;
 
 	float                 radarVisibility;

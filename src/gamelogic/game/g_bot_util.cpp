@@ -218,7 +218,7 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case BA_H_REACTOR:
 				enemyScore = 0.5;
 				break;
-			case BA_H_TESLAGEN:
+			case BA_H_ROCKETPOD:
 				enemyScore = 0.7;
 				break;
 			case BA_H_SPAWN:
@@ -696,7 +696,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 				switch ( target->s.modelindex )
 				{
 					case BA_H_MGTURRET:
-					case BA_H_TESLAGEN:
+					case BA_H_ROCKETPOD:
 						break;
 
 					default:

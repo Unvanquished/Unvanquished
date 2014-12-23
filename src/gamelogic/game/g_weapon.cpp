@@ -1055,60 +1055,6 @@ static void FireLcannon( gentity_t *self, qboolean secondary )
 /*
 ======================================================================
 
-TESLA GENERATOR
-
-======================================================================
-*/
-
-static void FireTesla( gentity_t *self )
-{
-	trace_t   tr;
-	vec3_t    origin, target;
-	gentity_t *tent;
-
-	if ( !self->target )
-	{
-		return;
-	}
-
-	// Move the muzzle from the entity origin up a bit to fire over turrets
-	VectorMA( muzzle, self->r.maxs[ 2 ], self->s.origin2, origin );
-
-	// Don't aim for the center, aim at the top of the bounding box
-	VectorCopy( self->target->s.origin, target );
-	target[ 2 ] += self->target->r.maxs[ 2 ];
-
-	// Trace to the target entity
-	trap_Trace( &tr, origin, NULL, NULL, target, self->s.number, MASK_SHOT, 0 );
-
-	if ( tr.entityNum != self->target->s.number )
-	{
-		return;
-	}
-
-	// Client side firing effect
-	self->s.eFlags |= EF_FIRING;
-
-	// Deal damage
-	if ( self->target->takedamage )
-	{
-		vec3_t dir;
-
-		VectorSubtract( target, origin, dir );
-		VectorNormalize( dir );
-		G_Damage( self->target, self, self, dir, tr.endpos,
-		          TESLAGEN_DMG, 0, MOD_TESLAGEN );
-	}
-
-	// Send tesla zap trail
-	tent = G_NewTempEntity( tr.endpos, EV_TESLATRAIL );
-	tent->s.generic1 = self->s.number; // src
-	tent->s.clientNum = self->target->s.number; // dest
-}
-
-/*
-======================================================================
-
 BUILD GUN
 
 ======================================================================
@@ -1269,7 +1215,7 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 		switch ( traceEnt->s.modelindex )
 		{
 			case BA_H_MGTURRET:
-			case BA_H_TESLAGEN:
+			case BA_H_ROCKETPOD:
 				break;
 
 			default:
@@ -1891,8 +1837,8 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					FireHive( self );
 					break;
 
-				case WP_TESLAGEN:
-					FireTesla( self );
+				case WP_ROCKETPOD:
+					FireBullet( self, TURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
 					break;
 
 				case WP_MGTURRET:

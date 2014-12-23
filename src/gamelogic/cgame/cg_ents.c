@@ -298,20 +298,6 @@ static void CG_EntityEffects( centity_t *cent )
 
 	if ( CG_IsTrailSystemValid( &cent->muzzleTS ) )
 	{
-		//FIXME hack to prevent tesla trails reaching too far
-		if ( cent->currentState.eType == ET_BUILDABLE )
-		{
-			vec3_t front, back;
-
-			CG_AttachmentPoint( &cent->muzzleTS->frontAttachment, front );
-			CG_AttachmentPoint( &cent->muzzleTS->backAttachment, back );
-
-			if ( Distance( front, back ) > ( TESLAGEN_RANGE * M_ROOT3 ) )
-			{
-				CG_DestroyTrailSystem( &cent->muzzleTS );
-			}
-		}
-
 		if ( cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid( &cent->muzzleTS ) )
 		{
 			CG_DestroyTrailSystem( &cent->muzzleTS );

@@ -412,7 +412,7 @@ typedef enum
   WP_LUCIFER_CANNON,
   WP_LOCKBLOB_LAUNCHER,
   WP_HIVE,
-  WP_TESLAGEN,
+  WP_ROCKETPOD,
   WP_MGTURRET,
 
   // build weapons must remain in a block ← I'm not asking why but I can imagine
@@ -490,7 +490,7 @@ typedef enum
   BA_H_SPAWN,
 
   BA_H_MGTURRET,
-  BA_H_TESLAGEN,
+  BA_H_ROCKETPOD,
 
   BA_H_ARMOURY,
   BA_H_MEDISTAT,
@@ -1013,7 +1013,7 @@ typedef enum
   MOD_SWARM,
 
   MOD_HSPAWN,
-  MOD_TESLAGEN,
+  MOD_ROCKETPOD,
   MOD_MGTURRET,
   MOD_REACTOR,
 

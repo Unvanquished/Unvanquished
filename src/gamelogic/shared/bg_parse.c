@@ -140,10 +140,6 @@ int   REACTOR_ATTACK_DAMAGE;
 
 float REPEATER_BASESIZE;
 
-float TESLAGEN_RANGE;
-int   TESLAGEN_REPEAT;
-int   TESLAGEN_DMG;
-
 // Human Weapons
 
 int   BLASTER_SPREAD;
@@ -208,10 +204,6 @@ static configVar_t bg_configVars[] =
 	{"b_reactor_zapAttackRepeat", INTEGER, qfalse, &REACTOR_ATTACK_REPEAT},
 
 	{"b_repeater_powerRadius", FLOAT, qfalse, &REPEATER_BASESIZE},
-
-	{"b_tesla_zapAttackDamage", INTEGER, qfalse, &TESLAGEN_DMG},
-	{"b_tesla_zapAttackRange", FLOAT, qfalse, &TESLAGEN_RANGE},
-	{"b_tesla_zapAttackRepeat", INTEGER, qfalse, &TESLAGEN_REPEAT},
 
 	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},

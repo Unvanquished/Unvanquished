@@ -78,7 +78,7 @@ static const char *const modNames[] =
 	"MOD_SWARM",
 
 	"MOD_HSPAWN",
-	"MOD_TESLAGEN",
+	"MOD_ROCKETPOD",
 	"MOD_MGTURRET",
 	"MOD_REACTOR",
 

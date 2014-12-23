@@ -282,9 +282,7 @@ extern float REPEATER_BASESIZE;
 #define TURRET_YAW_SPEED      120 // in degrees per second
 #define TURRET_GIVEUP_TARGET  500 // in ms, time until turret stops tracking a target after losing los
 
-extern float TESLAGEN_RANGE;
-extern int   TESLAGEN_REPEAT;
-extern int   TESLAGEN_DMG;
+#define ROCKETPOD_RANGE       1000
 
 extern float REACTOR_ATTACK_RANGE;
 extern int   REACTOR_ATTACK_REPEAT;
