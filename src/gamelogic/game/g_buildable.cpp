@@ -2204,10 +2204,18 @@ void HGeneric_Cancel( gentity_t *self )
 	G_FreeEntity( self );
 }
 
+#define HUMAN_DETONATION_RAND_DELAY ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) ) \
+                                     * DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY \
+                                     + HUMAN_DETONATION_DELAY
+
 void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
-	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
-	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
+	// HACK: Don't use a death animation for turrets as it just substracts from the current pitch.
+	if ( self->s.modelindex != BA_H_MGTURRET )
+	{
+		G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
+		G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
+	}
 
 	self->die = NullDieFunction;
 	self->killedBy = attacker - g_entities;
@@ -2216,9 +2224,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 
 	if ( self->spawned )
 	{
-		// blast after a brief period
 		self->think = HGeneric_Blast;
-		self->nextthink = level.time + HUMAN_DETONATION_DELAY;
 
 		// make a warning sound before ractor and repeater explosion
 		// don't randomize blast delay for them so the sound stays synced
@@ -2227,11 +2233,11 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 			case BA_H_REPEATER:
 			case BA_H_REACTOR:
 				G_AddEvent( self, EV_HUMAN_BUILDABLE_DYING, 0 );
+				self->nextthink = level.time + HUMAN_DETONATION_DELAY;
 				break;
 
 			default:
-				self->nextthink += ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) )
-				                   * DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY;
+				self->nextthink = level.time + HUMAN_DETONATION_RAND_DELAY;
 		}
 	}
 	else
@@ -2801,27 +2807,32 @@ static qboolean HTurret_FindTarget( gentity_t *self )
 	}
 }
 
-static void HTurret_MoveHeadToTarget( gentity_t *self )
+/**
+ * @return Whether another movement action will be needed afterwards.
+ */
+static qboolean HTurret_MoveHeadToTarget( gentity_t *self )
 {
 	const static vec3_t upwards = { 0.0f, 0.0f, 1.0f };
 
-	vec3_t rotAxis, angleToTarget, relativeDirToTarget, deltaAngles, relativeNewDir, newDir, maxAngles;
-	float  rotAngle, relativePitch, timeMod;
-	int    elapsed, currentAngle;
+	vec3_t   rotAxis, angleToTarget, relativeDirToTarget, deltaAngles, relativeNewDir, newDir,
+	         maxAngles;
+	float    rotAngle, relativePitch, timeMod;
+	int      elapsed, currentAngle;
+	qboolean anotherMoveNeeded;
 
 	// calculate maximum angular movement for this execution
 	if ( !self->turretLastHeadMove )
 	{
 		// no information yet, start moving next time
 		self->turretLastHeadMove = level.time;
-		return;
+		return qtrue;
 	}
 
 	elapsed = level.time - self->turretLastHeadMove;
 
 	if ( elapsed <= 0 )
 	{
-		return;
+		return qtrue;
 	}
 
 	timeMod = ( float )elapsed / 1000.0f;
@@ -2840,6 +2851,8 @@ static void HTurret_MoveHeadToTarget( gentity_t *self )
 	RotatePointAroundVector( relativeDirToTarget, rotAxis, self->turretDirToTarget, rotAngle );
 	vectoangles( relativeDirToTarget, angleToTarget );
 
+	anotherMoveNeeded = qfalse;
+
 	// adjust pitch and yaw
 	for ( currentAngle = 0; currentAngle < 3; currentAngle++ )
 	{
@@ -2855,10 +2868,12 @@ static void HTurret_MoveHeadToTarget( gentity_t *self )
 		if      ( deltaAngles[ currentAngle ] < 0.0f && deltaAngles[ currentAngle ] < -maxAngles[ currentAngle ] )
 		{
 			self->s.angles2[ currentAngle ] += maxAngles[ currentAngle ];
+			anotherMoveNeeded = qtrue;
 		}
 		else if ( deltaAngles[ currentAngle ] > 0.0f && deltaAngles[ currentAngle ] >  maxAngles[ currentAngle ] )
 		{
 			self->s.angles2[ currentAngle ] -= maxAngles[ currentAngle ];
+			anotherMoveNeeded = qtrue;
 		}
 		else
 		{
@@ -2885,6 +2900,8 @@ static void HTurret_MoveHeadToTarget( gentity_t *self )
 	vectoangles( newDir, self->buildableAim );
 
 	self->turretLastHeadMove = level.time;
+
+	return anotherMoveNeeded;
 }
 
 static void HTurret_TrackTarget( gentity_t *self )
@@ -3106,6 +3123,22 @@ void HTurret_Think( gentity_t *self )
 	}
 }
 
+void HTurret_PreBlast( gentity_t *self )
+{
+	HTurret_LowerPitch( self );
+
+	// Enter regular blast state as soon as the barrel is lowered.
+	if ( !HTurret_MoveHeadToTarget( self ) )
+	{
+		self->think = HGeneric_Blast;
+		self->nextthink = level.time + HUMAN_DETONATION_RAND_DELAY;
+	}
+	else
+	{
+		self->nextthink = level.time + TURRET_THINK_PERIOD;
+	}
+}
+
 void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	if ( self->target )
@@ -3114,6 +3147,10 @@ void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	}
 
 	HGeneric_Die( self, inflictor, attacker, mod );
+
+	// Do some last movements before entering blast state.
+	self->think = HTurret_PreBlast;
+	self->nextthink = level.time;
 }
 
 void HTeslaGen_Think( gentity_t *self )
