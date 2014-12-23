@@ -70,36 +70,36 @@ static void CG_Rocket_DFResolution( int handle, const char *data )
 	int w = atoi( Info_ValueForKey(data, "1" ) );
 	int h = atoi( Info_ValueForKey(data, "2" ) );
 	char *aspectRatio = BG_strdup( DisplayAspectString( w, h ) );
-	trap_Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio ), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio ), qfalse );
 	BG_Free( aspectRatio );
 }
 
 static void CG_Rocket_DFServerPing( int handle, const char *data )
 {
 	const char *str = Info_ValueForKey( data, "1" );
-	trap_Rocket_DataFormatterFormattedData( handle, *str && Q_isnumeric( *str ) ? va( "%s ms", Info_ValueForKey( data, "1" ) ) : "", qfalse );
+	Rocket_DataFormatterFormattedData( handle, *str && Q_isnumeric( *str ) ? va( "%s ms", Info_ValueForKey( data, "1" ) ) : "", qfalse );
 }
 
 static void CG_Rocket_DFServerPlayers( int handle, const char *data )
 {
 	char max[ 4 ];
 	Q_strncpyz( max, Info_ValueForKey( data, "3" ), sizeof( max ) );
-	trap_Rocket_DataFormatterFormattedData( handle, va( "%s + (%s) / %s", Info_ValueForKey( data, "1" ), Info_ValueForKey( data, "2" ), max ), qtrue );
+	Rocket_DataFormatterFormattedData( handle, va( "%s + (%s) / %s", Info_ValueForKey( data, "1" ), Info_ValueForKey( data, "2" ), max ), qtrue );
 }
 
 static void CG_Rocket_DFPlayerName( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, va("<div class=\"playername\">%s</div>", CG_Rocket_QuakeToRML( cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) ) , qfalse );
+	Rocket_DataFormatterFormattedData( handle, va("<div class=\"playername\">%s</div>", CG_Rocket_QuakeToRML( cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) ) , qfalse );
 }
 
 static void CG_Rocket_DFUpgradeName( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, BG_Upgrade( atoi( Info_ValueForKey( data, "1" ) ) )->humanName, qtrue );
+	Rocket_DataFormatterFormattedData( handle, BG_Upgrade( atoi( Info_ValueForKey( data, "1" ) ) )->humanName, qtrue );
 }
 
 static void CG_Rocket_DFVotePlayer( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"exec set ui_dialogCvar1 %s;exec rocket ui/dialogs/editplayer.rml load; exec rocket editplayer show\">vote/moderate</button>", cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) , qfalse );
+	Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"exec set ui_dialogCvar1 %s;exec rocket ui/dialogs/editplayer.rml load; exec rocket editplayer show\">vote/moderate</button>", cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) , qfalse );
 }
 
 static void CG_Rocket_DFVoteMap( int handle, const char *data )
@@ -107,24 +107,24 @@ static void CG_Rocket_DFVoteMap( int handle, const char *data )
 	int mapIndex = atoi( Info_ValueForKey( data, "1" ) );
 	if ( mapIndex < rocketInfo.data.mapCount )
 	{
-		trap_Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"exec set ui_dialogCvar1 %s;hide maps;exec rocket ui/dialogs/mapdialog.rml load; exec rocket mapdialog show\" class=\"maps\"><div class=\"levelname\">%s</div> <img class=\"levelshot\"src='/meta/%s/%s'/><div class=\"hovertext\">Start Vote</div> </button>", rocketInfo.data.mapList[ mapIndex ].mapLoadName, CG_Rocket_QuakeToRML( rocketInfo.data.mapList[ mapIndex ].mapName ), rocketInfo.data.mapList[ mapIndex ].mapLoadName, rocketInfo.data.mapList[ mapIndex ].mapLoadName ) , qfalse );
+		Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"exec set ui_dialogCvar1 %s;hide maps;exec rocket ui/dialogs/mapdialog.rml load; exec rocket mapdialog show\" class=\"maps\"><div class=\"levelname\">%s</div> <img class=\"levelshot\"src='/meta/%s/%s'/><div class=\"hovertext\">Start Vote</div> </button>", rocketInfo.data.mapList[ mapIndex ].mapLoadName, CG_Rocket_QuakeToRML( rocketInfo.data.mapList[ mapIndex ].mapName ), rocketInfo.data.mapList[ mapIndex ].mapLoadName, rocketInfo.data.mapList[ mapIndex ].mapLoadName ) , qfalse );
 	}
 }
 
 static void CG_Rocket_DFWeaponName( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, BG_Weapon( atoi( Info_ValueForKey( data, "1" ) ) )->humanName, qtrue );
+	Rocket_DataFormatterFormattedData( handle, BG_Weapon( atoi( Info_ValueForKey( data, "1" ) ) )->humanName, qtrue );
 }
 
 static void CG_Rocket_DFClassName( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, BG_Class( atoi( Info_ValueForKey( data, "1" ) ) )->name, qtrue );
+	Rocket_DataFormatterFormattedData( handle, BG_Class( atoi( Info_ValueForKey( data, "1" ) ) )->name, qtrue );
 }
 
 static void CG_Rocket_DFServerLabel( int handle, const char *data )
 {
 	const char *str = Info_ValueForKey( data, "1" );
-	trap_Rocket_DataFormatterFormattedData( handle, *data ? ++str : "&nbsp;", qfalse );
+	Rocket_DataFormatterFormattedData( handle, *data ? ++str : "&nbsp;", qfalse );
 }
 
 static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
@@ -162,7 +162,7 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 		action =  va( "onClick='exec \"buy +%s\"'", BG_Weapon( weapon )->name );
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='setDS armouryBuyList weapons %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon )), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='setDS armouryBuyList weapons %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon )), qfalse );
 }
 
 static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
@@ -198,7 +198,7 @@ static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 		action =  va( "onClick='exec \"buy +%s\"'", BG_Upgrade( upgrade )->name );
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='setDS armouryBuyList upgrades %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon)), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='setDS armouryBuyList upgrades %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon)), qfalse );
 }
 
 static void CG_Rocket_DFGWeaponDamage( int handle, const char *data )
@@ -221,7 +221,7 @@ static void CG_Rocket_DFGWeaponDamage( int handle, const char *data )
 		default: width = 0; break;
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), qfalse );
 }
 
 static void CG_Rocket_DFGWeaponRateOfFire( int handle, const char *data )
@@ -244,7 +244,7 @@ static void CG_Rocket_DFGWeaponRateOfFire( int handle, const char *data )
 		default: width = 0; break;
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), qfalse );
 }
 
 static void CG_Rocket_DFGWeaponRange( int handle, const char *data )
@@ -267,12 +267,12 @@ static void CG_Rocket_DFGWeaponRange( int handle, const char *data )
 		default: width = 0; break;
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), qfalse );
 }
 
 static void CG_Rocket_DFLevelShot( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<img class=\"levelshot\" src=\"/levelshots/%s\"/>", Info_ValueForKey( data, "1" ) ), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "<img class=\"levelshot\" src=\"/levelshots/%s\"/>", Info_ValueForKey( data, "1" ) ), qfalse );
 }
 
 static score_t *ScoreFromClientNum( int clientNum )
@@ -297,11 +297,11 @@ static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 	{
 		if ( CG_ClientIsReady( clientNum ) )
 		{
-			trap_Rocket_DataFormatterFormattedData( handle, "[check]", qtrue );
+			Rocket_DataFormatterFormattedData( handle, "[check]", qtrue );
 		}
 		else
 		{
-			trap_Rocket_DataFormatterFormattedData( handle, "", qfalse );
+			Rocket_DataFormatterFormattedData( handle, "", qfalse );
 		}
 	}
 	else
@@ -319,7 +319,7 @@ static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 			rml = va( "%s<img src='/%s'/>", rml, CG_GetShaderNameFromHandle( cg_upgrades[ s->upgrade ].upgradeIcon ) );
 		}
 
-		trap_Rocket_DataFormatterFormattedData( handle, rml, qfalse );
+		Rocket_DataFormatterFormattedData( handle, rml, qfalse );
 	}
 }
 
@@ -352,7 +352,7 @@ static void CG_Rocket_DFCMAlienBuildables( int handle, const char *data )
 		action = va( "onClick='exec \"build %s\"; hide %s'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_ALIENBUILD ].id );
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS alienBuildList default %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS alienBuildList default %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), qfalse );
 }
 
 static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
@@ -384,7 +384,7 @@ static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
 		action = va( "onClick='exec \"build %s\"; hide %s'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id );
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS humanBuildList default %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS humanBuildList default %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), qfalse );
 }
 
 static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
@@ -421,7 +421,7 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		action =  va( "onClick='exec \"class %s\"; hide %s'", BG_Class( alienClass )->name, rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id );
 	}
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' onMouseover='setDS alienEvolveList alienClasss %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' onMouseover='setDS alienEvolveList alienClasss %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), qfalse );
 }
 
 static void CG_Rocket_DFCMBeacons( int handle, const char *data )
@@ -438,7 +438,7 @@ static void CG_Rocket_DFCMBeacons( int handle, const char *data )
 	icon = CG_GetShaderNameFromHandle( ba->icon[ 0 ] );
 	action = va( "onClick='exec \"beacon %s\"; hide ingame_beaconmenu'", ba->name );
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='beacons' onMouseover='setDS beacons default %s' %s><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), action, icon ), qfalse );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='beacons' onMouseover='setDS beacons default %s' %s><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), action, icon ), qfalse );
 }
 
 typedef struct
@@ -484,7 +484,7 @@ void CG_Rocket_FormatData( int handle )
 	static char name[ 200 ], data[ BIG_INFO_STRING ];
 	dataFormatterCmd_t *cmd;
 
-	trap_Rocket_DataFormatterRawData( handle, name, sizeof( name ), data, sizeof( data ) );
+	Rocket_DataFormatterRawData( handle, name, sizeof( name ), data, sizeof( data ) );
 
 	cmd = (dataFormatterCmd_t*) bsearch( name, dataFormatterCmdList, dataFormatterCmdListCount, sizeof( dataFormatterCmd_t ), dataFormatterCmdCmp );
 
@@ -506,6 +506,6 @@ void CG_Rocket_RegisterDataFormatters( void )
 			CG_Printf( "CGame Rocket dataFormatterCmdList is in the wrong order for %s and %s\n", dataFormatterCmdList[i - 1].name, dataFormatterCmdList[ i ].name );
 		}
 
-		trap_Rocket_RegisterDataFormatter( dataFormatterCmdList[ i ].name );
+		Rocket_RegisterDataFormatter( dataFormatterCmdList[ i ].name );
 	}
 }

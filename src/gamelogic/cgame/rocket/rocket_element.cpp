@@ -107,7 +107,7 @@ static inline void Rocket_SetInnerRMLGuarded( Rocket::Core::Element *e, const Ro
 	}
 }
 
-void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, int parseFlags )
+void Rocket_SetInnerRMLById( const char *name, const char *id, const char *RML, int parseFlags )
 {
 	Rocket::Core::String newRML = parseFlags  ? Rocket_QuakeToRML( RML, parseFlags ) : RML;
 
@@ -132,6 +132,10 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, int 
 	}
 }
 
+void Rocket_SetInnerRML( const char *RML, qboolean parseFlags )
+{
+	Rocket_SetInnerRMLById( "", "", RML, parseFlags );
+}
 
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
 {

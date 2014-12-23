@@ -350,30 +350,30 @@ static void CG_TestCGrade_f( void )
 static void CG_MessageAdmin_f( void )
 {
 	cg.sayType = SAY_TYPE_ADMIN;
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessageCommand_f( void )
 {
 	cg.sayType = SAY_TYPE_COMMAND;
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessageTeam_f( void )
 {
 	cg.sayType = SAY_TYPE_TEAM;
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessagePublic_f( void )
 {
 	cg.sayType = SAY_TYPE_PUBLIC;
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_ToggleMenu_f( void )
 {
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_INGAME_MENU ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_INGAME_MENU ].id, "show" );
 }
 
 // FIXME: Don't hardcode scoreboard ID
@@ -384,7 +384,7 @@ void CG_ShowScores_f( void )
 		CG_RequestScores();
 		trap_PrepareKeyUp();
 
-		trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
+		Rocket_ShowScoreboard( "scoreboard", qtrue );
 		cg.showScores = qtrue;
 	}
 	else
@@ -395,13 +395,13 @@ void CG_ShowScores_f( void )
 
 void CG_HideScores_f( void )
 {
-	trap_Rocket_ShowScoreboard( "scoreboard", qfalse );
+	Rocket_ShowScoreboard( "scoreboard", qfalse );
 	cg.showScores = qfalse;
 }
 
 void CG_BeaconMenu_f( void )
 {
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
 }
 
 static const struct

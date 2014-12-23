@@ -1786,7 +1786,7 @@ void CG_Shutdown( void )
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
 	CG_Rocket_CleanUpDataSources();
-	trap_Rocket_Shutdown();
+	Rocket_Shutdown();
 	BG_UnloadAllConfigs();
 }
 

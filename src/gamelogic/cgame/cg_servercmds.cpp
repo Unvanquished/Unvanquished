@@ -814,7 +814,7 @@ void CG_Menu( int menuType, int arg )
 
 	if ( menu > 0 )
 	{
-		trap_Rocket_DocumentAction( rocketInfo.menu[ menu ].id, "show" );
+		Rocket_DocumentAction( rocketInfo.menu[ menu ].id, "show" );
 	}
 	else if ( longMsg && cg_disableWarningDialogs.integer == 0 )
 	{
