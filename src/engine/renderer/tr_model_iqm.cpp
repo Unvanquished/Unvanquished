@@ -960,7 +960,7 @@ int R_ComputeIQMFogNum( trRefEntity_t *ent ) {
 		IQAnim_t  *anim = model->anims;
 		float     *bounds;
 
-		if ( !anim ) {
+		if ( !( anim && anim->bounds )  ) {
 			bounds = model->bounds[0];
 		} else {
 			bounds = anim->bounds;
