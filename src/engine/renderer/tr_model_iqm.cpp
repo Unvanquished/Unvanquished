@@ -588,8 +588,16 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		IQAnim->num_joints   = header->num_joints;
 		IQAnim->flags        = anim->flags;
 		IQAnim->jointParents = IQModel->jointParents;
-		IQAnim->poses        = poses + anim->first_frame * header->num_poses;
-		IQAnim->bounds       = bounds + anim->first_frame * 6;
+		if( poses ) {
+			IQAnim->poses    = poses + anim->first_frame * header->num_poses;
+		} else {
+			IQAnim->poses    = NULL;
+		}
+		if( bounds ) {
+			IQAnim->bounds   = bounds + anim->first_frame * 6;
+		} else {
+			IQAnim->bounds    = NULL;
+		}
 		IQAnim->name         = str;
 		IQAnim->jointNames   = IQModel->jointNames;
 
@@ -960,7 +968,7 @@ int R_ComputeIQMFogNum( trRefEntity_t *ent ) {
 		IQAnim_t  *anim = model->anims;
 		float     *bounds;
 
-		if ( !anim ) {
+		if ( !anim || !anim->bounds ) {
 			bounds = model->bounds[0];
 		} else {
 			bounds = anim->bounds;
