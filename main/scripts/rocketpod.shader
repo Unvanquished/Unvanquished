@@ -7,7 +7,14 @@ models/buildables/rocketpod/rocketpod
 
 models/buildables/rocketpod/rocket
 {
-	diffuseMap  models/buildables/rocketpod/rocket_d.tga
+	cull                none
+	surfaceparm         trans
+
+	{
+		map       models/buildables/rocketpod/rocket_d.tga
+		stage     diffuseMap
+		blend     blend
+	}
 	normalMap   models/buildables/rocketpod/rocket_n.tga
 	specularMap models/buildables/rocketpod/rocket_s.tga
 	glowMap     models/buildables/rocketpod/rocket_g.tga
