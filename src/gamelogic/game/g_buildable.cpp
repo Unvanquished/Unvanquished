@@ -3207,10 +3207,38 @@ static void HRocketpod_Shoot( gentity_t *self )
 	self->turretNextShot = level.time + ROCKETPOD_ATTACK_PERIOD;
 }
 
-// TODO: Allow pod to shoot over buildables in a non-straight trajectory
+/**
+ * @return Whether the mode was changed.
+ */
+static bool HRocketpod_SafeMode( gentity_t *self, bool enable )
+{
+	if ( enable && !self->turretSafeMode )
+	{
+		// TODO: Call lid close anim.
+
+		self->turretSafeMode = qtrue;
+
+		return true;
+	}
+	else if ( !enable && self->turretSafeMode )
+	{
+		// TODO: Call lid open anim.
+
+		self->turretSafeMode = qfalse;
+
+		// Update head move time so the head doesn't jump.
+		self->turretLastHeadMove = level.time;
+
+		return true;
+	}
+
+	return false;
+}
+
 void HRocketpod_Think( gentity_t *self )
 {
-	qboolean gotValidTarget;
+	qboolean  gotValidTarget;
+	gentity_t *neighbour;
 
 	self->nextthink = level.time + TURRET_THINK_PERIOD;
 
@@ -3245,6 +3273,30 @@ void HRocketpod_Think( gentity_t *self )
 
 	// set turret base direction
 	HTurret_SetBaseDir( self );
+
+	// if there's an enemy really close, enter safe mode
+	for ( neighbour = NULL; ( neighbour = G_IterateEntities( neighbour ) ); )
+	{
+		if ( neighbour->client && neighbour->health > 0 && !G_OnSameTeam( self, neighbour )
+		     && Distance( self->s.origin, neighbour->s.origin ) < ROCKETPOD_RANGE )
+		{
+			classModelConfig_t *cmc = BG_ClassModelConfig( neighbour->client->pers.classSelection );
+			float classRadius = 0.5f * ( VectorLength( cmc->mins ) + VectorLength( cmc->maxs ) );
+
+			if ( Distance( self->s.origin, neighbour->s.origin ) - classRadius
+			     < BG_Missile( MIS_ROCKET )->splashRadius )
+			{
+				HRocketpod_SafeMode( self, qtrue );
+				return;
+			}
+		}
+	}
+
+	// otherwise, disable safe mode and if it was enabled, wait a brief period before shooting
+	if ( HRocketpod_SafeMode( self, qfalse ) )
+	{
+		self->turretNextShot = level.time + ROCKETPOD_ATTACK_PERIOD;
+	}
 
 	// check for valid target
 	if ( HTurret_TargetValid( self, self->target, qfalse, ROCKETPOD_RANGE ) )
