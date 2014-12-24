@@ -467,7 +467,7 @@ static void CG_Missile( centity_t *cent )
 		ent.shaderRGBA[ 2 ] = 0xFF;
 		ent.shaderRGBA[ 3 ] = 0xFF;
 	}
-	else
+	else if ( ma->model )
 	{
 		ent.hModel = ma->model;
 		ent.renderfx = ma->renderfx | RF_NOSHADOW;
@@ -475,7 +475,25 @@ static void CG_Missile( centity_t *cent )
 		// convert direction of travel into axis
 		if ( VectorNormalize2( es->pos.trDelta, ent.axis[ 0 ] ) == 0 )
 		{
-			ent.axis[ 0 ][ 2 ] = 1;
+			ent.axis[ 0 ][ 2 ] = 1.0f;
+		}
+
+		MakeNormalVectors( ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
+
+		// apply rotation from config
+		{
+			matrix_t axisMat;
+			quat_t   axisQuat, rotQuat;
+
+			QuatFromAngles( rotQuat, ma->modelRotation[ PITCH ], ma->modelRotation[ YAW ],
+			                         ma->modelRotation[ ROLL ] );
+
+			// FRU because that's what MakeNormalVectors produces (?)
+			MatrixFromVectorsFRU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
+			QuatFromMatrix( axisQuat, axisMat );
+			QuatMultiply0( axisQuat, rotQuat );
+			MatrixFromQuat( axisMat, axisQuat );
+			MatrixToVectorsFRU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 		}
 
 		// spin as it moves
@@ -483,9 +501,19 @@ static void CG_Missile( centity_t *cent )
 		{
 			RotateAroundDirection( ent.axis, cg.time / 4 );
 		}
+
+		// apply scale from config
+		if ( ma->modelScale != 1.0f )
+		{
+			VectorScale( ent.axis[ 0 ], ma->modelScale, ent.axis[ 0 ] );
+			VectorScale( ent.axis[ 1 ], ma->modelScale, ent.axis[ 1 ] );
+			VectorScale( ent.axis[ 2 ], ma->modelScale, ent.axis[ 2 ] );
+
+			ent.nonNormalizedAxes = qtrue;
+		}
 		else
 		{
-			RotateAroundDirection( ent.axis, es->time );
+			ent.nonNormalizedAxes = qfalse;
 		}
 
 		if ( ma->usesAnim )
@@ -509,7 +537,7 @@ static void CG_Missile( centity_t *cent )
 			}
 		}
 
-		ent.skeleton.scale = 1.0f;
+		ent.skeleton.scale = ma->modelScale;
 	}
 
 	//only refresh if there is something to display

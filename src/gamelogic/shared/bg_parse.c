@@ -2165,7 +2165,9 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		IMPACT_MARK      = 1 << 18,
 		IMPACT_MARK_SIZE = 1 << 19,
 		IMPACT_SOUND     = 1 << 20,
-		IMPACT_FLESH_SND = 1 << 21
+		IMPACT_FLESH_SND = 1 << 21,
+		MODEL_SCALE      = 1 << 22,
+		MODEL_ROTATION   = 1 << 23
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof( text_buffer ) ) )
@@ -2186,6 +2188,25 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			ma->model = trap_R_RegisterModel( token );
 #endif
 			defined |= MODEL;
+		}
+		else if ( !Q_stricmp( token, "modelScale" ) )
+		{
+			PARSE( text, token );
+
+			ma->modelScale = atof( token );
+
+			defined |= MODEL_SCALE;
+		}
+		else if ( !Q_stricmp( token, "modelRotation" ) )
+		{
+			PARSE( text, token );
+			ma->modelRotation[ 0 ] = atof( token );
+			PARSE( text, token );
+			ma->modelRotation[ 1 ] = atof( token );
+			PARSE( text, token );
+			ma->modelRotation[ 2 ] = atof( token );
+
+			defined |= MODEL_ROTATION;
 		}
 		else if ( !Q_stricmp( token, "sound" ) )
 		{
@@ -2399,6 +2420,9 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		ma->usesImpactMark = qfalse;
 		Com_Printf( S_ERROR "Not all mandatory impactMark vars defined in %s\n", filename );
 	}
+
+	// default values
+	if ( !( defined & MODEL_SCALE ) ) ma->modelScale = 1.0f;
 }
 
 /*

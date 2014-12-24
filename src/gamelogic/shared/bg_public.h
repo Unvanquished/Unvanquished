@@ -1310,6 +1310,9 @@ typedef struct
 
 	// display
 	qhandle_t      model;
+	float          modelScale;
+	vec3_t         modelRotation;
+
 	sfxHandle_t    sound;
 	qboolean       usesDlight;
 	float          dlight;
