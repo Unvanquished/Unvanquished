@@ -286,9 +286,11 @@ extern float REPEATER_BASESIZE;
 #define ROCKETPOD_RANGE         2000
 #define ROCKETPOD_ATTACK_PERIOD 500
 
+#ifndef Q3_VM
 static_assert( TURRET_GIVEUP_TARGET > MGTURRET_ATTACK_PERIOD + TURRET_THINK_PERIOD &&
                TURRET_GIVEUP_TARGET > ROCKETPOD_ATTACK_PERIOD + TURRET_THINK_PERIOD,
                "Turret giveup on target time is too low." );
+#endif
 
 extern float REACTOR_ATTACK_RANGE;
 extern int   REACTOR_ATTACK_REPEAT;

@@ -2786,7 +2786,8 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	else
 	{
 		// give up on target if we couldn't shoot at it for a while
-		if ( self->turretLastShotAtTarget && self->turretLastShotAtTarget + TURRET_GIVEUP_TARGET < level.time )
+		if ( self->turretLastShotAtTarget &&
+		     self->turretLastShotAtTarget + TURRET_GIVEUP_TARGET < level.time )
 		{
 			if ( g_debugTurrets.integer > 0 && self->target )
 			{
@@ -2803,7 +2804,8 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	return qtrue;
 }
 
-static qboolean HTurret_FindTarget( gentity_t *self, float range, __compar_fn_t cmp )
+static qboolean HTurret_FindTarget( gentity_t *self, float range,
+                                    int (*cmp)(const void *, const void *) )
 {
 	gentity_t *neighbour = NULL;
 	gentity_t *validTargets[ MAX_GENTITIES ];
@@ -2900,15 +2902,18 @@ static qboolean HTurret_MoveHeadToTarget( gentity_t *self )
 		}
 
 		// get angle delta from current orientation towards trarget angle
-		deltaAngles[ currentAngle ] = AngleSubtract( self->s.angles2[ currentAngle ], angleToTarget[ currentAngle ] );
+		deltaAngles[ currentAngle ] = AngleSubtract( self->s.angles2[ currentAngle ],
+		                                             angleToTarget[ currentAngle ] );
 
 		// adjust enttiyState_t.angles2
-		if      ( deltaAngles[ currentAngle ] < 0.0f && deltaAngles[ currentAngle ] < -maxAngles[ currentAngle ] )
+		if      ( deltaAngles[ currentAngle ] < 0.0f &&
+		          deltaAngles[ currentAngle ] < -maxAngles[ currentAngle ] )
 		{
 			self->s.angles2[ currentAngle ] += maxAngles[ currentAngle ];
 			anotherMoveNeeded = qtrue;
 		}
-		else if ( deltaAngles[ currentAngle ] > 0.0f && deltaAngles[ currentAngle ] >  maxAngles[ currentAngle ] )
+		else if ( deltaAngles[ currentAngle ] > 0.0f &&
+		          deltaAngles[ currentAngle ] >  maxAngles[ currentAngle ] )
 		{
 			self->s.angles2[ currentAngle ] -= maxAngles[ currentAngle ];
 			anotherMoveNeeded = qtrue;
