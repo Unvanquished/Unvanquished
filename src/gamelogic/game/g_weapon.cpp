@@ -844,6 +844,13 @@ static void RocketThink( gentity_t *self )
 	RotatePointAroundVector( newDir, rotAxis, currentDir,
 	                         Maths::clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
 
+	// Check if new direction is safe. Turn anyway if old direction is unsafe, too.
+	if ( !G_RocketpodSafeShot( ENTITYNUM_NONE, self->r.currentOrigin, newDir ) &&
+	     G_RocketpodSafeShot( ENTITYNUM_NONE, self->r.currentOrigin, currentDir ) )
+	{
+		return;
+	}
+
 	// Update trajectory.
 	VectorScale( newDir, BG_Missile( self->s.modelindex )->speed, self->s.pos.trDelta );
 	SnapVector( self->s.pos.trDelta );
@@ -855,6 +862,25 @@ static void FireRocket( gentity_t *self )
 {
 	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, self->target, RocketThink,
 	                level.time + ROCKET_TURN_PERIOD )->timestamp = level.time + ROCKET_LIFETIME;
+}
+
+bool G_RocketpodSafeShot( int passEntityNum, vec3_t origin, vec3_t dir )
+{
+	trace_t tr;
+	vec3_t mins, maxs, end;
+	float  size;
+	const missileAttributes_t *attr = BG_Missile( MIS_ROCKET );
+
+	size = attr->size;
+
+	VectorSet( mins, -size, -size, -size);
+	VectorSet( maxs, size, size, size );
+	VectorMA( origin, 8192, dir, end );
+
+	trap_Trace( &tr, origin, mins, maxs, end, passEntityNum, MASK_SHOT, 0 );
+
+	return !G_RadiusDamage( tr.endpos, NULL, attr->splashDamage, attr->splashRadius, NULL,
+	                        0, MOD_ROCKETPOD, TEAM_HUMANS );
 }
 
 /*

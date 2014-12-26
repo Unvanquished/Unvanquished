@@ -3331,7 +3331,7 @@ void HRocketpod_Think( gentity_t *self )
 		HTurret_ResetDirection( self );
 	}
 
-	// shoot if target in reach
+	// shoot if target in reach and safe
 	if ( HTurret_TargetInReach( self, ROCKETPOD_RANGE ) )
 	{
 		// if the target's origin is visible, aim for it first
@@ -3342,7 +3342,14 @@ void HRocketpod_Think( gentity_t *self )
 
 		if ( self->turretNextShot < level.time )
 		{
-			HRocketpod_Shoot( self );
+			vec3_t aimDir;
+
+			AngleVectors( self->buildableAim, aimDir, NULL, NULL );
+
+			if ( G_RocketpodSafeShot( self->s.number, self->s.pos.trBase, aimDir ) )
+			{
+				HRocketpod_Shoot( self );
+			}
 		}
 		else
 		{
@@ -3358,7 +3365,6 @@ void HRocketpod_Think( gentity_t *self )
 		self->turretSuccessiveShots = 0;
 	}
 }
-
 
 void HDrill_Think( gentity_t *self )
 {
