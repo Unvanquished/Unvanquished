@@ -812,10 +812,49 @@ ROCKET POD
 ======================================================================
 */
 
-// TODO: Add tracking/pathfinding
+static void RocketThink( gentity_t *self )
+{
+	vec3_t currentDir, targetDir, newDir, rotAxis;
+	float  rotAngle;
+
+	if ( level.time > self->timestamp )
+	{
+		self->think     = G_ExplodeMissile;
+		self->nextthink = level.time;
+
+		return;
+	}
+
+	self->nextthink = level.time + ROCKET_TURN_PERIOD;
+
+	// Calculate current and target direction.
+	VectorNormalize2( self->s.pos.trDelta, currentDir );
+	VectorSubtract( self->target->r.currentOrigin, self->r.currentOrigin, targetDir );
+	VectorNormalize( targetDir );
+
+	// Don't turn anymore after the target was passed.
+	if ( DotProduct( currentDir, targetDir ) < 0 )
+	{
+		return;
+	}
+
+	// Calculate new direction. Use a fixed turning angle.
+	CrossProduct( currentDir, targetDir, rotAxis );
+	rotAngle = RAD2DEG( acos( DotProduct( currentDir, targetDir ) ) );
+	RotatePointAroundVector( newDir, rotAxis, currentDir,
+	                         Maths::clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
+
+	// Update trajectory.
+	VectorScale( newDir, BG_Missile( self->s.modelindex )->speed, self->s.pos.trDelta );
+	SnapVector( self->s.pos.trDelta );
+	VectorCopy( self->r.currentOrigin, self->s.pos.trBase ); // TODO: Snap this, too?
+	self->s.pos.trTime = level.time;
+}
+
 static void FireRocket( gentity_t *self )
 {
-	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, NULL, G_ExplodeMissile, level.time + 10000 );
+	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, self->target, RocketThink,
+	                level.time + ROCKET_TURN_PERIOD )->timestamp = level.time + ROCKET_LIFETIME;
 }
 
 /*
