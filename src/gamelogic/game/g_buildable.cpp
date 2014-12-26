@@ -3231,9 +3231,6 @@ static bool HRocketpod_SafeMode( gentity_t *self, bool enable )
 
 		self->turretSafeMode = qfalse;
 
-		// Update head move time so the head doesn't jump.
-		self->turretLastHeadMove = level.time;
-
 		return true;
 	}
 
@@ -3292,6 +3289,12 @@ void HRocketpod_Think( gentity_t *self )
 			     < BG_Missile( MIS_ROCKET )->splashRadius )
 			{
 				HRocketpod_SafeMode( self, qtrue );
+
+				self->turretSuccessiveShots = 0;
+
+				HTurret_ResetPitch( self );
+				HTurret_MoveHeadToTarget( self );
+
 				return;
 			}
 		}
