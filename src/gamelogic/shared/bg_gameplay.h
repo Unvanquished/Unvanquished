@@ -278,7 +278,7 @@ extern float REPEATER_BASESIZE;
 #define TURRET_GIVEUP_TARGET  550 // in ms, time until turret stops tracking a target after losing los
 
 #define MGTURRET_ATTACK_PERIOD  125
-#define MGTURRET_RANGE          400
+#define MGTURRET_RANGE          350
 #define MGTURRET_SPREAD         200
 #define MGTURRET_ZONES          3   // range is divided into this amount of zones (disks) with equal width
 #define MGTURRET_ZONE_DAMAGE    { 4, 3, 2 } // damage for each of the TURRET_ZONES zones
@@ -287,7 +287,7 @@ extern float REPEATER_BASESIZE;
 #define ROCKETPOD_ATTACK_PERIOD 500
 
 #define ROCKET_TURN_PERIOD      50
-#define ROCKET_TURN_ANGLE       5.0f
+#define ROCKET_TURN_ANGLE       8.0f
 #define ROCKET_LIFETIME         5000
 
 #ifndef Q3_VM
