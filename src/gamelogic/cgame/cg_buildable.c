@@ -1294,7 +1294,9 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 			trap_R_SetColor( backColour );
 
-			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2, ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ), cgs.media.whiteShader );
+			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2,
+			            ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ),
+			            cgs.media.whiteShader );
 
 			trap_R_SetColor( NULL );
 

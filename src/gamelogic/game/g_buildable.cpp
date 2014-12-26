@@ -2677,7 +2677,6 @@ static int HMGTurret_CompareTargets( const void *first, const void *second )
 		}
 	}
 
-
 	// Prefer target that can be aimed at more quickly.
 	// This makes the turret spend less time tracking enemies.
 	{
@@ -2685,11 +2684,8 @@ static int HMGTurret_CompareTargets( const void *first, const void *second )
 
 		AngleVectors( cmpTurret->buildableAim, aimDir, NULL, NULL );
 
-		VectorSubtract( a->s.origin, cmpTurret->s.origin, aDir );
-		VectorSubtract( b->s.origin, cmpTurret->s.origin, bDir );
-
-		VectorNormalize( aDir );
-		VectorNormalize( bDir );
+		VectorSubtract( a->s.origin, cmpTurret->s.pos.trBase, aDir ); VectorNormalize( aDir );
+		VectorSubtract( b->s.origin, cmpTurret->s.pos.trBase, bDir ); VectorNormalize( bDir );
 
 		if ( DotProduct( aDir, aimDir ) > DotProduct( bDir, aimDir ) )
 		{
@@ -2730,13 +2726,30 @@ static int HRocketpod_CompareTargets( const void *first, const void *second )
 		}
 	}
 
-	// TODO: Extend strategy. Ideas:
-	//       - Consider what target is safer to shoot at (splash damage).
-	//       - Consider an "ideal" distance.
-
-	// Tie breaker is random decision, so clients on lower slots don't get shot at more often.
+	// First, prefer target that is currently safe to shoot at.
+	// Then, prefer target that can be aimed at more quickly.
 	{
-		if ( rand() < ( RAND_MAX / 2 ) )
+		vec3_t aimDir, aDir, bDir;
+		bool   aSafe, bSafe;
+
+		VectorSubtract( a->s.origin, cmpTurret->s.pos.trBase, aDir ); VectorNormalize( aDir );
+		VectorSubtract( b->s.origin, cmpTurret->s.pos.trBase, bDir ); VectorNormalize( bDir );
+
+		aSafe = G_RocketpodSafeShot( cmpTurret->s.number, cmpTurret->s.pos.trBase, aDir );
+		bSafe = G_RocketpodSafeShot( cmpTurret->s.number, cmpTurret->s.pos.trBase, bDir );
+
+		if ( aSafe && !bSafe )
+		{
+			return -1;
+		}
+		else if ( bSafe && !aSafe )
+		{
+			return 1;
+		}
+
+		AngleVectors( cmpTurret->buildableAim, aimDir, NULL, NULL );
+
+		if ( DotProduct( aDir, aimDir ) > DotProduct( bDir, aimDir ) )
 		{
 			return -1;
 		}
@@ -3099,7 +3112,7 @@ static void HMGTurret_Shoot( gentity_t *self )
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 	G_FireWeapon( self, WP_MGTURRET, WPM_PRIMARY );
 
-	self->turretSuccessiveShots++;
+	//self->turretSuccessiveShots++;
 	self->turretLastShotAtTarget = level.time;
 	self->turretNextShot = level.time + MGTURRET_ATTACK_PERIOD;
 }
@@ -3122,7 +3135,7 @@ void HMGTurret_Think( gentity_t *self )
 	if ( !self->powered )
 	{
 		self->turretDisabled = qtrue;
-		self->turretSuccessiveShots = 0;
+		//self->turretSuccessiveShots = 0;
 
 		HTurret_LowerPitch( self );
 		HTurret_MoveHeadToTarget( self );
@@ -3191,7 +3204,7 @@ void HMGTurret_Think( gentity_t *self )
 		// move head towards target
 		HTurret_MoveHeadToTarget( self );
 
-		self->turretSuccessiveShots = 0;
+		//self->turretSuccessiveShots = 0;
 	}
 }
 
@@ -3207,7 +3220,6 @@ static void HRocketpod_Shoot( gentity_t *self )
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 	G_FireWeapon( self, WP_ROCKETPOD, WPM_PRIMARY );
 
-	self->turretSuccessiveShots++;
 	self->turretLastShotAtTarget = level.time;
 	self->turretNextShot = level.time + ROCKETPOD_ATTACK_PERIOD;
 }
@@ -3256,8 +3268,6 @@ void HRocketpod_Think( gentity_t *self )
 	if ( !self->powered )
 	{
 		self->turretDisabled = qtrue;
-		self->turretSuccessiveShots = 0;
-
 		HTurret_LowerPitch( self );
 		HTurret_MoveHeadToTarget( self );
 
@@ -3277,10 +3287,10 @@ void HRocketpod_Think( gentity_t *self )
 	HTurret_SetBaseDir( self );
 
 	// if there's an enemy really close, enter safe mode
-	for ( neighbour = NULL; ( neighbour = G_IterateEntities( neighbour ) ); )
+	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
+	                                                                     ROCKETPOD_RANGE ) ); )
 	{
-		if ( neighbour->client && neighbour->health > 0 && !G_OnSameTeam( self, neighbour )
-		     && Distance( self->s.origin, neighbour->s.origin ) < ROCKETPOD_RANGE )
+		if ( neighbour->client && neighbour->health > 0 && !G_OnSameTeam( self, neighbour ) )
 		{
 			classModelConfig_t *cmc = BG_ClassModelConfig( neighbour->client->pers.classSelection );
 			float classRadius = 0.5f * ( VectorLength( cmc->mins ) + VectorLength( cmc->maxs ) );
@@ -3289,8 +3299,6 @@ void HRocketpod_Think( gentity_t *self )
 			     < BG_Missile( MIS_ROCKET )->splashRadius )
 			{
 				HRocketpod_SafeMode( self, qtrue );
-
-				self->turretSuccessiveShots = 0;
 
 				HTurret_ResetPitch( self );
 				HTurret_MoveHeadToTarget( self );
@@ -3361,8 +3369,6 @@ void HRocketpod_Think( gentity_t *self )
 	{
 		// move head towards target
 		HTurret_MoveHeadToTarget( self );
-
-		self->turretSuccessiveShots = 0;
 	}
 }
 
