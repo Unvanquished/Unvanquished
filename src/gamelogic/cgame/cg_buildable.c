@@ -2585,7 +2585,23 @@ void CG_Buildable( centity_t *cent )
 			{
 				if ( cg_buildables[ es->modelindex ].md5 )
 				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "Bone_fire" );
+					switch ( es->modelindex )
+					{
+						case BA_H_ROCKETPOD:
+						{
+							const static char left[]  = "left", right[] = "right";
+							int num = ( cent->muzzleFlashTime / ROCKETPOD_ATTACK_PERIOD ) % 6;
+							const char *side = ( num % 2 == 0 ) ? left : right;
+							num = ( num % 3 ) + 1;
+							CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel,
+							                     va( "Bone_fire_%s_%d", side, num ) );
+							break;
+						}
+
+						default:
+							CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "Bone_fire" );
+							break;
+					}
 				}
 				else
 				{
