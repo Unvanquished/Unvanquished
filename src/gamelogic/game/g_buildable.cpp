@@ -698,7 +698,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 {
 	gentity_t *om;
 
-	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
+	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
 	self->die = NullDieFunction;
@@ -1114,13 +1114,12 @@ void ABarricade_Shrink( gentity_t *self, qboolean shrink )
 
 		self->shrunkTime = 0;
 
-		// unshrink animation, IDLE2 has been hijacked for this
+		// unshrink animation
 		anim = self->s.legsAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
-		if ( self->spawned && self->health > 0 &&
-		     anim != BANIM_CONSTRUCT1 && anim != BANIM_CONSTRUCT2 )
+		if ( self->spawned && self->health > 0 && anim != BANIM_CONSTRUCT && anim != BANIM_POWERUP )
 		{
-			G_SetIdleBuildableAnim( self, (buildableAnimNumber_t) BG_Buildable( BA_A_BARRICADE )->idleAnim );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 			G_SetBuildableAnim( self, BANIM_ATTACK2, qtrue );
 		}
 	}
@@ -1757,23 +1756,17 @@ IdlePowerState
 Set buildable idle animation to match power state
 ================
 */
-static void IdlePowerState( gentity_t *self )
+static void PlayPowerStateAnims( gentity_t *self )
 {
-	if ( self->powered )
+	if ( self->powered && self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
 	{
-		if ( self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
-		{
-			// TODO: Play power up anim here?
-			G_SetIdleBuildableAnim( self, (buildableAnimNumber_t) BG_Buildable( self->s.modelindex )->idleAnim );
-		}
+		G_SetBuildableAnim( self, BANIM_POWERUP, qfalse );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 	}
-	else
+	else if ( !self->powered && self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
 	{
-		if ( self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
-		{
-			G_SetBuildableAnim( self, BANIM_POWERDOWN, qfalse );
-			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
-		}
+		G_SetBuildableAnim( self, BANIM_POWERDOWN, qfalse );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 	}
 }
 
@@ -2210,12 +2203,8 @@ void HGeneric_Cancel( gentity_t *self )
 
 void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
-	// HACK: Don't use a death animation for turrets as it just substracts from the current pitch.
-	if ( self->s.modelindex != BA_H_MGTURRET && self->s.modelindex != BA_H_ROCKETPOD )
-	{
-		G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
-		G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
-	}
+	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, qtrue );
+	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
 	self->die = NullDieFunction;
 	self->killedBy = attacker - g_entities;
@@ -2339,7 +2328,7 @@ void HRepeater_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 1000;
 
-	IdlePowerState( self );
+	PlayPowerStateAnims( self );
 }
 
 void HReactor_Think( gentity_t *self )
@@ -2457,7 +2446,7 @@ void HMedistat_Think( gentity_t *self )
 	{
 		if ( !self->active && self->s.torsoAnim != BANIM_IDLE1 )
 		{
-			G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
+			G_SetBuildableAnim( self, BANIM_POWERUP, qtrue );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 		}
 	}
@@ -2610,7 +2599,7 @@ void HMedistat_Think( gentity_t *self )
 	{
 		self->active = qfalse;
 
-		G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
+		G_SetBuildableAnim( self, BANIM_POWERUP, qtrue );
 		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 	}
 }
@@ -3378,7 +3367,7 @@ void HDrill_Think( gentity_t *self )
 
 	G_RGSThink( self );
 
-	IdlePowerState( self );
+	PlayPowerStateAnims( self );
 }
 
 void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
@@ -4630,7 +4619,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			break;
 
 		case BA_H_ROCKETPOD:
-			// TODO: Use own thinkers.
 			built->die = HTurret_Die;
 			built->think = HRocketpod_Think;
 			break;
@@ -4728,13 +4716,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );
 
-	G_SetIdleBuildableAnim( built, ( buildableAnimNumber_t )attr->idleAnim );
-
-	// HACK: Play construct animation only for non-turrets as turrets are completely code-controlled.
-	if ( built->builtBy && buildable != BA_H_MGTURRET && buildable != BA_H_ROCKETPOD )
-	{
-		G_SetBuildableAnim( built, BANIM_CONSTRUCT1, qtrue );
-	}
+	G_SetIdleBuildableAnim( built, BANIM_IDLE1 );
+	G_SetBuildableAnim( built, BANIM_CONSTRUCT, qtrue );
 
 	trap_LinkEntity( built );
 

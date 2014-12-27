@@ -143,7 +143,6 @@ void BG_InitBuildableAttributes( void )
 		ba->name = bh->name;
 		ba->entityName = bh->classname;
 
-		ba->idleAnim = BANIM_IDLE1;
 		ba->traj = TR_GRAVITY;
 		ba->bounce = 0.0;
 		ba->minNormal = 0.0;

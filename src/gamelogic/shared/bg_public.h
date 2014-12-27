@@ -840,11 +840,12 @@ typedef enum
   BANIM_IDLE1, // inactive idle
   BANIM_IDLE2, // active idle
 
-  BANIM_POWERDOWN, // note: not looped
+  BANIM_POWERDOWN, // BANIM_IDLE1 -> BANIM_IDLE_UNPOWERED
   BANIM_IDLE_UNPOWERED,
 
-  BANIM_CONSTRUCT1,
-  BANIM_CONSTRUCT2, // return to idle state
+  BANIM_CONSTRUCT, // -> BANIM_IDLE1
+
+  BANIM_POWERUP, // BANIM_IDLE_UNPOWERED -> BANIM_IDLE1
 
   BANIM_ATTACK1,
   BANIM_ATTACK2,
@@ -855,8 +856,8 @@ typedef enum
   BANIM_PAIN1,
   BANIM_PAIN2,
 
-  BANIM_DESTROY1,
-  BANIM_DESTROY_UNPOWERED, // if unpowered
+  BANIM_DESTROY, // BANIM_IDLE1 -> BANIM_DESTROYED
+  BANIM_DESTROY_UNPOWERED, // BANIM_IDLE_UNPOWERED -> BANIM_DESTROYED
   BANIM_DESTROYED,
 
   MAX_BUILDABLE_ANIMATIONS
@@ -1198,8 +1199,6 @@ typedef struct
 
 	team_t      team;
 	weapon_t    buildWeapon;
-
-	int         idleAnim;
 
 	int         buildTime;
 	qboolean    usable;
