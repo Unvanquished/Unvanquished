@@ -73,7 +73,6 @@ cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, preve
 
 cvar_t *com_pid; // bani - process id
 
-cvar_t *com_viewlog;
 cvar_t *com_speeds;
 cvar_t *com_developer;
 cvar_t *com_dedicated;
@@ -1802,7 +1801,6 @@ void Com_Init( char *commandLine )
 
 	com_timescale = Cvar_Get( "timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO );
 	com_dropsim = Cvar_Get( "com_dropsim", "0", CVAR_CHEAT );
-	com_viewlog = Cvar_Get( "viewlog", "0", CVAR_CHEAT );
 	com_speeds = Cvar_Get( "com_speeds", "0", 0 );
 	com_timedemo = Cvar_Get( "timedemo", "0", CVAR_CHEAT );
 
@@ -1829,14 +1827,6 @@ void Com_Init( char *commandLine )
 
 	com_hunkused = Cvar_Get( "com_hunkused", "0", 0 );
 	com_hunkusedvalue = 0;
-
-	if ( com_dedicated->integer )
-	{
-		if ( !com_viewlog->integer )
-		{
-			Cvar_Set( "viewlog", "1" );
-		}
-	}
 
 	if ( com_developer && com_developer->integer )
 	{
@@ -1885,18 +1875,6 @@ void Com_Init( char *commandLine )
 	}
 
 	CL_StartHunkUsers();
-
-	if ( !com_dedicated->integer )
-	{
-		//Cvar_Set( "com_logosPlaying", "1" );
-		//Cmd::BufferCommandText("cinematic etintro.roq\n");
-
-		/*Cvar_Set( "sv_nextmap", "cinematic avlogo.roq" );
-		   if( !com_introPlayed->integer ) {
-		   Cvar_Set( com_introPlayed->name, "1" );
-		   //Cvar_Set( "sv_nextmap", "cinematic avlogo.roq" );
-		   } */
-	}
 
 	if (defaultPipeFilename[0])
 	{
@@ -2183,12 +2161,6 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 
 	// write config file if anything changed
 	Com_WriteConfiguration();
-
-	// if "viewlog" has been modified, show or hide the log console
-	if ( com_viewlog->modified )
-	{
-		com_viewlog->modified = qfalse;
-	}
 
 	//
 	// main event loop
