@@ -1091,7 +1091,7 @@ void ABarricade_Shrink( gentity_t *self, qboolean shrink )
 		self->r.maxs[ 2 ] = ( int )( self->r.maxs[ 2 ] * BARRICADE_SHRINKPROP );
 		self->shrunkTime = level.time;
 
-		// shrink animation, the destroy animation is used
+		// shrink animation
 		if ( self->spawned && self->health > 0 )
 		{
 			G_SetBuildableAnim( self, BANIM_ATTACK1, qtrue );
@@ -1119,8 +1119,8 @@ void ABarricade_Shrink( gentity_t *self, qboolean shrink )
 
 		if ( self->spawned && self->health > 0 && anim != BANIM_CONSTRUCT && anim != BANIM_POWERUP )
 		{
-			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 			G_SetBuildableAnim( self, BANIM_ATTACK2, qtrue );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 		}
 	}
 
@@ -2441,20 +2441,7 @@ void HMedistat_Think( gentity_t *self )
 		return;
 	}
 
-	// set animation
-	if ( self->powered )
-	{
-		if ( !self->active && self->s.torsoAnim != BANIM_IDLE1 )
-		{
-			G_SetBuildableAnim( self, BANIM_POWERUP, qtrue );
-			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
-		}
-	}
-	else if ( self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
-	{
-			G_SetBuildableAnim( self, BANIM_POWERDOWN, qfalse );
-			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
-	}
+	PlayPowerStateAnims( self );
 
 	// clear target's healing flag for now
 	if ( self->target && self->target->client )
@@ -2594,12 +2581,13 @@ void HMedistat_Think( gentity_t *self )
 			}
 		}
 	}
-	// if we lost our target, replay construction animation
+	// we lost our target
 	else if ( self->active )
 	{
 		self->active = qfalse;
 
-		G_SetBuildableAnim( self, BANIM_POWERUP, qtrue );
+		// stop healing animation
+		G_SetBuildableAnim( self, BANIM_ATTACK2, qtrue );
 		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 	}
 }
