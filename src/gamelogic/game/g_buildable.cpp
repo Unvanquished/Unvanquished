@@ -3281,7 +3281,8 @@ void HRocketpod_Think( gentity_t *self )
 	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
 	                                                                     ROCKETPOD_RANGE ) ); )
 	{
-		if ( neighbour->client && neighbour->health > 0 && !G_OnSameTeam( self, neighbour ) )
+		if ( neighbour->client && neighbour->health > 0 && !G_OnSameTeam( self, neighbour ) &&
+		     neighbour->client->sess.spectatorState == SPECTATOR_NOT )
 		{
 			classModelConfig_t *cmc = BG_ClassModelConfig( neighbour->client->pers.classSelection );
 			float classRadius = 0.5f * ( VectorLength( cmc->mins ) + VectorLength( cmc->maxs ) );

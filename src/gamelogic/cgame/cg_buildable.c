@@ -528,7 +528,6 @@ static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *
 		Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.iqm:%s", modelName, modelName, animName );
 		ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
 	}
-
 	else
 	{
 		Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.md5anim", modelName, animName );
