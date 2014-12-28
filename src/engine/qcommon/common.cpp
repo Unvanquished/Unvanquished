@@ -1833,7 +1833,7 @@ void Com_Init( char *commandLine )
 	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 #else
-	com_dedicated = Cvar_Get( "dedicated", "0", CVAR_LATCH );
+	com_dedicated = Cvar_Get( "dedicated", "0", CVAR_ROM );
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
@@ -1913,10 +1913,9 @@ void Com_Init( char *commandLine )
 
 	com_dedicated->modified = qfalse;
 
-	if ( !com_dedicated->integer )
-	{
-		CL_Init();
-	}
+#ifdef BUILD_CLIENT
+	CL_Init();
+#endif
 
 	// set com_frameTime so that if a map is started on the
 	// command line it will still be able to count on com_frameTime
@@ -2297,26 +2296,6 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	}
 
 	SV_Frame( msec );
-
-	// if "dedicated" has been modified, start up
-	// or shut down the client system.
-	// Do this after the server may have started,
-	// but before the client tries to auto-connect
-	if ( com_dedicated->modified )
-	{
-		// get the latched value
-		Cvar_Get( "dedicated", "0", 0 );
-		com_dedicated->modified = qfalse;
-
-		if ( !com_dedicated->integer )
-		{
-			CL_Init();
-		}
-		else
-		{
-			CL_Shutdown();
-		}
-	}
 
 	//
 	// client system
