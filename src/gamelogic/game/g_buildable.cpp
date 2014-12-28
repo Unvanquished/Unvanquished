@@ -2992,6 +2992,8 @@ static void HTurret_SetBaseDir( gentity_t *self )
 
 static void HTurret_ResetDirection( gentity_t *self )
 {
+	HTurret_SetBaseDir( self );
+
 	VectorCopy( self->turretBaseDir, self->turretDirToTarget );
 }
 
@@ -3045,6 +3047,12 @@ void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	}
 
 	HGeneric_Die( self, inflictor, attacker, mod );
+
+	// Rocketpod: The safe mode has the same idle as the unpowered state.
+	if ( self->turretSafeMode )
+	{
+		G_SetBuildableAnim( self, BANIM_DESTROY_UNPOWERED, qtrue );
+	}
 
 	// Do some last movements before entering blast state.
 	self->think = HTurret_PreBlast;
@@ -3141,9 +3149,6 @@ void HMGTurret_Think( gentity_t *self )
 		self->turretDisabled = qfalse;
 	}
 
-	// set turret base direction
-	HTurret_SetBaseDir( self );
-
 	// check for valid target
 	if ( HTurret_TargetValid( self, self->target, qfalse, MGTURRET_RANGE ) )
 	{
@@ -3220,17 +3225,22 @@ static bool HRocketpod_SafeMode( gentity_t *self, bool enable )
 {
 	if ( enable && !self->turretSafeMode )
 	{
-		// TODO: Call lid close anim.
-
 		self->turretSafeMode = qtrue;
+
+		G_SetBuildableAnim( self, BANIM_POWERDOWN, qtrue );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 
 		return true;
 	}
 	else if ( !enable && self->turretSafeMode )
 	{
-		// TODO: Call lid open anim.
-
 		self->turretSafeMode = qfalse;
+
+		G_SetBuildableAnim( self, BANIM_POWERUP, qtrue );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
+
+		// Can't shoot for another second as the shutters open.
+		self->turretNextShot = level.time + 1000;
 
 		return true;
 	}
@@ -3253,27 +3263,31 @@ void HRocketpod_Think( gentity_t *self )
 		return;
 	}
 
-	// adjust pitch according to power state
+	// In addittion to regular animation, adjust pitch according to power state.
 	if ( !self->powered )
 	{
-		self->turretDisabled = qtrue;
-		HTurret_LowerPitch( self );
+		if ( !self->turretDisabled )
+		{
+			self->turretDisabled = qtrue;
+
+			PlayPowerStateAnims( self );
+			HTurret_LowerPitch( self );
+		}
+
 		HTurret_MoveHeadToTarget( self );
 
 		return;
 	}
-	else
+	else if ( self->turretDisabled )
 	{
-		if ( self->turretDisabled )
-		{
-			HTurret_ResetPitch( self );
-		}
-
 		self->turretDisabled = qfalse;
-	}
 
-	// set turret base direction
-	HTurret_SetBaseDir( self );
+		PlayPowerStateAnims( self );
+		HTurret_ResetPitch( self );
+
+		// Can't shoot for another second as the shutters open.
+		self->turretNextShot = level.time + 1000;
+	}
 
 	// if there's an enemy really close, enter safe mode
 	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
@@ -3297,11 +3311,8 @@ void HRocketpod_Think( gentity_t *self )
 		}
 	}
 
-	// otherwise, disable safe mode and if it was enabled, wait a brief period before shooting
-	if ( HRocketpod_SafeMode( self, qfalse ) )
-	{
-		self->turretNextShot = level.time + ROCKETPOD_ATTACK_PERIOD;
-	}
+	// otherwise, disable safe mode
+	HRocketpod_SafeMode( self, qfalse );
 
 	// check for valid target
 	if ( HTurret_TargetValid( self, self->target, qfalse, ROCKETPOD_RANGE ) )

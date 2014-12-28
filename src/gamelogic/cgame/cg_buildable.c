@@ -64,6 +64,8 @@ typedef enum shorthand_e {
 	DD, // destroyed
 
 	// custom names
+	OP, // open
+	CD, // closed
 
 	NUM_SHORTHANDS
 } shorthand_t;
@@ -86,7 +88,10 @@ static const char* shorthandToName[ NUM_SHORTHANDS ] = {
 	"pain2",
 	"destroy",
 	"destroy_unpowered",
-	"destroyed"
+	"destroyed",
+
+	"open",
+	"closed"
 };
 
 // Buildable animation flags.
@@ -111,7 +116,7 @@ static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABL
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_LEECH
 {{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{S1,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_SPAWN
 {{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_MGTURRET
-{{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,2},{I1,0},{I1,0}}, // H_ROCKETPOD
+{{XX,0},{I1,0},{XX,0},{OP,2},{CD,0},{OP,0},{OP,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{OP,2},{CD,0},{CD,0}}, // H_ROCKETPOD
 {{XX,0},{I1,0},{XX,0},{I1,0},{I1,0},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_ARMOURY
 {{XX,0},{I1,0},{I2,1},{PD,0},{I1,1},{C1,0},{C2,0},{A1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{DU,0},{DD,0}}, // H_MEDISTAT
 {{XX,0},{I1,0},{XX,0},{I1,0},{I1,1},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_DRILL
