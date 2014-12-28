@@ -124,22 +124,22 @@ static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABL
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // H_REPEATER
 };
 
-inline static const char *GetAnimationName( buildable_t buildable, buildableAnimNumber_t animNumber )
+static const char *GetAnimationName( buildable_t buildable, buildableAnimNumber_t animNumber )
 {
 	return shorthandToName[ anims[ buildable ][ animNumber ].shorthand ];
 }
 
-inline static int GetAnimationFlags( buildable_t buildable, buildableAnimNumber_t animNumber )
+static int GetAnimationFlags( buildable_t buildable, buildableAnimNumber_t animNumber )
 {
 	return anims[ buildable ][ animNumber ].flags;
 }
 
-inline static qboolean IsLooped( buildable_t buildable, buildableAnimNumber_t animNumber )
+static qboolean IsLooped( buildable_t buildable, buildableAnimNumber_t animNumber )
 {
 	return ( GetAnimationFlags( buildable, animNumber ) & BAF_LOOP );
 }
 
-inline static qboolean IsReversed( buildable_t buildable, buildableAnimNumber_t animNumber )
+static qboolean IsReversed( buildable_t buildable, buildableAnimNumber_t animNumber )
 {
 	return ( GetAnimationFlags( buildable, animNumber ) & BAF_REVERSE );
 }
