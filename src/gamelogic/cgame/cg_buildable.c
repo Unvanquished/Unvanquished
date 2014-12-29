@@ -94,6 +94,10 @@ static const char* shorthandToName[ NUM_SHORTHANDS ] = {
 	"closed"
 };
 
+// QVM code may not align values on the stack properly, so use a preallocated
+// ent structure.
+static refEntity_t ent;
+
 // Buildable animation flags.
 #define BAF_LOOP    0x1
 #define BAF_REVERSE 0x2
@@ -1137,7 +1141,6 @@ CG_GhostBuildable
 */
 void CG_GhostBuildable( int buildableInfo )
 {
-	refEntity_t   ent;
 	playerState_t *ps;
 	vec3_t        angles, entity_origin;
 	vec3_t        mins, maxs;
@@ -2285,7 +2288,6 @@ CG_Buildable
 */
 void CG_Buildable( centity_t *cent )
 {
-	refEntity_t   ent;
 	entityState_t *es = &cent->currentState;
 	vec3_t        angles;
 	vec3_t        surfNormal, xNormal, mins, maxs;
