@@ -203,14 +203,7 @@ static void SV_MapRestart_f( void )
 			continue;
 		}
 
-		if ( client->netchan.remoteAddress.type == NA_BOT )
-		{
-			isBot = qtrue;
-		}
-		else
-		{
-			isBot = qfalse;
-		}
+		isBot = SV_IsBot(client);
 
 		// add the map_restart command
 		SV_AddServerCommand( client, "map_restart\n" );

@@ -90,6 +90,17 @@ cvar_t *sv_fullmsg;
 
 cvar_t *vm_game;
 
+Cvar::Cvar<bool> isLanOnly(
+	"server.lanOnly", "should the server stay only on LAN (vs. advertise itself on the internet)",
+#if BUILD_CLIENT || BUILD_TTY_CLIENT
+	Cvar::ROM, true
+#elif BUILD_SERVER
+	Cvar::NONE, false
+#else
+	#error
+#endif
+);
+
 #define LL( x ) x = LittleLong( x )
 
 #define MAX_CHALLENGE_LEN 128
@@ -171,21 +182,23 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		return;
 	}
 
-	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr ", 9 ) )
+	if ( Com_IsDedicatedServer() )
 	{
-		SV_PrintTranslatedText( ( const char * ) message, qtrue, qfalse );
-	}
-	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr_p ", 9 ) )
-	{
-		SV_PrintTranslatedText( ( const char * ) message, qtrue, qtrue );
-	}
+		if ( !strncmp( ( char * ) message, "print_tr_p ", 11 ) )
+		{
+			SV_PrintTranslatedText( ( const char * ) message, qtrue, qtrue );
+		}
+		else if ( !strncmp( ( char * ) message, "print_tr ", 9 ) )
+		{
+			SV_PrintTranslatedText( ( const char * ) message, qtrue, qfalse );
+		}
 
-	// hack to echo broadcast prints to console
-	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print ", 6 ) )
-	{
-		Com_Printf( "Broadcast: %s", Cmd_UnquoteString( ( char * ) message + 6 ) );
+		// hack to echo broadcast prints to console
+		else if ( !strncmp( ( char * ) message, "print ", 6 ) )
+		{
+			Com_Printf( "Broadcast: %s", Cmd_UnquoteString( ( char * ) message + 6 ) );
+		}
 	}
-
 
 	// send the data to all relevent clients
 	for ( j = 0, client = svs.clients; j < sv_maxclients->integer; j++, client++ )
@@ -196,7 +209,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		}
 
 		// Ridah, don't need to send messages to AI
-		if ( client->gentity && client->gentity->r.svFlags & SVF_BOT )
+		if ( SV_IsBot(client) )
 		{
 			continue;
 		}
@@ -338,8 +351,7 @@ void SV_MasterHeartbeat( const char *hbname )
 
 	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
 
-	// "dedicated 1" is for LAN play, "dedicated 2" is for Internet play
-	if ( !com_dedicated || com_dedicated->integer != 2 || !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
+	if ( isLanOnly.Get() || !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
 	{
 		return; // only dedicated servers send heartbeats
 	}
@@ -409,7 +421,7 @@ void SV_MasterGameStat( const char *data )
 {
 	netadr_t adr;
 
-	if ( !com_dedicated || com_dedicated->integer != 2 )
+	if ( !isLanOnly.Get() )
 	{
 		return; // only dedicated servers send stats
 	}
@@ -495,7 +507,6 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	int           statusLength;
 	int           playerLength;
 	char          infostring[ MAX_INFO_STRING ];
-	const char    *challenge = nullptr;
 
 	//bani - bugtraq 12534
 	if ( args.Argc() > 1 && !SV_VerifyChallenge( args.Argv(1).c_str() ) )
@@ -583,7 +594,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			if ( svs.clients[ i ].gentity && ( svs.clients[ i ].gentity->r.svFlags & SVF_BOT ) )
+			if ( SV_IsBot(&svs.clients[ i ]) )
 			{
 				++botCount;
 			}
@@ -1041,7 +1052,7 @@ void SV_CalcPings( void )
 			continue;
 		}
 
-		if ( cl->gentity->r.svFlags & SVF_BOT )
+		if ( SV_IsBot(cl) )
 		{
 			cl->ping = 0;
 			continue;
@@ -1253,10 +1264,7 @@ void SV_Frame( int msec )
 		return;
 	}
 
-	if ( com_dedicated->integer )
-	{
-		frameStartTime = Sys_Milliseconds();
-	}
+	frameStartTime = Sys_Milliseconds();
 
 	// if it isn't time for the next frame, do nothing
 	if ( sv_fps->integer < 1 )
@@ -1268,7 +1276,7 @@ void SV_Frame( int msec )
 
 	sv.timeResidual += msec;
 
-	if ( com_dedicated->integer && sv.timeResidual < frameMsec )
+	if ( Com_IsDedicatedServer() && sv.timeResidual < frameMsec )
 	{
 		// NET_Sleep will give the OS time slices until either get a packet
 		// or time enough for a server frame has gone by
@@ -1360,55 +1368,48 @@ void SV_Frame( int msec )
 	// send a heartbeat to the master if needed
 	SV_MasterHeartbeat( HEARTBEAT_GAME );
 
-	if ( com_dedicated->integer )
+	frameEndTime = Sys_Milliseconds();
+
+	svs.totalFrameTime += ( frameEndTime - frameStartTime );
+	svs.currentFrameIndex++;
+
+	//if( svs.currentFrameIndex % 50 == 0 )
+	//  Com_Printf( "currentFrameIndex: %i\n", svs.currentFrameIndex );
+
+	if ( svs.currentFrameIndex == SERVER_PERFORMANCECOUNTER_FRAMES )
 	{
-		frameEndTime = Sys_Milliseconds();
+		int averageFrameTime;
 
-		svs.totalFrameTime += ( frameEndTime - frameStartTime );
-		svs.currentFrameIndex++;
+		averageFrameTime = svs.totalFrameTime / SERVER_PERFORMANCECOUNTER_FRAMES;
 
-		//if( svs.currentFrameIndex % 50 == 0 )
-		//  Com_Printf( "currentFrameIndex: %i\n", svs.currentFrameIndex );
+		svs.sampleTimes[ svs.currentSampleIndex % SERVER_PERFORMANCECOUNTER_SAMPLES ] = averageFrameTime;
+		svs.currentSampleIndex++;
 
-		if ( svs.currentFrameIndex == SERVER_PERFORMANCECOUNTER_FRAMES )
+		if ( svs.currentSampleIndex > SERVER_PERFORMANCECOUNTER_SAMPLES )
 		{
-			int averageFrameTime;
+			int totalTime, i;
 
-			averageFrameTime = svs.totalFrameTime / SERVER_PERFORMANCECOUNTER_FRAMES;
+			totalTime = 0;
 
-			svs.sampleTimes[ svs.currentSampleIndex % SERVER_PERFORMANCECOUNTER_SAMPLES ] = averageFrameTime;
-			svs.currentSampleIndex++;
-
-			if ( svs.currentSampleIndex > SERVER_PERFORMANCECOUNTER_SAMPLES )
+			for ( i = 0; i < SERVER_PERFORMANCECOUNTER_SAMPLES; i++ )
 			{
-				int totalTime, i;
-
-				totalTime = 0;
-
-				for ( i = 0; i < SERVER_PERFORMANCECOUNTER_SAMPLES; i++ )
-				{
-					totalTime += svs.sampleTimes[ i ];
-				}
-
-				if ( !totalTime )
-				{
-					totalTime = 1;
-				}
-
-				averageFrameTime = totalTime / SERVER_PERFORMANCECOUNTER_SAMPLES;
-
-				svs.serverLoad = ( averageFrameTime / ( float ) frameMsec ) * 100;
+				totalTime += svs.sampleTimes[ i ];
 			}
 
-			//Com_Printf( "serverload: %i (%i/%i)\n", svs.serverLoad, averageFrameTime, frameMsec );
+			if ( !totalTime )
+			{
+				totalTime = 1;
+			}
 
-			svs.totalFrameTime = 0;
-			svs.currentFrameIndex = 0;
+			averageFrameTime = totalTime / SERVER_PERFORMANCECOUNTER_SAMPLES;
+
+			svs.serverLoad = ( averageFrameTime / ( float ) frameMsec ) * 100;
 		}
-	}
-	else
-	{
-		svs.serverLoad = -1;
+
+		//Com_Printf( "serverload: %i (%i/%i)\n", svs.serverLoad, averageFrameTime, frameMsec );
+
+		svs.totalFrameTime = 0;
+		svs.currentFrameIndex = 0;
 	}
 
 	// collect timing statistics

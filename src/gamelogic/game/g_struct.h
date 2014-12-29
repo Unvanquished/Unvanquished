@@ -799,6 +799,14 @@ struct level_locals_s
 		float            momentum;
 		int              layoutBuildPoints;
 	} team[ NUM_TEAMS ];
+
+	struct {
+		int synchronous;
+		int fixed;
+		int msec;
+		int accurate;
+		bool initialized;
+	} pmoveParams;
 };
 
 struct commands_s

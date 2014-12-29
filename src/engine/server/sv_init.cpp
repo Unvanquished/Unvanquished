@@ -320,15 +320,7 @@ void SV_Startup( void )
 		Com_Error( ERR_FATAL, "SV_Startup: unable to allocate svs.clients" );
 	}
 
-	if ( com_dedicated->integer )
-	{
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
-	}
-	else
-	{
-		// we don't need nearly as many when playing locally
-		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
-	}
+	svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
 
 	svs.initialized = qtrue;
 
@@ -421,16 +413,7 @@ void SV_ChangeMaxClients( void )
 	// free the old clients on the hunk
 	Hunk_FreeTempMemory( oldClients );
 
-	// allocate new snapshot entities
-	if ( com_dedicated->integer )
-	{
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
-	}
-	else
-	{
-		// we don't need nearly as many when playing locally
-		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
-	}
+	svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
 }
 
 /*
@@ -640,15 +623,7 @@ void SV_SpawnServer( const char *server )
 			qboolean denied;
 			char reason[ MAX_STRING_CHARS ];
 
-			if ( svs.clients[ i ].netchan.remoteAddress.type == NA_BOT )
-			{
-
-				isBot = qtrue;
-			}
-			else
-			{
-				isBot = qfalse;
-			}
+			isBot = SV_IsBot(&svs.clients[i]);
 
 			// connect the client again
 			denied = gvm->GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
