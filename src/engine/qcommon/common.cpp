@@ -58,11 +58,8 @@ Maryland 20850 USA.
 
 #define MAX_NUM_ARGVS             50
 
-#define MIN_DEDICATED_COMHUNKMEGS 4
-#define MIN_COMHUNKMEGS           256 // JPW NERVE changed this to 42 for MP, was 56 for team arena and 75 for wolfSP
-#define DEF_COMHUNKMEGS           512 // RF, increased this, some maps are exceeding 56mb
-// JPW NERVE changed this for multiplayer back to 42, 56 for depot/mp_cpdepot, 42 for everything else
-#define DEF_COMHUNKMEGS_S         XSTRING(DEF_COMHUNKMEGS)
+#define MIN_COMHUNKMEGS 256
+#define DEF_COMHUNKMEGS 512
 
 jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire frame
 
@@ -75,7 +72,6 @@ cvar_t *com_pid; // bani - process id
 
 cvar_t *com_speeds;
 cvar_t *com_developer;
-cvar_t *com_dedicated;
 cvar_t *com_timescale;
 cvar_t *com_dropsim; // 0.0 to 1.0, simulated packet drops
 cvar_t *com_timedemo;
@@ -653,7 +649,7 @@ int Com_GMTime( qtime_t *qtime )
 
 /*
 ==============================================================================
-	Cheating
+Global common state
 ==============================================================================
 */
 
@@ -668,6 +664,33 @@ Cvar::Callback<Cvar::Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in
 bool Com_AreCheatsAllowed()
 {
 	return cvar_cheats.Get();
+}
+
+bool Com_IsClient()
+{
+#if BUILD_CLIENT || BUILD_TTY_CLIENT
+	return true;
+#elif BUILD_SERVER
+	return false;
+#else
+	#error
+#endif
+}
+
+bool Com_IsDedicatedServer()
+{
+#if BUILD_CLIENT || BUILD_TTY_CLIENT
+	return false;
+#elif BUILD_SERVER
+	return true;
+#else
+	#error
+#endif
+}
+
+bool Com_ServerRunning()
+{
+	return com_sv_running->integer;
 }
 
 /*
@@ -974,22 +997,14 @@ Com_InitHunkMemory
 void Com_InitHunkMemory( void )
 {
 	cvar_t *cv;
-	int    nMinAlloc;
-	qboolean isDedicated;
-
-	isDedicated = (com_dedicated && com_dedicated->integer);
 
 	// allocate the stack based hunk allocator
-	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS_S, CVAR_LATCH  );
+	cv = Cvar_Get( "com_hunkMegs", XSTRING(DEF_COMHUNKMEGS), CVAR_LATCH  );
 
-	// if we are not dedicated min allocation is 56, otherwise min is 1
-	nMinAlloc = isDedicated ? MIN_DEDICATED_COMHUNKMEGS : MIN_COMHUNKMEGS;
-
-	if ( cv->integer < nMinAlloc )
+	if ( cv->integer < MIN_COMHUNKMEGS )
 	{
-		s_hunkTotal = 1024 * 1024 * nMinAlloc;
-		Com_Printf(	isDedicated	? "Minimum com_hunkMegs for a dedicated server is %i, allocating %iMB.\n"
-				: "Minimum com_hunkMegs is %i, allocating %iMB.\n", nMinAlloc, s_hunkTotal / ( 1024 * 1024 ) );
+		s_hunkTotal = 1024 * 1024 * MIN_COMHUNKMEGS;
+		Com_Printf( "Minimum com_hunkMegs is " XSTRING(MIN_COMHUNKMEGS) ", allocating " XSTRING(MIN_COMHUNKMEGS) "MB.\n" );
 	}
 	else
 	{
@@ -1829,12 +1844,6 @@ void Com_Init( char *commandLine )
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
 
-#ifdef BUILD_SERVER
-	// TTimo: default to Internet dedicated, not LAN dedicated
-	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
-#else
-	com_dedicated = Cvar_Get( "dedicated", "0", CVAR_ROM );
-#endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
 	Trans_LoadDefaultLanguage();
@@ -1911,11 +1920,7 @@ void Com_Init( char *commandLine )
 	SV_Init();
 	Console::LoadHistory();
 
-	com_dedicated->modified = qfalse;
-
-#ifdef BUILD_CLIENT
 	CL_Init();
-#endif
 
 	// set com_frameTime so that if a map is started on the
 	// command line it will still be able to count on com_frameTime
@@ -2130,7 +2135,7 @@ int Com_ModifyMsec( int msec )
 		msec = 1;
 	}
 
-	if ( com_dedicated->integer )
+	if ( Com_IsDedicatedServer() )
 	{
 		// dedicated servers don't want to clamp for a much longer
 		// period, because it would mess up all the client's views
@@ -2142,7 +2147,7 @@ int Com_ModifyMsec( int msec )
 
 		clampTime = 5000;
 	}
-	else if ( !com_sv_running->integer )
+	else if ( !Com_ServerRunning() )
 	{
 		// clients of remote servers do not want to clamp time, because
 		// it would skew their view of the server's time temporarily
@@ -2227,7 +2232,7 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	// we may want to spin here if things are going too fast
 	if ( !com_timedemo->integer )
 	{
-		if ( com_dedicated->integer )
+		if ( Com_IsDedicatedServer() )
 		{
 			minMsec = SV_FrameMsec();
 		}
@@ -2300,46 +2305,34 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	//
 	// client system
 	//
-	if ( !com_dedicated->integer )
+	// run event loop a second time to get server to client packets
+	// without a frame of latency
+	//
+	if ( com_speeds->integer )
 	{
-		//
-		// run event loop a second time to get server to client packets
-		// without a frame of latency
-		//
-		if ( com_speeds->integer )
-		{
-			timeBeforeEvents = Sys_Milliseconds();
-		}
-
-		Com_EventLoop();
-		Cmd::DelayFrame();
-		Cmd::ExecuteCommandBuffer();
-		//
-		// client side
-		//
-		if ( com_speeds->integer )
-		{
-			timeBeforeClient = Sys_Milliseconds();
-		}
-
-		CL_Frame( msec );
-
-		if ( com_speeds->integer )
-		{
-			timeAfter = Sys_Milliseconds();
-		}
+		timeBeforeEvents = Sys_Milliseconds();
 	}
-	else
+
+	Com_EventLoop();
+	Cmd::DelayFrame();
+	Cmd::ExecuteCommandBuffer();
+
+	if ( com_speeds->integer )
 	{
-		Cmd::DelayFrame();
-		Cmd::ExecuteCommandBuffer();
+		timeBeforeClient = Sys_Milliseconds();
+	}
+
+	CL_Frame( msec );
+
+	if ( com_speeds->integer )
+	{
 		timeAfter = Sys_Milliseconds();
 	}
 
 	//
 	// watchdog
 	//
-	if ( com_dedicated->integer && !com_sv_running->integer && watchdogThreshold.Get() != 0 )
+	if ( Com_IsDedicatedServer() && !Com_ServerRunning() && watchdogThreshold.Get() != 0 )
 	{
 		if ( watchdogTime == 0 )
 		{

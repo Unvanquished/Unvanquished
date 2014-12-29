@@ -694,6 +694,9 @@ qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clie
 void       Com_StartupVariable( const char *match );
 void       Com_SetRecommended( void );
 bool       Com_AreCheatsAllowed();
+bool       Com_IsClient();
+bool       Com_IsDedicatedServer();
+bool       Com_ServerRunning();
 
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise
@@ -702,7 +705,6 @@ bool       Com_AreCheatsAllowed();
 extern cvar_t       *com_crashed;
 
 extern cvar_t       *com_developer;
-extern cvar_t       *com_dedicated;
 extern cvar_t       *com_speeds;
 extern cvar_t       *com_timescale;
 extern cvar_t       *com_sv_running;
