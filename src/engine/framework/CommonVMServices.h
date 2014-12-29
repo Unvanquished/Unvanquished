@@ -44,12 +44,9 @@ namespace VM {
 
             void Syscall(int major, int minor, IPC::Reader reader, IPC::Channel& channel);
 
-            bool HasVMErrored() const;
-
         private:
             std::string vmName;
             VMBase& vm;
-            bool vmErrored;
 
             VMBase& GetVM();
 

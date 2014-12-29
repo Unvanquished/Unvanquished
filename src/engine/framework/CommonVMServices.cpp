@@ -35,9 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../framework/LogSystem.h"
 #include "../framework/VirtualMachine.h"
 
-//TODO
-#include "../server/g_api.h"
-
 namespace VM {
 
     // Command Related
@@ -61,7 +58,7 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Bad command syscall number '%d' for VM '%s'", minor, vmName.c_str());
+                Sys::Drop("Bad command syscall number '%d' for VM '%s'", minor, vmName);
         }
     }
 
@@ -164,7 +161,7 @@ namespace VM {
 				break;
 
             default:
-                Com_Error(ERR_DROP, "Bad cvar syscall number '%d' for VM '%s'", minor, vmName.c_str());
+                Sys::Drop("Bad cvar syscall number '%d' for VM '%s'", minor, vmName);
         }
     }
 
@@ -207,7 +204,7 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Bad log syscall number '%d' for VM '%s'", minor, vmName.c_str());
+                Sys::Drop("Bad log syscall number '%d' for VM '%s'", minor, vmName);
         }
     }
 
@@ -222,7 +219,6 @@ namespace VM {
 
             case QVM_COMMON_ERROR:
                 IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](std::string text) {
-                    vmErrored = true;
                     Com_Error(ERR_DROP, "%s", text.c_str());
                 });
                 break;
@@ -354,7 +350,7 @@ namespace VM {
     // Misc, Dispatch
 
     CommonVMServices::CommonVMServices(VMBase& vm, Str::StringRef vmName, int commandFlag)
-    :vmName(vmName), vm(vm), vmErrored(false), commandProxy(new ProxyCmd(*this, commandFlag)) {
+    :vmName(vmName), vm(vm), commandProxy(new ProxyCmd(*this, commandFlag)) {
     }
 
     CommonVMServices::~CommonVMServices() {
@@ -386,12 +382,8 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Unhandled common engine syscall major number %i", major);
+                Sys::Drop("Unhandled common engine syscall major number %i", major);
         }
-    }
-
-    bool CommonVMServices::HasVMErrored() const {
-        return vmErrored;
     }
 
     VMBase& CommonVMServices::GetVM() {

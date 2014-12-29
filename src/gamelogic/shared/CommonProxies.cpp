@@ -506,7 +506,13 @@ void NORETURN trap_Error(const char *string)
 		VM::Exit();
 	recursiveError = true;
 	VM::SendMsg<VM::ErrorMsg>(string);
-	VM::Exit(); // Amanieu: Need to implement proper error handling
+
+	// The SendMsg should never return, but in case it does, just exit the VM
+	VM::Exit();
+}
+void Sys::Error(Str::StringRef message)
+{
+	trap_Error(message.c_str());
 }
 
 int trap_Milliseconds(void)

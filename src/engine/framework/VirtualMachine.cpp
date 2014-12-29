@@ -61,33 +61,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace VM {
 
-// Windows equivalent of strerror
-#ifdef _WIN32
-static std::string Win32StrError(uint32_t error)
-{
-	std::string out;
-	char* message;
-	if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<char *>(&message), 0, NULL)) {
-		out = message;
-		LocalFree(message);
-	} else
-		out = Str::Format("Unknown error 0x%08lx", error);
-	return out;
-}
-#endif
-
 // Platform-specific code to load a module
-static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem, FS::File stderrRedirect = FS::File())
+static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem, FS::File stderrRedirect = FS::File())
 {
 #ifdef _WIN32
 	// Inherit the socket in the child process
 	if (!SetHandleInformation(pair.second.GetHandle(), HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
-		Com_Error(ERR_DROP, "VM: Could not make socket inheritable: %s", Win32StrError(GetLastError()).c_str());
+		Sys::Drop("VM: Could not make socket inheritable: %s", Sys::Win32StrError(GetLastError()));
 
 	// Inherit the stderr redirect in the child process
 	HANDLE stderrRedirectHandle = stderrRedirect ? reinterpret_cast<HANDLE>(_get_osfhandle(fileno(stderrRedirect.GetHandle()))) : NULL;
 	if (stderrRedirect && !SetHandleInformation(stderrRedirectHandle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
-		Com_Error(ERR_DROP, "VM: Could not make stderr redirect inheritable: %s", Win32StrError(GetLastError()).c_str());
+		Sys::Drop("VM: Could not make stderr redirect inheritable: %s", Sys::Win32StrError(GetLastError()));
 
 	// Escape command line arguments
 	std::string cmdline;
@@ -129,12 +114,12 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	// Create a job object to ensure the process is terminated if the parent dies
 	HANDLE job = CreateJobObject(NULL, NULL);
 	if (!job)
-		Com_Error(ERR_DROP, "VM: Could not create job object: %s", Win32StrError(GetLastError()).c_str());
+		Sys::Drop("VM: Could not create job object: %s", Sys::Win32StrError(GetLastError()));
 	JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
 	memset(&jeli, 0, sizeof(jeli));
 	jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
 	if (!SetInformationJobObject(job, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
-		Com_Error(ERR_DROP, "VM: Could not set job object information: %s", Win32StrError(GetLastError()).c_str());
+		Sys::Drop("VM: Could not set job object information: %s", Sys::Win32StrError(GetLastError()));
 
 	STARTUPINFOW startupInfo;
 	PROCESS_INFORMATION processInfo;
@@ -146,7 +131,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	startupInfo.cb = sizeof(startupInfo);
 	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
-		Com_Error(ERR_DROP, "VM: Could not create child process: %s", Win32StrError(GetLastError()).c_str());
+		Sys::Drop("VM: Could not create child process: %s", Sys::Win32StrError(GetLastError()));
 	}
 
 	if (!AssignProcessToJobObject(job, processInfo.hProcess)) {
@@ -154,7 +139,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 		CloseHandle(job);
 		CloseHandle(processInfo.hThread);
 		CloseHandle(processInfo.hProcess);
-		Com_Error(ERR_DROP, "VM: Could not assign process to job object: %s", Win32StrError(GetLastError()).c_str());
+		Sys::Drop("VM: Could not assign process to job object: %s", Sys::Win32StrError(GetLastError()));
 	}
 
 #ifndef _WIN64
@@ -174,11 +159,11 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	// Create a pipe to report errors from the child process
 	int pipefds[2];
 	if (pipe(pipefds) == -1 || fcntl(pipefds[1], F_SETFD, FD_CLOEXEC))
-		Com_Error(ERR_DROP, "VM: Failed to create pipe: %s", strerror(errno));
+		Sys::Drop("VM: Failed to create pipe: %s", strerror(errno));
 
 	int pid = fork();
 	if (pid == -1)
-		Com_Error(ERR_DROP, "VM: Failed to fork process: %s", strerror(errno));
+		Sys::Drop("VM: Failed to fork process: %s", strerror(errno));
 	if (pid == 0) {
 		// Close the other end of the pipe
 		close(pipefds[0]);
@@ -224,14 +209,14 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	close(pipefds[0]);
 	if (count) {
 		waitpid(pid, NULL, 0);
-		Com_Error(ERR_DROP, "VM: Failed to exec: %s", strerror(err));
+		Sys::Drop("VM: Failed to exec: %s", strerror(err));
 	}
 
 	return std::make_pair(pid, std::move(pair.first));
 #endif
 }
 
-std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, int debugLoader) {
+std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, int debugLoader) {
 	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
@@ -256,7 +241,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 			FS::PakPath::CopyFile(module, out);
 			out.Close();
 		} catch (std::system_error& err) {
-			Com_Error(ERR_DROP, "VM: Failed to extract VM module %s: %s\n", module.c_str(), err.what());
+			Sys::Drop("VM: Failed to extract VM module %s: %s\n", module, err.what());
 		}
 		modulePath = FS::Path::Build(FS::GetHomePath(), module);
 	} else
@@ -318,7 +303,7 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	return InternalLoadModule(std::move(pair), args.data(), true, std::move(stderrRedirect));
 }
 
-std::pair<IPC::OSHandleType, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
+std::pair<Sys::OSHandle, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug) {
 	const std::string& libPath = FS::GetLibPath();
 	std::vector<const char*> args;
 
@@ -343,16 +328,14 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 
 	Com_Printf("Loading VM module %s...\n", filename.c_str());
 
-	void* handle = Sys_LoadLibrary(filename.c_str());
-	if (!handle) {
-		Com_Error(ERR_DROP, "VM: Failed to load shared library VM %s: %s", filename.c_str(), Sys_LibraryError());
-	}
-	inProcess.sharedLibHandle = handle;
+	std::string errorString;
+	inProcess.sharedLib = Sys::DynamicLib::Open(filename, errorString);
+	if (!inProcess.sharedLib)
+		Sys::Drop("VM: Failed to load shared library VM %s: %s", filename, errorString);
 
-	int (*vmMain)(int, const char**) = (int (*)(int, const char**))(Sys_LoadFunction(handle, "main"));
-	if (!vmMain) {
-		Com_Error(ERR_DROP, "VM: Could not find main function in shared library VM %s", filename.c_str());
-	}
+	auto vmMain = inProcess.sharedLib.LoadSym<int(int, const char**)>("main", errorString);
+	if (!vmMain)
+		Sys::Drop("VM: Could not find main function in shared library VM %s: %s", filename, errorString);
 
 	std::string vmSocketArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
 
@@ -374,7 +357,7 @@ uint32_t VMBase::Create()
 	type = static_cast<vmType_t>(params.vmType.Get());
 
 	if (type < 0 || type >= TYPE_END)
-		Com_Error(ERR_DROP, "VM: Invalid type %d", type);
+		Sys::Drop("VM: Invalid type %d", type);
 
 	int loadStartTime = Sys_Milliseconds();
 
@@ -434,11 +417,7 @@ void VMBase::FreeInProcessVM() {
 		}
 	}
 
-	if (inProcess.sharedLibHandle) {
-		Sys_UnloadLibrary(inProcess.sharedLibHandle);
-		inProcess.sharedLibHandle = nullptr;
-	}
-
+	inProcess.sharedLib.Close();
 	inProcess.running = false;
 }
 
@@ -479,7 +458,7 @@ void VMBase::Free()
 		kill(processHandle, SIGKILL);
 		waitpid(processHandle, NULL, 0);
 #endif
-		processHandle = IPC::INVALID_HANDLE;
+		processHandle = Sys::INVALID_HANDLE;
 	} else if (type == TYPE_NATIVE_DLL) {
 		FreeInProcessVM();
 	}

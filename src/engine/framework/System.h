@@ -28,56 +28,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "VMMain.h"
-#include "CommonProxies.h"
+#include "../qcommon/qcommon.h"
 
-IPC::Channel VM::rootChannel;
+#ifndef FRAMEWORK_SYSTEM_H_
+#define FRAMEWORK_SYSTEM_H_
 
-class ExitException{};
+// Low-level system functions
+namespace Sys {
 
-void VM::Exit() {
-  throw ExitException();
-}
+// Cleanly exit the engine, shutting down all subsystems.
+NORETURN void Quit(Str::StringRef message);
 
-static IPC::Channel GetRootChannel(int argc, char** argv) {
-	const char* channel;
-	if (argc == 1) {
-		channel = getenv("ROOT_SOCKET");
-		if (!channel) {
-			fprintf(stderr, "Environment variable ROOT_SOCKET not found\n");
-			VM::Exit();
-		}
-	} else {
-		channel = argv[1];
-	}
+} // namespace Sys
 
-	char* end;
-	Sys::OSHandle h = (Sys::OSHandle)strtol(channel, &end, 10);
-	if (channel == end || *end != '\0') {
-		fprintf(stderr, "Environment variable ROOT_SOCKET does not contain a valid handle\n");
-		VM::Exit();
-	}
-
-	return IPC::Channel(IPC::Socket::FromHandle(h));
-}
-
-DLLEXPORT int main(int argc, char** argv) {
-	try {
-		VM::rootChannel = GetRootChannel(argc, argv);
-
-		// Send syscall ABI version, also acts as a sign that the module loaded
-		IPC::Writer writer;
-		writer.Write<uint32_t>(VM::VM_API_VERSION);
-		VM::rootChannel.SendMsg(writer);
-
-		// Start main loop
-		while (true) {
-			IPC::Reader reader = VM::rootChannel.RecvMsg();
-			uint32_t id = reader.Read<uint32_t>();
-			VM::VMHandleSyscall(id, std::move(reader));
-		}
-	} catch (ExitException e) {
-		return 0;
-	}
-}
-
+#endif // FRAMEWORK_SYSTEM_H_

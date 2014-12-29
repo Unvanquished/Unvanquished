@@ -450,12 +450,12 @@ void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 
 void GameVM::GameShutdown(qboolean restart)
 {
-	if (!services->HasVMErrored()) {
+	// Ignore errors when shutting down
+	try {
 		this->SendMsg<GameShutdownMsg>(restart);
-	} else {
 		this->Free();
-		services = nullptr;
-	}
+	} catch (Sys::DropErr&) {}
+	services = nullptr;
 
 	// Release the shared memory region
 	this->shmRegion.Close();

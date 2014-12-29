@@ -44,6 +44,7 @@ Maryland 20850 USA.
 #include "../framework/CvarSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
+#include "../framework/System.h"
 
 // htons
 #ifdef _WIN32
@@ -61,10 +62,7 @@ Maryland 20850 USA.
 #define MIN_COMHUNKMEGS 256
 #define DEF_COMHUNKMEGS 512
 
-jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire frame
-
 static fileHandle_t logfile;
-static FILE         *pipefile;
 
 cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
@@ -111,10 +109,7 @@ int      com_frameNumber;
 int      com_expectedhunkusage;
 int      com_hunkusedvalue;
 
-qboolean com_errorEntered;
 qboolean com_fullyInitialized;
-
-char     com_errorMessage[ MAXPRINTMSG ];
 
 void     Com_WriteConfig_f( void );
 void     Com_WriteBindings_f( void );
@@ -265,80 +260,17 @@ do the appropriate things.
 // *INDENT-OFF*
 void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 {
-	va_list    argptr;
-	static int lastErrorTime;
-	static int errorCount;
-	int        currentTime;
-
-	// make sure we can get at our local stuff
-	if (code != ERR_FATAL) {
-		FS::PakPath::ClearPaks();
-		FS_LoadBasePak();
-	}
-
-	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
-	currentTime = Sys_Milliseconds();
-
-	if ( currentTime - lastErrorTime < 100 )
-	{
-		if ( ++errorCount > 3 )
-		{
-			code = ERR_FATAL;
-		}
-	}
-	else
-	{
-		errorCount = 0;
-	}
-
-	lastErrorTime = currentTime;
-
-	if ( com_errorEntered )
-	{
-		char buf[ 4096 ];
-
-		va_start( argptr, fmt );
-		Q_vsnprintf( buf, sizeof( buf ), fmt, argptr );
-		va_end( argptr );
-
-		Sys_Error( "recursive error '%s' after: %s", buf, com_errorMessage );
-	}
-
-	com_errorEntered = qtrue;
+	char buf[ 4096 ];
+	va_list argptr;
 
 	va_start( argptr, fmt );
-	Q_vsnprintf( com_errorMessage, sizeof( com_errorMessage ), fmt, argptr );
+	Q_vsnprintf( buf, sizeof( buf ), fmt, argptr );
 	va_end( argptr );
 
-	Cvar_Set("com_errorMessage", com_errorMessage);
-
-	if ( code == ERR_SERVERDISCONNECT )
-	{
-		Com_Printf( S_COLOR_WHITE "%s\n", com_errorMessage );
-		SV_Shutdown( "Server disconnected" );
-		CL_Disconnect( qtrue );
-		CL_FlushMemory();
-		com_errorEntered = qfalse;
-		longjmp( abortframe, -1 );
-	}
-	else if ( code == ERR_DROP )
-	{
-		Com_Printf( S_COLOR_ORANGE "%s\n", com_errorMessage );
-		SV_Shutdown( va( "********************\nServer crashed: %s\n********************\n", com_errorMessage ) );
-		CL_Disconnect( qtrue );
-		CL_FlushMemory();
-		com_errorEntered = qfalse;
-		longjmp( abortframe, -1 );
-	}
+	if ( code == ERR_FATAL )
+		Sys::Error( buf );
 	else
-	{
-		CL_Shutdown();
-		SV_Shutdown( va( "Server fatal crashed: %s\n", com_errorMessage ) );
-	}
-
-	Com_Shutdown();
-
-	Sys_Error( "%s", com_errorMessage );
+		Sys::Drop( buf );
 }
 
 // *INDENT-OFF*
@@ -359,23 +291,7 @@ void NORETURN Com_Quit_f( void )
 {
 	// don't try to shutdown if we are in a recursive error
 	char *p = Cmd_Args();
-
-	if ( !com_errorEntered )
-	{
-		// Some VMs might execute "quit" command directly,
-		// which would trigger an unload of active VM error.
-		// Sys_Quit will kill this process anyways, so
-		// a corrupt call stack makes no difference
-		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
-//bani
-#ifdef BUILD_CLIENT
-		CL_ShutdownCGame();
-#endif
-		CL_Shutdown();
-		Com_Shutdown();
-	}
-
-	Sys_Quit();
+	Sys::Quit(p[0] ? p : "Server quit");
 }
 
 /*
@@ -1715,31 +1631,10 @@ void Com_SetRecommended( void )
 Com_Init
 =================
 */
-
-
-#ifndef _WIN32
-# ifdef BUILD_SERVER
-	const char* defaultPipeFilename = "svpipe";
-# else
-	const char* defaultPipeFilename = "pipe";
-# endif
-#else
-	const char* defaultPipeFilename = "";
-#endif
-
 void Com_Init( char *commandLine )
 {
 	char              *s;
-	int               pid, qport;
-
-	pid = Sys_GetPID();
-
-	Com_Printf( "%s %s %s %s\n%s\n", Q3_VERSION, PLATFORM_STRING, ARCH_STRING, __DATE__, commandLine );
-
-	if ( setjmp( abortframe ) )
-	{
-		Sys_Error( "Error during initialization" );
-	}
+	int               qport;
 
 	// prepare enough of the subsystems to handle
 	// cvar and command buffer management
@@ -1757,41 +1652,7 @@ void Com_Init( char *commandLine )
 	// ydnar: init crashed variable as early as possible
 	com_crashed = Cvar_Get( "com_crashed", "0", CVAR_TEMP );
 
-	s = va( "%d", pid );
-	com_pid = Cvar_Get( "com_pid", s, CVAR_ROM );
-
-	// done early so bind command exists
-	CL_InitKeyCommands();
-
-	FS::Initialize();
-	FS_LoadBasePak();
-
 	Trans_Init();
-
-#ifndef BUILD_SERVER
-	Cmd::BufferCommandText("preset default.cfg");
-#endif
-
-#ifdef BUILD_CLIENT
-	// skip the q3config.cfg if "safe" is on the command line
-	if ( !Com_SafeMode() )
-	{
-		Cmd::BufferCommandText("exec -f " CONFIG_NAME);
-		Cmd::BufferCommandText("exec -f " KEYBINDINGS_NAME);
-		Cmd::BufferCommandText("exec -f " AUTOEXEC_NAME);
-	}
-#else
-	Cmd::BufferCommandText("exec -f " CONFIG_NAME);
-#endif
-
-	// ydnar: reset crashed state
-	Cmd::BufferCommandText("set com_crashed 0");
-
-	// execute the queued commands
-	Cmd::ExecuteCommandBuffer();
-
-	// override anything from the config files with command line args
-	Com_StartupVariable( NULL );
 
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
@@ -1863,7 +1724,6 @@ void Com_Init( char *commandLine )
 	Netchan_Init( qport & 0xffff );
 
 	SV_Init();
-	Console::LoadHistory();
 
 	CL_Init();
 
@@ -1872,80 +1732,10 @@ void Com_Init( char *commandLine )
 	// being random enough for a serverid
 	com_frameTime = Com_Milliseconds();
 
-	// add + commands from command line
-	if ( !Com_AddStartupCommands() )
-	{
-		// if the user didn't give any commands, run default action
-	}
-
 	CL_StartHunkUsers();
 
-	if (defaultPipeFilename[0])
-	{
-		std::string ospath = FS::Path::Build(FS::GetHomePath(), defaultPipeFilename);
-		pipefile = Sys_Mkfifo(ospath.c_str());
-		if (!pipefile)
-		{
-			Com_Printf( S_WARNING "Could not create new pipefile at %s. "
-			"pipefile will not be used.\n", ospath.c_str() );
-		}
-	}
 	com_fullyInitialized = qtrue;
 	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
-}
-
-/*
-===============
-Com_ReadFromPipe
-
-Read whatever is in the pipe, and if a line gets accumulated, executed it
-===============
-*/
-void Com_ReadFromPipe( void )
-{
-	static char buf[ MAX_STRING_CHARS ];
-	static int  numAccd = 0;
-	int         numNew;
-
-	if ( !pipefile )
-	{
-		return;
-	}
-
-	while ( ( numNew = fread( buf + numAccd, 1, sizeof( buf ) - 1 - numAccd, pipefile ) ) > 0 )
-	{
-		char *brk = NULL; // will point to after the last CR/LF character, if any
-		int i;
-
-		for ( i = numAccd; i < numAccd + numNew; ++i )
-		{
-			if( buf[ i ] == '\0' )
-				buf[ i ] = '\n';
-			if( buf[ i ] == '\n' || buf[ i ] == '\r' )
-				brk = &buf[ i + 1 ];
-		}
-
-		numAccd += numNew;
-
-		if ( brk )
-		{
-			char tmp = *brk;
-			*brk = '\0';
-			Cmd::BufferCommandText(buf);
-			*brk = tmp;
-
-			numAccd -= brk - buf;
-			memmove( buf, brk, numAccd );
-		}
-		else if ( numAccd >= sizeof( buf ) - 1 ) // there are no CR/LF characters, but the buffer is full
-		{
-			// unfortunately, this command line gets chopped
-			//  (but Cbuf_ExecuteText() chops long command lines at (MAX_STRING_CHARS - 1) anyway)
-			buf[ sizeof( buf ) - 1 ] = '\0';
-			Cmd::BufferCommandText(buf);
-			numAccd = 0;
-		}
-	}
 }
 
 //==================================================================
@@ -2145,11 +1935,6 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	static int      watchdogTime = 0;
 	static qboolean watchWarn = qfalse;
 
-	if ( setjmp( abortframe ) )
-	{
-		return; // an ERR_DROP was thrown
-	}
-
 	// bk001204 - init to zero.
 	//  also:  might be clobbered by `longjmp' or `vfork'
 	timeBeforeFirstEvents = 0;
@@ -2347,8 +2132,6 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	// old net chan encryption key
 	//key = lastTime * 0x87243987;
 
-	Com_ReadFromPipe();
-
 	com_frameNumber++;
 }
 
@@ -2363,12 +2146,6 @@ void Com_Shutdown()
 	{
 		FS_FCloseFile( logfile );
 		logfile = 0;
-	}
-
-	if ( pipefile )
-	{
-		fclose( pipefile );
-		FS_Delete( defaultPipeFilename );
 	}
 
 	FS::FlushAll();

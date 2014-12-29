@@ -673,8 +673,6 @@ extern int          com_frameMsec;
 extern int          com_expectedhunkusage;
 extern int          com_hunkusedvalue;
 
-extern qboolean     com_errorEntered;
-
 typedef enum
 {
   TAG_FREE,

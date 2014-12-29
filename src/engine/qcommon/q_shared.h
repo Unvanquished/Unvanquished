@@ -64,13 +64,10 @@ Maryland 20850 USA.
 
 #define AUTOEXEC_NAME           "autoexec.cfg"
 
-#ifndef BUILD_SERVER
 #define CONFIG_NAME             "autogen.cfg"
 #define KEYBINDINGS_NAME        "keybindings.cfg"
 #define TEAMCONFIG_NAME         "teamconfig.cfg"
-#else
-#define CONFIG_NAME             "autogen_server.cfg"
-#endif
+#define SERVERCONFIG_NAME       "autogen_server.cfg"
 
 #define UNNAMED_PLAYER "UnnamedPlayer"
 
