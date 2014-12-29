@@ -397,6 +397,12 @@ struct cmdlineArgs_t {
 #endif
 static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 {
+#ifdef __APPLE__
+	// Ignore the -psn parameter added by OSX
+	if (!strncmp(argv[argc - 1], "-psn", 4)
+		argc--;
+#endif
+
 	bool foundCommands = false;
 	for (int i = 1; i < argc; i++) {
 		// A + indicate the start of a command that should be run on startup
@@ -429,16 +435,12 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 
 		if (!strcmp(argv[i], "--help")) {
 			fprintf(stderr, PRODUCT_NAME " " PRODUCT_VERSION "\n"
-			                "Usage: %s" HELP_URL " [OPTION] [+COMMAND]...\n",
+			                "Usage: %s [-OPTION]..." HELP_URL " [+COMMAND]...\n",
 			                argv[0]);
 			exit(0);
 		} else if (!strcmp(argv[i], "--version")) {
 			fprintf(stderr, PRODUCT_NAME " " PRODUCT_VERSION "\n");
 			exit(0);
-#ifdef __APPLE__
-		} else if (!strncmp(argv[i], "-psn", 4) {
-			// Ignore -psn parameters added by OSX
-#endif
 		} else if (!strcmp(argv[i], "-set")) {
 			if (i >= argc - 2) {
 				Log::Warn("Missing argument for -set");
@@ -494,6 +496,15 @@ static void EarlyCvar(Str::StringRef name, cmdlineArgs_t& cmdlineArgs)
 static void Init(int argc, char** argv)
 {
 	cmdlineArgs_t cmdlineArgs;
+
+	// Print a banner and a copy of the command-line arguments
+	Log::Notice(Q3_VERSION " " PLATFORM_STRING " " ARCH_STRING " " __DATE__);
+	std::string argsString = "cmdline:";
+	for (int i = 1; i < argc; i++) {
+		argsString.push_back(' ');
+		argsString.append(argv[i]);
+	}
+	Log::Notice(argsString);
 
 	Sys::SetupCrashHandler();
 	Sys::ParseCmdline(argc, argv, cmdlineArgs);

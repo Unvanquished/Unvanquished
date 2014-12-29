@@ -65,8 +65,6 @@ Maryland 20850 USA.
 // JPW NERVE changed this for multiplayer back to 42, 56 for depot/mp_cpdepot, 42 for everything else
 #define DEF_COMHUNKMEGS_S         XSTRING(DEF_COMHUNKMEGS)
 
-jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire frame
-
 static fileHandle_t logfile;
 
 cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
@@ -1673,16 +1671,7 @@ Com_Init
 void Com_Init( char *commandLine )
 {
 	char              *s;
-	int               pid, qport;
-
-	pid = Sys_GetPID();
-
-	Com_Printf( "%s %s %s %s\n%s\n", Q3_VERSION, PLATFORM_STRING, ARCH_STRING, __DATE__, commandLine );
-
-	if ( setjmp( abortframe ) )
-	{
-		Sys_Error( "Error during initialization" );
-	}
+	int               qport;
 
 	// prepare enough of the subsystems to handle
 	// cvar and command buffer management
@@ -1699,9 +1688,6 @@ void Com_Init( char *commandLine )
 
 	// ydnar: init crashed variable as early as possible
 	com_crashed = Cvar_Get( "com_crashed", "0", CVAR_TEMP );
-
-	s = va( "%d", pid );
-	com_pid = Cvar_Get( "com_pid", s, CVAR_ROM );
 
 	Trans_Init();
 
@@ -2021,11 +2007,6 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 
 	static int      watchdogTime = 0;
 	static qboolean watchWarn = qfalse;
-
-	if ( setjmp( abortframe ) )
-	{
-		return; // an ERR_DROP was thrown
-	}
 
 	// bk001204 - init to zero.
 	//  also:  might be clobbered by `longjmp' or `vfork'
