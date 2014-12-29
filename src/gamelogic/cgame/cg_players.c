@@ -2618,11 +2618,10 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
-	// These are static because otherwise we have >32K of locals, and lcc doesn't like that.
-	// Also, jetpack and battpack are never both in use together, so just #define.
-	refEntity_t jetpack;
-	refEntity_t flash;
+	static refEntity_t jetpack; // static for proper alignment in QVMs
+	static refEntity_t flash; // static for proper alignment in QVMs
 
+	// jetpack and battpack are never both in use together
 #	define radar jetpack
 
 	int           held, publicFlags;
@@ -2803,7 +2802,7 @@ Float a sprite over the player's head
 static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 {
 	int         rf;
-	refEntity_t ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 
 	if ( cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson )
 	{

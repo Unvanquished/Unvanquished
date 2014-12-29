@@ -1280,7 +1280,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( E_A_LEECH );
 	D( E_H_SPAWN );
 	D( E_H_MGTURRET );
-	D( E_H_TESLAGEN );
+	D( E_H_ROCKETPOD );
 	D( E_H_ARMOURY );
 	D( E_H_MEDISTAT );
 	D( E_H_DRILL );
