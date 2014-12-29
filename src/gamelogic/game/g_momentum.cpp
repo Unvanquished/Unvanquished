@@ -389,7 +389,15 @@ float G_AddMomentumForBuilding( gentity_t *buildable )
 
 	value   = BG_Buildable( buildable->s.modelindex )->buildPoints;
 	team    = BG_Buildable( buildable->s.modelindex )->team;
-	builder = &g_entities[ buildable->builtBy->slot ];
+
+	if ( buildable->builtBy->slot != -1 )
+	{
+		builder = &g_entities[ buildable->builtBy->slot ];
+	}
+	else
+	{
+		builder = NULL;
+	}
 
 	reward = AddMomentum( CONF_BUILDING, team, value, builder, qfalse );
 
