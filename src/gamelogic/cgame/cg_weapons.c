@@ -1818,7 +1818,7 @@ Add the weapon, and flash for the player's view
 
 void CG_AddViewWeapon( playerState_t *ps )
 {
-	refEntity_t  hand;
+	static refEntity_t  hand; // static for proper alignment in QVMs
 	centity_t    *cent;
 	clientInfo_t *ci;
 	float        fovOffset;

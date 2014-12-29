@@ -312,7 +312,7 @@ CG_General
 */
 static void CG_General( centity_t *cent )
 {
-	refEntity_t   ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 	entityState_t *s1;
 
 	s1 = &cent->currentState;
@@ -424,7 +424,7 @@ CG_Missile
 */
 static void CG_Missile( centity_t *cent )
 {
-	refEntity_t               ent;
+	static refEntity_t        ent; // static for proper alignment in QVMs
 	entityState_t             *es;
 	const missileAttributes_t *ma;
 
@@ -554,7 +554,7 @@ CG_Mover
 */
 static void CG_Mover( centity_t *cent )
 {
-	refEntity_t   ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 	entityState_t *s1;
 
 	s1 = &cent->currentState;
@@ -599,7 +599,7 @@ CG_Portal
 */
 static void CG_Portal( centity_t *cent )
 {
-	refEntity_t   ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 	entityState_t *s1;
 
 	s1 = &cent->currentState;
@@ -667,7 +667,7 @@ CG_LightFlare
 */
 static void CG_LightFlare( centity_t *cent )
 {
-	refEntity_t   flare;
+	static refEntity_t flare; // static for proper alignment in QVMs
 	entityState_t *es;
 	vec3_t        forward, delta;
 	float         len;

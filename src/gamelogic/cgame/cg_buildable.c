@@ -2517,7 +2517,7 @@ void CG_Buildable( centity_t *cent )
 	// MD3 turret special treatment part 1. TODO: Remove.
 	if ( cg_buildables[ es->modelindex ].models[ 1 ] )
 	{
-		refEntity_t turretBarrel;
+		static refEntity_t turretBarrel; // static for proper alignment in QVMs
 		vec3_t      flatAxis[ 3 ];
 
 		memset( &turretBarrel, 0, sizeof( turretBarrel ) );
@@ -2563,7 +2563,7 @@ void CG_Buildable( centity_t *cent )
 	// MD3 turret special treatment part 2. TODO: Remove.
 	if ( cg_buildables[ es->modelindex ].models[ 2 ] )
 	{
-		refEntity_t turretTop;
+		static refEntity_t turretTop; // static for proper alignment in QVMs
 		vec3_t      flatAxis[ 3 ];
 		vec3_t      swivelAngles;
 
