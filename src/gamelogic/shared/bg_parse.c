@@ -2167,7 +2167,8 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		IMPACT_SOUND     = 1 << 20,
 		IMPACT_FLESH_SND = 1 << 21,
 		MODEL_SCALE      = 1 << 22,
-		MODELROTATION   = 1 << 23
+		MODELROTATION    = 1 << 23,
+		IMPACT_FLIGHTDIR = 1 << 24
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof( text_buffer ) ) )
@@ -2330,6 +2331,11 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			ma->impactParticleSystem = CG_RegisterParticleSystem( token );
 #endif
 			defined |= IMPACT_PARTICLE;
+		}
+		else if ( !Q_stricmp( token, "impactFlightDir" ) )
+		{
+			ma->impactFlightDirection = qtrue;
+			defined |= IMPACT_FLIGHTDIR;
 		}
 		else if ( !Q_stricmp( token, "impactMark" ) )
 		{

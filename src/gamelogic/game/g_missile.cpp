@@ -149,6 +149,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	gentity_t *other, *attacker, *neighbor;
 	qboolean  doDamage = qtrue, returnAfterDamage = qfalse;
 	vec3_t    dir;
+	int       dirAsByte;
 	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
 
 	other = &g_entities[ trace->entityNum ];
@@ -169,143 +170,152 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		return;
 	}
 
-	if ( !strcmp( ent->classname, "grenade" ) || !strcmp( ent->classname, "firebomb" ) )
+	switch( ent->s.modelindex )
 	{
-		// grenade doesn't explode on impact
-		BounceMissile( ent, trace );
+		case MIS_GRENADE:
+		case MIS_FIREBOMB:
+			BounceMissile( ent, trace );
 
-		// only play a sound if requested
-		if ( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
-		{
-			G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
-		}
+			// only play a sound if requested
+			if ( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
+			{
+				G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
+			}
 
-		return;
-	}
-	else if ( !strcmp( ent->classname, "flamer" ) )
-	{
-		// ignite alien buildables on direct hit
-		if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
-		{
-			if ( random() < FLAMER_IGNITE_CHANCE )
+			return;
+
+		case MIS_FLAMER:
+			// ignite alien buildables on direct hit
+			if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
+			{
+				if ( random() < FLAMER_IGNITE_CHANCE )
+				{
+					G_IgniteBuildable( other, ent->parent );
+				}
+			}
+
+			// ignite alien buildables in radius
+			neighbor = NULL;
+			while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) ) )
+			{
+				// we already handled other, since it might not always be in FLAMER_IGNITE_RADIUS due to BBOX sizes
+				if ( neighbor == other )
+				{
+					continue;
+				}
+
+				if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_ALIENS )
+				{
+					if ( random() < FLAMER_IGNITE_SPLCHANCE )
+					{
+						G_IgniteBuildable( neighbor, ent->parent );
+					}
+				}
+			}
+
+			// set the environment on fire
+			if ( other->s.number == ENTITYNUM_WORLD )
+			{
+				if ( random() < FLAMER_LEAVE_FIRE_CHANCE )
+				{
+					G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
+				}
+			}
+
+			break;
+
+		case MIS_FIREBOMB_SUB:
+			// ignite alien buildables on direct hit
+			if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
 			{
 				G_IgniteBuildable( other, ent->parent );
 			}
-		}
 
-		// ignite alien buildables in radius
-		neighbor = NULL;
-		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) ) )
-		{
-			// we already handled other, since it might not always be in FLAMER_IGNITE_RADIUS due to BBOX sizes
-			if ( neighbor == other )
-			{
-				continue;
-			}
-
-			if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_ALIENS )
-			{
-				if ( random() < FLAMER_IGNITE_SPLCHANCE )
-				{
-					G_IgniteBuildable( neighbor, ent->parent );
-				}
-			}
-		}
-
-		// set the environment on fire
-		if ( other->s.number == ENTITYNUM_WORLD )
-		{
-			if ( random() < FLAMER_LEAVE_FIRE_CHANCE )
+			// set the environment on fire
+			if ( other->s.number == ENTITYNUM_WORLD )
 			{
 				G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
 			}
-		}
-	}
-	else if ( !strcmp( ent->classname, "firebomb_sub" ) )
-	{
-		// ignite alien buildables on direct hit
-		if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
-		{
-			G_IgniteBuildable( other, ent->parent );
-		}
 
-		// set the environment on fire
-		if ( other->s.number == ENTITYNUM_WORLD )
-		{
-			G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
-		}
-	}
-	else if ( !strcmp( ent->classname, "lockblob" ) )
-	{
-		if ( other->client && other->client->pers.team == TEAM_HUMANS )
-		{
-			other->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
-			other->client->lastLockTime = level.time;
-			AngleVectors( other->client->ps.viewangles, dir, NULL, NULL );
-			other->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
-		}
-	}
-	else if ( !strcmp( ent->classname, "slowblob" ) )
-	{
-		if ( other->client && other->client->pers.team == TEAM_HUMANS )
-		{
-			other->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
-			other->client->lastSlowTime = level.time;
-		}
-		else if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
-		{
-			other->onFire = qfalse;
-			other->fireImmunityUntil = level.time + ABUILDER_BLOB_FIRE_IMMUNITY;
-			doDamage = qfalse;
-		}
-		else if ( other->s.number == ENTITYNUM_WORLD )
-		{
-			// put out floor fires in range
-			neighbor = NULL;
-			while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
-			                                                  ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
-			{
-				if ( neighbor->s.eType == ET_FIRE )
-				{
-					G_FreeEntity( neighbor );
-				}
-			}
-		}
-	}
-	else if ( !strcmp( ent->classname, "hive" ) )
-	{
-		if ( other->s.eType == ET_BUILDABLE && other->s.modelindex == BA_A_HIVE )
-		{
-			if ( !ent->parent )
-			{
-				G_Printf( S_WARNING "hive entity has no parent in G_MissileImpact\n" );
-			}
-			else
-			{
-				ent->parent->active = qfalse;
-			}
+			break;
 
-			G_FreeEntity( ent );
-			return;
-		}
-		else
-		{
-			//prevent collision with the client when returning
-			ent->r.ownerNum = other->s.number;
-
-			ent->think = G_ExplodeMissile;
-			ent->nextthink = level.time + FRAMETIME;
-
-			//only damage humans
+		case MIS_LOCKBLOB:
 			if ( other->client && other->client->pers.team == TEAM_HUMANS )
 			{
-				returnAfterDamage = qtrue;
+				other->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
+				other->client->lastLockTime = level.time;
+				AngleVectors( other->client->ps.viewangles, dir, NULL, NULL );
+				other->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
+			}
+
+			break;
+
+		case MIS_SLOWBLOB:
+			if ( other->client && other->client->pers.team == TEAM_HUMANS )
+			{
+				other->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
+				other->client->lastSlowTime = level.time;
+			}
+			else if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
+			{
+				other->onFire = qfalse;
+				other->fireImmunityUntil = level.time + ABUILDER_BLOB_FIRE_IMMUNITY;
+				doDamage = qfalse;
+			}
+			else if ( other->s.number == ENTITYNUM_WORLD )
+			{
+				// put out floor fires in range
+				neighbor = NULL;
+				while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
+				                                                  ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
+				{
+					if ( neighbor->s.eType == ET_FIRE )
+					{
+						G_FreeEntity( neighbor );
+					}
+				}
+			}
+
+			break;
+
+		case MIS_HIVE:
+			if ( other->s.eType == ET_BUILDABLE && other->s.modelindex == BA_A_HIVE )
+			{
+				if ( !ent->parent )
+				{
+					G_Printf( S_WARNING "hive entity has no parent in G_MissileImpact\n" );
+				}
+				else
+				{
+					ent->parent->active = qfalse;
+				}
+
+				G_FreeEntity( ent );
+				return;
 			}
 			else
 			{
-				return;
+				//prevent collision with the client when returning
+				ent->r.ownerNum = other->s.number;
+
+				ent->think = G_ExplodeMissile;
+				ent->nextthink = level.time + FRAMETIME;
+
+				//only damage humans
+				if ( other->client && other->client->pers.team == TEAM_HUMANS )
+				{
+					returnAfterDamage = qtrue;
+				}
+				else
+				{
+					return;
+				}
 			}
-		}
+
+			break;
+
+		default:
+			break;
 	}
 
 	// impact damage
@@ -327,37 +337,6 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 				  roundf( ent->damage * MissileTimeDmgMod( ent ) ), dflags, ent->methodOfDeath );
 	}
 
-	if ( returnAfterDamage )
-	{
-		return;
-	}
-
-	// is it cheaper in bandwidth to just remove this ent and create a new
-	// one, rather than changing the missile into the explosion?
-
-	if ( other->takedamage && ( other->s.eType == ET_PLAYER || other->s.eType == ET_BUILDABLE ) )
-	{
-		G_AddEvent( ent, EV_MISSILE_HIT_ENTITY, DirToByte( trace->plane.normal ) );
-		ent->s.otherEntityNum = other->s.number;
-	}
-	else if ( trace->surfaceFlags & SURF_METAL )
-	{
-		G_AddEvent( ent, EV_MISSILE_HIT_METAL, DirToByte( trace->plane.normal ) );
-	}
-	else
-	{
-		G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( trace->plane.normal ) );
-	}
-
-	ent->freeAfterEvent = qtrue;
-
-	// change over to a general entity right at the point of impact
-	ent->s.eType = ET_GENERAL;
-
-	G_SnapVectorTowards( trace->endpos, ent->s.pos.trBase );  // save net bandwidth
-
-	G_SetOrigin( ent, trace->endpos );
-
 	// splash damage (doesn't apply to person directly hit)
 	if ( doDamage && ent->splashDamage )
 	{
@@ -366,6 +345,52 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		                ent->splashRadius, other, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
 		                ent->splashMethodOfDeath );
 	}
+
+	if ( returnAfterDamage )
+	{
+		return;
+	}
+
+	// Use either the trajectory direction or the surface normal for the hit event.
+	if ( ma->impactFlightDirection )
+	{
+		vec3_t trajDir;
+		BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, trajDir );
+		VectorNormalize( trajDir );
+		dirAsByte = DirToByte( trajDir );
+	}
+	else
+	{
+		dirAsByte = DirToByte( trace->plane.normal );
+	}
+
+	// Add hit event.
+	if ( other->takedamage && ( other->s.eType == ET_PLAYER || other->s.eType == ET_BUILDABLE ) )
+	{
+		G_AddEvent( ent, EV_MISSILE_HIT_ENTITY, dirAsByte );
+
+		ent->s.otherEntityNum = other->s.number;
+	}
+	else if ( trace->surfaceFlags & SURF_METAL )
+	{
+		G_AddEvent( ent, EV_MISSILE_HIT_METAL, dirAsByte );
+	}
+	else
+	{
+		G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, dirAsByte );
+	}
+
+	ent->freeAfterEvent = qtrue;
+
+	// HACK: Change over to a general entity right at the point of impact.
+	// TODO: Make sure this doesn't have unintended side effects.
+	//       Like purple sandals appearing at impact point or so...
+	ent->s.eType = ET_GENERAL;
+
+	// Save net bandwith.
+	G_SnapVectorTowards( trace->endpos, ent->s.pos.trBase );
+
+	G_SetOrigin( ent, trace->endpos );
 
 	trap_LinkEntity( ent );
 }

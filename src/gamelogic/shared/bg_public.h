@@ -1337,6 +1337,7 @@ typedef struct
 	// impact
 	qboolean       alwaysImpact;
 	qhandle_t      impactParticleSystem;
+	qboolean       impactFlightDirection;
 	qboolean       usesImpactMark;
 	qhandle_t      impactMark;
 	qhandle_t      impactMarkSize;
