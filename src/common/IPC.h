@@ -125,6 +125,8 @@ public:
 	void SendMsg(const Writer& writer) const;
 	Reader RecvMsg() const;
 
+	void SetRecvTimeout(std::chrono::nanoseconds timeout);
+
 	static std::pair<Socket, Socket> CreatePair();
 
 private:
@@ -554,6 +556,10 @@ public:
 	Reader RecvMsg() const
 	{
 		return socket.RecvMsg();
+	}
+	void SetRecvTimeout(std::chrono::nanoseconds timeout)
+	{
+		socket.SetRecvTimeout(timeout);
 	}
 
 	// Generate a unique message key to match messages with replies

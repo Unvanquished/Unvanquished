@@ -333,21 +333,26 @@ IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, St
 	if (!inProcess.sharedLib)
 		Sys::Drop("VM: Failed to load shared library VM %s: %s", filename, errorString);
 
-	auto vmMain = inProcess.sharedLib.LoadSym<int(int, const char**)>("main", errorString);
+	auto vmMain = inProcess.sharedLib.LoadSym<void(Sys::OSHandle)>("vmMain", errorString);
 	if (!vmMain)
-		Sys::Drop("VM: Could not find main function in shared library VM %s: %s", filename, errorString);
+		Sys::Drop("VM: Could not find vmMain function in %s: %s", filename, errorString);
 
-	std::string vmSocketArg = std::to_string((int)(intptr_t)pair.second.ReleaseHandle());
-
+	Sys::OSHandle vmSocketArg = pair.second.ReleaseHandle();
 	inProcess.running = true;
-	inProcess.thread = std::thread([vmMain, vmSocketArg, &inProcess]() {
-		const char* args[2] = {"vm", vmSocketArg.c_str()};
-		vmMain(2, args);
+	try {
+		inProcess.thread = std::thread([vmMain, vmSocketArg, &inProcess]() {
+			vmMain(vmSocketArg);
 
-		std::lock_guard<std::mutex> lock(inProcess.mutex);
+			std::lock_guard<std::mutex> lock(inProcess.mutex);
+			inProcess.running = false;
+			inProcess.condition.notify_one();
+		});
+	} catch (std::system_error& err) {
+		// Close vmSocketArg using the Socket destructor
+		IPC::Socket::FromHandle(vmSocketArg);
 		inProcess.running = false;
-		inProcess.condition.notify_one();
-	});
+		Sys::Drop("VM: Could not create thread for VM: %s", err.what());
+	}
 
 	return std::move(pair.first);
 }
@@ -374,7 +379,7 @@ uint32_t VMBase::Create()
 		}
 	}
 
-	// Create the socket pair to get the handle for ROOT_SOCKET
+	// Create the socket pair to get the handle for the root socket
 	std::pair<IPC::Socket, IPC::Socket> pair = IPC::Socket::CreatePair();
 
 	IPC::Socket rootSocket;
@@ -389,6 +394,11 @@ uint32_t VMBase::Create()
 
 	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG)
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
+
+	// Only set a recieve timeout for non-debug configurations, otherwise it
+	// would get triggered by breakpoints.
+	if (type == TYPE_NACL || type == TYPE_NATIVE_EXE || type == TYPE_NACL_LIBPATH)
+		rootChannel.SetRecvTimeout(std::chrono::seconds(2));
 
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
@@ -429,7 +439,7 @@ void VMBase::LogMessage(bool vmToEngine, bool start, int id)
 
 		const char* direction = vmToEngine ? "V->E" : "E->V";
 		const char* extremity = start ? "start" : "end";
-		uint64_t ns = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+		uint64_t ns = std::chrono::duration_cast<std::chrono::nanoseconds>(Sys::SteadyClock::now().time_since_epoch()).count();
 		try {
 			syscallLogFile.Printf("%s %s %s %s %s\n", direction, extremity, major, minor, ns);
 		} catch (std::system_error& err) {
@@ -448,6 +458,8 @@ void VMBase::Free()
 	if (!IsActive())
 		return;
 
+	// First close the root channel, which will trigger an error for in-process
+	// VMs. This will then cause the thread to terminate.
 	rootChannel = IPC::Channel();
 
 	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {

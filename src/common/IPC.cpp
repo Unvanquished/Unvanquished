@@ -36,6 +36,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#ifndef __native_client__
+#include <sys/socket.h>
+#endif
 #endif
 
 #undef INLINE
@@ -318,6 +321,9 @@ bool InternalRecvMsg(Sys::OSHandle handle, Reader& reader)
 		Sys::Drop("IPC: Failed to receive message: %s", error);
 	}
 
+	if (hdr.flags & (NACL_MESSAGE_TRUNCATED | NACL_HANDLES_TRUNCATED))
+		Sys::Drop("IPC: Recieved truncated message");
+
 	for (size_t i = 0; i < NACL_ABI_IMC_DESC_MAX; i++) {
 		if (h[i] != NACL_INVALID_HANDLE) {
 			reader.GetHandles().emplace_back();
@@ -344,6 +350,9 @@ bool InternalRecvMsg(Sys::OSHandle handle, Reader& reader)
 		NaClGetLastErrorString(error, sizeof(error));
 		Sys::Drop("IPC: Failed to receive message: %s", error);
 	}
+
+	if (hdr.flags & (NACL_MESSAGE_TRUNCATED | NACL_HANDLES_TRUNCATED))
+		Sys::Drop("IPC: Recieved truncated message");
 
 	if (result == 0) {
 		FreeHandles(h);
@@ -420,6 +429,20 @@ Reader Socket::RecvMsg() const
 	Reader out;
 	while (InternalRecvMsg(handle, out)) {}
 	return out;
+}
+
+void Socket::SetRecvTimeout(std::chrono::nanoseconds timeout)
+{
+#if defined(_WIN32) || defined(__native_client__)
+	// Not supported on Windows or NaCl
+	Q_UNUSED(timeout);
+#else
+	struct timeval tv;
+	auto seconds = std::chrono::duration_cast<std::chrono::seconds>(timeout);
+	tv.tv_sec = seconds.count();
+	tv.tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(timeout - seconds).count();
+	setsockopt(handle, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+#endif
 }
 
 std::pair<Socket, Socket> Socket::CreatePair()

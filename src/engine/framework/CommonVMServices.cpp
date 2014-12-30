@@ -219,7 +219,7 @@ namespace VM {
 
             case QVM_COMMON_ERROR:
                 IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](std::string text) {
-                    Com_Error(ERR_DROP, "%s", text.c_str());
+                    Sys::Drop("%s VM: %s", vmName, text);
                 });
                 break;
 

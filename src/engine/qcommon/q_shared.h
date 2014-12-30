@@ -127,6 +127,7 @@ Maryland 20850 USA.
 #include <random>
 #include <numeric>
 #include <thread>
+#include <atomic>
 #include <mutex>
 #include <condition_variable>
 #include <valarray>

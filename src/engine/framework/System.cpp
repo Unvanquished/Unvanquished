@@ -311,10 +311,9 @@ void Quit(Str::StringRef message)
 void Error(Str::StringRef message)
 {
 	// Crash immediately in case of a recursive error
-	static bool errorEntered = false;
-	if (errorEntered)
+	static std::atomic_flag errorEntered;
+	if (errorEntered.test_and_set())
 		_exit(-1);
-	errorEntered = true;
 
 	Log::Error(message);
 
@@ -344,7 +343,7 @@ static void SignalThread()
 
 	// Sleep a bit, and wait for a signal again. If we still haven't shut down
 	// by then, trigger an error.
-	sleep(2);
+	Sys::SleepFor(std::chrono::seconds(2));
 	sigwait(&sigset, &sig);
 	Sys::Error("Forcing shutdown from signal: %s", strsignal(sig));
 }

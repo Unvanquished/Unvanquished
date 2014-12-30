@@ -61,7 +61,6 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 IPC::HandleMsg<CGameShutdownMsg>(VM::rootChannel, std::move(reader), [] {
                     CG_Shutdown();
                 });
-                VM::Exit();
                 break;
 
             case CG_DRAW_ACTIVE_FRAME:

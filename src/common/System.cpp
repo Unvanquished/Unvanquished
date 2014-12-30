@@ -34,7 +34,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 #include <unistd.h>
 #include <signal.h>
-#ifndef __native_client__
+#ifdef __native_client__
+#include <nacl/nacl_exception.h>
+#else
 #include <dlfcn.h>
 #endif
 #endif
@@ -58,6 +60,54 @@ SteadyClock::time_point SteadyClock::now() NOEXCEPT
 }
 #endif
 
+void SleepFor(SteadyClock::duration time)
+{
+#ifdef _WIN32
+	static ULONG maxRes = 0;
+	static NTSTATUS WINAPI (*pNtSetTimerResolution)(ULONG resolution, BOOLEAN set_resolution, ULONG* current_resolution);
+	static NTSTATUS WINAPI (*pNtDelayExecution)(BOOLEAN alertable, const LARGE_INTEGER* timeout);
+	if (maxRes == 0) {
+		// Load ntdll.dll functions
+		std::string errorString;
+		DynamicLib ntdll = DynamicLib::Open("ntdll.dll", errorString);
+		if (!ntdll)
+			Sys::Error("Failed to load ntdll.dll: %s", errorString);
+		auto pNtQueryTimerResolution = ntdll.LoadSym<NTSTATUS WINAPI(ULONG*, ULONG*, ULONG*)>("NtQueryTimerResolution", errorString);
+		if (!pNtQueryTimerResolution)
+			Sys::Error("Failed to load NtQueryTimerResolution from ntdll.dll: %s", errorString);
+		pNtSetTimerResolution = ntdll.LoadSym<NTSTATUS WINAPI(ULONG, BOOLEAN, ULONG*)>("NtSetTimerResolution", errorString);
+		if (!pNtSetTimerResolution)
+			Sys::Error("Failed to load NtSetTimerResolution from ntdll.dll: %s", errorString);
+		pNtDelayExecution = ntdll.LoadSym<NTSTATUS WINAPI(BOOLEAN, const LARGE_INTEGER*)>("NtDelayExecution", errorString);
+		if (!pNtDelayExecution)
+			Sys::Error("Failed to load NtDelayExecution from ntdll.dll: %s", errorString);
+
+		// Determine the maximum available timer resolution
+		ULONG minRes, curRes;
+		if (pNtQueryTimerResolution(&minRes, &maxRes, &curRes) != 0)
+			maxRes = 10000; // Default to 1ms
+	}
+
+	// Increase the system timer resolution for the duration of the sleep
+	ULONG curRes;
+	pNtSetTimerResolution(maxRes, TRUE, &curRes);
+
+	// Convert to NT units of 100ns
+	typedef std::chrono::duration<int64_t, std::ratio<1, 10000000>> NTDuration;
+	auto ntTime = std::chrono::duration_cast<NTDuration>(time);
+
+	// Store the delay as a negative number to indicate a relative sleep
+	LARGE_INTEGER duration;
+	duration.QuadPart = -ntTime.count();
+	pNtDelayExecution(FALSE, &duration);
+
+	// Restore timer resolution after sleeping
+	pNtSetTimerResolution(maxRes, FALSE, &curRes);
+#else
+	std::this_thread::sleep_for(time);
+#endif
+}
+
 SteadyClock::time_point SleepUntil(SteadyClock::time_point time)
 {
 	// Early exit if we are already past the deadline
@@ -68,52 +118,8 @@ SteadyClock::time_point SleepUntil(SteadyClock::time_point time)
 		return now;
 	}
 
-#ifdef _WIN32
-	// Load ntdll.dll functions
-	static NTSTATUS WINAPI (*pNtQueryTimerResolution)(ULONG* min_resolution, ULONG* max_resolution, ULONG* current_resolution);
-	static NTSTATUS WINAPI (*pNtSetTimerResolution)(ULONG resolution, BOOLEAN set_resolution, ULONG* current_resolution);
-	static NTSTATUS WINAPI (*pNtDelayExecution)(BOOLEAN alertable, const LARGE_INTEGER* timeout);
-	if (!pNtQueryTimerResolution) {
-		std::string errorString;
-		static DynamicLib ntdll = DynamicLib::Open("ntdll.dll", errorString);
-		if (!ntdll)
-			Sys::Error("Failed to load ntdll.dll: %s", errorString);
-		pNtQueryTimerResolution = ntdll.LoadSym<NTSTATUS WINAPI(ULONG*, ULONG*, ULONG*)>("NtQueryTimerResolution", errorString);
-		if (!pNtQueryTimerResolution)
-			Sys::Error("Failed to load NtQueryTimerResolution from ntdll.dll: %s", errorString);
-		pNtSetTimerResolution = ntdll.LoadSym<NTSTATUS WINAPI(ULONG, BOOLEAN, ULONG*)>("NtSetTimerResolution", errorString);
-		if (!pNtSetTimerResolution)
-			Sys::Error("Failed to load NtSetTimerResolution from ntdll.dll: %s", errorString);
-		pNtDelayExecution = ntdll.LoadSym<NTSTATUS WINAPI(BOOLEAN, const LARGE_INTEGER*)>("NtDelayExecution", errorString);
-		if (!pNtDelayExecution)
-			Sys::Error("Failed to load NtDelayExecution from ntdll.dll: %s", errorString);
-	}
-
-	// Determine the maximum available timer resolution
-	static ULONG maxRes = 0;
-	ULONG minRes, curRes;
-	if (maxRes == 0) {
-		if (pNtQueryTimerResolution(&minRes, &maxRes, &curRes) != 0)
-			maxRes = 10000; // Default to 1ms
-	}
-
-	// Increase the system timer resolution for the duration of the sleep
-	pNtSetTimerResolution(maxRes, TRUE, &curRes);
-
-	// Convert to NT units of 100ns
-	typedef std::chrono::duration<int64_t, std::ratio<1, 10000000>> NTDuration;
-	auto remaining = std::chrono::duration_cast<NTDuration>(time - now);
-
-	// Store the delay as a negative number to indicate a relative sleep
-	LARGE_INTEGER duration;
-	duration.QuadPart = -remaining.count();
-	pNtDelayExecution(FALSE, &duration);
-
-	// Restore timer resolution after sleeping
-	pNtSetTimerResolution(maxRes, FALSE, &curRes);
-#else
-	std::this_thread::sleep_for(time - now);
-#endif
+	// Perform the actual sleep
+	SleepFor(time - now);
 
 	// We may have overslept, so use the target time rather than the
 	// current time as the base for the next frame. That way we ensure
@@ -208,36 +214,38 @@ static LONG WINAPI CrashHandler(PEXCEPTION_POINTERS ExceptionInfo)
 
 	// TODO: backtrace
 
-	Sys::Error("Caught exception 0x%lx: %s", ExceptionInfo->ExceptionRecord->ExceptionCode, WindowsExceptionString(ExceptionInfo->ExceptionRecord->ExceptionCode));
+	Sys::Error("Crashed with exception 0x%lx: %s", ExceptionInfo->ExceptionRecord->ExceptionCode, WindowsExceptionString(ExceptionInfo->ExceptionRecord->ExceptionCode));
 }
 void SetupCrashHandler()
 {
 	SetUnhandledExceptionFilter(CrashHandler);
 }
-#else
-static void CrashHandler(int sig)
+#elif defined(__native_client__)
+static void CrashHandler(struct NaClExceptionContext *)
 {
-	// Remove signal handlers to avoid recursive signals
-	for (int sig: {SIGILL, SIGFPE, SIGSEGV, SIGABRT, SIGBUS, SIGTRAP})
-		signal(sig, SIG_DFL);
-
 	// TODO: backtrace
 
-	Sys::Error("Caught signal %d: %s", sig, strsignal(sig));
+	Sys::Error("Crashed with NaCl exception");
 }
 void SetupCrashHandler()
 {
-#ifdef __native_client__
-	for (int sig: {SIGILL, SIGFPE, SIGSEGV, SIGABRT, SIGBUS, SIGTRAP})
-		signal(sig, CrashHandler);
+	nacl_exception_set_handler(CrashHandler);
+}
 #else
+static void CrashHandler(int sig)
+{
+	// TODO: backtrace
+
+	Sys::Error("Crashed with signal %d: %s", sig, strsignal(sig));
+}
+void SetupCrashHandler()
+{
 	struct sigaction sa;
 	sa.sa_flags = SA_RESETHAND | SA_NODEFER;
 	sa.sa_handler = CrashHandler;
 	sigemptyset(&sa.sa_mask);
 	for (int sig: {SIGILL, SIGFPE, SIGSEGV, SIGABRT, SIGBUS, SIGTRAP})
 		sigaction(sig, &sa, nullptr);
-#endif
 }
 #endif
 
@@ -261,7 +269,15 @@ DynamicLib DynamicLib::Open(Str::StringRef filename, std::string& errorString)
 	if (!handle)
 		errorString = Win32StrError(GetLastError());
 #else
-	void* handle = dlopen(filename.c_str(), RTLD_NOW);
+	// Handle relative paths correctly
+	const char* dlopenFilename = filename.c_str();
+	std::string relativePath;
+	if (filename.find('/') == std::string::npos) {
+		relativePath = "./" + filename;
+		dlopenFilename = relativePath.c_str();
+	}
+
+	void* handle = dlopen(dlopenFilename, RTLD_NOW);
 	if (!handle)
 		errorString = dlerror();
 #endif

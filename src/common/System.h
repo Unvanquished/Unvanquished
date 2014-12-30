@@ -61,6 +61,7 @@ typedef std::chrono::system_clock RealClock;
 // requested time, unless the target time is already past, in which case the
 // current time is returned.
 SteadyClock::time_point SleepUntil(SteadyClock::time_point time);
+void SleepFor(SteadyClock::duration time);
 
 // Exit with a fatal error. Only critical subsystems are shut down cleanly, and
 // an error message is displayed to the user.
