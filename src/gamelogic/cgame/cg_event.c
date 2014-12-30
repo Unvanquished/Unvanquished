@@ -84,7 +84,7 @@ static const struct {
 	{ "[hive]",        qtrue,  qtrue,  TEAM_ALIENS },
 
 	{ LONGFORM,        qtrue,  qfalse, TEAM_HUMANS }, // H spawn
-	{ "[tesla]",       qtrue,  qtrue,  TEAM_HUMANS },
+	{ "[rocketpod]",   qtrue,  qtrue,  TEAM_HUMANS },
 	{ "[turret]",      qtrue,  qtrue,  TEAM_HUMANS },
 	{ "[reactor]",     qtrue,  qtrue,  TEAM_HUMANS },
 
@@ -288,9 +288,9 @@ static void CG_Obituary( entityState_t *ent )
 				messageAssisted = G_( "%s%s ^7was gunned down by a turret; %s%s^7 assisted\n" );
 				break;
 
-			case MOD_TESLAGEN:
-				message = G_( "%s%s ^7was zapped by a tesla generator\n" );
-				messageAssisted = G_( "%s%s ^7was zapped by a tesla generator; %s%s^7 assisted\n" );
+			case MOD_ROCKETPOD:
+				message = G_( "%s%s ^7caught a rocket\n" );
+				messageAssisted = G_( "%s%s ^7caught a rocket; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_ATUBE:
@@ -1087,11 +1087,9 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_TESLATRAIL:
-			cent->currentState.weapon = WP_TESLAGEN;
 			{
 				centity_t *source = &cg_entities[ es->generic1 ];
 				centity_t *target = &cg_entities[ es->clientNum ];
-				vec3_t    sourceOffset = { 0.0f, 0.0f, 28.0f };
 
 				if ( !CG_IsTrailSystemValid( &source->muzzleTS ) )
 				{
@@ -1103,7 +1101,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 						CG_SetAttachmentCent( &source->muzzleTS->backAttachment, target );
 						CG_AttachToCent( &source->muzzleTS->frontAttachment );
 						CG_AttachToCent( &source->muzzleTS->backAttachment );
-						CG_SetAttachmentOffset( &source->muzzleTS->frontAttachment, sourceOffset );
 
 						source->muzzleTSDeathTime = cg.time + cg_teslaTrailTime.integer;
 					}
