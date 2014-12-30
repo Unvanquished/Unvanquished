@@ -260,6 +260,7 @@ void DynamicLib::Close()
 #else
 	dlclose(handle);
 #endif
+	handle = nullptr;
 }
 
 DynamicLib DynamicLib::Open(Str::StringRef filename, std::string& errorString)
