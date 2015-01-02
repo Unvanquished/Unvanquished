@@ -948,7 +948,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				     ( other->s.eFlags & EF_BC_ENEMY ) &&
 				     !other->tagAttachment &&
 				     ent->client->pers.team == other->s.generic1 &&
-				     G_LineOfSight( ent, other ) )
+				     G_LineOfSight( ent, other, CONTENTS_SOLID, true ) )
 				{
 					Beacon::Delete( other, true );
 				}
