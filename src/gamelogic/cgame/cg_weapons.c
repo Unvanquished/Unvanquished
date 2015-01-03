@@ -1599,6 +1599,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			{
 				int    boneIndex = trap_R_BoneIndex( gun.hModel, weapon->rotationBone );
 				quat_t rotation;
+				matrix_t mat;
+				vec3_t   nBounds[ 2 ];
+				vec3_t   p1, p2;
 
 				if ( boneIndex < 0 )
 				{
@@ -1610,6 +1613,18 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 				QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
 				QuatMultiply0( gun.skeleton.bones[ boneIndex ].t.rot, rotation );
+
+				// Update bounds to reflect rotation
+				MatrixFromAngles( mat, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
+
+				MatrixTransformNormal( mat, gun.skeleton.bounds[ 0 ], p1 );
+				MatrixTransformNormal( mat, gun.skeleton.bounds[ 1 ], p2 );
+
+				ClearBounds( nBounds[ 0 ], nBounds[ 1 ] );
+				AddPointToBounds( p1, nBounds[ 0 ], nBounds[ 1 ] );
+				AddPointToBounds( p2, nBounds[ 0 ], nBounds[ 1 ] );
+
+				BoundsAdd( gun.skeleton.bounds[ 0 ], gun.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
 			}
 
 			CG_TransformSkeleton( &gun.skeleton, weapon->scale );
