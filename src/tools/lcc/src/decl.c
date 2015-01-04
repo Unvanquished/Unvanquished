@@ -977,9 +977,11 @@ static Symbol dcllocal(int sclass, char *id, Type ty, Coordinate *pos) {
 	case REGISTER: registers = append(p, registers);
 		       regcount++;
 		       p->defined = 1;
- break;
-	case AUTO:     autos = append(p, autos);
-		       p->defined = 1; break;
+                       break;
+        case AUTO:     if (isstruct(ty) && ty->align > 4)
+                        error("aligned struct on stack: `%t %s'\n", p->type, p->name);
+                       autos = append(p, autos);
+                       p->defined = 1; break;
 	default: assert(0);
 	}
 	if (t == '=') {

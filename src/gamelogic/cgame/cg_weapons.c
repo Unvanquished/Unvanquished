@@ -1833,7 +1833,7 @@ Add the weapon, and flash for the player's view
 
 void CG_AddViewWeapon( playerState_t *ps )
 {
-	refEntity_t  hand;
+	static refEntity_t  hand; // static for proper alignment in QVMs
 	centity_t    *cent;
 	clientInfo_t *ci;
 	float        fovOffset;
@@ -2404,41 +2404,30 @@ TODO: Put this into cg_event_weapon.c?
 
 static qboolean CalcMuzzlePoint( int entityNum, vec3_t muzzle )
 {
-	vec3_t    forward;
 	centity_t *cent;
-	int       anim;
 
-	if ( entityNum == cg.snap->ps.clientNum )
-	{
-		VectorCopy( cg.snap->ps.origin, muzzle );
-		muzzle[ 2 ] += cg.snap->ps.viewheight;
-		AngleVectors( cg.snap->ps.viewangles, forward, NULL, NULL );
-		VectorMA( muzzle, 14, forward, muzzle );
-		return qtrue;
-	}
-
-	cent = &cg_entities[ entityNum ];
-
-	if ( !cent->currentValid )
+	if ( entityNum < 0 || entityNum >= MAX_ENTITIES )
 	{
 		return qfalse;
 	}
 
-	VectorCopy( cent->currentState.pos.trBase, muzzle );
-
-	AngleVectors( cent->currentState.apos.trBase, forward, NULL, NULL );
-	anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
-
-	if ( anim == LEGS_WALKCR || anim == LEGS_IDLECR )
+	if ( entityNum == cg.predictedPlayerState.clientNum )
 	{
-		muzzle[ 2 ] += CROUCH_VIEWHEIGHT;
+		cent = &cg.predictedPlayerEntity;
+	}
+	else if ( !( cent = &cg_entities[ entityNum ] ) || !cent->currentValid )
+	{
+		return qfalse;
+	}
+
+	if ( cent->muzzlePS && CG_Attached( &cent->muzzlePS->attachment ) )
+	{
+		CG_AttachmentPoint( &cent->muzzlePS->attachment, muzzle );
 	}
 	else
 	{
-		muzzle[ 2 ] += DEFAULT_VIEWHEIGHT;
+		return qfalse;
 	}
-
-	VectorMA( muzzle, 14, forward, muzzle );
 
 	return qtrue;
 }
@@ -2549,32 +2538,34 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 	}
 }
 
-static void DrawTracer( vec3_t source, vec3_t dest )
+#define TRACER_MIN_DISTANCE 100.0f
+
+// TODO: Use a trail system to make the effect framerate independent.
+static void DrawTracer( vec3_t source, vec3_t dest, float chance, float length, float width )
 {
 	vec3_t     forward, right;
 	polyVert_t verts[ 4 ];
 	vec3_t     line;
-	float      len, begin, end;
+	float      distance, begin, end;
 	vec3_t     start, finish;
-	vec3_t     midpoint;
 
-	// tracer
-	VectorSubtract( dest, source, forward );
-	len = VectorNormalize( forward );
-
-	// start at least a little ways from the muzzle
-	if ( len < 100 )
+	if ( random() >= chance )
 	{
 		return;
 	}
 
-	begin = 50 + random() * ( len - 60 );
-	end = begin + cg_tracerLength.value;
+	VectorSubtract( dest, source, forward );
+	distance = VectorNormalize( forward );
 
-	if ( end > len )
+	// Start at least a little away from the muzzle.
+	if ( distance < TRACER_MIN_DISTANCE )
 	{
-		end = len;
+		return;
 	}
+
+	// Guarantee a minimum length of 1/4 * length.
+	begin = random() * Q_clamp( distance - 0.25f * length, TRACER_MIN_DISTANCE, distance );
+	end   = Q_clamp( begin + length, begin, distance );
 
 	VectorMA( source, begin, forward, start );
 	VectorMA( source, end, forward, finish );
@@ -2586,7 +2577,7 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	VectorMA( right, -line[ 0 ], cg.refdef.viewaxis[ 2 ], right );
 	VectorNormalize( right );
 
-	VectorMA( finish, cg_tracerWidth.value, right, verts[ 0 ].xyz );
+	VectorMA( finish, width, right, verts[ 0 ].xyz );
 	verts[ 0 ].st[ 0 ] = 0;
 	verts[ 0 ].st[ 1 ] = 1;
 	verts[ 0 ].modulate[ 0 ] = 255;
@@ -2594,7 +2585,7 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	verts[ 0 ].modulate[ 2 ] = 255;
 	verts[ 0 ].modulate[ 3 ] = 255;
 
-	VectorMA( finish, -cg_tracerWidth.value, right, verts[ 1 ].xyz );
+	VectorMA( finish, -width, right, verts[ 1 ].xyz );
 	verts[ 1 ].st[ 0 ] = 1;
 	verts[ 1 ].st[ 1 ] = 0;
 	verts[ 1 ].modulate[ 0 ] = 255;
@@ -2602,7 +2593,7 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	verts[ 1 ].modulate[ 2 ] = 255;
 	verts[ 1 ].modulate[ 3 ] = 255;
 
-	VectorMA( start, -cg_tracerWidth.value, right, verts[ 2 ].xyz );
+	VectorMA( start, -width, right, verts[ 2 ].xyz );
 	verts[ 2 ].st[ 0 ] = 1;
 	verts[ 2 ].st[ 1 ] = 1;
 	verts[ 2 ].modulate[ 0 ] = 255;
@@ -2610,7 +2601,7 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	verts[ 2 ].modulate[ 2 ] = 255;
 	verts[ 2 ].modulate[ 3 ] = 255;
 
-	VectorMA( start, cg_tracerWidth.value, right, verts[ 3 ].xyz );
+	VectorMA( start, width, right, verts[ 3 ].xyz );
 	verts[ 3 ].st[ 0 ] = 0;
 	verts[ 3 ].st[ 1 ] = 0;
 	verts[ 3 ].modulate[ 0 ] = 255;
@@ -2619,13 +2610,6 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 	verts[ 3 ].modulate[ 3 ] = 255;
 
 	trap_R_AddPolyToScene( cgs.media.tracerShader, 4, verts );
-
-	midpoint[ 0 ] = ( start[ 0 ] + finish[ 0 ] ) * 0.5;
-	midpoint[ 1 ] = ( start[ 1 ] + finish[ 1 ] ) * 0.5;
-	midpoint[ 2 ] = ( start[ 2 ] + finish[ 2 ] ) * 0.5;
-
-	// add the tracer sound
-	trap_S_StartSound( midpoint, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.tracerSound );
 }
 
 /*
@@ -2634,7 +2618,7 @@ Performs the same traces the server did to locate local hit effects.
 Keep this in sync with ShotgunPattern in g_weapon.c!
 ================
 */
-static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum )
+static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attackerNum )
 {
 	int     i;
 	float   r, u, a;
@@ -2662,7 +2646,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEn
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
 
-		CG_Trace( &tr, origin, NULL, NULL, end, otherEntNum, MASK_SHOT, 0 );
+		CG_Trace( &tr, origin, NULL, NULL, end, attackerNum, MASK_SHOT, 0 );
 
 		if ( !( tr.surfaceFlags & SURF_NOIMPACT ) )
 		{
@@ -2670,7 +2654,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEn
 			dummy.generic1        = WPM_PRIMARY;
 			dummy.eventParm       = DirToByte( tr.plane.normal );
 			dummy.otherEntityNum  = tr.entityNum;
-			dummy.otherEntityNum2 = 0; // TODO: Set attackerNum
+			dummy.otherEntityNum2 = attackerNum;
 			dummy.torsoAnim       = 0; // Make sure it is not used uninitialized
 
 			if ( cg_entities[ tr.entityNum ].currentState.eType == ET_PLAYER ||
@@ -2764,7 +2748,7 @@ void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 	weapon_t         weapon;
 	weaponMode_t     weaponMode;
 	int              victimNum, attackerNum, psCharge;
-	vec3_t           normal, tracerStart;
+	vec3_t           normal, muzzle;
 	weaponInfoMode_t *wim;
 	centity_t        *victim;
 
@@ -2809,15 +2793,10 @@ void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 	}
 
 	// tracer
-	if ( attackerNum >= 0 && cg_tracerChance.value > 0 )
+	if ( CalcMuzzlePoint( attackerNum, muzzle ) )
 	{
-		if ( CalcMuzzlePoint( attackerNum, tracerStart ) )
-		{
-			if ( random() < cg_tracerChance.value )
-			{
-				DrawTracer( tracerStart, origin );
-			}
-		}
+		DrawTracer( muzzle, origin, cg_tracerChance.value, cg_tracerLength.value,
+		            cg_tracerWidth.value );
 	}
 }
 
@@ -2826,7 +2805,7 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	weapon_t         weapon;
 	weaponMode_t     weaponMode;
 	int              attackerNum, psCharge;
-	vec3_t           normal, tracerStart;
+	vec3_t           normal, muzzle;
 	weaponInfoMode_t *wim;
 
 	// retrieve data from event
@@ -2857,15 +2836,10 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	}
 
 	// tracer
-	if ( attackerNum >= 0 && cg_tracerChance.value > 0 )
+	if ( CalcMuzzlePoint( attackerNum, muzzle ) )
 	{
-		if ( CalcMuzzlePoint( attackerNum, tracerStart ) )
-		{
-			if ( random() < cg_tracerChance.value )
-			{
-				DrawTracer( tracerStart, origin );
-			}
-		}
+		DrawTracer( muzzle, origin, cg_tracerChance.value, cg_tracerLength.value,
+		            cg_tracerWidth.value );
 	}
 }
 
