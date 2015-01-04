@@ -22,6 +22,12 @@
 			width: 50em;
 			height: 25em;
 		}
+		region.votes {
+			bottom: 35%;
+			text-align: left;
+			width: 40%;
+			left: 0.5em;
+		}
 		region.tutorial {
 			bottom: 21%;
 			text-align: left;
@@ -155,14 +161,13 @@
 			</if>
 
 		</statsbox>
-
-
-		<p><votes /></p>
-		<p><votes_team /></p>
-
 	</region>
 
 
+	<region class="votes">
+		<p><votes /></p>
+		<p><votes_team /></p>
+	</region>
 	<region class="tutorial">
 		<tutorial />
 	</region>
