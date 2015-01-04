@@ -528,8 +528,6 @@ namespace Beacon //this should eventually become a class
 		switch( ent->s.eType )
 		{
 			case ET_BUILDABLE:
-				if( ! (ent->s.eFlags & EF_B_SPAWNED ) )
-					return false;
 				if( ent->health <= 0 )
 					return false;
 				if( ent->buildableTeam == team )
