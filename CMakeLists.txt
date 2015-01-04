@@ -1571,23 +1571,59 @@ if( BUILD_TTY_CLIENT )
 endif()
 
 ################################################################################
-# NaCl SDK files
+# Runtime dependencies
 ################################################################################
 
-if( LINUX )
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
-elseif(WIN32 AND ARCH STREQUAL x86)
-  # Win32 requires sel_ldr64.exe in order to run on Win64
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-x86_64.nexe ${FULL_OUTPUT_DIR}/irt_core-x86_64.nexe )
-else()
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
+if( BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT )
+  add_custom_target( runtime_deps )
+
+  # The NaCl loader and IRT are required to load .nexe files
+  add_custom_command( TARGET runtime_deps PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} )
+  add_custom_command( TARGET runtime_deps PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe )
+
+  # Linux uses a bootstrap program to reserve address space
+  if( LINUX )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
+  endif()
+
+  # Win32 requires sel_ldr64.exe in order to run on Win64
+  if( WIN32 AND ARCH STREQUAL x86 )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-x86_64.nexe ${FULL_OUTPUT_DIR}/irt_core-x86_64.nexe )
+  endif()
+
+  # Mac requires some libraries from external_deps
+  if( APPLE )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_DIR}/SDL2.framework ${FULL_OUTPUT_DIR}/SDL2.framework )
+    file( GLOB RUNTIME_LIBS ${DEPS_DIR}/lib/*.dylib )
+    foreach( RUNTIME_LIB ${RUNTIME_LIBS} )
+      add_custom_command( TARGET runtime_deps PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RUNTIME_LIB} ${FULL_OUTPUT_DIR} )
+    endforeach()
+  endif()
+
+  # Windows requires some libraries from external_deps
+  if( WIN32 )
+    file( GLOB RUNTIME_LIBS ${DEPS_DIR}/bin/*.dll )
+    foreach( RUNTIME_LIB ${RUNTIME_LIBS} )
+      add_custom_command( TARGET runtime_deps PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RUNTIME_LIB} ${FULL_OUTPUT_DIR} )
+    endforeach()
+  endif()
+
+  if( BUILD_CLIENT )
+    add_dependencies( client runtime_deps )
+  endif()
+  if( BUILD_SERVER )
+    add_dependencies( server runtime_deps )
+  endif()
+  if( BUILD_TTY_CLIENT )
+    add_dependencies( ttyclient runtime_deps )
+  endif()
 endif()
