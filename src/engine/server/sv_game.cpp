@@ -433,8 +433,6 @@ SV_GetTag
   return qfalse if unable to retrieve tag information for this client
 ====================
 */
-extern qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * org );
-
 qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t * org )
 {
 	int i;
@@ -455,19 +453,7 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 		}
 	}
 
-	// Gordon: let's try and remove the inconsistency between ded/non-ded servers...
-	// Gordon: bleh, some code in clientthink_real really relies on this working on player models...
-#ifndef BUILD_SERVER // TTimo: dedicated only binary defines BUILD_SERVER
-
-	if ( com_dedicated->integer )
-	{
-		return qfalse;
-	}
-
-	return CL_GetTag( clientNum, tagname, org );
-#else
 	return qfalse;
-#endif
 }
 
 static VM::VMParams gameParams("game");

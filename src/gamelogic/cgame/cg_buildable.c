@@ -42,62 +42,108 @@ static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 	"destroyed.wav"
 };
 
-// MD5 buildable animation info helper macro
-#define CG_ANIM( b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15 ) \
-	( (   1   <<  1 ) | ( !!b2  <<  2 ) | ( !!b3  <<  3 ) | ( !!b4  <<  4 ) | \
-	  ( !!b5  <<  5 ) | ( !!b6  <<  6 ) | ( !!b7  <<  7 ) | ( !!b8  <<  8 ) | \
-	  ( !!b9  <<  9 ) | ( !!b10 << 10 ) | ( !!b11 << 11 ) | ( !!b12 << 12 ) | \
-	  ( !!b13 << 13 ) | ( !!b14 << 14 ) | ( !!b15 << 15 ) \
-	)
+// Shorthand definitions for the buildable animation names below.
+typedef enum shorthand_e {
+	XX,
 
-// MD5 buildable animation names, flags and fallbacks
-static const struct {
-	const char            *name;
-	qboolean              loop, reversed, clearOrigin;
-	buildableAnimNumber_t fallback;
-	qboolean              fallbackReversed; // true if the fallback's reversed flag is to be inverted
-} animTypes[ MAX_BUILDABLE_ANIMATIONS ] = {
-	{ "" }, // unused
-	{ "idle",              qtrue,  qfalse, qfalse, BANIM_NONE,     qfalse },
-	{ "idle2",     	       qtrue,  qfalse, qfalse, BANIM_IDLE1,    qfalse },
-	{ "powerdown",         qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
-	{ "idle_unpowered",    qtrue,  qfalse, qfalse, BANIM_IDLE1,    qfalse },
-	{ "construct", 	       qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
-	{ "construct2",        qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
-	{ "attack",            qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
-	{ "attack2",           qfalse, qfalse, qfalse, BANIM_ATTACK1,  qtrue  },
-	{ "spawn",     	       qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
-	{ "spawn2",            qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
-	{ "pain",              qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
-	{ "pain2",             qtrue,  qfalse, qfalse, BANIM_PAIN1,    qfalse },
-	{ "destroy",  	       qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
-	{ "destroy_unpowered", qfalse, qfalse, qfalse, BANIM_DESTROY1, qfalse },
-	{ "destroyed",         qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	// classic names
+	I1, // idle
+	I2, // idle2
+	PD, // powerdown
+	IU, // idle_unpowered
+	C1, // construct
+	C2, // construct2
+	A1, // attack
+	A2, // attack2
+	S1, // spawn
+	S2, // spawn2
+	P1, // pain
+	P2, // pain2
+	DE, // destroy
+	DU, // destroy_unpowered
+	DD, // destroyed
+
+	// custom names
+	OP, // open
+	CD, // closed
+
+	NUM_SHORTHANDS
+} shorthand_t;
+
+// Buildable animation names.
+static const char* shorthandToName[ NUM_SHORTHANDS ] = {
+    NULL,
+
+	"idle",
+	"idle2",
+	"powerdown",
+	"idle_unpowered",
+    "construct",
+	"construct2",
+	"attack",
+	"attack2",
+	"spawn",
+	"spawn2",
+	"pain",
+	"pain2",
+	"destroy",
+	"destroy_unpowered",
+	"destroyed",
+
+	"open",
+	"closed"
 };
 
-// Bitmaps for each buildable type, defining which animations are to be initialised
-// We expect that all have idle animations
-static const int animLoading[] = {
-	0,
-	//       idle2   pwrdwn  idlunp  cnstr   cnstr2  attack   attack2 spawn   spawn2  pain    pain2   dstry   dstry2  dstryed
-	CG_ANIM( qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_A_SPAWN
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_OVERMIND
-	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_A_BARRICADE
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_ACIDTUBE
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_TRAPPER
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_BOOSTER
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_HIVE
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_LEECH
+// Buildable animation flags.
+#define BAF_LOOP    0x1
+#define BAF_REVERSE 0x2
 
-	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_SPAWN
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TESLAGEN
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_ARMOURY
-	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_H_MEDISTAT
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DRILL
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REACTOR
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REPEATER
+// Mapping of buildableAnimNumber_t numbers to animation names (through their shorthand) and flags.
+// Every row is a buildable, every column is a buildableAnimNumber_t number.
+// The pd suffix means "_POWERDOWN".
+// TODO: Move this into buildable model config files (ideally after killing MD3).
+// TODO: Make XX print an error and keep current animation, right now the model would become distorted.
+static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABLES ][ MAX_BUILDABLE_ANIMATIONS ] = {
+// NONE IDLE1  IDLE2  PWRDWN IDLEpd CNSTR  PWRUP  ATTCK1 ATTCK2 SPAWN1 SPAWN2 PAIN1  PAIN2  DESTR  DSTRpd DESTRD   // BA_*
+{{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // NONE
+{{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_SPAWN
+{{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_OVERMIND
+{{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_BARRICADE
+{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_ACIDTUBE
+{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_TRAPPER
+{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_BOOSTER
+{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_HIVE
+{{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_LEECH
+{{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{S1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0}}, // H_SPAWN
+{{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_MGTURRET
+{{XX,0},{I1,0},{XX,0},{OP,2},{CD,0},{OP,0},{OP,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{OP,2},{CD,0},{CD,0}}, // H_ROCKETPOD
+{{XX,0},{I1,0},{XX,0},{I1,0},{I1,0},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_ARMOURY
+{{XX,0},{I1,0},{I2,0},{PD,0},{I1,0},{C1,0},{I1,0},{A1,0},{C2,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{DU,0},{DD,0}}, // H_MEDISTAT
+{{XX,0},{I1,0},{XX,0},{I1,0},{I1,0},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_DRILL
+{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0}}, // H_REACTOR
+{{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // H_REPEATER
 };
+
+static const char *GetAnimationName( buildable_t buildable, buildableAnimNumber_t animNumber )
+{
+	return shorthandToName[ anims[ buildable ][ animNumber ].shorthand ];
+}
+
+static int GetAnimationFlags( buildable_t buildable, buildableAnimNumber_t animNumber )
+{
+	return anims[ buildable ][ animNumber ].flags;
+}
+
+static qboolean IsLooped( buildable_t buildable, buildableAnimNumber_t animNumber )
+{
+	return ( GetAnimationFlags( buildable, animNumber ) & BAF_LOOP );
+}
+
+static qboolean IsReversed( buildable_t buildable, buildableAnimNumber_t animNumber )
+{
+	return ( GetAnimationFlags( buildable, animNumber ) & BAF_REVERSE );
+}
+
 
 static sfxHandle_t defaultAlienSounds[ MAX_BUILDABLE_ANIMATIONS ];
 static sfxHandle_t defaultHumanSounds[ MAX_BUILDABLE_ANIMATIONS ];
@@ -535,9 +581,9 @@ void CG_InitBuildables( void )
 	const char   *buildableName;
 	const char   *buildableIcon;
 	const char   *modelFile;
-	int          i;
+	buildable_t  buildable;
 	int          j;
-	int          n;
+	buildableAnimNumber_t anim;
 	fileHandle_t f;
 
 	memset( cg_buildables, 0, sizeof( cg_buildables ) );
@@ -556,21 +602,26 @@ void CG_InitBuildables( void )
 
 	cg.buildablesFraction = 0.0f;
 
-	for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; i++ )
+	for ( buildable = (buildable_t)( BA_NONE + 1 ); buildable < BA_NUM_BUILDABLES;
+	      buildable = (buildable_t)( buildable + 1 ) )
 	{
-		buildableInfo_t *bi = &cg_buildables[ i ];
+		buildableInfo_t *bi = &cg_buildables[ buildable ];
 		qboolean         iqm = qfalse;
 
-		buildableName = BG_Buildable( i )->name;
+		buildableName = BG_Buildable( buildable )->name;
 		//Load models
 		//Prefer md5 models over md3
 
-		if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.iqm", buildableName, buildableName ) ) ) )
+		if ( cg_highPolyBuildableModels.integer &&
+		     ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.iqm",
+		                                                   buildableName, buildableName ) ) ) )
 		{
 			bi->md5 = qtrue;
-			iqm = qtrue;
+			iqm     = qtrue;
 		}
-		else if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
+		else if ( cg_highPolyBuildableModels.integer &&
+		          ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh",
+		                                                        buildableName, buildableName ) ) ) )
 		{
 			bi->md5 = qtrue;
 		}
@@ -580,11 +631,11 @@ void CG_InitBuildables( void )
 
 			for ( j = 0; j < MAX_BUILDABLE_MODELS; j++ )
 			{
-				modelFile = BG_BuildableModelConfig( i )->models[ j ];
+				modelFile = BG_BuildableModelConfig( buildable )->models[ j ];
 
 				if ( strlen( modelFile ) > 0 )
 				{
-					cg_buildables[ i ].models[ j ] = trap_R_RegisterModel( modelFile );
+					cg_buildables[ buildable ].models[ j ] = trap_R_RegisterModel( modelFile );
 				}
 			}
 		}
@@ -592,39 +643,23 @@ void CG_InitBuildables( void )
 		// If an md5mesh is found, register md5anims
 		if ( bi->md5 )
 		{
-			for ( n = BANIM_NONE + 1; n < MAX_BUILDABLE_ANIMATIONS; n++ )
+			for ( anim = (buildableAnimNumber_t)( BANIM_NONE + 1 ); anim < MAX_BUILDABLE_ANIMATIONS;
+			      anim = (buildableAnimNumber_t)( anim + 1) )
 			{
-				if ( animLoading[ i ] & ( 1 << n ) )
+				const char *animName = GetAnimationName( buildable, anim );
+
+				if ( !animName )
 				{
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ n ].name, animTypes[ n ].loop, animTypes[ n ].reversed, animTypes[ n ].clearOrigin, iqm ) )
-					{
-						int o = (int) animTypes[ n ].fallback;
+					// No animation shall be loaded into this slot.
+					continue;
+				}
 
-						if ( o == BANIM_NONE )
-						{
-							// missing animation file, no fallback defined
-							Com_Printf( S_WARNING "Failed to load animation file '%s' for model '%s'\n", animTypes[ n ].name, buildableName );
-						}
-						else if ( !bi->animations[ o ].handle )
-						{
-							// no animation file, fallback wasn't loaded
-							if ( cg_debugAnim.integer )
-							{
-								Com_Printf( S_WARNING "No fallback for animation file '%s' for model '%s'\n", animTypes[ n ].name, buildableName );
-							}
-						}
-						else // valid fallback
-						{
-							// copy the animation data
-							bi->animations[ n ] = bi->animations[ o ];
-
-							// and reverse it if needed
-							if ( animTypes[ n ].fallbackReversed )
-							{
-									bi->animations[ n ].reversed = !bi->animations[ n ].reversed;
-							}
-						}
-					}
+				if ( !CG_RegisterBuildableAnimation( bi, buildableName, anim, animName,
+				                                     IsLooped( buildable, anim ),
+				                                     IsReversed( buildable, anim ), qfalse, iqm ) )
+				{
+					Com_Printf( S_ERROR "Failed to load animation '%s' for buildable '%s' and "
+					            "animation slot #%d.", animName, buildableName, anim );
 				}
 			}
 		}
@@ -633,7 +668,7 @@ void CG_InitBuildables( void )
 			//animation.cfg
 			Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/animation.cfg", buildableName );
 
-			if ( !CG_ParseBuildableAnimationFile( filename, (buildable_t) i ) )
+			if ( !CG_ParseBuildableAnimationFile( filename, (buildable_t) buildable ) )
 			{
 				Com_Printf( S_WARNING "failed to load animation file %s\n", filename );
 			}
@@ -642,7 +677,7 @@ void CG_InitBuildables( void )
 		//sound.cfg
 		Com_sprintf( filename, sizeof( filename ), "sound/buildables/%s/sound.cfg", buildableName );
 
-		if ( !CG_ParseBuildableSoundFile( filename, (buildable_t) i ) )
+		if ( !CG_ParseBuildableSoundFile( filename, (buildable_t) buildable ) )
 		{
 			Com_Printf( S_WARNING "failed to load sound file %s\n", filename );
 		}
@@ -653,41 +688,41 @@ void CG_InitBuildables( void )
 			strcpy( soundfile, cg_buildableSoundNames[ j - 1 ] );
 			Com_sprintf( filename, sizeof( filename ), "sound/buildables/%s/%s", buildableName, soundfile );
 
-			if ( cg_buildables[ i ].sounds[ j ].enabled )
+			if ( cg_buildables[ buildable ].sounds[ j ].enabled )
 			{
 				if ( trap_FS_FOpenFile( filename, &f, FS_READ ) > 0 )
 				{
 					//file exists so close it
 					trap_FS_FCloseFile( f );
 
-					cg_buildables[ i ].sounds[ j ].sound = trap_S_RegisterSound( filename, qfalse );
+					cg_buildables[ buildable ].sounds[ j ].sound = trap_S_RegisterSound( filename, qfalse );
 				}
 				else
 				{
 					//file doesn't exist - use default
-					if ( BG_Buildable( i )->team == TEAM_ALIENS )
+					if ( BG_Buildable( buildable )->team == TEAM_ALIENS )
 					{
-						cg_buildables[ i ].sounds[ j ].sound = defaultAlienSounds[ j ];
+						cg_buildables[ buildable ].sounds[ j ].sound = defaultAlienSounds[ j ];
 					}
 					else
 					{
-						cg_buildables[ i ].sounds[ j ].sound = defaultHumanSounds[ j ];
+						cg_buildables[ buildable ].sounds[ j ].sound = defaultHumanSounds[ j ];
 					}
 				}
 			}
 		}
 
 		//icon
-		if ( ( buildableIcon = BG_Buildable( i )->icon ) )
+		if ( ( buildableIcon = BG_Buildable( buildable )->icon ) )
 		{
-		        cg_buildables[ i ].buildableIcon = trap_R_RegisterShader( buildableIcon, RSF_DEFAULT );
+		        cg_buildables[ buildable ].buildableIcon = trap_R_RegisterShader( buildableIcon, RSF_DEFAULT );
                 }
 
-		cg.buildablesFraction = ( float ) i / ( float )( BA_NUM_BUILDABLES - 1 );
+		cg.buildablesFraction = ( float ) buildable / ( float )( BA_NUM_BUILDABLES - 1 );
 		trap_UpdateScreen();
 	}
 
-	cgs.media.teslaZapTS = CG_RegisterTrailSystem( "models/buildables/tesla/zap" );
+	cgs.media.teslaZapTS = CG_RegisterTrailSystem( "teslaZapTS" );
 }
 
 /*
@@ -737,12 +772,12 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_H_MGTURRET:
-			*range = TURRET_RANGE;
+			*range = MGTURRET_RANGE;
 			shc = SHC_ORANGE;
 			break;
 
-		case BA_H_TESLAGEN:
-			*range = TESLAGEN_RANGE;
+		case BA_H_ROCKETPOD:
+			*range = ROCKETPOD_RANGE;
 			shc = SHC_RED;
 			break;
 
@@ -770,7 +805,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 		// HACK: Assumes certain trapper attributes
 		*rmType = RM_SPHERICAL_CONE_64;
 	}
-	else if ( bType == BA_H_MGTURRET )
+	else if ( bType == BA_H_MGTURRET || bType == BA_H_ROCKETPOD )
 	{
 		// HACK: Assumes TURRET_PITCH_CAP == 30
 		*rmType = RM_SPHERICAL_CONE_240;
@@ -943,10 +978,10 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	//display the first frame of the construction anim if not yet spawned
 	if ( !( es->eFlags & EF_B_SPAWNED ) )
 	{
-		animation_t *anim = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT1 ];
+		animation_t *anim = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT ];
 
 		// Change the animation in the lerpFrame so that md5s will use it too.
-		cent->lerpFrame.animation = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT1 ];
+		cent->lerpFrame.animation = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT ];
 
 		//so that when animation starts for real it has sensible numbers
 		cent->lerpFrame.oldFrameTime =
@@ -1073,7 +1108,7 @@ static void CG_DrawBuildableRangeMarker( buildable_t buildable, const vec3_t ori
 
 		rgba[3] *= opacity;
 
-		if ( buildable == BA_A_HIVE || buildable == BA_H_TESLAGEN )
+		if ( buildable == BA_A_HIVE )
 		{
 			VectorMA( origin, BG_BuildableModelConfig( buildable )->maxs[ 2 ], normal, localOrigin );
 		}
@@ -1102,13 +1137,14 @@ CG_GhostBuildable
 */
 void CG_GhostBuildable( int buildableInfo )
 {
-	refEntity_t   ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 	playerState_t *ps;
 	vec3_t        angles, entity_origin;
 	vec3_t        mins, maxs;
 	trace_t       tr;
 	float         scale;
 	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK ); // assumed not BA_NONE
+	const buildableModelConfig_t *bmc = BG_BuildableModelConfig( buildable );
 
 	ps = &cg.predictedPlayerState;
 
@@ -1123,11 +1159,12 @@ void CG_GhostBuildable( int buildableInfo )
 		CG_DrawBuildableRangeMarker( buildable, entity_origin, tr.plane.normal, 1.0f );
 	}
 
-	CG_PositionAndOrientateBuildable( ps->viewangles, entity_origin, tr.plane.normal, ps->clientNum,
+	CG_PositionAndOrientateBuildable( angles, entity_origin, tr.plane.normal, ps->clientNum,
 	                                  mins, maxs, ent.axis, ent.origin );
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( buildable )->zOffset : BG_BuildableModelConfig( buildable )->oldOffset, tr.plane.normal, ent.origin );
+	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? bmc->zOffset : bmc->oldOffset,
+	          tr.plane.normal, ent.origin );
 
 	VectorCopy( ent.origin, ent.lightingOrigin );
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
@@ -1135,16 +1172,30 @@ void CG_GhostBuildable( int buildableInfo )
 	ent.hModel = cg_buildables[ buildable ].models[ 0 ];
 
 	ent.customShader = ( SB_BUILDABLE_TO_IBE( buildableInfo ) == IBE_NONE )
-	                     ? cgs.media.greenBuildShader
-	                     : cgs.media.redBuildShader;
+	                     ? cgs.media.greenBuildShader : cgs.media.redBuildShader;
 
-	//rescale the model
-	scale = BG_BuildableModelConfig( buildable )->modelScale;
+	scale = cg_highPolyBuildableModels.integer ? bmc->modelScale : bmc->oldScale;
+	if ( !scale ) scale = 1.0f;
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
 		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
 		CG_TransformSkeleton( &ent.skeleton, scale );
+	}
+
+	// Apply rotation from config.
+	{
+		matrix_t axisMat;
+		quat_t   axisQuat, rotQuat;
+
+		QuatFromAngles( rotQuat, bmc->modelRotation[ PITCH ], bmc->modelRotation[ YAW ],
+		                bmc->modelRotation[ ROLL ] );
+
+		MatrixFromVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
+		QuatFromMatrix( axisQuat, axisMat );
+		QuatMultiply0( axisQuat, rotQuat );
+		MatrixFromQuat( axisMat, axisQuat );
+		MatrixToVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 	}
 
 	if ( scale != 1.0f )
@@ -1279,7 +1330,9 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 			trap_R_SetColor( backColour );
 
-			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2, ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ), cgs.media.whiteShader );
+			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2,
+			            ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ),
+			            cgs.media.whiteShader );
 
 			trap_R_SetColor( NULL );
 
@@ -2232,16 +2285,17 @@ CG_Buildable
 */
 void CG_Buildable( centity_t *cent )
 {
-	refEntity_t   ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 	entityState_t *es = &cent->currentState;
 	vec3_t        angles;
 	vec3_t        surfNormal, xNormal, mins, maxs;
 	vec3_t        refNormal = { 0.0f, 0.0f, 1.0f };
-	float         rotAngle;
-	const buildableAttributes_t *buildable = BG_Buildable( es->modelindex );
-	team_t        team = buildable->team;
-	float         scale;
+	float         rotAngle, scale;
 	int           health;
+	buildable_t   buildable = (buildable_t)es->modelindex;
+	const buildableAttributes_t  *ba  = BG_Buildable( buildable );
+	const buildableModelConfig_t *bmc = BG_BuildableModelConfig( buildable );
+	team_t        team = ba->team;
 
 	//must be before EF_NODRAW check
 	if ( team == TEAM_ALIENS )
@@ -2313,7 +2367,8 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( es->modelindex )->zOffset : BG_BuildableModelConfig( es->modelindex )->oldOffset, surfNormal, ent.origin );
+	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? bmc->zOffset : bmc->oldOffset,
+	          surfNormal, ent.origin );
 
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
 	VectorCopy( ent.origin, ent.lightingOrigin );
@@ -2339,8 +2394,25 @@ void CG_Buildable( centity_t *cent )
 
 	CG_BuildableAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
 
-	//rescale the model
-	scale = cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( es->modelindex )->modelScale : BG_BuildableModelConfig( es->modelindex )->oldScale;
+	// TODO: Merge the scaling and rotation of (non-)ghost buildables.
+
+	// Apply rotation from config.
+	{
+		matrix_t axisMat;
+		quat_t   axisQuat, rotQuat;
+
+		QuatFromAngles( rotQuat, bmc->modelRotation[ PITCH ], bmc->modelRotation[ YAW ],
+		                bmc->modelRotation[ ROLL ] );
+
+		MatrixFromVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
+		QuatFromMatrix( axisQuat, axisMat );
+		QuatMultiply0( axisQuat, rotQuat );
+		MatrixFromQuat( axisMat, axisQuat );
+		MatrixToVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
+	}
+
+	// Apply scale from config.
+	scale = cg_highPolyBuildableModels.integer ? bmc->modelScale : bmc->oldScale;
 
 	if ( scale != 1.0f )
 	{
@@ -2366,32 +2438,50 @@ void CG_Buildable( centity_t *cent )
 		ent.customShader = cgs.media.redBuildShader;
 	}
 
+	// TODO: Rename condition as this is true for iqm models, too.
 	if ( cg_buildables[ es->modelindex ].md5 )
 	{
-		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
+		// If buildable has spawned or is a human buildable, don't alter the size
+		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
 
 		float realScale = spawned ? scale :
-			scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
+			scale * (float) sin ( 0.5f * (cg.time - es->time) / ba->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
 
-		if( es->modelindex == BA_H_MGTURRET )
+		if( es->modelindex == BA_H_MGTURRET || es->modelindex == BA_H_ROCKETPOD )
 		{
 			quat_t   rotation;
 			matrix_t mat;
 			vec3_t   nBounds[ 2 ];
 			vec3_t   p1, p2;
+			float    yaw, pitch, roll;
 
-			//FIXME: Don't hard code bones to specific assets. Soon, I should put bone names in
-			// .cfg so we can change it should the rig change.
+			yaw   = es->angles2[ YAW ] - es->angles[ YAW ];
+			pitch = es->angles2[ PITCH ];
 
-			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ], 0, 0 );
+			// TODO: Access bones by name instead of by number.
+
+			// The roll of Bone_platform is the turrets' yaw.
+			QuatFromAngles( rotation, 0, 0, yaw );
 			QuatMultiply0( ent.skeleton.bones[ 1 ].t.rot, rotation );
 
-			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
-			QuatMultiply0( ent.skeleton.bones[ 6 ].t.rot, rotation );
+			// The roll of Bone_gatlin is the turrets' pitch.
+			QuatFromAngles( rotation, 0, 0, pitch );
+			QuatMultiply0( ent.skeleton.bones[ 2 ].t.rot, rotation );
 
-			// transform bounds so they more accurately reflect the turret's new trasnformation
-			MatrixFromAngles( mat, es->angles2[ PITCH ], es->angles2[ YAW ] - es->angles[ YAW ], 0 );
+			// The roll of Bone_barrel is the mgturret's barrel roll.
+			if ( es->modelindex == BA_H_MGTURRET )
+			{
+				roll  = Q_clamp( ( 1.0f / MGTURRET_ATTACK_PERIOD ) *
+				        120.0f * ( cg.time - cent->muzzleFlashTime ), 0.0f, 120.0f );
+
+				QuatFromAngles( rotation, 0, 0, roll );
+				QuatMultiply0( ent.skeleton.bones[ 3 ].t.rot, rotation );
+			}
+
+			// transform bounds so they more accurately reflect the turrets' new transformation
+			// TODO: Evaluate
+			MatrixFromAngles( mat, pitch, yaw, 0 );
 
 			MatrixTransformNormal( mat, ent.skeleton.bounds[ 0 ], p1 );
 			MatrixTransformNormal( mat, ent.skeleton.bounds[ 1 ], p2 );
@@ -2415,17 +2505,17 @@ void CG_Buildable( centity_t *cent )
 		ent.altShaderIndex = CG_ALTSHADER_UNPOWERED;
 	}
 
-	//add to refresh list
+	// add to refresh list
 	trap_R_AddRefEntityToScene( &ent );
 
 	CrossProduct( surfNormal, refNormal, xNormal );
 	VectorNormalize( xNormal );
 	rotAngle = RAD2DEG( acos( DotProduct( surfNormal, refNormal ) ) );
 
-	//turret barrel bit
+	// MD3 turret special treatment part 1. TODO: Remove.
 	if ( cg_buildables[ es->modelindex ].models[ 1 ] )
 	{
-		refEntity_t turretBarrel;
+		static refEntity_t turretBarrel; // static for proper alignment in QVMs
 		vec3_t      flatAxis[ 3 ];
 
 		memset( &turretBarrel, 0, sizeof( turretBarrel ) );
@@ -2468,10 +2558,10 @@ void CG_Buildable( centity_t *cent )
 		trap_R_AddRefEntityToScene( &turretBarrel );
 	}
 
-	//turret barrel bit
+	// MD3 turret special treatment part 2. TODO: Remove.
 	if ( cg_buildables[ es->modelindex ].models[ 2 ] )
 	{
-		refEntity_t turretTop;
+		static refEntity_t turretTop; // static for proper alignment in QVMs
 		vec3_t      flatAxis[ 3 ];
 		vec3_t      swivelAngles;
 
@@ -2518,11 +2608,12 @@ void CG_Buildable( centity_t *cent )
 		trap_R_AddRefEntityToScene( &turretTop );
 	}
 
-	//weapon effects for turrets
+	// weapon effects
 	if ( es->eFlags & EF_FIRING )
 	{
 		weaponInfo_t *wi = &cg_weapons[ es->weapon ];
 
+		// muzzle flash
 		if ( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem )
 		{
 			// spawn muzzle ps if necessary
@@ -2534,14 +2625,38 @@ void CG_Buildable( centity_t *cent )
 			// update muzzle ps position
 			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
 			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "tag_flash" );
+				if ( cg_buildables[ es->modelindex ].md5 )
+				{
+					switch ( es->modelindex )
+					{
+						case BA_H_ROCKETPOD:
+						{
+							const static char left[]  = "left", right[] = "right";
+							int num = ( cent->muzzleFlashTime / ROCKETPOD_ATTACK_PERIOD ) % 6;
+							const char *side = ( num % 2 == 0 ) ? left : right;
+							num = ( num % 3 ) + 1;
+							CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel,
+							                     va( "Bone_fire_%s_%d", side, num ) );
+							break;
+						}
+
+						default:
+							CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "Bone_fire" );
+							break;
+					}
+				}
+				else
+				{
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "tag_flash" );
+				}
+
 				CG_AttachToTag( &cent->muzzlePS->attachment );
 			}
 		}
 
-		if ( cg.time - cent->muzzleFlashTime < MUZZLE_FLASH_TIME || ( weapon_t )es->weapon == WP_TESLAGEN )
+		// dynamic light
+		if ( cg.time - cent->muzzleFlashTime < MUZZLE_FLASH_TIME )
 		{
-			// add dynamic light
 			if ( wi->wim[ WPM_PRIMARY ].flashDlight )
 			{
 				trap_R_AddLightToScene( cent->lerpOrigin, wi->wim[ WPM_PRIMARY ].flashDlight,
@@ -2589,7 +2704,7 @@ void CG_Buildable( centity_t *cent )
 	// set particle effect to fire if buildable is burning
 	CG_OnFire( cent );
 
-	//smoke etc for damaged buildables
+	// smoke etc for damaged buildables
 	CG_BuildableParticleEffects( cent );
 
 	// draw range marker if enabled
@@ -2606,7 +2721,7 @@ void CG_Buildable( centity_t *cent )
 			drawRange = !!(cg_buildableRangeMarkerMask.integer & (1 << BA_NONE));
 		}
 
-		drawRange &= !!(cg_buildableRangeMarkerMask.integer & (1 << buildable->number));
+		drawRange &= !!(cg_buildableRangeMarkerMask.integer & (1 << ba->number));
 
 		dist = Distance( cent->lerpOrigin, cg.refdef.vieworg );
 
@@ -2617,7 +2732,7 @@ void CG_Buildable( centity_t *cent )
 				opacity = 10.0f - 10.0f * dist / maxDist;
 			}
 
-			CG_DrawBuildableRangeMarker( buildable->number, cent->lerpOrigin, cent->currentState.origin2, opacity );
+			CG_DrawBuildableRangeMarker( ba->number, cent->lerpOrigin, cent->currentState.origin2, opacity );
 		}
 	}
 

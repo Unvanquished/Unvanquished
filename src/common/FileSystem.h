@@ -35,7 +35,10 @@ typedef int64_t offset_t;
 // function.
 inline std::error_code& throws()
 {
-	std::error_code* ptr = nullptr;
+	// We use 1 instead of 0 because compilers smart enough know that 0 is an invalid value
+	// for a reference and when doing the following, will assume the condition to be true
+	//   if (&err != &throws()) // do stuff with err
+	std::error_code* ptr = reinterpret_cast<std::error_code*>(1);
 	return *ptr;
 }
 

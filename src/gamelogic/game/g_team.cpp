@@ -113,42 +113,26 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 	}
 }
 
-/*
-==============
-OnSameTeam
-==============
-*/
+team_t G_Team( gentity_t *ent )
+{
+	if ( ent->client )
+	{
+		return (team_t)ent->client->pers.team;
+	}
+	else if ( ent->s.eType == ET_BUILDABLE )
+	{
+		return ent->buildableTeam;
+	}
+	else
+	{
+		return TEAM_NONE;
+	}
+}
+
 qboolean G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 {
-	team_t team1, team2;
-
-	if ( ent1->client )
-	{
-		team1 = (team_t) ent1->client->pers.team;
-	}
-	else if ( ent1->s.eType == ET_BUILDABLE )
-	{
-		team1 = ent1->buildableTeam;
-	}
-	else
-	{
-		return qfalse;
-	}
-
-	if ( ent2->client )
-	{
-		team2 = (team_t) ent2->client->pers.team;
-	}
-	else if ( ent2->s.eType == ET_BUILDABLE )
-	{
-		team2 = ent2->buildableTeam;
-	}
-	else
-	{
-		return qfalse;
-	}
-
-	return ( team1 == team2 );
+	team_t team1 = G_Team( ent1 );
+	return ( team1 != TEAM_NONE && team1 == G_Team( ent2 ) );
 }
 
 /*

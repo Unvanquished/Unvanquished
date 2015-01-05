@@ -140,10 +140,6 @@ int   REACTOR_ATTACK_DAMAGE;
 
 float REPEATER_BASESIZE;
 
-float TESLAGEN_RANGE;
-int   TESLAGEN_REPEAT;
-int   TESLAGEN_DMG;
-
 // Human Weapons
 
 int   BLASTER_SPREAD;
@@ -208,10 +204,6 @@ static configVar_t bg_configVars[] =
 	{"b_reactor_zapAttackRepeat", INTEGER, qfalse, &REACTOR_ATTACK_REPEAT},
 
 	{"b_repeater_powerRadius", FLOAT, qfalse, &REPEATER_BASESIZE},
-
-	{"b_tesla_zapAttackDamage", INTEGER, qfalse, &TESLAGEN_DMG},
-	{"b_tesla_zapAttackRange", FLOAT, qfalse, &TESLAGEN_RANGE},
-	{"b_tesla_zapAttackRepeat", INTEGER, qfalse, &TESLAGEN_REPEAT},
 
 	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},
@@ -869,7 +861,8 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 		MAXS = 1 << 3,
 		ZOFFSET = 1 << 4,
 		OLDSCALE = 1 << 5,
-		OLDOFFSET = 1 << 6
+		OLDOFFSET = 1 << 6,
+		MODELROTATION = 1 << 7
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -923,6 +916,17 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 			bc->modelScale = scale;
 
 			defined |= MODELSCALE;
+		}
+		else if ( !Q_stricmp( token, "modelRotation" ) )
+		{
+			PARSE( text, token );
+			bc->modelRotation[ 0 ] = atof( token );
+			PARSE( text, token );
+			bc->modelRotation[ 1 ] = atof( token );
+			PARSE( text, token );
+			bc->modelRotation[ 2 ] = atof( token );
+
+			defined |= MODELROTATION;
 		}
 		else if ( !Q_stricmp( token, "mins" ) )
 		{
@@ -2180,7 +2184,9 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		IMPACT_MARK      = 1 << 18,
 		IMPACT_MARK_SIZE = 1 << 19,
 		IMPACT_SOUND     = 1 << 20,
-		IMPACT_FLESH_SND = 1 << 21
+		IMPACT_FLESH_SND = 1 << 21,
+		MODEL_SCALE      = 1 << 22,
+		MODELROTATION   = 1 << 23
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof( text_buffer ) ) )
@@ -2201,6 +2207,25 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			ma->model = trap_R_RegisterModel( token );
 #endif
 			defined |= MODEL;
+		}
+		else if ( !Q_stricmp( token, "modelScale" ) )
+		{
+			PARSE( text, token );
+
+			ma->modelScale = atof( token );
+
+			defined |= MODEL_SCALE;
+		}
+		else if ( !Q_stricmp( token, "modelRotation" ) )
+		{
+			PARSE( text, token );
+			ma->modelRotation[ 0 ] = atof( token );
+			PARSE( text, token );
+			ma->modelRotation[ 1 ] = atof( token );
+			PARSE( text, token );
+			ma->modelRotation[ 2 ] = atof( token );
+
+			defined |= MODELROTATION;
 		}
 		else if ( !Q_stricmp( token, "sound" ) )
 		{
@@ -2414,6 +2439,9 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		ma->usesImpactMark = qfalse;
 		Com_Printf( S_ERROR "Not all mandatory impactMark vars defined in %s\n", filename );
 	}
+
+	// default values
+	if ( !( defined & MODEL_SCALE ) ) ma->modelScale = 1.0f;
 }
 
 /*

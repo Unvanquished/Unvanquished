@@ -92,6 +92,71 @@ else()
 endif()
 
 ################################################################################
+# Directories
+################################################################################
+
+# Dependencies version, this must match the number in external_deps/build.sh
+set( DEPS_VERSION 2 )
+
+set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
+set( OBJ_DIR ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY} )
+set( ENGINE_DIR ${MOUNT_DIR}/engine )
+set( COMMON_DIR ${MOUNT_DIR}/common )
+set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
+set( TOOLS_DIR ${MOUNT_DIR}/tools )
+set( LCC_DIR ${TOOLS_DIR}/lcc )
+set( LIB_DIR ${MOUNT_DIR}/libs )
+set( ROCKET_DIR ${LIB_DIR}/libRocket )
+if( CMAKE_CFG_INTDIR STREQUAL "." )
+  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
+else()
+  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
+endif()
+if( MSVC )
+  set( DEPS_EXT ".zip" )
+  if( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc64-${DEPS_VERSION} )
+  else()
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc32-${DEPS_VERSION} )
+  endif()
+elseif( WIN32 )
+  set( DEPS_EXT ".zip" )
+  if( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw64-${DEPS_VERSION} )
+  else()
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw32-${DEPS_VERSION} )
+  endif()
+elseif( APPLE )
+  set( DEPS_EXT ".tar.bz2" )
+  if( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx64-${DEPS_VERSION} )
+  else()
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx32-${DEPS_VERSION} )
+  endif()
+elseif( LINUX )
+  set( DEPS_EXT ".tar.bz2" )
+  # Our minimal NaCl .debs put the files in /usr/lib/nacl, so check that first
+  if( EXISTS "/usr/lib/nacl/sel_ldr" )
+    set( DEPS_DIR "/usr/lib/nacl" )
+  elseif( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux64-${DEPS_VERSION} )
+  else()
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux32-${DEPS_VERSION} )
+  endif()
+endif()
+if( LINUX AND ARCH STREQUAL "x86_64" )
+  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin64 )
+else()
+  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin )
+endif()
+if( WIN32 )
+  set( PNACL_BIN_EXT ".bat" )
+else()
+  set( PNACL_BIN_EXT "" )
+endif()
+
+################################################################################
 # Compile and link flags
 ################################################################################
 
@@ -361,71 +426,6 @@ if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
     message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
   endif()
   set( PNACLPYTHON_PREFIX env "PNACLPYTHON=${PYTHON_EXECUTABLE}" )
-endif()
-
-################################################################################
-# Directories
-################################################################################
-
-# Dependencies version, this must match the number in external_deps/build.sh
-set( DEPS_VERSION 2 )
-
-set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
-set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( OBJ_DIR ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY} )
-set( ENGINE_DIR ${MOUNT_DIR}/engine )
-set( COMMON_DIR ${MOUNT_DIR}/common )
-set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
-set( TOOLS_DIR ${MOUNT_DIR}/tools )
-set( LCC_DIR ${TOOLS_DIR}/lcc )
-set( LIB_DIR ${MOUNT_DIR}/libs )
-set( ROCKET_DIR ${LIB_DIR}/libRocket )
-if( CMAKE_CFG_INTDIR STREQUAL "." )
-  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
-else()
-  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
-endif()
-if( MSVC )
-  set( DEPS_EXT ".zip" )
-  if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc32-${DEPS_VERSION} )
-  endif()
-elseif( WIN32 )
-  set( DEPS_EXT ".zip" )
-  if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw32-${DEPS_VERSION} )
-  endif()
-elseif( APPLE )
-  set( DEPS_EXT ".tar.bz2" )
-  if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx32-${DEPS_VERSION} )
-  endif()
-elseif( LINUX )
-  set( DEPS_EXT ".tar.bz2" )
-  # Our minimal NaCl .debs put the files in /usr/lib/nacl, so check that first
-  if( EXISTS "/usr/lib/nacl/sel_ldr" )
-    set( DEPS_DIR "/usr/lib/nacl" )
-  elseif( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux32-${DEPS_VERSION} )
-  endif()
-endif()
-if( LINUX AND ARCH STREQUAL "x86_64" )
-  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin64 )
-else()
-  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin )
-endif()
-if( WIN32 )
-  set( PNACL_BIN_EXT ".bat" )
-else()
-  set( PNACL_BIN_EXT "" )
 endif()
 
 ################################################################################
@@ -1723,23 +1723,59 @@ if( BUILD_TTY_CLIENT )
 endif()
 
 ################################################################################
-# NaCl SDK files
+# Runtime dependencies
 ################################################################################
 
-if( LINUX )
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
-elseif(WIN32 AND ARCH STREQUAL x86)
-  # Win32 requires sel_ldr64.exe in order to run on Win64
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-x86_64.nexe ${FULL_OUTPUT_DIR}/irt_core-x86_64.nexe )
-else()
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
+if( BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT )
+  add_custom_target( runtime_deps )
+
+  # The NaCl loader and IRT are required to load .nexe files
+  add_custom_command( TARGET runtime_deps PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} )
+  add_custom_command( TARGET runtime_deps PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe )
+
+  # Linux uses a bootstrap program to reserve address space
+  if( LINUX )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
+  endif()
+
+  # Win32 requires sel_ldr64.exe in order to run on Win64
+  if( WIN32 AND ARCH STREQUAL x86 )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-x86_64.nexe ${FULL_OUTPUT_DIR}/irt_core-x86_64.nexe )
+  endif()
+
+  # Mac requires some libraries from external_deps
+  if( APPLE )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_DIR}/SDL2.framework ${FULL_OUTPUT_DIR}/SDL2.framework )
+    file( GLOB RUNTIME_LIBS ${DEPS_DIR}/lib/*.dylib )
+    foreach( RUNTIME_LIB ${RUNTIME_LIBS} )
+      add_custom_command( TARGET runtime_deps PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RUNTIME_LIB} ${FULL_OUTPUT_DIR} )
+    endforeach()
+  endif()
+
+  # Windows requires some libraries from external_deps
+  if( WIN32 )
+    file( GLOB RUNTIME_LIBS ${DEPS_DIR}/bin/*.dll )
+    foreach( RUNTIME_LIB ${RUNTIME_LIBS} )
+      add_custom_command( TARGET runtime_deps PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RUNTIME_LIB} ${FULL_OUTPUT_DIR} )
+    endforeach()
+  endif()
+
+  if( BUILD_CLIENT )
+    add_dependencies( client runtime_deps )
+  endif()
+  if( BUILD_SERVER )
+    add_dependencies( server runtime_deps )
+  endif()
+  if( BUILD_TTY_CLIENT )
+    add_dependencies( ttyclient runtime_deps )
+  endif()
 endif()
