@@ -462,6 +462,16 @@ in-game talk, and menu fields
 Key events are used for non-printable characters, others are gotten from char events.
 =================
 */
+#ifdef BUILD_TTY_CLIENT
+# define SDL1_case(v)
+#else
+# include "SDL_version.h"
+# if SDL_VERSION_ATLEAST( 2, 0, 0 )
+#  define SDL1_case(v)
+# else
+#  define SDL1_case(v) case v:
+# endif
+#endif
 void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
     key = tolower(key);
 
@@ -470,6 +480,12 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             edit.DeleteNext();
             break;
 
+#ifndef BUILD_TTY_CLIENT
+# if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+        case 'h':
+            if ( keys[ K_CTRL ].down )
+# endif
+#endif
         case K_BACKSPACE:
             edit.DeletePrev();
             break;
@@ -499,6 +515,7 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             break;
 
         case K_HOME:
+		SDL1_case( 1 )
             edit.CursorStart();
             break;
 
@@ -509,6 +526,7 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             break;
 
         case K_END:
+		SDL1_case( 5 )
             edit.CursorEnd();
             break;
 
@@ -524,6 +542,7 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
         //kangz: I'm not sure we *need* this shortcut
         case 't':
             if ( keys[ K_CTRL ].down )
+		SDL1_case( 20 )
 			if( edit->cursor)
 			{
                 char *p, tmp[4];
@@ -547,23 +566,28 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
         */
         case 'v':
             if (keys[ K_CTRL ].down) {
+		SDL1_case( 22 )
                 Field_Paste( edit, SELECTION_CLIPBOARD );
             }
             break;
         case 'd':
             if (keys[ K_CTRL ].down) {
+		SDL1_case( 4 )
                 edit.DeleteNext();
             }
             break;
         case 'c':
         case 'u':
             if (keys[ K_CTRL ].down) {
+		SDL1_case( 3 )
+		SDL1_case( 21 )
                 edit.Clear();
             }
             break;
         case 'k':
             if (keys[ K_CTRL ].down) {
-				edit.DeleteEnd();
+		SDL1_case( 11 )
+		edit.DeleteEnd();
             }
             break;
     }
@@ -1498,6 +1522,8 @@ static void Key_CompleteEditbind( char *args, int argNum )
 Helper functions for Cmd_If_f & Cmd_ModCase_f
 ===============
 */
+static const char modifierList[] = "shift, ctrl, alt, command/cmd, mode, super, compose, menu; ! negates; e.g. shift,!alt";
+
 static const struct
 {
 	char name[ 8 ];

@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include <SDL.h>
+#include "sdl2_compat.h"
 #include "../client/client.h"
 #include "../qcommon/q_unicode.h"
 #include "../sys/sys_local.h"
@@ -44,6 +45,9 @@ static SDL_Joystick *stick = NULL;
 
 static qboolean     mouseAvailable = qfalse;
 qboolean            mouseActive = qfalse;
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+static qboolean     keyRepeatEnabled = qfalse;
+#endif
 
 static cvar_t       *in_mouse = NULL;
 
@@ -292,6 +296,10 @@ IN_TranslateSDLToQ3Key
 static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 {
 	keyNum_t key = (keyNum_t) 0;
+
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+	key = (keyNum_t) keysym->unicode;
+#endif
 
 	if ( keysym->sym >= SDLK_SPACE && keysym->sym < SDLK_DELETE )
 	{
@@ -581,8 +589,13 @@ static void IN_GobbleMotionEvents( void )
 
 	// Gobble any mouse motion events
 	SDL_PumpEvents();
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	while ( SDL_PeepEvents( dummy, 1, SDL_GETEVENT,
 	                        SDL_MOUSEMOTION, SDL_MOUSEMOTION ) ) { }
+#else
+	while ( SDL_PeepEvents( dummy, 1, SDL_GETEVENT,
+	                        SDL_EVENTMASK( SDL_MOUSEMOTION ) ) ) { }
+#endif
 }
 
 /*
@@ -642,7 +655,10 @@ void IN_DeactivateMouse( qboolean showCursor )
 
 	// Show the cursor when the mouse is disabled,
 	// but not when fullscreen
-	SDL_ShowCursor( showCursor );
+	if ( !cls.glconfig.isFullscreen || SDL_VERSION_ATLEAST( 2, 0, 0 ) )
+	{
+		SDL_ShowCursor( showCursor );
+	}
 
 	if ( !mouseAvailable )
 	{
@@ -1382,18 +1398,41 @@ static void IN_ProcessEvents( qboolean dropInput )
 		return;
 	}
 
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+	if ( cls.keyCatchers == 0 && keyRepeatEnabled )
+	{
+		SDL_EnableKeyRepeat( 0, 0 );
+		keyRepeatEnabled = qfalse;
+	}
+	else if ( !keyRepeatEnabled )
+	{
+		SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY,
+		                     SDL_DEFAULT_REPEAT_INTERVAL );
+		keyRepeatEnabled = qtrue;
+	}
+#endif
 	while ( SDL_PollEvent( &e ) )
 	{
 		switch ( e.type )
 		{
 			case SDL_KEYDOWN:
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 				if ( !dropInput && ( !e.key.repeat || cls.keyCatchers ) )
+#else
+				if ( !dropInput )
+#endif
 				{
 					key = IN_TranslateSDLToQ3Key( &e.key.keysym, qtrue );
 
 					if ( key )
 					{
 						Com_QueueEvent( 0, SE_KEY, key, qtrue, 0, NULL );
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+						if ( key != K_CONSOLE )
+						{
+							Com_QueueEvent( 0, SE_CHAR, Q_UTF8_Store( Q_UTF8_Encode( e.key.keysym.unicode ) ), 0, 0, NULL );
+						}
+#endif
 					}
 
 					lastKeyDown = key;
@@ -1415,6 +1454,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 				}
 
 				break;
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 			case SDL_TEXTINPUT:
 				if ( lastKeyDown != K_CONSOLE )
 				{
@@ -1429,13 +1469,14 @@ static void IN_ProcessEvents( qboolean dropInput )
 					}
 				}
 				break;
+#endif
 			case SDL_MOUSEMOTION:
 				if ( !dropInput )
 				{
 					if ( mouseActive )
 					{
 						Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL );
-#if defined( __linux__ ) || defined( __BSD__ )
+#if ( defined( __linux__ ) || defined( __BSD__ ) ) && SDL_VERSION_ATLEAST( 2, 0, 0 )
 						{
 							// work around X window managers and edge-based workspace flipping
 							// - without this, we get LeaveNotify, no mouse button events, EnterNotify;
@@ -1468,6 +1509,15 @@ static void IN_ProcessEvents( qboolean dropInput )
 						case SDL_BUTTON_RIGHT:
 							b = K_MOUSE2;
 							break;
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+						case SDL_BUTTON_WHEELUP:
+							b = K_MWHEELUP;
+							break;
+
+						case SDL_BUTTON_WHEELDOWN:
+							b = K_MWHEELDOWN;
+							break;
+#endif
 						case SDL_BUTTON_X1:
 							b = K_MOUSE4;
 							break;
@@ -1485,6 +1535,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 					                ( e.type == SDL_MOUSEBUTTONDOWN ? qtrue : qfalse ), 0, NULL );
 				}
 				break;
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 			case SDL_MOUSEWHEEL:
 				// FIXME: mouse wheel support shouldn't use keys!
 				if ( e.wheel.y > 0 )
@@ -1520,6 +1571,29 @@ static void IN_ProcessEvents( qboolean dropInput )
 					case SDL_WINDOWEVENT_FOCUS_GAINED: Cvar_SetValue( "com_unfocused", 0 ); break;
 				}
 				break;
+#else
+			case SDL_VIDEORESIZE:
+				{
+					char width[32], height[32];
+					Com_sprintf( width, sizeof( width ), "%d", e.resize.w );
+					Com_sprintf( height, sizeof( height ), "%d", e.resize.h );
+					Cvar_Set( "r_customwidth", width );
+					Cvar_Set( "r_customheight", height );
+					Cvar_Set( "r_mode", "-1" );
+				}
+				break;
+			case SDL_ACTIVEEVENT:
+				if ( e.active.state & SDL_APPINPUTFOCUS )
+				{
+					Cvar_SetValue( "com_unfocused", !e.active.gain );
+				}
+
+				if ( e.active.state & SDL_APPACTIVE )
+				{
+					Cvar_SetValue( "com_minimized", !e.active.gain );
+				}
+				break;
+#endif
 			case SDL_QUIT:
 				Cmd::ExecuteCommand("quit Closed window");
 				break;
@@ -1554,12 +1628,13 @@ void IN_Frame( void )
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
-	if ( !cls.glconfig.isFullscreen && cls.keyCatchers & KEYCATCH_CONSOLE )
+	if ( ( !cls.glconfig.isFullscreen || SDL_VERSION_ATLEAST( 2, 0, 0 ) ) &&
+	     ( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
 		// Console is down in windowed mode
 		IN_DeactivateMouse( qfalse );
 	}
-	else if ( !cls.glconfig.isFullscreen && loading )
+	else if ( ( !cls.glconfig.isFullscreen || SDL_VERSION_ATLEAST( 2, 0, 0 ) ) && loading )
 	{
 		// Loading in windowed mode
 		IN_DeactivateMouse( qtrue );
@@ -1622,13 +1697,23 @@ void IN_Init( void *windowData )
 	in_xbox360Controller = Cvar_Get( "in_xbox360Controller", "1", CVAR_TEMP );
 	in_xbox360ControllerAvailable = Cvar_Get( "in_xbox360ControllerAvailable", "0", CVAR_ROM );
 	in_xbox360ControllerDebug = Cvar_Get( "in_xbox360ControllerDebug", "0", CVAR_TEMP );
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	SDL_StartTextInput();
+#else
+	SDL_EnableUNICODE( 1 );
+	SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL );
+	keyRepeatEnabled = qtrue;
+#endif
 	mouseAvailable = ( in_mouse->value != 0 );
 	IN_DeactivateMouse( qtrue );
 
 	appState = SDL_GetWindowFlags( window );
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_WINDOW_INPUT_FOCUS ) );
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	Cvar_SetValue( "com_minimized", ( appState & SDL_WINDOW_MINIMIZED ) );
+#else
+	Cvar_SetValue( "com_minimized", !( appState & SDL_APPACTIVE ) );
+#endif
 	IN_InitJoystick();
 	Com_DPrintf( "------------------------------------\n" );
 }
@@ -1640,7 +1725,9 @@ IN_Shutdown
 */
 void IN_Shutdown( void )
 {
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	SDL_StopTextInput();
+#endif
 	IN_DeactivateMouse( qtrue );
 	mouseAvailable = qfalse;
 
