@@ -180,7 +180,7 @@ void              G_KnockbackByDir( gentity_t *target, const vec3_t direction, f
 void              G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength, qboolean ignoreMass );
 void              G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod );
 void              G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team );
-qboolean          G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int dflags, int mod );
+qboolean          G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int dflags, int mod, team_t testHit = TEAM_NONE );
 qboolean          G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod, int ignoreTeam );
 void              G_RewardAttackers( gentity_t *self );
 void              G_AddCreditsToScore( gentity_t *self, int credits );
@@ -232,6 +232,8 @@ void              G_InitGame( int levelTime, int randomSeed, int restart );
 void              G_RunFrame( int levelTime );
 void              G_ShutdownGame( int restart );
 vmCvar_t          *G_FindCvar( const char *name );
+void              G_CheckPmoveParamChanges();
+void              G_SendClientPmoveParams(int client);
 
 // g_maprotation.c
 void              G_PrintRotations( void );
@@ -274,6 +276,7 @@ void              G_UnregisterCommands( void );
 team_t            G_TeamFromString( const char *str );
 void              G_TeamCommand( team_t team, const char *cmd );
 void              G_AreaTeamCommand( gentity_t *ent, const char *cmd );
+team_t            G_Team( gentity_t *ent );
 qboolean          G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
 void              G_LeaveTeam( gentity_t *self );
 void              G_ChangeTeam( gentity_t *ent, team_t newTeam );
@@ -320,6 +323,7 @@ bool              G_IsPlayableTeam( team_t team );
 bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
 team_t            G_Enemy( team_t team );
+bool              G_Alive( gentity_t *ent );
 
 // g_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );
@@ -340,5 +344,6 @@ void              G_UpdateZaps( int msec );
 void              G_ClearPlayerZapEffects( gentity_t *player );
 void              G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode );
 void              G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
+bool              G_RocketpodSafeShot( int passEntityNum, vec3_t origin, vec3_t dir );
 
 #endif // G_PUBLIC_H_

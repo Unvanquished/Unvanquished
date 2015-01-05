@@ -3102,24 +3102,6 @@ void CL_SetCGameTime( void )
 	}
 }
 
-/*
-====================
-CL_GetTag
-====================
-*/
-qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * orientation )
-{
-	if ( !cgvm )
-	{
-		return qfalse;
-	}
-
-	// the current design of CG_GET_TAG is inappropriate for modules in sandboxed formats
-	//  (the direct pointer method to pass the tag name would work only with modules in native format)
-	//return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
-	return qfalse;
-}
-
 /**
  * is notified by teamchanges.
  * while most notifications will come from the cgame, due to game semantics,

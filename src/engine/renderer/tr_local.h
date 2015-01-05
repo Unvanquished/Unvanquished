@@ -3373,10 +3373,16 @@ static inline float halfToFloat( int16_t in ) {
 
 #ifdef GLEW_ARB_sync
 	typedef struct glRingbuffer_s {
+		// the BO is logically split into DYN_BUFFER_SEGMENTS
+		// segments, the active segment is the one the CPU may write
+		// into, while the GPU may read from the inactive segments.
 		void           *baseAddr;
 		GLsizei        elementSize;
 		GLsizei        segmentElements;
 		int            activeSegment;
+		// all syncs except the active segment's should be
+		// always defined and waitable, the active segment's
+		// sync is always undefined
 		GLsync         syncs[ DYN_BUFFER_SEGMENTS ];
 	} glRingbuffer_t;
 #endif

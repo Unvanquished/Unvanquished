@@ -186,7 +186,6 @@ vmCvar_t        cg_thirdPersonRange;
 vmCvar_t        cg_lagometer;
 vmCvar_t        cg_drawSpeed;
 vmCvar_t        cg_maxSpeedTimeWindow;
-vmCvar_t        cg_synchronousClients;
 vmCvar_t        cg_stats;
 vmCvar_t        cg_paused;
 vmCvar_t        cg_blood;
@@ -201,9 +200,6 @@ vmCvar_t        cg_noVoiceText;
 vmCvar_t        cg_hudFiles;
 vmCvar_t        cg_hudFilesEnable;
 vmCvar_t        cg_smoothClients;
-vmCvar_t        pmove_fixed;
-vmCvar_t        pmove_msec;
-vmCvar_t        pmove_accurate;
 vmCvar_t        cg_timescaleFadeEnd;
 vmCvar_t        cg_timescaleFadeSpeed;
 vmCvar_t        cg_timescale;
@@ -349,9 +345,9 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_noPlayerAnims,               "cg_noplayeranims",               "0",            CVAR_CHEAT                   },
 	{ &cg_showmiss,                    "cg_showmiss",                    "0",            0                            },
 	{ &cg_footsteps,                   "cg_footsteps",                   "1",            CVAR_CHEAT                   },
-	{ &cg_tracerChance,                "cg_tracerchance",                "0.4",          CVAR_CHEAT                   },
-	{ &cg_tracerWidth,                 "cg_tracerwidth",                 "1",            CVAR_CHEAT                   },
-	{ &cg_tracerLength,                "cg_tracerlength",                "100",          CVAR_CHEAT                   },
+	{ &cg_tracerChance,                "cg_tracerchance",                "1",            CVAR_CHEAT                   },
+	{ &cg_tracerWidth,                 "cg_tracerwidth",                 "3",            CVAR_CHEAT                   },
+	{ &cg_tracerLength,                "cg_tracerlength",                "200",          CVAR_CHEAT                   },
 	{ &cg_thirdPersonRange,            "cg_thirdPersonRange",            "75",           0                            },
 	{ &cg_thirdPerson,                 "cg_thirdPerson",                 "0",            CVAR_CHEAT                   },
 	{ &cg_thirdPersonAngle,            "cg_thirdPersonAngle",            "0",            CVAR_CHEAT                   },
@@ -431,15 +427,11 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_paused,                      "cl_paused",                      "0",            CVAR_ROM                     },
 	{ &cg_blood,                       "com_blood",                      "1",            0                            },
-	{ &cg_synchronousClients,          "g_synchronousClients",           "0",            CVAR_SYSTEMINFO              }, // communicated by systeminfo
 	{ &cg_timescaleFadeEnd,            "cg_timescaleFadeEnd",            "1",            CVAR_CHEAT                   },
 	{ &cg_timescaleFadeSpeed,          "cg_timescaleFadeSpeed",          "0",            CVAR_CHEAT                   },
 	{ &cg_timescale,                   "timescale",                      "1",            0                            },
 	{ &cg_smoothClients,               "cg_smoothClients",               "0",            CVAR_USERINFO                },
 
-	{ &pmove_fixed,                    "pmove_fixed",                    "0",            CVAR_SYSTEMINFO              },
-	{ &pmove_msec,                     "pmove_msec",                     "8",            CVAR_SYSTEMINFO              },
-	{ &pmove_accurate,                 "pmove_accurate",                 "0",            CVAR_SYSTEMINFO              },
 	{ &cg_noTaunt,                     "cg_noTaunt",                     "0",            0                            },
 
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO                },
@@ -659,7 +651,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				brmMask |= ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_ACIDTUBE ) |
 				           ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) |
 				           ( 1 << BA_A_BOOSTER ) | ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) |
-				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
+				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_ROCKETPOD ) | ( 1 << BA_H_DRILL );
 			}
 			else if ( !Q_stricmp( p, "none" ) )
 			{
@@ -680,7 +672,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				{
 					pp = p + 5;
 					only = ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) |
-					       ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
+					       ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_ROCKETPOD ) | ( 1 << BA_H_DRILL );
 				}
 				else
 				{
@@ -700,7 +692,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				else if ( !Q_stricmp( pp, "offensive" ) )
 				{
 					brmMask |= only & ( ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) |
-					                    ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) );
+					                    ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_ROCKETPOD ) );
 				}
 				else
 				{
@@ -1146,7 +1138,6 @@ static void CG_RegisterSounds( void )
 	cgs.media.alienL4ChargePrepare = trap_S_RegisterSound( "sound/player/level4/charge_prepare.wav", qtrue );
 	cgs.media.alienL4ChargeStart = trap_S_RegisterSound( "sound/player/level4/charge_start.wav", qtrue );
 
-	cgs.media.tracerSound = trap_S_RegisterSound( "sound/weapons/tracer.wav", qfalse );
 	cgs.media.selectSound = trap_S_RegisterSound( "sound/weapons/change.wav", qfalse );
 	cgs.media.turretSpinupSound = trap_S_RegisterSound( "sound/buildables/mgturret/spinup.wav", qfalse );
 	cgs.media.weaponEmptyClick = trap_S_RegisterSound( "sound/weapons/click.wav", qfalse );
@@ -1742,6 +1733,14 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	memset( &cgs, 0, sizeof( cgs ) );
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
+
+	// Set up the pmove params with sensible default values, the server params will
+	// be communicated with the "pmove_params" server commands.
+	// These values are the same as the default values of the servers to preserve
+	// compatibility with official Alpha 34 servers, but shouldn't be necessary anymore for Alpha 35
+	cg.pmoveParams.fixed = cg.pmoveParams.synchronous = 0;
+	cg.pmoveParams.accurate = 1;
+	cg.pmoveParams.msec = 8;
 
 	CG_UpdateLoadingStep( LOAD_START );
 	cg.clientNum = clientNum;

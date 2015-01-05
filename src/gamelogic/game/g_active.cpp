@@ -948,7 +948,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				     ( other->s.eFlags & EF_BC_ENEMY ) &&
 				     !other->tagAttachment &&
 				     ent->client->pers.team == other->s.generic1 &&
-				     G_LineOfSight( ent, other ) )
+				     G_LineOfSight( ent, other, CONTENTS_SOLID, true ) )
 				{
 					Beacon::Delete( other, true );
 				}
@@ -1784,18 +1784,9 @@ void ClientThink_real( gentity_t *self )
 
 	client->unlaggedTime = ucmd->serverTime;
 
-	if ( pmove_msec.integer < 8 )
+	if ( level.pmoveParams.fixed || client->pers.pmoveFixed )
 	{
-		trap_Cvar_Set( "pmove_msec", "8" );
-	}
-	else if ( pmove_msec.integer > 33 )
-	{
-		trap_Cvar_Set( "pmove_msec", "33" );
-	}
-
-	if ( pmove_fixed.integer || client->pers.pmoveFixed )
-	{
-		ucmd->serverTime = ( ( ucmd->serverTime + pmove_msec.integer - 1 ) / pmove_msec.integer ) * pmove_msec.integer;
+		ucmd->serverTime = ( ( ucmd->serverTime + level.pmoveParams.msec - 1 ) / level.pmoveParams.msec ) * level.pmoveParams.msec;
 		//if (ucmd->serverTime - client->ps.commandTime <= 0)
 		//  return;
 	}
@@ -2019,9 +2010,9 @@ void ClientThink_real( gentity_t *self )
 	pm.pointcontents  = trap_PointContents;
 	pm.debugLevel     = g_debugMove.integer;
 	pm.noFootsteps    = 0;
-	pm.pmove_fixed    = pmove_fixed.integer | client->pers.pmoveFixed;
-	pm.pmove_msec     = pmove_msec.integer;
-	pm.pmove_accurate = pmove_accurate.integer;
+	pm.pmove_fixed    = level.pmoveParams.fixed | client->pers.pmoveFixed;
+	pm.pmove_msec     = level.pmoveParams.msec;
+	pm.pmove_accurate = level.pmoveParams.accurate;
 
 	VectorCopy( client->ps.origin, client->oldOrigin );
 
@@ -2239,7 +2230,7 @@ void ClientThink( int clientNum )
 	// mark the time we got info, so we can display the phone jack if we don't get any for a while
 	ent->client->lastCmdTime = level.time;
 
-	if(!( ent->r.svFlags & SVF_BOT ) && !g_synchronousClients.integer )
+	if(!( ent->r.svFlags & SVF_BOT ) && !level.pmoveParams.synchronous )
 	{
 		ClientThink_real( ent );
 	}
@@ -2247,7 +2238,7 @@ void ClientThink( int clientNum )
 
 void G_RunClient( gentity_t *ent )
 {
-	if(!( ent->r.svFlags & SVF_BOT ) && !g_synchronousClients.integer )
+	if(!( ent->r.svFlags & SVF_BOT ) && !level.pmoveParams.synchronous )
 	{
 		return;
 	}

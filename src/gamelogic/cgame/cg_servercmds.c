@@ -1382,6 +1382,30 @@ static void CG_GameCmds_f( void )
 	}
 }
 
+static void CG_PmoveParams_f() {
+	char arg1[64], arg2[64], arg3[64], arg4[64];
+
+	if (trap_Argc() != 5) {
+		return;
+	}
+
+	trap_Argv(1, arg1, sizeof(arg1));
+	trap_Argv(2, arg2, sizeof(arg2));
+	trap_Argv(3, arg3, sizeof(arg3));
+	trap_Argv(4, arg4, sizeof(arg4));
+
+	cg.pmoveParams.synchronous = atoi(arg1);
+	cg.pmoveParams.fixed = atoi(arg2);
+	cg.pmoveParams.msec = atoi(arg3);
+	cg.pmoveParams.accurate = atoi(arg4);
+
+	if (cg.pmoveParams.msec < 8) {
+		cg.pmoveParams.msec = 8;
+	} else if (cg.pmoveParams.msec > 33) {
+		cg.pmoveParams.msec = 33;
+	}
+}
+
 static const consoleCommand_t svcommands[] =
 {	// sorting: use 'sort -f'
 	{ "achat",            CG_AdminChat_f          },
@@ -1393,6 +1417,7 @@ static const consoleCommand_t svcommands[] =
 	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cs",               CG_ConfigStringModified },
 	{ "map_restart",      CG_MapRestart           },
+	{ "pmove_params",     CG_PmoveParams_f        },
 	{ "print",            CG_Print_f              },
 	{ "print_tr",         CG_PrintTR_f            },
 	{ "print_tr_p",       CG_PrintTR_plural_f     },

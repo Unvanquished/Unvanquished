@@ -51,7 +51,7 @@ static void CG_UpdateRadarVisibility( void ) {
 
 			if( fadeOut <= 0.0f ||
 			    cent->currentState.modelindex2 == cg.predictedPlayerState.persistant[ PERS_TEAM ] ||
-			    cent->buildableAnim != bld->idleAnim ) {
+			    cent->buildableAnim != BANIM_IDLE1 ) {
 				cent->radarVisibility = 1.0f;
 			} else {
 				cent->radarVisibility = MAX( cent->radarVisibility - fadeOut * msec, 0.0f );

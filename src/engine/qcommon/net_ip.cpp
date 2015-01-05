@@ -2080,11 +2080,6 @@ void NET_Sleep( int msec )
 	fd_set         fdset;
 	SOCKET         highestfd = INVALID_SOCKET;
 
-	if ( !com_dedicated->integer )
-	{
-		return; // we're not a server, just run full speed
-	}
-
 	if ( ip_socket == INVALID_SOCKET && ip6_socket == INVALID_SOCKET )
 	{
 		return;
