@@ -284,7 +284,7 @@ extern float REPEATER_BASESIZE;
 #define MGTURRET_ZONE_DAMAGE    { 4, 3, 2 } // damage for each of the TURRET_ZONES zones
 
 #define ROCKETPOD_RANGE         2000
-#define ROCKETPOD_ATTACK_PERIOD 500
+#define ROCKETPOD_ATTACK_PERIOD 1000
 #define ROCKETPOD_LOCKON_TIME   500
 
 #define ROCKET_TURN_PERIOD      50
