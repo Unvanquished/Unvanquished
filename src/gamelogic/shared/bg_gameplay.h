@@ -275,7 +275,7 @@ extern float REPEATER_BASESIZE;
 #define TURRET_PITCH_CAP      30  // in degrees
 #define TURRET_PITCH_SPEED    160 // in degrees per second
 #define TURRET_YAW_SPEED      120 // in degrees per second
-#define TURRET_GIVEUP_TARGET  550 // in ms, time until turret stops tracking a target after losing los
+#define TURRET_GIVEUP_TARGET  1000 // in ms, time until turret stops tracking a target after losing los
 
 #define MGTURRET_ATTACK_PERIOD  125
 #define MGTURRET_RANGE          350
@@ -285,16 +285,11 @@ extern float REPEATER_BASESIZE;
 
 #define ROCKETPOD_RANGE         2000
 #define ROCKETPOD_ATTACK_PERIOD 500
+#define ROCKETPOD_LOCKON_TIME   500
 
 #define ROCKET_TURN_PERIOD      50
 #define ROCKET_TURN_ANGLE       8.0f
-#define ROCKET_LIFETIME         5000
-
-#ifndef Q3_VM
-static_assert( TURRET_GIVEUP_TARGET > MGTURRET_ATTACK_PERIOD + TURRET_THINK_PERIOD &&
-               TURRET_GIVEUP_TARGET > ROCKETPOD_ATTACK_PERIOD + TURRET_THINK_PERIOD,
-               "Turret giveup on target time is too low." );
-#endif
+#define ROCKET_LIFETIME         3000
 
 extern float REACTOR_ATTACK_RANGE;
 extern int   REACTOR_ATTACK_REPEAT;

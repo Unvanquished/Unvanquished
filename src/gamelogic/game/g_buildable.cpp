@@ -2737,59 +2737,61 @@ static int HRocketpod_CompareTargets( const void *first, const void *second )
 	}
 }
 
+static void HTurret_RemoveTarget( gentity_t *self )
+{
+	if ( self->target )
+	{
+		self->target->numTrackedBy--;
+	}
+
+	self->target = NULL;
+	self->turretLastLOSToTarget = 0;
+}
+
 static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolean newTarget,
                                      float range )
 {
-	trace_t tr;
-	vec3_t  dir, end;
-
 	if (    !target
 	     || !target->client
+	     || target->client->sess.spectatorState != SPECTATOR_NOT
 	     || target->health <= 0
-	     || G_OnSameTeam( self, target )
 	     || target->flags & FL_NOTARGET
+	     || G_OnSameTeam( self, target )
 	     || Distance( self->s.origin, target->s.origin ) > range
 	     || !trap_InPVS( self->s.origin, target->s.origin ) )
 	{
 		if ( g_debugTurrets.integer > 0 && self->target )
 		{
-			Com_Printf( "Turret %d: Target %d eliminated or out of sight.\n",
+			Com_Printf( "Turret %d: Target %d lost: Eliminated or out of range.\n",
 			            self->s.number, self->target->s.number );
 		}
 
 		return qfalse;
 	}
 
-	if ( newTarget )
+	// check for LOS, don't accept new targets if there is none
+	if ( G_LineOfFire( self, target ) )
 	{
-		// check if target could be hit with a precise shot
-		VectorSubtract( target->s.pos.trBase, self->s.pos.trBase, dir );
-		VectorNormalize( dir );
-		VectorMA( self->s.pos.trBase, range, dir, end );
-		trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
-
-		if ( tr.entityNum != ( target - g_entities ) )
-		{
-			return qfalse;
-		}
+		self->turretLastLOSToTarget = level.time;
 	}
-	else
+	else if ( newTarget )
 	{
-		// give up on target if we couldn't shoot at it for a while
-		if ( self->turretLastShotAtTarget &&
-		     self->turretLastShotAtTarget + TURRET_GIVEUP_TARGET < level.time )
-		{
-			if ( g_debugTurrets.integer > 0 && self->target )
-			{
-				Com_Printf( "Turret %d: No line of sight to target %d for %d ms, giving up.\n",
-				            self->s.number, self->target->s.number, TURRET_GIVEUP_TARGET );
-			}
-
-			return qfalse;
-		}
+		return qfalse;
 	}
 
-	self->turretLastSeenATarget = level.time;
+	// give up on existing target if there hasn't been a clear LOS for a while
+	if ( self->turretLastLOSToTarget + TURRET_GIVEUP_TARGET < level.time )
+	{
+		if ( g_debugTurrets.integer > 0 && self->target )
+		{
+			Com_Printf( "Turret %d: Target %d lost: No clear LOS for %d ms.\n",
+						self->s.number, self->target->s.number, TURRET_GIVEUP_TARGET );
+		}
+
+		return qfalse;
+	}
+
+	self->turretLastValidTargetTime = level.time;
 
 	return qtrue;
 }
@@ -2802,13 +2804,7 @@ static qboolean HTurret_FindTarget( gentity_t *self, float range,
 	int       validTargetNum = 0;
 
 	// delete old target
-	if ( self->target )
-	{
-		self->target->numTrackedBy--;
-	}
-
-	self->target = NULL;
-	self->turretLastShotAtTarget = 0;
+	HTurret_RemoveTarget( self );
 
 	// find all potential targets
 	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
@@ -2835,6 +2831,14 @@ static qboolean HTurret_FindTarget( gentity_t *self, float range,
 	{
 		return qfalse;
 	}
+}
+
+/**
+ * @brief If the turret's head should rest this needs to be called so the move timer stays valid.
+ */
+static void HTurret_PauseHead( gentity_t *self )
+{
+	self->turretLastHeadMove = level.time;
 }
 
 /**
@@ -3057,7 +3061,7 @@ static qboolean HTurret_TargetInReach( gentity_t *self, float range )
 		return qfalse;
 	}
 
-	// check if a precise shot would hit the target
+	// check if a shot would hit the target
 	AngleVectors( self->buildableAim, forward, NULL, NULL );
 	VectorMA( self->s.pos.trBase, range, forward, end );
 	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
@@ -3069,17 +3073,6 @@ static void HMGTurret_Shoot( gentity_t *self )
 {
 	const int zoneDamage[] = MGTURRET_ZONE_DAMAGE;
 	int       zone;
-
-	// if turret doesn't have the fast loader upgrade, pause after three shots
-	/*if ( !self->turretHasFastLoader && self->turretSuccessiveShots >= 3 )
-	{
-		self->turretSuccessiveShots = 0;
-
-		self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
-		self->s.eFlags &= ~EF_FIRING;
-
-		return;
-	}*/
 
 	self->s.eFlags |= EF_FIRING;
 
@@ -3097,18 +3090,44 @@ static void HMGTurret_Shoot( gentity_t *self )
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 	G_FireWeapon( self, WP_MGTURRET, WPM_PRIMARY );
 
-	//self->turretSuccessiveShots++;
-	self->turretLastShotAtTarget = level.time;
 	self->turretNextShot = level.time + MGTURRET_ATTACK_PERIOD;
+}
+
+/**
+ * @brief Adjusts the pitch in addition to regular power animations.
+ * @return Whether the structure is powered.
+ */
+static bool HMGTurret_PowerHelper( gentity_t *self )
+{
+	if ( !self->powered )
+	{
+		if ( !self->turretDisabled )
+		{
+			self->turretDisabled = qtrue;
+
+			// Forget about a target.
+			HTurret_RemoveTarget( self );
+
+			// Lower head.
+			HTurret_LowerPitch( self );
+		}
+	}
+	else if ( self->turretDisabled )
+	{
+		self->turretDisabled = qfalse;
+
+		// Raise head.
+		HTurret_ResetPitch( self );
+	}
+
+	return self->powered;
 }
 
 void HMGTurret_Think( gentity_t *self )
 {
-	qboolean gotValidTarget;
-
 	self->nextthink = level.time + TURRET_THINK_PERIOD;
 
-	// disable muzzle flash for now
+	// Disable muzzle flash for now.
 	self->s.eFlags &= ~EF_FIRING;
 
 	if ( !self->spawned )
@@ -3116,59 +3135,51 @@ void HMGTurret_Think( gentity_t *self )
 		return;
 	}
 
-	// adjust pitch according to power state
-	if ( !self->powered )
+	// If powered down, move head to allow for pitch adjustments.
+	if ( !HMGTurret_PowerHelper( self ) )
 	{
-		self->turretDisabled = qtrue;
-		//self->turretSuccessiveShots = 0;
-
-		HTurret_LowerPitch( self );
 		HTurret_MoveHeadToTarget( self );
-
 		return;
 	}
-	else
-	{
-		if ( self->turretDisabled )
-		{
-			HTurret_ResetPitch( self );
-		}
 
-		self->turretDisabled = qfalse;
+	// Remove existing target if it became invalid.
+	if ( !HTurret_TargetValid( self, self->target, qfalse, MGTURRET_RANGE ) )
+	{
+		HTurret_RemoveTarget( self );
 	}
 
-	// check for valid target
-	if ( HTurret_TargetValid( self, self->target, qfalse, MGTURRET_RANGE ) )
+	// Try to find a new target if there is none.
+	if ( !self->target )
 	{
-		gotValidTarget = qtrue;
-	}
-	else
-	{
-		gotValidTarget = HTurret_FindTarget( self, MGTURRET_RANGE, HMGTurret_CompareTargets );
-
-		if ( gotValidTarget && g_debugTurrets.integer > 0 )
+		if ( HTurret_FindTarget( self, MGTURRET_RANGE, HMGTurret_CompareTargets ) &&
+		     g_debugTurrets.integer > 0 )
 		{
 			Com_Printf( "MGTurret %d: New target %d.\n", self->s.number, self->target->s.number );
 		}
 	}
 
-	// adjust target direction
-	if ( gotValidTarget )
+	if ( self->target )
 	{
+		// Track target.
 		HTurret_TrackTarget( self );
 	}
-	else if ( !self->turretLastSeenATarget )
+	else if ( !self->turretLastValidTargetTime )
 	{
+		// Reset direction once after spawning.
 		HTurret_ResetDirection( self );
 	}
 
-	// shoot if target in reach
+	// Shoot if target in reach.
 	if ( HTurret_TargetInReach( self, MGTURRET_RANGE ) )
 	{
-		// if the target's origin is visible, aim for it first
+		// If the target's origin is visible, aim for it first, otherwise pause head.
 		if ( G_LineOfFire( self, self->target ) )
 		{
 			HTurret_MoveHeadToTarget( self );
+		}
+		else
+		{
+			HTurret_PauseHead( self );
 		}
 
 		if ( self->turretNextShot < level.time )
@@ -3177,16 +3188,14 @@ void HMGTurret_Think( gentity_t *self )
 		}
 		else
 		{
-			// keep the flag enabled in between shots
+			// Keep the flag enabled in between shots.
 			self->s.eFlags |= EF_FIRING;
 		}
 	}
 	else
 	{
-		// move head towards target
+		// Target not in reach, move head towards it.
 		HTurret_MoveHeadToTarget( self );
-
-		//self->turretSuccessiveShots = 0;
 	}
 }
 
@@ -3202,7 +3211,6 @@ static void HRocketpod_Shoot( gentity_t *self )
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 	G_FireWeapon( self, WP_ROCKETPOD, WPM_PRIMARY );
 
-	self->turretLastShotAtTarget = level.time;
 	self->turretNextShot = level.time + ROCKETPOD_ATTACK_PERIOD;
 }
 
@@ -3214,6 +3222,9 @@ static bool HRocketpod_SafeMode( gentity_t *self, bool enable )
 	if ( enable && !self->turretSafeMode )
 	{
 		self->turretSafeMode = qtrue;
+
+		HTurret_RemoveTarget( self );
+		HTurret_ResetPitch( self );
 
 		G_SetBuildableAnim( self, BANIM_POWERDOWN, qtrue );
 		G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
@@ -3228,7 +3239,7 @@ static bool HRocketpod_SafeMode( gentity_t *self, bool enable )
 		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 
 		// Can't shoot for another second as the shutters open.
-		self->turretNextShot = level.time + 1000;
+		self->turretPrepareTime = level.time + 1000;
 
 		return true;
 	}
@@ -3236,48 +3247,68 @@ static bool HRocketpod_SafeMode( gentity_t *self, bool enable )
 	return false;
 }
 
-void HRocketpod_Think( gentity_t *self )
+/**
+ * @brief Adjusts the pitch in addition to regular power animations.
+ * @return Whether the structure is powered.
+ */
+static bool HRocketpod_PowerHelper( gentity_t *self )
 {
-	qboolean  gotValidTarget;
-	gentity_t *neighbour;
-
-	self->nextthink = level.time + TURRET_THINK_PERIOD;
-
-	// disable muzzle flash for now
-	self->s.eFlags &= ~EF_FIRING;
-
-	if ( !self->spawned )
-	{
-		return;
-	}
-
-	// In addittion to regular animation, adjust pitch according to power state.
 	if ( !self->powered )
 	{
 		if ( !self->turretDisabled )
 		{
 			self->turretDisabled = qtrue;
 
-			PlayPowerStateAnims( self );
+			// Forget about a target.
+			HTurret_RemoveTarget( self );
+
+			// Lower head.
 			HTurret_LowerPitch( self );
+
+			// Close shutters.
+			PlayPowerStateAnims( self );
 		}
-
-		HTurret_MoveHeadToTarget( self );
-
-		return;
 	}
 	else if ( self->turretDisabled )
 	{
 		self->turretDisabled = qfalse;
 
-		PlayPowerStateAnims( self );
+		// Raise head.
 		HTurret_ResetPitch( self );
 
+		// Open shutters.
+		PlayPowerStateAnims( self );
+
 		// Can't shoot for another second as the shutters open.
-		self->turretNextShot = level.time + 1000;
+		self->turretPrepareTime = level.time + 1000;
 	}
 
-	// if there's an enemy really close, enter safe mode
+	return self->powered;
+}
+
+void HRocketpod_Think( gentity_t *self )
+{
+	gentity_t *neighbour;
+
+	self->nextthink = level.time + TURRET_THINK_PERIOD;
+
+	// Disable muzzle flash and lockon sound for now.
+	self->s.eFlags &= ~EF_FIRING;
+	self->s.eFlags &= ~EF_B_LOCKON;
+
+	if ( !self->spawned )
+	{
+		return;
+	}
+
+	// If powered down, move head to allow for pitch adjustments.
+	if ( !HRocketpod_PowerHelper( self ) )
+	{
+		HTurret_MoveHeadToTarget( self );
+		return;
+	}
+
+	// If there's an enemy really close, enter safe mode.
 	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
 	                                                                     ROCKETPOD_RANGE ) ); )
 	{
@@ -3292,72 +3323,108 @@ void HRocketpod_Think( gentity_t *self )
 			{
 				HRocketpod_SafeMode( self, qtrue );
 
-				HTurret_ResetPitch( self );
 				HTurret_MoveHeadToTarget( self );
-
 				return;
 			}
 		}
 	}
 
-	// otherwise, disable safe mode
+	// There's no enemy nearby so disable safe mode if it's active.
 	HRocketpod_SafeMode( self, qfalse );
 
-	// check for valid target
-	if ( HTurret_TargetValid( self, self->target, qfalse, ROCKETPOD_RANGE ) )
+	// Don't do anything while opening shutters.
+	if ( self->turretPrepareTime > level.time )
 	{
-		gotValidTarget = qtrue;
+		HTurret_PauseHead( self );
+		return;
 	}
-	else
-	{
-		gotValidTarget = HTurret_FindTarget( self, ROCKETPOD_RANGE, HRocketpod_CompareTargets );
 
-		if ( gotValidTarget && g_debugTurrets.integer > 0 )
+	// Remove existing target if it became invalid.
+	if ( !HTurret_TargetValid( self, self->target, qfalse, ROCKETPOD_RANGE ) )
+	{
+		HTurret_RemoveTarget( self );
+
+		// Delay the first shot on a new target.
+		self->turretLockonTime = level.time + ROCKETPOD_LOCKON_TIME;
+	}
+
+	// Try to find a new target if there is none.
+	if ( !self->target )
+	{
+		if ( HTurret_FindTarget( self, ROCKETPOD_RANGE, HRocketpod_CompareTargets ) &&
+		     g_debugTurrets.integer > 0 )
 		{
 			Com_Printf( "Rocketpod %d: New target %d.\n", self->s.number, self->target->s.number );
 		}
 	}
 
-	// adjust target direction
-	if ( gotValidTarget )
+	if ( self->target )
 	{
+		// Track target.
 		HTurret_TrackTarget( self );
 	}
-	else if ( !self->turretLastSeenATarget )
+	else if ( !self->turretLastValidTargetTime )
 	{
+		// Reset direction once after spawning.
 		HTurret_ResetDirection( self );
 	}
 
-	// shoot if target in reach and safe
+	// Shoot if target in reach and safe.
 	if ( HTurret_TargetInReach( self, ROCKETPOD_RANGE ) )
 	{
-		// if the target's origin is visible, aim for it first
+		// If the target's origin is visible, aim for it first, otherwise pause head.
 		if ( G_LineOfFire( self, self->target ) )
 		{
 			HTurret_MoveHeadToTarget( self );
 		}
+		else
+		{
+			HTurret_PauseHead( self );
+		}
 
-		if ( self->turretNextShot < level.time )
+		if ( level.time < self->turretLockonTime )
+		{
+			// Play lockon sound.
+			self->s.eFlags |= EF_B_LOCKON;
+		}
+		else
 		{
 			vec3_t aimDir;
 
 			AngleVectors( self->buildableAim, aimDir, NULL, NULL );
 
+			// While it's safe to shoot, do so.
 			if ( G_RocketpodSafeShot( self->s.number, self->s.pos.trBase, aimDir ) )
 			{
-				HRocketpod_Shoot( self );
+				if ( self->turretNextShot < level.time )
+				{
+					HRocketpod_Shoot( self );
+				}
+				else
+				{
+					// Keep the flag enabled in between shots.
+					self->s.eFlags |= EF_FIRING;
+				}
 			}
-		}
-		else
-		{
-			// keep the flag enabled in between shots
-			self->s.eFlags |= EF_FIRING;
+			else
+			{
+				// Delay the first shot after the situation became safe to shoot.
+				self->turretLockonTime = level.time + ROCKETPOD_LOCKON_TIME;
+			}
 		}
 	}
 	else
 	{
-		// move head towards target
-		HTurret_MoveHeadToTarget( self );
+		// Target not in reach, move head towards it.
+		if ( HTurret_MoveHeadToTarget( self ) )
+		{
+			// Delay the first shot after significant tracking.
+			self->turretLockonTime = level.time + ROCKETPOD_LOCKON_TIME;
+		}
+
+		// Delay the first shot after the target left its cover.
+		/*self->turretLockonTime = std::max( self->turretLockonTime,
+			                               level.time + ROCKETPOD_LOCKON_TIME );*/
 	}
 }
 

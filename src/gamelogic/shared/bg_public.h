@@ -346,6 +346,7 @@ typedef enum
 #define EF_B_POWERED        0x0010
 #define EF_B_MARKED         0x0020
 #define EF_B_ONFIRE         0x0040
+#define EF_B_LOCKON         0x0080
 
 // for players
 #define EF_POWER_AVAILABLE  0x0010

@@ -2667,20 +2667,27 @@ void CG_Buildable( centity_t *cent )
 			}
 		}
 
-		// spawn firing sound
+		// Play firing sound.
 		if ( wi->wim[ WPM_PRIMARY ].firingSound )
 		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->wim[ WPM_PRIMARY ].firingSound );
-		}
-		else if ( wi->readySound )
-		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->readySound );
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
+			                        wi->wim[ WPM_PRIMARY ].firingSound );
 		}
 	}
-	else if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+	else // Not firing.
 	{
-		// destroy active muzzle ps
-		CG_DestroyParticleSystem( &cent->muzzlePS );
+		// Destroy active muzzle PS.
+		if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+		{
+			CG_DestroyParticleSystem( &cent->muzzlePS );
+		}
+
+		// Play lockon sound if applicable.
+		if ( es->eFlags & EF_B_LOCKON )
+		{
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
+			                        cgs.media.rocketpodLockonSound );
+		}
 	}
 
 	health = es->generic1;
