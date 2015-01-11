@@ -560,7 +560,6 @@ static void Render_generic( int stage )
 
 	if( pStage->hasDepthFade ) {
 		gl_genericShader->SetUniform_DepthScale( pStage->depthFadeValue );
-		gl_genericShader->SetUniform_ProjectionMatrixTranspose( glState.projectionMatrix[ glState.stackIndex ] );
 		GL_SelectTexture( 1 );
 		GL_Bind( tr.depthRenderImage );
 	}

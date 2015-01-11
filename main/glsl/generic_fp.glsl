@@ -52,8 +52,4 @@ void	main()
 
 	color *= var_Color;
 	gl_FragColor = color;
-
-#if 0 //defined(USE_TCGEN_ENVIRONMENT)
-	gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), color.a);
-#endif
 }

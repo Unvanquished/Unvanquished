@@ -1095,7 +1095,7 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 
 void GLShader_generic::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1181,7 +1181,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 
 void GLShader_vertexLighting_DBS_entity::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_vertexLighting_DBS_entity::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1236,7 +1236,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 
 void GLShader_vertexLighting_DBS_world::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "deformVertexes ";
+	vertexInlines += "vertexSimple deformVertexes ";
 }
 void GLShader_vertexLighting_DBS_world::BuildShaderFragmentLibNames( std::string& fragmentInlines )
 {
@@ -1293,7 +1293,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderMana
 
 void GLShader_forwardLighting_omniXYZ::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_forwardLighting_omniXYZ::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1354,7 +1354,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderMana
 
 void GLShader_forwardLighting_projXYZ::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_forwardLighting_projXYZ::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1418,7 +1418,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 
 void GLShader_forwardLighting_directionalSun::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_forwardLighting_directionalSun::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1472,7 +1472,7 @@ GLShader_shadowFill::GLShader_shadowFill( GLShaderManager *manager ) :
 
 void GLShader_shadowFill::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_shadowFill::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1498,7 +1498,7 @@ GLShader_reflection::GLShader_reflection( GLShaderManager *manager ):
 
 void GLShader_reflection::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_reflection::BuildShaderCompileMacros( std::string& compileMacros )
@@ -1546,7 +1546,7 @@ GLShader_fogQuake3::GLShader_fogQuake3( GLShaderManager *manager ) :
 
 void GLShader_fogQuake3::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_fogQuake3::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1593,7 +1593,7 @@ GLShader_heatHaze::GLShader_heatHaze( GLShaderManager *manager ) :
 
 void GLShader_heatHaze::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_heatHaze::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1700,7 +1700,7 @@ GLShader_depthToColor::GLShader_depthToColor( GLShaderManager *manager ) :
 
 void GLShader_depthToColor::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning ";
+	vertexInlines += "vertexSimple vertexSkinning ";
 }
 
 GLShader_lightVolume_omni::GLShader_lightVolume_omni( GLShaderManager *manager ) :
