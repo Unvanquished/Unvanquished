@@ -22,11 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* vertexLighting_DBS_world_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec2 		attr_TexCoord0;
-attribute vec4		attr_QTangent;
-attribute vec4		attr_Color;
-
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
 uniform mat4		u_SpecularTextureMatrix;
@@ -50,32 +45,18 @@ varying vec3		var_Normal;
 varying vec4		var_LightColor;
 #endif
 
-vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
-	vec3 tmp = 2.0 * cross( quat.xyz, vec );
-	return vec + quat.w * tmp + cross( quat.xyz, tmp );
-}
-
-void QTangentToTBN( in vec4 qtangent, out vec3 tangent,
-                    out vec3 binormal, out vec3 normal ) {
-	tangent = QuatTransVec( qtangent, vec3( 1.0, 0.0, 0.0 ) );
-	binormal = QuatTransVec( qtangent, vec3( 0.0, 1.0, 0.0 ) );
-	normal = QuatTransVec( qtangent, vec3( 0.0, 0.0, 1.0 ) );
-	
-	tangent *= sign( qtangent.w );
-}
-
 void	main()
 {
 	vec4 position = vec4(attr_Position, 1.0);
-	vec3 tangent, binormal, normal;
+	localBasis LB;
 	vec2 texCoord;
 
-	QTangentToTBN( attr_QTangent, tangent, binormal, normal );
+	QTangentToLocalBasis( attr_QTangent, LB );
 
 	texCoord = attr_TexCoord0.xy;
 
 	DeformVertex( position,
-		      normal,
+		      LB.normal,
 		      texCoord,
 		      u_Time);
 
@@ -93,9 +74,9 @@ void	main()
 	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	// construct object-space-to-tangent-space 3x3 matrix
-	mat3 objectToTangentMatrix = mat3( tangent.x, binormal.x, normal.x,
-					   tangent.y, binormal.y, normal.y,
-					   tangent.z, binormal.z, normal.z );
+	mat3 objectToTangentMatrix = mat3( LB.tangent.x, LB.binormal.x, LB.normal.x,
+					   LB.tangent.y, LB.binormal.y, LB.normal.y,
+					   LB.tangent.z, LB.binormal.z, LB.normal.z );
 
 	// assign vertex Position for light grid sampling
 	var_Position = position.xyz;
@@ -106,7 +87,7 @@ void	main()
 	// assign color
 	var_LightColor = attr_Color * u_ColorModulate + u_Color;
 	
-	var_Normal = normal;
+	var_Normal = LB.normal;
 #endif
 
 #if defined(USE_GLOW_MAPPING)
