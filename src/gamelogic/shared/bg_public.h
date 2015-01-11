@@ -412,7 +412,7 @@ typedef enum
   WP_LUCIFER_CANNON,
   WP_LOCKBLOB_LAUNCHER,
   WP_HIVE,
-  WP_TESLAGEN,
+  WP_ROCKETPOD,
   WP_MGTURRET,
 
   // build weapons must remain in a block ← I'm not asking why but I can imagine
@@ -458,6 +458,7 @@ typedef enum
 	MIS_LOCKBLOB,
 	MIS_SLOWBLOB,
 	MIS_BOUNCEBALL,
+	MIS_ROCKET,
 
 	MIS_NUM_MISSILES
 } missile_t;
@@ -490,7 +491,7 @@ typedef enum
   BA_H_SPAWN,
 
   BA_H_MGTURRET,
-  BA_H_TESLAGEN,
+  BA_H_ROCKETPOD,
 
   BA_H_ARMOURY,
   BA_H_MEDISTAT,
@@ -839,11 +840,12 @@ typedef enum
   BANIM_IDLE1, // inactive idle
   BANIM_IDLE2, // active idle
 
-  BANIM_POWERDOWN, // note: not looped
+  BANIM_POWERDOWN, // BANIM_IDLE1 -> BANIM_IDLE_UNPOWERED
   BANIM_IDLE_UNPOWERED,
 
-  BANIM_CONSTRUCT1,
-  BANIM_CONSTRUCT2, // return to idle state
+  BANIM_CONSTRUCT, // -> BANIM_IDLE1
+
+  BANIM_POWERUP, // BANIM_IDLE_UNPOWERED -> BANIM_IDLE1
 
   BANIM_ATTACK1,
   BANIM_ATTACK2,
@@ -854,8 +856,8 @@ typedef enum
   BANIM_PAIN1,
   BANIM_PAIN2,
 
-  BANIM_DESTROY1,
-  BANIM_DESTROY_UNPOWERED, // if unpowered
+  BANIM_DESTROY, // BANIM_IDLE1 -> BANIM_DESTROYED
+  BANIM_DESTROY_UNPOWERED, // BANIM_IDLE_UNPOWERED -> BANIM_DESTROYED
   BANIM_DESTROYED,
 
   MAX_BUILDABLE_ANIMATIONS
@@ -1013,7 +1015,7 @@ typedef enum
   MOD_SWARM,
 
   MOD_HSPAWN,
-  MOD_TESLAGEN,
+  MOD_ROCKETPOD,
   MOD_MGTURRET,
   MOD_REACTOR,
 
@@ -1198,8 +1200,6 @@ typedef struct
 	team_t      team;
 	weapon_t    buildWeapon;
 
-	int         idleAnim;
-
 	int         buildTime;
 	qboolean    usable;
 
@@ -1220,6 +1220,7 @@ typedef struct
 	char   models[ MAX_BUILDABLE_MODELS ][ MAX_QPATH ];
 
 	float  modelScale;
+	vec3_t modelRotation;
 	vec3_t mins;
 	vec3_t maxs;
 	float  zOffset;
@@ -1308,6 +1309,9 @@ typedef struct
 
 	// display
 	qhandle_t      model;
+	float          modelScale;
+	vec3_t         modelRotation;
+
 	sfxHandle_t    sound;
 	qboolean       usesDlight;
 	float          dlight;

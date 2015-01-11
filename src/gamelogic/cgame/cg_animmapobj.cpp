@@ -44,7 +44,7 @@ CG_ModelDoor
 */
 void CG_ModelDoor( centity_t *cent )
 {
-	refEntity_t   ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 	entityState_t *es;
 	animation_t   anim;
 	lerpFrame_t   *lf = &cent->lerpFrame;
@@ -132,7 +132,7 @@ CG_animMapObj
 */
 void CG_AnimMapObj( centity_t *cent )
 {
-	refEntity_t   ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 	entityState_t *es;
 	float         scale;
 	animation_t   anim;
