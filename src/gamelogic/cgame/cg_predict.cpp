@@ -65,7 +65,7 @@ void CG_BuildSolidList( void )
 		snap = cg.snap;
 	}
 
-	for ( i = 0; i < snap->numEntities; i++ )
+	for ( i = 0; i < snap->entities.size(); i++ )
 	{
 		cent = &cg_entities[ snap->entities[ i ].number ];
 		ent = &cent->currentState;

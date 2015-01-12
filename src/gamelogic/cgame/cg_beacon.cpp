@@ -365,7 +365,7 @@ void CG_ListBeacons( void )
 	cbeacon_t *b;
 	vec3_t delta;
 
-	for( cg.beaconCount = 0, i = 0; i < cg.snap->numEntities; i++ )
+	for( cg.beaconCount = 0, i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		cent = cg_entities + cg.snap->entities[ i ].number;
 		es = &cent->currentState;

@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int VM::VM_API_VERSION = CGAME_API_VERSION;
 
-void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, glconfig_t gl, GameStateCSs gameState );
+void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState );
 void CG_RegisterCvars( void );
 void CG_Shutdown( void );
 
@@ -168,13 +168,6 @@ qboolean trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 {
 	bool res;
 	VM::SendMsg<GetSnapshotMsg>(snapshotNumber, res, *snapshot);
-	return res;
-}
-
-qboolean trap_GetServerCommand( int serverCommandNumber, std::string& cmdText )
-{
-	bool res;
-	VM::SendMsg<GetServerCommandMsg>(serverCommandNumber, res, cmdText);
 	return res;
 }
 

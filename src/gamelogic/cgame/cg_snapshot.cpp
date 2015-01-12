@@ -99,13 +99,13 @@ void CG_SetInitialSnapshot( snapshot_t *snap )
 	// sort out solid entities
 	CG_BuildSolidList();
 
-	CG_ExecuteNewServerCommands( snap->serverCommandSequence );
+	CG_ExecuteServerCommands( snap );
 
 	// set our local weapon selection pointer to
 	// what the server has indicated the current weapon is
 	CG_Respawn();
 
-	for ( i = 0; i < cg.snap->numEntities; i++ )
+	for ( i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		state = &cg.snap->entities[ i ];
 		cent = &cg_entities[ state->number ];
@@ -156,10 +156,10 @@ static void CG_TransitionSnapshot( void )
 	}
 
 	// execute any server string commands before transitioning entities
-	CG_ExecuteNewServerCommands( cg.nextSnap->serverCommandSequence );
+	CG_ExecuteServerCommands( cg.nextSnap );
 
 	// clear the currentValid flag for all entities in the existing snapshot
-	for ( i = 0; i < cg.snap->numEntities; i++ )
+	for ( i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		cent->currentValid = qfalse;
@@ -176,7 +176,7 @@ static void CG_TransitionSnapshot( void )
 	BG_PlayerStateToEntityState( &cg.snap->ps, &cg_entities[ cg.snap->ps.clientNum ].currentState, qfalse );
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = qfalse;
 
-	for ( i = 0; i < cg.snap->numEntities; i++ )
+	for ( i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		CG_TransitionEntity( cent );
@@ -241,7 +241,7 @@ static void CG_SetNextSnap( snapshot_t *snap )
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = qtrue;
 
 	// check for extrapolation errors
-	for ( num = 0; num < snap->numEntities; num++ )
+	for ( num = 0; num < snap->entities.size(); num++ )
 	{
 		es = &snap->entities[ num ];
 		cent = &cg_entities[ es->number ];
@@ -325,12 +325,6 @@ static snapshot_t *CG_ReadNextSnapshot( void )
 		// try to read the snapshot from the client system
 		cgs.processedSnapshotNum++;
 		r = trap_GetSnapshot( cgs.processedSnapshotNum, dest );
-
-		// FIXME: why would trap_GetSnapshot return a snapshot with the same server time
-		if ( cg.snap && r && dest->serverTime == cg.snap->serverTime )
-		{
-			//continue;
-		}
 
 		// if it succeeded, return
 		if ( r )

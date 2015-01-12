@@ -101,69 +101,6 @@ void CL_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
 }
 
 /*
-====================
-CL_GetSnapshot
-====================
-*/
-qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
-{
-	clSnapshot_t *clSnap;
-	int          i, count;
-
-	if ( snapshotNumber > cl.snap.messageNum )
-	{
-		Com_Error( ERR_DROP, "CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum" );
-	}
-
-	// if the frame has fallen out of the circular buffer, we can't return it
-	if ( cl.snap.messageNum - snapshotNumber >= PACKET_BACKUP )
-	{
-		return qfalse;
-	}
-
-	// if the frame is not valid, we can't return it
-	clSnap = &cl.snapshots[ snapshotNumber & PACKET_MASK ];
-
-	if ( !clSnap->valid )
-	{
-		return qfalse;
-	}
-
-	// if the entities in the frame have fallen out of their
-	// circular buffer, we can't return it
-	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES )
-	{
-		return qfalse;
-	}
-
-	// write the snapshot
-	snapshot->snapFlags = clSnap->snapFlags;
-	snapshot->serverCommandSequence = clSnap->serverCommandNum;
-	snapshot->ping = clSnap->ping;
-	snapshot->serverTime = clSnap->serverTime;
-	memcpy( snapshot->areamask, clSnap->areamask, sizeof( snapshot->areamask ) );
-	snapshot->ps = clSnap->ps;
-	count = clSnap->numEntities;
-
-	if ( count > MAX_ENTITIES_IN_SNAPSHOT )
-	{
-		Com_DPrintf( "CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT );
-		count = MAX_ENTITIES_IN_SNAPSHOT;
-	}
-
-	snapshot->numEntities = count;
-
-	for ( i = 0; i < count; i++ )
-	{
-		snapshot->entities[ i ] = cl.parseEntities[( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-	}
-
-	// FIXME: configstring changes and server commands!!!
-
-	return qtrue;
-}
-
-/*
 ==============
 CL_SetUserCmdValue
 ==============
@@ -332,49 +269,92 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 	return qtrue;
 }
 
-// Get the server command, does client-specific handling
-// that may block the propagation of the command to cgame.
+// Get the server commands, does client-specific handling
+// that may block the propagation of a command to cgame.
 // If the propagation is not blocked then it puts the command
-// in cmdText.
-// Returns false if the command was blocked.
-qboolean CL_GetServerCommand( int serverCommandNumber, std::string& cmdText )
+// in commands.
+void CL_FillServerCommands(std::vector<std::string>& commands, int start, int end)
 {
-	const char  *s;
-
 	// if we have irretrievably lost a reliable command, drop the connection
-	if ( serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS )
+	if ( start <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS )
 	{
 		// when a demo record was started after the client got a whole bunch of
 		// reliable commands then the client never got those first reliable commands
 		if ( clc.demoplaying )
 		{
-			return qfalse;
+			return;
 		}
 
-		Com_Error( ERR_DROP, "CL_GetServerCommand: a reliable command was cycled out" );
+		Com_Error( ERR_DROP, "CL_FillServerCommand: a reliable command was cycled out" );
 	}
 
-	if ( serverCommandNumber > clc.serverCommandSequence )
+	if ( end > clc.serverCommandSequence )
 	{
-		Com_Error( ERR_DROP, "CL_GetServerCommand: requested a command not received" );
+		Com_Error( ERR_DROP, "CL_FillServerCommand: requested a command not received" );
 	}
 
-	s = clc.serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS - 1 ) ];
-	clc.lastExecutedServerCommand = serverCommandNumber;
+	for (int i = start; i <= end; i++) {
+		const char* s = clc.serverCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ];
 
-	if ( cl_showServerCommands->integer )
+		std::string cmdText = s;
+		if (CL_HandleServerCommand(s, cmdText)) {
+			commands.push_back(std::move(cmdText));
+		}
+	}
+}
+
+/*
+====================
+CL_GetSnapshot
+====================
+*/
+qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
+{
+	clSnapshot_t *clSnap;
+	int          i, count;
+
+	if ( snapshotNumber > cl.snap.messageNum )
 	{
-		// NERVE - SMF
-		Com_Printf( "serverCommand: %i : %s\n", serverCommandNumber, s );
+		Com_Error( ERR_DROP, "CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum" );
 	}
 
-	cmdText = s;
-	if (CL_HandleServerCommand(s, cmdText)) {
-		return true;
+	// if the frame has fallen out of the circular buffer, we can't return it
+	if ( cl.snap.messageNum - snapshotNumber >= PACKET_BACKUP )
+	{
+		return qfalse;
 	}
 
-	cmdText = "";
-	return false;
+	// if the frame is not valid, we can't return it
+	clSnap = &cl.snapshots[ snapshotNumber & PACKET_MASK ];
+
+	if ( !clSnap->valid )
+	{
+		return qfalse;
+	}
+
+	// if the entities in the frame have fallen out of their
+	// circular buffer, we can't return it
+	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES )
+	{
+		return qfalse;
+	}
+
+	// write the snapshot
+	snapshot->snapFlags = clSnap->snapFlags;
+	snapshot->ping = clSnap->ping;
+	snapshot->serverTime = clSnap->serverTime;
+	memcpy( snapshot->areamask, clSnap->areamask, sizeof( snapshot->areamask ) );
+	snapshot->ps = clSnap->ps;
+
+	snapshot->entities.reserve(clSnap->numEntities);
+	for (i = 0; i < count; i++) {
+		snapshot->entities.push_back(cl.parseEntities[( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ]);
+	}
+
+	CL_FillServerCommands(snapshot->serverCommands, clc.lastExecutedServerCommand + 1, clSnap->serverCommandNum);
+	clc.lastExecutedServerCommand = clSnap->serverCommandNum;
+
+	return qtrue;
 }
 
 /*
@@ -1047,10 +1027,7 @@ void CL_InitCGame( void )
 	cls.state = CA_LOADING;
 
 	// init for this gamestate
-	// use the lastExecutedServerCommand instead of the serverCommandSequence
-	// otherwise server commands sent just before a gamestate are dropped
-	//bani - added clc.demoplaying, since some mods need this at init time, and drawactiveframe is too late for them
-	cgvm.CGameInit(clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum);
+	cgvm.CGameInit(clc.serverMessageSequence, clc.clientNum);
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -1501,9 +1478,9 @@ void CGameVM::CGameStaticInit()
 	this->SendMsg<CGameStaticInitMsg>();
 }
 
-void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum)
+void CGameVM::CGameInit(int serverMessageNum, int clientNum)
 {
-	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum, cls.glconfig, cl.gameState);
+	this->SendMsg<CGameInitMsg>(serverMessageNum, clientNum, cls.glconfig, cl.gameState);
 }
 
 void CGameVM::CGameShutdown()
@@ -1621,12 +1598,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		case CG_GETSNAPSHOT:
 			IPC::HandleMsg<GetSnapshotMsg>(channel, std::move(reader), [this] (int number, bool& res, snapshot_t& snapshot) {
 				res = CL_GetSnapshot(number, &snapshot);
-			});
-			break;
-
-		case CG_GETSERVERCOMMAND:
-			IPC::HandleMsg<GetServerCommandMsg>(channel, std::move(reader), [this] (int number, bool& res, std::string& cmdText) {
-				res = CL_GetServerCommand(number, cmdText);
 			});
 			break;
 

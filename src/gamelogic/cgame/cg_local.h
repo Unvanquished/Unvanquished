@@ -1640,7 +1640,6 @@ typedef struct
 	float       screenXBias;
 	float       aspectScale;
 
-	int         serverCommandSequence; // reliable command stream counter
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
 
 	// parsed from serverinfo
@@ -2180,7 +2179,7 @@ void     CG_ShowScores_f( void );
 //
 // cg_servercmds.c
 //
-void CG_ExecuteNewServerCommands( int latestSequence );
+void CG_ExecuteServerCommands( snapshot_t* snap );
 void CG_ParseServerinfo( void );
 void CG_SetConfigValues( void );
 void CG_ShaderStateChanged( void );

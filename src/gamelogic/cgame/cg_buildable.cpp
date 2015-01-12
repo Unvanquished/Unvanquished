@@ -2252,7 +2252,7 @@ void CG_DrawBuildableStatus( void )
 		return;
 	}
 
-	for ( i = 0; i < cg.snap->numEntities; i++ )
+	for ( i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		es = &cent->currentState;

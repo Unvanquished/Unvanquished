@@ -54,12 +54,37 @@ typedef struct
 
 	playerState_t ps; // complete information about the current player at this time
 
-	int           numEntities; // all of the entities that need to be presented
-	entityState_t entities[ MAX_ENTITIES_IN_SNAPSHOT ]; // at the time of this snapshot
+	// all of the entities that need to be presented at the time of this snapshot
+	std::vector<entityState_t> entities;
 
 	// text based server commands to execute when this snapshot becomes current
-	int           serverCommandSequence;
+	std::vector<std::string> serverCommands;
 } snapshot_t;
+
+template<> struct IPC::SerializeTraits<snapshot_t> {
+	static void Write(Writer& stream, const snapshot_t& snap)
+	{
+		stream.Write<int>(snap.snapFlags);
+		stream.Write<int>(snap.ping);
+		stream.Write<int>(snap.serverTime);
+		stream.WriteData(&snap.areamask, MAX_MAP_AREA_BYTES);
+		stream.Write<playerState_t>(snap.ps);
+		stream.Write<std::vector<entityState_t>>(snap.entities);
+		stream.Write<std::vector<std::string>>(snap.serverCommands);
+	}
+	static snapshot_t Read(Reader& stream)
+	{
+		snapshot_t snap;
+		snap.snapFlags = stream.Read<int>();
+		snap.ping = stream.Read<int>();
+		snap.serverTime = stream.Read<int>();
+		stream.ReadData(&snap.areamask, MAX_MAP_AREA_BYTES);
+		snap.ps = stream.Read<playerState_t>();
+		snap.entities = std::move(stream.Read<std::vector<entityState_t>>());
+		snap.serverCommands = std::move(stream.Read<std::vector<std::string>>());
+		return snap;
+	}
+};
 
 typedef enum {
 	ROCKET_STRING,
@@ -121,7 +146,6 @@ typedef enum cgameImport_s
   CG_CM_MARKFRAGMENTS,
   CG_GETCURRENTSNAPSHOTNUMBER,
   CG_GETSNAPSHOT,
-  CG_GETSERVERCOMMAND,
   CG_GETCURRENTCMDNUMBER,
   CG_GETUSERCMD,
   CG_SETUSERCMDVALUE,
@@ -274,11 +298,6 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETSNAPSHOT>, int>,
 	IPC::Reply<bool, snapshot_t>
 > GetSnapshotMsg;
-// GetServerCommandMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETSERVERCOMMAND>, int>,
-	IPC::Reply<bool, std::string>
-> GetServerCommandMsg;
 // GetCurrentCmdNumberMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETCURRENTCMDNUMBER>>,
@@ -774,7 +793,7 @@ typedef IPC::SyncMessage<
 > CGameStaticInitMsg;
 // CGameInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_INIT>, int, int, int, glconfig_t, GameStateCSs>
+	IPC::Message<IPC::Id<VM::QVM, CG_INIT>, int, int, glconfig_t, GameStateCSs>
 > CGameInitMsg;
 // CGameShutdownMsg
 typedef IPC::SyncMessage<
@@ -907,7 +926,6 @@ void            trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs
 int             trap_R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
 void            trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime );
 qboolean        trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot );
-qboolean        trap_GetServerCommand( int serverCommandNumber, std::string& cmdText );
 int             trap_GetCurrentCmdNumber( void );
 qboolean        trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd );
 void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient );

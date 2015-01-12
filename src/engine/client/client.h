@@ -422,7 +422,7 @@ public:
 	void Start();
 
 	void CGameStaticInit();
-	void CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum);
+	void CGameInit(int serverMessageNum, int clientNum);
 	void CGameShutdown();
 	void CGameDrawActiveFrame(int serverTime, bool demoPlayback);
 	int CGameCrosshairPlayer();

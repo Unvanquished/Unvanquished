@@ -1297,7 +1297,7 @@ void CG_AddPacketEntities( void )
 	}
 
 	// add each entity sent over by the server
-	for ( num = 0; num < cg.snap->numEntities; num++ )
+	for ( num = 0; num < cg.snap->entities.size(); num++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ num ].number ];
 		cent->valid = qtrue;
@@ -1320,7 +1320,7 @@ void CG_AddPacketEntities( void )
 	}
 
 	// add each entity sent over by the server
-	for ( num = 0; num < cg.snap->numEntities; num++ )
+	for ( num = 0; num < cg.snap->entities.size(); num++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ num ].number ];
 		CG_AddCEntity( cent );
@@ -1329,7 +1329,7 @@ void CG_AddPacketEntities( void )
 	//make an attempt at drawing bounding boxes of selected entity types
 	if ( cg_drawBBOX.integer )
 	{
-		for ( num = 0; num < cg.snap->numEntities; num++ )
+		for ( num = 0; num < cg.snap->entities.size(); num++ )
 		{
 			float         x, zd, zu;
 			vec3_t        mins, maxs;

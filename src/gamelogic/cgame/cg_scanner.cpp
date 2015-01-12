@@ -40,7 +40,7 @@ static void CG_UpdateRadarVisibility( void ) {
 
 	msec = cg.time - cg.oldTime;
 
-	for ( i = 0; i < cg.snap->numEntities; i++ )
+	for ( i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 
@@ -143,7 +143,7 @@ void CG_UpdateEntityPositions( void )
 	entityPositions.numAlienClients = 0;
 	entityPositions.numHumanClients = 0;
 
-	for ( i = 0; i < cg.snap->numEntities; i++ )
+	for ( i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 

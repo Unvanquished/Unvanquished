@@ -1626,7 +1626,7 @@ Will perform callbacks to make the loading info screen update.
 =================
 */
 
-void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, glconfig_t gl, GameStateCSs gameState)
+void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState)
 {
 	const char *s;
 
@@ -1650,7 +1650,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, gl
 	cg.clientNum = clientNum;
 
 	cgs.processedSnapshotNum = serverMessageNum;
-	cgs.serverCommandSequence = serverCommandSequence;
 
 	// get the rendering configuration from the client system
 	cgs.glconfig = gl;
@@ -1711,7 +1710,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, gl
 	trap_CM_LoadMap(cgs.mapname);
 	CG_InitMinimap();
 
-	srand( serverMessageNum * serverCommandSequence ^ clientNum );
+	srand( serverMessageNum * clientNum );
 
 	CG_UpdateLoadingStep( LOAD_TRAILS );
 	CG_LoadTrailSystems();
