@@ -1060,13 +1060,6 @@ qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
 	return syscallVM( CG_R_INPVS, p1, p2 );
 }
 
-//153.
-//Com_GetHunkInfo(VMA(1), VMA(2));
-void trap_GetHunkData( int *hunkused, int *hunkexpected )
-{
-	syscallVM( CG_GETHUNKDATA, hunkused, hunkexpected );
-}
-
 //157.
 //return re.LoadDynamicShader(VMA(1), VMA(2));
 qboolean trap_R_LoadDynamicShader( const char *shadername, const char *shadertext )

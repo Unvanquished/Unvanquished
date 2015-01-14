@@ -732,7 +732,6 @@ extern int          time_backend; // renderer backend time
 
 extern int          com_frameTime;
 extern int          com_frameMsec;
-extern int          com_expectedhunkusage;
 extern int          com_hunkusedvalue;
 
 extern qboolean     com_errorEntered;
@@ -1094,7 +1093,6 @@ int  Parse_FreeSourceHandle( int handle );
 int  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );
 int  Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
-void Com_GetHunkInfo( int *hunkused, int *hunkexpected );
 void Com_RandomBytes( byte *string, int len );
 
 #define _(x) Trans_Gettext(x)

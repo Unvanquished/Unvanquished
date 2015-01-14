@@ -176,7 +176,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	if (pipe(pipefds) == -1 || fcntl(pipefds[1], F_SETFD, FD_CLOEXEC))
 		Com_Error(ERR_DROP, "VM: Failed to create pipe: %s", strerror(errno));
 
-	int pid = fork();
+	int pid = vfork();
 	if (pid == -1)
 		Com_Error(ERR_DROP, "VM: Failed to fork process: %s", strerror(errno));
 	if (pid == 0) {
