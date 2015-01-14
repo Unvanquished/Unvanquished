@@ -1,3 +1,10 @@
+unvanquished (0.35.0-2) unstable; urgency=low
+
+  * Fix paths to NaCl helper binaries.
+  * Add libjpeg-dev as a preferred alternative dependency.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 14 Jan 2015 14:12:52 +0000
+
 unvanquished (0.35.0-1) unstable; urgency=low
 
   * Release of alpha 35.
