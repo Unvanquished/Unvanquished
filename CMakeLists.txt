@@ -70,6 +70,8 @@ option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
 option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
 
+set( NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries" )
+
 ################################################################################
 # Determine platform
 ################################################################################
@@ -1238,6 +1240,10 @@ else()
 endif()
 include_directories( ${LIB_DIR}/nacl )
 set( LIBSRC_NACL ${LIBSRC_NACL} ${NACLLIST_NATIVE} )
+
+if( NACL_RUNTIME_PATH )
+  add_definitions( "-DNACL_RUNTIME_PATH=${NACL_RUNTIME_PATH}" )
+endif()
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
