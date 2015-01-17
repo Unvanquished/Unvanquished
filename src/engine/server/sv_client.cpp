@@ -1570,7 +1570,7 @@ each of the backup packets.
 */
 static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 {
-	int       i, key;
+	int       i;
 	int       cmdCount;
 	usercmd_t nullcmd;
 	usercmd_t cmds[ MAX_PACKET_USERCMDS ];
@@ -1599,20 +1599,13 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 		return;
 	}
 
-	// use the checksum feed in the key
-	key = sv.checksumFeed;
-	// also use the message acknowledge
-	key ^= cl->messageAcknowledge;
-	// also use the last acknowledged server command in the key
-	key ^= Com_HashKey( cl->reliableCommands[ cl->reliableAcknowledge & ( MAX_RELIABLE_COMMANDS - 1 ) ], 32 );
-
 	memset( &nullcmd, 0, sizeof( nullcmd ) );
 	oldcmd = &nullcmd;
 
 	for ( i = 0; i < cmdCount; i++ )
 	{
 		cmd = &cmds[ i ];
-		MSG_ReadDeltaUsercmdKey( msg, key, oldcmd, cmd );
+		MSG_ReadDeltaUsercmd( msg, oldcmd, cmd );
 //      MSG_ReadDeltaUsercmd( msg, oldcmd, cmd );
 		oldcmd = cmd;
 	}
