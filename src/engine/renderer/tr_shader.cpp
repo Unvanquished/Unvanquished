@@ -5931,7 +5931,7 @@ void R_ShaderList_f( void )
 	shader_t *shader;
 	char     *s = NULL;
 
-	ri.Printf( PRINT_ALL, "-----------------------\n" );
+	ri.Printf( PRINT_ALL, "-----------------------" );
 
 	if ( ri.Cmd_Argc() > 1 )
 	{
@@ -5951,171 +5951,171 @@ void R_ShaderList_f( void )
 			shader = tr.shaders[ i ];
 		}
 
-		if ( s && Q_strnicmp( shader->name, s, strlen( s ) ) != 0 )
+		if ( s && !Com_Filter( s, shader->name, qfalse ) )
 		{
 			continue;
 		}
 
-		ri.Printf( PRINT_ALL, "%i ", shader->numStages );
+		std::string str;
 
 		switch ( shader->type )
 		{
 			case SHADER_2D:
-				ri.Printf( PRINT_ALL, "2D   " );
+				str += "2D   ";
 				break;
 
 			case SHADER_3D_DYNAMIC:
-				ri.Printf( PRINT_ALL, "3D_D " );
+				str += "3D_D ";
 				break;
 
 			case SHADER_3D_STATIC:
-				ri.Printf( PRINT_ALL, "3D_S " );
+				str += "3D_S ";
 				break;
 
 			case SHADER_LIGHT:
-				ri.Printf( PRINT_ALL, "ATTN " );
+				str += "ATTN ";
 				break;
 		}
 
 		if ( shader->collapseType == COLLAPSE_lighting_DB )
 		{
-			ri.Printf( PRINT_ALL, "lighting_DB    " );
+			str += "lighting_DB    ";
 		}
 		else if ( shader->collapseType == COLLAPSE_lighting_DBS )
 		{
-			ri.Printf( PRINT_ALL, "lighting_DBS   " );
+			str += "lighting_DBS   ";
 		}
 		else if ( shader->collapseType == COLLAPSE_reflection_CB )
 		{
-			ri.Printf( PRINT_ALL, "reflection_CB  " );
+			str += "reflection_CB  ";
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "               " );
+			str += "               ";
 		}
 
 		if ( shader->createdByGuide )
 		{
-			ri.Printf( PRINT_ALL, "G " );
+			str += "G ";
 		}
 		else if ( shader->explicitlyDefined )
 		{
-			ri.Printf( PRINT_ALL, "E " );
+			str += "E ";
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "  " );
+			str += "  ";
 		}
 
 		if ( shader->sort == SS_BAD )
 		{
-			ri.Printf( PRINT_ALL, "SS_BAD              " );
+			str += "SS_BAD              ";
 		}
 		else if ( shader->sort == SS_PORTAL )
 		{
-			ri.Printf( PRINT_ALL, "SS_PORTAL           " );
+			str += "SS_PORTAL           ";
 		}
 		else if ( shader->sort == SS_ENVIRONMENT_FOG )
 		{
-			ri.Printf( PRINT_ALL, "SS_ENVIRONMENT_FOG  " );
+			str += "SS_ENVIRONMENT_FOG  ";
 		}
 		else if ( shader->sort == SS_ENVIRONMENT_NOFOG )
 		{
-			ri.Printf( PRINT_ALL, "SS_ENVIRONMENT_NOFOG" );
+			str += "SS_ENVIRONMENT_NOFOG";
 		}
 		else if ( shader->sort == SS_OPAQUE )
 		{
-			ri.Printf( PRINT_ALL, "SS_OPAQUE           " );
+			str += "SS_OPAQUE           ";
 		}
 		else if ( shader->sort == SS_DECAL )
 		{
-			ri.Printf( PRINT_ALL, "SS_DECAL            " );
+			str += "SS_DECAL            ";
 		}
 		else if ( shader->sort == SS_SEE_THROUGH )
 		{
-			ri.Printf( PRINT_ALL, "SS_SEE_THROUGH      " );
+			str += "SS_SEE_THROUGH      ";
 		}
 		else if ( shader->sort == SS_BANNER )
 		{
-			ri.Printf( PRINT_ALL, "SS_BANNER           " );
+			str += "SS_BANNER           ";
 		}
 		else if ( shader->sort == SS_FOG )
 		{
-			ri.Printf( PRINT_ALL, "SS_FOG              " );
+			str += "SS_FOG              ";
 		}
 		else if ( shader->sort == SS_UNDERWATER )
 		{
-			ri.Printf( PRINT_ALL, "SS_UNDERWATER       " );
+			str += "SS_UNDERWATER       ";
 		}
 		else if ( shader->sort == SS_WATER )
 		{
-			ri.Printf( PRINT_ALL, "SS_WATER            " );
+			str += "SS_WATER            ";
 		}
 		else if ( shader->sort == SS_FAR )
 		{
-			ri.Printf( PRINT_ALL, "SS_FAR              " );
+			str += "SS_FAR              ";
 		}
 		else if ( shader->sort == SS_MEDIUM )
 		{
-			ri.Printf( PRINT_ALL, "SS_MEDIUM           " );
+			str += "SS_MEDIUM           ";
 		}
 		else if ( shader->sort == SS_CLOSE )
 		{
-			ri.Printf( PRINT_ALL, "SS_CLOSE            " );
+			str += "SS_CLOSE            ";
 		}
 		else if ( shader->sort == SS_BLEND0 )
 		{
-			ri.Printf( PRINT_ALL, "SS_BLEND0           " );
+			str += "SS_BLEND0           ";
 		}
 		else if ( shader->sort == SS_BLEND1 )
 		{
-			ri.Printf( PRINT_ALL, "SS_BLEND1           " );
+			str += "SS_BLEND1           ";
 		}
 		else if ( shader->sort == SS_BLEND2 )
 		{
-			ri.Printf( PRINT_ALL, "SS_BLEND2           " );
+			str += "SS_BLEND2           ";
 		}
 		else if ( shader->sort == SS_BLEND3 )
 		{
-			ri.Printf( PRINT_ALL, "SS_BLEND3           " );
+			str += "SS_BLEND3           ";
 		}
 		else if ( shader->sort == SS_BLEND6 )
 		{
-			ri.Printf( PRINT_ALL, "SS_BLEND6           " );
+			str += "SS_BLEND6           ";
 		}
 		else if ( shader->sort == SS_ALMOST_NEAREST )
 		{
-			ri.Printf( PRINT_ALL, "SS_ALMOST_NEAREST   " );
+			str += "SS_ALMOST_NEAREST   ";
 		}
 		else if ( shader->sort == SS_NEAREST )
 		{
-			ri.Printf( PRINT_ALL, "SS_NEAREST          " );
+			str += "SS_NEAREST          ";
 		}
 		else if ( shader->sort == SS_POST_PROCESS )
 		{
-			ri.Printf( PRINT_ALL, "SS_POST_PROCESS     " );
+			str += "SS_POST_PROCESS     ";
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "                    " );
+			str += "                    ";
 		}
 
 		if ( shader->interactLight )
 		{
-			ri.Printf( PRINT_ALL, "IA " );
+			str += "IA ";
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "   " );
+			str += "   ";
 		}
 
 		if ( shader->defaultShader )
 		{
-			ri.Printf( PRINT_ALL, ": %s (DEFAULTED)\n", shader->name );
+			ri.Printf( PRINT_ALL, "%s: %s (DEFAULTED)\n", str.c_str(), shader->name );
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, ": %s\n", shader->name );
+			ri.Printf( PRINT_ALL, "%s: %s\n", str.c_str(), shader->name );
 		}
 
 		count++;

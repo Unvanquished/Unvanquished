@@ -1290,6 +1290,8 @@ static int IQMBuildSkeleton( refSkeleton_t *skel, skelAnimation_t *skelAnim,
 
 	skel->numBones = anim->num_joints;
 	skel->type = SK_RELATIVE;
+	VectorCopy( mins, skel->bounds[ 0 ] );
+	VectorCopy( maxs, skel->bounds[ 1 ] );
 	return qtrue;
 }
 

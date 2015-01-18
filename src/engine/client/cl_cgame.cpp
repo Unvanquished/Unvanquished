@@ -481,62 +481,6 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 	return CL_HandleServerCommand(s);
 }
 
-// DHM - Nerve :: Copied from server to here
-
-/*
-====================
-CL_SetExpectedHunkUsage
-
-  Sets com_expectedhunkusage, so the client knows how to draw the percentage bar
-====================
-*/
-void CL_SetExpectedHunkUsage( const char *mapname )
-{
-	int  handle;
-	char *memlistfile = "hunkusage.dat";
-	char *buf;
-	char *buftrav;
-	char *token;
-	int  len;
-
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
-
-	if ( len >= 0 )
-	{
-		// the file exists, so read it in, strip out the current entry for this map, and save it out, so we can append the new value
-		buf = ( char * ) Z_Malloc( len + 1 );
-		memset( buf, 0, len + 1 );
-
-		FS_Read( ( void * ) buf, len, handle );
-		FS_FCloseFile( handle );
-
-		// now parse the file, filtering out the current map
-		buftrav = buf;
-
-		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[ 0 ] )
-		{
-			if ( !Q_stricmp( token, ( char * ) mapname ) )
-			{
-				// found a match
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && *token )
-				{
-					// this is the usage
-					com_expectedhunkusage = atoi( token );
-					Z_Free( buf );
-					return;
-				}
-			}
-		}
-
-		Z_Free( buf );
-	}
-
-	// just set it to a negative number,so the cgame knows not to draw the percent bar
-	com_expectedhunkusage = -1;
-}
-
 /*
 ====================
 CL_CM_LoadMap
@@ -546,12 +490,7 @@ Just adds default parameters that cgame doesn't need to know about
 */
 void CL_CM_LoadMap( const char *mapname )
 {
-	// DHM - Nerve :: If we are not running the server, then set expected usage here
-	if ( !com_sv_running->integer )
-	{
-		CL_SetExpectedHunkUsage( mapname );
-	}
-	else
+	if ( com_sv_running->integer )
 	{
 		// TTimo
 		// catch here when a local server is started to avoid outdated com_errorDiagnoseIP
@@ -2089,11 +2028,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameRenderSyscalls ++;
 			return re.inPVVS( (float*) VMA( 1 ), (float*) VMA( 2 ) );
 
-		case CG_GETHUNKDATA:
-			cls.nCgameUselessSyscalls ++;
-			Com_GetHunkInfo( (int*) VMA( 1 ), (int*) VMA( 2 ) );
-			return 0;
-
 			//bani - dynamic shaders
 		case CG_R_LOADDYNAMICSHADER:
 			cls.nCgameRenderSyscalls ++;
@@ -2502,132 +2436,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 }
 
 /*
-====================
-CL_UpdateLevelHunkUsage
-
-  This updates the "hunkusage.dat" file with the current map and its hunk usage count
-
-  This is used for level loading, so we can show a percentage bar dependent on the amount
-  of hunk memory allocated so far
-
-  This will be slightly inaccurate if some settings like sound quality are changed, but these
-  things should only account for a small variation (hopefully)
-====================
-*/
-void CL_UpdateLevelHunkUsage( void )
-{
-	int  handle;
-	const char *memlistfile = "hunkusage.dat";
-	char *buf, *outbuf;
-	char *buftrav, *outbuftrav;
-	char *token;
-	char outstr[ 256 ];
-	int  len, memusage;
-
-	memusage = Cvar_VariableIntegerValue( "com_hunkused" ) + Cvar_VariableIntegerValue( "hunk_soundadjust" );
-
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
-
-	if ( len >= 0 )
-	{
-		// the file exists, so read it in, strip out the current entry for this map, and save it out, so we can append the new value
-		buf = ( char * ) Z_Malloc( len + 1 );
-		outbuf = ( char * ) Z_Malloc( len + 1 );
-
-		FS_Read( ( void * ) buf, len, handle );
-		FS_FCloseFile( handle );
-
-		// now parse the file, filtering out the current map
-		buftrav = buf;
-		outbuftrav = outbuf;
-		outbuftrav[ 0 ] = '\0';
-
-		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[ 0 ] )
-		{
-			if ( !Q_stricmp( token, cl.mapname ) )
-			{
-				// found a match
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && token[ 0 ] )
-				{
-					if ( atoi( token ) == memusage )
-					{
-						// if it is the same, abort this process
-						Z_Free( buf );
-						Z_Free( outbuf );
-						return;
-					}
-				}
-			}
-			else
-			{
-				// send it to the outbuf
-				Q_strcat( outbuftrav, len + 1, token );
-				Q_strcat( outbuftrav, len + 1, " " );
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && token[ 0 ] )
-				{
-					Q_strcat( outbuftrav, len + 1, token );
-					Q_strcat( outbuftrav, len + 1, "\n" );
-				}
-				else
-				{
-					Z_Free( buf );
-					Z_Free( outbuf );
-					Com_Error( ERR_DROP, "hunkusage.dat file is corrupt" );
-				}
-			}
-		}
-
-		handle = FS_FOpenFileWrite( memlistfile );
-
-		if ( handle < 0 )
-		{
-			Z_Free( buf );
-			Z_Free( outbuf );
-			Com_Error( ERR_DROP, "cannot create %s", memlistfile );
-		}
-
-		// input file is parsed, now output to the new file
-		len = strlen( outbuf );
-
-		if ( FS_Write( ( void * ) outbuf, len, handle ) != len )
-		{
-			Z_Free( buf );
-			Z_Free( outbuf );
-			Com_Error( ERR_DROP, "cannot write to %s", memlistfile );
-		}
-
-		FS_FCloseFile( handle );
-
-		Z_Free( buf );
-		Z_Free( outbuf );
-	}
-
-	// now append the current map to the current file
-	handle = FS_FOpenFileAppend( memlistfile );
-
-	if ( handle == 0 )
-	{
-		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full" );
-	}
-
-	Com_sprintf( outstr, sizeof( outstr ), "%s %i\n", cl.mapname, memusage );
-	FS_Write( outstr, strlen( outstr ), handle );
-	FS_FCloseFile( handle );
-
-	// now just open it and close it, so it gets copied to the pak dir
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
-
-	if ( len >= 0 )
-	{
-		FS_FCloseFile( handle );
-	}
-}
-
-/*
 =============
 CL_InitUI
 
@@ -2695,9 +2503,6 @@ void CL_InitCGame( void )
 
 	// make sure everything is paged in
 	Com_TouchMemory();
-
-	// Ridah, update the memory usage file
-	CL_UpdateLevelHunkUsage();
 
 	// Cause any input while loading to be dropped and forget what's pressed
 	IN_DropInputsForFrame();

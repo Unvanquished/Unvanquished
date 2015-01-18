@@ -1196,3 +1196,24 @@ team_t G_Enemy( team_t team )
 		default:          return TEAM_NONE;
 	}
 }
+
+/**
+ * @return Whether ent is a player or buildable with positive health.
+ */
+bool G_Alive( gentity_t *ent )
+{
+	if ( !ent->inuse ) return false;
+
+	switch ( ent->s.eType )
+	{
+		case ET_PLAYER:
+			return ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
+			         ent->client->ps.stats[ STAT_HEALTH ] > 0 );
+
+		case ET_BUILDABLE:
+			return ( ent->health > 0 );
+
+		default:
+			return false;
+	}
+}
