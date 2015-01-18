@@ -108,7 +108,6 @@ int      time_backend; // renderer backend time
 int      com_frameTime;
 int      com_frameMsec;
 int      com_frameNumber;
-int      com_expectedhunkusage;
 int      com_hunkusedvalue;
 
 qboolean com_errorEntered;
@@ -2427,14 +2426,6 @@ void Com_Shutdown()
 	}
 
 	FS::FlushAll();
-}
-
-//------------------------------------------------------------------------
-
-void Com_GetHunkInfo( int *hunkused, int *hunkexpected )
-{
-	*hunkused = com_hunkusedvalue;
-	*hunkexpected = com_expectedhunkusage;
 }
 
 /*

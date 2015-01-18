@@ -460,6 +460,7 @@ typedef enum
 	MIS_SLOWBLOB,
 	MIS_BOUNCEBALL,
 	MIS_ROCKET,
+	MIS_SPIKER,
 
 	MIS_NUM_MISSILES
 } missile_t;
@@ -488,6 +489,7 @@ typedef enum
   BA_A_BOOSTER,
   BA_A_HIVE,
   BA_A_LEECH,
+  BA_A_SPIKER,
 
   BA_H_SPAWN,
 
@@ -968,7 +970,7 @@ typedef enum
 
 // means of death
 // keep modNames[] in g_combat.c in sync with this list!
-// keep bg_meansOfDeathData[] in g_misc.c in sync, too!
+// keep bg_meansOfDeathData[] in bg_misc.c in sync, too!
 // TODO: Get rid of the former and use the latter instead
 typedef enum
 {
@@ -1022,6 +1024,7 @@ typedef enum
 
   MOD_ASPAWN,
   MOD_ATUBE,
+  MOD_SPIKER,
   MOD_OVERMIND,
   MOD_DECONSTRUCT,
   MOD_REPLACE,
@@ -1335,6 +1338,7 @@ typedef struct
 	// impact
 	qboolean       alwaysImpact;
 	qhandle_t      impactParticleSystem;
+	qboolean       impactFlightDirection;
 	qboolean       usesImpactMark;
 	qhandle_t      impactMark;
 	qhandle_t      impactMarkSize;

@@ -114,6 +114,7 @@ static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABL
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_BOOSTER
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_HIVE
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_LEECH
+{{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_SPIKER
 {{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{S1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0}}, // H_SPAWN
 {{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_MGTURRET
 {{XX,0},{I1,0},{XX,0},{OP,2},{CD,0},{OP,0},{OP,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{OP,2},{CD,0},{CD,0}}, // H_ROCKETPOD
@@ -749,6 +750,11 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 		case BA_A_ACIDTUBE:
 			*range = ACIDTUBE_RANGE;
 			shc = SHC_ORANGE;
+			break;
+
+		case BA_A_SPIKER:
+			*range = SPIKER_RANGE;
+			shc = SHC_PINK;
 			break;
 
 		case BA_A_TRAPPER:

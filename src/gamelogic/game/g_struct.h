@@ -402,6 +402,10 @@ struct gentity_s
 	int         turretPrepareTime; // when the turret can start locking on and/or firing
 	int         turretLockonTime;  // when the turret can start firing
 
+	// spiker
+	int         spikerRestUntil;
+	float       spikerLastScoring;
+
 	vec4_t      animation; // animated map objects
 
 	qboolean    nonSegModel; // this entity uses a nonsegmented player model

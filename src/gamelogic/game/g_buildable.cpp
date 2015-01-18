@@ -1194,15 +1194,6 @@ void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	ABarricade_Shrink( self, qtrue );
 }
 
-//==================================================================================
-
-/*
-================
-AAcidTube_Think
-
-Think function for Alien Acid Tube
-================
-*/
 void AAcidTube_Think( gentity_t *self )
 {
 	gentity_t *ent;
@@ -1244,6 +1235,161 @@ void AAcidTube_Think( gentity_t *self )
 								 ACIDTUBE_RANGE, self, MOD_ATUBE, TEAM_ALIENS );
 
 		return;
+	}
+}
+
+bool ASpiker_Fire( gentity_t *self )
+{
+	// check if still resting
+	if ( self->spikerRestUntil > level.time )
+	{
+		return false;
+	}
+
+	// play shooting animation
+	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
+	//G_AddEvent( self, EV_ALIEN_SPIKER, DirToByte( self->s.origin2 ) );
+
+	// calculate total perimeter of all spike rows to allow for a more even spike distribution
+	float totalPerimeter = 0.0f;
+
+	for ( int row = 0; row < SPIKER_MISSILEROWS; row++ )
+	{
+		float polar = ( ( (float)row + SPIKER_ROWOFFSET ) * M_PI_2 ) / (float)SPIKER_MISSILEROWS;
+		float perim = 2.0f * M_PI * sin( 0.5f * polar );
+
+		totalPerimeter += perim;
+	}
+
+	// distribute and launch missiles
+	vec3_t dir, normal, rotAxis;
+
+	VectorCopy( self->s.origin2, normal );
+	PerpendicularVector( rotAxis, normal );
+
+	for ( int row = 0; row < SPIKER_MISSILEROWS; row++ )
+	{
+		float polar = ( ( (float)row + SPIKER_ROWOFFSET ) * M_PI_2 ) / (float)SPIKER_MISSILEROWS;
+		float perim = 2.0f * M_PI * sin( 0.5f * polar );
+
+		RotatePointAroundVector( dir, rotAxis, normal, RAD2DEG( polar ) );
+
+		// attempt to distribute spikes with equal distance on all rows
+		int spikes = (int)round( ( (float)SPIKER_MISSILES * perim ) / totalPerimeter );
+
+		for ( int spike = 0; spike < spikes; spike++ )
+		{
+			float azimuth = 2.0f * M_PI * ( ( (float)spike + crandom() ) / (float)spikes );
+
+			RotatePointAroundVector( dir, normal, dir, RAD2DEG( azimuth ) );
+
+			if ( g_debugTurrets.integer )
+			{
+				Com_Printf( "Spiker #%d fires: Row %d/%d: Spike %d/%d: ( %.2f, %.2f, %.2f )\n",
+				            self->s.number, row + 1, SPIKER_MISSILEROWS, spike + 1, spikes, dir[0],
+				            dir[1], dir[2] );
+			}
+
+			G_SpawnMissile( MIS_SPIKER, self, self->s.origin, dir, NULL, G_FreeEntity,
+			                level.time + 5000 );
+		}
+	}
+
+	// do radius damage in addition to spike missiles
+	//G_SelectiveRadiusDamage( self->s.origin, source, SPIKER_RADIUS_DAMAGE, SPIKER_RANGE, self,
+	//                         MOD_SPIKER, TEAM_ALIENS );
+
+	self->spikerRestUntil = level.time + SPIKER_COOLDOWN;
+	return true;
+}
+
+void ASpiker_Think( gentity_t *self )
+{
+	gentity_t *ent;
+	float     scoring;
+
+	self->nextthink = level.time + 500;
+
+	AGeneric_Think( self );
+
+	if ( !self->spawned || !self->powered || self->health <= 0 )
+	{
+		return;
+	}
+
+	// stop here if recovering from shot
+	if ( level.time < self->spikerRestUntil )
+	{
+		self->spikerLastScoring = 0.0f;
+
+		return;
+	}
+
+	// calculate a "scoring" of the situation to decide on the best moment to shoot
+	scoring = 0.0f;
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, SPIKER_RANGE ) ); )
+	{
+		switch ( ent->s.eType )
+		{
+			case ET_PLAYER:
+			case ET_BUILDABLE:
+				break;
+
+			default:
+				continue;
+		}
+
+		if ( self == ent || ( ent->flags & FL_NOTARGET ) ||
+		     !G_IsVisible( self, ent, CONTENTS_SOLID ) )
+		{
+			continue;
+		}
+
+		// approximate average damage the entity would receive from spikes
+		float diameter = VectorLength( ent->r.mins ) + VectorLength( ent->r.maxs );
+		float distance = Distance( self->s.origin, ent->s.origin );
+		float effectArea = 2.0f * M_PI * distance * distance; // half sphere
+		float targetArea = 0.5f * diameter * diameter; // approx. proj. of target on effect area
+		float expectedDamage = ( targetArea / effectArea ) * (float)SPIKER_MISSILES *
+		                       (float)BG_Missile( MIS_SPIKER )->damage;
+
+		// friendly entities that can receive damage substract from the scoring, enemies add to it
+		if ( G_OnSameTeam( self, ent ) )
+		{
+			scoring -= expectedDamage;
+		}
+		else
+		{
+			scoring += expectedDamage;
+		}
+	}
+
+	if ( scoring > 0.0f )
+	{
+		if ( g_debugTurrets.integer )
+		{
+			Com_Printf("Spiker #%i scoring: %f\n", self->s.number, scoring);
+		}
+
+		self->nextthink = level.time; // maximize sampling rate
+	}
+
+	// don't shoot as long as the enemy is getting closer
+	if ( scoring > 0.0f && scoring <= self->spikerLastScoring )
+	{
+		ASpiker_Fire( self );
+	}
+
+	self->spikerLastScoring = scoring;
+}
+
+void ASpiker_Pain( gentity_t *self, gentity_t *attacker, int damage )
+{
+	AGeneric_Pain( self, attacker, damage );
+
+	if ( self->spikerLastScoring > 0.0f )
+	{
+		//ASpiker_Fire( self );
 	}
 }
 
@@ -4667,6 +4813,12 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->die = ALeech_Die;
 			built->think = ALeech_Think;
 			built->pain = AGeneric_Pain;
+			break;
+
+		case BA_A_SPIKER:
+			built->die = AGeneric_Die;
+			built->think = ASpiker_Think;
+			built->pain = ASpiker_Pain;
 			break;
 
 		case BA_A_OVERMIND:
