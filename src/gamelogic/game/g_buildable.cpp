@@ -1283,10 +1283,12 @@ bool ASpiker_Fire( gentity_t *self )
 
 			RotatePointAroundVector( dir, normal, dir, RAD2DEG( azimuth ) );
 
-			// XXX: Debug
-			Com_Printf( "Spiker #%d fires: Row %d/%d: Spike %d/%d: ( %.2f, %.2f, %.2f )\n",
-						self->s.number, row + 1, SPIKER_MISSILEROWS, spike + 1, spikes, dir[0],
-						dir[1], dir[2] );
+			if ( g_debugTurrets.integer )
+			{
+				Com_Printf( "Spiker #%d fires: Row %d/%d: Spike %d/%d: ( %.2f, %.2f, %.2f )\n",
+				            self->s.number, row + 1, SPIKER_MISSILEROWS, spike + 1, spikes, dir[0],
+				            dir[1], dir[2] );
+			}
 
 			G_SpawnMissile( MIS_SPIKER, self, self->s.origin, dir, NULL, G_FreeEntity,
 			                level.time + 5000 );
@@ -1364,8 +1366,10 @@ void ASpiker_Think( gentity_t *self )
 
 	if ( scoring > 0.0f )
 	{
-		// XXX: Debug
-		Com_Printf("Spiker #%i scoring: %f\n", self->s.number, scoring);
+		if ( g_debugTurrets.integer )
+		{
+			Com_Printf("Spiker #%i scoring: %f\n", self->s.number, scoring);
+		}
 
 		self->nextthink = level.time; // maximize sampling rate
 	}
