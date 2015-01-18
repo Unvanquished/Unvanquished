@@ -184,7 +184,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 		close(pipefds[0]);
 
 		// Explicitly destroy the local socket, since destructors are not called
-		pair.first.Close();
+		close(pair.first.GetHandle());
 
 		// This seems to be required, otherwise killing the child process will
 		// also kill the parent process.
