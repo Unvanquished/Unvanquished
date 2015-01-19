@@ -347,6 +347,17 @@ static int CG_CompareBeaconsByDist( const void *a, const void *b )
 	return ( *(const cbeacon_t**)a )->dist > ( *(const cbeacon_t**)b )->dist;
 }
 
+static team_t TagTeam( const cbeacon_t *beacon )
+{
+	if ( beacon->type != BCT_TAG )
+		return TEAM_NONE;
+
+	if ( ( beacon->team == TEAM_ALIENS && beacon->flags & EF_BC_ENEMY ) ||
+	     ( beacon->team == TEAM_HUMANS && !( beacon->flags & EF_BC_ENEMY ) ) )
+		return TEAM_HUMANS;
+	else
+		return TEAM_ALIENS;
+}
 
 /*
 =============
@@ -473,67 +484,69 @@ void CG_ListBeacons( void )
 		cg.beacons[ i ]->oldFlags = cg.beacons[ i ]->flags;
 	}
 
-	//update cg.beaconRocket
+	// Update cg.beaconRocket.
+	// TODO: Move to own function.
 	{
 		beaconRocket_t * const br = &cg.beaconRocket;
-		float t_alpha, t_infoAlpha, t_ageAlpha, t_ownerAlpha; //targets
+		float t_nameAlpha, t_infoAlpha, t_distanceAlpha, t_ageAlpha, t_ownerAlpha; // targets
 
 		b = cg.highlightedBeacon;
 
-		t_alpha = 0;
-		t_infoAlpha = 0;
-		t_ageAlpha = 0;
-		t_ownerAlpha = 0;
+		t_nameAlpha = t_infoAlpha = t_distanceAlpha = t_ageAlpha = t_ownerAlpha = 0;
 
 		if( b )
 		{
-			t_alpha = 1;
-			br->name = CG_BeaconText( b );
-			Com_sprintf( br->distance, sizeof( br->distance ), "%im", (int)round( b->dist * 0.0254 ) );
+			// name
+			Com_sprintf( br->name, sizeof( br->name ), "%s", CG_BeaconName( b ) );
+			t_nameAlpha = 1;
 
-			// TODO: br->info
-
-			// friendly tags are always permanent so don't set age for them
-			// don't display age for base beacons either as it wouldn't be too useful
-			if( !( b->type == BCT_TAG && !( b->flags & EF_BC_ENEMY ) ) &&
-			    !( b->type == BCT_BASE ) )
+			// info
+			if ( b->type == BCT_TAG &&
+			     ( b->flags & EF_BC_TAG_PLAYER ) &&
+			     TagTeam( b ) == TEAM_HUMANS )
 			{
-				int age;
-
-				t_ageAlpha = 1;
-				age = cg.time - b->mtime;
-
-				if( age < 1000 )
-					Com_sprintf( br->age, sizeof( br->age ), "&lt;1s ago" );
-				else if( age < 60000 )
-					Com_sprintf( br->age, sizeof( br->age ), "%is ago", age / 1000 );
-				else
-					Com_sprintf( br->age, sizeof( br->age ), "%im%is ago", age / 60000, ( age / 1000 ) % 60 );
+				Com_sprintf( br->info, sizeof( br->info ), "Carrying %s",
+				             BG_Weapon( b->data )->humanName );
+				t_infoAlpha = 1;
 			}
 
-			if( BG_Beacon( b->type )->flags & BCF_IMPORTANT )
+			// distance
+			Com_sprintf( br->distance, sizeof( br->distance ), "%im from here",
+			             (int)round( b->dist * 0.0254 ) );
+			t_distanceAlpha = 1;
+
+			// age
+			if( b->type == BCT_TAG &&
+			    !( b->flags & EF_BC_TAG_PLAYER ) &&
+			    ( b->flags & EF_BC_ENEMY ) )
 			{
-				if( b->owner >= 0 && b->owner < MAX_CLIENTS &&
-				    cgs.clientinfo[ b->owner ].name )
-				{
+				int age = cg.time - b->mtime;
+
+				if( age < 1000 )
+					Com_sprintf( br->age, sizeof( br->age ), "Spotted just now" );
+				else
+					Com_sprintf( br->age, sizeof( br->age ), "Spotted %i:%02i ago",
+					             age / 60000, ( age / 1000 ) % 60 );
+
+				t_ageAlpha = 1;
+			}
+
+			// owner
+			if( BG_Beacon( b->type )->flags & BCF_IMPORTANT &&
+			    b->owner >= 0 && b->owner < MAX_CLIENTS &&
+			    cgs.clientinfo[ b->owner ].name)
+			{
+					Com_sprintf( br->owner, sizeof( br->owner ), "by ^7%s",
+					             cgs.clientinfo[ b->owner ].name );
 					t_ownerAlpha = 1;
-					Com_sprintf( br->owner, sizeof( br->owner ), "by ^7%s", cgs.clientinfo[ b->owner ].name );
-				}
-				else if( b->owner == ENTITYNUM_WORLD )
-				{
-					t_ownerAlpha = 1;
-					Q_strncpyz( br->owner, "(automatic)", sizeof( br->owner ) );
-				}
 			}
 		}
 
-		if( !br->name )
-			br->name = "";
-
-		CG_ExponentialFade( &br->alpha, t_alpha, 10 );
-		CG_ExponentialFade( &br->infoAlpha, t_infoAlpha, 10 );
-		CG_ExponentialFade( &br->ageAlpha, t_ageAlpha, 10 );
-		CG_ExponentialFade( &br->ownerAlpha, t_ownerAlpha, 10 );
+		CG_ExponentialFade( &br->nameAlpha,     t_nameAlpha,     10 );
+		CG_ExponentialFade( &br->infoAlpha,     t_infoAlpha,     10 );
+		CG_ExponentialFade( &br->distanceAlpha, t_distanceAlpha, 10 );
+		CG_ExponentialFade( &br->ageAlpha,      t_ageAlpha,      10 );
+		CG_ExponentialFade( &br->ownerAlpha,    t_ownerAlpha,    10 );
 	}
 }
 
@@ -599,14 +612,7 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b, qboolean hud )
 	return BG_Beacon( b->type )->icon[ 0 ];
 }
 
-/*
-=============
-CG_BeaconText
-
-Figures out the text for a beacon.
-=============
-*/
-const char *CG_BeaconText( const cbeacon_t *b )
+const char *CG_BeaconName( const cbeacon_t *b )
 {
 	const char *text;
 
@@ -618,10 +624,20 @@ const char *CG_BeaconText( const cbeacon_t *b )
 		case BCT_TAG:
 			if( b->flags & EF_BC_TAG_PLAYER )
 			{
-				if( ( b->team == TEAM_ALIENS ) == !( b->flags & EF_BC_ENEMY ) )
-					text = BG_Class( b->data )->name;
-				else
-					text = BG_Weapon( b->data )->humanName;
+				switch ( TagTeam( b ) )
+				{
+					case TEAM_ALIENS:
+						text = BG_ClassModelConfig( b->data )->humanName; // class name
+						break;
+
+					case TEAM_HUMANS:
+						text = "Human";
+						break;
+
+					default:
+						text = "Neutral Player";
+						break;
+				}
 			}
 			else
 				text = BG_Buildable( b->data )->humanName;
@@ -645,7 +661,5 @@ const char *CG_BeaconText( const cbeacon_t *b )
 			text = BG_Beacon( b->type )->text[ 0 ];
 	}
 
-	if( text )
-		return text;
-	return "(null)";
+	return text;
 }

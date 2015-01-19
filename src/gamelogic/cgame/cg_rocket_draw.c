@@ -1255,7 +1255,7 @@ void CG_Rocket_DrawBeaconAge( void )
 
 void CG_Rocket_DrawBeaconDistance( void )
 {
-	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.distance ) );
+	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.distanceAlpha ) );
 	trap_Rocket_SetInnerRML( cg.beaconRocket.distance, 0 );
 }
 
@@ -1267,7 +1267,7 @@ void CG_Rocket_DrawBeaconInfo( void )
 
 void CG_Rocket_DrawBeaconName( void )
 {
-	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.alpha ) );
+	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.nameAlpha ) );
 	trap_Rocket_SetInnerRML( cg.beaconRocket.name, 0 );
 }
 

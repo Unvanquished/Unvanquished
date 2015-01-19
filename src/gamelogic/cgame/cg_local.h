@@ -701,9 +701,11 @@ typedef struct
 // strings to display on the libRocket HUD
 typedef struct
 {
-	const char  *name;
-	float        alpha;
+	char         name[ 128 ];
+	float        nameAlpha;
+
 	char         distance[ 48 ];
+	float        distanceAlpha;
 
 	char         info[ 128 ];
 	float        infoAlpha;
@@ -2294,7 +2296,7 @@ const char *CG_TutorialText( void );
 void          CG_LoadBeaconsConfig( void );
 void          CG_ListBeacons( void );
 qhandle_t     CG_BeaconIcon( const cbeacon_t *b, qboolean hud );
-const char    *CG_BeaconText( const cbeacon_t *b );
+const char    *CG_BeaconName( const cbeacon_t *b );
 
 //
 //===============================================
