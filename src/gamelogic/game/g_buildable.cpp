@@ -282,53 +282,6 @@ static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 }
 
 /*
-==================
-G_GetBuildPointsInt
-
-Get the number of build points for a team
-==================
-*/
-int G_GetBuildPointsInt( team_t team )
-{
-	if ( team > TEAM_NONE && team < NUM_TEAMS )
-	{
-		return ( int )level.team[ team ].buildPoints;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-/*
-==================
-G_GetMarkedBuildPointsInt
-
-Get the number of marked build points for a team
-==================
-*/
-int G_GetMarkedBuildPointsInt( team_t team )
-{
-	gentity_t *ent;
-	int       i;
-	int       sum = 0;
-	const buildableAttributes_t *attr;
-
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( ent->s.eType != ET_BUILDABLE || !ent->inuse || ent->health <= 0 || ent->buildableTeam != team || !ent->deconstruct )
-		{
-			continue;
-		}
-
-		attr = BG_Buildable( ent->s.modelindex );
-		sum += attr->buildPoints * ( ent->health / (float)attr->health );
-	}
-
-	return sum;
-}
-
-/*
 ================
 G_Reactor
 G_Overmind
@@ -618,155 +571,6 @@ static void AGeneric_CreepSlow( gentity_t *self )
 	}
 }
 
-/**
- * @brief Calculates modifier for the efficiency of one RGS when another one interfers at given distance.
- */
-static float RGSInterferenceMod( float distance )
-{
-	float dr, q;
-
-	if ( RGS_RANGE <= 0.0f )
-	{
-		return 1.0f;
-	}
-
-	// q is the ratio of the part of a sphere with radius RGS_RANGE that intersects
-	// with another sphere of equal size and given distance
-	dr = distance / RGS_RANGE;
-	q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
-
-	// Two RGS together should mine at a rate proportional to the volume of the
-	// union of their areas of effect. If more RGS intersect, this is just an
-	// approximation that tends to punish cluttering of RGS.
-	return ( (1.0f - q) + 0.5f * q );
-}
-
-/**
- * @brief Adjust the rate of a RGS.
- */
-void G_RGSCalculateRate( gentity_t *self )
-{
-	gentity_t       *rgs;
-	float           rate;
-
-	if ( self->s.modelindex != BA_A_LEECH && self->s.modelindex != BA_H_DRILL )
-	{
-		return;
-	}
-
-	if ( !self->spawned || !self->powered )
-	{
-		self->mineRate       = 0.0f;
-		self->mineEfficiency = 0.0f;
-
-		// HACK: Save rate and efficiency entityState.weapon and entityState.weaponAnim
-		self->s.weapon     = 0;
-		self->s.weaponAnim = 0;
-	}
-	else
-	{
-		rate = level.mineRate;
-
-		for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
-		{
-			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-				 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
-			{
-				rate *= RGSInterferenceMod( Distance( self->s.origin, rgs->s.origin ) );
-			}
-		}
-
-		self->mineRate       = rate;
-		self->mineEfficiency = rate / level.mineRate;
-
-		// HACK: Save rate and efficiency in entityState.weapon and entityState.weaponAnim
-		self->s.weapon     = ( int )( self->mineRate * 1000.0f );
-		self->s.weaponAnim = ( int )( self->mineEfficiency * 100.0f );
-
-		// The transmitted rate must be positive to indicate that the RGS is active
-		if ( self->s.weapon < 1 )
-		{
-			self->s.weapon = 1;
-		}
-	}
-}
-
-/**
- * @brief Adjust the rate of all RGS in range.
- */
-void G_RGSInformNeighbors( gentity_t *self )
-{
-	gentity_t       *rgs;
-
-	for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
-	{
-		if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-			 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
-		{
-			G_RGSCalculateRate( rgs );
-		}
-	}
-}
-
-/**
- * @brief Predict the efficiecy loss of a RGS if another one is constructed at given origin.
- * @return Efficiency loss as negative value
- */
-static float RGSPredictInterferenceLoss( gentity_t *self, vec3_t origin )
-{
-	float currentRate, predictedRate, rateLoss;
-
-	currentRate   = self->mineRate;
-	predictedRate = currentRate * RGSInterferenceMod( Distance( self->s.origin, origin ) );
-	rateLoss      = predictedRate - currentRate;
-
-	return ( rateLoss / level.mineRate );
-}
-
-/**
- * @brief Predict the efficiency of a RGS constructed at the given point.
- * @return Predicted efficiency in percent points
- */
-float G_RGSPredictEfficiency( vec3_t origin )
-{
-	gentity_t dummy;
-
-	memset( &dummy, 0, sizeof( gentity_t ) );
-	VectorCopy( origin, dummy.s.origin );
-	dummy.s.eType = ET_BUILDABLE;
-	dummy.s.modelindex = BA_A_LEECH;
-	dummy.spawned = qtrue;
-	dummy.powered = qtrue;
-
-	G_RGSCalculateRate( &dummy );
-
-	return dummy.mineEfficiency;
-}
-
-/**
- * @brief Predict the total efficiency gain for a team when a RGS is constructed at the given point.
- * @return Predicted efficiency delta in percent points
- * @todo Consider RGS set for deconstruction
- */
-float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
-{
-	gentity_t *rgs;
-	float     delta;
-
-	delta = G_RGSPredictEfficiency( origin );
-
-	for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, origin, RGS_RANGE * 2.0f ) ); )
-	{
-		if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-		     && rgs->spawned && rgs->powered && rgs->health > 0 && rgs->buildableTeam == team )
-		{
-			delta += RGSPredictInterferenceLoss( rgs, origin );
-		}
-	}
-
-	return delta;
-}
-
 /*
 ================
 nullDieFunction
@@ -866,7 +670,6 @@ void AGeneric_Blast( gentity_t *self )
 
 	VectorCopy( self->s.origin2, dir );
 
-	//do a bit of radius damage
 	G_SelectiveRadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                         self->splashRadius, self, self->splashMethodOfDeath, TEAM_ALIENS );
 
@@ -895,7 +698,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 {
 	gentity_t *om;
 
-	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
+	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
 	self->die = NullDieFunction;
@@ -1190,6 +993,8 @@ void AOvermind_Think( gentity_t *self )
 		}
 
 		G_WarnPrimaryUnderAttack( self );
+
+		G_MainStructBPStorageThink( self );
 	}
 	else
 	{
@@ -1207,10 +1012,13 @@ Called when the overmind dies
 void AOvermind_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
+
 	if ( IsWarnableMOD( mod ) )
 	{
 		G_BroadcastEvent( EV_OVERMIND_DYING, 0, TEAM_ALIENS );
 	}
+
+	G_BPStorageDie( self );
 }
 
 /*
@@ -1283,7 +1091,7 @@ void ABarricade_Shrink( gentity_t *self, qboolean shrink )
 		self->r.maxs[ 2 ] = ( int )( self->r.maxs[ 2 ] * BARRICADE_SHRINKPROP );
 		self->shrunkTime = level.time;
 
-		// shrink animation, the destroy animation is used
+		// shrink animation
 		if ( self->spawned && self->health > 0 )
 		{
 			G_SetBuildableAnim( self, BANIM_ATTACK1, qtrue );
@@ -1306,14 +1114,13 @@ void ABarricade_Shrink( gentity_t *self, qboolean shrink )
 
 		self->shrunkTime = 0;
 
-		// unshrink animation, IDLE2 has been hijacked for this
+		// unshrink animation
 		anim = self->s.legsAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
-		if ( self->spawned && self->health > 0 &&
-		     anim != BANIM_CONSTRUCT1 && anim != BANIM_CONSTRUCT2 )
+		if ( self->spawned && self->health > 0 && anim != BANIM_CONSTRUCT && anim != BANIM_POWERUP )
 		{
-			G_SetIdleBuildableAnim( self, (buildableAnimNumber_t) BG_Buildable( BA_A_BARRICADE )->idleAnim );
 			G_SetBuildableAnim( self, BANIM_ATTACK2, qtrue );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 		}
 	}
 
@@ -1442,40 +1249,18 @@ void AAcidTube_Think( gentity_t *self )
 
 void ALeech_Think( gentity_t *self )
 {
-	qboolean active, lastThinkActive;
-	float    resources;
-
 	self->nextthink = level.time + 1000;
 
 	AGeneric_Think( self );
 
-	active = self->spawned & self->powered;
-	lastThinkActive = self->s.weapon > 0;
-
-	if ( active ^ lastThinkActive )
-	{
-		// If the state of this RGS has changed, adjust own rate and inform
-		// active closeby RGS so they can adjust their rate immediately.
-		G_RGSCalculateRate( self );
-		G_RGSInformNeighbors( self );
-	}
-
-	if ( active )
-	{
-		resources = self->s.weapon / 60000.0f;
-		self->buildableStatsTotalF += resources;
-	}
+	G_RGSThink( self );
 }
 
 void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
 
-	self->s.weapon = 0;
-	self->s.weaponAnim = 0;
-
-	// Assume our state has changed and inform closeby RGS
-	G_RGSInformNeighbors( self );
+	G_RGSDie( self );
 }
 
 static gentity_t *cmpHive = NULL;
@@ -1693,7 +1478,7 @@ void ABooster_Think( gentity_t *self )
 	AGeneric_Think( self );
 
 	// check if there is a closeby alien that used this booster for healing recently
-	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, REGEN_BOOST_RANGE ) ); )
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, REGEN_BOOSTER_RANGE ) ); )
 	{
 		if ( ent->boosterUsed == self && ent->boosterTime == level.previousTime )
 		{
@@ -1971,23 +1756,17 @@ IdlePowerState
 Set buildable idle animation to match power state
 ================
 */
-static void IdlePowerState( gentity_t *self )
+static void PlayPowerStateAnims( gentity_t *self )
 {
-	if ( self->powered )
+	if ( self->powered && self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
 	{
-		if ( self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
-		{
-			// TODO: Play power up anim here?
-			G_SetIdleBuildableAnim( self, (buildableAnimNumber_t) BG_Buildable( self->s.modelindex )->idleAnim );
-		}
+		G_SetBuildableAnim( self, BANIM_POWERUP, qfalse );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 	}
-	else
+	else if ( !self->powered && self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
 	{
-		if ( self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
-		{
-			G_SetBuildableAnim( self, BANIM_POWERDOWN, qfalse );
-			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
-		}
+		G_SetBuildableAnim( self, BANIM_POWERDOWN, qfalse );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 	}
 }
 
@@ -2391,9 +2170,8 @@ void HGeneric_Blast( gentity_t *self )
 
 	self->timestamp = level.time;
 
-	//do some radius damage
 	G_RadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
-	                self->splashRadius, self, self->splashMethodOfDeath );
+	                self->splashRadius, self, DAMAGE_KNOCKBACK, self->splashMethodOfDeath );
 
 	G_RewardAttackers( self );
 
@@ -2419,9 +2197,13 @@ void HGeneric_Cancel( gentity_t *self )
 	G_FreeEntity( self );
 }
 
+#define HUMAN_DETONATION_RAND_DELAY ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) ) \
+                                     * DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY \
+                                     + HUMAN_DETONATION_DELAY
+
 void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
-	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
+	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
 	self->die = NullDieFunction;
@@ -2431,9 +2213,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 
 	if ( self->spawned )
 	{
-		// blast after a brief period
 		self->think = HGeneric_Blast;
-		self->nextthink = level.time + HUMAN_DETONATION_DELAY;
 
 		// make a warning sound before ractor and repeater explosion
 		// don't randomize blast delay for them so the sound stays synced
@@ -2442,11 +2222,11 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 			case BA_H_REPEATER:
 			case BA_H_REACTOR:
 				G_AddEvent( self, EV_HUMAN_BUILDABLE_DYING, 0 );
+				self->nextthink = level.time + HUMAN_DETONATION_DELAY;
 				break;
 
 			default:
-				self->nextthink += ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) )
-				                   * DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY;
+				self->nextthink = level.time + HUMAN_DETONATION_RAND_DELAY;
 		}
 	}
 	else
@@ -2548,7 +2328,7 @@ void HRepeater_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 1000;
 
-	IdlePowerState( self );
+	PlayPowerStateAnims( self );
 }
 
 void HReactor_Think( gentity_t *self )
@@ -2591,15 +2371,20 @@ void HReactor_Think( gentity_t *self )
 	}
 
 	G_WarnPrimaryUnderAttack( self );
+
+	G_MainStructBPStorageThink( self );
 }
 
 void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
+
 	if ( IsWarnableMOD( mod ) )
 	{
 		G_BroadcastEvent( EV_REACTOR_DYING, 0, TEAM_HUMANS );
 	}
+
+	G_BPStorageDie( self );
 }
 
 void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -2656,20 +2441,7 @@ void HMedistat_Think( gentity_t *self )
 		return;
 	}
 
-	// set animation
-	if ( self->powered )
-	{
-		if ( !self->active && self->s.torsoAnim != BANIM_IDLE1 )
-		{
-			G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
-			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
-		}
-	}
-	else if ( self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
-	{
-			G_SetBuildableAnim( self, BANIM_POWERDOWN, qfalse );
-			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
-	}
+	PlayPowerStateAnims( self );
 
 	// clear target's healing flag for now
 	if ( self->target && self->target->client )
@@ -2809,25 +2581,26 @@ void HMedistat_Think( gentity_t *self )
 			}
 		}
 	}
-	// if we lost our target, replay construction animation
+	// we lost our target
 	else if ( self->active )
 	{
 		self->active = qfalse;
 
-		G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
+		// stop healing animation
+		G_SetBuildableAnim( self, BANIM_ATTACK2, qtrue );
 		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 	}
 }
 
-static int HTurret_DistanceToZone( float distance )
+static int HMGTurret_DistanceToZone( float distance )
 {
-	const float zoneWidth = ( float )TURRET_RANGE / ( float )TURRET_ZONES;
+	const float zoneWidth = ( float )MGTURRET_RANGE / ( float )MGTURRET_ZONES;
 
 	int zone = ( int )( distance / zoneWidth );
 
-	if ( zone >= TURRET_ZONES )
+	if ( zone >= MGTURRET_ZONES )
 	{
-		return TURRET_ZONES - 1;
+		return MGTURRET_ZONES - 1;
 	}
 	else
 	{
@@ -2837,7 +2610,7 @@ static int HTurret_DistanceToZone( float distance )
 
 static gentity_t *cmpTurret = NULL;
 
-static int HTurret_CompareTargets( const void *first, const void *second )
+static int HMGTurret_CompareTargets( const void *first, const void *second )
 {
 	gentity_t *a, *b;
 
@@ -2849,7 +2622,7 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 	a = ( gentity_t * )first;
 	b = ( gentity_t * )second;
 
-	// Always prefer target that isn't yet targeted.
+	// Prefer target that isn't yet targeted.
 	// This makes group attacks more and dretch spam less efficient.
 	{
 		if ( a->numTrackedBy == 0 && b->numTrackedBy > 0 )
@@ -2862,6 +2635,25 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 		}
 	}
 
+	// Prefer the target that is in a line of sight.
+	// This prevents the turret from keeping a lock on a target behind cover.
+	// (For the MG turret, do so after the already-targeted check so that such a lock is kept if all
+	// other valid targets are being dealt with. This results in suppressive fire against targets
+	// behind cover as long as it's safe for the turret to do so.)
+	{
+		bool los2a = G_LineOfFire( cmpTurret, a );
+		bool los2b = G_LineOfFire( cmpTurret, b );
+
+		if ( los2a && !los2b )
+		{
+			return -1;
+		}
+		else if ( los2b && !los2a )
+		{
+			return 1;
+		}
+	}
+
 	// Prefer target that can be aimed at more quickly.
 	// This makes the turret spend less time tracking enemies.
 	{
@@ -2869,11 +2661,8 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 
 		AngleVectors( cmpTurret->buildableAim, aimDir, NULL, NULL );
 
-		VectorSubtract( a->s.origin, cmpTurret->s.origin, aDir );
-		VectorSubtract( b->s.origin, cmpTurret->s.origin, bDir );
-
-		VectorNormalize( aDir );
-		VectorNormalize( bDir );
+		VectorSubtract( a->s.origin, cmpTurret->s.pos.trBase, aDir ); VectorNormalize( aDir );
+		VectorSubtract( b->s.origin, cmpTurret->s.pos.trBase, bDir ); VectorNormalize( bDir );
 
 		if ( DotProduct( aDir, aimDir ) > DotProduct( bDir, aimDir ) )
 		{
@@ -2884,27 +2673,60 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 			return 1;
 		}
 	}
+}
 
-	/*
-	// Prefer smaller distance. Use zones so close targets with different hit ranges are treated equally.
-	// Note that one target can't hide the other, since the other wouldn't be valid.
+static int HRocketpod_CompareTargets( const void *first, const void *second )
+{
+	gentity_t *a, *b;
+
+	if ( !cmpTurret )
 	{
-		int ad = HTurret_DistanceToZone( Distance( cmpTurret->s.origin, a->s.origin ) );
-		int bd = HTurret_DistanceToZone( Distance( cmpTurret->s.origin, b->s.origin ) );
+		return 0;
+	}
 
-		if ( ad < bd )
+	a = ( gentity_t * )first;
+	b = ( gentity_t * )second;
+
+	// Prefer the target that is in a line of sight.
+	// This prevents the turret from keeping a lock on a target behind cover.
+	{
+		bool los2a = G_LineOfFire( cmpTurret, a );
+		bool los2b = G_LineOfFire( cmpTurret, b );
+
+		if ( los2a && !los2b )
 		{
 			return -1;
 		}
-		else if ( bd < ad )
+		else if ( los2b && !los2a )
 		{
 			return 1;
 		}
 	}
 
-	// Tie breaker is random decision, so clients on lower slots don't get shot at more often.
+	// First, prefer target that is currently safe to shoot at.
+	// Then, prefer target that can be aimed at more quickly.
 	{
-		if ( rand() < ( RAND_MAX / 2 ) )
+		vec3_t aimDir, aDir, bDir;
+		bool   aSafe, bSafe;
+
+		VectorSubtract( a->s.origin, cmpTurret->s.pos.trBase, aDir ); VectorNormalize( aDir );
+		VectorSubtract( b->s.origin, cmpTurret->s.pos.trBase, bDir ); VectorNormalize( bDir );
+
+		aSafe = G_RocketpodSafeShot( cmpTurret->s.number, cmpTurret->s.pos.trBase, aDir );
+		bSafe = G_RocketpodSafeShot( cmpTurret->s.number, cmpTurret->s.pos.trBase, bDir );
+
+		if ( aSafe && !bSafe )
+		{
+			return -1;
+		}
+		else if ( bSafe && !aSafe )
+		{
+			return 1;
+		}
+
+		AngleVectors( cmpTurret->buildableAim, aimDir, NULL, NULL );
+
+		if ( DotProduct( aDir, aimDir ) > DotProduct( bDir, aimDir ) )
 		{
 			return -1;
 		}
@@ -2913,10 +2735,10 @@ static int HTurret_CompareTargets( const void *first, const void *second )
 			return 1;
 		}
 	}
-	*/
 }
 
-static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolean newTarget )
+static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolean newTarget,
+                                     float range )
 {
 	trace_t tr;
 	vec3_t  dir, end;
@@ -2926,7 +2748,8 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	     || target->health <= 0
 	     || G_OnSameTeam( self, target )
 	     || target->flags & FL_NOTARGET
-	     || Distance( self->s.origin, target->s.origin ) > TURRET_RANGE )
+	     || Distance( self->s.origin, target->s.origin ) > range
+	     || !trap_InPVS( self->s.origin, target->s.origin ) )
 	{
 		if ( g_debugTurrets.integer > 0 && self->target )
 		{
@@ -2942,7 +2765,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 		// check if target could be hit with a precise shot
 		VectorSubtract( target->s.pos.trBase, self->s.pos.trBase, dir );
 		VectorNormalize( dir );
-		VectorMA( self->s.pos.trBase, TURRET_RANGE, dir, end );
+		VectorMA( self->s.pos.trBase, range, dir, end );
 		trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 
 		if ( tr.entityNum != ( target - g_entities ) )
@@ -2953,7 +2776,8 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	else
 	{
 		// give up on target if we couldn't shoot at it for a while
-		if ( self->turretLastShotAtTarget && self->turretLastShotAtTarget + TURRET_GIVEUP_TARGET < level.time )
+		if ( self->turretLastShotAtTarget &&
+		     self->turretLastShotAtTarget + TURRET_GIVEUP_TARGET < level.time )
 		{
 			if ( g_debugTurrets.integer > 0 && self->target )
 			{
@@ -2970,7 +2794,8 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	return qtrue;
 }
 
-static qboolean HTurret_FindTarget( gentity_t *self )
+static qboolean HTurret_FindTarget( gentity_t *self, float range,
+                                    int (*cmp)(const void *, const void *) )
 {
 	gentity_t *neighbour = NULL;
 	gentity_t *validTargets[ MAX_GENTITIES ];
@@ -2986,9 +2811,10 @@ static qboolean HTurret_FindTarget( gentity_t *self )
 	self->turretLastShotAtTarget = 0;
 
 	// find all potential targets
-	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin, TURRET_RANGE )); )
+	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
+	                                                                     range )); )
 	{
-		if ( HTurret_TargetValid( self, neighbour, qtrue ) )
+		if ( HTurret_TargetValid( self, neighbour, qtrue, range ) )
 		{
 		     validTargets[ validTargetNum++ ] = neighbour;
 		}
@@ -2998,7 +2824,7 @@ static qboolean HTurret_FindTarget( gentity_t *self )
 	{
 		// search best target
 		cmpTurret = self;
-		qsort( validTargets, validTargetNum, sizeof( gentity_t* ), HTurret_CompareTargets );
+		qsort( validTargets, validTargetNum, sizeof( gentity_t* ), cmp );
 
 		self->target = validTargets[ 0 ];
 		self->target->numTrackedBy++;
@@ -3011,27 +2837,32 @@ static qboolean HTurret_FindTarget( gentity_t *self )
 	}
 }
 
-static void HTurret_MoveHeadToTarget( gentity_t *self )
+/**
+ * @return Whether another movement action will be needed afterwards.
+ */
+static qboolean HTurret_MoveHeadToTarget( gentity_t *self )
 {
 	const static vec3_t upwards = { 0.0f, 0.0f, 1.0f };
 
-	vec3_t rotAxis, angleToTarget, relativeDirToTarget, deltaAngles, relativeNewDir, newDir, maxAngles;
-	float  rotAngle, relativePitch, timeMod;
-	int    elapsed, currentAngle;
+	vec3_t   rotAxis, angleToTarget, relativeDirToTarget, deltaAngles, relativeNewDir, newDir,
+	         maxAngles;
+	float    rotAngle, relativePitch, timeMod;
+	int      elapsed, currentAngle;
+	qboolean anotherMoveNeeded;
 
 	// calculate maximum angular movement for this execution
 	if ( !self->turretLastHeadMove )
 	{
 		// no information yet, start moving next time
 		self->turretLastHeadMove = level.time;
-		return;
+		return qtrue;
 	}
 
 	elapsed = level.time - self->turretLastHeadMove;
 
 	if ( elapsed <= 0 )
 	{
-		return;
+		return qtrue;
 	}
 
 	timeMod = ( float )elapsed / 1000.0f;
@@ -3050,6 +2881,8 @@ static void HTurret_MoveHeadToTarget( gentity_t *self )
 	RotatePointAroundVector( relativeDirToTarget, rotAxis, self->turretDirToTarget, rotAngle );
 	vectoangles( relativeDirToTarget, angleToTarget );
 
+	anotherMoveNeeded = qfalse;
+
 	// adjust pitch and yaw
 	for ( currentAngle = 0; currentAngle < 3; currentAngle++ )
 	{
@@ -3059,16 +2892,21 @@ static void HTurret_MoveHeadToTarget( gentity_t *self )
 		}
 
 		// get angle delta from current orientation towards trarget angle
-		deltaAngles[ currentAngle ] = AngleSubtract( self->s.angles2[ currentAngle ], angleToTarget[ currentAngle ] );
+		deltaAngles[ currentAngle ] = AngleSubtract( self->s.angles2[ currentAngle ],
+		                                             angleToTarget[ currentAngle ] );
 
 		// adjust enttiyState_t.angles2
-		if      ( deltaAngles[ currentAngle ] < 0.0f && deltaAngles[ currentAngle ] < -maxAngles[ currentAngle ] )
+		if      ( deltaAngles[ currentAngle ] < 0.0f &&
+		          deltaAngles[ currentAngle ] < -maxAngles[ currentAngle ] )
 		{
 			self->s.angles2[ currentAngle ] += maxAngles[ currentAngle ];
+			anotherMoveNeeded = qtrue;
 		}
-		else if ( deltaAngles[ currentAngle ] > 0.0f && deltaAngles[ currentAngle ] >  maxAngles[ currentAngle ] )
+		else if ( deltaAngles[ currentAngle ] > 0.0f &&
+		          deltaAngles[ currentAngle ] >  maxAngles[ currentAngle ] )
 		{
 			self->s.angles2[ currentAngle ] -= maxAngles[ currentAngle ];
+			anotherMoveNeeded = qtrue;
 		}
 		else
 		{
@@ -3095,6 +2933,8 @@ static void HTurret_MoveHeadToTarget( gentity_t *self )
 	vectoangles( newDir, self->buildableAim );
 
 	self->turretLastHeadMove = level.time;
+
+	return anotherMoveNeeded;
 }
 
 static void HTurret_TrackTarget( gentity_t *self )
@@ -3125,7 +2965,7 @@ static void HTurret_SetBaseDir( gentity_t *self )
 	VectorNormalize( dir );
 
 	// invert base direction if it reaches into a wall within the first damage zone
-	VectorMA( self->s.origin, ( float )TURRET_RANGE / ( float )TURRET_ZONES, dir, end );
+	VectorMA( self->s.origin, ( float )MGTURRET_RANGE / ( float )MGTURRET_ZONES, dir, end );
 	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 
 	if ( tr.entityNum == ENTITYNUM_WORLD || g_entities[ tr.entityNum ].s.eType == ET_BUILDABLE )
@@ -3140,6 +2980,8 @@ static void HTurret_SetBaseDir( gentity_t *self )
 
 static void HTurret_ResetDirection( gentity_t *self )
 {
+	HTurret_SetBaseDir( self );
+
 	VectorCopy( self->turretBaseDir, self->turretDirToTarget );
 }
 
@@ -3169,7 +3011,43 @@ static void HTurret_LowerPitch( gentity_t *self )
 	VectorNormalize( self->turretDirToTarget );
 }
 
-static qboolean HTurret_TargetInReach( gentity_t *self )
+void HTurret_PreBlast( gentity_t *self )
+{
+	HTurret_LowerPitch( self );
+
+	// Enter regular blast state as soon as the barrel is lowered.
+	if ( !HTurret_MoveHeadToTarget( self ) )
+	{
+		self->think = HGeneric_Blast;
+		self->nextthink = level.time + HUMAN_DETONATION_RAND_DELAY;
+	}
+	else
+	{
+		self->nextthink = level.time + TURRET_THINK_PERIOD;
+	}
+}
+
+void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+{
+	if ( self->target )
+	{
+		self->target->numTrackedBy--;
+	}
+
+	HGeneric_Die( self, inflictor, attacker, mod );
+
+	// Rocketpod: The safe mode has the same idle as the unpowered state.
+	if ( self->turretSafeMode )
+	{
+		G_SetBuildableAnim( self, BANIM_DESTROY_UNPOWERED, qtrue );
+	}
+
+	// Do some last movements before entering blast state.
+	self->think = HTurret_PreBlast;
+	self->nextthink = level.time;
+}
+
+static qboolean HTurret_TargetInReach( gentity_t *self, float range )
 {
 	trace_t tr;
 	vec3_t  forward, end;
@@ -3181,15 +3059,15 @@ static qboolean HTurret_TargetInReach( gentity_t *self )
 
 	// check if a precise shot would hit the target
 	AngleVectors( self->buildableAim, forward, NULL, NULL );
-	VectorMA( self->s.pos.trBase, TURRET_RANGE, forward, end );
+	VectorMA( self->s.pos.trBase, range, forward, end );
 	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 
 	return ( tr.entityNum == ( self->target - g_entities ) );
 }
 
-static void HTurret_Shoot( gentity_t *self )
+static void HMGTurret_Shoot( gentity_t *self )
 {
-	const int zoneDamage[] = TURRET_ZONE_DAMAGE;
+	const int zoneDamage[] = MGTURRET_ZONE_DAMAGE;
 	int       zone;
 
 	// if turret doesn't have the fast loader upgrade, pause after three shots
@@ -3205,34 +3083,30 @@ static void HTurret_Shoot( gentity_t *self )
 
 	self->s.eFlags |= EF_FIRING;
 
-	zone = HTurret_DistanceToZone( Distance( self->s.pos.trBase, self->target->s.pos.trBase ) );
+	zone = HMGTurret_DistanceToZone( Distance( self->s.pos.trBase, self->target->s.pos.trBase ) );
 	self->turretCurrentDamage = zoneDamage[ zone ];
 
 	if ( g_debugTurrets.integer > 1 )
 	{
 		const static char color[] = {'1', '8', '3', '2'};
-		Com_Printf( "Turret %d: Shooting at %d: ^%cZone %d/%d → %d damage\n",
+		Com_Printf( "MGTurret %d: Shooting at %d: ^%cZone %d/%d → %d damage\n",
 		            self->s.number, self->target->s.number, color[zone], zone + 1,
-		            TURRET_ZONES, self->turretCurrentDamage );
+		            MGTURRET_ZONES, self->turretCurrentDamage );
 	}
 
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
-	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 	G_FireWeapon( self, WP_MGTURRET, WPM_PRIMARY );
 
-	self->turretSuccessiveShots++;
+	//self->turretSuccessiveShots++;
 	self->turretLastShotAtTarget = level.time;
-	self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
+	self->turretNextShot = level.time + MGTURRET_ATTACK_PERIOD;
 }
 
-void HTurret_Think( gentity_t *self )
+void HMGTurret_Think( gentity_t *self )
 {
 	qboolean gotValidTarget;
 
-	//HGeneric_Think( self );
 	self->nextthink = level.time + TURRET_THINK_PERIOD;
-
-	IdlePowerState( self );
 
 	// disable muzzle flash for now
 	self->s.eFlags &= ~EF_FIRING;
@@ -3242,11 +3116,11 @@ void HTurret_Think( gentity_t *self )
 		return;
 	}
 
-	// adjust yaw according to power state
+	// adjust pitch according to power state
 	if ( !self->powered )
 	{
 		self->turretDisabled = qtrue;
-		self->turretSuccessiveShots = 0;
+		//self->turretSuccessiveShots = 0;
 
 		HTurret_LowerPitch( self );
 		HTurret_MoveHeadToTarget( self );
@@ -3263,21 +3137,18 @@ void HTurret_Think( gentity_t *self )
 		self->turretDisabled = qfalse;
 	}
 
-	// set turret base direction
-	HTurret_SetBaseDir( self );
-
 	// check for valid target
-	if ( HTurret_TargetValid( self, self->target, qfalse ) )
+	if ( HTurret_TargetValid( self, self->target, qfalse, MGTURRET_RANGE ) )
 	{
 		gotValidTarget = qtrue;
 	}
 	else
 	{
-		gotValidTarget = HTurret_FindTarget( self );
+		gotValidTarget = HTurret_FindTarget( self, MGTURRET_RANGE, HMGTurret_CompareTargets );
 
 		if ( gotValidTarget && g_debugTurrets.integer > 0 )
 		{
-			Com_Printf( "Turret %d: New target %d.\n", self->s.number, self->target->s.number );
+			Com_Printf( "MGTurret %d: New target %d.\n", self->s.number, self->target->s.number );
 		}
 	}
 
@@ -3292,17 +3163,22 @@ void HTurret_Think( gentity_t *self )
 	}
 
 	// shoot if target in reach
-	if ( HTurret_TargetInReach( self ) )
+	if ( HTurret_TargetInReach( self, MGTURRET_RANGE ) )
 	{
 		// if the target's origin is visible, aim for it first
-		if ( G_LineOfSight( self->s.pos.trBase, self->target->s.origin, self ) )
+		if ( G_LineOfFire( self, self->target ) )
 		{
 			HTurret_MoveHeadToTarget( self );
 		}
 
 		if ( self->turretNextShot < level.time )
 		{
-			HTurret_Shoot( self );
+			HMGTurret_Shoot( self );
+		}
+		else
+		{
+			// keep the flag enabled in between shots
+			self->s.eFlags |= EF_FIRING;
 		}
 	}
 	else
@@ -3310,114 +3186,195 @@ void HTurret_Think( gentity_t *self )
 		// move head towards target
 		HTurret_MoveHeadToTarget( self );
 
-		self->turretSuccessiveShots = 0;
+		//self->turretSuccessiveShots = 0;
 	}
 }
 
-void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+static void HRocketpod_Shoot( gentity_t *self )
 {
-	if ( self->target )
+	self->s.eFlags |= EF_FIRING;
+
+	if ( g_debugTurrets.integer > 1 )
 	{
-		self->target->numTrackedBy--;
+		Com_Printf( "Rocketpod %d: Shooting at %d\n", self->s.number, self->target->s.number );
 	}
 
-	HGeneric_Die( self, inflictor, attacker, mod );
+	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
+	G_FireWeapon( self, WP_ROCKETPOD, WPM_PRIMARY );
+
+	self->turretLastShotAtTarget = level.time;
+	self->turretNextShot = level.time + ROCKETPOD_ATTACK_PERIOD;
 }
 
-void HTeslaGen_Think( gentity_t *self )
+/**
+ * @return Whether the mode was changed.
+ */
+static bool HRocketpod_SafeMode( gentity_t *self, bool enable )
 {
-	gentity_t *ent;
+	if ( enable && !self->turretSafeMode )
+	{
+		self->turretSafeMode = qtrue;
 
-	self->nextthink = level.time + 150;
+		G_SetBuildableAnim( self, BANIM_POWERDOWN, qtrue );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 
-	IdlePowerState( self );
+		return true;
+	}
+	else if ( !enable && self->turretSafeMode )
+	{
+		self->turretSafeMode = qfalse;
+
+		G_SetBuildableAnim( self, BANIM_POWERUP, qtrue );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
+
+		// Can't shoot for another second as the shutters open.
+		self->turretNextShot = level.time + 1000;
+
+		return true;
+	}
+
+	return false;
+}
+
+void HRocketpod_Think( gentity_t *self )
+{
+	qboolean  gotValidTarget;
+	gentity_t *neighbour;
+
+	self->nextthink = level.time + TURRET_THINK_PERIOD;
+
+	// disable muzzle flash for now
+	self->s.eFlags &= ~EF_FIRING;
 
 	if ( !self->spawned )
 	{
 		return;
 	}
 
+	// In addittion to regular animation, adjust pitch according to power state.
 	if ( !self->powered )
 	{
-		self->s.eFlags &= ~EF_FIRING;
-		self->nextthink = level.time + POWER_REFRESH_TIME;
+		if ( !self->turretDisabled )
+		{
+			self->turretDisabled = qtrue;
+
+			PlayPowerStateAnims( self );
+			HTurret_LowerPitch( self );
+		}
+
+		HTurret_MoveHeadToTarget( self );
 
 		return;
 	}
-
-	if ( self->timestamp < level.time )
+	else if ( self->turretDisabled )
 	{
-		vec3_t muzzle;
+		self->turretDisabled = qfalse;
 
-		// Stop firing effect for now
-		self->s.eFlags &= ~EF_FIRING;
+		PlayPowerStateAnims( self );
+		HTurret_ResetPitch( self );
 
-		// Move the muzzle from the entity origin up a bit to fire over turrets
-		VectorMA( self->s.origin, self->r.maxs[ 2 ], self->s.origin2, muzzle );
+		// Can't shoot for another second as the shutters open.
+		self->turretNextShot = level.time + 1000;
+	}
 
-		// Attack nearby Aliens
-		for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, muzzle, TESLAGEN_RANGE ) ); )
+	// if there's an enemy really close, enter safe mode
+	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
+	                                                                     ROCKETPOD_RANGE ) ); )
+	{
+		if ( neighbour->client && neighbour->health > 0 && !G_OnSameTeam( self, neighbour ) &&
+		     neighbour->client->sess.spectatorState == SPECTATOR_NOT )
 		{
-			// TODO: Replace this with IsAliveEnemy helper
-			if ( !ent->client ||
-			     ent->client->pers.team != TEAM_ALIENS ||
-			     ent->health <= 0 ||
-			     ent->flags & FL_NOTARGET )
+			classModelConfig_t *cmc = BG_ClassModelConfig( neighbour->client->pers.classSelection );
+			float classRadius = 0.5f * ( VectorLength( cmc->mins ) + VectorLength( cmc->maxs ) );
+
+			if ( Distance( self->s.origin, neighbour->s.origin ) - classRadius
+			     < BG_Missile( MIS_ROCKET )->splashRadius )
 			{
-				continue;
+				HRocketpod_SafeMode( self, qtrue );
+
+				HTurret_ResetPitch( self );
+				HTurret_MoveHeadToTarget( self );
+
+				return;
 			}
-
-			self->target = ent;
-			G_FireWeapon( self, WP_TESLAGEN, WPM_PRIMARY );
-			self->target = NULL;
 		}
+	}
 
-		if ( self->s.eFlags & EF_FIRING )
+	// otherwise, disable safe mode
+	HRocketpod_SafeMode( self, qfalse );
+
+	// check for valid target
+	if ( HTurret_TargetValid( self, self->target, qfalse, ROCKETPOD_RANGE ) )
+	{
+		gotValidTarget = qtrue;
+	}
+	else
+	{
+		gotValidTarget = HTurret_FindTarget( self, ROCKETPOD_RANGE, HRocketpod_CompareTargets );
+
+		if ( gotValidTarget && g_debugTurrets.integer > 0 )
 		{
-			G_AddEvent( self, EV_FIRE_WEAPON, 0 );
-			//G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
-
-			self->timestamp = level.time + TESLAGEN_REPEAT;
+			Com_Printf( "Rocketpod %d: New target %d.\n", self->s.number, self->target->s.number );
 		}
+	}
+
+	// adjust target direction
+	if ( gotValidTarget )
+	{
+		HTurret_TrackTarget( self );
+	}
+	else if ( !self->turretLastSeenATarget )
+	{
+		HTurret_ResetDirection( self );
+	}
+
+	// shoot if target in reach and safe
+	if ( HTurret_TargetInReach( self, ROCKETPOD_RANGE ) )
+	{
+		// if the target's origin is visible, aim for it first
+		if ( G_LineOfFire( self, self->target ) )
+		{
+			HTurret_MoveHeadToTarget( self );
+		}
+
+		if ( self->turretNextShot < level.time )
+		{
+			vec3_t aimDir;
+
+			AngleVectors( self->buildableAim, aimDir, NULL, NULL );
+
+			if ( G_RocketpodSafeShot( self->s.number, self->s.pos.trBase, aimDir ) )
+			{
+				HRocketpod_Shoot( self );
+			}
+		}
+		else
+		{
+			// keep the flag enabled in between shots
+			self->s.eFlags |= EF_FIRING;
+		}
+	}
+	else
+	{
+		// move head towards target
+		HTurret_MoveHeadToTarget( self );
 	}
 }
 
 void HDrill_Think( gentity_t *self )
 {
-	qboolean active, lastThinkActive;
-	float    resources;
-
 	self->nextthink = level.time + 1000;
 
-	active = self->spawned & self->powered;
-	lastThinkActive = self->s.weapon > 0;
+	G_RGSThink( self );
 
-	if ( active ^ lastThinkActive )
-	{
-		// If the state of this RGS has changed, adjust own rate and inform
-		// active closeby RGS so they can adjust their rate immediately.
-		G_RGSCalculateRate( self );
-		G_RGSInformNeighbors( self );
-	}
-
-	if ( active )
-	{
-		resources = self->s.weapon / 60000.0f;
-		self->buildableStatsTotalF += resources;
-	}
-
-	IdlePowerState( self );
+	PlayPowerStateAnims( self );
 }
 
 void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
 
-	self->s.weapon = 0;
-	self->s.weaponAnim = 0;
-
-	// Assume our state has changed and inform closeby RGS
-	G_RGSInformNeighbors( self );
+	G_RGSDie( self );
 }
 
 /*
@@ -3539,7 +3496,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 
 			G_Heal( ent, gain );
 		}
-		else if ( ent->health > 0 && ent->health < maxHealth )
+		else if ( ent->health > 0 && ent->health < maxHealth && ent->powered )
 		{
 			int regenWait;
 
@@ -3705,7 +3662,7 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 		BA_A_OVERMIND,
 
 		BA_H_MGTURRET,
-		BA_H_TESLAGEN,
+		BA_H_ROCKETPOD,
 		BA_H_MEDISTAT,
 		BA_H_ARMOURY,
 		BA_H_SPAWN,
@@ -3814,22 +3771,25 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
-	int   refund;
-	const buildableAttributes_t *attr;
-
 	if ( !self || self->s.eType != ET_BUILDABLE )
 	{
 		return;
 	}
 
-	attr = BG_Buildable( self->s.modelindex );
+	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
+
+	// save remaining health fraction
+	self->deconHealthFrac = Maths::clamp( self->health / ( float )attr->health, 0.0f, 1.0f );
 
 	// return BP
-	refund = attr->buildPoints * ( self->health / ( float )attr->health );
+	int refund = attr->buildPoints * self->deconHealthFrac;
 	G_ModifyBuildPoints( self->buildableTeam, refund );
 
 	// remove momentum
 	G_RemoveMomentumForDecon( self, deconner );
+
+	// reward attackers if the structure was hurt before deconstruction
+	if ( self->deconHealthFrac < 1.0f ) G_RewardAttackers( self );
 
 	// deconstruct
 	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, deconType );
@@ -4539,8 +4499,8 @@ G_Build
 Spawns a buildable
 ================
 */
-static gentity_t *Build( gentity_t *builder, buildable_t buildable,
-                         const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum )
+static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t origin,
+                         const vec3_t normal, const vec3_t angles, int groundEntNum )
 {
 	gentity_t  *built;
 	char       readable[ MAX_STRING_CHARS ];
@@ -4586,8 +4546,11 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	if ( builder->client && g_cheats.integer )
 	{
 		built->health = attr->health;
+
+		// HACK: This causes animation issues and can result in built->creationTime < 0.
 		built->creationTime -= attr->buildTime;
 	}
+
 	built->s.time = built->creationTime;
 
 	//things that vary for each buildable that aren't in the dbase
@@ -4652,12 +4615,12 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 		case BA_H_MGTURRET:
 			built->die = HTurret_Die;
-			built->think = HTurret_Think;
+			built->think = HMGTurret_Think;
 			break;
 
-		case BA_H_TESLAGEN:
-			built->die = HGeneric_Die;
-			built->think = HTeslaGen_Think;
+		case BA_H_ROCKETPOD:
+			built->die = HTurret_Die;
+			built->think = HRocketpod_Think;
 			break;
 
 		case BA_H_ARMOURY:
@@ -4730,7 +4693,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	VectorCopy( angles, built->s.angles );
 	built->s.angles[ PITCH ] = 0.0f;
 	built->s.angles2[ YAW ] = angles[ YAW ];
-	built->s.angles2[ PITCH ] = TURRET_PITCH_CAP;
+	built->s.angles2[ PITCH ] = 0.0f; // Neutral pitch since this is how the ghost buildable looks.
 	built->physicsBounce = attr->bounce;
 
 	built->s.groundEntityNum = groundEntNum;
@@ -4745,20 +4708,16 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built->s.generic1 = MAX( built->health, 0 );
 
 	built->powered = qtrue;
-	built->s.eFlags |= EF_B_POWERED;
 
+	built->s.eFlags |= EF_B_POWERED;
 	built->s.eFlags &= ~EF_B_SPAWNED;
 
 	VectorCopy( normal, built->s.origin2 );
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );
 
-	G_SetIdleBuildableAnim( built, ( buildableAnimNumber_t )attr->idleAnim );
-
-	if ( built->builtBy )
-	{
-		G_SetBuildableAnim( built, BANIM_CONSTRUCT1, qtrue );
-	}
+	G_SetIdleBuildableAnim( built, BANIM_IDLE1 );
+	G_SetBuildableAnim( built, BANIM_CONSTRUCT, qtrue );
 
 	trap_LinkEntity( built );
 
@@ -4908,8 +4867,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 		VectorSet( normal, 0.0f, 0.0f, 1.0f );
 	}
 
-	built = Build( ent, buildable, ent->s.pos.trBase,
-	                 normal, ent->s.angles, ENTITYNUM_NONE );
+	built = Build( ent, buildable, ent->s.pos.trBase, normal, ent->s.angles, ENTITYNUM_NONE );
 
 	built->takedamage = qtrue;
 	built->spawned = qtrue; //map entities are already spawned
@@ -5482,103 +5440,4 @@ void G_BuildLogRevert( int id )
 	}
 
 	G_AddMomentumEnd();
-}
-
-/*
-================
-G_CanAffordBuildPoints
-
-Tests wether a team can afford an amont of build points.
-The sign of amount is discarded.
-================
-*/
-qboolean G_CanAffordBuildPoints( team_t team, float amount )
-{
-	float *bp;
-
-	//TODO write a function to check if a team is a playable one
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
-	{
-		bp = &level.team[ team ].buildPoints;
-	}
-	else
-	{
-		return qfalse;
-	}
-
-	if ( fabs( amount ) > *bp )
-	{
-		return qfalse;
-	}
-	else
-	{
-		return qtrue;
-	}
-}
-
-/*
-================
-G_ModifyBuildPoints
-
-Adds or removes build points from a team.
-================
-*/
-void G_ModifyBuildPoints( team_t team, float amount )
-{
-	float *bp, newbp;
-
-	if ( team > TEAM_NONE && team < NUM_TEAMS )
-	{
-		bp = &level.team[ team ].buildPoints;
-	}
-	else
-	{
-		return;
-	}
-
-	newbp = *bp + amount;
-
-	if ( newbp < 0.0f )
-	{
-		*bp = 0.0f;
-	}
-	else
-	{
-		*bp = newbp;
-	}
-}
-
-/*
-=================
-G_GetBuildableValueBP
-
-Calculates the value of buildables (in build points) for both teams.
-=================
-*/
-void G_GetBuildableResourceValue( int *teamValue )
-{
-	int       entityNum;
-	gentity_t *ent;
-	int       team;
-	const buildableAttributes_t *attr;
-
-	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
-	{
-		teamValue[ team ] = 0;
-	}
-
-	for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
-	{
-		ent = &g_entities[ entityNum ];
-
-		if ( ent->s.eType != ET_BUILDABLE )
-		{
-			continue;
-		}
-
-		team = ent->buildableTeam ;
-		attr = BG_Buildable( ent->s.modelindex );
-
-		teamValue[ team ] += ( attr->buildPoints * MAX( 0, ent->health ) ) / attr->health;
-	}
 }

@@ -191,6 +191,7 @@ struct gentity_s
 	 */
 	float        mineRate;
 	float        mineEfficiency;
+	float        acquiredBuildPoints;
 
 	/**
 	 * Alien buildables can burn, which is a lot of fun if they are close.
@@ -274,6 +275,7 @@ struct gentity_s
 
 	int          lastHealth;
 	int          health;
+	float        deconHealthFrac;
 
 	float        speed;
 
@@ -388,9 +390,9 @@ struct gentity_s
 	vec3_t      buildableAim; // aim vector for buildables
 
 	// turret
-	//qboolean    turretHasFastLoader; // a turret upgrade (currently unused)
+	//qboolean    turretHasFastLoader;
+	//int         turretSuccessiveShots;
 	int         turretNextShot;
-	int         turretSuccessiveShots;
 	int         turretLastShotAtTarget;
 	int         turretLastSeenATarget;
 	int         turretLastHeadMove;
@@ -398,6 +400,7 @@ struct gentity_s
 	vec3_t      turretDirToTarget;
 	vec3_t      turretBaseDir;
 	qboolean    turretDisabled;
+	qboolean    turretSafeMode;
 
 	vec4_t      animation; // animated map objects
 
@@ -784,6 +787,8 @@ struct level_locals_s
 		int              numSamples;
 		int              numAliveClients;
 		float            buildPoints;
+		float            acquiredBuildPoints;
+		float            mainStructAcquiredBP;
 		float            mineEfficiency;
 		int              kills;
 		spawnQueue_t     spawnQueue;
@@ -791,6 +796,14 @@ struct level_locals_s
 		float            momentum;
 		int              layoutBuildPoints;
 	} team[ NUM_TEAMS ];
+
+	struct {
+		int synchronous;
+		int fixed;
+		int msec;
+		int accurate;
+		bool initialized;
+	} pmoveParams;
 };
 
 struct commands_s

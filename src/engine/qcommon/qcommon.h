@@ -497,6 +497,7 @@ void         FS_FreeFileList( char **list );
 qboolean     FS_FileExists( const char *file );
 
 int          FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
+int          FS_GetFileListRecursive( const char* path, const char* extension, char* listBuf, int bufSize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
@@ -580,7 +581,7 @@ const char* FS_LoadedPaks();
 
 bool     FS_LoadPak( const char *name );
 void     FS_LoadBasePak();
-void     FS_LoadAllMaps();
+void     FS_LoadAllMapMetadata();
 bool     FS_LoadServerPaks( const char* paks );
 
 // shutdown and restart the filesystem so changes to fs_gamedir can take effect
@@ -693,6 +694,9 @@ qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clie
 void       Com_StartupVariable( const char *match );
 void       Com_SetRecommended( void );
 bool       Com_AreCheatsAllowed();
+bool       Com_IsClient();
+bool       Com_IsDedicatedServer();
+bool       Com_ServerRunning();
 
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise
@@ -701,12 +705,10 @@ bool       Com_AreCheatsAllowed();
 extern cvar_t       *com_crashed;
 
 extern cvar_t       *com_developer;
-extern cvar_t       *com_dedicated;
 extern cvar_t       *com_speeds;
 extern cvar_t       *com_timescale;
 extern cvar_t       *com_sv_running;
 extern cvar_t       *com_cl_running;
-extern cvar_t       *com_viewlog; // 0 = hidden, 1 = visible, 2 = minimized
 extern cvar_t       *com_version;
 
 extern cvar_t       *com_consoleCommand;
@@ -730,7 +732,6 @@ extern int          time_backend; // renderer backend time
 
 extern int          com_frameTime;
 extern int          com_frameMsec;
-extern int          com_expectedhunkusage;
 extern int          com_hunkusedvalue;
 
 extern qboolean     com_errorEntered;
@@ -1092,7 +1093,6 @@ int  Parse_FreeSourceHandle( int handle );
 int  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );
 int  Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
-void Com_GetHunkInfo( int *hunkused, int *hunkexpected );
 void Com_RandomBytes( byte *string, int len );
 
 #define _(x) Trans_Gettext(x)

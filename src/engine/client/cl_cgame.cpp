@@ -41,6 +41,7 @@ Maryland 20850 USA.
 #include "../qcommon/crypto.h"
 
 #include "../framework/CommandSystem.h"
+#include "../framework/CvarSystem.h"
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
@@ -421,7 +422,7 @@ bool CL_HandleServerCommand(Str::StringRef text) {
 		mpz_t        message;
 
 		if (argc == 1) {
-			Com_Printf("%s", _("^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n"));
+			Com_Printf("%s", "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n");
 			return qfalse;
 		}
 
@@ -480,62 +481,6 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 	return CL_HandleServerCommand(s);
 }
 
-// DHM - Nerve :: Copied from server to here
-
-/*
-====================
-CL_SetExpectedHunkUsage
-
-  Sets com_expectedhunkusage, so the client knows how to draw the percentage bar
-====================
-*/
-void CL_SetExpectedHunkUsage( const char *mapname )
-{
-	int  handle;
-	char *memlistfile = "hunkusage.dat";
-	char *buf;
-	char *buftrav;
-	char *token;
-	int  len;
-
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
-
-	if ( len >= 0 )
-	{
-		// the file exists, so read it in, strip out the current entry for this map, and save it out, so we can append the new value
-		buf = ( char * ) Z_Malloc( len + 1 );
-		memset( buf, 0, len + 1 );
-
-		FS_Read( ( void * ) buf, len, handle );
-		FS_FCloseFile( handle );
-
-		// now parse the file, filtering out the current map
-		buftrav = buf;
-
-		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[ 0 ] )
-		{
-			if ( !Q_stricmp( token, ( char * ) mapname ) )
-			{
-				// found a match
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && *token )
-				{
-					// this is the usage
-					com_expectedhunkusage = atoi( token );
-					Z_Free( buf );
-					return;
-				}
-			}
-		}
-
-		Z_Free( buf );
-	}
-
-	// just set it to a negative number,so the cgame knows not to draw the percent bar
-	com_expectedhunkusage = -1;
-}
-
 /*
 ====================
 CL_CM_LoadMap
@@ -545,12 +490,7 @@ Just adds default parameters that cgame doesn't need to know about
 */
 void CL_CM_LoadMap( const char *mapname )
 {
-	// DHM - Nerve :: If we are not running the server, then set expected usage here
-	if ( !com_sv_running->integer )
-	{
-		CL_SetExpectedHunkUsage( mapname );
-	}
-	else
+	if ( com_sv_running->integer )
 	{
 		// TTimo
 		// catch here when a local server is started to avoid outdated com_errorDiagnoseIP
@@ -1291,7 +1231,7 @@ static int LAN_ServerIsVisible( int source, int n )
 
 		if ( Cmd_Argc() == 1 )
 		{
-			Com_Log(LOG_ERROR, _( "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" ));
+			Com_Log(LOG_ERROR, "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" );
 			return qfalse;
 		}
 
@@ -1520,6 +1460,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameUselessSyscalls ++;
 			return FloatAsInt( Cvar_VariableValue( (char*) VMA( 1 ) ) );
 
+		case CG_CVAR_ADDFLAGS:
+			cls.nCgameUselessSyscalls ++;
+			Cvar::AddFlags( ( const char * ) VMA( 1 ), args[ 2 ] );
+			return 0;
+
 		case CG_ARGC:
 			cls.nCgameUselessSyscalls ++;
 			return Cmd_Argc();
@@ -1568,11 +1513,25 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
+		case CG_FS_GETFILELISTRECURSIVE:
+			VM_CheckBlock( args[3], args[4], "FSGFL" );
+			return FS_GetFileListRecursive( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
+
+
 		case CG_FS_DELETEFILE:
 			return FS_Delete( (char*) VMA( 1 ) );
 
 		case CG_FS_LOADPAK:
-			return FS_LoadPak( ( char * ) VMA( 1 ) );
+			try {
+				FS::PakPath::LoadPakPrefix( *FS::FindPak( ( const char * ) VMA( 1 ) ), ( const char * ) VMA( 2 ) );
+			} catch (std::system_error& err) {
+				return 0;
+			}
+			return 1;
+
+		case CG_FS_LOADMAPMETADATA:
+			FS_LoadAllMapMetadata();
+			return 0;
 
 		case CG_SENDCONSOLECOMMAND:
 			Cmd::BufferCommandText( (char*) VMA( 1 ) );
@@ -2069,11 +2028,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameRenderSyscalls ++;
 			return re.inPVVS( (float*) VMA( 1 ), (float*) VMA( 2 ) );
 
-		case CG_GETHUNKDATA:
-			cls.nCgameUselessSyscalls ++;
-			Com_GetHunkInfo( (int*) VMA( 1 ), (int*) VMA( 2 ) );
-			return 0;
-
 			//bani - dynamic shaders
 		case CG_R_LOADDYNAMICSHADER:
 			cls.nCgameRenderSyscalls ++;
@@ -2469,138 +2423,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_SetDataSelectIndex( args[ 1 ] );
 			return 0;
 
+		case CG_ROCKET_LOADFONT:
+			Rocket_LoadFont( ( const char * ) VMA( 1 ) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
 	}
 
 	return 0;
-}
-
-/*
-====================
-CL_UpdateLevelHunkUsage
-
-  This updates the "hunkusage.dat" file with the current map and its hunk usage count
-
-  This is used for level loading, so we can show a percentage bar dependent on the amount
-  of hunk memory allocated so far
-
-  This will be slightly inaccurate if some settings like sound quality are changed, but these
-  things should only account for a small variation (hopefully)
-====================
-*/
-void CL_UpdateLevelHunkUsage( void )
-{
-	int  handle;
-	const char *memlistfile = "hunkusage.dat";
-	char *buf, *outbuf;
-	char *buftrav, *outbuftrav;
-	char *token;
-	char outstr[ 256 ];
-	int  len, memusage;
-
-	memusage = Cvar_VariableIntegerValue( "com_hunkused" ) + Cvar_VariableIntegerValue( "hunk_soundadjust" );
-
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
-
-	if ( len >= 0 )
-	{
-		// the file exists, so read it in, strip out the current entry for this map, and save it out, so we can append the new value
-		buf = ( char * ) Z_Malloc( len + 1 );
-		outbuf = ( char * ) Z_Malloc( len + 1 );
-
-		FS_Read( ( void * ) buf, len, handle );
-		FS_FCloseFile( handle );
-
-		// now parse the file, filtering out the current map
-		buftrav = buf;
-		outbuftrav = outbuf;
-		outbuftrav[ 0 ] = '\0';
-
-		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[ 0 ] )
-		{
-			if ( !Q_stricmp( token, cl.mapname ) )
-			{
-				// found a match
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && token[ 0 ] )
-				{
-					if ( atoi( token ) == memusage )
-					{
-						// if it is the same, abort this process
-						Z_Free( buf );
-						Z_Free( outbuf );
-						return;
-					}
-				}
-			}
-			else
-			{
-				// send it to the outbuf
-				Q_strcat( outbuftrav, len + 1, token );
-				Q_strcat( outbuftrav, len + 1, " " );
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && token[ 0 ] )
-				{
-					Q_strcat( outbuftrav, len + 1, token );
-					Q_strcat( outbuftrav, len + 1, "\n" );
-				}
-				else
-				{
-					Z_Free( buf );
-					Z_Free( outbuf );
-					Com_Error( ERR_DROP, "hunkusage.dat file is corrupt" );
-				}
-			}
-		}
-
-		handle = FS_FOpenFileWrite( memlistfile );
-
-		if ( handle < 0 )
-		{
-			Z_Free( buf );
-			Z_Free( outbuf );
-			Com_Error( ERR_DROP, "cannot create %s", memlistfile );
-		}
-
-		// input file is parsed, now output to the new file
-		len = strlen( outbuf );
-
-		if ( FS_Write( ( void * ) outbuf, len, handle ) != len )
-		{
-			Z_Free( buf );
-			Z_Free( outbuf );
-			Com_Error( ERR_DROP, "cannot write to %s", memlistfile );
-		}
-
-		FS_FCloseFile( handle );
-
-		Z_Free( buf );
-		Z_Free( outbuf );
-	}
-
-	// now append the current map to the current file
-	handle = FS_FOpenFileAppend( memlistfile );
-
-	if ( handle == 0 )
-	{
-		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full" );
-	}
-
-	Com_sprintf( outstr, sizeof( outstr ), "%s %i\n", cl.mapname, memusage );
-	FS_Write( outstr, strlen( outstr ), handle );
-	FS_FCloseFile( handle );
-
-	// now just open it and close it, so it gets copied to the pak dir
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
-
-	if ( len >= 0 )
-	{
-		FS_FCloseFile( handle );
-	}
 }
 
 /*
@@ -2672,9 +2504,6 @@ void CL_InitCGame( void )
 	// make sure everything is paged in
 	Com_TouchMemory();
 
-	// Ridah, update the memory usage file
-	CL_UpdateLevelHunkUsage();
-
 	// Cause any input while loading to be dropped and forget what's pressed
 	IN_DropInputsForFrame();
 	CL_ClearKeys();
@@ -2727,7 +2556,7 @@ qboolean CL_GameConsoleText( void )
 CL_CGameRendering
 =====================
 */
-void CL_CGameRendering( stereoFrame_t stereo )
+void CL_CGameRendering( void )
 {
 	/*  static int x = 0;
 	        if(!((++x) % 20)) {
@@ -2736,7 +2565,7 @@ void CL_CGameRendering( stereoFrame_t stereo )
 	        } else {
 	        }*/
 
-	VM_Call( cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying );
+	VM_Call( cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, clc.demoplaying );
 	VM_Debug( 0 );
 }
 
@@ -2875,7 +2704,7 @@ void CL_FirstSnapshot( void )
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
-		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application okay\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
+		Com_Printf("%s", ret == 0 ? "Mumble: Linking to Mumble application okay\n" : "Mumble: Linking to Mumble application failed\n" );
 	}
 
 #ifdef USE_VOIP
@@ -3076,24 +2905,6 @@ void CL_SetCGameTime( void )
 			return; // end of demo
 		}
 	}
-}
-
-/*
-====================
-CL_GetTag
-====================
-*/
-qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * orientation )
-{
-	if ( !cgvm )
-	{
-		return qfalse;
-	}
-
-	// the current design of CG_GET_TAG is inappropriate for modules in sandboxed formats
-	//  (the direct pointer method to pass the tag name would work only with modules in native format)
-	//return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
-	return qfalse;
 }
 
 /**

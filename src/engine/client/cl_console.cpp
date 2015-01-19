@@ -234,7 +234,7 @@ void Con_Dump_f( void )
 
 	if ( l > 2 )
 	{
-		Cmd_PrintUsage(_("[<filename>]"), NULL);
+		Cmd_PrintUsage("[<filename>]", NULL);
 		return;
 	}
 
@@ -253,11 +253,11 @@ void Con_Dump_f( void )
 
 	if ( !f )
 	{
-		Com_Log(LOG_ERROR, _( "couldn't open." ));
+		Com_Log(LOG_ERROR, "couldn't open." );
 		return;
 	}
 
-	Com_Printf(_( "Dumped console text to %s.\n"), name );
+	Com_Printf( "Dumped console text to %s.\n", name );
 
 	// skip empty lines
 	for ( l = consoleState.currentLine - consoleState.maxScrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
@@ -293,7 +293,7 @@ void Con_Search_f( void )
 
 	if ( c < 2 )
 	{
-		Cmd_PrintUsage(_("<string>…"), NULL);
+		Cmd_PrintUsage("<string>…", NULL);
 		return;
 	}
 
@@ -338,7 +338,7 @@ void Con_Grep_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage(_("<string>"), NULL);
+		Cmd_PrintUsage("<string>", NULL);
 		return;
 	}
 
@@ -1267,7 +1267,7 @@ void Con_RunAnimatedConsole( void )
 /*
 ==================
 Con_DrawConsole
-runs each render-frame (possibly twice with stereo enabled)
+runs each render-frame
 ==================
 */
 void Con_DrawConsole( void )
@@ -1384,15 +1384,11 @@ class GraphicalTarget : public Log::Target {
 				return false;
 			}
 
-			if (com_dedicated && !com_dedicated->integer) {
-				for (Log::Event event : events) {
-					CL_ConsolePrint(std::move(event.text));
-					CL_ConsolePrint("\n");
-				}
-				return true;
-			} else {
-				return false;
+			for (Log::Event event : events) {
+				CL_ConsolePrint(std::move(event.text));
+				CL_ConsolePrint("\n");
 			}
+			return true;
 		}
 };
 

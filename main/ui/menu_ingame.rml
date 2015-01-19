@@ -18,7 +18,7 @@
 					<sidesection  id="sidebar_ingame">
 						<h1> Match menu </h1>
 						<blocklink class="rightfloat" onClick="exec disconnect"> Leave match</blocklink>
-						<blocklink class="leftalign" onClick="hide ingame">Resume action</blocklink>
+						<blocklink class="leftalign" onClick="hide menu_ingame">Resume action</blocklink>
 
 						<h2> Teams </h2>
 						<indent>
@@ -103,7 +103,7 @@
 							<!-- <blocklink onClick="show options_fov"> Fields of view </blocklink> -->
 						</indent>
 
-						<h2> Lore </h2>
+						<h2> Help </h2>
 						<indent>
 							<blocklink onClick="show help_gameplay"> Gameplay guide </blocklink>
 							<blocklink onClick="show help_textentry"> Colour codes and symbols </blocklink>
@@ -112,7 +112,7 @@
 						<br />
 
 						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
-						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.30 </blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.35 </blocklink>
 					</sidesection>
 
 				</window>

@@ -2,30 +2,32 @@
 # which already committed files are matched against these rules
 
 *~
-lcc
 *.DS_Store
 CMakeCache.txt
 CMakeFiles
-CMakeLists.txt.user*
 Makefile
 cmake_install.cmake
-daemon*
-cgame-qvm-native.*
+daemon
+daemonded
+daemon-tty
+*-qvm-native.*
 vm
 main/*.pk3
-libROCKET_LIB.a
 Release
 Debug
 build
 *.vcxproj.user
 *.kdev4
+*.dll
+*.exe
+*.dylib
+*.so
 
 # NaCl
-game-nacl-native-dll.*
-game-nacl-native-exe*
-game-x86*.nexe
-game.pexe
-irt_core-x86_64.nexe
+*-nacl-native-dll.*
+*-nacl-native-exe*
+*.pexe
+*.nexe
 nacl_helper_bootstrap*
 sel_ldr*
 

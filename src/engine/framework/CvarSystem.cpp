@@ -79,7 +79,7 @@ namespace Cvar {
                 modified = true;
             } else {
                 if (Q_stricmp(var.string, cvar.value.c_str())) {
-                    Com_Printf(_("The change will take effect after restart."));
+                    Com_Printf("The change will take effect after restart.");
                     if (var.latchedString) Z_Free(var.latchedString);
                     var.latchedString = CopyString(cvar.value.c_str());
                     modified = true;
@@ -179,7 +179,7 @@ namespace Cvar {
                 cvarRecord_t* var = cvars[name];
 
                 if (args.Argc() < 2) {
-                    Print(_("\"%s\" - %s^7 - default: \"%s^7\""), name.c_str(), var->description.c_str(), var->resetValue.c_str());
+                    Print("\"%s\" - %s^7 - default: \"%s^7\"", name.c_str(), var->description.c_str(), var->resetValue.c_str());
                 } else {
                     //TODO forward the print part of the environment
                     SetValue(name, args.Argv(1));
@@ -202,7 +202,7 @@ namespace Cvar {
         //TODO: rom means the cvar should have been created before?
         if (it == cvars.end()) {
             if (!Cmd::IsValidCvarName(cvarName)) {
-                Com_Printf(_("Invalid cvar name '%s'"), cvarName.c_str());
+                Com_Printf("Invalid cvar name '%s'", cvarName.c_str());
                 return;
             }
 
@@ -217,7 +217,7 @@ namespace Cvar {
 
             if (not (cvar->flags & CVAR_USER_CREATED)) {
                 if (cvar->flags & (CVAR_ROM | CVAR_INIT) and not rom) {
-                    Com_Printf(_("%s is read only.\n"), cvarName.c_str());
+                    Com_Printf("%s is read only.\n", cvarName.c_str());
                     return;
                 }
 
@@ -226,7 +226,7 @@ namespace Cvar {
                 }
 
                 if (not cheatsAllowed && cvar->flags & CHEAT) {
-                    Com_Printf(_("%s is cheat-protected.\n"), cvarName.c_str());
+                    Com_Printf("%s is cheat-protected.\n", cvarName.c_str());
                     return;
                 }
             }
@@ -286,7 +286,7 @@ namespace Cvar {
         auto it = cvars.find(name);
         if (it == cvars.end()) {
             if (!Cmd::IsValidCvarName(name)) {
-                Com_Printf(_("Invalid cvar name '%s'"), name.c_str());
+                Com_Printf("Invalid cvar name '%s'", name.c_str());
                 return false;
             }
 
@@ -301,7 +301,7 @@ namespace Cvar {
             cvar = it->second;
 
             if (proxy && cvar->proxy) {
-                Com_Printf(_("Cvar %s cannot be registered twice\n"), name.c_str());
+                Com_Printf("Cvar %s cannot be registered twice\n", name.c_str());
             }
 
             //Register the cvar with the previous user_created value
@@ -327,7 +327,7 @@ namespace Cvar {
                     if (defaultValueResult.success) {
                         ChangeCvarDescription(name, cvar, result.description);
                     } else {
-                        Com_Printf(_("Default value '%s' is not correct for cvar '%s': %s\n"),
+                        Com_Printf("Default value '%s' is not correct for cvar '%s': %s\n",
                                 defaultValue.c_str(), name.c_str(), defaultValueResult.description.c_str());
                     }
                 }
@@ -372,7 +372,7 @@ namespace Cvar {
             // User error. Possibly coder error too, but unlikely
             if ((cvar->flags & TEMPORARY) && (flags & (ARCHIVE | USER_ARCHIVE)))
             {
-                Com_Printf(_("Cvar '%s' is temporary and will not be archived\n"), cvarName.c_str());
+                Com_Printf("Cvar '%s' is temporary and will not be archived\n", cvarName.c_str());
                 flags &= ~(ARCHIVE | USER_ARCHIVE);
             }
 
@@ -426,7 +426,7 @@ namespace Cvar {
                     if(result.success) {
                         ChangeCvarDescription(entry.first, cvar, result.description);
                     } else {
-                        Com_Printf(_("Default value '%s' is not correct for cvar '%s': %s\n"),
+                        Com_Printf("Default value '%s' is not correct for cvar '%s': %s\n",
                                 cvar->resetValue.c_str(), entry.first.c_str(), result.description.c_str());
                     }
                 }
@@ -501,7 +501,7 @@ namespace Cvar {
 
             void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() < 2) {
-                    PrintUsage(args, _("<variable> <value>"),"");
+                    PrintUsage(args, "<variable> <value>","");
                     return;
                 }
 
@@ -523,14 +523,14 @@ namespace Cvar {
         private:
             int flags;
     };
-    static SetCmd SetCmdRegistration("set", N_("sets the value of a cvar"), 0);
-    static SetCmd SetuCmdRegistration("setu", N_("sets the value of a cvar"), USERINFO);
-    static SetCmd SetsCmdRegistration("sets", N_("sets the value of a cvar"), SERVERINFO);
-    static SetCmd SetaCmdRegistration("seta", N_("sets the value of a cvar and marks the cvar as archived"), USER_ARCHIVE);
+    static SetCmd SetCmdRegistration("set", "sets the value of a cvar", 0);
+    static SetCmd SetuCmdRegistration("setu", "sets the value of a cvar", USERINFO);
+    static SetCmd SetsCmdRegistration("sets", "sets the value of a cvar", SERVERINFO);
+    static SetCmd SetaCmdRegistration("seta", "sets the value of a cvar and marks the cvar as archived", USER_ARCHIVE);
 
     class ResetCmd: public Cmd::StaticCmd {
         public:
-            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets the named variables")) {
+            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, "resets the named variables") {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
@@ -538,7 +538,7 @@ namespace Cvar {
                 bool clearArchive = true;
 
                 if (argc < 2) {
-                    PrintUsage(args, _("<variable>…"), "");
+                    PrintUsage(args, "<variable>…", "");
                     return;
                 }
 
@@ -556,7 +556,7 @@ namespace Cvar {
                             ::Cvar::ClearFlags(name, USER_ARCHIVE);
                         }
                     } else {
-                        Print(_("Cvar '%s' doesn't exist"), name.c_str());
+                        Print("Cvar '%s' doesn't exist", name.c_str());
                     }
                 }
             }
@@ -586,7 +586,7 @@ namespace Cvar {
 
     class ListCvars: public Cmd::StaticCmd {
         public:
-            ListCvars(): Cmd::StaticCmd("listCvars", Cmd::BASE, N_("lists variables")) {
+            ListCvars(): Cmd::StaticCmd("listCvars", Cmd::BASE, "lists variables") {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
@@ -672,7 +672,7 @@ namespace Cvar {
 
                 // FIXME: translation
                 static const std::initializer_list<Cmd::CompletionItem> flags = {
-                    {"-raw", N_("display colour controls")},
+                    {"-raw", "display colour controls"},
                 };
 
                 // command only allows one switch

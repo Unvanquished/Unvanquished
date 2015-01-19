@@ -126,6 +126,7 @@ typedef enum cgameImport_s
   CG_CVAR_LATCHEDVARIABLESTRINGBUFFER,
   CG_CVAR_VARIABLEINTEGERVALUE,
   CG_CVAR_VARIABLEVALUE,
+  CG_CVAR_ADDFLAGS,
   CG_ARGC,
   CG_ARGV,
   CG_ESCAPED_ARGS,
@@ -137,8 +138,10 @@ typedef enum cgameImport_s
   CG_FS_WRITE,
   CG_FS_FCLOSEFILE,
   CG_FS_GETFILELIST,
+  CG_FS_GETFILELISTRECURSIVE,
   CG_FS_DELETEFILE,
   CG_FS_LOADPAK,
+  CG_FS_LOADMAPMETADATA,
   CG_SENDCONSOLECOMMAND,
   CG_ADDCOMMAND,
   CG_REMOVECOMMAND,
@@ -251,7 +254,7 @@ typedef enum cgameImport_s
   CG_KEY_KEYNUMTOSTRINGBUF,
   CG_S_FADEALLSOUNDS,
   CG_R_INPVS,
-  CG_GETHUNKDATA,
+  CG_UNUSED,
   CG_R_LOADDYNAMICSHADER,
   CG_R_RENDERTOTEXTURE,
   CG_R_FINISH,
@@ -347,7 +350,8 @@ typedef enum cgameImport_s
   CG_ROCKET_CLEARTEXT,
   CG_ROCKET_REGISTERPROPERTY,
   CG_ROCKET_SHOWSCOREBOARD,
-  CG_ROCKET_SETDATASELECTINDEX
+  CG_ROCKET_SETDATASELECTINDEX,
+  CG_ROCKET_LOADFONT
 } cgameImport_t;
 
 typedef enum
@@ -373,7 +377,7 @@ typedef enum
   // command is not known to the game
 
   CG_DRAW_ACTIVE_FRAME,
-//  void (*CG_DrawActiveFrame)( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+//  void (*CG_DrawActiveFrame)( int serverTime, qboolean demoPlayback );
   // Generates and draws a game scene and status information at the given time.
   // If demoPlayback is set, local movement prediction will not be enabled
 
@@ -432,6 +436,7 @@ void            trap_Cvar_VariableStringBuffer( const char *var_name, char *buff
 void            trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 int             trap_Cvar_VariableIntegerValue( const char *var_name );
 float           trap_Cvar_VariableValue( const char *var_name );
+void            trap_Cvar_AddFlags( const char *var_name, int flags );
 int             trap_Argc( void );
 void            trap_Argv( int n, char *buffer, int bufferLength );
 void            trap_EscapedArgs( char *buffer, int bufferLength );
@@ -443,8 +448,10 @@ void            trap_FS_Read( void *buffer, int len, fileHandle_t f );
 void            trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void            trap_FS_FCloseFile( fileHandle_t f );
 int             trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
+int             trap_FS_GetFileListRecursive( const char *path, const char *extension, char *listbuf, int bufsize );
 int             trap_FS_Delete( const char *filename );
-qboolean            trap_FS_LoadPak( const char *pak );
+qboolean        trap_FS_LoadPak( const char *pak, const char *prefix );
+void            trap_FS_LoadAllMapMetadata( void );
 void            trap_SendConsoleCommand( const char *text );
 void            trap_AddCommand( const char *cmdName );
 void            trap_RemoveCommand( const char *cmdName );
@@ -573,7 +580,6 @@ void            trap_CG_TranslateString( const char *string, char *buf );
 void            trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean        trap_R_inPVVS( const vec3_t p1, const vec3_t p2 );
-void            trap_GetHunkData( int *hunkused, int *hunkexpected );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
 void            trap_R_RenderToTexture( int textureid, int x, int y, int w, int h );
 void            trap_R_Finish( void );
@@ -674,4 +680,5 @@ void            trap_Rocket_ClearText( void );
 void            trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
 void            trap_Rocket_ShowScoreboard( const char *name, qboolean show );
 void            trap_Rocket_SetDataSelectIndex( int index );
+void            trap_Rocket_LoadFont( const char *font );
 #endif

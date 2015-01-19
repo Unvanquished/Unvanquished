@@ -41,69 +41,21 @@ Maryland 20850 USA.
 SV_BotAllocateClient
 ==================
 */
-int SV_BotAllocateClient( int clientNum )
+int SV_BotAllocateClient( void )
 {
-	int      i;
-	int      firstSlot = std::max( 1, sv_privateClients->integer );
-	client_t *cl;
-
-	// Arnout: added possibility to request a clientnum
-	if ( clientNum > 0 )
-	{
-		if ( clientNum >= sv_maxclients->integer )
-		{
-			return -1;
-		}
-
-		cl = &svs.clients[ clientNum ];
-
-		if ( cl->state != CS_FREE )
-		{
-			return -1;
-		}
-		else
-		{
-			i = clientNum;
-		}
-	}
-	else
-	{
-		// find a free client slot which was occupied by a bot (doesn't matter which)
-		for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
-		{
-			if ( cl->state == CS_FREE && cl->gentity && ( cl->gentity->r.svFlags & SVF_BOT ) )
-			{
-				break;
-			}
-		}
-
-		// find any free client slot
-		if ( i == sv_maxclients->integer )
-		{
-			for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
-			{
-				// Wolfenstein, never use the first slot, otherwise if a bot connects before the first client on a listen server, game won't start
-				// Also, never use reserved slots since that messes up the reported player count
-				if ( i < firstSlot )
-				{
-					continue;
-				}
-
-				// done.
-				if ( cl->state == CS_FREE )
-				{
-					break;
-				}
-			}
+	int i;
+	for (i = std::max(1, sv_privateClients->integer); i < sv_maxclients->integer; i++) {
+		if (svs.clients[i].state == CS_FREE) {
+			break;
 		}
 	}
 
-	if ( i == sv_maxclients->integer )
-	{
+	if (i >= sv_maxclients->integer) {
 		return -1;
 	}
 
-	cl->gentity = SV_GentityNum( i );
+	client_t* cl = svs.clients + i;
+	cl->gentity = SV_GentityNum(i);
 	cl->gentity->s.number = i;
 	cl->state = CS_ACTIVE;
 	cl->lastPacketTime = svs.time;
@@ -130,12 +82,16 @@ void SV_BotFreeClient( int clientNum )
 	cl = &svs.clients[ clientNum ];
 	cl->state = CS_FREE;
 	cl->name[ 0 ] = 0;
+}
+
 /*
-	if ( cl->gentity )
-	{
-		cl->gentity->r.svFlags &= ~SVF_BOT;
-	}
+==================
+SV_IsBot
+==================
 */
+bool SV_IsBot( const client_t* client )
+{
+	return client->netchan.remoteAddress.type == NA_BOT && client->state == CS_ACTIVE;
 }
 
 //

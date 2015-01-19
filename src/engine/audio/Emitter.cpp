@@ -347,7 +347,7 @@ namespace Audio {
 
     class TestReverbCmd : public Cmd::StaticCmd {
         public:
-            TestReverbCmd(): StaticCmd("testReverb", Cmd::AUDIO, N_("Tests a reverb preset.")) {
+            TestReverbCmd(): StaticCmd("testReverb", Cmd::AUDIO, "Tests a reverb preset.") {
             }
 
             virtual void Run(const Cmd::Args& args) const OVERRIDE {

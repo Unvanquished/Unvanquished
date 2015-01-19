@@ -53,7 +53,6 @@ Maryland 20850 USA.
 #ifdef BUILD_CLIENT
 #include <SDL.h>
 #include <SDL_syswm.h>
-#include "sdl2_compat.h"
 #endif
 
 #ifndef SIGIOT
@@ -266,11 +265,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 			if ( event.type == SDL_SYSWMEVENT )
 			{
-#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 				XEvent xevent = event.syswm.msg->msg.x11.event;
-#else
-				XEvent xevent = event.syswm.msg->event.xevent;
-#endif
 				if ( xevent.type == SelectionNotify &&
 				     xevent.xselection.requestor == owner )
 				{
@@ -314,7 +309,6 @@ Sys_GetClipboardData
 char *Sys_GetClipboardData( clipboard_t clip )
 {
 #ifdef BUILD_CLIENT
-#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	char *buffer = SDL_GetClipboardText();
 	char *data = NULL;
 
@@ -328,9 +322,6 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	SDL_free( buffer );
 
 	return data;
-#else
-	return NULL;
-#endif
 #else
 	return NULL;
 #endif
@@ -834,7 +825,6 @@ Sys_Dialog
 dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title )
 {
 #ifdef BUILD_CLIENT
-#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	switch ( type )
 	{
 		default:
@@ -850,7 +840,6 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, message, NULL);
 			break;
 	}
-#endif
 #endif
 	return DR_OK;
 }
@@ -927,9 +916,9 @@ qboolean Sys_IsNumLockDown( void )
 
 	if ( dpy == 0 )
 	{
-		Com_Printf( _("ERROR: cannot determine numlock state as we couldn't\n" 
+		Com_Printf( "ERROR: cannot determine numlock state as we couldn't\n" 
 		              "grab your non-standard (e.g. not ':0') X display.\n"
-		              "ensure the 'DISPLAY' environment variable is set.\n") );
+		              "ensure the 'DISPLAY' environment variable is set.\n" );
 		return qtrue;
 	}
 	else

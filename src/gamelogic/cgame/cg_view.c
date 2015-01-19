@@ -1387,7 +1387,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
 
 	//the player has spawned once and is dead or in the intermission
-	if ( health <= 0 || (playing && cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )
+	if ( cg_spawnEffects.integer && ( health <= 0 || (playing && cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) ) )
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
@@ -1856,7 +1856,7 @@ CG_DrawActiveFrame
 Generates and draws a game scene and status information at the given time.
 =================
 */
-void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback )
+void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback )
 {
 	int inwater;
 
@@ -1949,19 +1949,15 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );
 	}
 
-	// make sure the lagometerSample and frame timing isn't done twice when in stereo
-	if ( stereoView != STEREO_RIGHT )
+	cg.frametime = cg.time - cg.oldTime;
+
+	if ( cg.frametime < 0 )
 	{
-		cg.frametime = cg.time - cg.oldTime;
-
-		if ( cg.frametime < 0 )
-		{
-			cg.frametime = 0;
-		}
-
-		cg.oldTime = cg.time;
-		CG_AddLagometerFrameInfo();
+		cg.frametime = 0;
 	}
+
+	cg.oldTime = cg.time;
+	CG_AddLagometerFrameInfo();
 
 	if ( cg_timescale.value != cg_timescaleFadeEnd.value )
 	{
@@ -1991,7 +1987,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	}
 
 	// actually issue the rendering calls
-	CG_DrawActive( stereoView );
+	CG_DrawActive();
 
 	if ( cg_stats.integer )
 	{

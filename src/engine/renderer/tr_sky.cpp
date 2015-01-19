@@ -502,6 +502,8 @@ static void DrawSkyBox( shader_t *shader )
 
 	GL_State( GLS_DEFAULT );
 
+	Tess_MapVBOs( qfalse );
+
 	for ( i = 0; i < 6; i++ )
 	{
 		int sky_mins_subd[ 2 ], sky_maxs_subd[ 2 ];
@@ -572,7 +574,8 @@ static void DrawSkyBox( shader_t *shader )
 		// only add indexes for first stage
 		FillCloudySkySide( sky_mins_subd, sky_maxs_subd, qtrue );
 	}
-	Tess_UpdateVBOs( tess.attribsSet );
+	Tess_UpdateVBOs( );
+	GL_VertexAttribsState( tess.attribsSet );
 
 	Tess_DrawElements();
 }
@@ -680,6 +683,8 @@ static void BuildCloudData()
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 	tess.attribsSet = 0;
+
+	Tess_MapVBOs( qfalse );
 
 	if ( tess.surfaceShader->sky.cloudHeight )
 	{

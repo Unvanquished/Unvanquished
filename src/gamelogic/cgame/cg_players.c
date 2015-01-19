@@ -370,7 +370,11 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 
 	if ( !ci->animations[ anim ].handle )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
+		if ( cg_debugAnim.integer )
+		{
+			Com_Printf( "Failed to load animation file %s\n", filename );
+		}
+
 		return qfalse;
 	}
 
@@ -1838,7 +1842,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 	if ( lf->animation )
 	{
-		if ( !trap_R_BuildSkeleton( &legsSkeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
+		if ( !trap_R_BuildSkeleton( &legsSkeleton, lf->animation->handle, anim->numFrames - 1, anim->numFrames - 1, 0, lf->animation->clearOrigin ) )
 		{
 			CG_Printf( "Can't build lf->skeleton\n" );
 		}
@@ -2614,11 +2618,10 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
-	// These are static because otherwise we have >32K of locals, and lcc doesn't like that.
-	// Also, jetpack and battpack are never both in use together, so just #define.
-	refEntity_t jetpack;
-	refEntity_t flash;
+	static refEntity_t jetpack; // static for proper alignment in QVMs
+	static refEntity_t flash; // static for proper alignment in QVMs
 
+	// jetpack and battpack are never both in use together
 #	define radar jetpack
 
 	int           held, publicFlags;
@@ -2799,7 +2802,7 @@ Float a sprite over the player's head
 static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 {
 	int         rf;
-	refEntity_t ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 
 	if ( cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson )
 	{

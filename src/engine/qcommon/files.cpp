@@ -522,6 +522,51 @@ int FS_GetFileList(const char* path, const char* extension, char* listBuf, int b
 	return numFiles;
 }
 
+int FS_GetFileListRecursive(const char* path, const char* extension, char* listBuf, int bufSize)
+{
+	// Mods are not yet supported in the new filesystem
+	if (!strcmp(path, "$modlist"))
+		return 0;
+
+	int numFiles = 0;
+	bool dirsOnly = extension && !strcmp(extension, "/");
+
+	try {
+		for (const std::string& x: FS::PakPath::ListFilesRecursive(path)) {
+			if (extension && !Str::IsSuffix(extension, x))
+				continue;
+			if (dirsOnly != (x.back() == '/'))
+				continue;
+			int length = x.size() + (x.back() != '/');
+			if (bufSize < length)
+				return numFiles;
+			memcpy(listBuf, x.c_str(), length);
+			listBuf[length - 1] = '\0';
+			listBuf += length;
+			bufSize -= length;
+			numFiles++;
+		}
+	} catch (std::system_error&) {}
+	try {
+		for (const std::string& x: FS::HomePath::ListFiles(FS::Path::Build("game", path))) {
+			if (extension && !Str::IsSuffix(extension, x))
+				continue;
+			if (dirsOnly != (x.back() == '/'))
+				continue;
+			int length = x.size() + (x.back() != '/');
+			if (bufSize < length)
+				return numFiles;
+			memcpy(listBuf, x.c_str(), length);
+			listBuf[length - 1] = '\0';
+			listBuf += length;
+			bufSize -= length;
+			numFiles++;
+		}
+	} catch (std::system_error&) {}
+
+	return numFiles;
+}
+
 const char* FS_LoadedPaks()
 {
 	static char info[BIG_INFO_STRING];
@@ -565,11 +610,18 @@ void FS_LoadBasePak()
 	}
 }
 
-void FS_LoadAllMaps()
+void FS_LoadAllMapMetadata()
 {
+	std::unordered_set<std::string> maps;
 	for (auto& x: FS::GetAvailablePaks()) {
-		if (Str::IsPrefix("map-", x.name))
-			FS_LoadPak(x.name.c_str());
+		if (Str::IsPrefix("map-", x.name) && maps.find(x.name) == maps.end())
+			maps.insert(x.name);
+	}
+
+	for (auto& x: maps) {
+		try {
+			FS::PakPath::LoadPakPrefix(*FS::FindPak(x), va("meta/%s/", x.substr(4).c_str()));
+		} catch (std::system_error& err) {} // ignore and move on
 	}
 }
 
@@ -637,21 +689,21 @@ qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
 class WhichCmd: public Cmd::StaticCmd {
 public:
 	WhichCmd()
-		: Cmd::StaticCmd("which", Cmd::SYSTEM, N_("shows which pak a file is in")) {}
+		: Cmd::StaticCmd("which", Cmd::SYSTEM, "shows which pak a file is in") {}
 
 	void Run(const Cmd::Args& args) const OVERRIDE
 	{
 		if (args.Argc() != 2) {
-			PrintUsage(args, _("<file>"), "");
+			PrintUsage(args, "<file>", "");
 			return;
 		}
 
 		const std::string& filename = args.Argv(1);
 		const FS::LoadedPakInfo* pak = FS::PakPath::LocateFile(filename);
 		if (pak)
-			Print(_( "File \"%s\" found in \"%s\""), filename, pak->path);
+			Print( "File \"%s\" found in \"%s\"", filename, pak->path);
 		else
-			Print(_("File not found: \"%s\""), filename);
+			Print("File not found: \"%s\"", filename);
 	}
 
 	Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE
@@ -668,7 +720,7 @@ static WhichCmd WhichCmdRegistration;
 class ListPathsCmd: public Cmd::StaticCmd {
 public:
 	ListPathsCmd()
-		: Cmd::StaticCmd("listPaths", Cmd::SYSTEM, N_("list filesystem search paths")) {}
+		: Cmd::StaticCmd("listPaths", Cmd::SYSTEM, "list filesystem search paths") {}
 
 	void Run(const Cmd::Args& args) const OVERRIDE
 	{
@@ -681,7 +733,7 @@ static ListPathsCmd ListPathsCmdRegistration;
 
 class DirCmd: public Cmd::StaticCmd {
 public:
-	DirCmd(): Cmd::StaticCmd("dir", Cmd::SYSTEM, N_("list all files in a given directory with the option to pass a filter")) {}
+	DirCmd(): Cmd::StaticCmd("dir", Cmd::SYSTEM, "list all files in a given directory with the option to pass a filter") {}
 
 	void Run(const Cmd::Args& args) const OVERRIDE
 	{

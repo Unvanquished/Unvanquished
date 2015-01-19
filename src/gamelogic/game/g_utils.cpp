@@ -1011,26 +1011,48 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	return fire;
 }
 
-qboolean G_LineOfSight( const gentity_t *ent1, const gentity_t *ent2 )
+qboolean G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase )
 {
 	trace_t trace;
 
-	if ( !ent1 || !ent2 )
+	if ( !from || !to )
 	{
 		return qfalse;
 	}
 
-	trap_Trace( &trace, ent1->s.origin, NULL, NULL, ent2->s.origin, ent1->s.number, MASK_SHOT, 0 );
+	trap_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, NULL, NULL, to->s.origin,
+	            from->s.number, mask, 0 );
 
-	return ( trace.entityNum == ent2->s.number );
+	// Also check for fraction in case the mask is chosen so that the trace skips the target entity
+	return ( trace.entityNum == to->s.number || trace.fraction == 1.0f );
 }
 
-qboolean G_LineOfSight( const vec3_t point1, const vec3_t point2, const gentity_t *ignore )
+/**
+ * @return Wheter a shot from the source's origin towards the target's origin would hit the target.
+ */
+qboolean G_LineOfSight( const gentity_t *from, const gentity_t *to )
+{
+	return G_LineOfSight( from, to, MASK_SHOT, false );
+}
+
+/**
+ * @return Wheter a shot from the source's trajectory base towards the target's origin would hit the
+ *         target.
+ */
+qboolean G_LineOfFire( const gentity_t *from, const gentity_t *to )
+{
+	return G_LineOfSight( from, to, MASK_SHOT, true );
+}
+
+/**
+ * @brief This version of line of sight only considers map geometry, including movers.
+ * @return Whether a line from one point to the other would intersect the world.
+ */
+qboolean G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 {
 	trace_t trace;
 
-	trap_Trace( &trace, point1, NULL, NULL, point2, ignore ? ignore->s.number : ENTITYNUM_NONE,
-	            CONTENTS_SOLID, 0 );
+	trap_Trace( &trace, point1, NULL, NULL, point2, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }
@@ -1141,6 +1163,30 @@ int G_Heal( gentity_t *self, int amount )
 	return healed;
 }
 
+bool G_IsPlayableTeam( team_t team )
+{
+	return ( team > TEAM_NONE && team < NUM_TEAMS );
+}
+
+bool G_IsPlayableTeam( int team )
+{
+	return G_IsPlayableTeam( (team_t)team );
+}
+
+team_t G_IterateTeams( team_t team )
+{
+	team_t nextTeam = (team_t)(std::max((int)team, (int)TEAM_NONE) + 1);
+
+	if ( nextTeam >= NUM_TEAMS )
+	{
+		return TEAM_NONE;
+	}
+	else
+	{
+		return nextTeam;
+	}
+}
+
 team_t G_Enemy( team_t team )
 {
 	switch ( team )
@@ -1148,5 +1194,26 @@ team_t G_Enemy( team_t team )
 		case TEAM_ALIENS: return TEAM_HUMANS;
 		case TEAM_HUMANS: return TEAM_ALIENS;
 		default:          return TEAM_NONE;
+	}
+}
+
+/**
+ * @return Whether ent is a player or buildable with positive health.
+ */
+bool G_Alive( gentity_t *ent )
+{
+	if ( !ent->inuse ) return false;
+
+	switch ( ent->s.eType )
+	{
+		case ET_PLAYER:
+			return ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
+			         ent->client->ps.stats[ STAT_HEALTH ] > 0 );
+
+		case ET_BUILDABLE:
+			return ( ent->health > 0 );
+
+		default:
+			return false;
 	}
 }

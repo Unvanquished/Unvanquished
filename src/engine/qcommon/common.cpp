@@ -58,11 +58,8 @@ Maryland 20850 USA.
 
 #define MAX_NUM_ARGVS             50
 
-#define MIN_DEDICATED_COMHUNKMEGS 4
-#define MIN_COMHUNKMEGS           256 // JPW NERVE changed this to 42 for MP, was 56 for team arena and 75 for wolfSP
-#define DEF_COMHUNKMEGS           512 // RF, increased this, some maps are exceeding 56mb
-// JPW NERVE changed this for multiplayer back to 42, 56 for depot/mp_cpdepot, 42 for everything else
-#define DEF_COMHUNKMEGS_S         XSTRING(DEF_COMHUNKMEGS)
+#define MIN_COMHUNKMEGS 256
+#define DEF_COMHUNKMEGS 512
 
 jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire frame
 
@@ -73,10 +70,8 @@ cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, preve
 
 cvar_t *com_pid; // bani - process id
 
-cvar_t *com_viewlog;
 cvar_t *com_speeds;
 cvar_t *com_developer;
-cvar_t *com_dedicated;
 cvar_t *com_timescale;
 cvar_t *com_dropsim; // 0.0 to 1.0, simulated packet drops
 cvar_t *com_timedemo;
@@ -113,7 +108,6 @@ int      time_backend; // renderer backend time
 int      com_frameTime;
 int      com_frameMsec;
 int      com_frameNumber;
-int      com_expectedhunkusage;
 int      com_hunkusedvalue;
 
 qboolean com_errorEntered;
@@ -188,13 +182,13 @@ void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location )
 	case LOG_OFF:
 		return;
 	case LOG_WARN:
-		Com_Printf(_("^3Warning: ^7%s\n"), event->message);
+		Com_Printf("^3Warning: ^7%s\n", event->message);
 		break;
 	case LOG_ERROR:
-		Com_Printf(_("^1Error: ^7%s\n"), event->message);
+		Com_Printf("^1Error: ^7%s\n", event->message);
 		break;
 	case LOG_DEBUG:
-		Com_Printf(_("Debug: %s\n"), event->message);
+		Com_Printf("Debug: %s\n", event->message);
 		break;
 	case LOG_TRACE:
 		Com_Printf("Trace: %s\n", event->message);
@@ -279,10 +273,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if (code != ERR_FATAL) {
 		FS::PakPath::ClearPaks();
 		FS_LoadBasePak();
-#ifndef BUILD_SERVER
-		// Load map pk3s to allow menus to load levelshots
-		FS_LoadAllMaps();
-#endif
 	}
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
@@ -658,7 +648,7 @@ int Com_GMTime( qtime_t *qtime )
 
 /*
 ==============================================================================
-	Cheating
+Global common state
 ==============================================================================
 */
 
@@ -673,6 +663,33 @@ Cvar::Callback<Cvar::Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in
 bool Com_AreCheatsAllowed()
 {
 	return cvar_cheats.Get();
+}
+
+bool Com_IsClient()
+{
+#if BUILD_CLIENT || BUILD_TTY_CLIENT
+	return true;
+#elif BUILD_SERVER
+	return false;
+#else
+	#error
+#endif
+}
+
+bool Com_IsDedicatedServer()
+{
+#if BUILD_CLIENT || BUILD_TTY_CLIENT
+	return false;
+#elif BUILD_SERVER
+	return true;
+#else
+	#error
+#endif
+}
+
+bool Com_ServerRunning()
+{
+	return com_sv_running->integer;
 }
 
 /*
@@ -833,6 +850,42 @@ void Com_TouchMemory( void )
 
 /*
 =================
+Com_Allocate_Aligned
+
+Aligned Memory Allocations for Posix and Win32
+=================
+*/
+void *Com_Allocate_Aligned( size_t alignment, size_t size )
+{
+#ifdef _WIN32
+	return _aligned_malloc( size, alignment );
+#else
+	void *ptr;
+	if( !posix_memalign( &ptr, alignment, size ) )
+		return ptr;
+	else
+		return NULL;
+#endif
+}
+
+/*
+=================
+Com_Free_Aligned
+
+Free Aligned Memory for Posix and Win32
+=================
+*/
+void Com_Free_Aligned( void *ptr )
+{
+#ifdef _WIN32
+	_aligned_free( ptr );
+#else
+	free( ptr );
+#endif
+}
+
+/*
+=================
 Hunk_Log
 =================
 */
@@ -943,37 +996,28 @@ Com_InitHunkMemory
 void Com_InitHunkMemory( void )
 {
 	cvar_t *cv;
-	int    nMinAlloc;
-	qboolean isDedicated;
-
-	isDedicated = (com_dedicated && com_dedicated->integer);
 
 	// allocate the stack based hunk allocator
-	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS_S, CVAR_LATCH  );
+	cv = Cvar_Get( "com_hunkMegs", XSTRING(DEF_COMHUNKMEGS), CVAR_LATCH  );
 
-	// if we are not dedicated min allocation is 56, otherwise min is 1
-	nMinAlloc = isDedicated ? MIN_DEDICATED_COMHUNKMEGS : MIN_COMHUNKMEGS;
-
-	if ( cv->integer < nMinAlloc )
+	if ( cv->integer < MIN_COMHUNKMEGS )
 	{
-		s_hunkTotal = 1024 * 1024 * nMinAlloc;
-		Com_Printf(	isDedicated	? "Minimum com_hunkMegs for a dedicated server is %i, allocating %iMB.\n"
-				: "Minimum com_hunkMegs is %i, allocating %iMB.\n", nMinAlloc, s_hunkTotal / ( 1024 * 1024 ) );
+		s_hunkTotal = 1024 * 1024 * MIN_COMHUNKMEGS;
+		Com_Printf( "Minimum com_hunkMegs is " XSTRING(MIN_COMHUNKMEGS) ", allocating " XSTRING(MIN_COMHUNKMEGS) "MB.\n" );
 	}
 	else
 	{
 		s_hunkTotal = cv->integer * 1024 * 1024;
 	}
 
-	s_hunkData = ( byte * ) malloc( s_hunkTotal + 31 );
+	// cacheline aligned
+	s_hunkData = ( byte * ) Com_Allocate_Aligned( 64, s_hunkTotal );
 
 	if ( !s_hunkData )
 	{
 		Com_Error( ERR_FATAL, "Hunk data failed to allocate %iMB", s_hunkTotal / ( 1024 * 1024 ) );
 	}
 
-	// cacheline align
-	s_hunkData = ( byte * )( ( ( intptr_t ) s_hunkData + 31 ) & ~31 );
 	Hunk_Clear();
 
 	Cmd_AddCommand( "meminfo", Com_Meminfo_f );
@@ -1461,6 +1505,9 @@ int Com_EventLoop( void )
 	byte       bufData[ MAX_MSGLEN ];
 	msg_t      buf;
 
+	int        mouseX = 0, mouseY = 0, mouseTime = 0;
+	bool       mouseHaveEvent = false;
+
 	MSG_Init( &buf, bufData, sizeof( bufData ) );
 
 	while ( 1 )
@@ -1470,6 +1517,10 @@ int Com_EventLoop( void )
 		// if no more events are available
 		if ( ev.evType == SE_NONE )
 		{
+			if ( mouseHaveEvent ){
+				CL_MouseEvent( mouseX, mouseY, mouseTime );
+			}
+
 			// manually send packet events for the loopback channel
 			while ( NET_GetLoopPacket( NS_CLIENT, &evFrom, &buf ) )
 			{
@@ -1520,7 +1571,10 @@ int Com_EventLoop( void )
 				break;
 
 			case SE_MOUSE:
-				CL_MouseEvent( ev.evValue, ev.evValue2, ev.evTime );
+				mouseHaveEvent = true;
+				mouseX += ev.evValue;
+				mouseY += ev.evValue2;
+				mouseTime += ev.evTime;
 				break;
 
 			case SE_JOYSTICK_AXIS:
@@ -1650,7 +1704,7 @@ static void Com_Freeze_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "freeze <seconds>\n" ));
+		Com_Printf( "freeze <seconds>\n" );
 		return;
 	}
 
@@ -1694,13 +1748,13 @@ void Com_SetRecommended( void )
 
 	if ( goodVideo )
 	{
-		Com_Printf(_( "Found high quality video and slow CPU\n" ));
+		Com_Printf( "Found high quality video and slow CPU\n" );
 		Cmd::BufferCommandText("preset preset_fast.cfg");
 		Cvar_Set( "com_recommended", "2" );
 	}
 	else
 	{
-		Com_Printf(_( "Found low quality video and slow CPU\n" ));
+		Com_Printf( "Found low quality video and slow CPU\n" );
 		Cmd::BufferCommandText("preset preset_fastest.cfg");
 		Cvar_Set( "com_recommended", "3" );
 	}
@@ -1761,10 +1815,6 @@ void Com_Init( char *commandLine )
 
 	FS::Initialize();
 	FS_LoadBasePak();
-#ifndef BUILD_SERVER
-	// Load map pk3s to allow menus to load levelshots
-	FS_LoadAllMaps();
-#endif
 
 	Trans_Init();
 
@@ -1793,12 +1843,6 @@ void Com_Init( char *commandLine )
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
 
-#ifdef BUILD_SERVER
-	// TTimo: default to Internet dedicated, not LAN dedicated
-	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
-#else
-	com_dedicated = Cvar_Get( "dedicated", "0", CVAR_LATCH );
-#endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
 	Trans_LoadDefaultLanguage();
@@ -1816,7 +1860,6 @@ void Com_Init( char *commandLine )
 
 	com_timescale = Cvar_Get( "timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO );
 	com_dropsim = Cvar_Get( "com_dropsim", "0", CVAR_CHEAT );
-	com_viewlog = Cvar_Get( "viewlog", "0", CVAR_CHEAT );
 	com_speeds = Cvar_Get( "com_speeds", "0", 0 );
 	com_timedemo = Cvar_Get( "timedemo", "0", CVAR_CHEAT );
 
@@ -1843,14 +1886,6 @@ void Com_Init( char *commandLine )
 
 	com_hunkused = Cvar_Get( "com_hunkused", "0", 0 );
 	com_hunkusedvalue = 0;
-
-	if ( com_dedicated->integer )
-	{
-		if ( !com_viewlog->integer )
-		{
-			Cvar_Set( "viewlog", "1" );
-		}
-	}
 
 	if ( com_developer && com_developer->integer )
 	{
@@ -1884,12 +1919,7 @@ void Com_Init( char *commandLine )
 	SV_Init();
 	Console::LoadHistory();
 
-	com_dedicated->modified = qfalse;
-
-	if ( !com_dedicated->integer )
-	{
-		CL_Init();
-	}
+	CL_Init();
 
 	// set com_frameTime so that if a map is started on the
 	// command line it will still be able to count on com_frameTime
@@ -1903,18 +1933,6 @@ void Com_Init( char *commandLine )
 	}
 
 	CL_StartHunkUsers();
-
-	if ( !com_dedicated->integer )
-	{
-		//Cvar_Set( "com_logosPlaying", "1" );
-		//Cmd::BufferCommandText("cinematic etintro.roq\n");
-
-		/*Cvar_Set( "sv_nextmap", "cinematic avlogo.roq" );
-		   if( !com_introPlayed->integer ) {
-		   Cvar_Set( com_introPlayed->name, "1" );
-		   //Cvar_Set( "sv_nextmap", "cinematic avlogo.roq" );
-		   } */
-	}
 
 	if (defaultPipeFilename[0])
 	{
@@ -1997,7 +2015,7 @@ void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandl
 
 	if ( !f )
 	{
-		Com_Printf(_( "Couldn't write %s.\n"), filename );
+		Com_Printf( "Couldn't write %s.\n", filename );
 		return;
 	}
 
@@ -2052,13 +2070,13 @@ void Com_WriteConfig_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage(_("<filename>"), NULL);
+		Cmd_PrintUsage("<filename>", NULL);
 		return;
 	}
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	Com_Printf(_( "Writing %s.\n"), filename );
+	Com_Printf( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename, Cvar_WriteVariables );
 }
 
@@ -2076,13 +2094,13 @@ void Com_WriteBindings_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage(_("<filename>"), NULL);
+		Cmd_PrintUsage("<filename>", NULL);
 		return;
 	}
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	Com_Printf(_( "Writing %s.\n"), filename );
+	Com_Printf( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename, Key_WriteBindings );
 }
 #endif
@@ -2116,7 +2134,7 @@ int Com_ModifyMsec( int msec )
 		msec = 1;
 	}
 
-	if ( com_dedicated->integer )
+	if ( Com_IsDedicatedServer() )
 	{
 		// dedicated servers don't want to clamp for a much longer
 		// period, because it would mess up all the client's views
@@ -2128,7 +2146,7 @@ int Com_ModifyMsec( int msec )
 
 		clampTime = 5000;
 	}
-	else if ( !com_sv_running->integer )
+	else if ( !Com_ServerRunning() )
 	{
 		// clients of remote servers do not want to clamp time, because
 		// it would skew their view of the server's time temporarily
@@ -2202,12 +2220,6 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	// write config file if anything changed
 	Com_WriteConfiguration();
 
-	// if "viewlog" has been modified, show or hide the log console
-	if ( com_viewlog->modified )
-	{
-		com_viewlog->modified = qfalse;
-	}
-
 	//
 	// main event loop
 	//
@@ -2219,7 +2231,7 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	// we may want to spin here if things are going too fast
 	if ( !com_timedemo->integer )
 	{
-		if ( com_dedicated->integer )
+		if ( Com_IsDedicatedServer() )
 		{
 			minMsec = SV_FrameMsec();
 		}
@@ -2289,59 +2301,29 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 
 	SV_Frame( msec );
 
-	// if "dedicated" has been modified, start up
-	// or shut down the client system.
-	// Do this after the server may have started,
-	// but before the client tries to auto-connect
-	if ( com_dedicated->modified )
-	{
-		// get the latched value
-		Cvar_Get( "dedicated", "0", 0 );
-		com_dedicated->modified = qfalse;
-
-		if ( !com_dedicated->integer )
-		{
-			CL_Init();
-		}
-		else
-		{
-			CL_Shutdown();
-		}
-	}
-
 	//
 	// client system
 	//
-	if ( !com_dedicated->integer )
+	// run event loop a second time to get server to client packets
+	// without a frame of latency
+	//
+	if ( com_speeds->integer )
 	{
-		//
-		// run event loop a second time to get server to client packets
-		// without a frame of latency
-		//
-		if ( com_speeds->integer )
-		{
-			timeBeforeEvents = Sys_Milliseconds();
-		}
-
-		Com_EventLoop();
-		Cmd::DelayFrame();
-		Cmd::ExecuteCommandBuffer();
-		//
-		// client side
-		//
-		if ( com_speeds->integer )
-		{
-			timeBeforeClient = Sys_Milliseconds();
-		}
-
-		CL_Frame( msec );
-
-		if ( com_speeds->integer )
-		{
-			timeAfter = Sys_Milliseconds();
-		}
+		timeBeforeEvents = Sys_Milliseconds();
 	}
-	else
+
+	Com_EventLoop();
+	Cmd::DelayFrame();
+	Cmd::ExecuteCommandBuffer();
+
+	if ( com_speeds->integer )
+	{
+		timeBeforeClient = Sys_Milliseconds();
+	}
+
+	CL_Frame( msec );
+
+	if ( com_speeds->integer )
 	{
 		timeAfter = Sys_Milliseconds();
 	}
@@ -2349,7 +2331,7 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	//
 	// watchdog
 	//
-	if ( com_dedicated->integer && !com_sv_running->integer && watchdogThreshold.Get() != 0 )
+	if ( Com_IsDedicatedServer() && !Com_ServerRunning() && watchdogThreshold.Get() != 0 )
 	{
 		if ( watchdogTime == 0 )
 		{
@@ -2359,12 +2341,12 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 		{
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( watchdogThreshold.Get() - 4 ) * 1000 )
 			{
-				Com_Log( LOG_WARN, _( "watchdog will trigger in 4 seconds" ));
+				Com_Log( LOG_WARN, "watchdog will trigger in 4 seconds" );
 				watchWarn = qtrue;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > watchdogThreshold.Get() * 1000 )
 			{
-				Com_Printf(_( "Idle server with no map — triggering watchdog\n" ));
+				Com_Printf( "Idle server with no map — triggering watchdog\n" );
 				watchdogTime = 0;
 				watchWarn = qfalse;
 
@@ -2444,14 +2426,6 @@ void Com_Shutdown()
 	}
 
 	FS::FlushAll();
-}
-
-//------------------------------------------------------------------------
-
-void Com_GetHunkInfo( int *hunkused, int *hunkexpected )
-{
-	*hunkused = com_hunkusedvalue;
-	*hunkexpected = com_expectedhunkusage;
 }
 
 /*

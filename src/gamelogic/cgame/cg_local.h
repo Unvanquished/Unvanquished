@@ -787,7 +787,7 @@ typedef struct centity_s
 	trailSystem_t         *level2ZapTS[ LEVEL2_AREAZAP_MAX_TARGETS ];
 	int                   level2ZapTime;
 
-	trailSystem_t         *muzzleTS; //used for the tesla and reactor
+	trailSystem_t         *muzzleTS;
 	int                   muzzleTSDeathTime;
 
 	float                 radarVisibility;
@@ -1180,7 +1180,6 @@ typedef struct
 	int      teamScores[ 2 ];
 	score_t  scores[ MAX_CLIENTS ];
 	qboolean showScores;
-	qboolean scoreBoardShowing;
 	int      scoreFadeTime;
 	char     killerName[ MAX_NAME_LENGTH ];
 	char     spectatorList[ MAX_STRING_CHARS ]; // list of names
@@ -1308,6 +1307,14 @@ typedef struct
 	beaconRocket_t          beaconRocket;
 
 	int                     tagScoreTime;
+
+	// pmove params
+	struct {
+		int synchronous;
+		int fixed;
+		int msec;
+		int accurate;
+	} pmoveParams;
 } cg_t;
 
 typedef struct
@@ -1365,9 +1372,6 @@ typedef struct
 {
 	char *mapName;
 	char *mapLoadName;
-	char *imageName;
-	int        cinematic;
-	qhandle_t  levelShot;
 } mapInfo_t;
 
 typedef struct
@@ -1520,7 +1524,6 @@ typedef struct
 	qhandle_t disconnectSound;
 
 	// sounds
-	sfxHandle_t tracerSound;
 	sfxHandle_t weaponEmptyClick;
 	sfxHandle_t selectSound;
 	sfxHandle_t footsteps[ FOOTSTEP_TOTAL ][ 4 ];
@@ -1845,11 +1848,9 @@ extern  vmCvar_t            cg_thirdPersonShoulderViewMode;
 extern  vmCvar_t            cg_staticDeathCam;
 extern  vmCvar_t            cg_thirdPersonPitchFollow;
 extern  vmCvar_t            cg_thirdPersonRange;
-extern  vmCvar_t            cg_stereoSeparation;
 extern  vmCvar_t            cg_lagometer;
 extern  vmCvar_t            cg_drawSpeed;
 extern  vmCvar_t            cg_maxSpeedTimeWindow;
-extern  vmCvar_t            cg_synchronousClients;
 extern  vmCvar_t            cg_stats;
 extern  vmCvar_t            cg_paused;
 extern  vmCvar_t            cg_blood;
@@ -1860,9 +1861,6 @@ extern  vmCvar_t            cg_noVoiceText;
 extern  vmCvar_t            cg_hudFiles;
 extern  vmCvar_t            cg_hudFilesEnable;
 extern  vmCvar_t            cg_smoothClients;
-extern  vmCvar_t            pmove_fixed;
-extern  vmCvar_t            pmove_accurate;
-extern  vmCvar_t            pmove_msec;
 extern  vmCvar_t            cg_timescaleFadeEnd;
 extern  vmCvar_t            cg_timescaleFadeSpeed;
 extern  vmCvar_t            cg_timescale;
@@ -1941,6 +1939,7 @@ extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
 extern vmCvar_t             ui_chatPromptColors;
+extern vmCvar_t             cg_spawnEffects;
 
 //
 // Rocket cvars
@@ -1989,7 +1988,7 @@ void     CG_TestModelPrevSkin_f( void );
 void     CG_AddBufferedSound( sfxHandle_t sfx );
 qboolean CG_CullBox(vec3_t mins, vec3_t maxs);
 qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
-void     CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+void     CG_DrawActiveFrame( int serverTime, qboolean demoPlayback );
 void     CG_OffsetFirstPersonView( void );
 void     CG_OffsetThirdPersonView( void );
 void     CG_OffsetShoulderView( void );
@@ -2040,7 +2039,7 @@ void CG_AddLagometerFrameInfo( void );
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed( void );
 void CG_CenterPrint( const char *str, int y, int charWidth );
-void CG_DrawActive( stereoFrame_t stereoView );
+void CG_DrawActive( void );
 void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float text_y, int ownerDraw, int ownerDrawFlags,
                    int align, int textalign, int textvalign,

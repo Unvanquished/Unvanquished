@@ -176,7 +176,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 	if (pipe(pipefds) == -1 || fcntl(pipefds[1], F_SETFD, FD_CLOEXEC))
 		Com_Error(ERR_DROP, "VM: Failed to create pipe: %s", strerror(errno));
 
-	int pid = fork();
+	int pid = vfork();
 	if (pid == -1)
 		Com_Error(ERR_DROP, "VM: Failed to fork process: %s", strerror(errno));
 	if (pid == 0) {
@@ -184,7 +184,7 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 		close(pipefds[0]);
 
 		// Explicitly destroy the local socket, since destructors are not called
-		pair.first.Close();
+		close(pair.first.GetHandle());
 
 		// This seems to be required, otherwise killing the child process will
 		// also kill the parent process.
@@ -263,12 +263,26 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 		modulePath = FS::Path::Build(libPath, module);
 
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
-	irt = FS::Path::Build(libPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
 
+#ifdef NACL_RUNTIME_PATH
+	// NACL_RUNTIME_PATH is unquoted...
+# define NACL_Q(x) STRING(x)
+# define NACL_P NACL_Q(NACL_RUNTIME_PATH)
+	irt = win32Force64Bit ? NACL_P "/irt_core-x86_64.nexe" : NACL_P "/irt_core-" ARCH_STRING ".nexe";
+	sel_ldr = win32Force64Bit ? NACL_P "/sel_ldr64" EXE_EXT : NACL_P "/sel_ldr" EXE_EXT;
+#else
+	irt = FS::Path::Build(libPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
 	sel_ldr = FS::Path::Build(libPath, win32Force64Bit ? "sel_ldr64" EXE_EXT : "sel_ldr" EXE_EXT);
+#endif
+			Log::Warn("irt: %s", irt.c_str());
+			Log::Warn("sel_ldr: %s", sel_ldr.c_str());
 
 #ifdef __linux__
+# ifdef NACL_RUNTIME_PATH
+	bootstrap = NACL_P "/nacl_helper_bootstrap";
+# else
 	bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
+# endif
 	args.push_back(bootstrap.c_str());
 	args.push_back(sel_ldr.c_str());
 	args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");

@@ -35,8 +35,8 @@ typedef int64_t offset_t;
 // function.
 inline std::error_code& throws()
 {
-	std::error_code* ptr = nullptr;
-	return *ptr;
+	extern std::error_code throw_err;
+	return throw_err;
 }
 
 // Wrapper around stdio

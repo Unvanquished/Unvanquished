@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.30.0"
+#define PRODUCT_VERSION         "0.35.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -86,21 +86,6 @@ typedef int intptr_t;
 #else //Q3_VM
 
 #define EXTERN_C extern "C"
-
-// for visibility of some functions in system headers
-#undef _GNU_SOURCE
-#undef _BSD_SOURCE
-#undef _XOPEN_SOURCE_EXTENDED
-#define _GNU_SOURCE
-#define _BSD_SOURCE
-#define _XOPEN_SOURCE_EXTENDED
-#if !(defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__))
-// defining the following breaks things on BSD-esque OSes
-#undef _XOPEN_SOURCE
-#undef _POSIX_C_SOURCE
-#define _XOPEN_SOURCE 500
-#define _POSIX_C_SOURCE 200112L
-#endif
 
 // C standard library headers
 #include <assert.h>
@@ -310,6 +295,9 @@ typedef int clipHandle_t;
 
 #define Com_Allocate malloc
 #define Com_Dealloc  free
+
+void *Com_Allocate_Aligned( size_t alignment, size_t size );
+void  Com_Free_Aligned( void *ptr );
 
 #define CIN_system   1
 #define CIN_loop     2
@@ -833,7 +821,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void  AxisCopy( vec3_t in[ 3 ], vec3_t out[ 3 ] );
 
 	void  SetPlaneSignbits( struct cplane_s *out );
-	int   BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *plane );
+	int   BoxOnPlaneSide( const vec3_t emins, const vec3_t emaxs, const struct cplane_s *plane );
 
 	float AngleMod( float a );
 	float LerpAngle( float from, float to, float frac );

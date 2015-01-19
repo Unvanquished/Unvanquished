@@ -236,14 +236,14 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 
 		if ( country )
 		{
-			Com_Printf(_( "Client %i connecting from %s with %i challenge ping\n"), i, country, ping );
+			Com_Printf( "Client %i connecting from %s with %i challenge ping\n", i, country, ping );
 		}
 		else
 		{
-			Com_Printf(_( "Client %i connecting from somewhere unknown with %i challenge ping\n"), i, ping );
+			Com_Printf( "Client %i connecting from somewhere unknown with %i challenge ping\n", i, ping );
 		}
 #else
-		Com_Printf(_( "Client %i connecting with %i challenge ping\n"), i, ping );
+		Com_Printf( "Client %i connecting with %i challenge ping\n", i, ping );
 #endif
 
 		svs.challenges[ i ].connected = qtrue;
@@ -346,7 +346,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 			{
 				cl = &svs.clients[ i ];
 
-				if ( cl->netchan.remoteAddress.type == NA_BOT )
+				if ( SV_IsBot(cl) )
 				{
 					count++;
 				}
@@ -476,6 +476,22 @@ void SV_FreeClient( client_t *client )
 	client->queuedVoipPackets = 0;
 #endif
 
+	// NA_BOT happens to be the default value for address types (value 0) and are
+	// never for clients that send challenges. For NA_BOT, skip the checks for
+	// challenges as it makes NET_CompareAdr yell at us.
+	if (client->netchan.remoteAddress.type != NA_BOT) {
+		// see if we already have a challenge for this IP address
+		challenge_t* challenge = &svs.challenges[ 0 ];
+		for (int i = 0; i < MAX_CHALLENGES; i++, challenge++)
+		{
+			if ( NET_CompareAdr( client->netchan.remoteAddress, challenge->adr ) )
+			{
+				challenge->connected = qfalse;
+				break;
+			}
+		}
+	}
+
 	SV_Netchan_FreeQueue( client );
 	SV_CloseDownload( client );
 }
@@ -491,83 +507,41 @@ or crashing -- SV_FinalCommand() will handle that
 */
 void SV_DropClient( client_t *drop, const char *reason )
 {
-	int         i;
-	challenge_t *challenge;
-	qboolean    isBot = qfalse;
-
 	if ( drop->state == CS_ZOMBIE )
 	{
 		return; // already dropped
 	}
-
-	if ( drop->gentity && ( drop->gentity->r.svFlags & SVF_BOT ) )
-	{
-		isBot = qtrue;
-	}
-	else
-	{
-		if ( drop->netchan.remoteAddress.type == NA_BOT )
-		{
-			isBot = qtrue;
-		}
-	}
-
-	if ( !isBot )
-	{
-		// see if we already have a challenge for this IP address
-		challenge = &svs.challenges[ 0 ];
-
-		for ( i = 0; i < MAX_CHALLENGES; i++, challenge++ )
-		{
-			if ( NET_CompareAdr( drop->netchan.remoteAddress, challenge->adr ) )
-			{
-				challenge->connected = qfalse;
-				break;
-			}
-		}
-
-		// Kill any download
-		SV_CloseDownload( drop );
-	}
-
-	// Free all allocated data on the client structure
-	SV_FreeClient( drop );
-
-	if ( !isBot )
-	{
-		// tell everyone why they got dropped
-
-		// Gordon: we want this displayed elsewhere now
-		SV_SendServerCommand( NULL, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
-	}
-
 	Com_DPrintf( "Going to CS_ZOMBIE for %s\n", drop->name );
 	drop->state = CS_ZOMBIE; // become free in a few seconds
-
-	if ( drop->download )
-	{
-		drop->download = nullptr;
-	}
 
 	// call the prog function for removing a client
 	// this will remove the body, among other things
 	gvm->GameClientDisconnect( drop - svs.clients );
 
-	// add the disconnect command
-	SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
-
-	if ( drop->netchan.remoteAddress.type == NA_BOT )
+	if ( SV_IsBot(drop) )
 	{
 		SV_BotFreeClient( drop - svs.clients );
+	}
+	else
+	{
+		// tell everyone why they got dropped
+		// Gordon: we want this displayed elsewhere now
+		SV_SendServerCommand( NULL, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
+
+		// add the disconnect command
+		SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
 	}
 
 	// nuke user info
 	SV_SetUserinfo( drop - svs.clients, "" );
 
+	SV_FreeClient( drop );
+
 	// if this was the last client on the server, send a heartbeat
 	// to the master so it is known the server is empty
 	// send a heartbeat now so the master will get up to date info
 	// if there is already a slot for this IP address, reuse it
+	int i;
 	for ( i = 0; i < sv_maxclients->integer; i++ )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
@@ -789,7 +763,7 @@ void SV_NextDownload_f( client_t *cl, const Cmd::Args& args )
 		// Find out if we are done.  A zero-length block indicates EOF
 		if ( cl->downloadBlockSize[ cl->downloadClientBlock % MAX_DOWNLOAD_WINDOW ] == 0 )
 		{
-			Com_Printf(_( "clientDownload: %d : file \"%s\" completed\n"), ( int )( cl - svs.clients ), cl->downloadName );
+			Com_Printf( "clientDownload: %d : file \"%s\" completed\n", ( int )( cl - svs.clients ), cl->downloadName );
 			SV_CloseDownload( cl );
 			return;
 		}
@@ -846,7 +820,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	// only accept wwwdl commands for clients which we first flagged as wwwdl ourselves
 	if ( !cl->bWWWDl )
 	{
-		Com_Printf(_( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n"), subcmd, cl->name );
+		Com_Printf( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name );
 		SV_DropClient( cl, va( "SV_WWWDownload: unexpected wwwdl %s", subcmd ) );
 		return;
 	}
@@ -855,7 +829,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	{
 		if ( cl->bWWWing )
 		{
-			Com_Logf(LOG_WARN, _( "dupe wwwdl ack from client '%s'"), cl->name );
+			Com_Logf(LOG_WARN, "dupe wwwdl ack from client '%s'", cl->name );
 		}
 
 		cl->bWWWing = qtrue;
@@ -870,7 +844,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	// below for messages that only happen during/after download
 	if ( !cl->bWWWing )
 	{
-		Com_Printf(_( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n"), subcmd, cl->name );
+		Com_Printf( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name );
 		SV_DropClient( cl, va( "SV_WWWDownload: unexpected wwwdl %s", subcmd ) );
 		return;
 	}
@@ -892,7 +866,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	}
 	else if ( !Q_stricmp( subcmd, "chkfail" ) )
 	{
-		Com_Logf(LOG_WARN, _( "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration."),
+		Com_Logf(LOG_WARN, "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration.",
 				cl->name, cl->downloadName );
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
@@ -932,7 +906,7 @@ static qboolean SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *m
 		return qfalse;
 	}
 
-	Com_Printf(_( "clientDownload: sending client '%s' to fallback URL '%s'\n"), cl->name, sv_wwwFallbackURL->string );
+	Com_Printf( "clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string );
 
 	MSG_WriteByte( msg, svc_download );
 	MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
@@ -1041,7 +1015,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					if ( cl->downloadnotify & DLNOTIFY_REDIRECT )
 					{
 						cl->downloadnotify &= ~DLNOTIFY_REDIRECT;
-						Com_Printf(_( "Redirecting client '%s' to %s\n"), cl->name, cl->downloadURL );
+						Com_Printf( "Redirecting client '%s' to %s\n", cl->name, cl->downloadURL );
 					}
 
 					// once cl->downloadName is set (and possibly we have our listening socket), let the client know
@@ -1065,7 +1039,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 				else
 				{
 					// that should NOT happen - even regular download would fail then anyway
-					Com_Logf(LOG_ERROR, _( "Client '%s': couldn't extract file size for %s"), cl->name, cl->downloadName );
+					Com_Logf(LOG_ERROR, "Client '%s': couldn't extract file size for %s", cl->name, cl->downloadName );
 				}
 			}
 			else
@@ -1078,7 +1052,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					return;
 				}
 
-				Com_Logf(LOG_ERROR, _( "Client '%s': falling back to regular downloading for failed file %s"), cl->name,
+				Com_Logf(LOG_ERROR, "Client '%s': falling back to regular downloading for failed file %s", cl->name,
 							cl->downloadName );
 			}
 		}
@@ -1103,7 +1077,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 		if ( !success )
 		{
-			Com_Printf(_( "clientDownload: %d : \"%s\" file not found on server\n"), ( int )( cl - svs.clients ), cl->downloadName );
+			Com_Printf( "clientDownload: %d : \"%s\" file not found on server\n", ( int )( cl - svs.clients ), cl->downloadName );
 			Com_sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n",
 			             cl->downloadName );
 			SV_BadDownload( cl, msg );
@@ -1168,12 +1142,12 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 		if ( bTellRate )
 		{
-			Com_Printf(_( "'%s' downloading at sv_dl_maxrate (%d)\n"), cl->name, sv_dl_maxRate->integer );
+			Com_Printf( "'%s' downloading at sv_dl_maxrate (%d)\n", cl->name, sv_dl_maxRate->integer );
 		}
 	}
 	else if ( bTellRate )
 	{
-		Com_Printf(_( "'%s' downloading at rate %d\n"), cl->name, rate );
+		Com_Printf( "'%s' downloading at rate %d\n", cl->name, rate );
 	}
 
 	if ( !rate )
@@ -1255,7 +1229,7 @@ The client is going to disconnect, so remove the connection immediately  FIXME: 
 */
 static void SV_Disconnect_f( client_t *cl, const Cmd::Args& )
 {
-	SV_DropClient( cl, _("disconnected") );
+	SV_DropClient( cl, "disconnected" );
 }
 
 /*
@@ -1278,7 +1252,7 @@ void SV_UserinfoChanged( client_t *cl )
 
 	// if the client is on the same subnet as the server and we aren't running an
 	// Internet server, assume that they don't need a rate choke
-	if ( Sys_IsLANAddress( cl->netchan.remoteAddress ) && com_dedicated->integer != 2 && sv_lanForceRate->integer == 1 )
+	if ( Sys_IsLANAddress( cl->netchan.remoteAddress ) && isLanOnly.Get() && sv_lanForceRate->integer == 1 )
 	{
 		cl->rate = 99999; // lans should not rate limit
 	}
@@ -1519,7 +1493,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	// drop the connection if we have somehow lost commands
 	if ( seq > cl->lastClientCommand + 1 )
 	{
-		Com_Printf(_( "Client %s lost %i clientCommands\n"), cl->name, seq - cl->lastClientCommand + 1 );
+		Com_Printf( "Client %s lost %i clientCommands\n", cl->name, seq - cl->lastClientCommand + 1 );
 		SV_DropClient( cl, "Lost reliable commands" );
 		return qfalse;
 	}
@@ -1829,7 +1803,7 @@ void SV_UserVoip( client_t *cl, msg_t *msg )
 		// Transmit this packet to the client.
 		if ( client->queuedVoipPackets >= ARRAY_LEN( client->voipPacket ) )
 		{
-			Com_Printf(_( "Too many VoIP packets queued for client #%d\n"), i );
+			Com_Printf( "Too many VoIP packets queued for client #%d\n", i );
 			continue; // no room for another packet right now.
 		}
 

@@ -129,6 +129,10 @@ namespace FS {
 #define PAK_ZIP_EXT ".pk3"
 #define PAK_DIR_EXT ".pk3dir/"
 
+// Error variable used by throws(). This is never written to and always
+// represents a success value.
+std::error_code throw_err;
+
 // Dependencies file in packages
 #define PAK_DEPS_FILE "DEPS"
 
@@ -159,7 +163,7 @@ inline int my_open(Str::StringRef path, openMode_t mode)
 {
 	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
 #ifdef _WIN32
-	int fd =  _wopen(Str::UTF8To16(path).c_str(), modes[mode] | O_BINARY, _S_IREAD | _S_IWRITE);
+	int fd = _wopen(Str::UTF8To16(path).c_str(), modes[mode] | O_BINARY, _S_IREAD | _S_IWRITE);
 #elif defined(__APPLE__)
 	// O_CLOEXEC is supported from 10.7 onwards
 	int fd = open(path.c_str(), modes[mode] | O_CLOEXEC, 0666);
@@ -356,10 +360,6 @@ static void ClearErrorCode(std::error_code& err)
 {
 	if (&err != &throws())
 		err = std::error_code();
-}
-static bool HaveError(std::error_code& err)
-{
-	return &err != &throws() && err;
 }
 static void SetErrorCodeSystem(std::error_code& err)
 {
@@ -597,7 +597,7 @@ void File::Flush(std::error_code& err) const
 std::string File::ReadAll(std::error_code& err) const
 {
 	offset_t length = Length(err);
-	if (HaveError(err))
+	if (err)
 		return "";
 	std::string out;
 	out.resize(length);
@@ -609,10 +609,10 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 	char buffer[65536];
 	while (true) {
 		size_t read = Read(buffer, sizeof(buffer), err);
-		if (HaveError(err) || read == 0)
+		if (err || read == 0)
 			return;
 		dest.Write(buffer, read, err);
-		if (HaveError(err))
+		if (err)
 			return;
 	}
 }
@@ -979,7 +979,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 				return;
 			}
 			LoadPak(*pak, err);
-			if (HaveError(err))
+			if (err)
 				return;
 			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
 			continue;
@@ -1003,7 +1003,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 				return;
 			}
 			LoadPak(*pak, err);
-			if (HaveError(err))
+			if (err)
 				return;
 			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
 			continue;
@@ -1043,22 +1043,20 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 	if (pak.type == PAK_DIR) {
 		loadedPaks.back().fd = -1;
 		auto dirRange = RawPath::ListFilesRecursive(pak.path, err);
-		if (HaveError(err))
+		if (err)
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
-			if (!Str::IsSuffix("/", *it) && Str::IsPrefix(pathPrefix, *it)) {
-				if (*it == PAK_DEPS_FILE)
-					hasDeps = true;
-				else {
+			if (*it == PAK_DEPS_FILE)
+				hasDeps = true;
+			else if (!Str::IsSuffix("/", *it) && Str::IsPrefix(pathPrefix, *it)) {
 #ifdef LIBSTDCXX_BROKEN_CXX11
-					fileMap.insert({*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0)});
+				fileMap.insert({*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0)});
 #else
-					fileMap.emplace(*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0));
+				fileMap.emplace(*it, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, 0));
 #endif
-				}
 			}
 			it.increment(err);
-			if (HaveError(err))
+			if (err)
 				return;
 		}
 	} else {
@@ -1071,14 +1069,14 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 
 		// Open zip
 		zipFile = ZipArchive::Open(loadedPaks.back().fd, err);
-		if (HaveError(err))
+		if (err)
 			return;
 
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		realChecksum = crc32(0, Z_NULL, 0);
 		zipFile.ForEachFile([&pak, &realChecksum, &pathPrefix, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
 			// Note that 'return' is effectively 'continue' since we are in a lambda
-			if (!Str::IsPrefix(pathPrefix, filename))
+			if (!Str::IsPrefix(pathPrefix, filename) && filename != PAK_DEPS_FILE)
 				return;
 			if (Str::IsSuffix("/", filename))
 				return;
@@ -1098,12 +1096,12 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 			fileMap.emplace(filename, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, offset));
 #endif
 		}, err);
-		if (HaveError(err))
+		if (err)
 			return;
 
 		// Get the timestamp of the pak
 		loadedPaks.back().timestamp = FS::RawPath::FileTimestamp(pak.path, err);
-		if (HaveError(err))
+		if (err)
 			return;
 	}
 
@@ -1126,21 +1124,21 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 		std::string depsData;
 		if (pak.type == PAK_DIR) {
 			File depsFile = RawPath::OpenRead(Path::Build(pak.path, PAK_DEPS_FILE), err);
-			if (HaveError(err))
+			if (err)
 				return;
 			depsData = depsFile.ReadAll(err);
-			if (HaveError(err))
+			if (err)
 				return;
 		} else {
 			zipFile.OpenFile(depsOffset, err);
-			if (HaveError(err))
+			if (err)
 				return;
 			offset_t length = zipFile.FileLength(err);
-			if (HaveError(err))
+			if (err)
 				return;
 			depsData.resize(length);
 			zipFile.ReadFile(&depsData[0], length, err);
-			if (HaveError(err))
+			if (err)
 				return;
 		}
 		ParseDeps(pak, depsData, err);
@@ -1212,12 +1210,12 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 #else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 #endif
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Get file length
 		offset_t length = file.Length(err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Read file contents
@@ -1228,29 +1226,29 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 	} else {
 		// Open zip
 		ZipArchive zipFile = ZipArchive::Open(pak.fd, err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Open file in zip
 		zipFile.OpenFile(it->second.second, err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Get file length
 		offset_t length = zipFile.FileLength(err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Read file
 		std::string out;
 		out.resize(length);
 		zipFile.ReadFile(&out[0], length, err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Close file and check for CRC errors
 		zipFile.CloseFile(err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		return out;
@@ -1274,30 +1272,30 @@ void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 #else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 #endif
-		if (HaveError(err))
+		if (err)
 			return;
 		file.CopyTo(dest, err);
 	} else {
 		// Open zip
 		ZipArchive zipFile = ZipArchive::Open(pak.fd, err);
-		if (HaveError(err))
+		if (err)
 			return;
 
 		// Open file in zip
 		zipFile.OpenFile(it->second.second, err);
-		if (HaveError(err))
+		if (err)
 			return;
 
 		// Copy contents into destination
 		char buffer[65536];
 		while (true) {
 			offset_t read = zipFile.ReadFile(buffer, sizeof(buffer), err);
-			if (HaveError(err))
+			if (err)
 				return;
 			if (read == 0)
 				break;
 			dest.Write(buffer, read, err);
-			if (HaveError(err))
+			if (err)
 				return;
 		}
 
@@ -1519,7 +1517,7 @@ static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 	if (!fd && mode != MODE_READ && errno == ENOENT) {
 		// Create the directories and try again
 		CreatePath(path, err);
-		if (HaveError(err))
+		if (err)
 			return {};
 		fd = my_fopen(path, mode);
 	}
@@ -1578,16 +1576,16 @@ void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err)
 	if (rename(src.c_str(), dest.c_str()) != 0) {
 		// Copy the file if the destination is on a different filesystem
 		File srcFile = OpenRead(src, err);
-		if (HaveError(err))
+		if (err)
 			return;
 		File destFile = OpenWrite(src, err);
-		if (HaveError(err))
+		if (err)
 			return;
 		srcFile.CopyTo(destFile, err);
-		if (HaveError(err))
+		if (err)
 			return;
 		destFile.Close(err);
-		if (HaveError(err))
+		if (err)
 			return;
 		DeleteFile(src, err);
 	} else
@@ -1711,7 +1709,7 @@ bool RecursiveDirectoryRange::Advance(std::error_code& err)
 {
 	if (current.back() == '/') {
 		auto subdir = ListFiles(Path::Build(path, current), err);
-		if (HaveError(err))
+		if (err)
 			return false;
 		if (!subdir.empty()) {
 			current.append(*subdir.begin());
@@ -1724,7 +1722,7 @@ bool RecursiveDirectoryRange::Advance(std::error_code& err)
 		size_t pos = current.rfind('/', current.size() - 2);
 		current.resize(pos == std::string::npos ? 0 : pos + 1);
 		dirs.back().begin().increment(err);
-		if (HaveError(err))
+		if (err)
 			return false;
 		if (!dirs.back().empty())
 			break;
@@ -1746,7 +1744,7 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 	if (!state.path.empty() && state.path.back() != '/')
 		state.path.push_back('/');
 	auto root = ListFiles(state.path, err);
-	if (HaveError(err) || root.begin() == root.end())
+	if (err || root.begin() == root.end())
 		return {};
 	state.current = *root.begin();
 	state.dirs.push_back(std::move(root));
@@ -1764,7 +1762,7 @@ static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 	Util::optional<IPC::FileHandle> handle;
 	VM::SendMsg<VM::FSHomePathOpenModeMsg>(path, mode, handle);
 	File file = FileFromIPC(handle, mode, err);
-	if (HaveError(err))
+	if (err)
 		return {};
 	return file;
 #else

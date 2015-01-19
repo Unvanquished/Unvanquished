@@ -952,7 +952,7 @@ void SetPlaneSignbits( cplane_t *out )
  * ==================
  */
 
-int BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *p )
+int BoxOnPlaneSide( const vec3_t emins, const vec3_t emaxs, const struct cplane_s *p )
 {
 	float dist[ 2 ];
 	int   sides, b, i;
@@ -3850,7 +3850,7 @@ void TransCombine( const transform_t *a, const transform_t *b,
 void TransInverse( const transform_t *in, transform_t *out )
 {
 	quat_t inverse;
-	transform_t tmp;
+	static transform_t tmp; // static for proper alignment in QVMs
 
 	TransInit( &tmp );
 	VectorNegate( in->trans, tmp.trans );

@@ -121,8 +121,15 @@ void CG_SetInitialSnapshot( snapshot_t *snap )
 		CG_CheckEvents( cent );
 	}
 
-	CG_OnPlayerUpgradeChange();
-	CG_OnPlayerWeaponChange( (weapon_t) cg.snap->ps.weapon );
+	// Need this check because the initial weapon for spec isn't always WP_NONE
+	if ( snap->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
+	{
+		trap_Rocket_ShowHud( WP_NONE );
+	}
+	else
+	{
+		trap_Rocket_ShowHud( BG_GetPlayerWeapon( &snap->ps ) );
+	}
 }
 
 /*
@@ -197,7 +204,7 @@ static void CG_TransitionSnapshot( void )
 		// if we are not doing client side movement prediction for any
 		// reason, then the client events and view changes will be issued now
 		if ( cg.demoPlayback || ( cg.snap->ps.pm_flags & PMF_FOLLOW ) ||
-		     cg_nopredict.integer || cg_synchronousClients.integer )
+		     cg_nopredict.integer || cg.pmoveParams.synchronous )
 		{
 			CG_TransitionPlayerState( ps, ops );
 		}

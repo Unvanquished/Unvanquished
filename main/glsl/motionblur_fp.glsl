@@ -47,7 +47,7 @@ void	main()
 	depth /= 1.0 - depth;
 
 	vec3 start = vec3(st * 2.0 - 1.0, 1.0) * depth;
-	vec3 end   = start + u_blurVec.yzx;
+	vec3 end   = start + u_blurVec.xyz;
 
 	float weight = 1.0;
 	float total = 0.0;
