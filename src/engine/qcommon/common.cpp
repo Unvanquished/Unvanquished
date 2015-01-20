@@ -1736,6 +1736,8 @@ void Com_Init( char *commandLine )
 
 	com_fullyInitialized = qtrue;
 	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
+
+	NET_Init();
 }
 
 //==================================================================
