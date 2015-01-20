@@ -67,7 +67,7 @@ namespace VM {
  * - Native exe: no sandboxing, no leaks, hard to debug. Might be used by server owners for perf.
  */
 enum vmType_t {
-	// Loads the VM as an executable from the hompath, potentially from a pk3
+	// Loads the VM as an nacl executable from the homepath, potentially from a pk3
 	// USE THIS BY DEFAULT FOR PROD
 	TYPE_NACL,
 	// Same as above will ask sel_ldr to open a gdb server on port 4014?
