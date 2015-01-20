@@ -2345,11 +2345,6 @@ void         ByteToDir( int b, vec3_t dir );
 		signed char forwardmove, rightmove, upmove;
 		byte        doubleTap; // Arnout: only 3 bits used
 
-		// rain - in ET, this can be any entity, and it's used as an array
-		// index, so make sure it's unsigned
-		// But Unv doesn't use it.
-		byte identClient; // NERVE - SMF
-
 		byte        weapon;
 		byte        flags;
 

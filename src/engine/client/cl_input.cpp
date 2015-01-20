@@ -713,8 +713,6 @@ void CL_FinishMove( usercmd_t *cmd )
 
 	cmd->flags = cl.cgameFlags;
 
-	cmd->identClient = cl.cgameMpIdentClient; // NERVE - SMF
-
 	// send the current server time so the amount of movement
 	// can be determined without allowing cheating
 	cmd->serverTime = cl.serverTime;

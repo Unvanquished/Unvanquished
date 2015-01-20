@@ -816,7 +816,7 @@ void MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 	     from->upmove == to->upmove &&
 	     !memcmp( from->buttons, to->buttons, sizeof( from->buttons ) ) &&
 	     from->weapon == to->weapon &&
-	     from->flags == to->flags && from->doubleTap == to->doubleTap && from->identClient == to->identClient )
+	     from->flags == to->flags && from->doubleTap == to->doubleTap)
 	{
 		// NERVE - SMF
 		MSG_WriteBits( msg, 0, 1 );  // no change
@@ -837,7 +837,6 @@ void MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 	MSG_WriteDelta( msg, from->weapon, to->weapon, 8 );
 	MSG_WriteDelta( msg, from->flags, to->flags, 8 );
 	MSG_WriteDelta( msg, from->doubleTap, to->doubleTap, 3 );
-	MSG_WriteDelta( msg, from->identClient, to->identClient, 8 );  // NERVE - SMF
 }
 
 /*
@@ -879,7 +878,6 @@ void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 		to->weapon = MSG_ReadDelta( msg, from->weapon, 8 );
 		to->flags = MSG_ReadDelta( msg, from->flags, 8 );
 		to->doubleTap = MSG_ReadDelta( msg, from->doubleTap, 3 ) & 0x7;
-		to->identClient = MSG_ReadDelta( msg, from->identClient, 8 );  // NERVE - SMF
 	}
 	else
 	{
@@ -893,7 +891,6 @@ void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 		to->weapon = from->weapon;
 		to->flags = from->flags;
 		to->doubleTap = from->doubleTap;
-		to->identClient = from->identClient; // NERVE - SMF
 	}
 }
 
