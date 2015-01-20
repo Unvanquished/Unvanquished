@@ -61,30 +61,32 @@ typedef struct
 	std::vector<std::string> serverCommands;
 } snapshot_t;
 
-template<> struct IPC::SerializeTraits<snapshot_t> {
-	static void Write(Writer& stream, const snapshot_t& snap)
-	{
-		stream.Write<int>(snap.snapFlags);
-		stream.Write<int>(snap.ping);
-		stream.Write<int>(snap.serverTime);
-		stream.WriteData(&snap.areamask, MAX_MAP_AREA_BYTES);
-		stream.Write<playerState_t>(snap.ps);
-		stream.Write<std::vector<entityState_t>>(snap.entities);
-		stream.Write<std::vector<std::string>>(snap.serverCommands);
-	}
-	static snapshot_t Read(Reader& stream)
-	{
-		snapshot_t snap;
-		snap.snapFlags = stream.Read<int>();
-		snap.ping = stream.Read<int>();
-		snap.serverTime = stream.Read<int>();
-		stream.ReadData(&snap.areamask, MAX_MAP_AREA_BYTES);
-		snap.ps = stream.Read<playerState_t>();
-		snap.entities = std::move(stream.Read<std::vector<entityState_t>>());
-		snap.serverCommands = std::move(stream.Read<std::vector<std::string>>());
-		return snap;
-	}
-};
+namespace IPC {
+	template<> struct IPC::SerializeTraits<snapshot_t> {
+		static void Write(Writer& stream, const snapshot_t& snap)
+		{
+			stream.Write<int>(snap.snapFlags);
+			stream.Write<int>(snap.ping);
+			stream.Write<int>(snap.serverTime);
+			stream.WriteData(&snap.areamask, MAX_MAP_AREA_BYTES);
+			stream.Write<playerState_t>(snap.ps);
+			stream.Write<std::vector<entityState_t>>(snap.entities);
+			stream.Write<std::vector<std::string>>(snap.serverCommands);
+		}
+		static snapshot_t Read(Reader& stream)
+		{
+			snapshot_t snap;
+			snap.snapFlags = stream.Read<int>();
+			snap.ping = stream.Read<int>();
+			snap.serverTime = stream.Read<int>();
+			stream.ReadData(&snap.areamask, MAX_MAP_AREA_BYTES);
+			snap.ps = stream.Read<playerState_t>();
+			snap.entities = std::move(stream.Read<std::vector<entityState_t>>());
+			snap.serverCommands = std::move(stream.Read<std::vector<std::string>>());
+			return snap;
+		}
+	};
+}
 
 typedef enum {
 	ROCKET_STRING,
