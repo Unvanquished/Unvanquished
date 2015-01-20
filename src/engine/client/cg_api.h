@@ -62,7 +62,7 @@ typedef struct
 } snapshot_t;
 
 namespace IPC {
-	template<> struct IPC::SerializeTraits<snapshot_t> {
+	template<> struct SerializeTraits<snapshot_t> {
 		static void Write(Writer& stream, const snapshot_t& snap)
 		{
 			stream.Write<int>(snap.snapFlags);
