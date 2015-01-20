@@ -774,7 +774,7 @@ void SV_Shutdown( const char *finalmsg )
 
 	NET_LeaveMulticast6();
 
-	if ( svs.clients && !com_errorEntered )
+	if ( svs.clients )
 	{
 		SV_FinalCommand( va( "print %s", Cmd_QuoteString( finalmsg ) ), qtrue );
 	}

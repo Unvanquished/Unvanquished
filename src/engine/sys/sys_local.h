@@ -59,6 +59,7 @@ void        *IN_GetWindow( void );
 // Curses Console
 void         CON_Shutdown( void );
 void         CON_Init( void );
+void         CON_Init_TTY( void );
 char         *CON_Input( void );
 void         CON_Print( const char *message );
 

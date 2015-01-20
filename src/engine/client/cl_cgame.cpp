@@ -1472,10 +1472,11 @@ void CGameVM::CGameInit(int serverMessageNum, int clientNum)
 
 void CGameVM::CGameShutdown()
 {
-	if (!services->HasVMErrored()) {
+	// Ignore errors when shutting down
+	try {
 		this->SendMsg<CGameShutdownMsg>();
-	}
-	this->Free();
+		this->Free();
+	} catch (Sys::DropErr&) {}
 	services = nullptr;
 }
 

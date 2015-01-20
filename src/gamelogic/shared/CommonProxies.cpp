@@ -501,21 +501,12 @@ void trap_Print(const char *string)
 
 void NORETURN trap_Error(const char *string)
 {
-	static bool recursiveError = false;
-	if (recursiveError)
-		VM::Exit();
-	recursiveError = true;
-	VM::SendMsg<VM::ErrorMsg>(string);
-	VM::Exit(); // Amanieu: Need to implement proper error handling
+	Sys::Drop(string);
 }
 
 int trap_Milliseconds(void)
 {
-#ifdef LIBSTDCXX_BROKEN_CXX11
-	auto duration = std::chrono::monotonic_clock::now().time_since_epoch();
-#else
-	auto duration = std::chrono::steady_clock::now().time_since_epoch();
-#endif
+	auto duration = Sys::SteadyClock::now().time_since_epoch();
 	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 

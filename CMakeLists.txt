@@ -559,6 +559,8 @@ set( COMMONLIST
   ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/String.cpp
   ${COMMON_DIR}/String.h
+  ${COMMON_DIR}/System.cpp
+  ${COMMON_DIR}/System.h
   ${COMMON_DIR}/cm/cm_load.cpp
   ${COMMON_DIR}/cm/cm_trisoup.cpp
   ${COMMON_DIR}/cm/cm_patch.cpp
@@ -658,6 +660,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/LogSystem.h
   ${ENGINE_DIR}/framework/Resource.cpp
   ${ENGINE_DIR}/framework/Resource.h
+  ${ENGINE_DIR}/framework/System.cpp
+  ${ENGINE_DIR}/framework/System.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
   ${ENGINE_DIR}/qcommon/cmd.cpp
@@ -1114,7 +1118,7 @@ else()
     set( LIBS_ENGINE ${LIBS_ENGINE} ${LIBICONV} )
   endif()
   mark_as_advanced( LIBM LIBRT LIBICONV )
-  set( LIBS_ENGINE ${LIBS_ENGINE} ${CMAKE_DL_LIBS} )
+  set( LIBS_BASE ${LIBS_BASE} ${CMAKE_DL_LIBS} )
   find_package( Threads REQUIRED )
   set( LIBS_BASE ${LIBS_BASE} ${CMAKE_THREAD_LIBS_INIT} )
   if( APPLE )
@@ -1339,7 +1343,7 @@ function( GAMEMODULE )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
-      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
+      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};BUILD_VM_IN_PROCESS"
     )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h )
   endif()
@@ -1465,7 +1469,7 @@ function( GAMEMODULE )
       COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
         ${NACL_COMPILE_OPTIONS}
         -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-        ${OBJECTS}
+        ${OBJECTS} -lnacl_exception
       DEPENDS ${OBJECTS}
     )
 

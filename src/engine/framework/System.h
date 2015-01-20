@@ -28,21 +28,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Common.h"
+#include "../qcommon/qcommon.h"
 
-namespace VM {
+#ifndef FRAMEWORK_SYSTEM_H_
+#define FRAMEWORK_SYSTEM_H_
 
-	// Root channel used to communicate with the engine
-	extern IPC::Channel rootChannel;
+// Low-level system functions
+namespace Sys {
 
-	// Functions each specific gamelogic should implement
-	void VMInit();
-	void VMHandleSyscall(uint32_t id, IPC::Reader reader);
-	extern int VM_API_VERSION;
+// Cleanly exit the engine, shutting down all subsystems.
+NORETURN void Quit(Str::StringRef message);
 
-	// Send a message to the engine
-	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
-		IPC::SendMsg<Msg>(rootChannel, VMHandleSyscall, std::forward<Args>(args)...);
-	}
+} // namespace Sys
 
-}
+#endif // FRAMEWORK_SYSTEM_H_

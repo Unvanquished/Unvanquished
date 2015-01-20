@@ -672,8 +672,6 @@ extern int          com_frameTime;
 extern int          com_frameMsec;
 extern int          com_hunkusedvalue;
 
-extern qboolean     com_errorEntered;
-
 typedef enum
 {
   TAG_FREE,
