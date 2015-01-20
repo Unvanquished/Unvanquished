@@ -149,7 +149,6 @@ typedef enum cgameImport_s
   CG_GETCURRENTCMDNUMBER,
   CG_GETUSERCMD,
   CG_SETUSERCMDVALUE,
-  CG_SETCLIENTLERPORIGIN,
   CG_GET_ENTITY_TOKEN,
   CG_REGISTER_BUTTON_COMMANDS,
   CG_GETCLIPBOARDDATA,
@@ -310,14 +309,12 @@ typedef IPC::SyncMessage<
 > GetUserCmdMsg;
 // SetUserCmdValueMsg TODO check it is async
 typedef IPC::Message<IPC::Id<VM::QVM, CG_SETUSERCMDVALUE>, int, int, float, int> SetUserCmdValueMsg;
-// SetClientLerpOriginMsg TODO check it is async
-typedef IPC::Message<IPC::Id<VM::QVM, CG_SETCLIENTLERPORIGIN>, float, float, float> SetClientLerpOriginMsg;
 // GetEntityTokenMsg TODO what?
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GET_ENTITY_TOKEN>, int>,
 	IPC::Reply<bool, std::string>
 > GetEntityTokenMsg;
-// RegisterButtonCommandsMsg TODO check it is async
+// RegisterButtonCommandsMsg
 typedef IPC::Message<IPC::Id<VM::QVM, CG_REGISTER_BUTTON_COMMANDS>, std::string> RegisterButtonCommandsMsg;
 // GetClipboardDataMsg
 typedef IPC::SyncMessage<
@@ -929,7 +926,6 @@ qboolean        trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot );
 int             trap_GetCurrentCmdNumber( void );
 qboolean        trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd );
 void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient );
-void            trap_SetClientLerpOrigin( float x, float y, float z );
 int             trap_Key_GetCatcher( void );
 void            trap_Key_SetCatcher( int catcher );
 void            trap_S_StopBackgroundTrack( void );

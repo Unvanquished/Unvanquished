@@ -190,11 +190,6 @@ void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, in
 	VM::SendMsg<SetUserCmdValueMsg>(stateValue, flags, sensitivityScale, mpIdentClient);
 }
 
-void trap_SetClientLerpOrigin( float x, float y, float z )
-{
-	VM::SendMsg<SetClientLerpOriginMsg>(x, y, z);
-}
-
 qboolean trap_GetEntityToken( char *buffer, int bufferSize )
 {
 	bool res;

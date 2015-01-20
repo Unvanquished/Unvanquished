@@ -114,18 +114,6 @@ void CL_SetUserCmdValue( int userCmdValue, int flags, float sensitivityScale, in
 }
 
 /*
-==================
-CL_SetClientLerpOrigin
-==================
-*/
-void CL_SetClientLerpOrigin( float x, float y, float z )
-{
-	cl.cgameClientLerpOrigin[ 0 ] = x;
-	cl.cgameClientLerpOrigin[ 1 ] = y;
-	cl.cgameClientLerpOrigin[ 2 ] = z;
-}
-
-/*
 =====================
 CL_ConfigstringModified
 =====================
@@ -1616,12 +1604,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		case CG_SETUSERCMDVALUE:
 			IPC::HandleMsg<SetUserCmdValueMsg>(channel, std::move(reader), [this] (int stateValue, int flags, float scale, int mpIdentClient) {
 				CL_SetUserCmdValue(stateValue, flags, scale, mpIdentClient);
-			});
-			break;
-
-		case CG_SETCLIENTLERPORIGIN:
-			IPC::HandleMsg<SetClientLerpOriginMsg>(channel, std::move(reader), [this] (float x, float y, float z) {
-				CL_SetClientLerpOrigin(x, y, z);
 			});
 			break;
 
