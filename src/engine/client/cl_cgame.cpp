@@ -105,12 +105,11 @@ void CL_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
 CL_SetUserCmdValue
 ==============
 */
-void CL_SetUserCmdValue( int userCmdValue, int flags, float sensitivityScale, int mpIdentClient )
+void CL_SetUserCmdValue( int userCmdValue, int flags, float sensitivityScale )
 {
 	cl.cgameUserCmdValue = userCmdValue;
 	cl.cgameFlags = flags;
 	cl.cgameSensitivity = sensitivityScale;
-	cl.cgameMpIdentClient = mpIdentClient; // NERVE - SMF
 }
 
 /*
@@ -1602,8 +1601,8 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_SETUSERCMDVALUE:
-			IPC::HandleMsg<SetUserCmdValueMsg>(channel, std::move(reader), [this] (int stateValue, int flags, float scale, int mpIdentClient) {
-				CL_SetUserCmdValue(stateValue, flags, scale, mpIdentClient);
+			IPC::HandleMsg<SetUserCmdValueMsg>(channel, std::move(reader), [this] (int stateValue, int flags, float scale) {
+				CL_SetUserCmdValue(stateValue, flags, scale);
 			});
 			break;
 

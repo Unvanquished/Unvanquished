@@ -185,9 +185,9 @@ qboolean trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
 	return res;
 }
 
-void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient )
+void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale )
 {
-	VM::SendMsg<SetUserCmdValueMsg>(stateValue, flags, sensitivityScale, mpIdentClient);
+	VM::SendMsg<SetUserCmdValueMsg>(stateValue, flags, sensitivityScale);
 }
 
 qboolean trap_GetEntityToken( char *buffer, int bufferSize )

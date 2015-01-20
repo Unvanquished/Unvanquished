@@ -307,8 +307,8 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETUSERCMD>, int>,
 	IPC::Reply<bool, usercmd_t>
 > GetUserCmdMsg;
-// SetUserCmdValueMsg TODO check it is async
-typedef IPC::Message<IPC::Id<VM::QVM, CG_SETUSERCMDVALUE>, int, int, float, int> SetUserCmdValueMsg;
+// SetUserCmdValueMsg
+typedef IPC::Message<IPC::Id<VM::QVM, CG_SETUSERCMDVALUE>, int, int, float> SetUserCmdValueMsg;
 // GetEntityTokenMsg TODO what?
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GET_ENTITY_TOKEN>, int>,
@@ -925,7 +925,7 @@ void            trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverT
 qboolean        trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot );
 int             trap_GetCurrentCmdNumber( void );
 qboolean        trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd );
-void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient );
+void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale );
 int             trap_Key_GetCatcher( void );
 void            trap_Key_SetCatcher( int catcher );
 void            trap_S_StopBackgroundTrack( void );
