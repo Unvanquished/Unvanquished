@@ -272,6 +272,7 @@ extern float REACTOR_BASESIZE;
 extern float REPEATER_BASESIZE;
 
 #define TURRET_THINK_PERIOD   25  // doesn't affect damage or turn speed directly, just their precision
+#define TURRET_SEARCH_PERIOD  500 // in ms, how often to look for a new target
 #define TURRET_PITCH_CAP      30  // in degrees
 #define TURRET_PITCH_SPEED    160 // in degrees per second
 #define TURRET_YAW_SPEED      120 // in degrees per second

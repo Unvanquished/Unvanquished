@@ -2803,6 +2803,8 @@ static qboolean HTurret_FindTarget( gentity_t *self, float range,
 	gentity_t *validTargets[ MAX_GENTITIES ];
 	int       validTargetNum = 0;
 
+	self->turretLastTargetSearch = level.time;
+
 	// delete old target
 	HTurret_RemoveTarget( self );
 
@@ -3149,7 +3151,7 @@ void HMGTurret_Think( gentity_t *self )
 	}
 
 	// Try to find a new target if there is none.
-	if ( !self->target )
+	if ( !self->target && level.time - self->turretLastTargetSearch > TURRET_SEARCH_PERIOD )
 	{
 		if ( HTurret_FindTarget( self, MGTURRET_RANGE, HMGTurret_CompareTargets ) &&
 		     g_debugTurrets.integer > 0 )
@@ -3286,10 +3288,40 @@ static bool HRocketpod_PowerHelper( gentity_t *self )
 	return self->powered;
 }
 
-void HRocketpod_Think( gentity_t *self )
+static bool HRocketPod_EnemyClose( gentity_t *self )
 {
 	gentity_t *neighbour;
 
+	// Let the safe mode cache the return value of this function.
+	if ( level.time - self->turretSafeModeCheckTime < TURRET_SEARCH_PERIOD )
+	{
+		return self->turretSafeMode;
+	}
+
+	self->turretSafeModeCheckTime = level.time;
+
+	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
+	                                                                     ROCKETPOD_RANGE ) ); )
+	{
+		if ( neighbour->client && neighbour->health > 0 && !G_OnSameTeam( self, neighbour ) &&
+		     neighbour->client->sess.spectatorState == SPECTATOR_NOT )
+		{
+			classModelConfig_t *cmc = BG_ClassModelConfig( neighbour->client->pers.classSelection );
+			float classRadius = 0.5f * ( VectorLength( cmc->mins ) + VectorLength( cmc->maxs ) );
+
+			if ( Distance( self->s.origin, neighbour->s.origin ) - classRadius
+			     < BG_Missile( MIS_ROCKET )->splashRadius )
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void HRocketpod_Think( gentity_t *self )
+{
 	self->nextthink = level.time + TURRET_THINK_PERIOD;
 
 	// Disable muzzle flash and lockon sound for now.
@@ -3309,28 +3341,14 @@ void HRocketpod_Think( gentity_t *self )
 	}
 
 	// If there's an enemy really close, enter safe mode.
-	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
-	                                                                     ROCKETPOD_RANGE ) ); )
+	HRocketpod_SafeMode( self, HRocketPod_EnemyClose( self ) );
+
+	// If in safe mode, move head to allow for pitch adjustments.
+	if ( self->turretSafeMode )
 	{
-		if ( neighbour->client && neighbour->health > 0 && !G_OnSameTeam( self, neighbour ) &&
-		     neighbour->client->sess.spectatorState == SPECTATOR_NOT )
-		{
-			classModelConfig_t *cmc = BG_ClassModelConfig( neighbour->client->pers.classSelection );
-			float classRadius = 0.5f * ( VectorLength( cmc->mins ) + VectorLength( cmc->maxs ) );
-
-			if ( Distance( self->s.origin, neighbour->s.origin ) - classRadius
-			     < BG_Missile( MIS_ROCKET )->splashRadius )
-			{
-				HRocketpod_SafeMode( self, qtrue );
-
-				HTurret_MoveHeadToTarget( self );
-				return;
-			}
-		}
+		HTurret_MoveHeadToTarget( self );
+		return;
 	}
-
-	// There's no enemy nearby so disable safe mode if it's active.
-	HRocketpod_SafeMode( self, qfalse );
 
 	// Don't do anything while opening shutters.
 	if ( self->turretPrepareTime > level.time )
@@ -3349,7 +3367,7 @@ void HRocketpod_Think( gentity_t *self )
 	}
 
 	// Try to find a new target if there is none.
-	if ( !self->target )
+	if ( !self->target && level.time - self->turretLastTargetSearch > TURRET_SEARCH_PERIOD )
 	{
 		if ( HTurret_FindTarget( self, ROCKETPOD_RANGE, HRocketpod_CompareTargets ) &&
 		     g_debugTurrets.integer > 0 )

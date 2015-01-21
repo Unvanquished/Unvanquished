@@ -393,11 +393,13 @@ struct gentity_s
 	int         turretNextShot;
 	int         turretLastLOSToTarget;
 	int         turretLastValidTargetTime;
+	int         turretLastTargetSearch;
 	int         turretLastHeadMove;
 	int         turretCurrentDamage;
 	vec3_t      turretDirToTarget;
 	vec3_t      turretBaseDir;
 	qboolean    turretDisabled;
+	int         turretSafeModeCheckTime;
 	qboolean    turretSafeMode;
 	int         turretPrepareTime; // when the turret can start locking on and/or firing
 	int         turretLockonTime;  // when the turret can start firing
