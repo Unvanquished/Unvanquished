@@ -861,7 +861,7 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 		ZOFFSET = 1 << 4,
 		OLDSCALE = 1 << 5,
 		OLDOFFSET = 1 << 6,
-		MODELROTATION = 1 << 7
+		MODEL_ROTATION = 1 << 7
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -925,7 +925,7 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 			PARSE( text, token );
 			bc->modelRotation[ 2 ] = atof( token );
 
-			defined |= MODELROTATION;
+			defined |= MODEL_ROTATION;
 		}
 		else if ( !Q_stricmp( token, "mins" ) )
 		{
@@ -2167,7 +2167,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		IMPACT_SOUND     = 1 << 20,
 		IMPACT_FLESH_SND = 1 << 21,
 		MODEL_SCALE      = 1 << 22,
-		MODELROTATION   = 1 << 23
+		MODEL_ROTATION   = 1 << 23
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof( text_buffer ) ) )
@@ -2206,7 +2206,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			PARSE( text, token );
 			ma->modelRotation[ 2 ] = atof( token );
 
-			defined |= MODELROTATION;
+			defined |= MODEL_ROTATION;
 		}
 		else if ( !Q_stricmp( token, "sound" ) )
 		{

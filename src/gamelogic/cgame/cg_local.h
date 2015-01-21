@@ -770,6 +770,9 @@ typedef struct centity_s
 	trailSystem_t         *muzzleTS;
 	int                   muzzleTSDeathTime;
 
+	particleSystem_t      *missilePS;
+	trailSystem_t         *missileTS;
+
 	float                 radarVisibility;
 
 	qboolean              valid;
