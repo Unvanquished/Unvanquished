@@ -16,6 +16,8 @@
 #ifndef COMPONENTS_H_
 #define COMPONENTS_H_
 
+#include <set>
+
 // /////////// //
 // Message IDs //
 // /////////// //
