@@ -39,10 +39,7 @@ class Message:
             return 'Handle' + self.name
 
     def get_function_args(self):
-        args = []
-        for arg in self.args:
-            args.append(arg[1] + ' ' + arg[0])
-        return ', '.join(args)
+        return ', '.join([arg[1] + ' ' + arg[0] for arg in self.args])
 
     def get_handler_declaration(self):
         return self.get_handler_name() + '(' + self.get_function_args() + ')'
@@ -60,21 +57,10 @@ class Message:
 
     # TODO: Rename to something that doesn't clash as much with get_arg_names
     def get_args_names(self):
-        if self.args == []:
-            return ''
-        return ', '.join(map(str, list(zip(*self.args))[0]))
+        return ', '.join(self.get_arg_names())
 
     def get_unpacked_tuple_args(self, tuple_name):
         return ', '.join(['std::get<' + str(i) + '>(' + tuple_name +')' for i in range(len(self.args))])
-
-    def get_arg_number(self):
-        return len(self.args)
-
-    def is_attrib(self):
-        return self.attrib != None
-
-    def get_attrib(self):
-        return self.attrib
 
     def __repr__(self):
         return 'Message({}, {})'.format(self.name, self.args)
@@ -90,11 +76,11 @@ class Component:
         self.inherits = inherits
 
     def gather_dependencies(self, messages, components):
-        self.messages = list(map(lambda message: messages[message], self.messages))
+        self.messages = [messages[m] for m in self.messages]
 
     def gather_component_dependencies(self, components):
-        self.requires = list(map(lambda component: components[component], self.requires))
-        self.inherits = list(map(lambda component: components[component], self.inherits))
+        self.requires = [components[c] for c in self.requires]
+        self.inherits = [components[c] for c in self.inherits]
 
     def for_each_component_dependencies(self, fun):
         for require in self.requires:
@@ -121,24 +107,24 @@ class Component:
         return self.messages
 
     def get_param_declarations(self):
-        return list(map(lambda p: p[1] + ' ' + p[0], self.param_list))
+        return [p[1] + ' ' + p[0] for p in self.param_list]
 
     def get_own_param_declarations(self):
         #TODO
-        return list(map(lambda p: p[1] + ' ' + p[0], self.param_list))
+        return [p[1] + ' ' + p[0] for p in self.param_list]
 
     def get_constructor_declaration(self):
-        return self.get_type_name() + '(Entity &entity' + ', '.join([''] + self.get_param_declarations()) + ')'
+        return self.get_type_name() + '(Entity &entity' + ''.join([', ' + d for d in self.get_param_declarations()]) + ')'
 
     def get_super_call(self):
-        return self.get_base_type_name() + '(entity' + ', '.join([''] + list(map(lambda p: p[0], self.param_list))) + ')'
+        return self.get_base_type_name() + '(entity' + ''.join([', ' + p[0] for p in self.param_list]) + ')'
 
     def get_param_names(self):
-        return list(map(lambda p: p[0], self.param_list))
+        return [p[0] for p in self.param_list]
 
     def get_own_param_names(self):
         #TODO
-        return list(map(lambda p: p[0], self.param_list))
+        return [p[0] for p in self.param_list]
 
     def get_required_components(self):
         return self.requires
@@ -148,18 +134,18 @@ class Component:
         return self.requires
 
     def get_required_component_declarations(self):
-        return list(map(lambda c: c.get_type_name() + '& r_' + c.get_type_name(), self.requires))
+        return [c.get_type_name() + '& r_' + c.get_type_name() for c in self.requires]
 
     def get_own_required_component_declarations(self):
         #TODO
-        return list(map(lambda c: c.get_type_name() + '& r_' + c.get_type_name(), self.requires))
+        return [c.get_type_name() + '& r_' + c.get_type_name() for c in self.requires]
 
     def get_required_component_names(self):
-        return list(map(lambda c: 'r_' + c.get_type_name(), self.requires))
+        return ['r_' + c.get_type_name() for c in self.requires]
 
     def get_own_required_component_names(self):
         #TODO
-        return list(map(lambda c: 'r_' + c.get_type_name(), self.requires))
+        return ['r_' + c.get_type_name() for c in self.requires]
 
     def __repr__(self):
         return "Component({}, ...)".format(self.name)
@@ -170,7 +156,7 @@ class Entity:
         self.params = params
 
     def gather_components(self, components):
-        self.components = list(map(lambda component: components[component], self.params.keys()))
+        self.components = [components[c] for c in self.params.keys()]
         self.components = sorted(self.components, key = lambda component: component.priority)
         self.messages = set()
         for component in self.components:
