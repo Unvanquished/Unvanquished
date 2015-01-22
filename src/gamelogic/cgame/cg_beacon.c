@@ -359,6 +359,74 @@ static team_t TagTeam( const cbeacon_t *beacon )
 		return TEAM_ALIENS;
 }
 
+/**
+ * @brief Hands over information about highlighted beacon to UI.
+ */
+static void UpdateBeaconRocket( void )
+{
+	cbeacon_t *beacon;
+	beaconRocket_t * const br = &cg.beaconRocket;
+	qboolean showName = qfalse,
+	         showInfo = qfalse,
+	         showDistance = qfalse,
+	         showAge = qfalse,
+	         showOwner = qfalse;
+
+	if( ( beacon = cg.highlightedBeacon ) )
+	{
+		// name
+		Com_sprintf( br->name, sizeof( br->name ), "%s", CG_BeaconName( beacon ) );
+		showName = qtrue;
+
+		// info
+		if ( beacon->type == BCT_TAG &&
+		     ( beacon->flags & EF_BC_TAG_PLAYER ) &&
+		     TagTeam( beacon ) == TEAM_HUMANS )
+		{
+			Com_sprintf( br->info, sizeof( br->info ), "Carrying %s",
+			             BG_Weapon( beacon->data )->humanName );
+			showInfo = qtrue;
+		}
+
+		// distance
+		Com_sprintf( br->distance, sizeof( br->distance ), "%im from here",
+		             (int)round( beacon->dist * 0.0254 ) );
+		showDistance = qtrue;
+
+		// age
+		if( beacon->type == BCT_TAG &&
+		    !( beacon->flags & EF_BC_TAG_PLAYER ) &&
+		    ( beacon->flags & EF_BC_ENEMY ) )
+		{
+			int age = cg.time - beacon->mtime;
+
+			if( age < 1000 )
+				Com_sprintf( br->age, sizeof( br->age ), "Spotted just now" );
+			else
+				Com_sprintf( br->age, sizeof( br->age ), "Spotted %i:%02i ago",
+				             age / 60000, ( age / 1000 ) % 60 );
+
+			showAge = qtrue;
+		}
+
+		// owner
+		if( BG_Beacon( beacon->type )->flags & BCF_IMPORTANT &&
+		    beacon->owner >= 0 && beacon->owner < MAX_CLIENTS &&
+		    cgs.clientinfo[ beacon->owner ].name)
+		{
+				Com_sprintf( br->owner, sizeof( br->owner ), "by ^7%s",
+				             cgs.clientinfo[ beacon->owner ].name );
+				showOwner = qtrue;
+		}
+	}
+
+	CG_ExponentialFade( &br->nameAlpha,     showName     ? 1 : 0, 10 );
+	CG_ExponentialFade( &br->infoAlpha,     showInfo     ? 1 : 0, 10 );
+	CG_ExponentialFade( &br->distanceAlpha, showDistance ? 1 : 0, 10 );
+	CG_ExponentialFade( &br->ageAlpha,      showAge      ? 1 : 0, 10 );
+	CG_ExponentialFade( &br->ownerAlpha,    showOwner    ? 1 : 0, 10 );
+}
+
 /*
 =============
 CG_ListBeacons
@@ -484,70 +552,7 @@ void CG_ListBeacons( void )
 		cg.beacons[ i ]->oldFlags = cg.beacons[ i ]->flags;
 	}
 
-	// Update cg.beaconRocket.
-	// TODO: Move to own function.
-	{
-		beaconRocket_t * const br = &cg.beaconRocket;
-		float t_nameAlpha, t_infoAlpha, t_distanceAlpha, t_ageAlpha, t_ownerAlpha; // targets
-
-		b = cg.highlightedBeacon;
-
-		t_nameAlpha = t_infoAlpha = t_distanceAlpha = t_ageAlpha = t_ownerAlpha = 0;
-
-		if( b )
-		{
-			// name
-			Com_sprintf( br->name, sizeof( br->name ), "%s", CG_BeaconName( b ) );
-			t_nameAlpha = 1;
-
-			// info
-			if ( b->type == BCT_TAG &&
-			     ( b->flags & EF_BC_TAG_PLAYER ) &&
-			     TagTeam( b ) == TEAM_HUMANS )
-			{
-				Com_sprintf( br->info, sizeof( br->info ), "Carrying %s",
-				             BG_Weapon( b->data )->humanName );
-				t_infoAlpha = 1;
-			}
-
-			// distance
-			Com_sprintf( br->distance, sizeof( br->distance ), "%im from here",
-			             (int)round( b->dist * 0.0254 ) );
-			t_distanceAlpha = 1;
-
-			// age
-			if( b->type == BCT_TAG &&
-			    !( b->flags & EF_BC_TAG_PLAYER ) &&
-			    ( b->flags & EF_BC_ENEMY ) )
-			{
-				int age = cg.time - b->mtime;
-
-				if( age < 1000 )
-					Com_sprintf( br->age, sizeof( br->age ), "Spotted just now" );
-				else
-					Com_sprintf( br->age, sizeof( br->age ), "Spotted %i:%02i ago",
-					             age / 60000, ( age / 1000 ) % 60 );
-
-				t_ageAlpha = 1;
-			}
-
-			// owner
-			if( BG_Beacon( b->type )->flags & BCF_IMPORTANT &&
-			    b->owner >= 0 && b->owner < MAX_CLIENTS &&
-			    cgs.clientinfo[ b->owner ].name)
-			{
-					Com_sprintf( br->owner, sizeof( br->owner ), "by ^7%s",
-					             cgs.clientinfo[ b->owner ].name );
-					t_ownerAlpha = 1;
-			}
-		}
-
-		CG_ExponentialFade( &br->nameAlpha,     t_nameAlpha,     10 );
-		CG_ExponentialFade( &br->infoAlpha,     t_infoAlpha,     10 );
-		CG_ExponentialFade( &br->distanceAlpha, t_distanceAlpha, 10 );
-		CG_ExponentialFade( &br->ageAlpha,      t_ageAlpha,      10 );
-		CG_ExponentialFade( &br->ownerAlpha,    t_ownerAlpha,    10 );
-	}
+	UpdateBeaconRocket();
 }
 
 /*
