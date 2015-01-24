@@ -33,16 +33,62 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace VM {
 
+/*
+ * To better support mods the gamelogic is treated like any other asset and can
+ * be downloaded from a server. However it is considered untrusted code so we
+ * need to run it in a sandbox. We use NaCl to provide the sandboxing which
+ * means that the gamelogic is in another process and that we have to use IPC and
+ * shared memory to communicate with it.
+ *
+ * The gamelogic can be compiled to and ran from several executable formats that
+ * will all start at the "main" function whose first job will be to retrieve the
+ * root socket handle to communicate with the engine. The different executable
+ * formats are:
+ *  - A native shared library loaded at runtime and started in the engine process,
+ * this shared lib exports a "main" function pointer which is called by the
+ * engine, providing a handle to the root socket in argv[1]. Because the gamelogic
+ * lives in the same process as the engine, any leaks in the gamelogic will be
+ * engine leaks. However because it is in the same process, it is easier to debug
+ * as the debugger doesn't automatically attach to child process.
+ *  - An NaCl executable started in a new sandboxed process. The "main" function is
+ * ran first and the root socket handle is given via an environment variable. This
+ * is how the gamelogic is ran when we do not trust the code as it won't be able to
+ * access anything apart from the file handles the engine gives it. When the NaCl
+ * gamelogic exits the OS will clean up any leaks for us. It is also slightly slower
+ * than native format (no SSE and code alignement constraints).
+ *  - A native executable started in a new process, obviously the "main" function
+ * is the first one ran. The root socket handle is given in argv[1]. It doesn't
+ * provide sandboxing like the nacl executable but the OS will still clean up any
+ * leak for us.
+ *
+ * TL;DR
+ * - Native DLL: no sandboxing, no cleaning up but debuger support. Use for dev.
+ * - NaCl exe: sandboxing, no leaks, slightly slower, hard to debug. Use for regular players.
+ * - Native exe: no sandboxing, no leaks, hard to debug. Might be used by server owners for perf.
+ */
 enum vmType_t {
+	// Loads the VM as an nacl executable from the homepath, potentially from a pk3
+	// USE THIS BY DEFAULT FOR PROD
 	TYPE_NACL,
+	// Same as above will ask sel_ldr to open a gdb server on port 4014?
 	TYPE_NACL_DEBUG,
+
+	// Loads the VM as a native exe from the libpath
 	TYPE_NATIVE_EXE,
+	// Same as above but opens it on a gdb server on port 4014, you will need to connect and run it with "c	"
 	TYPE_NATIVE_EXE_DEBUG,
+
+	// Loads the VM as a native DLL from the libpath
+	// USE THIS FOR DEVELOPMENT
 	TYPE_NATIVE_DLL,
+
+	// Loads the VM as an nacl executable from the libpath, for freshly compiled NaCl VMs (no need to put it in a pk3)
 	TYPE_NACL_LIBPATH,
+	// Same as above, with the debugger
 	TYPE_NACL_LIBPATH_DEBUG,
 	TYPE_END
 };
+
 
 struct VMParams {
 	VMParams(std::string name)
@@ -60,7 +106,7 @@ struct VMParams {
 class VMBase {
 public:
 	VMBase(std::string name)
-		: processHandle(IPC::INVALID_HANDLE), name(name), params(name) {}
+		: processHandle(Sys::INVALID_HANDLE), name(name), params(name) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
 	// by the module. This will automatically free any existing VM.
@@ -72,7 +118,7 @@ public:
 	// Check if the VM is active
 	bool IsActive() const
 	{
-		return processHandle != IPC::INVALID_HANDLE || inProcess.thread.joinable();
+		return Sys::IsValidHandle(processHandle) || inProcess.thread.joinable();
 	}
 
 	// Make sure the VM is closed on exit
@@ -98,11 +144,11 @@ public:
 		std::thread thread;
 		std::mutex mutex;
 		std::condition_variable condition;
-		void* sharedLibHandle;
+		Sys::DynamicLib sharedLib;
 		bool running;
 
 		InProcessInfo()
-			: sharedLibHandle(nullptr), running(false) {}
+			: running(false) {}
 	};
 
 protected:
@@ -113,7 +159,7 @@ private:
 	void FreeInProcessVM();
 
 	// Used for the NaCl VMs
-	IPC::OSHandleType processHandle;
+	Sys::OSHandle processHandle;
 
 	// Used by the native, in process VMs
 	InProcessInfo inProcess;

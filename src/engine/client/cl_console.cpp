@@ -1382,15 +1382,11 @@ class GraphicalTarget : public Log::Target {
 				return false;
 			}
 
-			if (com_dedicated && !com_dedicated->integer) {
-				for (Log::Event event : events) {
-					CL_ConsolePrint(std::move(event.text));
-					CL_ConsolePrint("\n");
-				}
-				return true;
-			} else {
-				return false;
+			for (Log::Event event : events) {
+				CL_ConsolePrint(std::move(event.text));
+				CL_ConsolePrint("\n");
 			}
+			return true;
 		}
 };
 

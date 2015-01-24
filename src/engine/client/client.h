@@ -145,8 +145,6 @@ typedef struct
 	int    cgameUserCmdValue; // current weapon to add to usercmd_t
 	int    cgameFlags; // flags that can be set by the gamecode
 	float  cgameSensitivity;
-	int    cgameMpIdentClient; // NERVE - SMF
-	vec3_t cgameClientLerpOrigin; // DHM - Nerve
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
@@ -422,7 +420,7 @@ public:
 	void Start();
 
 	void CGameStaticInit();
-	void CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum);
+	void CGameInit(int serverMessageNum, int clientNum);
 	void CGameShutdown();
 	void CGameDrawActiveFrame(int serverTime, bool demoPlayback);
 	int CGameCrosshairPlayer();
@@ -873,7 +871,6 @@ void     CL_CGameRendering( void );
 void     CL_SetCGameTime( void );
 void     CL_FirstSnapshot( void );
 void     CL_ShaderStateChanged( void );
-void     CL_UpdateLevelHunkUsage( void );
 void     CL_CGameBinaryMessageReceived( const char *buf, int buflen, int serverTime );
 void     CL_OnTeamChanged( int newTeam );
 

@@ -1,24 +1,30 @@
 /*
 ===========================================================================
+Daemon BSD Source Code
+Copyright (c) 2013-2014, Daemon Developers
+All rights reserved.
 
-Daemon GPL Source Code
-Copyright (C) 2013 Unvanquished Developers
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the Daemon developers nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
-
-Daemon Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Daemon Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL DAEMON DEVELOPERS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
@@ -50,7 +56,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <mach-o/dyld.h>
 #endif
 
-Log::Logger fsLogs(VM_STRING_PREFIX "fs");
+Log::Logger fsLogs(VM_STRING_PREFIX "fs", Log::LOG_NOTICE);
 
 // SerializeTraits for PakInfo/LoadedPakInfo
 namespace IPC {
@@ -129,6 +135,10 @@ namespace FS {
 #define PAK_ZIP_EXT ".pk3"
 #define PAK_DIR_EXT ".pk3dir/"
 
+// Error variable used by throws(). This is never written to and always
+// represents a success value.
+std::error_code throw_err;
+
 // Dependencies file in packages
 #define PAK_DEPS_FILE "DEPS"
 
@@ -159,7 +169,7 @@ inline int my_open(Str::StringRef path, openMode_t mode)
 {
 	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
 #ifdef _WIN32
-	int fd =  _wopen(Str::UTF8To16(path).c_str(), modes[mode] | O_BINARY, _S_IREAD | _S_IWRITE);
+	int fd = _wopen(Str::UTF8To16(path).c_str(), modes[mode] | O_BINARY, _S_IREAD | _S_IWRITE);
 #elif defined(__APPLE__)
 	// O_CLOEXEC is supported from 10.7 onwards
 	int fd = open(path.c_str(), modes[mode] | O_CLOEXEC, 0666);
@@ -356,10 +366,6 @@ static void ClearErrorCode(std::error_code& err)
 {
 	if (&err != &throws())
 		err = std::error_code();
-}
-static bool HaveError(std::error_code& err)
-{
-	return &err != &throws() && err;
 }
 static void SetErrorCodeSystem(std::error_code& err)
 {
@@ -597,7 +603,7 @@ void File::Flush(std::error_code& err) const
 std::string File::ReadAll(std::error_code& err) const
 {
 	offset_t length = Length(err);
-	if (HaveError(err))
+	if (err)
 		return "";
 	std::string out;
 	out.resize(length);
@@ -609,10 +615,10 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 	char buffer[65536];
 	while (true) {
 		size_t read = Read(buffer, sizeof(buffer), err);
-		if (HaveError(err) || read == 0)
+		if (err || read == 0)
 			return;
 		dest.Write(buffer, read, err);
-		if (HaveError(err))
+		if (err)
 			return;
 	}
 }
@@ -979,7 +985,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 				return;
 			}
 			LoadPak(*pak, err);
-			if (HaveError(err))
+			if (err)
 				return;
 			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
 			continue;
@@ -1003,7 +1009,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 				return;
 			}
 			LoadPak(*pak, err);
-			if (HaveError(err))
+			if (err)
 				return;
 			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
 			continue;
@@ -1031,7 +1037,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 	}
 
 	// Add the pak to the list of loaded paks
-	Com_Printf("Loading pak '%s'...\n", pak.path.c_str());
+	fsLogs.Notice("Loading pak '%s'...", pak.path.c_str());
 	loadedPaks.emplace_back();
 	loadedPaks.back().name = pak.name;
 	loadedPaks.back().version = pak.version;
@@ -1043,7 +1049,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 	if (pak.type == PAK_DIR) {
 		loadedPaks.back().fd = -1;
 		auto dirRange = RawPath::ListFilesRecursive(pak.path, err);
-		if (HaveError(err))
+		if (err)
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
 			if (*it == PAK_DEPS_FILE)
@@ -1056,7 +1062,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 #endif
 			}
 			it.increment(err);
-			if (HaveError(err))
+			if (err)
 				return;
 		}
 	} else {
@@ -1069,7 +1075,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 
 		// Open zip
 		zipFile = ZipArchive::Open(loadedPaks.back().fd, err);
-		if (HaveError(err))
+		if (err)
 			return;
 
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
@@ -1096,12 +1102,12 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 			fileMap.emplace(filename, std::pair<uint32_t, offset_t>(loadedPaks.size() - 1, offset));
 #endif
 		}, err);
-		if (HaveError(err))
+		if (err)
 			return;
 
 		// Get the timestamp of the pak
 		loadedPaks.back().timestamp = FS::RawPath::FileTimestamp(pak.path, err);
-		if (HaveError(err))
+		if (err)
 			return;
 	}
 
@@ -1124,21 +1130,21 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 		std::string depsData;
 		if (pak.type == PAK_DIR) {
 			File depsFile = RawPath::OpenRead(Path::Build(pak.path, PAK_DEPS_FILE), err);
-			if (HaveError(err))
+			if (err)
 				return;
 			depsData = depsFile.ReadAll(err);
-			if (HaveError(err))
+			if (err)
 				return;
 		} else {
 			zipFile.OpenFile(depsOffset, err);
-			if (HaveError(err))
+			if (err)
 				return;
 			offset_t length = zipFile.FileLength(err);
-			if (HaveError(err))
+			if (err)
 				return;
 			depsData.resize(length);
 			zipFile.ReadFile(&depsData[0], length, err);
-			if (HaveError(err))
+			if (err)
 				return;
 		}
 		ParseDeps(pak, depsData, err);
@@ -1210,12 +1216,12 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 #else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 #endif
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Get file length
 		offset_t length = file.Length(err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Read file contents
@@ -1226,29 +1232,29 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 	} else {
 		// Open zip
 		ZipArchive zipFile = ZipArchive::Open(pak.fd, err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Open file in zip
 		zipFile.OpenFile(it->second.second, err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Get file length
 		offset_t length = zipFile.FileLength(err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Read file
 		std::string out;
 		out.resize(length);
 		zipFile.ReadFile(&out[0], length, err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		// Close file and check for CRC errors
 		zipFile.CloseFile(err);
-		if (HaveError(err))
+		if (err)
 			return "";
 
 		return out;
@@ -1272,30 +1278,30 @@ void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 #else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 #endif
-		if (HaveError(err))
+		if (err)
 			return;
 		file.CopyTo(dest, err);
 	} else {
 		// Open zip
 		ZipArchive zipFile = ZipArchive::Open(pak.fd, err);
-		if (HaveError(err))
+		if (err)
 			return;
 
 		// Open file in zip
 		zipFile.OpenFile(it->second.second, err);
-		if (HaveError(err))
+		if (err)
 			return;
 
 		// Copy contents into destination
 		char buffer[65536];
 		while (true) {
 			offset_t read = zipFile.ReadFile(buffer, sizeof(buffer), err);
-			if (HaveError(err))
+			if (err)
 				return;
 			if (read == 0)
 				break;
 			dest.Write(buffer, read, err);
-			if (HaveError(err))
+			if (err)
 				return;
 		}
 
@@ -1455,8 +1461,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 #ifndef BUILD_VM
 namespace RawPath {
 
-// Create all directories leading to a filename
-static void CreatePath(Str::StringRef path, std::error_code& err)
+static void CreatePathTo(Str::StringRef path, std::error_code& err)
 {
 #ifdef _WIN32
 	std::wstring buffer = Str::UTF8To16(path);
@@ -1500,7 +1505,9 @@ static void CreatePath(Str::StringRef path, std::error_code& err)
 			return;
 		}
 #else
-		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST) {
+		// Create the directory as private to the current user by default. The
+		// user can relax the permissions later if he wishes.
+		if (mkdir(buffer.data(), 0700) != 0 && errno != EEXIST) {
 			SetErrorCodeSystem(err);
 			return;
 		}
@@ -1516,8 +1523,8 @@ static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 	FILE* fd = my_fopen(path, mode);
 	if (!fd && mode != MODE_READ && errno == ENOENT) {
 		// Create the directories and try again
-		CreatePath(path, err);
-		if (HaveError(err))
+		CreatePathTo(path, err);
+		if (err)
 			return {};
 		fd = my_fopen(path, mode);
 	}
@@ -1576,16 +1583,16 @@ void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err)
 	if (rename(src.c_str(), dest.c_str()) != 0) {
 		// Copy the file if the destination is on a different filesystem
 		File srcFile = OpenRead(src, err);
-		if (HaveError(err))
+		if (err)
 			return;
 		File destFile = OpenWrite(src, err);
-		if (HaveError(err))
+		if (err)
 			return;
 		srcFile.CopyTo(destFile, err);
-		if (HaveError(err))
+		if (err)
 			return;
 		destFile.Close(err);
-		if (HaveError(err))
+		if (err)
 			return;
 		DeleteFile(src, err);
 	} else
@@ -1709,7 +1716,7 @@ bool RecursiveDirectoryRange::Advance(std::error_code& err)
 {
 	if (current.back() == '/') {
 		auto subdir = ListFiles(Path::Build(path, current), err);
-		if (HaveError(err))
+		if (err)
 			return false;
 		if (!subdir.empty()) {
 			current.append(*subdir.begin());
@@ -1722,7 +1729,7 @@ bool RecursiveDirectoryRange::Advance(std::error_code& err)
 		size_t pos = current.rfind('/', current.size() - 2);
 		current.resize(pos == std::string::npos ? 0 : pos + 1);
 		dirs.back().begin().increment(err);
-		if (HaveError(err))
+		if (err)
 			return false;
 		if (!dirs.back().empty())
 			break;
@@ -1744,7 +1751,7 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 	if (!state.path.empty() && state.path.back() != '/')
 		state.path.push_back('/');
 	auto root = ListFiles(state.path, err);
-	if (HaveError(err) || root.begin() == root.end())
+	if (err || root.begin() == root.end())
 		return {};
 	state.current = *root.begin();
 	state.dirs.push_back(std::move(root));
@@ -1762,7 +1769,7 @@ static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 	Util::optional<IPC::FileHandle> handle;
 	VM::SendMsg<VM::FSHomePathOpenModeMsg>(path, mode, handle);
 	File file = FileFromIPC(handle, mode, err);
-	if (HaveError(err))
+	if (err)
 		return {};
 	return file;
 #else
@@ -1942,7 +1949,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 
 #ifndef BUILD_VM
 // Determine path to the executable, default to current directory
-static std::string DefaultBasePath()
+std::string DefaultBasePath()
 {
 #ifdef _WIN32
 	wchar_t buffer[MAX_PATH];
@@ -1990,60 +1997,58 @@ static std::string DefaultBasePath()
 }
 
 // Determine path to user settings directory
-static std::string DefaultHomePath()
+std::string DefaultHomePath()
 {
 #ifdef _WIN32
 	wchar_t buffer[MAX_PATH];
 	if (!SUCCEEDED(SHGetFolderPathW(nullptr, CSIDL_PERSONAL, nullptr, SHGFP_TYPE_CURRENT, buffer)))
 		return "";
-	return Str::UTF16To8(buffer) + "\\My Games\\Unvanquished";
+	return Str::UTF16To8(buffer) + "\\My Games\\" PRODUCT_NAME;
 #else
 	const char* home = getenv("HOME");
 	if (!home)
 		return "";
 #ifdef __APPLE__
-	return std::string(home) + "/Library/Application Support/Unvanquished";
+	return std::string(home) + "/Library/Application Support/" PRODUCT_NAME;
 #else
-	return std::string(home) + "/.unvanquished";
+	return std::string(home) + "/." PRODUCT_NAME_LOWER;
 #endif
 #endif
 }
 #endif // BUILD_VM
 
+#ifdef BUILD_VM
 void Initialize()
 {
-#ifdef BUILD_VM
-	// TODO: Need to clean up any existing open fds
+	// Make sure we don't leak fds if Initialize is called more than once
+	for (LoadedPakInfo& x: FS::PakPath::loadedPaks) {
+		if (x.fd != -1)
+			close(x.fd);
+	}
+
 	VM::SendMsg<VM::FSInitializeMsg>(homePath, libPath, availablePaks, PakPath::loadedPaks, PakPath::fileMap);
+}
 #else
-	Com_StartupVariable("fs_basepath");
-	Com_StartupVariable("fs_extrapath");
-	Com_StartupVariable("fs_homepath");
-	Com_StartupVariable("fs_libpath");
-	Com_StartupVariable("fs_extrapaks");
-	Com_StartupVariable("fs_basepak");
-
-	std::string defaultBasePath = DefaultBasePath();
-	std::string defaultHomePath = DefaultHomePath();
-	libPath = Cvar_Get("fs_libpath", defaultBasePath.c_str(), CVAR_INIT)->string;
-	homePath = Cvar_Get("fs_homepath", defaultHomePath.c_str(), CVAR_INIT)->string;
-	const char* basePath = Cvar_Get("fs_basepath", defaultBasePath.c_str(), CVAR_INIT)->string;
-	const char* extraPath = Cvar_Get("fs_extrapath", "", CVAR_INIT)->string;
-
-	if (basePath != homePath)
-		pakPaths.push_back(Path::Build(basePath, "pkg"));
-	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
-		pakPaths.push_back(Path::Build(extraPath, "pkg"));
+void Initialize(Str::StringRef homePath, Str::StringRef libPath, const std::vector<std::string>& paths)
+{
+	// Insert the homepath last so it overrides other paths
+	for (const std::string& path: paths) {
+		// This test isn't precise, but it doesn't matter if paths are duplicated
+		if (path != FS::homePath)
+			pakPaths.push_back(Path::Build(path, "pkg"));
+	}
 	pakPaths.push_back(Path::Build(homePath, "pkg"));
+	FS::homePath = homePath;
+	FS::libPath = libPath;
 	isInitialized = true;
 
-	Com_Printf("Home path: %s\n", homePath.c_str());
+	fsLogs.Notice("Home path: %s", homePath.c_str());
 	for (std::string& x: pakPaths)
-		Com_Printf("Pak path: %s\n", x.c_str());
+		fsLogs.Notice("Pak path: %s", x.c_str());
 
 	RefreshPaks();
-#endif
 }
+#endif
 
 void FlushAll()
 {
@@ -2428,7 +2433,7 @@ void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& chann
 		break;
 
 	default:
-		Com_Error(ERR_DROP, "Bad filesystem syscall number '%d' for VM '%s'", minor, vmName.c_str());
+		Sys::Drop("Bad filesystem syscall number '%d' for VM '%s'", minor, vmName);
 	}
 }
 #endif

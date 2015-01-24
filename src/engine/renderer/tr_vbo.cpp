@@ -476,6 +476,7 @@ static GLsizei R_RotateRingbuffer( glRingbuffer_t *rb ) {
 				 10000000 ) == GL_TIMEOUT_EXPIRED ) {
 		ri.Printf( PRINT_WARNING, "long wait for GL buffer" );
 	};
+	glDeleteSync( rb->syncs[ rb->activeSegment ] );
 
 	return rb->activeSegment * rb->segmentElements;
 }

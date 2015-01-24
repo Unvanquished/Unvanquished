@@ -40,8 +40,6 @@ namespace VM {
 	void VMHandleSyscall(uint32_t id, IPC::Reader reader);
 	extern int VM_API_VERSION;
 
-	void NORETURN Exit();
-
 	// Send a message to the engine
 	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
 		IPC::SendMsg<Msg>(rootChannel, VMHandleSyscall, std::forward<Args>(args)...);

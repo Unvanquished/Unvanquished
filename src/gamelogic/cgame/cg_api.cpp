@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int VM::VM_API_VERSION = CGAME_API_VERSION;
 
-void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, glconfig_t gl, GameStateCSs gameState );
+void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState );
 void CG_RegisterCvars( void );
 void CG_Shutdown( void );
 
@@ -61,7 +61,6 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 IPC::HandleMsg<CGameShutdownMsg>(VM::rootChannel, std::move(reader), [] {
                     CG_Shutdown();
                 });
-                VM::Exit();
                 break;
 
             case CG_DRAW_ACTIVE_FRAME:
@@ -169,13 +168,6 @@ qboolean trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 	return res;
 }
 
-qboolean trap_GetServerCommand( int serverCommandNumber, std::string& cmdText )
-{
-	bool res;
-	VM::SendMsg<GetServerCommandMsg>(serverCommandNumber, res, cmdText);
-	return res;
-}
-
 int trap_GetCurrentCmdNumber( void )
 {
 	int res;
@@ -190,14 +182,9 @@ qboolean trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
 	return res;
 }
 
-void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient )
+void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale )
 {
-	VM::SendMsg<SetUserCmdValueMsg>(stateValue, flags, sensitivityScale, mpIdentClient);
-}
-
-void trap_SetClientLerpOrigin( float x, float y, float z )
-{
-	VM::SendMsg<SetClientLerpOriginMsg>(x, y, z);
+	VM::SendMsg<SetUserCmdValueMsg>(stateValue, flags, sensitivityScale);
 }
 
 qboolean trap_GetEntityToken( char *buffer, int bufferSize )

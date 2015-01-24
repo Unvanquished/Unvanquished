@@ -1884,7 +1884,7 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback )
 	}
 
 	// let the client system know what our weapon and zoom settings are
-	trap_SetUserCmdValue( cg.weaponSelect, 0, cg.zoomSensitivity, 0 );
+	trap_SetUserCmdValue( cg.weaponSelect, 0, cg.zoomSensitivity );
 
 	// this counter will be bumped for every valid scene we generate
 	cg.clientFrame++;

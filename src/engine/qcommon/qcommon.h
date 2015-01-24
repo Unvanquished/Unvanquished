@@ -632,6 +632,9 @@ qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clie
 void       Com_StartupVariable( const char *match );
 void       Com_SetRecommended( void );
 bool       Com_AreCheatsAllowed();
+bool       Com_IsClient();
+bool       Com_IsDedicatedServer();
+bool       Com_ServerRunning();
 
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise
@@ -640,12 +643,10 @@ bool       Com_AreCheatsAllowed();
 extern cvar_t       *com_crashed;
 
 extern cvar_t       *com_developer;
-extern cvar_t       *com_dedicated;
 extern cvar_t       *com_speeds;
 extern cvar_t       *com_timescale;
 extern cvar_t       *com_sv_running;
 extern cvar_t       *com_cl_running;
-extern cvar_t       *com_viewlog; // 0 = hidden, 1 = visible, 2 = minimized
 extern cvar_t       *com_version;
 
 extern cvar_t       *com_consoleCommand;
@@ -669,10 +670,7 @@ extern int          time_backend; // renderer backend time
 
 extern int          com_frameTime;
 extern int          com_frameMsec;
-extern int          com_expectedhunkusage;
 extern int          com_hunkusedvalue;
-
-extern qboolean     com_errorEntered;
 
 typedef enum
 {
@@ -1031,7 +1029,6 @@ int  Parse_FreeSourceHandle( int handle );
 int  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );
 int  Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
-void Com_GetHunkInfo( int *hunkused, int *hunkexpected );
 void Com_RandomBytes( byte *string, int len );
 
 #define _(x) Trans_Gettext(x)

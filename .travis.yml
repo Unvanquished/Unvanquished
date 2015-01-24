@@ -37,4 +37,3 @@ notifications:
 branches:
   except:
     - debian
-    - engine-upgrade/sound

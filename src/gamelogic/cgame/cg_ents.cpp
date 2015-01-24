@@ -298,20 +298,6 @@ static void CG_EntityEffects( centity_t *cent )
 
 	if ( CG_IsTrailSystemValid( &cent->muzzleTS ) )
 	{
-		//FIXME hack to prevent tesla trails reaching too far
-		if ( cent->currentState.eType == ET_BUILDABLE )
-		{
-			vec3_t front, back;
-
-			CG_AttachmentPoint( &cent->muzzleTS->frontAttachment, front );
-			CG_AttachmentPoint( &cent->muzzleTS->backAttachment, back );
-
-			if ( Distance( front, back ) > ( TESLAGEN_RANGE * M_ROOT3 ) )
-			{
-				CG_DestroyTrailSystem( &cent->muzzleTS );
-			}
-		}
-
 		if ( cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid( &cent->muzzleTS ) )
 		{
 			CG_DestroyTrailSystem( &cent->muzzleTS );
@@ -326,7 +312,7 @@ CG_General
 */
 static void CG_General( centity_t *cent )
 {
-	refEntity_t   ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 	entityState_t *s1;
 
 	s1 = &cent->currentState;
@@ -438,7 +424,7 @@ CG_Missile
 */
 static void CG_Missile( centity_t *cent )
 {
-	refEntity_t               ent;
+	static refEntity_t        ent; // static for proper alignment in QVMs
 	entityState_t             *es;
 	const missileAttributes_t *ma;
 
@@ -481,7 +467,7 @@ static void CG_Missile( centity_t *cent )
 		ent.shaderRGBA[ 2 ] = 0xFF;
 		ent.shaderRGBA[ 3 ] = 0xFF;
 	}
-	else
+	else if ( ma->model )
 	{
 		ent.hModel = ma->model;
 		ent.renderfx = ma->renderfx | RF_NOSHADOW;
@@ -489,7 +475,25 @@ static void CG_Missile( centity_t *cent )
 		// convert direction of travel into axis
 		if ( VectorNormalize2( es->pos.trDelta, ent.axis[ 0 ] ) == 0 )
 		{
-			ent.axis[ 0 ][ 2 ] = 1;
+			ent.axis[ 0 ][ 2 ] = 1.0f;
+		}
+
+		MakeNormalVectors( ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
+
+		// apply rotation from config
+		{
+			matrix_t axisMat;
+			quat_t   axisQuat, rotQuat;
+
+			QuatFromAngles( rotQuat, ma->modelRotation[ PITCH ], ma->modelRotation[ YAW ],
+			                         ma->modelRotation[ ROLL ] );
+
+			// FRU because that's what MakeNormalVectors produces (?)
+			MatrixFromVectorsFRU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
+			QuatFromMatrix( axisQuat, axisMat );
+			QuatMultiply0( axisQuat, rotQuat );
+			MatrixFromQuat( axisMat, axisQuat );
+			MatrixToVectorsFRU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 		}
 
 		// spin as it moves
@@ -497,9 +501,19 @@ static void CG_Missile( centity_t *cent )
 		{
 			RotateAroundDirection( ent.axis, cg.time / 4 );
 		}
+
+		// apply scale from config
+		if ( ma->modelScale != 1.0f )
+		{
+			VectorScale( ent.axis[ 0 ], ma->modelScale, ent.axis[ 0 ] );
+			VectorScale( ent.axis[ 1 ], ma->modelScale, ent.axis[ 1 ] );
+			VectorScale( ent.axis[ 2 ], ma->modelScale, ent.axis[ 2 ] );
+
+			ent.nonNormalizedAxes = qtrue;
+		}
 		else
 		{
-			RotateAroundDirection( ent.axis, es->time );
+			ent.nonNormalizedAxes = qfalse;
 		}
 
 		if ( ma->usesAnim )
@@ -523,7 +537,7 @@ static void CG_Missile( centity_t *cent )
 			}
 		}
 
-		ent.skeleton.scale = 1.0f;
+		ent.skeleton.scale = ma->modelScale;
 	}
 
 	//only refresh if there is something to display
@@ -540,7 +554,7 @@ CG_Mover
 */
 static void CG_Mover( centity_t *cent )
 {
-	refEntity_t   ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 	entityState_t *s1;
 
 	s1 = &cent->currentState;
@@ -585,7 +599,7 @@ CG_Portal
 */
 static void CG_Portal( centity_t *cent )
 {
-	refEntity_t   ent;
+	static refEntity_t ent; // static for proper alignment in QVMs
 	entityState_t *s1;
 
 	s1 = &cent->currentState;
@@ -653,7 +667,7 @@ CG_LightFlare
 */
 static void CG_LightFlare( centity_t *cent )
 {
-	refEntity_t   flare;
+	static refEntity_t flare; // static for proper alignment in QVMs
 	entityState_t *es;
 	vec3_t        forward, delta;
 	float         len;
@@ -1283,7 +1297,7 @@ void CG_AddPacketEntities( void )
 	}
 
 	// add each entity sent over by the server
-	for ( num = 0; num < cg.snap->numEntities; num++ )
+	for ( num = 0; num < cg.snap->entities.size(); num++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ num ].number ];
 		cent->valid = qtrue;
@@ -1306,7 +1320,7 @@ void CG_AddPacketEntities( void )
 	}
 
 	// add each entity sent over by the server
-	for ( num = 0; num < cg.snap->numEntities; num++ )
+	for ( num = 0; num < cg.snap->entities.size(); num++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ num ].number ];
 		CG_AddCEntity( cent );
@@ -1315,7 +1329,7 @@ void CG_AddPacketEntities( void )
 	//make an attempt at drawing bounding boxes of selected entity types
 	if ( cg_drawBBOX.integer )
 	{
-		for ( num = 0; num < cg.snap->numEntities; num++ )
+		for ( num = 0; num < cg.snap->entities.size(); num++ )
 		{
 			float         x, zd, zu;
 			vec3_t        mins, maxs;

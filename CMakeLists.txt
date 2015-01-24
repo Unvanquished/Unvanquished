@@ -559,6 +559,8 @@ set( COMMONLIST
   ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/String.cpp
   ${COMMON_DIR}/String.h
+  ${COMMON_DIR}/System.cpp
+  ${COMMON_DIR}/System.h
   ${COMMON_DIR}/cm/cm_load.cpp
   ${COMMON_DIR}/cm/cm_trisoup.cpp
   ${COMMON_DIR}/cm/cm_patch.cpp
@@ -658,6 +660,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/LogSystem.h
   ${ENGINE_DIR}/framework/Resource.cpp
   ${ENGINE_DIR}/framework/Resource.h
+  ${ENGINE_DIR}/framework/System.cpp
+  ${ENGINE_DIR}/framework/System.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
   ${ENGINE_DIR}/qcommon/cmd.cpp
@@ -1114,7 +1118,7 @@ else()
     set( LIBS_ENGINE ${LIBS_ENGINE} ${LIBICONV} )
   endif()
   mark_as_advanced( LIBM LIBRT LIBICONV )
-  set( LIBS_ENGINE ${LIBS_ENGINE} ${CMAKE_DL_LIBS} )
+  set( LIBS_BASE ${LIBS_BASE} ${CMAKE_DL_LIBS} )
   find_package( Threads REQUIRED )
   set( LIBS_BASE ${LIBS_BASE} ${CMAKE_THREAD_LIBS_INIT} )
   if( APPLE )
@@ -1342,7 +1346,7 @@ function( GAMEMODULE )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} ${LIBS_${UPPER_NAME}} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
       PREFIX ""
-      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
+      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};BUILD_VM_IN_PROCESS"
     )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h )
   endif()
@@ -1468,7 +1472,7 @@ function( GAMEMODULE )
       COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
         ${NACL_COMPILE_OPTIONS}
         -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-        ${OBJECTS}
+        ${OBJECTS} -lnacl_exception
       DEPENDS ${OBJECTS}
     )
 
@@ -1574,23 +1578,59 @@ if( BUILD_TTY_CLIENT )
 endif()
 
 ################################################################################
-# NaCl SDK files
+# Runtime dependencies
 ################################################################################
 
-if( LINUX )
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
-elseif(WIN32 AND ARCH STREQUAL x86)
-  # Win32 requires sel_ldr64.exe in order to run on Win64
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-x86_64.nexe ${FULL_OUTPUT_DIR}/irt_core-x86_64.nexe )
-else()
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
+if( BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT )
+  add_custom_target( runtime_deps )
+
+  # The NaCl loader and IRT are required to load .nexe files
+  add_custom_command( TARGET runtime_deps PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} )
+  add_custom_command( TARGET runtime_deps PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe )
+
+  # Linux uses a bootstrap program to reserve address space
+  if( LINUX )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
+  endif()
+
+  # Win32 requires sel_ldr64.exe in order to run on Win64
+  if( WIN32 AND ARCH STREQUAL x86 )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-x86_64.nexe ${FULL_OUTPUT_DIR}/irt_core-x86_64.nexe )
+  endif()
+
+  # Mac requires some libraries from external_deps
+  if( APPLE )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_DIR}/SDL2.framework ${FULL_OUTPUT_DIR}/SDL2.framework )
+    file( GLOB RUNTIME_LIBS ${DEPS_DIR}/lib/*.dylib )
+    foreach( RUNTIME_LIB ${RUNTIME_LIBS} )
+      add_custom_command( TARGET runtime_deps PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RUNTIME_LIB} ${FULL_OUTPUT_DIR} )
+    endforeach()
+  endif()
+
+  # Windows requires some libraries from external_deps
+  if( WIN32 )
+    file( GLOB RUNTIME_LIBS ${DEPS_DIR}/bin/*.dll )
+    foreach( RUNTIME_LIB ${RUNTIME_LIBS} )
+      add_custom_command( TARGET runtime_deps PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RUNTIME_LIB} ${FULL_OUTPUT_DIR} )
+    endforeach()
+  endif()
+
+  if( BUILD_CLIENT )
+    add_dependencies( client runtime_deps )
+  endif()
+  if( BUILD_SERVER )
+    add_dependencies( server runtime_deps )
+  endif()
+  if( BUILD_TTY_CLIENT )
+    add_dependencies( ttyclient runtime_deps )
+  endif()
 endif()

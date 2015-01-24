@@ -72,7 +72,9 @@ namespace VM {
     // PrintMsg
     typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_PRINT>, std::string> PrintMsg;
     // ErrorMsg
-    typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_ERROR>, std::string> ErrorMsg;
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_ERROR>, std::string>
+    > ErrorMsg;
     // LogMsg TODO
     // SendConsoleCommandMsg
     typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_SEND_CONSOLE_COMMAND>, std::string> SendConsoleCommandMsg;
@@ -297,8 +299,7 @@ namespace VM {
     > FSPakPathTimestampMsg;
     // FSPakPathLoadPakMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC::Id<FILESYSTEM, FS_PAKPATH_LOADPAK>, uint32_t, Util::optional<uint32_t>, std::string>,
-        IPC::Reply<>
+        IPC::Message<IPC::Id<FILESYSTEM, FS_PAKPATH_LOADPAK>, uint32_t, Util::optional<uint32_t>, std::string>
     > FSPakPathLoadPakMsg;
 
 }

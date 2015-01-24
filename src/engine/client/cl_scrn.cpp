@@ -767,7 +767,7 @@ void SCR_UpdateScreen( void )
 
 	// If there is no VM, there are also no rendering commands issued. Stop the renderer in
 	// that case.
-	if ( cgvm.IsActive() || com_dedicated->integer )
+	if ( cgvm.IsActive() )
 	{
 		SCR_DrawScreenField();
 

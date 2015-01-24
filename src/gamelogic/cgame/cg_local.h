@@ -762,7 +762,7 @@ typedef struct centity_s
 	trailSystem_t         *level2ZapTS[ LEVEL2_AREAZAP_MAX_TARGETS ];
 	int                   level2ZapTime;
 
-	trailSystem_t         *muzzleTS; //used for the tesla and reactor
+	trailSystem_t         *muzzleTS;
 	int                   muzzleTSDeathTime;
 
 	float                 radarVisibility;
@@ -1498,7 +1498,6 @@ typedef struct
 	qhandle_t disconnectSound;
 
 	// sounds
-	sfxHandle_t tracerSound;
 	sfxHandle_t weaponEmptyClick;
 	sfxHandle_t selectSound;
 	sfxHandle_t footsteps[ FOOTSTEP_TOTAL ][ 4 ];
@@ -1641,7 +1640,6 @@ typedef struct
 	float       screenXBias;
 	float       aspectScale;
 
-	int         serverCommandSequence; // reliable command stream counter
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
 
 	// parsed from serverinfo
@@ -2182,7 +2180,7 @@ void     CG_ShowScores_f( void );
 //
 // cg_servercmds.c
 //
-void CG_ExecuteNewServerCommands( int latestSequence );
+void CG_ExecuteServerCommands( snapshot_t* snap );
 void CG_ParseServerinfo( void );
 void CG_SetConfigValues( void );
 void CG_ShaderStateChanged( void );

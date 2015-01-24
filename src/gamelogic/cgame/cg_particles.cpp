@@ -2528,7 +2528,7 @@ Actually render a particle
 */
 static void CG_RenderParticle( particle_t *p )
 {
-	refEntity_t          re;
+	static refEntity_t   re; // static for proper alignment in QVMs
 	float                timeFrac, scale;
 	int                  index;
 	baseParticle_t       *bp = p->class_;

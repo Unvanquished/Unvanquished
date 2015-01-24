@@ -30,54 +30,116 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VMMain.h"
 #include "CommonProxies.h"
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 IPC::Channel VM::rootChannel;
 
-class ExitException{};
+// Special exception type used to cleanly exit a thread for in-process VMs
+#ifdef BUILD_VM_IN_PROCESS
+// Using an anonymous namespace so the compiler knows that the exception is
+// only used in the current file.
+namespace {
+class ExitException {};
+}
+#endif
 
-void VM::Exit() {
-  throw ExitException();
+// Common initialization code for both VM types
+static void CommonInit(Sys::OSHandle rootSocket)
+{
+	VM::rootChannel = IPC::Channel(IPC::Socket::FromHandle(rootSocket));
+
+	// Send syscall ABI version, also acts as a sign that the module loaded
+	IPC::Writer writer;
+	writer.Write<uint32_t>(VM::VM_API_VERSION);
+	VM::rootChannel.SendMsg(writer);
+
+	// Start the main loop
+	while (true) {
+		IPC::Reader reader = VM::rootChannel.RecvMsg();
+		uint32_t id = reader.Read<uint32_t>();
+		VM::VMHandleSyscall(id, std::move(reader));
+	}
 }
 
-static IPC::Channel GetRootChannel(int argc, char** argv) {
-	const char* channel;
-	if (argc == 1) {
-		channel = getenv("ROOT_SOCKET");
-		if (!channel) {
-			fprintf(stderr, "Environment variable ROOT_SOCKET not found\n");
-			VM::Exit();
-		}
-	} else {
-		channel = argv[1];
+void Sys::Error(Str::StringRef message)
+{
+	// Only try sending an ErrorMsg once
+	static std::atomic_flag errorEntered;
+	if (!errorEntered.test_and_set()) {
+		// Disable checks for sending sync messages when handling async messages.
+		// At this point we don't really care since this is an error.
+		VM::rootChannel.handlingAsyncMsg = false;
+
+		// Try to tell the engine about the error, but ignore errors doing so.
+		try {
+			VM::SendMsg<VM::ErrorMsg>(message);
+		} catch (...) {}
 	}
 
-	char* end;
-	IPC::OSHandleType h = (IPC::OSHandleType)strtol(channel, &end, 10);
-	if (channel == end || *end != '\0') {
-		fprintf(stderr, "Environment variable ROOT_SOCKET does not contain a valid handle\n");
-		VM::Exit();
-	}
-
-	return IPC::Channel(IPC::Socket::FromHandle(h));
+#ifdef BUILD_VM_IN_PROCESS
+	// Then engine will close the root socket when it wants us to exit, which
+	// will trigger an error in the IPC functions. If we reached this point then
+	// we try to exit the thread semi-cleanly by throwing an exception.
+	throw ExitException();
+#else
+	// The SendMsg should never return since the engine should kill our process.
+	// Just in case it doesn't, exit here.
+	_exit(255);
+#endif
 }
 
-DLLEXPORT int main(int argc, char** argv) {
+#ifdef BUILD_VM_IN_PROCESS
+
+// Entry point called in a new thread inside the existing server process
+extern "C" DLLEXPORT void vmMain(Sys::OSHandle rootSocket)
+{
 	try {
-		VM::rootChannel = GetRootChannel(argc, argv);
-
-		// Send syscall ABI version, also acts as a sign that the module loaded
-		IPC::Writer writer;
-		writer.Write<uint32_t>(VM::VM_API_VERSION);
-		VM::rootChannel.SendMsg(writer);
-
-		// Start main loop
-		while (true) {
-			IPC::Reader reader = VM::rootChannel.RecvMsg();
-			uint32_t id = reader.Read<uint32_t>();
-			VM::VMHandleSyscall(id, std::move(reader));
+		try {
+			CommonInit(rootSocket);
+		} catch (ExitException&) {
+			return;
+		} catch (Sys::DropErr& err) {
+			Sys::Error(err.what());
+		} catch (std::exception& err) {
+			Sys::Error("Unhandled exception (%s): %s", typeid(err).name(), err.what());
+		} catch (...) {
+			Sys::Error("Unhandled exception of unknown type");
 		}
-	} catch (ExitException e) {
-		return 0;
+	} catch (...) {}
+}
+
+#else
+
+// Entry point called in a new process
+int main(int argc, char** argv)
+{
+	// The socket handle is sent as the first argument
+	if (argc != 2) {
+		fprintf(stderr, "This program is not meant to be invoked directly, it must be invoked by the engine's VM loader.\n");
+		exit(1);
+	}
+	char* end;
+	Sys::OSHandle rootSocket = (Sys::OSHandle)strtol(argv[1], &end, 10);
+	if (argv[1] == end || *end != '\0') {
+		fprintf(stderr, "Parameter is not a valid handle number\n");
+		exit(1);
+	}
+
+	// Set up crash handling for this process. This will allow crashes to be
+	// sent back to the engine and reported to the user.
+	Sys::SetupCrashHandler();
+
+	try {
+		CommonInit(rootSocket);
+	} catch (Sys::DropErr& err) {
+		Sys::Error(err.what());
+	} catch (std::exception& err) {
+		Sys::Error("Unhandled exception (%s): %s", typeid(err).name(), err.what());
+	} catch (...) {
+		Sys::Error("Unhandled exception of unknown type");
 	}
 }
 
+#endif

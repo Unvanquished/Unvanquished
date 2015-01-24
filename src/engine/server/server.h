@@ -395,6 +395,8 @@ extern cvar_t *sv_fullmsg;
 extern cvar_t *sv_voip;
 #endif
 
+extern Cvar::Cvar<bool> isLanOnly;
+
 //===========================================================
 
 //

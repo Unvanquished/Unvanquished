@@ -3850,7 +3850,7 @@ void TransCombine( const transform_t *a, const transform_t *b,
 void TransInverse( const transform_t *in, transform_t *out )
 {
 	quat_t inverse;
-	transform_t tmp;
+	static transform_t tmp; // static for proper alignment in QVMs
 
 	TransInit( &tmp );
 	VectorNegate( in->trans, tmp.trans );

@@ -395,6 +395,8 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 		tess.surfaceShader = state;
 		tess.surfaceStages = state->stages;
 		tess.numSurfaceStages = state->numStages;
+
+		Tess_MapVBOs( ShaderRequiresCPUDeforms( state ) );
 	}
 	else
 	{
@@ -403,9 +405,9 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 		tess.numSurfaceStages = 0;
 		tess.surfaceShader = NULL;
 		tess.surfaceStages = NULL;
+		Tess_MapVBOs( false );
 	}
 
-	Tess_MapVBOs( ShaderRequiresCPUDeforms( state ) );
 
 	bool isSky = ( state != NULL && state->isSky != qfalse );
 

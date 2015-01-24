@@ -101,91 +101,15 @@ void CL_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
 }
 
 /*
-====================
-CL_GetSnapshot
-====================
-*/
-qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
-{
-	clSnapshot_t *clSnap;
-	int          i, count;
-
-	if ( snapshotNumber > cl.snap.messageNum )
-	{
-		Com_Error( ERR_DROP, "CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum" );
-	}
-
-	// if the frame has fallen out of the circular buffer, we can't return it
-	if ( cl.snap.messageNum - snapshotNumber >= PACKET_BACKUP )
-	{
-		return qfalse;
-	}
-
-	// if the frame is not valid, we can't return it
-	clSnap = &cl.snapshots[ snapshotNumber & PACKET_MASK ];
-
-	if ( !clSnap->valid )
-	{
-		return qfalse;
-	}
-
-	// if the entities in the frame have fallen out of their
-	// circular buffer, we can't return it
-	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES )
-	{
-		return qfalse;
-	}
-
-	// write the snapshot
-	snapshot->snapFlags = clSnap->snapFlags;
-	snapshot->serverCommandSequence = clSnap->serverCommandNum;
-	snapshot->ping = clSnap->ping;
-	snapshot->serverTime = clSnap->serverTime;
-	memcpy( snapshot->areamask, clSnap->areamask, sizeof( snapshot->areamask ) );
-	snapshot->ps = clSnap->ps;
-	count = clSnap->numEntities;
-
-	if ( count > MAX_ENTITIES_IN_SNAPSHOT )
-	{
-		Com_DPrintf( "CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT );
-		count = MAX_ENTITIES_IN_SNAPSHOT;
-	}
-
-	snapshot->numEntities = count;
-
-	for ( i = 0; i < count; i++ )
-	{
-		snapshot->entities[ i ] = cl.parseEntities[( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-	}
-
-	// FIXME: configstring changes and server commands!!!
-
-	return qtrue;
-}
-
-/*
 ==============
 CL_SetUserCmdValue
 ==============
 */
-void CL_SetUserCmdValue( int userCmdValue, int flags, float sensitivityScale, int mpIdentClient )
+void CL_SetUserCmdValue( int userCmdValue, int flags, float sensitivityScale )
 {
 	cl.cgameUserCmdValue = userCmdValue;
 	cl.cgameFlags = flags;
 	cl.cgameSensitivity = sensitivityScale;
-	cl.cgameMpIdentClient = mpIdentClient; // NERVE - SMF
-}
-
-/*
-==================
-CL_SetClientLerpOrigin
-==================
-*/
-void CL_SetClientLerpOrigin( float x, float y, float z )
-{
-	cl.cgameClientLerpOrigin[ 0 ] = x;
-	cl.cgameClientLerpOrigin[ 1 ] = y;
-	cl.cgameClientLerpOrigin[ 2 ] = z;
 }
 
 /*
@@ -332,105 +256,92 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 	return qtrue;
 }
 
-// Get the server command, does client-specific handling
-// that may block the propagation of the command to cgame.
+// Get the server commands, does client-specific handling
+// that may block the propagation of a command to cgame.
 // If the propagation is not blocked then it puts the command
-// in cmdText.
-// Returns false if the command was blocked.
-qboolean CL_GetServerCommand( int serverCommandNumber, std::string& cmdText )
+// in commands.
+void CL_FillServerCommands(std::vector<std::string>& commands, int start, int end)
 {
-	const char  *s;
-
 	// if we have irretrievably lost a reliable command, drop the connection
-	if ( serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS )
+	if ( start <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS )
 	{
 		// when a demo record was started after the client got a whole bunch of
 		// reliable commands then the client never got those first reliable commands
 		if ( clc.demoplaying )
 		{
-			return qfalse;
+			return;
 		}
 
-		Com_Error( ERR_DROP, "CL_GetServerCommand: a reliable command was cycled out" );
+		Com_Error( ERR_DROP, "CL_FillServerCommand: a reliable command was cycled out" );
 	}
 
-	if ( serverCommandNumber > clc.serverCommandSequence )
+	if ( end > clc.serverCommandSequence )
 	{
-		Com_Error( ERR_DROP, "CL_GetServerCommand: requested a command not received" );
+		Com_Error( ERR_DROP, "CL_FillServerCommand: requested a command not received" );
 	}
 
-	s = clc.serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS - 1 ) ];
-	clc.lastExecutedServerCommand = serverCommandNumber;
+	for (int i = start; i <= end; i++) {
+		const char* s = clc.serverCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ];
 
-	if ( cl_showServerCommands->integer )
-	{
-		// NERVE - SMF
-		Com_Printf( "serverCommand: %i : %s\n", serverCommandNumber, s );
+		std::string cmdText = s;
+		if (CL_HandleServerCommand(s, cmdText)) {
+			commands.push_back(std::move(cmdText));
+		}
 	}
-
-	cmdText = s;
-	if (CL_HandleServerCommand(s, cmdText)) {
-		return true;
-	}
-
-	cmdText = "";
-	return false;
 }
-
-// DHM - Nerve :: Copied from server to here
 
 /*
 ====================
-CL_SetExpectedHunkUsage
-
-  Sets com_expectedhunkusage, so the client knows how to draw the percentage bar
+CL_GetSnapshot
 ====================
 */
-void CL_SetExpectedHunkUsage( const char *mapname )
+qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 {
-	int  handle;
-	char *memlistfile = "hunkusage.dat";
-	char *buf;
-	char *buftrav;
-	char *token;
-	int  len;
+	clSnapshot_t *clSnap;
+	int          i, count;
 
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
-
-	if ( len >= 0 )
+	if ( snapshotNumber > cl.snap.messageNum )
 	{
-		// the file exists, so read it in, strip out the current entry for this map, and save it out, so we can append the new value
-		buf = ( char * ) Z_Malloc( len + 1 );
-		memset( buf, 0, len + 1 );
-
-		FS_Read( ( void * ) buf, len, handle );
-		FS_FCloseFile( handle );
-
-		// now parse the file, filtering out the current map
-		buftrav = buf;
-
-		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[ 0 ] )
-		{
-			if ( !Q_stricmp( token, ( char * ) mapname ) )
-			{
-				// found a match
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && *token )
-				{
-					// this is the usage
-					com_expectedhunkusage = atoi( token );
-					Z_Free( buf );
-					return;
-				}
-			}
-		}
-
-		Z_Free( buf );
+		Com_Error( ERR_DROP, "CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum" );
 	}
 
-	// just set it to a negative number,so the cgame knows not to draw the percent bar
-	com_expectedhunkusage = -1;
+	// if the frame has fallen out of the circular buffer, we can't return it
+	if ( cl.snap.messageNum - snapshotNumber >= PACKET_BACKUP )
+	{
+		return qfalse;
+	}
+
+	// if the frame is not valid, we can't return it
+	clSnap = &cl.snapshots[ snapshotNumber & PACKET_MASK ];
+
+	if ( !clSnap->valid )
+	{
+		return qfalse;
+	}
+
+	// if the entities in the frame have fallen out of their
+	// circular buffer, we can't return it
+	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES )
+	{
+		return qfalse;
+	}
+
+	// write the snapshot
+	snapshot->snapFlags = clSnap->snapFlags;
+	snapshot->ping = clSnap->ping;
+	snapshot->serverTime = clSnap->serverTime;
+	memcpy( snapshot->areamask, clSnap->areamask, sizeof( snapshot->areamask ) );
+	snapshot->ps = clSnap->ps;
+
+	snapshot->entities.reserve(clSnap->numEntities);
+	for (i = 0; i < count; i++) {
+		snapshot->entities.push_back(cl.parseEntities[( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ]);
+	}
+
+	CL_FillServerCommands(snapshot->serverCommands, clc.lastExecutedServerCommand + 1, clSnap->serverCommandNum);
+	clc.lastExecutedServerCommand = clSnap->serverCommandNum;
+
+	return qtrue;
 }
 
 /*
@@ -1100,10 +1011,7 @@ void CL_InitCGame( void )
 	cls.state = CA_LOADING;
 
 	// init for this gamestate
-	// use the lastExecutedServerCommand instead of the serverCommandSequence
-	// otherwise server commands sent just before a gamestate are dropped
-	//bani - added clc.demoplaying, since some mods need this at init time, and drawactiveframe is too late for them
-	cgvm.CGameInit(clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum);
+	cgvm.CGameInit(clc.serverMessageSequence, clc.clientNum);
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -1554,17 +1462,18 @@ void CGameVM::CGameStaticInit()
 	this->SendMsg<CGameStaticInitMsg>();
 }
 
-void CGameVM::CGameInit(int serverMessageNum, int serverCommandSequence, int clientNum)
+void CGameVM::CGameInit(int serverMessageNum, int clientNum)
 {
-	this->SendMsg<CGameInitMsg>(serverMessageNum, serverCommandSequence, clientNum, cls.glconfig, cl.gameState);
+	this->SendMsg<CGameInitMsg>(serverMessageNum, clientNum, cls.glconfig, cl.gameState);
 }
 
 void CGameVM::CGameShutdown()
 {
-	if (!services->HasVMErrored()) {
+	// Ignore errors when shutting down
+	try {
 		this->SendMsg<CGameShutdownMsg>();
-	}
-	this->Free();
+		this->Free();
+	} catch (Sys::DropErr&) {}
 	services = nullptr;
 }
 
@@ -1677,12 +1586,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_GETSERVERCOMMAND:
-			IPC::HandleMsg<GetServerCommandMsg>(channel, std::move(reader), [this] (int number, bool& res, std::string& cmdText) {
-				res = CL_GetServerCommand(number, cmdText);
-			});
-			break;
-
 		case CG_GETCURRENTCMDNUMBER:
 			IPC::HandleMsg<GetCurrentCmdNumberMsg>(channel, std::move(reader), [this] (int& number) {
 				number = CL_GetCurrentCmdNumber();
@@ -1696,14 +1599,8 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_SETUSERCMDVALUE:
-			IPC::HandleMsg<SetUserCmdValueMsg>(channel, std::move(reader), [this] (int stateValue, int flags, float scale, int mpIdentClient) {
-				CL_SetUserCmdValue(stateValue, flags, scale, mpIdentClient);
-			});
-			break;
-
-		case CG_SETCLIENTLERPORIGIN:
-			IPC::HandleMsg<SetClientLerpOriginMsg>(channel, std::move(reader), [this] (float x, float y, float z) {
-				CL_SetClientLerpOrigin(x, y, z);
+			IPC::HandleMsg<SetUserCmdValueMsg>(channel, std::move(reader), [this] (int stateValue, int flags, float scale) {
+				CL_SetUserCmdValue(stateValue, flags, scale);
 			});
 			break;
 

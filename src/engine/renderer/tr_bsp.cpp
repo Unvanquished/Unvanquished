@@ -6578,7 +6578,6 @@ void R_BuildCubeMaps( void )
 	}
 
 	ri.Printf( PRINT_ALL, "...pre-rendering %d cubemaps\n", tr.cubeProbes.currentElements );
-	ri.Cvar_Set( "viewlog", "1" );
 	ri.Printf( PRINT_ALL, "0%%  10   20   30   40   50   60   70   80   90   100%%\n" );
 	ri.Printf( PRINT_ALL, "|----|----|----|----|----|----|----|----|----|----|\n" );
 

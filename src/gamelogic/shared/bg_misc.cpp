@@ -52,10 +52,10 @@ static const buildableName_t bg_buildableNameList[] =
 	{ BA_A_TRAPPER,   "trapper",   "team_alien_trapper"   },
 	{ BA_A_BOOSTER,   "booster",   "team_alien_booster"   },
 	{ BA_A_HIVE,      "hive",      "team_alien_hive"      },
-	{ BA_A_LEECH,     "leech",     "team_alien_leech"    },
+	{ BA_A_LEECH,     "leech",     "team_alien_leech"     },
 	{ BA_H_SPAWN,     "telenode",  "team_human_spawn"     },
 	{ BA_H_MGTURRET,  "mgturret",  "team_human_mgturret"  },
-	{ BA_H_TESLAGEN,  "tesla",     "team_human_tesla"     },
+	{ BA_H_ROCKETPOD, "rocketpod", "team_human_rocketpod" },
 	{ BA_H_ARMOURY,   "arm",       "team_human_armoury"   },
 	{ BA_H_MEDISTAT,  "medistat",  "team_human_medistat"  },
  	{ BA_H_DRILL,     "drill",     "team_human_drill"     },
@@ -143,7 +143,6 @@ void BG_InitBuildableAttributes( void )
 		ba->name = bh->name;
 		ba->entityName = bh->classname;
 
-		ba->idleAnim = BANIM_IDLE1;
 		ba->traj = TR_GRAVITY;
 		ba->bounce = 0.0;
 		ba->minNormal = 0.0;
@@ -569,7 +568,7 @@ static const weaponData_t bg_weaponsData[] =
 	{ WP_LUCIFER_CANNON,    "lcannon"   },
 	{ WP_LOCKBLOB_LAUNCHER, "lockblob"  },
 	{ WP_HIVE,              "hive"      },
-	{ WP_TESLAGEN,          "teslagen"  },
+	{ WP_ROCKETPOD,         "rocketpod" },
 	{ WP_MGTURRET,          "mgturret"  },
 	{ WP_ABUILD,            "abuild"    },
 	{ WP_ABUILD2,           "abuildupg" },
@@ -760,7 +759,8 @@ static const missileData_t bg_missilesData[] =
   { MIS_HIVE,         "hive"         },
   { MIS_LOCKBLOB,     "lockblob"     },
   { MIS_SLOWBLOB,     "slowblob"     },
-  { MIS_BOUNCEBALL,   "bounceball"   }
+  { MIS_BOUNCEBALL,   "bounceball"   },
+  { MIS_ROCKET,       "rocket"       }
 };
 
 static const size_t              bg_numMissiles = ARRAY_LEN( bg_missilesData );
@@ -877,7 +877,7 @@ static const meansOfDeathData_t bg_meansOfDeathData[] =
 	{ MOD_POISON, "MOD_POISON" },
 	{ MOD_SWARM, "MOD_SWARM" },
 	{ MOD_HSPAWN, "MOD_HSPAWN" },
-	{ MOD_TESLAGEN, "MOD_TESLAGEN" },
+	{ MOD_ROCKETPOD, "MOD_ROCKETPOD" },
 	{ MOD_MGTURRET, "MOD_MGTURRET" },
 	{ MOD_REACTOR, "MOD_REACTOR" },
 	{ MOD_ASPAWN, "MOD_ASPAWN" },

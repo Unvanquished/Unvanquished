@@ -390,9 +390,9 @@ struct gentity_s
 	vec3_t      buildableAim; // aim vector for buildables
 
 	// turret
-	//qboolean    turretHasFastLoader; // a turret upgrade (currently unused)
+	//qboolean    turretHasFastLoader;
+	//int         turretSuccessiveShots;
 	int         turretNextShot;
-	int         turretSuccessiveShots;
 	int         turretLastShotAtTarget;
 	int         turretLastSeenATarget;
 	int         turretLastHeadMove;
@@ -400,6 +400,7 @@ struct gentity_s
 	vec3_t      turretDirToTarget;
 	vec3_t      turretBaseDir;
 	qboolean    turretDisabled;
+	qboolean    turretSafeMode;
 
 	vec4_t      animation; // animated map objects
 

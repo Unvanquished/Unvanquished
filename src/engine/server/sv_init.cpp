@@ -320,15 +320,7 @@ void SV_Startup( void )
 		Com_Error( ERR_FATAL, "SV_Startup: unable to allocate svs.clients" );
 	}
 
-	if ( com_dedicated->integer )
-	{
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
-	}
-	else
-	{
-		// we don't need nearly as many when playing locally
-		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
-	}
+	svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
 
 	svs.initialized = qtrue;
 
@@ -421,70 +413,7 @@ void SV_ChangeMaxClients( void )
 	// free the old clients on the hunk
 	Hunk_FreeTempMemory( oldClients );
 
-	// allocate new snapshot entities
-	if ( com_dedicated->integer )
-	{
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
-	}
-	else
-	{
-		// we don't need nearly as many when playing locally
-		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
-	}
-}
-
-/*
-====================
-SV_SetExpectedHunkUsage
-
-  Sets com_expectedhunkusage, so the client knows how to draw the percentage bar
-====================
-*/
-void SV_SetExpectedHunkUsage( char *mapname )
-{
-	int  handle;
-	const char *memlistfile = "hunkusage.dat";
-	char *buf;
-	char *buftrav;
-	char *token;
-	int  len;
-
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
-
-	if ( len >= 0 )
-	{
-		// the file exists, so read it in, strip out the current entry for this map, and save it out, so we can append the new value
-		buf = ( char * ) Z_Malloc( len + 1 );
-		memset( buf, 0, len + 1 );
-
-		FS_Read( ( void * ) buf, len, handle );
-		FS_FCloseFile( handle );
-
-		// now parse the file, filtering out the current map
-		buftrav = buf;
-
-		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[ 0 ] )
-		{
-			if ( !Q_stricmp( token, mapname ) )
-			{
-				// found a match
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && token[ 0 ] )
-				{
-					// this is the usage
-					com_expectedhunkusage = atoi( token );
-					Z_Free( buf );
-					return;
-				}
-			}
-		}
-
-		Z_Free( buf );
-	}
-
-	// just set it to a negative number,so the cgame knows not to draw the percent bar
-	com_expectedhunkusage = -1;
+	svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
 }
 
 /*
@@ -572,9 +501,6 @@ void SV_SpawnServer( const char *server )
 	// set sv_nextmap to the same map, but it may be overridden
 	// by the game startup or another console command
 	Cvar_Set( "sv_nextmap", "map_restart 0" );
-//  Cvar_Set( "sv_nextmap", va("map %s", server) );
-
-	SV_SetExpectedHunkUsage( va( "maps/%s.bsp", server ) );
 
 	// make sure we are not paused
 	Cvar_Set( "cl_paused", "0" );
@@ -848,7 +774,7 @@ void SV_Shutdown( const char *finalmsg )
 
 	NET_LeaveMulticast6();
 
-	if ( svs.clients && !com_errorEntered )
+	if ( svs.clients )
 	{
 		SV_FinalCommand( va( "print %s", Cmd_QuoteString( finalmsg ) ), qtrue );
 	}

@@ -1464,22 +1464,16 @@ static void CG_ServerCommand( void )
 
 /*
 ====================
-CG_ExecuteNewServerCommands
+CG_ExecuteServerCommands
 
 Execute all of the server commands that were received along
 with this this snapshot.
 ====================
 */
-void CG_ExecuteNewServerCommands( int latestSequence )
-{
-	while ( cgs.serverCommandSequence < latestSequence )
-	{
-		std::string cmdText;
-		if ( trap_GetServerCommand( ++cgs.serverCommandSequence, cmdText ) )
-		{
-			Cmd::PushArgs(cmdText);
-			CG_ServerCommand();
-			Cmd::PopArgs();
-		}
+void CG_ExecuteServerCommands(snapshot_t* snap) {
+	for (auto& command: snap->serverCommands) {
+		Cmd::PushArgs(command);
+		CG_ServerCommand();
+		Cmd::PopArgs();
 	}
 }

@@ -529,7 +529,7 @@ void Sys_HelpText( const char *binaryName )
 #else
 #define ALIGN_STACK
 #endif
-int ALIGN_STACK main( int argc, char **argv )
+int ALIGN_STACK mainx( int argc, char **argv )
 {
 	int  i;
 	char commandLine[ MAX_STRING_CHARS ] = { 0 };
