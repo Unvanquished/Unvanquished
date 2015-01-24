@@ -130,10 +130,7 @@ namespace Str {
     // Unicode encoder/decoder based on http://utfcpp.sourceforge.net/
     static const uint32_t UNICODE_CODE_POINT_MAX = 0x10ffff;
     static const uint32_t UNICODE_SURROGATE_HEAD_START = 0xd800;
-    static const uint32_t UNICODE_SURROGATE_HEAD_END = 0xdbff;
-    static const uint32_t UNICODE_SURROGATE_TAIL_START = 0xdc00;
     static const uint32_t UNICODE_SURROGATE_TAIL_END = 0xdfff;
-    static const uint32_t UNICODE_SURROGATE_MASK = 0x3ff;
     static const uint32_t UNICODE_REPLACEMENT_CHAR = 0xfffd;
     static std::initializer_list<char> UNICODE_REPLACEMENT_CHAR_UTF8 = {char(0xef), char(0xbf), char(0xbd)};
 
