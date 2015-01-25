@@ -125,8 +125,8 @@ static inline void AddGLSLDefine( std::string &defines, const std::string define
 }
 
 std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
-    const char *libShaderNames,
-    GLenum shaderType ) const
+        const char *libShaderNames,
+        GLenum shaderType ) const
 {
 	char        filename[ MAX_QPATH ];
 	GLchar      *mainBuffer = NULL;
@@ -169,7 +169,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		}
 
 		// append it to the libsBuffer
-		libsBuffer.append(libBuffer);
+		libsBuffer.append( libBuffer );
 
 		ri.FS_FreeFile( libBuffer );
 	}
@@ -197,7 +197,8 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 
 	bufferExtra.reserve( 4096 );
 
-	if( glConfig2.textureRGAvailable ) {
+	if ( glConfig2.textureRGAvailable )
+	{
 		AddGLSLDefine( bufferExtra, "TEXTURE_RG", 1 );
 	}
 
@@ -270,9 +271,10 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 			//         42.9 is the maximum possible value for FILTER_SIZE=15
 			//         42.0 is the truncated value that we pass into the sample
 			AddGLSLDefine( bufferExtra, "r_EVSMExponents", 42.0f, 42.0f );
+
 			if ( r_evsmPostProcess->integer )
 			{
-				AddGLSLDefine( bufferExtra,"r_EVSMPostProcess", 1 );
+				AddGLSLDefine( bufferExtra, "r_EVSMPostProcess", 1 );
 			}
 		}
 		else
@@ -424,7 +426,7 @@ bool GLShaderManager::buildPermutation( GLShader *shader, size_t i )
 		return false;
 	}
 
-	if( shader->GetCompileMacrosString( i, compileMacros ) )
+	if ( shader->GetCompileMacrosString( i, compileMacros ) )
 	{
 		shader->BuildShaderCompileMacros( compileMacros );
 
@@ -451,6 +453,7 @@ bool GLShaderManager::buildPermutation( GLShader *shader, size_t i )
 		_totalBuildTime += ( endTime - startTime );
 		return true;
 	}
+
 	return false;
 }
 
@@ -462,7 +465,7 @@ void GLShaderManager::buildAll( )
 		size_t numPermutations = 1 << shader->GetNumOfCompiledMacros();
 		size_t i;
 
-		for( i = 0; i < numPermutations; i++ )
+		for ( i = 0; i < numPermutations; i++ )
 		{
 			buildPermutation( shader, i );
 		}
@@ -472,7 +475,7 @@ void GLShaderManager::buildAll( )
 
 	ri.Printf( PRINT_DEVELOPER, "glsl shaders took %d msec to build\n", _totalBuildTime );
 
-	if( r_recompileShaders->integer )
+	if ( r_recompileShaders->integer )
 	{
 		ri.Cvar_Set( "r_recompileShaders", "0" );
 	}
@@ -484,6 +487,7 @@ void GLShaderManager::InitShader( GLShader *shader )
 	memset( &shader->_shaderPrograms[ 0 ], 0, shader->_shaderPrograms.size() * sizeof( shaderProgram_t ) );
 
 	shader->_uniformStorageSize = 0;
+
 	for ( std::size_t i = 0; i < shader->_uniforms.size(); i++ )
 	{
 		GLUniform *uniform = shader->_uniforms[ i ];
@@ -500,7 +504,7 @@ void GLShaderManager::InitShader( GLShader *shader )
 
 	shader->_vertexShaderText = BuildGPUShaderText( shader->GetMainShaderName().c_str(), vertexInlines.c_str(), GL_VERTEX_SHADER );
 	shader->_fragmentShaderText = BuildGPUShaderText( shader->GetMainShaderName().c_str(), fragmentInlines.c_str(), GL_FRAGMENT_SHADER );
-	std::string combinedShaderText= shader->_vertexShaderText + shader->_fragmentShaderText;
+	std::string combinedShaderText = shader->_vertexShaderText + shader->_fragmentShaderText;
 
 	shader->_checkSum = Com_BlockChecksum( combinedShaderText.c_str(), combinedShaderText.length() );
 }
@@ -515,13 +519,13 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	GLShaderHeader shaderHeader;
 
 	// we need to recompile the shaders
-	if( r_recompileShaders->integer )
+	if ( r_recompileShaders->integer )
 	{
 		return false;
 	}
 
 	// don't even try if the necessary functions aren't available
-	if( !glConfig2.getProgramBinaryAvailable )
+	if ( !glConfig2.getProgramBinaryAvailable )
 	{
 		return false;
 	}
@@ -529,7 +533,7 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	fileLength = ri.FS_ReadFile( va( "glsl/%s/%s_%u.bin", shader->GetName().c_str(), shader->GetName().c_str(), ( unsigned int ) programNum ), &binary );
 
 	// file empty or not found
-	if( fileLength <= 0 )
+	if ( fileLength <= 0 )
 	{
 		return false;
 	}
@@ -599,7 +603,7 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 	shaderProgram_t       *shaderProgram;
 
 	// don't even try if the necessary functions aren't available
-	if( !glConfig2.getProgramBinaryAvailable )
+	if ( !glConfig2.getProgramBinaryAvailable )
 	{
 		return;
 	}
@@ -642,7 +646,7 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 #endif
 }
 void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
-    const std::string &compileMacros ) const
+        const std::string &compileMacros ) const
 {
 	//ri.Printf(PRINT_DEVELOPER, "------- GPU shader -------\n");
 	// header of the glsl shader
@@ -770,6 +774,7 @@ void GLShaderManager::PrintShaderSource( GLuint object ) const
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
 		ri.Printf( PRINT_ALL, "%s", msgPart );
 	}
+
 	ri.Printf( PRINT_ALL, "\n" );
 
 	ri.Hunk_FreeTempMemory( msg );
@@ -816,6 +821,7 @@ void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
 		ri.Printf( print, "%s", msgPart );
 	}
+
 	ri.Printf( PRINT_ALL, "\n" );
 
 	ri.Hunk_FreeTempMemory( msg );
@@ -826,11 +832,13 @@ void GLShaderManager::LinkProgram( GLuint program ) const
 	GLint linked;
 
 #ifdef GLEW_ARB_get_program_binary
+
 	// Apparently, this is necessary to get the binary program via glGetProgramBinary
-	if( glConfig2.getProgramBinaryAvailable )
+	if ( glConfig2.getProgramBinaryAvailable )
 	{
 		glProgramParameteri( program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE );
 	}
+
 #endif
 	glLinkProgram( program );
 
@@ -1209,7 +1217,7 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderManager *manager ) :
 	GLShader( "vertexLighting_DBS_world",
 	          ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR,
-		  manager
+	          manager
 	        ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
@@ -1259,7 +1267,7 @@ void GLShader_vertexLighting_DBS_world::SetShaderProgramUniforms( shaderProgram_
 }
 
 GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderManager *manager ):
-	GLShader("forwardLighting_omniXYZ", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager),
+	GLShader( "forwardLighting_omniXYZ", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
@@ -1319,7 +1327,7 @@ void GLShader_forwardLighting_omniXYZ::SetShaderProgramUniforms( shaderProgram_t
 }
 
 GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderManager *manager ):
-	GLShader("forwardLighting_projXYZ", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager),
+	GLShader( "forwardLighting_projXYZ", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
@@ -1381,7 +1389,7 @@ void GLShader_forwardLighting_projXYZ::SetShaderProgramUniforms( shaderProgram_t
 }
 
 GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun( GLShaderManager *manager ):
-	GLShader("forwardLighting_directionalSun", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager),
+	GLShader( "forwardLighting_directionalSun", "forwardLighting", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
@@ -1481,7 +1489,7 @@ void GLShader_shadowFill::SetShaderProgramUniforms( shaderProgram_t *shaderProgr
 }
 
 GLShader_reflection::GLShader_reflection( GLShaderManager *manager ):
-	GLShader("reflection", "reflection_CB", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
+	GLShader( "reflection", "reflection_CB", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_NormalTextureMatrix( this ),
 	u_ViewOrigin( this ),
 	u_ModelMatrix( this ),
@@ -1728,7 +1736,7 @@ void GLShader_lightVolume_omni::SetShaderProgramUniforms( shaderProgram_t *shade
 
 GLShader_liquid::GLShader_liquid( GLShaderManager *manager ) :
 	GLShader( "liquid", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT
-		, manager ),
+	          , manager ),
 	u_NormalTextureMatrix( this ),
 	u_ViewOrigin( this ),
 	u_RefractionIndex( this ),

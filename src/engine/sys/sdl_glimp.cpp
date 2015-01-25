@@ -309,13 +309,13 @@ void GLimp_WakeRenderer( void *data )
 
 typedef enum
 {
-  RSERR_OK,
+    RSERR_OK,
 
-  RSERR_INVALID_FULLSCREEN,
-  RSERR_INVALID_MODE,
-  RSERR_OLD_GL,
+    RSERR_INVALID_FULLSCREEN,
+    RSERR_INVALID_MODE,
+    RSERR_OLD_GL,
 
-  RSERR_UNKNOWN
+    RSERR_UNKNOWN
 } rserr_t;
 
 cvar_t                     *r_allowResize; // make window resizable
@@ -510,16 +510,16 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	}
 
 	icon = SDL_CreateRGBSurfaceFrom( ( void * ) CLIENT_WINDOW_ICON.pixel_data,
-			        CLIENT_WINDOW_ICON.width,
-			        CLIENT_WINDOW_ICON.height,
-			        CLIENT_WINDOW_ICON.bytes_per_pixel * 8,
-			        CLIENT_WINDOW_ICON.bytes_per_pixel * CLIENT_WINDOW_ICON.width,
+	                                 CLIENT_WINDOW_ICON.width,
+	                                 CLIENT_WINDOW_ICON.height,
+	                                 CLIENT_WINDOW_ICON.bytes_per_pixel * 8,
+	                                 CLIENT_WINDOW_ICON.bytes_per_pixel * CLIENT_WINDOW_ICON.width,
 #ifdef Q3_LITTLE_ENDIAN
-			        0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
+	                                 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
 #else
-			        0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF
+	                                 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF
 #endif
-					);
+	                               );
 
 	if ( SDL_GetDesktopDisplayMode( r_displayIndex->integer, &desktopMode ) == 0 )
 	{
@@ -543,8 +543,8 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		{
 			glConfig.vidWidth = desktopMode.w;
 			glConfig.vidHeight = desktopMode.h;
-			Cvar_Set( "r_customwidth", va("%d", desktopMode.w ) );
-			Cvar_Set( "r_customheight", va("%d", desktopMode.h ) );
+			Cvar_Set( "r_customwidth", va( "%d", desktopMode.w ) );
+			Cvar_Set( "r_customheight", va( "%d", desktopMode.h ) );
 		}
 		else
 		{
@@ -581,6 +581,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			SDL_DestroyWindow( window );
 			window = NULL;
 		}
+
 		// we come back here if we couldn't get a visual and there's
 		// something we can switch off
 
@@ -755,6 +756,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 					SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
 				}
 			}
+
 			window = SDL_CreateWindow( CLIENT_WINDOW_TITLE, x, y, glConfig.vidWidth, glConfig.vidHeight, flags );
 
 			if ( !window )
@@ -772,6 +774,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 				ri.Printf( PRINT_DEVELOPER, "SDL_GL_CreateContext failed: %s\n", SDL_GetError() );
 				continue;
 			}
+
 			SDL_GL_SetSwapInterval( r_swapInterval->integer );
 			SDL_ShowCursor( 0 );
 
@@ -780,7 +783,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			glConfig.stencilBits = testStencilBits;
 
 			ri.Printf( PRINT_ALL, "Using %d Color bits, %d depth, %d stencil display.\n",
-				glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );
+			           glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );
 
 			break;
 		}
@@ -790,7 +793,8 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			r_ext_multisample->integer = 0;
 		}
 
-	} while ( ( !glContext || !window ) && samples );
+	}
+	while ( ( !glContext || !window ) && samples );
 
 	SDL_FreeSurface( icon );
 
@@ -808,6 +812,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 
 	int GLmajor, GLminor;
 	sscanf( ( const char * ) glGetString( GL_VERSION ), "%d.%d", &GLmajor, &GLminor );
+
 	if ( GLmajor < 2 || ( GLmajor == 2 && GLminor < 1 ) )
 	{
 		// missing shader support, switch to 1.x renderer
@@ -824,6 +829,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		ri.Printf( PRINT_ALL, "Using enhanced (GL3) Renderer in GL 3.x mode...\n" );
 		glConfig.driverType = GLDRV_OPENGL3;
 	}
+
 	GLimp_DetectAvailableModes();
 
 	glstring = ( char * ) glGetString( GL_RENDERER );
@@ -908,7 +914,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 		fullscreen = qfalse;
 	}
 
-	err = (rserr_t) GLimp_SetMode( mode, fullscreen, noborder );
+	err = ( rserr_t ) GLimp_SetMode( mode, fullscreen, noborder );
 
 	switch ( err )
 	{
@@ -948,7 +954,7 @@ static GLenum debugTypes[] =
 #define DEBUG_CALLBACK_CALL
 #endif
 static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
-                                       GLenum severity, GLsizei length, const GLchar *message, const void *userParam )
+        GLenum severity, GLsizei length, const GLchar *message, const void *userParam )
 {
 	const char *debugTypeName;
 	const char *debugSeverity;
@@ -971,21 +977,27 @@ static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum source, GLenum type,
 		case GL_DEBUG_TYPE_ERROR_ARB:
 			debugTypeName = "DEBUG_TYPE_ERROR";
 			break;
+
 		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB:
 			debugTypeName = "DEBUG_TYPE_DEPRECATED_BEHAVIOR";
 			break;
+
 		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB:
 			debugTypeName = "DEBUG_TYPE_UNDEFINED_BEHAVIOR";
 			break;
+
 		case GL_DEBUG_TYPE_PORTABILITY_ARB:
 			debugTypeName = "DEBUG_TYPE_PORTABILITY";
 			break;
+
 		case GL_DEBUG_TYPE_PERFORMANCE_ARB:
 			debugTypeName = "DEBUG_TYPE_PERFORMANCE";
 			break;
+
 		case GL_DEBUG_TYPE_OTHER_ARB:
 			debugTypeName = "DEBUG_TYPE_OTHER";
 			break;
+
 		default:
 			debugTypeName = "DEBUG_TYPE_UNKNOWN";
 			break;
@@ -996,12 +1008,15 @@ static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum source, GLenum type,
 		case GL_DEBUG_SEVERITY_HIGH_ARB:
 			debugSeverity = "high";
 			break;
+
 		case GL_DEBUG_SEVERITY_MEDIUM_ARB:
 			debugSeverity = "med";
 			break;
+
 		case GL_DEBUG_SEVERITY_LOW_ARB:
 			debugSeverity = "low";
 			break;
+
 		default:
 			debugSeverity = "none";
 			break;
@@ -1046,6 +1061,7 @@ static bool LoadExtWithCvar( bool hasExt, const char* name, bool cvarValue )
 	{
 		ri.Printf( PRINT_ALL, "...GL_%s not found\n", name );
 	}
+
 	return false;
 }
 
@@ -1057,9 +1073,9 @@ static void GLimp_InitExtensions( void )
 {
 	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
 
-	if ( LOAD_EXTENSION_WITH_CVAR(ARB_debug_output, r_glDebugProfile) )
+	if ( LOAD_EXTENSION_WITH_CVAR( ARB_debug_output, r_glDebugProfile ) )
 	{
-		glDebugMessageCallbackARB( (GLDEBUGPROCARB)GLimp_DebugCallback, NULL );
+		glDebugMessageCallbackARB( ( GLDEBUGPROCARB )GLimp_DebugCallback, NULL );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB );
 	}
 
@@ -1078,12 +1094,14 @@ static void GLimp_InitExtensions( void )
 	REQUIRE_EXTENSION( ARB_shading_language_100 );
 
 	Q_strncpyz( glConfig2.shadingLanguageVersionString, ( char * ) glGetString( GL_SHADING_LANGUAGE_VERSION_ARB ),
-				sizeof( glConfig2.shadingLanguageVersionString ) );
+	            sizeof( glConfig2.shadingLanguageVersionString ) );
 	int majorVersion, minorVersion;
+
 	if ( sscanf( glConfig2.shadingLanguageVersionString, "%i.%i", &majorVersion, &minorVersion ) != 2 )
 	{
 		ri.Printf( PRINT_ALL, "WARNING: unrecognized shading language version string format\n" );
 	}
+
 	glConfig2.shadingLanguageVersion = majorVersion * 100 + minorVersion;
 
 	ri.Printf( PRINT_ALL, "...found shading language version %i\n", glConfig2.shadingLanguageVersion );
@@ -1094,27 +1112,30 @@ static void GLimp_InitExtensions( void )
 	REQUIRE_EXTENSION( ARB_texture_cube_map );
 	glGetIntegerv( GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB, &glConfig2.maxCubeMapTextureSize );
 
-	glConfig2.textureHalfFloatAvailable =  LOAD_EXTENSION_WITH_CVAR(ARB_half_float_pixel, r_ext_half_float_pixel);
-	glConfig2.textureFloatAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_float, r_ext_texture_float);
-	glConfig2.textureRGAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_rg, r_ext_texture_rg);
+	glConfig2.textureHalfFloatAvailable =  LOAD_EXTENSION_WITH_CVAR( ARB_half_float_pixel, r_ext_half_float_pixel );
+	glConfig2.textureFloatAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_texture_float, r_ext_texture_float );
+	glConfig2.textureRGAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_texture_rg, r_ext_texture_rg );
 
 	// TODO figure out what was the problem with MESA
-	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != GLDRV_MESA && LOAD_EXTENSION_WITH_CVAR(EXT_packed_depth_stencil, r_ext_packed_depth_stencil);
+	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != GLDRV_MESA && LOAD_EXTENSION_WITH_CVAR( EXT_packed_depth_stencil, r_ext_packed_depth_stencil );
 
-	glConfig2.ARBTextureCompressionAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_compression, r_ext_compressed_textures);
+	glConfig2.ARBTextureCompressionAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_texture_compression, r_ext_compressed_textures );
 	glConfig.textureCompression = TC_NONE;
-	if( LOAD_EXTENSION_WITH_CVAR(EXT_texture_compression_s3tc, r_ext_compressed_textures) )
+
+	if ( LOAD_EXTENSION_WITH_CVAR( EXT_texture_compression_s3tc, r_ext_compressed_textures ) )
 	{
 		glConfig.textureCompression = TC_S3TC;
 	}
+
 	//REQUIRE_EXTENSION(EXT_texture3D);
 
 	// Texture - others
-	glConfig2.textureNPOTAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_non_power_of_two, r_ext_texture_non_power_of_two);
-	glConfig2.generateMipmapAvailable = LOAD_EXTENSION_WITH_CVAR(SGIS_generate_mipmap, r_ext_generate_mipmap);
+	glConfig2.textureNPOTAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_texture_non_power_of_two, r_ext_texture_non_power_of_two );
+	glConfig2.generateMipmapAvailable = LOAD_EXTENSION_WITH_CVAR( SGIS_generate_mipmap, r_ext_generate_mipmap );
 
 	glConfig2.textureAnisotropyAvailable = qfalse;
-	if ( LOAD_EXTENSION_WITH_CVAR(EXT_texture_filter_anisotropic, r_ext_texture_filter_anisotropic) )
+
+	if ( LOAD_EXTENSION_WITH_CVAR( EXT_texture_filter_anisotropic, r_ext_texture_filter_anisotropic ) )
 	{
 		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &glConfig2.maxTextureAnisotropy );
 		glConfig2.textureAnisotropyAvailable = qtrue;
@@ -1127,27 +1148,31 @@ static void GLimp_InitExtensions( void )
 
 	// FBO
 	glConfig2.framebufferObjectAvailable = qfalse;
-	if ( LOAD_EXTENSION_WITH_CVAR(EXT_framebuffer_object, r_ext_framebuffer_object) )
+
+	if ( LOAD_EXTENSION_WITH_CVAR( EXT_framebuffer_object, r_ext_framebuffer_object ) )
 	{
 		glGetIntegerv( GL_MAX_RENDERBUFFER_SIZE_EXT, &glConfig2.maxRenderbufferSize );
 		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &glConfig2.maxColorAttachments );
 		glConfig2.framebufferObjectAvailable = qtrue;
 	}
-	glConfig2.framebufferBlitAvailable = LOAD_EXTENSION_WITH_CVAR(EXT_framebuffer_blit, r_ext_framebuffer_blit);
+
+	glConfig2.framebufferBlitAvailable = LOAD_EXTENSION_WITH_CVAR( EXT_framebuffer_blit, r_ext_framebuffer_blit );
 
 	// Other
 	REQUIRE_EXTENSION( ARB_shader_objects );
 
 	glConfig2.occlusionQueryAvailable = qfalse;
 	glConfig2.occlusionQueryBits = 0;
-	if ( LOAD_EXTENSION_WITH_CVAR(ARB_occlusion_query, r_ext_occlusion_query) )
+
+	if ( LOAD_EXTENSION_WITH_CVAR( ARB_occlusion_query, r_ext_occlusion_query ) )
 	{
 		glConfig2.occlusionQueryAvailable = qtrue;
 		glGetQueryivARB( GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &glConfig2.occlusionQueryBits );
 	}
 
 	glConfig2.drawBuffersAvailable = qfalse;
-	if ( LOAD_EXTENSION_WITH_CVAR(ARB_draw_buffers, r_ext_draw_buffers) )
+
+	if ( LOAD_EXTENSION_WITH_CVAR( ARB_draw_buffers, r_ext_draw_buffers ) )
 	{
 		glGetIntegerv( GL_MAX_DRAW_BUFFERS_ARB, &glConfig2.maxDrawBuffers );
 		glConfig2.drawBuffersAvailable = qtrue;
@@ -1164,7 +1189,8 @@ static void GLimp_InitExtensions( void )
 	}
 
 #ifdef GLEW_ARB_get_program_binary
-	if( GLEW_ARB_get_program_binary )
+
+	if ( GLEW_ARB_get_program_binary )
 	{
 		int formats = 0;
 
@@ -1172,23 +1198,24 @@ static void GLimp_InitExtensions( void )
 
 		if ( !formats )
 		{
-			ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary found, but with no binary formats\n");
+			ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary found, but with no binary formats\n" );
 			glConfig2.getProgramBinaryAvailable = qfalse;
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "...using GL_ARB_get_program_binary\n");
+			ri.Printf( PRINT_ALL, "...using GL_ARB_get_program_binary\n" );
 			glConfig2.getProgramBinaryAvailable = qtrue;
 		}
 	}
 	else
 #endif
 	{
-		ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary not found\n");
+		ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary not found\n" );
 		glConfig2.getProgramBinaryAvailable = qfalse;
 	}
 
 #ifdef GLEW_ARB_buffer_storage
+
 	if ( GLEW_ARB_buffer_storage )
 	{
 		if ( r_arb_buffer_storage->integer )
@@ -1221,10 +1248,12 @@ static void GLimp_InitExtensions( void )
 
 static void reportDriverType( qboolean force )
 {
-	static const char *const drivers[] = {
+	static const char *const drivers[] =
+	{
 		"integrated", "stand-alone", "OpenGL 3+", "Mesa"
 	};
-	if (glConfig.driverType > GLDRV_UNKNOWN && (int) glConfig.driverType < ARRAY_LEN( drivers ) )
+
+	if ( glConfig.driverType > GLDRV_UNKNOWN && ( int ) glConfig.driverType < ARRAY_LEN( drivers ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics driver class '%s'\n",
 		           force ? "User has forced" : "Detected",
@@ -1234,10 +1263,12 @@ static void reportDriverType( qboolean force )
 
 static void reportHardwareType( qboolean force )
 {
-	static const char *const hardware[] = {
+	static const char *const hardware[] =
+	{
 		"generic", "ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
 	};
-	if (glConfig.hardwareType > GLHW_UNKNOWN && (int) glConfig.hardwareType < ARRAY_LEN( hardware ) )
+
+	if ( glConfig.hardwareType > GLHW_UNKNOWN && ( int ) glConfig.hardwareType < ARRAY_LEN( hardware ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics hardware class '%s'\n",
 		           force ? "User has forced" : "Detected",
@@ -1314,8 +1345,11 @@ success:
 		glGetIntegerv( GL_NUM_EXTENSIONS, &numExts );
 
 		glConfig.extensions_string[ 0 ] = '\0';
+
 		for ( i = 0; i < numExts; ++i )
+		{
 			Q_strcat( glConfig.extensions_string, sizeof( glConfig.extensions_string ), ( char * ) glGetStringi( GL_EXTENSIONS, i ) );
+		}
 	}
 	else
 	{
@@ -1323,9 +1357,9 @@ success:
 	}
 
 	if ( Q_stristr( glConfig.renderer_string, "mesa" ) ||
-	     Q_stristr( glConfig.renderer_string, "gallium" ) ||
-	     Q_stristr( glConfig.vendor_string, "nouveau" ) ||
-	     Q_stristr( glConfig.vendor_string, "mesa" ) )
+	        Q_stristr( glConfig.renderer_string, "gallium" ) ||
+	        Q_stristr( glConfig.vendor_string, "nouveau" ) ||
+	        Q_stristr( glConfig.vendor_string, "mesa" ) )
 	{
 		// suckage
 		glConfig.driverType = GLDRV_MESA;
@@ -1334,42 +1368,42 @@ success:
 	if ( Q_stristr( glConfig.renderer_string, "geforce" ) )
 	{
 		if ( Q_stristr( glConfig.renderer_string, "8400" ) ||
-		     Q_stristr( glConfig.renderer_string, "8500" ) ||
-		     Q_stristr( glConfig.renderer_string, "8600" ) ||
-		     Q_stristr( glConfig.renderer_string, "8800" ) ||
-		     Q_stristr( glConfig.renderer_string, "9500" ) ||
-		     Q_stristr( glConfig.renderer_string, "9600" ) ||
-		     Q_stristr( glConfig.renderer_string, "9800" ) ||
-		     Q_stristr( glConfig.renderer_string, "gts 240" ) ||
-		     Q_stristr( glConfig.renderer_string, "gts 250" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 260" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 275" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 280" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 285" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 295" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 320" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 330" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 340" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 415" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 420" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 425" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 430" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 435" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 440" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 520" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 525" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 540" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 550" ) ||
-		     Q_stristr( glConfig.renderer_string, "gt 555" ) ||
-		     Q_stristr( glConfig.renderer_string, "gts 450" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 460" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 470" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 480" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 485" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 560" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 570" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 580" ) ||
-		     Q_stristr( glConfig.renderer_string, "gtx 590" ) )
+		        Q_stristr( glConfig.renderer_string, "8500" ) ||
+		        Q_stristr( glConfig.renderer_string, "8600" ) ||
+		        Q_stristr( glConfig.renderer_string, "8800" ) ||
+		        Q_stristr( glConfig.renderer_string, "9500" ) ||
+		        Q_stristr( glConfig.renderer_string, "9600" ) ||
+		        Q_stristr( glConfig.renderer_string, "9800" ) ||
+		        Q_stristr( glConfig.renderer_string, "gts 240" ) ||
+		        Q_stristr( glConfig.renderer_string, "gts 250" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 260" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 275" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 280" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 285" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 295" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 320" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 330" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 340" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 415" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 420" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 425" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 430" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 435" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 440" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 520" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 525" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 540" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 550" ) ||
+		        Q_stristr( glConfig.renderer_string, "gt 555" ) ||
+		        Q_stristr( glConfig.renderer_string, "gts 450" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 460" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 470" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 480" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 485" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 560" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 570" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 580" ) ||
+		        Q_stristr( glConfig.renderer_string, "gtx 590" ) )
 		{
 			glConfig.hardwareType = GLHW_NV_DX10;
 		}
@@ -1403,46 +1437,47 @@ success:
 	reportDriverType( qfalse );
 	reportHardwareType( qfalse );
 
-	{ // allow overriding where the user really does know better
+	{
+		// allow overriding where the user really does know better
 		cvar_t          *forceGL;
 		glDriverType_t   driverType   = GLDRV_UNKNOWN;
 		glHardwareType_t hardwareType = GLHW_UNKNOWN;
 
 		forceGL = ri.Cvar_Get( "r_glForceDriver", "", CVAR_LATCH );
 
-		if      ( !Q_stricmp( forceGL->string, "icd" ))
+		if ( !Q_stricmp( forceGL->string, "icd" ) )
 		{
 			driverType = GLDRV_ICD;
 		}
-		else if ( !Q_stricmp( forceGL->string, "standalone" ))
+		else if ( !Q_stricmp( forceGL->string, "standalone" ) )
 		{
 			driverType = GLDRV_STANDALONE;
 		}
-		else if ( !Q_stricmp( forceGL->string, "opengl3" ))
+		else if ( !Q_stricmp( forceGL->string, "opengl3" ) )
 		{
 			driverType = GLDRV_OPENGL3;
 		}
-		else if ( !Q_stricmp( forceGL->string, "mesa" ))
+		else if ( !Q_stricmp( forceGL->string, "mesa" ) )
 		{
 			driverType = GLDRV_MESA;
 		}
 
 		forceGL = ri.Cvar_Get( "r_glForceHardware", "", CVAR_LATCH );
 
-		if      ( !Q_stricmp( forceGL->string, "generic" ))
+		if ( !Q_stricmp( forceGL->string, "generic" ) )
 		{
 			hardwareType = GLHW_GENERIC;
 		}
-		else if ( !Q_stricmp( forceGL->string, "ati" ))
+		else if ( !Q_stricmp( forceGL->string, "ati" ) )
 		{
 			hardwareType = GLHW_ATI;
 		}
 		else if ( !Q_stricmp( forceGL->string, "atidx10" ) ||
-		          !Q_stricmp( forceGL->string, "radeonhd" ))
+		          !Q_stricmp( forceGL->string, "radeonhd" ) )
 		{
 			hardwareType = GLHW_ATI_DX10;
 		}
-		else if ( !Q_stricmp( forceGL->string, "nvdx10" ))
+		else if ( !Q_stricmp( forceGL->string, "nvdx10" ) )
 		{
 			hardwareType = GLHW_NV_DX10;
 		}
@@ -1532,7 +1567,7 @@ void GLimp_HandleCvars( void )
 
 			if ( sdlToggled < 0 )
 			{
-				Cmd::BufferCommandText("vid_restart");
+				Cmd::BufferCommandText( "vid_restart" );
 			}
 
 			ri.IN_Restart();

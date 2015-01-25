@@ -258,8 +258,8 @@ static void MakeMeshNormals( int width, int height, srfVert_t ctrl[ MAX_GRID_SIZ
 				}
 
 				R_CalcTangents( tangent, binormal,
-						vec3_origin, around[ k ], around[ ( k + 1 ) & 7 ],
-						dv->st, st[ k ], st[ ( k + 1 ) & 7 ] );
+				                vec3_origin, around[ k ], around[( k + 1 ) & 7 ],
+				                dv->st, st[ k ], st[( k + 1 ) & 7 ] );
 
 				VectorAdd( normal, sum, sum );
 				VectorAdd( tangent, sumTangents, sumTangents );
@@ -270,12 +270,14 @@ static void MakeMeshNormals( int width, int height, srfVert_t ctrl[ MAX_GRID_SIZ
 			if ( count == 0 )
 			{
 				VectorSet( dv->normal, 0.0f, 0.0f, 1.0f );
-			} else {
+			}
+			else
+			{
 				VectorNormalize2( sum, dv->normal );
 			}
 
 			R_TBNtoQtangents( sumTangents, sumBinormals, dv->normal,
-					  dv->qtangent );
+			                  dv->qtangent );
 		}
 	}
 }
@@ -411,9 +413,9 @@ R_CreateSurfaceGridMesh
 =================
 */
 static srfGridMesh_t *R_CreateSurfaceGridMesh( int width, int height,
-    srfVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ],
-    float errorTable[ 2 ][ MAX_GRID_SIZE ],
-    int numTriangles, srfTriangle_t triangles[ SHADER_MAX_TRIANGLES ] )
+        srfVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ],
+        float errorTable[ 2 ][ MAX_GRID_SIZE ],
+        int numTriangles, srfTriangle_t triangles[ SHADER_MAX_TRIANGLES ] )
 {
 	int           i, j, size;
 	srfVert_t     *vert;
@@ -425,39 +427,39 @@ static srfGridMesh_t *R_CreateSurfaceGridMesh( int width, int height,
 
 	if ( r_stitchCurves->integer )
 	{
-		grid = (srfGridMesh_t*)/*ri.Hunk_Alloc */ Com_Allocate( size );
+		grid = ( srfGridMesh_t* )/*ri.Hunk_Alloc */ Com_Allocate( size );
 		Com_Memset( grid, 0, size );
 
-		grid->widthLodError = (float*)/*ri.Hunk_Alloc */ Com_Allocate( width * 4 );
+		grid->widthLodError = ( float* )/*ri.Hunk_Alloc */ Com_Allocate( width * 4 );
 		Com_Memcpy( grid->widthLodError, errorTable[ 0 ], width * 4 );
 
-		grid->heightLodError = (float*)/*ri.Hunk_Alloc */ Com_Allocate( height * 4 );
+		grid->heightLodError = ( float* )/*ri.Hunk_Alloc */ Com_Allocate( height * 4 );
 		Com_Memcpy( grid->heightLodError, errorTable[ 1 ], height * 4 );
 
 		grid->numTriangles = numTriangles;
-		grid->triangles = (srfTriangle_t*) Com_Allocate( grid->numTriangles * sizeof( srfTriangle_t ) );
+		grid->triangles = ( srfTriangle_t* ) Com_Allocate( grid->numTriangles * sizeof( srfTriangle_t ) );
 		Com_Memcpy( grid->triangles, triangles, numTriangles * sizeof( srfTriangle_t ) );
 
 		grid->numVerts = ( width * height );
-		grid->verts = (srfVert_t*) Com_Allocate( grid->numVerts * sizeof( srfVert_t ) );
+		grid->verts = ( srfVert_t* ) Com_Allocate( grid->numVerts * sizeof( srfVert_t ) );
 	}
 	else
 	{
-		grid = (srfGridMesh_t*) ri.Hunk_Alloc( size, h_low );
+		grid = ( srfGridMesh_t* ) ri.Hunk_Alloc( size, h_low );
 		Com_Memset( grid, 0, size );
 
-		grid->widthLodError = (float*) ri.Hunk_Alloc( width * 4, h_low );
+		grid->widthLodError = ( float* ) ri.Hunk_Alloc( width * 4, h_low );
 		Com_Memcpy( grid->widthLodError, errorTable[ 0 ], width * 4 );
 
-		grid->heightLodError = (float*) ri.Hunk_Alloc( height * 4, h_low );
+		grid->heightLodError = ( float* ) ri.Hunk_Alloc( height * 4, h_low );
 		Com_Memcpy( grid->heightLodError, errorTable[ 1 ], height * 4 );
 
 		grid->numTriangles = numTriangles;
-		grid->triangles = (srfTriangle_t*) ri.Hunk_Alloc( grid->numTriangles * sizeof( srfTriangle_t ), h_low );
+		grid->triangles = ( srfTriangle_t* ) ri.Hunk_Alloc( grid->numTriangles * sizeof( srfTriangle_t ), h_low );
 		Com_Memcpy( grid->triangles, triangles, numTriangles * sizeof( srfTriangle_t ) );
 
 		grid->numVerts = ( width * height );
-		grid->verts = (srfVert_t*) ri.Hunk_Alloc( grid->numVerts * sizeof( srfVert_t ), h_low );
+		grid->verts = ( srfVert_t* ) ri.Hunk_Alloc( grid->numVerts * sizeof( srfVert_t ), h_low );
 	}
 
 	grid->width = width;

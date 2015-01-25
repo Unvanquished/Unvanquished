@@ -42,79 +42,68 @@ Maryland 20850 USA.
 class RocketDataSelect : public Rocket::Controls::ElementFormControlDataSelect, public Rocket::Core::EventListener
 {
 public:
-	RocketDataSelect( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlDataSelect( tag ), selection( -2 ) { }
-	~RocketDataSelect() { }
+    RocketDataSelect ( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlDataSelect ( tag ), selection ( -2 ) { }
+    ~RocketDataSelect() { }
 
-	virtual void OnChildAdd( Element *child )
-	{
-		ElementFormControlDataSelect::OnChildAdd( child );
+    virtual void OnChildAdd ( Element *child ) {
+        ElementFormControlDataSelect::OnChildAdd ( child );
 
-		if ( child == this )
-		{
-			owner = GetOwnerDocument();
-			owner->AddEventListener( "show", this );
-		}
-	}
+        if ( child == this ) {
+            owner = GetOwnerDocument();
+            owner->AddEventListener ( "show", this );
+        }
+    }
 
-	virtual void OnChildRemove( Element *child )
-	{
-		ElementFormControlDataSelect::OnChildRemove( child );
+    virtual void OnChildRemove ( Element *child ) {
+        ElementFormControlDataSelect::OnChildRemove ( child );
 
-		if (  child == this )
-		{
-			if ( owner )
-			{
-				owner->RemoveEventListener( "show", this );
-			}
-		}
-	}
+        if ( child == this ) {
+            if ( owner ) {
+                owner->RemoveEventListener ( "show", this );
+            }
+        }
+    }
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
-	{
-		if (  changed_attributes.find( "source" ) != changed_attributes.end() )
-		{
-			Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String>( "source", "" );
-			unsigned int pos = dataSource.Find( "." );
-			dsName = dataSource.Substring( 0, pos );
-			tableName =  dataSource.Substring( pos + 1, dataSource.Length() );
-		}
-	}
+    virtual void OnAttributeChange ( const Rocket::Core::AttributeNameList &changed_attributes ) {
+        if ( changed_attributes.find ( "source" ) != changed_attributes.end() ) {
+            Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String> ( "source", "" );
+            unsigned int pos = dataSource.Find ( "." );
+            dsName = dataSource.Substring ( 0, pos );
+            tableName =  dataSource.Substring ( pos + 1, dataSource.Length() );
+        }
+    }
 
-	virtual void ProcessEvent( Rocket::Core::Event &event )
-	{
-		extern std::queue< RocketEvent_t * > eventQueue;
+    virtual void ProcessEvent ( Rocket::Core::Event &event ) {
+        extern std::queue< RocketEvent_t * > eventQueue;
 
-		if ( event.GetTargetElement() == owner && event == "show" )
-		{
-			eventQueue.push( new RocketEvent_t( this, Rocket::Core::String( 1024, "setDataSelectValue %s %s", dsName.CString(), tableName.CString() ) ) );
-		}
-	}
+        if ( event.GetTargetElement() == owner && event == "show" ) {
+            eventQueue.push ( new RocketEvent_t ( this, Rocket::Core::String ( 1024, "setDataSelectValue %s %s", dsName.CString(), tableName.CString() ) ) );
+        }
+    }
 
-	void OnUpdate( void )
-	{
-		extern std::queue< RocketEvent_t * > eventQueue;
+    void OnUpdate ( void ) {
+        extern std::queue< RocketEvent_t * > eventQueue;
 
-		ElementFormControlDataSelect::OnUpdate();
+        ElementFormControlDataSelect::OnUpdate();
 
-		if ( GetSelection() != selection )
-		{
-			selection = GetSelection();
+        if ( GetSelection() != selection ) {
+            selection = GetSelection();
 
-			// dispatch event so cgame knows about it
-			eventQueue.push( new RocketEvent_t( Rocket::Core::String( va( "setDS %s %s %d", dsName.CString(), tableName.CString(), selection ) ) ) );
+            // dispatch event so cgame knows about it
+            eventQueue.push ( new RocketEvent_t ( Rocket::Core::String ( va ( "setDS %s %s %d", dsName.CString(), tableName.CString(), selection ) ) ) );
 
-			// dispatch event so rocket knows about it
-			Rocket::Core::Dictionary parameters;
-			parameters.Set( "index", va( "%d", selection ) );
-			parameters.Set( "datasource", dsName );
-			parameters.Set( "table", tableName );
-			DispatchEvent( "rowselect", parameters );
-		}
-	}
+            // dispatch event so rocket knows about it
+            Rocket::Core::Dictionary parameters;
+            parameters.Set ( "index", va ( "%d", selection ) );
+            parameters.Set ( "datasource", dsName );
+            parameters.Set ( "table", tableName );
+            DispatchEvent ( "rowselect", parameters );
+        }
+    }
 private:
-	int selection;
-	Rocket::Core::Element *owner;
-	Rocket::Core::String dsName;
-	Rocket::Core::String tableName;
+    int selection;
+    Rocket::Core::Element *owner;
+    Rocket::Core::String dsName;
+    Rocket::Core::String tableName;
 };
 

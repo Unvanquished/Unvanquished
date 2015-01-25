@@ -48,8 +48,9 @@ int           cvar_modifiedFlags;
 Cvar_FindVar
 ============
 */
-static cvar_t* Cvar_FindVar(const char* name) {
-    return Cvar::FindCCvar(name);
+static cvar_t* Cvar_FindVar( const char* name )
+{
+	return Cvar::FindCCvar( name );
 }
 
 /*
@@ -57,9 +58,10 @@ static cvar_t* Cvar_FindVar(const char* name) {
 Cvar_VariableValue
 ============
 */
-float Cvar_VariableValue(const char* name) {
-    cvar_t* var = Cvar_FindVar(name);
-    return var ? var->value : 0.0f;
+float Cvar_VariableValue( const char* name )
+{
+	cvar_t* var = Cvar_FindVar( name );
+	return var ? var->value : 0.0f;
 }
 
 /*
@@ -67,9 +69,10 @@ float Cvar_VariableValue(const char* name) {
 Cvar_VariableIntegerValue
 ============
 */
-int Cvar_VariableIntegerValue( const char* name ) {
-    cvar_t* var = Cvar_FindVar(name);
-    return var ? var->integer : 0;
+int Cvar_VariableIntegerValue( const char* name )
+{
+	cvar_t* var = Cvar_FindVar( name );
+	return var ? var->integer : 0;
 }
 
 /*
@@ -77,9 +80,10 @@ int Cvar_VariableIntegerValue( const char* name ) {
 Cvar_VariableString
 ============
 */
-char* Cvar_VariableString(const char* name) {
-    cvar_t* var = Cvar_FindVar(name);
-    return var ? var->string : (char*)"";
+char* Cvar_VariableString( const char* name )
+{
+	cvar_t* var = Cvar_FindVar( name );
+	return var ? var->string : ( char* )"";
 }
 
 /*
@@ -87,14 +91,18 @@ char* Cvar_VariableString(const char* name) {
 Cvar_VariableStringBuffer
 ============
 */
-void Cvar_VariableStringBuffer(const char* name, char* buffer, int bufsize) {
-    cvar_t* var = Cvar_FindVar(name);
+void Cvar_VariableStringBuffer( const char* name, char* buffer, int bufsize )
+{
+	cvar_t* var = Cvar_FindVar( name );
 
-    if (not var) {
-        buffer[0] = '\0';
-    } else {
-        Q_strncpyz(buffer, var->string, bufsize);
-    }
+	if ( not var )
+	{
+		buffer[0] = '\0';
+	}
+	else
+	{
+		Q_strncpyz( buffer, var->string, bufsize );
+	}
 }
 
 /*
@@ -102,9 +110,10 @@ void Cvar_VariableStringBuffer(const char* name, char* buffer, int bufsize) {
 Cvar_VariableString
 ============
 */
-char* Cvar_LatchedVariableString(const char* name) {
-    cvar_t* var = Cvar_FindVar(name);
-    return var && var->latchedString ? var->latchedString : (char*)"";
+char* Cvar_LatchedVariableString( const char* name )
+{
+	cvar_t* var = Cvar_FindVar( name );
+	return var && var->latchedString ? var->latchedString : ( char* )"";
 }
 
 /*
@@ -112,18 +121,25 @@ char* Cvar_LatchedVariableString(const char* name) {
 Cvar_LatchedVariableStringBuffer
 ============
 */
-void Cvar_LatchedVariableStringBuffer(const char* name, char* buffer, int bufsize) {
-    cvar_t* var = Cvar_FindVar(name);
+void Cvar_LatchedVariableStringBuffer( const char* name, char* buffer, int bufsize )
+{
+	cvar_t* var = Cvar_FindVar( name );
 
-    if (not var) {
-        buffer[0] = '\0';
-    } else {
-        if (var->latchedString) {
-            Q_strncpyz(buffer, var->latchedString, bufsize);
-        } else {
-            Q_strncpyz(buffer, var->string, bufsize);
-        }
-    }
+	if ( not var )
+	{
+		buffer[0] = '\0';
+	}
+	else
+	{
+		if ( var->latchedString )
+		{
+			Q_strncpyz( buffer, var->latchedString, bufsize );
+		}
+		else
+		{
+			Q_strncpyz( buffer, var->string, bufsize );
+		}
+	}
 }
 
 /*
@@ -134,9 +150,10 @@ If the variable already exists, the value will not be set unless CVAR_ROM
 The flags will be or'ed in if the variable exists.
 ============
 */
-cvar_t *Cvar_Get(const char* name, const char* value, int flags) {
-    Cvar::Register(nullptr, name, "--", flags, value);
-    return Cvar_FindVar(name);
+cvar_t *Cvar_Get( const char* name, const char* value, int flags )
+{
+	Cvar::Register( nullptr, name, "--", flags, value );
+	return Cvar_FindVar( name );
 }
 
 /*
@@ -144,12 +161,16 @@ cvar_t *Cvar_Get(const char* name, const char* value, int flags) {
 Cvar_Set
 ============
 */
-void Cvar_Set(const char* name, const char* value) {
-    if (value == nullptr) {
-        Cvar_Reset(name);
-    } else {
-        Cvar::SetValueCProxy(name, value);
-    }
+void Cvar_Set( const char* name, const char* value )
+{
+	if ( value == nullptr )
+	{
+		Cvar_Reset( name );
+	}
+	else
+	{
+		Cvar::SetValueCProxy( name, value );
+	}
 }
 
 /*
@@ -157,11 +178,15 @@ void Cvar_Set(const char* name, const char* value) {
 Cvar_SetValue
 ============
 */
-void Cvar_SetValue(const char* name, float value) {
-	if (value == (int) value) {
-        Cvar_Set(name, va("%i", (int) value));
-	} else {
-        Cvar_Set(name, va("%f", value));
+void Cvar_SetValue( const char* name, float value )
+{
+	if ( value == ( int ) value )
+	{
+		Cvar_Set( name, va( "%i", ( int ) value ) );
+	}
+	else
+	{
+		Cvar_Set( name, va( "%f", value ) );
 	}
 }
 
@@ -170,11 +195,14 @@ void Cvar_SetValue(const char* name, float value) {
 Cvar_Reset
 ============
 */
-void Cvar_Reset(const char* name) {
-    cvar_t* var = Cvar::FindCCvar(name);
-    if (var != nullptr) {
-        Cvar_Set(name, var->resetString);
-    }
+void Cvar_Reset( const char* name )
+{
+	cvar_t* var = Cvar::FindCCvar( name );
+
+	if ( var != nullptr )
+	{
+		Cvar_Set( name, var->resetString );
+	}
 }
 
 /*
@@ -187,7 +215,7 @@ with the archive flag set that are not in a transient state.
 */
 void Cvar_WriteVariables( fileHandle_t f )
 {
-    Cvar::WriteVariables(f);
+	Cvar::WriteVariables( f );
 }
 
 /*
@@ -195,8 +223,9 @@ void Cvar_WriteVariables( fileHandle_t f )
 Cvar_InfoString
 =====================
 */
-char* Cvar_InfoString(int flag, qboolean big) {
-    return Cvar::InfoString(flag, big);
+char* Cvar_InfoString( int flag, qboolean big )
+{
+	return Cvar::InfoString( flag, big );
 }
 
 /*
@@ -204,8 +233,9 @@ char* Cvar_InfoString(int flag, qboolean big) {
 Cvar_InfoStringBuffer
 =====================
 */
-void Cvar_InfoStringBuffer(int bit, char* buff, int buffsize) {
-	Q_strncpyz(buff, Cvar_InfoString( bit, qfalse), buffsize);
+void Cvar_InfoStringBuffer( int bit, char* buff, int buffsize )
+{
+	Q_strncpyz( buff, Cvar_InfoString( bit, qfalse ), buffsize );
 }
 
 /*
@@ -218,22 +248,25 @@ basically a slightly modified Cvar_Get for the interpreted modules
 
 static std::vector<cvar_t*> vmCvarTable;
 
-void Cvar_Register(vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags) {
+void Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags )
+{
 	// if the cvar was created by a script, it won't have the correct flags
-	cvar_t* cv = Cvar_Get(varName, defaultValue, flags);
+	cvar_t* cv = Cvar_Get( varName, defaultValue, flags );
 
-	if (!vmCvar) {
+	if ( !vmCvar )
+	{
 		return;
 	}
 
-	if (cv->index == -1) {
+	if ( cv->index == -1 )
+	{
 		cv->index = vmCvarTable.size();
-		vmCvarTable.push_back(cv);
+		vmCvarTable.push_back( cv );
 	}
 
 	vmCvar->handle = cv->index;
 	vmCvar->modificationCount = -1;
-	Cvar_Update(vmCvar);
+	Cvar_Update( vmCvar );
 }
 
 /*
@@ -243,27 +276,32 @@ Cvar_Update
 updates an interpreted modules' version of a cvar
 =====================
 */
-void Cvar_Update(vmCvar_t *vmCvar) {
-    if ((unsigned) vmCvar->handle >= vmCvarTable.size()) {
-		Com_Error( ERR_DROP, "Cvar_Update: handle %d out of range", (unsigned) vmCvar->handle );
-    }
+void Cvar_Update( vmCvar_t *vmCvar )
+{
+	if ( ( unsigned ) vmCvar->handle >= vmCvarTable.size() )
+	{
+		Com_Error( ERR_DROP, "Cvar_Update: handle %d out of range", ( unsigned ) vmCvar->handle );
+	}
 
 	cvar_t* cv = vmCvarTable[vmCvar->handle];
 
-	if (cv->modificationCount == vmCvar->modificationCount) {
+	if ( cv->modificationCount == vmCvar->modificationCount )
+	{
 		return;
 	}
 
-	if (!cv->string) {
+	if ( !cv->string )
+	{
 		return; // variable might have been cleared by a cvar_restart
 	}
 
 	vmCvar->modificationCount = cv->modificationCount;
 
 	// bk001129 - mismatches.
-	if (strlen( cv->string ) + 1 > MAX_CVAR_VALUE_STRING) {
-		Com_Error(ERR_DROP, "Cvar_Update: src %s length %lu exceeds MAX_CVAR_VALUE_STRING(%lu)",
-		           cv->string, (unsigned long) strlen(cv->string), (unsigned long) sizeof(vmCvar->string));
+	if ( strlen( cv->string ) + 1 > MAX_CVAR_VALUE_STRING )
+	{
+		Com_Error( ERR_DROP, "Cvar_Update: src %s length %lu exceeds MAX_CVAR_VALUE_STRING(%lu)",
+		           cv->string, ( unsigned long ) strlen( cv->string ), ( unsigned long ) sizeof( vmCvar->string ) );
 	}
 
 	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0
@@ -271,7 +309,7 @@ void Cvar_Update(vmCvar_t *vmCvar) {
 	// bk001129 - beware, sizeof(char*) is always 4 (for cv->string).
 	//            sizeof(vmCvar->string) always MAX_CVAR_VALUE_STRING
 	//Q_strncpyz( vmCvar->string, cv->string, sizeof( vmCvar->string ) ); // id
-	Q_strncpyz(vmCvar->string, cv->string, MAX_CVAR_VALUE_STRING);
+	Q_strncpyz( vmCvar->string, cv->string, MAX_CVAR_VALUE_STRING );
 
 	vmCvar->value = cv->value;
 	vmCvar->integer = cv->integer;

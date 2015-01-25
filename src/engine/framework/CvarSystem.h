@@ -59,47 +59,48 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //TODO add callbacks for when cvars are modified
 
-namespace Cvar {
+namespace Cvar
+{
 
-    // Generic ways to access cvars, might specialize it to parse and serialize automatically
+// Generic ways to access cvars, might specialize it to parse and serialize automatically
 
-    void SetValue(const std::string& cvarName, std::string value);
-    //Used for ROM cvars, will trigger a warning if the cvar is not ROM
-    void SetValueForce(const std::string& cvarName, std::string value);
-    std::string GetValue(const std::string& cvarName);
+void SetValue ( const std::string& cvarName, std::string value );
+//Used for ROM cvars, will trigger a warning if the cvar is not ROM
+void SetValueForce ( const std::string& cvarName, std::string value );
+std::string GetValue ( const std::string& cvarName );
 
-    // Returns a list of cvars matching the prefix as well as their description
-    Cmd::CompletionResult Complete(Str::StringRef prefix);
+// Returns a list of cvars matching the prefix as well as their description
+Cmd::CompletionResult Complete ( Str::StringRef prefix );
 
-    // Alter flags, returns true if the variable exists
-    bool AddFlags(const std::string& cvarName, int flags);
-    bool ClearFlags(const std::string& cvarName, int flags);
+// Alter flags, returns true if the variable exists
+bool AddFlags ( const std::string& cvarName, int flags );
+bool ClearFlags ( const std::string& cvarName, int flags );
 
-    // Used by statically defined cvar.
-    bool Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
-    void Unregister(const std::string& cvarName);
+// Used by statically defined cvar.
+bool Register ( CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue );
+void Unregister ( const std::string& cvarName );
 
-    // Used by the C API
-    cvar_t* FindCCvar(const std::string& cvarName);
-    void WriteVariables(fileHandle_t f);
-    char* InfoString(int flag, bool big);
-    void SetValueCProxy(const std::string& cvarName, std::string value);
+// Used by the C API
+cvar_t* FindCCvar ( const std::string& cvarName );
+void WriteVariables ( fileHandle_t f );
+char* InfoString ( int flag, bool big );
+void SetValueCProxy ( const std::string& cvarName, std::string value );
 
-    void SetCheatsAllowed(bool allowed);
+void SetCheatsAllowed ( bool allowed );
 
-    //Kept as a reference for cvar flags
+//Kept as a reference for cvar flags
 
-    // Keep
-    //CVAR_ARCHIVE, CVAR_*INFO, CVAR_ROM CVAR_CHEAT are kept
+// Keep
+//CVAR_ARCHIVE, CVAR_*INFO, CVAR_ROM CVAR_CHEAT are kept
 
-    // Remove eventually
-    //CVAR_UNSAFE, not sure <- no support for now
-    //CVAR_USER_CREATED is kept for now but not really needed
-    //CVAR_LATCH, CVAR_SHADER, CVAR_INIT are not longer supported, will be implemented by the proxy
+// Remove eventually
+//CVAR_UNSAFE, not sure <- no support for now
+//CVAR_USER_CREATED is kept for now but not really needed
+//CVAR_LATCH, CVAR_SHADER, CVAR_INIT are not longer supported, will be implemented by the proxy
 
-    //CVAR_NORESTART is not used will be killed
-    //CVAR_TEMP seems useless, don't put the CVAR_ARCHIVE and CVAR_CHEAT
-    //CVAR_SERVERINFO_NOUPDATE is not used
+//CVAR_NORESTART is not used will be killed
+//CVAR_TEMP seems useless, don't put the CVAR_ARCHIVE and CVAR_CHEAT
+//CVAR_SERVERINFO_NOUPDATE is not used
 }
 
 #endif // FRAMEWORK_CVAR_SYSTEM_H_

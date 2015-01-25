@@ -45,135 +45,112 @@ Maryland 20850 USA.
 class RocketDataSourceSingle : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener, public Rocket::Core::EventListener
 {
 public:
-	RocketDataSourceSingle( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), formatter( NULL ), data_source( NULL ), selection( -1 ),
-	targetElement( NULL ), dirty_query( false ), dirty_listener( false ) { }
+    RocketDataSourceSingle ( const Rocket::Core::String &tag ) : Rocket::Core::Element ( tag ), formatter ( NULL ), data_source ( NULL ), selection ( -1 ),
+        targetElement ( NULL ), dirty_query ( false ), dirty_listener ( false ) { }
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
-	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
-		{
-			ParseDataSource( data_source, data_table, GetAttribute( "source")->Get<Rocket::Core::String>() );
-			dirty_query = true;
-		}
-		if ( changed_attributes.find( "fields" ) != changed_attributes.end() )
-		{
-			csvFields = GetAttribute( "fields" )->Get<Rocket::Core::String>();
-			Rocket::Core::StringUtilities::ExpandString( fields, csvFields );
-			dirty_query = true;
-		}
-		if ( changed_attributes.find( "formatter" ) != changed_attributes.end() )
-		{
-			formatter = Rocket::Controls::DataFormatter::GetDataFormatter( GetAttribute( "formatter" )->Get<Rocket::Core::String>() );
-			dirty_query = true;
-		}
-		if ( changed_attributes.find( "targetid" ) != changed_attributes.end() || changed_attributes.find( "targetdoc" ) != changed_attributes.end() )
-		{
-			dirty_listener = true;
-		}
-	}
+    void OnAttributeChange ( const Rocket::Core::AttributeNameList &changed_attributes ) {
+        Rocket::Core::Element::OnAttributeChange ( changed_attributes );
+        if ( changed_attributes.find ( "source" ) != changed_attributes.end() ) {
+            ParseDataSource ( data_source, data_table, GetAttribute ( "source" )->Get<Rocket::Core::String>() );
+            dirty_query = true;
+        }
+        if ( changed_attributes.find ( "fields" ) != changed_attributes.end() ) {
+            csvFields = GetAttribute ( "fields" )->Get<Rocket::Core::String>();
+            Rocket::Core::StringUtilities::ExpandString ( fields, csvFields );
+            dirty_query = true;
+        }
+        if ( changed_attributes.find ( "formatter" ) != changed_attributes.end() ) {
+            formatter = Rocket::Controls::DataFormatter::GetDataFormatter ( GetAttribute ( "formatter" )->Get<Rocket::Core::String>() );
+            dirty_query = true;
+        }
+        if ( changed_attributes.find ( "targetid" ) != changed_attributes.end() || changed_attributes.find ( "targetdoc" ) != changed_attributes.end() ) {
+            dirty_listener = true;
+        }
+    }
 
-	void ProcessEvent( Rocket::Core::Event &evt )
-	{
-		Rocket::Core::Element::ProcessEvent( evt );
+    void ProcessEvent ( Rocket::Core::Event &evt ) {
+        Rocket::Core::Element::ProcessEvent ( evt );
 
-		// Make sure it is meant for the element we are listening to
-		if ( evt == "rowselect" && targetElement == evt.GetTargetElement() )
-		{
-			const Rocket::Core::Dictionary *parameters = evt.GetParameters();
-			selection = parameters->Get<int>( "index", -1 );
-			dirty_query = true;
-		}
+        // Make sure it is meant for the element we are listening to
+        if ( evt == "rowselect" && targetElement == evt.GetTargetElement() ) {
+            const Rocket::Core::Dictionary *parameters = evt.GetParameters();
+            selection = parameters->Get<int> ( "index", -1 );
+            dirty_query = true;
+        }
 
-	}
+    }
 
-	void OnUpdate( void )
-	{
-		if ( dirty_listener )
-		{
-			Rocket::Core::ElementDocument *document;
-			Rocket::Core::String td;
+    void OnUpdate ( void ) {
+        if ( dirty_listener ) {
+            Rocket::Core::ElementDocument *document;
+            Rocket::Core::String td;
 
-			if (  ( td = GetAttribute<Rocket::Core::String>( "targetdoc", "" ) ).Empty() )
-			{
-				document = GetOwnerDocument();
-			}
-			else
-			{
-				document = GetContext()->GetDocument( td );
-			}
+            if ( ( td = GetAttribute<Rocket::Core::String> ( "targetdoc", "" ) ).Empty() ) {
+                document = GetOwnerDocument();
+            } else {
+                document = GetContext()->GetDocument ( td );
+            }
 
-			if ( document )
-			{
-				Rocket::Core::Element *element;
+            if ( document ) {
+                Rocket::Core::Element *element;
 
-				if ( ( element = document->GetElementById( GetAttribute<Rocket::Core::String>( "targetid", "" ) ) ) )
-				{
-					if ( element != targetElement )
-					{
-						if ( targetElement )
-						{
-							targetElement->RemoveEventListener( "rowselect", this );
-						}
+                if ( ( element = document->GetElementById ( GetAttribute<Rocket::Core::String> ( "targetid", "" ) ) ) ) {
+                    if ( element != targetElement ) {
+                        if ( targetElement ) {
+                            targetElement->RemoveEventListener ( "rowselect", this );
+                        }
 
-						targetElement = element;
-						targetElement->AddEventListener( "rowselect", this );
-					}
-				}
-			}
+                        targetElement = element;
+                        targetElement->AddEventListener ( "rowselect", this );
+                    }
+                }
+            }
 
-			dirty_listener = false;
-		}
-		if ( dirty_query && selection >= 0 )
-		{
-			Rocket::Controls::DataQuery query( data_source, data_table, csvFields, selection, 1 );
-			Rocket::Core::StringList raw_data;
-			Rocket::Core::String out_data;
+            dirty_listener = false;
+        }
+        if ( dirty_query && selection >= 0 ) {
+            Rocket::Controls::DataQuery query ( data_source, data_table, csvFields, selection, 1 );
+            Rocket::Core::StringList raw_data;
+            Rocket::Core::String out_data;
 
-			query.NextRow();
+            query.NextRow();
 
-			for ( size_t i = 0; i < fields.size(); ++i )
-			{
-				raw_data.push_back( query.Get<Rocket::Core::String>( fields[ i ], "" ) );
-			}
+            for ( size_t i = 0; i < fields.size(); ++i ) {
+                raw_data.push_back ( query.Get<Rocket::Core::String> ( fields[ i ], "" ) );
+            }
 
-			if ( formatter )
-			{
-				formatter->FormatData( out_data, raw_data );
-			}
-			else
-			{
-				for ( size_t i = 0; i < raw_data.size(); ++i )
-				{
-					if ( i > 0 )
-					{
-						out_data.Append( "," );
-					}
+            if ( formatter ) {
+                formatter->FormatData ( out_data, raw_data );
+            } else {
+                for ( size_t i = 0; i < raw_data.size(); ++i ) {
+                    if ( i > 0 ) {
+                        out_data.Append ( "," );
+                    }
 
-					out_data.Append( raw_data[ i ] );
-				}
-			}
+                    out_data.Append ( raw_data[ i ] );
+                }
+            }
 
-			SetInnerRML( out_data );
+            SetInnerRML ( out_data );
 
-			dirty_query = false;
-		}
-	}
+            dirty_query = false;
+        }
+    }
 
 
 
 
 
 private:
-	Rocket::Controls::DataFormatter *formatter;
-	Rocket::Controls::DataSource *data_source;
-	int selection;
-	Rocket::Core::String data_table;
-	Rocket::Core::String csvFields;
-	Rocket::Core::StringList fields;
-	Rocket::Core::Element *targetElement;
-	bool dirty_query;
-	bool dirty_listener;
+    Rocket::Controls::DataFormatter *formatter;
+    Rocket::Controls::DataSource *data_source;
+    int selection;
+    Rocket::Core::String data_table;
+    Rocket::Core::String csvFields;
+    Rocket::Core::StringList fields;
+    Rocket::Core::Element *targetElement;
+    bool dirty_query;
+    bool dirty_listener;
 };
 
 #endif

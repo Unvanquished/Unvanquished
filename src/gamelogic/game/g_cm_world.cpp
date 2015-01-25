@@ -644,9 +644,9 @@ void G_CM_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 		}
 
 		if ( gcheck->r.absmin[ 0 ] > ap->maxs[ 0 ]
-		     || gcheck->r.absmin[ 1 ] > ap->maxs[ 1 ]
-		     || gcheck->r.absmin[ 2 ] > ap->maxs[ 2 ]
-		     || gcheck->r.absmax[ 0 ] < ap->mins[ 0 ] || gcheck->r.absmax[ 1 ] < ap->mins[ 1 ] || gcheck->r.absmax[ 2 ] < ap->mins[ 2 ] )
+		        || gcheck->r.absmin[ 1 ] > ap->maxs[ 1 ]
+		        || gcheck->r.absmin[ 2 ] > ap->maxs[ 2 ]
+		        || gcheck->r.absmax[ 0 ] < ap->mins[ 0 ] || gcheck->r.absmax[ 1 ] < ap->mins[ 1 ] || gcheck->r.absmax[ 2 ] < ap->mins[ 2 ] )
 		{
 			continue;
 		}
@@ -898,9 +898,9 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const
 		maxs2 = vec3_origin;
 	}
 
-    vec3_t mins, maxs;
-    VectorCopy(mins2, mins);
-    VectorCopy(maxs2, maxs);
+	vec3_t mins, maxs;
+	VectorCopy( mins2, mins );
+	VectorCopy( maxs2, maxs );
 
 	memset( &clip, 0, sizeof( moveclip_t ) );
 

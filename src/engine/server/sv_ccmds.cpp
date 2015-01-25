@@ -44,56 +44,70 @@ These commands can only be entered from stdin or by a remote operator datagram
 ===============================================================================
 */
 
-class MapCmd: public Cmd::StaticCmd {
-    public:
-        MapCmd(Str::StringRef name, Str::StringRef description, bool cheat):
-            Cmd::StaticCmd(name, Cmd::SYSTEM, description), cheat(cheat) {
-        }
+class MapCmd: public Cmd::StaticCmd
+{
+public:
+	MapCmd( Str::StringRef name, Str::StringRef description, bool cheat ):
+		Cmd::StaticCmd( name, Cmd::SYSTEM, description ), cheat( cheat )
+	{
+	}
 
-        void Run(const Cmd::Args& args) const OVERRIDE {
-            if (args.Argc() < 2) {
-                PrintUsage(args, "<mapname> (layoutname)", "loads a new map");
-                return;
-            }
+	void Run( const Cmd::Args& args ) const OVERRIDE
+	{
+		if ( args.Argc() < 2 )
+		{
+			PrintUsage( args, "<mapname> (layoutname)", "loads a new map" );
+			return;
+		}
 
-            const std::string& mapName = args.Argv(1);
+		const std::string& mapName = args.Argv( 1 );
 
-            //Make sure the map exists to avoid typos that would kill the game
-            if (!FS::FindPak("map-" + mapName)) {
-                Print("Can't find map %s", mapName);
-                return;
-            }
+		//Make sure the map exists to avoid typos that would kill the game
+		if ( !FS::FindPak( "map-" + mapName ) )
+		{
+			Print( "Can't find map %s", mapName );
+			return;
+		}
 
-            //Gets the layout list from the command but do not override if there is nothing
-            std::string layouts = args.ConcatArgs(2);
-            if (not layouts.empty()) {
-                Cvar::SetValue("g_layouts", layouts);
-            }
+		//Gets the layout list from the command but do not override if there is nothing
+		std::string layouts = args.ConcatArgs( 2 );
 
-            Cvar::SetValueForce("sv_cheats", cheat ? "1" : "0");
-            SV_SpawnServer(mapName.c_str());
-        }
+		if ( not layouts.empty() )
+		{
+			Cvar::SetValue( "g_layouts", layouts );
+		}
 
-        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-            if (argNum == 1) {
-                Cmd::CompletionResult out;
-                for (auto& x: FS::GetAvailablePaks()) {
-                    if (Str::IsPrefix("map-" + prefix, x.name))
-                        out.push_back({x.name.substr(4), ""});
-                }
-                return out;
-            } else if (argNum > 1) {
-                return FS::HomePath::CompleteFilename(prefix, "game/layouts/" + args.Argv(1), ".dat", false, true);
-            }
+		Cvar::SetValueForce( "sv_cheats", cheat ? "1" : "0" );
+		SV_SpawnServer( mapName.c_str() );
+	}
 
-            return {};
-        }
+	Cmd::CompletionResult Complete( int argNum, const Cmd::Args& args, Str::StringRef prefix ) const OVERRIDE
+	{
+		if ( argNum == 1 )
+		{
+			Cmd::CompletionResult out;
 
-    private:
-        bool cheat;
+			for ( auto & x : FS::GetAvailablePaks() )
+			{
+				if ( Str::IsPrefix( "map-" + prefix, x.name ) )
+					out.push_back( {x.name.substr( 4 ), ""} );
+			}
+
+			return out;
+		}
+		else if ( argNum > 1 )
+		{
+			return FS::HomePath::CompleteFilename( prefix, "game/layouts/" + args.Argv( 1 ), ".dat", false, true );
+		}
+
+		return {};
+	}
+
+private:
+	bool cheat;
 };
-static MapCmd MapCmdRegistration("map", "starts a new map", false);
-static MapCmd DevmapCmdRegistration("devmap", "starts a new map with cheats enabled", true);
+static MapCmd MapCmdRegistration( "map", "starts a new map", false );
+static MapCmd DevmapCmdRegistration( "devmap", "starts a new map with cheats enabled", true );
 
 void MSG_PrioritiseEntitystateFields( void );
 void MSG_PrioritisePlayerStateFields( void );
@@ -175,7 +189,7 @@ static void SV_MapRestart_f( void )
 
 	Cvar_Set( "sv_serverRestarting", "1" );
 
-	SV_RestartGameProgs(Cvar_VariableString("mapname"));
+	SV_RestartGameProgs( Cvar_VariableString( "mapname" ) );
 
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
@@ -203,7 +217,7 @@ static void SV_MapRestart_f( void )
 			continue;
 		}
 
-		isBot = SV_IsBot(client);
+		isBot = SV_IsBot( client );
 
 		// add the map_restart command
 		SV_AddServerCommand( client, "map_restart\n" );
@@ -273,7 +287,7 @@ static void SV_Status_f( void )
 	            "map: %s\n"
 	            "num score ping name            lastmsg address               qport rate\n"
 	            "--- ----- ---- --------------- ------- --------------------- ----- -----\n",
-	           ( int ) cpu, ( int ) avg, sv_mapname->string );
+	            ( int ) cpu, ( int ) avg, sv_mapname->string );
 
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{

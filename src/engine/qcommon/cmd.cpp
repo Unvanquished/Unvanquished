@@ -87,7 +87,7 @@ Cmd_PrintUsage
 */
 void Cmd_PrintUsage( const char *syntax, const char *description )
 {
-	if(!description)
+	if ( !description )
 	{
 		Com_Printf( "%s: %s %s\n", "usage", Cmd_Argv( 0 ), syntax );
 	}
@@ -115,15 +115,16 @@ Cmd_Argv
 */
 char *Cmd_Argv( int arg )
 {
-	if (arg >= Cmd_Argc() || arg < 0) {
+	if ( arg >= Cmd_Argc() || arg < 0 )
+	{
 		return "";
 	}
 
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.Argv(arg);
+	const std::string& res = args.Argv( arg );
 	static char buffer[100][1024];
 
-	Q_strncpyz(buffer[arg], res.c_str(), sizeof(buffer[arg]));
+	Q_strncpyz( buffer[arg], res.c_str(), sizeof( buffer[arg] ) );
 
 	return buffer[arg];
 }
@@ -153,8 +154,8 @@ char *Cmd_ArgsFrom( int arg )
 	static char cmd_args[ BIG_INFO_STRING ];
 
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.EscapedArgs(arg);
-	Q_strncpyz(cmd_args, res.c_str(), BIG_INFO_STRING);
+	const std::string& res = args.EscapedArgs( arg );
+	Q_strncpyz( cmd_args, res.c_str(), BIG_INFO_STRING );
 
 	return cmd_args;
 }
@@ -168,7 +169,7 @@ Cmd_EscapedArgsBuffer
 void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength )
 {
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.EscapedArgs(0);
+	const std::string& res = args.EscapedArgs( 0 );
 	Q_strncpyz( buffer, res.c_str(), bufferLength );
 }
 
@@ -181,7 +182,7 @@ Cmd_LiteralArgsBuffer
 void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength )
 {
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.ConcatArgs(0);
+	const std::string& res = args.ConcatArgs( 0 );
 	Q_strncpyz( buffer, res.c_str(), bufferLength );
 }
 
@@ -248,6 +249,7 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 			{
 				// two increments, avoiding matching /*/
 				++text;
+
 				while ( *++text && !( text[ 0 ] == '*' && text[ 1 ] == '/' ) ) {}
 
 				if ( !*text )
@@ -277,7 +279,7 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 				// copy until next space, quote or EOT, handling backslashes
 				while ( *text < 0 || ( *text > ' ' && *text != '"' ) )
 				{
-					if ( *text == '\\' && (++text, (*text >= 0 && *text < ' ') ) )
+					if ( *text == '\\' && ( ++text, ( *text >= 0 && *text < ' ' ) ) )
 					{
 						break;
 					}
@@ -294,7 +296,7 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 
 				while ( *text && *text != '"' )
 				{
-					if ( *text == '\\' && (++text, (*text >= 0 && *text < ' ') ) )
+					if ( *text == '\\' && ( ++text, ( *text >= 0 && *text < ' ' ) ) )
 					{
 						break;
 					}
@@ -302,7 +304,10 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 					*textOut++ = *text++;
 				}
 
-				if ( *text ) ++text; // terminating ", if any
+				if ( *text )
+				{
+					++text;    // terminating ", if any
+				}
 			}
 		}
 
@@ -314,7 +319,7 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 		}
 	}
 
-	done:
+done:
 
 	if ( textOut > textOutStart )
 	{
@@ -331,8 +336,8 @@ Cmd_TokenizeString
 */
 void Cmd_TokenizeString( const char *text_in )
 {
-	Cmd::Args args(text_in);
-	Cmd::SetCurrentArgs(args);
+	Cmd::Args args( text_in );
+	Cmd::SetCurrentArgs( args );
 }
 
 /*
@@ -379,26 +384,40 @@ static const char *EscapeString( const char *in, qboolean quote )
 
 		switch ( c )
 		{
-		case '/':
-			// only quote "//" and "/*"
-			if ( *in != '/' && *in != '*' ) break;
-			forcequote = qtrue;
-			goto doquote;
-		case ';':
-			// no need to quote semicolons if in ""
-			quoted = qtrue;
-			if ( quote ) break;
-		case '"':
-		case '$':
-		case '\\':
-			doquote:
-			quoted = qtrue;
-			*out++ = '\\'; // could set out == end - is fine
-			break;
+			case '/':
+
+				// only quote "//" and "/*"
+				if ( *in != '/' && *in != '*' )
+				{
+					break;
+				}
+
+				forcequote = qtrue;
+				goto doquote;
+
+			case ';':
+				// no need to quote semicolons if in ""
+				quoted = qtrue;
+
+				if ( quote )
+				{
+					break;
+				}
+
+			case '"':
+			case '$':
+			case '\\':
+doquote:
+				quoted = qtrue;
+				*out++ = '\\'; // could set out == end - is fine
+				break;
 		}
 
 		// keep quotes if we have white space
-		if ( c >= '\0' && c <= ' ' ) quoted = qtrue;
+		if ( c >= '\0' && c <= ' ' )
+		{
+			quoted = qtrue;
+		}
 
 		// if out == end, overrun (but within escapeBuffer)
 		*out++ = c;
@@ -465,7 +484,8 @@ const char *Cmd_UnquoteString( const char *str )
 	return escapeBuffer;
 }
 
-struct proxyInfo_t{
+struct proxyInfo_t
+{
 	xcommand_t cmd;
 	completionFunc_t complete;
 };
@@ -477,50 +497,60 @@ Cmd::CompletionResult completeMatches;
 std::string completedPrefix;
 
 //Is registered in the new command system for all the commands registered through the C interface.
-class ProxyCmd: public Cmd::CmdBase {
-	public:
-		ProxyCmd(): Cmd::CmdBase(Cmd::PROXY_FOR_OLD) {}
+class ProxyCmd: public Cmd::CmdBase
+{
+public:
+	ProxyCmd(): Cmd::CmdBase( Cmd::PROXY_FOR_OLD ) {}
 
-		void Run(const Cmd::Args& args) const OVERRIDE {
-			proxyInfo_t proxy = proxies[args.Argv(0)];
-			proxy.cmd();
+	void Run( const Cmd::Args& args ) const OVERRIDE
+	{
+		proxyInfo_t proxy = proxies[args.Argv( 0 )];
+		proxy.cmd();
+	}
+
+	Cmd::CompletionResult Complete( int argNum, const Cmd::Args& args, Str::StringRef prefix ) const OVERRIDE
+	{
+		static char buffer[4096];
+		proxyInfo_t proxy = proxies[args.Argv( 0 )];
+
+		if ( !proxy.complete )
+		{
+			return {};
 		}
 
-		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-			static char buffer[4096];
-			proxyInfo_t proxy = proxies[args.Argv(0)];
+		completedPrefix = prefix;
+		completeMatches.clear();
 
-			if (!proxy.complete) {
-				return {};
-			}
-			completedPrefix = prefix;
-			completeMatches.clear();
-
-			//Completing an empty arg, we add a space to mimic the old autocompletion behavior
-			if (args.Argc() == argNum) {
-				Q_strncpyz(buffer, (args.ConcatArgs(0) + " ").c_str(), sizeof(buffer));
-			} else {
-				Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), sizeof(buffer));
-			}
-
-			//Some completion handlers expect tokenized arguments
-			Cmd::Args savedArgs = Cmd::GetCurrentArgs();
-			Cmd::SetCurrentArgs(args);
-
-			proxy.complete(buffer, argNum + 1);
-
-			Cmd::SetCurrentArgs(savedArgs);
-
-			return completeMatches;
+		//Completing an empty arg, we add a space to mimic the old autocompletion behavior
+		if ( args.Argc() == argNum )
+		{
+			Q_strncpyz( buffer, ( args.ConcatArgs( 0 ) + " " ).c_str(), sizeof( buffer ) );
 		}
+		else
+		{
+			Q_strncpyz( buffer, args.ConcatArgs( 0 ).c_str(), sizeof( buffer ) );
+		}
+
+		//Some completion handlers expect tokenized arguments
+		Cmd::Args savedArgs = Cmd::GetCurrentArgs();
+		Cmd::SetCurrentArgs( args );
+
+		proxy.complete( buffer, argNum + 1 );
+
+		Cmd::SetCurrentArgs( savedArgs );
+
+		return completeMatches;
+	}
 };
 
 ProxyCmd myProxyCmd;
 
-void Cmd_OnCompleteMatch(const char* s) {
-    if (Str::IsIPrefix(completedPrefix, s)) {
-        completeMatches.push_back({s, ""});
-    }
+void Cmd_OnCompleteMatch( const char* s )
+{
+	if ( Str::IsIPrefix( completedPrefix, s ) )
+	{
+		completeMatches.push_back( {s, ""} );
+	}
 }
 /*
 ============
@@ -529,11 +559,12 @@ Cmd_AddCommand
 */
 void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 {
-	proxies[cmd_name] = proxyInfo_t{function, NULL};
+	proxies[cmd_name] = proxyInfo_t {function, NULL};
 
 	//VMs do not properly clean up commands so we avoid creating a command if there is already one
-	if (not Cmd::CommandExists(cmd_name)) {
-		Cmd::AddCommand(cmd_name, myProxyCmd, "--");
+	if ( not Cmd::CommandExists( cmd_name ) )
+	{
+		Cmd::AddCommand( cmd_name, myProxyCmd, "--" );
 	}
 }
 
@@ -554,8 +585,8 @@ Cmd_RemoveCommand
 */
 void Cmd_RemoveCommand( const char *cmd_name )
 {
-	proxies.erase(cmd_name);
-	Cmd::RemoveCommand(cmd_name);
+	proxies.erase( cmd_name );
+	Cmd::RemoveCommand( cmd_name );
 }
 
 /*
@@ -563,14 +594,19 @@ void Cmd_RemoveCommand( const char *cmd_name )
 Cmd_RemoveCommandByFunc
 ============
 */
-void Cmd_RemoveCommandsByFunc( xcommand_t function ) {
-    for (auto it = proxies.cbegin(); it != proxies.cend();) {
-        if (it->second.cmd == function) {
-            Cmd::RemoveCommand(it->first);
-            proxies.erase(it ++);
-        } else {
-            ++ it;
-        }
-    }
+void Cmd_RemoveCommandsByFunc( xcommand_t function )
+{
+	for ( auto it = proxies.cbegin(); it != proxies.cend(); )
+	{
+		if ( it->second.cmd == function )
+		{
+			Cmd::RemoveCommand( it->first );
+			proxies.erase( it ++ );
+		}
+		else
+		{
+			++ it;
+		}
+	}
 }
 

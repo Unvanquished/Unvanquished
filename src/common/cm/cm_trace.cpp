@@ -42,7 +42,7 @@ Maryland 20850 USA.
 
 //#define CAPSULE_DEBUG
 
-Cvar::Cvar<bool> cm_noCurves(VM_STRING_PREFIX "cm_noCurves", "something in cm about curves?", Cvar::CHEAT, false);
+Cvar::Cvar<bool> cm_noCurves( VM_STRING_PREFIX "cm_noCurves", "something in cm about curves?", Cvar::CHEAT, false );
 
 /*
 ===============================================================================
@@ -183,10 +183,10 @@ static void CM_TestBoxInBrush( traceWork_t *tw, cbrush_t *brush )
 	// special test for axial
 	// the first 6 brush planes are always axial
 	if ( tw->bounds[ 0 ][ 0 ] > brush->bounds[ 1 ][ 0 ]
-	     || tw->bounds[ 0 ][ 1 ] > brush->bounds[ 1 ][ 1 ]
-	     || tw->bounds[ 0 ][ 2 ] > brush->bounds[ 1 ][ 2 ]
-	     || tw->bounds[ 1 ][ 0 ] < brush->bounds[ 0 ][ 0 ]
-	     || tw->bounds[ 1 ][ 1 ] < brush->bounds[ 0 ][ 1 ] || tw->bounds[ 1 ][ 2 ] < brush->bounds[ 0 ][ 2 ] )
+	        || tw->bounds[ 0 ][ 1 ] > brush->bounds[ 1 ][ 1 ]
+	        || tw->bounds[ 0 ][ 2 ] > brush->bounds[ 1 ][ 2 ]
+	        || tw->bounds[ 1 ][ 0 ] < brush->bounds[ 0 ][ 0 ]
+	        || tw->bounds[ 1 ][ 1 ] < brush->bounds[ 0 ][ 1 ] || tw->bounds[ 1 ][ 2 ] < brush->bounds[ 0 ][ 2 ] )
 	{
 		return;
 	}
@@ -1822,10 +1822,10 @@ void CM_TraceCapsuleThroughCapsule( traceWork_t *tw, clipHandle_t model )
 
 	// test trace bounds vs. capsule bounds
 	if ( tw->bounds[ 0 ][ 0 ] > maxs[ 0 ] + RADIUS_EPSILON
-	     || tw->bounds[ 0 ][ 1 ] > maxs[ 1 ] + RADIUS_EPSILON
-	     || tw->bounds[ 0 ][ 2 ] > maxs[ 2 ] + RADIUS_EPSILON
-	     || tw->bounds[ 1 ][ 0 ] < mins[ 0 ] - RADIUS_EPSILON
-	     || tw->bounds[ 1 ][ 1 ] < mins[ 1 ] - RADIUS_EPSILON || tw->bounds[ 1 ][ 2 ] < mins[ 2 ] - RADIUS_EPSILON )
+	        || tw->bounds[ 0 ][ 1 ] > maxs[ 1 ] + RADIUS_EPSILON
+	        || tw->bounds[ 0 ][ 2 ] > maxs[ 2 ] + RADIUS_EPSILON
+	        || tw->bounds[ 1 ][ 0 ] < mins[ 0 ] - RADIUS_EPSILON
+	        || tw->bounds[ 1 ][ 1 ] < mins[ 1 ] - RADIUS_EPSILON || tw->bounds[ 1 ][ 2 ] < mins[ 2 ] - RADIUS_EPSILON )
 	{
 		return;
 	}
@@ -2426,7 +2426,7 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 
 	// sweep the box through the model
 	CM_Trace( &trace, start_l, end_l, symetricSize[ 0 ], symetricSize[ 1 ], model, origin,
-			  brushmask, skipmask, type, &sphere );
+	          brushmask, skipmask, type, &sphere );
 
 	// if the bmodel was rotated and there was a collision
 	if ( rotated && trace.fraction != 1.0 )
@@ -2610,7 +2610,8 @@ static float CM_DistanceToBrush( const vec3_t loc, cbrush_t *brush )
 	return dist;
 }
 
-float CM_DistanceToModel( const vec3_t loc, clipHandle_t model ) {
+float CM_DistanceToModel( const vec3_t loc, clipHandle_t model )
+{
 	cmodel_t    *cmod;
 	int        k;
 	int        brushnum;
@@ -2627,8 +2628,11 @@ float CM_DistanceToModel( const vec3_t loc, clipHandle_t model ) {
 		b = &cm.brushes[ brushnum ];
 
 		d1 = CM_DistanceToBrush( loc, b );
-		if( d1 < dist )
+
+		if ( d1 < dist )
+		{
 			dist = d1;
+		}
 	}
 
 	return dist;

@@ -42,152 +42,140 @@ Maryland 20850 USA.
 #define CAPSULE_MODEL_HANDLE ( MAX_SUBMODELS )
 #define BOX_MODEL_HANDLE     ( MAX_SUBMODELS + 1)
 
-typedef struct cbrushedge_s
-{
-	vec3_t p0;
-	vec3_t p1;
+typedef struct cbrushedge_s {
+    vec3_t p0;
+    vec3_t p1;
 } cbrushedge_t;
 
-typedef struct
-{
-	cplane_t  *plane;
-	int       planeNum;
-	int       children[ 2 ]; // negative numbers are leafs
-	winding_t *winding;
+typedef struct {
+    cplane_t  *plane;
+    int       planeNum;
+    int       children[ 2 ]; // negative numbers are leafs
+    winding_t *winding;
 } cNode_t;
 
-typedef struct
-{
-	int cluster;
-	int area;
+typedef struct {
+    int cluster;
+    int area;
 
-	int firstLeafBrush;
-	int numLeafBrushes;
+    int firstLeafBrush;
+    int numLeafBrushes;
 
-	int firstLeafSurface;
-	int numLeafSurfaces;
+    int firstLeafSurface;
+    int numLeafSurfaces;
 } cLeaf_t;
 
-typedef struct cmodel_s
-{
-	vec3_t  mins, maxs;
-	cLeaf_t leaf; // submodels don't reference the main tree
+typedef struct cmodel_s {
+    vec3_t  mins, maxs;
+    cLeaf_t leaf; // submodels don't reference the main tree
 } cmodel_t;
 
-typedef struct
-{
-	cplane_t  *plane;
-	int       planeNum;
-	int       surfaceFlags;
-	winding_t *winding;
+typedef struct {
+    cplane_t  *plane;
+    int       planeNum;
+    int       surfaceFlags;
+    winding_t *winding;
 } cbrushside_t;
 
-typedef struct
-{
-	int          contents;
-	vec3_t       bounds[ 2 ];
-	int          numsides;
-	cbrushside_t *sides;
-	int          checkcount; // to avoid repeated testings
-	qboolean     collided; // marker for optimisation
-	cbrushedge_t *edges;
-	int          numEdges;
+typedef struct {
+    int          contents;
+    vec3_t       bounds[ 2 ];
+    int          numsides;
+    cbrushside_t *sides;
+    int          checkcount; // to avoid repeated testings
+    qboolean     collided; // marker for optimisation
+    cbrushedge_t *edges;
+    int          numEdges;
 } cbrush_t;
 
-typedef struct cPlane_s
-{
-	float           plane[ 4 ];
-	int             signbits; // signx + (signy<<1) + (signz<<2), used as lookup during collision
-	struct cPlane_s *hashChain;
+typedef struct cPlane_s {
+    float           plane[ 4 ];
+    int             signbits; // signx + (signy<<1) + (signz<<2), used as lookup during collision
+    struct cPlane_s *hashChain;
 } cPlane_t;
 
 // 3 or four + 6 axial bevels + 4 or 3 * 4 edge bevels
 #define MAX_FACET_BEVELS ( 4 + 6 + 16 )
 
 // a facet is a subdivided element of a patch approximation or model
-typedef struct
-{
-	int      surfacePlane;
-	int      numBorders;
-	int      borderPlanes[ MAX_FACET_BEVELS ];
-	int      borderInward[ MAX_FACET_BEVELS ];
-	qboolean borderNoAdjust[ MAX_FACET_BEVELS ];
+typedef struct {
+    int      surfacePlane;
+    int      numBorders;
+    int      borderPlanes[ MAX_FACET_BEVELS ];
+    int      borderInward[ MAX_FACET_BEVELS ];
+    qboolean borderNoAdjust[ MAX_FACET_BEVELS ];
 } cFacet_t;
 
-typedef struct cSurfaceCollide_s
-{
-	vec3_t   bounds[ 2 ];
-	int      numPlanes; // surface planes plus edge planes
-	cPlane_t *planes;
+typedef struct cSurfaceCollide_s {
+    vec3_t   bounds[ 2 ];
+    int      numPlanes; // surface planes plus edge planes
+    cPlane_t *planes;
 
-	int      numFacets;
-	cFacet_t *facets;
+    int      numFacets;
+    cFacet_t *facets;
 } cSurfaceCollide_t;
 
-typedef struct
-{
-	int               checkcount; // to avoid repeated testings
-	int               surfaceFlags;
-	int               contents;
-	cSurfaceCollide_t *sc;
-	int               type;
+typedef struct {
+    int               checkcount; // to avoid repeated testings
+    int               surfaceFlags;
+    int               contents;
+    cSurfaceCollide_t *sc;
+    int               type;
 } cSurface_t;
 
-typedef struct
-{
-	int floodnum;
-	int floodvalid;
+typedef struct {
+    int floodnum;
+    int floodvalid;
 } cArea_t;
 
-typedef struct
-{
-	char         name[ MAX_QPATH ];
+typedef struct {
+    char         name[ MAX_QPATH ];
 
-	int          numShaders;
-	dshader_t    *shaders;
+    int          numShaders;
+    dshader_t    *shaders;
 
-	int          numBrushSides;
-	cbrushside_t *brushsides;
+    int          numBrushSides;
+    cbrushside_t *brushsides;
 
-	int          numPlanes;
-	cplane_t     *planes;
+    int          numPlanes;
+    cplane_t     *planes;
 
-	int          numNodes;
-	cNode_t      *nodes;
+    int          numNodes;
+    cNode_t      *nodes;
 
-	int          numLeafs;
-	cLeaf_t      *leafs;
+    int          numLeafs;
+    cLeaf_t      *leafs;
 
-	int          numLeafBrushes;
-	int          *leafbrushes;
+    int          numLeafBrushes;
+    int          *leafbrushes;
 
-	int          numLeafSurfaces;
-	int          *leafsurfaces;
+    int          numLeafSurfaces;
+    int          *leafsurfaces;
 
-	int          numSubModels;
-	cmodel_t     *cmodels;
+    int          numSubModels;
+    cmodel_t     *cmodels;
 
-	int          numBrushes;
-	cbrush_t     *brushes;
+    int          numBrushes;
+    cbrush_t     *brushes;
 
-	int          numClusters;
-	int          clusterBytes;
-	byte         *visibility;
-	qboolean     vised; // if false, visibility is just a single cluster of ffs
+    int          numClusters;
+    int          clusterBytes;
+    byte         *visibility;
+    qboolean     vised; // if false, visibility is just a single cluster of ffs
 
-	int          numEntityChars;
-	char         *entityString;
+    int          numEntityChars;
+    char         *entityString;
 
-	int          numAreas;
-	cArea_t      *areas;
-	int          *areaPortals; // [ numAreas*numAreas ] reference counts
+    int          numAreas;
+    cArea_t      *areas;
+    int          *areaPortals; // [ numAreas*numAreas ] reference counts
 
-	int          numSurfaces;
-	cSurface_t   **surfaces; // non-patches will be NULL
+    int          numSurfaces;
+    cSurface_t   **surfaces; // non-patches will be NULL
 
-	int          floodvalid;
-	int          checkcount; // incremented on each trace
-	qboolean     perPolyCollision;
+    int          floodvalid;
+    int          checkcount; // incremented on each trace
+    qboolean     perPolyCollision;
 } clipMap_t;
 
 // keep 1/8 unit away to keep the position valid before network snapping
@@ -202,74 +190,69 @@ extern Log::Logger cmLog;
 
 // cm_test.c
 
-typedef struct
-{
-	float startRadius;
-	float endRadius;
+typedef struct {
+    float startRadius;
+    float endRadius;
 } biSphere_t;
 
 // Used for oriented capsule collision detection
-typedef struct
-{
-	float  radius;
-	float  halfheight;
-	vec3_t offset;
+typedef struct {
+    float  radius;
+    float  halfheight;
+    vec3_t offset;
 } sphere_t;
 
-typedef struct
-{
-	traceType_t type;
-	vec3_t      start;
-	vec3_t      end;
-	vec3_t      size[ 2 ]; // size of the box being swept through the model
-	vec3_t      offsets[ 8 ]; // [signbits][x] = either size[0][x] or size[1][x]
-	float       maxOffset; // longest corner length from origin
-	vec3_t      extents; // greatest of abs(size[0]) and abs(size[1])
-	vec3_t      bounds[ 2 ]; // enclosing box of start and end surrounding by size
-	vec3_t      modelOrigin; // origin of the model tracing through
-	int         contents; // ored contents of the model tracing through
-	int         skipContents; // ored contents that shall be ignored
-	qboolean    isPoint; // optimized case
-	trace_t     trace; // returned from trace call
-	sphere_t    sphere; // sphere for oriendted capsule collision
-	biSphere_t  biSphere;
-	qboolean    testLateralCollision; // whether or not to test for lateral collision
+typedef struct {
+    traceType_t type;
+    vec3_t      start;
+    vec3_t      end;
+    vec3_t      size[ 2 ]; // size of the box being swept through the model
+    vec3_t      offsets[ 8 ]; // [signbits][x] = either size[0][x] or size[1][x]
+    float       maxOffset; // longest corner length from origin
+    vec3_t      extents; // greatest of abs(size[0]) and abs(size[1])
+    vec3_t      bounds[ 2 ]; // enclosing box of start and end surrounding by size
+    vec3_t      modelOrigin; // origin of the model tracing through
+    int         contents; // ored contents of the model tracing through
+    int         skipContents; // ored contents that shall be ignored
+    qboolean    isPoint; // optimized case
+    trace_t     trace; // returned from trace call
+    sphere_t    sphere; // sphere for oriendted capsule collision
+    biSphere_t  biSphere;
+    qboolean    testLateralCollision; // whether or not to test for lateral collision
 } traceWork_t;
 
-typedef struct leafList_s
-{
-	int      count;
-	int      maxcount;
-	qboolean overflowed;
-	int      *list;
-	vec3_t   bounds[ 2 ];
-	int      lastLeaf; // for overflows where each leaf can't be stored individually
-	void ( *storeLeafs )( struct leafList_s *ll, int nodenum );
+typedef struct leafList_s {
+    int      count;
+    int      maxcount;
+    qboolean overflowed;
+    int      *list;
+    vec3_t   bounds[ 2 ];
+    int      lastLeaf; // for overflows where each leaf can't be stored individually
+    void ( *storeLeafs ) ( struct leafList_s *ll, int nodenum );
 } leafList_t;
 
 #define SUBDIVIDE_DISTANCE 16 //4 // never more than this units away from curve
 #define PLANE_TRI_EPSILON  0.1
 #define WRAP_POINT_EPSILON 0.1
 
-cSurfaceCollide_t *CM_GeneratePatchCollide( int width, int height, vec3_t *points );
-void              CM_ClearLevelPatches( void );
+cSurfaceCollide_t *CM_GeneratePatchCollide ( int width, int height, vec3_t *points );
+void              CM_ClearLevelPatches ( void );
 
 // cm_trisoup.c
 
-typedef struct
-{
-	int    numTriangles;
-	int    indexes[ SHADER_MAX_INDEXES ];
+typedef struct {
+    int    numTriangles;
+    int    indexes[ SHADER_MAX_INDEXES ];
 
-	int    trianglePlanes[ SHADER_MAX_TRIANGLES ];
+    int    trianglePlanes[ SHADER_MAX_TRIANGLES ];
 
-	vec3_t points[ SHADER_MAX_TRIANGLES ][ 3 ];
+    vec3_t points[ SHADER_MAX_TRIANGLES ][ 3 ];
 } cTriangleSoup_t;
 
-cSurfaceCollide_t              *CM_GenerateTriangleSoupCollide( int numVertexes, vec3_t *vertexes, int numIndexes, int *indexes );
+cSurfaceCollide_t              *CM_GenerateTriangleSoupCollide ( int numVertexes, vec3_t *vertexes, int numIndexes, int *indexes );
 
 
-void* CM_Alloc( int size );
+void* CM_Alloc ( int size );
 
 // cm_plane.c
 
@@ -279,14 +262,14 @@ extern cPlane_t planes[];
 extern int numFacets;
 extern cFacet_t facets[];
 
-void     CM_ResetPlaneCounts( void );
-int      CM_FindPlane2( float plane[ 4 ], qboolean *flipped );
-int      CM_FindPlane( const float *p1, const float *p2, const float *p3 );
-int      CM_PointOnPlaneSide( float *p, int planeNum );
-qboolean CM_ValidateFacet( cFacet_t *facet );
-void     CM_AddFacetBevels( cFacet_t *facet );
-qboolean CM_GenerateFacetFor3Points( cFacet_t *facet, const vec3_t p1, const vec3_t p2, const vec3_t p3 );
-qboolean CM_GenerateFacetFor4Points( cFacet_t *facet, const vec3_t p1, const vec3_t p2, const vec3_t p3, const vec3_t p4 );
+void     CM_ResetPlaneCounts ( void );
+int      CM_FindPlane2 ( float plane[ 4 ], qboolean *flipped );
+int      CM_FindPlane ( const float *p1, const float *p2, const float *p3 );
+int      CM_PointOnPlaneSide ( float *p, int planeNum );
+qboolean CM_ValidateFacet ( cFacet_t *facet );
+void     CM_AddFacetBevels ( cFacet_t *facet );
+qboolean CM_GenerateFacetFor3Points ( cFacet_t *facet, const vec3_t p1, const vec3_t p2, const vec3_t p3 );
+qboolean CM_GenerateFacetFor4Points ( cFacet_t *facet, const vec3_t p1, const vec3_t p2, const vec3_t p3, const vec3_t p4 );
 
 
 // cm_test.c
@@ -295,15 +278,15 @@ extern const cFacet_t          *debugFacet;
 extern qboolean                debugBlock;
 extern vec3_t                  debugBlockPoints[ 4 ];
 
-void                           CM_StoreLeafs( leafList_t *ll, int nodenum );
-void                           CM_StoreBrushes( leafList_t *ll, int nodenum );
+void                           CM_StoreLeafs ( leafList_t *ll, int nodenum );
+void                           CM_StoreBrushes ( leafList_t *ll, int nodenum );
 
-void                           CM_BoxLeafnums_r( leafList_t *ll, int nodenum );
+void                           CM_BoxLeafnums_r ( leafList_t *ll, int nodenum );
 
-cmodel_t                       *CM_ClipHandleToModel( clipHandle_t handle );
+cmodel_t                       *CM_ClipHandleToModel ( clipHandle_t handle );
 
 // XreaL BEGIN
-qboolean                       CM_BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
-qboolean                       CM_BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t point );
+qboolean                       CM_BoundsIntersect ( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
+qboolean                       CM_BoundsIntersectPoint ( const vec3_t mins, const vec3_t maxs, const vec3_t point );
 
 // XreaL END

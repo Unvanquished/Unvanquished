@@ -153,8 +153,10 @@ void SP_gfx_light_flare( gentity_t *self )
 
 	self->act = gfx_light_flare_toggle;
 
-	if( !self->config.speed )
+	if ( !self->config.speed )
+	{
 		self->config.speed = 200;
+	}
 
 	self->s.time = self->config.speed;
 
@@ -356,7 +358,7 @@ void gfx_shader_mod_reset( gentity_t *self )
 		return;
 	}
 
-	if( !self->active ) // initial reset doesnt need a remap
+	if ( !self->active ) // initial reset doesnt need a remap
 	{
 		return;
 	}

@@ -75,26 +75,26 @@ qboolean G_BotClearNames( void )
 			return qfalse;
 		}
 
-		for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
-			if ( botNames[TEAM_HUMANS].name[i].inUse )
-			{
-				return qfalse;
-			}
+	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
+		if ( botNames[TEAM_HUMANS].name[i].inUse )
+		{
+			return qfalse;
+		}
 
-			for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
-			{
-				BG_Free( botNames[TEAM_ALIENS].name[i].name );
-			}
+	for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
+	{
+		BG_Free( botNames[TEAM_ALIENS].name[i].name );
+	}
 
-			for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
-			{
-				BG_Free( botNames[TEAM_HUMANS].name[i].name );
-			}
+	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
+	{
+		BG_Free( botNames[TEAM_HUMANS].name[i].name );
+	}
 
-			botNames[TEAM_ALIENS].count = 0;
-			botNames[TEAM_HUMANS].count = 0;
+	botNames[TEAM_ALIENS].count = 0;
+	botNames[TEAM_HUMANS].count = 0;
 
-			return qtrue;
+	return qtrue;
 }
 
 int G_BotAddNames( team_t team, int arg, int last )
@@ -117,13 +117,13 @@ int G_BotAddNames( team_t team, int arg, int last )
 					goto next;
 				}
 
-				botNames[team].name[i].name = ( char * )BG_Alloc( strlen( name ) + 1 );
-			strcpy( botNames[team].name[i].name, name );
+		botNames[team].name[i].name = ( char * )BG_Alloc( strlen( name ) + 1 );
+		strcpy( botNames[team].name[i].name, name );
 
 		botNames[team].count = ++i;
 		++added;
 
-		next:
+next:
 		;
 	}
 
@@ -147,6 +147,7 @@ static char *G_BotSelectName( team_t team )
 		{
 			return botNames[team].name[choice].name;
 		}
+
 		choice = ( choice + 1 ) % botNames[team].count;
 	}
 
@@ -174,7 +175,7 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 	botMind = self->botMind = &g_botMind[clientNum];
 
 	botMind->botTeam = team;
-	BotSetNavmesh( self, (class_t) self->client->ps.stats[ STAT_CLASS ] );
+	BotSetNavmesh( self, ( class_t ) self->client->ps.stats[ STAT_CLASS ] );
 
 	memset( botMind->runningNodes, 0, sizeof( botMind->runningNodes ) );
 	botMind->numRunningNodes = 0;
@@ -233,6 +234,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 		trap_Print( "no more slots for bot\n" );
 		return qfalse;
 	}
+
 	bot = &g_entities[ clientNum ];
 	bot->r.svFlags |= SVF_BOT;
 	bot->inuse = qtrue;
@@ -251,6 +253,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	Info_SetValueForKey( userinfo, "name", name ? name : "", qfalse ); // allow defaulting
 	Info_SetValueForKey( userinfo, "rate", "25000", qfalse );
 	Info_SetValueForKey( userinfo, "snaps", "20", qfalse );
+
 	if ( autoname )
 	{
 		Info_SetValueForKey( userinfo, "autoname", name, qfalse );
@@ -303,13 +306,14 @@ void G_BotDel( int clientNum )
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
 	autoname = Info_ValueForKey( userinfo, "autoname" );
+
 	if ( autoname && *autoname )
 	{
 		G_BotNameUsed( BotGetEntityTeam( bot ), autoname, qfalse );
 	}
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 disconnected\n" ) ),
-					Quote( bot->client->pers.netname ) ) );
+	                                Quote( bot->client->pers.netname ) ) );
 	trap_DropClient( clientNum, "disconnected" );
 }
 
@@ -401,7 +405,7 @@ void G_BotThink( gentity_t *self )
 		trap_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
 		//BotClampPos( self );
 	}
-	
+
 	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
 
 	// if we were nudged...
@@ -426,6 +430,7 @@ void G_BotSpectatorThink( gentity_t *self )
 		//check for humans in the spawn que
 		{
 			spawnQueue_t *sq;
+
 			if ( self->client->pers.team != TEAM_NONE )
 			{
 				sq = &level.team[ self->client->pers.team ].spawnQueue;
@@ -465,6 +470,7 @@ void G_BotSpectatorThink( gentity_t *self )
 			self->client->pers.classSelection = PCL_HUMAN_NAKED;
 			self->client->ps.stats[STAT_CLASS] = PCL_HUMAN_NAKED;
 			BotSetNavmesh( self, PCL_HUMAN_NAKED );
+
 			//we want to spawn with rifle unless it is disabled or we need to build
 			if ( g_bot_rifle.integer )
 			{
@@ -499,6 +505,7 @@ void G_BotIntermissionThink( gclient_t *client )
 void G_BotInit( void )
 {
 	G_BotNavInit( );
+
 	if ( treeList.maxTrees == 0 )
 	{
 		InitTreeList( &treeList );
@@ -521,6 +528,7 @@ void G_BotCleanup( int restart )
 
 		G_BotClearNames();
 	}
+
 	FreeTreeList( &treeList );
 	G_BotNavCleanup();
 }

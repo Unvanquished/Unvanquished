@@ -66,7 +66,7 @@ static void R_JPGOutputMessage( j_common_ptr cinfo )
 }
 
 void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height,
-	      int *numLayers, int *numMips, int *bits, byte alphaByte )
+              int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
 	/* This struct contains the JPEG decompression parameters and pointers to
 	 * working space (which is allocated as needed by the JPEG library).
@@ -179,8 +179,8 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 	pixelcount = cinfo.output_width * cinfo.output_height;
 
 	if ( !cinfo.output_width || !cinfo.output_height
-	     || ( ( pixelcount * 4 ) / cinfo.output_width ) / 4 != cinfo.output_height
-	     || pixelcount > 0x1FFFFFFF || cinfo.output_components != 3 )
+	        || ( ( pixelcount * 4 ) / cinfo.output_width ) / 4 != cinfo.output_height
+	        || pixelcount > 0x1FFFFFFF || cinfo.output_components != 3 )
 	{
 		// Free the memory to make sure we don't leak memory
 		ri.FS_FreeFile( fbuffer.v );
@@ -196,7 +196,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 	memcount = pixelcount * 4;
 	row_stride = cinfo.output_width * cinfo.output_components;
 
-	out = (byte*) ri.Z_Malloc( memcount );
+	out = ( byte* ) ri.Z_Malloc( memcount );
 
 	*width = cinfo.output_width;
 	*height = cinfo.output_height;
@@ -460,7 +460,7 @@ void SaveJPG( char *filename, int quality, int image_width, int image_height, by
 	size_t bufSize;
 
 	bufSize = image_width * image_height * 3;
-	out = (byte*) ri.Hunk_AllocateTempMemory( bufSize );
+	out = ( byte* ) ri.Hunk_AllocateTempMemory( bufSize );
 
 	bufSize = SaveJPGToBuffer( out, bufSize, quality, image_width, image_height, image_buffer );
 	ri.FS_WriteFile( filename, out, bufSize );

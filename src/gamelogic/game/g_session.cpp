@@ -126,7 +126,7 @@ void G_InitSessionData( gclient_t *client, const char *userinfo )
 	else
 	{
 		if ( g_maxGameClients.integer > 0 &&
-		     level.numAliveClients >= g_maxGameClients.integer )
+		        level.numAliveClients >= g_maxGameClients.integer )
 		{
 			sess->spectatorState = SPECTATOR_FREE;
 		}

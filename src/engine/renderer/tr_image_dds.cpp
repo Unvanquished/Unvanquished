@@ -119,8 +119,8 @@ typedef struct
 #ifndef MAKEFOURCC
 
 #define MAKEFOURCC(ch0, ch1, ch2, ch3)                                                                                  \
-        ((unsigned int)(char)( ch0 ) | ((unsigned int)(char)( ch1 ) << 8 ) |                     \
-         ((unsigned int)(char)( ch2 ) << 16 ) | ((unsigned int)(char)( ch3 ) << 24 ))
+	((unsigned int)(char)( ch0 ) | ((unsigned int)(char)( ch1 ) << 8 ) |                     \
+	 ((unsigned int)(char)( ch2 ) << 16 ) | ((unsigned int)(char)( ch3 ) << 24 ))
 
 #endif
 
@@ -149,8 +149,8 @@ static INLINE void UnpackRGB565( byte rgb[ 3 ], uint16_t cl )
 }
 
 void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
-			 int *width, int *height, int *numLayers,
-			 int *numMips, int *bits )
+                         int *width, int *height, int *numLayers,
+                         int *numMips, int *bits )
 {
 	byte         *buff;
 	DDSHEADER_t  *ddsd; //used to get at the dds header in the read buffer
@@ -283,44 +283,54 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 		//compressed FOURCC formats
 		switch ( ddsd->ddpfPixelFormat.dwFourCC )
 		{
-		case FOURCC_DXT1:
-			*bits |= IF_BC1;
-			blockSize = 8;
-			break;
+			case FOURCC_DXT1:
+				*bits |= IF_BC1;
+				blockSize = 8;
+				break;
 
-		case FOURCC_DXT5:
-			*bits |= IF_BC3;
-			blockSize = 16;
-			break;
+			case FOURCC_DXT5:
+				*bits |= IF_BC3;
+				blockSize = 16;
+				break;
 
-		case FOURCC_ATI1:
-		case FOURCC_BC4U:
-			*bits |= IF_BC4;
-			blockSize = 8;
-			break;
+			case FOURCC_ATI1:
+			case FOURCC_BC4U:
+				*bits |= IF_BC4;
+				blockSize = 8;
+				break;
 
-		case FOURCC_ATI2:
-		case FOURCC_BC5U:
-			*bits |= IF_BC5;
-			blockSize = 16;
-			break;
+			case FOURCC_ATI2:
+			case FOURCC_BC5U:
+				*bits |= IF_BC5;
+				blockSize = 16;
+				break;
 
-		default:
-			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: unsupported FOURCC 0x%08x, \"%s\"\n",
-				   ddsd->ddpfPixelFormat.dwFourCC, name );
-			return;
+			default:
+				ri.Printf( PRINT_WARNING, "R_LoadDDSImage: unsupported FOURCC 0x%08x, \"%s\"\n",
+				           ddsd->ddpfPixelFormat.dwFourCC, name );
+				return;
 		}
+
 		w = *width;
 		h = *height;
 		size = 0;
 
-		for( i = 0; i < *numMips; i++ ) {
-			int mipSize = ((w + 3) >> 2) * ((h + 3) >> 2) * blockSize;
+		for ( i = 0; i < *numMips; i++ )
+		{
+			int mipSize = ( ( w + 3 ) >> 2 ) * ( ( h + 3 ) >> 2 ) * blockSize;
 
-			data[ i ] = (byte *)(intptr_t)size;
+			data[ i ] = ( byte * )( intptr_t )size;
 			size += mipSize;
-			if( w > 1 ) w >>= 1;
-			if( h > 1 ) h >>= 1;
+
+			if ( w > 1 )
+			{
+				w >>= 1;
+			}
+
+			if ( h > 1 )
+			{
+				h >>= 1;
+			}
 		}
 	}
 	else
@@ -346,18 +356,20 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 		}
 	}
 
-	data[0] = (byte*) ri.Z_Malloc( size );
+	data[0] = ( byte* ) ri.Z_Malloc( size );
 	Com_Memcpy( data[0], ddsd + 1, size );
 
-	if( compressed ) {
-		for( i = 1; i < *numMips; i++ ) {
-			data[ i ] = (intptr_t)data[ i ] + data[ 0 ];
+	if ( compressed )
+	{
+		for ( i = 1; i < *numMips; i++ )
+		{
+			data[ i ] = ( intptr_t )data[ i ] + data[ 0 ];
 		}
 	}
 }
 
 void LoadDDS( const char *name, byte **data, int *width, int *height,
-	      int *numLayers, int *numMips, int *bits, byte alphaByte )
+              int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
 	byte    *buff;
 
@@ -369,7 +381,7 @@ void LoadDDS( const char *name, byte **data, int *width, int *height,
 	}
 
 	R_LoadDDSImageData( buff, name, data, width, height,
-			    numLayers, numMips, bits );
+	                    numLayers, numMips, bits );
 
 	ri.FS_FreeFile( buff );
 }

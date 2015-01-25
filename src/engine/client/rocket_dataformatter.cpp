@@ -55,5 +55,5 @@ void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *
 void Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake )
 {
 	dataFormatterList[ handle ]->out = parseQuake ? Rocket_QuakeToRML( data, RP_EMOTICONS ) :
-		Rocket::Core::String( data );
+	                                   Rocket::Core::String( data );
 }

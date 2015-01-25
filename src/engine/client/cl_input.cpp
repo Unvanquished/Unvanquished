@@ -131,6 +131,7 @@ void IN_KeyUp( kbutton_t *b )
 	{
 		b->down[ 0 ] = 0;
 	}
+
 	if ( b->down[ 1 ] == k || b->down[ 1 ] < 0 )
 	{
 		b->down[ 1 ] = 0;
@@ -220,9 +221,9 @@ void IN_VoipRecordUp( void )
 }
 #endif
 
-void IN_CenterView (void)
+void IN_CenterView( void )
 {
-        cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
+	cl.viewangles[PITCH] = -SHORT2ANGLE( cl.snap.ps.delta_angles[PITCH] );
 }
 
 void IN_Help( void )
@@ -348,6 +349,7 @@ void CL_KeyMove( usercmd_t *cmd )
 				lastKeyTime = cl.doubleTap.pressedTime[ i ];
 				lastKey = i;
 			}
+
 			if ( cl.doubleTap.releasedTime[ i ] > lastKeyTime )
 			{
 				lastKeyTime = cl.doubleTap.releasedTime[ i ];
@@ -494,7 +496,7 @@ void CL_JoystickMove( usercmd_t *cmd )
 		cmd->forwardmove = ClampChar( cmd->forwardmove + ( int )( j_forward->value * cl.joystickAxis[ j_forward_axis->integer ] ) );
 	}
 
-	cmd->upmove = ClampChar( cmd->upmove + ( int ) ( j_up->value * cl.joystickAxis[ j_up_axis->integer ] ) );
+	cmd->upmove = ClampChar( cmd->upmove + ( int )( j_up->value * cl.joystickAxis[ j_up_axis->integer ] ) );
 }
 
 /*
@@ -1094,7 +1096,7 @@ void CL_WritePacket( void )
 
 	if ( cl_showSend->integer )
 	{
-		Com_Printf("%i ", buf.cursize );
+		Com_Printf( "%i ", buf.cursize );
 	}
 
 	MSG_WriteByte( &buf, clc_EOF );
@@ -1157,10 +1159,12 @@ void CL_SendCmd( void )
 
 static char *registeredButtonCommands[ USERCMD_BUTTONS ] = { NULL };
 
-static const struct{
+static const struct
+{
 	const char* name;
 	int key;
-} builtinButtonCommands [] = {
+} builtinButtonCommands [] =
+{
 	{ "moveup",     KB_UP        },
 	{ "movedown",   KB_DOWN      },
 	{ "left",       KB_LEFT      },
@@ -1205,6 +1209,7 @@ void IN_BuiltinButtonCommand( void )
 	if ( key == -1 )
 	{
 		i = 0;
+
 		while ( builtinButtonCommands[i].name != NULL )
 		{
 			if ( !Q_stricmp( builtinButtonCommands[i].name, name ) )
@@ -1212,6 +1217,7 @@ void IN_BuiltinButtonCommand( void )
 				key = builtinButtonCommands[i].key;
 				break;
 			}
+
 			i++;
 		}
 	}
@@ -1247,11 +1253,11 @@ void IN_KeysUp_f( void )
 		{
 			if ( first )
 			{
-				Cmd::ExecuteCommand(va("setkeydata %d %d %u", check, key + 1, time));
+				Cmd::ExecuteCommand( va( "setkeydata %d %d %u", check, key + 1, time ) );
 				first = qfalse;
 			}
 
-			Cmd::ExecuteCommand(va("-%s", registeredButtonCommands[ i ] + 1)); // command name includes '+'
+			Cmd::ExecuteCommand( va( "-%s", registeredButtonCommands[ i ] + 1 ) ); // command name includes '+'
 		}
 	}
 
@@ -1261,17 +1267,17 @@ void IN_KeysUp_f( void )
 		{
 			if ( first )
 			{
-				Cmd::ExecuteCommand(va("setkeydata %d %d %u", check, key + 1, time));
+				Cmd::ExecuteCommand( va( "setkeydata %d %d %u", check, key + 1, time ) );
 				first = qfalse;
 			}
 
-			Cmd::ExecuteCommand(va("-%s", builtinButtonCommands[i].name)); // command name doesn't include '+'
+			Cmd::ExecuteCommand( va( "-%s", builtinButtonCommands[i].name ) ); // command name doesn't include '+'
 		}
 	}
 
 	if ( !first )
 	{
-		Cmd::ExecuteCommand(va("setkeydata %d", check));
+		Cmd::ExecuteCommand( va( "setkeydata %d", check ) );
 	}
 
 	// Pseudo-button commands handled here
@@ -1369,7 +1375,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 		term = strchr( cmd_names, ',' );
 
 		Q_snprintf( name + 1, sizeof( name ) - 1, "%.*s",
-		            (int)( term ? ( term - cmd_names ) : sizeof ( name ) - 1 ), cmd_names );
+		            ( int )( term ? ( term - cmd_names ) : sizeof( name ) - 1 ), cmd_names );
 
 		name[0] = '-';
 		Cmd_AddCommand( name, IN_BuiltinButtonCommand );
@@ -1397,9 +1403,9 @@ void CL_InitInput( void )
 {
 	int i = 0;
 
-	Cmd_AddCommand ("centerview", IN_CenterView);
+	Cmd_AddCommand( "centerview", IN_CenterView );
 
-	while( builtinButtonCommands[i].name != NULL )
+	while ( builtinButtonCommands[i].name != NULL )
 	{
 		Cmd_AddCommand( va( "-%s", builtinButtonCommands[i].name ), IN_BuiltinButtonCommand );
 		Cmd_AddCommand( va( "+%s", builtinButtonCommands[i].name ), IN_BuiltinButtonCommand );

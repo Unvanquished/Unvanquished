@@ -164,6 +164,7 @@ static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, tr
 	if ( *surface == SF_FACE && r_facePlaneCull->integer )
 	{
 		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )gen;
+
 		if ( light->l.rlType == RL_DIRECTIONAL )
 		{
 			d = DotProduct( tr.sunDirection, srf->plane.normal );
@@ -172,6 +173,7 @@ static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, tr
 		{
 			d = DotProduct( light->origin, srf->plane.normal ) - srf->plane.dist;
 		}
+
 		// don't cull exactly on the plane, because there are levels of rounding
 		// through the BSP, ICD, and hardware that may cause pixel gaps if an
 		// epsilon isn't allowed here
@@ -240,6 +242,7 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, in
 		{
 			tr.pc.c_dlightSurfacesCulled++;
 		}
+
 		return;
 	}
 
@@ -497,7 +500,7 @@ static void R_RecursiveWorldNode( bspNode_t *node, int planeBits, int decalBits 
 				{
 					// test decal bounds against node bounds
 					if ( tr.refdef.decalProjectors[ i ].shader == NULL ||
-					     !R_TestDecalBoundingBox( &tr.refdef.decalProjectors[ i ], node->mins, node->maxs ) )
+					        !R_TestDecalBoundingBox( &tr.refdef.decalProjectors[ i ], node->mins, node->maxs ) )
 					{
 						decalBits &= ~( 1 << i );
 					}
@@ -772,15 +775,22 @@ static void R_MarkLeaves( void )
 
 	// if the cluster is the same and the area visibility matrix
 	// hasn't changed, we don't need to mark everything again
-	if( tr.refdef.areamaskModified ) {
+	if ( tr.refdef.areamaskModified )
+	{
 		// remark ALL cached visClusters
-		for ( i = 0; i < MAX_VISCOUNTS; i++ ) {
+		for ( i = 0; i < MAX_VISCOUNTS; i++ )
+		{
 			tr.visClusters[ i ] = -1;
 		}
+
 		tr.visIndex = 1;
-	} else {
-		for ( i = 0; i < MAX_VISCOUNTS; i++ ) {
-			if ( tr.visClusters[ i ] == cluster ) {
+	}
+	else
+	{
+		for ( i = 0; i < MAX_VISCOUNTS; i++ )
+		{
+			if ( tr.visClusters[ i ] == cluster )
+			{
 				// if r_showcluster was just turned on, remark everything
 				if ( !r_showcluster->modified )
 				{
@@ -794,6 +804,7 @@ static void R_MarkLeaves( void )
 				}
 			}
 		}
+
 		tr.visIndex = ( tr.visIndex + 1 ) % MAX_VISCOUNTS;
 	}
 

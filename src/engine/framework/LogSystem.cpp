@@ -32,147 +32,180 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../qcommon/qcommon.h"
 #include "LogSystem.h"
 
-namespace Log {
+namespace Log
+{
 
-    static Target* targets[MAX_TARGET_ID];
+static Target* targets[MAX_TARGET_ID];
 
 
-    //TODO make me reentrant // or check it is actually reentrant when using for (Event e : events) do stuff
-    //TODO think way more about thread safety
-    void Dispatch(Log::Event event, int targetControl) {
-        static std::vector<Log::Event> buffers[MAX_TARGET_ID];
-        static std::recursive_mutex bufferLocks[MAX_TARGET_ID];
+//TODO make me reentrant // or check it is actually reentrant when using for (Event e : events) do stuff
+//TODO think way more about thread safety
+void Dispatch( Log::Event event, int targetControl )
+{
+	static std::vector<Log::Event> buffers[MAX_TARGET_ID];
+	static std::recursive_mutex bufferLocks[MAX_TARGET_ID];
 
-        for (int i = 0; i < MAX_TARGET_ID; i++) {
-            if ((targetControl >> i) & 1) {
-                auto& buffer = buffers[i];
-                std::lock_guard<std::recursive_mutex> guard(bufferLocks[i]);
+	for ( int i = 0; i < MAX_TARGET_ID; i++ )
+	{
+		if ( ( targetControl >> i ) & 1 )
+		{
+			auto& buffer = buffers[i];
+			std::lock_guard<std::recursive_mutex> guard( bufferLocks[i] );
 
-                buffer.push_back(event);
+			buffer.push_back( event );
 
-                bool processed = false;
-                if (targets[i]) {
-                    processed = targets[i]->Process(buffer);
-                }
+			bool processed = false;
 
-                if (processed) {
-                    buffer.clear();
-                } else if (buffer.size() > 512) {
-                    buffer.clear();
-                }
-            }
-        }
-    }
+			if ( targets[i] )
+			{
+				processed = targets[i]->Process( buffer );
+			}
 
-    void RegisterTarget(TargetId id, Target* target) {
-        targets[id] = target;
-    }
+			if ( processed )
+			{
+				buffer.clear();
+			}
+			else if ( buffer.size() > 512 )
+			{
+				buffer.clear();
+			}
+		}
+	}
+}
 
-    Target::Target() {
-    }
+void RegisterTarget( TargetId id, Target* target )
+{
+	targets[id] = target;
+}
 
-    void Target::Register(TargetId id) {
-        Log::RegisterTarget(id, this);
-    }
+Target::Target()
+{
+}
 
-    //Log Targets
-    //TODO: move them in their respective modules
-    //TODO this one isn't mutlithreaded at all, need a rewrite of the consoles
-    class TTYTarget : public Target {
-        public:
-            TTYTarget() {
-                this->Register(TTY_CONSOLE);
-            }
+void Target::Register( TargetId id )
+{
+	Log::RegisterTarget( id, this );
+}
 
-            virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
-                for (Log::Event event : events)  {
-                    Sys_Print(event.text.c_str());
-                    Sys_Print("\n");
-                }
-                return true;
-            }
-    };
+//Log Targets
+//TODO: move them in their respective modules
+//TODO this one isn't mutlithreaded at all, need a rewrite of the consoles
+class TTYTarget : public Target
+{
+public:
+	TTYTarget()
+	{
+		this->Register( TTY_CONSOLE );
+	}
 
-    static TTYTarget tty;
+	virtual bool Process( std::vector<Log::Event>& events ) OVERRIDE
+	{
+		for ( Log::Event event : events )
+		{
+			Sys_Print( event.text.c_str() );
+			Sys_Print( "\n" );
+		}
 
-    //TODO for now these change nothing because the file is opened before the cvars are read.
-    //TODO add a Callback on these that will make the logFile open a new file or something
-    //Or maybe have Com_Init start it ?
-    Cvar::Cvar<bool> useLogFile("logs.logFile.active", "are the logs sent in the logfile", Cvar::NONE, true);
-    Cvar::Cvar<std::string> logFileName("logs.logFile.filename", "the name of the logfile", Cvar::NONE, "daemon.log");
-    Cvar::Cvar<bool> overwrite("logs.logFile.overwrite", "if true the logfile is deleted at each run else the logs are just appended", Cvar::NONE, true);
-    Cvar::Cvar<bool> forceFlush("logs.logFile.forceFlush", "are all the logs flushed immediately (more accurate but slower)", Cvar::NONE, false);
-    class LogFileTarget :public Target {
-        public:
-            LogFileTarget() : logFile(0), recursing(false) {
-                this->Register(LOGFILE);
-            }
+		return true;
+	}
+};
 
-            virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
-                //If we have no log file drop the events
-                if (not useLogFile.Get()) {
-                    return true;
-                }
+static TTYTarget tty;
 
-                //TODO this is actually wrong because the FS itself doesn't support multiple threads
-                // so we pray it works (it should because the memory touched by FS_Write seems very cold)
-                std::lock_guard<std::recursive_mutex> guard(lock);
+//TODO for now these change nothing because the file is opened before the cvars are read.
+//TODO add a Callback on these that will make the logFile open a new file or something
+//Or maybe have Com_Init start it ?
+Cvar::Cvar<bool> useLogFile( "logs.logFile.active", "are the logs sent in the logfile", Cvar::NONE, true );
+Cvar::Cvar<std::string> logFileName( "logs.logFile.filename", "the name of the logfile", Cvar::NONE, "daemon.log" );
+Cvar::Cvar<bool> overwrite( "logs.logFile.overwrite", "if true the logfile is deleted at each run else the logs are just appended", Cvar::NONE, true );
+Cvar::Cvar<bool> forceFlush( "logs.logFile.forceFlush", "are all the logs flushed immediately (more accurate but slower)", Cvar::NONE, false );
+class LogFileTarget : public Target
+{
+public:
+	LogFileTarget() : logFile( 0 ), recursing( false )
+	{
+		this->Register( LOGFILE );
+	}
 
-                //TODO atomic test and set on recursing
-                if (logFile == 0 and FS::IsInitialized() and not recursing) {
-                    recursing = true;
+	virtual bool Process( std::vector<Log::Event>& events ) OVERRIDE
+	{
+		//If we have no log file drop the events
+		if ( not useLogFile.Get() )
+		{
+			return true;
+		}
 
-                    if (overwrite.Get()) {
-                        logFile = FS_FOpenFileWrite(logFileName.Get().c_str());
-                    } else {
-                        logFile = FS_FOpenFileAppend(logFileName.Get().c_str());
-                    }
+		//TODO this is actually wrong because the FS itself doesn't support multiple threads
+		// so we pray it works (it should because the memory touched by FS_Write seems very cold)
+		std::lock_guard<std::recursive_mutex> guard( lock );
 
-                    if (forceFlush.Get()) {
-                        FS_ForceFlush(logFile);
-                    }
+		//TODO atomic test and set on recursing
+		if ( logFile == 0 and FS::IsInitialized() and not recursing )
+		{
+			recursing = true;
 
-                    recursing = false;
-                }
+			if ( overwrite.Get() )
+			{
+				logFile = FS_FOpenFileWrite( logFileName.Get().c_str() );
+			}
+			else
+			{
+				logFile = FS_FOpenFileAppend( logFileName.Get().c_str() );
+			}
 
-                if (logFile != 0) {
-                    for (Log::Event event : events) {
-                        std::string text = event.text + "\n";
-                        FS_Write(text.c_str(), text.length(), logFile);
-                    }
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+			if ( forceFlush.Get() )
+			{
+				FS_ForceFlush( logFile );
+			}
 
-        private:
-            fileHandle_t logFile;
-            //TODO atomic boolean
-            bool recursing;
-            std::recursive_mutex lock;
-    };
+			recursing = false;
+		}
 
-    static LogFileTarget logfile;
+		if ( logFile != 0 )
+		{
+			for ( Log::Event event : events )
+			{
+				std::string text = event.text + "\n";
+				FS_Write( text.c_str(), text.length(), logFile );
+			}
 
-    //Temp targets that forward to the regular Com_Printf.
-    class LegacyTarget : public Target {
-        public:
-            LegacyTarget(std::string name, TargetId id): name(std::move(name)) {
-                this->Register(id);
-            }
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
-            virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
-                Q_UNUSED(events);
+private:
+	fileHandle_t logFile;
+	//TODO atomic boolean
+	bool recursing;
+	std::recursive_mutex lock;
+};
 
-                return true;
-                //Com_Printf("%s: %s\n", name.c_str(), event.text.c_str());
-            }
+static LogFileTarget logfile;
 
-        private:
-            std::string name;
-    };
+//Temp targets that forward to the regular Com_Printf.
+class LegacyTarget : public Target
+{
+public:
+	LegacyTarget( std::string name, TargetId id ): name( std::move( name ) )
+	{
+		this->Register( id );
+	}
 
-    static LegacyTarget console4("GameLog", GAMELOG);
-    static LegacyTarget console5("HUD", HUD);
+	virtual bool Process( std::vector<Log::Event>& events ) OVERRIDE
+	{
+		Q_UNUSED( events );
+
+		return true;
+		//Com_Printf("%s: %s\n", name.c_str(), event.text.c_str());
+	}
+
+private:
+	std::string name;
+};
+
+static LegacyTarget console4( "GameLog", GAMELOG );
+static LegacyTarget console5( "HUD", HUD );
 }

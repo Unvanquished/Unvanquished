@@ -30,80 +30,100 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Common.h"
 
-namespace Cvar {
+namespace Cvar
+{
 
-    CvarProxy::CvarProxy(std::string name, int flags, std::string defaultValue)
-    : name(std::move(name)), flags(flags), defaultValue(std::move(defaultValue)) {
-    }
+CvarProxy::CvarProxy( std::string name, int flags, std::string defaultValue )
+	: name( std::move( name ) ), flags( flags ), defaultValue( std::move( defaultValue ) )
+{
+}
 
-    void CvarProxy::SetValue(std::string value) {
-        ::Cvar::SetValue(name, std::move(value));
-    }
+void CvarProxy::SetValue( std::string value )
+{
+	::Cvar::SetValue( name, std::move( value ) );
+}
 
-    bool CvarProxy::Register(std::string description) {
-        return ::Cvar::Register(this, name, std::move(description), flags, std::move(defaultValue));
-    }
+bool CvarProxy::Register( std::string description )
+{
+	return ::Cvar::Register( this, name, std::move( description ), flags, std::move( defaultValue ) );
+}
 
-    bool ParseCvarValue(Str::StringRef value, bool& result) {
-        if (value == "1" or value == "on" or value == "yes" or value == "true" or value == "enable") {
-            result = true;
-            return true;
-        } else if (value == "0" or value == "off" or value == "no" or value == "false" or value == "disable") {
-            result = false;
-            return true;
-        }
-        return false;
-    }
-
-    std::string SerializeCvarValue(bool value) {
-        return value ? "on" : "off";
-    }
-
-    template<>
-    std::string GetCvarTypeName<bool>() {
-        return "bool";
-    }
-
-    bool ParseCvarValue(Str::StringRef value, int& result) {
-        //TODO: this accepts "1a" as a valid int
-        return Str::ParseInt(result, value);
-    }
-
-
-    std::string SerializeCvarValue(int value) {
-        return std::to_string(value);
-    }
-
-    template<>
-    std::string GetCvarTypeName<int>() {
-        return "int";
-    }
-
-    bool ParseCvarValue(Str::StringRef value, float& result) {
-        return Str::ToFloat(std::move(value), result);
-    }
-
-
-    std::string SerializeCvarValue(float value) {
-        return std::to_string(value);
-    }
-
-    template<>
-    std::string GetCvarTypeName<float>() {
-        return "float";
-    }
-
-    bool ParseCvarValue(std::string value, std::string& result) {
-		result = std::move(value);
+bool ParseCvarValue( Str::StringRef value, bool& result )
+{
+	if ( value == "1" or value == "on" or value == "yes" or value == "true" or value == "enable" )
+	{
+		result = true;
 		return true;
-    }
+	}
+	else if ( value == "0" or value == "off" or value == "no" or value == "false" or value == "disable" )
+	{
+		result = false;
+		return true;
+	}
 
-    std::string SerializeCvarValue(std::string value) {
-		return std::move(value);
-    }
+	return false;
+}
 
-    template<>
-    std::string GetCvarTypeName<std::string>() {
-        return "text";
-    }
+std::string SerializeCvarValue( bool value )
+{
+	return value ? "on" : "off";
+}
+
+template<>
+std::string GetCvarTypeName<bool>()
+{
+	return "bool";
+}
+
+bool ParseCvarValue( Str::StringRef value, int& result )
+{
+	//TODO: this accepts "1a" as a valid int
+	return Str::ParseInt( result, value );
+}
+
+
+std::string SerializeCvarValue( int value )
+{
+	return std::to_string( value );
+}
+
+template<>
+std::string GetCvarTypeName<int>()
+{
+	return "int";
+}
+
+bool ParseCvarValue( Str::StringRef value, float& result )
+{
+	return Str::ToFloat( std::move( value ), result );
+}
+
+
+std::string SerializeCvarValue( float value )
+{
+	return std::to_string( value );
+}
+
+template<>
+std::string GetCvarTypeName<float>()
+{
+	return "float";
+}
+
+bool ParseCvarValue( std::string value, std::string& result )
+{
+	result = std::move( value );
+	return true;
+}
+
+std::string SerializeCvarValue( std::string value )
+{
+	return std::move( value );
+}
+
+template<>
+std::string GetCvarTypeName<std::string>()
+{
+	return "text";
+}
 }

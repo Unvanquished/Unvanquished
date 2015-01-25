@@ -44,18 +44,22 @@ SV_BotAllocateClient
 int SV_BotAllocateClient( void )
 {
 	int i;
-	for (i = std::max(1, sv_privateClients->integer); i < sv_maxclients->integer; i++) {
-		if (svs.clients[i].state == CS_FREE) {
+
+	for ( i = std::max( 1, sv_privateClients->integer ); i < sv_maxclients->integer; i++ )
+	{
+		if ( svs.clients[i].state == CS_FREE )
+		{
 			break;
 		}
 	}
 
-	if (i >= sv_maxclients->integer) {
+	if ( i >= sv_maxclients->integer )
+	{
 		return -1;
 	}
 
 	client_t* cl = svs.clients + i;
-	cl->gentity = SV_GentityNum(i);
+	cl->gentity = SV_GentityNum( i );
 	cl->gentity->s.number = i;
 	cl->state = CS_ACTIVE;
 	cl->lastPacketTime = svs.time;

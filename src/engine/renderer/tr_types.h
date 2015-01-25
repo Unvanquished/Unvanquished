@@ -91,40 +91,37 @@ Maryland 20850 USA.
 typedef unsigned int   glIndex_t;
 
 typedef enum RegisterShaderFlags {
-	RSF_DEFAULT           = 0x00,
-	RSF_NOMIP             = 0x01,
-	RSF_LIGHT_ATTENUATION = 0x02,
-	RSF_NOLIGHTSCALE      = 0x04
+    RSF_DEFAULT           = 0x00,
+    RSF_NOMIP             = 0x01,
+    RSF_LIGHT_ATTENUATION = 0x02,
+    RSF_NOLIGHTSCALE      = 0x04
 } RegisterShaderFlags_t;
 
-typedef struct
-{
-	vec3_t xyz;
-	float  st[ 2 ];
-	byte   modulate[ 4 ];
+typedef struct {
+    vec3_t xyz;
+    float  st[ 2 ];
+    byte   modulate[ 4 ];
 } polyVert_t;
 
-typedef struct poly_s
-{
-	qhandle_t  hShader;
-	int        numVerts;
-	polyVert_t *verts;
+typedef struct poly_s {
+    qhandle_t  hShader;
+    int        numVerts;
+    polyVert_t *verts;
 } poly_t;
 
-typedef enum
-{
-  RT_MODEL,
-  RT_UNUSED_1,
-  RT_SPRITE,
-  RT_UNUSED_3,
-  RT_UNUSED_4,
-  RT_UNUSED_5,
-  RT_UNUSED_6,
-  RT_UNUSED_7,
-  RT_UNUSED_8,
-  RT_PORTALSURFACE, // doesn't draw anything, just info for portals
+typedef enum {
+    RT_MODEL,
+    RT_UNUSED_1,
+    RT_SPRITE,
+    RT_UNUSED_3,
+    RT_UNUSED_4,
+    RT_UNUSED_5,
+    RT_UNUSED_6,
+    RT_UNUSED_7,
+    RT_UNUSED_8,
+    RT_PORTALSURFACE, // doesn't draw anything, just info for portals
 
-  RT_MAX_REF_ENTITY_TYPE
+    RT_MAX_REF_ENTITY_TYPE
 } refEntityType_t;
 
 // XreaL BEGIN
@@ -136,92 +133,88 @@ typedef enum
 // in backEndData_t so only use it for debugging and development
 // enabling this will show the bone names with r_showSkeleton 1
 
-typedef struct
-{
+typedef struct {
 #if defined( REFBONE_NAMES )
-	char   name[ 64 ];
+    char   name[ 64 ];
 #endif
-	short  parentIndex; // parent index (-1 if root)
-	transform_t t;
+    short  parentIndex; // parent index (-1 if root)
+    transform_t t;
 } refBone_t;
 
-typedef enum
-{
-  SK_INVALID,
-  SK_RELATIVE,
-  SK_ABSOLUTE
+typedef enum {
+    SK_INVALID,
+    SK_RELATIVE,
+    SK_ABSOLUTE
 } refSkeletonType_t;
 
-typedef ALIGNED(16, struct
-{
-	refSkeletonType_t type; // skeleton has been reset
+typedef ALIGNED ( 16, struct {
+    refSkeletonType_t type; // skeleton has been reset
 
-	short             numBones;
-	refBone_t         bones[ MAX_BONES ];
+    short             numBones;
+    refBone_t         bones[ MAX_BONES ];
 
-	vec3_t            bounds[ 2 ]; // bounds of all applied animations
-	vec_t             scale;
-	int               padding[ 3 ]; // pad to multiple of 16 bytes for QVM code
+    vec3_t            bounds[ 2 ]; // bounds of all applied animations
+    vec_t             scale;
+    int               padding[ 3 ]; // pad to multiple of 16 bytes for QVM code
 } ) refSkeleton_t;
 
 // XreaL END
 
-typedef struct
-{
-	refEntityType_t reType;
-	int             renderfx;
+typedef struct {
+    refEntityType_t reType;
+    int             renderfx;
 
-	qhandle_t       hModel; // opaque type outside refresh
+    qhandle_t       hModel; // opaque type outside refresh
 
-	// most recent data
-	vec3_t    lightingOrigin; // so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
-	float     shadowPlane; // projection shadows go here, stencils go slightly lower
+    // most recent data
+    vec3_t    lightingOrigin; // so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
+    float     shadowPlane; // projection shadows go here, stencils go slightly lower
 
-	vec3_t    axis[ 3 ]; // rotation vectors
-	qboolean  nonNormalizedAxes; // axis are not normalized, i.e. they have scale
-	vec3_t    origin; // also used as MODEL_BEAM's "from"
-	int       frame; // also used as MODEL_BEAM's diameter
+    vec3_t    axis[ 3 ]; // rotation vectors
+    qboolean  nonNormalizedAxes; // axis are not normalized, i.e. they have scale
+    vec3_t    origin; // also used as MODEL_BEAM's "from"
+    int       frame; // also used as MODEL_BEAM's diameter
 
-	// previous data for frame interpolation
-	vec3_t    oldorigin; // also used as MODEL_BEAM's "to"
-	int       oldframe;
-	float     backlerp; // 0.0 = current, 1.0 = old
+    // previous data for frame interpolation
+    vec3_t    oldorigin; // also used as MODEL_BEAM's "to"
+    int       oldframe;
+    float     backlerp; // 0.0 = current, 1.0 = old
 
-	// texturing
-	int       skinNum; // inline skin index
-	qhandle_t customSkin; // NULL for default skin
-	qhandle_t customShader; // use one image for the entire thing
+    // texturing
+    int       skinNum; // inline skin index
+    qhandle_t customSkin; // NULL for default skin
+    qhandle_t customShader; // use one image for the entire thing
 
-	// misc
-	byte  shaderRGBA[ 4 ]; // colors used by rgbgen entity shaders
-	float shaderTexCoord[ 2 ]; // texture coordinates used by tcMod entity modifiers
-	float shaderTime; // subtracted from refdef time to control effect start times
+    // misc
+    byte  shaderRGBA[ 4 ]; // colors used by rgbgen entity shaders
+    float shaderTexCoord[ 2 ]; // texture coordinates used by tcMod entity modifiers
+    float shaderTime; // subtracted from refdef time to control effect start times
 
-	// extra sprite information
-	float radius;
-	float rotation;
+    // extra sprite information
+    float radius;
+    float rotation;
 
-	// Ridah
-	vec3_t fireRiseDir;
+    // Ridah
+    vec3_t fireRiseDir;
 
-	// Ridah, entity fading (gibs, debris, etc)
-	int   fadeStartTime, fadeEndTime;
+    // Ridah, entity fading (gibs, debris, etc)
+    int   fadeStartTime, fadeEndTime;
 
-	float hilightIntensity; //----(SA)  added
+    float hilightIntensity; //----(SA)  added
 
-	int   entityNum; // currentState.number, so we can attach rendering effects to specific entities (Zombie)
+    int   entityNum; // currentState.number, so we can attach rendering effects to specific entities (Zombie)
 
 // XreaL BEGIN
 
-	// extra animation information
-	refSkeleton_t skeleton;
+    // extra animation information
+    refSkeleton_t skeleton;
 
 #if defined( USE_REFENTITY_NOSHADOWID )
-	// extra light interaction information
-	short noShadowID;
+    // extra light interaction information
+    short noShadowID;
 #endif
 
-	int altShaderIndex;
+    int altShaderIndex;
 
 // XreaL END
 } refEntity_t;
@@ -230,44 +223,42 @@ typedef struct
 
 // XreaL BEGIN
 
-typedef enum
-{
-  RL_OMNI, // point light
-  RL_PROJ, // spot light
-  RL_DIRECTIONAL, // sun light
+typedef enum {
+    RL_OMNI, // point light
+    RL_PROJ, // spot light
+    RL_DIRECTIONAL, // sun light
 
-  RL_MAX_REF_LIGHT_TYPE
+    RL_MAX_REF_LIGHT_TYPE
 } refLightType_t;
 
-typedef struct
-{
-	refLightType_t rlType;
+typedef struct {
+    refLightType_t rlType;
 //  int             lightfx;
 
-	qhandle_t attenuationShader;
+    qhandle_t attenuationShader;
 
-	vec3_t    origin;
-	quat_t    rotation;
-	vec3_t    center;
-	vec3_t    color; // range from 0.0 to 1.0, should be color normalized
+    vec3_t    origin;
+    quat_t    rotation;
+    vec3_t    center;
+    vec3_t    color; // range from 0.0 to 1.0, should be color normalized
 
-	float     scale; // r_lightScale if not set
+    float     scale; // r_lightScale if not set
 
-	// omni-directional light specific
-	vec3_t radius;
+    // omni-directional light specific
+    vec3_t radius;
 
-	// projective light specific
-	vec3_t   projTarget;
-	vec3_t   projRight;
-	vec3_t   projUp;
-	vec3_t   projStart;
-	vec3_t   projEnd;
+    // projective light specific
+    vec3_t   projTarget;
+    vec3_t   projRight;
+    vec3_t   projUp;
+    vec3_t   projStart;
+    vec3_t   projEnd;
 
-	qboolean noShadows;
-	short    noShadowID; // don't cast shadows of all entities with this id
+    qboolean noShadows;
+    short    noShadowID; // don't cast shadows of all entities with this id
 
-	qboolean inverseShadows; // don't cast light and draw shadows by darken the scene
-	// this is useful for drawing player shadows with shadow mapping
+    qboolean inverseShadows; // don't cast light and draw shadows by darken the scene
+    // this is useful for drawing player shadows with shadow mapping
 } refLight_t;
 
 // XreaL END
@@ -279,43 +270,41 @@ typedef struct
 //                                                                  //
 // WARNING:: synch FOG_SERVER in sv_ccmds.c if you change anything  //
 //                                                                  //
-typedef enum
-{
-  FOG_NONE, //  0
+typedef enum {
+    FOG_NONE, //  0
 
-  FOG_SKY, //  1   fog values to apply to the sky when using density fog for the world (non-distance clipping fog) (only used if(glfogsettings[FOG_MAP].registered) or if(glfogsettings[FOG_MAP].registered))
-  FOG_PORTALVIEW, //  2   used by the portal sky scene
-  FOG_HUD, //  3   used by the 3D HUD scene
+    FOG_SKY, //  1   fog values to apply to the sky when using density fog for the world (non-distance clipping fog) (only used if(glfogsettings[FOG_MAP].registered) or if(glfogsettings[FOG_MAP].registered))
+    FOG_PORTALVIEW, //  2   used by the portal sky scene
+    FOG_HUD, //  3   used by the 3D HUD scene
 
-  //      The result of these for a given frame is copied to the scene.glFog when the scene is rendered
+    //      The result of these for a given frame is copied to the scene.glFog when the scene is rendered
 
-  // the following are fogs applied to the main world scene
-  FOG_MAP, //  4   use fog parameter specified using the "fogvars" in the sky shader
-  FOG_WATER, //  5   used when underwater
-  FOG_SERVER, //  6   the server has set my fog (probably a target_fog) (keep synch in sv_ccmds.c !!!)
-  FOG_CURRENT, //  7   stores the current values when a transition starts
-  FOG_LAST, //  8   stores the current values when a transition starts
-  FOG_TARGET, //  9   the values it's transitioning to.
+    // the following are fogs applied to the main world scene
+    FOG_MAP, //  4   use fog parameter specified using the "fogvars" in the sky shader
+    FOG_WATER, //  5   used when underwater
+    FOG_SERVER, //  6   the server has set my fog (probably a target_fog) (keep synch in sv_ccmds.c !!!)
+    FOG_CURRENT, //  7   stores the current values when a transition starts
+    FOG_LAST, //  8   stores the current values when a transition starts
+    FOG_TARGET, //  9   the values it's transitioning to.
 
-  FOG_CMD_SWITCHFOG, // 10   transition to the fog specified in the second parameter of R_SetFog(...) (keep synch in sv_ccmds.c !!!)
+    FOG_CMD_SWITCHFOG, // 10   transition to the fog specified in the second parameter of R_SetFog(...) (keep synch in sv_ccmds.c !!!)
 
-  NUM_FOGS
+    NUM_FOGS
 } glfogType_t;
 
-typedef struct
-{
-	int      mode; // GL_LINEAR, GL_EXP
-	int      hint; // GL_DONT_CARE
-	int      startTime; // in ms
-	int      finishTime; // in ms
-	float    color[ 4 ];
-	float    start; // near
-	float    end; // far
-	qboolean useEndForClip; // use the 'far' value for the far clipping plane
-	float    density; // 0.0-1.0
-	qboolean registered; // has this fog been set up?
-	qboolean drawsky; // draw skybox
-	qboolean clearscreen; // clear the GL color buffer
+typedef struct {
+    int      mode; // GL_LINEAR, GL_EXP
+    int      hint; // GL_DONT_CARE
+    int      startTime; // in ms
+    int      finishTime; // in ms
+    float    color[ 4 ];
+    float    start; // near
+    float    end; // far
+    qboolean useEndForClip; // use the 'far' value for the far clipping plane
+    float    density; // 0.0-1.0
+    qboolean registered; // has this fog been set up?
+    qboolean drawsky; // draw skybox
+    qboolean clearscreen; // clear the GL color buffer
 } glfog_t;
 
 //----(SA)  end
@@ -323,38 +312,36 @@ typedef struct
 #define MAX_RENDER_STRINGS       8
 #define MAX_RENDER_STRING_LENGTH 32
 
-typedef struct
-{
-	int    x, y, width, height;
-	float  fov_x, fov_y;
-	vec3_t vieworg;
-	vec3_t viewaxis[ 3 ]; // transformation matrix
-	vec3_t blurVec;       // motion blur direction
+typedef struct {
+    int    x, y, width, height;
+    float  fov_x, fov_y;
+    vec3_t vieworg;
+    vec3_t viewaxis[ 3 ]; // transformation matrix
+    vec3_t blurVec;       // motion blur direction
 
-	int    time; // time in milliseconds for shader effects and other time dependent rendering issues
-	int    rdflags; // RDF_NOWORLDMODEL, etc
+    int    time; // time in milliseconds for shader effects and other time dependent rendering issues
+    int    rdflags; // RDF_NOWORLDMODEL, etc
 
-	// 1 bits will prevent the associated area from rendering at all
-	byte areamask[ MAX_MAP_AREA_BYTES ];
+    // 1 bits will prevent the associated area from rendering at all
+    byte areamask[ MAX_MAP_AREA_BYTES ];
 
 //----(SA)  added (needed to pass fog infos into the portal sky scene)
-	glfog_t glfog;
+    glfog_t glfog;
 //----(SA)  end
-	vec4_t  gradingWeights;
+    vec4_t  gradingWeights;
 } refdef_t;
 
 // XreaL BEGIN
 
 // cg_shadows modes
-typedef enum
-{
-  SHADOWING_NONE,
-  SHADOWING_BLOB,
-  SHADOWING_ESM16,
-  SHADOWING_ESM32,
-  SHADOWING_VSM16,
-  SHADOWING_VSM32,
-  SHADOWING_EVSM32,
+typedef enum {
+    SHADOWING_NONE,
+    SHADOWING_BLOB,
+    SHADOWING_ESM16,
+    SHADOWING_ESM32,
+    SHADOWING_VSM16,
+    SHADOWING_VSM32,
+    SHADOWING_EVSM32,
 } shadowingMode_t;
 // XreaL END
 
@@ -365,131 +352,126 @@ typedef enum
 ** being run right now.  These are constant once the OpenGL
 ** subsystem is initialized.
 */
-typedef enum
-{
-  TC_NONE,
-  TC_S3TC,
-  TC_EXT_COMP_S3TC
+typedef enum {
+    TC_NONE,
+    TC_S3TC,
+    TC_EXT_COMP_S3TC
 } textureCompression_t;
 
 // Keep the list in sdl_glimp.c:reportDriverType in sync with this
-typedef enum
-{
-  GLDRV_UNKNOWN = -1,
-  GLDRV_ICD, // driver is integrated with window system
-  // WARNING: there are tests that check for
-  // > GLDRV_ICD for minidriverness, so this
-  // should always be the lowest value in this
-  // enum set
-  GLDRV_STANDALONE, // driver is a non-3Dfx standalone driver
+typedef enum {
+    GLDRV_UNKNOWN = -1,
+    GLDRV_ICD, // driver is integrated with window system
+    // WARNING: there are tests that check for
+    // > GLDRV_ICD for minidriverness, so this
+    // should always be the lowest value in this
+    // enum set
+    GLDRV_STANDALONE, // driver is a non-3Dfx standalone driver
 
 // XreaL BEGIN
-  GLDRV_OPENGL3, // new driver system
-  GLDRV_MESA, // crap
+    GLDRV_OPENGL3, // new driver system
+    GLDRV_MESA, // crap
 // XreaL END
 } glDriverType_t;
 
 // Keep the list in sdl_glimp.c:reportHardwareType in sync with this
-typedef enum
-{
-  GLHW_UNKNOWN = -1,
-  GLHW_GENERIC, // where everthing works the way it should
+typedef enum {
+    GLHW_UNKNOWN = -1,
+    GLHW_GENERIC, // where everthing works the way it should
 
 // XreaL BEGIN
-  GLHW_ATI, // where you don't have proper GLSL support
-  GLHW_ATI_DX10, // ATI Radeon HD series DX10 hardware
-  GLHW_NV_DX10 // Geforce 8/9 class DX10 hardware
+    GLHW_ATI, // where you don't have proper GLSL support
+    GLHW_ATI_DX10, // ATI Radeon HD series DX10 hardware
+    GLHW_NV_DX10 // Geforce 8/9 class DX10 hardware
 // XreaL END
 } glHardwareType_t;
 
-typedef struct
-{
-	char                 renderer_string[ MAX_STRING_CHARS ];
-	char                 vendor_string[ MAX_STRING_CHARS ];
-	char                 version_string[ MAX_STRING_CHARS ];
-	char                 extensions_string[ MAX_STRING_CHARS * 4 ]; // TTimo - bumping, some cards have a big extension string
+typedef struct {
+    char                 renderer_string[ MAX_STRING_CHARS ];
+    char                 vendor_string[ MAX_STRING_CHARS ];
+    char                 version_string[ MAX_STRING_CHARS ];
+    char                 extensions_string[ MAX_STRING_CHARS * 4 ]; // TTimo - bumping, some cards have a big extension string
 
-	int                  maxTextureSize; // queried from GL
-	int                  unused;
+    int                  maxTextureSize; // queried from GL
+    int                  unused;
 
-	int                  colorBits, depthBits, stencilBits;
+    int                  colorBits, depthBits, stencilBits;
 
-	glDriverType_t       driverType;
-	glHardwareType_t     hardwareType;
+    glDriverType_t       driverType;
+    glHardwareType_t     hardwareType;
 
-	textureCompression_t textureCompression;
-	qboolean             textureEnvAddAvailable;
-	qboolean             anisotropicAvailable; //----(SA)  added
-	float                maxAnisotropy; //----(SA)  added
+    textureCompression_t textureCompression;
+    qboolean             textureEnvAddAvailable;
+    qboolean             anisotropicAvailable; //----(SA)  added
+    float                maxAnisotropy; //----(SA)  added
 
-	// vendor-specific support
-	// NVidia
-	qboolean NVFogAvailable; //----(SA)  added
-	int      NVFogMode; //----(SA)  added
-	// ATI
-	int      ATIMaxTruformTess; // for truform support
-	int      ATINormalMode; // for truform support
-	int      ATIPointMode; // for truform support
+    // vendor-specific support
+    // NVidia
+    qboolean NVFogAvailable; //----(SA)  added
+    int      NVFogMode; //----(SA)  added
+    // ATI
+    int      ATIMaxTruformTess; // for truform support
+    int      ATINormalMode; // for truform support
+    int      ATIPointMode; // for truform support
 
-	int      vidWidth, vidHeight;
-	// aspect is the screen's physical width / height, which may be different
-	// than scrWidth / scrHeight if the pixels are non-square
-	float windowAspect;
+    int      vidWidth, vidHeight;
+    // aspect is the screen's physical width / height, which may be different
+    // than scrWidth / scrHeight if the pixels are non-square
+    float windowAspect;
 
-	int   displayFrequency;
+    int   displayFrequency;
 
-	// synonymous with "does rendering consume the entire screen?", therefore
-	// a Win32 ICD that used CDS will have this set to TRUE
-	qboolean isFullscreen;
-	qboolean smpActive; // dual processor
+    // synonymous with "does rendering consume the entire screen?", therefore
+    // a Win32 ICD that used CDS will have this set to TRUE
+    qboolean isFullscreen;
+    qboolean smpActive; // dual processor
 } glconfig_t;
 
 // XreaL BEGIN
-typedef struct
-{
-	qboolean ARBTextureCompressionAvailable;
+typedef struct {
+    qboolean ARBTextureCompressionAvailable;
 
-	int      maxCubeMapTextureSize;
+    int      maxCubeMapTextureSize;
 
-	qboolean occlusionQueryAvailable;
-	int      occlusionQueryBits;
+    qboolean occlusionQueryAvailable;
+    int      occlusionQueryBits;
 
-	char     shadingLanguageVersionString[ MAX_STRING_CHARS ];
-	int      shadingLanguageVersion;
+    char     shadingLanguageVersionString[ MAX_STRING_CHARS ];
+    int      shadingLanguageVersion;
 
-	int      maxVertexUniforms;
+    int      maxVertexUniforms;
 //	int             maxVaryingFloats;
-	int      maxVertexAttribs;
-	qboolean vboVertexSkinningAvailable;
-	int      maxVertexSkinningBones;
+    int      maxVertexAttribs;
+    qboolean vboVertexSkinningAvailable;
+    int      maxVertexSkinningBones;
 
-	qboolean unused_texture3DAvailable;
-	qboolean textureNPOTAvailable;
+    qboolean unused_texture3DAvailable;
+    qboolean textureNPOTAvailable;
 
-	qboolean drawBuffersAvailable;
-	qboolean textureHalfFloatAvailable;
-	qboolean textureFloatAvailable;
-	qboolean textureRGAvailable;
-	int      maxDrawBuffers;
+    qboolean drawBuffersAvailable;
+    qboolean textureHalfFloatAvailable;
+    qboolean textureFloatAvailable;
+    qboolean textureRGAvailable;
+    int      maxDrawBuffers;
 
-	qboolean unused_vertexArrayObjectAvailable;
+    qboolean unused_vertexArrayObjectAvailable;
 
-	qboolean unused_stencilWrapAvailable;
+    qboolean unused_stencilWrapAvailable;
 
-	float    maxTextureAnisotropy;
-	qboolean textureAnisotropyAvailable;
+    float    maxTextureAnisotropy;
+    qboolean textureAnisotropyAvailable;
 
-	qboolean framebufferObjectAvailable;
-	int      maxRenderbufferSize;
-	int      maxColorAttachments;
-	qboolean framebufferPackedDepthStencilAvailable;
-	qboolean framebufferBlitAvailable;
+    qboolean framebufferObjectAvailable;
+    int      maxRenderbufferSize;
+    int      maxColorAttachments;
+    qboolean framebufferPackedDepthStencilAvailable;
+    qboolean framebufferBlitAvailable;
 
-	qboolean generateMipmapAvailable;
-	qboolean getProgramBinaryAvailable;
-	qboolean bufferStorageAvailable;
-	qboolean mapBufferRangeAvailable;
-	qboolean syncAvailable;
+    qboolean generateMipmapAvailable;
+    qboolean getProgramBinaryAvailable;
+    qboolean bufferStorageAvailable;
+    qboolean mapBufferRangeAvailable;
+    qboolean syncAvailable;
 } glconfig2_t;
 // XreaL END
 
@@ -498,17 +480,16 @@ typedef struct
 #define MAX_PB_VERTS    1025
 #define MAX_PB_INDICIES ( MAX_PB_VERTS * 6 )
 
-typedef struct polyBuffer_s
-{
-	vec4_t    xyz[ MAX_PB_VERTS ];
-	vec2_t    st[ MAX_PB_VERTS ];
-	byte      color[ MAX_PB_VERTS ][ 4 ];
-	int       numVerts;
+typedef struct polyBuffer_s {
+    vec4_t    xyz[ MAX_PB_VERTS ];
+    vec2_t    st[ MAX_PB_VERTS ];
+    byte      color[ MAX_PB_VERTS ][ 4 ];
+    int       numVerts;
 
-	glIndex_t indicies[ MAX_PB_INDICIES ];
-	int       numIndicies;
+    glIndex_t indicies[ MAX_PB_INDICIES ];
+    int       numIndicies;
 
-	qhandle_t shader;
+    qhandle_t shader;
 } polyBuffer_t;
 
 // =========================================

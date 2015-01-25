@@ -90,30 +90,32 @@ qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean )
 	char     *string;
 	int     out;
 
-	if(G_SpawnString( key, "", &string ))
+	if ( G_SpawnString( key, "", &string ) )
 	{
-		if(Q_strtoi(string, &out))
+		if ( Q_strtoi( string, &out ) )
 		{
-			if(out == 1)
+			if ( out == 1 )
 			{
 				return qtrue;
 			}
-			else if(out == 0)
+			else if ( out == 0 )
 			{
 				return qfalse;
 			}
+
 			return defaultqboolean;
 		}
 		else
 		{
-			if(!Q_stricmp(string, "true"))
+			if ( !Q_stricmp( string, "true" ) )
 			{
 				return qtrue;
 			}
-			else if(!Q_stricmp(string, "false"))
+			else if ( !Q_stricmp( string, "false" ) )
 			{
 				return qfalse;
 			}
+
 			return defaultqboolean;
 		}
 	}
@@ -168,16 +170,16 @@ qboolean  G_SpawnVector4( const char *key, const char *defaultString, float *out
 //
 typedef enum
 {
-  F_INT,
-  F_FLOAT,
-  F_STRING,
-  F_TARGET,
-  F_CALLTARGET,
-  F_TIME,
-  F_3D_VECTOR,
-  F_4D_VECTOR,
-  F_YAW,
-  F_SOUNDINDEX
+    F_INT,
+    F_FLOAT,
+    F_STRING,
+    F_TARGET,
+    F_CALLTARGET,
+    F_TIME,
+    F_3D_VECTOR,
+    F_4D_VECTOR,
+    F_YAW,
+    F_SOUNDINDEX
 } fieldType_t;
 
 typedef struct
@@ -221,7 +223,7 @@ static const fieldDescriptor_t fields[] =
 	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR  },
 	{ "period",              FOFS( config.period ),       F_TIME       },
 	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR  }, // What's with the variable abuse everytime?
-	{ "random",              FOFS( config.wait.variance ),F_FLOAT,     ENT_V_TMPNAME, "wait" },
+	{ "random",              FOFS( config.wait.variance ), F_FLOAT,     ENT_V_TMPNAME, "wait" },
 	{ "replacement",         FOFS( shaderReplacement ),   F_STRING     },
 	{ "shader",              FOFS( shaderKey ),           F_STRING     },
 	{ "sound1to2",           FOFS( sound1to2 ),           F_SOUNDINDEX },
@@ -246,26 +248,26 @@ static const fieldDescriptor_t fields[] =
 
 typedef enum
 {
-	/*
-	 * self sufficent, it might possibly be fired at, but it can do as well on its own, so won't be freed automaticly
-	 */
-	CHAIN_AUTONOMOUS,
-	/*
-	 * needs something to fire at, or it has no reason to exist in this <world> and will be freed
-	 */
-	CHAIN_ACTIVE,
-	/*
-	 * needs something to fire at it in order to fullfill any task given to it, or will be freed otherwise
-	 */
-	CHAIN_PASSIV,
-	/*
-	 * needs something to fire at it, and something to relay that fire to (under whatever conditions given), or will be freed otherwise
-	 */
-	CHAIN_RELAY,
-	/*
-	 * will be aimed at by something, but no firing needs to be involved at all, if not aimed at, it will be freed
-	 */
-	CHAIN_TARGET,
+    /*
+     * self sufficent, it might possibly be fired at, but it can do as well on its own, so won't be freed automaticly
+     */
+    CHAIN_AUTONOMOUS,
+    /*
+     * needs something to fire at, or it has no reason to exist in this <world> and will be freed
+     */
+    CHAIN_ACTIVE,
+    /*
+     * needs something to fire at it in order to fullfill any task given to it, or will be freed otherwise
+     */
+    CHAIN_PASSIV,
+    /*
+     * needs something to fire at it, and something to relay that fire to (under whatever conditions given), or will be freed otherwise
+     */
+    CHAIN_RELAY,
+    /*
+     * will be aimed at by something, but no firing needs to be involved at all, if not aimed at, it will be freed
+     */
+    CHAIN_TARGET,
 } entityChainType_t;
 
 typedef struct
@@ -319,7 +321,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "func_door_model",          SP_func_door_model,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_door_rotating",       SP_func_door_rotating,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_dynamic",             SP_func_dynamic,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "func_group",               SP_RemoveSelf,             (entityChainType_t) 0 },
+	{ "func_group",               SP_RemoveSelf, ( entityChainType_t ) 0 },
 	{ "func_pendulum",            SP_func_pendulum,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_plat",                SP_func_plat,              CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_rotating",            SP_func_rotating,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
@@ -370,14 +372,14 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_ALIEN_INTERMISSION  },
 	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_HUMAN_INTERMISSION  },
 	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_RENAMED, S_POS_TARGET },
-	{ "info_null",                SP_RemoveSelf,             (entityChainType_t) 0 },
+	{ "info_null",                SP_RemoveSelf, ( entityChainType_t ) 0 },
 	{ "info_player_deathmatch",   SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
 	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_INTERMISSION },
 	{ "info_player_start",        SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
-	{ "light",                    SP_RemoveSelf,             (entityChainType_t) 0 },
+	{ "light",                    SP_RemoveSelf, ( entityChainType_t ) 0 },
 	{ "misc_anim_model",          SP_gfx_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_animated_model },
 	{ "misc_light_flare",         SP_gfx_light_flare,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_light_flare },
-	{ "misc_model",               SP_RemoveSelf,             (entityChainType_t) 0 },
+	{ "misc_model",               SP_RemoveSelf, ( entityChainType_t ) 0 },
 	{ "misc_particle_system",     SP_gfx_particle_system,    CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_particle_system},
 	{ "misc_portal_camera",       SP_gfx_portal_camera,      CHAIN_TARGET,     ENT_V_TMPNAME, S_gfx_portal_camera },
 	{ "misc_portal_surface",      SP_gfx_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_portal_surface },
@@ -417,7 +419,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ S_SENSOR_SUPPORT,           SP_sensor_support,         CHAIN_ACTIVE },
 	{ S_SENSOR_TIMER,             SP_sensor_timer,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 
-   /**
+	/**
 	*
 	*	Sound Effects
 	*	====================
@@ -463,57 +465,78 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_t *entity )
 {
 	if ( spawnDescription->versionState == ENT_V_CURRENT ) // we don't need to handle anything
+	{
 		return qtrue;
+	}
 
-	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
+	if ( !spawnDescription->replacement || !Q_stricmp( entity->classname, spawnDescription->replacement ) )
 	{
 		if ( g_debugEntities.integer > -2 )
-			G_Printf(S_ERROR "Class %s has been marked deprecated but no replacement has been supplied\n", etos( entity ) );
+		{
+			G_Printf( S_ERROR "Class %s has been marked deprecated but no replacement has been supplied\n", etos( entity ) );
+		}
 
 		return qfalse;
 	}
 
 	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
 	{
-		if( spawnDescription->versionState < ENT_V_TMPORARY
-		|| ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
+		if ( spawnDescription->versionState < ENT_V_TMPORARY
+		        || ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY ) )
 		{
 			G_Printf( S_WARNING "Entity %s uses a deprecated classtype — use the class " S_COLOR_CYAN "%s" S_COLOR_WHITE " instead\n", etos( entity ), spawnDescription->replacement );
 		}
 	}
+
 	entity->classname = spawnDescription->replacement;
 	return qtrue;
 }
 
 qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 {
-	switch (entityClass->chainType) {
+	switch ( entityClass->chainType )
+	{
 		case CHAIN_ACTIVE:
-			if(!entity->callTargetCount) //check target usage for backward compatibility
+			if ( !entity->callTargetCount ) //check target usage for backward compatibility
 			{
-				if( g_debugEntities.integer > -2 )
+				if ( g_debugEntities.integer > -2 )
+				{
 					G_Printf( S_WARNING "Entity %s needs to call or target to something — Removing it.\n", etos( entity ) );
+				}
+
 				return qfalse;
 			}
+
 			break;
+
 		case CHAIN_TARGET:
 		case CHAIN_PASSIV:
-			if(!entity->names[0])
+			if ( !entity->names[0] )
 			{
-				if( g_debugEntities.integer > -2 )
+				if ( g_debugEntities.integer > -2 )
+				{
 					G_Printf( S_WARNING "Entity %s needs a name, so other entities can target it — Removing it.\n", etos( entity ) );
+				}
+
 				return qfalse;
 			}
+
 			break;
+
 		case CHAIN_RELAY:
-			if((!entity->callTargetCount) //check target usage for backward compatibility
-					|| !entity->names[0])
+			if ( ( !entity->callTargetCount ) //check target usage for backward compatibility
+			        || !entity->names[0] )
 			{
-				if( g_debugEntities.integer > -2 )
+				if ( g_debugEntities.integer > -2 )
+				{
 					G_Printf( S_WARNING "Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.\n", etos( entity ) );
+				}
+
 				return qfalse;
 			}
+
 			break;
+
 		default:
 			break;
 	}
@@ -521,7 +544,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 	return qtrue;
 }
 
-static entityClass_t entityClasses[ARRAY_LEN(entityClassDescriptions)];
+static entityClass_t entityClasses[ARRAY_LEN( entityClassDescriptions )];
 
 /*
 ===============
@@ -540,7 +563,10 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.integer > -2 )
+		{
 			G_Printf( S_ERROR "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
+		}
+
 		return qfalse;
 	}
 
@@ -570,31 +596,36 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 	}
 
 	// check the spawn functions for other classes
-	spawnedClass = (entityClassDescriptor_t*) bsearch( spawnedEntity->classname, entityClassDescriptions, ARRAY_LEN( entityClassDescriptions ),
-	             sizeof( entityClassDescriptor_t ), cmdcmp );
+	spawnedClass = ( entityClassDescriptor_t* ) bsearch( spawnedEntity->classname, entityClassDescriptions, ARRAY_LEN( entityClassDescriptions ),
+	               sizeof( entityClassDescriptor_t ), cmdcmp );
 
 	if ( spawnedClass )
-	{ // found it
+	{
+		// found it
 
-		spawnedEntity->eclass = &entityClasses[(int) (spawnedClass-entityClassDescriptions)];
+		spawnedEntity->eclass = &entityClasses[( int )( spawnedClass - entityClassDescriptions )];
 		spawnedEntity->eclass->instanceCounter++;
 
-		if(!G_ValidateEntity( spawnedClass, spawnedEntity ))
-			return qfalse; // results in freeing the entity
+		if ( !G_ValidateEntity( spawnedClass, spawnedEntity ) )
+		{
+			return qfalse;    // results in freeing the entity
+		}
 
 		spawnedClass->spawn( spawnedEntity );
 		spawnedEntity->spawned = qtrue;
 
 		if ( g_debugEntities.integer > 2 )
 			G_Printf( S_DEBUG "Successfully spawned entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " as " S_COLOR_YELLOW "%i" S_COLOR_WHITE "th instance of " S_COLOR_CYAN "%s\n",
-					spawnedEntity->s.number, spawnedEntity->eclass->instanceCounter, spawnedClass->name);
+			          spawnedEntity->s.number, spawnedEntity->eclass->instanceCounter, spawnedClass->name );
 
 		/*
 		 *  to allow each spawn function to test and handle for itself,
 		 *  we handle it automatically *after* the spawn (but before it's use/reset)
 		 */
-		if(!G_HandleEntityVersions( spawnedClass, spawnedEntity ))
+		if ( !G_HandleEntityVersions( spawnedClass, spawnedEntity ) )
+		{
 			return qfalse;
+		}
 
 
 		return qtrue;
@@ -603,7 +634,7 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 	if ( g_debugEntities.integer > -2 )
 	{
-		if (!Q_stricmp(S_WORLDSPAWN, spawnedEntity->classname))
+		if ( !Q_stricmp( S_WORLDSPAWN, spawnedEntity->classname ) )
 		{
 			G_Printf( S_ERROR "a " S_COLOR_CYAN S_WORLDSPAWN S_COLOR_WHITE " class was misplaced into position " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of the spawn string – Ignoring\n", spawnedEntity->s.number );
 		}
@@ -631,7 +662,7 @@ char *G_NewString( const char *string )
 
 	l = strlen( string ) + 1;
 
-	newb =(char*) BG_Alloc( l );
+	newb = ( char* ) BG_Alloc( l );
 
 	new_p = newb;
 
@@ -672,10 +703,13 @@ gentityCallDefinition_t G_NewCallDefinition( char *eventKey, const char *string 
 	gentityCallDefinition_t newCallDefinition = { NULL, ON_DEFAULT, NULL, NULL, ECA_NOP };
 
 	stringLength = strlen( string ) + 1;
-	if(stringLength == 1)
-		return newCallDefinition;
 
-	stringPointer = (char*) BG_Alloc( stringLength );
+	if ( stringLength == 1 )
+	{
+		return newCallDefinition;
+	}
+
+	stringPointer = ( char* ) BG_Alloc( stringLength );
 	newCallDefinition.name = stringPointer;
 
 	for ( i = 0; i < stringLength; i++ )
@@ -686,8 +720,10 @@ gentityCallDefinition_t G_NewCallDefinition( char *eventKey, const char *string 
 			newCallDefinition.action = stringPointer;
 			continue;
 		}
+
 		*stringPointer++ = string[ i ];
 	}
+
 	newCallDefinition.actionType = G_GetCallActionTypeFor( newCallDefinition.action );
 
 	newCallDefinition.event = eventKey;
@@ -710,7 +746,7 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 	vec4_t  tmpFloatData;
 	variatingTime_t varTime = {0, 0};
 
-	fieldDescriptor = (fieldDescriptor_t*) bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
+	fieldDescriptor = ( fieldDescriptor_t* ) bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
 
 	if ( !fieldDescriptor )
 	{
@@ -726,15 +762,19 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 			break;
 
 		case F_TARGET:
-			if(entity->targetCount >= MAX_ENTITY_TARGETS)
-				G_Error("Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
+			if ( entity->targetCount >= MAX_ENTITY_TARGETS )
+			{
+				G_Error( "Maximal number of %i targets reached.", MAX_ENTITY_TARGETS );
+			}
 
 			( ( char ** ) entityDataField ) [ entity->targetCount++ ] = G_NewString( rawString );
 			break;
 
 		case F_CALLTARGET:
-			if(entity->callTargetCount >= MAX_ENTITY_CALLTARGETS)
-				G_Error("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
+			if ( entity->callTargetCount >= MAX_ENTITY_CALLTARGETS )
+			{
+				G_Error( "Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS );
+			}
 
 			( ( gentityCallDefinition_t * ) entityDataField ) [ entity->callTargetCount++ ] = G_NewCallDefinition( fieldDescriptor->replacement ? fieldDescriptor->replacement : fieldDescriptor->name, rawString );
 			break;
@@ -790,7 +830,9 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 	}
 
 	if ( fieldDescriptor->replacement && fieldDescriptor->versionState )
-		G_WarnAboutDeprecatedEntityField(entity, fieldDescriptor->replacement, key, fieldDescriptor->versionState );
+	{
+		G_WarnAboutDeprecatedEntityField( entity, fieldDescriptor->replacement, key, fieldDescriptor->versionState );
+	}
 }
 
 /*
@@ -814,7 +856,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], spawningEntity );
 	}
 
-	if(G_SpawnBoolean( "nop", qfalse ) || G_SpawnBoolean( "notunv", qfalse ))
+	if ( G_SpawnBoolean( "nop", qfalse ) || G_SpawnBoolean( "notunv", qfalse ) )
 	{
 		G_FreeEntity( spawningEntity );
 		return;
@@ -826,7 +868,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 	 * in the server, where we dont know as much anymore about it,
 	 * so we fail rather here, so mappers have a chance to remove it
 	 */
-	if( level.numSpawnVars <= 1 )
+	if ( level.numSpawnVars <= 1 )
 	{
 		G_Printf( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
 		G_FreeEntity( spawningEntity );
@@ -839,23 +881,29 @@ void G_SpawnGEntityFromSpawnVars( void )
 
 	// don't leave any "gaps" between multiple names
 	j = 0;
-	for (i = 0; i < MAX_ENTITY_ALIASES; ++i)
+
+	for ( i = 0; i < MAX_ENTITY_ALIASES; ++i )
 	{
-		if (spawningEntity->names[i])
+		if ( spawningEntity->names[i] )
+		{
 			spawningEntity->names[j++] = spawningEntity->names[i];
+		}
 	}
+
 	spawningEntity->names[ j ] = NULL;
 
 	/*
 	 * for backward compatbility, since before targets were used for calling,
 	 * we'll have to copy them over to the called-targets as well for now
 	 */
-	if(!spawningEntity->callTargetCount)
+	if ( !spawningEntity->callTargetCount )
 	{
-		for (i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS; i++)
+		for ( i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS; i++ )
 		{
-			if (!spawningEntity->targets[i])
+			if ( !spawningEntity->targets[i] )
+			{
 				continue;
+			}
 
 			spawningEntity->calltargets[i].event = "target";
 			spawningEntity->calltargets[i].eventType = ON_DEFAULT;
@@ -867,11 +915,15 @@ void G_SpawnGEntityFromSpawnVars( void )
 
 	// don't leave any "gaps" between multiple targets
 	j = 0;
-	for (i = 0; i < MAX_ENTITY_TARGETS; ++i)
+
+	for ( i = 0; i < MAX_ENTITY_TARGETS; ++i )
 	{
-		if (spawningEntity->targets[i])
+		if ( spawningEntity->targets[i] )
+		{
 			spawningEntity->targets[j++] = spawningEntity->targets[i];
+		}
 	}
+
 	spawningEntity->targets[ j ] = NULL;
 
 	// if we didn't get necessary fields (like the classname), don't bother spawning anything
@@ -886,29 +938,34 @@ void G_ReorderCallTargets( gentity_t *ent )
 	int i, j;
 	// don't leave any "gaps" between multiple targets
 	j = 0;
-	for (i = 0; i < MAX_ENTITY_CALLTARGETS; ++i)
+
+	for ( i = 0; i < MAX_ENTITY_CALLTARGETS; ++i )
 	{
-		if (ent->calltargets[i].name) {
+		if ( ent->calltargets[i].name )
+		{
 			ent->calltargets[j] = ent->calltargets[i];
-			ent->calltargets[j].actionType = G_GetCallActionTypeFor(ent->calltargets[i].action);
+			ent->calltargets[j].actionType = G_GetCallActionTypeFor( ent->calltargets[i].action );
 			j++;
 		}
 	}
+
 	ent->calltargets[ j ].name = NULL;
 	ent->calltargets[ j ].action = NULL;
 	ent->calltargets[ j ].actionType = ECA_NOP;
 	ent->callTargetCount = j;
 }
 
-qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
+qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation )
 {
-	if ( !Q_stricmp(expectedFieldname, actualFieldname) || typeOfDeprecation == ENT_V_CURRENT )
+	if ( !Q_stricmp( expectedFieldname, actualFieldname ) || typeOfDeprecation == ENT_V_CURRENT )
+	{
 		return qfalse;
+	}
 
 	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
 	{
-		if( typeOfDeprecation < ENT_V_TMPORARY
-		|| ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY) )
+		if ( typeOfDeprecation < ENT_V_TMPORARY
+		        || ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY ) )
 		{
 			G_Printf( S_WARNING "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " contains deprecated field " S_COLOR_CYAN "%s" S_COLOR_WHITE " — use " S_COLOR_CYAN "%s" S_COLOR_WHITE " instead\n", entity->s.number, actualFieldname, expectedFieldname );
 		}
@@ -1054,18 +1111,26 @@ void SP_worldspawn( void )
 	G_SpawnString( "message", "", &s );
 	trap_SetConfigstring( CS_MESSAGE, s );  // map specific message
 
-	if(G_SpawnString( "gradingTexture", "", &s ))
-		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
-
-	if(G_SpawnString( "colorGrade", "", &s )) {
-		Com_Printf("^3Warning: ^7\"colorGrade\" deprecated. Please use \"gradingTexture\"");
+	if ( G_SpawnString( "gradingTexture", "", &s ) )
+	{
 		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
 	}
 
-	if(G_SpawnString( "reverbIntensity", "", &s ))
+	if ( G_SpawnString( "colorGrade", "", &s ) )
+	{
+		Com_Printf( "^3Warning: ^7\"colorGrade\" deprecated. Please use \"gradingTexture\"" );
+		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
+	}
+
+	if ( G_SpawnString( "reverbIntensity", "", &s ) )
+	{
 		sscanf( s, "%f", &reverbIntensity );
-	if(G_SpawnString( "reverbEffect", "", &s ))
+	}
+
+	if ( G_SpawnString( "reverbEffect", "", &s ) )
+	{
 		trap_SetConfigstring( CS_REVERB_EFFECTS, va( "%i %f %s %f", 0, 0.0f, s, Com_Clamp( 0.0f, 2.0f, reverbIntensity ) ) );
+	}
 
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
@@ -1132,8 +1197,8 @@ void G_SpawnFakeEntities( void )
 {
 	level.fakeLocation = G_NewEntity();
 	level.fakeLocation->s.origin[ 0 ] =
-	level.fakeLocation->s.origin[ 1 ] =
-	level.fakeLocation->s.origin[ 2 ] = 1.7e19f; // well out of range
+	    level.fakeLocation->s.origin[ 1 ] =
+	        level.fakeLocation->s.origin[ 2 ] = 1.7e19f; // well out of range
 	level.fakeLocation->message = NULL;
 
 	level.fakeLocation->s.eType = ET_LOCATION;

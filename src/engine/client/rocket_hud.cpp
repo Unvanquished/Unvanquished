@@ -78,6 +78,7 @@ void Rocket_LoadUnit( const char *path )
 
 		// Close any other documents which may have the same ID
 		other = hudContext->GetDocument( document->GetId() );
+
 		if ( other && other != document )
 		{
 			other->Close();
@@ -92,6 +93,7 @@ void Rocket_AddUnitToHud( int weapon, const char *id )
 	if ( id && *id )
 	{
 		Rocket::Core::ElementDocument *doc = hudContext->GetDocument( id );
+
 		if ( doc )
 		{
 			huds[ weapon ].push_back( HudUnit( doc ) );
@@ -122,6 +124,7 @@ void Rocket_ShowHud( int weapon )
 		for ( RocketHud::iterator it = activeHud->begin(); it != activeHud->end(); ++it )
 		{
 			HudUnit *unit;
+
 			// Check if the new HUD needs this unit
 			if ( ( unit = findUnit( currentHud, *it ) ) )
 			{

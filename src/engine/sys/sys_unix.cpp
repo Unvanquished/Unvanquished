@@ -119,10 +119,10 @@ int Sys_Milliseconds( void )
 	if ( !sys_timeBase )
 	{
 		sys_timeBase = tp.tv_sec;
-		return tp.tv_usec/1000;
+		return tp.tv_usec / 1000;
 	}
 
-	return ( tp.tv_sec - sys_timeBase ) * 1000 + tp.tv_usec/1000;
+	return ( tp.tv_sec - sys_timeBase ) * 1000 + tp.tv_usec / 1000;
 }
 
 /*
@@ -176,7 +176,8 @@ Sys_GetClipboardData
 */
 #ifndef MACOS_X
 #ifdef BUILD_CLIENT
-static struct {
+static struct
+{
 	Display *display;
 	Window  window;
 	Atom    utf8;
@@ -201,9 +202,10 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		SDL_SysWMinfo info;
 
 		SDL_VERSION( &info.version );
-		if ( SDL_GetWindowWMInfo( (SDL_Window*) IN_GetWindow(), &info ) != 1 || info.subsystem != SDL_SYSWM_X11 )
+
+		if ( SDL_GetWindowWMInfo( ( SDL_Window* ) IN_GetWindow(), &info ) != 1 || info.subsystem != SDL_SYSWM_X11 )
 		{
-			Com_Printf("Not on X11? (%d)\n",info.subsystem);
+			Com_Printf( "Not on X11? (%d)\n", info.subsystem );
 			return NULL;
 		}
 
@@ -219,26 +221,28 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 	switch ( clip )
 	{
-	// preference order; we use fall-through
-	default: // SELECTION_CLIPBOARD
-		selection = XInternAtom( x11.display, "CLIPBOARD", False );
-		owner = XGetSelectionOwner( x11.display, selection );
-		if ( owner != None && owner != x11.window )
-		{
-			break;
-		}
+			// preference order; we use fall-through
+		default: // SELECTION_CLIPBOARD
+			selection = XInternAtom( x11.display, "CLIPBOARD", False );
+			owner = XGetSelectionOwner( x11.display, selection );
 
-	case SELECTION_PRIMARY:
-		selection = XA_PRIMARY;
-		owner = XGetSelectionOwner( x11.display, selection );
-		if ( owner != None && owner != x11.window )
-		{
-			break;
-		}
+			if ( owner != None && owner != x11.window )
+			{
+				break;
+			}
 
-	case SELECTION_SECONDARY:
-		selection = XA_SECONDARY;
-		owner = XGetSelectionOwner( x11.display, selection );
+		case SELECTION_PRIMARY:
+			selection = XA_PRIMARY;
+			owner = XGetSelectionOwner( x11.display, selection );
+
+			if ( owner != None && owner != x11.window )
+			{
+				break;
+			}
+
+		case SELECTION_SECONDARY:
+			selection = XA_SECONDARY;
+			owner = XGetSelectionOwner( x11.display, selection );
 	}
 
 	converted = XInternAtom( x11.display, "UNVANQUISHED_SELECTION", False );
@@ -259,15 +263,16 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		XConvertSelection( x11.display, selection, x11.utf8, converted, owner, CurrentTime );
 		XUnlockDisplay( x11.display );
 
-		for (;;)
+		for ( ;; )
 		{
 			SDL_WaitEvent( &event );
 
 			if ( event.type == SDL_SYSWMEVENT )
 			{
 				XEvent xevent = event.syswm.msg->msg.x11.event;
+
 				if ( xevent.type == SelectionNotify &&
-				     xevent.xselection.requestor == owner )
+				        xevent.xselection.requestor == owner )
 				{
 					break;
 				}
@@ -279,16 +284,17 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 	if ( XGetWindowProperty( x11.display, owner, converted, 0, INT_MAX / 4,
 	                         False, x11.utf8, &selectionType, &selectionFormat,
-	                         &nbytes, &overflow, (unsigned char **) &src ) == Success )
+	                         &nbytes, &overflow, ( unsigned char ** ) &src ) == Success )
 	{
 		char *dest = NULL;
 
 		if ( selectionType == x11.utf8 )
 		{
-			dest = (char*) Z_Malloc( nbytes + 1 );
+			dest = ( char* ) Z_Malloc( nbytes + 1 );
 			memcpy( dest, src, nbytes );
 			dest[ nbytes ] = 0;
 		}
+
 		XFree( src );
 
 		XUnlockDisplay( x11.display );
@@ -312,7 +318,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	char *buffer = SDL_GetClipboardText();
 	char *data = NULL;
 
-	if( !buffer )
+	if ( !buffer )
 	{
 		return NULL;
 	}
@@ -374,7 +380,7 @@ Sys_Chmod
 */
 void Sys_Chmod( const char *ospath, int mode )
 {
-	chmod( ospath, (mode_t) mode );
+	chmod( ospath, ( mode_t ) mode );
 }
 
 /*
@@ -384,7 +390,7 @@ Sys_FChmod
 */
 void Sys_FChmod( FILE *f, int mode )
 {
-	fchmod( fileno( f ), (mode_t) mode );
+	fchmod( fileno( f ), ( mode_t ) mode );
 }
 
 /*
@@ -417,20 +423,31 @@ FILE *Sys_Mkfifo( const char *ospath )
 	struct	stat buf;
 
 	// if file already exists AND is a pipefile, remove it
-	if( !stat( ospath, &buf ) && S_ISFIFO( buf.st_mode ) )
+	if ( !stat( ospath, &buf ) && S_ISFIFO( buf.st_mode ) )
+	{
 		remove( ospath );
+	}
 
 	result = mkfifo( ospath, 0600 );
-	if( result != 0 )
+
+	if ( result != 0 )
+	{
 		return NULL;
+	}
 
 	fn = open( ospath, O_RDWR | O_NONBLOCK );
-	if( fn == -1 )
+
+	if ( fn == -1 )
+	{
 		return NULL;
+	}
 
 	fifo = fdopen( fn, "w+" );
-	if( fifo == NULL )
+
+	if ( fifo == NULL )
+	{
 		close( fn );
+	}
 
 	return fifo;
 }
@@ -525,15 +542,16 @@ void Sys_ErrorDialog( const char *error )
 	unsigned int size;
 	int          f;
 	const char   *fileName = "crashlog.txt";
-	std::string ospath = FS::Path::Build(FS::GetHomePath(), fileName);
+	std::string ospath = FS::Path::Build( FS::GetHomePath(), fileName );
 
 	Sys_Print( va( "%s\n", error ) );
 
 #ifdef BUILD_CLIENT
+
 	// We may have grabbed input devices. Need to release.
 	if ( SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
-		SDL_SetWindowGrab( (SDL_Window*) IN_GetWindow(), SDL_FALSE );
+		SDL_SetWindowGrab( ( SDL_Window* ) IN_GetWindow(), SDL_FALSE );
 	}
 
 	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospath.c_str() ), "Error" );
@@ -585,6 +603,7 @@ static int Sys_System( const char *cmd, ... )
 	for ( r = 1; r < ARRAY_LEN( argv ) - 1; ++r )
 	{
 		argv[ r ] = va_arg( ap, char * );
+
 		if ( !argv[ r ] )
 		{
 			break;
@@ -595,21 +614,22 @@ static int Sys_System( const char *cmd, ... )
 
 	switch ( pid = fork() )
 	{
-	case 0: // child
-		// give me an exec() which takes a va_list...
-		execvp( cmd, ( char ** ) argv );
-		exit( 2 );
+		case 0: // child
+			// give me an exec() which takes a va_list...
+			execvp( cmd, ( char ** ) argv );
+			exit( 2 );
 
-	case -1: // error
-		return -1;
+		case -1: // error
+			return -1;
 
-	default: // parent
-		do
-		{
-			waitpid( pid, &r, 0 );
-		} while ( !WIFEXITED( r ) );
+		default: // parent
+			do
+			{
+				waitpid( pid, &r, 0 );
+			}
+			while ( !WIFEXITED( r ) );
 
-		return WEXITSTATUS( r );
+			return WEXITSTATUS( r );
 	}
 }
 
@@ -731,11 +751,11 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 {
 	typedef enum
 	{
-	  NONE = 0,
-	  ZENITY,
-	  KDIALOG,
-	  XMESSAGE,
-	  NUM_DIALOG_PROGRAMS
+	    NONE = 0,
+	    ZENITY,
+	    KDIALOG,
+	    XMESSAGE,
+	    NUM_DIALOG_PROGRAMS
 	} dialogCommandType_t;
 	typedef int ( *dialogCommandBuilder_t )( dialogType_t, const char *, const char * );
 
@@ -825,21 +845,23 @@ Sys_Dialog
 dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title )
 {
 #ifdef BUILD_CLIENT
+
 	switch ( type )
 	{
 		default:
 		case DT_INFO:
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, title, message, NULL);
+			SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_INFORMATION, title, message, NULL );
 			break;
 
 		case DT_WARNING:
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, title, message, NULL);
+			SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_WARNING, title, message, NULL );
 			break;
 
 		case DT_ERROR:
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, message, NULL);
+			SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, title, message, NULL );
 			break;
 	}
+
 #endif
 	return DR_OK;
 }
@@ -868,7 +890,7 @@ void Sys_PlatformInit( void )
 	signal( SIGBUS, Sys_SigHandler );
 
 	// Enable S3TC on Mesa even if libtxc-dxtn is not available
-	putenv("force_s3tc_enable=true");
+	putenv( "force_s3tc_enable=true" );
 
 	setlocale( LC_ALL, "" );
 
@@ -883,7 +905,7 @@ void Sys_PlatformInit( void )
  Unix specific deinitialisation
 ==============
 */
- void Sys_PlatformExit( void )
+void Sys_PlatformExit( void )
 {
 }
 
@@ -910,24 +932,28 @@ qboolean Sys_IsNumLockDown( void )
 	XKeyboardState x;
 
 	if ( denv != NULL && strlen( denv ) > 0 )
-		dpy = XOpenDisplay(denv);
+	{
+		dpy = XOpenDisplay( denv );
+	}
 	else
-		dpy = XOpenDisplay(":0");
+	{
+		dpy = XOpenDisplay( ":0" );
+	}
 
 	if ( dpy == 0 )
 	{
-		Com_Printf( "ERROR: cannot determine numlock state as we couldn't\n" 
-		              "grab your non-standard (e.g. not ':0') X display.\n"
-		              "ensure the 'DISPLAY' environment variable is set.\n" );
+		Com_Printf( "ERROR: cannot determine numlock state as we couldn't\n"
+		            "grab your non-standard (e.g. not ':0') X display.\n"
+		            "ensure the 'DISPLAY' environment variable is set.\n" );
 		return qtrue;
 	}
 	else
 	{
-		XGetKeyboardControl(dpy, &x);
-		XCloseDisplay(dpy);
+		XGetKeyboardControl( dpy, &x );
+		XCloseDisplay( dpy );
 	}
 
-	return (x.led_mask & 2) ? qtrue : qfalse;
+	return ( x.led_mask & 2 ) ? qtrue : qfalse;
 #else
 	return qtrue; // Macs don't have Numlock.
 #endif

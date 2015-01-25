@@ -46,241 +46,239 @@ Maryland 20850 USA.
 //
 // these are the functions exported by the refresh module
 //
-typedef struct
-{
-	// called before the library is unloaded
-	// if the system is just reconfiguring, pass destroyWindow = qfalse,
-	// which will keep the screen from flashing to the desktop.
-	void ( *Shutdown )( qboolean destroyWindow );
+typedef struct {
+    // called before the library is unloaded
+    // if the system is just reconfiguring, pass destroyWindow = qfalse,
+    // which will keep the screen from flashing to the desktop.
+    void ( *Shutdown ) ( qboolean destroyWindow );
 
-	// All data that will be used in a level should be
-	// registered before rendering any frames to prevent disk hits,
-	// but they can still be registered at a later time
-	// if necessary.
-	//
-	// BeginRegistration makes any existing media pointers invalid
-	// and returns the current gl configuration, including screen width
-	// and height, which can be used by the client to intelligently
-	// size display elements. Returns false if the renderer couldn't
-	// be initialized.
-	qboolean( *BeginRegistration )( glconfig_t *config, glconfig2_t *glconfig2 );
-	qhandle_t ( *RegisterModel )( const char *name );
-	//qhandle_t   (*RegisterModelAllLODs) (const char *name);
-	qhandle_t ( *RegisterSkin )( const char *name );
-	qhandle_t ( *RegisterShader )( const char *name,
-				       RegisterShaderFlags_t flags );
-	void   ( *RegisterFont )( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font );
-	void   ( *UnregisterFont )( fontInfo_t *font );
-	void   ( *RegisterFontVM )( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
-	void   ( *UnregisterFontVM )( fontHandle_t font );
-	void   ( *Glyph )( fontInfo_t *font, const char *str, glyphInfo_t *glyph );
-	void   ( *GlyphChar )( fontInfo_t *font, int ch, glyphInfo_t *glyph );
-	void   ( *GlyphVM )( fontHandle_t font, const char *ch, glyphInfo_t *glyph );
-	void   ( *GlyphCharVM )( fontHandle_t font, int ch, glyphInfo_t *glyph );
+    // All data that will be used in a level should be
+    // registered before rendering any frames to prevent disk hits,
+    // but they can still be registered at a later time
+    // if necessary.
+    //
+    // BeginRegistration makes any existing media pointers invalid
+    // and returns the current gl configuration, including screen width
+    // and height, which can be used by the client to intelligently
+    // size display elements. Returns false if the renderer couldn't
+    // be initialized.
+    qboolean ( *BeginRegistration ) ( glconfig_t *config, glconfig2_t *glconfig2 );
+    qhandle_t ( *RegisterModel ) ( const char *name );
+    //qhandle_t   (*RegisterModelAllLODs) (const char *name);
+    qhandle_t ( *RegisterSkin ) ( const char *name );
+    qhandle_t ( *RegisterShader ) ( const char *name,
+                                    RegisterShaderFlags_t flags );
+    void ( *RegisterFont ) ( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font );
+    void ( *UnregisterFont ) ( fontInfo_t *font );
+    void ( *RegisterFontVM ) ( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
+    void ( *UnregisterFontVM ) ( fontHandle_t font );
+    void ( *Glyph ) ( fontInfo_t *font, const char *str, glyphInfo_t *glyph );
+    void ( *GlyphChar ) ( fontInfo_t *font, int ch, glyphInfo_t *glyph );
+    void ( *GlyphVM ) ( fontHandle_t font, const char *ch, glyphInfo_t *glyph );
+    void ( *GlyphCharVM ) ( fontHandle_t font, int ch, glyphInfo_t *glyph );
 
-	void ( *LoadWorld )( const char *name );
-	qboolean( *GetSkinModel )( qhandle_t skinid, const char *type, char *name );                  //----(SA) added
-	qhandle_t ( *GetShaderFromModel )( qhandle_t modelid, int surfnum, int withlightmap );                //----(SA)    added
+    void ( *LoadWorld ) ( const char *name );
+    qboolean ( *GetSkinModel ) ( qhandle_t skinid, const char *type, char *name );                //----(SA) added
+    qhandle_t ( *GetShaderFromModel ) ( qhandle_t modelid, int surfnum, int withlightmap );               //----(SA)    added
 
-	// the vis data is a large enough block of data that we go to the trouble
-	// of sharing it with the clipmodel subsystem
-	void ( *SetWorldVisData )( const byte *vis );
+    // the vis data is a large enough block of data that we go to the trouble
+    // of sharing it with the clipmodel subsystem
+    void ( *SetWorldVisData ) ( const byte *vis );
 
-	// EndRegistration will draw a tiny polygon with each texture, forcing
-	// them to be loaded into card memory
-	void ( *EndRegistration )( void );
+    // EndRegistration will draw a tiny polygon with each texture, forcing
+    // them to be loaded into card memory
+    void ( *EndRegistration ) ( void );
 
-	// a scene is built up by calls to R_ClearScene and the various R_Add functions.
-	// Nothing is drawn until R_RenderScene is called.
-	void ( *ClearScene )( void );
-	void ( *AddRefEntityToScene )( const refEntity_t *re );
+    // a scene is built up by calls to R_ClearScene and the various R_Add functions.
+    // Nothing is drawn until R_RenderScene is called.
+    void ( *ClearScene ) ( void );
+    void ( *AddRefEntityToScene ) ( const refEntity_t *re );
 
-	int ( *LightForPoint )( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
+    int ( *LightForPoint ) ( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
-	void ( *AddPolyToScene )( qhandle_t hShader, int numVerts, const polyVert_t *verts );
-	void ( *AddPolysToScene )( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys );
+    void ( *AddPolyToScene ) ( qhandle_t hShader, int numVerts, const polyVert_t *verts );
+    void ( *AddPolysToScene ) ( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys );
 
-	void ( *AddLightToScene )( const vec3_t org, float radius, float intensity, float r, float g, float b,
-	                           qhandle_t hShader, int flags );
+    void ( *AddLightToScene ) ( const vec3_t org, float radius, float intensity, float r, float g, float b,
+                                qhandle_t hShader, int flags );
 
-	void ( *AddAdditiveLightToScene )( const vec3_t org, float intensity, float r, float g, float b );
+    void ( *AddAdditiveLightToScene ) ( const vec3_t org, float intensity, float r, float g, float b );
 
 //----(SA)
-	void ( *AddCoronaToScene )( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
-	void ( *SetFog )( int fogvar, int var1, int var2, float r, float g, float b, float density );
+    void ( *AddCoronaToScene ) ( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
+    void ( *SetFog ) ( int fogvar, int var1, int var2, float r, float g, float b, float density );
 //----(SA)
-	void ( *RenderScene )( const refdef_t *fd );
+    void ( *RenderScene ) ( const refdef_t *fd );
 
-	void ( *SaveViewParms )( void );
-	void ( *RestoreViewParms )( void );
+    void ( *SaveViewParms ) ( void );
+    void ( *RestoreViewParms ) ( void );
 
-	void ( *SetColor )( const float *rgba );             // NULL = 1,1,1,1
-	void ( *SetClipRegion )( const float *region );
-	void ( *DrawStretchPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );             // 0 = white
-	void ( *DrawRotatedPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );             // NERVE - SMF
-	void ( *DrawStretchPicGradient )( float x, float y, float w, float h, float s1, float t1, float s2, float t2,
-	                                  qhandle_t hShader, const float *gradientColor, int gradientType );
-	void ( *Add2dPolys )( polyVert_t *polys, int numverts, qhandle_t hShader );
+    void ( *SetColor ) ( const float *rgba );            // NULL = 1,1,1,1
+    void ( *SetClipRegion ) ( const float *region );
+    void ( *DrawStretchPic ) ( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );            // 0 = white
+    void ( *DrawRotatedPic ) ( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );            // NERVE - SMF
+    void ( *DrawStretchPicGradient ) ( float x, float y, float w, float h, float s1, float t1, float s2, float t2,
+                                       qhandle_t hShader, const float *gradientColor, int gradientType );
+    void ( *Add2dPolys ) ( polyVert_t *polys, int numverts, qhandle_t hShader );
 
-	// Draw images for cinematic rendering, pass as 32 bit rgba
-	void ( *DrawStretchRaw )( int x, int y, int w, int h, int cols, int rows, const byte *data, int client,
-	                          qboolean dirty );
-	void ( *UploadCinematic )( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
+    // Draw images for cinematic rendering, pass as 32 bit rgba
+    void ( *DrawStretchRaw ) ( int x, int y, int w, int h, int cols, int rows, const byte *data, int client,
+                               qboolean dirty );
+    void ( *UploadCinematic ) ( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
 
-	void ( *BeginFrame )( void );
+    void ( *BeginFrame ) ( void );
 
-	// if the pointers are not NULL, timing info will be returned
-	void ( *EndFrame )( int *frontEndMsec, int *backEndMsec );
+    // if the pointers are not NULL, timing info will be returned
+    void ( *EndFrame ) ( int *frontEndMsec, int *backEndMsec );
 
-	int ( *MarkFragments )( int numPoints, const vec3_t *points, const vec3_t projection,
-	                        int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
+    int ( *MarkFragments ) ( int numPoints, const vec3_t *points, const vec3_t projection,
+                             int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 
-	void ( *ProjectDecal )( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color,
-	                        int lifeTime, int fadeTime );
-	void ( *ClearDecals )( void );
+    void ( *ProjectDecal ) ( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color,
+                             int lifeTime, int fadeTime );
+    void ( *ClearDecals ) ( void );
 
-	int ( *LerpTag )( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
-	void ( *ModelBounds )( qhandle_t model, vec3_t mins, vec3_t maxs );
+    int ( *LerpTag ) ( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
+    void ( *ModelBounds ) ( qhandle_t model, vec3_t mins, vec3_t maxs );
 
-	void ( *RemapShader )( const char *oldShader, const char *newShader, const char *offsetTime );
+    void ( *RemapShader ) ( const char *oldShader, const char *newShader, const char *offsetTime );
 
-	void ( *DrawDebugPolygon )( int color, int numpoints, float *points );
-	void ( *DrawDebugText )( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude );
+    void ( *DrawDebugPolygon ) ( int color, int numpoints, float *points );
+    void ( *DrawDebugText ) ( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude );
 
-	qboolean( *GetEntityToken )( char *buffer, int size );
+    qboolean ( *GetEntityToken ) ( char *buffer, int size );
 
-	void ( *AddPolyBufferToScene )( polyBuffer_t *pPolyBuffer );
+    void ( *AddPolyBufferToScene ) ( polyBuffer_t *pPolyBuffer );
 
-	void ( *SetGlobalFog )( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
+    void ( *SetGlobalFog ) ( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 
-	qboolean( *inPVS )( const vec3_t p1, const vec3_t p2 );
-	qboolean( *inPVVS )( const vec3_t p1, const vec3_t p2 );
+    qboolean ( *inPVS ) ( const vec3_t p1, const vec3_t p2 );
+    qboolean ( *inPVVS ) ( const vec3_t p1, const vec3_t p2 );
 
-	void ( *purgeCache )( void );
+    void ( *purgeCache ) ( void );
 
-	qboolean( *LoadDynamicShader )( const char *shadername, const char *shadertext );
+    qboolean ( *LoadDynamicShader ) ( const char *shadername, const char *shadertext );
 
-	void ( *RenderToTexture )( int textureid, int x, int y, int w, int h );
-	void ( *Finish )( void );
+    void ( *RenderToTexture ) ( int textureid, int x, int y, int w, int h );
+    void ( *Finish ) ( void );
 
-	// XreaL BEGIN
-	void ( *TakeVideoFrame )( int h, int w, byte *captureBuffer, byte *encodeBuffer, qboolean motionJpeg );
+    // XreaL BEGIN
+    void ( *TakeVideoFrame ) ( int h, int w, byte *captureBuffer, byte *encodeBuffer, qboolean motionJpeg );
 
-	void ( *AddRefLightToScene )( const refLight_t *light );
+    void ( *AddRefLightToScene ) ( const refLight_t *light );
 
-	// RB: alternative skeletal animation system
-	qhandle_t ( *RegisterAnimation )( const char *name );
-	int ( *CheckSkeleton )( refSkeleton_t *skel, qhandle_t model, qhandle_t anim );
-	int ( *BuildSkeleton )( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac,
-	                        qboolean clearOrigin );
-	int ( *BlendSkeleton )( refSkeleton_t *skel, const refSkeleton_t *blend, float frac );
-	int ( *BoneIndex )( qhandle_t hModel, const char *boneName );
-	int ( *AnimNumFrames )( qhandle_t hAnim );
-	int ( *AnimFrameRate )( qhandle_t hAnim );
+    // RB: alternative skeletal animation system
+    qhandle_t ( *RegisterAnimation ) ( const char *name );
+    int ( *CheckSkeleton ) ( refSkeleton_t *skel, qhandle_t model, qhandle_t anim );
+    int ( *BuildSkeleton ) ( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac,
+                             qboolean clearOrigin );
+    int ( *BlendSkeleton ) ( refSkeleton_t *skel, const refSkeleton_t *blend, float frac );
+    int ( *BoneIndex ) ( qhandle_t hModel, const char *boneName );
+    int ( *AnimNumFrames ) ( qhandle_t hAnim );
+    int ( *AnimFrameRate ) ( qhandle_t hAnim );
 
-	// XreaL END
+    // XreaL END
 
-	// VisTest API
-	qhandle_t ( *RegisterVisTest ) ();
-	void      ( *AddVisTestToScene ) ( qhandle_t hTest, vec3_t pos,
-					   float depthAdjust, float area );
-	float     ( *CheckVisibility ) ( qhandle_t hTest );
-	void      ( *UnregisterVisTest ) ( qhandle_t hTest );
+    // VisTest API
+    qhandle_t ( *RegisterVisTest ) ();
+    void ( *AddVisTestToScene ) ( qhandle_t hTest, vec3_t pos,
+                                  float depthAdjust, float area );
+    float ( *CheckVisibility ) ( qhandle_t hTest );
+    void ( *UnregisterVisTest ) ( qhandle_t hTest );
 
-	// color grading
-	void      ( *SetColorGrading ) ( int slot, qhandle_t hShader );
+    // color grading
+    void ( *SetColorGrading ) ( int slot, qhandle_t hShader );
 
-	void ( *ScissorEnable ) ( qboolean enable );
-	void ( *ScissorSet ) ( int x, int y, int w, int h );
+    void ( *ScissorEnable ) ( qboolean enable );
+    void ( *ScissorSet ) ( int x, int y, int w, int h );
 
-	void ( *SetAltShaderTokens ) ( const char * );
+    void ( *SetAltShaderTokens ) ( const char * );
 
-	void ( *GetTextureSize )( int textureID, int *width, int *height );
-	void ( *Add2dPolysIndexed )( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader );
-	qhandle_t ( *GenerateTexture )( const byte *pic, int width, int height );
-	const char *( *ShaderNameFromHandle )( qhandle_t shader );
+    void ( *GetTextureSize ) ( int textureID, int *width, int *height );
+    void ( *Add2dPolysIndexed ) ( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader );
+    qhandle_t ( *GenerateTexture ) ( const byte *pic, int width, int height );
+    const char * ( *ShaderNameFromHandle ) ( qhandle_t shader );
 } refexport_t;
 
 //
 // these are the functions imported by the refresh module
 //
-typedef struct
-{
-	// print message on the local console
-	void ( QDECL *Printf )( int printLevel, const char *fmt, ... ) PRINTF_LIKE(2);
+typedef struct {
+    // print message on the local console
+    void ( QDECL *Printf ) ( int printLevel, const char *fmt, ... ) PRINTF_LIKE ( 2 );
 
-	// abort the game
-	void ( QDECL *Error )( int errorLevel, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN_PTR;
+    // abort the game
+    void ( QDECL *Error ) ( int errorLevel, const char *fmt, ... ) PRINTF_LIKE ( 2 ) NORETURN_PTR;
 
-	// milliseconds should only be used for profiling, never
-	// for anything game related.  Get time from the refdef
-	int ( *Milliseconds )( void );
+    // milliseconds should only be used for profiling, never
+    // for anything game related.  Get time from the refdef
+    int ( *Milliseconds ) ( void );
 
-	int ( *RealTime )( qtime_t *qtime );
+    int ( *RealTime ) ( qtime_t *qtime );
 
-	// stack based memory allocation for per-level things that
-	// won't be freed
-	void ( *Hunk_Clear )( void );
+    // stack based memory allocation for per-level things that
+    // won't be freed
+    void ( *Hunk_Clear ) ( void );
 #ifdef HUNK_DEBUG
-	void            *( *Hunk_AllocDebug )( int size, ha_pref pref, const char *label, const char *file, int line );
+    void            * ( *Hunk_AllocDebug ) ( int size, ha_pref pref, const char *label, const char *file, int line );
 #else
-	void            *( *Hunk_Alloc )( int size, ha_pref pref );
+    void            * ( *Hunk_Alloc ) ( int size, ha_pref pref );
 #endif
-	void            *( *Hunk_AllocateTempMemory )( int size );
-	void ( *Hunk_FreeTempMemory )( void *block );
+    void            * ( *Hunk_AllocateTempMemory ) ( int size );
+    void ( *Hunk_FreeTempMemory ) ( void *block );
 
-	// dynamic memory allocator for things that need to be freed
-	void            *( *Z_Malloc )( int bytes );
-	void ( *Free )( void *buf );
-	void ( *Tag_Free )( void );
+    // dynamic memory allocator for things that need to be freed
+    void            * ( *Z_Malloc ) ( int bytes );
+    void ( *Free ) ( void *buf );
+    void ( *Tag_Free ) ( void );
 
-	cvar_t          *( *Cvar_Get )( const char *name, const char *value, int flags );
-	void ( *Cvar_Set )( const char *name, const char *value );
+    cvar_t          * ( *Cvar_Get ) ( const char *name, const char *value, int flags );
+    void ( *Cvar_Set ) ( const char *name, const char *value );
 
-	void ( *Cmd_AddCommand )( const char *name, void ( *cmd )( void ) );
-	void ( *Cmd_RemoveCommand )( const char *name );
+    void ( *Cmd_AddCommand ) ( const char *name, void ( *cmd ) ( void ) );
+    void ( *Cmd_RemoveCommand ) ( const char *name );
 
-	int ( *Cmd_Argc )( void );
-	char            *( *Cmd_Argv )( int i );
+    int ( *Cmd_Argc ) ( void );
+    char            * ( *Cmd_Argv ) ( int i );
 
-	const char *( *Cmd_QuoteString )( const char *text );
+    const char * ( *Cmd_QuoteString ) ( const char *text );
 
-	int ( *Cvar_VariableIntegerValue )( const char *var_name );
+    int ( *Cvar_VariableIntegerValue ) ( const char *var_name );
 
-	// visualization for debugging collision detection
-	int ( *CM_PointContents )( const vec3_t p, clipHandle_t model );
-	void ( *CM_DrawDebugSurface )( void ( *drawPoly )( int color, int numPoints, float *points ) );
+    // visualization for debugging collision detection
+    int ( *CM_PointContents ) ( const vec3_t p, clipHandle_t model );
+    void ( *CM_DrawDebugSurface ) ( void ( *drawPoly ) ( int color, int numPoints, float *points ) );
 
-	// a -1 return means the file does not exist
-	// NULL can be passed for buf to just determine existence
-	int ( *FS_FileIsInPAK )( const char *name, int *pChecksum );
-	int ( *FS_ReadFile )( const char *name, void **buf );
-	void ( *FS_FreeFile )( void *buf );
-	char           **( *FS_ListFiles )( const char *name, const char *extension, int *numfilesfound );
-	void ( *FS_FreeFileList )( char **filelist );
-	void ( *FS_WriteFile )( const char *qpath, const void *buffer, int size );
-	qboolean( *FS_FileExists )( const char *file );
-	int ( *FS_Seek )( fileHandle_t f, long offset, int origin );
-	int ( *FS_FTell )( fileHandle_t f );
-	int ( *FS_Read )( void *buffer, int len, fileHandle_t f );
-	int ( *FS_FCloseFile )( fileHandle_t f );
-	int ( *FS_FOpenFileRead )( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
+    // a -1 return means the file does not exist
+    // NULL can be passed for buf to just determine existence
+    int ( *FS_FileIsInPAK ) ( const char *name, int *pChecksum );
+    int ( *FS_ReadFile ) ( const char *name, void **buf );
+    void ( *FS_FreeFile ) ( void *buf );
+    char           ** ( *FS_ListFiles ) ( const char *name, const char *extension, int *numfilesfound );
+    void ( *FS_FreeFileList ) ( char **filelist );
+    void ( *FS_WriteFile ) ( const char *qpath, const void *buffer, int size );
+    qboolean ( *FS_FileExists ) ( const char *file );
+    int ( *FS_Seek ) ( fileHandle_t f, long offset, int origin );
+    int ( *FS_FTell ) ( fileHandle_t f );
+    int ( *FS_Read ) ( void *buffer, int len, fileHandle_t f );
+    int ( *FS_FCloseFile ) ( fileHandle_t f );
+    int ( *FS_FOpenFileRead ) ( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
 
-	// cinematic stuff
-	void ( *CIN_UploadCinematic )( int handle );
-	int ( *CIN_PlayCinematic )( const char *arg0, int xpos, int ypos, int width, int height, int bits );
-	e_status( *CIN_RunCinematic )( int handle );
+    // cinematic stuff
+    void ( *CIN_UploadCinematic ) ( int handle );
+    int ( *CIN_PlayCinematic ) ( const char *arg0, int xpos, int ypos, int width, int height, int bits );
+    e_status ( *CIN_RunCinematic ) ( int handle );
 
-	// XreaL BEGIN
-	qboolean( *CL_VideoRecording )( void );
-	void ( *CL_WriteAVIVideoFrame )( const byte *buffer, int size );
-	// XreaL END
+    // XreaL BEGIN
+    qboolean ( *CL_VideoRecording ) ( void );
+    void ( *CL_WriteAVIVideoFrame ) ( const byte *buffer, int size );
+    // XreaL END
 
-	// input event handling
-	void ( *IN_Init )( void *windowData );
-	void ( *IN_Shutdown )( void );
-	void ( *IN_Restart )( void );
-	void ( *Bot_DrawDebugMesh )( BotDebugInterface_t *in );
+    // input event handling
+    void ( *IN_Init ) ( void *windowData );
+    void ( *IN_Shutdown ) ( void );
+    void ( *IN_Restart ) ( void );
+    void ( *Bot_DrawDebugMesh ) ( BotDebugInterface_t *in );
 } refimport_t;
 
 // this is the only function actually exported at the linker level
@@ -288,6 +286,6 @@ typedef struct
 // returned.
 
 // RB: changed to GetRefAPI_t
-typedef refexport_t *( *GetRefAPI_t )( int apiVersion, refimport_t *rimp );
+typedef refexport_t * ( *GetRefAPI_t ) ( int apiVersion, refimport_t *rimp );
 
 #endif // __TR_PUBLIC_H

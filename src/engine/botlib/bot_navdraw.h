@@ -39,17 +39,17 @@ Maryland 20850 USA.
 
 class DebugDrawQuake : public duDebugDraw
 {
-	BotDebugInterface_t *re;
+    BotDebugInterface_t *re;
 public:
-	void init(BotDebugInterface_t *in);
-	void depthMask(bool state);
-	void texture(bool state) {};
-	void begin(duDebugDrawPrimitives prim, float size = 1.0f);
-	void vertex(const float* pos, unsigned int color);
-	void vertex(const float x, const float y, const float z, unsigned int color);
-	void vertex(const float* pos, unsigned int color, const float* uv);
-	void vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v);
-	void end();
+    void init ( BotDebugInterface_t *in );
+    void depthMask ( bool state );
+    void texture ( bool state ) {};
+    void begin ( duDebugDrawPrimitives prim, float size = 1.0f );
+    void vertex ( const float* pos, unsigned int color );
+    void vertex ( const float x, const float y, const float z, unsigned int color );
+    void vertex ( const float* pos, unsigned int color, const float* uv );
+    void vertex ( const float x, const float y, const float z, unsigned int color, const float u, const float v );
+    void end();
 };
 
-void BotDrawNavEdit( NavData_t *nav, DebugDrawQuake *dd );
+void BotDrawNavEdit ( NavData_t *nav, DebugDrawQuake *dd );

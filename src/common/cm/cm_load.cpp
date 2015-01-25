@@ -59,26 +59,27 @@ cbrush_t  *box_brush;
 void      CM_InitBoxHull( void );
 void      CM_FloodAreaConnections( void );
 
-Cvar::Cvar<bool> cm_forceTriangles(VM_STRING_PREFIX "cm_forceTriangles", "Convert all patches into triangles?", Cvar::CHEAT | Cvar::ROM, false);
-Log::Logger cmLog(VM_STRING_PREFIX "common.cm");
+Cvar::Cvar<bool> cm_forceTriangles( VM_STRING_PREFIX "cm_forceTriangles", "Convert all patches into triangles?", Cvar::CHEAT | Cvar::ROM, false );
+Log::Logger cmLog( VM_STRING_PREFIX "common.cm" );
 
 static std::vector<void*> allocations;
 
 void* CM_Alloc( int size )
 {
-    void* alloc = malloc(size);
-	memset(alloc, 0, size);
-    allocations.push_back(alloc);
-    return alloc;
+	void* alloc = malloc( size );
+	memset( alloc, 0, size );
+	allocations.push_back( alloc );
+	return alloc;
 }
 
 void CM_FreeAll( void )
 {
-    for (auto alloc : allocations)
-    {
-        free(alloc);
-    }
-    allocations.clear();
+	for ( auto alloc : allocations )
+	{
+		free( alloc );
+	}
+
+	allocations.clear();
 }
 
 /*
@@ -718,7 +719,7 @@ void CMod_LoadEntityString( lump_t *l )
 		// check for per-poly collision support
 		if ( !Q_stricmp( keyname, "perPolyCollision" ) && !Q_stricmp( value, "1" ) )
 		{
-			Com_Printf(_( "map features per poly collision detection\n" ));
+			Com_Printf( _( "map features per poly collision detection\n" ) );
 			cm.perPolyCollision = qtrue;
 			continue;
 		}
@@ -927,7 +928,7 @@ void CM_LoadMap( const char *name, const void* buffer, qboolean clientload )
 	}
 
 	// free old stuff
-    CM_FreeAll();
+	CM_FreeAll();
 	memset( &cm, 0, sizeof( cm ) );
 	CM_ClearLevelPatches();
 

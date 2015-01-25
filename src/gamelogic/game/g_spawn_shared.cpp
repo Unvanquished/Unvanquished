@@ -109,11 +109,11 @@ shared reset functions
 
 void G_ResetIntField( int* result, qboolean fallbackIfNegative, int instanceField, int classField, int fallback )
 {
-	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
+	if ( instanceField && ( instanceField > 0 || !fallbackIfNegative ) )
 	{
 		*result = instanceField;
 	}
-	else if (classField && (classField > 0 || !fallbackIfNegative))
+	else if ( classField && ( classField > 0 || !fallbackIfNegative ) )
 	{
 		*result = classField;
 	}
@@ -125,11 +125,11 @@ void G_ResetIntField( int* result, qboolean fallbackIfNegative, int instanceFiel
 
 void G_ResetFloatField( float* result, qboolean fallbackIfNegative, float instanceField, float classField, float fallback )
 {
-	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
+	if ( instanceField && ( instanceField > 0 || !fallbackIfNegative ) )
 	{
 		*result = instanceField;
 	}
-	else if (classField && (classField > 0 || !fallbackIfNegative))
+	else if ( classField && ( classField > 0 || !fallbackIfNegative ) )
 	{
 		*result = classField;
 	}
@@ -140,13 +140,13 @@ void G_ResetFloatField( float* result, qboolean fallbackIfNegative, float instan
 }
 
 void G_ResetTimeField( variatingTime_t *result,
-		variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback )
+                       variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback )
 {
-	if( instanceField.time && instanceField.time > 0 )
+	if ( instanceField.time && instanceField.time > 0 )
 	{
 		*result = instanceField;
 	}
-	else if (classField.time && classField.time > 0 )
+	else if ( classField.time && classField.time > 0 )
 	{
 		*result = classField;
 	}
@@ -159,16 +159,16 @@ void G_ResetTimeField( variatingTime_t *result,
 	{
 		result->variance = 0;
 
-		if( g_debugEntities.integer >= 0 )
+		if ( g_debugEntities.integer >= 0 )
 		{
 			G_Printf( S_WARNING "negative variance (%f); resetting to 0\n", result->variance );
 		}
 	}
-	else if ( result->variance >= result->time && result->variance > 0)
+	else if ( result->variance >= result->time && result->variance > 0 )
 	{
 		result->variance = result->time - FRAMETIME;
 
-		if( g_debugEntities.integer > 0 )
+		if ( g_debugEntities.integer > 0 )
 		{
 			G_Printf( S_WARNING "limitting variance (%f) to be smaller than time (%f)\n", result->variance, result->time );
 		}
@@ -183,10 +183,12 @@ shared class spawn functions
 =================================================================================
 */
 
-void SP_Nothing( gentity_t *self ) {
+void SP_Nothing( gentity_t *self )
+{
 }
 
-void SP_RemoveSelf( gentity_t *self ) {
+void SP_RemoveSelf( gentity_t *self )
+{
 	G_FreeEntity( self );
 }
 
@@ -198,33 +200,43 @@ shared field spawn functions
 =================================================================================
 */
 
-void SP_ConditionFields( gentity_t *self ) {
+void SP_ConditionFields( gentity_t *self )
+{
 	char *buffer;
 
 	if ( G_SpawnString( "buildables", "", &buffer ) )
+	{
 		BG_ParseCSVBuildableList( buffer, self->conditions.buildables, BA_NUM_BUILDABLES );
+	}
 
 	if ( G_SpawnString( "classes", "", &buffer ) )
+	{
 		BG_ParseCSVClassList( buffer, self->conditions.classes, PCL_NUM_CLASSES );
+	}
 
 	if ( G_SpawnString( "equipment", "", &buffer ) )
 		BG_ParseCSVEquipmentList( buffer, self->conditions.weapons, WP_NUM_WEAPONS,
-	                          self->conditions.upgrades, UP_NUM_UPGRADES );
+		                          self->conditions.upgrades, UP_NUM_UPGRADES );
 
 }
 
-void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance ) {
-	if (!self->config.wait.time)
+void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance )
+{
+	if ( !self->config.wait.time )
+	{
 		self->config.wait.time = defaultWait;
+	}
 
-	if (!self->config.wait.variance)
+	if ( !self->config.wait.variance )
+	{
 		self->config.wait.variance = defaultWaitVariance;
+	}
 
-	if ( self->config.wait.variance >= self->config.wait.time && self->config.wait.variance > 0)
+	if ( self->config.wait.variance >= self->config.wait.time && self->config.wait.variance > 0 )
 	{
 		self->config.wait.variance = self->config.wait.time - FRAMETIME;
 
-		if( g_debugEntities.integer > -1)
+		if ( g_debugEntities.integer > -1 )
 		{
 			G_Printf( S_WARNING "Entity %s has wait.variance >= wait.time\n", etos( self ) );
 		}

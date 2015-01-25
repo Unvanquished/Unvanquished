@@ -135,7 +135,7 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 	R_TransformClipToWindow( clip, &backEnd.viewParms, normalized, window );
 
 	if ( window[ 0 ] < 0 || window[ 0 ] >= backEnd.viewParms.viewportWidth ||
-	     window[ 1 ] < 0 || window[ 1 ] >= backEnd.viewParms.viewportHeight )
+	        window[ 1 ] < 0 || window[ 1 ] >= backEnd.viewParms.viewportHeight )
 	{
 		return; // shouldn't happen, since we check the clip[] above, except for FP rounding
 	}
@@ -145,7 +145,7 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 	for ( f = r_activeFlares; f; f = f->next )
 	{
 		if ( f->surface == surface && f->frameSceneNum == backEnd.viewParms.frameSceneNum &&
-		     f->inPortal == backEnd.viewParms.isPortal )
+		        f->inPortal == backEnd.viewParms.isPortal )
 		{
 			break;
 		}

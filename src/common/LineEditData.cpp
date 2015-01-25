@@ -33,116 +33,149 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //TODO: use a std::string instead of a fixed size char* ?
 //TODO: support MAJ-selection ?
 
-namespace Util {
-    LineEditData::LineEditData(unsigned size, unsigned scrollSize)
-    :scrollSize(scrollSize), width(size), scroll(0), cursor(0) {
-    }
-    const std::u32string& LineEditData::GetText() const {
-        return buffer;
-    }
-    std::u32string& LineEditData::GetText() {
-        return buffer;
-    }
+namespace Util
+{
+LineEditData::LineEditData( unsigned size, unsigned scrollSize )
+	: scrollSize( scrollSize ), width( size ), scroll( 0 ), cursor( 0 )
+{
+}
+const std::u32string& LineEditData::GetText() const
+{
+	return buffer;
+}
+std::u32string& LineEditData::GetText()
+{
+	return buffer;
+}
 
-    const char32_t* LineEditData::GetViewText() const {
-        return GetText().c_str() + scroll;
-    }
+const char32_t* LineEditData::GetViewText() const
+{
+	return GetText().c_str() + scroll;
+}
 
-    unsigned LineEditData::GetViewStartPos() const {
-        return scroll;
-    }
+unsigned LineEditData::GetViewStartPos() const
+{
+	return scroll;
+}
 
-    unsigned LineEditData::GetCursorPos() const {
-        return cursor;
-    }
+unsigned LineEditData::GetCursorPos() const
+{
+	return cursor;
+}
 
-    unsigned LineEditData::GetViewCursorPos() const {
-        return cursor - scroll;
-    }
+unsigned LineEditData::GetViewCursorPos() const
+{
+	return cursor - scroll;
+}
 
-    void LineEditData::SetText(std::u32string text) {
-        buffer = std::move(text);
-        cursor = buffer.size();
-        if (cursor > width) {
-            scroll = cursor - width + std::min(width - 1, scrollSize);
-        } else
-            scroll = 0;
-    }
+void LineEditData::SetText( std::u32string text )
+{
+	buffer = std::move( text );
+	cursor = buffer.size();
 
-    void LineEditData::CursorLeft(int times) {
-        cursor = std::max(0, (int)cursor - times);
-        UpdateScroll();
-    }
+	if ( cursor > width )
+	{
+		scroll = cursor - width + std::min( width - 1, scrollSize );
+	}
+	else
+	{
+		scroll = 0;
+	}
+}
 
-    void LineEditData::CursorRight(int times) {
-        cursor = std::min(cursor + times, (unsigned)buffer.size());
-        UpdateScroll();
-    }
+void LineEditData::CursorLeft( int times )
+{
+	cursor = std::max( 0, ( int )cursor - times );
+	UpdateScroll();
+}
 
-    void LineEditData::CursorStart() {
-        cursor = 0;
-        scroll = 0;
-    }
+void LineEditData::CursorRight( int times )
+{
+	cursor = std::min( cursor + times, ( unsigned )buffer.size() );
+	UpdateScroll();
+}
 
-    void LineEditData::CursorEnd() {
-        cursor = buffer.size();
-        UpdateScroll();
-    }
+void LineEditData::CursorStart()
+{
+	cursor = 0;
+	scroll = 0;
+}
 
-    void LineEditData::SetCursor(int pos) {
-        cursor = pos;
-        UpdateScroll();
-    }
+void LineEditData::CursorEnd()
+{
+	cursor = buffer.size();
+	UpdateScroll();
+}
 
-    void LineEditData::DeleteNext(int times) {
-        buffer.erase(cursor, times);
-    }
+void LineEditData::SetCursor( int pos )
+{
+	cursor = pos;
+	UpdateScroll();
+}
 
-    void LineEditData::DeletePrev(int times) {
-        times = std::min(times, (int)cursor);
+void LineEditData::DeleteNext( int times )
+{
+	buffer.erase( cursor, times );
+}
 
-        CursorLeft(times);
-        DeleteNext(times);
-    }
+void LineEditData::DeletePrev( int times )
+{
+	times = std::min( times, ( int )cursor );
 
-    void LineEditData::AddChar(char32_t a) {
-        buffer.insert(buffer.begin() + cursor, a);
-        cursor ++;
-        UpdateScroll();
-    }
+	CursorLeft( times );
+	DeleteNext( times );
+}
 
-    void LineEditData::SwapWithNext() {
-        unsigned length = buffer.length();
+void LineEditData::AddChar( char32_t a )
+{
+	buffer.insert( buffer.begin() + cursor, a );
+	cursor ++;
+	UpdateScroll();
+}
 
-        if (length > 1 && cursor) {
-            if (cursor == length) {
-                --cursor;
-            }
-            std::swap(buffer[cursor - 1], buffer[cursor]);
-            ++cursor;
-        }
-    }
+void LineEditData::SwapWithNext()
+{
+	unsigned length = buffer.length();
 
-    void LineEditData::Clear() {
-        buffer.clear();
-        scroll = 0;
-        cursor = 0;
-    }
+	if ( length > 1 && cursor )
+	{
+		if ( cursor == length )
+		{
+			--cursor;
+		}
 
-    void LineEditData::SetWidth(int width_) {
-        width = std::max(width_, 1);
-        UpdateScroll();
-    }
+		std::swap( buffer[cursor - 1], buffer[cursor] );
+		++cursor;
+	}
+}
 
-    unsigned LineEditData::GetWidth() const {
-        return width;
-    }
+void LineEditData::Clear()
+{
+	buffer.clear();
+	scroll = 0;
+	cursor = 0;
+}
 
-    void LineEditData::UpdateScroll() {
-        if (cursor < scroll) {
-            scroll = scroll > scrollSize ? scroll - scrollSize : 0U;
-        } else if (cursor > scroll + width) {
-            scroll = cursor - width + std::min(width - 1, scrollSize);
-        }
-    }
+void LineEditData::SetWidth( int width_ )
+{
+	width = std::max( width_, 1 );
+	UpdateScroll();
+}
+
+unsigned LineEditData::GetWidth() const
+{
+	return width;
+}
+
+void LineEditData::UpdateScroll()
+{
+	if ( cursor < scroll )
+	{
+		scroll = scroll > scrollSize ? scroll - scrollSize : 0U;
+	}
+	else if ( cursor > scroll + width )
+	{
+		scroll = cursor - width + std::min( width - 1, scrollSize );
+	}
+}
 }

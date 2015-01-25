@@ -45,22 +45,19 @@ extern Rocket::Core::Context *hudContext;
 class RocketEvent_t
 {
 public:
-	RocketEvent_t( Rocket::Core::Event &event, const Rocket::Core::String &cmds ) : cmd( cmds )
-	{
-		targetElement = event.GetTargetElement();
-		Parameters = *(event.GetParameters());
-	}
-	RocketEvent_t( const Rocket::Core::String &cmds ) : cmd( cmds )
-	{
-	}
-	RocketEvent_t( Rocket::Core::Element *e, const Rocket::Core::String &cmds ) : targetElement( e ), cmd( cmds )
-	{
-	}
-	~RocketEvent_t() { }
-	Rocket::Core::Element *targetElement;
-	Rocket::Core::Dictionary Parameters;
-	Rocket::Core::String cmd;
+    RocketEvent_t ( Rocket::Core::Event &event, const Rocket::Core::String &cmds ) : cmd ( cmds ) {
+        targetElement = event.GetTargetElement();
+        Parameters = * ( event.GetParameters() );
+    }
+    RocketEvent_t ( const Rocket::Core::String &cmds ) : cmd ( cmds ) {
+    }
+    RocketEvent_t ( Rocket::Core::Element *e, const Rocket::Core::String &cmds ) : targetElement ( e ), cmd ( cmds ) {
+    }
+    ~RocketEvent_t() { }
+    Rocket::Core::Element *targetElement;
+    Rocket::Core::Dictionary Parameters;
+    Rocket::Core::String cmd;
 };
 
-Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
+Rocket::Core::String Rocket_QuakeToRML ( const char *in, int parseFlags );
 #endif

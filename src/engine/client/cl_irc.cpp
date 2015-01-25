@@ -174,9 +174,9 @@ static qboolean IRC_ParserError;
  */
 
 #define irc_string_t(len) struct { \
-    unsigned int length; \
-    char         string[ len ]; \
-}
+		unsigned int length; \
+		char         string[ len ]; \
+	}
 
 #define IRC_MAX_NICK_LEN 64
 #define IRC_MAX_ARG_LEN  509
@@ -216,7 +216,7 @@ typedef struct
 {
 	char cmd_string[ 33 ];
 	void ( *handler )( void );
-}irc_handler_t;
+} irc_handler_t;
 
 static std::unordered_map<std::string, irc_handler_func_t>  IRC_Handlers;
 static std::unordered_map<std::string, ctcp_handler_func_t> IRC_CTCPHandlers;
@@ -333,7 +333,7 @@ static int IRC_ExecuteHandler( void )
 		return IRC_CMD_SUCCESS;
 	}
 
-	return (it->second)();
+	return ( it->second )();
 }
 
 /*
@@ -499,53 +499,53 @@ static int IRC_ProcessDEQueue( void )
 /* Parser macros, 'cause I'm lazy */
 #define P_SET_STATE(S)    IRC_ParserState = IRC_PARSER_##S
 #define P_INIT_MESSAGE(S) { \
-    P_SET_STATE(S); \
-    IRC_ParserInMessage = qtrue; \
-    memset( &IRC_ReceivedMessage, 0, sizeof( struct irc_message_t ) ); \
-}
+		P_SET_STATE(S); \
+		IRC_ParserInMessage = qtrue; \
+		memset( &IRC_ReceivedMessage, 0, sizeof( struct irc_message_t ) ); \
+	}
 #if defined DEBUG_DUMP_IRC
 #define P_ERROR(S)        { \
-    if ( !IRC_ParserError ) { \
-      Com_Printf( "IRC PARSER ERROR (state: %d , received: %d)\n", IRC_ParserState, next ); \
-    } \
-    P_SET_STATE(S); \
-    IRC_ParserError = qtrue; \
-}
+		if ( !IRC_ParserError ) { \
+			Com_Printf( "IRC PARSER ERROR (state: %d , received: %d)\n", IRC_ParserState, next ); \
+		} \
+		P_SET_STATE(S); \
+		IRC_ParserError = qtrue; \
+	}
 #else // defined DEBUG_DUMP_IRC
 #define P_ERROR(S)        { \
-    P_SET_STATE(S); \
-    IRC_ParserError = qtrue; \
-}
+		P_SET_STATE(S); \
+		IRC_ParserError = qtrue; \
+	}
 #endif // defined DEBUG_DUMP_IRC
 #define P_AUTO_ERROR  { \
-    if ( next == '\r' ) { \
-      P_ERROR(LF); \
-    } else { \
-      P_ERROR(RECOVERY); \
-    } \
-}
+		if ( next == '\r' ) { \
+			P_ERROR(LF); \
+		} else { \
+			P_ERROR(RECOVERY); \
+		} \
+	}
 #define P_INIT_STRING(S)  { \
-    IRC_ReceivedMessage.S.string[ 0 ] = next; \
-    IRC_ReceivedMessage.S.length = 1; \
-}
+		IRC_ReceivedMessage.S.string[ 0 ] = next; \
+		IRC_ReceivedMessage.S.length = 1; \
+	}
 #define P_ADD_STRING(S)   { \
-    if ( IRC_ReceivedMessage.S.length == sizeof( IRC_ReceivedMessage.S.string ) - 1 ) { \
-      P_ERROR(RECOVERY); \
-    } else { \
-      IRC_ReceivedMessage.S.string[ IRC_ReceivedMessage.S.length++ ] = next; \
-    } \
-}
+		if ( IRC_ReceivedMessage.S.length == sizeof( IRC_ReceivedMessage.S.string ) - 1 ) { \
+			P_ERROR(RECOVERY); \
+		} else { \
+			IRC_ReceivedMessage.S.string[ IRC_ReceivedMessage.S.length++ ] = next; \
+		} \
+	}
 #define P_NEXT_PARAM  { \
-    if ( ( ++IRC_ReceivedMessage.arg_count ) == IRC_MAX_PARAMS ) { \
-      P_ERROR(RECOVERY); \
-    } \
-}
+		if ( ( ++IRC_ReceivedMessage.arg_count ) == IRC_MAX_PARAMS ) { \
+			P_ERROR(RECOVERY); \
+		} \
+	}
 #define P_START_PARAM { \
-    if ( ( ++IRC_ReceivedMessage.arg_count ) == IRC_MAX_PARAMS ) { \
-      P_ERROR(RECOVERY); \
-    } else \
-      P_INIT_STRING(arg_values[ IRC_ReceivedMessage.arg_count - 1 ]) \
-      }
+		if ( ( ++IRC_ReceivedMessage.arg_count ) == IRC_MAX_PARAMS ) { \
+			P_ERROR(RECOVERY); \
+		} else \
+			P_INIT_STRING(arg_values[ IRC_ReceivedMessage.arg_count - 1 ]) \
+		}
 #define P_ADD_PARAM   P_ADD_STRING(arg_values[ IRC_ReceivedMessage.arg_count - 1 ])
 
 /*
@@ -1083,7 +1083,7 @@ Attempt to format then send a message to the IRC server. Will return
 true on success, and false if an overflow occurred or if send() failed.
 ==================
 */
-static int PRINTF_LIKE(1) IRC_Send( const char *format, ... )
+static int PRINTF_LIKE( 1 ) IRC_Send( const char *format, ... )
 {
 	char    buffer[ IRC_SEND_BUF_SIZE + 1 ];
 	va_list args;
@@ -1532,11 +1532,11 @@ static int IRCH_ServerError( void )
 
 	if ( IRC_ReceivedMessage.arg_count == 1 )
 	{
-		Com_Printf("IRC: %s: %s\n", "server error" , IRC_String( arg_values[ 0 ] ));
+		Com_Printf( "IRC: %s: %s\n", "server error" , IRC_String( arg_values[ 0 ] ) );
 	}
 	else
 	{
-		Com_Printf("IRC: %s\n", "server error" );
+		Com_Printf( "IRC: %s\n", "server error" );
 	}
 
 	return IRC_CMD_RETRY;
@@ -1594,7 +1594,7 @@ static int IRCH_NickError( void )
 	}
 	else
 	{
-		Com_Printf("…IRC: %s\n", "got spurious nickname error" );
+		Com_Printf( "…IRC: %s\n", "got spurious nickname error" );
 	}
 
 	return IRC_CMD_SUCCESS;
@@ -1726,7 +1726,7 @@ static int IRCH_Nick( void )
 	if ( !strcmp( IRC_String( pfx_nickOrServer ), IRC_User.nick ) )
 	{
 		Q_strncpyz( IRC_User.nick, IRC_String( arg_values[ 0 ] ), sizeof( IRC_User.nick ) );
-		Com_Printf("%s\n", IRC_User.nick );
+		Com_Printf( "%s\n", IRC_User.nick );
 		event = IRC_MakeEvent( NICK_CHANGE, 1 );
 	}
 	else
@@ -1822,8 +1822,8 @@ static int IRCH_PrivMsg( void )
 	}
 
 	if ( IRC_Length( arg_values[ 1 ] ) > 2
-	     && IRC_String( arg_values[ 1 ] ) [ 0 ] == 1
-	     && IRC_String( arg_values[ 1 ] ) [ IRC_Length( arg_values[ 1 ] ) - 1 ] == 1 )
+	        && IRC_String( arg_values[ 1 ] ) [ 0 ] == 1
+	        && IRC_String( arg_values[ 1 ] ) [ IRC_Length( arg_values[ 1 ] ) - 1 ] == 1 )
 	{
 		return IRC_HandleCTCP( is_channel, IRC_String( arg_values[ 1 ] ) + 1, IRC_Length( arg_values[ 1 ] ) - 1 );
 	}
@@ -1994,17 +1994,17 @@ void CL_IRCSay( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Cmd_PrintUsage("<text>", NULL);
+		Cmd_PrintUsage( "<text>", NULL );
 		return;
 	}
 
 	if ( IRC_ThreadStatus != IRC_THREAD_JOINED )
 	{
-		Com_Printf("IRC: %s\n", "Not connected" );
+		Com_Printf( "IRC: %s\n", "Not connected" );
 		return;
 	}
 
-	Q_strncpyz( m_sendstring, Cmd_UnquoteString(Cmd_Args()), sizeof( m_sendstring ) );
+	Q_strncpyz( m_sendstring, Cmd_UnquoteString( Cmd_Args() ), sizeof( m_sendstring ) );
 
 	if ( m_sendstring[ 0 ] == 0 )
 	{
@@ -2022,7 +2022,7 @@ void CL_IRCSay( void )
 
 	if ( !send_result )
 	{
-		Com_Printf("IRC: %s\n", "flood detected, message not sent" );
+		Com_Printf( "IRC: %s\n", "flood detected, message not sent" );
 	}
 }
 
@@ -2218,21 +2218,21 @@ static int IRC_AttemptConnection( void )
 	int                port;
 
 	CHECK_SHUTDOWN;
-	Com_Printf("…IRC: %s\n", "connecting to server" );
+	Com_Printf( "…IRC: %s\n", "connecting to server" );
 
 	// Force players to use a non-default name
 	Q_strncpyz( name, Cvar_VariableString( "name" ), sizeof( name ) );
 
 	if ( !Q_strnicmp( name, "player", 7 ) )
 	{
-		Com_Printf("…IRC: %s\n", "rejected due to unset player name" );
+		Com_Printf( "…IRC: %s\n", "rejected due to unset player name" );
 		return IRC_CMD_FATAL;
 	}
 
 	// Prepare USER record
 	if ( !IRC_InitialiseUser( name ) )
 	{
-		Com_Printf("…IRC: %s\n", "rejected due to mostly unusable player name" );
+		Com_Printf( "…IRC: %s\n", "rejected due to mostly unusable player name" );
 		return IRC_CMD_FATAL;
 	}
 
@@ -2241,7 +2241,7 @@ static int IRC_AttemptConnection( void )
 
 	if ( ( host = gethostbyname( host_name ) ) == NULL )
 	{
-		Com_Printf("…IRC: %s\n", "unknown server" );
+		Com_Printf( "…IRC: %s\n", "unknown server" );
 		return IRC_CMD_FATAL;
 	}
 
@@ -2259,7 +2259,7 @@ static int IRC_AttemptConnection( void )
 
 	if ( port <= 0 || port >= 65536 )
 	{
-		Com_Printf("IRC: %s\n", "invalid port number, defaulting to 6667" );
+		Com_Printf( "IRC: %s\n", "invalid port number, defaulting to 6667" );
 		port = 6667;
 	}
 
@@ -2272,7 +2272,7 @@ static int IRC_AttemptConnection( void )
 	if ( ( connect( IRC_Socket, ( struct sockaddr * ) &address, sizeof( address ) ) ) != 0 )
 	{
 		closesocket( IRC_Socket );
-		Com_Printf("…IRC: %s\n", "connection refused" );
+		Com_Printf( "…IRC: %s\n", "connection refused" );
 		return IRC_CMD_RETRY;
 	}
 
@@ -2497,7 +2497,7 @@ static void IRC_Thread( void )
 	IRC_MainLoop();
 
 	// Clean up
-	Com_Printf("…IRC: %s\n", "disconnected from server" );
+	Com_Printf( "…IRC: %s\n", "disconnected from server" );
 	IRC_FlushDEQueue();
 	IRC_SetThreadDead();
 }
@@ -2660,7 +2660,7 @@ void CL_InitIRC( void )
 {
 	if ( IRC_ThreadStatus != IRC_THREAD_DEAD )
 	{
-		Com_Printf("…IRC: %s\n", "thread is already running" );
+		Com_Printf( "…IRC: %s\n", "thread is already running" );
 		return;
 	}
 

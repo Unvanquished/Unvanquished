@@ -103,12 +103,16 @@ static const char *Con_LineToString( int lineno, qboolean lf )
 	{
 		if ( line[ s ].ch < 0x80 )
 		{
-			lineString[ d++ ] = (char) line[ s ].ch;
+			lineString[ d++ ] = ( char ) line[ s ].ch;
 		}
 		else
 		{
 			strcpy( lineString + d, Q_UTF8_Encode( line[ s ].ch ) );
-			while ( lineString[ d ] ) { ++d; }
+
+			while ( lineString[ d ] )
+			{
+				++d;
+			}
 		}
 	}
 
@@ -140,12 +144,16 @@ static const char *Con_LineToColouredString( int lineno, qboolean lf )
 
 		if ( line[ s ].ch < 0x80 )
 		{
-			lineString[ d++ ] = (char) line[ s ].ch;
+			lineString[ d++ ] = ( char ) line[ s ].ch;
 		}
 		else
 		{
 			strcpy( lineString + d, Q_UTF8_Encode( line[ s ].ch ) );
-			while ( lineString[ d ] ) { ++d; }
+
+			while ( lineString[ d ] )
+			{
+				++d;
+			}
 		}
 	}
 
@@ -171,11 +179,14 @@ void Con_ToggleConsole_f( void )
 		g_consoleField.Clear();
 	}
 
-	g_consoleField.SetWidth(g_console_field_width);
+	g_consoleField.SetWidth( g_console_field_width );
 
-	if (consoleState.isOpened) {
+	if ( consoleState.isOpened )
+	{
 		cls.keyCatchers &= ~KEYCATCH_CONSOLE;
-	} else {
+	}
+	else
+	{
 		cls.keyCatchers |= KEYCATCH_CONSOLE;
 	}
 }
@@ -234,7 +245,7 @@ void Con_Dump_f( void )
 
 	if ( l > 2 )
 	{
-		Cmd_PrintUsage("[<filename>]", NULL);
+		Cmd_PrintUsage( "[<filename>]", NULL );
 		return;
 	}
 
@@ -253,7 +264,7 @@ void Con_Dump_f( void )
 
 	if ( !f )
 	{
-		Com_Log(LOG_ERROR, "couldn't open." );
+		Com_Log( LOG_ERROR, "couldn't open." );
 		return;
 	}
 
@@ -293,7 +304,7 @@ void Con_Search_f( void )
 
 	if ( c < 2 )
 	{
-		Cmd_PrintUsage("<string>…", NULL);
+		Cmd_PrintUsage( "<string>…", NULL );
 		return;
 	}
 
@@ -338,7 +349,7 @@ void Con_Grep_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage("<string>", NULL);
+		Cmd_PrintUsage( "<string>", NULL );
 		return;
 	}
 
@@ -369,21 +380,24 @@ void Con_Grep_f( void )
 			{
 				char *nb;
 				// allocate in 16K chunks - more than adequate
-				pbAlloc = ( pbLength + i + 1 + 16383) & ~16383;
-				nb = (char*) Z_Malloc( pbAlloc );
-				if( printbuf )
+				pbAlloc = ( pbLength + i + 1 + 16383 ) & ~16383;
+				nb = ( char* ) Z_Malloc( pbAlloc );
+
+				if ( printbuf )
 				{
 					strcpy( nb, printbuf );
 					Z_Free( printbuf );
 				}
+
 				printbuf = nb;
 			}
+
 			Q_strcat( printbuf, pbAlloc, buffer );
 			pbLength += i;
 		}
 	}
 
-	if( printbuf )
+	if ( printbuf )
 	{
 		char tmpbuf[ MAXPRINTMSG ];
 		int i;
@@ -414,7 +428,7 @@ qboolean Con_CheckResize( void )
 
 	if ( cls.glconfig.vidWidth )
 	{
-		const int consoleVidWidth = cls.glconfig.vidWidth - 2 * (consoleState.margin.sides + consoleState.padding.sides );
+		const int consoleVidWidth = cls.glconfig.vidWidth - 2 * ( consoleState.margin.sides + consoleState.padding.sides );
 		textWidthInChars = consoleVidWidth / SCR_ConsoleFontUnicharWidth( 'W' );
 	}
 	else
@@ -445,7 +459,8 @@ qboolean Con_CheckResize( void )
 		oldtotallines = consoleState.maxScrollbackLengthInLines;
 		consoleState.maxScrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
 
-		if ( oldtotallines > 0 && oldwidth > 0 && consoleState.usedScrollbackLengthInLines > 0 ) {
+		if ( oldtotallines > 0 && oldwidth > 0 && consoleState.usedScrollbackLengthInLines > 0 )
+		{
 
 			numlines = std::min( {consoleState.maxScrollbackLengthInLines, consoleState.usedScrollbackLengthInLines, oldtotallines} );
 			numchars = std::min( oldwidth, consoleState.textWidthInChars );
@@ -453,16 +468,21 @@ qboolean Con_CheckResize( void )
 			Com_Memcpy( buf, consoleState.text, sizeof( consoleState.text ) );
 			Con_Clear();
 
-			for ( i = 0; i < numlines; i++ ) {
+			for ( i = 0; i < numlines; i++ )
+			{
 				conChar_t* destination = consoleState.text + ( consoleState.maxScrollbackLengthInLines - 1 - i ) * consoleState.textWidthInChars;
 				memcpy( destination,
-				    buf + ( ( consoleState.currentLine - i - 1 + oldtotallines ) % oldtotallines ) * oldwidth,
-				    numchars * sizeof( conChar_t ) );
+				        buf + ( ( consoleState.currentLine - i - 1 + oldtotallines ) % oldtotallines ) * oldwidth,
+				        numchars * sizeof( conChar_t ) );
 			}
+
 			consoleState.usedScrollbackLengthInLines = numlines;
-		} else {
+		}
+		else
+		{
 			Con_Clear();
 		}
+
 		consoleState.currentLine = consoleState.maxScrollbackLengthInLines;
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 		consoleState.scrollLineIndex = consoleState.currentLine;
@@ -476,7 +496,7 @@ qboolean Con_CheckResize( void )
 		Q_CleanStr( prompt );
 		// 8 spaces for clock, 1 for cursor
 		g_console_field_width = consoleState.textWidthInChars - 9 - Q_UTF8_Strlen( prompt );
-		g_consoleField.SetWidth(g_console_field_width);
+		g_consoleField.SetWidth( g_console_field_width );
 	}
 
 	return ret;
@@ -517,7 +537,7 @@ void Con_Init( void )
 	// Done defining cvars for console colors
 
 	g_consoleField.Clear();
-	g_consoleField.SetWidth(g_console_field_width);
+	g_consoleField.SetWidth( g_console_field_width );
 
 	Cmd_AddCommand( "toggleConsole", Con_ToggleConsole_f );
 	Cmd_AddCommand( "clear", Con_Clear_f );
@@ -542,7 +562,7 @@ void Con_Linefeed( void )
 	consoleState.horizontalCharOffset = 0;
 
 	//fall down to input line if scroll lock is configured to do so
-	if(scrollLockMode <= 0)
+	if ( scrollLockMode <= 0 )
 	{
 		consoleState.scrollLineIndex = consoleState.currentLine;
 	}
@@ -555,8 +575,10 @@ void Con_Linefeed( void )
 
 	consoleState.currentLine++;
 
-	if( consoleState.usedScrollbackLengthInLines < consoleState.maxScrollbackLengthInLines )
+	if ( consoleState.usedScrollbackLengthInLines < consoleState.maxScrollbackLengthInLines )
+	{
 		consoleState.usedScrollbackLengthInLines++;
+	}
 
 	line = consoleState.text + CON_LINE( consoleState.currentLine );
 
@@ -599,7 +621,8 @@ qboolean CL_InternalConsolePrint( const char *text )
 	}
 
 	//Video hasn't been initialized
-	if ( ! cls.glconfig.vidWidth ) {
+	if ( ! cls.glconfig.vidWidth )
+	{
 		return qfalse;
 	}
 
@@ -612,7 +635,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 	{
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
-		Cmd_TokenizeString( Cmd::Escape(text).c_str() );
+		Cmd_TokenizeString( Cmd::Escape( text ).c_str() );
 		Rocket_AddConsoleText();
 		Cmd_RestoreCmdContext();
 	}
@@ -637,11 +660,13 @@ qboolean CL_InternalConsolePrint( const char *text )
 				{
 					break;
 				}
+
 				if ( Q_IsColorString( text + i ) )
 				{
 					i += 2;
 					continue;
 				}
+
 				if ( text[ i ] == Q_COLOR_ESCAPE && text[ i + 1 ] == Q_COLOR_ESCAPE )
 				{
 					++i;
@@ -652,7 +677,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 
 			// word wrap
 			if ( consoleState.horizontalCharOffset + wordLen >= consoleState.textWidthInChars
-			       && consoleState.horizontalCharOffset > 0 )
+			        && consoleState.horizontalCharOffset > 0 )
 			{
 				Con_Linefeed();
 			}
@@ -673,6 +698,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 				{
 					++text;
 				}
+
 				/* no break */
 
 			default: // display character and advance
@@ -682,6 +708,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ch = Q_UTF8_CodePoint( text );
 				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ink = color;
 				++consoleState.horizontalCharOffset;
+
 				if ( wordLen > 0 )
 				{
 					--wordLen;
@@ -797,14 +824,14 @@ void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, 
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int positionFromTop = consoleState.margin.top
-	                          + consoleState.border.top
-	                          + consoleState.padding.top
-	                          + charHeight;
+	                            + consoleState.border.top
+	                            + consoleState.padding.top
+	                            + charHeight;
 
 	i = strlen( text );
 	currentWidthLocation = cls.glconfig.vidWidth
-	                     - SCR_ConsoleFontStringWidth( text, i )
-	                     - consoleState.margin.sides - consoleState.padding.sides;
+	                       - SCR_ConsoleFontStringWidth( text, i )
+	                       - consoleState.margin.sides - consoleState.padding.sides;
 
 	re.SetColor( color );
 
@@ -872,18 +899,18 @@ void Con_DrawConsoleScrollbar( void )
 	const float scrollBarWidth = consoleState.border.sides * 2;
 
 	const float scrollHandleLength = consoleState.usedScrollbackLengthInLines
-	                                 ? scrollBarLength * std::min( 1.0f, (float) consoleState.visibleAmountOfLines / consoleState.usedScrollbackLengthInLines )
+	                                 ? scrollBarLength * std::min( 1.0f, ( float ) consoleState.visibleAmountOfLines / consoleState.usedScrollbackLengthInLines )
 	                                 : 0;
 
 	const float scrollBarLengthPerLine = ( scrollBarLength - scrollHandleLength ) / ( consoleState.usedScrollbackLengthInLines - consoleState.visibleAmountOfLines );
 	// that may result in -NaN
 
 	const float relativeScrollLineIndex = consoleState.currentLine - consoleState.usedScrollbackLengthInLines
-				+ std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
+	                                      + std::min( consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines );
 
 	const float scrollHandlePostition = ( scrollBarLengthPerLine == scrollBarLengthPerLine )
-	                                  ? scrollBarLengthPerLine * ( consoleState.bottomDisplayedLine - relativeScrollLineIndex )
-	                                  : 0; // we may get this: +/- NaN is never equal to itself
+	                                    ? scrollBarLengthPerLine * ( consoleState.bottomDisplayedLine - relativeScrollLineIndex )
+	                                    : 0; // we may get this: +/- NaN is never equal to itself
 
 	//draw the scrollBar
 	color[ 0 ] = 0.2f;
@@ -905,7 +932,7 @@ void Con_DrawConsoleScrollbar( void )
 	}
 	else if ( consoleState.usedScrollbackLengthInLines ) //this happens when line appending gets us over the top position in a roll-lock situation (scrolling itself won't do that)
 	{
-		color[ 0 ] = (-scrollHandlePostition * 5.0f)/10;
+		color[ 0 ] = ( -scrollHandlePostition * 5.0f ) / 10;
 		color[ 1 ] = 0.5f;
 		color[ 2 ] = 0.5f;
 		color[ 3 ] = consoleState.currentAlphaFactor;
@@ -913,8 +940,9 @@ void Con_DrawConsoleScrollbar( void )
 		SCR_FillRect( scrollBarX, scrollBarY, scrollBarWidth, scrollHandleLength, color );
 	}
 
-	if(con_debug->integer) {
-		Con_DrawRightFloatingTextLine( 6, NULL, va( "Scrollbar (px): Size %d HandleSize %d Position %d", (int) scrollBarLength, (int) scrollHandleLength, (int) scrollHandlePostition ) );
+	if ( con_debug->integer )
+	{
+		Con_DrawRightFloatingTextLine( 6, NULL, va( "Scrollbar (px): Size %d HandleSize %d Position %d", ( int ) scrollBarLength, ( int ) scrollHandleLength, ( int ) scrollHandlePostition ) );
 	}
 }
 
@@ -930,10 +958,10 @@ void Con_DrawScrollbackMarkerline( int lineDrawPosition )
 	color[ 2 ] = 0.0f;
 	color[ 3 ] = 0.5f * consoleState.currentAlphaFactor;
 
-	SCR_FillRect(	consoleState.margin.sides + consoleState.border.sides + consoleState.padding.sides/2,
-					lineDrawPosition + SCR_ConsoleFontCharVPadding(),
-					cls.glconfig.vidWidth - 2 * consoleState.margin.sides - 2 * consoleState.border.sides - consoleState.padding.sides/2 - scrollBarImpliedPadding,
-					1, color );
+	SCR_FillRect(	consoleState.margin.sides + consoleState.border.sides + consoleState.padding.sides / 2,
+	                lineDrawPosition + SCR_ConsoleFontCharVPadding(),
+	                cls.glconfig.vidWidth - 2 * consoleState.margin.sides - 2 * consoleState.border.sides - consoleState.padding.sides / 2 - scrollBarImpliedPadding,
+	                1, color );
 }
 
 /*
@@ -945,7 +973,7 @@ static float Con_MarginFadeAlpha( float alpha, float lineDrawPosition, int topMa
 {
 	if ( lineDrawPosition > bottomMargin && lineDrawPosition <= bottomMargin + charHeight )
 	{
-		return alpha * (float)( bottomMargin + charHeight - lineDrawPosition ) / (float) charHeight;
+		return alpha * ( float )( bottomMargin + charHeight - lineDrawPosition ) / ( float ) charHeight;
 	}
 
 	if ( lineDrawPosition < topMargin || lineDrawPosition >= topMargin + charHeight )
@@ -953,7 +981,7 @@ static float Con_MarginFadeAlpha( float alpha, float lineDrawPosition, int topMa
 		return alpha;
 	}
 
-	return alpha * (float)( lineDrawPosition - topMargin ) / (float) charHeight;
+	return alpha * ( float )( lineDrawPosition - topMargin ) / ( float ) charHeight;
 }
 
 
@@ -974,18 +1002,18 @@ void Con_DrawConsoleContent( void )
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
 	const int textDistanceToTop = consoleState.margin.top
-	                            + consoleState.padding.top
-	                            + consoleState.border.top
-	                            - charPadding - 1;
+	                              + consoleState.padding.top
+	                              + consoleState.border.top
+	                              - charPadding - 1;
 
 	// draw from the bottom up
 	lineDrawPosition = consoleState.height
-	                 + consoleState.margin.top
-	                 - consoleState.padding.bottom
-	                 - consoleState.border.top
-	                 - charPadding - 1;
+	                   + consoleState.margin.top
+	                   - consoleState.padding.bottom
+	                   - consoleState.border.top
+	                   - charPadding - 1;
 
-	if (lineDrawPosition <= textDistanceToTop)
+	if ( lineDrawPosition <= textDistanceToTop )
 	{
 		return;
 	}
@@ -995,14 +1023,15 @@ void Con_DrawConsoleContent( void )
 	Con_DrawInput( lineDrawPosition, Con_MarginFadeAlpha( 1, lineDrawPosition, textDistanceToTop, lineDrawPosition, charHeight ) );
 	lineDrawPosition -= charHeight;
 
-	if (lineDrawPosition <= textDistanceToTop)
+	if ( lineDrawPosition <= textDistanceToTop )
 	{
 		return;
 	}
 
-	if(con_debug->integer) {
-		Con_DrawRightFloatingTextLine( 3, NULL, va( "Buffer (lines): ScrollbackLength %d/%d  CurrentIndex %d", consoleState.usedScrollbackLengthInLines, consoleState.maxScrollbackLengthInLines, consoleState.currentLine) );
-		Con_DrawRightFloatingTextLine( 4, NULL, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine-consoleState.maxScrollbackLengthInLines, consoleState.scrollLineIndex, consoleState.visibleAmountOfLines, charHeight ) );
+	if ( con_debug->integer )
+	{
+		Con_DrawRightFloatingTextLine( 3, NULL, va( "Buffer (lines): ScrollbackLength %d/%d  CurrentIndex %d", consoleState.usedScrollbackLengthInLines, consoleState.maxScrollbackLengthInLines, consoleState.currentLine ) );
+		Con_DrawRightFloatingTextLine( 4, NULL, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine - consoleState.maxScrollbackLengthInLines, consoleState.scrollLineIndex, consoleState.visibleAmountOfLines, charHeight ) );
 	}
 
 	/*
@@ -1049,8 +1078,8 @@ void Con_DrawConsoleContent( void )
 		}
 
 		if ( row == consoleState.lastReadLineIndex - 1
-			&& consoleState.lastReadLineIndex != consoleState.currentLine
-			&& consoleState.currentLine - consoleState.lastReadLineIndex < consoleState.usedScrollbackLengthInLines)
+		        && consoleState.lastReadLineIndex != consoleState.currentLine
+		        && consoleState.currentLine - consoleState.lastReadLineIndex < consoleState.usedScrollbackLengthInLines )
 		{
 			Con_DrawScrollbackMarkerline( lineDrawPosition );
 		}
@@ -1106,8 +1135,9 @@ void Con_DrawAnimatedConsole( void )
 	//build info, projectname/copyrights, meta informatin or similar
 	Con_DrawAboutText();
 
-	if(con_debug->integer) {
-			Con_DrawRightFloatingTextLine( 8, NULL, va( "Animation: target %d current fraction %f alpha %f", (int) consoleState.isOpened, consoleState.currentAnimationFraction, consoleState.currentAlphaFactor) );
+	if ( con_debug->integer )
+	{
+		Con_DrawRightFloatingTextLine( 8, NULL, va( "Animation: target %d current fraction %f alpha %f", ( int ) consoleState.isOpened, consoleState.currentAnimationFraction, consoleState.currentAlphaFactor ) );
 	}
 
 	//input, scrollbackindicator, scrollback text
@@ -1139,12 +1169,15 @@ void Con_UpdateConsoleState( void )
 	 */
 	consoleState.border.bottom = std::max( 0, con_borderWidth->integer );
 
-	if(con_margin->value > 0) {
+	if ( con_margin->value > 0 )
+	{
 		horizontalMargin = con_margin->value;
 		verticalMargin = con_margin->value;
 		consoleState.border.sides = consoleState.border.bottom;
 		consoleState.border.top = consoleState.border.bottom;
-	} else {
+	}
+	else
+	{
 		horizontalMargin = - con_margin->value;
 		verticalMargin = 0;
 		consoleState.border.sides = 0;
@@ -1164,7 +1197,7 @@ void Con_UpdateConsoleState( void )
 	consoleState.padding.bottom = std::max( 3, consoleState.padding.top );
 
 	// on wide screens, this will lead to somewhat of a centering of the text
-	if(con_horizontalPadding->integer)
+	if ( con_horizontalPadding->integer )
 	{
 		float horizontalVidPadding = con_horizontalPadding->value;
 		SCR_AdjustFrom640( &horizontalVidPadding, NULL, NULL, NULL );
@@ -1184,10 +1217,10 @@ void Con_UpdateConsoleState( void )
 	/*
 	 * calculate current console height
 	 */
-	consoleState.height = con_height->integer * 0.01 * (cls.glconfig.vidHeight
-						- consoleState.margin.top - consoleState.margin.bottom
-						- consoleState.border.top - consoleState.border.bottom
-						);
+	consoleState.height = con_height->integer * 0.01 * ( cls.glconfig.vidHeight
+	                      - consoleState.margin.top - consoleState.margin.bottom
+	                      - consoleState.border.top - consoleState.border.bottom
+	                                                   );
 
 	totalVerticalPadding = consoleState.padding.top + consoleState.padding.bottom;
 
@@ -1198,7 +1231,7 @@ void Con_UpdateConsoleState( void )
 
 
 	//animate via scroll animation if the type is set
-	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
+	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN )
 	{
 		consoleState.height *= consoleState.currentAnimationFraction;
 	}
@@ -1228,34 +1261,35 @@ void Con_RunAnimatedConsole( void )
 {
 	int consoleVidWidth;
 
-	if (con_height->value > 100.0f || con_height->value < 1.0f )
+	if ( con_height->value > 100.0f || con_height->value < 1.0f )
 	{
-		Cvar_Reset(con_height->name);
+		Cvar_Reset( con_height->name );
 	}
-	if (con_animationSpeed->value <= 0.0f)
+
+	if ( con_animationSpeed->value <= 0.0f )
 	{
-		Cvar_Reset(con_animationSpeed->name);
+		Cvar_Reset( con_animationSpeed->name );
 	}
 
 	Con_UpdateConsoleState( );
 
 	//now check everything that is depending on the consolestate
-	if (con_height->value < con_margin->value || ( consoleState.visibleAmountOfLines < 1 && consoleState.currentAnimationFraction == 1.0f ) )
+	if ( con_height->value < con_margin->value || ( consoleState.visibleAmountOfLines < 1 && consoleState.currentAnimationFraction == 1.0f ) )
 	{
-		Cvar_Reset(con_height->name);
-		Cvar_Reset(con_margin->name);
+		Cvar_Reset( con_height->name );
+		Cvar_Reset( con_margin->name );
 		Con_UpdateConsoleState( ); //recalculate
 	}
 
-	consoleVidWidth = cls.glconfig.vidWidth - 2 * (consoleState.margin.sides + consoleState.padding.sides );
+	consoleVidWidth = cls.glconfig.vidWidth - 2 * ( consoleState.margin.sides + consoleState.padding.sides );
 
-	if( 2 * con_horizontalPadding->value >= consoleVidWidth )
+	if ( 2 * con_horizontalPadding->value >= consoleVidWidth )
 	{
-		Cvar_Reset(con_horizontalPadding->name);
+		Cvar_Reset( con_horizontalPadding->name );
 
 		//to be sure, its not the caus of this happening and resulting in a loop
-		Cvar_Reset(con_borderWidth->name);
-		Cvar_Reset(con_margin->name);
+		Cvar_Reset( con_borderWidth->name );
+		Cvar_Reset( con_margin->name );
 		Con_UpdateConsoleState( );  //recalculate
 	}
 
@@ -1274,8 +1308,10 @@ void Con_DrawConsole( void )
 {
 	// render console only if flag is set or is within an animation but also in special disconnected states
 	if ( !consoleState.isOpened && consoleState.currentAnimationFraction <= 0
-		&& !( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) ) )
+	        && !( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) ) )
+	{
 		return;
+	}
 
 
 	Con_RunAnimatedConsole( );
@@ -1305,7 +1341,8 @@ void Con_RunConsole( void )
 		consoleState.currentAnimationFraction -= con_animationSpeed->value * cls.realFrametime * 0.001;
 
 		if ( consoleState.currentAnimationFraction <= 0  || con_animationType->integer == ANIMATION_TYPE_NONE )
-		{	//we are closed, do some last onClose work
+		{
+			//we are closed, do some last onClose work
 			consoleState.currentAnimationFraction = 0;
 			consoleState.lastReadLineIndex = consoleState.currentLine;
 		}
@@ -1314,19 +1351,21 @@ void Con_RunConsole( void )
 	{
 		consoleState.currentAnimationFraction += con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction > 1  || con_animationType->integer == ANIMATION_TYPE_NONE  )
+		if ( consoleState.currentAnimationFraction > 1  || con_animationType->integer == ANIMATION_TYPE_NONE )
 		{
 			consoleState.currentAnimationFraction = 1;
 		}
 	}
 
-	if(consoleState.currentAnimationFraction > 0)
+	if ( consoleState.currentAnimationFraction > 0 )
 	{
 		const float scrollDifference = std::max( 0.5f, fabsf( consoleState.bottomDisplayedLine - consoleState.scrollLineIndex ) );
-		if( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex )
+
+		if ( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex )
 		{
 			consoleState.bottomDisplayedLine += con_animationSpeed->value * cls.realFrametime * 0.005 * scrollDifference;
-			if( consoleState.bottomDisplayedLine > consoleState.scrollLineIndex || con_animationType->integer == ANIMATION_TYPE_NONE )
+
+			if ( consoleState.bottomDisplayedLine > consoleState.scrollLineIndex || con_animationType->integer == ANIMATION_TYPE_NONE )
 			{
 				consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 			}
@@ -1334,12 +1373,15 @@ void Con_RunConsole( void )
 		else if ( consoleState.bottomDisplayedLine > consoleState.scrollLineIndex )
 		{
 			consoleState.bottomDisplayedLine -= con_animationSpeed->value * cls.realFrametime * 0.005 * scrollDifference;
-			if( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex || con_animationType->integer == ANIMATION_TYPE_NONE )
+
+			if ( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex || con_animationType->integer == ANIMATION_TYPE_NONE )
 			{
 				consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 			}
 		}
-	} else {
+	}
+	else
+	{
 		/*
 		 * if we are not visible, its better to do an instant update
 		 * skipping it entirely would lead to retrospective/delayed scrolling on opening
@@ -1349,10 +1391,12 @@ void Con_RunConsole( void )
 
 	std::vector<std::string> lines;
 	{
-		std::lock_guard<std::mutex> guard(cl_bufferedLinesLock);
-		lines = std::move(cl_consoleBufferedLines);
+		std::lock_guard<std::mutex> guard( cl_bufferedLinesLock );
+		lines = std::move( cl_consoleBufferedLines );
 	}
-	for (auto line : lines) {
+
+	for ( auto line : lines )
+	{
 		CL_InternalConsolePrint( line.c_str() );
 	}
 }
@@ -1360,36 +1404,43 @@ void Con_RunConsole( void )
 // Definition of the graphical console log target
 // TODO split with the HUD from it
 
-void CL_ConsolePrint(std::string text) {
-	std::lock_guard<std::mutex> guard(cl_bufferedLinesLock);
-	cl_consoleBufferedLines.push_back(std::move(text));
+void CL_ConsolePrint( std::string text )
+{
+	std::lock_guard<std::mutex> guard( cl_bufferedLinesLock );
+	cl_consoleBufferedLines.push_back( std::move( text ) );
 }
 
-class GraphicalTarget : public Log::Target {
-	public:
-		GraphicalTarget() {
-			this->Register(Log::GRAPHICAL_CONSOLE);
-		}
+class GraphicalTarget : public Log::Target
+{
+public:
+	GraphicalTarget()
+	{
+		this->Register( Log::GRAPHICAL_CONSOLE );
+	}
 
-		virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
-			// for some demos we don't want to ever show anything on the console
-			// flush the buffer
-			if ( cl_noprint && cl_noprint->integer )
-			{
-				return true;
-			}
-
-			//Video hasn't been initialized
-			if ( ! cls.glconfig.vidWidth ) {
-				return false;
-			}
-
-			for (Log::Event event : events) {
-				CL_ConsolePrint(std::move(event.text));
-				CL_ConsolePrint("\n");
-			}
+	virtual bool Process( std::vector<Log::Event>& events ) OVERRIDE
+	{
+		// for some demos we don't want to ever show anything on the console
+		// flush the buffer
+		if ( cl_noprint && cl_noprint->integer )
+		{
 			return true;
 		}
+
+		//Video hasn't been initialized
+		if ( ! cls.glconfig.vidWidth )
+		{
+			return false;
+		}
+
+		for ( Log::Event event : events )
+		{
+			CL_ConsolePrint( std::move( event.text ) );
+			CL_ConsolePrint( "\n" );
+		}
+
+		return true;
+	}
 };
 
 static GraphicalTarget gui;
@@ -1397,24 +1448,26 @@ static GraphicalTarget gui;
 
 void Con_PageUp( void )
 {
-	Con_ScrollUp( consoleState.visibleAmountOfLines/2 );
+	Con_ScrollUp( consoleState.visibleAmountOfLines / 2 );
 }
 
 void Con_PageDown( void )
 {
-	Con_ScrollDown( consoleState.visibleAmountOfLines/2 );
+	Con_ScrollDown( consoleState.visibleAmountOfLines / 2 );
 }
 
 void Con_ScrollUp( int lines )
 {
 	//do not scroll if there isn't enough to scroll
-	if(consoleState.usedScrollbackLengthInLines < consoleState.visibleAmountOfLines)
+	if ( consoleState.usedScrollbackLengthInLines < consoleState.visibleAmountOfLines )
+	{
 		return;
+	}
 
 	consoleState.scrollLineIndex -= lines;
 
 	if ( consoleState.scrollLineIndex < consoleState.currentLine - consoleState.usedScrollbackLengthInLines
-			+ std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines) )
+	        + std::min( consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines ) )
 	{
 		Con_ScrollToTop( );
 	}
@@ -1432,16 +1485,16 @@ void Con_ScrollDown( int lines )
 
 void Con_ScrollToMarkerLine( void )
 {
-	consoleState.scrollLineIndex = std::max(consoleState.lastReadLineIndex, consoleState.currentLine - consoleState.usedScrollbackLengthInLines)
-			+ std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
+	consoleState.scrollLineIndex = std::max( consoleState.lastReadLineIndex, consoleState.currentLine - consoleState.usedScrollbackLengthInLines )
+	                               + std::min( consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines );
 	//consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 }
 
 void Con_ScrollToTop( void )
 {
 	consoleState.scrollLineIndex = consoleState.currentLine
-			- consoleState.usedScrollbackLengthInLines
-			+ std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
+	                               - consoleState.usedScrollbackLengthInLines
+	                               + std::min( consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines );
 	//consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 }
 
@@ -1454,8 +1507,8 @@ void Con_ScrollToBottom( void )
 void Con_JumpUp( void )
 {
 	if ( consoleState.lastReadLineIndex &&
-		 consoleState.scrollLineIndex > consoleState.lastReadLineIndex + std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines)
-	   //&& consoleState.currentLine - consoleState.lastReadLineIndex > consoleState.visibleAmountOfLines
+	        consoleState.scrollLineIndex > consoleState.lastReadLineIndex + std::min( consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines )
+	        //&& consoleState.currentLine - consoleState.lastReadLineIndex > consoleState.visibleAmountOfLines
 	   )
 	{
 		Con_ScrollToMarkerLine( );

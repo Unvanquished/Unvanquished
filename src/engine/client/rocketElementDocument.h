@@ -43,22 +43,19 @@ Maryland 20850 USA.
 class RocketElementDocument : public Rocket::Core::ElementDocument
 {
 public:
-	RocketElementDocument( const Rocket::Core::String &tag ) : Rocket::Core::ElementDocument( tag ) { }
+    RocketElementDocument ( const Rocket::Core::String &tag ) : Rocket::Core::ElementDocument ( tag ) { }
 
-	void ProcessEvent( Rocket::Core::Event &event )
-	{
-		Rocket::Core::ElementDocument::ProcessEvent( event );
+    void ProcessEvent ( Rocket::Core::Event &event ) {
+        Rocket::Core::ElementDocument::ProcessEvent ( event );
 
-		if ( event == "keydown" )
-		{
-			Rocket::Core::Input::KeyIdentifier key = (Rocket::Core::Input::KeyIdentifier) event.GetParameter<int>( "key_identifier", 0 );
+        if ( event == "keydown" ) {
+            Rocket::Core::Input::KeyIdentifier key = ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter<int> ( "key_identifier", 0 );
 
-			if ( key == Rocket::Core::Input::KI_ESCAPE && !HasAttribute( "nohide" ) )
-			{
-				this->Hide();
-			}
-		}
-	}
+            if ( key == Rocket::Core::Input::KI_ESCAPE && !HasAttribute ( "nohide" ) ) {
+                this->Hide();
+            }
+        }
+    }
 };
 
 #endif

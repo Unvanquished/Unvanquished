@@ -57,7 +57,7 @@ void SP_game_score( gentity_t *self )
 {
 	if ( !self->config.amount )
 	{
-		if( G_SpawnInt( "count", "0", &self->config.amount) )
+		if ( G_SpawnInt( "count", "0", &self->config.amount ) )
 		{
 			G_WarnAboutDeprecatedEntityField( self, "amount", "count", ENT_V_RENAMED );
 		}
@@ -87,11 +87,11 @@ void game_end_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 
 void SP_game_end( gentity_t *self )
 {
-	if(!Q_stricmp(self->classname, "target_human_win"))
+	if ( !Q_stricmp( self->classname, "target_human_win" ) )
 	{
 		self->conditions.team = TEAM_HUMANS;
 	}
-	else if(!Q_stricmp(self->classname, "target_alien_win"))
+	else if ( !Q_stricmp( self->classname, "target_alien_win" ) )
 	{
 		self->conditions.team = TEAM_ALIENS;
 	}
@@ -109,7 +109,7 @@ game_funds
 
 void game_funds_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
-	if( !activator )
+	if ( !activator )
 	{
 		return;
 	}
@@ -119,7 +119,7 @@ void game_funds_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 
 void game_funds_reset( gentity_t *self )
 {
-	G_ResetIntField( &self->amount, qfalse, self->config.amount, self->eclass->config.amount, 0);
+	G_ResetIntField( &self->amount, qfalse, self->config.amount, self->eclass->config.amount, 0 );
 }
 
 void SP_game_funds( gentity_t *self )

@@ -34,15 +34,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AudioData.h"
 #include <string>
 
-namespace Audio {
+namespace Audio
+{
 
-    AudioData LoadSoundCodec(std::string filename);
+AudioData LoadSoundCodec ( std::string filename );
 
-    AudioData LoadWavCodec(std::string filename);
+AudioData LoadWavCodec ( std::string filename );
 
-    AudioData LoadOggCodec(std::string filename);
+AudioData LoadOggCodec ( std::string filename );
 
-    AudioData LoadOpusCodec(std::string filename);
+AudioData LoadOpusCodec ( std::string filename );
 
 } // namespace Audio
 #endif

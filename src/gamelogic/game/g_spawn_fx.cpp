@@ -60,7 +60,7 @@ void target_speaker_act( gentity_t *self, gentity_t *caller, gentity_t *activato
 	else
 	{
 		// one-time sound
-		if ( (self->spawnflags & 8) && activator )
+		if ( ( self->spawnflags & 8 ) && activator )
 		{
 			G_AddEvent( activator, EV_GENERAL_SOUND, self->soundIndex );
 		}
@@ -90,6 +90,7 @@ void SP_sfx_speaker( gentity_t *self )
 	{
 		self->spawnflags |= 8;
 	}
+
 	self->soundIndex = G_SoundIndex( tmpString );
 
 	// a repeating speaker can be done completely client side
@@ -176,7 +177,7 @@ void SP_fx_rumble( gentity_t *self )
 {
 	if ( !self->config.amount )
 	{
-		if( G_SpawnInt( "count", "0", &self->config.amount) )
+		if ( G_SpawnInt( "count", "0", &self->config.amount ) )
 		{
 			G_WarnAboutDeprecatedEntityField( self, "amount", "count", ENT_V_RENAMED );
 		}

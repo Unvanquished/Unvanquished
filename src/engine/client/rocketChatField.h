@@ -46,440 +46,379 @@ Maryland 20850 USA.
 class RocketChatField : public Rocket::Core::Element, Rocket::Core::EventListener
 {
 public:
-	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cursor_timer( 0 ), last_update_time( 0 ), focus( false ), cursor_character_index( 0 ), text_element( NULL )
-	{
-		// Spawn text container
-		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
+    RocketChatField ( const Rocket::Core::String &tag ) : Rocket::Core::Element ( tag ), cursor_timer ( 0 ), last_update_time ( 0 ), focus ( false ), cursor_character_index ( 0 ), text_element ( NULL ) {
+        // Spawn text container
+        text_element = Rocket::Core::Factory::InstanceElement ( this, "div", "*", Rocket::Core::XMLAttributes() );
 
-		// Add it to this element
-		AppendChild( text_element );
-		text_element->RemoveReference();
-	}
+        // Add it to this element
+        AppendChild ( text_element );
+        text_element->RemoveReference();
+    }
 
-	virtual void OnChildRemove( Element *child )
-	{
-		Element::OnChildRemove(child);
-		if ( child == this && context )
-		{
-			context->GetRootElement()->RemoveEventListener( "show", this );
-			context->GetRootElement()->RemoveEventListener( "hide", this );
-			context->GetRootElement()->RemoveEventListener( "blur", this );
-			context->GetRootElement()->RemoveEventListener( "mousemove", this );
+    virtual void OnChildRemove ( Element *child ) {
+        Element::OnChildRemove ( child );
+        if ( child == this && context ) {
+            context->GetRootElement()->RemoveEventListener ( "show", this );
+            context->GetRootElement()->RemoveEventListener ( "hide", this );
+            context->GetRootElement()->RemoveEventListener ( "blur", this );
+            context->GetRootElement()->RemoveEventListener ( "mousemove", this );
 
-			context = NULL;
-		}
-	}
+            context = NULL;
+        }
+    }
 
-	void OnRender( void )
-	{
-		UpdateCursorPosition();
-		cursor_geometry.Render( cursor_position );
-	}
+    void OnRender ( void ) {
+        UpdateCursorPosition();
+        cursor_geometry.Render ( cursor_position );
+    }
 
-	virtual void OnChildAdd( Element *child )
-	{
-		Element::OnChildAdd( child );
-		if ( child == this )
-		{
-			// Cache context so we can remove the event listeners later
-			context = GetContext();
+    virtual void OnChildAdd ( Element *child ) {
+        Element::OnChildAdd ( child );
+        if ( child == this ) {
+            // Cache context so we can remove the event listeners later
+            context = GetContext();
 
-			context->GetRootElement()->AddEventListener( "show", this );
-			context->GetRootElement()->AddEventListener( "hide", this );
-			context->GetRootElement()->AddEventListener( "blur", this );
-			context->GetRootElement()->AddEventListener( "mousemove", this );
-		}
-	}
+            context->GetRootElement()->AddEventListener ( "show", this );
+            context->GetRootElement()->AddEventListener ( "hide", this );
+            context->GetRootElement()->AddEventListener ( "blur", this );
+            context->GetRootElement()->AddEventListener ( "mousemove", this );
+        }
+    }
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
-	{
-		if (changed_attributes.find( "exec" ) != changed_attributes.end() )
-		{
-			cmd = GetAttribute<Rocket::Core::String>( "exec", "" );
-		}
-	}
+    virtual void OnAttributeChange ( const Rocket::Core::AttributeNameList& changed_attributes ) {
+        if ( changed_attributes.find ( "exec" ) != changed_attributes.end() ) {
+            cmd = GetAttribute<Rocket::Core::String> ( "exec", "" );
+        }
+    }
 
-	void OnUpdate( void )
-	{
-		// Ensure mouse follow cursor
-		if ( focus )
-		{
-			GetContext()->ProcessMouseMove( cursor_position.x, cursor_position.y, 0 );
+    void OnUpdate ( void ) {
+        // Ensure mouse follow cursor
+        if ( focus ) {
+            GetContext()->ProcessMouseMove ( cursor_position.x, cursor_position.y, 0 );
 
-			// Make sure this element is in focus if visible
-			if ( GetContext()->GetFocusElement() != this )
-			{
-				this->Click();
-				this->Focus();
-			}
-		}
-	}
+            // Make sure this element is in focus if visible
+            if ( GetContext()->GetFocusElement() != this ) {
+                this->Click();
+                this->Focus();
+            }
+        }
+    }
 
-	void ProcessEvent( Rocket::Core::Event &event )
-	{
-		Element::ProcessEvent( event );
+    void ProcessEvent ( Rocket::Core::Event &event ) {
+        Element::ProcessEvent ( event );
 
-		// Cannot move mouse while this element is in view
-		if ( focus && event == "mousemove" )
-		{
-			event.StopPropagation();
-			return;
-		}
+        // Cannot move mouse while this element is in view
+        if ( focus && event == "mousemove" ) {
+            event.StopPropagation();
+            return;
+        }
 
-		// We are in focus, let the element know
-		if ( event.GetTargetElement() == GetOwnerDocument() )
-		{
-			if ( event == "show" )
-			{
-				focus = true;
-				GetContext()->ShowMouseCursor( false );
-			}
+        // We are in focus, let the element know
+        if ( event.GetTargetElement() == GetOwnerDocument() ) {
+            if ( event == "show" ) {
+                focus = true;
+                GetContext()->ShowMouseCursor ( false );
+            }
 
-			else if ( event == "blur" || event == "hide" )
-			{
-				focus =  false;
-				text.Clear();
-				UpdateText();
-			}
-		}
+            else if ( event == "blur" || event == "hide" ) {
+                focus =  false;
+                text.Clear();
+                UpdateText();
+            }
+        }
 
-		if ( focus )
-		{
-			if ( event == "resize" )
-			{
-				GetContext()->ShowMouseCursor( false );
-				focus = true;
-				GenerateCursor();
-			}
+        if ( focus ) {
+            if ( event == "resize" ) {
+                GetContext()->ShowMouseCursor ( false );
+                focus = true;
+                GenerateCursor();
+            }
 
-			// Handle key presses
-			else if ( event == "keydown" )
-			{
-				Rocket::Core::Input::KeyIdentifier key_identifier = ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
+            // Handle key presses
+            else if ( event == "keydown" ) {
+                Rocket::Core::Input::KeyIdentifier key_identifier = ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter<int> ( "key_identifier", 0 );
 
-				switch ( key_identifier )
-				{
-					case Rocket::Core::Input::KI_BACK:
-						text.Erase( cursor_character_index - 1, 1 );
-						UpdateText();
-						MoveCursor( -1 );
-						break;
+                switch ( key_identifier ) {
+                case Rocket::Core::Input::KI_BACK:
+                    text.Erase ( cursor_character_index - 1, 1 );
+                    UpdateText();
+                    MoveCursor ( -1 );
+                    break;
 
-					case Rocket::Core::Input::KI_DELETE:
-						if ( cursor_character_index < text.Length() )
-						{
-							text.Erase( cursor_character_index, 1 );
-							UpdateText();
-						}
+                case Rocket::Core::Input::KI_DELETE:
+                    if ( cursor_character_index < text.Length() ) {
+                        text.Erase ( cursor_character_index, 1 );
+                        UpdateText();
+                    }
 
-						break;
+                    break;
 
-					case Rocket::Core::Input::KI_LEFT:
-						MoveCursor( -1 );
-						break;
+                case Rocket::Core::Input::KI_LEFT:
+                    MoveCursor ( -1 );
+                    break;
 
-					case Rocket::Core::Input::KI_RIGHT:
-						MoveCursor( 1 );
-						break;
+                case Rocket::Core::Input::KI_RIGHT:
+                    MoveCursor ( 1 );
+                    break;
 
-					case Rocket::Core::Input::KI_RETURN:
-					case Rocket::Core::Input::KI_NUMPADENTER:
-					{
-						if ( text.Empty() )
-						{
-							GetOwnerDocument()->Hide();
-							return;
-						}
-						else if ( text[0] == '/' || text[0] == '\\' )
-						{
-							Cmd::BufferCommandText( va( "%s\n", text.Substring( 1 ).CString() ) );
-							text.Clear();
-							UpdateText();
-							GetOwnerDocument()->Hide();
-							return;
-						}
-						else if ( cmd == "/" )
-						{
-							Cmd::BufferCommandText( va( "%s\n", text.CString() ) );
-							text.Clear();
-							UpdateText();
-							GetOwnerDocument()->Hide();
-							return;
-						}
+                case Rocket::Core::Input::KI_RETURN:
+                case Rocket::Core::Input::KI_NUMPADENTER: {
+                    if ( text.Empty() ) {
+                        GetOwnerDocument()->Hide();
+                        return;
+                    } else if ( text[0] == '/' || text[0] == '\\' ) {
+                        Cmd::BufferCommandText ( va ( "%s\n", text.Substring ( 1 ).CString() ) );
+                        text.Clear();
+                        UpdateText();
+                        GetOwnerDocument()->Hide();
+                        return;
+                    } else if ( cmd == "/" ) {
+                        Cmd::BufferCommandText ( va ( "%s\n", text.CString() ) );
+                        text.Clear();
+                        UpdateText();
+                        GetOwnerDocument()->Hide();
+                        return;
+                    }
 
-						if ( cmd.Empty() )
-						{
-							cmd = Cvar_VariableString( "cg_sayCommand" );
-						}
+                    if ( cmd.Empty() ) {
+                        cmd = Cvar_VariableString ( "cg_sayCommand" );
+                    }
 
-						if ( !cmd.Empty() && !text.Empty() )
-						{
-							Cmd::BufferCommandText( va( "%s %s\n", cmd.CString(), text.CString() ) );
-							text.Clear();
-							UpdateText();
-							GetOwnerDocument()->Hide();
-						}
-					}
-						break;
+                    if ( !cmd.Empty() && !text.Empty() ) {
+                        Cmd::BufferCommandText ( va ( "%s %s\n", cmd.CString(), text.CString() ) );
+                        text.Clear();
+                        UpdateText();
+                        GetOwnerDocument()->Hide();
+                    }
+                }
+                break;
 
-					default:
-						break;
-				}
-			}
+                default:
+                    break;
+                }
+            }
 
-			else if ( event == "textinput" )
-			{
-				if ( event.GetParameter< int >( "ctrl_key", 0 ) == 0 &&
-				        event.GetParameter< int >( "alt_key", 0 ) == 0 &&
-				        event.GetParameter< int >( "meta_key", 0 ) == 0 )
-				{
-					Rocket::Core::word character = event.GetParameter< Rocket::Core::word >( "data", 0 );
+            else if ( event == "textinput" ) {
+                if ( event.GetParameter< int > ( "ctrl_key", 0 ) == 0 &&
+                        event.GetParameter< int > ( "alt_key", 0 ) == 0 &&
+                        event.GetParameter< int > ( "meta_key", 0 ) == 0 ) {
+                    Rocket::Core::word character = event.GetParameter< Rocket::Core::word > ( "data", 0 );
 
-					if ( text.Length() == cursor_character_index )
-					{
-						text.Append( ( char )character );
-					}
+                    if ( text.Length() == cursor_character_index ) {
+                        text.Append ( ( char ) character );
+                    }
 
-					else
-					{
-						text.Insert( cursor_character_index, character );
-					}
+                    else {
+                        text.Insert ( cursor_character_index, character );
+                    }
 
-					UpdateText();
-					MoveCursor( 1 );
-				}
-			}
-		}
-	}
+                    UpdateText();
+                    MoveCursor ( 1 );
+                }
+            }
+        }
+    }
 
-	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
-	{
-		const Rocket::Core::Property *property;
-		property = GetProperty( "width" );
+    bool GetIntrinsicDimensions ( Rocket::Core::Vector2f &dimension ) {
+        const Rocket::Core::Property *property;
+        property = GetProperty ( "width" );
 
-		// Absolute unit. We can use it as is
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
-		{
-			dimensions.x = property->value.Get<float>();
-		}
+        // Absolute unit. We can use it as is
+        if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT ) {
+            dimensions.x = property->value.Get<float>();
+        }
 
-		else
-		{
-			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
-			stack.push( this );
+        else {
+            float base_size = 0;
+            Rocket::Core::Element *parent = this;
+            std::stack<Rocket::Core::Element*> stack;
+            stack.push ( this );
 
-			while ( ( parent = parent->GetParentNode() ) )
-			{
-				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
-				{
-					dimensions.x = base_size;
-					while ( !stack.empty() )
-					{
-						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
+            while ( ( parent = parent->GetParentNode() ) ) {
+                if ( ( base_size = parent->GetOffsetWidth() ) != 0 ) {
+                    dimensions.x = base_size;
+                    while ( !stack.empty() ) {
+                        dimensions.x = stack.top()->ResolveProperty ( "width", dimensions.x );
 
-						stack.pop();
-					}
-					break;
-				}
+                        stack.pop();
+                    }
+                    break;
+                }
 
-				stack.push( parent );
-			}
-		}
+                stack.push ( parent );
+            }
+        }
 
-		dimensions.y = Rocket::Core::ElementUtilities::GetLineHeight( this );
+        dimensions.y = Rocket::Core::ElementUtilities::GetLineHeight ( this );
 
-		dimension = dimensions;
+        dimension = dimensions;
 
-		return true;
-	}
+        return true;
+    }
 
 
 protected:
-	void GenerateCursor( void )
-	{
-		// Generates the cursor.
-		cursor_geometry.Release();
+    void GenerateCursor ( void ) {
+        // Generates the cursor.
+        cursor_geometry.Release();
 
-		std::vector< Rocket::Core::Vertex > &vertices = cursor_geometry.GetVertices();
-		vertices.resize( 4 );
+        std::vector< Rocket::Core::Vertex > &vertices = cursor_geometry.GetVertices();
+        vertices.resize ( 4 );
 
-		std::vector< int > &indices = cursor_geometry.GetIndices();
-		indices.resize( 6 );
+        std::vector< int > &indices = cursor_geometry.GetIndices();
+        indices.resize ( 6 );
 
-		cursor_size.x = 1;
-		cursor_size.y = ( float ) Rocket::Core::ElementUtilities::GetLineHeight( text_element ) + 2;
-		Rocket::Core::GeometryUtilities::GenerateQuad( &vertices[0], &indices[0], Rocket::Core::Vector2f( 0, 0 ), cursor_size, GetProperty< Rocket::Core::Colourb >( "color" ) );
-	}
+        cursor_size.x = 1;
+        cursor_size.y = ( float ) Rocket::Core::ElementUtilities::GetLineHeight ( text_element ) + 2;
+        Rocket::Core::GeometryUtilities::GenerateQuad ( &vertices[0], &indices[0], Rocket::Core::Vector2f ( 0, 0 ), cursor_size, GetProperty< Rocket::Core::Colourb > ( "color" ) );
+    }
 
-	void MoveCursor( int amt )
-	{
-		cursor_character_index += amt;
+    void MoveCursor ( int amt ) {
+        cursor_character_index += amt;
 
-		cursor_character_index = Rocket::Core::Math::Clamp<int>( cursor_character_index, 0, text.Length() );
-	}
+        cursor_character_index = Rocket::Core::Math::Clamp<int> ( cursor_character_index, 0, text.Length() );
+    }
 
-	void UpdateCursorPosition( void )
-	{
-		if ( text_element->GetFontFaceHandle() == NULL )
-		{
-			return;
-		}
+    void UpdateCursorPosition ( void ) {
+        if ( text_element->GetFontFaceHandle() == NULL ) {
+            return;
+        }
 
-		cursor_position = GetAbsoluteOffset();
+        cursor_position = GetAbsoluteOffset();
 
-		cursor_position.x += ( float ) Rocket::Core::ElementUtilities::GetStringWidth( text_element, text.Substring( 0, cursor_character_index ) );
-	}
+        cursor_position.x += ( float ) Rocket::Core::ElementUtilities::GetStringWidth ( text_element, text.Substring ( 0, cursor_character_index ) );
+    }
 
-	void UpdateText( void )
-	{
-		RemoveChild( text_element );
-		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
-		AppendChild( text_element );
-		text_element->RemoveReference();
-		if ( !text.Empty() )
-		{
-			q2rml( text.CString(), text_element );
-		}
-	}
+    void UpdateText ( void ) {
+        RemoveChild ( text_element );
+        text_element = Rocket::Core::Factory::InstanceElement ( this, "div", "*", Rocket::Core::XMLAttributes() );
+        AppendChild ( text_element );
+        text_element->RemoveReference();
+        if ( !text.Empty() ) {
+            q2rml ( text.CString(), text_element );
+        }
+    }
 
-	// Special q -> rml conversion function that preserves carets and codes
-	void q2rml( const char *in, Rocket::Core::Element *parent )
-	{
-		const char *p;
-		Rocket::Core::String out;
-		Rocket::Core::Element *child = NULL;
-		bool span = false;
+    // Special q -> rml conversion function that preserves carets and codes
+    void q2rml ( const char *in, Rocket::Core::Element *parent ) {
+        const char *p;
+        Rocket::Core::String out;
+        Rocket::Core::Element *child = NULL;
+        bool span = false;
 
-		if ( !*in )
-		{
-			return;
-		}
+        if ( !*in ) {
+            return;
+        }
 
-		for ( p = in; p && *p; ++p )
-		{
-			if ( *p == '<' )
-			{
-				out.Append( "&lt;" );
-			}
+        for ( p = in; p && *p; ++p ) {
+            if ( *p == '<' ) {
+                out.Append ( "&lt;" );
+            }
 
-			else if ( *p == '>' )
-			{
-				out.Append( "&gt;" );
-			}
+            else if ( *p == '>' ) {
+                out.Append ( "&gt;" );
+            }
 
-			else if ( *p == '&' )
-			{
-				out.Append( "&amp;" );
-			}
+            else if ( *p == '&' ) {
+                out.Append ( "&amp;" );
+            }
 
-			else if ( *p == '\n' )
-			{
-				// Child element initialized.
-				if ( span )
-				{
-					span = false;
-				}
+            else if ( *p == '\n' ) {
+                // Child element initialized.
+                if ( span ) {
+                    span = false;
+                }
 
-				// If not intialized, probably the first one, and should be white.
-				else
-				{
-					Rocket::Core::XMLAttributes xml;
-					child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-					child->SetProperty( "color", "#FFFFFF" );
-				}
+                // If not intialized, probably the first one, and should be white.
+                else {
+                    Rocket::Core::XMLAttributes xml;
+                    child = Rocket::Core::Factory::InstanceElement ( parent, "#text", "span", xml );
+                    child->SetProperty ( "color", "#FFFFFF" );
+                }
 
-				static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-				parent->AppendChild( child );
-				child->RemoveReference();
-				parent->AppendChild( ( child = Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) ) );
-				child->RemoveReference();
-				out.Clear();
-			}
+                static_cast<Rocket::Core::ElementText *> ( child )->SetText ( out );
+                parent->AppendChild ( child );
+                child->RemoveReference();
+                parent->AppendChild ( ( child = Rocket::Core::Factory::InstanceElement ( parent, "*", "br", Rocket::Core::XMLAttributes() ) ) );
+                child->RemoveReference();
+                out.Clear();
+            }
 
-			// Convert ^^ to ^
-			else if ( *p == '^' && *( p + 1 ) == '^' )
-			{
-				p++;
-				out.Append( "^" );
-			}
+            // Convert ^^ to ^
+            else if ( *p == '^' && * ( p + 1 ) == '^' ) {
+                p++;
+                out.Append ( "^" );
+            }
 
-			else if ( Q_IsColorString( p ) )
-			{
-				Rocket::Core::XMLAttributes xml;
-				int code = ColorIndex( *++p );
-				char c = *p;
+            else if ( Q_IsColorString ( p ) ) {
+                Rocket::Core::XMLAttributes xml;
+                int code = ColorIndex ( *++p );
+                char c = *p;
 
-				// Child element initialized
-				if ( span )
-				{
-					span = false;
-					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-					parent->AppendChild( child );
-					child->RemoveReference();
-					out.Clear();
-				}
+                // Child element initialized
+                if ( span ) {
+                    span = false;
+                    static_cast<Rocket::Core::ElementText *> ( child )->SetText ( out );
+                    parent->AppendChild ( child );
+                    child->RemoveReference();
+                    out.Clear();
+                }
 
-				// If not intialized, probably the first one, and should be white.
-				else if ( !out.Empty() )
-				{
-					Rocket::Core::XMLAttributes xml;
-					child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-					child->SetProperty( "color", "#FFFFFF" );
-					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-					parent->AppendChild( child );
-					child->RemoveReference();
-					out.Clear();
-				}
+                // If not intialized, probably the first one, and should be white.
+                else if ( !out.Empty() ) {
+                    Rocket::Core::XMLAttributes xml;
+                    child = Rocket::Core::Factory::InstanceElement ( parent, "#text", "span", xml );
+                    child->SetProperty ( "color", "#FFFFFF" );
+                    static_cast<Rocket::Core::ElementText *> ( child )->SetText ( out );
+                    parent->AppendChild ( child );
+                    child->RemoveReference();
+                    out.Clear();
+                }
 
 
-				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-				child->SetProperty( "color", va( "#%02X%02X%02X",
-				                                 ( int )( g_color_table[ code ][ 0 ] * 255 ),
-				                                 ( int )( g_color_table[ code ][ 1 ] * 255 ),
-				                                 ( int )( g_color_table[ code ][ 2 ] * 255 ) ) );
-				out.Append( va( "^%c", c ) );
-				span = true;
-			}
+                child = Rocket::Core::Factory::InstanceElement ( parent, "#text", "span", xml );
+                child->SetProperty ( "color", va ( "#%02X%02X%02X",
+                                                   ( int ) ( g_color_table[ code ][ 0 ] * 255 ),
+                                                   ( int ) ( g_color_table[ code ][ 1 ] * 255 ),
+                                                   ( int ) ( g_color_table[ code ][ 2 ] * 255 ) ) );
+                out.Append ( va ( "^%c", c ) );
+                span = true;
+            }
 
-			else
-			{
-				out.Append( *p );
-			}
-		}
+            else {
+                out.Append ( *p );
+            }
+        }
 
-		if ( span && child && !out.Empty() )
-		{
-			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-			parent->AppendChild( child );
-			child->RemoveReference();
-			span = false;
-		}
+        if ( span && child && !out.Empty() ) {
+            static_cast<Rocket::Core::ElementText *> ( child )->SetText ( out );
+            parent->AppendChild ( child );
+            child->RemoveReference();
+            span = false;
+        }
 
-		else if ( !span && !child && !out.Empty() )
-		{
-			child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", Rocket::Core::XMLAttributes() );
-			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-			parent->AppendChild( child );
-			child->RemoveReference();
-		}
-	}
+        else if ( !span && !child && !out.Empty() ) {
+            child = Rocket::Core::Factory::InstanceElement ( parent, "#text", "span", Rocket::Core::XMLAttributes() );
+            static_cast<Rocket::Core::ElementText *> ( child )->SetText ( out );
+            parent->AppendChild ( child );
+            child->RemoveReference();
+        }
+    }
 
 private:
-	Rocket::Core::Vector2f cursor_position;
-	float cursor_timer;
-	float last_update_time;
-	bool focus;
-	int cursor_character_index;
-	Rocket::Core::Element *text_element;
-	Rocket::Core::Context *context;
+    Rocket::Core::Vector2f cursor_position;
+    float cursor_timer;
+    float last_update_time;
+    bool focus;
+    int cursor_character_index;
+    Rocket::Core::Element *text_element;
+    Rocket::Core::Context *context;
 
-	Rocket::Core::Geometry cursor_geometry;
-	Rocket::Core::Vector2f cursor_size;
-	Rocket::Core::Vector2f dimensions;
-	Rocket::Core::String text;
-	Rocket::Core::String cmd;
+    Rocket::Core::Geometry cursor_geometry;
+    Rocket::Core::Vector2f cursor_size;
+    Rocket::Core::Vector2f dimensions;
+    Rocket::Core::String text;
+    Rocket::Core::String cmd;
 
 };
 #endif

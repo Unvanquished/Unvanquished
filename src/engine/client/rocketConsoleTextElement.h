@@ -41,106 +41,91 @@ Maryland 20850 USA.
 #include "client.h"
 #include "rocket.h"
 
-struct ConsoleLine
-{
-	Rocket::Core::String text;
-	int time;
-	ConsoleLine( Rocket::Core::String _i ) : text( _i )
-	{
-		time = Sys_Milliseconds();
-	}
+struct ConsoleLine {
+    Rocket::Core::String text;
+    int time;
+    ConsoleLine ( Rocket::Core::String _i ) : text ( _i ) {
+        time = Sys_Milliseconds();
+    }
 };
 
 class RocketConsoleTextElement : public Rocket::Core::Element
 {
 public:
-	RocketConsoleTextElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), numLines( 0 ), maxLines( 0 ), lastTime( -1 ),
-	dirty_height( true )
-	{
-	}
+    RocketConsoleTextElement ( const Rocket::Core::String &tag ) : Rocket::Core::Element ( tag ), numLines ( 0 ), maxLines ( 0 ), lastTime ( -1 ),
+        dirty_height ( true ) {
+    }
 
-	void OnUpdate( void )
-	{
-		// Clean up old elements
-		int latency = Cvar_VariableIntegerValue( "cg_consoleLatency" );
-		int time = Sys_Milliseconds();
+    void OnUpdate ( void ) {
+        // Clean up old elements
+        int latency = Cvar_VariableIntegerValue ( "cg_consoleLatency" );
+        int time = Sys_Milliseconds();
 
-		while ( !lines.empty() && lines.back().time + latency < time )
-		{
-			lines.pop_back();
-		}
+        while ( !lines.empty() && lines.back().time + latency < time ) {
+            lines.pop_back();
+        }
 
-		while ( HasChildNodes() && atoi( GetFirstChild()->GetId().CString() ) + latency < time )
-		{
-			RemoveChild( GetFirstChild() );
-			numLines--;
-		}
+        while ( HasChildNodes() && atoi ( GetFirstChild()->GetId().CString() ) + latency < time ) {
+            RemoveChild ( GetFirstChild() );
+            numLines--;
+        }
 
-		if ( !lines.empty() && lines.front().time > lastTime )
-		{
-			int line = 0;
+        if ( !lines.empty() && lines.front().time > lastTime ) {
+            int line = 0;
 
-			lastTime = lines[ line ].time;
+            lastTime = lines[ line ].time;
 
-			// Find out how many lines
-			while ( line < lines.size() && lines[ line ].time >= lastTime )
-			{
-				line++;
-			}
+            // Find out how many lines
+            while ( line < lines.size() && lines[ line ].time >= lastTime ) {
+                line++;
+            }
 
-			// Each line gets its own span element
-			for (line = line - 1; line >= 0; --line, numLines++ )
-			{
-				Rocket::Core::Element *child = Rocket::Core::Factory::InstanceElement( this, "#text", "span", Rocket::Core::XMLAttributes() );
-				Rocket::Core::Factory::InstanceElementText( child, Rocket_QuakeToRML( lines[ line ].text.CString(), RP_EMOTICONS ));
-				child->SetId( va( "%d", lines[ line ].time ) );
-				AppendChild( child );
-				child->RemoveReference();
-			}
-		}
+            // Each line gets its own span element
+            for ( line = line - 1; line >= 0; --line, numLines++ ) {
+                Rocket::Core::Element *child = Rocket::Core::Factory::InstanceElement ( this, "#text", "span", Rocket::Core::XMLAttributes() );
+                Rocket::Core::Factory::InstanceElementText ( child, Rocket_QuakeToRML ( lines[ line ].text.CString(), RP_EMOTICONS ) );
+                child->SetId ( va ( "%d", lines[ line ].time ) );
+                AppendChild ( child );
+                child->RemoveReference();
+            }
+        }
 
-		// Calculate max lines when we have a child element with a fontface
-		if ( dirty_height && HasChildNodes() )
-		{
-			const Rocket::Core::FontFaceHandle *font = GetFirstChild()->GetFontFaceHandle();
-			if ( font )
-			{
-				maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( font->GetBaseline() + font->GetLineHeight() ) );
+        // Calculate max lines when we have a child element with a fontface
+        if ( dirty_height && HasChildNodes() ) {
+            const Rocket::Core::FontFaceHandle *font = GetFirstChild()->GetFontFaceHandle();
+            if ( font ) {
+                maxLines = floor ( GetProperty ( "height" )->value.Get<float>() / ( font->GetBaseline() + font->GetLineHeight() ) );
 
-				if ( maxLines <= 0 )
-				{
-					maxLines = 4; // conservatively low number
-				}
+                if ( maxLines <= 0 ) {
+                    maxLines = 4; // conservatively low number
+                }
 
-				dirty_height = false;
-			}
-		}
+                dirty_height = false;
+            }
+        }
 
-		while ( maxLines < numLines )
-		{
-			RemoveChild( GetFirstChild() );
-			numLines--;
-		}
+        while ( maxLines < numLines ) {
+            RemoveChild ( GetFirstChild() );
+            numLines--;
+        }
 
-		Rocket::Core::Element::OnUpdate();
-	}
+        Rocket::Core::Element::OnUpdate();
+    }
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList &changed_properties )
-	{
-		if ( changed_properties.find( "height" ) != changed_properties.end() )
-		{
-			int fontPt = GetProperty<int>( "font-size" );
-			maxLines = GetProperty<int>("height") / ( fontPt > 0 ? fontPt : 1 );
-		}
-	}
+    void OnPropertyChange ( const Rocket::Core::PropertyNameList &changed_properties ) {
+        if ( changed_properties.find ( "height" ) != changed_properties.end() ) {
+            int fontPt = GetProperty<int> ( "font-size" );
+            maxLines = GetProperty<int> ( "height" ) / ( fontPt > 0 ? fontPt : 1 );
+        }
+    }
 
 
-	static std::deque<ConsoleLine> lines;
+    static std::deque<ConsoleLine> lines;
 private:
-	int numLines;
-	int maxLines;
-	int lastTime;
-	bool dirty_height;
+    int numLines;
+    int maxLines;
+    int lastTime;
+    bool dirty_height;
 };
 #endif
 

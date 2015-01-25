@@ -32,40 +32,41 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AUDIO_DATA_H
 #include <memory>
 
-namespace Audio {
+namespace Audio
+{
 
 struct AudioData {
-	AudioData()
-	    : sampleRate{0}
-	    , byteDepth{0}
-	    , numberOfChannels{0}
-	    , size{0}
-	    , rawSamples{nullptr}
-	{}
+    AudioData()
+        : sampleRate {0}
+    , byteDepth {0}
+    , numberOfChannels {0}
+    , size {0}
+    , rawSamples {nullptr}
+    {}
 
-	AudioData(int sampleRate, int byteDepth, int numberOfChannels, int size, const char* rawSamples)
-	    : sampleRate{sampleRate}
-	    , byteDepth{byteDepth}
-	    , numberOfChannels{numberOfChannels}
-	    , size{size}
-	    , rawSamples{rawSamples}
-	{}
+    AudioData ( int sampleRate, int byteDepth, int numberOfChannels, int size, const char* rawSamples )
+        : sampleRate {sampleRate}
+    , byteDepth {byteDepth}
+    , numberOfChannels {numberOfChannels}
+    , size {size}
+    , rawSamples {rawSamples}
+    {}
 
-	AudioData(AudioData&& that)
-	    : sampleRate{that.sampleRate}
-	    , byteDepth{that.byteDepth}
-	    , numberOfChannels{that.numberOfChannels}
-	    , size{that.size}
-	    , rawSamples{std::move(that.rawSamples)}
-	{}
+    AudioData ( AudioData&& that )
+        : sampleRate {that.sampleRate}
+    , byteDepth {that.byteDepth}
+    , numberOfChannels {that.numberOfChannels}
+    , size {that.size}
+    , rawSamples {std::move ( that.rawSamples ) }
+    {}
 
-	AudioData(const AudioData& that) = delete;
+    AudioData ( const AudioData& that ) = delete;
 
-	const int sampleRate;
-	const int byteDepth;
-	const int numberOfChannels;
-	const int size;
-	std::unique_ptr<const char[]> rawSamples;
+    const int sampleRate;
+    const int byteDepth;
+    const int numberOfChannels;
+    const int size;
+    std::unique_ptr<const char[]> rawSamples;
 };
 } // namespace Audio
 #endif

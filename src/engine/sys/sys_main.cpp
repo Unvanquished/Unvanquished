@@ -180,15 +180,52 @@ int Sys_GetProcessorFeatures( void )
 {
 	int features = 0;
 #ifdef BUILD_CLIENT
-	if( SDL_HasRDTSC( ) ) features |= CF_RDTSC;
-	if( SDL_HasMMX( ) ) features |= CF_MMX;
-	if( SDL_Has3DNow( ) ) features |= CF_3DNOW;
-	if( SDL_HasSSE( ) ) features |= CF_SSE;
-	if( SDL_HasSSE2( ) ) features |= CF_SSE2;
-	if( SDL_HasSSE3( ) ) features |= CF_SSE3;
-	if( SDL_HasSSE41( ) ) features |= CF_SSE4_1;
-	if( SDL_HasSSE42( ) ) features |= CF_SSE4_2;
-	if( SDL_HasAltiVec( ) ) features |= CF_ALTIVEC;
+
+	if ( SDL_HasRDTSC( ) )
+	{
+		features |= CF_RDTSC;
+	}
+
+	if ( SDL_HasMMX( ) )
+	{
+		features |= CF_MMX;
+	}
+
+	if ( SDL_Has3DNow( ) )
+	{
+		features |= CF_3DNOW;
+	}
+
+	if ( SDL_HasSSE( ) )
+	{
+		features |= CF_SSE;
+	}
+
+	if ( SDL_HasSSE2( ) )
+	{
+		features |= CF_SSE2;
+	}
+
+	if ( SDL_HasSSE3( ) )
+	{
+		features |= CF_SSE3;
+	}
+
+	if ( SDL_HasSSE41( ) )
+	{
+		features |= CF_SSE4_1;
+	}
+
+	if ( SDL_HasSSE42( ) )
+	{
+		features |= CF_SSE4_2;
+	}
+
+	if ( SDL_HasAltiVec( ) )
+	{
+		features |= CF_ALTIVEC;
+	}
+
 #endif
 	return features;
 }
@@ -220,8 +257,10 @@ void Sys_AnsiColorPrint( const char *msg )
 	// Approximations of g_color_table (q_math.c)
 #define A_BOLD 16
 #define A_DIM  32
-	static const char colour16map[2][32] = {
-		{ // Variant 1 (xterm)
+	static const char colour16map[2][32] =
+	{
+		{
+			// Variant 1 (xterm)
 			0 | A_BOLD, 1,          2,          3,
 			4,          6,          5,          7,
 			3 | A_DIM,  7 | A_DIM,  7 | A_DIM,  7 | A_DIM,
@@ -231,7 +270,8 @@ void Sys_AnsiColorPrint( const char *msg )
 			2 | A_DIM,  1,          1 | A_DIM,  3 | A_DIM,
 			3 | A_DIM,  2 | A_DIM,  5,          3 | A_BOLD
 		},
-		{ // Variant 1 (vte)
+		{
+			// Variant 1 (vte)
 			0 | A_BOLD, 1,          2,          3 | A_BOLD,
 			4,          6,          5,          7,
 			3        ,  7 | A_DIM,  7 | A_DIM,  7 | A_DIM,
@@ -272,11 +312,11 @@ void Sys_AnsiColorPrint( const char *msg )
 			else
 			{
 				// Print the color code
-				int colour = colour16map[ index ][ ( msg[ 1 ] - '0' ) & 31 ];
+				int colour = colour16map[ index ][( msg[ 1 ] - '0' ) & 31 ];
 
 				Com_sprintf( buffer, sizeof( buffer ), "\033[%s%d%sm",
-				             (colour & 0x30) == 0 ? "0;" : "",
-				             30 + ( colour & 15 ), modifier[ ( colour / 16 ) & 3 ] );
+				             ( colour & 0x30 ) == 0 ? "0;" : "",
+				             30 + ( colour & 15 ), modifier[( colour / 16 ) & 3 ] );
 				fputs( buffer, stderr );
 				msg += 2;
 			}
@@ -323,7 +363,7 @@ void Sys_Print( const char *msg )
 Sys_Error
 =================
 */
-void PRINTF_LIKE(1) NORETURN Sys_Error( const char *error, ... )
+void PRINTF_LIKE( 1 ) NORETURN Sys_Error( const char *error, ... )
 {
 	va_list argptr;
 	char    string[ 1024 ];
@@ -417,6 +457,7 @@ void *QDECL Sys_LoadDll( const char *name,
 	if ( !*entryPoint || !dllEntry )
 	{
 #ifndef NDEBUG
+
 		if ( !dllEntry )
 		{
 			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%s\" !", name, Sys_LibraryError() );
@@ -425,7 +466,9 @@ void *QDECL Sys_LoadDll( const char *name,
 		{
 			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%s\" !", name, Sys_LibraryError() );
 		}
+
 #else
+
 		if ( !dllEntry )
 		{
 			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%p\" !\n", name, Sys_LibraryError() );
@@ -434,6 +477,7 @@ void *QDECL Sys_LoadDll( const char *name,
 		{
 			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%p\" !\n", name, Sys_LibraryError() );
 		}
+
 #endif
 		Sys_UnloadLibrary( libHandle );
 		return NULL;
@@ -457,7 +501,7 @@ void Sys_ParseArgs( int argc, char **argv )
 	if ( argc == 2 )
 	{
 		if ( !strcmp( argv[ 1 ], "--version" ) ||
-		     !strcmp( argv[ 1 ], "-v" ) )
+		        !strcmp( argv[ 1 ], "-v" ) )
 		{
 			const char *date = __DATE__;
 #ifdef BUILD_SERVER
@@ -500,7 +544,7 @@ void NORETURN Sys_SigHandler( int signal )
 	fprintf( stderr, "Received signal %d\n", signal );
 	CON_LogDump();
 
-	exit ( ( signal == -SIGTERM || signal == -SIGINT ) ? 1 : 2 );
+	exit( ( signal == -SIGTERM || signal == -SIGINT ) ? 1 : 2 );
 }
 
 /*
@@ -564,12 +608,12 @@ int ALIGN_STACK main( int argc, char **argv )
 #       endif
 
 #define MINSDL_VERSION \
-  XSTRING(MINSDL_MAJOR) "." \
-  XSTRING(MINSDL_MINOR) "." \
-  XSTRING(MINSDL_PATCH)
+	XSTRING(MINSDL_MAJOR) "." \
+	XSTRING(MINSDL_MINOR) "." \
+	XSTRING(MINSDL_PATCH)
 
 	if ( SDL_VERSIONNUM( ver.major, ver.minor, ver.patch ) <
-	     SDL_VERSIONNUM( MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH ) )
+	        SDL_VERSIONNUM( MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH ) )
 	{
 		Sys_Dialog( DT_ERROR, va( "SDL version " MINSDL_VERSION " or greater is required, "
 		                          "but only version %d.%d.%d was found. You may be able to obtain a more recent copy "
@@ -594,10 +638,11 @@ int ALIGN_STACK main( int argc, char **argv )
 		Q_strncpyz( locale, setlocale( LC_CTYPE, NULL ), sizeof( locale ) - 6 );
 
 		// Remove any existing encoding info then set to UTF-8
-		if ( ( dot = strchr( locale, '.') ) )
+		if ( ( dot = strchr( locale, '.' ) ) )
 		{
 			*dot = 0;
 		}
+
 		strcat( locale, ".UTF-8" );
 
 		// try current language but with UTF-8, falling back on C.UTF-8
@@ -618,7 +663,7 @@ int ALIGN_STACK main( int argc, char **argv )
 	curses = qfalse;
 #endif
 
- 	// Concatenate the command line for passing to Com_Init
+	// Concatenate the command line for passing to Com_Init
 	for ( i = 1; i < argc; i++ )
 	{
 

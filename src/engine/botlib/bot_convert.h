@@ -38,103 +38,94 @@ Maryland 20850 USA.
 #include "bot_types.h"
 
 //coordinate conversion
-static inline void quake2recast( float vec[ 3 ] )
+static inline void quake2recast ( float vec[ 3 ] )
 {
-	float temp = vec[1];
-	vec[1] = vec[2];
-	vec[2] = temp;
+    float temp = vec[1];
+    vec[1] = vec[2];
+    vec[2] = temp;
 }
 
-static inline void recast2quake( float vec[ 3 ] )
+static inline void recast2quake ( float vec[ 3 ] )
 {
-	float temp = vec[1];
-	vec[1] = vec[2];
-	vec[2] = temp;
+    float temp = vec[1];
+    vec[1] = vec[2];
+    vec[2] = temp;
 }
 
 class rVec;
 class qVec
 {
-	float v[ 3 ];
+    float v[ 3 ];
 
 public:
-	qVec( ) { }
-	qVec( float x, float y, float z );
-	qVec( const float vec[ 3 ] );
-	qVec( rVec vec );
+    qVec( ) { }
+    qVec ( float x, float y, float z );
+    qVec ( const float vec[ 3 ] );
+    qVec ( rVec vec );
 
-	inline float &operator[]( int i )
-	{
-		return v[ i ];
-	}
+    inline float &operator[] ( int i ) {
+        return v[ i ];
+    }
 
-	inline operator const float*() const
-	{
-		return v;
-	}
+    inline operator const float*() const {
+        return v;
+    }
 
-	inline operator float*()
-	{
-		return v;
-	}
+    inline operator float*() {
+        return v;
+    }
 };
 
 class rVec
 {
-	float v[ 3 ];
+    float v[ 3 ];
 public:
-	rVec() { }
-	rVec( float x, float y, float z );
-	rVec( const float vec[ 3 ] );
-	rVec( qVec vec );
+    rVec() { }
+    rVec ( float x, float y, float z );
+    rVec ( const float vec[ 3 ] );
+    rVec ( qVec vec );
 
-	inline float &operator[]( int i )
-	{
-		return v[ i ];
-	}
-	
-	inline operator const float*() const
-	{
-		return v;
-	}
+    inline float &operator[] ( int i ) {
+        return v[ i ];
+    }
 
-	inline operator float*()
-	{
-		return v;
-	}
+    inline operator const float*() const {
+        return v;
+    }
+
+    inline operator float*() {
+        return v;
+    }
 };
 
 class rBounds
 {
 public:
-	rVec mins, maxs;
+    rVec mins, maxs;
 
-	rBounds()
-	{
-		clear();
-	}
+    rBounds() {
+        clear();
+    }
 
-	rBounds( const rBounds &b )
-	{
-		mins = b.mins;
-		maxs = b.maxs;
-	}
+    rBounds ( const rBounds &b ) {
+        mins = b.mins;
+        maxs = b.maxs;
+    }
 
-	rBounds( qVec min, qVec max );
-	rBounds( const float min[ 3 ], const float max[ 3 ] );
+    rBounds ( qVec min, qVec max );
+    rBounds ( const float min[ 3 ], const float max[ 3 ] );
 
-	void addPoint( rVec p );
-	void clear();
+    void addPoint ( rVec p );
+    void clear();
 };
 
-struct botRouteTargetInternal
-{
-	botRouteTargetType_t type;
-	rVec pos;
-	rVec polyExtents;
+struct botRouteTargetInternal {
+    botRouteTargetType_t type;
+    rVec pos;
+    rVec polyExtents;
 
-	botRouteTargetInternal() { }
-	botRouteTargetInternal( const botRouteTarget_t &target );
+    botRouteTargetInternal() { }
+    botRouteTargetInternal ( const botRouteTarget_t &target );
 };
 
 #endif

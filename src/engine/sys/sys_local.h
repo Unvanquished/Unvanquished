@@ -46,35 +46,35 @@ Maryland 20850 USA.
 #endif
 
 // Input subsystem
-void         IN_Init( void *windowData );
-void         IN_Frame( void );
-void         IN_FrameEnd( void );
-void         IN_Shutdown( void );
-void         IN_Restart( void );
+void         IN_Init ( void *windowData );
+void         IN_Frame ( void );
+void         IN_FrameEnd ( void );
+void         IN_Shutdown ( void );
+void         IN_Restart ( void );
 
-void         IN_DropInputsForFrame( void );
+void         IN_DropInputsForFrame ( void );
 
-void        *IN_GetWindow( void );
+void        *IN_GetWindow ( void );
 
 // Curses Console
-void         CON_Shutdown( void );
-void         CON_Init( void );
-char         *CON_Input( void );
-void         CON_Print( const char *message );
+void         CON_Shutdown ( void );
+void         CON_Init ( void );
+char         *CON_Input ( void );
+void         CON_Print ( const char *message );
 
-void         CON_LogDump( void );
+void         CON_LogDump ( void );
 
 // Console - other
-unsigned int CON_LogSize( void );
-unsigned int CON_LogWrite( const char *in );
-unsigned int CON_LogRead( char *out, unsigned int outSize );
+unsigned int CON_LogSize ( void );
+unsigned int CON_LogWrite ( const char *in );
+unsigned int CON_LogRead ( char *out, unsigned int outSize );
 
-void     Sys_PlatformInit( void );
-void     Sys_PlatformExit( void );
-void NORETURN Sys_SigHandler( int signal );
-void     Sys_ErrorDialog( const char *error );
-void     Sys_AnsiColorPrint( const char *msg );
+void     Sys_PlatformInit ( void );
+void     Sys_PlatformExit ( void );
+void NORETURN Sys_SigHandler ( int signal );
+void     Sys_ErrorDialog ( const char *error );
+void     Sys_AnsiColorPrint ( const char *msg );
 
-int      Sys_GetPID( void );
+int      Sys_GetPID ( void );
 
-void     Sys_HelpText( const char * );
+void     Sys_HelpText ( const char * );

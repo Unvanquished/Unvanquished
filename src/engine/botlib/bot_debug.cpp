@@ -39,27 +39,27 @@ Maryland 20850 USA.
 #include "bot_debug.h"
 #include "bot_navdraw.h"
 
-void DebugDrawQuake::init(BotDebugInterface_t *ref)
+void DebugDrawQuake::init( BotDebugInterface_t *ref )
 {
 	re = ref;
 }
 
-void DebugDrawQuake::depthMask(bool state)
+void DebugDrawQuake::depthMask( bool state )
 {
-	re->DebugDrawDepthMask( ( qboolean ) ( int ) state );
+	re->DebugDrawDepthMask( ( qboolean )( int ) state );
 }
 
-void DebugDrawQuake::begin(duDebugDrawPrimitives prim, float s)
+void DebugDrawQuake::begin( duDebugDrawPrimitives prim, float s )
 {
 	re->DebugDrawBegin( ( debugDrawMode_t ) prim, s );
 }
 
-void DebugDrawQuake::vertex(const float* pos, unsigned int c)
+void DebugDrawQuake::vertex( const float* pos, unsigned int c )
 {
 	vertex( pos, c, NULL );
 }
 
-void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color)
+void DebugDrawQuake::vertex( const float x, const float y, const float z, unsigned int color )
 {
 	vec3_t vert;
 	VectorSet( vert, x, y, z );
@@ -67,7 +67,7 @@ void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigne
 	re->DebugDrawVertex( vert, color, NULL );
 }
 
-void DebugDrawQuake::vertex(const float *pos, unsigned int color, const float* uv)
+void DebugDrawQuake::vertex( const float *pos, unsigned int color, const float* uv )
 {
 	vec3_t vert;
 	VectorCopy( pos, vert );
@@ -75,7 +75,7 @@ void DebugDrawQuake::vertex(const float *pos, unsigned int color, const float* u
 	re->DebugDrawVertex( vert, color, uv );
 }
 
-void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v)
+void DebugDrawQuake::vertex( const float x, const float y, const float z, unsigned int color, const float u, const float v )
 {
 	vec3_t vert;
 	vec2_t uv;

@@ -102,7 +102,7 @@ void target_push_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_target_push( gentity_t *self )
 {
-	if ( !self->config.speed)
+	if ( !self->config.speed )
 	{
 		self->config.speed = 1000;
 	}
@@ -135,15 +135,19 @@ void target_teleporter_act( gentity_t *self, gentity_t *other, gentity_t *activa
 	dest = G_PickRandomTargetFor( self );
 
 	if ( !dest )
+	{
 		return;
+	}
 
 	G_TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->config.speed );
 }
 
 void SP_target_teleporter( gentity_t *self )
 {
-	if( !self->config.speed )
+	if ( !self->config.speed )
+	{
 		self->config.speed = 400;
+	}
 
 	self->act = target_teleporter_act;
 }
@@ -168,7 +172,7 @@ void target_hurt_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_target_hurt( gentity_t *self )
 {
-	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 5);
+	G_ResetIntField( &self->damage, qtrue, self->config.damage, self->eclass->config.damage, 5 );
 	self->act = target_hurt_act;
 }
 

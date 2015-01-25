@@ -50,7 +50,7 @@ R_CalcFaceNormal
 =============
 */
 void R_CalcFaceNormal( vec3_t normal,
-		       const vec3_t v0, const vec3_t v1, const vec3_t v2 )
+                       const vec3_t v0, const vec3_t v1, const vec3_t v2 )
 {
 	vec3_t u, v;
 
@@ -69,8 +69,8 @@ R_CalcTangents
 =============
 */
 void R_CalcTangents( vec3_t tangent, vec3_t binormal,
-		     const vec3_t v0, const vec3_t v1, const vec3_t v2,
-		     const vec2_t t0, const vec2_t t1, const vec2_t t2 )
+                     const vec3_t v0, const vec3_t v1, const vec3_t v2,
+                     const vec2_t t0, const vec2_t t1, const vec2_t t2 )
 {
 	vec3_t dpx, dpy;
 	vec2_t dtx, dty;
@@ -93,8 +93,8 @@ void R_CalcTangents( vec3_t tangent, vec3_t binormal,
 }
 
 void R_CalcTangents( vec3_t tangent, vec3_t binormal,
-		     const vec3_t v0, const vec3_t v1, const vec3_t v2,
-		     const i16vec2_t t0, const i16vec2_t t1, const i16vec2_t t2 )
+                     const vec3_t v0, const vec3_t v1, const vec3_t v2,
+                     const i16vec2_t t0, const i16vec2_t t1, const i16vec2_t t2 )
 {
 	vec3_t cp, u, v;
 	vec2_t t0f, t1f, t2f;
@@ -144,7 +144,7 @@ void R_CalcTangents( vec3_t tangent, vec3_t binormal,
 
 
 void R_QtangentsToTBN( const i16vec4_t qtangent, vec3_t tangent,
-		       vec3_t binormal, vec3_t normal )
+                       vec3_t binormal, vec3_t normal )
 {
 	vec4_t quat;
 	const vec3_t x = { 1.0f, 0.0f, 0.0f };
@@ -156,13 +156,14 @@ void R_QtangentsToTBN( const i16vec4_t qtangent, vec3_t tangent,
 	QuatTransformVector( quat, y, binormal );
 	QuatTransformVector( quat, z, normal );
 
-	if( quat[ 3 ] < 0.0f ) {
+	if ( quat[ 3 ] < 0.0f )
+	{
 		VectorNegate( tangent, tangent );
 	}
 }
 
 void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
-		       const vec3_t normal, i16vec4_t qtangent )
+                       const vec3_t normal, i16vec4_t qtangent )
 {
 	vec3_t tangent2, binormal2, normal2;
 	vec4_t q;
@@ -172,45 +173,63 @@ void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
 
 	// orthogonalize the input vectors
 	// preserve normal vector as precise as possible
-	if( VectorLengthSquared( normal ) < 0.001f ) {
+	if ( VectorLengthSquared( normal ) < 0.001f )
+	{
 		// degenerate case, compute new normal
 		CrossProduct( tangent, binormal, normal2 );
 		VectorNormalizeFast( normal2 );
-	} else {
+	}
+	else
+	{
 		VectorCopy( normal, normal2 );
 	}
 
 	// project tangent and binormal onto the normal orthogonal plane
-	VectorMA(tangent, -DotProduct(normal2, tangent), normal2, tangent2 );
-	VectorMA(binormal, -DotProduct(normal2, binormal), normal2, binormal2 );
+	VectorMA( tangent, -DotProduct( normal2, tangent ), normal2, tangent2 );
+	VectorMA( binormal, -DotProduct( normal2, binormal ), normal2, binormal2 );
 
 	// check for several degenerate cases
-	if( VectorLengthSquared( tangent2 ) < 0.001f ) {
-		if( VectorLengthSquared( binormal2 ) < 0.001f ) {
+	if ( VectorLengthSquared( tangent2 ) < 0.001f )
+	{
+		if ( VectorLengthSquared( binormal2 ) < 0.001f )
+		{
 			PerpendicularVector( tangent2, normal2 );
 			CrossProduct( normal2, tangent2, binormal2 );
-		} else {
+		}
+		else
+		{
 			VectorNormalizeFast( binormal2 );
 			CrossProduct( binormal2, normal2, tangent2 );
 		}
-	} else {
+	}
+	else
+	{
 		VectorNormalizeFast( tangent2 );
-		if( VectorLengthSquared( binormal2 ) < 0.001f ) {
+
+		if ( VectorLengthSquared( binormal2 ) < 0.001f )
+		{
 			CrossProduct( normal2, tangent2, binormal2 );
-		} else {
+		}
+		else
+		{
 			// compute mid vector and project into mid-orthogonal plane
 			VectorNormalizeFast( binormal2 );
 			VectorAdd( tangent2, binormal2, mid );
-			if( VectorLengthSquared( mid ) < 0.001f ) {
+
+			if ( VectorLengthSquared( mid ) < 0.001f )
+			{
 				CrossProduct( binormal2, normal2, mid );
-			} else {
+			}
+			else
+			{
 				VectorNormalizeFast( mid );
 			}
 
-			VectorMA(tangent2, -DotProduct(mid, tangent2), mid, tangent3 );
-			VectorMA(binormal2, -DotProduct(mid, binormal2), mid, binormal3 );
-			
-			if( VectorLengthSquared( tangent3 ) < 0.001f ) {
+			VectorMA( tangent2, -DotProduct( mid, tangent2 ), mid, tangent3 );
+			VectorMA( binormal2, -DotProduct( mid, binormal2 ), mid, binormal3 );
+
+			if ( VectorLengthSquared( tangent3 ) < 0.001f )
+			{
 				CrossProduct( mid, normal2, tangent3 );
 				VectorNegate( tangent3, binormal3 );
 			}
@@ -236,7 +255,9 @@ void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
 	// check of orientation
 	CrossProduct( binormal2, normal2, tangent3 );
 	dot = DotProduct( tangent2, tangent3 );
-	if( dot < 0.0f ) {
+
+	if ( dot < 0.0f )
+	{
 		flipped = qtrue;
 		VectorNegate( tangent2, tangent2 );
 	}
@@ -285,7 +306,8 @@ void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
 		q[ 1 ] = ( binormal2[ 2 ] + normal2  [ 1 ] ) * scale;
 	}
 
-	if( q[ 3 ] < 0.0f ) {
+	if ( q[ 3 ] < 0.0f )
+	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
@@ -294,23 +316,30 @@ void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
 
 	floatToSnorm16( q, qtangent );
 
-	if( qtangent[ 3 ] == 0 ) {
+	if ( qtangent[ 3 ] == 0 )
+	{
 		qtangent[ 3 ] = 1;
-	} 
-	if( flipped ) {
+	}
+
+	if ( flipped )
+	{
 		qtangent[ 0 ] = -qtangent[ 0 ];
 		qtangent[ 1 ] = -qtangent[ 1 ];
 		qtangent[ 2 ] = -qtangent[ 2 ];
 		qtangent[ 3 ] = -qtangent[ 3 ];
 	}
 
-	if (0) {
+	if ( 0 )
+	{
 		vec3_t T, B, N;
 		R_QtangentsToTBN( qtangent, T, B, N );
 		assert( Distance( N, normal2 ) < 0.01f );
-		if( flipped ) {
+
+		if ( flipped )
+		{
 			VectorNegate( T, T );
 		}
+
 		assert( Distance( T, tangent2 ) < 0.01f );
 		assert( Distance( B, binormal2 ) < 0.01f );
 	}
@@ -832,6 +861,7 @@ static void SetFarClip( void )
 {
 	float farthestCornerDistance;
 	int   i;
+
 	// if not rendering the world (icons, menus, etc)
 	// set a 2k far clip plane
 	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL )
@@ -1249,7 +1279,7 @@ Returns qtrue if it should be mirrored
 =================
 */
 static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *surface, orientation_t *camera, vec3_t pvsOrigin,
-    qboolean *mirror )
+        qboolean *mirror )
 {
 	int           i;
 	cplane_t      originalPlane, plane;
@@ -1533,7 +1563,7 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 		}
 
 		R_QtangentsToTBN( tess.verts[ tess.indexes[ i ] ].qtangents,
-				  qtangent, qbinormal, qnormal );
+		                  qtangent, qbinormal, qnormal );
 
 		if ( ( dot = DotProduct( normal, qnormal ) ) >= 0 )
 		{
@@ -1743,9 +1773,10 @@ static void R_SortDrawSurfs( void )
 	}
 
 	std::sort( tr.viewParms.drawSurfs, tr.viewParms.drawSurfs + tr.viewParms.numDrawSurfs,
-	           []( const drawSurf_t &a, const drawSurf_t &b ) {
-	               return a.sort < b.sort;
-	           } );
+	           []( const drawSurf_t & a, const drawSurf_t & b )
+	{
+		return a.sort < b.sort;
+	} );
 
 	// check for any pass through drawing, which
 	// may cause another view to be rendered first
@@ -1909,20 +1940,23 @@ void R_AddEntityInteractions( trRefLight_t *light )
 		iaType = IA_DEFAULT;
 
 		if ( r_shadows->integer <= SHADOWING_BLOB ||
-		     light->l.noShadows ) {
-			iaType = (interactionType_t) (iaType & (~IA_SHADOW));
-		}
-		if ( light->restrictInteractionFirst >= 0 &&
-		     ( i < light->restrictInteractionFirst ||
-		       i > light->restrictInteractionLast ) ) {
-			iaType = (interactionType_t) (iaType & (~IA_SHADOW));
+		        light->l.noShadows )
+		{
+			iaType = ( interactionType_t )( iaType & ( ~IA_SHADOW ) );
 		}
 
 		if ( light->restrictInteractionFirst >= 0 &&
-		     i >= light->restrictInteractionFirst &&
-		     i <= light->restrictInteractionLast )
+		        ( i < light->restrictInteractionFirst ||
+		          i > light->restrictInteractionLast ) )
 		{
-			iaType = (interactionType_t) (iaType & ~IA_LIGHT);
+			iaType = ( interactionType_t )( iaType & ( ~IA_SHADOW ) );
+		}
+
+		if ( light->restrictInteractionFirst >= 0 &&
+		        i >= light->restrictInteractionFirst &&
+		        i <= light->restrictInteractionLast )
+		{
+			iaType = ( interactionType_t )( iaType & ~IA_LIGHT );
 		}
 
 		ent = tr.currentEntity = &tr.refdef.entities[ i ];
@@ -1992,18 +2026,23 @@ R_TransformShadowLight
 check if OMNI shadow light can be turned into PROJ for better shadow map quality
 =============
 */
-void R_TransformShadowLight( trRefLight_t *light ) {
+void R_TransformShadowLight( trRefLight_t *light )
+{
 	int    i;
 	vec3_t mins, maxs, mids;
 	vec3_t forward, right, up;
 	float  radius, dist;
 
-	if( !light->l.inverseShadows || light->l.rlType != RL_OMNI ||
-	    light->restrictInteractionFirst < 0 )
+	if ( !light->l.inverseShadows || light->l.rlType != RL_OMNI ||
+	        light->restrictInteractionFirst < 0 )
+	{
 		return;
+	}
 
 	ClearBounds( mins, maxs );
-	for( i = light->restrictInteractionFirst; i <= light->restrictInteractionLast; i++ ) {
+
+	for ( i = light->restrictInteractionFirst; i <= light->restrictInteractionLast; i++ )
+	{
 		trRefEntity_t *ent = &tr.refdef.entities[ i ];
 
 		AddPointToBounds( ent->worldBounds[0], mins, maxs );
@@ -2165,7 +2204,7 @@ void R_AddLightInteractions( void )
 
 			// ignore if not in visible bounds
 			if ( !BoundsIntersect
-			     ( light->worldBounds[ 0 ], light->worldBounds[ 1 ], tr.viewParms.visBounds[ 0 ], tr.viewParms.visBounds[ 1 ] ) )
+			        ( light->worldBounds[ 0 ], light->worldBounds[ 1 ], tr.viewParms.visBounds[ 0 ], tr.viewParms.visBounds[ 1 ] ) )
 			{
 				light->cull = CULL_OUT;
 				continue;

@@ -42,137 +42,128 @@ Maryland 20850 USA.
 class SelectableDataGrid : public Rocket::Controls::ElementDataGrid
 {
 public:
-	SelectableDataGrid( const Rocket::Core::String& tag ) :
-		Rocket::Controls::ElementDataGrid(tag), lastSelectedRow( NULL ), lastSelectedRowIndex( -1 )
-	{
-		SetProperty( "selected-row", "-1" );
-	}
+    SelectableDataGrid ( const Rocket::Core::String& tag ) :
+        Rocket::Controls::ElementDataGrid ( tag ), lastSelectedRow ( NULL ), lastSelectedRowIndex ( -1 ) {
+        SetProperty ( "selected-row", "-1" );
+    }
 
-	~SelectableDataGrid()
-	{
-		if( lastSelectedRow != NULL ) {
-			lastSelectedRow->SetPseudoClass( "selected", false );
-			lastSelectedRow->RemoveReference();
-		}
-	}
+    ~SelectableDataGrid() {
+        if ( lastSelectedRow != NULL ) {
+            lastSelectedRow->SetPseudoClass ( "selected", false );
+            lastSelectedRow->RemoveReference();
+        }
+    }
 
-	/// Called for every event sent to this element or one of its descendants.
-	/// @param[in] event The event to process.
-	void ProcessEvent( Rocket::Core::Event& evt )
-	{
-		extern std::queue< RocketEvent_t* > eventQueue;
-		Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String>( "source", "" );
+    /// Called for every event sent to this element or one of its descendants.
+    /// @param[in] event The event to process.
+    void ProcessEvent ( Rocket::Core::Event& evt ) {
+        extern std::queue< RocketEvent_t* > eventQueue;
+        Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String> ( "source", "" );
 
-		ElementDataGrid::ProcessEvent( evt );
+        ElementDataGrid::ProcessEvent ( evt );
 
-		if( evt == "click" || evt == "dblclick" )
-		{
-			Element* elem;
-			int column = -1;
-			Rocket::Core::String dsName = dataSource.Substring( 0, dataSource.Find( "." ) );
-			Rocket::Core::String tableName =  dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() );
+        if ( evt == "click" || evt == "dblclick" ) {
+            Element* elem;
+            int column = -1;
+            Rocket::Core::String dsName = dataSource.Substring ( 0, dataSource.Find ( "." ) );
+            Rocket::Core::String tableName =  dataSource.Substring ( dataSource.Find ( "." ) + 1, dataSource.Length() );
 
 
-			// get the column index
-			elem = evt.GetTargetElement();
-			while( elem && elem->GetTagName() != "datagridcell" && elem->GetTagName() != "datagridcolumn" ) {
-				elem = elem->GetParentNode();
-			}
-			if( elem ) {
-				// "datagridcolumn" points to just Element, so figure out the index by iterating
-				// FIXME: We could be little smarter with this and get the column definition here too
-				// and use colselect or colactivate events
-				if( elem->GetTagName() == "datagridcolumn" ) {
-					Rocket::Core::Element* child = elem->GetParentNode()->GetFirstChild();
-					column = 0;
-					while( child && child != elem ) {
-						child = child->GetNextSibling();
-						column++;
-					}
-				}
-				else {
-					column = static_cast<Rocket::Controls::ElementDataGridCell *>( elem )->GetColumn();
-				}
-			}
+            // get the column index
+            elem = evt.GetTargetElement();
+            while ( elem && elem->GetTagName() != "datagridcell" && elem->GetTagName() != "datagridcolumn" ) {
+                elem = elem->GetParentNode();
+            }
+            if ( elem ) {
+                // "datagridcolumn" points to just Element, so figure out the index by iterating
+                // FIXME: We could be little smarter with this and get the column definition here too
+                // and use colselect or colactivate events
+                if ( elem->GetTagName() == "datagridcolumn" ) {
+                    Rocket::Core::Element* child = elem->GetParentNode()->GetFirstChild();
+                    column = 0;
+                    while ( child && child != elem ) {
+                        child = child->GetNextSibling();
+                        column++;
+                    }
+                } else {
+                    column = static_cast<Rocket::Controls::ElementDataGridCell *> ( elem )->GetColumn();
+                }
+            }
 
-			// get the row element
-			elem = evt.GetTargetElement();
-			while( elem && elem->GetTagName() != "datagridrow" && elem->GetTagName() != "datagridheader" ) {
-				elem = elem->GetParentNode();
-			}
+            // get the row element
+            elem = evt.GetTargetElement();
+            while ( elem && elem->GetTagName() != "datagridrow" && elem->GetTagName() != "datagridheader" ) {
+                elem = elem->GetParentNode();
+            }
 
-			if( elem )
-			{
-				Rocket::Controls::ElementDataGridRow *row = dynamic_cast<Rocket::Controls::ElementDataGridRow*>( elem );
-				int index = row->GetTableRelativeIndex();
-				Rocket::Core::String indexStr( va( "%d", index ) );
+            if ( elem ) {
+                Rocket::Controls::ElementDataGridRow *row = dynamic_cast<Rocket::Controls::ElementDataGridRow*> ( elem );
+                int index = row->GetTableRelativeIndex();
+                Rocket::Core::String indexStr ( va ( "%d", index ) );
 
-				// this should never happen
-				if( index >= this->GetNumRows() )
-					return;
-				if( index >= 0 )
-				{
-					// deselect last selected row
-					if( lastSelectedRow != row )
-					{
-						if( lastSelectedRow ) {
-							lastSelectedRow->SetPseudoClass( "selected", false );
-							lastSelectedRow->RemoveReference();
-						}
-					}
+                // this should never happen
+                if ( index >= this->GetNumRows() ) {
+                    return;
+                }
+                if ( index >= 0 ) {
+                    // deselect last selected row
+                    if ( lastSelectedRow != row ) {
+                        if ( lastSelectedRow ) {
+                            lastSelectedRow->SetPseudoClass ( "selected", false );
+                            lastSelectedRow->RemoveReference();
+                        }
+                    }
 
-					// select clicked row
-					lastSelectedRow = row;
-					lastSelectedRowIndex = index;
+                    // select clicked row
+                    lastSelectedRow = row;
+                    lastSelectedRowIndex = index;
 
-					this->SetProperty( "selected-row", indexStr );
+                    this->SetProperty ( "selected-row", indexStr );
 
-					row->SetPseudoClass( "selected", true );
-					row->AddReference();
+                    row->SetPseudoClass ( "selected", true );
+                    row->AddReference();
 
 
 
-					eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "setDS %s %s %d", dsName.CString(),tableName.CString(), index ) ) ) );
-				}
+                    eventQueue.push ( new RocketEvent_t ( Rocket::Core::String ( va ( "setDS %s %s %d", dsName.CString(),tableName.CString(), index ) ) ) );
+                }
 
-				Rocket::Core::Dictionary parameters;
-				parameters.Set( "index", indexStr );
-				parameters.Set( "column_index", column );
-				parameters.Set( "datasource", dsName );
-				parameters.Set( "table", tableName );
+                Rocket::Core::Dictionary parameters;
+                parameters.Set ( "index", indexStr );
+                parameters.Set ( "column_index", column );
+                parameters.Set ( "datasource", dsName );
+                parameters.Set ( "table", tableName );
 
-				if( evt == "click" )
-					DispatchEvent( "rowselect", parameters );
-				else
-					DispatchEvent( "rowactivate", parameters );
-			}
+                if ( evt == "click" ) {
+                    DispatchEvent ( "rowselect", parameters );
+                } else {
+                    DispatchEvent ( "rowactivate", parameters );
+                }
+            }
 
-			if( evt == "dblclick" )
-			{
-				eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "execDS %s %s", dataSource.Substring( 0, dataSource.Find( "." ) ).CString(), tableName.CString() ) ) ) );
-			}
-		}
-		else if( evt == "rowremove" )
-		{
-			int numRowsRemoved = evt.GetParameter< int >("num_rows_removed", 0);
-			if( !numRowsRemoved ) {
-				return;
-			}
+            if ( evt == "dblclick" ) {
+                eventQueue.push ( new RocketEvent_t ( Rocket::Core::String ( va ( "execDS %s %s", dataSource.Substring ( 0, dataSource.Find ( "." ) ).CString(), tableName.CString() ) ) ) );
+            }
+        } else if ( evt == "rowremove" ) {
+            int numRowsRemoved = evt.GetParameter< int > ( "num_rows_removed", 0 );
+            if ( !numRowsRemoved ) {
+                return;
+            }
 
-			int firstRowRemoved = evt.GetParameter< int >("first_row_removed", 0);
-			if( lastSelectedRowIndex >= firstRowRemoved && lastSelectedRowIndex < firstRowRemoved + numRowsRemoved ) {
-				lastSelectedRow->RemoveReference();
-				lastSelectedRow = NULL;
+            int firstRowRemoved = evt.GetParameter< int > ( "first_row_removed", 0 );
+            if ( lastSelectedRowIndex >= firstRowRemoved && lastSelectedRowIndex < firstRowRemoved + numRowsRemoved ) {
+                lastSelectedRow->RemoveReference();
+                lastSelectedRow = NULL;
 
-				lastSelectedRowIndex = -1;
-				this->SetProperty( "selected-row", "-1" );
-			}
-		}
+                lastSelectedRowIndex = -1;
+                this->SetProperty ( "selected-row", "-1" );
+            }
+        }
 
-	}
+    }
 
 private:
-	Rocket::Core::Element *lastSelectedRow;
-	int lastSelectedRowIndex;
+    Rocket::Core::Element *lastSelectedRow;
+    int lastSelectedRowIndex;
 };
 #endif

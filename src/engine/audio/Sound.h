@@ -31,110 +31,116 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AUDIO_SOUND_H_
 #define AUDIO_SOUND_H_
 
-namespace Audio {
+namespace Audio
+{
 
-    class Emitter;
-    class Sound;
+class Emitter;
+class Sound;
 
-    void InitSounds();
-    void ShutdownSounds();
-    void UpdateSounds();
+void InitSounds();
+void ShutdownSounds();
+void UpdateSounds();
 
-    // The only way to add a sound, attaches the sound to the emitter, a higher priority means
-    // the sound will be less likely to be recycled to spawn a new sound.
-    void AddSound(std::shared_ptr<Emitter> emitter, std::shared_ptr<Sound> sound, int priority);
+// The only way to add a sound, attaches the sound to the emitter, a higher priority means
+// the sound will be less likely to be recycled to spawn a new sound.
+void AddSound ( std::shared_ptr<Emitter> emitter, std::shared_ptr<Sound> sound, int priority );
 
-    class Sample;
+class Sample;
 
-    namespace AL {
-        class Source;
-    }
+namespace AL
+{
+class Source;
+}
 
-    //TODO sound.mute
-    class Sound {
-        public:
-            Sound();
-            virtual ~Sound();
+//TODO sound.mute
+class Sound
+{
+public:
+    Sound();
+    virtual ~Sound();
 
-            void Play();
-            // Stop the source and marks the sound for deletion.
-            void Stop();
-            bool IsStopped();
+    void Play();
+    // Stop the source and marks the sound for deletion.
+    void Stop();
+    bool IsStopped();
 
-            // The is attenuated because of its inherent porperties and because of its position.
-            // Each attenuation can be set separately.
-            void SetPositionalGain(float gain);
-            void SetSoundGain(float gain);
-            float GetCurrentGain();
+    // The is attenuated because of its inherent porperties and because of its position.
+    // Each attenuation can be set separately.
+    void SetPositionalGain ( float gain );
+    void SetSoundGain ( float gain );
+    float GetCurrentGain();
 
-            void SetEmitter(std::shared_ptr<Emitter> emitter);
-            std::shared_ptr<Emitter> GetEmitter();
+    void SetEmitter ( std::shared_ptr<Emitter> emitter );
+    std::shared_ptr<Emitter> GetEmitter();
 
-            void AcquireSource(AL::Source& source);
-            AL::Source& GetSource();
+    void AcquireSource ( AL::Source& source );
+    AL::Source& GetSource();
 
-            // Used to setup a source for a specific kind of sound and to start the sound.
-            virtual void SetupSource(AL::Source& source) = 0;
-            void FinishSetup();
+    // Used to setup a source for a specific kind of sound and to start the sound.
+    virtual void SetupSource ( AL::Source& source ) = 0;
+    void FinishSetup();
 
-            void Update();
-            // Called each frame, after emitters have been updated.
-            virtual void InternalUpdate() = 0;
+    void Update();
+    // Called each frame, after emitters have been updated.
+    virtual void InternalUpdate() = 0;
 
-        private:
-            float positionalGain;
-            float soundGain;
-            float currentGain;
+private:
+    float positionalGain;
+    float soundGain;
+    float currentGain;
 
-            bool playing;
-            std::shared_ptr<Emitter> emitter;
-            AL::Source* source;
-    };
+    bool playing;
+    std::shared_ptr<Emitter> emitter;
+    AL::Source* source;
+};
 
-    // A sound that is played once.
-    class OneShotSound : public Sound {
-        public:
-            OneShotSound(std::shared_ptr<Sample> sample);
-            virtual ~OneShotSound();
+// A sound that is played once.
+class OneShotSound : public Sound
+{
+public:
+    OneShotSound ( std::shared_ptr<Sample> sample );
+    virtual ~OneShotSound();
 
-            virtual void SetupSource(AL::Source& source) OVERRIDE;
-            virtual void InternalUpdate() OVERRIDE;
+    virtual void SetupSource ( AL::Source& source ) OVERRIDE;
+    virtual void InternalUpdate() OVERRIDE;
 
-        private:
-            std::shared_ptr<Sample> sample;
-    };
+private:
+    std::shared_ptr<Sample> sample;
+};
 
-    // A looping sound
-    class LoopingSound : public Sound {
-        public:
-            LoopingSound(std::shared_ptr<Sample> loopingSample, std::shared_ptr<Sample> leadingSample = nullptr);
-            virtual ~LoopingSound();
+// A looping sound
+class LoopingSound : public Sound
+{
+public:
+    LoopingSound ( std::shared_ptr<Sample> loopingSample, std::shared_ptr<Sample> leadingSample = nullptr );
+    virtual ~LoopingSound();
 
-            void FadeOutAndDie();
+    void FadeOutAndDie();
 
-            virtual void SetupSource(AL::Source& source) OVERRIDE;
-            virtual void InternalUpdate() OVERRIDE;
+    virtual void SetupSource ( AL::Source& source ) OVERRIDE;
+    virtual void InternalUpdate() OVERRIDE;
 
-        private:
-            void SetupLoopingSound(AL::Source& source);
-            std::shared_ptr<Sample> loopingSample;
-            std::shared_ptr<Sample> leadingSample;
-            bool fadingOut;
-    };
+private:
+    void SetupLoopingSound ( AL::Source& source );
+    std::shared_ptr<Sample> loopingSample;
+    std::shared_ptr<Sample> leadingSample;
+    bool fadingOut;
+};
 
 
-    // Any sound that receives its data over time (such as VoIP)
-    class StreamingSound : public Sound {
-        public:
-            StreamingSound();
-            virtual ~StreamingSound();
+// Any sound that receives its data over time (such as VoIP)
+class StreamingSound : public Sound
+{
+public:
+    StreamingSound();
+    virtual ~StreamingSound();
 
-            virtual void SetupSource(AL::Source& source) OVERRIDE;
-            virtual void InternalUpdate() OVERRIDE;
+    virtual void SetupSource ( AL::Source& source ) OVERRIDE;
+    virtual void InternalUpdate() OVERRIDE;
 
-            void AppendBuffer(AL::Buffer buffer);
-            void SetGain(float gain);
-    };
+    void AppendBuffer ( AL::Buffer buffer );
+    void SetGain ( float gain );
+};
 
 }
 

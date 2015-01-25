@@ -46,6 +46,7 @@ void G_BotNavInit()
 		bot.polyFlagsExclude = POLYFLAGS_DISABLED;
 
 		model = BG_ClassModelConfig( i );
+
 		if ( model->navMeshClass )
 		{
 			if ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass )
@@ -65,6 +66,7 @@ void G_BotNavInit()
 			return;
 		}
 	}
+
 	navMeshLoaded = qtrue;
 }
 
@@ -96,8 +98,8 @@ void BotSetNavmesh( gentity_t  *self, class_t newClass )
 
 	model = BG_ClassModelConfig( newClass );
 	navHandle = model->navMeshClass
-	          ? BG_ClassModelConfig( model->navMeshClass )->navHandle
-	          : model->navHandle;
+	            ? BG_ClassModelConfig( model->navMeshClass )->navHandle
+	            : model->navHandle;
 
 	trap_BotSetNavMesh( self->s.number, navHandle );
 }
@@ -119,6 +121,7 @@ float BotGetGoalRadius( gentity_t *self )
 	if ( BotTargetIsEntity( self->botMind->goal ) )
 	{
 		botTarget_t *t = &self->botMind->goal;
+
 		if ( t->ent->s.modelindex == BA_H_MEDISTAT || t->ent->s.modelindex == BA_A_BOOSTER )
 		{
 			return self->r.maxs[0] + t->ent->r.maxs[0];
@@ -170,11 +173,13 @@ int DistanceToGoal( gentity_t *self )
 {
 	vec3_t targetPos;
 	vec3_t selfPos;
+
 	//safety check for morons who use this incorrectly
 	if ( !( self->botMind ) )
 	{
 		return -1;
 	}
+
 	BotGetTargetPos( self->botMind->goal, targetPos );
 	VectorCopy( self->s.origin, selfPos );
 	return Distance( selfPos, targetPos );
@@ -184,11 +189,13 @@ int DistanceToGoalSquared( gentity_t *self )
 {
 	vec3_t targetPos;
 	vec3_t selfPos;
+
 	//safety check for morons who use this incorrectly
 	if ( !( self->botMind ) )
 	{
 		return -1;
 	}
+
 	BotGetTargetPos( self->botMind->goal, targetPos );
 	VectorCopy( self->s.origin, selfPos );
 	return DistanceSquared( selfPos, targetPos );
@@ -347,8 +354,8 @@ qboolean BotSprint( gentity_t *self, qboolean enable )
 	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 
 	if ( self->client->pers.team == TEAM_HUMANS
-	     && self->client->ps.stats[ STAT_STAMINA ] > staminaJumpCost
-	     && self->botMind->botSkill.level >= 5 )
+	        && self->client->ps.stats[ STAT_STAMINA ] > staminaJumpCost
+	        && self->botMind->botSkill.level >= 5 )
 	{
 		usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
 		BotWalk( self, qfalse );
@@ -373,6 +380,7 @@ void BotWalk( gentity_t *self, qboolean enable )
 			botCmdBuffer->forwardmove *= 2;
 			botCmdBuffer->rightmove *= 2;
 		}
+
 		return;
 	}
 
@@ -406,6 +414,7 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
 
 	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+
 	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f ) || g_entities[ trace.entityNum ].s.eType == ET_BUILDABLE )
 	{
 		return &g_entities[trace.entityNum];
@@ -443,6 +452,7 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 
 	//make sure we are moving into a block
 	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+
 	if ( trace.fraction >= 1.0f || blocker != &g_entities[trace.entityNum] )
 	{
 		return qfalse;
@@ -577,11 +587,14 @@ qboolean BotAvoidObstacles( gentity_t *self, vec3_t dir )
 			{
 				VectorNegate( right, dir );
 			}
+
 			dir[ 2 ] = 0;
 			VectorNormalize( dir );
 		}
+
 		return qtrue;
 	}
+
 	return qfalse;
 }
 
@@ -713,7 +726,7 @@ void BotMoveToGoal( gentity_t *self )
 
 	//dont sprint or dodge if we dont have enough stamina and are about to slow
 	if ( self->client->pers.team == TEAM_HUMANS
-	     && self->client->ps.stats[ STAT_STAMINA ] < staminaJumpCost )
+	        && self->client->ps.stats[ STAT_STAMINA ] < staminaJumpCost )
 	{
 		usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 

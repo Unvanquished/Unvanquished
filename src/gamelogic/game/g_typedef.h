@@ -56,50 +56,47 @@ typedef struct zap_s               zap_t;
 // enum types
 // ----------
 
-typedef enum
-{
-	CON_DISCONNECTED,
-	CON_CONNECTING,
-	CON_CONNECTED
+typedef enum {
+    CON_DISCONNECTED,
+    CON_CONNECTING,
+    CON_CONNECTED
 } clientConnected_t;
 
 //status of the warning of certain events
-typedef enum
-{
-	TW_NOT = 0,
-	TW_IMMINENT,
-	TW_PASSED
+typedef enum {
+    TW_NOT = 0,
+    TW_IMMINENT,
+    TW_PASSED
 } timeWarning_t;
 
 // fate of a buildable
-typedef enum
-{
-	BF_CONSTRUCT,
-	BF_DECONSTRUCT,
-	BF_REPLACE,
-	BF_DESTROY,
-	BF_TEAMKILL,
-	BF_UNPOWER,
-	BF_AUTO
+typedef enum {
+    BF_CONSTRUCT,
+    BF_DECONSTRUCT,
+    BF_REPLACE,
+    BF_DESTROY,
+    BF_TEAMKILL,
+    BF_UNPOWER,
+    BF_AUTO
 } buildFate_t;
 
 typedef enum {
-	VOTE_KICK,
-	VOTE_SPECTATE,
-	VOTE_MUTE,
-	VOTE_UNMUTE,
-	VOTE_DENYBUILD,
-	VOTE_ALLOWBUILD,
-	VOTE_EXTEND,
-	VOTE_ADMIT_DEFEAT,
-	VOTE_DRAW,
-	VOTE_MAP_RESTART,
-	VOTE_MAP,
-	VOTE_LAYOUT,
-	VOTE_NEXT_MAP,
-	VOTE_POLL,
-	VOTE_BOT_KICK,
-	VOTE_BOT_SPECTATE
+    VOTE_KICK,
+    VOTE_SPECTATE,
+    VOTE_MUTE,
+    VOTE_UNMUTE,
+    VOTE_DENYBUILD,
+    VOTE_ALLOWBUILD,
+    VOTE_EXTEND,
+    VOTE_ADMIT_DEFEAT,
+    VOTE_DRAW,
+    VOTE_MAP_RESTART,
+    VOTE_MAP,
+    VOTE_LAYOUT,
+    VOTE_NEXT_MAP,
+    VOTE_POLL,
+    VOTE_BOT_KICK,
+    VOTE_BOT_SPECTATE
 } voteType_t;
 
 #endif // G_TYPEDEF_H_

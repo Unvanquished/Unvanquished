@@ -125,7 +125,7 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 
 	Tess_CheckOverflow( numVerts, numIndexes );
 
-	for ( i = 0; i < numIndexes; i+=3, tri++ )
+	for ( i = 0; i < numIndexes; i += 3, tri++ )
 	{
 		tess.indexes[ tess.numIndexes + i + 0 ] = tess.numVertexes + tri->indexes[ 0 ];
 		tess.indexes[ tess.numIndexes + i + 1 ] = tess.numVertexes + tri->indexes[ 1 ];
@@ -275,6 +275,7 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t c
 
 	u8vec4_t iColor;
 	floatToUnorm8( color, iColor );
+
 	for ( i = 0; i < 4; i++ )
 	{
 		Vector4Copy( iColor, tess.verts[ ndx + i ].color );
@@ -333,8 +334,8 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1,
 	vec2_t st[ 3 ] = { { s1, t1 }, { s2, t1 }, { s2, t2 } };
 	R_CalcFaceNormal( normal, quadVerts[ 0 ], quadVerts[ 1 ], quadVerts[ 2 ] );
 	R_CalcTangents( tangent, binormal,
-			quadVerts[ 0 ], quadVerts[ 1 ], quadVerts[ 2 ],
-			st[ 0 ], st[ 1 ], st[ 2 ] );
+	                quadVerts[ 0 ], quadVerts[ 1 ], quadVerts[ 2 ],
+	                st[ 0 ], st[ 1 ], st[ 2 ] );
 	//if ( !calcNormals )
 	//{
 	//	VectorNegate( backEnd.viewParms.orientation.axis[ 0 ], normal );
@@ -363,6 +364,7 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1,
 
 	u8vec4_t iColor;
 	floatToUnorm8( color, iColor );
+
 	for ( i = 0; i < 4; i++ )
 	{
 		Vector4Copy( iColor, tess.verts[ ndx + i ].color );
@@ -597,16 +599,22 @@ static void Tess_SurfaceSprite( void )
 
 	VectorSubtract( backEnd.currentEntity->e.origin, backEnd.viewParms.pvsOrigin, delta );
 
-	if( VectorNormalize( delta ) < NORMAL_EPSILON )
+	if ( VectorNormalize( delta ) < NORMAL_EPSILON )
+	{
 		return;
+	}
 
 	CrossProduct( backEnd.viewParms.orientation.axis[ 2 ], delta, left );
 
-	if( VectorNormalize( left ) < NORMAL_EPSILON )
+	if ( VectorNormalize( left ) < NORMAL_EPSILON )
+	{
 		VectorSet( left, 1, 0, 0 );
+	}
 
-	if( backEnd.currentEntity->e.rotation != 0 )
+	if ( backEnd.currentEntity->e.rotation != 0 )
+	{
 		RotatePointAroundVector( left, delta, left, backEnd.currentEntity->e.rotation );
+	}
 
 	CrossProduct( delta, left, up );
 
@@ -614,7 +622,9 @@ static void Tess_SurfaceSprite( void )
 	VectorScale( up, radius, up );
 
 	if ( backEnd.viewParms.isMirror )
+	{
 		VectorSubtract( vec3_origin, left, left );
+	}
 
 	color[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
 	color[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );
@@ -679,9 +689,9 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		vec3_t      normal, *normals;
 		glIndex_t   *indices;
 
-		tangents = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
-		binormals = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
-		normals = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
+		tangents = ( vec3_t * )ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
+		binormals = ( vec3_t * )ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
+		normals = ( vec3_t * )ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
 
 		for ( i = 0; i < numVertexes; i++ )
 		{
@@ -718,7 +728,7 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		{
 			VectorNormalizeFast( normals[ i ] );
 			R_TBNtoQtangents( tangents[ i ], binormals[ i ],
-					  normals[ i ], tess.verts[ tess.numVertexes + i ].qtangents );
+			                  normals[ i ], tess.verts[ tess.numVertexes + i ].qtangents );
 		}
 
 		ri.Hunk_FreeTempMemory( normals );
@@ -945,9 +955,9 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 
 		tess.attribsSet |= ATTR_QTANGENT;
 
-		tangents = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
-		binormals = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
-		normals = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
+		tangents = ( vec3_t * )ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
+		binormals = ( vec3_t * )ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
+		normals = ( vec3_t * )ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
 
 		for ( i = 0; i < numVertexes; i++ )
 		{
@@ -993,7 +1003,7 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 		for ( i = 0; i < numVertexes; i++ )
 		{
 			R_TBNtoQtangents( tangents[ i ], binormals[ i ],
-					  normals[ i ], tess.verts[ numVertexes + i ].qtangents );
+			                  normals[ i ], tess.verts[ numVertexes + i ].qtangents );
 		}
 
 		ri.Hunk_FreeTempMemory( normals );
@@ -1056,6 +1066,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 				TransInitRotationQuat( model->bones[ i ].rotation, &bones[i] );
 				TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
 			}
+
 			TransInsScale( model->internalScale, &bones[ i ] );
 		}
 
@@ -1067,12 +1078,14 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			vec3_t tmp;
 
 			VectorClear( tess.verts[ tess.numVertexes + j ].xyz );
-			for ( k = 0; k < v->numWeights; k++ ) {
+
+			for ( k = 0; k < v->numWeights; k++ )
+			{
 				TransformPoint( &bones[ v->boneIndexes[ k ] ],
-						v->position, tmp );
+				                v->position, tmp );
 				VectorMA( tess.verts[ tess.numVertexes + j ].xyz,
-					  v->boneWeights[ k ], tmp,
-					  tess.verts[ tess.numVertexes + j ].xyz );
+				          v->boneWeights[ k ], tmp,
+				          tess.verts[ tess.numVertexes + j ].xyz );
 
 			}
 
@@ -1101,6 +1114,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			{
 				TransInitScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
 			}
+
 			TransInsScale( model->internalScale, &bones[ i ] );
 		}
 
@@ -1116,25 +1130,27 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			VectorClear( binormal );
 			VectorClear( tangent );
 
-			for( k = 0; k < v->numWeights; k++ ) {
+			for ( k = 0; k < v->numWeights; k++ )
+			{
 				TransformPoint( &bones[ v->boneIndexes[ k ] ],
-						v->position, tmp );
+				                v->position, tmp );
 				VectorMA( tess.verts[ tess.numVertexes + j ].xyz,
-					  v->boneWeights[ k ], tmp,
-					  tess.verts[ tess.numVertexes + j ].xyz );
+				          v->boneWeights[ k ], tmp,
+				          tess.verts[ tess.numVertexes + j ].xyz );
 
 				TransformNormalVector( &bones[ v->boneIndexes[ k ] ],
-						       v->normal, tmp );
+				                       v->normal, tmp );
 				VectorMA( normal, v->boneWeights[ k ], tmp, normal );
 
 				TransformNormalVector( &bones[ v->boneIndexes[ k ] ],
-						       v->tangent, tmp );
+				                       v->tangent, tmp );
 				VectorMA( tangent, v->boneWeights[ k ], tmp, tangent );
 
 				TransformNormalVector( &bones[ v->boneIndexes[ k ] ],
-						       v->binormal, tmp );
+				                       v->binormal, tmp );
 				VectorMA( binormal, v->boneWeights[ k ], tmp, binormal );
 			}
+
 			VectorNormalize( normal );
 			VectorNormalize( tangent );
 			VectorNormalize( binormal );
@@ -1157,7 +1173,8 @@ Tess_SurfaceIQM
 Compute vertices for this model surface
 =================
 */
-void Tess_SurfaceIQM( srfIQModel_t *surf ) {
+void Tess_SurfaceIQM( srfIQModel_t *surf )
+{
 	IQModel_t       *model = surf->data;
 	int             i, j;
 	int             offset = tess.numVertexes - surf->first_vertex;
@@ -1181,23 +1198,29 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 		{
 			TransInit( &bones[ i ] );
 		}
+
 		TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
 		TransInsScale( model->internalScale, &bones[ i ] );
 	}
 
-	if( surf->vbo && surf->ibo ) {
-		if( model->num_joints > 0 ) {
-			Com_Memcpy( tess.bones, bones, model->num_joints * sizeof(transform_t) );
+	if ( surf->vbo && surf->ibo )
+	{
+		if ( model->num_joints > 0 )
+		{
+			Com_Memcpy( tess.bones, bones, model->num_joints * sizeof( transform_t ) );
 			tess.numBones = model->num_joints;
-		} else {
+		}
+		else
+		{
 			TransInitScale( model->internalScale * backEnd.currentEntity->e.skeleton.scale, &tess.bones[ 0 ] );
 			tess.numBones = 1;
 		}
+
 		R_BindVBO( surf->vbo );
 		R_BindIBO( surf->ibo );
 		tess.vboVertexSkinning = qtrue;
 
-		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ((glIndex_t *)NULL) + surf->first_triangle * 3;
+		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ( ( glIndex_t * )NULL ) + surf->first_triangle * 3;
 		tess.multiDrawCounts[ tess.multiDrawPrimitives ] = surf->num_triangles * 3;
 		tess.multiDrawPrimitives++;
 
@@ -1214,7 +1237,8 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT;
 
-	if( model->num_joints > 0 && model->blendWeights && model->blendIndexes ) {
+	if ( model->num_joints > 0 && model->blendWeights && model->blendIndexes )
+	{
 		// deform the vertices by the lerped bones
 		for ( i = 0; i < surf->num_vertexes; i++ )
 		{
@@ -1223,35 +1247,40 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 			const float weightFactor = 1.0f / 255.0f;
 			vec3_t tangent, binormal, normal, tmp;
 
-			if( model->blendWeights[ 4 * idxIn + 0 ] == 0 &&
-			    model->blendWeights[ 4 * idxIn + 1 ] == 0 &&
-			    model->blendWeights[ 4 * idxIn + 2 ] == 0 &&
-			    model->blendWeights[ 4 * idxIn + 3 ] == 0 )
+			if ( model->blendWeights[ 4 * idxIn + 0 ] == 0 &&
+			        model->blendWeights[ 4 * idxIn + 1 ] == 0 &&
+			        model->blendWeights[ 4 * idxIn + 2 ] == 0 &&
+			        model->blendWeights[ 4 * idxIn + 3 ] == 0 )
+			{
 				model->blendWeights[ 4 * idxIn + 0 ] = 255;
+			}
 
 			VectorClear( tess.verts[ idxOut ].xyz );
 			VectorClear( normal );
 			VectorClear( tangent );
 			VectorClear( binormal );
-			for ( j = 0; j < 4; j++ ) {
+
+			for ( j = 0; j < 4; j++ )
+			{
 				int bone = model->blendIndexes[ 4 * idxIn + j ];
 				float weight = weightFactor * model->blendWeights[ 4 * idxIn + j ];
 
 				TransformPoint( &bones[ bone ],
-						&model->positions[ 3 * idxIn ], tmp );
+				                &model->positions[ 3 * idxIn ], tmp );
 				VectorMA( tess.verts[ idxOut ].xyz, weight, tmp,
-					  tess.verts[ idxOut ].xyz );
+				          tess.verts[ idxOut ].xyz );
 
 				TransformNormalVector( &bones[ bone ],
-						       &model->normals[ 3 * idxIn ], tmp );
+				                       &model->normals[ 3 * idxIn ], tmp );
 				VectorMA( normal, weight, tmp, normal );
 				TransformNormalVector( &bones[ bone ],
-						       &model->tangents[ 3 * idxIn ], tmp );
+				                       &model->tangents[ 3 * idxIn ], tmp );
 				VectorMA( tangent, weight, tmp, tangent );
 				TransformNormalVector( &bones[ bone ],
-						       &model->bitangents[ 3 * idxIn ], tmp );
+				                       &model->bitangents[ 3 * idxIn ], tmp );
 				VectorMA( binormal, weight, tmp, binormal );
 			}
+
 			VectorNormalize( normal );
 			VectorNormalize( tangent );
 			VectorNormalize( binormal );
@@ -1261,7 +1290,9 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 			tess.verts[ idxOut ].texCoords[ 0 ] = model->texcoords[ 2 * idxIn + 0 ];
 			tess.verts[ idxOut ].texCoords[ 1 ] = model->texcoords[ 2 * idxIn + 1 ];
 		}
-	} else {
+	}
+	else
+	{
 		for ( i = 0; i < surf->num_vertexes; i++ )
 		{
 			int    idxIn = surf->first_vertex + i;
@@ -1270,9 +1301,9 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 
 			VectorScale( &model->positions[ 3 * idxIn ], scale, tess.verts[ idxOut ].xyz );
 			R_TBNtoQtangents( &model->tangents[ 3 * idxIn ],
-					  &model->bitangents[ 3 * idxIn ],
-					  &model->normals[ 3 * idxIn ],
-					  tess.verts[ idxOut ].qtangents );
+			                  &model->bitangents[ 3 * idxIn ],
+			                  &model->normals[ 3 * idxIn ],
+			                  tess.verts[ idxOut ].qtangents );
 
 			tess.verts[ idxOut ].texCoords[ 0 ] = model->texcoords[ 2 * idxIn + 0 ];
 			tess.verts[ idxOut ].texCoords[ 1 ] = model->texcoords[ 2 * idxIn + 1 ];
@@ -1301,6 +1332,7 @@ static void Tess_SurfaceEntity( surfaceType_t *surfType )
 		case RT_SPRITE:
 			Tess_SurfaceSprite();
 			break;
+
 		default:
 			break;
 	}
@@ -1432,9 +1464,12 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 			TransAddTranslation( model->bones[ srf->boneRemapInverse[ i ] ].origin, &tess.bones[ i ] );
 			TransInverse( &tess.bones[ i ], &tess.bones[ i ] );
 			TransCombine( &tess.bones[ i ], &bone->t, &tess.bones[ i ] );
-		} else {
+		}
+		else
+		{
 			TransInit( &tess.bones[ i ] );
 		}
+
 		TransAddScale( backEnd.currentEntity->e.skeleton.scale, &tess.bones[ i ] );
 		TransInsScale( model->internalScale, &tess.bones[ i ] );
 	}

@@ -39,85 +39,97 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *-sizeof(int) == 4
  */
 
-namespace Audio {
+namespace Audio
+{
 
-inline int PackChars(const std::string& input, int startingPosition, int numberOfCharsToPack)
+inline int PackChars( const std::string& input, int startingPosition, int numberOfCharsToPack )
 {
 	int packed = 0;
 	int charsLeftToPack = numberOfCharsToPack;
-	while (charsLeftToPack > 0) {
+
+	while ( charsLeftToPack > 0 )
+	{
 		int position = numberOfCharsToPack - charsLeftToPack;
-        //the number must be converted to unsinged char first
-        //else if it's >127, 1s will be added to the higher-order bits
-		packed |= static_cast<unsigned char>(input[startingPosition + position]) << position * 8;
+		//the number must be converted to unsinged char first
+		//else if it's >127, 1s will be added to the higher-order bits
+		packed |= static_cast<unsigned char>( input[startingPosition + position] ) << position * 8;
 		--charsLeftToPack;
 	}
+
 	return packed;
 }
 
-AudioData LoadWavCodec(std::string filename)
+AudioData LoadWavCodec( std::string filename )
 {
 	std::string audioFile;
 
 	try
 	{
-		audioFile = std::move(FS::PakPath::ReadFile(filename));
+		audioFile = std::move( FS::PakPath::ReadFile( filename ) );
 	}
-	catch (std::system_error& err)
+	catch ( std::system_error& err )
 	{
-		audioLogs.Warn("Failed to open %s: %s", filename, err.what());
-        return AudioData();
-	}
-
-	std::string format = audioFile.substr(8, 4);
-
-	if (format != "WAVE") {
-		audioLogs.Warn("The format label in %s is not \"WAVE\".", filename);
+		audioLogs.Warn( "Failed to open %s: %s", filename, err.what() );
 		return AudioData();
 	}
 
-	std::string chunk1ID = audioFile.substr(12, 4);
+	std::string format = audioFile.substr( 8, 4 );
 
-	if (chunk1ID != "fmt ") {
-		audioLogs.Warn("The Chunk1ID in %s is not \"fmt\".", filename);
+	if ( format != "WAVE" )
+	{
+		audioLogs.Warn( "The format label in %s is not \"WAVE\".", filename );
 		return AudioData();
 	}
 
-	int numChannels = PackChars(audioFile, 22, 2);
+	std::string chunk1ID = audioFile.substr( 12, 4 );
 
-	if (numChannels != 1 && numChannels != 2) {
-		audioLogs.Warn("%s has an unsupported number of channels.", filename);
+	if ( chunk1ID != "fmt " )
+	{
+		audioLogs.Warn( "The Chunk1ID in %s is not \"fmt\".", filename );
 		return AudioData();
 	}
 
-	int sampleRate = PackChars(audioFile, 24, 4);
-	int byteDepth = PackChars(audioFile, 34, 2) / 8;
+	int numChannels = PackChars( audioFile, 22, 2 );
 
-	if (byteDepth != 1 && byteDepth != 2) {
-		audioLogs.Warn("%s has an unsupported bytedepth.", filename);
+	if ( numChannels != 1 && numChannels != 2 )
+	{
+		audioLogs.Warn( "%s has an unsupported number of channels.", filename );
 		return AudioData();
 	}
 
-    //TODO  find the position of "data"
-    std::size_t dataOffset{audioFile.find("data", 36)};
-	if (dataOffset == std::string::npos) {
-		audioLogs.Warn("Could not find the data chunk in %s", filename);
+	int sampleRate = PackChars( audioFile, 24, 4 );
+	int byteDepth = PackChars( audioFile, 34, 2 ) / 8;
+
+	if ( byteDepth != 1 && byteDepth != 2 )
+	{
+		audioLogs.Warn( "%s has an unsupported bytedepth.", filename );
 		return AudioData();
 	}
-	std::string chunk2ID = audioFile.substr(dataOffset, 4);
 
-	int size = PackChars(audioFile, dataOffset + 4, 4);
+	//TODO  find the position of "data"
+	std::size_t dataOffset {audioFile.find( "data", 36 )};
 
-	if (size <= 0 || sampleRate  <=0 ){
-		audioLogs.Warn("Error in reading %s.", filename);
+	if ( dataOffset == std::string::npos )
+	{
+		audioLogs.Warn( "Could not find the data chunk in %s", filename );
+		return AudioData();
+	}
+
+	std::string chunk2ID = audioFile.substr( dataOffset, 4 );
+
+	int size = PackChars( audioFile, dataOffset + 4, 4 );
+
+	if ( size <= 0 || sampleRate  <= 0 )
+	{
+		audioLogs.Warn( "Error in reading %s.", filename );
 		return AudioData();
 	}
 
 	char* data = new char[size];
 
-	std::copy_n(audioFile.data() + dataOffset + 8, size, data);
+	std::copy_n( audioFile.data() + dataOffset + 8, size, data );
 
-	return AudioData(sampleRate, byteDepth, numChannels, size, data);
+	return AudioData( sampleRate, byteDepth, numChannels, size, data );
 }
 
 } // namespace Audio

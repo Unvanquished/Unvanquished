@@ -180,7 +180,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	}
 
 	NavMeshSetHeader header;
-	
+
 	FS_Read( &header, sizeof( header ), f );
 
 	SwapNavMeshSetHeader( header );
@@ -381,6 +381,7 @@ qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 			agents[ i ].offMesh = false;
 			memset( agents[ i ].routeResults, 0, sizeof( agents[ i ].routeResults ) );
 		}
+
 #ifndef BUILD_SERVER
 		NavEditInit();
 #endif

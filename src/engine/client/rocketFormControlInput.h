@@ -43,143 +43,115 @@ Maryland 20850 USA.
 class CvarElementFormControlInput : public Rocket::Controls::ElementFormControlInput, public Rocket::Core::EventListener
 {
 public:
-	CvarElementFormControlInput( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlInput( tag ) { }
+    CvarElementFormControlInput ( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlInput ( tag ) { }
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
-	{
-		Rocket::Controls::ElementFormControlInput::OnAttributeChange( changed_attributes );
+    virtual void OnAttributeChange ( const Rocket::Core::AttributeNameList &changed_attributes ) {
+        Rocket::Controls::ElementFormControlInput::OnAttributeChange ( changed_attributes );
 
-		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
-		{
-			cvar = GetAttribute< Rocket::Core::String >( "cvar", "" );
-			UpdateValue();
-		}
+        if ( changed_attributes.find ( "cvar" ) != changed_attributes.end() ) {
+            cvar = GetAttribute< Rocket::Core::String > ( "cvar", "" );
+            UpdateValue();
+        }
 
-		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
-		{
-			type = GetAttribute< Rocket::Core::String >( "type", "" );
-		}
-	}
+        if ( changed_attributes.find ( "type" ) != changed_attributes.end() ) {
+            type = GetAttribute< Rocket::Core::String > ( "type", "" );
+        }
+    }
 
-	virtual void OnChildAdd( Element *child )
-	{
-		Rocket::Controls::ElementFormControlInput::OnChildAdd( child );
-		if ( child == this )
-		{
-			// Need to cache this because it is not available
-			// when this element is being removed
-			owner = GetOwnerDocument();
-			owner->AddEventListener( "show", this );
-		}
-	}
+    virtual void OnChildAdd ( Element *child ) {
+        Rocket::Controls::ElementFormControlInput::OnChildAdd ( child );
+        if ( child == this ) {
+            // Need to cache this because it is not available
+            // when this element is being removed
+            owner = GetOwnerDocument();
+            owner->AddEventListener ( "show", this );
+        }
+    }
 
-	virtual void OnChildRemove( Element *child )
-	{
-		Rocket::Controls::ElementFormControlInput::OnChildRemove( child );
-		if ( child == this )
-		{
-			owner->RemoveEventListener( "show", this );
-		}
-	}
+    virtual void OnChildRemove ( Element *child ) {
+        Rocket::Controls::ElementFormControlInput::OnChildRemove ( child );
+        if ( child == this ) {
+            owner->RemoveEventListener ( "show", this );
+        }
+    }
 
-	virtual void ProcessEvent( Rocket::Core::Event &event )
-	{
-		Rocket::Controls::ElementFormControlInput::ProcessEvent( event );
+    virtual void ProcessEvent ( Rocket::Core::Event &event ) {
+        Rocket::Controls::ElementFormControlInput::ProcessEvent ( event );
 
-		if ( !cvar.Empty() )
-		{
-			if ( owner == event.GetTargetElement() && event == "show" )
-			{
-				UpdateValue();
-			}
+        if ( !cvar.Empty() ) {
+            if ( owner == event.GetTargetElement() && event == "show" ) {
+                UpdateValue();
+            }
 
-			if ( this == event.GetTargetElement() )
-			{
-				if ( event == "blur" && ( type != "checkbox" && type != "radio" ) )
-				{
-					SetCvarValueAndFlags( cvar, GetValue() );
-				}
+            if ( this == event.GetTargetElement() ) {
+                if ( event == "blur" && ( type != "checkbox" && type != "radio" ) ) {
+                    SetCvarValueAndFlags ( cvar, GetValue() );
+                }
 
-				else if ( event == "change" && type == "range" )
-				{
-					SetCvarValueAndFlags( cvar, GetValue() );
-				}
+                else if ( event == "change" && type == "range" ) {
+                    SetCvarValueAndFlags ( cvar, GetValue() );
+                }
 
-				else if ( event == "click" && !IsDisabled() )
-				{
-					if ( type == "checkbox" )
-					{
-						if ( HasAttribute( "checked" ) )
-						{
-							SetCvarValueAndFlags( cvar, "1" );
-						}
+                else if ( event == "click" && !IsDisabled() ) {
+                    if ( type == "checkbox" ) {
+                        if ( HasAttribute ( "checked" ) ) {
+                            SetCvarValueAndFlags ( cvar, "1" );
+                        }
 
-						else
-						{
-							SetCvarValueAndFlags( cvar, "0" );
-						}
-					}
+                        else {
+                            SetCvarValueAndFlags ( cvar, "0" );
+                        }
+                    }
 
-					else if ( type == "radio" )
-					{
-						SetCvarValueAndFlags( cvar, GetValue() );
-					}
-				}
-			}
-		}
-	}
+                    else if ( type == "radio" ) {
+                        SetCvarValueAndFlags ( cvar, GetValue() );
+                    }
+                }
+            }
+        }
+    }
 
 
-	void UpdateValue( void )
-	{
-		if ( !type.Empty() )
-		{
-			if ( type == "checkbox" )
-			{
-				bool result;
+    void UpdateValue ( void ) {
+        if ( !type.Empty() ) {
+            if ( type == "checkbox" ) {
+                bool result;
 
-				if ( Cvar::ParseCvarValue( Cvar::GetValue( cvar.CString() ).c_str(), result ) )
-				{
-					if ( result )
-					{
-						SetAttribute( "checked", "" );
-						SetValue( "1" );
-					}
+                if ( Cvar::ParseCvarValue ( Cvar::GetValue ( cvar.CString() ).c_str(), result ) ) {
+                    if ( result ) {
+                        SetAttribute ( "checked", "" );
+                        SetValue ( "1" );
+                    }
 
-					else
-					{
-						RemoveAttribute( "checked" );
-						SetValue( "0" );
-					}
-				}
-			}
+                    else {
+                        RemoveAttribute ( "checked" );
+                        SetValue ( "0" );
+                    }
+                }
+            }
 
-			else if ( type == "radio" )
-			{
-				if ( GetValue() == Cvar::GetValue( cvar.CString() ).c_str() )
-				{
-					SetAttribute( "checked", "" );
-				}
-			}
+            else if ( type == "radio" ) {
+                if ( GetValue() == Cvar::GetValue ( cvar.CString() ).c_str() ) {
+                    SetAttribute ( "checked", "" );
+                }
+            }
 
-			else
-			{
-				SetValue( Cvar::GetValue( cvar.CString() ).c_str() );
-			}
-		}
+            else {
+                SetValue ( Cvar::GetValue ( cvar.CString() ).c_str() );
+            }
+        }
 
-	}
+    }
 
 private:
-	void SetCvarValueAndFlags( const Rocket::Core::String& cvar, const Rocket::Core::String& value )
-	{
-		Cvar::SetValue( cvar.CString(), value.CString() );
-		Cvar::AddFlags( cvar.CString(), Cvar::USER_ARCHIVE );
-	}
+    void SetCvarValueAndFlags ( const Rocket::Core::String& cvar, const Rocket::Core::String& value ) {
+        Cvar::SetValue ( cvar.CString(), value.CString() );
+        Cvar::AddFlags ( cvar.CString(), Cvar::USER_ARCHIVE );
+    }
 
-	Rocket::Core::String cvar;
-	Rocket::Core::String type;
-	Rocket::Core::Element *owner;
+    Rocket::Core::String cvar;
+    Rocket::Core::String type;
+    Rocket::Core::Element *owner;
 };
 
 #endif

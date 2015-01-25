@@ -141,7 +141,7 @@ static INLINE unsigned int loadWord( void *addr )
 
 #else
 static INLINE unsigned int __lwbrx( register void *addr,
-                                       register int offset )
+                                    register int offset )
 {
 	register unsigned int word;
 
@@ -203,7 +203,7 @@ void VM_PrepareInterpreter( vm_t *vm, vmHeader_t *header )
 	int  instruction;
 	int  *codeBase;
 
-	vm->codeBase = (byte*) Hunk_Alloc( vm->codeLength * 4, h_high );  // we're now int aligned
+	vm->codeBase = ( byte* ) Hunk_Alloc( vm->codeLength * 4, h_high ); // we're now int aligned
 //	memcpy( vm->codeBase, (byte *)header + header->codeOffset, vm->codeLength );
 
 	// we don't need to translate the instructions, but we still need
@@ -409,7 +409,7 @@ int     VM_CallInterpreted( vm_t *vm, int *args )
 	// leave a free spot at start of stack so
 	// that as long as opStack is valid, opStack-1 will
 	// not corrupt anything
-	opStack = (int*) PADP( stack, 16 );
+	opStack = ( int* ) PADP( stack, 16 );
 	*opStack = 0xDEADBEEF;
 	opStackOfs = 0;
 
@@ -567,6 +567,7 @@ nextInstruction2:
 //VM_LogSyscalls( (int *)&image[ programStack + 4 ] );
 					{
 						VM_SetSanity( vm, ~programCounter );
+
 						// the VM has ints on the stack, we expect
 						// pointers so we might have to convert it
 						if ( sizeof( intptr_t ) != sizeof( int ) )
@@ -592,6 +593,7 @@ nextInstruction2:
 						else
 						{
 							intptr_t *argptr = ( intptr_t * ) &image[ programStack + 4 ];
+
 							if ( programCounter < -FIRST_VM_SYSCALL )
 							{
 								r = vm->systemCall( argptr );

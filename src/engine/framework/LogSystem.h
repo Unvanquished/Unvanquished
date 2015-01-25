@@ -41,30 +41,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * common/Log
  */
 
-namespace Log {
+namespace Log
+{
 
-    // Dispatches the event to all the targets specified by targetControl (flags)
+// Dispatches the event to all the targets specified by targetControl (flags)
+// Can be called by any thread.
+void Dispatch ( Log::Event event, int targetControl );
+
+class Target
+{
+public:
+    Target();
+
+    // Should process all the logs in the batch given or none at all
+    // return true iff the logs were processed (on false the log system
+    // retains them for later).
     // Can be called by any thread.
-    void Dispatch(Log::Event event, int targetControl);
+    virtual bool Process ( std::vector<Log::Event>& events ) = 0;
 
-    class Target {
-        public:
-            Target();
+protected:
+    // Register itself as the target with this id
+    void Register ( TargetId id );
+};
 
-            // Should process all the logs in the batch given or none at all
-            // return true iff the logs were processed (on false the log system
-            // retains them for later).
-            // Can be called by any thread.
-            virtual bool Process(std::vector<Log::Event>& events) = 0;
+// Internal
 
-        protected:
-            // Register itself as the target with this id
-            void Register(TargetId id);
-    };
-
-    // Internal
-
-    void RegisterTarget(TargetId id, Target* target);
+void RegisterTarget ( TargetId id, Target* target );
 }
 
 #endif //FRAMEWORK_LOG_SYSTEM_H_

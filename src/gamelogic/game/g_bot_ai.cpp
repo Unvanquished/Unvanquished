@@ -47,7 +47,9 @@ qboolean isBinaryOp( AIOpType_t op )
 		case OP_AND:
 		case OP_OR:
 			return qtrue;
-		default: return qfalse;
+
+		default:
+			return qfalse;
 	}
 }
 
@@ -90,8 +92,10 @@ float AIUnBoxFloat( AIValue_t v )
 	{
 		case VALUE_FLOAT:
 			return v.l.floatValue;
+
 		case VALUE_INT:
 			return ( float ) v.l.intValue;
+
 		default:
 			return 0.0f;
 	}
@@ -103,8 +107,10 @@ int AIUnBoxInt( AIValue_t v )
 	{
 		case VALUE_FLOAT:
 			return ( int ) v.l.floatValue;
+
 		case VALUE_INT:
 			return v.l.intValue;
+
 		default:
 			return 0;
 	}
@@ -118,10 +124,13 @@ const char *AIUnBoxString( AIValue_t v )
 	{
 		case VALUE_FLOAT:
 			return va( "%f", v.l.floatValue );
+
 		case VALUE_INT:
 			return va( "%d", v.l.intValue );
+
 		case VALUE_STRING:
 			return v.l.stringValue;
+
 		default:
 			return empty;
 	}
@@ -133,8 +142,10 @@ double AIUnBoxDouble( AIValue_t v )
 	{
 		case VALUE_FLOAT:
 			return ( double ) v.l.floatValue;
+
 		case VALUE_INT:
 			return ( double ) v.l.intValue;
+
 		default:
 			return 0.0;
 	}
@@ -182,13 +193,14 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 		ret.distance = 0;
 		return ret;
 	}
-	
+
 	return ret;
 }
 
 static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
 {
 	int i;
+
 	for ( i = 0; i < self->botMind->numRunningNodes; i++ )
 	{
 		if ( self->botMind->runningNodes[ i ] == node )
@@ -196,6 +208,7 @@ static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
 			return qtrue;
 		}
 	}
+
 	return qfalse;
 }
 
@@ -230,12 +243,15 @@ AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node )
 	for ( ; i < selector->numNodes; i++ )
 	{
 		AINodeStatus_t status = BotEvaluateNode( self, selector->list[ i ] );
+
 		if ( status == STATUS_FAILURE )
 		{
 			continue;
 		}
+
 		return status;
 	}
+
 	return STATUS_FAILURE;
 }
 
@@ -256,6 +272,7 @@ AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node )
 	for ( ; i < sequence->numNodes; i++ )
 	{
 		AINodeStatus_t status = BotEvaluateNode( self, sequence->list[ i ] );
+
 		if ( status == STATUS_FAILURE )
 		{
 			return STATUS_FAILURE;
@@ -266,6 +283,7 @@ AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_RUNNING;
 		}
 	}
+
 	return STATUS_SUCCESS;
 }
 
@@ -283,6 +301,7 @@ AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 	}
+
 	return STATUS_SUCCESS;
 }
 
@@ -315,7 +334,7 @@ AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
 {
 	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;
-	
+
 	AINodeStatus_t status = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 0 ] );
 
 	BotEvaluateNode( self, dec->child );
@@ -359,20 +378,28 @@ qboolean EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
 	{
 		case OP_LESSTHAN:
 			return EvalValue( self, o->exp1 ) < EvalValue( self, o->exp2 );
+
 		case OP_LESSTHANEQUAL:
 			return EvalValue( self, o->exp1 ) <= EvalValue( self, o->exp2 );
+
 		case OP_GREATERTHAN:
 			return EvalValue( self, o->exp1 ) > EvalValue( self, o->exp2 );
+
 		case OP_GREATERTHANEQUAL:
 			return EvalValue( self, o->exp1 ) >= EvalValue( self, o->exp2 );
+
 		case OP_EQUAL:
 			return EvalValue( self, o->exp1 ) == EvalValue( self, o->exp2 );
+
 		case OP_NEQUAL:
 			return EvalValue( self, o->exp1 ) != EvalValue( self, o->exp2 );
+
 		case OP_AND:
 			return EvalConditionExpression( self, o->exp1 ) && EvalConditionExpression( self, o->exp2 );
+
 		case OP_OR:
 			return EvalConditionExpression( self, o->exp1 ) || EvalConditionExpression( self, o->exp2 );
+
 		default:
 			return qfalse;
 	}
@@ -427,6 +454,7 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 	AIConditionNode_t *con = ( AIConditionNode_t * ) node;
 
 	success = EvalConditionExpression( self, con->exp );
+
 	if ( success )
 	{
 		if ( con->child )
@@ -460,7 +488,7 @@ AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node )
 ======================
 BotEvaluateNode
 
-Generic node running routine that properly handles 
+Generic node running routine that properly handles
 running information for sequences and selectors
 This should always be used instead of the node->run function pointer
 ======================
@@ -519,7 +547,7 @@ to the rest of the behavior tree
 ======================
 */
 
-AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node ) 
+AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node )
 {
 	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), &self->client->ps ) && self->client->pers.team == TEAM_HUMANS )
 	{
@@ -541,10 +569,11 @@ AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode_t *node 
 	upgrade_t u = ( upgrade_t ) AIUnBoxInt( action->params[ 0 ] );
 
 	if ( !BG_UpgradeIsActive( u, self->client->ps.stats ) &&
-		BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
+	        BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
 	{
 		BG_ActivateUpgrade( u, self->client->ps.stats );
 	}
+
 	return STATUS_SUCCESS;
 }
 
@@ -554,10 +583,11 @@ AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *nod
 	upgrade_t u = ( upgrade_t ) AIUnBoxInt( action->params[ 0 ] );
 
 	if ( BG_UpgradeIsActive( u, self->client->ps.stats ) &&
-		BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
+	        BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
 	{
 		BG_DeactivateUpgrade( u, self->client->ps.stats );
 	}
+
 	return STATUS_SUCCESS;
 }
 
@@ -574,6 +604,7 @@ AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t *node )
 		BotSlowAim( self, pos, 0.5 );
 		BotAimAtLocation( self, pos );
 	}
+
 	return STATUS_SUCCESS;
 }
 
@@ -587,10 +618,12 @@ AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *a = ( AIActionNode_t * ) node;
 	int dir = AIUnBoxInt( a->params[ 0 ] );
+
 	if ( a->nparams == 2 )
 	{
 		dir |= AIUnBoxInt( a->params[ 1 ] );
 	}
+
 	BotMoveInDir( self, dir );
 	return STATUS_SUCCESS;
 }
@@ -786,6 +819,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 			BotMoveToGoal( self );
 		}
 	}
+
 	return STATUS_RUNNING;
 }
 
@@ -797,6 +831,7 @@ AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+
 		self->botMind->currentNode = node;
 	}
 
@@ -842,6 +877,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+
 		self->botMind->currentNode = node;
 	}
 
@@ -863,10 +899,12 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 	if ( node != self->botMind->currentNode )
 	{
 		botTarget_t target = BotGetRoamTarget( self );
+
 		if ( !BotChangeGoal( self, target ) )
 		{
 			return STATUS_FAILURE;
 		}
+
 		self->botMind->currentNode = node;
 	}
 
@@ -878,6 +916,7 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 	{
 		BotMoveToGoal( self );
 	}
+
 	return STATUS_RUNNING;
 }
 
@@ -894,7 +933,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	float radius = 0;
 	AIActionNode_t *moveTo = ( AIActionNode_t * ) node;
 	AIEntity_t ent = ( AIEntity_t ) AIUnBoxInt( moveTo->params[ 0 ] );
-	
+
 	if ( moveTo->nparams > 1 )
 	{
 		radius = MAX( AIUnBoxFloat( moveTo->params[ 1 ] ), 0.0f );
@@ -966,6 +1005,7 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 	{
 		BotMoveToGoal( self );
 	}
+
 	return STATUS_RUNNING;
 }
 
@@ -984,9 +1024,10 @@ AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 /*
 	alien specific actions
 */
-AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
+AINodeStatus_t BotActionEvolve( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeStatus_t status = STATUS_FAILURE;
+
 	if ( !g_bot_evolve.integer )
 	{
 		return status;
@@ -1007,7 +1048,7 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 		}
 	}
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3 ) &&
-	          ( !BG_ClassUnlocked( PCL_ALIEN_LEVEL3_UPG ) ||!g_bot_level2upg.integer ||
+	          ( !BG_ClassUnlocked( PCL_ALIEN_LEVEL3_UPG ) || !g_bot_level2upg.integer ||
 	            !g_bot_level3upg.integer ) && g_bot_level3.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL3 ) )
@@ -1112,6 +1153,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 	{
 		BotMoveToGoal( self );
 	}
+
 	return STATUS_RUNNING;
 }
 
@@ -1141,6 +1183,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+
 		self->botMind->currentNode = node;
 	}
 
@@ -1177,6 +1220,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 	{
 		BotMoveToGoal( self );
 	}
+
 	return STATUS_RUNNING;
 }
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
@@ -1191,6 +1235,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+
 		self->botMind->currentNode = node;
 	}
 
@@ -1230,6 +1275,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		BotAimAtLocation( self, targetPos );
 		// we automatically heal a building if close enough and aiming at it
 	}
+
 	return STATUS_RUNNING;
 }
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
@@ -1318,6 +1364,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+
 		self->botMind->currentNode = node;
 	}
 
@@ -1362,7 +1409,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		{
 			G_ForceWeaponChange( self, weapon );
 		}
-		
+
 		return STATUS_SUCCESS;
 	}
 

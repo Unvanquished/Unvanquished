@@ -44,6 +44,7 @@ Remove color codes and non-alphanumeric characters from a string
 void G_SanitiseString( const char *in, char *out, int len )
 {
 	len--;
+
 	while ( *in && len > 0 )
 	{
 		int cp = Q_UTF8_CodePoint( in );
@@ -104,15 +105,16 @@ int G_MatchOnePlayer( const int *plist, int found, char *err, int len )
 
 	if ( found <= 0 )
 	{
-		Q_strcat( err, len, N_("no connected player by that name or slot #") );
+		Q_strcat( err, len, N_( "no connected player by that name or slot #" ) );
 		return -1;
 	}
 
 	if ( found > 1 )
 	{
-		Q_strcat( err, len, N_("more than one player name matches. "
-		          "be more specific or use the slot #: ") );
+		Q_strcat( err, len, N_( "more than one player name matches. "
+		                        "be more specific or use the slot #: " ) );
 		count = strlen( err );
+
 		for ( p = 0; p < found; p++ )
 		{
 			cl = &level.clients[ plist[p] ];
@@ -159,14 +161,17 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 	{
 		if ( p )
 		{
-			Q_strncpyz( p, N_("no player name or slot # provided\n"), len );
+			Q_strncpyz( p, N_( "no player name or slot # provided\n" ), len );
 		}
 
 		return -1;
 	}
 
 	// numeric values are just slot numbers
-	for ( i = 0; s[ i ] && isdigit( s[ i ] ); i++ ) {; }
+	for ( i = 0; s[ i ] && isdigit( s[ i ] ); i++ )
+	{
+		;
+	}
 
 	if ( !s[ i ] )
 	{
@@ -176,8 +181,9 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 		{
 			if ( p )
 			{
-				Q_strncpyz( p, N_("no player connected in that slot #\n"), len );
+				Q_strncpyz( p, N_( "no player connected in that slot #\n" ), len );
 			}
+
 			return -1;
 		}
 
@@ -187,7 +193,7 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 		{
 			if ( p )
 			{
-				Q_strncpyz( p, N_("no player connected in that slot #\n"), len );
+				Q_strncpyz( p, N_( "no player connected in that slot #\n" ), len );
 			}
 
 			return -1;
@@ -202,7 +208,7 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 	{
 		if ( p )
 		{
-			Q_strncpyz( p, N_("no player name provided\n"), len );
+			Q_strncpyz( p, N_( "no player name provided\n" ), len );
 		}
 
 		return -1;
@@ -210,8 +216,8 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 	if ( p )
 	{
-		Q_strncpyz( p, N_("more than one player name matches. "
-		            "be more specific or use the slot #:\n"), l2 );
+		Q_strncpyz( p, N_( "more than one player name matches. "
+		                   "be more specific or use the slot #:\n" ), l2 );
 		l = strlen( p );
 		p += l;
 		l2 -= l;
@@ -253,7 +259,7 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 	if ( found == 0 && err )
 	{
-		Q_strncpyz( err, N_("no connected player by that name or slot #\n"), len );
+		Q_strncpyz( err, N_( "no connected player by that name or slot #\n" ), len );
 	}
 
 	return -1;
@@ -375,10 +381,10 @@ void ScoreboardMessage( gentity_t *ent )
 		}
 
 		if ( cl->sess.spectatorState == SPECTATOR_NOT &&
-		     ( ent->client->pers.team == TEAM_NONE ||
-		       cl->pers.team == ent->client->pers.team ) )
+		        ( ent->client->pers.team == TEAM_NONE ||
+		          cl->pers.team == ent->client->pers.team ) )
 		{
-			weapon = (weapon_t) cl->ps.weapon;
+			weapon = ( weapon_t ) cl->ps.weapon;
 
 			if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, cl->ps.stats ) )
 			{
@@ -553,7 +559,7 @@ void Cmd_Give_f( gentity_t *ent )
 		give_all = qtrue;
 	}
 
-	if ( give_all || Q_strnicmp( name, "funds", strlen("funds") ) == 0 )
+	if ( give_all || Q_strnicmp( name, "funds", strlen( "funds" ) ) == 0 )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
@@ -561,17 +567,17 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			amount = atof( name + strlen("funds") ) *
-			          ( ent->client->pers.team == TEAM_ALIENS ? CREDITS_PER_EVO : 1.0f );
+			amount = atof( name + strlen( "funds" ) ) *
+			         ( ent->client->pers.team == TEAM_ALIENS ? CREDITS_PER_EVO : 1.0f );
 			// clamp credits as G_AddCreditToClient() expects a short int
-			amount = Maths::clamp(amount, -30000.0f, 30000.0f);
+			amount = Maths::clamp( amount, -30000.0f, 30000.0f );
 		}
 
 		G_AddCreditToClient( ent->client, ( short ) amount, qtrue );
 	}
 
 	// give bp
-	if ( Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
+	if ( Q_strnicmp( name, "bp", strlen( "bp" ) ) == 0 )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
@@ -579,15 +585,15 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			amount = atof( name + strlen("bp") );
+			amount = atof( name + strlen( "bp" ) );
 		}
 
-		G_ModifyBuildPoints( (team_t)ent->client->pers.team, amount );
-		G_MarkBuildPointsMined( (team_t)ent->client->pers.team, amount );
+		G_ModifyBuildPoints( ( team_t )ent->client->pers.team, amount );
+		G_MarkBuildPointsMined( ( team_t )ent->client->pers.team, amount );
 	}
 
 	// give momentum
-	if ( Q_strnicmp( name, "momentum", strlen("momentum") ) == 0 )
+	if ( Q_strnicmp( name, "momentum", strlen( "momentum" ) ) == 0 )
 	{
 		if ( trap_Argc() < 3 )
 		{
@@ -595,19 +601,19 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			amount = atof( name + strlen("momentum") );
+			amount = atof( name + strlen( "momentum" ) );
 		}
 
-		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
+		G_AddMomentumGeneric( ( team_t ) ent->client->pers.team, amount );
 	}
 
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
-			ent->client->sess.spectatorState != SPECTATOR_NOT )
+	        ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		return;
 	}
 
-	if ( give_all || Q_strnicmp( name, "health", strlen("health") ) == 0 )
+	if ( give_all || Q_strnicmp( name, "health", strlen( "health" ) ) == 0 )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
@@ -616,8 +622,8 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			int amount = atoi( name + strlen("health") );
-			ent->health = Maths::clamp(ent->health + amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ]);
+			int amount = atoi( name + strlen( "health" ) );
+			ent->health = Maths::clamp( ent->health + amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ] );
 		}
 	}
 
@@ -628,7 +634,7 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if ( give_all || Q_stricmp( name, "fuel" ) == 0 )
 	{
-		G_RefillFuel(ent, qfalse);
+		G_RefillFuel( ent, qfalse );
 	}
 
 	if ( Q_stricmp( name, "poison" ) == 0 )
@@ -669,11 +675,11 @@ void Cmd_God_f( gentity_t *ent )
 
 	if ( !( ent->flags & FL_GODMODE ) )
 	{
-		msg = QQ( N_("godmode OFF\n") );
+		msg = QQ( N_( "godmode OFF\n" ) );
 	}
 	else
 	{
-		msg = QQ( N_("godmode ON\n") );
+		msg = QQ( N_( "godmode ON\n" ) );
 	}
 
 	trap_SendServerCommand( ent - g_entities, va( "print_tr %s", msg ) );
@@ -696,11 +702,11 @@ void Cmd_Notarget_f( gentity_t *ent )
 
 	if ( !( ent->flags & FL_NOTARGET ) )
 	{
-		msg = QQ( N_("notarget OFF\n") );
+		msg = QQ( N_( "notarget OFF\n" ) );
 	}
 	else
 	{
-		msg = QQ( N_("notarget ON\n") );
+		msg = QQ( N_( "notarget ON\n" ) );
 	}
 
 	trap_SendServerCommand( ent - g_entities, va( "print_tr %s", msg ) );
@@ -719,12 +725,12 @@ void Cmd_Noclip_f( gentity_t *ent )
 
 	if ( ent->client->noclip )
 	{
-		msg = QQ( N_("noclip OFF\n") );
+		msg = QQ( N_( "noclip OFF\n" ) );
 		ent->r.contents = ent->client->cliprcontents;
 	}
 	else
 	{
-		msg = QQ( N_("noclip ON\n") );
+		msg = QQ( N_( "noclip ON\n" ) );
 		ent->client->cliprcontents = ent->r.contents;
 		ent->r.contents = 0;
 	}
@@ -755,12 +761,12 @@ void Cmd_Kill_f( gentity_t *ent )
 	{
 		if ( ent->suicideTime == 0 )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You will suicide in 20 seconds\n") "\"" );
+			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "You will suicide in 20 seconds\n" ) "\"" );
 			ent->suicideTime = level.time + 20000;
 		}
 		else if ( ent->suicideTime > level.time )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("Suicide cancelled\n") "\"" );
+			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "Suicide cancelled\n" ) "\"" );
 			ent->suicideTime = 0;
 		}
 	}
@@ -774,7 +780,7 @@ Cmd_Team_f
 void Cmd_Team_f( gentity_t *ent )
 {
 	team_t   team;
-	team_t   oldteam = (team_t) ent->client->pers.team;
+	team_t   oldteam = ( team_t ) ent->client->pers.team;
 	char     s[ MAX_TOKEN_CHARS ];
 	qboolean force = G_admin_permission( ent, ADMF_FORCETEAMCHANGE );
 	int      players[ NUM_TEAMS ];
@@ -791,24 +797,24 @@ void Cmd_Team_f( gentity_t *ent )
 
 	// stop team join spam
 	if ( ent->client->pers.teamChangeTime &&
-	     level.time - ent->client->pers.teamChangeTime < 1000 )
+	        level.time - ent->client->pers.teamChangeTime < 1000 )
 	{
 		return;
 	}
 
 	// Cannot leave a team while in combat.
 	if ( !g_cheats.integer &&
-	     g_combatCooldown.integer &&
-	     ent->client->lastCombatTime &&
-	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
-	     ent->health > 0 &&
-	     ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time )
+	        g_combatCooldown.integer &&
+	        ent->client->lastCombatTime &&
+	        ent->client->sess.spectatorState == SPECTATOR_NOT &&
+	        ent->health > 0 &&
+	        ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time )
 	{
 		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
 
 		trap_SendServerCommand( ent - g_entities,
-		    va( "print_tr %s %i %.0f", QQ( N_("You cannot leave your team until $1$ after combat. Try again in $2$s.\n") ),
-		        g_combatCooldown.integer, remaining ) );
+		                        va( "print_tr %s %i %.0f", QQ( N_( "You cannot leave your team until $1$ after combat. Try again in $2$s.\n" ) ),
+		                            g_combatCooldown.integer, remaining ) );
 
 		return;
 	}
@@ -824,7 +830,7 @@ void Cmd_Team_f( gentity_t *ent )
 
 	if ( !s[ 0 ] )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("team: $1$\n") ),
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_( "team: $1$\n" ) ),
 		                        Quote( BG_TeamName( oldteam ) ) ) );
 		return;
 	}
@@ -846,7 +852,7 @@ void Cmd_Team_f( gentity_t *ent )
 		}
 		else
 		{
-			team = (team_t) ( TEAM_ALIENS + rand() / ( RAND_MAX / 2 + 1 ) );
+			team = ( team_t )( TEAM_ALIENS + rand() / ( RAND_MAX / 2 + 1 ) );
 		}
 	}
 	else
@@ -858,6 +864,7 @@ void Cmd_Team_f( gentity_t *ent )
 				break;
 
 			case TEAM_ALIENS:
+
 				//TODO move code in a function common with next case
 				if ( level.team[ TEAM_ALIENS ].locked )
 				{
@@ -869,7 +876,7 @@ void Cmd_Team_f( gentity_t *ent )
 					force = qtrue;
 				}
 
-				if ( !force && g_teamForceBalance.integer && players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ])
+				if ( !force && g_teamForceBalance.integer && players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ] )
 				{
 					G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
 					return;
@@ -879,6 +886,7 @@ void Cmd_Team_f( gentity_t *ent )
 				break;
 
 			case TEAM_HUMANS:
+
 				//TODO move code in a function common with previous case
 				if ( level.team[ TEAM_HUMANS ].locked )
 				{
@@ -901,7 +909,7 @@ void Cmd_Team_f( gentity_t *ent )
 
 			default:
 				trap_SendServerCommand( ent - g_entities,
-				                        va( "print_tr %s %s", QQ( N_("Unknown team: $1$\n") ), Quote( s ) ) );
+				                        va( "print_tr %s %s", QQ( N_( "Unknown team: $1$\n" ) ), Quote( s ) ) );
 				return;
 		}
 	}
@@ -914,7 +922,7 @@ void Cmd_Team_f( gentity_t *ent )
 		if ( specOnly->expires == -1 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        "print_tr \"" N_("You cannot join a team until the next game.\n") "\"" );
+			                        "print_tr \"" N_( "You cannot join a team until the next game.\n" ) "\"" );
 			return;
 		}
 
@@ -923,7 +931,7 @@ void Cmd_Team_f( gentity_t *ent )
 			int remaining = specOnly->expires - t;
 
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %d", QQ( N_("You cannot join a team for another $1$s.\n") ), remaining ) );
+			                        va( "print_tr %s %d", QQ( N_( "You cannot join a team for another $1$s.\n" ) ), remaining ) );
 			return;
 		}
 	}
@@ -935,7 +943,7 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	if ( team != TEAM_NONE && g_maxGameClients.integer &&
-	     level.numPlayingClients >= g_maxGameClients.integer )
+	        level.numPlayingClients >= g_maxGameClients.integer )
 	{
 		G_TriggerMenu( ent - g_entities, MN_PLAYERLIMIT );
 		return;
@@ -1163,7 +1171,7 @@ static qboolean G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const
 	}
 
 	if ( ( ent && !G_OnSameTeam( ent, other ) ) &&
-	     ( mode == SAY_TEAM || mode == SAY_AREA || mode == SAY_TPRIVMSG ) )
+	        ( mode == SAY_TEAM || mode == SAY_AREA || mode == SAY_TPRIVMSG ) )
 	{
 		if ( other->client->pers.team != TEAM_NONE )
 		{
@@ -1202,11 +1210,11 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 
 	// check if blocked by g_specChat 0
 	if ( ( !g_specChat.integer ) && ( mode != SAY_TEAM ) &&
-	     ( ent ) && ( ent->client->pers.team == TEAM_NONE ) &&
-	     ( !G_admin_permission( ent, ADMF_NOCENSORFLOOD ) ) )
+	        ( ent ) && ( ent->client->pers.team == TEAM_NONE ) &&
+	        ( !G_admin_permission( ent, ADMF_NOCENSORFLOOD ) ) )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("say: Global chatting for "
-		                        "spectators has been disabled. You may only use team chat.\n") "\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "say: Global chatting for "
+		                        "spectators has been disabled. You may only use team chat.\n" ) "\"" );
 		mode = SAY_TEAM;
 	}
 
@@ -1273,7 +1281,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( "\"" N_("usage: say_area [message]\n") "\"" );
+		ADMP( "\"" N_( "usage: say_area [message]\n" ) "\"" );
 		return;
 	}
 
@@ -1301,7 +1309,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		if ( g_entities[ i ].client->pers.team == TEAM_NONE &&
-		     G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) )
+		        G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) )
 		{
 			G_SayTo( ent, &g_entities[ i ], SAY_AREA, msg );
 		}
@@ -1318,7 +1326,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( "\"" N_("usage: say_area_team [message]\n") "\"" );
+		ADMP( "\"" N_( "usage: say_area_team [message]\n" ) "\"" );
 		return;
 	}
 
@@ -1340,7 +1348,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 	for ( i = 0; i < num; i++ )
 	{
 		if ( g_entities[ entityList[ i ] ].client &&
-			ent->client->pers.team == g_entities[ entityList[ i ] ].client->pers.team )
+		        ent->client->pers.team == g_entities[ entityList[ i ] ].client->pers.team )
 		{
 			G_SayTo( ent, &g_entities[ entityList[ i ] ], SAY_AREA_TEAM, msg );
 		}
@@ -1350,7 +1358,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		if ( g_entities[ i ].client->pers.team == TEAM_NONE &&
-		     G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) )
+		        G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) )
 		{
 			G_SayTo( ent, &g_entities[ i ], SAY_AREA_TEAM, msg );
 		}
@@ -1384,7 +1392,7 @@ static void Cmd_Say_f( gentity_t *ent )
 	{
 		if ( !G_admin_permission( ent, ADMF_ADMINCHAT ) )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied\n") ), "asay" ) );
+			ADMP( va( "%s %s", QQ( N_( "^3$1$: ^7permission denied\n" ) ), "asay" ) );
 			return;
 		}
 
@@ -1426,22 +1434,22 @@ void Cmd_VSay_f( gentity_t *ent )
 	if ( trap_Argc() < 2 )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print_tr %s %s", QQ( N_("usage: $1$ command [text]\n") ),  arg ) );
+		                            "print_tr %s %s", QQ( N_( "usage: $1$ command [text]\n" ) ),  arg ) );
 		return;
 	}
 
 	if ( !level.voices )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print_tr %s %s", QQ( N_("$1$: voice system is not installed on this server\n") ), arg ) );
+		                            "print_tr %s %s", QQ( N_( "$1$: voice system is not installed on this server\n" ) ), arg ) );
 		return;
 	}
 
 	if ( !g_enableVsays.integer )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print_tr %s %s", QQ( N_("$1$: voice system administratively disabled on this server\n") ),
-		                          arg ) );
+		                            "print_tr %s %s", QQ( N_( "$1$: voice system administratively disabled on this server\n" ) ),
+		                            arg ) );
 		return;
 	}
 
@@ -1474,7 +1482,7 @@ void Cmd_VSay_f( gentity_t *ent )
 	if ( !voice )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print_tr %s %s %s", QQ( N_("$1$: voice '$2$' not found\n") ), vsay, Quote( voiceName ) ) );
+		                            "print_tr %s %s %s", QQ( N_( "$1$: voice '$2$' not found\n" ) ), vsay, Quote( voiceName ) ) );
 		return;
 	}
 
@@ -1484,8 +1492,8 @@ void Cmd_VSay_f( gentity_t *ent )
 	if ( !cmd )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print_tr %s %s %s %s", QQ( N_("$1$: command '$2$' not found in voice '$3$'\n") ),
-		                          vsay, Quote( voiceCmd ), Quote( voiceName ) ) );
+		                            "print_tr %s %s %s %s", QQ( N_( "$1$: command '$2$' not found in voice '$3$'\n" ) ),
+		                            vsay, Quote( voiceCmd ), Quote( voiceName ) ) );
 		return;
 	}
 
@@ -1503,12 +1511,12 @@ void Cmd_VSay_f( gentity_t *ent )
 
 	if ( !track )
 	{
-		trap_SendServerCommand( ent - g_entities, va("print_tr %s %s %s %d %d %d %d %s",
-		                          QQ( N_("$1$: no available track for command '$2$', team $3$, "
-		                          "class $4$, weapon $5$, and enthusiasm $6$ in voice '$7$'\n") ),
-		                          vsay, Quote( voiceCmd ), ent->client->pers.team,
-		                          ent->client->pers.classSelection, weapon,
-		                          ( int ) ent->client->voiceEnthusiasm, Quote( voiceName ) ) );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s %d %d %d %d %s",
+		                        QQ( N_( "$1$: no available track for command '$2$', team $3$, "
+		                                "class $4$, weapon $5$, and enthusiasm $6$ in voice '$7$'\n" ) ),
+		                        vsay, Quote( voiceCmd ), ent->client->pers.team,
+		                        ent->client->pers.classSelection, weapon,
+		                        ( int ) ent->client->voiceEnthusiasm, Quote( voiceName ) ) );
 		return;
 	}
 
@@ -1528,20 +1536,20 @@ void Cmd_VSay_f( gentity_t *ent )
 	{
 		case VOICE_CHAN_ALL:
 			trap_SendServerCommand( -1, va(
-			                          "voice %ld %d %d %d %s\n",
-			                          ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
+			                            "voice %ld %d %d %d %s\n",
+			                            ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
 			break;
 
 		case VOICE_CHAN_TEAM:
-			G_TeamCommand( (team_t) ent->client->pers.team, va(
-			                 "voice %ld %d %d %d %s\n",
-			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
+			G_TeamCommand( ( team_t ) ent->client->pers.team, va(
+			                   "voice %ld %d %d %d %s\n",
+			                   ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
 			break;
 
 		case VOICE_CHAN_LOCAL:
 			G_AreaTeamCommand( ent, va(
-			                 "voice %ld %d %d %d %s\n",
-			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
+			                       "voice %ld %d %d %d %s\n",
+			                       ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
 			break;
 
 		default:
@@ -1562,7 +1570,7 @@ void Cmd_Where_f( gentity_t *ent )
 	}
 
 	trap_SendServerCommand( ent - g_entities,
-	                        va( "print_tr %s %f %f %f", QQ( N_("origin: $1$ $2$ $3$\n") ),
+	                        va( "print_tr %s %f %f %f", QQ( N_( "origin: $1$ $2$ $3$\n" ) ),
 	                            ent->s.origin[ 0 ], ent->s.origin[ 1 ],
 	                            ent->s.origin[ 2 ] ) );
 }
@@ -1570,21 +1578,25 @@ void Cmd_Where_f( gentity_t *ent )
 
 // Basic vote information
 // Entries must be in the same order as for voteType_t
-enum {
-	V_TEAM, V_PUBLIC, V_ANY
+enum
+{
+    V_TEAM, V_PUBLIC, V_ANY
 };
-enum {
-	T_NONE, T_PLAYER, T_OTHER
+enum
+{
+    T_NONE, T_PLAYER, T_OTHER
 };
-enum {
-	VOTE_ALWAYS, // default
-	VOTE_BEFORE, // within the first N minutes
-	VOTE_AFTER,  // not within the first N minutes
-	VOTE_REMAIN, // within N/2 minutes before SD
-	VOTE_NO_AUTO,// don't automatically vote 'yes'
-	VOTE_ENABLE, // for special-purpose enable flags
+enum
+{
+    VOTE_ALWAYS, // default
+    VOTE_BEFORE, // within the first N minutes
+    VOTE_AFTER,  // not within the first N minutes
+    VOTE_REMAIN, // within N/2 minutes before SD
+    VOTE_NO_AUTO,// don't automatically vote 'yes'
+    VOTE_ENABLE, // for special-purpose enable flags
 };
-static const struct {
+static const struct
+{
 	const char     *name;
 	qboolean        stopOnIntermission;
 	int             type;
@@ -1596,7 +1608,8 @@ static const struct {
 	int             special;
 	const vmCvar_t *specialCvar;
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
-} voteInfo[] = {
+} voteInfo[] =
+{
 	// Name           Stop?   Type      Target     Immune   Quorum  Reason  Vote percentage var        Extra
 	{ "kick",         qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  qyes,   &g_kickVotesPercent },
 	{ "spectate",     qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  qyes,   &g_kickVotesPercent },
@@ -1648,19 +1661,19 @@ void Cmd_CallVote_f( gentity_t *ent )
 	int    i;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
-	team = (team_t) ( ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.team : TEAM_NONE );
+	team = ( team_t )( ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.team : TEAM_NONE );
 
 	if ( !g_allowVote.integer )
 	{
 		trap_SendServerCommand( ent - g_entities,
-		                        va( "print_tr %s %s", QQ( N_("$1$: voting not allowed here\n") ), cmd ) );
+		                        va( "print_tr %s %s", QQ( N_( "$1$: voting not allowed here\n" ) ), cmd ) );
 		return;
 	}
 
 	if ( level.team[ team ].voteTime )
 	{
 		trap_SendServerCommand( ent - g_entities,
-		                        va( "print_tr %s %s", QQ( N_("$1$: a vote is already in progress\n") ), cmd ) );
+		                        va( "print_tr %s %s", QQ( N_( "$1$: a vote is already in progress\n" ) ), cmd ) );
 		return;
 	}
 
@@ -1676,11 +1689,12 @@ void Cmd_CallVote_f( gentity_t *ent )
 	// look up the vote detail
 	for ( voteId = 0; voteInfo[voteId].name; ++voteId )
 	{
-		if ( ( team == TEAM_NONE && voteInfo[voteId].type == V_TEAM   ) ||
-		     ( team != TEAM_NONE && voteInfo[voteId].type == V_PUBLIC ) )
+		if ( ( team == TEAM_NONE && voteInfo[voteId].type == V_TEAM ) ||
+		        ( team != TEAM_NONE && voteInfo[voteId].type == V_PUBLIC ) )
 		{
 			continue;
 		}
+
 		if ( !Q_stricmp( voteInfo[voteId].name, vote ) )
 		{
 			break;
@@ -1692,17 +1706,17 @@ void Cmd_CallVote_f( gentity_t *ent )
 	{
 		qboolean added = qfalse;
 
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("Invalid vote string\n") "\"" );
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", team == TEAM_NONE ? QQ( N_("Valid vote commands are: ") ) :
-			QQ( N_("Valid team-vote commands are: ") ) ) );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "Invalid vote string\n" ) "\"" );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", team == TEAM_NONE ? QQ( N_( "Valid vote commands are: " ) ) :
+		                        QQ( N_( "Valid team-vote commands are: " ) ) ) );
 		cmd[0] = '\0';
 
 		Q_strcat( cmd, sizeof( cmd ), "print \"" );
 
-		for( voteId = 0; voteInfo[voteId].name; ++voteId )
+		for ( voteId = 0; voteInfo[voteId].name; ++voteId )
 		{
-			if ( ( team == TEAM_NONE && voteInfo[voteId].type != V_TEAM   ) ||
-			     ( team != TEAM_NONE && voteInfo[voteId].type != V_PUBLIC ) )
+			if ( ( team == TEAM_NONE && voteInfo[voteId].type != V_TEAM ) ||
+			        ( team != TEAM_NONE && voteInfo[voteId].type != V_PUBLIC ) )
 			{
 				if ( !voteInfo[voteId].percentage || voteInfo[voteId].percentage->integer > 0 )
 				{
@@ -1758,89 +1772,90 @@ void Cmd_CallVote_f( gentity_t *ent )
 	}
 
 	if ( g_voteLimit.integer > 0 &&
-	     ent->client->pers.namelog->voteCount >= g_voteLimit.integer &&
-	     !G_admin_permission( ent, ADMF_NO_VOTE_LIMIT ) )
+	        ent->client->pers.namelog->voteCount >= g_voteLimit.integer &&
+	        !G_admin_permission( ent, ADMF_NO_VOTE_LIMIT ) )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print_tr %s %s %d", QQ( N_("$1$: you have already called the maximum number of votes ($2$)\n") ),
-		                          cmd, g_voteLimit.integer ) );
+		                            "print_tr %s %s %d", QQ( N_( "$1$: you have already called the maximum number of votes ($2$)\n" ) ),
+		                            cmd, g_voteLimit.integer ) );
 		return;
 	}
 
-	level.team[ team ].voteType = (voteType_t) voteId;
+	level.team[ team ].voteType = ( voteType_t ) voteId;
 
 	// Vote time, percentage for pass, quorum
 	level.team[ team ].voteDelay = 0;
 	level.team[ team ].voteThreshold = voteInfo[voteId].percentage ? voteInfo[voteId].percentage->integer : 50;
 	level.team[ team ].quorum = voteInfo[voteId].quorum;
 
-	if ( level.team[ team ].voteThreshold <= 0)
+	if ( level.team[ team ].voteThreshold <= 0 )
 	{
 vote_is_disabled:
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled\n") ), voteInfo[voteId].name ) );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_( "'$1$' votes have been disabled\n" ) ), voteInfo[voteId].name ) );
 		return;
 	}
 
-	if ( level.team[ team ].voteThreshold > 100)
+	if ( level.team[ team ].voteThreshold > 100 )
 	{
 		level.team[ team ].voteThreshold = 100;
 	}
 
 	switch ( voteInfo[voteId].special )
 	{
-	case VOTE_BEFORE:
-		if ( level.matchTime >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed once $2$ minutes have passed\n") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
-			return;
-		}
+		case VOTE_BEFORE:
+			if ( level.matchTime >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s %d", QQ( N_( "'$1$' votes are not allowed once $2$ minutes have passed\n" ) ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
+				return;
+			}
 
-		break;
+			break;
 
-	case VOTE_AFTER:
-		if ( level.matchTime < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed until $2$ minutes have passed\n") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
-			return;
-		}
+		case VOTE_AFTER:
+			if ( level.matchTime < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s %d", QQ( N_( "'$1$' votes are not allowed until $2$ minutes have passed\n" ) ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
+				return;
+			}
 
-		break;
+			break;
 
-	case VOTE_REMAIN:
-		if ( !level.timelimit || level.matchTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are only allowed with less than $2$ minutes remaining\n") ),
-			                            voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer / 2 ) );
-			return;
-		}
+		case VOTE_REMAIN:
+			if ( !level.timelimit || level.matchTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s %d", QQ( N_( "'$1$' votes are only allowed with less than $2$ minutes remaining\n" ) ),
+				                            voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer / 2 ) );
+				return;
+			}
 
-		break;
+			break;
 
-	case VOTE_ENABLE:
-		if ( !voteInfo[voteId].specialCvar->integer )
-		{
-			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled\n") ), voteInfo[voteId].name ) );
-			return;
-		}
+		case VOTE_ENABLE:
+			if ( !voteInfo[voteId].specialCvar->integer )
+			{
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_( "'$1$' votes have been disabled\n" ) ), voteInfo[voteId].name ) );
+				return;
+			}
 
-		break;
+			break;
 
-	default:;
+		default:
+			;
 	}
 
 	// Get argument and reason, if needed
 	arg[0] = '\0';
 	reason[0] = '\0';
 
-	if( voteInfo[voteId].target != T_NONE )
+	if ( voteInfo[voteId].target != T_NONE )
 	{
 		trap_Argv( 2, arg, sizeof( arg ) );
 	}
 
-	if( voteInfo[voteId].reasonNeeded )
+	if ( voteInfo[voteId].reasonNeeded )
 	{
 		char *creason = ConcatArgs( voteInfo[voteId].target != T_NONE ? 3 : 2 );
 		G_DecolorString( creason, reason, sizeof( reason ) );
@@ -1853,7 +1868,7 @@ vote_is_disabled:
 		if ( !arg[ 0 ] )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: no target\n") ), cmd ) );
+			                        va( "print_tr %s %s", QQ( N_( "$1$: no target\n" ) ), cmd ) );
 			return;
 		}
 
@@ -1872,14 +1887,14 @@ vote_is_disabled:
 		if ( g_entities[clientNum].r.svFlags & SVF_BOT )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: player is a bot\n") ), cmd ) );
+			                        va( "print_tr %s %s", QQ( N_( "$1$: player is a bot\n" ) ), cmd ) );
 			return;
 		}
 
 		if ( voteInfo[voteId].adminImmune && G_admin_permission( g_entities + clientNum, ADMF_IMMUNITY ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: admin is immune\n") ), cmd ) );
+			                        va( "print_tr %s %s", QQ( N_( "$1$: admin is immune\n" ) ), cmd ) );
 			G_AdminMessage( NULL,
 			                va( "^7%s^3 attempted %s %s"
 			                    " on immune admin ^7%s"
@@ -1893,205 +1908,206 @@ vote_is_disabled:
 		if ( level.clients[ clientNum ].pers.localClient )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: admin is immune\n") ), cmd ) );
+			                        va( "print_tr %s %s", QQ( N_( "$1$: admin is immune\n" ) ), cmd ) );
 			return;
 		}
 
 		if ( team != TEAM_NONE &&
-			 ent->client->pers.team != level.clients[ clientNum ].pers.team )
+		        ent->client->pers.team != level.clients[ clientNum ].pers.team )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: player is not on your team\n") ), cmd ) );
+			                        va( "print_tr %s %s", QQ( N_( "$1$: player is not on your team\n" ) ), cmd ) );
 			return;
 		}
 	}
 
 	if ( voteInfo[voteId].reasonNeeded == qyes && !reason[ 0 ] &&
-	     !( voteInfo[voteId].adminImmune && G_admin_permission( ent, ADMF_UNACCOUNTABLE ) ) &&
-	     !( voteInfo[voteId].reasonFlag && voteInfo[voteId].reasonFlag->integer ) )
+	        !( voteInfo[voteId].adminImmune && G_admin_permission( ent, ADMF_UNACCOUNTABLE ) ) &&
+	        !( voteInfo[voteId].reasonFlag && voteInfo[voteId].reasonFlag->integer ) )
 	{
 		trap_SendServerCommand( ent - g_entities,
-		                        va( "print_tr %s %s", QQ( N_("$1$: You must provide a reason\n") ), cmd ) );
+		                        va( "print_tr %s %s", QQ( N_( "$1$: You must provide a reason\n" ) ), cmd ) );
 		return;
 	}
 
-	switch( voteId )
+	switch ( voteId )
 	{
-	case VOTE_KICK:
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "ban %s 1s%s %s ^7called vote kick (%s^7)", level.clients[ clientNum ].pers.ip.str,
-		             Quote( g_adminTempBan.string ), Quote( ent->client->pers.netname ), Quote( reason ) );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ), N_("Kick player '%s'"), name );
-		break;
+		case VOTE_KICK:
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+			             "ban %s 1s%s %s ^7called vote kick (%s^7)", level.clients[ clientNum ].pers.ip.str,
+			             Quote( g_adminTempBan.string ), Quote( ent->client->pers.netname ), Quote( reason ) );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+			             sizeof( level.team[ team ].voteDisplayString ), N_( "Kick player '%s'" ), name );
+			break;
 
-	case VOTE_SPECTATE:
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "speclock %d 1s%s", clientNum, Quote( g_adminTempBan.string ) );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             N_("Move player '%s' to spectators"), name );
-		break;
+		case VOTE_SPECTATE:
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+			             "speclock %d 1s%s", clientNum, Quote( g_adminTempBan.string ) );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+			             sizeof( level.team[ team ].voteDisplayString ),
+			             N_( "Move player '%s' to spectators" ), name );
+			break;
 
-	case VOTE_BOT_KICK:
-	case VOTE_BOT_SPECTATE:
-		for ( i = 0; i < MAX_CLIENTS; ++i )
-		{
-			if ( g_entities[i].r.svFlags & SVF_BOT &&
-			     g_entities[i].client->pers.team != TEAM_NONE )
+		case VOTE_BOT_KICK:
+		case VOTE_BOT_SPECTATE:
+			for ( i = 0; i < MAX_CLIENTS; ++i )
 			{
-				break;
+				if ( g_entities[i].r.svFlags & SVF_BOT &&
+				        g_entities[i].client->pers.team != TEAM_NONE )
+				{
+					break;
+				}
 			}
-		}
 
-		if ( i == MAX_CLIENTS )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: there are no active bots\n") ), cmd ) );
-			return;
-		}
+			if ( i == MAX_CLIENTS )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s", QQ( N_( "$1$: there are no active bots\n" ) ), cmd ) );
+				return;
+			}
 
-		if ( voteId == VOTE_BOT_KICK )
-		{
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot del all" );
-			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Remove all bots") );
-		}
-		else
-		{
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot spec all" );
-			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Move all bots to spectators") );
-		}
-		break;
+			if ( voteId == VOTE_BOT_KICK )
+			{
+				Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot del all" );
+				Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_( "Remove all bots" ) );
+			}
+			else
+			{
+				Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot spec all" );
+				Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_( "Move all bots to spectators" ) );
+			}
 
-	case VOTE_MUTE:
-		if ( level.clients[ clientNum ].pers.namelog->muted )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: player is already muted\n") ), cmd ) );
-			return;
-		}
+			break;
 
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "mute %d", id );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             N_("Mute player '%s'"), name );
-		break;
+		case VOTE_MUTE:
+			if ( level.clients[ clientNum ].pers.namelog->muted )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s", QQ( N_( "$1$: player is already muted\n" ) ), cmd ) );
+				return;
+			}
 
-	case VOTE_UNMUTE:
-		if ( !level.clients[ clientNum ].pers.namelog->muted )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: player is not currently muted\n") ), cmd ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "unmute %d", id );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             N_("Unmute player '%s'"), name );
-		break;
-
-	case VOTE_DENYBUILD:
-		if ( level.clients[ clientNum ].pers.namelog->denyBuild )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: player already lost building rights\n") ), cmd ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "denybuild %d", id );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             "Take away building rights from '%s'", name );
-		break;
-
-	case VOTE_ALLOWBUILD:
-		if ( !level.clients[ clientNum ].pers.namelog->denyBuild )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: player already has building rights\n") ), cmd ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "allowbuild %d", id );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             "Allow '%s' to build", name );
-		break;
-
-	case VOTE_EXTEND:
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "time %i", level.timelimit + g_extendVotesTime.integer );
-		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
-		             "Extend the timelimit by %d minutes", g_extendVotesTime.integer );
-		break;
-
-	case VOTE_ADMIT_DEFEAT:
-		level.team[ team ].voteDelay = 3000;
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "admitdefeat %d", team );
-		strcpy( level.team[ team ].voteDisplayString, "Admit Defeat" );
-		break;
-
-	case VOTE_DRAW:
-		level.team[ team ].voteDelay = 3000;
-		strcpy( level.team[ team ].voteString, "evacuation" );
-		strcpy( level.team[ team ].voteDisplayString, "End match in a draw" );
-		break;
-
-	case VOTE_MAP_RESTART:
-		strcpy( level.team[ team ].voteString, vote );
-		strcpy( level.team[ team ].voteDisplayString, "Restart current map" );
-		// map_restart comes with a default delay
-		break;
-
-	case VOTE_MAP:
-		if ( !G_MapExists( arg ) )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %s", QQ( N_("$1$: 'maps/$2$.bsp' could not be found on the server\n") ),
-			                            cmd, Quote( arg ) ) );
-			return;
-		}
-
-		level.team[ team ].voteDelay = 3000;
-
-		if ( *reason ) // layout?
-		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "map %s %s", Quote( arg ), Quote( reason ) );
+			             "mute %d", id );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
-			             "Change to map '%s' layout '%s'", arg, reason );
-		}
-		else
-		{
+			             N_( "Mute player '%s'" ), name );
+			break;
+
+		case VOTE_UNMUTE:
+			if ( !level.clients[ clientNum ].pers.namelog->muted )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s", QQ( N_( "$1$: player is not currently muted\n" ) ), cmd ) );
+				return;
+			}
+
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "map %s", Quote( arg ) );
+			             "unmute %d", id );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
-			             "Change to map '%s'", arg );
-		}
+			             N_( "Unmute player '%s'" ), name );
+			break;
 
-		reason[0] = '\0'; // nullify since we've used it here...
-		break;
+		case VOTE_DENYBUILD:
+			if ( level.clients[ clientNum ].pers.namelog->denyBuild )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s", QQ( N_( "$1$: player already lost building rights\n" ) ), cmd ) );
+				return;
+			}
 
-	case VOTE_LAYOUT:
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+			             "denybuild %d", id );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+			             sizeof( level.team[ team ].voteDisplayString ),
+			             "Take away building rights from '%s'", name );
+			break;
+
+		case VOTE_ALLOWBUILD:
+			if ( !level.clients[ clientNum ].pers.namelog->denyBuild )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s", QQ( N_( "$1$: player already has building rights\n" ) ), cmd ) );
+				return;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+			             "allowbuild %d", id );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+			             sizeof( level.team[ team ].voteDisplayString ),
+			             "Allow '%s' to build", name );
+			break;
+
+		case VOTE_EXTEND:
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+			             "time %i", level.timelimit + g_extendVotesTime.integer );
+			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
+			             "Extend the timelimit by %d minutes", g_extendVotesTime.integer );
+			break;
+
+		case VOTE_ADMIT_DEFEAT:
+			level.team[ team ].voteDelay = 3000;
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+			             "admitdefeat %d", team );
+			strcpy( level.team[ team ].voteDisplayString, "Admit Defeat" );
+			break;
+
+		case VOTE_DRAW:
+			level.team[ team ].voteDelay = 3000;
+			strcpy( level.team[ team ].voteString, "evacuation" );
+			strcpy( level.team[ team ].voteDisplayString, "End match in a draw" );
+			break;
+
+		case VOTE_MAP_RESTART:
+			strcpy( level.team[ team ].voteString, vote );
+			strcpy( level.team[ team ].voteDisplayString, "Restart current map" );
+			// map_restart comes with a default delay
+			break;
+
+		case VOTE_MAP:
+			if ( !G_MapExists( arg ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s %s", QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server\n" ) ),
+				                            cmd, Quote( arg ) ) );
+				return;
+			}
+
+			level.team[ team ].voteDelay = 3000;
+
+			if ( *reason ) // layout?
+			{
+				Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+				             "map %s %s", Quote( arg ), Quote( reason ) );
+				Com_sprintf( level.team[ team ].voteDisplayString,
+				             sizeof( level.team[ team ].voteDisplayString ),
+				             "Change to map '%s' layout '%s'", arg, reason );
+			}
+			else
+			{
+				Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+				             "map %s", Quote( arg ) );
+				Com_sprintf( level.team[ team ].voteDisplayString,
+				             sizeof( level.team[ team ].voteDisplayString ),
+				             "Change to map '%s'", arg );
+			}
+
+			reason[0] = '\0'; // nullify since we've used it here...
+			break;
+
+		case VOTE_LAYOUT:
 		{
 			char map[ 64 ];
 
 			trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
 			if ( Q_stricmp( arg, S_BUILTIN_LAYOUT ) &&
-			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), NULL, FS_READ ) )
+			        !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), NULL, FS_READ ) )
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("callvote: "
-				                        "layout '$1$' could not be found on the server\n") ), Quote( arg ) ) );
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_( "callvote: "
+				                        "layout '$1$' could not be found on the server\n" ) ), Quote( arg ) ) );
 				return;
 			}
 
@@ -2101,52 +2117,52 @@ vote_is_disabled:
 		}
 		break;
 
-	case VOTE_NEXT_MAP:
-		if ( G_MapExists( g_nextMap.string ) )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %s", QQ( N_("$1$: the next map is already set to '$2$'\n") ),
-			                            cmd, Quote( g_nextMap.string ) ) );
-			return;
-		}
+		case VOTE_NEXT_MAP:
+			if ( G_MapExists( g_nextMap.string ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s %s", QQ( N_( "$1$: the next map is already set to '$2$'\n" ) ),
+				                            cmd, Quote( g_nextMap.string ) ) );
+				return;
+			}
 
-		if ( !G_MapExists( arg ) )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %s", QQ( N_("$1$: 'maps/$2$.bsp' could not be found on the server\n") ),
-			                            cmd, Quote( arg ) ) );
-			return;
-		}
+			if ( !G_MapExists( arg ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print_tr %s %s %s", QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server\n" ) ),
+				                            cmd, Quote( arg ) ) );
+				return;
+			}
 
-		if ( *reason ) // layout?
-		{
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "set g_nextMap %s; set g_nextMapLayouts %s", Quote( arg ), Quote( reason ) );
+			if ( *reason ) // layout?
+			{
+				Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+				             "set g_nextMap %s; set g_nextMapLayouts %s", Quote( arg ), Quote( reason ) );
+				Com_sprintf( level.team[ team ].voteDisplayString,
+				             sizeof( level.team[ team ].voteDisplayString ),
+				             "Set the next map to '%s' layout '%s'", arg, reason );
+			}
+			else
+			{
+				Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+				             "set g_nextMap %s; set g_nextMapLayouts \"\"", Quote( arg ) );
+				Com_sprintf( level.team[ team ].voteDisplayString,
+				             sizeof( level.team[ team ].voteDisplayString ),
+				             "Set the next map to '%s'", arg );
+			}
+
+			reason[0] = '\0'; // nullify since we've used it here...
+			break;
+
+		case VOTE_POLL:
+			level.team[ team ].voteString[0] = '\0';
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
-			             "Set the next map to '%s' layout '%s'", arg, reason );
-		}
-		else
-		{
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "set g_nextMap %s; set g_nextMapLayouts \"\"", Quote( arg ) );
-			Com_sprintf( level.team[ team ].voteDisplayString,
-			             sizeof( level.team[ team ].voteDisplayString ),
-			             "Set the next map to '%s'", arg );
-		}
+			             "(poll) %s", reason );
+			reason[0] = '\0'; // nullify since we've used it here...
+			break;
 
-		reason[0] = '\0'; // nullify since we've used it here...
-		break;
-
-	case VOTE_POLL:
-		level.team[ team ].voteString[0] = '\0';
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             "(poll) %s", reason );
-		reason[0] = '\0'; // nullify since we've used it here...
-		break;
-
-	//default:;
+			//default:;
 	}
 
 	// Append the vote reason (if applicable)
@@ -2162,7 +2178,7 @@ vote_is_disabled:
 
 	if ( team == TEAM_NONE )
 	{
-		trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^7 called a vote: $2$\n") ),
+		trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_( "$1$^7 called a vote: $2$\n" ) ),
 		                                Quote( ent->client->pers.netname ), Quote( level.team[ team ].voteDisplayString ) ) );
 	}
 	else
@@ -2174,10 +2190,10 @@ vote_is_disabled:
 			if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 			{
 				if ( level.clients[ i ].pers.team == team ||
-				     ( level.clients[ i ].pers.team == TEAM_NONE &&
-				       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
+				        ( level.clients[ i ].pers.team == TEAM_NONE &&
+				          G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 				{
-					trap_SendServerCommand( i, va( "print_tr %s %s %s", QQ( N_("$1$^7 called a team vote: $2t$\n") ),
+					trap_SendServerCommand( i, va( "print_tr %s %s %s", QQ( N_( "$1$^7 called a team vote: $2t$\n" ) ),
 					                               Quote( ent->client->pers.netname ), Quote( level.team[ team ].voteDisplayString ) ) );
 				}
 				else if ( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
@@ -2216,7 +2232,7 @@ Cmd_Vote_f
 void Cmd_Vote_f( gentity_t *ent )
 {
 	char   cmd[ MAX_TOKEN_CHARS ], vote[ MAX_TOKEN_CHARS ];
-	team_t team = (team_t) ent->client->pers.team;
+	team_t team = ( team_t ) ent->client->pers.team;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
@@ -2228,31 +2244,33 @@ void Cmd_Vote_f( gentity_t *ent )
 	if ( !level.team[ team ].voteTime )
 	{
 		trap_SendServerCommand( ent - g_entities,
-		                        va( "print_tr %s %s", QQ( N_("$1$: no vote in progress\n") ), cmd ) );
+		                        va( "print_tr %s %s", QQ( N_( "$1$: no vote in progress\n" ) ), cmd ) );
 		return;
 	}
 
 	if ( ent->client->pers.voted & ( 1 << team ) )
 	{
 		trap_SendServerCommand( ent - g_entities,
-		                        va( "print_tr %s %s", QQ( N_("$1$: vote already cast\n") ),  cmd ) );
+		                        va( "print_tr %s %s", QQ( N_( "$1$: vote already cast\n" ) ),  cmd ) );
 		return;
 	}
 
 	trap_SendServerCommand( ent - g_entities,
-	                        va( "print_tr %s %s", QQ( N_("$1$: vote cast\n") ), cmd ) );
+	                        va( "print_tr %s %s", QQ( N_( "$1$: vote cast\n" ) ), cmd ) );
 
 	trap_Argv( 1, vote, sizeof( vote ) );
 
 	switch ( vote[ 0 ] )
 	{
-	case 'y': case 'Y':
-		ent->client->pers.voteYes |= 1 << team;
-		break;
+		case 'y':
+		case 'Y':
+			ent->client->pers.voteYes |= 1 << team;
+			break;
 
-	case 'n': case 'N':
-		ent->client->pers.voteNo |= 1 << team;
-		break;
+		case 'n':
+		case 'N':
+			ent->client->pers.voteNo |= 1 << team;
+			break;
 	}
 
 	G_Vote( ent, team, qtrue );
@@ -2272,24 +2290,26 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 	if ( trap_Argc() < 4 && trap_Argc() != 2 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n") "\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n" ) "\"" );
 		return;
 	}
 
-	if(trap_Argc() == 2)
+	if ( trap_Argc() == 2 )
 	{
 		trap_Argv( 1, buffer, sizeof( buffer ) );
 		entityId = atoi( buffer );
 
-		if (entityId >= level.num_entities || entityId < MAX_CLIENTS)
+		if ( entityId >= level.num_entities || entityId < MAX_CLIENTS )
 		{
-			G_Printf("entityId %d is out of range\n", entityId);
+			G_Printf( "entityId %d is out of range\n", entityId );
 			return;
 		}
+
 		selection = &g_entities[entityId];
-		if (!selection->inuse)
+
+		if ( !selection->inuse )
 		{
-			G_Printf("entity slot %d is not in use\n", entityId);
+			G_Printf( "entity slot %d is not in use\n", entityId );
 			return;
 		}
 
@@ -2303,6 +2323,7 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 			trap_Argv( i + 1, buffer, sizeof( buffer ) );
 			origin[ i ] = atof( buffer );
 		}
+
 		origin[ 2 ] -= ent->client->ps.viewheight;
 		VectorCopy( ent->client->ps.viewangles, angles );
 		angles[ ROLL ] = 0;
@@ -2311,6 +2332,7 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 		{
 			trap_Argv( 4, buffer, sizeof( buffer ) );
 			angles[ YAW ] = atof( buffer );
+
 			if ( trap_Argc() >= 6 )
 			{
 				trap_Argv( 5, buffer, sizeof( buffer ) );
@@ -2332,7 +2354,7 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 	trace_t tr;
 	float   nudgeHeight;
 	float   maxHorizGrowth;
-	class_t oldClass = (class_t) ent->client->ps.stats[ STAT_CLASS ];
+	class_t oldClass = ( class_t ) ent->client->ps.stats[ STAT_CLASS ];
 
 	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
 	BG_ClassBoundingBox( pcl, toMins, toMaxs, NULL, NULL, NULL );
@@ -2420,22 +2442,25 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		team_t team;
+
 		if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
 		{
 			G_StopFollowing( ent );
 		}
 
-		team = (team_t) ent->client->pers.team;
+		team = ( team_t ) ent->client->pers.team;
+
 		if ( team == TEAM_ALIENS )
 		{
 			if ( newClass != PCL_ALIEN_BUILDER0 &&
-			     newClass != PCL_ALIEN_BUILDER0_UPG &&
-			     newClass != PCL_ALIEN_LEVEL0 )
+			        newClass != PCL_ALIEN_BUILDER0_UPG &&
+			        newClass != PCL_ALIEN_LEVEL0 )
 			{
 				if ( report )
 				{
 					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTSPAWN, newClass );
 				}
+
 				return qfalse;
 			}
 
@@ -2445,6 +2470,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTALLOWED, newClass );
 				}
+
 				return qfalse;
 			}
 
@@ -2454,6 +2480,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSLOCKED, newClass );
 				}
+
 				return qfalse;
 			}
 
@@ -2471,7 +2498,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 		{
 			//set the item to spawn with
 			if ( !Q_stricmp( s, BG_Weapon( WP_MACHINEGUN )->name ) &&
-			     !BG_WeaponDisabled( WP_MACHINEGUN ) )
+			        !BG_WeaponDisabled( WP_MACHINEGUN ) )
 			{
 				ent->client->pers.humanItemSelection = WP_MACHINEGUN;
 			}
@@ -2486,12 +2513,14 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNSPAWNITEM );
 				}
+
 				return qfalse;
 			}
 
 			// spawn from a telenode
 			//TODO merge with alien's code
 			newClass = PCL_HUMAN_NAKED;
+
 			if ( G_PushSpawnQueue( &level.team[ team ].spawnQueue, clientNum ) )
 			{
 				ent->client->pers.classSelection = newClass;
@@ -2517,6 +2546,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 			{
 				G_TriggerMenu( ent->client->ps.clientNum, MN_A_UNKNOWNCLASS );
 			}
+
 			return qfalse;
 		}
 
@@ -2532,6 +2562,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenu( clientNum, MN_A_NOOVMND_EVOLVE );
 				}
+
 				return qfalse;
 			}
 
@@ -2546,13 +2577,14 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				other = &g_entities[ entityList[ i ] ];
 
 				if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
-				     ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
-				       other->powered ) )
+				        ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
+				          other->powered ) )
 				{
 					if ( report )
 					{
 						G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
 					}
+
 					return qfalse;
 				}
 			}
@@ -2564,18 +2596,20 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenu( clientNum, MN_A_EVOLVEWALLWALK );
 				}
+
 				return qfalse;
 			}
 
 			if ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
-			     ( currentClass == PCL_ALIEN_BUILDER0 ||
-			       currentClass == PCL_ALIEN_BUILDER0_UPG ) &&
-			     ent->client->ps.stats[ STAT_MISC ] > 0 )
+			        ( currentClass == PCL_ALIEN_BUILDER0 ||
+			          currentClass == PCL_ALIEN_BUILDER0_UPG ) &&
+			        ent->client->ps.stats[ STAT_MISC ] > 0 )
 			{
 				if ( report )
 				{
 					G_TriggerMenu( ent->client->ps.clientNum, MN_A_EVOLVEBUILDTIMER );
 				}
+
 				return qfalse;
 			}
 
@@ -2586,7 +2620,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				if ( cost >= 0 )
 				{
 					ent->client->pers.evolveHealthFraction = ( float ) ent->client->ps.stats[ STAT_HEALTH ] /
-					    ( float ) BG_Class( currentClass )->health;
+					        ( float ) BG_Class( currentClass )->health;
 
 					if ( ent->client->pers.evolveHealthFraction < 0.0f )
 					{
@@ -2625,6 +2659,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 					{
 						G_TriggerMenuArgs( clientNum, MN_A_CANTEVOLVE, newClass );
 					}
+
 					return qfalse;
 				}
 			}
@@ -2634,6 +2669,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenu( clientNum, MN_A_NOEROOM );
 				}
+
 				return qfalse;
 			}
 		}
@@ -2644,6 +2680,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 		{
 			G_TriggerMenu( clientNum, MN_H_DEADTOCLASS );
 		}
+
 		return qfalse;
 	}
 
@@ -2661,7 +2698,10 @@ void Cmd_Class_f( gentity_t *ent )
 	{
 		trap_Argv( i, s, sizeof( s ) );
 
-		if ( Cmd_Class_internal( ent, s, i == args ) ) break;
+		if ( Cmd_Class_internal( ent, s, i == args ) )
+		{
+			break;
+		}
 	}
 }
 
@@ -2689,8 +2729,8 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 
 	// check if target is valid
 	if ( trace.fraction >= 1.0f ||
-	     buildable->s.eType != ET_BUILDABLE ||
-	     !G_OnSameTeam( ent, buildable ) )
+	        buildable->s.eType != ET_BUILDABLE ||
+	        !G_OnSameTeam( ent, buildable ) )
 	{
 		return;
 	}
@@ -2745,6 +2785,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 						G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
 						return;
 					}
+
 					break;
 			}
 
@@ -2812,7 +2853,7 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 	if ( !Q_stricmp( "weapon", s ) )
 	{
 		if ( ent->client->ps.weapon == WP_BLASTER &&
-		     BG_PlayerCanChangeWeapon( &ent->client->ps ) )
+		        BG_PlayerCanChangeWeapon( &ent->client->ps ) )
 		{
 			G_ForceWeaponChange( ent, WP_NONE );
 		}
@@ -2848,14 +2889,14 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 	          BG_InventoryContainsWeapon( weapon, ent->client->ps.stats ) )
 	{
 		if ( ent->client->ps.weapon != weapon &&
-		     BG_PlayerCanChangeWeapon( &ent->client->ps ) )
+		        BG_PlayerCanChangeWeapon( &ent->client->ps ) )
 		{
-			G_ForceWeaponChange( ent, (weapon_t) weapon );
+			G_ForceWeaponChange( ent, ( weapon_t ) weapon );
 		}
 	}
 	else
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("You don't have the $1$\n") ), Quote( s ) ) );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_( "You don't have the $1$\n" ) ), Quote( s ) ) );
 	}
 }
 
@@ -2880,7 +2921,7 @@ void Cmd_DeActivateItem_f( gentity_t *ent )
 	}
 	else
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("You don't have the $1$\n") ), Quote( s ) ) );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_( "You don't have the $1$\n" ) ), Quote( s ) ) );
 	}
 }
 
@@ -2933,7 +2974,7 @@ void Cmd_ToggleItem_f( gentity_t *ent )
 	}
 	else
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("You don't have the $1$\n") ), Quote( s ) ) );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_( "You don't have the $1$\n" ) ), Quote( s ) ) );
 	}
 }
 
@@ -2963,7 +3004,7 @@ static qboolean Cmd_Sell_weapons( gentity_t *ent )
 		}
 
 		if ( BG_InventoryContainsWeapon( i, ent->client->ps.stats ) &&
-		     BG_Weapon( i )->purchasable )
+		        BG_Weapon( i )->purchasable )
 		{
 			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
 
@@ -2987,7 +3028,7 @@ static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 {
 	// check if carried and sellable
 	if ( !BG_InventoryContainsUpgrade( item, ent->client->ps.stats ) ||
-	     !BG_Upgrade( item )->purchasable )
+	        !BG_Upgrade( item )->purchasable )
 	{
 		return qfalse;
 	}
@@ -3025,7 +3066,7 @@ static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
-		sold |= Cmd_Sell_upgradeItem( ent, (upgrade_t) i );
+		sold |= Cmd_Sell_upgradeItem( ent, ( upgrade_t ) i );
 	}
 
 	return sold;
@@ -3053,7 +3094,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 
 	if ( !Q_strnicmp( s, "weapon", 6 ) )
 	{
-		weapon = (weapon_t) ent->client->ps.stats[ STAT_WEAPON ];
+		weapon = ( weapon_t ) ent->client->ps.stats[ STAT_WEAPON ];
 	}
 	else
 	{
@@ -3074,7 +3115,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 		//are we /allowed/ to sell this?
 		if ( !BG_Weapon( weapon )->purchasable )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this weapon\n") "\"" );
+			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "You can't sell this weapon\n" ) "\"" );
 			return qfalse;
 		}
 
@@ -3107,7 +3148,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 		//are we /allowed/ to sell this?
 		if ( !BG_Upgrade( upgrade )->purchasable )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this item\n") "\"" );
+			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "You can't sell this item\n" ) "\"" );
 			return qfalse;
 		}
 
@@ -3179,7 +3220,7 @@ static qboolean Cmd_Sell_conflictingUpgrades( gentity_t *ent, upgrade_t upgrade 
 
 			if ( slots & slot )
 			{
-				sold |= Cmd_Sell_upgradeItem( ent, (upgrade_t) i );
+				sold |= Cmd_Sell_upgradeItem( ent, ( upgrade_t ) i );
 			}
 		}
 	}
@@ -3239,7 +3280,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 			return qfalse;
 		}
 
-		for (;;)
+		for ( ;; )
 		{
 			//can afford this?
 			if ( BG_Weapon( weapon )->price > ( short ) ent->client->pers.credit )
@@ -3309,7 +3350,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 			goto cant_buy;
 		}
 
-		for (;;)
+		for ( ;; )
 		{
 			//can afford this?
 			if ( BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
@@ -3396,11 +3437,11 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 	return qfalse;
 
 cant_buy:
-	trap_SendServerCommand( ent - g_entities, va( "print_tr \"" N_("You can't buy this item ($1$)\n") "\" %s", Quote( s ) ) );
+	trap_SendServerCommand( ent - g_entities, va( "print_tr \"" N_( "You can't buy this item ($1$)\n" ) "\" %s", Quote( s ) ) );
 	return qfalse;
 
 not_alien:
-	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
+	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "You can't buy alien items\n" ) "\"" );
 	return qfalse;
 }
 
@@ -3421,18 +3462,21 @@ void Cmd_Buy_f( gentity_t *ent )
 
 		switch ( s[0] )
 		{
-		case '-':
-			updated |= Cmd_Sell_internal( ent, s + 1 );
-			break;
-		case '+':
-			updated |= Cmd_Buy_internal( ent, s + 1, qtrue, qfalse ); // auto-sell if needed
-			break;
-		case '?':
-			updated |= Cmd_Buy_internal( ent, s + 1, qfalse, qtrue ); // quiet mode
-			break;
-		default:
-			updated |= Cmd_Buy_internal( ent, s, qfalse, qfalse );
-			break;
+			case '-':
+				updated |= Cmd_Sell_internal( ent, s + 1 );
+				break;
+
+			case '+':
+				updated |= Cmd_Buy_internal( ent, s + 1, qtrue, qfalse ); // auto-sell if needed
+				break;
+
+			case '?':
+				updated |= Cmd_Buy_internal( ent, s + 1, qfalse, qtrue ); // quiet mode
+				break;
+
+			default:
+				updated |= Cmd_Buy_internal( ent, s, qfalse, qfalse );
+				break;
 		}
 	}
 
@@ -3474,8 +3518,8 @@ void Cmd_Build_f( gentity_t *ent )
 	buildable = BG_BuildableByName( s )->number;
 
 	if ( buildable != BA_NONE &&
-	     ( ( 1 << ent->client->ps.weapon ) & BG_Buildable( buildable )->buildWeapon ) &&
-	     !BG_BuildableDisabled( buildable ) && BG_BuildableUnlocked( buildable ) )
+	        ( ( 1 << ent->client->ps.weapon ) & BG_Buildable( buildable )->buildWeapon ) &&
+	        !BG_BuildableDisabled( buildable ) && BG_BuildableUnlocked( buildable ) )
 	{
 		dynMenu_t err;
 		vec3_t forward, aimDir;
@@ -3483,7 +3527,7 @@ void Cmd_Build_f( gentity_t *ent )
 
 		BG_GetClientNormal( &ent->client->ps, normal );
 		AngleVectors( ent->client->ps.viewangles, aimDir, NULL, NULL );
-		ProjectPointOnPlane( forward, aimDir, normal);
+		ProjectPointOnPlane( forward, aimDir, normal );
 		VectorNormalize( forward );
 
 		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
@@ -3494,7 +3538,7 @@ void Cmd_Build_f( gentity_t *ent )
 		// these are the errors displayed when the builder first selects something to use
 		switch ( reason )
 		{
-			// non-temporary issues won't spawn a blueprint buildable
+				// non-temporary issues won't spawn a blueprint buildable
 			case IBE_DISABLED:
 				err = MN_B_DISABLED;
 				break;
@@ -3507,7 +3551,7 @@ void Cmd_Build_f( gentity_t *ent )
 				err = MN_H_ONEREACTOR;
 				break;
 
-			// otherwise we don't error for now
+				// otherwise we don't error for now
 			default:
 				err = MN_NONE;
 				break;
@@ -3581,7 +3625,7 @@ void G_StopFromFollowing( gentity_t *ent )
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		if ( level.clients[ i ].sess.spectatorState == SPECTATOR_FOLLOW &&
-		     level.clients[ i ].sess.spectatorClient == ent->client->ps.clientNum )
+		        level.clients[ i ].sess.spectatorClient == ent->client->ps.clientNum )
 		{
 			if ( !G_FollowNewClient( &g_entities[ i ], 1 ) )
 			{
@@ -3777,15 +3821,15 @@ qboolean G_FollowNewClient( gentity_t *ent, int dir )
 
 		// if stickyspec is disabled, can't follow someone in queue either
 		if ( !ent->client->pers.stickySpec &&
-		     level.clients[ clientnum ].sess.spectatorState != SPECTATOR_NOT )
+		        level.clients[ clientnum ].sess.spectatorState != SPECTATOR_NOT )
 		{
 			continue;
 		}
 
 		// can only follow teammates when dead and on a team
 		if ( ent->client->pers.team != TEAM_NONE &&
-		     ( level.clients[ clientnum ].pers.team !=
-		       ent->client->pers.team ) )
+		        ( level.clients[ clientnum ].pers.team !=
+		          ent->client->pers.team ) )
 		{
 			continue;
 		}
@@ -3866,15 +3910,15 @@ void Cmd_Follow_f( gentity_t *ent )
 
 		// can't follow another spectator if sticky spec is off
 		if ( !ent->client->pers.stickySpec &&
-		     level.clients[ i ].sess.spectatorState != SPECTATOR_NOT )
+		        level.clients[ i ].sess.spectatorState != SPECTATOR_NOT )
 		{
 			return;
 		}
 
 		// if not on team spectator, you can only follow teammates
 		if ( ent->client->pers.team != TEAM_NONE &&
-		     ( level.clients[ i ].pers.team !=
-		       ent->client->pers.team ) )
+		        ( level.clients[ i ].pers.team !=
+		          ent->client->pers.team ) )
 		{
 			return;
 		}
@@ -3929,7 +3973,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 	if ( trap_Argc() < 2 )
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-		                        "%s\" %s", N_("usage: $1$ [clientNum | partial name match]\n"), cmd ) );
+		                        "%s\" %s", N_( "usage: $1$ [clientNum | partial name match]\n" ), cmd ) );
 		return;
 	}
 
@@ -3939,7 +3983,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 	if ( matches < 1 )
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-		                        "%s\" %s %s", N_("$1$: no clients match the name '$2$'\n"), cmd, Quote( name ) ) );
+		                        "%s\" %s %s", N_( "$1$: no clients match the name '$2$'\n" ), cmd, Quote( name ) ) );
 		return;
 	}
 
@@ -3952,13 +3996,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 				Com_ClientListAdd( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
 				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("ignore: added $1$^7 to your ignore list\n"),
+				                        "%s\" %s", N_( "ignore: added $1$^7 to your ignore list\n" ),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("ignore: $1$^7 is already on your ignore list\n"),
+				                        "%s\" %s", N_( "ignore: $1$^7 is already on your ignore list\n" ),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 		}
@@ -3969,14 +4013,14 @@ static void Cmd_Ignore_f( gentity_t *ent )
 				Com_ClientListRemove( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
 				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("unignore: removed $1$^7 from your ignore list\n"),
+				                        "%s\" %s", N_( "unignore: removed $1$^7 from your ignore list\n" ),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("unignore: $1$^7 is not on your ignore list\n"),
-				                        Quote( level.clients[ pids[ i ] ].pers.netname ) )  );
+				                        "%s\" %s", N_( "unignore: $1$^7 is not on your ignore list\n" ),
+				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 		}
 	}
@@ -4016,7 +4060,10 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	{
 		trap_Argv( 1, search, sizeof( search ) );
 
-		for ( p = search; ( *p ) && isdigit( *p ); p++ ) {; }
+		for ( p = search; ( *p ) && isdigit( *p ); p++ )
+		{
+			;
+		}
 
 		if ( !( *p ) )
 		{
@@ -4105,32 +4152,34 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 	if ( search[ 0 ] )
 	{
-		ADMP_P( va( "%s %d %s", Quote( P_("^3listmaps: ^7found $1$ map matching '$2$^7'", "^3listmaps: ^7found $1$ maps matching '$2$^7'", count) ), count, Quote( search ) ), count );
+		ADMP_P( va( "%s %d %s", Quote( P_( "^3listmaps: ^7found $1$ map matching '$2$^7'", "^3listmaps: ^7found $1$ maps matching '$2$^7'", count ) ), count, Quote( search ) ), count );
 	}
 	else
 	{
-		ADMP_P( va( "%s %d %d", Quote( P_("^3listmaps: ^7listing $1$ of $2$ map", "^3listmaps: ^7listing $1$ of $2$ maps", count) ), shown, count ), count );
+		ADMP_P( va( "%s %d %d", Quote( P_( "^3listmaps: ^7listing $1$ of $2$ map", "^3listmaps: ^7listing $1$ of $2$ maps", count ) ), shown, count ), count );
 	}
 
 	if ( pages > 1 && page + 1 < pages )
 	{
-		ADMP( va( "%s %d %d %s %s %d", QQ( N_("^3listmaps: ^7page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
-		           page + 1, pages, Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
+		ADMP( va( "%s %d %d %s %s %d", QQ( N_( "^3listmaps: ^7page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more" ) ),
+		          page + 1, pages, Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
 	}
 	else if ( pages > 1 )
 	{
-		ADMP( va( "%s %d %d", QQ( N_("^3listmaps: ^7page $1$ of $2$") ),  page + 1, pages ) );
+		ADMP( va( "%s %d %d", QQ( N_( "^3listmaps: ^7page $1$ of $2$" ) ),  page + 1, pages ) );
 	}
 }
 
 #define MAX_MAPLOGS 5
 
-typedef struct {
+typedef struct
+{
 	char       flag;
 	const char description[64];
 } mapLogResult_t;
 
-static const mapLogResult_t maplog_table[] = {
+static const mapLogResult_t maplog_table[] =
+{
 	{ 't', "^7tie"                                  },
 	{ 'a', "^1Alien win"                            },
 	{ 'A', "^1Alien win ^7/ Humans admitted defeat" },
@@ -4162,6 +4211,7 @@ void G_MapLog_NewMap( void )
 		{
 			ptr++;
 		}
+
 		count++;
 
 		if ( count == MAX_MAPLOGS )
@@ -4233,10 +4283,10 @@ void Cmd_MapLog_f( gentity_t *ent )
 	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
 	ptr = maplog;
 
-	ADMP( "\"" N_("^3maplog: ^7recent map results, newest first\n") "\"" );
+	ADMP( "\"" N_( "^3maplog: ^7recent map results, newest first\n" ) "\"" );
 	ADMBP_begin();
 
-	while( *ptr )
+	while ( *ptr )
 	{
 		const char *clock = "  -:--";
 		const char *result = "^1unknown";
@@ -4262,14 +4312,16 @@ void Cmd_MapLog_f( gentity_t *ent )
 					break;
 				}
 			}
+
 			ptr += 2;
 			clock = ptr;
-			while( *ptr && *ptr != ';' )
+
+			while ( *ptr && *ptr != ';' )
 			{
 				ptr++;
 			}
 
-			if( *ptr == ';' )
+			if ( *ptr == ';' )
 			{
 				*ptr++ = '\0';
 			}
@@ -4284,6 +4336,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 		           ptr, clock, result ) );
 		ptr = end;
 	}
+
 	ADMBP_end();
 }
 
@@ -4357,7 +4410,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 	if ( trap_Argc( ) < 2 )
 	{
 		trap_SendServerCommand( ent - g_entities,
-		                        va( "print_tr %s", QQ( N_("Usage: beacon [type]\n") ) ) );
+		                        va( "print_tr %s", QQ( N_( "Usage: beacon [type]\n" ) ) ) );
 		return;
 	}
 
@@ -4370,14 +4423,14 @@ void Cmd_Beacon_f( gentity_t *ent )
 	if ( !battr || battr->flags & BCF_RESERVED )
 	{
 		trap_SendServerCommand( ent - g_entities,
-		                        va( "print_tr %s %s", QQ( N_("Unknown beacon type $1$\n") ),
+		                        va( "print_tr %s %s", QQ( N_( "Unknown beacon type $1$\n" ) ),
 		                            Quote( type_str ) ) );
 		return;
 	}
 
 	type  = battr->number;
 	flags = battr->flags;
-	team  = (team_t)ent->client->pers.team;
+	team  = ( team_t )ent->client->pers.team;
 
 	// Trace in view direction.
 	BG_GetClientViewOrigin( &ent->client->ps, origin );
@@ -4389,17 +4442,21 @@ void Cmd_Beacon_f( gentity_t *ent )
 	G_UnlaggedOff( );
 
 	// Evaluate flood limit.
-	if( G_FloodLimited( ent ) )
+	if ( G_FloodLimited( ent ) )
+	{
 		return;
+	}
 
 	if ( !( flags & BCF_PRECISE ) )
+	{
 		Beacon::MoveTowardsRoom( tr.endpos );
+	}
 
 	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->s.number, BCH_REMOVE ) );
 	return;
 
 invalid_beacon:
-	CP( "cp_tr " QQ(N_("Couldn't place beacon")) "\n" );
+	CP( "cp_tr " QQ( N_( "Couldn't place beacon" ) ) "\n" );
 }
 
 /*
@@ -4443,8 +4500,8 @@ int G_FloodLimited( gentity_t *ent )
 		return 0;
 	}
 
-	trap_SendServerCommand( ent - g_entities, va( "print_tr %s %d", QQ( N_("You are flooding: "
-	                        "please wait $1$s before trying again\n") ),
+	trap_SendServerCommand( ent - g_entities, va( "print_tr %s %d", QQ( N_( "You are flooding: "
+	                        "please wait $1$s before trying again\n" ) ),
 	                        ( ms + 999 ) / 1000 ) );
 	return ms;
 }
@@ -4465,6 +4522,7 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 	}
 
 	trap_Argv( 1, buffer, sizeof( buffer ) );
+
 	if ( Q_strncmp( buffer, admin->msg, MAX_STRING_CHARS ) )
 	{
 		return;
@@ -4473,7 +4531,7 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 	ent->client->pers.pubkey_authenticated = 1;
 	G_admin_authlog( ent );
 	G_ListCommands( ent );
-	CP( "cp_tr " QQ(N_("^2Pubkey authenticated")) "\n" );
+	CP( "cp_tr " QQ( N_( "^2Pubkey authenticated" ) ) "\n" );
 }
 
 // commands must be in alphabetical order!
@@ -4548,14 +4606,14 @@ void ClientCommand( int clientNum )
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	command = (commands_t*) bsearch( cmd, cmds, numCmds, sizeof( cmds[ 0 ] ), cmdcmp );
+	command = ( commands_t* ) bsearch( cmd, cmds, numCmds, sizeof( cmds[ 0 ] ), cmdcmp );
 
 	if ( !command )
 	{
 		if ( !G_admin_cmd_check( ent ) )
 		{
 			trap_SendServerCommand( clientNum,
-			                        va( "print_tr %s %s", QQ( N_("Unknown command $1$\n") ), Quote( cmd ) ) );
+			                        va( "print_tr %s %s", QQ( N_( "Unknown command $1$\n" ) ), Quote( cmd ) ) );
 		}
 
 		return;
@@ -4564,61 +4622,61 @@ void ClientCommand( int clientNum )
 	// do tests here to reduce the amount of repeated code
 
 	if ( !( command->cmdFlags & CMD_INTERMISSION ) &&
-	     ( level.intermissiontime || level.pausedTime ) )
+	        ( level.intermissiontime || level.pausedTime ) )
 	{
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_CHEAT) && !g_cheats.integer )
+	if ( ( command->cmdFlags & CMD_CHEAT ) && !g_cheats.integer )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT );
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_MESSAGE) && ( ent->client->pers.namelog->muted ||
-	     G_FloodLimited( ent ) ) )
+	if ( ( command->cmdFlags & CMD_MESSAGE ) && ( ent->client->pers.namelog->muted ||
+	        G_FloodLimited( ent ) ) )
 	{
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_TEAM) &&
-	     ent->client->pers.team == TEAM_NONE )
+	if ( ( command->cmdFlags & CMD_TEAM ) &&
+	        ent->client->pers.team == TEAM_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_TEAM );
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_CHEAT_TEAM) && !g_cheats.integer &&
-	     ent->client->pers.team != TEAM_NONE )
+	if ( ( command->cmdFlags & CMD_CHEAT_TEAM ) && !g_cheats.integer &&
+	        ent->client->pers.team != TEAM_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT_TEAM );
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_SPEC) &&
-	     ent->client->sess.spectatorState == SPECTATOR_NOT )
+	if ( ( command->cmdFlags & CMD_SPEC ) &&
+	        ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_SPEC );
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_ALIEN) &&
-	     ent->client->pers.team != TEAM_ALIENS )
+	if ( ( command->cmdFlags & CMD_ALIEN ) &&
+	        ent->client->pers.team != TEAM_ALIENS )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_ALIEN );
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_HUMAN) &&
-	     ent->client->pers.team != TEAM_HUMANS )
+	if ( ( command->cmdFlags & CMD_HUMAN ) &&
+	        ent->client->pers.team != TEAM_HUMANS )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_HUMAN );
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_ALIVE) &&
-	     ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
-	       ent->client->sess.spectatorState != SPECTATOR_NOT ) )
+	if ( ( command->cmdFlags & CMD_ALIVE ) &&
+	        ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
+	          ent->client->sess.spectatorState != SPECTATOR_NOT ) )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_ALIVE );
 		return;
@@ -4696,7 +4754,7 @@ void G_UnEscapeString( const char *in, char *out, int len )
 
 	while ( *in && len > 0 )
 	{
-		if ( (unsigned char)*in >= ' ' || *in == '\n' )
+		if ( ( unsigned char )*in >= ' ' || *in == '\n' )
 		{
 			*out++ = *in;
 			len--;
@@ -4723,7 +4781,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 
 	if ( !g_privateMessages.integer && ent )
 	{
-		ADMP( "\"" N_("Sorry, but private messages have been disabled\n") "\"" );
+		ADMP( "\"" N_( "Sorry, but private messages have been disabled\n" ) "\"" );
 		return;
 	}
 
@@ -4731,7 +4789,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 
 	if ( trap_Argc() < 3 )
 	{
-		ADMP( va( "%s %s", QQ( N_("usage: $1$ [name|slot#] [message]\n") ), cmd ) );
+		ADMP( va( "%s %s", QQ( N_( "usage: $1$ [name|slot#] [message]\n" ) ), cmd ) );
 		return;
 	}
 
@@ -4763,12 +4821,12 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 
 	if ( !count )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3No player matching ^7 '$1$^7' ^3to send message to.\n") ),
+		ADMP( va( "%s %s", QQ( N_( "^3No player matching ^7 '$1$^7' ^3to send message to.\n" ) ),
 		          Quote( name ) ) );
 	}
 	else
 	{
-		ADMP( va( "%s %c %s", QQ( N_("^$1$Private message: ^7$2$\n") ), color, Quote( text ) ) );
+		ADMP( va( "%s %c %s", QQ( N_( "^$1$Private message: ^7$2$\n" ) ), color, Quote( text ) ) );
 		// remove trailing ", "
 		recipients[ strlen( recipients ) - 2 ] = '\0';
 		// FIXME PLURAL
@@ -4799,19 +4857,19 @@ void Cmd_AdminMessage_f( gentity_t *ent )
 	{
 		if ( !g_publicAdminMessages.integer )
 		{
-			ADMP( "\"" N_("Sorry, but use of /a by non-admins has been disabled.\n") "\"" );
+			ADMP( "\"" N_( "Sorry, but use of /a by non-admins has been disabled.\n" ) "\"" );
 			return;
 		}
 		else
 		{
-			ADMP( "\"" N_("Your message has been sent to any available admins "
-			      "and to the server logs.\n") "\"" );
+			ADMP( "\"" N_( "Your message has been sent to any available admins "
+			               "and to the server logs.\n" ) "\"" );
 		}
 	}
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( "\"" N_("usage: a [message]\n") "\"" );
+		ADMP( "\"" N_( "usage: a [message]\n" ) "\"" );
 		return;
 	}
 

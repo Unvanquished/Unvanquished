@@ -291,9 +291,9 @@ extern float REPEATER_BASESIZE;
 #define ROCKET_LIFETIME         5000
 
 #ifndef Q3_VM
-static_assert( TURRET_GIVEUP_TARGET > MGTURRET_ATTACK_PERIOD + TURRET_THINK_PERIOD &&
-               TURRET_GIVEUP_TARGET > ROCKETPOD_ATTACK_PERIOD + TURRET_THINK_PERIOD,
-               "Turret giveup on target time is too low." );
+static_assert ( TURRET_GIVEUP_TARGET > MGTURRET_ATTACK_PERIOD + TURRET_THINK_PERIOD &&
+                TURRET_GIVEUP_TARGET > ROCKETPOD_ATTACK_PERIOD + TURRET_THINK_PERIOD,
+                "Turret giveup on target time is too low." );
 #endif
 
 extern float REACTOR_ATTACK_RANGE;

@@ -78,32 +78,68 @@ IN_PrintKey
 */
 static void IN_PrintKey( const SDL_Keysym *keysym, keyNum_t key, qboolean down )
 {
-	if ( keysym->mod & KMOD_LSHIFT ) { Com_Printf( " KMOD_LSHIFT" ); }
+	if ( keysym->mod & KMOD_LSHIFT )
+	{
+		Com_Printf( " KMOD_LSHIFT" );
+	}
 
-	if ( keysym->mod & KMOD_RSHIFT ) { Com_Printf( " KMOD_RSHIFT" ); }
+	if ( keysym->mod & KMOD_RSHIFT )
+	{
+		Com_Printf( " KMOD_RSHIFT" );
+	}
 
-	if ( keysym->mod & KMOD_LCTRL ) { Com_Printf( " KMOD_LCTRL" ); }
+	if ( keysym->mod & KMOD_LCTRL )
+	{
+		Com_Printf( " KMOD_LCTRL" );
+	}
 
-	if ( keysym->mod & KMOD_RCTRL ) { Com_Printf( " KMOD_RCTRL" ); }
+	if ( keysym->mod & KMOD_RCTRL )
+	{
+		Com_Printf( " KMOD_RCTRL" );
+	}
 
-	if ( keysym->mod & KMOD_LALT ) { Com_Printf( " KMOD_LALT" ); }
+	if ( keysym->mod & KMOD_LALT )
+	{
+		Com_Printf( " KMOD_LALT" );
+	}
 
-	if ( keysym->mod & KMOD_RALT ) { Com_Printf( " KMOD_RALT" ); }
+	if ( keysym->mod & KMOD_RALT )
+	{
+		Com_Printf( " KMOD_RALT" );
+	}
 
-	if ( keysym->mod & KMOD_LGUI ) { Com_Printf( " KMOD_LGUI" ); }
+	if ( keysym->mod & KMOD_LGUI )
+	{
+		Com_Printf( " KMOD_LGUI" );
+	}
 
-	if ( keysym->mod & KMOD_RGUI ) { Com_Printf( " KMOD_RGUI" ); }
+	if ( keysym->mod & KMOD_RGUI )
+	{
+		Com_Printf( " KMOD_RGUI" );
+	}
 
-	if ( keysym->mod & KMOD_NUM ) { Com_Printf( " KMOD_NUM" ); }
+	if ( keysym->mod & KMOD_NUM )
+	{
+		Com_Printf( " KMOD_NUM" );
+	}
 
-	if ( keysym->mod & KMOD_CAPS ) { Com_Printf( " KMOD_CAPS" ); }
+	if ( keysym->mod & KMOD_CAPS )
+	{
+		Com_Printf( " KMOD_CAPS" );
+	}
 
-	if ( keysym->mod & KMOD_MODE ) { Com_Printf( " KMOD_MODE" ); }
+	if ( keysym->mod & KMOD_MODE )
+	{
+		Com_Printf( " KMOD_MODE" );
+	}
 
-	if ( keysym->mod & KMOD_RESERVED ) { Com_Printf( " KMOD_RESERVED" ); }
+	if ( keysym->mod & KMOD_RESERVED )
+	{
+		Com_Printf( " KMOD_RESERVED" );
+	}
 
 	Com_Printf( "%c 0x%02x \"%s\" Q:0x%02x(%s)\n", down ? '+' : ' ', keysym->scancode,
-		    SDL_GetKeyName( keysym->sym ), key, Key_KeynumToString( key ) );
+	            SDL_GetKeyName( keysym->sym ), key, Key_KeynumToString( key ) );
 }
 
 #define MAX_CONSOLE_KEYS 16
@@ -122,8 +158,8 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 	{
 		enum
 		{
-		  KEY,
-		  CHARACTER
+		    KEY,
+		    CHARACTER
 		} type;
 
 		union
@@ -133,10 +169,12 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 		} u;
 	} consoleKey_t;
 
-	static const struct {
+	static const struct
+	{
 		char name[8];
 		int  key;
-	} modMap[] = {
+	} modMap[] =
+	{
 		{ "shift", K_SHIFT },
 		{ "ctrl",  K_CTRL  },
 		{ "alt",   K_ALT   },
@@ -203,7 +241,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 			else
 			{
 				c->type = consoleKey_t::KEY;
-				c->u.key = (keyNum_t) Key_StringToKeynum( token );
+				c->u.key = ( keyNum_t ) Key_StringToKeynum( token );
 
 				// 0 isn't a key
 				if ( c->u.key <= 0 )
@@ -254,7 +292,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 	// If the character is the same as the key, prefer the character
 	if ( key == character )
 	{
-		key = (keyNum_t) 0;
+		key = ( keyNum_t ) 0;
 	}
 
 	for ( i = 0; i < numConsoleKeys; i++ )
@@ -263,7 +301,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 
 		switch ( c->type )
 		{
-            case consoleKey_t::KEY:
+			case consoleKey_t::KEY:
 				if ( key && c->u.key == key )
 				{
 					return qtrue;
@@ -271,7 +309,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 
 				break;
 
-            case consoleKey_t::CHARACTER:
+			case consoleKey_t::CHARACTER:
 				if ( c->u.character == character )
 				{
 					return qtrue;
@@ -291,7 +329,7 @@ IN_TranslateSDLToQ3Key
 */
 static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 {
-	keyNum_t key = (keyNum_t) 0;
+	keyNum_t key = ( keyNum_t ) 0;
 
 	if ( keysym->sym >= SDLK_SPACE && keysym->sym < SDLK_DELETE )
 	{
@@ -560,7 +598,7 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 		IN_PrintKey( keysym, key, down );
 	}
 
-	if ( IN_IsConsoleKey( key, 0 ) && !keys[ K_ALT ].down)
+	if ( IN_IsConsoleKey( key, 0 ) && !keys[ K_ALT ].down )
 	{
 		// Console keys can't be bound or generate characters
 		// (but allow Alt+key for text input)
@@ -581,6 +619,7 @@ static void IN_GobbleMotionEvents( void )
 
 	// Gobble any mouse motion events
 	SDL_PumpEvents();
+
 	while ( SDL_PeepEvents( dummy, 1, SDL_GETEVENT,
 	                        SDL_MOUSEMOTION, SDL_MOUSEMOTION ) ) { }
 }
@@ -903,7 +942,10 @@ static void IN_JoyMove( void )
 
 	if ( total > 0 )
 	{
-		if ( total > 4 ) { total = 4; }
+		if ( total > 4 )
+		{
+			total = 4;
+		}
 
 		for ( i = 0; i < total; i++ )
 		{
@@ -1015,7 +1057,10 @@ static void IN_JoyMove( void )
 
 	if ( total > 0 )
 	{
-		if ( total > 16 ) { total = 16; }
+		if ( total > 16 )
+		{
+			total = 16;
+		}
 
 		for ( i = 0; i < total; i++ )
 		{
@@ -1038,7 +1083,10 @@ static void IN_JoyMove( void )
 			{
 				float f = ( ( float ) abs( axis ) ) / 32767.0f;
 
-				if ( f < in_joystickThreshold->value ) { axis = 0; }
+				if ( f < in_joystickThreshold->value )
+				{
+					axis = 0;
+				}
 
 				if ( axis != stick_state.oldaaxes[ i ] )
 				{
@@ -1374,8 +1422,8 @@ IN_ProcessEvents
 static void IN_ProcessEvents( qboolean dropInput )
 {
 	SDL_Event  e;
-	keyNum_t   key = (keyNum_t) 0;
-	static keyNum_t lastKeyDown = (keyNum_t) 0;
+	keyNum_t   key = ( keyNum_t ) 0;
+	static keyNum_t lastKeyDown = ( keyNum_t ) 0;
 
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
@@ -1411,10 +1459,11 @@ static void IN_ProcessEvents( qboolean dropInput )
 						Com_QueueEvent( 0, SE_KEY, key, qfalse, 0, NULL );
 					}
 
-					lastKeyDown = (keyNum_t) 0;
+					lastKeyDown = ( keyNum_t ) 0;
 				}
 
 				break;
+
 			case SDL_TEXTINPUT:
 				if ( lastKeyDown != K_CONSOLE )
 				{
@@ -1428,7 +1477,9 @@ static void IN_ProcessEvents( qboolean dropInput )
 						c += width;
 					}
 				}
+
 				break;
+
 			case SDL_MOUSEMOTION:
 				if ( !dropInput )
 				{
@@ -1447,6 +1498,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 #endif
 					}
 				}
+
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
@@ -1468,6 +1520,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 						case SDL_BUTTON_RIGHT:
 							b = K_MOUSE2;
 							break;
+
 						case SDL_BUTTON_X1:
 							b = K_MOUSE4;
 							break;
@@ -1484,8 +1537,11 @@ static void IN_ProcessEvents( qboolean dropInput )
 					Com_QueueEvent( 0, SE_KEY, b,
 					                ( e.type == SDL_MOUSEBUTTONDOWN ? qtrue : qfalse ), 0, NULL );
 				}
+
 				break;
+
 			case SDL_MOUSEWHEEL:
+
 				// FIXME: mouse wheel support shouldn't use keys!
 				if ( e.wheel.y > 0 )
 				{
@@ -1497,32 +1553,47 @@ static void IN_ProcessEvents( qboolean dropInput )
 					Com_QueueEvent( 0, SE_KEY, K_MWHEELDOWN, qtrue, 0, NULL );
 					Com_QueueEvent( 0, SE_KEY, K_MWHEELDOWN, qfalse, 0, NULL );
 				}
+
 				break;
 
 			case SDL_WINDOWEVENT:
-				switch( e.window.event )
+				switch ( e.window.event )
 				{
 					case SDL_WINDOWEVENT_RESIZED:
-						{
-							char width[32], height[32];
-							Com_sprintf( width, sizeof( width ), "%d", e.window.data1 );
-							Com_sprintf( height, sizeof( height ), "%d", e.window.data2 );
-							Cvar_Set( "r_customwidth", width );
-							Cvar_Set( "r_customheight", height );
-							Cvar_Set( "r_mode", "-1" );
-						}
+					{
+						char width[32], height[32];
+						Com_sprintf( width, sizeof( width ), "%d", e.window.data1 );
+						Com_sprintf( height, sizeof( height ), "%d", e.window.data2 );
+						Cvar_Set( "r_customwidth", width );
+						Cvar_Set( "r_customheight", height );
+						Cvar_Set( "r_mode", "-1" );
+					}
+					break;
+
+					case SDL_WINDOWEVENT_MINIMIZED:
+						Cvar_SetValue( "com_minimized", 1 );
 						break;
 
-					case SDL_WINDOWEVENT_MINIMIZED:    Cvar_SetValue( "com_minimized", 1 ); break;
 					case SDL_WINDOWEVENT_RESTORED:
-					case SDL_WINDOWEVENT_MAXIMIZED:    Cvar_SetValue( "com_minimized", 0 ); break;
-					case SDL_WINDOWEVENT_FOCUS_LOST:   Cvar_SetValue( "com_unfocused", 1 ); break;
-					case SDL_WINDOWEVENT_FOCUS_GAINED: Cvar_SetValue( "com_unfocused", 0 ); break;
+					case SDL_WINDOWEVENT_MAXIMIZED:
+						Cvar_SetValue( "com_minimized", 0 );
+						break;
+
+					case SDL_WINDOWEVENT_FOCUS_LOST:
+						Cvar_SetValue( "com_unfocused", 1 );
+						break;
+
+					case SDL_WINDOWEVENT_FOCUS_GAINED:
+						Cvar_SetValue( "com_unfocused", 0 );
+						break;
 				}
+
 				break;
+
 			case SDL_QUIT:
-				Cmd::ExecuteCommand("quit Closed window");
+				Cmd::ExecuteCommand( "quit Closed window" );
 				break;
+
 			default:
 				break;
 		}
@@ -1604,7 +1675,7 @@ void IN_Init( void *windowData )
 		Com_Error( ERR_FATAL, "IN_Init called before SDL_Init( SDL_INIT_VIDEO )" );
 	}
 
-	window = (SDL_Window*) windowData;
+	window = ( SDL_Window* ) windowData;
 
 	Com_DPrintf( "\n------- Input Initialization -------\n" );
 

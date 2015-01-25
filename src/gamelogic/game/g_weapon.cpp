@@ -186,7 +186,7 @@ qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
 
 	// needs a human with jetpack
 	if ( self->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS ||
-	     !BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats ) )
+	        !BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats ) )
 	{
 		return qfalse;
 	}
@@ -230,10 +230,10 @@ qboolean G_FindAmmo( gentity_t *self )
 	{
 		// only friendly, living and powered buildables provide ammo
 		if ( neighbor->s.eType != ET_BUILDABLE ||
-		     !G_OnSameTeam( self, neighbor ) ||
-		     !neighbor->spawned ||
-		     !neighbor->powered ||
-		     neighbor->health <= 0 )
+		        !G_OnSameTeam( self, neighbor ) ||
+		        !neighbor->spawned ||
+		        !neighbor->powered ||
+		        neighbor->health <= 0 )
 		{
 			continue;
 		}
@@ -250,6 +250,7 @@ qboolean G_FindAmmo( gentity_t *self )
 				{
 					foundSource = qtrue;
 				}
+
 				break;
 		}
 	}
@@ -281,10 +282,10 @@ qboolean G_FindFuel( gentity_t *self )
 	{
 		// only friendly, living and powered buildables provide fuel
 		if ( neighbor->s.eType != ET_BUILDABLE ||
-		     !G_OnSameTeam( self, neighbor ) ||
-		     !neighbor->spawned ||
-		     !neighbor->powered ||
-		     neighbor->health <= 0 )
+		        !G_OnSameTeam( self, neighbor ) ||
+		        !neighbor->spawned ||
+		        !neighbor->powered ||
+		        neighbor->health <= 0 )
 		{
 			continue;
 		}
@@ -763,9 +764,9 @@ static void HiveMissileThink( gentity_t *self )
 		}
 
 		if ( ent->client &&
-		     ent->health > 0 &&
-		     ent->client->pers.team == TEAM_HUMANS &&
-		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
+		        ent->health > 0 &&
+		        ent->client->pers.team == TEAM_HUMANS &&
+		        nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
 			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
 			            ent->r.currentOrigin, self->r.ownerNum, self->clipmask, 0 );
@@ -846,7 +847,7 @@ static void RocketThink( gentity_t *self )
 
 	// Check if new direction is safe. Turn anyway if old direction is unsafe, too.
 	if ( !G_RocketpodSafeShot( ENTITYNUM_NONE, self->r.currentOrigin, newDir ) &&
-	     G_RocketpodSafeShot( ENTITYNUM_NONE, self->r.currentOrigin, currentDir ) )
+	        G_RocketpodSafeShot( ENTITYNUM_NONE, self->r.currentOrigin, currentDir ) )
 	{
 		return;
 	}
@@ -873,7 +874,7 @@ bool G_RocketpodSafeShot( int passEntityNum, vec3_t origin, vec3_t dir )
 
 	size = attr->size;
 
-	VectorSet( mins, -size, -size, -size);
+	VectorSet( mins, -size, -size, -size );
 	VectorSet( maxs, size, size, size );
 	VectorMA( origin, 8192, dir, end );
 
@@ -955,12 +956,13 @@ static void FirebombMissileThink( gentity_t *self )
 
 	// ignite alien buildables in range
 	neighbor = NULL;
+
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, FIREBOMB_IGNITE_RANGE ) ) )
 	{
 		if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_ALIENS &&
-		     G_LineOfSight( self, neighbor ) )
+		        G_LineOfSight( self, neighbor ) )
 		{
-				G_IgniteBuildable( neighbor, self->parent );
+			G_IgniteBuildable( neighbor, self->parent );
 		}
 	}
 
@@ -1146,7 +1148,7 @@ void G_CheckCkitRepair( gentity_t *self )
 	gentity_t *traceEnt;
 
 	if ( self->client->ps.weaponTime > 0 ||
-	     self->client->ps.stats[ STAT_MISC ] > 0 )
+	        self->client->ps.stats[ STAT_MISC ] > 0 )
 	{
 		return;
 	}
@@ -1159,7 +1161,7 @@ void G_CheckCkitRepair( gentity_t *self )
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->health > 0 &&
-	     traceEnt->s.eType == ET_BUILDABLE && traceEnt->buildableTeam == TEAM_HUMANS )
+	        traceEnt->s.eType == ET_BUILDABLE && traceEnt->buildableTeam == TEAM_HUMANS )
 	{
 		const buildableAttributes_t *buildable;
 
@@ -1192,10 +1194,10 @@ static void CancelBuild( gentity_t *self )
 	}
 
 	if ( self->client->ps.weapon == WP_ABUILD ||
-	     self->client->ps.weapon == WP_ABUILD2 )
+	        self->client->ps.weapon == WP_ABUILD2 )
 	{
 		FireMelee( self, ABUILDER_CLAW_RANGE, ABUILDER_CLAW_WIDTH,
-		             ABUILDER_CLAW_WIDTH, ABUILDER_CLAW_DMG, MOD_ABUILDER_CLAW );
+		           ABUILDER_CLAW_WIDTH, ABUILDER_CLAW_DMG, MOD_ABUILDER_CLAW );
 	}
 }
 
@@ -1208,7 +1210,7 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 		return;
 	}
 
-	buildable = (buildable_t) ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+	buildable = ( buildable_t )( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 	// open build menu
 	if ( buildable <= BA_NONE )
@@ -1283,7 +1285,7 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
 	if ( !traceEnt || !traceEnt->takedamage || traceEnt->health <= 0 ||
-	     G_OnSameTeam( self, traceEnt ) )
+	        G_OnSameTeam( self, traceEnt ) )
 	{
 		return qfalse;
 	}
@@ -1333,7 +1335,7 @@ static void FindZapChainTargets( zap_t *zap )
 	trace_t   tr;
 	float     distance;
 
-	VectorSet(range, LEVEL2_AREAZAP_CHAIN_RANGE, LEVEL2_AREAZAP_CHAIN_RANGE, LEVEL2_AREAZAP_CHAIN_RANGE);
+	VectorSet( range, LEVEL2_AREAZAP_CHAIN_RANGE, LEVEL2_AREAZAP_CHAIN_RANGE, LEVEL2_AREAZAP_CHAIN_RANGE );
 
 	VectorAdd( ent->s.origin, range, maxs );
 	VectorSubtract( ent->s.origin, range, mins );
@@ -1354,10 +1356,10 @@ static void FindZapChainTargets( zap_t *zap )
 
 		if ( ( ( enemy->client &&
 		         enemy->client->pers.team == TEAM_HUMANS ) ||
-		       ( enemy->s.eType == ET_BUILDABLE &&
-		         BG_Buildable( enemy->s.modelindex )->team == TEAM_HUMANS ) ) &&
-		     enemy->health > 0 && // only chain to living targets
-		     distance <= LEVEL2_AREAZAP_CHAIN_RANGE )
+		        ( enemy->s.eType == ET_BUILDABLE &&
+		          BG_Buildable( enemy->s.modelindex )->team == TEAM_HUMANS ) ) &&
+		        enemy->health > 0 && // only chain to living targets
+		        distance <= LEVEL2_AREAZAP_CHAIN_RANGE )
 		{
 			// world-LOS check: trace against the world, ignoring other BODY entities
 			trap_Trace( &tr, ent->s.origin, NULL, NULL,
@@ -1536,8 +1538,8 @@ static void FireAreaZap( gentity_t *ent )
 	}
 
 	if ( ( traceEnt->client && traceEnt->client->pers.team == TEAM_HUMANS ) ||
-	     ( traceEnt->s.eType == ET_BUILDABLE &&
-	       BG_Buildable( traceEnt->s.modelindex )->team == TEAM_HUMANS ) )
+	        ( traceEnt->s.eType == ET_BUILDABLE &&
+	          BG_Buildable( traceEnt->s.modelindex )->team == TEAM_HUMANS ) )
 	{
 		CreateNewZap( ent, traceEnt );
 	}
@@ -1627,8 +1629,8 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 	vec3_t forward;
 
 	if ( !self->client || self->client->ps.stats[ STAT_MISC ] <= 0 ||
-	     !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) ||
-	     self->client->ps.weaponTime )
+	        !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) ||
+	        self->client->ps.weaponTime )
 	{
 		return;
 	}
@@ -1655,8 +1657,8 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 		}
 
 		self->client->trampleBuildablesHit[
-		  self->client->trampleBuildablesHitPos++ % MAX_TRAMPLE_BUILDABLES_TRACKED ] =
-		    victim - g_entities;
+		    self->client->trampleBuildablesHitPos++ % MAX_TRAMPLE_BUILDABLES_TRACKED ] =
+		        victim - g_entities;
 	}
 
 	SendMeleeHitEvent( self, victim, NULL );
@@ -1709,15 +1711,15 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 
 	// attacker must be above victim
 	if ( self->client->ps.origin[ 2 ] + self->r.mins[ 2 ] <
-	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
+	        victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
 	{
 		return;
 	}
 
 	// allow the granger airlifting ritual
 	if ( victim->client && victim->client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE &&
-	     ( self->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
-	       self->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
+	        ( self->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
+	          self->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
 	{
 		return;
 	}
@@ -1765,7 +1767,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 
 	// attacker must be above victim
 	if ( self->client->ps.origin[ 2 ] + self->r.mins[ 2 ] <
-	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
+	        victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
 	{
 		return;
 	}
@@ -1793,7 +1795,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 		if ( weightDamage > 0 )
 		{
 			G_Damage( victim, self, self, NULL, victim->s.origin, weightDamage,
-					  DAMAGE_NO_LOCDAMAGE, ModWeight( self ) );
+			          DAMAGE_NO_LOCDAMAGE, ModWeight( self ) );
 		}
 	}
 
@@ -1936,8 +1938,10 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 				default:
 					break;
 			}
+
 			break;
 		}
+
 		case WPM_SECONDARY:
 		{
 			switch ( weapon )
@@ -1959,8 +1963,10 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 				default:
 					break;
 			}
+
 			break;
 		}
+
 		case WPM_TERTIARY:
 		{
 			switch ( weapon )
@@ -1976,8 +1982,10 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 				default:
 					break;
 			}
+
 			break;
 		}
+
 		default:
 		{
 			break;
@@ -2005,9 +2013,16 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 
 	switch ( upgrade )
 	{
-		case UP_GRENADE:  FireGrenade( self );  break;
-		case UP_FIREBOMB: FireFirebomb( self ); break;
-		default:                                break;
+		case UP_GRENADE:
+			FireGrenade( self );
+			break;
+
+		case UP_FIREBOMB:
+			FireFirebomb( self );
+			break;
+
+		default:
+			break;
 	}
 
 	switch ( upgrade )

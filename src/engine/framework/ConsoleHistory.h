@@ -31,17 +31,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FRAMEWORK_CONSOLE_HISTORY_H_
 #define FRAMEWORK_CONSOLE_HISTORY_H_
 
-namespace Console {
+namespace Console
+{
 
-    typedef unsigned HistoryHandle;
-    static const HistoryHandle HISTORY_END = -1;
+typedef unsigned HistoryHandle;
+static const HistoryHandle HISTORY_END = -1;
 
-    void SaveHistory();
-    void LoadHistory();
+void SaveHistory();
+void LoadHistory();
 
-    void AddToHistory(HistoryHandle& handle, std::string current);
-    void PrevLine(HistoryHandle& handle, std::string& current);
-    void NextLine(HistoryHandle& handle, std::string& current);
+void AddToHistory ( HistoryHandle& handle, std::string current );
+void PrevLine ( HistoryHandle& handle, std::string& current );
+void NextLine ( HistoryHandle& handle, std::string& current );
 
 }
 

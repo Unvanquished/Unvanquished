@@ -44,7 +44,10 @@ void Rocket_InjectMouseMotion( int x, int y ) {}
 void Rocket_LoadDocument( const char *path ) {}
 void Rocket_LoadCursor( const char *path ) {}
 void Rocket_DocumentAction( const char *name, const char *action ) {}
-qboolean Rocket_GetEvent( void ) { return false; }
+qboolean Rocket_GetEvent( void )
+{
+	return false;
+}
 void Rocket_DeleteEvent( void ) {}
 void Rocket_RegisterDataSource( const char *name ) {}
 void Rocket_DSAddRow( const char *name, const char *table, const char *data ) {}
@@ -74,7 +77,10 @@ void Rocket_AddUnitToHud( int weapon, const char *id ) {}
 void Rocket_ShowHud( int weapon ) {}
 void Rocket_ClearHud( int weapon ) {}
 void Rocket_InitKeys( void ) {}
-keyNum_t Rocket_ToQuake( int key ) { return K_NONE; }
+keyNum_t Rocket_ToQuake( int key )
+{
+	return K_NONE;
+}
 void Rocket_ProcessKeyInput( int key, qboolean down ) {}
 void Rocket_ProcessTextInput( int key ) {}
 void Rocket_MouseMove( int x, int y ) {}

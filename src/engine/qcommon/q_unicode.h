@@ -22,24 +22,24 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef Q_UNICODE_H_
 #define Q_UNICODE_H_
 
-int Q_UTF8_Width( const char *str );
-int Q_UTF8_WidthCP( int ch );
-int Q_UTF8_Strlen( const char *str );
-int Q_UTF8_PrintStrlen( const char *str );
-qboolean Q_UTF8_ContByte( char c );
-unsigned long Q_UTF8_CodePoint( const char *str );
-char *Q_UTF8_Encode( unsigned long codepoint );
-int Q_UTF8_Store( const char *s );
-char *Q_UTF8_Unstore( int e );
+int Q_UTF8_Width ( const char *str );
+int Q_UTF8_WidthCP ( int ch );
+int Q_UTF8_Strlen ( const char *str );
+int Q_UTF8_PrintStrlen ( const char *str );
+qboolean Q_UTF8_ContByte ( char c );
+unsigned long Q_UTF8_CodePoint ( const char *str );
+char *Q_UTF8_Encode ( unsigned long codepoint );
+int Q_UTF8_Store ( const char *s );
+char *Q_UTF8_Unstore ( int e );
 
-qboolean Q_Unicode_IsAlpha( int ch );
-qboolean Q_Unicode_IsUpper( int ch );
-qboolean Q_Unicode_IsLower( int ch );
-qboolean Q_Unicode_IsIdeo( int ch );
-qboolean Q_Unicode_IsAlphaOrIdeo( int ch );
-qboolean Q_Unicode_IsAlphaOrIdeoOrDigit( int ch );
+qboolean Q_Unicode_IsAlpha ( int ch );
+qboolean Q_Unicode_IsUpper ( int ch );
+qboolean Q_Unicode_IsLower ( int ch );
+qboolean Q_Unicode_IsIdeo ( int ch );
+qboolean Q_Unicode_IsAlphaOrIdeo ( int ch );
+qboolean Q_Unicode_IsAlphaOrIdeoOrDigit ( int ch );
 
-int Q_Unicode_ToUpper( int ch );
-int Q_Unicode_ToLower( int ch );
+int Q_Unicode_ToUpper ( int ch );
+int Q_Unicode_ToLower ( int ch );
 
 #endif /* Q_UNICODE_H_ */

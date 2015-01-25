@@ -44,53 +44,45 @@ Maryland 20850 USA.
 class RocketDataGrid : public Rocket::Controls::DataSource
 {
 public:
-	RocketDataGrid( const char *name ) : Rocket::Controls::DataSource( name ) { }
-	~RocketDataGrid() { }
-	void GetRow( Rocket::Core::StringList& row, const Rocket::Core::String& table, int row_index, const Rocket::Core::StringList& columns )
-	{
-		if ( data.find( table ) == data.end() || data[table].size() <= row_index )
-		{
-			return;
-		}
+    RocketDataGrid ( const char *name ) : Rocket::Controls::DataSource ( name ) { }
+    ~RocketDataGrid() { }
+    void GetRow ( Rocket::Core::StringList& row, const Rocket::Core::String& table, int row_index, const Rocket::Core::StringList& columns ) {
+        if ( data.find ( table ) == data.end() || data[table].size() <= row_index ) {
+            return;
+        }
 
-		for ( size_t i = 0; i < columns.size(); ++i )
-		{
-			row.push_back( Rocket_QuakeToRML( Info_ValueForKey( data[ table ][ row_index ].CString(), columns[ i ].CString() ), RP_EMOTICONS ) );
-		}
-	}
+        for ( size_t i = 0; i < columns.size(); ++i ) {
+            row.push_back ( Rocket_QuakeToRML ( Info_ValueForKey ( data[ table ][ row_index ].CString(), columns[ i ].CString() ), RP_EMOTICONS ) );
+        }
+    }
 
-	int GetNumRows( const Rocket::Core::String& table )
-	{
-		return data[ table ].size();
-	}
+    int GetNumRows ( const Rocket::Core::String& table ) {
+        return data[ table ].size();
+    }
 
-	void AddRow( const char *table, const char *dataIn )
-	{
-		data[ table ].push_back( dataIn );
-		NotifyRowAdd( table, data[ table ].size() - 1, 1 );
-	}
+    void AddRow ( const char *table, const char *dataIn ) {
+        data[ table ].push_back ( dataIn );
+        NotifyRowAdd ( table, data[ table ].size() - 1, 1 );
+    }
 
-	void ChangeRow( const char *table, const int row, const char *dataIn )
-	{
-		data[ table ][ row ] = dataIn;
-		NotifyRowChange( table, row, 1 );
-	}
+    void ChangeRow ( const char *table, const int row, const char *dataIn ) {
+        data[ table ][ row ] = dataIn;
+        NotifyRowChange ( table, row, 1 );
+    }
 
-	void RemoveRow( const char *table, const int row )
-	{
-		data[ table ].erase( data[ table ].begin() + row - 1 );
-		NotifyRowRemove( table, row, 1 );
-	}
+    void RemoveRow ( const char *table, const int row ) {
+        data[ table ].erase ( data[ table ].begin() + row - 1 );
+        NotifyRowRemove ( table, row, 1 );
+    }
 
-	void ClearTable( const char *table )
-	{
-		data.erase( table );
-		NotifyRowChange( table );
-	}
+    void ClearTable ( const char *table ) {
+        data.erase ( table );
+        NotifyRowChange ( table );
+    }
 
 
 private:
-	std::map<Rocket::Core::String, std::vector<Rocket::Core::String> > data;
+    std::map<Rocket::Core::String, std::vector<Rocket::Core::String> > data;
 };
 
 #endif

@@ -33,21 +33,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FRAMEWORK_CONSOLE_FIELD_H_
 #define FRAMEWORK_CONSOLE_FIELD_H_
 
-namespace Console {
+namespace Console
+{
 
-    class Field : public Util::LineEditData {
-        public:
-            Field(int size);
+class Field : public Util::LineEditData
+{
+public:
+    Field ( int size );
 
-            void HistoryPrev();
-            void HistoryNext();
+    void HistoryPrev();
+    void HistoryNext();
 
-            void RunCommand(Str::StringRef defaultCommand = "");
-            void AutoComplete();
+    void RunCommand ( Str::StringRef defaultCommand = "" );
+    void AutoComplete();
 
-        private:
-            HistoryHandle hist;
-    };
+private:
+    HistoryHandle hist;
+};
 
 }
 

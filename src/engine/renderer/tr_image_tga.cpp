@@ -29,7 +29,7 @@ LoadTGA
 =============
 */
 void LoadTGA( const char *name, byte **pic, int *width, int *height,
-	      int *numLayers, int *numMips, int *bits, byte alphaByte )
+              int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
 	unsigned int columns, rows, numPixels;
 	byte        *pixbuf;
@@ -111,7 +111,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height,
 		ri.Error( ERR_DROP, "LoadTGA: %s has an invalid image size", name );
 	}
 
-	targa_rgba = (byte*) ri.Z_Malloc( numPixels );
+	targa_rgba = ( byte* ) ri.Z_Malloc( numPixels );
 
 	*pic = targa_rgba;
 

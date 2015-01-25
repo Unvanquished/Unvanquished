@@ -139,7 +139,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
 
-	Q_strncpyz( userinfo, args.Argv(1).c_str(), sizeof( userinfo ) );
+	Q_strncpyz( userinfo, args.Argv( 1 ).c_str(), sizeof( userinfo ) );
 
 	// DHM - Nerve :: Update Server allows any protocol to connect
 	// NOTE TTimo: but we might need to store the protocol around for potential non http/ftp clients
@@ -163,11 +163,11 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		//continue;
 		//}
 		if ( NET_CompareBaseAdr( from, cl->netchan.remoteAddress )
-		     && ( cl->netchan.qport == qport
-		          || from.port == cl->netchan.remoteAddress.port ) )
+		        && ( cl->netchan.qport == qport
+		             || from.port == cl->netchan.remoteAddress.port ) )
 		{
 			if ( ( svs.time - cl->lastConnectTime )
-			     < ( sv_reconnectlimit->integer * 1000 ) )
+			        < ( sv_reconnectlimit->integer * 1000 ) )
 			{
 				Com_DPrintf( "%s: reconnect rejected: too soon\n", NET_AdrToString( from ) );
 				return;
@@ -242,6 +242,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		{
 			Com_Printf( "Client %i connecting from somewhere unknown with %i challenge ping\n", i, ping );
 		}
+
 #else
 		Com_Printf( "Client %i connecting with %i challenge ping\n", i, ping );
 #endif
@@ -284,8 +285,8 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		}
 
 		if ( NET_CompareBaseAdr( from, cl->netchan.remoteAddress )
-		     && ( cl->netchan.qport == qport
-		          || from.port == cl->netchan.remoteAddress.port ) )
+		        && ( cl->netchan.qport == qport
+		             || from.port == cl->netchan.remoteAddress.port ) )
 		{
 			Com_Printf( "%s:reconnect\n", NET_AdrToString( from ) );
 			newcl = cl;
@@ -346,7 +347,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 			{
 				cl = &svs.clients[ i ];
 
-				if ( SV_IsBot(cl) )
+				if ( SV_IsBot( cl ) )
 				{
 					count++;
 				}
@@ -379,7 +380,7 @@ gotnewcl:
 	// build a new connection
 	// accept the new client
 	// this is the only place a client_t is ever initialized
-	*newcl = std::move(temp);
+	*newcl = std::move( temp );
 	clientNum = newcl - svs.clients;
 	ent = SV_GentityNum( clientNum );
 	newcl->gentity = ent;
@@ -391,6 +392,7 @@ gotnewcl:
 	{
 		Info_SetValueForKey( userinfo, "geoip", country, qfalse );
 	}
+
 #endif
 
 	// save the challenge
@@ -479,10 +481,12 @@ void SV_FreeClient( client_t *client )
 	// NA_BOT happens to be the default value for address types (value 0) and are
 	// never for clients that send challenges. For NA_BOT, skip the checks for
 	// challenges as it makes NET_CompareAdr yell at us.
-	if (client->netchan.remoteAddress.type != NA_BOT) {
+	if ( client->netchan.remoteAddress.type != NA_BOT )
+	{
 		// see if we already have a challenge for this IP address
 		challenge_t* challenge = &svs.challenges[ 0 ];
-		for (int i = 0; i < MAX_CHALLENGES; i++, challenge++)
+
+		for ( int i = 0; i < MAX_CHALLENGES; i++, challenge++ )
 		{
 			if ( NET_CompareAdr( client->netchan.remoteAddress, challenge->adr ) )
 			{
@@ -511,6 +515,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	{
 		return; // already dropped
 	}
+
 	Com_DPrintf( "Going to CS_ZOMBIE for %s\n", drop->name );
 	drop->state = CS_ZOMBIE; // become free in a few seconds
 
@@ -518,7 +523,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	// this will remove the body, among other things
 	gvm->GameClientDisconnect( drop - svs.clients );
 
-	if ( SV_IsBot(drop) )
+	if ( SV_IsBot( drop ) )
 	{
 		SV_BotFreeClient( drop - svs.clients );
 	}
@@ -542,6 +547,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	// send a heartbeat now so the master will get up to date info
 	// if there is already a slot for this IP address, reuse it
 	int i;
+
 	for ( i = 0; i < sv_maxclients->integer; i++ )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
@@ -752,7 +758,9 @@ the same as cl->downloadClientBlock
 void SV_NextDownload_f( client_t *cl, const Cmd::Args& args )
 {
 	int block;
-	if (args.Argc() < 2 or not Str::ParseInt(block, args.Argv(1))) {
+
+	if ( args.Argc() < 2 or not Str::ParseInt( block, args.Argv( 1 ) ) )
+	{
 		return;
 	}
 
@@ -789,19 +797,20 @@ void SV_BeginDownload_f( client_t *cl, const Cmd::Args& args )
 	// Kill any existing download
 	SV_CloseDownload( cl );
 
-	if (args.Argc() < 2) {
+	if ( args.Argc() < 2 )
+	{
 		return;
 	}
 
 	//bani - stop us from printing dupe messages
-	if (args.Argv(1) != cl->downloadName)
+	if ( args.Argv( 1 ) != cl->downloadName )
 	{
 		cl->downloadnotify = DLNOTIFY_ALL;
 	}
 
 	// cl->downloadName is non-zero now, SV_WriteDownloadToClient will see this and open
 	// the file itself
-	Q_strncpyz( cl->downloadName, args.Argv(1).c_str(), sizeof( cl->downloadName ) );
+	Q_strncpyz( cl->downloadName, args.Argv( 1 ).c_str(), sizeof( cl->downloadName ) );
 }
 
 /*
@@ -811,11 +820,12 @@ SV_WWWDownload_f
 */
 void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 {
-	if (args.Argc() < 2) {
+	if ( args.Argc() < 2 )
+	{
 		return;
 	}
 
-	const char *subcmd = args.Argv(1).c_str();
+	const char *subcmd = args.Argv( 1 ).c_str();
 
 	// only accept wwwdl commands for clients which we first flagged as wwwdl ourselves
 	if ( !cl->bWWWDl )
@@ -829,7 +839,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	{
 		if ( cl->bWWWing )
 		{
-			Com_Logf(LOG_WARN, "dupe wwwdl ack from client '%s'", cl->name );
+			Com_Logf( LOG_WARN, "dupe wwwdl ack from client '%s'", cl->name );
 		}
 
 		cl->bWWWing = qtrue;
@@ -866,8 +876,8 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	}
 	else if ( !Q_stricmp( subcmd, "chkfail" ) )
 	{
-		Com_Logf(LOG_WARN, "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration.",
-				cl->name, cl->downloadName );
+		Com_Logf( LOG_WARN, "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration.",
+		          cl->name, cl->downloadName );
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		cl->bFallback = qtrue;
@@ -876,7 +886,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 		return;
 	}
 
-	Com_Printf("SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n", subcmd, cl->name );
+	Com_Printf( "SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n", subcmd, cl->name );
 	SV_DropClient( cl, va( "SV_WWWDownload: unknown wwwdl subcommand '%s'", subcmd ) );
 }
 
@@ -963,16 +973,16 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			if ( sv_pure->integer )
 			{
 				Com_sprintf( errorMessage, sizeof( errorMessage ),
-							 "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
-							 "You will need to get this file elsewhere before you " "can connect to this pure server.\n",
-							 cl->downloadName );
+				             "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
+				             "You will need to get this file elsewhere before you " "can connect to this pure server.\n",
+				             cl->downloadName );
 			}
 			else
 			{
 				Com_sprintf( errorMessage, sizeof( errorMessage ),
-							 "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
-							 "Set autodownload to No in your settings and you might be "
-							 "able to connect even if you don't have the file.\n", cl->downloadName );
+				             "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
+				             "Set autodownload to No in your settings and you might be "
+				             "able to connect even if you don't have the file.\n", cl->downloadName );
 			}
 
 			SV_BadDownload( cl, msg );
@@ -990,26 +1000,37 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			std::string name, version;
 			Util::optional<uint32_t> checksum;
 			int downloadSize = 0;
-			bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
-			if (success) {
-				const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
-				if (pak) {
-					try {
-						downloadSize = FS::RawPath::OpenRead(pak->path).Length();
-					} catch (std::system_error&) {
+			bool success = FS::ParsePakName( cl->downloadName, cl->downloadName + strlen( cl->downloadName ), name, version, checksum );
+
+			if ( success )
+			{
+				const FS::PakInfo* pak = checksum ? FS::FindPak( name, version ) : FS::FindPak( name, version, *checksum );
+
+				if ( pak )
+				{
+					try
+					{
+						downloadSize = FS::RawPath::OpenRead( pak->path ).Length();
+					}
+					catch ( std::system_error& )
+					{
 						success = false;
 					}
-				} else
+				}
+				else
+				{
 					success = false;
+				}
 			}
+
 			std::string pakName = name + "_" + version + ".pk3";
 
 			if ( !cl->bFallback )
 			{
 				if ( success )
 				{
-					Q_strncpyz( cl->downloadURL, va("%s/%s", sv_wwwBaseURL->string, pakName.c_str()),
-								sizeof( cl->downloadURL ) );
+					Q_strncpyz( cl->downloadURL, va( "%s/%s", sv_wwwBaseURL->string, pakName.c_str() ),
+					            sizeof( cl->downloadURL ) );
 
 					//bani - prevent multiple download notifications
 					if ( cl->downloadnotify & DLNOTIFY_REDIRECT )
@@ -1039,7 +1060,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 				else
 				{
 					// that should NOT happen - even regular download would fail then anyway
-					Com_Logf(LOG_ERROR, "Client '%s': couldn't extract file size for %s", cl->name, cl->downloadName );
+					Com_Logf( LOG_ERROR, "Client '%s': couldn't extract file size for %s", cl->name, cl->downloadName );
 				}
 			}
 			else
@@ -1052,8 +1073,8 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					return;
 				}
 
-				Com_Logf(LOG_ERROR, "Client '%s': falling back to regular downloading for failed file %s", cl->name,
-							cl->downloadName );
+				Com_Logf( LOG_ERROR, "Client '%s': falling back to regular downloading for failed file %s", cl->name,
+				          cl->downloadName );
 			}
 		}
 
@@ -1061,18 +1082,28 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		cl->bWWWDl = qfalse;
 		std::string name, version;
 		Util::optional<uint32_t> checksum;
-		bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
-		if (success) {
-			const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
-			if (pak) {
-				try {
-					cl->download = std::make_shared<FS::File>(FS::RawPath::OpenRead(pak->path));
+		bool success = FS::ParsePakName( cl->downloadName, cl->downloadName + strlen( cl->downloadName ), name, version, checksum );
+
+		if ( success )
+		{
+			const FS::PakInfo* pak = checksum ? FS::FindPak( name, version ) : FS::FindPak( name, version, *checksum );
+
+			if ( pak )
+			{
+				try
+				{
+					cl->download = std::make_shared<FS::File>( FS::RawPath::OpenRead( pak->path ) );
 					cl->downloadSize = cl->download->Length();
-				} catch (std::system_error&) {
+				}
+				catch ( std::system_error& )
+				{
 					success = false;
 				}
-			} else
+			}
+			else
+			{
 				success = false;
+			}
 		}
 
 		if ( !success )
@@ -1103,9 +1134,12 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			cl->downloadBlocks[ curindex ] = ( byte* ) Z_Malloc( MAX_DOWNLOAD_BLKSIZE );
 		}
 
-		try {
-			cl->downloadBlockSize[ curindex ] = cl->download->Read(cl->downloadBlocks[ curindex ], MAX_DOWNLOAD_BLKSIZE);
-		} catch (std::system_error&) {
+		try
+		{
+			cl->downloadBlockSize[ curindex ] = cl->download->Read( cl->downloadBlocks[ curindex ], MAX_DOWNLOAD_BLKSIZE );
+		}
+		catch ( std::system_error& )
+		{
 			// EOF right now
 			cl->downloadCount = cl->downloadSize;
 			break;
@@ -1119,7 +1153,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 	// Check to see if we have eof condition and add the EOF block
 	if ( cl->downloadCount == cl->downloadSize &&
-	     !cl->downloadEOF && cl->downloadCurrentBlock - cl->downloadClientBlock < MAX_DOWNLOAD_WINDOW )
+	        !cl->downloadEOF && cl->downloadCurrentBlock - cl->downloadClientBlock < MAX_DOWNLOAD_WINDOW )
 	{
 		cl->downloadBlockSize[ cl->downloadCurrentBlock % MAX_DOWNLOAD_WINDOW ] = 0;
 		cl->downloadCurrentBlock++;
@@ -1341,11 +1375,12 @@ SV_UpdateUserinfo_f
 */
 static void SV_UpdateUserinfo_f( client_t *cl, const Cmd::Args& args )
 {
-	if (args.Argc() < 2) {
+	if ( args.Argc() < 2 )
+	{
 		return;
 	}
 
-	Q_strncpyz(cl->userinfo, args.Argv(1).c_str(), sizeof(cl->userinfo)); // FIXME QUOTING INFO
+	Q_strncpyz( cl->userinfo, args.Argv( 1 ).c_str(), sizeof( cl->userinfo ) ); // FIXME QUOTING INFO
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides
@@ -1374,18 +1409,20 @@ SV_Voip_f
 */
 static void SV_Voip_f( client_t *cl, const Cmd::Args& args )
 {
-	if (args.Argc() < 2) {
+	if ( args.Argc() < 2 )
+	{
 		return;
 	}
-	const char *cmd = args.Argv(1).c_str();
 
-	if ( strcmp( cmd, "ignore" ) == 0 and args.Argc() >= 3)
+	const char *cmd = args.Argv( 1 ).c_str();
+
+	if ( strcmp( cmd, "ignore" ) == 0 and args.Argc() >= 3 )
 	{
-		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), qtrue );
+		SV_UpdateVoipIgnore( cl, args.Argv( 2 ).c_str(), qtrue );
 	}
-	else if ( strcmp( cmd, "unignore" ) == 0 and args.Argc() >= 3)
+	else if ( strcmp( cmd, "unignore" ) == 0 and args.Argc() >= 3 )
 	{
-		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), qfalse );
+		SV_UpdateVoipIgnore( cl, args.Argv( 2 ).c_str(), qfalse );
 	}
 	else if ( strcmp( cmd, "muteall" ) == 0 )
 	{
@@ -1435,19 +1472,23 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 	qboolean bProcessed = qfalse;
 
 	Com_DPrintf( "EXCL: %s\n", s );
-	Cmd::Args args(s);
+	Cmd::Args args( s );
 
-	if (args.Argc() == 0) {
+	if ( args.Argc() == 0 )
+	{
 		return;
 	}
 
-	for (u = ucmds; u->name; u++) {
-		if (args.Argv(0) == u->name) {
-			if (premaprestart && !u->allowedpostmapchange) {
+	for ( u = ucmds; u->name; u++ )
+	{
+		if ( args.Argv( 0 ) == u->name )
+		{
+			if ( premaprestart && !u->allowedpostmapchange )
+			{
 				continue;
 			}
 
-			u->func(cl, args);
+			u->func( cl, args );
 			bProcessed = qtrue;
 			break;
 		}
@@ -1463,7 +1504,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 	}
 	else if ( !bProcessed )
 	{
-		Com_DPrintf( "client text ignored for %s^7: %s\n", cl->name, args.Argv(0).c_str());
+		Com_DPrintf( "client text ignored for %s^7: %s\n", cl->name, args.Argv( 0 ).c_str() );
 	}
 }
 
@@ -1514,7 +1555,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	// We don't do this when the client hasn't been active yet, since it is
 	// by protocol to spam a lot of commands when downloading
 	if ( !com_cl_running->integer && cl->state >= CS_ACTIVE && // (SA) this was commented out in Wolf.  Did we do that?
-	     sv_floodProtect->integer && svs.time < cl->nextReliableTime && floodprotect )
+	        sv_floodProtect->integer && svs.time < cl->nextReliableTime && floodprotect )
 	{
 		// ignore any other text messages from this client but let them keep playing
 		// TTimo - moved the ignored verbose to the actual processing in SV_ExecuteClientCommand, only printing if the core doesn't intercept

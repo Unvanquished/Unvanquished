@@ -33,128 +33,106 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #error No translation function? Fail!
 #endif
 
-static const char *TranslateText_Internal( qboolean plural, int firstTextArg )
+static const char *TranslateText_Internal ( qboolean plural, int firstTextArg )
 {
-	static char str[ MAX_STRING_CHARS ];
-	char        buf[ MAX_STRING_CHARS ];
-	const char  *in;
-	int         c, i = 0, totalArgs;
+    static char str[ MAX_STRING_CHARS ];
+    char        buf[ MAX_STRING_CHARS ];
+    const char  *in;
+    int         c, i = 0, totalArgs;
 
-	totalArgs = Cmd_Argc();
+    totalArgs = Cmd_Argc();
 
-	if ( plural )
-	{
-		int        number = atoi( Cmd_Argv( firstTextArg ) );
-		const char *text = Cmd_Argv( ++firstTextArg );
+    if ( plural ) {
+        int        number = atoi ( Cmd_Argv ( firstTextArg ) );
+        const char *text = Cmd_Argv ( ++firstTextArg );
 
-		Q_strncpyz( buf, PLURAL_TRANSLATE_FUNC( text, text, number ), sizeof( buf ) );
-	}
-	else
-	{
-		Q_strncpyz( buf, TRANSLATE_FUNC( Cmd_Argv( firstTextArg ) ), sizeof( buf ) );
-	}
+        Q_strncpyz ( buf, PLURAL_TRANSLATE_FUNC ( text, text, number ), sizeof ( buf ) );
+    } else {
+        Q_strncpyz ( buf, TRANSLATE_FUNC ( Cmd_Argv ( firstTextArg ) ), sizeof ( buf ) );
+    }
 
-	in = buf;
-	memset( &str, 0, sizeof( str ) );
+    in = buf;
+    memset ( &str, 0, sizeof ( str ) );
 
-	while( *in )
-	{
-		c = *in;
+    while ( *in ) {
+        c = *in;
 
-		if( c == '$' )
-		{
-			const char *number = ++in;
+        if ( c == '$' ) {
+            const char *number = ++in;
 
-			if( *in == '$' )
-			{
-				goto literal;
-			}
+            if ( *in == '$' ) {
+                goto literal;
+            }
 
-			while( *in )
-			{
-				if( isdigit( *in ) )
-				{
-					in++;
+            while ( *in ) {
+                if ( isdigit ( *in ) ) {
+                    in++;
 
-					if( *in == 't' && *(in+1) == '$' )
-					{
-						int num = atoi( number );
+                    if ( *in == 't' && * ( in+1 ) == '$' ) {
+                        int num = atoi ( number );
 
-						if( num >= 0 && num < totalArgs )
-						{
-							const char *translated = TRANSLATE_FUNC( Cmd_Argv( num + firstTextArg ) );
-							int         length = strlen( translated );
+                        if ( num >= 0 && num < totalArgs ) {
+                            const char *translated = TRANSLATE_FUNC ( Cmd_Argv ( num + firstTextArg ) );
+                            int         length = strlen ( translated );
 
-							i += length;
+                            i += length;
 
-							if( i >= MAX_STRING_CHARS )
-							{
-								Com_Printf( "%s", str );
-								memset( &str, 0, sizeof( str ) );
-								i = length;
-							}
+                            if ( i >= MAX_STRING_CHARS ) {
+                                Com_Printf ( "%s", str );
+                                memset ( &str, 0, sizeof ( str ) );
+                                i = length;
+                            }
 
-							Q_strcat( str, sizeof( str ), translated );
-						}
+                            Q_strcat ( str, sizeof ( str ), translated );
+                        }
 
-						in += 2;
-						break;
-					}
-					else if( *in == '$' )
-					{
-						int num = atoi( number );
+                        in += 2;
+                        break;
+                    } else if ( *in == '$' ) {
+                        int num = atoi ( number );
 
-						if( num >= 0 && num < totalArgs )
-						{
-							const char *translated = TRANSLATE_FUNC( Cmd_Argv( num + firstTextArg ) );
-							int         length = strlen( translated );
+                        if ( num >= 0 && num < totalArgs ) {
+                            const char *translated = TRANSLATE_FUNC ( Cmd_Argv ( num + firstTextArg ) );
+                            int         length = strlen ( translated );
 
-							i += length;
+                            i += length;
 
-							if( i >= MAX_STRING_CHARS )
-							{
-								Com_Printf( "%s", str );
-								memset( &str, 0, sizeof( str ) );
-								i = length;
-							}
+                            if ( i >= MAX_STRING_CHARS ) {
+                                Com_Printf ( "%s", str );
+                                memset ( &str, 0, sizeof ( str ) );
+                                i = length;
+                            }
 
-							Q_strcat( str, sizeof( str ), translated );
-						}
+                            Q_strcat ( str, sizeof ( str ), translated );
+                        }
 
-						in++;
-						break;
-					}
-				}
-				else
-				{
-					// invalid sequence
-					c = '$';
-					goto literal;
-				}
-			}
-		}
-		else
-		{
-			// arrive here for literal '$' or invalid sequence
-			// in has not yet been incremented
-			// c contains the character to be appended
-			literal:
+                        in++;
+                        break;
+                    }
+                } else {
+                    // invalid sequence
+                    c = '$';
+                    goto literal;
+                }
+            }
+        } else {
+            // arrive here for literal '$' or invalid sequence
+            // in has not yet been incremented
+            // c contains the character to be appended
+        literal:
 
-			if( i < MAX_STRING_CHARS )
-			{
-				str[ i++ ] = c;
-			}
-			else
-			{
-				Com_Printf( "%s", str );
-				memset( &str, 0, sizeof( str ) );
-				str[ 0 ] = c;
-				i = 1;
-			}
+            if ( i < MAX_STRING_CHARS ) {
+                str[ i++ ] = c;
+            } else {
+                Com_Printf ( "%s", str );
+                memset ( &str, 0, sizeof ( str ) );
+                str[ 0 ] = c;
+                i = 1;
+            }
 
-			++in;
-		}
-	}
+            ++in;
+        }
+    }
 
-	return str;
+    return str;
 }

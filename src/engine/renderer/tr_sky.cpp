@@ -574,6 +574,7 @@ static void DrawSkyBox( shader_t *shader )
 		// only add indexes for first stage
 		FillCloudySkySide( sky_mins_subd, sky_maxs_subd, qtrue );
 	}
+
 	Tess_UpdateVBOs( );
 	GL_VertexAttribsState( tess.attribsSet );
 
@@ -791,7 +792,7 @@ void Tess_StageIteratorSky( void )
 		ri.Error( ERR_FATAL, "tess.stageIteratorFunc == NULL" );
 	}
 
-	GL_Cull(CT_TWO_SIDED);
+	GL_Cull( CT_TWO_SIDED );
 
 	if ( tess.stageIteratorFunc2 == &Tess_StageIteratorDepthFill )
 	{

@@ -41,22 +41,19 @@ Maryland 20850 USA.
 class RocketIncludeElement : public Rocket::Core::Element
 {
 public:
-	RocketIncludeElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ) { }
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
-	{
-		Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
-		{
-			Rocket::Core::String filename = GetAttribute<Rocket::Core::String>("src", "");
+    RocketIncludeElement ( const Rocket::Core::String &tag ) : Rocket::Core::Element ( tag ) { }
+    void OnAttributeChange ( const Rocket::Core::AttributeNameList &changed_attributes ) {
+        Element::OnAttributeChange ( changed_attributes );
+        if ( changed_attributes.find ( "src" ) != changed_attributes.end() ) {
+            Rocket::Core::String filename = GetAttribute<Rocket::Core::String> ( "src", "" );
 
-			if ( !filename.Empty() )
-			{
-				std::string buffer;
-				buffer = FS::PakPath::ReadFile(filename.CString());
-				SetInnerRML(buffer.c_str());
-			}
-		}
-	}
+            if ( !filename.Empty() ) {
+                std::string buffer;
+                buffer = FS::PakPath::ReadFile ( filename.CString() );
+                SetInnerRML ( buffer.c_str() );
+            }
+        }
+    }
 };
 
 

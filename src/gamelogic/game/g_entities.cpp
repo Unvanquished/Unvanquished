@@ -146,7 +146,7 @@ void G_FreeEntity( gentity_t *entity )
 
 	if ( g_debugEntities.integer > 2 )
 	{
-		G_Printf(S_DEBUG "Freeing Entity %s\n", etos(entity));
+		G_Printf( S_DEBUG "Freeing Entity %s\n", etos( entity ) );
 	}
 
 	if ( entity->obstacleHandle )
@@ -154,7 +154,7 @@ void G_FreeEntity( gentity_t *entity )
 		trap_BotRemoveObstacle( entity->obstacleHandle );
 	}
 
-	if( entity->eclass && entity->eclass->instanceCounter > 0 )
+	if ( entity->eclass && entity->eclass->instanceCounter > 0 )
 	{
 		entity->eclass->instanceCounter--;
 	}
@@ -162,7 +162,7 @@ void G_FreeEntity( gentity_t *entity )
 	if ( entity->s.eType == ET_BEACON && entity->s.modelindex == BCT_TAG )
 	{
 		// It's possible that this happened before, but we need to be sure.
-		BaseClustering::Remove(entity);
+		BaseClustering::Remove( entity );
 	}
 
 	memset( entity, 0, sizeof( *entity ) );
@@ -187,7 +187,7 @@ gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 	vec3_t    snapped;
 
 	newEntity = G_NewEntity();
-	newEntity->s.eType = (entityType_t) ( ET_EVENTS + event );
+	newEntity->s.eType = ( entityType_t )( ET_EVENTS + event );
 
 	newEntity->classname = "tempEntity";
 	newEntity->eventTime = level.time;
@@ -226,44 +226,48 @@ char *etos( const gentity_t *entity )
 	static  char str[ 4 ][ MAX_ETOS_LENGTH ];
 	char         *resultString;
 
-	if(!entity)
+	if ( !entity )
+	{
 		return "<NULL>";
+	}
 
 	// use an array so that multiple etos have smaller chance of colliding
 	resultString = str[ index ];
 	index = ( index + 1 ) & 3;
 
 	Com_sprintf( resultString, MAX_ETOS_LENGTH,
-			"%s%s" S_COLOR_WHITE "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%i" S_COLOR_WHITE ")",
-			entity->names[0] ? entity->names[0] : "", entity->names[0] ? " " : "", entity->classname, entity->s.number
-			);
+	             "%s%s" S_COLOR_WHITE "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%i" S_COLOR_WHITE ")",
+	             entity->names[0] ? entity->names[0] : "", entity->names[0] ? " " : "", entity->classname, entity->s.number
+	           );
 
 	return resultString;
 }
 
-void G_PrintEntityNameList(gentity_t *entity)
+void G_PrintEntityNameList( gentity_t *entity )
 {
 	int i;
 	char string[ MAX_STRING_CHARS ];
 
-	if(!entity)
+	if ( !entity )
 	{
-		G_Printf("<NULL>");
+		G_Printf( "<NULL>" );
 		return;
 	}
-	if(!entity->names[0])
+
+	if ( !entity->names[0] )
 	{
 		return;
 	}
 
-	Q_strncpyz( string, entity->names[0], sizeof(string) );
+	Q_strncpyz( string, entity->names[0], sizeof( string ) );
 
-	for (i = 1; i < MAX_ENTITY_ALIASES && entity->names[i]; i++)
+	for ( i = 1; i < MAX_ENTITY_ALIASES && entity->names[i]; i++ )
 	{
-		Q_strcat(string, sizeof(string), ", ");
-		Q_strcat(string, sizeof(string), entity->names[i]);
+		Q_strcat( string, sizeof( string ), ", " );
+		Q_strcat( string, sizeof( string ), entity->names[i] );
 	}
-	G_Printf("{ %s }\n", string);
+
+	G_Printf( "{ %s }\n", string );
 }
 
 /*
@@ -294,9 +298,12 @@ gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, qboolean
 	if ( !entity )
 	{
 		entity = g_entities;
+
 		//start after the reserved player slots, if we are not searching for a player
-		if ( classname && !strcmp(classname, S_PLAYER_CLASSNAME) )
+		if ( classname && !strcmp( classname, S_PLAYER_CLASSNAME ) )
+		{
 			entity += MAX_CLIENTS;
+		}
 	}
 	else
 	{
@@ -306,20 +313,29 @@ gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, qboolean
 	for ( ; entity < &g_entities[ level.num_entities ]; entity++ )
 	{
 		if ( !entity->inuse )
+		{
 			continue;
+		}
 
-		if( skipdisabled && !entity->enabled)
+		if ( skipdisabled && !entity->enabled )
+		{
 			continue;
+		}
 
 
 		if ( classname && Q_stricmp( entity->classname, classname ) )
+		{
 			continue;
+		}
 
 		if ( fieldofs && match )
 		{
 			fieldString = * ( char ** )( ( byte * ) entity + fieldofs );
+
 			if ( Q_stricmp( fieldString, match ) )
+			{
 				continue;
+			}
 		}
 
 		return entity;
@@ -441,18 +457,20 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	gentity_t *choices[ MAX_GENTITIES - 2 - MAX_CLIENTS ];
 
 	//collects the targets
-	while( ( foundEntity = G_IterateEntities( foundEntity, classname, qtrue, fieldofs, match ) ) != NULL )
+	while ( ( foundEntity = G_IterateEntities( foundEntity, classname, qtrue, fieldofs, match ) ) != NULL )
+	{
 		choices[ totalChoiceCount++ ] = foundEntity;
+	}
 
 	if ( !totalChoiceCount )
 	{
 
 		if ( g_debugEntities.integer > -1 )
 			G_Printf( S_WARNING "Could not find any entity matching \"" S_COLOR_CYAN "%s%s%s" S_COLOR_WHITE "\"\n",
-					classname ? classname : "",
-					classname && match ? S_COLOR_WHITE " and " S_COLOR_CYAN :  "",
-					match ? match : ""
-					);
+			          classname ? classname : "",
+			          classname && match ? S_COLOR_WHITE " and " S_COLOR_CYAN :  "",
+			          match ? match : ""
+			        );
 
 		return NULL;
 	}
@@ -463,12 +481,12 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 
 gentity_t *G_PickRandomEntityOfClass( const char *classname )
 {
-	return G_PickRandomEntity(classname, 0, NULL);
+	return G_PickRandomEntity( classname, 0, NULL );
 }
 
 gentity_t *G_PickRandomEntityWithField( size_t fieldofs, const char *match )
 {
-	return G_PickRandomEntity(NULL, fieldofs, match);
+	return G_PickRandomEntity( NULL, fieldofs, match );
 }
 
 /*
@@ -504,31 +522,35 @@ typedef struct
 
 static const entityCallEventDescription_t gentityEventDescriptions[] =
 {
-		{ "onAct",       ON_ACT       },
-		{ "onDie",       ON_DIE       },
-		{ "onDisable",   ON_DISABLE   },
-		{ "onEnable",    ON_ENABLE    },
-		{ "onFree",      ON_FREE      },
-		{ "onReach",     ON_REACH     },
-		{ "onReset",     ON_RESET     },
-		{ "onSpawn",     ON_SPAWN     },
-		{ "onTouch",     ON_TOUCH     },
-		{ "onUse",       ON_USE       },
-		{ "target",      ON_DEFAULT   },
+	{ "onAct",       ON_ACT       },
+	{ "onDie",       ON_DIE       },
+	{ "onDisable",   ON_DISABLE   },
+	{ "onEnable",    ON_ENABLE    },
+	{ "onFree",      ON_FREE      },
+	{ "onReach",     ON_REACH     },
+	{ "onReset",     ON_RESET     },
+	{ "onSpawn",     ON_SPAWN     },
+	{ "onTouch",     ON_TOUCH     },
+	{ "onUse",       ON_USE       },
+	{ "target",      ON_DEFAULT   },
 };
 
 gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
 {
 	entityCallEventDescription_t *foundDescription;
 
-	if(!event)
+	if ( !event )
+	{
 		return ON_DEFAULT;
+	}
 
-	foundDescription = (entityCallEventDescription_t*) bsearch(event, gentityEventDescriptions, ARRAY_LEN( gentityEventDescriptions ),
-		             sizeof( entityCallEventDescription_t ), cmdcmp );
+	foundDescription = ( entityCallEventDescription_t* ) bsearch( event, gentityEventDescriptions, ARRAY_LEN( gentityEventDescriptions ),
+	                   sizeof( entityCallEventDescription_t ), cmdcmp );
 
-	if(foundDescription && foundDescription->key)
+	if ( foundDescription && foundDescription->key )
+	{
 		return foundDescription->eventType;
+	}
 
 	return ON_CUSTOM;
 }
@@ -541,29 +563,33 @@ typedef struct
 
 static const entityActionDescription_t actionDescriptions[] =
 {
-		{ "act",       ECA_ACT       },
-		{ "disable",   ECA_DISABLE   },
-		{ "enable",    ECA_ENABLE    },
-		{ "free",      ECA_FREE      },
-		{ "nop",       ECA_NOP       },
-		{ "propagate", ECA_PROPAGATE },
-		{ "reset",     ECA_RESET     },
-		{ "toggle",    ECA_TOGGLE    },
-		{ "use",       ECA_USE       },
+	{ "act",       ECA_ACT       },
+	{ "disable",   ECA_DISABLE   },
+	{ "enable",    ECA_ENABLE    },
+	{ "free",      ECA_FREE      },
+	{ "nop",       ECA_NOP       },
+	{ "propagate", ECA_PROPAGATE },
+	{ "reset",     ECA_RESET     },
+	{ "toggle",    ECA_TOGGLE    },
+	{ "use",       ECA_USE       },
 };
 
 gentityCallActionType_t G_GetCallActionTypeFor( const char* action )
 {
 	entityActionDescription_t *foundDescription;
 
-	if(!action)
+	if ( !action )
+	{
 		return ECA_DEFAULT;
+	}
 
-	foundDescription = (entityActionDescription_t*) bsearch(action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
-		             sizeof( entityActionDescription_t ), cmdcmp );
+	foundDescription = ( entityActionDescription_t* ) bsearch( action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
+	                   sizeof( entityActionDescription_t ), cmdcmp );
 
-	if(foundDescription && foundDescription->alias)
+	if ( foundDescription && foundDescription->alias )
+	{
 		return foundDescription->action;
+	}
 
 	return ECA_CUSTOM;
 }
@@ -572,75 +598,109 @@ gentity_t *G_ResolveEntityKeyword( gentity_t *self, char *keyword )
 {
 	gentity_t *resolution = NULL;
 
-	if (!Q_stricmp(keyword, "$activator"))
+	if ( !Q_stricmp( keyword, "$activator" ) )
+	{
 		resolution = self->activator;
-	else if (!Q_stricmp(keyword, "$self"))
+	}
+	else if ( !Q_stricmp( keyword, "$self" ) )
+	{
 		resolution = self;
-	else if (!Q_stricmp(keyword, "$parent"))
+	}
+	else if ( !Q_stricmp( keyword, "$parent" ) )
+	{
 		resolution = self->parent;
-	else if (!Q_stricmp(keyword, "$target"))
+	}
+	else if ( !Q_stricmp( keyword, "$target" ) )
+	{
 		resolution = self->target;
-	else if (!Q_stricmp(keyword, "$tracker"))
+	}
+	else if ( !Q_stricmp( keyword, "$tracker" ) )
+	{
 		resolution = self->tracker;
+	}
 
-	if(!resolution || !resolution->inuse)
+	if ( !resolution || !resolution->inuse )
+	{
 		return NULL;
+	}
 
 	return resolution;
 }
 
-gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self)
+gentity_t *G_IterateTargets( gentity_t *entity, int *targetIndex, gentity_t *self )
 {
 	gentity_t *possibleTarget = NULL;
 
-	if (entity)
-		goto cont;
-
-	for (*targetIndex = 0; self->targets[*targetIndex]; ++(*targetIndex))
+	if ( entity )
 	{
-		if(self->targets[*targetIndex][0] == '$')
+		goto cont;
+	}
+
+	for ( *targetIndex = 0; self->targets[*targetIndex]; ++( *targetIndex ) )
+	{
+		if ( self->targets[*targetIndex][0] == '$' )
 		{
 			possibleTarget = G_ResolveEntityKeyword( self, self->targets[*targetIndex] );
-			if(possibleTarget && possibleTarget->enabled)
+
+			if ( possibleTarget && possibleTarget->enabled )
+			{
 				return possibleTarget;
+			}
+
 			return NULL;
 		}
 
-		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
+		for ( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
 		{
-			if ( !entity->inuse || !entity->enabled)
+			if ( !entity->inuse || !entity->enabled )
+			{
 				continue;
+			}
 
-			if( G_MatchesName(entity, self->targets[*targetIndex]) )
+			if ( G_MatchesName( entity, self->targets[*targetIndex] ) )
+			{
 				return entity;
+			}
 
-			cont: ;
+cont:
+			;
 		}
 	}
+
 	return NULL;
 }
 
-gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, gentity_t *self)
+gentity_t *G_IterateCallEndpoints( gentity_t *entity, int *calltargetIndex, gentity_t *self )
 {
-	if (entity)
-		goto cont;
-
-	for (*calltargetIndex = 0; self->calltargets[*calltargetIndex].name; ++(*calltargetIndex))
+	if ( entity )
 	{
-		if(self->calltargets[*calltargetIndex].name[0] == '$')
-			return G_ResolveEntityKeyword( self, self->calltargets[*calltargetIndex].name );
+		goto cont;
+	}
 
-		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
+	for ( *calltargetIndex = 0; self->calltargets[*calltargetIndex].name; ++( *calltargetIndex ) )
+	{
+		if ( self->calltargets[*calltargetIndex].name[0] == '$' )
+		{
+			return G_ResolveEntityKeyword( self, self->calltargets[*calltargetIndex].name );
+		}
+
+		for ( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
 		{
 			if ( !entity->inuse )
+			{
 				continue;
+			}
 
-			if( G_MatchesName(entity, self->calltargets[*calltargetIndex].name) )
+			if ( G_MatchesName( entity, self->calltargets[*calltargetIndex].name ) )
+			{
 				return entity;
+			}
 
-			cont: ;
+cont:
+			;
 		}
 	}
+
 	return NULL;
 }
 
@@ -656,16 +716,19 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	gentity_t *choices[ MAX_GENTITIES ];
 
 	//collects the targets
-	while( ( foundTarget = G_IterateTargets( foundTarget, &targetIndex, self ) ) != NULL )
+	while ( ( foundTarget = G_IterateTargets( foundTarget, &targetIndex, self ) ) != NULL )
+	{
 		choices[ totalChoiceCount++ ] = foundTarget;
+	}
 
 	if ( !totalChoiceCount )
 	{
 		if ( g_debugEntities.integer > -1 )
 		{
-			G_Printf( S_WARNING "none of the following targets could be resolved for Entity %s:", etos(self));
+			G_Printf( S_WARNING "none of the following targets could be resolved for Entity %s:", etos( self ) );
 			G_PrintEntityNameList( self );
 		}
+
 		return NULL;
 	}
 
@@ -689,7 +752,7 @@ void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 	gentityTargetChoice_t *selectedChoice;
 
 	//collects the targets
-	while( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, entity ) ) != NULL )
+	while ( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, entity ) ) != NULL )
 	{
 		choices[ totalChoiceCount ].recipient = possibleTarget;
 		choices[ totalChoiceCount ].callDefinition = &entity->calltargets[targetIndex];
@@ -697,7 +760,9 @@ void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 	}
 
 	if ( totalChoiceCount == 0 )
+	{
 		return;
+	}
 
 	//return a random one from among the choices
 	selectedChoice = &choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
@@ -726,9 +791,9 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	gentityCall_t call;
 	call.activator = activator;
 
-	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != NULL )
+	while ( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != NULL )
 	{
-		if( eventType && self->calltargets[ targetIndex ].eventType != eventType )
+		if ( eventType && self->calltargets[ targetIndex ].eventType != eventType )
 		{
 			continue;
 		}
@@ -736,7 +801,7 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 		call.caller = self; //reset the caller in case there have been nested calls
 		call.definition = &self->calltargets[ targetIndex ];
 
-		G_CallEntity(currentTarget, &call);
+		G_CallEntity( currentTarget, &call );
 
 		if ( !self->inuse )
 		{
@@ -767,7 +832,7 @@ void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
 
 	//assert( entity->callIn->activator != NULL );
 
-	if( entity->active )
+	if ( entity->active )
 	{
 		//TODO
 	}
@@ -778,7 +843,7 @@ void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
 	 * for now we use the callIn activator if its set or fallback to the old solution, but we should
 	 * //TODO remove the old solution of activator setting from this
 	 */
-	entity->act(entity, call->caller, call->caller->activator ? call->caller->activator : entity->activator );
+	entity->act( entity, call->caller, call->caller->activator ? call->caller->activator : entity->activator );
 	entity->active = qfalse;
 }
 
@@ -792,9 +857,9 @@ void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
 	assert( call != NULL );
 	entity->callIn = *call;
 
-	G_ResetTimeField(&delay, entity->config.delay, entity->eclass->config.delay, delay );
+	G_ResetTimeField( &delay, entity->config.delay, entity->eclass->config.delay, delay );
 
-	if(delay.time)
+	if ( delay.time )
 	{
 		entity->nextAct = VariatedLevelTime( delay );
 	}
@@ -804,96 +869,118 @@ void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
 	}
 }
 
-void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
+void G_CallEntity( gentity_t *targetedEntity, gentityCall_t *call )
 {
 	if ( g_debugEntities.integer > 1 )
 	{
-		G_Printf(S_DEBUG "[%s] %s calling %s %s:%s\n",
-				etos( call->activator ),
-				etos( call->caller ),
-				call->definition ? call->definition->event : "onUnknown",
-				etos( targetedEntity ),
-				call->definition && call->definition->action ? call->definition->action : "default");
+		G_Printf( S_DEBUG "[%s] %s calling %s %s:%s\n",
+		          etos( call->activator ),
+		          etos( call->caller ),
+		          call->definition ? call->definition->event : "onUnknown",
+		          etos( targetedEntity ),
+		          call->definition && call->definition->action ? call->definition->action : "default" );
 	}
 
 	targetedEntity->callIn = *call;
 
-	if((!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call)) && call->definition)
+	if ( ( !targetedEntity->handleCall || !targetedEntity->handleCall( targetedEntity, call ) ) && call->definition )
 	{
-		switch (call->definition->actionType)
+		switch ( call->definition->actionType )
 		{
-		case ECA_NOP:
-			break;
-
-		case ECA_CUSTOM:
-			if ( g_debugEntities.integer > -1 )
-			{
-				G_Printf(S_WARNING "Unknown action \"%s\" for %s\n",
-						call->definition->action, etos(targetedEntity));
-			}
-			break;
-
-		case ECA_FREE:
-			G_FreeEntity(targetedEntity);
-			return; //we have to handle notification differently in the free-case
-
-		case ECA_PROPAGATE:
-			G_FireEntity( targetedEntity, call->activator);
-			break;
-
-		case ECA_ENABLE:
-			if(!targetedEntity->enabled) //only fire an event if we weren't already enabled
-			{
-				targetedEntity->enabled = qtrue;
-				G_EventFireEntity( targetedEntity, call->activator, ON_ENABLE );
-			}
-			break;
-		case ECA_DISABLE:
-			if(targetedEntity->enabled) //only fire an event if we weren't already disabled
-			{
-				targetedEntity->enabled = qfalse;
-				G_EventFireEntity( targetedEntity, call->activator, ON_DISABLE );
-			}
-			break;
-		case ECA_TOGGLE:
-			targetedEntity->enabled = !targetedEntity->enabled;
-			G_EventFireEntity( targetedEntity, call->activator, targetedEntity->enabled ? ON_ENABLE : ON_DISABLE );
-			break;
-
-		case ECA_USE:
-			if (!targetedEntity->use)
-			{
-				if(g_debugEntities.integer >= 0)
-					G_Printf(S_WARNING "calling :use on %s, which has no use function!\n", etos(targetedEntity));
+			case ECA_NOP:
 				break;
-			}
-			if(!call->activator || !call->activator->client)
-			{
-				if(g_debugEntities.integer >= 0)
-					G_Printf(S_WARNING "calling %s:use, without a client as activator.\n", etos(targetedEntity));
-				break;
-			}
-			targetedEntity->use(targetedEntity, call->caller, call->activator);
-			break;
-		case ECA_RESET:
-			if (targetedEntity->reset)
-			{
-				targetedEntity->reset(targetedEntity);
-				G_EventFireEntity( targetedEntity, call->activator, ON_RESET );
-			}
-			break;
-		case ECA_ACT:
-			G_HandleActCall( targetedEntity, call );
-			break;
 
-		default:
-			if (targetedEntity->act)
-				targetedEntity->act(targetedEntity, call->caller, call->activator);
-			break;
+			case ECA_CUSTOM:
+				if ( g_debugEntities.integer > -1 )
+				{
+					G_Printf( S_WARNING "Unknown action \"%s\" for %s\n",
+					          call->definition->action, etos( targetedEntity ) );
+				}
+
+				break;
+
+			case ECA_FREE:
+				G_FreeEntity( targetedEntity );
+				return; //we have to handle notification differently in the free-case
+
+			case ECA_PROPAGATE:
+				G_FireEntity( targetedEntity, call->activator );
+				break;
+
+			case ECA_ENABLE:
+				if ( !targetedEntity->enabled ) //only fire an event if we weren't already enabled
+				{
+					targetedEntity->enabled = qtrue;
+					G_EventFireEntity( targetedEntity, call->activator, ON_ENABLE );
+				}
+
+				break;
+
+			case ECA_DISABLE:
+				if ( targetedEntity->enabled ) //only fire an event if we weren't already disabled
+				{
+					targetedEntity->enabled = qfalse;
+					G_EventFireEntity( targetedEntity, call->activator, ON_DISABLE );
+				}
+
+				break;
+
+			case ECA_TOGGLE:
+				targetedEntity->enabled = !targetedEntity->enabled;
+				G_EventFireEntity( targetedEntity, call->activator, targetedEntity->enabled ? ON_ENABLE : ON_DISABLE );
+				break;
+
+			case ECA_USE:
+				if ( !targetedEntity->use )
+				{
+					if ( g_debugEntities.integer >= 0 )
+					{
+						G_Printf( S_WARNING "calling :use on %s, which has no use function!\n", etos( targetedEntity ) );
+					}
+
+					break;
+				}
+
+				if ( !call->activator || !call->activator->client )
+				{
+					if ( g_debugEntities.integer >= 0 )
+					{
+						G_Printf( S_WARNING "calling %s:use, without a client as activator.\n", etos( targetedEntity ) );
+					}
+
+					break;
+				}
+
+				targetedEntity->use( targetedEntity, call->caller, call->activator );
+				break;
+
+			case ECA_RESET:
+				if ( targetedEntity->reset )
+				{
+					targetedEntity->reset( targetedEntity );
+					G_EventFireEntity( targetedEntity, call->activator, ON_RESET );
+				}
+
+				break;
+
+			case ECA_ACT:
+				G_HandleActCall( targetedEntity, call );
+				break;
+
+			default:
+				if ( targetedEntity->act )
+				{
+					targetedEntity->act( targetedEntity, call->caller, call->activator );
+				}
+
+				break;
 		}
 	}
-	if(targetedEntity->notifyHandler)
+
+	if ( targetedEntity->notifyHandler )
+	{
 		targetedEntity->notifyHandler( targetedEntity, call );
+	}
 
 	targetedEntity->callIn = NULL_CALL; /**< not called anymore */
 }
@@ -910,11 +997,14 @@ qboolean G_MatchesName( gentity_t *entity, const char* name )
 {
 	int nameIndex;
 
-	for (nameIndex = 0; entity->names[nameIndex]; ++nameIndex)
+	for ( nameIndex = 0; entity->names[nameIndex]; ++nameIndex )
 	{
-		if (!Q_stricmp(name, entity->names[nameIndex]))
+		if ( !Q_stricmp( name, entity->names[nameIndex] ) )
+		{
 			return qtrue;
+		}
 	}
+
 	return qfalse;
 }
 

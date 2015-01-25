@@ -131,7 +131,7 @@ to the appropriate place.
 A raw string should NEVER be passed as fmt, because of "%f" type crashers.
 =============
 */
-int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
+int QDECL VPRINTF_LIKE( 1 ) Com_VPrintf( const char *fmt, va_list argptr )
 {
 #ifdef SMP
 	static SDL_mutex *lock = NULL;
@@ -148,12 +148,13 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 	//Build the message
 	char msg[MAXPRINTMSG];
 	memset( msg, 0, sizeof( msg ) );
-	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
+	Q_vsnprintf( msg, sizeof( msg ), fmt, argptr );
 	msg[ MAXPRINTMSG - 1 ] = '\0';
 
 	//Remove a trailing newline, this is handled by Log::*
-	int len = strlen(msg);
-	if (msg[len - 1] == '\n')
+	int len = strlen( msg );
+
+	if ( msg[len - 1] == '\n' )
 	{
 		msg[len - 1] = '\0';
 	}
@@ -166,7 +167,7 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 	return strlen( msg );
 }
 
-void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
+void QDECL PRINTF_LIKE( 1 ) Com_Printf( const char *fmt, ... )
 {
 	va_list argptr;
 
@@ -177,35 +178,43 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 
 void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location )
 {
-	switch (event->level)
+	switch ( event->level )
 	{
-	case LOG_OFF:
-		return;
-	case LOG_WARN:
-		Com_Printf("^3Warning: ^7%s\n", event->message);
-		break;
-	case LOG_ERROR:
-		Com_Printf("^1Error: ^7%s\n", event->message);
-		break;
-	case LOG_DEBUG:
-		Com_Printf("Debug: %s\n", event->message);
-		break;
-	case LOG_TRACE:
-		Com_Printf("Trace: %s\n", event->message);
-		return;
-	default:
-		Com_Printf("%s\n", event->message);
-		break;
+		case LOG_OFF:
+			return;
+
+		case LOG_WARN:
+			Com_Printf( "^3Warning: ^7%s\n", event->message );
+			break;
+
+		case LOG_ERROR:
+			Com_Printf( "^1Error: ^7%s\n", event->message );
+			break;
+
+		case LOG_DEBUG:
+			Com_Printf( "Debug: %s\n", event->message );
+			break;
+
+		case LOG_TRACE:
+			Com_Printf( "Trace: %s\n", event->message );
+			return;
+
+		default:
+			Com_Printf( "%s\n", event->message );
+			break;
 	}
+
 #ifndef NDEBUG
-	if (location)
+
+	if ( location )
 	{
-		Com_Printf("\tin %s at %s:%i\n", location->function, location->file, location->line);
+		Com_Printf( "\tin %s at %s:%i\n", location->function, location->file, location->line );
 	}
+
 #endif
 }
 
-void QDECL PRINTF_LIKE(2) Com_Logf( log_level_t level, const char *fmt, ... )
+void QDECL PRINTF_LIKE( 2 ) Com_Logf( log_level_t level, const char *fmt, ... )
 {
 	va_list argptr;
 	char    text[ MAXPRINTMSG ];
@@ -236,7 +245,7 @@ Com_DPrintf
 A Com_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *fmt, ... )
+void QDECL PRINTF_LIKE( 1 ) Com_DPrintf( const char *fmt, ... )
 {
 	va_list argptr;
 	char    msg[ MAXPRINTMSG ];
@@ -262,7 +271,7 @@ do the appropriate things.
 =============
 */
 // *INDENT-OFF*
-void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
+void QDECL PRINTF_LIKE( 2 ) NORETURN Com_Error( int code, const char *fmt, ... )
 {
 	va_list    argptr;
 	static int lastErrorTime;
@@ -270,7 +279,8 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	int        currentTime;
 
 	// make sure we can get at our local stuff
-	if (code != ERR_FATAL) {
+	if ( code != ERR_FATAL )
+	{
 		FS::PakPath::ClearPaks();
 		FS_LoadBasePak();
 	}
@@ -309,7 +319,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	Q_vsnprintf( com_errorMessage, sizeof( com_errorMessage ), fmt, argptr );
 	va_end( argptr );
 
-	Cvar_Set("com_errorMessage", com_errorMessage);
+	Cvar_Set( "com_errorMessage", com_errorMessage );
 
 	if ( code == ERR_SERVERDISCONNECT )
 	{
@@ -444,7 +454,7 @@ qboolean Com_SafeMode( void )
 
 	for ( i = 0; i < com_numConsoleLines; i++ )
 	{
-		Cmd::Args line(com_consoleLines[i]);
+		Cmd::Args line( com_consoleLines[i] );
 
 		if ( line.size() > 1 && ( !Q_stricmp( line[0].c_str(), "safe" ) || !Q_stricmp( line[0].c_str(), "cvar_restart" ) ) )
 		{
@@ -475,9 +485,9 @@ void Com_StartupVariable( const char *match )
 
 	for ( i = 0; i < com_numConsoleLines; i++ )
 	{
-		Cmd::Args line(com_consoleLines[i]);
+		Cmd::Args line( com_consoleLines[i] );
 
-		if ( line.size() < 3 || strcmp( line[0].c_str(), "set" ))
+		if ( line.size() < 3 || strcmp( line[0].c_str(), "set" ) )
 		{
 			continue;
 		}
@@ -488,7 +498,9 @@ void Com_StartupVariable( const char *match )
 		{
 			Cvar_Set( s, line[2].c_str() );
 			cv = Cvar_Get( s, "", CVAR_USER_CREATED );
-			if (cv->flags & CVAR_ROM) {
+
+			if ( cv->flags & CVAR_ROM )
+			{
 				com_consoleLines[i] = 0;
 			}
 		}
@@ -527,7 +539,7 @@ qboolean Com_AddStartupCommands( void )
 			added = qtrue;
 		}
 
-		Cmd::BufferCommandText(com_consoleLines[i], true);
+		Cmd::BufferCommandText( com_consoleLines[i], true );
 	}
 
 	return added;
@@ -596,7 +608,7 @@ void Info_Print( const char *s )
 }
 
 /* Internals for Com_RealTime & Com_GMTime */
-static int internalTime( qtime_t *qtime, struct tm *( *timefunc )( const time_t * ) )
+static int internalTime( qtime_t *qtime, struct tm * ( *timefunc )( const time_t * ) )
 {
 	time_t    t;
 	struct tm *tms;
@@ -652,13 +664,13 @@ Global common state
 ==============================================================================
 */
 
-void SetCheatMode(bool allowed)
+void SetCheatMode( bool allowed )
 {
-	Cvar::SetCheatsAllowed(allowed);
+	Cvar::SetCheatsAllowed( allowed );
 }
 
 //The server gives the sv_cheats cvar to the client, on 'off' it prevents the user from changing Cvar::CHEAT cvars
-Cvar::Callback<Cvar::Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in the current game", Cvar::SYSTEMINFO | Cvar::ROM, true, SetCheatMode);
+Cvar::Callback<Cvar::Cvar<bool>> cvar_cheats( "sv_cheats", "can cheats be used in the current game", Cvar::SYSTEMINFO | Cvar::ROM, true, SetCheatMode );
 
 bool Com_AreCheatsAllowed()
 {
@@ -672,7 +684,7 @@ bool Com_IsClient()
 #elif BUILD_SERVER
 	return false;
 #else
-	#error
+#error
 #endif
 }
 
@@ -683,7 +695,7 @@ bool Com_IsDedicatedServer()
 #elif BUILD_SERVER
 	return true;
 #else
-	#error
+#error
 #endif
 }
 
@@ -861,10 +873,16 @@ void *Com_Allocate_Aligned( size_t alignment, size_t size )
 	return _aligned_malloc( size, alignment );
 #else
 	void *ptr;
-	if( !posix_memalign( &ptr, alignment, size ) )
+
+	if ( !posix_memalign( &ptr, alignment, size ) )
+	{
 		return ptr;
+	}
 	else
+	{
 		return NULL;
+	}
+
 #endif
 }
 
@@ -998,12 +1016,12 @@ void Com_InitHunkMemory( void )
 	cvar_t *cv;
 
 	// allocate the stack based hunk allocator
-	cv = Cvar_Get( "com_hunkMegs", XSTRING(DEF_COMHUNKMEGS), CVAR_LATCH  );
+	cv = Cvar_Get( "com_hunkMegs", XSTRING( DEF_COMHUNKMEGS ), CVAR_LATCH );
 
 	if ( cv->integer < MIN_COMHUNKMEGS )
 	{
 		s_hunkTotal = 1024 * 1024 * MIN_COMHUNKMEGS;
-		Com_Printf( "Minimum com_hunkMegs is " XSTRING(MIN_COMHUNKMEGS) ", allocating " XSTRING(MIN_COMHUNKMEGS) "MB.\n" );
+		Com_Printf( "Minimum com_hunkMegs is " XSTRING( MIN_COMHUNKMEGS ) ", allocating " XSTRING( MIN_COMHUNKMEGS ) "MB.\n" );
 	}
 	else
 	{
@@ -1517,7 +1535,8 @@ int Com_EventLoop( void )
 		// if no more events are available
 		if ( ev.evType == SE_NONE )
 		{
-			if ( mouseHaveEvent ){
+			if ( mouseHaveEvent )
+			{
 				CL_MouseEvent( mouseX, mouseY, mouseTime );
 			}
 
@@ -1583,12 +1602,12 @@ int Com_EventLoop( void )
 
 			case SE_CONSOLE:
 			{
-				char *cmd = (char *) ev.evPtr;
+				char *cmd = ( char * ) ev.evPtr;
 
-				if (cmd[0] == '/' || cmd[0] == '\\')
+				if ( cmd[0] == '/' || cmd[0] == '\\' )
 				{
 					//make sure, explicit commands are not getting handled with com_consoleCommand
-					Cmd::BufferCommandTextAfter(cmd + 1, true);
+					Cmd::BufferCommandTextAfter( cmd + 1, true );
 				}
 				else
 				{
@@ -1599,7 +1618,7 @@ int Com_EventLoop( void )
 					 *
 					 * the additional space gets trimmed by the parser
 					 */
-					Cmd::BufferCommandTextAfter(va("%s %s", com_consoleCommand->string, cmd), true);
+					Cmd::BufferCommandTextAfter( va( "%s %s", com_consoleCommand->string, cmd ), true );
 				}
 
 				break;
@@ -1664,7 +1683,7 @@ Can be used for profiling, but will be journaled accurately
 */
 int Com_Milliseconds( void )
 {
-    return Sys_Milliseconds();
+	return Sys_Milliseconds();
 }
 
 //============================================================================
@@ -1749,13 +1768,13 @@ void Com_SetRecommended( void )
 	if ( goodVideo )
 	{
 		Com_Printf( "Found high quality video and slow CPU\n" );
-		Cmd::BufferCommandText("preset preset_fast.cfg");
+		Cmd::BufferCommandText( "preset preset_fast.cfg" );
 		Cvar_Set( "com_recommended", "2" );
 	}
 	else
 	{
 		Com_Printf( "Found low quality video and slow CPU\n" );
-		Cmd::BufferCommandText("preset preset_fastest.cfg");
+		Cmd::BufferCommandText( "preset preset_fastest.cfg" );
 		Cvar_Set( "com_recommended", "3" );
 	}
 }
@@ -1769,12 +1788,12 @@ Com_Init
 
 #ifndef _WIN32
 # ifdef BUILD_SERVER
-	const char* defaultPipeFilename = "svpipe";
+const char* defaultPipeFilename = "svpipe";
 # else
-	const char* defaultPipeFilename = "pipe";
+const char* defaultPipeFilename = "pipe";
 # endif
 #else
-	const char* defaultPipeFilename = "";
+const char* defaultPipeFilename = "";
 #endif
 
 void Com_Init( char *commandLine )
@@ -1819,23 +1838,25 @@ void Com_Init( char *commandLine )
 	Trans_Init();
 
 #ifndef BUILD_SERVER
-	Cmd::BufferCommandText("preset default.cfg");
+	Cmd::BufferCommandText( "preset default.cfg" );
 #endif
 
 #ifdef BUILD_CLIENT
+
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
-		Cmd::BufferCommandText("exec -f " CONFIG_NAME);
-		Cmd::BufferCommandText("exec -f " KEYBINDINGS_NAME);
-		Cmd::BufferCommandText("exec -f " AUTOEXEC_NAME);
+		Cmd::BufferCommandText( "exec -f " CONFIG_NAME );
+		Cmd::BufferCommandText( "exec -f " KEYBINDINGS_NAME );
+		Cmd::BufferCommandText( "exec -f " AUTOEXEC_NAME );
 	}
+
 #else
-	Cmd::BufferCommandText("exec -f " CONFIG_NAME);
+	Cmd::BufferCommandText( "exec -f " CONFIG_NAME );
 #endif
 
 	// ydnar: reset crashed state
-	Cmd::BufferCommandText("set com_crashed 0");
+	Cmd::BufferCommandText( "set com_crashed 0" );
 
 	// execute the queued commands
 	Cmd::ExecuteCommandBuffer();
@@ -1934,16 +1955,18 @@ void Com_Init( char *commandLine )
 
 	CL_StartHunkUsers();
 
-	if (defaultPipeFilename[0])
+	if ( defaultPipeFilename[0] )
 	{
-		std::string ospath = FS::Path::Build(FS::GetHomePath(), defaultPipeFilename);
-		pipefile = Sys_Mkfifo(ospath.c_str());
-		if (!pipefile)
+		std::string ospath = FS::Path::Build( FS::GetHomePath(), defaultPipeFilename );
+		pipefile = Sys_Mkfifo( ospath.c_str() );
+
+		if ( !pipefile )
 		{
 			Com_Printf( S_WARNING "Could not create new pipefile at %s. "
-			"pipefile will not be used.\n", ospath.c_str() );
+			            "pipefile will not be used.\n", ospath.c_str() );
 		}
 	}
+
 	com_fullyInitialized = qtrue;
 	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
 }
@@ -1973,10 +1996,15 @@ void Com_ReadFromPipe( void )
 
 		for ( i = numAccd; i < numAccd + numNew; ++i )
 		{
-			if( buf[ i ] == '\0' )
+			if ( buf[ i ] == '\0' )
+			{
 				buf[ i ] = '\n';
-			if( buf[ i ] == '\n' || buf[ i ] == '\r' )
+			}
+
+			if ( buf[ i ] == '\n' || buf[ i ] == '\r' )
+			{
 				brk = &buf[ i + 1 ];
+			}
 		}
 
 		numAccd += numNew;
@@ -1985,7 +2013,7 @@ void Com_ReadFromPipe( void )
 		{
 			char tmp = *brk;
 			*brk = '\0';
-			Cmd::BufferCommandText(buf);
+			Cmd::BufferCommandText( buf );
 			*brk = tmp;
 
 			numAccd -= brk - buf;
@@ -1996,7 +2024,7 @@ void Com_ReadFromPipe( void )
 			// unfortunately, this command line gets chopped
 			//  (but Cbuf_ExecuteText() chops long command lines at (MAX_STRING_CHARS - 1) anyway)
 			buf[ sizeof( buf ) - 1 ] = '\0';
-			Cmd::BufferCommandText(buf);
+			Cmd::BufferCommandText( buf );
 			numAccd = 0;
 		}
 	}
@@ -2004,7 +2032,7 @@ void Com_ReadFromPipe( void )
 
 //==================================================================
 
-void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandle_t ) )
+void Com_WriteConfigToFile( const char *filename, void ( *writeConfig )( fileHandle_t ) )
 {
 	fileHandle_t f;
 	char         tmp[ MAX_QPATH ];
@@ -2048,12 +2076,14 @@ void Com_WriteConfiguration( void )
 	}
 
 #ifdef BUILD_CLIENT
+
 	if ( bindingsModified )
 	{
 		bindingsModified = qfalse;
 
 		Com_WriteConfigToFile( KEYBINDINGS_NAME, Key_WriteBindings );
 	}
+
 #endif
 }
 
@@ -2070,7 +2100,7 @@ void Com_WriteConfig_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage("<filename>", NULL);
+		Cmd_PrintUsage( "<filename>", NULL );
 		return;
 	}
 
@@ -2094,7 +2124,7 @@ void Com_WriteBindings_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage("<filename>", NULL);
+		Cmd_PrintUsage( "<filename>", NULL );
 		return;
 	}
 
@@ -2110,7 +2140,7 @@ void Com_WriteBindings_f( void )
 Com_ModifyMsec
 ================
 */
-static Cvar::Cvar<int> fixedtime("common.framerate.fixed", "in milliseconds, forces the frame time, 0 for no effect", Cvar::CHEAT, 0);
+static Cvar::Cvar<int> fixedtime( "common.framerate.fixed", "in milliseconds, forces the frame time, 0 for no effect", Cvar::CHEAT, 0 );
 
 int Com_ModifyMsec( int msec )
 {
@@ -2175,16 +2205,16 @@ Com_Frame
 */
 
 //TODO 0 for the same value as common.maxFPS
-static Cvar::Cvar<int> maxfps("common.framerate.max", "the max framerate, 0 for unlimited", Cvar::NONE, 125);
-static Cvar::Cvar<int> maxfpsUnfocused("common.framerate.maxUnfocused", "the max framerate when the game is unfocused, 0 for unlimited", Cvar::NONE, 0);
-static Cvar::Cvar<int> maxfpsMinimized("common.framerate.maxMinimized", "the max framerate when the game is minimized, 0 for unlimited", Cvar::NONE, 0);
+static Cvar::Cvar<int> maxfps( "common.framerate.max", "the max framerate, 0 for unlimited", Cvar::NONE, 125 );
+static Cvar::Cvar<int> maxfpsUnfocused( "common.framerate.maxUnfocused", "the max framerate when the game is unfocused, 0 for unlimited", Cvar::NONE, 0 );
+static Cvar::Cvar<int> maxfpsMinimized( "common.framerate.maxMinimized", "the max framerate when the game is minimized, 0 for unlimited", Cvar::NONE, 0 );
 
-static Cvar::Cvar<int> watchdogThreshold("common.watchdogTime", "seconds of server running without a map after which common.watchdogCmd is executed", Cvar::NONE, 60);
-static Cvar::Cvar<std::string> watchdogCmd("common.watchdogCmd", "the command triggered by the watchdog, empty for /quit", Cvar::NONE, "");
+static Cvar::Cvar<int> watchdogThreshold( "common.watchdogTime", "seconds of server running without a map after which common.watchdogCmd is executed", Cvar::NONE, 60 );
+static Cvar::Cvar<std::string> watchdogCmd( "common.watchdogCmd", "the command triggered by the watchdog, empty for /quit", Cvar::NONE, "" );
 
-static Cvar::Cvar<bool> showTraceStats("common.showTraceStats", "are physics traces stats printed each frame", Cvar::CHEAT, false);
+static Cvar::Cvar<bool> showTraceStats( "common.showTraceStats", "are physics traces stats printed each frame", Cvar::CHEAT, false );
 
-void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
+void Com_Frame( void ( *GetInput )( void ), void ( *DoneInput )( void ) )
 {
 	int             msec, minMsec;
 	static int      lastTime = 0;
@@ -2352,11 +2382,11 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 
 				if ( watchdogCmd.Get().empty() )
 				{
-					Cmd::BufferCommandText("quit");
+					Cmd::BufferCommandText( "quit" );
 				}
 				else
 				{
-					Cmd::BufferCommandText(watchdogCmd.Get());
+					Cmd::BufferCommandText( watchdogCmd.Get() );
 				}
 			}
 		}

@@ -44,7 +44,7 @@ key up events are sent even if in console mode
 
 #define CLIP(t) Maths::clamp( (t), 0, MAX_TEAMS - 1 )
 
-Console::Field g_consoleField(INT_MAX);
+Console::Field g_consoleField( INT_MAX );
 qboolean chat_irc;
 
 qboolean key_overstrikeMode;
@@ -55,7 +55,8 @@ qkey_t   keys[ MAX_KEYS ];
 
 int      bindTeam = DEFAULT_BINDING;
 
-static struct {
+static struct
+{
 	int          key;
 	unsigned int time;
 	qboolean     valid;
@@ -357,68 +358,78 @@ Handles horizontal scrolling and cursor blinking
 x, y, and width are in pixels
 ===================
 */
-void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int size, qboolean showCursor,
-        qboolean noColorEscape, float alpha )
+void Field_VariableSizeDraw( const Util::LineEditData& edit, int x, int y, int size, qboolean showCursor,
+                             qboolean noColorEscape, float alpha )
 {
-    //TODO support UTF-8 once LineEditData does
-    //Extract the text we want to draw
-    int len = edit.GetText().size();
-    int lineStart = edit.GetViewStartPos();
-    int cursorPos = edit.GetViewCursorPos();
-    int drawWidth = std::min<size_t>(edit.GetWidth() - 1, len - lineStart);
-    std::string text = Str::UTF32To8(std::u32string(edit.GetViewText(), drawWidth));
+	//TODO support UTF-8 once LineEditData does
+	//Extract the text we want to draw
+	int len = edit.GetText().size();
+	int lineStart = edit.GetViewStartPos();
+	int cursorPos = edit.GetViewCursorPos();
+	int drawWidth = std::min<size_t>( edit.GetWidth() - 1, len - lineStart );
+	std::string text = Str::UTF32To8( std::u32string( edit.GetViewText(), drawWidth ) );
 
-    // draw the text
-    if (size == SMALLCHAR_WIDTH) {
-        float color[4] = {1.0, 1.0, 1.0, alpha};
-        SCR_DrawSmallStringExt(x, y, text.c_str(), color, qfalse, noColorEscape);
-    } else {
-        SCR_DrawBigString(x, y, text.c_str(), 1.0, noColorEscape);
-    }
+	// draw the text
+	if ( size == SMALLCHAR_WIDTH )
+	{
+		float color[4] = {1.0, 1.0, 1.0, alpha};
+		SCR_DrawSmallStringExt( x, y, text.c_str(), color, qfalse, noColorEscape );
+	}
+	else
+	{
+		SCR_DrawBigString( x, y, text.c_str(), 1.0, noColorEscape );
+	}
 
-    // draw the line scrollbar
-    if (len > drawWidth) {
-        static const float yellow[] = { 1, 1, 0, 0.25 };
-        float width = SCR_ConsoleFontStringWidth(text.c_str(), drawWidth);
+	// draw the line scrollbar
+	if ( len > drawWidth )
+	{
+		static const float yellow[] = { 1, 1, 0, 0.25 };
+		float width = SCR_ConsoleFontStringWidth( text.c_str(), drawWidth );
 
-        re.SetColor( yellow );
-        re.DrawStretchPic(x + (width * lineStart) / len, y + 3, (width * drawWidth) / len, 2, 0, 0, 0, 0, cls.whiteShader);
-    }
+		re.SetColor( yellow );
+		re.DrawStretchPic( x + ( width * lineStart ) / len, y + 3, ( width * drawWidth ) / len, 2, 0, 0, 0, 0, cls.whiteShader );
+	}
 
-    // draw the cursor
-    if (showCursor) {
-        //Blink changes state approximately 4 times per second
-        if ((int)(cls.realtime >> 8) & 1) {
-            return;
-        }
+	// draw the cursor
+	if ( showCursor )
+	{
+		//Blink changes state approximately 4 times per second
+		if ( ( int )( cls.realtime >> 8 ) & 1 )
+		{
+			return;
+		}
 
-        vec4_t supportElementsColor = {1.0f, 1.0f, 1.0f, 0.66f * consoleState.currentAlphaFactor};
-        re.SetColor( supportElementsColor );
+		vec4_t supportElementsColor = {1.0f, 1.0f, 1.0f, 0.66f * consoleState.currentAlphaFactor};
+		re.SetColor( supportElementsColor );
 
-        //Compute the position of the cursor
-        float xpos, width, height;
-        if (size == SMALLCHAR_WIDTH) {
-            xpos = x + SCR_ConsoleFontStringWidth(text.c_str(), cursorPos);
-            height = key_overstrikeMode ? SMALLCHAR_HEIGHT / (CONSOLE_FONT_VPADDING + 1) : 2;
-            width = SMALLCHAR_WIDTH;
-        } else {
-            xpos = x + cursorPos * size;
-            height = key_overstrikeMode ? BIGCHAR_HEIGHT / (CONSOLE_FONT_VPADDING + 1) : 2;
-            width = BIGCHAR_WIDTH;
-        }
+		//Compute the position of the cursor
+		float xpos, width, height;
 
-        re.DrawStretchPic(xpos, y + 2 - height, width, height, 0, 0, 0, 0, cls.whiteShader);
-    }
+		if ( size == SMALLCHAR_WIDTH )
+		{
+			xpos = x + SCR_ConsoleFontStringWidth( text.c_str(), cursorPos );
+			height = key_overstrikeMode ? SMALLCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
+			width = SMALLCHAR_WIDTH;
+		}
+		else
+		{
+			xpos = x + cursorPos * size;
+			height = key_overstrikeMode ? BIGCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
+			width = BIGCHAR_WIDTH;
+		}
+
+		re.DrawStretchPic( xpos, y + 2 - height, width, height, 0, 0, 0, 0, cls.whiteShader );
+	}
 }
 
-void Field_Draw(const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha)
+void Field_Draw( const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha )
 {
-	Field_VariableSizeDraw(edit, x, y, SMALLCHAR_WIDTH, showCursor, noColorEscape, alpha);
+	Field_VariableSizeDraw( edit, x, y, SMALLCHAR_WIDTH, showCursor, noColorEscape, alpha );
 }
 
-void Field_BigDraw(const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape)
+void Field_BigDraw( const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape )
 {
-	Field_VariableSizeDraw(edit, x, y, BIGCHAR_WIDTH, showCursor, noColorEscape, 1.0f);
+	Field_VariableSizeDraw( edit, x, y, BIGCHAR_WIDTH, showCursor, noColorEscape, 1.0f );
 }
 
 /*
@@ -426,11 +437,11 @@ void Field_BigDraw(const Util::LineEditData& edit, int x, int y, qboolean showCu
 Field_Paste
 ================
 */
-static void Field_Paste(Util::LineEditData& edit, clipboard_t clip )
+static void Field_Paste( Util::LineEditData& edit, clipboard_t clip )
 {
 	const char *cbd;
 	int        pasteLen, width;
-	char       *ptr = Sys_GetClipboardData(clip);
+	char       *ptr = Sys_GetClipboardData( clip );
 
 	if ( !ptr )
 	{
@@ -462,111 +473,140 @@ in-game talk, and menu fields
 Key events are used for non-printable characters, others are gotten from char events.
 =================
 */
-void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
-    key = tolower(key);
+void Field_KeyDownEvent( Util::LineEditData& edit, int key )
+{
+	key = tolower( key );
 
-    switch (key) {
-        case K_DEL:
-            edit.DeleteNext();
-            break;
+	switch ( key )
+	{
+		case K_DEL:
+			edit.DeleteNext();
+			break;
 
-        case K_BACKSPACE:
-            edit.DeletePrev();
-            break;
+		case K_BACKSPACE:
+			edit.DeletePrev();
+			break;
 
-        case K_RIGHTARROW:
-            if (keys[ K_CTRL ].down) {
-                //TODO: Skip a full word
-                edit.CursorRight();
-            } else {
-                edit.CursorRight();
-            }
-            break;
-
-        case K_LEFTARROW:
-            if (keys[ K_CTRL ].down) {
-                //TODO: Skip a full word
-                edit.CursorLeft();
-            } else {
-                edit.CursorLeft();
-            }
-            break;
-
-        case 'a':
-            if (keys[ K_CTRL ].down) {
-                edit.CursorStart();
-            }
-            break;
-
-        case K_HOME:
-            edit.CursorStart();
-            break;
-
-        case 'e':
-            if (keys[ K_CTRL ].down) {
-                edit.CursorEnd();
-            }
-            break;
-
-        case K_END:
-            edit.CursorEnd();
-            break;
-
-        case K_INS:
-            if (keys[ K_SHIFT ].down) {
-                Field_Paste(edit, SELECTION_PRIMARY);
-            } else {
-                key_overstrikeMode = !key_overstrikeMode;
-            }
-            break;
-
-        /*
-        //kangz: I'm not sure we *need* this shortcut
-        case 't':
-            if ( keys[ K_CTRL ].down )
-			if( edit->cursor)
+		case K_RIGHTARROW:
+			if ( keys[ K_CTRL ].down )
 			{
-                char *p, tmp[4];
+				//TODO: Skip a full word
+				edit.CursorRight();
+			}
+			else
+			{
+				edit.CursorRight();
+			}
 
-                if ( edit->cursor == len )
-                {
-                    --edit->cursor;
-                    s = &edit->buffer[ Field_CursorToOffset( edit ) ];
-                    width = Q_UTF8_Width( s );
-                }
+			break;
 
-                --edit->cursor;
-                p = &edit->buffer[ Field_CursorToOffset( edit ) ];
-                memcpy( tmp, p, s - p );
-                memmove( p, s, width );
-                memcpy( p + width, tmp, s - p );
-                edit->cursor += 2;
-            }
+		case K_LEFTARROW:
+			if ( keys[ K_CTRL ].down )
+			{
+				//TODO: Skip a full word
+				edit.CursorLeft();
+			}
+			else
+			{
+				edit.CursorLeft();
+			}
 
-            break;
-        */
-        case 'v':
-            if (keys[ K_CTRL ].down) {
-                Field_Paste( edit, SELECTION_CLIPBOARD );
-            }
-            break;
-        case 'd':
-            if (keys[ K_CTRL ].down) {
-                edit.DeleteNext();
-            }
-            break;
-        case 'c':
-        case 'u':
-            if (keys[ K_CTRL ].down) {
-                edit.Clear();
-            }
-            break;
-        case 'k':
-            if (keys[ K_CTRL ].down) {
+			break;
+
+		case 'a':
+			if ( keys[ K_CTRL ].down )
+			{
+				edit.CursorStart();
+			}
+
+			break;
+
+		case K_HOME:
+			edit.CursorStart();
+			break;
+
+		case 'e':
+			if ( keys[ K_CTRL ].down )
+			{
+				edit.CursorEnd();
+			}
+
+			break;
+
+		case K_END:
+			edit.CursorEnd();
+			break;
+
+		case K_INS:
+			if ( keys[ K_SHIFT ].down )
+			{
+				Field_Paste( edit, SELECTION_PRIMARY );
+			}
+			else
+			{
+				key_overstrikeMode = !key_overstrikeMode;
+			}
+
+			break;
+
+			/*
+			//kangz: I'm not sure we *need* this shortcut
+			case 't':
+			    if ( keys[ K_CTRL ].down )
+				if( edit->cursor)
+				{
+			        char *p, tmp[4];
+
+			        if ( edit->cursor == len )
+			        {
+			            --edit->cursor;
+			            s = &edit->buffer[ Field_CursorToOffset( edit ) ];
+			            width = Q_UTF8_Width( s );
+			        }
+
+			        --edit->cursor;
+			        p = &edit->buffer[ Field_CursorToOffset( edit ) ];
+			        memcpy( tmp, p, s - p );
+			        memmove( p, s, width );
+			        memcpy( p + width, tmp, s - p );
+			        edit->cursor += 2;
+			    }
+
+			    break;
+			*/
+		case 'v':
+			if ( keys[ K_CTRL ].down )
+			{
+				Field_Paste( edit, SELECTION_CLIPBOARD );
+			}
+
+			break;
+
+		case 'd':
+			if ( keys[ K_CTRL ].down )
+			{
+				edit.DeleteNext();
+			}
+
+			break;
+
+		case 'c':
+		case 'u':
+			if ( keys[ K_CTRL ].down )
+			{
+				edit.Clear();
+			}
+
+			break;
+
+		case 'k':
+			if ( keys[ K_CTRL ].down )
+			{
 				edit.DeleteEnd();
-            }
-            break;
-    }
+			}
+
+			break;
+	}
 }
 
 /*
@@ -574,26 +614,28 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
 Field_CharEvent
 ==================
 */
-void Field_CharEvent(Util::LineEditData& edit, int c )
+void Field_CharEvent( Util::LineEditData& edit, int c )
 {
-    //
-    // ignore any non printable chars
-    //
-    if ( c < 32 || c == 0x7f )
-    {
-        return;
-    }
+	//
+	// ignore any non printable chars
+	//
+	if ( c < 32 || c == 0x7f )
+	{
+		return;
+	}
 
-    // 'unprintable' on Mac - used for cursor keys, function keys etc.
-    if ( (unsigned int)( c - 0xF700 ) < 0x200u )
-    {
-        return;
-    }
+	// 'unprintable' on Mac - used for cursor keys, function keys etc.
+	if ( ( unsigned int )( c - 0xF700 ) < 0x200u )
+	{
+		return;
+	}
 
-    if (key_overstrikeMode) {
-        edit.DeleteNext();
-    }
-    edit.AddChar(c);
+	if ( key_overstrikeMode )
+	{
+		edit.DeleteNext();
+	}
+
+	edit.AddChar( c );
 }
 
 /*
@@ -616,37 +658,45 @@ void Console_Key( int key )
 	// just return if any of the listed modifiers are pressed
 	// - no point in passing on, since they Just Get In The Way
 	if ( keys[ K_ALT     ].down || keys[ K_COMMAND ].down ||
-			keys[ K_MODE    ].down || keys[ K_SUPER   ].down )
+	        keys[ K_MODE    ].down || keys[ K_SUPER   ].down )
 	{
 		return;
 	}
 
 	// ctrl-L clears screen
-	if (key == 'l' && keys[ K_CTRL ].down) {
-		Cmd::BufferCommandText("clear");
+	if ( key == 'l' && keys[ K_CTRL ].down )
+	{
+		Cmd::BufferCommandText( "clear" );
 		return;
 	}
 
 	// enter finishes the line
-	if (key == K_ENTER or key == K_KP_ENTER) {
+	if ( key == K_ENTER or key == K_KP_ENTER )
+	{
 
 		//scroll lock state 1 or smaller will scroll down on own output
-		if (con_scrollLock->integer <= 1) {
+		if ( con_scrollLock->integer <= 1 )
+		{
 			consoleState.scrollLineIndex = consoleState.currentLine;
 		}
 
-		Com_Printf("]%s\n", Str::UTF32To8(g_consoleField.GetText()).c_str());
+		Com_Printf( "]%s\n", Str::UTF32To8( g_consoleField.GetText() ).c_str() );
 
 		// if not in the game always treat the input as a command
-		if (cls.state != CA_ACTIVE) {
+		if ( cls.state != CA_ACTIVE )
+		{
 			g_consoleField.RunCommand();
-		} else {
-			g_consoleField.RunCommand(cl_consoleCommand->string);
+		}
+		else
+		{
+			g_consoleField.RunCommand( cl_consoleCommand->string );
 		}
 
-		if (cls.state == CA_DISCONNECTED) {
+		if ( cls.state == CA_DISCONNECTED )
+		{
 			SCR_UpdateScreen(); // force an update, because the command may take some time
 		}
+
 		return;
 	}
 
@@ -662,7 +712,7 @@ void Console_Key( int key )
 
 	//----(SA)  added some mousewheel functionality to the console
 	if ( ( key == K_MWHEELUP && keys[ K_SHIFT ].down ) || ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ||
-			( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
+	        ( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
 	{
 		g_consoleField.HistoryPrev();
 		return;
@@ -670,7 +720,7 @@ void Console_Key( int key )
 
 	//----(SA)  added some mousewheel functionality to the console
 	if ( ( key == K_MWHEELDOWN && keys[ K_SHIFT ].down ) || ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW ) ||
-			( ( tolower( key ) == 'n' ) && keys[ K_CTRL ].down ) )
+	        ( ( tolower( key ) == 'n' ) && keys[ K_CTRL ].down ) )
 	{
 		g_consoleField.HistoryNext();
 		return;
@@ -728,7 +778,7 @@ void Console_Key( int key )
 	}
 
 	// pass to the next editline routine
-	Field_KeyDownEvent(g_consoleField, key);
+	Field_KeyDownEvent( g_consoleField, key );
 }
 
 //============================================================================
@@ -875,10 +925,12 @@ static const char *const teamName[] = { "default", "aliens", "humans", "others" 
 
 int Key_GetTeam( const char *arg, const char *cmd )
 {
-	static const struct {
+	static const struct
+	{
 		char team;
 		char label[11];
-	} labels[] = {
+	} labels[] =
+	{
 		{ 0, "spectators" },
 		{ 0, "default" },
 		{ 1, "aliens" },
@@ -958,6 +1010,7 @@ void Key_SetBinding( int keynum, int team, const char *binding )
 				keys[ keynum ].binding[ team ] = NULL;
 			}
 		}
+
 		// team == 0...
 	}
 
@@ -1048,7 +1101,7 @@ void Key_Unbind_f( void )
 
 	if ( b < 2 || b > 3 )
 	{
-		Cmd_PrintUsage("[<team>] <key>", "remove commands from a key");
+		Cmd_PrintUsage( "[<team>] <key>", "remove commands from a key" );
 		return;
 	}
 
@@ -1106,7 +1159,7 @@ void Key_Bind_f( void )
 
 	if ( c < 2 + teambind )
 	{
-		Cmd_PrintUsage( teambind ? "<team> <key> [<command>]" : "<key> [<command>]", "attach a command to a key");
+		Cmd_PrintUsage( teambind ? "<team> <key> [<command>]" : "<key> [<command>]", "attach a command to a key" );
 		return;
 	}
 	else if ( c > 2 + teambind )
@@ -1199,7 +1252,7 @@ void Key_EditBind_f( void )
 
 	if ( b < 2 || b > 3 )
 	{
-		Cmd_PrintUsage("[<team>] <key>", NULL);
+		Cmd_PrintUsage( "[<team>] <key>", NULL );
 		return;
 	}
 
@@ -1224,19 +1277,20 @@ void Key_EditBind_f( void )
 
 	if ( team >= 0 )
 	{
-		buf = Str::UTF8To32("/teambind ");
+		buf = Str::UTF8To32( "/teambind " );
 		buf += Str::UTF8To32( teamName[ team ] );
-		buf += Str::UTF8To32(" ");
+		buf += Str::UTF8To32( " " );
 	}
 	else
 	{
-		buf = Str::UTF8To32("/bind ");
+		buf = Str::UTF8To32( "/bind " );
 	}
 
 	buf += Str::UTF8To32( Key_KeynumToString( b ) );
-	buf += Str::UTF8To32(" ");
+	buf += Str::UTF8To32( " " );
 
 	const char *binding = Key_GetBinding( b, -team );
+
 	if ( binding )
 	{
 		buf += Str::UTF8To32( Cmd::Escape( std::string( binding ) ) );
@@ -1258,7 +1312,7 @@ void Key_WriteBindings( fileHandle_t f )
 {
 	int i, team;
 
-	FS_Printf( f,"%s", "unbindall\n" );
+	FS_Printf( f, "%s", "unbindall\n" );
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
@@ -1325,7 +1379,7 @@ void Key_Bindlist_f( void )
 Key_SetKeyData
 ============
 */
-void Key_SetKeyData_f(void)
+void Key_SetKeyData_f( void )
 {
 	if ( atoi( Cmd_Argv( 1 ) ) == plusCommand.check )
 	{
@@ -1339,12 +1393,12 @@ void Key_SetKeyData_f(void)
 	}
 }
 
-int Key_GetKeyNumber(void)
+int Key_GetKeyNumber( void )
 {
 	return plusCommand.valid ? plusCommand.key : -1;
 }
 
-unsigned int Key_GetKeyTime(void)
+unsigned int Key_GetKeyTime( void )
 {
 	return plusCommand.valid ? plusCommand.time : 0;
 }
@@ -1358,7 +1412,7 @@ FindMatches
 //TODO (kangz) rework the bind commands and their completion
 static void FindMatches( const char *s )
 {
-    Cmd_OnCompleteMatch(s);
+	Cmd_OnCompleteMatch( s );
 }
 
 static void Field_TeamnameCompletion( void ( *callback )( const char *s ), int flags )
@@ -1459,11 +1513,12 @@ static void Key_CompleteBind_Internal( char *args, int argNum, int nameArg )
 	}
 	else if ( argNum > nameArg )
 	{
-		Cmd::Args arg(args);
-		Cmd::CompletionResult res = Cmd::CompleteArgument(Cmd::Args(arg.EscapedArgs(nameArg)), argNum - nameArg - 1);
-		for (auto candidate : res)
+		Cmd::Args arg( args );
+		Cmd::CompletionResult res = Cmd::CompleteArgument( Cmd::Args( arg.EscapedArgs( nameArg ) ), argNum - nameArg - 1 );
+
+		for ( auto candidate : res )
 		{
-			FindMatches(candidate.first.c_str());
+			FindMatches( candidate.first.c_str() );
 		}
 	}
 }
@@ -1538,7 +1593,10 @@ static modifierMask_t getModifierMask( const char *mods )
 
 	--mods;
 
-	while ( *++mods == ' ' ) { /* skip leading spaces */; }
+	while ( *++mods == ' ' )
+	{
+		/* skip leading spaces */;
+	}
 
 	ptr = mods;
 
@@ -1555,9 +1613,9 @@ static modifierMask_t getModifierMask( const char *mods )
 		{
 			// is it this modifier?
 			if ( !Q_strnicmp( ptr, modifierKeys[ i ].name, modifierKeys[ i ].count )
-					&& ( ptr[ modifierKeys[ i ].count ] == ' ' ||
-						ptr[ modifierKeys[ i ].count ] == ',' ||
-						ptr[ modifierKeys[ i ].count ] == 0 ) )
+			        && ( ptr[ modifierKeys[ i ].count ] == ' ' ||
+			             ptr[ modifierKeys[ i ].count ] == ',' ||
+			             ptr[ modifierKeys[ i ].count ] == 0 ) )
 			{
 				if ( invert )
 				{
@@ -1577,11 +1635,17 @@ static modifierMask_t getModifierMask( const char *mods )
 				// right, parsed a word - skip it, maybe a comma, and any spaces
 				ptr += modifierKeys[ i ].count - 1;
 
-				while ( *++ptr == ' ' ) { /**/; }
+				while ( *++ptr == ' ' )
+				{
+					/**/;
+				}
 
 				if ( *ptr == ',' )
 				{
-					while ( *++ptr == ' ' ) { /**/; }
+					while ( *++ptr == ' ' )
+					{
+						/**/;
+					}
 				}
 
 				// ready to parse the next one
@@ -1704,11 +1768,11 @@ found:
 	{
 		if ( *v == '/' || *v == '\\' )
 		{
-			Cmd::BufferCommandTextAfter(va("%s\n", v + 1), true);
+			Cmd::BufferCommandTextAfter( va( "%s\n", v + 1 ), true );
 		}
 		else
 		{
-			Cmd::BufferCommandTextAfter(va("vstr %s\n", v), true);
+			Cmd::BufferCommandTextAfter( va( "vstr %s\n", v ), true );
 		}
 	}
 }
@@ -1803,28 +1867,31 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	}
 
 #ifdef MACOS_X
+
 	if ( down && keys[ K_COMMAND ].down )
 	{
 		if ( key == 'f' )
 		{
 			Key_ClearStates();
-			Cmd::BufferCommandText("toggle r_fullscreen; vid_restart");
+			Cmd::BufferCommandText( "toggle r_fullscreen; vid_restart" );
 			return;
 		}
 		else if ( key == 'q' )
 		{
 			Key_ClearStates();
-			Cmd::BufferCommandText("quit");
+			Cmd::BufferCommandText( "quit" );
 			return;
 		}
 		else if ( key == K_TAB )
 		{
 			Key_ClearStates();
-			Cmd::BufferCommandText("minimize");
+			Cmd::BufferCommandText( "minimize" );
 			return;
 		}
 	}
+
 #else
+
 	if ( key == K_ENTER )
 	{
 		if ( down )
@@ -1840,9 +1907,10 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( cl_altTab->integer && keys[ K_ALT ].down && key == K_TAB )
 	{
 		Key_ClearStates();
-		Cmd::BufferCommandText("minimize");
+		Cmd::BufferCommandText( "minimize" );
 		return;
 	}
+
 #endif
 
 	// console key is hardcoded, so the user can never unbind it
@@ -1918,7 +1986,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( !down )
 	{
 		// Handle any +commands which were invoked on the corresponding key-down
-		Cmd::BufferCommandText(va("keyup %d %d %u", plusCommand.check, key, time));
+		Cmd::BufferCommandText( va( "keyup %d %d %u", plusCommand.check, key, time ) );
 
 		if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
 		{
@@ -1960,14 +2028,14 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	{
 		// send the bound action
 		kb = keys[ key ].binding[ bindTeam ]
-		   ? keys[ key ].binding[ bindTeam ] // prefer the team bind
-		   : keys[ key ].binding[ 0 ];       // default to global
+		     ? keys[ key ].binding[ bindTeam ] // prefer the team bind
+		     : keys[ key ].binding[ 0 ];       // default to global
 
 		if ( kb )
 		{
 			// down-only command
-			Cmd::BufferCommandTextAfter(va("setkeydata %d %d %u\n%s", plusCommand.check, key + 1, time, kb), true);
-			Cmd::BufferCommandTextAfter(va("setkeydata %d", plusCommand.check), true);
+			Cmd::BufferCommandTextAfter( va( "setkeydata %d %d %u\n%s", plusCommand.check, key + 1, time, kb ), true );
+			Cmd::BufferCommandTextAfter( va( "setkeydata %d", plusCommand.check ), true );
 		}
 	}
 }
@@ -1985,7 +2053,7 @@ static int CL_UTF8_unpack( int c )
 	int chr = Q_UTF8_CodePoint( str );
 
 	// filter out Apple control codes
-	return (unsigned int)( chr - 0xF700 ) < 0x200u ? 0 : chr;
+	return ( unsigned int )( chr - 0xF700 ) < 0x200u ? 0 : chr;
 }
 
 void CL_CharEvent( int c )
@@ -2000,11 +2068,11 @@ void CL_CharEvent( int c )
 	// distribute the key down event to the appropriate handler
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
-		Field_CharEvent(g_consoleField, CL_UTF8_unpack(c));
+		Field_CharEvent( g_consoleField, CL_UTF8_unpack( c ) );
 	}
 	else if ( cls.state == CA_DISCONNECTED )
 	{
-		Field_CharEvent(g_consoleField, CL_UTF8_unpack(c));
+		Field_CharEvent( g_consoleField, CL_UTF8_unpack( c ) );
 	}
 
 	Rocket_ProcessTextInput( c );

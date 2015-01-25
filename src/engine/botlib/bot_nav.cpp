@@ -149,6 +149,7 @@ qboolean BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, qboo
 static bool withinRadiusOfOffMeshConnection( const Bot_t *bot, rVec pos, rVec off, dtPolyRef conPoly )
 {
 	const dtOffMeshConnection *con = bot->nav->mesh->getOffMeshConnectionByRef( conPoly );
+
 	if ( !con )
 	{
 		return false;
@@ -171,6 +172,7 @@ static bool overOffMeshConnectionStart( const Bot_t *bot, rVec pos )
 	{
 		return withinRadiusOfOffMeshConnection( bot, pos, &bot->cornerVerts[ corner * 3 ], bot->cornerPolys[ corner ] );
 	}
+
 	return false;
 }
 
@@ -268,7 +270,7 @@ void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNav
 		recast2quake( cmd->pos );
 
 		// if there are no corners, we have reached the goal
-		// FIXME: this must be done because of a weird bug where the target is not reachable even if 
+		// FIXME: this must be done because of a weird bug where the target is not reachable even if
 		// the path was checked for a partial path beforehand
 		if ( bot->numCorners == 0 )
 		{
@@ -279,14 +281,16 @@ void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNav
 			VectorCopy( bot->corridor.getTarget(), cmd->tpos );
 
 			float height;
+
 			if ( dtStatusSucceed( bot->nav->query->getPolyHeight( bot->corridor.getLastPoly(), cmd->tpos, &height ) ) )
 			{
 				cmd->tpos[ 1 ] = height;
 			}
+
 			recast2quake( cmd->tpos );
 		}
 	}
-	
+
 	if ( bot->offMesh )
 	{
 		qVec pos, proj;
@@ -300,7 +304,7 @@ void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNav
 		end[ 2 ] = pos[ 2 ];
 
 		ProjectPointOntoVectorBounded( pos, start, end, proj );
-		
+
 		VectorCopy( proj, cmd->pos );
 		cmd->directPathToGoal = qfalse;
 		VectorSubtract( end, pos, cmd->dir );
@@ -308,10 +312,12 @@ void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNav
 
 		VectorCopy( bot->corridor.getTarget(), cmd->tpos );
 		float height;
+
 		if ( dtStatusSucceed( bot->nav->query->getPolyHeight( bot->corridor.getLastPoly(), cmd->tpos, &height ) ) )
 		{
 			cmd->tpos[ 1 ] = height;
 		}
+
 		recast2quake( cmd->tpos );
 
 		cmd->havePath = true;
@@ -355,7 +361,7 @@ qboolean BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3
 
 	dtPolyRef randRef;
 	dtStatus status = bot->nav->query->findRandomPointAroundCircle( nearPoly, rorigin, radius, &bot->nav->filter, frand, &randRef, nearPoint );
-	
+
 	if ( dtStatusFailed( status ) )
 	{
 		return qfalse;
@@ -379,11 +385,13 @@ qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, c
 	Bot_t *bot = &agents[ botClientNum ];
 
 	status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, NULL );
+
 	if ( dtStatusFailed( status ) || startRef == 0 )
 	{
 		//try larger extents
 		extents[ 1 ] += 500;
 		status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, NULL );
+
 		if ( dtStatusFailed( status ) || startRef == 0 )
 		{
 			return qfalse;
@@ -391,6 +399,7 @@ qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, c
 	}
 
 	status = bot->nav->query->raycast( startRef, spos, epos, &bot->nav->filter, &trace->frac, trace->normal, NULL, NULL, 0 );
+
 	if ( dtStatusFailed( status ) )
 	{
 		return qfalse;
@@ -422,7 +431,7 @@ void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHa
 
 		tempBox.maxs[ 0 ] += offset;
 		tempBox.maxs[ 2 ] += offset;
-		
+
 		// offset mins down by agent height so obstacles placed on ledges are handled correctly
 		tempBox.mins[ 1 ] -= params->walkableHeight;
 
@@ -436,10 +445,12 @@ void BotRemoveObstacle( qhandle_t obstacleHandle )
 	for ( int i = 0; i < numNavData; i++ )
 	{
 		NavData_t *nav = &BotNavData[ i ];
+
 		if ( nav->cache->getObstacleCount() <= 0 )
 		{
 			continue;
 		}
+
 		nav->cache->removeObstacle( obstacleHandle );
 	}
 }

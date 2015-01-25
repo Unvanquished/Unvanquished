@@ -164,12 +164,12 @@ int G_SoundIndex( const char *name )
  */
 int G_GradingTextureIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_GRADING_TEXTURES+1, MAX_GRADING_TEXTURES-1, qtrue );
+	return G_FindConfigstringIndex( name, CS_GRADING_TEXTURES + 1, MAX_GRADING_TEXTURES - 1, qtrue );
 }
 
 int G_ReverbEffectIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_REVERB_EFFECTS+1, MAX_REVERB_EFFECTS-1, qtrue );
+	return G_FindConfigstringIndex( name, CS_REVERB_EFFECTS + 1, MAX_REVERB_EFFECTS - 1, qtrue );
 }
 
 int G_LocationIndex( const char *name )
@@ -217,10 +217,16 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 	AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
 	VectorScale( player->client->ps.velocity, speed, player->client->ps.velocity );
 	player->client->ps.pm_time = 0.4f * abs( speed ); // duration of loss of control
+
 	if ( player->client->ps.pm_time > 160 )
+	{
 		player->client->ps.pm_time = 160;
+	}
+
 	if ( player->client->ps.pm_time != 0 )
+	{
 		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	}
 
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
@@ -255,7 +261,7 @@ G_CopyString
 char *G_CopyString( const char *str )
 {
 	size_t size = strlen( str ) + 1;
-	char *cp = (char*) BG_Alloc( size );
+	char *cp = ( char* ) BG_Alloc( size );
 	memcpy( cp, str, size );
 	return cp;
 }
@@ -315,27 +321,33 @@ G_KillBrushModel
 */
 void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
 {
-  gentity_t *e;
-  vec3_t mins, maxs;
-  trace_t tr;
+	gentity_t *e;
+	vec3_t mins, maxs;
+	trace_t tr;
 
-  for( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
-  {
-    if( !e->takedamage || !e->r.linked || !e->clipmask || ( e->client && e->client->noclip ) )
-      continue;
+	for ( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
+	{
+		if ( !e->takedamage || !e->r.linked || !e->clipmask || ( e->client && e->client->noclip ) )
+		{
+			continue;
+		}
 
-    VectorAdd( e->r.currentOrigin, e->r.mins, mins );
-    VectorAdd( e->r.currentOrigin, e->r.maxs, maxs );
+		VectorAdd( e->r.currentOrigin, e->r.mins, mins );
+		VectorAdd( e->r.currentOrigin, e->r.maxs, maxs );
 
-    if( !trap_EntityContact( mins, maxs, ent ) )
-      continue;
+		if ( !trap_EntityContact( mins, maxs, ent ) )
+		{
+			continue;
+		}
 
-    trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
-                e->r.currentOrigin, e->s.number, e->clipmask, 0 );
+		trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
+		            e->r.currentOrigin, e->s.number, e->clipmask, 0 );
 
-    if( tr.entityNum != ENTITYNUM_NONE )
-      G_Damage( e, ent, activator, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_CRUSH );
-  }
+		if ( tr.entityNum != ENTITYNUM_NONE )
+		{
+			G_Damage( e, ent, activator, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_CRUSH );
+		}
+	}
 }
 
 //==============================================================================
@@ -857,7 +869,10 @@ void G_FireThink( gentity_t *self )
 		hit = G_SelectiveRadiusDamage( self->s.origin, self->fireStarter, BURN_SPLDAMAGE,
 		                               BURN_SPLDAMAGE_RADIUS, self, MOD_BURN, TEAM_NONE );
 
-		if ( hit && g_debugFire.integer ) Com_Printf( "%s ^8dealt burn damage^7.", descr );
+		if ( hit && g_debugFire.integer )
+		{
+			Com_Printf( "%s ^8dealt burn damage^7.", descr );
+		}
 
 		self->nextBurnSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
 	}
@@ -870,13 +885,17 @@ void G_FireThink( gentity_t *self )
 
 		// lower burn stop chance if there are other burning entities nearby
 		neighbor = NULL;
+
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_STOP_RADIUS ) ) )
 		{
-			if ( neighbor == self ) continue;
+			if ( neighbor == self )
+			{
+				continue;
+			}
 
 			if ( neighbor->onFire && neighbor->health > 0 )
 			{
-				float frac = Distance( self->s.origin, neighbor->s.origin ) / (float)BURN_STOP_RADIUS;
+				float frac = Distance( self->s.origin, neighbor->s.origin ) / ( float )BURN_STOP_RADIUS;
 				float mod  = frac * 1.0f + ( 1.0f - frac ) * BURN_STOP_CHANCE;
 
 				burnStopChance *= mod;
@@ -893,9 +912,16 @@ void G_FireThink( gentity_t *self )
 
 			switch ( self->s.eType )
 			{
-				case ET_BUILDABLE: self->onFire = qfalse; break;
-				case ET_FIRE:      G_FreeEntity( self );  break;
-				default:                                  break;
+				case ET_BUILDABLE:
+					self->onFire = qfalse;
+					break;
+
+				case ET_FIRE:
+					G_FreeEntity( self );
+					break;
+
+				default:
+					break;
 			}
 
 			return;
@@ -907,14 +933,22 @@ void G_FireThink( gentity_t *self )
 
 		// attempt to ignite close alien buildables
 		neighbor = NULL;
+
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_SPREAD_RADIUS ) ) )
 		{
 			float chance;
 
-			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_ALIENS ) continue;
-			if ( neighbor == self ) continue;
+			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_ALIENS )
+			{
+				continue;
+			}
 
-			chance = 1.0f - ( Distance( self->s.origin, neighbor->s.origin ) / (float)BURN_SPREAD_RADIUS );
+			if ( neighbor == self )
+			{
+				continue;
+			}
+
+			chance = 1.0f - ( Distance( self->s.origin, neighbor->s.origin ) / ( float )BURN_SPREAD_RADIUS );
 
 			if ( random() < chance && G_LineOfSight( self, neighbor ) )
 			{
@@ -963,6 +997,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 
 	// don't spawn a fire inside another fire
 	fire = NULL;
+
 	while ( ( fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ) ) )
 	{
 		if ( fire->s.eType == ET_FIRE )
@@ -1005,7 +1040,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	{
 		char descr[ 64 ];
 		BG_BuildEntityDescription( descr, sizeof( descr ), &fire->s );
-		Com_Printf("%s spawned.", descr);
+		Com_Printf( "%s spawned.", descr );
 	}
 
 	return fire;
@@ -1114,6 +1149,7 @@ int G_Heal( gentity_t *self, int amount )
 
 	// get total damage account and assemble list of relevant clients
 	totalCredits = 0;
+
 	for ( clientNum = 0, relevantClientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
 	{
 		if ( self->credits[ clientNum ].value > 0.0f )
@@ -1170,12 +1206,12 @@ bool G_IsPlayableTeam( team_t team )
 
 bool G_IsPlayableTeam( int team )
 {
-	return G_IsPlayableTeam( (team_t)team );
+	return G_IsPlayableTeam( ( team_t )team );
 }
 
 team_t G_IterateTeams( team_t team )
 {
-	team_t nextTeam = (team_t)(std::max((int)team, (int)TEAM_NONE) + 1);
+	team_t nextTeam = ( team_t )( std::max( ( int )team, ( int )TEAM_NONE ) + 1 );
 
 	if ( nextTeam >= NUM_TEAMS )
 	{
@@ -1191,9 +1227,14 @@ team_t G_Enemy( team_t team )
 {
 	switch ( team )
 	{
-		case TEAM_ALIENS: return TEAM_HUMANS;
-		case TEAM_HUMANS: return TEAM_ALIENS;
-		default:          return TEAM_NONE;
+		case TEAM_ALIENS:
+			return TEAM_HUMANS;
+
+		case TEAM_HUMANS:
+			return TEAM_ALIENS;
+
+		default:
+			return TEAM_NONE;
 	}
 }
 
@@ -1202,7 +1243,10 @@ team_t G_Enemy( team_t team )
  */
 bool G_Alive( gentity_t *ent )
 {
-	if ( !ent->inuse ) return false;
+	if ( !ent->inuse )
+	{
+		return false;
+	}
 
 	switch ( ent->s.eType )
 	{

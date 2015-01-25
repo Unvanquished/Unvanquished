@@ -30,86 +30,110 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../../common/Common.h"
 
-namespace Audio {
+namespace Audio
+{
 
-    bool Init() {
-        return true;
-    }
+bool Init()
+{
+	return true;
+}
 
-    void Shutdown() {
-    }
+void Shutdown()
+{
+}
 
-    void Update() {
-    }
-
-
-    void BeginRegistration() {
-    }
-
-    sfxHandle_t RegisterSFX(Str::StringRef filename) {
-        return 0;
-    }
-
-    void EndRegistration() {
-    }
+void Update()
+{
+}
 
 
-    void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx) {
-    }
+void BeginRegistration()
+{
+}
 
-    void StartLocalSound(int entityNum) {
-    }
+sfxHandle_t RegisterSFX( Str::StringRef filename )
+{
+	return 0;
+}
 
-
-    void AddEntityLoopingSound(int entityNum, sfxHandle_t sfx) {
-    }
-
-    void ClearAllLoopingSounds() {
-    }
-
-    void ClearLoopingSoundsForEntity(int entityNum) {
-    }
+void EndRegistration()
+{
+}
 
 
-    void StartMusic(Str::StringRef leadingSound, Str::StringRef loopSound) {
-    }
+void StartSound( int entityNum, const vec3_t origin, sfxHandle_t sfx )
+{
+}
 
-    void StopMusic() {
-    }
-
-
-    void StopAllSounds() {
-    }
+void StartLocalSound( int entityNum )
+{
+}
 
 
-    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum) {
-    }
+void AddEntityLoopingSound( int entityNum, sfxHandle_t sfx )
+{
+}
+
+void ClearAllLoopingSounds()
+{
+}
+
+void ClearLoopingSoundsForEntity( int entityNum )
+{
+}
 
 
-    void UpdateListener(int entityNum, const vec3_t orientation[3]) {
-    }
+void StartMusic( Str::StringRef leadingSound, Str::StringRef loopSound )
+{
+}
 
-    void UpdateEntityPosition(int entityNum, const vec3_t position) {
-    }
-
-    void UpdateEntityVelocity(int entityNum, const vec3_t velocity) {
-    }
-
-
-    void SetReverb(int slotNum, std::string name, float ratio) {
-    }
+void StopMusic()
+{
+}
 
 
-    void StartCapture(int rate) {
-    }
+void StopAllSounds()
+{
+}
 
-    int AvailableCaptureSamples() {
-        return 0;
-    }
 
-    void GetCapturedData(int numSamples, void* buffer) {
-    }
+void StreamData( int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum )
+{
+}
 
-    void StopCapture() {
-    }
+
+void UpdateListener( int entityNum, const vec3_t orientation[3] )
+{
+}
+
+void UpdateEntityPosition( int entityNum, const vec3_t position )
+{
+}
+
+void UpdateEntityVelocity( int entityNum, const vec3_t velocity )
+{
+}
+
+
+void SetReverb( int slotNum, std::string name, float ratio )
+{
+}
+
+
+void StartCapture( int rate )
+{
+}
+
+int AvailableCaptureSamples()
+{
+	return 0;
+}
+
+void GetCapturedData( int numSamples, void* buffer )
+{
+}
+
+void StopCapture()
+{
+}
 }

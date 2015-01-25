@@ -54,7 +54,7 @@ void G_namelog_connect( gclient_t *client )
 
 	if ( !n )
 	{
-		n = (namelog_t*) BG_Alloc( sizeof( namelog_t ) );
+		n = ( namelog_t* ) BG_Alloc( sizeof( namelog_t ) );
 		strcpy( n->guid, client->pers.guid );
 
 		if ( p )
@@ -119,7 +119,7 @@ void G_namelog_update_score( gclient_t *client )
 		return;
 	}
 
-	n->team = (team_t) client->pers.team;
+	n->team = ( team_t ) client->pers.team;
 	n->score = client->ps.persistant[ PERS_SCORE ];
 	n->credits = client->pers.credit;
 }

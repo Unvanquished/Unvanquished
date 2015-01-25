@@ -59,7 +59,7 @@ Maryland 20850 USA.
  * noexec32=on x86_64) */
 #define VM_X86_MMAP
 
- // workaround for systems that use the old MAP_ANON macro
+// workaround for systems that use the old MAP_ANON macro
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
@@ -95,16 +95,16 @@ static  int jlabel;
 
 typedef enum
 {
-  LAST_COMMAND_NONE = 0,
-  LAST_COMMAND_MOV_STACK_EAX,
-  LAST_COMMAND_SUB_BL_1,
-  LAST_COMMAND_SUB_BL_2,
+    LAST_COMMAND_NONE = 0,
+    LAST_COMMAND_MOV_STACK_EAX,
+    LAST_COMMAND_SUB_BL_1,
+    LAST_COMMAND_SUB_BL_2,
 } ELastCommand;
 
 typedef enum
 {
-  VM_JMP_VIOLATION = 0,
-  VM_BLOCK_COPY = 1
+    VM_JMP_VIOLATION = 0,
+    VM_BLOCK_COPY = 1
 } ESysCallType;
 
 static  ELastCommand LastCommand;
@@ -221,19 +221,19 @@ static void EmitString( const char *string )
 }
 
 #define MASK_REG(modrm, mask) \
-        EmitString("81"); \
-        EmitString(( modrm )); \
-        Emit4(( mask ))
+	EmitString("81"); \
+	EmitString(( modrm )); \
+	Emit4(( mask ))
 
 // add bl, bytes
 #define STACK_PUSH(bytes) \
-        EmitString("80 C3"); \
-        Emit1(bytes)
+	EmitString("80 C3"); \
+	Emit1(bytes)
 
 // sub bl, bytes
 #define STACK_POP(bytes) \
-        EmitString("80 EB"); \
-        Emit1(bytes)
+	EmitString("80 EB"); \
+	Emit1(bytes)
 
 static void EmitCommand( ELastCommand command )
 {
@@ -342,7 +342,7 @@ void EmitMovECXStack( vm_t *vm )
 		}
 
 		if ( pop1 == OP_DIVI || pop1 == OP_DIVU || pop1 == OP_MULI || pop1 == OP_MULU ||
-		     pop1 == OP_STORE4 || pop1 == OP_STORE2 || pop1 == OP_STORE1 )
+		        pop1 == OP_STORE4 || pop1 == OP_STORE2 || pop1 == OP_STORE1 )
 		{
 			EmitString( "89 C1" );  // mov ecx, eax
 			return;
@@ -404,14 +404,14 @@ void EmitMovEDXStack( vm_t *vm, int andit )
 }
 
 #define JUSED(x) \
-        do { \
-    if (x < 0 || x >= vm->instructionCount) { \
-      VMFREE_BUFFERS(); \
-      Com_Error( ERR_DROP, \
-                 "VM_CompileX86: jump target out of range at offset %d", pc ); \
-    } \
-    jused[ x ] = 1; \
-  } while(0)
+	do { \
+		if (x < 0 || x >= vm->instructionCount) { \
+			VMFREE_BUFFERS(); \
+			Com_Error( ERR_DROP, \
+			           "VM_CompileX86: jump target out of range at offset %d", pc ); \
+		} \
+		jused[ x ] = 1; \
+	} while(0)
 
 #define SET_JMPOFS(x) do { buf[ ( x ) ] = compiledOfs - (( x ) + 1 ); } while(0)
 
@@ -436,7 +436,8 @@ so as to work around different calling conventions
 =================
 */
 
-static struct {
+static struct
+{
 	int      syscallNum;
 	int      programStack;
 	int *    opStackBase;
@@ -479,17 +480,19 @@ static void DoSyscall( void )
 		{
 			vmInfo.opStackBase[ vmInfo.opStackOfs + 1 ] = savedVM->systemCall( args ); // VM-specific
 		}
+
 #else
 		data[ 0 ] = ~vmInfo.syscallNum;
 
 		if ( data[ 0 ] < FIRST_VM_SYSCALL )
 		{
-			vmInfo.opStackBase[ vmInfo.opStackOfs + 1 ] = VM_SystemCall( (intptr_t *) data ); // Common
+			vmInfo.opStackBase[ vmInfo.opStackOfs + 1 ] = VM_SystemCall( ( intptr_t * ) data ); // Common
 		}
 		else
 		{
-			vmInfo.opStackBase[ vmInfo.opStackOfs + 1 ] = savedVM->systemCall( (intptr_t *) data ); // VM-specific
+			vmInfo.opStackBase[ vmInfo.opStackOfs + 1 ] = savedVM->systemCall( ( intptr_t * ) data ); // VM-specific
 		}
+
 #endif
 		VM_CheckSanity( savedVM, ~vmInfo.syscallNum );
 	}
@@ -498,19 +501,19 @@ static void DoSyscall( void )
 		switch ( vmInfo.syscallNum )
 		{
 			case VM_JMP_VIOLATION:
-					ErrJump();
+				ErrJump();
 
 			case VM_BLOCK_COPY:
-					if ( vmInfo.opStackOfs < 1 )
-					{
-						Com_Error( ERR_DROP, "VM_BLOCK_COPY failed due to corrupted opStack" );
-					}
+				if ( vmInfo.opStackOfs < 1 )
+				{
+					Com_Error( ERR_DROP, "VM_BLOCK_COPY failed due to corrupted opStack" );
+				}
 
-				VM_BlockCopy( vmInfo.opStackBase[ ( vmInfo.opStackOfs - 1 ) ], vmInfo.opStackBase[ vmInfo.opStackOfs ], vmInfo.arg );
+				VM_BlockCopy( vmInfo.opStackBase[( vmInfo.opStackOfs - 1 ) ], vmInfo.opStackBase[ vmInfo.opStackOfs ], vmInfo.arg );
 				break;
 
 			default:
-					Com_Error( ERR_DROP, "Unknown VM operation %d", vmInfo.syscallNum );
+				Com_Error( ERR_DROP, "Unknown VM operation %d", vmInfo.syscallNum );
 		}
 	}
 
@@ -571,8 +574,8 @@ X32_ADDR32     - 32-bit addressing - x32
 int EmitCallDoSyscall( vm_t *vm )
 {
 	// use edx register to store DoSyscall address
-	EmitString( REX_W(48,40) "BA" );  // mov edx, DoSyscall
-	EmitPtr( (void*) DoSyscall );
+	EmitString( REX_W( 48, 40 ) "BA" ); // mov edx, DoSyscall
+	EmitPtr( ( void* ) DoSyscall );
 
 	// Push important registers to stack as we can't really make
 	// any assumptions about calling conventions.
@@ -580,8 +583,8 @@ int EmitCallDoSyscall( vm_t *vm )
 	EmitString( "56" );  // push esi
 	EmitString( "57" );  // push edi
 #if idx64 || idx64_32
-	EmitString( REX(41) "50" );  // push r8
-	EmitString( REX(41) "51" );  // push r9
+	EmitString( REX( 41 ) "50" ); // push r8
+	EmitString( REX( 41 ) "51" ); // push r9
 #endif
 
 	// write arguments to global vars
@@ -597,8 +600,8 @@ int EmitCallDoSyscall( vm_t *vm )
 	EmitString( X32_ADDR32 "A2" ); // mov [0x12345678], al
 	EmitPtr( &vmInfo.opStackOfs );
 	// vm_opStackBase
-	EmitString( REX64(48) "89 F8" ); // mov eax, edi
-	EmitString( X32_ADDR32 REX64(48) "A3" ); // mov [0x12345678], eax
+	EmitString( REX64( 48 ) "89 F8" ); // mov eax, edi
+	EmitString( X32_ADDR32 REX64( 48 ) "A3" ); // mov [0x12345678], eax
 	EmitPtr( &vmInfo.opStackBase );
 	// vm_arg
 	EmitString( "89 C8" ); // mov eax, ecx
@@ -607,20 +610,20 @@ int EmitCallDoSyscall( vm_t *vm )
 
 	// align the stack pointer to a 16-byte-boundary
 	EmitString( "55" );  // push ebp
-	EmitString( REX64(48) "89 E5" );  // mov ebp, esp
-	EmitString( REX64(48) "83 E4 F0" );  // and esp, 0xFFFFFFF0
+	EmitString( REX64( 48 ) "89 E5" ); // mov ebp, esp
+	EmitString( REX64( 48 ) "83 E4 F0" ); // and esp, 0xFFFFFFF0
 
 	// call the syscall wrapper function DoSyscall()
 
 	EmitString( "FF D2" );  // call edx
 
 	// reset the stack pointer to its previous value
-	EmitString( REX64(48) "89 EC" );  // mov esp, ebp
+	EmitString( REX64( 48 ) "89 EC" ); // mov esp, ebp
 	EmitString( "5D" );  // pop ebp
 
 #if idx64 || idx64_32
-	EmitString( REX(41) "59" );  // pop r9
-	EmitString( REX(41) "58" );  // pop r8
+	EmitString( REX( 41 ) "59" ); // pop r9
+	EmitString( REX( 41 ) "58" ); // pop r8
 #endif
 	EmitString( "5F" );  // pop edi
 	EmitString( "5E" );  // pop esi
@@ -677,9 +680,9 @@ int EmitCallProcedure( vm_t *vm, int sysCallOfs )
 
 #if idx64_32
 	EmitString( "67 45 8B 14 80" ); // mov (%r8d,%eax,4),%r10d
-	EmitString( REX(41) "FF D2" ); // callq *%r10
+	EmitString( REX( 41 ) "FF D2" ); // callq *%r10
 #elif idx64
-	EmitString( REX(49) "FF 14 C0" );  // call qword ptr [r8 + eax * 8]
+	EmitString( REX( 49 ) "FF 14 C0" ); // call qword ptr [r8 + eax * 8]
 #else
 	EmitString( "FF 14 85" );  // call dword ptr [vm->instructionPointers + eax * 4]
 	Emit4( ( intptr_t ) vm->instructionPointers );
@@ -787,43 +790,43 @@ void EmitBranchConditions( vm_t *vm, int op )
 	switch ( op )
 	{
 		case OP_EQ:
-				EmitJumpIns( vm, "0F 84", Constant4() );  // je 0x12345678
+			EmitJumpIns( vm, "0F 84", Constant4() );  // je 0x12345678
 			break;
 
 		case OP_NE:
-				EmitJumpIns( vm, "0F 85", Constant4() );  // jne 0x12345678
+			EmitJumpIns( vm, "0F 85", Constant4() );  // jne 0x12345678
 			break;
 
 		case OP_LTI:
-				EmitJumpIns( vm, "0F 8C", Constant4() );  // jl 0x12345678
+			EmitJumpIns( vm, "0F 8C", Constant4() );  // jl 0x12345678
 			break;
 
 		case OP_LEI:
-				EmitJumpIns( vm, "0F 8E", Constant4() );  // jle 0x12345678
+			EmitJumpIns( vm, "0F 8E", Constant4() );  // jle 0x12345678
 			break;
 
 		case OP_GTI:
-				EmitJumpIns( vm, "0F 8F", Constant4() );  // jg 0x12345678
+			EmitJumpIns( vm, "0F 8F", Constant4() );  // jg 0x12345678
 			break;
 
 		case OP_GEI:
-				EmitJumpIns( vm, "0F 8D", Constant4() );  // jge 0x12345678
+			EmitJumpIns( vm, "0F 8D", Constant4() );  // jge 0x12345678
 			break;
 
 		case OP_LTU:
-				EmitJumpIns( vm, "0F 82", Constant4() );  // jb 0x12345678
+			EmitJumpIns( vm, "0F 82", Constant4() );  // jb 0x12345678
 			break;
 
 		case OP_LEU:
-				EmitJumpIns( vm, "0F 86", Constant4() );  // jbe 0x12345678
+			EmitJumpIns( vm, "0F 86", Constant4() );  // jbe 0x12345678
 			break;
 
 		case OP_GTU:
-				EmitJumpIns( vm, "0F 87", Constant4() );  // ja 0x12345678
+			EmitJumpIns( vm, "0F 87", Constant4() );  // ja 0x12345678
 			break;
 
 		case OP_GEU:
-				EmitJumpIns( vm, "0F 83", Constant4() );  // jae 0x12345678
+			EmitJumpIns( vm, "0F 83", Constant4() );  // jae 0x12345678
 			break;
 	}
 }
@@ -855,9 +858,9 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 	switch ( op1 )
 	{
 		case OP_LOAD4:
-				EmitPushStack( vm );
+			EmitPushStack( vm );
 #if idx64 || idx64_32
-			EmitString( REX(41) "8B 81" );  // mov eax, dword ptr [r9 + 0x12345678]
+			EmitString( REX( 41 ) "8B 81" ); // mov eax, dword ptr [r9 + 0x12345678]
 			Emit4( Constant4() & vm->dataMask );
 #else
 			EmitString( "B8" );  // mov eax, 0x12345678
@@ -871,9 +874,9 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_LOAD2:
-				EmitPushStack( vm );
+			EmitPushStack( vm );
 #if idx64 || idx64_32
-			EmitString( REX(41) "0F B7 81" );  // movzx eax, word ptr [r9 + 0x12345678]
+			EmitString( REX( 41 ) "0F B7 81" ); // movzx eax, word ptr [r9 + 0x12345678]
 			Emit4( Constant4() & vm->dataMask );
 #else
 			EmitString( "B8" );  // mov eax, 0x12345678
@@ -887,9 +890,9 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_LOAD1:
-				EmitPushStack( vm );
+			EmitPushStack( vm );
 #if idx64 || idx64_32
-			EmitString( REX(41) "0F B6 81" );  // movzx eax, byte ptr [r9 + 0x12345678]
+			EmitString( REX( 41 ) "0F B6 81" ); // movzx eax, byte ptr [r9 + 0x12345678]
 			Emit4( Constant4() & vm->dataMask );
 #else
 			EmitString( "B8" );  // mov eax, 0x12345678
@@ -903,9 +906,9 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_STORE4:
-				EmitMovEAXStack( vm, ( vm->dataMask & ~3 ) );
+			EmitMovEAXStack( vm, ( vm->dataMask & ~3 ) );
 #if idx64 || idx64_32
-			EmitString( REX(41) "C7 04 01" );  // mov dword ptr [r9 + eax], 0x12345678
+			EmitString( REX( 41 ) "C7 04 01" ); // mov dword ptr [r9 + eax], 0x12345678
 			Emit4( Constant4() );
 #else
 			EmitString( "C7 80" );  // mov dword ptr [eax + 0x12345678], 0x12345678
@@ -918,10 +921,10 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_STORE2:
-				EmitMovEAXStack( vm, ( vm->dataMask & ~1 ) );
+			EmitMovEAXStack( vm, ( vm->dataMask & ~1 ) );
 #if idx64 || idx64_32
 			Emit1( 0x66 );  // mov word ptr [r9 + eax], 0x1234
-			EmitString( REX(41) "C7 04 01" );
+			EmitString( REX( 41 ) "C7 04 01" );
 			Emit2( Constant4() );
 #else
 			EmitString( "66 C7 80" );  // mov word ptr [eax + 0x12345678], 0x1234
@@ -935,9 +938,9 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_STORE1:
-				EmitMovEAXStack( vm, vm->dataMask );
+			EmitMovEAXStack( vm, vm->dataMask );
 #if idx64 || idx64_32
-			EmitString( REX(41) "C6 04 01" );  // mov byte [r9 + eax], 0x12
+			EmitString( REX( 41 ) "C6 04 01" ); // mov byte [r9 + eax], 0x12
 			Emit1( Constant4() );
 #else
 			EmitString( "C6 80" );  // mov byte ptr [eax + 0x12345678], 0x12
@@ -951,7 +954,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_ADD:
-				v = Constant4();
+			v = Constant4();
 
 			EmitMovEAXStack( vm, 0 );
 
@@ -973,7 +976,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_SUB:
-				v = Constant4();
+			v = Constant4();
 
 			EmitMovEAXStack( vm, 0 );
 
@@ -995,7 +998,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_MULI:
-				v = Constant4();
+			v = Constant4();
 
 			EmitMovEAXStack( vm, 0 );
 
@@ -1017,7 +1020,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_LSH:
-				v = NextConstant4();
+			v = NextConstant4();
 
 			if ( v < 0 || v > 31 )
 			{
@@ -1034,7 +1037,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_RSHI:
-				v = NextConstant4();
+			v = NextConstant4();
 
 			if ( v < 0 || v > 31 )
 			{
@@ -1051,7 +1054,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_RSHU:
-				v = NextConstant4();
+			v = NextConstant4();
 
 			if ( v < 0 || v > 31 )
 			{
@@ -1068,7 +1071,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_BAND:
-				v = Constant4();
+			v = Constant4();
 
 			EmitMovEAXStack( vm, 0 );
 
@@ -1090,7 +1093,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_BOR:
-				v = Constant4();
+			v = Constant4();
 
 			EmitMovEAXStack( vm, 0 );
 
@@ -1112,7 +1115,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_BXOR:
-				v = Constant4();
+			v = Constant4();
 
 			EmitMovEAXStack( vm, 0 );
 
@@ -1134,16 +1137,16 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_EQ:
-			case OP_NE:
-				case OP_LTI:
-					case OP_LEI:
-						case OP_GTI:
-							case OP_GEI:
-								case OP_LTU:
-									case OP_LEU:
-										case OP_GTU:
-											case OP_GEU:
-													EmitMovEAXStack( vm, 0 );
+		case OP_NE:
+		case OP_LTI:
+		case OP_LEI:
+		case OP_GTI:
+		case OP_GEI:
+		case OP_LTU:
+		case OP_LEU:
+		case OP_GTU:
+		case OP_GEU:
+			EmitMovEAXStack( vm, 0 );
 			EmitCommand( LAST_COMMAND_SUB_BL_1 );
 			EmitString( "3D" );  // cmp eax, 0x12345678
 			Emit4( Constant4() );
@@ -1155,11 +1158,11 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_EQF:
-			case OP_NEF:
-					if ( NextConstant4() )
-					{
-						break;
-					}
+		case OP_NEF:
+			if ( NextConstant4() )
+			{
+				break;
+			}
 
 			pc += 5; // CONST + OP_EQF|OP_NEF
 
@@ -1182,14 +1185,14 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		case OP_JUMP:
-				EmitJumpIns( vm, "E9", Constant4() );  // jmp 0x12345678
+			EmitJumpIns( vm, "E9", Constant4() );  // jmp 0x12345678
 
 			pc += 1; // OP_JUMP
 			instruction += 1;
 			return qtrue;
 
 		case OP_CALL:
-				v = Constant4();
+			v = Constant4();
 			EmitCallConst( vm, v, callProcOfsSyscall );
 
 			pc += 1; // OP_CALL
@@ -1197,7 +1200,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			return qtrue;
 
 		default:
-				break;
+			break;
 	}
 
 	return qfalse;
@@ -1232,9 +1235,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 	// allocate a very large temp buffer, we will shrink it later
 	maxLength = header->codeLength * 8 + 64;
-	buf = (byte*) Z_Malloc( maxLength );
-	jused = (byte*) Z_Malloc( jusedSize );
-	code = (byte*) Z_Malloc( header->codeLength + 32 );
+	buf = ( byte* ) Z_Malloc( maxLength );
+	jused = ( byte* ) Z_Malloc( jusedSize );
+	code = ( byte* ) Z_Malloc( header->codeLength + 32 );
 
 	Com_Memset( jused, 0, jusedSize );
 	Com_Memset( buf, 0, maxLength );
@@ -1308,22 +1311,22 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 			switch ( op )
 			{
 				case 0:
-						break;
+					break;
 
 				case OP_BREAK:
-						EmitString( "CC" );  // int 3
+					EmitString( "CC" );  // int 3
 					break;
 
 				case OP_ENTER:
-						EmitString( "81 EE" );  // sub esi, 0x12345678
+					EmitString( "81 EE" );  // sub esi, 0x12345678
 					Emit4( Constant4() );
 					break;
 
 				case OP_CONST:
-						if ( ConstOptimize( vm, callProcOfsSyscall ) )
-						{
-							break;
-						}
+					if ( ConstOptimize( vm, callProcOfsSyscall ) )
+					{
+						break;
+					}
 
 					EmitPushStack( vm );
 					EmitString( "C7 04 9F" );  // mov dword ptr [edi + ebx * 4], 0x12345678
@@ -1339,7 +1342,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_LOCAL:
-						EmitPushStack( vm );
+					EmitPushStack( vm );
 					EmitString( "8D 86" );  // lea eax, [0x12345678 + esi]
 					oc0 = oc1;
 					oc1 = Constant4();
@@ -1348,13 +1351,13 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_ARG:
-						EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
+					EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
 					EmitString( "8B D6" );  // mov edx, esi
 					EmitString( "81 C2" );  // add edx, 0x12345678
 					Emit4( ( Constant1() & 0xFF ) );
 					MASK_REG( "E2", vm->dataMask );  // and edx, 0x12345678
 #if idx64 || idx64_32
-					EmitString( REX(41) "89 04 11" );  // mov dword ptr [r9 + edx], eax
+					EmitString( REX( 41 ) "89 04 11" ); // mov dword ptr [r9 + edx], eax
 #else
 					EmitString( "89 82" );  // mov dword ptr [edx + 0x12345678], eax
 					Emit4( ( intptr_t ) vm->dataBase );
@@ -1363,87 +1366,87 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_CALL:
-						EmitCallRel( vm, callProcOfs );
+					EmitCallRel( vm, callProcOfs );
 					break;
 
 				case OP_PUSH:
-						EmitPushStack( vm );
+					EmitPushStack( vm );
 					break;
 
 				case OP_POP:
-						EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
+					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_LEAVE:
-						v = Constant4();
+					v = Constant4();
 					EmitString( "81 C6" );  // add  esi, 0x12345678
 					Emit4( v );
 					EmitString( "C3" );  // ret
 					break;
 
 				case OP_LOAD4:
-						if ( code[ pc ] == OP_CONST && code[ pc + 5 ] == OP_ADD && code[ pc + 6 ] == OP_STORE4 )
+					if ( code[ pc ] == OP_CONST && code[ pc + 5 ] == OP_ADD && code[ pc + 6 ] == OP_STORE4 )
+					{
+						if ( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
 						{
+							compiledOfs -= 12;
+							vm->instructionPointers[ instruction - 1 ] = compiledOfs;
+						}
+
+						pc++; // OP_CONST
+						v = Constant4();
+
+						EmitMovEDXStack( vm, vm->dataMask );
+
+						if ( v == 1 && oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
+						{
+#if idx64 || idx64_32
+							EmitString( REX( 41 ) "FF 04 11" ); // inc dword ptr [r9 + edx]
+#else
+							EmitString( "FF 82" );  // inc dword ptr [edx + 0x12345678]
+							Emit4( ( intptr_t ) vm->dataBase );
+#endif
+						}
+						else
+						{
+#if idx64 || idx64_32
+							EmitString( REX( 41 ) "8B 04 11" ); // mov eax, dword ptr [r9 + edx]
+#else
+							EmitString( "8B 82" );  // mov eax, dword ptr [edx + 0x12345678]
+							Emit4( ( intptr_t ) vm->dataBase );
+#endif
+							EmitString( "05" );  // add eax, v
+							Emit4( v );
+
 							if ( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
 							{
-								compiledOfs -= 12;
-								vm->instructionPointers[ instruction - 1 ] = compiledOfs;
-							}
-
-							pc++; // OP_CONST
-							v = Constant4();
-
-							EmitMovEDXStack( vm, vm->dataMask );
-
-							if ( v == 1 && oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
-							{
 #if idx64 || idx64_32
-								EmitString( REX(41) "FF 04 11" );  // inc dword ptr [r9 + edx]
+								EmitString( REX( 41 ) "89 04 11" ); // mov dword ptr [r9 + edx], eax
 #else
-								EmitString( "FF 82" );  // inc dword ptr [edx + 0x12345678]
+								EmitString( "89 82" );  // mov dword ptr [edx + 0x12345678], eax
 								Emit4( ( intptr_t ) vm->dataBase );
 #endif
 							}
 							else
 							{
+								EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
+								EmitString( "8B 14 9F" );  // mov edx, dword ptr [edi + ebx * 4]
+								MASK_REG( "E2", vm->dataMask );  // and edx, 0x12345678
 #if idx64 || idx64_32
-								EmitString( REX(41) "8B 04 11" );  // mov eax, dword ptr [r9 + edx]
+								EmitString( REX( 41 ) "89 04 11" ); // mov dword ptr [r9 + edx], eax
 #else
-								EmitString( "8B 82" );  // mov eax, dword ptr [edx + 0x12345678]
+								EmitString( "89 82" );  // mov dword ptr [edx + 0x12345678], eax
 								Emit4( ( intptr_t ) vm->dataBase );
 #endif
-								EmitString( "05" );  // add eax, v
-								Emit4( v );
-
-								if ( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
-								{
-#if idx64 || idx64_32
-									EmitString( REX(41) "89 04 11" );  // mov dword ptr [r9 + edx], eax
-#else
-									EmitString( "89 82" );  // mov dword ptr [edx + 0x12345678], eax
-									Emit4( ( intptr_t ) vm->dataBase );
-#endif
-								}
-								else
-								{
-									EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
-									EmitString( "8B 14 9F" );  // mov edx, dword ptr [edi + ebx * 4]
-									MASK_REG( "E2", vm->dataMask );  // and edx, 0x12345678
-#if idx64 || idx64_32
-									EmitString( REX(41) "89 04 11" );  // mov dword ptr [r9 + edx], eax
-#else
-									EmitString( "89 82" );  // mov dword ptr [edx + 0x12345678], eax
-									Emit4( ( intptr_t ) vm->dataBase );
-#endif
-								}
 							}
-
-							EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
-							pc++; // OP_ADD
-							pc++; // OP_STORE
-							instruction += 3;
-							break;
 						}
+
+						EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
+						pc++; // OP_ADD
+						pc++; // OP_STORE
+						instruction += 3;
+						break;
+					}
 
 					if ( code[ pc ] == OP_CONST && code[ pc + 5 ] == OP_SUB && code[ pc + 6 ] == OP_STORE4 )
 					{
@@ -1461,7 +1464,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 						if ( v == 1 && oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
 						{
 #if idx64 || idx64_32
-							EmitString( REX(41) "FF 0C 11" );  // dec dword ptr [r9 + edx]
+							EmitString( REX( 41 ) "FF 0C 11" ); // dec dword ptr [r9 + edx]
 #else
 							EmitString( "FF 8A" );  // dec dword ptr [edx + 0x12345678]
 							Emit4( ( intptr_t ) vm->dataBase );
@@ -1470,7 +1473,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 						else
 						{
 #if idx64 || idx64_32
-							EmitString( REX(41) "8B 04 11" );  // mov eax, dword ptr [r9 + edx]
+							EmitString( REX( 41 ) "8B 04 11" ); // mov eax, dword ptr [r9 + edx]
 #else
 							EmitString( "8B 82" );  // mov eax, dword ptr [edx + 0x12345678]
 							Emit4( ( intptr_t ) vm->dataBase );
@@ -1481,7 +1484,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 							if ( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
 							{
 #if idx64 || idx64_32
-								EmitString( REX(41) "89 04 11" );  // mov dword ptr [r9 + edx], eax
+								EmitString( REX( 41 ) "89 04 11" ); // mov dword ptr [r9 + edx], eax
 #else
 								EmitString( "89 82" );  // mov dword ptr [edx + 0x12345678], eax
 								Emit4( ( intptr_t ) vm->dataBase );
@@ -1493,7 +1496,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 								EmitString( "8B 14 9F" );  // mov edx, dword ptr [edi + ebx * 4]
 								MASK_REG( "E2", vm->dataMask );  // and edx, 0x12345678
 #if idx64 || idx64_32
-								EmitString( REX(41) "89 04 11" );  // mov dword ptr [r9 + edx], eax
+								EmitString( REX( 41 ) "89 04 11" ); // mov dword ptr [r9 + edx], eax
 #else
 								EmitString( "89 82" );  // mov dword ptr [edx + 0x12345678], eax
 								Emit4( ( intptr_t ) vm->dataBase );
@@ -1514,7 +1517,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 						vm->instructionPointers[ instruction - 1 ] = compiledOfs;
 						MASK_REG( "E0", vm->dataMask );  // and eax, 0x12345678
 #if idx64 || idx64_32
-						EmitString( REX(41) "8B 04 01" );  // mov eax, dword ptr [r9 + eax]
+						EmitString( REX( 41 ) "8B 04 01" ); // mov eax, dword ptr [r9 + eax]
 #else
 						EmitString( "8B 80" );  // mov eax, dword ptr [eax + 0x1234567]
 						Emit4( ( intptr_t ) vm->dataBase );
@@ -1525,7 +1528,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 					EmitMovEAXStack( vm, vm->dataMask );
 #if idx64 || idx64_32
-					EmitString( REX(41) "8B 04 01" );  // mov eax, dword ptr [r9 + eax]
+					EmitString( REX( 41 ) "8B 04 01" ); // mov eax, dword ptr [r9 + eax]
 #else
 					EmitString( "8B 80" );  // mov eax, dword ptr [eax + 0x12345678]
 					Emit4( ( intptr_t ) vm->dataBase );
@@ -1534,9 +1537,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_LOAD2:
-						EmitMovEAXStack( vm, vm->dataMask );
+					EmitMovEAXStack( vm, vm->dataMask );
 #if idx64 || idx64_32
-					EmitString( REX(41) "0F B7 04 01" );  // movzx eax, word ptr [r9 + eax]
+					EmitString( REX( 41 ) "0F B7 04 01" ); // movzx eax, word ptr [r9 + eax]
 #else
 					EmitString( "0F B7 80" );  // movzx eax, word ptr [eax + 0x12345678]
 					Emit4( ( intptr_t ) vm->dataBase );
@@ -1545,9 +1548,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_LOAD1:
-						EmitMovEAXStack( vm, vm->dataMask );
+					EmitMovEAXStack( vm, vm->dataMask );
 #if idx64 || idx64_32
-					EmitString( REX(41) "0F B6 04 01" );  // movzx eax, byte ptr [r9 + eax]
+					EmitString( REX( 41 ) "0F B6 04 01" ); // movzx eax, byte ptr [r9 + eax]
 #else
 					EmitString( "0F B6 80" );  // movzx eax, byte ptr [eax + 0x12345678]
 					Emit4( ( intptr_t ) vm->dataBase );
@@ -1556,11 +1559,11 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_STORE4:
-						EmitMovEAXStack( vm, 0 );
+					EmitMovEAXStack( vm, 0 );
 					EmitString( "8B 54 9F FC" );  // mov edx, dword ptr -4[edi + ebx * 4]
 					MASK_REG( "E2", vm->dataMask & ~3 );  // and edx, 0x12345678
 #if idx64 || idx64_32
-					EmitString( REX(41) "89 04 11" );  // mov dword ptr [r9 + edx], eax
+					EmitString( REX( 41 ) "89 04 11" ); // mov dword ptr [r9 + edx], eax
 #else
 					EmitString( "89 82" );  // mov dword ptr [edx + 0x12345678], eax
 					Emit4( ( intptr_t ) vm->dataBase );
@@ -1569,12 +1572,12 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_STORE2:
-						EmitMovEAXStack( vm, 0 );
+					EmitMovEAXStack( vm, 0 );
 					EmitString( "8B 54 9F FC" );  // mov edx, dword ptr -4[edi + ebx * 4]
 					MASK_REG( "E2", vm->dataMask & ~1 );  // and edx, 0x12345678
 #if idx64 || idx64_32
 					Emit1( 0x66 );  // mov word ptr [r9 + edx], eax
-					EmitString( REX(41) "89 04 11" );
+					EmitString( REX( 41 ) "89 04 11" );
 #else
 					EmitString( "66 89 82" );  // mov word ptr [edx + 0x12345678], eax
 					Emit4( ( intptr_t ) vm->dataBase );
@@ -1583,11 +1586,11 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_STORE1:
-						EmitMovEAXStack( vm, 0 );
+					EmitMovEAXStack( vm, 0 );
 					EmitString( "8B 54 9F FC" );  // mov edx, dword ptr -4[edi + ebx * 4]
 					MASK_REG( "E2", vm->dataMask );  // and edx, 0x12345678
 #if idx64 || idx64_32
-					EmitString( REX(41) "88 04 11" );  // mov byte ptr [r9 + edx], eax
+					EmitString( REX( 41 ) "88 04 11" ); // mov byte ptr [r9 + edx], eax
 #else
 					EmitString( "88 82" );  // mov byte ptr [edx + 0x12345678], eax
 					Emit4( ( intptr_t ) vm->dataBase );
@@ -1596,16 +1599,16 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_EQ:
-					case OP_NE:
-						case OP_LTI:
-							case OP_LEI:
-								case OP_GTI:
-									case OP_GEI:
-										case OP_LTU:
-											case OP_LEU:
-												case OP_GTU:
-													case OP_GEU:
-															EmitMovEAXStack( vm, 0 );
+				case OP_NE:
+				case OP_LTI:
+				case OP_LEI:
+				case OP_GTI:
+				case OP_GEI:
+				case OP_LTU:
+				case OP_LEU:
+				case OP_GTU:
+				case OP_GEU:
+					EmitMovEAXStack( vm, 0 );
 					EmitCommand( LAST_COMMAND_SUB_BL_2 );  // sub bl, 2
 					EmitString( "39 44 9F 04" );  // cmp  eax, dword ptr 4[edi + ebx * 4]
 
@@ -1613,12 +1616,12 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_EQF:
-					case OP_NEF:
-						case OP_LTF:
-							case OP_LEF:
-								case OP_GTF:
-									case OP_GEF:
-											EmitCommand( LAST_COMMAND_SUB_BL_2 );  // sub bl, 2
+				case OP_NEF:
+				case OP_LTF:
+				case OP_LEF:
+				case OP_GTF:
+				case OP_GEF:
+					EmitCommand( LAST_COMMAND_SUB_BL_2 );  // sub bl, 2
 					EmitString( "D9 44 9F 04" );  // fld dword ptr 4[edi + ebx * 4]
 					EmitString( "D8 5C 9F 08" );  // fcomp dword ptr 8[edi + ebx * 4]
 					EmitString( "DF E0" );  // fnstsw ax
@@ -1626,32 +1629,32 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					switch ( op )
 					{
 						case OP_EQF:
-								EmitString( "F6 C4 40" );  // test  ah,0x40
+							EmitString( "F6 C4 40" );  // test  ah,0x40
 							EmitJumpIns( vm, "0F 85", Constant4() );  // jne 0x12345678
 							break;
 
 						case OP_NEF:
-								EmitString( "F6 C4 40" );  // test  ah,0x40
+							EmitString( "F6 C4 40" );  // test  ah,0x40
 							EmitJumpIns( vm, "0F 84", Constant4() );  // je 0x12345678
 							break;
 
 						case OP_LTF:
-								EmitString( "F6 C4 01" );  // test  ah,0x01
+							EmitString( "F6 C4 01" );  // test  ah,0x01
 							EmitJumpIns( vm, "0F 85", Constant4() );  // jne 0x12345678
 							break;
 
 						case OP_LEF:
-								EmitString( "F6 C4 41" );  // test  ah,0x41
+							EmitString( "F6 C4 41" );  // test  ah,0x41
 							EmitJumpIns( vm, "0F 85", Constant4() );  // jne 0x12345678
 							break;
 
 						case OP_GTF:
-								EmitString( "F6 C4 41" );  // test  ah,0x41
+							EmitString( "F6 C4 41" );  // test  ah,0x41
 							EmitJumpIns( vm, "0F 84", Constant4() );  // je 0x12345678
 							break;
 
 						case OP_GEF:
-								EmitString( "F6 C4 01" );  // test  ah,0x01
+							EmitString( "F6 C4 01" );  // test  ah,0x01
 							EmitJumpIns( vm, "0F 84", Constant4() );  // je 0x12345678
 							break;
 					}
@@ -1659,25 +1662,25 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_NEGI:
-						EmitMovEAXStack( vm, 0 );
+					EmitMovEAXStack( vm, 0 );
 					EmitString( "F7 D8" );  // neg eax
 					EmitCommand( LAST_COMMAND_MOV_STACK_EAX );
 					break;
 
 				case OP_ADD:
-						EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
+					EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
 					EmitString( "01 44 9F FC" );  // add dword ptr -4[edi + ebx * 4], eax
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_SUB:
-						EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
+					EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
 					EmitString( "29 44 9F FC" );  // sub dword ptr -4[edi + ebx * 4], eax
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_DIVI:
-						EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
+					EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
 					EmitString( "99" );  // cdq
 					EmitString( "F7 3C 9F" );  // idiv dword ptr [edi + ebx * 4]
 					EmitString( "89 44 9F FC" );  // mov dword ptr -4[edi + ebx * 4],eax
@@ -1685,7 +1688,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_DIVU:
-						EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
+					EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
 					EmitString( "33 D2" );  // xor edx, edx
 					EmitString( "F7 34 9F" );  // div dword ptr [edi + ebx * 4]
 					EmitString( "89 44 9F FC" );  // mov dword ptr -4[edi + ebx * 4],eax
@@ -1693,7 +1696,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_MODI:
-						EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
+					EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
 					EmitString( "99" );  // cdq
 					EmitString( "F7 3C 9F" );  // idiv dword ptr [edi + ebx * 4]
 					EmitString( "89 54 9F FC" );  // mov dword ptr -4[edi + ebx * 4],edx
@@ -1701,7 +1704,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_MODU:
-						EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
+					EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
 					EmitString( "33 D2" );  // xor edx, edx
 					EmitString( "F7 34 9F" );  // div dword ptr [edi + ebx * 4]
 					EmitString( "89 54 9F FC" );  // mov dword ptr -4[edi + ebx * 4],edx
@@ -1709,95 +1712,95 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_MULI:
-						EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
+					EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
 					EmitString( "F7 2C 9F" );  // imul dword ptr [edi + ebx * 4]
 					EmitString( "89 44 9F FC" );  // mov dword ptr -4[edi + ebx * 4],eax
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_MULU:
-						EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
+					EmitString( "8B 44 9F FC" );  // mov eax,dword ptr -4[edi + ebx * 4]
 					EmitString( "F7 24 9F" );  // mul dword ptr [edi + ebx * 4]
 					EmitString( "89 44 9F FC" );  // mov dword ptr -4[edi + ebx * 4],eax
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_BAND:
-						EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
+					EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
 					EmitString( "21 44 9F FC" );  // and dword ptr -4[edi + ebx * 4],eax
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_BOR:
-						EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
+					EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
 					EmitString( "09 44 9F FC" );  // or dword ptr -4[edi + ebx * 4],eax
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_BXOR:
-						EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
+					EmitMovEAXStack( vm, 0 );  // mov eax, dword ptr [edi + ebx * 4]
 					EmitString( "31 44 9F FC" );  // xor dword ptr -4[edi + ebx * 4],eax
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_BCOM:
-						EmitString( "F7 14 9F" );  // not dword ptr [edi + ebx * 4]
+					EmitString( "F7 14 9F" );  // not dword ptr [edi + ebx * 4]
 					break;
 
 				case OP_LSH:
-						EmitMovECXStack( vm );
+					EmitMovECXStack( vm );
 					EmitString( "D3 64 9F FC" );  // shl dword ptr -4[edi + ebx * 4], cl
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_RSHI:
-						EmitMovECXStack( vm );
+					EmitMovECXStack( vm );
 					EmitString( "D3 7C 9F FC" );  // sar dword ptr -4[edi + ebx * 4], cl
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_RSHU:
-						EmitMovECXStack( vm );
+					EmitMovECXStack( vm );
 					EmitString( "D3 6C 9F FC" );  // shr dword ptr -4[edi + ebx * 4], cl
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_NEGF:
-						EmitString( "D9 04 9F" );  // fld dword ptr [edi + ebx * 4]
+					EmitString( "D9 04 9F" );  // fld dword ptr [edi + ebx * 4]
 					EmitString( "D9 E0" );  // fchs
 					EmitString( "D9 1C 9F" );  // fstp dword ptr [edi + ebx * 4]
 					break;
 
 				case OP_ADDF:
-						EmitString( "D9 44 9F FC" );  // fld dword ptr -4[edi + ebx * 4]
+					EmitString( "D9 44 9F FC" );  // fld dword ptr -4[edi + ebx * 4]
 					EmitString( "D8 04 9F" );  // fadd dword ptr [edi + ebx * 4]
 					EmitString( "D9 5C 9F FC" );  // fstp dword ptr -4[edi + ebx * 4]
 					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					break;
 
 				case OP_SUBF:
-						EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
+					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					EmitString( "D9 04 9F" );  // fld dword ptr [edi + ebx * 4]
 					EmitString( "D8 64 9F 04" );  // fsub dword ptr 4[edi + ebx * 4]
 					EmitString( "D9 1C 9F" );  // fstp dword ptr [edi + ebx * 4]
 					break;
 
 				case OP_DIVF:
-						EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
+					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					EmitString( "D9 04 9F" );  // fld dword ptr [edi + ebx * 4]
 					EmitString( "D8 74 9F 04" );  // fdiv dword ptr 4[edi + ebx * 4]
 					EmitString( "D9 1C 9F" );  // fstp dword ptr [edi + ebx * 4]
 					break;
 
 				case OP_MULF:
-						EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
+					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					EmitString( "D9 04 9F" );  // fld dword ptr [edi + ebx * 4]
 					EmitString( "D8 4C 9F 04" );  // fmul dword ptr 4[edi + ebx * 4]
 					EmitString( "D9 1C 9F" );  // fstp dword ptr [edi + ebx * 4]
 					break;
 
 				case OP_CVIF:
-						EmitString( "DB 04 9F" );  // fild dword ptr [edi + ebx * 4]
+					EmitString( "DB 04 9F" );  // fild dword ptr [edi + ebx * 4]
 					EmitString( "D9 1C 9F" );  // fstp dword ptr [edi + ebx * 4]
 					break;
 
@@ -1808,17 +1811,17 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_SEX8:
-						EmitString( "0F BE 04 9F" );  // movsx eax, byte ptr [edi + ebx * 4]
+					EmitString( "0F BE 04 9F" );  // movsx eax, byte ptr [edi + ebx * 4]
 					EmitCommand( LAST_COMMAND_MOV_STACK_EAX );  // mov dword ptr [edi + ebx * 4], eax
 					break;
 
 				case OP_SEX16:
-						EmitString( "0F BF 04 9F" );  // movsx eax, word ptr [edi + ebx * 4]
+					EmitString( "0F BF 04 9F" );  // movsx eax, word ptr [edi + ebx * 4]
 					EmitCommand( LAST_COMMAND_MOV_STACK_EAX );  // mov dword ptr [edi + ebx * 4], eax
 					break;
 
 				case OP_BLOCK_COPY:
-						EmitString( "B8" );  // mov eax, 0x12345678
+					EmitString( "B8" );  // mov eax, 0x12345678
 					Emit4( VM_BLOCK_COPY );
 					EmitString( "B9" );  // mov ecx, 0x12345678
 					Emit4( Constant4() );
@@ -1829,17 +1832,17 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_JUMP:
-						EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
+					EmitCommand( LAST_COMMAND_SUB_BL_1 );  // sub bl, 1
 					EmitString( "8B 44 9F 04" );  // mov eax, dword ptr 4[edi + ebx * 4]
 					EmitString( "81 F8" );  // cmp eax, vm->instructionCount
 					Emit4( vm->instructionCount );
 #if idx64_32
 					EmitString( "73 08" );  // jae +8
 					EmitString( "67 45 8B 14 80" ); // mov (%r8d,%eax,4),%r10d
-					EmitString( REX(41) "FF E2" ); // jmpq *%r10
+					EmitString( REX( 41 ) "FF E2" ); // jmpq *%r10
 #elif idx64
 					EmitString( "73 04" );  // jae +4
-					EmitString( REX(49) "FF 24 C0" );  // jmp qword ptr [r8 + eax * 8]
+					EmitString( REX( 49 ) "FF 24 C0" ); // jmp qword ptr [r8 + eax * 8]
 #else
 					EmitString( "73 07" );  // jae +7
 					EmitString( "FF 24 85" );  // jmp dword ptr [instructionPointers + eax * 4]
@@ -1849,7 +1852,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				default:
-						VMFREE_BUFFERS();
+					VMFREE_BUFFERS();
 					Com_Error( ERR_DROP, "VM_CompileX86: bad opcode %i at offset %i", op, pc );
 			}
 
@@ -1861,7 +1864,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 	// copy to an exact sized buffer with the appropriate permission bits
 	vm->codeLength = compiledOfs;
 #ifdef VM_X86_MMAP
-	vm->codeBase = (byte*) mmap( NULL, compiledOfs, PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0 );
+	vm->codeBase = ( byte* ) mmap( NULL, compiledOfs, PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0 );
 
 	if ( vm->codeBase == MAP_FAILED )
 	{
@@ -1982,7 +1985,7 @@ int VM_CallCompiled( vm_t *vm, int *args )
 
 	// off we go into generated code...
 	entryPoint = vm->codeBase + vm->entryOfs;
-	opStack = (int*) PADP( stack, 16 );
+	opStack = ( int* ) PADP( stack, 16 );
 	*opStack = 0xDEADBEEF;
 	opStackOfs = 0;
 
@@ -2010,36 +2013,36 @@ int VM_CallCompiled( vm_t *vm, int *args )
 #elif idx64 || idx64_32
 	__asm__ volatile(
 #if idx64_32
-	  //"xor %%rax,%%rax\n" // needed? not sure about this code!
-	  "movl %3, %%eax\n"
-	  "movq %%rax, %%r8\n"
-	  "movl %4, %%eax\n"
-	  "movq %%rax, %%r9\n"
-	  "movl %5, %%eax\n"
+	    //"xor %%rax,%%rax\n" // needed? not sure about this code!
+	    "movl %3, %%eax\n"
+	    "movq %%rax, %%r8\n"
+	    "movl %4, %%eax\n"
+	    "movq %%rax, %%r9\n"
+	    "movl %5, %%eax\n"
 #else
-	  "movq %5, %%rax\n"
-	  "movq %3, %%r8\n"
-	  "movq %4, %%r9\n"
+	    "movq %5, %%rax\n"
+	    "movq %3, %%r8\n"
+	    "movq %4, %%r9\n"
 #endif
-	  "push %%r15\n"
-	  "push %%r14\n"
-	  "push %%r13\n"
-	  "push %%r12\n"
-	  "callq *%%rax\n"
-	  "pop %%r12\n"
-	  "pop %%r13\n"
-	  "pop %%r14\n"
-	  "pop %%r15\n"
-	  : "+S"( programStack ), "+D"( opStack ), "+b"( opStackOfs )
-	  : "g"( vm->instructionPointers ), "g"( vm->dataBase ), "g"( entryPoint )
-	  : "cc", "memory", "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11"
+	    "push %%r15\n"
+	    "push %%r14\n"
+	    "push %%r13\n"
+	    "push %%r12\n"
+	    "callq *%%rax\n"
+	    "pop %%r12\n"
+	    "pop %%r13\n"
+	    "pop %%r14\n"
+	    "pop %%r15\n"
+	    : "+S"( programStack ), "+D"( opStack ), "+b"( opStackOfs )
+	    : "g"( vm->instructionPointers ), "g"( vm->dataBase ), "g"( entryPoint )
+	    : "cc", "memory", "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11"
 	);
 #else
 	__asm__ volatile(
-	  "calll *%3\n"
-	  : "+S"( programStack ), "+D"( opStack ), "+b"( opStackOfs )
-	  : "g"( entryPoint )
-	  : "cc", "memory", "%eax", "%ecx", "%edx"
+	    "calll *%3\n"
+	    : "+S"( programStack ), "+D"( opStack ), "+b"( opStackOfs )
+	    : "g"( entryPoint )
+	    : "cc", "memory", "%eax", "%ecx", "%edx"
 	);
 #endif
 

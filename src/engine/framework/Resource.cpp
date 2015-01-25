@@ -30,32 +30,42 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Resource.h"
 
-namespace Resource {
+namespace Resource
+{
 
-    Resource::Resource(std::string name) : name(std::move(name)),
-    loaded(false), failed(false), keep(true) {
-    }
+Resource::Resource( std::string name ) : name( std::move( name ) ),
+	loaded( false ), failed( false ), keep( true )
+{
+}
 
-    Resource::~Resource() {
-    }
+Resource::~Resource()
+{
+}
 
-    bool Resource::TagDependencies() {
-        return true;
-    }
+bool Resource::TagDependencies()
+{
+	return true;
+}
 
-    bool Resource::IsStillValid() {
-        return true;
-    }
+bool Resource::IsStillValid()
+{
+	return true;
+}
 
-    const std::string& Resource::GetName() const {
-        return name;
-    }
+const std::string& Resource::GetName() const
+{
+	return name;
+}
 
-    bool Resource::TryLoad() {
-        loaded = Load();
-        if (not loaded) {
-            failed = true;
-        }
-        return loaded;
-    }
+bool Resource::TryLoad()
+{
+	loaded = Load();
+
+	if ( not loaded )
+	{
+		failed = true;
+	}
+
+	return loaded;
+}
 }

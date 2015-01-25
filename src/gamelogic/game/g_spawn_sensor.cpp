@@ -49,7 +49,7 @@ void InitBrushSensor( gentity_t *self )
 	trap_LinkEntity( self );
 }
 
-void sensor_act(gentity_t *self, gentity_t *other, gentity_t *activator)
+void sensor_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	// if we wanted to tell the cgame about our deactivation, this would be the way to do it
 	// self->s.eFlags ^= EF_NODRAW;
@@ -60,7 +60,7 @@ void sensor_act(gentity_t *self, gentity_t *other, gentity_t *activator)
 void sensor_reset( gentity_t *self )
 {
 	// SPAWN_DISABLED?
-	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
+	self->enabled = !( self->spawnflags & SPF_SPAWN_DISABLED );
 
 	// NEGATE?
 	self->conditions.negated = !!( self->spawnflags & 2 );
@@ -111,11 +111,15 @@ void trigger_multiple_act( gentity_t *self, gentity_t *caller, gentity_t *activa
 	self->activator = activator;
 
 	if ( self->nextthink )
-		return; // can't retrigger until the wait is over
+	{
+		return;    // can't retrigger until the wait is over
+	}
 
 	if ( activator && activator->client && self->conditions.team &&
-	   ( activator->client->pers.team != self->conditions.team ) )
+	        ( activator->client->pers.team != self->conditions.team ) )
+	{
 		return;
+	}
 
 	G_FireEntity( self, self->activator );
 	trigger_checkWaitForReactivation( self );
@@ -128,17 +132,21 @@ void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 void trigger_multiple_compat_reset( gentity_t *self )
 {
-	if (!!( self->spawnflags & 1 ) != !!( self->spawnflags & 2 )) //if both are set or none are set we assume TEAM_ALL
+	if ( !!( self->spawnflags & 1 ) != !!( self->spawnflags & 2 ) ) //if both are set or none are set we assume TEAM_ALL
 	{
 		if ( self->spawnflags & 1 )
+		{
 			self->conditions.team = TEAM_HUMANS;
+		}
 		else if ( self->spawnflags & 2 )
+		{
 			self->conditions.team = TEAM_ALIENS;
+		}
 	}
 
 	if ( self->spawnflags && g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
-		G_Printf( S_ERROR "It appears as if %s has set spawnflags that were not defined behavior of the entities.def; this is likely to break in the future\n", etos( self ));
+		G_Printf( S_ERROR "It appears as if %s has set spawnflags that were not defined behavior of the entities.def; this is likely to break in the future\n", etos( self ) );
 	}
 }
 
@@ -153,7 +161,7 @@ sensor_start
 
 void sensor_start_fireAndForget( gentity_t *self )
 {
-	G_FireEntity(self, self);
+	G_FireEntity( self, self );
 	G_FreeEntity( self );
 }
 
@@ -166,12 +174,14 @@ void G_notify_sensor_start()
 {
 	gentity_t *sensor = NULL;
 
-	if( g_debugEntities.integer >= 2 )
-		G_Printf( S_DEBUG "Notification of match start.\n");
-
-	while ((sensor = G_IterateEntitiesOfClass(sensor, S_SENSOR_START)) != NULL )
+	if ( g_debugEntities.integer >= 2 )
 	{
-		sensor_start_fireAndForget(sensor);
+		G_Printf( S_DEBUG "Notification of match start.\n" );
+	}
+
+	while ( ( sensor = G_IterateEntitiesOfClass( sensor, S_SENSOR_START ) ) != NULL )
+	{
+		sensor_start_fireAndForget( sensor );
 	}
 }
 
@@ -207,7 +217,7 @@ void sensor_timer_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_sensor_timer( gentity_t *self )
 {
-	SP_WaitFields(self, 1.0f, (self->classname[0] == 'f') ? 1.0f : 0.0f); //wait variance default only for func_timer
+	SP_WaitFields( self, 1.0f, ( self->classname[0] == 'f' ) ? 1.0f : 0.0f ); //wait variance default only for func_timer
 
 	self->act = sensor_timer_act;
 	self->think = sensor_timer_think;
@@ -240,29 +250,37 @@ void G_notify_sensor_stage( team_t team, int previousStage, int newStage )
 {
 	gentity_t *entities = NULL;
 
-	if( g_debugEntities.integer >= 2 )
-		G_Printf( S_DEBUG "Notification of team %i changing stage from %i to %i (0-2).\n", team, previousStage, newStage );
-
-	if(newStage <= previousStage) //not supporting stage down yet, also no need to fire if stage didn't change at all
-		return;
-
-	while ((entities = G_IterateEntitiesOfClass(entities, S_SENSOR_STAGE)) != NULL )
+	if ( g_debugEntities.integer >= 2 )
 	{
-		if (((!entities->conditions.stage || newStage == entities->conditions.stage)
-				&& (!entities->conditions.team || team == entities->conditions.team))
-				== !entities->conditions.negated)
+		G_Printf( S_DEBUG "Notification of team %i changing stage from %i to %i (0-2).\n", team, previousStage, newStage );
+	}
+
+	if ( newStage <= previousStage ) //not supporting stage down yet, also no need to fire if stage didn't change at all
+	{
+		return;
+	}
+
+	while ( ( entities = G_IterateEntitiesOfClass( entities, S_SENSOR_STAGE ) ) != NULL )
+	{
+		if ( ( ( !entities->conditions.stage || newStage == entities->conditions.stage )
+		        && ( !entities->conditions.team || team == entities->conditions.team ) )
+		        == !entities->conditions.negated )
 		{
-			G_FireEntity(entities, entities);
+			G_FireEntity( entities, entities );
 		}
 	}
 }
 
 void SP_sensor_stage( gentity_t *self )
 {
-	if(self->classname[0] == 't')
+	if ( self->classname[0] == 't' )
+	{
 		self->act = trigger_compat_propagation_act;
+	}
 	else
+	{
 		self->act = sensor_act;
+	}
 
 	self->reset = sensor_reset;
 
@@ -281,23 +299,31 @@ void G_notify_sensor_end( team_t winningTeam )
 {
 	gentity_t *entity = NULL;
 
-	if( g_debugEntities.integer >= 2 )
-		G_Printf( S_DEBUG "Notification of game end. Winning team %i.\n", winningTeam );
-
-	while ((entity = G_IterateEntitiesOfClass(entity, S_SENSOR_END)) != NULL )
+	if ( g_debugEntities.integer >= 2 )
 	{
-		if ((winningTeam == entity->conditions.team) == !entity->conditions.negated)
-			G_FireEntity(entity, entity);
+		G_Printf( S_DEBUG "Notification of game end. Winning team %i.\n", winningTeam );
+	}
+
+	while ( ( entity = G_IterateEntitiesOfClass( entity, S_SENSOR_END ) ) != NULL )
+	{
+		if ( ( winningTeam == entity->conditions.team ) == !entity->conditions.negated )
+		{
+			G_FireEntity( entity, entity );
+		}
 	}
 }
 
 
 void SP_sensor_end( gentity_t *self )
 {
-	if(self->classname[0] == 't')
+	if ( self->classname[0] == 't' )
+	{
 		self->act = trigger_compat_propagation_act;
+	}
 	else
+	{
 		self->act = sensor_act;
+	}
 
 	self->reset = sensor_reset;
 
@@ -344,7 +370,7 @@ qboolean sensor_buildable_match( gentity_t *self, gentity_t *activator )
 void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
 {
 	//sanity check
-	if ( !activator || !(activator->s.eType == ET_BUILDABLE) )
+	if ( !activator || !( activator->s.eType == ET_BUILDABLE ) )
 	{
 		return;
 	}
@@ -356,7 +382,7 @@ void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t *tra
 		return; // can't retrigger until the wait is over
 	}
 
-	if( sensor_buildable_match( self, activator ) == !self->conditions.negated )
+	if ( sensor_buildable_match( self, activator ) == !self->conditions.negated )
 	{
 		G_FireEntity( self, activator );
 		trigger_checkWaitForReactivation( self );
@@ -365,7 +391,7 @@ void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t *tra
 
 void SP_sensor_buildable( gentity_t *self )
 {
-	SP_WaitFields(self, 0.5f, 0);
+	SP_WaitFields( self, 0.5f, 0 );
 	SP_ConditionFields( self );
 
 	self->touch = sensor_buildable_touch;
@@ -477,7 +503,9 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 	}
 
 	if ( self->conditions.team && ( activator->client->pers.team != self->conditions.team ) )
+	{
 		return;
+	}
 
 	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && activator->client->pers.team == TEAM_HUMANS )
 	{
@@ -492,7 +520,7 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 		shouldFire = qfalse;
 	}
 
-	if( shouldFire == !self->conditions.negated )
+	if ( shouldFire == !self->conditions.negated )
 	{
 		G_FireEntity( self, activator );
 		trigger_checkWaitForReactivation( self );
@@ -501,15 +529,17 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 
 void SP_sensor_player( gentity_t *self )
 {
-	SP_WaitFields(self, 0.5f, 0);
+	SP_WaitFields( self, 0.5f, 0 );
 	SP_ConditionFields( self );
 
-	if(!Q_stricmp(self->classname, "trigger_multiple"))
+	if ( !Q_stricmp( self->classname, "trigger_multiple" ) )
 	{
 		self->touch = trigger_multiple_touch;
 		self->act = trigger_multiple_act;
 		self->reset = trigger_multiple_compat_reset;
-	} else {
+	}
+	else
+	{
 		self->touch = sensor_player_touch;
 		self->act = sensor_act;
 		self->reset = sensor_reset;
@@ -528,38 +558,44 @@ sensor_support
 
 void sensor_support_think( gentity_t *self )
 {
-	if(!self->enabled)
+	if ( !self->enabled )
 	{
 		self->nextthink = level.time + SENSOR_POLL_PERIOD * 5;
 		return;
 	}
 
 	//TODO check the difference between G_FindCreep and G_FindPower
-	switch (self->conditions.team) {
+	switch ( self->conditions.team )
+	{
 		case TEAM_HUMANS:
 			self->powered = qfalse;
 			break;
+
 		case TEAM_ALIENS:
 			self->powered = G_FindCreep( self );
 			break;
+
 		case TEAM_ALL:
 			self->powered = G_FindCreep( self );
 			break;
+
 		default:
-			G_Printf(S_ERROR "missing team field for %s\n", etos( self ));
+			G_Printf( S_ERROR "missing team field for %s\n", etos( self ) );
 			G_FreeEntity( self );
 			break;
 	}
 
-	if(self->powered)
+	if ( self->powered )
+	{
 		G_FireEntity( self, self->powerSource );
+	}
 
 	self->nextthink = level.time + SENSOR_POLL_PERIOD;
 }
 
 void sensor_support_reset( gentity_t *self )
 {
-	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
+	self->enabled = !( self->spawnflags & SPF_SPAWN_DISABLED );
 	//if(self->enabled)
 	self->nextthink = level.time + SENSOR_POLL_PERIOD;
 }
@@ -581,7 +617,7 @@ sensor_power
 
 void sensor_power_think( gentity_t *self )
 {
-	if(!self->enabled)
+	if ( !self->enabled )
 	{
 		self->nextthink = level.time + SENSOR_POLL_PERIOD * 5;
 		return;
@@ -589,8 +625,10 @@ void sensor_power_think( gentity_t *self )
 
 	self->powered = qfalse; //TODO: Reuse or remove this sensor
 
-	if(self->powered)
+	if ( self->powered )
+	{
 		G_FireEntity( self, self->powerSource );
+	}
 
 	self->nextthink = level.time + SENSOR_POLL_PERIOD;
 }
@@ -612,7 +650,7 @@ sensor_creep
 
 void sensor_creep_think( gentity_t *self )
 {
-	if(!self->enabled)
+	if ( !self->enabled )
 	{
 		self->nextthink = level.time + SENSOR_POLL_PERIOD * 5;
 		return;
@@ -620,8 +658,10 @@ void sensor_creep_think( gentity_t *self )
 
 	self->powered = G_FindCreep( self );
 
-	if(self->powered)
+	if ( self->powered )
+	{
 		G_FireEntity( self, self->powerSource );
+	}
 
 	self->nextthink = level.time + SENSOR_POLL_PERIOD;
 }

@@ -31,93 +31,96 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AUDIO_SAMPLE_H_
 #define AUDIO_SAMPLE_H_
 
-namespace Audio {
+namespace Audio
+{
 
-    //TODO remove once we have VM handles
-    template<typename T>
-    class HandledResource {
-        public:
-            struct handleRecord_t {
-                bool active;
-                std::shared_ptr<T> value;
-            };
-
-            static bool IsValidHandle(int handle) {
-                return handle >= 0 and (unsigned)handle < handles.size() and handles[handle].active;
-            }
-            static std::shared_ptr<T> FromHandle(int handle) {
-                if (not IsValidHandle(handle)) {
-                    return nullptr;
-                }
-
-                return handles[handle].value;
-            }
-
-            int GetHandle() {
-                return handle;
-            }
-
-            void InitHandle(std::shared_ptr<T> self) {
-                if (handle != -1) {
-                    return;
-                }
-
-                if (not inactiveHandles.empty()) {
-                    handle = inactiveHandles.back();
-                    inactiveHandles.pop_back();
-                    handles[handle] = {true, self};
-                } else {
-                    handle = handles.size();
-                    handles.push_back({true, self});
-                }
-            }
-
-        protected:
-            HandledResource(): handle(-1) {
-            }
-
-            ~HandledResource() {
-                if (IsValidHandle(handle)) {
-                    handles[handle] = {false, nullptr};
-                    inactiveHandles.push_back(handle);
-                }
-            }
-
-        private:
-            int handle;
-
-            static std::vector<handleRecord_t> handles;
-            static std::vector<int> inactiveHandles;
+//TODO remove once we have VM handles
+template<typename T>
+class HandledResource
+{
+public:
+    struct handleRecord_t {
+        bool active;
+        std::shared_ptr<T> value;
     };
 
-    template<typename T>
-    std::vector<typename HandledResource<T>::handleRecord_t> HandledResource<T>::handles;
+    static bool IsValidHandle ( int handle ) {
+        return handle >= 0 and ( unsigned ) handle < handles.size() and handles[handle].active;
+    }
+    static std::shared_ptr<T> FromHandle ( int handle ) {
+        if ( not IsValidHandle ( handle ) ) {
+            return nullptr;
+        }
 
-    template<typename T>
-    std::vector<int> HandledResource<T>::inactiveHandles;
+        return handles[handle].value;
+    }
 
-    class Sample: public HandledResource<Sample>, public Resource::Resource {
-        public:
-            explicit Sample(std::string name);
-            virtual ~Sample() OVERRIDE FINAL;
+    int GetHandle() {
+        return handle;
+    }
 
-            virtual bool Load() OVERRIDE FINAL;
-            virtual void Cleanup() OVERRIDE FINAL;
+    void InitHandle ( std::shared_ptr<T> self ) {
+        if ( handle != -1 ) {
+            return;
+        }
 
-            AL::Buffer& GetBuffer();
+        if ( not inactiveHandles.empty() ) {
+            handle = inactiveHandles.back();
+            inactiveHandles.pop_back();
+            handles[handle] = {true, self};
+        } else {
+            handle = handles.size();
+            handles.push_back ( {true, self} );
+        }
+    }
 
-        private:
-            AL::Buffer buffer;
-    };
+protected:
+    HandledResource() : handle ( -1 ) {
+    }
 
-    void InitSamples();
-    void ShutdownSamples();
+    ~HandledResource() {
+        if ( IsValidHandle ( handle ) ) {
+            handles[handle] = {false, nullptr};
+            inactiveHandles.push_back ( handle );
+        }
+    }
 
-	std::vector<std::string> ListSamples();
+private:
+    int handle;
 
-    void BeginSampleRegistration();
-    std::shared_ptr<Sample> RegisterSample(Str::StringRef filename);
-    void EndSampleRegistration();
+    static std::vector<handleRecord_t> handles;
+    static std::vector<int> inactiveHandles;
+};
+
+template<typename T>
+std::vector<typename HandledResource<T>::handleRecord_t> HandledResource<T>::handles;
+
+template<typename T>
+std::vector<int> HandledResource<T>::inactiveHandles;
+
+class Sample: public HandledResource<Sample>, public Resource::Resource
+{
+public:
+    explicit Sample ( std::string name );
+    virtual ~Sample() OVERRIDE FINAL;
+
+    virtual bool Load() OVERRIDE FINAL;
+    virtual void Cleanup() OVERRIDE FINAL;
+
+    AL::Buffer& GetBuffer();
+
+private:
+    AL::Buffer buffer;
+};
+
+void InitSamples();
+void ShutdownSamples();
+
+std::vector<std::string> ListSamples();
+
+void BeginSampleRegistration();
+std::shared_ptr<Sample> RegisterSample ( Str::StringRef filename );
+void EndSampleRegistration();
 }
 
 #endif //AUDIO_SAMPLE_H_

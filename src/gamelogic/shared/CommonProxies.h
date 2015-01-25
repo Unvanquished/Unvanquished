@@ -31,17 +31,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef SHARED_COMMON_PROXIES_H_
 #define SHARED_COMMON_PROXIES_H_
 
-namespace Cmd {
+namespace Cmd
+{
 
-    void PushArgs(Str::StringRef args);
-    void PopArgs();
+void PushArgs ( Str::StringRef args );
+void PopArgs();
 
 }
 
-namespace VM {
+namespace VM
+{
 
-    void InitializeProxies();
-    void HandleCommonSyscall(int major, int minor, IPC::Reader reader, IPC::Channel& channel);
+void InitializeProxies();
+void HandleCommonSyscall ( int major, int minor, IPC::Reader reader, IPC::Channel& channel );
 
 }
 

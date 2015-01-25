@@ -103,7 +103,8 @@ static fontInfo_t registeredFont[ MAX_FONTS ];
 static unsigned int fontUsage[ MAX_FONTS ];
 static unsigned int fontUsageVM[ MAX_FONTS ];
 
-static struct {
+static struct
+{
 	void *data;
 	int   length;
 	int   count;
@@ -117,12 +118,12 @@ void R_GetGlyphInfo( FT_GlyphSlot glyph, int *left, int *right, int *width, int 
 {
 	// ±1 adjustments for border-related reasons - really want clamp to transparent border (FIXME)
 
-	*left = _FLOOR( glyph->metrics.horiBearingX - 1);
-	*right = _CEIL( glyph->metrics.horiBearingX + glyph->metrics.width + 1);
+	*left = _FLOOR( glyph->metrics.horiBearingX - 1 );
+	*right = _CEIL( glyph->metrics.horiBearingX + glyph->metrics.width + 1 );
 	*width = _TRUNC( *right - *left );
 
-	*top = _CEIL( glyph->metrics.horiBearingY + 1);
-	*bottom = _FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height - 1);
+	*top = _CEIL( glyph->metrics.horiBearingY + 1 );
+	*bottom = _FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height - 1 );
 	*height = _TRUNC( *top - *bottom );
 	*pitch = ( *width + 3 ) & - 4;
 }
@@ -138,13 +139,13 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 	{
 		size = pitch * height;
 
-		bit2 = (FT_Bitmap*) ri.Z_Malloc( sizeof( FT_Bitmap ) );
+		bit2 = ( FT_Bitmap* ) ri.Z_Malloc( sizeof( FT_Bitmap ) );
 
 		bit2->width = width;
 		bit2->rows = height;
 		bit2->pitch = pitch;
 		bit2->pixel_mode = ft_pixel_mode_grays;
-		bit2->buffer = (unsigned char*) ri.Z_Malloc( pitch * height );
+		bit2->buffer = ( unsigned char* ) ri.Z_Malloc( pitch * height );
 		bit2->num_grays = 256;
 
 		Com_Memset( bit2->buffer, 0, size );
@@ -169,7 +170,7 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 }
 
 static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, int *yOut,
-    int *maxHeight, FT_Face face, FT_Face fallback, const int c, qboolean calcHeight )
+        int *maxHeight, FT_Face face, FT_Face fallback, const int c, qboolean calcHeight )
 {
 	int                i;
 	static glyphInfo_t glyph;
@@ -314,7 +315,7 @@ static byte *fdFile;
 int readInt( void )
 {
 	int i =
-	  fdFile[ fdOffset ] + ( fdFile[ fdOffset + 1 ] << 8 ) + ( fdFile[ fdOffset + 2 ] << 16 ) + ( fdFile[ fdOffset + 3 ] << 24 );
+	    fdFile[ fdOffset ] + ( fdFile[ fdOffset + 1 ] << 8 ) + ( fdFile[ fdOffset + 2 ] << 16 ) + ( fdFile[ fdOffset + 3 ] << 24 );
 	fdOffset += 4;
 	return i;
 }
@@ -411,10 +412,18 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int 
 	y = FONT_SIZE;
 
 	// How much to reduce it?
-	while ( yEnd < y / 2 - 1 ) { i += i; y /= 2; }
+	while ( yEnd < y / 2 - 1 )
+	{
+		i += i;
+		y /= 2;
+	}
 
 	// Fix up the glyphs' Y co-ordinates
-	for ( j = from; j < to; j++ ) { glyphs[j].t *= i; glyphs[j].t2 *= i; }
+	for ( j = from; j < to; j++ )
+	{
+		glyphs[j].t *= i;
+		glyphs[j].t2 *= i;
+	}
 
 	scaledSize /= i;
 
@@ -434,6 +443,7 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int 
 	}
 
 	buffer = ( unsigned char * ) ri.Z_Malloc( scaledSize * 4 );
+
 	for ( i = j = 0; i < scaledSize; i++ )
 	{
 		buffer[ j++ ] = 255;
@@ -479,7 +489,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 		return;
 	}
 
-	out = (unsigned char*) ri.Z_Malloc( FONT_SIZE * FONT_SIZE );
+	out = ( unsigned char* ) ri.Z_Malloc( FONT_SIZE * FONT_SIZE );
 
 	if ( out == NULL )
 	{
@@ -495,7 +505,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	for ( i = 0; i < 256; i++ )
 	{
-		rendered |= !!RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qtrue );
+		rendered |= !!RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, ( FT_Face ) font->face, ( FT_Face ) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qtrue );
 	}
 
 	// no glyphs? just return
@@ -506,7 +516,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 		return;
 	}
 
-	glyphs = font->glyphBlock[ chunk ] = (glyphInfo_t*) ri.Z_Malloc( sizeof( glyphBlock_t ) );
+	glyphs = font->glyphBlock[ chunk ] = ( glyphInfo_t* ) ri.Z_Malloc( sizeof( glyphBlock_t ) );
 	memset( glyphs, 0, sizeof( glyphBlock_t ) );
 
 	xOut = yOut = 0;
@@ -515,7 +525,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	while ( i < 256 )
 	{
-		glyphInfo_t *glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qfalse );
+		glyphInfo_t *glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, ( FT_Face ) font->face, ( FT_Face ) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qfalse );
 
 		if ( glyph )
 		{
@@ -541,6 +551,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	{
 		RE_StoreImage( font, chunk, page, lastStart, 256, out, yOut + maxHeight + 1 );
 	}
+
 	ri.Free( out );
 }
 
@@ -616,6 +627,7 @@ static void RE_FreeFontFile( void *data )
 			{
 				free( fontData[ i ].data );
 			}
+
 			break;
 		}
 	}
@@ -697,9 +709,9 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 		ri.FS_ReadFile( fileName, &faceData );
 		fdOffset = 0;
-		fdFile = (byte*) faceData;
+		fdFile = ( byte* ) faceData;
 
-		glyphs = (*font)->glyphBlock[0] = (glyphInfo_t*) ri.Z_Malloc( sizeof( glyphBlock_t ) );
+		glyphs = ( *font )->glyphBlock[0] = ( glyphInfo_t* ) ri.Z_Malloc( sizeof( glyphBlock_t ) );
 		memset( glyphs, 0, sizeof( glyphBlock_t ) );
 
 		for ( i = 0; i < GLYPHS_PER_FONT; i++ )
@@ -722,14 +734,14 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 			glyphs[ i ].s2 = readFloat();
 			glyphs[ i ].t2 = readFloat();
 			glyphs[ i ].glyph = readInt();
-			Q_strncpyz( glyphs[ i ].shaderName, (const char *) &fdFile[ fdOffset ], sizeof( glyphs[ i ].shaderName ) );
+			Q_strncpyz( glyphs[ i ].shaderName, ( const char * ) &fdFile[ fdOffset ], sizeof( glyphs[ i ].shaderName ) );
 			fdOffset += sizeof( glyphs[ i ].shaderName );
 		}
 
-		(*font)->pointSize = pointSize;
-		(*font)->height = height;
-		(*font)->glyphScale = readFloat();
-		Q_strncpyz( (*font)->name, registeredName, sizeof( (*font)->name ) );
+		( *font )->pointSize = pointSize;
+		( *font )->height = height;
+		( *font )->glyphScale = readFloat();
+		Q_strncpyz( ( *font )->name, registeredName, sizeof( ( *font )->name ) );
 
 		ri.FS_FreeFile( faceData );
 
@@ -749,7 +761,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 	}
 
 	// FIXME: fallback name OR index no.
-	Q_strncpyz( (*font)->name, strippedName, sizeof( (*font)->name ) );
+	Q_strncpyz( ( *font )->name, strippedName, sizeof( ( *font )->name ) );
 
 	Q_strncpyz( fileName, fontName, sizeof( fileName ) );
 
@@ -763,7 +775,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 	}
 
 	// allocate on the stack first in case we fail
-	if ( FT_New_Memory_Face( ftLibrary, (FT_Byte*) faceData, len, 0, &face ) )
+	if ( FT_New_Memory_Face( ftLibrary, ( FT_Byte* ) faceData, len, 0, &face ) )
 	{
 		ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType2, unable to allocate new face.\n" );
 		RE_FreeFontFile( faceData );
@@ -797,7 +809,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		}
 
 		// allocate on the stack first in case we fail
-		if ( FT_New_Memory_Face( ftLibrary, (FT_Byte*) fallbackData, len, 0, &fallback ) )
+		if ( FT_New_Memory_Face( ftLibrary, ( FT_Byte* ) fallbackData, len, 0, &fallback ) )
 		{
 			ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType2, unable to allocate new face.\n" );
 			RE_FreeFontFile( fallbackData );
@@ -817,13 +829,13 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		}
 	}
 
-	(*font)->face = face;
-	(*font)->faceData = faceData;
-	(*font)->fallback = fallback;
-	(*font)->fallbackData = fallbackData;
-	(*font)->pointSize = pointSize;
-	(*font)->glyphScale = Com_Clamp( 24.0f, 64.0f, r_fontScale->value ) / pointSize;
-	(*font)->height = ceil( ( face->height / 64.0 ) * ( face->size->metrics.y_scale / 65536.0 ) * (*font)->glyphScale );
+	( *font )->face = face;
+	( *font )->faceData = faceData;
+	( *font )->fallback = fallback;
+	( *font )->fallbackData = fallbackData;
+	( *font )->pointSize = pointSize;
+	( *font )->glyphScale = Com_Clamp( 24.0f, 64.0f, r_fontScale->value ) / pointSize;
+	( *font )->height = ceil( ( face->height / 64.0 ) * ( face->size->metrics.y_scale / 65536.0 ) * ( *font )->glyphScale );
 
 	RE_RenderChunk( *font, 0 );
 
@@ -881,13 +893,13 @@ void RE_UnregisterFont_Internal( fontHandle_t handle )
 
 	if ( registeredFont[ handle ].face )
 	{
-		FT_Done_Face( (FT_Face) registeredFont[ handle ].face );
+		FT_Done_Face( ( FT_Face ) registeredFont[ handle ].face );
 		RE_FreeFontFile( registeredFont[ handle ].faceData );
 	}
 
 	if ( registeredFont[ handle ].fallback )
 	{
-		FT_Done_Face( (FT_Face) registeredFont[ handle ].fallback );
+		FT_Done_Face( ( FT_Face ) registeredFont[ handle ].fallback );
 		RE_FreeFontFile( registeredFont[ handle ].fallbackData );
 	}
 

@@ -156,7 +156,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	int             playerNum;
 
 	// Suicide? No assistance needed with that
-	if ( killer == self)
+	if ( killer == self )
 	{
 		return NULL;
 	}
@@ -164,6 +164,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	// Require that the assist was for, at least, 25% of the damage or
 	// as much damage as the killer did, whichever is lower
 	damage = self->client->ps.stats[ STAT_MAX_HEALTH ] / 4.0f;
+
 	if ( killer )
 	{
 		damage = MIN( damage, self->credits[ killer - g_entities ].value );
@@ -179,7 +180,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 		}
 
 		if ( self->credits[ playerNum ].value > damage ||
-		     (self->credits[ playerNum ].value == damage && self->credits[ playerNum ].time > when ) )
+		        ( self->credits[ playerNum ].value == damage && self->credits[ playerNum ].time > when ) )
 		{
 			assistant = player;
 			damage = self->credits[ playerNum ].value;
@@ -205,13 +206,13 @@ void G_RewardAttackers( gentity_t *self )
 	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		ownTeam   = (team_t) self->client->pers.team;
+		ownTeam   = ( team_t ) self->client->pers.team;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
 		value     = BG_GetValueOfPlayer( &self->client->ps );
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
-		ownTeam   = (team_t) self->buildableTeam;
+		ownTeam   = ( team_t ) self->buildableTeam;
 		maxHealth = BG_Buildable( self->s.modelindex )->health;
 		value     = BG_IsMainStructure( &self->s )
 		            ? MAIN_STRUCTURE_MOMENTUM_VALUE
@@ -235,7 +236,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player     = &g_entities[ playerNum ];
-		playerTeam = (team_t) player->client->pers.team;
+		playerTeam = ( team_t ) player->client->pers.team;
 
 		// Player must be on the other team
 		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
@@ -255,7 +256,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player      = &g_entities[ playerNum ];
-		playerTeam  = (team_t) player->client->pers.team;
+		playerTeam  = ( team_t ) player->client->pers.team;
 		damageShare = self->credits[ playerNum ].value;
 
 		// Clear reward array
@@ -376,9 +377,9 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		             obit,
 		             assistant,
 		             assistantTeam,
-			     killerName,
-			     self->client->pers.netname,
-			     assistantName );
+		             killerName,
+		             self->client->pers.netname,
+		             assistantName );
 	}
 	else
 	{
@@ -423,7 +424,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		}
 		else if ( g_showKillerHP.integer )
 		{
-			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^7, had $2$ HP.\n") ),
+			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_( "Your killer, $1$^7, had $2$ HP.\n" ) ),
 			                        Quote( killerName ),
 			                        attacker->health ) );
 		}
@@ -474,6 +475,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	self->takedamage = qfalse; // can still be gibbed
 
 	self->s.weapon = WP_NONE;
+
 	if ( self->client->noclip )
 	{
 		self->client->cliprcontents = CONTENTS_CORPSE;
@@ -542,12 +544,12 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		}
 
 		self->client->ps.legsAnim =
-		  ( ( self->client->ps.legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
+		    ( ( self->client->ps.legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 
 		if ( !( self->client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			self->client->ps.torsoAnim =
-			  ( ( self->client->ps.torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
+			    ( ( self->client->ps.torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 		}
 
 		// use own entityid if killed by non-client to prevent uint8_t overflow
@@ -800,7 +802,7 @@ float G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float he
 
 		// angle must be within range
 		if ( ( region->minAngle <= region->maxAngle && ( angle < region->minAngle || angle > region->maxAngle ) ) ||
-		     ( region->minAngle >  region->maxAngle && ( angle > region->maxAngle && angle < region->minAngle ) ) )
+		        ( region->minAngle >  region->maxAngle && ( angle > region->maxAngle && angle < region->minAngle ) ) )
 		{
 			continue;
 		}
@@ -1101,7 +1103,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 	{
 		// special case for ET_MOVER with act function in initial position
 		if ( ( target->moverState == MOVER_POS1 || target->moverState == ROTATOR_POS1 ) &&
-		     target->act )
+		        target->act )
 		{
 			target->act( target, inflictor, attacker );
 		}
@@ -1180,8 +1182,8 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 
 		// for buildables, never protect from damage dealt by building actions
 		if ( target->s.eType == ET_BUILDABLE && attacker->client &&
-		     mod != MOD_DECONSTRUCT && mod != MOD_SUICIDE &&
-		     mod != MOD_REPLACE     && mod != MOD_NOCREEP )
+		        mod != MOD_DECONSTRUCT && mod != MOD_SUICIDE &&
+		        mod != MOD_REPLACE     && mod != MOD_NOCREEP )
 		{
 			// check for protection from friendly buildable damage
 			if ( G_OnSameTeam( target, attacker ) && !g_friendlyBuildableFire.integer )
@@ -1218,20 +1220,21 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 
 		// drain jetpack fuel
 		client->ps.stats[ STAT_FUEL ] -= damage * JETPACK_FUEL_PER_DMG;
+
 		if ( client->ps.stats[ STAT_FUEL ] < 0 )
 		{
 			client->ps.stats[ STAT_FUEL ] = 0;
 		}
 
 		// apply damage modifier
-		modifier = CalcDamageModifier( point, target, (class_t) client->ps.stats[ STAT_CLASS ], damageFlags );
+		modifier = CalcDamageModifier( point, target, ( class_t ) client->ps.stats[ STAT_CLASS ], damageFlags );
 		take = ( int )( ( float )damage * modifier + 0.5f );
 
 		// if boosted poison every attack
 		if ( attacker->client &&
-		     ( attacker->client->ps.stats[ STAT_STATE ] & SS_BOOSTED ) &&
-		     target->client->pers.team == TEAM_HUMANS &&
-		     target->client->poisonImmunityTime < level.time )
+		        ( attacker->client->ps.stats[ STAT_STATE ] & SS_BOOSTED ) &&
+		        target->client->pers.team == TEAM_HUMANS &&
+		        target->client->poisonImmunityTime < level.time )
 		{
 			switch ( mod )
 			{
@@ -1295,7 +1298,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 			// add to the attacker's account on the target
 			target->credits[ attacker->client->ps.clientNum ].value += ( float )loss;
 			target->credits[ attacker->client->ps.clientNum ].time = level.time;
-			target->credits[ attacker->client->ps.clientNum ].team = (team_t)attacker->client->pers.team;
+			target->credits[ attacker->client->ps.clientNum ].team = ( team_t )attacker->client->pers.team;
 
 			// notify the attacker of a hit
 			NotifyClientOfHit( attacker );
@@ -1336,7 +1339,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 		}
 
 		// for non-client victims, fire ON_DIE event
-		if( !target->client )
+		if ( !target->client )
 		{
 			G_EventFireEntity( target, attacker, ON_DIE );
 		}
@@ -1490,7 +1493,7 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 		points = damage * ( 1.0 - dist / radius );
 
 		if ( G_CanDamage( ent, origin ) && ent->client &&
-		     ent->client->pers.team != ignoreTeam )
+		        ent->client->pers.team != ignoreTeam )
 		{
 			hitClient = qtrue;
 
@@ -1619,7 +1622,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 			if ( actor->client )
 			{
 				if ( actor->client->pers.team ==
-				     BG_Buildable( self->s.modelindex )->team )
+				        BG_Buildable( self->s.modelindex )->team )
 				{
 					fate = BF_TEAMKILL;
 				}
@@ -1656,17 +1659,17 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	// No-power deaths for humans come after some minutes and it's confusing
 	//  when the messages appear attributed to the deconner. Just don't print them.
 	if ( mod == MOD_NOCREEP && actor->client &&
-	     actor->client->pers.team == TEAM_HUMANS )
+	        actor->client->pers.team == TEAM_HUMANS )
 	{
 		return;
 	}
 
 	if ( actor->client && actor->client->pers.team ==
-	     BG_Buildable( self->s.modelindex )->team )
+	        BG_Buildable( self->s.modelindex )->team )
 	{
-		G_TeamCommand( (team_t) actor->client->pers.team,
-		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^7 by $2$\n") ) :
-						   QQ( N_("$1$ ^3DESTROYED^7 by $2$\n") ),
+		G_TeamCommand( ( team_t ) actor->client->pers.team,
+		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_( "$1$ ^3DECONSTRUCTED^7 by $2$\n" ) ) :
+		                   QQ( N_( "$1$ ^3DESTROYED^7 by $2$\n" ) ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),
 		                   Quote( actor->client->pers.netname ) ) );
 	}

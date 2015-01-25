@@ -30,94 +30,119 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Common.h"
 
-namespace Log {
+namespace Log
+{
 
-    Logger::Logger(Str::StringRef name, Level defaultLevel)
-    :filterLevel("logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel) {
-    }
-
-    void Logger::DoWarnCode(std::function<void()> code) {
-        if (filterLevel.Get() <= LOG_WARNING) {
-            code();
-        }
-    };
-
-    void Logger::DoNoticeCode(std::function<void()> code) {
-        if (filterLevel.Get() <= LOG_NOTICE) {
-            code();
-        }
-    };
-
-    void Logger::DoDebugCode(std::function<void()> code) {
-        if (filterLevel.Get() <= LOG_DEBUG) {
-            code();
-        }
-    };
-
-    bool ParseCvarValue(std::string value, Log::Level& result) {
-        if (value == "error" or value == "err") {
-            result = Log::LOG_ERROR;
-            return true;
-        }
-
-        if (value == "warning" or value == "warn") {
-            result = Log::LOG_WARNING;
-            return true;
-        }
-
-        if (value == "info" or value == "notice") {
-            result = Log::LOG_NOTICE;
-            return true;
-        }
-
-        if (value == "debug" or value == "all") {
-            result = Log::LOG_DEBUG;
-            return true;
-        }
-
-        return false;
-    }
-
-    std::string SerializeCvarValue(Log::Level value) {
-        switch(value) {
-            case Log::LOG_ERROR:
-                return "error";
-            case Log::LOG_WARNING:
-                return "warning";
-            case Log::LOG_NOTICE:
-                return "notice";
-            case Log::LOG_DEBUG:
-                return "debug";
-            default:
-                return "";
-        }
-    }
-
-	//TODO add the time (broken for now because it is journaled) use Sys_Milliseconds instead (Utils::Milliseconds ?)
-    static const int errorTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << HUD) | (1 << LOGFILE);
-    void CodeSourceError(std::string message) {
-        Log::Dispatch({"^1Error: " + message}, errorTargets);
-    }
-
-    static const int warnTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
-    void CodeSourceWarn(std::string message) {
-        Log::Dispatch({"^3Warn: " + message}, warnTargets);
-    }
-
-    static const int noticeTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
-    void CodeSourceNotice(std::string message) {
-        Log::Dispatch({message}, noticeTargets);
-    }
-
-    static const int debugTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE);
-    void CodeSourceDebug(std::string message) {
-        Log::Dispatch({"^5Debug: " + message}, debugTargets);
-    }
+Logger::Logger( Str::StringRef name, Level defaultLevel )
+	: filterLevel( "logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel )
+{
 }
 
-namespace Cvar {
-    template<>
-    std::string GetCvarTypeName<Log::Level>() {
-        return "log level";
-    }
+void Logger::DoWarnCode( std::function<void()> code )
+{
+	if ( filterLevel.Get() <= LOG_WARNING )
+	{
+		code();
+	}
+};
+
+void Logger::DoNoticeCode( std::function<void()> code )
+{
+	if ( filterLevel.Get() <= LOG_NOTICE )
+	{
+		code();
+	}
+};
+
+void Logger::DoDebugCode( std::function<void()> code )
+{
+	if ( filterLevel.Get() <= LOG_DEBUG )
+	{
+		code();
+	}
+};
+
+bool ParseCvarValue( std::string value, Log::Level& result )
+{
+	if ( value == "error" or value == "err" )
+	{
+		result = Log::LOG_ERROR;
+		return true;
+	}
+
+	if ( value == "warning" or value == "warn" )
+	{
+		result = Log::LOG_WARNING;
+		return true;
+	}
+
+	if ( value == "info" or value == "notice" )
+	{
+		result = Log::LOG_NOTICE;
+		return true;
+	}
+
+	if ( value == "debug" or value == "all" )
+	{
+		result = Log::LOG_DEBUG;
+		return true;
+	}
+
+	return false;
+}
+
+std::string SerializeCvarValue( Log::Level value )
+{
+	switch ( value )
+	{
+		case Log::LOG_ERROR:
+			return "error";
+
+		case Log::LOG_WARNING:
+			return "warning";
+
+		case Log::LOG_NOTICE:
+			return "notice";
+
+		case Log::LOG_DEBUG:
+			return "debug";
+
+		default:
+			return "";
+	}
+}
+
+//TODO add the time (broken for now because it is journaled) use Sys_Milliseconds instead (Utils::Milliseconds ?)
+static const int errorTargets = ( 1 << GRAPHICAL_CONSOLE ) | ( 1 << TTY_CONSOLE ) | ( 1 << CRASHLOG ) | ( 1 << HUD ) | ( 1 << LOGFILE );
+void CodeSourceError( std::string message )
+{
+	Log::Dispatch( {"^1Error: " + message}, errorTargets );
+}
+
+static const int warnTargets = ( 1 << GRAPHICAL_CONSOLE ) | ( 1 << TTY_CONSOLE ) | ( 1 << CRASHLOG ) | ( 1 << LOGFILE );
+void CodeSourceWarn( std::string message )
+{
+	Log::Dispatch( {"^3Warn: " + message}, warnTargets );
+}
+
+static const int noticeTargets = ( 1 << GRAPHICAL_CONSOLE ) | ( 1 << TTY_CONSOLE ) | ( 1 << CRASHLOG ) | ( 1 << LOGFILE );
+void CodeSourceNotice( std::string message )
+{
+	Log::Dispatch( {message}, noticeTargets );
+}
+
+static const int debugTargets = ( 1 << GRAPHICAL_CONSOLE ) | ( 1 << TTY_CONSOLE );
+void CodeSourceDebug( std::string message )
+{
+	Log::Dispatch( {"^5Debug: " + message}, debugTargets );
+}
+}
+
+namespace Cvar
+{
+template<>
+std::string GetCvarTypeName<Log::Level>()
+{
+	return "log level";
+}
 }

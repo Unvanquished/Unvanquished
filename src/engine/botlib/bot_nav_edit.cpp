@@ -58,6 +58,7 @@ bool GetPointPointedTo( NavData_t *nav, rVec &p )
 	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP, 0, TT_AABB );
 
 	pos = qVec( trace.endpos );
+
 	if ( dtStatusFailed( nav->query->findNearestPoly( pos, extents, &nav->filter, &nearRef, p ) ) )
 	{
 		return false;
@@ -91,32 +92,38 @@ void BotDrawNavEdit( DebugDrawQuake *dd )
 		if ( cmd.offBegin )
 		{
 			duAppendArc( dd, cmd.pc.start[ 0 ], cmd.pc.start[ 1 ], cmd.pc.start[ 2 ], p[ 0 ], p[ 1 ], p[ 2 ], 0.25f,
-						0.6f, 0.6f, col );
+			             0.6f, 0.6f, col );
 			duAppendCircle( dd, cmd.pc.start[ 0 ], cmd.pc.start[ 1 ], cmd.pc.start[ 2 ], connectionSize, col );
 		}
+
 		dd->end();
 	}
 }
 
 void DrawPath( Bot_t *bot, DebugDrawQuake &dd )
 {
-	dd.depthMask(false);
-	const unsigned int spathCol = duRGBA(128,128,128,255);
-	dd.begin(DU_DRAW_LINES, 3.0f);
+	dd.depthMask( false );
+	const unsigned int spathCol = duRGBA( 128, 128, 128, 255 );
+	dd.begin( DU_DRAW_LINES, 3.0f );
 	dd.vertex( bot->corridor.getPos(), spathCol );
-	for (int i = 0; i < bot->numCorners; ++i)
-		dd.vertex(bot->cornerVerts[i*3], bot->cornerVerts[i*3+1]+5.0f, bot->cornerVerts[i*3+2], spathCol);
+
+	for ( int i = 0; i < bot->numCorners; ++i )
+	{
+		dd.vertex( bot->cornerVerts[i * 3], bot->cornerVerts[i * 3 + 1] + 5.0f, bot->cornerVerts[i * 3 + 2], spathCol );
+	}
+
 	if ( bot->numCorners < MAX_CORNERS - 1 )
 	{
 		if ( bot->numCorners % 2 != 0 )
 		{
-			dd.vertex( &bot->cornerVerts[ ( bot->numCorners - 1 ) * 3 ], spathCol );
+			dd.vertex( &bot->cornerVerts[( bot->numCorners - 1 ) * 3 ], spathCol );
 		}
 
 		dd.vertex( bot->corridor.getTarget(), spathCol );
 	}
+
 	dd.end();
-	dd.depthMask(true);
+	dd.depthMask( true );
 }
 
 void BotDebugDrawMesh( BotDebugInterface_t *in )
@@ -150,7 +157,7 @@ void BotDebugDrawMesh( BotDebugInterface_t *in )
 		duDebugDrawNavMeshPortals( &dd, *cmd.nav->mesh );
 	}
 
-	duDebugDrawNavMeshWithClosedList(&dd, *cmd.nav->mesh, *cmd.nav->query, DU_DRAWNAVMESH_OFFMESHCONS | DU_DRAWNAVMESH_CLOSEDLIST);
+	duDebugDrawNavMeshWithClosedList( &dd, *cmd.nav->mesh, *cmd.nav->query, DU_DRAWNAVMESH_OFFMESHCONS | DU_DRAWNAVMESH_CLOSEDLIST );
 	BotDrawNavEdit( &dd );
 
 	for ( int i = 0; i < MAX_CLIENTS; i++ )
@@ -187,6 +194,7 @@ void Cmd_NavEdit( void )
 	if ( !Q_stricmp( arg, "enable" ) )
 	{
 		int i;
+
 		if ( argc < 3 )
 		{
 			Com_Printf( "%s", usage );
@@ -194,6 +202,7 @@ void Cmd_NavEdit( void )
 		}
 
 		arg = Cmd_Argv( 2 );
+
 		for ( i = 0; i < numNavData; i++ )
 		{
 			if ( !Q_stricmp( BotNavData[ i ].name, arg ) )
@@ -293,6 +302,7 @@ void Cmd_AddConnection( void )
 			{
 				cmd.pc.radius = connectionSize;
 			}
+
 			cmd.offBegin = true;
 		}
 	}
@@ -418,6 +428,7 @@ void Cmd_NavTest( void )
 	else if ( !Q_stricmp( arg, "endpath" ) )
 	{
 		rVec end;
+
 		if ( GetPointPointedTo( cmd.nav, end ) && cmd.validPathStart )
 		{
 			dtPolyRef startRef;

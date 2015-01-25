@@ -42,59 +42,47 @@ Maryland 20850 USA.
 class RocketFocusManager : public Rocket::Core::EventListener
 {
 public:
-	RocketFocusManager( void ) { }
-	void ProcessEvent( Rocket::Core::Event &evt )
-	{
-		bool anyVisible = false;
-		Rocket::Core::Context* context = evt.GetTargetElement() ? evt.GetTargetElement()->GetContext() : nullptr;
+    RocketFocusManager ( void ) { }
+    void ProcessEvent ( Rocket::Core::Event &evt ) {
+        bool anyVisible = false;
+        Rocket::Core::Context* context = evt.GetTargetElement() ? evt.GetTargetElement()->GetContext() : nullptr;
 
-		if ( context )
-		{
-			for ( size_t i = 0; i < context->GetNumDocuments(); ++i )
-			{
-				if ( context->GetDocument( i )->IsVisible() )
-				{
-					anyVisible = true;
-					break;
-				}
-			}
-		}
+        if ( context ) {
+            for ( size_t i = 0; i < context->GetNumDocuments(); ++i ) {
+                if ( context->GetDocument ( i )->IsVisible() ) {
+                    anyVisible = true;
+                    break;
+                }
+            }
+        }
 
-		if ( anyVisible && ! ( cls.keyCatchers & KEYCATCH_UI ) )
-		{
-			Key_ClearStates();
-			CL_ClearCmdButtons();
-			Key_SetCatcher( KEYCATCH_UI );
-		}
-		else if ( !anyVisible && cls.keyCatchers && cls.state >= CA_PRIMED )
-		{
-			Key_SetCatcher( 0 );
-		}
-	}
+        if ( anyVisible && ! ( cls.keyCatchers & KEYCATCH_UI ) ) {
+            Key_ClearStates();
+            CL_ClearCmdButtons();
+            Key_SetCatcher ( KEYCATCH_UI );
+        } else if ( !anyVisible && cls.keyCatchers && cls.state >= CA_PRIMED ) {
+            Key_SetCatcher ( 0 );
+        }
+    }
 
 private:
-	// Checks if parents are visible as well
-	bool IsTreeVisible( Rocket::Core::Element *element )
-	{
-		if ( element && element->IsVisible() )
-		{
-			Rocket::Core::Element *parent = element;
+    // Checks if parents are visible as well
+    bool IsTreeVisible ( Rocket::Core::Element *element ) {
+        if ( element && element->IsVisible() ) {
+            Rocket::Core::Element *parent = element;
 
-			while ( ( parent = parent->GetParentNode() ) )
-			{
-				if ( !parent->IsVisible() )
-				{
-					return false;
-				}
-			}
+            while ( ( parent = parent->GetParentNode() ) ) {
+                if ( !parent->IsVisible() ) {
+                    return false;
+                }
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		else
-		{
-			return false;
-		}
-	}
+        else {
+            return false;
+        }
+    }
 };
 #endif

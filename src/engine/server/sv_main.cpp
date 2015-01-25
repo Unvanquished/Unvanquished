@@ -91,13 +91,13 @@ cvar_t *sv_fullmsg;
 cvar_t *vm_game;
 
 Cvar::Cvar<bool> isLanOnly(
-	"server.lanOnly", "should the server stay only on LAN (vs. advertise itself on the internet)",
+    "server.lanOnly", "should the server stay only on LAN (vs. advertise itself on the internet)",
 #if BUILD_CLIENT || BUILD_TTY_CLIENT
-	Cvar::ROM, true
+    Cvar::ROM, true
 #elif BUILD_SERVER
-	Cvar::NONE, false
+    Cvar::NONE, false
 #else
-	#error
+#error
 #endif
 );
 
@@ -133,7 +133,7 @@ void SV_AddServerCommand( client_t *client, const char *cmd )
 	// doesn't cause a recursive drop client
 	if ( client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS + 1 )
 	{
-		Com_DPrintf("===== pending server commands =====\n");
+		Com_DPrintf( "===== pending server commands =====\n" );
 
 		for ( i = client->reliableAcknowledge + 1; i <= client->reliableSequence; i++ )
 		{
@@ -158,7 +158,7 @@ the client game module: "cp", "print", "chat", etc
 A NULL client will broadcast to all clients
 =================
 */
-void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, ... )
+void QDECL PRINTF_LIKE( 2 ) SV_SendServerCommand( client_t *cl, const char *fmt, ... )
 {
 	va_list  argptr;
 	byte     message[ MAX_MSGLEN ];
@@ -209,7 +209,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		}
 
 		// Ridah, don't need to send messages to AI
-		if ( SV_IsBot(client) )
+		if ( SV_IsBot( client ) )
 		{
 			continue;
 		}
@@ -226,11 +226,13 @@ MASTER SERVER FUNCTIONS
 
 ==============================================================================
 */
-static struct {
+static struct
+{
 	netadr_t ipv4, ipv6;
 } masterServerAddr[ MAX_MASTER_SERVERS ];
 
-static struct {
+static struct
+{
 	netadrtype_t type;
 	char         text[ MAX_CHALLENGE_LEN + 1 ];
 } challenges[ MAX_MASTER_SERVERS ];
@@ -246,7 +248,7 @@ static void SV_ResolveMasterServers( void )
 		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
 		{
 			challenges[ i ].type =
-			masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
+			    masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
 			continue;
 		}
 
@@ -478,7 +480,7 @@ qboolean SV_VerifyChallenge( const char *challenge )
 	for ( i = 0; i < j; i++ )
 	{
 		if ( challenge[ i ] == '\\' || challenge[ i ] == '/' || challenge[ i ] == '%' || challenge[ i ] == ';' || challenge[ i ] == '"' || challenge[ i ] < 32 || // non-ascii
-		     challenge[ i ] > 126 // non-ascii
+		        challenge[ i ] > 126 // non-ascii
 		   )
 		{
 			return qfalse;
@@ -509,7 +511,7 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	char          infostring[ MAX_INFO_STRING ];
 
 	//bani - bugtraq 12534
-	if ( args.Argc() > 1 && !SV_VerifyChallenge( args.Argv(1).c_str() ) )
+	if ( args.Argc() > 1 && !SV_VerifyChallenge( args.Argv( 1 ).c_str() ) )
 	{
 		return;
 	}
@@ -520,7 +522,7 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	{
 		// echo back the parameter to status. so master servers can use it as a challenge
 		// to prevent timed spoofed reply packets that add ghost servers
-		Info_SetValueForKey( infostring, "challenge", args.Argv(1).c_str(), qfalse );
+		Info_SetValueForKey( infostring, "challenge", args.Argv( 1 ).c_str(), qfalse );
 	}
 
 	status[ 0 ] = 0;
@@ -567,14 +569,14 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 		return;
 	}
 
-	const char *challenge = args.Argv(1).c_str();
+	const char *challenge = args.Argv( 1 ).c_str();
 
 	/*
 	 * Check whether Cmd_Argv(1) has a sane length. This was not done in the original Quake3 version which led
 	 * to the Infostring bug discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory.
 	*/
 	// A maximum challenge length of 128 should be more than plenty.
-	if ( strlen( challenge ) > MAX_CHALLENGE_LEN  )
+	if ( strlen( challenge ) > MAX_CHALLENGE_LEN )
 	{
 		return;
 	}
@@ -594,7 +596,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			if ( SV_IsBot(&svs.clients[ i ]) )
+			if ( SV_IsBot( &svs.clients[ i ] ) )
 			{
 				++botCount;
 			}
@@ -703,7 +705,10 @@ qboolean SV_CheckDRDoS( netadr_t from )
 	// with a source address being a spoofed LAN address.  Even if that's not
 	// the case, sending packets to other hosts in the LAN is not a big deal.
 	// NA_LOOPBACK qualifies as a LAN address.
-	if ( Sys_IsLANAddress( from ) ) { return qfalse; }
+	if ( Sys_IsLANAddress( from ) )
+	{
+		return qfalse;
+	}
 
 	exactFrom = from;
 
@@ -797,29 +802,33 @@ Redirect all printfs
 ===============
 */
 
-class RconEnvironment: public Cmd::DefaultEnvironment {
-    public:
-        RconEnvironment(netadr_t from, int bufferSize): from(from), bufferSize(bufferSize) {};
+class RconEnvironment: public Cmd::DefaultEnvironment
+{
+public:
+	RconEnvironment( netadr_t from, int bufferSize ): from( from ), bufferSize( bufferSize ) {};
 
-        virtual void Print(Str::StringRef text) OVERRIDE {
-            if (text.size() + buffer.size() > bufferSize - 1) {
-                Flush();
-            }
+	virtual void Print( Str::StringRef text ) OVERRIDE
+	{
+		if ( text.size() + buffer.size() > bufferSize - 1 )
+		{
+			Flush();
+		}
 
-            buffer += text;
-            buffer += '\n';
-        }
+		buffer += text;
+		buffer += '\n';
+	}
 
-        void Flush() {
-            NET_OutOfBandPrint(NS_SERVER, from, "print\n%s", buffer.c_str());
-            Cmd::ResetEnv();
-            buffer = "";
-        }
+	void Flush()
+	{
+		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", buffer.c_str() );
+		Cmd::ResetEnv();
+		buffer = "";
+	}
 
-    private:
-        netadr_t from;
-        int bufferSize;
-        std::string buffer;
+private:
+	netadr_t from;
+	int bufferSize;
+	std::string buffer;
 };
 
 void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
@@ -844,15 +853,15 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 
 	lasttime = time;
 
-	if ( !strlen( sv_rconPassword->string ) || args.Argv(1) != sv_rconPassword->string )
+	if ( !strlen( sv_rconPassword->string ) || args.Argv( 1 ) != sv_rconPassword->string )
 	{
 		valid = qfalse;
-		Com_Printf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
+		Com_Printf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs( 2 ).c_str() );
 	}
 	else
 	{
 		valid = qtrue;
-		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
+		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs( 2 ).c_str() );
 	}
 
 	// start redirecting all print outputs to the packet
@@ -862,7 +871,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	//   which leads to client overflows
 	//   see show_bug.cgi?id=51
 	//     (also a Q3 issue)
-	auto env = RconEnvironment(from, SV_OUTPUTBUF_LENGTH);
+	auto env = RconEnvironment( from, SV_OUTPUTBUF_LENGTH );
 
 	if ( !strlen( sv_rconPassword->string ) )
 	{
@@ -874,7 +883,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	}
 	else
 	{
-		Cmd::ExecuteCommand(args.EscapedArgs(2), true, &env);
+		Cmd::ExecuteCommand( args.EscapedArgs( 2 ), true, &env );
 	}
 
 	env.Flush();
@@ -900,40 +909,46 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		Huff_Decompress( msg, 12 );
 	}
 
-	Cmd::Args args(MSG_ReadStringLine( msg ));
+	Cmd::Args args( MSG_ReadStringLine( msg ) );
 
 	if ( args.Argc() <= 0 )
 	{
 		return;
 	}
 
-	Com_DPrintf( "SV packet %s : %s\n", NET_AdrToString( from ), args.Argv(0).c_str() );
+	Com_DPrintf( "SV packet %s : %s\n", NET_AdrToString( from ), args.Argv( 0 ).c_str() );
 
-	if ( args.Argv(0) == "getstatus" )
+	if ( args.Argv( 0 ) == "getstatus" )
 	{
-		if ( SV_CheckDRDoS( from ) ) { return; }
+		if ( SV_CheckDRDoS( from ) )
+		{
+			return;
+		}
 
 		SVC_Status( from, args );
 	}
-	else if ( args.Argv(0) == "getinfo" )
+	else if ( args.Argv( 0 ) == "getinfo" )
 	{
-		if ( SV_CheckDRDoS( from ) ) { return; }
+		if ( SV_CheckDRDoS( from ) )
+		{
+			return;
+		}
 
 		SVC_Info( from, args );
 	}
-	else if ( args.Argv(0) == "getchallenge" )
+	else if ( args.Argv( 0 ) == "getchallenge" )
 	{
 		SV_GetChallenge( from );
 	}
-	else if ( args.Argv(0) == "connect" )
+	else if ( args.Argv( 0 ) == "connect" )
 	{
 		SV_DirectConnect( from, args );
 	}
-	else if ( args.Argv(0) == "rcon" )
+	else if ( args.Argv( 0 ) == "rcon" )
 	{
 		SVC_RemoteCommand( from, args );
 	}
-	else if ( args.Argv(0) == "disconnect" )
+	else if ( args.Argv( 0 ) == "disconnect" )
 	{
 		// if a client starts up a local server, we may see some spurious
 		// server disconnect messages when their new server sees our final
@@ -941,7 +956,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 	else
 	{
-		Com_DPrintf( "bad connectionless packet from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(0).c_str() );
+		Com_DPrintf( "bad connectionless packet from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs( 0 ).c_str() );
 	}
 }
 
@@ -1052,7 +1067,7 @@ void SV_CalcPings( void )
 			continue;
 		}
 
-		if ( SV_IsBot(cl) )
+		if ( SV_IsBot( cl ) )
 		{
 			cl->ping = 0;
 			continue;
@@ -1204,13 +1219,13 @@ Return time in millseconds until processing of the next server frame.
 */
 int SV_FrameMsec( void )
 {
-	if( sv_fps )
+	if ( sv_fps )
 	{
 		int frameMsec;
 
 		frameMsec = 1000.0f / sv_fps->value;
 
-		if( frameMsec < sv.timeResidual )
+		if ( frameMsec < sv.timeResidual )
 		{
 			return 0;
 		}
@@ -1297,7 +1312,7 @@ void SV_Frame( int msec )
 		// there won't be a map_restart if you have shut down the server
 		// since it doesn't restart a non-running server
 		// instead, re-run the current map
-		Cmd::BufferCommandText(va("map %s", mapname));
+		Cmd::BufferCommandText( va( "map %s", mapname ) );
 		return;
 	}
 
@@ -1307,14 +1322,14 @@ void SV_Frame( int msec )
 		Q_strncpyz( mapname, sv_mapname->string, MAX_QPATH );
 		SV_Shutdown( "Restarting server due to numSnapshotEntities wrapping" );
 		// TTimo see above
-		Cmd::BufferCommandText(va("map %s", mapname));
+		Cmd::BufferCommandText( va( "map %s", mapname ) );
 		return;
 	}
 
 	if ( sv.restartTime && sv.time >= sv.restartTime )
 	{
 		sv.restartTime = 0;
-		Cmd::BufferCommandText("map_restart 0");
+		Cmd::BufferCommandText( "map_restart 0" );
 		return;
 	}
 

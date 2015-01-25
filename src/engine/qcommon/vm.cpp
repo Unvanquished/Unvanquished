@@ -336,7 +336,7 @@ void VM_LoadSymbols( vm_t *vm )
 		}
 
 		chars = strlen( token );
-		sym = (vmSymbol_t*) Hunk_Alloc( sizeof( *sym ) + chars, h_high );
+		sym = ( vmSymbol_t* ) Hunk_Alloc( sizeof( *sym ) + chars, h_high );
 		*prev = sym;
 		prev = &sym->next;
 		sym->next = NULL;
@@ -377,7 +377,7 @@ static void VM_InitSanity( vm_t *vm )
 		for ( i = 1; i < sizeof( vm->sanity ); ++i )
 		{
 			vm->dataBase[ vm->dataMask + 1 + i ] =
-			  vm->sanity[ i ] = 1 + ( rand () % 255 );
+			    vm->sanity[ i ] = 1 + ( rand() % 255 );
 		}
 	}
 
@@ -408,9 +408,9 @@ void VM_SetSanity( vm_t* vm, intptr_t call )
 		if ( i % sizeof( vm->sanity ) )
 		{
 			vm->dataBase[ vm->dataMask + 1 + ( i % sizeof( vm->sanity ) ) ] =
-			  vm->sanity[ i % sizeof( vm->sanity ) ] ^=
-			    (byte) ( i / sizeof( vm->sanity ) ) ^
-			    (byte) ( i / sizeof( vm->sanity ) / 257 );
+			    vm->sanity[ i % sizeof( vm->sanity ) ] ^=
+			        ( byte )( i / sizeof( vm->sanity ) ) ^
+			        ( byte )( i / sizeof( vm->sanity ) / 257 );
 
 			if ( !vm->clean )
 			{
@@ -496,6 +496,7 @@ intptr_t QDECL VM_DllSyscall( intptr_t arg, ... )
 	{
 		ret = currentVM->systemCall( args );
 	}
+
 #else // original id code (almost)
 	VM_SetSanity( currentVM, arg );
 
@@ -507,6 +508,7 @@ intptr_t QDECL VM_DllSyscall( intptr_t arg, ... )
 	{
 		ret = currentVM->systemCall( &arg );
 	}
+
 #endif
 	VM_CheckSanity( currentVM, arg );
 	return ret;
@@ -548,7 +550,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	// show where the QVM was loaded from
 	if ( com_developer->integer )
 	{
-		Cmd::ExecuteCommand(va("which %s", filename));
+		Cmd::ExecuteCommand( va( "which %s", filename ) );
 	}
 
 	if ( LittleLong( header.h->vmMagic ) == VM_MAGIC_VER2 )
@@ -563,10 +565,10 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 		// validate
 		if ( header.h->jtrgLength < 0
-		     || header.h->bssLength < 0
-		     || header.h->dataLength < 0
-		     || header.h->litLength < 0
-		     || header.h->codeLength <= 0 )
+		        || header.h->bssLength < 0
+		        || header.h->dataLength < 0
+		        || header.h->litLength < 0
+		        || header.h->codeLength <= 0 )
 		{
 			VM_Free( vm );
 			Com_Error( ERR_FATAL, "%s has bad header", filename );
@@ -583,9 +585,9 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 		// validate
 		if ( header.h->bssLength < 0
-		     || header.h->dataLength < 0
-		     || header.h->litLength < 0
-		     || header.h->codeLength <= 0 )
+		        || header.h->dataLength < 0
+		        || header.h->litLength < 0
+		        || header.h->codeLength <= 0 )
 		{
 			VM_Free( vm );
 			Com_Error( ERR_FATAL, "%s has bad header", filename );
@@ -612,7 +614,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	if ( alloc )
 	{
 		// allocate zero filled space for initialized and uninitialized data
-		vm->dataBase = (byte*) Hunk_Alloc( dataLength + VM_DATA_PADDING, h_high );
+		vm->dataBase = ( byte* ) Hunk_Alloc( dataLength + VM_DATA_PADDING, h_high );
 		vm->dataMask = dataLength - 1;
 	}
 	else
@@ -620,11 +622,11 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 		// clear the data, but make sure we're not clearing more than allocated
 		if ( vm->dataMask + 1 != dataLength )
 		{
-			VM_Free(vm);
-			FS_FreeFile(header.v);
+			VM_Free( vm );
+			FS_FreeFile( header.v );
 
 			Com_DPrintf( S_WARNING "Data region size of %s not matching after"
-						"VM_Restart()\n", filename );
+			             "VM_Restart()\n", filename );
 			return NULL;
 		}
 
@@ -652,17 +654,17 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 		if ( alloc )
 		{
-			vm->jumpTableTargets = (byte*) Hunk_Alloc( header.h->jtrgLength, h_high );
+			vm->jumpTableTargets = ( byte* ) Hunk_Alloc( header.h->jtrgLength, h_high );
 		}
 		else
 		{
-			if( vm->numJumpTableTargets != previousNumJumpTableTargets )
+			if ( vm->numJumpTableTargets != previousNumJumpTableTargets )
 			{
 				VM_Free( vm );
 				FS_FreeFile( header.v );
 
 				Com_DPrintf( S_WARNING "Jump table size of %s not matching after"
-				            "VM_Restart()\n", filename );
+				             "VM_Restart()\n", filename );
 				return NULL;
 			}
 
@@ -806,7 +808,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 
 	// allocate space for the jump targets, which will be filled in by the compile/prep functions
 	vm->instructionCount = header->instructionCount;
-	vm->instructionPointers = (intptr_t*) Hunk_Alloc( vm->instructionCount * sizeof( *vm->instructionPointers ), h_high );
+	vm->instructionPointers = ( intptr_t* ) Hunk_Alloc( vm->instructionCount * sizeof( *vm->instructionPointers ), h_high );
 
 	// copy or compile the instructions
 	vm->codeLength = header->codeLength;
@@ -1106,7 +1108,7 @@ void VM_VmProfile_f( void )
 		return;
 	}
 
-	sorted = (vmSymbol_t**) Z_Malloc( vm->numSymbols * sizeof( *sorted ) );
+	sorted = ( vmSymbol_t** ) Z_Malloc( vm->numSymbols * sizeof( *sorted ) );
 	sorted[ 0 ] = vm->symbols;
 	total = sorted[ 0 ]->profileCount;
 
@@ -1202,9 +1204,9 @@ void VM_CheckBlock( intptr_t buf, size_t n, const char *fail )
 	intptr_t dataMask = currentVM->dataMask;
 
 	if ( dataMask &&
-	     ( ( buf & dataMask ) != buf || ( ( buf + n ) & dataMask ) != buf + n ) )
+	        ( ( buf & dataMask ) != buf || ( ( buf + n ) & dataMask ) != buf + n ) )
 	{
-		Com_Error( ERR_DROP, "%s out of range! [%lx, %lx, %lx]", fail, (unsigned long)buf, (unsigned long)n, (unsigned long)dataMask );
+		Com_Error( ERR_DROP, "%s out of range! [%lx, %lx, %lx]", fail, ( unsigned long )buf, ( unsigned long )n, ( unsigned long )dataMask );
 	}
 }
 
@@ -1213,10 +1215,10 @@ void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const
 	intptr_t dataMask = currentVM->dataMask;
 
 	if ( dataMask &&
-	     ( ( dest & dataMask ) != dest
-	       || ( src & dataMask ) != src
-	       || ( ( dest + dn ) & dataMask ) != dest + dn
-	       || ( ( src + sn ) & dataMask ) != src + sn ) )
+	        ( ( dest & dataMask ) != dest
+	          || ( src & dataMask ) != src
+	          || ( ( dest + dn ) & dataMask ) != dest + dn
+	          || ( ( src + sn ) & dataMask ) != src + sn ) )
 	{
 		Com_Error( ERR_DROP, "%s out of range!", fail );
 	}
@@ -1250,7 +1252,7 @@ static int FloatAsInt( float f )
 
 intptr_t VM_SystemCall( intptr_t *args )
 {
-	switch( args[ 0 ] )
+	switch ( args[ 0 ] )
 	{
 		case TRAP_MEMSET:
 			VM_CheckBlock( args[ 1 ], args[ 3 ], "MEMSET" );
@@ -1267,8 +1269,8 @@ intptr_t VM_SystemCall( intptr_t *args )
 			return memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case TRAP_STRNCPY:
-			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], strlen( (char*) VMA( 2 ) ) + 1, "STRNCPY" );
-			return ( intptr_t ) strncpy( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
+			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], strlen( ( char* ) VMA( 2 ) ) + 1, "STRNCPY" );
+			return ( intptr_t ) strncpy( ( char* ) VMA( 1 ), ( char* ) VMA( 2 ), args[ 3 ] );
 
 		case TRAP_SIN:
 			return FloatAsInt( sin( VMF( 1 ) ) );
@@ -1299,20 +1301,20 @@ intptr_t VM_SystemCall( intptr_t *args )
 
 		case TRAP_CEIL:
 			return FloatAsInt( ceil( VMF( 1 ) ) );
-			
+
 		case TRAP_EXP:
 			return FloatAsInt( exp( VMF( 1 ) ) );
 
 		case TRAP_MATRIXMULTIPLY:
-			AxisMultiply( (float(*)[3]) VMA( 1 ), (float(*)[3]) VMA( 2 ), (float(*)[3]) VMA( 3 ) );
+			AxisMultiply( ( float( * )[3] ) VMA( 1 ), ( float( * )[3] ) VMA( 2 ), ( float( * )[3] ) VMA( 3 ) );
 			return 0;
 
 		case TRAP_ANGLEVECTORS:
-			AngleVectors( (float*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ) );
+			AngleVectors( ( float* ) VMA( 1 ), ( float* ) VMA( 2 ), ( float* ) VMA( 3 ), ( float* ) VMA( 4 ) );
 			return 0;
 
 		case TRAP_PERPENDICULARVECTOR:
-			PerpendicularVector( (float*) VMA( 1 ), (float*) VMA( 2 ) );
+			PerpendicularVector( ( float* ) VMA( 1 ), ( float* ) VMA( 2 ) );
 			return 0;
 
 		case TRAP_VERSION:
@@ -1320,6 +1322,7 @@ intptr_t VM_SystemCall( intptr_t *args )
 			{
 				Com_Error( ERR_DROP, "Syscall ABI mismatch" );
 			}
+
 			return 0;
 
 		default:

@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #include "qcommon.h"
 
 extern "C" {
-    #include "../../libs/findlocale/findlocale.h"
+#include "../../libs/findlocale/findlocale.h"
 }
 
 #include "../../libs/tinygettext/log.hpp"
@@ -89,7 +89,7 @@ public:
 
 	~DaemonInputbuf()
 	{
-		if( fileHandle )
+		if ( fileHandle )
 		{
 			FS_FCloseFile( fileHandle );
 		}
@@ -97,12 +97,12 @@ public:
 
 	int underflow()
 	{
-		if( gptr() < egptr() ) // buffer not exhausted
+		if ( gptr() < egptr() ) // buffer not exhausted
 		{
 			return traits_type::to_int_type( *gptr() );
 		}
 
-		if( !fileHandle )
+		if ( !fileHandle )
 		{
 			return traits_type::eof();
 		}
@@ -110,7 +110,7 @@ public:
 		char *base = buffer;
 		char *start = base;
 
-		if( eback() == base )
+		if ( eback() == base )
 		{
 			// Make arrangements for putback characters
 			memmove( base, egptr() - putBack, putBack );
@@ -119,7 +119,7 @@ public:
 
 		size_t n = FS_Read( start, BUFFER_SIZE - ( start - base ), fileHandle );
 
-		if( n == 0 )
+		if ( n == 0 )
 		{
 			return traits_type::eof();
 		}
@@ -171,7 +171,7 @@ public:
 
 		files = FS_ListFiles( pathname.c_str(), NULL, &numFiles );
 
-		for( int i = 0; i < numFiles; i++ )
+		for ( int i = 0; i < numFiles; i++ )
 		{
 			ret.push_back( std::string( files[ i ] ) );
 		}
@@ -199,7 +199,7 @@ void Trans_Error( const std::string& str )
 
 void Trans_Warning( const std::string& str )
 {
-	if( trans_debug->integer != 0 )
+	if ( trans_debug->integer != 0 )
 	{
 		Com_Printf( "^3%s^7", str.c_str() );
 	}
@@ -207,7 +207,7 @@ void Trans_Warning( const std::string& str )
 
 void Trans_Info( const std::string& str )
 {
-	if( trans_debug->integer != 0 )
+	if ( trans_debug->integer != 0 )
 	{
 		Com_Printf( "%s", str.c_str() );
 	}
@@ -232,11 +232,11 @@ void Trans_SetLanguage( const char* lang )
 
 	std::set<Language> langs = trans_manager.get_languages();
 
-	for( std::set<Language>::iterator i = langs.begin(); i != langs.end(); i++ )
+	for ( std::set<Language>::iterator i = langs.begin(); i != langs.end(); i++ )
 	{
 		int score = Language::match( requestLang, *i );
 
-		if( score > bestScore )
+		if ( score > bestScore )
 		{
 			bestScore = score;
 			bestLang = *i;
@@ -244,11 +244,11 @@ void Trans_SetLanguage( const char* lang )
 	}
 
 	// language not found, display warning
-	if( bestScore == 0 )
+	if ( bestScore == 0 )
 	{
 		Com_Printf( S_WARNING "Language \"%s\" (%s) not found. Default to \"English\" (en)\n",
-					requestLang.get_name().empty() ? "Unknown Language" : requestLang.get_name().c_str(),
-					lang );
+		            requestLang.get_name().empty() ? "Unknown Language" : requestLang.get_name().c_str(),
+		            lang );
 	}
 
 	trans_manager.set_language( bestLang );
@@ -266,7 +266,7 @@ void Trans_UpdateLanguage_f( void )
 #ifndef BUILD_SERVER
 	// update the default console keys string
 	Z_Free( cl_consoleKeys->resetString );
-	cl_consoleKeys->resetString = CopyString( _("~ ` 0x7e 0x60") );
+	cl_consoleKeys->resetString = CopyString( _( "~ ` 0x7e 0x60" ) );
 #endif
 }
 
@@ -302,7 +302,7 @@ void Trans_Init( void )
 
 	langs = trans_manager.get_languages();
 
-	for( std::set<Language>::iterator p = langs.begin(); p != langs.end(); p++ )
+	for ( std::set<Language>::iterator p = langs.begin(); p != langs.end(); p++ )
 	{
 		Q_strcat( langList, sizeof( langList ), va( "\"%s\" ", p->get_name().c_str() ) );
 		Q_strcat( encList, sizeof( encList ), va( "\"%s\" ", p->str().c_str() ) );
@@ -319,20 +319,20 @@ void Trans_LoadDefaultLanguage( void )
 	FL_Locale           *locale;
 
 	// Only detect locale if no previous language set.
-	if( !language->string[0] )
+	if ( !language->string[0] )
 	{
 		FL_FindLocale( &locale, FL_MESSAGES );
 
 		// Invalid or not found. Just use builtin language.
-		if( !locale->lang || !locale->lang[0] || !locale->country || !locale->country[0] )
+		if ( !locale->lang || !locale->lang[0] || !locale->country || !locale->country[0] )
 		{
 			Cvar_Set( "language", "en" );
 		}
 		else
 		{
 			Cvar_Set( "language", va( "%s%s%s", locale->lang,
-						  locale->country[0] ? "_" : "",
-						  locale->country ) );
+			                          locale->country[0] ? "_" : "",
+			                          locale->country ) );
 		}
 
 		FL_FreeLocale( &locale );

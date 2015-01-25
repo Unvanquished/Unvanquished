@@ -32,17 +32,18 @@ static qboolean expectToken( const char *s, pc_token_list **list, qboolean next 
 		BotError( "Expected token %s but found end of file\n", s );
 		return qfalse;
 	}
-	
+
 	if ( Q_stricmp( current->token.string, s ) != 0 )
 	{
 		BotError( "Expected token %s but found %s on line %d\n", s, current->token.string, current->token.line );
 		return qfalse;
 	}
-	
+
 	if ( next )
 	{
 		*list = current->next;
 	}
+
 	return qtrue;
 }
 
@@ -158,7 +159,7 @@ static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
 	botEntityAndDistance_t ent = AIEntityToGentity( self, e );
-	
+
 	return AIBoxFloat( ent.distance );
 }
 
@@ -186,7 +187,7 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 {
 	botTarget_t target;
 	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	botEntityAndDistance_t e = AIEntityToGentity( self ,et );
+	botEntityAndDistance_t e = AIEntityToGentity( self , et );
 
 	if ( !e.ent )
 	{
@@ -222,6 +223,7 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 		{
 			self->botMind->enemyLastSeen = level.time;
 		}
+
 		return AIBoxInt( qtrue );
 	}
 
@@ -377,6 +379,7 @@ static const struct AIOpMap_s
 static AIOpType_t opTypeFromToken( pc_token_stripped_t *token )
 {
 	int i;
+
 	if ( token->type != TT_PUNCTUATION )
 	{
 		return OP_NONE;
@@ -389,12 +392,14 @@ static AIOpType_t opTypeFromToken( pc_token_stripped_t *token )
 			return conditionOps[ i ].opType;
 		}
 	}
+
 	return OP_NONE;
 }
 
 static const char *opTypeToString( AIOpType_t op )
 {
 	int i;
+
 	for ( i = 0; i < ARRAY_LEN( conditionOps ); i++ )
 	{
 		if ( conditionOps[ i ].opType == op )
@@ -402,6 +407,7 @@ static const char *opTypeToString( AIOpType_t op )
 			return conditionOps[ i ].str;
 		}
 	}
+
 	return NULL;
 }
 
@@ -416,6 +422,7 @@ static int opCompare( AIOpType_t op1, AIOpType_t op2 )
 	{
 		return -1;
 	}
+
 	return 0;
 }
 
@@ -525,6 +532,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 			*list = parenEnd->next; // skip invalid function expression
 			return NULL;
 		}
+
 		parse = parse->next;
 	}
 
@@ -552,6 +560,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 
 		numParams = 0;
 		parse = parenBegin->next;
+
 		while ( parse != parenEnd )
 		{
 			if ( parse->token.type == TT_NUMBER || parse->token.type == TT_STRING )
@@ -559,9 +568,11 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 				params[ numParams ] = AIBoxToken( &parse->token );
 				numParams++;
 			}
+
 			parse = parse->next;
 		}
 	}
+
 	*list = parenEnd->next;
 	return params;
 }
@@ -576,7 +587,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 
 	memset( &v, 0, sizeof( v ) );
 
-	f = (struct AIConditionMap_s*) bsearch( current->token.string, conditionFuncs, ARRAY_LEN( conditionFuncs ), sizeof( *conditionFuncs ), cmdcmp );
+	f = ( struct AIConditionMap_s* ) bsearch( current->token.string, conditionFuncs, ARRAY_LEN( conditionFuncs ), sizeof( *conditionFuncs ), cmdcmp );
 
 	if ( !f )
 	{
@@ -654,14 +665,14 @@ static AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op
 		return NULL;
 	}
 
-	op = opTypeFromToken( &(*list)->token );
+	op = opTypeFromToken( &( *list )->token );
 
 	while ( isBinaryOp( op ) && opCompare( op, op2 ) >= 0 )
 	{
 		AIExpType_t *t1;
 		pc_token_list *prev = *list;
 		AIOp_t *exp = newOp( *list );
-		*list = (*list)->next;
+		*list = ( *list )->next;
 		t1 = ReadConditionExpression( list, op );
 
 		if ( !t1 )
@@ -674,7 +685,7 @@ static AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op
 
 		t = makeExpression( exp, t, t1 );
 
-		op = opTypeFromToken( &(*list)->token );
+		op = opTypeFromToken( &( *list )->token );
 	}
 
 	return t;
@@ -705,6 +716,7 @@ static AIExpType_t *Primary( pc_token_list **list )
 	{
 		*list = current->next;
 		tree = ReadConditionExpression( list, OP_NONE );
+
 		if ( !expectToken( ")", list, qtrue ) )
 		{
 			return NULL;
@@ -722,6 +734,7 @@ static AIExpType_t *Primary( pc_token_list **list )
 	{
 		BotError( "token %s on line %d is not valid\n", current->token.string, current->token.line );
 	}
+
 	return tree;
 }
 
@@ -794,7 +807,7 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 
 	if ( !condition->child )
 	{
-		BotError( "Failed to parse child node of condition on line %d\n", (*tokenlist)->token.line );
+		BotError( "Failed to parse child node of condition on line %d\n", ( *tokenlist )->token.line );
 		*tokenlist = current;
 		FreeConditionNode( condition );
 		return NULL;
@@ -839,12 +852,12 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 
 	if ( !current )
 	{
-		BotError( "Unexpected end of file after line %d\n", (*list)->token.line );
+		BotError( "Unexpected end of file after line %d\n", ( *list )->token.line );
 		*list = current;
 		return NULL;
 	}
 
-	dec = (struct AIDecoratorMap_s*) bsearch( current->token.string, AIDecorators, ARRAY_LEN( AIDecorators ), sizeof( *AIDecorators ), cmdcmp );
+	dec = ( struct AIDecoratorMap_s* ) bsearch( current->token.string, AIDecorators, ARRAY_LEN( AIDecorators ), sizeof( *AIDecorators ), cmdcmp );
 
 	if ( !dec )
 	{
@@ -886,7 +899,7 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 
 	if ( !node.child )
 	{
-		BotError( "Failed to parse child node of decorator on line %d\n",  (*list)->token.line );
+		BotError( "Failed to parse child node of decorator on line %d\n", ( *list )->token.line );
 		*list = current;
 		return NULL;
 	}
@@ -966,11 +979,11 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 
 	if ( !current )
 	{
-		BotError( "Unexpected end of file after line %d\n", (*tokenlist)->token.line );
+		BotError( "Unexpected end of file after line %d\n", ( *tokenlist )->token.line );
 		return NULL;
 	}
 
-	action = (struct AIActionMap_s*) bsearch( current->token.string, AIActions, ARRAY_LEN( AIActions ), sizeof( *AIActions ), cmdcmp );
+	action = ( struct AIActionMap_s* ) bsearch( current->token.string, AIActions, ARRAY_LEN( AIActions ), sizeof( *AIActions ), cmdcmp );
 
 	if ( !action )
 	{
@@ -1018,10 +1031,12 @@ AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
 	node = ReadNodeList( &current );
 
 	*tokenlist = current;
+
 	if ( !node )
 	{
 		return NULL;
 	}
+
 	BotInitNode( SELECTOR_NODE, BotSequenceNode, node );
 	return node;
 }
@@ -1035,10 +1050,12 @@ AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
 	node = ReadNodeList( &current );
 
 	*tokenlist = current;
+
 	if ( !node )
 	{
 		return NULL;
 	}
+
 	BotInitNode( SELECTOR_NODE, BotSelectorNode, node );
 	return node;
 }
@@ -1052,10 +1069,12 @@ AIGenericNode_t *ReadConcurrent( pc_token_list **tokenlist )
 	node = ReadNodeList( &current );
 
 	*tokenlist = current;
+
 	if ( !node )
 	{
 		return NULL;
 	}
+
 	BotInitNode( SELECTOR_NODE, BotConcurrentNode, node );
 	return node;
 }
@@ -1086,7 +1105,7 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 
 		if ( node && list->numNodes >= MAX_NODE_LIST )
 		{
-			BotError( "Max selector children limit exceeded at line %d\n", (*tokenlist)->token.line );
+			BotError( "Max selector children limit exceeded at line %d\n", ( *tokenlist )->token.line );
 			FreeNode( node );
 			FreeNodeList( list );
 			*tokenlist = current;
@@ -1235,6 +1254,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	for ( i = 0; i < list->numTrees; i++ )
 	{
 		AIBehaviorTree_t *tree = list->trees[ i ];
+
 		if ( !Q_stricmp( tree->name, name ) )
 		{
 			return tree;
@@ -1306,7 +1326,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( PCL_HUMAN_LIGHT );
 	D( PCL_HUMAN_MEDIUM );
 	D( PCL_HUMAN_BSUIT );
-	
+
 	D( MOVE_FORWARD );
 	D( MOVE_BACKWARD );
 	D( MOVE_RIGHT );
@@ -1323,10 +1343,11 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( SAY_TEAM );
 	D( SAY_AREA );
 	D( SAY_AREA_TEAM );
-	
+
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
 	handle = trap_Parse_LoadSource( treefilename );
+
 	if ( !handle )
 	{
 		G_Printf( S_COLOR_RED "ERROR: Cannot load behavior tree %s: File not found\n", treefilename );
@@ -1348,6 +1369,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	current = tokenlist;
 
 	node = ReadNode( &current );
+
 	if ( node )
 	{
 		tree->root = ( AIGenericNode_t * ) node;
@@ -1372,7 +1394,7 @@ pc_token_list *CreateTokenList( int handle )
 	while ( trap_Parse_ReadToken( handle, &token ) )
 	{
 		pc_token_list *list = ( pc_token_list * ) BG_Alloc( sizeof( pc_token_list ) );
-		
+
 		if ( current )
 		{
 			list->prev = current;
@@ -1383,7 +1405,7 @@ pc_token_list *CreateTokenList( int handle )
 			list->prev = list;
 			root = list;
 		}
-		
+
 		current = list;
 		current->next = NULL;
 
@@ -1401,7 +1423,8 @@ pc_token_list *CreateTokenList( int handle )
 void FreeTokenList( pc_token_list *list )
 {
 	pc_token_list *current = list;
-	while( current )
+
+	while ( current )
 	{
 		pc_token_list *node = current;
 		current = current->next;
@@ -1441,6 +1464,7 @@ void RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree )
 	for ( i = 0; i < list->numTrees; i++ )
 	{
 		AIBehaviorTree_t *testTree = list->trees[ i ];
+
 		if ( !Q_stricmp( testTree->name, tree->name ) )
 		{
 			FreeBehaviorTree( testTree );
@@ -1453,6 +1477,7 @@ void RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree )
 void FreeTreeList( AITreeList_t *list )
 {
 	int i;
+
 	for ( i = 0; i < list->numTrees; i++ )
 	{
 		AIBehaviorTree_t *tree = list->trees[ i ];
@@ -1472,6 +1497,7 @@ void FreeValue( AIValue_t *v )
 	{
 		return;
 	}
+
 	AIDestroyValue( *v );
 	BG_Free( v );
 }
@@ -1479,6 +1505,7 @@ void FreeValue( AIValue_t *v )
 void FreeValueFunc( AIValueFunc_t *v )
 {
 	int i;
+
 	if ( !v )
 	{
 		return;
@@ -1508,7 +1535,7 @@ void FreeExpression( AIExpType_t *exp )
 	else if ( *exp == EX_VALUE )
 	{
 		AIValue_t *v = ( AIValue_t * ) exp;
-		
+
 		FreeValue( v );
 	}
 	else if ( *exp == EX_OP )
@@ -1551,16 +1578,19 @@ void FreeConditionNode( AIConditionNode_t *node )
 void FreeNodeList( AINodeList_t *node )
 {
 	int i;
+
 	for ( i = 0; i < node->numNodes; i++ )
 	{
 		FreeNode( node->list[ i ] );
 	}
+
 	BG_Free( node );
 }
 
 void FreeActionNode( AIActionNode_t *action )
 {
 	int i;
+
 	for ( i = 0; i < action->nparams; i++ )
 	{
 		AIDestroyValue( action->params[ i ] );
@@ -1584,20 +1614,24 @@ void FreeNode( AIGenericNode_t *node )
 		return;
 	}
 
-	switch( node->type )
+	switch ( node->type )
 	{
 		case SELECTOR_NODE:
 			FreeNodeList( ( AINodeList_t * ) node );
 			break;
+
 		case CONDITION_NODE:
 			FreeConditionNode( ( AIConditionNode_t * ) node );
 			break;
+
 		case ACTION_NODE:
 			FreeActionNode( ( AIActionNode_t * ) node );
 			break;
+
 		case DECORATOR_NODE:
 			FreeDecoratorNode( ( AIDecoratorNode_t * ) node );
 			break;
+
 		default:
 			break;
 	}

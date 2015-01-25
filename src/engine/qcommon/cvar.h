@@ -47,29 +47,28 @@
  *
  * nothing outside the Cvar_*() functions should modify these fields!
  */
-typedef struct cvar_s
-{
-	char *name;
-	char *string;
-	char *resetString; // cvar_restart will reset to this value
-	char *latchedString; // for CVAR_LATCH vars
-	int flags;
-	qboolean modified; // set each time the cvar is changed
-	int modificationCount; // incremented each time the cvar is changed
-	float value; // atof( string )
-	int integer; // atoi( string )
+typedef struct cvar_s {
+    char *name;
+    char *string;
+    char *resetString; // cvar_restart will reset to this value
+    char *latchedString; // for CVAR_LATCH vars
+    int flags;
+    qboolean modified; // set each time the cvar is changed
+    int modificationCount; // incremented each time the cvar is changed
+    float value; // atof( string )
+    int integer; // atoi( string )
 
     int index; //for vmCvar_t
 
-	/**
-	 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
-	 * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
-	 */
-	qboolean transient;
+    /**
+     * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
+     * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
+     */
+    qboolean transient;
 
-	struct cvar_s *next;
+    struct cvar_s *next;
 
-	struct cvar_s *hashNext;
+    struct cvar_s *hashNext;
 } cvar_t;
 
 /**
@@ -78,63 +77,63 @@ typedef struct cvar_s
  * to be unarchived without needing bitflags if value is "",
  * the value will not override a previously set value.
  */
-cvar_t *Cvar_Get(const char *var_name, const char *value, int flags);
+cvar_t *Cvar_Get ( const char *var_name, const char *value, int flags );
 
 /**
  * basically a slightly modified Cvar_Get for the interpreted modules
  */
-void Cvar_Register(vmCvar_t *vmCvar, const char *varName,
-		const char *defaultValue, int flags);
+void Cvar_Register ( vmCvar_t *vmCvar, const char *varName,
+                     const char *defaultValue, int flags );
 
 /**
  * updates a module's version of a cvar
  */
-void Cvar_Update(vmCvar_t *vmCvar);
+void Cvar_Update ( vmCvar_t *vmCvar );
 
 /**
  * will create the variable with no flags if it doesn't exist
  */
-void Cvar_Set(const char *var_name, const char *value);
+void Cvar_Set ( const char *var_name, const char *value );
 
 /**
  * expands value to a string and calls Cvar_Set
  */
-void Cvar_SetValue(const char *var_name, float value);
+void Cvar_SetValue ( const char *var_name, float value );
 
 // returns 0 if not defined or non numeric
-float Cvar_VariableValue(const char *var_name);
-int Cvar_VariableIntegerValue(const char *var_name);
+float Cvar_VariableValue ( const char *var_name );
+int Cvar_VariableIntegerValue ( const char *var_name );
 
 // returns an empty string if not defined
-char *Cvar_VariableString(const char *var_name);
-void Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
+char *Cvar_VariableString ( const char *var_name );
+void Cvar_VariableStringBuffer ( const char *var_name, char *buffer, int bufsize );
 
 // returns the latched value if there is one, and the current value otherwise
-char* Cvar_LatchedVariableString(const char* name);
+char* Cvar_LatchedVariableString ( const char* name );
 
 /**
  * returns the latched value if there is one, and the current value otherwise
  * (an empty string in case the cvar does not exist)
  */
-void Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer,
-		int bufsize);
+void Cvar_LatchedVariableStringBuffer ( const char *var_name, char *buffer,
+                                        int bufsize );
 
 // reset all testing vars to a safe value
-void Cvar_Reset(const char *var_name);
+void Cvar_Reset ( const char *var_name );
 
 /**
  * writes lines containing "set variable value" for all variables
  * with the archive flag set to true.
  */
-void Cvar_WriteVariables(fileHandle_t f);
+void Cvar_WriteVariables ( fileHandle_t f );
 
 /**
  * returns an info string containing all the cvars that have the given bit set
  * in their flags ( CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc )
  */
-char *Cvar_InfoString(int bit, qboolean big);
+char *Cvar_InfoString ( int bit, qboolean big );
 
-void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
+void Cvar_InfoStringBuffer ( int bit, char *buff, int buffsize );
 
 /**
  *  whenever a cvar is modified, its flags will be OR'd into this, so

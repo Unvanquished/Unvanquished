@@ -327,6 +327,7 @@ char *NET_ErrorString( void )
 static void NetadrToSockadr( netadr_t *a, struct sockaddr *s )
 {
 	memset( s, 0, sizeof( struct sockaddr ) );
+
 	if ( a->type == NA_BROADCAST )
 	{
 		( ( struct sockaddr_in * ) s )->sin_family = AF_INET;
@@ -667,6 +668,7 @@ const char      *NET_AdrToStringwPort( netadr_t a )
 	{
 		Com_sprintf( s, sizeof( s ), "[%s]:%lu", NET_AdrToString( a ), ( unsigned long ) ntohs( a.type == NA_IP_DUAL ? a.port6 : a.port ) );
 	}
+
 	return s;
 }
 
@@ -847,9 +849,9 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 	}
 
 	if ( ( ip_socket == INVALID_SOCKET && NET_IS_IPv4( to.type ) ) ||
-	     ( ip_socket == INVALID_SOCKET && to.type == NA_BROADCAST ) ||
-	     ( ip6_socket == INVALID_SOCKET && NET_IS_IPv6( to.type ) ) ||
-	     ( ip6_socket == INVALID_SOCKET && to.type == NA_MULTICAST6 ) )
+	        ( ip_socket == INVALID_SOCKET && to.type == NA_BROADCAST ) ||
+	        ( ip6_socket == INVALID_SOCKET && NET_IS_IPv6( to.type ) ) ||
+	        ( ip6_socket == INVALID_SOCKET && to.type == NA_MULTICAST6 ) )
 	{
 		return;
 	}
@@ -1122,7 +1124,7 @@ SOCKET NET_IPSocket( const char *net_interface, int port, struct sockaddr_in *bi
 			struct sockaddr_in addr; // enough space
 			socklen_t          addrlen = sizeof( addr );
 
-			if ( !getsockname( newsocket, (struct sockaddr *) &addr, &addrlen ) && addrlen )
+			if ( !getsockname( newsocket, ( struct sockaddr * ) &addr, &addrlen ) && addrlen )
 			{
 				address.sin_port = addr.sin_port;
 			}
@@ -1214,11 +1216,12 @@ SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *
 			struct sockaddr_in6 addr; // enough space
 			socklen_t           addrlen = sizeof( addr );
 
-			if ( !getsockname( newsocket, (struct sockaddr *) &addr, &addrlen ) && addrlen )
+			if ( !getsockname( newsocket, ( struct sockaddr * ) &addr, &addrlen ) && addrlen )
 			{
 				address.sin6_port = addr.sin6_port;
 			}
 		}
+
 		*bindto = address;
 	}
 
@@ -1809,12 +1812,12 @@ static qboolean NET_GetCvars( void )
 
 #ifdef BUILD_SERVER
 	// I want server owners to explicitly turn on IPv6 support.
-	net_enabled = Cvar_Get( "net_enabled", "1", CVAR_LATCH  );
+	net_enabled = Cvar_Get( "net_enabled", "1", CVAR_LATCH );
 #else
 
 	/* End users have it enabled so they can connect to IPv6-only hosts, but IPv4 will be
 	 * used if available due to ping */
-	net_enabled = Cvar_Get( "net_enabled", "3", CVAR_LATCH  );
+	net_enabled = Cvar_Get( "net_enabled", "3", CVAR_LATCH );
 #endif
 	modified = net_enabled->modified;
 	net_enabled->modified = qfalse;
@@ -1836,35 +1839,35 @@ static qboolean NET_GetCvars( void )
 	net_port6->modified = qfalse;
 
 	// Some cvars for configuring multicast options which facilitates scanning for servers on local subnets.
-	net_mcast6addr = Cvar_Get( "net_mcast6addr", NET_MULTICAST_IP6, CVAR_LATCH  );
+	net_mcast6addr = Cvar_Get( "net_mcast6addr", NET_MULTICAST_IP6, CVAR_LATCH );
 	modified += net_mcast6addr->modified;
 	net_mcast6addr->modified = qfalse;
 
 #ifdef _WIN32
-	net_mcast6iface = Cvar_Get( "net_mcast6iface", "0", CVAR_LATCH  );
+	net_mcast6iface = Cvar_Get( "net_mcast6iface", "0", CVAR_LATCH );
 #else
-	net_mcast6iface = Cvar_Get( "net_mcast6iface", "", CVAR_LATCH  );
+	net_mcast6iface = Cvar_Get( "net_mcast6iface", "", CVAR_LATCH );
 #endif
 	modified += net_mcast6iface->modified;
 	net_mcast6iface->modified = qfalse;
 
-	net_socksEnabled = Cvar_Get( "net_socksEnabled", "0", CVAR_LATCH  );
+	net_socksEnabled = Cvar_Get( "net_socksEnabled", "0", CVAR_LATCH );
 	modified += net_socksEnabled->modified;
 	net_socksEnabled->modified = qfalse;
 
-	net_socksServer = Cvar_Get( "net_socksServer", "", CVAR_LATCH  );
+	net_socksServer = Cvar_Get( "net_socksServer", "", CVAR_LATCH );
 	modified += net_socksServer->modified;
 	net_socksServer->modified = qfalse;
 
-	net_socksPort = Cvar_Get( "net_socksPort", "1080", CVAR_LATCH  );
+	net_socksPort = Cvar_Get( "net_socksPort", "1080", CVAR_LATCH );
 	modified += net_socksPort->modified;
 	net_socksPort->modified = qfalse;
 
-	net_socksUsername = Cvar_Get( "net_socksUsername", "", CVAR_LATCH  );
+	net_socksUsername = Cvar_Get( "net_socksUsername", "", CVAR_LATCH );
 	modified += net_socksUsername->modified;
 	net_socksUsername->modified = qfalse;
 
-	net_socksPassword = Cvar_Get( "net_socksPassword", "", CVAR_LATCH  );
+	net_socksPassword = Cvar_Get( "net_socksPassword", "", CVAR_LATCH );
 	modified += net_socksPassword->modified;
 	net_socksPassword->modified = qfalse;
 
@@ -1989,24 +1992,24 @@ const char *NET_GeoIP_Country( const netadr_t *from )
 {
 	switch ( from->type )
 	{
-	case NA_IP:
-		return geoip_data_4 ? GeoIP_country_name_by_ipnum( geoip_data_4, htonl( *(uint32_t *)from->ip ) ) : NULL;
+		case NA_IP:
+			return geoip_data_4 ? GeoIP_country_name_by_ipnum( geoip_data_4, htonl( *( uint32_t * )from->ip ) ) : NULL;
 
-	case NA_IP6:
-		return geoip_data_6 ? GeoIP_country_name_by_ipnum_v6( geoip_data_6, *(struct in6_addr *)from->ip6 ) : NULL;
+		case NA_IP6:
+			return geoip_data_6 ? GeoIP_country_name_by_ipnum_v6( geoip_data_6, *( struct in6_addr * )from->ip6 ) : NULL;
 
-	default:
-		return NULL;
+		default:
+			return NULL;
 	}
 }
 
-static GeoIP *NET_GeoIP_LoadData (int db)
+static GeoIP *NET_GeoIP_LoadData( int db )
 {
-	GeoIP *data = GeoIP_open_type (db, GEOIP_INDEX_CACHE);
+	GeoIP *data = GeoIP_open_type( db, GEOIP_INDEX_CACHE );
 
-	if (!data)
+	if ( !data )
 	{
-		data = GeoIP_open_type (db, GEOIP_MEMORY_CACHE);
+		data = GeoIP_open_type( db, GEOIP_MEMORY_CACHE );
 	}
 
 	return data;

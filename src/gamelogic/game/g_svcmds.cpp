@@ -63,13 +63,13 @@ void Svcmd_EntityFire_f( void )
 
 	selection = &g_entities[entityNum];
 
-	if (!selection->inuse)
+	if ( !selection->inuse )
 	{
-		G_Printf("entity slot %d is not in use\n", entityNum);
+		G_Printf( "entity slot %d is not in use\n", entityNum );
 		return;
 	}
 
-	if( trap_Argc() >= 3 )
+	if ( trap_Argc() >= 3 )
 	{
 		trap_Argv( 2, argument, sizeof( argument ) );
 		callDefinition.action = argument;
@@ -78,22 +78,24 @@ void Svcmd_EntityFire_f( void )
 
 	G_Printf( "firing %s:%s\n", etos( selection ), callDefinition.action ? callDefinition.action : "default" );
 
-	if(selection->names[0])
+	if ( selection->names[0] )
+	{
 		callDefinition.name = selection->names[0];
+	}
 
 	call.definition = &callDefinition;
 	call.caller = &g_entities[ ENTITYNUM_NONE ];
 	call.activator = &g_entities[ ENTITYNUM_NONE ] ;
 
-	G_CallEntity(selection, &call);
+	G_CallEntity( selection, &call );
 }
 
 
 STATIC_INLINE void PrintEntityOverviewLine( gentity_t *entity )
 {
 	G_Printf( "%3i: %15s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s%s\n",
-			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
-			entity->names[0] ? entity->names[0] : "", entity->names[1] ? " …" : "");
+	          entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
+	          entity->names[0] ? entity->names[0] : "", entity->names[1] ? " …" : "" );
 }
 
 /*
@@ -110,95 +112,103 @@ void Svcmd_EntityShow_f( void )
 	char argument[ 6 ];
 
 
-	if (trap_Argc() != 2)
+	if ( trap_Argc() != 2 )
 	{
-		G_Printf("usage: entityShow <entityId>\n");
+		G_Printf( "usage: entityShow <entityId>\n" );
 		return;
 	}
 
 	trap_Argv( 1, argument, sizeof( argument ) );
 	entityNum = atoi( argument );
 
-	if (entityNum >= level.num_entities || entityNum < MAX_CLIENTS)
+	if ( entityNum >= level.num_entities || entityNum < MAX_CLIENTS )
 	{
-		G_Printf("entityId %d is out of range\n", entityNum);
+		G_Printf( "entityId %d is out of range\n", entityNum );
 		return;
 	}
 
 	selection = &g_entities[entityNum];
 
-	if (!selection->inuse)
+	if ( !selection->inuse )
 	{
-		G_Printf("entity slot %d is unused/free\n", entityNum);
+		G_Printf( "entity slot %d is unused/free\n", entityNum );
 		return;
 	}
 
 	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
 	G_Printf( S_COLOR_CYAN "#%3i" S_COLOR_WHITE ": %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
-	if (IS_NON_NULL_VEC3(selection->s.origin))
+
+	if ( IS_NON_NULL_VEC3( selection->s.origin ) )
 	{
-		G_Printf("%26s", vtos( selection->s.origin ) );
+		G_Printf( "%26s", vtos( selection->s.origin ) );
 	}
+
 	G_Printf( "\n⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
 	G_Printf( "Classname: " S_COLOR_CYAN "%s" S_COLOR_WHITE "\n", selection->classname );
 	G_Printf( "Capabilities:%s%s%s%s%s%s%s\n\n",
-			selection->act ? " acts" : "",
-			selection->think ? " thinks" : "",
-			selection->pain ? " pains" : "",
-			selection->die ? " dies" : "",
-			selection->reset ? " resets" : "",
-			selection->touch ? " touchable" : "",
-			selection->use ? " usable" : "");
-	if (selection->names[0])
+	          selection->act ? " acts" : "",
+	          selection->think ? " thinks" : "",
+	          selection->pain ? " pains" : "",
+	          selection->die ? " dies" : "",
+	          selection->reset ? " resets" : "",
+	          selection->touch ? " touchable" : "",
+	          selection->use ? " usable" : "" );
+
+	if ( selection->names[0] )
 	{
-		G_Printf( "Names: ");
+		G_Printf( "Names: " );
 		G_PrintEntityNameList( selection );
 	}
 
-	G_Printf("State: %s\n", selection->enabled ? "enabled" : "disabled");
+	G_Printf( "State: %s\n", selection->enabled ? "enabled" : "disabled" );
 
-	if (selection->groupName)
+	if ( selection->groupName )
 	{
-		G_Printf("Member of Group: %s%s\n", selection->groupName, !selection->groupMaster ? " [master]" : "");
+		G_Printf( "Member of Group: %s%s\n", selection->groupName, !selection->groupMaster ? " [master]" : "" );
 	}
 
-	G_Printf( "\n");
+	G_Printf( "\n" );
 
-	if(selection->targetCount)
+	if ( selection->targetCount )
 	{
-		G_Printf( "Aims at\n");
+		G_Printf( "Aims at\n" );
 
-		while ((possibleTarget = G_IterateTargets(possibleTarget, &targetIndex, selection)) != NULL )
+		while ( ( possibleTarget = G_IterateTargets( possibleTarget, &targetIndex, selection ) ) != NULL )
 		{
-			G_Printf(" • %s %s\n", etos( possibleTarget ), vtos( possibleTarget->s.origin));
+			G_Printf( " • %s %s\n", etos( possibleTarget ), vtos( possibleTarget->s.origin ) );
 		}
-		G_Printf( "\n");
+
+		G_Printf( "\n" );
 	}
 
-	if(selection->callTargetCount)
+	if ( selection->callTargetCount )
 	{
 		lastTargetIndex = -1;
-		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex, selection)) != NULL )
+
+		while ( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, selection ) ) != NULL )
 		{
 
-			if(lastTargetIndex != targetIndex)
+			if ( lastTargetIndex != targetIndex )
 			{
-				G_Printf("Calls %s \"%s:%s\"\n",
-						selection->calltargets[ targetIndex ].event ? selection->calltargets[ targetIndex ].event : "onUnknown",
-						selection->calltargets[ targetIndex ].name,
-						selection->calltargets[ targetIndex ].action ? selection->calltargets[ targetIndex ].action : "default");
+				G_Printf( "Calls %s \"%s:%s\"\n",
+				          selection->calltargets[ targetIndex ].event ? selection->calltargets[ targetIndex ].event : "onUnknown",
+				          selection->calltargets[ targetIndex ].name,
+				          selection->calltargets[ targetIndex ].action ? selection->calltargets[ targetIndex ].action : "default" );
 				lastTargetIndex = targetIndex;
 			}
 
-			G_Printf(" • %s", etos(possibleTarget));
-			if(possibleTarget->names[1])
+			G_Printf( " • %s", etos( possibleTarget ) );
+
+			if ( possibleTarget->names[1] )
 			{
-				G_Printf(" using \"%s\" ∈ ", selection->calltargets[ targetIndex ].name);
+				G_Printf( " using \"%s\" ∈ ", selection->calltargets[ targetIndex ].name );
 				G_PrintEntityNameList( possibleTarget );
 			}
-			G_Printf("\n");
+
+			G_Printf( "\n" );
 		}
 	}
+
 	G_Printf( "\n" );
 }
 
@@ -218,7 +228,7 @@ void  Svcmd_EntityList_f( void )
 
 	displayedEntity = g_entities;
 
-	if(trap_Argc() > 1)
+	if ( trap_Argc() > 1 )
 	{
 		filter = ConcatArgs( 1 );
 	}
@@ -233,24 +243,27 @@ void  Svcmd_EntityList_f( void )
 		{
 			continue;
 		}
+
 		currentEntityCount++;
 
-		if(filter && !Com_Filter(filter, displayedEntity->classname, qfalse) )
+		if ( filter && !Com_Filter( filter, displayedEntity->classname, qfalse ) )
 		{
-			for (i = 0; i < MAX_ENTITY_ALIASES && displayedEntity->names[i]; ++i)
+			for ( i = 0; i < MAX_ENTITY_ALIASES && displayedEntity->names[i]; ++i )
 			{
-				if( Com_Filter(filter, displayedEntity->names[i], qfalse) )
+				if ( Com_Filter( filter, displayedEntity->names[i], qfalse ) )
 				{
 					PrintEntityOverviewLine( displayedEntity );
 					break;
 				}
 			}
+
 			continue;
 		}
+
 		PrintEntityOverviewLine( displayedEntity );
 	}
 
-	G_Printf( "A total of %i entities are currently in use.\n", currentEntityCount);
+	G_Printf( "A total of %i entities are currently in use.\n", currentEntityCount );
 }
 
 static gclient_t *ClientForString( char *s )
@@ -402,12 +415,12 @@ static void Svcmd_AdmitDefeat_f( void )
 	if ( team == TEAM_ALIENS )
 	{
 		G_TeamCommand( TEAM_ALIENS, "cp \"Hivemind Link Broken\" 1" );
-		trap_SendServerCommand( -1, "print_tr \"" N_("Alien team has admitted defeat\n") "\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_( "Alien team has admitted defeat\n" ) "\"" );
 	}
 	else if ( team == TEAM_HUMANS )
 	{
 		G_TeamCommand( TEAM_HUMANS, "cp \"Life Support Terminated\" 1" );
-		trap_SendServerCommand( -1, "print_tr \"" N_("Human team has admitted defeat\n") "\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_( "Human team has admitted defeat\n" ) "\"" );
 	}
 	else
 	{
@@ -415,8 +428,8 @@ static void Svcmd_AdmitDefeat_f( void )
 		return;
 	}
 
-	level.surrenderTeam = (team_t) team;
-	G_BaseSelfDestruct( (team_t) team );
+	level.surrenderTeam = ( team_t ) team;
+	G_BaseSelfDestruct( ( team_t ) team );
 }
 
 static void Svcmd_TeamWin_f( void )
@@ -432,6 +445,7 @@ static void Svcmd_TeamWin_f( void )
 	{
 		G_BaseSelfDestruct( TEAM_HUMANS );
 	}
+
 	if ( TEAM_HUMANS == team )
 	{
 		G_BaseSelfDestruct( TEAM_ALIENS );
@@ -440,7 +454,7 @@ static void Svcmd_TeamWin_f( void )
 
 static void Svcmd_Evacuation_f( void )
 {
-	trap_SendServerCommand( -1, "print_tr \"" N_("Evacuation ordered\n") "\"" );
+	trap_SendServerCommand( -1, "print_tr \"" N_( "Evacuation ordered\n" ) "\"" );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
 	G_notify_sensor_end( TEAM_NONE );
@@ -631,7 +645,8 @@ static void Svcmd_PrintQueue_f( void )
 
 	trap_Argv( 1, teamName, sizeof( teamName ) );
 
-	team = G_TeamFromString(teamName);
+	team = G_TeamFromString( teamName );
+
 	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 	{
 		G_PrintSpawnQueue( &level.team[ team ].spawnQueue );
@@ -729,8 +744,8 @@ qboolean  ConsoleCommand( void )
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	command = (struct svcmd*) bsearch( cmd, svcmds, ARRAY_LEN( svcmds ),
-	                   sizeof( struct svcmd ), cmdcmp );
+	command = ( struct svcmd* ) bsearch( cmd, svcmds, ARRAY_LEN( svcmds ),
+	                                     sizeof( struct svcmd ), cmdcmp );
 
 	if ( !command )
 	{

@@ -124,7 +124,7 @@ void GL_TextureMode( const char *string )
 	// change all the existing mipmap texture objects
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = (image_t*) Com_GrowListElement( &tr.images, i );
+		image = ( image_t* ) Com_GrowListElement( &tr.images, i );
 
 		if ( image->filterType == FT_DEFAULT )
 		{
@@ -159,7 +159,7 @@ void R_ImageList_f( void )
 	{
 		"no ", "yes"
 	};
-	const char *filter = ri.Cmd_Argc() > 1 ? ri.Cmd_Argv(1) : NULL;
+	const char *filter = ri.Cmd_Argc() > 1 ? ri.Cmd_Argv( 1 ) : NULL;
 
 	ri.Printf( PRINT_ALL, "\n      -w-- -h-- -mm- -type-   -if-- wrap --name-------\n" );
 
@@ -168,7 +168,7 @@ void R_ImageList_f( void )
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = (image_t*) Com_GrowListElement( &tr.images, i );
+		image = ( image_t* ) Com_GrowListElement( &tr.images, i );
 		char buffer[ MAX_TOKEN_CHARS ];
 		std::string out;
 
@@ -178,8 +178,9 @@ void R_ImageList_f( void )
 		}
 
 		Com_sprintf( buffer, sizeof( buffer ), "%4i: %4i %4i  %s   ",
-		           i, image->uploadWidth, image->uploadHeight, yesno[ image->filterType == FT_DEFAULT ] );
+		             i, image->uploadWidth, image->uploadHeight, yesno[ image->filterType == FT_DEFAULT ] );
 		out += buffer;
+
 		switch ( image->type )
 		{
 			case GL_TEXTURE_2D:
@@ -566,22 +567,22 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 
 	outWidth = inWidth >> 1;
 	outHeight = inHeight >> 1;
-	temp = (unsigned int*) ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
-	outpix = (byte *) temp;
+	temp = ( unsigned int* ) ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
+	outpix = ( byte * ) temp;
 
 	inWidthMask = ( inWidth << 2 ) - 1; // applied to row indices
 	inHeightMask = inHeight - 1; // applied to in indices
 
-	row[ 1 ] = (byte *) &in[( -1 & inHeightMask ) * inWidth ];
-	row[ 2 ] = (byte *) &in[   0                            ];
-	row[ 3 ] = (byte *) &in[(  1 & inHeightMask ) * inWidth ];
+	row[ 1 ] = ( byte * ) &in[( -1 & inHeightMask ) * inWidth ];
+	row[ 2 ] = ( byte * ) &in[   0                            ];
+	row[ 3 ] = ( byte * ) &in[( 1 & inHeightMask ) * inWidth ];
 
 	for ( i = 0; i < inHeight; i += 2 ) // count source, row pairs
 	{
 		row[ 0 ] = row[ 1 ];
 		row[ 1 ] = row[ 2 ];
 		row[ 2 ] = row[ 3 ];
-		row[ 3 ] = (byte *) &in[ ( ( i + 2 ) & inHeightMask ) * inWidth ];
+		row[ 3 ] = ( byte * ) &in[( ( i + 2 ) & inHeightMask ) * inWidth ];
 
 		for ( j = 0; j < inWidth * 4; j += 8 ) // count source, bytes comprising texel pairs
 		{
@@ -592,9 +593,9 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 				const int kp2 = ( k + 8 ) & inWidthMask;
 
 				*outpix++ = ( 1 * row[ 0 ][ km1 ] + 2 * row[ 0 ][ k   ] + 2 * row[ 0 ][ kp1 ] + 1 * row[ 0 ][ kp2 ] +
-						2 * row[ 1 ][ km1 ] + 4 * row[ 1 ][ k   ] + 4 * row[ 1 ][ kp1 ] + 2 * row[ 1 ][ kp2 ] +
-						2 * row[ 2 ][ km1 ] + 4 * row[ 2 ][ k   ] + 4 * row[ 2 ][ kp1 ] + 2 * row[ 2 ][ kp2 ] +
-						1 * row[ 3 ][ km1 ] + 2 * row[ 3 ][ k   ] + 2 * row[ 3 ][ kp1 ] + 1 * row[ 3 ][ kp2 ] ) / 36;
+				              2 * row[ 1 ][ km1 ] + 4 * row[ 1 ][ k   ] + 4 * row[ 1 ][ kp1 ] + 2 * row[ 1 ][ kp2 ] +
+				              2 * row[ 2 ][ km1 ] + 4 * row[ 2 ][ k   ] + 4 * row[ 2 ][ kp1 ] + 2 * row[ 2 ][ kp2 ] +
+				              1 * row[ 3 ][ km1 ] + 2 * row[ 3 ][ k   ] + 2 * row[ 3 ][ kp1 ] + 1 * row[ 3 ][ kp2 ] ) / 36;
 			}
 		}
 	}
@@ -799,63 +800,176 @@ R_UnpackDXT5A( const byte *in, byte *out )
 	unsigned int bits0, bits1, val;
 	int i;
 
-	bits0 = in[2] + (in[3] << 8) + (in[4] << 16);
-	bits1 = in[5] + (in[6] << 8) + (in[7] << 16);
+	bits0 = in[2] + ( in[3] << 8 ) + ( in[4] << 16 );
+	bits1 = in[5] + ( in[6] << 8 ) + ( in[7] << 16 );
 
-	if( in[0] > in[1] ) {
-		for( i = 0; i < 8; i++ ) {
-			val = bits0 & 7; bits0 >>= 3;
-			switch( val ) {
-			case 0: val = in[0]; break;
-			case 1: val = in[1]; break;
-			case 2: val = (6 * in[0] + 1 * in[1]) / 7; break;
-			case 3: val = (5 * in[0] + 2 * in[1]) / 7; break;
-			case 4: val = (4 * in[0] + 3 * in[1]) / 7; break;
-			case 5: val = (3 * in[0] + 4 * in[1]) / 7; break;
-			case 6: val = (2 * in[0] + 5 * in[1]) / 7; break;
-			case 7: val = (1 * in[0] + 6 * in[1]) / 7; break;
+	if ( in[0] > in[1] )
+	{
+		for ( i = 0; i < 8; i++ )
+		{
+			val = bits0 & 7;
+			bits0 >>= 3;
+
+			switch ( val )
+			{
+				case 0:
+					val = in[0];
+					break;
+
+				case 1:
+					val = in[1];
+					break;
+
+				case 2:
+					val = ( 6 * in[0] + 1 * in[1] ) / 7;
+					break;
+
+				case 3:
+					val = ( 5 * in[0] + 2 * in[1] ) / 7;
+					break;
+
+				case 4:
+					val = ( 4 * in[0] + 3 * in[1] ) / 7;
+					break;
+
+				case 5:
+					val = ( 3 * in[0] + 4 * in[1] ) / 7;
+					break;
+
+				case 6:
+					val = ( 2 * in[0] + 5 * in[1] ) / 7;
+					break;
+
+				case 7:
+					val = ( 1 * in[0] + 6 * in[1] ) / 7;
+					break;
 			}
+
 			out[ i ] = val;
 
-			val = bits1 & 7; bits1 >>= 3;
-			switch( val ) {
-			case 0: val = in[0]; break;
-			case 1: val = in[1]; break;
-			case 2: val = (6 * in[0] + 1 * in[1]) / 7; break;
-			case 3: val = (5 * in[0] + 2 * in[1]) / 7; break;
-			case 4: val = (4 * in[0] + 3 * in[1]) / 7; break;
-			case 5: val = (3 * in[0] + 4 * in[1]) / 7; break;
-			case 6: val = (2 * in[0] + 5 * in[1]) / 7; break;
-			case 7: val = (1 * in[0] + 6 * in[1]) / 7; break;
+			val = bits1 & 7;
+			bits1 >>= 3;
+
+			switch ( val )
+			{
+				case 0:
+					val = in[0];
+					break;
+
+				case 1:
+					val = in[1];
+					break;
+
+				case 2:
+					val = ( 6 * in[0] + 1 * in[1] ) / 7;
+					break;
+
+				case 3:
+					val = ( 5 * in[0] + 2 * in[1] ) / 7;
+					break;
+
+				case 4:
+					val = ( 4 * in[0] + 3 * in[1] ) / 7;
+					break;
+
+				case 5:
+					val = ( 3 * in[0] + 4 * in[1] ) / 7;
+					break;
+
+				case 6:
+					val = ( 2 * in[0] + 5 * in[1] ) / 7;
+					break;
+
+				case 7:
+					val = ( 1 * in[0] + 6 * in[1] ) / 7;
+					break;
 			}
+
 			out[ i + 8 ] = val;
 		}
-	} else {
-		for( i = 0; i < 8; i++ ) {
-			val = bits0 & 7; bits0 >>= 3;
-			switch( val ) {
-			case 0: val = in[0]; break;
-			case 1: val = in[1]; break;
-			case 2: val = (4 * in[0] + 1 * in[1]) / 5; break;
-			case 3: val = (3 * in[0] + 2 * in[1]) / 5; break;
-			case 4: val = (2 * in[0] + 3 * in[1]) / 5; break;
-			case 5: val = (1 * in[0] + 4 * in[1]) / 5; break;
-			case 6: val = 0;                           break;
-			case 7: val = 0xff;                        break;
+	}
+	else
+	{
+		for ( i = 0; i < 8; i++ )
+		{
+			val = bits0 & 7;
+			bits0 >>= 3;
+
+			switch ( val )
+			{
+				case 0:
+					val = in[0];
+					break;
+
+				case 1:
+					val = in[1];
+					break;
+
+				case 2:
+					val = ( 4 * in[0] + 1 * in[1] ) / 5;
+					break;
+
+				case 3:
+					val = ( 3 * in[0] + 2 * in[1] ) / 5;
+					break;
+
+				case 4:
+					val = ( 2 * in[0] + 3 * in[1] ) / 5;
+					break;
+
+				case 5:
+					val = ( 1 * in[0] + 4 * in[1] ) / 5;
+					break;
+
+				case 6:
+					val = 0;
+					break;
+
+				case 7:
+					val = 0xff;
+					break;
 			}
+
 			out[ i ] = val;
 
-			val = bits1 & 7; bits1 >>= 3;
-			switch( val ) {
-			case 0: val = in[0]; break;
-			case 1: val = in[1]; break;
-			case 2: val = (4 * in[0] + 1 * in[1]) / 5; break;
-			case 3: val = (3 * in[0] + 2 * in[1]) / 5; break;
-			case 4: val = (2 * in[0] + 3 * in[1]) / 5; break;
-			case 5: val = (1 * in[0] + 4 * in[1]) / 5; break;
-			case 6: val = 0;                           break;
-			case 7: val = 0xff;                        break;
+			val = bits1 & 7;
+			bits1 >>= 3;
+
+			switch ( val )
+			{
+				case 0:
+					val = in[0];
+					break;
+
+				case 1:
+					val = in[1];
+					break;
+
+				case 2:
+					val = ( 4 * in[0] + 1 * in[1] ) / 5;
+					break;
+
+				case 3:
+					val = ( 3 * in[0] + 2 * in[1] ) / 5;
+					break;
+
+				case 4:
+					val = ( 2 * in[0] + 3 * in[1] ) / 5;
+					break;
+
+				case 5:
+					val = ( 1 * in[0] + 4 * in[1] ) / 5;
+					break;
+
+				case 6:
+					val = 0;
+					break;
+
+				case 7:
+					val = 0xff;
+					break;
 			}
+
 			out[ i + 8 ] = val;
 		}
 	}
@@ -870,72 +984,107 @@ R_PackDXT1_Green( const byte *in, byte *out )
 	unsigned int bits0, bits1;
 
 	min = max = in[ 0 ];
-	for( i = 1; i < 16; i++ ) {
-		if( in[ i ] < min )
+
+	for ( i = 1; i < 16; i++ )
+	{
+		if ( in[ i ] < min )
+		{
 			min = in[ i ];
-		if( in[ i ] > max )
+		}
+
+		if ( in[ i ] > max )
+		{
 			max = in[ i ];
+		}
 	}
 
 	// truncate min and max to 6 bits
-	i = (max - min) >> 3;
-	min = (min + i) & 0xfc;
-	max = (max - i) & 0xfc;
-	if( min == max ) {
-		if( max == 0xfc ) {
+	i = ( max - min ) >> 3;
+	min = ( min + i ) & 0xfc;
+	max = ( max - i ) & 0xfc;
+
+	if ( min == max )
+	{
+		if ( max == 0xfc )
+		{
 			min -= 4;
-		} else {
+		}
+		else
+		{
 			max += 4;
 		}
 	}
+
 	min |= min >> 6;
 	max |= max >> 6;
 
 	// find best match for every pixel
-	lim1 = (max + 5 * min) / 6;
-	lim2 = (max + min) / 2;
-	lim3 = (5 * max + min) / 6;
+	lim1 = ( max + 5 * min ) / 6;
+	lim2 = ( max + min ) / 2;
+	lim3 = ( 5 * max + min ) / 6;
 	bits0 = bits1 = 0;
-	for( i = 7; i >= 0; i-- ) {
+
+	for ( i = 7; i >= 0; i-- )
+	{
 		bits0 <<= 2;
 		bits1 <<= 2;
-		if( in[ i ] > lim2 ) {
-			if( in[ i ] > lim3 ) {
+
+		if ( in[ i ] > lim2 )
+		{
+			if ( in[ i ] > lim3 )
+			{
 				bits0 |= 0;
-			} else {
+			}
+			else
+			{
 				bits0 |= 2;
 			}
-		} else {
-			if( in[ i ] > lim1 ) {
+		}
+		else
+		{
+			if ( in[ i ] > lim1 )
+			{
 				bits0 |= 3;
-			} else {
+			}
+			else
+			{
 				bits0 |= 1;
 			}
 		}
-		if( in[ i + 8 ] > lim2 ) {
-			if( in[ i + 8 ] > lim3 ) {
+
+		if ( in[ i + 8 ] > lim2 )
+		{
+			if ( in[ i + 8 ] > lim3 )
+			{
 				bits1 |= 0;
-			} else {
+			}
+			else
+			{
 				bits1 |= 2;
 			}
-		} else {
-			if( in[ i + 8 ] > lim1 ) {
+		}
+		else
+		{
+			if ( in[ i + 8 ] > lim1 )
+			{
 				bits1 |= 3;
-			} else {
+			}
+			else
+			{
 				bits1 |= 1;
 			}
 		}
 	}
 
 	// write back DXT1 format data into out[]
-	out[0] = (max & 0x1c) << 3;
-	out[1] = 0xf8 | (max >> 5);
-	out[2] = (min & 0x1c) << 3;
-	out[3] = 0xf8 | (min >> 5);
+	out[0] = ( max & 0x1c ) << 3;
+	out[1] = 0xf8 | ( max >> 5 );
+	out[2] = ( min & 0x1c ) << 3;
+	out[3] = 0xf8 | ( min >> 5 );
 	out[4] = bits0 & 0xff;
-	out[5] = (bits0 >> 8) & 0xff;
+	out[5] = ( bits0 >> 8 ) & 0xff;
 	out[6] = bits1 & 0xff;
-	out[7] = (bits1 >> 8) & 0xff;
+	out[7] = ( bits1 >> 8 ) & 0xff;
 }
 
 /*
@@ -949,8 +1098,8 @@ XY as vec2(tex.x * tex.a, tex.y).
 ==================
 */
 static void
-R_ConvertBC5Image(const byte **in, byte **out, int numMips, int numLayers,
-		  int width, int height, qboolean is3D )
+R_ConvertBC5Image( const byte **in, byte **out, int numMips, int numLayers,
+                   int width, int height, qboolean is3D )
 {
 	int blocks = 0;
 	int mipWidth, mipHeight, mipLayers, mipSize;
@@ -962,33 +1111,47 @@ R_ConvertBC5Image(const byte **in, byte **out, int numMips, int numLayers,
 	mipWidth = width;
 	mipHeight = height;
 	mipLayers = numLayers;
-	for ( i = 0; i < numMips; i++ ) {
-		mipSize = ((mipWidth + 3) >> 2) * ((mipHeight + 3) >> 2);
+
+	for ( i = 0; i < numMips; i++ )
+	{
+		mipSize = ( ( mipWidth + 3 ) >> 2 ) * ( ( mipHeight + 3 ) >> 2 );
 
 		blocks += mipSize * mipLayers;
 
-		if( mipWidth > 1 )
+		if ( mipWidth > 1 )
+		{
 			mipWidth >>= 1;
-		if( mipHeight > 1 )
+		}
+
+		if ( mipHeight > 1 )
+		{
 			mipHeight >>= 1;
-		if( is3D && mipLayers > 1 )
+		}
+
+		if ( is3D && mipLayers > 1 )
+		{
 			mipLayers >>= 1;
+		}
 	}
 
-	*out = to = (byte *)ri.Hunk_AllocateTempMemory( blocks * 16 );
+	*out = to = ( byte * )ri.Hunk_AllocateTempMemory( blocks * 16 );
 
 	// Convert each mipmap
 	mipWidth = width;
 	mipHeight = height;
 	mipLayers = numLayers;
-	for ( i = 0; i < numMips; i++ ) {
-		mipSize = ((mipWidth + 3) >> 2) * ((mipHeight + 3) >> 2);
 
-		for( j = 0; j < mipLayers; j++ ) {
+	for ( i = 0; i < numMips; i++ )
+	{
+		mipSize = ( ( mipWidth + 3 ) >> 2 ) * ( ( mipHeight + 3 ) >> 2 );
+
+		for ( j = 0; j < mipLayers; j++ )
+		{
 			from = in[ i * numLayers + j ];
 			in [ i * numLayers + j ] = to;
 
-			for( k = 0; k < mipSize; k++ ) {
+			for ( k = 0; k < mipSize; k++ )
+			{
 				// red channel is unchanged
 				Com_Memcpy( to, from, 8 );
 
@@ -996,16 +1159,25 @@ R_ConvertBC5Image(const byte **in, byte **out, int numMips, int numLayers,
 				R_UnpackDXT5A( from + 8, data );
 				R_PackDXT1_Green( data, to + 8 );
 
-				from += 16; to += 16;
+				from += 16;
+				to += 16;
 			}
 		}
 
-		if( mipWidth > 1 )
+		if ( mipWidth > 1 )
+		{
 			mipWidth >>= 1;
-		if( mipHeight > 1 )
+		}
+
+		if ( mipHeight > 1 )
+		{
 			mipHeight >>= 1;
-		if( is3D && mipLayers > 1 )
+		}
+
+		if ( is3D && mipLayers > 1 )
+		{
 			mipLayers >>= 1;
+		}
 	}
 }
 
@@ -1022,7 +1194,7 @@ the dataArray for every mip level, the unneeded elements at the end aren't used.
 ===============
 */
 void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
-		    image_t *image )
+                    image_t *image )
 {
 	const byte *data;
 	byte       *scaledBuffer = NULL;
@@ -1039,7 +1211,9 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	static const vec4_t alphaZeroClampBorder = { 0, 0, 0, 0 };
 
 	if ( numMips <= 0 )
+	{
 		numMips = 1;
+	}
 
 	GL_Bind( image );
 
@@ -1076,13 +1250,17 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	if ( !( image->bits & IF_NOPICMIP ) )
 	{
 		int picmip = r_picmip->integer;
-		if( picmip < 0 )
+
+		if ( picmip < 0 )
+		{
 			picmip = 0;
+		}
 
 		scaledWidth >>= picmip;
 		scaledHeight >>= picmip;
 
-		if( dataArray && numMips > picmip ) {
+		if ( dataArray && numMips > picmip )
+		{
 			dataArray += numLayers * picmip;
 			numMips -= picmip;
 		}
@@ -1159,7 +1337,8 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	}
 	else if ( image->bits & ( IF_RGBA16F | IF_RGBA32F | IF_RGBA16 | IF_TWOCOMP16F | IF_TWOCOMP32F | IF_ONECOMP16F | IF_ONECOMP32F ) )
 	{
-		if( !glConfig2.textureFloatAvailable ) {
+		if ( !glConfig2.textureFloatAvailable )
+		{
 			ri.Printf( PRINT_WARNING, "WARNING: floating point image '%s' cannot be loaded\n", image->name );
 			internalFormat = GL_RGBA8;
 		}
@@ -1174,12 +1353,12 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 		else if ( image->bits & IF_TWOCOMP16F )
 		{
 			internalFormat = glConfig2.textureRGAvailable ?
-			  GL_RG16F : GL_LUMINANCE_ALPHA16F_ARB;
+			                 GL_RG16F : GL_LUMINANCE_ALPHA16F_ARB;
 		}
 		else if ( image->bits & IF_TWOCOMP32F )
 		{
 			internalFormat = glConfig2.textureRGAvailable ?
-			  GL_RG32F : GL_LUMINANCE_ALPHA32F_ARB;
+			                 GL_RG32F : GL_LUMINANCE_ALPHA32F_ARB;
 		}
 		else if ( image->bits & IF_RGBA16 )
 		{
@@ -1188,59 +1367,69 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 		else if ( image->bits & IF_ONECOMP16F )
 		{
 			internalFormat = glConfig2.textureRGAvailable ?
-			  GL_R16F : GL_ALPHA16F_ARB;
+			                 GL_R16F : GL_ALPHA16F_ARB;
 		}
 		else if ( image->bits & IF_ONECOMP32F )
 		{
 			internalFormat = glConfig2.textureRGAvailable ?
-			  GL_R32F : GL_ALPHA32F_ARB;
+			                 GL_R32F : GL_ALPHA32F_ARB;
 		}
 	}
 	else if ( IsImageCompressed( image->bits ) )
 	{
-		if( !GLEW_EXT_texture_compression_dxt1 &&
-		    !GLEW_EXT_texture_compression_s3tc ) {
+		if ( !GLEW_EXT_texture_compression_dxt1 &&
+		        !GLEW_EXT_texture_compression_s3tc )
+		{
 			ri.Printf( PRINT_WARNING, "WARNING: compressed image '%s' cannot be loaded\n", image->name );
 			internalFormat = GL_RGBA8;
 		}
-		else if( image->bits & IF_BC1 ) {
+		else if ( image->bits & IF_BC1 )
+		{
 			format = GL_NONE;
 			internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 			blockSize = 8;
 		}
-		else if ( image->bits & IF_BC3 ) {
+		else if ( image->bits & IF_BC3 )
+		{
 			format = GL_NONE;
 			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			blockSize = 16;
 		}
-		else if ( image->bits & IF_BC4 ) {
-			if( !GLEW_ARB_texture_compression_rgtc ) {
+		else if ( image->bits & IF_BC4 )
+		{
+			if ( !GLEW_ARB_texture_compression_rgtc )
+			{
 				format = GL_NONE;
 				internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 				blockSize = 8;
 
-				if( dataArray ) {
+				if ( dataArray )
+				{
 					// convert to BC1/dxt1
 				}
 			}
-			else {
+			else
+			{
 				format = GL_NONE;
 				internalFormat = GL_COMPRESSED_RED_RGTC1;
 				blockSize = 8;
 			}
 		}
-		else if ( image->bits & IF_BC5 ) {
-			if( !GLEW_ARB_texture_compression_rgtc ) {
+		else if ( image->bits & IF_BC5 )
+		{
+			if ( !GLEW_ARB_texture_compression_rgtc )
+			{
 				format = GL_NONE;
 				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 				blockSize = 16;
 
 				R_ConvertBC5Image( dataArray, &scaledBuffer,
-						   numMips, numLayers,
-						   scaledWidth, scaledHeight,
-						   image->type == GL_TEXTURE_3D );
+				                   numMips, numLayers,
+				                   scaledWidth, scaledHeight,
+				                   image->type == GL_TEXTURE_3D );
 			}
-			else {
+			else
+			{
 				format = GL_NONE;
 				internalFormat = GL_COMPRESSED_RG_RGTC2;
 				blockSize = 16;
@@ -1251,7 +1440,8 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	{
 		internalFormat = GL_RGBA8;
 	}
-	else if ( !dataArray ) {
+	else if ( !dataArray )
+	{
 		internalFormat = GL_RGBA8;
 	}
 	else
@@ -1339,34 +1529,54 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 	// 3D textures are uploaded in slices via glTexSubImage3D,
 	// so the storage has to be allocated before the loop
-	if( image->type == GL_TEXTURE_3D ) {
+	if ( image->type == GL_TEXTURE_3D )
+	{
 		mipWidth = scaledWidth;
 		mipHeight = scaledHeight;
 		mipLayers = numLayers;
 
-		for( i = 0; i < numMips; i++ ) {
+		for ( i = 0; i < numMips; i++ )
+		{
 			glTexImage3D( GL_TEXTURE_3D, i, internalFormat,
-				      scaledWidth, scaledHeight, mipLayers,
-				      0, format, GL_UNSIGNED_BYTE, NULL );
+			              scaledWidth, scaledHeight, mipLayers,
+			              0, format, GL_UNSIGNED_BYTE, NULL );
 
-			if( mipWidth  > 1 ) mipWidth  >>= 1;
-			if( mipHeight > 1 ) mipHeight >>= 1;
-			if( mipLayers > 1 ) mipLayers >>= 1;
+			if ( mipWidth  > 1 )
+			{
+				mipWidth  >>= 1;
+			}
+
+			if ( mipHeight > 1 )
+			{
+				mipHeight >>= 1;
+			}
+
+			if ( mipLayers > 1 )
+			{
+				mipLayers >>= 1;
+			}
 		}
 	}
 
-	if( format != GL_NONE ) {
-		if( dataArray )
-			scaledBuffer = (byte*) ri.Hunk_AllocateTempMemory( sizeof( byte ) * scaledWidth * scaledHeight * 4 );
+	if ( format != GL_NONE )
+	{
+		if ( dataArray )
+		{
+			scaledBuffer = ( byte* ) ri.Hunk_AllocateTempMemory( sizeof( byte ) * scaledWidth * scaledHeight * 4 );
+		}
 
 		for ( i = 0; i < numLayers; i++ )
 		{
-			if( dataArray )
+			if ( dataArray )
+			{
 				data = dataArray[ i ];
+			}
 			else
+			{
 				data = NULL;
+			}
 
-			if( scaledBuffer )
+			if ( scaledBuffer )
 			{
 				// copy or resample data as appropriate for first MIP level
 				if ( ( scaledWidth == image->width ) && ( scaledHeight == image->height ) )
@@ -1376,11 +1586,13 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				else
 				{
 					ResampleTexture( ( unsigned * ) data, image->width, image->height, ( unsigned * ) scaledBuffer, scaledWidth, scaledHeight,
-							 ( image->bits & IF_NORMALMAP ) );
+					                 ( image->bits & IF_NORMALMAP ) );
 				}
 
-				if( image->bits & IF_NORMALMAP ) {
+				if ( image->bits & IF_NORMALMAP )
+				{
 					c = scaledWidth * scaledHeight;
+
 					for ( i = 0; i < c; i++ )
 					{
 						vec3_t n;
@@ -1404,35 +1616,37 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 			switch ( image->type )
 			{
-			case GL_TEXTURE_3D:
-				glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i,
-						 scaledWidth, scaledHeight, 1,
-						 format, GL_UNSIGNED_BYTE,
-						 scaledBuffer );
-				break;
-			case GL_TEXTURE_CUBE_MAP:
-				glTexImage2D( target + i, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_BYTE,
-				              scaledBuffer );
-				break;
+				case GL_TEXTURE_3D:
+					glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i,
+					                 scaledWidth, scaledHeight, 1,
+					                 format, GL_UNSIGNED_BYTE,
+					                 scaledBuffer );
+					break;
 
-			default:
-				if ( image->bits & IF_PACKED_DEPTH24_STENCIL8 )
-				{
-					glTexImage2D( target, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_INT_24_8_EXT, NULL );
-				}
-				else
-				{
-					glTexImage2D( target, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_BYTE, scaledBuffer );
-				}
+				case GL_TEXTURE_CUBE_MAP:
+					glTexImage2D( target + i, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_BYTE,
+					              scaledBuffer );
+					break;
 
-				break;
+				default:
+					if ( image->bits & IF_PACKED_DEPTH24_STENCIL8 )
+					{
+						glTexImage2D( target, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_INT_24_8_EXT, NULL );
+					}
+					else
+					{
+						glTexImage2D( target, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_BYTE, scaledBuffer );
+					}
+
+					break;
 			}
 
 			if ( image->filterType == FT_DEFAULT )
 			{
 				if ( glConfig.driverType == GLDRV_OPENGL3 || glConfig2.framebufferObjectAvailable )
 				{
-					if( image->type != GL_TEXTURE_CUBE_MAP || i == 5 ) {
+					if ( image->type != GL_TEXTURE_CUBE_MAP || i == 5 )
+					{
 						glGenerateMipmapEXT( image->type );
 						glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
 					}
@@ -1488,21 +1702,23 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 						switch ( image->type )
 						{
-						case GL_TEXTURE_CUBE_MAP:
-							glTexImage2D( target + i, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
-							              scaledBuffer );
-							break;
+							case GL_TEXTURE_CUBE_MAP:
+								glTexImage2D( target + i, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
+								              scaledBuffer );
+								break;
 
-						default:
-							glTexImage2D( target, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
-							              scaledBuffer );
-							break;
+							default:
+								glTexImage2D( target, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
+								              scaledBuffer );
+								break;
 						}
 					}
 				}
 			}
 		}
-	} else {
+	}
+	else
+	{
 		// already compressed texture data, precomputed mipmaps must be
 		// in the data array
 		image->uploadWidth = scaledWidth;
@@ -1515,37 +1731,51 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 		for ( i = 0; i < numMips; i++ )
 		{
-			mipSize = ((mipWidth + 3) >> 2)
-			  * ((mipHeight + 3) >> 2) * blockSize;
+			mipSize = ( ( mipWidth + 3 ) >> 2 )
+			          * ( ( mipHeight + 3 ) >> 2 ) * blockSize;
 
-			for ( j = 0; j < mipLayers; j++ ) {
-				if( dataArray )
+			for ( j = 0; j < mipLayers; j++ )
+			{
+				if ( dataArray )
+				{
 					data = dataArray[ j * numMips + i ];
+				}
 				else
+				{
 					data = NULL;
+				}
 
 				switch ( image->type )
 				{
-				case GL_TEXTURE_3D:
-					glCompressedTexSubImage3D( GL_TEXTURE_3D, i, 0, 0, j,
-								   scaledWidth, scaledHeight, 1,
-								   internalFormat, mipSize, data );
-					break;
-				case GL_TEXTURE_CUBE_MAP:
-					glCompressedTexImage2D( target + j, i, internalFormat, mipWidth, mipHeight, 0, mipSize, data );
-					break;
+					case GL_TEXTURE_3D:
+						glCompressedTexSubImage3D( GL_TEXTURE_3D, i, 0, 0, j,
+						                           scaledWidth, scaledHeight, 1,
+						                           internalFormat, mipSize, data );
+						break;
 
-				default:
-					glCompressedTexImage2D( target, i, internalFormat, mipWidth, mipHeight, 0, mipSize, data );
-					break;
+					case GL_TEXTURE_CUBE_MAP:
+						glCompressedTexImage2D( target + j, i, internalFormat, mipWidth, mipHeight, 0, mipSize, data );
+						break;
+
+					default:
+						glCompressedTexImage2D( target, i, internalFormat, mipWidth, mipHeight, 0, mipSize, data );
+						break;
 				}
 
-				if( mipWidth > 1 )
+				if ( mipWidth > 1 )
+				{
 					mipWidth >>= 1;
-				if( mipHeight > 1 )
+				}
+
+				if ( mipHeight > 1 )
+				{
 					mipHeight >>= 1;
-				if( image->type == GL_TEXTURE_3D && mipLayers > 1 )
+				}
+
+				if ( image->type == GL_TEXTURE_3D && mipLayers > 1 )
+				{
 					mipLayers >>= 1;
+				}
 			}
 		}
 	}
@@ -1588,114 +1818,118 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 	// set wrap type
 	if ( image->wrapType.s == image->wrapType.t )
-        {
-                switch ( image->wrapType.s )
-                {
-                        case WT_REPEAT:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
-                                break;
+	{
+		switch ( image->wrapType.s )
+		{
+			case WT_REPEAT:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
+				break;
 
-                        case WT_CLAMP:
-                        case WT_EDGE_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-                                break;
-                        case WT_ONE_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
-                                break;
-                        case WT_ZERO_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
-                                break;
+			case WT_CLAMP:
+			case WT_EDGE_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				break;
 
-                        case WT_ALPHA_ZERO_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
-                                break;
+			case WT_ONE_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+				glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
+				break;
 
-                        default:
-                                ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s'\n", image->name );
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
-                                break;
-                }
-        } else {
-        	// warn about mismatched clamp types if both require a border colour to be set
-                if ( ( image->wrapType.s == WT_ZERO_CLAMP || image->wrapType.s == WT_ONE_CLAMP || image->wrapType.s == WT_ALPHA_ZERO_CLAMP ) &&
-	             ( image->wrapType.t == WT_ZERO_CLAMP || image->wrapType.t == WT_ONE_CLAMP || image->wrapType.t == WT_ALPHA_ZERO_CLAMP ) )
-        	{
-	                ri.Printf( PRINT_WARNING, "WARNING: mismatched wrap types for image '%s'\n", image->name );
-                }
+			case WT_ZERO_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+				glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
+				break;
 
-                switch ( image->wrapType.s )
-                {
-                        case WT_REPEAT:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
-                                break;
+			case WT_ALPHA_ZERO_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+				glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
+				break;
 
-                        case WT_CLAMP:
-                        case WT_EDGE_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-                                break;
+			default:
+				ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s'\n", image->name );
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
+				break;
+		}
+	}
+	else
+	{
+		// warn about mismatched clamp types if both require a border colour to be set
+		if ( ( image->wrapType.s == WT_ZERO_CLAMP || image->wrapType.s == WT_ONE_CLAMP || image->wrapType.s == WT_ALPHA_ZERO_CLAMP ) &&
+		        ( image->wrapType.t == WT_ZERO_CLAMP || image->wrapType.t == WT_ONE_CLAMP || image->wrapType.t == WT_ALPHA_ZERO_CLAMP ) )
+		{
+			ri.Printf( PRINT_WARNING, "WARNING: mismatched wrap types for image '%s'\n", image->name );
+		}
 
-                        case WT_ONE_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
-                                break;
+		switch ( image->wrapType.s )
+		{
+			case WT_REPEAT:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
+				break;
 
-                        case WT_ZERO_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
-                                break;
+			case WT_CLAMP:
+			case WT_EDGE_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				break;
 
-                        case WT_ALPHA_ZERO_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
-                                break;
+			case WT_ONE_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+				glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
+				break;
 
-                        default:
-                                ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s' axis S\n", image->name );
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
-                                break;
-                }
+			case WT_ZERO_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+				glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
+				break;
 
-                switch ( image->wrapType.t )
-                {
-                        case WT_REPEAT:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
-                                break;
+			case WT_ALPHA_ZERO_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+				glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
+				break;
 
-                        case WT_CLAMP:
-                        case WT_EDGE_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-                                break;
+			default:
+				ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s' axis S\n", image->name );
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
+				break;
+		}
 
-                        case WT_ONE_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
-                                break;
+		switch ( image->wrapType.t )
+		{
+			case WT_REPEAT:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
+				break;
 
-                        case WT_ZERO_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
-                                break;
+			case WT_CLAMP:
+			case WT_EDGE_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				break;
 
-                        case WT_ALPHA_ZERO_CLAMP:
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
-                                break;
+			case WT_ONE_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+				glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
+				break;
 
-                        default:
-                                ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s' axis T\n", image->name );
-                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
-                                break;
-                }
-        }
+			case WT_ZERO_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+				glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
+				break;
+
+			case WT_ALPHA_ZERO_CLAMP:
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+				glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
+				break;
+
+			default:
+				ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s' axis T\n", image->name );
+				glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
+				break;
+		}
+	}
 
 	GL_CheckErrors();
 
@@ -1724,7 +1958,7 @@ image_t        *R_AllocImage( const char *name, qboolean linkIntoHashTable )
 		return NULL;
 	}
 
-	image = (image_t*) ri.Hunk_Alloc( sizeof( image_t ), h_low );
+	image = ( image_t* ) ri.Hunk_Alloc( sizeof( image_t ), h_low );
 	Com_Memset( image, 0, sizeof( image_t ) );
 
 	glGenTextures( 1, &image->texnum );
@@ -1755,14 +1989,17 @@ static void R_ExportTexture( image_t *image )
 
 
 	Com_sprintf( path, sizeof( path ), "texexp/%s.ktx",
-		     image->name );
+	             image->name );
 
 	// quick and dirty sanitize path name
-	for( i = strlen( path ) - 1; i >= 7; i-- ) {
-		if( !isalnum( path[ i ] ) && path[ i ] != '.' && path[ i ] != '-' ) {
+	for ( i = strlen( path ) - 1; i >= 7; i-- )
+	{
+		if ( !isalnum( path[ i ] ) && path[ i ] != '.' && path[ i ] != '-' )
+		{
 			path[ i ] = 'z';
 		}
 	}
+
 	SaveImageKTX( path, image );
 }
 
@@ -1772,7 +2009,7 @@ R_CreateImage
 ================
 */
 image_t        *R_CreateImage( const char *name, const byte **pic, int width, int height,
-			       int numMips, int bits, filterType_t filterType, wrapType_t wrapType )
+                               int numMips, int bits, filterType_t filterType, wrapType_t wrapType )
 {
 	image_t *image;
 
@@ -1794,7 +2031,8 @@ image_t        *R_CreateImage( const char *name, const byte **pic, int width, in
 
 	R_UploadImage( pic, 1, numMips, image );
 
-	if( r_exportTextures->integer ) {
+	if ( r_exportTextures->integer )
+	{
 		R_ExportTexture( image );
 	}
 
@@ -1874,7 +2112,8 @@ image_t        *R_CreateCubeImage( const char *name,
 
 	R_UploadImage( pic, 6, 1, image );
 
-	if( r_exportTextures->integer ) {
+	if ( r_exportTextures->integer )
+	{
 		R_ExportTexture( image );
 	}
 
@@ -1887,10 +2126,10 @@ R_Create3DImage
 ================
 */
 image_t        *R_Create3DImage( const char *name,
-				 const byte *pic,
-				 int width, int height, int depth,
-				 int bits, filterType_t filterType,
-				 wrapType_t wrapType )
+                                 const byte *pic,
+                                 int width, int height, int depth,
+                                 int bits, filterType_t filterType,
+                                 wrapType_t wrapType )
 {
 	image_t *image;
 	const byte **pics;
@@ -1908,9 +2147,11 @@ image_t        *R_Create3DImage( const char *name,
 	image->width = width;
 	image->height = height;
 
-	pics = (const byte**) ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
-	for( i = 0; i < depth; i++ ) {
-		pics[i] = pic + i * width * height * sizeof(u8vec4_t);
+	pics = ( const byte** ) ri.Hunk_AllocateTempMemory( depth * sizeof( const byte * ) );
+
+	for ( i = 0; i < depth; i++ )
+	{
+		pics[i] = pic + i * width * height * sizeof( u8vec4_t );
 	}
 
 	image->bits = bits;
@@ -1921,7 +2162,8 @@ image_t        *R_Create3DImage( const char *name,
 
 	ri.Hunk_FreeTempMemory( pics );
 
-	if( r_exportTextures->integer ) {
+	if ( r_exportTextures->integer )
+	{
 		R_ExportTexture( image );
 	}
 
@@ -1959,8 +2201,8 @@ Loads any of the supported image types into a canonical
 =================
 */
 static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
-			 int *numLayers, int *numMips,
-			 int *bits, const char *materialName )
+                         int *numLayers, int *numMips,
+                         int *bits, const char *materialName )
 {
 	char *token;
 
@@ -2032,13 +2274,13 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
 	// prioritize with the pak priority
 	for ( i = 0; i < numImageLoaders; i++ )
 	{
-		std::string altName = Str::Format("%s.%s", filename, imageLoaders[i].ext);
-		const FS::PakInfo* pak = FS::PakPath::LocateFile(altName);
+		std::string altName = Str::Format( "%s.%s", filename, imageLoaders[i].ext );
+		const FS::PakInfo* pak = FS::PakPath::LocateFile( altName );
 
 		// We found a file and its pak is better than the best pak we have
 		// this relies on how the filesystem works internally and should be moved
 		// to a more explicit interface once there is one. (FIXME)
-		if ( pak != nullptr && (bestPak == nullptr || pak < bestPak ) )
+		if ( pak != nullptr && ( bestPak == nullptr || pak < bestPak ) )
 		{
 			bestPak = pak;
 			bestLoader = i;
@@ -2109,12 +2351,13 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	buffer_p = &buffer[ 0 ];
 	R_LoadImage( &buffer_p, pic, &width, &height, &numLayers, &numMips, &bits, materialName );
 
-	if ( (mallocPtr = pic[ 0 ]) == NULL || numLayers > 0 )
+	if ( ( mallocPtr = pic[ 0 ] ) == NULL || numLayers > 0 )
 	{
 		if ( mallocPtr )
 		{
 			ri.Free( mallocPtr );
 		}
+
 		return NULL;
 	}
 
@@ -2125,9 +2368,9 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 		bits |= IF_NOCOMPRESSION;
 	}
 
-	image = R_CreateImage( ( char * ) buffer, (const byte **)pic,
-			       width, height, numMips, bits,
-			       filterType, wrapType );
+	image = R_CreateImage( ( char * ) buffer, ( const byte ** )pic,
+	                       width, height, numMips, bits,
+	                       filterType, wrapType );
 
 	ri.Free( mallocPtr );
 	return image;
@@ -2135,7 +2378,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 
 static void R_Flip( byte *in, int width, int height )
 {
-	int32_t *data = (int32_t *) in;
+	int32_t *data = ( int32_t * ) in;
 	int x, y;
 
 	for ( y = 0; y < height; y++ )
@@ -2146,14 +2389,15 @@ static void R_Flip( byte *in, int width, int height )
 			data[ x ] = data[ width - 1 - x ];
 			data[ width - 1 - x ] = texel;
 		}
+
 		data += width;
 	}
 }
 
 static void R_Flop( byte *in, int width, int height )
 {
-	int32_t *upper = (int32_t *) in;
-	int32_t *lower = (int32_t *) in + ( height - 1 ) * width;
+	int32_t *upper = ( int32_t * ) in;
+	int32_t *lower = ( int32_t * ) in + ( height - 1 ) * width;
 	int     x, y;
 
 	for ( y = 0; y < height / 2; y++ )
@@ -2176,7 +2420,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 	int  x, y, x2, y2;
 	byte *out, *tmp;
 
-	tmp = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
+	tmp = ( byte* ) ri.Hunk_AllocateTempMemory( width * height * 4 );
 
 	// rotate into tmp buffer
 	for ( y = 0; y < height; y++ )
@@ -2247,7 +2491,7 @@ Tr3B: fear the use of goto
 */
 static void R_FreeCubePics( byte **pic, int count )
 {
-	while (--count >= 0)
+	while ( --count >= 0 )
 	{
 		if ( pic[ count ] )
 		{
@@ -2299,19 +2543,27 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 
 	// try to load .CRN cubemap
 	LoadCRN( buffer, pic, &width, &height, &numLayers, &numMips, &bits, 0 );
-	if( numLayers == 6 && pic[0] ) {
+
+	if ( numLayers == 6 && pic[0] )
+	{
 		numPicsToFree = 1;
 		goto createCubeImage;
-	} else {
+	}
+	else
+	{
 		R_FreeCubePics( pic, numLayers );
 	}
 
 	// try to load .KTX cubemap
 	LoadKTX( buffer, pic, &width, &height, &numLayers, &numMips, &bits, 0 );
-	if( numLayers == 6 && pic[0] ) {
+
+	if ( numLayers == 6 && pic[0] )
+	{
 		numPicsToFree = 1;
 		goto createCubeImage;
-	} else {
+	}
+	else
+	{
 		R_FreeCubePics( pic, numLayers );
 	}
 
@@ -2329,8 +2581,8 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
-		        goto skipCubeImage;
+			ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+			goto skipCubeImage;
 		}
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
@@ -2338,6 +2590,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 			image = NULL;
 			goto tryDoom3Suffices;
 		}
+
 		numPicsToFree = i;
 	}
 
@@ -2345,10 +2598,12 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 
 tryDoom3Suffices:
 
-	for ( i = 0; i < numPicsToFree; i++ ) {
+	for ( i = 0; i < numPicsToFree; i++ )
+	{
 		ri.Free( pic[i] );
 		pic[i] = NULL;
 	}
+
 	numPicsToFree = 0;
 
 	for ( i = 0; i < 6; i++ )
@@ -2360,8 +2615,8 @@ tryDoom3Suffices:
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
-		        goto skipCubeImage;
+			ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+			goto skipCubeImage;
 		}
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
@@ -2389,10 +2644,12 @@ tryDoom3Suffices:
 
 tryQuakeSuffices:
 
-	for ( i = 0; i < numPicsToFree; i++ ) {
+	for ( i = 0; i < numPicsToFree; i++ )
+	{
 		ri.Free( pic[i] );
 		pic[i] = NULL;
 	}
+
 	numPicsToFree = 0;
 
 	for ( i = 0; i < 6; i++ )
@@ -2404,8 +2661,8 @@ tryQuakeSuffices:
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
-		        goto skipCubeImage;
+			ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+			goto skipCubeImage;
 		}
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
@@ -2516,7 +2773,7 @@ static void R_CreateFogImage( void )
 	float d;
 	float borderColor[ 4 ];
 
-	ptr = data = (byte*) ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
+	ptr = data = ( byte* ) ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
 
 	// S is distance, T is depth
 	for ( y = 0; y < FOG_T; y++ )
@@ -2535,7 +2792,7 @@ static void R_CreateFogImage( void )
 	// the border color at the edges.  OpenGL 1.2 has clamp-to-edge, which does
 	// what we want.
 	tr.fogImage = R_CreateImage( "_fog", ( const byte ** ) &data,
-				     FOG_S, FOG_T, 1, IF_NOPICMIP, FT_LINEAR, WT_CLAMP );
+	                             FOG_S, FOG_T, 1, IF_NOPICMIP, FT_LINEAR, WT_CLAMP );
 	ri.Hunk_FreeTempMemory( data );
 
 	borderColor[ 0 ] = 1.0;
@@ -2567,14 +2824,14 @@ static void R_CreateDefaultImage( void )
 		data[ x ][ 0 ][ 0 ] = data[ x ][ 0 ][ 1 ] = data[ x ][ 0 ][ 2 ] = data[ x ][ 0 ][ 3 ] = 255;
 
 		data[ DEFAULT_SIZE - 1 ][ x ][ 0 ] =
-		  data[ DEFAULT_SIZE - 1 ][ x ][ 1 ] = data[ DEFAULT_SIZE - 1 ][ x ][ 2 ] = data[ DEFAULT_SIZE - 1 ][ x ][ 3 ] = 255;
+		    data[ DEFAULT_SIZE - 1 ][ x ][ 1 ] = data[ DEFAULT_SIZE - 1 ][ x ][ 2 ] = data[ DEFAULT_SIZE - 1 ][ x ][ 3 ] = 255;
 
 		data[ x ][ DEFAULT_SIZE - 1 ][ 0 ] =
-		  data[ x ][ DEFAULT_SIZE - 1 ][ 1 ] = data[ x ][ DEFAULT_SIZE - 1 ][ 2 ] = data[ x ][ DEFAULT_SIZE - 1 ][ 3 ] = 255;
+		    data[ x ][ DEFAULT_SIZE - 1 ][ 1 ] = data[ x ][ DEFAULT_SIZE - 1 ][ 2 ] = data[ x ][ DEFAULT_SIZE - 1 ][ 3 ] = 255;
 	}
 
 	tr.defaultImage = R_CreateImage( "_default", ( const byte ** ) &dataPtr,
-					 DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP, FT_DEFAULT, WT_REPEAT );
+	                                 DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP, FT_DEFAULT, WT_REPEAT );
 }
 
 static void R_CreateRandomNormalsImage( void )
@@ -2609,7 +2866,7 @@ static void R_CreateRandomNormalsImage( void )
 	}
 
 	tr.randomNormalsImage = R_CreateImage( "_randomNormals", ( const byte ** ) &dataPtr,
-					       DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP, FT_DEFAULT, WT_REPEAT );
+	                                       DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP, FT_DEFAULT, WT_REPEAT );
 }
 
 static void R_CreateNoFalloffImage( void )
@@ -2620,7 +2877,7 @@ static void R_CreateNoFalloffImage( void )
 	// we use a solid white image instead of disabling texturing
 	Com_Memset( data, 255, sizeof( data ) );
 	tr.noFalloffImage = R_CreateImage( "_noFalloff", ( const byte ** ) &dataPtr,
-					   8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
+	                                   8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
 }
 
 #define ATTENUATION_XY_SIZE 128
@@ -2659,9 +2916,9 @@ static void R_CreateAttenuationXYImage( void )
 	}
 
 	tr.attenuationXYImage =
-	  R_CreateImage( "_attenuationXY", ( const byte ** ) &dataPtr,
-			 ATTENUATION_XY_SIZE, ATTENUATION_XY_SIZE, 1, IF_NOPICMIP, FT_LINEAR,
-	                 WT_CLAMP );
+	    R_CreateImage( "_attenuationXY", ( const byte ** ) &dataPtr,
+	                   ATTENUATION_XY_SIZE, ATTENUATION_XY_SIZE, 1, IF_NOPICMIP, FT_LINEAR,
+	                   WT_CLAMP );
 }
 
 static void R_CreateContrastRenderFBOImage( void )
@@ -2869,7 +3126,8 @@ static void R_CreateShadowMapFBOImage( void )
 	{
 		format = IF_NOPICMIP | IF_RGBA16F;
 	}
-	if( r_shadowMapLinearFilter->integer )
+
+	if ( r_shadowMapLinearFilter->integer )
 	{
 		filter = FT_LINEAR;
 	}
@@ -2942,7 +3200,8 @@ static void R_CreateShadowCubeFBOImage( void )
 	{
 		format = IF_NOPICMIP | IF_RGBA16F;
 	}
-	if( r_shadowMapLinearFilter->integer )
+
+	if ( r_shadowMapLinearFilter->integer )
 	{
 		filter = FT_LINEAR;
 	}
@@ -2974,7 +3233,7 @@ static void R_CreateBlackCubeImage( void )
 
 	for ( i = 0; i < 6; i++ )
 	{
-		data[ i ] = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
+		data[ i ] = ( byte* ) ri.Hunk_AllocateTempMemory( width * height * 4 );
 		Com_Memset( data[ i ], 0, width * height * 4 );
 	}
 
@@ -3001,7 +3260,7 @@ static void R_CreateWhiteCubeImage( void )
 
 	for ( i = 0; i < 6; i++ )
 	{
-		data[ i ] = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
+		data[ i ] = ( byte* ) ri.Hunk_AllocateTempMemory( width * height * 4 );
 		Com_Memset( data[ i ], 0xFF, width * height * 4 );
 	}
 
@@ -3020,16 +3279,20 @@ static void R_CreateColorGradeImage( void )
 	byte *data, *ptr;
 	int i, r, g, b;
 
-	data = (byte*) ri.Hunk_AllocateTempMemory( 4 * REF_COLORGRADEMAP_STORE_SIZE * sizeof(u8vec4_t) );
+	data = ( byte* ) ri.Hunk_AllocateTempMemory( 4 * REF_COLORGRADEMAP_STORE_SIZE * sizeof( u8vec4_t ) );
 
 	// 255 is 15 * 17, so the colors range from 0 to 255
-	for( ptr = data, i = 0; i < 4; i++ ) {
-		for( b = 0; b < REF_COLORGRADEMAP_SIZE; b++ ) {
-			for( g = 0; g < REF_COLORGRADEMAP_SIZE; g++ ) {
-				for( r = 0; r < REF_COLORGRADEMAP_SIZE; r++ ) {
-					*ptr++ = (byte) r * 17;
-					*ptr++ = (byte) g * 17;
-					*ptr++ = (byte) b * 17;
+	for ( ptr = data, i = 0; i < 4; i++ )
+	{
+		for ( b = 0; b < REF_COLORGRADEMAP_SIZE; b++ )
+		{
+			for ( g = 0; g < REF_COLORGRADEMAP_SIZE; g++ )
+			{
+				for ( r = 0; r < REF_COLORGRADEMAP_SIZE; r++ )
+				{
+					*ptr++ = ( byte ) r * 17;
+					*ptr++ = ( byte ) g * 17;
+					*ptr++ = ( byte ) b * 17;
 					*ptr++ = 255;
 				}
 			}
@@ -3037,12 +3300,12 @@ static void R_CreateColorGradeImage( void )
 	}
 
 	tr.colorGradeImage = R_Create3DImage( "_colorGrade", data,
-					      REF_COLORGRADEMAP_SIZE,
-					      REF_COLORGRADEMAP_SIZE,
-					      4 * REF_COLORGRADEMAP_SIZE,
-					      IF_NOPICMIP | IF_NOCOMPRESSION | IF_NOLIGHTSCALE,
-					      FT_LINEAR,
-					      WT_EDGE_CLAMP );
+	                                      REF_COLORGRADEMAP_SIZE,
+	                                      REF_COLORGRADEMAP_SIZE,
+	                                      4 * REF_COLORGRADEMAP_SIZE,
+	                                      IF_NOPICMIP | IF_NOCOMPRESSION | IF_NOLIGHTSCALE,
+	                                      FT_LINEAR,
+	                                      WT_EDGE_CLAMP );
 
 	ri.Hunk_FreeTempMemory( data );
 }
@@ -3066,12 +3329,12 @@ void R_CreateBuiltinImages( void )
 	// we use a solid white image instead of disabling texturing
 	Com_Memset( data, 255, sizeof( data ) );
 	tr.whiteImage = R_CreateImage( "_white", ( const byte ** ) &dataPtr,
-				       8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
+	                               8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// we use a solid black image instead of disabling texturing
 	Com_Memset( data, 0, sizeof( data ) );
 	tr.blackImage = R_CreateImage( "_black", ( const byte ** ) &dataPtr,
-				       8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
+	                               8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// red
 	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
@@ -3081,7 +3344,7 @@ void R_CreateBuiltinImages( void )
 	}
 
 	tr.redImage = R_CreateImage( "_red", ( const byte ** ) &dataPtr,
-				     8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
+	                             8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// green
 	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
@@ -3091,7 +3354,7 @@ void R_CreateBuiltinImages( void )
 	}
 
 	tr.greenImage = R_CreateImage( "_green", ( const byte ** ) &dataPtr,
-				       8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
+	                               8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// blue
 	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
@@ -3101,7 +3364,7 @@ void R_CreateBuiltinImages( void )
 	}
 
 	tr.blueImage = R_CreateImage( "_blue", ( const byte ** ) &dataPtr,
-				      8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
+	                              8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// generate a default normalmap with a zero heightmap
 	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
@@ -3112,13 +3375,13 @@ void R_CreateBuiltinImages( void )
 	}
 
 	tr.flatImage = R_CreateImage( "_flat", ( const byte ** ) &dataPtr,
-				      8, 8, 1, IF_NOPICMIP | IF_NORMALMAP, FT_LINEAR, WT_REPEAT );
+	                              8, 8, 1, IF_NOPICMIP | IF_NORMALMAP, FT_LINEAR, WT_REPEAT );
 
 	for ( x = 0; x < 32; x++ )
 	{
 		// scratchimage is usually used for cinematic drawing
 		tr.scratchImage[ x ] = R_CreateImage( "_scratch", ( const byte ** ) &dataPtr,
-						      DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NONE, FT_LINEAR, WT_CLAMP );
+		                                      DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NONE, FT_LINEAR, WT_CLAMP );
 	}
 
 	out = &data[ 0 ][ 0 ][ 0 ];
@@ -3143,9 +3406,9 @@ void R_CreateBuiltinImages( void )
 	}
 
 	tr.quadraticImage =
-		R_CreateImage( "_quadratic", ( const byte ** ) &dataPtr,
-			       DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR,
-			       WT_CLAMP );
+	    R_CreateImage( "_quadratic", ( const byte ** ) &dataPtr,
+	                   DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR,
+	                   WT_CLAMP );
 
 	R_CreateRandomNormalsImage();
 	R_CreateFogImage();
@@ -3213,7 +3476,7 @@ void R_ShutdownImages( void )
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = (image_t*) Com_GrowListElement( &tr.images, i );
+		image = ( image_t* ) Com_GrowListElement( &tr.images, i );
 
 		glDeleteTextures( 1, &image->texnum );
 	}
@@ -3236,12 +3499,14 @@ void RE_GetTextureSize( int textureID, int *width, int *height )
 	shader = R_GetShaderByHandle( textureID );
 
 	assert( shader );
+
 	if ( !shader )
 	{
 		return;
 	}
 
 	baseImage = shader->stages[ 0 ]->bundle->image[ 0 ];
+
 	if ( !baseImage )
 	{
 		Com_DPrintf( S_COLOR_YELLOW "RE_GetTextureSize: shader %s is missing base image\n", shader->name );
@@ -3252,6 +3517,7 @@ void RE_GetTextureSize( int textureID, int *width, int *height )
 	{
 		*width = baseImage->width;
 	}
+
 	if ( height )
 	{
 		*height = baseImage->height;

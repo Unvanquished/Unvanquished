@@ -33,42 +33,43 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../../common/Common.h"
 
-namespace Audio {
+namespace Audio
+{
 
-    // An interface to the sound system that mimics the previous sound system's behavior
+// An interface to the sound system that mimics the previous sound system's behavior
 
-    bool Init();
-    void Shutdown();
-    void Update();
+bool Init();
+void Shutdown();
+void Update();
 
-    void BeginRegistration();
-    sfxHandle_t RegisterSFX(Str::StringRef filename);
-    void EndRegistration();
+void BeginRegistration();
+sfxHandle_t RegisterSFX ( Str::StringRef filename );
+void EndRegistration();
 
-    void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx);
-    void StartLocalSound(int entityNum);
+void StartSound ( int entityNum, const vec3_t origin, sfxHandle_t sfx );
+void StartLocalSound ( int entityNum );
 
-    void AddEntityLoopingSound(int entityNum, sfxHandle_t sfx);
-    void ClearAllLoopingSounds();
-    void ClearLoopingSoundsForEntity(int entityNum);
+void AddEntityLoopingSound ( int entityNum, sfxHandle_t sfx );
+void ClearAllLoopingSounds();
+void ClearLoopingSoundsForEntity ( int entityNum );
 
-    void StartMusic(Str::StringRef leadingSound, Str::StringRef loopSound);
-    void StopMusic();
+void StartMusic ( Str::StringRef leadingSound, Str::StringRef loopSound );
+void StopMusic();
 
-    void StopAllSounds();
+void StopAllSounds();
 
-    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum);
+void StreamData ( int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum );
 
-    void UpdateListener(int entityNum, const vec3_t orientation[3]);
-    void UpdateEntityPosition(int entityNum, const vec3_t position);
-    void UpdateEntityVelocity(int entityNum, const vec3_t velocity);
+void UpdateListener ( int entityNum, const vec3_t orientation[3] );
+void UpdateEntityPosition ( int entityNum, const vec3_t position );
+void UpdateEntityVelocity ( int entityNum, const vec3_t velocity );
 
-    void SetReverb(int slotNum, std::string name, float ratio);
+void SetReverb ( int slotNum, std::string name, float ratio );
 
-    void StartCapture(int rate);
-    int AvailableCaptureSamples();
-    void GetCapturedData(int numSamples, void* buffer);
-    void StopCapture();
+void StartCapture ( int rate );
+int AvailableCaptureSamples();
+void GetCapturedData ( int numSamples, void* buffer );
+void StopCapture();
 }
 
 #endif //AUDIO_AUDIO_H_

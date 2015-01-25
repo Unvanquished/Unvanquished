@@ -43,7 +43,7 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 	// and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		iaType = (interactionType_t) (iaType & ~IA_LIGHT);
+		iaType = ( interactionType_t )( iaType & ~IA_LIGHT );
 	}
 
 	if ( !iaType )
@@ -56,14 +56,14 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 
 	if ( light->l.inverseShadows )
 	{
-		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
+		if ( ( iaType & IA_SHADOW ) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
 		{
 			return;
 		}
 	}
 	else
 	{
-		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
+		if ( ( iaType & IA_SHADOW ) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
 		{
 			return;
 		}
@@ -118,8 +118,9 @@ LIGHT SAMPLING
 */
 
 float R_InterpolateLightGrid( world_t *w, int from[3], int to[3],
-			      float *factors[3], vec3_t ambientLight,
-			      vec3_t directedLight, vec2_t lightDir ) {
+                              float *factors[3], vec3_t ambientLight,
+                              vec3_t directedLight, vec2_t lightDir )
+{
 	float           totalFactor = 0.0f, factor;
 	float           *xFactor, *yFactor, *zFactor;
 	int             gridStep[ 3 ];
@@ -135,25 +136,34 @@ float R_InterpolateLightGrid( world_t *w, int from[3], int to[3],
 	gridStep[ 1 ] = w->lightGridBounds[ 0 ];
 	gridStep[ 2 ] = gridStep[ 1 ] * w->lightGridBounds[ 1 ];
 
-	for( x = from[ 0 ], xFactor = factors[ 0 ]; x <= to[ 0 ];
-	     x++, xFactor++ ) {
-		if( x < 0 || x > w->lightGridBounds[ 0 ] )
+	for ( x = from[ 0 ], xFactor = factors[ 0 ]; x <= to[ 0 ];
+	        x++, xFactor++ )
+	{
+		if ( x < 0 || x > w->lightGridBounds[ 0 ] )
+		{
 			continue;
+		}
 
-		for( y = from[ 1 ], yFactor = factors[ 1 ]; y <= to[ 1 ];
-		     y++, yFactor++ ) {
-			if( y < 0 || y > w->lightGridBounds[ 1 ] )
+		for ( y = from[ 1 ], yFactor = factors[ 1 ]; y <= to[ 1 ];
+		        y++, yFactor++ )
+		{
+			if ( y < 0 || y > w->lightGridBounds[ 1 ] )
+			{
 				continue;
+			}
 
-			for( z = from[ 2 ], zFactor = factors[ 2 ]; z <= to[ 2 ];
-			     z++, zFactor++ ) {
-				if( z < 0 || z > w->lightGridBounds[ 2 ] )
+			for ( z = from[ 2 ], zFactor = factors[ 2 ]; z <= to[ 2 ];
+			        z++, zFactor++ )
+			{
+				if ( z < 0 || z > w->lightGridBounds[ 2 ] )
+				{
 					continue;
+				}
 
 				gp1 = w->lightGridData1 + x * gridStep[ 0 ] + y * gridStep[ 1 ] + z * gridStep[ 2 ];
 				gp2 = w->lightGridData2 + x * gridStep[ 0 ] + y * gridStep[ 1 ] + z * gridStep[ 2 ];
 
-				if ( !( gp1->ambient[ 0 ] || gp1->ambient[ 1 ] || gp1->ambient[ 2 ]) )
+				if ( !( gp1->ambient[ 0 ] || gp1->ambient[ 1 ] || gp1->ambient[ 2 ] ) )
 				{
 					continue; // ignore samples in walls
 				}
@@ -164,7 +174,7 @@ float R_InterpolateLightGrid( world_t *w, int from[3], int to[3],
 
 				lightDir[ 0 ] += factor * snorm8ToFloat( gp1->lightVecX - 128 );
 				lightDir[ 1 ] += factor * snorm8ToFloat( gp2->lightVecY - 128 );
-				
+
 				ambientLight[ 0 ] += factor * unorm8ToFloat( gp1->ambient[ 0 ] );
 				ambientLight[ 1 ] += factor * unorm8ToFloat( gp1->ambient[ 1 ] );
 				ambientLight[ 2 ] += factor * unorm8ToFloat( gp1->ambient[ 2 ] );
@@ -193,7 +203,7 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 
 	// bk010103 - this segfaults with -nolight maps
 	if ( tr.world->lightGridData1 == NULL ||
-	     tr.world->lightGridData2 == NULL )
+	        tr.world->lightGridData2 == NULL )
 	{
 		return qfalse;
 	}
@@ -223,8 +233,8 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 	}
 
 	totalFactor = R_InterpolateLightGrid( tr.world, from, to, factors,
-					      ambientLight, directedLight,
-					      lightDir );
+	                                      ambientLight, directedLight,
+	                                      lightDir );
 
 	if ( totalFactor > 0 && totalFactor < 0.99 )
 	{
@@ -237,7 +247,9 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 
 	// compute z-component of direction
 	lightDir[ 2 ] = 1.0f - fabsf( lightDir[ 0 ] ) - fabsf( lightDir[ 1 ] );
-	if( lightDir[ 2 ] < 0.0f ) {
+
+	if ( lightDir[ 2 ] < 0.0f )
+	{
 		float X = lightDir[ 0 ];
 		float Y = lightDir[ 1 ];
 		lightDir[ 0 ] = copysignf( 1.0f - fabs( Y ), X );
@@ -247,8 +259,8 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 	VectorNormalize( lightDir );
 
 	if ( ambientLight[ 0 ] < r_forceAmbient->value &&
-	     ambientLight[ 1 ] < r_forceAmbient->value &&
-	     ambientLight[ 2 ] < r_forceAmbient->value )
+	        ambientLight[ 1 ] < r_forceAmbient->value &&
+	        ambientLight[ 2 ] < r_forceAmbient->value )
 	{
 		ambientLight[ 0 ] = r_forceAmbient->value;
 		ambientLight[ 1 ] = r_forceAmbient->value;
@@ -301,7 +313,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 	}
 
 	R_LightForPoint( lightOrigin, ent->ambientLight, ent->directedLight,
-			 ent->lightDir );
+	                 ent->lightDir );
 }
 
 /*
@@ -324,7 +336,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 
 	// if NOWORLDMODEL, only use dynamic lights (menu system, etc)
 	if ( !( refdef->rdflags & RDF_NOWORLDMODEL ) && tr.world
-	     && tr.world->lightGridData1 && tr.world->lightGridData2 )
+	        && tr.world->lightGridData1 && tr.world->lightGridData2 )
 	{
 		R_SetupEntityLightingGrid( ent, forcedOrigin );
 	}
@@ -416,55 +428,55 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 	{
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
-			{
-				light->localBounds[ 0 ][ 0 ] = -light->l.radius[ 0 ];
-				light->localBounds[ 0 ][ 1 ] = -light->l.radius[ 1 ];
-				light->localBounds[ 0 ][ 2 ] = -light->l.radius[ 2 ];
-				light->localBounds[ 1 ][ 0 ] = light->l.radius[ 0 ];
-				light->localBounds[ 1 ][ 1 ] = light->l.radius[ 1 ];
-				light->localBounds[ 1 ][ 2 ] = light->l.radius[ 2 ];
-				break;
-			}
+		{
+			light->localBounds[ 0 ][ 0 ] = -light->l.radius[ 0 ];
+			light->localBounds[ 0 ][ 1 ] = -light->l.radius[ 1 ];
+			light->localBounds[ 0 ][ 2 ] = -light->l.radius[ 2 ];
+			light->localBounds[ 1 ][ 0 ] = light->l.radius[ 0 ];
+			light->localBounds[ 1 ][ 1 ] = light->l.radius[ 1 ];
+			light->localBounds[ 1 ][ 2 ] = light->l.radius[ 2 ];
+			break;
+		}
 
 		case RL_PROJ:
+		{
+			int    j;
+			vec3_t farCorners[ 4 ];
+			const vec4_t *frustum = ( const vec4_t * )light->localFrustum;
+
+			ClearBounds( light->localBounds[ 0 ], light->localBounds[ 1 ] );
+
+			// transform frustum from world space to local space
+			R_CalcFrustumFarCorners( frustum, farCorners );
+
+			if ( !VectorCompare( light->l.projStart, vec3_origin ) )
 			{
-				int    j;
-				vec3_t farCorners[ 4 ];
-				const vec4_t *frustum = (const vec4_t *)light->localFrustum;
+				vec3_t nearCorners[ 4 ];
 
-				ClearBounds( light->localBounds[ 0 ], light->localBounds[ 1 ] );
+				// calculate the vertices defining the top area
+				R_CalcFrustumNearCorners( frustum, nearCorners );
 
-				// transform frustum from world space to local space
-				R_CalcFrustumFarCorners( frustum, farCorners );
-
-				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
+				for ( j = 0; j < 4; j++ )
 				{
-					vec3_t nearCorners[ 4 ];
-
-					// calculate the vertices defining the top area
-					R_CalcFrustumNearCorners( frustum, nearCorners );
-
-					for ( j = 0; j < 4; j++ )
-					{
-						AddPointToBounds( farCorners[ j ], light->localBounds[ 0 ], light->localBounds[ 1 ] );
-						AddPointToBounds( nearCorners[ j ], light->localBounds[ 0 ], light->localBounds[ 1 ] );
-					}
+					AddPointToBounds( farCorners[ j ], light->localBounds[ 0 ], light->localBounds[ 1 ] );
+					AddPointToBounds( nearCorners[ j ], light->localBounds[ 0 ], light->localBounds[ 1 ] );
 				}
-				else
-				{
-					vec3_t top;
-
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
-					AddPointToBounds( top, light->localBounds[ 0 ], light->localBounds[ 1 ] );
-
-					for ( j = 0; j < 4; j++ )
-					{
-						AddPointToBounds( farCorners[ j ], light->localBounds[ 0 ], light->localBounds[ 1 ] );
-					}
-				}
-
-				break;
 			}
+			else
+			{
+				vec3_t top;
+
+				PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
+				AddPointToBounds( top, light->localBounds[ 0 ], light->localBounds[ 1 ] );
+
+				for ( j = 0; j < 4; j++ )
+				{
+					AddPointToBounds( farCorners[ j ], light->localBounds[ 0 ], light->localBounds[ 1 ] );
+				}
+			}
+
+			break;
+		}
 
 		default:
 			break;
@@ -511,10 +523,11 @@ void R_SetupLightView( trRefLight_t *light )
 		case RL_OMNI:
 		case RL_PROJ:
 		case RL_DIRECTIONAL:
-			{
-				MatrixAffineInverse( light->transformMatrix, light->viewMatrix );
-				break;
-			}
+		{
+			MatrixAffineInverse( light->transformMatrix, light->viewMatrix );
+			break;
+		}
+
 		default:
 			ri.Error( ERR_DROP, "R_SetupLightView: Bad rlType" );
 	}
@@ -524,91 +537,93 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 {
 	int j;
 
-	switch( light->l.rlType )
+	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
 			Tess_AddCube( vec3_origin, light->localBounds[ 0 ], light->localBounds[ 1 ], color ? color : colorWhite );
 			break;
+
 		case RL_PROJ:
+		{
+			vec3_t farCorners[ 4 ];
+			vec4_t quadVerts[ 4 ];
+			const vec4_t *frustum = light->localFrustum;
+
+			R_CalcFrustumFarCorners( frustum, farCorners );
+
+			if ( !VectorCompare( light->l.projStart, vec3_origin ) )
 			{
-				vec3_t farCorners[ 4 ];
-				vec4_t quadVerts[ 4 ];
-				const vec4_t *frustum = light->localFrustum;
+				vec3_t nearCorners[ 4 ];
 
-				R_CalcFrustumFarCorners( frustum, farCorners );
+				// calculate the vertices defining the top area
+				R_CalcFrustumNearCorners( frustum, nearCorners );
 
-				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
+				// draw outer surfaces
+				for ( j = 0; j < 4; j++ )
 				{
-					vec3_t nearCorners[ 4 ];
-
-					// calculate the vertices defining the top area
-					R_CalcFrustumNearCorners( frustum, nearCorners );
-
-					// draw outer surfaces
-					for ( j = 0; j < 4; j++ )
-					{
-						Vector4Set( quadVerts[ 0 ], nearCorners[ j ][ 0 ], nearCorners[ j ][ 1 ], nearCorners[ j ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 1 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 2 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 3 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-						Tess_AddQuadStamp2( quadVerts, color ? color : colorCyan );
-					}
-
-					// draw far cap
-					Vector4Set( quadVerts[ 0 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-					Vector4Set( quadVerts[ 1 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
-					Vector4Set( quadVerts[ 2 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
-					Vector4Set( quadVerts[ 3 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, color ? color : colorRed );
-
-					// draw near cap
-					Vector4Set( quadVerts[ 0 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
-					Vector4Set( quadVerts[ 1 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
-					Vector4Set( quadVerts[ 2 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
-					Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, color ? color : colorGreen );
+					Vector4Set( quadVerts[ 0 ], nearCorners[ j ][ 0 ], nearCorners[ j ][ 1 ], nearCorners[ j ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 1 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 2 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 3 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
+					Tess_AddQuadStamp2( quadVerts, color ? color : colorCyan );
 				}
-				else
-				{
-					vec3_t top;
 
-					// no light_start, just use the top vertex (doesn't need to be mirrored)
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
+				// draw far cap
+				Vector4Set( quadVerts[ 0 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
+				Vector4Set( quadVerts[ 1 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
+				Vector4Set( quadVerts[ 2 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
+				Vector4Set( quadVerts[ 3 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
+				Tess_AddQuadStamp2( quadVerts, color ? color : colorRed );
 
-					// draw pyramid
-					for ( j = 0; j < 4; j++ )
-					{
-						const float *c = color ? color : colorCyan;
-						u8vec4_t iColor;
-						iColor[ 0 ] = floatToUnorm8( c[ 0 ] );
-						iColor[ 1 ] = floatToUnorm8( c[ 1 ] );
-						iColor[ 2 ] = floatToUnorm8( c[ 2 ] );
-						iColor[ 3 ] = floatToUnorm8( c[ 3 ] );
-
-						VectorCopy( top, tess.verts[ tess.numVertexes ].xyz );
-						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
-						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-						tess.numVertexes++;
-
-						VectorCopy( farCorners[( j + 1 ) % 4 ], tess.verts[ tess.numVertexes ].xyz );
-						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
-						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-						tess.numVertexes++;
-
-						VectorCopy( farCorners[ j ], tess.verts[ tess.numVertexes ].xyz );
-						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
-						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-						tess.numVertexes++;
-					}
-
-					Vector4Set( quadVerts[ 0 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-					Vector4Set( quadVerts[ 1 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
-					Vector4Set( quadVerts[ 2 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
-					Vector4Set( quadVerts[ 3 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, color ? color : colorRed );
-				}
+				// draw near cap
+				Vector4Set( quadVerts[ 0 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
+				Vector4Set( quadVerts[ 1 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
+				Vector4Set( quadVerts[ 2 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
+				Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
+				Tess_AddQuadStamp2( quadVerts, color ? color : colorGreen );
 			}
+			else
+			{
+				vec3_t top;
+
+				// no light_start, just use the top vertex (doesn't need to be mirrored)
+				PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
+
+				// draw pyramid
+				for ( j = 0; j < 4; j++ )
+				{
+					const float *c = color ? color : colorCyan;
+					u8vec4_t iColor;
+					iColor[ 0 ] = floatToUnorm8( c[ 0 ] );
+					iColor[ 1 ] = floatToUnorm8( c[ 1 ] );
+					iColor[ 2 ] = floatToUnorm8( c[ 2 ] );
+					iColor[ 3 ] = floatToUnorm8( c[ 3 ] );
+
+					VectorCopy( top, tess.verts[ tess.numVertexes ].xyz );
+					Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
+					tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
+					tess.numVertexes++;
+
+					VectorCopy( farCorners[( j + 1 ) % 4 ], tess.verts[ tess.numVertexes ].xyz );
+					Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
+					tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
+					tess.numVertexes++;
+
+					VectorCopy( farCorners[ j ], tess.verts[ tess.numVertexes ].xyz );
+					Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
+					tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
+					tess.numVertexes++;
+				}
+
+				Vector4Set( quadVerts[ 0 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
+				Vector4Set( quadVerts[ 1 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
+				Vector4Set( quadVerts[ 2 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
+				Vector4Set( quadVerts[ 3 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
+				Tess_AddQuadStamp2( quadVerts, color ? color : colorRed );
+			}
+		}
+
 		default:
 			break;
 	}
@@ -625,84 +640,84 @@ void R_SetupLightFrustum( trRefLight_t *light )
 	{
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
+		{
+			int    i;
+			vec3_t planeNormal;
+			vec3_t planeOrigin;
+			axis_t axis;
+
+			QuatToAxis( light->l.rotation, axis );
+
+			for ( i = 0; i < 3; i++ )
 			{
-				int    i;
-				vec3_t planeNormal;
-				vec3_t planeOrigin;
-				axis_t axis;
+				VectorMA( light->l.origin, light->l.radius[ i ], axis[ i ], planeOrigin );
+				VectorNegate( axis[ i ], planeNormal );
+				VectorNormalize( planeNormal );
 
-				QuatToAxis( light->l.rotation, axis );
-
-				for ( i = 0; i < 3; i++ )
-				{
-					VectorMA( light->l.origin, light->l.radius[ i ], axis[ i ], planeOrigin );
-					VectorNegate( axis[ i ], planeNormal );
-					VectorNormalize( planeNormal );
-
-					VectorCopy( planeNormal, light->frustum[ i ].normal );
-					light->frustum[ i ].dist = DotProduct( planeOrigin, planeNormal );
-				}
-
-				for ( i = 0; i < 3; i++ )
-				{
-					VectorMA( light->l.origin, -light->l.radius[ i ], axis[ i ], planeOrigin );
-					VectorCopy( axis[ i ], planeNormal );
-					VectorNormalize( planeNormal );
-
-					VectorCopy( planeNormal, light->frustum[ i + 3 ].normal );
-					light->frustum[ i + 3 ].dist = DotProduct( planeOrigin, planeNormal );
-				}
-
-				for ( i = 0; i < 6; i++ )
-				{
-					vec_t length, ilength;
-
-					light->frustum[ i ].type = PLANE_NON_AXIAL;
-
-					// normalize
-					length = VectorLength( light->frustum[ i ].normal );
-
-					if ( length )
-					{
-						ilength = 1.0 / length;
-						light->frustum[ i ].normal[ 0 ] *= ilength;
-						light->frustum[ i ].normal[ 1 ] *= ilength;
-						light->frustum[ i ].normal[ 2 ] *= ilength;
-						light->frustum[ i ].dist *= ilength;
-					}
-
-					SetPlaneSignbits( &light->frustum[ i ] );
-				}
-
-				break;
+				VectorCopy( planeNormal, light->frustum[ i ].normal );
+				light->frustum[ i ].dist = DotProduct( planeOrigin, planeNormal );
 			}
+
+			for ( i = 0; i < 3; i++ )
+			{
+				VectorMA( light->l.origin, -light->l.radius[ i ], axis[ i ], planeOrigin );
+				VectorCopy( axis[ i ], planeNormal );
+				VectorNormalize( planeNormal );
+
+				VectorCopy( planeNormal, light->frustum[ i + 3 ].normal );
+				light->frustum[ i + 3 ].dist = DotProduct( planeOrigin, planeNormal );
+			}
+
+			for ( i = 0; i < 6; i++ )
+			{
+				vec_t length, ilength;
+
+				light->frustum[ i ].type = PLANE_NON_AXIAL;
+
+				// normalize
+				length = VectorLength( light->frustum[ i ].normal );
+
+				if ( length )
+				{
+					ilength = 1.0 / length;
+					light->frustum[ i ].normal[ 0 ] *= ilength;
+					light->frustum[ i ].normal[ 1 ] *= ilength;
+					light->frustum[ i ].normal[ 2 ] *= ilength;
+					light->frustum[ i ].dist *= ilength;
+				}
+
+				SetPlaneSignbits( &light->frustum[ i ] );
+			}
+
+			break;
+		}
 
 		case RL_PROJ:
+		{
+			int    i;
+			vec4_t worldFrustum[ 6 ];
+
+			// transform local frustum to world space
+			for ( i = 0; i < 6; i++ )
 			{
-				int    i;
-				vec4_t worldFrustum[ 6 ];
-
-				// transform local frustum to world space
-				for ( i = 0; i < 6; i++ )
-				{
-					MatrixTransformPlane( light->transformMatrix, light->localFrustum[ i ], worldFrustum[ i ] );
-				}
-
-				// normalize all frustum planes
-				for ( i = 0; i < 6; i++ )
-				{
-					PlaneNormalize( worldFrustum[ i ] );
-
-					VectorCopy( worldFrustum[ i ], light->frustum[ i ].normal );
-					light->frustum[ i ].dist = worldFrustum[ i ][ 3 ];
-
-					light->frustum[ i ].type = PLANE_NON_AXIAL;
-
-					SetPlaneSignbits( &light->frustum[ i ] );
-				}
-
-				break;
+				MatrixTransformPlane( light->transformMatrix, light->localFrustum[ i ], worldFrustum[ i ] );
 			}
+
+			// normalize all frustum planes
+			for ( i = 0; i < 6; i++ )
+			{
+				PlaneNormalize( worldFrustum[ i ] );
+
+				VectorCopy( worldFrustum[ i ], light->frustum[ i ].normal );
+				light->frustum[ i ].dist = worldFrustum[ i ][ 3 ];
+
+				light->frustum[ i ].type = PLANE_NON_AXIAL;
+
+				SetPlaneSignbits( &light->frustum[ i ] );
+			}
+
+			break;
+		}
 
 		default:
 			break;
@@ -729,6 +744,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 			// transform to world space
 			MatrixTransformPoint( light->transformMatrix, tess.verts[ i ].xyz, data.xyz[ i ] );
 		}
+
 		data.numVerts = tess.numVertexes;
 
 		light->frustumVBO = R_CreateStaticVBO( "staticLightFrustum_VBO", data, VBO_LAYOUT_POSITION );
@@ -757,133 +773,133 @@ void R_SetupLightProjection( trRefLight_t *light )
 	{
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
-			{
-				MatrixSetupScale( light->projectionMatrix, 1.0 / light->l.radius[ 0 ], 1.0 / light->l.radius[ 1 ], 1.0 / light->l.radius[ 2 ] );
-				break;
-			}
+		{
+			MatrixSetupScale( light->projectionMatrix, 1.0 / light->l.radius[ 0 ], 1.0 / light->l.radius[ 1 ], 1.0 / light->l.radius[ 2 ] );
+			break;
+		}
 
 		case RL_PROJ:
+		{
+			int    i;
+			float  *proj = light->projectionMatrix;
+			vec4_t *frustum = light->localFrustum;
+			vec4_t lightProject[ 4 ];
+			vec3_t right, up, normal;
+			vec3_t start, stop;
+			vec3_t falloff;
+			float  falloffLen;
+			float  rLen;
+			float  uLen;
+			float  a, b, ofs, dist;
+			vec4_t targetGlobal;
+
+			rLen = VectorNormalize2( light->l.projRight, right );
+			uLen = VectorNormalize2( light->l.projUp, up );
+
+			CrossProduct( up, right, normal );
+			VectorNormalize( normal );
+
+			dist = DotProduct( light->l.projTarget, normal );
+
+			if ( dist < 0 )
 			{
-				int    i;
-				float  *proj = light->projectionMatrix;
-				vec4_t *frustum = light->localFrustum;
-				vec4_t lightProject[ 4 ];
-				vec3_t right, up, normal;
-				vec3_t start, stop;
-				vec3_t falloff;
-				float  falloffLen;
-				float  rLen;
-				float  uLen;
-				float  a, b, ofs, dist;
-				vec4_t targetGlobal;
-
-				rLen = VectorNormalize2( light->l.projRight, right );
-				uLen = VectorNormalize2( light->l.projUp, up );
-
-				CrossProduct( up, right, normal );
-				VectorNormalize( normal );
-
-				dist = DotProduct( light->l.projTarget, normal );
-
-				if ( dist < 0 )
-				{
-					dist = -dist;
-					VectorInverse( normal );
-				}
-
-				VectorScale( right, ( 0.5f * dist ) / rLen, right );
-				VectorScale( up, - ( 0.5f * dist ) / uLen, up );
-
-				Vector4Set( lightProject[ 0 ], right[ 0 ], right[ 1 ], right[ 2 ], 0 );
-				Vector4Set( lightProject[ 1 ], up[ 0 ], up[ 1 ], up[ 2 ], 0 );
-				Vector4Set( lightProject[ 2 ], normal[ 0 ], normal[ 1 ], normal[ 2 ], 0 );
-
-				// now offset to center
-				VectorCopy( light->l.projTarget, targetGlobal );
-				targetGlobal[ 3 ] = 1;
-				{
-					a = DotProduct4( targetGlobal, lightProject[ 0 ] );
-					b = DotProduct4( targetGlobal, lightProject[ 2 ] );
-					ofs = 0.5 - a / b;
-
-					Vector4MA( lightProject[ 0 ], ofs, lightProject[ 2 ], lightProject[ 0 ] );
-				}
-				{
-					a = DotProduct4( targetGlobal, lightProject[ 1 ] );
-					b = DotProduct4( targetGlobal, lightProject[ 2 ] );
-					ofs = 0.5 - a / b;
-
-					Vector4MA( lightProject[ 1 ], ofs, lightProject[ 2 ], lightProject[ 1 ] );
-				}
-
-				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
-				{
-					VectorCopy( light->l.projStart, start );
-				}
-				else
-				{
-					VectorClear( start );
-				}
-
-				if ( !VectorCompare( light->l.projEnd, vec3_origin ) )
-				{
-					VectorCopy( light->l.projEnd, stop );
-				}
-				else
-				{
-					VectorCopy( light->l.projTarget, stop );
-				}
-
-				// Calculate the falloff vector
-				VectorSubtract( stop, start, falloff );
-				light->falloffLength = falloffLen = VectorNormalize( falloff );
-
-				if ( falloffLen <= 0 )
-				{
-					falloffLen = 1;
-				}
-
-				//FIXME ?
-				VectorScale( falloff, 1.0f / falloffLen, falloff );
-
-				Vector4Set( lightProject[ 3 ], falloff[ 0 ], falloff[ 1 ], falloff[ 2 ], -DotProduct( start, falloff ) );
-
-				// we want the planes of s=0, s=q, t=0, and t=q
-				Vector4Copy( lightProject[ 0 ], frustum[ FRUSTUM_LEFT ] );
-				Vector4Copy( lightProject[ 1 ], frustum[ FRUSTUM_BOTTOM ] );
-
-				VectorSubtract( lightProject[ 2 ], lightProject[ 0 ], frustum[ FRUSTUM_RIGHT ] );
-				frustum[ FRUSTUM_RIGHT ][ 3 ] = lightProject[ 2 ][ 3 ] - lightProject[ 0 ][ 3 ];
-
-				VectorSubtract( lightProject[ 2 ], lightProject[ 1 ], frustum[ FRUSTUM_TOP ] );
-				frustum[ FRUSTUM_TOP ][ 3 ] = lightProject[ 2 ][ 3 ] - lightProject[ 1 ][ 3 ];
-
-				// we want the planes of s=0 and s=1 for front and rear clipping planes
-				VectorCopy( lightProject[ 3 ], frustum[ FRUSTUM_NEAR ] );
-				frustum[ FRUSTUM_NEAR ][ 3 ] = lightProject[ 3 ][ 3 ];
-
-				VectorNegate( lightProject[ 3 ], frustum[ FRUSTUM_FAR ] );
-				frustum[ FRUSTUM_FAR ][ 3 ] = -lightProject[ 3 ][ 3 ] - 1.0f;
-
-				// calculate the new projection matrix from the frustum planes
-				MatrixFromPlanes( proj, frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], frustum[ FRUSTUM_FAR ] );
-
-				//MatrixMultiply2(proj, newProjection);
-
-				// scale the falloff texture coordinate so that 0.5 is at the apex and 0.0
-				// as at the base of the pyramid.
-				// TODO: I don't like hacking the matrix like this, but all attempts to use
-				// a transformation seemed to affect too many other things.
-				//proj[10] *= 0.5f;
-
-				// normalise all frustum planes
-				for ( i = 0; i < 6; i++ )
-				{
-					PlaneNormalize( frustum[ i ] );
-				}
-
-				break;
+				dist = -dist;
+				VectorInverse( normal );
 			}
+
+			VectorScale( right, ( 0.5f * dist ) / rLen, right );
+			VectorScale( up, - ( 0.5f * dist ) / uLen, up );
+
+			Vector4Set( lightProject[ 0 ], right[ 0 ], right[ 1 ], right[ 2 ], 0 );
+			Vector4Set( lightProject[ 1 ], up[ 0 ], up[ 1 ], up[ 2 ], 0 );
+			Vector4Set( lightProject[ 2 ], normal[ 0 ], normal[ 1 ], normal[ 2 ], 0 );
+
+			// now offset to center
+			VectorCopy( light->l.projTarget, targetGlobal );
+			targetGlobal[ 3 ] = 1;
+			{
+				a = DotProduct4( targetGlobal, lightProject[ 0 ] );
+				b = DotProduct4( targetGlobal, lightProject[ 2 ] );
+				ofs = 0.5 - a / b;
+
+				Vector4MA( lightProject[ 0 ], ofs, lightProject[ 2 ], lightProject[ 0 ] );
+			}
+			{
+				a = DotProduct4( targetGlobal, lightProject[ 1 ] );
+				b = DotProduct4( targetGlobal, lightProject[ 2 ] );
+				ofs = 0.5 - a / b;
+
+				Vector4MA( lightProject[ 1 ], ofs, lightProject[ 2 ], lightProject[ 1 ] );
+			}
+
+			if ( !VectorCompare( light->l.projStart, vec3_origin ) )
+			{
+				VectorCopy( light->l.projStart, start );
+			}
+			else
+			{
+				VectorClear( start );
+			}
+
+			if ( !VectorCompare( light->l.projEnd, vec3_origin ) )
+			{
+				VectorCopy( light->l.projEnd, stop );
+			}
+			else
+			{
+				VectorCopy( light->l.projTarget, stop );
+			}
+
+			// Calculate the falloff vector
+			VectorSubtract( stop, start, falloff );
+			light->falloffLength = falloffLen = VectorNormalize( falloff );
+
+			if ( falloffLen <= 0 )
+			{
+				falloffLen = 1;
+			}
+
+			//FIXME ?
+			VectorScale( falloff, 1.0f / falloffLen, falloff );
+
+			Vector4Set( lightProject[ 3 ], falloff[ 0 ], falloff[ 1 ], falloff[ 2 ], -DotProduct( start, falloff ) );
+
+			// we want the planes of s=0, s=q, t=0, and t=q
+			Vector4Copy( lightProject[ 0 ], frustum[ FRUSTUM_LEFT ] );
+			Vector4Copy( lightProject[ 1 ], frustum[ FRUSTUM_BOTTOM ] );
+
+			VectorSubtract( lightProject[ 2 ], lightProject[ 0 ], frustum[ FRUSTUM_RIGHT ] );
+			frustum[ FRUSTUM_RIGHT ][ 3 ] = lightProject[ 2 ][ 3 ] - lightProject[ 0 ][ 3 ];
+
+			VectorSubtract( lightProject[ 2 ], lightProject[ 1 ], frustum[ FRUSTUM_TOP ] );
+			frustum[ FRUSTUM_TOP ][ 3 ] = lightProject[ 2 ][ 3 ] - lightProject[ 1 ][ 3 ];
+
+			// we want the planes of s=0 and s=1 for front and rear clipping planes
+			VectorCopy( lightProject[ 3 ], frustum[ FRUSTUM_NEAR ] );
+			frustum[ FRUSTUM_NEAR ][ 3 ] = lightProject[ 3 ][ 3 ];
+
+			VectorNegate( lightProject[ 3 ], frustum[ FRUSTUM_FAR ] );
+			frustum[ FRUSTUM_FAR ][ 3 ] = -lightProject[ 3 ][ 3 ] - 1.0f;
+
+			// calculate the new projection matrix from the frustum planes
+			MatrixFromPlanes( proj, frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], frustum[ FRUSTUM_FAR ] );
+
+			//MatrixMultiply2(proj, newProjection);
+
+			// scale the falloff texture coordinate so that 0.5 is at the apex and 0.0
+			// as at the base of the pyramid.
+			// TODO: I don't like hacking the matrix like this, but all attempts to use
+			// a transformation seemed to affect too many other things.
+			//proj[10] *= 0.5f;
+
+			// normalise all frustum planes
+			for ( i = 0; i < 6; i++ )
+			{
+				PlaneNormalize( frustum[ i ] );
+			}
+
+			break;
+		}
 
 		default:
 			ri.Error( ERR_DROP, "R_SetupLightProjection: Bad rlType" );
@@ -940,10 +956,13 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	// update counters
 	light->numInteractions++;
 
-	if( !(iaType & IA_LIGHT) ) {
+	if ( !( iaType & IA_LIGHT ) )
+	{
 		light->numShadowOnlyInteractions++;
 	}
-	if( !(iaType & (IA_SHADOW | IA_SHADOWCLIP) ) ) {
+
+	if ( !( iaType & ( IA_SHADOW | IA_SHADOWCLIP ) ) )
+	{
 		light->numLightOnlyInteractions++;
 	}
 
@@ -1136,7 +1155,7 @@ static int R_ClipEdgeToPlane( cplane_t plane, const vec3_t in_world1, const vec3
 		VectorCopy( in_world1, out_world1 );
 		VectorCopy( in_world2, out_world2 );
 	}
-	
+
 	return sides;
 }
 
@@ -1156,10 +1175,12 @@ static void R_AddEdgeToLightScissor( trRefLight_t *light, const vec3_t in_world1
 		// only clip against near plane
 		frust = &tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ];
 		int sides = R_ClipEdgeToPlane( *frust, in_world1, in_world2, clip1, clip2 );
+
 		if ( !sides )
 		{
 			return;
 		}
+
 		R_AddPointToLightScissor( light, clip1 );
 		R_AddPointToLightScissor( light, clip2 );
 	}
@@ -1210,111 +1231,112 @@ void R_SetupLightScissor( trRefLight_t *light )
 	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
-			{
-				// top plane
-				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+		{
+			// top plane
+			VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+			VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+			VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+			VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				// bottom plane
-				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+			// bottom plane
+			VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+			VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+			VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+			VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				// sides
-				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+			// sides
+			VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+			VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
+			VectorSet( v1, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 0 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
 
-				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
-				VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
-				R_AddEdgeToLightScissor( light, v1, v2 );
-				break;
-			}
+			VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 0 ][ 2 ] );
+			VectorSet( v2, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 0 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
+			R_AddEdgeToLightScissor( light, v1, v2 );
+			break;
+		}
 
 		case RL_PROJ:
+		{
+			int    j;
+			vec3_t farCorners[ 4 ];
+			vec4_t frustum[ 6 ];
+
+			for ( j = 0; j < 6; j++ )
 			{
-				int    j;
-				vec3_t farCorners[ 4 ];
-				vec4_t frustum[ 6 ];
-				for ( j = 0; j < 6; j++ )
-				{
-					VectorCopy( light->frustum[ j ].normal, frustum[ j ] );
-					frustum[ j ][ 3 ] = light->frustum[ j ].dist;
-				}
-
-				R_CalcFrustumFarCorners( frustum, farCorners );
-
-				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
-				{
-					vec3_t nearCorners[ 4 ];
-
-					// calculate the vertices defining the top area
-					R_CalcFrustumNearCorners( frustum, nearCorners );
-
-					for ( j = 0; j < 4; j++ )
-					{
-						// outer quad
-						R_AddEdgeToLightScissor( light, nearCorners[ j ], farCorners[ j ] );
-						R_AddEdgeToLightScissor( light, farCorners[ j ], farCorners[( j + 1 ) % 4 ] );
-						R_AddEdgeToLightScissor( light, farCorners[( j + 1 ) % 4 ], nearCorners[( j + 1 ) % 4 ] );
-						R_AddEdgeToLightScissor( light, nearCorners[( j + 1 ) % 4 ],  nearCorners[ j ] );
-
-						// far cap
-						R_AddEdgeToLightScissor( light, farCorners[ j ], farCorners[( j + 1 ) % 4 ] );
-
-						// near cap
-						R_AddEdgeToLightScissor( light, nearCorners[ j ], nearCorners[( j + 1 ) % 4 ] );
-					}
-				}
-				else
-				{
-					vec3_t top;
-
-					// no light_start, just use the top vertex (doesn't need to be mirrored)
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
-
-					for ( j = 0; j < 4; j++ )
-					{
-						R_AddEdgeToLightScissor( light, farCorners[ j ], farCorners[( j + 1 ) % 4 ] );
-						R_AddEdgeToLightScissor( light, top, farCorners[ j ] );
-					}
-				}
-
-				break;
+				VectorCopy( light->frustum[ j ].normal, frustum[ j ] );
+				frustum[ j ][ 3 ] = light->frustum[ j ].dist;
 			}
+
+			R_CalcFrustumFarCorners( frustum, farCorners );
+
+			if ( !VectorCompare( light->l.projStart, vec3_origin ) )
+			{
+				vec3_t nearCorners[ 4 ];
+
+				// calculate the vertices defining the top area
+				R_CalcFrustumNearCorners( frustum, nearCorners );
+
+				for ( j = 0; j < 4; j++ )
+				{
+					// outer quad
+					R_AddEdgeToLightScissor( light, nearCorners[ j ], farCorners[ j ] );
+					R_AddEdgeToLightScissor( light, farCorners[ j ], farCorners[( j + 1 ) % 4 ] );
+					R_AddEdgeToLightScissor( light, farCorners[( j + 1 ) % 4 ], nearCorners[( j + 1 ) % 4 ] );
+					R_AddEdgeToLightScissor( light, nearCorners[( j + 1 ) % 4 ],  nearCorners[ j ] );
+
+					// far cap
+					R_AddEdgeToLightScissor( light, farCorners[ j ], farCorners[( j + 1 ) % 4 ] );
+
+					// near cap
+					R_AddEdgeToLightScissor( light, nearCorners[ j ], nearCorners[( j + 1 ) % 4 ] );
+				}
+			}
+			else
+			{
+				vec3_t top;
+
+				// no light_start, just use the top vertex (doesn't need to be mirrored)
+				PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
+
+				for ( j = 0; j < 4; j++ )
+				{
+					R_AddEdgeToLightScissor( light, farCorners[ j ], farCorners[( j + 1 ) % 4 ] );
+					R_AddEdgeToLightScissor( light, top, farCorners[ j ] );
+				}
+			}
+
+			break;
+		}
 
 		default:
 			break;
@@ -1361,41 +1383,41 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 		switch ( cubeSide )
 		{
 			default: // 0
-				{
-					// view parameters
-					VectorSet( angles, 0, 0, 0 );
-					break;
-				}
+			{
+				// view parameters
+				VectorSet( angles, 0, 0, 0 );
+				break;
+			}
 
 			case 1:
-				{
-					VectorSet( angles, 0, 180, 0 );
-					break;
-				}
+			{
+				VectorSet( angles, 0, 180, 0 );
+				break;
+			}
 
 			case 2:
-				{
-					VectorSet( angles, 0, 90, 0 );
-					break;
-				}
+			{
+				VectorSet( angles, 0, 90, 0 );
+				break;
+			}
 
 			case 3:
-				{
-					VectorSet( angles, 0, 270, 0 );
-					break;
-				}
+			{
+				VectorSet( angles, 0, 270, 0 );
+				break;
+			}
 
 			case 4:
-				{
-					VectorSet( angles, -90, 0, 0 );
-					break;
-				}
+			{
+				VectorSet( angles, -90, 0, 0 );
+				break;
+			}
 
 			case 5:
-				{
-					VectorSet( angles, 90, 0, 0 );
-					break;
-				}
+			{
+				VectorSet( angles, 90, 0, 0 );
+				break;
+			}
 		}
 
 		// Quake -> OpenGL view matrix from light perspective

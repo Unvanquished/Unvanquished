@@ -154,8 +154,10 @@ KeyIdentifier Rocket_FromQuake( int key )
 		Com_Log( LOG_WARN, "Tried to convert keyMap before key array initialized." );
 		return KI_UNKNOWN;
 	}
+
 	std::map< int, int >::iterator it;
 	it = keyMap.find( key );
+
 	if ( it != keyMap.end() )
 	{
 		return static_cast< KeyIdentifier >( it->second );
@@ -172,7 +174,9 @@ keyNum_t Rocket_ToQuake( int key )
 		Com_Log( LOG_WARN, "Tried to convert keyMap before key array initialized." );
 		return K_NONE;
 	}
+
 	std::map< int, int >::iterator it;
+
 	for ( it = keyMap.begin(); it != keyMap.end(); ++it )
 	{
 		if ( it->second == key )
@@ -193,22 +197,27 @@ KeyModifier Rocket_GetKeyModifiers( void )
 	{
 		mod |= KM_CTRL;
 	}
+
 	if ( Key_IsDown( K_SHIFT ) )
 	{
 		mod |= KM_SHIFT;
 	}
+
 	if ( Key_IsDown( K_ALT ) )
 	{
 		mod |= KM_ALT;
 	}
+
 	if ( Key_IsDown( K_SUPER ) )
 	{
 		mod |= KM_META;
 	}
+
 	if ( Key_IsDown( K_CAPSLOCK ) )
 	{
 		mod |= KM_CAPSLOCK;
 	}
+
 	if ( Sys_IsNumLockDown() )
 	{
 		mod |= KM_NUMLOCK;
@@ -230,7 +239,8 @@ void Rocket_ProcessMouseClick( int button, qboolean down )
 		if ( !down && !wasDownBefore )
 		{
 			return;
-		} else if ( !down && wasDownBefore )
+		}
+		else if ( !down && wasDownBefore )
 		{
 			wasDownBefore = false;
 		}
@@ -241,6 +251,7 @@ void Rocket_ProcessMouseClick( int button, qboolean down )
 	}
 
 	int idx = 0;
+
 	if ( button <= K_MOUSE5 )
 	{
 		idx = button - K_MOUSE1;
@@ -287,6 +298,7 @@ void Rocket_ProcessKeyInput( int key, qboolean down )
 		menuContext->ProcessMouseWheel( key == K_MWHEELDOWN ? MOUSEWHEEL_DELTA : -MOUSEWHEEL_DELTA, Rocket_GetKeyModifiers() );
 		return;
 	}
+
 	if ( down )
 	{
 		menuContext->ProcessKeyDown( Rocket_FromQuake( key ), Rocket_GetKeyModifiers() );
@@ -300,7 +312,9 @@ void Rocket_ProcessKeyInput( int key, qboolean down )
 int utf8_to_ucs2( const unsigned char *input )
 {
 	if ( input[0] == 0 )
+	{
 		return -1;
+	}
 
 	if ( input[0] < 0x80 )
 	{
@@ -310,7 +324,9 @@ int utf8_to_ucs2( const unsigned char *input )
 	if ( ( input[0] & 0xE0 ) == 0xE0 )
 	{
 		if ( input[1] == 0 || input[2] == 0 )
+		{
 			return -1;
+		}
 
 		return
 		    ( input[0] & 0x0F ) << 12 |
@@ -321,7 +337,9 @@ int utf8_to_ucs2( const unsigned char *input )
 	if ( ( input[0] & 0xC0 ) == 0xC0 )
 	{
 		if ( input[1] == 0 )
+		{
 			return -1;
+		}
 
 		return
 		    ( input[0] & 0x1F ) << 6  |
@@ -343,6 +361,7 @@ void Rocket_ProcessTextInput( int key )
 	// ignore any non printable chars
 	//
 	const char *s =  Q_UTF8_Unstore( key );
+
 	if ( ( unsigned char )*s < 32 || ( unsigned char )*s == 0x7f )
 	{
 		return;
@@ -354,7 +373,8 @@ void Rocket_ProcessTextInput( int key )
 void Rocket_MouseMove( int x, int y )
 {
 	static int mousex, mousey;
-	if ( !menuContext || ! ( cls.keyCatchers & KEYCATCH_UI ) )
+
+	if ( !menuContext || !( cls.keyCatchers & KEYCATCH_UI ) )
 	{
 		return;
 	}

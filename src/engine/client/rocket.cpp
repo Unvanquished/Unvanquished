@@ -90,7 +90,7 @@ public:
 
 	size_t Read( void *buffer, size_t size, Rocket::Core::FileHandle file )
 	{
-		return ( size_t ) FS_Read( buffer, (int)size, ( fileHandle_t ) file );
+		return ( size_t ) FS_Read( buffer, ( int )size, ( fileHandle_t ) file );
 	}
 
 	bool Seek( Rocket::Core::FileHandle file, long offset, int origin )
@@ -137,18 +137,23 @@ public:
 			case Rocket::Core::Log::LT_ALWAYS :
 				Com_Printf( "ALWAYS: %s\n", message.CString() );
 				break;
+
 			case Rocket::Core::Log::LT_ERROR :
 				Com_Printf( "ERROR: %s\n", message.CString() );
 				break;
+
 			case Rocket::Core::Log::LT_WARNING :
 				Com_Printf( "WARNING: %s\n", message.CString() );
 				break;
+
 			case Rocket::Core::Log::LT_INFO :
 				Com_Printf( "INFO: %s\n", message.CString() );
 				break;
+
 			default:
 				Com_Printf( "%s\n", message.CString() );
 		}
+
 		return true;
 	}
 };
@@ -258,7 +263,7 @@ public:
 	bool GenerateTexture( Rocket::Core::TextureHandle& textureHandle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& sourceDimensions )
 	{
 
-		textureHandle = re.GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
+		textureHandle = re.GenerateTexture( ( const byte* )source, sourceDimensions.x, sourceDimensions.y );
 		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
 
 		return ( textureHandle > 0 );
@@ -299,7 +304,7 @@ public:
 
 void Rocket_Rocket_f( void )
 {
-	Rocket_DocumentAction( Cmd_Argv(1), Cmd_Argv(2) );
+	Rocket_DocumentAction( Cmd_Argv( 1 ), Cmd_Argv( 2 ) );
 }
 
 void Rocket_RocketDebug_f( void )
@@ -308,7 +313,7 @@ void Rocket_RocketDebug_f( void )
 
 	if ( !init )
 	{
-		Rocket::Debugger::Initialise(menuContext);
+		Rocket::Debugger::Initialise( menuContext );
 		init = true;
 	}
 
@@ -324,6 +329,7 @@ void Rocket_RocketDebug_f( void )
 		{
 			Rocket::Debugger::SetContext( menuContext );
 		}
+
 		Key_SetCatcher( Key_GetCatcher() | KEYCATCH_UI );
 	}
 	else
@@ -524,6 +530,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				spanHasContent = true;
 				out.Append( spanstr );
 			}
+
 			out.Append( "&lt;" );
 		}
 		else if ( *p == '>' )
@@ -533,6 +540,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				spanHasContent = true;
 				out.Append( spanstr );
 			}
+
 			out.Append( "&gt;" );
 		}
 		else if ( *p == '&' )
@@ -542,6 +550,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				spanHasContent = true;
 				out.Append( spanstr );
 			}
+
 			out.Append( "&amp;" );
 		}
 		else if ( *p == '\n' )
@@ -563,9 +572,9 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			int code = ColorIndex( *++p );
 
 			Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
-			          (int)( g_color_table[ code ][ 0 ] * 255 ),
-			          (int)( g_color_table[ code ][ 1 ] * 255 ),
-			          (int)( g_color_table[ code ][ 2 ] * 255 ) );
+			             ( int )( g_color_table[ code ][ 0 ] * 255 ),
+			             ( int )( g_color_table[ code ][ 1 ] * 255 ),
+			             ( int )( g_color_table[ code ][ 2 ] * 255 ) );
 
 			// don't add the span yet, because it might be empty
 			spanstr = rgb;
@@ -580,6 +589,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				out.Append( spanstr );
 				spanHasContent = true;
 			}
+
 			out.Append( *p );
 		}
 	}
@@ -608,12 +618,14 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			const char *path;
 
 			openBracket = out.Find( "[", currentPosition );
+
 			if ( openBracket == Rocket::Core::String::npos )
 			{
 				break;
 			}
 
 			closeBracket = out.Find( "]", openBracket );
+
 			if ( closeBracket == Rocket::Core::String::npos )
 			{
 				break;
@@ -630,6 +642,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 
 			// TODO: Dont hardcode the extension.
 			path =  va( "emoticons/%s.crn", emoticon.CString() );
+
 			if ( FS_FOpenFileRead( path, NULL, qtrue ) )
 			{
 				out.Erase( openBracket, closeBracket - openBracket + 1 );

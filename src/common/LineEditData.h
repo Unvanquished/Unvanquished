@@ -32,56 +32,58 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define COMMON_LINE_EDIT_DATA_H_
 
 //FIXME: the namespace and the class name aren't very explicit
-namespace Util {
+namespace Util
+{
 
-    class LineEditData {
-        public:
-            static const unsigned defaultScrollSize = 16;
+class LineEditData
+{
+public:
+    static const unsigned defaultScrollSize = 16;
 
-            LineEditData(unsigned size, unsigned scrollSize = defaultScrollSize);
+    LineEditData ( unsigned size, unsigned scrollSize = defaultScrollSize );
 
-            const std::u32string& GetText() const;
-            std::u32string& GetText();
-            const char32_t* GetViewText() const;
-            unsigned GetViewStartPos() const;
-            unsigned GetCursorPos() const;
-            unsigned GetViewCursorPos() const;
+    const std::u32string& GetText() const;
+    std::u32string& GetText();
+    const char32_t* GetViewText() const;
+    unsigned GetViewStartPos() const;
+    unsigned GetCursorPos() const;
+    unsigned GetViewCursorPos() const;
 
-            void SetText(std::u32string text);
+    void SetText ( std::u32string text );
 
-            void CursorLeft(int times = 1);
-            void CursorRight(int times = 1);
-            void CursorStart();
-            void CursorEnd();
-            void SetCursor(int pos);
+    void CursorLeft ( int times = 1 );
+    void CursorRight ( int times = 1 );
+    void CursorStart();
+    void CursorEnd();
+    void SetCursor ( int pos );
 
-            void DeleteNext(int times = 1);
-            void DeletePrev(int times = 1);
-            void DeleteEnd();
+    void DeleteNext ( int times = 1 );
+    void DeletePrev ( int times = 1 );
+    void DeleteEnd();
 
-            void AddChar(char32_t a);
-            void SwapWithNext();
+    void AddChar ( char32_t a );
+    void SwapWithNext();
 
-            void Clear();
+    void Clear();
 
-            void SetWidth(int width);
-            unsigned GetWidth() const;
+    void SetWidth ( int width );
+    unsigned GetWidth() const;
 
-        private:
-            void UpdateScroll();
-            std::u32string buffer;
-            unsigned scrollSize;
-            unsigned width;
-            unsigned scroll;
-            unsigned cursor;
-    };
+private:
+    void UpdateScroll();
+    std::u32string buffer;
+    unsigned scrollSize;
+    unsigned width;
+    unsigned scroll;
+    unsigned cursor;
+};
 
-    // Implementation details
+// Implementation details
 
-    inline void LineEditData::DeleteEnd()
-    {
-        DeleteNext(INT_MAX);
-    }
+inline void LineEditData::DeleteEnd()
+{
+    DeleteNext ( INT_MAX );
+}
 }
 
 #endif // COMMON_LINE_EDIT_DATA_H_

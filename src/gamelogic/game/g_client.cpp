@@ -236,7 +236,7 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 		}
 
 		if ( !spot || DistanceSquared( preference, search->s.origin ) <
-		     DistanceSquared( preference, spot->s.origin ) )
+		        DistanceSquared( preference, spot->s.origin ) )
 		{
 			spot = search;
 		}
@@ -257,8 +257,9 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 	gentity_t *spot = NULL;
 
 	/* team must exist, or there will be a sigsegv */
-	assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
-	if( level.team[ team ].numSpawns <= 0 )
+	assert( team == TEAM_HUMANS || team == TEAM_ALIENS );
+
+	if ( level.team[ team ].numSpawns <= 0 )
 	{
 		return NULL;
 	}
@@ -318,7 +319,7 @@ Historical wrapper which should be removed. See G_SelectLockSpawnPoint.
 */
 gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
-	return G_SelectLockSpawnPoint(origin, angles, S_POS_ALIEN_INTERMISSION );
+	return G_SelectLockSpawnPoint( origin, angles, S_POS_ALIEN_INTERMISSION );
 }
 
 /*
@@ -330,7 +331,7 @@ Historical wrapper which should be removed. See G_SelectLockSpawnPoint.
 */
 gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
-	return G_SelectLockSpawnPoint(origin, angles, S_POS_HUMAN_INTERMISSION );
+	return G_SelectLockSpawnPoint( origin, angles, S_POS_HUMAN_INTERMISSION );
 }
 
 /*
@@ -555,7 +556,7 @@ void respawn( gentity_t *ent )
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		if ( level.clients[ i ].sess.spectatorState == SPECTATOR_FOLLOW &&
-		     level.clients[ i ].sess.spectatorClient == ent - g_entities )
+		        level.clients[ i ].sess.spectatorClient == ent - g_entities )
 		{
 			if ( !( level.clients[ i ].pers.stickySpec ) )
 			{
@@ -628,7 +629,7 @@ qboolean G_IsUnnamed( const char *name )
 	char testName[ MAX_NAME_LENGTH ];
 	int  length;
 
-	G_DecolorString( (char *)name, testName, sizeof( testName ) );
+	G_DecolorString( ( char * )name, testName, sizeof( testName ) );
 
 	if ( !Q_stricmp( testName, UNNAMED_PLAYER ) )
 	{
@@ -638,7 +639,7 @@ qboolean G_IsUnnamed( const char *name )
 	length = strlen( g_unnamedNamePrefix.string );
 
 	if ( g_unnamedNumbering.integer && length &&
-	     !Q_strnicmp( testName, g_unnamedNamePrefix.string, length ) )
+	        !Q_strnicmp( testName, g_unnamedNamePrefix.string, length ) )
 	{
 		return qtrue;
 	}
@@ -665,7 +666,8 @@ static unnamed_t G_FindFreeUnnamed( unnamed_t number )
 				break;
 			}
 		}
-	} while ( i != level.maxclients );
+	}
+	while ( i != level.maxclients );
 
 	return number;
 }
@@ -687,13 +689,13 @@ static const char *G_UnnamedClientName( gclient_t *client )
 		return UNNAMED_PLAYER;
 	}
 
-	if( client->pers.namelog->unnamedNumber )
+	if ( client->pers.namelog->unnamedNumber )
 	{
 		number = client->pers.namelog->unnamedNumber;
 	}
 	else
 	{
-		if( g_unnamedNumbering.integer > 0 )
+		if ( g_unnamedNumbering.integer > 0 )
 		{
 			// server op may have reset this, so check for numbers in use
 			number = G_FindFreeUnnamed( g_unnamedNumbering.integer );
@@ -709,7 +711,7 @@ static const char *G_UnnamedClientName( gclient_t *client )
 	}
 
 	client->pers.namelog->unnamedNumber = number;
-	Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
+	Com_sprintf( name, sizeof( name ), "%.*s%d", ( int )sizeof( name ) - 11,
 	             g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER,
 	             number );
 
@@ -757,7 +759,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 		}
 
 		// check colors or escaped escape character
-		if ( Q_IsColorString(in) || ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE ) )
+		if ( Q_IsColorString( in ) || ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE ) )
 		{
 			in++;
 
@@ -942,26 +944,26 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 	if ( strcmp( oldname, newname ) )
 	{
 		if ( !forceName && client->pers.namelog->nameChangeTime &&
-		     level.time - client->pers.namelog->nameChangeTime <=
-		     g_minNameChangePeriod.value * 1000 )
+		        level.time - client->pers.namelog->nameChangeTime <=
+		        g_minNameChangePeriod.value * 1000 )
 		{
 			trap_SendServerCommand( ent - g_entities, va(
-			                          "print_tr %s %d", QQ( N_("Name change spam protection (g_minNameChangePeriod = $1$)\n") ),
-			                          g_minNameChangePeriod.integer ) );
+			                            "print_tr %s %d", QQ( N_( "Name change spam protection (g_minNameChangePeriod = $1$)\n" ) ),
+			                            g_minNameChangePeriod.integer ) );
 			revertName = qtrue;
 		}
 		else if ( !forceName && g_maxNameChanges.integer > 0 &&
 		          client->pers.namelog->nameChanges >= g_maxNameChanges.integer )
 		{
 			trap_SendServerCommand( ent - g_entities, va(
-			                          "print_tr %s %d", QQ( N_("Maximum name changes reached (g_maxNameChanges = $1$)\n") ),
-			                          g_maxNameChanges.integer ) );
+			                            "print_tr %s %d", QQ( N_( "Maximum name changes reached (g_maxNameChanges = $1$)\n" ) ),
+			                            g_maxNameChanges.integer ) );
 			revertName = qtrue;
 		}
 		else if ( !forceName && client->pers.namelog->muted )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s", QQ( N_("You cannot change your name while you are muted\n") ) ) );
+			                        va( "print_tr %s", QQ( N_( "You cannot change your name while you are muted\n" ) ) ) );
 			revertName = qtrue;
 		}
 		else if ( !G_admin_name_check( ent, newname, err, sizeof( err ) ) )
@@ -977,7 +979,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		}
 		else
 		{
-			if( G_IsUnnamed( newname ) )
+			if ( G_IsUnnamed( newname ) )
 			{
 				Q_strncpyz( newname, G_UnnamedClientName( client ), sizeof( newname ) );
 			}
@@ -1002,8 +1004,8 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 		G_namelog_update_name( client );
 
-		Info_SetValueForKey(userinfo, "name", client->pers.netname, qfalse);
-		trap_SetUserinfo(clientNum, userinfo);
+		Info_SetValueForKey( userinfo, "name", client->pers.netname, qfalse );
+		trap_SetUserinfo( clientNum, userinfo );
 	}
 
 	if ( client->pers.classSelection == PCL_NONE )
@@ -1221,7 +1223,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	value = Info_ValueForKey( userinfo, "password" );
 
 	if ( g_password.string[ 0 ] && Q_stricmp( g_password.string, "none" ) &&
-	     strcmp( g_password.string, value ) != 0 )
+	        strcmp( g_password.string, value ) != 0 )
 	{
 		return "Invalid password";
 	}
@@ -1229,9 +1231,9 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	// if a player reconnects quickly after a disconnect, the client disconnect may never be called, thus flag can get lost in the ether
 	if ( ent->inuse )
 	{
-		G_LogPrintf( "Forcing disconnect on active client: %i\n", (int)( ent - g_entities ) );
+		G_LogPrintf( "Forcing disconnect on active client: %i\n", ( int )( ent - g_entities ) );
 		// so lets just fix up anything that should happen on a disconnect
-		ClientDisconnect( ent-g_entities );
+		ClientDisconnect( ent - g_entities );
 	}
 
 	for ( i = 0; i < level.maxclients; i++ )
@@ -1280,19 +1282,19 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	country = Info_ValueForKey( userinfo, "geoip" );
 	Q_strncpyz( client->pers.country, country, sizeof( client->pers.country ) );
 
-	G_SendClientPmoveParams(clientNum);
+	G_SendClientPmoveParams( clientNum );
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
 		if ( g_geoip.integer && country && *country )
 		{
-			trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^7 connected from $2$\n") ),
+			trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_( "$1$^7 connected from $2$\n" ) ),
 			                                Quote( client->pers.netname ), Quote( country ) ) );
 		}
 		else
 		{
-			trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected\n") ),
+			trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 connected\n" ) ),
 			                                Quote( client->pers.netname ) ) );
 		}
 	}
@@ -1374,7 +1376,7 @@ char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
-		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected\n") ),
+		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 connected\n" ) ),
 		                                Quote( client->pers.netname ) ) );
 	}
 
@@ -1470,7 +1472,7 @@ void ClientBegin( int clientNum )
 	// locate ent at a spawn point
 	ClientSpawn( ent, NULL, NULL, NULL );
 
-	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 entered the game\n") ), Quote( client->pers.netname ) ) );
+	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 entered the game\n" ) ), Quote( client->pers.netname ) ) );
 
 	trap_Cvar_VariableStringBuffer( "g_mapStartupMessage", startMsg, sizeof( startMsg ) );
 
@@ -1502,12 +1504,12 @@ void ClientBegin( int clientNum )
 		// 2 - show only to unregistered
 		switch ( g_showHelpOnConnection.integer )
 		{
-		case 0:
-			if (0)
-		default:
-			if ( !client->pers.admin )
-		case 1:
-			G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
+			case 0:
+				if ( 0 )
+				default:
+				if ( !client->pers.admin )
+				case 1:
+				G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
 		}
 	}
 }
@@ -1671,6 +1673,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->client = &level.clients[ index ];
 	ent->takedamage = teamLocal != TEAM_NONE && client->sess.spectatorState == SPECTATOR_NOT; //qtrue;
 	ent->classname = S_PLAYER_CLASSNAME;
+
 	if ( client->noclip )
 	{
 		client->cliprcontents = CONTENTS_BODY;
@@ -1679,6 +1682,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		ent->r.contents = CONTENTS_BODY;
 	}
+
 	ent->clipmask = MASK_PLAYERSOLID;
 	ent->die = G_PlayerDie;
 	ent->waterlevel = 0;
@@ -1698,7 +1702,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	if ( client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		client->ps.stats[ STAT_MAX_HEALTH ] =
-		  BG_Class( ent->client->pers.classSelection )->health;
+		    BG_Class( ent->client->pers.classSelection )->health;
 	}
 	else
 	{
@@ -1764,7 +1768,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	//give aliens some spawn velocity
 	if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	     client->pers.team == TEAM_ALIENS )
+	        client->pers.team == TEAM_ALIENS )
 	{
 		if ( ent == spawn )
 		{
@@ -1883,7 +1887,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// (re)tag the client for its team
 	Beacon::DeleteTags( ent );
-	Beacon::Tag( ent, (team_t)ent->client->ps.persistant[ PERS_TEAM ], 0, true );
+	Beacon::Tag( ent, ( team_t )ent->client->ps.persistant[ PERS_TEAM ], 0, true );
 }
 
 /*
@@ -1924,7 +1928,7 @@ void ClientDisconnect( int clientNum )
 
 	// send effect if they were completely connected
 	if ( ent->client->pers.connected == CON_CONNECTED &&
-	     ent->client->sess.spectatorState == SPECTATOR_NOT )
+	        ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		tent = G_NewTempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = ent->s.clientNum;

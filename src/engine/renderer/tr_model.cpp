@@ -65,7 +65,7 @@ model_t        *R_AllocModel( void )
 		return NULL;
 	}
 
-	mod = (model_t*) ri.Hunk_Alloc( sizeof( *tr.models[ tr.numModels ] ), h_low );
+	mod = ( model_t* ) ri.Hunk_Alloc( sizeof( *tr.models[ tr.numModels ] ), h_low );
 	mod->index = tr.numModels;
 	tr.models[ tr.numModels ] = mod;
 	tr.numModels++;
@@ -159,7 +159,8 @@ qhandle_t RE_RegisterModel( const char *name )
 			{
 				loaded = R_LoadMD5( mod, buffer, bufferLen, name );
 			}
-			else if ( !Q_strnicmp( ( const char * ) buffer, "INTERQUAKEMODEL", 15 ) ) {
+			else if ( !Q_strnicmp( ( const char * ) buffer, "INTERQUAKEMODEL", 15 ) )
+			{
 				loaded = R_LoadIQModel( mod, buffer, bufferLen, name );
 			}
 
@@ -476,6 +477,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 	backLerp = 1.0 - frac;
 
 	start = end = NULL;
+
 	if ( model->type == MOD_MD5 || model->type == MOD_IQM )
 	{
 		vec3_t tmp;
@@ -488,7 +490,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 		}
 
 		VectorScale( refent->skeleton.bones[ retval ].t.trans,
-			     refent->skeleton.scale, tag->origin );
+		             refent->skeleton.scale, tag->origin );
 		QuatToAxis( refent->skeleton.bones[ retval ].t.rot, tag->axis );
 		VectorCopy( tag->axis[ 2 ], tmp );
 		VectorCopy( tag->axis[ 1 ], tag->axis[ 2 ] );
@@ -564,7 +566,7 @@ int RE_BoneIndex( qhandle_t hModel, const char *boneName )
 		{
 			char *str = model->iqm->jointNames;
 
-			while (  i < model->iqm->num_joints )
+			while ( i < model->iqm->num_joints )
 			{
 				if ( !Q_stricmp( boneName, str ) )
 				{

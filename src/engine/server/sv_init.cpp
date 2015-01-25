@@ -378,7 +378,7 @@ void SV_ChangeMaxClients( void )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			oldClients[ i ] = std::move(svs.clients[ i ]);
+			oldClients[ i ] = std::move( svs.clients[ i ] );
 		}
 		else
 		{
@@ -406,7 +406,7 @@ void SV_ChangeMaxClients( void )
 	{
 		if ( oldClients[ i ].state >= CS_CONNECTED )
 		{
-			svs.clients[ i ] = std::move(oldClients[ i ]);
+			svs.clients[ i ] = std::move( oldClients[ i ] );
 		}
 	}
 
@@ -511,8 +511,11 @@ void SV_SpawnServer( const char *server )
 
 	FS::PakPath::ClearPaks();
 	FS_LoadBasePak();
-	if (!FS_LoadPak(va("map-%s", server)))
-		Com_Error(ERR_DROP, "Could not load map pak\n");
+
+	if ( !FS_LoadPak( va( "map-%s", server ) ) )
+	{
+		Com_Error( ERR_DROP, "Could not load map pak\n" );
+	}
 
 	void* buffer;
 	const char* name = va( "maps/%s.bsp", server );
@@ -545,7 +548,7 @@ void SV_SpawnServer( const char *server )
 	Cvar_Set( "sv_serverRestarting", "1" );
 
 	// load and spawn all other entities
-	SV_InitGameProgs(server);
+	SV_InitGameProgs( server );
 
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
@@ -566,7 +569,7 @@ void SV_SpawnServer( const char *server )
 			qboolean denied;
 			char reason[ MAX_STRING_CHARS ];
 
-			isBot = SV_IsBot(&svs.clients[i]);
+			isBot = SV_IsBot( &svs.clients[i] );
 
 			// connect the client again
 			denied = gvm->GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
@@ -655,19 +658,19 @@ void SV_Init( void )
 	// serverinfo vars
 	Cvar_Get( "timelimit", "0", CVAR_SERVERINFO );
 
-	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO  );
+	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO );
 	sv_mapname = Cvar_Get( "mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM );
 	Cvar_Get( "layout", "", CVAR_SERVERINFO | CVAR_ROM );
 	Cvar_Get( "g_layouts", "", 0 ); // FIXME
 	sv_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );
-	sv_hostname = Cvar_Get( "sv_hostname", "Unnamed Unvanquished Server", CVAR_SERVERINFO  );
+	sv_hostname = Cvar_Get( "sv_hostname", "Unnamed Unvanquished Server", CVAR_SERVERINFO );
 	sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH );  // NERVE - SMF - changed to 20 from 8
 	sv_maxRate = Cvar_Get( "sv_maxRate", "0",  CVAR_SERVERINFO );
 	sv_minPing = Cvar_Get( "sv_minPing", "0",  CVAR_SERVERINFO );
 	sv_maxPing = Cvar_Get( "sv_maxPing", "0",  CVAR_SERVERINFO );
 	sv_floodProtect = Cvar_Get( "sv_floodProtect", "0",  CVAR_SERVERINFO );
 
-	sv_statsURL = Cvar_Get( "sv_statsURL", "", CVAR_SERVERINFO  );
+	sv_statsURL = Cvar_Get( "sv_statsURL", "", CVAR_SERVERINFO );
 
 	// systeminfo
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );

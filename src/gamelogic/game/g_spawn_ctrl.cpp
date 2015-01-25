@@ -45,17 +45,19 @@ ctrl_relay
 
 void target_relay_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
-	if (!self->enabled)
+	if ( !self->enabled )
+	{
 		return;
+	}
 
 	if ( ( self->spawnflags & 1 ) && activator && activator->client &&
-	     activator->client->pers.team != TEAM_HUMANS )
+	        activator->client->pers.team != TEAM_HUMANS )
 	{
 		return;
 	}
 
 	if ( ( self->spawnflags & 2 ) && activator && activator->client &&
-	     activator->client->pers.team != TEAM_ALIENS )
+	        activator->client->pers.team != TEAM_ALIENS )
 	{
 		return;
 	}
@@ -80,13 +82,15 @@ void target_relay_act( gentity_t *self, gentity_t *caller, gentity_t *activator 
 
 void ctrl_relay_reset( gentity_t *self )
 {
-	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
+	self->enabled = !( self->spawnflags & SPF_SPAWN_DISABLED );
 }
 
 void ctrl_relay_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
-	if (!self->enabled)
+	if ( !self->enabled )
+	{
 		return;
+	}
 
 	if ( !self->config.wait.time )
 	{
@@ -102,25 +106,27 @@ void ctrl_relay_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 
 void SP_ctrl_relay( gentity_t *self )
 {
-	if( Q_stricmp(self->classname, S_CTRL_RELAY ) ) //if anything but ctrl_relay
+	if ( Q_stricmp( self->classname, S_CTRL_RELAY ) ) //if anything but ctrl_relay
 	{
-		if ( !self->config.wait.time ) {
+		if ( !self->config.wait.time )
+		{
 			// check delay for backwards compatibility
 			G_SpawnFloat( "delay", "0", &self->config.wait.time );
 
 			//target delay had previously a default of 1 instead of 0
-			if ( !self->config.wait.time && !Q_stricmp(self->classname, "target_delay") )
+			if ( !self->config.wait.time && !Q_stricmp( self->classname, "target_delay" ) )
 			{
 				self->config.wait.time = 1;
 			}
 		}
-		SP_WaitFields(self, 0, 0 );
+
+		SP_WaitFields( self, 0, 0 );
 
 		self->act = target_relay_act;
 		return;
 	}
 
-	SP_WaitFields(self, 0, 0 );
+	SP_WaitFields( self, 0, 0 );
 	self->act = ctrl_relay_act;
 	self->reset = ctrl_relay_reset;
 }
@@ -133,25 +139,29 @@ ctrl_limited
 =================================================================================
 */
 
-void ctrl_limited_act(gentity_t *self, gentity_t *other, gentity_t *activator)
+void ctrl_limited_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	if (!self->enabled)
+	if ( !self->enabled )
+	{
 		return;
+	}
 
 	G_FireEntity( self, activator );
+
 	if ( self->count <= 1 )
 	{
 		G_FreeEntity( self );
 		return;
 	}
+
 	self->count--;
 }
 
 void ctrl_limited_reset( gentity_t *self )
 {
-	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
+	self->enabled = !( self->spawnflags & SPF_SPAWN_DISABLED );
 
-	G_ResetIntField(&self->count, qtrue, self->config.amount, self->eclass->config.amount, 1);
+	G_ResetIntField( &self->count, qtrue, self->config.amount, self->eclass->config.amount, 1 );
 }
 
 void SP_ctrl_limited( gentity_t *self )

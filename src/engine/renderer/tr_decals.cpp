@@ -357,8 +357,8 @@ return qtrue if the decal projector intersects the bounding box
 qboolean R_TestDecalBoundingBox( decalProjector_t *dp, vec3_t mins, vec3_t maxs )
 {
 	if ( mins[ 0 ] >= ( dp->center[ 0 ] + dp->radius ) || maxs[ 0 ] <= ( dp->center[ 0 ] - dp->radius ) ||
-	     mins[ 1 ] >= ( dp->center[ 1 ] + dp->radius ) || maxs[ 1 ] <= ( dp->center[ 1 ] - dp->radius ) ||
-	     mins[ 2 ] >= ( dp->center[ 2 ] + dp->radius ) || maxs[ 2 ] <= ( dp->center[ 2 ] - dp->radius ) )
+	        mins[ 1 ] >= ( dp->center[ 1 ] + dp->radius ) || maxs[ 1 ] <= ( dp->center[ 1 ] - dp->radius ) ||
+	        mins[ 2 ] >= ( dp->center[ 2 ] + dp->radius ) || maxs[ 2 ] <= ( dp->center[ 2 ] - dp->radius ) )
 	{
 		return qfalse;
 	}

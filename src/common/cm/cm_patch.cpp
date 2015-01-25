@@ -410,7 +410,7 @@ static int CM_GridPlane( int gridPlanes[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ][ 2 ], 
 	}
 
 	// should never happen
-	Com_Printf(_( "WARNING: CM_GridPlane unresolvable\n" ));
+	Com_Printf( _( "WARNING: CM_GridPlane unresolvable\n" ) );
 	return -1;
 }
 
@@ -570,10 +570,10 @@ static void CM_SetBorderInward( cFacet_t *facet, cGrid_t *grid, int gridPlanes[ 
 
 typedef enum
 {
-  EN_TOP,
-  EN_RIGHT,
-  EN_BOTTOM,
-  EN_LEFT
+    EN_TOP,
+    EN_RIGHT,
+    EN_BOTTOM,
+    EN_LEFT
 } edgeName_t;
 
 /*

@@ -72,7 +72,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	mod->type = MOD_MD5;
 	mod->dataSize += sizeof( md5Model_t );
-	md5 = mod->md5 = (md5Model_t*) ri.Hunk_Alloc( sizeof( md5Model_t ), h_low );
+	md5 = mod->md5 = ( md5Model_t* ) ri.Hunk_Alloc( sizeof( md5Model_t ), h_low );
 
 	// skip commandline <arguments string>
 	token = COM_ParseExt2( &buf_p, qtrue );
@@ -115,7 +115,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	}
 
 	// parse all the bones
-	md5->bones = (md5Bone_t*) ri.Hunk_Alloc( sizeof( *bone ) * md5->numBones, h_low );
+	md5->bones = ( md5Bone_t* ) ri.Hunk_Alloc( sizeof( *bone ) * md5->numBones, h_low );
 
 	// parse joints {
 	token = COM_ParseExt2( &buf_p, qtrue );
@@ -219,7 +219,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		return qfalse;
 	}
 
-	md5->surfaces = (md5Surface_t*) ri.Hunk_Alloc( sizeof( *surf ) * md5->numSurfaces, h_low );
+	md5->surfaces = ( md5Surface_t* ) ri.Hunk_Alloc( sizeof( *surf ) * md5->numSurfaces, h_low );
 
 	for ( i = 0, surf = md5->surfaces; i < md5->numSurfaces; i++, surf++ )
 	{
@@ -291,8 +291,8 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			          modName, SHADER_MAX_VERTEXES, surf->numVerts );
 		}
 
-		surf->verts = (md5Vertex_t*) ri.Hunk_Alloc( sizeof( *v ) * surf->numVerts, h_low );
-		assert( ((intptr_t) surf->verts & 15) == 0 );
+		surf->verts = ( md5Vertex_t* ) ri.Hunk_Alloc( sizeof( *v ) * surf->numVerts, h_low );
+		assert( ( ( intptr_t ) surf->verts & 15 ) == 0 );
 
 		for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 		{
@@ -362,7 +362,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			          modName, SHADER_MAX_TRIANGLES, surf->numTriangles );
 		}
 
-		surf->triangles = (srfTriangle_t*) ri.Hunk_Alloc( sizeof( *tri ) * surf->numTriangles, h_low );
+		surf->triangles = ( srfTriangle_t* ) ri.Hunk_Alloc( sizeof( *tri ) * surf->numTriangles, h_low );
 
 		for ( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
 		{
@@ -396,7 +396,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		token = COM_ParseExt2( &buf_p, qfalse );
 		surf->numWeights = atoi( token );
 
-		surf->weights = (md5Weight_t*) ri.Hunk_Alloc( sizeof( *weight ) * surf->numWeights, h_low );
+		surf->weights = ( md5Weight_t* ) ri.Hunk_Alloc( sizeof( *weight ) * surf->numWeights, h_low );
 
 		for ( j = 0, weight = surf->weights; j < surf->numWeights; j++, weight++ )
 		{
@@ -538,8 +538,11 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			}
 		}
 	}
+
 	md5->internalScale = BoundsMaxExtent( md5->bounds[ 0 ], md5->bounds[ 1 ] );
-	if( md5->internalScale > 0.0f ) {
+
+	if ( md5->internalScale > 0.0f )
+	{
 		float invScale = 1.0f / md5->internalScale;
 
 		for ( i = 0, surf = md5->surfaces; i < md5->numSurfaces; i++, surf++ )
@@ -561,7 +564,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		for ( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
 		{
-			skelTriangle_t *sortTri = (skelTriangle_t*) Com_Allocate( sizeof( *sortTri ) );
+			skelTriangle_t *sortTri = ( skelTriangle_t* ) Com_Allocate( sizeof( *sortTri ) );
 
 			for ( k = 0; k < 3; k++ )
 			{
@@ -585,7 +588,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 			for ( j = 0; j < sortedTriangles.currentElements; j++ )
 			{
-				skelTriangle_t *sortTri = (skelTriangle_t*) Com_GrowListElement( &sortedTriangles, j );
+				skelTriangle_t *sortTri = ( skelTriangle_t* ) Com_GrowListElement( &sortedTriangles, j );
 
 				if ( sortTri->referenced )
 				{
@@ -613,7 +616,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		for ( j = 0; j < sortedTriangles.currentElements; j++ )
 		{
-			skelTriangle_t *sortTri = (skelTriangle_t*) Com_GrowListElement( &sortedTriangles, j );
+			skelTriangle_t *sortTri = ( skelTriangle_t* ) Com_GrowListElement( &sortedTriangles, j );
 
 			Com_Dealloc( sortTri );
 		}
@@ -623,7 +626,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	// move VBO surfaces list to hunk
 	md5->numVBOSurfaces = vboSurfaces.currentElements;
-	md5->vboSurfaces = (srfVBOMD5Mesh_t**) ri.Hunk_Alloc( md5->numVBOSurfaces * sizeof( *md5->vboSurfaces ), h_low );
+	md5->vboSurfaces = ( srfVBOMD5Mesh_t** ) ri.Hunk_Alloc( md5->numVBOSurfaces * sizeof( *md5->vboSurfaces ), h_low );
 
 	for ( i = 0; i < md5->numVBOSurfaces; i++ )
 	{

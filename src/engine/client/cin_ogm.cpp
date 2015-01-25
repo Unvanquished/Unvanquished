@@ -188,7 +188,7 @@ static qboolean loadAudio( void )
 	float        *right, *left;
 	int          samples, samplesNeeded;
 	int          i;
-    short        *rawBuffer = new short[SIZEOF_RAWBUFF/sizeof(short)];
+	short        *rawBuffer = new short[SIZEOF_RAWBUFF / sizeof( short )];
 	short        *ptr;
 	ogg_packet   op;
 	vorbis_block vb;
@@ -204,7 +204,7 @@ static qboolean loadAudio( void )
 		if ( ( samples = vorbis_synthesis_pcmout( &g_ogm.vd, &pcm ) ) > 0 )
 		{
 			// vorbis -> raw
-            ptr = rawBuffer;
+			ptr = rawBuffer;
 			samplesNeeded = ( SIZEOF_RAWBUFF ) / ( 2 * 2 ); // (width*channel)
 
 			if ( samples < samplesNeeded )
@@ -229,7 +229,7 @@ static qboolean loadAudio( void )
 				// tell libvorbis how many samples we actually consumed
 				vorbis_synthesis_read( &g_ogm.vd, i );
 
-				Audio::StreamData( 0, rawBuffer, i, g_ogm.vi.rate, 2, 2, 1.0f, 1);
+				Audio::StreamData( 0, rawBuffer, i, g_ogm.vi.rate, 2, 2, 1.0f, 1 );
 
 				anyDataTransferred = qtrue;
 			}
@@ -367,19 +367,19 @@ static int loadVideoFrameTheora( void )
 				                                //TODO: use one yuv->rgb function for the whole frame (large amount of stack movement (yuv->rgb calls) can't be good ;))
 				                                for(j=0;j<g_ogm.th_info.height;++j) {
 				                                        for(i=0;i<g_ogm.th_info.width;++i) {
-#if 1
+				#if 1
 				                                                // simple grayscale-output ^^
 				                                                pixelPtr[0] =
 				                                                        pixelPtr[1] =
 				                                                        pixelPtr[2] = g_ogm.th_yuvbuffer.y[i+j*g_ogm.th_yuvbuffer.y_stride];
 				                                                pixelPtr+=4;
 
-#else
+				#else
 				                                                // using RoQ yuv->rgb code
 				                                                *pixPtr++ = yuv_to_rgb24( g_ogm.th_yuvbuffer.y[(i>>yWShift)+(j>>yHShift)*g_ogm.th_yuvbuffer.y_stride],
 				                                                                                                g_ogm.th_yuvbuffer.u[(i>>uvWShift)+(j>>uvHShift)*g_ogm.th_yuvbuffer.uv_stride],
 				                                                                                                g_ogm.th_yuvbuffer.v[(i>>uvWShift)+(j>>uvHShift)*g_ogm.th_yuvbuffer.uv_stride]);
-#endif
+				#endif
 				                                        }
 				                                }
 				*/
@@ -411,7 +411,10 @@ static int loadVideoFrame( void )
 	{
 		ogg_packet op;
 
-		while ( ogg_stream_packetout( &g_ogm.os_video, &op ) ) {; }
+		while ( ogg_stream_packetout( &g_ogm.os_video, &op ) )
+		{
+			;
+		}
 	}
 
 	return 1;

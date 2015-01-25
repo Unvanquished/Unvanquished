@@ -137,7 +137,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 		else
 		{
 			oldstate = &cl.parseEntities[
-			             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
+			               ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
 			oldnum = oldstate->number;
 		}
 	}
@@ -176,7 +176,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 			else
 			{
 				oldstate = &cl.parseEntities[
-				             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
+				               ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
 				oldnum = oldstate->number;
 			}
 		}
@@ -200,7 +200,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 			else
 			{
 				oldstate = &cl.parseEntities[
-				             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
+				               ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
 				oldnum = oldstate->number;
 			}
 
@@ -240,7 +240,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 		else
 		{
 			oldstate = &cl.parseEntities[
-			             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
+			               ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
 			oldnum = oldstate->number;
 		}
 	}
@@ -509,10 +509,14 @@ void CL_SystemInfoChanged( void )
 #endif
 
 	// load paks sent by the server, but not if we are running a local server
-	if (!com_sv_running->integer) {
+	if ( !com_sv_running->integer )
+	{
 		FS::PakPath::ClearPaks();
-		if (!FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) ) && !cl_allowDownload->integer)
-			Com_Error(ERR_DROP, "Client is missing paks but downloads are disabled");
+
+		if ( !FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) ) && !cl_allowDownload->integer )
+		{
+			Com_Error( ERR_DROP, "Client is missing paks but downloads are disabled" );
+		}
 	}
 
 	// scan through all the variables in the systeminfo and locally set cvars to match
@@ -851,7 +855,7 @@ A VoIP message has been received from the server
 static
 void CL_ParseVoip( msg_t *msg )
 {
-    const int decodedSize = 4096 * sizeof(short); //FIXME: don't hardcode.
+	const int decodedSize = 4096 * sizeof( short ); //FIXME: don't hardcode.
 
 	const int    sender = MSG_ReadShort( msg );
 	const int    generation = MSG_ReadByte( msg );
@@ -953,7 +957,7 @@ void CL_ParseVoip( msg_t *msg )
 		seqdiff = 0;
 	}
 
-    short *decoded = new short[decodedSize/sizeof(short)];
+	short *decoded = new short[decodedSize / sizeof( short )];
 
 	if ( seqdiff != 0 )
 	{
@@ -989,7 +993,7 @@ void CL_ParseVoip( msg_t *msg )
 
 			CL_PlayVoip( sender, written, ( const byte * ) decoded, flags );
 			written = 0;
-            decoded = new short[decodedSize / sizeof(short)];
+			decoded = new short[decodedSize / sizeof( short )];
 		}
 
 		speex_bits_read_from( &clc.speexDecoderBits[ sender ], encoded, len );
@@ -1057,7 +1061,7 @@ void CL_ParseServerMessage( msg_t *msg )
 
 	if ( cl_shownet->integer == 1 )
 	{
-		Com_Printf("%i ", msg->cursize );
+		Com_Printf( "%i ", msg->cursize );
 	}
 	else if ( cl_shownet->integer >= 2 )
 	{

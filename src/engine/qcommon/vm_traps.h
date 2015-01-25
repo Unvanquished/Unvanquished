@@ -45,31 +45,30 @@ Maryland 20850 USA.
 
 // Calls common to all VMs. Call nos. must be between 0 and FIRST_VM_SYSCALL
 // Comments in this enum are used by the QVM API scanner
-typedef enum sharedImport_s
-{
-  TRAP_MEMSET,               // = memset
-  TRAP_MEMCPY,               // = memcpy
-  TRAP_MEMCMP,               // = memcmp
-  TRAP_STRNCPY,              // = strncpy
-  TRAP_SIN,                  // = sin
-  TRAP_COS,                  // = cos
-  TRAP_ASIN,                 // = asin
+typedef enum sharedImport_s {
+    TRAP_MEMSET,               // = memset
+    TRAP_MEMCPY,               // = memcpy
+    TRAP_MEMCMP,               // = memcmp
+    TRAP_STRNCPY,              // = strncpy
+    TRAP_SIN,                  // = sin
+    TRAP_COS,                  // = cos
+    TRAP_ASIN,                 // = asin
 //.TRAP_ACOS,                 // = acos
-  TRAP_TAN,                  // = tan
-  TRAP_ATAN,                 // = atan
-  TRAP_ATAN2,                // = atan2
-  TRAP_SQRT,                 // = sqrt
-  TRAP_FLOOR,                // = floor
-  TRAP_CEIL,                 // = ceil
-  TRAP_EXP,                  // = exp
+    TRAP_TAN,                  // = tan
+    TRAP_ATAN,                 // = atan
+    TRAP_ATAN2,                // = atan2
+    TRAP_SQRT,                 // = sqrt
+    TRAP_FLOOR,                // = floor
+    TRAP_CEIL,                 // = ceil
+    TRAP_EXP,                  // = exp
 
-  TRAP_MATRIXMULTIPLY = 128, // unused
-  TRAP_ANGLEVECTORS,         // unused
-  TRAP_PERPENDICULARVECTOR,  // unused
+    TRAP_MATRIXMULTIPLY = 128, // unused
+    TRAP_ANGLEVECTORS,         // unused
+    TRAP_PERPENDICULARVECTOR,  // unused
 
-  TRAP_VERSION = 255
+    TRAP_VERSION = 255
 } sharedTraps_t;
 
-void trap_SyscallABIVersion( int, int );
+void trap_SyscallABIVersion ( int, int );
 
 #endif

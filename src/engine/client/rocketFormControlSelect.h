@@ -43,79 +43,65 @@ Maryland 20850 USA.
 class CvarElementFormControlSelect : public Rocket::Controls::ElementFormControlSelect, public Rocket::Core::EventListener
 {
 public:
-	CvarElementFormControlSelect( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlSelect( tag ) { }
+    CvarElementFormControlSelect ( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlSelect ( tag ) { }
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
-	{
-		Rocket::Controls::ElementFormControlSelect::OnAttributeChange( changed_attributes );
+    virtual void OnAttributeChange ( const Rocket::Core::AttributeNameList &changed_attributes ) {
+        Rocket::Controls::ElementFormControlSelect::OnAttributeChange ( changed_attributes );
 
-		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
-		{
-			cvar = GetAttribute< Rocket::Core::String >( "cvar", "" );
-			UpdateValue();
-		}
-	}
+        if ( changed_attributes.find ( "cvar" ) != changed_attributes.end() ) {
+            cvar = GetAttribute< Rocket::Core::String > ( "cvar", "" );
+            UpdateValue();
+        }
+    }
 
-	virtual void OnChildAdd( Element *child )
-	{
-		Rocket::Controls::ElementFormControlSelect::OnChildAdd( child );
-		if ( child == this )
-		{
-			// Need to cache this because it is not available
-			// when this element is being removed
-			owner = GetOwnerDocument();
-			owner->AddEventListener( "show", this );
-		}
-	}
+    virtual void OnChildAdd ( Element *child ) {
+        Rocket::Controls::ElementFormControlSelect::OnChildAdd ( child );
+        if ( child == this ) {
+            // Need to cache this because it is not available
+            // when this element is being removed
+            owner = GetOwnerDocument();
+            owner->AddEventListener ( "show", this );
+        }
+    }
 
-	virtual void OnChildRemove( Element *child )
-	{
-		Rocket::Controls::ElementFormControlSelect::OnChildRemove( child );
-		if ( child == this )
-		{
-			owner->RemoveEventListener( "show", this );
-		}
-	}
+    virtual void OnChildRemove ( Element *child ) {
+        Rocket::Controls::ElementFormControlSelect::OnChildRemove ( child );
+        if ( child == this ) {
+            owner->RemoveEventListener ( "show", this );
+        }
+    }
 
-	virtual void ProcessEvent( Rocket::Core::Event &event )
-	{
-		Rocket::Controls::ElementFormControlSelect::ProcessEvent( event );
+    virtual void ProcessEvent ( Rocket::Core::Event &event ) {
+        Rocket::Controls::ElementFormControlSelect::ProcessEvent ( event );
 
-		if ( !cvar.Empty() )
-		{
-			if ( owner == event.GetTargetElement() && event == "show" )
-			{
-				UpdateValue();
-			}
-			else if ( this == event.GetTargetElement() && event == "change" )
-			{
-				Cvar::SetValue( cvar.CString(), GetValue().CString() );
-				Cvar::AddFlags( cvar.CString(), Cvar::USER_ARCHIVE );
-			}
-		}
-	}
+        if ( !cvar.Empty() ) {
+            if ( owner == event.GetTargetElement() && event == "show" ) {
+                UpdateValue();
+            } else if ( this == event.GetTargetElement() && event == "change" ) {
+                Cvar::SetValue ( cvar.CString(), GetValue().CString() );
+                Cvar::AddFlags ( cvar.CString(), Cvar::USER_ARCHIVE );
+            }
+        }
+    }
 
-	void UpdateValue( void )
-	{
-		Rocket::Core::String value = Cvar::GetValue( cvar.CString() ).c_str();
+    void UpdateValue ( void ) {
+        Rocket::Core::String value = Cvar::GetValue ( cvar.CString() ).c_str();
 
-		for ( size_t i = 0; i < GetNumOptions(); ++i )
-		{
-			Rocket::Controls::SelectOption *o = GetOption( i );
-			if ( o->GetValue() == value )
-			{
-				SetSelection( i );
-				return;
-			}
-		}
+        for ( size_t i = 0; i < GetNumOptions(); ++i ) {
+            Rocket::Controls::SelectOption *o = GetOption ( i );
+            if ( o->GetValue() == value ) {
+                SetSelection ( i );
+                return;
+            }
+        }
 
-		SetSelection( -1 );
-	}
+        SetSelection ( -1 );
+    }
 
 private:
-	Rocket::Core::String cvar;
-	Rocket::Core::String type;
-	Rocket::Core::Element *owner;
+    Rocket::Core::String cvar;
+    Rocket::Core::String type;
+    Rocket::Core::Element *owner;
 };
 
 #endif

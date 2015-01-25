@@ -58,54 +58,51 @@ const int MAX_ROUTE_PLANS = 2;
 const int MAX_ROUTE_CACHE = 20;
 const int ROUTE_CACHE_TIME = 200;
 
-typedef struct
-{
-	dtPolyRef startRef;
-	dtPolyRef endRef;
-	int       time;
-	dtStatus  status;
-	bool      invalid;
+typedef struct {
+    dtPolyRef startRef;
+    dtPolyRef endRef;
+    int       time;
+    dtStatus  status;
+    bool      invalid;
 } dtRouteResult;
 
-typedef struct
-{
-	dtTileCache      *cache;
-	dtNavMesh        *mesh;
-	dtNavMeshQuery   *query;
-	dtQueryFilter    filter;
-	MeshProcess      process;
-	char             name[ 64 ];
+typedef struct {
+    dtTileCache      *cache;
+    dtNavMesh        *mesh;
+    dtNavMeshQuery   *query;
+    dtQueryFilter    filter;
+    MeshProcess      process;
+    char             name[ 64 ];
 } NavData_t;
 
-typedef struct
-{
-	NavData_t         *nav;
-	dtPathCorridor    corridor;
-	int               clientNum;
-	bool              needReplan;
-	float             cornerVerts[ MAX_CORNERS * 3 ];
-	unsigned char     cornerFlags[ MAX_CORNERS ];
-	dtPolyRef         cornerPolys[ MAX_CORNERS ];
-	int               numCorners;
-	bool              offMesh;
-	rVec              offMeshStart;
-	rVec              offMeshEnd;
-	dtPolyRef         offMeshPoly;
-	dtRouteResult     routeResults[ MAX_ROUTE_CACHE ];
+typedef struct {
+    NavData_t         *nav;
+    dtPathCorridor    corridor;
+    int               clientNum;
+    bool              needReplan;
+    float             cornerVerts[ MAX_CORNERS * 3 ];
+    unsigned char     cornerFlags[ MAX_CORNERS ];
+    dtPolyRef         cornerPolys[ MAX_CORNERS ];
+    int               numCorners;
+    bool              offMesh;
+    rVec              offMeshStart;
+    rVec              offMeshEnd;
+    dtPolyRef         offMeshPoly;
+    dtRouteResult     routeResults[ MAX_ROUTE_CACHE ];
 } Bot_t;
 
 extern int numNavData;
 extern NavData_t BotNavData[ MAX_NAV_DATA ];
 extern Bot_t agents[ MAX_CLIENTS ];
 
-void NavEditInit( void );
-void NavEditShutdown( void );
-void BotSaveOffMeshConnections( NavData_t *nav );
+void NavEditInit ( void );
+void NavEditShutdown ( void );
+void BotSaveOffMeshConnections ( NavData_t *nav );
 
-void         BotCalcSteerDir( Bot_t *bot, rVec &dir );
-void         FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners );
-bool         PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents );
-bool         PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point );
-bool         BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint );
-bool         FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal target, bool allowPartial );
+void         BotCalcSteerDir ( Bot_t *bot, rVec &dir );
+void         FindWaypoints ( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners );
+bool         PointInPolyExtents ( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents );
+bool         PointInPoly ( Bot_t *bot, dtPolyRef ref, rVec point );
+bool         BotFindNearestPoly ( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint );
+bool         FindRoute ( Bot_t *bot, rVec s, botRouteTargetInternal target, bool allowPartial );
 #endif

@@ -64,16 +64,22 @@ float BotGetBaseRushScore( gentity_t *ent )
 	{
 		case WP_BLASTER:
 			return 0.1f;
+
 		case WP_LUCIFER_CANNON:
 			return 1.0f;
+
 		case WP_MACHINEGUN:
 			return 0.5f;
+
 		case WP_PULSE_RIFLE:
 			return 0.7f;
+
 		case WP_LAS_GUN:
 			return 0.7f;
+
 		case WP_SHOTGUN:
 			return 0.2f;
+
 		case WP_CHAINGUN:
 			if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, ent->client->ps.stats ) )
 			{
@@ -83,26 +89,37 @@ float BotGetBaseRushScore( gentity_t *ent )
 			{
 				return 0.2f;
 			}
+
 		case WP_HBUILD:
 			return 0.0f;
+
 		case WP_ABUILD:
 			return 0.0f;
+
 		case WP_ABUILD2:
 			return 0.0f;
+
 		case WP_ALEVEL0:
 			return 0.0f;
+
 		case WP_ALEVEL1:
 			return 0.2f;
+
 		case WP_ALEVEL2:
 			return 0.5f;
+
 		case WP_ALEVEL2_UPG:
 			return 0.7f;
+
 		case WP_ALEVEL3:
 			return 0.8f;
+
 		case WP_ALEVEL3_UPG:
 			return 0.9f;
+
 		case WP_ALEVEL4:
 			return 1.0f;
+
 		default:
 			return 0.5f;
 	}
@@ -142,6 +159,7 @@ float BotGetHealScore( gentity_t *self )
 	{
 		return 1.0f;
 	}
+
 	return percentHealth * distToHealer / MAX_HEAL_DIST;
 }
 
@@ -158,51 +176,67 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case WP_ALEVEL0:
 				enemyScore = 0.1;
 				break;
+
 			case WP_ALEVEL1:
 				enemyScore = 0.3;
 				break;
+
 			case WP_ALEVEL2:
 				enemyScore = 0.4;
 				break;
+
 			case WP_ALEVEL2_UPG:
 				enemyScore = 0.7;
 				break;
+
 			case WP_ALEVEL3:
 				enemyScore = 0.7;
 				break;
+
 			case WP_ALEVEL3_UPG:
 				enemyScore = 0.8;
 				break;
+
 			case WP_ALEVEL4:
 				enemyScore = 1.0;
 				break;
+
 			case WP_BLASTER:
 				enemyScore = 0.2;
 				break;
+
 			case WP_MACHINEGUN:
 				enemyScore = 0.4;
 				break;
+
 			case WP_PAIN_SAW:
 				enemyScore = 0.4;
 				break;
+
 			case WP_LAS_GUN:
 				enemyScore = 0.4;
 				break;
+
 			case WP_MASS_DRIVER:
 				enemyScore = 0.4;
 				break;
+
 			case WP_CHAINGUN:
 				enemyScore = 0.6;
 				break;
+
 			case WP_FLAMER:
 				enemyScore = 0.6;
 				break;
+
 			case WP_PULSE_RIFLE:
 				enemyScore = 0.5;
 				break;
+
 			case WP_LUCIFER_CANNON:
 				enemyScore = 1.0;
 				break;
+
 			default:
 				enemyScore = 0.5;
 				break;
@@ -215,51 +249,66 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case BA_H_MGTURRET:
 				enemyScore = 0.6;
 				break;
+
 			case BA_H_REACTOR:
 				enemyScore = 0.5;
 				break;
+
 			case BA_H_ROCKETPOD:
 				enemyScore = 0.7;
 				break;
+
 			case BA_H_SPAWN:
 				enemyScore = 0.9;
 				break;
+
 			case BA_H_ARMOURY:
 				enemyScore = 0.8;
 				break;
+
 			case BA_H_MEDISTAT:
 				enemyScore = 0.6;
 				break;
+
 			case BA_A_ACIDTUBE:
 				enemyScore = 0.7;
 				break;
+
 			case BA_A_SPAWN:
 				enemyScore = 0.9;
 				break;
+
 			case BA_A_OVERMIND:
 				enemyScore = 0.5;
 				break;
+
 			case BA_A_HIVE:
 				enemyScore = 0.7;
 				break;
+
 			case BA_A_BOOSTER:
 				enemyScore = 0.4;
 				break;
+
 			case BA_A_TRAPPER:
 				enemyScore = 0.8;
 				break;
+
 			case BA_A_LEECH:
 				enemyScore = 0.6;
 				break;
+
 			case BA_H_DRILL:
 				enemyScore = 0.6;
 				break;
+
 			default:
 				enemyScore = 0.5;
 				break;
 
 		}
 	}
+
 	return enemyScore * 1000 / distanceScore;
 }
 
@@ -315,6 +364,7 @@ int BotValueOfWeapons( gentity_t *self )
 			worth += BG_Weapon( ( weapon_t )i )->price;
 		}
 	}
+
 	return worth;
 }
 int BotValueOfUpgrades( gentity_t *self )
@@ -329,6 +379,7 @@ int BotValueOfUpgrades( gentity_t *self )
 			worth += BG_Upgrade( ( upgrade_t ) i )->price;
 		}
 	}
+
 	return worth;
 }
 
@@ -341,7 +392,7 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 
 	//decide what upgrade(s) to buy
 	if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_BATTLESUIT ) &&
-	     usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) )
+	        usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) )
 	{
 		upgrades[0] = UP_BATTLESUIT;
 		*numUpgrades = 1;
@@ -377,7 +428,7 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 		*numUpgrades = 0;
 	}
 
-	for (i = 0; i < *numUpgrades; i++)
+	for ( i = 0; i < *numUpgrades; i++ )
 	{
 		usableCapital -= BG_Upgrade( upgrades[i] )->price;
 	}
@@ -444,10 +495,12 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 		if ( numContain == *numUpgrades )
 		{
 			*numUpgrades = 0;
+
 			for ( i = 0; i < 3; i++ )
 			{
 				upgrades[i] = UP_NONE;
 			}
+
 			*weapon = WP_NONE;
 		}
 	}
@@ -472,13 +525,16 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 		{
 			continue;
 		}
+
 		if ( target->s.eType == ET_BUILDABLE && target->s.modelindex == buildingType && ( target->buildableTeam == TEAM_ALIENS || ( target->powered && target->spawned ) ) && target->health > 0 )
 		{
 			newDistance = DistanceSquared( self->s.origin, target->s.origin );
+
 			if ( range && newDistance > rangeSquared )
 			{
 				continue;
 			}
+
 			if ( newDistance < minDistance || minDistance == -1 )
 			{
 				minDistance = newDistance;
@@ -486,6 +542,7 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 			}
 		}
 	}
+
 	return closestBuilding;
 }
 
@@ -505,6 +562,7 @@ void BotFindClosestBuildings( gentity_t *self )
 	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
 	{
 		float newDist;
+
 		//ignore entities that arnt in use
 		if ( !testEnt->inuse )
 		{
@@ -586,6 +644,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 		}
 
 		distSqr = DistanceSquared( self->s.origin, target->s.origin );
+
 		if ( distSqr < minDistSqr )
 		{
 			self->botMind->closestDamagedBuilding.ent = target;
@@ -628,7 +687,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 		}
 
 		if ( target->s.eType == ET_PLAYER && self->client->pers.team == TEAM_HUMANS
-		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
+		        && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
 		{
 			continue;
 		}
@@ -652,6 +711,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			bestInvisibleEnemy = target;
 		}
 	}
+
 	if ( bestVisibleEnemy || !hasRadar )
 	{
 		return bestVisibleEnemy;
@@ -671,6 +731,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
 	{
 		float newDistance;
+
 		//ignore entities that arnt in use
 		if ( !target->inuse )
 		{
@@ -725,13 +786,16 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 				continue;
 			}
 		}
+
 		newDistance = DistanceSquared( self->s.origin, target->s.origin );
+
 		if ( newDistance <= minDistance )
 		{
 			minDistance = newDistance;
 			closestEnemy = target;
 		}
 	}
+
 	return closestEnemy;
 }
 
@@ -739,6 +803,7 @@ botTarget_t BotGetRushTarget( gentity_t *self )
 {
 	botTarget_t target;
 	gentity_t* rushTarget = NULL;
+
 	if ( BotGetEntityTeam( self ) == TEAM_HUMANS )
 	{
 		if ( self->botMind->closestBuildings[BA_A_SPAWN].ent )
@@ -761,6 +826,7 @@ botTarget_t BotGetRushTarget( gentity_t *self )
 			rushTarget = self->botMind->closestBuildings[BA_H_REACTOR].ent;
 		}
 	}
+
 	BotSetTarget( &target, rushTarget, NULL );
 	return target;
 }
@@ -769,6 +835,7 @@ botTarget_t BotGetRetreatTarget( gentity_t *self )
 {
 	botTarget_t target;
 	gentity_t* retreatTarget = NULL;
+
 	//FIXME, this seems like it could be done better...
 	if ( self->client->pers.team == TEAM_HUMANS )
 	{
@@ -784,6 +851,7 @@ botTarget_t BotGetRetreatTarget( gentity_t *self )
 			retreatTarget = self->botMind->closestBuildings[BA_A_OVERMIND].ent;
 		}
 	}
+
 	BotSetTarget( &target, retreatTarget, NULL );
 	return target;
 }
@@ -896,7 +964,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 		VectorSet( mins, -96, -96, -96 );
 		routeTarget->type = BOT_TARGET_STATIC;
 	}
-	
+
 	for ( i = 0; i < 3; i++ )
 	{
 		routeTarget->polyExtents[ i ] = MAX( Q_fabs( mins[ i ] ), maxs[ i ] );
@@ -947,6 +1015,7 @@ team_t BotGetEntityTeam( gentity_t *ent )
 	{
 		return TEAM_NONE;
 	}
+
 	if ( ent->client )
 	{
 		return ( team_t )ent->client->pers.team;
@@ -1029,6 +1098,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up , muzzle );
 	BotGetTargetPos( target, targetPos );
+
 	switch ( self->client->ps.weapon )
 	{
 		case WP_ABUILD:
@@ -1036,142 +1106,162 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
+
 		case WP_ABUILD2:
 			range = ABUILDER_CLAW_RANGE;
 			secondaryRange = 300; //An arbitrary value for the blob launcher, has nothing to do with actual range
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
+
 		case WP_ALEVEL0:
 			range = LEVEL0_BITE_RANGE;
 			secondaryRange = 0;
 			break;
+
 		case WP_ALEVEL1:
 			range = LEVEL1_CLAW_RANGE;
 			secondaryRange = LEVEL1_POUNCE_DISTANCE;
 			width = height = LEVEL1_CLAW_WIDTH;
 			break;
+
 		case WP_ALEVEL2:
 			range = LEVEL2_CLAW_RANGE;
 			secondaryRange = 0;
 			width = height = LEVEL2_CLAW_WIDTH;
 			break;
+
 		case WP_ALEVEL2_UPG:
 			range = LEVEL2_CLAW_U_RANGE;
 			secondaryRange = LEVEL2_AREAZAP_RANGE;
 			width = height = LEVEL2_CLAW_WIDTH;
 			break;
+
 		case WP_ALEVEL3:
 			range = LEVEL3_CLAW_RANGE;
 			//need to check if we can pounce to the target
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG; //An arbitrary value for pounce, has nothing to do with actual range
 			width = height = LEVEL3_CLAW_WIDTH;
 			break;
+
 		case WP_ALEVEL3_UPG:
 			range = LEVEL3_CLAW_RANGE;
 			//we can pounce, or we have barbs
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; //An arbitrary value for pounce and barbs, has nothing to do with actual range
+
 			if ( self->client->ps.ammo > 0 )
 			{
 				secondaryRange = 900;
 			}
+
 			width = height = LEVEL3_CLAW_WIDTH;
 			break;
+
 		case WP_ALEVEL4:
 			range = LEVEL4_CLAW_RANGE;
 			secondaryRange = 0; //Using 0 since tyrant rush is basically just movement, not a ranged attack
 			width = height = LEVEL4_CLAW_WIDTH;
 			break;
+
 		case WP_HBUILD:
 			range = 100;
 			secondaryRange = 0;
 			break;
+
 		case WP_PAIN_SAW:
 			range = PAINSAW_RANGE;
 			secondaryRange = 0;
 			break;
+
 		case WP_FLAMER:
+		{
+			vec3_t dir;
+			vec3_t rdir;
+			vec3_t nvel;
+			vec3_t npos;
+			vec3_t proj;
+			trajectory_t t;
+
+			// Correct muzzle so that the missile does not start in the ceiling
+			VectorMA( muzzle, -7.0f, up, muzzle );
+
+			// Correct muzzle so that the missile fires from the player's hand
+			VectorMA( muzzle, 4.5f, right, muzzle );
+
+			// flamer projectiles add the player's velocity scaled by FLAMER_LAG to the fire direction with length FLAMER_SPEED
+			VectorSubtract( targetPos, muzzle, dir );
+			VectorNormalize( dir );
+			VectorScale( self->client->ps.velocity, FLAMER_LAG, nvel );
+			VectorMA( nvel, FLAMER_SPEED, dir, t.trDelta );
+			SnapVector( t.trDelta );
+			VectorCopy( muzzle, t.trBase );
+			t.trType = TR_LINEAR;
+			t.trTime = level.time - 50;
+
+			// find projectile's final position
+			BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, npos );
+
+			// find distance traveled by projectile along fire line
+			ProjectPointOntoVector( npos, muzzle, targetPos, proj );
+			range = Distance( muzzle, proj );
+
+			// make sure the sign of the range is correct
+			VectorSubtract( npos, muzzle, rdir );
+			VectorNormalize( rdir );
+
+			if ( DotProduct( rdir, dir ) < 0 )
 			{
-				vec3_t dir;
-				vec3_t rdir;
-				vec3_t nvel;
-				vec3_t npos;
-				vec3_t proj;
-				trajectory_t t;
-			
-				// Correct muzzle so that the missile does not start in the ceiling
-				VectorMA( muzzle, -7.0f, up, muzzle );
-
-				// Correct muzzle so that the missile fires from the player's hand
-				VectorMA( muzzle, 4.5f, right, muzzle );
-
-				// flamer projectiles add the player's velocity scaled by FLAMER_LAG to the fire direction with length FLAMER_SPEED
-				VectorSubtract( targetPos, muzzle, dir );
-				VectorNormalize( dir );
-				VectorScale( self->client->ps.velocity, FLAMER_LAG, nvel );
-				VectorMA( nvel, FLAMER_SPEED, dir, t.trDelta );
-				SnapVector( t.trDelta );
-				VectorCopy( muzzle, t.trBase );
-				t.trType = TR_LINEAR;
-				t.trTime = level.time - 50;
-			
-				// find projectile's final position
-				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, npos );
-
-				// find distance traveled by projectile along fire line
-				ProjectPointOntoVector( npos, muzzle, targetPos, proj );
-				range = Distance( muzzle, proj );
-
-				// make sure the sign of the range is correct
-				VectorSubtract( npos, muzzle, rdir );
-				VectorNormalize( rdir );
-				if ( DotProduct( rdir, dir ) < 0 )
-				{
-					range = -range;
-				}
-
-				// the flamer uses a cosine based power falloff by default
-				// so decrease the range to give us a usable minimum damage
-				// FIXME: depend on the value of the flamer damage falloff cvar
-				// FIXME: have to stand further away from acid or will be
-				//        pushed back and will stop attacking (too far away)
-				if ( BotGetTargetType( target ) == ET_BUILDABLE &&
-				     target.ent->s.modelindex != BA_A_ACIDTUBE )
-				{
-					range -= 300;
-				}
-				else
-				{
-					range -= 150;
-				}
-				range = MAX( range, 100.0f );
-				secondaryRange = 0;
-				width = height = FLAMER_SIZE;
+				range = -range;
 			}
-			break;
+
+			// the flamer uses a cosine based power falloff by default
+			// so decrease the range to give us a usable minimum damage
+			// FIXME: depend on the value of the flamer damage falloff cvar
+			// FIXME: have to stand further away from acid or will be
+			//        pushed back and will stop attacking (too far away)
+			if ( BotGetTargetType( target ) == ET_BUILDABLE &&
+			        target.ent->s.modelindex != BA_A_ACIDTUBE )
+			{
+				range -= 300;
+			}
+			else
+			{
+				range -= 150;
+			}
+
+			range = MAX( range, 100.0f );
+			secondaryRange = 0;
+			width = height = FLAMER_SIZE;
+		}
+		break;
+
 		case WP_SHOTGUN:
 			range = ( 50 * 8192 ) / SHOTGUN_SPREAD; //50 is the maximum radius we want the spread to be
 			secondaryRange = 0;
 			break;
+
 		case WP_MACHINEGUN:
 			range = ( 100 * 8192 ) / RIFLE_SPREAD; //100 is the maximum radius we want the spread to be
 			secondaryRange = 0;
 			break;
+
 		case WP_CHAINGUN:
 			range = ( 60 * 8192 ) / CHAINGUN_SPREAD; //60 is the maximum radius we want the spread to be
 			secondaryRange = 0;
 			break;
+
 		default:
 			range = 4098 * 4; //large range for guns because guns have large ranges :)
 			secondaryRange = 0; //no secondary attack
 	}
+
 	VectorSet( maxs, width, width, width );
 	VectorSet( mins, -width, -width, -height );
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0 );
 
 	if ( self->client->pers.team != BotGetEntityTeam( &g_entities[trace.entityNum] )
-		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
-		&& Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
+	        && BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
+	        && Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
 	{
 		return qtrue;
 	}
@@ -1206,10 +1296,11 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 
 	//target is in range
 	if ( ( trace.entityNum == BotGetTargetEntityNumber( target ) || trace.fraction == 1.0f ) &&
-	     !trace.startsolid )
+	        !trace.startsolid )
 	{
 		return qtrue;
 	}
+
 	return qfalse;
 }
 /*
@@ -1276,7 +1367,7 @@ void BotAimAtEnemy( gentity_t *self )
 	VectorNormalize( desired );
 	AngleVectors( self->client->ps.viewangles, current, NULL, NULL );
 
-	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
+	frac = ( 1.0f - ( ( float )( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
 	VectorLerp( current, desired, frac, newAim );
 
 	VectorSet( self->client->ps.delta_angles, 0, 0, 0 );
@@ -1331,6 +1422,7 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	{
 		return;
 	}
+
 	//clamp to 0-1
 	slow = Com_Clamp( 0.1f, 1.0, slowAmount );
 
@@ -1379,9 +1471,11 @@ int FindBots( int *botEntityNumbers, int maxBots, team_t team )
 	int numBots = 0;
 	int i;
 	memset( botEntityNumbers, 0, sizeof( int )*maxBots );
+
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		testEntity = &g_entities[i];
+
 		if ( testEntity->r.svFlags & SVF_BOT )
 		{
 			if ( testEntity->client->pers.team == team && numBots < maxBots )
@@ -1390,6 +1484,7 @@ int FindBots( int *botEntityNumbers, int maxBots, team_t team )
 			}
 		}
 	}
+
 	return numBots;
 }
 
@@ -1402,7 +1497,7 @@ qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
 	spawnQueue_t *sq;
 
 	if ( self->client->pers.team > TEAM_NONE &&
-	     self->client->pers.team < NUM_TEAMS )
+	        self->client->pers.team < NUM_TEAMS )
 	{
 		sq = &level.team[ self->client->pers.team ].spawnQueue;
 	}
@@ -1465,15 +1560,18 @@ qboolean BotTeamateHasWeapon( gentity_t *self, int weapon )
 	for ( i = 0; i < numBots; i++ )
 	{
 		gentity_t *bot = &g_entities[botNumbers[i]];
+
 		if ( bot == self )
 		{
 			continue;
 		}
+
 		if ( BG_InventoryContainsWeapon( weapon, bot->client->ps.stats ) )
 		{
 			return qtrue;
 		}
 	}
+
 	return qfalse;
 }
 
@@ -1506,8 +1604,10 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 		case PCL_ALIEN_LEVEL0:
 			BotStrafeDodge( self );
 			break;
+
 		case PCL_ALIEN_LEVEL1:
 			break;
+
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
 			if ( self->botMind->nav.directPathToGoal )
@@ -1516,26 +1616,35 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 				{
 					BotJump( self );
 				}
+
 				BotStrafeDodge( self );
 			}
+
 			break;
+
 		case PCL_ALIEN_LEVEL3:
 			break;
+
 		case PCL_ALIEN_LEVEL3_UPG:
 			if ( BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE && self->client->ps.ammo > 0
-				&& inAttackRange )
+			        && inAttackRange )
 			{
 				//dont move when sniping buildings
 				BotStandStill( self );
 			}
+
 			break;
+
 		case PCL_ALIEN_LEVEL4:
+
 			//use rush to approach faster
 			if ( !inAttackRange )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 			}
+
 			break;
+
 		default:
 			break;
 	}
@@ -1625,6 +1734,7 @@ void BotFireWeaponAI( gentity_t *self )
 
 	trap_Trace( &trace, muzzle, NULL, NULL, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = Distance( muzzle, trace.endpos );
+
 	switch ( self->s.weapon )
 	{
 		case WP_ABUILD:
@@ -1636,7 +1746,9 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				usercmdPressButton( botCmdBuffer->buttons, BUTTON_GESTURE );    //make cute granger sounds to ward off the would be attackers
 			}
+
 			break;
+
 		case WP_ABUILD2:
 			if ( distance <= ABUILDER_CLAW_RANGE )
 			{
@@ -1646,9 +1758,12 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer );    //blob launcher
 			}
+
 			break;
+
 		case WP_ALEVEL0:
 			break; //auto hit
+
 		case WP_ALEVEL1:
 			if ( distance < LEVEL1_CLAW_RANGE )
 			{
@@ -1659,10 +1774,13 @@ void BotFireWeaponAI( gentity_t *self )
 				BotMoveInDir( self, MOVE_FORWARD );
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
 			}
+
 			break;
+
 		case WP_ALEVEL2:
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mara swipe
 			break;
+
 		case WP_ALEVEL2_UPG:
 			if ( distance <= LEVEL2_CLAW_U_RANGE )
 			{
@@ -1672,7 +1790,9 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );    //mara lightning
 			}
+
 			break;
+
 		case WP_ALEVEL3:
 			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME )
 			{
@@ -1683,7 +1803,9 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //goon chomp
 			}
+
 			break;
+
 		case WP_ALEVEL3_UPG:
 			if ( self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE )
 			{
@@ -1699,7 +1821,9 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //goon chomp
 			}
+
 			break;
+
 		case WP_ALEVEL4:
 			if ( distance > LEVEL4_CLAW_RANGE && self->client->ps.stats[STAT_MISC] < LEVEL4_TRAMPLE_CHARGE_MAX )
 			{
@@ -1709,13 +1833,17 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //rant swipe
 			}
+
 			break;
+
 		case WP_LUCIFER_CANNON:
 			if ( self->client->ps.stats[STAT_MISC] < LCANNON_CHARGE_TIME_MAX * Com_Clamp( 0.5, 1, random() ) )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
 			}
+
 			break;
+
 		default:
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
 	}
@@ -1754,12 +1882,13 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 		VectorSubtract( ent->client->ps.origin, range, mins );
 
 		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+
 		for ( i = 0; i < num; i++ )
 		{
 			other = &g_entities[ entityList[ i ] ];
 
 			if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
-				( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
+			        ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
 			{
 				return qfalse;
 			}
@@ -1778,7 +1907,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			if ( numLevels >= 0 && BG_ClassUnlocked( newClass ) && !BG_ClassDisabled( newClass ) )
 			{
 				ent->client->pers.evolveHealthFraction = ( float )ent->client->ps.stats[ STAT_HEALTH ] /
-				( float )BG_Class( currentClass )->health;
+				        ( float )BG_Class( currentClass )->health;
 
 				if ( ent->client->pers.evolveHealthFraction < 0.0f )
 				{
@@ -1812,6 +1941,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			return qfalse;
 		}
 	}
+
 	return qfalse;
 }
 
@@ -1876,6 +2006,7 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 	{
 		return;
 	}
+
 	//update ClientInfo
 	ClientUserinfoChanged( self->client->ps.clientNum, qfalse );
 }
@@ -1927,6 +2058,7 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 			{
 				return;
 			}
+
 			VectorCopy( newOrigin, self->client->ps.origin );
 			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
 			self->client->pers.classSelection = PCL_HUMAN_LIGHT;
@@ -1939,6 +2071,7 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 			{
 				return;
 			}
+
 			VectorCopy( newOrigin, self->client->ps.origin );
 			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
 			self->client->pers.classSelection = PCL_HUMAN_MEDIUM;
@@ -1951,6 +2084,7 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 			{
 				return;
 			}
+
 			VectorCopy( newOrigin, self->client->ps.origin );
 			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
 			self->client->pers.classSelection = PCL_HUMAN_BSUIT;
@@ -1998,7 +2132,7 @@ void BotSellWeapons( gentity_t *self )
 		}
 
 		if ( BG_InventoryContainsWeapon( i, self->client->ps.stats ) &&
-			BG_Weapon( ( weapon_t )i )->purchasable )
+		        BG_Weapon( ( weapon_t )i )->purchasable )
 		{
 			self->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
 
@@ -2022,6 +2156,7 @@ void BotSellAll( gentity_t *self )
 	{
 		return;
 	}
+
 	BotSellWeapons( self );
 
 	//sell upgrades
@@ -2029,7 +2164,7 @@ void BotSellAll( gentity_t *self )
 	{
 		//remove upgrade if carried
 		if ( BG_InventoryContainsUpgrade( i, self->client->ps.stats ) &&
-			BG_Upgrade( ( upgrade_t )i )->purchasable )
+		        BG_Upgrade( ( upgrade_t )i )->purchasable )
 		{
 
 			// shouldn't really need to test for this, but just to be safe
@@ -2041,6 +2176,7 @@ void BotSellAll( gentity_t *self )
 				{
 					continue;
 				}
+
 				VectorCopy( newOrigin, self->client->ps.origin );
 				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
 				self->client->pers.classSelection = PCL_HUMAN_NAKED;
@@ -2055,6 +2191,7 @@ void BotSellAll( gentity_t *self )
 			G_AddCreditToClient( self->client, ( short )BG_Upgrade( ( upgrade_t )i )->price, qfalse );
 		}
 	}
+
 	//update ClientInfo
 	ClientUserinfoChanged( self->client->ps.clientNum, qfalse );
 }
@@ -2062,16 +2199,17 @@ void BotSellAll( gentity_t *self )
 void BotSetSkillLevel( gentity_t *self, int skill )
 {
 	self->botMind->botSkill.level = skill;
+
 	//different aim for different teams
 	if ( self->botMind->botTeam == TEAM_HUMANS )
 	{
 		self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-		self->botMind->botSkill.aimShake = ( int ) ( 10 - skill );
+		self->botMind->botSkill.aimShake = ( int )( 10 - skill );
 	}
 	else
 	{
 		self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-		self->botMind->botSkill.aimShake = ( int ) ( 10 - skill );
+		self->botMind->botSkill.aimShake = ( int )( 10 - skill );
 	}
 }
 
@@ -2127,7 +2265,7 @@ qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 
 	//ignore buildings if we cant attack them
 	if ( enemy->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer ||
-	                                         self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
+	        self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
 	{
 		return qfalse;
 	}
@@ -2170,11 +2308,12 @@ void BotSearchForEnemy( gentity_t *self )
 	do
 	{
 		enemy = BotPopEnemy( queue );
-	} while ( enemy && !BotEnemyIsValid( self, enemy ) );
+	}
+	while ( enemy && !BotEnemyIsValid( self, enemy ) );
 
 	self->botMind->bestEnemy.ent = enemy;
 
-	if ( self->botMind->bestEnemy.ent ) 
+	if ( self->botMind->bestEnemy.ent )
 	{
 		self->botMind->bestEnemy.distance = Distance( self->s.origin, self->botMind->bestEnemy.ent->s.origin );
 	}

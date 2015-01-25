@@ -81,7 +81,7 @@ void SP_pos_location( gentity_t *self )
 	self->r.svFlags = SVF_BROADCAST;
 	trap_LinkEntity( self );  // make the server send them to the clients
 
-	if ( G_SpawnInt( "count", "", &self->customNumber) )
+	if ( G_SpawnInt( "count", "", &self->customNumber ) )
 	{
 		if ( self->customNumber < 0 )
 		{
@@ -102,7 +102,7 @@ void SP_pos_location( gentity_t *self )
 	}
 
 	self->nextPathSegment = level.locationHead;
-	self->s.generic1 = G_LocationIndex(message);
+	self->s.generic1 = G_LocationIndex( message );
 	level.locationHead = self;
 
 	G_SetOrigin( self, self->s.origin );

@@ -599,7 +599,7 @@ void Huff_Init( huffman_t *huff )
 
 	// Initialize the tree & list with the NYT node
 	huff->decompressor.tree = huff->decompressor.lhead = huff->decompressor.ltail = huff->decompressor.loc[ NYT ] =
-	                            & ( huff->decompressor.nodeList[ huff->decompressor.blocNode++ ] );
+	                              & ( huff->decompressor.nodeList[ huff->decompressor.blocNode++ ] );
 	huff->decompressor.tree->symbol = NYT;
 	huff->decompressor.tree->weight = 0;
 	huff->decompressor.lhead->next = huff->decompressor.lhead->prev = NULL;
@@ -607,7 +607,7 @@ void Huff_Init( huffman_t *huff )
 
 	// Add the NYT (not yet transmitted) node into the tree/list */
 	huff->compressor.tree = huff->compressor.lhead = huff->compressor.loc[ NYT ] =
-	                          & ( huff->compressor.nodeList[ huff->compressor.blocNode++ ] );
+	                            & ( huff->compressor.nodeList[ huff->compressor.blocNode++ ] );
 	huff->compressor.tree->symbol = NYT;
 	huff->compressor.tree->weight = 0;
 	huff->compressor.lhead->next = huff->compressor.lhead->prev = NULL;

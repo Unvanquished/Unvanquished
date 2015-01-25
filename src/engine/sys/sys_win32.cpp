@@ -1,4 +1,4 @@
-﻿/*
+/*
 ===========================================================================
 
 Daemon GPL Source Code
@@ -101,12 +101,12 @@ Sys_DefaultHomePath
 char *Sys_DefaultHomePath( void )
 {
 	TCHAR   szPath[ MAX_PATH ];
-	HRESULT (WINAPI *qSHGetFolderPath)(
-	  _In_   HWND hwndOwner,
-	  _In_   int nFolder,
-	  _In_   HANDLE hToken,
-	  _In_   DWORD dwFlags,
-	  _Out_  LPTSTR pszPath
+	HRESULT( WINAPI * qSHGetFolderPath )(
+	    _In_   HWND hwndOwner,
+	    _In_   int nFolder,
+	    _In_   HANDLE hToken,
+	    _In_   DWORD dwFlags,
+	    _Out_  LPTSTR pszPath
 	);
 	HMODULE shfolder = LoadLibrary( "shfolder.dll" );
 
@@ -118,7 +118,7 @@ char *Sys_DefaultHomePath( void )
 			return NULL;
 		}
 
-		qSHGetFolderPath = (decltype(qSHGetFolderPath))GetProcAddress( shfolder, "SHGetFolderPathA" );
+		qSHGetFolderPath = ( decltype( qSHGetFolderPath ) )GetProcAddress( shfolder, "SHGetFolderPathA" );
 
 		if ( qSHGetFolderPath == NULL )
 		{
@@ -527,28 +527,39 @@ void Sys_PlatformInit( void )
 	Sys_SetFloatEnv();
 
 	// Mark the process as DPI-aware on Vista and above
-	HMODULE user32 = LoadLibrary("user32.dll");
-	if (user32) {
-		FARPROC pSetProcessDPIAware = GetProcAddress(user32, "SetProcessDPIAware");
-		if (pSetProcessDPIAware)
+	HMODULE user32 = LoadLibrary( "user32.dll" );
+
+	if ( user32 )
+	{
+		FARPROC pSetProcessDPIAware = GetProcAddress( user32, "SetProcessDPIAware" );
+
+		if ( pSetProcessDPIAware )
+		{
 			pSetProcessDPIAware();
-		FreeLibrary(user32);
+		}
+
+		FreeLibrary( user32 );
 	}
 
 #ifdef BUILD_CLIENT
-	if(timeGetDevCaps(&ptc, sizeof(ptc)) == MMSYSERR_NOERROR)
+
+	if ( timeGetDevCaps( &ptc, sizeof( ptc ) ) == MMSYSERR_NOERROR )
 	{
 		timerResolution = ptc.wPeriodMin;
-		if(timerResolution > 1)
+
+		if ( timerResolution > 1 )
 		{
-			Com_Printf("Warning: Minimum supported timer resolution is %ums "
-					"on this system, recommended resolution 1ms\n", timerResolution);
+			Com_Printf( "Warning: Minimum supported timer resolution is %ums "
+			            "on this system, recommended resolution 1ms\n", timerResolution );
 		}
 
-		timeBeginPeriod(timerResolution);
+		timeBeginPeriod( timerResolution );
 	}
 	else
+	{
 		timerResolution = 0;
+	}
+
 #endif
 }
 /*
@@ -561,8 +572,12 @@ Windows specific deinitialisation
 void Sys_PlatformExit( void )
 {
 #ifdef BUILD_CLIENT
-	if(timerResolution)
-		timeEndPeriod(timerResolution);
+
+	if ( timerResolution )
+	{
+		timeEndPeriod( timerResolution );
+	}
+
 #endif
 }
 

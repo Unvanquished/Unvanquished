@@ -41,12 +41,12 @@ static float RGSInterferenceMod( float distance )
 	// q is the ratio of the part of a sphere with radius RGS_RANGE that intersects
 	// with another sphere of equal size and given distance
 	dr = distance / RGS_RANGE;
-	q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
+	q = ( ( dr * dr * dr ) - 12.0f * dr + 16.0f ) / 16.0f;
 
 	// Two RGS together should mine at a rate proportional to the volume of the
 	// union of their areas of effect. If more RGS intersect, this is just an
 	// approximation that tends to punish cluttering of RGS.
-	return ( (1.0f - q) + 0.5f * q );
+	return ( ( 1.0f - q ) + 0.5f * q );
 }
 
 /**
@@ -75,11 +75,11 @@ static void RGSCalculateRate( gentity_t *self )
 		rate = level.mineRate;
 
 		for ( rgs = NULL;
-		      ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
+		        ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
 		{
 			if ( rgs->s.eType == ET_BUILDABLE &&
-			     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-				 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
+			        ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
+			        && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
 			{
 				rate *= RGSInterferenceMod( Distance( self->s.origin, rgs->s.origin ) );
 			}
@@ -101,11 +101,11 @@ static void RGSInformNeighbors( gentity_t *self )
 	gentity_t *rgs;
 
 	for ( rgs = NULL;
-	      ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
+	        ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
 	{
 		if ( rgs->s.eType == ET_BUILDABLE &&
-		     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-			 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
+		        ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
+		        && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
 		{
 			RGSCalculateRate( rgs );
 		}
@@ -230,8 +230,8 @@ float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
 	for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, origin, RGS_RANGE * 2.0f ) ); )
 	{
 		if ( rgs->s.eType == ET_BUILDABLE &&
-		     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-		     && rgs->spawned && rgs->powered && rgs->health > 0 && rgs->buildableTeam == team )
+		        ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
+		        && rgs->spawned && rgs->powered && rgs->health > 0 && rgs->buildableTeam == team )
 		{
 			delta += RGSPredictInterferenceLoss( rgs, origin );
 		}
@@ -270,7 +270,10 @@ void G_MineBuildPoints( void )
 	// sum up mine rates of RGS, store how many build points they mined
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( ent->s.eType != ET_BUILDABLE ) continue;
+		if ( ent->s.eType != ET_BUILDABLE )
+		{
+			continue;
+		}
 
 		ent->acquiredBuildPoints += ent->mineEfficiency * mineMod;
 
@@ -288,12 +291,14 @@ void G_MineBuildPoints( void )
 
 	// main structure provides the rest of the minimum mining efficiency
 	float minEff = ( g_minimumMineRate.value / 100.0f ), deltaEff;
+
 	if ( G_ActiveReactor() && ( deltaEff = minEff - level.team[ TEAM_HUMANS ].mineEfficiency ) > 0 )
 	{
 		level.team[ TEAM_HUMANS ].mineEfficiency       += deltaEff;
 		level.team[ TEAM_HUMANS ].mainStructAcquiredBP += deltaEff * mineMod;
 	}
-	if ( G_ActiveOvermind() &&( deltaEff = minEff - level.team[ TEAM_ALIENS ].mineEfficiency ) > 0 )
+
+	if ( G_ActiveOvermind() && ( deltaEff = minEff - level.team[ TEAM_ALIENS ].mineEfficiency ) > 0 )
 	{
 		level.team[ TEAM_ALIENS ].mineEfficiency       += deltaEff;
 		level.team[ TEAM_ALIENS ].mainStructAcquiredBP += deltaEff * mineMod;
@@ -314,16 +319,19 @@ void G_MineBuildPoints( void )
 		player = &g_entities[ playerNum ];
 		client = player->client;
 
-		if ( !client ) continue;
+		if ( !client )
+		{
+			continue;
+		}
 
 		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
 
-		team_t team = (team_t)client->pers.team;
+		team_t team = ( team_t )client->pers.team;
 
 		if ( G_IsPlayableTeam( team ) )
 		{
 			client->ps.persistant[ PERS_RGS_EFFICIENCY ] =
-				( short )( level.team[ team ].mineEfficiency * 100.0f );
+			    ( short )( level.team[ team ].mineEfficiency * 100.0f );
 		}
 		else
 		{
@@ -363,13 +371,13 @@ int G_GetMarkedBuildPointsInt( team_t team )
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( ent->s.eType != ET_BUILDABLE || !ent->inuse || ent->health <= 0 ||
-		     ent->buildableTeam != team || !ent->deconstruct )
+		        ent->buildableTeam != team || !ent->deconstruct )
 		{
 			continue;
 		}
 
 		attr = BG_Buildable( ent->s.modelindex );
-		sum += attr->buildPoints * ( ent->health / (float)attr->health );
+		sum += attr->buildPoints * ( ent->health / ( float )attr->health );
 	}
 
 	return sum;

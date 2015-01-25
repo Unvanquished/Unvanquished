@@ -41,8 +41,8 @@ static void G_WarnPrimaryUnderAttack( gentity_t *self )
 	float fracHealth, fracLastHealth;
 	int event = 0;
 
-	fracHealth = (float) self->health / (float) attr->health;
-	fracLastHealth = (float) self->lastHealth / (float) attr->health;
+	fracHealth = ( float ) self->health / ( float ) attr->health;
+	fracLastHealth = ( float ) self->lastHealth / ( float ) attr->health;
 
 	if ( fracHealth < 0.25f && fracLastHealth >= 0.25f )
 	{
@@ -76,7 +76,7 @@ static qboolean IsWarnableMOD( int mod )
 {
 	switch ( mod )
 	{
-		//case MOD_UNKNOWN:
+			//case MOD_UNKNOWN:
 		case MOD_TRIGGER_HURT:
 		case MOD_DECONSTRUCT:
 		case MOD_REPLACE:
@@ -239,22 +239,23 @@ Move spawn blockers
 static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 {
 	vec3_t nudge;
-	if( self )
+
+	if ( self )
 	{
-		if( !self->spawnBlockTime )
+		if ( !self->spawnBlockTime )
 		{
 			// begin timer
 			self->spawnBlockTime = level.time;
 			return;
 		}
-		else if( level.time - self->spawnBlockTime > 10000 )
+		else if ( level.time - self->spawnBlockTime > 10000 )
 		{
 			// still blocked, get rid of them
 			G_Damage( blocker, NULL, NULL, NULL, NULL, 10000, 0, MOD_TRIGGER_HURT );
 			self->spawnBlockTime = 0;
 			return;
 		}
-		else if( level.time - self->spawnBlockTime < 5000 )
+		else if ( level.time - self->spawnBlockTime < 5000 )
 		{
 			// within grace period
 			return;
@@ -267,7 +268,7 @@ static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 
 	if ( blocker->r.svFlags & SVF_BOT )
 	{
-	        // nudge the bot (okay, we lose the fractional part)
+		// nudge the bot (okay, we lose the fractional part)
 		blocker->client->pers.cmd.forwardmove = nudge[0];
 		blocker->client->pers.cmd.rightmove = nudge[1];
 		blocker->client->pers.cmd.upmove = nudge[2];
@@ -278,7 +279,7 @@ static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 	{
 		VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
 		trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
-        }
+	}
 }
 
 /*
@@ -376,7 +377,7 @@ static gentity_t* GetMainBuilding( gentity_t *self, qboolean ownBase )
 
 	if ( self->client )
 	{
-		team = (team_t) self->client->pers.team;
+		team = ( team_t ) self->client->pers.team;
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
@@ -483,7 +484,7 @@ qboolean G_FindCreep( gentity_t *self )
 
 	//if self does not have a parentNode or its parentNode is invalid find a new one
 	if ( self->client || self->powerSource == NULL || !self->powerSource->inuse ||
-	     self->powerSource->health <= 0 )
+	        self->powerSource->health <= 0 )
 	{
 		for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 		{
@@ -493,8 +494,8 @@ qboolean G_FindCreep( gentity_t *self )
 			}
 
 			if ( ( ent->s.modelindex == BA_A_SPAWN ||
-			       ent->s.modelindex == BA_A_OVERMIND ) &&
-			       ent->health > 0 )
+			        ent->s.modelindex == BA_A_OVERMIND ) &&
+			        ent->health > 0 )
 			{
 				VectorSubtract( self->s.origin, ent->s.origin, temp_v );
 				distance = VectorLength( temp_v );
@@ -558,10 +559,10 @@ static void AGeneric_CreepSlow( gentity_t *self )
 
 	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, creepSize ) ); )
 	{
-		if (    !ent->client
-		     || ent->client->pers.team != TEAM_HUMANS
-		     || ent->client->ps.groundEntityNum == ENTITYNUM_NONE
-		     || ent->flags & FL_NOTARGET )
+		if ( !ent->client
+		        || ent->client->pers.team != TEAM_HUMANS
+		        || ent->client->ps.groundEntityNum == ENTITYNUM_NONE
+		        || ent->flags & FL_NOTARGET )
 		{
 			continue;
 		}
@@ -709,7 +710,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 
 	// warn if in main base and there's an overmind
 	if ( ( om = G_ActiveOvermind() ) && om != self && level.time > om->warnTimer
-	     && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ) )
+	        && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ) )
 	{
 		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
 		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
@@ -787,7 +788,7 @@ void G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter )
 			char selfDescr[ 64 ], fireStarterDescr[ 64 ];
 			BG_BuildEntityDescription( selfDescr, sizeof( selfDescr ), &self->s );
 			BG_BuildEntityDescription( fireStarterDescr, sizeof( fireStarterDescr ), &fireStarter->s );
-			Com_Printf("%s ^2ignited^7 %s.", fireStarterDescr, selfDescr);
+			Com_Printf( "%s ^2ignited^7 %s.", fireStarterDescr, selfDescr );
 		}
 
 		self->onFire               = qtrue;
@@ -803,7 +804,7 @@ void G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter )
 			char selfDescr[ 64 ], fireStarterDescr[ 64 ];
 			BG_BuildEntityDescription( selfDescr, sizeof( selfDescr ), &self->s );
 			BG_BuildEntityDescription( fireStarterDescr, sizeof( fireStarterDescr ), &fireStarter->s );
-			Com_Printf("%s ^2reset burning action timer of^7 %s.", fireStarterDescr, selfDescr);
+			Com_Printf( "%s ^2reset burning action timer of^7 %s.", fireStarterDescr, selfDescr );
 		}
 
 		// always reset the action timer
@@ -880,7 +881,7 @@ void ASpawn_Think( gentity_t *self )
 	if ( self->s.groundEntityNum != ENTITYNUM_NONE )
 	{
 		if ( ( ent = G_CheckSpawnPoint( self->s.number, self->s.origin,
-										self->s.origin2, BA_A_SPAWN, NULL ) ) != NULL )
+		                                self->s.origin2, BA_A_SPAWN, NULL ) ) != NULL )
 		{
 			// If the thing blocking the spawn is a buildable, kill it.
 			// If it's part of the map, kill self.
@@ -904,8 +905,8 @@ void ASpawn_Think( gentity_t *self )
 				G_Damage( self, NULL, NULL, NULL, NULL, 10000, DAMAGE_NO_PROTECTION, MOD_SUICIDE );
 				return;
 			}
-			else if( g_antiSpawnBlock.integer &&
-					 ent->client && ent->client->pers.team == TEAM_ALIENS )
+			else if ( g_antiSpawnBlock.integer &&
+			          ent->client && ent->client->pers.team == TEAM_ALIENS )
 			{
 				PuntBlocker( self, ent );
 			}
@@ -964,7 +965,7 @@ void AOvermind_Think( gentity_t *self )
 
 		//low on spawns
 		if ( !level.overmindMuted && level.team[ TEAM_ALIENS ].numSpawns <= 0 &&
-		     level.time > self->overmindSpawnsTimer )
+		        level.time > self->overmindSpawnsTimer )
 		{
 			qboolean  haveBuilder = qfalse;
 			gentity_t *builder;
@@ -977,8 +978,8 @@ void AOvermind_Think( gentity_t *self )
 				builder = &g_entities[ level.sortedClients[ clientNum ] ];
 
 				if ( builder->health > 0 &&
-				     ( builder->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
-				       builder->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
+				        ( builder->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
+				          builder->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
 				{
 					haveBuilder = qtrue;
 					break;
@@ -1220,9 +1221,9 @@ void AAcidTube_Think( gentity_t *self )
 	// check for close humans
 	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, ACIDTUBE_RANGE ) ); )
 	{
-		if (    ( ent->flags & FL_NOTARGET )
-		     || !ent->client
-		     || ent->client->pers.team != TEAM_HUMANS )
+		if ( ( ent->flags & FL_NOTARGET )
+		        || !ent->client
+		        || ent->client->pers.team != TEAM_HUMANS )
 		{
 			continue;
 		}
@@ -1241,7 +1242,7 @@ void AAcidTube_Think( gentity_t *self )
 		}
 
 		G_SelectiveRadiusDamage( self->s.pos.trBase, self, ACIDTUBE_DAMAGE,
-								 ACIDTUBE_RANGE, self, MOD_ATUBE, TEAM_ALIENS );
+		                         ACIDTUBE_RANGE, self, MOD_ATUBE, TEAM_ALIENS );
 
 		return;
 	}
@@ -1322,11 +1323,11 @@ static qboolean AHive_TargetValid( gentity_t *self, gentity_t *target, qboolean 
 	trace_t trace;
 	vec3_t  tipOrigin;
 
-	if (    !target
-	     || !target->client
-	     || target->client->pers.team != TEAM_HUMANS
-	     || target->health <= 0
-	     || ( target->flags & FL_NOTARGET ) )
+	if ( !target
+	        || !target->client
+	        || target->client->pers.team != TEAM_HUMANS
+	        || target->health <= 0
+	        || ( target->flags & FL_NOTARGET ) )
 	{
 		return qfalse;
 	}
@@ -1371,11 +1372,11 @@ static qboolean AHive_FindTarget( gentity_t *self )
 	self->target = NULL;
 
 	// find all potential targets
-	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, HIVE_SENSE_RANGE )); )
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, HIVE_SENSE_RANGE ) ); )
 	{
 		if ( AHive_TargetValid( self, ent, qfalse ) )
 		{
-		     validTargets[ validTargetNum++ ] = ent;
+			validTargets[ validTargetNum++ ] = ent;
 		}
 	}
 
@@ -1550,9 +1551,9 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 	float     distanceToTarget = LOCKBLOB_RANGE;
 	int       lowMsec = 0;
 	int       highMsec = ( int )( (
-	                                ( ( distanceToTarget * LOCKBLOB_SPEED ) +
-	                                  ( distanceToTarget * BG_Class( target->client->ps.stats[ STAT_CLASS ] )->speed ) ) /
-	                                ( LOCKBLOB_SPEED * LOCKBLOB_SPEED ) ) * 1000.0f );
+	                                  ( ( distanceToTarget * LOCKBLOB_SPEED ) +
+	                                    ( distanceToTarget * BG_Class( target->client->ps.stats[ STAT_CLASS ] )->speed ) ) /
+	                                  ( LOCKBLOB_SPEED * LOCKBLOB_SPEED ) ) * 1000.0f );
 
 	VectorScale( target->acceleration, 1.0f / 2.0f, halfAcceleration );
 	VectorScale( target->jerk, 1.0f / 3.0f, thirdJerk );
@@ -1829,6 +1830,7 @@ static gentity_t *NearestPowerSourceInRange( gentity_t *self )
 		if ( neighbor->s.modelindex == BA_H_REPEATER )
 		{
 			float distance = Distance( self->s.origin, neighbor->s.origin );
+
 			if ( distance < bestDistance )
 			{
 				bestDistance = distance;
@@ -1940,7 +1942,7 @@ static float OutgoingInterference( buildable_t buildable, gentity_t *neighbor, f
 	}
 
 	// cannot influence buildables that need no power
-	if ( !BG_Buildable(neighbor->s.modelindex )->powerConsumption )
+	if ( !BG_Buildable( neighbor->s.modelindex )->powerConsumption )
 	{
 		return 0.0f;
 	}
@@ -2023,6 +2025,7 @@ static void CalculateSparePower( gentity_t *self )
 	}
 
 	neighbor = NULL;
+
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, PowerRelevantRange() ) ) )
 	{
 		if ( self == neighbor )
@@ -2032,18 +2035,18 @@ static void CalculateSparePower( gentity_t *self )
 
 		distance = Distance( self->s.origin, neighbor->s.origin );
 
-		self->expectedSparePower += IncomingInterference( (buildable_t) self->s.modelindex, neighbor, distance, qtrue );
+		self->expectedSparePower += IncomingInterference( ( buildable_t ) self->s.modelindex, neighbor, distance, qtrue );
 
 		if ( self->spawned )
 		{
-			self->currentSparePower += IncomingInterference( (buildable_t) self->s.modelindex, neighbor, distance, qfalse );
+			self->currentSparePower += IncomingInterference( ( buildable_t ) self->s.modelindex, neighbor, distance, qfalse );
 		}
 	}
 
 	// HACK: Store total power (used + spare) in entityState_t.clientNum for display
 	if ( self->spawned )
 	{
-		int totalPower = (int)self->currentSparePower + BG_Buildable( self->s.modelindex )->powerConsumption;
+		int totalPower = ( int )self->currentSparePower + BG_Buildable( self->s.modelindex )->powerConsumption;
 
 		self->s.clientNum = Q_clamp( totalPower, 0, POWER_DISPLAY_MAX );
 	}
@@ -2198,8 +2201,8 @@ void HGeneric_Cancel( gentity_t *self )
 }
 
 #define HUMAN_DETONATION_RAND_DELAY ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) ) \
-                                     * DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY \
-                                     + HUMAN_DETONATION_DELAY
+	* DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY \
+	+ HUMAN_DETONATION_DELAY
 
 void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
@@ -2259,6 +2262,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		if ( watcher )
 		{
 			location = Team_GetLocation( watcher );
+
 			if ( !location )
 			{
 				location = level.fakeLocation; // fall back on the fake location
@@ -2305,8 +2309,8 @@ void HSpawn_Think( gentity_t *self )
 					G_Damage( self, NULL, NULL, NULL, NULL, self->health, 0, MOD_SUICIDE );
 					return;
 				}
-				else if( g_antiSpawnBlock.integer &&
-				         ent->client && ent->client->pers.team == TEAM_HUMANS )
+				else if ( g_antiSpawnBlock.integer &&
+				          ent->client && ent->client->pers.team == TEAM_HUMANS )
 				{
 					PuntBlocker( self, ent );
 				}
@@ -2347,8 +2351,8 @@ void HReactor_Think( gentity_t *self )
 	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.pos.trBase, REACTOR_ATTACK_RANGE ) ); )
 	{
 		if ( !ent->client ||
-			 ent->client->pers.team != TEAM_ALIENS ||
-			 ent->flags & FL_NOTARGET )
+		        ent->client->pers.team != TEAM_ALIENS ||
+		        ent->flags & FL_NOTARGET )
 		{
 			continue;
 		}
@@ -2477,8 +2481,8 @@ void HMedistat_Think( gentity_t *self )
 		client = player->client;
 
 		if ( self->target == player && PM_Live( client->ps.pm_type ) &&
-			 ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] ||
-			   client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
+		        ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] ||
+		          client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
 		{
 			occupied = qtrue;
 		}
@@ -2528,8 +2532,8 @@ void HMedistat_Think( gentity_t *self )
 		if ( !occupied )
 		{
 			if ( PM_Live( client->ps.pm_type ) &&
-				 ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] ||
-				   client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
+			        ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] ||
+			          client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
 			{
 				self->target = player;
 				occupied = qtrue;
@@ -2661,8 +2665,10 @@ static int HMGTurret_CompareTargets( const void *first, const void *second )
 
 		AngleVectors( cmpTurret->buildableAim, aimDir, NULL, NULL );
 
-		VectorSubtract( a->s.origin, cmpTurret->s.pos.trBase, aDir ); VectorNormalize( aDir );
-		VectorSubtract( b->s.origin, cmpTurret->s.pos.trBase, bDir ); VectorNormalize( bDir );
+		VectorSubtract( a->s.origin, cmpTurret->s.pos.trBase, aDir );
+		VectorNormalize( aDir );
+		VectorSubtract( b->s.origin, cmpTurret->s.pos.trBase, bDir );
+		VectorNormalize( bDir );
 
 		if ( DotProduct( aDir, aimDir ) > DotProduct( bDir, aimDir ) )
 		{
@@ -2709,8 +2715,10 @@ static int HRocketpod_CompareTargets( const void *first, const void *second )
 		vec3_t aimDir, aDir, bDir;
 		bool   aSafe, bSafe;
 
-		VectorSubtract( a->s.origin, cmpTurret->s.pos.trBase, aDir ); VectorNormalize( aDir );
-		VectorSubtract( b->s.origin, cmpTurret->s.pos.trBase, bDir ); VectorNormalize( bDir );
+		VectorSubtract( a->s.origin, cmpTurret->s.pos.trBase, aDir );
+		VectorNormalize( aDir );
+		VectorSubtract( b->s.origin, cmpTurret->s.pos.trBase, bDir );
+		VectorNormalize( bDir );
 
 		aSafe = G_RocketpodSafeShot( cmpTurret->s.number, cmpTurret->s.pos.trBase, aDir );
 		bSafe = G_RocketpodSafeShot( cmpTurret->s.number, cmpTurret->s.pos.trBase, bDir );
@@ -2743,13 +2751,13 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	trace_t tr;
 	vec3_t  dir, end;
 
-	if (    !target
-	     || !target->client
-	     || target->health <= 0
-	     || G_OnSameTeam( self, target )
-	     || target->flags & FL_NOTARGET
-	     || Distance( self->s.origin, target->s.origin ) > range
-	     || !trap_InPVS( self->s.origin, target->s.origin ) )
+	if ( !target
+	        || !target->client
+	        || target->health <= 0
+	        || G_OnSameTeam( self, target )
+	        || target->flags & FL_NOTARGET
+	        || Distance( self->s.origin, target->s.origin ) > range
+	        || !trap_InPVS( self->s.origin, target->s.origin ) )
 	{
 		if ( g_debugTurrets.integer > 0 && self->target )
 		{
@@ -2777,7 +2785,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	{
 		// give up on target if we couldn't shoot at it for a while
 		if ( self->turretLastShotAtTarget &&
-		     self->turretLastShotAtTarget + TURRET_GIVEUP_TARGET < level.time )
+		        self->turretLastShotAtTarget + TURRET_GIVEUP_TARGET < level.time )
 		{
 			if ( g_debugTurrets.integer > 0 && self->target )
 			{
@@ -2795,7 +2803,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 }
 
 static qboolean HTurret_FindTarget( gentity_t *self, float range,
-                                    int (*cmp)(const void *, const void *) )
+                                    int ( *cmp )( const void *, const void * ) )
 {
 	gentity_t *neighbour = NULL;
 	gentity_t *validTargets[ MAX_GENTITIES ];
@@ -2812,11 +2820,11 @@ static qboolean HTurret_FindTarget( gentity_t *self, float range,
 
 	// find all potential targets
 	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
-	                                                                     range )); )
+	                                      range ) ); )
 	{
 		if ( HTurret_TargetValid( self, neighbour, qtrue, range ) )
 		{
-		     validTargets[ validTargetNum++ ] = neighbour;
+			validTargets[ validTargetNum++ ] = neighbour;
 		}
 	}
 
@@ -2893,11 +2901,11 @@ static qboolean HTurret_MoveHeadToTarget( gentity_t *self )
 
 		// get angle delta from current orientation towards trarget angle
 		deltaAngles[ currentAngle ] = AngleSubtract( self->s.angles2[ currentAngle ],
-		                                             angleToTarget[ currentAngle ] );
+		                              angleToTarget[ currentAngle ] );
 
 		// adjust enttiyState_t.angles2
-		if      ( deltaAngles[ currentAngle ] < 0.0f &&
-		          deltaAngles[ currentAngle ] < -maxAngles[ currentAngle ] )
+		if ( deltaAngles[ currentAngle ] < 0.0f &&
+		        deltaAngles[ currentAngle ] < -maxAngles[ currentAngle ] )
 		{
 			self->s.angles2[ currentAngle ] += maxAngles[ currentAngle ];
 			anotherMoveNeeded = qtrue;
@@ -3279,16 +3287,16 @@ void HRocketpod_Think( gentity_t *self )
 
 	// if there's an enemy really close, enter safe mode
 	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
-	                                                                     ROCKETPOD_RANGE ) ); )
+	                                      ROCKETPOD_RANGE ) ); )
 	{
 		if ( neighbour->client && neighbour->health > 0 && !G_OnSameTeam( self, neighbour ) &&
-		     neighbour->client->sess.spectatorState == SPECTATOR_NOT )
+		        neighbour->client->sess.spectatorState == SPECTATOR_NOT )
 		{
 			classModelConfig_t *cmc = BG_ClassModelConfig( neighbour->client->pers.classSelection );
 			float classRadius = 0.5f * ( VectorLength( cmc->mins ) + VectorLength( cmc->maxs ) );
 
 			if ( Distance( self->s.origin, neighbour->s.origin ) - classRadius
-			     < BG_Missile( MIS_ROCKET )->splashRadius )
+			        < BG_Missile( MIS_ROCKET )->splashRadius )
 			{
 				HRocketpod_SafeMode( self, qtrue );
 
@@ -3502,9 +3510,17 @@ void G_BuildableThink( gentity_t *ent, int msec )
 
 			switch ( ent->buildableTeam )
 			{
-				case TEAM_ALIENS: regenWait = ALIEN_BUILDABLE_REGEN_WAIT; break;
-				case TEAM_HUMANS: regenWait = HUMAN_BUILDABLE_REGEN_WAIT; break;
-				default:          regenWait = 0;                          break;
+				case TEAM_ALIENS:
+					regenWait = ALIEN_BUILDABLE_REGEN_WAIT;
+					break;
+
+				case TEAM_HUMANS:
+					regenWait = HUMAN_BUILDABLE_REGEN_WAIT;
+					break;
+
+				default:
+					regenWait = 0;
+					break;
 			}
 
 			if ( regenRate && ( ent->lastDamageTime + regenWait ) < level.time )
@@ -3571,7 +3587,7 @@ qboolean G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable 
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) ) )
 	{
 		if ( neighbor->s.eType != ET_BUILDABLE || !neighbor->spawned || neighbor->health <= 0 ||
-		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )
+		        ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )
 		{
 			continue;
 		}
@@ -3598,7 +3614,7 @@ static gentity_t *FindBuildable( buildable_t buildable )
 	gentity_t *ent;
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i;
-	      i < level.num_entities; i++, ent++ )
+	        i < level.num_entities; i++, ent++ )
 	{
 		if ( ent->s.eType != ET_BUILDABLE )
 		{
@@ -3680,9 +3696,9 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 	// Prefer the one that collides with the thing we're building
 	aMatches = BuildablesIntersect( cmpBuildable, cmpOrigin,
-	                                (buildable_t) buildableA->s.modelindex, buildableA->s.origin );
+	                                ( buildable_t ) buildableA->s.modelindex, buildableA->s.origin );
 	bMatches = BuildablesIntersect( cmpBuildable, cmpOrigin,
-	                                (buildable_t) buildableB->s.modelindex, buildableB->s.origin );
+	                                ( buildable_t ) buildableB->s.modelindex, buildableB->s.origin );
 
 	if ( aMatches && !bMatches )
 	{
@@ -3697,13 +3713,13 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	if ( cmpBuildable == BA_A_SPAWN || cmpBuildable == BA_H_SPAWN )
 	{
 		if ( ( buildableA->s.modelindex == BA_A_SPAWN && level.team[ TEAM_ALIENS ].numSpawns == 1 ) ||
-		     ( buildableA->s.modelindex == BA_H_SPAWN && level.team[ TEAM_HUMANS ].numSpawns == 1 ) )
+		        ( buildableA->s.modelindex == BA_H_SPAWN && level.team[ TEAM_HUMANS ].numSpawns == 1 ) )
 		{
 			return 1;
 		}
 
 		if ( ( buildableB->s.modelindex == BA_A_SPAWN && level.team[ TEAM_ALIENS ].numSpawns == 1 ) ||
-		     ( buildableB->s.modelindex == BA_H_SPAWN && level.team[ TEAM_HUMANS ].numSpawns == 1 ) )
+		        ( buildableB->s.modelindex == BA_H_SPAWN && level.team[ TEAM_HUMANS ].numSpawns == 1 ) )
 		{
 			return -1;
 		}
@@ -3789,7 +3805,10 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	G_RemoveMomentumForDecon( self, deconner );
 
 	// reward attackers if the structure was hurt before deconstruction
-	if ( self->deconHealthFrac < 1.0f ) G_RewardAttackers( self );
+	if ( self->deconHealthFrac < 1.0f )
+	{
+		G_RewardAttackers( self );
+	}
 
 	// deconstruct
 	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, deconType );
@@ -3804,7 +3823,7 @@ Returns the number of buildables removed.
 ===============
 */
 int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
-                             char *nums, int nsize )
+                            char *nums, int nsize )
 {
 	int       i;
 	int       bNum;
@@ -3902,17 +3921,17 @@ static qboolean IsSetForDeconstruction( gentity_t *ent )
 static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, buildable_t newBuildable )
 {
 	// don't replace the main buildable with any other buildable
-	if (    ( oldBuildable == BA_H_REACTOR  && newBuildable != BA_H_REACTOR  )
-	     || ( oldBuildable == BA_A_OVERMIND && newBuildable != BA_A_OVERMIND ) )
+	if ( ( oldBuildable == BA_H_REACTOR  && newBuildable != BA_H_REACTOR )
+	        || ( oldBuildable == BA_A_OVERMIND && newBuildable != BA_A_OVERMIND ) )
 	{
 		return IBE_MAINSTRUCTURE;
 	}
 
 	// don't replace last spawn with a non-spawn
-	if (    ( oldBuildable == BA_H_SPAWN && newBuildable != BA_H_SPAWN &&
-	          level.team[ TEAM_HUMANS ].numSpawns == 1 )
-	     || ( oldBuildable == BA_A_SPAWN && newBuildable != BA_A_SPAWN &&
-	          level.team[ TEAM_ALIENS ].numSpawns == 1 ) )
+	if ( ( oldBuildable == BA_H_SPAWN && newBuildable != BA_H_SPAWN &&
+	        level.team[ TEAM_HUMANS ].numSpawns == 1 )
+	        || ( oldBuildable == BA_A_SPAWN && newBuildable != BA_A_SPAWN &&
+	             level.team[ TEAM_ALIENS ].numSpawns == 1 ) )
 	{
 		return IBE_LASTSPAWN;
 	}
@@ -3956,6 +3975,7 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 	ownPrediction = baseSupply - powerConsumption;
 
 	neighbor = NULL;
+
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
 	{
 		// only predict interference with friendly buildables
@@ -3979,12 +3999,13 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 		if ( neighborPrediction < 0.0f && distance < g_powerCompetitionRange.integer )
 		{
 			buddy = NULL;
+
 			while ( ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, PowerRelevantRange() ) ) )
 			{
 				if ( IsSetForDeconstruction( buddy ) )
 				{
 					distance = Distance( neighbor->s.origin, buddy->s.origin );
-					neighborPrediction -= IncomingInterference( (buildable_t) neighbor->s.modelindex, buddy, distance, qtrue );
+					neighborPrediction -= IncomingInterference( ( buildable_t ) neighbor->s.modelindex, buddy, distance, qtrue );
 				}
 			}
 
@@ -4075,16 +4096,16 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 			continue;
 		}
 
-		if ( BuildablesIntersect( buildable, origin, (buildable_t) ent->s.modelindex, ent->s.origin ) )
+		if ( BuildablesIntersect( buildable, origin, ( buildable_t ) ent->s.modelindex, ent->s.origin ) )
 		{
 			if ( ent->buildableTeam == attr->team && ent->deconstruct )
 			{
 				// ignore main buildable since it will already be on the list
-				if (    !( buildable == BA_H_REACTOR  && ent->s.modelindex == BA_H_REACTOR )
-				     && !( buildable == BA_A_OVERMIND && ent->s.modelindex == BA_A_OVERMIND ) )
+				if ( !( buildable == BA_H_REACTOR  && ent->s.modelindex == BA_H_REACTOR )
+				        && !( buildable == BA_A_OVERMIND && ent->s.modelindex == BA_A_OVERMIND ) )
 				{
 					// apply general replacement rules
-					if ( ( reason = BuildableReplacementChecks( (buildable_t) ent->s.modelindex, buildable ) ) != IBE_NONE )
+					if ( ( reason = BuildableReplacementChecks( ( buildable_t ) ent->s.modelindex, buildable ) ) != IBE_NONE )
 					{
 						return reason;
 					}
@@ -4169,7 +4190,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				}
 
 				// apply general replacement rules
-				if ( BuildableReplacementChecks( (buildable_t) neighbor->s.modelindex, buildable ) != IBE_NONE )
+				if ( BuildableReplacementChecks( ( buildable_t ) neighbor->s.modelindex, buildable ) != IBE_NONE )
 				{
 					continue;
 				}
@@ -4198,6 +4219,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 		cost -= entAttr->buildPoints * ( ent->health / ( float )entAttr->health );
 	}
+
 	cost = MAX( 0.0f, cost );
 
 	// check if we can already afford the new buildable
@@ -4232,7 +4254,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		}
 
 		// apply general replacement rules
-		if ( BuildableReplacementChecks( (buildable_t) ent->s.modelindex, buildable ) != IBE_NONE )
+		if ( BuildableReplacementChecks( ( buildable_t ) ent->s.modelindex, buildable ) != IBE_NONE )
 		{
 			continue;
 		}
@@ -4412,7 +4434,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Check surface permissions
-		if ( (tr1.surfaceFlags & (SURF_NOALIENBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOALIENBUILD | CONTENTS_NOBUILD)) )
+		if ( ( tr1.surfaceFlags & ( SURF_NOALIENBUILD | SURF_NOBUILD ) ) || ( contents & ( CONTENTS_NOALIENBUILD | CONTENTS_NOBUILD ) ) )
 		{
 			reason = IBE_SURFACE;
 		}
@@ -4426,7 +4448,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	else if ( ent->client->pers.team == TEAM_HUMANS )
 	{
 		// Check permissions
-		if ( (tr1.surfaceFlags & (SURF_NOHUMANBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOHUMANBUILD | CONTENTS_NOBUILD)) )
+		if ( ( tr1.surfaceFlags & ( SURF_NOHUMANBUILD | SURF_NOBUILD ) ) || ( contents & ( CONTENTS_NOHUMANBUILD | CONTENTS_NOBUILD ) ) )
 		{
 			reason = IBE_SURFACE;
 		}
@@ -4528,7 +4550,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	built->classname = attr->entityName;
 	built->s.modelindex = buildable;
 	built->s.modelindex2 = attr->team;
-	built->buildableTeam = (team_t) built->s.modelindex2;
+	built->buildableTeam = ( team_t ) built->s.modelindex2;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
 	built->health = ( int )ceil( attr->health * BUILDABLE_START_HEALTH_FRAC );
@@ -4697,6 +4719,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	built->physicsBounce = attr->bounce;
 
 	built->s.groundEntityNum = groundEntNum;
+
 	if ( groundEntNum == ENTITYNUM_NONE )
 	{
 		built->s.pos.trType = attr->traj;
@@ -4723,11 +4746,11 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 
 	if ( builder->client )
 	{
-	        // readable and the model name shouldn't need quoting
-		G_TeamCommand( (team_t) builder->client->pers.team,
+		// readable and the model name shouldn't need quoting
+		G_TeamCommand( ( team_t ) builder->client->pers.team,
 		               va( "print_tr %s %s %s %s", ( readable[ 0 ] ) ?
-						QQ( N_("$1$ ^2built^7 by $2$^7, ^3replacing^7 $3$\n") ) :
-						QQ( N_("$1$ ^2built^7 by $2$$3$\n") ),
+		                   QQ( N_( "$1$ ^2built^7 by $2$^7, ^3replacing^7 $3$\n" ) ) :
+		                   QQ( N_( "$1$ ^2built^7 by $2$$3$\n" ) ),
 		                   Quote( BG_Buildable( built->s.modelindex )->humanName ),
 		                   Quote( builder->client->pers.netname ),
 		                   Quote( readable ) ) );
@@ -4750,8 +4773,10 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 		G_BuildLogSet( log, built );
 	}
 
-	if( builder->client )
-		Beacon::Tag( built, (team_t)builder->client->pers.team, builder->client->ps.clientNum, qtrue );
+	if ( builder->client )
+	{
+		Beacon::Tag( built, ( team_t )builder->client->pers.team, builder->client->ps.clientNum, qtrue );
+	}
 
 	return built;
 }
@@ -4763,7 +4788,7 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	int    groundEntNum;
 	vec3_t forward, aimDir;
 
-	BG_GetClientNormal( &ent->client->ps, normal);
+	BG_GetClientNormal( &ent->client->ps, normal );
 	AngleVectors( ent->client->ps.viewangles, aimDir, NULL, NULL );
 	ProjectPointOnPlane( forward, aimDir, normal );
 	VectorNormalize( forward );
@@ -4852,7 +4877,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 	trace_t     tr;
 	vec3_t      normal, dest;
 	gentity_t   *built;
-	buildable_t buildable = (buildable_t) ent->s.modelindex;
+	buildable_t buildable = ( buildable_t ) ent->s.modelindex;
 
 	if ( ent->s.origin2[ 0 ] || ent->s.origin2[ 1 ] || ent->s.origin2[ 2 ] )
 	{
@@ -4900,7 +4925,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 
 	trap_LinkEntity( built );
 
-	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, ENTITYNUM_NONE, qtrue );
+	Beacon::Tag( built, ( team_t )BG_Buildable( buildable )->team, ENTITYNUM_NONE, qtrue );
 
 	return built;
 }
@@ -5093,7 +5118,7 @@ void G_LayoutSelect( void )
 	layoutPtr = &layouts2[ 0 ];
 	layouts[ 0 ] = '\0';
 
-	while ( *(layout = COM_ParseExt( &layoutPtr, qfalse )) )
+	while ( *( layout = COM_ParseExt( &layoutPtr, qfalse ) ) )
 	{
 		if ( !Q_stricmp( layout, S_BUILTIN_LAYOUT ) )
 		{
@@ -5127,7 +5152,7 @@ void G_LayoutSelect( void )
 	Q_strncpyz( layouts2, layouts, sizeof( layouts2 ) );
 	layoutPtr = &layouts2[ 0 ];
 
-	for ( cnt = 0; *(layout = COM_ParseExt( &layoutPtr, qfalse )) && cnt < layoutNum; cnt++ )
+	for ( cnt = 0; * ( layout = COM_ParseExt( &layoutPtr, qfalse ) ) && cnt < layoutNum; cnt++ )
 	{
 		Q_strncpyz( level.layout, layout, sizeof( level.layout ) );
 	}
@@ -5187,7 +5212,7 @@ void G_LayoutLoad( void )
 		return;
 	}
 
-	layoutHead = layout = (char*) BG_Alloc( len + 1 );
+	layoutHead = layout = ( char* ) BG_Alloc( len + 1 );
 	trap_FS_Read( layout, len, f );
 	layout[ len ] = '\0';
 	trap_FS_FCloseFile( f );
@@ -5224,7 +5249,7 @@ void G_LayoutLoad( void )
 			}
 			else
 			{
-				LayoutBuildItem( (buildable_t) buildable, origin, angles, origin2, angles2 );
+				LayoutBuildItem( ( buildable_t ) buildable, origin, angles, origin2, angles2 );
 				level.team[ attr->team ].layoutBuildPoints += attr->buildPoints;
 			}
 		}
@@ -5281,7 +5306,7 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 {
 	log->buildableTeam = ent->buildableTeam;
-	log->modelindex = (buildable_t) ent->s.modelindex;
+	log->modelindex = ( buildable_t ) ent->s.modelindex;
 	log->deconstruct = ent->deconstruct;
 	log->deconstructTime = ent->deconstructTime;
 	log->builtBy = ent->builtBy;
@@ -5376,67 +5401,68 @@ void G_BuildLogRevert( int id )
 
 		switch ( log->fate )
 		{
-		case BF_CONSTRUCT:
-			for ( team = MAX_CLIENTS; team < level.num_entities; team++ )
-			{
-				ent = &g_entities[ team ];
-
-				if ( ( ( ent->s.eType == ET_BUILDABLE && ent->health > 0 ) ||
-					   ( ent->s.eType == ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
-					 ent->s.modelindex == log->modelindex )
+			case BF_CONSTRUCT:
+				for ( team = MAX_CLIENTS; team < level.num_entities; team++ )
 				{
-					VectorSubtract( ent->s.pos.trBase, log->origin, dist );
+					ent = &g_entities[ team ];
 
-					if ( VectorLengthSquared( dist ) <= 2.0f )
+					if ( ( ( ent->s.eType == ET_BUILDABLE && ent->health > 0 ) ||
+					        ( ent->s.eType == ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
+					        ent->s.modelindex == log->modelindex )
 					{
-						if ( ent->s.eType == ET_BUILDABLE )
+						VectorSubtract( ent->s.pos.trBase, log->origin, dist );
+
+						if ( VectorLengthSquared( dist ) <= 2.0f )
 						{
-							G_LogPrintf( "revert: remove %d %s\n",
-										 ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );
+							if ( ent->s.eType == ET_BUILDABLE )
+							{
+								G_LogPrintf( "revert: remove %d %s\n",
+								             ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );
+							}
+
+							// Revert resources
+							G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
+							momentumChange[ log->buildableTeam ] -= log->momentumEarned;
+
+							// Free buildable
+							G_FreeEntity( ent );
+
+							break;
 						}
-
-						// Revert resources
-						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
-						momentumChange[ log->buildableTeam ] -= log->momentumEarned;
-
-						// Free buildable
-						G_FreeEntity( ent );
-
-						break;
 					}
 				}
-			}
-			break;
 
-		case BF_DECONSTRUCT:
-		case BF_REPLACE:
+				break;
+
+			case BF_DECONSTRUCT:
+			case BF_REPLACE:
 				// Revert resources
 				G_ModifyBuildPoints( log->buildableTeam, -BG_Buildable( log->modelindex )->buildPoints );
 				momentumChange[ log->buildableTeam ] += log->momentumEarned;
 
 				// Fall through to default
 
-		default:
-			// Spawn buildable
-			buildable = G_NewEntity();
-			VectorCopy( log->origin, buildable->s.pos.trBase );
-			VectorCopy( log->angles, buildable->s.angles );
-			VectorCopy( log->origin2, buildable->s.origin2 );
-			VectorCopy( log->angles2, buildable->s.angles2 );
-			buildable->s.modelindex = log->modelindex;
-			buildable->deconstruct = log->deconstruct;
-			buildable->deconstructTime = log->deconstructTime;
-			buildable->builtBy = log->builtBy;
-			buildable->momentumEarned = log->momentumEarned;
-			buildable->think = G_BuildLogRevertThink;
-			buildable->nextthink = level.time + FRAMETIME;
-			buildable->suicideTime = 30; // number of thinks before killing players in the way
+			default:
+				// Spawn buildable
+				buildable = G_NewEntity();
+				VectorCopy( log->origin, buildable->s.pos.trBase );
+				VectorCopy( log->angles, buildable->s.angles );
+				VectorCopy( log->origin2, buildable->s.origin2 );
+				VectorCopy( log->angles2, buildable->s.angles2 );
+				buildable->s.modelindex = log->modelindex;
+				buildable->deconstruct = log->deconstruct;
+				buildable->deconstructTime = log->deconstructTime;
+				buildable->builtBy = log->builtBy;
+				buildable->momentumEarned = log->momentumEarned;
+				buildable->think = G_BuildLogRevertThink;
+				buildable->nextthink = level.time + FRAMETIME;
+				buildable->suicideTime = 30; // number of thinks before killing players in the way
 		}
 	}
 
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
 	{
-		G_AddMomentumGenericStep( (team_t) team, momentumChange[ team ] );
+		G_AddMomentumGenericStep( ( team_t ) team, momentumChange[ team ] );
 	}
 
 	G_AddMomentumEnd();

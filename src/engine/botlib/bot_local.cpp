@@ -39,7 +39,7 @@ Maryland 20850 USA.
 ====================
 bot_local.cpp
 
-All vectors used as inputs and outputs to functions here are assumed to 
+All vectors used as inputs and outputs to functions here are assumed to
 use detour/recast's coordinate system
 
 Callers should use recast2quake() and quake2recast() where appropriate to
@@ -63,17 +63,18 @@ void BotCalcSteerDir( Bot_t *bot, rVec &dir )
 	VectorSubtract( p1, spos, dir1 );
 	dir0[ 1 ] = 0;
 	dir1[ 1 ] = 0;
-	
+
 	len0 = VectorLength( dir0 );
 	len1 = VectorLength( dir1 );
+
 	if ( len1 > 0.001f )
 	{
-		VectorScale(dir1, 1.0f / len1, dir1);
+		VectorScale( dir1, 1.0f / len1, dir1 );
 	}
-	
-	dir[ 0 ] = dir0[ 0 ] - dir1[ 0 ]*len0*0.5f;
+
+	dir[ 0 ] = dir0[ 0 ] - dir1[ 0 ] * len0 * 0.5f;
 	dir[ 1 ] = 0;
-	dir[ 2 ] = dir0[ 2 ] - dir1[ 2 ]*len0*0.5f;
+	dir[ 2 ] = dir0[ 2 ] - dir1[ 2 ] * len0 * 0.5f;
 
 	VectorNormalize( dir );
 }
@@ -130,16 +131,19 @@ bool BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &n
 	dtQueryFilter* navFilter = &bot->nav->filter;
 
 	status = navQuery->findNearestPoly( start, extents, navFilter, nearestPoly, nearPoint );
+
 	if ( dtStatusFailed( status ) || *nearestPoly == 0 )
 	{
 		//try larger extents
 		extents[ 1 ] += 900;
 		status = navQuery->findNearestPoly( start, extents, navFilter, nearestPoly, nearPoint );
+
 		if ( dtStatusFailed( status ) || *nearestPoly == 0 )
 		{
 			return false; // failed
 		}
 	}
+
 	return true;
 }
 
@@ -250,8 +254,8 @@ bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPa
 		return false;
 	}
 
-	status = bot->nav->query->findNearestPoly( rtarget.pos, rtarget.polyExtents, 
-	                                           &bot->nav->filter, &endRef, end ); 
+	status = bot->nav->query->findNearestPoly( rtarget.pos, rtarget.polyExtents,
+	         &bot->nav->filter, &endRef, end );
 
 	if ( dtStatusFailed( status ) || !endRef )
 	{
@@ -273,7 +277,7 @@ bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPa
 			return false;
 		}
 	}
-	
+
 	status = bot->nav->query->findPath( startRef, endRef, start, end, &bot->nav->filter, pathPolys, &pathNumPolys, MAX_BOT_PATH );
 
 	AddRouteResult( bot, startRef, endRef, status );

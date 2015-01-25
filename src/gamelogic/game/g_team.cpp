@@ -67,8 +67,8 @@ void G_TeamCommand( team_t team, const char *cmd )
 		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
 			if ( level.clients[ i ].pers.team == team ||
-			     ( level.clients[ i ].pers.team == TEAM_NONE &&
-			       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
+			        ( level.clients[ i ].pers.team == TEAM_NONE &&
+			          G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 			{
 				trap_SendServerCommand( i, cmd );
 			}
@@ -89,7 +89,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 	int    num, i;
 	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
 	vec3_t mins, maxs;
-	team_t team = (team_t) ent->client->pers.team;
+	team_t team = ( team_t ) ent->client->pers.team;
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -117,7 +117,7 @@ team_t G_Team( gentity_t *ent )
 {
 	if ( ent->client )
 	{
-		return (team_t)ent->client->pers.team;
+		return ( team_t )ent->client->pers.team;
 	}
 	else if ( ent->s.eType == ET_BUILDABLE )
 	{
@@ -200,7 +200,7 @@ G_LeaveTeam
 */
 void G_LeaveTeam( gentity_t *self )
 {
-	team_t    team = (team_t) self->client->pers.team;
+	team_t    team = ( team_t ) self->client->pers.team;
 	gentity_t *ent;
 	int       i;
 
@@ -237,7 +237,7 @@ void G_LeaveTeam( gentity_t *self )
 		{
 			// cure poison
 			if ( ( ent->client->ps.stats[ STAT_STATE ] & SS_POISONED ) &&
-			     ent->client->lastPoisonClient == self )
+			        ent->client->lastPoisonClient == self )
 			{
 				ent->client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 			}
@@ -264,7 +264,7 @@ G_ChangeTeam
 */
 void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 {
-	team_t oldTeam = (team_t) ent->client->pers.team;
+	team_t oldTeam = ( team_t ) ent->client->pers.team;
 
 	if ( oldTeam == newTeam )
 	{
@@ -282,15 +282,15 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	{
 		// Convert from human to alien credits
 		ent->client->pers.credit =
-		  ( int )( ent->client->pers.credit *
-		           ALIEN_MAX_CREDITS / HUMAN_MAX_CREDITS + 0.5f );
+		    ( int )( ent->client->pers.credit *
+		             ALIEN_MAX_CREDITS / HUMAN_MAX_CREDITS + 0.5f );
 	}
 	else if ( oldTeam == TEAM_ALIENS && newTeam == TEAM_HUMANS )
 	{
 		// Convert from alien to human credits
 		ent->client->pers.credit =
-		  ( int )( ent->client->pers.credit *
-		           HUMAN_MAX_CREDITS / ALIEN_MAX_CREDITS + 0.5f );
+		    ( int )( ent->client->pers.credit *
+		             HUMAN_MAX_CREDITS / ALIEN_MAX_CREDITS + 0.5f );
 	}
 
 	if ( !g_cheats.integer )
@@ -300,6 +300,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 			ent->client->noclip = qfalse;
 			ent->r.contents = ent->client->cliprcontents;
 		}
+
 		ent->flags &= ~( FL_GODMODE | FL_NOTARGET );
 	}
 
@@ -372,7 +373,7 @@ Format:
 void TeamplayInfoMessage( gentity_t *ent )
 {
 	char      entry[ 24 ];
-	char      string[ ( MAX_CLIENTS - 1 ) * ( sizeof( entry ) - 1 ) + 1 ];
+	char      string[( MAX_CLIENTS - 1 ) * ( sizeof( entry ) - 1 ) + 1 ];
 	int       i, j;
 	int       team, stringlength;
 	gentity_t *player;
@@ -393,7 +394,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 	if ( ent->client->pers.team == TEAM_NONE )
 	{
 		if ( ent->client->sess.spectatorState == SPECTATOR_FREE ||
-		     ent->client->sess.spectatorClient < 0 )
+		        ent->client->sess.spectatorClient < 0 )
 		{
 			return;
 		}
@@ -415,7 +416,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		cl = player->client;
 
 		if ( ent == player || !cl || team != cl->pers.team ||
-		     !player->inuse )
+		        !player->inuse )
 		{
 			continue;
 		}
@@ -462,13 +463,13 @@ void TeamplayInfoMessage( gentity_t *ent )
 			upgrade = UP_NONE;
 		}
 
-		if( team == TEAM_ALIENS ) // aliens don't have upgrades
+		if ( team == TEAM_ALIENS ) // aliens don't have upgrades
 		{
 			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i", i,
-						 cl->pers.location,
-						 cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
-						 curWeaponClass,
-						 cl->pers.credit );
+			             cl->pers.location,
+			             cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
+			             curWeaponClass,
+			             cl->pers.credit );
 		}
 		else
 		{
@@ -493,7 +494,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		stringlength += j;
 	}
 
-	if( string[ 0 ] )
+	if ( string[ 0 ] )
 	{
 		trap_SendServerCommand( ent - g_entities, va( "tinfo%s", string ) );
 		ent->client->pers.teamInfo = level.time;
@@ -525,7 +526,7 @@ void CheckTeamStatus( void )
 
 				if ( loc )
 				{
-					if( ent->client->pers.location != loc->s.generic1 )
+					if ( ent->client->pers.location != loc->s.generic1 )
 					{
 						ent->client->pers.infoChangeTime = level.time;
 						ent->client->pers.location = loc->s.generic1;
@@ -557,24 +558,24 @@ void CheckTeamStatus( void )
 
 	// Warn on imbalanced teams
 	if ( g_teamImbalanceWarnings.integer && !level.intermissiontime &&
-	     ( level.time - level.lastTeamImbalancedTime >
-	       ( g_teamImbalanceWarnings.integer * 1000 ) ) &&
-	     level.numTeamImbalanceWarnings < 3 && !level.restarted )
+	        ( level.time - level.lastTeamImbalancedTime >
+	          ( g_teamImbalanceWarnings.integer * 1000 ) ) &&
+	        level.numTeamImbalanceWarnings < 3 && !level.restarted )
 	{
 		level.lastTeamImbalancedTime = level.time;
 
 		if ( level.team[ TEAM_ALIENS ].numSpawns > 0 &&
-		     level.team[ TEAM_HUMANS ].numClients - level.team[ TEAM_ALIENS ].numClients > 2 )
+		        level.team[ TEAM_HUMANS ].numClients - level.team[ TEAM_ALIENS ].numClients > 2 )
 		{
-			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
-			                        "Humans have more players.\n") "\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_( "Teams are imbalanced. "
+			                        "Humans have more players.\n" ) "\"" );
 			level.numTeamImbalanceWarnings++;
 		}
 		else if ( level.team[ TEAM_HUMANS ].numSpawns > 0 &&
 		          level.team[ TEAM_ALIENS ].numClients - level.team[ TEAM_HUMANS ].numClients > 2 )
 		{
-			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
-			                        "Aliens have more players.\n") "\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_( "Teams are imbalanced. "
+			                        "Aliens have more players.\n" ) "\"" );
 			level.numTeamImbalanceWarnings++;
 		}
 		else

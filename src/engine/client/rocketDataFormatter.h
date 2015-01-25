@@ -42,24 +42,22 @@ Maryland 20850 USA.
 class RocketDataFormatter : public Rocket::Controls::DataFormatter
 {
 public:
-	Rocket::Core::String name;
-	int handle;
-	char data[ BIG_INFO_STRING ];
-	Rocket::Core::String out;
+    Rocket::Core::String name;
+    int handle;
+    char data[ BIG_INFO_STRING ];
+    Rocket::Core::String out;
 
-	RocketDataFormatter( const char *name, int handle ) : Rocket::Controls::DataFormatter( name ), name( name ), handle( handle ) { }
-	~RocketDataFormatter() { }
+    RocketDataFormatter ( const char *name, int handle ) : Rocket::Controls::DataFormatter ( name ), name ( name ), handle ( handle ) { }
+    ~RocketDataFormatter() { }
 
-	void FormatData( Rocket::Core::String &formatted_data, const Rocket::Core::StringList &raw_data )
-	{
-		Com_Memset( &data, 0, sizeof( data ) );
+    void FormatData ( Rocket::Core::String &formatted_data, const Rocket::Core::StringList &raw_data ) {
+        Com_Memset ( &data, 0, sizeof ( data ) );
 
-		for ( size_t i = 0; i < raw_data.size(); ++i )
-		{
-			Info_SetValueForKeyRocket( data, va( "%u", ( uint32_t ) i+1 ), raw_data[ i ].CString(), qtrue );
-		}
-		VM_Call( cgvm, CG_ROCKET_FORMATDATA, handle );
-		formatted_data = out;
-	}
+        for ( size_t i = 0; i < raw_data.size(); ++i ) {
+            Info_SetValueForKeyRocket ( data, va ( "%u", ( uint32_t ) i+1 ), raw_data[ i ].CString(), qtrue );
+        }
+        VM_Call ( cgvm, CG_ROCKET_FORMATDATA, handle );
+        formatted_data = out;
+    }
 };
 #endif

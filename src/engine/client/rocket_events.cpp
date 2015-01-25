@@ -47,6 +47,7 @@ void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& valu
 	Rocket::Core::StringList list;
 
 	Rocket::Core::StringUtilities::ExpandString( list, value, ';' );
+
 	for ( size_t i = 0; i < list.size(); ++i )
 	{
 		eventQueue.push( new RocketEvent_t( event, list[ i ] ) );
@@ -77,6 +78,7 @@ void Rocket_GetEventParameters( char *params, int length )
 {
 	RocketEvent_t *event = eventQueue.front();
 	*params = '\0';
+
 	if ( !eventQueue.empty() )
 	{
 		int index = 0;

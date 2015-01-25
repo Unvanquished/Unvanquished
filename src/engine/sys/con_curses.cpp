@@ -64,7 +64,7 @@ void CON_Print_TTY( const char *message );
 
 static qboolean curses_on = qfalse;
 static qboolean dump_logs = qfalse;
-static Console::Field input_field(INT_MAX);
+static Console::Field input_field( INT_MAX );
 static WINDOW   *borderwin;
 static WINDOW   *logwin;
 static WINDOW   *inputwin;
@@ -95,8 +95,10 @@ static void CON_SetColor( WINDOW *win, int color )
 {
 	// Approximations of g_color_table (q_math.c)
 	// Colours are hard-wired below; see init_pair() calls
-	static const chtype colour16map[2][32] = {
-		{ // Variant 1 (xterm)
+	static const chtype colour16map[2][32] =
+	{
+		{
+			// Variant 1 (xterm)
 			1 | A_BOLD, 2,          3,          4,
 			5,          6,          7,          8,
 			4 | A_DIM,  8 | A_DIM,  8 | A_DIM,  8 | A_DIM,
@@ -106,7 +108,8 @@ static void CON_SetColor( WINDOW *win, int color )
 			3 | A_DIM,  2,          2 | A_DIM,  4 | A_DIM,
 			4 | A_DIM,  3 | A_DIM,  7,          4 | A_BOLD
 		},
-		{ // Variant 2 (vte)
+		{
+			// Variant 2 (vte)
 			1 | A_BOLD, 2,          3,          4 | A_BOLD,
 			5,          6,          7,          8,
 			4        ,  8 | A_DIM,  8 | A_DIM,  8 | A_DIM,
@@ -125,8 +128,8 @@ static void CON_SetColor( WINDOW *win, int color )
 	else if ( COLORS >= 256 && com_ansiColor->integer > 0 )
 	{
 #ifdef A_RGB  //macro producing color attribute for a 64-bit chtype in pdcurses
-		wattrset( win, A_RGB( (int)( g_color_table[color][0] * 31 ),
-		    (int)( g_color_table[color][1] * 31 ), (int)( g_color_table[color][2] * 31 ), 0, 0, 0 ) );
+		wattrset( win, A_RGB( ( int )( g_color_table[color][0] * 31 ),
+		                      ( int )( g_color_table[color][1] * 31 ), ( int )( g_color_table[color][2] * 31 ), 0, 0, 0 ) );
 #else
 		wattrset( win, COLOR_PAIR( color + 9 ) ); // hard-wired below; see init_pair() calls
 #endif
@@ -243,8 +246,9 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 			{
 				noColour = qfalse;
 			}
-			buffer[ length ] = (wchar_t) Q_UTF8_CodePoint( msg );
-			msg += Q_UTF8_WidthCP( buffer[ length ]);
+
+			buffer[ length ] = ( wchar_t ) Q_UTF8_CodePoint( msg );
+			msg += Q_UTF8_WidthCP( buffer[ length ] );
 			length++;
 		}
 	}
@@ -285,7 +289,7 @@ static void CON_Redraw( void )
 	int col;
 
 	// Delete any existing windows
-	if( logwin )
+	if ( logwin )
 	{
 #ifndef _WIN32
 		struct winsize winsz = { 0, };
@@ -296,6 +300,7 @@ static void CON_Redraw( void )
 		{
 			return;
 		}
+
 		resizeterm( winsz.ws_row, winsz.ws_col );
 #endif
 
@@ -312,21 +317,25 @@ static void CON_Redraw( void )
 	idlok( logwin, TRUE );
 	CON_ColorPrint( logwin, logbuf, qtrue );
 	getyx( logwin, lastline, col );
+
 	if ( col )
 	{
 		lastline++;
 	}
+
 	scrollline = lastline - LOG_LINES;
+
 	if ( scrollline < 0 )
 	{
 		scrollline = 0;
 	}
+
 	pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 
 	// Create the input field
 	inputwin = newwin( 1, COLS - Q_PrintStrlen( PROMPT ) - 8, LINES - 1, Q_PrintStrlen( PROMPT ) + 8 );
-	input_field.SetWidth(COLS - Q_PrintStrlen( PROMPT ) - 9);
-	CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), qfalse );
+	input_field.SetWidth( COLS - Q_PrintStrlen( PROMPT ) - 9 );
+	CON_ColorPrint( inputwin, Str::UTF32To8( input_field.GetViewText() ).c_str(), qfalse );
 	CON_UpdateCursor();
 	wnoutrefresh( inputwin );
 
@@ -336,9 +345,11 @@ static void CON_Redraw( void )
 
 	// Create the border
 	CON_SetColor( stdscr, 2 );
-	for (int i = 0; i < COLS; i++) {
-		mvaddch(0, i, ACS_HLINE);
-		mvaddch(LINES - 2, i, ACS_HLINE);
+
+	for ( int i = 0; i < COLS; i++ )
+	{
+		mvaddch( 0, i, ACS_HLINE );
+		mvaddch( LINES - 2, i, ACS_HLINE );
 	}
 
 	// Display the title and input prompt
@@ -412,10 +423,12 @@ void CON_Shutdown( void )
 	curses_on = qfalse;
 
 #ifndef _WIN32
+
 	if ( stderr_fd >= 0 )
 	{
 		dup2( stderr_fd, STDERR_FILENO );
 	}
+
 #endif
 }
 
@@ -478,6 +491,7 @@ void CON_Init( void )
 		CON_Init_TTY();
 		return;
 	}
+
 #endif
 
 	// Initialize curses and set up the root window
@@ -485,10 +499,14 @@ void CON_Init( void )
 	{
 #ifndef _WIN32
 		// Enable more colors
-		const char* term = getenv("TERM");
-		if (!strncmp(term, "xterm", 5) || !strncmp(term, "screen", 6))
-			setenv("TERM", "xterm-256color", 1);
-		setlocale(LC_CTYPE, "");
+		const char* term = getenv( "TERM" );
+
+		if ( !strncmp( term, "xterm", 5 ) || !strncmp( term, "screen", 6 ) )
+		{
+			setenv( "TERM", "xterm-256color", 1 );
+		}
+
+		setlocale( LC_CTYPE, "" );
 #endif
 
 		initscr();
@@ -505,7 +523,8 @@ void CON_Init( void )
 		if ( has_colors() )
 		{
 			// Mappings used in CON_SetColor()
-			static const unsigned char colourmap[] = {
+			static const unsigned char colourmap[] =
+			{
 				0, // <- dummy entry
 				// 8-colour terminal mappings (modified later with bold/dim)
 				COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW,
@@ -513,8 +532,8 @@ void CON_Init( void )
 				// 256-colour terminal mappings
 				239, 196,  46, 226,  21,  51, 201, 231,
 				208, 244, 250, 250,  28, 100,  18,  88,
-				 94, 209,  30,  90,  33,  93,  68, 194,
-				 29, 197, 124,  94, 173, 101, 229, 228
+				94, 209,  30,  90,  33,  93,  68, 194,
+				29, 197, 124,  94, 173, 101, 229, 228
 			};
 			int i;
 
@@ -554,10 +573,11 @@ char *CON_Input( void )
 {
 	int         chr, num_chars = 0;
 	static int  lasttime = -1;
-	static enum {
-		MODE_UNKNOWN,
-		MODE_PLAIN,
-		MODE_UTF8
+	static enum
+	{
+	    MODE_UNKNOWN,
+	    MODE_PLAIN,
+	    MODE_UTF8
 	}           mode;
 
 	if ( !curses_on )
@@ -596,7 +616,7 @@ char *CON_Input( void )
 				{
 					werase( inputwin );
 
-					CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), qfalse );
+					CON_ColorPrint( inputwin, Str::UTF32To8( input_field.GetViewText() ).c_str(), qfalse );
 #ifdef _WIN32
 					wrefresh( inputwin );  // If this is not done the cursor moves strangely
 #else
@@ -611,8 +631,8 @@ char *CON_Input( void )
 			case '\n':
 			case '\r':
 			case KEY_ENTER:
-				Com_Printf( PROMPT S_COLOR_NULL "%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
-				input_field.RunCommand(com_consoleCommand->string);
+				Com_Printf( PROMPT S_COLOR_NULL "%s\n", Str::UTF32To8( input_field.GetText() ).c_str() );
+				input_field.RunCommand( com_consoleCommand->string );
 				werase( inputwin );
 				wnoutrefresh( inputwin );
 				continue;
@@ -674,10 +694,15 @@ char *CON_Input( void )
 
 					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
-				if (scrollline >= lastline - LOG_LINES) {
-					CON_SetColor(stdscr, 2);
-					for (int i = COLS - 7; i < COLS - 1; i++)
-						mvaddch(LINES - 2, i, ACS_HLINE);
+
+				if ( scrollline >= lastline - LOG_LINES )
+				{
+					CON_SetColor( stdscr, 2 );
+
+					for ( int i = COLS - 7; i < COLS - 1; i++ )
+					{
+						mvaddch( LINES - 2, i, ACS_HLINE );
+					}
 				}
 
 				continue;
@@ -694,9 +719,11 @@ char *CON_Input( void )
 
 					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
-				if (scrollline < lastline - LOG_LINES) {
-					CON_SetColor(stdscr, 1);
-					mvaddstr(LINES - 2, COLS - 7, "(more)");
+
+				if ( scrollline < lastline - LOG_LINES )
+				{
+					CON_SetColor( stdscr, 1 );
+					mvaddstr( LINES - 2, COLS - 7, "(more)" );
 				}
 
 				continue;
@@ -725,95 +752,112 @@ char *CON_Input( void )
 			char buf[20];
 
 			if ( chr >= 0x100 )
-				continue; // !!!
+			{
+				continue;    // !!!
+			}
 
 			if ( chr >= 0xC2 && chr <= 0xF4 )
 			{
 				switch ( mode )
 				{
-				case MODE_UNKNOWN:
-				case MODE_UTF8:
-					timeout( 2 );
-					count = ( chr < 0xE0 ) ? 1 : ( chr < 0xF0 ) ? 2 : 3;
-					width = count + 1;
-					while ( --count >= 0)
-					{
-						int ch = getch();
+					case MODE_UNKNOWN:
+					case MODE_UTF8:
+						timeout( 2 );
+						count = ( chr < 0xE0 ) ? 1 : ( chr < 0xF0 ) ? 2 : 3;
+						width = count + 1;
 
-						if ( ch == ERR )
+						while ( --count >= 0 )
 						{
-							if ( mode == MODE_UNKNOWN )
+							int ch = getch();
+
+							if ( ch == ERR )
 							{
-								mode = MODE_PLAIN;
+								if ( mode == MODE_UNKNOWN )
+								{
+									mode = MODE_PLAIN;
+									width -= count;
+								}
+								else
+								{
+									width = 0;
+								}
+
+								break;
+							}
+
+							chr = chr << 8 | ch;
+
+							if ( ch < 0x80 || ch >= 0xC0 )
+							{
 								width -= count;
+								mode = MODE_PLAIN;
+								break;
 							}
-							else
-							{
-								width = 0;
-							}
-							break;
+
+							mode = MODE_UTF8;
 						}
 
-						chr = chr << 8 | ch;
+						timeout( 0 );
+						break;
 
-						if ( ch < 0x80 || ch >= 0xC0 )
-						{
-							width -= count;
-							mode = MODE_PLAIN;
-							break;
-						}
-						mode = MODE_UTF8;
-					}
-					timeout( 0 );
-					break;
-
-				case MODE_PLAIN:
-					break;
+					case MODE_PLAIN:
+						break;
 				}
 			}
 			else
 			{
 				switch ( mode )
 				{
-				case MODE_UNKNOWN:
-					if ( chr >= 0x80 )
-						mode = MODE_PLAIN;
-				case MODE_PLAIN:
-					break;
-				case MODE_UTF8:
-					if ( chr >= 0x80 )
-					{
-						width = 0;
-					}
-					break;
+					case MODE_UNKNOWN:
+						if ( chr >= 0x80 )
+						{
+							mode = MODE_PLAIN;
+						}
+
+					case MODE_PLAIN:
+						break;
+
+					case MODE_UTF8:
+						if ( chr >= 0x80 )
+						{
+							width = 0;
+						}
+
+						break;
 				}
 			}
 
 			std::u32string u32text;
+
 			switch ( mode )
 			{
-			case MODE_UNKNOWN:
-			case MODE_PLAIN:
-				// convert non-ASCII to UTF-8, then insert
-				// FIXME: assumes Latin-1
-				for ( count = 0; count < width; ++count )
-				{
-					input_field.AddChar( ( chr >> ( ( width - count - 1 ) * 8 ) ) & 0xFF );
-				}
-				break;
+				case MODE_UNKNOWN:
+				case MODE_PLAIN:
 
-			case MODE_UTF8:
-				// UTF-8, but packed
-
-				if ( width > 0 )
-				{
+					// convert non-ASCII to UTF-8, then insert
+					// FIXME: assumes Latin-1
 					for ( count = 0; count < width; ++count )
 					{
-						buf[ count ] = ( chr >> ( ( width - count - 1 ) * 8 ) ) & 0xFF;
+						input_field.AddChar( ( chr >> ( ( width - count - 1 ) * 8 ) ) & 0xFF );
 					}
-					input_field.AddChar( Q_UTF8_CodePoint( buf ) );
-				}
-				break;
+
+					break;
+
+				case MODE_UTF8:
+
+					// UTF-8, but packed
+
+					if ( width > 0 )
+					{
+						for ( count = 0; count < width; ++count )
+						{
+							buf[ count ] = ( chr >> ( ( width - count - 1 ) * 8 ) ) & 0xFF;
+						}
+
+						input_field.AddChar( Q_UTF8_CodePoint( buf ) );
+					}
+
+					break;
 			}
 		}
 	}

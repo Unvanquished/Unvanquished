@@ -347,7 +347,7 @@ SV_AddEntitiesVisibleFromPoint
 static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *frame,
 //                                  snapshotEntityNumbers_t *eNums, qboolean portal, clientSnapshot_t *oldframe, qboolean localClient ) {
 //                                  snapshotEntityNumbers_t *eNums, qboolean portal ) {
-    snapshotEntityNumbers_t *eNums /*, qboolean portal, qboolean localClient */ )
+        snapshotEntityNumbers_t *eNums /*, qboolean portal, qboolean localClient */ )
 {
 	int            e, i;
 	sharedEntity_t *ent, *playerEnt;
@@ -460,8 +460,8 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 		}
 
 		// send entity if the client is in range
-		if ( (ent->r.svFlags & SVF_CLIENTS_IN_RANGE) &&
-		     Distance( ent->s.origin, playerEnt->s.origin ) <= ent->r.clientRadius )
+		if ( ( ent->r.svFlags & SVF_CLIENTS_IN_RANGE ) &&
+		        Distance( ent->s.origin, playerEnt->s.origin ) <= ent->r.clientRadius )
 		{
 			SV_AddEntToSnapshot( playerEnt, svEnt, ent, eNums );
 			continue;
@@ -887,7 +887,7 @@ void SV_SendMessageToClient( msg_t *msg, client_t *client )
 	// TTimo - show_bug.cgi?id=491
 	// added sv_lanForceRate check
 	if ( client->netchan.remoteAddress.type == NA_LOOPBACK ||
-	     ( sv_lanForceRate->integer && Sys_IsLANAddress( client->netchan.remoteAddress ) ) )
+	        ( sv_lanForceRate->integer && Sys_IsLANAddress( client->netchan.remoteAddress ) ) )
 	{
 		client->nextSnapshotTime = svs.time - 1;
 		return;
@@ -1003,7 +1003,7 @@ void SV_SendClientSnapshot( client_t *client )
 
 	// bots need to have their snapshots built, but
 	// those are queried directly without needing to be sent
-	if ( SV_IsBot(client) )
+	if ( SV_IsBot( client ) )
 	{
 		return;
 	}
@@ -1031,7 +1031,7 @@ void SV_SendClientSnapshot( client_t *client )
 	// check for overflow
 	if ( msg.overflowed )
 	{
-		Com_Logf(LOG_WARN, "msg overflowed for %s", client->name );
+		Com_Logf( LOG_WARN, "msg overflowed for %s", client->name );
 		MSG_Clear( &msg );
 
 		SV_DropClient( client, "Msg overflowed" );
@@ -1076,7 +1076,7 @@ void SV_SendClientMessages( void )
 
 		// RF, needed to insert this otherwise bots would cause error drops in sv_net_chan.c:
 		// --> "netchan queue is not properly initialized in SV_Netchan_TransmitNextFragment\n"
-		if ( SV_IsBot(c) )
+		if ( SV_IsBot( c ) )
 		{
 			continue;
 		}

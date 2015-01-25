@@ -104,7 +104,7 @@ void R_PerformanceCounters( void )
 	else if ( r_speeds->integer == RSPEEDS_SHADING_TIMES )
 	{
 		ri.Printf( PRINT_ALL, "forward shading times: ambient:%i lighting:%i\n", backEnd.pc.c_forwardAmbientTime,
-			           backEnd.pc.c_forwardLightingTime );
+		           backEnd.pc.c_forwardLightingTime );
 	}
 	else if ( r_speeds->integer == RSPEEDS_NEAR_FAR )
 	{
@@ -257,7 +257,7 @@ void R_AddDrawViewCmd( void )
 {
 	drawViewCommand_t *cmd;
 
-	cmd = (drawViewCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( drawViewCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -309,7 +309,7 @@ void RE_SetColor( const float *rgba )
 		return;
 	}
 
-	cmd = (setColorCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( setColorCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -391,14 +391,14 @@ void RE_SetColorGrading( int slot, qhandle_t hShader )
 R_ClipRegion
 =============
 */
-static qboolean R_ClipRegion ( float *x, float *y, float *w, float *h, float *s1, float *t1, float *s2, float *t2 )
+static qboolean R_ClipRegion( float *x, float *y, float *w, float *h, float *s1, float *t1, float *s2, float *t2 )
 {
 	float left, top, right, bottom;
 	float _s1, _t1, _s2, _t2;
 	float clipLeft, clipTop, clipRight, clipBottom;
 
 	if ( tr.clipRegion[2] <= tr.clipRegion[0] ||
-		tr.clipRegion[3] <= tr.clipRegion[1] )
+	        tr.clipRegion[3] <= tr.clipRegion[1] )
 	{
 		return qfalse;
 	}
@@ -420,7 +420,7 @@ static qboolean R_ClipRegion ( float *x, float *y, float *w, float *h, float *s1
 
 	// Completely clipped away
 	if ( right <= clipLeft || left >= clipRight ||
-		bottom <= clipTop || top >= clipBottom )
+	        bottom <= clipTop || top >= clipBottom )
 	{
 		return qtrue;
 	}
@@ -485,21 +485,23 @@ void RE_SetClipRegion( const float *region )
 RE_StretchPic
 =============
 */
-void RE_StretchPic ( float x, float y, float w, float h,
-					  float s1, float t1, float s2, float t2, qhandle_t hShader )
+void RE_StretchPic( float x, float y, float w, float h,
+                    float s1, float t1, float s2, float t2, qhandle_t hShader )
 {
 	stretchPicCommand_t	*cmd;
 
-	if (!tr.registered)
+	if ( !tr.registered )
 	{
 		return;
 	}
+
 	if ( R_ClipRegion( &x, &y, &w, &h, &s1, &t1, &s2, &t2 ) )
 	{
 		return;
 	}
 
-	cmd = (stretchPicCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( stretchPicCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
+
 	if ( !cmd )
 	{
 		return;
@@ -534,7 +536,7 @@ void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 		return;
 	}
 
-	cmd = (poly2dCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( poly2dCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -564,7 +566,7 @@ void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int num
 		return;
 	}
 
-	cmd = (poly2dIndexedCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( poly2dIndexedCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -595,7 +597,8 @@ void RE_ScissorEnable( qboolean enable )
 {
 	// scissor disable sets scissor to full screen
 	// scissor enable is a no-op
-	if( !enable ) {
+	if ( !enable )
+	{
 		RE_ScissorSet( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 	}
 }
@@ -609,7 +612,7 @@ void RE_ScissorSet( int x, int y, int w, int h )
 {
 	scissorSetCommand_t *cmd;
 
-	cmd = (scissorSetCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( scissorSetCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -632,7 +635,7 @@ void RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, floa
 {
 	stretchPicCommand_t *cmd;
 
-	cmd = (stretchPicCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( stretchPicCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -666,7 +669,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 {
 	stretchPicCommand_t *cmd;
 
-	cmd = (stretchPicCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( stretchPicCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -813,7 +816,7 @@ void RE_BeginFrame( void )
 	}
 
 	// draw buffer stuff
-	cmd = (drawBufferCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( drawBufferCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -850,7 +853,7 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 
 	GLimp_HandleCvars();
 
-	cmd = (swapBuffersCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( swapBuffersCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -897,7 +900,7 @@ void RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encode
 		return;
 	}
 
-	cmd = (videoFrameCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( videoFrameCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -936,7 +939,7 @@ void RE_Finish( void )
 
 	ri.Printf( PRINT_ALL, "RE_Finish\n" );
 
-	cmd = (renderFinishCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( renderFinishCommand_t* ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{

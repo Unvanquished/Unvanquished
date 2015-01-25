@@ -32,17 +32,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 typedef enum
 {
-  CV_ERR,
-  CV_RANDOM,
-  CV_NUMCLIENTS,
-  CV_LASTWIN
+    CV_ERR,
+    CV_RANDOM,
+    CV_NUMCLIENTS,
+    CV_LASTWIN
 } conditionVariable_t;
 
 typedef enum
 {
-  CO_LT,
-  CO_EQ,
-  CO_GT
+    CO_LT,
+    CO_EQ,
+    CO_GT
 } conditionOperator_t;
 #define CONDITION_OPERATOR(op) ( ( op ) + '<' )
 
@@ -72,12 +72,12 @@ typedef struct label_s
 
 typedef enum
 {
-  NT_MAP,
-  NT_CONDITION,
-  NT_GOTO,
-  NT_RESUME,
-  NT_LABEL,
-  NT_RETURN
+    NT_MAP,
+    NT_CONDITION,
+    NT_GOTO,
+    NT_RESUME,
+    NT_LABEL,
+    NT_RETURN
 } nodeType_t;
 
 typedef struct rotationNode_s
@@ -165,13 +165,13 @@ static qboolean G_LabelExists( int rotation, const char *name )
 		mrNode_t *node = mr->nodes[ i ];
 
 		if ( node->type == NT_LABEL &&
-		     !Q_stricmp( name, node->u.label.name ) )
+		        !Q_stricmp( name, node->u.label.name ) )
 		{
 			return qtrue;
 		}
 
 		if ( node->type == NT_MAP &&
-		     !Q_stricmp( name, node->u.map.name ) )
+		        !Q_stricmp( name, node->u.map.name ) )
 		{
 			return qtrue;
 		}
@@ -189,7 +189,7 @@ Allocate memory for a mrNode_t
 */
 static mrNode_t *G_AllocateNode( void )
 {
-	mrNode_t *node = (mrNode_t*) BG_Alloc( sizeof( mrNode_t ) );
+	mrNode_t *node = ( mrNode_t* ) BG_Alloc( sizeof( mrNode_t ) );
 
 	return node;
 }
@@ -629,8 +629,8 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 			}
 
 			if ( ( node->type == NT_GOTO || node->type == NT_RESUME ) &&
-			     !G_LabelExists( i, node->u.label.name ) &&
-			     !G_RotationExists( node->u.label.name ) )
+			        !G_LabelExists( i, node->u.label.name ) &&
+			        !G_RotationExists( node->u.label.name ) )
 			{
 				G_Printf( S_ERROR "goto destination named \"%s\" doesn't exist\n",
 				          node->u.label.name );
@@ -687,6 +687,7 @@ static const char *G_RotationNode_ToString( const mrNode_t *node )
 				default:
 					return MAP_CONTROL "condition: ???";
 			}
+
 			break;
 
 		case NT_GOTO:
@@ -776,13 +777,13 @@ void G_PrintCurrentRotation( gentity_t *ent )
 
 	if ( mapRotation == NULL )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("^3listrotation: ^7there is no active map rotation on this server\n") "\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "^3listrotation: ^7there is no active map rotation on this server\n" ) "\"" );
 		return;
 	}
 
 	if ( mapRotation->numNodes == 0 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("^3listrotation: ^7there are no maps in the active map rotation\n") "\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "^3listrotation: ^7there are no maps in the active map rotation\n" ) "\"" );
 		return;
 	}
 
@@ -829,6 +830,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 		{
 			ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
 		}
+
 		if ( currentMap && currentShown && G_MapExists( g_nextMap.string ) )
 		{
 			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.string ) );
@@ -1021,7 +1023,7 @@ Return a node in a rotation by its index
 static mrNode_t *G_NodeByIndex( int index, int rotation )
 {
 	if ( rotation >= 0 && rotation < mapRotations.numRotations &&
-	     index >= 0 && index < mapRotations.rotations[ rotation ].numNodes )
+	        index >= 0 && index < mapRotations.rotations[ rotation ].numNodes )
 	{
 		return mapRotations.rotations[ rotation ].nodes[ index ];
 	}
@@ -1253,7 +1255,7 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 				if ( returnRotation >= 0 )
 				{
 					G_SetCurrentNodeByIndex(
-					  G_NodeIndexAfter( nodeIndex, rotation ), rotation );
+					    G_NodeIndexAfter( nodeIndex, rotation ), rotation );
 
 					if ( G_StartMapRotation( G_RotationNameByIndex( returnRotation ),
 					                         qtrue, qfalse, qfalse, depth ) )
@@ -1268,7 +1270,7 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 				if ( G_MapExists( node->u.map.name ) )
 				{
 					G_SetCurrentNodeByIndex(
-					  G_NodeIndexAfter( nodeIndex, rotation ), rotation );
+					    G_NodeIndexAfter( nodeIndex, rotation ), rotation );
 
 					if ( !G_MapExists( g_nextMap.string ) )
 					{
@@ -1288,7 +1290,7 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 			case NT_GOTO:
 			case NT_RESUME:
 				G_SetCurrentNodeByIndex(
-				  G_NodeIndexAfter( nodeIndex, rotation ), rotation );
+				    G_NodeIndexAfter( nodeIndex, rotation ), rotation );
 
 				if ( G_GotoLabel( rotation, nodeIndex, node->u.label.name,
 				                  ( node->type == NT_GOTO ), depth ) )

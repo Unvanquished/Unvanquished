@@ -141,7 +141,7 @@ memStream_t *AllocMemStream( byte *buffer, int bufSize )
 		return NULL;
 	}
 
-	s = (memStream_t*)Com_Allocate( sizeof( memStream_t ) );
+	s = ( memStream_t* )Com_Allocate( sizeof( memStream_t ) );
 
 	if ( s == NULL )
 	{
@@ -689,33 +689,74 @@ q_shared.h-enum to name conversion
 ============================================================================
 */
 
-const char *Com_EntityTypeName(entityType_t entityType)
+const char *Com_EntityTypeName( entityType_t entityType )
 {
-	switch (entityType)
+	switch ( entityType )
 	{
-	case ET_GENERAL:          return "GENERAL";
-	case ET_PLAYER:           return "PLAYER";
-	case ET_ITEM:             return "ITEM";
-	case ET_BUILDABLE:        return "BUILDABLE";
-	case ET_LOCATION:         return "LOCATION";
-	case ET_MISSILE:          return "MISSILE";
-	case ET_MOVER:            return "MOVER";
-	case ET_PORTAL:           return "PORTAL";
-	case ET_SPEAKER:          return "SPEAKER";
-	case ET_PUSHER:           return "PUSHER";
-	case ET_TELEPORTER:       return "TELEPORTER";
-	case ET_INVISIBLE:        return "INVISIBLE";
-	case ET_FIRE:             return "FIRE";
-	case ET_CORPSE:           return "CORPSE";
-	case ET_PARTICLE_SYSTEM:  return "PARTICLE_SYSTEM";
-	case ET_ANIMMAPOBJ:       return "ANIMMAPOBJ";
-	case ET_MODELDOOR:        return "MODELDOOR";
-	case ET_LIGHTFLARE:       return "LIGHTFLARE";
-	case ET_LEV2_ZAP_CHAIN:   return "LEV2_ZAP_CHAIN";
-	default:
-		if(entityType >= ET_EVENTS)
-			return "EVENT";
-		return NULL;
+		case ET_GENERAL:
+			return "GENERAL";
+
+		case ET_PLAYER:
+			return "PLAYER";
+
+		case ET_ITEM:
+			return "ITEM";
+
+		case ET_BUILDABLE:
+			return "BUILDABLE";
+
+		case ET_LOCATION:
+			return "LOCATION";
+
+		case ET_MISSILE:
+			return "MISSILE";
+
+		case ET_MOVER:
+			return "MOVER";
+
+		case ET_PORTAL:
+			return "PORTAL";
+
+		case ET_SPEAKER:
+			return "SPEAKER";
+
+		case ET_PUSHER:
+			return "PUSHER";
+
+		case ET_TELEPORTER:
+			return "TELEPORTER";
+
+		case ET_INVISIBLE:
+			return "INVISIBLE";
+
+		case ET_FIRE:
+			return "FIRE";
+
+		case ET_CORPSE:
+			return "CORPSE";
+
+		case ET_PARTICLE_SYSTEM:
+			return "PARTICLE_SYSTEM";
+
+		case ET_ANIMMAPOBJ:
+			return "ANIMMAPOBJ";
+
+		case ET_MODELDOOR:
+			return "MODELDOOR";
+
+		case ET_LIGHTFLARE:
+			return "LIGHTFLARE";
+
+		case ET_LEV2_ZAP_CHAIN:
+			return "LEV2_ZAP_CHAIN";
+
+		default:
+			if ( entityType >= ET_EVENTS )
+			{
+				return "EVENT";
+			}
+
+			return NULL;
 	}
 }
 
@@ -775,7 +816,7 @@ char *COM_Parse( char **data_p )
 	return COM_ParseExt( data_p, qtrue );
 }
 
-void PRINTF_LIKE(1) COM_ParseError( char *format, ... )
+void PRINTF_LIKE( 1 ) COM_ParseError( char *format, ... )
 {
 	va_list     argptr;
 	static char string[ 4096 ];
@@ -787,7 +828,7 @@ void PRINTF_LIKE(1) COM_ParseError( char *format, ... )
 	Com_Printf( S_ERROR "%s, line %d: %s\n", com_parsename, com_lines, string );
 }
 
-void PRINTF_LIKE(1) COM_ParseWarning( char *format, ... )
+void PRINTF_LIKE( 1 ) COM_ParseWarning( char *format, ... )
 {
 	va_list     argptr;
 	static char string[ 4096 ];
@@ -815,7 +856,7 @@ static char *SkipWhitespace( char *data, qboolean *hasNewLines )
 {
 	int c;
 
-	while ( ( c = *data & 0xFF) <= ' ' )
+	while ( ( c = *data & 0xFF ) <= ' ' )
 	{
 		if ( !c )
 		{
@@ -1198,9 +1239,9 @@ char           *COM_ParseExt2( char **data_p, qboolean allowLineBreaks )
 	// check for a number
 	// is this parsing of negative numbers going to cause expression problems
 	if ( ( c >= '0' && c <= '9' ) ||
-	     ( c == '-' && data[ 1 ] >= '0' && data[ 1 ] <= '9' ) ||
-	     ( c == '.' && data[ 1 ] >= '0' && data[ 1 ] <= '9' ) ||
-	     ( c == '-' && data[ 1 ] == '.' && data[ 2 ] >= '0' && data[ 2 ] <= '9' ) )
+	        ( c == '-' && data[ 1 ] >= '0' && data[ 1 ] <= '9' ) ||
+	        ( c == '.' && data[ 1 ] >= '0' && data[ 1 ] <= '9' ) ||
+	        ( c == '-' && data[ 1 ] == '.' && data[ 2 ] >= '0' && data[ 2 ] <= '9' ) )
 	{
 		do
 		{
@@ -1270,11 +1311,11 @@ char           *COM_ParseExt2( char **data_p, qboolean allowLineBreaks )
 	// we still allow forward and back slashes in name tokens for pathnames
 	// and also colons for drive letters
 	if ( ( c >= 'a' && c <= 'z' ) ||
-	     ( c >= 'A' && c <= 'Z' ) ||
-	     ( c == '_' ) ||
-	     ( c == '/' ) ||
-	     ( c == '\\' ) ||
-	     ( c == '$' ) || ( c == '*' ) ) // Tr3B - for bad shader strings
+	        ( c >= 'A' && c <= 'Z' ) ||
+	        ( c == '_' ) ||
+	        ( c == '/' ) ||
+	        ( c == '\\' ) ||
+	        ( c == '$' ) || ( c == '*' ) ) // Tr3B - for bad shader strings
 	{
 		do
 		{
@@ -1290,17 +1331,17 @@ char           *COM_ParseExt2( char **data_p, qboolean allowLineBreaks )
 		}
 		while
 		( ( c >= 'a' && c <= 'z' ) ||
-		    ( c >= 'A' && c <= 'Z' ) ||
-		    ( c == '_' ) ||
-		    ( c == '-' ) ||
-		    ( c >= '0' && c <= '9' ) ||
-		    ( c == '/' ) ||
-		    ( c == '\\' ) ||
-		    ( c == ':' ) ||
-		    ( c == '.' ) ||
-		    ( c == '$' ) ||
-		    ( c == '*' ) ||
-		    ( c == '@' ) );
+		        ( c >= 'A' && c <= 'Z' ) ||
+		        ( c == '_' ) ||
+		        ( c == '-' ) ||
+		        ( c >= '0' && c <= '9' ) ||
+		        ( c == '/' ) ||
+		        ( c == '\\' ) ||
+		        ( c == ':' ) ||
+		        ( c == '.' ) ||
+		        ( c == '$' ) ||
+		        ( c == '*' ) ||
+		        ( c == '@' ) );
 
 		if ( len == MAX_TOKEN_CHARS )
 		{
@@ -1695,7 +1736,7 @@ const char *Com_QuoteStr( const char *str )
 	{
 		free( buf );
 		buflen = 2 * length + 3;
-		buf = (char*)Com_Allocate( buflen );
+		buf = ( char* )Com_Allocate( buflen );
 	}
 
 	ptr = buf;
@@ -1749,7 +1790,7 @@ const char *Com_UnquoteStr( const char *str )
 	{
 		length = end + 1 - str;
 		free( buf );
-		buf = (char*)Com_Allocate( length + 1 );
+		buf = ( char* )Com_Allocate( length + 1 );
 		Q_strncpyz( buf, str, length + 1 );
 		return buf;
 	}
@@ -1761,7 +1802,7 @@ const char *Com_UnquoteStr( const char *str )
 	}
 
 	free( buf );
-	buf = (char*)Com_Allocate( end + 1 - str );
+	buf = ( char* )Com_Allocate( end + 1 - str );
 	ptr = buf;
 
 	// Copy, unquoting as we go
@@ -1795,7 +1836,7 @@ const char *Com_ClearForeignCharacters( const char *str )
 
 	free( clean );
 	size = strlen( str );
-	clean = (char*)Com_Allocate ( size + 1 ); // guaranteed sufficient
+	clean = ( char* )Com_Allocate( size + 1 ); // guaranteed sufficient
 
 	i = -1;
 	j = 0;
@@ -1803,37 +1844,75 @@ const char *Com_ClearForeignCharacters( const char *str )
 	while ( str[ ++i ] != '\0' )
 	{
 		int c = str[i] & 0xFF;
+
 		if ( c < 0x80 )
 		{
-			if ( j == size )                 break; // out of buffer space
+			if ( j == size )
+			{
+				break;    // out of buffer space
+			}
+
 			clean[ j++ ] = str[ i ];
 		}
 		else if ( c >= 0xC2 && c <= 0xF4 )
 		{
 			int u, width = Q_UTF8_Width( str + i );
 
-			if ( j + width > size )          break; // out of buffer space
+			if ( j + width > size )
+			{
+				break;    // out of buffer space
+			}
 
-			if ( width == 1 )                continue; // should be multibyte
+			if ( width == 1 )
+			{
+				continue;    // should be multibyte
+			}
 
 			u = Q_UTF8_CodePoint( str + i );
 
 			// Filtering out...
-			if ( Q_UTF8_WidthCP( u ) != width ) continue; // over-long form
-			if ( u == 0xFEFF || u == 0xFFFE )  continue; // BOM
-			if ( u >= 0x80 && u < 0xA0 )       continue; // undefined (from ISO8859-1)
-			if ( u >= 0xD800 && u < 0xE000 )   continue; // UTF-16 surrogate halves
-			if ( u >= 0x110000 )               continue; // out of range
+			if ( Q_UTF8_WidthCP( u ) != width )
+			{
+				continue;    // over-long form
+			}
+
+			if ( u == 0xFEFF || u == 0xFFFE )
+			{
+				continue;    // BOM
+			}
+
+			if ( u >= 0x80 && u < 0xA0 )
+			{
+				continue;    // undefined (from ISO8859-1)
+			}
+
+			if ( u >= 0xD800 && u < 0xE000 )
+			{
+				continue;    // UTF-16 surrogate halves
+			}
+
+			if ( u >= 0x110000 )
+			{
+				continue;    // out of range
+			}
 
 			// width is in the range 1..4
 			switch ( width )
 			{
-			case 4: clean[ j++ ] = str[ i++ ];
-			case 3: clean[ j++ ] = str[ i++ ];
-			case 2: clean[ j++ ] = str[ i++ ];
-			case 1: clean[ j++ ] = str[ i ];
+				case 4:
+					clean[ j++ ] = str[ i++ ];
+
+				case 3:
+					clean[ j++ ] = str[ i++ ];
+
+				case 2:
+					clean[ j++ ] = str[ i++ ];
+
+				case 1:
+					clean[ j++ ] = str[ i ];
 			}
 		}
+
 		// else invalid
 	}
 
@@ -1903,7 +1982,7 @@ int Q_isnumeric( int c )
 int Q_isalphanumeric( int c )
 {
 	if ( Q_isalpha( c ) ||
-	     Q_isnumeric( c ) )
+	        Q_isnumeric( c ) )
 	{
 		return ( 1 );
 	}
@@ -2061,18 +2140,26 @@ void Q_strncpyz( char *dest, const char *src, int destsize )
 	n = destsize;
 
 	/* Copy as many bytes as will fit */
-	if (n != 0) {
-		while (--n != 0) {
-			if ((*d++ = *s++) == '\0')
+	if ( n != 0 )
+	{
+		while ( --n != 0 )
+		{
+			if ( ( *d++ = *s++ ) == '\0' )
+			{
 				break;
+			}
 		}
 	}
 
 	/* Not enough room in dst, add NUL and traverse rest of src */
-	if (n == 0) {
-		if (destsize != 0)
-			*d = '\0';		/* NUL-terminate dst */
-		while (*s++)
+	if ( n == 0 )
+	{
+		if ( destsize != 0 )
+		{
+			*d = '\0';    /* NUL-terminate dst */
+		}
+
+		while ( *s++ )
 			;
 	}
 }
@@ -2494,6 +2581,7 @@ int Q_PrintStrlen( const char *string )
 			p += 2;
 			continue;
 		}
+
 		if ( *p == Q_COLOR_ESCAPE && p[1] == Q_COLOR_ESCAPE )
 		{
 			++p;
@@ -2521,7 +2609,7 @@ char *Q_CleanStr( char *string )
 		{
 			s++;
 		}
-		else if ( (byte) c >= 0x20 && c != 0x7F )
+		else if ( ( byte ) c >= 0x20 && c != 0x7F )
 		{
 			*d++ = c;
 		}
@@ -2595,7 +2683,7 @@ int Q_CountChar( const char *string, char tocount )
 	return count;
 }
 
-int QDECL PRINTF_LIKE(3) Com_sprintf( char *dest, int size, const char *fmt, ... )
+int QDECL PRINTF_LIKE( 3 ) Com_sprintf( char *dest, int size, const char *fmt, ... )
 {
 	int     len;
 	va_list argptr;
@@ -2629,7 +2717,7 @@ Ridah, modified this into a circular list, to further prevent stepping on
 previous strings
 ============
 */
-char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
+char     *QDECL PRINTF_LIKE( 1 ) va( const char *format, ... )
 {
 	va_list     argptr;
 #define MAX_VA_STRING 32000
@@ -2860,7 +2948,7 @@ void Info_RemoveKey( char *s, const char *key, qboolean big )
 
 		if ( !Q_stricmp( key, pkey ) )
 		{
-			memmove( start, s, strlen(s) + 1 );
+			memmove( start, s, strlen( s ) + 1 );
 			return;
 		}
 

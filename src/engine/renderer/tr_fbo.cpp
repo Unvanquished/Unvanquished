@@ -119,7 +119,7 @@ FBO_t          *R_CreateFBO( const char *name, int width, int height )
 		ri.Error( ERR_DROP, "R_CreateFBO: MAX_FBOS hit" );
 	}
 
-	fbo = tr.fbos[ tr.numFBOs ] = (FBO_t*) ri.Hunk_Alloc( sizeof( *fbo ), h_low );
+	fbo = tr.fbos[ tr.numFBOs ] = ( FBO_t* ) ri.Hunk_Alloc( sizeof( *fbo ), h_low );
 	Q_strncpyz( fbo->name, name, sizeof( fbo->name ) );
 	fbo->index = tr.numFBOs++;
 	fbo->width = width;
@@ -178,7 +178,7 @@ void R_CreateFBODepthBuffer( FBO_t *fbo, int format )
 	qboolean absent;
 
 	if ( format != GL_DEPTH_COMPONENT &&
-	     format != GL_DEPTH_COMPONENT16 && format != GL_DEPTH_COMPONENT24 && format != GL_DEPTH_COMPONENT32_ARB )
+	        format != GL_DEPTH_COMPONENT16 && format != GL_DEPTH_COMPONENT24 && format != GL_DEPTH_COMPONENT32_ARB )
 	{
 		ri.Printf( PRINT_WARNING, "R_CreateFBODepthBuffer: format %i is not depth-renderable\n", format );
 		return;
@@ -214,8 +214,8 @@ void R_CreateFBOStencilBuffer( FBO_t *fbo, int format )
 	qboolean absent;
 
 	if ( format != GL_STENCIL_INDEX &&
-	     format != GL_STENCIL_INDEX1_EXT &&
-	     format != GL_STENCIL_INDEX4_EXT && format != GL_STENCIL_INDEX8_EXT && format != GL_STENCIL_INDEX16_EXT )
+	        format != GL_STENCIL_INDEX1_EXT &&
+	        format != GL_STENCIL_INDEX4_EXT && format != GL_STENCIL_INDEX8_EXT && format != GL_STENCIL_INDEX16_EXT )
 	{
 		ri.Printf( PRINT_WARNING, "R_CreateFBOStencilBuffer: format %i is not stencil-renderable\n", format );
 		return;
@@ -486,8 +486,8 @@ void R_InitFBOs( void )
 			tr.shadowMapFBO[ i ] = R_CreateFBO( va( "_shadowMap%d", i ), width, height );
 			R_BindFBO( tr.shadowMapFBO[ i ] );
 			R_AttachFBOTexture2D( GL_TEXTURE_2D,
-					      tr.shadowMapFBOImage[ i ]->texnum,
-					      0 );
+			                      tr.shadowMapFBOImage[ i ]->texnum,
+			                      0 );
 
 			R_CreateFBODepthBuffer( tr.shadowMapFBO[ i ], GL_DEPTH_COMPONENT24 );
 
@@ -502,8 +502,8 @@ void R_InitFBOs( void )
 			tr.sunShadowMapFBO[ i ] = R_CreateFBO( va( "_sunShadowMap%d", i ), width, height );
 			R_BindFBO( tr.sunShadowMapFBO[ i ] );
 			R_AttachFBOTexture2D( GL_TEXTURE_2D,
-					      tr.sunShadowMapFBOImage[ i ]->texnum,
-					      0 );
+			                      tr.sunShadowMapFBOImage[ i ]->texnum,
+			                      0 );
 
 			R_CreateFBODepthBuffer( tr.sunShadowMapFBO[ i ], GL_DEPTH_COMPONENT24 );
 

@@ -128,48 +128,48 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 // Compilers are smart enough to optimize these to a single bswap instruction
-STATIC_INLINE int16_t Swap16(int16_t x) IFDECLARE
+STATIC_INLINE int16_t Swap16 ( int16_t x ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 {
-	return (x >> 8) | (x << 8);
+    return ( x >> 8 ) | ( x << 8 );
 }
 #endif
 
-STATIC_INLINE int32_t Swap32(int32_t x) IFDECLARE
+STATIC_INLINE int32_t Swap32 ( int32_t x ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 {
-	return (x << 24) | ((x << 8) & 0xff0000) | ((x >> 8) & 0xff00) | (x >> 24);
+    return ( x << 24 ) | ( ( x << 8 ) & 0xff0000 ) | ( ( x >> 8 ) & 0xff00 ) | ( x >> 24 );
 }
 #endif
 
 #ifndef Q3_VM
-STATIC_INLINE int64_t Swap64(int64_t x)
+STATIC_INLINE int64_t Swap64 ( int64_t x )
 {
-	return  (x << 56) |
-	       ((x << 40) & 0xff000000000000ULL) |
-	       ((x << 24) & 0xff0000000000ULL) |
-	       ((x <<  8) & 0xff00000000ULL) |
-	       ((x >>  8) & 0xff000000ULL) |
-	       ((x >> 24) & 0xff0000ULL) |
-	       ((x >> 40) & 0xff00ULL) |
-	        (x >> 56);
+    return ( x << 56 ) |
+           ( ( x << 40 ) & 0xff000000000000ULL ) |
+           ( ( x << 24 ) & 0xff0000000000ULL ) |
+           ( ( x <<  8 ) & 0xff00000000ULL ) |
+           ( ( x >>  8 ) & 0xff000000ULL ) |
+           ( ( x >> 24 ) & 0xff0000ULL ) |
+           ( ( x >> 40 ) & 0xff00ULL ) |
+           ( x >> 56 );
 }
 #endif
 
-STATIC_INLINE float SwapFloat(float x) IFDECLARE
+STATIC_INLINE float SwapFloat ( float x ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 {
-	typedef union
-	{
-		float        f;
-		int          i;
-		unsigned int ui;
-	} floatint_t;
+    typedef union
+    {
+        float        f;
+        int          i;
+        unsigned int ui;
+    } floatint_t;
 
-	floatint_t fi;
-	fi.f = x;
-	fi.i = Swap32(fi.i);
-	return fi.f;
+    floatint_t fi;
+    fi.f = x;
+    fi.i = Swap32 ( fi.i );
+    return fi.f;
 }
 #endif
 

@@ -30,19 +30,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../../common/Common.h"
 
-namespace VM {
+namespace VM
+{
 
-	// Root channel used to communicate with the engine
-	extern IPC::Channel rootChannel;
+// Root channel used to communicate with the engine
+extern IPC::Channel rootChannel;
 
-	// Main handler for incoming messages from the engine
-	void VMMain(uint32_t id, IPC::Reader reader);
+// Main handler for incoming messages from the engine
+void VMMain ( uint32_t id, IPC::Reader reader );
 
-	void NORETURN Exit();
+void NORETURN Exit();
 
-	// Send a message to the engine
-	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
-		IPC::SendMsg<Msg>(rootChannel, VMMain, std::forward<Args>(args)...);
-	}
+// Send a message to the engine
+template<typename Msg, typename... Args> void SendMsg ( Args&&... args )
+{
+    IPC::SendMsg<Msg> ( rootChannel, VMMain, std::forward<Args> ( args )... );
+}
 
 }

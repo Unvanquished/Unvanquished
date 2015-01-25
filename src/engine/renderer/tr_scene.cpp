@@ -479,9 +479,12 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	}
 
 	// set last lights restrictInteractionEnd if needed
-	if ( r_numLights > r_firstSceneLight ) {
+	if ( r_numLights > r_firstSceneLight )
+	{
 		light = &backEndData[ tr.smpFrame ]->lights[ r_numLights - 1 ];
-		if( light->restrictInteractionFirst >= 0 ) {
+
+		if ( light->restrictInteractionFirst >= 0 )
+		{
 			light->restrictInteractionLast = r_numEntities - r_firstSceneEntity - 1;
 		}
 	}
@@ -518,10 +521,13 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	light->l.inverseShadows = !!( flags & REF_INVERSE_DLIGHT );
 	light->l.noShadows = !r_dynamicLightCastShadows->integer && !light->l.inverseShadows;
 
-	if( flags & REF_RESTRICT_DLIGHT ) {
+	if ( flags & REF_RESTRICT_DLIGHT )
+	{
 		light->restrictInteractionFirst = r_numEntities - r_firstSceneEntity;
 		light->restrictInteractionLast = 0;
-	} else {
+	}
+	else
+	{
 		light->restrictInteractionFirst = -1;
 		light->restrictInteractionLast = -1;
 	}
@@ -529,10 +535,14 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	light->isStatic = qfalse;
 	light->additive = qtrue;
 
-	if( light->l.inverseShadows )
+	if ( light->l.inverseShadows )
+	{
 		light->l.scale = -intensity;
+	}
 	else
+	{
 		light->l.scale = intensity;
+	}
 }
 
 void RE_AddDynamicLightToSceneQ3A( const vec3_t org, float radius, float r, float g, float b )
@@ -787,7 +797,7 @@ void R_UpdateVisTests( void )
 
 		// make sure these are testing the same thing
 		if ( VectorCompare( test->position, res->position ) && test->area == res->area &&
-			test->depthAdjust == res->depthAdjust )
+		        test->depthAdjust == res->depthAdjust )
 		{
 			test->lastResult = res->lastResult;
 		}
@@ -818,6 +828,7 @@ qhandle_t RE_RegisterVisTest( void )
 	for ( hTest = 0; hTest < MAX_VISTESTS; hTest++ )
 	{
 		test = &tr.visTests[ hTest ];
+
 		if ( !test->registered )
 		{
 			break;
@@ -840,7 +851,7 @@ running from a prior scene, just noop.
 ================
 */
 void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
-			   float area )
+                           float area )
 {
 	visTest_t *test;
 	visTestResult_t *result;
@@ -862,7 +873,7 @@ void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
 
 	// cancel the currently running query if the parameters change
 	if ( !VectorCompare( test->position, pos ) || test->depthAdjust != depthAdjust ||
-	     test->area != area )
+	        test->area != area )
 	{
 		result->discardExisting = qtrue;
 	}

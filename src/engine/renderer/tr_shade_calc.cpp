@@ -221,7 +221,7 @@ static float GetOpValue( const expOperation_t *op )
 	return value;
 }
 
-const char* GetOpName(opcode_t type);
+const char* GetOpName( opcode_t type );
 
 float RB_EvalExpression( const expression_t *exp, float defaultValue )
 {
@@ -256,24 +256,24 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 				return defaultValue;
 
 			case OP_NEG:
+			{
+				if ( numOps < 1 )
 				{
-					if ( numOps < 1 )
-					{
-						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 1 for unary - operator\n", tess.surfaceShader->name );
-						return defaultValue;
-					}
-
-					value1 = GetOpValue( &ops[ numOps - 1 ] );
-					numOps--;
-
-					value = -value1;
-
-					// push result
-					op.type = OP_NUM;
-					op.value = value;
-					ops[ numOps++ ] = op;
-					break;
+					ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 1 for unary - operator\n", tess.surfaceShader->name );
+					return defaultValue;
 				}
+
+				value1 = GetOpValue( &ops[ numOps - 1 ] );
+				numOps--;
+
+				value = -value1;
+
+				// push result
+				op.type = OP_NUM;
+				op.value = value;
+				ops[ numOps++ ] = op;
+				break;
+			}
 
 			case OP_NUM:
 			case OP_TIME:
@@ -305,155 +305,155 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 				break;
 
 			case OP_TABLE:
+			{
+				shaderTable_t *table;
+				int           numValues;
+				float         index;
+				float         lerp;
+				int           oldIndex;
+				int           newIndex;
+
+				if ( numOps < 1 )
 				{
-					shaderTable_t *table;
-					int           numValues;
-					float         index;
-					float         lerp;
-					int           oldIndex;
-					int           newIndex;
-
-					if ( numOps < 1 )
-					{
-						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 1 for table operator\n", tess.surfaceShader->name );
-						return defaultValue;
-					}
-
-					value1 = GetOpValue( &ops[ numOps - 1 ] );
-					numOps--;
-
-					table = tr.shaderTables[( int ) op.value ];
-
-					numValues = table->numValues;
-
-					index = value1 * numValues; // float index into the table?s elements
-					lerp = index - floor( index );  // being inbetween two elements of the table
-
-					oldIndex = ( int ) index;
-					newIndex = ( int ) index + 1;
-
-					if ( table->clamp )
-					{
-						// clamp indices to table-range
-						oldIndex = Maths::clamp( oldIndex, 0, numValues - 1 );
-						newIndex = Maths::clamp( newIndex, 0, numValues - 1 );
-					}
-					else
-					{
-						// wrap around indices
-						oldIndex %= numValues;
-						newIndex %= numValues;
-					}
-
-					if ( table->snap )
-					{
-						// use fixed value
-						value = table->values[ oldIndex ];
-					}
-					else
-					{
-						// lerp value
-						value = table->values[ oldIndex ] + ( ( table->values[ newIndex ] - table->values[ oldIndex ] ) * lerp );
-					}
-
-					//ri.Printf(PRINT_ALL, "%s: %i %i %f\n", table->name, oldIndex, newIndex, value);
-
-					// push result
-					op.type = OP_NUM;
-					op.value = value;
-					ops[ numOps++ ] = op;
-					break;
+					ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 1 for table operator\n", tess.surfaceShader->name );
+					return defaultValue;
 				}
+
+				value1 = GetOpValue( &ops[ numOps - 1 ] );
+				numOps--;
+
+				table = tr.shaderTables[( int ) op.value ];
+
+				numValues = table->numValues;
+
+				index = value1 * numValues; // float index into the table?s elements
+				lerp = index - floor( index );  // being inbetween two elements of the table
+
+				oldIndex = ( int ) index;
+				newIndex = ( int ) index + 1;
+
+				if ( table->clamp )
+				{
+					// clamp indices to table-range
+					oldIndex = Maths::clamp( oldIndex, 0, numValues - 1 );
+					newIndex = Maths::clamp( newIndex, 0, numValues - 1 );
+				}
+				else
+				{
+					// wrap around indices
+					oldIndex %= numValues;
+					newIndex %= numValues;
+				}
+
+				if ( table->snap )
+				{
+					// use fixed value
+					value = table->values[ oldIndex ];
+				}
+				else
+				{
+					// lerp value
+					value = table->values[ oldIndex ] + ( ( table->values[ newIndex ] - table->values[ oldIndex ] ) * lerp );
+				}
+
+				//ri.Printf(PRINT_ALL, "%s: %i %i %f\n", table->name, oldIndex, newIndex, value);
+
+				// push result
+				op.type = OP_NUM;
+				op.value = value;
+				ops[ numOps++ ] = op;
+				break;
+			}
 
 			default:
+			{
+				if ( numOps < 2 )
 				{
-					if ( numOps < 2 )
-					{
-						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 2 for binary operator %s\n", tess.surfaceShader->name,
-						           GetOpName( op.type ) );
-						return defaultValue;
-					}
-
-					value2 = GetOpValue( &ops[ numOps - 1 ] );
-					numOps--;
-
-					value1 = GetOpValue( &ops[ numOps - 1 ] );
-					numOps--;
-
-					switch ( op.type )
-					{
-						case OP_LAND:
-							value = value1 && value2;
-							break;
-
-						case OP_LOR:
-							value = value1 || value2;
-							break;
-
-						case OP_GE:
-							value = value1 >= value2;
-							break;
-
-						case OP_LE:
-							value = value1 <= value2;
-							break;
-
-						case OP_LEQ:
-							value = value1 == value2;
-							break;
-
-						case OP_LNE:
-							value = value1 != value2;
-							break;
-
-						case OP_ADD:
-							value = value1 + value2;
-							break;
-
-						case OP_SUB:
-							value = value1 - value2;
-							break;
-
-						case OP_DIV:
-							if ( value2 == 0 )
-							{
-								// don't divide by zero
-								value = value1;
-							}
-							else
-							{
-								value = value1 / value2;
-							}
-
-							break;
-
-						case OP_MOD:
-							value = ( float )( ( int ) value1 % ( int ) value2 );
-							break;
-
-						case OP_MUL:
-							value = value1 * value2;
-							break;
-
-						case OP_LT:
-							value = value1 < value2;
-							break;
-
-						case OP_GT:
-							value = value1 > value2;
-							break;
-
-						default:
-							value = value1 = value2 = 0;
-							break;
-					}
-
-					// push result
-					op.type = OP_NUM;
-					op.value = value;
-					ops[ numOps++ ] = op;
-					break;
+					ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 2 for binary operator %s\n", tess.surfaceShader->name,
+					           GetOpName( op.type ) );
+					return defaultValue;
 				}
+
+				value2 = GetOpValue( &ops[ numOps - 1 ] );
+				numOps--;
+
+				value1 = GetOpValue( &ops[ numOps - 1 ] );
+				numOps--;
+
+				switch ( op.type )
+				{
+					case OP_LAND:
+						value = value1 && value2;
+						break;
+
+					case OP_LOR:
+						value = value1 || value2;
+						break;
+
+					case OP_GE:
+						value = value1 >= value2;
+						break;
+
+					case OP_LE:
+						value = value1 <= value2;
+						break;
+
+					case OP_LEQ:
+						value = value1 == value2;
+						break;
+
+					case OP_LNE:
+						value = value1 != value2;
+						break;
+
+					case OP_ADD:
+						value = value1 + value2;
+						break;
+
+					case OP_SUB:
+						value = value1 - value2;
+						break;
+
+					case OP_DIV:
+						if ( value2 == 0 )
+						{
+							// don't divide by zero
+							value = value1;
+						}
+						else
+						{
+							value = value1 / value2;
+						}
+
+						break;
+
+					case OP_MOD:
+						value = ( float )( ( int ) value1 % ( int ) value2 );
+						break;
+
+					case OP_MUL:
+						value = value1 * value2;
+						break;
+
+					case OP_LT:
+						value = value1 < value2;
+						break;
+
+					case OP_GT:
+						value = value1 > value2;
+						break;
+
+					default:
+						value = value1 = value2 = 0;
+						break;
+				}
+
+				// push result
+				op.type = OP_NUM;
+				op.value = value;
+				ops[ numOps++ ] = op;
+				break;
+			}
 		}
 	}
 
@@ -546,32 +546,32 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 		ds->deformationWave.frequency *= -1;
 	}
 	else if ( ds->deformationWave.frequency == 0 )
+	{
+		scale = RB_EvalWaveForm( &ds->deformationWave );
+
+		for ( i = 0; i < tess.numVertexes; i++ )
 		{
-			scale = RB_EvalWaveForm( &ds->deformationWave );
+			R_QtangentsToTBN( tess.verts[ i ].qtangents, tangent, binormal, normal );
 
-			for ( i = 0; i < tess.numVertexes; i++ )
-			{
-				R_QtangentsToTBN( tess.verts[ i ].qtangents, tangent, binormal, normal );
-
-				VectorMA( tess.verts[ i ].xyz, scale, normal, tess.verts[ i ].xyz );
-			}
+			VectorMA( tess.verts[ i ].xyz, scale, normal, tess.verts[ i ].xyz );
 		}
-		else
+	}
+	else
+	{
+		table = TableForFunc( ds->deformationWave.func );
+
+		for ( i = 0; i < tess.numVertexes; i++ )
 		{
-			table = TableForFunc( ds->deformationWave.func );
+			float off = ( tess.verts[ i ].xyz[ 0 ] + tess.verts[ i ].xyz[ 1 ] + tess.verts[ i ].xyz[ 2 ] ) * ds->deformationSpread;
 
-			for ( i = 0; i < tess.numVertexes; i++ )
-			{
-				float off = ( tess.verts[ i ].xyz[ 0 ] + tess.verts[ i ].xyz[ 1 ] + tess.verts[ i ].xyz[ 2 ] ) * ds->deformationSpread;
+			scale = WAVEVALUE( table, ds->deformationWave.base,
+			                   ds->deformationWave.amplitude, ds->deformationWave.phase + off, ds->deformationWave.frequency );
 
-				scale = WAVEVALUE( table, ds->deformationWave.base,
-				                   ds->deformationWave.amplitude, ds->deformationWave.phase + off, ds->deformationWave.frequency );
+			R_QtangentsToTBN( tess.verts[ i ].qtangents, tangent, binormal, normal );
 
-				R_QtangentsToTBN( tess.verts[ i ].qtangents, tangent, binormal, normal );
-
-				VectorMA( tess.verts[ i ].xyz, scale, normal, tess.verts[ i ].xyz );
-			}
+			VectorMA( tess.verts[ i ].xyz, scale, normal, tess.verts[ i ].xyz );
 		}
+	}
 }
 
 /*
@@ -593,8 +593,8 @@ void RB_CalcDeformNormals( deformStage_t *ds )
 
 		scale = 0.98f;
 		scale =
-		  R_NoiseGet4f( tess.verts[ i ].xyz[ 0 ] * scale, tess.verts[ i ].xyz[ 1 ] * scale, tess.verts[ i ].xyz[ 2 ] * scale,
-		                backEnd.refdef.floatTime * ds->deformationWave.frequency );
+		    R_NoiseGet4f( tess.verts[ i ].xyz[ 0 ] * scale, tess.verts[ i ].xyz[ 1 ] * scale, tess.verts[ i ].xyz[ 2 ] * scale,
+		                  backEnd.refdef.floatTime * ds->deformationWave.frequency );
 		normal[ 0 ] += ds->deformationWave.amplitude * scale;
 
 		scale = 0.98f;
@@ -889,7 +889,7 @@ static void Autosprite2Deform( void )
 			for ( k = 0; k < 5; k++ )
 			{
 				if ( tess.indexes[ indexes + k ] == i + edgeVerts[ nums[ j ] ][ 0 ]
-				     && tess.indexes[ indexes + k + 1 ] == i + edgeVerts[ nums[ j ] ][ 1 ] )
+				        && tess.indexes[ indexes + k + 1 ] == i + edgeVerts[ nums[ j ] ][ 1 ] )
 				{
 					break;
 				}
@@ -1042,140 +1042,140 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 				break;
 
 			case TMOD_TURBULENT:
-				{
-					waveForm_t *wf;
+			{
+				waveForm_t *wf;
 
-					wf = &bundle->texMods[ j ].wave;
+				wf = &bundle->texMods[ j ].wave;
 
-					x = ( 1.0 / 4.0 );
-					y = ( wf->phase + backEnd.refdef.floatTime * wf->frequency );
+				x = ( 1.0 / 4.0 );
+				y = ( wf->phase + backEnd.refdef.floatTime * wf->frequency );
 
-					MatrixMultiplyScale( matrix, 1 + ( wf->amplitude * sin( y ) + wf->base ) * x,
-					                     1 + ( wf->amplitude * sin( y + 0.25 ) + wf->base ) * x, 0.0 );
-					break;
-				}
+				MatrixMultiplyScale( matrix, 1 + ( wf->amplitude * sin( y ) + wf->base ) * x,
+				                     1 + ( wf->amplitude * sin( y + 0.25 ) + wf->base ) * x, 0.0 );
+				break;
+			}
 
 			case TMOD_ENTITY_TRANSLATE:
-				{
-					x = backEnd.currentEntity->e.shaderTexCoord[ 0 ] * backEnd.refdef.floatTime;
-					y = backEnd.currentEntity->e.shaderTexCoord[ 1 ] * backEnd.refdef.floatTime;
+			{
+				x = backEnd.currentEntity->e.shaderTexCoord[ 0 ] * backEnd.refdef.floatTime;
+				y = backEnd.currentEntity->e.shaderTexCoord[ 1 ] * backEnd.refdef.floatTime;
 
-					// clamp so coordinates don't continuously get larger, causing problems
-					// with hardware limits
-					x = x - floor( x );
-					y = y - floor( y );
+				// clamp so coordinates don't continuously get larger, causing problems
+				// with hardware limits
+				x = x - floor( x );
+				y = y - floor( y );
 
-					MatrixMultiplyTranslation( matrix, x, y, 0.0 );
-					break;
-				}
+				MatrixMultiplyTranslation( matrix, x, y, 0.0 );
+				break;
+			}
 
 			case TMOD_SCROLL:
-				{
-					x = bundle->texMods[ j ].scroll[ 0 ] * backEnd.refdef.floatTime;
-					y = bundle->texMods[ j ].scroll[ 1 ] * backEnd.refdef.floatTime;
+			{
+				x = bundle->texMods[ j ].scroll[ 0 ] * backEnd.refdef.floatTime;
+				y = bundle->texMods[ j ].scroll[ 1 ] * backEnd.refdef.floatTime;
 
-					// clamp so coordinates don't continuously get larger, causing problems
-					// with hardware limits
-					x = x - floor( x );
-					y = y - floor( y );
+				// clamp so coordinates don't continuously get larger, causing problems
+				// with hardware limits
+				x = x - floor( x );
+				y = y - floor( y );
 
-					MatrixMultiplyTranslation( matrix, x, y, 0.0 );
-					break;
-				}
+				MatrixMultiplyTranslation( matrix, x, y, 0.0 );
+				break;
+			}
 
 			case TMOD_SCALE:
-				{
-					x = bundle->texMods[ j ].scale[ 0 ];
-					y = bundle->texMods[ j ].scale[ 1 ];
+			{
+				x = bundle->texMods[ j ].scale[ 0 ];
+				y = bundle->texMods[ j ].scale[ 1 ];
 
-					MatrixMultiplyScale( matrix, x, y, 0.0 );
-					break;
-				}
+				MatrixMultiplyScale( matrix, x, y, 0.0 );
+				break;
+			}
 
 			case TMOD_STRETCH:
-				{
-					float p;
+			{
+				float p;
 
-					p = 1.0f / RB_EvalWaveForm( &bundle->texMods[ j ].wave );
+				p = 1.0f / RB_EvalWaveForm( &bundle->texMods[ j ].wave );
 
-					MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
-					MatrixMultiplyScale( matrix, p, p, 0.0 );
-					MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
-					break;
-				}
+				MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
+				MatrixMultiplyScale( matrix, p, p, 0.0 );
+				MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
+				break;
+			}
 
 			case TMOD_TRANSFORM:
-				{
-					const texModInfo_t *tmi = &bundle->texMods[ j ];
+			{
+				const texModInfo_t *tmi = &bundle->texMods[ j ];
 
-					MatrixMultiply2( matrix, tmi->matrix );
-					break;
-				}
+				MatrixMultiply2( matrix, tmi->matrix );
+				break;
+			}
 
 			case TMOD_ROTATE:
-				{
-					x = -bundle->texMods[ j ].rotateSpeed * backEnd.refdef.floatTime;
+			{
+				x = -bundle->texMods[ j ].rotateSpeed * backEnd.refdef.floatTime;
 
-					MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
-					MatrixMultiplyZRotation( matrix, x );
-					MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
-					break;
-				}
+				MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
+				MatrixMultiplyZRotation( matrix, x );
+				MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
+				break;
+			}
 
 			case TMOD_SCROLL2:
-				{
-					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
-					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
+			{
+				x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
+				y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
 
-					// clamp so coordinates don't continuously get larger, causing problems
-					// with hardware limits
-					x = x - floor( x );
-					y = y - floor( y );
+				// clamp so coordinates don't continuously get larger, causing problems
+				// with hardware limits
+				x = x - floor( x );
+				y = y - floor( y );
 
-					MatrixMultiplyTranslation( matrix, x, y, 0.0 );
-					break;
-				}
+				MatrixMultiplyTranslation( matrix, x, y, 0.0 );
+				break;
+			}
 
 			case TMOD_SCALE2:
-				{
-					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
-					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
+			{
+				x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
+				y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
 
-					MatrixMultiplyScale( matrix, x, y, 0.0 );
-					break;
-				}
+				MatrixMultiplyScale( matrix, x, y, 0.0 );
+				break;
+			}
 
 			case TMOD_CENTERSCALE:
-				{
-					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
-					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
+			{
+				x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
+				y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
 
-					MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
-					MatrixMultiplyScale( matrix, x, y, 0.0 );
-					MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
-					break;
-				}
+				MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
+				MatrixMultiplyScale( matrix, x, y, 0.0 );
+				MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
+				break;
+			}
 
 			case TMOD_SHEAR:
-				{
-					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
-					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
+			{
+				x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
+				y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
 
-					MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
-					MatrixMultiplyShear( matrix, x, y );
-					MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
-					break;
-				}
+				MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
+				MatrixMultiplyShear( matrix, x, y );
+				MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
+				break;
+			}
 
 			case TMOD_ROTATE2:
-				{
-					x = RB_EvalExpression( &bundle->texMods[ j ].rExp, 0 );
+			{
+				x = RB_EvalExpression( &bundle->texMods[ j ].rExp, 0 );
 
-					MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
-					MatrixMultiplyZRotation( matrix, x );
-					MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
-					break;
-				}
+				MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
+				MatrixMultiplyZRotation( matrix, x );
+				MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
+				break;
+			}
 
 			default:
 				break;

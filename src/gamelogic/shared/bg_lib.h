@@ -110,66 +110,66 @@ typedef         unsigned int size_t;
         if( !( expr ) ) \
     Com_Error( ERR_DROP, "%s:%d: Assertion `%s' failed", \
                __FILE__, __LINE__, #expr )
-typedef int cmp_t( const void *, const void * );
-void qsort( void *a, size_t n, size_t es, cmp_t *cmp );
+typedef int cmp_t ( const void *, const void * );
+void qsort ( void *a, size_t n, size_t es, cmp_t *cmp );
 
 #define RAND_MAX 0x7fff
-void srand( unsigned seed );
-int  rand( void );
-void *bsearch( const void *key, const void *base, size_t nmemb,
-               size_t size, cmp_t *compar );
+void srand ( unsigned seed );
+int  rand ( void );
+void *bsearch ( const void *key, const void *base, size_t nmemb,
+                size_t size, cmp_t *compar );
 
 // String functions
-size_t strlen( const char *string );
-char   *strcat( char *strDestination, const char *strSource );
-char   *strcpy( char *strDestination, const char *strSource );
-int    strcmp( const char *string1, const char *string2 );
-char   *strchr( const char *string, int c );
-char   *strrchr( const char *string, int c );
-char   *strstr( const char *string, const char *strCharSet );
-int    tolower( int c );
-int    toupper( int c );
+size_t strlen ( const char *string );
+char   *strcat ( char *strDestination, const char *strSource );
+char   *strcpy ( char *strDestination, const char *strSource );
+int    strcmp ( const char *string1, const char *string2 );
+char   *strchr ( const char *string, int c );
+char   *strrchr ( const char *string, int c );
+char   *strstr ( const char *string, const char *strCharSet );
+int    tolower ( int c );
+int    toupper ( int c );
 
-double atof( const char *string );
-double _atof( const char **stringPtr );
-double strtod( const char *nptr, char **endptr );
-int    atoi( const char *string );
-int    _atoi( const char **stringPtr );
-long   strtol( const char *nptr, char **endptr, int base );
+double atof ( const char *string );
+double _atof ( const char **stringPtr );
+double strtod ( const char *nptr, char **endptr );
+int    atoi ( const char *string );
+int    _atoi ( const char **stringPtr );
+long   strtol ( const char *nptr, char **endptr, int base );
 
-int    Q_vsnprintf( char *buffer, size_t length, const char *fmt, va_list argptr ) ;
-int    Q_snprintf( char *buffer, size_t length, const char *fmt, ... ) ;
+int    Q_vsnprintf ( char *buffer, size_t length, const char *fmt, va_list argptr ) ;
+int    Q_snprintf ( char *buffer, size_t length, const char *fmt, ... ) ;
 
-int    sscanf( const char *buffer, const char *fmt, ... ) ;
+int    sscanf ( const char *buffer, const char *fmt, ... ) ;
 
 // Memory functions
-void   *memmove( void *dest, const void *src, size_t count );
-void   *memset( void *dest, int c, size_t count );
-void   *memcpy( void *dest, const void *src, size_t count );
+void   *memmove ( void *dest, const void *src, size_t count );
+void   *memset ( void *dest, int c, size_t count );
+void   *memcpy ( void *dest, const void *src, size_t count );
 
 // Math functions
 #define FLT_EPSILON 1.19209290E-07F
 
-double ceil( double x );
-float  ceilf( float x );
-double floor( double x );
-float  floorf( float x );
-double sqrt( double x );
-float  sqrtf( float x );
-double sin( double x );
-double cos( double x );
-double atan( double x );
-float  atanf( float x );
-double atan2( double y, double x );
-double tan( double x );
-float  tanf( float x );
-int    abs( int n );
-double fabs( double x );
-double asin( double x );
-double acos( double x );
-float  powf( float x, float y );
-double rint( double v );
+double ceil ( double x );
+float  ceilf ( float x );
+double floor ( double x );
+float  floorf ( float x );
+double sqrt ( double x );
+float  sqrtf ( float x );
+double sin ( double x );
+double cos ( double x );
+double atan ( double x );
+float  atanf ( float x );
+double atan2 ( double y, double x );
+double tan ( double x );
+float  tanf ( float x );
+int    abs ( int n );
+double fabs ( double x );
+double asin ( double x );
+double acos ( double x );
+float  powf ( float x, float y );
+double rint ( double v );
 
-double exp( double ); // trap call
+double exp ( double ); // trap call
 
 #endif // BG_LIB_H

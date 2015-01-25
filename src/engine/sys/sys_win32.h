@@ -44,25 +44,24 @@ Maryland 20850 USA.
 #pragma warning( pop )
 #endif
 
-typedef struct
-{
-	HINSTANCE     reflib_library; // Handle to refresh DLL
-	qboolean      reflib_active;
+typedef struct {
+    HINSTANCE     reflib_library; // Handle to refresh DLL
+    qboolean      reflib_active;
 
-	HWND          hWnd;
-	HINSTANCE     hInstance;
-	qboolean      activeApp;
-	qboolean      isMinimized;
-	OSVERSIONINFO osversion;
+    HWND          hWnd;
+    HINSTANCE     hInstance;
+    qboolean      activeApp;
+    qboolean      isMinimized;
+    OSVERSIONINFO osversion;
 
-	// when we get a windows message, we store the time off so keyboard processing
-	// can know the exact time of an event
-	unsigned sysMsgTime;
+    // when we get a windows message, we store the time off so keyboard processing
+    // can know the exact time of an event
+    unsigned sysMsgTime;
 } WinVars_t;
 
 extern WinVars_t g_wv;
 
-void             Sys_CreateConsole( void );
-void             Sys_ShowConsole( int level, qboolean quitOnClose );
+void             Sys_CreateConsole ( void );
+void             Sys_ShowConsole ( int level, qboolean quitOnClose );
 
 #endif

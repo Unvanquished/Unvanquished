@@ -367,7 +367,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg )
 
 		// copy the fragment to the fragment buffer
 		if ( fragmentLength < 0 || msg->readcount + fragmentLength > msg->cursize ||
-		     chan->fragmentLength + fragmentLength > sizeof( chan->fragmentBuffer ) )
+		        chan->fragmentLength + fragmentLength > sizeof( chan->fragmentBuffer ) )
 		{
 			if ( showdrop->integer || showpackets->integer )
 			{
@@ -516,8 +516,8 @@ static void NET_QueuePacket( int length, const void *data, netadr_t to,
 		offset = 999;
 	}
 
-	newp = (packetQueue_t*) S_Malloc( sizeof( packetQueue_t ) );
-	newp->data = (byte*) S_Malloc( length );
+	newp = ( packetQueue_t* ) S_Malloc( sizeof( packetQueue_t ) );
+	newp->data = ( byte* ) S_Malloc( length );
 	Com_Memcpy( newp->data, data, length );
 	newp->length = length;
 	newp->to = to;
@@ -590,20 +590,21 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to )
 	}
 
 #ifndef BUILD_SERVER
+
 	if ( sock == NS_CLIENT && cl_packetdelay->integer > 0 )
 	{
 		NET_QueuePacket( length, data, to, cl_packetdelay->integer );
 	}
 	else
 #endif
-	if ( sock == NS_SERVER && sv_packetdelay->integer > 0 )
-	{
-		NET_QueuePacket( length, data, to, sv_packetdelay->integer );
-	}
-	else
-	{
-		Sys_SendPacket( length, data, to );
-	}
+		if ( sock == NS_SERVER && sv_packetdelay->integer > 0 )
+		{
+			NET_QueuePacket( length, data, to, sv_packetdelay->integer );
+		}
+		else
+		{
+			Sys_SendPacket( length, data, to );
+		}
 }
 
 static INLINE void NET_SetOOBHeader( char *s )
@@ -623,7 +624,7 @@ NET_OutOfBandPrint
 Sends a text message in an out-of-band datagram
 ================
 */
-void QDECL PRINTF_LIKE(3) NET_OutOfBandPrint( netsrc_t sock, netadr_t adr, const char *format, ... )
+void QDECL PRINTF_LIKE( 3 ) NET_OutOfBandPrint( netsrc_t sock, netadr_t adr, const char *format, ... )
 {
 	va_list argptr;
 	char    string[ MAX_MSGLEN ];

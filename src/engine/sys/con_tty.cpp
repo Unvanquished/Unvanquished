@@ -66,7 +66,7 @@ static int            TTY_eof;
 
 static struct termios TTY_tc;
 
-static Console::Field TTY_field(INT_MAX);
+static Console::Field TTY_field( INT_MAX );
 
 /*
 ==================
@@ -125,7 +125,8 @@ static void CON_Hide( void )
 			return;
 		}
 
-		for (int i = TTY_field.GetText().size(); i-->0;) {
+		for ( int i = TTY_field.GetText().size(); i-- > 0; )
+		{
 			CON_Back();
 		}
 
@@ -153,8 +154,8 @@ static void CON_Show( void )
 		{
 			write( STDOUT_FILENO, "]", 1 );
 
-			std::string text = Str::UTF32To8(TTY_field.GetText());
-			write( STDOUT_FILENO, text.c_str(), text.size());
+			std::string text = Str::UTF32To8( TTY_field.GetText() );
+			write( STDOUT_FILENO, text.c_str(), text.size() );
 		}
 	}
 }
@@ -284,7 +285,7 @@ char *CON_Input_TTY( void )
 			{
 				if ( key == '\n' )
 				{
-					TTY_field.RunCommand(com_consoleCommand->string);
+					TTY_field.RunCommand( com_consoleCommand->string );
 					write( STDOUT_FILENO, "\n]", 2 );
 					return NULL;
 				}
@@ -348,7 +349,7 @@ char *CON_Input_TTY( void )
 			}
 
 			CON_Hide();
-			TTY_field.AddChar(key);
+			TTY_field.AddChar( key );
 			CON_Show();
 		}
 

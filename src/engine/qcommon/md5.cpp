@@ -84,7 +84,7 @@ static void MD5Init( struct MD5Context *ctx )
 
 /* This is the central step in the MD5 algorithm. */
 #define MD5STEP(f, w, x, y, z, data, s) \
-        ( w += f(x, y, z) + data,  w = w << s | w >> ( 32 - s ),  w += x )
+	( w += f(x, y, z) + data,  w = w << s | w >> ( 32 - s ),  w += x )
 
 /*
  * The core of the MD5 algorithm, this alters an existing MD5 hash to
@@ -313,8 +313,8 @@ unsigned Com_BlockChecksum( const void *buffer, int length )
 	unsigned val;
 
 	MD5Init( &md5 );
-	MD5Update( &md5, (const unsigned char*) buffer, length );
-	MD5Final( &md5, (unsigned char*) digest );
+	MD5Update( &md5, ( const unsigned char* ) buffer, length );
+	MD5Final( &md5, ( unsigned char* ) digest );
 
 	val = digest[ 0 ] ^ digest[ 1 ] ^ digest[ 2 ] ^ digest[ 3 ];
 

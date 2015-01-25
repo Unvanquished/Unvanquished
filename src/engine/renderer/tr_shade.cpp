@@ -202,7 +202,8 @@ void Tess_DrawElements()
 		{
 			uint32_t base = 0;
 
-			if( glState.currentIBO == tess.ibo ) {
+			if ( glState.currentIBO == tess.ibo )
+			{
 				base = tess.indexBase * sizeof( glIndex_t );
 			}
 
@@ -352,7 +353,7 @@ static void DrawTris()
 	gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
 
 	// bind u_ColorMap
-	GL_BindToTMU( 0, tr.whiteImage ); 
+	GL_BindToTMU( 0, tr.whiteImage );
 	gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 	gl_genericShader->SetRequiredVertexPointers();
 
@@ -466,7 +467,8 @@ static void Render_generic( int stage )
 
 	GL_State( pStage->stateBits );
 
-	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+	if ( pStage->stateBits & GLS_DEPTHMASK_TRUE )
+	{
 		// depth buffer may change
 		backEnd.depthRenderImageValid = qfalse;
 	}
@@ -478,15 +480,19 @@ static void Render_generic( int stage )
 	gl_genericShader->SetTCGenEnvironment( pStage->tcGen_Environment );
 	gl_genericShader->SetTCGenLightmap( pStage->tcGen_Lightmap );
 
-	if( pStage->hasDepthFade ) {
+	if ( pStage->hasDepthFade )
+	{
 		gl_genericShader->EnableMacro_USE_DEPTH_FADE();
 
-		if( !backEnd.depthRenderImageValid ) {
+		if ( !backEnd.depthRenderImageValid )
+		{
 			GL_Bind( tr.depthRenderImage );
 			glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
 			backEnd.depthRenderImageValid = qtrue;
 		}
-	} else {
+	}
+	else
+	{
 		gl_genericShader->DisableMacro_USE_DEPTH_FADE();
 	}
 
@@ -559,7 +565,8 @@ static void Render_generic( int stage )
 	BindAnimatedImage( &pStage->bundle[ TB_COLORMAP ] );
 	gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
-	if( pStage->hasDepthFade ) {
+	if ( pStage->hasDepthFade )
+	{
 		gl_genericShader->SetUniform_DepthScale( pStage->depthFadeValue );
 		gl_genericShader->SetUniform_ProjectionMatrixTranspose( glState.projectionMatrix[ glState.stackIndex ] );
 		GL_SelectTexture( 1 );
@@ -585,7 +592,8 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	GL_State( stateBits );
 
-	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+	if ( pStage->stateBits & GLS_DEPTHMASK_TRUE )
+	{
 		// depth buffer may change
 		backEnd.depthRenderImageValid = qfalse;
 	}
@@ -626,7 +634,8 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	gl_vertexLightingShader_DBS_entity->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_vertexLightingShader_DBS_entity->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	if( tr.world ) {
+	if ( tr.world )
+	{
 		gl_vertexLightingShader_DBS_entity->SetUniform_LightGridOrigin( tr.world->lightGridGLOrigin );
 		gl_vertexLightingShader_DBS_entity->SetUniform_LightGridScale( tr.world->lightGridGLScale );
 	}
@@ -650,7 +659,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	}
 
 	// bind u_DiffuseMap
-	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_vertexLightingShader_DBS_entity->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
@@ -683,7 +692,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 		float maxSpec = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_SpecularExponent( minSpec, maxSpec );
-		
+
 		if ( tr.cubeHashTable != NULL )
 		{
 			cubemapProbe_t *cubeProbeNearest;
@@ -704,17 +713,17 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				GLimp_LogComment( "cubeProbeNearest && cubeProbeSecondNearest == NULL\n" );
 
 				// bind u_EnvironmentMap0
-				GL_BindToTMU( 3, tr.whiteCubeImage ); 
+				GL_BindToTMU( 3, tr.whiteCubeImage );
 
 				// bind u_EnvironmentMap1
-				GL_BindToTMU( 4, tr.whiteCubeImage ); 
+				GL_BindToTMU( 4, tr.whiteCubeImage );
 			}
 			else if ( cubeProbeNearest == NULL )
 			{
 				GLimp_LogComment( "cubeProbeNearest == NULL\n" );
 
 				// bind u_EnvironmentMap0
-				GL_BindToTMU( 3, cubeProbeSecondNearest->cubemap ); 
+				GL_BindToTMU( 3, cubeProbeSecondNearest->cubemap );
 
 				// u_EnvironmentInterpolation
 				gl_vertexLightingShader_DBS_entity->SetUniform_EnvironmentInterpolation( 0.0 );
@@ -724,7 +733,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				GLimp_LogComment( "cubeProbeSecondNearest == NULL\n" );
 
 				// bind u_EnvironmentMap0
-				GL_BindToTMU( 3, cubeProbeNearest->cubemap ); 
+				GL_BindToTMU( 3, cubeProbeNearest->cubemap );
 
 				// bind u_EnvironmentMap1
 				//GL_SelectTexture(4);
@@ -758,10 +767,10 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				}
 
 				// bind u_EnvironmentMap0
-				GL_BindToTMU( 3, cubeProbeNearest->cubemap ); 
+				GL_BindToTMU( 3, cubeProbeNearest->cubemap );
 
 				// bind u_EnvironmentMap1
-				GL_BindToTMU( 4, cubeProbeSecondNearest->cubemap ); 
+				GL_BindToTMU( 4, cubeProbeSecondNearest->cubemap );
 
 				// u_EnvironmentInterpolation
 				gl_vertexLightingShader_DBS_entity->SetUniform_EnvironmentInterpolation( interpolate );
@@ -771,12 +780,13 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	if ( glowMapping )
 	{
-		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] ); 
+		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
 	}
 
-	if ( tr.lightGrid1Image && tr.lightGrid2Image ) {
+	if ( tr.lightGrid1Image && tr.lightGrid2Image )
+	{
 		GL_BindToTMU( 6, tr.lightGrid1Image );
 		GL_BindToTMU( 7, tr.lightGrid2Image );
 	}
@@ -853,7 +863,8 @@ static void Render_vertexLighting_DBS_world( int stage )
 
 	GL_State( stateBits );
 
-	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+	if ( pStage->stateBits & GLS_DEPTHMASK_TRUE )
+	{
 		// depth buffer may change
 		backEnd.depthRenderImageValid = qfalse;
 	}
@@ -871,6 +882,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 	gl_vertexLightingShader_DBS_world->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	gl_vertexLightingShader_DBS_world->SetUniform_AlphaTest( pStage->stateBits );
+
 	if ( r_parallaxMapping->integer )
 	{
 		float depthScale;
@@ -879,13 +891,14 @@ static void Render_vertexLighting_DBS_world( int stage )
 		gl_vertexLightingShader_DBS_world->SetUniform_DepthScale( depthScale );
 	}
 
-	if( tr.world ) {
+	if ( tr.world )
+	{
 		gl_vertexLightingShader_DBS_world->SetUniform_LightGridOrigin( tr.world->lightGridGLOrigin );
 		gl_vertexLightingShader_DBS_world->SetUniform_LightGridScale( tr.world->lightGridGLScale );
 	}
 
 	// bind u_DiffuseMap
-	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_vertexLightingShader_DBS_world->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
@@ -920,14 +933,15 @@ static void Render_vertexLighting_DBS_world( int stage )
 		gl_vertexLightingShader_DBS_world->SetUniform_SpecularExponent( minSpec, maxSpec );
 	}
 
-	if ( tr.lightGrid1Image && tr.lightGrid2Image ) {
+	if ( tr.lightGrid1Image && tr.lightGrid2Image )
+	{
 		GL_BindToTMU( 6, tr.lightGrid1Image );
 		GL_BindToTMU( 7, tr.lightGrid2Image );
 	}
 
 	if ( glowMapping )
 	{
-		GL_BindToTMU( 3, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] ); 
+		GL_BindToTMU( 3, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
 
 		gl_vertexLightingShader_DBS_world->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
 	}
@@ -984,7 +998,8 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	GL_State( stateBits );
 
-	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+	if ( pStage->stateBits & GLS_DEPTHMASK_TRUE )
+	{
 		// depth buffer may change
 		backEnd.depthRenderImageValid = qfalse;
 	}
@@ -1085,7 +1100,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	if ( glowMapping )
 	{
-		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] ); 
+		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
 
 		gl_lightMappingShader->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
 	}
@@ -1112,7 +1127,8 @@ static void Render_depthFill( int stage )
 
 	GL_State( stateBits );
 
-	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+	if ( pStage->stateBits & GLS_DEPTHMASK_TRUE )
+	{
 		// depth buffer may change
 		backEnd.depthRenderImageValid = qfalse;
 	}
@@ -1190,7 +1206,8 @@ static void Render_shadowFill( int stage )
 
 	GL_State( stateBits );
 
-	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+	if ( pStage->stateBits & GLS_DEPTHMASK_TRUE )
+	{
 		// depth buffer may change
 		backEnd.depthRenderImageValid = qfalse;
 	}
@@ -1257,8 +1274,8 @@ static void Render_shadowFill( int stage )
 }
 
 static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
-    shaderStage_t *attenuationXYStage,
-    shaderStage_t *attenuationZStage, trRefLight_t *light )
+        shaderStage_t *attenuationXYStage,
+        shaderStage_t *attenuationZStage, trRefLight_t *light )
 {
 	vec3_t     viewOrigin;
 	vec3_t     lightOrigin;
@@ -1386,7 +1403,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
-	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_forwardLightingShader_omniXYZ->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
@@ -1436,12 +1453,12 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	// bind u_ShadowMap
 	if ( shadowCompare )
 	{
-		GL_BindToTMU( 5, tr.shadowCubeFBOImage[ light->shadowLOD ] ); 
-		GL_BindToTMU( 7, tr.shadowClipCubeFBOImage[ light->shadowLOD ] ); 
+		GL_BindToTMU( 5, tr.shadowCubeFBOImage[ light->shadowLOD ] );
+		GL_BindToTMU( 7, tr.shadowClipCubeFBOImage[ light->shadowLOD ] );
 	}
 
 	// bind u_RandomMap
-	GL_BindToTMU( 6, tr.randomNormalsImage ); 
+	GL_BindToTMU( 6, tr.randomNormalsImage );
 
 	gl_forwardLightingShader_omniXYZ->SetRequiredVertexPointers();
 
@@ -1451,8 +1468,8 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 }
 
 static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
-    shaderStage_t *attenuationXYStage,
-    shaderStage_t *attenuationZStage, trRefLight_t *light )
+        shaderStage_t *attenuationXYStage,
+        shaderStage_t *attenuationZStage, trRefLight_t *light )
 {
 	vec3_t     viewOrigin;
 	vec3_t     lightOrigin;
@@ -1579,7 +1596,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
-	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_forwardLightingShader_projXYZ->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
@@ -1629,12 +1646,12 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	// bind u_ShadowMap
 	if ( shadowCompare )
 	{
-		GL_BindToTMU( 5, tr.shadowMapFBOImage[ light->shadowLOD ] ); 
-		GL_BindToTMU( 7, tr.shadowClipMapFBOImage[ light->shadowLOD ] ); 
+		GL_BindToTMU( 5, tr.shadowMapFBOImage[ light->shadowLOD ] );
+		GL_BindToTMU( 7, tr.shadowClipMapFBOImage[ light->shadowLOD ] );
 	}
 
 	// bind u_RandomMap
-	GL_BindToTMU( 6, tr.randomNormalsImage ); 
+	GL_BindToTMU( 6, tr.randomNormalsImage );
 
 	gl_forwardLightingShader_projXYZ->SetRequiredVertexPointers();
 
@@ -1644,8 +1661,8 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 }
 
 static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
-    shaderStage_t *attenuationXYStage,
-    shaderStage_t *attenuationZStage, trRefLight_t *light )
+        shaderStage_t *attenuationXYStage,
+        shaderStage_t *attenuationZStage, trRefLight_t *light )
 {
 	vec3_t     viewOrigin;
 	vec3_t     lightDirection;
@@ -1776,7 +1793,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
-	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_forwardLightingShader_directionalSun->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
@@ -1818,12 +1835,12 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	// bind u_ShadowMap
 	if ( shadowCompare )
 	{
-		GL_BindToTMU( 5, tr.sunShadowMapFBOImage[ 0 ] ); 
+		GL_BindToTMU( 5, tr.sunShadowMapFBOImage[ 0 ] );
 		GL_BindToTMU( 10, tr.sunShadowClipMapFBOImage[ 0 ] );
 
 		if ( r_parallelShadowSplits->integer >= 1 )
 		{
-			GL_BindToTMU( 6, tr.sunShadowMapFBOImage[ 1 ] ); 
+			GL_BindToTMU( 6, tr.sunShadowMapFBOImage[ 1 ] );
 			GL_BindToTMU( 11, tr.sunShadowClipMapFBOImage[ 1 ] );
 		}
 
@@ -1835,13 +1852,13 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 		if ( r_parallelShadowSplits->integer >= 3 )
 		{
-			GL_BindToTMU( 8, tr.sunShadowMapFBOImage[ 3 ] ); 
+			GL_BindToTMU( 8, tr.sunShadowMapFBOImage[ 3 ] );
 			GL_BindToTMU( 13, tr.sunShadowClipMapFBOImage[ 3 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 4 )
 		{
-			GL_BindToTMU( 9, tr.sunShadowMapFBOImage[ 4 ] ); 
+			GL_BindToTMU( 9, tr.sunShadowMapFBOImage[ 4 ] );
 			GL_BindToTMU( 14, tr.sunShadowClipMapFBOImage[ 4 ] );
 		}
 	}
@@ -1861,7 +1878,8 @@ static void Render_reflection_CB( int stage )
 
 	GL_State( pStage->stateBits );
 
-	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+	if ( pStage->stateBits & GLS_DEPTHMASK_TRUE )
+	{
 		// depth buffer may change
 		backEnd.depthRenderImageValid = qfalse;
 	}
@@ -1897,6 +1915,7 @@ static void Render_reflection_CB( int stage )
 
 	// bind u_ColorMap
 	GL_SelectTexture( 0 );
+
 	if ( backEnd.currentEntity && ( backEnd.currentEntity != &tr.worldEntity ) )
 	{
 		GL_BindNearestCubeMap( backEnd.currentEntity->e.origin );
@@ -1909,7 +1928,7 @@ static void Render_reflection_CB( int stage )
 	// bind u_NormalMap
 	if ( normalMapping )
 	{
-		GL_BindToTMU( 1, pStage->bundle[ TB_NORMALMAP ].image[ 0 ] ); 
+		GL_BindToTMU( 1, pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		gl_reflectionShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
 	}
 
@@ -1936,7 +1955,7 @@ static void Render_skybox( int stage )
 	gl_skyboxShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// bind u_ColorMap
-	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
 
 	gl_skyboxShader->SetRequiredVertexPointers();
 
@@ -1953,7 +1972,8 @@ static void Render_screen( int stage )
 
 	GL_State( pStage->stateBits );
 
-	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+	if ( pStage->stateBits & GLS_DEPTHMASK_TRUE )
+	{
 		// depth buffer may change
 		backEnd.depthRenderImageValid = qfalse;
 	}
@@ -1984,7 +2004,8 @@ static void Render_portal( int stage )
 
 	GL_State( pStage->stateBits );
 
-	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
+	if ( pStage->stateBits & GLS_DEPTHMASK_TRUE )
+	{
 		// depth buffer may change
 		backEnd.depthRenderImageValid = qfalse;
 	}
@@ -2063,7 +2084,7 @@ static void Render_heatHaze( int stage )
 	}
 
 	// bind u_NormalMap
-	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
 	gl_heatHazeShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
 	GL_BindToTMU( 1, tr.currentRenderImage );
@@ -2090,7 +2111,7 @@ static void Render_liquid( int stage )
 	GL_State( pStage->stateBits & ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_DEPTHMASK_TRUE ) );
 
 	// choose right shader program
-	gl_liquidShader->SetParallaxMapping(r_parallaxMapping->integer && tess.surfaceShader->parallax);
+	gl_liquidShader->SetParallaxMapping( r_parallaxMapping->integer && tess.surfaceShader->parallax );
 
 	// enable shader, set arrays
 	gl_liquidShader->BindProgram();
@@ -2124,7 +2145,7 @@ static void Render_liquid( int stage )
 	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
 
 	// bind u_PortalMap
-	GL_BindToTMU( 1, tr.portalRenderImage ); 
+	GL_BindToTMU( 1, tr.portalRenderImage );
 
 	// depth texture is not bound to a FBO
 	GL_SelectTexture( 2 );
@@ -2132,7 +2153,7 @@ static void Render_liquid( int stage )
 	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
 
 	// bind u_NormalMap
-	GL_BindToTMU( 3, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 3, pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
 	gl_liquidShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
 	Tess_DrawElements();
@@ -2250,7 +2271,7 @@ static void Render_fog()
 	gl_fogQuake3Shader->SetUniform_Time( backEnd.refdef.floatTime );
 
 	// bind u_ColorMap
-	GL_BindToTMU( 0, tr.fogImage ); 
+	GL_BindToTMU( 0, tr.fogImage );
 
 	gl_fogQuake3Shader->SetRequiredVertexPointers();
 
@@ -2278,161 +2299,161 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 	switch ( pStage->rgbGen )
 	{
 		case CGEN_IDENTITY:
+		{
+			tess.svars.color[ 0 ] = 1.0;
+			tess.svars.color[ 1 ] = 1.0;
+			tess.svars.color[ 2 ] = 1.0;
+			tess.svars.color[ 3 ] = 1.0;
+			break;
+		}
+
+		case CGEN_VERTEX:
+		case CGEN_ONE_MINUS_VERTEX:
+		{
+			tess.svars.color[ 0 ] = 0.0;
+			tess.svars.color[ 1 ] = 0.0;
+			tess.svars.color[ 2 ] = 0.0;
+			tess.svars.color[ 3 ] = 0.0;
+			break;
+		}
+
+		default:
+		case CGEN_IDENTITY_LIGHTING:
+		{
+			tess.svars.color[ 0 ] = tr.identityLight;
+			tess.svars.color[ 1 ] = tr.identityLight;
+			tess.svars.color[ 2 ] = tr.identityLight;
+			tess.svars.color[ 3 ] = tr.identityLight;
+			break;
+		}
+
+		case CGEN_CONST:
+		{
+			tess.svars.color[ 0 ] = pStage->constantColor[ 0 ] * ( 1.0 / 255.0 );
+			tess.svars.color[ 1 ] = pStage->constantColor[ 1 ] * ( 1.0 / 255.0 );
+			tess.svars.color[ 2 ] = pStage->constantColor[ 2 ] * ( 1.0 / 255.0 );
+			tess.svars.color[ 3 ] = pStage->constantColor[ 3 ] * ( 1.0 / 255.0 );
+			break;
+		}
+
+		case CGEN_ENTITY:
+		{
+			if ( backEnd.currentLight )
+			{
+				tess.svars.color[ 0 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 0 ] );
+				tess.svars.color[ 1 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 1 ] );
+				tess.svars.color[ 2 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 2 ] );
+				tess.svars.color[ 3 ] = 1.0;
+			}
+			else if ( backEnd.currentEntity )
+			{
+				tess.svars.color[ 0 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) );
+				tess.svars.color[ 1 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) );
+				tess.svars.color[ 2 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) );
+				tess.svars.color[ 3 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
+			}
+			else
 			{
 				tess.svars.color[ 0 ] = 1.0;
 				tess.svars.color[ 1 ] = 1.0;
 				tess.svars.color[ 2 ] = 1.0;
 				tess.svars.color[ 3 ] = 1.0;
-				break;
 			}
 
-		case CGEN_VERTEX:
-		case CGEN_ONE_MINUS_VERTEX:
+			break;
+		}
+
+		case CGEN_ONE_MINUS_ENTITY:
+		{
+			if ( backEnd.currentLight )
+			{
+				tess.svars.color[ 0 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 0 ] );
+				tess.svars.color[ 1 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 1 ] );
+				tess.svars.color[ 2 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 2 ] );
+				tess.svars.color[ 3 ] = 0.0; // FIXME
+			}
+			else if ( backEnd.currentEntity )
+			{
+				tess.svars.color[ 0 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) );
+				tess.svars.color[ 1 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) );
+				tess.svars.color[ 2 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) );
+				tess.svars.color[ 3 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
+			}
+			else
 			{
 				tess.svars.color[ 0 ] = 0.0;
 				tess.svars.color[ 1 ] = 0.0;
 				tess.svars.color[ 2 ] = 0.0;
 				tess.svars.color[ 3 ] = 0.0;
-				break;
 			}
 
-		default:
-		case CGEN_IDENTITY_LIGHTING:
-			{
-				tess.svars.color[ 0 ] = tr.identityLight;
-				tess.svars.color[ 1 ] = tr.identityLight;
-				tess.svars.color[ 2 ] = tr.identityLight;
-				tess.svars.color[ 3 ] = tr.identityLight;
-				break;
-			}
-
-		case CGEN_CONST:
-			{
-				tess.svars.color[ 0 ] = pStage->constantColor[ 0 ] * ( 1.0 / 255.0 );
-				tess.svars.color[ 1 ] = pStage->constantColor[ 1 ] * ( 1.0 / 255.0 );
-				tess.svars.color[ 2 ] = pStage->constantColor[ 2 ] * ( 1.0 / 255.0 );
-				tess.svars.color[ 3 ] = pStage->constantColor[ 3 ] * ( 1.0 / 255.0 );
-				break;
-			}
-
-		case CGEN_ENTITY:
-			{
-				if ( backEnd.currentLight )
-				{
-					tess.svars.color[ 0 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 0 ] );
-					tess.svars.color[ 1 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 1 ] );
-					tess.svars.color[ 2 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 2 ] );
-					tess.svars.color[ 3 ] = 1.0;
-				}
-				else if ( backEnd.currentEntity )
-				{
-					tess.svars.color[ 0 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 1 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 2 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 3 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
-				}
-				else
-				{
-					tess.svars.color[ 0 ] = 1.0;
-					tess.svars.color[ 1 ] = 1.0;
-					tess.svars.color[ 2 ] = 1.0;
-					tess.svars.color[ 3 ] = 1.0;
-				}
-
-				break;
-			}
-
-		case CGEN_ONE_MINUS_ENTITY:
-			{
-				if ( backEnd.currentLight )
-				{
-					tess.svars.color[ 0 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 0 ] );
-					tess.svars.color[ 1 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 1 ] );
-					tess.svars.color[ 2 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 2 ] );
-					tess.svars.color[ 3 ] = 0.0; // FIXME
-				}
-				else if ( backEnd.currentEntity )
-				{
-					tess.svars.color[ 0 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 1 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 2 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 3 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
-				}
-				else
-				{
-					tess.svars.color[ 0 ] = 0.0;
-					tess.svars.color[ 1 ] = 0.0;
-					tess.svars.color[ 2 ] = 0.0;
-					tess.svars.color[ 3 ] = 0.0;
-				}
-
-				break;
-			}
+			break;
+		}
 
 		case CGEN_WAVEFORM:
+		{
+			float      glow;
+			waveForm_t *wf;
+
+			wf = &pStage->rgbWave;
+
+			if ( wf->func == GF_NOISE )
 			{
-				float      glow;
-				waveForm_t *wf;
-
-				wf = &pStage->rgbWave;
-
-				if ( wf->func == GF_NOISE )
-				{
-					glow = wf->base + R_NoiseGet4f( 0, 0, 0, ( backEnd.refdef.floatTime + wf->phase ) * wf->frequency ) * wf->amplitude;
-				}
-				else
-				{
-					glow = RB_EvalWaveForm( wf ) * tr.identityLight;
-				}
-
-				glow = Com_Clamp( 0, 1, glow );
-
-				tess.svars.color[ 0 ] = glow;
-				tess.svars.color[ 1 ] = glow;
-				tess.svars.color[ 2 ] = glow;
-				tess.svars.color[ 3 ] = 1.0;
-				break;
+				glow = wf->base + R_NoiseGet4f( 0, 0, 0, ( backEnd.refdef.floatTime + wf->phase ) * wf->frequency ) * wf->amplitude;
 			}
+			else
+			{
+				glow = RB_EvalWaveForm( wf ) * tr.identityLight;
+			}
+
+			glow = Com_Clamp( 0, 1, glow );
+
+			tess.svars.color[ 0 ] = glow;
+			tess.svars.color[ 1 ] = glow;
+			tess.svars.color[ 2 ] = glow;
+			tess.svars.color[ 3 ] = 1.0;
+			break;
+		}
 
 		case CGEN_CUSTOM_RGB:
-			{
-				rgb = Maths::clampFraction( RB_EvalExpression( &pStage->rgbExp, 1.0 ) );
+		{
+			rgb = Maths::clampFraction( RB_EvalExpression( &pStage->rgbExp, 1.0 ) );
 
-				tess.svars.color[ 0 ] = rgb;
-				tess.svars.color[ 1 ] = rgb;
-				tess.svars.color[ 2 ] = rgb;
-				break;
-			}
+			tess.svars.color[ 0 ] = rgb;
+			tess.svars.color[ 1 ] = rgb;
+			tess.svars.color[ 2 ] = rgb;
+			break;
+		}
 
 		case CGEN_CUSTOM_RGBs:
+		{
+			if ( backEnd.currentLight )
 			{
-				if ( backEnd.currentLight )
-				{
-					red = Maths::clampFraction( RB_EvalExpression( &pStage->redExp, backEnd.currentLight->l.color[ 0 ] ) );
-					green = Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, backEnd.currentLight->l.color[ 1 ] ) );
-					blue = Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, backEnd.currentLight->l.color[ 2 ] ) );
-				}
-				else if ( backEnd.currentEntity )
-				{
-					red =
-					  Maths::clampFraction( RB_EvalExpression( &pStage->redExp, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) ) );
-					green =
-					  Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) ) );
-					blue =
-					  Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) ) );
-				}
-				else
-				{
-					red = Maths::clampFraction( RB_EvalExpression( &pStage->redExp, 1.0 ) );
-					green = Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, 1.0 ) );
-					blue = Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, 1.0 ) );
-				}
-
-				tess.svars.color[ 0 ] = red;
-				tess.svars.color[ 1 ] = green;
-				tess.svars.color[ 2 ] = blue;
-				break;
+				red = Maths::clampFraction( RB_EvalExpression( &pStage->redExp, backEnd.currentLight->l.color[ 0 ] ) );
+				green = Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, backEnd.currentLight->l.color[ 1 ] ) );
+				blue = Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, backEnd.currentLight->l.color[ 2 ] ) );
 			}
+			else if ( backEnd.currentEntity )
+			{
+				red =
+				    Maths::clampFraction( RB_EvalExpression( &pStage->redExp, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) ) );
+				green =
+				    Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) ) );
+				blue =
+				    Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) ) );
+			}
+			else
+			{
+				red = Maths::clampFraction( RB_EvalExpression( &pStage->redExp, 1.0 ) );
+				green = Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, 1.0 ) );
+				blue = Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, 1.0 ) );
+			}
+
+			tess.svars.color[ 0 ] = red;
+			tess.svars.color[ 1 ] = green;
+			tess.svars.color[ 2 ] = blue;
+			break;
+		}
 	}
 
 	// alphaGen
@@ -2440,91 +2461,91 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 	{
 		default:
 		case AGEN_IDENTITY:
+		{
+			if ( pStage->rgbGen != CGEN_IDENTITY )
 			{
-				if ( pStage->rgbGen != CGEN_IDENTITY )
-				{
-					if ( ( pStage->rgbGen == CGEN_VERTEX && tr.identityLight != 1 ) || pStage->rgbGen != CGEN_VERTEX )
-					{
-						tess.svars.color[ 3 ] = 1.0;
-					}
-				}
-
-				break;
-			}
-
-		case AGEN_VERTEX:
-		case AGEN_ONE_MINUS_VERTEX:
-			{
-				tess.svars.color[ 3 ] = 0.0;
-				break;
-			}
-
-		case AGEN_CONST:
-			{
-				if ( pStage->rgbGen != CGEN_CONST )
-				{
-					tess.svars.color[ 3 ] = pStage->constantColor[ 3 ] * ( 1.0 / 255.0 );
-				}
-
-				break;
-			}
-
-		case AGEN_ENTITY:
-			{
-				if ( backEnd.currentLight )
-				{
-					tess.svars.color[ 3 ] = 1.0; // FIXME ?
-				}
-				else if ( backEnd.currentEntity )
-				{
-					tess.svars.color[ 3 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
-				}
-				else
+				if ( ( pStage->rgbGen == CGEN_VERTEX && tr.identityLight != 1 ) || pStage->rgbGen != CGEN_VERTEX )
 				{
 					tess.svars.color[ 3 ] = 1.0;
 				}
-
-				break;
 			}
+
+			break;
+		}
+
+		case AGEN_VERTEX:
+		case AGEN_ONE_MINUS_VERTEX:
+		{
+			tess.svars.color[ 3 ] = 0.0;
+			break;
+		}
+
+		case AGEN_CONST:
+		{
+			if ( pStage->rgbGen != CGEN_CONST )
+			{
+				tess.svars.color[ 3 ] = pStage->constantColor[ 3 ] * ( 1.0 / 255.0 );
+			}
+
+			break;
+		}
+
+		case AGEN_ENTITY:
+		{
+			if ( backEnd.currentLight )
+			{
+				tess.svars.color[ 3 ] = 1.0; // FIXME ?
+			}
+			else if ( backEnd.currentEntity )
+			{
+				tess.svars.color[ 3 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
+			}
+			else
+			{
+				tess.svars.color[ 3 ] = 1.0;
+			}
+
+			break;
+		}
 
 		case AGEN_ONE_MINUS_ENTITY:
+		{
+			if ( backEnd.currentLight )
 			{
-				if ( backEnd.currentLight )
-				{
-					tess.svars.color[ 3 ] = 0.0; // FIXME ?
-				}
-				else if ( backEnd.currentEntity )
-				{
-					tess.svars.color[ 3 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
-				}
-				else
-				{
-					tess.svars.color[ 3 ] = 0.0;
-				}
-
-				break;
+				tess.svars.color[ 3 ] = 0.0; // FIXME ?
 			}
+			else if ( backEnd.currentEntity )
+			{
+				tess.svars.color[ 3 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
+			}
+			else
+			{
+				tess.svars.color[ 3 ] = 0.0;
+			}
+
+			break;
+		}
 
 		case AGEN_WAVEFORM:
-			{
-				float      glow;
-				waveForm_t *wf;
+		{
+			float      glow;
+			waveForm_t *wf;
 
-				wf = &pStage->alphaWave;
+			wf = &pStage->alphaWave;
 
-				glow = RB_EvalWaveFormClamped( wf );
+			glow = RB_EvalWaveFormClamped( wf );
 
-				tess.svars.color[ 3 ] = glow;
-				break;
-			}
+			tess.svars.color[ 3 ] = glow;
+			break;
+		}
 
 		case AGEN_CUSTOM:
-			{
-				alpha = Maths::clampFraction( RB_EvalExpression( &pStage->alphaExp, 1.0 ) );
+		{
+			alpha = Maths::clampFraction( RB_EvalExpression( &pStage->alphaExp, 1.0 ) );
 
-				tess.svars.color[ 3 ] = alpha;
-				break;
-			}
+			tess.svars.color[ 3 ] = alpha;
+			break;
+		}
 	}
 }
 
@@ -2579,62 +2600,80 @@ void Tess_StageIteratorDebug()
 
 static INLINE GLenum RB_StencilOp( int op )
 {
-	switch( op & STO_MASK ) {
-	case STO_KEEP:
-		return GL_KEEP;
-	case STO_ZERO:
-		return GL_ZERO;
-	case STO_REPLACE:
-		return GL_REPLACE;
-	case STO_INVERT:
-		return GL_INVERT;
-	case STO_INCR:
-		return GL_INCR_WRAP;
-	case STO_DECR:
-		return GL_DECR_WRAP;
-	default:
-		return GL_KEEP;
+	switch ( op & STO_MASK )
+	{
+		case STO_KEEP:
+			return GL_KEEP;
+
+		case STO_ZERO:
+			return GL_ZERO;
+
+		case STO_REPLACE:
+			return GL_REPLACE;
+
+		case STO_INVERT:
+			return GL_INVERT;
+
+		case STO_INCR:
+			return GL_INCR_WRAP;
+
+		case STO_DECR:
+			return GL_DECR_WRAP;
+
+		default:
+			return GL_KEEP;
 	}
 }
 static void RB_SetStencil( GLenum side, stencil_t *stencil )
 {
 	GLenum  sfailOp, zfailOp, zpassOp;
 
-	if( !side ) {
+	if ( !side )
+	{
 		glDisable( GL_STENCIL_TEST );
 		return;
 	}
 
-	if( !stencil->flags ) {
+	if ( !stencil->flags )
+	{
 		return;
 	}
 
 	glEnable( GL_STENCIL_TEST );
-	switch( stencil->flags & STF_MASK ) {
-	case STF_ALWAYS:
-		glStencilFuncSeparate( side, GL_ALWAYS, stencil->ref, stencil->mask);
-		break;
-	case STF_NEVER:
-		glStencilFuncSeparate( side, GL_NEVER, stencil->ref, stencil->mask);
-		break;
-	case STF_LESS:
-		glStencilFuncSeparate( side, GL_LESS, stencil->ref, stencil->mask);
-		break;
-	case STF_LEQUAL:
-		glStencilFuncSeparate( side, GL_LEQUAL, stencil->ref, stencil->mask);
-		break;
-	case STF_GREATER:
-		glStencilFuncSeparate( side, GL_GREATER, stencil->ref, stencil->mask);
-		break;
-	case STF_GEQUAL:
-		glStencilFuncSeparate( side, GL_GEQUAL, stencil->ref, stencil->mask);
-		break;
-	case STF_EQUAL:
-		glStencilFuncSeparate( side, GL_EQUAL, stencil->ref, stencil->mask);
-		break;
-	case STF_NEQUAL:
-		glStencilFuncSeparate( side, GL_NOTEQUAL, stencil->ref, stencil->mask);
-		break;
+
+	switch ( stencil->flags & STF_MASK )
+	{
+		case STF_ALWAYS:
+			glStencilFuncSeparate( side, GL_ALWAYS, stencil->ref, stencil->mask );
+			break;
+
+		case STF_NEVER:
+			glStencilFuncSeparate( side, GL_NEVER, stencil->ref, stencil->mask );
+			break;
+
+		case STF_LESS:
+			glStencilFuncSeparate( side, GL_LESS, stencil->ref, stencil->mask );
+			break;
+
+		case STF_LEQUAL:
+			glStencilFuncSeparate( side, GL_LEQUAL, stencil->ref, stencil->mask );
+			break;
+
+		case STF_GREATER:
+			glStencilFuncSeparate( side, GL_GREATER, stencil->ref, stencil->mask );
+			break;
+
+		case STF_GEQUAL:
+			glStencilFuncSeparate( side, GL_GEQUAL, stencil->ref, stencil->mask );
+			break;
+
+		case STF_EQUAL:
+			glStencilFuncSeparate( side, GL_EQUAL, stencil->ref, stencil->mask );
+			break;
+
+		case STF_NEQUAL:
+			glStencilFuncSeparate( side, GL_NOTEQUAL, stencil->ref, stencil->mask );
+			break;
 	}
 
 	sfailOp = RB_StencilOp( stencil->flags >> STS_SFAIL );
@@ -2642,7 +2681,7 @@ static void RB_SetStencil( GLenum side, stencil_t *stencil )
 	zpassOp = RB_StencilOp( stencil->flags >> STS_ZPASS );
 	glStencilOpSeparate( side, sfailOp, zfailOp, zpassOp );
 
-	glStencilMaskSeparate( side, (GLuint) stencil->writeMask );
+	glStencilMaskSeparate( side, ( GLuint ) stencil->writeMask );
 }
 
 void Tess_StageIteratorGeneric()
@@ -2669,10 +2708,14 @@ void Tess_StageIteratorGeneric()
 	}
 
 	// set face culling appropriately
-	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+	if ( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+	{
 		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
+	}
 	else
+	{
 		GL_Cull( tess.surfaceShader->cullType );
+	}
 
 	// set polygon offset if necessary
 	if ( tess.surfaceShader->polygonOffset )
@@ -2699,7 +2742,8 @@ void Tess_StageIteratorGeneric()
 		Tess_ComputeColor( pStage );
 		Tess_ComputeTexMatrices( pStage );
 
-		if( pStage->frontStencil.flags || pStage->backStencil.flags ) {
+		if ( pStage->frontStencil.flags || pStage->backStencil.flags )
+		{
 			RB_SetStencil( GL_FRONT, &pStage->frontStencil );
 			RB_SetStencil( GL_BACK, &pStage->backStencil );
 		}
@@ -2707,114 +2751,115 @@ void Tess_StageIteratorGeneric()
 		switch ( pStage->type )
 		{
 			case ST_COLORMAP:
-				{
-					Render_generic( stage );
-					break;
-				}
+			{
+				Render_generic( stage );
+				break;
+			}
 
 			case ST_LIGHTMAP:
-				{
-					Render_lightMapping( stage, true, false );
-					break;
-				}
+			{
+				Render_lightMapping( stage, true, false );
+				break;
+			}
 
 			case ST_DIFFUSEMAP:
 			case ST_COLLAPSE_lighting_DBSG:
 			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
+			{
 				{
+					if ( r_precomputedLighting->integer || r_vertexLighting->integer )
 					{
-						if ( r_precomputedLighting->integer || r_vertexLighting->integer )
+						if ( !r_vertexLighting->integer && tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements )
 						{
-							if ( !r_vertexLighting->integer && tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements )
+							if ( tr.worldDeluxeMapping && r_normalMapping->integer )
 							{
-								if ( tr.worldDeluxeMapping && r_normalMapping->integer )
-								{
-									Render_lightMapping( stage, false, true );
-								}
-								else
-								{
-									Render_lightMapping( stage, false, false );
-								}
-							}
-							else if ( backEnd.currentEntity != &tr.worldEntity )
-							{
-								Render_vertexLighting_DBS_entity( stage );
+								Render_lightMapping( stage, false, true );
 							}
 							else
 							{
-								Render_vertexLighting_DBS_world( stage );
+								Render_lightMapping( stage, false, false );
 							}
+						}
+						else if ( backEnd.currentEntity != &tr.worldEntity )
+						{
+							Render_vertexLighting_DBS_entity( stage );
 						}
 						else
 						{
-							Render_depthFill( stage );
+							Render_vertexLighting_DBS_world( stage );
 						}
 					}
-					break;
+					else
+					{
+						Render_depthFill( stage );
+					}
 				}
+				break;
+			}
 
 			case ST_COLLAPSE_reflection_CB:
 			case ST_REFLECTIONMAP:
+			{
+				if ( r_reflectionMapping->integer )
 				{
-					if ( r_reflectionMapping->integer )
-					{
-						Render_reflection_CB( stage );
-					}
-
-					break;
+					Render_reflection_CB( stage );
 				}
+
+				break;
+			}
 
 			case ST_REFRACTIONMAP:
-				{
-					break;
-				}
+			{
+				break;
+			}
 
 			case ST_DISPERSIONMAP:
-				{
-					break;
-				}
+			{
+				break;
+			}
 
 			case ST_SKYBOXMAP:
-				{
-					Render_skybox( stage );
-					break;
-				}
+			{
+				Render_skybox( stage );
+				break;
+			}
 
 			case ST_SCREENMAP:
-				{
-					Render_screen( stage );
-					break;
-				}
+			{
+				Render_screen( stage );
+				break;
+			}
 
 			case ST_PORTALMAP:
-				{
-					Render_portal( stage );
-					break;
-				}
+			{
+				Render_portal( stage );
+				break;
+			}
 
 			case ST_HEATHAZEMAP:
+			{
+				if ( r_heatHaze->integer )
 				{
-					if ( r_heatHaze->integer )
-					{
-						Render_heatHaze( stage );
-					}
-
-					break;
+					Render_heatHaze( stage );
 				}
+
+				break;
+			}
 
 			case ST_LIQUIDMAP:
-				{
-					Render_liquid( stage );
-					break;
-				}
+			{
+				Render_liquid( stage );
+				break;
+			}
 
 			default:
 				break;
 		}
 
-		if( pStage->frontStencil.flags || pStage->backStencil.flags ) {
+		if ( pStage->frontStencil.flags || pStage->backStencil.flags )
+		{
 			RB_SetStencil( 0, NULL );
 		}
 
@@ -2860,10 +2905,14 @@ void Tess_StageIteratorDepthFill()
 	}
 
 	// set face culling appropriately
-	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+	if ( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+	{
 		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
+	}
 	else
+	{
 		GL_Cull( tess.surfaceShader->cullType );
+	}
 
 	// set polygon offset if necessary
 	if ( tess.surfaceShader->polygonOffset )
@@ -2892,30 +2941,30 @@ void Tess_StageIteratorDepthFill()
 		switch ( pStage->type )
 		{
 			case ST_COLORMAP:
-				{
-					if ( tess.surfaceShader->sort <= SS_OPAQUE )
-					{
-						Render_depthFill( stage );
-					}
-
-					break;
-				}
-
-			case ST_LIGHTMAP:
+			{
+				if ( tess.surfaceShader->sort <= SS_OPAQUE )
 				{
 					Render_depthFill( stage );
-					break;
 				}
+
+				break;
+			}
+
+			case ST_LIGHTMAP:
+			{
+				Render_depthFill( stage );
+				break;
+			}
 
 			case ST_DIFFUSEMAP:
 			case ST_COLLAPSE_lighting_DBSG:
 			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
-				{
-					Render_depthFill( stage );
-					break;
-				}
+			{
+				Render_depthFill( stage );
+				break;
+			}
 
 			default:
 				break;
@@ -2950,10 +2999,14 @@ void Tess_StageIteratorShadowFill()
 	}
 
 	// set face culling appropriately
-	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+	if ( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+	{
 		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
+	}
 	else
+	{
 		GL_Cull( tess.surfaceShader->cullType );
+	}
 
 	// set polygon offset if necessary
 	if ( tess.surfaceShader->polygonOffset )
@@ -2982,14 +3035,14 @@ void Tess_StageIteratorShadowFill()
 		switch ( pStage->type )
 		{
 			case ST_COLORMAP:
+			{
+				if ( tess.surfaceShader->sort <= SS_OPAQUE )
 				{
-					if ( tess.surfaceShader->sort <= SS_OPAQUE )
-					{
-						Render_shadowFill( stage );
-					}
-
-					break;
+					Render_shadowFill( stage );
 				}
+
+				break;
+			}
 
 			case ST_LIGHTMAP:
 			case ST_DIFFUSEMAP:
@@ -2997,10 +3050,10 @@ void Tess_StageIteratorShadowFill()
 			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
-				{
-					Render_shadowFill( stage );
-					break;
-				}
+			{
+				Render_shadowFill( stage );
+				break;
+			}
 
 			default:
 				break;
@@ -3057,10 +3110,14 @@ void Tess_StageIteratorLighting()
 	}
 
 	// set face culling appropriately
-	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+	if ( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+	{
 		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
+	}
 	else
+	{
 		GL_Cull( tess.surfaceShader->cullType );
+	}
 
 	// set polygon offset if necessary
 	if ( tess.surfaceShader->polygonOffset )
@@ -3176,7 +3233,7 @@ void Tess_End()
 	tess.stageIteratorFunc();
 
 	if ( ( tess.stageIteratorFunc != Tess_StageIteratorShadowFill ) &&
-	     ( tess.stageIteratorFunc != Tess_StageIteratorDebug ) )
+	        ( tess.stageIteratorFunc != Tess_StageIteratorDebug ) )
 	{
 		// draw debugging stuff
 		if ( r_showTris->integer || r_showBatches->integer || ( r_showLightBatches->integer && ( tess.stageIteratorFunc == Tess_StageIteratorLighting ) ) )

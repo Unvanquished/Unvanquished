@@ -43,7 +43,7 @@ static skelAnimation_t *R_AllocAnimation( void )
 		return NULL;
 	}
 
-	anim = (skelAnimation_t*) ri.Hunk_Alloc( sizeof( *anim ), h_low );
+	anim = ( skelAnimation_t* ) ri.Hunk_Alloc( sizeof( *anim ), h_low );
 	anim->index = tr.numAnimations;
 	tr.animations[ tr.numAnimations ] = anim;
 	tr.numAnimations++;
@@ -78,10 +78,10 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 	int            version;
 	char           *buf_p;
 
-	buf_p = (char*) buffer;
+	buf_p = ( char* ) buffer;
 
 	skelAnim->type = AT_MD5;
-	skelAnim->md5 = anim = (md5Animation_t*) ri.Hunk_Alloc( sizeof( *anim ), h_low );
+	skelAnim->md5 = anim = ( md5Animation_t* ) ri.Hunk_Alloc( sizeof( *anim ), h_low );
 
 	// skip MD5Version indent string
 	COM_ParseExt2( &buf_p, qfalse );
@@ -167,7 +167,7 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 	}
 
 	// parse all the channels
-	anim->channels = (md5Channel_t*) ri.Hunk_Alloc( sizeof( md5Channel_t ) * anim->numChannels, h_low );
+	anim->channels = ( md5Channel_t* ) ri.Hunk_Alloc( sizeof( md5Channel_t ) * anim->numChannels, h_low );
 
 	for ( i = 0, channel = anim->channels; i < anim->numChannels; i++, channel++ )
 	{
@@ -218,7 +218,7 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 		return qfalse;
 	}
 
-	anim->frames = (md5Frame_t*) ri.Hunk_Alloc( sizeof( md5Frame_t ) * anim->numFrames, h_low );
+	anim->frames = ( md5Frame_t* ) ri.Hunk_Alloc( sizeof( md5Frame_t ) * anim->numFrames, h_low );
 
 	for ( i = 0, frame = anim->frames; i < anim->numFrames; i++, frame++ )
 	{
@@ -386,7 +386,7 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 			return qfalse;
 		}
 
-		frame->components = (float*) ri.Hunk_Alloc( sizeof( float ) * anim->numAnimatedComponents, h_low );
+		frame->components = ( float* ) ri.Hunk_Alloc( sizeof( float ) * anim->numAnimatedComponents, h_low );
 
 		for ( j = 0; j < anim->numAnimatedComponents; j++ )
 		{
@@ -429,7 +429,7 @@ qhandle_t RE_RegisterAnimationIQM( const char *name, IQAnim_t *data )
 	if ( strlen( name ) >= MAX_QPATH )
 	{
 		ri.Printf( PRINT_WARNING, "Animation name exceeds MAX_QPATH\n" );
-			return 0;
+		return 0;
 	}
 
 	// search the currently loaded animations
@@ -678,7 +678,7 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 	fogNum = R_FogWorldBox( ent->worldBounds );
 
 	if ( !r_vboModels->integer || !model->numVBOSurfaces ||
-	     ( !glConfig2.vboVertexSkinningAvailable && ent->e.skeleton.type == SK_ABSOLUTE ) )
+	        ( !glConfig2.vboVertexSkinningAvailable && ent->e.skeleton.type == SK_ABSOLUTE ) )
 	{
 		// finally add surfaces
 		for ( i = 0, surface = model->surfaces; i < model->numSurfaces; i++, surface++ )
@@ -716,7 +716,7 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 				shader = R_GetShaderByHandle( surface->shaderIndex );
 
 				if ( ent->e.altShaderIndex > 0 && ent->e.altShaderIndex < MAX_ALTSHADERS &&
-				     shader->altShader[ ent->e.altShaderIndex ].index )
+				        shader->altShader[ ent->e.altShaderIndex ].index )
 				{
 					shader = R_GetShaderByHandle( shader->altShader[ ent->e.altShaderIndex ].index );
 				}
@@ -727,7 +727,7 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddDrawSurf( (surfaceType_t*) surface, shader, -1, fogNum );
+				R_AddDrawSurf( ( surfaceType_t* ) surface, shader, -1, fogNum );
 			}
 		}
 	}
@@ -777,7 +777,7 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddDrawSurf( (surfaceType_t*) vboSurface, shader, -1, fogNum );
+				R_AddDrawSurf( ( surfaceType_t* ) vboSurface, shader, -1, fogNum );
 			}
 		}
 	}
@@ -801,9 +801,10 @@ void R_AddIQMInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	// is outside the view frustum and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		iaType = (interactionType_t) (iaType & ~IA_LIGHT);
+		iaType = ( interactionType_t )( iaType & ~IA_LIGHT );
 
-		if( !iaType ) {
+		if ( !iaType )
+		{
 			return;
 		}
 	}
@@ -813,14 +814,14 @@ void R_AddIQMInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 
 	if ( light->l.inverseShadows )
 	{
-		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
+		if ( ( iaType & IA_SHADOW ) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
 		{
 			return;
 		}
 	}
 	else
 	{
-		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
+		if ( ( iaType & IA_SHADOW ) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
 		{
 			return;
 		}
@@ -852,57 +853,57 @@ void R_AddIQMInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 
 	cubeSideBits = R_CalcLightCubeSideBits( light, ent->worldBounds );
 
-		// generate interactions with all surfaces
-		for ( i = 0, surface = model->surfaces; i < model->num_surfaces; i++, surface++ )
+	// generate interactions with all surfaces
+	for ( i = 0, surface = model->surfaces; i < model->num_surfaces; i++, surface++ )
+	{
+		if ( ent->e.customShader )
 		{
-			if ( ent->e.customShader )
+			shader = R_GetShaderByHandle( ent->e.customShader );
+		}
+		else if ( ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins )
+		{
+			skin_t *skin;
+
+			skin = R_GetSkinByHandle( ent->e.customSkin );
+
+			// match the surface name to something in the skin file
+			shader = tr.defaultShader;
+
+			// FIXME: replace MD3_MAX_SURFACES for skin_t::surfaces
+			if ( i >= 0 && i < skin->numSurfaces && skin->surfaces[ i ] )
 			{
-				shader = R_GetShaderByHandle( ent->e.customShader );
-			}
-			else if ( ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins )
-			{
-				skin_t *skin;
-
-				skin = R_GetSkinByHandle( ent->e.customSkin );
-
-				// match the surface name to something in the skin file
-				shader = tr.defaultShader;
-
-				// FIXME: replace MD3_MAX_SURFACES for skin_t::surfaces
-				if ( i >= 0 && i < skin->numSurfaces && skin->surfaces[ i ] )
-				{
-					shader = skin->surfaces[ i ]->shader;
-				}
-
-				if ( shader == tr.defaultShader )
-				{
-					ri.Printf( PRINT_DEVELOPER, "WARNING: no shader for surface %i in skin %s\n", i, skin->name );
-				}
-				else if ( shader->defaultShader )
-				{
-					ri.Printf( PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
-				}
-			}
-			else
-			{
-				shader = R_GetShaderByHandle( surface->shader->index );
+				shader = skin->surfaces[ i ]->shader;
 			}
 
-			// skip all surfaces that don't matter for lighting only pass
-			if ( shader->isSky || ( !shader->interactLight && shader->noShadows ) )
+			if ( shader == tr.defaultShader )
 			{
-				continue;
+				ri.Printf( PRINT_DEVELOPER, "WARNING: no shader for surface %i in skin %s\n", i, skin->name );
 			}
-
-			// we will add shadows even if the main object isn't visible in the view
-
-			// don't add third_person objects if not viewing through a portal
-			if ( !personalModel )
+			else if ( shader->defaultShader )
 			{
-				R_AddLightInteraction( light, ( surfaceType_t * ) surface, shader, cubeSideBits, iaType );
-				tr.pc.c_dlightSurfaces++;
+				ri.Printf( PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
 			}
 		}
+		else
+		{
+			shader = R_GetShaderByHandle( surface->shader->index );
+		}
+
+		// skip all surfaces that don't matter for lighting only pass
+		if ( shader->isSky || ( !shader->interactLight && shader->noShadows ) )
+		{
+			continue;
+		}
+
+		// we will add shadows even if the main object isn't visible in the view
+
+		// don't add third_person objects if not viewing through a portal
+		if ( !personalModel )
+		{
+			R_AddLightInteraction( light, ( surfaceType_t * ) surface, shader, cubeSideBits, iaType );
+			tr.pc.c_dlightSurfaces++;
+		}
+	}
 }
 
 /*
@@ -923,10 +924,10 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	// is outside the view frustum and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		iaType = (interactionType_t) (iaType & ~IA_LIGHT);
+		iaType = ( interactionType_t )( iaType & ~IA_LIGHT );
 	}
 
-	if( !iaType )
+	if ( !iaType )
 	{
 		return;
 	}
@@ -936,14 +937,14 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 
 	if ( light->l.inverseShadows )
 	{
-		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
+		if ( ( iaType & IA_SHADOW ) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
 		{
 			return;
 		}
 	}
 	else
 	{
-		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
+		if ( ( iaType & IA_SHADOW ) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
 		{
 			return;
 		}
@@ -976,7 +977,7 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	cubeSideBits = R_CalcLightCubeSideBits( light, ent->worldBounds );
 
 	if ( !r_vboModels->integer || !model->numVBOSurfaces ||
-	     ( !glConfig2.vboVertexSkinningAvailable && ent->e.skeleton.type == SK_ABSOLUTE ) )
+	        ( !glConfig2.vboVertexSkinningAvailable && ent->e.skeleton.type == SK_ABSOLUTE ) )
 	{
 		// generate interactions with all surfaces
 		for ( i = 0, surface = model->surfaces; i < model->numSurfaces; i++, surface++ )
@@ -1025,7 +1026,7 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddLightInteraction( light, (surfaceType_t*) surface, shader, cubeSideBits, iaType );
+				R_AddLightInteraction( light, ( surfaceType_t* ) surface, shader, cubeSideBits, iaType );
 				tr.pc.c_dlightSurfaces++;
 			}
 		}
@@ -1082,7 +1083,7 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddLightInteraction( light, (surfaceType_t*) vboSurface, shader, cubeSideBits, iaType );
+				R_AddLightInteraction( light, ( surfaceType_t* ) vboSurface, shader, cubeSideBits, iaType );
 				tr.pc.c_dlightSurfaces++;
 			}
 		}
@@ -1098,7 +1099,7 @@ and copy the parentIndex entries into the refSkeleton_t
 ==============
 */
 static qboolean IQMCheckSkeleton( refSkeleton_t *skel, model_t *model,
-				  skelAnimation_t *anim )
+                                  skelAnimation_t *anim )
 {
 	int        i;
 	IQModel_t *IQModel = model->iqm;
@@ -1121,12 +1122,14 @@ static qboolean IQMCheckSkeleton( refSkeleton_t *skel, model_t *model,
 		char     *modelNames;
 		char     *animNames;
 
-		if ( IQModel->jointNames == IQAnim->jointNames ) {
+		if ( IQModel->jointNames == IQAnim->jointNames )
+		{
 			// loaded from same IQM file, must match
 			for ( i = 0; i < IQModel->num_joints; i++ )
 			{
 				skel->bones[ i ].parentIndex = IQModel->jointParents[ i ];
 			}
+
 			return qtrue;
 		}
 
@@ -1139,12 +1142,14 @@ static qboolean IQMCheckSkeleton( refSkeleton_t *skel, model_t *model,
 		// check bone names
 		modelNames = IQModel->jointNames;
 		animNames = IQAnim->jointNames;
+
 		for ( i = 0; i < IQModel->num_joints; i++ )
 		{
 			if ( Q_stricmp( modelNames, animNames ) )
 			{
 				return qfalse;
 			}
+
 			modelNames += strlen( modelNames ) + 1;
 			animNames += strlen( animNames ) + 1;
 
@@ -1177,7 +1182,8 @@ int RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim )
 	model = R_GetModelByHandle( hModel );
 	skelAnim = R_GetAnimationByHandle( hAnim );
 
-	if( model->type == MOD_IQM && model->iqm ) {
+	if ( model->type == MOD_IQM && model->iqm )
+	{
 		return IQMCheckSkeleton( skel, model, skelAnim );
 	}
 	else if ( model->type != MOD_MD5 || !model->md5 )
@@ -1239,7 +1245,7 @@ R_IQMBuildSkeleton
 ==============
 */
 static int IQMBuildSkeleton( refSkeleton_t *skel, skelAnimation_t *skelAnim,
-			     int startFrame, int endFrame, float frac )
+                             int startFrame, int endFrame, float frac )
 {
 	int            i;
 	IQAnim_t       *anim;
@@ -1252,10 +1258,13 @@ static int IQMBuildSkeleton( refSkeleton_t *skel, skelAnimation_t *skelAnim,
 	// This will write directly into the entity structure, so
 	// when the surfaces are rendered, they don't need to be
 	// range checked again.
-	if( anim->flags & IQM_LOOP ) {
+	if ( anim->flags & IQM_LOOP )
+	{
 		startFrame %= anim->num_frames;
 		endFrame %= anim->num_frames;
-	} else {
+	}
+	else
+	{
 		Q_clamp( startFrame, 0, anim->num_frames - 1 );
 		Q_clamp( endFrame, 0, anim->num_frames - 1 );
 	}
@@ -1265,7 +1274,8 @@ static int IQMBuildSkeleton( refSkeleton_t *skel, skelAnimation_t *skelAnim,
 	newPose = &anim->poses[ endFrame * anim->num_joints ];
 
 	// calculate a bounding box in the current coordinate system
-	if( anim->bounds ) {
+	if ( anim->bounds )
+	{
 		float *bounds = &anim->bounds[ 6 * startFrame ];
 		VectorCopy( bounds, mins );
 		VectorCopy( bounds + 3, maxs );
@@ -1306,7 +1316,8 @@ int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t hAnim, int startFrame, int 
 
 	skelAnim = R_GetAnimationByHandle( hAnim );
 
-	if ( skelAnim->type == AT_IQM && skelAnim->iqm ) {
+	if ( skelAnim->type == AT_IQM && skelAnim->iqm )
+	{
 		return IQMBuildSkeleton( skel, skelAnim, startFrame, endFrame, frac );
 	}
 	else if ( skelAnim->type == AT_MD5 && skelAnim->md5 )
@@ -1346,9 +1357,9 @@ int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t hAnim, int startFrame, int 
 		for ( i = 0; i < 3; i++ )
 		{
 			skel->bounds[ 0 ][ i ] =
-			  oldFrame->bounds[ 0 ][ i ] < newFrame->bounds[ 0 ][ i ] ? oldFrame->bounds[ 0 ][ i ] : newFrame->bounds[ 0 ][ i ];
+			    oldFrame->bounds[ 0 ][ i ] < newFrame->bounds[ 0 ][ i ] ? oldFrame->bounds[ 0 ][ i ] : newFrame->bounds[ 0 ][ i ];
 			skel->bounds[ 1 ][ i ] =
-			  oldFrame->bounds[ 1 ][ i ] > newFrame->bounds[ 1 ][ i ] ? oldFrame->bounds[ 1 ][ i ] : newFrame->bounds[ 1 ][ i ];
+			    oldFrame->bounds[ 1 ][ i ] > newFrame->bounds[ 1 ][ i ] ? oldFrame->bounds[ 1 ][ i ] : newFrame->bounds[ 1 ][ i ];
 		}
 
 		for ( i = 0, channel = anim->channels; i < anim->numChannels; i++, channel++ )
@@ -1506,7 +1517,8 @@ int RE_AnimNumFrames( qhandle_t hAnim )
 
 	anim = R_GetAnimationByHandle( hAnim );
 
-	if( anim->type == AT_IQM && anim->iqm ) {
+	if ( anim->type == AT_IQM && anim->iqm )
+	{
 		return anim->iqm->num_frames;
 	}
 	else if ( anim->type == AT_MD5 && anim->md5 )
@@ -1528,7 +1540,8 @@ int RE_AnimFrameRate( qhandle_t hAnim )
 
 	anim = R_GetAnimationByHandle( hAnim );
 
-	if( anim->type == AT_IQM && anim->iqm ) {
+	if ( anim->type == AT_IQM && anim->iqm )
+	{
 		return anim->iqm->framerate;
 	}
 	else if ( anim->type == AT_MD5 && anim->md5 )

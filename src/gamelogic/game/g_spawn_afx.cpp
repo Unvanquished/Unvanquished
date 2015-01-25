@@ -46,7 +46,7 @@ void InitEnvAFXEntity( gentity_t *self, qboolean link )
 	self->r.contents = CONTENTS_SENSOR; // replaces the -1 from trap_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
 
-	if( link )
+	if ( link )
 	{
 		trap_LinkEntity( self );
 	}
@@ -89,6 +89,7 @@ void env_afx_push_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
 	{
 		return;
 	}
+
 	self->nextthink = VariatedLevelTime( self->config.wait );
 
 	VectorCopy( self->s.origin2, activator->client->ps.velocity );
@@ -96,7 +97,7 @@ void env_afx_push_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
 
 void SP_env_afx_push( gentity_t *self )
 {
-	SP_WaitFields(self, 0.5f, 0);
+	SP_WaitFields( self, 0.5f, 0 );
 
 	self->s.eType = ET_PUSHER;
 	self->touch = env_afx_push_touch;
@@ -104,7 +105,7 @@ void SP_env_afx_push( gentity_t *self )
 	self->nextthink = level.time + FRAMETIME;
 	self->act = env_afx_toggle;
 
-	InitEnvAFXEntity( self, !(self->spawnflags & SPF_SPAWN_DISABLED ) );
+	InitEnvAFXEntity( self, !( self->spawnflags & SPF_SPAWN_DISABLED ) );
 
 	// unlike other afx, we need to send this one to the client
 	self->r.svFlags &= ~SVF_NOCLIENT;
@@ -139,7 +140,7 @@ void env_afx_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 
 	// Spectators only?
 	if ( ( self->spawnflags & 1 ) &&
-	     other->client->sess.spectatorState == SPECTATOR_NOT )
+	        other->client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		return;
 	}
@@ -147,7 +148,9 @@ void env_afx_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 	dest = G_PickRandomTargetFor( self );
 
 	if ( !dest )
+	{
 		return;
+	}
 
 	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->config.speed );
 }
@@ -160,8 +163,10 @@ void env_afx_teleporter_act( gentity_t *ent, gentity_t *other, gentity_t *activa
 void SP_env_afx_teleport( gentity_t *self )
 {
 
-	if( !self->config.speed )
+	if ( !self->config.speed )
+	{
 		self->config.speed = 400;
+	}
 
 	// SPAWN_DISABLED
 	if ( self->spawnflags & 2 )
@@ -174,6 +179,7 @@ void SP_env_afx_teleport( gentity_t *self )
 	self->act = env_afx_teleporter_act;
 
 	InitEnvAFXEntity( self, qtrue );
+
 	// unlike other afx, we need to send this one to the client
 	// unless is a spectator trigger
 	if ( self->spawnflags & 1 )
@@ -241,11 +247,11 @@ void SP_env_afx_hurt( gentity_t *self )
 	self->soundIndex = G_SoundIndex( "sound/misc/electro.wav" );
 	self->touch = env_afx_hurt_touch;
 
-	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 5);
+	G_ResetIntField( &self->damage, qtrue, self->config.damage, self->eclass->config.damage, 5 );
 
 	self->act = env_afx_toggle;
 
-	InitEnvAFXEntity( self, !(self->spawnflags & SPF_SPAWN_DISABLED ) );
+	InitEnvAFXEntity( self, !( self->spawnflags & SPF_SPAWN_DISABLED ) );
 }
 
 /*
@@ -258,7 +264,7 @@ trigger_gravity
 
 void env_afx_gravity_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->amount, qfalse, self->config.amount, self->eclass->config.amount, 800);
+	G_ResetIntField( &self->amount, qfalse, self->config.amount, self->eclass->config.amount, 800 );
 }
 
 void env_afx_gravity_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
@@ -279,8 +285,10 @@ SP_trigger_gravity
 */
 void SP_env_afx_gravity( gentity_t *self )
 {
-	if(!self->config.amount)
+	if ( !self->config.amount )
+	{
 		G_SpawnInt( "gravity", "0", &self->config.amount );
+	}
 
 	self->touch = env_afx_gravity_touch;
 	self->act = env_afx_toggle;
@@ -428,7 +436,7 @@ void SP_env_afx_ammo( gentity_t *self )
 	if ( self->config.amount <= 0 )
 	{
 		self->config.amount = 1;
-		G_Printf( S_WARNING "%s with negative or unset ammo amount key\n", etos(self) );
+		G_Printf( S_WARNING "%s with negative or unset ammo amount key\n", etos( self ) );
 	}
 
 	self->touch = env_afx_ammo_touch;

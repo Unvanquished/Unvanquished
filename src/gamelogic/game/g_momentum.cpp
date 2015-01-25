@@ -35,13 +35,13 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
 typedef enum
 {
-	CONF_GENERIC,
-	CONF_BUILDING,
-	CONF_DECONSTRUCTING,
-	CONF_DESTROYING,
-	CONF_KILLING,
+    CONF_GENERIC,
+    CONF_BUILDING,
+    CONF_DECONSTRUCTING,
+    CONF_DESTROYING,
+    CONF_KILLING,
 
-	NUM_CONF
+    NUM_CONF
 } momentum_t;
 
 // -------------
@@ -52,12 +52,23 @@ const char *MomentumTypeToReason( momentum_t type )
 {
 	switch ( type )
 	{
-		case CONF_GENERIC:        return "generic actions";
-		case CONF_BUILDING:       return "building a structure";
-		case CONF_DECONSTRUCTING: return "deconstructing a structure";
-		case CONF_DESTROYING:     return "destryoing a structure";
-		case CONF_KILLING:        return "killing a player";
-		default:                  return "(unknown momentum type)";
+		case CONF_GENERIC:
+			return "generic actions";
+
+		case CONF_BUILDING:
+			return "building a structure";
+
+		case CONF_DECONSTRUCTING:
+			return "deconstructing a structure";
+
+		case CONF_DESTROYING:
+			return "destryoing a structure";
+
+		case CONF_KILLING:
+			return "killing a player";
+
+		default:
+			return "(unknown momentum type)";
 	}
 }
 
@@ -82,12 +93,12 @@ void MomentumChanged( void )
 			continue;
 		}
 
-		team = (team_t) client->pers.team;
+		team = ( team_t ) client->pers.team;
 
 		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
 			client->ps.persistant[ PERS_MOMENTUM ] = ( short )
-				( level.team[ team ].momentum * 10.0f + 0.5f );
+			        ( level.team[ team ].momentum * 10.0f + 0.5f );
 		}
 	}
 
@@ -110,11 +121,11 @@ void NotifyLegacyStageSensors( team_t team, float amount )
 		momentum = stage * ( float )MOMENTUM_PER_LEGACY_STAGE;
 
 		if ( ( level.team[ team ].momentum - amount < momentum ) ==
-		     ( level.team[ team ].momentum          > momentum ) )
+		        ( level.team[ team ].momentum          > momentum ) )
 		{
-			if      ( amount > 0.0f )
+			if ( amount > 0.0f )
 			{
-				G_notify_sensor_stage( team, stage - 1, stage     );
+				G_notify_sensor_stage( team, stage - 1, stage );
 			}
 			else if ( amount < 0.0f )
 			{
@@ -201,7 +212,7 @@ static float MomentumMod( momentum_t type )
  * Will notify the client hwo earned it if given, otherwise the whole team, with an event.
  */
 static float AddMomentum( momentum_t type, team_t team, float amount,
-                            gentity_t *source, qboolean skipChangeHook )
+                          gentity_t *source, qboolean skipChangeHook )
 {
 	gentity_t *event = NULL;
 	gclient_t *client;
@@ -250,6 +261,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 			event->r.svFlags = ( SVF_BROADCAST | SVF_CLIENTMASK );
 			G_TeamToClientmask( team, &( event->r.loMask ), &( event->r.hiMask ) );
 		}
+
 		if ( event )
 		{
 			// TODO: Use more bits for momentum value
@@ -325,7 +337,7 @@ void G_DecreaseMomentum( void )
 		level.team[ team ].momentum += amount;
 
 		// notify legacy stage sensors
-		NotifyLegacyStageSensors( (team_t) team, amount );
+		NotifyLegacyStageSensors( ( team_t ) team, amount );
 	}
 
 	MomentumChanged();
@@ -420,6 +432,7 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 	{
 		return 0.0f;
 	}
+
 	team           = BG_Buildable( buildable->s.modelindex )->team;
 
 	if ( buildable->momentumEarned )
@@ -458,7 +471,7 @@ float G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker,
 		return 0.0f;
 	}
 
-	team = (team_t) attacker->client->pers.team;
+	team = ( team_t ) attacker->client->pers.team;
 
 	return AddMomentum( CONF_DESTROYING, team, amount, attacker, qtrue );
 }
@@ -486,7 +499,7 @@ float G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float
 	}
 
 	value = BG_GetValueOfPlayer( &victim->client->ps ) * MOMENTUM_PER_CREDIT * share;
-	team  = (team_t) attacker->client->pers.team;
+	team  = ( team_t ) attacker->client->pers.team;
 
 	return AddMomentum( CONF_KILLING, team, value, attacker, qtrue );
 }

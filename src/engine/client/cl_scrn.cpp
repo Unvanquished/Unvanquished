@@ -169,12 +169,15 @@ static void SCR_DrawUnichar( int x, int y, float size, int ch )
 	ah = size;
 	SCR_AdjustFrom640( &ax, &ay, &aw, &ah );
 
-	if( cls.useLegacyConsoleFace )
+	if ( cls.useLegacyConsoleFace )
 	{
 		int row, col;
 		float frow, fcol;
 
-		if ( ch >= 0x100 ) { ch = 0; }
+		if ( ch >= 0x100 )
+		{
+			ch = 0;
+		}
 
 		row = ch >> 4;
 		col = ch & 15;
@@ -184,18 +187,18 @@ static void SCR_DrawUnichar( int x, int y, float size, int ch )
 		size = 0.0625;
 
 		re.DrawStretchPic( ax, ay, aw, ah,
-				fcol, frow,
-				fcol + size, frow + size,
-				cls.charSetShader );
+		                   fcol, frow,
+		                   fcol + size, frow + size,
+		                   cls.charSetShader );
 	}
 	else
 	{
-	glyphInfo_t *glyph = Glyph( ch );
+		glyphInfo_t *glyph = Glyph( ch );
 
-	re.DrawStretchPic( ax, ay, aw, glyph->imageHeight,
-		glyph->s, glyph->t,
-		glyph->s2, glyph->t2,
-		glyph->glyph );
+		re.DrawStretchPic( ax, ay, aw, glyph->imageHeight,
+		                   glyph->s, glyph->t,
+		                   glyph->s2, glyph->t2,
+		                   glyph->glyph );
 	}
 }
 
@@ -237,38 +240,45 @@ void SCR_DrawSmallUnichar( int x, int y, int ch )
 
 	if ( ch < 0x100 || cls.useLegacyConsoleFont )
 	{
-		if ( ch == ' ' ) {
+		if ( ch == ' ' )
+		{
 			return;
 		}
 
-		if ( y < -SMALLCHAR_HEIGHT ) {
+		if ( y < -SMALLCHAR_HEIGHT )
+		{
 			return;
 		}
 
-		if ( ch >= 0x100 ) { ch = 0; }
+		if ( ch >= 0x100 )
+		{
+			ch = 0;
+		}
 
-		row = ch>>4;
-		col = ch&15;
+		row = ch >> 4;
+		col = ch & 15;
 
-		frow = row*0.0625;
-		fcol = col*0.0625;
+		frow = row * 0.0625;
+		fcol = col * 0.0625;
 		size = 0.0625;
 
 		// adjust for baseline
-		re.DrawStretchPic( x, y - (int)( SMALLCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) ),
-		                SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT,
-				fcol, frow,
-				fcol + size, frow + size,
-				cls.charSetShader );
-	} else {
+		re.DrawStretchPic( x, y - ( int )( SMALLCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) ),
+		                   SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT,
+		                   fcol, frow,
+		                   fcol + size, frow + size,
+		                   cls.charSetShader );
+	}
+	else
+	{
 		glyphInfo_t *glyph = Glyph( ch );
 
 		re.DrawStretchPic( x, y, SMALLCHAR_WIDTH, glyph->imageHeight,
-				glyph->s,
-				glyph->t,
-				glyph->s2,
-				glyph->t2,
-				glyph->glyph );
+		                   glyph->s,
+		                   glyph->t,
+		                   glyph->s2,
+		                   glyph->t2,
+		                   glyph->glyph );
 	}
 }
 
@@ -613,16 +623,23 @@ void SCR_DrawVoipSender( void )
 			return; // client has VoIP support disabled.
 		}
 
-		switch ( atoi( Info_ValueForKey(cl.gameState.stringData +
-			cl.gameState.stringOffsets[CS_PLAYERS + cls.voipSender], "t") ) )
+		switch ( atoi( Info_ValueForKey( cl.gameState.stringData +
+		                                 cl.gameState.stringOffsets[CS_PLAYERS + cls.voipSender], "t" ) ) )
 		{
-			case TEAM_ALIENS: teamColor = '1'; break;
-			case TEAM_HUMANS: teamColor = '4'; break;
-			default: teamColor = '3';
+			case TEAM_ALIENS:
+				teamColor = '1';
+				break;
+
+			case TEAM_HUMANS:
+				teamColor = '4';
+				break;
+
+			default:
+				teamColor = '3';
 		}
 
-		sprintf( string, "VoIP: ^%c%s", teamColor, Info_ValueForKey(cl.gameState.stringData +
-		cl.gameState.stringOffsets[CS_PLAYERS + cls.voipSender], "t" ) );
+		sprintf( string, "VoIP: ^%c%s", teamColor, Info_ValueForKey( cl.gameState.stringData +
+		         cl.gameState.stringOffsets[CS_PLAYERS + cls.voipSender], "t" ) );
 
 		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
 		{
@@ -649,6 +666,7 @@ void SCR_DrawVoipSender( void )
 			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}
 	}
+
 #endif
 }
 #endif
@@ -807,23 +825,23 @@ float SCR_ConsoleFontCharHeight( void )
 {
 	return cls.useLegacyConsoleFont
 	       ? SMALLCHAR_HEIGHT
-	       : cls.consoleFont->glyphBlock[0][(unsigned)'I'].imageHeight + CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
+	       : cls.consoleFont->glyphBlock[0][( unsigned )'I'].imageHeight + CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
 }
 
 float SCR_ConsoleFontCharVPadding( void )
 {
 	return cls.useLegacyConsoleFont
 	       ? 0
-	       : std::max( 0, -cls.consoleFont->glyphBlock[0][(unsigned)'g'].bottom >> 6);
+	       : std::max( 0, -cls.consoleFont->glyphBlock[0][( unsigned )'g'].bottom >> 6 );
 }
 
 float SCR_ConsoleFontStringWidth( const char* s, int len )
 {
 	float width = 0;
 
-	if( cls.useLegacyConsoleFont )
+	if ( cls.useLegacyConsoleFont )
 	{
-		if( cls.useLegacyConsoleFace )
+		if ( cls.useLegacyConsoleFace )
 		{
 			return len * SMALLCHAR_WIDTH;
 		}
@@ -832,7 +850,7 @@ float SCR_ConsoleFontStringWidth( const char* s, int len )
 			int l = 0;
 			const char *str = s;
 
-			while( *str && len > 0 )
+			while ( *str && len > 0 )
 			{
 				l++;
 				str += Q_UTF8_Width( str );
@@ -843,7 +861,7 @@ float SCR_ConsoleFontStringWidth( const char* s, int len )
 		}
 	}
 
-	while( *s && len > 0 )
+	while ( *s && len > 0 )
 	{
 		width += SCR_ConsoleFontCharWidth( s );
 
@@ -851,5 +869,5 @@ float SCR_ConsoleFontStringWidth( const char* s, int len )
 		len--;
 	}
 
-	return (width);
+	return ( width );
 }

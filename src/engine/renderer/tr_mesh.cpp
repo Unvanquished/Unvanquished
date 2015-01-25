@@ -43,9 +43,9 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 	for ( i = 0; i < 3; i++ )
 	{
 		ent->localBounds[ 0 ][ i ] =
-		  oldFrame->bounds[ 0 ][ i ] < newFrame->bounds[ 0 ][ i ] ? oldFrame->bounds[ 0 ][ i ] : newFrame->bounds[ 0 ][ i ];
+		    oldFrame->bounds[ 0 ][ i ] < newFrame->bounds[ 0 ][ i ] ? oldFrame->bounds[ 0 ][ i ] : newFrame->bounds[ 0 ][ i ];
 		ent->localBounds[ 1 ][ i ] =
-		  oldFrame->bounds[ 1 ][ i ] > newFrame->bounds[ 1 ][ i ] ? oldFrame->bounds[ 1 ][ i ] : newFrame->bounds[ 1 ][ i ];
+		    oldFrame->bounds[ 1 ][ i ] > newFrame->bounds[ 1 ][ i ] ? oldFrame->bounds[ 1 ][ i ] : newFrame->bounds[ 1 ][ i ];
 	}
 
 	// setup world bounds for intersection tests
@@ -299,7 +299,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	// when the surfaces are rendered, they don't need to be
 	// range checked again.
 	if ( ( ent->e.frame >= tr.currentModel->mdv[ lod ]->numFrames )
-	     || ( ent->e.frame < 0 ) || ( ent->e.oldframe >= tr.currentModel->mdv[ lod ]->numFrames ) || ( ent->e.oldframe < 0 ) )
+	        || ( ent->e.frame < 0 ) || ( ent->e.oldframe >= tr.currentModel->mdv[ lod ]->numFrames ) || ( ent->e.oldframe < 0 ) )
 	{
 		ri.Printf( PRINT_DEVELOPER, "R_AddMDVSurfaces: no such frame %d to %d for '%s' (%d)\n",
 		           ent->e.oldframe, ent->e.frame, tr.currentModel->name, tr.currentModel->mdv[ lod ]->numFrames );
@@ -384,7 +384,7 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	// is outside the view frustum and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		iaType = (interactionType_t) (iaType & ~IA_LIGHT);
+		iaType = ( interactionType_t )( iaType & ~IA_LIGHT );
 	}
 
 	if ( !iaType )
@@ -397,14 +397,14 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 
 	if ( light->l.inverseShadows )
 	{
-		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
+		if ( ( iaType & IA_SHADOW ) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
 		{
 			return;
 		}
 	}
 	else
 	{
-		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
+		if ( ( iaType & IA_SHADOW ) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
 		{
 			return;
 		}

@@ -740,8 +740,8 @@ Traces a ray from inside a rectangle and returns the point of
 intersection with the rectangle
 ==================
 */
-float ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const vec2_t dir, 
-                                         const vec2_t bounds[ 2 ] )
+float ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const vec2_t dir,
+        const vec2_t bounds[ 2 ] )
 {
 	float t, ty;
 	qboolean dsign[ 2 ];
@@ -752,8 +752,10 @@ float ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const v
 	t = ( bounds[ 1 - dsign[ 0 ] ][ 0 ] - point[ 0 ] ) / dir[ 0 ];
 	ty = ( bounds[ 1 - dsign[ 1 ] ][ 1 ] - point[ 1 ] ) / dir[ 1 ];
 
-	if( ty < t )
+	if ( ty < t )
+	{
 		t = ty;
+	}
 
 	out[ 0 ] = point[ 0 ] + dir[ 0 ] * t;
 	out[ 1 ] = point[ 1 ] + dir[ 1 ] * t;
@@ -1170,7 +1172,8 @@ qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_
 	return qtrue;
 }
 
-float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs ) {
+float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs )
+{
 	float result = Q_fabs( mins[0] );
 
 	result = MAX( result, Q_fabs( mins[ 1 ] ) );

@@ -32,7 +32,7 @@ LoadWEBP
 */
 
 void LoadWEBP( const char *filename, unsigned char **pic, int *width, int *height,
-	       int *numLayers, int *numMips, int *bits, byte alphaByte )
+               int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
 	byte *out;
 	int  len;
@@ -62,7 +62,7 @@ void LoadWEBP( const char *filename, unsigned char **pic, int *width, int *heigh
 	stride = *width * sizeof( u8vec4_t );
 	size = *height * stride;
 
-	out = (byte*) ri.Z_Malloc( size );
+	out = ( byte* ) ri.Z_Malloc( size );
 
 	if ( !WebPDecodeRGBAInto( fbuffer.b, len, out, size, stride ) )
 	{

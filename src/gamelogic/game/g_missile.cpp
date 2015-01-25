@@ -29,10 +29,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MISSILE_PRESTEP_TIME 50
 
-typedef enum missileTimePowerMod_e {
-	MTPR_LINEAR_DECREASE,
-	MTPR_LINEAR_INCREASE,
-	MTPR_EXPONENTIAL_DECREASE // endTime is half time period, endMod is ignored
+typedef enum missileTimePowerMod_e
+{
+    MTPR_LINEAR_DECREASE,
+    MTPR_LINEAR_INCREASE,
+    MTPR_EXPONENTIAL_DECREASE // endTime is half time period, endMod is ignored
 } missileTimePowerMod_t;
 
 // -------------
@@ -136,7 +137,7 @@ static float MissileTimeSplashDmgMod( gentity_t *self )
 	{
 		case MIS_FLAMER:
 			return MissileTimePowerMod( self, MTPR_LINEAR_INCREASE, FLAMER_SPLASH_MINDST_MOD, 1.0f,
-										0, FLAMER_LIFETIME );
+			                            0, FLAMER_LIFETIME );
 	}
 
 	return 1.0f;
@@ -156,7 +157,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 
 	// check for bounce
 	if ( !other->takedamage &&
-	     ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) )
+	        ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) )
 	{
 		BounceMissile( ent, trace );
 
@@ -195,6 +196,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 
 		// ignite alien buildables in radius
 		neighbor = NULL;
+
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) ) )
 		{
 			// we already handled other, since it might not always be in FLAMER_IGNITE_RADIUS due to BBOX sizes
@@ -262,8 +264,9 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		{
 			// put out floor fires in range
 			neighbor = NULL;
+
 			while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
-			                                                  ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
+			                     ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
 			{
 				if ( neighbor->s.eType == ET_FIRE )
 				{
@@ -321,10 +324,14 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		}
 
 		int dflags = DAMAGE_NO_LOCDAMAGE;
-		if ( ma->doKnockback ) dflags |= DAMAGE_KNOCKBACK;
+
+		if ( ma->doKnockback )
+		{
+			dflags |= DAMAGE_KNOCKBACK;
+		}
 
 		G_Damage( other, ent, attacker, dir, ent->s.origin,
-				  roundf( ent->damage * MissileTimeDmgMod( ent ) ), dflags, ent->methodOfDeath );
+		          roundf( ent->damage * MissileTimeDmgMod( ent ) ), dflags, ent->methodOfDeath );
 	}
 
 	if ( returnAfterDamage )
@@ -430,7 +437,7 @@ void G_RunMissile( gentity_t *ent )
 
 	if ( tr.fraction < 1.0f )
 	{
-		if ( !ent->pointAgainstWorld || (tr.contents & CONTENTS_BODY) )
+		if ( !ent->pointAgainstWorld || ( tr.contents & CONTENTS_BODY ) )
 		{
 			// We hit an entity or we don't care
 			impact = qtrue;
@@ -535,11 +542,11 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, v
 	m->splashMethodOfDeath = ma->splashMeansOfDeath;
 	m->clipmask            = ma->clipmask;
 	m->r.mins[ 0 ]         =
-	m->r.mins[ 1 ]         =
-	m->r.mins[ 2 ]         = -ma->size;
+	    m->r.mins[ 1 ]         =
+	        m->r.mins[ 2 ]         = -ma->size;
 	m->r.maxs[ 0 ]         =
-	m->r.maxs[ 1 ]         =
-	m->r.maxs[ 2 ]         = ma->size;
+	    m->r.maxs[ 1 ]         =
+	        m->r.maxs[ 2 ]         = ma->size;
 	m->s.eFlags            = ma->flags;
 
 	// not yet implemented / deprecated

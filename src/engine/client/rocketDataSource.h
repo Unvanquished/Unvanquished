@@ -46,221 +46,189 @@ Maryland 20850 USA.
 class RocketDataSource : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener
 {
 public:
-	RocketDataSource( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( NULL ), data_source( NULL )
-	{
-	}
+    RocketDataSource ( const Rocket::Core::String &tag ) : Rocket::Core::Element ( tag ), dirty_query ( false ), dirty_layout ( false ), init ( false ), radius ( 10 ), formatter ( NULL ), data_source ( NULL ) {
+    }
 
-	virtual ~RocketDataSource( void )
-	{
-		if ( data_source )
-		{
-			data_source->DetachListener( this );
-		}
-	}
+    virtual ~RocketDataSource ( void ) {
+        if ( data_source ) {
+            data_source->DetachListener ( this );
+        }
+    }
 
-	void SetDataSource( const Rocket::Core::String &dsn )
-	{
-		ParseDataSource( data_source, data_table, dsn );
-		data_source->AttachListener( this );
-		dirty_query = true;
-	}
+    void SetDataSource ( const Rocket::Core::String &dsn ) {
+        ParseDataSource ( data_source, data_table, dsn );
+        data_source->AttachListener ( this );
+        dirty_query = true;
+    }
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
-	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
-		{
-			SetDataSource( GetAttribute<Rocket::Core::String>( "source", "" ) );
-		}
+    void OnAttributeChange ( const Rocket::Core::AttributeNameList &changed_attributes ) {
+        Rocket::Core::Element::OnAttributeChange ( changed_attributes );
+        if ( changed_attributes.find ( "source" ) != changed_attributes.end() ) {
+            SetDataSource ( GetAttribute<Rocket::Core::String> ( "source", "" ) );
+        }
 
-		if ( changed_attributes.find( "fields" ) != changed_attributes.end() )
-		{
-			csvFields = GetAttribute<Rocket::Core::String>( "fields", "" );
-			Rocket::Core::StringUtilities::ExpandString( fields, csvFields );
-			dirty_query = true;
-		}
+        if ( changed_attributes.find ( "fields" ) != changed_attributes.end() ) {
+            csvFields = GetAttribute<Rocket::Core::String> ( "fields", "" );
+            Rocket::Core::StringUtilities::ExpandString ( fields, csvFields );
+            dirty_query = true;
+        }
 
-		if ( changed_attributes.find( "formatter" ) != changed_attributes.end() )
-		{
-			formatter = Rocket::Controls::DataFormatter::GetDataFormatter( GetAttribute( "formatter" )->Get<Rocket::Core::String>() );
-			dirty_query = true;
-		}
-	}
+        if ( changed_attributes.find ( "formatter" ) != changed_attributes.end() ) {
+            formatter = Rocket::Controls::DataFormatter::GetDataFormatter ( GetAttribute ( "formatter" )->Get<Rocket::Core::String>() );
+            dirty_query = true;
+        }
+    }
 
-	void OnRowAdd( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_added, int num_rows_added )
-	{
-		dirty_query = true;
-	}
+    void OnRowAdd ( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_added, int num_rows_added ) {
+        dirty_query = true;
+    }
 
-	void OnRowChange( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_changed, int num_rows_changed )
-	{
-		dirty_query = true;
-	}
+    void OnRowChange ( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_changed, int num_rows_changed ) {
+        dirty_query = true;
+    }
 
-	void OnRowChange( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table )
-	{
-		dirty_query = true;
-	}
+    void OnRowChange ( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table ) {
+        dirty_query = true;
+    }
 
-	void OnRowRemove( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_removed, int num_rows_removed )
-	{
-		dirty_query = true;
-	}
+    void OnRowRemove ( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_removed, int num_rows_removed ) {
+        dirty_query = true;
+    }
 
 
-	void OnUpdate( void )
-	{
-		if ( dirty_query )
-		{
-			dirty_query = false;
+    void OnUpdate ( void ) {
+        if ( dirty_query ) {
+            dirty_query = false;
 
-			while ( HasChildNodes() )
-			{
+            while ( HasChildNodes() ) {
 
-				RemoveChild( GetFirstChild() );
-			}
+                RemoveChild ( GetFirstChild() );
+            }
 
-			Rocket::Controls::DataQuery query( data_source, data_table, csvFields, 0, -1 );
-			int index = 0;
+            Rocket::Controls::DataQuery query ( data_source, data_table, csvFields, 0, -1 );
+            int index = 0;
 
-			while ( query.NextRow() )
-			{
-				Rocket::Core::StringList raw_data;
-				Rocket::Core::String out;
+            while ( query.NextRow() ) {
+                Rocket::Core::StringList raw_data;
+                Rocket::Core::String out;
 
-				for ( size_t i = 0; i < fields.size(); ++i )
-				{
-					raw_data.push_back( query.Get<Rocket::Core::String>( fields[ i ], "" ) );
-				}
+                for ( size_t i = 0; i < fields.size(); ++i ) {
+                    raw_data.push_back ( query.Get<Rocket::Core::String> ( fields[ i ], "" ) );
+                }
 
-				raw_data.push_back( va( "%d", index++ ) );
+                raw_data.push_back ( va ( "%d", index++ ) );
 
 
-				if ( formatter )
-				{
+                if ( formatter ) {
 
-					formatter->FormatData( out, raw_data );
+                    formatter->FormatData ( out, raw_data );
 
-				}
+                }
 
-				else
-				{
-					for ( size_t i = 0; i < raw_data.size(); ++i )
-					{
-						if ( i > 0 )
-						{
-							out.Append( "," );
-						}
+                else {
+                    for ( size_t i = 0; i < raw_data.size(); ++i ) {
+                        if ( i > 0 ) {
+                            out.Append ( "," );
+                        }
 
-						out.Append( raw_data[ i ] );
-					}
-				}
+                        out.Append ( raw_data[ i ] );
+                    }
+                }
 
-				Rocket::Core::Factory::InstanceElementText( this, out );
-			}
-		}
-	}
+                Rocket::Core::Factory::InstanceElementText ( this, out );
+            }
+        }
+    }
 
-	virtual void ProcessEvent( Rocket::Core::Event &event )
-	{
-		Element::ProcessEvent( event );
-		if ( event == "mouseover" )
-		{
-			Rocket::Core::Element *parent = event.GetTargetElement();
-			Rocket::Core::Element *button = parent->GetTagName() == "button" ? parent : NULL;
-			while ( ( parent = parent->GetParentNode() ) )
-			{
-				if ( !button && parent->GetTagName() == "button" )
-				{
-					button = parent;
-					continue;
-				}
+    virtual void ProcessEvent ( Rocket::Core::Event &event ) {
+        Element::ProcessEvent ( event );
+        if ( event == "mouseover" ) {
+            Rocket::Core::Element *parent = event.GetTargetElement();
+            Rocket::Core::Element *button = parent->GetTagName() == "button" ? parent : NULL;
+            while ( ( parent = parent->GetParentNode() ) ) {
+                if ( !button && parent->GetTagName() == "button" ) {
+                    button = parent;
+                    continue;
+                }
 
-				if ( parent == this )
-				{
-					Rocket::Core::Dictionary parameters;
-					int i = 0;
+                if ( parent == this ) {
+                    Rocket::Core::Dictionary parameters;
+                    int i = 0;
 
-					for ( i = 1; i < GetNumChildren(); ++i )
-					{
-						if ( GetChild( i ) == button )
-						{
-							parameters.Set( "index", va( "%d", i - 1 ) );
-							parameters.Set( "datasource", data_source->GetDataSourceName() );
-							parameters.Set( "table", data_table );
+                    for ( i = 1; i < GetNumChildren(); ++i ) {
+                        if ( GetChild ( i ) == button ) {
+                            parameters.Set ( "index", va ( "%d", i - 1 ) );
+                            parameters.Set ( "datasource", data_source->GetDataSourceName() );
+                            parameters.Set ( "table", data_table );
 
-							DispatchEvent( "rowselect", parameters );
-							break;
-						}
-					}
+                            DispatchEvent ( "rowselect", parameters );
+                            break;
+                        }
+                    }
 
-					break;
-				}
-			}
-		}
-	}
+                    break;
+                }
+            }
+        }
+    }
 
 protected:
-	void LayoutChildren( void )
-	{
-		dirty_layout = false;
+    void LayoutChildren ( void ) {
+        dirty_layout = false;
 
-		int numChildren = 0;
-		float width, height;
-		Rocket::Core::Element *child;
-		Rocket::Core::Vector2f offset = GetRelativeOffset();
+        int numChildren = 0;
+        float width, height;
+        Rocket::Core::Element *child;
+        Rocket::Core::Vector2f offset = GetRelativeOffset();
 
-		// First child is the cancel button. It should go in the center.
-		child = GetFirstChild();
-		width = child->GetOffsetWidth();
-		height = child->GetOffsetHeight();
-		child->SetProperty( "position", "absolute" );
-		child->SetProperty( "top", va( "%fpx", offset.y + ( dimensions.y / 2 ) - ( height / 2 ) ) );
-		child->SetProperty( "left", va( "%fpx", offset.x + ( dimensions.x / 2 ) - ( width / 2 ) ) );
+        // First child is the cancel button. It should go in the center.
+        child = GetFirstChild();
+        width = child->GetOffsetWidth();
+        height = child->GetOffsetHeight();
+        child->SetProperty ( "position", "absolute" );
+        child->SetProperty ( "top", va ( "%fpx", offset.y + ( dimensions.y / 2 ) - ( height / 2 ) ) );
+        child->SetProperty ( "left", va ( "%fpx", offset.x + ( dimensions.x / 2 ) - ( width / 2 ) ) );
 
-		// No other children
-		if ( ( numChildren = GetNumChildren() ) <= 1 )
-		{
-			return;
-		}
+        // No other children
+        if ( ( numChildren = GetNumChildren() ) <= 1 ) {
+            return;
+        }
 
-		float angle = 360.0f / ( numChildren - 1 );
+        float angle = 360.0f / ( numChildren - 1 );
 
-		// Rest are the circular buttons
-		for ( int i = 1; i < numChildren; ++i )
-		{
-			child = GetChild( i );
-			width = child->GetOffsetWidth();
-			height = child->GetOffsetHeight();
-			float y = sin( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
-			float x = cos( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
+        // Rest are the circular buttons
+        for ( int i = 1; i < numChildren; ++i ) {
+            child = GetChild ( i );
+            width = child->GetOffsetWidth();
+            height = child->GetOffsetHeight();
+            float y = sin ( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
+            float x = cos ( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
 
-			child->SetProperty( "position", "absolute" );
-			child->SetProperty( "left", va( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x ) );
-			child->SetProperty( "top", va( "%fpx", ( dimensions.y / 2 ) - ( height / 2 ) + offset.y + y ) );
-		}
-	}
+            child->SetProperty ( "position", "absolute" );
+            child->SetProperty ( "left", va ( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x ) );
+            child->SetProperty ( "top", va ( "%fpx", ( dimensions.y / 2 ) - ( height / 2 ) + offset.y + y ) );
+        }
+    }
 
 private:
 
-	void AddCancelbutton( void )
-	{
-		init = true;
-		Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );
-		GetFirstChild()->SetClass( "cancelButton", true );
-	}
+    void AddCancelbutton ( void ) {
+        init = true;
+        Rocket::Core::Factory::InstanceElementText ( this, va ( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );
+        GetFirstChild()->SetClass ( "cancelButton", true );
+    }
 
-	bool dirty_query;
-	bool dirty_layout;
-	bool init;
-	float radius;
-	Rocket::Controls::DataFormatter *formatter;
-	Rocket::Controls::DataSource *data_source;
+    bool dirty_query;
+    bool dirty_layout;
+    bool init;
+    float radius;
+    Rocket::Controls::DataFormatter *formatter;
+    Rocket::Controls::DataSource *data_source;
 
-	Rocket::Core::String data_table;
-	Rocket::Core::String csvFields;
-	Rocket::Core::StringList fields;
-	Rocket::Core::Vector2f dimensions;
+    Rocket::Core::String data_table;
+    Rocket::Core::String csvFields;
+    Rocket::Core::StringList fields;
+    Rocket::Core::Vector2f dimensions;
 };
 
 #endif
