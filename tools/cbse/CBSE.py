@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import jinja2
 import yaml
@@ -243,62 +243,73 @@ def topo_sort_components(components):
 
     return sorted_components
 
-def remove_indentation(line, n):
-    for _ in range(n):
-        if line.startswith('    '):
-            line = line[4:]
-        elif line.startswith('\t'):
-            line = line[1:]
-    return line
+# A custom Jinja2 template loader that removes the extra indentation
+# of the template blocks so that the output is correctly indented
+class PreprocessingLoader(jinja2.BaseLoader):
+    def __init__(self, path):
+        self.path = path
 
-blockstart = re.compile('^\s*{%\s*(if|for).*$')
-blockend = re.compile('^\s*{%\s*end(if|for).*$')
+    def get_source(self, environment, template):
+        path = os.path.join(self.path, template)
+        if not os.path.exists(path):
+            raise jinja2.TemplateNotFound(template)
+        mtime = os.path.getmtime(path)
+        with open(path) as f:
+            source = self.preprocess(f.read())
+        return source, path, lambda: mtime == os.path.getmtime(path)
 
-def preprocess(lines):
-    # Remove the trailing newline
-    lines = [line[0:-1] for line in lines]
+    def preprocess(self, source):
+        # Remove the trailing newline
+        lines = source.split("\n")
 
-    # Compute the current indentation level of the template blocks and remove their indentation
-    result = []
-    indentation_level = 0
-    for line in lines:
-        if blockstart.match(line) != None:
-            indentation_level += 1
-        elif blockend.match(line) != None:
-            indentation_level -=1
+        # Compute the current indentation level of the template blocks and remove their indentation
+        result = []
+        indentation_level = 0
+        for line in lines:
+            if self.blockstart.match(line) != None:
+                indentation_level += 1
+            elif self.blockend.match(line) != None:
+                indentation_level -=1
 
-        result.append(remove_indentation(line, indentation_level))
+            result.append(self.remove_indentation(line, indentation_level))
 
-    return '\n'.join(result)
+        return self.my_filter('\n'.join(result))
 
-def my_filter(text):
-    lines = []
-    for line in text.split('\n'):
-        # Remove the "template" comments
-        if line.strip().startswith("//*"):
-            continue
+    def remove_indentation(self, line, n):
+        for _ in range(n):
+            if line.startswith(' '):
+                line = line[4:]
+            elif line.startswith('\t'):
+                line = line[1:]
+        return line
 
-        lines.append(line)
-    return '\n'.join(lines)
+    blockstart = re.compile('^\s*{%-?\s*(if|for).*$')
+    blockend = re.compile('^\s*{%-?\s*end(if|for).*$')
 
-def my_open_read(filename):
-    if filename == "-":
-        return sys.stdin
-    else:
-        return open(filename, "r")
+    #TODO remove the need for my_filter
+    def my_filter(self, text):
+        lines = []
+        for line in text.split('\n'):
+            # Remove the "template" comments
+            if line.strip().startswith("//*"):
+                continue
 
-def my_open_write(filename):
-    if filename == "-":
-        return sys.stdout
-    else:
-        return open(filename, "w")
-
-def render(input_file, output_file, template_params):
-    template_text = preprocess(open(input_file).readlines())
-    template = jinja2.Template(template_text, trim_blocks=True, lstrip_blocks=True) 
-    output_file.write(my_filter(template.render(**template_params)))
+            lines.append(line)
+        return '\n'.join(lines)
 
 if __name__ == '__main__':
+    def my_open_read(filename):
+        if filename == "-":
+            return sys.stdin
+        else:
+            return open(filename, "r")
+
+    def my_open_write(filename):
+        if filename == "-":
+            return sys.stdout
+        else:
+            return open(filename, "w")
+
     parser = argparse.ArgumentParser(
         description="Outputs C++ plumbing code for the gamelogic given a component/entity definition file.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -365,26 +376,30 @@ if __name__ == '__main__':
         'messages': message_list,
         'components': component_list,
         'entities': entity_list,
-        'enumerate': enumerate,
         'files': outfiles,
         'dirs': outdirs
     }
 
     if args.output_dir != None:
+        env = jinja2.Environment(loader=PreprocessingLoader(args.template_dir), trim_blocks=True, lstrip_blocks=True)
+        env.globals["enumerate"] = enumerate
+
+        def render(name, params):
+            return env.get_template(name).render(**params) + "\n"
+
         outdir = args.output_dir + os.path.sep
-        template_dir = args.template_dir + os.path.sep
 
         with open(outdir + outfiles['backend'], "w") as outfile:
-            render(template_dir + infiles['backend'], outfile, template_params)
+            outfile.write(render(infiles['backend'], template_params))
 
         with open(outdir + outfiles['backend_cpp'], "w") as outfile:
-            render(template_dir + infiles['backend_cpp'], outfile, template_params)
+            outfile.write(render(infiles['backend_cpp'], template_params))
 
         with open(outdir + outfiles['entities'], "w") as outfile:
-            render(template_dir + infiles['entities'], outfile, template_params)
+            outfile.write(render(infiles['entities'], template_params))
 
         with open(outdir + outfiles['components'], "w") as outfile:
-            render(template_dir + infiles['components'], outfile, template_params)
+            outfile.write(render(infiles['components'], template_params))
 
         compdir = outdir + outdirs['components'] + os.path.sep
 
@@ -402,7 +417,7 @@ if __name__ == '__main__':
             basename = component.get_type_name() + ".h"
 
             with open(skeldir + basename, "w") as outfile:
-                render(template_dir + infiles['skeleton'], outfile, template_params)
+                outfile.write(render(infiles['skeleton'], template_params))
 
             if args.copy_skel and not os.path.exists(compdir + basename):
                 print("Adding new file " + compdir + basename + ".", file=sys.stderr)
@@ -414,7 +429,7 @@ if __name__ == '__main__':
             basename = component.get_type_name() + ".cpp"
 
             with open(skeldir + basename, "w") as outfile:
-                render(template_dir + infiles['skeleton_cpp'], outfile, template_params)
+                outfile.write(render(infiles['skeleton_cpp'], template_params))
 
             if args.copy_skel and not os.path.exists(compdir + basename):
                 print("Adding new file " + compdir + basename + ".", file=sys.stderr)
