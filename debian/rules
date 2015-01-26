@@ -29,7 +29,8 @@ override_dh_auto_configure:
 		 -DBUILD_GAME_NACL=OFF \
 		 -DBUILD_GAME_NACL_NATIVE_DLL=OFF \
 		 -DUSE_SDL2=${SDL2} \
-		 -DBUILD_TTY_CLIENT=OFF
+		 -DBUILD_TTY_CLIENT=OFF \
+		 -DNACL_RUNTIME_PATH=/usr/lib/nacl
 
 override_dh_auto_install:
 

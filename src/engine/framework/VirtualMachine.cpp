@@ -169,7 +169,7 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 		close(pipefds[0]);
 
 		// Explicitly destroy the local socket, since destructors are not called
-		pair.first.Close();
+		close(pair.first.GetHandle());
 
 		// This seems to be required, otherwise killing the child process will
 		// also kill the parent process.
@@ -217,8 +217,12 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 }
 
 std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, int debugLoader) {
-	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
+#ifdef NACL_RUNTIME_PATH
+	const char* naclPath = XSTRING(NACL_RUNTIME_PATH);
+#else
+	const std::string& naclPath = libPath;
+#endif
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
 	std::string module, sel_ldr, irt, bootstrap, modulePath, verbosity;
@@ -238,6 +242,8 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 	if (extract) {
 		try {
 			FS::File out = FS::HomePath::OpenWrite(module);
+			if (const FS::LoadedPakInfo* pak = FS::PakPath::LocateFile(module))
+				Com_Printf("Extracting VM module %s from %s...\n", module.c_str(), pak->path.c_str());
 			FS::PakPath::CopyFile(module, out);
 			out.Close();
 		} catch (std::system_error& err) {
@@ -247,13 +253,12 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 	} else
 		modulePath = FS::Path::Build(libPath, module);
 
+	// Generate command line
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
-	irt = FS::Path::Build(libPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
-
-	sel_ldr = FS::Path::Build(libPath, win32Force64Bit ? "sel_ldr64" EXE_EXT : "sel_ldr" EXE_EXT);
-
+	irt = FS::Path::Build(naclPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
+	sel_ldr = FS::Path::Build(naclPath, win32Force64Bit ? "sel_ldr64" EXE_EXT : "sel_ldr" EXE_EXT);
 #ifdef __linux__
-	bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
+	bootstrap = FS::Path::Build(naclPath, "nacl_helper_bootstrap");
 	args.push_back(bootstrap.c_str());
 	args.push_back(sel_ldr.c_str());
 	args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");
