@@ -399,7 +399,7 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 {
 #ifdef __APPLE__
 	// Ignore the -psn parameter added by OSX
-	if (!strncmp(argv[argc - 1], "-psn", 4)
+	if (!strncmp(argv[argc - 1], "-psn", 4))
 		argc--;
 #endif
 
