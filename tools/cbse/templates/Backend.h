@@ -18,6 +18,12 @@
 
 #include <set>
 
+#define ONLY_MESSAGE_COMPONENT_DECLARATION
+{% for component in components -%}
+	#include "{{dirs['components']}}/{{component.get_type_name()}}.h"
+{% endfor %}
+#undef ONLY_MESSAGE_COMPONENT_DECLARATION
+
 // /////////// //
 // Message IDs //
 // /////////// //

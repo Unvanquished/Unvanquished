@@ -7,7 +7,6 @@ This file contains:
 	- Implementations of the specific entities, including necessary helpers.
 */
 
-#include "{{files['backend']}}"
 #include "{{files['entities']}}"
 #include <tuple>
 
