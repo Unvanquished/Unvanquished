@@ -539,6 +539,18 @@ void       FS_Rename( const char *from, const char *to );
 /*
 ==============================================================
 
+INPUT
+
+==============================================================
+*/
+
+void IN_Frame();
+void IN_FrameEnd();
+bool IN_IsNumLockDown();
+
+/*
+==============================================================
+
 DOWNLOAD
 
 ==============================================================
@@ -745,7 +757,7 @@ double Sys_DoubleTime( void );
 
 // commandLine should not include the executable name (argv[0])
 void   Com_Init( char *commandLine );
-void   Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) );
+void   Com_Frame();
 void   Com_Shutdown();
 
 /*

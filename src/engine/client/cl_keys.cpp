@@ -1776,7 +1776,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		case K_KP_INS:
 		case K_KP_DEL:
 		case K_KP_HOME:
-			if ( Sys_IsNumLockDown() )
+			if ( IN_IsNumLockDown() )
 			{
 				onlybinds = qtrue;
 			}

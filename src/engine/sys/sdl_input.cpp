@@ -1531,6 +1531,15 @@ static void IN_ProcessEvents( qboolean dropInput )
 
 /*
 ===============
+IN_IsNumLockDown
+===============
+*/
+
+bool IN_IsNumLockDown() {
+    return SDL_GetModState() & KMOD_NUM;
+}
+/*
+===============
 IN_Frame
 ===============
 */

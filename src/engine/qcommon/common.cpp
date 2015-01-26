@@ -1921,7 +1921,7 @@ static Cvar::Cvar<std::string> watchdogCmd("common.watchdogCmd", "the command tr
 
 static Cvar::Cvar<bool> showTraceStats("common.showTraceStats", "are physics traces stats printed each frame", Cvar::CHEAT, false);
 
-void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
+void Com_Frame()
 {
 	int             msec, minMsec;
 	static int      lastTime = 0;
@@ -2001,19 +2001,19 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 
 	msec = com_frameTime - lastTime;
 
-	GetInput(); // must be called at least once
+	IN_Frame(); // must be called at least once
 
 	while ( msec < minMsec )
 	{
 		//give cycles back to the OS
 		Sys_Sleep( std::min( minMsec - msec, 50 ) );
-		GetInput();
+		IN_Frame();
 
 		com_frameTime = Com_EventLoop();
 		msec = com_frameTime - lastTime;
 	}
 
-	DoneInput();
+	IN_FrameEnd();
 
 	Cmd::ExecuteCommandBuffer();
 

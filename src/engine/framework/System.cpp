@@ -651,7 +651,7 @@ ALIGN_STACK int main(int argc, char** argv)
 	try {
 		while (true) {
 			try {
-				Com_Frame(IN_Frame, IN_FrameEnd);
+				Com_Frame();
 			} catch (Sys::DropErr& err) {
 				Log::Error(err.what());
 				FS::PakPath::ClearPaks();

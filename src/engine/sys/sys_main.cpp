@@ -562,6 +562,6 @@ int ALIGN_STACK mainx( int argc, char **argv )
 
 	while ( 1 )
 	{
-		Com_Frame( IN_Frame, IN_FrameEnd );
+		Com_Frame();
 	}
 }
