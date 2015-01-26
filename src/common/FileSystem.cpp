@@ -943,6 +943,17 @@ namespace PakPath {
 // List of loaded pak files
 static std::vector<LoadedPakInfo> loadedPaks;
 
+// Guard object to ensure that the fds in loadedPaks are closed on shutdown
+struct LoadedPakGuard {
+	~LoadedPakGuard() {
+		for (LoadedPakInfo& x: loadedPaks) {
+			if (x.fd != -1)
+				close(x.fd);
+		}
+	}
+};
+static LoadedPakGuard loadedPaksGuard;
+
 // Map of filenames to pak files. The size_t is an offset into loadedPaks and
 // the offset_t is the position within the zip archive (unused for PAK_DIR).
 static std::unordered_map<std::string, std::pair<uint32_t, offset_t>> fileMap;
