@@ -68,6 +68,108 @@ static struct termios TTY_tc;
 static Console::Field TTY_field(INT_MAX);
 
 /*
+=================
+CON_AnsiColorPrint
+
+Transform Q3 colour codes to ANSI escape sequences
+=================
+*/
+static void CON_AnsiColorPrint( const char *msg )
+{
+	static char buffer[ MAXPRINTMSG ];
+	int         length = 0;
+
+	// Approximations of g_color_table (q_math.c)
+#define A_BOLD 16
+#define A_DIM  32
+	static const char colour16map[2][32] = {
+		{ // Variant 1 (xterm)
+			0 | A_BOLD, 1,          2,          3,
+			4,          6,          5,          7,
+			3 | A_DIM,  7 | A_DIM,  7 | A_DIM,  7 | A_DIM,
+			2 | A_DIM,  3 | A_DIM,  4 | A_DIM,  1 | A_DIM,
+			3 | A_DIM,  3 | A_DIM,  6 | A_DIM,  5 | A_DIM,
+			6 | A_DIM,  5 | A_DIM,  6 | A_DIM,  2 | A_BOLD,
+			2 | A_DIM,  1,          1 | A_DIM,  3 | A_DIM,
+			3 | A_DIM,  2 | A_DIM,  5,          3 | A_BOLD
+		},
+		{ // Variant 1 (vte)
+			0 | A_BOLD, 1,          2,          3 | A_BOLD,
+			4,          6,          5,          7,
+			3        ,  7 | A_DIM,  7 | A_DIM,  7 | A_DIM,
+			2 | A_DIM,  3,          4 | A_DIM,  1 | A_DIM,
+			3 | A_DIM,  3 | A_DIM,  6 | A_DIM,  5 | A_DIM,
+			6 | A_DIM,  5 | A_DIM,  6 | A_DIM,  2 | A_BOLD,
+			2 | A_DIM,  1,          1 | A_DIM,  3 | A_DIM,
+			3 | A_DIM,  2 | A_DIM,  5,          3 | A_BOLD
+		}
+	};
+	static const char modifier[][4] = { "", ";1", ";2", "" };
+
+	int index = abs( com_ansiColor->integer ) - 1;
+
+	if ( index >= ARRAY_LEN( colour16map ) )
+	{
+		index = 0;
+	}
+
+	while ( *msg )
+	{
+		if ( Q_IsColorString( msg ) || *msg == '\n' )
+		{
+			// First empty the buffer
+			if ( length > 0 )
+			{
+				buffer[ length ] = '\0';
+				fputs( buffer, stderr );
+				length = 0;
+			}
+
+			if ( *msg == '\n' )
+			{
+				// Issue a reset and then the newline
+				fputs( "\033[0;40;37m\n", stderr );
+				msg++;
+			}
+			else
+			{
+				// Print the color code
+				int colour = colour16map[ index ][ ( msg[ 1 ] - '0' ) & 31 ];
+
+				Com_sprintf( buffer, sizeof( buffer ), "\033[%s%d%sm",
+				             (colour & 0x30) == 0 ? "0;" : "",
+				             30 + ( colour & 15 ), modifier[ ( colour / 16 ) & 3 ] );
+				fputs( buffer, stderr );
+				msg += 2;
+			}
+		}
+		else
+		{
+			if ( length >= MAXPRINTMSG - 1 )
+			{
+				break;
+			}
+
+			if ( *msg == Q_COLOR_ESCAPE && msg[1] == Q_COLOR_ESCAPE )
+			{
+				++msg;
+			}
+
+			buffer[ length ] = *msg;
+			length++;
+			msg++;
+		}
+	}
+
+	// Empty anything still left in the buffer
+	if ( length > 0 )
+	{
+		buffer[ length ] = '\0';
+		fputs( buffer, stderr );
+	}
+}
+
+/*
 ==================
 CON_FlushIn
 
@@ -405,7 +507,7 @@ void CON_Print_TTY( const char *msg )
 
 	if ( com_ansiColor && com_ansiColor->integer )
 	{
-		Sys_AnsiColorPrint( msg );
+		CON_AnsiColorPrint( msg );
 	}
 	else
 	{

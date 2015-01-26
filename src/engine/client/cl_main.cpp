@@ -52,6 +52,9 @@ cvar_t *cl_wavefilerecord;
 #ifndef _WIN32
 #include <sys/stat.h>
 #endif
+#ifdef BUILD_CLIENT
+#include <SDL.h>
+#endif
 
 cvar_t *cl_useMumble;
 cvar_t *cl_mumbleScale;
@@ -5202,8 +5205,9 @@ CL_GetClipboardData
 */
 void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 {
+#ifdef BUILD_CLIENT
 	int         i, j;
-	char       *cbd = Sys_GetClipboardData( clip );
+	char       *cbd = SDL_GetClipboardText();
 	const char *clean;
 
 	if ( !cbd )
@@ -5213,7 +5217,7 @@ void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 	}
 
 	clean = Com_ClearForeignCharacters( cbd ); // yes, I know
-	Z_Free( cbd );
+	SDL_free( cbd );
 
 	i = j = 0;
 	while ( clean[ i ] )
@@ -5248,4 +5252,7 @@ void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 	}
 
 	buf[ j ] = '\0';
+#else
+	buf[ 0 ] = '\0';
+#endif
 }

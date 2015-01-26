@@ -681,7 +681,6 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/net_ip.cpp
   ${ENGINE_DIR}/qcommon/parse.cpp
   ${ENGINE_DIR}/qcommon/translation.cpp
-  ${ENGINE_DIR}/sys/sys_main.cpp
   ${ENGINE_DIR}/sys/con_log.cpp
   ${ENGINE_DIR}/qcommon/qcommon.h
   ${ENGINE_DIR}/qcommon/surfaceflags.h
@@ -690,13 +689,10 @@ set( ENGINELIST
 
 if( WIN32 )
   set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_win32.cpp
-    ${ENGINE_DIR}/sys/sys_win32.h
     ${ENGINE_DIR}/sys/con_passive.cpp
   )
 else()
   set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_unix.cpp
     ${ENGINE_DIR}/sys/con_tty.cpp
   )
 endif()

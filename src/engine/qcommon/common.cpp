@@ -2211,3 +2211,9 @@ qboolean Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int client
 	return qfalse;
 }
 
+
+int Sys_Milliseconds( void )
+{
+	static Sys::SteadyClock::time_point baseTime = Sys::SteadyClock::now();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(Sys::SteadyClock::now() - baseTime).count();
+}
