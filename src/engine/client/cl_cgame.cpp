@@ -298,7 +298,6 @@ CL_GetSnapshot
 qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 {
 	clSnapshot_t *clSnap;
-	int          i, count;
 
 	if ( snapshotNumber > cl.snap.messageNum )
 	{
@@ -334,7 +333,7 @@ qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 	snapshot->ps = clSnap->ps;
 
 	snapshot->entities.reserve(clSnap->numEntities);
-	for (i = 0; i < count; i++) {
+	for (int i = 0; i < clSnap->numEntities; i++) {
 		snapshot->entities.push_back(cl.parseEntities[( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ]);
 	}
 
