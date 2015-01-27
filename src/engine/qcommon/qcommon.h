@@ -544,10 +544,13 @@ INPUT
 ==============================================================
 */
 
+void IN_Init(void *windowData);
 void IN_Frame();
 void IN_FrameEnd();
 void IN_Restart();
+void IN_Shutdown();
 bool IN_IsNumLockDown();
+void IN_DropInputsForFrame();
 
 /*
 ==============================================================
@@ -611,26 +614,6 @@ MISC
 
 ==============================================================
 */
-
-// returned by Sys_GetProcessorFeatures
-typedef enum
-{
-  CF_RDTSC = BIT( 0 ),
-  CF_MMX = BIT( 1 ),
-  CF_MMX_EXT = BIT( 2 ),
-  CF_3DNOW = BIT( 3 ),
-  CF_3DNOW_EXT = BIT( 4 ),
-  CF_SSE = BIT( 5 ),
-  CF_SSE2 = BIT( 6 ),
-  CF_SSE3 = BIT( 7 ),
-  CF_SSSE3 = BIT( 8 ),
-  CF_SSE4_1 = BIT( 9 ),
-  CF_SSE4_2 = BIT( 10 ),
-  CF_ALTIVEC = BIT( 11 ),
-  CF_HasHTT = BIT( 12 ),
-  CF_HasSerial = BIT( 13 ),
-  CF_Is64Bit = BIT( 14 )
-} cpuFeatures_t;
 
 // TTimo
 // centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
@@ -770,8 +753,6 @@ void   Hunk_Log( void );
 
 void   Com_TouchMemory( void );
 
-double Sys_DoubleTime( void );
-
 // commandLine should not include the executable name (argv[0])
 void   Com_Init( char *commandLine );
 void   Com_Frame();
@@ -903,92 +884,29 @@ typedef struct
 void       Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
 int        Com_EventLoop( void );
 
-void       Sys_Init( void );
-qboolean   Sys_IsNumLockDown( void );
+void Sys_SendPacket(int length, const void *data, netadr_t to);
+qboolean Sys_GetPacket(netadr_t *net_from, msg_t *net_message);
 
-void           *QDECL Sys_LoadDll( const char *name, intptr_t ( QDECL  * *entryPoint )( int, ... ),
-                                   intptr_t ( QDECL *systemcalls )( intptr_t, ... ) );
+qboolean Sys_StringToAdr(const char *s, netadr_t *a, netadrtype_t family);
 
-void                  Sys_UnloadDll( void *dllHandle );
+qboolean Sys_IsLANAddress(netadr_t adr);
+void Sys_ShowIP();
 
-void                  *Sys_LoadFunction( void *dllHandle, const char *functionName );
+int Sys_Milliseconds( void );
 
-const char            *Sys_GetCurrentUser( void );
-int                   Sys_GetPID( void );
-
-void QDECL NORETURN   Sys_Error( const char *error, ... ) PRINTF_LIKE(1);
-void NORETURN         Sys_Quit( void );
-char                  *Sys_GetClipboardData( clipboard_t clip );  // note that this isn't journaled...
-
-void                  Sys_Print( const char *msg );
-
-// Sys_Milliseconds should only be used for profiling purposes,
-// any game related timing information should come from event timestamps
-int           Sys_Milliseconds( void );
-
-qboolean      Sys_RandomBytes( byte *string, int len );
-
-// the system console is shown when a dedicated server is running
-void          Sys_DisplaySystemConsole( qboolean show );
-
-int           Sys_GetProcessorFeatures( void );
-
-void          Sys_SetErrorText( const char *text );
-
-void          Sys_SendPacket( int length, const void *data, netadr_t to );
-qboolean      Sys_GetPacket( netadr_t *net_from, msg_t *net_message );
-
-qboolean      Sys_StringToAdr( const char *s, netadr_t *a, netadrtype_t family );
-
-//Does NOT parse port numbers, only base addresses.
-
-qboolean Sys_IsLANAddress( netadr_t adr );
-void     Sys_ShowIP( void );
-
-FILE     *Sys_FOpen( const char *ospath, const char *mode );
-qboolean Sys_Mkdir( const char *path );
-FILE     *Sys_Mkfifo( const char *ospath );
-char     *Sys_Cwd( void );
-char     *Sys_DefaultBasePath( void );
-
-void     Sys_FChmod( FILE *f, int mode );
-void     Sys_Chmod( const char *ospath, int mode );
-
-#ifdef MACOS_X
-char     *Sys_DefaultAppPath( void );
-#endif
-
-char *Sys_DefaultLibPath( void );
-
-char         *Sys_DefaultHomePath( void );
-char         *Sys_Dirname( char *path );
-char         *Sys_Basename( char *path );
+// Curses Console
+void         CON_Shutdown( void );
+void         CON_Init( void );
+void         CON_Init_TTY( void );
 char         *CON_Input( void );
-unsigned int CON_LogWrite(const char* text);
-void CON_Print(const char* text);
+void         CON_Print( const char *message );
 
-void         Sys_Sleep( int msec );
+void         CON_LogDump( void );
 
-typedef enum
-{
-  DR_YES = 0,
-  DR_NO = 1,
-  DR_OK = 0,
-  DR_CANCEL = 1
-} dialogResult_t;
-
-typedef enum
-{
-  DT_INFO,
-  DT_WARNING,
-  DT_ERROR,
-  DT_YES_NO,
-  DT_OK_CANCEL
-} dialogType_t;
-
-dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title );
-
-void           Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
+// Console - other
+unsigned int CON_LogSize( void );
+unsigned int CON_LogWrite( const char *in );
+unsigned int CON_LogRead( char *out, unsigned int outSize );
 
 /* This is based on the Adaptive Huffman algorithm described in Sayood's Data
  * Compression book.  The ranks are not actually stored, but implicitly defined

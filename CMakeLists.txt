@@ -768,7 +768,6 @@ set( DEDSERVERLIST
 
 set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.cpp
-  ${ENGINE_DIR}/sys/sys_local.h
 )
 
 set( GAMESHAREDLIST

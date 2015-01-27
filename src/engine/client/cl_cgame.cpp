@@ -35,7 +35,6 @@ Maryland 20850 USA.
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
-#include "../sys/sys_local.h"
 
 #include "libmumblelink.h"
 #include "../qcommon/crypto.h"
