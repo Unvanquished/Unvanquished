@@ -676,44 +676,6 @@ void Com_Meminfo_f( void )
 }
 
 /*
-===============
-Com_TouchMemory
-
-Touch all known used data to make sure it is paged in
-===============
-*/
-void Com_TouchMemory( void )
-{
-	int        start, end;
-	int        i, j;
-	int        sum;
-	start = Sys_Milliseconds();
-
-	sum = 0;
-
-	j = hunk_low.permanent >> 2;
-
-	for ( i = 0; i < j; i += 64 )
-	{
-		// only need to touch each page
-		sum += ( ( int * ) s_hunkData ) [ i ];
-	}
-
-	i = ( s_hunkTotal - hunk_high.permanent ) >> 2;
-	j = hunk_high.permanent >> 2;
-
-	for ( ; i < j; i += 64 )
-	{
-		// only need to touch each page
-		sum += ( ( int * ) s_hunkData ) [ i ];
-	}
-
-	end = Sys_Milliseconds();
-
-	Com_DPrintf( "Com_TouchMemory: %i msec\n", end - start );
-}
-
-/*
 =================
 Com_Allocate_Aligned
 

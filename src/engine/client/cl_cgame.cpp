@@ -1026,9 +1026,6 @@ void CL_InitCGame( void )
 	// on the card even if the driver does deferred loading
 	re.EndRegistration();
 
-	// make sure everything is paged in
-	Com_TouchMemory();
-
 	// Ridah, update the memory usage file
 	CL_UpdateLevelHunkUsage();
 
