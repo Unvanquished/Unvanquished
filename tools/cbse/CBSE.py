@@ -206,6 +206,8 @@ def load_components(definitions):
             kwargs['requires'] = []
         if not 'inherits' in kwargs:
             kwargs['inherits'] = {}
+        else:
+            raise Exception("inherits not handled for now")
         components[name] = Component(name, **kwargs)
     return components
 
