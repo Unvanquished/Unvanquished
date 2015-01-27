@@ -170,7 +170,7 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 	va_end( argptr );
 }
 
-void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location )
+void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *)
 {
 	switch (event->level)
 	{
@@ -257,7 +257,7 @@ do the appropriate things.
 =============
 */
 // *INDENT-OFF*
-void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
+void QDECL PRINTF_LIKE(2) Com_Error( int code, const char *fmt, ... )
 {
 	char buf[ 4096 ];
 	va_list argptr;
@@ -1277,7 +1277,7 @@ sysEvent_t Com_GetEvent( void )
 	}
 
 	// check for console commands
-	s = Sys_ConsoleInput();
+	s = CON_Input();
 
 	if ( s )
 	{
@@ -1542,7 +1542,7 @@ Just throw a fatal error to
 test error shutdown procedures
 =============
 */
-static void NORETURN Com_Error_f( void )
+static void Com_Error_f( void )
 {
 	if ( Cmd_Argc() > 1 )
 	{
@@ -1623,6 +1623,11 @@ void Com_SetRecommended( void )
 		Cmd::BufferCommandText("preset preset_fastest.cfg");
 		Cvar_Set( "com_recommended", "3" );
 	}
+}
+
+void Com_In_Restart_f( void )
+{
+	IN_Restart();
 }
 
 /*
@@ -1713,7 +1718,7 @@ void Com_Init( char *commandLine )
 	s = va( "%s %s %s %s", Q3_VERSION, PLATFORM_STRING, ARCH_STRING, __DATE__ );
 	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
 
-	Sys_Init();
+	Cmd_AddCommand( "in_restart", Com_In_Restart_f );
 
 	// Pick a qport value that is nice and random.
 	// As machines get faster, Com_Milliseconds() can't be used
@@ -2006,7 +2011,7 @@ void Com_Frame()
 	while ( msec < minMsec )
 	{
 		//give cycles back to the OS
-		Sys_Sleep( std::min( minMsec - msec, 50 ) );
+		Sys::SleepFor(std::chrono::milliseconds(std::min(minMsec - msec, 50)));
 		IN_Frame();
 
 		com_frameTime = Com_EventLoop();
@@ -2161,18 +2166,25 @@ fills string array with len radom bytes, peferably from the OS randomizer
 */
 void Com_RandomBytes( byte *string, int len )
 {
-	int i;
+	static std::random_device rd;
+	static std::mt19937 prng(rd());
+	static std::uniform_int_distribution<uint32_t> dist;
 
-	if ( Sys_RandomBytes( string, len ) )
-	{
+	while (len >= 4) {
+		*(uint32_t*)string = dist(prng);
+		string += 4;
+		len -= 4;
+	}
+
+	if (len == 0) {
 		return;
 	}
 
-	Com_Printf( "Com_RandomBytes: using weak randomization\n" );
-
-	for ( i = 0; i < len; i++ )
-	{
-		string[ i ] = ( unsigned char )( rand() % 255 );
+	uint32_t remainder = dist(prng);
+	while (len-->0) {
+		*string = uint8_t(remainder & 0xFF);
+		remainder >>= 8;
+		string ++;
 	}
 }
 

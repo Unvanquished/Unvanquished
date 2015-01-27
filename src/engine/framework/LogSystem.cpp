@@ -86,8 +86,10 @@ namespace Log {
 
             virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
                 for (Log::Event event : events)  {
-                    Sys_Print(event.text.c_str());
-                    Sys_Print("\n");
+                    CON_LogWrite(event.text.c_str());
+                    CON_Print(event.text.c_str());
+                    CON_LogWrite("\n");
+                    CON_Print("\n");
                 }
                 return true;
             }

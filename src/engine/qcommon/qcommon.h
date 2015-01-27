@@ -546,6 +546,7 @@ INPUT
 
 void IN_Frame();
 void IN_FrameEnd();
+void IN_Restart();
 bool IN_IsNumLockDown();
 
 /*
@@ -556,7 +557,23 @@ DOWNLOAD
 ==============================================================
 */
 
-#include "dl_public.h"
+typedef enum
+{
+  DL_CONTINUE,
+  DL_DONE,
+  DL_FAILED
+} dlStatus_t;
+
+int        DL_BeginDownload( const char *localName, const char *remoteName, int debug );
+dlStatus_t DL_DownloadLoop( void );
+
+void       DL_Shutdown( void );
+
+// bitmask
+typedef enum
+{
+  DL_FLAG_DISCON = 0
+} dlFlags_t;
 
 /*
 ==============================================================
@@ -946,7 +963,9 @@ char *Sys_DefaultLibPath( void );
 char         *Sys_DefaultHomePath( void );
 char         *Sys_Dirname( char *path );
 char         *Sys_Basename( char *path );
-char         *Sys_ConsoleInput( void );
+char         *CON_Input( void );
+unsigned int CON_LogWrite(const char* text);
+void CON_Print(const char* text);
 
 void         Sys_Sleep( int msec );
 

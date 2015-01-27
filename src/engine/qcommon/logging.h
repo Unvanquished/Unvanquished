@@ -100,7 +100,7 @@ typedef enum
 } errorParm_t;
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void QDECL NORETURN Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2);
+void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2);
 void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
 

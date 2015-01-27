@@ -44,7 +44,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef INLINE
 #undef DLLEXPORT
 #undef NORETURN
-#undef NORETURN_PTR
 #include "../libs/nacl/native_client/src/shared/imc/nacl_imc_c.h"
 #include "../libs/nacl/native_client/src/public/imc_types.h"
 #include "../libs/nacl/native_client/src/trusted/service_runtime/nacl_config.h"
