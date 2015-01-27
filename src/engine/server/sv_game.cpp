@@ -491,7 +491,7 @@ void GameVM::GameStaticInit()
 
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 {
-	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart, Com_AreCheatsAllowed());
+	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart, Com_AreCheatsAllowed(), Com_IsClient());
 }
 
 void GameVM::GameShutdown(qboolean restart)

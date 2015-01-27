@@ -683,7 +683,7 @@ static void Svcmd_G_AdvanceMapRotation_f( void )
 static const struct svcmd
 {
 	const char *cmd;
-	qboolean dedicated;
+	qboolean conflicts; //With a command registered by cgame
 	void ( *function )( void );
 } svcmds[] =
 {
@@ -740,15 +740,15 @@ qboolean  ConsoleCommand( void )
 			return qtrue;
 		}
 
-		if ( g_dedicated.integer )
+		if ( level.inClient )
 		{
-			G_Printf( "unknown command: %s\n", cmd );
+			G_Printf( "unknown command server console command: %s\n", cmd );
 		}
 
 		return qfalse;
 	}
 
-	if ( command->dedicated && !g_dedicated.integer )
+	if ( command->conflicts && level.inClient )
 	{
 		return qfalse;
 	}
@@ -763,7 +763,7 @@ void G_RegisterCommands( void )
 
 	for ( i = 0; i < ARRAY_LEN( svcmds ); i++ )
 	{
-		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
+		if ( svcmds[ i ].conflicts && level.inClient )
 		{
 			continue;
 		}
@@ -780,7 +780,7 @@ void G_UnregisterCommands( void )
 
 	for ( i = 0; i < ARRAY_LEN( svcmds ); i++ )
 	{
-		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
+		if ( svcmds[ i ].conflicts && level.inClient )
 		{
 			continue;
 		}

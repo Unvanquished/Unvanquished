@@ -61,7 +61,6 @@ vmCvar_t           g_password;
 vmCvar_t           g_needpass;
 vmCvar_t           g_maxclients;
 vmCvar_t           g_maxGameClients;
-vmCvar_t           g_dedicated;
 vmCvar_t           g_speed;
 vmCvar_t           g_gravity;
 vmCvar_t           g_cheats;
@@ -251,7 +250,6 @@ static cvarTable_t gameCvarTable[] =
 	{ NULL,                           "B",                             "",                                 CVAR_SERVERINFO,                                 0, qfalse           },
 	{ NULL,                           "g_mapStartupMessage",           "",                                 0,                                               0, qfalse           },
 	{ NULL,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, qfalse           },
-	{ &g_dedicated,                   "dedicated",                     "0",                                0,                                               0, qfalse           },
 	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, qfalse           },
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, qfalse           },
 	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                0,                                               0, qfalse           },
@@ -702,7 +700,7 @@ G_InitGame
 
 ============
 */
-void G_InitGame( int levelTime, int randomSeed, int restart )
+void G_InitGame( int levelTime, int randomSeed, int restart, bool inClient )
 {
 	int i;
 
@@ -719,6 +717,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
 	level.time = levelTime;
+	level.inClient = inClient;
 	level.startTime = levelTime;
 	level.snd_fry = G_SoundIndex( "sound/misc/fry.wav" );  // FIXME standing in lava / slime
 
@@ -1867,7 +1866,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	Q_vsnprintf( string + 7, sizeof( string ) - 7, fmt, argptr );
 	va_end( argptr );
 
-	if ( g_dedicated.integer )
+	if ( !level.inClient )
 	{
 		G_UnEscapeString( string, decolored, sizeof( decolored ) );
 		G_Printf( "%s", decolored + 7 );
