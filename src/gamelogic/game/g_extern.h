@@ -41,7 +41,6 @@ extern gclient_t *g_clients;
 // cvars
 // -----
 
-extern  vmCvar_t g_dedicated;
 extern  vmCvar_t g_cheats;
 extern  vmCvar_t g_maxclients;
 extern  vmCvar_t g_maxGameClients;
