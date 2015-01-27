@@ -210,7 +210,7 @@ typedef struct
 	void ( QDECL *Printf )( int printLevel, const char *fmt, ... ) PRINTF_LIKE(2);
 
 	// abort the game
-	void ( QDECL *Error )( int errorLevel, const char *fmt, ... ) PRINTF_LIKE(2);
+	void ( QDECL *Error )( int errorLevel, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN_PTR;
 
 	// milliseconds should only be used for profiling, never
 	// for anything game related.  Get time from the refdef

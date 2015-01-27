@@ -75,11 +75,7 @@ public:
 	DropErr(const std::string& message)
 		: std::runtime_error(message) {}
 };
-
-#ifdef BUILD_VM
-NORETURN
-#endif
-void Drop(Str::StringRef errorMessage);
+NORETURN void Drop(Str::StringRef errorMessage);
 
 // Variadic wrappers for Error and Drop
 template<typename ... Args> void Error(Str::StringRef format, Args&& ... args)
