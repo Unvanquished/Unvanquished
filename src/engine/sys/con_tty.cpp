@@ -127,7 +127,7 @@ static void CON_AnsiColorPrint( const char *msg )
 			if ( *msg == '\n' )
 			{
 				// Issue a reset and then the newline
-				fputs( "\033[0;40;37m\n", stderr );
+				fputs( "\033[0;49;37m\n", stderr );
 				msg++;
 			}
 			else
