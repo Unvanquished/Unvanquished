@@ -471,6 +471,13 @@ void VMBase::Free()
 		// Closing the job object should kill the child process
 		CloseHandle(processHandle);
 #else
+		int status;
+		if (waitpid(processHandle, &status, WNOHANG) != 0) {
+			if (WIFSIGNALED(status))
+				Log::Warn("VM exited with signal %d: %s\n", WTERMSIG(status), strsignal(WTERMSIG(status)));
+			else if (WIFEXITED(status))
+				Log::Warn("VM exited with non-zero exit code %d\n", WEXITSTATUS(status));
+		}
 		kill(processHandle, SIGKILL);
 		waitpid(processHandle, NULL, 0);
 #endif
