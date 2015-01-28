@@ -118,21 +118,21 @@ bool Entity::SendMessage(int msg, const void* data) {
 	};
 
 	// {{entity.get_type_name()}}'s constructor.
-	{{entity.get_type_name()}}::{{entity.get_type_name()}}(
-		{%- for (i, attrib) in enumerate(general.common_entity_attributes) -%}
-			{%- if i != 0 -%}
-				,
-			{%- endif -%}
-			{{attrib.get_declaration()}}
-		{%- endfor -%})
+	{% set user_params = entity.get_user_params() %}
+	{{entity.get_type_name()}}::{{entity.get_type_name()}}(Params params)
 		: Entity(messageHandlers, componentOffsets
-		{%- for attrib in general.common_entity_attributes -%}
-			, {{attrib.get_name()}}
-		{%- endfor -%})
+			{%- for attrib in general.common_entity_attributes -%}
+				, params.{{attrib.get_name()}}
+			{%- endfor -%}
+		)
 		{%- for component in entity.get_components() -%}
 			, {{component.get_variable_name()}}(*this
 			{%- for param in component.get_param_names() -%}
-				, {{entity.get_params()[component.name][param]}}
+				{%- if param in user_params[component.get_name()] -%}
+					, params.{{component.get_name()}}_{{param}}
+				{%- else-%}
+					, {{entity.get_params()[component.name][param]}}
+				{%- endif -%}
 			{%- endfor -%}
 			{%- for required in component.get_required_components() -%}
 				, *{{required.get_variable_name()}}

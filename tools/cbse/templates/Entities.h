@@ -18,15 +18,21 @@
 			static const int componentOffsets[];
 
 		public:
+			{% set user_params = entity.get_user_params() %}
+			struct Params {
+				{% for attrib in general.common_entity_attributes %}
+					{{attrib.get_declaration()}};
+				{% endfor %}
+				{% for component in entity.get_components() %}
+					{% for param_name in user_params[component.name] %}
+						{% set param = user_params[component.name][param_name] %}
+						{{param.typ}} {{component.get_name()}}_{{param.name}};
+					{% endfor %}
+				{% endfor %}
+			};
+
 			//* Default constructor
-			{{entity.get_type_name()}}(
-				{%- for (i, attrib) in enumerate(general.common_entity_attributes) -%}
-					{%- if i != 0 -%}
-						,
-					{%- endif -%}
-					{{attrib.get_declaration()}}
-				{%- endfor -%}
-			);
+			{{entity.get_type_name()}}(Params params);
 			virtual ~{{entity.get_type_name()}}();
 
 			//* The components
