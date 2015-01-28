@@ -22,23 +22,26 @@ components:
         parameters:
             maxHealth: int
             startHealth: int
+            stuffWithDefault: int
         messages:
             - Heal
             - Damage
+        defaults:
+            stuffWithDefault: 42
     MonsterDie:
         messages:
             - Die
     Comp1:
         requires:
             - Comp2
-        inherits:
-            - Comp3
+        #inherits:
+        #    - Comp3
         messages:
             - Foo1
             - Foo2
-    Comp4:
-        inherits:
-            - Comp3
+    #Comp4:
+        #inherits:
+        #    - Comp3
     Comp2:
         messages:
             - Foo3

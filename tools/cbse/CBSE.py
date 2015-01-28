@@ -65,11 +65,23 @@ class Message:
     def __repr__(self):
         return 'Message({}, {})'.format(self.name, self.args)
 
+Parameter = namedtuple('Parameter', ['name', 'typ', 'default'])
+
 class Component:
-    def __init__(self, name, parameters=None, messages=None, requires=None, inherits=None):
+    def __init__(self, name, parameters=None, messages=None, requires=None, inherits=None, defaults=None):
         self.name = name
-        self.params = parameters
-        self.param_list = list(parameters.items())
+        self.param_list = []
+        self.parameters = {}
+        for (name, typ) in parameters.items():
+            p = None
+            if name in defaults:
+                p = Parameter(name, typ, defaults[name])
+            else:
+                p = Parameter(name, typ, None)
+            self.param_list.append(p)
+            self.parameters[name] = p
+
+        self.param_list = sorted(self.param_list, key = lambda param: param.name)
         self.messages = messages
         self.priority = None
         self.requires = requires
@@ -107,24 +119,24 @@ class Component:
         return self.messages
 
     def get_param_declarations(self):
-        return [p[1] + ' ' + p[0] for p in self.param_list]
+        return [p.typ + ' ' + p.name for p in self.param_list]
 
     def get_own_param_declarations(self):
         #TODO
-        return [p[1] + ' ' + p[0] for p in self.param_list]
+        return [p.typ + ' ' + p.name for p in self.param_list]
 
     def get_constructor_declaration(self):
         return self.get_type_name() + '(Entity &entity' + ''.join([', ' + d for d in self.get_param_declarations()]) + ')'
 
     def get_super_call(self):
-        return self.get_base_type_name() + '(entity' + ''.join([', ' + p[0] for p in self.param_list]) + ')'
+        return self.get_base_type_name() + '(entity' + ''.join([', ' + p.name for p in self.param_list]) + ')'
 
     def get_param_names(self):
-        return [p[0] for p in self.param_list]
+        return [p.name for p in self.param_list]
 
     def get_own_param_names(self):
         #TODO
-        return [p[0] for p in self.param_list]
+        return [p.name for p in self.param_list]
 
     def get_required_components(self):
         return self.requires
@@ -162,6 +174,11 @@ class Entity:
         for component in self.components:
             self.messages |= set(component.get_messages_to_handle())
         self.messages = list(self.messages)
+
+        for component in self.components:
+            for param in component.param_list:
+                if param.default != None and not param.name in self.params[component.name]:
+                    self.params[component.name][param.name] = param.default
 
     def get_type_name(self):
         return self.name + "Entity"
@@ -202,6 +219,8 @@ def load_components(definitions):
             kwargs['messages'] = []
         if not 'parameters' in kwargs:
             kwargs['parameters'] = {}
+        if not 'defaults' in kwargs:
+            kwargs['defaults'] = {}
         if not 'requires' in kwargs:
             kwargs['requires'] = []
         if not 'inherits' in kwargs:
