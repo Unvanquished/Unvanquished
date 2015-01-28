@@ -3188,15 +3188,18 @@ void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	HGeneric_Die( self, inflictor, attacker, mod );
 
-	// Rocketpod: The safe mode has the same idle as the unpowered state.
-	if ( self->turretSafeMode )
+	if ( self->think == HGeneric_Blast )
 	{
-		G_SetBuildableAnim( self, BANIM_DESTROY_UNPOWERED, qtrue );
-	}
+		// Rocketpod: The safe mode has the same idle as the unpowered state.
+		if ( self->turretSafeMode )
+		{
+			G_SetBuildableAnim( self, BANIM_DESTROY_UNPOWERED, qtrue );
+		}
 
-	// Do some last movements before entering blast state.
-	self->think = HTurret_PreBlast;
-	self->nextthink = level.time;
+		// Do some last movements before entering blast state.
+		self->think = HTurret_PreBlast;
+		self->nextthink = level.time;
+	}
 }
 
 static qboolean HTurret_TargetInReach( gentity_t *self, float range )
