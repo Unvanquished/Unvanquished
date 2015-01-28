@@ -175,10 +175,25 @@ class Entity:
             self.messages |= set(component.get_messages_to_handle())
         self.messages = list(self.messages)
 
+        self.user_params = {}
+        self.has_user_params = False
+        for component in self.components:
+            self.user_params[component.name] = {}
+            if not component.name in self.params:
+                self.params[component.name] = {}
+
         for component in self.components:
             for param in component.param_list:
-                if param.default != None and not param.name in self.params[component.name]:
-                    self.params[component.name][param.name] = param.default
+                if not param.name in self.params[component.name]:
+                    if param.default != None:
+                        self.params[component.name][param.name] = param.default
+                    else:
+                        self.user_params[component.name][param.name] = param
+                        self.has_user_params = True
+                elif self.params[component.name][param.name] == 'USER':
+                    self.user_params[component.name][param.name] = param
+                    self.has_user_params = True
+
 
     def get_type_name(self):
         return self.name + "Entity"
@@ -188,6 +203,12 @@ class Entity:
 
     def get_params(self):
         return self.params
+
+    def get_user_params(self):
+        return self.user_params
+
+    def get_has_user_params(self):
+        return self.has_user_params
 
     def get_messages_to_handle(self):
         return self.messages

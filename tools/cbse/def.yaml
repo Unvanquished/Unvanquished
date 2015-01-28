@@ -23,6 +23,7 @@ components:
             maxHealth: int
             startHealth: int
             stuffWithDefault: int
+            undefinedStuff: int
         messages:
             - Heal
             - Damage
