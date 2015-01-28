@@ -407,10 +407,11 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 
 		ent->freeAfterEvent = qtrue;
 
-		// HACK: Change over to a general entity right at the point of impact.
-		// TODO: Make sure this doesn't have unintended side effects.
-		//       Like purple sandals appearing at impact point or so...
+		// HACK: Change over to a general entity at the point of impact.
 		ent->s.eType = ET_GENERAL;
+
+		// Prevent map models from appearing at impact point.
+		ent->s.modelindex = 0;
 
 		// Save net bandwith.
 		G_SnapVectorTowards( trace->endpos, ent->s.pos.trBase );
