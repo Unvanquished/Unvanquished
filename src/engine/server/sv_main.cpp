@@ -87,8 +87,6 @@ cvar_t *sv_packetdelay;
 // fretn
 cvar_t *sv_fullmsg;
 
-cvar_t *vm_game;
-
 Cvar::Cvar<bool> isLanOnly(
 	"server.lanOnly", "should the server stay only on LAN (vs. advertise itself on the internet)",
 #if BUILD_CLIENT || BUILD_TTY_CLIENT
