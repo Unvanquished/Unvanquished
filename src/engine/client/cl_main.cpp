@@ -2448,7 +2448,7 @@ void CL_DownloadsComplete( void )
 		cls.downloadRestart = qfalse;
 
 		FS::PakPath::ClearPaks();
-		FS_LoadServerPaks(Cvar_VariableString("sv_paks")); // We possibly downloaded a pak, restart the file system to load it
+		FS_LoadServerPaks(Cvar_VariableString("sv_paks"), clc.demoplaying); // We possibly downloaded a pak, restart the file system to load it
 
 		if ( !cls.bWWWDlDisconnected )
 		{

@@ -530,8 +530,6 @@ void SV_SpawnServer( const char *server )
 	// set serverinfo visible name
 	Cvar_Set( "mapname", server );
 
-	sv_newGameShlib = Cvar_Get( "sv_newGameShlib", "", CVAR_TEMP );
-
 	// serverid should be different each time
 	sv.serverId = com_frameTime;
 	sv.restartedServerId = sv.serverId;
@@ -541,8 +539,6 @@ void SV_SpawnServer( const char *server )
 	// the loading stage, so connected clients don't have
 	// to load during actual gameplay
 	sv.state = SS_LOADING;
-
-	Cvar_Set( "sv_serverRestarting", "1" );
 
 	// load and spawn all other entities
 	SV_InitGameProgs(server);
@@ -633,8 +629,6 @@ void SV_SpawnServer( const char *server )
 	Hunk_SetMark();
 
 	SV_UpdateConfigStrings();
-
-	Cvar_Set( "sv_serverRestarting", "0" );
 
 	SV_AddOperatorCommands();
 
@@ -807,8 +801,7 @@ void SV_Shutdown( const char *finalmsg )
 			SV_FreeClient( &svs.clients[ index ] );
 		}
 
-		//Z_Free( svs.clients );
-		free( svs.clients );  // RF, avoid trying to allocate large chunk on a fragmented zone
+		free( svs.clients );
 	}
 
 	memset( &svs, 0, sizeof( svs ) );
