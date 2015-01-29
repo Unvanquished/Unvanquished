@@ -321,12 +321,6 @@ void SV_ShutdownGameProgs( void )
 	gvm->GameShutdown( qfalse );
 	delete gvm;
     gvm = nullptr;
-
-	if ( sv_newGameShlib->string[ 0 ] )
-	{
-		FS_Rename( sv_newGameShlib->string, "game" DLL_EXT );
-		Cvar_Set( "sv_newGameShlib", "" );
-	}
 }
 
 /*

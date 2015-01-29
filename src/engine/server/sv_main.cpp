@@ -66,7 +66,6 @@ cvar_t         *sv_minPing;
 cvar_t         *sv_maxPing;
 
 cvar_t         *sv_pure;
-cvar_t         *sv_newGameShlib;
 cvar_t         *sv_floodProtect;
 cvar_t         *sv_lanForceRate; // TTimo - dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 
