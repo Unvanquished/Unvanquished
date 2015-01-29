@@ -493,7 +493,7 @@ void CL_SystemInfoChanged( void )
 	// load paks sent by the server, but not if we are running a local server
 	if (!com_sv_running->integer) {
 		FS::PakPath::ClearPaks();
-		if (!FS_LoadServerPaks(Info_ValueForKey(systemInfo, "sv_paks"))) {
+		if (!FS_LoadServerPaks(Info_ValueForKey(systemInfo, "sv_paks"), clc.demoplaying)) {
 			if (!cl_allowDownload->integer) {
 				Com_Error(ERR_DROP, "Client is missing paks but downloads are disabled");
 			} else if (clc.demoplaying) {
