@@ -654,10 +654,12 @@ bool FS_LoadServerPaks(const char* paks, bool isDemo)
 	}
 
 	// Load extra paks as well for demos
-	Cmd::Args extrapaks(fs_extrapaks.Get());
-	for (auto& x: extrapaks) {
-		if (!FS_LoadPak(x.c_str()))
-			Com_Error(ERR_FATAL, "Could not load extra pak '%s'\n", x.c_str());
+	if (isDemo) {
+		Cmd::Args extrapaks(fs_extrapaks.Get());
+		for (auto& x: extrapaks) {
+			if (!FS_LoadPak(x.c_str()))
+				Com_Error(ERR_FATAL, "Could not load extra pak '%s'\n", x.c_str());
+		}
 	}
 
 	return fs_missingPaks.empty();
