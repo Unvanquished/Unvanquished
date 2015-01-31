@@ -132,6 +132,7 @@ static void CG_Rocket_DrawClips( void )
 		case WP_ABUILD:
 		case WP_ABUILD2:
 		case WP_HBUILD:
+			trap_Rocket_SetInnerRML( "", 0 );
 			return;
 
 		default:

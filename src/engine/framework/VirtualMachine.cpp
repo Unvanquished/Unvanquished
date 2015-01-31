@@ -232,8 +232,12 @@ static std::pair<IPC::OSHandleType, IPC::Socket> InternalLoadModule(std::pair<IP
 }
 
 std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, int debugLoader) {
-	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
+#ifdef NACL_RUNTIME_PATH
+	const char* naclPath = XSTRING(NACL_RUNTIME_PATH);
+#else
+	const std::string& naclPath = libPath;
+#endif
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
 	std::string module, sel_ldr, irt, bootstrap, modulePath, verbosity;
@@ -253,6 +257,8 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	if (extract) {
 		try {
 			FS::File out = FS::HomePath::OpenWrite(module);
+			if (const FS::LoadedPakInfo* pak = FS::PakPath::LocateFile(module))
+				Com_Printf("Extracting VM module %s from %s...\n", module.c_str(), pak->path.c_str());
 			FS::PakPath::CopyFile(module, out);
 			out.Close();
 		} catch (std::system_error& err) {
@@ -262,27 +268,12 @@ std::pair<IPC::OSHandleType, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IP
 	} else
 		modulePath = FS::Path::Build(libPath, module);
 
+	// Generate command line
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
-
-#ifdef NACL_RUNTIME_PATH
-	// NACL_RUNTIME_PATH is unquoted...
-# define NACL_Q(x) STRING(x)
-# define NACL_P NACL_Q(NACL_RUNTIME_PATH)
-	irt = win32Force64Bit ? NACL_P "/irt_core-x86_64.nexe" : NACL_P "/irt_core-" ARCH_STRING ".nexe";
-	sel_ldr = win32Force64Bit ? NACL_P "/sel_ldr64" EXE_EXT : NACL_P "/sel_ldr" EXE_EXT;
-#else
-	irt = FS::Path::Build(libPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
-	sel_ldr = FS::Path::Build(libPath, win32Force64Bit ? "sel_ldr64" EXE_EXT : "sel_ldr" EXE_EXT);
-#endif
-			Log::Warn("irt: %s", irt.c_str());
-			Log::Warn("sel_ldr: %s", sel_ldr.c_str());
-
+	irt = FS::Path::Build(naclPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
+	sel_ldr = FS::Path::Build(naclPath, win32Force64Bit ? "sel_ldr64" EXE_EXT : "sel_ldr" EXE_EXT);
 #ifdef __linux__
-# ifdef NACL_RUNTIME_PATH
-	bootstrap = NACL_P "/nacl_helper_bootstrap";
-# else
-	bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
-# endif
+	bootstrap = FS::Path::Build(naclPath, "nacl_helper_bootstrap");
 	args.push_back(bootstrap.c_str());
 	args.push_back(sel_ldr.c_str());
 	args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");

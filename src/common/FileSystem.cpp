@@ -744,7 +744,7 @@ public:
 			}
 
 			// Refill the buffer if the request can't be satisfied from it
-			if (zipData->pos < zipData->bufferPos || zipData->pos + size > zipData->bufferPos + zipData->bufferLen) {
+			if (zipData->pos < zipData->bufferPos || zipData->pos + (long) size > zipData->bufferPos + zipData->bufferLen) {
 				intptr_t result = my_pread(zipData->fd, zipData->buffer, sizeof(zipData->buffer), zipData->pos);
 				if (result == -1)
 					return 0;
@@ -1171,17 +1171,17 @@ void ClearPaks()
 	FS::RefreshPaks();
 }
 #else // BUILD_VM
-void LoadPak(const PakInfo& pak, std::error_code& err)
+void LoadPak(const PakInfo& pak, std::error_code&)
 {
 	VM::SendMsg<VM::FSPakPathLoadPakMsg>(&pak - availablePaks.data(), Util::nullopt, "");
 }
 
-void LoadPakPrefix(const PakInfo& pak, Str::StringRef pathPrefix, std::error_code& err)
+void LoadPakPrefix(const PakInfo& pak, Str::StringRef pathPrefix, std::error_code&)
 {
 	VM::SendMsg<VM::FSPakPathLoadPakMsg>(&pak - availablePaks.data(), Util::nullopt, pathPrefix);
 }
 
-void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err)
+void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code&)
 {
 	VM::SendMsg<VM::FSPakPathLoadPakMsg>(&pak - availablePaks.data(), expectedChecksum, "");
 }

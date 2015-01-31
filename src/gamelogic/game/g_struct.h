@@ -677,6 +677,8 @@ struct level_locals_s
 	// store latched cvars here that we want to get at often
 	int      maxclients;
 
+	bool     inClient;
+
 	int      framenum;
 	int      time; // time the map was first started in milliseconds (map restart will update startTime)
 	int      previousTime; // so movers can back up when blocked
