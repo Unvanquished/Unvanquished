@@ -1272,6 +1272,26 @@ void CG_Rocket_DrawBeaconName( void )
 	trap_Rocket_SetInnerRML( cg.beaconRocket.name, 0 );
 }
 
+void CG_Rocket_DrawBeaconIcon( void )
+{
+	rectDef_t rect;
+	vec4_t    color;
+
+	if ( !cg.beaconRocket.icon )
+	{
+		return;
+	}
+
+	CG_GetRocketElementColor( color );
+	CG_GetRocketElementRect( &rect );
+
+	color[ 3 ] *= cg.beaconRocket.iconAlpha;
+
+	trap_R_SetColor( color );
+	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cg.beaconRocket.icon );
+	trap_R_SetColor( NULL );
+}
+
 void CG_Rocket_DrawBeaconOwner( void )
 {
 	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.ownerAlpha ) );
@@ -2592,6 +2612,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
 	{ "beacon_age", &CG_Rocket_DrawBeaconAge, ELEMENT_GAME },
 	{ "beacon_distance", &CG_Rocket_DrawBeaconDistance, ELEMENT_GAME },
+	{ "beacon_icon", &CG_Rocket_DrawBeaconIcon, ELEMENT_GAME },
 	{ "beacon_info", &CG_Rocket_DrawBeaconInfo, ELEMENT_GAME },
 	{ "beacon_name", &CG_Rocket_DrawBeaconName, ELEMENT_GAME },
 	{ "beacon_owner", &CG_Rocket_DrawBeaconOwner, ELEMENT_GAME },

@@ -366,14 +366,21 @@ static void UpdateBeaconRocket( void )
 {
 	cbeacon_t *beacon;
 	beaconRocket_t * const br = &cg.beaconRocket;
-	qboolean showName = qfalse,
-	         showInfo = qfalse,
+	qboolean showIcon     = qfalse,
+	         showName     = qfalse,
+	         showInfo     = qfalse,
 	         showDistance = qfalse,
-	         showAge = qfalse,
-	         showOwner = qfalse;
+	         showAge      = qfalse,
+	         showOwner    = qfalse;
 
 	if( ( beacon = cg.highlightedBeacon ) )
 	{
+		// icon
+		if ( ( br->icon = CG_BeaconIcon( beacon, qfalse ) ) )
+		{
+			showIcon = qtrue;
+		}
+
 		// name
 		Com_sprintf( br->name, sizeof( br->name ), "%s", CG_BeaconName( beacon ) );
 		showName = qtrue;
@@ -390,7 +397,7 @@ static void UpdateBeaconRocket( void )
 
 		// distance
 		Com_sprintf( br->distance, sizeof( br->distance ), "%im from here",
-		             (int)round( beacon->dist * 0.0254 ) );
+		             (int)round( beacon->dist * QU_TO_METER ) );
 		showDistance = qtrue;
 
 		// age
@@ -420,6 +427,7 @@ static void UpdateBeaconRocket( void )
 		}
 	}
 
+	CG_ExponentialFade( &br->iconAlpha,     showIcon     ? 1 : 0, 10 );
 	CG_ExponentialFade( &br->nameAlpha,     showName     ? 1 : 0, 10 );
 	CG_ExponentialFade( &br->infoAlpha,     showInfo     ? 1 : 0, 10 );
 	CG_ExponentialFade( &br->distanceAlpha, showDistance ? 1 : 0, 10 );

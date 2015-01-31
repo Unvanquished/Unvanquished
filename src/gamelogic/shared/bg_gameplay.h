@@ -340,6 +340,8 @@ extern int   REACTOR_ATTACK_DAMAGE;
  * Misc
  */
 
+#define QU_TO_METER                        0.03125 // in m/qu
+
 #define ENTITY_USE_RANGE                   64.0f
 #define ENTITY_BUY_RANGE                   128.0f
 
@@ -353,7 +355,6 @@ extern int   REACTOR_ATTACK_DAMAGE;
 
 // impact and weight damage
 #define IMPACTDMG_JOULE_TO_DAMAGE          0.002f  // in 1/J
-#define IMPACTDMG_QU_TO_METER              0.03125 // in m/qu
 #define WEIGHTDMG_DMG_MODIFIER             0.25f   // multiply with weight difference to get DPS
 #define WEIGHTDMG_DPS_THRESHOLD            10      // ignore weight damage per second below this
 #define WEIGHTDMG_REPEAT                   200     // in ms, low value reduces damage precision

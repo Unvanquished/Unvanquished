@@ -701,6 +701,9 @@ typedef struct
 // strings to display on the libRocket HUD
 typedef struct
 {
+	qhandle_t    icon;
+	float        iconAlpha;
+
 	char         name[ 128 ];
 	float        nameAlpha;
 
