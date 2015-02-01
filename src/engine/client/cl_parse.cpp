@@ -488,16 +488,21 @@ void CL_SystemInfoChanged( void )
 	// in some cases, outdated cp commands might get sent with this news serverId
 	cl.serverId = atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
 
-	// don't set any vars when playing a demo, but load the map
+	// load paks sent by the server, but not if we are running a local server
+	if (!com_sv_running->integer) {
+		FS::PakPath::ClearPaks();
+		if (!FS_LoadServerPaks(Info_ValueForKey(systemInfo, "sv_paks"), clc.demoplaying)) {
+			if (!cl_allowDownload->integer) {
+				Com_Error(ERR_DROP, "Client is missing paks but downloads are disabled");
+			} else if (clc.demoplaying) {
+				Com_Error(ERR_DROP, "Client is missing paks needed by the demo");
+			}
+		}
+	}
+
+	// don't set any vars when playing a demo
 	if ( clc.demoplaying )
 	{
-		const char *mapname, *info;
-
-		// find the current mapname
-		info = cl.gameState[ CS_SERVERINFO ].c_str();
-		mapname = Info_ValueForKey( info, "mapname" );
-		FS_LoadPak( va( "map-%s", mapname ) );
-
 		return;
 	}
 
@@ -505,13 +510,6 @@ void CL_SystemInfoChanged( void )
 	s = Info_ValueForKey( systemInfo, "sv_voip" );
 	clc.voipEnabled = atoi( s );
 #endif
-
-	// load paks sent by the server, but not if we are running a local server
-	if (!com_sv_running->integer) {
-		FS::PakPath::ClearPaks();
-		if (!FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) ) && !cl_allowDownload->integer)
-			Com_Error(ERR_DROP, "Client is missing paks but downloads are disabled");
-	}
 
 	// scan through all the variables in the systeminfo and locally set cvars to match
 	s = systemInfo;
