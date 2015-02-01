@@ -299,8 +299,8 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_SPIKER:
-				message = G_( "%s%s ^7was flechetted by the spiker\n" );
-				messageAssisted = G_( "%s%s ^7was flechetted by the spiker; %s%s^7 assisted\n" );
+				message = G_( "%s%s ^7was flechetted by a spiker\n" );
+				messageAssisted = G_( "%s%s ^7was flechetted by a spiker; %s%s^7 assisted\n" );
 				break;
 
 			case MOD_OVERMIND:
