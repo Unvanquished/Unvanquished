@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "cg_local.h"
+#include "../../engine/client/cg_msgdef.h"
 
 #include "../shared/VMMain.h"
 #include "../shared/CommonProxies.h"

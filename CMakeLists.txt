@@ -552,7 +552,6 @@ set( COMMONLIST
   ${COMMON_DIR}/DisjointSets.h
   ${COMMON_DIR}/FileSystem.cpp
   ${COMMON_DIR}/FileSystem.h
-  ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/LineEditData.cpp
   ${COMMON_DIR}/LineEditData.h
   ${COMMON_DIR}/Log.cpp
@@ -644,6 +643,7 @@ set( SERVERLIST
   ${ENGINE_DIR}/server/sv_snapshot.cpp
   ${ENGINE_DIR}/server/server.h
   ${ENGINE_DIR}/server/g_api.h
+  ${ENGINE_DIR}/server/g_msgdef.h
   ${ENGINE_DIR}/qcommon/print_translated.h
 )
 
@@ -709,6 +709,7 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/botlib/bot_debug.cpp
   ${ENGINE_DIR}/botlib/bot_nav_edit.cpp
   ${ENGINE_DIR}/client/cg_api.h
+  ${ENGINE_DIR}/client/cg_msgdef.h
   ${ENGINE_DIR}/client/client.h
   ${ENGINE_DIR}/client/cin_ogm.cpp
   ${ENGINE_DIR}/client/cl_avi.cpp
@@ -823,6 +824,7 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
   ${GAMELOGIC_DIR}/cgame/cg_parseutils.cpp
   ${ENGINE_DIR}/client/cg_api.h
+  ${ENGINE_DIR}/client/cg_msgdef.h
   ${ENGINE_DIR}/qcommon/print_translated.h
   ${GAMESHAREDLIST}
   ${COMMONLIST}
@@ -870,6 +872,7 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/game/Beacon.cpp
   ${GAMELOGIC_DIR}/game/Clustering.cpp
   ${ENGINE_DIR}/server/g_api.h
+  ${ENGINE_DIR}/server/g_msgdef.h
   ${GAMESHAREDLIST}
   ${COMMONLIST}
 )

@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "g_local.h"
 #include "g_cm_world.h"
+#include "../../engine/server/g_msgdef.h"
 #include "../shared/VMMain.h"
 #include "../shared/CommonProxies.h"
 

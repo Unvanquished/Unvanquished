@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // sv_game.c -- interface to the game module
 
 #include "server.h"
+#include "g_msgdef.h"
 #include "../qcommon/crypto.h"
 #include "../framework/CommonVMServices.h"
 #include "../framework/CommandSystem.h"
