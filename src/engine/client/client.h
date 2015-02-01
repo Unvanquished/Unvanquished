@@ -143,7 +143,6 @@ typedef struct
 	int    cgameUserCmdValue; // current weapon to add to usercmd_t
 	int    cgameFlags; // flags that can be set by the gamecode
 	float  cgameSensitivity;
-	int    cgameMpIdentClient; // NERVE - SMF
 	vec3_t cgameClientLerpOrigin; // DHM - Nerve
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last

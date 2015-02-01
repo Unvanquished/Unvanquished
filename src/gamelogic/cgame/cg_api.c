@@ -770,9 +770,9 @@ qboolean trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
 
 //98.
 //CL_SetUserCmdValue(args[1], args[2], VMF(3), args[4]);
-void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient )
+void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale )
 {
-	syscallVM( CG_SETUSERCMDVALUE, stateValue, flags, PASSFLOAT( sensitivityScale ), mpIdentClient );
+	syscallVM( CG_SETUSERCMDVALUE, stateValue, flags, PASSFLOAT( sensitivityScale ) );
 }
 
 //99.

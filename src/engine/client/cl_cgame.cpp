@@ -187,12 +187,11 @@ qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 CL_SetUserCmdValue
 ==============
 */
-void CL_SetUserCmdValue( int userCmdValue, int flags, float sensitivityScale, int mpIdentClient )
+void CL_SetUserCmdValue( int userCmdValue, int flags, float sensitivityScale )
 {
 	cl.cgameUserCmdValue = userCmdValue;
 	cl.cgameFlags = flags;
 	cl.cgameSensitivity = sensitivityScale;
-	cl.cgameMpIdentClient = mpIdentClient; // NERVE - SMF
 }
 
 /*
@@ -1898,7 +1897,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return CL_GetUserCmd( args[ 1 ], (usercmd_t*) VMA( 2 ) );
 
 		case CG_SETUSERCMDVALUE:
-			CL_SetUserCmdValue( args[ 1 ], args[ 2 ], VMF( 3 ), args[ 4 ] );
+			CL_SetUserCmdValue( args[ 1 ], args[ 2 ], VMF( 3 ) );
 			return 0;
 
 		case CG_SETCLIENTLERPORIGIN:

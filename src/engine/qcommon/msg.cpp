@@ -790,10 +790,10 @@ usercmd_t communication
 
 /*
 =====================
-MSG_WriteDeltaUsercmdKey
+MSG_WriteDeltaUsercmd
 =====================
 */
-void MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to )
+void MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 {
 	int i;
 
@@ -816,37 +816,35 @@ void MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *
 	     from->upmove == to->upmove &&
 	     !memcmp( from->buttons, to->buttons, sizeof( from->buttons ) ) &&
 	     from->weapon == to->weapon &&
-	     from->flags == to->flags && from->doubleTap == to->doubleTap && from->identClient == to->identClient )
+	     from->flags == to->flags && from->doubleTap == to->doubleTap)
 	{
 		// NERVE - SMF
 		MSG_WriteBits( msg, 0, 1 );  // no change
 		return;
 	}
 
-	key ^= to->serverTime;
 	MSG_WriteBits( msg, 1, 1 );
-	MSG_WriteDeltaKey( msg, key, from->angles[ 0 ], to->angles[ 0 ], 16 );
-	MSG_WriteDeltaKey( msg, key, from->angles[ 1 ], to->angles[ 1 ], 16 );
-	MSG_WriteDeltaKey( msg, key, from->angles[ 2 ], to->angles[ 2 ], 16 );
-	MSG_WriteDeltaKey( msg, key, from->forwardmove, to->forwardmove, 8 );
-	MSG_WriteDeltaKey( msg, key, from->rightmove, to->rightmove, 8 );
-	MSG_WriteDeltaKey( msg, key, from->upmove, to->upmove, 8 );
+	MSG_WriteDelta( msg, from->angles[ 0 ], to->angles[ 0 ], 16 );
+	MSG_WriteDelta( msg, from->angles[ 1 ], to->angles[ 1 ], 16 );
+	MSG_WriteDelta( msg, from->angles[ 2 ], to->angles[ 2 ], 16 );
+	MSG_WriteDelta( msg, from->forwardmove, to->forwardmove, 8 );
+	MSG_WriteDelta( msg, from->rightmove, to->rightmove, 8 );
+	MSG_WriteDelta( msg, from->upmove, to->upmove, 8 );
 	for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
 	{
-		MSG_WriteDeltaKey( msg, key, from->buttons[i], to->buttons[i], 8 );
+		MSG_WriteDelta( msg, from->buttons[i], to->buttons[i], 8 );
 	}
-	MSG_WriteDeltaKey( msg, key, from->weapon, to->weapon, 8 );
-	MSG_WriteDeltaKey( msg, key, from->flags, to->flags, 8 );
-	MSG_WriteDeltaKey( msg, key, from->doubleTap, to->doubleTap, 3 );
-	MSG_WriteDeltaKey( msg, key, from->identClient, to->identClient, 8 );  // NERVE - SMF
+	MSG_WriteDelta( msg, from->weapon, to->weapon, 8 );
+	MSG_WriteDelta( msg, from->flags, to->flags, 8 );
+	MSG_WriteDelta( msg, from->doubleTap, to->doubleTap, 3 );
 }
 
 /*
 =====================
-MSG_ReadDeltaUsercmdKey
+MSG_ReadDeltaUsercmd
 =====================
 */
-void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to )
+void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 {
 	int i;
 
@@ -861,13 +859,12 @@ void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *t
 
 	if ( MSG_ReadBits( msg, 1 ) )
 	{
-		key ^= to->serverTime;
-		to->angles[ 0 ] = MSG_ReadDeltaKey( msg, key, from->angles[ 0 ], 16 );
-		to->angles[ 1 ] = MSG_ReadDeltaKey( msg, key, from->angles[ 1 ], 16 );
-		to->angles[ 2 ] = MSG_ReadDeltaKey( msg, key, from->angles[ 2 ], 16 );
-		to->forwardmove = MSG_ReadDeltaKey( msg, key, from->forwardmove, 8 );
-		to->rightmove = MSG_ReadDeltaKey( msg, key, from->rightmove, 8 );
-		to->upmove = MSG_ReadDeltaKey( msg, key, from->upmove, 8 );
+		to->angles[ 0 ] = MSG_ReadDelta( msg, from->angles[ 0 ], 16 );
+		to->angles[ 1 ] = MSG_ReadDelta( msg, from->angles[ 1 ], 16 );
+		to->angles[ 2 ] = MSG_ReadDelta( msg, from->angles[ 2 ], 16 );
+		to->forwardmove = MSG_ReadDelta( msg, from->forwardmove, 8 );
+		to->rightmove = MSG_ReadDelta( msg, from->rightmove, 8 );
+		to->upmove = MSG_ReadDelta( msg, from->upmove, 8 );
 		if ( to->forwardmove == -128 )
 			to->forwardmove = -127;
 		if ( to->rightmove == -128 )
@@ -876,12 +873,11 @@ void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *t
 			to->upmove = -127;
 		for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
 		{
-			to->buttons[i] = MSG_ReadDeltaKey( msg, key, from->buttons[i], 8 );
+			to->buttons[i] = MSG_ReadDelta( msg, from->buttons[i], 8 );
 		}
-		to->weapon = MSG_ReadDeltaKey( msg, key, from->weapon, 8 );
-		to->flags = MSG_ReadDeltaKey( msg, key, from->flags, 8 );
-		to->doubleTap = MSG_ReadDeltaKey( msg, key, from->doubleTap, 3 ) & 0x7;
-		to->identClient = MSG_ReadDeltaKey( msg, key, from->identClient, 8 );  // NERVE - SMF
+		to->weapon = MSG_ReadDelta( msg, from->weapon, 8 );
+		to->flags = MSG_ReadDelta( msg, from->flags, 8 );
+		to->doubleTap = MSG_ReadDelta( msg, from->doubleTap, 3 ) & 0x7;
 	}
 	else
 	{
@@ -895,7 +891,6 @@ void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *t
 		to->weapon = from->weapon;
 		to->flags = from->flags;
 		to->doubleTap = from->doubleTap;
-		to->identClient = from->identClient; // NERVE - SMF
 	}
 }
 

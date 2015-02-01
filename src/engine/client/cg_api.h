@@ -541,7 +541,7 @@ qboolean        trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot );
 qboolean        trap_GetServerCommand( int serverCommandNumber );
 int             trap_GetCurrentCmdNumber( void );
 qboolean        trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd );
-void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient );
+void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale );
 void            trap_SetClientLerpOrigin( float x, float y, float z );
 int             trap_MemoryRemaining( void );
 qboolean        trap_Key_IsDown( int keynum );
