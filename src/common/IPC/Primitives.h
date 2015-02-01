@@ -50,8 +50,8 @@ namespace IPC {
 			return Sys::IsValidHandle(handle);
 		}
 
-		Desc GetDesc() const;
-		static FileHandle FromDesc(const Desc& desc);
+		FileDesc GetDesc() const;
+		static FileHandle FromDesc(const FileDesc& desc);
 
 		Sys::OSHandle GetHandle() const {
 			return handle;
@@ -91,8 +91,8 @@ namespace IPC {
 			return out;
 		}
 
-		Desc GetDesc() const;
-		static Socket FromDesc(const Desc& desc);
+		FileDesc GetDesc() const;
+		static Socket FromDesc(const FileDesc& desc);
 		static Socket FromHandle(Sys::OSHandle handle);
 
 		void SendMsg(const Serialize::Writer& writer) const;
@@ -128,8 +128,8 @@ namespace IPC {
 
 		void Close();
 
-		Desc GetDesc() const;
-		static SharedMemory FromDesc(const Desc& desc);
+		FileDesc GetDesc() const;
+		static SharedMemory FromDesc(const FileDesc& desc);
 
 		static SharedMemory Create(size_t size);
 

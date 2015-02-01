@@ -35,7 +35,7 @@ namespace IPC {
 
 	// IPC descriptor which can be sent over a socket. You should treat this as an
 	// opaque type and not access any of the fields directly.
-	struct Desc {
+	struct FileDesc {
 		Sys::OSHandle handle;
 		#ifndef __native_client__
 		int type;
@@ -44,8 +44,8 @@ namespace IPC {
 			int32_t flags;
 		};
 		#endif
+        void Close() const;
 	};
-	void CloseDesc(const Desc& desc);
 
 	// Message ID to indicate an RPC return
 	const uint32_t ID_RETURN = 0xffffffff;

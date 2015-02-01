@@ -55,7 +55,7 @@ namespace Serialize {
 		{
 			SerializeTraits<T>::Write(*this, std::forward<Arg>(value));
 		}
-		void WriteHandle(const IPC::Desc& h)
+		void WriteHandle(const IPC::FileDesc& h)
 		{
 			handles.push_back(h);
 		}
@@ -64,7 +64,7 @@ namespace Serialize {
 		{
 			return data;
 		}
-		const std::vector<IPC::Desc>& GetHandles() const
+		const std::vector<IPC::FileDesc>& GetHandles() const
 		{
 			return handles;
 		}
@@ -91,7 +91,7 @@ namespace Serialize {
 		}
 	private:
 		std::vector<char> data;
-		std::vector<IPC::Desc> handles;
+		std::vector<IPC::FileDesc> handles;
 	};
 
 	// Class to read messages
@@ -113,7 +113,7 @@ namespace Serialize {
 		{
 			// Close any handles that weren't read
 			for (size_t i = handles_pos; i < handles.size(); i++)
-				IPC::CloseDesc(handles[i]);
+				handles[i].Close();
 		}
 
 		void ReadData(void* p, size_t len)
@@ -166,7 +166,7 @@ namespace Serialize {
 			typedef std::tuple<typename MapTupleHelper<T>::type...> type;
 		};
 
-		IPC::Desc ReadHandle()
+		IPC::FileDesc ReadHandle()
 		{
 			if (handles_pos <= handles.size())
 				return handles[handles_pos++];
@@ -178,14 +178,14 @@ namespace Serialize {
 		{
 			return data;
 		}
-		std::vector<IPC::Desc>& GetHandles()
+		std::vector<IPC::FileDesc>& GetHandles()
 		{
 			return handles;
 		}
 
 	private:
 		std::vector<char> data;
-		std::vector<IPC::Desc> handles;
+		std::vector<IPC::FileDesc> handles;
 		size_t pos;
 		size_t handles_pos;
 	};

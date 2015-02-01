@@ -93,14 +93,14 @@ struct NaClInternalHeader {
 
 namespace IPC {
 
-void CloseDesc(const Desc& desc)
+void FileDesc::Close() const
 {
-	NaClClose(desc.handle);
+	NaClClose(handle);
 }
 
-Desc FileHandle::GetDesc() const
+FileDesc FileHandle::GetDesc() const
 {
-	Desc out;
+	FileDesc out;
 	out.handle = handle;
 #ifndef __native_client__
 	out.type = NACL_DESC_HOST_IO;
@@ -125,7 +125,7 @@ Desc FileHandle::GetDesc() const
 	return out;
 }
 
-FileHandle FileHandle::FromDesc(const Desc& desc)
+FileHandle FileHandle::FromDesc(const FileDesc& desc)
 {
 	FileOpenMode mode = MODE_READ;
 #ifndef __native_client__
@@ -157,9 +157,9 @@ void Socket::Close()
 	handle = Sys::INVALID_HANDLE;
 }
 
-Desc Socket::GetDesc() const
+FileDesc Socket::GetDesc() const
 {
-	Desc out;
+	FileDesc out;
 	out.handle = handle;
 #ifndef __native_client__
 	out.type = NACL_DESC_TRANSFERABLE_DATA_SOCKET;
@@ -167,7 +167,7 @@ Desc Socket::GetDesc() const
 	return out;
 }
 
-Socket Socket::FromDesc(const Desc& desc)
+Socket Socket::FromDesc(const FileDesc& desc)
 {
 	Socket out;
 	out.handle = desc.handle;
@@ -180,7 +180,7 @@ Socket Socket::FromHandle(Sys::OSHandle handle)
 	return out;
 }
 
-static void InternalSendMsg(Sys::OSHandle handle, bool more, const Desc* handles, size_t numHandles, const void* data, size_t len)
+static void InternalSendMsg(Sys::OSHandle handle, bool more, const FileDesc* handles, size_t numHandles, const void* data, size_t len)
 {
 	NaClMessageHeader hdr;
 	NaClIOVec iov[4];
@@ -270,7 +270,7 @@ static void InternalSendMsg(Sys::OSHandle handle, bool more, const Desc* handles
 
 void Socket::SendMsg(const Serialize::Writer& writer) const
 {
-	const Desc* handles = writer.GetHandles().data();
+	const FileDesc* handles = writer.GetHandles().data();
 	size_t numHandles = writer.GetHandles().size();
 	const void* data = writer.GetData().data();
 	size_t len = writer.GetData().size();
@@ -489,9 +489,9 @@ void SharedMemory::Close()
 	handle = Sys::INVALID_HANDLE;
 }
 
-Desc SharedMemory::GetDesc() const
+FileDesc SharedMemory::GetDesc() const
 {
-	Desc out;
+	FileDesc out;
 	out.handle = handle;
 #ifndef __native_client__
 	out.type = NACL_DESC_SHM;
@@ -500,7 +500,7 @@ Desc SharedMemory::GetDesc() const
 	return out;
 }
 
-SharedMemory SharedMemory::FromDesc(const Desc& desc)
+SharedMemory SharedMemory::FromDesc(const FileDesc& desc)
 {
 	SharedMemory out;
 #ifdef __native_client__
