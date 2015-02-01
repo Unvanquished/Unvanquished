@@ -28,7 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "Common.h"
+#include "../Common.h"
+#include "Primitives.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -45,10 +46,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef DLLEXPORT
 #undef NORETURN
 #undef NORETURN_PTR
-#include "../libs/nacl/native_client/src/shared/imc/nacl_imc_c.h"
-#include "../libs/nacl/native_client/src/public/imc_types.h"
-#include "../libs/nacl/native_client/src/trusted/service_runtime/nacl_config.h"
-#include "../libs/nacl/native_client/src/trusted/service_runtime/include/sys/fcntl.h"
+#include "../../libs/nacl/native_client/src/shared/imc/nacl_imc_c.h"
+#include "../../libs/nacl/native_client/src/public/imc_types.h"
+#include "../../libs/nacl/native_client/src/trusted/service_runtime/nacl_config.h"
+#include "../../libs/nacl/native_client/src/trusted/service_runtime/include/sys/fcntl.h"
 
 // Definitions taken from nacl_desc_base.h
 enum NaClDescTypeTag {
@@ -267,7 +268,7 @@ static void InternalSendMsg(Sys::OSHandle handle, bool more, const Desc* handles
 #endif
 }
 
-void Socket::SendMsg(const Writer& writer) const
+void Socket::SendMsg(const Serialize::Writer& writer) const
 {
 	const Desc* handles = writer.GetHandles().data();
 	size_t numHandles = writer.GetHandles().size();
@@ -295,7 +296,7 @@ static void FreeHandles(const NaClHandle* h)
 }
 #endif
 
-bool InternalRecvMsg(Sys::OSHandle handle, Reader& reader)
+bool InternalRecvMsg(Sys::OSHandle handle, Serialize::Reader& reader)
 {
 	NaClMessageHeader hdr;
 	NaClIOVec iov[2];
@@ -424,9 +425,9 @@ bool InternalRecvMsg(Sys::OSHandle handle, Reader& reader)
 #endif
 }
 
-Reader Socket::RecvMsg() const
+Serialize::Reader Socket::RecvMsg() const
 {
-	Reader out;
+    Serialize::Reader out;
 	while (InternalRecvMsg(handle, out)) {}
 	return out;
 }

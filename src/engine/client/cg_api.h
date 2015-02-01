@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/q_shared.h"
 #include "../renderer/tr_types.h"
 #include "../../common/cm/cm_public.h"
+#include "../../common/IPC/CommonSyscalls.h"
 
 #define CGAME_API_VERSION 1
 
@@ -61,7 +62,7 @@ typedef struct
 	std::vector<std::string> serverCommands;
 } snapshot_t;
 
-namespace IPC {
+namespace Serialize {
 	template<> struct SerializeTraits<snapshot_t> {
 		static void Write(Writer& stream, const snapshot_t& snap)
 		{

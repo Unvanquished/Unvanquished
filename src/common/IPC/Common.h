@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2015, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,21 +28,57 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/IPC/Channel.h"
+#ifndef COMMON_IPC_COMMON_H_
+#define COMMON_IPC_COMMON_H_
 
-namespace VM {
+namespace IPC {
 
-	// Root channel used to communicate with the engine
-	extern IPC::Channel rootChannel;
+	// IPC descriptor which can be sent over a socket. You should treat this as an
+	// opaque type and not access any of the fields directly.
+	struct Desc {
+		Sys::OSHandle handle;
+		#ifndef __native_client__
+		int type;
+		union {
+			uint64_t size;
+			int32_t flags;
+		};
+		#endif
+	};
+	void CloseDesc(const Desc& desc);
 
-	// Functions each specific gamelogic should implement
-	void VMInit();
-	void VMHandleSyscall(uint32_t id, Serialize::Reader reader);
-	extern int VM_API_VERSION;
+	// Message ID to indicate an RPC return
+	const uint32_t ID_RETURN = 0xffffffff;
 
-	// Send a message to the engine
-	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
-		IPC::SendMsg<Msg>(rootChannel, VMHandleSyscall, std::forward<Args>(args)...);
-	}
+	// Combine a major and minor ID into a single number
+	template<uint16_t Major, uint16_t Minor> struct Id {
+		enum {
+			value = (Major << 16) + Minor
+		};
+	};
 
-}
+	// Asynchronous message which does not wait for a reply
+	template<typename Id, typename... T> struct Message {
+		enum {
+			id = Id::value
+		};
+		typedef std::tuple<T...> Inputs;
+	};
+
+	// Reply class which should only be used for the second parameter of SyncMessage
+	template<typename... T> struct Reply {
+		typedef std::tuple<T...> Outputs;
+	};
+
+	// Synchronous message which waits for a reply. The reply can contain data.
+	template<typename Msg, typename Reply = Reply<>> struct SyncMessage {
+		enum {
+			id = Msg::id
+		};
+		typedef typename Msg::Inputs Inputs;
+		typedef typename Reply::Outputs Outputs;
+	};
+
+} // namespace IPC
+
+#endif // COMMON_IPC_IPC_H_

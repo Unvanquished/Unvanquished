@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "../../common/Common.h"
+#include "../../common/IPC/CommonSyscalls.h"
 #include "VMMain.h"
 
 // The old console command handler that should be defined in all VMs
@@ -107,7 +108,7 @@ namespace Cmd {
 
     // Implementation of the engine syscalls
 
-    void ExecuteSyscall(IPC::Reader& reader, IPC::Channel& channel) {
+    void ExecuteSyscall(Serialize::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<VM::ExecuteMsg>(channel, std::move(reader), [](std::string command){
             Cmd::Args args(command);
 
@@ -122,7 +123,7 @@ namespace Cmd {
         });
     }
 
-    void CompleteSyscall(IPC::Reader& reader, IPC::Channel& channel) {
+    void CompleteSyscall(Serialize::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<VM::CompleteMsg>(channel, std::move(reader), [](int argNum, std::string command, std::string prefix, Cmd::CompletionResult& res) {
             Cmd::Args args(command);
 
@@ -137,7 +138,7 @@ namespace Cmd {
         });
     }
 
-    void HandleSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
+    void HandleSyscall(int minor, Serialize::Reader& reader, IPC::Channel& channel) {
         switch (minor) {
             case VM::EXECUTE:
                 ExecuteSyscall(reader, channel);
@@ -328,7 +329,7 @@ namespace Cvar{
 
     // Syscalls called by the engine
 
-    void CallOnValueChangedSyscall(IPC::Reader& reader, IPC::Channel& channel) {
+    void CallOnValueChangedSyscall(Serialize::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<VM::OnValueChangedMsg>(channel, std::move(reader), [](std::string name, std::string value, bool& success, std::string& description) {
             auto map = GetCvarMap();
             auto it = map.find(name);
@@ -346,7 +347,7 @@ namespace Cvar{
         });
     }
 
-    void HandleSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
+    void HandleSyscall(int minor, Serialize::Reader& reader, IPC::Channel& channel) {
         switch (minor) {
             case VM::ON_VALUE_CHANGED:
                 CallOnValueChangedSyscall(reader, channel);
@@ -476,7 +477,7 @@ namespace VM {
         Cvar::InitializeProxy();
     }
 
-    void HandleCommonSyscall(int major, int minor, IPC::Reader reader, IPC::Channel& channel) {
+    void HandleCommonSyscall(int major, int minor, Serialize::Reader reader, IPC::Channel& channel) {
         switch (major) {
             case VM::COMMAND:
                 Cmd::HandleSyscall(minor, reader, channel);

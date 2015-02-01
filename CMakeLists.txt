@@ -557,12 +557,11 @@ set( COMMONLIST
   ${COMMON_DIR}/LineEditData.h
   ${COMMON_DIR}/Log.cpp
   ${COMMON_DIR}/Log.h
-  ${COMMON_DIR}/IPC.cpp
-  ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/String.cpp
   ${COMMON_DIR}/String.h
   ${COMMON_DIR}/System.cpp
   ${COMMON_DIR}/System.h
+  ${COMMON_DIR}/Serialize.h
   ${COMMON_DIR}/cm/cm_load.cpp
   ${COMMON_DIR}/cm/cm_trisoup.cpp
   ${COMMON_DIR}/cm/cm_patch.cpp
@@ -574,6 +573,9 @@ set( COMMONLIST
   ${COMMON_DIR}/cm/cm_patch.h
   ${COMMON_DIR}/cm/cm_polylib.h
   ${COMMON_DIR}/cm/cm_public.h
+  ${COMMON_DIR}/IPC/Primitives.cpp
+  ${COMMON_DIR}/IPC/Primitives.h
+  ${COMMON_DIR}/IPC/Channel.h
 )
 
 set( RENDERERLIST

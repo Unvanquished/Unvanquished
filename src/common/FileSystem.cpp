@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../engine/qcommon/qcommon.h"
 #endif
 
+#include "IPC/CommonSyscalls.h"
+
 #ifdef _WIN32
 #include <windows.h>
 #include <shlobj.h>
@@ -59,7 +61,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Log::Logger fsLogs(VM_STRING_PREFIX "fs", Log::LOG_NOTICE);
 
 // SerializeTraits for PakInfo/LoadedPakInfo
-namespace IPC {
+namespace Serialize {
 
 template<> struct SerializeTraits<FS::PakInfo> {
 	static void Write(Writer& stream, const FS::PakInfo& value)
@@ -2324,7 +2326,7 @@ const std::string& GetLibPath()
 }
 
 #ifdef BUILD_ENGINE
-void HandleFileSystemSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel, Str::StringRef vmName)
+void HandleFileSystemSyscall(int minor, Serialize::Reader& reader, IPC::Channel& channel, Str::StringRef vmName)
 {
 	switch (minor) {
 	case VM::FS_INITIALIZE:

@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VMMain.h"
 #include "CommonProxies.h"
+#include "../../common/IPC/CommonSyscalls.h"
 #ifndef _WIN32
 #include <unistd.h>
 #endif
@@ -51,13 +52,13 @@ static void CommonInit(Sys::OSHandle rootSocket)
 	VM::rootChannel = IPC::Channel(IPC::Socket::FromHandle(rootSocket));
 
 	// Send syscall ABI version, also acts as a sign that the module loaded
-	IPC::Writer writer;
+	Serialize::Writer writer;
 	writer.Write<uint32_t>(VM::VM_API_VERSION);
 	VM::rootChannel.SendMsg(writer);
 
 	// Start the main loop
 	while (true) {
-		IPC::Reader reader = VM::rootChannel.RecvMsg();
+		Serialize::Reader reader = VM::rootChannel.RecvMsg();
 		uint32_t id = reader.Read<uint32_t>();
 		VM::VMHandleSyscall(id, std::move(reader));
 	}
