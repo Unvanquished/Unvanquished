@@ -1,3 +1,9 @@
+unvanquished (0.36.0-1) unstable; urgency=low
+
+  * Release of alpha 36 "leaving the door wide open for spoofed packets".
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 02 Feb 2015 03:49:36 +0000
+
 unvanquished (0.35.0-2) unstable; urgency=low
 
   * Fix paths to NaCl helper binaries.
