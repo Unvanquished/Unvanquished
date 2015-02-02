@@ -380,45 +380,6 @@ static void CG_Speaker( centity_t *cent )
 
 /*
 ===============
-CG_LaunchMissile
-===============
-*/
-static void CG_LaunchMissile( centity_t *cent )
-{
-	entityState_t             *es;
-	const missileAttributes_t *ma;
-	particleSystem_t          *ps;
-	trailSystem_t             *ts;
-
-	es = &cent->currentState;
-	ma = BG_Missile( es->weapon );
-
-	if ( ma->particleSystem )
-	{
-		ps = CG_SpawnNewParticleSystem( ma->particleSystem );
-
-		if ( CG_IsParticleSystemValid( &ps ) )
-		{
-			CG_SetAttachmentCent( &ps->attachment, cent );
-			CG_AttachToCent( &ps->attachment );
-			ps->charge = es->torsoAnim;
-		}
-	}
-
-	if ( ma->trailSystem )
-	{
-		ts = CG_SpawnNewTrailSystem( ma->trailSystem );
-
-		if ( CG_IsTrailSystemValid( &ts ) )
-		{
-			CG_SetAttachmentCent( &ts->frontAttachment, cent );
-			CG_AttachToCent( &ts->frontAttachment );
-		}
-	}
-}
-
-/*
-===============
 CG_Missile
 ===============
 */
@@ -540,7 +501,57 @@ static void CG_Missile( centity_t *cent )
 		ent.skeleton.scale = ma->modelScale;
 	}
 
-	//only refresh if there is something to display
+	// Add particle system.
+	if ( ma->particleSystem && !CG_IsParticleSystemValid( &cent->missilePS ) )
+	{
+		cent->missilePS = CG_SpawnNewParticleSystem( ma->particleSystem );
+
+		if ( CG_IsParticleSystemValid( &cent->missilePS ) )
+		{
+			CG_SetAttachmentCent( &cent->missilePS->attachment, cent );
+			CG_AttachToCent( &cent->missilePS->attachment );
+			cent->missilePS->charge = es->torsoAnim;
+		}
+	}
+
+	// Add trail system.
+	if ( ma->trailSystem && !CG_IsTrailSystemValid( &cent->missileTS ) )
+	{
+		cent->missileTS = CG_SpawnNewTrailSystem( ma->trailSystem );
+
+		if ( CG_IsTrailSystemValid( &cent->missileTS ) )
+		{
+			// TODO: Make attachment to tags on missile models work.
+			/*const char *tag;
+			bool       attachToTag = true;
+
+			// TODO: Move attachment name to config files.
+			switch ( es->modelindex )
+			{
+				case MIS_ROCKET:
+					tag = "Bone_nozzle";
+					break;
+
+				default:
+					attachToTag = false;
+					break;
+			}
+
+			if ( attachToTag )
+			{
+				CG_SetAttachmentTag( &cent->missileTS->frontAttachment, &ent, ent.hModel, tag );
+				CG_SetAttachmentCent( &cent->missileTS->frontAttachment, cent );
+				CG_AttachToTag( &cent->missileTS->frontAttachment );
+			}
+			else
+			{*/
+				CG_SetAttachmentCent( &cent->missileTS->frontAttachment, cent );
+				CG_AttachToCent( &cent->missileTS->frontAttachment );
+			//}
+		}
+	}
+
+	// Only refresh if there is something to display.
 	if ( ma->sprite || ma->model )
 	{
 		trap_R_AddRefEntityToScene( &ent );
@@ -1039,10 +1050,6 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 
 	switch ( es->eType )
 	{
-		case ET_MISSILE:
-			CG_LaunchMissile( cent );
-			break;
-
 		case ET_BUILDABLE:
 			cent->lastBuildableHealth = es->generic1;
 			break;
@@ -1065,6 +1072,8 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	cent->buildableStatusPS = NULL;
 	cent->entityPS = NULL;
 	cent->entityPSMissing = qfalse;
+	cent->missilePS = NULL;
+	cent->missileTS = NULL;
 
 	//make sure that the buildable animations are in a consistent state
 	//when a buildable enters the PVS
@@ -1134,6 +1143,17 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 		CG_DestroyParticleSystem( &cent->jetPackPS[ 1 ] );
 	}
 
+	// Destroy missile PS.
+	if ( CG_IsParticleSystemValid( &cent->missilePS ) )
+	{
+		CG_DestroyParticleSystem( &cent->missilePS );
+	}
+
+	// Destroy missile TS.
+	if ( CG_IsTrailSystemValid( &cent->missileTS ) )
+	{
+		CG_DestroyTrailSystem( &cent->missileTS );
+	}
 
 	// Lazy TODO: Destroy more PS/TS here
 	// Better TODO: Make two groups cent->temporaryPS[NUM_TMPPS], cent->persistentPS[NUM_PERSPS]

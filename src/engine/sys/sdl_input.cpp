@@ -1623,8 +1623,6 @@ void IN_Frame( void )
 		IN_JoyMove();
 	}
 
-	IN_ProcessEvents( dropInput );
-
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
@@ -1653,6 +1651,8 @@ void IN_Frame( void )
 	{
 		IN_ActivateMouse();
 	}
+
+	IN_ProcessEvents( dropInput );
 }
 
 void IN_DropInputsForFrame( void )

@@ -53,6 +53,7 @@ static const buildableName_t bg_buildableNameList[] =
 	{ BA_A_BOOSTER,   "booster",   "team_alien_booster"   },
 	{ BA_A_HIVE,      "hive",      "team_alien_hive"      },
 	{ BA_A_LEECH,     "leech",     "team_alien_leech"     },
+	{ BA_A_SPIKER,    "spiker",    "team_alien_spiker"    },
 	{ BA_H_SPAWN,     "telenode",  "team_human_spawn"     },
 	{ BA_H_MGTURRET,  "mgturret",  "team_human_mgturret"  },
 	{ BA_H_ROCKETPOD, "rocketpod", "team_human_rocketpod" },
@@ -760,7 +761,8 @@ static const missileData_t bg_missilesData[] =
   { MIS_LOCKBLOB,     "lockblob"     },
   { MIS_SLOWBLOB,     "slowblob"     },
   { MIS_BOUNCEBALL,   "bounceball"   },
-  { MIS_ROCKET,       "rocket"       }
+  { MIS_ROCKET,       "rocket"       },
+  { MIS_SPIKER,       "spiker"       }
 };
 
 static const size_t              bg_numMissiles = ARRAY_LEN( bg_missilesData );
@@ -882,6 +884,7 @@ static const meansOfDeathData_t bg_meansOfDeathData[] =
 	{ MOD_REACTOR, "MOD_REACTOR" },
 	{ MOD_ASPAWN, "MOD_ASPAWN" },
 	{ MOD_ATUBE, "MOD_ATUBE" },
+	{ MOD_SPIKER, "MOD_SPIKER" },
 	{ MOD_OVERMIND, "MOD_OVERMIND" },
 	{ MOD_DECONSTRUCT, "MOD_DECONSTRUCT" },
 	{ MOD_REPLACE, "MOD_REPLACE" },

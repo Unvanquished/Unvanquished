@@ -228,7 +228,7 @@ void              G_ResetVote( team_t team );
 void              G_ExecuteVote( team_t team );
 void              G_CheckVote( team_t team );
 void              LogExit( const char *string );
-void              G_InitGame( int levelTime, int randomSeed, int restart );
+void              G_InitGame( int levelTime, int randomSeed, int restart, bool inClient );
 void              G_RunFrame( int levelTime );
 void              G_ShutdownGame( int restart );
 vmCvar_t          *G_FindCvar( const char *name );

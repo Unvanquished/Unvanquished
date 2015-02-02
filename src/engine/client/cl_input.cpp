@@ -713,8 +713,6 @@ void CL_FinishMove( usercmd_t *cmd )
 
 	cmd->flags = cl.cgameFlags;
 
-	cmd->identClient = cl.cgameMpIdentClient; // NERVE - SMF
-
 	// send the current server time so the amount of movement
 	// can be determined without allowing cheating
 	cmd->serverTime = cl.serverTime;
@@ -936,7 +934,7 @@ void CL_WritePacket( void )
 	usercmd_t nullcmd;
 	int       packetNum;
 	int       oldPacketNum;
-	int       count, key;
+	int       count;
 
 	// don't send anything if playing back a demo
 	if ( clc.demoplaying || cls.state == CA_CINEMATIC )
@@ -1066,19 +1064,12 @@ void CL_WritePacket( void )
 		// write the command count
 		MSG_WriteByte( &buf, count );
 
-		// use the checksum feed in the key
-		key = clc.checksumFeed;
-		// also use the message acknowledge
-		key ^= clc.serverMessageSequence;
-		// also use the last acknowledged server command in the key
-		key ^= Com_HashKey( clc.serverCommands[ clc.serverCommandSequence & ( MAX_RELIABLE_COMMANDS - 1 ) ], 32 );
-
 		// write all the commands, including the predicted command
 		for ( i = 0; i < count; i++ )
 		{
 			j = ( cl.cmdNumber - count + i + 1 ) & CMD_MASK;
 			cmd = &cl.cmds[ j ];
-			MSG_WriteDeltaUsercmdKey( &buf, key, oldcmd, cmd );
+			MSG_WriteDeltaUsercmd( &buf, oldcmd, cmd );
 			oldcmd = cmd;
 		}
 	}

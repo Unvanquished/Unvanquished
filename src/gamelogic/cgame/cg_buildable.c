@@ -114,6 +114,7 @@ static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABL
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_BOOSTER
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_HIVE
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_LEECH
+{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_SPIKER
 {{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{S1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0}}, // H_SPAWN
 {{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_MGTURRET
 {{XX,0},{I1,0},{XX,0},{OP,2},{CD,0},{OP,0},{OP,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{OP,2},{CD,0},{CD,0}}, // H_ROCKETPOD
@@ -121,7 +122,7 @@ static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABL
 {{XX,0},{I1,0},{I2,0},{PD,0},{I1,0},{C1,0},{I1,0},{A1,0},{C2,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{DU,0},{DD,0}}, // H_MEDISTAT
 {{XX,0},{I1,0},{XX,0},{I1,0},{I1,0},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_DRILL
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0}}, // H_REACTOR
-{{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // H_REPEATER
+{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0}}, // H_REPEATER
 };
 
 static const char *GetAnimationName( buildable_t buildable, buildableAnimNumber_t animNumber )
@@ -749,6 +750,11 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 		case BA_A_ACIDTUBE:
 			*range = ACIDTUBE_RANGE;
 			shc = SHC_ORANGE;
+			break;
+
+		case BA_A_SPIKER:
+			*range = SPIKER_RANGE;
+			shc = SHC_PINK;
 			break;
 
 		case BA_A_TRAPPER:
@@ -2667,20 +2673,27 @@ void CG_Buildable( centity_t *cent )
 			}
 		}
 
-		// spawn firing sound
+		// Play firing sound.
 		if ( wi->wim[ WPM_PRIMARY ].firingSound )
 		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->wim[ WPM_PRIMARY ].firingSound );
-		}
-		else if ( wi->readySound )
-		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->readySound );
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
+			                        wi->wim[ WPM_PRIMARY ].firingSound );
 		}
 	}
-	else if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+	else // Not firing.
 	{
-		// destroy active muzzle ps
-		CG_DestroyParticleSystem( &cent->muzzlePS );
+		// Destroy active muzzle PS.
+		if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+		{
+			CG_DestroyParticleSystem( &cent->muzzlePS );
+		}
+
+		// Play lockon sound if applicable.
+		if ( es->eFlags & EF_B_LOCKON )
+		{
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
+			                        cgs.media.rocketpodLockonSound );
+		}
 	}
 
 	health = es->generic1;

@@ -298,6 +298,11 @@ static void CG_Obituary( entityState_t *ent )
 				messageAssisted = G_( "%s%s ^7was melted by an acid tube; %s%s^7 assisted\n" );
 				break;
 
+			case MOD_SPIKER:
+				message = G_( "%s%s ^7was flechetted by a spiker\n" );
+				messageAssisted = G_( "%s%s ^7was flechetted by a spiker; %s%s^7 assisted\n" );
+				break;
+
 			case MOD_OVERMIND:
 				message = G_( "%s%s ^7was whipped by the overmind\n" );
 				messageAssisted = G_( "%s%s ^7was whipped by the overmind; %s%s^7 assisted\n" );
