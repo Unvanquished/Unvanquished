@@ -156,7 +156,7 @@ equ trap_Parse_SourceFileAndLine          -392
 equ trap_Key_KeynumToStringBuf            -393
 equ trap_S_FadeAllSound                   -394
 equ trap_R_inPVS                          -395
-equ trap_GetHunkData                      -396
+equ trap_Unused                           -396
 equ trap_R_LoadDynamicShader              -397
 equ trap_R_RenderToTexture                -398
 equ trap_R_Finish                         -399

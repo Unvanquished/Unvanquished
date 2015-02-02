@@ -106,8 +106,8 @@ float MSG_ReadAngle16( msg_t *sb );
 void  MSG_ReadData( msg_t *sb, void *buffer, int size );
 int   MSG_LookaheadByte( msg_t *msg );
 
-void  MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to );
-void  MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to );
+void  MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to );
+void  MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to );
 
 void  MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to, qboolean force );
 void  MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, int number );
@@ -582,7 +582,7 @@ const char* FS_LoadedPaks();
 bool     FS_LoadPak( const char *name );
 void     FS_LoadBasePak();
 void     FS_LoadAllMapMetadata();
-bool     FS_LoadServerPaks( const char* paks );
+bool     FS_LoadServerPaks( const char* paks, bool isDemo );
 
 // shutdown and restart the filesystem so changes to fs_gamedir can take effect
 
@@ -732,7 +732,6 @@ extern int          time_backend; // renderer backend time
 
 extern int          com_frameTime;
 extern int          com_frameMsec;
-extern int          com_expectedhunkusage;
 extern int          com_hunkusedvalue;
 
 extern qboolean     com_errorEntered;
@@ -1094,7 +1093,6 @@ int  Parse_FreeSourceHandle( int handle );
 int  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );
 int  Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
-void Com_GetHunkInfo( int *hunkused, int *hunkexpected );
 void Com_RandomBytes( byte *string, int len );
 
 #define _(x) Trans_Gettext(x)

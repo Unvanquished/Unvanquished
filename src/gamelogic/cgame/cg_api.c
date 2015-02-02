@@ -770,9 +770,9 @@ qboolean trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
 
 //98.
 //CL_SetUserCmdValue(args[1], args[2], VMF(3), args[4]);
-void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale, int mpIdentClient )
+void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale )
 {
-	syscallVM( CG_SETUSERCMDVALUE, stateValue, flags, PASSFLOAT( sensitivityScale ), mpIdentClient );
+	syscallVM( CG_SETUSERCMDVALUE, stateValue, flags, PASSFLOAT( sensitivityScale ) );
 }
 
 //99.
@@ -1058,13 +1058,6 @@ void trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds )
 qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
 {
 	return syscallVM( CG_R_INPVS, p1, p2 );
-}
-
-//153.
-//Com_GetHunkInfo(VMA(1), VMA(2));
-void trap_GetHunkData( int *hunkused, int *hunkexpected )
-{
-	syscallVM( CG_GETHUNKDATA, hunkused, hunkexpected );
 }
 
 //157.

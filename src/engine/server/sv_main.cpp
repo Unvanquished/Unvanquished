@@ -66,7 +66,6 @@ cvar_t         *sv_minPing;
 cvar_t         *sv_maxPing;
 
 cvar_t         *sv_pure;
-cvar_t         *sv_newGameShlib;
 cvar_t         *sv_floodProtect;
 cvar_t         *sv_lanForceRate; // TTimo - dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 
@@ -87,8 +86,6 @@ cvar_t *sv_packetdelay;
 
 // fretn
 cvar_t *sv_fullmsg;
-
-cvar_t *vm_game;
 
 Cvar::Cvar<bool> isLanOnly(
 	"server.lanOnly", "should the server stay only on LAN (vs. advertise itself on the internet)",

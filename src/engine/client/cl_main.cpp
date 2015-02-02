@@ -2173,9 +2173,6 @@ void CL_Vid_Restart_f( void )
 
 // XreaL END
 
-	// RF, don't show percent bar, since the memory usage will just sit at the same level anyway
-	com_expectedhunkusage = -1;
-
 	// don't let them loop during the restart
 	Audio::StopAllSounds();
 	// shutdown the CGame
@@ -2451,7 +2448,7 @@ void CL_DownloadsComplete( void )
 		cls.downloadRestart = qfalse;
 
 		FS::PakPath::ClearPaks();
-		FS_LoadServerPaks(Cvar_VariableString("sv_paks")); // We possibly downloaded a pak, restart the file system to load it
+		FS_LoadServerPaks(Cvar_VariableString("sv_paks"), clc.demoplaying); // We possibly downloaded a pak, restart the file system to load it
 
 		if ( !cls.bWWWDlDisconnected )
 		{
@@ -4156,7 +4153,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "irc_quit", CL_IRCInitiateShutdown );
 	Cmd_AddCommand( "irc_say", CL_IRCSay );
 
-	Cmd_AddCommand( "updatehunkusage", CL_UpdateLevelHunkUsage );
 	Cmd_AddCommand( "updatescreen", SCR_UpdateScreen );
 	// done.
 
@@ -4245,7 +4241,6 @@ void CL_Shutdown( void )
 	Cmd_RemoveCommand( "showip" );
 	Cmd_RemoveCommand( "model" );
 
-	Cmd_RemoveCommand( "updatehunkusage" );
 	Cmd_RemoveCommand( "wav_record" );
 	Cmd_RemoveCommand( "wav_stoprecord" );
 	// done.

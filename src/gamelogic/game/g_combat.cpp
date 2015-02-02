@@ -84,6 +84,7 @@ static const char *const modNames[] =
 
 	"MOD_ASPAWN",
 	"MOD_ATUBE",
+	"MOD_SPIKER",
 	"MOD_OVERMIND",
 	"MOD_DECONSTRUCT",
 	"MOD_REPLACE",

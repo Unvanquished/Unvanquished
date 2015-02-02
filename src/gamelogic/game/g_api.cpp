@@ -117,10 +117,10 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 			break;
 
 		case GAME_INIT:
-			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart, bool cheats) {
+			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart, bool cheats, bool inClient) {
 				FS::Initialize();
 				g_cheats.integer = cheats;
-				G_InitGame(levelTime, randomSeed, restart);
+				G_InitGame(levelTime, randomSeed, restart, inClient);
 			});
 			break;
 
