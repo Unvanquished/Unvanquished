@@ -2001,7 +2001,8 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		BOUNCE_FULL           = 1 << 11,
 		BOUNCE_HALF           = 1 << 12,
 		BOUNCE_NO_SOUND       = 1 << 13,
-		KNOCKBACK             = 1 << 14
+		KNOCKBACK             = 1 << 14,
+		LOCATIONAL_DAMAGE     = 1 << 15
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -2099,6 +2100,11 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		{
 			ma->doKnockback = qtrue;
 			defined |= KNOCKBACK;
+		}
+		else if ( !Q_stricmp( token, "doLocationalDamage" ) )
+		{
+			ma->doLocationalDamage = qtrue;
+			defined |= LOCATIONAL_DAMAGE;
 		}
 		/*else if( (var = BG_FindConfigVar( va( "m_%s_%s", ma->name, token ) ) ) != NULL )
 		{
