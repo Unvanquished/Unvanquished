@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "IPC/Common.h"
 
-namespace Serialize {
+namespace Utils {
 
 	// Base type for serialization traits.
 	template<typename T, typename = void> struct SerializeTraits {};

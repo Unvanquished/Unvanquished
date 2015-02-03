@@ -506,7 +506,7 @@ const std::string& GetLibPath();
 
 #ifdef BUILD_ENGINE
 // Handle filesystem system calls
-void HandleFileSystemSyscall(int minor, Serialize::Reader& reader, IPC::Channel& channel, Str::StringRef vmName);
+void HandleFileSystemSyscall(int minor, Utils::Reader& reader, IPC::Channel& channel, Str::StringRef vmName);
 #endif
 
 } // namespace FS

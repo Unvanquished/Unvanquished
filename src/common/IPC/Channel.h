@@ -58,11 +58,11 @@ public:
 	}
 
 	// Wrappers around socket functions
-	void SendMsg(const Serialize::Writer& writer) const
+	void SendMsg(const Utils::Writer& writer) const
 	{
 		socket.SendMsg(writer);
 	}
-    Serialize::Reader RecvMsg() const
+    Utils::Reader RecvMsg() const
 	{
 		return socket.RecvMsg();
 	}
@@ -78,19 +78,19 @@ public:
 	}
 
 	// Wait for a synchronous message reply, returns the message ID and contents
-	std::pair<uint32_t, Serialize::Reader> RecvReplyMsg(uint32_t key)
+	std::pair<uint32_t, Utils::Reader> RecvReplyMsg(uint32_t key)
 	{
 		// If we have already recieved a reply for this key, just return that
 		auto it = replies.find(key);
 		if (it != replies.end()) {
-            Serialize::Reader reader = std::move(it->second);
+            Utils::Reader reader = std::move(it->second);
 			replies.erase(it);
 			return {ID_RETURN, std::move(reader)};
 		}
 
 		// Otherwise handle incoming messages until we find the reply we want
 		while (true) {
-            Serialize::Reader reader = RecvMsg();
+            Utils::Reader reader = RecvMsg();
 
 			// Is this a reply?
 			uint32_t id = reader.Read<uint32_t>();
@@ -110,7 +110,7 @@ public:
 private:
 	Socket socket;
 	uint32_t counter;
-	std::unordered_map<uint32_t, Serialize::Reader> replies;
+	std::unordered_map<uint32_t, Utils::Reader> replies;
 
 public:
 	bool handlingAsyncMsg;
@@ -124,7 +124,7 @@ template<typename Func, typename Id, typename... MsgArgs, typename... Args> void
 	typedef Message<Id, MsgArgs...> Message;
 	static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
-    Serialize::Writer writer;
+    Utils::Writer writer;
 	writer.Write<uint32_t>(Message::id);
 	writer.WriteArgs(Util::TypeListFromTuple<typename Message::Inputs>(), std::forward<Args>(args)...);
 	channel.SendMsg(writer);
@@ -137,7 +137,7 @@ template<typename Func, typename Msg, typename Reply, typename... Args> void Sen
 	if (channel.handlingAsyncMsg)
 		Com_Error(ERR_DROP, "Attempting to send a SyncMessage while handling a Message");
 
-    Serialize::Writer writer;
+    Utils::Writer writer;
 	writer.Write<uint32_t>(Message::id);
 	uint32_t key = channel.GenMsgKey();
 	writer.Write<uint32_t>(key);
@@ -145,7 +145,7 @@ template<typename Func, typename Msg, typename Reply, typename... Args> void Sen
 	channel.SendMsg(writer);
 
 	while (true) {
-        Serialize::Reader reader;
+        Utils::Reader reader;
 		uint32_t id;
 		std::tie(id, reader) = channel.RecvReplyMsg(key);
 		if (id == ID_RETURN) {
@@ -158,11 +158,11 @@ template<typename Func, typename Msg, typename Reply, typename... Args> void Sen
 }
 
 // Implementations of HandleMsg for Message and SyncMessage
-template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel& channel, Message<Id, MsgArgs...>, Serialize::Reader reader, Func&& func)
+template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel& channel, Message<Id, MsgArgs...>, Utils::Reader reader, Func&& func)
 {
 	typedef Message<Id, MsgArgs...> Message;
 
-	typename Serialize::Reader::MapTuple<typename Message::Inputs>::type inputs;
+	typename Utils::Reader::MapTuple<typename Message::Inputs>::type inputs;
 	reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
 
 	bool old = channel.handlingAsyncMsg;
@@ -170,17 +170,17 @@ template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel
 	Util::apply(std::forward<Func>(func), std::move(inputs));
 	channel.handlingAsyncMsg = old;
 }
-template<typename Func, typename Msg, typename Reply> void HandleMsg(Channel& channel, SyncMessage<Msg, Reply>, Serialize::Reader reader, Func&& func)
+template<typename Func, typename Msg, typename Reply> void HandleMsg(Channel& channel, SyncMessage<Msg, Reply>, Utils::Reader reader, Func&& func)
 {
 	typedef SyncMessage<Msg, Reply> Message;
 
 	uint32_t key = reader.Read<uint32_t>();
-	typename Serialize::Reader::MapTuple<typename Message::Inputs>::type inputs;
+	typename Utils::Reader::MapTuple<typename Message::Inputs>::type inputs;
 	typename Message::Outputs outputs;
 	reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
 	Util::apply(std::forward<Func>(func), std::tuple_cat(Util::ref_tuple(std::move(inputs)), Util::ref_tuple(outputs)));
 
-    Serialize::Writer writer;
+    Utils::Writer writer;
 	writer.Write<uint32_t>(ID_RETURN);
 	writer.Write<uint32_t>(key);
     writer.WriteTuple(Util::TypeListFromTuple<typename Message::Outputs>(), std::move(outputs));
@@ -199,7 +199,7 @@ template<typename Msg, typename Func, typename... Args> void SendMsg(Channel& ch
 
 // Handle an incoming message using a callback function (which can just be a lambda). If the message is
 // synchronous then outputs values are written to using reference parameters.
-template<typename Msg, typename Func> void HandleMsg(Channel& channel, Serialize::Reader reader, Func&& func)
+template<typename Msg, typename Func> void HandleMsg(Channel& channel, Utils::Reader reader, Func&& func)
 {
 	detail::HandleMsg(channel, Msg(), std::move(reader), std::forward<Func>(func));
 }

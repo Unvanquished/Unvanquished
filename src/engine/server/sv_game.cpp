@@ -513,7 +513,7 @@ void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSi
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-void GameVM::Syscall(uint32_t id, Serialize::Reader reader, IPC::Channel& channel)
+void GameVM::Syscall(uint32_t id, Utils::Reader reader, IPC::Channel& channel)
 {
 	int major = id >> 16;
 	int minor = id & 0xffff;
@@ -528,7 +528,7 @@ void GameVM::Syscall(uint32_t id, Serialize::Reader reader, IPC::Channel& channe
 	}
 }
 
-void GameVM::QVMSyscall(int index, Serialize::Reader& reader, IPC::Channel& channel)
+void GameVM::QVMSyscall(int index, Utils::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
 	case G_LOCATE_GAME_DATA1:

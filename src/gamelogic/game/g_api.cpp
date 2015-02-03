@@ -45,7 +45,7 @@ void VM::VMInit() {
 	G_CM_ClearWorld();
 }
 
-void VM::VMHandleSyscall(uint32_t id, Serialize::Reader reader) {
+void VM::VMHandleSyscall(uint32_t id, Utils::Reader reader) {
 
 	int major = id >> 16;
 	int minor = id & 0xffff;

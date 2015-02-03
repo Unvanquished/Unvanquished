@@ -43,7 +43,7 @@ namespace VM {
             CommonVMServices(VMBase& vm, Str::StringRef vmName, int commandFlag);
             ~CommonVMServices();
 
-            void Syscall(int major, int minor, Serialize::Reader reader, IPC::Channel& channel);
+            void Syscall(int major, int minor, Utils::Reader reader, IPC::Channel& channel);
 
         private:
             std::string vmName;
@@ -52,12 +52,12 @@ namespace VM {
             VMBase& GetVM();
 
             // Command Related
-            void HandleCommandSyscall(int minor, Serialize::Reader& reader, IPC::Channel& channel);
+            void HandleCommandSyscall(int minor, Utils::Reader& reader, IPC::Channel& channel);
 
-            void AddCommand(Serialize::Reader& reader, IPC::Channel& channel);
-            void RemoveCommand(Serialize::Reader& reader, IPC::Channel& channel);
-            void EnvPrint(Serialize::Reader& reader, IPC::Channel& channel);
-            void EnvExecuteAfter(Serialize::Reader& reader, IPC::Channel& channel);
+            void AddCommand(Utils::Reader& reader, IPC::Channel& channel);
+            void RemoveCommand(Utils::Reader& reader, IPC::Channel& channel);
+            void EnvPrint(Utils::Reader& reader, IPC::Channel& channel);
+            void EnvExecuteAfter(Utils::Reader& reader, IPC::Channel& channel);
 
             class ProxyCmd;
             int commandFlag;
@@ -66,21 +66,21 @@ namespace VM {
             std::unordered_map<std::string, uint64_t> registeredCommands;
 
             // Cvar Related
-            void HandleCvarSyscall(int minor, Serialize::Reader& reader, IPC::Channel& channel);
+            void HandleCvarSyscall(int minor, Utils::Reader& reader, IPC::Channel& channel);
 
-            void RegisterCvar(Serialize::Reader& reader, IPC::Channel& channel);
-            void GetCvar(Serialize::Reader& reader, IPC::Channel& channel);
-            void SetCvar(Serialize::Reader& reader, IPC::Channel& channel);
-            void AddCvarFlags(Serialize::Reader& reader, IPC::Channel& channel);
+            void RegisterCvar(Utils::Reader& reader, IPC::Channel& channel);
+            void GetCvar(Utils::Reader& reader, IPC::Channel& channel);
+            void SetCvar(Utils::Reader& reader, IPC::Channel& channel);
+            void AddCvarFlags(Utils::Reader& reader, IPC::Channel& channel);
 
             class ProxyCvar;
             std::vector<std::unique_ptr<ProxyCvar>> registeredCvars;
 
             // Log Related
-            void HandleLogSyscall(int minor, Serialize::Reader& reader, IPC::Channel& channel);
+            void HandleLogSyscall(int minor, Utils::Reader& reader, IPC::Channel& channel);
 
             // Common common QVM syscalls
-            void HandleCommonQVMSyscall(int minor, Serialize::Reader& reader, IPC::Channel& channel);
+            void HandleCommonQVMSyscall(int minor, Utils::Reader& reader, IPC::Channel& channel);
     };
 }
 

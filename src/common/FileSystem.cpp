@@ -61,7 +61,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Log::Logger fsLogs(VM_STRING_PREFIX "fs", Log::LOG_NOTICE);
 
 // SerializeTraits for PakInfo/LoadedPakInfo
-namespace Serialize {
+namespace Utils {
 
 template<> struct SerializeTraits<FS::PakInfo> {
 	static void Write(Writer& stream, const FS::PakInfo& value)
@@ -2326,7 +2326,7 @@ const std::string& GetLibPath()
 }
 
 #ifdef BUILD_ENGINE
-void HandleFileSystemSyscall(int minor, Serialize::Reader& reader, IPC::Channel& channel, Str::StringRef vmName)
+void HandleFileSystemSyscall(int minor, Utils::Reader& reader, IPC::Channel& channel, Str::StringRef vmName)
 {
 	switch (minor) {
 	case VM::FS_INITIALIZE:

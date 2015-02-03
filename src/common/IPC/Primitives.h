@@ -97,8 +97,8 @@ namespace IPC {
 		static Socket FromDesc(const FileDesc& desc);
 		static Socket FromHandle(Sys::OSHandle handle);
 
-		void SendMsg(const Serialize::Writer& writer) const;
-		Serialize::Reader RecvMsg() const;
+		void SendMsg(const Utils::Writer& writer) const;
+		Utils::Reader RecvMsg() const;
 
 		void SetRecvTimeout(std::chrono::nanoseconds timeout);
 
@@ -150,7 +150,7 @@ namespace IPC {
 
 } // namespace IPC
 
-namespace Serialize {
+namespace Utils {
 
 	// Socket, file handle and shared memory
 	template<> struct SerializeTraits<IPC::Socket> {
@@ -184,7 +184,7 @@ namespace Serialize {
 		}
 	};
 
-} // namespace Serialize
+} // namespace Utils
 
 #endif // COMMON_IPC_PRIMITIVES_H_
 

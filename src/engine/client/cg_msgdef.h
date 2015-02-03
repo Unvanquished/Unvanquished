@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cg_api.h"
 #include "../../common/IPC/CommonSyscalls.h"
 
-namespace Serialize {
+namespace Utils {
 	template<> struct SerializeTraits<snapshot_t> {
 		static void Write(Writer& stream, const snapshot_t& snap)
 		{
