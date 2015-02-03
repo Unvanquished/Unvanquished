@@ -407,6 +407,7 @@ struct gentity_s
 	// spiker
 	int         spikerRestUntil;
 	float       spikerLastScoring;
+	qboolean    spikerLastSensing;
 
 	vec4_t      animation; // animated map objects
 

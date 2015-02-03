@@ -753,7 +753,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_A_SPIKER:
-			*range = SPIKER_RANGE;
+			*range = SPIKER_SPIKE_RANGE;
 			shc = SHC_PINK;
 			break;
 
