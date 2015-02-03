@@ -35,6 +35,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace VM {
 
+    /*
+     * This file contains the definition of the message types that are common
+     * to all the VMs and that are implemented in
+     *   - CommonVMServices in the engine
+     *   - CommonProxies in the VM
+     * QVM is a special message ID major number that will be used for all the
+     * messages for the former QVM syscalls.
+     * LAST_COMMON_SYSCALL is the first ID available for VM-specific use.
+     */
+
     enum {
         QVM,
         QVM_COMMON,

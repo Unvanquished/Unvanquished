@@ -31,10 +31,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COMMON_IPC_COMMON_H_
 #define COMMON_IPC_COMMON_H_
 
+/*
+ * Contains definitions that are common to all IPC methods so that they are consistent
+ */
+
 namespace IPC {
 
-	// IPC descriptor which can be sent over a socket. You should treat this as an
-	// opaque type and not access any of the fields directly.
+    /*
+     * IPC descriptor which can be sent over a socket. You should treat this as an
+     * opaque type and not access any of the fields directly.
+     */
 	struct FileDesc {
 		Sys::OSHandle handle;
 		#ifndef __native_client__
@@ -47,17 +53,31 @@ namespace IPC {
         void Close() const;
 	};
 
-	// Message ID to indicate an RPC return
+    /*
+     * The messages sent between the VM and the engine are defined by a numerical
+     * ID used for dispatch, a list of input types and an optional list of return
+     * types. The ID is on 32 bits with usually 16 bits for coarse dispatch (at the
+     * services level) and 16 bits for fine dispatch (function level).
+     */
+
+	// Special message ID used to indicate an RPC return
 	const uint32_t ID_RETURN = 0xffffffff;
 
-	// Combine a major and minor ID into a single number
+    // Combine a major and minor ID into a single number.
+    // TODO we use a template, because we need the ID to be part of template
+    // arguments and some compilers do not support constexpr yet.
 	template<uint16_t Major, uint16_t Minor> struct Id {
 		enum {
 			value = (Major << 16) + Minor
 		};
 	};
 
-	// Asynchronous message which does not wait for a reply
+    /*
+     * Asynchronous message which does not wait for a reply, the argument types
+     * can be any serializable type, you can declare a message type like so:
+     *
+     *     typedef IPC::Message<IPC::Id<MY_MODULE, MY_METHOD>, std::string, int, bool> MyMethodMsg;
+     */
 	template<typename Id, typename... T> struct Message {
 		enum {
 			id = Id::value
@@ -70,7 +90,20 @@ namespace IPC {
 		typedef std::tuple<T...> Outputs;
 	};
 
-	// Synchronous message which waits for a reply. The reply can contain data.
+    /*
+     * Synchronous message which waits for a reply. The reply can contain data. Both
+     * the input and output types can be any serializable type, you can declare a
+     * synchronous message type like so:
+     *
+     *     typedef IPC::SyncMessage<
+     *         Message<IPC::Id<MY_MODULE, MY_METHOD>, std::string, int, bool>,
+     *         IPC::Reply<std::string>
+     *     > MyMethodMsg;
+     *
+     * You can skip the Reply part if there is no return value, this is useful for
+     * messages whose invocation will contain other sync messages, such as most
+     * Engine -> VM messages.
+     */
 	template<typename Msg, typename Reply = Reply<>> struct SyncMessage {
 		enum {
 			id = Msg::id

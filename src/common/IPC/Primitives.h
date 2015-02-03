@@ -35,6 +35,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace IPC {
 
+    /*
+     * NaCl allows us to share file descriptors between the engine and the VM,
+     * these allow us in turn to share sockets and shared memory regions, which
+     * are file descriptor-backed OS resources.
+     */
+
 	// Simple file handle wrapper, does *not* close handle on destruction
 	enum FileOpenMode {
 		MODE_READ,
@@ -108,7 +114,8 @@ namespace IPC {
 		Sys::OSHandle handle;
 	};
 
-	// Shared memory area, can be sent over a socket
+	// Shared memory area, can be sent over a socket. Can be initialized in the VM
+    // safely as the engine will ask the OS for the size of the Shared memory region.
 	class SharedMemory {
 	public:
 		SharedMemory() : handle(Sys::INVALID_HANDLE) {}

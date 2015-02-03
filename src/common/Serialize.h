@@ -35,7 +35,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Utils {
 
-	// Base type for serialization traits.
+    /*
+     * Contains classes used to serialize data to memory and back. Also to
+     * support NaCl IPC specifics, they can contain IPC file descriptors.
+     * To define serialization and deserialization, all is needed is to
+     * implement the following template trait.
+     *
+     * namespace Utils {
+     *     template<>
+     *     struct SerializeTraits<MyType> {
+     *         static void Write(Writer& stream, const MyType& value) {
+     *             // Write data to stream
+     *         }
+     *         static MyType Read(Reader& stream) {
+     *             // Read from stream and return
+     *         }
+     *     };
+     * }
+     */
+
+	// Trait declaration for the serialization trait.
 	template<typename T, typename = void> struct SerializeTraits {};
 
 	// Class to generate messages
@@ -189,6 +208,8 @@ namespace Utils {
 		size_t pos;
 		size_t handles_pos;
 	};
+
+    // Implementation of the serialization traits for common types and std containers
 
 	// Simple implementation for POD types
 	template<typename T>
