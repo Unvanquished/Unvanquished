@@ -268,7 +268,7 @@ static void InternalSendMsg(Sys::OSHandle handle, bool more, const FileDesc* han
 #endif
 }
 
-void Socket::SendMsg(const Utils::Writer& writer) const
+void Socket::SendMsg(const Util::Writer& writer) const
 {
 	const FileDesc* handles = writer.GetHandles().data();
 	size_t numHandles = writer.GetHandles().size();
@@ -296,7 +296,7 @@ static void FreeHandles(const NaClHandle* h)
 }
 #endif
 
-bool InternalRecvMsg(Sys::OSHandle handle, Utils::Reader& reader)
+bool InternalRecvMsg(Sys::OSHandle handle, Util::Reader& reader)
 {
 	NaClMessageHeader hdr;
 	NaClIOVec iov[2];
@@ -425,9 +425,9 @@ bool InternalRecvMsg(Sys::OSHandle handle, Utils::Reader& reader)
 #endif
 }
 
-Utils::Reader Socket::RecvMsg() const
+Util::Reader Socket::RecvMsg() const
 {
-    Utils::Reader out;
+    Util::Reader out;
 	while (InternalRecvMsg(handle, out)) {}
 	return out;
 }

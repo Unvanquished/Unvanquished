@@ -37,7 +37,7 @@ namespace VM {
 
 	// Functions each specific gamelogic should implement
 	void VMInit();
-	void VMHandleSyscall(uint32_t id, Utils::Reader reader);
+	void VMHandleSyscall(uint32_t id, Util::Reader reader);
 	extern int VM_API_VERSION;
 
 	// Send a message to the engine

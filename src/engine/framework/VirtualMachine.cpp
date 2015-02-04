@@ -406,7 +406,7 @@ uint32_t VMBase::Create()
 
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
-	Utils::Reader reader = rootChannel.RecvMsg();
+	Util::Reader reader = rootChannel.RecvMsg();
 	Com_Printf("Loaded VM module in %d msec\n", Sys_Milliseconds() - loadStartTime);
 	return reader.Read<uint32_t>();
 }

@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "IPC/Common.h"
 
-namespace Utils {
+namespace Util {
 
     /*
      * Contains classes used to serialize data to memory and back. Also to
@@ -41,7 +41,7 @@ namespace Utils {
      * To define serialization and deserialization, all is needed is to
      * implement the following template trait.
      *
-     * namespace Utils {
+     * namespace Util {
      *     template<>
      *     struct SerializeTraits<MyType> {
      *         static void Write(Writer& stream, const MyType& value) {
@@ -399,6 +399,6 @@ namespace Utils {
 		}
 	};
 
-} // Serialize
+} // namespace Util
 
 #endif // COMMON_SERIALIZATION_H_

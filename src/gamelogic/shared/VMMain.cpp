@@ -52,13 +52,13 @@ static void CommonInit(Sys::OSHandle rootSocket)
 	VM::rootChannel = IPC::Channel(IPC::Socket::FromHandle(rootSocket));
 
 	// Send syscall ABI version, also acts as a sign that the module loaded
-	Utils::Writer writer;
+	Util::Writer writer;
 	writer.Write<uint32_t>(VM::VM_API_VERSION);
 	VM::rootChannel.SendMsg(writer);
 
 	// Start the main loop
 	while (true) {
-		Utils::Reader reader = VM::rootChannel.RecvMsg();
+		Util::Reader reader = VM::rootChannel.RecvMsg();
 		uint32_t id = reader.Read<uint32_t>();
 		VM::VMHandleSyscall(id, std::move(reader));
 	}

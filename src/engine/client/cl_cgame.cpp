@@ -1532,7 +1532,7 @@ float CGameVM::CGameRocketProgressbarValue(Str::StringRef source)
 	return value;
 }
 
-void CGameVM::Syscall(uint32_t id, Utils::Reader reader, IPC::Channel& channel)
+void CGameVM::Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel)
 {
 	int major = id >> 16;
 	int minor = id & 0xffff;
@@ -1547,7 +1547,7 @@ void CGameVM::Syscall(uint32_t id, Utils::Reader reader, IPC::Channel& channel)
 	}
 }
 
-void CGameVM::QVMSyscall(int index, Utils::Reader& reader, IPC::Channel& channel)
+void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
 		case CG_SENDCLIENTCOMMAND:
