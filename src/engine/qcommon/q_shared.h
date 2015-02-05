@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.35.0"
+#define PRODUCT_VERSION         "0.36.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -2256,11 +2256,6 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 
 		signed char forwardmove, rightmove, upmove;
 		byte        doubleTap; // Arnout: only 3 bits used
-
-		// rain - in ET, this can be any entity, and it's used as an array
-		// index, so make sure it's unsigned
-		// But Unv doesn't use it.
-		byte identClient; // NERVE - SMF
 
 		byte        weapon;
 		byte        flags;
