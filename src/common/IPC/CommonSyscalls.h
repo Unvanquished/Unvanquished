@@ -52,6 +52,7 @@ namespace VM {
         CVAR,
         LOG,
         FILESYSTEM,
+        COMMAND_BUFFER,
         LAST_COMMON_SYSCALL
     };
 

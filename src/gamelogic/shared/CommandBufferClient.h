@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2015, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,26 +28,54 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#ifndef SHARED_VM_MAIN_H_
-#define SHARED_VM_MAIN_H_
+#ifndef SHARED_COMMAND_BUFFER_CLIENT_H_
+#define SHARED_COMMAND_BUFFER_CLIENT_H_
 
-#include "../../common/IPC/Channel.h"
+#include "../../common/IPC/CommandBuffer.h"
+#include "../../common/Serialize.h"
+#include "VMMain.h"
 
-namespace VM {
+namespace IPC {
 
-	// Root channel used to communicate with the engine
-	extern IPC::Channel rootChannel;
 
-	// Functions each specific gamelogic should implement
-	void VMInit();
-	void VMHandleSyscall(uint32_t id, Util::Reader reader);
-	extern int VM_API_VERSION;
+    class CommandBufferClient {
+        public:
+            CommandBufferClient(std::string name);
 
-	// Send a message to the engine
-	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
-		IPC::SendMsg<Msg>(rootChannel, VMHandleSyscall, std::forward<Args>(args)...);
-	}
+            void Init();
+
+            template<typename Message, typename... Args> void SendMsg(Args&&... args) {
+                SendMsgImpl(Message(), std::forward<Args>(args)...);
+            }
+
+            template<typename Message, typename... Args> void SendMsgImpl(Message, Args&&... args) {
+                static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value, "Incorrect number of arguments for CommandBufferClient::SendMsg");
+
+                Util::Writer writer;
+                writer.Write<uint32_t>(Message::id);
+                writer.WriteArgs(Util::TypeListFromTuple<typename Message::Inputs>(), std::forward<Args>(args)...);
+
+                Write(writer);
+            }
+
+            void TryFlush();
+
+        private:
+            std::string name;
+            Cvar::Range<Cvar::Cvar<int>> bufferSize;
+            Log::Logger logs;
+            int current;
+            size_t written[2];
+            IPC::CommandBufferData buffers[2];
+
+            void Write(Util::Writer& writer);
+
+            bool CanWrite(size_t length);
+            size_t RemainingSize();
+
+            void Flush();
+    };
 
 }
 
-#endif // SHARED_VM_MAIN_H_
+#endif // SHARED_COMMAND_BUFFER_CLIENT_H_

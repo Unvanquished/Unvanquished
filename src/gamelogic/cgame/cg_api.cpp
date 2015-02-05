@@ -32,11 +32,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../../engine/client/cg_msgdef.h"
 
 #include "../shared/VMMain.h"
+#include "../shared/CommandBufferClient.h"
 #include "../shared/CommonProxies.h"
 
-// Symbols required by the shqred VMMqin code
+// Symbols required by the shared VMMain code
 
 int VM::VM_API_VERSION = CGAME_API_VERSION;
+
+static IPC::CommandBufferClient cmdBuffer("cgame");
 
 void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState );
 void CG_RegisterCvars( void );
@@ -51,7 +54,8 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 IPC::HandleMsg<CGameStaticInitMsg>(VM::rootChannel, std::move(reader), [] {
                     VM::InitializeProxies();
                     FS::Initialize();
-                    });
+					cmdBuffer.Init();
+                });
                 break;
 
             case CG_INIT:
@@ -68,6 +72,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, bool demoPlayback) {
                     CG_DrawActiveFrame(serverTime, demoPlayback);
                 });
+				cmdBuffer.TryFlush();
                 break;
 
             case CG_CROSSHAIR_PLAYER:
@@ -96,6 +101,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 
             case CG_ROCKET_FRAME:
                 IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), CG_Rocket_Frame);
+				cmdBuffer.TryFlush();
                 break;
 
             case CG_ROCKET_FORMAT_DATA:
@@ -264,17 +270,17 @@ void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )
 	if (origin) {
 		VectorCopy(origin, myorigin.data());
 	}
-	VM::SendMsg<Audio::StartSoundMsg>(!!origin, myorigin, entityNum, sfx);
+	cmdBuffer.SendMsg<Audio::StartSoundMsg>(!!origin, myorigin, entityNum, sfx);
 }
 
 void trap_S_StartLocalSound( sfxHandle_t sfx, int )
 {
-	VM::SendMsg<Audio::StartLocalSoundMsg>(sfx);
+	cmdBuffer.SendMsg<Audio::StartLocalSoundMsg>(sfx);
 }
 
 void trap_S_ClearLoopingSounds( qboolean )
 {
-	VM::SendMsg<Audio::ClearLoopingSoundsMsg>();
+	cmdBuffer.SendMsg<Audio::ClearLoopingSoundsMsg>();
 }
 
 void trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
@@ -285,7 +291,7 @@ void trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t ve
 	if (velocity) {
 		trap_S_UpdateEntityVelocity(entityNum, velocity);
 	}
-	VM::SendMsg<Audio::AddLoopingSoundMsg>(entityNum, sfx);
+	cmdBuffer.SendMsg<Audio::AddLoopingSoundMsg>(entityNum, sfx);
 }
 
 void trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
@@ -295,14 +301,14 @@ void trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_
 
 void trap_S_StopLoopingSound( int entityNum )
 {
-	VM::SendMsg<Audio::StopLoopingSoundMsg>(entityNum);
+	cmdBuffer.SendMsg<Audio::StopLoopingSoundMsg>(entityNum);
 }
 
 void trap_S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 {
 	std::array<float, 3> myposition;
 	VectorCopy(origin, myposition.data());
-	VM::SendMsg<Audio::UpdateEntityPositionMsg>(entityNum, myposition);
+	cmdBuffer.SendMsg<Audio::UpdateEntityPositionMsg>(entityNum, myposition);
 }
 
 void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int )
@@ -312,7 +318,7 @@ void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], 
 	}
 	std::array<float, 9> myaxis;
 	memcpy(myaxis.data(), axis, sizeof(float) * 9);
-	VM::SendMsg<Audio::RespatializeMsg>(entityNum, myaxis);
+	cmdBuffer.SendMsg<Audio::RespatializeMsg>(entityNum, myaxis);
 }
 
 sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean)
@@ -324,34 +330,34 @@ sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean)
 
 void trap_S_StartBackgroundTrack( const char *intro, const char *loop )
 {
-	VM::SendMsg<Audio::StartBackgroundTrackMsg>(intro, loop);
+	cmdBuffer.SendMsg<Audio::StartBackgroundTrackMsg>(intro, loop);
 }
 
 void trap_S_StopBackgroundTrack( void )
 {
-	VM::SendMsg<Audio::StopBackgroundTrackMsg>();
+	cmdBuffer.SendMsg<Audio::StopBackgroundTrackMsg>();
 }
 
 void trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
 {
 	std::array<float, 3> myvelocity;
 	VectorCopy(velocity, myvelocity.data());
-	VM::SendMsg<Audio::UpdateEntityVelocityMsg>(entityNum, myvelocity);
+	cmdBuffer.SendMsg<Audio::UpdateEntityVelocityMsg>(entityNum, myvelocity);
 }
 
 void trap_S_SetReverb( int slotNum, const char* name, float ratio )
 {
-	VM::SendMsg<Audio::SetReverbMsg>(slotNum, name, ratio);
+	cmdBuffer.SendMsg<Audio::SetReverbMsg>(slotNum, name, ratio);
 }
 
 void trap_S_BeginRegistration( void )
 {
-	VM::SendMsg<Audio::BeginRegistrationMsg>();
+	cmdBuffer.SendMsg<Audio::BeginRegistrationMsg>();
 }
 
 void trap_S_EndRegistration( void )
 {
-	VM::SendMsg<Audio::EndRegistrationMsg>();
+	cmdBuffer.SendMsg<Audio::EndRegistrationMsg>();
 }
 
 // All renderer

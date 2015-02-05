@@ -1442,7 +1442,7 @@ void  CL_OnTeamChanged( int newTeam )
 	Cmd::BufferCommandText( "exec -f " TEAMCONFIG_NAME );
 }
 
-CGameVM::CGameVM(): VM::VMBase("cgame"), services(nullptr)
+CGameVM::CGameVM(): VM::VMBase("cgame"), services(nullptr), cmdBuffer("client")
 {
 }
 
@@ -1539,11 +1539,14 @@ void CGameVM::Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel)
 	if (major == VM::QVM) {
 		this->QVMSyscall(minor, reader, channel);
 
+	} else if (major == VM::COMMAND_BUFFER) {
+		this->cmdBuffer.Syscall(minor, reader, channel);
+
 	} else if (major < VM::LAST_COMMON_SYSCALL) {
 		services->Syscall(major, minor, std::move(reader), channel);
 
 	} else {
-		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
+		Sys::Drop("Bad major game syscall number: %d", major);
 	}
 }
 
@@ -1679,89 +1682,11 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		// All sounds
 
-		case CG_S_STARTSOUND:
-			IPC::HandleMsg<Audio::StartSoundMsg>(channel, std::move(reader), [this] (bool isPositional, std::array<float, 3> origin, int entityNum, int sfx) {
-				Audio::StartSound(entityNum, (isPositional ? origin.data() : nullptr), sfx);
-			});
-			break;
-
-		case CG_S_STARTLOCALSOUND:
-			IPC::HandleMsg<Audio::StartLocalSoundMsg>(channel, std::move(reader), [this] (int sfx) {
-				Audio::StartLocalSound(sfx);
-			});
-			break;
-
-		case CG_S_CLEARLOOPINGSOUNDS:
-			IPC::HandleMsg<Audio::ClearLoopingSoundsMsg>(channel, std::move(reader), [this] {
-				Audio::ClearAllLoopingSounds();
-			});
-			break;
-
-		case CG_S_ADDLOOPINGSOUND:
-			IPC::HandleMsg<Audio::AddLoopingSoundMsg>(channel, std::move(reader), [this] (int entityNum, int sfx) {
-				Audio::AddEntityLoopingSound(entityNum, sfx);
-			});
-			break;
-
-		case CG_S_STOPLOOPINGSOUND:
-			IPC::HandleMsg<Audio::StopLoopingSoundMsg>(channel, std::move(reader), [this] (int entityNum) {
-				Audio::ClearLoopingSoundsForEntity(entityNum);
-			});
-			break;
-
-		case CG_S_UPDATEENTITYPOSITION:
-			IPC::HandleMsg<Audio::UpdateEntityPositionMsg>(channel, std::move(reader), [this] (int entityNum, std::array<float, 3> position) {
-				Audio::UpdateEntityPosition(entityNum, position.data());
-			});
-			break;
-
-		case CG_S_RESPATIALIZE:
-			IPC::HandleMsg<Audio::RespatializeMsg>(channel, std::move(reader), [this] (int entityNum, std::array<float, 9> axis) {
-				Audio::UpdateListener(entityNum, (vec3_t*) axis.data());
-			});
-			break;
-
-		case CG_S_REGISTERSOUND:
-			IPC::HandleMsg<Audio::RegisterSoundMsg>(channel, std::move(reader), [this] (std::string sample, int& handle) {
-				handle = Audio::RegisterSFX(sample.c_str());
-			});
-			break;
-
-		case CG_S_STARTBACKGROUNDTRACK:
-			IPC::HandleMsg<Audio::StartBackgroundTrackMsg>(channel, std::move(reader), [this] (std::string intro, std::string loop) {
-				Audio::StartMusic(intro.c_str(), loop.c_str());
-			});
-			break;
-
-		case CG_S_STOPBACKGROUNDTRACK:
-			IPC::HandleMsg<Audio::StopBackgroundTrackMsg>(channel, std::move(reader), [this] {
-				Audio::StopMusic();
-			});
-			break;
-
-		case CG_S_UPDATEENTITYVELOCITY:
-			IPC::HandleMsg<Audio::UpdateEntityVelocityMsg>(channel, std::move(reader), [this] (int entityNum, std::array<float, 3> velocity) {
-				Audio::UpdateEntityVelocity(entityNum, velocity.data());
-			});
-			break;
-
-		case CG_S_SETREVERB:
-			IPC::HandleMsg<Audio::SetReverbMsg>(channel, std::move(reader), [this] (int slotNum, std::string name, float ratio) {
-				Audio::SetReverb(slotNum, name.c_str(), ratio);
-			});
-			break;
-
-		case CG_S_BEGINREGISTRATION:
-			IPC::HandleMsg<Audio::BeginRegistrationMsg>(channel, std::move(reader), [this] {
-				Audio::BeginRegistration();
-			});
-			break;
-
-		case CG_S_ENDREGISTRATION:
-			IPC::HandleMsg<Audio::EndRegistrationMsg>(channel, std::move(reader), [this] {
-				Audio::EndRegistration();
-			});
-			break;
+			case CG_S_REGISTERSOUND:
+				IPC::HandleMsg<Audio::RegisterSoundMsg>(channel, std::move(reader), [this] (std::string sample, int& handle) {
+					handle = Audio::RegisterSFX(sample.c_str());
+				});
+				break;
 
 		// All renderer
 
@@ -2312,6 +2237,119 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 	default:
-		Com_Error(ERR_DROP, "Bad game system trap: %d", index);
+		Sys::Drop("Bad CGame QVM syscall minor number: %d", index);
 	}
 }
+
+//TODO move somewhere else
+template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(IPC::Message<Id, MsgArgs...>, Util::Reader reader, Func&& func)
+{
+    typedef IPC::Message<Id, MsgArgs...> Message;
+
+    typename Util::Reader::MapTuple<typename Message::Inputs>::type inputs;
+    reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
+
+    Util::apply(std::forward<Func>(func), std::move(inputs));
+}
+
+template<typename Msg, typename Func> void HandleMsg(Util::Reader reader, Func&& func)
+{
+    HandleMsg(Msg(), std::move(reader), std::forward<Func>(func));
+}
+
+CGameVM::CmdBuffer::CmdBuffer(std::string name): IPC::CommandBufferHost(name) {
+}
+
+void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::Reader& reader) {
+	if (major == VM::QVM) {
+		switch (minor) {
+
+			// All sounds
+
+			case CG_S_STARTSOUND:
+				HandleMsg<Audio::StartSoundMsg>(std::move(reader), [this] (bool isPositional, std::array<float, 3> origin, int entityNum, int sfx) {
+					Audio::StartSound(entityNum, (isPositional ? origin.data() : nullptr), sfx);
+				});
+				break;
+
+			case CG_S_STARTLOCALSOUND:
+				HandleMsg<Audio::StartLocalSoundMsg>(std::move(reader), [this] (int sfx) {
+					Audio::StartLocalSound(sfx);
+				});
+				break;
+
+			case CG_S_CLEARLOOPINGSOUNDS:
+				HandleMsg<Audio::ClearLoopingSoundsMsg>(std::move(reader), [this] {
+					Audio::ClearAllLoopingSounds();
+				});
+				break;
+
+			case CG_S_ADDLOOPINGSOUND:
+				HandleMsg<Audio::AddLoopingSoundMsg>(std::move(reader), [this] (int entityNum, int sfx) {
+					Audio::AddEntityLoopingSound(entityNum, sfx);
+				});
+				break;
+
+			case CG_S_STOPLOOPINGSOUND:
+				HandleMsg<Audio::StopLoopingSoundMsg>(std::move(reader), [this] (int entityNum) {
+					Audio::ClearLoopingSoundsForEntity(entityNum);
+				});
+				break;
+
+			case CG_S_UPDATEENTITYPOSITION:
+				HandleMsg<Audio::UpdateEntityPositionMsg>(std::move(reader), [this] (int entityNum, std::array<float, 3> position) {
+					Audio::UpdateEntityPosition(entityNum, position.data());
+				});
+				break;
+
+			case CG_S_RESPATIALIZE:
+				HandleMsg<Audio::RespatializeMsg>(std::move(reader), [this] (int entityNum, std::array<float, 9> axis) {
+					Audio::UpdateListener(entityNum, (vec3_t*) axis.data());
+				});
+				break;
+
+			case CG_S_STARTBACKGROUNDTRACK:
+				HandleMsg<Audio::StartBackgroundTrackMsg>(std::move(reader), [this] (std::string intro, std::string loop) {
+					Audio::StartMusic(intro.c_str(), loop.c_str());
+				});
+				break;
+
+			case CG_S_STOPBACKGROUNDTRACK:
+				HandleMsg<Audio::StopBackgroundTrackMsg>(std::move(reader), [this] {
+					Audio::StopMusic();
+				});
+				break;
+
+			case CG_S_UPDATEENTITYVELOCITY:
+				HandleMsg<Audio::UpdateEntityVelocityMsg>(std::move(reader), [this] (int entityNum, std::array<float, 3> velocity) {
+					Audio::UpdateEntityVelocity(entityNum, velocity.data());
+				});
+				break;
+
+			case CG_S_SETREVERB:
+				HandleMsg<Audio::SetReverbMsg>(std::move(reader), [this] (int slotNum, std::string name, float ratio) {
+					Audio::SetReverb(slotNum, name.c_str(), ratio);
+				});
+				break;
+
+			case CG_S_BEGINREGISTRATION:
+				HandleMsg<Audio::BeginRegistrationMsg>(std::move(reader), [this] {
+					Audio::BeginRegistration();
+				});
+				break;
+
+			case CG_S_ENDREGISTRATION:
+				HandleMsg<Audio::EndRegistrationMsg>(std::move(reader), [this] {
+					Audio::EndRegistration();
+				});
+				break;
+
+		default:
+			Sys::Drop("Bad minor CGame QVM Command Buffer number: %d", minor);
+		}
+
+	} else {
+		Sys::Drop("Bad major CGame Command Buffer number: %d", major);
+	}
+}
+

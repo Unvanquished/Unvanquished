@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2015, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,26 +28,52 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#ifndef SHARED_VM_MAIN_H_
-#define SHARED_VM_MAIN_H_
+#ifndef COMMON_IPC_COMMAND_BUFFER_H_
+#define COMMON_IPC_COMMAND_BUFFER_H_
 
-#include "../../common/IPC/Channel.h"
+#include "CommonSyscalls.h"
+#include "Primitives.h"
 
-namespace VM {
+namespace IPC {
 
-	// Root channel used to communicate with the engine
-	extern IPC::Channel rootChannel;
+    struct CommandBufferData {
+        IPC::SharedMemory shm;
+        char* data;
+        uint32_t* writePos;
+        uint32_t* readPos;
+        size_t size;
 
-	// Functions each specific gamelogic should implement
-	void VMInit();
-	void VMHandleSyscall(uint32_t id, Util::Reader reader);
-	extern int VM_API_VERSION;
+        static const int READ_OFFSET = 0;
+        static const int WRITE_OFFSET = 64;
+        static const int DATA_OFFSET = 128;
 
-	// Send a message to the engine
-	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
-		IPC::SendMsg<Msg>(rootChannel, VMHandleSyscall, std::forward<Args>(args)...);
-	}
+        void Init(IPC::SharedMemory shmem) {
+            shm = std::move(shmem);
+            size = shm.GetSize() - DATA_OFFSET;
+            char* base = reinterpret_cast<char*>(shm.GetBase());
+            writePos = reinterpret_cast<uint32_t*>(base + WRITE_OFFSET);
+            readPos = reinterpret_cast<uint32_t*>(base + READ_OFFSET);
+            data = reinterpret_cast<char*>(base + DATA_OFFSET);
+        }
 
-}
+        void Close() {
+            shm.Close();
+        }
+    };
 
-#endif // SHARED_VM_MAIN_H_
+    enum {
+        COMMAND_BUFFER_LOCATE,
+        COMMAND_BUFFER_CONSUME,
+    };
+
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::COMMAND_BUFFER, COMMAND_BUFFER_LOCATE>, IPC::SharedMemory, IPC::SharedMemory>
+    > CommandBufferLocateMsg;
+
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::COMMAND_BUFFER, COMMAND_BUFFER_CONSUME>, int>
+    > CommandBufferConsumeMsg;
+
+} // namespace IPC
+
+#endif // COMMON_IPC_COMMAND_BUFFER_H_

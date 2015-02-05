@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2015, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,26 +28,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#ifndef SHARED_VM_MAIN_H_
-#define SHARED_VM_MAIN_H_
+#ifndef FRAMEWORK_COMMAND_BUFFER_HOST_H_
+#define FRAMEWORK_COMMAND_BUFFER_HOST_H_
 
-#include "../../common/IPC/Channel.h"
+#include "../../common/IPC/CommandBuffer.h"
+#include "../../common/Serialize.h"
 
-namespace VM {
+namespace IPC {
 
-	// Root channel used to communicate with the engine
-	extern IPC::Channel rootChannel;
+    class CommandBufferHost {
+        public:
+            CommandBufferHost(std::string name);
 
-	// Functions each specific gamelogic should implement
-	void VMInit();
-	void VMHandleSyscall(uint32_t id, Util::Reader reader);
-	extern int VM_API_VERSION;
+            void Syscall(int index, Util::Reader& reader, IPC::Channel& channel);
+            void Close();
 
-	// Send a message to the engine
-	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
-		IPC::SendMsg<Msg>(rootChannel, VMHandleSyscall, std::forward<Args>(args)...);
-	}
+        private:
+            std::string name;
+            Log::Logger logs;
+            size_t read[2];
+            IPC::CommandBufferData buffers[2];
 
+            virtual void HandleCommandBufferSyscall(int major, int minor, Util::Reader& reader) = 0;
+
+            void Init(IPC::SharedMemory mem0, IPC::SharedMemory mem1);
+
+            void Consume(int i);
+            Util::Reader ConsumeOne(int i);
+    };
 }
 
-#endif // SHARED_VM_MAIN_H_
+#endif // FRAMEWORK_COMMAND_BUFFER_HOST_H_

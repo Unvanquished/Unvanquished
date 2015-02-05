@@ -572,9 +572,11 @@ set( COMMONLIST
   ${COMMON_DIR}/cm/cm_patch.h
   ${COMMON_DIR}/cm/cm_polylib.h
   ${COMMON_DIR}/cm/cm_public.h
+  ${COMMON_DIR}/IPC/Channel.h
+  ${COMMON_DIR}/IPC/CommonSyscalls.h
+  ${COMMON_DIR}/IPC/CommandBuffer.h
   ${COMMON_DIR}/IPC/Primitives.cpp
   ${COMMON_DIR}/IPC/Primitives.h
-  ${COMMON_DIR}/IPC/Channel.h
 )
 
 set( RENDERERLIST
@@ -654,6 +656,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/CommandSystem.h
   ${ENGINE_DIR}/framework/CvarSystem.cpp
   ${ENGINE_DIR}/framework/CvarSystem.h
+  ${ENGINE_DIR}/framework/CommandBufferHost.cpp
+  ${ENGINE_DIR}/framework/CommandBufferHost.h
   ${ENGINE_DIR}/framework/CommonVMServices.cpp
   ${ENGINE_DIR}/framework/CommonVMServices.h
   ${ENGINE_DIR}/framework/ConsoleField.cpp
@@ -782,6 +786,8 @@ set( GAMESHAREDLIST
   ${GAMELOGIC_DIR}/shared/bg_voice.cpp
   ${GAMELOGIC_DIR}/shared/bg_teamprogress.cpp
   ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
+  ${GAMELOGIC_DIR}/shared/CommandBufferClient.cpp
+  ${GAMELOGIC_DIR}/shared/CommandBufferClient.h
   ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/shared/VMMain.cpp
