@@ -367,14 +367,8 @@ static void StartSignalThread()
 
 // Command line arguments
 struct cmdlineArgs_t {
-	// The Windows client defaults to curses off because of performance issues
 	cmdlineArgs_t()
-		: homePath(FS::DefaultHomePath()), libPath(FS::DefaultBasePath()), reset_config(false), use_basepath(true),
-#if defined(_WIN32) && defined(BUILD_CLIENT)
-	use_curses(false) {}
-#else
-	use_curses(true) {}
-#endif
+		: homePath(FS::DefaultHomePath()), libPath(FS::DefaultBasePath()), reset_config(false), use_basepath(true), use_curses(false) {}
 
 	std::string homePath;
 	std::string libPath;
@@ -474,8 +468,6 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 			cmdlineArgs.reset_config = true;
 		} else if (!strcmp(argv[i], "-curses")) {
 			cmdlineArgs.use_curses = true;
-		} else if (!strcmp(argv[i], "-nocurses")) {
-			cmdlineArgs.use_curses = false;
 		} else {
 			Log::Warn("Ignoring unrecognized parameter \"%s\"", argv[i]);
 			continue;
