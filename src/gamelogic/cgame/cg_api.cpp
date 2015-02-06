@@ -72,7 +72,6 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, bool demoPlayback) {
                     CG_DrawActiveFrame(serverTime, demoPlayback);
                 });
-				cmdBuffer.TryFlush();
                 break;
 
             case CG_CROSSHAIR_PLAYER:
@@ -101,7 +100,6 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 
             case CG_ROCKET_FRAME:
                 IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), CG_Rocket_Frame);
-				cmdBuffer.TryFlush();
                 break;
 
             case CG_ROCKET_FORMAT_DATA:
@@ -133,6 +131,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
     } else {
         CG_Error("unhandled VM major syscall number %i", major);
     }
+	cmdBuffer.TryFlush();
 }
 
 // Definition of the VM->Engine calls
