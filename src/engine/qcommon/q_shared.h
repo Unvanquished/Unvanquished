@@ -35,6 +35,14 @@ Maryland 20850 USA.
 #ifndef Q_SHARED_H_
 #define Q_SHARED_H_
 
+// math.h/cmath uses _USE_MATH_DEFINES to decide if to define M_PI etc or not.
+// So define _USE_MATH_DEFINES early before including math.h/cmath
+// and before including any other header in case they bring in math.h/cmath indirectly.
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
+
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
