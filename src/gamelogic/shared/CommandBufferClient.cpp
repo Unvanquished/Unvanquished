@@ -52,6 +52,9 @@ namespace IPC {
     }
 
     void CommandBufferClient::TryFlush() {
+        if (VM::rootChannel.handlingAsyncMsg) {
+            Sys::Drop("Trying to Flush the %s command buffer when handling an async message", name);
+        }
         if (written[current] == 0) {
             return;
         }
