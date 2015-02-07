@@ -4348,7 +4348,6 @@ void Cmd_Beacon_f( gentity_t *ent )
 	beaconType_t type;
 	team_t       team;
 	int          flags;
-	gentity_t    *traceEnt, *existingTag;
 	vec3_t       origin, end, forward;
 	trace_t      tr;
 	const beaconAttributes_t *battr;

@@ -81,7 +81,7 @@ DLLEXPORT int main(int argc, char** argv)
 			uint32_t id = reader.Read<uint32_t>();
 			VM::VMMain(id, std::move(reader));
 		}
-	} catch (ExitException e) {
+	} catch (ExitException /*e*/) {
 		return 0;
 	}
 }

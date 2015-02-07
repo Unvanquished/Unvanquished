@@ -1665,7 +1665,6 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 	if ( !Q_stricmp( table, "default" ) )
 	{
 		int i;
-		int cost;
 
 		trap_Rocket_DSClearTable( "alienEvolveList", "default" );
 		CG_Rocket_CleanUpAlienEvolveList( "default" );

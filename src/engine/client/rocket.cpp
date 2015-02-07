@@ -346,9 +346,6 @@ cvar_t *cg_draw2D;
 
 void Rocket_Init( void )
 {
-	char **fonts;
-	int numFiles;
-
 	Rocket::Core::SetFileInterface( &fileInterface );
 	Rocket::Core::SetSystemInterface( &systemInterface );
 	Rocket::Core::SetRenderInterface( &renderInterface );

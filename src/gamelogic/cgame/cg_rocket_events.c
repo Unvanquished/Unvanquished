@@ -105,7 +105,6 @@ static void CG_Rocket_EventExec( void )
 static void CG_Rocket_SortDS( void )
 {
 	char name[ 100 ], table[ 100 ], sortBy[ 100 ];
-	char *p;
 
 	Q_strncpyz( name, CG_Argv( 1 ), sizeof( name ) );
 	Q_strncpyz( table, CG_Argv( 2 ), sizeof( table ) );
@@ -412,7 +411,6 @@ static int eventCmdCmp( const void *a, const void *b )
 
 void CG_Rocket_ProcessEvents( void )
 {
-	char *tail, *head;
 	eventCmd_t *cmd;
 
 	// Get the even command
