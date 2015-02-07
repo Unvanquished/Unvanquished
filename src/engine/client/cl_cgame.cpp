@@ -1523,7 +1523,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_FS_LOADPAK:
 			try {
 				FS::PakPath::LoadPakPrefix( *FS::FindPak( ( const char * ) VMA( 1 ) ), ( const char * ) VMA( 2 ) );
-			} catch (std::system_error& /*err*/) {
+			} catch (std::system_error&) {
 				return 0;
 			}
 			return 1;
