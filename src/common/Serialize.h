@@ -176,15 +176,6 @@ namespace Util {
 			FillTuple<Index + 1>(Util::TypeList<Types...>(), tuple);
 		}
 
-		// Map a tuple to get the actual types returned by SerializeTraits::Read instead of the declared types
-		template<typename T> struct MapTupleHelper {
-			typedef decltype(SerializeTraits<T>::Read(std::declval<Reader&>())) type;
-		};
-		template<typename T> struct MapTuple {};
-		template<typename... T> struct MapTuple<std::tuple<T...>> {
-			typedef std::tuple<typename MapTupleHelper<T>::type...> type;
-		};
-
 		IPC::FileDesc ReadHandle()
 		{
 			if (handles_pos <= handles.size())

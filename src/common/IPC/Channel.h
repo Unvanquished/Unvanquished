@@ -165,12 +165,21 @@ namespace IPC {
             }
         }
 
+        // Map a tuple to get the actual types returned by SerializeTraits::Read instead of the declared types
+        template<typename T> struct MapTupleHelper {
+            typedef decltype(Util::SerializeTraits<T>::Read(std::declval<Util::Reader&>())) type;
+        };
+        template<typename T> struct MapTuple {};
+        template<typename... T> struct MapTuple<std::tuple<T...>> {
+            typedef std::tuple<typename MapTupleHelper<T>::type...> type;
+        };
+
         // Implementations of HandleMsg for Message and SyncMessage
         template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel& channel, Message<Id, MsgArgs...>, Util::Reader reader, Func&& func)
         {
             typedef Message<Id, MsgArgs...> Message;
 
-            typename Util::Reader::MapTuple<typename Message::Inputs>::type inputs;
+            typename MapTuple<typename Message::Inputs>::type inputs;
             reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
 
             bool old = channel.handlingAsyncMsg;
@@ -182,7 +191,7 @@ namespace IPC {
         {
             typedef SyncMessage<Msg, Reply> Message;
 
-            typename Util::Reader::MapTuple<typename Message::Inputs>::type inputs;
+            typename MapTuple<typename Message::Inputs>::type inputs;
             typename Message::Outputs outputs;
             reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
             Util::apply(std::forward<Func>(func), std::tuple_cat(Util::ref_tuple(std::move(inputs)), Util::ref_tuple(outputs)));
