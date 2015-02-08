@@ -621,7 +621,7 @@ void FS_LoadAllMapMetadata()
 	for (auto& x: maps) {
 		try {
 			FS::PakPath::LoadPakPrefix(*FS::FindPak(x), va("meta/%s/", x.substr(4).c_str()));
-		} catch (std::system_error& err) {} // ignore and move on
+		} catch (std::system_error&) {} // ignore and move on
 	}
 }
 
@@ -765,7 +765,7 @@ public:
 					Print("%s", filename.c_str());
 				}
 			}
-		} catch (std::system_error& err) {
+		} catch (std::system_error&) {
 			Print("^1ERROR^7: Path does not exist");
 		}
 
@@ -778,7 +778,7 @@ public:
 					Print("%s", filename.c_str());
 				}
 			}
-		} catch (std::system_error& err) {
+		} catch (std::system_error&) {
 			Print("^1ERROR^7: Path does not exist");
 		}
 
