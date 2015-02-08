@@ -1255,7 +1255,7 @@ bool ASpiker_Fire( gentity_t *self )
 
 	for ( int row = 0; row < SPIKER_MISSILEROWS; row++ )
 	{
-		float polar = ( ( (float)row + SPIKER_ROWOFFSET ) * M_PI_2 ) / (float)SPIKER_MISSILEROWS;
+		float polar = ( ( (float)row + SPIKER_ROWOFFSET ) * M_PI / 2 ) / (float)SPIKER_MISSILEROWS;
 		float perim = 2.0f * M_PI * sin( 0.5f * polar );
 
 		totalPerimeter += perim;
@@ -1269,7 +1269,7 @@ bool ASpiker_Fire( gentity_t *self )
 
 	for ( int row = 0; row < SPIKER_MISSILEROWS; row++ )
 	{
-		float polar = ( ( (float)row + SPIKER_ROWOFFSET ) * M_PI_2 ) / (float)SPIKER_MISSILEROWS;
+		float polar = ( ( (float)row + SPIKER_ROWOFFSET ) * M_PI / 2 ) / (float)SPIKER_MISSILEROWS;
 		float perim = 2.0f * M_PI * sin( 0.5f * polar );
 
 		RotatePointAroundVector( dir, rotAxis, normal, RAD2DEG( polar ) );
