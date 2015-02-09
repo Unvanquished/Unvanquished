@@ -64,9 +64,8 @@ namespace IPC {
             std::string name;
             Cvar::Range<Cvar::Cvar<int>> bufferSize;
             Log::Logger logs;
-            int current;
-            size_t written[2];
-            IPC::CommandBufferData buffers[2];
+            IPC::CommandBuffer buffer;
+            IPC::SharedMemory shm;
 
             void Write(Util::Writer& writer);
 

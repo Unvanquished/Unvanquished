@@ -33,74 +33,66 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace IPC {
 
     static const int DEFAULT_SIZE = 2 * 1024 * 1024;
+    static const int MINIMUM_SIZE = CommandBuffer::DATA_OFFSET + 128;
 
     CommandBufferClient::CommandBufferClient(std::string name)
     : name(name),
-    bufferSize("vm." + name + "commandBuffer.size", "The size of the shared memory command buffer used by " + name, Cvar::NONE, DEFAULT_SIZE, 100, 16 * 1024 * 1024),
+    bufferSize("vm." + name + "commandBuffer.size", "The size of the shared memory command buffer used by " + name, Cvar::NONE, DEFAULT_SIZE, MINIMUM_SIZE, 16 * 1024 * 1024),
     logs(name + ".commandBuffer") {
     }
 
     void CommandBufferClient::Init() {
-        buffers[0].Init(IPC::SharedMemory::Create(bufferSize.Get()));
-        buffers[1].Init(IPC::SharedMemory::Create(bufferSize.Get()));
-        current = 0;
-        written[0] = written[1] = 0;
+        shm = IPC::SharedMemory::Create(bufferSize.Get());
+        buffer.Init(shm.GetBase(), shm.GetSize());
 
-        VM::SendMsg<CommandBufferLocateMsg>(buffers[0].shm, buffers[1].shm);
+        VM::SendMsg<CommandBufferLocateMsg>(shm);
 
-        logs.Debug("Created double buffers of size %i for %s", bufferSize.Get(), name);
+        logs.Debug("Created circular buffer of size %i for %s", bufferSize.Get(), name);
     }
 
     void CommandBufferClient::TryFlush() {
         if (VM::rootChannel.handlingAsyncMsg) {
             Sys::Drop("Trying to Flush the %s command buffer when handling an async message", name);
         }
-        if (written[current] == 0) {
+
+        buffer.LoadReaderData();
+        if (buffer.GetMaxReadLength() == 0) {
             return;
         }
         Flush();
     }
 
     void CommandBufferClient::Write(Util::Writer& writer) {
-        auto& writerData = writer.GetData();
-        size_t dataSize = writerData.size();
-
-        if (!CanWrite(dataSize)) {
-            logs.Debug("Message of size %i for %s doesn't fit the remaining %i, flushing.", dataSize, name, RemainingSize());
-            Flush();
-            if (!CanWrite(dataSize)) {
-                Sys::Drop("Message of size %i doesn't fit in buffer for %s of size %i", dataSize, name, buffers[current].size);
-            }
+        if (VM::rootChannel.handlingAsyncMsg) {
+            Sys::Drop("Trying to write to the %s command buffer when handling an async message", name);
         }
+        auto& writerData = writer.GetData();
+        uint32_t dataSize = writerData.size();
 
         if (writer.GetHandles().size() != 0) {
             Sys::Drop("Command buffer %s: handles sent to the command buffer", name);
         }
 
-        char* data = buffers[current].data;
+        buffer.LoadReaderData();
+        if (!buffer.CanWrite(dataSize + sizeof(uint32_t))) {
+            logs.Debug("Message of size %i(+4) for %s doesn't fit the remaining %i, flushing.", dataSize, name, buffer.GetMaxWriteLength());
+            Flush();
+            buffer.LoadReaderData();
+            if (!buffer.CanWrite(dataSize)+ sizeof(uint32_t)) {
+                Sys::Drop("Message of size %i doesn't fit in buffer for %s of size %i", dataSize, name, buffer.size);
+            }
+        }
 
-        *reinterpret_cast<uint32_t*>(data + written[current]) = writerData.size();
-        memcpy(data + written[current] + sizeof(uint32_t), writerData.data(), writerData.size());
-        written[current] += sizeof(uint32_t) + writerData.size();
+        buffer.Write((char*)&dataSize, sizeof(uint32_t));
+        buffer.Write(writerData.data(), dataSize);
 
-        *buffers[current].writePos = written[current];
-    }
-
-    bool CommandBufferClient::CanWrite(size_t length) {
-        return length + sizeof(uint32_t) <= RemainingSize();
-    }
-
-    size_t CommandBufferClient::RemainingSize() {
-        return buffers[current].size - written[current];
+        buffer.AdvanceWritePointer(sizeof(uint32_t) + dataSize);
     }
 
     void CommandBufferClient::Flush() {//TODO prevent recursion
-        written[current] = 0;
+        logs.Debug("Flushing %s command buffer", name);
 
-        logs.Debug("Flushing %s buffer %i containing %i worth of message", name, current, written[current]);
-
-        VM::SendMsg<CommandBufferConsumeMsg>(current);
-        //current ^= 1;
+        VM::SendMsg<CommandBufferConsumeMsg>();
     }
 
 } // namespace IPC

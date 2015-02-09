@@ -46,15 +46,15 @@ namespace IPC {
         private:
             std::string name;
             Log::Logger logs;
-            size_t read[2];
-            IPC::CommandBufferData buffers[2];
+            IPC::CommandBuffer buffer;
+            IPC::SharedMemory shm;
 
             virtual void HandleCommandBufferSyscall(int major, int minor, Util::Reader& reader) = 0;
 
-            void Init(IPC::SharedMemory mem0, IPC::SharedMemory mem1);
+            void Init(IPC::SharedMemory mem);
 
-            void Consume(int i);
-            Util::Reader ConsumeOne(int i);
+            void Consume();
+            bool ConsumeOne(Util::Reader& reader);
     };
 }
 

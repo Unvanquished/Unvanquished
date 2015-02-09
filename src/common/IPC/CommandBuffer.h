@@ -36,29 +36,130 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace IPC {
 
-    struct CommandBufferData {
-        IPC::SharedMemory shm;
+    struct CommandBuffer {
+        // We assume these structure will be packed, and static assert on it.
+        // TODO IIRC the standard says we should still be using atomics
+        // Also the current code might not work correctly, on arm as writes' order
+        // might not be preserved by default, or if a compiler reorders them.
+        struct WriterData {
+            uint32_t offset;
+        };
+        static_assert(offsetof(WriterData, offset) == 0, "Wrong packing on WriterData");
+
+        struct ReaderData {
+            uint32_t offset;
+        };
+        static_assert(offsetof(ReaderData, offset) == 0, "Wrong packing on ReaderData");
+
         char* data;
-        uint32_t* writePos;
-        uint32_t* readPos;
+        WriterData* sharedWriterData;
+        ReaderData* sharedReaderData;
+        WriterData writerData;
+        ReaderData readerData;
         size_t size;
 
-        static const int READ_OFFSET = 0;
-        static const int WRITE_OFFSET = 64;
-        static const int DATA_OFFSET = 128;
+        // Make sure the read and write offsets are in different cache lines to
+        // avoid false sharing and a performance loss. 128 is generous but it
+        // with a cache line size of 64 bytes it make sure variable do not overlap
+        // if the pointer is not a cache line boundary.
+        static const int READER_OFFSET = 0;
+        static const int WRITER_OFFSET = 128;
+        static const int DATA_OFFSET = 256;
 
-        void Init(IPC::SharedMemory shmem) {
-            shm = std::move(shmem);
-            size = shm.GetSize() - DATA_OFFSET;
-            char* base = reinterpret_cast<char*>(shm.GetBase());
-            writePos = reinterpret_cast<uint32_t*>(base + WRITE_OFFSET);
-            readPos = reinterpret_cast<uint32_t*>(base + READ_OFFSET);
+        void Init(void* memory, size_t size) {
+            //TODO assert size at least DATA_OFFSET
+            this->size = size - DATA_OFFSET;
+            char* base = reinterpret_cast<char*>(memory);
+            sharedWriterData = reinterpret_cast<WriterData*>(base + WRITER_OFFSET);
+            sharedReaderData = reinterpret_cast<ReaderData*>(base + READER_OFFSET);
             data = reinterpret_cast<char*>(base + DATA_OFFSET);
         }
 
-        void Close() {
-            shm.Close();
+        void Reset() {
+            sharedWriterData->offset = 0;
+            sharedReaderData->offset = 0;
         }
+
+        void LoadWriterData() {
+            //TODO Drop on invalid offset
+            writerData = *sharedWriterData;
+        }
+
+        void LoadReaderData() {
+            //TODO Drop on invalid offset
+            readerData = *sharedReaderData;
+        }
+
+        size_t FromRead(size_t offset) {
+            if (offset < readerData.offset) {
+                offset += size;
+            }
+            return offset - readerData.offset;
+        }
+
+        size_t FromWrite(size_t offset) {
+            if (offset < writerData.offset) {
+                offset += size;
+            }
+            return offset - writerData.offset;
+        }
+
+        size_t GetMaxReadLength() {
+            return FromRead(writerData.offset);
+        }
+
+        size_t GetMaxWriteLength() {
+            return FromWrite(readerData.offset);
+        }
+
+        bool CanRead(size_t len) {
+            return FromRead(writerData.offset) >= len;
+        }
+
+        void Read(char* out, size_t len) {
+            size_t canRead = size - readerData.offset;
+            if (len >= canRead) {
+                memcpy(out, data + readerData.offset, canRead);
+                len -= canRead;
+                out += canRead;
+            }
+            memcpy(out, data, len);
+        }
+
+        void AdvanceReadPointer(size_t offset) {
+            // TODO assert that offset is < size
+            size_t newOffset = readerData.offset + offset;
+            if (offset >= size) {
+                offset -= size;
+            }
+            readerData.offset = newOffset;
+            sharedReaderData->offset = newOffset;
+        }
+
+        bool CanWrite(size_t len) {
+            return FromWrite(readerData.offset) >= len;
+        }
+
+        void Write(const char* in, size_t len) {
+            size_t canWrite = size - writerData.offset;
+            if (len >= canWrite) {
+                memcpy(data + writerData.offset, in, canWrite);
+                len -= canWrite;
+                in += canWrite;
+            }
+            memcpy(data, in, len);
+        }
+
+        void AdvanceWritePointer(size_t offset) {
+            // TODO assert that offset is < size
+            size_t newOffset = writerData.offset + offset;
+            if (offset >= size) {
+                offset -= size;
+            }
+            writerData.offset = newOffset;
+            sharedWriterData->offset = newOffset;
+        }
+
     };
 
     enum {
@@ -67,11 +168,11 @@ namespace IPC {
     };
 
     typedef IPC::SyncMessage<
-        IPC::Message<IPC::Id<VM::COMMAND_BUFFER, COMMAND_BUFFER_LOCATE>, IPC::SharedMemory, IPC::SharedMemory>
+        IPC::Message<IPC::Id<VM::COMMAND_BUFFER, COMMAND_BUFFER_LOCATE>, IPC::SharedMemory>
     > CommandBufferLocateMsg;
 
     typedef IPC::SyncMessage<
-        IPC::Message<IPC::Id<VM::COMMAND_BUFFER, COMMAND_BUFFER_CONSUME>, int>
+        IPC::Message<IPC::Id<VM::COMMAND_BUFFER, COMMAND_BUFFER_CONSUME>>
     > CommandBufferConsumeMsg;
 
 } // namespace IPC

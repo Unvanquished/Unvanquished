@@ -38,14 +38,14 @@ namespace IPC {
     void CommandBufferHost::Syscall(int index, Util::Reader& reader, IPC::Channel& channel) {
         switch (index) {
             case IPC::COMMAND_BUFFER_LOCATE:
-                IPC::HandleMsg<IPC::CommandBufferLocateMsg>(channel, std::move(reader), [this] (IPC::SharedMemory mem0, IPC::SharedMemory mem1) {
-                    this->Init(std::move(mem0), std::move(mem1));
+                IPC::HandleMsg<IPC::CommandBufferLocateMsg>(channel, std::move(reader), [this] (IPC::SharedMemory mem) {
+                    this->Init(std::move(mem));
                 });
                 break;
 
             case IPC::COMMAND_BUFFER_CONSUME:
-                IPC::HandleMsg<IPC::CommandBufferConsumeMsg>(channel, std::move(reader), [this] (int i) {
-                    this->Consume(i);
+                IPC::HandleMsg<IPC::CommandBufferConsumeMsg>(channel, std::move(reader), [this] () {
+                    this->Consume();
                 });
                 break;
         default:
@@ -53,56 +53,51 @@ namespace IPC {
         }
     }
 
-    void CommandBufferHost::Init(IPC::SharedMemory mem0, IPC::SharedMemory mem1) {
-        buffers[0].Init(std::move(mem0));
-        buffers[1].Init(std::move(mem1));
-        read[0] = read[1] = 0;
+    void CommandBufferHost::Init(IPC::SharedMemory mem) {
+        shm = std::move(mem);
+        buffer.Init(shm.GetBase(), shm.GetSize());
 
-        logs.Debug("Received buffers of size %i and %i for %s", buffers[0].size, buffers[1].size, name);
+        logs.Debug("Received buffers of size %i for %s", buffer.size, name);
     }
 
-    void CommandBufferHost::Consume(int i) {
-        if (i < 0 || i > 1) {
-            Sys::Drop("Invalid command buffer to be consumed %d for %s", i, name);
+    void CommandBufferHost::Consume() {
+        buffer.LoadWriterData();
+
+        logs.Debug("Consuming up to %i data from buffer for %s", buffer.GetMaxReadLength(), name);
+        bool consuming = true;
+        //TODO set fixed bound too
+
+        while(consuming) {
+            Util::Reader reader;
+            consuming = ConsumeOne(reader);
+
+            //TODO add more logic to stop consuming (e.g. when the socket is ready)
         }
-
-        logs.Debug("Consuming %i worth of data from buffer %i for %s", *buffers[i].writePos, i, name);
-        while (read[i] != *buffers[i].writePos) {
-            auto reader = ConsumeOne(i);
-
-            uint32_t id = reader.Read<uint32_t>();
-
-            int major = id >> 16;
-            int minor = id & 0xffff;
-
-            this->HandleCommandBufferSyscall(major, minor, reader);
-        }
-
-        read[i] = 0;
     }
 
-    Util::Reader CommandBufferHost::ConsumeOne(int i) {
-        size_t bufferSize = buffers[i].size;
-
-        if (read[i] + sizeof(uint32_t) > bufferSize) {
-            Sys::Drop("Command buffer overflow when reading size, for %s", name);
+    bool CommandBufferHost::ConsumeOne(Util::Reader& reader) {
+        if (!buffer.CanRead(sizeof(uint32_t))) {
+            if (buffer.GetMaxReadLength() != 0) {
+                logs.Warn("Command buffer for %s probably had an incomplete length write", name);
+            }
+            return false;
         }
+        uint32_t size;
+        buffer.Read((char*)&size, sizeof(uint32_t));
+        size += sizeof(uint32_t);
 
-        uint32_t length = *reinterpret_cast<uint32_t*>(buffers[i].data + read[i]);
-        read[i] += sizeof(uint32_t);
-
-        if (read[i] + length > bufferSize) {
-            Sys::Drop("Command buffer overflow when reading data, for %s", name);
+        if (!buffer.CanRead(size)) {
+            logs.Warn("Command buffer for %s probably had an incomplete message write", name);
+            return false;
         }
+        std::vector<char>& readerData = reader.GetData();
+        readerData.resize(size);
+        buffer.Read(readerData.data(), size);
 
-        Util::Reader reader;
-        auto& readerData = reader.GetData();
-        readerData.resize(length);
-        memcpy(readerData.data(), buffers[i].data + read[i], length);
+        reader.Read<uint32_t>();
+        buffer.AdvanceReadPointer(size);
 
-        read[i] += length;
-
-        return std::move(reader);
+        return true;
     }
 
 } // namespace IPC
