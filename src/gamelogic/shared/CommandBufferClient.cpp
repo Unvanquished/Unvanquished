@@ -38,7 +38,7 @@ namespace IPC {
     CommandBufferClient::CommandBufferClient(std::string name)
     : name(name),
     bufferSize("vm." + name + "commandBuffer.size", "The size of the shared memory command buffer used by " + name, Cvar::NONE, DEFAULT_SIZE, MINIMUM_SIZE, 16 * 1024 * 1024),
-    logs(name + ".commandBuffer") {
+    logs(name + ".commandBuffer"), initialized(false) {
     }
 
     void CommandBufferClient::Init() {
@@ -47,10 +47,15 @@ namespace IPC {
 
         VM::SendMsg<CommandBufferLocateMsg>(shm);
 
+        initialized = true;
         logs.Debug("Created circular buffer of size %i for %s", bufferSize.Get(), name);
     }
 
     void CommandBufferClient::TryFlush() {
+        if (!initialized) {
+            return;
+        }
+
         if (VM::rootChannel.handlingAsyncMsg) {
             Sys::Drop("Trying to Flush the %s command buffer when handling an async message", name);
         }
@@ -68,25 +73,26 @@ namespace IPC {
         }
         auto& writerData = writer.GetData();
         uint32_t dataSize = writerData.size();
+        uint32_t totalSize = dataSize + sizeof(uint32_t);
 
         if (writer.GetHandles().size() != 0) {
             Sys::Drop("Command buffer %s: handles sent to the command buffer", name);
         }
 
         buffer.LoadReaderData();
-        if (!buffer.CanWrite(dataSize + sizeof(uint32_t))) {
+        if (!buffer.CanWrite(totalSize)) {
             logs.Debug("Message of size %i(+4) for %s doesn't fit the remaining %i, flushing.", dataSize, name, buffer.GetMaxWriteLength());
             Flush();
             buffer.LoadReaderData();
-            if (!buffer.CanWrite(dataSize)+ sizeof(uint32_t)) {
-                Sys::Drop("Message of size %i doesn't fit in buffer for %s of size %i", dataSize, name, buffer.size);
+            if (!buffer.CanWrite(totalSize)) {
+                Sys::Drop("Message of size %i(+4) doesn't fit in buffer for %s of size %i", dataSize, name, buffer.GetSize());
             }
         }
 
         buffer.Write((char*)&dataSize, sizeof(uint32_t));
-        buffer.Write(writerData.data(), dataSize);
+        buffer.Write(writerData.data(), dataSize, sizeof(uint32_t));
 
-        buffer.AdvanceWritePointer(sizeof(uint32_t) + dataSize);
+        buffer.AdvanceWritePointer(totalSize);
     }
 
     void CommandBufferClient::Flush() {//TODO prevent recursion

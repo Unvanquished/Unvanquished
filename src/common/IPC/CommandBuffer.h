@@ -37,6 +37,58 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace IPC {
 
     struct CommandBuffer {
+        // Make sure the read and write offsets are in different cache lines to
+        // avoid false sharing and a performance loss. 128 is generous but it
+        // with a cache line size of 64 bytes it make sure variable do not overlap
+        // if the pointer is not a cache line boundary.
+        static const int READER_OFFSET = 0;
+        static const int WRITER_OFFSET = 128;
+        static const int DATA_OFFSET = 256;
+
+        void Init(void* memory, size_t size);
+
+        // Synchronizes the reader data with the what is in shared memory
+        // you need to call this to have the command buffer see the new
+        // write offset for example. We do this to control when updates are
+        // performed and simplify the logic.
+        // Same thing for the reader data below.
+        void LoadWriterData();
+        void LoadReaderData();
+
+        size_t GetMaxReadLength() const;
+        size_t GetMaxWriteLength() const;
+
+        bool CanRead(size_t len) const;
+        bool CanWrite(size_t len) const;
+
+        // Reads len bytes in out, starting at offset from the read pointer
+        void Read(char* out, size_t len, size_t offset = 0);
+        void Write(const char* in, size_t len, size_t offset = 0);
+
+        // Advances the pointers and makes the update visible to the other end.
+        // Make sure read advances correspond to write advances as the pointers
+        // are re-aligned on advance.
+        void AdvanceReadPointer(size_t offset);
+        void AdvanceWritePointer(size_t offset);
+
+        size_t GetSize() const;
+    private:
+        // Wraps offset in the circular buffer
+        size_t Normalize(size_t offset) const;
+
+        // Returns the position of offset if we consider the read (resp. write) offset to be the origin
+        size_t FromRead(size_t offset) const;
+        size_t FromWrite(size_t offset) const;
+
+        void InternalRead(size_t fromOffset, char* out, size_t len);
+        void InternalWrite(size_t toOffset, const char* in, size_t len);
+
+        // If we have the read offset equal to the write offset then we don't know
+        // if the full buffer is ready to be read or written. So we force a constant
+        // "safety" offset between the read and the write pointer, here at 4 so we
+        // start aligned. (otherwise it could be 1).
+        static const int SAFETY_OFFSET = 4;
+
         // We assume these structure will be packed, and static assert on it.
         // TODO IIRC the standard says we should still be using atomics
         // Also the current code might not work correctly, on arm as writes' order
@@ -57,109 +109,6 @@ namespace IPC {
         WriterData writerData;
         ReaderData readerData;
         size_t size;
-
-        // Make sure the read and write offsets are in different cache lines to
-        // avoid false sharing and a performance loss. 128 is generous but it
-        // with a cache line size of 64 bytes it make sure variable do not overlap
-        // if the pointer is not a cache line boundary.
-        static const int READER_OFFSET = 0;
-        static const int WRITER_OFFSET = 128;
-        static const int DATA_OFFSET = 256;
-
-        void Init(void* memory, size_t size) {
-            //TODO assert size at least DATA_OFFSET
-            this->size = size - DATA_OFFSET;
-            char* base = reinterpret_cast<char*>(memory);
-            sharedWriterData = reinterpret_cast<WriterData*>(base + WRITER_OFFSET);
-            sharedReaderData = reinterpret_cast<ReaderData*>(base + READER_OFFSET);
-            data = reinterpret_cast<char*>(base + DATA_OFFSET);
-        }
-
-        void Reset() {
-            sharedWriterData->offset = 0;
-            sharedReaderData->offset = 0;
-        }
-
-        void LoadWriterData() {
-            //TODO Drop on invalid offset
-            writerData = *sharedWriterData;
-        }
-
-        void LoadReaderData() {
-            //TODO Drop on invalid offset
-            readerData = *sharedReaderData;
-        }
-
-        size_t FromRead(size_t offset) {
-            if (offset < readerData.offset) {
-                offset += size;
-            }
-            return offset - readerData.offset;
-        }
-
-        size_t FromWrite(size_t offset) {
-            if (offset < writerData.offset) {
-                offset += size;
-            }
-            return offset - writerData.offset;
-        }
-
-        size_t GetMaxReadLength() {
-            return FromRead(writerData.offset);
-        }
-
-        size_t GetMaxWriteLength() {
-            return FromWrite(readerData.offset);
-        }
-
-        bool CanRead(size_t len) {
-            return FromRead(writerData.offset) >= len;
-        }
-
-        void Read(char* out, size_t len) {
-            size_t canRead = size - readerData.offset;
-            if (len >= canRead) {
-                memcpy(out, data + readerData.offset, canRead);
-                len -= canRead;
-                out += canRead;
-            }
-            memcpy(out, data, len);
-        }
-
-        void AdvanceReadPointer(size_t offset) {
-            // TODO assert that offset is < size
-            size_t newOffset = readerData.offset + offset;
-            if (offset >= size) {
-                offset -= size;
-            }
-            readerData.offset = newOffset;
-            sharedReaderData->offset = newOffset;
-        }
-
-        bool CanWrite(size_t len) {
-            return FromWrite(readerData.offset) >= len;
-        }
-
-        void Write(const char* in, size_t len) {
-            size_t canWrite = size - writerData.offset;
-            if (len >= canWrite) {
-                memcpy(data + writerData.offset, in, canWrite);
-                len -= canWrite;
-                in += canWrite;
-            }
-            memcpy(data, in, len);
-        }
-
-        void AdvanceWritePointer(size_t offset) {
-            // TODO assert that offset is < size
-            size_t newOffset = writerData.offset + offset;
-            if (offset >= size) {
-                offset -= size;
-            }
-            writerData.offset = newOffset;
-            sharedWriterData->offset = newOffset;
-        }
-
     };
 
     enum {

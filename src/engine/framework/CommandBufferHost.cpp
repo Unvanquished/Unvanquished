@@ -57,7 +57,7 @@ namespace IPC {
         shm = std::move(mem);
         buffer.Init(shm.GetBase(), shm.GetSize());
 
-        logs.Debug("Received buffers of size %i for %s", buffer.size, name);
+        logs.Debug("Received buffers of size %i for %s", buffer.GetSize(), name);
     }
 
     void CommandBufferHost::Consume() {
@@ -71,6 +71,12 @@ namespace IPC {
             Util::Reader reader;
             consuming = ConsumeOne(reader);
 
+            if (consuming) {
+                uint32_t id = reader.Read<uint32_t>();
+                int major = id >> 16;
+                int minor = id & 0xffff;
+                this->HandleCommandBufferSyscall(major, minor, reader);
+            }
             //TODO add more logic to stop consuming (e.g. when the socket is ready)
         }
     }
@@ -84,18 +90,16 @@ namespace IPC {
         }
         uint32_t size;
         buffer.Read((char*)&size, sizeof(uint32_t));
-        size += sizeof(uint32_t);
 
-        if (!buffer.CanRead(size)) {
+        if (!buffer.CanRead(size + sizeof(uint32_t))) {
             logs.Warn("Command buffer for %s probably had an incomplete message write", name);
             return false;
         }
         std::vector<char>& readerData = reader.GetData();
         readerData.resize(size);
-        buffer.Read(readerData.data(), size);
+        buffer.Read(readerData.data(), size, sizeof(uint32_t));
 
-        reader.Read<uint32_t>();
-        buffer.AdvanceReadPointer(size);
+        buffer.AdvanceReadPointer(size + sizeof(uint32_t));
 
         return true;
     }

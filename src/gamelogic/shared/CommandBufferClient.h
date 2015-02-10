@@ -66,6 +66,7 @@ namespace IPC {
             Log::Logger logs;
             IPC::CommandBuffer buffer;
             IPC::SharedMemory shm;
+            bool initialized;
 
             void Write(Util::Writer& writer);
 

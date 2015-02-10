@@ -574,6 +574,7 @@ set( COMMONLIST
   ${COMMON_DIR}/cm/cm_public.h
   ${COMMON_DIR}/IPC/Channel.h
   ${COMMON_DIR}/IPC/CommonSyscalls.h
+  ${COMMON_DIR}/IPC/CommandBuffer.cpp
   ${COMMON_DIR}/IPC/CommandBuffer.h
   ${COMMON_DIR}/IPC/Primitives.cpp
   ${COMMON_DIR}/IPC/Primitives.h
