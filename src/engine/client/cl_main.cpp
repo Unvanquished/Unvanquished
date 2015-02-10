@@ -2096,7 +2096,7 @@ doesn't know what graphics to reload
 */
 
 #ifdef _WIN32
-extern void Sys_In_Restart_f( void );  // fretn
+extern void IN_Restart( void );  // fretn
 
 #endif
 
@@ -2147,7 +2147,7 @@ void CL_Vid_Restart_f( void )
 	CL_StartHunkUsers();
 
 #ifdef _WIN32
-	Sys_In_Restart_f(); // fretn
+	IN_Restart(); // fretn
 #endif
 
 	// start the cgame if connected

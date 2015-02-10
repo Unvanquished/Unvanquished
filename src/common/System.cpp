@@ -64,8 +64,8 @@ void SleepFor(SteadyClock::duration time)
 {
 #ifdef _WIN32
 	static ULONG maxRes = 0;
-	static NTSTATUS WINAPI (*pNtSetTimerResolution)(ULONG resolution, BOOLEAN set_resolution, ULONG* current_resolution);
-	static NTSTATUS WINAPI (*pNtDelayExecution)(BOOLEAN alertable, const LARGE_INTEGER* timeout);
+	static NTSTATUS(WINAPI *pNtSetTimerResolution) (ULONG resolution, BOOLEAN set_resolution, ULONG* current_resolution);
+	static NTSTATUS(WINAPI *pNtDelayExecution) (BOOLEAN alertable, const LARGE_INTEGER* timeout);
 	if (maxRes == 0) {
 		// Load ntdll.dll functions
 		std::string errorString;
@@ -215,6 +215,8 @@ static LONG WINAPI CrashHandler(PEXCEPTION_POINTERS ExceptionInfo)
 	// TODO: backtrace
 
 	Sys::Error("Crashed with exception 0x%lx: %s", ExceptionInfo->ExceptionRecord->ExceptionCode, WindowsExceptionString(ExceptionInfo->ExceptionRecord->ExceptionCode));
+
+	return EXCEPTION_CONTINUE_EXECUTION;
 }
 void SetupCrashHandler()
 {

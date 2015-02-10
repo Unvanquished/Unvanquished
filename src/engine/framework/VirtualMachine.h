@@ -65,7 +65,7 @@ namespace VM {
  * leak for us.
  *
  * TL;DR
- * - Native DLL: no sandboxing, no cleaning up but debuger support. Use for dev.
+ * - Native DLL: no sandboxing, no cleaning up but debugger support. Use for dev.
  * - NaCl exe: sandboxing, no leaks, slightly slower, hard to debug. Use for regular players.
  * - Native exe: no sandboxing, no leaks, hard to debug. Might be used by server owners for perf.
  */

@@ -78,15 +78,14 @@ namespace IPC {
     class Channel {
     public:
         Channel()
-            : counter(0), handlingAsyncMsg(false) {}
+            : handlingAsyncMsg(false) {}
         Channel(Socket socket)
-            : socket(std::move(socket)), counter(0), handlingAsyncMsg(false) {}
+            : socket(std::move(socket)), handlingAsyncMsg(false) {}
         Channel(Channel&& other)
-            : socket(std::move(other.socket)), counter(0), handlingAsyncMsg(false) {}
+            : socket(std::move(other.socket)), handlingAsyncMsg(false) {}
         Channel& operator=(Channel&& other)
         {
             std::swap(socket, other.socket);
-            counter = other.counter;
             handlingAsyncMsg = other.handlingAsyncMsg;
             return *this;
         }
@@ -109,40 +108,13 @@ namespace IPC {
             socket.SetRecvTimeout(timeout);
         }
 
-        // Generate a unique message key to match messages with replies
-        uint32_t GenMsgKey()
-        {
-            return counter++;
-        }
-
         // Wait for a synchronous message reply, returns the message ID and contents
-        std::pair<uint32_t, Util::Reader> RecvReplyMsg(uint32_t key)
+        std::pair<uint32_t, Util::Reader> RecvReplyMsg()
         {
-            // If we have already recieved a reply for this key, just return that
-            auto it = replies.find(key);
-            if (it != replies.end()) {
-                Util::Reader reader = std::move(it->second);
-                replies.erase(it);
-                return {ID_RETURN, std::move(reader)};
-            }
+            Util::Reader reader = RecvMsg();
 
-            // Otherwise handle incoming messages until we find the reply we want
-            while (true) {
-                Util::Reader reader = RecvMsg();
-
-                // Is this a reply?
-                uint32_t id = reader.Read<uint32_t>();
-                if (id != ID_RETURN)
-                    return {id, std::move(reader)};
-
-                // Is this the reply we are expecting?
-                uint32_t msg_key = reader.Read<uint32_t>();
-                if (msg_key == key)
-                    return {ID_RETURN, std::move(reader)};
-
-                // Save the reply for later
-                replies.insert(std::make_pair(msg_key, std::move(reader)));
-            }
+            uint32_t id = reader.Read<uint32_t>();
+            return {id, std::move(reader)};
         }
 
     private:
@@ -177,15 +149,13 @@ namespace IPC {
 
             Util::Writer writer;
             writer.Write<uint32_t>(Message::id);
-            uint32_t key = channel.GenMsgKey();
-            writer.Write<uint32_t>(key);
             writer.WriteArgs(Util::TypeListFromTuple<typename Message::Inputs>(), std::forward<Args>(args)...);
             channel.SendMsg(writer);
 
             while (true) {
                 Util::Reader reader;
                 uint32_t id;
-                std::tie(id, reader) = channel.RecvReplyMsg(key);
+                std::tie(id, reader) = channel.RecvReplyMsg();
                 if (id == ID_RETURN) {
                     auto out = std::forward_as_tuple(std::forward<Args>(args)...);
                     reader.FillTuple<std::tuple_size<typename Message::Inputs>::value>(Util::TypeListFromTuple<typename Message::Outputs>(), out);
@@ -195,12 +165,21 @@ namespace IPC {
             }
         }
 
+        // Map a tuple to get the actual types returned by SerializeTraits::Read instead of the declared types
+        template<typename T> struct MapTupleHelper {
+            typedef decltype(Util::SerializeTraits<T>::Read(std::declval<Util::Reader&>())) type;
+        };
+        template<typename T> struct MapTuple {};
+        template<typename... T> struct MapTuple<std::tuple<T...>> {
+            typedef std::tuple<typename MapTupleHelper<T>::type...> type;
+        };
+
         // Implementations of HandleMsg for Message and SyncMessage
         template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel& channel, Message<Id, MsgArgs...>, Util::Reader reader, Func&& func)
         {
             typedef Message<Id, MsgArgs...> Message;
 
-            typename Util::Reader::MapTuple<typename Message::Inputs>::type inputs;
+            typename MapTuple<typename Message::Inputs>::type inputs;
             reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
 
             bool old = channel.handlingAsyncMsg;
@@ -212,15 +191,13 @@ namespace IPC {
         {
             typedef SyncMessage<Msg, Reply> Message;
 
-            uint32_t key = reader.Read<uint32_t>();
-            typename Util::Reader::MapTuple<typename Message::Inputs>::type inputs;
+            typename MapTuple<typename Message::Inputs>::type inputs;
             typename Message::Outputs outputs;
             reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
             Util::apply(std::forward<Func>(func), std::tuple_cat(Util::ref_tuple(std::move(inputs)), Util::ref_tuple(outputs)));
 
             Util::Writer writer;
             writer.Write<uint32_t>(ID_RETURN);
-            writer.Write<uint32_t>(key);
             writer.WriteTuple(Util::TypeListFromTuple<typename Message::Outputs>(), std::move(outputs));
             channel.SendMsg(writer);
         }
