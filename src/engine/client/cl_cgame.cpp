@@ -2246,7 +2246,7 @@ template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(IPC::Me
 {
     typedef IPC::Message<Id, MsgArgs...> Message;
 
-    typename Util::Reader::MapTuple<typename Message::Inputs>::type inputs;
+    typename IPC::detail::MapTuple<typename Message::Inputs>::type inputs;
     reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
 
     Util::apply(std::forward<Func>(func), std::move(inputs));
