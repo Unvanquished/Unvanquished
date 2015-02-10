@@ -1712,8 +1712,6 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	trap_CM_LoadMap(cgs.mapname);
 	CG_InitMinimap();
 
-	srand( serverMessageNum * clientNum );
-
 	CG_UpdateLoadingStep( LOAD_TRAILS );
 	CG_LoadTrailSystems();
 
