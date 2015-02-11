@@ -65,8 +65,10 @@ struct OggDataSource {
 size_t OggCallbackRead(void* ptr, size_t size, size_t count, void* datasource)
 {
 
+	OggDataSource* data = static_cast<OggDataSource*>(datasource);
+
 	// check if input is valid
-	if ( !ptr || !datasource )
+	if ( !ptr )
 	{
 		errno = EFAULT;
 		return 0;
@@ -78,15 +80,14 @@ size_t OggCallbackRead(void* ptr, size_t size, size_t count, void* datasource)
 		errno = 0;
 		return 0;
 	}
-	OggDataSource& data = *static_cast<OggDataSource*>(datasource);
 
-	if (data.audioFile == nullptr || data.audioFile->size() < data.position) {
+	if (data == nullptr || data->audioFile == nullptr || data->audioFile->size() < data->position) {
 		errno = EBADF;
 		return 0;
 	}
 
-	std::string* audioFile = data.audioFile;
-	int position = data.position;
+	std::string* audioFile = data->audioFile;
+	int position = data->position;
 	int bytesRemaining = audioFile->size() - position;
 	int bytesToRead = size * count;
 	if (bytesToRead > bytesRemaining) {
@@ -94,9 +95,9 @@ size_t OggCallbackRead(void* ptr, size_t size, size_t count, void* datasource)
 	}
 
 	std::copy_n(audioFile->cbegin() + position, bytesToRead, static_cast<char*>(ptr));
-	data.position += bytesToRead;
+	data->position += bytesToRead;
 
-	size_t elementsRead = bytesToRead/size;
+	int elementsRead = bytesToRead/size;
 
     //An element was partially read
 	if (bytesToRead % size)
@@ -113,14 +114,13 @@ AudioData LoadOggCodec(std::string filename)
 	std::string audioFile;
 	try
 	{
-		audioFile = FS::PakPath::ReadFile(filename);
+		audioFile = std::move(FS::PakPath::ReadFile(filename));
 	}
 	catch (std::system_error& err)
 	{
 		audioLogs.Warn("Failed to open %s: %s", filename, err.what());
 		return AudioData();
 	}
-
 	OggDataSource dataSource = {&audioFile, 0};
 	std::unique_ptr<OggVorbis_File> vorbisFile(new OggVorbis_File);
 
@@ -155,41 +155,9 @@ AudioData LoadOggCodec(std::string filename)
 
 	std::vector<char> samples;
 
-	// TODO! Optimize here. Pass the file size in as a hint so we can preallocate the memory needed.
-	// Also avoid duplicate allocation by using a container that is compatible with
-	// AudioData. AudioData currently uses unique_ptr and we currently use a vector
-	// which we can't move to the AudioData without re-allocating the vector into
-	// a char array.
-	// We should probably avoid vector and use malloc and free and a customer deleter,
-	// as this code is low level and we want precise control over allocating the
-	// exact amount of buffer space and not getting some excess speculated amount.
-	// But the exact strategy is still TBD.
-	int actualSize = 0;
 	while ((bytesRead = ov_read(vorbisFile.get(), buffer, 4096, 0, sampleWidth, 1, &bitStream)) > 0) {
-		try {
-			std::copy_n(buffer, bytesRead, std::back_inserter(samples));
-		}
-		catch (std::bad_alloc&) {
-			ov_clear(vorbisFile.get());
-			audioLogs.Warn("Out of memory loading file %s. %d bytes read when allocation failed.", filename, actualSize + bytesRead );
-			return AudioData();
-		}
-		actualSize += bytesRead;
+		std::copy_n(buffer, bytesRead, std::back_inserter(samples));
 	}
-
-	// There is currently a bug that is causing at leat heartbeat.ogg to fail to
-	// load or with a correct size, at least on the Windows build.
-	// Diagnose that this problem is still happening and avoid it
-	// until we can figure out what it is.
-	// 9010572 is the size from the pak file.
-	if (filename == "sound/ui/heartbeat.ogg" && actualSize != 9010572)
-	{
-		// Expected: 9010572, Actual:   49059952 (or something crazy)
-		ov_clear(vorbisFile.get());
-		audioLogs.Warn("Bad file size %d read for file %s.", actualSize, filename);
-		return AudioData();
-	}
-
 	ov_clear(vorbisFile.get());
 
 	char* rawSamples = new char[samples.size()];
