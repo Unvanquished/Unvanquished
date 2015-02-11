@@ -47,6 +47,8 @@ namespace IPC {
 
         void Init(void* memory, size_t size);
 
+        void Reset();
+
         // Synchronizes the reader data with the what is in shared memory
         // you need to call this to have the command buffer see the new
         // write offset for example. We do this to control when updates are
@@ -90,24 +92,19 @@ namespace IPC {
         static const int SAFETY_OFFSET = 4;
 
         // We assume these structure will be packed, and static assert on it.
-        // TODO IIRC the standard says we should still be using atomics
-        // Also the current code might not work correctly, on arm as writes' order
-        // might not be preserved by default, or if a compiler reorders them.
-        struct WriterData {
-            uint32_t offset;
+        struct SharedWriterData {
+            std::atomic<uint32_t> offset;
         };
-        static_assert(offsetof(WriterData, offset) == 0, "Wrong packing on WriterData");
+        static_assert(offsetof(SharedWriterData, offset) == 0, "Wrong packing on SharedWriterData");
 
-        struct ReaderData {
-            uint32_t offset;
+        struct SharedReaderData {
+            std::atomic<uint32_t> offset;
         };
-        static_assert(offsetof(ReaderData, offset) == 0, "Wrong packing on ReaderData");
+        static_assert(offsetof(SharedReaderData, offset) == 0, "Wrong packing on SharedReaderData");
 
-        char* data;
-        WriterData* sharedWriterData;
-        ReaderData* sharedReaderData;
-        WriterData writerData;
-        ReaderData readerData;
+        char* base;
+        size_t writerOffset;
+        size_t readerOffset;
         size_t size;
     };
 

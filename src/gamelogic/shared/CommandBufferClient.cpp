@@ -44,6 +44,7 @@ namespace IPC {
     void CommandBufferClient::Init() {
         shm = IPC::SharedMemory::Create(bufferSize.Get());
         buffer.Init(shm.GetBase(), shm.GetSize());
+        buffer.Reset();
 
         VM::SendMsg<CommandBufferLocateMsg>(shm);
 
