@@ -59,7 +59,10 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 break;
 
             case CG_INIT:
-                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), CG_Init);
+                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gamestate) {
+                    CG_Init(serverMessageNum, clientNum, gl, gamestate);
+                    cmdBuffer.TryFlush();
+                });
                 break;
 
             case CG_SHUTDOWN:
@@ -71,6 +74,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
             case CG_DRAW_ACTIVE_FRAME:
                 IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, bool demoPlayback) {
                     CG_DrawActiveFrame(serverTime, demoPlayback);
+                    cmdBuffer.TryFlush();
                 });
                 break;
 
@@ -83,6 +87,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
             case CG_KEY_EVENT:
                 IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, std::move(reader), [] (int key, bool down) {
                     CG_KeyEvent(key, 0, down);
+                    cmdBuffer.TryFlush();
                 });
                 break;
 
@@ -99,7 +104,10 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 break;
 
             case CG_ROCKET_FRAME:
-                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), CG_Rocket_Frame);
+                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), [] (cgClientState_t cs) {
+                    CG_Rocket_Frame(cs);
+                    cmdBuffer.TryFlush();
+                });
                 break;
 
             case CG_ROCKET_FORMAT_DATA:
@@ -111,6 +119,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
             case CG_ROCKET_RENDER_ELEMENT:
                 IPC::HandleMsg<CGameRocketRenderElementMsg>(VM::rootChannel, std::move(reader), [] {
                     CG_Rocket_RenderElement();
+                    cmdBuffer.TryFlush();
                 });
                 break;
 
@@ -131,7 +140,6 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
     } else {
         CG_Error("unhandled VM major syscall number %i", major);
     }
-	cmdBuffer.TryFlush();
 }
 
 // Definition of the VM->Engine calls
