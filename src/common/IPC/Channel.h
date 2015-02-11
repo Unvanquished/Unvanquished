@@ -119,7 +119,6 @@ namespace IPC {
 
     private:
         Socket socket;
-        uint32_t counter;
         std::unordered_map<uint32_t, Util::Reader> replies;
 
     public:

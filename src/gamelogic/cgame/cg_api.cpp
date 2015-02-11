@@ -54,6 +54,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 IPC::HandleMsg<CGameStaticInitMsg>(VM::rootChannel, std::move(reader), [] {
                     VM::InitializeProxies();
                     FS::Initialize();
+                    srand(time(nullptr));
 					cmdBuffer.Init();
                 });
                 break;
