@@ -114,7 +114,7 @@ AudioData LoadOggCodec(std::string filename)
 	std::string audioFile;
 	try
 	{
-		audioFile = std::move(FS::PakPath::ReadFile(filename));
+		audioFile = FS::PakPath::ReadFile(filename);
 	}
 	catch (std::system_error& err)
 	{
@@ -156,12 +156,24 @@ AudioData LoadOggCodec(std::string filename)
 	std::vector<char> samples;
 
 	while ((bytesRead = ov_read(vorbisFile.get(), buffer, 4096, 0, sampleWidth, 1, &bitStream)) > 0) {
-		std::copy_n(buffer, bytesRead, std::back_inserter(samples));
+        try {
+            std::copy_n(buffer, bytesRead, std::back_inserter(samples));
+        }
+        catch(std::bad_alloc& err) {
+            audioLogs.Warn("Error loading file %s: %s - sound playback may be affected.", filename, err.what());
+            break;
+        }
 	}
 	ov_clear(vorbisFile.get());
 
-	char* rawSamples = new char[samples.size()];
-	std::copy_n(samples.data(), samples.size(), rawSamples);
+	char* rawSamples = nullptr;
+    try {
+        rawSamples = new char[samples.size()];
+        std::copy_n(samples.data(), samples.size(), rawSamples);
+    } catch(std::bad_alloc& err) {        
+		audioLogs.Warn("Error loading file %s: %s - sound playback may be affected.", filename, err.what());
+		return AudioData();
+	}
 	return AudioData(sampleRate, sampleWidth, numberOfChannels, samples.size(), rawSamples);
 }
 
