@@ -61,8 +61,6 @@ namespace IPC {
     }
 
     void CommandBufferHost::Consume() {
-        buffer.LoadWriterData();
-
         logs.Debug("Consuming up to %i data from buffer for %s", buffer.GetMaxReadLength(), name);
         bool consuming = true;
         //TODO set fixed bound too
@@ -83,10 +81,13 @@ namespace IPC {
 
     bool CommandBufferHost::ConsumeOne(Util::Reader& reader) {
         if (!buffer.CanRead(sizeof(uint32_t))) {
-            if (buffer.GetMaxReadLength() != 0) {
-                logs.Warn("Command buffer for %s probably had an incomplete length write", name);
+            buffer.LoadWriterData();
+            if (!buffer.CanRead(sizeof(uint32_t))) {
+                if (buffer.GetMaxReadLength() != 0) {
+                    logs.Warn("Command buffer for %s probably had an incomplete length write", name);
+                }
+                return false;
             }
-            return false;
         }
         uint32_t size;
         buffer.Read((char*)&size, sizeof(uint32_t));

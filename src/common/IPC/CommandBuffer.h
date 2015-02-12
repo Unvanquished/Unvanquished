@@ -38,12 +38,12 @@ namespace IPC {
 
     struct CommandBuffer {
         // Make sure the read and write offsets are in different cache lines to
-        // avoid false sharing and a performance loss. 128 is generous but it
-        // with a cache line size of 64 bytes it make sure variable do not overlap
-        // if the pointer is not a cache line boundary.
+        // avoid false sharing and a performance loss. 64 is because we expect and
+        // know that the OS returns the shared memory pointer at memory page boundary
+        // and that our structures all fit completely in one cache line.
         static const int READER_OFFSET = 0;
-        static const int WRITER_OFFSET = 128;
-        static const int DATA_OFFSET = 256;
+        static const int WRITER_OFFSET = 64;
+        static const int DATA_OFFSET = 128;
 
         void Init(void* memory, size_t size);
 
