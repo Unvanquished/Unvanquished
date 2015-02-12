@@ -84,7 +84,7 @@ namespace IPC {
             buffer.LoadWriterData();
             if (!buffer.CanRead(sizeof(uint32_t))) {
                 if (buffer.GetMaxReadLength() != 0) {
-                    logs.Warn("Command buffer for %s probably had an incomplete length write", name);
+                    Sys::Drop("Command buffer for %s had an incomplete length write", name);
                 }
                 return false;
             }
@@ -93,7 +93,7 @@ namespace IPC {
         buffer.Read((char*)&size, sizeof(uint32_t));
 
         if (!buffer.CanRead(size + sizeof(uint32_t))) {
-            logs.Warn("Command buffer for %s probably had an incomplete message write", name);
+            Sys::Drop("Command buffer for %s had an incomplete message write", name);
             return false;
         }
         std::vector<char>& readerData = reader.GetData();
