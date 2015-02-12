@@ -141,7 +141,7 @@ namespace IPC {
             typedef Message<Id, MsgArgs...> Message;
             static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
-            if (channel.canSendAsyncMsg)
+            if (!channel.canSendAsyncMsg)
                 Com_Error(ERR_DROP, "Attempting to send a Message in VM toplevel");
 
             Util::Writer writer;
@@ -154,7 +154,7 @@ namespace IPC {
             typedef SyncMessage<Msg, Reply> Message;
             static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value + std::tuple_size<typename Message::Outputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
-            if (channel.canSendSyncMsg)
+            if (!channel.canSendSyncMsg)
                 Com_Error(ERR_DROP, "Attempting to send a SyncMessage while handling a Message or in VM toplevel");
 
             Util::Writer writer;
@@ -207,7 +207,14 @@ namespace IPC {
             typename MapTuple<typename Message::Inputs>::type inputs;
             typename Message::Outputs outputs;
             reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
+
+            bool oldSync = channel.canSendSyncMsg;
+            bool oldAsync = channel.canSendAsyncMsg;
+            channel.canSendSyncMsg = true;
+            channel.canSendAsyncMsg = true;
             Util::apply(std::forward<Func>(func), std::tuple_cat(Util::ref_tuple(std::move(inputs)), Util::ref_tuple(outputs)));
+            channel.canSendSyncMsg = oldSync;
+            channel.canSendAsyncMsg = oldAsync;
 
             Util::Writer writer;
             writer.Write<uint32_t>(ID_RETURN);
