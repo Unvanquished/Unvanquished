@@ -28,6 +28,9 @@ cmake_minimum_required( VERSION 2.8 )
 if( POLICY CMP0017 )
   cmake_policy( SET CMP0017 NEW )
 endif()
+if( POLICY CMP0026 )
+  cmake_policy( SET CMP0026 NEW )
+endif()
 
 # Need 2.8.12 for RPATH support
 if( APPLE )
