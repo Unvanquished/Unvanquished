@@ -71,7 +71,7 @@ void Sys::Error(Str::StringRef message)
 	if (!errorEntered.test_and_set()) {
 		// Disable checks for sending sync messages when handling async messages.
 		// At this point we don't really care since this is an error.
-		VM::rootChannel.handlingAsyncMsg = false;
+		VM::rootChannel.canSendSyncMsg = true;
 
 		// Try to tell the engine about the error, but ignore errors doing so.
 		try {

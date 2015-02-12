@@ -57,8 +57,8 @@ namespace IPC {
             return;
         }
 
-        if (VM::rootChannel.handlingAsyncMsg) {
-            Sys::Drop("Trying to Flush the %s command buffer when handling an async message", name);
+        if (!VM::rootChannel.canSendSyncMsg) {
+            Sys::Drop("Trying to Flush the %s command buffer when handling an async message or in toplevel", name);
         }
 
         buffer.LoadReaderData();
@@ -69,8 +69,8 @@ namespace IPC {
     }
 
     void CommandBufferClient::Write(Util::Writer& writer) {
-        if (VM::rootChannel.handlingAsyncMsg) {
-            Sys::Drop("Trying to write to the %s command buffer when handling an async message", name);
+        if (!VM::rootChannel.canSendSyncMsg) {
+            Sys::Drop("Trying to write to the %s command buffer when handling an async message or in toplevel", name);
         }
         auto& writerData = writer.GetData();
         uint32_t dataSize = writerData.size();

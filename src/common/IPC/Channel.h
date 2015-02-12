@@ -75,18 +75,25 @@ namespace IPC {
      * send it in the socket.
      */
 
+    #ifdef BUILD_ENGINE
+        static const bool TOPLEVEL_MSG_ALLOWED = true;
+    #else
+        static const bool TOPLEVEL_MSG_ALLOWED = false;
+    #endif
+
     class Channel {
     public:
         Channel()
-            : handlingAsyncMsg(false) {}
+            : canSendSyncMsg(TOPLEVEL_MSG_ALLOWED), canSendAsyncMsg(TOPLEVEL_MSG_ALLOWED) {}
         Channel(Socket socket)
-            : socket(std::move(socket)), handlingAsyncMsg(false) {}
+            : socket(std::move(socket)), canSendSyncMsg(TOPLEVEL_MSG_ALLOWED), canSendAsyncMsg(TOPLEVEL_MSG_ALLOWED) {}
         Channel(Channel&& other)
-            : socket(std::move(other.socket)), handlingAsyncMsg(false) {}
+            : socket(std::move(other.socket)), canSendSyncMsg(TOPLEVEL_MSG_ALLOWED), canSendAsyncMsg(TOPLEVEL_MSG_ALLOWED) {}
         Channel& operator=(Channel&& other)
         {
             std::swap(socket, other.socket);
-            handlingAsyncMsg = other.handlingAsyncMsg;
+            canSendSyncMsg = other.canSendSyncMsg;
+            canSendAsyncMsg = other.canSendAsyncMsg;
             return *this;
         }
         explicit operator bool() const
@@ -122,7 +129,8 @@ namespace IPC {
         std::unordered_map<uint32_t, Util::Reader> replies;
 
     public:
-        bool handlingAsyncMsg;
+        bool canSendSyncMsg;
+        bool canSendAsyncMsg;
     };
 
     namespace detail {
@@ -132,6 +140,9 @@ namespace IPC {
         {
             typedef Message<Id, MsgArgs...> Message;
             static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value, "Incorrect number of arguments for IPC::SendMsg");
+
+            if (channel.canSendAsyncMsg)
+                Com_Error(ERR_DROP, "Attempting to send a Message in VM toplevel");
 
             Util::Writer writer;
             writer.Write<uint32_t>(Message::id);
@@ -143,8 +154,8 @@ namespace IPC {
             typedef SyncMessage<Msg, Reply> Message;
             static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value + std::tuple_size<typename Message::Outputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
-            if (channel.handlingAsyncMsg)
-                Com_Error(ERR_DROP, "Attempting to send a SyncMessage while handling a Message");
+            if (channel.canSendSyncMsg)
+                Com_Error(ERR_DROP, "Attempting to send a SyncMessage while handling a Message or in VM toplevel");
 
             Util::Writer writer;
             writer.Write<uint32_t>(Message::id);
@@ -181,10 +192,13 @@ namespace IPC {
             typename MapTuple<typename Message::Inputs>::type inputs;
             reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
 
-            bool old = channel.handlingAsyncMsg;
-            channel.handlingAsyncMsg = true;
+            bool oldSync = channel.canSendSyncMsg;
+            bool oldAsync = channel.canSendAsyncMsg;
+            channel.canSendSyncMsg = false;
+            channel.canSendAsyncMsg = true;
             Util::apply(std::forward<Func>(func), std::move(inputs));
-            channel.handlingAsyncMsg = old;
+            channel.canSendSyncMsg = oldSync;
+            channel.canSendAsyncMsg = oldAsync;
         }
         template<typename Func, typename Msg, typename Reply> void HandleMsg(Channel& channel, SyncMessage<Msg, Reply>, Util::Reader reader, Func&& func)
         {
