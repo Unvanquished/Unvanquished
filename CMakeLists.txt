@@ -245,7 +245,15 @@ if( MSVC )
     set_linker_flag( "/LTCG" RELEASE )
   endif()
   set_linker_flag( "/LARGEADDRESSAWARE" )
-else()
+
+  # Turn off C4503:, e.g: 
+  # warning C4503: 'std::_Tree<std::_Tmap_traits<_Kty,_Ty,_Pr,_Alloc,false>>::_Insert_hint' : decorated name length exceeded, name was truncated
+  # No issue will be caused from this error as long as no two symbols become identical by being truncated.
+  # In practice this rarely happens and even the standard libraries are affected as in the example. So there really is not
+  # much that can to done about it and the warnings about each truncation really just make it more likely
+  # that other more real issues might get missed. So better to remove the distraction when it really is very unlikey to happen.
+  set_c_cxx_flag( "/wd4503" )
+  else()
   set_c_cxx_flag( "-ffast-math" )
   set_c_cxx_flag( "-fno-strict-aliasing" )
 
