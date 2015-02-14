@@ -253,6 +253,12 @@ if( MSVC )
   # much that can to done about it and the warnings about each truncation really just make it more likely
   # that other more real issues might get missed. So better to remove the distraction when it really is very unlikey to happen.
   set_c_cxx_flag( "/wd4503" )  
+
+  # Turn off warning C4996:, e.g:
+  # warning C4996: 'open': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _open. See online help for details.  set_c_cxx_flag( "/wd4996" )
+  # open seems far more popular than _open not to mention nicer. There doesn't seem to be any reason or will to change to _open.
+  # So until there is a specific plan to tackle all of these type of warnings it's best to turn them off to the distraction.
+  set_c_cxx_flag( "/wd4996" )
   
 else()
   set_c_cxx_flag( "-ffast-math" )
