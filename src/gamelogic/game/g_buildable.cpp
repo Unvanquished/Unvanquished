@@ -1574,15 +1574,15 @@ void AHive_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( !self->spawned || !self->powered || self->health <= 0 )
-	{
-		return;
-	}
-
 	// last missile hasn't returned in time, forget about it
 	if ( self->timestamp < level.time )
 	{
 		self->active = qfalse;
+	}
+
+	if ( !self->spawned || !self->powered || self->health <= 0 )
+	{
+		return;
 	}
 
 	if ( self->active )
@@ -1602,7 +1602,7 @@ void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
 	AGeneric_Pain( self, attacker, damage );
 
 	// if inactive, fire on attacker even if it's out of sense range
-	if ( self->spawned && self->health > 0 && !self->active )
+	if ( self->spawned && self->powered && self->health > 0 && !self->active )
 	{
 		if ( AHive_TargetValid( self, attacker, qtrue ) )
 		{
