@@ -1409,58 +1409,40 @@ void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	G_RGSDie( self );
 }
 
-static gentity_t *cmpHive = NULL;
-
-static int AHive_CompareTargets( const void *first, const void *second )
+static qboolean AHive_isBetterTarget(const gentity_t *const self, const gentity_t *candidate)
 {
-	gentity_t *a, *b;
 
-	if ( !cmpHive )
+	// Any valid target is better than none
+	if ( self->target == NULL )
 	{
-		return 0;
+		return qtrue;
 	}
 
-	a = ( gentity_t * )first;
-	b = ( gentity_t * )second;
-
 	// Always prefer target that isn't yet targeted.
+	if ( self->target->numTrackedBy == 0 && candidate->numTrackedBy > 0 )
 	{
-		if ( a->numTrackedBy == 0 && b->numTrackedBy > 0 )
-		{
-			return -1;
-		}
-		else if ( a->numTrackedBy > 0 && b->numTrackedBy == 0 )
-		{
-			return 1;
-		}
+		return qfalse;
+	}
+	else if ( self->target->numTrackedBy > 0 && candidate->numTrackedBy == 0 )
+	{
+		return qtrue;
 	}
 
 	// Prefer smaller distance.
-	{
-		int ad = Distance( cmpHive->s.origin, a->s.origin );
-		int bd = Distance( cmpHive->s.origin, b->s.origin );
+	int dt = Distance( self->s.origin, self->target->s.origin );
+	int dc = Distance( self->s.origin, candidate->s.origin );
 
-		if ( ad < bd )
-		{
-			return -1;
-		}
-		else if ( bd < ad )
-		{
-			return 1;
-		}
+	if ( dc < dt )
+	{
+		return qtrue;
+	}
+	else if ( dt < dc )
+	{
+		return qfalse;
 	}
 
 	// Tie breaker is random decision, so clients on lower slots don't get shot at more often.
-	{
-		if ( rand() < ( RAND_MAX / 2 ) )
-		{
-			return -1;
-		}
-		else
-		{
-			return 1;
-		}
-	}
+	return rand()%2 ? qtrue : qfalse;
 }
 
 static qboolean AHive_TargetValid( gentity_t *self, gentity_t *target, qboolean ignoreDistance )
@@ -1504,36 +1486,29 @@ static qboolean AHive_TargetValid( gentity_t *self, gentity_t *target, qboolean 
  */
 static qboolean AHive_FindTarget( gentity_t *self )
 {
-	gentity_t *ent = NULL;
-	gentity_t *validTargets[ MAX_GENTITIES ];
-	int       validTargetNum = 0;
 
 	// delete old target
 	if ( self->target )
 	{
 		self->target->numTrackedBy--;
+		self->target = NULL;
 	}
 
-	self->target = NULL;
-
-	// find all potential targets
-	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, HIVE_SENSE_RANGE )); )
+	// search best target
+	gentity_t *ent = NULL;
+	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, HIVE_SENSE_RANGE ) ) )
 	{
-		if ( AHive_TargetValid( self, ent, qfalse ) )
+		if ( AHive_TargetValid( self, ent, qfalse ) && AHive_isBetterTarget( self, ent ) )
 		{
-		     validTargets[ validTargetNum++ ] = ent;
+			// change target if I find a valid target that's better than the old one
+			self->target = ent;
 		}
 	}
 
-	if ( validTargetNum > 0 )
+	// track target
+	if ( self->target )
 	{
-		// search best target
-		cmpHive = self;
-		qsort( validTargets, validTargetNum, sizeof( gentity_t* ), AHive_CompareTargets );
-
-		self->target = validTargets[ 0 ];
 		self->target->numTrackedBy++;
-
 		return qtrue;
 	}
 	else
