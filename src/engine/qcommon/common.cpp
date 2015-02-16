@@ -475,6 +475,10 @@ void Com_StartupVariable( const char *match )
 
 	for ( i = 0; i < com_numConsoleLines; i++ )
 	{
+		if (com_consoleLines[i] == 0) {
+			continue;
+		}
+
 		Cmd::Args line(com_consoleLines[i]);
 
 		if ( line.size() < 3 || strcmp( line[0].c_str(), "set" ))
