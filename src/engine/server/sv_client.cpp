@@ -909,6 +909,8 @@ static qboolean SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *m
 
 	Com_Printf( "clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string );
 
+	Q_strncpyz(cl->downloadURL, va("%s/%s", sv_wwwFallbackURL->string, pakName), sizeof(cl->downloadURL));
+
 	MSG_WriteByte( msg, svc_download );
 	MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
 	MSG_WriteString( msg, va( "%s/%s", sv_wwwFallbackURL->string, pakName ) );
