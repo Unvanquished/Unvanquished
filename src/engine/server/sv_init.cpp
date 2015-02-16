@@ -456,12 +456,12 @@ void SV_SpawnServer( const char *server )
 	PrintBanner( "Server Initialization" )
 	Com_Printf( "Server: %s\n", server );
 
+	// clear the whole hunk because we're (re)loading the server
+	Hunk_Clear();
+
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
 	CL_MapLoading();
-
-	// clear the whole hunk because we're (re)loading the server
-	Hunk_Clear();
 
 	// clear collision map data     // (SA) NOTE: TODO: used in missionpack
 	CM_ClearMap();
