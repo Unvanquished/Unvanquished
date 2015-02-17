@@ -98,7 +98,7 @@ endif()
 ################################################################################
 
 # Dependencies version, this must match the number in external_deps/build.sh
-set( DEPS_VERSION 2 )
+set( DEPS_VERSION 3 )
 
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )

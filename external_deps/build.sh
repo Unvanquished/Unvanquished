@@ -7,30 +7,30 @@ set -u
 
 # Dependencies version. This number must be updated every time the version
 # numbers below change, or packages are added/removed.
-DEPS_VERSION=2
+DEPS_VERSION=3
 
 # Package versions
 PKGCONFIG_VERSION=0.28
-NASM_VERSION=2.11.02
+NASM_VERSION=2.11.06
 ZLIB_VERSION=1.2.8
 GMP_VERSION=6.0.0
-NETTLE_VERSION=2.7.1
-GEOIP_VERSION=1.6.0
-CURL_VERSION=7.36.0
+NETTLE_VERSION=3.0
+GEOIP_VERSION=1.6.4
+CURL_VERSION=7.40.0
 SDL2_VERSION=2.0.3
-GLEW_VERSION=1.10.0
-PNG_VERSION=1.6.10
-JPEG_VERSION=1.3.1
-WEBP_VERSION=0.4.0
-FREETYPE_VERSION=2.5.3
-OPENAL_VERSION=1.15.1
-OGG_VERSION=1.3.1
+GLEW_VERSION=1.12.0
+PNG_VERSION=1.6.16
+JPEG_VERSION=1.4.0
+WEBP_VERSION=0.4.2
+FREETYPE_VERSION=2.5.5
+OPENAL_VERSION=1.16.0
+OGG_VERSION=1.3.2
 VORBIS_VERSION=1.3.4
 SPEEX_VERSION=1.2rc1
 THEORA_VERSION=1.1.1
 OPUS_VERSION=1.1
-OPUSFILE_VERSION=0.5
-NACLSDK_VERSION=35.0.1916.99
+OPUSFILE_VERSION=0.6
+NACLSDK_VERSION=41.0.2272.53
 
 # Extract an archive into the given subdirectory of the build dir and cd to it
 # Usage: extract <filename> <directory>
@@ -155,8 +155,9 @@ build_nettle() {
 
 # Build GeoIP
 build_geoip() {
-	download "GeoIP-${GEOIP_VERSION}.tar.gz" "http://www.maxmind.com/download/geoip/api/c/GeoIP-${GEOIP_VERSION}.tar.gz" geoip
-	cd "GeoIP-${GEOIP_VERSION}"
+	download "GeoIP-${GEOIP_VERSION}.tar.gz" "https://github.com/maxmind/geoip-api-c/archive/v${GEOIP_VERSION}.tar.gz" geoip
+	cd "geoip-api-c-${GEOIP_VERSION}"
+	autoreconf -vi
 	export ac_cv_func_malloc_0_nonnull=yes
 	export ac_cv_func_realloc_0_nonnull=yes
 	# GeoIP needs -lws2_32 in LDFLAGS
@@ -257,7 +258,7 @@ build_jpeg() {
 
 # Build WebP
 build_webp() {
-	download "libwebp-${WEBP_VERSION}.tar.gz" "https://webp.googlecode.com/files/libwebp-${WEBP_VERSION}.tar.gz" webp
+	download "libwebp-${WEBP_VERSION}.tar.gz" "http://downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz" webp
 	cd "libwebp-${WEBP_VERSION}"
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
 	make
@@ -284,12 +285,12 @@ build_openal() {
 		cp -r "include/AL" "${PREFIX}/include"
 		case "${PLATFORM}" in
 		*32)
-			cp "lib/Win32/libOpenAL32.dll.a" "${PREFIX}/lib"
-			cp "Win32/soft_oal.dll" "${PREFIX}/bin/OpenAL32.dll"
+			cp "libs/Win32/libOpenAL32.dll.a" "${PREFIX}/lib"
+			cp "bin/Win32/soft_oal.dll" "${PREFIX}/bin/OpenAL32.dll"
 			;;
 		*64)
-			cp "lib/Win64/libOpenAL32.dll.a" "${PREFIX}/lib"
-			cp "Win64/soft_oal.dll" "${PREFIX}/bin/OpenAL32.dll"
+			cp "libs/Win64/libOpenAL32.dll.a" "${PREFIX}/lib"
+			cp "bin/Win64/soft_oal.dll" "${PREFIX}/bin/OpenAL32.dll"
 			;;
 		esac
 		;;
@@ -417,10 +418,13 @@ build_naclsdk() {
 	cp pepper_*"/toolchain/${NACLSDK_PLATFORM}_x86_newlib/bin/x86_64-nacl-gdb${EXE}" "${PREFIX}/nacl-gdb${EXE}"
 	rm -rf "${PREFIX}/pnacl"
 	cp -a pepper_*"/toolchain/${NACLSDK_PLATFORM}_pnacl" "${PREFIX}/pnacl"
-	rm -rf "${PREFIX}/pnacl/lib-bc-x86_64"
-	rm -rf "${PREFIX}/pnacl/usr-bc-arm"
-	rm -rf "${PREFIX}/pnacl/usr-bc-x86_32"
-	rm -rf "${PREFIX}/pnacl/usr-bc-x86_64"
+	rm -rf "${PREFIX}/pnacl/bin/"{i686,x86_64}-nacl-*
+	rm -rf "${PREFIX}/pnacl/arm_bc-nacl"
+	rm -rf "${PREFIX}/pnacl/docs"
+	rm -rf "${PREFIX}/pnacl/i686_bc-nacl"
+	rm -rf "${PREFIX}/pnacl/include"
+	rm -rf "${PREFIX}/pnacl/x86_64-nacl"
+	rm -rf "${PREFIX}/pnacl/x86_64_bc-nacl"
 	case "${PLATFORM}" in
 	mingw32|msvc32)
 		cp pepper_*"/tools/sel_ldr_x86_64.exe" "${PREFIX}/sel_ldr64.exe"
@@ -428,13 +432,9 @@ build_naclsdk() {
 		;;
 	linux32)
 		cp pepper_*"/tools/nacl_helper_bootstrap_x86_32" "${PREFIX}/nacl_helper_bootstrap"
-		rm -rf "${PREFIX}/pnacl/bin64"
-		rm -rf "${PREFIX}/pnacl/host_x86_64"
 		;;
 	linux64)
 		cp pepper_*"/tools/nacl_helper_bootstrap_x86_64" "${PREFIX}/nacl_helper_bootstrap"
-		rm -rf "${PREFIX}/pnacl/bin"
-		rm -rf "${PREFIX}/pnacl/host_x86_32"
 		;;
 	esac
 }
