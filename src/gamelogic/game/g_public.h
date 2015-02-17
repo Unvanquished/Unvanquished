@@ -162,7 +162,6 @@ void              Cmd_ListMaps_f( gentity_t *ent );
 void              Cmd_Test_f( gentity_t *player );
 void              Cmd_AdminMessage_f( gentity_t *ent );
 int               G_FloodLimited( gentity_t *ent );
-void              G_ListCommands( gentity_t *ent );
 void              G_LoadCensors( void );
 void              G_CensorString( char *out, const char *in, int len, gentity_t *ent );
 qboolean          G_CheckStopVote( team_t );

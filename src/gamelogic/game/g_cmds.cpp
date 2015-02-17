@@ -4472,11 +4472,12 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 
 	ent->client->pers.pubkey_authenticated = 1;
 	G_admin_authlog( ent );
-	G_ListCommands( ent );
+	G_admin_cmdlist( ent );
 	CP( "cp_tr " QQ(N_("^2Pubkey authenticated")) "\n" );
 }
 
 // commands must be in alphabetical order!
+// keep the list synchronized with the list in cg_consolecmds for completion.
 static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
@@ -4625,32 +4626,6 @@ void ClientCommand( int clientNum )
 	}
 
 	command->cmdHandler( ent );
-}
-
-void G_ListCommands( gentity_t *ent )
-{
-	int  i;
-	char out[ MAX_STRING_CHARS ] = "";
-	int  len, outlen;
-
-	outlen = 0;
-
-	for ( i = 0; i < numCmds; i++ )
-	{
-		len = strlen( cmds[ i ].cmdName ) + 1;
-
-		if ( len + outlen >= sizeof( out ) - 1 )
-		{
-			trap_SendServerCommand( ent - g_entities, va( "cmds%s\n", out ) );
-			outlen = 0;
-		}
-
-		strcpy( out + outlen, va( " %s", cmds[ i ].cmdName ) );
-		outlen += len;
-	}
-
-	trap_SendServerCommand( ent - g_entities, va( "cmds%s\n", out ) );
-	G_admin_cmdlist( ent );
 }
 
 void G_DecolorString( const char *in, char *out, int len )
