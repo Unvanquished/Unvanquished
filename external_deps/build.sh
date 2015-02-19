@@ -343,7 +343,7 @@ build_speex() {
 	sed "s/deplibs_check_method=.*/deplibs_check_method=pass_all/g" libtool > "${TMP_FILE}"
 	mv "${TMP_FILE}" libtool
 	make
-	make install
+	make install || make install
 }
 
 # Build Theora
@@ -358,6 +358,12 @@ build_theora() {
 		local TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
 		sed "s,EXPORTS,," "win32/xmingw32/libtheoraenc-all.def" > "${TMP_FILE}"
 		mv "${TMP_FILE}" "win32/xmingw32/libtheoraenc-all.def"
+		;;
+	macosx*)
+		local TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
+		sed "s/-fforce-addr //" "configure" > "${TMP_FILE}"
+		mv "${TMP_FILE}" "configure"
+		chmod +x "configure"
 		;;
 	esac
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --disable-examples --disable-encode
