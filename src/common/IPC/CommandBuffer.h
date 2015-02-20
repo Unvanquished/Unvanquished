@@ -36,6 +36,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace IPC {
 
+    /*
+     * The command buffer is a single shared memory region, starting with a header
+     * where signaling data is, followed by a big array that is treated as a circular
+     * buffer. The signaling data contains the current offset of the reader and writer
+     * of the command buffer.
+     * This class contains the logic shared by the host and client of a command buffer
+     * handling the fact that indices are in shared memory, circular calculations etc.
+     */
+
     struct CommandBuffer {
         // Make sure the read and write offsets are in different cache lines to
         // avoid false sharing and a performance loss. 64 is because we expect and
