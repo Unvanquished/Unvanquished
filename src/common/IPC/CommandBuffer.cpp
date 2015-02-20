@@ -51,14 +51,14 @@ namespace IPC {
 
     void CommandBuffer::LoadWriterData() {
         writerOffset = reinterpret_cast<SharedWriterData*>(base + WRITER_OFFSET)->offset.load(std::memory_order_acquire);
-        if (writerOffset < 0 || writerOffset >= size) {
+        if (writerOffset >= size) {
             Sys::Drop("Invalid writerOffset %i for size %i", writerOffset, size);
         }
     }
 
     void CommandBuffer::LoadReaderData() {
         readerOffset = reinterpret_cast<SharedReaderData*>(base + READER_OFFSET)->offset.load(std::memory_order_acquire);
-        if (readerOffset < 0 || readerOffset >= size) {
+        if (readerOffset >= size) {
             Sys::Drop("Invalid readerOffset %i for size %i", readerOffset, size);
         }
     }
