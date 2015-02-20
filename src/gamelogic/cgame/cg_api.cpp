@@ -563,11 +563,42 @@ int trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, i
 	return result;
 }
 
+// Shamelessly stolen from tr_animation.cpp
 int trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
 {
-	int result;
-	VM::SendMsg<Render::BlendSkeletonMsg>(*skel, *blend, frac, *skel, result);
-	return result;
+    int    i;
+    vec3_t bounds[ 2 ];
+
+    if ( skel->numBones != blend->numBones )
+    {
+        Log::Warn("trap_R_BlendSkeleton: different number of bones %d != %d\n", skel->numBones, blend->numBones);
+        return qfalse;
+    }
+
+    // lerp between the 2 bone poses
+    for ( i = 0; i < skel->numBones; i++ )
+    {
+        transform_t trans;
+
+        TransStartLerp( &trans );
+        TransAddWeight( 1.0f - frac, &skel->bones[ i ].t, &trans );
+        TransAddWeight( frac, &blend->bones[ i ].t, &trans );
+        TransEndLerp( &trans );
+
+        TransCopy( &trans, &skel->bones[ i ].t );
+    }
+
+    // calculate a bounding box in the current coordinate system
+    for ( i = 0; i < 3; i++ )
+    {
+        bounds[ 0 ][ i ] = skel->bounds[ 0 ][ i ] < blend->bounds[ 0 ][ i ] ? skel->bounds[ 0 ][ i ] : blend->bounds[ 0 ][ i ];
+        bounds[ 1 ][ i ] = skel->bounds[ 1 ][ i ] > blend->bounds[ 1 ][ i ] ? skel->bounds[ 1 ][ i ] : blend->bounds[ 1 ][ i ];
+    }
+
+    VectorCopy( bounds[ 0 ], skel->bounds[ 0 ] );
+    VectorCopy( bounds[ 1 ], skel->bounds[ 1 ] );
+
+    return qtrue;
 }
 
 int trap_R_BoneIndex( qhandle_t hModel, const char *boneName )
