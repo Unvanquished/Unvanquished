@@ -42,6 +42,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif
 
+#ifdef BUILD_VM
+#include "../../gamelogic/shared/VMMain.h"
+#include "CommonSyscalls.h"
+#endif
+
 #undef INLINE
 #undef DLLEXPORT
 #undef NORETURN
@@ -519,6 +524,14 @@ SharedMemory SharedMemory::FromDesc(const FileDesc& desc)
 	return out;
 }
 
+#ifdef BUILD_VM
+SharedMemory SharedMemory::Create(size_t size)
+{
+    IPC::SharedMemory result;
+    VM::SendMsg<VM::CreateSharedMemoryMsg>(size, result);
+    return std::move(result);
+}
+#else
 SharedMemory SharedMemory::Create(size_t size)
 {
 	// Round size up to page size, otherwise the syscall will fail in NaCl
@@ -537,5 +550,6 @@ SharedMemory SharedMemory::Create(size_t size)
 	out.base = MapSharedMemory(out.handle, out.size);
 	return out;
 }
+#endif
 
 } // namespace IPC

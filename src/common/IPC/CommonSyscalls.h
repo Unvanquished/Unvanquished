@@ -48,6 +48,7 @@ namespace VM {
     enum {
         QVM,
         QVM_COMMON,
+        MISC,
         COMMAND,
         CVAR,
         LOG,
@@ -163,6 +164,18 @@ namespace VM {
         IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_PARSE_SOURCE_FILE_AND_LINE>, int>,
         IPC::Reply<int, std::string, int>
     > ParseSourceFileAndLineMsg;
+
+    // Misc Syscall Definitions
+
+    enum EngineMiscMessages {
+        CREATE_SHARED_MEMORY
+    };
+
+    // CreateSharedMemoryMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<MISC, CREATE_SHARED_MEMORY>, uint32_t>,
+        IPC::Reply<IPC::SharedMemory>
+    > CreateSharedMemoryMsg;
 
     // Command-Related Syscall Definitions
 

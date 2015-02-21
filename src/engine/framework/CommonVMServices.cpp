@@ -38,6 +38,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace VM {
 
+    // Misc Related
+
+    void CommonVMServices::HandleMiscSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
+        switch(minor) {
+            case CREATE_SHARED_MEMORY:
+                IPC::HandleMsg<CreateSharedMemoryMsg>(channel, std::move(reader), [this](size_t size, IPC::SharedMemory& shm) {
+                    shm = IPC::SharedMemory::Create(size);
+                });
+        }
+    }
+
     // Command Related
 
     void CommonVMServices::HandleCommandSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
@@ -364,6 +375,10 @@ namespace VM {
         switch (major) {
             case QVM_COMMON:
                 HandleCommonQVMSyscall(minor, reader, channel);
+                break;
+
+            case MISC:
+                HandleMiscSyscall(minor, reader, channel);
                 break;
 
             case COMMAND:

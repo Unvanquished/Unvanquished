@@ -51,6 +51,9 @@ namespace VM {
 
             VMBase& GetVM();
 
+            // Misc Related
+            void HandleMiscSyscall(int minor, Util::Reader& reader, IPC::Channel& channel);
+
             // Command Related
             void HandleCommandSyscall(int minor, Util::Reader& reader, IPC::Channel& channel);
 
@@ -60,7 +63,6 @@ namespace VM {
             void EnvExecuteAfter(Util::Reader& reader, IPC::Channel& channel);
 
             class ProxyCmd;
-            int commandFlag;
             std::unique_ptr<ProxyCmd> commandProxy;
             //TODO use the values to help the VM cache the location of the commands instead of doing a second hashtable lookup
             std::unordered_map<std::string, uint64_t> registeredCommands;
