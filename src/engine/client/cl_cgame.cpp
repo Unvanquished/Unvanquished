@@ -1825,11 +1825,25 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_KEY_GETBINDINGBUF:
-			IPC::HandleMsg<Key::GetBindingBufMsg>(channel, std::move(reader), [this] (int keynum, int team, int len, std::string& result) {
-				std::unique_ptr<char[]> buffer(new char[len]);
-				Key_GetBindingBuf(keynum, team, buffer.get(), len);
-				result.assign(buffer.get(), len);
+		case CG_KEY_GETKEYNUMFORBINDS:
+			IPC::HandleMsg<Key::GetKeynumForBindsMsg>(channel, std::move(reader), [this] (int team, std::vector<std::string> binds, std::vector<std::vector<int>>& result) {
+                for (auto& bind : binds) {
+                    result.push_back({});
+                    for (int i = 0; i < MAX_KEYS; i++) {
+                        char buffer[MAX_STRING_CHARS];
+
+                        Key_GetBindingBuf(i, team, buffer, MAX_STRING_CHARS);
+                        if (bind == buffer) {
+                            result.back().push_back(i);
+                            continue;
+                        }
+                        Key_GetBindingBuf(0, team, buffer, MAX_STRING_CHARS);
+                        if (bind == buffer) {
+                            result.back().push_back(i);
+                            continue;
+                        }
+                    }
+                }
 			});
 			break;
 

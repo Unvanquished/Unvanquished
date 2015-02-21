@@ -213,7 +213,7 @@ void            trap_R_RemapShader( const char *oldShader, const char *newShader
 qboolean        trap_GetEntityToken( char *buffer, int bufferSize );
 void            trap_UI_Popup( int arg0 );
 void            trap_UI_ClosePopup( const char *arg0 );
-void            trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen );
+std::vector<std::vector<int>> trap_Key_GetKeynumForBinds(int team, std::vector<std::string> binds);
 int             trap_Parse_AddGlobalDefine( const char *define );
 int             trap_Parse_LoadSource( const char *filename );
 int             trap_Parse_FreeSource( int handle );

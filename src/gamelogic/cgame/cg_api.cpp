@@ -667,11 +667,10 @@ void trap_Key_SetCatcher( int catcher )
 	VM::SendMsg<Key::SetCatcherMsg>(catcher);
 }
 
-void trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
-{
-	std::string result;
-	VM::SendMsg<Key::GetBindingBufMsg>(keynum, team, buflen, result);
-	Q_strncpyz(buf, result.c_str(), buflen);
+std::vector<std::vector<int>> trap_Key_GetKeynumForBinds(int team, std::vector<std::string> binds) {
+    std::vector<std::vector<int>> result;
+	VM::SendMsg<Key::GetKeynumForBindsMsg>(team, binds, result);
+    return std::move(result);
 }
 
 void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )

@@ -61,39 +61,23 @@ CG_GetBindings
 */
 static void CG_GetBindings( team_t team )
 {
-	unsigned  i, j, numKeys;
-	char buffer[ MAX_STRING_CHARS ];
+    std::vector<std::string> binds;
 
-	for ( i = 0; i < numBindings; i++ )
-	{
-		bindings[ i ].keys[ 0 ] = bindings[ i ].keys[ 1 ] = K_NONE;
-		numKeys = 0;
+    for (int i = 0; i < numBindings; i++) {
+		bindings[i].keys[0] = bindings[i].keys[1] = K_NONE;
+        binds.push_back(bindings[i].command);
+    }
 
-		for ( j = 0; j < MAX_KEYS; j++ )
-		{
-			trap_Key_GetBindingBuf( j, team, buffer, MAX_STRING_CHARS );
+    std::vector<std::vector<int>> keyNums = trap_Key_GetKeynumForBinds(team, binds);
 
-			if ( team != TEAM_NONE && buffer[ 0 ] == 0 )
-			{
-				trap_Key_GetBindingBuf( j, TEAM_NONE, buffer, MAX_STRING_CHARS );
-			}
-
-			if ( buffer[ 0 ] == 0 )
-			{
-				continue;
-			}
-
-			if ( !Q_stricmp( buffer, bindings[ i ].command ) )
-			{
-				bindings[ i ].keys[ numKeys++ ] = j;
-
-				if ( numKeys > 1 )
-				{
-					break;
-				}
-			}
-		}
-	}
+    for (int i = 0; i < numBindings; i++) {
+        if (keyNums[i].size() > 0) {
+            bindings[i].keys[0] = keyNums[i][0];
+        }
+        if (keyNums[i].size() > 1) {
+            bindings[i].keys[1] = keyNums[i][1];
+        }
+    }
 }
 
 /*
@@ -586,9 +570,6 @@ const char *CG_TutorialText( void )
 	playerState_t *ps;
 	static char   text[ MAX_TUTORIAL_TEXT ];
 	static int    refreshBindings = 0;
-
-	// TODO TODO TODO kangz: I disabled this function violently because CG_GetBindings makes too many syscalls, see #448
-	return "";
 
 	text[ 0 ] = '\0';
 	ps = &cg.snap->ps;

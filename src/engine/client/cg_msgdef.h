@@ -133,7 +133,7 @@ typedef enum cgameImport_s
   // Keys
   CG_KEY_GETCATCHER,
   CG_KEY_SETCATCHER,
-  CG_KEY_GETBINDINGBUF,
+  CG_KEY_GETKEYNUMFORBINDS,
   CG_KEY_KEYNUMTOSTRINGBUF,
 
   // Lan
@@ -447,11 +447,11 @@ namespace Key {
 	> GetCatcherMsg;
 	// SetCatcherMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_SETCATCHER>, int> SetCatcherMsg;
-	// GetBindingBufMsg
+	// GetKeynumForBindsMsg
 	typedef IPC::SyncMessage<
-		IPC::Message<IPC::Id<VM::QVM, CG_KEY_GETBINDINGBUF>, int, int, int>,
-		IPC::Reply<std::string>
-	> GetBindingBufMsg;
+		IPC::Message<IPC::Id<VM::QVM, CG_KEY_GETKEYNUMFORBINDS>, int, std::vector<std::string>>,
+		IPC::Reply<std::vector<std::vector<int>>>
+	> GetKeynumForBindsMsg;
 	// KeyNumToStringMsg
 	typedef IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYNUMTOSTRINGBUF>, int, int>,
