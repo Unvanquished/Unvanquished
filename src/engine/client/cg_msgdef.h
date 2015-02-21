@@ -121,7 +121,6 @@ typedef enum cgameImport_s
   CG_R_LIGHTFORPOINT,
   CG_R_REGISTERANIMATION,
   CG_R_BUILDSKELETON,
-  CG_R_BLENDSKELETON,
   CG_R_BONEINDEX,
   CG_R_ANIMNUMFRAMES,
   CG_R_ANIMFRAMERATE,
@@ -273,6 +272,14 @@ typedef IPC::SyncMessage<
 // All Sounds
 
 namespace Audio {
+	// RegisterSoundMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_S_REGISTERSOUND>, std::string>,
+		IPC::Reply<int>
+	> RegisterSoundMsg;
+
+    //Command buffer syscalls
+
 	// StartSoundMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTSOUND>, bool, std::array<float, 3>, int, int> StartSoundMsg;
 	// StartLocalSoundMsg
@@ -287,11 +294,6 @@ namespace Audio {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYPOSITION>, int, std::array<float, 3>> UpdateEntityPositionMsg;
 	// RespatializeMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_RESPATIALIZE>, int, std::array<float, 9>> RespatializeMsg;
-	// RegisterSoundMsg
-	typedef IPC::SyncMessage<
-		IPC::Message<IPC::Id<VM::QVM, CG_S_REGISTERSOUND>, std::string>,
-		IPC::Reply<int>
-	> RegisterSoundMsg;
 	// StartBackgroundTrackMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTBACKGROUNDTRACK>, std::string, std::string> StartBackgroundTrackMsg;
 	// StopBackgroundTrackMsg
@@ -314,16 +316,12 @@ namespace Render {
 		IPC::Message<IPC::Id<VM::QVM, CG_R_GETSHADERNAMEFROMHANDLE>, int>,
 		IPC::Reply<std::string>
 	> GetShaderNameFromHandleMsg;
-	// ScissorEnableMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SCISSOR_ENABLE>, bool> ScissorEnableMsg;
-	// ScissorSetMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SCISSOR_SET>, int, int, int, int> ScissorSetMsg;
 	// InPVVSMsg //TODO not a renderer call, handle in CM in the VM?
 	typedef IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_INPVVS>, std::array<float, 3>, std::array<float, 3>>,
 		IPC::Reply<bool>
 	> InPVVSMsg;
-	// LoadWorldMapMsg //TODO is it realy async?
+	// LoadWorldMapMsg //TODO is it really async?
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_LOADWORLDMAP>, std::string> LoadWorldMapMsg;
 	// RegisterModelMsg
 	typedef IPC::SyncMessage<
@@ -345,30 +343,6 @@ namespace Render {
 		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERFONT>, std::string, std::string, int>,
 		IPC::Reply<fontMetrics_t>
 	> RegisterFontMsg;
-	// ClearSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_CLEARSCENE>> ClearSceneMsg;
-	// AddRefEntityToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDREFENTITYTOSCENE>, refEntity_t> AddRefEntityToSceneMsg;
-	// AddPolyToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYTOSCENE>, int, std::vector<polyVert_t>> AddPolyToSceneMsg;
-	// AddPolysToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYSTOSCENE>, int, std::vector<polyVert_t>, int, int> AddPolysToSceneMsg;
-	// AddLightToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDLIGHTTOSCENE>, std::array<float, 3>, float, float, float, float, float, int, int> AddLightToSceneMsg;
-	// AddAdditiveLightToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDADDITIVELIGHTTOSCENE>, std::array<float, 3>, float, float, float, float> AddAdditiveLightToSceneMsg;
-	// RenderSceneMsg //TODO check async
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RENDERSCENE>, refdef_t> RenderSceneMsg;
-	// SetColorMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, std::array<float, 4>> SetColorMsg;
-	// SetClipRegionMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCLIPREGION>, std::array<float, 4>> SetClipRegionMsg;
-	// ResetClipRegionMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RESETCLIPREGION>> ResetClipRegionMsg;
-	// DrawStretchPicMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWSTRETCHPIC>, float, float, float, float, float, float, float, float, int> DrawStretchPicMsg;
-	// DrawRotatedPicMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWROTATEDPIC>, float, float, float, float, float, float, float, float, int, float> DrawRotatedPicMsg;
 	// ModelBoundsMsg
 	typedef IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_MODELBOUNDS>, int>,
@@ -401,11 +375,6 @@ namespace Render {
 		IPC::Message<IPC::Id<VM::QVM, CG_R_BUILDSKELETON>, int, int, int, float, bool>,
 		IPC::Reply<refSkeleton_t, int>
 	> BuildSkeletonMsg;
-	// BlendSkeletonMsg
-	typedef IPC::SyncMessage<
-		IPC::Message<IPC::Id<VM::QVM, CG_R_BLENDSKELETON>, refSkeleton_t, refSkeleton_t, float>,
-		IPC::Reply<refSkeleton_t, int>
-	> BlendSkeletonMsg;
 	// BoneIndexMsg
 	typedef IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_BONEINDEX>, int, std::string>,
@@ -426,17 +395,48 @@ namespace Render {
 		IPC::Message<IPC::Id<VM::QVM, CG_REGISTERVISTEST>>,
 		IPC::Reply<int>
 	> RegisterVisTestMsg;
-	// AddVisTextToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_ADDVISTESTTOSCENE>, int, std::array<float, 3>, float, float> AddVisTestToSceneMsg;
 	// CheckVisibilityMsg
 	typedef IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_CHECKVISIBILITY>, int>,
 		IPC::Reply<float>
 	> CheckVisibilityMsg;
+
+    // All command buffer syscalls
+
+	// ScissorEnableMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SCISSOR_ENABLE>, bool> ScissorEnableMsg;
+	// ScissorSetMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SCISSOR_SET>, int, int, int, int> ScissorSetMsg;
+	// ClearSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_CLEARSCENE>> ClearSceneMsg;
+	// AddRefEntityToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDREFENTITYTOSCENE>, refEntity_t> AddRefEntityToSceneMsg;
+	// AddPolyToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYTOSCENE>, int, std::vector<polyVert_t>> AddPolyToSceneMsg;
+	// AddPolysToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYSTOSCENE>, int, std::vector<polyVert_t>, int, int> AddPolysToSceneMsg;
+	// AddLightToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDLIGHTTOSCENE>, std::array<float, 3>, float, float, float, float, float, int, int> AddLightToSceneMsg;
+	// AddAdditiveLightToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDADDITIVELIGHTTOSCENE>, std::array<float, 3>, float, float, float, float> AddAdditiveLightToSceneMsg;
+	// SetColorMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, std::array<float, 4>> SetColorMsg;
+	// SetClipRegionMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCLIPREGION>, std::array<float, 4>> SetClipRegionMsg;
+	// ResetClipRegionMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RESETCLIPREGION>> ResetClipRegionMsg;
+	// DrawStretchPicMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWSTRETCHPIC>, float, float, float, float, float, float, float, float, int> DrawStretchPicMsg;
+	// DrawRotatedPicMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWROTATEDPIC>, float, float, float, float, float, float, float, float, int, float> DrawRotatedPicMsg;
+	// AddVisTextToSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_ADDVISTESTTOSCENE>, int, std::array<float, 3>, float, float> AddVisTestToSceneMsg;
 	// UnregisterVisTestMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_UNREGISTERVISTEST>, int> UnregisterVisTestMsg;
 	// SetColorGradingMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_SETCOLORGRADING>, int, int> SetColorGradingMsg;
+	// RenderSceneMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RENDERSCENE>, refdef_t> RenderSceneMsg;
 }
 
 namespace Key {

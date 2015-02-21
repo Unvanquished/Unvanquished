@@ -1702,18 +1702,6 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_R_SCISSOR_ENABLE:
-			IPC::HandleMsg<Render::ScissorEnableMsg>(channel, std::move(reader), [this] (bool enable) {
-				re.ScissorEnable(enable);
-			});
-			break;
-
-		case CG_R_SCISSOR_SET:
-			IPC::HandleMsg<Render::ScissorSetMsg>(channel, std::move(reader), [this] (int x, int y, int w, int h) {
-				re.ScissorSet(x, y, w, h);
-			});
-			break;
-
 		case CG_R_INPVVS:
 			IPC::HandleMsg<Render::InPVVSMsg>(channel, std::move(reader), [this] (std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
 				res = re.inPVVS(p1.data(), p2.data());
@@ -1748,78 +1736,6 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		case CG_R_REGISTERFONT:
 			IPC::HandleMsg<Render::RegisterFontMsg>(channel, std::move(reader), [this] (std::string name, std::string fallbackName, int pointSize, fontMetrics_t& font) {
 				re.RegisterFontVM(name.c_str(), fallbackName.c_str(), pointSize, &font);
-			});
-			break;
-
-		case CG_R_CLEARSCENE:
-			IPC::HandleMsg<Render::ClearSceneMsg>(channel, std::move(reader), [this] {
-				re.ClearScene();
-			});
-			break;
-
-		case CG_R_ADDREFENTITYTOSCENE:
-			IPC::HandleMsg<Render::AddRefEntityToSceneMsg>(channel, std::move(reader), [this] (refEntity_t entity) {
-				re.AddRefEntityToScene(&entity);
-			});
-			break;
-
-		case CG_R_ADDPOLYTOSCENE:
-			IPC::HandleMsg<Render::AddPolyToSceneMsg>(channel, std::move(reader), [this] (int shader, std::vector<polyVert_t> verts) {
-				re.AddPolyToScene(shader, verts.size(), verts.data());
-			});
-			break;
-
-		case CG_R_ADDPOLYSTOSCENE:
-			IPC::HandleMsg<Render::AddPolysToSceneMsg>(channel, std::move(reader), [this] (int shader, std::vector<polyVert_t> verts, int numVerts, int numPolys) {
-				re.AddPolysToScene(shader, numVerts, verts.data(), numPolys);
-			});
-			break;
-
-		case CG_R_ADDLIGHTTOSCENE:
-			IPC::HandleMsg<Render::AddLightToSceneMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, float radius, float intensity, float r, float g, float b, int shader, int flags) {
-				re.AddLightToScene(point.data(), radius, intensity, r, g, b, shader, flags);
-			});
-			break;
-
-		case CG_R_ADDADDITIVELIGHTTOSCENE:
-			IPC::HandleMsg<Render::AddAdditiveLightToSceneMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, float intensity, float r, float g, float b) {
-				re.AddAdditiveLightToScene(point.data(), intensity, r, g, b);
-			});
-			break;
-
-		case CG_R_RENDERSCENE:
-			IPC::HandleMsg<Render::RenderSceneMsg>(channel, std::move(reader), [this] (refdef_t rd) {
-				re.RenderScene(&rd);
-			});
-			break;
-
-		case CG_R_SETCOLOR:
-			IPC::HandleMsg<Render::SetColorMsg>(channel, std::move(reader), [this] (std::array<float, 4> color) {
-				re.SetColor(color.data());
-			});
-			break;
-
-		case CG_R_SETCLIPREGION:
-			IPC::HandleMsg<Render::SetClipRegionMsg>(channel, std::move(reader), [this] (std::array<float, 4> region) {
-				re.SetClipRegion(region.data());
-			});
-			break;
-
-		case CG_R_RESETCLIPREGION:
-			IPC::HandleMsg<Render::ResetClipRegionMsg>(channel, std::move(reader), [this] {
-				re.SetClipRegion(nullptr);
-			});
-			break;
-
-		case CG_R_DRAWSTRETCHPIC:
-			IPC::HandleMsg<Render::DrawStretchPicMsg>(channel, std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader) {
-				re.DrawStretchPic(x, y, w, h, s1, t1, s2, t2, shader);
-			});
-			break;
-
-		case CG_R_DRAWROTATEDPIC:
-			IPC::HandleMsg<Render::DrawRotatedPicMsg>(channel, std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader, float angle) {
-				re.DrawRotatedPic(x, y, w, h, s1, t1, s2, t2, shader, angle);
 			});
 			break;
 
@@ -1865,13 +1781,6 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_R_BLENDSKELETON:
-			IPC::HandleMsg<Render::BlendSkeletonMsg>(channel, std::move(reader), [this] (refSkeleton_t skel1, refSkeleton_t skel2, float frac, refSkeleton_t& resSkel, int& res) {
-				memcpy(&resSkel, &skel1, sizeof(refSkeleton_t));
-				res = re.BlendSkeleton(&resSkel, &skel2, frac);
-			});
-			break;
-
 		case CG_R_BONEINDEX:
 			IPC::HandleMsg<Render::BoneIndexMsg>(channel, std::move(reader), [this] (int model, std::string boneName, int& index) {
 				index = re.BoneIndex(model, boneName.c_str());
@@ -1896,27 +1805,9 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_ADDVISTESTTOSCENE:
-			IPC::HandleMsg<Render::AddVisTestToSceneMsg>(channel, std::move(reader), [this] (int handle, std::array<float, 3> pos, float depthAdjust, float area) {
-				re.AddVisTestToScene(handle, pos.data(), depthAdjust, area);
-			});
-			break;
-
 		case CG_CHECKVISIBILITY:
 			IPC::HandleMsg<Render::CheckVisibilityMsg>(channel, std::move(reader), [this] (int handle, float& res) {
 				res = re.CheckVisibility(handle);
-			});
-			break;
-
-		case CG_UNREGISTERVISTEST:
-			IPC::HandleMsg<Render::UnregisterVisTestMsg>(channel, std::move(reader), [this] (int handle) {
-				re.UnregisterVisTest(handle);
-			});
-			break;
-
-		case CG_SETCOLORGRADING:
-			IPC::HandleMsg<Render::SetColorGradingMsg>(channel, std::move(reader), [this] (int slot, int shader) {
-				re.SetColorGrading(slot, shader);
 			});
 			break;
 
@@ -2343,6 +2234,110 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
 					Audio::EndRegistration();
 				});
 				break;
+
+            // All renderer
+
+            case CG_R_SCISSOR_ENABLE:
+                HandleMsg<Render::ScissorEnableMsg>(std::move(reader), [this] (bool enable) {
+                    re.ScissorEnable(enable);
+                });
+                break;
+
+            case CG_R_SCISSOR_SET:
+                HandleMsg<Render::ScissorSetMsg>(std::move(reader), [this] (int x, int y, int w, int h) {
+                    re.ScissorSet(x, y, w, h);
+                });
+                break;
+
+            case CG_R_CLEARSCENE:
+                HandleMsg<Render::ClearSceneMsg>(std::move(reader), [this] {
+                    re.ClearScene();
+                });
+                break;
+
+            case CG_R_ADDREFENTITYTOSCENE:
+                HandleMsg<Render::AddRefEntityToSceneMsg>(std::move(reader), [this] (refEntity_t entity) {
+                    re.AddRefEntityToScene(&entity);
+                });
+                break;
+
+            case CG_R_ADDPOLYTOSCENE:
+                HandleMsg<Render::AddPolyToSceneMsg>(std::move(reader), [this] (int shader, std::vector<polyVert_t> verts) {
+                    re.AddPolyToScene(shader, verts.size(), verts.data());
+                });
+                break;
+
+            case CG_R_ADDPOLYSTOSCENE:
+                HandleMsg<Render::AddPolysToSceneMsg>(std::move(reader), [this] (int shader, std::vector<polyVert_t> verts, int numVerts, int numPolys) {
+                    re.AddPolysToScene(shader, numVerts, verts.data(), numPolys);
+                });
+                break;
+
+            case CG_R_ADDLIGHTTOSCENE:
+                HandleMsg<Render::AddLightToSceneMsg>(std::move(reader), [this] (std::array<float, 3> point, float radius, float intensity, float r, float g, float b, int shader, int flags) {
+                    re.AddLightToScene(point.data(), radius, intensity, r, g, b, shader, flags);
+                });
+                break;
+
+            case CG_R_ADDADDITIVELIGHTTOSCENE:
+                HandleMsg<Render::AddAdditiveLightToSceneMsg>(std::move(reader), [this] (std::array<float, 3> point, float intensity, float r, float g, float b) {
+                    re.AddAdditiveLightToScene(point.data(), intensity, r, g, b);
+                });
+                break;
+
+            case CG_R_SETCOLOR:
+                HandleMsg<Render::SetColorMsg>(std::move(reader), [this] (std::array<float, 4> color) {
+                    re.SetColor(color.data());
+                });
+                break;
+
+            case CG_R_SETCLIPREGION:
+                HandleMsg<Render::SetClipRegionMsg>(std::move(reader), [this] (std::array<float, 4> region) {
+                    re.SetClipRegion(region.data());
+                });
+                break;
+
+            case CG_R_RESETCLIPREGION:
+                HandleMsg<Render::ResetClipRegionMsg>(std::move(reader), [this] {
+                    re.SetClipRegion(nullptr);
+                });
+                break;
+
+            case CG_R_DRAWSTRETCHPIC:
+                HandleMsg<Render::DrawStretchPicMsg>(std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader) {
+                    re.DrawStretchPic(x, y, w, h, s1, t1, s2, t2, shader);
+                });
+                break;
+
+            case CG_R_DRAWROTATEDPIC:
+                HandleMsg<Render::DrawRotatedPicMsg>(std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader, float angle) {
+                    re.DrawRotatedPic(x, y, w, h, s1, t1, s2, t2, shader, angle);
+                });
+                break;
+
+            case CG_ADDVISTESTTOSCENE:
+                HandleMsg<Render::AddVisTestToSceneMsg>(std::move(reader), [this] (int handle, std::array<float, 3> pos, float depthAdjust, float area) {
+                    re.AddVisTestToScene(handle, pos.data(), depthAdjust, area);
+                });
+                break;
+
+            case CG_UNREGISTERVISTEST:
+                HandleMsg<Render::UnregisterVisTestMsg>(std::move(reader), [this] (int handle) {
+                    re.UnregisterVisTest(handle);
+                });
+                break;
+
+            case CG_SETCOLORGRADING:
+                HandleMsg<Render::SetColorGradingMsg>(std::move(reader), [this] (int slot, int shader) {
+                    re.SetColorGrading(slot, shader);
+                });
+                break;
+
+            case CG_R_RENDERSCENE:
+                HandleMsg<Render::RenderSceneMsg>(std::move(reader), [this] (refdef_t rd) {
+                    re.RenderScene(&rd);
+                });
+                break;
 
 		default:
 			Sys::Drop("Bad minor CGame QVM Command Buffer number: %d", minor);

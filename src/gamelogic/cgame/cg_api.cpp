@@ -384,12 +384,12 @@ void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len 
 
 void trap_R_ScissorEnable( qboolean enable )
 {
-	VM::SendMsg<Render::ScissorEnableMsg>(enable);
+    cmdBuffer.SendMsg<Render::ScissorEnableMsg>(enable);
 }
 
 void trap_R_ScissorSet( int x, int y, int w, int h )
 {
-	VM::SendMsg<Render::ScissorSetMsg>(x, y, w, h);
+	cmdBuffer.SendMsg<Render::ScissorSetMsg>(x, y, w, h);
 }
 
 qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
@@ -435,45 +435,45 @@ void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int po
 
 void trap_R_ClearScene( void )
 {
-	VM::SendMsg<Render::ClearSceneMsg>();
+	cmdBuffer.SendMsg<Render::ClearSceneMsg>();
 }
 
 void trap_R_AddRefEntityToScene( const refEntity_t *re )
 {
-	VM::SendMsg<Render::AddRefEntityToSceneMsg>(*re);
+	cmdBuffer.SendMsg<Render::AddRefEntityToSceneMsg>(*re);
 }
 
 void trap_R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts )
 {
 	std::vector<polyVert_t> myverts(numVerts);
 	memcpy(myverts.data(), verts, numVerts * sizeof(polyVert_t));
-	VM::SendMsg<Render::AddPolyToSceneMsg>(hShader, myverts);
+	cmdBuffer.SendMsg<Render::AddPolyToSceneMsg>(hShader, myverts);
 }
 
 void trap_R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
 {
 	std::vector<polyVert_t> myverts(numVerts * numPolys);
 	memcpy(myverts.data(), verts, numVerts * numPolys * sizeof(polyVert_t));
-	VM::SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numVerts, numPolys);
+	cmdBuffer.SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numVerts, numPolys);
 }
 
 void trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
 {
 	std::array<float, 3> myorg;
 	VectorCopy(org, myorg.data());
-	VM::SendMsg<Render::AddLightToSceneMsg>(myorg, radius, intensity, r, g, b, hShader, flags);
+	cmdBuffer.SendMsg<Render::AddLightToSceneMsg>(myorg, radius, intensity, r, g, b, hShader, flags);
 }
 
 void trap_R_AddAdditiveLightToScene( const vec3_t org, float intensity, float r, float g, float b )
 {
 	std::array<float, 3> myorg;
 	VectorCopy(org, myorg.data());
-	VM::SendMsg<Render::AddAdditiveLightToSceneMsg>(myorg, intensity, r, g, b);
+	cmdBuffer.SendMsg<Render::AddAdditiveLightToSceneMsg>(myorg, intensity, r, g, b);
 }
 
 void trap_R_RenderScene( const refdef_t *fd )
 {
-	VM::SendMsg<Render::RenderSceneMsg>(*fd);
+	cmdBuffer.SendMsg<Render::RenderSceneMsg>(*fd);
 }
 
 void trap_R_SetColor( const float *rgba )
@@ -482,29 +482,29 @@ void trap_R_SetColor( const float *rgba )
 	if (rgba) {
 		memcpy(myrgba.data(), rgba, 4 * sizeof(float));
 	}
-	VM::SendMsg<Render::SetColorMsg>(myrgba);
+	cmdBuffer.SendMsg<Render::SetColorMsg>(myrgba);
 }
 
 void trap_R_SetClipRegion( const float *region )
 {
 	std::array<float, 4> myregion;
 	memcpy(myregion.data(), region, 4 * sizeof(float));
-	VM::SendMsg<Render::SetClipRegionMsg>(myregion);
+	cmdBuffer.SendMsg<Render::SetClipRegionMsg>(myregion);
 }
 
 void trap_R_ResetClipRegion( void )
 {
-	VM::SendMsg<Render::ResetClipRegionMsg>();
+	cmdBuffer.SendMsg<Render::ResetClipRegionMsg>();
 }
 
 void trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader )
 {
-	VM::SendMsg<Render::DrawStretchPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader);
+	cmdBuffer.SendMsg<Render::DrawStretchPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader);
 }
 
 void trap_R_DrawRotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle )
 {
-	VM::SendMsg<Render::DrawRotatedPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader, angle);
+	cmdBuffer.SendMsg<Render::DrawRotatedPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader, angle);
 }
 
 void trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs )
@@ -633,7 +633,7 @@ void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, flo
 {
 	std::array<float, 3> mypos;
 	VectorCopy(pos, mypos.data());
-	VM::SendMsg<Render::AddVisTestToSceneMsg>(hTest, mypos, depthAdjust, area);
+	cmdBuffer.SendMsg<Render::AddVisTestToSceneMsg>(hTest, mypos, depthAdjust, area);
 }
 
 float trap_CheckVisibility( qhandle_t hTest )
@@ -645,12 +645,12 @@ float trap_CheckVisibility( qhandle_t hTest )
 
 void trap_UnregisterVisTest( qhandle_t hTest )
 {
-	VM::SendMsg<Render::UnregisterVisTestMsg>(hTest);
+	cmdBuffer.SendMsg<Render::UnregisterVisTestMsg>(hTest);
 }
 
 void trap_SetColorGrading( int slot, qhandle_t hShader )
 {
-	VM::SendMsg<Render::SetColorGradingMsg>(slot, hShader);
+	cmdBuffer.SendMsg<Render::SetColorGradingMsg>(slot, hShader);
 }
 
 // All keys
