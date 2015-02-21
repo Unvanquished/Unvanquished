@@ -61,6 +61,7 @@ namespace IPC {
     }
 
     void CommandBufferHost::Consume() {
+        buffer.LoadWriterData();
         logs.Debug("Consuming up to %i data from buffer for %s", buffer.GetMaxReadLength(), name);
         bool consuming = true;
         //TODO set fixed bound too
