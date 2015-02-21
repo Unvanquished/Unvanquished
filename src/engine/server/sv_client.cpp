@@ -689,6 +689,7 @@ static void SV_CloseDownload( client_t *cl )
 	// EOF
 	if ( cl->download )
 	{
+		delete cl->download;
 		cl->download = nullptr;
 	}
 
@@ -908,6 +909,8 @@ static qboolean SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *m
 
 	Com_Printf( "clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string );
 
+	Q_strncpyz(cl->downloadURL, va("%s/%s", sv_wwwFallbackURL->string, pakName), sizeof(cl->downloadURL));
+
 	MSG_WriteByte( msg, svc_download );
 	MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
 	MSG_WriteString( msg, va( "%s/%s", sv_wwwFallbackURL->string, pakName ) );
@@ -1066,7 +1069,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
 			if (pak) {
 				try {
-					cl->download = std::make_shared<FS::File>(FS::RawPath::OpenRead(pak->path));
+					cl->download = new FS::File(FS::RawPath::OpenRead(pak->path));
 					cl->downloadSize = cl->download->Length();
 				} catch (std::system_error&) {
 					success = false;

@@ -96,7 +96,7 @@ endif()
 ################################################################################
 
 # Dependencies version, this must match the number in external_deps/build.sh
-set( DEPS_VERSION 2 )
+set( DEPS_VERSION 3 )
 
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
@@ -143,11 +143,7 @@ elseif( LINUX )
     set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux32-${DEPS_VERSION} )
   endif()
 endif()
-if( LINUX AND ARCH STREQUAL "x86_64" )
-  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin64 )
-else()
-  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin )
-endif()
+set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin )
 if( WIN32 )
   set( PNACL_BIN_EXT ".bat" )
 else()
@@ -240,6 +236,22 @@ if( MSVC )
     set_linker_flag( "/LTCG" RELWITHDEBINFO )
     set_linker_flag( "/LTCG" RELEASE )
   endif()
+  set_linker_flag( "/LARGEADDRESSAWARE" )
+
+  # Turn off C4503:, e.g: 
+  # warning C4503: 'std::_Tree<std::_Tmap_traits<_Kty,_Ty,_Pr,_Alloc,false>>::_Insert_hint' : decorated name length exceeded, name was truncated
+  # No issue will be caused from this error as long as no two symbols become identical by being truncated.
+  # In practice this rarely happens and even the standard libraries are affected as in the example. So there really is not
+  # much that can to done about it and the warnings about each truncation really just make it more likely
+  # that other more real issues might get missed. So better to remove the distraction when it really is very unlikey to happen.
+  set_c_cxx_flag( "/wd4503" )  
+  
+  # Turn off warning C4996:, e.g:
+  # warning C4996: 'open': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _open. See online help for details.  set_c_cxx_flag( "/wd4996" )
+  # open seems far more popular than _open not to mention nicer. There doesn't seem to be any reason or will to change to _open.
+  # So until there is a specific plan to tackle all of these type of warnings it's best to turn them off to the distraction.
+  set_c_cxx_flag( "/wd4996" )
+
 else()
   set_c_cxx_flag( "-ffast-math" )
   set_c_cxx_flag( "-fno-strict-aliasing" )
@@ -315,6 +327,7 @@ else()
   if( WIN32 )
     try_linker_flag( LINKER_DYNAMICBASE "-Wl,--dynamicbase" )
     try_linker_flag( LINKER_NXCOMPAT "-Wl,--nxcompat" )
+    try_linker_flag( LINKER_LARGE_ADDRESS_AWARE "-Wl,--large-address-aware" )
   endif()
 
   # The -pthread flag sets some preprocessor defines, it is also used to link

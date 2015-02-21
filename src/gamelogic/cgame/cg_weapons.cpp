@@ -2046,13 +2046,9 @@ CG_DrawItemSelect
 void CG_DrawHumanInventory( void )
 {
 	int           i;
-	float         iconWidth;
-	float         iconHeight;
 	int           items[ 64 ];
 	int           colinfo[ 64 ];
 	int           numItems = 0, selectedItem = 0;
-	int           length;
-	qboolean      vertical;
 	playerState_t *ps;
 	static char   RML[ MAX_STRING_CHARS ];
 

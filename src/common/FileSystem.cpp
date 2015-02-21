@@ -2103,7 +2103,7 @@ static void FindPaksInPath(Str::StringRef basePath, Str::StringRef subPath)
 			} else if (Str::IsSuffix("/", filename))
 				FindPaksInPath(basePath, Path::Build(subPath, filename));
 		}
-	} catch (std::system_error& err) {
+	} catch (std::system_error&) {
 		// If there was an error reading a directory, just ignore it and go to
 		// the next one.
 	}
@@ -2343,7 +2343,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, std::move(reader), [](std::string path, uint32_t mode, Util::optional<IPC::FileHandle>& out) {
 			try {
 				out = FileToIPC(HomePath::OpenMode(path, static_cast<openMode_t>(mode), throws()), static_cast<openMode_t>(mode));
-			} catch (std::system_error& err) {}
+			} catch (std::system_error&) {}
 		});
 		break;
 
@@ -2357,7 +2357,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		IPC::HandleMsg<VM::FSHomePathTimestampMsg>(channel, std::move(reader), [](std::string path, Util::optional<uint64_t>& out) {
 			try {
 				out = std::chrono::system_clock::to_time_t(HomePath::FileTimestamp(path));
-			} catch (std::system_error& err) {}
+			} catch (std::system_error&) {}
 		});
 		break;
 
@@ -2366,7 +2366,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 			try {
 				HomePath::MoveFile(dest, src);
 				success = true;
-			} catch (std::system_error& err) {
+			} catch (std::system_error&) {
 				success = false;
 			}
 		});
@@ -2377,7 +2377,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 			try {
 				HomePath::DeleteFile(path);
 				success = true;
-			} catch (std::system_error& err) {
+			} catch (std::system_error&) {
 				success = false;
 			}
 		});
@@ -2390,7 +2390,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				for (auto&& x: FS::HomePath::ListFiles(path))
 					vec.push_back(std::move(x));
 				out = std::move(vec);
-			} catch (std::system_error& err) {}
+			} catch (std::system_error&) {}
 		});
 		break;
 
@@ -2401,7 +2401,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				for (auto&& x: FS::HomePath::ListFilesRecursive(path))
 					vec.push_back(std::move(x));
 				out = std::move(vec);
-			} catch (std::system_error& err) {}
+			} catch (std::system_error&) {}
 		});
 		break;
 
@@ -2416,7 +2416,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				return;
 			try {
 				out = FileToIPC(RawPath::OpenRead(Path::Build(loadedPaks[pakIndex].path, path)), MODE_READ);
-			} catch (std::system_error& err) {}
+			} catch (std::system_error&) {}
 		});
 		break;
 
@@ -2431,7 +2431,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				return;
 			try {
 				out = std::chrono::system_clock::to_time_t(RawPath::FileTimestamp(Path::Build(loadedPaks[pakIndex].path, path)));
-			} catch (std::system_error& err) {}
+			} catch (std::system_error&) {}
 		});
 		break;
 
@@ -2441,7 +2441,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				return;
 			try {
 				FS::PakPath::InternalLoadPak(availablePaks[pakIndex], expectedChecksum, pathPrefix, FS::throws());
-			} catch (std::system_error& err) {}
+			} catch (std::system_error&) {}
 		});
 		break;
 

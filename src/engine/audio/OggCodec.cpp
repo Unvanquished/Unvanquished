@@ -114,7 +114,7 @@ AudioData LoadOggCodec(std::string filename)
 	std::string audioFile;
 	try
 	{
-		audioFile = std::move(FS::PakPath::ReadFile(filename));
+		audioFile = FS::PakPath::ReadFile(filename);
 	}
 	catch (std::system_error& err)
 	{
@@ -149,7 +149,7 @@ AudioData LoadOggCodec(std::string filename)
 	int sampleRate = oggInfo->rate;
 	int numberOfChannels = oggInfo->channels;
 
-	char* buffer = new char[4096];
+	char buffer[4096];
 	int bytesRead = 0;
 	int bitStream = 0;
 

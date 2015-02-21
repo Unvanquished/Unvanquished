@@ -738,7 +738,7 @@ static void HiveMissileThink( gentity_t *self )
 	int       i;
 	float     d, nearest;
 
-	if ( level.time > self->timestamp )
+	if ( level.time > self->timestamp ) // swarm lifetime exceeded
 	{
 		VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
 		self->s.pos.trType = TR_STATIONARY;

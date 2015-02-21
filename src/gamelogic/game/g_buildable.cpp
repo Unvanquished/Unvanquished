@@ -1409,58 +1409,40 @@ void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	G_RGSDie( self );
 }
 
-static gentity_t *cmpHive = NULL;
-
-static int AHive_CompareTargets( const void *first, const void *second )
+static qboolean AHive_isBetterTarget(const gentity_t *const self, const gentity_t *candidate)
 {
-	gentity_t *a, *b;
 
-	if ( !cmpHive )
+	// Any valid target is better than none
+	if ( self->target == NULL )
 	{
-		return 0;
+		return qtrue;
 	}
 
-	a = ( gentity_t * )first;
-	b = ( gentity_t * )second;
-
 	// Always prefer target that isn't yet targeted.
+	if ( self->target->numTrackedBy == 0 && candidate->numTrackedBy > 0 )
 	{
-		if ( a->numTrackedBy == 0 && b->numTrackedBy > 0 )
-		{
-			return -1;
-		}
-		else if ( a->numTrackedBy > 0 && b->numTrackedBy == 0 )
-		{
-			return 1;
-		}
+		return qfalse;
+	}
+	else if ( self->target->numTrackedBy > 0 && candidate->numTrackedBy == 0 )
+	{
+		return qtrue;
 	}
 
 	// Prefer smaller distance.
-	{
-		int ad = Distance( cmpHive->s.origin, a->s.origin );
-		int bd = Distance( cmpHive->s.origin, b->s.origin );
+	int dt = Distance( self->s.origin, self->target->s.origin );
+	int dc = Distance( self->s.origin, candidate->s.origin );
 
-		if ( ad < bd )
-		{
-			return -1;
-		}
-		else if ( bd < ad )
-		{
-			return 1;
-		}
+	if ( dc < dt )
+	{
+		return qtrue;
+	}
+	else if ( dt < dc )
+	{
+		return qfalse;
 	}
 
 	// Tie breaker is random decision, so clients on lower slots don't get shot at more often.
-	{
-		if ( rand() < ( RAND_MAX / 2 ) )
-		{
-			return -1;
-		}
-		else
-		{
-			return 1;
-		}
-	}
+	return rand()%2 ? qtrue : qfalse;
 }
 
 static qboolean AHive_TargetValid( gentity_t *self, gentity_t *target, qboolean ignoreDistance )
@@ -1504,36 +1486,29 @@ static qboolean AHive_TargetValid( gentity_t *self, gentity_t *target, qboolean 
  */
 static qboolean AHive_FindTarget( gentity_t *self )
 {
-	gentity_t *ent = NULL;
-	gentity_t *validTargets[ MAX_GENTITIES ];
-	int       validTargetNum = 0;
 
 	// delete old target
 	if ( self->target )
 	{
 		self->target->numTrackedBy--;
+		self->target = NULL;
 	}
 
-	self->target = NULL;
-
-	// find all potential targets
-	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, HIVE_SENSE_RANGE )); )
+	// search best target
+	gentity_t *ent = NULL;
+	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, HIVE_SENSE_RANGE ) ) )
 	{
-		if ( AHive_TargetValid( self, ent, qfalse ) )
+		if ( AHive_TargetValid( self, ent, qfalse ) && AHive_isBetterTarget( self, ent ) )
 		{
-		     validTargets[ validTargetNum++ ] = ent;
+			// change target if I find a valid target that's better than the old one
+			self->target = ent;
 		}
 	}
 
-	if ( validTargetNum > 0 )
+	// track target
+	if ( self->target )
 	{
-		// search best target
-		cmpHive = self;
-		qsort( validTargets, validTargetNum, sizeof( gentity_t* ), AHive_CompareTargets );
-
-		self->target = validTargets[ 0 ];
 		self->target->numTrackedBy++;
-
 		return qtrue;
 	}
 	else
@@ -1574,15 +1549,15 @@ void AHive_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( !self->spawned || !self->powered || self->health <= 0 )
-	{
-		return;
-	}
-
 	// last missile hasn't returned in time, forget about it
 	if ( self->timestamp < level.time )
 	{
 		self->active = qfalse;
+	}
+
+	if ( !self->spawned || !self->powered || self->health <= 0 )
+	{
+		return;
 	}
 
 	if ( self->active )
@@ -1602,7 +1577,7 @@ void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
 	AGeneric_Pain( self, attacker, damage );
 
 	// if inactive, fire on attacker even if it's out of sense range
-	if ( self->spawned && self->health > 0 && !self->active )
+	if ( self->spawned && self->powered && self->health > 0 && !self->active )
 	{
 		if ( AHive_TargetValid( self, attacker, qtrue ) )
 		{
@@ -2754,31 +2729,23 @@ static int HMGTurret_DistanceToZone( float distance )
 	}
 }
 
-static gentity_t *cmpTurret = NULL;
-
-static int HMGTurret_CompareTargets( const void *first, const void *second )
+static qboolean HMGTurret_IsBetterTarget( gentity_t *self, gentity_t *candidate )
 {
-	gentity_t *a, *b;
-
-	if ( !cmpTurret )
+	// Any target is better than none
+	if ( self->target == NULL)
 	{
-		return 0;
+		return qtrue;
 	}
-
-	a = ( gentity_t * )first;
-	b = ( gentity_t * )second;
 
 	// Prefer target that isn't yet targeted.
 	// This makes group attacks more and dretch spam less efficient.
+	if ( self->target->numTrackedBy == 0 && candidate->numTrackedBy > 0 )
 	{
-		if ( a->numTrackedBy == 0 && b->numTrackedBy > 0 )
-		{
-			return -1;
-		}
-		else if ( a->numTrackedBy > 0 && b->numTrackedBy == 0 )
-		{
-			return 1;
-		}
+		return qfalse;
+	}
+	else if ( self->target->numTrackedBy > 0 && candidate->numTrackedBy == 0 )
+	{
+		return qtrue;
 	}
 
 	// Prefer the target that is in a line of sight.
@@ -2786,100 +2753,88 @@ static int HMGTurret_CompareTargets( const void *first, const void *second )
 	// (For the MG turret, do so after the already-targeted check so that such a lock is kept if all
 	// other valid targets are being dealt with. This results in suppressive fire against targets
 	// behind cover as long as it's safe for the turret to do so.)
-	{
-		bool los2a = G_LineOfFire( cmpTurret, a );
-		bool los2b = G_LineOfFire( cmpTurret, b );
+	bool los2t = G_LineOfFire( self, self->target );
+	bool los2c = G_LineOfFire( self, candidate );
 
-		if ( los2a && !los2b )
-		{
-			return -1;
-		}
-		else if ( los2b && !los2a )
-		{
-			return 1;
-		}
+	if ( los2t && !los2c )
+	{
+		return qfalse;
+	}
+	else if ( los2c && !los2t )
+	{
+		return qtrue;
 	}
 
 	// Prefer target that can be aimed at more quickly.
 	// This makes the turret spend less time tracking enemies.
+	vec3_t aimDir, dir_t, dir_c;
+
+	AngleVectors( self->buildableAim, aimDir, NULL, NULL );
+
+	VectorSubtract( self->target->s.origin, self->s.pos.trBase, dir_t ); VectorNormalize( dir_t );
+	VectorSubtract( candidate->s.origin, self->s.pos.trBase, dir_c ); VectorNormalize( dir_c );
+
+	if ( DotProduct( dir_t, aimDir ) > DotProduct( dir_c, aimDir ) )
 	{
-		vec3_t aimDir, aDir, bDir;
-
-		AngleVectors( cmpTurret->buildableAim, aimDir, NULL, NULL );
-
-		VectorSubtract( a->s.origin, cmpTurret->s.pos.trBase, aDir ); VectorNormalize( aDir );
-		VectorSubtract( b->s.origin, cmpTurret->s.pos.trBase, bDir ); VectorNormalize( bDir );
-
-		if ( DotProduct( aDir, aimDir ) > DotProduct( bDir, aimDir ) )
-		{
-			return -1;
-		}
-		else
-		{
-			return 1;
-		}
+		return qfalse;
+	}
+	else
+	{
+		return qtrue;
 	}
 }
 
-static int HRocketpod_CompareTargets( const void *first, const void *second )
+static qboolean HRocketpod_IsBetterTarget( gentity_t *self, gentity_t *candidate )
 {
-	gentity_t *a, *b;
-
-	if ( !cmpTurret )
+	// Any target is better than none
+	if ( self->target == NULL)
 	{
-		return 0;
+		return qtrue;
 	}
-
-	a = ( gentity_t * )first;
-	b = ( gentity_t * )second;
 
 	// Prefer the target that is in a line of sight.
 	// This prevents the turret from keeping a lock on a target behind cover.
-	{
-		bool los2a = G_LineOfFire( cmpTurret, a );
-		bool los2b = G_LineOfFire( cmpTurret, b );
+	bool los2t = G_LineOfFire( self, self->target );
+	bool los2c = G_LineOfFire( self, candidate );
 
-		if ( los2a && !los2b )
-		{
-			return -1;
-		}
-		else if ( los2b && !los2a )
-		{
-			return 1;
-		}
+	if ( los2t && !los2c )
+	{
+		return qfalse;
+	}
+	else if ( los2c && !los2t )
+	{
+		return qtrue;
 	}
 
 	// First, prefer target that is currently safe to shoot at.
 	// Then, prefer target that can be aimed at more quickly.
+	vec3_t aimDir, dir_t, dir_c;
+	bool   safe_t, safe_c;
+
+	VectorSubtract( self->target->s.origin, self->s.pos.trBase, dir_t ); VectorNormalize( dir_t );
+	VectorSubtract( candidate->s.origin, self->s.pos.trBase, dir_c ); VectorNormalize( dir_c );
+
+	safe_t = G_RocketpodSafeShot( self->s.number, self->s.pos.trBase, dir_t );
+	safe_c = G_RocketpodSafeShot( self->s.number, self->s.pos.trBase, dir_c );
+
+	if ( safe_t && !safe_c )
 	{
-		vec3_t aimDir, aDir, bDir;
-		bool   aSafe, bSafe;
+		return qfalse;
+	}
+	else if ( safe_c && !safe_t )
+	{
+		return qtrue;
+	}
 
-		VectorSubtract( a->s.origin, cmpTurret->s.pos.trBase, aDir ); VectorNormalize( aDir );
-		VectorSubtract( b->s.origin, cmpTurret->s.pos.trBase, bDir ); VectorNormalize( bDir );
+	AngleVectors( self->buildableAim, aimDir, NULL, NULL );
 
-		aSafe = G_RocketpodSafeShot( cmpTurret->s.number, cmpTurret->s.pos.trBase, aDir );
-		bSafe = G_RocketpodSafeShot( cmpTurret->s.number, cmpTurret->s.pos.trBase, bDir );
-
-		if ( aSafe && !bSafe )
-		{
-			return -1;
-		}
-		else if ( bSafe && !aSafe )
-		{
-			return 1;
-		}
-
-		AngleVectors( cmpTurret->buildableAim, aimDir, NULL, NULL );
-
-		if ( DotProduct( aDir, aimDir ) > DotProduct( bDir, aimDir ) )
-		{
-			return -1;
-		}
-		else
-		{
-			return 1;
-		}
+	if ( DotProduct( dir_t, aimDir ) > DotProduct( dir_c, aimDir ) )
+	{
+		return qfalse;
+	}
+	else
+	{
+		return qtrue;
 	}
 }
 
@@ -2888,9 +2843,9 @@ static void HTurret_RemoveTarget( gentity_t *self )
 	if ( self->target )
 	{
 		self->target->numTrackedBy--;
+		self->target = NULL;
 	}
 
-	self->target = NULL;
 	self->turretLastLOSToTarget = 0;
 }
 
@@ -2943,36 +2898,27 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 }
 
 static qboolean HTurret_FindTarget( gentity_t *self, float range,
-                                    int (*cmp)(const void *, const void *) )
+                                    qboolean (*isBetterTarget)(gentity_t* , gentity_t* ) )
 {
-	gentity_t *neighbour = NULL;
-	gentity_t *validTargets[ MAX_GENTITIES ];
-	int       validTargetNum = 0;
 
 	self->turretLastTargetSearch = level.time;
 
 	// delete old target
 	HTurret_RemoveTarget( self );
 
-	// find all potential targets
-	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
-	                                                                     range )); )
+	// search best target
+	gentity_t *ent = NULL;
+	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, range ) ) )
 	{
-		if ( HTurret_TargetValid( self, neighbour, qtrue, range ) )
+		if ( HTurret_TargetValid( self, ent, qtrue, range ) && HMGTurret_IsBetterTarget( self, ent ) )
 		{
-		     validTargets[ validTargetNum++ ] = neighbour;
+			self->target = ent;
 		}
 	}
 
-	if ( validTargetNum > 0 )
+	if ( self->target )
 	{
-		// search best target
-		cmpTurret = self;
-		qsort( validTargets, validTargetNum, sizeof( gentity_t* ), cmp );
-
-		self->target = validTargets[ 0 ];
 		self->target->numTrackedBy++;
-
 		return qtrue;
 	}
 	else
@@ -3302,7 +3248,7 @@ void HMGTurret_Think( gentity_t *self )
 	// Try to find a new target if there is none.
 	if ( !self->target && level.time - self->turretLastTargetSearch > TURRET_SEARCH_PERIOD )
 	{
-		if ( HTurret_FindTarget( self, MGTURRET_RANGE, HMGTurret_CompareTargets ) &&
+		if ( HTurret_FindTarget( self, MGTURRET_RANGE, HMGTurret_IsBetterTarget ) &&
 		     g_debugTurrets.integer > 0 )
 		{
 			Com_Printf( "MGTurret %d: New target %d.\n", self->s.number, self->target->s.number );
@@ -3518,7 +3464,7 @@ void HRocketpod_Think( gentity_t *self )
 	// Try to find a new target if there is none.
 	if ( !self->target && level.time - self->turretLastTargetSearch > TURRET_SEARCH_PERIOD )
 	{
-		if ( HTurret_FindTarget( self, ROCKETPOD_RANGE, HRocketpod_CompareTargets ) &&
+		if ( HTurret_FindTarget( self, ROCKETPOD_RANGE, HRocketpod_IsBetterTarget ) &&
 		     g_debugTurrets.integer > 0 )
 		{
 			Com_Printf( "Rocketpod %d: New target %d.\n", self->s.number, self->target->s.number );

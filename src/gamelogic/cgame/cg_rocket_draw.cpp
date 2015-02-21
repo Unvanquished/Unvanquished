@@ -1205,8 +1205,6 @@ static void CG_Rocket_DrawMomentum( void )
 
 static void CG_Rocket_DrawLevelshot( void )
 {
-	const char *map;
-
 	if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) )
 	{
 		return;
