@@ -51,6 +51,8 @@ public:
 	StringBase(const T* string_start, const T* string_end);
 	StringBase(size_type length, const T character);
 	StringBase(size_type max_length, const T* fmt, ...);
+	// Move construct.
+	StringBase(StringBase<T>&& other);
 
 	~StringBase();
 
@@ -174,6 +176,8 @@ public:
 
 	inline StringBase<T>& operator=(const T* assign);
 	inline StringBase<T>& operator=(const StringBase<T>& assign);
+	// Move assign.
+	inline StringBase<T>& operator=(StringBase<T>&& rhs);
 
 	inline StringBase<T> operator+(const T* append) const;
 	inline StringBase<T> operator+(const StringBase<T>& append) const;
@@ -185,8 +189,18 @@ public:
 	inline const T& operator[](size_type index) const;
 	inline T& operator[](size_type index);
 
-protected:	
+	// Offer c_str() to make the interface somewhat more consistent with std::string.
+	// It eases code migration to std::string in the future should that be needed.
+	// The name also imparts better expectations about what it does better
+	// than CString() which can be confused with things like MFC's class of the same name.
+	inline const T* c_str() const;
 
+protected:	
+	inline T* _LocalBuffer();
+	// Is the Small String Optimization buffer in use.
+	inline bool _IsUsingLocalBuffer() const;
+
+protected:
 	T* value;
 	size_type buffer_size;
 	size_type length;
