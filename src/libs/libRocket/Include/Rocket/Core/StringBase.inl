@@ -69,7 +69,7 @@ StringBase< T >::StringBase(size_type count, const T character) : value((T*)loca
 		Reserve(length);
 		for (size_type i = 0; i < length; i++)
 			value[i] = character;
-		value[length] = '\0';
+		value[length] = T();
 	}
 }
 
@@ -107,6 +107,7 @@ void StringBase< T >::Clear()
 	hash = 0;
 	value = (T*)local_buffer;
 	buffer_size = LOCAL_BUFFER_SIZE;
+    value[0] = T();
 }
 
 template< typename T >
@@ -149,6 +150,12 @@ const T* StringBase< T >::CString() const
 }
 
 template< typename T >
+bool StringBase<T>::_IsUsingLocalBuffer() const
+{
+	return value == reinterpret_cast<const T*>(local_buffer);
+}
+
+template< typename T >
 void StringBase< T >::Reserve(size_type size)
 {
 	size_type new_size = (size + 1) * sizeof(T);
@@ -165,12 +172,18 @@ void StringBase< T >::Reserve(size_type size)
 	if (value == (T*)local_buffer)
 	{
 		T* new_value = (T*)realloc(NULL, buffer_size);
+		// TODO! Consider throwing here.
+		//if (!value)
+		//	throw std::bad_alloc("String allocation failed.");
 		Copy(new_value, (T*)local_buffer, LOCAL_BUFFER_SIZE / sizeof(T));
 		value = new_value;
 	}
 	else
 	{
 		value = (T*)realloc(value, buffer_size);
+		// TODO! Consider throwing here.
+		//if (!value)
+		//	throw std::bad_alloc("String allocation failed.");
 	}
 }
 
@@ -321,7 +334,7 @@ void StringBase< T >::Resize(size_type new_length)
 {
 	Reserve(new_length);
 	length = new_length;
-	value[length] = '\0';
+	value[length] = T();
 
 	if (length == 0)
 		Clear();
@@ -399,7 +412,7 @@ bool StringBase< T >::operator==(const T* compare) const
 	while (index < length && compare[index] == value[index])
 		index++;
 
-	return index == length && compare[index] == '\0';	
+	return index == length && compare[index] == T();	
 }
 
 template< typename T >
@@ -480,18 +493,20 @@ StringBase< T >& StringBase< T >::operator=(const StringBase< T >& assign)
 template< typename T >
 StringBase< T > StringBase< T >::operator+(const T* add) const
 {	
-	StringBase< T > combined(*this);
-	combined.Append(add);	
-	
+	StringBase< T > combined;
+	combined.Reserve(this->Length() + GetLength(add));
+	combined += *this;
+	combined += add;
 	return combined;
 }
 
 template< typename T >
 StringBase< T > StringBase< T >::operator+(const StringBase< T >& add) const
 {	
-	StringBase< T > combined(*this);
-	combined.Append(add);	
-	
+	StringBase< T > combined;
+	combined.Reserve(this->Length() + add.Length());
+	combined += *this;
+	combined += add;
 	return combined;
 }
 
@@ -578,7 +593,7 @@ typename StringBase< T >::size_type StringBase< T >::_Find(const T* find, size_t
 			if (needle_index == find_length)
 				return haystack_index;
 		}
-		else		
+		else
 		{
 			// Advance haystack index by one and reset needle index.
 			haystack_index++;
@@ -714,4 +729,109 @@ void StringBase< T >::_Insert(size_type index, const T* insert, size_type insert
 	length += add_length;
 	
 	hash = 0;
+}
+
+// Allow code to be more compatible with std::string
+template< typename T >
+const T* StringBase< T >::c_str() const
+{
+	return value;
+}
+
+template< typename T >
+T* StringBase< T >::_LocalBuffer()
+{
+	return reinterpret_cast<T*>(local_buffer);
+}
+
+// Move constructor
+template< typename T >
+StringBase<T>::StringBase(StringBase<T>&& from)
+{
+	if (from._IsUsingLocalBuffer())
+	{
+		// The string to move from is using an SSO buffer.
+		// That means it can't be stolen and has to be copied from.
+		// Vut it does mean it should fit nicely in our own SSO buffer.
+		// So set that up and then copy.
+		value = _LocalBuffer();
+		buffer_size = LOCAL_BUFFER_SIZE;
+		length = 0;
+		Assign(from);
+	}
+	else
+	{
+		// The moved from string is using a dynamic buffer. We have no
+		// buffer at all yet so we can simply steal theirs.
+		// But we must reset theirs to their SSO buffer so they don't try
+		// to delete the stolen buffer we now have responsibility for.
+		this->value = from.value;
+		this->buffer_size = from.buffer_size;
+		this->length = from.length;
+		this->hash = from.hash;
+		from.value = from._LocalBuffer();
+		from.buffer_size = from.LOCAL_BUFFER_SIZE;
+	}
+	// Don't forget to empty the moved from string. We can't use Clear
+	// as that might delete the buffer which we don't want to do.
+	from.length = 0;
+	from.value[0] = T();
+	from.hash = 0;
+}
+
+template< typename T >
+StringBase<T>& StringBase<T>::operator=(StringBase<T>&& from)
+{
+	if (from._IsUsingLocalBuffer())
+	{
+		// The string to move from is using it's SSO buffer so we can't steal it
+		// we must copy from it.
+		// Or own buffer is setup though, so just copy from it.
+		this->Assign(from);
+	}
+	else
+	{
+		// The string to move from is using a dynamic buffer, so we can assign
+		// it's data to ourself just by stealing it's buffer pointer. 
+
+		// If we are using a local buffer, steal their buffer and reset
+		// them to point to their SSO buffer so they don't try to delete it
+		// after we've taken responsibility for it.
+
+		// If are using a dynamic buffer and so are they. Swap our buffer
+		// with theirs. This will assign their data to us quickly without
+		// copying any data and ensure our buffer is diposed of which we need
+		// to ensure happens anyway. But tis will also yield a performance
+		// improvement if anyone assigns to the moved from string later
+		// otherwise it would likely worsen if we just took their buffer
+		// and just left them with their SSO buffer.
+
+		if (this->_IsUsingLocalBuffer())
+		{
+			this->value = from.value;
+			this->buffer_size = from.buffer_size;
+			this->length = from.length;
+			from.value = from._LocalBuffer();
+			from.buffer_size = from.LOCAL_BUFFER_SIZE;
+		}
+		else
+		{
+			// Swap buffers. Save theirs. Give ours overwriting theirs.
+			// Take theirs from where we saved it.
+			T* from_value = from.value;
+			size_type from_buffer_size = from.buffer_size;
+			from.value = this->value;
+			from.buffer_size = this->buffer_size;
+			this->value = from_value;
+			this->buffer_size = from_buffer_size;
+			this->length = from.length;
+		}
+		this->hash = from.hash;
+	}
+	// Don't forget to empty the moved from string. We can't use clear
+	// as that might delete a buffer which we don't want to do.
+	from.length = 0;
+	from.value[0] = T();
+	from.hash = 0;
+	return *this;
 }
