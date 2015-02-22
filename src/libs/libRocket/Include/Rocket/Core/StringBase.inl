@@ -559,7 +559,7 @@ void StringBase< T >::Copy(T* target, const T* src, size_type length, bool termi
 	{
 		*target++ = *src++;
 	}
-	
+
 	if (terminate)
 	{
 		*target++ = 0;
@@ -651,11 +651,20 @@ StringBase< T > StringBase< T >::_Replace(const T* find, size_type find_length, 
 
 		// Term not found, add remainder and return
 		if (pos == npos)
-			return result + (Substring(offset).CString());
+		{
+			size_type remaining_length = Length() - offset;
+			if (remaining_length > 0)
+			{
+				result._Append(&(*this)[offset], remaining_length, remaining_length);
+			}
+			return result;
+		}
 
 		// Add the unchanged text and replacement after it
-		result += Substring(offset, pos - offset);
-		result._Append(replace, replace_length);
+		size_type unchanged_length = pos - offset;
+		if (unchanged_length > 0)
+			result._Append(&(*this)[offset], Length() - offset, unchanged_length);
+        result._Append(replace, replace_length, replace_length);
 
 		// Advance the find position
 		offset = pos + find_length;
