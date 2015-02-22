@@ -73,8 +73,9 @@ namespace IPC {
      * services level) and 16 bits for fine dispatch (function level).
      */
 
-	// Special message ID used to indicate an RPC return
+	// Special message ID used to indicate an RPC return and VM exit
 	const uint32_t ID_RETURN = 0xffffffff;
+	const uint32_t ID_EXIT = 0xfffffffe;
 
     // Combine a major and minor ID into a single number.
     // TODO we use a template, because we need the ID to be part of template

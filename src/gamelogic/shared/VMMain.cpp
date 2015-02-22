@@ -60,6 +60,9 @@ static void CommonInit(Sys::OSHandle rootSocket)
 	while (true) {
 		Util::Reader reader = VM::rootChannel.RecvMsg();
 		uint32_t id = reader.Read<uint32_t>();
+		if (id == IPC::ID_EXIT) {
+			return;
+		}
 		VM::VMHandleSyscall(id, std::move(reader));
 	}
 }

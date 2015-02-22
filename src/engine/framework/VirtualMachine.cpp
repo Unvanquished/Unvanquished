@@ -462,8 +462,14 @@ void VMBase::Free()
 	if (!IsActive())
 		return;
 
-	// First close the root channel, which will trigger an error for in-process
-	// VMs. This will then cause the thread to terminate.
+	// First send a message signaling an exit to the VM
+	// then delete the socket. This is needed because
+	// recvmsg in NaCl doesn't return when the socket has
+	// been closed.
+	Util::Writer writer;
+	writer.Write<uint32_t>(IPC::ID_EXIT);
+	rootChannel.SendMsg(writer);
+
 	rootChannel = IPC::Channel();
 
 	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
