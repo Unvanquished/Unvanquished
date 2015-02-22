@@ -28,27 +28,27 @@
 template< typename T >
 StringBase< T >::StringBase() : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
-	value[0] = 0;
+	value[0] = T();
 }
 
 template< typename T >
 StringBase< T >::StringBase(const StringBase< T >& copy) : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
-	value[0] = 0;
+	value[0] = T();
 	*this = copy;
 }
 
 template< typename T >
 StringBase< T >::StringBase(const T* string) : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
-	value[0] = 0;
+	value[0] = T();
 	*this = string;
 }
 
 template< typename T >
 StringBase< T >::StringBase(const T* string_start, const T* string_end) : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
-	value[0] = 0;
+	value[0] = T();
 	length = (string_end - string_start);
 
 	if (length > 0)
@@ -61,7 +61,7 @@ StringBase< T >::StringBase(const T* string_start, const T* string_end) : value(
 template< typename T >
 StringBase< T >::StringBase(size_type count, const T character) : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
-	value[0] = 0;
+	value[0] = T();
 	length = count;
 
 	if (length > 0)
@@ -79,7 +79,7 @@ StringBase< T >::StringBase(size_type ROCKET_UNUSED_PARAMETER(max_length), const
 	ROCKET_UNUSED(max_length);
 	ROCKET_UNUSED(fmt);
 
-	value[0] = 0;
+	value[0] = T();
 	// Can't implement this at the base level, requires template specialisation
 	ROCKET_ERRORMSG("Not implemented.");
 }
@@ -309,13 +309,12 @@ void StringBase< T >::Erase(size_type index, size_type count)
 	else
 	{
 		size_type erase_amount = count < length - index ? count : length - index;
-			
+
 		Copy(&value[index], &value[index + erase_amount], length - index - erase_amount, true);		
 
 		length -= erase_amount;
-
-		if (length == 0)
-			Clear();
+		if (erase_amount > 0)
+			hash = 0;
 	}
 }
 
@@ -335,9 +334,6 @@ void StringBase< T >::Resize(size_type new_length)
 	Reserve(new_length);
 	length = new_length;
 	value[length] = T();
-
-	if (length == 0)
-		Clear();
 }
 
 // Create a lowercase version of the string
@@ -689,23 +685,16 @@ StringBase< T >& StringBase< T >::_Append(const T* append, size_type append_leng
 
 template< typename T >
 StringBase< T >& StringBase< T >::_Assign(const T* assign, size_type assign_length, size_type count)
-{		
+{
 	size_type new_length = count < assign_length ? count : assign_length;
 
-	if (new_length == 0)
-	{
-		Clear();
-	}
-	else
-	{
-		Reserve(new_length);
-		Copy(value, assign, new_length, true);
-	}
+	Reserve(new_length);
+	Copy(value, assign, new_length, true);
 
 	length = new_length;
-	
+
 	hash = 0;
-	
+
 	return *this;
 }
 
@@ -757,6 +746,7 @@ StringBase<T>::StringBase(StringBase<T>&& from)
 		value = LocalBuffer();
 		buffer_size = LOCAL_BUFFER_SIZE;
 		length = 0;
+		value[0] = T();
 		Assign(from);
 	}
 	else
