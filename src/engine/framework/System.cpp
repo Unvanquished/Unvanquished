@@ -327,24 +327,41 @@ void Error(Str::StringRef message)
 
 // Translate non-fatal signals into a quit command
 #ifndef _WIN32
-static void SignalThread()
+static void SignalHandler(int sig)
 {
-	// Wait for the signals we are interested in
-	sigset_t sigset;
-	sigemptyset(&sigset);
-	for (int sig: {SIGTERM, SIGINT, SIGQUIT, SIGPIPE, SIGHUP})
-		sigaddset(&sigset, sig);
-	int sig;
-	sigwait(&sigset, &sig);
-
 	// Queue a quit command to be executed next frame
 	Cmd::BufferCommandText("quit");
 
 	// Sleep a bit, and wait for a signal again. If we still haven't shut down
 	// by then, trigger an error.
 	Sys::SleepFor(std::chrono::seconds(2));
+
+	sigset_t sigset;
+	sigemptyset(&sigset);
+	for (int sig: {SIGTERM, SIGINT, SIGQUIT, SIGPIPE, SIGHUP})
+		sigaddset(&sigset, sig);
 	sigwait(&sigset, &sig);
 	Sys::Error("Forcing shutdown from signal: %s", strsignal(sig));
+}
+static void SignalThread()
+{
+	// Unblock the signals we are interested in and handle them in this thread
+	sigset_t sigset;
+	sigemptyset(&sigset);
+	struct sigaction sa;
+	sa.sa_flags = 0;
+	sa.sa_handler = SignalHandler;
+	sigfillset(&sa.sa_mask);
+	for (int sig: {SIGTERM, SIGINT, SIGQUIT, SIGPIPE, SIGHUP}) {
+		sigaddset(&sigset, sig);
+		sigaction(sig, &sa, nullptr);
+	}
+	pthread_sigmask(SIG_UNBLOCK, &sigset, nullptr);
+
+	// Sleep indefinitely, all the work is done in the signal handler. We don't
+	// use sigwait here because it interferes with gdb when debugging.
+	while (true)
+		sleep(1000000);
 }
 static void StartSignalThread()
 {
