@@ -352,11 +352,11 @@ void  Com_Free_Aligned( void *ptr );
 #pragma GCC diagnostic pop
 #endif
 #else
-	typedef struct transform_s {
+	typedef ALIGNED( 16, struct transform_s {
 		quat_t rot;
 		vec3_t trans;
 		vec_t  scale;
-	} transform_t;
+	} ) transform_t;
 #endif
 
 	typedef int    fixed4_t;
