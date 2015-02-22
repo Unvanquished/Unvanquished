@@ -184,6 +184,14 @@ namespace Util {
 				Sys::Drop("Reader: Unexpected end of message");
 		}
 
+		void CheckEndRead()
+		{
+			if (pos != data.size())
+				Sys::Drop("Reader: Unread bytes at end of message");
+			if (handles_pos != handles.size())
+				Sys::Drop("Reader: Unread handles at end of message");
+		}
+
 		std::vector<char>& GetData()
 		{
 			return data;

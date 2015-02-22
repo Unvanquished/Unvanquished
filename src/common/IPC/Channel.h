@@ -191,6 +191,7 @@ namespace IPC {
 
             typename MapTuple<typename Message::Inputs>::type inputs;
             reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
+            reader.CheckEndRead();
 
             bool oldSync = channel.canSendSyncMsg;
             bool oldAsync = channel.canSendAsyncMsg;
@@ -207,6 +208,7 @@ namespace IPC {
             typename MapTuple<typename Message::Inputs>::type inputs;
             typename Message::Outputs outputs;
             reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
+            reader.CheckEndRead();
 
             bool oldSync = channel.canSendSyncMsg;
             bool oldAsync = channel.canSendAsyncMsg;
