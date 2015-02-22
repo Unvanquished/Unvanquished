@@ -190,15 +190,14 @@ public:
 	inline T& operator[](size_type index);
 
 	// Offer c_str() to make the interface somewhat more consistent with std::string.
-	// It eases code migration to std::string in the future should that be needed.
-	// The name also imparts better expectations about what it does better
-	// than CString() which can be confused with things like MFC's class of the same name.
+	// c_str() better sets expectations about what it does than CString()
+	// Having a consistent name with std::string also helps with generic code.
 	inline const T* c_str() const;
 
 protected:	
-	inline T* _LocalBuffer();
+	inline T* LocalBuffer();
 	// Is the Small String Optimization buffer in use.
-	inline bool _IsUsingLocalBuffer() const;
+	inline bool IsUsingLocalBuffer() const;
 
 protected:
 	T* value;

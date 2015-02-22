@@ -26,27 +26,27 @@
  */
 
 template< typename T >
-StringBase< T >::StringBase() : value((T*)local_buffer), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
+StringBase< T >::StringBase() : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
 	value[0] = 0;
 }
 
 template< typename T >
-StringBase< T >::StringBase(const StringBase< T >& copy) : value((T*)local_buffer), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
+StringBase< T >::StringBase(const StringBase< T >& copy) : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
 	value[0] = 0;
 	*this = copy;
 }
 
 template< typename T >
-StringBase< T >::StringBase(const T* string) : value((T*)local_buffer), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
+StringBase< T >::StringBase(const T* string) : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
 	value[0] = 0;
 	*this = string;
 }
 
 template< typename T >
-StringBase< T >::StringBase(const T* string_start, const T* string_end) : value((T*)local_buffer), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
+StringBase< T >::StringBase(const T* string_start, const T* string_end) : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
 	value[0] = 0;
 	length = (string_end - string_start);
@@ -59,7 +59,7 @@ StringBase< T >::StringBase(const T* string_start, const T* string_end) : value(
 }
 
 template< typename T >
-StringBase< T >::StringBase(size_type count, const T character) : value((T*)local_buffer), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
+StringBase< T >::StringBase(size_type count, const T character) : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
 	value[0] = 0;
 	length = count;
@@ -74,7 +74,7 @@ StringBase< T >::StringBase(size_type count, const T character) : value((T*)loca
 }
 
 template< typename T >
-StringBase< T >::StringBase(size_type ROCKET_UNUSED_PARAMETER(max_length), const T* ROCKET_UNUSED_PARAMETER(fmt), ...) : value((T*)local_buffer), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
+StringBase< T >::StringBase(size_type ROCKET_UNUSED_PARAMETER(max_length), const T* ROCKET_UNUSED_PARAMETER(fmt), ...) : value(LocalBuffer()), buffer_size(LOCAL_BUFFER_SIZE), length(0), hash(0)
 {
 	ROCKET_UNUSED(max_length);
 	ROCKET_UNUSED(fmt);
@@ -87,7 +87,7 @@ StringBase< T >::StringBase(size_type ROCKET_UNUSED_PARAMETER(max_length), const
 template< typename T >
 StringBase< T >::~StringBase()
 {
-	if (value != (T*)local_buffer)
+	if (value != LocalBuffer())
 		free(value);
 }
 
@@ -100,14 +100,14 @@ bool StringBase< T >::Empty() const
 template< typename T >
 void StringBase< T >::Clear()
 {
-	if (value != (T*)local_buffer)
+	if (value != LocalBuffer())
 		free(value);
 
 	length = 0;
 	hash = 0;
-	value = (T*)local_buffer;
+	value = LocalBuffer();
 	buffer_size = LOCAL_BUFFER_SIZE;
-    value[0] = T();
+	value[0] = T();
 }
 
 template< typename T >
@@ -150,7 +150,7 @@ const T* StringBase< T >::CString() const
 }
 
 template< typename T >
-bool StringBase<T>::_IsUsingLocalBuffer() const
+bool StringBase<T>::IsUsingLocalBuffer() const
 {
 	return value == reinterpret_cast<const T*>(local_buffer);
 }
@@ -162,20 +162,20 @@ void StringBase< T >::Reserve(size_type size)
 	
 	if (buffer_size >= new_size)
 		return;
-	
+
 	// Pad out to a block of 16 bytes
 	const int BLOCK_SIZE = 16;
 	new_size = (new_size+BLOCK_SIZE-1)&(~(BLOCK_SIZE-1));
 	
 	buffer_size = new_size;
 	
-	if (value == (T*)local_buffer)
+	if (IsUsingLocalBuffer())
 	{
 		T* new_value = (T*)realloc(NULL, buffer_size);
 		// TODO! Consider throwing here.
 		//if (!value)
 		//	throw std::bad_alloc("String allocation failed.");
-		Copy(new_value, (T*)local_buffer, LOCAL_BUFFER_SIZE / sizeof(T));
+		Copy(new_value, LocalBuffer(), LOCAL_BUFFER_SIZE / sizeof(T));
 		value = new_value;
 	}
 	else
@@ -408,7 +408,7 @@ template< typename T >
 bool StringBase< T >::operator==(const T* compare) const
 {
 	size_type index = 0;
-	
+
 	while (index < length && compare[index] == value[index])
 		index++;
 
@@ -423,7 +423,7 @@ bool StringBase< T >::operator==(const StringBase< T >& compare) const
 	
 	if (Hash() != compare.Hash())
 		return false;
-		
+
 	return (*this) == compare.value;
 }
 
@@ -464,7 +464,7 @@ bool StringBase< T >::operator<(const T* compare) const
 		// if the string we're comparing with still
 		// has data, then we're smaller
 		if (compare[index] != 0)
-			return true;		
+			return true;
 	}
 
 	return false;
@@ -484,7 +484,7 @@ StringBase< T >& StringBase< T >::operator=(const T* assign)
 
 template< typename T >
 StringBase< T >& StringBase< T >::operator=(const StringBase< T >& assign)
-{	
+{
 	StringBase< T >&out = Assign(assign);
 	out.hash = assign.hash;
 	return out;
@@ -492,7 +492,7 @@ StringBase< T >& StringBase< T >::operator=(const StringBase< T >& assign)
 
 template< typename T >
 StringBase< T > StringBase< T >::operator+(const T* add) const
-{	
+{
 	StringBase< T > combined;
 	combined.Reserve(this->Length() + GetLength(add));
 	combined += *this;
@@ -502,7 +502,7 @@ StringBase< T > StringBase< T >::operator+(const T* add) const
 
 template< typename T >
 StringBase< T > StringBase< T >::operator+(const StringBase< T >& add) const
-{	
+{
 	StringBase< T > combined;
 	combined.Reserve(this->Length() + add.Length());
 	combined += *this;
@@ -512,19 +512,19 @@ StringBase< T > StringBase< T >::operator+(const StringBase< T >& add) const
 
 template< typename T >
 StringBase< T >& StringBase< T >::operator+=(const T* add)
-{	
+{
 	return Append(add);
 }
 
 template< typename T >
 StringBase< T >& StringBase< T >::operator+=(const StringBase< T >& add)
-{	
+{
 	return _Append(add.CString(), add.length);
 }
 
 template< typename T >
 StringBase< T >& StringBase< T >::operator+=(const T& add)
-{	
+{
 	return Append(add);
 }
 
@@ -544,12 +544,12 @@ T& StringBase< T >::operator[](size_type index)
 
 template< typename T >
 typename StringBase< T >::size_type StringBase< T >::GetLength(const T* string) const
-{	
+{
 	const T* ptr = string;
 
 	while (*ptr)
 	{
-		ptr++;		
+		ptr++;
 	}
 
 	return ptr - string;
@@ -565,8 +565,8 @@ void StringBase< T >::Copy(T* target, const T* src, size_type length, bool termi
 	}
 	
 	if (terminate)
-	{		
-		*target++ = 0;		
+	{
+		*target++ = 0;
 	}
 }
 
@@ -629,7 +629,7 @@ typename StringBase< T >::size_type StringBase< T >::_RFind(const T* find, size_
 			if (find[needle_index] == 0)
 				return haystack_index;
 		}
-		else		
+		else
 		{
 			if (haystack_index == 0)
 				return npos;
@@ -664,7 +664,7 @@ StringBase< T > StringBase< T >::_Replace(const T* find, size_type find_length, 
 		// Advance the find position
 		offset = pos + find_length;
 	}
-	
+
 	hash = 0;
 
 	return result;
@@ -739,7 +739,7 @@ const T* StringBase< T >::c_str() const
 }
 
 template< typename T >
-T* StringBase< T >::_LocalBuffer()
+T* StringBase< T >::LocalBuffer()
 {
 	return reinterpret_cast<T*>(local_buffer);
 }
@@ -748,13 +748,13 @@ T* StringBase< T >::_LocalBuffer()
 template< typename T >
 StringBase<T>::StringBase(StringBase<T>&& from)
 {
-	if (from._IsUsingLocalBuffer())
+	if (from.IsUsingLocalBuffer())
 	{
 		// The string to move from is using an SSO buffer.
 		// That means it can't be stolen and has to be copied from.
 		// Vut it does mean it should fit nicely in our own SSO buffer.
 		// So set that up and then copy.
-		value = _LocalBuffer();
+		value = LocalBuffer();
 		buffer_size = LOCAL_BUFFER_SIZE;
 		length = 0;
 		Assign(from);
@@ -769,7 +769,7 @@ StringBase<T>::StringBase(StringBase<T>&& from)
 		this->buffer_size = from.buffer_size;
 		this->length = from.length;
 		this->hash = from.hash;
-		from.value = from._LocalBuffer();
+		from.value = from.LocalBuffer();
 		from.buffer_size = from.LOCAL_BUFFER_SIZE;
 	}
 	// Don't forget to empty the moved from string. We can't use Clear
@@ -782,7 +782,7 @@ StringBase<T>::StringBase(StringBase<T>&& from)
 template< typename T >
 StringBase<T>& StringBase<T>::operator=(StringBase<T>&& from)
 {
-	if (from._IsUsingLocalBuffer())
+	if (from.IsUsingLocalBuffer())
 	{
 		// The string to move from is using it's SSO buffer so we can't steal it
 		// we must copy from it.
@@ -806,12 +806,12 @@ StringBase<T>& StringBase<T>::operator=(StringBase<T>&& from)
 		// otherwise it would likely worsen if we just took their buffer
 		// and just left them with their SSO buffer.
 
-		if (this->_IsUsingLocalBuffer())
+		if (this->IsUsingLocalBuffer())
 		{
 			this->value = from.value;
 			this->buffer_size = from.buffer_size;
 			this->length = from.length;
-			from.value = from._LocalBuffer();
+			from.value = from.LocalBuffer();
 			from.buffer_size = from.LOCAL_BUFFER_SIZE;
 		}
 		else
