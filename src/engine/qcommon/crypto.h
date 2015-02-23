@@ -32,12 +32,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <nettle/rsa.h>
 #include <nettle/buffer.h>
 
-// What.
-#ifdef _WIN32
-typedef size_t NettleLength;
-#else
-typedef unsigned int NettleLength;
-#endif
+// Old versions of nettle have nettle_random_func taking an unsigned parameter
+// instead of a size_t parameter. Detect this and use the approriate type.
+typedef typename std::conditional<std::is_same<nettle_random_func, void (*)(void*, size_t, uint8_t*)>::value, size_t, unsigned>::type NettleLength;
 
 // Random function used for key generation and encryption
 void     qnettle_random( void *ctx, NettleLength length, uint8_t *dst );
