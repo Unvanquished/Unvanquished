@@ -32,7 +32,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <nettle/rsa.h>
 #include <nettle/buffer.h>
 
+// What.
+#ifdef _WIN32
+typedef size_t NettleLength;
+#else
+typedef unsigned int NettleLength;
+#endif
+
 // Random function used for key generation and encryption
-void     qnettle_random( void *ctx, size_t length, uint8_t *dst );
+void     qnettle_random( void *ctx, NettleLength length, uint8_t *dst );
 
 #endif /* __CRYPTO_H__ */
