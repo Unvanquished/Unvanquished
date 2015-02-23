@@ -196,7 +196,6 @@ static void CG_Rocket_SetChatCommand( void )
 static void CG_Rocket_EventExecForm( void )
 {
 	static char params[ BIG_INFO_STRING ];
-	static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
 	char cmd[ MAX_STRING_CHARS ]  = { 0 };
 	char Template[ MAX_STRING_CHARS ];
 	char *k = Template;
