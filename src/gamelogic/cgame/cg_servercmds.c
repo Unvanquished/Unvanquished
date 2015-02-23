@@ -318,7 +318,7 @@ static void CG_ConfigStringModified( void )
 		cg.intermissionStarted = atoi( str );
 		if ( cg.intermissionStarted )
 		{
-			CG_ShowScores_f();
+			trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
 		}
 	}
 	else if ( num >= CS_MODELS && num < CS_MODELS + MAX_MODELS )
