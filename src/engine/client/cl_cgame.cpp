@@ -233,7 +233,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 
 	if (cmd == "pubkey_decrypt") {
 		char         buffer[ MAX_STRING_CHARS ] = "pubkey_identify ";
-		unsigned int msg_len = MAX_STRING_CHARS - 16;
+		size_t msg_len = MAX_STRING_CHARS - 16;
 		mpz_t        message;
 
 		if (argc == 1) {

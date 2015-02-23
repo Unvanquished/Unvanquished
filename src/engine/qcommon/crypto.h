@@ -33,6 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <nettle/buffer.h>
 
 // Random function used for key generation and encryption
-void     qnettle_random( void *ctx, unsigned length, uint8_t *dst );
+void     qnettle_random( void *ctx, size_t length, uint8_t *dst );
 
 #endif /* __CRYPTO_H__ */
