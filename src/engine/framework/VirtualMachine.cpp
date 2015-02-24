@@ -472,7 +472,7 @@ void VMBase::Free()
 
 	rootChannel = IPC::Channel();
 
-	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
+	if (type != TYPE_NATIVE_DLL) {
 #ifdef _WIN32
 		// Closing the job object should kill the child process
 		CloseHandle(processHandle);
