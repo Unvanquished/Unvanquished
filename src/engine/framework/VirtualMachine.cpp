@@ -313,7 +313,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC:
 
 	std::string handleArg = std::to_string((int)(intptr_t)pair.second.GetHandle());
 
-	std::string module = FS::Path::Build(libPath, name + "-nacl-native-exe" + EXE_EXT);
+	std::string module = FS::Path::Build(libPath, name + "-native-exe" + EXE_EXT);
 	if (debug) {
 		args.push_back("/usr/bin/gdbserver");
 		args.push_back("localhost:4014");
@@ -328,7 +328,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC:
 }
 
 IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, VM::VMBase::InProcessInfo& inProcess) {
-	std::string filename = FS::Path::Build(FS::GetLibPath(), name + "-nacl-native-dll" + DLL_EXT);
+	std::string filename = FS::Path::Build(FS::GetLibPath(), name + "-native-dll" + DLL_EXT);
 
 	Com_Printf("Loading VM module %s...\n", filename.c_str());
 
@@ -387,21 +387,21 @@ uint32_t VMBase::Create()
 	std::pair<IPC::Socket, IPC::Socket> pair = IPC::Socket::CreatePair();
 
 	IPC::Socket rootSocket;
-	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH || type == TYPE_NACL_LIBPATH_DEBUG) {
-		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG, type == TYPE_NACL || type == TYPE_NACL_DEBUG, params.debugLoader.Get());
-	} else if (type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
-		std::tie(processHandle, rootSocket) = CreateNativeVM(std::move(pair), name, type == TYPE_NATIVE_EXE_DEBUG);
+	if (type == TYPE_NACL || type == TYPE_NACL_LIBPATH) {
+		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, params.debug.Get(), type == TYPE_NACL, params.debugLoader.Get());
+	} else if (type == TYPE_NATIVE_EXE) {
+		std::tie(processHandle, rootSocket) = CreateNativeVM(std::move(pair), name, params.debug.Get());
 	} else {
 		rootSocket = CreateInProcessNativeVM(std::move(pair), name, inProcess);
 	}
 	rootChannel = IPC::Channel(std::move(rootSocket));
 
-	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG)
+	if (type != TYPE_NATIVE_DLL && params.debug.Get())
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
 
 	// Only set a recieve timeout for non-debug configurations, otherwise it
 	// would get triggered by breakpoints.
-	if (type == TYPE_NACL || type == TYPE_NATIVE_EXE || type == TYPE_NACL_LIBPATH)
+	if (type != TYPE_NATIVE_DLL && !params.debug.Get())
 		rootChannel.SetRecvTimeout(std::chrono::seconds(2));
 
 	// Read the ABI version from the root socket.
@@ -488,7 +488,7 @@ void VMBase::Free()
 		waitpid(processHandle, NULL, 0);
 #endif
 		processHandle = Sys::INVALID_HANDLE;
-	} else if (type == TYPE_NATIVE_DLL) {
+	} else {
 		FreeInProcessVM();
 	}
 

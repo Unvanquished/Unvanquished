@@ -50,8 +50,8 @@ project( Daemon C CXX )
 
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
-option( BUILD_GAME_NACL_NATIVE_EXE "Build native executable NaCl game logic" 1 )
-option( BUILD_GAME_NACL_NATIVE_DLL "Build native shared library NaCl game logic" 1 )
+option( BUILD_GAME_NATIVE_EXE "Build native executable game logic" 1 )
+option( BUILD_GAME_NATIVE_DLL "Build native shared library game logic" 1 )
 option( BUILD_GAME_NACL "Build NaCl game logic" 1 )
 option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 
@@ -1364,23 +1364,23 @@ function( GAMEMODULE )
   set( multiValueArgs COMPILE_DEF FILES )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-  if( BUILD_GAME_NACL_NATIVE_DLL )
-    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
+  if( BUILD_GAME_NATIVE_DLL )
+    add_library( ${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
+    target_link_libraries( ${GAMEMODULE_NAME}-native-dll nacl-source-libs ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-native-dll PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};BUILD_VM_IN_PROCESS"
     )
-    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-dll ${COMMON_DIR}/Common.h )
   endif()
 
-  if( BUILD_GAME_NACL_NATIVE_EXE )
-    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe nacl-source-libs ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
+  if( BUILD_GAME_NATIVE_EXE )
+    add_executable( ${GAMEMODULE_NAME}-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
+    target_link_libraries( ${GAMEMODULE_NAME}-native-exe nacl-source-libs ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-native-exe PROPERTIES
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
-    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-exe ${COMMON_DIR}/Common.h )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-exe ${COMMON_DIR}/Common.h )
   endif()
 
   if( BUILD_GAME_NACL )

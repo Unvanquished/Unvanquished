@@ -73,22 +73,16 @@ enum vmType_t {
 	// Loads the VM as an nacl executable from the homepath, potentially from a pk3
 	// USE THIS BY DEFAULT FOR PROD
 	TYPE_NACL,
-	// Same as above will ask sel_ldr to open a gdb server on port 4014?
-	TYPE_NACL_DEBUG,
+
+	// Loads the VM as an nacl executable from the libpath, for freshly compiled NaCl VMs (no need to put it in a pk3)
+	TYPE_NACL_LIBPATH,
 
 	// Loads the VM as a native exe from the libpath
 	TYPE_NATIVE_EXE,
-	// Same as above but opens it on a gdb server on port 4014, you will need to connect and run it with "c	"
-	TYPE_NATIVE_EXE_DEBUG,
 
 	// Loads the VM as a native DLL from the libpath
 	// USE THIS FOR DEVELOPMENT
 	TYPE_NATIVE_DLL,
-
-	// Loads the VM as an nacl executable from the libpath, for freshly compiled NaCl VMs (no need to put it in a pk3)
-	TYPE_NACL_LIBPATH,
-	// Same as above, with the debugger
-	TYPE_NACL_LIBPATH_DEBUG,
 	TYPE_END
 };
 
@@ -97,11 +91,13 @@ struct VMParams {
 	VMParams(std::string name)
 		: logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
 		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NACL, 0, TYPE_END - 1),
+		  debug("vm." + name + ".debug", "run a gdbserver on localhost:4014 to debug the VM", Cvar::NONE, false),
 		  debugLoader("vm." + name + ".debugLoader", "make sel_ldr dump information to " + name + "-sel_ldr.log", Cvar::NONE, 0, 0, 5) {
 	}
 
 	Cvar::Cvar<bool> logSyscalls;
 	Cvar::Range<Cvar::Cvar<int>> vmType;
+	Cvar::Cvar<bool> debug;
 	Cvar::Range<Cvar::Cvar<int>> debugLoader;
 };
 
