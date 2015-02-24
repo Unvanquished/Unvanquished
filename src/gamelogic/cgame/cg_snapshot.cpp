@@ -381,7 +381,7 @@ void CG_ProcessSnapshots( void )
 		if ( n < cg.latestSnapshotNum )
 		{
 			// this should never happen
-			CG_Error( "CG_ProcessSnapshots: n < cg.latestSnapshotNum" );
+			CG_Error( "CG_ProcessSnapshots: n (%i) < cg.latestSnapshotNum (%i)", n, cg.latestSnapshotNum );
 		}
 
 		cg.latestSnapshotNum = n;
