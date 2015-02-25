@@ -111,15 +111,11 @@ namespace Cmd {
                 const std::string& filename = args.Argv(filenameArg);
 
                 SetExecArgs(args, filenameArg + 1);
-                if (not ExecFile(filename)) {
+                if (not ExecFile(filename, executeSilent)) {
                     if (not failSilent) {
                         Print("couldn't exec '%s'", filename.c_str());
                     }
                     return;
-                }
-
-                if (not executeSilent) {
-                    Print("execing '%s'", filename.c_str());
                 }
             }
 
@@ -147,7 +143,7 @@ namespace Cmd {
                 }
             }
 
-            bool ExecFile(Str::StringRef filename) const {
+            bool ExecFile(Str::StringRef filename, bool executeSilent) const {
                 std::string buffer;
                 try {
                     if (readHomepath) {
@@ -158,6 +154,11 @@ namespace Cmd {
                 } catch (std::system_error&) {
                     return false;
                 }
+
+                if (not executeSilent) {
+                    Print("execing '%s'", filename.c_str());
+                }
+
                 ExecuteAfter(buffer, true);
                 return true;
             }
