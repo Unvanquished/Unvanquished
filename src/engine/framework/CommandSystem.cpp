@@ -54,8 +54,10 @@ namespace Cmd {
     };
 
     std::vector<BufferEntry> commandBuffer;
+    std::mutex commandBufferLock;
 
     void BufferCommandTextInternal(Str::StringRef text, bool parseCvars, Environment* env, bool insertAtTheEnd) {
+        std::lock_guard<std::mutex> locked(commandBufferLock);
         auto insertPoint = insertAtTheEnd ? commandBuffer.end() : commandBuffer.begin();
 
         // Iterates over the commands in the text
@@ -81,10 +83,13 @@ namespace Cmd {
 
     void ExecuteCommandBuffer() {
         // Note that commands may be inserted into the buffer while running other commands
+        std::unique_lock<std::mutex> locked(commandBufferLock);
         while (not commandBuffer.empty()) {
             auto entry = std::move(commandBuffer.front());
             commandBuffer.erase(commandBuffer.begin());
+            locked.unlock();
             ExecuteCommand(entry.text, entry.parseCvars, entry.env);
+            locked.lock();
         }
     }
 
