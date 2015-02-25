@@ -151,6 +151,14 @@ std::string Win32StrError(uint32_t error)
 	char* message;
 	if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL, error, MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), reinterpret_cast<char *>(&message), 0, NULL)) {
 		out = message;
+
+		// FormatMessage adds ".\r\n" to messages, but we don't want those
+		if (out.back() == '\n')
+			out.pop_back();
+		if (out.back() == '\r')
+			out.pop_back();
+		if (out.back() == '.')
+			out.pop_back();
 		LocalFree(message);
 	} else
 		out = Str::Format("Unknown error 0x%08lx", error);

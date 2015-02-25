@@ -460,9 +460,9 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 			i += 2;
 		} else if (!strcmp(argv[i], "-nobasepath")) {
 			cmdlineArgs.use_basepath = false;
-		} else if (!strcmp(argv[i], "-path")) {
+		} else if (!strcmp(argv[i], "-pakpath")) {
 			if (i == argc - 1) {
-				Log::Warn("Missing argument for -path");
+				Log::Warn("Missing argument for -pakpath");
 				continue;
 			}
 			cmdlineArgs.paths.push_back(argv[i + 1]);
@@ -560,9 +560,11 @@ static void Init(int argc, char** argv)
 	else
 		CON_Init_TTY();
 
-	// Initialize the filesystem
+	// Initialize the filesystem. The base path is added first and has the
+	// lowest priority, while the homepath is added last and has the highest.
 	if (cmdlineArgs.use_basepath)
-		cmdlineArgs.paths.insert(cmdlineArgs.paths.begin(), FS::DefaultBasePath());
+		cmdlineArgs.paths.insert(cmdlineArgs.paths.begin(), FS::Path::Build(FS::DefaultBasePath(), "pkg"));
+	cmdlineArgs.paths.push_back(FS::Path::Build(cmdlineArgs.homePath, "pkg"));
 	FS::Initialize(cmdlineArgs.homePath, cmdlineArgs.libPath, cmdlineArgs.paths);
 
 	// Look for an existing instance of the engine running on the same homepath.
