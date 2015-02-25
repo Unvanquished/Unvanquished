@@ -224,19 +224,19 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 #endif
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
-	std::string module, sel_ldr, irt, bootstrap, modulePath, verbosity;
+	std::string module, nacl_loader, irt, bootstrap, modulePath, verbosity;
 	FS::File stderrRedirect;
 	bool win32Force64Bit = false;
 
 	// On Windows, even if we are running a 32-bit engine, we must use the
-	// 64-bit sel_ldr if the host operating system is 64-bit.
+	// 64-bit nacl_loader if the host operating system is 64-bit.
 #if defined(_WIN32) && !defined(_WIN64)
 	SYSTEM_INFO systemInfo;
 	GetNativeSystemInfo(&systemInfo);
 	win32Force64Bit = systemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;
 #endif
 
-	// Extract the nexe from the pak so that sel_ldr can load it
+	// Extract the nexe from the pak so that nacl_loader can load it
 	module = win32Force64Bit ? name + "-x86_64.nexe" : name + "-" ARCH_STRING ".nexe";
 	if (extract) {
 		try {
@@ -255,16 +255,16 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 	// Generate command line
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
 	irt = FS::Path::Build(naclPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
-	sel_ldr = FS::Path::Build(naclPath, win32Force64Bit ? "sel_ldr64" EXE_EXT : "sel_ldr" EXE_EXT);
+	nacl_loader = FS::Path::Build(naclPath, win32Force64Bit ? "nacl_loader64" EXE_EXT : "nacl_loader" EXE_EXT);
 #ifdef __linux__
 	bootstrap = FS::Path::Build(naclPath, "nacl_helper_bootstrap");
 	args.push_back(bootstrap.c_str());
-	args.push_back(sel_ldr.c_str());
+	args.push_back(nacl_loader.c_str());
 	args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");
 	args.push_back("--reserved_at_zero=0xXXXXXXXXXXXXXXXX");
 #else
 	Q_UNUSED(bootstrap);
-	args.push_back(sel_ldr.c_str());
+	args.push_back(nacl_loader.c_str());
 #endif
 	if (debug) {
 		args.push_back("-g");
@@ -272,9 +272,9 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 
 	if (debugLoader) {
 		try {
-			stderrRedirect = FS::HomePath::OpenWrite(name + ".sel_ldr.log");
+			stderrRedirect = FS::HomePath::OpenWrite(name + ".nacl_loader.log");
 		} catch (std::system_error& err) {
-			Log::Warn("Couldn't open %s: %s", name + ".sel_ldr.log", err.what());
+			Log::Warn("Couldn't open %s: %s", name + ".nacl_loader.log", err.what());
 		}
 		verbosity = "-";
 		verbosity.append(debugLoader, 'v');
