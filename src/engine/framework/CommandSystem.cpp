@@ -86,7 +86,6 @@ namespace Cmd {
             commandBuffer.erase(commandBuffer.begin());
             ExecuteCommand(entry.text, entry.parseCvars, entry.env);
         }
-        commandBuffer.clear();
     }
 
     /*
@@ -183,15 +182,10 @@ namespace Cmd {
     // Command execution is sequential so we make their environment a global variable.
     Environment* storedEnvironment = &defaultEnv;
 
-
-
     void ExecuteCommand(Str::StringRef command, bool parseCvars, Environment* env) {
         CommandMap& commands = GetCommandMap();
 
         commandLog.Debug("Execing command '%s'", command);
-        if (not env) {
-            env = &defaultEnv;
-        }
 
         std::string parsedString;
         if (parseCvars) {
@@ -210,8 +204,11 @@ namespace Cmd {
 
         auto it = commands.find(cmdName);
         if (it != commands.end()) {
-            storedEnvironment = env;
+            if (env) {
+                storedEnvironment = env;
+            }
             it->second.cmd->Run(args);
+            storedEnvironment = &defaultEnv;
             return;
         }
 
@@ -281,10 +278,6 @@ namespace Cmd {
 
     Environment* GetEnv() {
         return storedEnvironment;
-    }
-
-    void ResetEnv() {
-        storedEnvironment = &defaultEnv;
     }
 
     /*
