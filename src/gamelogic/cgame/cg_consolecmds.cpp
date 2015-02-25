@@ -379,6 +379,11 @@ static void CG_ToggleMenu_f( void )
 // FIXME: Don't hardcode scoreboard ID
 void CG_ShowScores_f( void )
 {
+	if ( cg.intermissionStarted )
+	{
+		return;
+	}
+
 	if ( !cg.showScores )
 	{
 		CG_RequestScores();
@@ -395,6 +400,11 @@ void CG_ShowScores_f( void )
 
 void CG_HideScores_f( void )
 {
+	if ( cg.intermissionStarted )
+	{
+		return;
+	}
+
 	trap_Rocket_ShowScoreboard( "scoreboard", qfalse );
 	cg.showScores = qfalse;
 }

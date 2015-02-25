@@ -395,7 +395,6 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	const char *Class = "";
 	const char *Icon = "";
 	const char *action = "";
-	playerState_t *ps = &cg.snap->ps;
 	int cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass, cg.predictedPlayerState.persistant[ PERS_CREDIT ] );
 
 	if( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )

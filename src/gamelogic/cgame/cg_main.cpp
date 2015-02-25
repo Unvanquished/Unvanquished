@@ -1586,30 +1586,6 @@ void CG_StartMusic( void )
 	trap_S_StartBackgroundTrack( parm1, parm2 );
 }
 
-// FIXME: might need to cache this info
-static clientInfo_t *CG_InfoFromScoreIndex( int index, int team, int *scoreIndex )
-{
-	int i, count;
-	count = 0;
-
-	for ( i = 0; i < cg.numScores; i++ )
-	{
-		if ( cg.scores[ i ].team == team )
-		{
-			if ( count == index )
-			{
-				*scoreIndex = i;
-				return &cgs.clientinfo[ cg.scores[ i ].client ];
-			}
-
-			count++;
-		}
-	}
-
-	*scoreIndex = index;
-	return &cgs.clientinfo[ cg.scores[ index ].client ];
-}
-
 qboolean CG_ClientIsReady( int clientNum )
 {
 	clientList_t ready;

@@ -174,7 +174,13 @@ typedef enum
   NS_SERVER
 } netsrc_t;
 
-#define NET_ADDRSTRMAXLEN 48 // maximum length of an IPv6 address string including trailing '\0'
+// maximum length of an IPv6 address string including trailing '\0'
+#define NET_ADDR_STR_MAX_LEN 48
+
+// maximum length of an formatted IPv6 address string including port and trailing '\0'
+// format [%s]:%hu - 48 for %s (address), 3 for []: and 5 for %hu (port number, max value 65535)
+#define NET_ADDR_W_PORT_STR_MAX_LEN ( NET_ADDR_STR_MAX_LEN + 3 + 5 )
+
 typedef struct
 {
     netadrtype_t   type;

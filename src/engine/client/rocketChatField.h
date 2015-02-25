@@ -192,7 +192,7 @@ public:
 						}
 						else if ( text[0] == '/' || text[0] == '\\' )
 						{
-							Cmd::BufferCommandText( va( "%s\n", text.Substring( 1 ).CString() ) );
+							Cmd::BufferCommandText( Cmd::Escape( va( "%s\n", text.Substring( 1 ).CString() ) ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
@@ -200,7 +200,7 @@ public:
 						}
 						else if ( cmd == "/" )
 						{
-							Cmd::BufferCommandText( va( "%s\n", text.CString() ) );
+							Cmd::BufferCommandText( Cmd::Escape( va( "%s\n", text.CString() ) ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
@@ -214,7 +214,7 @@ public:
 
 						if ( !cmd.Empty() && !text.Empty() )
 						{
-							Cmd::BufferCommandText( va( "%s %s\n", cmd.CString(), text.CString() ) );
+							Cmd::BufferCommandText( Cmd::Escape( va( "%s %s\n", cmd.CString(), text.CString() ) ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();

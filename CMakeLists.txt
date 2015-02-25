@@ -531,7 +531,7 @@ function( ADD_PRECOMPILED_HEADER Target Header )
       add_custom_target( ${Target}-pch DEPENDS "${OBJ_DIR}/${Target}.h.gch" )
       add_dependencies( ${Target} ${Target}-pch )
 
-      if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+      if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
         set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${OBJ_DIR}/${Target}.h.gch" )
       else()
         set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include ${OBJ_DIR}/${Target}.h -Winvalid-pch" )

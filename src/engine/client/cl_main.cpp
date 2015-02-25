@@ -3017,7 +3017,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 				if ( addresses[ numservers ].port == cls.serverLinks[ j ].port4 && !memcmp( addresses[ numservers ].ip, cls.serverLinks[ j ].ip, 4 ) )
 				{
 					// found it, so look up the corresponding address
-					char s[ NET_ADDRSTRMAXLEN ];
+					char s[ NET_ADDR_W_PORT_STR_MAX_LEN ];
 
 					// hax to get the IP address & port as a string (memcmp etc. SHOULD work, but...)
 					cls.serverLinks[ j ].type = NA_IP6;
@@ -3069,7 +3069,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 				if ( addresses[ numservers ].port == cls.serverLinks[ j ].port6 && !memcmp( addresses[ numservers ].ip6, cls.serverLinks[ j ].ip6, 16 ) )
 				{
 					// found it, so look up the corresponding address
-					char s[ NET_ADDRSTRMAXLEN ];
+					char s[ NET_ADDR_W_PORT_STR_MAX_LEN ];
 
 					// hax to get the IP address & port as a string (memcmp etc. SHOULD work, but...)
 					cls.serverLinks[ j ].type = NA_IP;

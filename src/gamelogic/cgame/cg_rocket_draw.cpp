@@ -69,6 +69,7 @@ static void CG_Rocket_DrawAmmo( void )
 	{
 		case WP_NONE:
 		case WP_BLASTER:
+			trap_Rocket_SetInnerRML( "", 0 );
 			return;
 
 		case WP_ABUILD:
@@ -152,7 +153,7 @@ static void CG_Rocket_DrawClips( void )
 #define FPS_STRING "fps"
 static void CG_Rocket_DrawFPS( void )
 {
-	char       *s;
+	char       *s = "";
 	static int previousTimes[ FPS_FRAMES ];
 	static int index;
 	int        i, total;
@@ -162,6 +163,7 @@ static void CG_Rocket_DrawFPS( void )
 
 	if ( !cg_drawFPS.integer )
 	{
+		trap_Rocket_SetInnerRML( s, 0 );
 		return;
 	}
 
@@ -212,9 +214,9 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	qboolean     onRelevantEntity;
 
 	if ( ( !cg_drawCrosshairHit.integer && !cg_drawCrosshairFriendFoe.integer ) ||
-	        cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
-	        cg.snap->ps.pm_type == PM_INTERMISSION ||
-	        cg.renderingThirdPerson )
+			cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
+			cg.snap->ps.pm_type == PM_INTERMISSION ||
+			cg.renderingThirdPerson )
 	{
 		return;
 	}
@@ -233,7 +235,7 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 
 	// set base color (friend/foe detection)
 	if ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_ALWAYSON ||
-	        ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_RANGEDONLY && BG_Weapon( weapon )->longRanged ) )
+			( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_RANGEDONLY && BG_Weapon( weapon )->longRanged ) )
 	{
 		if ( cg.crosshairFoe )
 		{
@@ -313,7 +315,7 @@ static void CG_Rocket_DrawCrosshair( void )
 	}
 
 	if ( cg_drawCrosshair.integer == CROSSHAIR_RANGEDONLY &&
-	        !BG_Weapon( weapon )->longRanged )
+			!BG_Weapon( weapon )->longRanged )
 	{
 		return;
 	}
@@ -431,7 +433,7 @@ void CG_AddSpeed( void )
 	}
 
 	if ( !newSpeedGteMaxSpeedInWindow && ( maxSpeedSampleInWindow == oldestSpeedSample ||
-	                                       cg.time - speedSampleTimes[ maxSpeedSampleInWindow ] > windowTime ) )
+										   cg.time - speedSampleTimes[ maxSpeedSampleInWindow ] > windowTime ) )
 	{
 		int i;
 
@@ -591,6 +593,7 @@ static void CG_Rocket_DrawWeaponIcon( void )
 	// don't display if dead
 	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 || weapon == WP_NONE )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -602,7 +605,8 @@ static void CG_Rocket_DrawWeaponIcon( void )
 	if ( !cg_weapons[ weapon ].registered )
 	{
 		Com_Printf( S_WARNING "CG_DrawWeaponIcon: weapon %d (%s) "
-		            "is not registered\n", weapon, BG_Weapon( weapon )->name );
+					"is not registered\n", weapon, BG_Weapon( weapon )->name );
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -661,19 +665,20 @@ static void CG_Rocket_DrawUsableBuildable( void )
 	AngleVectors( cg.refdefViewAngles, view, NULL, NULL );
 	VectorMA( cg.refdef.vieworg, 64, view, point );
 	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL,
-	          point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
+			  point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
 
 	es = &cg_entities[ trace.entityNum ].currentState;
 
 	if ( es->eType == ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
-	        cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
+			cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
 	{
 		//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
 		if ( ( es->modelindex == BA_H_REACTOR || es->modelindex == BA_H_REPEATER ) &&
-		        ( !BG_Weapon( cg.snap->ps.weapon )->usesEnergy ||
-		          BG_Weapon( cg.snap->ps.weapon )->infiniteAmmo ) )
+				( !BG_Weapon( cg.snap->ps.weapon )->usesEnergy ||
+				  BG_Weapon( cg.snap->ps.weapon )->infiniteAmmo ) )
 		{
 			cg.nearUsableBuildable = BA_NONE;
+			trap_Rocket_SetInnerRML( "", 0 );
 			return;
 		}
 
@@ -722,6 +727,7 @@ static void CG_Rocket_DrawTimer( void )
 
 	if ( !cg_drawTimer.integer )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -844,7 +850,7 @@ static void CG_Rocket_DrawDisconnect( void )
 	y = 480 - 48;
 
 	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader( "gfx/2d/net",
-	            RSF_DEFAULT ) );
+				RSF_DEFAULT ) );
 }
 
 #define MAX_LAGOMETER_PING  900
@@ -868,16 +874,19 @@ static void CG_Rocket_DrawLagometer( void )
 
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
 	if ( !cg_lagometer.integer )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
 	if ( cg.demoPlayback )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1034,7 +1043,7 @@ static void CG_ScanForCrosshairEntity( void )
 	VectorMA( start, 131072, cg.refdef.viewaxis[ 0 ], end );
 
 	CG_Trace( &trace, start, vec3_origin, vec3_origin, end,
-	          cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY, 0 );
+			  cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY, 0 );
 
 	// ignore special entities
 	if ( trace.entityNum > ENTITYNUM_MAX_NORMAL )
@@ -1121,11 +1130,13 @@ static void CG_Rocket_DrawCrosshairNames( void )
 
 	if ( !cg_drawCrosshairNames.integer )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
 	if ( cg.renderingThirdPerson )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1142,6 +1153,7 @@ static void CG_Rocket_DrawCrosshairNames( void )
 
 	else if ( !alpha )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1150,7 +1162,7 @@ static void CG_Rocket_DrawCrosshairNames( void )
 	if ( cg_drawEntityInfo.integer )
 	{
 		name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
-		           Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
+				   Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
 	}
 
 	else if ( cg_drawCrosshairNames.integer >= 2 )
@@ -1165,13 +1177,13 @@ static void CG_Rocket_DrawCrosshairNames( void )
 
 	// add health from overlay info to the crosshair client name
 	if ( cg_teamOverlayUserinfo.integer &&
-	        cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_NONE &&
-	        cgs.teamInfoReceived &&
-	        cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
+			cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_NONE &&
+			cgs.teamInfoReceived &&
+			cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
 	{
 		name = va( "%s ^7[^%c%d^7]", name,
-		           CG_GetColorCharForHealth( cg.crosshairClientNum ),
-		           cgs.clientinfo[ cg.crosshairClientNum ].health );
+				   CG_GetColorCharForHealth( cg.crosshairClientNum ),
+				   cgs.clientinfo[ cg.crosshairClientNum ].health );
 	}
 
 	trap_Rocket_SetInnerRML( va( "%s", name ), RP_EMOTICONS );
@@ -1185,6 +1197,7 @@ static void CG_Rocket_DrawMomentum( void )
 
 	if ( cg.intermissionStarted )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1192,6 +1205,7 @@ static void CG_Rocket_DrawMomentum( void )
 
 	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1233,7 +1247,7 @@ void CG_Rocket_DrawCenterPrint( void )
 	if ( cg.centerPrintTime + CENTER_PRINT_DURATION < cg.time )
 	{
 		*cg.centerPrint = '\0';
-		trap_Rocket_SetInnerRML( "&nbsp;", 0 );
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1296,7 +1310,7 @@ void CG_Rocket_DrawPlayerHealthCross( void )
 	Vector4Copy( ref_color, color );
 
 	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
-	        cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
+			cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
 	{
 		color[ 0 ] = 1.0f;
 		color[ 1 ] = color[ 2 ] = 0.0f;
@@ -1387,7 +1401,7 @@ into a single progress bar.
 #define LALIGN_BOTTOMRIGHT 2
 
 static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
-                          int align, float val, int max )
+						  int align, float val, int max )
 {
 	int      i;
 	float    each, frac;
@@ -1446,13 +1460,13 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 		if ( vertical )
 		{
 			CG_DrawPic( rect->x, rect->y + loff, rect->w, rect->h * val / fmax,
-			            cgs.media.whiteShader );
+						cgs.media.whiteShader );
 		}
 
 		else
 		{
 			CG_DrawPic( rect->x + loff, rect->y, rect->w * val / fmax, rect->h,
-			            cgs.media.whiteShader );
+						cgs.media.whiteShader );
 		}
 
 		trap_R_SetColor( NULL );
@@ -1496,13 +1510,13 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 		if ( vertical )
 		{
 			CG_DrawPic( rect->x, rect->y + rect->h * start, rect->w, each,
-			            cgs.media.whiteShader );
+						cgs.media.whiteShader );
 		}
 
 		else
 		{
 			CG_DrawPic( rect->x + rect->w * start, rect->y, each, rect->h,
-			            cgs.media.whiteShader );
+						cgs.media.whiteShader );
 		}
 	}
 
@@ -1523,13 +1537,13 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 			if ( vertical )
 			{
 				CG_DrawPic( rect->x, rect->y - rect->h * ( 1 - frac ) / fmax,
-				            rect->w, each, cgs.media.whiteShader );
+							rect->w, each, cgs.media.whiteShader );
 			}
 
 			else
 			{
 				CG_DrawPic( rect->x - rect->w * ( 1 - frac ) / fmax, rect->y,
-				            each, rect->h, cgs.media.whiteShader );
+							each, rect->h, cgs.media.whiteShader );
 			}
 
 			break;
@@ -1542,15 +1556,15 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 			if ( vertical )
 			{
 				CG_DrawPic( rect->x, rect->y + rect->h *
-				            ( 1 + ( ( 1 - fill ) / fmax ) - frac / fmax ),
-				            rect->w, each, cgs.media.whiteShader );
+							( 1 + ( ( 1 - fill ) / fmax ) - frac / fmax ),
+							rect->w, each, cgs.media.whiteShader );
 			}
 
 			else
 			{
 				CG_DrawPic( rect->x + rect->w *
-				            ( 1 + ( ( 1 - fill ) / fmax ) - frac / fmax ), rect->y,
-				            each, rect->h, cgs.media.whiteShader );
+							( 1 + ( ( 1 - fill ) / fmax ) - frac / fmax ), rect->y,
+							each, rect->h, cgs.media.whiteShader );
 			}
 	}
 
@@ -1583,8 +1597,8 @@ static void CG_DrawPlayerAmmoStack( void )
 
 	// smoothing effects (only if weaponTime etc. apply to primary weapon)
 	if ( ps->weapon == primary && ps->weaponTime > 0 &&
-	        ( ps->weaponstate == WEAPON_FIRING ||
-	          ps->weaponstate == WEAPON_RELOADING ) )
+			( ps->weaponstate == WEAPON_FIRING ||
+			  ps->weaponstate == WEAPON_RELOADING ) )
 	{
 		// track the weaponTime we're coming down from
 		// if weaponstate changed, this value is invalid
@@ -1808,6 +1822,7 @@ void CG_Rocket_DrawClock( void )
 
 	if ( !cg_drawClock.integer )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1816,7 +1831,7 @@ void CG_Rocket_DrawClock( void )
 	if ( cg_drawClock.integer == 2 )
 	{
 		s = va( "%02d%s%02d", qt.tm_hour, ( qt.tm_sec % 2 ) ? ":" : " ",
-		        qt.tm_min );
+				qt.tm_min );
 	}
 
 	else
@@ -1976,7 +1991,7 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 	{
 		glowFraction = fabs( cg.momentumGained / MOMENTUM_MAX );
 		glowStrength = ( MOMENTUM_BAR_GLOWTIME - ( cg.time - cg.momentumGainedTime ) ) /
-		               ( float )MOMENTUM_BAR_GLOWTIME;
+					   ( float )MOMENTUM_BAR_GLOWTIME;
 
 		if ( cg.momentumGained > 0.0f )
 		{
@@ -2010,7 +2025,7 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 
 	// draw threshold markers
 	while ( ( unlockableIter = BG_IterateMomentumThresholds( unlockableIter, team, &threshold, &unlocked ) ),
-	        ( unlockableIter.num >= 0 ) )
+			( unlockableIter.num >= 0 ) )
 	{
 		fraction = threshold / MOMENTUM_MAX;
 
@@ -2048,6 +2063,7 @@ void CG_Rocket_DrawMineRate( void )
 			break;
 
 		default:
+			trap_Rocket_SetInnerRML( "", 0 );
 			return;
 	}
 
@@ -2255,16 +2271,16 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	if ( cg_tutorial.integer )
 	{
 		Com_sprintf( yeskey, sizeof( yeskey ), "[%s]",
-		             CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
+					 CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
 		Com_sprintf( nokey, sizeof( nokey ), "[%s]",
-		             CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
+					 CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
 	}
 
 	s = va( "%sVOTE(%i): %s\n"
-	        "    Called by: \"%s\"\n"
-	        "    %s[check]:%i %s[cross]:%i\n",
-	        team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ],
-	        cgs.voteCaller[ team ], yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
+			"    Called by: \"%s\"\n"
+			"    %s[check]:%i %s[cross]:%i\n",
+			team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ],
+			cgs.voteCaller[ team ], yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
 	trap_Rocket_SetInnerRML( s, RP_EMOTICONS );
 }
@@ -2294,6 +2310,7 @@ static void CG_Rocket_DrawSpawnQueuePosition( void )
 
 	if ( position < 1 )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2317,6 +2334,7 @@ static void CG_Rocket_DrawNumSpawns( void )
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2325,17 +2343,15 @@ static void CG_Rocket_DrawNumSpawns( void )
 
 	if ( position < 1 )
 	{
-		return;
+		s = "";
 	}
-
-	if ( spawns == 0 )
+	else if ( spawns == 0 )
 	{
-		s = va( _( "There are no spawns remaining" ) );
+		s = _( "There are no spawns remaining" );
 	}
-
 	else
 	{
-		s = va( P_( "There is 1 spawn remaining", "There are %d spawns remaining", spawns ), spawns );
+		s = P_( "There is 1 spawn remaining", va( "There are %d spawns remaining", spawns ), spawns );
 	}
 
 	trap_Rocket_SetInnerRML( s, 0 );
@@ -2452,6 +2468,7 @@ static void CG_Rocket_DrawDownloadTime( void )
 
 	if ( !*rocketInfo.downloadName )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2471,7 +2488,7 @@ static void CG_Rocket_DrawDownloadTime( void )
 
 		// We do it in K (/1024) because we'd overflow around 4MB
 		CG_PrintTime( dlTimeBuf, sizeof dlTimeBuf,
-			      ( n - ( ( ( downloadCount / 1024 ) * n ) / ( downloadSize / 1024 ) ) ) * 1000 );
+				  ( n - ( ( ( downloadCount / 1024 ) * n ) / ( downloadSize / 1024 ) ) ) * 1000 );
 		trap_Rocket_SetInnerRML( dlTimeBuf, RP_QUAKE );
 	}
 	else
@@ -2487,6 +2504,7 @@ static void CG_Rocket_DrawDownloadTotalSize( void )
 
 	if ( !*rocketInfo.downloadName )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2502,6 +2520,7 @@ static void CG_Rocket_DrawDownloadCompletedSize( void )
 
 	if ( !*rocketInfo.downloadName )
 	{
+		trap_Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2519,6 +2538,7 @@ static void CG_Rocket_DrawDownloadSpeed( void )
 
 	if ( !*rocketInfo.downloadName )
 	{
+		trap_Rocket_SetInnerRML ( "", 0 );
 		return;
 	}
 
