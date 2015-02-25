@@ -809,7 +809,6 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
 
         void Flush() {
             NET_OutOfBandPrint(NS_SERVER, from, "print\n%s", buffer.c_str());
-            Cmd::ResetEnv();
             buffer = "";
         }
 
@@ -872,6 +871,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	else
 	{
 		Cmd::ExecuteCommand(args.EscapedArgs(2), true, &env);
+		Cmd::ExecuteCommandBuffer();
 	}
 
 	env.Flush();
