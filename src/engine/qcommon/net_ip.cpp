@@ -625,7 +625,7 @@ qboolean NET_CompareBaseAdr( netadr_t a, netadr_t b )
 
 const char      *NET_AdrToString( netadr_t a )
 {
-	static  char s[ NET_ADDRSTRMAXLEN ];
+	static  char s[ NET_ADDR_STR_MAX_LEN ];
 
 	if ( a.type == NA_LOOPBACK )
 	{
@@ -649,7 +649,7 @@ const char      *NET_AdrToString( netadr_t a )
 
 const char      *NET_AdrToStringwPort( netadr_t a )
 {
-	static  char s[ NET_ADDRSTRMAXLEN ];
+	static  char s[ NET_ADDR_W_PORT_STR_MAX_LEN ];
 
 	if ( a.type == NA_LOOPBACK )
 	{
@@ -661,11 +661,11 @@ const char      *NET_AdrToStringwPort( netadr_t a )
 	}
 	else if ( NET_IS_IPv4( a.type ) )
 	{
-		Com_sprintf( s, sizeof( s ), "%s:%lu", NET_AdrToString( a ), ( unsigned long ) ntohs( a.type == NA_IP_DUAL ? a.port4 : a.port ) );
+		Com_sprintf( s, sizeof( s ), "%s:%hu", NET_AdrToString( a ), ntohs( a.type == NA_IP_DUAL ? a.port4 : a.port ) );
 	}
 	else if ( NET_IS_IPv6( a.type ) )
 	{
-		Com_sprintf( s, sizeof( s ), "[%s]:%lu", NET_AdrToString( a ), ( unsigned long ) ntohs( a.type == NA_IP_DUAL ? a.port6 : a.port ) );
+		Com_sprintf( s, sizeof( s ), "[%s]:%hu", NET_AdrToString( a ), ntohs( a.type == NA_IP_DUAL ? a.port6 : a.port ) );
 	}
 	return s;
 }
@@ -1031,7 +1031,7 @@ Sys_ShowIP
 void Sys_ShowIP( void )
 {
 	int  i;
-	char addrbuf[ NET_ADDRSTRMAXLEN ];
+	char addrbuf[ NET_ADDR_STR_MAX_LEN ];
 
 	for ( i = 0; i < numIP; i++ )
 	{
