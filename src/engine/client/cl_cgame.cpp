@@ -1746,7 +1746,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_R_LERPTAG:
-			IPC::HandleMsg<Render::LerpTagMsg>(channel, std::move(reader), [this] (refEntity_t entity, std::string tagName, int startIndex, orientation_t& tag, int& res) {
+			IPC::HandleMsg<Render::LerpTagMsg>(channel, std::move(reader), [this] (refEntity_t&& entity, std::string tagName, int startIndex, orientation_t& tag, int& res) {
 				res = re.LerpTag(&tag, &entity, tagName.c_str(), startIndex);
 			});
 			break;
@@ -2270,7 +2270,7 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
                 break;
 
             case CG_R_ADDREFENTITYTOSCENE:
-                HandleMsg<Render::AddRefEntityToSceneMsg>(std::move(reader), [this] (refEntity_t entity) {
+                HandleMsg<Render::AddRefEntityToSceneMsg>(std::move(reader), [this] (refEntity_t&& entity) {
                     re.AddRefEntityToScene(&entity);
                 });
                 break;
