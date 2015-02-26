@@ -387,7 +387,14 @@ static void StartSignalThread()
 // Command line arguments
 struct cmdlineArgs_t {
 	cmdlineArgs_t()
-		: homePath(FS::DefaultHomePath()), libPath(FS::DefaultBasePath()), reset_config(false), use_basepath(true), use_curses(false) {}
+		: homePath(FS::DefaultHomePath()), libPath(FS::DefaultBasePath()), reset_config(false), use_basepath(true), use_curses(false)
+	{
+#if defined(_WIN32) && !defined(BUILD_CLIENT)
+		// The windows dedicated server and tty client must enable the curses
+		// interface because they have no other usable interface.
+		use_curses = true;
+#endif
+	}
 
 	std::string homePath;
 	std::string libPath;
