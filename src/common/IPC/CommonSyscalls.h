@@ -281,7 +281,7 @@ namespace VM {
     // FSHomePathOpenModeMsg
     typedef IPC::SyncMessage<
         IPC::Message<IPC::Id<FILESYSTEM, FS_HOMEPATH_OPENMODE>, std::string, uint32_t>,
-        IPC::Reply<Util::optional<IPC::FileHandle>>
+        IPC::Reply<Util::optional<IPC::OwnedFileHandle>>
     > FSHomePathOpenModeMsg;
     // FSHomePathFileExistsMsg
     typedef IPC::SyncMessage<
@@ -316,7 +316,7 @@ namespace VM {
     // FSPakPathOpenMsg
     typedef IPC::SyncMessage<
         IPC::Message<IPC::Id<FILESYSTEM, FS_PAKPATH_OPEN>, uint32_t, std::string>,
-        IPC::Reply<Util::optional<IPC::FileHandle>>
+        IPC::Reply<Util::optional<IPC::OwnedFileHandle>>
     > FSPakPathOpenMsg;
     // FSPakPathTimestampMsg
     typedef IPC::SyncMessage<

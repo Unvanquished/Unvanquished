@@ -106,7 +106,11 @@ void FileDesc::Close() const
 FileDesc FileHandle::GetDesc() const
 {
 	FileDesc out;
+#ifdef _WIN32
+	out.handle = reinterpret_cast<HANDLE>(_get_osfhandle(handle));
+#else
 	out.handle = handle;
+#endif
 #ifndef __native_client__
 	out.type = NACL_DESC_HOST_IO;
 	switch (mode) {
@@ -152,7 +156,22 @@ FileHandle FileHandle::FromDesc(const FileDesc& desc)
 		break;
 	}
 #endif
+#ifdef _WIN32
+	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
+	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(desc.handle), modes[mode]);
+	if (fd == -1) {
+		CloseHandle(desc.handle);
+		return FileHandle();
+	}
+	return FileHandle(fd, mode);
+#else
 	return FileHandle(desc.handle, mode);
+#endif
+}
+
+OwnedFileHandle::~OwnedFileHandle()
+{
+	close(handle.GetHandle());
 }
 
 void Socket::Close()

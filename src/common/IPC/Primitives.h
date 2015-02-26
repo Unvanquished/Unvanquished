@@ -41,7 +41,6 @@ namespace IPC {
      * are file descriptor-backed OS resources.
      */
 
-	// Simple file handle wrapper, does *not* close handle on destruction
 	enum FileOpenMode {
 		MODE_READ,
 		MODE_WRITE,
@@ -50,24 +49,61 @@ namespace IPC {
 		MODE_RW_APPEND
 	};
 
+	// Simple file handle wrapper, does *not* close handle on destruction
 	class FileHandle {
 	public:
-		FileHandle() : handle(Sys::INVALID_HANDLE) {}
-		FileHandle(Sys::OSHandle handle, FileOpenMode mode) : handle(handle), mode(mode) {}
+		FileHandle() : handle(-1) {}
+		FileHandle(int handle, FileOpenMode mode) : handle(handle), mode(mode) {}
 		explicit operator bool() const {
-			return Sys::IsValidHandle(handle);
+			return handle != -1;
 		}
 
 		FileDesc GetDesc() const;
 		static FileHandle FromDesc(const FileDesc& desc);
 
-		Sys::OSHandle GetHandle() const {
+		int GetHandle() const {
 			return handle;
 		}
 
 	private:
-		Sys::OSHandle handle;
+		int handle;
 		FileOpenMode mode;
+	};
+
+	// Same as FileHandle except the fd is closed on destruction
+	class OwnedFileHandle {
+	public:
+		OwnedFileHandle() {}
+		OwnedFileHandle(int fd, FileOpenMode mode) : handle(fd, mode) {}
+		OwnedFileHandle(OwnedFileHandle&& other) : handle(other.handle) {
+			other.handle = FileHandle();
+		}
+		OwnedFileHandle& operator=(OwnedFileHandle&& other) {
+			std::swap(handle, other.handle);
+			return *this;
+		}
+		~OwnedFileHandle();
+		explicit operator bool() const {
+			return bool(handle);
+		}
+
+		FileDesc GetDesc() const {
+			return handle.GetDesc();
+		}
+		static OwnedFileHandle FromDesc(const FileDesc& desc) {
+			OwnedFileHandle out;
+			out.handle = FileHandle::FromDesc(desc);
+			return out;
+		}
+
+		int GetHandle() {
+			int fd = handle.GetHandle();
+			handle = FileHandle();
+			return fd;
+		}
+
+	private:
+		FileHandle handle;
 	};
 
 	// Message-based socket through which data and handles can be passed.
@@ -178,6 +214,16 @@ namespace Util {
 		static IPC::FileHandle Read(Reader& stream)
 		{
 			return IPC::FileHandle::FromDesc(stream.ReadHandle());
+		}
+	};
+	template<> struct SerializeTraits<IPC::OwnedFileHandle> {
+		static void Write(Writer& stream, const IPC::OwnedFileHandle& value)
+		{
+			stream.WriteHandle(value.GetDesc());
+		}
+		static IPC::OwnedFileHandle Read(Reader& stream)
+		{
+			return IPC::OwnedFileHandle::FromDesc(stream.ReadHandle());
 		}
 	};
 	template<> struct SerializeTraits<IPC::SharedMemory> {

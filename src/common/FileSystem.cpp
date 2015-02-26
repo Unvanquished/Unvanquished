@@ -95,13 +95,8 @@ template<> struct SerializeTraits<FS::LoadedPakInfo> {
 		stream.Write<Util::optional<uint32_t>>(value.realChecksum);
 		stream.Write<uint64_t>(std::chrono::system_clock::to_time_t(value.timestamp));
 		stream.Write<bool>(value.fd != -1);
-		if (value.fd != -1) {
-#ifdef _WIN32
-			stream.Write<IPC::FileHandle>(IPC::FileHandle(reinterpret_cast<HANDLE>(_get_osfhandle(value.fd)), IPC::MODE_READ));
-#else
+		if (value.fd != -1)
 			stream.Write<IPC::FileHandle>(IPC::FileHandle(value.fd, IPC::MODE_READ));
-#endif
-		}
 		stream.Write<std::string>(value.pathPrefix);
 	}
 	static FS::LoadedPakInfo Read(Reader& stream)
@@ -114,16 +109,10 @@ template<> struct SerializeTraits<FS::LoadedPakInfo> {
 		value.path = stream.Read<std::string>();
 		value.realChecksum = stream.Read<Util::optional<uint32_t>>();
 		value.timestamp = std::chrono::system_clock::from_time_t(stream.Read<uint64_t>());
-		if (stream.Read<bool>()) {
-#ifdef _WIN32
-			void* handle = stream.Read<IPC::FileHandle>().GetHandle();
-			value.fd = _open_osfhandle(reinterpret_cast<intptr_t>(handle), O_RDONLY);
-			if (value.fd == -1)
-				CloseHandle(handle);
-#else
+		if (stream.Read<bool>())
 			value.fd = stream.Read<IPC::FileHandle>().GetHandle();
-#endif
-		}
+		else
+			value.fd = -1;
 		value.pathPrefix = stream.Read<std::string>();
 		return value;
 	}
@@ -627,24 +616,14 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 
 #ifdef BUILD_VM
 // Convert an IPC file handle to a File object
-static File FileFromIPC(Util::optional<IPC::FileHandle> ipcFile, openMode_t mode, std::error_code& err)
+static File FileFromIPC(Util::optional<IPC::OwnedFileHandle> ipcFile, openMode_t mode, std::error_code& err)
 {
 	if (!ipcFile) {
 		SetErrorCodeFilesystem(err, filesystem_error::no_such_file);
 		return File();
 	}
 
-#ifdef _WIN32
-	int raw_modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
-	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(ipcFile->GetHandle()), raw_modes[mode]);
-	if (fd == -1) {
-		CloseHandle(ipcFile->GetHandle());
-		SetErrorCodeSystem(err);
-		return File();
-	}
-#else
 	int fd = ipcFile->GetHandle();
-#endif
 
 	const char* modes[] = {"rb", "wb", "ab", "rb+"};
 	FILE* fp = fdopen(fd, modes[mode]);
@@ -660,11 +639,8 @@ static File FileFromIPC(Util::optional<IPC::FileHandle> ipcFile, openMode_t mode
 
 #ifdef BUILD_ENGINE
 // Convert a File object to an ipc file handle
-static IPC::FileHandle FileToIPC(File file, openMode_t mode)
+static IPC::OwnedFileHandle FileToIPC(File file, openMode_t mode)
 {
-	if (!file)
-		return IPC::FileHandle();
-
 	IPC::FileOpenMode ipcMode = IPC::MODE_READ;
 	switch (mode) {
 	case MODE_READ:
@@ -681,11 +657,10 @@ static IPC::FileHandle FileToIPC(File file, openMode_t mode)
 		break;
 	}
 
-#ifdef _WIN32
-	return IPC::FileHandle(reinterpret_cast<HANDLE>(_get_osfhandle(fileno(file.GetHandle()))), ipcMode);
-#else
-	return IPC::FileHandle(fileno(file.GetHandle()), ipcMode);
-#endif
+	int newfd = dup(fileno(file.GetHandle()));
+	if (newfd == -1)
+		return IPC::OwnedFileHandle();
+	return IPC::OwnedFileHandle(newfd, ipcMode);
 }
 #endif
 
@@ -1223,9 +1198,9 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 	if (pak.type == PAK_DIR) {
 		// Open file
 #ifdef BUILD_VM
-		Util::optional<IPC::FileHandle> handle;
+		Util::optional<IPC::OwnedFileHandle> handle;
 		VM::SendMsg<VM::FSPakPathOpenMsg>(it->second.first, path, handle);
-		File file = FileFromIPC(handle, MODE_READ, err);
+		File file = FileFromIPC(std::move(handle), MODE_READ, err);
 #else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 #endif
@@ -1285,9 +1260,9 @@ void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 	const LoadedPakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR) {
 #ifdef BUILD_VM
-		Util::optional<IPC::FileHandle> handle;
+		Util::optional<IPC::OwnedFileHandle> handle;
 		VM::SendMsg<VM::FSPakPathOpenMsg>(it->second.first, path, handle);
-		File file = FileFromIPC(handle, MODE_READ, err);
+		File file = FileFromIPC(std::move(handle), MODE_READ, err);
 #else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 #endif
@@ -1779,9 +1754,9 @@ namespace HomePath {
 static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 {
 #ifdef BUILD_VM
-	Util::optional<IPC::FileHandle> handle;
+	Util::optional<IPC::OwnedFileHandle> handle;
 	VM::SendMsg<VM::FSHomePathOpenModeMsg>(path, mode, handle);
-	File file = FileFromIPC(handle, mode, err);
+	File file = FileFromIPC(std::move(handle), mode, err);
 	if (err)
 		return {};
 	return file;
@@ -2370,23 +2345,23 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_OPENMODE:
-		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, std::move(reader), [](std::string path, uint32_t mode, Util::optional<IPC::FileHandle>& out) {
+		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, std::move(reader), [](std::string path, uint32_t mode, Util::optional<IPC::OwnedFileHandle>& out) {
 			try {
-				out = FileToIPC(HomePath::OpenMode(path, static_cast<openMode_t>(mode), throws()), static_cast<openMode_t>(mode));
+				out = FileToIPC(HomePath::OpenMode(Path::Build("game", path), static_cast<openMode_t>(mode), throws()), static_cast<openMode_t>(mode));
 			} catch (std::system_error&) {}
 		});
 		break;
 
 	case VM::FS_HOMEPATH_FILEEXISTS:
 		IPC::HandleMsg<VM::FSHomePathFileExistsMsg>(channel, std::move(reader), [](std::string path, bool& out) {
-			out = HomePath::FileExists(path);
+			out = HomePath::FileExists(Path::Build("game", path));
 		});
 		break;
 
 	case VM::FS_HOMEPATH_TIMESTAMP:
 		IPC::HandleMsg<VM::FSHomePathTimestampMsg>(channel, std::move(reader), [](std::string path, Util::optional<uint64_t>& out) {
 			try {
-				out = std::chrono::system_clock::to_time_t(HomePath::FileTimestamp(path));
+				out = std::chrono::system_clock::to_time_t(HomePath::FileTimestamp(Path::Build("game", path)));
 			} catch (std::system_error&) {}
 		});
 		break;
@@ -2394,7 +2369,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 	case VM::FS_HOMEPATH_MOVEFILE:
 		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src, bool success) {
 			try {
-				HomePath::MoveFile(dest, src);
+				HomePath::MoveFile(Path::Build("game", dest), Path::Build("game", src));
 				success = true;
 			} catch (std::system_error&) {
 				success = false;
@@ -2405,7 +2380,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 	case VM::FS_HOMEPATH_DELETEFILE:
 		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path, bool success) {
 			try {
-				HomePath::DeleteFile(path);
+				HomePath::DeleteFile(Path::Build("game", path));
 				success = true;
 			} catch (std::system_error&) {
 				success = false;
@@ -2417,7 +2392,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		IPC::HandleMsg<VM::FSHomePathListFilesMsg>(channel, std::move(reader), [](std::string path, Util::optional<std::vector<std::string>>& out) {
 			try {
 				std::vector<std::string> vec;
-				for (auto&& x: FS::HomePath::ListFiles(path))
+				for (auto&& x: FS::HomePath::ListFiles(Path::Build("game", path)))
 					vec.push_back(std::move(x));
 				out = std::move(vec);
 			} catch (std::system_error&) {}
@@ -2428,7 +2403,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		IPC::HandleMsg<VM::FSHomePathListFilesRecursiveMsg>(channel, std::move(reader), [](std::string path, Util::optional<std::vector<std::string>>& out) {
 			try {
 				std::vector<std::string> vec;
-				for (auto&& x: FS::HomePath::ListFilesRecursive(path))
+				for (auto&& x: FS::HomePath::ListFilesRecursive(Path::Build("game", path)))
 					vec.push_back(std::move(x));
 				out = std::move(vec);
 			} catch (std::system_error&) {}
@@ -2436,7 +2411,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_PAKPATH_OPEN:
-		IPC::HandleMsg<VM::FSPakPathOpenMsg>(channel, std::move(reader), [](uint32_t pakIndex, std::string path, Util::optional<IPC::FileHandle>& out) {
+		IPC::HandleMsg<VM::FSPakPathOpenMsg>(channel, std::move(reader), [](uint32_t pakIndex, std::string path, Util::optional<IPC::OwnedFileHandle>& out) {
 			auto& loadedPaks = FS::PakPath::GetLoadedPaks();
 			if (loadedPaks.size() <= pakIndex)
 				return;
