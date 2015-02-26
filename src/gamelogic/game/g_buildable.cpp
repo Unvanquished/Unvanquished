@@ -172,7 +172,7 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 			maxDistance = VectorLength( mins ) + VectorLength( cmaxs );
 
 			// the fraction of the angle seperating best (0°) and worst case (45°)
-			frac = acos( -normal[ 2 ] ) / ( M_PI / 4.0f );
+			frac = acos( -normal[ 2 ] ) / M_PI_4;
 		}
 		else
 		{
@@ -183,7 +183,7 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 			maxDistance = VectorLength( maxs ) + VectorLength( cmins );
 
 			// the fraction of the angle seperating best (0°) and worst case (45°)
-			frac = acos( normal[ 2 ] ) / ( M_PI / 4.0f );
+			frac = acos( normal[ 2 ] ) / M_PI_4;
 		}
 
 		// the linear interpolation of min & max distance should be an upper boundary for the
