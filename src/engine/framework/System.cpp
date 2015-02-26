@@ -259,7 +259,9 @@ void ReadSingletonSocket()
 static void CloseSingletonSocket()
 {
 #ifdef _WIN32
-	CloseHandle(singletonSocket);
+	// We do not close the singleton socket on Windows because another thread is
+	// currently busy waiting for message. This would cause CloseHandle to block
+	// indefinitely. Instead we rely on process shutdown to close the handle.
 #else
 	if (!haveSingletonLock)
 		return;
