@@ -356,10 +356,11 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 				dir[ 2 ] = 1; // stepped on a grenade
 			}
 
-			int dflags = DAMAGE_NO_LOCDAMAGE;
-			if ( ma->doKnockback ) dflags |= DAMAGE_KNOCKBACK;
+			int dflags = 0;
+			if ( !ma->doLocationalDamage ) dflags |= DAMAGE_NO_LOCDAMAGE;
+			if ( ma->doKnockback )         dflags |= DAMAGE_KNOCKBACK;
 
-			G_Damage( hitEnt, ent, attacker, dir, ent->s.origin,
+			G_Damage( hitEnt, ent, attacker, dir, trace->endpos,
 					  roundf( ent->damage * MissileTimeDmgMod( ent ) ), dflags, ent->methodOfDeath );
 		}
 

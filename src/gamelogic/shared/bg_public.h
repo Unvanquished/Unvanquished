@@ -1310,6 +1310,7 @@ typedef struct
 	float          lag;
 	int            flags;
 	qboolean       doKnockback;
+	qboolean       doLocationalDamage;
 
 	// display
 	qhandle_t      model;

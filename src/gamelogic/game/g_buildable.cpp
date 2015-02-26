@@ -1255,43 +1255,48 @@ bool ASpiker_Fire( gentity_t *self )
 
 	for ( int row = 0; row < SPIKER_MISSILEROWS; row++ )
 	{
-		float polar = ( ( (float)row + SPIKER_ROWOFFSET ) * M_PI / 2 ) / (float)SPIKER_MISSILEROWS;
-		float perim = 2.0f * M_PI * sin( 0.5f * polar );
+		float altitude = ( ( (float)row + SPIKER_ROWOFFSET ) * M_PI_2 ) / (float)SPIKER_MISSILEROWS;
+		float perimeter = 2.0f * M_PI * cos( altitude );
 
-		totalPerimeter += perim;
+		totalPerimeter += perimeter;
 	}
 
 	// distribute and launch missiles
-	vec3_t dir, normal, rotAxis;
+	vec3_t dir, rowBase, zenith, rotAxis;
 
-	VectorCopy( self->s.origin2, normal );
-	PerpendicularVector( rotAxis, normal );
+	VectorCopy( self->s.origin2, zenith );
+	PerpendicularVector( rotAxis, zenith );
 
 	for ( int row = 0; row < SPIKER_MISSILEROWS; row++ )
 	{
-		float polar = ( ( (float)row + SPIKER_ROWOFFSET ) * M_PI / 2 ) / (float)SPIKER_MISSILEROWS;
-		float perim = 2.0f * M_PI * sin( 0.5f * polar );
+		float altitude = ( ( (float)row + SPIKER_ROWOFFSET ) * M_PI_2 ) / (float)SPIKER_MISSILEROWS;
+		float perimeter = 2.0f * M_PI * cos( altitude );
 
-		RotatePointAroundVector( dir, rotAxis, normal, RAD2DEG( polar ) );
+		RotatePointAroundVector( rowBase, rotAxis, zenith, RAD2DEG( M_PI_2 - altitude ) );
 
 		// attempt to distribute spikes with equal distance on all rows
-		int spikes = (int)round( ( (float)SPIKER_MISSILES * perim ) / totalPerimeter );
+		int spikes = (int)round( ( (float)SPIKER_MISSILES * perimeter ) / totalPerimeter );
 
 		for ( int spike = 0; spike < spikes; spike++ )
 		{
-			float azimuth = 2.0f * M_PI * ( ( (float)spike + crandom() ) / (float)spikes );
+			float azimuth = 2.0f * M_PI * ( ( (float)spike + 0.5f * crandom() ) / (float)spikes );
+			float altitudeVariance = 0.5f * crandom() * M_PI_2 / (float)SPIKER_MISSILEROWS;
 
-			RotatePointAroundVector( dir, normal, dir, RAD2DEG( azimuth ) );
+			RotatePointAroundVector( dir, zenith, rowBase, RAD2DEG( azimuth ) );
+			RotatePointAroundVector( dir, rotAxis, dir, RAD2DEG( altitudeVariance ) );
 
 			if ( g_debugTurrets.integer )
 			{
-				Com_Printf( "Spiker #%d fires: Row %d/%d: Spike %d/%d: ( %.2f, %.2f, %.2f )\n",
-				            self->s.number, row + 1, SPIKER_MISSILEROWS, spike + 1, spikes, dir[0],
-				            dir[1], dir[2] );
+				Com_Printf( "Spiker #%d fires: Row %d/%d: Spike %2d/%2d: "
+				            "( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )\n",
+				            self->s.number, row + 1, SPIKER_MISSILEROWS, spike + 1, spikes,
+				            RAD2DEG( altitude + altitudeVariance ), RAD2DEG( azimuth ),
+				            dir[0], dir[1], dir[2] );
 			}
 
 			G_SpawnMissile( MIS_SPIKER, self, self->s.origin, dir, NULL, G_FreeEntity,
-			                level.time + 5000 );
+			                level.time + (int)( 1000.0f * SPIKER_SPIKE_RANGE /
+			                                    (float)BG_Missile( MIS_SPIKER )->speed ) );
 		}
 	}
 
@@ -1306,7 +1311,8 @@ bool ASpiker_Fire( gentity_t *self )
 void ASpiker_Think( gentity_t *self )
 {
 	gentity_t *ent;
-	float     scoring;
+	float     scoring, enemyDamage, friendlyDamage;
+	qboolean  sensing;
 
 	self->nextthink = level.time + 500;
 
@@ -1321,13 +1327,15 @@ void ASpiker_Think( gentity_t *self )
 	if ( level.time < self->spikerRestUntil )
 	{
 		self->spikerLastScoring = 0.0f;
+		self->spikerLastSensing = qfalse;
 
 		return;
 	}
 
 	// calculate a "scoring" of the situation to decide on the best moment to shoot
-	scoring = 0.0f;
-	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, SPIKER_RANGE ) ); )
+	enemyDamage = friendlyDamage = 0.0f; sensing = qfalse;
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin,
+	                                                         SPIKER_SPIKE_RANGE ) ); )
 	{
 		switch ( ent->s.eType )
 		{
@@ -1339,48 +1347,71 @@ void ASpiker_Think( gentity_t *self )
 				continue;
 		}
 
-		if ( self == ent || ( ent->flags & FL_NOTARGET ) ||
-		     !G_IsVisible( self, ent, CONTENTS_SOLID ) )
+		if ( self == ent || ( ent->flags & FL_NOTARGET ) || !G_LineOfSight( self, ent ) )
+		{
+			continue;
+		}
+
+		vec3_t vecToTarget;
+		VectorSubtract( ent->s.origin, self->s.origin, vecToTarget );
+
+		// only entities in the spiker's upper hemisphere can be hit
+		if ( DotProduct( self->s.origin2, vecToTarget ) < 0 )
 		{
 			continue;
 		}
 
 		// approximate average damage the entity would receive from spikes
 		float diameter = VectorLength( ent->r.mins ) + VectorLength( ent->r.maxs );
-		float distance = Distance( self->s.origin, ent->s.origin );
+		float distance = VectorLength( vecToTarget );
 		float effectArea = 2.0f * M_PI * distance * distance; // half sphere
 		float targetArea = 0.5f * diameter * diameter; // approx. proj. of target on effect area
 		float expectedDamage = ( targetArea / effectArea ) * (float)SPIKER_MISSILES *
 		                       (float)BG_Missile( MIS_SPIKER )->damage;
 
-		// friendly entities that can receive damage substract from the scoring, enemies add to it
 		if ( G_OnSameTeam( self, ent ) )
 		{
-			scoring -= expectedDamage;
+
+			friendlyDamage += expectedDamage;
 		}
 		else
 		{
-			scoring += expectedDamage;
+			if ( distance < SPIKER_SENSE_RANGE )
+			{
+				sensing = qtrue;
+			}
+			enemyDamage += expectedDamage;
 		}
 	}
 
-	if ( scoring > 0.0f )
+	// friendly entities that can receive damage substract from the scoring, enemies add to it
+	scoring = enemyDamage - friendlyDamage;
+
+	// Shoot if a viable target leaves sense range even if scoring is bad.
+	// Guarantees that the spiker always shoots eventually when an enemy gets close enough to it.
+	qboolean senseLost = self->spikerLastScoring > 0.0f && self->spikerLastSensing && !sensing;
+
+	if ( scoring > 0.0f || senseLost )
 	{
 		if ( g_debugTurrets.integer )
 		{
-			Com_Printf("Spiker #%i scoring: %f\n", self->s.number, scoring);
+			Com_Printf( "Spiker #%i scoring %.1f - %.1f = %.1f%s%s\n",
+			            self->s.number, enemyDamage, friendlyDamage, scoring,
+			            sensing ? " (sensing)" : "", senseLost ? " (lost target)" : "" );
 		}
 
-		self->nextthink = level.time; // maximize sampling rate
-	}
-
-	// don't shoot as long as the enemy is getting closer
-	if ( scoring > 0.0f && scoring <= self->spikerLastScoring )
-	{
-		ASpiker_Fire( self );
+		if ( ( scoring <= self->spikerLastScoring && sensing ) || senseLost )
+		{
+			ASpiker_Fire( self );
+		}
+		else if ( sensing )
+		{
+			self->nextthink = level.time; // Maximize sampling rate.
+		}
 	}
 
 	self->spikerLastScoring = scoring;
+	self->spikerLastSensing = sensing;
 }
 
 void ASpiker_Pain( gentity_t *self, gentity_t *attacker, int damage )
