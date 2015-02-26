@@ -138,6 +138,8 @@ namespace Audio {
         InitSounds();
         InitEmitters();
 
+        UpdateListenerGain();
+
         for (int i = 0; i < MAX_GENTITIES; i++) {
             entityLoops[i] = {false, nullptr, -1, -1};
         }
@@ -203,11 +205,7 @@ namespace Audio {
             }
         }
 
-        if ((muteWhenMinimized.Get() and com_minimized->integer) or (muteWhenUnfocused.Get() and com_unfocused->integer)) {
-            AL::SetListenerGain(0.0f);
-        } else {
-            AL::SetListenerGain(SliderToAmplitude(masterVolume.Get()));
-        }
+        UpdateListenerGain();
 
         // Update the rest of the system
         CaptureTestUpdate();
@@ -383,6 +381,14 @@ namespace Audio {
         }
 
         UpdateListenerEntity(entityNum, orientation);
+    }
+
+    void UpdateListenerGain() {
+        if ((muteWhenMinimized.Get() and com_minimized->integer) or (muteWhenUnfocused.Get() and com_unfocused->integer)) {
+            AL::SetListenerGain(0.0f);
+        } else {
+            AL::SetListenerGain(SliderToAmplitude(masterVolume.Get()));
+        }
     }
 
     void UpdateEntityPosition(int entityNum, const vec3_t position) {
