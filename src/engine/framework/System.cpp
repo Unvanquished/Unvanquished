@@ -387,7 +387,7 @@ static void StartSignalThread()
 // Command line arguments
 struct cmdlineArgs_t {
 	cmdlineArgs_t()
-		: homePath(FS::DefaultHomePath()), libPath(FS::DefaultBasePath()), reset_config(false), use_basepath(true), use_curses(false)
+		: homePath(FS::DefaultHomePath()), libPath(FS::DefaultBasePath()), reset_config(false), use_curses(false)
 	{
 #if defined(_WIN32) && !defined(BUILD_CLIENT)
 		// The windows dedicated server and tty client must enable the curses
@@ -401,7 +401,6 @@ struct cmdlineArgs_t {
 	std::vector<std::string> paths;
 
 	bool reset_config;
-	bool use_basepath;
 	bool use_curses;
 
 	std::unordered_map<std::string, std::string> cvars;
@@ -452,13 +451,20 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 		}
 #endif
 
-		if (!strcmp(argv[i], "--help")) {
-			fprintf(stderr, PRODUCT_NAME " " PRODUCT_VERSION "\n"
-			                "Usage: %s [-OPTION]..." HELP_URL " [+COMMAND]...\n",
-			                argv[0]);
+		if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-help")) {
+			printf("Usage: %s [-OPTION]..." HELP_URL " [+COMMAND]...\n",  argv[0]);
+			printf("Possible options are:\n"
+			       "  -homepath <path>         set the path used for user-specific configuration files and downloaded pk3 files\n"
+			       "  -libpath <path>          set the path containing additional executables and libraries\n"
+			       "  -pakpath <path>          add another path from which pk3 files are loaded\n"
+			       "  -resetconfig             reset all cvars and keybindings to their default value\n"
+			       "  -curses                  activate the curses interface\n"
+			       "  -set <variable> <value>  set the value of a cvar\n"
+			       "  +<command> <args>        execute an ingame command after startup\n"
+			);
 			exit(0);
-		} else if (!strcmp(argv[i], "--version")) {
-			fprintf(stderr, PRODUCT_NAME " " PRODUCT_VERSION "\n");
+		} else if (!strcmp(argv[i], "--version") || !strcmp(argv[i], "-version")) {
+			printf(PRODUCT_NAME " " PRODUCT_VERSION "\n");
 			exit(0);
 		} else if (!strcmp(argv[i], "-set")) {
 			if (i >= argc - 2) {
@@ -467,8 +473,6 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 			}
 			cmdlineArgs.cvars[argv[i + 1]] = argv[i + 2];
 			i += 2;
-		} else if (!strcmp(argv[i], "-nobasepath")) {
-			cmdlineArgs.use_basepath = false;
 		} else if (!strcmp(argv[i], "-pakpath")) {
 			if (i == argc - 1) {
 				Log::Warn("Missing argument for -pakpath");
@@ -571,8 +575,7 @@ static void Init(int argc, char** argv)
 
 	// Initialize the filesystem. The base path is added first and has the
 	// lowest priority, while the homepath is added last and has the highest.
-	if (cmdlineArgs.use_basepath)
-		cmdlineArgs.paths.insert(cmdlineArgs.paths.begin(), FS::Path::Build(FS::DefaultBasePath(), "pkg"));
+	cmdlineArgs.paths.insert(cmdlineArgs.paths.begin(), FS::Path::Build(FS::DefaultBasePath(), "pkg"));
 	cmdlineArgs.paths.push_back(FS::Path::Build(cmdlineArgs.homePath, "pkg"));
 	FS::Initialize(cmdlineArgs.homePath, cmdlineArgs.libPath, cmdlineArgs.paths);
 
