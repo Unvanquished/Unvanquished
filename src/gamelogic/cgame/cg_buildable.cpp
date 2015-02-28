@@ -2499,6 +2499,70 @@ void CG_Buildable( centity_t *cent )
 			BoundsAdd( ent.skeleton.bounds[ 0 ], ent.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
 		}
 
+#define OVERMIND_EYE_CLAMP    43.0f // 45° shows seams due to imperfections of the low poly version.
+#define OVERMIND_EYE_LAMBDA   10.0f
+#define OVERMIND_IDLE_ANGLE   ( 0.3f * OVERMIND_EYE_CLAMP )
+#define OVERMIND_EYE_Z_OFFSET 64.0f
+
+		// Handle overmind eye movement.
+		if( es->modelindex == BA_A_OVERMIND )
+		{
+			vec3_t   dirToTarget, angles, eyeOrigin;
+			quat_t   rotation;
+
+			// Calculate relative angles to target.
+			// TODO: Also check if target entity is known.
+			if ( es->otherEntityNum == ENTITYNUM_NONE /*||
+				 !cg_entities[ es->otherEntityNum ].valid*/ )
+			{
+				int randSeed = cg.time / 3000;
+
+				// HACK: Mess with the seed once because the first output of Q_crandom is so bad.
+				Q_crandom( &randSeed );
+
+				angles[ PITCH ] = Q_crandom( &randSeed ) * OVERMIND_IDLE_ANGLE;
+				angles[ YAW ]   = Q_crandom( &randSeed ) * OVERMIND_IDLE_ANGLE;
+				angles[ ROLL ]  = 0.0f;
+			}
+			else
+			{
+				// HACK: Fixed offset for eye height.
+				// TODO: Retrieve eye origin from skeleton.
+				VectorCopy( es->origin, eyeOrigin );
+				eyeOrigin[ 2 ] += OVERMIND_EYE_Z_OFFSET;
+
+				// Get absolute angles to target.
+				VectorSubtract( cg_entities[ es->otherEntityNum ].lerpOrigin, eyeOrigin, dirToTarget );
+				VectorNormalize( dirToTarget );
+				vectoangles( dirToTarget, angles );
+
+				// Transform into relative angles.
+				angles[ PITCH ] -= es->angles[ PITCH ];
+				angles[ YAW ]   -= ( es->angles[ YAW ] - 180.0f );
+				angles[ ROLL ]  = 0;
+
+				// Limit angles.
+				if ( angles[ PITCH ] < -180.0f ) angles[ PITCH ] += 360.0f;
+				if ( angles[ PITCH ] >  180.0f ) angles[ PITCH ] -= 360.0f;
+				if ( angles[ YAW ]   < -180.0f ) angles[ YAW ]   += 360.0f;
+				if ( angles[ YAW ]   >  180.0f ) angles[ YAW ]   -= 360.0f;
+				angles[ PITCH ] = Maths::clamp( angles[ PITCH ], -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
+				angles[ YAW ]   = Maths::clamp( angles[ YAW ],   -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
+			}
+
+			// Smooth out movement.
+			ExponentialFade( &cent->overmindEyeAngle[ PITCH ], angles[ PITCH ], OVERMIND_EYE_LAMBDA,
+			                 0.001f * cg.frametime );
+			ExponentialFade( &cent->overmindEyeAngle[ YAW ],   angles[ YAW ],   OVERMIND_EYE_LAMBDA,
+			                 0.001f * cg.frametime );
+
+			// TODO: Access bone by name instead of by number.
+			// Note that rotation's pitch is the eye's roll and vice versa.
+			// Also the yaw needs to be inverted.
+			QuatFromAngles( rotation, 0, -cent->overmindEyeAngle[ YAW ], cent->overmindEyeAngle[ PITCH ] );
+			QuatMultiply0( ent.skeleton.bones[ 38 ].t.rot, rotation );
+		}
+
 		CG_TransformSkeleton( &ent.skeleton, realScale );
 	}
 

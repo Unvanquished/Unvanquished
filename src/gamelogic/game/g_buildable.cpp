@@ -922,16 +922,79 @@ void ASpawn_Think( gentity_t *self )
 	}
 }
 
-#define OVERMIND_DYING_PERIOD  5000
+static qboolean AOvermind_TargetValid( gentity_t *self, gentity_t *target )
+{
+	if (    !target
+	     || !target->client
+	     || target->client->sess.spectatorState != SPECTATOR_NOT
+	     || target->health <= 0
+	     || target->flags & FL_NOTARGET
+	     || !trap_InPVS( self->s.origin, target->s.origin )
+	     || !G_LineOfSight( self, target, MASK_SOLID, qfalse ) )
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
+static qboolean AOvermind_IsBetterTarget( gentity_t *self, gentity_t *candidate )
+{
+	team_t tTeam, cTeam;
+
+	// Any target is better than none.
+	if ( !self->target )
+	{
+		return qtrue;
+	}
+
+	// Prefer humans.
+	tTeam = G_Team( self->target );
+	cTeam = G_Team( candidate );
+
+	if ( tTeam != TEAM_HUMANS && cTeam == TEAM_HUMANS )
+	{
+		return qtrue;
+	}
+	else if ( tTeam == TEAM_HUMANS && cTeam != TEAM_HUMANS )
+	{
+		return qfalse;
+	}
+
+	// Prefer closer target.
+	if ( Distance( self->s.origin, candidate->s.origin ) <
+	     Distance( self->s.origin, self->target->s.origin ) )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static void AOvermind_FindTarget( gentity_t *self )
+{
+	// Clear old target if invalid.
+	if ( !AOvermind_TargetValid( self, self->target ) )
+	{
+		self->target = NULL;
+	}
+
+	// Search best target.
+	gentity_t *ent = NULL;
+	while ( ( ent = G_IterateEntities( ent ) ) )
+	{
+		if ( AOvermind_TargetValid( self, ent ) && AOvermind_IsBetterTarget( self, ent ) )
+		{
+			self->target = ent;
+		}
+	}
+
+	// Copy to entity state so target can be tracked in cgame.
+	self->s.otherEntityNum = self->target ? self->target->s.number : ENTITYNUM_NONE;
+}
+
 #define OVERMIND_SPAWNS_PERIOD 30000
 
-/*
-================
-AOvermind_Think
-
-Think function for Alien Overmind
-================
-*/
 void AOvermind_Think( gentity_t *self )
 {
 	int clientNum;
@@ -942,6 +1005,8 @@ void AOvermind_Think( gentity_t *self )
 
 	if ( self->spawned && ( self->health > 0 ) )
 	{
+		AOvermind_FindTarget( self );
+
 		//do some damage
 		if ( G_SelectiveRadiusDamage( self->s.pos.trBase, self, self->splashDamage,
 		                              self->splashRadius, self, MOD_OVERMIND, TEAM_ALIENS ) )

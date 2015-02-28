@@ -740,6 +740,8 @@ typedef struct centity_s
 	float                 lastBuildableHealth;
 	int                   lastBuildableDamageSoundTime;
 
+	vec3_t                overmindEyeAngle;
+
 	lightFlareStatus_t    lfs;
 
 	qboolean              doorState;
