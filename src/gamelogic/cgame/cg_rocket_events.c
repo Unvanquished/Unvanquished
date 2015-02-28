@@ -372,6 +372,13 @@ static void CG_Rocket_EventPlay( void )
 	}
 }
 
+static void CG_Rocket_ResetPings( void )
+{
+	const char *src = CG_Argv( 1 );
+	trap_LAN_ResetPings( CG_StringToNetSource( src ) );
+	trap_LAN_UpdateVisiblePings( CG_StringToNetSource( src ) );
+}
+
 typedef struct
 {
 	const char *const command;
@@ -393,6 +400,7 @@ static const eventCmd_t eventCmdList[] =
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
 	{ "play", &CG_Rocket_EventPlay },
+	{ "resetPings", &CG_Rocket_ResetPings },
 	{ "setAttribute", &CG_Rocket_SetAttribute },
 	{ "setChatCommand", &CG_Rocket_SetChatCommand },
 	{ "setDataSelectValue", &CG_Rocket_SetDataSelectValue },
