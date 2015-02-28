@@ -518,6 +518,14 @@ static void Init(int argc, char** argv)
 {
 	cmdlineArgs_t cmdlineArgs;
 
+#ifdef _WIN32
+	// If we were launched from a console, make our output visible on it
+	if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+		freopen("CONOUT$", "w", stdout);
+		freopen("CONOUT$", "w", stderr);
+	}
+#endif
+
 	// Print a banner and a copy of the command-line arguments
 	Log::Notice(Q3_VERSION " " PLATFORM_STRING " " ARCH_STRING " " __DATE__);
 	std::string argsString = "cmdline:";
@@ -690,4 +698,7 @@ ALIGN_STACK int main(int argc, char** argv)
 	} catch (...) {
 		Sys::Error("Unhandled exception of unknown type");
 	}
+
+	// Should be unreachable
+	return 0;
 }
