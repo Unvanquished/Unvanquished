@@ -621,21 +621,21 @@ void FS_LoadAllMapMetadata()
 	for (auto& x: maps) {
 		try {
 			FS::PakPath::LoadPakPrefix(*FS::FindPak(x), va("meta/%s/", x.substr(4).c_str()));
-		} catch (std::system_error& err) {} // ignore and move on
+		} catch (std::system_error&) {} // ignore and move on
 	}
 }
 
-bool FS_LoadServerPaks(const char* paks)
+bool FS_LoadServerPaks(const char* paks, bool isDemo)
 {
 	Cmd::Args args(paks);
 	fs_missingPaks.clear();
 	for (auto& x: args) {
 		std::string name, version;
 		Util::optional<uint32_t> checksum;
-		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum) || !checksum) {
+		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum)) {
 			Com_Error(ERR_DROP, "Invalid pak reference from server: %s", x.c_str());
 		} else if (!checksum) {
-			if (allowRemotePakDir.Get())
+			if (isDemo || allowRemotePakDir.Get())
 				continue;
 			Com_Error(ERR_DROP, "The server is configured to load game data from a directory which makes it incompatible with remote clients.");
 		}
@@ -652,6 +652,16 @@ bool FS_LoadServerPaks(const char* paks)
 			}
 		}
 	}
+
+	// Load extra paks as well for demos
+	if (isDemo) {
+		Cmd::Args extrapaks(fs_extrapaks.Get());
+		for (auto& x: extrapaks) {
+			if (!FS_LoadPak(x.c_str()))
+				Com_Error(ERR_FATAL, "Could not load extra pak '%s'\n", x.c_str());
+		}
+	}
+
 	return fs_missingPaks.empty();
 }
 
@@ -755,7 +765,7 @@ public:
 					Print("%s", filename.c_str());
 				}
 			}
-		} catch (std::system_error& err) {
+		} catch (std::system_error&) {
 			Print("^1ERROR^7: Path does not exist");
 		}
 
@@ -768,7 +778,7 @@ public:
 					Print("%s", filename.c_str());
 				}
 			}
-		} catch (std::system_error& err) {
+		} catch (std::system_error&) {
 			Print("^1ERROR^7: Path does not exist");
 		}
 

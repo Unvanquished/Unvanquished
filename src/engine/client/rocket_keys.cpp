@@ -209,7 +209,7 @@ KeyModifier Rocket_GetKeyModifiers( void )
 	{
 		mod |= KM_CAPSLOCK;
 	}
-	if ( Sys_IsNumLockDown() )
+	if ( IN_IsNumLockDown() )
 	{
 		mod |= KM_NUMLOCK;
 	}

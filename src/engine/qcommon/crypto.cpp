@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "qcommon.h"
 #include "crypto.h"
 
-void qnettle_random( void *ctx, unsigned length, uint8_t *dst )
+void qnettle_random( void *ctx, NettleLength length, uint8_t *dst )
 {
 	Com_RandomBytes( dst, length );
 }

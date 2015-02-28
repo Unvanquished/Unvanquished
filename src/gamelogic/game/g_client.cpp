@@ -1208,7 +1208,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	if ( client->pers.admin )
 	{
-		trap_GMTime( &client->pers.admin->lastSeen );
+		Com_GMTime( &client->pers.admin->lastSeen );
 	}
 
 	// check for admin ban
@@ -1485,12 +1485,6 @@ void ClientBegin( int clientNum )
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
-
-	// send the client a list of commands that can be used
-	if ( !client->pers.admin )
-	{
-		G_ListCommands( ent );
-	}
 
 	// display the help menu, if connecting the first time
 	if ( !client->sess.seenWelcome )

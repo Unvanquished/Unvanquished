@@ -61,7 +61,7 @@ AudioData LoadWavCodec(std::string filename)
 
 	try
 	{
-		audioFile = std::move(FS::PakPath::ReadFile(filename));
+		audioFile = FS::PakPath::ReadFile(filename);
 	}
 	catch (std::system_error& err)
 	{

@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // sv_game.c -- interface to the game module
 
 #include "server.h"
+#include "g_msgdef.h"
 #include "../qcommon/crypto.h"
 #include "../framework/CommonVMServices.h"
 #include "../framework/CommandSystem.h"
@@ -267,7 +268,7 @@ SV_GameBinaryMessageReceived
 */
 void SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime )
 {
-	gvm->GameMessageRecieved( cno, buf, buflen, commandTime );
+	gvm.GameMessageRecieved( cno, buf, buflen, commandTime );
 }
 
 //==============================================
@@ -313,20 +314,13 @@ Called every time a map changes
 */
 void SV_ShutdownGameProgs( void )
 {
-	if ( !gvm )
+	if ( !gvm.IsActive() )
 	{
 		return;
 	}
 
-	gvm->GameShutdown( qfalse );
-	delete gvm;
-    gvm = nullptr;
-
-	if ( sv_newGameShlib->string[ 0 ] )
-	{
-		FS_Rename( sv_newGameShlib->string, "game" DLL_EXT );
-		Cvar_Set( "sv_newGameShlib", "" );
-	}
+	gvm.GameShutdown( qfalse );
+    gvm.Free();
 }
 
 /*
@@ -352,28 +346,7 @@ static void SV_InitGameVM( qboolean restart )
 
 	// use the current msec count for a random seed
 	// init for this gamestate
-	gvm->GameInit( sv.time, Com_Milliseconds(), restart );
-}
-
-/*
-===================
-SV_CreateGameVM
-
-Load a QVM vm or fails and try to load a NaCl vm
-===================
-*/
-GameVM* SV_CreateGameVM( void )
-{
-    GameVM* vm = new GameVM();
-
-    if (vm->Start()) {
-        return vm;
-    }
-    delete vm;
-
-	Com_Error(ERR_DROP, "Couldn't load the game VM");
-
-	return nullptr;
+	gvm.GameInit( sv.time, Com_Milliseconds(), restart );
 }
 
 /*
@@ -385,21 +358,14 @@ Called on a map_restart, but not on a map change
 */
 void SV_RestartGameProgs(Str::StringRef mapname)
 {
-	if ( !gvm )
+	if ( !gvm.IsActive() )
 	{
 		return;
 	}
 
-	gvm->GameShutdown( qtrue );
+	gvm.GameShutdown( qtrue );
 
-	delete gvm;
-	gvm = nullptr;
-
-	gvm = SV_CreateGameVM();
-
-	gvm->GameStaticInit();
-
-	gvm->GameLoadMap(mapname);
+	gvm.Start();
 
 	SV_InitGameVM( qtrue );
 }
@@ -417,11 +383,7 @@ void SV_InitGameProgs(Str::StringRef mapname)
 	sv.num_tags = 0;
 
 	// load the game module
-	gvm = SV_CreateGameVM();
-
-	gvm->GameStaticInit();
-
-	gvm->GameLoadMap(mapname);
+	gvm.Start();
 
 	SV_InitGameVM( qfalse );
 }
@@ -456,32 +418,19 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 	return qfalse;
 }
 
-static VM::VMParams gameParams("game");
-
-GameVM::GameVM(): VM::VMBase("game", gameParams), services(new VM::CommonVMServices(*this, "Game", Cmd::GAME_VM))
-{
+GameVM::GameVM(): VM::VMBase("game"), services(nullptr){
 }
 
-bool GameVM::Start()
+void GameVM::Start()
 {
-    int version = this->Create();
+	services = std::unique_ptr<VM::CommonVMServices>(new VM::CommonVMServices(*this, "Game", Cmd::GAME_VM));
 
-    if (version < 0)
-    {
-        return false;
-    }
-
+	uint32_t version = this->Create();
 	if ( version != GAME_API_VERSION ) {
 		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
-    }
+	}
 
-
-    return true;
-}
-
-GameVM::~GameVM()
-{
-    this->Free();
+	this->GameStaticInit();
 }
 
 void GameVM::GameStaticInit()
@@ -496,36 +445,15 @@ void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 
 void GameVM::GameShutdown(qboolean restart)
 {
-	//TODO ignore errors
-	this->SendMsg<GameShutdownMsg>(restart);
+	// Ignore errors when shutting down
+	try {
+		this->SendMsg<GameShutdownMsg>(restart);
+		this->Free();
+	} catch (Sys::DropErr&) {}
+	services = nullptr;
 
 	// Release the shared memory region
 	this->shmRegion.Close();
-}
-
-void GameVM::GameLoadMap(Str::StringRef name)
-{
-	char* buffer;
-	std::string filename = "maps/" + name + ".bsp";
-	int length = FS_ReadFile( filename.c_str(), ( void ** ) &buffer );
-
-	if ( !buffer )
-	{
-		Com_Error( ERR_DROP, "Couldn't load %s", name.c_str() );
-	}
-
-	char* origBuffer = buffer;
-	char* bufferEnd = buffer + length;
-
-	while (buffer < bufferEnd)
-	{
-		this->SendMsg<GameLoadMapChunkMsg>(std::vector<char>(buffer, std::min(buffer + (64 << 10), bufferEnd)));
-		buffer += 64 << 10;
-	}
-
-	this->SendMsg<GameLoadMapMsg>(name);
-
-	FS_FreeFile( origBuffer );
 }
 
 qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
@@ -585,7 +513,7 @@ void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSi
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-void GameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
+void GameVM::Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel)
 {
 	int major = id >> 16;
 	int minor = id & 0xffff;
@@ -600,79 +528,9 @@ void GameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
 	}
 }
 
-void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
+void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
-	case G_PRINT:
-		IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](std::string text) {
-			Com_Printf("%s", text.c_str());
-		});
-		break;
-
-	case G_ERROR:
-		IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](std::string text) {
-			Com_Error(ERR_DROP, "%s", text.c_str());
-		});
-		break;
-
-	case G_LOG:
-		Com_Error(ERR_DROP, "trap_Log not implemented");
-
-	case G_SEND_CONSOLE_COMMAND:
-		IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](std::string text) {
-			Cmd::BufferCommandText(text);
-		});
-		break;
-
-	case G_FS_FOPEN_FILE:
-		IPC::HandleMsg<FSFOpenFileMsg>(channel, std::move(reader), [this](std::string filename, bool open, int fsMode, int& success, int& handle) {
-			fsMode_t mode = static_cast<fsMode_t>(fsMode);
-			success = FS_Game_FOpenFileByMode(filename.c_str(), open ? &handle : NULL, mode);
-		});
-		break;
-
-	case G_FS_READ:
-		IPC::HandleMsg<FSReadMsg>(channel, std::move(reader), [this](int handle, int len, std::string& res) {
-			std::unique_ptr<char[]> buffer(new char[len]);
-			buffer[0] = '\0';
-			FS_Read(buffer.get(), len, handle);
-			res.assign(buffer.get(), len);
-		});
-		break;
-
-	case G_FS_WRITE:
-		IPC::HandleMsg<FSWriteMsg>(channel, std::move(reader), [this](int handle, std::string text, int& res) {
-			res = FS_Write(text.c_str(), text.size(), handle);
-		});
-		break;
-
-	case G_FS_RENAME:
-		IPC::HandleMsg<FSRenameMsg>(channel, std::move(reader), [this](std::string from, std::string to) {
-			FS_Rename(from.c_str(), to.c_str());
-		});
-		break;
-
-	case G_FS_FCLOSE_FILE:
-		IPC::HandleMsg<FSFCloseFileMsg>(channel, std::move(reader), [this](int handle) {
-			FS_FCloseFile(handle);
-		});
-		break;
-
-	case G_FS_GET_FILE_LIST:
-		IPC::HandleMsg<FSGetFileListMsg>(channel, std::move(reader), [this](std::string path, std::string extension, int len, int& intRes, std::string& res) {
-			std::unique_ptr<char[]> buffer(new char[len]);
-			buffer[0] = '\0';
-			intRes = FS_GetFileList(path.c_str(), extension.c_str(), buffer.get(), len);
-			res.assign(buffer.get(), len);
-		});
-		break;
-
-	case G_FS_FIND_PAK:
-		IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
-			found = FS::FindPak(pakName);
-		});
-		break;
-
 	case G_LOCATE_GAME_DATA1:
 		IPC::HandleMsg<LocateGameDataMsg1>(channel, std::move(reader), [this](IPC::SharedMemory shm, int numEntities, int entitySize, int playerSize) {
 			shmRegion = std::move(shm);
@@ -721,7 +579,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_SET_CONFIGSTRING_RESTRICTIONS:
-		IPC::HandleMsg<SetConfigStringRestrictionsMsg>(channel, std::move(reader), [this]() {
+		IPC::HandleMsg<SetConfigStringRestrictionsMsg>(channel, std::move(reader), [this] {
 			//Com_Printf("SV_SetConfigstringRestrictions not implemented\n");
 		});
 		break;
@@ -821,50 +679,12 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		});
 		break;
 
-	case G_GM_TIME:
-		IPC::HandleMsg<GMTimeMsg>(channel, std::move(reader), [this](int& res, qtime_t& time) {
-			res = Com_GMTime(&time);
-		});
-		break;
-
 	case G_GET_TIME_STRING:
 		IPC::HandleMsg<GetTimeStringMsg>(channel, std::move(reader), [this](int len, std::string format, const qtime_t& time, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			buffer[0] = '\0';
 			SV_GetTimeString(buffer.get(), len, format.c_str(), &time);
 			res.assign(buffer.get(), len);
-		});
-		break;
-
-	case G_PARSE_ADD_GLOBAL_DEFINE:
-		IPC::HandleMsg<ParseAddGlobalDefineMsg>(channel, std::move(reader), [this](std::string define, int& res) {
-			res = Parse_AddGlobalDefine(define.c_str());
-		});
-		break;
-
-	case G_PARSE_LOAD_SOURCE:
-		IPC::HandleMsg<ParseLoadSourceMsg>(channel, std::move(reader), [this](std::string name, int& res) {
-			res = Parse_LoadSourceHandle(name.c_str());
-		});
-		break;
-
-	case G_PARSE_FREE_SOURCE:
-		IPC::HandleMsg<ParseFreeSourceMsg>(channel, std::move(reader), [this](int source, int& res) {
-			res = Parse_FreeSourceHandle(source);
-		});
-		break;
-
-	case G_PARSE_READ_TOKEN:
-		IPC::HandleMsg<ParseReadTokenMsg>(channel, std::move(reader), [this](int source, int& res, pc_token_t& token) {
-			res = Parse_ReadTokenHandle(source, &token);
-		});
-		break;
-
-	case G_PARSE_SOURCE_FILE_AND_LINE:
-		IPC::HandleMsg<ParseSourceFileAndLineMsg>(channel, std::move(reader), [this](int source, int& res, std::string& file, int& line) {
-			char buffer[128] = {0};
-			res = Parse_SourceFileAndLine(source, buffer, &line);
-			file = buffer;
 		});
 		break;
 

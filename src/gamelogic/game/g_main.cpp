@@ -335,15 +335,15 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                0,                                               0, qfalse           },
 
 	// debug switches
-	{ &g_debugMove,                   "g_debugMove",                   "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugDamage,                 "g_debugDamage",                 "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugKnockback,              "g_debugKnockback",              "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugTurrets,                "g_debugTurrets",                "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                CVAR_TEMP,                                       0, qfalse           },
+	{ &g_debugMove,                   "g_debugMove",                   "0",                                0,                                               0, qfalse           },
+	{ &g_debugDamage,                 "g_debugDamage",                 "0",                                0,                                               0, qfalse           },
+	{ &g_debugKnockback,              "g_debugKnockback",              "0",                                0,                                               0, qfalse           },
+	{ &g_debugTurrets,                "g_debugTurrets",                "0",                                0,                                               0, qfalse           },
+	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                0,                                               0, qfalse           },
 	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, qfalse           },
-	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugEntities,               "g_debugEntities",               "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugFire,                   "g_debugFire",                   "0",                                CVAR_TEMP,                                       0, qfalse           },
+	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                0,                                               0, qfalse           },
+	{ &g_debugEntities,               "g_debugEntities",               "0",                                0,                                               0, qfalse           },
+	{ &g_debugFire,                   "g_debugFire",                   "0",                                0,                                               0, qfalse           },
 
 	// gameplay: basic
 	{ &g_timelimit,                   "timelimit",                     "45",                               CVAR_SERVERINFO,                                 0, qtrue            },
@@ -747,7 +747,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart, bool inClient )
 			G_LogPrintf( "------------------------------------------------------------\n" );
 			G_LogPrintf( "InitGame: %s\n", serverinfo );
 
-			trap_GMTime( &qt );
+			Com_GMTime( &qt );
 			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i Z\n",
 			             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 			             qt.tm_hour, qt.tm_min, qt.tm_sec );
@@ -765,7 +765,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart, bool inClient )
 		char    logfile[ 128 ], mapname[ 64 ];
 		qtime_t qt;
 
-		trap_GMTime( &qt );
+		Com_GMTime( &qt );
 		trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 
 		Com_sprintf( logfile, sizeof( logfile ),
@@ -1954,7 +1954,7 @@ static void G_LogGameplayStats( int state )
 			qtime_t t;
 
 			trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
-			trap_GMTime( &t );
+			Com_GMTime( &t );
 
 			Com_sprintf( logline, sizeof( logline ),
 			             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"

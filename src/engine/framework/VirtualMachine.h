@@ -28,6 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "../../common/Common.h"
+#include "../../common/IPC/Channel.h"
+
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
@@ -62,30 +65,24 @@ namespace VM {
  * leak for us.
  *
  * TL;DR
- * - Native DLL: no sandboxing, no cleaning up but debuger support. Use for dev.
+ * - Native DLL: no sandboxing, no cleaning up but debugger support. Use for dev.
  * - NaCl exe: sandboxing, no leaks, slightly slower, hard to debug. Use for regular players.
  * - Native exe: no sandboxing, no leaks, hard to debug. Might be used by server owners for perf.
  */
 enum vmType_t {
-	// Loads the VM as an executable from the hompath, potentially from a pk3
+	// Loads the VM as an nacl executable from the homepath, potentially from a pk3
 	// USE THIS BY DEFAULT FOR PROD
 	TYPE_NACL,
-	// Same as above will ask sel_ldr to open a gdb server on port 4014?
-	TYPE_NACL_DEBUG,
+
+	// Loads the VM as an nacl executable from the libpath, for freshly compiled NaCl VMs (no need to put it in a pk3)
+	TYPE_NACL_LIBPATH,
 
 	// Loads the VM as a native exe from the libpath
 	TYPE_NATIVE_EXE,
-	// Same as above but opens it on a gdb server on port 4014, you will need to connect and run it with "c	"
-	TYPE_NATIVE_EXE_DEBUG,
 
 	// Loads the VM as a native DLL from the libpath
 	// USE THIS FOR DEVELOPMENT
 	TYPE_NATIVE_DLL,
-
-	// Loads the VM as an nacl executable from the libpath, for freshly compiled NaCl VMs (no need to put it in a pk3)
-	TYPE_NACL_LIBPATH,
-	// Same as above, with the debugger
-	TYPE_NACL_LIBPATH_DEBUG,
 	TYPE_END
 };
 
@@ -94,23 +91,25 @@ struct VMParams {
 	VMParams(std::string name)
 		: logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
 		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NACL, 0, TYPE_END - 1),
-		  debugLoader("vm." + name + ".debugLoader", "make sel_ldr dump information to " + name + "-sel_ldr.log", Cvar::NONE, 0, 0, 5) {
+		  debug("vm." + name + ".debug", "run a gdbserver on localhost:4014 to debug the VM", Cvar::NONE, false),
+		  debugLoader("vm." + name + ".debugLoader", "make nacl_loader dump information to " + name + "-nacl_loader.log", Cvar::NONE, 0, 0, 5) {
 	}
 
 	Cvar::Cvar<bool> logSyscalls;
 	Cvar::Range<Cvar::Cvar<int>> vmType;
+	Cvar::Cvar<bool> debug;
 	Cvar::Range<Cvar::Cvar<int>> debugLoader;
 };
 
 // Base class for a virtual machine instance
 class VMBase {
 public:
-	VMBase(std::string name, VMParams& params)
-		: processHandle(IPC::INVALID_HANDLE), name(name), params(params) {}
+	VMBase(std::string name)
+		: processHandle(Sys::INVALID_HANDLE), name(name), params(name) {}
 
 	// Create the VM for the named module. Returns the ABI version reported
-	// by the module.
-	int Create();
+	// by the module. This will automatically free any existing VM.
+	uint32_t Create();
 
 	// Free the VM
 	void Free();
@@ -118,7 +117,7 @@ public:
 	// Check if the VM is active
 	bool IsActive() const
 	{
-		return processHandle != IPC::INVALID_HANDLE || inProcess.thread.joinable();
+		return Sys::IsValidHandle(processHandle) || inProcess.thread.joinable();
 	}
 
 	// Make sure the VM is closed on exit
@@ -131,33 +130,35 @@ public:
 	template<typename Msg, typename... Args> void SendMsg(Args&&... args)
 	{
 		// Marking lambda as mutable to work around a bug in gcc 4.6
-        LogMessage(false, Msg::id);
-		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, IPC::Reader reader) mutable {
+		LogMessage(false, true, Msg::id);
+		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, Util::Reader reader) mutable {
+			LogMessage(true, true, id);
 			Syscall(id, std::move(reader), rootChannel);
-            LogMessage(true, id);
+			LogMessage(true, false, id);
 		}, std::forward<Args>(args)...);
+		LogMessage(false, false, Msg::id);
 	}
 
 	struct InProcessInfo {
 		std::thread thread;
 		std::mutex mutex;
 		std::condition_variable condition;
-		void* sharedLibHandle;
+		Sys::DynamicLib sharedLib;
 		bool running;
 
 		InProcessInfo()
-			: sharedLibHandle(nullptr), running(false) {}
+			: running(false) {}
 	};
 
 protected:
 	// System call handler
-	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) = 0;
+	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) = 0;
 
 private:
 	void FreeInProcessVM();
 
 	// Used for the NaCl VMs
-	IPC::OSHandleType processHandle;
+	Sys::OSHandle processHandle;
 
 	// Used by the native, in process VMs
 	InProcessInfo inProcess;
@@ -169,12 +170,12 @@ private:
 
 	vmType_t type;
 
-	VMParams& params;
+	VMParams params;
 
 	// Logging the syscalls
 	FS::File syscallLogFile;
 
-	void LogMessage(bool vmToEngine, int id);
+	void LogMessage(bool vmToEngine, bool start, int id);
 };
 
 } // namespace VM
