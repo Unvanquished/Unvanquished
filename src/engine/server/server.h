@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../botlib/bot_api.h"
-#include "../server/g_api.h"
+#include "sg_api.h"
 #include "../framework/VirtualMachine.h"
 #include "../framework/CommonVMServices.h"
 
@@ -477,7 +477,7 @@ void SV_SendClientSnapshot( client_t *client );
 void SV_SendClientIdle( client_t *client );
 
 //
-// sv_game.c
+// sv_sgame.c
 //
 int SV_NumForGentity( sharedEntity_t *ent );
 

@@ -652,14 +652,14 @@ set( SERVERLIST
   ${ENGINE_DIR}/server/sv_bot.cpp
   ${ENGINE_DIR}/server/sv_ccmds.cpp
   ${ENGINE_DIR}/server/sv_client.cpp
-  ${ENGINE_DIR}/server/sv_game.cpp
+  ${ENGINE_DIR}/server/sv_sgame.cpp
   ${ENGINE_DIR}/server/sv_init.cpp
   ${ENGINE_DIR}/server/sv_main.cpp
   ${ENGINE_DIR}/server/sv_net_chan.cpp
   ${ENGINE_DIR}/server/sv_snapshot.cpp
   ${ENGINE_DIR}/server/server.h
-  ${ENGINE_DIR}/server/g_api.h
-  ${ENGINE_DIR}/server/g_msgdef.h
+  ${ENGINE_DIR}/server/sg_api.h
+  ${ENGINE_DIR}/server/sg_msgdef.h
   ${ENGINE_DIR}/qcommon/print_translated.h
 )
 
@@ -850,49 +850,49 @@ set( CGAMELIST
   ${COMMONLIST}
 )
 
-set( GAMELIST
-  ${GAMELOGIC_DIR}/game/g_active.cpp
-  ${GAMELOGIC_DIR}/game/g_api.cpp
-  ${GAMELOGIC_DIR}/game/g_buildpoints.cpp
-  ${GAMELOGIC_DIR}/game/g_client.cpp
-  ${GAMELOGIC_DIR}/game/g_cmds.cpp
-  ${GAMELOGIC_DIR}/game/g_combat.cpp
-  ${GAMELOGIC_DIR}/game/g_momentum.cpp
-  ${GAMELOGIC_DIR}/game/g_entities.cpp
-  ${GAMELOGIC_DIR}/game/g_physics.cpp
-  ${GAMELOGIC_DIR}/game/g_buildable.cpp
-  ${GAMELOGIC_DIR}/game/g_main.cpp
-  ${GAMELOGIC_DIR}/game/g_missile.cpp
-  ${GAMELOGIC_DIR}/game/g_session.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_afx.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_ctrl.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_fx.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_game.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_generic.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_gfx.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_mover.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_position.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_sensor.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn_shared.cpp
-  ${GAMELOGIC_DIR}/game/g_spawn.cpp
-  ${GAMELOGIC_DIR}/game/g_svcmds.cpp
-  ${GAMELOGIC_DIR}/game/g_team.cpp
-  ${GAMELOGIC_DIR}/game/g_utils.cpp
-  ${GAMELOGIC_DIR}/game/g_maprotation.cpp
-  ${GAMELOGIC_DIR}/game/g_weapon.cpp
-  ${GAMELOGIC_DIR}/game/g_admin.cpp
-  ${GAMELOGIC_DIR}/game/g_namelog.cpp
-  ${GAMELOGIC_DIR}/game/g_bot.cpp
-  ${GAMELOGIC_DIR}/game/g_bot_ai.cpp
-  ${GAMELOGIC_DIR}/game/g_bot_nav.cpp
-  ${GAMELOGIC_DIR}/game/g_bot_parse.cpp
-  ${GAMELOGIC_DIR}/game/g_bot_util.cpp
-  ${GAMELOGIC_DIR}/game/g_cm_world.cpp
-  ${GAMELOGIC_DIR}/game/g_cm_world.h
-  ${GAMELOGIC_DIR}/game/Beacon.cpp
-  ${GAMELOGIC_DIR}/game/Clustering.cpp
-  ${ENGINE_DIR}/server/g_api.h
-  ${ENGINE_DIR}/server/g_msgdef.h
+set( SGAMELIST
+  ${GAMELOGIC_DIR}/sgame/sg_active.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_api.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_buildpoints.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_client.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_cmds.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_combat.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_momentum.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_entities.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_physics.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_buildable.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_main.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_missile.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_session.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_afx.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_ctrl.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_fx.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_game.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_generic.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_gfx.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_mover.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_position.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_sensor.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_shared.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_svcmds.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_team.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_utils.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_maprotation.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_admin.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_namelog.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_bot.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_bot_ai.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_bot_nav.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_bot_parse.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_bot_util.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_cm_world.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_cm_world.h
+  ${GAMELOGIC_DIR}/sgame/Beacon.cpp
+  ${GAMELOGIC_DIR}/sgame/Clustering.cpp
+  ${ENGINE_DIR}/server/sg_api.h
+  ${ENGINE_DIR}/server/sg_msgdef.h
   ${GAMESHAREDLIST}
   ${COMMONLIST}
 )
@@ -1555,9 +1555,9 @@ function( GAMEMODULE )
 
 endfunction()
 
-GAMEMODULE( NAME game
-  COMPILE_DEF BUILD_VM BUILD_GAME
-  FILES ${GAMELIST}
+GAMEMODULE( NAME sgame
+  COMPILE_DEF BUILD_VM BUILD_SGAME
+  FILES ${SGAMELIST}
 )
 
 GAMEMODULE( NAME cgame
