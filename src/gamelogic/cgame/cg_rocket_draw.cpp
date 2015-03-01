@@ -568,7 +568,7 @@ static void CG_Rocket_DrawAlienEvosValue( void )
 
 	value /= ( float ) CREDITS_PER_EVO;
 
-	trap_Rocket_SetInnerRML( va( "%0.1f", floor( value * 10 ) / 10 ), 0 );
+	trap_Rocket_SetInnerRML( va( "%1.1f", value ), 0 );
 }
 
 static void CG_Rocket_DrawStaminaValue( void )
