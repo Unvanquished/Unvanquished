@@ -8,8 +8,8 @@ set -u
 # Dynamic libraries for inclusion in app bundle
 DEPS_VERSION=3
 SDL2_VERSION=2.0.3
-GLEW_VERSION=1.10.0
-OPENAL_VERSION=1.15.1
+GLEW_VERSION=1.12.0
+OPENAL_VERSION=1.16.0
 
 # Usage
 if [ "${#}" -ne "2" ]; then
@@ -42,9 +42,7 @@ make_universal() {
 make_universal daemon 755
 make_universal daemonded 755
 make_universal daemon-tty 755
-make_universal sel_ldr 755
-make_universal game-nacl-native-exe 755
-make_universal cgame-qvm-native.so 644
+make_universal nacl_loader 755
 install -m 644 "${BUILD32_PATH}/irt_core-x86.nexe" "${DEST_PATH}/Contents/MacOS/irt_core-x86.nexe"
 install -m 644 "${BUILD64_PATH}/irt_core-x86_64.nexe" "${DEST_PATH}/Contents/MacOS/irt_core-x86_64.nexe"
 
@@ -54,6 +52,7 @@ chmod 644 "${DEST_PATH}/Contents/MacOS/libGLEW.${GLEW_VERSION}.dylib"
 lipo -create -o "${DEST_PATH}/Contents/MacOS/libopenal.${OPENAL_VERSION}.dylib" "${DEPS32_PATH}/lib/libopenal.${OPENAL_VERSION}.dylib" "${DEPS64_PATH}/lib/libopenal.${OPENAL_VERSION}.dylib"
 chmod 644 "${DEST_PATH}/Contents/MacOS/libopenal.${OPENAL_VERSION}.dylib"
 
-# SDL is already compiled as a universal binary, copy as is
-cp -a "${DEPS64_PATH}/SDL2.framework" "${DEST_PATH}/Contents/MacOS/"
-
+# SDL is already compiled as a universal binary, just remove the headers
+cp -a "${DEPS_PATH}/SDL2.framework" "${DEST_PATH}/Contents/MacOS/"
+rm -f "${DEST_PATH}/Contents/MacOS/SDL2.framework/Headers"
+rm -rf "${DEST_PATH}/Contents/MacOS/SDL2.framework/Versions/A/Headers"
