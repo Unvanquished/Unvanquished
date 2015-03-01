@@ -28,15 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-//TODO we need to include headers in this order
-//#include "../../engine/qcommon/q_shared.h"
-//#include "bg_public.h"
-
-// We only do game for now but later have a common list of game services
-#include "../game/g_local.h"
-
 #include "../../common/Common.h"
+#include "../../common/IPC/CommonSyscalls.h"
 #include "VMMain.h"
+
+// The old console command handler that should be defined in all VMs
+qboolean ConsoleCommand();
+void CompleteCommand(int);
 
 const char* Trans_Gettext(const char* text) {
     return text;
@@ -110,7 +108,7 @@ namespace Cmd {
 
     // Implementation of the engine syscalls
 
-    void ExecuteSyscall(IPC::Reader& reader, IPC::Channel& channel) {
+    void ExecuteSyscall(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<VM::ExecuteMsg>(channel, std::move(reader), [](std::string command){
             Cmd::Args args(command);
 
@@ -125,7 +123,7 @@ namespace Cmd {
         });
     }
 
-    void CompleteSyscall(IPC::Reader& reader, IPC::Channel& channel) {
+    void CompleteSyscall(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<VM::CompleteMsg>(channel, std::move(reader), [](int argNum, std::string command, std::string prefix, Cmd::CompletionResult& res) {
             Cmd::Args args(command);
 
@@ -140,7 +138,7 @@ namespace Cmd {
         });
     }
 
-    void HandleSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
+    void HandleSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
         switch (minor) {
             case VM::EXECUTE:
                 ExecuteSyscall(reader, channel);
@@ -151,7 +149,7 @@ namespace Cmd {
                 break;
 
             default:
-                G_Error("Unhandled engine command syscall %i", minor);
+                Com_Error(ERR_DROP, "Unhandled engine command syscall %i", minor);
         }
     }
 }
@@ -164,6 +162,20 @@ namespace Cmd {
 // This vector is used as a stack of Cmd::Args for when commands are called recursively.
 static std::vector<const Cmd::Args*> argStack;
 
+// The complete trap calls worked by tokenizing the args in trap_Argc and trap_Argv
+// then it called the completion syscall CompleteCommand that called trap_CompleteCallback
+// with the potential values. Our new system returns a vector of candidates so we fake the
+// trap_CompleteCallback call to add the candidate to our vector
+Cmd::CompletionResult completeMatches;
+std::string completedPrefix;
+
+void trap_CompleteCallback( const char *complete ) {
+    // The callback is called for each valid arg, without filtering so do it here
+    if (Str::IsIPrefix(completedPrefix, complete)) {
+        completeMatches.push_back({complete, ""});
+    }
+}
+
 // A proxy command added instead of the string when the VM registers a command? It will just
 // setup the args right and call the command Dispatcher
 class TrapProxyCommand: public Cmd::CmdBase {
@@ -175,6 +187,27 @@ class TrapProxyCommand: public Cmd::CmdBase {
             argStack.push_back(&args);
             ConsoleCommand();
             argStack.pop_back();
+        }
+
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+            static char buffer[4096];
+
+            completedPrefix = prefix;
+            completeMatches.clear();
+
+            //Completing an empty arg, we add a space to mimic the old autocompletion behavior
+            if (args.Argc() == argNum) {
+                Q_strncpyz(buffer, (args.ConcatArgs(0) + " ").c_str(), sizeof(buffer));
+            } else {
+                Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), sizeof(buffer));
+            }
+
+            //Some completion handlers expect tokenized arguments
+            argStack.push_back(&args);
+            CompleteCommand(argNum);
+            argStack.pop_back();
+
+            return completeMatches;
         }
 };
 
@@ -205,6 +238,18 @@ void trap_Argv(int n, char *buffer, int bufferLength) {
     } else {
         buffer[0] = '\0';
     }
+}
+
+void trap_EscapedArgs( char *buffer, int bufferLength ) {
+	const Cmd::Args* args = argStack.back();
+	std::string res = args->EscapedArgs(0);
+	Q_strncpyz( buffer, res.c_str(), bufferLength );
+}
+
+void trap_LiteralArgs( char *buffer, int bufferLength ) {
+	const Cmd::Args* args = argStack.back();
+	std::string res = args->ConcatArgs(0);
+	Q_strncpyz( buffer, res.c_str(), bufferLength );
 }
 
 namespace Cmd {
@@ -276,9 +321,15 @@ namespace Cvar{
         VM::SendMsg<VM::SetCvarMsg>(name, value);
     }
 
+    bool AddFlags(const std::string& name, int flags) {
+        bool exists;
+        VM::SendMsg<VM::AddCvarFlagsMsg>(name, flags, exists);
+        return exists;
+    }
+
     // Syscalls called by the engine
 
-    void CallOnValueChangedSyscall(IPC::Reader& reader, IPC::Channel& channel) {
+    void CallOnValueChangedSyscall(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<VM::OnValueChangedMsg>(channel, std::move(reader), [](std::string name, std::string value, bool& success, std::string& description) {
             auto map = GetCvarMap();
             auto it = map.find(name);
@@ -296,14 +347,14 @@ namespace Cvar{
         });
     }
 
-    void HandleSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
+    void HandleSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
         switch (minor) {
             case VM::ON_VALUE_CHANGED:
                 CallOnValueChangedSyscall(reader, channel);
                 break;
 
             default:
-                G_Error("Unhandled engine cvar syscall %i", minor);
+                Com_Error(ERR_DROP, "Unhandled engine cvar syscall %i", minor);
         }
     }
 }
@@ -370,6 +421,9 @@ void trap_Cvar_Register(vmCvar_t *cvar, const char *varName, const char *value, 
 }
 
 void trap_Cvar_Set(const char *varName, const char *value) {
+    if (!value) {
+        value = "";
+    }
     Cvar::SetValue(varName, value);
 }
 
@@ -386,9 +440,22 @@ int trap_Cvar_VariableIntegerValue(const char *varName) {
     return 0;
 }
 
+float trap_Cvar_VariableValue(const char *varName) {
+    std::string value = Cvar::GetValue(varName);
+    float res;
+    if (Str::ToFloat(value, res)) {
+        return res;
+    }
+    return 0.0;
+}
+
 void trap_Cvar_VariableStringBuffer(const char *varName, char *buffer, int bufsize) {
     std::string value = Cvar::GetValue(varName);
     Q_strncpyz(buffer, value.c_str(), bufsize);
+}
+
+void trap_Cvar_AddFlags(const char* varName, int flags) {
+    Cvar::AddFlags(varName, flags);
 }
 
 // Log related commands
@@ -410,7 +477,7 @@ namespace VM {
         Cvar::InitializeProxy();
     }
 
-    void HandleCommonSyscall(int major, int minor, IPC::Reader reader, IPC::Channel& channel) {
+    void HandleCommonSyscall(int major, int minor, Util::Reader reader, IPC::Channel& channel) {
         switch (major) {
             case VM::COMMAND:
                 Cmd::HandleSyscall(minor, reader, channel);
@@ -421,7 +488,144 @@ namespace VM {
                 break;
 
             default:
-                G_Error("Unhandled common VM syscall major number %i", major);
+                Com_Error(ERR_DROP, "Unhandled common VM syscall major number %i", major);
         }
     }
 }
+
+// Defintion of some additional trap_* that are common to all VMs
+
+void trap_Print(const char *string)
+{
+	VM::SendMsg<VM::PrintMsg>(string);
+}
+
+void NORETURN trap_Error(const char *string)
+{
+	Sys::Drop(string);
+}
+
+int trap_Milliseconds(void)
+{
+	auto duration = Sys::SteadyClock::now().time_since_epoch();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+}
+
+void trap_SendConsoleCommand(const char *text)
+{
+	VM::SendMsg<VM::SendConsoleCommandMsg>(text);
+}
+
+int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
+{
+	int ret, handle;
+	VM::SendMsg<VM::FSFOpenFileMsg>(qpath, f != NULL, mode, ret, handle);
+	if (f)
+		*f = handle;
+	return ret;
+}
+
+void trap_FS_Read(void *buffer, int len, fileHandle_t f)
+{
+	std::string res;
+	VM::SendMsg<VM::FSReadMsg>(f, len, res);
+	memcpy(buffer, res.c_str(), std::min((int)res.size() + 1, len));
+}
+
+int trap_FS_Write(const void *buffer, int len, fileHandle_t f)
+{
+	int res;
+	std::string text((const char*)buffer, len);
+	VM::SendMsg<VM::FSWriteMsg>(f, text, res);
+	return res;
+}
+
+void trap_GS_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin )
+{
+	VM::SendMsg<VM::FSSeekMsg>(f, offset, origin);
+}
+
+void trap_FS_Rename(const char *from, const char *to)
+{
+	VM::SendMsg<VM::FSRenameMsg>(from, to);
+}
+
+void trap_FS_FCloseFile(fileHandle_t f)
+{
+	VM::SendMsg<VM::FSFCloseFileMsg>(f);
+}
+
+int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize)
+{
+	int res;
+	std::string text;
+	VM::SendMsg<VM::FSGetFileListMsg>(path, extension, bufsize, res, text);
+	memcpy(listbuf, text.c_str(), std::min((int)text.size() + 1, bufsize));
+	return res;
+}
+
+int trap_FS_GetFileListRecursive(const char *path, const char *extension, char *listbuf, int bufsize)
+{
+	int res;
+	std::string text;
+	VM::SendMsg<VM::FSGetFileListRecursiveMsg>(path, extension, bufsize, res, text);
+	memcpy(listbuf, text.c_str(), std::min((int)text.size() + 1, bufsize));
+	return res;
+}
+
+qboolean trap_FindPak(const char *name)
+{
+	bool res;
+	VM::SendMsg<VM::FSFindPakMsg>(name, res);
+	return res;
+}
+
+qboolean trap_FS_LoadPak( const char *pak, const char* prefix )
+{
+	bool res;
+	VM::SendMsg<VM::FSLoadPakMsg>(pak, prefix, res);
+	return res;
+}
+
+void trap_FS_LoadAllMapMetadata( void )
+{
+	VM::SendMsg<VM::FSLoadMapMetadataMsg>();
+}
+
+int trap_Parse_AddGlobalDefine(const char *define)
+{
+	int res;
+	VM::SendMsg<VM::ParseAddGlobalDefineMsg>(define, res);
+	return res;
+}
+
+int trap_Parse_LoadSource(const char *filename)
+{
+	int res;
+	VM::SendMsg<VM::ParseLoadSourceMsg>(filename, res);
+	return res;
+}
+
+int trap_Parse_FreeSource(int handle)
+{
+	int res;
+	VM::SendMsg<VM::ParseFreeSourceMsg>(handle, res);
+	return res;
+}
+
+int trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
+{
+	int res;
+	VM::SendMsg<VM::ParseReadTokenMsg>(handle, res, *pc_token);
+	return res;
+}
+
+int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
+{
+	int res;
+	std::string filename2;
+	VM::SendMsg<VM::ParseSourceFileAndLineMsg>(handle, res, filename2, *line);
+	Q_strncpyz(filename, filename2.c_str(), 128);
+	return res;
+}
+

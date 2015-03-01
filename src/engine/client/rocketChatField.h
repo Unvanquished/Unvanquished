@@ -190,17 +190,9 @@ public:
 							GetOwnerDocument()->Hide();
 							return;
 						}
-						else if ( text[0] == '/' || text[0] == '\\' )
-						{
-							Cmd::BufferCommandText( Cmd::Escape( va( "%s\n", text.Substring( 1 ).CString() ) ) );
-							text.Clear();
-							UpdateText();
-							GetOwnerDocument()->Hide();
-							return;
-						}
 						else if ( cmd == "/" )
 						{
-							Cmd::BufferCommandText( Cmd::Escape( va( "%s\n", text.CString() ) ) );
+							Cmd::BufferCommandText( text.CString() );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
@@ -214,7 +206,7 @@ public:
 
 						if ( !cmd.Empty() && !text.Empty() )
 						{
-							Cmd::BufferCommandText( Cmd::Escape( va( "%s %s\n", cmd.CString(), text.CString() ) ) );
+							Cmd::BufferCommandText( va( "%s %s", cmd.CString(), Cmd::Escape( text.CString() ).c_str() ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();

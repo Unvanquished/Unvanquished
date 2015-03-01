@@ -141,8 +141,6 @@ typedef struct
 
 typedef struct
 {
-	char         name[ MAX_QPATH ];
-
 	int          numShaders;
 	dshader_t    *shaders;
 

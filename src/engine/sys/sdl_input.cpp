@@ -35,7 +35,6 @@ Maryland 20850 USA.
 #include <SDL.h>
 #include "../client/client.h"
 #include "../qcommon/q_unicode.h"
-#include "../sys/sys_local.h"
 #include "../framework/CommandSystem.h"
 
 static cvar_t       *in_keyboardDebug = NULL;
@@ -295,67 +294,8 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 
 	if ( keysym->sym >= SDLK_SPACE && keysym->sym < SDLK_DELETE )
 	{
-		if ( keysym->scancode >= SDL_SCANCODE_A && keysym->scancode <= SDL_SCANCODE_Z )
-		{
-			key = (keyNum_t)(keysym->scancode - SDL_SCANCODE_A + 'a');
-		} 
-		else if ( keysym->scancode >= SDL_SCANCODE_1 && keysym->scancode <= SDL_SCANCODE_9 )
-		{
-			key = (keyNum_t)(keysym->scancode - SDL_SCANCODE_1 + '1');
-		} 
-		else switch ( keysym->scancode )
-		{
-			case SDL_SCANCODE_0:
-				key = (keyNum_t)'0';
-				break;
-
-			case SDL_SCANCODE_SEMICOLON:
-				key = (keyNum_t)';';
-				break;
-
-			case SDL_SCANCODE_MINUS:
-				key = (keyNum_t)'-';
-				break;
-
-			case SDL_SCANCODE_EQUALS:
-				key = (keyNum_t)'=';
-				break;
-
-			case SDL_SCANCODE_LEFTBRACKET:
-				key = (keyNum_t)'[';
-				break;
-
-			case SDL_SCANCODE_RIGHTBRACKET:
-				key = (keyNum_t)']';
-				break;
-
-			case SDL_SCANCODE_APOSTROPHE:
-				key = (keyNum_t)'\'';
-				break;
-
-			case SDL_SCANCODE_PERIOD:
-				key = (keyNum_t)'.';
-				break;
-
-			case SDL_SCANCODE_COMMA:
-				key = (keyNum_t)',';
-				break;
-
-			case SDL_SCANCODE_SLASH:
-				key = (keyNum_t)'/';
-				break;
-
-			case SDL_SCANCODE_GRAVE:
-				key = (keyNum_t)'`';
-				break;
-
-			case SDL_SCANCODE_BACKSLASH:
-				key = (keyNum_t)'\\';
-				break;
-
-			default:
-				key = (keyNum_t)keysym->sym;
-		}
+		// These happen to match the ASCII chars
+		key = ( keyNum_t ) keysym->sym;
 	}
 	else
 	{
@@ -1588,6 +1528,15 @@ static void IN_ProcessEvents( qboolean dropInput )
 	}
 }
 
+/*
+===============
+IN_IsNumLockDown
+===============
+*/
+
+bool IN_IsNumLockDown() {
+    return SDL_GetModState() & KMOD_NUM;
+}
 /*
 ===============
 IN_Frame

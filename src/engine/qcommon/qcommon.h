@@ -344,60 +344,6 @@ enum clc_ops_e
 /*
 ==============================================================
 
-VIRTUAL MACHINE
-
-==============================================================
-*/
-
-// See also vm_traps.h for syscalls common to all VMs
-
-typedef struct vm_s vm_t;
-
-typedef enum
-{
-  VMI_NATIVE,
-  VMI_BYTECODE,
-  VMI_COMPILED
-} vmInterpret_t;
-
-void VM_Init( void );
-
-vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ), vmInterpret_t interpret );
-
-// module should be bare: "cgame", not "cgame.dll", "vm/cgame.qvm"
-
-void           VM_Free( vm_t *vm );
-void           VM_Clear( void );
-void           VM_Forced_Unload_Start( void );
-void           VM_Forced_Unload_Done( void );
-vm_t           *VM_Restart( vm_t *vm );
-
-ATTRIBUTE_NO_SANITIZE_ADDRESS intptr_t QDECL VM_Call( vm_t *vm, int callNum, ... );
-ATTRIBUTE_NO_SANITIZE_ADDRESS intptr_t QDECL VM_DllSyscall( intptr_t arg, ... );
-
-void           VM_Debug( int level );
-
-void           *VM_ArgPtr( intptr_t intValue );
-void           *VM_ExplicitArgPtr( vm_t *vm, intptr_t intValue );
-
-void VM_CheckBlock( intptr_t buf, size_t n, const char *fail );
-void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const char *fail );
-
-intptr_t       VM_SystemCall( intptr_t *args ); // common system calls
-
-#define VMA(x) VM_ArgPtr(args[ x ])
-static INLINE float _vmf( intptr_t x )
-{
-    floatint_t fi;
-    fi.i = ( int ) x;
-    return fi.f;
-}
-
-#define VMF(x) _vmf(args[ x ])
-
-/*
-==============================================================
-
 CMD
 
 Command text buffering and command execution
@@ -599,12 +545,44 @@ void       FS_Rename( const char *from, const char *to );
 /*
 ==============================================================
 
+INPUT
+
+==============================================================
+*/
+
+void IN_Init(void *windowData);
+void IN_Frame();
+void IN_FrameEnd();
+void IN_Restart();
+void IN_Shutdown();
+bool IN_IsNumLockDown();
+void IN_DropInputsForFrame();
+
+/*
+==============================================================
+
 DOWNLOAD
 
 ==============================================================
 */
 
-#include "dl_public.h"
+typedef enum
+{
+  DL_CONTINUE,
+  DL_DONE,
+  DL_FAILED
+} dlStatus_t;
+
+int        DL_BeginDownload( const char *localName, const char *remoteName, int debug );
+dlStatus_t DL_DownloadLoop( void );
+
+void       DL_Shutdown( void );
+
+// bitmask
+typedef enum
+{
+  DL_FLAG_DISCON = 0
+} dlFlags_t;
 
 /*
 ==============================================================
@@ -643,26 +621,6 @@ MISC
 ==============================================================
 */
 
-// returned by Sys_GetProcessorFeatures
-typedef enum
-{
-  CF_RDTSC = BIT( 0 ),
-  CF_MMX = BIT( 1 ),
-  CF_MMX_EXT = BIT( 2 ),
-  CF_3DNOW = BIT( 3 ),
-  CF_3DNOW_EXT = BIT( 4 ),
-  CF_SSE = BIT( 5 ),
-  CF_SSE2 = BIT( 6 ),
-  CF_SSE3 = BIT( 7 ),
-  CF_SSSE3 = BIT( 8 ),
-  CF_SSE4_1 = BIT( 9 ),
-  CF_SSE4_2 = BIT( 10 ),
-  CF_ALTIVEC = BIT( 11 ),
-  CF_HasHTT = BIT( 12 ),
-  CF_HasSerial = BIT( 13 ),
-  CF_Is64Bit = BIT( 14 )
-} cpuFeatures_t;
-
 // TTimo
 // centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
 #define MAXPRINTMSG 4096
@@ -685,14 +643,6 @@ unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
 int        Com_FilterPath( const char *filter, char *name, int casesensitive );
-int        Com_RealTime( qtime_t *qtime );
-int        Com_GMTime( qtime_t *qtime );
-// Com_Time: client gets local time, server gets GMT
-#ifdef BUILD_SERVER
-#define Com_Time(t) Com_GMTime(t)
-#else
-#define Com_Time(t) Com_RealTime(t)
-#endif
 qboolean   Com_SafeMode( void );
 
 qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );
@@ -739,8 +689,6 @@ extern int          time_backend; // renderer backend time
 extern int          com_frameTime;
 extern int          com_frameMsec;
 extern int          com_hunkusedvalue;
-
-extern qboolean     com_errorEntered;
 
 typedef enum
 {
@@ -809,13 +757,9 @@ int    Hunk_MemoryRemaining( void );
 void   Hunk_SmallLog( void );
 void   Hunk_Log( void );
 
-void   Com_TouchMemory( void );
-
-double Sys_DoubleTime( void );
-
 // commandLine should not include the executable name (argv[0])
 void   Com_Init( char *commandLine );
-void   Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) );
+void   Com_Frame();
 void   Com_Shutdown();
 
 /*
@@ -944,90 +888,29 @@ typedef struct
 void       Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
 int        Com_EventLoop( void );
 
-void       Sys_Init( void );
-qboolean   Sys_IsNumLockDown( void );
+void Sys_SendPacket(int length, const void *data, netadr_t to);
+qboolean Sys_GetPacket(netadr_t *net_from, msg_t *net_message);
 
-void           *QDECL Sys_LoadDll( const char *name, intptr_t ( QDECL  * *entryPoint )( int, ... ),
-                                   intptr_t ( QDECL *systemcalls )( intptr_t, ... ) );
+qboolean Sys_StringToAdr(const char *s, netadr_t *a, netadrtype_t family);
 
-void                  Sys_UnloadDll( void *dllHandle );
+qboolean Sys_IsLANAddress(netadr_t adr);
+void Sys_ShowIP();
 
-void                  *Sys_LoadFunction( void *dllHandle, const char *functionName );
+int Sys_Milliseconds( void );
 
-const char            *Sys_GetCurrentUser( void );
-int                   Sys_GetPID( void );
+// Curses Console
+void         CON_Shutdown( void );
+void         CON_Init( void );
+void         CON_Init_TTY( void );
+char         *CON_Input( void );
+void         CON_Print( const char *message );
 
-void QDECL NORETURN   Sys_Error( const char *error, ... ) PRINTF_LIKE(1);
-void NORETURN         Sys_Quit( void );
-char                  *Sys_GetClipboardData( clipboard_t clip );  // note that this isn't journaled...
+void         CON_LogDump( void );
 
-void                  Sys_Print( const char *msg );
-
-// Sys_Milliseconds should only be used for profiling purposes,
-// any game related timing information should come from event timestamps
-int           Sys_Milliseconds( void );
-
-qboolean      Sys_RandomBytes( byte *string, int len );
-
-// the system console is shown when a dedicated server is running
-void          Sys_DisplaySystemConsole( qboolean show );
-
-int           Sys_GetProcessorFeatures( void );
-
-void          Sys_SetErrorText( const char *text );
-
-void          Sys_SendPacket( int length, const void *data, netadr_t to );
-qboolean      Sys_GetPacket( netadr_t *net_from, msg_t *net_message );
-
-qboolean      Sys_StringToAdr( const char *s, netadr_t *a, netadrtype_t family );
-
-//Does NOT parse port numbers, only base addresses.
-
-qboolean Sys_IsLANAddress( netadr_t adr );
-void     Sys_ShowIP( void );
-
-FILE     *Sys_FOpen( const char *ospath, const char *mode );
-qboolean Sys_Mkdir( const char *path );
-FILE     *Sys_Mkfifo( const char *ospath );
-char     *Sys_Cwd( void );
-char     *Sys_DefaultBasePath( void );
-
-void     Sys_FChmod( FILE *f, int mode );
-void     Sys_Chmod( const char *ospath, int mode );
-
-#ifdef MACOS_X
-char     *Sys_DefaultAppPath( void );
-#endif
-
-char *Sys_DefaultLibPath( void );
-
-char         *Sys_DefaultHomePath( void );
-char         *Sys_Dirname( char *path );
-char         *Sys_Basename( char *path );
-char         *Sys_ConsoleInput( void );
-
-void         Sys_Sleep( int msec );
-
-typedef enum
-{
-  DR_YES = 0,
-  DR_NO = 1,
-  DR_OK = 0,
-  DR_CANCEL = 1
-} dialogResult_t;
-
-typedef enum
-{
-  DT_INFO,
-  DT_WARNING,
-  DT_ERROR,
-  DT_YES_NO,
-  DT_OK_CANCEL
-} dialogType_t;
-
-dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title );
-
-void           Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
+// Console - other
+unsigned int CON_LogSize( void );
+unsigned int CON_LogWrite( const char *in );
+unsigned int CON_LogRead( char *out, unsigned int outSize );
 
 /* This is based on the Adaptive Huffman algorithm described in Sayood's Data
  * Compression book.  The ranks are not actually stored, but implicitly defined

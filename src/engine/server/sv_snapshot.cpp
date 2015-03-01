@@ -329,7 +329,7 @@ static void SV_AddEntToSnapshot( sharedEntity_t *clientEnt, svEntity_t *svEnt, s
 
 	if ( gEnt->r.snapshotCallback )
 	{
-		if ( !gvm->GameSnapshotCallback( gEnt->s.number, clientEnt->s.number ) )
+		if ( !gvm.GameSnapshotCallback( gEnt->s.number, clientEnt->s.number ) )
 		{
 			return;
 		}

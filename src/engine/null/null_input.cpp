@@ -65,3 +65,8 @@ void IN_Activate( qboolean active )
 void IN_DropInputsForFrame( void )
 {
 }
+
+bool IN_IsNumLockDown()
+{
+    return false;
+}

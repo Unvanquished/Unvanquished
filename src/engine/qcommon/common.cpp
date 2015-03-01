@@ -44,6 +44,7 @@ Maryland 20850 USA.
 #include "../framework/CvarSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
+#include "../framework/System.h"
 
 // htons
 #ifdef _WIN32
@@ -61,10 +62,7 @@ Maryland 20850 USA.
 #define MIN_COMHUNKMEGS 256
 #define DEF_COMHUNKMEGS 512
 
-jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire frame
-
 static fileHandle_t logfile;
-static FILE         *pipefile;
 
 cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
@@ -110,10 +108,7 @@ int      com_frameMsec;
 int      com_frameNumber;
 int      com_hunkusedvalue;
 
-qboolean com_errorEntered;
 qboolean com_fullyInitialized;
-
-char     com_errorMessage[ MAXPRINTMSG ];
 
 void     Com_WriteConfig_f( void );
 void     Com_WriteBindings_f( void );
@@ -175,7 +170,7 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 	va_end( argptr );
 }
 
-void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location )
+void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location)
 {
 	switch (event->level)
 	{
@@ -262,82 +257,19 @@ do the appropriate things.
 =============
 */
 // *INDENT-OFF*
-void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
+void QDECL PRINTF_LIKE(2) Com_Error( int code, const char *fmt, ... )
 {
-	va_list    argptr;
-	static int lastErrorTime;
-	static int errorCount;
-	int        currentTime;
-
-	// make sure we can get at our local stuff
-	if (code != ERR_FATAL) {
-		FS::PakPath::ClearPaks();
-		FS_LoadBasePak();
-	}
-
-	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
-	currentTime = Sys_Milliseconds();
-
-	if ( currentTime - lastErrorTime < 100 )
-	{
-		if ( ++errorCount > 3 )
-		{
-			code = ERR_FATAL;
-		}
-	}
-	else
-	{
-		errorCount = 0;
-	}
-
-	lastErrorTime = currentTime;
-
-	if ( com_errorEntered )
-	{
-		char buf[ 4096 ];
-
-		va_start( argptr, fmt );
-		Q_vsnprintf( buf, sizeof( buf ), fmt, argptr );
-		va_end( argptr );
-
-		Sys_Error( "recursive error '%s' after: %s", buf, com_errorMessage );
-	}
-
-	com_errorEntered = qtrue;
+	char buf[ 4096 ];
+	va_list argptr;
 
 	va_start( argptr, fmt );
-	Q_vsnprintf( com_errorMessage, sizeof( com_errorMessage ), fmt, argptr );
+	Q_vsnprintf( buf, sizeof( buf ), fmt, argptr );
 	va_end( argptr );
 
-	Cvar_Set("com_errorMessage", com_errorMessage);
-
-	if ( code == ERR_SERVERDISCONNECT )
-	{
-		Com_Printf( S_COLOR_WHITE "%s\n", com_errorMessage );
-		SV_Shutdown( "Server disconnected" );
-		CL_Disconnect( qtrue );
-		CL_FlushMemory();
-		com_errorEntered = qfalse;
-		longjmp( abortframe, -1 );
-	}
-	else if ( code == ERR_DROP )
-	{
-		Com_Printf( S_COLOR_ORANGE "%s\n", com_errorMessage );
-		SV_Shutdown( va( "********************\nServer crashed: %s\n********************\n", com_errorMessage ) );
-		CL_Disconnect( qtrue );
-		CL_FlushMemory();
-		com_errorEntered = qfalse;
-		longjmp( abortframe, -1 );
-	}
+	if ( code == ERR_FATAL )
+		Sys::Error( buf );
 	else
-	{
-		CL_Shutdown();
-		SV_Shutdown( va( "Server fatal crashed: %s\n", com_errorMessage ) );
-	}
-
-	Com_Shutdown();
-
-	Sys_Error( "%s", com_errorMessage );
+		Sys::Drop( buf );
 }
 
 // *INDENT-OFF*
@@ -358,23 +290,7 @@ void NORETURN Com_Quit_f( void )
 {
 	// don't try to shutdown if we are in a recursive error
 	char *p = Cmd_Args();
-
-	if ( !com_errorEntered )
-	{
-		// Some VMs might execute "quit" command directly,
-		// which would trigger an unload of active VM error.
-		// Sys_Quit will kill this process anyways, so
-		// a corrupt call stack makes no difference
-		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
-//bani
-#ifdef BUILD_CLIENT
-		CL_ShutdownCGame();
-#endif
-		CL_Shutdown();
-		Com_Shutdown();
-	}
-
-	Sys_Quit();
+	Sys::Quit(p[0] ? p : "Server quit");
 }
 
 /*
@@ -599,57 +515,6 @@ void Info_Print( const char *s )
 	}
 }
 
-/* Internals for Com_RealTime & Com_GMTime */
-static int internalTime( qtime_t *qtime, struct tm *( *timefunc )( const time_t * ) )
-{
-	time_t    t;
-	struct tm *tms;
-
-	t = time( NULL );
-
-	if ( !qtime )
-	{
-		return t;
-	}
-
-	tms = timefunc( &t );
-
-	if ( tms )
-	{
-		qtime->tm_sec = tms->tm_sec;
-		qtime->tm_min = tms->tm_min;
-		qtime->tm_hour = tms->tm_hour;
-		qtime->tm_mday = tms->tm_mday;
-		qtime->tm_mon = tms->tm_mon;
-		qtime->tm_year = tms->tm_year;
-		qtime->tm_wday = tms->tm_wday;
-		qtime->tm_yday = tms->tm_yday;
-		qtime->tm_isdst = tms->tm_isdst;
-	}
-
-	return t;
-}
-
-/*
-================
-Com_RealTime
-================
-*/
-int Com_RealTime( qtime_t *qtime )
-{
-	return internalTime( qtime, localtime );
-}
-
-/*
-================
-Com_GMTime
-================
-*/
-int Com_GMTime( qtime_t *qtime )
-{
-	return internalTime( qtime, gmtime );
-}
-
 /*
 ==============================================================================
 Global common state
@@ -812,44 +677,6 @@ void Com_Meminfo_f( void )
 	}
 
 	Com_Printf( "%9i bytes (%6.2f MB) unused highwater\n", unused, unused / Square( 1024.f ) );
-}
-
-/*
-===============
-Com_TouchMemory
-
-Touch all known used data to make sure it is paged in
-===============
-*/
-void Com_TouchMemory( void )
-{
-	int        start, end;
-	int        i, j;
-	int        sum;
-	start = Sys_Milliseconds();
-
-	sum = 0;
-
-	j = hunk_low.permanent >> 2;
-
-	for ( i = 0; i < j; i += 64 )
-	{
-		// only need to touch each page
-		sum += ( ( int * ) s_hunkData ) [ i ];
-	}
-
-	i = ( s_hunkTotal - hunk_high.permanent ) >> 2;
-	j = hunk_high.permanent >> 2;
-
-	for ( ; i < j; i += 64 )
-	{
-		// only need to touch each page
-		sum += ( ( int * ) s_hunkData ) [ i ];
-	}
-
-	end = Sys_Milliseconds();
-
-	Com_DPrintf( "Com_TouchMemory: %i msec\n", end - start );
 }
 
 /*
@@ -1416,7 +1243,7 @@ sysEvent_t Com_GetEvent( void )
 	}
 
 	// check for console commands
-	s = Sys_ConsoleInput();
+	s = CON_Input();
 
 	if ( s )
 	{
@@ -1681,7 +1508,7 @@ Just throw a fatal error to
 test error shutdown procedures
 =============
 */
-static void NORETURN Com_Error_f( void )
+static void Com_Error_f( void )
 {
 	if ( Cmd_Argc() > 1 )
 	{
@@ -1764,36 +1591,20 @@ void Com_SetRecommended( void )
 	}
 }
 
+void Com_In_Restart_f( void )
+{
+	IN_Restart();
+}
+
 /*
 =================
 Com_Init
 =================
 */
-
-
-#ifndef _WIN32
-# ifdef BUILD_SERVER
-	const char* defaultPipeFilename = "svpipe";
-# else
-	const char* defaultPipeFilename = "pipe";
-# endif
-#else
-	const char* defaultPipeFilename = "";
-#endif
-
 void Com_Init( char *commandLine )
 {
 	char              *s;
-	int               pid, qport;
-
-	pid = Sys_GetPID();
-
-	Com_Printf( "%s %s %s %s\n%s\n", Q3_VERSION, PLATFORM_STRING, ARCH_STRING, __DATE__, commandLine );
-
-	if ( setjmp( abortframe ) )
-	{
-		Sys_Error( "Error during initialization" );
-	}
+	int               qport;
 
 	// prepare enough of the subsystems to handle
 	// cvar and command buffer management
@@ -1811,41 +1622,7 @@ void Com_Init( char *commandLine )
 	// ydnar: init crashed variable as early as possible
 	com_crashed = Cvar_Get( "com_crashed", "0", CVAR_TEMP );
 
-	s = va( "%d", pid );
-	com_pid = Cvar_Get( "com_pid", s, CVAR_ROM );
-
-	// done early so bind command exists
-	CL_InitKeyCommands();
-
-	FS::Initialize();
-	FS_LoadBasePak();
-
 	Trans_Init();
-
-#ifndef BUILD_SERVER
-	Cmd::BufferCommandText("preset default.cfg");
-#endif
-
-#ifdef BUILD_CLIENT
-	// skip the q3config.cfg if "safe" is on the command line
-	if ( !Com_SafeMode() )
-	{
-		Cmd::BufferCommandText("exec -f " CONFIG_NAME);
-		Cmd::BufferCommandText("exec -f " KEYBINDINGS_NAME);
-		Cmd::BufferCommandText("exec -f " AUTOEXEC_NAME);
-	}
-#else
-	Cmd::BufferCommandText("exec -f " CONFIG_NAME);
-#endif
-
-	// ydnar: reset crashed state
-	Cmd::BufferCommandText("set com_crashed 0");
-
-	// execute the queued commands
-	Cmd::ExecuteCommandBuffer();
-
-	// override anything from the config files with command line args
-	Com_StartupVariable( NULL );
 
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
@@ -1907,7 +1684,7 @@ void Com_Init( char *commandLine )
 	s = va( "%s %s %s %s", Q3_VERSION, PLATFORM_STRING, ARCH_STRING, __DATE__ );
 	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
 
-	Sys_Init();
+	Cmd_AddCommand( "in_restart", Com_In_Restart_f );
 
 	// Pick a qport value that is nice and random.
 	// As machines get faster, Com_Milliseconds() can't be used
@@ -1916,12 +1693,7 @@ void Com_Init( char *commandLine )
 	Com_RandomBytes( ( byte * )&qport, sizeof( int ) );
 	Netchan_Init( qport & 0xffff );
 
-	VM_Init();
-	// Ignore any errors
-	VM_Forced_Unload_Start();
-
 	SV_Init();
-	Console::LoadHistory();
 
 	CL_Init();
 
@@ -1930,80 +1702,12 @@ void Com_Init( char *commandLine )
 	// being random enough for a serverid
 	com_frameTime = Com_Milliseconds();
 
-	// add + commands from command line
-	if ( !Com_AddStartupCommands() )
-	{
-		// if the user didn't give any commands, run default action
-	}
-
 	CL_StartHunkUsers();
 
-	if (defaultPipeFilename[0])
-	{
-		std::string ospath = FS::Path::Build(FS::GetHomePath(), defaultPipeFilename);
-		pipefile = Sys_Mkfifo(ospath.c_str());
-		if (!pipefile)
-		{
-			Com_Printf( S_WARNING "Could not create new pipefile at %s. "
-			"pipefile will not be used.\n", ospath.c_str() );
-		}
-	}
 	com_fullyInitialized = qtrue;
 	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
-}
 
-/*
-===============
-Com_ReadFromPipe
-
-Read whatever is in the pipe, and if a line gets accumulated, executed it
-===============
-*/
-void Com_ReadFromPipe( void )
-{
-	static char buf[ MAX_STRING_CHARS ];
-	static int  numAccd = 0;
-	int         numNew;
-
-	if ( !pipefile )
-	{
-		return;
-	}
-
-	while ( ( numNew = fread( buf + numAccd, 1, sizeof( buf ) - 1 - numAccd, pipefile ) ) > 0 )
-	{
-		char *brk = NULL; // will point to after the last CR/LF character, if any
-		int i;
-
-		for ( i = numAccd; i < numAccd + numNew; ++i )
-		{
-			if( buf[ i ] == '\0' )
-				buf[ i ] = '\n';
-			if( buf[ i ] == '\n' || buf[ i ] == '\r' )
-				brk = &buf[ i + 1 ];
-		}
-
-		numAccd += numNew;
-
-		if ( brk )
-		{
-			char tmp = *brk;
-			*brk = '\0';
-			Cmd::BufferCommandText(buf);
-			*brk = tmp;
-
-			numAccd -= brk - buf;
-			memmove( buf, brk, numAccd );
-		}
-		else if ( numAccd >= sizeof( buf ) - 1 ) // there are no CR/LF characters, but the buffer is full
-		{
-			// unfortunately, this command line gets chopped
-			//  (but Cbuf_ExecuteText() chops long command lines at (MAX_STRING_CHARS - 1) anyway)
-			buf[ sizeof( buf ) - 1 ] = '\0';
-			Cmd::BufferCommandText(buf);
-			numAccd = 0;
-		}
-	}
+	NET_Init();
 }
 
 //==================================================================
@@ -2188,7 +1892,7 @@ static Cvar::Cvar<std::string> watchdogCmd("common.watchdogCmd", "the command tr
 
 static Cvar::Cvar<bool> showTraceStats("common.showTraceStats", "are physics traces stats printed each frame", Cvar::CHEAT, false);
 
-void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
+void Com_Frame()
 {
 	int             msec, minMsec;
 	static int      lastTime = 0;
@@ -2202,11 +1906,6 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 
 	static int      watchdogTime = 0;
 	static qboolean watchWarn = qfalse;
-
-	if ( setjmp( abortframe ) )
-	{
-		return; // an ERR_DROP was thrown
-	}
 
 	// bk001204 - init to zero.
 	//  also:  might be clobbered by `longjmp' or `vfork'
@@ -2273,19 +1972,19 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 
 	msec = com_frameTime - lastTime;
 
-	GetInput(); // must be called at least once
+	IN_Frame(); // must be called at least once
 
 	while ( msec < minMsec )
 	{
 		//give cycles back to the OS
-		Sys_Sleep( std::min( minMsec - msec, 50 ) );
-		GetInput();
+		Sys::SleepFor(std::chrono::milliseconds(std::min(minMsec - msec, 50)));
+		IN_Frame();
 
 		com_frameTime = Com_EventLoop();
 		msec = com_frameTime - lastTime;
 	}
 
-	DoneInput();
+	IN_FrameEnd();
 
 	Cmd::ExecuteCommandBuffer();
 
@@ -2405,8 +2104,6 @@ void Com_Frame( void (*GetInput)( void ), void (*DoneInput)( void ) )
 	// old net chan encryption key
 	//key = lastTime * 0x87243987;
 
-	Com_ReadFromPipe();
-
 	com_frameNumber++;
 }
 
@@ -2423,12 +2120,6 @@ void Com_Shutdown()
 		logfile = 0;
 	}
 
-	if ( pipefile )
-	{
-		fclose( pipefile );
-		FS_Delete( defaultPipeFilename );
-	}
-
 	FS::FlushAll();
 }
 
@@ -2441,18 +2132,25 @@ fills string array with len radom bytes, peferably from the OS randomizer
 */
 void Com_RandomBytes( byte *string, int len )
 {
-	int i;
+	static std::random_device rd;
+	static std::mt19937 prng(rd());
+	static std::uniform_int_distribution<uint32_t> dist;
 
-	if ( Sys_RandomBytes( string, len ) )
-	{
+	while (len >= 4) {
+		*(uint32_t*)string = dist(prng);
+		string += 4;
+		len -= 4;
+	}
+
+	if (len == 0) {
 		return;
 	}
 
-	Com_Printf( "Com_RandomBytes: using weak randomization\n" );
-
-	for ( i = 0; i < len; i++ )
-	{
-		string[ i ] = ( unsigned char )( rand() % 255 );
+	uint32_t remainder = dist(prng);
+	while (len-->0) {
+		*string = uint8_t(remainder & 0xFF);
+		remainder >>= 8;
+		string ++;
 	}
 }
 
@@ -2491,3 +2189,9 @@ qboolean Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int client
 	return qfalse;
 }
 
+
+int Sys_Milliseconds( void )
+{
+	static Sys::SteadyClock::time_point baseTime = Sys::SteadyClock::now();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(Sys::SteadyClock::now() - baseTime).count();
+}
