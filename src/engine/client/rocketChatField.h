@@ -190,14 +190,6 @@ public:
 							GetOwnerDocument()->Hide();
 							return;
 						}
-						else if ( text[0] == '/' || text[0] == '\\' )
-						{
-							Cmd::BufferCommandText( text.Substring( 1 ).CString() );
-							text.Clear();
-							UpdateText();
-							GetOwnerDocument()->Hide();
-							return;
-						}
 						else if ( cmd == "/" )
 						{
 							Cmd::BufferCommandText( text.CString() );
