@@ -1,3 +1,12 @@
+unvanquished (0.37.0-1) unstable; urgency=low
+
+  * Release of alpha 37.
+  * Reverted renaming of sel_ldr to nacl_loader. Thst isn't bundled and
+    isn't a change which I want to make at this time (we may yet depend on a
+    full nacl install, should one be officially packaged).
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 02 Mar 2015 17:19:50 +0000
+
 unvanquished (0.36.0-1) unstable; urgency=low
 
   * Release of alpha 36 "leaving the door wide open for spoofed packets".

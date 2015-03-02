@@ -136,7 +136,7 @@ elseif( APPLE )
 elseif( LINUX )
   set( DEPS_EXT ".tar.bz2" )
   # Our minimal NaCl .debs put the files in /usr/lib/nacl, so check that first
-  if( EXISTS "/usr/lib/nacl/nacl_loader" )
+  if( EXISTS "/usr/lib/nacl/sel_ldr" )
     set( DEPS_DIR "/usr/lib/nacl" )
   elseif( ARCH STREQUAL "x86_64" )
     set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux64-${DEPS_VERSION} )
@@ -1623,7 +1623,7 @@ if( BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT )
 
   # The NaCl loader and IRT are required to load .nexe files
   add_custom_command( TARGET runtime_deps PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/nacl_loader${CMAKE_EXECUTABLE_SUFFIX} )
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} )
   add_custom_command( TARGET runtime_deps PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe )
 
@@ -1633,10 +1633,10 @@ if( BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT )
       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
   endif()
 
-  # Win32 requires nacl_loader64.exe in order to run on Win64
+  # Win32 requires sel_ldr64.exe in order to run on Win64
   if( WIN32 AND ARCH STREQUAL x86 )
     add_custom_command( TARGET runtime_deps PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/nacl_loader64${CMAKE_EXECUTABLE_SUFFIX} )
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} )
     add_custom_command( TARGET runtime_deps PRE_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-x86_64.nexe ${FULL_OUTPUT_DIR}/irt_core-x86_64.nexe )
   endif()
