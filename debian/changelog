@@ -7,6 +7,8 @@ unvanquished (0.37.0-1) unstable; urgency=low
   * Disabled VoIP due to build breakage.
   * Restored correct use of Shift-Insert, which should access the current
     selection rather than the clipboard.
+  * Partially restored SDL 1.2 compatibility for error reporting. Requires
+    zenity.
 
  -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 02 Mar 2015 17:19:50 +0000
 

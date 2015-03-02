@@ -309,6 +309,62 @@ void Quit(Str::StringRef message)
 	exit(0);
 }
 
+#include  <SDL_version.h>
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+// SDL 1.2 support. People keep on breaking it.
+#include <sys/types.h>
+#include <sys/wait.h>
+
+static int Sys_System( const char *cmd, ... )
+{
+	va_list ap;
+	const char    *argv[ 16 ] = { NULL };
+	pid_t   pid;
+	int     r;
+
+	va_start( ap, cmd );
+	argv[ 0 ] = cmd;
+
+	for ( r = 1; r < ARRAY_LEN( argv ) - 1; ++r )
+	{
+		argv[ r ] = va_arg( ap, char * );
+		if ( !argv[ r ] )
+		{
+			break;
+		}
+	}
+
+	va_end( ap );
+
+	switch ( pid = fork() )
+	{
+	case 0: // child
+		// give me an exec() which takes a va_list...
+		execvp( cmd, ( char ** ) argv );
+		exit( 2 );
+
+	case -1: // error
+		return -1;
+
+	default: // parent
+		do
+		{
+			waitpid( pid, &r, 0 );
+		} while ( !WIFEXITED( r ) );
+
+		return WEXITSTATUS( r );
+	}
+}
+
+static int Sys_ZenityError( const Str::StringRef message, const Str::StringRef title )
+{
+	std::string opt_text = "--text=" + message;
+	std::string opt_title = "--title=" + title;
+
+	return Sys_System( "zenity", "--error", opt_text.c_str(), opt_title.c_str(), NULL );
+}
+#endif
+
 void Error(Str::StringRef message)
 {
 	// Crash immediately in case of a recursive error
@@ -319,7 +375,11 @@ void Error(Str::StringRef message)
 	Log::Error(message);
 
 #if defined(_WIN32) || defined(BUILD_CLIENT)
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PRODUCT_NAME, message.c_str(), nullptr);
+#else
+	Sys_ZenityError(message, PRODUCT_NAME);
+#endif
 #endif
 
 	Shutdown(true, message);
