@@ -38,8 +38,9 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../botlib/bot_api.h"
-#include "../server/g_api.h"
+#include "sg_api.h"
 #include "../framework/VirtualMachine.h"
+#include "../framework/CommonVMServices.h"
 
 //=============================================================================
 
@@ -184,7 +185,7 @@ typedef struct client_s
 
 	// downloading
 	char          downloadName[ MAX_QPATH ]; // if not empty string, we are downloading
-	std::shared_ptr<FS::File> download; // file being downloaded (Using shared_ptr to work around MSVC failing at infering move constructors)
+	FS::File*     download; // file being downloaded
 	int           downloadSize; // total bytes (can't use EOF because of paks)
 	int           downloadCount; // bytes sent
 	int           downloadClientBlock; // last block we sent to the client, awaiting ack
@@ -308,20 +309,14 @@ typedef struct
 
 //=============================================================================
 
-namespace VM {
-    class CommonVMServices;
-}
-
 class GameVM: public VM::VMBase {
 public:
 	GameVM();
-    virtual ~GameVM();
-	bool Start();
+	void Start();
 
 	void GameStaticInit();
 	void GameInit(int levelTime, int randomSeed, qboolean restart);
 	void GameShutdown(qboolean restart);
-	void GameLoadMap(Str::StringRef name);
 	qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot);
 	void GameClientBegin(int clientNum);
 	void GameClientUserInfoChanged(int clientNum);
@@ -334,19 +329,19 @@ public:
 	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
 
 private:
-	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
-	void QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel);
+	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
+	void QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel);
 
 	IPC::SharedMemory shmRegion;
 
-    std::unique_ptr<VM::CommonVMServices> services;
+	std::unique_ptr<VM::CommonVMServices> services;
 };
 
 //=============================================================================
 
 extern serverStatic_t svs; // persistent server info across maps
 extern server_t       sv; // cleared each map
-extern GameVM         *gvm; // game virtual machine
+extern GameVM         gvm; // game virtual machine
 
 extern cvar_t         *sv_fps;
 extern cvar_t         *sv_timeout;
@@ -482,7 +477,7 @@ void SV_SendClientSnapshot( client_t *client );
 void SV_SendClientIdle( client_t *client );
 
 //
-// sv_game.c
+// sv_sgame.c
 //
 int SV_NumForGentity( sharedEntity_t *ent );
 
@@ -494,7 +489,7 @@ playerState_t  *SV_GameClientNum( int num );
 
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
-GameVM         *SV_CreateGameVM( void );
+std::unique_ptr<GameVM> SV_CreateGameVM( void );
 void           SV_InitGameProgs(Str::StringRef mapname);
 void           SV_ShutdownGameProgs( void );
 void           SV_RestartGameProgs(Str::StringRef mapname);

@@ -101,7 +101,7 @@ AudioData LoadOpusCodec(std::string filename)
 	std::string audioFile;
 	try
 	{
-		audioFile = std::move(FS::PakPath::ReadFile(filename));
+		audioFile = FS::PakPath::ReadFile(filename);
 	}
 	catch (std::system_error& err)
 	{

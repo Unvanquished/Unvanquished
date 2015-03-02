@@ -32,7 +32,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <nettle/rsa.h>
 #include <nettle/buffer.h>
 
+// Old versions of nettle have nettle_random_func taking an unsigned parameter
+// instead of a size_t parameter. Detect this and use the approriate type.
+typedef std::conditional<std::is_same<nettle_random_func, void(void*, size_t, uint8_t*)>::value, size_t, unsigned>::type NettleLength;
+
 // Random function used for key generation and encryption
-void     qnettle_random( void *ctx, unsigned length, uint8_t *dst );
+void     qnettle_random( void *ctx, NettleLength length, uint8_t *dst );
 
 #endif /* __CRYPTO_H__ */

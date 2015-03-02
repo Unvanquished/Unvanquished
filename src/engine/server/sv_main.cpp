@@ -42,7 +42,7 @@ cvar_t         *sv_voip;
 
 serverStatic_t svs; // persistent server info
 server_t       sv; // local server
-GameVM         *gvm = nullptr; // game virtual machine
+GameVM         gvm; // game virtual machine
 
 cvar_t         *sv_fps; // time rate for running non-clients
 cvar_t         *sv_timeout; // seconds without any message
@@ -809,7 +809,6 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
 
         void Flush() {
             NET_OutOfBandPrint(NS_SERVER, from, "print\n%s", buffer.c_str());
-            Cmd::ResetEnv();
             buffer = "";
         }
 
@@ -872,6 +871,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	else
 	{
 		Cmd::ExecuteCommand(args.EscapedArgs(2), true, &env);
+		Cmd::ExecuteCommandBuffer();
 	}
 
 	env.Flush();
@@ -1348,7 +1348,7 @@ void SV_Frame( int msec )
 		sv.time += frameMsec;
 
 		// let everything in the world think and move
-		gvm->GameRunFrame( sv.time );
+		gvm.GameRunFrame( sv.time );
 	}
 
 	if ( com_speeds->integer )

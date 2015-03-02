@@ -35,7 +35,6 @@ Maryland 20850 USA.
 #include <SDL.h>
 #include "../client/client.h"
 #include "../qcommon/q_unicode.h"
-#include "../sys/sys_local.h"
 #include "../framework/CommandSystem.h"
 
 static cvar_t       *in_keyboardDebug = NULL;
@@ -1529,6 +1528,15 @@ static void IN_ProcessEvents( qboolean dropInput )
 	}
 }
 
+/*
+===============
+IN_IsNumLockDown
+===============
+*/
+
+bool IN_IsNumLockDown() {
+    return SDL_GetModState() & KMOD_NUM;
+}
 /*
 ===============
 IN_Frame

@@ -43,7 +43,7 @@
 				</datagrid>
 
 				<buttonbar>
-					<button onClick="buildDS server_browser internet">Refresh list</button>
+					<button onClick="resetPings internet; buildDS server_browser internet">Refresh list</button>
 					<button onClick="execDS server_browser internet">Connect</button>
 					<button onClick="init_servers internet;buildDS server_browser internet">Fetch new list</button>
 				</buttonbar>
@@ -61,7 +61,7 @@
 				</datagrid>
 
 				<buttonbar>
-					<button onClick="buildDS server_browser local">Refresh list</button>
+					<button onClick="resetPings local; buildDS server_browser local">Refresh list</button>
 					<button onClick="execDS server_browser local">Connect</button>
 					<button onClick="init_servers local;buildDS server_browser local">Scan for new</button>
 

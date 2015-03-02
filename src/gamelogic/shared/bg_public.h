@@ -1313,6 +1313,7 @@ typedef struct
 	float          lag;
 	int            flags;
 	qboolean       doKnockback;
+	qboolean       doLocationalDamage;
 
 	// display
 	qhandle_t      model;
@@ -1463,7 +1464,7 @@ qboolean BG_ClassUnlocked( int class_ );
 unlockableType_t              BG_UnlockableType( int num );
 int                           BG_UnlockableTypeIndex( int num );
 momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, team_t team, int *threshold, qboolean *unlocked );
-#ifdef BUILD_GAME
+#ifdef BUILD_SGAME
 void     G_UpdateUnlockables( void );
 #endif
 #ifdef BUILD_CGAME

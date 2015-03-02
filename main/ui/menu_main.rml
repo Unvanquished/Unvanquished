@@ -124,7 +124,7 @@
 						<br />
 
 						<blocklink class="rightfloat" onClick="exec quit"> Quit game</blocklink>
-						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.36 </blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.37 </blocklink>
 					</sidesection>
 
 				</window>
