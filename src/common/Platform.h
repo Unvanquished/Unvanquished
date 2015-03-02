@@ -50,9 +50,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #elif defined(__native_client__)
 #define PLATFORM_STRING "Native Client"
 #else
-#ifndef Q3_VM
 #error "Platform not supported"
-#endif
 #endif
 
 // Architecture-specific configuration
@@ -66,8 +64,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ARCH_STRING "x86_64"
 #elif defined(__pnacl__)
 #define ARCH_STRING "PNaCl"
-#elif defined(Q3_VM)
-#define ARCH_STRING "QVM_bytecode"
 #else
 #error "Architecture not supported"
 #endif
@@ -86,8 +82,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // VM Prefixes
 #if !defined(BUILD_VM)
 #define VM_STRING_PREFIX ""
-#elif defined(BUILD_GAME)
-#define VM_STRING_PREFIX "game."
+#elif defined(BUILD_SGAME)
+#define VM_STRING_PREFIX "sgame."
 #elif defined(BUILD_CGAME)
 #define VM_STRING_PREFIX "cgame."
 #elif defined(BUILD_UI)

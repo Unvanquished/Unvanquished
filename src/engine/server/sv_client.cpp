@@ -407,7 +407,7 @@ gotnewcl:
 	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 
 	// get the game a chance to reject this connection or modify the userinfo
-	denied = gvm->GameClientConnect( reason, sizeof( reason ), clientNum, qtrue, qfalse );  // firstTime = qtrue
+	denied = gvm.GameClientConnect( reason, sizeof( reason ), clientNum, qtrue, qfalse );  // firstTime = qtrue
 
 	if ( denied )
 	{
@@ -516,7 +516,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 
 	// call the prog function for removing a client
 	// this will remove the body, among other things
-	gvm->GameClientDisconnect( drop - svs.clients );
+	gvm.GameClientDisconnect( drop - svs.clients );
 
 	if ( SV_IsBot(drop) )
 	{
@@ -664,7 +664,7 @@ void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd )
 	client->lastUsercmd = *cmd;
 
 	// call the game begin function
-	gvm->GameClientBegin( client - svs.clients );
+	gvm.GameClientBegin( client - svs.clients );
 }
 
 /*
@@ -689,6 +689,7 @@ static void SV_CloseDownload( client_t *cl )
 	// EOF
 	if ( cl->download )
 	{
+		delete cl->download;
 		cl->download = nullptr;
 	}
 
@@ -908,6 +909,8 @@ static qboolean SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *m
 
 	Com_Printf( "clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string );
 
+	Q_strncpyz(cl->downloadURL, va("%s/%s", sv_wwwFallbackURL->string, pakName), sizeof(cl->downloadURL));
+
 	MSG_WriteByte( msg, svc_download );
 	MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
 	MSG_WriteString( msg, va( "%s/%s", sv_wwwFallbackURL->string, pakName ) );
@@ -1066,7 +1069,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
 			if (pak) {
 				try {
-					cl->download = std::make_shared<FS::File>(FS::RawPath::OpenRead(pak->path));
+					cl->download = new FS::File(FS::RawPath::OpenRead(pak->path));
 					cl->downloadSize = cl->download->Length();
 				} catch (std::system_error&) {
 					success = false;
@@ -1349,7 +1352,7 @@ static void SV_UpdateUserinfo_f( client_t *cl, const Cmd::Args& args )
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides
-	gvm->GameClientUserInfoChanged( cl - svs.clients );
+	gvm.GameClientUserInfoChanged( cl - svs.clients );
 }
 
 #ifdef USE_VOIP
@@ -1458,7 +1461,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 		// pass unknown strings to the game
 		if ( !u->name && sv.state == SS_GAME )
 		{
-			gvm->GameClientCommand( cl - svs.clients, s );
+			gvm.GameClientCommand( cl - svs.clients, s );
 		}
 	}
 	else if ( !bProcessed )
@@ -1553,7 +1556,7 @@ void SV_ClientThink( client_t *cl, usercmd_t *cmd )
 		return; // may have been kicked during the last usercmd
 	}
 
-	gvm->GameClientThink( cl - svs.clients );
+	gvm.GameClientThink( cl - svs.clients );
 }
 
 /*

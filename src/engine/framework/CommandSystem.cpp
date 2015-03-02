@@ -54,8 +54,10 @@ namespace Cmd {
     };
 
     std::vector<BufferEntry> commandBuffer;
+    std::mutex commandBufferLock;
 
     void BufferCommandTextInternal(Str::StringRef text, bool parseCvars, Environment* env, bool insertAtTheEnd) {
+        std::lock_guard<std::mutex> locked(commandBufferLock);
         auto insertPoint = insertAtTheEnd ? commandBuffer.end() : commandBuffer.begin();
 
         // Iterates over the commands in the text
@@ -81,12 +83,14 @@ namespace Cmd {
 
     void ExecuteCommandBuffer() {
         // Note that commands may be inserted into the buffer while running other commands
+        std::unique_lock<std::mutex> locked(commandBufferLock);
         while (not commandBuffer.empty()) {
             auto entry = std::move(commandBuffer.front());
             commandBuffer.erase(commandBuffer.begin());
+            locked.unlock();
             ExecuteCommand(entry.text, entry.parseCvars, entry.env);
+            locked.lock();
         }
-        commandBuffer.clear();
     }
 
     /*
@@ -160,6 +164,18 @@ namespace Cmd {
         }
     }
 
+    void RemoveSameCommands(const CmdBase& cmd) {
+        CommandMap& commands = GetCommandMap();
+
+        for (auto it = commands.cbegin(); it != commands.cend();) {
+            if (it->second.cmd == &cmd) {
+                commands.erase(it ++);
+            } else {
+                ++ it;
+            }
+        }
+    }
+
     bool CommandExists(const std::string& name) {
         CommandMap& commands = GetCommandMap();
 
@@ -171,15 +187,10 @@ namespace Cmd {
     // Command execution is sequential so we make their environment a global variable.
     Environment* storedEnvironment = &defaultEnv;
 
-
-
     void ExecuteCommand(Str::StringRef command, bool parseCvars, Environment* env) {
         CommandMap& commands = GetCommandMap();
 
         commandLog.Debug("Execing command '%s'", command);
-        if (not env) {
-            env = &defaultEnv;
-        }
 
         std::string parsedString;
         if (parseCvars) {
@@ -198,8 +209,11 @@ namespace Cmd {
 
         auto it = commands.find(cmdName);
         if (it != commands.end()) {
-            storedEnvironment = env;
+            if (env) {
+                storedEnvironment = env;
+            }
             it->second.cmd->Run(args);
+            storedEnvironment = &defaultEnv;
             return;
         }
 
@@ -269,10 +283,6 @@ namespace Cmd {
 
     Environment* GetEnv() {
         return storedEnvironment;
-    }
-
-    void ResetEnv() {
-        storedEnvironment = &defaultEnv;
     }
 
     /*

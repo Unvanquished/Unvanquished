@@ -30,11 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../engine/client/keycodes.h"
 #include "cg_ui.h"
 
-// future imports
-#ifndef Q3_VM
-#include "../../common/Maths.h"
-#endif
-
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is no persistent data between levels on the client side.
 // If you absolutely need something stored, it can either be kept
@@ -744,6 +739,8 @@ typedef struct centity_s
 	buildableCache_t      buildableCache; // so we don't recalculate things
 	float                 lastBuildableHealth;
 	int                   lastBuildableDamageSoundTime;
+
+	vec3_t                overmindEyeAngle;
 
 	lightFlareStatus_t    lfs;
 
@@ -1643,14 +1640,13 @@ typedef struct
 // all clients to begin playing instantly
 typedef struct
 {
-	gameState_t gameState; // gamestate from server
+	GameStateCSs gameState; // gamestate from server
 	glconfig_t  glconfig; // rendering configuration
 	float       screenXScale; // derived from glconfig
 	float       screenYScale;
 	float       screenXBias;
 	float       aspectScale;
 
-	int         serverCommandSequence; // reliable command stream counter
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
 
 	// parsed from serverinfo
@@ -2181,7 +2177,7 @@ void CG_ProcessSnapshots( void );
 //
 // cg_consolecmds.c
 //
-qboolean CG_ConsoleCommand( void );
+qboolean ConsoleCommand( void );
 void     CG_InitConsoleCommands( void );
 void     CG_RequestScores( void );
 void     CG_HideScores_f( void );
@@ -2190,7 +2186,7 @@ void     CG_ShowScores_f( void );
 //
 // cg_servercmds.c
 //
-void CG_ExecuteNewServerCommands( int latestSequence );
+void CG_ExecuteServerCommands( snapshot_t* snap );
 void CG_ParseServerinfo( void );
 void CG_SetConfigValues( void );
 void CG_ShaderStateChanged( void );
@@ -2291,15 +2287,6 @@ enum
   CROSSHAIR_ALWAYSON
 };
 
-// menu types for cg_disable*Dialogs
-typedef enum
-{
-  DT_INTERACTIVE, // team, class, armoury
-  DT_ARMOURYEVOLVE, // Insufficient funds et al
-  DT_BUILD, // build errors
-  DT_COMMAND, // You must be alive/human/spec/etc.
-} dialogType_t;
-
 //
 // cg_utils.c
 //
@@ -2314,7 +2301,7 @@ void       CG_PrintTime( char *buf, int bufsize, int time );
 
 void CG_Rocket_Init( void );
 void CG_Rocket_LoadHuds( void );
-void CG_Rocket_Frame( void );
+void CG_Rocket_Frame( cgClientState_t state );
 const char *CG_Rocket_GetTag();
 const char *CG_Rocket_GetAttribute( const char *attribute );
 int CG_StringToNetSource( const char *src );

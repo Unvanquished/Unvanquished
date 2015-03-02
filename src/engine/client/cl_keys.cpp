@@ -35,6 +35,9 @@ Maryland 20850 USA.
 #include "client.h"
 #include "../qcommon/q_unicode.h"
 #include "../framework/CommandSystem.h"
+#ifdef BUILD_CLIENT
+#include <SDL.h>
+#endif
 
 /*
 
@@ -426,11 +429,12 @@ void Field_BigDraw(const Util::LineEditData& edit, int x, int y, qboolean showCu
 Field_Paste
 ================
 */
-static void Field_Paste(Util::LineEditData& edit, clipboard_t clip )
+static void Field_Paste(Util::LineEditData& edit)
 {
+#ifdef BUILD_CLIENT
 	const char *cbd;
 	int        pasteLen, width;
-	char       *ptr = Sys_GetClipboardData(clip);
+	char       *ptr = SDL_GetClipboardText();
 
 	if ( !ptr )
 	{
@@ -438,7 +442,7 @@ static void Field_Paste(Util::LineEditData& edit, clipboard_t clip )
 	}
 
 	cbd = Com_ClearForeignCharacters( ptr );
-	Z_Free( ptr );
+	SDL_free( ptr );
 
 	// send as if typed, so insert / overstrike works properly
 	pasteLen = strlen( cbd );
@@ -450,6 +454,7 @@ static void Field_Paste(Util::LineEditData& edit, clipboard_t clip )
 		cbd += width;
 		pasteLen -= width;
 	}
+#endif
 }
 
 /*
@@ -532,7 +537,7 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
 
         case K_INS:
             if (keys[ K_SHIFT ].down) {
-                Field_Paste(edit, SELECTION_PRIMARY);
+                Field_Paste(edit);
             } else {
                 key_overstrikeMode = !key_overstrikeMode;
             }
@@ -1797,7 +1802,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		case K_KP_INS:
 		case K_KP_DEL:
 		case K_KP_HOME:
-			if ( Sys_IsNumLockDown() )
+			if ( IN_IsNumLockDown() )
 			{
 				onlybinds = qtrue;
 			}
@@ -1946,11 +1951,11 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		// Handle any +commands which were invoked on the corresponding key-down
 		Cmd::BufferCommandText(va("keyup %d %d %u", plusCommand.check, key, time));
 
-		if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
+		if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm.IsActive() )
 		{
 			if ( !onlybinds )
 			{
-				VM_Call( cgvm, CG_KEY_EVENT, key, down );
+				cgvm.CGameKeyEvent(key, down);
 			}
 		}
 
@@ -1967,11 +1972,11 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	}
 	else if ( cls.keyCatchers & KEYCATCH_CGAME && !bypassMenu )
 	{
-		if ( cgvm )
+		if ( cgvm.IsActive() )
 		{
 			if ( !onlybinds )
 			{
-				VM_Call( cgvm, CG_KEY_EVENT, key, down );
+				cgvm.CGameKeyEvent(key, down);
 			}
 		}
 	}

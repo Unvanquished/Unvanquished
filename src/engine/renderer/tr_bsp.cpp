@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_bsp.c
 #include "tr_local.h"
-#include "../../common/Maths.h"
 #include "../framework/CommandSystem.h"
 
 /*
@@ -270,21 +269,12 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 	qboolean formatFound;
 	float        exposure = 1.6;
 	const vec3_t LUMINANCE_VECTOR = { 0.2125f, 0.7154f, 0.0721f };
-	float        luminance;
-	float        avgLuminance;
-	float        maxLuminance;
-	float        scaledLuminance;
-	float        finalLuminance;
-	double       sum;
-	float        gamma;
 
 	union
 	{
 		byte  b[ 4 ];
 		float f;
 	} sample;
-
-	vec4_t sampleVector;
 
 	*pic = NULL;
 

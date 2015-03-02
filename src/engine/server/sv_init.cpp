@@ -456,12 +456,12 @@ void SV_SpawnServer( const char *server )
 	PrintBanner( "Server Initialization" )
 	Com_Printf( "Server: %s\n", server );
 
+	// clear the whole hunk because we're (re)loading the server
+	Hunk_Clear();
+
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
 	CL_MapLoading();
-
-	// clear the whole hunk because we're (re)loading the server
-	Hunk_Clear();
 
 	// clear collision map data     // (SA) NOTE: TODO: used in missionpack
 	CM_ClearMap();
@@ -514,18 +514,7 @@ void SV_SpawnServer( const char *server )
 	if (!FS_LoadPak(va("map-%s", server)))
 		Com_Error(ERR_DROP, "Could not load map pak\n");
 
-	void* buffer;
-	const char* name = va( "maps/%s.bsp", server );
-	FS_ReadFile( name, ( void ** ) &buffer );
-
-	if ( !buffer )
-	{
-		Com_Error( ERR_DROP, "Couldn't load %s", name );
-	}
-
-	CM_LoadMap( name, buffer, qfalse );
-
-	FS_FreeFile( buffer );
+	CM_LoadMap(server);
 
 	// set serverinfo visible name
 	Cvar_Set( "mapname", server );
@@ -546,7 +535,7 @@ void SV_SpawnServer( const char *server )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		gvm->GameRunFrame( sv.time );
+		gvm.GameRunFrame( sv.time );
 		svs.time += FRAMETIME;
 		sv.time += FRAMETIME;
 	}
@@ -565,7 +554,7 @@ void SV_SpawnServer( const char *server )
 			isBot = SV_IsBot(&svs.clients[i]);
 
 			// connect the client again
-			denied = gvm->GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
+			denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
 
 			if ( denied )
 			{
@@ -595,14 +584,14 @@ void SV_SpawnServer( const char *server )
 					client->deltaMessage = -1;
 					client->nextSnapshotTime = svs.time; // generate a snapshot immediately
 
-					gvm->GameClientBegin( i );
+					gvm.GameClientBegin( i );
 				}
 			}
 		}
 	}
 
 	// run another frame to allow things to look at all the players
-	gvm->GameRunFrame( sv.time );
+	gvm.GameRunFrame( sv.time );
 	svs.time += FRAMETIME;
 	sv.time += FRAMETIME;
 
@@ -779,7 +768,7 @@ void SV_Shutdown( const char *finalmsg )
 
 	NET_LeaveMulticast6();
 
-	if ( svs.clients && !com_errorEntered )
+	if ( svs.clients )
 	{
 		SV_FinalCommand( va( "print %s", Cmd_QuoteString( finalmsg ) ), qtrue );
 	}
