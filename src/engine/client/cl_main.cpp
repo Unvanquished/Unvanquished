@@ -51,8 +51,9 @@ cvar_t *cl_wavefilerecord;
 #include <sys/stat.h>
 #endif
 #ifdef BUILD_CLIENT
-#include <SDL.h>
+#include "../sys/sdl2_compat.h"
 #endif
+
 
 cvar_t *cl_useMumble;
 cvar_t *cl_mumbleScale;
@@ -5205,7 +5206,7 @@ void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 {
 #ifdef BUILD_CLIENT
 	int         i, j;
-	char       *cbd = SDL_GetClipboardText();
+	char       *cbd = Sys_GetClipboardText();
 	const char *clean;
 
 	if ( !cbd )

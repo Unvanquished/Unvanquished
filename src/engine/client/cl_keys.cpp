@@ -35,9 +35,8 @@ Maryland 20850 USA.
 #include "client.h"
 #include "../qcommon/q_unicode.h"
 #include "../framework/CommandSystem.h"
-#ifdef BUILD_CLIENT
-#include <SDL.h>
-#endif
+
+#include  "../sys/sdl2_compat.h"
 
 /*
 
@@ -429,12 +428,12 @@ void Field_BigDraw(const Util::LineEditData& edit, int x, int y, qboolean showCu
 Field_Paste
 ================
 */
-static void Field_Paste(Util::LineEditData& edit)
+static void Field_Paste(Util::LineEditData& edit, clipboard_t clip)
 {
 #ifdef BUILD_CLIENT
 	const char *cbd;
 	int        pasteLen, width;
-	char       *ptr = SDL_GetClipboardText();
+	char       *ptr = Sys_GetClipboardText(clip);
 
 	if ( !ptr )
 	{
@@ -470,7 +469,6 @@ Key events are used for non-printable characters, others are gotten from char ev
 #ifdef BUILD_TTY_CLIENT
 # define SDL1_case(v)
 #else
-# include "SDL_version.h"
 # if SDL_VERSION_ATLEAST( 2, 0, 0 )
 #  define SDL1_case(v)
 # else
@@ -537,7 +535,7 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
 
         case K_INS:
             if (keys[ K_SHIFT ].down) {
-                Field_Paste(edit);
+                Field_Paste(edit, SELECTION_PRIMARY);
             } else {
                 key_overstrikeMode = !key_overstrikeMode;
             }

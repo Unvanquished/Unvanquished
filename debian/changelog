@@ -5,6 +5,8 @@ unvanquished (0.37.0-1) unstable; urgency=low
     isn't a change which I want to make at this time (we may yet depend on a
     full nacl install, should one be officially packaged).
   * Disabled VoIP due to build breakage.
+  * Restored correct use of Shift-Insert, which should access the current
+    selection rather than the clipboard.
 
  -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 02 Mar 2015 17:19:50 +0000
 

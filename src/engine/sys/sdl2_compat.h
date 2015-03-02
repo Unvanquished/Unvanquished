@@ -27,6 +27,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #if SDL_VERSION_ATLEAST( 2, 0, 0 )
 static int colorBits = 0;
+
+#include <SDL.h>
+#include <SDL_video.h>
+#include <SDL_syswm.h>
 #endif
 
 #if !SDL_VERSION_ATLEAST( 2, 0, 0 )

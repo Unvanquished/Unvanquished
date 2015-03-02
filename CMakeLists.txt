@@ -747,6 +747,7 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/client/dl_main.cpp
   ${ENGINE_DIR}/client/libmumblelink.cpp
   ${ENGINE_DIR}/client/libmumblelink.h
+  ${ENGINE_DIR}/sys/sys_clipboard.cpp
 )
 
 set( CLIENTLIST

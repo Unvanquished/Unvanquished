@@ -2607,6 +2607,10 @@ int        Com_GMTime( qtime_t *qtime );
 #define RSA_KEY_LENGTH      2048
 #define RSA_STRING_LENGTH   ( RSA_KEY_LENGTH / 4 + 1 )
 
+#ifdef BUILD_CLIENT
+char *Sys_GetClipboardText( clipboard_t clip = SELECTION_CLIPBOARD );
+#endif
+
 // Include common for C++ code
 #ifdef __cplusplus
 #include "../../common/Common.h"
