@@ -1,5 +1,4 @@
 obj-*-*-*/daemon			usr/lib/games/unvanquished/
-obj-*-*-*/cgame-qvm-native.so		usr/lib/games/unvanquished/
 
 #src/gamelogic/base/ui			usr/share/games/unvanquished/base/
 #main					usr/share/games/unvanquished/
