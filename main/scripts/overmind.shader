@@ -1,3 +1,4 @@
+// TODO: Remove MD3 model shader
 models/buildables/overmind/over_spike
 {
 	{
@@ -12,6 +13,7 @@ models/buildables/overmind/over_spike
 	}
 }
 
+// TODO: Remove MD3 model shader
 models/buildables/overmind/pod_strands
 {
 	cull disable
@@ -22,3 +24,10 @@ models/buildables/overmind/pod_strands
 	}
 }
 
+models/buildables/overmind/overmind
+{
+	diffuseMap  models/buildables/overmind/overmind_d
+	normalMap   models/buildables/overmind/overmind_n
+	specularMap models/buildables/overmind/overmind_s
+	glowMap     models/buildables/overmind/overmind_g
+}

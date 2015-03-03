@@ -28,21 +28,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Common.h"
+#ifndef SHARED_VM_MAIN_H_
+#define SHARED_VM_MAIN_H_
+
+#include "../../common/IPC/Channel.h"
 
 namespace VM {
 
 	// Root channel used to communicate with the engine
 	extern IPC::Channel rootChannel;
 
-	// Main handler for incoming messages from the engine
-	void VMMain(uint32_t id, IPC::Reader reader);
-
-	void NORETURN Exit();
+	// Functions each specific gamelogic should implement
+	void VMInit();
+	void VMHandleSyscall(uint32_t id, Util::Reader reader);
+	extern int VM_API_VERSION;
 
 	// Send a message to the engine
 	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
-		IPC::SendMsg<Msg>(rootChannel, VMMain, std::forward<Args>(args)...);
+		IPC::SendMsg<Msg>(rootChannel, VMHandleSyscall, std::forward<Args>(args)...);
 	}
 
 }
+
+#endif // SHARED_VM_MAIN_H_

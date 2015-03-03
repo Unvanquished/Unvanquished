@@ -11,5 +11,5 @@ if echo "$1" | grep -q '^unv://'; then
 		"$0" +connect $uri
 	fi
 else
-	exec /usr/lib/unvanquished/daemon +set fs_libpath /usr/lib/unvanquished +set fs_basepath /usr/share/unvanquished "$@"
+	exec /usr/lib/unvanquished/daemon -libpath /usr/lib/unvanquished -pakpath /usr/share/unvanquished/pkg "$@"
 fi

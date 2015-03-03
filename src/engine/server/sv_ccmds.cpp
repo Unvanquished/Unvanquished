@@ -167,7 +167,7 @@ static void SV_MapRestart_f( void )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		gvm->GameRunFrame( sv.time );
+		gvm.GameRunFrame( sv.time );
 		svs.time += FRAMETIME;
 		sv.time += FRAMETIME;
 	}
@@ -196,7 +196,7 @@ static void SV_MapRestart_f( void )
 		SV_AddServerCommand( client, "map_restart\n" );
 
 		// connect the client again, without the firstTime flag
-		denied = gvm->GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );
+		denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );
 
 		if ( denied )
 		{
@@ -218,7 +218,7 @@ static void SV_MapRestart_f( void )
 	}
 
 	// run another frame to allow things to look at all the players
-	gvm->GameRunFrame( sv.time );
+	gvm.GameRunFrame( sv.time );
 	svs.time += FRAMETIME;
 	sv.time += FRAMETIME;
 }

@@ -43,6 +43,10 @@ Maryland 20850 USA.
 #include "keys.h"
 #include "../audio/Audio.h"
 #include "../client/cg_api.h"
+#include "../framework/VirtualMachine.h"
+#include "../framework/CommonVMServices.h"
+#include "../framework/CommandBufferHost.h"
+#include "../../common/IPC/CommandBuffer.h"
 
 #if defined(USE_VOIP) && !defined(BUILD_SERVER)
 #include <speex/speex.h>
@@ -116,6 +120,7 @@ extern int g_console_field_width;
 
 typedef struct
 {
+	GameStateCSs gameState; // configstrings
 	int timeoutcount; // it requres several frames in a timeout condition
 	// to disconnect, preventing debugging breaks from
 	// causing immediate disconnects on continue
@@ -130,7 +135,6 @@ typedef struct
 	// cleared when CL_AdjustTimeDelta looks at it
 	qboolean     newSnapshots; // set on parse of any valid packet
 
-	gameState_t  gameState; // configstrings
 	char         mapname[ MAX_QPATH ]; // extracted from CS_SERVERINFO
 
 	int          parseEntitiesNum; // index (not anded off) into cl_parse_entities[]
@@ -143,8 +147,6 @@ typedef struct
 	int    cgameUserCmdValue; // current weapon to add to usercmd_t
 	int    cgameFlags; // flags that can be set by the gamecode
 	float  cgameSensitivity;
-	int    cgameMpIdentClient; // NERVE - SMF
-	vec3_t cgameClientLerpOrigin; // DHM - Nerve
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
@@ -361,12 +363,6 @@ typedef struct
 	int      voipTime;
 	int      voipSender;
 
-	int      nCgameSyscalls;
-	int      nCgameRenderSyscalls;
-	int      nCgamePhysicsSyscalls;
-	int      nCgameUselessSyscalls;
-	int      nCgameSoundSyscalls;
-
 	// master server sequence information
 	int          numMasterPackets;
 	unsigned int receivedMasterPackets; // bitfield
@@ -420,7 +416,43 @@ extern clientStatic_t cls;
 
 //=============================================================================
 
-extern vm_t                   *cgvm; // interface to the cgame module
+class CGameVM: public VM::VMBase {
+public:
+	CGameVM();
+	void Start();
+
+	void CGameStaticInit();
+	void CGameInit(int serverMessageNum, int clientNum);
+	void CGameShutdown();
+	void CGameDrawActiveFrame(int serverTime, bool demoPlayback);
+	int CGameCrosshairPlayer();
+	void CGameKeyEvent(int key, bool down);
+	void CGameMouseEvent(int dx, int dy);
+	//std::vector<std::string> CGameVoipString();
+	//void CGameInitCvars();
+
+	void CGameRocketInit();
+	void CGameRocketFrame();
+	void CGameRocketFormatData(int handle);
+	void CGameRocketRenderElement();
+	float CGameRocketProgressbarValue(Str::StringRef source);
+
+private:
+	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
+	void QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel);
+
+	std::unique_ptr<VM::CommonVMServices> services;
+
+    class CmdBuffer: public IPC::CommandBufferHost {
+        public:
+            CmdBuffer(std::string name);
+            virtual void HandleCommandBufferSyscall(int major, int minor, Util::Reader& reader) OVERRIDE FINAL;
+    };
+
+    CmdBuffer cmdBuffer;
+};
+
+extern CGameVM                cgvm;
 
 extern refexport_t            re; // interface to refresh library
 
@@ -569,9 +601,6 @@ void        CL_Snd_Restart_f( void );
 void        CL_NextDemo( void );
 void        CL_ReadDemoMessage( void );
 void        CL_StartDemoLoop( void );
-demoState_t CL_DemoState( void );
-int         CL_DemoPos( void );
-void        CL_DemoName( char *buffer, int size );
 
 void        CL_InitDownloads( void );
 void        CL_NextDownload( void );
@@ -584,7 +613,7 @@ int         CL_GetPingQueueCount( void );
 void        CL_ShutdownRef( void );
 qboolean    CL_InitRef( void );
 
-int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
+int         CL_ServerStatus( const char *serverAddress, char *serverStatusString, int maxLen );
 
 void CL_Record( const char *name );
 
@@ -843,7 +872,6 @@ void          Cin_OGM_Shutdown( void );
 //
 // cl_cgame.c
 //
-void     CL_CGameStats( void );
 void     CL_InitCGame( void );
 void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
@@ -859,7 +887,6 @@ void     CL_OnTeamChanged( int newTeam );
 //
 // cl_ui.c
 //
-void CL_InitUI( void );
 void CL_ShutdownUI( void );
 int  Key_GetCatcher( void );
 void Key_SetCatcher( int catcher );
@@ -906,7 +933,7 @@ void Rocket_InjectMouseMotion( int x, int y );
 void Rocket_LoadDocument( const char *path );
 void Rocket_LoadCursor( const char *path );
 void Rocket_DocumentAction( const char *name, const char *action );
-qboolean Rocket_GetEvent( void );
+qboolean Rocket_GetEvent(std::string& cmdText);
 void Rocket_DeleteEvent( void );
 void Rocket_RegisterDataSource( const char *name );
 void Rocket_DSAddRow( const char *name, const char *table, const char *data );
@@ -929,7 +956,7 @@ void Rocket_GetElementAbsoluteOffset( float *x, float *y );
 void Rocket_SetClass( const char *in, qboolean activate );
 void Rocket_SetPropertyById( const char *id, const char *property, const char *value );
 void Rocket_SetActiveContext( int catcher );
-void Rocket_AddConsoleText( void );
+void Rocket_AddConsoleText(Str::StringRef text);
 void Rocket_InitializeHuds( int size );
 void Rocket_LoadUnit( const char *path );
 void Rocket_AddUnitToHud( int weapon, const char *id );

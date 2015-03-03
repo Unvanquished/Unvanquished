@@ -35,13 +35,21 @@ Maryland 20850 USA.
 #ifndef Q_SHARED_H_
 #define Q_SHARED_H_
 
+// math.h/cmath uses _USE_MATH_DEFINES to decide if to define M_PI etc or not.
+// So define _USE_MATH_DEFINES early before including math.h/cmath
+// and before including any other header in case they bring in math.h/cmath indirectly.
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
+
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.35.0"
+#define PRODUCT_VERSION         "0.37.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -64,26 +72,14 @@ Maryland 20850 USA.
 
 #define AUTOEXEC_NAME           "autoexec.cfg"
 
-#ifndef BUILD_SERVER
 #define CONFIG_NAME             "autogen.cfg"
 #define KEYBINDINGS_NAME        "keybindings.cfg"
 #define TEAMCONFIG_NAME         "teamconfig.cfg"
-#else
-#define CONFIG_NAME             "autogen_server.cfg"
-#endif
+#define SERVERCONFIG_NAME       "autogen_server.cfg"
 
 #define UNNAMED_PLAYER "UnnamedPlayer"
 
 #define Q_UNUSED(x) (void)(x)
-
-#ifdef Q3_VM
-
-#define EXTERN_C
-#include "../../gamelogic/shared/bg_lib.h"
-typedef int intptr_t;
-#define roundf( f ) ( floor( f + 0.5 ) )
-
-#else //Q3_VM
 
 #define EXTERN_C extern "C"
 
@@ -139,6 +135,7 @@ typedef int intptr_t;
 #include <random>
 #include <numeric>
 #include <thread>
+#include <atomic>
 #include <mutex>
 #include <condition_variable>
 #include <valarray>
@@ -164,8 +161,6 @@ typedef int intptr_t;
 #ifdef _MSC_VER
 #define roundf( f ) ( floor( (f) + 0.5 ) )
 #endif
-
-#endif //Q3_VM
 
 //=============================================================
 
@@ -357,14 +352,11 @@ void  Com_Free_Aligned( void *ptr );
 #pragma GCC diagnostic pop
 #endif
 #else
-	typedef struct transform_s {
+	typedef ALIGNED( 16, struct transform_s {
 		quat_t rot;
 		vec3_t trans;
 		vec_t  scale;
-	} transform_t;
-#ifdef Q3_VM
-#pragma align transform_t 16
-#endif
+	} ) transform_t;
 #endif
 
 	typedef int    fixed4_t;
@@ -502,14 +494,12 @@ void  Com_Free_Aligned( void *ptr );
 #define S_COLOR_MDPURPLE "^C"
 #define S_COLOR_NULL     "^*"
 
-STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+inline qboolean Q_IsColorString( const char *p )
 {
 	return ( p[0] == Q_COLOR_ESCAPE &&
 	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
 	       ) ? qtrue : qfalse;
 }
-#endif
 
 #define INDENT_MARKER    '\v'
 
@@ -530,11 +520,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define DEG2RAD( a )                  ( ( ( a ) * M_PI ) / 180.0F )
 #define RAD2DEG( a )                  ( ( ( a ) * 180.0f ) / M_PI )
 
-#ifdef Q3_VM
-#define Q_clamp( a, b, c )            ( ( b ) >= ( c ) ? ( b ) : ( a ) < ( b ) ? ( b ) : ( a ) > ( c ) ? ( c ) : ( a ) )
-#else
 #define Q_clamp( a, b, c )            Maths::clamp( (a), (b), (c) )
-#endif
 #define Q_lerp( from, to, frac )      ( ( from ) + ( frac ) * ( ( to ) - ( from ) ) )
 
 struct cplane_s;
@@ -568,35 +554,28 @@ extern quat_t   quatIdentity;
 #endif
 	*/
 
-	STATIC_INLINE long XreaL_Q_ftol( float f ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline long XreaL_Q_ftol( float f )
 	{
 		return ( long ) f;
 	}
-#endif
 
-	STATIC_INLINE unsigned int Q_floatBitsToUint( float number ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline unsigned int Q_floatBitsToUint( float number )
 	{
 		floatint_t t;
 
 		t.f = number;
 		return t.ui;
 	}
-#endif
 
-	STATIC_INLINE float Q_uintBitsToFloat( unsigned int number ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline float Q_uintBitsToFloat( unsigned int number )
 	{
 		floatint_t t;
 
 		t.ui = number;
 		return t.f;
 	}
-#endif
 
-	STATIC_INLINE float Q_rsqrt( float number ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline float Q_rsqrt( float number )
 	{
 		float x = 0.5f * number;
 		float y;
@@ -622,22 +601,11 @@ extern quat_t   quatIdentity;
 #endif
 		return y;
 	}
-#endif
 
-STATIC_INLINE float Q_fabs( float x ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+inline float Q_fabs( float x )
 {
-#ifndef Q3_VM
 	return fabsf( x );
-#else
-	floatint_t tmp;
-
-	tmp.f = x;
-	tmp.i &= 0x7FFFFFFF;
-	return tmp.f;
-#endif
 }
-#endif
 
 #define Q_recip(x) ( 1.0f / (x) )
 
@@ -721,8 +689,7 @@ void         ByteToDir( int b, vec3_t dir );
 	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
 	float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs );
 
-	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] )
 	{
 		VectorSet( corners[ 0 ], mins[ 0 ], maxs[ 1 ], maxs[ 2 ] );
 		VectorSet( corners[ 1 ], maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] );
@@ -733,12 +700,10 @@ void         ByteToDir( int b, vec3_t dir );
 		VectorSet( corners[ 6 ], maxs[ 0 ], mins[ 1 ], mins[ 2 ] );
 		VectorSet( corners[ 7 ], mins[ 0 ], mins[ 1 ], mins[ 2 ] );
 	}
-#endif
 
 	int VectorCompare( const vec3_t v1, const vec3_t v2 );
 
-	STATIC_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline int Vector4Compare( const vec4_t v1, const vec4_t v2 )
 	{
 		if ( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] || v1[ 3 ] != v2[ 3 ] )
 		{
@@ -747,19 +712,15 @@ void         ByteToDir( int b, vec3_t dir );
 
 		return 1;
 	}
-#endif
 
-	STATIC_INLINE void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out )
 	{
 		out[ 0 ] = from[ 0 ] + ( ( to[ 0 ] - from[ 0 ] ) * frac );
 		out[ 1 ] = from[ 1 ] + ( ( to[ 1 ] - from[ 1 ] ) * frac );
 		out[ 2 ] = from[ 2 ] + ( ( to[ 2 ] - from[ 2 ] ) * frac );
 	}
-#endif
 
-	STATIC_INLINE int VectorCompareEpsilon( const vec3_t v1, const vec3_t v2, float epsilon ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline int VectorCompareEpsilon( const vec3_t v1, const vec3_t v2, float epsilon )
 	{
 		vec3_t d;
 
@@ -775,7 +736,6 @@ void         ByteToDir( int b, vec3_t dir );
 
 		return 1;
 	}
-#endif
 
 	vec_t VectorLength( const vec3_t v );
 	vec_t VectorLengthSquared( const vec3_t v );
@@ -949,12 +909,10 @@ void         ByteToDir( int b, vec3_t dir );
 	void     MatrixScaleTranslateToUnitCube( matrix_t m, const vec3_t mins, const vec3_t maxs );
 	void     MatrixCrop( matrix_t m, const vec3_t mins, const vec3_t maxs );
 
-	STATIC_INLINE void AnglesToMatrix( const vec3_t angles, matrix_t m ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void AnglesToMatrix( const vec3_t angles, matrix_t m )
 	{
 		MatrixFromAngles( m, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
-#endif
 
 //=============================================
 
@@ -965,51 +923,42 @@ void         ByteToDir( int b, vec3_t dir );
 
 #define QuatCompare(a,b)   (( a )[ 0 ] == ( b )[ 0 ] && ( a )[ 1 ] == ( b )[ 1 ] && ( a )[ 2 ] == ( b )[ 2 ] && ( a )[ 3 ] == ( b )[ 3 ] )
 
-	STATIC_INLINE void QuatClear( quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void QuatClear( quat_t q )
 	{
 		q[ 0 ] = 0;
 		q[ 1 ] = 0;
 		q[ 2 ] = 0;
 		q[ 3 ] = 1;
 	}
-#endif
 
-	STATIC_INLINE void QuatZero( quat_t o ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void QuatZero( quat_t o )
 	{
 		o[ 0 ] = 0.0f;
 		o[ 1 ] = 0.0f;
 		o[ 2 ] = 0.0f;
 		o[ 3 ] = 0.0f;
 	}
-#endif
 
-	STATIC_INLINE void QuatAdd( const quat_t p, const quat_t q,
-				    quat_t o ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void QuatAdd( const quat_t p, const quat_t q,
+				    quat_t o )
 	{
 		o[ 0 ] = p[ 0 ] + q[ 0 ];
 		o[ 1 ] = p[ 1 ] + q[ 1 ];
 		o[ 2 ] = p[ 2 ] + q[ 2 ];
 		o[ 3 ] = p[ 3 ] + q[ 3 ];
 	}
-#endif
 
-	STATIC_INLINE void QuatMA( const quat_t p, float f, const quat_t q,
-				   quat_t o ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void QuatMA( const quat_t p, float f, const quat_t q,
+				   quat_t o )
 	{
 		o[ 0 ] = p[ 0 ] + f * q[ 0 ];
 		o[ 1 ] = p[ 1 ] + f * q[ 1 ];
 		o[ 2 ] = p[ 2 ] + f * q[ 2 ];
 		o[ 3 ] = p[ 3 ] + f * q[ 3 ];
 	}
-#endif
 
 	/*
-	STATIC_INLINE int QuatCompare(const quat_t a, const quat_t b) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline int QuatCompare(const quat_t a, const quat_t b)
 	{
 	        if(a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3])
 	        {
@@ -1017,11 +966,9 @@ void         ByteToDir( int b, vec3_t dir );
 	        }
 	        return 1;
 	}
-#endif
 	*/
 
-	STATIC_INLINE void QuatCalcW( quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void QuatCalcW( quat_t q )
 	{
 #if 1
 		vec_t term = 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] );
@@ -1039,44 +986,35 @@ void         ByteToDir( int b, vec3_t dir );
 		q[ 3 ] = sqrt( fabs( 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] ) ) );
 #endif
 	}
-#endif
 
-	STATIC_INLINE void QuatInverse( quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void QuatInverse( quat_t q )
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 	}
-#endif
 
-	STATIC_INLINE void QuatAntipodal( quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void QuatAntipodal( quat_t q )
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 		q[ 3 ] = -q[ 3 ];
 	}
-#endif
 
-	STATIC_INLINE vec_t QuatLength( const quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline vec_t QuatLength( const quat_t q )
 	{
 		return ( vec_t ) sqrt( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ] );
 	}
-#endif
 
 	vec_t QuatNormalize( quat_t q );
 
 	void  QuatFromAngles( quat_t q, vec_t pitch, vec_t yaw, vec_t roll );
 
-	STATIC_INLINE void AnglesToQuat( const vec3_t angles, quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void AnglesToQuat( const vec3_t angles, quat_t q )
 	{
 		QuatFromAngles( q, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
-#endif
 
 	void QuatFromMatrix( quat_t q, const matrix_t m );
 	void QuatToVectorsFLU( const quat_t quat, vec3_t forward, vec3_t left, vec3_t up );
@@ -1369,52 +1307,52 @@ void         ByteToDir( int b, vec3_t dir );
 #define SWZ_WWWW 0xff
 #define sseSwizzle( a, mask ) _mm_shuffle_ps( (a), (a), SWZ_##mask )
 
-	STATIC_INLINE __m128 unitQuat() {
+	inline __m128 unitQuat() {
 		return _mm_set_ps( 1.0f, 0.0f, 0.0f, 0.0f ); // order is reversed
 	}
-	STATIC_INLINE __m128 sseLoadInts( const int vec[4] ) {
+	inline __m128 sseLoadInts( const int vec[4] ) {
 		return *(__m128 *)vec;
 	}
-	STATIC_INLINE __m128 mask_0000() {
+	inline __m128 mask_0000() {
 		static const ALIGNED(16, int vec[4]) = {  0,  0,  0,  0 };
 		return sseLoadInts( vec );
 	}
-	STATIC_INLINE __m128 mask_000W() {
+	inline __m128 mask_000W() {
 		static const ALIGNED(16, int vec[4]) = {  0,  0,  0, -1 };
 		return sseLoadInts( vec );
 	}
-	STATIC_INLINE __m128 mask_XYZ0() {
+	inline __m128 mask_XYZ0() {
 		static const ALIGNED(16, int vec[4]) = { -1, -1, -1,  0 };
 		return sseLoadInts( vec );
 	}
 
-	STATIC_INLINE __m128 sign_000W() {
+	inline __m128 sign_000W() {
 		static const ALIGNED(16, int vec[4]) = { 0, 0, 0, 1<<31 };
 		return sseLoadInts( vec );
 	}
-	STATIC_INLINE __m128 sign_XYZ0() {
+	inline __m128 sign_XYZ0() {
 		static const ALIGNED(16, int vec[4]) = { 1<<31, 1<<31, 1<<31,  0 };
 		return sseLoadInts( vec );
 	}
-	STATIC_INLINE __m128 sign_XYZW() {
+	inline __m128 sign_XYZW() {
 		static const ALIGNED(16, int vec[4]) = { 1<<31, 1<<31, 1<<31, 1<<31 };
 		return sseLoadInts( vec );
 	}
 
-	STATIC_INLINE __m128 sseDot4( __m128 a, __m128 b ) {
+	inline __m128 sseDot4( __m128 a, __m128 b ) {
 		__m128 prod = _mm_mul_ps( a, b );
 		__m128 sum1 = _mm_add_ps( prod, sseSwizzle( prod, YXWZ ) );
 		__m128 sum2 = _mm_add_ps( sum1, sseSwizzle( sum1, ZWXY ) );
 		return sum2;
 	}
-	STATIC_INLINE __m128 sseCrossProduct( __m128 a, __m128 b ) {
+	inline __m128 sseCrossProduct( __m128 a, __m128 b ) {
 		__m128 a_yzx = sseSwizzle( a, YZXW );
 		__m128 b_yzx = sseSwizzle( b, YZXW );
 		__m128 c_zxy = _mm_sub_ps( _mm_mul_ps( a, b_yzx ),
 					   _mm_mul_ps( a_yzx, b ) );
 		return sseSwizzle( c_zxy, YZXW );
 	}
-	STATIC_INLINE __m128 sseQuatMul( __m128 a, __m128 b ) {
+	inline __m128 sseQuatMul( __m128 a, __m128 b ) {
 		__m128 a1 = sseSwizzle( a, WWWW );
 		__m128 c1 = _mm_mul_ps( a1, b );
 		__m128 a2 = sseSwizzle( a, XYZX );
@@ -1428,7 +1366,7 @@ void         ByteToDir( int b, vec3_t dir );
 		__m128 c4 = _mm_mul_ps( a4, b4 );
 		return _mm_add_ps( _mm_add_ps(c1, c2), _mm_sub_ps(c3, c4) );
 	}
-	STATIC_INLINE __m128 sseQuatNormalize( __m128 q ) {
+	inline __m128 sseQuatNormalize( __m128 q ) {
 		__m128 p = _mm_mul_ps( q, q );
 		__m128 t, h;
 		p = _mm_add_ps( sseSwizzle( p, XXZZ ),
@@ -1444,7 +1382,7 @@ void         ByteToDir( int b, vec3_t dir );
 #endif
 		return _mm_mul_ps( q, t );
 	}
-	STATIC_INLINE __m128 sseQuatTransform( __m128 q, __m128 vec ) {
+	inline __m128 sseQuatTransform( __m128 q, __m128 vec ) {
 		__m128 t, t2;
 		t = sseCrossProduct( q, vec );
 		t = _mm_add_ps( t, t );
@@ -1452,7 +1390,7 @@ void         ByteToDir( int b, vec3_t dir );
 		t = _mm_mul_ps( sseSwizzle( q, WWWW ), t );
 		return _mm_add_ps( _mm_add_ps( vec, t2 ), t );
 	}
-	STATIC_INLINE __m128 sseQuatTransformInverse( __m128 q, __m128 vec ) {
+	inline __m128 sseQuatTransformInverse( __m128 q, __m128 vec ) {
 		__m128 t, t2;
 		t = sseCrossProduct( vec, q );
 		t = _mm_add_ps( t, t );
@@ -1460,27 +1398,27 @@ void         ByteToDir( int b, vec3_t dir );
 		t = _mm_mul_ps( sseSwizzle( q, WWWW ), t );
 		return _mm_add_ps( _mm_add_ps( vec, t2 ), t );
 	}
-	STATIC_INLINE __m128 sseLoadVec3( const vec3_t vec ) {
+	inline __m128 sseLoadVec3( const vec3_t vec ) {
 		__m128 v = _mm_load_ss( &vec[ 2 ] );
 		v = sseSwizzle( v, YYXY );
 		v = _mm_loadl_pi( v, (__m64 *)vec );
 		return v;
 	}
-	STATIC_INLINE void sseStoreVec3( __m128 in, vec3_t out ) {
+	inline void sseStoreVec3( __m128 in, vec3_t out ) {
 		_mm_storel_pi( (__m64 *)out, in );
 		__m128 v = sseSwizzle( in, ZZZZ );
 		_mm_store_ss( &out[ 2 ], v );
 	}
-	STATIC_INLINE void TransInit( transform_t *t ) {
+	inline void TransInit( transform_t *t ) {
 		__m128 u = unitQuat();
 		t->sseRot = u;
 		t->sseTransScale = u;
 	}
-	STATIC_INLINE void TransCopy( const transform_t *in, transform_t *out ) {
+	inline void TransCopy( const transform_t *in, transform_t *out ) {
 		out->sseRot = in->sseRot;
 		out->sseTransScale = in->sseTransScale;
 	}
-	STATIC_INLINE void TransformPoint( const transform_t *t,
+	inline void TransformPoint( const transform_t *t,
 					   const vec3_t in, vec3_t out ) {
 		__m128 ts = t->sseTransScale;
 		__m128 tmp = sseQuatTransform( t->sseRot, _mm_loadu_ps( in ) );
@@ -1488,7 +1426,7 @@ void         ByteToDir( int b, vec3_t dir );
 		tmp = _mm_add_ps( tmp, ts );
 		sseStoreVec3( tmp, out );
 	}
-	STATIC_INLINE void TransformPointInverse( const transform_t *t,
+	inline void TransformPointInverse( const transform_t *t,
 						  const vec3_t in, vec3_t out ) {
 		__m128 ts = t->sseTransScale;
 		__m128 v = _mm_sub_ps( _mm_loadu_ps( in ), ts );
@@ -1496,19 +1434,19 @@ void         ByteToDir( int b, vec3_t dir );
 		v = sseQuatTransformInverse( t->sseRot, v );
 		sseStoreVec3( v, out );
 	}
-	STATIC_INLINE void TransformNormalVector( const transform_t *t,
+	inline void TransformNormalVector( const transform_t *t,
 						  const vec3_t in, vec3_t out ) {
 		__m128 v = _mm_loadu_ps( in );
 		v = sseQuatTransform( t->sseRot, v );
 		sseStoreVec3( v, out );
 	}
-	STATIC_INLINE void TransformNormalVectorInverse( const transform_t *t,
+	inline void TransformNormalVectorInverse( const transform_t *t,
 							 const vec3_t in, vec3_t out ) {
 		__m128 v = _mm_loadu_ps( in );
 		v = sseQuatTransformInverse( t->sseRot, v );
 		sseStoreVec3( v, out );
 	}
-	STATIC_INLINE __m128 sseAxisAngleToQuat( const vec3_t axis, float angle ) {
+	inline __m128 sseAxisAngleToQuat( const vec3_t axis, float angle ) {
 		__m128 sa = _mm_set1_ps( sin( 0.5f * angle ) );
 		__m128 ca = _mm_set1_ps( cos( 0.5f * angle ) );
 		__m128 a = _mm_loadu_ps( axis );
@@ -1516,45 +1454,45 @@ void         ByteToDir( int b, vec3_t dir );
 		a = _mm_mul_ps( a, sa );
 		return _mm_or_ps( a, _mm_and_ps( ca, mask_000W() ) );
 	}
-	STATIC_INLINE void TransInitRotationQuat( const quat_t quat,
+	inline void TransInitRotationQuat( const quat_t quat,
 						  transform_t *t ) {
 		t->sseRot = _mm_loadu_ps( quat );
 		t->sseTransScale = unitQuat();
 	}
-	STATIC_INLINE void TransInitRotation( const vec3_t axis, float angle,
+	inline void TransInitRotation( const vec3_t axis, float angle,
 					      transform_t *t ) {
 		t->sseRot = sseAxisAngleToQuat( axis, angle );
 		t->sseTransScale = unitQuat();
 	}
-	STATIC_INLINE void TransInitTranslation( const vec3_t vec, transform_t *t ) {
+	inline void TransInitTranslation( const vec3_t vec, transform_t *t ) {
 		__m128 v = _mm_loadu_ps( vec );
 		v = _mm_and_ps( v, mask_XYZ0() );
 		t->sseRot = unitQuat();
 		t->sseTransScale = _mm_or_ps( v, unitQuat() );
 	}
-	STATIC_INLINE void TransInitScale( float factor, transform_t *t ) {
+	inline void TransInitScale( float factor, transform_t *t ) {
 		__m128 f = _mm_set1_ps( factor );
 		f = _mm_and_ps( f, mask_000W() );
 		t->sseRot = unitQuat();
 		t->sseTransScale = f;
 	}
-	STATIC_INLINE void TransInsRotationQuat( const quat_t quat, transform_t *t ) {
+	inline void TransInsRotationQuat( const quat_t quat, transform_t *t ) {
 		__m128 q = _mm_loadu_ps( quat );
 		t->sseRot = sseQuatMul( t->sseRot, q );
 	}
-	STATIC_INLINE void TransInsRotation( const vec3_t axis, float angle,
+	inline void TransInsRotation( const vec3_t axis, float angle,
 					     transform_t *t ) {
 		__m128 q = sseAxisAngleToQuat( axis, angle );
 		t->sseRot = sseQuatMul( q, t->sseRot );
 	}
-	STATIC_INLINE void TransAddRotationQuat( const quat_t quat, transform_t *t ) {
+	inline void TransAddRotationQuat( const quat_t quat, transform_t *t ) {
 		__m128 q = _mm_loadu_ps( quat );
 		__m128 transformed = sseQuatTransform( q, t->sseTransScale );
 		t->sseRot = sseQuatMul( q, t->sseRot );
 		t->sseTransScale = _mm_or_ps( _mm_and_ps( transformed, mask_XYZ0() ),
 					      _mm_and_ps( t->sseTransScale, mask_000W() ) );
 	}
-	STATIC_INLINE void TransAddRotation( const vec3_t axis, float angle,
+	inline void TransAddRotation( const vec3_t axis, float angle,
 					     transform_t *t ) {
 		__m128 q = sseAxisAngleToQuat( axis, angle );
 		__m128 transformed = sseQuatTransform( q, t->sseTransScale );
@@ -1562,14 +1500,14 @@ void         ByteToDir( int b, vec3_t dir );
 		t->sseTransScale = _mm_or_ps( _mm_and_ps( transformed, mask_XYZ0() ),
 					      _mm_and_ps( t->sseTransScale, mask_000W() ) );
 	}
-	STATIC_INLINE void TransInsScale( float factor, transform_t *t ) {
+	inline void TransInsScale( float factor, transform_t *t ) {
 		t->scale *= factor;
 	}
-	STATIC_INLINE void TransAddScale( float factor, transform_t *t ) {
+	inline void TransAddScale( float factor, transform_t *t ) {
 		__m128 f = _mm_set1_ps( factor );
 		t->sseTransScale = _mm_mul_ps( f, t->sseTransScale );
 	}
-	STATIC_INLINE void TransInsTranslation( const vec3_t vec,
+	inline void TransInsTranslation( const vec3_t vec,
 						transform_t *t ) {
 		__m128 v = _mm_loadu_ps( vec );
 		__m128 ts = t->sseTransScale;
@@ -1578,13 +1516,13 @@ void         ByteToDir( int b, vec3_t dir );
 		v = _mm_and_ps( v, mask_XYZ0() );
 		t->sseTransScale = _mm_add_ps( ts, v );
 	}
-	STATIC_INLINE void TransAddTranslation( const vec3_t vec,
+	inline void TransAddTranslation( const vec3_t vec,
 						transform_t *t ) {
 		__m128 v = _mm_loadu_ps( vec );
 		v = _mm_and_ps( v, mask_XYZ0() );
 		t->sseTransScale = _mm_add_ps( t->sseTransScale, v );
 	}
-	STATIC_INLINE void TransCombine( const transform_t *a,
+	inline void TransCombine( const transform_t *a,
 					 const transform_t *b,
 					 transform_t *out ) {
 		__m128 aRot = a->sseRot;
@@ -1598,7 +1536,7 @@ void         ByteToDir( int b, vec3_t dir );
 		out->sseTransScale = _mm_add_ps( tmp, _mm_and_ps( bTS, mask_XYZ0() ) );
 		out->sseRot = sseQuatMul( bRot, aRot );
 	}
-	STATIC_INLINE void TransInverse( const transform_t *in,
+	inline void TransInverse( const transform_t *in,
 					 transform_t *out ) {
 		__m128 rot = in->sseRot;
 		__m128 ts = in->sseTransScale;
@@ -1611,11 +1549,11 @@ void         ByteToDir( int b, vec3_t dir );
 		out->sseTransScale = _mm_or_ps( _mm_and_ps( tmp, mask_XYZ0() ),
 						_mm_and_ps( invS, mask_000W() ) );
 	}
-	STATIC_INLINE void TransStartLerp( transform_t *t ) {
+	inline void TransStartLerp( transform_t *t ) {
 		t->sseRot = mask_0000();
 		t->sseTransScale = mask_0000();
 	}
-	STATIC_INLINE void TransAddWeight( float weight, const transform_t *a,
+	inline void TransAddWeight( float weight, const transform_t *a,
 					   transform_t *out ) {
 		__m128 w = _mm_set1_ps( weight );
 		__m128 d = sseDot4( a->sseRot, out->sseRot );
@@ -1625,7 +1563,7 @@ void         ByteToDir( int b, vec3_t dir );
 		out->sseRot = _mm_add_ps( out->sseRot,
 					  _mm_mul_ps( w, a->sseRot ) );
 }
-	STATIC_INLINE void TransEndLerp( transform_t *t ) {
+	inline void TransEndLerp( transform_t *t ) {
 		t->sseRot = sseQuatNormalize( t->sseRot );
 	}
 #else
@@ -1715,15 +1653,6 @@ void         ByteToDir( int b, vec3_t dir );
 
 //=============================================
 
-#ifdef Q3_VM
-#ifndef MAX
-#define MAX(x,y) (( x ) > ( y ) ? ( x ) : ( y ))
-#endif
-
-#ifndef MIN
-#define MIN(x,y) (( x ) < ( y ) ? ( x ) : ( y ))
-#endif
-#else
 #include <algorithm>
 #ifndef MAX
 #define MAX(x,y) std::max((x), (y))
@@ -1732,13 +1661,10 @@ void         ByteToDir( int b, vec3_t dir );
 #ifndef MIN
 #define MIN(x,y) std::min((x), (y))
 #endif
-#endif
 
 //=============================================
 
-//#ifdef Q3_VM
 	float      Com_Clamp( float min, float max, float value );
-//#endif
 
 	char       *COM_SkipPath( char *pathname );
 	char       *Com_SkipTokens( char *s, int numTokens, char *sep );
@@ -2022,8 +1948,7 @@ void         ByteToDir( int b, vec3_t dir );
 #define PlaneTypeForNormal( x ) ( x[ 0 ] == 1.0 ? PLANE_X : ( x[ 1 ] == 1.0 ? PLANE_Y : ( x[ 2 ] == 1.0 ? PLANE_Z : ( x[ 0 ] == 0.f && x[ 1 ] == 0.f && x[ 2 ] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL ) ) ) )
 
 	/*
-	STATIC_INLINE int PlaneTypeForNormal(vec3_t normal) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline int PlaneTypeForNormal(vec3_t normal)
 	{
 	        if(normal[0] == 1.0)
 	                return PLANE_X;
@@ -2036,7 +1961,6 @@ void         ByteToDir( int b, vec3_t dir );
 
 	        return PLANE_NON_AXIAL;
 	}
-#endif
 	*/
 
 // plane_t structure
@@ -2174,12 +2098,8 @@ void         ByteToDir( int b, vec3_t dir );
 #define RESERVED_CONFIGSTRINGS 2 // game can't modify below this, only the system can
 
 #define MAX_GAMESTATE_CHARS    16000
-	typedef struct
-	{
-		int  stringOffsets[ MAX_CONFIGSTRINGS ];
-		char stringData[ MAX_GAMESTATE_CHARS ];
-		int  dataCount;
-	} gameState_t;
+
+typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 
 #define REF_FORCE_DLIGHT       ( 1 << 31 ) // RF, passed in through overdraw parameter, force this dlight under all conditions
 #define REF_JUNIOR_DLIGHT      ( 1 << 30 ) // (SA) this dlight does not light surfaces.  it only affects dynamic light grid
@@ -2345,11 +2265,6 @@ void         ByteToDir( int b, vec3_t dir );
 		signed char forwardmove, rightmove, upmove;
 		byte        doubleTap; // Arnout: only 3 bits used
 
-		// rain - in ET, this can be any entity, and it's used as an array
-		// index, so make sure it's unsigned
-		// But Unv doesn't use it.
-		byte identClient; // NERVE - SMF
-
 		byte        weapon;
 		byte        flags;
 
@@ -2357,36 +2272,27 @@ void         ByteToDir( int b, vec3_t dir );
 	} usercmd_t;
 
 // Some functions for buttons manipulation & testing
-	STATIC_INLINE void usercmdPressButton( byte *buttons, int bit ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void usercmdPressButton( byte *buttons, int bit )
 	{
 		buttons[bit / 8] |= 1 << ( bit & 7 );
 	}
-#endif
 
-	STATIC_INLINE void usercmdReleaseButton( byte *buttons, int bit ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void usercmdReleaseButton( byte *buttons, int bit )
 	{
 		buttons[bit / 8] &= ~( 1 << ( bit & 7 ) );
 	}
-#endif
 
-	STATIC_INLINE void usercmdClearButtons( byte *buttons ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void usercmdClearButtons( byte *buttons )
 	{
 		memset( buttons, 0, USERCMD_BUTTONS / 8 );
 	}
-#endif
 
-	STATIC_INLINE void usercmdCopyButtons( byte *dest, const byte *source ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void usercmdCopyButtons( byte *dest, const byte *source )
 	{
 		memcpy( dest, source, USERCMD_BUTTONS / 8 );
 	}
-#endif
 
-	STATIC_INLINE void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld )
 	{
 		int i;
 		for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
@@ -2394,21 +2300,16 @@ void         ByteToDir( int b, vec3_t dir );
 			 dest[i] |= srcNew[i] & ~srcOld[i];
 		}
 	}
-#endif
 
-	STATIC_INLINE qboolean usercmdButtonPressed( const byte *buttons, int bit ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline qboolean usercmdButtonPressed( const byte *buttons, int bit )
 	{
 		return ( buttons[bit / 8] & ( 1 << ( bit & 7 ) ) ) ? qtrue : qfalse;
 	}
-#endif
 
-	STATIC_INLINE qboolean usercmdButtonsDiffer( const byte *a, const byte *b ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	inline qboolean usercmdButtonsDiffer( const byte *a, const byte *b )
 	{
 		return memcmp( a, b, USERCMD_BUTTONS / 8 ) ? qtrue : qfalse;
 	}
-#endif
 
 //===================================================================
 
@@ -2611,18 +2512,27 @@ typedef struct
 // real time
 //=============================================
 
-	typedef struct qtime_s
-	{
-		int tm_sec; /* seconds after the minute - [0,59] */
-		int tm_min; /* minutes after the hour - [0,59] */
-		int tm_hour; /* hours since midnight - [0,23] */
-		int tm_mday; /* day of the month - [1,31] */
-		int tm_mon; /* months since January - [0,11] */
-		int tm_year; /* years since 1900 */
-		int tm_wday; /* days since Sunday - [0,6] */
-		int tm_yday; /* days since January 1 - [0,365] */
-		int tm_isdst; /* daylight savings time flag */
-	} qtime_t;
+typedef struct qtime_s
+{
+    int tm_sec; /* seconds after the minute - [0,59] */
+    int tm_min; /* minutes after the hour - [0,59] */
+    int tm_hour; /* hours since midnight - [0,23] */
+    int tm_mday; /* day of the month - [1,31] */
+    int tm_mon; /* months since January - [0,11] */
+    int tm_year; /* years since 1900 */
+    int tm_wday; /* days since Sunday - [0,6] */
+    int tm_yday; /* days since January 1 - [0,365] */
+    int tm_isdst; /* daylight savings time flag */
+} qtime_t;
+
+int        Com_RealTime( qtime_t *qtime );
+int        Com_GMTime( qtime_t *qtime );
+// Com_Time: client gets local time, server gets GMT
+#ifdef BUILD_SERVER
+#define Com_Time(t) Com_GMTime(t)
+#else
+#define Com_Time(t) Com_RealTime(t)
+#endif
 
 // server browser sources
 #define AS_LOCAL     0
