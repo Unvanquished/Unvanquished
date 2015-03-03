@@ -643,8 +643,6 @@ typedef struct
 	team_t        team;
 	int           owner;
 
-	float         priority;
-
 	// cache
 	float         dot;
 	float         dist;

@@ -454,53 +454,48 @@ void CG_ListBeacons( void )
 
 	cg.highlightedBeacon = NULL;
 
+	// Find beacons and add them to cg.beacons.
 	for( cg.beaconCount = 0, i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		cent = cg_entities + cg.snap->entities[ i ].number;
-		es = &cent->currentState;
-		b = &cent->beacon;
+		es   = &cent->currentState;
+		b    = &cent->beacon;
 
-		if( es->eType == ET_BEACON )
-		{
-			if( es->modelindex <= BCT_NONE ||
-					es->modelindex >= NUM_BEACON_TYPES )
-				continue;
+		if ( es->eType != ET_BEACON )
+			continue;
 
-			if( es->bc_etime && es->bc_etime <= cg.time ) //expired
-				continue;
+		if( es->modelindex <= BCT_NONE || es->modelindex >= NUM_BEACON_TYPES )
+			continue;
 
-			b->inuse = qtrue;
-			b->ctime = es->bc_ctime;
-			b->etime = es->bc_etime;
-			b->mtime = es->bc_mtime;
+		if( es->bc_etime && es->bc_etime <= cg.time ) // Beacon expired.
+			continue;
 
-			VectorCopy( cent->lerpOrigin, b->origin );
-			b->type = (beaconType_t)es->bc_type;
-			b->data = es->bc_data;
-			b->team = (team_t)es->bc_team;
-			b->owner = es->bc_owner;
-			b->flags = es->eFlags;
-		}
-		else
-			continue; //TODO: alien radar
+		b->inuse = qtrue;
+		b->ctime = es->bc_ctime;
+		b->etime = es->bc_etime;
+		b->mtime = es->bc_mtime;
+
+		VectorCopy( cent->lerpOrigin, b->origin );
+		b->type = (beaconType_t)es->bc_type;
+		b->data = es->bc_data;
+		b->team = (team_t)es->bc_team;
+		b->owner = es->bc_owner;
+		b->flags = es->eFlags;
 
 		VectorSubtract( b->origin, cg.refdef.vieworg, delta );
 		VectorNormalize( delta );
 		b->dot = DotProduct( delta, cg.refdef.viewaxis[ 0 ] );
 		b->dist = Distance( cg.predictedPlayerState.origin, b->origin );
 
-		if( ( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) ||
-		    b->type == BCT_BASE )
-			b->priority = -b->dist;
-		else
-			b->priority = -10.0 * b->dist * 6500.0;
-
+		// Set highlighted beacon to smallest angle below threshold.
 		if( b->dot > cgs.bc.highlightAngle &&
-		   ( !cg.highlightedBeacon ||
-		     b->priority > cg.highlightedBeacon->priority) )
+		    ( !cg.highlightedBeacon || b->dot > cg.highlightedBeacon->dot ) )
+		{
 			cg.highlightedBeacon = b;
+		}
 
 		cg.beacons[ cg.beaconCount ] = b;
+
 		if( ++cg.beaconCount >= MAX_CBEACONS )
 			break;
 	}
@@ -508,9 +503,11 @@ void CG_ListBeacons( void )
 	if( !cg.beaconCount )
 		return;
 
+	// Sort beacons by distance.
 	qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CG_CompareBeaconsByDist );
 
-	//mark the nearest booster/medistat if low hp and mark the nearest armoury if low ammo
+	// Mark the nearest booster/medistat if low on hp and mark the nearest armoury if low on ammo.
+	// TODO: Move to seperate function.
 	{
 		const playerState_t *ps = &cg.predictedPlayerState;
 		int tofind, team = ps->persistant[ PERS_TEAM ];
@@ -525,29 +522,32 @@ void CG_ListBeacons( void )
 			if( b->type != BCT_TAG )
 				continue;
 
-			if( ( b->flags & EF_BC_TAG_PLAYER ) ||
-			    ( b->flags & EF_BC_DYING ) )
+			if( ( b->flags & EF_BC_TAG_PLAYER ) || ( b->flags & EF_BC_DYING ) )
 				continue;
 
+			// Find a health source.
 			if( tofind & 1 )
+			{
 				if( ( team == TEAM_ALIENS && b->data == BA_A_BOOSTER ) ||
-						( team == TEAM_HUMANS && b->data == BA_H_MEDISTAT ) )
+				    ( team == TEAM_HUMANS && b->data == BA_H_MEDISTAT ) )
 				{
 					if( ps->stats[ STAT_HEALTH ] < ps->stats[ STAT_MAX_HEALTH ] / 2 )
 						b->type = BCT_HEALTH;
 					tofind &= ~1;
 				}
+			}
 
+			// Find an ammo source.
 			if( tofind & 2 )
-				if( team == TEAM_HUMANS &&
-				    ( b->data == BA_H_ARMOURY ||
-				      ( energy &&
-				        ( b->data == BA_H_REPEATER || b->data == BA_H_REACTOR ) ) ) )
+			{
+				if( team == TEAM_HUMANS && ( b->data == BA_H_ARMOURY ||
+				    ( energy && ( b->data == BA_H_REPEATER || b->data == BA_H_REACTOR ) ) ) )
 				{
 					if( lowammo )
 						b->type = BCT_AMMO;
 					tofind &= ~2;
 				}
+			}
 		}
 	}
 
