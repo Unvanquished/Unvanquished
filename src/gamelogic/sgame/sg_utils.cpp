@@ -157,7 +157,7 @@ int G_SoundIndex( const char *name )
 }
 
 /**
- * searches for a the grading texture with the given name among the configstrings and returns the index
+ * searches for the grading texture with the given name among the configstrings and returns the index
  * if it wasn't found it will add the texture to the configstrings, send these to the client and return the new index
  *
  * the first one at CS_GRADING_TEXTURES is always the global one, so we start searching from CS_GRADING_TEXTURES+1
