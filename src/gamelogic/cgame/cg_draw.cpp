@@ -328,7 +328,9 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	float angle;
 	vec4_t color;
 
-	if( b->type == BCT_TAG && b->clamped )
+	// Don't draw clamped beacons for tags, except for enemy players.
+	if( b->type == BCT_TAG && b->clamped && !( ( b->flags & EF_BC_ENEMY ) &&
+	                                           ( b->flags & EF_BC_TAG_PLAYER ) ) )
 		return;
 
 	Vector4Copy( b->color, color );
