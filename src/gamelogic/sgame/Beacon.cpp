@@ -434,13 +434,30 @@ namespace Beacon //this should eventually become a class
 
 	static void UpdateTag( gentity_t *ent, gentity_t *parent )
 	{
-		Move( ent, parent->s.origin );
+		vec3_t mins, maxs, center;
 
-		if( parent->client )
+		if ( !parent ) return;
+
+		VectorCopy( parent->s.origin, center );
+
+		if ( parent->client )
 		{
+			BG_ClassBoundingBox( parent->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
+			BG_MoveOriginToBBOXCenter( center, mins, maxs );
+
+			// Also update weapon for humans.
 			if( parent->client->pers.team == TEAM_HUMANS )
+			{
 				ent->s.bc_data = BG_GetPlayerWeapon( &parent->client->ps );
+			}
 		}
+		else if ( parent->s.eType == ET_BUILDABLE )
+		{
+			BG_BuildableBoundingBox( parent->s.modelindex, mins, maxs );
+			BG_MoveOriginToBBOXCenter( center, mins, maxs );
+		}
+
+		Move( ent, center );
 	}
 
 	/**

@@ -454,13 +454,33 @@ void CG_ListBeacons( void )
 		b->etime = es->bc_etime;
 		b->mtime = es->bc_mtime;
 
-		VectorCopy( cent->lerpOrigin, b->origin );
 		b->type = (beaconType_t)es->bc_type;
 		b->data = es->bc_data;
 		b->ownerTeam = (team_t)es->bc_team;
 		b->owner = es->bc_owner;
 		b->flags = es->eFlags;
 		b->target = es->bc_target;
+
+		// Snap beacon origin to exact player location if known.
+		centity_t *targetCent; entityState_t *targetES;
+		if ( b->target && ( targetCent = &cg_entities[ b->target ] )->valid &&
+		     ( targetES = &targetCent->currentState )->eType == ET_PLAYER )
+		{
+			vec3_t mins, maxs, center;
+			int pClass = ( ( targetES->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
+
+			VectorCopy( targetCent->lerpOrigin, center );
+			BG_ClassBoundingBox( pClass, mins, maxs, NULL, NULL, NULL );
+			BG_MoveOriginToBBOXCenter( center, mins, maxs );
+
+			// TODO: Interpolate when target entity pops in.
+			VectorCopy( center, b->origin );
+		}
+		else
+		{
+			// TODO: Interpolate when target entity pops out.
+			VectorCopy( cent->lerpOrigin, b->origin );
+		}
 
 		VectorSubtract( b->origin, cg.refdef.vieworg, delta );
 		VectorNormalize( delta );
