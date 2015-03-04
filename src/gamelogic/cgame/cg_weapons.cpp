@@ -2046,13 +2046,9 @@ CG_DrawItemSelect
 void CG_DrawHumanInventory( void )
 {
 	int           i;
-	float         iconWidth;
-	float         iconHeight;
 	int           items[ 64 ];
 	int           colinfo[ 64 ];
-	int           numItems = 0, selectedItem = 0;
-	int           length;
-	qboolean      vertical;
+	int           numItems = 0;
 	playerState_t *ps;
 	static char   RML[ MAX_STRING_CHARS ];
 
@@ -2107,11 +2103,6 @@ void CG_DrawHumanInventory( void )
 			colinfo[ numItems ] = USABLE;
 		}
 
-		if ( i == cg.weaponSelect )
-		{
-			selectedItem = numItems;
-		}
-
 		if ( !cg_weapons[ i ].registered )
 		{
 			Com_Printf( S_WARNING "CG_DrawItemSelect: weapon %d (%s) "
@@ -2136,11 +2127,6 @@ void CG_DrawHumanInventory( void )
 		if ( !BG_Upgrade( i )->usable )
 		{
 			colinfo[ numItems ] = NOT_USABLE;
-		}
-
-		if ( i == cg.weaponSelect - 32 )
-		{
-			selectedItem = numItems;
 		}
 
 		if ( !cg_upgrades[ i ].registered )

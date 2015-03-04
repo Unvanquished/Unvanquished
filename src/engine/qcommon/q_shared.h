@@ -35,13 +35,21 @@ Maryland 20850 USA.
 #ifndef Q_SHARED_H_
 #define Q_SHARED_H_
 
+// math.h/cmath uses _USE_MATH_DEFINES to decide if to define M_PI etc or not.
+// So define _USE_MATH_DEFINES early before including math.h/cmath
+// and before including any other header in case they bring in math.h/cmath indirectly.
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
+
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.35.0"
+#define PRODUCT_VERSION         "0.37.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -344,11 +352,11 @@ void  Com_Free_Aligned( void *ptr );
 #pragma GCC diagnostic pop
 #endif
 #else
-	typedef struct transform_s {
+	typedef ALIGNED( 16, struct transform_s {
 		quat_t rot;
 		vec3_t trans;
 		vec_t  scale;
-	} transform_t;
+	} ) transform_t;
 #endif
 
 	typedef int    fixed4_t;
@@ -2256,11 +2264,6 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 
 		signed char forwardmove, rightmove, upmove;
 		byte        doubleTap; // Arnout: only 3 bits used
-
-		// rain - in ET, this can be any entity, and it's used as an array
-		// index, so make sure it's unsigned
-		// But Unv doesn't use it.
-		byte identClient; // NERVE - SMF
 
 		byte        weapon;
 		byte        flags;

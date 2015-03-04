@@ -22,14 +22,15 @@ build
 *.exe
 *.dylib
 *.so
+*.a
 
 # NaCl
-*-nacl-native-dll.*
-*-nacl-native-exe*
+*-native-dll.*
+*-native-exe*
 *.pexe
 *.nexe
 nacl_helper_bootstrap*
-sel_ldr*
+nacl_loader*
 
 #ignore editor temporary files
 .*.swp

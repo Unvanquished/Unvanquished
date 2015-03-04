@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VMMain.h"
 #include "CommonProxies.h"
+#include "../../common/IPC/CommonSyscalls.h"
 #ifndef _WIN32
 #include <unistd.h>
 #endif
@@ -51,14 +52,17 @@ static void CommonInit(Sys::OSHandle rootSocket)
 	VM::rootChannel = IPC::Channel(IPC::Socket::FromHandle(rootSocket));
 
 	// Send syscall ABI version, also acts as a sign that the module loaded
-	IPC::Writer writer;
+	Util::Writer writer;
 	writer.Write<uint32_t>(VM::VM_API_VERSION);
 	VM::rootChannel.SendMsg(writer);
 
 	// Start the main loop
 	while (true) {
-		IPC::Reader reader = VM::rootChannel.RecvMsg();
+		Util::Reader reader = VM::rootChannel.RecvMsg();
 		uint32_t id = reader.Read<uint32_t>();
+		if (id == IPC::ID_EXIT) {
+			return;
+		}
 		VM::VMHandleSyscall(id, std::move(reader));
 	}
 }
@@ -70,7 +74,7 @@ void Sys::Error(Str::StringRef message)
 	if (!errorEntered.test_and_set()) {
 		// Disable checks for sending sync messages when handling async messages.
 		// At this point we don't really care since this is an error.
-		VM::rootChannel.handlingAsyncMsg = false;
+		VM::rootChannel.canSendSyncMsg = true;
 
 		// Try to tell the engine about the error, but ignore errors doing so.
 		try {

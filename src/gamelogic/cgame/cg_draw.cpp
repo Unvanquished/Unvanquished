@@ -214,8 +214,6 @@ void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
 
 void CG_MouseEvent( int x, int y )
 {
-	int n;
-
 	if ( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	       cg.predictedPlayerState.pm_type == PM_SPECTATOR ) &&
 	     cg.showScores == qfalse )

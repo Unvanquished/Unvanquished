@@ -861,7 +861,7 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 		ZOFFSET = 1 << 4,
 		OLDSCALE = 1 << 5,
 		OLDOFFSET = 1 << 6,
-		MODELROTATION = 1 << 7
+		MODEL_ROTATION = 1 << 7
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -925,7 +925,7 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 			PARSE( text, token );
 			bc->modelRotation[ 2 ] = atof( token );
 
-			defined |= MODELROTATION;
+			defined |= MODEL_ROTATION;
 		}
 		else if ( !Q_stricmp( token, "mins" ) )
 		{
@@ -2001,7 +2001,8 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		BOUNCE_FULL           = 1 << 11,
 		BOUNCE_HALF           = 1 << 12,
 		BOUNCE_NO_SOUND       = 1 << 13,
-		KNOCKBACK             = 1 << 14
+		KNOCKBACK             = 1 << 14,
+		LOCATIONAL_DAMAGE     = 1 << 15
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -2100,6 +2101,11 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 			ma->doKnockback = qtrue;
 			defined |= KNOCKBACK;
 		}
+		else if ( !Q_stricmp( token, "doLocationalDamage" ) )
+		{
+			ma->doLocationalDamage = qtrue;
+			defined |= LOCATIONAL_DAMAGE;
+		}
 		/*else if( (var = BG_FindConfigVar( va( "m_%s_%s", ma->name, token ) ) ) != NULL )
 		{
 			BG_ParseConfigVar( var, &text, filename );
@@ -2167,7 +2173,8 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		IMPACT_SOUND     = 1 << 20,
 		IMPACT_FLESH_SND = 1 << 21,
 		MODEL_SCALE      = 1 << 22,
-		MODELROTATION   = 1 << 23
+		MODEL_ROTATION   = 1 << 23,
+		IMPACT_FLIGHTDIR = 1 << 24
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof( text_buffer ) ) )
@@ -2206,7 +2213,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			PARSE( text, token );
 			ma->modelRotation[ 2 ] = atof( token );
 
-			defined |= MODELROTATION;
+			defined |= MODEL_ROTATION;
 		}
 		else if ( !Q_stricmp( token, "sound" ) )
 		{
@@ -2330,6 +2337,11 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			ma->impactParticleSystem = CG_RegisterParticleSystem( token );
 #endif
 			defined |= IMPACT_PARTICLE;
+		}
+		else if ( !Q_stricmp( token, "impactFlightDir" ) )
+		{
+			ma->impactFlightDirection = qtrue;
+			defined |= IMPACT_FLIGHTDIR;
 		}
 		else if ( !Q_stricmp( token, "impactMark" ) )
 		{

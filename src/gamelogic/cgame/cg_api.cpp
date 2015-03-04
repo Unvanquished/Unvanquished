@@ -29,19 +29,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "cg_local.h"
+#include "../../engine/client/cg_msgdef.h"
 
 #include "../shared/VMMain.h"
+#include "../shared/CommandBufferClient.h"
 #include "../shared/CommonProxies.h"
 
-// Symbols required by the shqred VMMqin code
+// Symbols required by the shared VMMain code
 
 int VM::VM_API_VERSION = CGAME_API_VERSION;
+
+static IPC::CommandBufferClient cmdBuffer("cgame");
 
 void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState );
 void CG_RegisterCvars( void );
 void CG_Shutdown( void );
 
-void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
+void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
     int major = id >> 16;
     int minor = id & 0xffff;
     if (major == VM::QVM) {
@@ -50,11 +54,16 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
                 IPC::HandleMsg<CGameStaticInitMsg>(VM::rootChannel, std::move(reader), [] {
                     VM::InitializeProxies();
                     FS::Initialize();
-                    });
+                    srand(time(nullptr));
+					cmdBuffer.Init();
+                });
                 break;
 
             case CG_INIT:
-                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), CG_Init);
+                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gamestate) {
+                    CG_Init(serverMessageNum, clientNum, gl, gamestate);
+                    cmdBuffer.TryFlush();
+                });
                 break;
 
             case CG_SHUTDOWN:
@@ -66,6 +75,7 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
             case CG_DRAW_ACTIVE_FRAME:
                 IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, bool demoPlayback) {
                     CG_DrawActiveFrame(serverTime, demoPlayback);
+                    cmdBuffer.TryFlush();
                 });
                 break;
 
@@ -78,40 +88,13 @@ void VM::VMHandleSyscall(uint32_t id, IPC::Reader reader) {
             case CG_KEY_EVENT:
                 IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, std::move(reader), [] (int key, bool down) {
                     CG_KeyEvent(key, 0, down);
+                    cmdBuffer.TryFlush();
                 });
                 break;
 
             case CG_MOUSE_EVENT:
                 IPC::HandleMsg<CGameMouseEventMsg>(VM::rootChannel, std::move(reader), [] (int dx, int dy) {
                     // TODO don't we care about that?
-                });
-                break;
-
-            case CG_ROCKET_VM_INIT:
-                IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, std::move(reader), [] {
-                    CG_Rocket_Init();
-                });
-                break;
-
-            case CG_ROCKET_FRAME:
-                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), CG_Rocket_Frame);
-                break;
-
-            case CG_ROCKET_FORMAT_DATA:
-                IPC::HandleMsg<CGameRocketFormatDataMsg>(VM::rootChannel, std::move(reader), [] (int handle) {
-                    CG_Rocket_FormatData(handle);
-                });
-                break;
-
-            case CG_ROCKET_RENDER_ELEMENT:
-                IPC::HandleMsg<CGameRocketRenderElementMsg>(VM::rootChannel, std::move(reader), [] {
-                    // TODO: Remove
-                });
-                break;
-
-            case CG_ROCKET_PROGRESSBAR_VALUE:
-                IPC::HandleMsg<CGameRocketProgressbarValueMsg>(VM::rootChannel, std::move(reader), [] (std::string source, float& value) {
-			// TODO: Delete
                 });
                 break;
 
@@ -261,17 +244,17 @@ void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )
 	if (origin) {
 		VectorCopy(origin, myorigin.data());
 	}
-	VM::SendMsg<Audio::StartSoundMsg>(!!origin, myorigin, entityNum, sfx);
+	cmdBuffer.SendMsg<Audio::StartSoundMsg>(!!origin, myorigin, entityNum, sfx);
 }
 
 void trap_S_StartLocalSound( sfxHandle_t sfx, int )
 {
-	VM::SendMsg<Audio::StartLocalSoundMsg>(sfx);
+	cmdBuffer.SendMsg<Audio::StartLocalSoundMsg>(sfx);
 }
 
 void trap_S_ClearLoopingSounds( qboolean )
 {
-	VM::SendMsg<Audio::ClearLoopingSoundsMsg>();
+	cmdBuffer.SendMsg<Audio::ClearLoopingSoundsMsg>();
 }
 
 void trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
@@ -282,7 +265,7 @@ void trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t ve
 	if (velocity) {
 		trap_S_UpdateEntityVelocity(entityNum, velocity);
 	}
-	VM::SendMsg<Audio::AddLoopingSoundMsg>(entityNum, sfx);
+	cmdBuffer.SendMsg<Audio::AddLoopingSoundMsg>(entityNum, sfx);
 }
 
 void trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
@@ -292,14 +275,14 @@ void trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_
 
 void trap_S_StopLoopingSound( int entityNum )
 {
-	VM::SendMsg<Audio::StopLoopingSoundMsg>(entityNum);
+	cmdBuffer.SendMsg<Audio::StopLoopingSoundMsg>(entityNum);
 }
 
 void trap_S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 {
 	std::array<float, 3> myposition;
 	VectorCopy(origin, myposition.data());
-	VM::SendMsg<Audio::UpdateEntityPositionMsg>(entityNum, myposition);
+	cmdBuffer.SendMsg<Audio::UpdateEntityPositionMsg>(entityNum, myposition);
 }
 
 void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int )
@@ -309,7 +292,7 @@ void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], 
 	}
 	std::array<float, 9> myaxis;
 	memcpy(myaxis.data(), axis, sizeof(float) * 9);
-	VM::SendMsg<Audio::RespatializeMsg>(entityNum, myaxis);
+	cmdBuffer.SendMsg<Audio::RespatializeMsg>(entityNum, myaxis);
 }
 
 sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean)
@@ -321,34 +304,34 @@ sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean)
 
 void trap_S_StartBackgroundTrack( const char *intro, const char *loop )
 {
-	VM::SendMsg<Audio::StartBackgroundTrackMsg>(intro, loop);
+	cmdBuffer.SendMsg<Audio::StartBackgroundTrackMsg>(intro, loop);
 }
 
 void trap_S_StopBackgroundTrack( void )
 {
-	VM::SendMsg<Audio::StopBackgroundTrackMsg>();
+	cmdBuffer.SendMsg<Audio::StopBackgroundTrackMsg>();
 }
 
 void trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
 {
 	std::array<float, 3> myvelocity;
 	VectorCopy(velocity, myvelocity.data());
-	VM::SendMsg<Audio::UpdateEntityVelocityMsg>(entityNum, myvelocity);
+	cmdBuffer.SendMsg<Audio::UpdateEntityVelocityMsg>(entityNum, myvelocity);
 }
 
 void trap_S_SetReverb( int slotNum, const char* name, float ratio )
 {
-	VM::SendMsg<Audio::SetReverbMsg>(slotNum, name, ratio);
+	cmdBuffer.SendMsg<Audio::SetReverbMsg>(slotNum, name, ratio);
 }
 
 void trap_S_BeginRegistration( void )
 {
-	VM::SendMsg<Audio::BeginRegistrationMsg>();
+	cmdBuffer.SendMsg<Audio::BeginRegistrationMsg>();
 }
 
 void trap_S_EndRegistration( void )
 {
-	VM::SendMsg<Audio::EndRegistrationMsg>();
+	cmdBuffer.SendMsg<Audio::EndRegistrationMsg>();
 }
 
 // All renderer
@@ -367,12 +350,12 @@ void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len 
 
 void trap_R_ScissorEnable( qboolean enable )
 {
-	VM::SendMsg<Render::ScissorEnableMsg>(enable);
+    cmdBuffer.SendMsg<Render::ScissorEnableMsg>(enable);
 }
 
 void trap_R_ScissorSet( int x, int y, int w, int h )
 {
-	VM::SendMsg<Render::ScissorSetMsg>(x, y, w, h);
+	cmdBuffer.SendMsg<Render::ScissorSetMsg>(x, y, w, h);
 }
 
 qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
@@ -418,45 +401,45 @@ void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int po
 
 void trap_R_ClearScene( void )
 {
-	VM::SendMsg<Render::ClearSceneMsg>();
+	cmdBuffer.SendMsg<Render::ClearSceneMsg>();
 }
 
 void trap_R_AddRefEntityToScene( const refEntity_t *re )
 {
-	VM::SendMsg<Render::AddRefEntityToSceneMsg>(*re);
+	cmdBuffer.SendMsg<Render::AddRefEntityToSceneMsg>(*re);
 }
 
 void trap_R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts )
 {
 	std::vector<polyVert_t> myverts(numVerts);
 	memcpy(myverts.data(), verts, numVerts * sizeof(polyVert_t));
-	VM::SendMsg<Render::AddPolyToSceneMsg>(hShader, myverts);
+	cmdBuffer.SendMsg<Render::AddPolyToSceneMsg>(hShader, myverts);
 }
 
 void trap_R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
 {
 	std::vector<polyVert_t> myverts(numVerts * numPolys);
 	memcpy(myverts.data(), verts, numVerts * numPolys * sizeof(polyVert_t));
-	VM::SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numVerts, numPolys);
+	cmdBuffer.SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numVerts, numPolys);
 }
 
 void trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
 {
 	std::array<float, 3> myorg;
 	VectorCopy(org, myorg.data());
-	VM::SendMsg<Render::AddLightToSceneMsg>(myorg, radius, intensity, r, g, b, hShader, flags);
+	cmdBuffer.SendMsg<Render::AddLightToSceneMsg>(myorg, radius, intensity, r, g, b, hShader, flags);
 }
 
 void trap_R_AddAdditiveLightToScene( const vec3_t org, float intensity, float r, float g, float b )
 {
 	std::array<float, 3> myorg;
 	VectorCopy(org, myorg.data());
-	VM::SendMsg<Render::AddAdditiveLightToSceneMsg>(myorg, intensity, r, g, b);
+	cmdBuffer.SendMsg<Render::AddAdditiveLightToSceneMsg>(myorg, intensity, r, g, b);
 }
 
 void trap_R_RenderScene( const refdef_t *fd )
 {
-	VM::SendMsg<Render::RenderSceneMsg>(*fd);
+	cmdBuffer.SendMsg<Render::RenderSceneMsg>(*fd);
 }
 
 void trap_R_SetColor( const float *rgba )
@@ -465,29 +448,29 @@ void trap_R_SetColor( const float *rgba )
 	if (rgba) {
 		memcpy(myrgba.data(), rgba, 4 * sizeof(float));
 	}
-	VM::SendMsg<Render::SetColorMsg>(myrgba);
+	cmdBuffer.SendMsg<Render::SetColorMsg>(myrgba);
 }
 
 void trap_R_SetClipRegion( const float *region )
 {
 	std::array<float, 4> myregion;
 	memcpy(myregion.data(), region, 4 * sizeof(float));
-	VM::SendMsg<Render::SetClipRegionMsg>(myregion);
+	cmdBuffer.SendMsg<Render::SetClipRegionMsg>(myregion);
 }
 
 void trap_R_ResetClipRegion( void )
 {
-	VM::SendMsg<Render::ResetClipRegionMsg>();
+	cmdBuffer.SendMsg<Render::ResetClipRegionMsg>();
 }
 
 void trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader )
 {
-	VM::SendMsg<Render::DrawStretchPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader);
+	cmdBuffer.SendMsg<Render::DrawStretchPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader);
 }
 
 void trap_R_DrawRotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle )
 {
-	VM::SendMsg<Render::DrawRotatedPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader, angle);
+	cmdBuffer.SendMsg<Render::DrawRotatedPicMsg>(x, y, w, h, s1, t1, s2, t2, hShader, angle);
 }
 
 void trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs )
@@ -546,11 +529,42 @@ int trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, i
 	return result;
 }
 
+// Shamelessly stolen from tr_animation.cpp
 int trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
 {
-	int result;
-	VM::SendMsg<Render::BlendSkeletonMsg>(*skel, *blend, frac, *skel, result);
-	return result;
+    int    i;
+    vec3_t bounds[ 2 ];
+
+    if ( skel->numBones != blend->numBones )
+    {
+        Log::Warn("trap_R_BlendSkeleton: different number of bones %d != %d\n", skel->numBones, blend->numBones);
+        return qfalse;
+    }
+
+    // lerp between the 2 bone poses
+    for ( i = 0; i < skel->numBones; i++ )
+    {
+        transform_t trans;
+
+        TransStartLerp( &trans );
+        TransAddWeight( 1.0f - frac, &skel->bones[ i ].t, &trans );
+        TransAddWeight( frac, &blend->bones[ i ].t, &trans );
+        TransEndLerp( &trans );
+
+        TransCopy( &trans, &skel->bones[ i ].t );
+    }
+
+    // calculate a bounding box in the current coordinate system
+    for ( i = 0; i < 3; i++ )
+    {
+        bounds[ 0 ][ i ] = skel->bounds[ 0 ][ i ] < blend->bounds[ 0 ][ i ] ? skel->bounds[ 0 ][ i ] : blend->bounds[ 0 ][ i ];
+        bounds[ 1 ][ i ] = skel->bounds[ 1 ][ i ] > blend->bounds[ 1 ][ i ] ? skel->bounds[ 1 ][ i ] : blend->bounds[ 1 ][ i ];
+    }
+
+    VectorCopy( bounds[ 0 ], skel->bounds[ 0 ] );
+    VectorCopy( bounds[ 1 ], skel->bounds[ 1 ] );
+
+    return qtrue;
 }
 
 int trap_R_BoneIndex( qhandle_t hModel, const char *boneName )
@@ -585,7 +599,7 @@ void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, flo
 {
 	std::array<float, 3> mypos;
 	VectorCopy(pos, mypos.data());
-	VM::SendMsg<Render::AddVisTestToSceneMsg>(hTest, mypos, depthAdjust, area);
+	cmdBuffer.SendMsg<Render::AddVisTestToSceneMsg>(hTest, mypos, depthAdjust, area);
 }
 
 float trap_CheckVisibility( qhandle_t hTest )
@@ -597,12 +611,12 @@ float trap_CheckVisibility( qhandle_t hTest )
 
 void trap_UnregisterVisTest( qhandle_t hTest )
 {
-	VM::SendMsg<Render::UnregisterVisTestMsg>(hTest);
+	cmdBuffer.SendMsg<Render::UnregisterVisTestMsg>(hTest);
 }
 
 void trap_SetColorGrading( int slot, qhandle_t hShader )
 {
-	VM::SendMsg<Render::SetColorGradingMsg>(slot, hShader);
+	cmdBuffer.SendMsg<Render::SetColorGradingMsg>(slot, hShader);
 }
 
 // All keys
@@ -619,11 +633,10 @@ void trap_Key_SetCatcher( int catcher )
 	VM::SendMsg<Key::SetCatcherMsg>(catcher);
 }
 
-void trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
-{
-	std::string result;
-	VM::SendMsg<Key::GetBindingBufMsg>(keynum, team, buflen, result);
-	Q_strncpyz(buf, result.c_str(), buflen);
+std::vector<std::vector<int>> trap_Key_GetKeynumForBinds(int team, std::vector<std::string> binds) {
+    std::vector<std::vector<int>> result;
+	VM::SendMsg<Key::GetKeynumForBindsMsg>(team, binds, result);
+    return std::move(result);
 }
 
 void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )

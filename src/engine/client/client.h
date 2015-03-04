@@ -45,6 +45,8 @@ Maryland 20850 USA.
 #include "../client/cg_api.h"
 #include "../framework/VirtualMachine.h"
 #include "../framework/CommonVMServices.h"
+#include "../framework/CommandBufferHost.h"
+#include "../../common/IPC/CommandBuffer.h"
 
 #if defined(USE_VOIP) && !defined(BUILD_SERVER)
 #include <speex/speex.h>
@@ -436,10 +438,18 @@ public:
 	float CGameRocketProgressbarValue(Str::StringRef source);
 
 private:
-	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
-	void QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel);
+	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
+	void QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel);
 
 	std::unique_ptr<VM::CommonVMServices> services;
+
+    class CmdBuffer: public IPC::CommandBufferHost {
+        public:
+            CmdBuffer(std::string name);
+            virtual void HandleCommandBufferSyscall(int major, int minor, Util::Reader& reader) OVERRIDE FINAL;
+    };
+
+    CmdBuffer cmdBuffer;
 };
 
 extern CGameVM                cgvm;

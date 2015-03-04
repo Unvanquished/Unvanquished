@@ -35,7 +35,7 @@ Maryland 20850 USA.
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
-#include "../sys/sys_local.h"
+#include "cg_msgdef.h"
 
 #include "libmumblelink.h"
 #include "../qcommon/crypto.h"
@@ -233,7 +233,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 
 	if (cmd == "pubkey_decrypt") {
 		char         buffer[ MAX_STRING_CHARS ] = "pubkey_identify ";
-		unsigned int msg_len = MAX_STRING_CHARS - 16;
+		NettleLength msg_len = MAX_STRING_CHARS - 16;
 		mpz_t        message;
 
 		if (argc == 1) {
@@ -298,7 +298,6 @@ CL_GetSnapshot
 qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 {
 	clSnapshot_t *clSnap;
-	int          i, count;
 
 	if ( snapshotNumber > cl.snap.messageNum )
 	{
@@ -334,7 +333,7 @@ qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 	snapshot->ps = clSnap->ps;
 
 	snapshot->entities.reserve(clSnap->numEntities);
-	for (i = 0; i < count; i++) {
+	for (int i = 0; i < clSnap->numEntities; i++) {
 		snapshot->entities.push_back(cl.parseEntities[( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ]);
 	}
 
@@ -1025,9 +1024,6 @@ void CL_InitCGame( void )
 	// on the card even if the driver does deferred loading
 	re.EndRegistration();
 
-	// make sure everything is paged in
-	Com_TouchMemory();
-
 	// Ridah, update the memory usage file
 	CL_UpdateLevelHunkUsage();
 
@@ -1443,7 +1439,7 @@ void  CL_OnTeamChanged( int newTeam )
 	Cmd::BufferCommandText( "exec -f " TEAMCONFIG_NAME );
 }
 
-CGameVM::CGameVM(): VM::VMBase("cgame"), services(nullptr)
+CGameVM::CGameVM(): VM::VMBase("cgame"), services(nullptr), cmdBuffer("client")
 {
 }
 
@@ -1533,22 +1529,25 @@ float CGameVM::CGameRocketProgressbarValue(Str::StringRef source)
 	return value;
 }
 
-void CGameVM::Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel)
+void CGameVM::Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel)
 {
 	int major = id >> 16;
 	int minor = id & 0xffff;
 	if (major == VM::QVM) {
 		this->QVMSyscall(minor, reader, channel);
 
+	} else if (major == VM::COMMAND_BUFFER) {
+		this->cmdBuffer.Syscall(minor, reader, channel);
+
 	} else if (major < VM::LAST_COMMON_SYSCALL) {
 		services->Syscall(major, minor, std::move(reader), channel);
 
 	} else {
-		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
+		Sys::Drop("Bad major game syscall number: %d", major);
 	}
 }
 
-void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
+void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
 		case CG_SENDCLIENTCOMMAND:
@@ -1680,89 +1679,11 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 
 		// All sounds
 
-		case CG_S_STARTSOUND:
-			IPC::HandleMsg<Audio::StartSoundMsg>(channel, std::move(reader), [this] (bool isPositional, std::array<float, 3> origin, int entityNum, int sfx) {
-				Audio::StartSound(entityNum, (isPositional ? origin.data() : nullptr), sfx);
-			});
-			break;
-
-		case CG_S_STARTLOCALSOUND:
-			IPC::HandleMsg<Audio::StartLocalSoundMsg>(channel, std::move(reader), [this] (int sfx) {
-				Audio::StartLocalSound(sfx);
-			});
-			break;
-
-		case CG_S_CLEARLOOPINGSOUNDS:
-			IPC::HandleMsg<Audio::ClearLoopingSoundsMsg>(channel, std::move(reader), [this] {
-				Audio::ClearAllLoopingSounds();
-			});
-			break;
-
-		case CG_S_ADDLOOPINGSOUND:
-			IPC::HandleMsg<Audio::AddLoopingSoundMsg>(channel, std::move(reader), [this] (int entityNum, int sfx) {
-				Audio::AddEntityLoopingSound(entityNum, sfx);
-			});
-			break;
-
-		case CG_S_STOPLOOPINGSOUND:
-			IPC::HandleMsg<Audio::StopLoopingSoundMsg>(channel, std::move(reader), [this] (int entityNum) {
-				Audio::ClearLoopingSoundsForEntity(entityNum);
-			});
-			break;
-
-		case CG_S_UPDATEENTITYPOSITION:
-			IPC::HandleMsg<Audio::UpdateEntityPositionMsg>(channel, std::move(reader), [this] (int entityNum, std::array<float, 3> position) {
-				Audio::UpdateEntityPosition(entityNum, position.data());
-			});
-			break;
-
-		case CG_S_RESPATIALIZE:
-			IPC::HandleMsg<Audio::RespatializeMsg>(channel, std::move(reader), [this] (int entityNum, std::array<float, 9> axis) {
-				Audio::UpdateListener(entityNum, (vec3_t*) axis.data());
-			});
-			break;
-
-		case CG_S_REGISTERSOUND:
-			IPC::HandleMsg<Audio::RegisterSoundMsg>(channel, std::move(reader), [this] (std::string sample, int& handle) {
-				handle = Audio::RegisterSFX(sample.c_str());
-			});
-			break;
-
-		case CG_S_STARTBACKGROUNDTRACK:
-			IPC::HandleMsg<Audio::StartBackgroundTrackMsg>(channel, std::move(reader), [this] (std::string intro, std::string loop) {
-				Audio::StartMusic(intro.c_str(), loop.c_str());
-			});
-			break;
-
-		case CG_S_STOPBACKGROUNDTRACK:
-			IPC::HandleMsg<Audio::StopBackgroundTrackMsg>(channel, std::move(reader), [this] {
-				Audio::StopMusic();
-			});
-			break;
-
-		case CG_S_UPDATEENTITYVELOCITY:
-			IPC::HandleMsg<Audio::UpdateEntityVelocityMsg>(channel, std::move(reader), [this] (int entityNum, std::array<float, 3> velocity) {
-				Audio::UpdateEntityVelocity(entityNum, velocity.data());
-			});
-			break;
-
-		case CG_S_SETREVERB:
-			IPC::HandleMsg<Audio::SetReverbMsg>(channel, std::move(reader), [this] (int slotNum, std::string name, float ratio) {
-				Audio::SetReverb(slotNum, name.c_str(), ratio);
-			});
-			break;
-
-		case CG_S_BEGINREGISTRATION:
-			IPC::HandleMsg<Audio::BeginRegistrationMsg>(channel, std::move(reader), [this] {
-				Audio::BeginRegistration();
-			});
-			break;
-
-		case CG_S_ENDREGISTRATION:
-			IPC::HandleMsg<Audio::EndRegistrationMsg>(channel, std::move(reader), [this] {
-				Audio::EndRegistration();
-			});
-			break;
+			case CG_S_REGISTERSOUND:
+				IPC::HandleMsg<Audio::RegisterSoundMsg>(channel, std::move(reader), [this] (std::string sample, int& handle) {
+					handle = Audio::RegisterSFX(sample.c_str());
+				});
+				break;
 
 		// All renderer
 
@@ -1775,18 +1696,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 		case CG_R_GETSHADERNAMEFROMHANDLE:
 			IPC::HandleMsg<Render::GetShaderNameFromHandleMsg>(channel, std::move(reader), [this] (int handle, std::string& name) {
 			    name = re.ShaderNameFromHandle(handle);
-			});
-			break;
-
-		case CG_R_SCISSOR_ENABLE:
-			IPC::HandleMsg<Render::ScissorEnableMsg>(channel, std::move(reader), [this] (bool enable) {
-				re.ScissorEnable(enable);
-			});
-			break;
-
-		case CG_R_SCISSOR_SET:
-			IPC::HandleMsg<Render::ScissorSetMsg>(channel, std::move(reader), [this] (int x, int y, int w, int h) {
-				re.ScissorSet(x, y, w, h);
 			});
 			break;
 
@@ -1827,78 +1736,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_R_CLEARSCENE:
-			IPC::HandleMsg<Render::ClearSceneMsg>(channel, std::move(reader), [this] {
-				re.ClearScene();
-			});
-			break;
-
-		case CG_R_ADDREFENTITYTOSCENE:
-			IPC::HandleMsg<Render::AddRefEntityToSceneMsg>(channel, std::move(reader), [this] (refEntity_t entity) {
-				re.AddRefEntityToScene(&entity);
-			});
-			break;
-
-		case CG_R_ADDPOLYTOSCENE:
-			IPC::HandleMsg<Render::AddPolyToSceneMsg>(channel, std::move(reader), [this] (int shader, std::vector<polyVert_t> verts) {
-				re.AddPolyToScene(shader, verts.size(), verts.data());
-			});
-			break;
-
-		case CG_R_ADDPOLYSTOSCENE:
-			IPC::HandleMsg<Render::AddPolysToSceneMsg>(channel, std::move(reader), [this] (int shader, std::vector<polyVert_t> verts, int numVerts, int numPolys) {
-				re.AddPolysToScene(shader, numVerts, verts.data(), numPolys);
-			});
-			break;
-
-		case CG_R_ADDLIGHTTOSCENE:
-			IPC::HandleMsg<Render::AddLightToSceneMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, float radius, float intensity, float r, float g, float b, int shader, int flags) {
-				re.AddLightToScene(point.data(), radius, intensity, r, g, b, shader, flags);
-			});
-			break;
-
-		case CG_R_ADDADDITIVELIGHTTOSCENE:
-			IPC::HandleMsg<Render::AddAdditiveLightToSceneMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, float intensity, float r, float g, float b) {
-				re.AddAdditiveLightToScene(point.data(), intensity, r, g, b);
-			});
-			break;
-
-		case CG_R_RENDERSCENE:
-			IPC::HandleMsg<Render::RenderSceneMsg>(channel, std::move(reader), [this] (refdef_t rd) {
-				re.RenderScene(&rd);
-			});
-			break;
-
-		case CG_R_SETCOLOR:
-			IPC::HandleMsg<Render::SetColorMsg>(channel, std::move(reader), [this] (std::array<float, 4> color) {
-				re.SetColor(color.data());
-			});
-			break;
-
-		case CG_R_SETCLIPREGION:
-			IPC::HandleMsg<Render::SetClipRegionMsg>(channel, std::move(reader), [this] (std::array<float, 4> region) {
-				re.SetClipRegion(region.data());
-			});
-			break;
-
-		case CG_R_RESETCLIPREGION:
-			IPC::HandleMsg<Render::ResetClipRegionMsg>(channel, std::move(reader), [this] {
-				re.SetClipRegion(nullptr);
-			});
-			break;
-
-		case CG_R_DRAWSTRETCHPIC:
-			IPC::HandleMsg<Render::DrawStretchPicMsg>(channel, std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader) {
-				re.DrawStretchPic(x, y, w, h, s1, t1, s2, t2, shader);
-			});
-			break;
-
-		case CG_R_DRAWROTATEDPIC:
-			IPC::HandleMsg<Render::DrawRotatedPicMsg>(channel, std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader, float angle) {
-				re.DrawRotatedPic(x, y, w, h, s1, t1, s2, t2, shader, angle);
-			});
-			break;
-
 		case CG_R_MODELBOUNDS:
 			IPC::HandleMsg<Render::ModelBoundsMsg>(channel, std::move(reader), [this] (int handle, std::array<float, 3>& mins, std::array<float, 3>& maxs) {
 				re.ModelBounds(handle, mins.data(), maxs.data());
@@ -1906,7 +1743,7 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_R_LERPTAG:
-			IPC::HandleMsg<Render::LerpTagMsg>(channel, std::move(reader), [this] (refEntity_t entity, std::string tagName, int startIndex, orientation_t& tag, int& res) {
+			IPC::HandleMsg<Render::LerpTagMsg>(channel, std::move(reader), [this] (refEntity_t&& entity, std::string tagName, int startIndex, orientation_t& tag, int& res) {
 				res = re.LerpTag(&tag, &entity, tagName.c_str(), startIndex);
 			});
 			break;
@@ -1941,13 +1778,6 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_R_BLENDSKELETON:
-			IPC::HandleMsg<Render::BlendSkeletonMsg>(channel, std::move(reader), [this] (refSkeleton_t skel1, refSkeleton_t skel2, float frac, refSkeleton_t& resSkel, int& res) {
-				memcpy(&resSkel, &skel1, sizeof(refSkeleton_t));
-				res = re.BlendSkeleton(&resSkel, &skel2, frac);
-			});
-			break;
-
 		case CG_R_BONEINDEX:
 			IPC::HandleMsg<Render::BoneIndexMsg>(channel, std::move(reader), [this] (int model, std::string boneName, int& index) {
 				index = re.BoneIndex(model, boneName.c_str());
@@ -1972,27 +1802,9 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_ADDVISTESTTOSCENE:
-			IPC::HandleMsg<Render::AddVisTestToSceneMsg>(channel, std::move(reader), [this] (int handle, std::array<float, 3> pos, float depthAdjust, float area) {
-				re.AddVisTestToScene(handle, pos.data(), depthAdjust, area);
-			});
-			break;
-
 		case CG_CHECKVISIBILITY:
 			IPC::HandleMsg<Render::CheckVisibilityMsg>(channel, std::move(reader), [this] (int handle, float& res) {
 				res = re.CheckVisibility(handle);
-			});
-			break;
-
-		case CG_UNREGISTERVISTEST:
-			IPC::HandleMsg<Render::UnregisterVisTestMsg>(channel, std::move(reader), [this] (int handle) {
-				re.UnregisterVisTest(handle);
-			});
-			break;
-
-		case CG_SETCOLORGRADING:
-			IPC::HandleMsg<Render::SetColorGradingMsg>(channel, std::move(reader), [this] (int slot, int shader) {
-				re.SetColorGrading(slot, shader);
 			});
 			break;
 
@@ -2010,11 +1822,25 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
-		case CG_KEY_GETBINDINGBUF:
-			IPC::HandleMsg<Key::GetBindingBufMsg>(channel, std::move(reader), [this] (int keynum, int team, int len, std::string& result) {
-				std::unique_ptr<char[]> buffer(new char[len]);
-				Key_GetBindingBuf(keynum, team, buffer.get(), len);
-				result.assign(buffer.get(), len);
+		case CG_KEY_GETKEYNUMFORBINDS:
+			IPC::HandleMsg<Key::GetKeynumForBindsMsg>(channel, std::move(reader), [this] (int team, std::vector<std::string> binds, std::vector<std::vector<int>>& result) {
+                for (auto& bind : binds) {
+                    result.push_back({});
+                    for (int i = 0; i < MAX_KEYS; i++) {
+                        char buffer[MAX_STRING_CHARS];
+
+                        Key_GetBindingBuf(i, team, buffer, MAX_STRING_CHARS);
+                        if (bind == buffer) {
+                            result.back().push_back(i);
+                            continue;
+                        }
+                        Key_GetBindingBuf(0, team, buffer, MAX_STRING_CHARS);
+                        if (bind == buffer) {
+                            result.back().push_back(i);
+                            continue;
+                        }
+                    }
+                }
 			});
 			break;
 
@@ -2087,6 +1913,223 @@ void CGameVM::QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel)
 			break;
 
 	default:
-		Com_Error(ERR_DROP, "Bad game system trap: %d", index);
+		Sys::Drop("Bad CGame QVM syscall minor number: %d", index);
 	}
 }
+
+//TODO move somewhere else
+template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(IPC::Message<Id, MsgArgs...>, Util::Reader reader, Func&& func)
+{
+    typedef IPC::Message<Id, MsgArgs...> Message;
+
+    typename IPC::detail::MapTuple<typename Message::Inputs>::type inputs;
+    reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
+
+    Util::apply(std::forward<Func>(func), std::move(inputs));
+}
+
+template<typename Msg, typename Func> void HandleMsg(Util::Reader reader, Func&& func)
+{
+    HandleMsg(Msg(), std::move(reader), std::forward<Func>(func));
+}
+
+CGameVM::CmdBuffer::CmdBuffer(std::string name): IPC::CommandBufferHost(name) {
+}
+
+void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::Reader& reader) {
+	if (major == VM::QVM) {
+		switch (minor) {
+
+			// All sounds
+
+			case CG_S_STARTSOUND:
+				HandleMsg<Audio::StartSoundMsg>(std::move(reader), [this] (bool isPositional, std::array<float, 3> origin, int entityNum, int sfx) {
+					Audio::StartSound(entityNum, (isPositional ? origin.data() : nullptr), sfx);
+				});
+				break;
+
+			case CG_S_STARTLOCALSOUND:
+				HandleMsg<Audio::StartLocalSoundMsg>(std::move(reader), [this] (int sfx) {
+					Audio::StartLocalSound(sfx);
+				});
+				break;
+
+			case CG_S_CLEARLOOPINGSOUNDS:
+				HandleMsg<Audio::ClearLoopingSoundsMsg>(std::move(reader), [this] {
+					Audio::ClearAllLoopingSounds();
+				});
+				break;
+
+			case CG_S_ADDLOOPINGSOUND:
+				HandleMsg<Audio::AddLoopingSoundMsg>(std::move(reader), [this] (int entityNum, int sfx) {
+					Audio::AddEntityLoopingSound(entityNum, sfx);
+				});
+				break;
+
+			case CG_S_STOPLOOPINGSOUND:
+				HandleMsg<Audio::StopLoopingSoundMsg>(std::move(reader), [this] (int entityNum) {
+					Audio::ClearLoopingSoundsForEntity(entityNum);
+				});
+				break;
+
+			case CG_S_UPDATEENTITYPOSITION:
+				HandleMsg<Audio::UpdateEntityPositionMsg>(std::move(reader), [this] (int entityNum, std::array<float, 3> position) {
+					Audio::UpdateEntityPosition(entityNum, position.data());
+				});
+				break;
+
+			case CG_S_RESPATIALIZE:
+				HandleMsg<Audio::RespatializeMsg>(std::move(reader), [this] (int entityNum, std::array<float, 9> axis) {
+					Audio::UpdateListener(entityNum, (vec3_t*) axis.data());
+				});
+				break;
+
+			case CG_S_STARTBACKGROUNDTRACK:
+				HandleMsg<Audio::StartBackgroundTrackMsg>(std::move(reader), [this] (std::string intro, std::string loop) {
+					Audio::StartMusic(intro.c_str(), loop.c_str());
+				});
+				break;
+
+			case CG_S_STOPBACKGROUNDTRACK:
+				HandleMsg<Audio::StopBackgroundTrackMsg>(std::move(reader), [this] {
+					Audio::StopMusic();
+				});
+				break;
+
+			case CG_S_UPDATEENTITYVELOCITY:
+				HandleMsg<Audio::UpdateEntityVelocityMsg>(std::move(reader), [this] (int entityNum, std::array<float, 3> velocity) {
+					Audio::UpdateEntityVelocity(entityNum, velocity.data());
+				});
+				break;
+
+			case CG_S_SETREVERB:
+				HandleMsg<Audio::SetReverbMsg>(std::move(reader), [this] (int slotNum, std::string name, float ratio) {
+					Audio::SetReverb(slotNum, name.c_str(), ratio);
+				});
+				break;
+
+			case CG_S_BEGINREGISTRATION:
+				HandleMsg<Audio::BeginRegistrationMsg>(std::move(reader), [this] {
+					Audio::BeginRegistration();
+				});
+				break;
+
+			case CG_S_ENDREGISTRATION:
+				HandleMsg<Audio::EndRegistrationMsg>(std::move(reader), [this] {
+					Audio::EndRegistration();
+				});
+				break;
+
+            // All renderer
+
+            case CG_R_SCISSOR_ENABLE:
+                HandleMsg<Render::ScissorEnableMsg>(std::move(reader), [this] (bool enable) {
+                    re.ScissorEnable(enable);
+                });
+                break;
+
+            case CG_R_SCISSOR_SET:
+                HandleMsg<Render::ScissorSetMsg>(std::move(reader), [this] (int x, int y, int w, int h) {
+                    re.ScissorSet(x, y, w, h);
+                });
+                break;
+
+            case CG_R_CLEARSCENE:
+                HandleMsg<Render::ClearSceneMsg>(std::move(reader), [this] {
+                    re.ClearScene();
+                });
+                break;
+
+            case CG_R_ADDREFENTITYTOSCENE:
+                HandleMsg<Render::AddRefEntityToSceneMsg>(std::move(reader), [this] (refEntity_t&& entity) {
+                    re.AddRefEntityToScene(&entity);
+                });
+                break;
+
+            case CG_R_ADDPOLYTOSCENE:
+                HandleMsg<Render::AddPolyToSceneMsg>(std::move(reader), [this] (int shader, std::vector<polyVert_t> verts) {
+                    re.AddPolyToScene(shader, verts.size(), verts.data());
+                });
+                break;
+
+            case CG_R_ADDPOLYSTOSCENE:
+                HandleMsg<Render::AddPolysToSceneMsg>(std::move(reader), [this] (int shader, std::vector<polyVert_t> verts, int numVerts, int numPolys) {
+                    re.AddPolysToScene(shader, numVerts, verts.data(), numPolys);
+                });
+                break;
+
+            case CG_R_ADDLIGHTTOSCENE:
+                HandleMsg<Render::AddLightToSceneMsg>(std::move(reader), [this] (std::array<float, 3> point, float radius, float intensity, float r, float g, float b, int shader, int flags) {
+                    re.AddLightToScene(point.data(), radius, intensity, r, g, b, shader, flags);
+                });
+                break;
+
+            case CG_R_ADDADDITIVELIGHTTOSCENE:
+                HandleMsg<Render::AddAdditiveLightToSceneMsg>(std::move(reader), [this] (std::array<float, 3> point, float intensity, float r, float g, float b) {
+                    re.AddAdditiveLightToScene(point.data(), intensity, r, g, b);
+                });
+                break;
+
+            case CG_R_SETCOLOR:
+                HandleMsg<Render::SetColorMsg>(std::move(reader), [this] (std::array<float, 4> color) {
+                    re.SetColor(color.data());
+                });
+                break;
+
+            case CG_R_SETCLIPREGION:
+                HandleMsg<Render::SetClipRegionMsg>(std::move(reader), [this] (std::array<float, 4> region) {
+                    re.SetClipRegion(region.data());
+                });
+                break;
+
+            case CG_R_RESETCLIPREGION:
+                HandleMsg<Render::ResetClipRegionMsg>(std::move(reader), [this] {
+                    re.SetClipRegion(nullptr);
+                });
+                break;
+
+            case CG_R_DRAWSTRETCHPIC:
+                HandleMsg<Render::DrawStretchPicMsg>(std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader) {
+                    re.DrawStretchPic(x, y, w, h, s1, t1, s2, t2, shader);
+                });
+                break;
+
+            case CG_R_DRAWROTATEDPIC:
+                HandleMsg<Render::DrawRotatedPicMsg>(std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader, float angle) {
+                    re.DrawRotatedPic(x, y, w, h, s1, t1, s2, t2, shader, angle);
+                });
+                break;
+
+            case CG_ADDVISTESTTOSCENE:
+                HandleMsg<Render::AddVisTestToSceneMsg>(std::move(reader), [this] (int handle, std::array<float, 3> pos, float depthAdjust, float area) {
+                    re.AddVisTestToScene(handle, pos.data(), depthAdjust, area);
+                });
+                break;
+
+            case CG_UNREGISTERVISTEST:
+                HandleMsg<Render::UnregisterVisTestMsg>(std::move(reader), [this] (int handle) {
+                    re.UnregisterVisTest(handle);
+                });
+                break;
+
+            case CG_SETCOLORGRADING:
+                HandleMsg<Render::SetColorGradingMsg>(std::move(reader), [this] (int slot, int shader) {
+                    re.SetColorGrading(slot, shader);
+                });
+                break;
+
+            case CG_R_RENDERSCENE:
+                HandleMsg<Render::RenderSceneMsg>(std::move(reader), [this] (refdef_t rd) {
+                    re.RenderScene(&rd);
+                });
+                break;
+
+		default:
+			Sys::Drop("Bad minor CGame QVM Command Buffer number: %d", minor);
+		}
+
+	} else {
+		Sys::Drop("Bad major CGame Command Buffer number: %d", major);
+	}
+}
+

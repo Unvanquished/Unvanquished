@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../botlib/bot_api.h"
-#include "../server/g_api.h"
+#include "sg_api.h"
 #include "../framework/VirtualMachine.h"
 #include "../framework/CommonVMServices.h"
 
@@ -185,7 +185,7 @@ typedef struct client_s
 
 	// downloading
 	char          downloadName[ MAX_QPATH ]; // if not empty string, we are downloading
-	std::shared_ptr<FS::File> download; // file being downloaded (Using shared_ptr to work around MSVC failing at infering move constructors)
+	FS::File*     download; // file being downloaded
 	int           downloadSize; // total bytes (can't use EOF because of paks)
 	int           downloadCount; // bytes sent
 	int           downloadClientBlock; // last block we sent to the client, awaiting ack
@@ -329,8 +329,8 @@ public:
 	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
 
 private:
-	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
-	void QVMSyscall(int index, IPC::Reader& reader, IPC::Channel& channel);
+	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
+	void QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel);
 
 	IPC::SharedMemory shmRegion;
 
@@ -364,8 +364,6 @@ extern cvar_t         *sv_serverid;
 extern cvar_t         *sv_maxRate;
 extern cvar_t         *sv_minPing;
 extern cvar_t         *sv_maxPing;
-
-extern cvar_t *sv_newGameShlib;
 
 extern cvar_t *sv_pure;
 extern cvar_t *sv_floodProtect;
@@ -479,7 +477,7 @@ void SV_SendClientSnapshot( client_t *client );
 void SV_SendClientIdle( client_t *client );
 
 //
-// sv_game.c
+// sv_sgame.c
 //
 int SV_NumForGentity( sharedEntity_t *ent );
 

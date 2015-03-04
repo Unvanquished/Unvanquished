@@ -110,7 +110,6 @@ void CG_Rocket_BuildServerInfo( void )
 
 	if ( trap_LAN_ServerStatus( server->addr, serverInfoText, sizeof( serverInfoText ) ) )
 	{
-		int line = 0;
 		int i = 0, score, ping;
 		const char *start, *end;
 		static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
@@ -523,7 +522,6 @@ void CG_Rocket_BuildResolutionList( const char *args )
 	int         w, h;
 	char        *p;
 	char        *out;
-	char        *s = NULL;
 	int          i;
 
 	trap_Cvar_VariableStringBuffer( "r_availableModes", buf, sizeof( buf ) );
@@ -1665,7 +1663,6 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 	if ( !Q_stricmp( table, "default" ) )
 	{
 		int i;
-		int cost;
 
 		Rocket_DSClearTable( "alienEvolveList", "default" );
 		CG_Rocket_CleanUpAlienEvolveList( "default" );

@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "../../common/Common.h"
+#include "../../common/IPC/CommonSyscalls.h"
 #include "CommonVMServices.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/CvarSystem.h"
@@ -37,9 +38,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace VM {
 
+    // Misc Related
+
+    void CommonVMServices::HandleMiscSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
+        switch(minor) {
+            case CREATE_SHARED_MEMORY:
+                IPC::HandleMsg<CreateSharedMemoryMsg>(channel, std::move(reader), [this](size_t size, IPC::SharedMemory& shm) {
+                    shm = IPC::SharedMemory::Create(size);
+                });
+        }
+    }
+
     // Command Related
 
-    void CommonVMServices::HandleCommandSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::HandleCommandSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
         switch(minor) {
             case ADD_COMMAND:
                 AddCommand(reader, channel);
@@ -83,7 +95,7 @@ namespace VM {
             CommonVMServices& services;
     };
 
-    void CommonVMServices::AddCommand(IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::AddCommand(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<AddCommandMsg>(channel, std::move(reader), [this](std::string name, std::string description){
             if (Cmd::CommandExists(name)) {
                 Log::Warn("VM '%s' tried to register command '%s' which is already registered", vmName, name);
@@ -95,7 +107,7 @@ namespace VM {
         });
     }
 
-    void CommonVMServices::RemoveCommand(IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::RemoveCommand(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<RemoveCommandMsg>(channel, std::move(reader), [this](std::string name){
             if (registeredCommands.find(name) != registeredCommands.end()) {
                 Cmd::RemoveCommand(name);
@@ -103,14 +115,14 @@ namespace VM {
         });
     }
 
-    void CommonVMServices::EnvPrint(IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::EnvPrint(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<EnvPrintMsg>(channel, std::move(reader), [this](std::string line){
             //TODO allow it only if we are in a command?
             Cmd::GetEnv()->Print(line);
         });
     }
 
-    void CommonVMServices::EnvExecuteAfter(IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::EnvExecuteAfter(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<EnvExecuteAfterMsg>(channel, std::move(reader), [this](std::string commandText, bool parseCvars){
             //TODO check that it isn't sending /quit or other bad commands (/lua "rootkit()")?
             Cmd::GetEnv()->ExecuteAfter(commandText, parseCvars);
@@ -142,7 +154,7 @@ namespace VM {
             CommonVMServices* services;
     };
 
-    void CommonVMServices::HandleCvarSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::HandleCvarSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
         switch(minor) {
             case REGISTER_CVAR:
                 RegisterCvar(reader, channel);
@@ -165,7 +177,7 @@ namespace VM {
         }
     }
 
-    void CommonVMServices::RegisterCvar(IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::RegisterCvar(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<RegisterCvarMsg>(channel, std::move(reader), [this](std::string name, std::string description,
                 int flags, std::string defaultValue){
             // The registration of the cvar is made automatically when it is created
@@ -173,21 +185,21 @@ namespace VM {
         });
     }
 
-    void CommonVMServices::GetCvar(IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::GetCvar(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<GetCvarMsg>(channel, std::move(reader), [&, this](std::string name, std::string& value){
             //TODO check it is only looking at allowed cvars?
             value = Cvar::GetValue(name);
         });
     }
 
-    void CommonVMServices::SetCvar(IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::SetCvar(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<SetCvarMsg>(channel, std::move(reader), [this](std::string name, std::string value){
             //TODO check it is only touching allowed cvars?
             Cvar::SetValue(name, value);
         });
     }
 
-    void CommonVMServices::AddCvarFlags(IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::AddCvarFlags(Util::Reader& reader, IPC::Channel& channel) {
         IPC::HandleMsg<AddCvarFlagsMsg>(channel, std::move(reader), [this](std::string name, int flags, bool& exists){
             //TODO check it is only touching allowed cvars?
             exists = Cvar::AddFlags(name, flags);
@@ -195,7 +207,7 @@ namespace VM {
     }
 
     // Log Related
-    void CommonVMServices::HandleLogSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::HandleLogSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
         switch(minor) {
             case DISPATCH_EVENT:
                 IPC::HandleMsg<DispatchLogEventMsg>(channel, std::move(reader), [this](std::string text, int targetControl){
@@ -209,7 +221,7 @@ namespace VM {
     }
 
     // Common common QVM syscalls
-    void CommonVMServices::HandleCommonQVMSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel) {
+    void CommonVMServices::HandleCommonQVMSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
         switch (minor) {
             case QVM_COMMON_PRINT:
                 IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](std::string text) {
@@ -359,10 +371,14 @@ namespace VM {
         //TODO unregesiter cvars
     }
 
-    void CommonVMServices::Syscall(int major, int minor, IPC::Reader reader, IPC::Channel& channel) {
+    void CommonVMServices::Syscall(int major, int minor, Util::Reader reader, IPC::Channel& channel) {
         switch (major) {
             case QVM_COMMON:
                 HandleCommonQVMSyscall(minor, reader, channel);
+                break;
+
+            case MISC:
+                HandleMiscSyscall(minor, reader, channel);
                 break;
 
             case COMMAND:

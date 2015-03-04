@@ -44,9 +44,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "LineEditData.h"
 #include "Maths.h"
 #include "System.h"
-#include "IPC.h"
+#include "Serialize.h"
 #include "FileSystem.h"
-#include "CommonSyscalls.h"
 #include "DisjointSets.h"
 
 #endif // COMMON_COMMON_H_

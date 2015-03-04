@@ -740,6 +740,8 @@ typedef struct centity_s
 	float                 lastBuildableHealth;
 	int                   lastBuildableDamageSoundTime;
 
+	vec3_t                overmindEyeAngle;
+
 	lightFlareStatus_t    lfs;
 
 	qboolean              doorState;
@@ -764,6 +766,9 @@ typedef struct centity_s
 
 	trailSystem_t         *muzzleTS;
 	int                   muzzleTSDeathTime;
+
+	particleSystem_t      *missilePS;
+	trailSystem_t         *missileTS;
 
 	float                 radarVisibility;
 
@@ -1581,6 +1586,8 @@ typedef struct
 	sfxHandle_t lCannonWarningSound;
 	sfxHandle_t lCannonWarningSound2;
 
+	sfxHandle_t rocketpodLockonSound;
+
 	qhandle_t   buildWeaponTimerPie[ 8 ];
 	qhandle_t   healthCross;
 	qhandle_t   healthCross2X;
@@ -2280,15 +2287,6 @@ enum
   CROSSHAIR_RANGEDONLY,
   CROSSHAIR_ALWAYSON
 };
-
-// menu types for cg_disable*Dialogs
-typedef enum
-{
-  DT_INTERACTIVE, // team, class, armoury
-  DT_ARMOURYEVOLVE, // Insufficient funds et al
-  DT_BUILD, // build errors
-  DT_COMMAND, // You must be alive/human/spec/etc.
-} dialogType_t;
 
 //
 // cg_utils.c

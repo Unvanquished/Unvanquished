@@ -138,23 +138,24 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 	weapon_t currentweapon = BG_PrimaryWeapon( ps->stats );
 	credits += BG_Weapon( currentweapon )->price;
 
-	if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
+	if( BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) ){
+		Class = "active";
+		action =  va( "onClick='exec \"sell %s\"'", BG_Weapon( weapon )->name );
+		//Check mark icon. UTF-8 encoding of \uf00c
+		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
+	}
+	else if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
 	{
 		Class = "locked";
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
+
 	else if(BG_Weapon( weapon )->price > credits){
 
 		Class = "expensive";
 		//$1 bill icon. UTF-8 encoding of \uf0d6
 		Icon = "<icon>\xEF\x83\x96</icon>";
-	}
-	else if( BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) ){
-		Class = "active";
-		action =  va( "onClick='exec \"sell %s\"'", BG_Weapon( weapon )->name );
-		//Check mark icon. UTF-8 encoding of \uf00c
-		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
 	else
 	{
@@ -174,7 +175,14 @@ static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 	playerState_t *ps = &cg.snap->ps;
 	int credits = ps->persistant[ PERS_CREDIT ];
 
-	if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
+	if( BG_InventoryContainsUpgrade( upgrade, cg.predictedPlayerState.stats ) ){
+		Class = "active";
+		action =  va( "onClick='exec \"sell %s\"'", BG_Upgrade( upgrade )->name );
+		//Check mark icon. UTF-8 encoding of \uf00c
+		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
+	}
+
+	else if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
 	{
 		Class = "locked";
 		//Padlock icon. UTF-8 encoding of \uf023
@@ -185,12 +193,6 @@ static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 		Class = "expensive";
 		//$1 bill icon. UTF-8 encoding of \uf0d6
 		Icon = "<icon>\xEF\x83\x96</icon>";
-	}
-	else if( BG_InventoryContainsUpgrade( upgrade, cg.predictedPlayerState.stats ) ){
-		Class = "active";
-		action =  va( "onClick='exec \"sell %s\"'", BG_Upgrade( upgrade )->name );
-		//Check mark icon. UTF-8 encoding of \uf00c
-		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
 	else
 	{
@@ -393,7 +395,6 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	const char *Class = "";
 	const char *Icon = "";
 	const char *action = "";
-	playerState_t *ps = &cg.snap->ps;
 	int cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass, cg.predictedPlayerState.persistant[ PERS_CREDIT ] );
 
 	if( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )

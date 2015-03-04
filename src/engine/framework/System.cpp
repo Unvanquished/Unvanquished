@@ -30,7 +30,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../sys/sys_local.h"
 #include "ConsoleHistory.h"
 #include "CommandSystem.h"
 #include "System.h"
@@ -260,7 +259,9 @@ void ReadSingletonSocket()
 static void CloseSingletonSocket()
 {
 #ifdef _WIN32
-	CloseHandle(singletonSocket);
+	// We do not close the singleton socket on Windows because another thread is
+	// currently busy waiting for message. This would cause CloseHandle to block
+	// indefinitely. Instead we rely on process shutdown to close the handle.
 #else
 	if (!haveSingletonLock)
 		return;
@@ -328,24 +329,41 @@ void Error(Str::StringRef message)
 
 // Translate non-fatal signals into a quit command
 #ifndef _WIN32
-static void SignalThread()
+static void SignalHandler(int sig)
 {
-	// Wait for the signals we are interested in
-	sigset_t sigset;
-	sigemptyset(&sigset);
-	for (int sig: {SIGTERM, SIGINT, SIGQUIT, SIGPIPE, SIGHUP})
-		sigaddset(&sigset, sig);
-	int sig;
-	sigwait(&sigset, &sig);
-
 	// Queue a quit command to be executed next frame
 	Cmd::BufferCommandText("quit");
 
 	// Sleep a bit, and wait for a signal again. If we still haven't shut down
 	// by then, trigger an error.
 	Sys::SleepFor(std::chrono::seconds(2));
+
+	sigset_t sigset;
+	sigemptyset(&sigset);
+	for (int sig: {SIGTERM, SIGINT, SIGQUIT, SIGPIPE, SIGHUP})
+		sigaddset(&sigset, sig);
 	sigwait(&sigset, &sig);
 	Sys::Error("Forcing shutdown from signal: %s", strsignal(sig));
+}
+static void SignalThread()
+{
+	// Unblock the signals we are interested in and handle them in this thread
+	sigset_t sigset;
+	sigemptyset(&sigset);
+	struct sigaction sa;
+	sa.sa_flags = 0;
+	sa.sa_handler = SignalHandler;
+	sigfillset(&sa.sa_mask);
+	for (int sig: {SIGTERM, SIGINT, SIGQUIT, SIGPIPE, SIGHUP}) {
+		sigaddset(&sigset, sig);
+		sigaction(sig, &sa, nullptr);
+	}
+	pthread_sigmask(SIG_UNBLOCK, &sigset, nullptr);
+
+	// Sleep indefinitely, all the work is done in the signal handler. We don't
+	// use sigwait here because it interferes with gdb when debugging.
+	while (true)
+		sleep(1000000);
 }
 static void StartSignalThread()
 {
@@ -368,21 +386,21 @@ static void StartSignalThread()
 
 // Command line arguments
 struct cmdlineArgs_t {
-	// The Windows client defaults to curses off because of performance issues
 	cmdlineArgs_t()
-		: homePath(FS::DefaultHomePath()), libPath(FS::DefaultBasePath()), reset_config(false), use_basepath(true),
-#if defined(_WIN32) && defined(BUILD_CLIENT)
-	use_curses(false) {}
-#else
-	use_curses(true) {}
+		: homePath(FS::DefaultHomePath()), libPath(FS::DefaultBasePath()), reset_config(false), use_curses(false)
+	{
+#if defined(_WIN32) && !defined(BUILD_CLIENT)
+		// The windows dedicated server and tty client must enable the curses
+		// interface because they have no other usable interface.
+		use_curses = true;
 #endif
+	}
 
 	std::string homePath;
 	std::string libPath;
 	std::vector<std::string> paths;
 
 	bool reset_config;
-	bool use_basepath;
 	bool use_curses;
 
 	std::unordered_map<std::string, std::string> cvars;
@@ -399,7 +417,7 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 {
 #ifdef __APPLE__
 	// Ignore the -psn parameter added by OSX
-	if (!strncmp(argv[argc - 1], "-psn", 4)
+	if (!strncmp(argv[argc - 1], "-psn", 4))
 		argc--;
 #endif
 
@@ -433,13 +451,20 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 		}
 #endif
 
-		if (!strcmp(argv[i], "--help")) {
-			fprintf(stderr, PRODUCT_NAME " " PRODUCT_VERSION "\n"
-			                "Usage: %s [-OPTION]..." HELP_URL " [+COMMAND]...\n",
-			                argv[0]);
+		if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-help")) {
+			printf("Usage: %s [-OPTION]..." HELP_URL " [+COMMAND]...\n",  argv[0]);
+			printf("Possible options are:\n"
+			       "  -homepath <path>         set the path used for user-specific configuration files and downloaded pk3 files\n"
+			       "  -libpath <path>          set the path containing additional executables and libraries\n"
+			       "  -pakpath <path>          add another path from which pk3 files are loaded\n"
+			       "  -resetconfig             reset all cvars and keybindings to their default value\n"
+			       "  -curses                  activate the curses interface\n"
+			       "  -set <variable> <value>  set the value of a cvar\n"
+			       "  +<command> <args>        execute an ingame command after startup\n"
+			);
 			exit(0);
-		} else if (!strcmp(argv[i], "--version")) {
-			fprintf(stderr, PRODUCT_NAME " " PRODUCT_VERSION "\n");
+		} else if (!strcmp(argv[i], "--version") || !strcmp(argv[i], "-version")) {
+			printf(PRODUCT_NAME " " PRODUCT_VERSION "\n");
 			exit(0);
 		} else if (!strcmp(argv[i], "-set")) {
 			if (i >= argc - 2) {
@@ -448,11 +473,9 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 			}
 			cmdlineArgs.cvars[argv[i + 1]] = argv[i + 2];
 			i += 2;
-		} else if (!strcmp(argv[i], "-nobasepath")) {
-			cmdlineArgs.use_basepath = false;
-		} else if (!strcmp(argv[i], "-path")) {
+		} else if (!strcmp(argv[i], "-pakpath")) {
 			if (i == argc - 1) {
-				Log::Warn("Missing argument for -path");
+				Log::Warn("Missing argument for -pakpath");
 				continue;
 			}
 			cmdlineArgs.paths.push_back(argv[i + 1]);
@@ -475,8 +498,6 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 			cmdlineArgs.reset_config = true;
 		} else if (!strcmp(argv[i], "-curses")) {
 			cmdlineArgs.use_curses = true;
-		} else if (!strcmp(argv[i], "-nocurses")) {
-			cmdlineArgs.use_curses = false;
 		} else {
 			Log::Warn("Ignoring unrecognized parameter \"%s\"", argv[i]);
 			continue;
@@ -496,6 +517,14 @@ static void EarlyCvar(Str::StringRef name, cmdlineArgs_t& cmdlineArgs)
 static void Init(int argc, char** argv)
 {
 	cmdlineArgs_t cmdlineArgs;
+
+#ifdef _WIN32
+	// If we were launched from a console, make our output visible on it
+	if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+		freopen("CONOUT$", "w", stdout);
+		freopen("CONOUT$", "w", stderr);
+	}
+#endif
 
 	// Print a banner and a copy of the command-line arguments
 	Log::Notice(Q3_VERSION " " PLATFORM_STRING " " ARCH_STRING " " __DATE__);
@@ -552,9 +581,10 @@ static void Init(int argc, char** argv)
 	else
 		CON_Init_TTY();
 
-	// Initialize the filesystem
-	if (cmdlineArgs.use_basepath)
-		cmdlineArgs.paths.insert(cmdlineArgs.paths.begin(), FS::DefaultBasePath());
+	// Initialize the filesystem. The base path is added first and has the
+	// lowest priority, while the homepath is added last and has the highest.
+	cmdlineArgs.paths.insert(cmdlineArgs.paths.begin(), FS::Path::Build(FS::DefaultBasePath(), "pkg"));
+	cmdlineArgs.paths.push_back(FS::Path::Build(cmdlineArgs.homePath, "pkg"));
 	FS::Initialize(cmdlineArgs.homePath, cmdlineArgs.libPath, cmdlineArgs.paths);
 
 	// Look for an existing instance of the engine running on the same homepath.
@@ -651,7 +681,7 @@ ALIGN_STACK int main(int argc, char** argv)
 	try {
 		while (true) {
 			try {
-				Com_Frame(IN_Frame, IN_FrameEnd);
+				Com_Frame();
 			} catch (Sys::DropErr& err) {
 				Log::Error(err.what());
 				FS::PakPath::ClearPaks();
@@ -668,4 +698,7 @@ ALIGN_STACK int main(int argc, char** argv)
 	} catch (...) {
 		Sys::Error("Unhandled exception of unknown type");
 	}
+
+	// Should be unreachable
+	return 0;
 }

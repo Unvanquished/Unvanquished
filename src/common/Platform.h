@@ -82,8 +82,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // VM Prefixes
 #if !defined(BUILD_VM)
 #define VM_STRING_PREFIX ""
-#elif defined(BUILD_GAME)
-#define VM_STRING_PREFIX "game."
+#elif defined(BUILD_SGAME)
+#define VM_STRING_PREFIX "sgame."
 #elif defined(BUILD_CGAME)
 #define VM_STRING_PREFIX "cgame."
 #elif defined(BUILD_UI)

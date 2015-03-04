@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "../qcommon/qcommon.h"
-#include "../sys/sys_loadlib.h"
 #include "VirtualMachine.h"
 
 #ifdef _WIN32
@@ -129,7 +128,7 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 		startupInfo.dwFlags = STARTF_USESTDHANDLES;
 	}
 	startupInfo.cb = sizeof(startupInfo);
-	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, NULL, NULL, &startupInfo, &processInfo)) {
+	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | CREATE_NO_WINDOW, NULL, NULL, &startupInfo, &processInfo)) {
 		CloseHandle(job);
 		Sys::Drop("VM: Could not create child process: %s", Sys::Win32StrError(GetLastError()));
 	}
@@ -169,7 +168,7 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 		close(pipefds[0]);
 
 		// Explicitly destroy the local socket, since destructors are not called
-		pair.first.Close();
+		close(pair.first.GetHandle());
 
 		// This seems to be required, otherwise killing the child process will
 		// also kill the parent process.
@@ -217,27 +216,33 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 }
 
 std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, bool debug, bool extract, int debugLoader) {
-	// Generate command line
 	const std::string& libPath = FS::GetLibPath();
+#ifdef NACL_RUNTIME_PATH
+	const char* naclPath = XSTRING(NACL_RUNTIME_PATH);
+#else
+	const std::string& naclPath = libPath;
+#endif
 	std::vector<const char*> args;
 	char rootSocketRedir[32];
-	std::string module, sel_ldr, irt, bootstrap, modulePath, verbosity;
+	std::string module, nacl_loader, irt, bootstrap, modulePath, verbosity;
 	FS::File stderrRedirect;
 	bool win32Force64Bit = false;
 
 	// On Windows, even if we are running a 32-bit engine, we must use the
-	// 64-bit sel_ldr if the host operating system is 64-bit.
+	// 64-bit nacl_loader if the host operating system is 64-bit.
 #if defined(_WIN32) && !defined(_WIN64)
 	SYSTEM_INFO systemInfo;
 	GetNativeSystemInfo(&systemInfo);
 	win32Force64Bit = systemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;
 #endif
 
-	// Extract the nexe from the pak so that sel_ldr can load it
+	// Extract the nexe from the pak so that nacl_loader can load it
 	module = win32Force64Bit ? name + "-x86_64.nexe" : name + "-" ARCH_STRING ".nexe";
 	if (extract) {
 		try {
 			FS::File out = FS::HomePath::OpenWrite(module);
+			if (const FS::LoadedPakInfo* pak = FS::PakPath::LocateFile(module))
+				Com_Printf("Extracting VM module %s from %s...\n", module.c_str(), pak->path.c_str());
 			FS::PakPath::CopyFile(module, out);
 			out.Close();
 		} catch (std::system_error& err) {
@@ -247,20 +252,19 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 	} else
 		modulePath = FS::Path::Build(libPath, module);
 
+	// Generate command line
 	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
-	irt = FS::Path::Build(libPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
-
-	sel_ldr = FS::Path::Build(libPath, win32Force64Bit ? "sel_ldr64" EXE_EXT : "sel_ldr" EXE_EXT);
-
+	irt = FS::Path::Build(naclPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
+	nacl_loader = FS::Path::Build(naclPath, win32Force64Bit ? "nacl_loader64" EXE_EXT : "nacl_loader" EXE_EXT);
 #ifdef __linux__
-	bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
+	bootstrap = FS::Path::Build(naclPath, "nacl_helper_bootstrap");
 	args.push_back(bootstrap.c_str());
-	args.push_back(sel_ldr.c_str());
+	args.push_back(nacl_loader.c_str());
 	args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");
 	args.push_back("--reserved_at_zero=0xXXXXXXXXXXXXXXXX");
 #else
 	Q_UNUSED(bootstrap);
-	args.push_back(sel_ldr.c_str());
+	args.push_back(nacl_loader.c_str());
 #endif
 	if (debug) {
 		args.push_back("-g");
@@ -268,9 +272,9 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 
 	if (debugLoader) {
 		try {
-			stderrRedirect = FS::HomePath::OpenWrite(name + ".sel_ldr.log");
+			stderrRedirect = FS::HomePath::OpenWrite(name + ".nacl_loader.log");
 		} catch (std::system_error& err) {
-			Log::Warn("Couldn't open %s: %s", name + ".sel_ldr.log", err.what());
+			Log::Warn("Couldn't open %s: %s", name + ".nacl_loader.log", err.what());
 		}
 		verbosity = "-";
 		verbosity.append(debugLoader, 'v');
@@ -309,7 +313,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC:
 
 	std::string handleArg = std::to_string((int)(intptr_t)pair.second.GetHandle());
 
-	std::string module = FS::Path::Build(libPath, name + "-nacl-native-exe" + EXE_EXT);
+	std::string module = FS::Path::Build(libPath, name + "-native-exe" + EXE_EXT);
 	if (debug) {
 		args.push_back("/usr/bin/gdbserver");
 		args.push_back("localhost:4014");
@@ -324,7 +328,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC:
 }
 
 IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, VM::VMBase::InProcessInfo& inProcess) {
-	std::string filename = FS::Path::Build(FS::GetLibPath(), name + "-nacl-native-dll" + DLL_EXT);
+	std::string filename = FS::Path::Build(FS::GetLibPath(), name + "-native-dll" + DLL_EXT);
 
 	Com_Printf("Loading VM module %s...\n", filename.c_str());
 
@@ -383,26 +387,26 @@ uint32_t VMBase::Create()
 	std::pair<IPC::Socket, IPC::Socket> pair = IPC::Socket::CreatePair();
 
 	IPC::Socket rootSocket;
-	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH || type == TYPE_NACL_LIBPATH_DEBUG) {
-		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, type == TYPE_NACL_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG, type == TYPE_NACL || type == TYPE_NACL_DEBUG, params.debugLoader.Get());
-	} else if (type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
-		std::tie(processHandle, rootSocket) = CreateNativeVM(std::move(pair), name, type == TYPE_NATIVE_EXE_DEBUG);
+	if (type == TYPE_NACL || type == TYPE_NACL_LIBPATH) {
+		std::tie(processHandle, rootSocket) = CreateNaClVM(std::move(pair), name, params.debug.Get(), type == TYPE_NACL, params.debugLoader.Get());
+	} else if (type == TYPE_NATIVE_EXE) {
+		std::tie(processHandle, rootSocket) = CreateNativeVM(std::move(pair), name, params.debug.Get());
 	} else {
 		rootSocket = CreateInProcessNativeVM(std::move(pair), name, inProcess);
 	}
 	rootChannel = IPC::Channel(std::move(rootSocket));
 
-	if (type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE_DEBUG || type == TYPE_NACL_LIBPATH_DEBUG)
+	if (type != TYPE_NATIVE_DLL && params.debug.Get())
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
 
 	// Only set a recieve timeout for non-debug configurations, otherwise it
 	// would get triggered by breakpoints.
-	if (type == TYPE_NACL || type == TYPE_NATIVE_EXE || type == TYPE_NACL_LIBPATH)
+	if (type != TYPE_NATIVE_DLL && !params.debug.Get())
 		rootChannel.SetRecvTimeout(std::chrono::seconds(2));
 
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
-	IPC::Reader reader = rootChannel.RecvMsg();
+	Util::Reader reader = rootChannel.RecvMsg();
 	Com_Printf("Loaded VM module in %d msec\n", Sys_Milliseconds() - loadStartTime);
 	return reader.Read<uint32_t>();
 }
@@ -458,20 +462,33 @@ void VMBase::Free()
 	if (!IsActive())
 		return;
 
-	// First close the root channel, which will trigger an error for in-process
-	// VMs. This will then cause the thread to terminate.
+	// First send a message signaling an exit to the VM
+	// then delete the socket. This is needed because
+	// recvmsg in NaCl doesn't return when the socket has
+	// been closed.
+	Util::Writer writer;
+	writer.Write<uint32_t>(IPC::ID_EXIT);
+	rootChannel.SendMsg(writer);
+
 	rootChannel = IPC::Channel();
 
-	if (type == TYPE_NACL || type == TYPE_NACL_DEBUG || type == TYPE_NATIVE_EXE || type == TYPE_NATIVE_EXE_DEBUG) {
+	if (type != TYPE_NATIVE_DLL) {
 #ifdef _WIN32
 		// Closing the job object should kill the child process
 		CloseHandle(processHandle);
 #else
+		int status;
+		if (waitpid(processHandle, &status, WNOHANG) != 0) {
+			if (WIFSIGNALED(status))
+				Log::Warn("VM exited with signal %d: %s\n", WTERMSIG(status), strsignal(WTERMSIG(status)));
+			else if (WIFEXITED(status))
+				Log::Warn("VM exited with non-zero exit code %d\n", WEXITSTATUS(status));
+		}
 		kill(processHandle, SIGKILL);
 		waitpid(processHandle, NULL, 0);
 #endif
 		processHandle = Sys::INVALID_HANDLE;
-	} else if (type == TYPE_NATIVE_DLL) {
+	} else {
 		FreeInProcessVM();
 	}
 

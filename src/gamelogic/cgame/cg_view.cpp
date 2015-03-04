@@ -724,7 +724,7 @@ void CG_OffsetFirstPersonView( void )
 			fraction1 = 1.0f;
 		}
 
-		fraction2 = -sin( fraction1 * M_PI / 2 );
+		fraction2 = -sin( fraction1 * M_PI_2 );
 
 		VectorMA( origin, LEVEL3_FEEDBACK * fraction2, forward, origin );
 	}
@@ -1772,7 +1772,7 @@ void CG_SetupFrustum(void)
 	float           xs, xc;
 	float           ang;
 
-	ang = cg.refdef.fov_x / 180 * M_PI * 0.5f;
+	ang = cg.refdef.fov_x / 180 * M_PI_2;
 	xs = sin(ang);
 	xc = cos(ang);
 
@@ -1782,7 +1782,7 @@ void CG_SetupFrustum(void)
 	VectorScale(cg.refdef.viewaxis[0], xs, frustum[1].normal);
 	VectorMA(frustum[1].normal, -xc, cg.refdef.viewaxis[1], frustum[1].normal);
 
-	ang = cg.refdef.fov_y / 180 * M_PI * 0.5f;
+	ang = cg.refdef.fov_y / 180 * M_PI_2;
 	xs = sin(ang);
 	xc = cos(ang);
 

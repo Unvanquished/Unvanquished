@@ -35,7 +35,6 @@ Maryland 20850 USA.
 #include <SDL.h>
 #include "../client/client.h"
 #include "../qcommon/q_unicode.h"
-#include "../sys/sys_local.h"
 #include "../framework/CommandSystem.h"
 
 static cvar_t       *in_keyboardDebug = NULL;
@@ -1531,6 +1530,15 @@ static void IN_ProcessEvents( qboolean dropInput )
 
 /*
 ===============
+IN_IsNumLockDown
+===============
+*/
+
+bool IN_IsNumLockDown() {
+    return SDL_GetModState() & KMOD_NUM;
+}
+/*
+===============
 IN_Frame
 ===============
 */
@@ -1548,8 +1556,6 @@ void IN_Frame( void )
 	{
 		IN_JoyMove();
 	}
-
-	IN_ProcessEvents( dropInput );
 
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
@@ -1578,6 +1584,8 @@ void IN_Frame( void )
 	{
 		IN_ActivateMouse();
 	}
+
+	IN_ProcessEvents( dropInput );
 }
 
 void IN_DropInputsForFrame( void )

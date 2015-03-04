@@ -28,7 +28,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Common.h"
+#ifndef SHARED_VM_MAIN_H_
+#define SHARED_VM_MAIN_H_
+
+#include "../../common/IPC/Channel.h"
 
 namespace VM {
 
@@ -37,7 +40,7 @@ namespace VM {
 
 	// Functions each specific gamelogic should implement
 	void VMInit();
-	void VMHandleSyscall(uint32_t id, IPC::Reader reader);
+	void VMHandleSyscall(uint32_t id, Util::Reader reader);
 	extern int VM_API_VERSION;
 
 	// Send a message to the engine
@@ -46,3 +49,5 @@ namespace VM {
 	}
 
 }
+
+#endif // SHARED_VM_MAIN_H_

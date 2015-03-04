@@ -805,7 +805,7 @@ static qboolean PM_CheckPounce( void )
 	{
 		case WP_ALEVEL1:
 			// wallwalking (ground surface normal is off more than 45° from Z direction)
-			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acos( pml.groundTrace.plane.normal[ 2 ] ) > M_PI / 4.0f )
+			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acos( pml.groundTrace.plane.normal[ 2 ] ) > M_PI_4 )
 			{
 				// get jump magnitude
 				jumpMagnitude = LEVEL1_WALLPOUNCE_MAGNITUDE;
@@ -942,18 +942,18 @@ static qboolean PM_CheckPounce( void )
 				jumpDirection[ 2 ] = fabs( jumpDirection[ 2 ] );
 
 				// get pitch towards ground surface
-				pitchToGround = ( M_PI / 2.0f ) - acos( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
+				pitchToGround = M_PI_2 - acos( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
 
 				// get pitch towards XY reference plane
-				pitchToRef = ( M_PI / 2.0f ) - acos( DotProduct( up, jumpDirection ) );
+				pitchToRef = M_PI_2 - acos( DotProduct( up, jumpDirection ) );
 
 				// use the advantageous pitch; allows using an upwards gradiant as a ramp
 				pitch = MIN( pitchToGround, pitchToRef );
 
 				// pitches above 45° or below LEVEL1_POUNCE_MINPITCH will result in less than the maximum jump length
-				if ( pitch > M_PI / 4.0f )
+				if ( pitch > M_PI_4 )
 				{
-					pitch = M_PI / 4.0f;
+					pitch = M_PI_4;
 				}
 				else if ( pitch < LEVEL1_POUNCE_MINPITCH )
 				{
@@ -1365,7 +1365,7 @@ static void PM_LandJetpack( qboolean force )
 	// allow the player to jump instead of land for some impacts
 	if ( !force )
 	{
-		if ( angle > 0.0f && angle < M_PI / 4.0f ) // 45°
+		if ( angle > 0.0f && angle < M_PI_4 ) // 45°
 		{
 			if ( pm->debugLevel > 0 )
 			{

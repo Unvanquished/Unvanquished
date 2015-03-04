@@ -1120,6 +1120,8 @@ static void CG_RegisterSounds( void )
 	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning.wav", qfalse );
 	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", qfalse );
 
+	cgs.media.rocketpodLockonSound = trap_S_RegisterSound( "sound/rocketpod/lockon.wav", qfalse );
+
 	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", qfalse );
 }
 
@@ -1587,30 +1589,6 @@ void CG_StartMusic( void )
 	trap_S_StartBackgroundTrack( parm1, parm2 );
 }
 
-// FIXME: might need to cache this info
-static clientInfo_t *CG_InfoFromScoreIndex( int index, int team, int *scoreIndex )
-{
-	int i, count;
-	count = 0;
-
-	for ( i = 0; i < cg.numScores; i++ )
-	{
-		if ( cg.scores[ i ].team == team )
-		{
-			if ( count == index )
-			{
-				*scoreIndex = i;
-				return &cgs.clientinfo[ cg.scores[ i ].client ];
-			}
-
-			count++;
-		}
-	}
-
-	*scoreIndex = index;
-	return &cgs.clientinfo[ cg.scores[ index ].client ];
-}
-
 qboolean CG_ClientIsReady( int clientNum )
 {
 	clientList_t ready;
@@ -1712,8 +1690,6 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	// load the new map
 	trap_CM_LoadMap(cgs.mapname);
 	CG_InitMinimap();
-
-	srand( serverMessageNum * clientNum );
 
 	CG_UpdateLoadingStep( LOAD_TRAILS );
 	CG_LoadTrailSystems();

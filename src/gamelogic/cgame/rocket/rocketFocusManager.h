@@ -62,11 +62,10 @@ public:
 
 		if ( anyVisible && ! ( trap_Key_GetCatcher() & KEYCATCH_UI ) )
 		{
-			trap_Key_SetCatcher( KEYCATCH_UI );
 			// TODO
 // 			CL_ClearCmdButtons();
 // 			trap_Key_ClearStates();
-// 			CL_ClearKeys();
+			trap_Key_SetCatcher( KEYCATCH_UI );
 		}
 		else if ( !anyVisible && trap_Key_GetCatcher() && rocketInfo.cstate.connState >= CA_PRIMED )
 		{

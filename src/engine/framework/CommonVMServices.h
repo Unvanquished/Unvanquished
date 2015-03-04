@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "../../common/Common.h"
+#include "../../common/IPC/Channel.h"
 
 #ifndef COMMON_VM_SERVICES_H_
 #define COMMON_VM_SERVICES_H_
@@ -42,7 +43,7 @@ namespace VM {
             CommonVMServices(VMBase& vm, Str::StringRef vmName, int commandFlag);
             ~CommonVMServices();
 
-            void Syscall(int major, int minor, IPC::Reader reader, IPC::Channel& channel);
+            void Syscall(int major, int minor, Util::Reader reader, IPC::Channel& channel);
 
         private:
             std::string vmName;
@@ -50,36 +51,38 @@ namespace VM {
 
             VMBase& GetVM();
 
-            // Command Related
-            void HandleCommandSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel);
+            // Misc Related
+            void HandleMiscSyscall(int minor, Util::Reader& reader, IPC::Channel& channel);
 
-            void AddCommand(IPC::Reader& reader, IPC::Channel& channel);
-            void RemoveCommand(IPC::Reader& reader, IPC::Channel& channel);
-            void EnvPrint(IPC::Reader& reader, IPC::Channel& channel);
-            void EnvExecuteAfter(IPC::Reader& reader, IPC::Channel& channel);
+            // Command Related
+            void HandleCommandSyscall(int minor, Util::Reader& reader, IPC::Channel& channel);
+
+            void AddCommand(Util::Reader& reader, IPC::Channel& channel);
+            void RemoveCommand(Util::Reader& reader, IPC::Channel& channel);
+            void EnvPrint(Util::Reader& reader, IPC::Channel& channel);
+            void EnvExecuteAfter(Util::Reader& reader, IPC::Channel& channel);
 
             class ProxyCmd;
-            int commandFlag;
             std::unique_ptr<ProxyCmd> commandProxy;
             //TODO use the values to help the VM cache the location of the commands instead of doing a second hashtable lookup
             std::unordered_map<std::string, uint64_t> registeredCommands;
 
             // Cvar Related
-            void HandleCvarSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel);
+            void HandleCvarSyscall(int minor, Util::Reader& reader, IPC::Channel& channel);
 
-            void RegisterCvar(IPC::Reader& reader, IPC::Channel& channel);
-            void GetCvar(IPC::Reader& reader, IPC::Channel& channel);
-            void SetCvar(IPC::Reader& reader, IPC::Channel& channel);
-            void AddCvarFlags(IPC::Reader& reader, IPC::Channel& channel);
+            void RegisterCvar(Util::Reader& reader, IPC::Channel& channel);
+            void GetCvar(Util::Reader& reader, IPC::Channel& channel);
+            void SetCvar(Util::Reader& reader, IPC::Channel& channel);
+            void AddCvarFlags(Util::Reader& reader, IPC::Channel& channel);
 
             class ProxyCvar;
             std::vector<std::unique_ptr<ProxyCvar>> registeredCvars;
 
             // Log Related
-            void HandleLogSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel);
+            void HandleLogSyscall(int minor, Util::Reader& reader, IPC::Channel& channel);
 
             // Common common QVM syscalls
-            void HandleCommonQVMSyscall(int minor, IPC::Reader& reader, IPC::Channel& channel);
+            void HandleCommonQVMSyscall(int minor, Util::Reader& reader, IPC::Channel& channel);
     };
 }
 

@@ -337,9 +337,6 @@ Rocket::Core::Context *hudContext = NULL;
 
 void Rocket_Init( void )
 {
-	char **fonts;
-	int numFiles;
-
 	Rocket::Core::SetFileInterface( &fileInterface );
 	Rocket::Core::SetSystemInterface( &systemInterface );
 	Rocket::Core::SetRenderInterface( &renderInterface );

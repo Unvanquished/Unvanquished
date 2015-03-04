@@ -189,14 +189,6 @@ public:
 							GetOwnerDocument()->Hide();
 							return;
 						}
-						else if ( text[0] == '/' || text[0] == '\\' )
-						{
-							trap_SendConsoleCommand( va( "%s\n", text.Substring( 1 ).CString() ) );
-							text.Clear();
-							UpdateText();
-							GetOwnerDocument()->Hide();
-							return;
-						}
 						else if ( cmd == "/" )
 						{
 							trap_SendConsoleCommand( va( "%s\n", text.CString() ) );
@@ -213,7 +205,7 @@ public:
 
 						if ( !cmd.Empty() && !text.Empty() )
 						{
-							trap_SendConsoleCommand( va( "%s %s\n", cmd.CString(), text.CString() ) );
+							trap_SendConsoleCommand( va( "%s %s", cmd.CString(), Cmd::Escape( text.CString() ).c_str() ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();

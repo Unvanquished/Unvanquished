@@ -24,8 +24,8 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
-#ifdef BUILD_GAME
-#include "../game/g_local.h"
+#ifdef BUILD_SGAME
+#include "../sgame/sg_local.h"
 #endif
 
 #ifdef BUILD_CGAME
@@ -204,7 +204,7 @@ static float UnlockToLockThreshold( float unlockThreshold )
 	static float lastMod                = 0.0f;
 
 	// retrieve relevant settings
-#ifdef BUILD_GAME
+#ifdef BUILD_SGAME
 	momentumHalfLife = g_momentumHalfLife.value;
 	unlockableMinTime  = g_unlockableMinTime.value;
 #endif
@@ -259,7 +259,7 @@ void BG_InitUnlockackables( void )
 	unlockablesTypeOffset[ UNLT_BUILDABLE ] = unlockablesTypeOffset[ UNLT_UPGRADE ]   + UP_NUM_UPGRADES;
 	unlockablesTypeOffset[ UNLT_CLASS ]     = unlockablesTypeOffset[ UNLT_BUILDABLE ] + BA_NUM_BUILDABLES;
 
-#ifdef BUILD_GAME
+#ifdef BUILD_SGAME
 	G_UpdateUnlockables();
 #endif
 }
@@ -501,7 +501,7 @@ momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdItera
 // GAME methods
 // ------------
 
-#ifdef BUILD_GAME
+#ifdef BUILD_SGAME
 static void UpdateUnlockablesMask( void )
 {
 	int    unlockable, unlockableNum[ NUM_TEAMS ];
@@ -540,7 +540,7 @@ static void UpdateUnlockablesMask( void )
 }
 #endif
 
-#ifdef BUILD_GAME
+#ifdef BUILD_SGAME
 void G_UpdateUnlockables( void )
 {
 	int              itemNum = 0, unlockableNum, unlockThreshold;

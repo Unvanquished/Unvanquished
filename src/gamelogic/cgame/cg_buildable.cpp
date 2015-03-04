@@ -107,13 +107,14 @@ static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABL
 // NONE IDLE1  IDLE2  PWRDWN IDLEpd CNSTR  PWRUP  ATTCK1 ATTCK2 SPAWN1 SPAWN2 PAIN1  PAIN2  DESTR  DSTRpd DESTRD   // BA_*
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // NONE
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_SPAWN
-{{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_OVERMIND
+{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{P2,0},{DE,0},{XX,0},{DD,0}}, // A_OVERMIND
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_BARRICADE
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_ACIDTUBE
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_TRAPPER
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_BOOSTER
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_HIVE
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_LEECH
+{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0}}, // A_SPIKER
 {{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{S1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0}}, // H_SPAWN
 {{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_MGTURRET
 {{XX,0},{I1,0},{XX,0},{OP,2},{CD,0},{OP,0},{OP,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{OP,2},{CD,0},{CD,0}}, // H_ROCKETPOD
@@ -121,7 +122,7 @@ static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABL
 {{XX,0},{I1,0},{I2,0},{PD,0},{I1,0},{C1,0},{I1,0},{A1,0},{C2,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{DU,0},{DD,0}}, // H_MEDISTAT
 {{XX,0},{I1,0},{XX,0},{I1,0},{I1,0},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0}}, // H_DRILL
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0}}, // H_REACTOR
-{{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // H_REPEATER
+{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0}}, // H_REPEATER
 };
 
 static const char *GetAnimationName( buildable_t buildable, buildableAnimNumber_t animNumber )
@@ -749,6 +750,11 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 		case BA_A_ACIDTUBE:
 			*range = ACIDTUBE_RANGE;
 			shc = SHC_ORANGE;
+			break;
+
+		case BA_A_SPIKER:
+			*range = SPIKER_SPIKE_RANGE;
+			shc = SHC_PINK;
 			break;
 
 		case BA_A_TRAPPER:
@@ -2493,6 +2499,70 @@ void CG_Buildable( centity_t *cent )
 			BoundsAdd( ent.skeleton.bounds[ 0 ], ent.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
 		}
 
+#define OVERMIND_EYE_CLAMP    43.0f // 45° shows seams due to imperfections of the low poly version.
+#define OVERMIND_EYE_LAMBDA   10.0f
+#define OVERMIND_IDLE_ANGLE   ( 0.3f * OVERMIND_EYE_CLAMP )
+#define OVERMIND_EYE_Z_OFFSET 64.0f
+
+		// Handle overmind eye movement.
+		if( es->modelindex == BA_A_OVERMIND )
+		{
+			vec3_t   dirToTarget, angles, eyeOrigin;
+			quat_t   rotation;
+
+			// Calculate relative angles to target.
+			// TODO: Also check if target entity is known.
+			if ( es->otherEntityNum == ENTITYNUM_NONE /*||
+				 !cg_entities[ es->otherEntityNum ].valid*/ )
+			{
+				int randSeed = cg.time / 3000;
+
+				// HACK: Mess with the seed once because the first output of Q_crandom is so bad.
+				Q_crandom( &randSeed );
+
+				angles[ PITCH ] = Q_crandom( &randSeed ) * OVERMIND_IDLE_ANGLE;
+				angles[ YAW ]   = Q_crandom( &randSeed ) * OVERMIND_IDLE_ANGLE;
+				angles[ ROLL ]  = 0.0f;
+			}
+			else
+			{
+				// HACK: Fixed offset for eye height.
+				// TODO: Retrieve eye origin from skeleton.
+				VectorCopy( es->origin, eyeOrigin );
+				eyeOrigin[ 2 ] += OVERMIND_EYE_Z_OFFSET;
+
+				// Get absolute angles to target.
+				VectorSubtract( cg_entities[ es->otherEntityNum ].lerpOrigin, eyeOrigin, dirToTarget );
+				VectorNormalize( dirToTarget );
+				vectoangles( dirToTarget, angles );
+
+				// Transform into relative angles.
+				angles[ PITCH ] -= es->angles[ PITCH ];
+				angles[ YAW ]   -= ( es->angles[ YAW ] - 180.0f );
+				angles[ ROLL ]  = 0;
+
+				// Limit angles.
+				if ( angles[ PITCH ] < -180.0f ) angles[ PITCH ] += 360.0f;
+				if ( angles[ PITCH ] >  180.0f ) angles[ PITCH ] -= 360.0f;
+				if ( angles[ YAW ]   < -180.0f ) angles[ YAW ]   += 360.0f;
+				if ( angles[ YAW ]   >  180.0f ) angles[ YAW ]   -= 360.0f;
+				angles[ PITCH ] = Maths::clamp( angles[ PITCH ], -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
+				angles[ YAW ]   = Maths::clamp( angles[ YAW ],   -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
+			}
+
+			// Smooth out movement.
+			ExponentialFade( &cent->overmindEyeAngle[ PITCH ], angles[ PITCH ], OVERMIND_EYE_LAMBDA,
+			                 0.001f * cg.frametime );
+			ExponentialFade( &cent->overmindEyeAngle[ YAW ],   angles[ YAW ],   OVERMIND_EYE_LAMBDA,
+			                 0.001f * cg.frametime );
+
+			// TODO: Access bone by name instead of by number.
+			// Note that rotation's pitch is the eye's roll and vice versa.
+			// Also the yaw needs to be inverted.
+			QuatFromAngles( rotation, 0, -cent->overmindEyeAngle[ YAW ], cent->overmindEyeAngle[ PITCH ] );
+			QuatMultiply0( ent.skeleton.bones[ 38 ].t.rot, rotation );
+		}
+
 		CG_TransformSkeleton( &ent.skeleton, realScale );
 	}
 
@@ -2667,20 +2737,27 @@ void CG_Buildable( centity_t *cent )
 			}
 		}
 
-		// spawn firing sound
+		// Play firing sound.
 		if ( wi->wim[ WPM_PRIMARY ].firingSound )
 		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->wim[ WPM_PRIMARY ].firingSound );
-		}
-		else if ( wi->readySound )
-		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->readySound );
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
+			                        wi->wim[ WPM_PRIMARY ].firingSound );
 		}
 	}
-	else if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+	else // Not firing.
 	{
-		// destroy active muzzle ps
-		CG_DestroyParticleSystem( &cent->muzzlePS );
+		// Destroy active muzzle PS.
+		if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+		{
+			CG_DestroyParticleSystem( &cent->muzzlePS );
+		}
+
+		// Play lockon sound if applicable.
+		if ( es->eFlags & EF_B_LOCKON )
+		{
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
+			                        cgs.media.rocketpodLockonSound );
+		}
 	}
 
 	health = es->generic1;

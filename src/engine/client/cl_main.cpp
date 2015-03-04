@@ -40,8 +40,6 @@ Maryland 20850 USA.
 #include "../framework/CommandSystem.h"
 #include "../framework/CvarSystem.h"
 
-#include "../sys/sys_loadlib.h"
-#include "../sys/sys_local.h"
 #include "../botlib/bot_debug.h"
 
 cvar_t *cl_wavefilerecord;
@@ -51,6 +49,9 @@ cvar_t *cl_wavefilerecord;
 
 #ifndef _WIN32
 #include <sys/stat.h>
+#endif
+#ifdef BUILD_CLIENT
+#include <SDL.h>
 #endif
 
 cvar_t *cl_useMumble;
@@ -2095,7 +2096,7 @@ doesn't know what graphics to reload
 */
 
 #ifdef _WIN32
-extern void Sys_In_Restart_f( void );  // fretn
+extern void IN_Restart( void );  // fretn
 
 #endif
 
@@ -2146,7 +2147,7 @@ void CL_Vid_Restart_f( void )
 	CL_StartHunkUsers();
 
 #ifdef _WIN32
-	Sys_In_Restart_f(); // fretn
+	IN_Restart(); // fretn
 #endif
 
 	// start the cgame if connected
@@ -2384,7 +2385,7 @@ void CL_DownloadsComplete( void )
 		cls.downloadRestart = qfalse;
 
 		FS::PakPath::ClearPaks();
-		FS_LoadServerPaks(Cvar_VariableString("sv_paks")); // We possibly downloaded a pak, restart the file system to load it
+		FS_LoadServerPaks(Cvar_VariableString("sv_paks"), clc.demoplaying); // We possibly downloaded a pak, restart the file system to load it
 
 		if ( !cls.bWWWDlDisconnected )
 		{
@@ -3015,7 +3016,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 				if ( addresses[ numservers ].port == cls.serverLinks[ j ].port4 && !memcmp( addresses[ numservers ].ip, cls.serverLinks[ j ].ip, 4 ) )
 				{
 					// found it, so look up the corresponding address
-					char s[ NET_ADDRSTRMAXLEN ];
+					char s[ NET_ADDR_W_PORT_STR_MAX_LEN ];
 
 					// hax to get the IP address & port as a string (memcmp etc. SHOULD work, but...)
 					cls.serverLinks[ j ].type = NA_IP6;
@@ -3067,7 +3068,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 				if ( addresses[ numservers ].port == cls.serverLinks[ j ].port6 && !memcmp( addresses[ numservers ].ip6, cls.serverLinks[ j ].ip6, 16 ) )
 				{
 					// found it, so look up the corresponding address
-					char s[ NET_ADDRSTRMAXLEN ];
+					char s[ NET_ADDR_W_PORT_STR_MAX_LEN ];
 
 					// hax to get the IP address & port as a string (memcmp etc. SHOULD work, but...)
 					cls.serverLinks[ j ].type = NA_IP;
@@ -5198,8 +5199,9 @@ CL_GetClipboardData
 */
 void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 {
+#ifdef BUILD_CLIENT
 	int         i, j;
-	char       *cbd = Sys_GetClipboardData( clip );
+	char       *cbd = SDL_GetClipboardText();
 	const char *clean;
 
 	if ( !cbd )
@@ -5209,7 +5211,7 @@ void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 	}
 
 	clean = Com_ClearForeignCharacters( cbd ); // yes, I know
-	Z_Free( cbd );
+	SDL_free( cbd );
 
 	i = j = 0;
 	while ( clean[ i ] )
@@ -5244,4 +5246,7 @@ void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 	}
 
 	buf[ j ] = '\0';
+#else
+	buf[ 0 ] = '\0';
+#endif
 }

@@ -502,32 +502,18 @@ CG_KeyBinding
 char *CG_KeyBinding( const char *bind, team_t team )
 {
 	static char key[ 32 ];
-	char        bindbuff[ MAX_CVAR_VALUE_STRING ];
-	int         i;
 
-	key[ 0 ] = '\0';
+	key[0] = '\0';
 
-	for ( i = 0; i < MAX_KEYS; i++ )
-	{
-		trap_Key_GetBindingBuf( i, team, bindbuff, sizeof( bindbuff ) );
+    std::vector<std::vector<int>> keyNums = trap_Key_GetKeynumForBinds(team, {bind});
 
-		if ( !bindbuff[0] )
-		{
-			trap_Key_GetBindingBuf( i, TEAM_NONE, bindbuff, sizeof( bindbuff ) );
-		}
+    if (keyNums[0].size() == 0) {
+        return key;
+    }
 
-		if ( !Q_stricmp( bindbuff, bind ) )
-		{
-			trap_Key_KeynumToStringBuf( i, key, sizeof( key ) );
-			break;
-		}
-	}
-
-	if ( !key[ 0 ] )
-	{
-		Q_strncpyz( key, "\\", sizeof( key ) );
-		Q_strcat( key, sizeof( key ), bind );
-	}
+    trap_Key_KeynumToStringBuf( keyNums[0][0], key, sizeof( key ) );
+    Q_strncpyz( key, "\\", sizeof( key ) );
+    Q_strcat( key, sizeof( key ), bind );
 
 	return key;
 }

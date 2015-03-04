@@ -28,6 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "../../common/Common.h"
+#include "../../common/IPC/Channel.h"
+
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
@@ -62,7 +65,7 @@ namespace VM {
  * leak for us.
  *
  * TL;DR
- * - Native DLL: no sandboxing, no cleaning up but debuger support. Use for dev.
+ * - Native DLL: no sandboxing, no cleaning up but debugger support. Use for dev.
  * - NaCl exe: sandboxing, no leaks, slightly slower, hard to debug. Use for regular players.
  * - Native exe: no sandboxing, no leaks, hard to debug. Might be used by server owners for perf.
  */
@@ -70,22 +73,16 @@ enum vmType_t {
 	// Loads the VM as an nacl executable from the homepath, potentially from a pk3
 	// USE THIS BY DEFAULT FOR PROD
 	TYPE_NACL,
-	// Same as above will ask sel_ldr to open a gdb server on port 4014?
-	TYPE_NACL_DEBUG,
+
+	// Loads the VM as an nacl executable from the libpath, for freshly compiled NaCl VMs (no need to put it in a pk3)
+	TYPE_NACL_LIBPATH,
 
 	// Loads the VM as a native exe from the libpath
 	TYPE_NATIVE_EXE,
-	// Same as above but opens it on a gdb server on port 4014, you will need to connect and run it with "c	"
-	TYPE_NATIVE_EXE_DEBUG,
 
 	// Loads the VM as a native DLL from the libpath
 	// USE THIS FOR DEVELOPMENT
 	TYPE_NATIVE_DLL,
-
-	// Loads the VM as an nacl executable from the libpath, for freshly compiled NaCl VMs (no need to put it in a pk3)
-	TYPE_NACL_LIBPATH,
-	// Same as above, with the debugger
-	TYPE_NACL_LIBPATH_DEBUG,
 	TYPE_END
 };
 
@@ -94,11 +91,13 @@ struct VMParams {
 	VMParams(std::string name)
 		: logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
 		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NACL, 0, TYPE_END - 1),
-		  debugLoader("vm." + name + ".debugLoader", "make sel_ldr dump information to " + name + "-sel_ldr.log", Cvar::NONE, 0, 0, 5) {
+		  debug("vm." + name + ".debug", "run a gdbserver on localhost:4014 to debug the VM", Cvar::NONE, false),
+		  debugLoader("vm." + name + ".debugLoader", "make nacl_loader dump information to " + name + "-nacl_loader.log", Cvar::NONE, 0, 0, 5) {
 	}
 
 	Cvar::Cvar<bool> logSyscalls;
 	Cvar::Range<Cvar::Cvar<int>> vmType;
+	Cvar::Cvar<bool> debug;
 	Cvar::Range<Cvar::Cvar<int>> debugLoader;
 };
 
@@ -132,7 +131,7 @@ public:
 	{
 		// Marking lambda as mutable to work around a bug in gcc 4.6
 		LogMessage(false, true, Msg::id);
-		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, IPC::Reader reader) mutable {
+		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, Util::Reader reader) mutable {
 			LogMessage(true, true, id);
 			Syscall(id, std::move(reader), rootChannel);
 			LogMessage(true, false, id);
@@ -153,7 +152,7 @@ public:
 
 protected:
 	// System call handler
-	virtual void Syscall(uint32_t id, IPC::Reader reader, IPC::Channel& channel) = 0;
+	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) = 0;
 
 private:
 	void FreeInProcessVM();
