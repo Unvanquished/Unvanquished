@@ -151,7 +151,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
  */
 static void RunBeacon( cbeacon_t *b )
 {
-	float target, alpha;
+	float alpha; // target
 	int time_in, time_left;
 	float t_fadein, t_fadeout; // t_ stands for "parameter", not "time"
 	qboolean front;
@@ -227,7 +227,7 @@ static void RunBeacon( cbeacon_t *b )
 
 		b->scale *= Square( 1.0 - t ) * 2.0 + 1.0;
 	}
-
+/*
 	// occlusion effects
 	if ( b->type == BCT_TAG && ( b->flags & EF_BC_TAG_PLAYER ) )
 	{
@@ -251,7 +251,7 @@ static void RunBeacon( cbeacon_t *b )
 		else
 			alpha *= LinearRemap( b->dist, cgs.bc.fadeMinDist, cgs.bc.fadeMaxDist, cgs.bc.fadeMinAlpha, cgs.bc.fadeMaxAlpha );
 	}
-
+*/
 	// color
 	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE ||
 	    b->type == BCT_TAG || b->type == BCT_BASE )
@@ -618,7 +618,6 @@ char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 			}
 			break;
 
-		// TODO: Unify determination of different prefixes (Own/Enemy/Alien/Human).
 		case BCT_BASE:
 		{
 			const char *prefix, *suffix;
