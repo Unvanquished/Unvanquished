@@ -784,6 +784,52 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	client->medKitHealthToRestore -= G_Heal( self, 1 );
 }
 
+static void BeaconAutoTag( gentity_t *self, int timePassed )
+{
+	gentity_t *traceEnt, *target;
+	gclient_s *client;
+	team_t    team;
+	vec3_t viewOrigin, forward, end;
+
+	if ( !( client = self->client ) ) return;
+
+	team = (team_t)client->pers.team;
+
+	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
+	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
+	VectorMA( viewOrigin, 65536, forward, end );
+
+	G_UnlaggedOn( self, viewOrigin, 65536 );
+	traceEnt = Beacon::TagTrace( viewOrigin, end, self->s.number, MASK_SHOT, team, qtrue );
+	G_UnlaggedOff( );
+
+	client->ps.stats[ STAT_TAGSCORE ] = 0;
+
+	for ( target = NULL; ( target = G_IterateEntities( target ) ); )
+	{
+		// Tag entity directly hit and entities in human radar range, make sure the latter are also
+		// in vis and, for buildables, are in a line of sight.
+		if( ( target == traceEnt ) ||
+		    ( team == TEAM_HUMANS &&
+		      BG_InventoryContainsUpgrade( UP_RADAR, client->ps.stats ) &&
+		      Distance( self->s.origin, target->s.origin ) < RADAR_RANGE &&
+		      Beacon::EntityTaggable( target->s.number, team, false ) &&
+		      trap_InPVSIgnorePortals( self->s.origin, target->s.origin ) &&
+		      ( target->s.eType != ET_BUILDABLE ||
+		        G_LineOfSight( self, target, MASK_SOLID, false ) ) ) )
+		{
+			target->tagScore     += timePassed;
+			target->tagScoreTime  = level.time;
+
+			if( target->tagScore > 1000 )
+				Beacon::Tag( target, team, ( target->s.eType == ET_BUILDABLE ) );
+
+			client->ps.stats[ STAT_TAGSCORE ] = Maths::clamp(
+				target->tagScore, client->ps.stats[ STAT_TAGSCORE ], 1000 );
+		}
+	}
+}
+
 /*
 ==================
 ClientTimerActions
@@ -895,6 +941,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				break;
 		}
 
+		BeaconAutoTag( ent, 100 );
+
 		// replenish human health
 		G_ReplenishHumanHealth( ent );
 
@@ -909,33 +957,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		if ( client->ps.stats[ STAT_FUEL ] < JETPACK_FUEL_REFUEL )
 		{
 			G_FindFuel( ent );
-		}
-
-		// auto-tagging
-		{
-			gentity_t *other;
-			vec3_t origin, forward, end;
-
-			BG_GetClientViewOrigin( &client->ps, origin );
-			AngleVectors( client->ps.viewangles, forward, NULL, NULL );
-			VectorMA( origin, 65536, forward, end );
-			G_UnlaggedOn( ent, origin, 65536 );
-			other = Beacon::TagTrace( origin, end, ent->s.number, MASK_SHOT,
-			                          (team_t)client->pers.team, qtrue );
-			G_UnlaggedOff( );
-
-			if( other )
-			{
-				other->tagScore += 100;
-				other->tagScoreTime = level.time;
-				if( other->tagScore > 1000 )
-					Beacon::Tag( other, (team_t)client->pers.team, ent->s.number,
-					             ( other->s.eType == ET_BUILDABLE ) );
-
-				client->ps.stats[ STAT_TAGSCORE ] = other->tagScore;
-			}
-			else
-				client->ps.stats[ STAT_TAGSCORE ] = 0;
 		}
 
 		// remove orphaned tags for enemy structures when the structure's death was confirmed

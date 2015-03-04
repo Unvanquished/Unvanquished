@@ -5033,7 +5033,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	}
 
 	if( builder->client )
-		Beacon::Tag( built, (team_t)builder->client->pers.team, builder->client->ps.clientNum, qtrue );
+		Beacon::Tag( built, (team_t)builder->client->pers.team, qtrue );
 
 	return built;
 }
@@ -5182,7 +5182,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 
 	trap_LinkEntity( built );
 
-	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, ENTITYNUM_NONE, qtrue );
+	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, qtrue );
 
 	return built;
 }
