@@ -36,12 +36,6 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 #define bc_etime time2
 #define bc_mtime apos.trTime
 
-/*
-=============
-CG_LoadBeaconsConfig
-=============
-*/
-
 void CG_LoadBeaconsConfig( void )
 {
 	beaconsConfig_t  *bc = &cgs.bc;
@@ -150,17 +144,12 @@ else if( !Q_stricmp( token.string, #x ) ) \
 	trap_Parse_FreeSource( fd  );
 }
 
-/*
-=============
-CG_RunBeacon
-
-Handles all animations and sounds.
-Called every frame for every beacon.
-=============
-*/
 #define Distance2(a,b) sqrt(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
 
-static void CG_RunBeacon( cbeacon_t *b )
+/**
+ * @brief Handles beacon animations and sounds. Called every frame for every beacon.
+ */
+static void RunBeacon( cbeacon_t *b )
 {
 	float target, alpha;
 	int time_in, time_left;
@@ -267,7 +256,7 @@ static void CG_RunBeacon( cbeacon_t *b )
 	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE ||
 	    b->type == BCT_TAG || b->type == BCT_BASE )
 	{
-		switch( b->team )
+		switch( b->ownerTeam )
 		{
 			case TEAM_ALIENS:
 				if ( b->flags & EF_BC_ENEMY )
@@ -335,25 +324,21 @@ static void CG_RunBeacon( cbeacon_t *b )
 		b->clamped = qfalse;
 }
 
-/*
-=============
-CG_CompareBeaconsByDot
-
-Used by qsort
-=============
-*/
-static int CG_CompareBeaconsByDist( const void *a, const void *b )
+/**
+ * @brief Used by qsort to compare beacons.
+ */
+static int CompareBeaconsByDist( const void *a, const void *b )
 {
 	return ( *(const cbeacon_t**)a )->dist > ( *(const cbeacon_t**)b )->dist;
 }
 
-static team_t TagTeam( const cbeacon_t *beacon )
+static team_t TargetTeam( const cbeacon_t *beacon )
 {
-	if ( beacon->type != BCT_TAG )
+	if ( beacon->type != BCT_TAG && beacon->type != BCT_BASE )
 		return TEAM_NONE;
 
-	if ( ( beacon->team == TEAM_ALIENS && beacon->flags & EF_BC_ENEMY ) ||
-	     ( beacon->team == TEAM_HUMANS && !( beacon->flags & EF_BC_ENEMY ) ) )
+	if ( ( beacon->ownerTeam == TEAM_ALIENS && beacon->flags & EF_BC_ENEMY ) ||
+	     ( beacon->ownerTeam == TEAM_HUMANS && !( beacon->flags & EF_BC_ENEMY ) ) )
 		return TEAM_HUMANS;
 	else
 		return TEAM_ALIENS;
@@ -376,19 +361,19 @@ static void UpdateBeaconRocket( void )
 	if( ( beacon = cg.highlightedBeacon ) )
 	{
 		// icon
-		if ( ( br->icon = CG_BeaconIcon( beacon, qfalse ) ) )
+		if ( ( br->icon = CG_BeaconDescriptiveIcon( beacon ) ) )
 		{
 			showIcon = qtrue;
 		}
 
 		// name
-		Com_sprintf( br->name, sizeof( br->name ), "%s", CG_BeaconName( beacon ) );
+		CG_BeaconName( beacon, br->name, sizeof( br->name ) );
 		showName = qtrue;
 
 		// info
 		if ( beacon->type == BCT_TAG &&
 		     ( beacon->flags & EF_BC_TAG_PLAYER ) &&
-		     TagTeam( beacon ) == TEAM_HUMANS )
+		     TargetTeam( beacon ) == TEAM_HUMANS )
 		{
 			Com_sprintf( br->info, sizeof( br->info ), "Carrying %s",
 			             BG_Weapon( beacon->data )->humanName );
@@ -419,7 +404,7 @@ static void UpdateBeaconRocket( void )
 		// owner
 		if( BG_Beacon( beacon->type )->flags & BCF_IMPORTANT &&
 		    beacon->owner >= 0 && beacon->owner < MAX_CLIENTS &&
-		    cgs.clientinfo[ beacon->owner ].name)
+		    *cgs.clientinfo[ beacon->owner ].name )
 		{
 				Com_sprintf( br->owner, sizeof( br->owner ), "by ^7%s",
 				             cgs.clientinfo[ beacon->owner ].name );
@@ -435,15 +420,9 @@ static void UpdateBeaconRocket( void )
 	CG_ExponentialFade( &br->ownerAlpha,    showOwner    ? 1 : 0, 10 );
 }
 
-/*
-=============
-CG_ListBeacons
-
-Fill the cg.beacons array with explicit (ET_BEACON entities) and
-implicit beacons.
-Used to draw beacons on HUD and the minimap.
-=============
-*/
+/**
+ * @brief Fills the cg.beacons array.
+ */
 void CG_ListBeacons( void )
 {
 	int i;
@@ -478,9 +457,10 @@ void CG_ListBeacons( void )
 		VectorCopy( cent->lerpOrigin, b->origin );
 		b->type = (beaconType_t)es->bc_type;
 		b->data = es->bc_data;
-		b->team = (team_t)es->bc_team;
+		b->ownerTeam = (team_t)es->bc_team;
 		b->owner = es->bc_owner;
 		b->flags = es->eFlags;
+		b->target = es->bc_target;
 
 		VectorSubtract( b->origin, cg.refdef.vieworg, delta );
 		VectorNormalize( delta );
@@ -504,7 +484,7 @@ void CG_ListBeacons( void )
 		return;
 
 	// Sort beacons by distance.
-	qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CG_CompareBeaconsByDist );
+	qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CompareBeaconsByDist );
 
 	// Mark the nearest booster/medistat if low on hp and mark the nearest armoury if low on ammo.
 	// TODO: Move to seperate function.
@@ -552,7 +532,7 @@ void CG_ListBeacons( void )
 	}
 
 	for( i = 0; i < cg.beaconCount; i++ )
-		CG_RunBeacon( cg.beacons[ i ] );
+		RunBeacon( cg.beacons[ i ] );
 
 	for( i = 0; i < cg.beaconCount; i++ )
 	{
@@ -563,116 +543,112 @@ void CG_ListBeacons( void )
 	UpdateBeaconRocket();
 }
 
-/*
-=============
-CG_BeaconIcon
-
-Figures out the icon shader for a beacon.
-=============
-*/
-qhandle_t CG_BeaconIcon( const cbeacon_t *b, qboolean hud )
+static inline bool IsHighlighted( const cbeacon_t *b )
 {
-	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES )
-		return 0;
-
-	if ( b->type == BCT_TAG )
-	{
-		if ( b == cg.highlightedBeacon || !hud )
-		{
-			if ( b->flags & EF_BC_TAG_PLAYER )
-			{
-				if ( ( b->team == TEAM_ALIENS ) == !( b->flags & EF_BC_ENEMY ) )
-				{
-					if( b->data <= PCL_NONE || b->data >= PCL_NUM_CLASSES )
-						return 0;
-					return cg_classes[ b->data ].classIcon;
-				}
-				else
-				{
-					if( b->data <= WP_NONE || b->data >= WP_NUM_WEAPONS )
-						return 0;
-					return cg_weapons[ b->data ].weaponIcon;
-				}
-			}
-			else
-			{
-				if( b->data <= BA_NONE || b->data >= BA_NUM_BUILDABLES )
-					return 0;
-				return cg_buildables[ b->data ].buildableIcon;
-			}
-		}
-		else
-		{
-			if ( b->flags & EF_BC_TAG_PLAYER )
-				return BG_Beacon( b->type )->icon[ 1 ];
-			else
-				return BG_Beacon( b->type )->icon[ 0 ];
-		}
-	}
-	else if ( b->type == BCT_BASE )
-	{
-		int index = 0;
-
-		if( b->flags & EF_BC_BASE_OUTPOST )
-			index |= 1;
-
-		if( b->flags & EF_BC_ENEMY )
-			index |= 2;
-
-		return BG_Beacon( b->type )->icon[ index ];
-	}
-
-	return BG_Beacon( b->type )->icon[ 0 ];
+	return cg.highlightedBeacon == b;
 }
 
-const char *CG_BeaconName( const cbeacon_t *b )
+qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 {
-	const char *text;
+	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES ) return 0;
 
-	if( b->type <= BCT_NONE || b->type > NUM_BEACON_TYPES )
+	int hlFlag = IsHighlighted( b ) ? 1 : 0;
+
+	if ( b->type == BCT_TAG ) {
+		return BG_Beacon( b->type )->icon[ hlFlag ][ b->flags & EF_BC_TAG_PLAYER ? 1 : 0 ];
+	} else if ( b->type == BCT_BASE ) {
+		int index = 0;
+
+		if( b->flags & EF_BC_BASE_OUTPOST ) index |= 1;
+		if( b->flags & EF_BC_ENEMY )        index |= 2;
+
+		return BG_Beacon( b->type )->icon[ hlFlag ][ index ];
+	}
+
+	return BG_Beacon( b->type )->icon[ hlFlag ][ 0 ];
+}
+
+qhandle_t CG_BeaconDescriptiveIcon( const cbeacon_t *b )
+{
+	if ( b->type == BCT_TAG ) {
+		if( b->flags & EF_BC_TAG_PLAYER ) {
+			switch ( TargetTeam( b ) ) {
+				case TEAM_ALIENS:
+					return cg_classes[ b->data ].classIcon;
+				case TEAM_HUMANS:
+					return cg_weapons[ b->data ].weaponIcon;
+				default:
+					return CG_BeaconIcon( b );
+			}
+		} else {
+			return cg_buildables[ b->data ].buildableIcon;
+		}
+	} else {
+		return CG_BeaconIcon( b );
+	}
+}
+
+char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
+{
+	if( b->type <= BCT_NONE || b->type > NUM_BEACON_TYPES ) {
+		return strncpy( out, "b->type out of range", len );
 		return "b->type out of range";
+	}
+
+	team_t ownTeam    = (team_t)cg.predictedPlayerState.persistant[ PERS_TEAM ];
+	team_t beaconTeam = TargetTeam( b );
 
 	switch( b->type )
 	{
 		case BCT_TAG:
-			if( b->flags & EF_BC_TAG_PLAYER )
-			{
-				switch ( TagTeam( b ) )
-				{
-					case TEAM_ALIENS:
-						text = BG_ClassModelConfig( b->data )->humanName; // class name
-						break;
+			if( b->flags & EF_BC_TAG_PLAYER ) {
+				if ( ownTeam == TEAM_NONE || ownTeam == beaconTeam ) {
+					return strncpy( out, cgs.clientinfo[ b->target ].name, len ); // Player name
+				} else if ( beaconTeam == TEAM_ALIENS ) {
+					return strncpy( out, BG_ClassModelConfig( b->data )->humanName, len ); // Class name
+				} else if ( beaconTeam == TEAM_HUMANS ) {
+					// TODO: Display "Light//Chewy/Canned Food" for different armor types.
+					return strncpy( out, "Food", len );
+				} else {
+					return strncpy( out, "???", len );
+				}
+			} else {
+				// Display buildable name for all teams.
+				return strncpy( out, BG_Buildable( b->data )->humanName, len );
+			}
+			break;
 
-					case TEAM_HUMANS:
-						text = "Human";
-						break;
+		// TODO: Unify determination of different prefixes (Own/Enemy/Alien/Human).
+		case BCT_BASE:
+		{
+			const char *prefix, *suffix;
 
-					default:
-						text = "Neutral Player";
-						break;
+			if ( ownTeam == TEAM_NONE ) {
+				switch ( TargetTeam( b ) ) {
+					case TEAM_ALIENS: prefix = "Alien"; break;
+					case TEAM_HUMANS: prefix = "Human"; break;
+					default:          prefix = "Neutral";
+				}
+			} else {
+				if ( b->flags & EF_BC_ENEMY ) {
+					prefix = "Enemy";
+				} else {
+					prefix = "Friendly";
 				}
 			}
-			else
-				text = BG_Buildable( b->data )->humanName;
-			break;
 
-		case BCT_BASE:
-			{
-				int index = 0;
-
-				if( b->flags & EF_BC_BASE_OUTPOST )
-					index |= 1;
-
-				if( b->flags & EF_BC_ENEMY )
-					index |= 2;
-
-				text = BG_Beacon( b->type )->text[ index ];
+			if ( b->flags & EF_BC_BASE_OUTPOST ) {
+				suffix = "Outpost";
+			} else {
+				suffix = "Base";
 			}
-			break;
+
+			snprintf( out, len, "%s %s", prefix, suffix );
+			return out;
+		}
 
 		default:
-			text = BG_Beacon( b->type )->text[ 0 ];
+			// All other beacons have a fixed name.
+			return strncpy( out, BG_Beacon( b->type )->text[ 0 ], len );
 	}
-
-	return text;
 }

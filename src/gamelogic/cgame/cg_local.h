@@ -640,8 +640,9 @@ typedef struct
 	int           etime;
 	int           mtime;
 	int           data;
-	team_t        team;
+	team_t        ownerTeam;
 	int           owner;
+	int           target;
 
 	// cache
 	float         dot;
@@ -2297,8 +2298,9 @@ const char *CG_TutorialText( void );
 
 void          CG_LoadBeaconsConfig( void );
 void          CG_ListBeacons( void );
-qhandle_t     CG_BeaconIcon( const cbeacon_t *b, qboolean hud );
-const char    *CG_BeaconName( const cbeacon_t *b );
+qhandle_t     CG_BeaconIcon( const cbeacon_t *b );
+qhandle_t     CG_BeaconDescriptiveIcon( const cbeacon_t *b );
+char          *CG_BeaconName( const cbeacon_t *b, char *out, size_t len );
 
 //
 //===============================================

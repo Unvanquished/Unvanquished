@@ -344,7 +344,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	                       b->pos[ 1 ] - b->size/2,
 	                       b->size, b->size,
 	                       0, 0, 1, 1,
-	                       CG_BeaconIcon( b, qtrue ) );
+	                       CG_BeaconIcon( b ) );
 
 	if( b->flags & EF_BC_DYING )
 		trap_R_DrawStretchPic( b->pos[ 0 ] - b->size/2 * 1.3,

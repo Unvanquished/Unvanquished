@@ -2501,7 +2501,21 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 			if( index < 0 || index >= 4 )
 				Com_Printf( S_ERROR "Invalid beacon icon index %i in %s\n", index, filename );
 			else
-				ba->icon[ index ] = trap_R_RegisterShader( token, RSF_DEFAULT );
+				ba->icon[ 0 ][ index ] = trap_R_RegisterShader( token, RSF_DEFAULT );
+#endif
+		}
+		else if ( !Q_stricmp( token, "hlIcon" ) )
+		{
+			PARSE( text, token );
+#ifdef BUILD_CGAME
+			index = atoi( token );
+#endif
+			PARSE( text, token );
+#ifdef BUILD_CGAME
+			if( index < 0 || index >= 4 )
+				Com_Printf( S_ERROR "Invalid beacon highlighted icon index %i in %s\n", index, filename );
+			else
+				ba->icon[ 1 ][ index ] = trap_R_RegisterShader( token, RSF_DEFAULT );
 #endif
 		}
 		else if ( !Q_stricmp( token, "inSound" ) )
