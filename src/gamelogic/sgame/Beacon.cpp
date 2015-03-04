@@ -713,7 +713,7 @@ namespace Beacon //this should eventually become a class
 		if ( *attachment )
 			Delete( *attachment );
 
-		beacon = New( origin, BCT_TAG, data, team, owner );
+		beacon = New( origin, BCT_TAG, data, team, ENTITYNUM_NONE );
 		beacon->tagAttachment = attachment;
 		beacon->s.bc_target = ent - g_entities;
 
