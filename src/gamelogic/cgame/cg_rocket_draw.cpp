@@ -625,37 +625,6 @@ static void CG_Rocket_DrawPlayerWallclimbing( void )
 	trap_Rocket_SetClass( "inactive", !wallwalking );
 }
 
-static void CG_Rocket_DrawAlienSense( void )
-{
-	rectDef_t rect;
-
-	if ( !BG_ClassHasAbility( cg.snap->ps.stats[ STAT_CLASS ], SCA_ALIENSENSE ) )
-	{
-		return;
-	}
-
-	// grab info from libRocket
-	CG_GetRocketElementRect( &rect );
-	CG_AlienSense( &rect );
-}
-
-static void CG_Rocket_DrawHumanScanner( void )
-{
-	rectDef_t rect;
-
-	if ( !BG_InventoryContainsUpgrade( UP_RADAR, cg.snap->ps.stats ) )
-	{
-		trap_Rocket_SetClass( "active", qfalse );
-		return;
-	}
-
-	// grab info from libRocket
-	CG_GetRocketElementRect( &rect );
-
-	trap_Rocket_SetClass( "active", qtrue );
-	CG_Scanner( &rect );
-}
-
 static void CG_Rocket_DrawUsableBuildable( void )
 {
 	vec3_t        view, point;
@@ -2624,7 +2593,6 @@ typedef struct
 // THESE MUST BE ALPHABETIZED
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
-	{ "alien_sense", &CG_Rocket_DrawAlienSense, ELEMENT_ALIENS },
 	{ "ammo", &CG_Rocket_DrawAmmo, ELEMENT_BOTH },
 	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
 	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
@@ -2671,7 +2639,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "numSpawns", &CG_Rocket_DrawNumSpawns, ELEMENT_DEAD },
 	{ "predictedMineEfficiency", &CG_Rocket_DrawPredictedRGSRate, ELEMENT_BOTH },
 	{ "progress_value", &CG_Rocket_DrawProgressValue, ELEMENT_ALL },
-	{ "scanner", &CG_Rocket_DrawHumanScanner, ELEMENT_HUMANS },
 	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, ELEMENT_DEAD },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },
 	{ "stamina", &CG_Rocket_DrawStaminaValue, ELEMENT_HUMANS },

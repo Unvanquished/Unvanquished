@@ -2173,13 +2173,6 @@ void CG_DrawItemSelectText( void );
 float CG_ChargeProgress( void );
 
 //
-// cg_scanner.c
-//
-void CG_UpdateEntityPositions( void );
-void CG_Scanner( rectDef_t *rect );
-void CG_AlienSense( rectDef_t *rect );
-
-//
 // cg_minimap.c
 //
 void CG_InitMinimap( void );

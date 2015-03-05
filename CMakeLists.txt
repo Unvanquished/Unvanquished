@@ -828,7 +828,6 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_snapshot.cpp
   ${GAMELOGIC_DIR}/cgame/cg_view.cpp
   ${GAMELOGIC_DIR}/cgame/cg_weapons.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_scanner.cpp
   ${GAMELOGIC_DIR}/cgame/cg_attachment.cpp
   ${GAMELOGIC_DIR}/cgame/cg_trails.cpp
   ${GAMELOGIC_DIR}/cgame/cg_particles.cpp

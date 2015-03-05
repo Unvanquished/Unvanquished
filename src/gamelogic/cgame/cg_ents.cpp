@@ -1310,9 +1310,6 @@ void CG_AddPacketEntities( void )
 	// lerp the non-predicted value for lightning gun origins
 	CG_CalcEntityLerpPositions( &cg_entities[ cg.snap->ps.clientNum ] );
 
-	// scanner
-	CG_UpdateEntityPositions();
-
 	for ( num = 0; num < MAX_GENTITIES; num++ )
 	{
 		cg_entities[ num ].valid = qfalse;

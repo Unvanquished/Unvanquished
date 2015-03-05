@@ -263,9 +263,7 @@ extern int   LCANNON_CHARGE_AMMO;
  * HUMAN upgrades
  */
 
-extern float RADAR_RANGE;
-
-extern float BATTPACK_MODIFIER;
+#define RADAR_RANGE           1000.0f
 
 extern int   MEDKIT_POISON_IMMUNITY_TIME;
 extern int   MEDKIT_STARTUP_TIME;

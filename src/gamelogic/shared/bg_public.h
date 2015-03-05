@@ -1144,8 +1144,6 @@ typedef struct
 
 	int      cost;
 	int      value;
-
-	float    radarFadeOut;
 } classAttributes_t;
 
 typedef struct
@@ -1215,8 +1213,6 @@ typedef struct
 
 	qboolean    transparentTest;
 	qboolean    uniqueTest;
-
-	float       radarFadeOut;
 } buildableAttributes_t;
 
 typedef struct
