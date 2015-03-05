@@ -628,7 +628,6 @@ typedef struct buildableCache_s
 // it depends on past states)
 typedef struct
 {
-	qboolean      inuse;
 	qboolean      old;
 	qboolean      eventFired;
 

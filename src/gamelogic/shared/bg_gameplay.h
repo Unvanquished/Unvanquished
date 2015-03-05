@@ -175,7 +175,9 @@ extern int   LEVEL4_CRUSH_REPEAT;
  * ALIEN misc
  */
 
-#define ALIENSENSE_RANGE         1000.0f
+#define ALIENSENSE_RANGE         1500.0f
+#define ALIENSENSE_BORDER_FRAC   0.2f // In this outer fraction of the range beacons are faded.
+
 #define REGEN_BOOSTER_RANGE      200.0f
 #define REGEN_TEAMMATE_RANGE     300.0f
 

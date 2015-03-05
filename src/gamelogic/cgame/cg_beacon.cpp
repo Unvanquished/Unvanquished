@@ -175,7 +175,6 @@ static bool LoadExplicitBeacons( void )
 		if( es->bc_etime && es->bc_etime <= cg.time ) // Beacon expired.
 			continue;
 
-		beacon->inuse = qtrue;
 		beacon->ctime = es->bc_ctime;
 		beacon->etime = es->bc_etime;
 		beacon->mtime = es->bc_mtime;
@@ -261,15 +260,13 @@ static bool LoadImplicitBeacons( void )
 			beacon->alphaMod = Maths::clampFraction(
 				( ( (float)ALIENSENSE_RANGE -
 			        Distance( cg.predictedPlayerState.origin, beacon->origin ) ) /
-			      ( 0.1f * (float)ALIENSENSE_RANGE ) ) );
+			      ( ALIENSENSE_BORDER_FRAC * (float)ALIENSENSE_RANGE ) ) );
 
 			// A value of 0 means the target is out of range, don't create a beacon in that case.
 			if ( beacon->alphaMod == 0.0f ) continue;
 
 			// Prepare beacon to be added.
-			beacon->inuse     = qtrue;
 			beacon->ctime     = ent->pvsEnterTime;
-			beacon->etime     = 0;
 			beacon->mtime     = cg.time;
 			beacon->type      = BCT_TAG;
 			beacon->data      = es->weapon;
@@ -280,7 +277,18 @@ static bool LoadImplicitBeacons( void )
 
 			// Expire beacons on corpses.
 			if ( ent->currentState.eFlags & EF_DEAD ) {
-				beacon->etime = ent->currentState.pos.trTime + 2000;
+				beacon->flags |= EF_BC_DYING;
+
+				if ( !beacon->old || !( beacon->oldFlags & EF_BC_DYING ) ) {
+					beacon->etime = cg.time + 1500; // TODO: Sync delay with explicit beacons.
+				}
+
+				// Don't add beacon if it's both expired and faded out.
+				if ( beacon->etime <= cg.time ) {
+					continue;
+				}
+			} else {
+				beacon->etime = 0;
 			}
 
 			// Add beacon to cg.beacons.
@@ -400,9 +408,9 @@ static void DrawBeacon( cbeacon_t *b )
 
 	// reset animations
 	b->scale = 1.0;
-	alpha = 1.0;
+	alpha    = 1.0;
 
-	time_in = cg.time - b->ctime; // time since creation
+	time_in   = cg.time - b->ctime; // time since creation
 	time_left = b->etime - cg.time; // time to expiration
 
 	// check creation
