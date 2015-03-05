@@ -1081,6 +1081,8 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	cent->lerpFrame.animationNumber = BANIM_NONE;
 	cent->oldBuildableAnim = (buildableAnimNumber_t) es->legsAnim;
 	cent->radarVisibility = 0.0f;
+
+	cent->pvsEnterTime = cg.time;
 }
 
 /**

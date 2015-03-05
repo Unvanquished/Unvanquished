@@ -451,7 +451,7 @@ static void CG_Draw2D( void )
 	}
 
 	// get an up-to-date list of beacons
-	CG_ListBeacons();
+	CG_RunBeacons();
 
 	// draw beacons on HUD
 	for( i = 0; i < cg.beaconCount; i++ )

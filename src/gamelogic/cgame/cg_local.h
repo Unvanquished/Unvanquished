@@ -643,6 +643,7 @@ typedef struct
 	team_t        ownerTeam;
 	int           owner;
 	int           target;
+	float         alphaMod; // A modifier that can be set before the drawing phase begins.
 
 	// cache
 	float         dot;
@@ -798,6 +799,8 @@ typedef struct centity_s
 
 	qboolean              valid;
 	qboolean              oldValid;
+	int                   pvsEnterTime;
+
 	struct centity_s      *nextLocation;
 
 	cbeacon_t             beacon;
@@ -2297,7 +2300,7 @@ const char *CG_TutorialText( void );
 //
 
 void          CG_LoadBeaconsConfig( void );
-void          CG_ListBeacons( void );
+void          CG_RunBeacons( void );
 qhandle_t     CG_BeaconIcon( const cbeacon_t *b );
 qhandle_t     CG_BeaconDescriptiveIcon( const cbeacon_t *b );
 char          *CG_BeaconName( const cbeacon_t *b, char *out, size_t len );

@@ -147,9 +147,250 @@ else if( !Q_stricmp( token.string, #x ) ) \
 #define Distance2(a,b) sqrt(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
 
 /**
+ * @brief Fills cg.beacons with explicit (ET_BEACON entity) beacons.
+ * @return Whether all beacons found space in cg.beacons.
+ */
+static bool LoadExplicitBeacons( void )
+{
+	int i;
+	centity_t     *ent;
+	entityState_t *es;
+	cbeacon_t     *beacon;
+
+	cg.highlightedBeacon = NULL;
+
+	// Find beacons and add them to cg.beacons.
+	for( cg.beaconCount = 0, i = 0; i < cg.snap->entities.size(); i++ )
+	{
+		ent    = cg_entities + cg.snap->entities[ i ].number;
+		es     = &ent->currentState;
+		beacon = &ent->beacon;
+
+		if ( es->eType != ET_BEACON )
+			continue;
+
+		if( es->modelindex <= BCT_NONE || es->modelindex >= NUM_BEACON_TYPES )
+			continue;
+
+		if( es->bc_etime && es->bc_etime <= cg.time ) // Beacon expired.
+			continue;
+
+		beacon->inuse = qtrue;
+		beacon->ctime = es->bc_ctime;
+		beacon->etime = es->bc_etime;
+		beacon->mtime = es->bc_mtime;
+		beacon->type = (beaconType_t)es->bc_type;
+		beacon->data = es->bc_data;
+		beacon->ownerTeam = (team_t)es->bc_team;
+		beacon->owner = es->bc_owner;
+		beacon->flags = es->eFlags;
+		beacon->target = es->bc_target;
+		beacon->alphaMod = 1.0f;
+
+		// Snap beacon origin to exact player location if known.
+		centity_t *targetCent; entityState_t *targetES;
+		if ( beacon->target && ( targetCent = &cg_entities[ beacon->target ] )->valid &&
+		     ( targetES = &targetCent->currentState )->eType == ET_PLAYER )
+		{
+			vec3_t mins, maxs, center;
+			int pClass = ( ( targetES->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
+
+			VectorCopy( targetCent->lerpOrigin, center );
+			BG_ClassBoundingBox( pClass, mins, maxs, NULL, NULL, NULL );
+			BG_MoveOriginToBBOXCenter( center, mins, maxs );
+
+			// TODO: Interpolate when target entity pops in.
+			VectorCopy( center, beacon->origin );
+		}
+		else
+		{
+			// TODO: Interpolate when target entity pops out.
+			VectorCopy( ent->lerpOrigin, beacon->origin );
+		}
+
+		cg.beacons[ cg.beaconCount++ ] = beacon;
+		if( cg.beaconCount >= MAX_CBEACONS ) return false;
+	}
+
+	return true;
+}
+
+/**
+ * @brief Fills cg.beacons with implicit (client side generated) beacons.
+ * @return Whether all beacons found space in cg.beacons.
+ */
+static bool LoadImplicitBeacons( void )
+{
+	// All alive aliens have enemy sense.
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
+	     cg.predictedPlayerState.persistant[ PERS_SPECSTATE ] == SPECTATOR_NOT &&
+	     cg.predictedPlayerState.stats[ STAT_HEALTH ] > 0 )
+	{
+		for ( int clientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
+		{
+			centity_t     *ent;
+			entityState_t *es;
+			clientInfo_t  *client;
+
+			// Can only track valid targets.
+			// TODO: Make beacons expire properly anyway.
+			if ( !( ent = &cg_entities[ clientNum ] )->valid )            continue;
+
+			// Only tag enemies like this, teammates have an explicit beacon.
+			if ( !( client = &cgs.clientinfo[ clientNum ] )->infoValid ) continue;
+			if ( client->team != TEAM_HUMANS )                           continue;
+
+			//ent = &cg_entities[ clientNum ];
+			es = &ent->currentState;
+
+			cbeacon_t *beacon = &ent->beacon;
+
+			// Set location on exact center of target player entity.
+			{
+				vec3_t mins, maxs, center;
+				int pClass = ( ( es->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
+
+				VectorCopy( ent->lerpOrigin, center );
+				BG_ClassBoundingBox( pClass, mins, maxs, NULL, NULL, NULL );
+				BG_MoveOriginToBBOXCenter( center, mins, maxs );
+
+				VectorCopy( center, beacon->origin );
+			}
+
+			// Add alpha fade at the borders of the sense range.
+			beacon->alphaMod = Maths::clampFraction(
+				( ( (float)ALIENSENSE_RANGE -
+			        Distance( cg.predictedPlayerState.origin, beacon->origin ) ) /
+			      ( 0.1f * (float)ALIENSENSE_RANGE ) ) );
+
+			// A value of 0 means the target is out of range, don't create a beacon in that case.
+			if ( beacon->alphaMod == 0.0f ) continue;
+
+			// Prepare beacon to be added.
+			beacon->inuse     = qtrue;
+			beacon->ctime     = ent->pvsEnterTime;
+			beacon->etime     = 0;
+			beacon->mtime     = cg.time;
+			beacon->type      = BCT_TAG;
+			beacon->data      = es->weapon;
+			beacon->ownerTeam = TEAM_ALIENS;
+			beacon->owner     = ENTITYNUM_NONE;
+			beacon->flags     = EF_BC_TAG_PLAYER | EF_BC_ENEMY;
+			beacon->target    = es->number;
+
+			// Expire beacons on corpses.
+			if ( ent->currentState.eFlags & EF_DEAD ) {
+				beacon->etime = ent->currentState.pos.trTime + 2000;
+			}
+
+			// Add beacon to cg.beacons.
+			cg.beacons[ cg.beaconCount++ ] = beacon;
+			if( cg.beaconCount >= MAX_CBEACONS ) return false;
+		}
+	}
+
+	return true;
+}
+
+/**
+ * @brief Used by qsort to compare beacons.
+ */
+static int CompareBeaconsByDist( const void *a, const void *b )
+{
+	return ( *(const cbeacon_t**)a )->dist > ( *(const cbeacon_t**)b )->dist;
+}
+
+/**
+ * @brief Marks the nearest refreshing buildable if low on health or ammo.
+ * @note  Assumes that cg.beacons is sorted.
+ */
+static void MarkRelevantBeacons( void )
+{
+	const playerState_t *ps = &cg.predictedPlayerState;
+	int team = ps->persistant[ PERS_TEAM ];
+	qboolean lowammo, energy;
+
+	lowammo = BG_PlayerLowAmmo( ps, &energy );
+
+	for( int beaconNum = 0, tofind = 3; beaconNum < cg.beaconCount && tofind; beaconNum++ )
+	{
+		cbeacon_t *beacon = cg.beacons[ beaconNum ];
+
+		// Only tagged buildables are relevant so far.
+		if( beacon->type != BCT_TAG ||
+		    ( beacon->flags & EF_BC_TAG_PLAYER ) ||
+		    ( beacon->flags & EF_BC_DYING ) )
+		{
+			continue;
+		}
+
+		// Find a health source.
+		if( tofind & 1 )
+		{
+			if( ( team == TEAM_ALIENS && beacon->data == BA_A_BOOSTER ) ||
+			    ( team == TEAM_HUMANS && beacon->data == BA_H_MEDISTAT ) )
+			{
+				if( ps->stats[ STAT_HEALTH ] < ps->stats[ STAT_MAX_HEALTH ] / 2 )
+					beacon->type = BCT_HEALTH;
+				tofind &= ~1;
+			}
+		}
+
+		// Find an ammo source.
+		if( tofind & 2 )
+		{
+			if( team == TEAM_HUMANS && ( beacon->data == BA_H_ARMOURY ||
+			    ( energy && ( beacon->data == BA_H_REPEATER || beacon->data == BA_H_REACTOR ) ) ) )
+			{
+				if( lowammo )
+					beacon->type = BCT_AMMO;
+				tofind &= ~2;
+			}
+		}
+	}
+}
+
+static void SetHighlightedBeacon( void )
+{
+	for( int beaconNum = 0; beaconNum < cg.beaconCount; beaconNum++ ) {
+		cbeacon_t *beacon = cg.beacons[ beaconNum ];
+		vec3_t delta;
+
+		VectorSubtract( beacon->origin, cg.refdef.vieworg, delta );
+		VectorNormalize( delta );
+		beacon->dot = DotProduct( delta, cg.refdef.viewaxis[ 0 ] );
+		beacon->dist = Distance( cg.predictedPlayerState.origin, beacon->origin );
+
+		// Set highlighted beacon to smallest angle below threshold.
+		if( beacon->dot > cgs.bc.highlightAngle &&
+			( !cg.highlightedBeacon || beacon->dot > cg.highlightedBeacon->dot ) )
+		{
+			cg.highlightedBeacon = beacon;
+		}
+	}
+}
+
+static inline bool IsHighlighted( const cbeacon_t *b )
+{
+	return cg.highlightedBeacon == b;
+}
+
+static team_t TargetTeam( const cbeacon_t *beacon )
+{
+	if ( beacon->type != BCT_TAG && beacon->type != BCT_BASE )
+		return TEAM_NONE;
+
+	if ( ( beacon->ownerTeam == TEAM_ALIENS && beacon->flags & EF_BC_ENEMY ) ||
+	     ( beacon->ownerTeam == TEAM_HUMANS && !( beacon->flags & EF_BC_ENEMY ) ) )
+		return TEAM_HUMANS;
+	else
+		return TEAM_ALIENS;
+}
+
+/**
  * @brief Handles beacon animations and sounds. Called every frame for every beacon.
  */
-static void RunBeacon( cbeacon_t *b )
+static void DrawBeacon( cbeacon_t *b )
 {
 	float alpha; // target
 	int time_in, time_left;
@@ -200,6 +441,9 @@ static void RunBeacon( cbeacon_t *b )
 	else
 		t_fadeout = 0.0;
 	alpha *= 1.0 - t_fadeout;
+
+	// apply pre-defined alpha modifier
+	alpha *= b->alphaMod;
 
 	// pulsation
 	if( b->type == BCT_HEALTH && time_in > 600 )
@@ -325,29 +569,9 @@ static void RunBeacon( cbeacon_t *b )
 }
 
 /**
- * @brief Used by qsort to compare beacons.
- */
-static int CompareBeaconsByDist( const void *a, const void *b )
-{
-	return ( *(const cbeacon_t**)a )->dist > ( *(const cbeacon_t**)b )->dist;
-}
-
-static team_t TargetTeam( const cbeacon_t *beacon )
-{
-	if ( beacon->type != BCT_TAG && beacon->type != BCT_BASE )
-		return TEAM_NONE;
-
-	if ( ( beacon->ownerTeam == TEAM_ALIENS && beacon->flags & EF_BC_ENEMY ) ||
-	     ( beacon->ownerTeam == TEAM_HUMANS && !( beacon->flags & EF_BC_ENEMY ) ) )
-		return TEAM_HUMANS;
-	else
-		return TEAM_ALIENS;
-}
-
-/**
  * @brief Hands over information about highlighted beacon to UI.
  */
-static void UpdateBeaconRocket( void )
+static void HandHLBeaconToUI( void )
 {
 	cbeacon_t *beacon;
 	beaconRocket_t * const br = &cg.beaconRocket;
@@ -421,151 +645,29 @@ static void UpdateBeaconRocket( void )
 }
 
 /**
- * @brief Fills the cg.beacons array.
+ * @brief Loads and runs beacons, passes beacon data to the UI.
  */
-void CG_ListBeacons( void )
+void CG_RunBeacons( void )
 {
-	int i;
-	centity_t *cent;
-	entityState_t *es;
-	cbeacon_t *b;
-	vec3_t delta;
+	// Don't load implicit beacons if there wasn't enough space for the explicit ones.
+	LoadExplicitBeacons() && LoadImplicitBeacons();
 
-	cg.highlightedBeacon = NULL;
-
-	// Find beacons and add them to cg.beacons.
-	for( cg.beaconCount = 0, i = 0; i < cg.snap->entities.size(); i++ )
-	{
-		cent = cg_entities + cg.snap->entities[ i ].number;
-		es   = &cent->currentState;
-		b    = &cent->beacon;
-
-		if ( es->eType != ET_BEACON )
-			continue;
-
-		if( es->modelindex <= BCT_NONE || es->modelindex >= NUM_BEACON_TYPES )
-			continue;
-
-		if( es->bc_etime && es->bc_etime <= cg.time ) // Beacon expired.
-			continue;
-
-		b->inuse = qtrue;
-		b->ctime = es->bc_ctime;
-		b->etime = es->bc_etime;
-		b->mtime = es->bc_mtime;
-
-		b->type = (beaconType_t)es->bc_type;
-		b->data = es->bc_data;
-		b->ownerTeam = (team_t)es->bc_team;
-		b->owner = es->bc_owner;
-		b->flags = es->eFlags;
-		b->target = es->bc_target;
-
-		// Snap beacon origin to exact player location if known.
-		centity_t *targetCent; entityState_t *targetES;
-		if ( b->target && ( targetCent = &cg_entities[ b->target ] )->valid &&
-		     ( targetES = &targetCent->currentState )->eType == ET_PLAYER )
-		{
-			vec3_t mins, maxs, center;
-			int pClass = ( ( targetES->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
-
-			VectorCopy( targetCent->lerpOrigin, center );
-			BG_ClassBoundingBox( pClass, mins, maxs, NULL, NULL, NULL );
-			BG_MoveOriginToBBOXCenter( center, mins, maxs );
-
-			// TODO: Interpolate when target entity pops in.
-			VectorCopy( center, b->origin );
-		}
-		else
-		{
-			// TODO: Interpolate when target entity pops out.
-			VectorCopy( cent->lerpOrigin, b->origin );
-		}
-
-		VectorSubtract( b->origin, cg.refdef.vieworg, delta );
-		VectorNormalize( delta );
-		b->dot = DotProduct( delta, cg.refdef.viewaxis[ 0 ] );
-		b->dist = Distance( cg.predictedPlayerState.origin, b->origin );
-
-		// Set highlighted beacon to smallest angle below threshold.
-		if( b->dot > cgs.bc.highlightAngle &&
-		    ( !cg.highlightedBeacon || b->dot > cg.highlightedBeacon->dot ) )
-		{
-			cg.highlightedBeacon = b;
-		}
-
-		cg.beacons[ cg.beaconCount ] = b;
-
-		if( ++cg.beaconCount >= MAX_CBEACONS )
-			break;
-	}
-
-	if( !cg.beaconCount )
-		return;
-
-	// Sort beacons by distance.
+	// Sort beacons by distance, code below this may assume this.
 	qsort( cg.beacons, cg.beaconCount, sizeof( cbeacon_t* ), CompareBeaconsByDist );
 
-	// Mark the nearest booster/medistat if low on hp and mark the nearest armoury if low on ammo.
-	// TODO: Move to seperate function.
-	{
-		const playerState_t *ps = &cg.predictedPlayerState;
-		int tofind, team = ps->persistant[ PERS_TEAM ];
-		qboolean lowammo, energy;
+	MarkRelevantBeacons();
+	SetHighlightedBeacon();
 
-		lowammo = BG_PlayerLowAmmo( ps, &energy );
-
-		for( i = 0, tofind = 3; i < cg.beaconCount && tofind; i++ )
-		{
-			b = cg.beacons[ i ];
-
-			if( b->type != BCT_TAG )
-				continue;
-
-			if( ( b->flags & EF_BC_TAG_PLAYER ) || ( b->flags & EF_BC_DYING ) )
-				continue;
-
-			// Find a health source.
-			if( tofind & 1 )
-			{
-				if( ( team == TEAM_ALIENS && b->data == BA_A_BOOSTER ) ||
-				    ( team == TEAM_HUMANS && b->data == BA_H_MEDISTAT ) )
-				{
-					if( ps->stats[ STAT_HEALTH ] < ps->stats[ STAT_MAX_HEALTH ] / 2 )
-						b->type = BCT_HEALTH;
-					tofind &= ~1;
-				}
-			}
-
-			// Find an ammo source.
-			if( tofind & 2 )
-			{
-				if( team == TEAM_HUMANS && ( b->data == BA_H_ARMOURY ||
-				    ( energy && ( b->data == BA_H_REPEATER || b->data == BA_H_REACTOR ) ) ) )
-				{
-					if( lowammo )
-						b->type = BCT_AMMO;
-					tofind &= ~2;
-				}
-			}
-		}
+	for( int beaconNum = 0; beaconNum < cg.beaconCount; beaconNum++ ) {
+		DrawBeacon( cg.beacons[ beaconNum ] );
 	}
 
-	for( i = 0; i < cg.beaconCount; i++ )
-		RunBeacon( cg.beacons[ i ] );
-
-	for( i = 0; i < cg.beaconCount; i++ )
-	{
-		cg.beacons[ i ]->old = qtrue;
-		cg.beacons[ i ]->oldFlags = cg.beacons[ i ]->flags;
+	for( int beaconNum = 0; beaconNum < cg.beaconCount; beaconNum++ ) {
+		cg.beacons[ beaconNum ]->old = qtrue;
+		cg.beacons[ beaconNum ]->oldFlags = cg.beacons[ beaconNum ]->flags;
 	}
 
-	UpdateBeaconRocket();
-}
-
-static inline bool IsHighlighted( const cbeacon_t *b )
-{
-	return cg.highlightedBeacon == b;
+	HandHLBeaconToUI();
 }
 
 qhandle_t CG_BeaconIcon( const cbeacon_t *b )
