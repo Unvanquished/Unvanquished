@@ -1456,6 +1456,7 @@ void CL_MapLoading( void )
 		memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
 		cl.gameState.fill("");
 		clc.lastPacketSentTime = -9999;
+		cgvm.CGameRocketFrame();
 		SCR_UpdateScreen();
 	}
 	else
@@ -1467,6 +1468,7 @@ void CL_MapLoading( void )
 		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = CA_CHALLENGING; // so the connect screen is drawn
 		cls.keyCatchers = 0;
+		cgvm.CGameRocketFrame();
 		SCR_UpdateScreen();
 		clc.connectTime = -RETRANSMIT_TIMEOUT;
 		NET_StringToAdr( cls.servername, &clc.serverAddress, NA_UNSPEC );
@@ -3597,6 +3599,9 @@ void CL_Frame( int msec )
 
 	// decide on the serverTime to render
 	CL_SetCGameTime();
+
+	// DOM updates from cgame
+	cgvm.CGameRocketFrame();
 
 	// Update librocket
 	Rocket_Update();

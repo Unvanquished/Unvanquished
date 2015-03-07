@@ -621,8 +621,14 @@ void CG_Rocket_Frame( cgClientState_t state )
 		CG_Rocket_BuildServerInfo();
 	}
 
+	if ( cg.scoreInvalidated )
+	{
+		CG_Rocket_BuildPlayerList( NULL );
+		cg.scoreInvalidated = qfalse;
+	}
+
 	// Update scores as long as they are showing
-	if ( cg.showScores && cg.scoresRequestTime + 2000 < cg.time )
+	if ( ( cg.showScores || cg.intermissionStarted ) && cg.scoresRequestTime + 2000 < cg.time )
 	{
 		CG_RequestScores();
 	}

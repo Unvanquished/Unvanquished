@@ -1165,6 +1165,7 @@ typedef struct
 	char     spectatorList[ MAX_STRING_CHARS ]; // list of names
 	int      spectatorTime; // next time to offset
 	float    spectatorOffset; // current offset from start
+	qboolean scoreInvalidated; // needs update on next RocketUpdate
 
 	// centerprinting
 	int  centerPrintTime;
@@ -1429,7 +1430,6 @@ typedef struct
 	int currentNetSrc;
 	int serversLastRefresh;
 	int serverStatusLastRefresh;
-	int scoresLastUpdate;
 	int realtime;
 	char downloadName[ MAX_STRING_CHARS ];
 	cgClientState_t cstate;

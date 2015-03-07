@@ -386,7 +386,6 @@ void CG_ShowScores_f( void )
 
 	if ( !cg.showScores )
 	{
-		CG_RequestScores();
 		trap_PrepareKeyUp();
 
 		trap_Rocket_ShowScoreboard( "scoreboard", qtrue );

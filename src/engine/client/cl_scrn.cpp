@@ -771,8 +771,6 @@ void SCR_UpdateScreen( void )
 	{
 		SCR_DrawScreenField();
 
-		cgvm.CGameRocketFrame();
-
 		Rocket_Render();
 		SCR_DrawConsoleAndPointer();
 

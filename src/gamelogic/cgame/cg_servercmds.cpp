@@ -74,10 +74,8 @@ static void CG_ParseScores( void )
 
 		cg.scores[ i ].team = cgs.clientinfo[ cg.scores[ i ].client ].team;
 	}
-	if ( cg.showScores )
-	{
-		CG_Rocket_BuildPlayerList( NULL );
-	}
+
+	cg.scoreInvalidated = qtrue;
 }
 
 /*
