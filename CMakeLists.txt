@@ -50,9 +50,6 @@ project( Daemon C CXX )
 
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
-option( BUILD_GAME_NATIVE_EXE "Build native executable game logic" 1 )
-option( BUILD_GAME_NATIVE_DLL "Build native shared library game logic" 1 )
-option( BUILD_GAME_NACL "Build NaCl game logic" 1 )
 option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
@@ -103,7 +100,6 @@ set( MOUNT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 set( OBJ_DIR ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY} )
 set( ENGINE_DIR ${MOUNT_DIR}/engine )
 set( COMMON_DIR ${MOUNT_DIR}/common )
-set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( LIB_DIR ${MOUNT_DIR}/libs )
 set( ROCKET_DIR ${LIB_DIR}/libRocket )
 if( CMAKE_CFG_INTDIR STREQUAL "." )
@@ -142,12 +138,6 @@ elseif( LINUX )
   else()
     set( DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_deps/linux32-${DEPS_VERSION} )
   endif()
-endif()
-set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin )
-if( WIN32 )
-  set( PNACL_BIN_EXT ".bat" )
-else()
-  set( PNACL_BIN_EXT "" )
 endif()
 
 ################################################################################
@@ -424,19 +414,6 @@ if( APPLE )
   set_linker_flag( "-Wl,-no_pie" )
   set( CMAKE_INSTALL_RPATH "@executable_path/;${DEPS_DIR};${DEPS_DIR}/lib" )
   set( CMAKE_BUILD_WITH_INSTALL_RPATH ON )
-endif()
-
-################################################################################
-# Determine python version and set env variable
-################################################################################
-
-if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
-  set( PythonInterp_FIND_VERSION 2 )
-  find_package( PythonInterp 2 )
-  if( NOT PYTHONINTERP_FOUND )
-    message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
-  endif()
-  set( PNACLPYTHON_PREFIX env "PNACLPYTHON=${PYTHON_EXECUTABLE}" )
 endif()
 
 ################################################################################
@@ -791,112 +768,6 @@ set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.cpp
 )
 
-set( GAMESHAREDLIST
-  ${GAMELOGIC_DIR}/shared/bg_misc.cpp
-  ${GAMELOGIC_DIR}/shared/bg_parse.cpp
-  ${GAMELOGIC_DIR}/shared/bg_pmove.cpp
-  ${GAMELOGIC_DIR}/shared/bg_slidemove.cpp
-  ${GAMELOGIC_DIR}/shared/bg_alloc.cpp
-  ${GAMELOGIC_DIR}/shared/bg_voice.cpp
-  ${GAMELOGIC_DIR}/shared/bg_teamprogress.cpp
-  ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
-  ${GAMELOGIC_DIR}/shared/CommandBufferClient.cpp
-  ${GAMELOGIC_DIR}/shared/CommandBufferClient.h
-  ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
-  ${GAMELOGIC_DIR}/shared/CommonProxies.h
-  ${GAMELOGIC_DIR}/shared/VMMain.cpp
-  ${GAMELOGIC_DIR}/shared/VMMain.h
-)
-
-set( CGAMELIST
-  ${GAMELOGIC_DIR}/cgame/cg_api.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_consolecmds.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_buildable.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_animation.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_animmapobj.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_draw.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_drawtools.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_ents.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_event.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_main.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_marks.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_minimap.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_players.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_playerstate.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_predict.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_servercmds.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_snapshot.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_view.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_weapons.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_scanner.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_attachment.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_trails.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_particles.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_tutorial.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_utils.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_beacon.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_rocket.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_draw.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_events.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_datasource.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_progressbar.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_parseutils.cpp
-  ${ENGINE_DIR}/client/cg_api.h
-  ${ENGINE_DIR}/client/cg_msgdef.h
-  ${ENGINE_DIR}/qcommon/print_translated.h
-  ${GAMESHAREDLIST}
-  ${COMMONLIST}
-)
-
-set( SGAMELIST
-  ${GAMELOGIC_DIR}/sgame/sg_active.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_api.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_buildpoints.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_client.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_cmds.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_combat.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_momentum.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_entities.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_physics.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_buildable.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_main.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_missile.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_session.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn_afx.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn_ctrl.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn_fx.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn_game.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn_generic.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn_gfx.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn_mover.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn_position.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn_sensor.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn_shared.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_spawn.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_svcmds.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_team.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_utils.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_maprotation.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_admin.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_namelog.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_bot.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_bot_ai.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_bot_nav.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_bot_parse.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_bot_util.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_cm_world.cpp
-  ${GAMELOGIC_DIR}/sgame/sg_cm_world.h
-  ${GAMELOGIC_DIR}/sgame/Beacon.cpp
-  ${GAMELOGIC_DIR}/sgame/Clustering.cpp
-  ${ENGINE_DIR}/server/sg_api.h
-  ${ENGINE_DIR}/server/sg_msgdef.h
-  ${GAMESHAREDLIST}
-  ${COMMONLIST}
-)
-
 set( WIN_RC ${ENGINE_DIR}/sys/daemon.rc )
 
 set( MINIZIPLIST
@@ -904,37 +775,6 @@ set( MINIZIPLIST
   ${LIB_DIR}/minizip/ioapi.h
   ${LIB_DIR}/minizip/unzip.c
   ${LIB_DIR}/minizip/unzip.h
-)
-
-# This is only used for the NaCl modules. For all other targets, the host zlib
-# is used (sourced from external_deps if not available on target platform).
-set( ZLIBLIST
-  ${LIB_DIR}/zlib/adler32.c
-  ${LIB_DIR}/zlib/compress.c
-  ${LIB_DIR}/zlib/crc32.c
-  ${LIB_DIR}/zlib/crc32.h
-  ${LIB_DIR}/zlib/deflate.c
-  ${LIB_DIR}/zlib/deflate.h
-  ${LIB_DIR}/zlib/gzclose.c
-  ${LIB_DIR}/zlib/gzguts.h
-  ${LIB_DIR}/zlib/gzlib.c
-  ${LIB_DIR}/zlib/gzread.c
-  ${LIB_DIR}/zlib/gzwrite.c
-  ${LIB_DIR}/zlib/infback.c
-  ${LIB_DIR}/zlib/inffast.c
-  ${LIB_DIR}/zlib/inffast.h
-  ${LIB_DIR}/zlib/inffixed.h
-  ${LIB_DIR}/zlib/inflate.c
-  ${LIB_DIR}/zlib/inflate.h
-  ${LIB_DIR}/zlib/inftrees.c
-  ${LIB_DIR}/zlib/inftrees.h
-  ${LIB_DIR}/zlib/trees.c
-  ${LIB_DIR}/zlib/trees.h
-  ${LIB_DIR}/zlib/uncompr.c
-  ${LIB_DIR}/zlib/zconf.h
-  ${LIB_DIR}/zlib/zlib.h
-  ${LIB_DIR}/zlib/zutil.c
-  ${LIB_DIR}/zlib/zutil.h
 )
 
 set( TINYGETTEXTLIST
@@ -1063,18 +903,6 @@ elseif( WIN32 )
   )
 endif()
 
-set( NACLLIST_MODULE
-  ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
-  ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl/nacl_imc.cc
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_accept.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_connect.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_makeboundsock.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_mem_obj_create.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_recvmsg.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_sendmsg.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
-)
-
 ################################################################################
 # Libraries
 ################################################################################
@@ -1120,7 +948,7 @@ if( DEPS_DIR )
 endif()
 
 # These variables are defined:
-# LIBS_BASE, LIBS_ENGINE, LIBS_BASECLIENT, LIBS_CLIENT
+# LIBS_BASE, LIBS_ENGINE, LIBS_CLIENT
 # LIBSRC_BASE, LIBSRC_NACL, LIBSRC_ENGINE
 
 # Base OS libs
@@ -1351,219 +1179,6 @@ set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROP
 
 set( LIBS_BASE base-source-libs ${LIBS_BASE} )
 set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
-
-################################################################################
-# Game logic
-################################################################################
-
-# Function to setup all the Game/Cgame/UI libraries
-include( CMakeParseArguments )
-function( GAMEMODULE )
-  # ParseArguments setup
-  set( oneValueArgs NAME )
-  set( multiValueArgs COMPILE_DEF FILES )
-  cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-
-  if( BUILD_GAME_NATIVE_DLL )
-    add_library( ${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
-    target_link_libraries( ${GAMEMODULE_NAME}-native-dll nacl-source-libs ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-native-dll PROPERTIES
-      PREFIX ""
-      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};BUILD_VM_IN_PROCESS"
-    )
-    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-dll ${COMMON_DIR}/Common.h )
-  endif()
-
-  if( BUILD_GAME_NATIVE_EXE )
-    add_executable( ${GAMEMODULE_NAME}-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
-    target_link_libraries( ${GAMEMODULE_NAME}-native-exe nacl-source-libs ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-native-exe PROPERTIES
-      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
-    )
-    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-exe ${COMMON_DIR}/Common.h )
-  endif()
-
-  if( BUILD_GAME_NACL )
-    if( CMAKE_CFG_INTDIR STREQUAL "." )
-      set( NACL_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-nacl.dir )
-    else()
-      set( NACL_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-nacl.dir/${CMAKE_CFG_INTDIR} )
-    endif()
-
-    # Determine compiler and translator options
-    set( NACL_COMPILE_OPTIONS
-      -I${LIB_DIR}/nacl
-      -I${LIB_DIR}/zlib
-      -DNACL_BUILD_ARCH=x86 # Not actually used
-      -DNACL_BUILD_SUBARCH=64 # Not actually used
-      -Wall
-      -ffast-math
-      -fvisibility=hidden
-      -stdlib=libc++
-      --pnacl-allow-exceptions
-    )
-    set( NACL_TRANSLATE_OPTIONS
-      --allow-llvm-bitcode-input
-      --pnacl-allow-exceptions
-    )
-    if( CMAKE_VERSION VERSION_LESS 2.8.10 )
-      # Use some default flags if cmake doesn't support generator expressions
-      set( NACL_COMPILE_OPTIONS
-        ${NACL_COMPILE_OPTIONS}
-        -O3
-        -DNDEBUG
-      )
-      set( NACL_TRANSLATE_OPTIONS
-        ${NACL_TRANSLATE_OPTIONS}
-        -O3
-      )
-    else()
-      set( NACL_COMPILE_OPTIONS
-        ${NACL_COMPILE_OPTIONS}
-        $<$<CONFIG:None>:-O3>
-        $<$<CONFIG:None>:-DNDEBUG>
-        $<$<CONFIG:Release>:-O3>
-        $<$<CONFIG:Release>:-DNDEBUG>
-        $<$<CONFIG:Debug>:-O0>
-        $<$<CONFIG:Debug>:-g3>
-        $<$<CONFIG:RelWithDebInfo>:-O2>
-        $<$<CONFIG:RelWithDebInfo>:-DNDEBUG>
-        $<$<CONFIG:RelWithDebInfo>:-g3>
-        $<$<CONFIG:MinSizeRel>:-Os>
-        $<$<CONFIG:MinSizeRel>:-DNDEBUG>
-      )
-      set( NACL_TRANSLATE_OPTIONS
-        ${NACL_TRANSLATE_OPTIONS}
-        $<$<CONFIG:None>:-O3>
-        $<$<CONFIG:Release>:-O3>
-        $<$<CONFIG:Debug>:-O0>
-        $<$<CONFIG:RelWithDebInfo>:-O2>
-        $<$<CONFIG:MinSizeRel>:-O2>
-      )
-    endif()
-    if( USE_WEXTRA )
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wextra" )
-    else()
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wno-sign-compare" )
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wno-write-strings" )
-    endif()
-    if( USE_PEDANTIC )
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-pedantic" )
-    endif()
-    foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} -D${DEF} )
-    endforeach()
-
-    # Compile C files with clang and C++ files with clang++
-    set( OBJECTS )
-    foreach( FILE ${GAMEMODULE_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} ${ZLIBLIST} ${LIBSRC_BASE} )
-      get_filename_component( FILENAME ${FILE} NAME_WE )
-      get_filename_component( FILEDIR ${FILE} PATH )
-      get_filename_component( EXT ${FILE} EXT )
-      set( OBJ ${NACL_DIR}/${FILENAME}.o )
-
-      if( EXT STREQUAL ".c" AND FILEDIR MATCHES ${LIB_DIR} )
-        add_custom_command( OUTPUT ${OBJ}
-          COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
-            -std=gnu89
-            ${NACL_COMPILE_OPTIONS}
-            -c
-            -o ${OBJ}
-            ${FILE}
-          DEPENDS ${FILE}
-          IMPLICIT_DEPENDS C ${FILE}
-        )
-        set( OBJECTS ${OBJECTS} ${OBJ} )
-      elseif( EXT STREQUAL ".c" OR EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
-        add_custom_command( OUTPUT ${OBJ}
-          COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
-            -x c++ -std=gnu++11
-            ${NACL_COMPILE_OPTIONS}
-            -c
-            -o ${OBJ}
-            ${FILE}
-          DEPENDS ${FILE}
-          IMPLICIT_DEPENDS CXX ${FILE}
-        )
-        set( OBJECTS ${OBJECTS} ${OBJ} )
-      endif()
-    endforeach()
-
-    # Generate PNaCL platform-independent executable
-    add_custom_command(
-      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
-        ${NACL_COMPILE_OPTIONS}
-        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-        ${OBJECTS} -lnacl_exception
-      DEPENDS ${OBJECTS}
-    )
-
-    # Generate NaCl executables for x86 and x86_64
-    add_custom_command(
-      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
-        ${NACL_TRANSLATE_OPTIONS}
-        -arch i686
-        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-    )
-    add_custom_command(
-      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
-      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
-        ${NACL_TRANSLATE_OPTIONS}
-        -arch x86-64
-        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
-        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-    )
-
-    # Create stripped versions of the NaCl executables
-    add_custom_command(
-      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
-      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-strip${PNACL_BIN_EXT}
-        -s
-        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
-        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-    )
-    add_custom_command(
-      OUTPUT ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
-      COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-strip${PNACL_BIN_EXT}
-        -s
-        -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
-        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
-      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
-    )
-
-    # Dummy target to get CMake to execute the commands
-    add_custom_target( ${GAMEMODULE_NAME}-nacl ALL
-      DEPENDS ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
-        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
-        ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
-    )
-
-    # Create the build directory before building
-    add_custom_command( TARGET ${GAMEMODULE_NAME}-nacl PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${FULL_OUTPUT_DIR}
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${NACL_DIR}
-    )
-  endif()
-
-endfunction()
-
-GAMEMODULE( NAME sgame
-  COMPILE_DEF BUILD_VM BUILD_SGAME
-  FILES ${SGAMELIST}
-)
-
-GAMEMODULE( NAME cgame
-  COMPILE_DEF BUILD_VM BUILD_CGAME
-  FILES ${CGAMELIST}
-)
 
 ################################################################################
 # Engine
