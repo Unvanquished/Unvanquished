@@ -23,16 +23,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /* generic_vp.glsl */
 
 uniform mat4		u_ColorTextureMatrix;
+#if !defined(USE_VERTEX_SPRITE)
 uniform vec3		u_ViewOrigin;
+#endif
 
 uniform float		u_Time;
 
 uniform vec4		u_ColorModulate;
 uniform vec4		u_Color;
+#if defined(USE_TCGEN_ENVIRONMENT)
 uniform mat4		u_ModelMatrix;
+#endif
 uniform mat4		u_ModelViewProjectionMatrix;
 
-#if defined(USE_DEPTH_FADE)
+#if defined(USE_VERTEX_SPRITE)
+varying vec2            var_FadeDepth;
+uniform mat4		u_ProjectionMatrixTranspose;
+#elif defined(USE_DEPTH_FADE)
 uniform float           u_DepthScale;
 varying vec2            var_FadeDepth;
 #endif
@@ -78,10 +85,11 @@ void	main()
 	var_Tex = (u_ColorTextureMatrix * vec4(texCoord, 0.0, 1.0)).xy;
 #endif
 
-#if defined(USE_DEPTH_FADE)
+#if defined(USE_DEPTH_FADE) || defined(USE_VERTEX_SPRITE)
 	// compute z of end of fading effect
 	vec4 fadeDepth = u_ModelViewProjectionMatrix * (position - u_DepthScale * vec4(LB.normal, 0.0));
 	var_FadeDepth = fadeDepth.zw;
+
 #endif
 
 	var_Color = color * u_ColorModulate + u_Color;
