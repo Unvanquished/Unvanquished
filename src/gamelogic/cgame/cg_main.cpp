@@ -1288,7 +1288,7 @@ static void CG_RegisterGraphics( void )
 								 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
 	cgs.media.balloonShader = trap_R_RegisterShader("gfx/sprites/chatballoon",
-							(RegisterShaderFlags_t) RSF_DEFAULT);
+							(RegisterShaderFlags_t) RSF_SPRITE);
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "disconnectPS" );
 

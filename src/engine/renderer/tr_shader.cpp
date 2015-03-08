@@ -5677,6 +5677,10 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 		implicitCullType = CT_FRONT_SIDED;
 	}
 
+	if( flags & RSF_SPRITE ) {
+		shader.autoSpriteMode = 1;
+	}
+
 	// attempt to define shader from an explicit parameter file
 	shaderText = FindShaderInShaderText( strippedName );
 

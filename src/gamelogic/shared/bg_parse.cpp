@@ -2258,7 +2258,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		{
 			PARSE( text, token );
 #ifdef BUILD_CGAME
-			ma->sprite = trap_R_RegisterShader( token, RSF_DEFAULT );
+			ma->sprite = trap_R_RegisterShader( token, RSF_SPRITE );
 #endif
 			defined |= SPRITE;
 			ma->usesSprite = qtrue;
