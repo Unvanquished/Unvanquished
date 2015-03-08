@@ -1402,10 +1402,18 @@ void ASpiker_Think( gentity_t *self )
 	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin,
 	                                                         SPIKER_SPIKE_RANGE ) ); )
 	{
+		float   durability;
+		class_t pClass;
+
 		switch ( ent->s.eType )
 		{
 			case ET_PLAYER:
+				pClass     = (class_t)ent->client->ps.stats[ STAT_CLASS ];
+				durability = (float)BG_Class( pClass )->health / G_GetNonLocDamageMod( pClass );
+				break;
+
 			case ET_BUILDABLE:
+				durability = (float)BG_Buildable( ent->s.modelindex )->health;
 				break;
 
 			default:
@@ -1433,11 +1441,11 @@ void ASpiker_Think( gentity_t *self )
 		float targetArea = 0.5f * diameter * diameter; // approx. proj. of target on effect area
 		float expectedDamage = ( targetArea / effectArea ) * (float)SPIKER_MISSILES *
 		                       (float)BG_Missile( MIS_SPIKER )->damage;
+		float relativeDamage = expectedDamage / durability;
 
 		if ( G_OnSameTeam( self, ent ) )
 		{
-
-			friendlyDamage += expectedDamage;
+			friendlyDamage += relativeDamage;
 		}
 		else
 		{
@@ -1445,7 +1453,7 @@ void ASpiker_Think( gentity_t *self )
 			{
 				sensing = qtrue;
 			}
-			enemyDamage += expectedDamage;
+			enemyDamage += relativeDamage;
 		}
 	}
 
