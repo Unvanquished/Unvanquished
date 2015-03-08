@@ -3420,6 +3420,7 @@ static inline float halfToFloat( int16_t in ) {
 		transform_t bones[ MAX_BONES ];
 
 		qboolean    vboVertexAnimation;
+		qboolean    buildingVBO;
 
 		// info extracted from current shader or backend mode
 		void ( *stageIteratorFunc )( void );
@@ -3657,10 +3658,10 @@ static inline float halfToFloat( int16_t in ) {
 	============================================================
 	*/
 	VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout );
-	VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *vertexes, uint32_t stateBits );
+	VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, shaderVertex_t *verts, uint32_t stateBits );
 
 	IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes );
-	IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, srfTriangle_t *triangles );
+	IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, glIndex_t *indexes );
 
 	void  R_BindVBO( VBO_t *vbo );
 	void  R_BindNullVBO( void );
