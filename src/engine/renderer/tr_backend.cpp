@@ -5635,11 +5635,6 @@ const void     *RB_SwapBuffers( const void *data )
 		ri.Hunk_FreeTempMemory( stencilReadback );
 	}
 
-	if ( !glState.finishCalled )
-	{
-		glFinish();
-	}
-
 	GLimp_LogComment( "***************** RB_SwapBuffers *****************\n\n\n" );
 
 	GLimp_EndFrame();

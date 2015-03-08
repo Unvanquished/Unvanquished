@@ -1369,7 +1369,7 @@ function( GAMEMODULE )
 
   if( BUILD_GAME_NATIVE_DLL )
     add_library( ${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
-    target_link_libraries( ${GAMEMODULE_NAME}-native-dll nacl-source-libs ${LIBS_BASE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-native-dll nacl-source-libs ${LIBS_BASE} ${LIBS_CGAME} )
     set_target_properties( ${GAMEMODULE_NAME}-native-dll PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};BUILD_VM_IN_PROCESS"

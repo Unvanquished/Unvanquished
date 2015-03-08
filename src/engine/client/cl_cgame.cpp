@@ -1558,6 +1558,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_UPDATESCREEN:
 			IPC::HandleMsg<UpdateScreenMsg>(channel, std::move(reader), [this]  {
+				CGameRocketFrame();
 				SCR_UpdateScreen();
 			});
 			break;
