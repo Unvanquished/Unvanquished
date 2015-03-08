@@ -1826,14 +1826,12 @@ public:
 	void SetUniform_DeformParms( deformStage_t deforms[ MAX_SHADER_DEFORMS ], int numDeforms )
 	{
 		float deformParms[ MAX_SHADER_DEFORM_PARMS ];
-		int   deformOfs = 0;
+		int   deformOfs = 1;
 
 		if ( numDeforms > MAX_SHADER_DEFORMS )
 		{
 			numDeforms = MAX_SHADER_DEFORMS;
 		}
-
-		deformParms[ deformOfs++ ] = numDeforms;
 
 		for ( int i = 0; i < numDeforms; i++ )
 		{
@@ -1879,6 +1877,8 @@ public:
 					break;
 			}
 		}
+
+		deformParms[ 0 ] = deformOfs - 1;
 
 		this->SetValue( deformOfs, deformParms );
 	}
