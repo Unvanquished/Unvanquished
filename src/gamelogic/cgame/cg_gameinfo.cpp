@@ -144,16 +144,16 @@ static void CG_LoadArenasFromFile( char *filename )
 }
 
 /*
-=================
-CG_MapNameCompare
-=================
+===============
+CG_MapLoadNameCompare
+===============
 */
-static int CG_MapNameCompare( const void *a, const void *b )
+static int CG_MapLoadNameCompare( const void *a, const void *b )
 {
 	mapInfo_t *A = ( mapInfo_t * ) a;
 	mapInfo_t *B = ( mapInfo_t * ) b;
 
-	return Q_stricmp( A->mapName, B->mapName );
+	return Q_stricmp( A->mapLoadName, B->mapLoadName );
 }
 
 /*
@@ -199,5 +199,5 @@ void CG_LoadArenas( void )
 		}
 	}
 
-	qsort( rocketInfo.data.mapList, rocketInfo.data.mapCount, sizeof( mapInfo_t ), CG_MapNameCompare );
+	qsort( rocketInfo.data.mapList, rocketInfo.data.mapCount, sizeof( mapInfo_t ), CG_MapLoadNameCompare );
 }
