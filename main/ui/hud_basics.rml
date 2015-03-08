@@ -53,6 +53,15 @@
 			background-color: #1E1E1E1E;
 		}
 
+		region.beacon
+		{
+			right: 1em;
+			bottom: 45%;
+			text-align: right;
+			/*width: 20%;*/
+			width: 50%;
+		}
+
 		minimap {
 			display: block;
 			width: 12em;
@@ -128,6 +137,22 @@
 			height: 1.5em;
 		}
 
+		beacon_name
+		{
+			font-size: 150%;
+		}
+
+		beacon_icon {
+			display:  inline;
+			width:    3em;
+			height:   3em;
+			margin-right: 0.5em;
+		}
+
+		.trem-emoticon
+		{
+			height: 1.1em;
+		}
 
 	</style>
 </head>
@@ -186,6 +211,15 @@
 		<!-- Do we need this if? -->
 		<region class="speedo"> <speedometer /> </region>
 	</if>
+
+	<region class="beacon">
+		<beacon_icon /><br />
+		<beacon_name /><br />
+		<beacon_info /><br />
+		<beacon_distance /><br />
+		<beacon_age /><br />
+		<beacon_owner />
+	</region>
 
 </body>
 </rml>

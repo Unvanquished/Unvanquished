@@ -1877,7 +1877,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// (re)tag the client for its team
 	Beacon::DeleteTags( ent );
-	Beacon::Tag( ent, (team_t)ent->client->ps.persistant[ PERS_TEAM ], 0, true );
+	Beacon::Tag( ent, (team_t)ent->client->ps.persistant[ PERS_TEAM ], true );
 }
 
 /*

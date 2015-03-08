@@ -1087,7 +1087,7 @@ typedef struct
 #ifdef BUILD_CGAME
 	const char    *text[ 4 ];
 	const char    *desc;
-	qhandle_t     icon[ 4 ];
+	qhandle_t     icon[ 2 ][ 4 ];
 	sfxHandle_t   inSound;
 	sfxHandle_t   outSound;
 #endif	
@@ -1144,8 +1144,6 @@ typedef struct
 
 	int      cost;
 	int      value;
-
-	float    radarFadeOut;
 } classAttributes_t;
 
 typedef struct
@@ -1215,8 +1213,6 @@ typedef struct
 
 	qboolean    transparentTest;
 	qboolean    uniqueTest;
-
-	float       radarFadeOut;
 } buildableAttributes_t;
 
 typedef struct
@@ -1352,6 +1348,7 @@ qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
                                 vec2_t angles, vec3_t dir1, vec3_t dir2 );
 void     BG_BuildEntityDescription( char *str, size_t size, entityState_t *es );
 qboolean BG_IsMainStructure( entityState_t *es );
+void     BG_MoveOriginToBBOXCenter( vec3_t point, const vec3_t mins, const vec3_t maxs );
 
 qboolean BG_WeaponIsFull(int weapon, int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, const int stats[] );

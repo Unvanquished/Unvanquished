@@ -124,9 +124,6 @@ int   LEVEL4_TRAMPLE_DURATION;
 int   LEVEL4_TRAMPLE_STOP_PENALTY;
 int   LEVEL4_TRAMPLE_REPEAT;
 
-// Human upgrades
-float RADAR_RANGE;
-
 int   MEDKIT_POISON_IMMUNITY_TIME;
 int   MEDKIT_STARTUP_TIME;
 int   MEDKIT_STARTUP_SPEED;
@@ -208,8 +205,6 @@ static configVar_t bg_configVars[] =
 	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},
 	{"u_medkit_startupTime", INTEGER, qfalse, &MEDKIT_STARTUP_TIME},
-
-	{"u_radar_radarRange", FLOAT, qfalse, &RADAR_RANGE},
 
 	{"w_abuild_blobDmg", INTEGER, qfalse, &ABUILDER_BLOB_DMG},
 	{"w_abuild_blobSlowTime", INTEGER, qfalse, &ABUILDER_BLOB_TIME},
@@ -609,7 +604,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		TEAM = 1 << 8,
 		BUILDWEAPON = 1 << 9,
 		BUILDTIME = 1 << 10,
-		RADAR = 1 << 11,
+		UNUSED_11 = 1 << 11,
 		POWERCONSUMPTION = 1 << 12,
 		UNLOCKTHRESHOLD = 1 << 13
 	};
@@ -797,13 +792,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		{
 			ba->uniqueTest = qtrue;
 		}
-		else if ( !Q_stricmp( token, "radarFadeOut" ) )
-		{
-			PARSE(text, token);
-
-			ba->radarFadeOut = atof(token);
-			defined |= RADAR;
-		}
 		else if ( !Q_stricmp( token, "unlockThreshold" ) )
 		{
 			PARSE(text, token);
@@ -830,7 +818,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 	else if ( !( defined & TEAM) ) { token = "team"; }
 	else if ( !( defined & BUILDWEAPON) ) { token = "buildWeapon"; }
 	else if ( !( defined & BUILDTIME) ) { token = "buildTime"; }
-	else if ( !( defined & RADAR) ) { token = "radarFadeOut"; }
 	else if ( !( defined & NORMAL) ) { token = "minNormal"; }
 
 	if ( strlen( token ) > 0 )
@@ -1031,7 +1018,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		ICON               = 1 << 14,
 		COST               = 1 << 15,
 		SPRINTMOD          = 1 << 16,
-		RADAR              = 1 << 17,
+		UNUSED_17          = 1 << 17,
 		MASS               = 1 << 18,
 		UNLOCKTHRESHOLD    = 1 << 19,
 		STAMINAJUMPCOST    = 1 << 20,
@@ -1216,12 +1203,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			ca->sprintMod = atof( token );
 			defined |= SPRINTMOD;
 		}
-		else if ( !Q_stricmp( token, "radarFadeOut" ) )
-		{
-			PARSE(text, token);
-			ca->radarFadeOut = atof( token );
-			defined |= RADAR;
-		}
 		else if ( !Q_stricmp( token, "unlockThreshold" ) )
 		{
 			PARSE(text, token);
@@ -1292,7 +1273,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !( defined & JUMPMAGNITUDE ) )   { token = "jumpMagnitude"; }
 		else if ( !( defined & ICON ) )            { token = "icon"; }
 		else if ( !( defined & COST ) )            { token = "cost"; }
-		else if ( !( defined & RADAR ) )           { token = "radarFadeOut"; }
 		else                                       { token = NULL; }
 
 		if ( token )
@@ -2501,7 +2481,21 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 			if( index < 0 || index >= 4 )
 				Com_Printf( S_ERROR "Invalid beacon icon index %i in %s\n", index, filename );
 			else
-				ba->icon[ index ] = trap_R_RegisterShader( token, RSF_DEFAULT );
+				ba->icon[ 0 ][ index ] = trap_R_RegisterShader( token, RSF_DEFAULT );
+#endif
+		}
+		else if ( !Q_stricmp( token, "hlIcon" ) )
+		{
+			PARSE( text, token );
+#ifdef BUILD_CGAME
+			index = atoi( token );
+#endif
+			PARSE( text, token );
+#ifdef BUILD_CGAME
+			if( index < 0 || index >= 4 )
+				Com_Printf( S_ERROR "Invalid beacon highlighted icon index %i in %s\n", index, filename );
+			else
+				ba->icon[ 1 ][ index ] = trap_R_RegisterShader( token, RSF_DEFAULT );
 #endif
 		}
 		else if ( !Q_stricmp( token, "inSound" ) )
