@@ -28,7 +28,7 @@ uniform float		u_AlphaThreshold;
 varying vec2		var_Tex;
 varying vec4		var_Color;
 
-#if defined(USE_DEPTH_FADE)
+#if defined(USE_DEPTH_FADE) || defined(USE_VERTEX_SPRITE)
 varying vec2            var_FadeDepth;
 uniform sampler2D       u_DepthMap;
 #endif
@@ -37,7 +37,7 @@ void	main()
 {
 	vec4 color = texture2D(u_ColorMap, var_Tex);
 
-#if defined(USE_DEPTH_FADE)
+#if defined(USE_DEPTH_FADE) || defined(USE_VERTEX_SPRITE)
 	float depth = texture2D(u_DepthMap, gl_FragCoord.xy * r_FBufScale * r_NPOTScale).x;
 	float fadeDepth = 0.5 * var_FadeDepth.x / var_FadeDepth.y + 0.5;
 	color.a *= smoothstep(gl_FragCoord.z, fadeDepth, depth);

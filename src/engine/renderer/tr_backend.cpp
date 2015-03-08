@@ -617,6 +617,12 @@ void GL_VertexAttribsState( uint32_t stateBits )
 		stateBits |= ATTR_BONE_FACTORS;
 	}
 
+	if ( tess.vboVertexSprite )
+	{
+		stateBits &= ~(ATTR_TEXCOORD | ATTR_QTANGENT);
+		stateBits |= ATTR_ORIENTATION;
+	}
+
 	GL_VertexAttribPointers( stateBits );
 
 	diff = stateBits ^ glState.vertexAttribsState;
@@ -896,6 +902,11 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 		{
 			if ( oldShader != NULL )
 			{
+				if ( oldShader->autoSpriteMode && !(tess.attribsSet & ATTR_ORIENTATION) ) {
+					Tess_AutospriteDeform( oldShader->autoSpriteMode,
+							       0, tess.numVertexes,
+							       0, tess.numIndexes );
+				}
 				Tess_End();
 			}
 
@@ -957,6 +968,11 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	// draw the contents of the last shader batch
 	if ( oldShader != NULL )
 	{
+		if ( oldShader->autoSpriteMode && !(tess.attribsSet & ATTR_ORIENTATION) ) {
+			Tess_AutospriteDeform( oldShader->autoSpriteMode,
+					       0, tess.numVertexes,
+					       0, tess.numIndexes );
+		}
 		Tess_End();
 	}
 

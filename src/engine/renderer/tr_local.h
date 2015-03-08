@@ -595,6 +595,9 @@ static inline float halfToFloat( int16_t in ) {
 		ATTR_INDEX_QTANGENT,
 		ATTR_INDEX_COLOR,
 
+		// Sprites
+		ATTR_INDEX_ORIENTATION,
+
 		// GPU vertex skinning
 		ATTR_INDEX_BONE_FACTORS,
 
@@ -611,6 +614,7 @@ static inline float halfToFloat( int16_t in ) {
 		"attr_TexCoord0",
 		"attr_QTangent",
 		"attr_Color",
+		"attr_Orientation",
 		"attr_BoneFactors",
 		"attr_Position2",
 		"attr_QTangent2"
@@ -623,6 +627,7 @@ static inline float halfToFloat( int16_t in ) {
 	  ATTR_QTANGENT       = BIT( ATTR_INDEX_QTANGENT ),
 	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
 
+	  ATTR_ORIENTATION    = BIT( ATTR_INDEX_ORIENTATION ),
 	  ATTR_BONE_FACTORS   = BIT( ATTR_INDEX_BONE_FACTORS ),
 
 	  // for .md3 interpolation
@@ -667,6 +672,7 @@ static inline float halfToFloat( int16_t in ) {
 		union { i16vec2_t *st; i16vec4_t *stpq; };
 		int    (*boneIndexes)[ 4 ];
 		vec4_t *boneWeights;
+		vec4_t *spriteOrientation;
 
 		int	numFrames;
 		int     numVerts;
@@ -774,11 +780,7 @@ static inline float halfToFloat( int16_t in ) {
 	  DEFORM_NORMALS,
 	  DEFORM_BULGE,
 	  DEFORM_MOVE,
-	  DEFORM_PROJECTION_SHADOW,
-	  DEFORM_AUTOSPRITE,
-	  DEFORM_AUTOSPRITE2,
-	  DEFORM_SPRITE,
-	  DEFORM_FLARE
+	  DEFORM_PROJECTION_SHADOW
 	} deform_t;
 
 // deformVertexes types that can be handled by the GPU
@@ -1279,6 +1281,8 @@ static inline float halfToFloat( int16_t in ) {
 		int             spectrumValue;
 
 		qboolean        interactLight; // this shader can interact with light shaders
+
+		int		autoSpriteMode;
 
 		uint8_t         numDeforms;
 		deformStage_t   deforms[ MAX_SHADER_DEFORMS ];
@@ -3158,6 +3162,7 @@ static inline float halfToFloat( int16_t in ) {
 
 	void R_QtangentsToTBN( const i16vec4_t qtangent, vec3_t tangent,
 			       vec3_t binormal, vec3_t normal );
+	void R_QtangentsToNormal( const i16vec4_t qtangent, vec3_t normal );
 
 	float    R_CalcFov( float fovX, float width, float height );
 
@@ -3367,8 +3372,13 @@ static inline float halfToFloat( int16_t in ) {
 	typedef struct shaderVertex_s {
 		vec3_t    xyz;
 		u8vec4_t  color;
-		i16vec4_t qtangents;
-		i16vec4_t texCoords;
+		union {
+			struct {
+				i16vec4_t qtangents;
+				i16vec4_t texCoords;
+			};
+			vec4_t spriteOrientation;
+		};
 	} shaderVertex_t;
 
 #ifdef GLEW_ARB_sync
@@ -3420,6 +3430,7 @@ static inline float halfToFloat( int16_t in ) {
 		transform_t bones[ MAX_BONES ];
 
 		qboolean    vboVertexAnimation;
+		qboolean    vboVertexSprite;
 		qboolean    buildingVBO;
 
 		// info extracted from current shader or backend mode
@@ -3776,6 +3787,8 @@ static inline float halfToFloat( int16_t in ) {
 	float    R_ProjectRadius( float r, vec3_t location );
 
 	qboolean ShaderRequiresCPUDeforms( const shader_t *shader );
+	void     Tess_AutospriteDeform( int mode, int firstVertex, int numVertexes,
+					int firstIndex, int numIndexes );
 	void     Tess_DeformGeometry( void );
 
 	float    RB_EvalWaveForm( const waveForm_t *wf );

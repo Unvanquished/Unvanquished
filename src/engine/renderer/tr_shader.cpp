@@ -130,6 +130,11 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 		return;
 	}
 
+	if ( sh->autoSpriteMode != sh2->autoSpriteMode ) {
+		ri.Printf( PRINT_WARNING, "WARNING: R_RemapShader: shaders %s and %s have different autoSprite modes\n", shaderName, newShaderName );
+		return;
+	}
+
 	// remap all the shaders with the given name
 	// even tho they might have different lightmaps
 	COM_StripExtension3( shaderName, strippedName, sizeof( strippedName ) );
@@ -2906,13 +2911,15 @@ static void ParseDeform( char **text )
 
 	if ( !Q_stricmp( token, "autosprite" ) )
 	{
-		ds->deformation = DEFORM_AUTOSPRITE;
+		shader.autoSpriteMode = 1;
+		shader.numDeforms--;
 		return;
 	}
 
 	if ( !Q_stricmp( token, "autosprite2" ) )
 	{
-		ds->deformation = DEFORM_AUTOSPRITE2;
+		shader.autoSpriteMode = 2;
+		shader.numDeforms--;
 		return;
 	}
 
@@ -3027,7 +3034,8 @@ static void ParseDeform( char **text )
 
 	if ( !Q_stricmp( token, "sprite" ) )
 	{
-		ds->deformation = DEFORM_SPRITE;
+		shader.autoSpriteMode = 1;
+		shader.numDeforms--;
 		return;
 	}
 

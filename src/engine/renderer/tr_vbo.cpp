@@ -51,7 +51,6 @@ const GLsizei sizeSkeletal = sizeof( struct fmtSkeletal );
 // -> struct shaderVertex_t in tr_local.h
 const GLsizei sizeShaderVertex = sizeof( shaderVertex_t );
 
-
 static uint32_t R_DeriveAttrBits( vboData_t data )
 {
 	uint32_t stateBits = 0;
@@ -79,6 +78,11 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 	if ( data.boneIndexes && data.boneWeights )
 	{
 		stateBits |= ATTR_BONE_FACTORS;
+	}
+
+	if ( data.spriteOrientation )
+	{
+		stateBits |= ATTR_ORIENTATION;
 	}
 
 	if ( data.numFrames )
@@ -223,6 +227,14 @@ static void R_SetAttributeLayoutsStatic( VBO_t *vbo )
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride        = sizeShaderVertex;
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset   = 0;
 
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].componentType = GL_FLOAT;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].ofs           = offsetof( shaderVertex_t, spriteOrientation );
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].realStride    = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].stride        = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].frameOffset   = 0;
+
 	// total size
 	vbo->vertexesSize = sizeShaderVertex * vbo->vertexesNum;
 }
@@ -358,6 +370,11 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 			if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
 			{
 				Vector4Copy( inData.stpq[ v ], ptr[ v ].texCoords );
+			}
+
+			if ( ( vbo->attribBits & ATTR_ORIENTATION ) )
+			{
+				Vector4Copy( inData.spriteOrientation[ v ], ptr[ v ].spriteOrientation );
 			}
 		} else if ( vbo->layout == VBO_LAYOUT_POSITION ) {
 			vec3_t *ptr = ( vec3_t * )outData;

@@ -911,6 +911,22 @@ uint32_t        GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes
 	return attribs;
 }
 
+bool GLCompileMacro_USE_VERTEX_SPRITE::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
+{
+	for ( size_t i = 0; i < macros.size(); i++ )
+	{
+		GLCompileMacro *macro = macros[ i ];
+
+		if ( ( permutation & macro->GetBit() ) != 0 && (macro->GetType() == USE_VERTEX_SKINNING || macro->GetType() == USE_VERTEX_ANIMATION))
+		{
+			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool GLCompileMacro_USE_PARALLAX_MAPPING::MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
 	bool foundUSE_NORMAL_MAPPING = false;
@@ -1075,6 +1091,7 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	GLShader( "generic", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_ColorTextureMatrix( this ),
 	u_ViewOrigin( this ),
+	u_ViewUp( this ),
 	u_AlphaThreshold( this ),
 	u_ModelMatrix( this ),
 	u_ProjectionMatrixTranspose( this ),
@@ -1087,6 +1104,7 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
+	GLCompileMacro_USE_VERTEX_SPRITE( this ),
 	GLCompileMacro_USE_TCGEN_ENVIRONMENT( this ),
 	GLCompileMacro_USE_TCGEN_LIGHTMAP( this ),
 	GLCompileMacro_USE_DEPTH_FADE( this )
@@ -1095,7 +1113,7 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 
 void GLShader_generic::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation vertexSprite deformVertexes ";
 }
 
 void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )

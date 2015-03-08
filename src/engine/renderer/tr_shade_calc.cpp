@@ -668,15 +668,47 @@ void RB_CalcMoveVertexes( deformStage_t *ds )
 }
 
 /*
-==================
-GlobalVectorToLocal
-==================
+=====================
+ReorderQuadVerts
+
+Reorder the quad vertices so that they are sorted by their texcoords
+=====================
 */
-static void GlobalVectorToLocal( const vec3_t in, vec3_t out )
+static void ReorderQuadVerts( shaderVertex_t *vert, glIndex_t *index,
+			      glIndex_t minIndex )
 {
-	out[ 0 ] = DotProduct( in, backEnd.orientation.axis[ 0 ] );
-	out[ 1 ] = DotProduct( in, backEnd.orientation.axis[ 1 ] );
-	out[ 2 ] = DotProduct( in, backEnd.orientation.axis[ 2 ] );
+	int newIndex[4];
+	shaderVertex_t vertexCopy[4];
+	vec2_t midTexCoord;
+	int i;
+
+	Com_Memcpy( vertexCopy, vert, 4 * sizeof(shaderVertex_t) );
+
+	midTexCoord[ 0 ] = midTexCoord[ 1 ] = 0.0f;
+	for( i = 0; i < 4; i++ ) {
+		midTexCoord[ 0 ] += halfToFloat( vert[ i ].texCoords[ 0 ] );
+		midTexCoord[ 1 ] += halfToFloat( vert[ i ].texCoords[ 1 ] );
+	}
+	midTexCoord[ 0 ] *= 0.25f;
+	midTexCoord[ 1 ] *= 0.25f;
+
+	for( i = 0; i < 4; i++ ) {
+		newIndex[ i ] = 0;
+		if( halfToFloat( vert[ i ].texCoords[ 0 ] ) > midTexCoord[ 0 ] )
+			newIndex[ i ] |= 3;
+		if( halfToFloat( vert[ i ].texCoords[ 1 ] ) > midTexCoord[ 1 ] )
+			newIndex[ i ] ^= 1;
+
+		newIndex[ i ] = (newIndex[ i ] - minIndex) & 3;
+	}
+
+	for( i = 0; i < 4; i++ ) {
+		Com_Memcpy( &vert[ newIndex[ i ] ], &vertexCopy[ i ],
+			    sizeof(shaderVertex_t) );
+	}
+	for( i = 0; i < 6; i++ ) {
+		index[ i ] = minIndex + newIndex[ index[ i ] - minIndex ];
+	}
 }
 
 /*
@@ -687,85 +719,41 @@ Assuming all the triangles for this shader are independent
 quads, rebuild them as forward facing sprites
 =====================
 */
-static void AutospriteDeform( void )
+static void AutospriteDeform( int firstVertex, int numVertexes, int firstIndex, int numIndexes )
 {
-	int    i;
-	int    oldVerts;
-	float  *xyz;
+	int    i, j;
+	shaderVertex_t *v;
 	vec3_t mid, delta;
 	float  radius;
-	vec3_t left, up;
-	vec3_t leftDir, upDir;
 
-	if ( tess.numVertexes & 3 )
+	if ( numVertexes & 3 )
 	{
 		ri.Printf( PRINT_WARNING, "Autosprite shader %s had odd vertex count\n", tess.surfaceShader->name );
 	}
 
-	if ( tess.numIndexes != ( tess.numVertexes >> 2 ) * 6 )
+	if ( numIndexes != ( numVertexes >> 2 ) * 6 )
 	{
 		ri.Printf( PRINT_WARNING, "Autosprite shader %s had odd index count\n", tess.surfaceShader->name );
 	}
 
-	oldVerts = tess.numVertexes;
-	tess.numVertexes = 0;
-	tess.numIndexes = 0;
-	tess.multiDrawPrimitives = 0;
-
-	if ( backEnd.currentEntity != &tr.worldEntity )
-	{
-		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[ 1 ], leftDir );
-		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[ 2 ], upDir );
-	}
-	else
-	{
-		VectorCopy( backEnd.viewParms.orientation.axis[ 1 ], leftDir );
-		VectorCopy( backEnd.viewParms.orientation.axis[ 2 ], upDir );
-	}
-
-	for ( i = 0; i < oldVerts; i += 4 )
+	for ( i = 0; i < numVertexes; i += 4 )
 	{
 		// find the midpoint
-		xyz = tess.verts[ i ].xyz;
+		v = &tess.verts[ firstVertex + i ];
 
-		mid[ 0 ] = 0.25f * ( xyz[ 0 ] + xyz[ 4 ] + xyz[ 8 ] + xyz[ 12 ] );
-		mid[ 1 ] = 0.25f * ( xyz[ 1 ] + xyz[ 5 ] + xyz[ 9 ] + xyz[ 13 ] );
-		mid[ 2 ] = 0.25f * ( xyz[ 2 ] + xyz[ 6 ] + xyz[ 10 ] + xyz[ 14 ] );
+		mid[ 0 ] = 0.25f * ( v[ 0 ].xyz[ 0 ] + v[ 1 ].xyz[ 0 ] + v[ 2 ].xyz[ 0 ] + v[ 3 ].xyz[ 0 ] );
+		mid[ 1 ] = 0.25f * ( v[ 0 ].xyz[ 1 ] + v[ 1 ].xyz[ 1 ] + v[ 2 ].xyz[ 1 ] + v[ 3 ].xyz[ 1 ] );
+		mid[ 2 ] = 0.25f * ( v[ 0 ].xyz[ 2 ] + v[ 1 ].xyz[ 2 ] + v[ 2 ].xyz[ 2 ] + v[ 3 ].xyz[ 2 ] );
 
-		VectorSubtract( xyz, mid, delta );
-		radius = VectorLength( delta ) * 0.7071067811865f;  // / sqrt(2)
+		VectorSubtract( v[ 0 ].xyz, mid, delta );
+		radius = VectorLength( delta ) * 0.5f * M_SQRT2;
 
-		VectorScale( leftDir, radius, left );
-		VectorScale( upDir, radius, up );
-
-		if ( backEnd.viewParms.isMirror )
-		{
-			VectorSubtract( vec3_origin, left, left );
+		// add 4 identical vertices
+		for ( j = 0; j < 4; j++ ) {
+			VectorCopy( mid, v[ j ].xyz );
+			Vector4Set( v[ j ].spriteOrientation,
+				    0.0f, 0.0f, 0.0f, radius );
 		}
-
-		// compensate for scale in the axes if necessary
-		if ( backEnd.currentEntity->e.nonNormalizedAxes )
-		{
-			float axisLength;
-
-			axisLength = VectorLength( backEnd.currentEntity->e.axis[ 0 ] );
-
-			if ( !axisLength )
-			{
-				axisLength = 0;
-			}
-			else
-			{
-				axisLength = 1.0f / axisLength;
-			}
-
-			VectorScale( left, axisLength, left );
-			VectorScale( up, axisLength, up );
-		}
-
-		vec4_t color;
-		unorm8ToFloat( tess.verts[ i ].color, color );
-		Tess_AddQuadStamp( mid, left, up, color );
 	}
 }
 
@@ -786,45 +774,39 @@ static const int edgeVerts[ 6 ][ 2 ] =
 	{ 2, 3 }
 };
 
-static void Autosprite2Deform( void )
+static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex, int numIndexes )
 {
 	int    i, j, k;
 	int    indexes;
-	float  *xyz;
-	vec3_t forward;
 
-	if ( tess.numVertexes & 3 )
+	if ( numVertexes & 3 )
 	{
 		ri.Printf( PRINT_WARNING, "Autosprite2 shader %s had odd vertex count\n", tess.surfaceShader->name );
 	}
 
-	if ( tess.numIndexes != ( tess.numVertexes >> 2 ) * 6 )
+	if ( numIndexes != ( numVertexes >> 2 ) * 6 )
 	{
 		ri.Printf( PRINT_WARNING, "Autosprite2 shader %s had odd index count\n", tess.surfaceShader->name );
-	}
-
-	if ( backEnd.currentEntity != &tr.worldEntity )
-	{
-		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[ 0 ], forward );
-	}
-	else
-	{
-		VectorCopy( backEnd.viewParms.orientation.axis[ 0 ], forward );
 	}
 
 	// this is a lot of work for two triangles...
 	// we could precalculate a lot of it is an issue, but it would mess up
 	// the shader abstraction
-	for ( i = 0, indexes = 0; i < tess.numVertexes; i += 4, indexes += 6 )
+	for ( i = 0, indexes = 0; i < numVertexes; i += 4, indexes += 6 )
 	{
 		float  lengths[ 2 ];
 		int    nums[ 2 ];
 		vec3_t mid[ 2 ];
+		vec3_t normal, cross;
 		vec3_t major, minor;
-		float  *v1, *v2;
+		shaderVertex_t *v1, *v2;
+
+		ReorderQuadVerts( tess.verts + firstVertex + i,
+				  tess.indexes + firstIndex + indexes,
+				  firstVertex );
+		R_QtangentsToNormal( tess.verts[ firstVertex + i ].qtangents, normal );
 
 		// find the midpoint
-		xyz = tess.verts[ i ].xyz;
 
 		// identify the two shortest edges
 		nums[ 0 ] = nums[ 1 ] = 0;
@@ -835,10 +817,10 @@ static void Autosprite2Deform( void )
 			float  l;
 			vec3_t temp;
 
-			v1 = xyz + 4 * edgeVerts[ j ][ 0 ];
-			v2 = xyz + 4 * edgeVerts[ j ][ 1 ];
+			v1 = tess.verts + firstVertex + i + edgeVerts[ j ][ 0 ];
+			v2 = tess.verts + firstVertex + i + edgeVerts[ j ][ 1 ];
 
-			VectorSubtract( v1, v2, temp );
+			VectorSubtract( v1->xyz, v2->xyz, temp );
 
 			l = DotProduct( temp, temp );
 
@@ -858,52 +840,40 @@ static void Autosprite2Deform( void )
 
 		for ( j = 0; j < 2; j++ )
 		{
-			v1 = xyz + 4 * edgeVerts[ nums[ j ] ][ 0 ];
-			v2 = xyz + 4 * edgeVerts[ nums[ j ] ][ 1 ];
+			v1 = tess.verts + firstVertex + i + edgeVerts[ nums[ j ] ][ 0 ];
+			v2 = tess.verts + firstVertex + i + edgeVerts[ nums[ j ] ][ 1 ];
 
-			mid[ j ][ 0 ] = 0.5f * ( v1[ 0 ] + v2[ 0 ] );
-			mid[ j ][ 1 ] = 0.5f * ( v1[ 1 ] + v2[ 1 ] );
-			mid[ j ][ 2 ] = 0.5f * ( v1[ 2 ] + v2[ 2 ] );
+			mid[ j ][ 0 ] = 0.5f * ( v1->xyz[ 0 ] + v2->xyz[ 0 ] );
+			mid[ j ][ 1 ] = 0.5f * ( v1->xyz[ 1 ] + v2->xyz[ 1 ] );
+			mid[ j ][ 2 ] = 0.5f * ( v1->xyz[ 2 ] + v2->xyz[ 2 ] );
 		}
 
 		// find the vector of the major axis
 		VectorSubtract( mid[ 1 ], mid[ 0 ], major );
+		CrossProduct( major, normal, cross );
 
-		// cross this with the view direction to get minor axis
-		CrossProduct( major, forward, minor );
-		VectorNormalize( minor );
-
-		// re-project the points
-		for ( j = 0; j < 2; j++ )
+		// update the vertices
+		for ( j = 0; j < 4; j++ )
 		{
-			float l;
+			v1 = &tess.verts[ firstVertex + i + j ];
+			lengths[ 0 ] = Distance( mid[ 0 ], v1->xyz );
+			lengths[ 1 ] = Distance( mid[ 1 ], v1->xyz );
 
-			v1 = xyz + 4 * edgeVerts[ nums[ j ] ][ 0 ];
-			v2 = xyz + 4 * edgeVerts[ nums[ j ] ][ 1 ];
-
-			l = 0.5 * sqrt( lengths[ j ] );
-
-			// we need to see which direction this edge
-			// is used to determine direction of projection
-			for ( k = 0; k < 5; k++ )
-			{
-				if ( tess.indexes[ indexes + k ] == i + edgeVerts[ nums[ j ] ][ 0 ]
-				     && tess.indexes[ indexes + k + 1 ] == i + edgeVerts[ nums[ j ] ][ 1 ] )
-				{
-					break;
-				}
-			}
-
-			if ( k == 5 )
-			{
-				VectorMA( mid[ j ], l, minor, v1 );
-				VectorMA( mid[ j ], -l, minor, v2 );
-			}
+			// pick the closer midpoint
+			if ( lengths[ 0 ] <= lengths[ 1 ] )
+				k = 0;
 			else
-			{
-				VectorMA( mid[ j ], -l, minor, v1 );
-				VectorMA( mid[ j ], l, minor, v2 );
+				k = 1;
+
+			VectorSubtract( v1->xyz, mid[ k ], minor );
+			if ( DotProduct( cross, minor ) * (k ? -1.0f : 1.0f) < 0.0f ) {
+				VectorNegate( major, v1->spriteOrientation );
+			} else {
+				VectorCopy( major, v1->spriteOrientation );
 			}
+			v1->spriteOrientation[ 3 ] = -lengths[ k ];
+
+			VectorCopy( mid[ k ], v1->xyz );
 		}
 	}
 }
@@ -915,7 +885,7 @@ qboolean ShaderRequiresCPUDeforms( const shader_t *shader )
 		int      i;
 		qboolean cpuDeforms = qfalse;
 
-		if ( glConfig.driverType != GLDRV_OPENGL3 || !r_vboDeformVertexes->integer )
+		if ( !r_vboDeformVertexes->integer )
 		{
 			return qtrue;
 		}
@@ -940,6 +910,25 @@ qboolean ShaderRequiresCPUDeforms( const shader_t *shader )
 	}
 
 	return qfalse;
+}
+
+/*
+=====================
+Tess_AutospriteDeform
+=====================
+*/
+void Tess_AutospriteDeform( int mode, int firstVertex, int numVertexes,
+			    int firstIndex, int numIndexes )
+{
+	switch( mode ) {
+	case 1:
+		AutospriteDeform( firstVertex, numVertexes, firstIndex, numIndexes );
+		break;
+	case 2:
+		Autosprite2Deform( firstVertex, numVertexes, firstIndex, numIndexes );
+		break;
+	}
+	GL_CheckErrors();
 }
 
 /*
@@ -991,20 +980,6 @@ void Tess_DeformGeometry( void )
 
 			case DEFORM_PROJECTION_SHADOW:
 				RB_ProjectionShadowDeform();
-				break;
-
-			case DEFORM_AUTOSPRITE:
-				AutospriteDeform();
-				break;
-
-			case DEFORM_AUTOSPRITE2:
-				Autosprite2Deform();
-				break;
-
-			case DEFORM_SPRITE:
-				break;
-
-			case DEFORM_FLARE:
 				break;
 		}
 	}

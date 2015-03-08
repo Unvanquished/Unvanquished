@@ -42,7 +42,7 @@ void QTangentToLocalBasis( in vec4 qtangent, out localBasis LB ) {
 #endif
 }
 
-#if !defined(USE_VERTEX_ANIMATION) && !defined(USE_VERTEX_SKINNING)
+#if !defined(USE_VERTEX_ANIMATION) && !defined(USE_VERTEX_SKINNING) && !defined(USE_VERTEX_SPRITE)
 
 attribute vec3 attr_Position;
 attribute vec4 attr_Color;

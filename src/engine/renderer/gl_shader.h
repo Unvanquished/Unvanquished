@@ -612,6 +612,7 @@ protected:
 	{
 	  USE_VERTEX_SKINNING,
 	  USE_VERTEX_ANIMATION,
+	  USE_VERTEX_SPRITE,
 	  USE_TCGEN_ENVIRONMENT,
 	  USE_TCGEN_LIGHTMAP,
 	  USE_NORMAL_MAPPING,
@@ -763,6 +764,53 @@ public:
 		else
 		{
 			DisableVertexAnimation();
+		}
+	}
+};
+
+class GLCompileMacro_USE_VERTEX_SPRITE :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_VERTEX_SPRITE( GLShader *shader ) :
+		GLCompileMacro( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_VERTEX_SPRITE";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_VERTEX_SPRITE;
+	}
+
+	bool     HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
+	uint32_t GetRequiredVertexAttributes() const {
+		return ATTR_QTANGENT;
+	}
+
+	void EnableVertexSprite()
+	{
+		EnableMacro();
+	}
+
+	void DisableVertexSprite()
+	{
+		DisableMacro();
+	}
+
+	void SetVertexSprite( bool enable )
+	{
+		if ( enable )
+		{
+			EnableVertexSprite();
+		}
+		else
+		{
+			DisableVertexSprite();
 		}
 	}
 };
@@ -1329,6 +1377,21 @@ public:
 	}
 
 	void SetUniform_ViewOrigin( const vec3_t v )
+	{
+		this->SetValue( v );
+	}
+};
+
+class u_ViewUp :
+	GLUniform3f
+{
+public:
+	u_ViewUp( GLShader *shader ) :
+		GLUniform3f( shader, "u_ViewUp" )
+	{
+	}
+
+	void SetUniform_ViewUp( const vec3_t v )
 	{
 		this->SetValue( v );
 	}
@@ -2131,6 +2194,7 @@ class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
 	public u_ViewOrigin,
+	public u_ViewUp,
 	public u_AlphaThreshold,
 	public u_ModelMatrix,
  	public u_ProjectionMatrixTranspose,
@@ -2143,6 +2207,7 @@ class GLShader_generic :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
+	public GLCompileMacro_USE_VERTEX_SPRITE,
 	public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
 	public GLCompileMacro_USE_TCGEN_LIGHTMAP,
 	public GLCompileMacro_USE_DEPTH_FADE

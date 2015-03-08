@@ -458,6 +458,7 @@ static void Render_generic( int stage )
 	shaderStage_t *pStage;
 	colorGen_t    rgbGen;
 	alphaGen_t    alphaGen;
+	qboolean      needDepthMap = qfalse;
 
 	GLimp_LogComment( "--- Render_generic ---\n" );
 
@@ -479,24 +480,35 @@ static void Render_generic( int stage )
 
 	if( pStage->hasDepthFade ) {
 		gl_genericShader->EnableMacro_USE_DEPTH_FADE();
-
-		if( !backEnd.depthRenderImageValid ) {
-			GL_Bind( tr.depthRenderImage );
-			glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
-			backEnd.depthRenderImageValid = qtrue;
-		}
+		needDepthMap = qtrue;
 	} else {
 		gl_genericShader->DisableMacro_USE_DEPTH_FADE();
+	}
+
+	if( tess.surfaceShader->autoSpriteMode ) {
+		gl_genericShader->EnableVertexSprite();
+		needDepthMap = qtrue;
+		tess.vboVertexSprite = qtrue;
+	} else {
+		gl_genericShader->DisableVertexSprite();
+		tess.vboVertexSprite = qfalse;
+	}
+
+	if( needDepthMap && !backEnd.depthRenderImageValid ) {
+		GL_Bind( tr.depthRenderImage );
+		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
+		backEnd.depthRenderImageValid = qtrue;
 	}
 
 	gl_genericShader->BindProgram();
 	// end choose right shader program ------------------------------
 
 	// set uniforms
-	if ( pStage->tcGen_Environment )
+	if ( pStage->tcGen_Environment || tess.surfaceShader->autoSpriteMode )
 	{
 		// calculate the environment texcoords in object space
 		gl_genericShader->SetUniform_ViewOrigin( backEnd.orientation.viewOrigin );
+		gl_genericShader->SetUniform_ViewUp( backEnd.orientation.axis[ 2 ] );
 	}
 
 	// u_AlphaTest
@@ -560,6 +572,8 @@ static void Render_generic( int stage )
 
 	if( pStage->hasDepthFade ) {
 		gl_genericShader->SetUniform_DepthScale( pStage->depthFadeValue );
+	}
+	if( needDepthMap ) {
 		GL_SelectTexture( 1 );
 		GL_Bind( tr.depthRenderImage );
 	}
