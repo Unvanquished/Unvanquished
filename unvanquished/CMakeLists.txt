@@ -29,13 +29,7 @@ if( POLICY CMP0017 )
   cmake_policy( SET CMP0017 NEW )
 endif()
 
-# Need 2.8.12 for RPATH support
-if( APPLE )
-  cmake_minimum_required( VERSION 2.8.12 )
-endif()
-
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/daemon/cmake ${CMAKE_MODULE_PATH} )
-set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
 
 include( CMakeDependentOption )
 
@@ -66,14 +60,6 @@ option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
 option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
 
-set( NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries" )
-
-################################################################################
-# Determine platform + architecture
-################################################################################
-
-include( DaemonUtils )
-
 ################################################################################
 # Directories
 ################################################################################
@@ -84,34 +70,6 @@ set( ENGINE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/daemon/src/engine )
 set( COMMON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/daemon/src/common )
 set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( LIB_DIR ${MOUNT_DIR}/libs )
-
-include( DaemonExternals )
-
-################################################################################
-# Compile and link flags
-################################################################################
-
-include( DaemonFlags )
-
-################################################################################
-# Determine python version and set env variable for NaCl
-################################################################################
-
-set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin )
-if( WIN32 )
-  set( PNACL_BIN_EXT ".bat" )
-else()
-  set( PNACL_BIN_EXT "" )
-endif()
-
-if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
-  set( PythonInterp_FIND_VERSION 2 )
-  find_package( PythonInterp 2 )
-  if( NOT PYTHONINTERP_FOUND )
-    message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
-  endif()
-  set( PNACLPYTHON_PREFIX env "PNACLPYTHON=${PYTHON_EXECUTABLE}" )
-endif()
 
 ################################################################################
 # Git revision info
@@ -280,110 +238,6 @@ set( SGAMELIST
   ${GAMESHAREDLIST}
   ${COMMONLIST}
 )
-
-set( MINIZIPLIST
-  ${LIB_DIR}/minizip/ioapi.c
-  ${LIB_DIR}/minizip/ioapi.h
-  ${LIB_DIR}/minizip/unzip.c
-  ${LIB_DIR}/minizip/unzip.h
-)
-
-# This is only used for the NaCl modules. For all other targets, the host zlib
-# is used (sourced from external_deps if not available on target platform).
-set( ZLIBLIST
-  ${LIB_DIR}/zlib/adler32.c
-  ${LIB_DIR}/zlib/compress.c
-  ${LIB_DIR}/zlib/crc32.c
-  ${LIB_DIR}/zlib/crc32.h
-  ${LIB_DIR}/zlib/deflate.c
-  ${LIB_DIR}/zlib/deflate.h
-  ${LIB_DIR}/zlib/gzclose.c
-  ${LIB_DIR}/zlib/gzguts.h
-  ${LIB_DIR}/zlib/gzlib.c
-  ${LIB_DIR}/zlib/gzread.c
-  ${LIB_DIR}/zlib/gzwrite.c
-  ${LIB_DIR}/zlib/infback.c
-  ${LIB_DIR}/zlib/inffast.c
-  ${LIB_DIR}/zlib/inffast.h
-  ${LIB_DIR}/zlib/inffixed.h
-  ${LIB_DIR}/zlib/inflate.c
-  ${LIB_DIR}/zlib/inflate.h
-  ${LIB_DIR}/zlib/inftrees.c
-  ${LIB_DIR}/zlib/inftrees.h
-  ${LIB_DIR}/zlib/trees.c
-  ${LIB_DIR}/zlib/trees.h
-  ${LIB_DIR}/zlib/uncompr.c
-  ${LIB_DIR}/zlib/zconf.h
-  ${LIB_DIR}/zlib/zlib.h
-  ${LIB_DIR}/zlib/zutil.c
-  ${LIB_DIR}/zlib/zutil.h
-)
-
-if( APPLE )
-  set( NACLLIST_NATIVE
-    ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
-    ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
-    ${LIB_DIR}/nacl/native_client/src/shared/imc/osx/nacl_imc.cc
-  )
-elseif( LINUX )
-  set( NACLLIST_NATIVE
-    ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
-    ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
-    ${LIB_DIR}/nacl/native_client/src/shared/imc/linux/nacl_imc.cc
-  )
-elseif( WIN32 )
-  set( NACLLIST_NATIVE
-    ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
-    ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_imc.cc
-    ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_shm.cc
-  )
-endif()
-
-set( NACLLIST_MODULE
-  ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
-  ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl/nacl_imc.cc
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_accept.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_connect.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_makeboundsock.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_mem_obj_create.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_recvmsg.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_sendmsg.c
-  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
-)
-
-################################################################################
-# Libraries
-################################################################################
-
-include( DaemonLibs )
-
-# Base OS libs
-if( WIN32 )
-  set( LIBS_BASE ${LIBS_BASE} winmm ws2_32 )
-else()
-  find_library( LIBM m )
-  if( LIBM )
-    set( LIBS_BASE ${LIBS_BASE} ${LIBM} )
-  endif()
-  find_library( LIBRT rt )
-  if( LIBRT )
-    set( LIBS_BASE ${LIBS_BASE} ${LIBRT} )
-  endif()
-  mark_as_advanced( LIBM LIBRT )
-  set( LIBS_BASE ${LIBS_BASE} ${CMAKE_DL_LIBS} )
-  find_package( Threads REQUIRED )
-  set( LIBS_BASE ${LIBS_BASE} ${CMAKE_THREAD_LIBS_INIT} )
-endif()
-
-# zlib
-find_package( ZLIB REQUIRED )
-include_directories( ${ZLIB_INCLUDE_DIRS} )
-set( LIBS_BASE ${LIBS_BASE} ${ZLIB_LIBRARIES} )
-
-# Minizip -- added by daemon
-#add_library( minizip EXCLUDE_FROM_ALL ${MINIZIPLIST} )
-#set_target_properties( minizip PROPERTIES POSITION_INDEPENDENT_CODE 1 )
-set( LIBS_BASE minizip ${LIBS_BASE} )
 
 ################################################################################
 # Game logic
