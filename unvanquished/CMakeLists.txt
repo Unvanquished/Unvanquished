@@ -94,7 +94,7 @@ endif()
 # Dependencies version, this must match the number in external_deps/build.sh
 set( DEPS_VERSION 3 )
 
-set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
+set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
 set( MOUNT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 set( ENGINE_MOUNT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/daemon/src )
 set( OBJ_DIR ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY} )
