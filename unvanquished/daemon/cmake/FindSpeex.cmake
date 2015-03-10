@@ -1,0 +1,1 @@
+../../../cmake/FindSpeex.cmake
