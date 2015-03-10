@@ -34,6 +34,8 @@ if( APPLE )
   cmake_minimum_required( VERSION 2.8.12 )
 endif()
 
+set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
+
 include( CMakeDependentOption )
 
 # This line has to appear before 'PROJECT' in order to be able to disable incremental linking
@@ -66,459 +68,37 @@ option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
 
 set( NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries" )
 
-################################################################################
-# Determine platform
-################################################################################
-
-# When adding a new platform, look at all the places WIN32, APPLE and LINUX are used
-if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
-  set( LINUX ON )
-elseif( NOT WIN32 AND NOT APPLE )
-  message( FATAL_ERROR "Platform not supported" )
-endif()
-
-################################################################################
-# Determine architecture
-################################################################################
-
-# When adding a new architecture, look at all the places ARCH is used
-if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-  set( ARCH "x86_64" )
-else()
-  set( ARCH "x86" )
-endif()
+include( DaemonUtils )
 
 ################################################################################
 # Directories
 ################################################################################
 
-# Dependencies version, this must match the number in external_deps/build.sh
-set( DEPS_VERSION 3 )
-
-set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
 set( MOUNT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 set( OBJ_DIR ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY} )
 set( ENGINE_DIR ${MOUNT_DIR}/engine )
 set( COMMON_DIR ${MOUNT_DIR}/common )
 set( LIB_DIR ${MOUNT_DIR}/libs )
-set( ROCKET_DIR ${LIB_DIR}/libRocket )
-if( CMAKE_CFG_INTDIR STREQUAL "." )
-  set( FULL_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR} )
-else()
-  set( FULL_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
-endif()
-if( MSVC )
-  set( DEPS_EXT ".zip" )
-  if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_deps/msvc64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_deps/msvc32-${DEPS_VERSION} )
-  endif()
-elseif( WIN32 )
-  set( DEPS_EXT ".zip" )
-  if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_deps/mingw64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_deps/mingw32-${DEPS_VERSION} )
-  endif()
-elseif( APPLE )
-  set( DEPS_EXT ".tar.bz2" )
-  if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_deps/macosx64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_deps/macosx32-${DEPS_VERSION} )
-  endif()
-elseif( LINUX )
-  set( DEPS_EXT ".tar.bz2" )
-  # Our minimal NaCl .debs put the files in /usr/lib/nacl, so check that first
-  if( EXISTS "/usr/lib/nacl/nacl_loader" )
-    set( DEPS_DIR "/usr/lib/nacl" )
-  elseif( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_deps/linux64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_deps/linux32-${DEPS_VERSION} )
-  endif()
-endif()
+
+include( DaemonExternals )
 
 ################################################################################
 # Compile and link flags
 ################################################################################
 
-include(CheckCCompilerFlag)
-include(CheckCXXCompilerFlag)
-
-# Set flag without checking, optional argument specifies build type
-macro( set_c_flag FLAG )
-  if( ${ARGC} GREATER 1 )
-    set( CMAKE_C_FLAGS_${ARGV1} "${CMAKE_C_FLAGS_${ARGV1}} ${FLAG}" )
-  else()
-    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}" )
-  endif()
-endmacro()
-macro( set_cxx_flag FLAG )
-  if( ${ARGC} GREATER 1 )
-    set( CMAKE_CXX_FLAGS_${ARGV1} "${CMAKE_CXX_FLAGS_${ARGV1}} ${FLAG}" )
-  else()
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" )
-  endif()
-endmacro()
-macro( set_c_cxx_flag FLAG )
-  set_c_flag( ${FLAG} ${ARGN} )
-  set_cxx_flag( ${FLAG} ${ARGN} )
-endmacro()
-macro( set_linker_flag FLAG )
-  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" )
-  set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${FLAG}" )
-  set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${FLAG}" )
-endmacro()
-
-# Try flag and set if it works, optional argument specifies build type
-macro( try_cxx_flag PROP FLAG )
-  check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
-  if( FLAG_${PROP} )
-    set_cxx_flag( ${FLAG} ${ARGV2} )
-  endif()
-endmacro()
-macro( try_c_cxx_flag PROP FLAG )
-  # Only try the flag once on the C++ compiler
-  try_cxx_flag( ${PROP} ${FLAG} ${ARGV2} )
-  if( FLAG_${PROP} )
-    set_c_flag( ${FLAG} ${ARGV2} )
-  endif()
-endmacro()
-# Clang prints a warning when if it doesn't support a flag, so use -Werror to detect
-macro( try_cxx_flag_werror PROP FLAG )
-  set( CMAKE_REQUIRED_FLAGS "-Werror" )
-  check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
-  set( CMAKE_REQUIRED_FLAGS "" )
-  if( FLAG_${PROP} )
-    set_cxx_flag( ${FLAG} ${ARGV2} )
-  endif()
-endmacro()
-macro( try_c_cxx_flag_werror PROP FLAG )
-  try_cxx_flag_werror( ${PROP} ${FLAG} ${ARGV2} )
-  if( FLAG_${PROP} )
-    set_c_flag( ${FLAG} ${ARGV2} )
-  endif()
-endmacro()
-macro( try_linker_flag PROP FLAG )
-  # Check it with the C compiler
-  set( CMAKE_REQUIRED_FLAGS ${FLAG} )
-  check_C_compiler_flag( ${FLAG} FLAG_${PROP} )
-  set( CMAKE_REQUIRED_FLAGS "" )
-  if( FLAG_${PROP} )
-    set_linker_flag( ${FLAG} ${ARGN} )
-  endif()
-endmacro()
-
-if( MSVC )
-  set_c_cxx_flag( "/MP" )
-  set_c_cxx_flag( "/fp:fast" )
-  set_c_cxx_flag( "/d2Zi+" RELWITHDEBINFO )
-  if( ARCH STREQUAL "x86" )
-    set_c_cxx_flag( "/arch:SSE2" )
-  endif()
-  if( USE_LTO )
-    set_c_cxx_flag( "/GL" MINSIZEREL )
-    set_c_cxx_flag( "/GL" RELWITHDEBINFO )
-    set_c_cxx_flag( "/GL" RELEASE )
-    set_linker_flag( "/LTCG" MINSIZEREL )
-    set_linker_flag( "/LTCG" RELWITHDEBINFO )
-    set_linker_flag( "/LTCG" RELEASE )
-  endif()
-  set_linker_flag( "/LARGEADDRESSAWARE" )
-
-  # Turn off C4503:, e.g: 
-  # warning C4503: 'std::_Tree<std::_Tmap_traits<_Kty,_Ty,_Pr,_Alloc,false>>::_Insert_hint' : decorated name length exceeded, name was truncated
-  # No issue will be caused from this error as long as no two symbols become identical by being truncated.
-  # In practice this rarely happens and even the standard libraries are affected as in the example. So there really is not
-  # much that can to done about it and the warnings about each truncation really just make it more likely
-  # that other more real issues might get missed. So better to remove the distraction when it really is very unlikey to happen.
-  set_c_cxx_flag( "/wd4503" )  
-  
-  # Turn off warning C4996:, e.g:
-  # warning C4996: 'open': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _open. See online help for details.  set_c_cxx_flag( "/wd4996" )
-  # open seems far more popular than _open not to mention nicer. There doesn't seem to be any reason or will to change to _open.
-  # So until there is a specific plan to tackle all of these type of warnings it's best to turn them off to the distraction.
-  set_c_cxx_flag( "/wd4996" )
-
-else()
-  set_c_cxx_flag( "-ffast-math" )
-  set_c_cxx_flag( "-fno-strict-aliasing" )
-
-  # Set arch on x86 to SSE2 minimum and enable CMPXCHG16B
-  if( ARCH STREQUAL "x86" )
-    set_c_cxx_flag( "-m32" )
-    set_c_cxx_flag( "-msse2" )
-    set_c_cxx_flag( "-mtune=generic" )
-    try_c_cxx_flag_werror( MFPMATH_SSE "-mfpmath=sse" )
-  elseif( ARCH STREQUAL "x86_64" )
-    set_c_cxx_flag( "-m64" )
-    set_c_cxx_flag( "-mtune=generic" )
-    try_c_cxx_flag_werror( MCX16 "-mcx16" )
-  endif()
-
-  # Use hidden symbol visibility if possible
-  try_c_cxx_flag( FVISIBILITY_HIDDEN "-fvisibility=hidden" )
-
-  # Extra debug flags
-  set_c_cxx_flag( "-g3" DEBUG )
-  set_c_cxx_flag( "-g3" RELWITHDEBINFO )
-  if( USE_DEBUG_OPTIMIZE )
-    try_c_cxx_flag( OPTIMIZE_DEBUG "-Og" DEBUG )
-  endif()
-
-  # C++11 support
-  try_cxx_flag( GNUXX11 "-std=gnu++11" )
-  if( NOT FLAG_GNUXX11 )
-    try_cxx_flag( GNUXX0X "-std=gnu++0x" )
-    if( NOT FLAG_GNUXX0X )
-      message( FATAL_ERROR "C++11 not supported by compiler" )
-    endif()
-  endif()
-
-  # Use MSVC-compatible bitfield layout
-  if( WIN32 )
-    set_c_cxx_flag( "-mms-bitfields" )
-  endif()
-
-  # Use libc++ on Mac because the shipped libstdc++ version is too old
-  if( APPLE )
-    set_c_cxx_flag( "-stdlib=libc++" )
-    set_linker_flag( "-stdlib=libc++" )
-  endif()
-
-  # Hardening, don't set _FORTIFY_SOURCE in debug builds
-  set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELEASE )
-  set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELWITHDEBINFO )
-  set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" MINSIZEREL )
-  if( USE_HARDENING )
-    try_c_cxx_flag( FSTACK_PROTECTOR_STRONG "-fstack-protector-strong" )
-    if( NOT FLAG_FSTACK_PROTECTOR_STRONG )
-      try_c_cxx_flag( FSTACK_PROTECTOR_ALL "-fstack-protector-all" )
-    endif()
-    try_c_cxx_flag( FNO_STRICT_OVERFLOW "-fno-strict-overflow" )
-    try_c_cxx_flag( WSTACK_PROTECTOR "-Wstack-protector" )
-    try_c_cxx_flag( FPIE "-fPIE" )
-    try_linker_flag( LINKER_PIE "-pie" )
-  endif()
-
-  # Linker flags
-  if( NOT APPLE )
-    try_linker_flag( LINKER_O1 "-Wl,-O1" )
-    try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
-    try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
-    if( NOT USE_ADDRESS_SANITIZER )
-      try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
-    endif()
-    try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
-    try_linker_flag( LINKER_Z_NOW "-Wl,-z,now" )
-  endif()
-  if( WIN32 )
-    try_linker_flag( LINKER_DYNAMICBASE "-Wl,--dynamicbase" )
-    try_linker_flag( LINKER_NXCOMPAT "-Wl,--nxcompat" )
-    try_linker_flag( LINKER_LARGE_ADDRESS_AWARE "-Wl,--large-address-aware" )
-  endif()
-
-  # The -pthread flag sets some preprocessor defines, it is also used to link
-  # with libpthread on Linux
-  try_c_cxx_flag( PTHREAD "-pthread" )
-  if( LINUX )
-    set_linker_flag( "-pthread" )
-  endif()
-
-  # Warning options
-  set_c_cxx_flag( "-Wall" )
-  if( USE_WEXTRA )
-    set_c_cxx_flag( "-Wextra" )
-  else()
-    set_c_cxx_flag( "-Wno-sign-compare" )
-    set_c_cxx_flag( "-Wno-write-strings" )
-  endif()
-
-  if( USE_PEDANTIC )
-    set_c_cxx_flag( "-pedantic" )
-  endif()
-
-  if( USE_ADDRESS_SANITIZER )
-    set_cxx_flag( "-fsanitize=address" )
-    set_linker_flag( "-fsanitize=address" )
-  endif()
-
-  # Link-time optimization
-  if( USE_LTO )
-    set_c_cxx_flag( "-flto" )
-    set_linker_flag( "-flto" )
-
-    # For LTO compilation we must send a copy of all compile flags to the linker
-    set_linker_flag( "${CMAKE_CXX_FLAGS}" )
-
-    # Use gcc-ar and gcc-ranlib instead of ar and ranlib so that we can use
-    # slim LTO objects. This requires a recent version of GCC and binutils.
-    if( ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU )
-      if( USE_SLIM_LTO )
-        string(REGEX MATCH "^([0-9]+.[0-9]+)" _version
-           "${CMAKE_CXX_COMPILER_VERSION}")
-        get_filename_component(COMPILER_BASENAME "${CMAKE_C_COMPILER}" NAME)
-        if (COMPILER_BASENAME MATCHES "^(.+-)g?cc(-[0-9]+\\.[0-9]+\\.[0-9]+)?(\\.exe)?$")
-          set(TOOLCHAIN_PREFIX ${CMAKE_MATCH_1})
-        endif()
-
-        find_program(GCC_AR NAMES
-          "${TOOLCHAIN_PREFIX}gcc-ar"
-          "${TOOLCHAIN_PREFIX}gcc-ar-${_version}"
-          DOC "gcc provided wrapper for ar which adds the --plugin option"
-        )
-
-        find_program(GCC_RANLIB NAMES
-          "${TOOLCHAIN_PREFIX}gcc-ranlib"
-          "${TOOLCHAIN_PREFIX}gcc-ranlib-${_version}"
-          DOC "gcc provided wrapper for ranlib which adds the --plugin option"
-        )
-
-        mark_as_advanced( GCC_AR GCC_RANLIB )
-
-        # Override standard ar and ranlib with the gcc- versions
-        if( GCC_AR )
-          set( CMAKE_AR ${GCC_AR} )
-        endif()
-        if( GCC_RANLIB )
-          set( CMAKE_RANLIB ${GCC_RANLIB} )
-        endif()
-
-        try_c_cxx_flag( NO_FAT_LTO_OBJECTS "-fno-fat-lto-objects" )
-      else()
-        try_c_cxx_flag( FAT_LTO_OBJECTS "-ffat-lto-objects" )
-      endif()
-    endif()
-  endif()
-
-endif()
-
-# Windows-specific definitions
-if( WIN32 )
-  # Minimum Windows version: XP
-  # Define WIN32 for compatibility (compiler defines _WIN32)
-  # Define NOMINMAX to prevent conflics between std::min/max and the min/max macros in WinDef.h
-  # Enable STRICT type checking for windows.h
-  add_definitions( -DWINVER=0x501 -DWIN32 -DNOMINMAX -DSTRICT )
-  set( CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "" "lib" )
-endif()
-if( MSVC )
-  add_definitions( -D_CRT_SECURE_NO_WARNINGS )
-endif()
-
-# Mac-specific definitions
-if( APPLE )
-  add_definitions( -DMACOS_X )
-  set_linker_flag( "-Wl,-no_pie" )
-  set( CMAKE_INSTALL_RPATH "@executable_path/;${DEPS_DIR};${DEPS_DIR}/lib" )
-  set( CMAKE_BUILD_WITH_INSTALL_RPATH ON )
-endif()
+include( DaemonFlags )
 
 ################################################################################
 # Git revision info
 ################################################################################
 
-if( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git" )
-  find_package( Git )
-  if( GIT_FOUND )
-    execute_process( COMMAND ${GIT_EXECUTABLE} describe --tags --long --match v* --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
-    message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
-    # this may fail with annotated non-release tags
-    if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
-      set( GIT_DESCRIBE_REPORT )
-    endif()
-  endif()
-endif()
-
-if( GIT_DESCRIBE_REPORT )
-  set( DESIRED_REVISION_H_CONTENTS "#define REVISION \"${GIT_DESCRIBE_REPORT}\"\n" )
-endif()
-
-if( EXISTS "${OBJ_DIR}/revision.h" )
-  file( READ "${OBJ_DIR}/revision.h" ACTUAL_REVISION_H_CONTENTS )
-  if( NOT "${ACTUAL_REVISION_H_CONTENTS}" STREQUAL "${DESIRED_REVISION_H_CONTENTS}" )
-    file( WRITE "${OBJ_DIR}/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
-  endif()
-else()
-  file( WRITE "${OBJ_DIR}/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
-endif()
-
-include_directories( "${OBJ_DIR}" )
+include( DaemonGitRev )
 
 ################################################################################
 # Support for precompiled headers
 ################################################################################
 
-# MSVC requires that an extra file be added to a project
-if( USE_PRECOMPILED_HEADER AND MSVC )
-  file( WRITE ${OBJ_DIR}/PrecompiledHeader.cpp "" )
-  set( PCH_FILE ${OBJ_DIR}/PrecompiledHeader.cpp )
-endif()
-
-function( ADD_PRECOMPILED_HEADER Target Header )
-  if( USE_PRECOMPILED_HEADER AND NOT CMAKE_VERSION VERSION_LESS 2.8.10 )
-    # Get the common compile flags
-    set( Flags ${CMAKE_CXX_FLAGS} )
-    get_target_property( Type ${Target} TYPE )
-    if( Type STREQUAL MODULE_LIBRARY )
-        set( Flags ${Flags} ${CMAKE_SHARED_MODULE_CXX_FLAGS} )
-    endif()
-    separate_arguments( Flags )
-
-    # Get the per-configuration compile flags
-    foreach( Config Debug Release RelWithDebInfo MinSizeRel )
-      string( TOUPPER ${Config} CONFIG )
-      set( ConfigFlags ${CMAKE_CXX_FLAGS_${CONFIG}} )
-      separate_arguments( ConfigFlags )
-      foreach( Flag ${ConfigFlags} )
-        set( Flags ${Flags} $<$<CONFIG:${Config}>:${Flag}> )
-      endforeach()
-    endforeach()
-
-    # Get preprocessor options for the target and directory (global)
-    get_directory_property( DirCompileDefs COMPILE_DEFINITIONS )
-    get_directory_property( DirIncludeDirs INCLUDE_DIRECTORIES )
-    get_target_property( TargetCompileDefs ${Target} COMPILE_DEFINITIONS )
-    set( Defs )
-    foreach( Def ${TargetCompileDefs} )
-      set( Defs ${Defs} -D${Def} )
-    endforeach()
-    foreach( Def ${DirCompileDefs} )
-      set( Defs ${Defs} -D${Def} )
-    endforeach()
-    foreach( Def ${DirIncludeDirs} )
-      set( Defs ${Defs} -I${Def} )
-    endforeach()
-
-    # Specify minimum OSX version
-    if( APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET )
-      set( Flags ${Flags} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} )
-    endif()
-
-    # Compiler-specific PCH support
-    if( CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
-      add_custom_command( OUTPUT "${OBJ_DIR}/${Target}.h.gch"
-        COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
-        DEPENDS ${Header}
-        IMPLICIT_DEPENDS CXX ${Header}
-      )
-
-      add_custom_target( ${Target}-pch DEPENDS "${OBJ_DIR}/${Target}.h.gch" )
-      add_dependencies( ${Target} ${Target}-pch )
-
-      if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
-        set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${OBJ_DIR}/${Target}.h.gch" )
-      else()
-        set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include ${OBJ_DIR}/${Target}.h -Winvalid-pch" )
-      endif()
-    elseif( MSVC )
-      set_source_files_properties( ${PCH_FILE} PROPERTIES COMPILE_FLAGS "/Yc${Header}" )
-      set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "/Yu${Header} /Fp${OBJ_DIR}/${Target}.pch /FI${Header}" )
-    endif()
-  endif()
-endfunction()
+include( DaemonPCH )
 
 ################################################################################
 # File lists
@@ -907,49 +487,17 @@ endif()
 # Libraries
 ################################################################################
 
-# Import external dependencies
-if( DEPS_DIR )
-  # Download them if they not available
-  if( NOT EXISTS ${DEPS_DIR} )
-    get_filename_component( BASENAME ${DEPS_DIR} NAME )
-    set( REMOTE "http://dl.unvanquished.net/deps/${BASENAME}${DEPS_EXT}" )
-    message( STATUS "Downloading dependencies from '${REMOTE}'" )
-    file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}${DEPS_EXT} SHOW_PROGRESS
-      STATUS DOWNLOAD_RESULT LOG DOWNLOAD_LOG )
-    list( GET DOWNLOAD_RESULT 0 DOWNLOAD_STATUS )
-    list( GET DOWNLOAD_RESULT 1 DOWNLOAD_STRING )
-    if( NOT DOWNLOAD_STATUS EQUAL 0 )
-      message( FATAL_ERROR "Error downloading '${REMOTE}':
-        Status code: ${DOWNLOAD_STATUS}
-        Error string: ${DOWNLOAD_STRING}
-        Download log: ${DOWNLOAD_LOG}" )
-    endif()
-    message( STATUS "Download completed successfully" )
+include( DaemonLibs )
 
-    # Extract the downloaded archive
-    execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${OBJ_DIR}/${BASENAME}${DEPS_EXT}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external_deps RESULT_VARIABLE EXTRACT_RESULT )
-    if( NOT EXTRACT_RESULT EQUAL 0 )
-      message( FATAL_ERROR "Could not extract ${BASENAME}${DEPS_EXT}" )
-    endif()
-  endif()
-
-  # Add to paths
-  set( CMAKE_FIND_ROOT_PATH ${DEPS_DIR} ${CMAKE_FIND_ROOT_PATH} )
-  set( CMAKE_INCLUDE_PATH ${DEPS_DIR} ${DEPS_DIR}/include ${CMAKE_INCLUDE_PATH} )
-  set( CMAKE_FRAMEWORK_PATH ${DEPS_DIR} ${CMAKE_FRAMEWORK_PATH} )
-  set( CMAKE_LIBRARY_PATH ${DEPS_DIR}/lib ${CMAKE_LIBRARY_PATH} )
-
-  # Force OpenAL Soft on Mac, otherwise the system framework will be selected
-  if( APPLE )
-    set( OPENAL_INCLUDE_DIR ${DEPS_DIR}/include/AL )
-    set( OPENAL_LIBRARY ${DEPS_DIR}/lib/libopenal.dylib )
-  endif()
+# Force OpenAL Soft on Mac, otherwise the system framework will be selected
+if( APPLE )
+  set( OPENAL_INCLUDE_DIR ${DEPS_DIR}/include/AL )
+  set( OPENAL_LIBRARY ${DEPS_DIR}/lib/libopenal.dylib )
 endif()
 
 # These variables are defined:
 # LIBS_BASE, LIBS_ENGINE, LIBS_CLIENT
-# LIBSRC_BASE, LIBSRC_NACL, LIBSRC_ENGINE
+# LIBSRC_NACL, LIBSRC_ENGINE
 
 # Base OS libs
 if( WIN32 )
@@ -977,7 +525,9 @@ else()
 endif()
 
 # Minizip
-set( LIBSRC_BASE ${LIBSRC_BASE} ${MINIZIPLIST} )
+add_library( minizip ${MINIZIPLIST} )
+set_target_properties( minizip PROPERTIES POSITION_INDEPENDENT_CODE 1 )
+set( LIBS_BASE ${LIBS_BASE} minizip )
 
 # Tinygettext
 set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${TINYGETTEXTLIST} )
@@ -991,31 +541,6 @@ if( USE_GEOIP )
   add_definitions( -DHAVE_GEOIP )
   set( LIBS_ENGINE ${LIBS_ENGINE} ${GeoIP_LIBRARIES} )
   include_directories( ${GeoIP_INCLUDE_DIRS} )
-endif()
-
-# Native client
-if( APPLE )
-  add_definitions( -DNACL_WINDOWS=0 -DNACL_LINUX=0 -DNACL_ANDROID=0 -DNACL_OSX=1 )
-elseif( LINUX )
-  add_definitions( -DNACL_WINDOWS=0 -DNACL_LINUX=1 -DNACL_ANDROID=0 -DNACL_OSX=0 )
-elseif( WIN32 )
-  add_definitions( -DNACL_WINDOWS=1 -DNACL_LINUX=0 -DNACL_ANDROID=0 -DNACL_OSX=0 )
-endif()
-if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
-  add_definitions( -DNACL_BUILD_ARCH=x86 )
-else()
-  add_definitions( -DNACL_BUILD_ARCH=${ARCH} )
-endif()
-if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-  add_definitions( -DNACL_BUILD_SUBARCH=64 )
-else()
-  add_definitions( -DNACL_BUILD_SUBARCH=32 )
-endif()
-include_directories( ${LIB_DIR}/nacl )
-set( LIBSRC_NACL ${LIBSRC_NACL} ${NACLLIST_NATIVE} )
-
-if( NACL_RUNTIME_PATH )
-  add_definitions( "-DNACL_RUNTIME_PATH=${NACL_RUNTIME_PATH}" )
 endif()
 
 # SDL, required for all targets on win32 because of iconv
@@ -1037,6 +562,7 @@ mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
 
 # libRocket
 if( BUILD_CLIENT )
+  set( ROCKET_DIR ${LIB_DIR}/libRocket )
   include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
   add_subdirectory( ${ROCKET_DIR} )
   add_definitions( -DSTATIC_LIB )
@@ -1172,12 +698,10 @@ elseif( NOT APPLE )
 endif()
 
 # Builds the libs for which we include the source
-add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
-add_library( nacl-source-libs EXCLUDE_FROM_ALL ${LIBSRC_NACL} )
 add_library( engine-source-libs EXCLUDE_FROM_ALL ${LIBSRC_ENGINE} )
-set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
+add_library( nacl-source-libs EXCLUDE_FROM_ALL ${LIBSRC_NACL} )
+set_target_properties( engine-source-libs nacl-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 
-set( LIBS_BASE base-source-libs ${LIBS_BASE} )
 set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
 
 ################################################################################
