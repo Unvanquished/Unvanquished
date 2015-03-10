@@ -41,7 +41,8 @@ set( CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options 
 
 project( Unvanquished C CXX )
 
-add_subdirectory( daemon )
+set( DAEMON_OUT ${CMAKE_CURRENT_BINARY_DIR} )
+add_subdirectory( daemon daemon_build )
 
 ################################################################################
 # Configuration options
