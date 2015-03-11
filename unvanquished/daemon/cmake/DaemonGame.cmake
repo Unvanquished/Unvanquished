@@ -170,6 +170,7 @@ function( GAMEMODULE )
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};BUILD_VM_IN_PROCESS"
     )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-dll ${COMMON_DIR}/Common.h )
+    add_dependencies(runtime_deps ${GAMEMODULE_NAME}-native-dll)
   endif()
 
   if( BUILD_GAME_NATIVE_EXE )
@@ -179,6 +180,7 @@ function( GAMEMODULE )
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-exe ${COMMON_DIR}/Common.h )
+    add_dependencies(runtime_deps ${GAMEMODULE_NAME}-native-exe)
   endif()
 
   if( BUILD_GAME_NACL )
@@ -349,6 +351,7 @@ function( GAMEMODULE )
       COMMAND ${CMAKE_COMMAND} -E make_directory ${FULL_OUTPUT_DIR}
       COMMAND ${CMAKE_COMMAND} -E make_directory ${NACL_DIR}
     )
+    add_dependencies(runtime_deps ${GAMEMODULE_NAME}-nacl)
   endif()
 
 endfunction()
