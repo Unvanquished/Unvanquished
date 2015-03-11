@@ -62,16 +62,12 @@ option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
-option( USE_LTO "Use link-time optimization for release builds" 0 )
-cmake_dependent_option( USE_SLIM_LTO "Generate slim LTO objects, improves build times" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0 )
-option( USE_HARDENING "Use stack protection and other hardening flags" 0 )
-option( USE_WEXTRA "Enable extra compilation warnings" 0 )
-option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
-option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
-option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
-option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
 
 set( NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries" )
+
+################################################################################
+# Determine platform + architecture
+################################################################################
 
 include( DaemonUtils )
 

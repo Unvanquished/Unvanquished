@@ -2,6 +2,10 @@
 # Configuration options
 ################################################################################
 
+option( BUILD_GAME_NATIVE_EXE "Build native executable game logic" 1 )
+option( BUILD_GAME_NATIVE_DLL "Build native shared library game logic" 1 )
+option( BUILD_GAME_NACL "Build NaCl game logic" 1 )
+
 set( NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries" )
 
 ################################################################################
