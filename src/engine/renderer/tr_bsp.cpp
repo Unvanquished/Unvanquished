@@ -3216,6 +3216,8 @@ static void R_CreateWorldVBO( void )
 			}
 
 			rb_surfaceTable[ SF_GRID ]( srf );
+			Tess_AutospriteDeform( surface->shader->autoSpriteMode, srf->firstVert, srf->numVerts,
+					       3 * srf->firstTriangle, 3 * srf->numTriangles );
 		}
 		else if ( *surface->data == SF_TRIANGLES )
 		{
@@ -3250,6 +3252,8 @@ static void R_CreateWorldVBO( void )
 			}
 
 			rb_surfaceTable[ SF_TRIANGLES ]( srf );
+			Tess_AutospriteDeform( surface->shader->autoSpriteMode, srf->firstVert, srf->numVerts,
+					       3 * srf->firstTriangle, 3 * srf->numTriangles );
 		}
 	}
 

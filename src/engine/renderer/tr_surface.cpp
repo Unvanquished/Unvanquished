@@ -414,8 +414,14 @@ void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, fl
 
 	for ( i = 0; i < 4; i++ )
 	{
+		vec4_t texCoord;
+
+		Vector4Set( texCoord, 0.5f * (i & 2), 0.5f * ( (i + 1) & 2 ),
+			    0.5f * (i & 2), 0.5f * ( (i + 1) & 2 ) );
+
 		VectorCopy( center, tess.verts[ ndx + i ].xyz );
 		Vector4Copy( color, tess.verts[ ndx + i ].color );
+		floatToHalf( texCoord, tess.verts[ ndx + i ].texCoords );
 		Vector4Set( tess.verts[ ndx + i ].spriteOrientation,
 			    rotation, 0.0f, 0.0f, radius );
 	}
@@ -423,7 +429,7 @@ void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, fl
 	tess.numVertexes += 4;
 	tess.numIndexes += 6;
 
-	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_ORIENTATION;
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD | ATTR_ORIENTATION;
 }
 
 void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const vec4_t colorf )

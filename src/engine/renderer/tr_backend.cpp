@@ -619,7 +619,7 @@ void GL_VertexAttribsState( uint32_t stateBits )
 
 	if ( tess.vboVertexSprite )
 	{
-		stateBits &= ~(ATTR_TEXCOORD | ATTR_QTANGENT);
+		stateBits &= ~ATTR_QTANGENT;
 		stateBits |= ATTR_ORIENTATION;
 	}
 

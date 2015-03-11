@@ -42,6 +42,7 @@ typedef int16_t  i16vec4_t [ 4 ];
 typedef uint16_t u16vec4_t [ 4 ];
 typedef int16_t  i16vec2_t [ 2 ];
 typedef uint16_t u16vec2_t [ 2 ];
+typedef int16_t  f16vec4_t [ 4 ]; // half float vector
 
 // GL conversion helpers
 static inline float unorm8ToFloat(byte unorm8) {
@@ -119,12 +120,26 @@ static inline int16_t floatToHalf( float in ) {
 	
 	return (int16_t)(((fi.ui & 0x80000000) >> 16) | ((fi.ui & 0x0fffe000) >> 13));
 }
+static inline void floatToHalf( const vec4_t in, f16vec4_t out )
+{
+	out[ 0 ] = floatToHalf( in[ 0 ] );
+	out[ 1 ] = floatToHalf( in[ 1 ] );
+	out[ 2 ] = floatToHalf( in[ 2 ] );
+	out[ 3 ] = floatToHalf( in[ 3 ] );
+}
 static inline float halfToFloat( int16_t in ) {
 	static float scale = powf(2.0f, 127 - 15);
 	floatint_t fi;
 
 	fi.ui = (((unsigned int)in & 0x8000) << 16) | (((unsigned int)in & 0x7fff) << 13);
 	return fi.f * scale;
+}
+static inline void halfToFloat( const f16vec4_t in, vec4_t out )
+{
+	out[ 0 ] = halfToFloat( in[ 0 ] );
+	out[ 1 ] = halfToFloat( in[ 1 ] );
+	out[ 2 ] = halfToFloat( in[ 2 ] );
+	out[ 3 ] = halfToFloat( in[ 3 ] );
 }
 
 // everything that is needed by the backend needs
@@ -3373,12 +3388,10 @@ static inline float halfToFloat( int16_t in ) {
 		vec3_t    xyz;
 		u8vec4_t  color;
 		union {
-			struct {
-				i16vec4_t qtangents;
-				i16vec4_t texCoords;
-			};
-			vec4_t spriteOrientation;
+			i16vec4_t qtangents;
+			f16vec4_t spriteOrientation;
 		};
+		i16vec4_t texCoords;
 	} shaderVertex_t;
 
 #ifdef GLEW_ARB_sync

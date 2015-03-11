@@ -752,7 +752,7 @@ static void AutospriteDeform( int firstVertex, int numVertexes, int firstIndex, 
 		for ( j = 0; j < 4; j++ ) {
 			VectorCopy( mid, v[ j ].xyz );
 			Vector4Set( v[ j ].spriteOrientation,
-				    0.0f, 0.0f, 0.0f, radius );
+				    0, 0, 0, floatToHalf( radius ) );
 		}
 	}
 }
@@ -855,6 +855,8 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex,
 		// update the vertices
 		for ( j = 0; j < 4; j++ )
 		{
+			vec4_t orientation;
+
 			v1 = &tess.verts[ firstVertex + i + j ];
 			lengths[ 0 ] = Distance( mid[ 0 ], v1->xyz );
 			lengths[ 1 ] = Distance( mid[ 1 ], v1->xyz );
@@ -867,12 +869,13 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex,
 
 			VectorSubtract( v1->xyz, mid[ k ], minor );
 			if ( DotProduct( cross, minor ) * (k ? -1.0f : 1.0f) < 0.0f ) {
-				VectorNegate( major, v1->spriteOrientation );
+				VectorNegate( major, orientation );
 			} else {
-				VectorCopy( major, v1->spriteOrientation );
+				VectorCopy( major, orientation );
 			}
-			v1->spriteOrientation[ 3 ] = -lengths[ k ];
+			orientation[ 3 ] = -lengths[ k ];
 
+			floatToHalf( orientation, v1->spriteOrientation );
 			VectorCopy( mid[ k ], v1->xyz );
 		}
 	}

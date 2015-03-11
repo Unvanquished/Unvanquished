@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 attribute vec3 attr_Position;
 attribute vec4 attr_Color;
+attribute vec4 attr_TexCoord0;
 attribute vec4 attr_Orientation;
 
 uniform vec3 u_ViewOrigin;
@@ -38,23 +39,24 @@ void VertexFetch(out vec4 position,
 		 out vec2 texCoord,
 		 out vec2 lmCoord)
 {
+	vec2 corner;
 	float radius = attr_Orientation.w;
 	vec3 normal = normalize( u_ViewOrigin - attr_Position ), up, left;
 	float s, c; // sin & cos of rotation factor
 
-	// autogenerate texCoord from VertexID, generated coordinates are:
-	//   0, 0
-	//   1, 0
-	//   1, 1
-	//   0, 1
-	texCoord = 0.5 * vec2( float( (gl_VertexID + 0) & 2),
-			       float( (gl_VertexID + 1) & 2) );
+	// autogenerate corner from VertexID, generated coordinates are:
+	//   -1, -1
+	//    1, -1
+	//    1,  1
+	//   -1,  1
+	corner = vec2( float( (gl_VertexID + 0) & 2) - 1.0,
+		       float( (gl_VertexID + 1) & 2) - 1.0 );
 
 	if( radius <= 0.0 ) {
 		// autosprite2 mode, attr_Orientation.xyz contains the up-vector
 		up = attr_Orientation.xyz;
 		left = radius * normalize( cross( up, normal ) );
-		position = vec4( attr_Position + (2.0 * texCoord.y - 1.0) * left, 1.0 );
+		position = vec4( attr_Position + corner.y * left, 1.0 );
 	} else {
 		// autosprite mode, attr_Orientation.x contains the rotation angle
 		left = normalize( cross( u_ViewUp, normal ) );
@@ -68,8 +70,8 @@ void VertexFetch(out vec4 position,
 		left = c * left + s * up;
 		up = c * up - s * leftOrig;
 
-		left *= 2.0 * texCoord.x - 1.0;
-		up *= 2.0 * texCoord.y - 1.0;
+		left *= corner.x;
+		up *= corner.y;
 
 		position = vec4( attr_Position + left + up, 1.0 );
 	}
@@ -78,8 +80,9 @@ void VertexFetch(out vec4 position,
 	normalBasis.tangent = normalize( up );
 	normalBasis.binormal = normalize( left );
 #endif
+	texCoord = attr_TexCoord0.xy;
+	lmCoord  = attr_TexCoord0.zw;
 	color    = attr_Color;
-	lmCoord  = texCoord;
 
 	u_DepthScale = 2.0 * radius;
 }

@@ -37,18 +37,17 @@ void	main()
 {
 	vec4 color = texture2D(u_ColorMap, var_Tex);
 
-#if defined(USE_DEPTH_FADE) || defined(USE_VERTEX_SPRITE)
-	float depth = texture2D(u_DepthMap, gl_FragCoord.xy * r_FBufScale * r_NPOTScale).x;
-	float fadeDepth = 0.5 * var_FadeDepth.x / var_FadeDepth.y + 0.5;
-	color.a *= smoothstep(gl_FragCoord.z, fadeDepth, depth);
-#endif
-
-
 	if( abs(color.a + u_AlphaThreshold) <= 1.0 )
 	{
 		discard;
 		return;
 	}
+
+#if defined(USE_DEPTH_FADE) || defined(USE_VERTEX_SPRITE)
+	float depth = texture2D(u_DepthMap, gl_FragCoord.xy * r_FBufScale * r_NPOTScale).x;
+	float fadeDepth = 0.5 * var_FadeDepth.x / var_FadeDepth.y + 0.5;
+	color.a *= smoothstep(gl_FragCoord.z, fadeDepth, depth);
+#endif
 
 	color *= var_Color;
 	gl_FragColor = color;

@@ -228,7 +228,7 @@ static void R_SetAttributeLayoutsStatic( VBO_t *vbo )
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset   = 0;
 
 	vbo->attribs[ ATTR_INDEX_ORIENTATION ].numComponents = 4;
-	vbo->attribs[ ATTR_INDEX_ORIENTATION ].componentType = GL_FLOAT;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].componentType = GL_HALF_FLOAT;
 	vbo->attribs[ ATTR_INDEX_ORIENTATION ].normalize     = GL_FALSE;
 	vbo->attribs[ ATTR_INDEX_ORIENTATION ].ofs           = offsetof( shaderVertex_t, spriteOrientation );
 	vbo->attribs[ ATTR_INDEX_ORIENTATION ].realStride    = sizeShaderVertex;
