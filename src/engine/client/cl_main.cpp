@@ -1487,7 +1487,12 @@ Called before parsing a gamestate
 */
 void CL_ClearState( void )
 {
-	cl = clientActive_t();
+	cl.~clientActive_t();
+#ifdef _MSC_VER
+	// MSVC doesn't properly zero-initialize values in the default constructor
+	memset(&cl, 0, sizeof(cl));
+#endif
+	new(&cl) clientActive_t();
 }
 
 /*
