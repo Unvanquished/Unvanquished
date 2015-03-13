@@ -1612,11 +1612,7 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	// reset cgs in-place to avoid creating a huge struct on stack (caused a stack overflow)
 	// this is equivalent to cgs = cgs_t()
 	cgs.~cgs_t();
-#ifdef _MSC_VER
-	// MSVC doesn't properly zero-initialize values in the default constructor
-	memset(&cgs, 0, sizeof(cgs));
-#endif
-	new(&cgs) cgs_t();
+	new(&cgs) cgs_t{}; // Using {} instead of () to work around MSVC bug
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
 
