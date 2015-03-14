@@ -109,6 +109,7 @@ typedef enum cgameImport_s
   CG_R_ADDLIGHTTOSCENE,
   CG_R_ADDADDITIVELIGHTTOSCENE,
   CG_R_RENDERSCENE,
+  CG_R_ADD2DPOLYSINDEXED,
   CG_R_SETCOLOR,
   CG_R_SETCLIPREGION,
   CG_R_RESETCLIPREGION,
@@ -129,6 +130,8 @@ typedef enum cgameImport_s
   CG_CHECKVISIBILITY,
   CG_UNREGISTERVISTEST,
   CG_SETCOLORGRADING,
+  CG_R_GETTEXTURESIZE,
+  CG_R_GENERATETEXTURE,
 
   // Keys
   CG_KEY_GETCATCHER,
@@ -400,6 +403,16 @@ namespace Render {
 		IPC::Message<IPC::Id<VM::QVM, CG_CHECKVISIBILITY>, int>,
 		IPC::Reply<float>
 	> CheckVisibilityMsg;
+	// GetTextureSizeMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_GETTEXTURESIZE>, qhandle_t>,
+		IPC::Reply<int, int>
+	> GetTextureSizeMsg;
+	// GenerateTextureMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_GENERATETEXTURE>, std::vector<byte>, int, int>,
+		IPC::Reply<qhandle_t>
+	> GenerateTextureMsg;
 
     // All command buffer syscalls
 
@@ -437,6 +450,8 @@ namespace Render {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_SETCOLORGRADING>, int, int> SetColorGradingMsg;
 	// RenderSceneMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RENDERSCENE>, refdef_t> RenderSceneMsg;
+	// Add2dPolysIndexedMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADD2DPOLYSINDEXED>, std::vector<polyVert_t>, int, std::vector<int>, int, int, int, qhandle_t> Add2dPolysIndexedMsg;
 }
 
 namespace Key {

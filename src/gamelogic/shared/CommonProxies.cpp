@@ -525,11 +525,13 @@ int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
 	return ret;
 }
 
-void trap_FS_Read(void *buffer, int len, fileHandle_t f)
+int trap_FS_Read(void *buffer, int len, fileHandle_t f)
 {
 	std::string res;
-	VM::SendMsg<VM::FSReadMsg>(f, len, res);
+	int ret;
+	VM::SendMsg<VM::FSReadMsg>(f, len, res, ret);
 	memcpy(buffer, res.c_str(), std::min((int)res.size() + 1, len));
+	return ret;
 }
 
 int trap_FS_Write(const void *buffer, int len, fileHandle_t f)
@@ -540,9 +542,25 @@ int trap_FS_Write(const void *buffer, int len, fileHandle_t f)
 	return res;
 }
 
-void trap_GS_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin )
+int trap_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin )
 {
-	VM::SendMsg<VM::FSSeekMsg>(f, offset, origin);
+    int res;
+	VM::SendMsg<VM::FSSeekMsg>(f, offset, origin, res);
+    return res;
+}
+
+int trap_FS_Tell( fileHandle_t f )
+{
+	int ret;
+	VM::SendMsg<VM::FSTellMsg>(f, ret);
+	return ret;
+}
+
+int trap_FS_FileLength( fileHandle_t f )
+{
+	int ret;
+	VM::SendMsg<VM::FSFileLengthMsg>(f, ret);
+	return ret;
 }
 
 void trap_FS_Rename(const char *from, const char *to)

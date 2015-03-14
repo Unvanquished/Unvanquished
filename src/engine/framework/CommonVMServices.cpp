@@ -249,10 +249,10 @@ namespace VM {
                 break;
 
             case QVM_COMMON_FS_READ:
-                IPC::HandleMsg<FSReadMsg>(channel, std::move(reader), [this](int handle, int len, std::string& res) {
+                IPC::HandleMsg<FSReadMsg>(channel, std::move(reader), [this](int handle, int len, std::string& res, int& ret) {
                     std::unique_ptr<char[]> buffer(new char[len]);
                     buffer[0] = '\0';
-                    FS_Read(buffer.get(), len, handle);
+                    ret = FS_Read(buffer.get(), len, handle);
                     res.assign(buffer.get(), len);
                 });
                 break;
@@ -264,11 +264,21 @@ namespace VM {
                 break;
 
             case QVM_COMMON_FS_SEEK:
-                IPC::HandleMsg<VM::FSSeekMsg>(channel, std::move(reader), [this] (int f, long offset, int origin) {
-                    FS_Seek(f, offset, origin);
+                IPC::HandleMsg<VM::FSSeekMsg>(channel, std::move(reader), [this] (int f, long offset, int origin, int& res) {
+                    res = FS_Seek(f, offset, origin);
                 });
                 break;
 
+            case QVM_COMMON_FS_TELL:
+                IPC::HandleMsg<VM::FSTellMsg>(channel, std::move(reader), [this] (fileHandle_t f, int& res) {
+                    res = FS_FTell(f);
+                });
+                break;
+			case QVM_COMMON_FS_FILELENGTH:
+				IPC::HandleMsg<VM::FSFileLengthMsg>(channel, std::move(reader), [this] (fileHandle_t f, int& res) {
+					res = FS_filelength(f);
+				});
+				break;
             case QVM_COMMON_FS_RENAME:
                 IPC::HandleMsg<FSRenameMsg>(channel, std::move(reader), [this](std::string from, std::string to) {
                     FS_Rename(from.c_str(), to.c_str());

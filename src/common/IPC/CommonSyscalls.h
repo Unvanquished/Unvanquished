@@ -68,6 +68,8 @@ namespace VM {
         QVM_COMMON_FS_READ,
         QVM_COMMON_FS_WRITE,
         QVM_COMMON_FS_SEEK,
+        QVM_COMMON_FS_TELL,
+		QVM_COMMON_FS_FILELENGTH,
         QVM_COMMON_FS_RENAME,
         QVM_COMMON_FS_FCLOSE_FILE,
         QVM_COMMON_FS_GET_FILE_LIST,
@@ -101,7 +103,7 @@ namespace VM {
     // FSReadMsg
     typedef IPC::SyncMessage<
         IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_READ>, int, int>,
-        IPC::Reply<std::string>
+        IPC::Reply<std::string, int>
     > FSReadMsg;
     // FSWriteMsg
     typedef IPC::SyncMessage<
@@ -109,7 +111,20 @@ namespace VM {
         IPC::Reply<int>
     > FSWriteMsg;
     // FSSeekMsg
-    typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_SEEK>, int, long, int> FSSeekMsg;
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_SEEK>, int, long, int>,
+        IPC::Reply<int>
+    > FSSeekMsg;
+    // FSTellMsg
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_TELL>, fileHandle_t>,
+        IPC::Reply<int>
+    > FSTellMsg;
+	// FSFileLengthMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_FILELENGTH>, fileHandle_t>,
+		IPC::Reply<int>
+	> FSFileLengthMsg;
     // FSRenameMsg
     typedef IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_RENAME>, std::string, std::string> FSRenameMsg;
     // FSFCloseFile

@@ -1809,6 +1809,18 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
+		case CG_R_GETTEXTURESIZE:
+			IPC::HandleMsg<Render::GetTextureSizeMsg>(channel, std::move(reader), [this] (qhandle_t handle, int& x, int& y) {
+				re.GetTextureSize(handle, &x, &y);
+			});
+			break;
+
+		case CG_R_GENERATETEXTURE:
+			IPC::HandleMsg<Render::GenerateTextureMsg>(channel, std::move(reader), [this] (std::vector<byte> data, int x, int y, qhandle_t& handle) {
+				handle = re.GenerateTexture(data.data(), x, y);
+			});
+			break;
+
 		// All keys
 
 		case CG_KEY_GETCATCHER:
@@ -2123,6 +2135,12 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
                 HandleMsg<Render::RenderSceneMsg>(std::move(reader), [this] (refdef_t rd) {
                     re.RenderScene(&rd);
                 });
+				break;
+
+			case CG_R_ADD2DPOLYSINDEXED:
+				HandleMsg<Render::Add2dPolysIndexedMsg>(std::move(reader), [this] (std::vector<polyVert_t> polys, int numPolys, std::vector<int> indicies, int numIndicies, int trans_x, int trans_y, qhandle_t shader) {
+					re.Add2dPolysIndexed(polys.data(), numPolys, indicies.data(), numIndicies, trans_x, trans_y, shader);
+				});
                 break;
 
 		default:

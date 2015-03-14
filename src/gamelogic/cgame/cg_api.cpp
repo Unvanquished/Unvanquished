@@ -72,6 +72,19 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 });
                 break;
 
+			case CG_ROCKET_VM_INIT:
+				IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, std::move(reader), [] {
+					CG_Rocket_Init();
+				});
+				break;
+
+			case CG_ROCKET_FRAME:
+				IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), [] (cgClientState_t cs) {
+					CG_Rocket_Frame(cs);
+					cmdBuffer.TryFlush();
+				});
+				break;
+
             case CG_DRAW_ACTIVE_FRAME:
                 IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, bool demoPlayback) {
                     CG_DrawActiveFrame(serverTime, demoPlayback);
@@ -423,6 +436,16 @@ void trap_R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *
 	cmdBuffer.SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numVerts, numPolys);
 }
 
+void trap_R_Add2dPolysIndexedToScene( polyVert_t* polys, int numPolys, int* indexes, int numIndexes, int trans_x, int trans_y, qhandle_t shader )
+{
+	std::vector<polyVert_t> mypolys(numPolys);
+	std::vector<int> myindices(numIndexes);
+	memcpy(mypolys.data(), polys, numPolys * sizeof( polyVert_t ) );
+	memcpy(myindices.data(), indexes, numIndexes * sizeof( int ) );
+	cmdBuffer.SendMsg<Render::Add2dPolysIndexedMsg>(mypolys, numPolys, myindices, numIndexes, trans_x, trans_y, shader);
+}
+
+
 void trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
 {
 	std::array<float, 3> myorg;
@@ -608,6 +631,21 @@ float trap_CheckVisibility( qhandle_t hTest )
 	VM::SendMsg<Render::CheckVisibilityMsg>(hTest, result);
 	return result;
 }
+
+void trap_R_GetTextureSize( qhandle_t handle, int *x, int *y )
+{
+	VM::SendMsg<Render::GetTextureSizeMsg>(handle, *x, *y);
+}
+
+qhandle_t trap_R_GenerateTexture( const byte *data, int x, int y )
+{
+	qhandle_t handle;
+	std::vector<byte> mydata(x * y);
+	memcpy(mydata.data(), data, x * y * sizeof( byte ) );
+	VM::SendMsg<Render::GenerateTextureMsg>(mydata, x, y, handle);
+	return handle;
+}
+
 
 void trap_UnregisterVisTest( qhandle_t hTest )
 {

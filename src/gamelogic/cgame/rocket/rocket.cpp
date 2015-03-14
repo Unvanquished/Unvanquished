@@ -90,22 +90,19 @@ public:
 
 	size_t Read( void *buffer, size_t size, Rocket::Core::FileHandle file )
 	{
-		return 0; // TODO: ( size_t ) trap_FS_Read( buffer, (int)size, ( fileHandle_t ) file );
+		return ( size_t ) trap_FS_Read( buffer, (int)size, ( fileHandle_t ) file );
 	}
 
 	// TODO
 	bool Seek( Rocket::Core::FileHandle file, long offset, int origin )
 	{
-// 		int ret = trap_FS_Seek( ( fileHandle_t ) file, offset, origin );
-
-		return false;
+		return trap_FS_Seek( ( fileHandle_t ) file, offset, ( fsOrigin_t ) origin );
 	}
 
 	// TODO
 	size_t Tell( Rocket::Core::FileHandle file )
 	{
-		return -1;
-// 		return ( size_t ) trap_FS_FTell( ( fileHandle_t ) file );
+		return ( size_t ) trap_FS_Tell( ( fileHandle_t ) file );
 	}
 
 	/*
@@ -114,8 +111,7 @@ public:
 	// TODO
 	size_t Length( Rocket::Core::FileHandle file )
 	{
-		return 0;
-// 		return ( size_t ) trap_FS_filelength( ( fileHandle_t ) file );
+		return ( size_t ) trap_FS_FileLength( ( fileHandle_t ) file );
 	}
 };
 
@@ -218,9 +214,7 @@ public:
 	void RenderGeometry( Rocket::Core::Vertex *verticies,  int numVerticies, int *indices, int numIndicies, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation )
 	{
 		polyVert_t *verts = createVertexArray( verticies, numVerticies );
-
-// TODO:		re.Add2dPolysIndexed( verts, numVerticies, indices, numIndicies, translation.x, translation.y, texture ? ( qhandle_t ) texture : whiteShader );
-
+		trap_R_Add2dPolysIndexedToScene( verts, numVerticies, indices, numIndicies, translation.x, translation.y, texture ? ( qhandle_t ) texture : whiteShader );
 		delete[]  verts;
 	}
 
@@ -235,8 +229,7 @@ public:
 	void RenderCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry, const Rocket::Core::Vector2f &translation )
 	{
 		RocketCompiledGeometry *g = ( RocketCompiledGeometry * ) geometry;
-
-// TODO		re.Add2dPolysIndexed( g->verts, g->numVerts, g->indices, g->numIndicies, translation.x, translation.y, g->shader );
+		trap_R_Add2dPolysIndexedToScene( g->verts, g->numVerts, g->indices, g->numIndicies, translation.x, translation.y, g->shader );
 	}
 
 	void ReleaseCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry )
@@ -247,7 +240,7 @@ public:
 
 	bool LoadTexture( Rocket::Core::TextureHandle& textureHandle, Rocket::Core::Vector2i& textureDimensions, const Rocket::Core::String& source )
 	{
-		qhandle_t shaderHandle = -1; // TODO: re.RegisterShader( source.CString(), RSF_NOMIP );
+		qhandle_t shaderHandle = trap_R_RegisterShader( source.CString(), RSF_NOMIP );
 
 		if ( shaderHandle == -1 )
 		{
@@ -256,14 +249,14 @@ public:
 
 		// Find the size of the texture
 		textureHandle = ( Rocket::Core::TextureHandle ) shaderHandle;
-// TODO		re.GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );
+		trap_R_GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );
 		return true;
 	}
 
 	bool GenerateTexture( Rocket::Core::TextureHandle& textureHandle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& sourceDimensions )
 	{
 
-		textureHandle = 0; // TODO re.GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
+		textureHandle = trap_R_GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
 // 		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
 
 		return ( textureHandle > 0 );
@@ -276,13 +269,13 @@ public:
 
 	void EnableScissorRegion( bool enable )
 	{
-// TODO		re.ScissorEnable( enable ? qtrue :  qfalse );
+		trap_R_ScissorEnable( enable ? qtrue :  qfalse );
 
 	}
 
 	void SetScissorRegion( int x, int y, int width, int height )
 	{
-// TODO		re.ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
+		trap_R_ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
 	}
 };
 
@@ -396,7 +389,7 @@ void Rocket_Init( void )
 // 	trap_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
 
 // 	cg_draw2D = Cvar_Get( "cg_draw2D", "1", 0 );
-	whiteShader = -1; // TODO: re.RegisterShader( "white", RSF_DEFAULT );
+	whiteShader = trap_R_RegisterShader( "white", RSF_DEFAULT );
 }
 
 void Rocket_Shutdown( void )
