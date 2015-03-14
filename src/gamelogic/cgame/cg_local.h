@@ -2300,7 +2300,7 @@ void       CG_PrintTime( char *buf, int bufsize, int time );
 // cg_rocket.c
 //
 
-void CG_Rocket_Init( void );
+void CG_Rocket_Init( glconfig_t gl );
 void CG_Rocket_LoadHuds( void );
 void CG_Rocket_Frame( cgClientState_t state );
 const char *CG_Rocket_GetTag();

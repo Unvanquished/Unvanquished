@@ -1497,7 +1497,7 @@ void CGameVM::CGameMouseEvent(int dx, int dy)
 
 void CGameVM::CGameRocketInit()
 {
-	this->SendMsg<CGameRocketInitMsg>();
+	this->SendMsg<CGameRocketInitMsg>(cls.glconfig);
 }
 
 void CGameVM::CGameRocketFrame()

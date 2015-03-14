@@ -76,7 +76,7 @@ void CG_RegisterRocketCvars( void )
 
 static connstate_t oldConnState;
 
-void CG_Rocket_Init( void )
+void CG_Rocket_Init( glconfig_t gl )
 {
 	int len;
 	char *token, *text_p;
@@ -84,6 +84,7 @@ void CG_Rocket_Init( void )
 	fileHandle_t f;
 
 	oldConnState = CA_UNINITIALIZED;
+	cgs.glconfig = gl;
 
 	// Init Rocket
 	Rocket_Init();

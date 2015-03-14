@@ -73,8 +73,8 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 break;
 
 			case CG_ROCKET_VM_INIT:
-				IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, std::move(reader), [] {
-					CG_Rocket_Init();
+				IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, std::move(reader), [] (glconfig_t gl) {
+					CG_Rocket_Init(gl);
 				});
 				break;
 
