@@ -640,8 +640,8 @@ void trap_R_GetTextureSize( qhandle_t handle, int *x, int *y )
 qhandle_t trap_R_GenerateTexture( const byte *data, int x, int y )
 {
 	qhandle_t handle;
-	std::vector<byte> mydata(x * y);
-	memcpy(mydata.data(), data, x * y * sizeof( byte ) );
+	std::vector<byte> mydata(x * y * 4);
+	memcpy(mydata.data(), data, x * y * 4 * sizeof( byte ) );
 	VM::SendMsg<Render::GenerateTextureMsg>(mydata, x, y, handle);
 	return handle;
 }
