@@ -28,7 +28,7 @@
 #ifndef TEXTURELAYOUTTEXTURE_H
 #define TEXTURELAYOUTTEXTURE_H
 
-#include <Rocket/Core/Texture.h>
+#include "../../Include/Rocket/Core/Texture.h"
 #include "TextureLayoutRow.h"
 
 namespace Rocket {
@@ -47,7 +47,7 @@ class TextureResource;
 class TextureLayoutTexture
 {
 public:
-	TextureLayoutTexture();
+	TextureLayoutTexture(int samples = 4);
 	~TextureLayoutTexture();
 
 	/// Returns the texture's dimensions. This is only valid after the texture has been generated.
@@ -72,6 +72,7 @@ private:
 	RowList rows;
 
 	byte* texture_data;
+	int samples;
 };
 
 }

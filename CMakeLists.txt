@@ -1211,7 +1211,7 @@ mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
 if( BUILD_CLIENT )
   include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
   add_subdirectory( ${ROCKET_DIR} )
-  add_definitions( -DSTATIC_LIB )
+  add_definitions( -DROCKET_STATIC_LIB )
   set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
 endif()
 

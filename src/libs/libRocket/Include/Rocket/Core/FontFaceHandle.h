@@ -42,6 +42,7 @@
 #include <Rocket/Core/Texture.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_SIZES_H
 
 namespace Rocket {
 namespace Core {
@@ -100,9 +101,10 @@ public:
 	/// Generates the texture data for a layer (for the texture database).
 	/// @param[out] texture_data The pointer to be set to the generated texture data.
 	/// @param[out] texture_dimensions The dimensions of the texture.
+	/// @param[out] texture_samples Pixel size of the texture, in bytes.
 	/// @param[in] layer_id The id of the layer to request the texture data from.
 	/// @param[in] texture_id The index of the texture within the layer to generate.
-	bool GenerateLayerTexture(const byte*& texture_data, Vector2i& texture_dimensions, FontEffect* layer_id, int layout_id, int texture_id);
+	bool GenerateLayerTexture(const byte*& texture_data, Vector2i& texture_dimensions, int &texture_samples, FontEffect* layer_id, int layout_id, int texture_id);
 
 	/// Generates the geometry required to render a single line of text.
 	/// @param[out] geometry An array of geometries to generate the geometry into.
@@ -144,8 +146,8 @@ private:
 	typedef std::map< word, int > GlyphKerningMap;
 	typedef std::map< word, GlyphKerningMap > FontKerningMap;
 
-	FT_Face ft_face;
-	FT_Face backup_face;
+	FT_Size ft_size;
+	FT_Size backup_size;
 	uint8_t fonts_generated[ 0xFFFF / 256 / 8 ];
 
 	FontGlyphMap glyphs;

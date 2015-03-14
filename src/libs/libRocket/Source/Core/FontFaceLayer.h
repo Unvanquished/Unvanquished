@@ -28,11 +28,11 @@
 #ifndef ROCKETCOREFONTFACELAYER_H
 #define ROCKETCOREFONTFACELAYER_H
 
-#include <Rocket/Core/FontGlyph.h>
-#include <Rocket/Core/Geometry.h>
-#include <Rocket/Core/GeometryUtilities.h>
-#include <Rocket/Core/String.h>
-#include <Rocket/Core/Texture.h>
+#include "../../Include/Rocket/Core/FontGlyph.h"
+#include "../../Include/Rocket/Core/Geometry.h"
+#include "../../Include/Rocket/Core/GeometryUtilities.h"
+#include "../../Include/Rocket/Core/String.h"
+#include "../../Include/Rocket/Core/Texture.h"
 #include "TextureLayout.h"
 #include <memory>
 
@@ -66,9 +66,11 @@ public:
 	/// Generates the texture data for a layer (for the texture database).
 	/// @param[out] texture_data The pointer to be set to the generated texture data.
 	/// @param[out] texture_dimensions The dimensions of the texture.
+	/// @param[out] texture_samples Pixel size of the texture, in bytes.
 	/// @param[in] glyphs The glyphs required by the font face handle.
 	/// @param[in] texture_id The index of the texture within the layer to generate.
-	bool GenerateTexture( const Rocket::Core::byte *&texture_data, Rocket::Core::Vector2i &texture_dimensions, int layout_id, int texture_id );
+	bool GenerateTexture(const byte *&texture_data, Vector2i &texture_dimensions, int &texture_samples, int layout_id, int texture_id);
+
 	/// Generates the geometry required to render a single character.
 	/// @param[out] geometry An array of geometries this layer will write to. It must be at least as big as the number of textures in this layer.
 	/// @param[in] character_code The character to generate geometry for.
@@ -107,6 +109,8 @@ public:
 	/// @return The layer's colour.
 	const Colourb& GetColour() const;
 	bool AddNewGlyphs();
+	void MergeFromBase(void);
+	const FontFaceLayer *GetBaseLayer(void) const { return base; }
 
 private:
 	struct Character
@@ -128,6 +132,8 @@ private:
 
 	const FontFaceHandle* handle;
 	FontEffect* effect;
+	const FontFaceLayer* base;
+	bool deep_copy;
 
 	std::vector< std::unique_ptr<TextureLayout> > texture_layouts;
 

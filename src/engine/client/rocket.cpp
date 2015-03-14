@@ -255,7 +255,7 @@ public:
 		return true;
 	}
 
-	bool GenerateTexture( Rocket::Core::TextureHandle& textureHandle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& sourceDimensions )
+	bool GenerateTexture( Rocket::Core::TextureHandle& textureHandle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& sourceDimensions, int samples )
 	{
 
 		textureHandle = re.GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
