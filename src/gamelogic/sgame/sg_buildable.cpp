@@ -1402,28 +1402,36 @@ void ASpiker_Think( gentity_t *self )
 	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin,
 	                                                         SPIKER_SPIKE_RANGE ) ); )
 	{
-		float   durability;
+		float   durability, health;
 		class_t pClass;
+
+		if ( self == ent || ( ent->flags & FL_NOTARGET ) ) continue;
 
 		switch ( ent->s.eType )
 		{
 			case ET_PLAYER:
 				pClass     = (class_t)ent->client->ps.stats[ STAT_CLASS ];
-				durability = (float)BG_Class( pClass )->health / G_GetNonLocDamageMod( pClass );
+				if ( G_OnSameTeam( self, ent ) ) {
+					health = (float)ent->health; // current health
+				} else {
+					health = (float)BG_Class( pClass )->health; // max health
+				}
+				durability = health / G_GetNonLocDamageMod( pClass );
 				break;
 
 			case ET_BUILDABLE:
-				durability = (float)BG_Buildable( ent->s.modelindex )->health;
+				if ( G_OnSameTeam( self, ent ) ) {
+					durability = (float)ent->health; // current health
+				} else {
+					durability = (float)BG_Buildable( ent->s.modelindex )->health; // max health
+				}
 				break;
 
 			default:
 				continue;
 		}
 
-		if ( self == ent || ( ent->flags & FL_NOTARGET ) || !G_LineOfSight( self, ent ) )
-		{
-			continue;
-		}
+		if ( !durability || !G_LineOfSight( self, ent ) ) continue;
 
 		vec3_t vecToTarget;
 		VectorSubtract( ent->s.origin, self->s.origin, vecToTarget );
