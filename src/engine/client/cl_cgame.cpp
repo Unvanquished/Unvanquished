@@ -1865,6 +1865,24 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
+		case CG_KEY_SETBINDING:
+			IPC::HandleMsg<Key::SetBindingMsg>(channel, std::move(reader), [this] (int keyNum, int team, std::string cmd) {
+				Key_SetBinding(keyNum, team, cmd.c_str());
+			});
+			break;
+
+		case CG_KEY_CLEARCMDBUTTONS:
+			IPC::HandleMsg<Key::ClearCmdButtonsMsg>(channel, std::move(reader), [this] {
+				CL_ClearCmdButtons();
+			});
+			break;
+//
+		case CG_KEY_CLEARSTATES:
+			IPC::HandleMsg<Key::ClearStatesMsg>(channel, std::move(reader), [this] {
+				Key_ClearStates();
+			});
+			break;
+
 		// All LAN
 
 		case CG_LAN_GETSERVERCOUNT:

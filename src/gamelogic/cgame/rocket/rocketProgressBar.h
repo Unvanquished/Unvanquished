@@ -294,8 +294,7 @@ public:
 		if ( shader && ( auto_height || auto_width ) )
 		{
 			int x, y;
-			// TODO:
-// 			trap_R_GetTextureSize( shader, &x, &y );
+			trap_R_GetTextureSize( shader, &x, &y );
 
 			if ( auto_height && !auto_width )
 			{

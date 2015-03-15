@@ -60,8 +60,7 @@ public:
 
 		if ( changed_attributes.find( "team" ) != changed_attributes.end() )
 		{
-			// TODO
-// 			team = Key_GetTeam( GetAttribute( "team" )->Get<Rocket::Core::String>().CString(), "Rocket KeyBinder" );
+			team = GetTeam( GetAttribute( "team" )->Get<Rocket::Core::String>().CString() );
 			dirty_key = true;
 		}
 	}
@@ -93,14 +92,8 @@ public:
 		if ( dirty_key && team >= 0 )
 		{
 			dirty_key = false;
-			// TODO: Key_GetKey
-// 			key = Key_GetKey( cmd.CString(), team );
-			if ( key == -1 && team != DEFAULT_BINDING )
-			{
-// 				key = Key_GetKey( cmd.CString(), DEFAULT_BINDING );
-			}
-
-// 			SetInnerRML( key == -1 ? "Unbound" : Key_KeynumToString( key ) );
+			const char *keyName = CG_KeyBinding( cmd.CString(), static_cast<team_t>(team) );
+			SetInnerRML( !keyName ? "Unbound" : keyName );
 		}
 	}
 
@@ -164,16 +157,41 @@ protected:
 			return;
 		}
 
-// 		Key_SetBinding( newKey, team, cmd.CString() );
+		trap_Key_SetBinding( newKey, team, cmd.CString() );
 
 		if ( key > 0 )
 		{
-// 			Key_SetBinding( key, team, NULL );
+			trap_Key_SetBinding( key, team, NULL );
 		}
 
 		key = newKey;
 		dirty_key = true;
 		waitingForKeypress = false;
+	}
+
+	int GetTeam( Rocket::Core::String team )
+	{
+		static const struct {
+			char team;
+			Rocket::Core::String label;
+		} labels[] = {
+			{ 0, "spectators" },
+			{ 0, "default" },
+			{ 1, "aliens" },
+			{ 2, "humans" }
+		};
+		static const int NUM_LABELS = 4;
+
+		for ( int i = 0; i < NUM_LABELS; ++i )
+		{
+			if ( team == labels[i].label )
+			{
+				return labels[ i ].team;
+			}
+		}
+
+		Com_Printf( "^3Warning: Team %s not found", team.CString() );
+		return -1;
 	}
 
 private:

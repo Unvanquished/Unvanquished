@@ -2407,5 +2407,6 @@ void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboole
 void Rocket_ShowScoreboard( const char *name, bool show );
 void Rocket_SetDataSelectIndex( int index );
 void Rocket_LoadFont( const char *font );
+void Rocket_Rocket_f( void );
 #endif
 

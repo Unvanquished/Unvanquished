@@ -167,7 +167,6 @@ private:
 		switch ( value.GetType() )
 		{
 			case Rocket::Core::Variant::INT:
-				// TODO:
 				Compare( atoi( Cvar::GetValue( cvar.CString() ).c_str() ), value.Get<int>() );
 			case Rocket::Core::Variant::FLOAT:
 				Compare( atof( Cvar::GetValue( cvar.CString() ).c_str() ), value.Get<float>() );

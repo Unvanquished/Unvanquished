@@ -467,6 +467,7 @@ static const struct
 	{ "prevskin",         CG_TestModelPrevSkin_f,  0                },
 	{ "reload",           0,                       0                },
 	{ "reloadHud",        CG_ReloadHud_f,          0                },
+	{ "rocket",           Rocket_Rocket_f,         0,               },
 	{ "say",              0,                       0                },
 	{ "say_area",         0,                       0                },
 	{ "say_area_team",    0,                       0                },

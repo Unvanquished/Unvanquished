@@ -70,9 +70,6 @@ Maryland 20850 USA.
 #include <Rocket/Debugger.h>
 #include "../cg_local.h"
 
-#include <SDL.h>
-
-
 class DaemonFileInterface : public Rocket::Core::FileInterface
 {
 public:
@@ -384,11 +381,6 @@ void Rocket_Init( void )
 	Rocket::Core::Factory::RegisterElementInstancer( "include", new Rocket::Core::ElementInstancerGeneric< RocketIncludeElement > () )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "inlinecvar", new Rocket::Core::ElementInstancerGeneric< RocketCvarInlineElement > () )->RemoveReference();
 
-// TODO
-// 	trap_AddCommand( "rocket", Rocket_Rocket_f );
-// 	trap_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
-
-// 	cg_draw2D = Cvar_Get( "cg_draw2D", "1", 0 );
 	whiteShader = trap_R_RegisterShader( "white", RSF_DEFAULT );
 }
 
@@ -440,8 +432,7 @@ void Rocket_Shutdown( void )
 
 void Rocket_Render( void )
 {
-	// TODO: Add back cg_draw2D
-	if ( hudContext )
+	if ( cg_draw2D.integer && hudContext )
 	{
 		hudContext->Render();
 	}

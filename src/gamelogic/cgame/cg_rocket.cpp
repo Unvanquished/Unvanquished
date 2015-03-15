@@ -95,6 +95,7 @@ void CG_Rocket_Init( glconfig_t gl )
 
 	// rocket cvars
 	CG_RegisterRocketCvars();
+	CG_InitConsoleCommands();
 
 
 	// Intialize data sources...

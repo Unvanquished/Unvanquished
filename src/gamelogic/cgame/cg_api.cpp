@@ -684,6 +684,21 @@ void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 	Q_strncpyz(buf, result.c_str(), buflen);
 }
 
+void trap_Key_SetBinding( int keyNum, int team, const char *cmd )
+{
+	VM::SendMsg<Key::SetBindingMsg>(keyNum, team, cmd);
+}
+
+void trap_Key_ClearCmdButtons( void )
+{
+	VM::SendMsg<Key::ClearCmdButtonsMsg>();
+}
+
+void trap_Key_ClearStates( void )
+{
+	VM::SendMsg<Key::ClearStatesMsg>();
+}
+
 // All LAN
 
 int trap_LAN_GetServerCount( int source )
