@@ -415,6 +415,7 @@ void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, fl
 	for ( i = 0; i < 4; i++ )
 	{
 		vec4_t texCoord;
+		vec4_t orientation;
 
 		Vector4Set( texCoord, 0.5f * (i & 2), 0.5f * ( (i + 1) & 2 ),
 			    0.5f * (i & 2), 0.5f * ( (i + 1) & 2 ) );
@@ -422,8 +423,8 @@ void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, fl
 		VectorCopy( center, tess.verts[ ndx + i ].xyz );
 		Vector4Copy( color, tess.verts[ ndx + i ].color );
 		floatToHalf( texCoord, tess.verts[ ndx + i ].texCoords );
-		Vector4Set( tess.verts[ ndx + i ].spriteOrientation,
-			    rotation, 0.0f, 0.0f, radius );
+		Vector4Set( orientation, rotation, 0.0f, 0.0f, radius );
+		floatToHalf( orientation, tess.verts[ ndx + i ].spriteOrientation );
 	}
 
 	tess.numVertexes += 4;

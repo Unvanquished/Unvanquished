@@ -309,6 +309,14 @@ static void DrawTris()
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( tess.vboVertexAnimation );
 
+	if( tess.surfaceShader->autoSpriteMode ) {
+		gl_genericShader->EnableVertexSprite();
+		tess.vboVertexSprite = qtrue;
+	} else {
+		gl_genericShader->DisableVertexSprite();
+		tess.vboVertexSprite = qfalse;
+	}
+
 	gl_genericShader->DisableTCGenEnvironment();
 	gl_genericShader->DisableTCGenLightmap();
 	gl_genericShader->DisableMacro_USE_DEPTH_FADE();
@@ -504,7 +512,7 @@ static void Render_generic( int stage )
 	// end choose right shader program ------------------------------
 
 	// set uniforms
-	if ( pStage->tcGen_Environment || tess.surfaceShader->autoSpriteMode )
+	if ( pStage->tcGen_Environment || tess.vboVertexSprite )
 	{
 		// calculate the environment texcoords in object space
 		gl_genericShader->SetUniform_ViewOrigin( backEnd.orientation.viewOrigin );
@@ -608,6 +616,8 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_vertexLightingShader_DBS_entity->SetVertexAnimation( tess.vboVertexAnimation );
+
+	tess.vboVertexSprite = qfalse;
 
 	gl_vertexLightingShader_DBS_entity->SetNormalMapping( normalMapping );
 	gl_vertexLightingShader_DBS_entity->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
@@ -820,6 +830,8 @@ static void Render_vertexLighting_DBS_world( int stage )
 	gl_vertexLightingShader_DBS_world->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 	gl_vertexLightingShader_DBS_world->SetGlowMapping( glowMapping );
 
+	tess.vboVertexSprite = qfalse;
+
 	gl_vertexLightingShader_DBS_world->BindProgram();
 
 	// end choose right shader program ------------------------------
@@ -1015,6 +1027,8 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	gl_lightMappingShader->SetNormalMapping( normalMapping );
 	gl_lightMappingShader->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 	gl_lightMappingShader->SetGlowMapping( glowMapping );
+
+	tess.vboVertexSprite = qfalse;
 
 	gl_lightMappingShader->BindProgram();
 
@@ -2041,12 +2055,26 @@ static void Render_heatHaze( int stage )
 	// choose right shader program ----------------------------------
 	gl_heatHazeShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_heatHazeShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
+	if( tess.surfaceShader->autoSpriteMode ) {
+		gl_heatHazeShader->EnableVertexSprite();
+		tess.vboVertexSprite = qtrue;
+	} else {
+		gl_heatHazeShader->DisableVertexSprite();
+		tess.vboVertexSprite = qfalse;
+	}
 
 	gl_heatHazeShader->BindProgram();
 
 	// end choose right shader program ------------------------------
 
 	// set uniforms
+	if ( tess.vboVertexSprite )
+	{
+		// calculate the environment texcoords in object space
+		gl_heatHazeShader->SetUniform_ViewOrigin( backEnd.orientation.viewOrigin );
+		gl_heatHazeShader->SetUniform_ViewUp( backEnd.orientation.axis[ 2 ] );
+	}
+
 
 	deformMagnitude = RB_EvalExpression( &pStage->deformMagnitudeExp, 1.0 );
 	gl_heatHazeShader->SetUniform_DeformMagnitude( deformMagnitude );
