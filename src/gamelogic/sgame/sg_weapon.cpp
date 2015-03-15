@@ -1288,18 +1288,10 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 		return qfalse;
 	}
 
-	// only allow bites to work against turrets or buildables in construction
+	// only allow bites to work against buildables in construction
 	if ( traceEnt->s.eType == ET_BUILDABLE && traceEnt->spawned )
 	{
-		switch ( traceEnt->s.modelindex )
-		{
-			case BA_H_MGTURRET:
-			case BA_H_ROCKETPOD:
-				break;
-
-			default:
-				return qfalse;
-		}
+		return qfalse;
 	}
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
