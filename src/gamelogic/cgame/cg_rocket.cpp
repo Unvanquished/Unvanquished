@@ -576,6 +576,7 @@ void CG_Rocket_Frame( cgClientState_t state )
 	Rocket_Update();
 	rocketInfo.cstate = state;
 	rocketInfo.realtime = trap_Milliseconds();
+	rocketInfo.keyCatcher = trap_Key_GetCatcher();
 
 	if ( oldConnState != rocketInfo.cstate.connState )
 	{

@@ -60,13 +60,13 @@ public:
 			}
 		}
 
-		if ( anyVisible && ! ( trap_Key_GetCatcher() & KEYCATCH_UI ) )
+		if ( anyVisible && ! ( rocketInfo.keyCatcher & KEYCATCH_UI ) )
 		{
 			trap_Key_ClearCmdButtons();
 			trap_Key_ClearStates();
 			trap_Key_SetCatcher( KEYCATCH_UI );
 		}
-		else if ( !anyVisible && trap_Key_GetCatcher() && rocketInfo.cstate.connState >= CA_PRIMED )
+		else if ( !anyVisible && rocketInfo.keyCatcher && rocketInfo.cstate.connState >= CA_PRIMED )
 		{
 			trap_Key_SetCatcher( 0 );
 		}

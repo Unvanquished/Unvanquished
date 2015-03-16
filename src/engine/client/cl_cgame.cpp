@@ -1883,6 +1883,23 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			});
 			break;
 
+		case CG_KEY_KEYSDOWN:
+			IPC::HandleMsg<Key::KeysDownMsg>(channel, std::move(reader), [this] (std::vector<int> keys, std::vector<int>& list) {
+				list.reserve(keys.size());
+				for (int i = 0; i < keys.size(); ++i)
+				{
+					if (keys[i] == K_KP_NUMLOCK)
+					{
+						list.push_back(IN_IsNumLockDown());
+					}
+					else
+					{
+						list.push_back(Key_IsDown( keys[i] ));
+					}
+				}
+			});
+			break;
+
 		// All LAN
 
 		case CG_LAN_GETSERVERCOUNT:

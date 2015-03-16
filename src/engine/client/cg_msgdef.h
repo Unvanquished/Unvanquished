@@ -141,6 +141,7 @@ typedef enum cgameImport_s
   CG_KEY_SETBINDING,
   CG_KEY_CLEARSTATES,
   CG_KEY_CLEARCMDBUTTONS,
+  CG_KEY_KEYSDOWN,
 
   // Lan
   CG_LAN_GETSERVERCOUNT,
@@ -481,6 +482,11 @@ namespace Key {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_CLEARCMDBUTTONS>> ClearCmdButtonsMsg;
 	// ClearStatesMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_CLEARSTATES>> ClearStatesMsg;
+	// KeysDownMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYSDOWN>, std::vector<int>>,
+		IPC::Reply<std::vector<int>>
+	> KeysDownMsg;
 }
 
 namespace LAN {

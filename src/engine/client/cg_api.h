@@ -211,6 +211,7 @@ void            trap_Key_SetCatcher( int catcher );
 void            trap_Key_SetBinding( int keyNum, int team, const char *cmd );
 void            trap_Key_ClearCmdButtons( void );
 void            trap_Key_ClearStates( void );
+std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys );
 void            trap_S_StopBackgroundTrack( void );
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status        trap_CIN_StopCinematic( int handle );

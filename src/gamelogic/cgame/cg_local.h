@@ -1431,6 +1431,7 @@ typedef struct
 	int serversLastRefresh;
 	int serverStatusLastRefresh;
 	int realtime;
+	int keyCatcher;
 	char downloadName[ MAX_STRING_CHARS ];
 	cgClientState_t cstate;
 	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
@@ -1945,7 +1946,7 @@ void       CG_UpdateCvars( void );
 
 int        CG_CrosshairPlayer( void );
 void       CG_LoadMenus( const char *menuFile );
-void       CG_KeyEvent( int key, int chr, int flags );
+void       CG_KeyEvent( int key, qboolean down );
 void       CG_MouseEvent( int x, int y );
 qboolean   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString( void );
@@ -2362,7 +2363,6 @@ void Rocket_Init( void );
 void Rocket_Shutdown( void );
 void Rocket_Render( void );
 void Rocket_Update( void );
-void Rocket_InjectMouseMotion( int x, int y );
 void Rocket_LoadDocument( const char *path );
 void Rocket_LoadCursor( const char *path );
 void Rocket_DocumentAction( const char *name, const char *action );

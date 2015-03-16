@@ -402,13 +402,10 @@ CL_MouseEvent
 */
 void CL_MouseEvent( int dx, int dy, int time )
 {
-	if ( cls.keyCatchers & KEYCATCH_CGAME )
+	if ( cls.keyCatchers & KEYCATCH_CGAME ||
+		cls.keyCatchers & KEYCATCH_UI )
 	{
 		cgvm.CGameMouseEvent(dx, dy);
-	}
-	else if ( cls.keyCatchers & KEYCATCH_UI )
-	{
-		// TODO: Rocket feed mouse into cgame
 	}
 	else
 	{

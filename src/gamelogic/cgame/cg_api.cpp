@@ -100,14 +100,15 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 
             case CG_KEY_EVENT:
                 IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, std::move(reader), [] (int key, bool down) {
-                    CG_KeyEvent(key, 0, down);
+                    CG_KeyEvent(key, down);
                     cmdBuffer.TryFlush();
                 });
                 break;
 
             case CG_MOUSE_EVENT:
                 IPC::HandleMsg<CGameMouseEventMsg>(VM::rootChannel, std::move(reader), [] (int dx, int dy) {
-                    // TODO don't we care about that?
+                    CG_MouseEvent(dx, dy);
+					cmdBuffer.TryFlush();
                 });
                 break;
 
@@ -668,6 +669,7 @@ int trap_Key_GetCatcher( void )
 
 void trap_Key_SetCatcher( int catcher )
 {
+	rocketInfo.keyCatcher = catcher;
 	VM::SendMsg<Key::SetCatcherMsg>(catcher);
 }
 
@@ -698,6 +700,14 @@ void trap_Key_ClearStates( void )
 {
 	VM::SendMsg<Key::ClearStatesMsg>();
 }
+
+std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys )
+{
+	std::vector<int> list;
+	VM::SendMsg<Key::KeysDownMsg>( keys, list );
+	return list;
+}
+
 
 // All LAN
 

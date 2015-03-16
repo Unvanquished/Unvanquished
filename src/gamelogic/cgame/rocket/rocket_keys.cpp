@@ -172,8 +172,8 @@ keyNum_t Rocket_ToQuake( int key )
 		CG_Printf( "^3WARNING: ^7Tried to convert keyMap before key array initialized." );
 		return K_NONE;
 	}
-	std::map< int, int >::iterator it;
-	for ( it = keyMap.begin(); it != keyMap.end(); ++it )
+
+	for ( auto it = keyMap.begin(); it != keyMap.end(); ++it )
 	{
 		if ( it->second == key )
 		{
@@ -188,39 +188,24 @@ keyNum_t Rocket_ToQuake( int key )
 KeyModifier Rocket_GetKeyModifiers( void )
 {
 	int mod = 0;
+	static const std::vector<int> keys = { K_CTRL, K_SHIFT, K_ALT, K_SUPER, K_CAPSLOCK, K_KP_NUMLOCK };
+	static const int quakeToRocketKeyModifier[] = { KM_CTRL, KM_SHIFT, KM_ALT, KM_META, KM_CAPSLOCK, KM_NUMLOCK };
+	std::vector<int> list = trap_Key_KeysDown( keys );
 
-// 	if ( Key_IsDown( K_CTRL ) )
-// 	{
-// 		mod |= KM_CTRL;
-// 	}
-// 	if ( Key_IsDown( K_SHIFT ) )
-// 	{
-// 		mod |= KM_SHIFT;
-// 	}
-// 	if ( Key_IsDown( K_ALT ) )
-// 	{
-// 		mod |= KM_ALT;
-// 	}
-// 	if ( Key_IsDown( K_SUPER ) )
-// 	{
-// 		mod |= KM_META;
-// 	}
-// 	if ( Key_IsDown( K_CAPSLOCK ) )
-// 	{
-// 		mod |= KM_CAPSLOCK;
-// 	}
-// 	if ( Sys_IsNumLockDown() )
-// 	{
-// 		mod |= KM_NUMLOCK;
-// 	}
-
+	for (int i = 0; i < keys.size(); ++i)
+	{
+		if ( list[i] )
+		{
+			mod |= quakeToRocketKeyModifier[i];
+		}
+	}
 	return static_cast< KeyModifier >( mod );
 }
 
 static bool wasDownBefore = false;
 void Rocket_ProcessMouseClick( int button, qboolean down )
 {
-	if ( !menuContext || trap_Key_GetCatcher() & KEYCATCH_CONSOLE || !trap_Key_GetCatcher() )
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
 		return;
 	}
@@ -263,7 +248,7 @@ void Rocket_ProcessMouseClick( int button, qboolean down )
 #define MOUSEWHEEL_DELTA 5
 void Rocket_ProcessKeyInput( int key, qboolean down )
 {
-	if ( !menuContext || trap_Key_GetCatcher() & KEYCATCH_CONSOLE || !trap_Key_GetCatcher() )
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
 		return;
 	}
@@ -334,7 +319,7 @@ int utf8_to_ucs2( const unsigned char *input )
 
 void Rocket_ProcessTextInput( int key )
 {
-	if ( !menuContext || trap_Key_GetCatcher() & KEYCATCH_CONSOLE || !trap_Key_GetCatcher() )
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
 		return;
 	}
@@ -354,7 +339,7 @@ void Rocket_ProcessTextInput( int key )
 void Rocket_MouseMove( int x, int y )
 {
 	static int mousex, mousey;
-	if ( !menuContext || ! ( trap_Key_GetCatcher() & KEYCATCH_UI ) )
+	if ( !menuContext || ! ( rocketInfo.keyCatcher & KEYCATCH_UI ) )
 	{
 		return;
 	}

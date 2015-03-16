@@ -1901,7 +1901,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 			return;
 		}
 
-		// TODO: Rocket: Inject into rocket
+		cgvm.CGameKeyEvent(key, down);
 		return;
 	}
 
@@ -1910,7 +1910,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	// to run any binds (since they won't be found).
 	if ( cls.keyCatchers & KEYCATCH_UI && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
-		// TODO: Rocket: inject into rocket
+		cgvm.CGameKeyEvent(key, down);
 		return;
 	}
 
