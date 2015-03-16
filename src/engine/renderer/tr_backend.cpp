@@ -1353,20 +1353,6 @@ static void RB_RenderInteractions()
 	}
 }
 
-static deformType_t GetDeformType( const shader_t *shader )
-{
-	deformType_t deformType;
-	if ( shader->numDeforms )
-	{
-		deformType = ShaderRequiresCPUDeforms( shader ) ? DEFORM_TYPE_CPU : DEFORM_TYPE_GPU;
-	}
-	else
-	{
-		deformType = DEFORM_TYPE_NONE;
-	}
-	return deformType;
-}
-
 static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				       qboolean shadowClip )
 {
@@ -2085,7 +2071,6 @@ static void RB_RenderInteractionsShadowMapped()
 	surfaceType_t  *surface;
 	qboolean       depthRange, oldDepthRange;
 	qboolean       alphaTest, oldAlphaTest;
-	deformType_t   deformType, oldDeformType;
 	qboolean       shadowClipFound;
 
 	int            startTime = 0, endTime = 0;
@@ -2114,7 +2099,6 @@ static void RB_RenderInteractionsShadowMapped()
 	oldShader = NULL;
 	oldDepthRange = depthRange = qfalse;
 	oldAlphaTest = alphaTest = qfalse;
-	oldDeformType = deformType = DEFORM_TYPE_NONE;
 
 	// if we need to clear the FBO color buffers then it should be white
 	GL_ClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -2170,7 +2154,6 @@ static void RB_RenderInteractionsShadowMapped()
 				surface = ia->surface;
 				shader = tr.sortedShaders[ ia->shaderNum ];
 				alphaTest = shader->alphaTest;
-				deformType = GetDeformType( shader );
 
 				if ( entity->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) )
 				{
@@ -2212,7 +2195,7 @@ static void RB_RenderInteractionsShadowMapped()
 					case RL_PROJ:
 					case RL_DIRECTIONAL:
 						{
-							if ( entity == oldEntity && ( alphaTest ? shader == oldShader : alphaTest == oldAlphaTest ) && deformType == oldDeformType )
+							if ( entity == oldEntity && ( alphaTest ? shader == oldShader : alphaTest == oldAlphaTest ) )
 							{
 								if ( r_logFile->integer )
 								{
@@ -2316,7 +2299,6 @@ static void RB_RenderInteractionsShadowMapped()
 				oldEntity = entity;
 				oldShader = shader;
 				oldAlphaTest = alphaTest;
-				oldDeformType = deformType;
 			}
 
 			if ( r_logFile->integer )
@@ -2355,7 +2337,6 @@ static void RB_RenderInteractionsShadowMapped()
 					surface = ia->surface;
 					shader = tr.sortedShaders[ ia->shaderNum ];
 					alphaTest = shader->alphaTest;
-					deformType = GetDeformType( shader );
 
 					if ( entity->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) )
 					{
@@ -2393,7 +2374,7 @@ static void RB_RenderInteractionsShadowMapped()
 						case RL_PROJ:
 						case RL_DIRECTIONAL:
 							{
-								if ( entity == oldEntity && ( alphaTest ? shader == oldShader : alphaTest == oldAlphaTest ) && deformType == oldDeformType )
+								if ( entity == oldEntity && ( alphaTest ? shader == oldShader : alphaTest == oldAlphaTest ) )
 								{
 									if ( r_logFile->integer )
 									{
@@ -2497,7 +2478,6 @@ static void RB_RenderInteractionsShadowMapped()
 					oldEntity = entity;
 					oldShader = shader;
 					oldAlphaTest = alphaTest;
-					oldDeformType = deformType;
 				}
 
 				if ( r_logFile->integer )
@@ -2536,7 +2516,6 @@ static void RB_RenderInteractionsShadowMapped()
 			surface = ia->surface;
 			shader = tr.sortedShaders[ ia->shaderNum ];
 			alphaTest = shader->alphaTest;
-			deformType = GetDeformType( shader );
 
 			if ( !shader->interactLight )
 			{
@@ -2625,7 +2604,6 @@ static void RB_RenderInteractionsShadowMapped()
 			oldEntity = entity;
 			oldShader = shader;
 			oldAlphaTest = alphaTest;
-			oldDeformType = deformType;
 		}
 
 		if ( r_logFile->integer )

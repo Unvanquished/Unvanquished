@@ -164,7 +164,7 @@ static qboolean Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIn
 		return qfalse;
 	}
 
-	if ( tess.skipVBO || ShaderRequiresCPUDeforms( tess.surfaceShader ) || tess.stageIteratorFunc == &Tess_StageIteratorSky )
+	if ( tess.skipVBO || tess.stageIteratorFunc == &Tess_StageIteratorSky )
 	{
 		return qfalse;
 	}

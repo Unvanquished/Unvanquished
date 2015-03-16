@@ -794,8 +794,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  DEFORM_WAVE,
 	  DEFORM_NORMALS,
 	  DEFORM_BULGE,
-	  DEFORM_MOVE,
-	  DEFORM_PROJECTION_SHADOW
+	  DEFORM_MOVE
 	} deform_t;
 
 // deformVertexes types that can be handled by the GPU
@@ -816,13 +815,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  DGEN_BULGE,
 	  DGEN_MOVE
 	} deformGen_t;
-
-	typedef enum
-	{
-	  DEFORM_TYPE_NONE,
-	  DEFORM_TYPE_CPU,
-	  DEFORM_TYPE_GPU,
-	} deformType_t;
 
 	typedef enum
 	{
@@ -3606,16 +3598,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	/*
 	============================================================
 
-	SHADOWS, tr_shadows.c
-
-	============================================================
-	*/
-
-	void RB_ProjectionShadowDeform( void );
-
-	/*
-	============================================================
-
 	SKIES
 
 	============================================================
@@ -3799,10 +3781,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void     R_TransformClipToWindow( const vec4_t clip, const viewParms_t *view, vec4_t normalized, vec4_t window );
 	float    R_ProjectRadius( float r, vec3_t location );
 
-	qboolean ShaderRequiresCPUDeforms( const shader_t *shader );
 	void     Tess_AutospriteDeform( int mode, int firstVertex, int numVertexes,
 					int firstIndex, int numIndexes );
-	void     Tess_DeformGeometry( void );
 
 	float    RB_EvalWaveForm( const waveForm_t *wf );
 	float    RB_EvalWaveFormClamped( const waveForm_t *wf );

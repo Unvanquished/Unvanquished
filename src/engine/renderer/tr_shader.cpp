@@ -2876,7 +2876,6 @@ deformVertexes wave <spread> <waveform> <base> <amplitude> <phase> <frequency>
 deformVertexes normal <frequency> <amplitude>
 deformVertexes move <vector> <waveform> <base> <amplitude> <phase> <frequency>
 deformVertexes bulge <bulgeWidth> <bulgeHeight> <bulgeSpeed>
-deformVertexes projectionShadow
 deformVertexes autoSprite
 deformVertexes autoSprite2
 ===============
@@ -2902,12 +2901,6 @@ static void ParseDeform( char **text )
 
 	ds = &shader.deforms[ shader.numDeforms ];
 	shader.numDeforms++;
-
-	if ( !Q_stricmp( token, "projectionShadow" ) )
-	{
-		ds->deformation = DEFORM_PROJECTION_SHADOW;
-		return;
-	}
 
 	if ( !Q_stricmp( token, "autosprite" ) )
 	{

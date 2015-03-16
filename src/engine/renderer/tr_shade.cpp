@@ -404,7 +404,7 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 		tess.surfaceStages = state->stages;
 		tess.numSurfaceStages = state->numStages;
 
-		Tess_MapVBOs( ShaderRequiresCPUDeforms( state ) );
+		Tess_MapVBOs( false );
 	}
 	else
 	{
@@ -2701,8 +2701,6 @@ void Tess_StageIteratorGeneric()
 
 	GL_CheckErrors();
 
-	Tess_DeformGeometry();
-
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
 		Tess_UpdateVBOs( );
@@ -2892,8 +2890,6 @@ void Tess_StageIteratorDepthFill()
 
 	GL_CheckErrors();
 
-	Tess_DeformGeometry();
-
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
 		Tess_UpdateVBOs( );
@@ -2982,8 +2978,6 @@ void Tess_StageIteratorShadowFill()
 
 	GL_CheckErrors();
 
-	Tess_DeformGeometry();
-
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
 		Tess_UpdateVBOs( );
@@ -3071,8 +3065,6 @@ void Tess_StageIteratorLighting()
 	GL_CheckErrors();
 
 	light = backEnd.currentLight;
-
-	Tess_DeformGeometry();
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{

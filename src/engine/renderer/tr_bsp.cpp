@@ -2972,7 +2972,7 @@ static void R_CreateWorldVBO( void )
 	{
 		surface = &s_worldData.surfaces[ k ];
 
-		if ( surface->shader->isSky || surface->shader->isPortal || ShaderRequiresCPUDeforms( surface->shader ) )
+		if ( surface->shader->isSky || surface->shader->isPortal )
 		{
 			continue;
 		}
@@ -3047,7 +3047,7 @@ static void R_CreateWorldVBO( void )
 
 			shader1 = surf1->shader;
 
-			if ( shader1->isSky || shader1->isPortal || ShaderRequiresCPUDeforms( shader1 ) )
+			if ( shader1->isSky || shader1->isPortal )
 			{
 				continue;
 			}
@@ -3109,7 +3109,7 @@ static void R_CreateWorldVBO( void )
 	{
 		surface = &s_worldData.surfaces[ k ];
 
-		if ( surface->shader->isSky || surface->shader->isPortal || ShaderRequiresCPUDeforms( surface->shader ) )
+		if ( surface->shader->isSky || surface->shader->isPortal )
 		{
 			continue;
 		}
@@ -5140,11 +5140,6 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 			continue;
 		}
 
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
-		{
-			continue;
-		}
-
 		numCaches++;
 	}
 
@@ -5168,11 +5163,6 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 		}
 
 		if ( surface->shader->isPortal )
-		{
-			continue;
-		}
-
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
 		{
 			continue;
 		}
@@ -5482,11 +5472,6 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 			continue;
 		}
 
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
-		{
-			continue;
-		}
-
 		numCaches++;
 	}
 
@@ -5525,11 +5510,6 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 		}
 
 		if ( surface->shader->isPortal )
-		{
-			continue;
-		}
-
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
 		{
 			continue;
 		}
@@ -5856,11 +5836,6 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 			continue;
 		}
 
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
-		{
-			continue;
-		}
-
 		numCaches++;
 	}
 
@@ -5899,11 +5874,6 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 		}
 
 		if ( surface->shader->isPortal )
-		{
-			continue;
-		}
-
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
 		{
 			continue;
 		}
