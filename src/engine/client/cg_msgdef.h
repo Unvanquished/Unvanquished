@@ -713,20 +713,14 @@ typedef enum
   CG_MOUSE_EVENT,
 //  void    (*CG_MouseEvent)( int dx, int dy );
 
+  CG_TEXT_INPUT_EVENT,
+// pass in text input events from the engine
+
   CG_ROCKET_VM_INIT,
 // Inits libRocket in the game.
 
   CG_ROCKET_FRAME,
 // Rocket runs through a frame, including event processing
-
-  CG_ROCKET_FORMAT_DATA,
-// Rocket wants some data formatted
-
-  CG_ROCKET_RENDER_ELEMENT,
-// Rocket wants an element renderered
-
-  CG_ROCKET_PROGRESSBAR_VALUE
-// Rocket wants to query the value of a progress bar
 } cgameExport_t;
 
 // CGameStaticInitMsg
@@ -758,6 +752,9 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_EVENT>, int, int>
 > CGameMouseEventMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, char>
+> CGameTextInptEvent;
 
 //TODO Check all rocket calls
 // CGameRocketInitMsg
@@ -768,18 +765,5 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FRAME>, cgClientState_t>
 > CGameRocketFrameMsg;
-// CGameRocketFormatDataMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FORMAT_DATA>, int>
-> CGameRocketFormatDataMsg;
-// CGameRocketRenderElementMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_RENDER_ELEMENT>>
-> CGameRocketRenderElementMsg;
-// CGameRocketProgressbarValueMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_PROGRESSBAR_VALUE>, std::string>,
-	IPC::Reply<float>
-> CGameRocketProgressbarValueMsg;
 
 #endif

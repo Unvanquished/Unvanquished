@@ -428,14 +428,12 @@ public:
 	int CGameCrosshairPlayer();
 	void CGameKeyEvent(int key, bool down);
 	void CGameMouseEvent(int dx, int dy);
+	void CGameTextInputEvent(char c);
 	//std::vector<std::string> CGameVoipString();
 	//void CGameInitCvars();
 
 	void CGameRocketInit();
 	void CGameRocketFrame();
-	void CGameRocketFormatData(int handle);
-	void CGameRocketRenderElement();
-	float CGameRocketProgressbarValue(Str::StringRef source);
 
 private:
 	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;

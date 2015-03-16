@@ -1495,6 +1495,11 @@ void CGameVM::CGameMouseEvent(int dx, int dy)
 	this->SendMsg<CGameMouseEventMsg>(dx, dy);
 }
 
+void CGameVM::CGameTextInputEvent(char c)
+{
+	this->SendMsg<CGameTextInptEvent>(c);
+}
+
 void CGameVM::CGameRocketInit()
 {
 	this->SendMsg<CGameRocketInitMsg>(cls.glconfig);
@@ -1510,23 +1515,6 @@ void CGameVM::CGameRocketFrame()
 	Q_strncpyz( state.messageString, clc.serverMessage, sizeof( state.messageString ) );
 	state.clientNum = cl.snap.ps.clientNum;
 	this->SendMsg<CGameRocketFrameMsg>(state);
-}
-
-void CGameVM::CGameRocketFormatData(int handle)
-{
-	this->SendMsg<CGameRocketFormatDataMsg>(handle);
-}
-
-void CGameVM::CGameRocketRenderElement()
-{
-	this->SendMsg<CGameRocketRenderElementMsg>();
-}
-
-float CGameVM::CGameRocketProgressbarValue(Str::StringRef source)
-{
-	float value;
-	this->SendMsg<CGameRocketProgressbarValueMsg>(source, value);
-	return value;
 }
 
 void CGameVM::Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel)

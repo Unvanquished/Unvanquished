@@ -2012,7 +2012,7 @@ void CL_CharEvent( int c )
 		Field_CharEvent(g_consoleField, CL_UTF8_unpack(c));
 	}
 
-	// TODO: INject TextInput into rocket
+	cgvm.CGameTextInputEvent(c);
 }
 
 /*
