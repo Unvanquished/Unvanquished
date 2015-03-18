@@ -1613,7 +1613,8 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	// this is equivalent to cgs = cgs_t()
 	cgs.~cgs_t();
 	new(&cgs) cgs_t{}; // Using {} instead of () to work around MSVC bug
-	memset( &cg, 0, sizeof( cg ) );
+	cg.~cg_t();
+	new(&cg) cg_t{};
 	memset( cg_entities, 0, sizeof( cg_entities ) );
 
 	// Set up the pmove params with sensible default values, the server params will
