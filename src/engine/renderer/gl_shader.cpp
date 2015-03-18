@@ -213,6 +213,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	AddGLSLDefine( bufferExtra, "DEFORM_WAVE", DEFORM_WAVE );
 	AddGLSLDefine( bufferExtra, "DEFORM_BULGE", DEFORM_BULGE );
 	AddGLSLDefine( bufferExtra, "DEFORM_MOVE", DEFORM_MOVE );
+	AddGLSLDefine( bufferExtra, "DEFORM_NORMALS", DEFORM_NORMALS );
 
 	AddGLSLDefine( bufferExtra, "genFunc_t" );
 	AddGLSLDefine( bufferExtra, "GF_NONE", static_cast<float>( GF_NONE ) );

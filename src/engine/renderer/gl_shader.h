@@ -1936,6 +1936,13 @@ public:
 					deformParms[ deformOfs++ ] = ds->moveVector[ 2 ];
 					break;
 
+				case DEFORM_NORMALS:
+					deformParms[ deformOfs++ ] = DEFORM_NORMALS;
+
+					deformParms[ deformOfs++ ] = ds->deformationWave.amplitude;
+					deformParms[ deformOfs++ ] = ds->deformationWave.frequency;
+					break;
+
 				default:
 					break;
 			}
