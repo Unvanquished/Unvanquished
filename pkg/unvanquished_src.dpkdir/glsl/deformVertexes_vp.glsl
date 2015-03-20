@@ -80,6 +80,7 @@ vec4 pnoise(vec4 v) {
 void DeformVertex( inout vec4 pos,
 		   inout vec3 normal,
 		   inout vec2 st,
+		   inout vec4 color,
 		   in    float time)
 {
 	vec4 work = vec4(0.0);

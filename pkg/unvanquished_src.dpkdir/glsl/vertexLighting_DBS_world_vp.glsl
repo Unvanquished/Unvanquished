@@ -35,6 +35,7 @@ uniform vec4		u_Color;
 uniform vec3		u_ViewOrigin;
 
 varying vec4		var_TexDiffuseGlow;
+varying vec4		var_Color;
 
 #if defined(USE_NORMAL_MAPPING)
 varying vec4		var_TexNormalSpecular;
@@ -42,22 +43,23 @@ varying vec3		var_ViewDir;
 varying vec3            var_Position;
 #else
 varying vec3		var_Normal;
-varying vec4		var_LightColor;
 #endif
 
 void	main()
 {
-	vec4 position = vec4(attr_Position, 1.0);
+	vec4 position;
 	localBasis LB;
-	vec2 texCoord;
+	vec2 texCoord, lmCoord;
+	vec4 color;
 
-	QTangentToLocalBasis( attr_QTangent, LB );
+	VertexFetch( position, LB, color, texCoord, lmCoord );
 
-	texCoord = attr_TexCoord0.xy;
+	color = color * u_ColorModulate + u_Color;
 
 	DeformVertex( position,
 		      LB.normal,
 		      texCoord,
+		      color,
 		      u_Time);
 
 	// transform vertex position into homogenous clip-space
@@ -66,6 +68,9 @@ void	main()
 	// transform diffusemap texcoords
 	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
+	// assign color
+	var_Color = color;
+	
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
 	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
@@ -84,9 +89,6 @@ void	main()
 	// assign vertex to view origin vector in tangent space
 	var_ViewDir = objectToTangentMatrix * normalize( u_ViewOrigin - position.xyz );
 #else
-	// assign color
-	var_LightColor = attr_Color * u_ColorModulate + u_Color;
-	
 	var_Normal = LB.normal;
 #endif
 

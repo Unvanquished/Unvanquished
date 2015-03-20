@@ -48,9 +48,12 @@ void	main()
 
 	VertexFetch( position, LB, color, texCoord, lmCoord );
 
+	color = /* color * u_ColorModulate + */ u_Color;
+
 	DeformVertex( position,
 		      LB.normal,
 		      texCoord,
+		      color,
 		      u_Time);
 
 	// transform vertex position into homogenous clip-space
@@ -89,5 +92,5 @@ void	main()
 
 	var_Tex = vec2(s, t);
 
-	var_Color = /* color * u_ColorModulate + */ u_Color;
+	var_Color = color;
 }

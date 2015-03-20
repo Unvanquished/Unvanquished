@@ -60,9 +60,13 @@ void	main()
 
 	VertexFetch( position, LB, color, texCoord, lmCoord);
 
+	// assign color
+        color = color * u_ColorModulate + u_Color;
+
 	DeformVertex( position,
 		      LB.normal,
 		      texCoord.st,
+		      color,
 		      u_Time);
 
 	// transform vertex position into homogenous clip-space
@@ -91,9 +95,6 @@ void	main()
 	// transform specularmap texture coords
 	var_TexSpecular = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 #endif
-
-	// assign color
-        color = color * u_ColorModulate + u_Color;
 
 	var_TexDiffuse.p = color.r;
 	var_TexNormal.pq = color.gb;

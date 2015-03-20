@@ -33,6 +33,7 @@ uniform float		u_Time;
 
 varying vec3		var_Position;
 varying vec2		var_TexDiffuse;
+varying vec4		var_Color;
 #if defined(USE_NORMAL_MAPPING)
 varying vec2		var_TexNormal;
 varying vec2		var_TexSpecular;
@@ -57,6 +58,7 @@ void	main()
 	DeformVertex( position,
 		      LB.normal,
 		      texCoord,
+		      color,
 		      u_Time);
 
 	// transform vertex position into homogenous clip-space
@@ -73,6 +75,7 @@ void	main()
 	var_Normal.xyz = (u_ModelMatrix * vec4(LB.normal, 0.0)).xyz;
 	// transform diffusemap texcoords
 	var_TexDiffuse = (u_DiffuseTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
+	var_Color = color;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords

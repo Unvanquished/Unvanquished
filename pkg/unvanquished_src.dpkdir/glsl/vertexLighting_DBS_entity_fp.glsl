@@ -43,6 +43,7 @@ uniform vec3            u_LightGridScale;
 
 varying vec3		var_Position;
 varying vec2		var_TexDiffuse;
+varying vec4		var_Color;
 #if defined(USE_NORMAL_MAPPING)
 varying vec2		var_TexNormal;
 varying vec2		var_TexSpecular;
@@ -196,7 +197,7 @@ void	main()
 #endif // USE_NORMAL_MAPPING
 
 	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
+	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse) * var_Color;
 
 	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
