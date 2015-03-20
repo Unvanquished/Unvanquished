@@ -79,8 +79,6 @@ typedef struct
 	void   ( *GlyphCharVM )( fontHandle_t font, int ch, glyphInfo_t *glyph );
 
 	void ( *LoadWorld )( const char *name );
-	qboolean( *GetSkinModel )( qhandle_t skinid, const char *type, char *name );                  //----(SA) added
-	qhandle_t ( *GetShaderFromModel )( qhandle_t modelid, int surfnum, int withlightmap );                //----(SA)    added
 
 	// the vis data is a large enough block of data that we go to the trouble
 	// of sharing it with the clipmodel subsystem
@@ -105,14 +103,7 @@ typedef struct
 
 	void ( *AddAdditiveLightToScene )( const vec3_t org, float intensity, float r, float g, float b );
 
-//----(SA)
-	void ( *AddCoronaToScene )( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
-	void ( *SetFog )( int fogvar, int var1, int var2, float r, float g, float b, float density );
-//----(SA)
 	void ( *RenderScene )( const refdef_t *fd );
-
-	void ( *SaveViewParms )( void );
-	void ( *RestoreViewParms )( void );
 
 	void ( *SetColor )( const float *rgba );             // NULL = 1,1,1,1
 	void ( *SetClipRegion )( const float *region );
@@ -151,12 +142,8 @@ typedef struct
 
 	void ( *AddPolyBufferToScene )( polyBuffer_t *pPolyBuffer );
 
-	void ( *SetGlobalFog )( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
-
 	qboolean( *inPVS )( const vec3_t p1, const vec3_t p2 );
 	qboolean( *inPVVS )( const vec3_t p1, const vec3_t p2 );
-
-	void ( *purgeCache )( void );
 
 	qboolean( *LoadDynamicShader )( const char *shadername, const char *shadertext );
 

@@ -254,20 +254,6 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 		ambientLight[ 2 ] = r_forceAmbient->value;
 	}
 
-//----(SA)  added
-	// cheats?  check for single player?
-	if ( tr.lightGridMulDirected )
-	{
-		VectorScale( directedLight, tr.lightGridMulDirected, directedLight );
-	}
-
-	if ( tr.lightGridMulAmbient )
-	{
-		VectorScale( ambientLight, tr.lightGridMulAmbient, ambientLight );
-	}
-
-//----(SA)  end
-
 	return qtrue;
 }
 

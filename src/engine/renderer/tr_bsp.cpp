@@ -4322,18 +4322,6 @@ void R_LoadEntities( lump_t *l )
 			}
 		}
 
-		// check for fog color
-		else if ( !Q_stricmp( keyname, "fogColor" ) )
-		{
-			sscanf( value, "%f %f %f", &tr.fogColor[ 0 ], &tr.fogColor[ 1 ], &tr.fogColor[ 2 ] );
-		}
-
-		// check for fog density
-		else if ( !Q_stricmp( keyname, "fogDensity" ) )
-		{
-			tr.fogDensity = atof( value );
-		}
-
 		// check for deluxe mapping support
 		if ( !Q_stricmp( keyname, "deluxeMapping" ) && !Q_stricmp( value, "1" ) )
 		{
@@ -6864,25 +6852,6 @@ void RE_LoadWorldMap( const char *name )
 
 	VectorNormalize( tr.sunDirection );
 
-	// inalidate fogs (likely to be re-initialized to new values by the current map)
-	// TODO:(SA)this is sort of silly.  I'm going to do a general cleanup on fog stuff
-	//          now that I can see how it's been used.  (functionality can narrow since
-	//          it's not used as much as it's designed for.)
-
-	RE_SetFog( FOG_SKY, 0, 0, 0, 0, 0, 0 );
-	RE_SetFog( FOG_PORTALVIEW, 0, 0, 0, 0, 0, 0 );
-	RE_SetFog( FOG_HUD, 0, 0, 0, 0, 0, 0 );
-	RE_SetFog( FOG_MAP, 0, 0, 0, 0, 0, 0 );
-	RE_SetFog( FOG_CURRENT, 0, 0, 0, 0, 0, 0 );
-	RE_SetFog( FOG_TARGET, 0, 0, 0, 0, 0, 0 );
-	RE_SetFog( FOG_WATER, 0, 0, 0, 0, 0, 0 );
-	RE_SetFog( FOG_SERVER, 0, 0, 0, 0, 0, 0 );
-
-	tr.glfogNum = (glfogType_t) 0;
-
-	VectorCopy( colorMdGrey, tr.fogColor );
-	tr.fogDensity = 0;
-
 	// set default ambient color
 	tr.worldEntity.ambientLight[ 0 ] = r_forceAmbient->value;
 	tr.worldEntity.ambientLight[ 1 ] = r_forceAmbient->value;
@@ -6968,9 +6937,6 @@ void RE_LoadWorldMap( const char *name )
 
 	// only set tr.world now that we know the entire level has loaded properly
 	tr.world = &s_worldData;
-
-	// reset fog to world fog (if present)
-	RE_SetFog( FOG_CMD_SWITCHFOG, FOG_MAP, 20, 0, 0, 0, 0 );
 
 	//----(SA)  set the sun shader if there is one
 	if ( tr.sunShaderName )

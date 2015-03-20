@@ -2476,8 +2476,6 @@ void R_RenderView( viewParms_t *parms )
 	// matrix for lod calculation
 	R_SetupProjection( qfalse );
 
-	R_SetFrameFog();
-
 	R_SetupUnprojection();
 
 	// set camera frustum planes in world space again, but this time including the far plane

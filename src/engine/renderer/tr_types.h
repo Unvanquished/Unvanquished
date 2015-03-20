@@ -259,52 +259,6 @@ typedef struct
 
 // ================================================================================================
 
-//----(SA)
-
-//                                                                  //
-// WARNING:: synch FOG_SERVER in sv_ccmds.c if you change anything  //
-//                                                                  //
-typedef enum
-{
-  FOG_NONE, //  0
-
-  FOG_SKY, //  1   fog values to apply to the sky when using density fog for the world (non-distance clipping fog) (only used if(glfogsettings[FOG_MAP].registered) or if(glfogsettings[FOG_MAP].registered))
-  FOG_PORTALVIEW, //  2   used by the portal sky scene
-  FOG_HUD, //  3   used by the 3D HUD scene
-
-  //      The result of these for a given frame is copied to the scene.glFog when the scene is rendered
-
-  // the following are fogs applied to the main world scene
-  FOG_MAP, //  4   use fog parameter specified using the "fogvars" in the sky shader
-  FOG_WATER, //  5   used when underwater
-  FOG_SERVER, //  6   the server has set my fog (probably a target_fog) (keep synch in sv_ccmds.c !!!)
-  FOG_CURRENT, //  7   stores the current values when a transition starts
-  FOG_LAST, //  8   stores the current values when a transition starts
-  FOG_TARGET, //  9   the values it's transitioning to.
-
-  FOG_CMD_SWITCHFOG, // 10   transition to the fog specified in the second parameter of R_SetFog(...) (keep synch in sv_ccmds.c !!!)
-
-  NUM_FOGS
-} glfogType_t;
-
-typedef struct
-{
-	int      mode; // GL_LINEAR, GL_EXP
-	int      hint; // GL_DONT_CARE
-	int      startTime; // in ms
-	int      finishTime; // in ms
-	float    color[ 4 ];
-	float    start; // near
-	float    end; // far
-	qboolean useEndForClip; // use the 'far' value for the far clipping plane
-	float    density; // 0.0-1.0
-	qboolean registered; // has this fog been set up?
-	qboolean drawsky; // draw skybox
-	qboolean clearscreen; // clear the GL color buffer
-} glfog_t;
-
-//----(SA)  end
-
 #define MAX_RENDER_STRINGS       8
 #define MAX_RENDER_STRING_LENGTH 32
 
@@ -322,9 +276,6 @@ typedef struct
 	// 1 bits will prevent the associated area from rendering at all
 	byte areamask[ MAX_MAP_AREA_BYTES ];
 
-//----(SA)  added (needed to pass fog infos into the portal sky scene)
-	glfog_t glfog;
-//----(SA)  end
 	vec4_t  gradingWeights;
 } refdef_t;
 

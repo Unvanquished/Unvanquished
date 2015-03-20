@@ -1441,8 +1441,6 @@ static inline float halfToFloat( int16_t in ) {
 		int                     pixelTargetWidth;
 		int                     pixelTargetHeight;
 
-		glfog_t glFog; // (SA) added (needed to pass fog infos into the portal sky scene)
-
 		int                    numVisTests;
 		struct visTestResult_s *visTests;
 	} trRefdef_t;
@@ -2760,17 +2758,6 @@ static inline float halfToFloat( int16_t in ) {
 		vec3_t         sunLight; // from the sky shader for this level
 		vec3_t         sunDirection;
 
-//----(SA)  added
-		float lightGridMulAmbient; // lightgrid multipliers specified in sky shader
-		float lightGridMulDirected; //
-//----(SA)  end
-
-		vec3_t fogColor;
-		float  fogDensity;
-
-		glfog_t     glfogsettings[ NUM_FOGS ];
-		glfogType_t glfogNum;
-
 		frontEndCounters_t pc;
 		int                frontEndMsec; // not in pc due to clearing issue
 
@@ -3237,12 +3224,6 @@ static inline float halfToFloat( int16_t in ) {
 	qhandle_t RE_RegisterSkin( const char *name );
 	void      RE_Shutdown( qboolean destroyWindow );
 
-//----(SA)
-	qboolean  RE_GetSkinModel( qhandle_t skinid, const char *type, char *name );
-	qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );  //----(SA)
-
-//----(SA) end
-
 	qboolean   R_GetEntityToken( char *buffer, int size );
 	float      R_ProcessLightmap( byte *pic, int in_padding, int width, int height, int bits, byte *pic_out );  // Arnout
 
@@ -3566,21 +3547,6 @@ static inline float halfToFloat( int16_t in ) {
 	/*
 	============================================================
 
-	FOG, tr_fog.c
-
-	============================================================
-	*/
-
-	void R_SetFrameFog( void );
-	void RB_Fog( glfog_t *curfog );
-	void RB_FogOff( void );
-	void RB_FogOn( void );
-	void RE_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density );
-	void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
-
-	/*
-	============================================================
-
 	SHADOWS, tr_shadows.c
 
 	============================================================
@@ -3717,10 +3683,7 @@ static inline float halfToFloat( int16_t in ) {
 	void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags );
 	void RE_AddDynamicLightToSceneQ3A( const vec3_t org, float intensity, float r, float g, float b );
 
-	void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
 	void RE_RenderScene( const refdef_t *fd );
-	void RE_SaveViewParms( void );
-	void RE_RestoreViewParms( void );
 
 	qhandle_t RE_RegisterVisTest( void );
 	void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
