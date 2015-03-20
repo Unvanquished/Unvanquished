@@ -46,6 +46,7 @@ void	main()
 	DeformVertex( position,
 		      LB.normal,
 		      texCoord,
+		      color,
 		      u_Time);
 
 	// transform vertex position into homogenous clip-space

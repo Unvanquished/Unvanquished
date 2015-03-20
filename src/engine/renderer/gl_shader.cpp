@@ -1147,7 +1147,7 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 
 void GLShader_lightMapping::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation vertexSprite deformVertexes ";
 }
 
 void GLShader_lightMapping::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1255,7 +1255,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 
 void GLShader_vertexLighting_DBS_world::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSimple deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation vertexSprite deformVertexes ";
 }
 void GLShader_vertexLighting_DBS_world::BuildShaderFragmentLibNames( std::string& fragmentInlines )
 {
