@@ -2148,7 +2148,7 @@ static void Render_fog()
 	vec4_t fogDistanceVector, fogDepthVector;
 
 	// no fog pass in snooper
-	if ( ( tr.refdef.rdflags & RDF_SNOOPERVIEW ) || tess.surfaceShader->noFog || !r_wolfFog->integer )
+	if ( tess.surfaceShader->noFog || !r_wolfFog->integer )
 	{
 		return;
 	}

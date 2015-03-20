@@ -61,7 +61,6 @@ Maryland 20850 USA.
 // for lighting.  This allows entities to sink into the floor
 // with their origin going solid, and allows all parts of a
 // player to get the same lighting
-#define RF_SHADOW_PLANE  0x000040 // use refEntity->shadowPlane
 #define RF_WRAP_FRAMES   0x000080 // mod the model frames by the maxframes to allow continuous
 // animation without needing to know the frame count
 #define RF_FORCENOLOD    0x000400
@@ -78,7 +77,6 @@ Maryland 20850 USA.
 //----(SA)
 #define RDF_UNDERWATER   ( 1 << 4 ) // so the renderer knows to use underwater fog when the player is underwater
 #define RDF_DRAWINGSKY   ( 1 << 5 )
-#define RDF_SNOOPERVIEW  ( 1 << 6 ) //----(SA)  added
 
 // XreaL BEGIN
 #define RDF_NOCUBEMAP    ( 1 << 7 ) // RB: don't use cubemaps
@@ -114,14 +112,7 @@ typedef struct poly_s
 typedef enum
 {
   RT_MODEL,
-  RT_UNUSED_1,
   RT_SPRITE,
-  RT_UNUSED_3,
-  RT_UNUSED_4,
-  RT_UNUSED_5,
-  RT_UNUSED_6,
-  RT_UNUSED_7,
-  RT_UNUSED_8,
   RT_PORTALSURFACE, // doesn't draw anything, just info for portals
 
   RT_MAX_REF_ENTITY_TYPE
@@ -175,12 +166,11 @@ typedef struct
 
 	// most recent data
 	vec3_t    lightingOrigin; // so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
-	float     shadowPlane; // projection shadows go here, stencils go slightly lower
 
 	vec3_t    axis[ 3 ]; // rotation vectors
 	qboolean  nonNormalizedAxes; // axis are not normalized, i.e. they have scale
-	vec3_t    origin; // also used as MODEL_BEAM's "from"
-	int       frame; // also used as MODEL_BEAM's diameter
+	vec3_t    origin;
+	int       frame;
 
 	// previous data for frame interpolation
 	vec3_t    oldorigin; // also used as MODEL_BEAM's "to"
@@ -201,13 +191,8 @@ typedef struct
 	float radius;
 	float rotation;
 
-	// Ridah
-	vec3_t fireRiseDir;
-
 	// Ridah, entity fading (gibs, debris, etc)
 	int   fadeStartTime, fadeEndTime;
-
-	float hilightIntensity; //----(SA)  added
 
 	int   entityNum; // currentState.number, so we can attach rendering effects to specific entities (Zombie)
 
@@ -422,15 +407,6 @@ typedef struct
 	qboolean             anisotropicAvailable; //----(SA)  added
 	float                maxAnisotropy; //----(SA)  added
 
-	// vendor-specific support
-	// NVidia
-	qboolean NVFogAvailable; //----(SA)  added
-	int      NVFogMode; //----(SA)  added
-	// ATI
-	int      ATIMaxTruformTess; // for truform support
-	int      ATINormalMode; // for truform support
-	int      ATIPointMode; // for truform support
-
 	int      vidWidth, vidHeight;
 	// aspect is the screen's physical width / height, which may be different
 	// than scrWidth / scrHeight if the pixels are non-square
@@ -463,7 +439,6 @@ typedef struct
 	qboolean vboVertexSkinningAvailable;
 	int      maxVertexSkinningBones;
 
-	qboolean unused_texture3DAvailable;
 	qboolean textureNPOTAvailable;
 
 	qboolean drawBuffersAvailable;
@@ -471,10 +446,6 @@ typedef struct
 	qboolean textureFloatAvailable;
 	qboolean textureRGAvailable;
 	int      maxDrawBuffers;
-
-	qboolean unused_vertexArrayObjectAvailable;
-
-	qboolean unused_stencilWrapAvailable;
 
 	float    maxTextureAnisotropy;
 	qboolean textureAnisotropyAvailable;

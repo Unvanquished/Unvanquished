@@ -344,24 +344,12 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 		VectorNormalize( ent->lightDir );
 	}
 
-	if ( ent->e.hilightIntensity )
-	{
-		// level of intensity was set because the item was looked at
-		ent->ambientLight[ 0 ] += tr.identityLight * 0.5f * ent->e.hilightIntensity;
-		ent->ambientLight[ 1 ] += tr.identityLight * 0.5f * ent->e.hilightIntensity;
-		ent->ambientLight[ 2 ] += tr.identityLight * 0.5f * ent->e.hilightIntensity;
-	}
-	else if ( ( ent->e.renderfx & RF_MINLIGHT ) ) // && VectorLength(ent->ambientLight) <= 0)
+	if ( ( ent->e.renderfx & RF_MINLIGHT ) ) // && VectorLength(ent->ambientLight) <= 0)
 	{
 		// give everything a minimum light add
 		ent->ambientLight[ 0 ] += tr.identityLight * 0.125f;
 		ent->ambientLight[ 1 ] += tr.identityLight * 0.125f;
 		ent->ambientLight[ 2 ] += tr.identityLight * 0.125f;
-	}
-
-	if ( ent->e.entityNum < MAX_CLIENTS && ( refdef->rdflags & RDF_SNOOPERVIEW ) )
-	{
-		VectorSet( ent->ambientLight, 0.96f, 0.96f, 0.96f );  // allow a little room for flicker from directed light
 	}
 }
 

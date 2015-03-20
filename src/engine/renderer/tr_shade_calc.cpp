@@ -484,24 +484,7 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 		qboolean inverse = qfalse;
 		vec3_t   worldUp;
 
-		if ( VectorCompare( backEnd.currentEntity->e.fireRiseDir, vec3_origin ) )
-		{
-			VectorSet( backEnd.currentEntity->e.fireRiseDir, 0, 0, 1 );
-		}
-
-		// get the world up vector in local coordinates
-		if ( backEnd.currentEntity->e.hModel )
-		{
-			// world surfaces don't have an axis
-			VectorRotate( backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp );
-		}
-		else
-		{
-			VectorCopy( backEnd.currentEntity->e.fireRiseDir, worldUp );
-		}
-
-		// don't go so far if sideways, since they must be moving
-		VectorScale( worldUp, 0.4 + 0.6 * Q_fabs( backEnd.currentEntity->e.fireRiseDir[ 2 ] ), worldUp );
+		VectorSet( worldUp, 0, 0, 1 );
 
 		ds->deformationWave.frequency *= -1;
 
