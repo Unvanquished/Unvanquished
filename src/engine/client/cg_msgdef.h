@@ -57,28 +57,28 @@ namespace Util {
 		static void Write(Writer& stream, const refSkeleton_t& skel)
 		{
 			stream.Write<uint32_t>(skel.type);
-			stream.Write<uint16_t>(skel.numBones);
+			stream.WriteSize(skel.numBones);
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 3; j++) {
 					stream.Write<float>(skel.bounds[i][j]);
 				}
 			}
 			stream.Write<float>(skel.scale);
-			size_t length = reinterpret_cast<const char*>(&skel.bones[skel.numBones]) - reinterpret_cast<const char*>(&skel.bones[0]);
+			size_t length = sizeof(refBone_t) * skel.numBones;
 			stream.WriteData(&skel.bones, length);
 		}
 		static refSkeleton_t Read(Reader& stream)
 		{
 			refSkeleton_t skel;
 			skel.type = static_cast<refSkeletonType_t>(stream.Read<uint32_t>());
-			skel.numBones = stream.Read<uint16_t>();
+			skel.numBones = stream.ReadSize<refBone_t>();
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 3; j++) {
 					skel.bounds[i][j] = stream.Read<float>();
 				}
 			}
 			skel.scale = stream.Read<float>();
-			size_t length = reinterpret_cast<const char*>(&skel.bones[skel.numBones]) - reinterpret_cast<const char*>(&skel.bones[0]);
+			size_t length = sizeof(refBone_t) * skel.numBones;
 			stream.ReadData(&skel.bones, length);
 			return skel;
 		}
