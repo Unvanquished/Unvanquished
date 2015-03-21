@@ -108,7 +108,6 @@ void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts
 void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys ) { }
 void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags ) { }
 void RE_AddLightToSceneQ3A( const vec3_t org, float intensity, float r, float g, float b ) { }
-void R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density ) { }
 void RE_RenderScene( const refdef_t *fd ) { }
 void RE_SetColor( const float *rgba ) { }
 void RE_SetClipRegion( const float *region ) { }
@@ -139,7 +138,6 @@ qboolean R_GetEntityToken( char *buffer, int size )
 	return qtrue;
 }
 void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer ) { }
-void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque ) { }
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 )
 {
 	return qfalse;
@@ -249,9 +247,6 @@ refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
     // done.
     re.AddLightToScene = RE_AddLightToScene;
     re.AddAdditiveLightToScene = RE_AddLightToSceneQ3A;
-    //----(SA)
-    re.SetFog = R_SetFog;
-    //----(SA)
 
     re.RenderScene = RE_RenderScene;
 
@@ -279,8 +274,6 @@ refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
     re.GetEntityToken = R_GetEntityToken;
 
     re.AddPolyBufferToScene = RE_AddPolyBufferToScene;
-
-    re.SetGlobalFog = RE_SetGlobalFog;
 
     re.inPVS = R_inPVS;
     re.inPVVS = R_inPVVS;
