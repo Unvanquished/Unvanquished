@@ -1,0 +1,1 @@
+../build-macosx-app-single.sh

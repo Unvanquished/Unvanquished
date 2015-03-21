@@ -1,0 +1,1 @@
+../../build-macosx-app-universal.sh

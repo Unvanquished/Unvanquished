@@ -1,0 +1,1 @@
+../../../cmake/cross-toolchain-mingw64.cmake
