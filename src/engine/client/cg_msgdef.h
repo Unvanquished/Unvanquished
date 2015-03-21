@@ -30,9 +30,9 @@ namespace Util {
 	template<> struct SerializeTraits<snapshot_t> {
 		static void Write(Writer& stream, const snapshot_t& snap)
 		{
-			stream.Write<int>(snap.snapFlags);
-			stream.Write<int>(snap.ping);
-			stream.Write<int>(snap.serverTime);
+			stream.Write<uint32_t>(snap.snapFlags);
+			stream.Write<uint32_t>(snap.ping);
+			stream.Write<uint32_t>(snap.serverTime);
 			stream.WriteData(&snap.areamask, MAX_MAP_AREA_BYTES);
 			stream.Write<playerState_t>(snap.ps);
 			stream.Write<std::vector<entityState_t>>(snap.entities);
@@ -41,14 +41,62 @@ namespace Util {
 		static snapshot_t Read(Reader& stream)
 		{
 			snapshot_t snap;
-			snap.snapFlags = stream.Read<int>();
-			snap.ping = stream.Read<int>();
-			snap.serverTime = stream.Read<int>();
+			snap.snapFlags = stream.Read<uint32_t>();
+			snap.ping = stream.Read<uint32_t>();
+			snap.serverTime = stream.Read<uint32_t>();
 			stream.ReadData(&snap.areamask, MAX_MAP_AREA_BYTES);
 			snap.ps = stream.Read<playerState_t>();
 			snap.entities = std::move(stream.Read<std::vector<entityState_t>>());
 			snap.serverCommands = std::move(stream.Read<std::vector<std::string>>());
 			return snap;
+		}
+	};
+
+	// For skeletons, only send the bones which are used
+	template<> struct SerializeTraits<refSkeleton_t> {
+		static void Write(Writer& stream, const refSkeleton_t& skel)
+		{
+			stream.Write<uint32_t>(skel.type);
+			stream.Write<uint16_t>(skel.numBones);
+			for (int i = 0; i < 2; i++) {
+				for (int j = 0; j < 3; j++) {
+					stream.Write<float>(skel.bounds[i][j]);
+				}
+			}
+			stream.Write<float>(skel.scale);
+			size_t length = reinterpret_cast<const char*>(&skel.bones[skel.numBones]) - reinterpret_cast<const char*>(&skel.bones[0]);
+			stream.WriteData(&skel.bones, length);
+		}
+		static refSkeleton_t Read(Reader& stream)
+		{
+			refSkeleton_t skel;
+			skel.type = static_cast<refSkeletonType_t>(stream.Read<uint32_t>());
+			skel.numBones = stream.Read<uint16_t>();
+			for (int i = 0; i < 2; i++) {
+				for (int j = 0; j < 3; j++) {
+					skel.bounds[i][j] = stream.Read<float>();
+				}
+			}
+			skel.scale = stream.Read<float>();
+			size_t length = reinterpret_cast<const char*>(&skel.bones[skel.numBones]) - reinterpret_cast<const char*>(&skel.bones[0]);
+			stream.ReadData(&skel.bones, length);
+			return skel;
+		}
+	};
+
+	// Use that bone optimization for refEntity_t
+	template<> struct SerializeTraits<refEntity_t> {
+		static void Write(Writer& stream, const refEntity_t& ent)
+		{
+			stream.WriteData(&ent, offsetof(refEntity_t, skeleton));
+			stream.Write<refSkeleton_t>(ent.skeleton);
+		}
+		static refEntity_t Read(Reader& stream)
+		{
+			refEntity_t ent;
+			stream.ReadData(&ent, offsetof(refEntity_t, skeleton));
+			ent.skeleton = stream.Read<refSkeleton_t>();
+			return ent;
 		}
 	};
 }

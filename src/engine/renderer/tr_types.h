@@ -148,11 +148,11 @@ typedef ALIGNED(16, struct
 	refSkeletonType_t type; // skeleton has been reset
 
 	short             numBones;
-	refBone_t         bones[ MAX_BONES ];
 
 	vec3_t            bounds[ 2 ]; // bounds of all applied animations
 	vec_t             scale;
-	int               padding[ 3 ]; // pad to multiple of 16 bytes for QVM code
+
+	refBone_t         bones[ MAX_BONES ];
 } ) refSkeleton_t;
 
 // XreaL END
@@ -196,11 +196,6 @@ typedef struct
 
 	int   entityNum; // currentState.number, so we can attach rendering effects to specific entities (Zombie)
 
-// XreaL BEGIN
-
-	// extra animation information
-	refSkeleton_t skeleton;
-
 #if defined( USE_REFENTITY_NOSHADOWID )
 	// extra light interaction information
 	short noShadowID;
@@ -208,7 +203,11 @@ typedef struct
 
 	int altShaderIndex;
 
-// XreaL END
+	// KEEP SKELETON AT THE END OF THE STRUCTURE
+	// it is to make a serialization hack for refEntity_t easier
+	// by memcpying up to skeleton and then serializing skeleton
+	refSkeleton_t skeleton;
+
 } refEntity_t;
 
 // ================================================================================================
