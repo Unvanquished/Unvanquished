@@ -1369,19 +1369,6 @@ static qboolean ParseTexMod( char **text, shaderStage_t *stage )
 		return qfalse;
 	}
 
-	// Tr3B NOTE: some shaders using tcMod are messed up by artists so we need this bugfix
-	while ( 1 )
-	{
-		token = COM_ParseExt2( text, qfalse );
-
-		if ( token[ 0 ] == 0 )
-		{
-			break;
-		}
-
-		ri.Printf( PRINT_WARNING, "WARNING: obsolete tcMod parameter '%s' in shader '%s'\n", token, shader.name );
-	}
-
 	return qtrue;
 }
 
@@ -1612,18 +1599,6 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 				loadMap = qtrue;
 			}
 		}
-		// remoteRenderMap <int> <int>
-		else if ( !Q_stricmp( token, "remoteRenderMap" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: remoteRenderMap keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
-		}
-		// mirrorRenderMap <int> <int>
-		else if ( !Q_stricmp( token, "mirrorRenderMap" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: mirrorRenderMap keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
-		}
 		// clampmap <name>
 		else if ( !Q_stricmp( token, "clampmap" ) )
 		{
@@ -1718,12 +1693,6 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 				stage->bundle[ 0 ].isVideoMap = qtrue;
 				stage->bundle[ 0 ].image[ 0 ] = tr.scratchImage[ stage->bundle[ 0 ].videoMapHandle ];
 			}
-		}
-		// soundmap [waveform]
-		else if ( !Q_stricmp( token, "soundMap" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: soundMap keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
 		}
 		// cubeMap <map>
 		else if ( !Q_stricmp( token, "cubeMap" ) || !Q_stricmp( token, "cameraCubeMap" ) )
@@ -1849,12 +1818,6 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		{
 			stage->forceHighQuality = qtrue;
 			stage->overrideNoPicMip = qtrue;
-		}
-		// detail
-		else if ( !Q_stricmp( token, "detail" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: detail keyword not supported in shader '%s'\n", shader.name );
-			continue;
 		}
 		// ET fog
 		else if ( !Q_stricmp( token, "fog" ) )
@@ -2346,10 +2309,6 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			else if ( !Q_stricmp( token, "texture" ) || !Q_stricmp( token, "base" ) )
 			{
 			}
-			else if ( !Q_stricmp( token, "vector" ) )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: texGen vector keyword not supported in shader '%s'\n", shader.name );
-			}
 			else if ( !Q_stricmp( token, "reflect" ) )
 			{
 				stage->type = ST_REFLECTIONMAP;
@@ -2566,47 +2525,6 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		else if ( !Q_stricmp( token, "wrapAroundLighting" ) )
 		{
 			ParseExpression( text, &stage->wrapAroundLightingExp );
-		}
-		// fragmentProgram <prog>
-		else if ( !Q_stricmp( token, "fragmentProgram" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: fragmentProgram keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
-		}
-		// vertexProgram <prog>
-		else if ( !Q_stricmp( token, "vertexProgram" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: vertexProgram keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
-		}
-		// program <prog>
-		else if ( !Q_stricmp( token, "program" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: program keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
-		}
-		// vertexParm <index> <exp0> [,exp1] [,exp2] [,exp3]
-		else if ( !Q_stricmp( token, "vertexParm" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: vertexParm keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
-		}
-		// fragmentMap <index> [options] <map>
-		else if ( !Q_stricmp( token, "fragmentMap" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: fragmentMap keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
-		}
-		// megaTexture <mega>
-		else if ( !Q_stricmp( token, "megaTexture" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: megaTexture keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
-		}
-		// glowStage
-		else if ( !Q_stricmp( token, "glowStage" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: glowStage keyword not supported in shader '%s'\n", shader.name );
 		}
 		else
 		{
@@ -3669,36 +3587,9 @@ static qboolean ParseShader( char *_text )
 			SkipRestOfLine( text );
 			continue;
 		}
-		// skip unsmoothedTangents
-		else if ( !Q_stricmp( token, "unsmoothedTangents" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: unsmoothedTangents keyword not supported in shader '%s'\n", shader.name );
-			continue;
-		}
 		// skip guiSurf
 		else if ( !Q_stricmp( token, "guiSurf" ) )
 		{
-			SkipRestOfLine( text );
-			continue;
-		}
-		// skip decalInfo
-		else if ( !Q_stricmp( token, "decalInfo" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: decalInfo keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
-			continue;
-		}
-		// skip Quake4's extra material types
-		else if ( !Q_stricmp( token, "materialType" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: materialType keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
-			continue;
-		}
-		// skip Prey's extra material types
-		else if ( !Q_strnicmp( token, "matter", 6 ) )
-		{
-			//ri.Printf(PRINT_WARNING, "WARNING: materialType keyword not supported in shader '%s'\n", shader.name);
 			SkipRestOfLine( text );
 			continue;
 		}
@@ -3782,51 +3673,6 @@ static qboolean ParseShader( char *_text )
 		else if ( !Q_stricmp( token, "noShadows" ) )
 		{
 			shader.noShadows = qtrue;
-			continue;
-		}
-		// noSelfShadow
-		else if ( !Q_stricmp( token, "noSelfShadow" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: noSelfShadow keyword not supported in shader '%s'\n", shader.name );
-			continue;
-		}
-		// forceShadows
-		else if ( !Q_stricmp( token, "forceShadows" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: forceShadows keyword not supported in shader '%s'\n", shader.name );
-			continue;
-		}
-		// forceOverlays
-		else if ( !Q_stricmp( token, "forceOverlays" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: forceOverlays keyword not supported in shader '%s'\n", shader.name );
-			continue;
-		}
-		// noPortalFog
-		else if ( !Q_stricmp( token, "noPortalFog" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: noPortalFog keyword not supported in shader '%s'\n", shader.name );
-			continue;
-		}
-		// fogLight
-		else if ( !Q_stricmp( token, "fogLight" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: fogLight keyword not supported in shader '%s'\n", shader.name );
-			shader.fogLight = qtrue;
-			continue;
-		}
-		// blendLight
-		else if ( !Q_stricmp( token, "blendLight" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: blendLight keyword not supported in shader '%s'\n", shader.name );
-			shader.blendLight = qtrue;
-			continue;
-		}
-		// ambientLight
-		else if ( !Q_stricmp( token, "ambientLight" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: ambientLight keyword not supported in shader '%s'\n", shader.name );
-			shader.ambientLight = qtrue;
 			continue;
 		}
 		// volumetricLight
@@ -4323,13 +4169,6 @@ static qboolean ParseShader( char *_text )
 		{
 			ParseReflectionMapBlended( &stages[ s ], text );
 			s++;
-			continue;
-		}
-		// lightMap <image>
-		else if ( !Q_stricmp( token, "lightMap" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: obsolete lightMap keyword not supported in shader '%s'\n", shader.name );
-			SkipRestOfLine( text );
 			continue;
 		}
 		// lightFalloffImage <image>
