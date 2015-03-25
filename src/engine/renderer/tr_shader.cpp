@@ -4547,34 +4547,6 @@ static shader_t *FinishShader( void )
 			int blendSrcBits = pStage->stateBits & GLS_SRCBLEND_BITS;
 			int blendDstBits = pStage->stateBits & GLS_DSTBLEND_BITS;
 
-			// fog color adjustment only works for blend modes that have a contribution
-			// that approaches 0 as the modulate values approach 0 --
-			// GL_ONE, GL_ONE
-			// GL_ZERO, GL_ONE_MINUS_SRC_COLOR
-			// GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
-
-			// modulate, additive
-			if ( ( ( blendSrcBits == GLS_SRCBLEND_ONE ) && ( blendDstBits == GLS_DSTBLEND_ONE ) ) ||
-			     ( ( blendSrcBits == GLS_SRCBLEND_ZERO ) && ( blendDstBits == GLS_DSTBLEND_ONE_MINUS_SRC_COLOR ) ) )
-			{
-				pStage->adjustColorsForFog = ACFF_MODULATE_RGB;
-			}
-			// strict blend
-			else if ( ( blendSrcBits == GLS_SRCBLEND_SRC_ALPHA ) &&
-			          ( blendDstBits == GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA ) )
-			{
-				pStage->adjustColorsForFog = ACFF_MODULATE_ALPHA;
-			}
-			// premultiplied alpha
-			else if ( ( blendSrcBits == GLS_SRCBLEND_ONE ) && ( blendDstBits == GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA ) )
-			{
-				pStage->adjustColorsForFog = ACFF_MODULATE_RGBA;
-			}
-			else
-			{
-				// we can't adjust this one correctly, so it won't be exactly correct in fog
-			}
-
 			// don't screw with sort order if this is a portal or environment
 			if ( !shader.sort )
 			{
