@@ -36,24 +36,6 @@ namespace Log {
     :filterLevel("logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel) {
     }
 
-    void Logger::DoWarnCode(std::function<void()> code) {
-        if (filterLevel.Get() <= LOG_WARNING) {
-            code();
-        }
-    };
-
-    void Logger::DoNoticeCode(std::function<void()> code) {
-        if (filterLevel.Get() <= LOG_NOTICE) {
-            code();
-        }
-    };
-
-    void Logger::DoDebugCode(std::function<void()> code) {
-        if (filterLevel.Get() <= LOG_DEBUG) {
-            code();
-        }
-    };
-
     bool ParseCvarValue(std::string value, Log::Level& result) {
         if (value == "error" or value == "err") {
             result = Log::LOG_ERROR;
