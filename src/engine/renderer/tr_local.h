@@ -836,14 +836,6 @@ static inline float halfToFloat( int16_t in ) {
 
 	typedef enum
 	{
-	  ACFF_NONE,
-	  ACFF_MODULATE_RGB,
-	  ACFF_MODULATE_RGBA,
-	  ACFF_MODULATE_ALPHA
-	} acff_t;
-
-	typedef enum
-	{
 	  OP_BAD,
 	  // logic operators
 	  OP_LAND,
@@ -1090,8 +1082,6 @@ static inline float halfToFloat( int16_t in ) {
 
 		uint32_t        stateBits; // GLS_xxxx mask
 
-		acff_t          adjustColorsForFog;
-
 		qboolean        overrideNoPicMip; // for images that must always be full resolution
 		qboolean        overrideFilterType; // for console fonts, 2D elements, etc.
 		filterType_t    filterType;
@@ -1101,9 +1091,6 @@ static inline float halfToFloat( int16_t in ) {
 		qboolean        uncompressed;
 		qboolean        highQuality;
 		qboolean        forceHighQuality;
-
-		qboolean        privatePolygonOffset; // set for decals and other items that must be offset
-		float           privatePolygonOffsetValue;
 
 		qboolean        hasDepthFade; // for soft particles
 		float           depthFadeValue;
@@ -1127,8 +1114,6 @@ static inline float halfToFloat( int16_t in ) {
 		expression_t    depthScaleExp;
 
 		expression_t    deformMagnitudeExp;
-
-		expression_t    blurMagnitudeExp;
 
 		expression_t    wrapAroundLightingExp;
 
@@ -1190,16 +1175,14 @@ static inline float halfToFloat( int16_t in ) {
 		// something calls RE_RegisterShader again with
 		// the same name, we don't try looking for it again
 
-		qboolean       explicitlyDefined; // found in a .shader file
 		qboolean       createdByGuide; // created using a shader .guide template
 
-		int            surfaceFlags; // if explicitlyDefined, this will have SURF_* flags
+		int            surfaceFlags;
 		int            contentFlags;
 
 		qboolean       entityMergable; // merge across entites optimizable (smoke, blood)
 		qboolean       alphaTest; // helps merging shadowmap generating surfaces
 
-		qboolean       fogVolume; // surface encapsulates a fog volume
 		fogParms_t     fogParms;
 		fogPass_t      fogPass; // draw a blended pass, possibly with depth test equals
 		qboolean       noFog;
@@ -1210,7 +1193,6 @@ static inline float halfToFloat( int16_t in ) {
 		qboolean       fogLight;
 		qboolean       blendLight;
 		qboolean       ambientLight;
-		qboolean       volumetricLight;
 		qboolean       translucent;
 		qboolean       forceOpaque;
 		qboolean       isSky;
@@ -1231,10 +1213,6 @@ static inline float halfToFloat( int16_t in ) {
 		filterType_t   filterType; // for console fonts, 2D elements, etc.
 		wrapType_t     wrapType;
 
-		// spectrums are used for "invisible writing" that can only be illuminated by a light of matching spectrum
-		qboolean        spectrum;
-		int             spectrumValue;
-
 		qboolean        interactLight; // this shader can interact with light shaders
 
 		uint8_t         numDeforms;
@@ -1244,12 +1222,8 @@ static inline float halfToFloat( int16_t in ) {
 		shaderStage_t   *stages[ MAX_SHADER_STAGES ];
 
 		int             numStates; // if non-zero this is a state shader
-		struct shader_s *currentShader; // current state if this is a state shader
-
-		struct shader_s *parentShader; // current state if this is a state shader
 
 		int             currentState; // current state index for cycle purposes
-		long            expireTime; // time in milliseconds this expires
 
 		struct shader_s *remappedShader; // current shader this one is remapped too
 

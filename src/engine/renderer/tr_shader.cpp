@@ -2267,21 +2267,6 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			ParseExpression( text, &stage->blueExp );
 			ParseExpression( text, &stage->alphaExp );
 		}
-		// privatePolygonOffset <float>
-		else if ( !Q_stricmp( token, "privatePolygonOffset" ) )
-		{
-			token = COM_ParseExt2( text, qfalse );
-
-			if ( !token[ 0 ] )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: missing parameter for 'privatePolygonOffset' keyword in shader '%s'\n",
-				           shader.name );
-				return qfalse;
-			}
-
-			stage->privatePolygonOffset = qtrue;
-			stage->privatePolygonOffsetValue = atof( token );
-		}
 		// tcGen <function>
 		else if ( !Q_stricmp( token, "texGen" ) || !Q_stricmp( token, "tcGen" ) )
 		{
@@ -2511,11 +2496,6 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		else if ( !Q_stricmp( token, "deformMagnitude" ) )
 		{
 			ParseExpression( text, &stage->deformMagnitudeExp );
-		}
-		// blurMagnitude <arithmetic expression>
-		else if ( !Q_stricmp( token, "blurMagnitude" ) )
-		{
-			ParseExpression( text, &stage->blurMagnitudeExp );
 		}
 		// wrapAroundLighting <arithmetic expression>
 		else if ( !Q_stricmp( token, "wrapAroundLighting" ) )
@@ -3210,8 +3190,6 @@ static qboolean ParseShader( char *_text )
 	int  s;
 
 	s = 0;
-	shader.explicitlyDefined = qtrue;
-
 	text = &_text;
 
 	token = COM_ParseExt2( text, qtrue );
@@ -3361,12 +3339,6 @@ static qboolean ParseShader( char *_text )
 			shader.noShadows = qtrue;
 			continue;
 		}
-		// volumetricLight
-		else if ( !Q_stricmp( token, "volumetricLight" ) )
-		{
-			shader.volumetricLight = qtrue;
-			continue;
-		}
 		// translucent
 		else if ( !Q_stricmp( token, "translucent" ) )
 		{
@@ -3489,7 +3461,6 @@ static qboolean ParseShader( char *_text )
 
 			shader.fogParms.depthForOpaque = atof( token );
 
-			//shader.fogVolume = qtrue;
 			shader.sort = SS_FOG;
 
 			// skip any old gradient directions
@@ -3796,23 +3767,6 @@ static qboolean ParseShader( char *_text )
 				}
 			}
 
-			continue;
-		}
-		// spectrum
-		else if ( !Q_stricmp( token, "spectrum" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: spectrum keyword not supported in shader '%s'\n", shader.name );
-
-			token = COM_ParseExt2( text, qfalse );
-
-			if ( !token[ 0 ] )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: missing parm for 'spectrum' keyword in shader '%s'\n", shader.name );
-				continue;
-			}
-
-			shader.spectrum = qtrue;
-			shader.spectrumValue = atoi( token );
 			continue;
 		}
 		// diffuseMap <image>
@@ -5311,15 +5265,6 @@ void R_ShaderList_f( void )
 		else
 		{
 			str += "               ";
-		}
-
-		if ( shader->explicitlyDefined )
-		{
-			str += "E ";
-		}
-		else
-		{
-			str += "  ";
 		}
 
 		if ( shader->sort == SS_BAD )
