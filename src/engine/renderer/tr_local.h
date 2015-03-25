@@ -797,24 +797,22 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  DEFORM_MOVE
 	} deform_t;
 
-// deformVertexes types that can be handled by the GPU
 	typedef enum
 	{
-	  // do not edit: same as genFunc_t
-
-	  DGEN_NONE,
-	  DGEN_WAVE_SIN,
-	  DGEN_WAVE_SQUARE,
-	  DGEN_WAVE_TRIANGLE,
-	  DGEN_WAVE_SAWTOOTH,
-	  DGEN_WAVE_INVERSE_SAWTOOTH,
-	  DGEN_WAVE_NOISE,
-
-	  // do not edit until this line
-
-	  DGEN_BULGE,
-	  DGEN_MOVE
-	} deformGen_t;
+	  DSTEP_NONE,
+	  DSTEP_LOAD_POS,
+	  DSTEP_LOAD_NORM,
+	  DSTEP_LOAD_TC,
+	  DSTEP_LOAD_VEC,
+	  DSTEP_MODIFY_POS,
+	  DSTEP_MODIFY_NORM,
+	  DSTEP_SIN,
+	  DSTEP_SQUARE,
+	  DSTEP_TRIANGLE,
+	  DSTEP_SAWTOOTH,
+	  DSTEP_INVERSE_SAWTOOTH,
+	  DSTEP_NOISE
+	} deformStep_t;
 
 	typedef enum
 	{
@@ -959,7 +957,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	} texMod_t;
 
 #define MAX_SHADER_DEFORMS      3
-#define MAX_SHADER_DEFORM_PARMS ( 1 + MAX_SHADER_DEFORMS + MAX_SHADER_DEFORMS * 8 )
+#define MAX_SHADER_DEFORM_STEPS	4
+#define MAX_SHADER_DEFORM_PARMS ( MAX_SHADER_DEFORMS * MAX_SHADER_DEFORM_STEPS )
 	typedef struct
 	{
 		deform_t   deformation; // vertex coordinate modification type

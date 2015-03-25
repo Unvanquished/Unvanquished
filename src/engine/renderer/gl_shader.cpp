@@ -209,20 +209,20 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	AddGLSLDefine( bufferExtra, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
 	AddGLSLDefine( bufferExtra, "MAX_SHADER_DEFORM_PARMS", MAX_SHADER_DEFORM_PARMS );
 
-	AddGLSLDefine( bufferExtra, "deform_t" );
-	AddGLSLDefine( bufferExtra, "DEFORM_WAVE", DEFORM_WAVE );
-	AddGLSLDefine( bufferExtra, "DEFORM_BULGE", DEFORM_BULGE );
-	AddGLSLDefine( bufferExtra, "DEFORM_MOVE", DEFORM_MOVE );
-	AddGLSLDefine( bufferExtra, "DEFORM_NORMALS", DEFORM_NORMALS );
-
-	AddGLSLDefine( bufferExtra, "genFunc_t" );
-	AddGLSLDefine( bufferExtra, "GF_NONE", static_cast<float>( GF_NONE ) );
-	AddGLSLDefine( bufferExtra, "GF_SIN", static_cast<float>( GF_SIN ) );
-	AddGLSLDefine( bufferExtra, "GF_SQUARE", static_cast<float>( GF_SQUARE ) );
-	AddGLSLDefine( bufferExtra, "GF_TRIANGLE", static_cast<float>( GF_TRIANGLE ) );
-	AddGLSLDefine( bufferExtra, "GF_SAWTOOTH", static_cast<float>( GF_SAWTOOTH ) );
-	AddGLSLDefine( bufferExtra, "GF_INVERSE_SAWTOOTH", static_cast<float>( GF_INVERSE_SAWTOOTH ) );
-	AddGLSLDefine( bufferExtra, "GF_NOISE", static_cast<float>( GF_NOISE ) );
+	AddGLSLDefine( bufferExtra, "deformStep_t" );
+	AddGLSLDefine( bufferExtra, "DSTEP_NONE",             DSTEP_NONE);
+	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_POS",         DSTEP_LOAD_POS);
+	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_NORM",        DSTEP_LOAD_NORM);
+	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_TC",          DSTEP_LOAD_TC);
+	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_VEC",         DSTEP_LOAD_VEC);
+	AddGLSLDefine( bufferExtra, "DSTEP_MODIFY_POS",       DSTEP_MODIFY_POS);
+	AddGLSLDefine( bufferExtra, "DSTEP_MODIFY_NORM",      DSTEP_MODIFY_NORM);
+	AddGLSLDefine( bufferExtra, "DSTEP_SIN",              DSTEP_SIN);
+	AddGLSLDefine( bufferExtra, "DSTEP_SQUARE",           DSTEP_SQUARE);
+	AddGLSLDefine( bufferExtra, "DSTEP_TRIANGLE",         DSTEP_TRIANGLE);
+	AddGLSLDefine( bufferExtra, "DSTEP_SAWTOOTH",         DSTEP_SAWTOOTH);
+	AddGLSLDefine( bufferExtra, "DSTEP_INVERSE_SAWTOOTH", DSTEP_INVERSE_SAWTOOTH);
+	AddGLSLDefine( bufferExtra, "DSTEP_NOISE",            DSTEP_NOISE);
 
 	float fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
 	float fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );
