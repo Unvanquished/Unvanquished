@@ -23,9 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_shader.c -- this file deals with the parsing and definition of shaders
 #include "tr_local.h"
 
-#define MAX_GUIDETEXT_HASH   2048
-static char          **guideTextHashTable[ MAX_GUIDETEXT_HASH ];
-
 #define MAX_SHADERTABLE_HASH 1024
 static shaderTable_t *shaderTableHashTable[ MAX_SHADERTABLE_HASH ];
 
@@ -35,7 +32,6 @@ static shader_t      *shaderHashTable[ FILE_HASH_SIZE ];
 #define MAX_SHADERTEXT_HASH  2048
 static char          **shaderTextHashTable[ MAX_SHADERTEXT_HASH ];
 
-static char          *s_guideText;
 static char          *s_shaderText;
 
 // the shader is parsed into these global variables, then copied into
@@ -3199,308 +3195,6 @@ static void ParseLightFalloffImage( shaderStage_t *stage, char **text )
 }
 
 /*
-====================
-FindShaderInShaderText
-
-Scans the combined text description of all the shader template files for
-the given guide name.
-
-return NULL if not found
-
-If found, it will return a valid template
-=====================
-*/
-static char    *FindGuideInGuideText( const char *guideName )
-{
-	char *token, *p;
-
-	int  i, hash;
-
-	if ( !s_guideText )
-	{
-		// no guides loaded at all
-		return NULL;
-	}
-
-	hash = generateHashValue( guideName, MAX_GUIDETEXT_HASH );
-
-	for ( i = 0; guideTextHashTable[ hash ][ i ]; i++ )
-	{
-		p = guideTextHashTable[ hash ][ i ];
-		token = COM_ParseExt2( &p, qtrue );
-
-		if ( !Q_stricmp( token, guideName ) )
-		{
-			return p;
-		}
-	}
-
-	p = s_guideText;
-
-	if ( !p )
-	{
-		return NULL;
-	}
-
-	// look for label
-	while ( 1 )
-	{
-		token = COM_ParseExt2( &p, qtrue );
-
-		if ( token[ 0 ] == 0 )
-		{
-			break;
-		}
-
-		if ( Q_stricmp( token, "guide" ) && Q_stricmp( token, "inlineGuide" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: expected guide or inlineGuide found '%s'\n", token );
-			break;
-		}
-
-		// parse guide name
-		token = COM_ParseExt2( &p, qtrue );
-
-		if ( !Q_stricmp( token, guideName ) )
-		{
-			ri.Printf( PRINT_ALL, "found guide '%s' by linear search\n", guideName );
-			return p;
-		}
-
-		// skip parameters
-		token = COM_ParseExt2( &p, qtrue );
-
-		if ( Q_stricmp( token, "(" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: expected ( found '%s'\n", token );
-			break;
-		}
-
-		while ( 1 )
-		{
-			token = COM_ParseExt2( &p, qtrue );
-
-			if ( !token[ 0 ] )
-			{
-				break;
-			}
-
-			if ( !Q_stricmp( token, ")" ) )
-			{
-				break;
-			}
-		}
-
-		if ( Q_stricmp( token, ")" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: expected ) found '%s'\n", token );
-			break;
-		}
-
-		// skip guide body
-		SkipBracedSection( &p );
-	}
-
-	return NULL;
-}
-
-/*
-=================
-CreateShaderByGuide
-=================
-*/
-#define MAX_GUIDE_PARAMETERS 16
-static char    *CreateShaderByGuide( const char *guideName, char *shaderText )
-{
-	int         i;
-	char        *guideText;
-	char        *token;
-	const char  *p;
-	static char buffer[ 4096 ];
-	char        name[ MAX_QPATH ];
-	int         numGuideParms;
-	char        guideParms[ MAX_GUIDE_PARAMETERS ][ MAX_QPATH ];
-	int         numShaderParms;
-	char        shaderParms[ MAX_GUIDE_PARAMETERS ][ MAX_QPATH ];
-
-	Com_Memset( buffer, 0, sizeof( buffer ) );
-	Com_Memset( guideParms, 0, sizeof( guideParms ) );
-	Com_Memset( shaderParms, 0, sizeof( shaderParms ) );
-
-	// attempt to define shader from an explicit parameter file
-	guideText = FindGuideInGuideText( guideName );
-
-	if ( guideText )
-	{
-		shader.createdByGuide = qtrue;
-
-		// parse guide parameters
-		numGuideParms = 0;
-
-		token = COM_ParseExt2( &guideText, qtrue );
-
-		if ( Q_stricmp( token, "(" ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: expected ( found '%s'\n", token );
-			return NULL;
-		}
-
-		while ( 1 )
-		{
-			token = COM_ParseExt2( &guideText, qtrue );
-
-			if ( !token[ 0 ] )
-			{
-				break;
-			}
-
-			if ( !Q_stricmp( token, ")" ) )
-			{
-				break;
-			}
-
-			if ( numGuideParms >= MAX_GUIDE_PARAMETERS - 1 )
-			{
-				ri.Printf( PRINT_ALL, "WARNING: more than %i guide parameters are not allowed\n", MAX_GUIDE_PARAMETERS );
-				return NULL;
-			}
-
-			Q_strncpyz( guideParms[ numGuideParms ], token, MAX_QPATH );
-			numGuideParms++;
-		}
-
-		if ( Q_stricmp( token, ")" ) )
-		{
-			ri.Printf( PRINT_ALL, "WARNING: expected ) found '%s'\n", token );
-			return NULL;
-		}
-
-		// parse shader parameters
-		numShaderParms = 0;
-
-		token = COM_ParseExt2( &shaderText, qtrue );
-
-		if ( Q_stricmp( token, "(" ) )
-		{
-			ri.Printf( PRINT_ALL, "WARNING: expected ( found '%s'\n", token );
-			return NULL;
-		}
-
-		while ( 1 )
-		{
-			token = COM_ParseExt2( &shaderText, qtrue );
-
-			if ( !token[ 0 ] )
-			{
-				break;
-			}
-
-			if ( !Q_stricmp( token, ")" ) )
-			{
-				break;
-			}
-
-			if ( numShaderParms >= MAX_GUIDE_PARAMETERS - 1 )
-			{
-				ri.Printf( PRINT_ALL, "WARNING: more than %i guide parameters are not allowed\n", MAX_GUIDE_PARAMETERS );
-				return NULL;
-			}
-
-			Q_strncpyz( shaderParms[ numShaderParms ], token, MAX_QPATH );
-			numShaderParms++;
-		}
-
-		if ( Q_stricmp( token, ")" ) )
-		{
-			ri.Printf( PRINT_ALL, "WARNING: expected ) found '%s'\n", token );
-			return NULL;
-		}
-
-		if ( numGuideParms != numShaderParms )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: %i numGuideParameters != %i numShaderParameters\n", numGuideParms, numShaderParms );
-			return NULL;
-		}
-
-		token = COM_ParseExt2( &guideText, qtrue );
-
-		if ( Q_stricmp( token, "{" ) )
-		{
-			ri.Printf( PRINT_ALL, "WARNING: expected { found '%s'\n", token );
-			return NULL;
-		}
-
-		// create buffer
-		while ( 1 )
-		{
-			// begin new line
-			token = COM_ParseExt2( &guideText, qtrue );
-
-			if ( !token[ 0 ] )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: no concluding '}' in guide %s\n", guideName );
-				return NULL;
-			}
-
-			// end of guide definition
-			if ( token[ 0 ] == '}' )
-			{
-				break;
-			}
-
-			Q_strncpyz( name, token, sizeof( name ) );
-
-			Q_strcat( buffer, sizeof( buffer ), name );
-			Q_strcat( buffer, sizeof( buffer ), " " );
-
-			// parse rest of line
-			while ( 1 )
-			{
-				token = COM_ParseExt2( &guideText, qfalse );
-
-				if ( !token[ 0 ] )
-				{
-					// end of line
-					break;
-				}
-
-				Q_strncpyz( name, token, sizeof( name ) );
-
-				// adjust name by guide parameters if necessary
-				for ( i = 0; i < numGuideParms; i++ )
-				{
-					if ( ( p = Q_stristr( name, ( const char * ) guideParms ) ) )
-					{
-						//ri.Printf(PRINT_ALL, "guide parameter '%s' = '%s'\n", guideParms[i], shaderParms[i]);
-
-						Q_strreplace( name, sizeof( name ), guideParms[ i ], shaderParms[ i ] );
-					}
-				}
-
-				Q_strcat( buffer, sizeof( buffer ), name );
-				Q_strcat( buffer, sizeof( buffer ), " " );
-			}
-
-			Q_strcat( buffer, sizeof( buffer ), "\n" );
-		}
-
-		if ( Q_stricmp( token, "}" ) )
-		{
-			ri.Printf( PRINT_ALL, "WARNING: expected } found '%s'\n", token );
-			return NULL;
-		}
-
-		Q_strcat( buffer, sizeof( buffer ), "}" );
-
-		ri.Printf( PRINT_ALL, "----- '%s' -----\n%s\n----------\n", shader.name, buffer );
-
-		return buffer;
-	}
-
-	return NULL;
-}
-
-/*
 =================
 ParseShader
 
@@ -3524,16 +3218,8 @@ static qboolean ParseShader( char *_text )
 
 	if ( token[ 0 ] != '{' )
 	{
-		if ( !( _text = CreateShaderByGuide( token, _text ) ) )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: couldn't create shader '%s' by template '%s'\n", shader.name, token );
-			//ri.Printf(PRINT_WARNING, "WARNING: expecting '{', found '%s' instead in shader '%s'\n", token, shader.name);
-			return qfalse;
-		}
-		else
-		{
-			text = &_text;
-		}
+		ri.Printf( PRINT_WARNING, "WARNING: no preceding '}' in shader %s\n", shader.name );
+		return qfalse;
 	}
 
 	while ( 1 )
@@ -5627,11 +5313,7 @@ void R_ShaderList_f( void )
 			str += "               ";
 		}
 
-		if ( shader->createdByGuide )
-		{
-			str += "G ";
-		}
-		else if ( shader->explicitlyDefined )
+		if ( shader->explicitlyDefined )
 		{
 			str += "E ";
 		}
@@ -5792,250 +5474,6 @@ void R_ShaderExp_f( void )
 
 /*
 ====================
-ScanAndLoadShaderGuides
-
-Finds and loads all .guide files, combining them into
-a single large text block that can be scanned for shader template names
-=====================
-*/
-#define MAX_GUIDE_FILES 1024
-static void ScanAndLoadGuideFiles( void )
-{
-	char **guideFiles;
-	char *buffers[ MAX_GUIDE_FILES ];
-	char *p;
-	int  numGuides;
-	int  i;
-	char *oldp, *token, **hashMem;
-	int  guideTextHashTableSizes[ MAX_GUIDETEXT_HASH ], hash, size;
-	char filename[ MAX_QPATH ];
-	long sum = 0;
-
-	ri.Printf( PRINT_DEVELOPER, "----- ScanAndLoadGuideFiles -----\n" );
-
-	s_guideText = NULL;
-	Com_Memset( guideTextHashTableSizes, 0, sizeof( guideTextHashTableSizes ) );
-	Com_Memset( guideTextHashTable, 0, sizeof( guideTextHashTable ) );
-
-	// scan for guide files
-	guideFiles = ri.FS_ListFiles( "guides", ".guide", &numGuides );
-
-	if ( !guideFiles || !numGuides )
-	{
-		ri.Printf( PRINT_DEVELOPER, "WARNING: no shader guide files found\n" );
-		return;
-	}
-
-	if ( numGuides > MAX_GUIDE_FILES )
-	{
-		numGuides = MAX_GUIDE_FILES;
-	}
-
-	// build single large buffer
-	for ( i = 0; i < numGuides; i++ )
-	{
-		Com_sprintf( filename, sizeof( filename ), "guides/%s", guideFiles[ i ] );
-
-		sum += ri.FS_ReadFile( filename, NULL );
-	}
-
-	s_guideText = (char*) ri.Hunk_Alloc( sum + numGuides * 2, h_low );
-
-	// load in reverse order, so doubled templates are overridden properly
-	for ( i = numGuides - 1; i >= 0; i-- )
-	{
-		Com_sprintf( filename, sizeof( filename ), "guides/%s", guideFiles[ i ] );
-
-		ri.Printf( PRINT_DEVELOPER, "...loading '%s'\n", filename );
-		sum += ri.FS_ReadFile( filename, ( void ** ) &buffers[ i ] );
-
-		if ( !buffers[ i ] )
-		{
-			ri.Error( ERR_DROP, "Couldn't load %s", filename );
-		}
-
-		strcat( s_guideText, "\n" );
-		p = &s_guideText[ strlen( s_guideText ) ];
-		strcat( s_guideText, buffers[ i ] );
-		ri.FS_FreeFile( buffers[ i ] );
-		buffers[ i ] = p;
-		COM_Compress( p );
-	}
-
-	size = 0;
-
-	//
-	for ( i = 0; i < numGuides; i++ )
-	{
-		Com_sprintf( filename, sizeof( filename ), "guides/%s", guideFiles[ i ] );
-
-		COM_BeginParseSession( filename );
-
-		// pointer to the first shader file
-		p = buffers[ i ];
-
-		// look for label
-		while ( 1 )
-		{
-			token = COM_ParseExt2( &p, qtrue );
-
-			if ( token[ 0 ] == 0 )
-			{
-				break;
-			}
-
-			if ( Q_stricmp( token, "guide" ) && Q_stricmp( token, "inlineGuide" ) )
-			{
-				COM_ParseWarning( "expected guide or inlineGuide found '%s'", token );
-				break;
-			}
-
-			// parse guide name
-			token = COM_ParseExt2( &p, qtrue );
-
-			hash = generateHashValue( token, MAX_GUIDETEXT_HASH );
-			guideTextHashTableSizes[ hash ]++;
-			size++;
-
-			// skip parameters
-			token = COM_ParseExt2( &p, qtrue );
-
-			if ( Q_stricmp( token, "(" ) )
-			{
-				COM_ParseWarning( "expected ( found '%s'", token );
-				break;
-			}
-
-			while ( 1 )
-			{
-				token = COM_ParseExt2( &p, qtrue );
-
-				if ( !token[ 0 ] )
-				{
-					break;
-				}
-
-				if ( !Q_stricmp( token, ")" ) )
-				{
-					break;
-				}
-			}
-
-			if ( Q_stricmp( token, ")" ) )
-			{
-				COM_ParseWarning( "expected ) found '%s'", token );
-				break;
-			}
-
-			// skip guide body
-			SkipBracedSection( &p );
-
-			// if we passed the pointer to the next shader file
-			if ( i < numGuides - 1 )
-			{
-				if ( p > buffers[ i + 1 ] )
-				{
-					break;
-				}
-			}
-		}
-	}
-
-	size += MAX_GUIDETEXT_HASH;
-
-	hashMem = (char**) ri.Hunk_Alloc( size * sizeof( char * ), h_low );
-
-	for ( i = 0; i < MAX_GUIDETEXT_HASH; i++ )
-	{
-		guideTextHashTable[ i ] = hashMem;
-		hashMem += guideTextHashTableSizes[ i ] + 1;
-	}
-
-	Com_Memset( guideTextHashTableSizes, 0, sizeof( guideTextHashTableSizes ) );
-
-	//
-	for ( i = 0; i < numGuides; i++ )
-	{
-		Com_sprintf( filename, sizeof( filename ), "guides/%s", guideFiles[ i ] );
-
-		COM_BeginParseSession( filename );
-
-		// pointer to the first shader file
-		p = buffers[ i ];
-
-		// look for label
-		while ( 1 )
-		{
-			token = COM_ParseExt2( &p, qtrue );
-
-			if ( token[ 0 ] == 0 )
-			{
-				break;
-			}
-
-			if ( Q_stricmp( token, "guide" ) && Q_stricmp( token, "inlineGuide" ) )
-			{
-				COM_ParseWarning( "expected guide or inlineGuide found '%s'", token );
-				break;
-			}
-
-			// parse guide name
-			oldp = p;
-			token = COM_ParseExt2( &p, qtrue );
-
-			hash = generateHashValue( token, MAX_GUIDETEXT_HASH );
-			guideTextHashTable[ hash ][ guideTextHashTableSizes[ hash ]++ ] = oldp;
-
-			// skip parameters
-			token = COM_ParseExt2( &p, qtrue );
-
-			if ( Q_stricmp( token, "(" ) )
-			{
-				COM_ParseWarning( "expected ( found '%s'", token );
-				break;
-			}
-
-			while ( 1 )
-			{
-				token = COM_ParseExt2( &p, qtrue );
-
-				if ( !token[ 0 ] )
-				{
-					break;
-				}
-
-				if ( !Q_stricmp( token, ")" ) )
-				{
-					break;
-				}
-			}
-
-			if ( Q_stricmp( token, ")" ) )
-			{
-				COM_ParseWarning( "expected ) found '%s'", token );
-				break;
-			}
-
-			// skip guide body
-			SkipBracedSection( &p );
-
-			// if we passed the pointer to the next shader file
-			if ( i < numGuides - 1 )
-			{
-				if ( p > buffers[ i + 1 ] )
-				{
-					break;
-				}
-			}
-		}
-	}
-
-	// free up memory
-	ri.FS_FreeFileList( guideFiles );
-}
-
-/*
-====================
 ScanAndLoadShaderFiles
 
 Finds and loads all .shader files, combining them into
@@ -6095,8 +5533,8 @@ static void ScanAndLoadShaderFiles( void )
 				break;
 			}
 
-			// Step over the "table"/"guide" and the name
-			if ( !Q_stricmp( token, "table" ) || !Q_stricmp( token, "guide" ) )
+			// Step over the "table" and the name
+			if ( !Q_stricmp( token, "table" ) )
 			{
 				token = COM_ParseExt2( &p, qtrue );
 
@@ -6172,48 +5610,6 @@ static void ScanAndLoadShaderFiles( void )
 			token = COM_ParseExt2( &p, qtrue );
 
 			SkipBracedSection( &p );
-		}
-		// support shader templates
-		else if ( !Q_stricmp( token, "guide" ) )
-		{
-			// parse shader name
-			token = COM_ParseExt2( &p, qtrue );
-			hash = generateHashValue( token, MAX_SHADERTEXT_HASH );
-			shaderTextHashTableSizes[ hash ]++;
-			size++;
-
-			// skip guide name
-			token = COM_ParseExt2( &p, qtrue );
-
-			// skip parameters
-			token = COM_ParseExt2( &p, qtrue );
-
-			if ( Q_stricmp( token, "(" ) )
-			{
-				ri.Printf( PRINT_WARNING, "expected ( found '%s'\n", token );
-				break;
-			}
-
-			while ( 1 )
-			{
-				token = COM_ParseExt2( &p, qtrue );
-
-				if ( !token[ 0 ] )
-				{
-					break;
-				}
-
-				if ( !Q_stricmp( token, ")" ) )
-				{
-					break;
-				}
-			}
-
-			if ( Q_stricmp( token, ")" ) )
-			{
-				ri.Printf( PRINT_WARNING, "expected ( found '%s'\n", token );
-				break;
-			}
 		}
 		else
 		{
@@ -6324,49 +5720,6 @@ static void ScanAndLoadShaderFiles( void )
 				GeneratePermanentShaderTable( values, numValues );
 			}
 		}
-		// support shader templates
-		else if ( !Q_stricmp( token, "guide" ) )
-		{
-			// parse shader name
-			oldp = p;
-			token = COM_ParseExt2( &p, qtrue );
-
-			hash = generateHashValue( token, MAX_SHADERTEXT_HASH );
-			shaderTextHashTable[ hash ][ shaderTextHashTableSizes[ hash ]++ ] = oldp;
-
-			// skip guide name
-			token = COM_ParseExt2( &p, qtrue );
-
-			// skip parameters
-			token = COM_ParseExt2( &p, qtrue );
-
-			if ( Q_stricmp( token, "(" ) )
-			{
-				ri.Printf( PRINT_WARNING, "expected ( found '%s'\n", token );
-				break;
-			}
-
-			while ( 1 )
-			{
-				token = COM_ParseExt2( &p, qtrue );
-
-				if ( !token[ 0 ] )
-				{
-					break;
-				}
-
-				if ( !Q_stricmp( token, ")" ) )
-				{
-					break;
-				}
-			}
-
-			if ( Q_stricmp( token, ")" ) )
-			{
-				ri.Printf( PRINT_WARNING, "expected ( found '%s'\n", token );
-				break;
-			}
-		}
 		else
 		{
 			hash = generateHashValue( token, MAX_SHADERTEXT_HASH );
@@ -6425,8 +5778,6 @@ void R_InitShaders( void )
 	Com_Memset( shaderHashTable, 0, sizeof( shaderHashTable ) );
 
 	CreateInternalShaders();
-
-	ScanAndLoadGuideFiles();
 
 	ScanAndLoadShaderFiles();
 
