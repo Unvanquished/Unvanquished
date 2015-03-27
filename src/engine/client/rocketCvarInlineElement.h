@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #ifndef ROCKETCVARINLINEELEMENT_H
 #define ROCKETCVARINLINEELEMENT_H
 
-#include "../framework/CvarSystem.h"
+#include "framework/CvarSystem.h"
 #include <Rocket/Core/Core.h>
 
 class RocketCvarInlineElement : public Rocket::Core::Element

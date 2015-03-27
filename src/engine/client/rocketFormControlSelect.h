@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #define ROCKETFORMCONTROLSELECT_H
 
 #include "client.h"
-#include "../framework/CvarSystem.h"
+#include "framework/CvarSystem.h"
 #include <Rocket/Core/Core.h>
 #include <Rocket/Controls/ElementFormControlSelect.h>
 

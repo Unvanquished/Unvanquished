@@ -32,9 +32,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
-#include "../renderer/tr_public.h"
+#include "qcommon/q_shared.h"
+#include "qcommon/qcommon.h"
+#include "renderer/tr_public.h"
 
 
 void RE_Shutdown( qboolean destroyWindow ) { }

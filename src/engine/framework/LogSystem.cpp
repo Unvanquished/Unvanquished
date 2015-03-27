@@ -28,8 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
+#include "qcommon/q_shared.h"
+#include "qcommon/qcommon.h"
 #include "LogSystem.h"
 
 namespace Log {
@@ -45,8 +45,8 @@ namespace Log {
 
         for (int i = 0; i < MAX_TARGET_ID; i++) {
             if ((targetControl >> i) & 1) {
-                auto& buffer = buffers[i];
                 std::lock_guard<std::recursive_mutex> guard(bufferLocks[i]);
+                auto& buffer = buffers[i];
 
                 buffer.push_back(event);
 
@@ -55,9 +55,7 @@ namespace Log {
                     processed = targets[i]->Process(buffer);
                 }
 
-                if (processed) {
-                    buffer.clear();
-                } else if (buffer.size() > 512) {
+                if (processed || buffer.size() > 512) {
                     buffer.clear();
                 }
             }
@@ -84,8 +82,8 @@ namespace Log {
                 this->Register(TTY_CONSOLE);
             }
 
-            virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
-                for (Log::Event event : events)  {
+            virtual bool Process(const std::vector<Log::Event>& events) OVERRIDE {
+                for (auto& event : events)  {
                     CON_LogWrite(event.text.c_str());
                     CON_Print(event.text.c_str());
                     CON_LogWrite("\n");
@@ -110,7 +108,7 @@ namespace Log {
                 this->Register(LOGFILE);
             }
 
-            virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
+            virtual bool Process(const std::vector<Log::Event>& events) OVERRIDE {
                 //If we have no log file drop the events
                 if (not useLogFile.Get()) {
                     return true;
@@ -138,7 +136,7 @@ namespace Log {
                 }
 
                 if (logFile != 0) {
-                    for (Log::Event event : events) {
+                    for (auto& event : events) {
                         std::string text = event.text + "\n";
                         FS_Write(text.c_str(), text.length(), logFile);
                     }
@@ -156,25 +154,4 @@ namespace Log {
     };
 
     static LogFileTarget logfile;
-
-    //Temp targets that forward to the regular Com_Printf.
-    class LegacyTarget : public Target {
-        public:
-            LegacyTarget(std::string name, TargetId id): name(std::move(name)) {
-                this->Register(id);
-            }
-
-            virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
-                Q_UNUSED(events);
-
-                return true;
-                //Com_Printf("%s: %s\n", name.c_str(), event.text.c_str());
-            }
-
-        private:
-            std::string name;
-    };
-
-    static LegacyTarget console4("GameLog", GAMELOG);
-    static LegacyTarget console5("HUD", HUD);
 }

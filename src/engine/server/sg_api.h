@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
-#include "../botlib/bot_api.h"
+#include "engine/qcommon/q_shared.h"
+#include "engine/botlib/bot_api.h"
 
 #define GAME_API_VERSION          1
 

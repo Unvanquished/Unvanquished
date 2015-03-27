@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "server.h"
 
-#include "../framework/CommandSystem.h"
+#include "framework/CommandSystem.h"
 
 #ifdef USE_VOIP
 cvar_t         *sv_voip;
@@ -1516,7 +1516,7 @@ int SV_LoadTag( const char *mod_name )
  */
 #define TRANSLATE_FUNC        Trans_GettextGame
 #define PLURAL_TRANSLATE_FUNC Trans_GettextGamePlural
-#include "../qcommon/print_translated.h"
+#include "qcommon/print_translated.h"
 
 void SV_PrintTranslatedText( const char *text, qboolean broadcast, qboolean plural )
 {

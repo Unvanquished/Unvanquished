@@ -38,11 +38,11 @@ Maryland 20850 USA.
 #include "cg_msgdef.h"
 
 #include "libmumblelink.h"
-#include "../qcommon/crypto.h"
+#include "qcommon/crypto.h"
 
-#include "../framework/CommonVMServices.h"
-#include "../framework/CommandSystem.h"
-#include "../framework/CvarSystem.h"
+#include "framework/CommonVMServices.h"
+#include "framework/CommandSystem.h"
+#include "framework/CvarSystem.h"
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)

@@ -32,8 +32,6 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// cmodel.c -- model loading
-
 #include "cm_local.h"
 
 // to allow boxes to be treated as brush models, we allocate

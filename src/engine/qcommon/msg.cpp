@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
+#include "qcommon/q_shared.h"
 #include "qcommon.h"
 
 static huffman_t msgHuff;

@@ -88,13 +88,8 @@ void CG_Rocket_Init( void )
 	// Init Rocket
 	trap_Rocket_Init();
 
-	// Dynamic memory
-	BG_InitMemory();
-
-
 	// rocket cvars
 	CG_RegisterRocketCvars();
-
 
 	// Intialize data sources...
 	CG_Rocket_RegisterDataSources();

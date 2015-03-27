@@ -36,9 +36,9 @@ Maryland 20850 USA.
 
 #include "server.h"
 #include "sg_msgdef.h"
-#include "../qcommon/crypto.h"
-#include "../framework/CommonVMServices.h"
-#include "../framework/CommandSystem.h"
+#include "qcommon/crypto.h"
+#include "framework/CommonVMServices.h"
+#include "framework/CommandSystem.h"
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part

@@ -28,12 +28,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../libs/minizip/unzip.h"
+#include "libs/minizip/unzip.h"
 
 #ifdef BUILD_VM
-#include "../gamelogic/shared/VMMain.h"
+#include "gamelogic/shared/VMMain.h"
 #else
-#include "../engine/qcommon/qcommon.h"
+#include "engine/qcommon/qcommon.h"
 #endif
 
 #include "IPC/CommonSyscalls.h"

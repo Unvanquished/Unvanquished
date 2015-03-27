@@ -180,9 +180,9 @@ Maryland 20850 USA.
 
 //=============================================================
 
-#include "../../common/Compiler.h"
-#include "../../common/Platform.h"
-#include "../../common/Endian.h"
+#include "common/Compiler.h"
+#include "common/Platform.h"
+#include "common/Endian.h"
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;
@@ -2607,9 +2607,6 @@ int        Com_GMTime( qtime_t *qtime );
 #define RSA_KEY_LENGTH      2048
 #define RSA_STRING_LENGTH   ( RSA_KEY_LENGTH / 4 + 1 )
 
-// Include common for C++ code
-#ifdef __cplusplus
-#include "../../common/Common.h"
-#endif // __cplusplus
+#include "common/Common.h"
 
 #endif /* Q_SHARED_H_ */

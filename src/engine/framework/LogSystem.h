@@ -55,7 +55,7 @@ namespace Log {
             // return true iff the logs were processed (on false the log system
             // retains them for later).
             // Can be called by any thread.
-            virtual bool Process(std::vector<Log::Event>& events) = 0;
+            virtual bool Process(const std::vector<Log::Event>& events) = 0;
 
         protected:
             // Register itself as the target with this id

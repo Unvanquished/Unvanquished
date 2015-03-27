@@ -26,11 +26,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <SDL_thread.h>
 #endif
 
-#include "../renderer/tr_local.h"
+#include "renderer/tr_local.h"
 
 #include "sdl_icon.h"
 #include "SDL_syswm.h"
-#include "../framework/CommandSystem.h"
+#include "framework/CommandSystem.h"
 
 SDL_Window         *window = NULL;
 static SDL_GLContext glContext = NULL;
