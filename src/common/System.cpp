@@ -318,7 +318,7 @@ intptr_t DynamicLib::InternalLoadSym(Str::StringRef sym, std::string& errorStrin
 
 // Global operator new/delete override to not throw an exception when out of
 // memory. Instead, it is preferable to simply crash with an error.
-/*void* operator new(size_t n)
+void* operator new(size_t n)
 {
 	void* p = malloc(n);
 	if (!p)
@@ -328,4 +328,4 @@ intptr_t DynamicLib::InternalLoadSym(Str::StringRef sym, std::string& errorStrin
 void operator delete(void* p) NOEXCEPT
 {
 	free(p);
-}*/
+}
