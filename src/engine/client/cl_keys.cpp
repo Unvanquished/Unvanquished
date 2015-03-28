@@ -391,7 +391,7 @@ void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int si
     // draw the cursor
     if (showCursor) {
         //Blink changes state approximately 4 times per second
-        if ((int)(cls.realtime >> 8) & 1) {
+        if (cls.realtime >> 8 & 1) {
             return;
         }
 

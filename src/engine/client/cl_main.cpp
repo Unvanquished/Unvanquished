@@ -2794,14 +2794,14 @@ int CL_GSRSequenceInformation( byte **data )
 		return -1;
 	}
 
-	ind = strtol( p, ( char ** ) &e, 10 );
+	ind = strtol( p, &e, 10 );
 
 	if ( *e++ != '\0' )
 	{
 		return -1;
 	}
 
-	num = strtol( e, ( char ** ) &p, 10 );
+	num = strtol( e, &p, 10 );
 
 	if ( *p++ != '\0' )
 	{

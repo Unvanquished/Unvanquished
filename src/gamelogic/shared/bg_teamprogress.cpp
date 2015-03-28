@@ -416,30 +416,30 @@ int BG_UnlockableTypeIndex( int num )
 
 bool BG_WeaponUnlocked( int weapon )
 {
-	CheckStatusKnowledge( UNLT_WEAPON, ( int )weapon );
+	CheckStatusKnowledge( UNLT_WEAPON, weapon);
 
-	return Unlocked( UNLT_WEAPON, ( int )weapon );
+	return Unlocked( UNLT_WEAPON, weapon);
 }
 
 bool BG_UpgradeUnlocked( int upgrade )
 {
-	CheckStatusKnowledge( UNLT_UPGRADE, ( int )upgrade );
+	CheckStatusKnowledge( UNLT_UPGRADE, upgrade);
 
-	return Unlocked( UNLT_UPGRADE, ( int )upgrade );
+	return Unlocked( UNLT_UPGRADE, upgrade);
 }
 
 bool BG_BuildableUnlocked( int buildable )
 {
-	CheckStatusKnowledge( UNLT_BUILDABLE, ( int )buildable );
+	CheckStatusKnowledge( UNLT_BUILDABLE, buildable);
 
-	return Unlocked( UNLT_BUILDABLE, ( int )buildable );
+	return Unlocked( UNLT_BUILDABLE, buildable);
 }
 
 bool BG_ClassUnlocked( int class_ )
 {
-	CheckStatusKnowledge( UNLT_CLASS, ( int )class_ );
+	CheckStatusKnowledge( UNLT_CLASS, class_);
 
-	return Unlocked( UNLT_CLASS, ( int )class_ );
+	return Unlocked( UNLT_CLASS, class_);
 }
 
 static int MomentumNextThreshold( int threshold )

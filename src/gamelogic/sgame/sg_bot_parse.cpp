@@ -1350,7 +1350,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	node = ReadNode( &current );
 	if ( node )
 	{
-		tree->root = ( AIGenericNode_t * ) node;
+		tree->root = node;
 	}
 	else
 	{
@@ -1607,7 +1607,7 @@ void FreeBehaviorTree( AIBehaviorTree_t *tree )
 {
 	if ( tree )
 	{
-		FreeNode( ( AIGenericNode_t * ) tree->root );
+		FreeNode(tree->root);
 
 		BG_Free( tree );
 	}

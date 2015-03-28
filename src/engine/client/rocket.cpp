@@ -258,7 +258,7 @@ public:
 	bool GenerateTexture( Rocket::Core::TextureHandle& textureHandle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& sourceDimensions )
 	{
 
-		textureHandle = re.GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
+		textureHandle = re.GenerateTexture(source, sourceDimensions.x, sourceDimensions.y );
 		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
 
 		return ( textureHandle > 0 );

@@ -507,7 +507,7 @@ void SV_SpawnServer( const char *server )
 
 	// get a new checksum feed and restart the file system
 	srand( Sys_Milliseconds() );
-	sv.checksumFeed = ( ( ( int ) rand() << 16 ) ^ rand() ) ^ Sys_Milliseconds();
+	sv.checksumFeed = ( ( rand() << 16 ) ^ rand() ) ^ Sys_Milliseconds();
 
 	FS::PakPath::ClearPaks();
 	FS_LoadBasePak();

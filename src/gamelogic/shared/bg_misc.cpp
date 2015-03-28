@@ -1075,7 +1075,7 @@ void BG_UnloadAllConfigs( void )
 
     for ( i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
     {
-        BG_Free( (char *)BG_ClassModelConfig( i )->humanName );
+        BG_Free(BG_ClassModelConfig( i )->humanName);
     }
 
     for ( i = 0; i < bg_numWeapons; i++ )

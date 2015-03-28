@@ -241,7 +241,7 @@ static INLINE void rgbe2float( float *red, float *green, float *blue, unsigned c
 	if ( rgbe[ 3 ] )
 	{
 		/*nonzero pixel */
-		f = ldexp( 1.0, rgbe[ 3 ] - ( int )( 128 + 8 ) );
+		f = ldexp( 1.0, rgbe[ 3 ] - (128 + 8));
 		e = ( rgbe[ 3 ] - 128 ) / 4.0f;
 
 		// RB: exp2 not defined by MSVC
@@ -4056,8 +4056,8 @@ void R_LoadLightGrid( lump_t *l )
 
 	ri.Printf( PRINT_DEVELOPER, "grid size (%i %i %i)\n", ( int ) w->lightGridSize[ 0 ], ( int ) w->lightGridSize[ 1 ],
 	           ( int ) w->lightGridSize[ 2 ] );
-	ri.Printf( PRINT_DEVELOPER, "grid bounds (%i %i %i)\n", ( int ) w->lightGridBounds[ 0 ], ( int ) w->lightGridBounds[ 1 ],
-	           ( int ) w->lightGridBounds[ 2 ] );
+	ri.Printf( PRINT_DEVELOPER, "grid bounds (%i %i %i)\n", w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
+			   w->lightGridBounds[ 2 ]);
 
 	if ( l->filelen != w->numLightGridPoints * sizeof( dgridPoint_t ) )
 	{
@@ -5327,8 +5327,8 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 
 			// add everything needed to the light
 			iaVBO = R_CreateInteractionVBO( light );
-			iaVBO->shader = ( struct shader_s * ) shader;
-			iaVBO->vboLightMesh = ( struct srfVBOMesh_s * ) vboSurf;
+			iaVBO->shader = shader;
+			iaVBO->vboLightMesh = vboSurf;
 
 			c_vboLightSurfaces++;
 		}
@@ -5699,8 +5699,8 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 
 			// add everything needed to the light
 			iaVBO = R_CreateInteractionVBO( light );
-			iaVBO->shader = ( struct shader_s * ) shader;
-			iaVBO->vboShadowMesh = ( struct srfVBOMesh_s * ) vboSurf;
+			iaVBO->shader = shader;
+			iaVBO->vboShadowMesh = vboSurf;
 
 			c_vboShadowSurfaces++;
 		}
@@ -6054,8 +6054,8 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 				// add everything needed to the light
 				iaVBO = R_CreateInteractionVBO( light );
 				iaVBO->cubeSideBits = ( 1 << cubeSide );
-				iaVBO->shader = ( struct shader_s * ) shader;
-				iaVBO->vboShadowMesh = ( struct srfVBOMesh_s * ) vboSurf;
+				iaVBO->shader = shader;
+				iaVBO->vboShadowMesh = vboSurf;
 
 				c_vboShadowSurfaces++;
 			}
@@ -6256,9 +6256,9 @@ unsigned int VertexCoordGenerateHash( const vec3_t xyz )
 	vec3_t xyz_epsilonspace;
 
 	VectorScale( xyz, HASH_XYZ_EPSILONSPACE_MULTIPLIER, xyz_epsilonspace );
-	xyz_epsilonspace[ 0 ] = ( double ) floor( xyz_epsilonspace[ 0 ] );
-	xyz_epsilonspace[ 1 ] = ( double ) floor( xyz_epsilonspace[ 1 ] );
-	xyz_epsilonspace[ 2 ] = ( double ) floor( xyz_epsilonspace[ 2 ] );
+	xyz_epsilonspace[ 0 ] = floor( xyz_epsilonspace[ 0 ] );
+	xyz_epsilonspace[ 1 ] = floor( xyz_epsilonspace[ 1 ] );
+	xyz_epsilonspace[ 2 ] = floor( xyz_epsilonspace[ 2 ] );
 
 	hash += ~( * ( ( unsigned int * ) &xyz_epsilonspace[ 0 ] ) << 15 );
 	hash ^= ( * ( ( unsigned int * ) &xyz_epsilonspace[ 0 ] ) >> 10 );

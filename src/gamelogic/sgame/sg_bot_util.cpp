@@ -295,7 +295,7 @@ float PercentAmmoRemaining( weapon_t weapon, playerState_t *ps )
 		totalMaxAmmo = ( float ) maxAmmo + maxClips * maxAmmo;
 		totalAmmo = ( float ) ps->ammo + ps->clips * maxAmmo;
 
-		return ( float ) totalAmmo / totalMaxAmmo;
+		return totalAmmo / totalMaxAmmo;
 	}
 	else
 	{
@@ -2059,12 +2059,12 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 	if ( self->botMind->botTeam == TEAM_HUMANS )
 	{
 		self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-		self->botMind->botSkill.aimShake = ( int ) ( 10 - skill );
+		self->botMind->botSkill.aimShake = 10 - skill;
 	}
 	else
 	{
 		self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-		self->botMind->botSkill.aimShake = ( int ) ( 10 - skill );
+		self->botMind->botSkill.aimShake = 10 - skill;
 	}
 }
 

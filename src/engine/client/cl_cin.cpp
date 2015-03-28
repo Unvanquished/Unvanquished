@@ -202,7 +202,7 @@ static void RllSetupTable( void )
 	for ( z = 0; z < 128; z++ )
 	{
 		cin.sqrTable[ z ] = ( short )( z * z );
-		cin.sqrTable[ z + 128 ] = ( short )( -cin.sqrTable[ z ] );
+		cin.sqrTable[ z + 128 ] = -cin.sqrTable[ z ];
 	}
 }
 
@@ -583,7 +583,7 @@ void ROQ_GenYUVTables( void )
 		ROQ_VR_tab[ i ] = ( long )( ( t_vr * x ) + ( 1 << 5 ) );
 		ROQ_UG_tab[ i ] = ( long )( ( -t_ug * x ) );
 		ROQ_VG_tab[ i ] = ( long )( ( -t_vg * x ) + ( 1 << 5 ) );
-		ROQ_YY_tab[ i ] = ( long )( ( i << 6 ) | ( i >> 2 ) );
+		ROQ_YY_tab[ i ] = ( i << 6 ) | ( i >> 2 );
 	}
 }
 
@@ -633,7 +633,7 @@ void ROQ_GenYUVTables( void )
 
 static unsigned short yuv_to_rgb( long y, long u, long v )
 {
-	long r, g, b, YY = ( long )( ROQ_YY_tab[( y ) ] );
+	long r, g, b, YY = ROQ_YY_tab[( y ) ];
 
 	r = ( YY + ROQ_VR_tab[ v ] ) >> 9;
 	g = ( YY + ROQ_UG_tab[ u ] + ROQ_VG_tab[ v ] ) >> 8;
@@ -671,7 +671,7 @@ void Frame_yuv_to_rgb24( const unsigned char *y, const unsigned char *u, const u
 	{
 		for ( i = 0; i < width; ++i )
 		{
-			YY = ( long )( ROQ_YY_tab[( y[( i >> yWShift ) + ( j >> yHShift ) * y_stride ] ) ] );
+			YY = ROQ_YY_tab[( y[( i >> yWShift ) + ( j >> yHShift ) * y_stride ] ) ];
 			uvI = ( i >> uvWShift ) + ( j >> uvHShift ) * uv_stride;
 
 			r = ( YY + ROQ_VR_tab[ v[ uvI ] ] ) >> 6;
@@ -723,7 +723,7 @@ void Frame_yuv_to_rgb24( const unsigned char *y, const unsigned char *u, const u
 ******************************************************************************/
 static unsigned int yuv_to_rgb24( long y, long u, long v )
 {
-	long r, g, b, YY = ( long )( ROQ_YY_tab[( y ) ] );
+	long r, g, b, YY = ROQ_YY_tab[( y ) ];
 
 	r = ( YY + ROQ_VR_tab[ v ] ) >> 6;
 	g = ( YY + ROQ_UG_tab[ u ] + ROQ_VG_tab[ v ] ) >> 6;

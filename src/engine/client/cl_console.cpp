@@ -943,7 +943,7 @@ static float Con_MarginFadeAlpha( float alpha, float lineDrawPosition, int topMa
 {
 	if ( lineDrawPosition > bottomMargin && lineDrawPosition <= bottomMargin + charHeight )
 	{
-		return alpha * (float)( bottomMargin + charHeight - lineDrawPosition ) / (float) charHeight;
+		return alpha * (bottomMargin + charHeight - lineDrawPosition) / (float) charHeight;
 	}
 
 	if ( lineDrawPosition < topMargin || lineDrawPosition >= topMargin + charHeight )
@@ -951,7 +951,7 @@ static float Con_MarginFadeAlpha( float alpha, float lineDrawPosition, int topMa
 		return alpha;
 	}
 
-	return alpha * (float)( lineDrawPosition - topMargin ) / (float) charHeight;
+	return alpha * (lineDrawPosition - topMargin) / (float) charHeight;
 }
 
 
