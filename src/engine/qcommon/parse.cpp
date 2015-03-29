@@ -233,7 +233,7 @@ typedef struct directive_s
 
 #define DEFINEHASHSIZE 1024
 
-static int      Parse_ReadToken( source_t *source, token_t *token );
+static bool Parse_ReadToken( source_t *source, token_t *token );
 static bool Parse_AddDefineToSourceFromString( source_t *source,
     char *string );
 
@@ -3872,7 +3872,7 @@ static bool Parse_ReadEnumeration( source_t *source )
 Parse_ReadToken
 ===============
 */
-static int Parse_ReadToken( source_t *source, token_t *token )
+static bool Parse_ReadToken( source_t *source, token_t *token )
 {
 	define_t *define;
 
@@ -4302,10 +4302,10 @@ int Parse_FreeSourceHandle( int handle )
 Parse_ReadTokenHandle
 ===============
 */
-int Parse_ReadTokenHandle( int handle, pc_token_t *pc_token )
+bool Parse_ReadTokenHandle( int handle, pc_token_t *pc_token )
 {
 	token_t token;
-	int     ret;
+	bool     ret;
 
 	if ( handle < 1 || handle >= MAX_SOURCEFILES )
 	{

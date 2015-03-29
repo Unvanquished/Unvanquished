@@ -31,7 +31,7 @@ int         trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode
 int         trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 int         trap_Parse_LoadSource( const char *filename );
 int         trap_Parse_FreeSource( int handle );
-int         trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
+bool        trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
 int         trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
 #ifdef BUILD_CGAME
@@ -153,9 +153,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 	pc_token_t token;
 	bool   found = false;
 	bool   foundText = false;
-	bool   foundToken = false;
-
-	foundToken = trap_Parse_ReadToken( handle, &token );
+	bool   foundToken = trap_Parse_ReadToken( handle, &token );
 
 	while ( foundToken )
 	{

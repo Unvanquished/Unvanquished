@@ -217,7 +217,7 @@ std::vector<std::vector<int>> trap_Key_GetKeynumForBinds(int team, std::vector<s
 int             trap_Parse_AddGlobalDefine( const char *define );
 int             trap_Parse_LoadSource( const char *filename );
 int             trap_Parse_FreeSource( int handle );
-int             trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
+bool             trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
 int             trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
 void            trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
 void            trap_CG_TranslateString( const char *string, char *buf );

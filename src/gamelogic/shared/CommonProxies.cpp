@@ -615,9 +615,9 @@ int trap_Parse_FreeSource(int handle)
 	return res;
 }
 
-int trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
+bool trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
 {
-	int res;
+	bool res;
 	VM::SendMsg<VM::ParseReadTokenMsg>(handle, res, *pc_token);
 	return res;
 }

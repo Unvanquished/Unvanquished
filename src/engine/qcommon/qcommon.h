@@ -979,7 +979,7 @@ extern huffman_t clientHuffTables;
 int  Parse_AddGlobalDefine( const char *string );
 int  Parse_LoadSourceHandle( const char *filename );
 int  Parse_FreeSourceHandle( int handle );
-int  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );
+bool  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );
 int  Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
 void Com_RandomBytes( byte *string, int len );
