@@ -98,28 +98,28 @@ void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, sha
 	}
 }
 
-static inline void AddGLSLDefine( std::string &defines, const std::string define, int value )
+static inline void AddGLSLDefine( std::string& defines, const std::string& define, int value )
 {
 	defines += "#ifndef " + define + "\n#define " + define + " ";
 	defines += va( "%d\n", value );
 	defines += "#endif\n";
 }
 
-static inline void AddGLSLDefine( std::string &defines, const std::string define, float value )
+static inline void AddGLSLDefine( std::string& defines, const std::string& define, float value )
 {
 	defines += "#ifndef " + define + "\n#define " + define + " ";
 	defines += va( "%f\n", value );
 	defines += "#endif\n";
 }
 
-static inline void AddGLSLDefine( std::string &defines, const std::string define, float v1, float v2 )
+static inline void AddGLSLDefine( std::string& defines, const std::string& define, float v1, float v2 )
 {
 	defines += "#ifndef " + define + "\n#define " + define + " ";
 	defines += va( "vec2( %f, %f )\n", v1, v2 );
 	defines += "#endif\n";
 }
 
-static inline void AddGLSLDefine( std::string &defines, const std::string define )
+static inline void AddGLSLDefine( std::string& defines, const std::string& define )
 {
 	defines += "#ifndef " + define + "\n#define " + define + "\n#endif\n";
 }
