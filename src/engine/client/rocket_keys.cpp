@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 #include "rocket.h"
 #include "client.h"
-#include "../qcommon/q_unicode.h"
+#include "qcommon/q_unicode.h"
 
 using namespace Rocket::Core::Input;
 

@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
-#include "../../engine/qcommon/q_unicode.h"
+#include "engine/qcommon/q_unicode.h"
 
 static void G_admin_notIntermission( gentity_t *ent )
 {
@@ -5619,7 +5619,6 @@ void G_admin_cleanup( void )
 	}
 
 	g_admin_commands = NULL;
-	BG_DefragmentMemory();
 }
 
 qboolean G_admin_bot( gentity_t *ent )

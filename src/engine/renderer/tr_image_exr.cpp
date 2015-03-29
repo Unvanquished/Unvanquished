@@ -22,10 +22,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_image_exr.c
 
 //#include "tr_local.h"
-#include "../qcommon/q_shared.h"
+#include "qcommon/q_shared.h"
 
 //#include <OpenEXR/half.h>
-#include "../../libs/openexr/half.h"
+#include "libs/openexr/half.h"
 
 	void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height );
 

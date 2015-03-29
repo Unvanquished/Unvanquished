@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define COMMON_COMMON_H_
 
 // Compiler.h, Platform.h and Endian.h are included by q_shared.h
-#include "../engine/qcommon/q_shared.h"
+#include "engine/qcommon/q_shared.h"
 
 // Common headers
 #include "String.h"

@@ -88,9 +88,14 @@ namespace Log {
             template<typename ... Args>
             void Debug(Str::StringRef format, Args&& ... args);
 
-            void DoWarnCode(std::function<void()> code);
-            void DoNoticeCode(std::function<void()> code);
-            void DoDebugCode(std::function<void()> code);
+            template<typename F>
+            void DoWarnCode(F&& code);
+
+            template<typename F>
+            void DoNoticeCode(F&& code);
+
+            template<typename F>
+            void DoDebugCode(F&& code);
 
         private:
             // the cvar logs.logLevel.<name>
@@ -188,6 +193,27 @@ namespace Log {
             CodeSourceDebug(Str::Format(format, std::forward<Args>(args) ...));
         }
     }
+
+    template<typename F>
+    inline void Logger::DoWarnCode(F&& code) {
+        if (filterLevel.Get() <= LOG_WARNING) {
+            code();
+        }
+    };
+
+    template<typename F>
+    inline void Logger::DoNoticeCode(F&& code) {
+        if (filterLevel.Get() <= LOG_NOTICE) {
+            code();
+        }
+    };
+
+    template<typename F>
+    inline void Logger::DoDebugCode(F&& code) {
+        if (filterLevel.Get() <= LOG_DEBUG) {
+            code();
+        }
+    };
 
     // Quick Logs
 

@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "tr_local.h"
-#include "../../libs/crunch/crn_decomp.h"
+#include "libs/crunch/crn_decomp.h"
 
 void LoadCRN( const char *name, byte **data, int *width, int *height,
 	      int *numLayers, int *numMips, int *bits, byte alphaByte )

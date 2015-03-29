@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
-#include "../../engine/qcommon/q_unicode.h"
+#include "engine/qcommon/q_unicode.h"
 
 // sg_client.c -- client functions that don't happen every frame
 

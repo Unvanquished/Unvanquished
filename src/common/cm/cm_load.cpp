@@ -32,8 +32,6 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// cmodel.c -- model loading
-
 #include "cm_local.h"
 
 // to allow boxes to be treated as brush models, we allocate
@@ -675,9 +673,10 @@ void CMod_LoadEntityString( lump_t *l )
 	char keyname[ MAX_TOKEN_CHARS ];
 	char value[ MAX_TOKEN_CHARS ];
 
-	cm.entityString = ( char * ) CM_Alloc( l->filelen );
+	cm.entityString = ( char * ) CM_Alloc( l->filelen + 1);
 	cm.numEntityChars = l->filelen;
 	Com_Memcpy( cm.entityString, cmod_base + l->fileofs, l->filelen );
+	cm.entityString[l->filelen] = '\0';
 
 	p = cm.entityString;
 

@@ -79,8 +79,8 @@ Maryland 20850 USA.
 
 #include "tr_local.h"
 
-#include "../qcommon/qcommon.h"
-#include "../qcommon/q_unicode.h"
+#include "qcommon/qcommon.h"
+#include "qcommon/q_unicode.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

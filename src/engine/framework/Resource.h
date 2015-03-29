@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FRAMEWORK_RESOURCE_H_
 #define FRAMEWORK_RESOURCE_H_
 
-#include "../../common/Common.h"
+#include "common/Common.h"
 
 /*
  * Resource registration logic.
