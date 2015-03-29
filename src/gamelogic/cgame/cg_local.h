@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef CG_LOCAL_H
 #define CG_LOCAL_H
 
-#include "../../engine/qcommon/q_shared.h"
-#include "../../engine/renderer/tr_types.h"
-#include "../../engine/client/cg_api.h"
-#include "../shared/bg_public.h"
-#include "../../engine/client/keycodes.h"
+#include "engine/qcommon/q_shared.h"
+#include "engine/renderer/tr_types.h"
+#include "engine/client/cg_api.h"
+#include "shared/bg_public.h"
+#include "engine/client/keycodes.h"
 #include "cg_ui.h"
 
 // The entire cgame module is unloaded and reloaded on each level change,

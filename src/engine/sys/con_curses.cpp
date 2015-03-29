@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/q_unicode.h"
-#include "../qcommon/qcommon.h"
+#include "qcommon/q_shared.h"
+#include "qcommon/q_unicode.h"
+#include "qcommon/qcommon.h"
 
-#include "../framework/ConsoleField.h"
+#include "framework/ConsoleField.h"
 
 // curses.h defines COLOR_*, which are already defined in q_shared.h
 #undef COLOR_BLACK

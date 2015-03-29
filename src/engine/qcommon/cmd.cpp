@@ -34,11 +34,11 @@ Maryland 20850 USA.
 
 // cmd_c -- Quake script command processing module
 
-#include "../qcommon/q_shared.h"
+#include "qcommon/q_shared.h"
 #include "qcommon.h"
-#include "../client/keys.h"
+#include "client/keys.h"
 
-#include "../framework/CommandSystem.h"
+#include "framework/CommandSystem.h"
 
 #define MAX_CMD_BUFFER 131072
 

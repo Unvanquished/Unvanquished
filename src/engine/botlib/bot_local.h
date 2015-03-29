@@ -35,15 +35,15 @@ Maryland 20850 USA.
 #ifndef __BOT_LOCAL_H
 #define __BOT_LOCAL_H
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
+#include "qcommon/q_shared.h"
+#include "qcommon/qcommon.h"
 
-#include "../../libs/detour/DetourNavMeshBuilder.h"
-#include "../../libs/detour/DetourNavMeshQuery.h"
-#include "../../libs/detour/DetourPathCorridor.h"
-#include "../../libs/detour/DetourCommon.h"
-#include "../../libs/detour/DetourTileCache.h"
-#include "../../libs/detour/DetourTileCacheBuilder.h"
+#include "libs/detour/DetourNavMeshBuilder.h"
+#include "libs/detour/DetourNavMeshQuery.h"
+#include "libs/detour/DetourPathCorridor.h"
+#include "libs/detour/DetourCommon.h"
+#include "libs/detour/DetourTileCache.h"
+#include "libs/detour/DetourTileCacheBuilder.h"
 
 #include "bot_types.h"
 #include "bot_api.h"

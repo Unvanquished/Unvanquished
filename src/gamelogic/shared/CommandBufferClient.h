@@ -31,8 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef SHARED_COMMAND_BUFFER_CLIENT_H_
 #define SHARED_COMMAND_BUFFER_CLIENT_H_
 
-#include "../../common/IPC/CommandBuffer.h"
-#include "../../common/Serialize.h"
+#include "common/IPC/CommandBuffer.h"
+#include "common/Serialize.h"
 #include "VMMain.h"
 
 namespace IPC {

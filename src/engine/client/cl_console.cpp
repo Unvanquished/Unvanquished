@@ -36,8 +36,8 @@ Maryland 20850 USA.
 
 #include "revision.h"
 #include "client.h"
-#include "../qcommon/q_unicode.h"
-#include "../framework/LogSystem.h"
+#include "qcommon/q_unicode.h"
+#include "framework/LogSystem.h"
 
 
 #define CONSOLE_COLOR COLOR_WHITE //COLOR_BLACK
@@ -1369,7 +1369,7 @@ class GraphicalTarget : public Log::Target {
 			this->Register(Log::GRAPHICAL_CONSOLE);
 		}
 
-		virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
+		virtual bool Process(const std::vector<Log::Event>& events) OVERRIDE {
 			// for some demos we don't want to ever show anything on the console
 			// flush the buffer
 			if ( cl_noprint && cl_noprint->integer )
@@ -1382,7 +1382,7 @@ class GraphicalTarget : public Log::Target {
 				return false;
 			}
 
-			for (Log::Event event : events) {
+			for (auto& event : events) {
 				CL_ConsolePrint(std::move(event.text));
 				CL_ConsolePrint("\n");
 			}

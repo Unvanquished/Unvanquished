@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "server.h"
-#include "../framework/CvarSystem.h"
+#include "framework/CvarSystem.h"
 
 /*
 ===============================================================================

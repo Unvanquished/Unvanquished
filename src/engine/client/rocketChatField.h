@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #include <Rocket/Core/GeometryUtilities.h>
 #include "client.h"
 #include "rocket.h"
-#include "../framework/CommandSystem.h"
+#include "framework/CommandSystem.h"
 
 class RocketChatField : public Rocket::Core::Element, Rocket::Core::EventListener
 {

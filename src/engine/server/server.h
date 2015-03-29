@@ -35,12 +35,12 @@ Maryland 20850 USA.
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
-#include "../botlib/bot_api.h"
+#include "qcommon/q_shared.h"
+#include "qcommon/qcommon.h"
+#include "botlib/bot_api.h"
 #include "sg_api.h"
-#include "../framework/VirtualMachine.h"
-#include "../framework/CommonVMServices.h"
+#include "framework/VirtualMachine.h"
+#include "framework/CommonVMServices.h"
 
 //=============================================================================
 

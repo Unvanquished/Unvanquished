@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../Common.h"
+#include "common/Common.h"
 #include "Primitives.h"
 
 #ifdef _WIN32
@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #ifdef BUILD_VM
-#include "../../gamelogic/shared/VMMain.h"
+#include "gamelogic/shared/VMMain.h"
 #include "CommonSyscalls.h"
 #endif
 
@@ -53,10 +53,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef DLLEXPORT
 #undef NORETURN
 #undef NORETURN_PTR
-#include "../../libs/nacl/native_client/src/shared/imc/nacl_imc_c.h"
-#include "../../libs/nacl/native_client/src/public/imc_types.h"
-#include "../../libs/nacl/native_client/src/trusted/service_runtime/nacl_config.h"
-#include "../../libs/nacl/native_client/src/trusted/service_runtime/include/sys/fcntl.h"
+#include "libs/nacl/native_client/src/shared/imc/nacl_imc_c.h"
+#include "libs/nacl/native_client/src/public/imc_types.h"
+#include "libs/nacl/native_client/src/trusted/service_runtime/nacl_config.h"
+#include "libs/nacl/native_client/src/trusted/service_runtime/include/sys/fcntl.h"
 
 // Definitions taken from nacl_desc_base.h
 enum NaClDescTypeTag {

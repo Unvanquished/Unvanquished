@@ -26,12 +26,12 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define SG_LOCAL_H_
 
 // engine headers
-#include "../../engine/qcommon/q_shared.h"
-#include "../../engine/server/sg_api.h"
-#include "../../engine/botlib/bot_types.h"
+#include "engine/qcommon/q_shared.h"
+#include "engine/server/sg_api.h"
+#include "engine/botlib/bot_types.h"
 
 // shared gamelogic (bg) headers
-#include "../shared/bg_public.h"
+#include "shared/bg_public.h"
 
 // macros and common constants
 #include "sg_definitions.h"

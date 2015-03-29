@@ -28,8 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Common.h"
-#include "../../common/IPC/Channel.h"
+#include "common/Common.h"
+#include "common/IPC/Channel.h"
 
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_

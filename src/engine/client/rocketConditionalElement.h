@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #ifndef ROCKETCONDITIONALELEMENT_H
 #define ROCKETCONDITIONALELEMENT_H
-#include "../framework/CvarSystem.h"
+#include "framework/CvarSystem.h"
 #include <Rocket/Core/Core.h>
 
 class RocketConditionalElement : public Rocket::Core::Element

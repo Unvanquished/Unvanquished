@@ -28,8 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Common.h"
-#include "../../common/IPC/CommonSyscalls.h"
+#include "common/Common.h"
+#include "common/IPC/CommonSyscalls.h"
 #include "VMMain.h"
 
 // The old console command handler that should be defined in all VMs

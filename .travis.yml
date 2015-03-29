@@ -11,6 +11,7 @@ install:
   - sudo sh -c 'echo deb http://ppa.launchpad.net/purplekarrot/ppa/ubuntu precise main >>/etc/apt/sources.list'
   - sudo apt-key adv --keyserver x-hkp://pool.sks-keyservers.net --recv-key D4762858
   - sudo add-apt-repository ppa:zoogie/sdl2-snapshots -y
+  - sudo add-apt-repository ppa:kalakris/cmake -y
   - sudo apt-get -qq update
   - sudo apt-get -qq install libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libgeoip-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl2-dev libspeexdsp-dev libtheora-dev libvorbis-dev libopusfile-dev libxvidcore-dev nettle-dev zlib1g-dev cmake
 
@@ -21,7 +22,6 @@ before_script:
   - sudo patch /usr/include/c++/4.6/condition_variable < libstdc++4.6-thread-fix.patch;
 
 script:
-  - sed -i 's/POSITION_INDEPENDENT_CODE 1/COMPILE_FLAGS "-fPIC"/' CMakeLists.txt
   - mkdir -p build
   - cd build
   - CXXFLAGS="-D__extern_always_inline=inline" cmake -DCMAKE_BUILD_TYPE=Debug ..

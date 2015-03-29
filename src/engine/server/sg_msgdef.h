@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../../common/IPC/CommonSyscalls.h"
+#include "common/IPC/CommonSyscalls.h"
 
 // game-module-to-engine calls
 typedef enum gameImport_s
