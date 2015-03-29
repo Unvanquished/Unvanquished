@@ -111,7 +111,7 @@ static GeoIP *geoip_data_6 = nullptr;
 #endif
 
 static bool            usingSocks = false;
-static int                 networkingEnabled = 0;
+static bool            networkingEnabled = false;
 #ifndef BUILD_SERVER
 static bool            serverMode = false;
 #else
@@ -1903,31 +1903,14 @@ void NET_Config( bool enableNetworking )
 		return;
 	}
 
+	start = enableNetworking;
 	if ( enableNetworking == networkingEnabled )
 	{
-		if ( enableNetworking )
-		{
-			stop = true;
-			start = true;
-		}
-		else
-		{
-			stop = false;
-			start = false;
-		}
+		stop = enableNetworking;
 	}
 	else
 	{
-		if ( enableNetworking )
-		{
-			stop = false;
-			start = true;
-		}
-		else
-		{
-			stop = true;
-			start = false;
-		}
+		stop = !enableNetworking;
 	}
 
 #ifndef BUILD_SERVER
