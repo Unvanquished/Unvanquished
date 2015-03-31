@@ -94,6 +94,8 @@ void DeformVertex( inout vec4 pos,
 			work.xyz = pos.xyz * parms.xyz;
 		} else if( cmd == DSTEP_LOAD_NORM ) {
 			work.xyz = normal.xyz * parms.xyz;
+		} else if( cmd == DSTEP_LOAD_COLOR ) {
+			work.xyz = color.xyz * parms.xyz;
 		} else if( cmd == DSTEP_LOAD_TC ) {
 			work.xyz = vec3(st, 1.0) * parms.xyz;
 		} else if( cmd == DSTEP_LOAD_VEC ) {
@@ -103,6 +105,8 @@ void DeformVertex( inout vec4 pos,
 		} else if( cmd == DSTEP_MODIFY_NORM ) {
 			normal.xyz += (parms.x + parms.y * work.a) * work.xyz;
 			normal = normalize(normal);
+		} else if( cmd == DSTEP_MODIFY_COLOR ) {
+			color.xyz += (parms.x + parms.y * work.a) * work.xyz;
 		} else if( cmd == DSTEP_SIN ) {
 			work.a = sin( 2.0 * M_PI * (parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time) );
 		} else if( cmd == DSTEP_SQUARE ) {
@@ -116,6 +120,13 @@ void DeformVertex( inout vec4 pos,
 		} else if( cmd == DSTEP_NOISE ) {
 			//work = pnoise(vec4(parms.y * work.xyz, parms.z * time));
 			work = noise4(vec4(parms.y * work.xyz, parms.z * time));
+		} else if( cmd == DSTEP_ROTGROW ) {
+			if(work.z > parms.x * time)
+				work.a = 0.0;
+			else {
+				work.a = parms.y * atan(pos.y, pos.x) + parms.z * time;
+				work.a = 0.5 * sin(work.a) + 0.5;
+			}
 		} else
 			break;
 	}
