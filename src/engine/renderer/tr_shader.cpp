@@ -2876,6 +2876,7 @@ deformVertexes wave <spread> <waveform> <base> <amplitude> <phase> <frequency>
 deformVertexes normal <frequency> <amplitude>
 deformVertexes move <vector> <waveform> <base> <amplitude> <phase> <frequency>
 deformVertexes bulge <bulgeWidth> <bulgeHeight> <bulgeSpeed>
+deformVertexes rotgrow <growSpeed> <rotSlices> <rotSpeed>
 deformVertexes autoSprite
 deformVertexes autoSprite2
 ===============
@@ -3022,6 +3023,27 @@ static void ParseDeform( char **text )
 
 		ParseWaveForm( text, &ds->deformationWave );
 		ds->deformation = DEFORM_MOVE;
+		return;
+	}
+
+	if ( !Q_stricmp( token, "rotgrow" ) )
+	{
+		int i;
+
+		for ( i = 0; i < 3; i++ )
+		{
+			token = COM_ParseExt2( text, qfalse );
+
+			if ( token[ 0 ] == 0 )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name );
+				return;
+			}
+
+			ds->moveVector[ i ] = atof( token );
+		}
+
+		ds->deformation = DEFORM_ROTGROW;
 		return;
 	}
 

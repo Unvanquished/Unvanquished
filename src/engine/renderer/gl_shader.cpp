@@ -213,16 +213,19 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	AddGLSLDefine( bufferExtra, "DSTEP_NONE",             DSTEP_NONE);
 	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_POS",         DSTEP_LOAD_POS);
 	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_NORM",        DSTEP_LOAD_NORM);
+	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_COLOR",       DSTEP_LOAD_COLOR);
 	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_TC",          DSTEP_LOAD_TC);
 	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_VEC",         DSTEP_LOAD_VEC);
 	AddGLSLDefine( bufferExtra, "DSTEP_MODIFY_POS",       DSTEP_MODIFY_POS);
 	AddGLSLDefine( bufferExtra, "DSTEP_MODIFY_NORM",      DSTEP_MODIFY_NORM);
+	AddGLSLDefine( bufferExtra, "DSTEP_MODIFY_COLOR",     DSTEP_MODIFY_COLOR);
 	AddGLSLDefine( bufferExtra, "DSTEP_SIN",              DSTEP_SIN);
 	AddGLSLDefine( bufferExtra, "DSTEP_SQUARE",           DSTEP_SQUARE);
 	AddGLSLDefine( bufferExtra, "DSTEP_TRIANGLE",         DSTEP_TRIANGLE);
 	AddGLSLDefine( bufferExtra, "DSTEP_SAWTOOTH",         DSTEP_SAWTOOTH);
 	AddGLSLDefine( bufferExtra, "DSTEP_INVERSE_SAWTOOTH", DSTEP_INVERSE_SAWTOOTH);
 	AddGLSLDefine( bufferExtra, "DSTEP_NOISE",            DSTEP_NOISE);
+	AddGLSLDefine( bufferExtra, "DSTEP_ROTGROW",          DSTEP_ROTGROW);
 
 	float fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
 	float fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );

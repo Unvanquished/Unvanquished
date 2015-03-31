@@ -2038,6 +2038,32 @@ public:
 					deformOfs++;
 					break;
 
+				case DEFORM_ROTGROW:
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_POS;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = ds->moveVector[0];
+					deformParms[ deformOfs ][ 1 ] = ds->moveVector[1];
+					deformParms[ deformOfs ][ 2 ] = ds->moveVector[2];
+					deformParms[ deformOfs ][ 3 ] = DSTEP_ROTGROW;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_COLOR;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = -1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 0.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_COLOR;
+					deformOfs++;
+					break;
+
 				default:
 					break;
 			}

@@ -794,7 +794,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  DEFORM_WAVE,
 	  DEFORM_NORMALS,
 	  DEFORM_BULGE,
-	  DEFORM_MOVE
+	  DEFORM_MOVE,
+	  DEFORM_ROTGROW
 	} deform_t;
 
 	typedef enum
@@ -803,15 +804,18 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  DSTEP_LOAD_POS,
 	  DSTEP_LOAD_NORM,
 	  DSTEP_LOAD_TC,
+	  DSTEP_LOAD_COLOR,
 	  DSTEP_LOAD_VEC,
 	  DSTEP_MODIFY_POS,
 	  DSTEP_MODIFY_NORM,
+	  DSTEP_MODIFY_COLOR,
 	  DSTEP_SIN,
 	  DSTEP_SQUARE,
 	  DSTEP_TRIANGLE,
 	  DSTEP_SAWTOOTH,
 	  DSTEP_INVERSE_SAWTOOTH,
-	  DSTEP_NOISE
+	  DSTEP_NOISE,
+	  DSTEP_ROTGROW
 	} deformStep_t;
 
 	typedef enum

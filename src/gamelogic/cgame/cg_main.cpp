@@ -1254,7 +1254,7 @@ static void CG_RegisterGraphics( void )
 							   (RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.redBuildShader = trap_R_RegisterShader("gfx/misc/redbuild",
 							 (RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.humanSpawningShader = trap_R_RegisterShader("models/buildables/telenode/rep_cyl",
+	cgs.media.humanSpawningShader = trap_R_RegisterShader("models/buildables/humanSpawning",
 							      (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	for ( i = 0; i < 8; i++ )
