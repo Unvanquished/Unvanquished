@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "qcommon/qcommon.h"
 #include "ConsoleHistory.h"
 #include "CommandSystem.h"
+#include "LogSystem.h"
 #include "System.h"
 #ifdef _WIN32
 #include <windows.h>
@@ -612,6 +613,10 @@ static void Init(int argc, char** argv)
 	} catch (std::system_error& err) {
 		Sys::Error("Could not create singleton socket thread: %s", err.what());
 	}
+
+	// At this point we can safely open the log file since there are no existing
+	// instances running on this homepath.
+	Log::OpenLogFile();
 
 	// Load the base paks
 	// TODO: cvar names and FS_* stuff needs to be properly integrated

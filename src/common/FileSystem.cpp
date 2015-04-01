@@ -613,6 +613,13 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 			return;
 	}
 }
+void File::SetLineBuffered(bool enable, std::error_code& err) const
+{
+	if (setvbuf(fd, NULL, enable ? _IOLBF : _IOFBF, BUFSIZ) != 0)
+		SetErrorCodeSystem(err);
+	else
+		ClearErrorCode(err);
+}
 
 #ifdef BUILD_VM
 // Convert an IPC file handle to a File object
