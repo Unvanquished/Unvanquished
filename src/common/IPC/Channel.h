@@ -142,7 +142,7 @@ namespace IPC {
             static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
             if (!channel.canSendAsyncMsg)
-                Com_Error(ERR_DROP, "Attempting to send a Message in VM toplevel");
+                Com_Error(ERR_DROP, "Attempting to send a Message in VM toplevel with id: 0x%x", Message::id);
 
             Util::Writer writer;
             writer.Write<uint32_t>(Message::id);
@@ -155,7 +155,7 @@ namespace IPC {
             static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value + std::tuple_size<typename Message::Outputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
             if (!channel.canSendSyncMsg)
-                Com_Error(ERR_DROP, "Attempting to send a SyncMessage while handling a Message or in VM toplevel");
+                Com_Error(ERR_DROP, "Attempting to send a SyncMessage while handling a Message or in VM toplevel with id: 0x%x", Message::id);
 
             Util::Writer writer;
             writer.Write<uint32_t>(Message::id);
