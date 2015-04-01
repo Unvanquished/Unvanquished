@@ -317,7 +317,7 @@ void Error(Str::StringRef message)
 	if (errorEntered.test_and_set())
 		_exit(-1);
 
-	Log::Error(message);
+	Log::Notice("^1 Error: %s", message);
 
 #if defined(_WIN32) || defined(BUILD_CLIENT)
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PRODUCT_NAME, message.c_str(), nullptr);
@@ -689,7 +689,7 @@ ALIGN_STACK int main(int argc, char** argv)
 			try {
 				Com_Frame();
 			} catch (Sys::DropErr& err) {
-				Log::Error(err.what());
+				Log::Notice("^1Error: %s", err.what());
 				FS::PakPath::ClearPaks();
 				FS_LoadBasePak();
 				SV_Shutdown(va("********************\nServer crashed: %s\n********************\n", err.what()));

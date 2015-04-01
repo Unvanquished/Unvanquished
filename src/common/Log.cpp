@@ -37,11 +37,6 @@ namespace Log {
     }
 
     bool ParseCvarValue(std::string value, Log::Level& result) {
-        if (value == "error" or value == "err") {
-            result = Log::LOG_ERROR;
-            return true;
-        }
-
         if (value == "warning" or value == "warn") {
             result = Log::LOG_WARNING;
             return true;
@@ -62,8 +57,6 @@ namespace Log {
 
     std::string SerializeCvarValue(Log::Level value) {
         switch(value) {
-            case Log::LOG_ERROR:
-                return "error";
             case Log::LOG_WARNING:
                 return "warning";
             case Log::LOG_NOTICE:
@@ -76,11 +69,6 @@ namespace Log {
     }
 
 	//TODO add the time (broken for now because it is journaled) use Sys_Milliseconds instead (Utils::Milliseconds ?)
-    static const int errorTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << HUD) | (1 << LOGFILE);
-    void CodeSourceError(std::string message) {
-        Log::Dispatch({"^1Error: " + message}, errorTargets);
-    }
-
     static const int warnTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
     void CodeSourceWarn(std::string message) {
         Log::Dispatch({"^3Warn: " + message}, warnTargets);
