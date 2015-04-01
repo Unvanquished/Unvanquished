@@ -603,6 +603,7 @@ static void Init(int argc, char** argv)
 #else
 		close(singletonSocket);
 #endif
+		CON_Shutdown();
 		exit(0);
 	}
 
