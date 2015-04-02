@@ -1564,7 +1564,7 @@ A way to force a bus error for development reasons
 static void NORETURN Com_Crash_f( void )
 {
 	* ( volatile int * ) 0 = 0x12345678;
-	exit( 1 ); // silence warning
+	Sys::OSExit(1); // silence warning
 }
 
 void Com_SetRecommended( void )

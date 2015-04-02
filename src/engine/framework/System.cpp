@@ -307,7 +307,7 @@ void Quit(Str::StringRef message)
 {
 	Shutdown(false, message);
 
-	exit(0);
+	OSExit(0);
 }
 
 void Error(Str::StringRef message)
@@ -325,7 +325,7 @@ void Error(Str::StringRef message)
 
 	Shutdown(true, message);
 
-	exit(1);
+	OSExit(1);
 }
 
 // Translate non-fatal signals into a quit command
@@ -463,10 +463,10 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 			       "  -set <variable> <value>  set the value of a cvar\n"
 			       "  +<command> <args>        execute an ingame command after startup\n"
 			);
-			exit(0);
+			OSExit(0);
 		} else if (!strcmp(argv[i], "--version") || !strcmp(argv[i], "-version")) {
 			printf(PRODUCT_NAME " " PRODUCT_VERSION "\n");
-			exit(0);
+			OSExit(0);
 		} else if (!strcmp(argv[i], "-set")) {
 			if (i >= argc - 2) {
 				Log::Warn("Missing argument for -set");
@@ -604,7 +604,7 @@ static void Init(int argc, char** argv)
 		close(singletonSocket);
 #endif
 		CON_Shutdown();
-		exit(0);
+		OSExit(0);
 	}
 
 	// Create the singleton socket and a thread to watch it
