@@ -45,7 +45,7 @@ public:
 	StyleSheetNodeSelector();
 	virtual ~StyleSheetNodeSelector();
 
-	/// Returns true if the the node this selector is discriminating for is applicable to a given element.
+	/// Returns true if the node this selector is discriminating for is applicable to a given element.
 	/// @param element[in] The element to determine node applicability for.
 	/// @param a[in] For counting selectors, this is the 'a' variable of an + b.
 	/// @param b[in] For counting selectors, this is the 'b' variable of an + b.

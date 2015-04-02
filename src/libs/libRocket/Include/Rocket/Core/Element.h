@@ -524,7 +524,7 @@ public:
 	bool HasChildNodes() const;
 
 	/// Get a child element by its ID.
-	/// @param[in] id Id of the the child element
+	/// @param[in] id Id of the child element
 	/// @return The child of this element with the given ID, or NULL if no such child exists.
 	Element* GetElementById(const String& id);
 	/// Get all descendant elements with the given tag.
