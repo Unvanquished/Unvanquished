@@ -251,9 +251,9 @@ static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		LL( triangle->vertex[1] );
 		LL( triangle->vertex[2] );
 
-		if( triangle->vertex[0] < 0 || triangle->vertex[0] > header->num_vertexes ||
-		    triangle->vertex[1] < 0 || triangle->vertex[1] > header->num_vertexes ||
-		    triangle->vertex[2] < 0 || triangle->vertex[2] > header->num_vertexes ) {
+		if( triangle->vertex[0] > header->num_vertexes ||
+		    triangle->vertex[1] > header->num_vertexes ||
+		    triangle->vertex[2] > header->num_vertexes ) {
 			return false;
 		}
 	}
@@ -279,9 +279,7 @@ static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		    mesh->first_vertex + mesh->num_vertexes > header->num_vertexes ||
 		    mesh->first_triangle >= header->num_triangles ||
 		    mesh->first_triangle + mesh->num_triangles > header->num_triangles ||
-		    mesh->name < 0 ||
 		    mesh->name >= header->num_text ||
-		    mesh->material < 0 ||
 		    mesh->material >= header->num_text ) {
 			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid mesh.\n",
 				  mod_name );

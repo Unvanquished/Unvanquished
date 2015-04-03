@@ -61,7 +61,7 @@ cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT
 option( USE_LTO "Use link-time optimization for release builds" 0 )
 cmake_dependent_option( USE_SLIM_LTO "Generate slim LTO objects, improves build times" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0 )
 option( USE_HARDENING "Use stack protection and other hardening flags" 0 )
-option( USE_WEXTRA "Enable extra compilation warnings" 0 )
+option( USE_WERROR "Tell the compiler to make the build fail when warnings are present" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
 option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
@@ -338,17 +338,38 @@ else()
   endif()
 
   # Warning options
-  set_c_cxx_flag( "-Wall" )
-  if( USE_WEXTRA )
-    set_c_cxx_flag( "-Wextra" )
-  else()
-    set_c_cxx_flag( "-Wno-sign-compare" )
-    set_c_cxx_flag( "-Wno-write-strings" )
-  endif()
-
+  set_cxx_flag( "-Wall" )
+  set_cxx_flag( "-Wextra" )
   if( USE_PEDANTIC )
     set_c_cxx_flag( "-pedantic" )
   endif()
+  if( USE_WERROR )
+    set_cxx_flag( "-Werror" )
+    if( USE_PEDANTIC )
+      set_cxx_flag( "-pedantic-errors" )
+    endif()
+  endif()
+  try_cxx_flag( WNO_ABSOLUTE_VALUE "-Wno-absolute-value" )
+  try_cxx_flag( WNO_DEPRECATED_REGISTER "-Wno-deprecated-register" )
+  try_cxx_flag( WNO_INCONSISTENT_MISSING_OVERRIDE "-Wno-inconsistent-missing-override" )
+  try_cxx_flag( WNO_INVALID_SOURCE_ENCODING "-Wno-invalid-source-encoding" )
+  try_cxx_flag( WNO_MAYBE_UNINITIALIZED "-Wno-maybe-uninitialized" )
+  try_cxx_flag( WNO_MISSING_FIELD_INITIALIZERS "-Wno-missing-field-initializers" )
+  try_cxx_flag( WNO_PARENTHESES "-Wno-parentheses" )
+  try_cxx_flag( WNO_POINTER_BOOL_CONVERSION "-Wno-pointer-bool-conversion" )
+  try_cxx_flag( WNO_PRAGMAS "-Wno-pragmas" )
+  try_cxx_flag( WNO_SIGN_COMPARE "-Wno-sign-compare" )
+  try_cxx_flag( WNO_STRICT_OVERFLOW "-Wno-strict-overflow" )
+  try_cxx_flag( WNO_SWITCH "-Wno-switch" )
+  try_cxx_flag( WNO_UNINITIALIZED "-Wno-uninitialized" )
+  try_cxx_flag( WNO_UNUSED_BUT_SET_PARAMETER "-Wno-unused-but-set-parameter" )
+  try_cxx_flag( WNO_UNUSED_BUT_SET_VARIABLE "-Wno-unused-but-set-variable" )
+  try_cxx_flag( WNO_UNUSED_FUNCTION "-Wno-unused-function" )
+  try_cxx_flag( WNO_UNUSED_PARAMETER "-Wno-unused-parameter" )
+  try_cxx_flag( WNO_UNUSED_PRIVATE_FIELD "-Wno-unused-private-field" )
+  try_cxx_flag( WNO_UNUSED_RESULT "-Wno-unused-result" )
+  try_cxx_flag( WNO_UNUSED_VARIABLE "-Wno-unused-variable" )
+  try_cxx_flag( WNO_WRITE_STRINGS "-Wno-write-strings" )
 
   if( USE_ADDRESS_SANITIZER )
     set_cxx_flag( "-fsanitize=address" )
@@ -1445,14 +1466,23 @@ function( GAMEMODULE )
         $<$<CONFIG:MinSizeRel>:-O2>
       )
     endif()
-    if( USE_WEXTRA )
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wextra" )
-    else()
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wno-sign-compare" )
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wno-write-strings" )
-    endif()
-    if( USE_PEDANTIC )
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-pedantic" )
+    set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS}
+      -Wextra
+      -Wno-absolute-value
+      -Wno-implicit-function-declaration
+      -Wno-missing-field-initializers
+      -Wno-pointer-bool-conversion
+      -Wno-sign-compare
+      -Wno-switch
+      -Wno-uninitialized
+      -Wno-unused-function
+      -Wno-unused-label
+      -Wno-unused-parameter
+      -Wno-writable-strings
+      -pedantic
+    )
+    if( USE_WERROR )
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} -Werror )
     endif()
     foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
       set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} -D${DEF} )
@@ -1469,7 +1499,7 @@ function( GAMEMODULE )
       if( EXT STREQUAL ".c" AND FILEDIR MATCHES ${LIB_DIR} )
         add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
-            -std=gnu89
+            -std=c11
             ${NACL_COMPILE_OPTIONS}
             -c
             -o ${OBJ}
