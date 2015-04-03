@@ -1664,7 +1664,7 @@ void         ByteToDir( int b, vec3_t dir );
 	float      Com_Clamp( float min, float max, float value );
 
 	char       *COM_SkipPath( char *pathname );
-	char       *Com_SkipTokens( char *s, int numTokens, char *sep );
+	char       *Com_SkipTokens( char *s, int numTokens, const char *sep );
 	char       *Com_SkipCharset( char *s, char *sep );
 	void       COM_FixPath( char *pathname );
 	const char *COM_GetExtension( const char *name );
@@ -1678,18 +1678,18 @@ void         ByteToDir( int b, vec3_t dir );
 	void       COM_RestoreParseSession( char **data_p );
 	void       COM_SetCurrentParseLine( int line );
 	int        COM_GetCurrentParseLine();
-	char       *COM_Parse( char **data_p );
+	char       *COM_Parse( const char **data_p );
 
 // RB: added COM_Parse2 for having a Doom 3 style tokenizer.
-	char       *COM_Parse2( char **data_p );
-	char       *COM_ParseExt2( char **data_p, bool allowLineBreak );
+	char       *COM_Parse2( const char **data_p );
+	char       *COM_ParseExt2( const char **data_p, bool allowLineBreak );
 
-	char       *COM_ParseExt( char **data_p, bool allowLineBreak );
+	char       *COM_ParseExt( const char **data_p, bool allowLineBreak );
 	int        COM_Compress( char *data_p );
-	void       COM_ParseError( char *format, ... ) PRINTF_LIKE(1);
-	void       COM_ParseWarning( char *format, ... ) PRINTF_LIKE(1);
+	void       COM_ParseError( const char *format, ... ) PRINTF_LIKE(1);
+	void       COM_ParseWarning( const char *format, ... ) PRINTF_LIKE(1);
 
-	int        Com_ParseInfos( char *buf, int max, char infos[][ MAX_INFO_STRING ] );
+	int        Com_ParseInfos( const char *buf, int max, char infos[][ MAX_INFO_STRING ] );
 
 	bool   COM_BitCheck( const int array[], int bitNum );
 
@@ -1724,17 +1724,17 @@ void         ByteToDir( int b, vec3_t dir );
 
 	void      COM_MatchToken( char **buf_p, char *match );
 
-	void      Com_Parse1DMatrix( char **buf_p, int x, float *m, bool checkBrackets );
-	void      Com_Parse2DMatrix( char **buf_p, int y, int x, float *m );
-	void      Com_Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
+	void      Com_Parse1DMatrix( const char **buf_p, int x, float *m, bool checkBrackets );
+	void      Com_Parse2DMatrix( const char **buf_p, int y, int x, float *m );
+	void      Com_Parse3DMatrix( const char **buf_p, int z, int y, int x, float *m );
 
-	bool  SkipBracedSection( char **program );
-	bool  SkipBracedSection_Depth( char **program, int depth );  // start at given depth if already
-	void      SkipRestOfLine( char **data );
+	bool  SkipBracedSection( const char **program );
+	bool  SkipBracedSection_Depth( const char **program, int depth );  // start at given depth if already
+	void      SkipRestOfLine( const char **data );
 
-	void      Parse1DMatrix( char **buf_p, int x, float *m );
-	void      Parse2DMatrix( char **buf_p, int y, int x, float *m );
-	void      Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
+	void      Parse1DMatrix( const char **buf_p, int x, float *m );
+	void      Parse2DMatrix( const char **buf_p, int y, int x, float *m );
+	void      Parse3DMatrix( const char **buf_p, int z, int y, int x, float *m );
 
 	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) PRINTF_LIKE(3);
 
@@ -1822,7 +1822,7 @@ void         ByteToDir( int b, vec3_t dir );
 //
 // key / value info strings
 //
-	char       *Info_ValueForKey( const char *s, const char *key );
+	const char *Info_ValueForKey( const char *s, const char *key );
 	void       Info_RemoveKey( char *s, const char *key , bool big );
 	void       Info_RemoveKey_big( char *s, const char *key );
 	void       Info_SetValueForKey( char *s, const char *key, const char *value , bool big );

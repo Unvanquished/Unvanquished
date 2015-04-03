@@ -5357,7 +5357,7 @@ void G_LayoutSelect()
 	char fileName[ MAX_OSPATH ];
 	char layouts[ MAX_CVAR_VALUE_STRING ];
 	char layouts2[ MAX_CVAR_VALUE_STRING ];
-	char *layoutPtr;
+	const char *layoutPtr;
 	char map[ MAX_QPATH ];
 	char *layout;
 	int  cnt = 0;

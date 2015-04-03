@@ -1652,7 +1652,7 @@ void Key_ModCase_f()
 	int index = 0;
 	int max = 0;
 	int count = ( argc - 1 ) / 2; // round down :-)
-	char *v;
+	const char *v;
 
 	int mods[ 1 << NUM_RECOGNISED_MODIFIERS ];
 	// want 'modifierMask_t mods[argc / 2 - 1];' (variable array, C99)

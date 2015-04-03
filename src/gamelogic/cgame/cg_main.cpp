@@ -1575,7 +1575,7 @@ CG_StartMusic
 */
 void CG_StartMusic()
 {
-	char *s;
+	const char *s;
 	char parm1[ MAX_QPATH ], parm2[ MAX_QPATH ];
 
 	// start the background music

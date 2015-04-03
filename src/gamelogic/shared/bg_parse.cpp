@@ -362,7 +362,7 @@ bool BG_ReadWholeFile( const char *filename, char *buffer, int size)
 	return true;
 }
 
-static team_t ParseTeam(char* token)
+static team_t ParseTeam(const char* token)
 {
 	if ( !Q_strnicmp( token, "alien", 5 ) ) // alien(s)
 	{
@@ -383,7 +383,7 @@ static team_t ParseTeam(char* token)
 	}
 }
 
-static int ParseSlotList(char** text)
+static int ParseSlotList(const char** text)
 {
 	int slots = 0;
 	char* token;
@@ -448,7 +448,7 @@ static int ParseSlotList(char** text)
 	return slots;
 }
 
-static int ParseClipmask( char *token )
+static int ParseClipmask( const char *token )
 {
 	if      ( !Q_stricmp( token, "MASK_ALL" ) )
 	{
@@ -485,7 +485,7 @@ static int ParseClipmask( char *token )
 	}
 }
 
-static trType_t ParseTrajectoryType( char *token )
+static trType_t ParseTrajectoryType( const char *token )
 {
 	if      ( !Q_stricmp( token, "TR_STATIONARY" ) )
 	{
@@ -534,7 +534,7 @@ configVar_t* BG_FindConfigVar(const char *varName)
 	return (configVar_t*) bsearch(&varName, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator);
 }
 
-bool BG_ParseConfigVar(configVar_t *var, char **text, const char *filename)
+bool BG_ParseConfigVar(configVar_t *var, const char **text, const char *filename)
 {
 	char *token;
 
@@ -587,9 +587,9 @@ Parses a configuration file describing the attributes of a buildable
 
 void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba )
 {
-	char *token;
+	const char *token;
 	char text_buffer[ 20000 ];
-	char* text;
+	const char* text;
 	configVar_t* var;
 	int defined = 0;
 	enum
@@ -835,9 +835,9 @@ Parses a configuration file describing the model of a buildable
 */
 void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc )
 {
-	char *token;
+	const char *token;
 	char text_buffer[ 20000 ];
-	char* text;
+	const char* text;
 	int defined = 0;
 	enum
 	{
@@ -993,9 +993,9 @@ Parses a configuration file describing the attributes of a class
 
 void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 {
-	char         *token = nullptr;
+	const char         *token = nullptr;
 	char         text_buffer[ 20000 ];
-	char         *text;
+	const char         *text;
 	configVar_t  *var;
 	int          defined = 0;
 
@@ -1309,7 +1309,7 @@ Reads an animation.cfg to check for nonsegmentation
 */
 bool BG_NonSegModel( const char *filename )
 {
-	char *text_p;
+	const char *text_p;
 	char *token;
 	char text[ 20000 ];
 
@@ -1350,9 +1350,9 @@ Parses a configuration file describing the model of a class
 */
 void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 {
-	char *token;
+	const char *token;
 	char text_buffer[ 20000 ];
-	char* text;
+	const char* text;
 	int defined = 0;
 	enum
 	{
@@ -1630,9 +1630,9 @@ Parses a configuration file describing the attributes of a weapon
 */
 void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 {
-	char *token;
+	const char *token;
 	char text_buffer[ 20000 ];
-	char* text;
+	const char* text;
 	configVar_t* var;
 	int defined = 0;
 	enum
@@ -1824,9 +1824,9 @@ Parses a configuration file describing the attributes of an upgrade
 */
 void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua )
 {
-	char *token;
+	const char *token;
 	char text_buffer[ 20000 ];
-	char* text;
+	const char* text;
 	configVar_t* var;
 	int defined = 0;
 	enum
@@ -1959,9 +1959,9 @@ Can be the same as the display configuration file.
 */
 void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma )
 {
-	char        *token;
+	const char *token;
 	char        text_buffer[ 20000 ];
-	char        *text;
+	const char        *text;
 	//configVar_t *var;
 	int         defined = 0;
 
@@ -2122,7 +2122,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 {
 	char        *token;
 	char        text_buffer[ 20000 ];
-	char        *text;
+	const char        *text;
 	int         defined = 0;
 #ifdef BUILD_CGAME
 	int         index;
@@ -2428,7 +2428,7 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 {
 	char        *token;
 	char        text_buffer[ 20000 ];
-	char        *text;
+	const char        *text;
 #ifdef BUILD_CGAME
 	int         index;
 #endif

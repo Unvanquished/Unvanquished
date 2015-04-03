@@ -122,7 +122,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	int                 version;
 	int                 qport;
 	int                 challenge;
-	char                *password;
+	const char                *password;
 	int                 startIndex;
 	bool            denied;
 	char                reason[ MAX_STRING_CHARS ];
@@ -1245,7 +1245,7 @@ into a more C friendly form.
 */
 void SV_UserinfoChanged( client_t *cl )
 {
-	char *val;
+	const char *val;
 	int  i;
 
 	// name for C code

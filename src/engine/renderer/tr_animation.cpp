@@ -76,7 +76,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 	md5Channel_t   *channel;
 	char           *token;
 	int            version;
-	char           *buf_p;
+	const char     *buf_p;
 
 	buf_p = (char*) buffer;
 

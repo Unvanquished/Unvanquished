@@ -332,7 +332,7 @@ Find all console lines containing a string
 void Con_Grep_f()
 {
 	int    l;
-	char  *search;
+	const char  *search;
 	char  *printbuf = nullptr;
 	size_t pbAlloc = 0, pbLength = 0;
 

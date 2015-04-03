@@ -41,7 +41,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modName 
 	md5Weight_t   *weight;
 	int           version;
 	shader_t      *sh;
-	char          *buf_p;
+	const char    *buf_p;
 	char          *token;
 	vec3_t        boneOrigin;
 	quat_t        boneQuat;

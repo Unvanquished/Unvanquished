@@ -80,7 +80,7 @@ Load custom crosshairs specified by the user
 
 static void CG_LoadCustomCrosshairs()
 {
-	char         *text_p, *token;
+	const char         *text_p, *token;
 	char         text[ 20000 ];
 	int          len;
 	fileHandle_t f;
@@ -226,7 +226,7 @@ Reads the animation.cfg for weapons
 
 static bool CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
@@ -306,7 +306,7 @@ CG_ParseWeaponModeSection
 Parse a weapon mode section
 ===============
 */
-static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p )
+static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_p )
 {
 	char *token;
 	int  i;
@@ -637,7 +637,7 @@ Parses a configuration file describing a weapon
 */
 static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *wi )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          len;
 	char         *token;
 	char         text[ 20000 ];

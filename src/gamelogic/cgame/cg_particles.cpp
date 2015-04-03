@@ -705,7 +705,7 @@ static void CG_ParseValueAndVariance( char *token, float *value, float *variance
 /*
 CG_ParseParticle helpers
 */
-static void CG_CopyLine( int *i, char *toks, int num, size_t size, char **text_p )
+static void CG_CopyLine( int *i, char *toks, int num, size_t size, const char **text_p )
 {
 	char *token;
 
@@ -725,7 +725,7 @@ static void CG_CopyLine( int *i, char *toks, int num, size_t size, char **text_p
 	}
 }
 
-static bool CG_ParseType( pMoveType_t *pmt, char **text_p )
+static bool CG_ParseType( pMoveType_t *pmt, const char **text_p )
 {
 	char *token = COM_Parse( text_p );
 
@@ -766,7 +766,7 @@ static bool CG_ParseType( pMoveType_t *pmt, char **text_p )
 	return true;
 }
 
-static bool CG_ParseDir( pMoveValues_t *pmv, char **text_p )
+static bool CG_ParseDir( pMoveValues_t *pmv, const char **text_p )
 {
 	char *token = COM_Parse( text_p );
 
@@ -787,7 +787,7 @@ static bool CG_ParseDir( pMoveValues_t *pmv, char **text_p )
 	return true;
 }
 
-static bool CG_ParseFinal( pLerpValues_t *plv, char **text_p, bool allowNegative )
+static bool CG_ParseFinal( pLerpValues_t *plv, const char **text_p, bool allowNegative )
 {
 	char *token = COM_Parse( text_p );
 
@@ -816,7 +816,7 @@ CG_ParseParticle
 Parse a particle section
 ===============
 */
-static bool CG_ParseParticle( baseParticle_t *bp, char **text_p )
+static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 {
 	char  *token;
 	float number, randFrac;
@@ -1499,7 +1499,7 @@ CG_ParseParticleEjector
 Parse a particle ejector section
 ===============
 */
-static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text_p )
+static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char **text_p )
 {
 	char  *token;
 	float number;
@@ -1634,7 +1634,7 @@ CG_ParseParticleSystem
 Parse a particle system section
 ===============
 */
-static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, char **text_p, const char *name )
+static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, const char **text_p, const char *name )
 {
 	char                  *token;
 	baseParticleEjector_t *bpe;
@@ -1721,7 +1721,7 @@ Load the particle systems from a particle file
 */
 static bool CG_ParseParticleFile( const char *fileName )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          i;
 	int          len;
 	char         *token;

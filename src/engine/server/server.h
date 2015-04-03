@@ -93,7 +93,7 @@ typedef struct
 	bool        configstringsmodified[ MAX_CONFIGSTRINGS ];
 	svEntity_t      svEntities[ MAX_GENTITIES ];
 
-	char            *entityParsePoint; // used during game VM init
+	const char            *entityParsePoint; // used during game VM init
 
 	// the game virtual machine will update these on init and changes
 	sharedEntity_t *gentities;

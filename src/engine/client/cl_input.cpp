@@ -1285,7 +1285,7 @@ Called by the +command code.
 */
 void IN_PrepareKeyUp()
 {
-	char *cmd;
+	const char *cmd;
 	int  key;
 
 	// Get the current key no. If negative, return

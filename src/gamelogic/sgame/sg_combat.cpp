@@ -566,7 +566,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	self->client->pers.infoChangeTime = level.time;
 }
 
-static int ParseDmgScript( damageRegion_t *regions, char *buf )
+static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 {
 	char  *token;
 	float angleSpan, heightSpan;

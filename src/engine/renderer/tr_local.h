@@ -2055,7 +2055,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		byte               *novis; // clusterBytes of 0xff
 
 		char     *entityString;
-		char     *entityParsePoint;
+		const char     *entityParsePoint;
 
 		bool hasSkyboxPortal;
 	} world_t;

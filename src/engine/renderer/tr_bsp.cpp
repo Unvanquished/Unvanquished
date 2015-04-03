@@ -293,7 +293,7 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 
 	while ( true )
 	{
-		token = COM_ParseExt2( ( char ** ) &buf_p, true );
+		token = COM_ParseExt2( ( const char ** ) &buf_p, true );
 
 		if ( !token[ 0 ] )
 		{
@@ -302,19 +302,19 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 
 		if ( !Q_stricmp( token, "FORMAT" ) )
 		{
-			token = COM_ParseExt2( ( char ** ) &buf_p, false );
+			token = COM_ParseExt2( ( const char ** ) &buf_p, false );
 
 			if ( !Q_stricmp( token, "=" ) )
 			{
-				token = COM_ParseExt2( ( char ** ) &buf_p, false );
+				token = COM_ParseExt2( ( const char ** ) &buf_p, false );
 
 				if ( !Q_stricmp( token, "32" ) )
 				{
-					token = COM_ParseExt2( ( char ** ) &buf_p, false );
+					token = COM_ParseExt2( ( const char ** ) &buf_p, false );
 
 					if ( !Q_stricmp( token, "-" ) )
 					{
-						token = COM_ParseExt2( ( char ** ) &buf_p, false );
+						token = COM_ParseExt2( ( const char ** ) &buf_p, false );
 
 						if ( !Q_stricmp( token, "bit_rle_rgbe" ) )
 						{
@@ -343,22 +343,22 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 
 		if ( !Q_stricmp( token, "-" ) )
 		{
-			token = COM_ParseExt2( ( char ** ) &buf_p, false );
+			token = COM_ParseExt2( ( const char ** ) &buf_p, false );
 
 			if ( !Q_stricmp( token, "Y" ) )
 			{
-				token = COM_ParseExt2( ( char ** ) &buf_p, false );
+				token = COM_ParseExt2( ( const char ** ) &buf_p, false );
 				w = atoi( token );
 
-				token = COM_ParseExt2( ( char ** ) &buf_p, false );
+				token = COM_ParseExt2( ( const char ** ) &buf_p, false );
 
 				if ( !Q_stricmp( token, "+" ) )
 				{
-					token = COM_ParseExt2( ( char ** ) &buf_p, false );
+					token = COM_ParseExt2( ( const char ** ) &buf_p, false );
 
 					if ( !Q_stricmp( token, "X" ) )
 					{
-						token = COM_ParseExt2( ( char ** ) &buf_p, false );
+						token = COM_ParseExt2( ( const char ** ) &buf_p, false );
 						h = atoi( token );
 						break;
 					}
@@ -4239,7 +4239,8 @@ R_LoadEntities
 void R_LoadEntities( lump_t *l )
 {
 	int          i;
-	char         *p, *pOld, *token, *s;
+	const char *p, *pOld, *token;
+	char *s;
 	char         keyname[ MAX_TOKEN_CHARS ];
 	char         value[ MAX_TOKEN_CHARS ];
 	world_t      *w;

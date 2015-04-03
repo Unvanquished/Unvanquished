@@ -201,7 +201,7 @@ G_ParseMapCommandSection
 Parse a map rotation command section
 ===============
 */
-static bool G_ParseMapCommandSection( mrNode_t *node, char **text_p )
+static bool G_ParseMapCommandSection( mrNode_t *node, const char **text_p )
 {
 	char  *token;
 	mrMapDescription_t *map = &node->u.map;
@@ -270,7 +270,7 @@ G_ParseNode
 Parse a node
 ===============
 */
-static bool G_ParseNode( mrNode_t **node, char *token, char **text_p, bool conditional )
+static bool G_ParseNode( mrNode_t **node, char *token, const char **text_p, bool conditional )
 {
 	if ( !Q_stricmp( token, "if" ) )
 	{
@@ -431,7 +431,7 @@ G_ParseMapRotation
 Parse a map rotation section
 ===============
 */
-static bool G_ParseMapRotation( mapRotation_t *mr, char **text_p )
+static bool G_ParseMapRotation( mapRotation_t *mr, const char **text_p )
 {
 	char   *token;
 	mrNode_t *node = nullptr;
@@ -496,7 +496,7 @@ Load the map rotations from a map rotation file
 */
 static bool G_ParseMapRotationFile( const char *fileName )
 {
-	char         *text_p;
+	const char *text_p;
 	int          i, j;
 	int          len;
 	char         *token;
@@ -893,7 +893,7 @@ static int G_PopRotationStack()
 {
 	int  value = -1;
 	char text[ MAX_CVAR_VALUE_STRING ];
-	char *text_p, *token;
+	const char *text_p, *token;
 
 	Q_strncpyz( text, g_mapRotationStack.string, sizeof( text ) );
 
@@ -952,7 +952,7 @@ static int *G_CurrentNodeIndexArray()
 	static int currentNode[ MAX_MAP_ROTATIONS ];
 	int        i = 0;
 	char       text[ MAX_MAP_ROTATIONS * 2 ];
-	char       *text_p, *token;
+	const char       *text_p, *token;
 
 	Q_strncpyz( text, g_mapRotationNodes.string, sizeof( text ) );
 

@@ -38,7 +38,7 @@ static char *cg_arenaInfos[ MAX_ARENAS ];
 CG_ParseInfos
 ===============
 */
-int CG_ParseInfos( char *buf, int max, char *infos[] )
+int CG_ParseInfos( const char *buf, int max, char *infos[] )
 {
 	char *token;
 	int  count;

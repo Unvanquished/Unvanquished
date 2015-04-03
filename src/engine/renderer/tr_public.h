@@ -228,7 +228,7 @@ typedef struct
 	void ( *Cmd_RemoveCommand )( const char *name );
 
 	int ( *Cmd_Argc )();
-	char            *( *Cmd_Argv )( int i );
+	const char *( *Cmd_Argv )( int i );
 
 	const char *( *Cmd_QuoteString )( const char *text );
 

@@ -898,7 +898,7 @@ if desired.
 char *ClientUserinfoChanged( int clientNum, bool forceName )
 {
 	gentity_t *ent;
-	char      *s;
+	const char      *s;
 	char      model[ MAX_QPATH ];
 	char      buffer[ MAX_QPATH ];
 	char      oldname[ MAX_NAME_LENGTH ];
@@ -1160,7 +1160,7 @@ restarts.
 */
 char *ClientConnect( int clientNum, bool firstTime )
 {
-	char            *value;
+	const char      *value;
 	char            *userInfoError;
 	gclient_t       *client;
 	char            userinfo[ MAX_INFO_STRING ];

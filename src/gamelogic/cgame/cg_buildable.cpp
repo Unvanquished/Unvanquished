@@ -346,7 +346,7 @@ models/buildables/hivemind/animation.cfg, etc
 */
 static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t buildable )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
@@ -455,7 +455,7 @@ sound/buildables/hivemind/sound.cfg, etc
 */
 static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t buildable )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          len;
 	int          i;
 	char         *token;

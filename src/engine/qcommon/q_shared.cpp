@@ -318,7 +318,7 @@ char *COM_SkipPath( char *pathname )
 Com_CharIsOneOfCharset
 ==================
 */
-static bool Com_CharIsOneOfCharset( char c, char *set )
+static bool Com_CharIsOneOfCharset( char c, const char *set )
 {
 	int i;
 
@@ -362,7 +362,7 @@ char *Com_SkipCharset( char *s, char *sep )
 Com_SkipTokens
 ==================
 */
-char *Com_SkipTokens( char *s, int numTokens, char *sep )
+char *Com_SkipTokens( char *s, int numTokens, const char *sep )
 {
 	int  sepCount = 0;
 	char *p = s;
@@ -739,7 +739,7 @@ static char com_parsename[ MAX_TOKEN_CHARS ];
 static int  com_lines;
 
 static int  backup_lines;
-static char *backup_text;
+static const char *backup_text;
 
 void COM_BeginParseSession( const char *name )
 {
@@ -747,13 +747,13 @@ void COM_BeginParseSession( const char *name )
 	Com_sprintf( com_parsename, sizeof( com_parsename ), "%s", name );
 }
 
-void COM_BackupParseSession( char **data_p )
+void COM_BackupParseSession( const char **data_p )
 {
 	backup_lines = com_lines;
 	backup_text = *data_p;
 }
 
-void COM_RestoreParseSession( char **data_p )
+void COM_RestoreParseSession( const char **data_p )
 {
 	com_lines = backup_lines;
 	*data_p = backup_text;
@@ -769,12 +769,12 @@ int COM_GetCurrentParseLine()
 	return com_lines;
 }
 
-char *COM_Parse( char **data_p )
+char *COM_Parse( const char **data_p )
 {
 	return COM_ParseExt( data_p, true );
 }
 
-void PRINTF_LIKE(1) COM_ParseError( char *format, ... )
+void PRINTF_LIKE(1) COM_ParseError( const char *format, ... )
 {
 	va_list     argptr;
 	static char string[ 4096 ];
@@ -786,7 +786,7 @@ void PRINTF_LIKE(1) COM_ParseError( char *format, ... )
 	Com_Printf( S_ERROR "%s, line %d: %s\n", com_parsename, com_lines, string );
 }
 
-void PRINTF_LIKE(1) COM_ParseWarning( char *format, ... )
+void PRINTF_LIKE(1) COM_ParseWarning( const char *format, ... )
 {
 	va_list     argptr;
 	static char string[ 4096 ];
@@ -810,7 +810,7 @@ string will be returned if the next token is
 a newline.
 ==============
 */
-static char *SkipWhitespace( char *data, bool *hasNewLines )
+static const char *SkipWhitespace( const char *data, bool *hasNewLines )
 {
 	int c;
 
@@ -903,11 +903,11 @@ int COM_Compress( char *data_p )
 	return size;
 }
 
-char *COM_ParseExt( char **data_p, bool allowLineBreaks )
+char *COM_ParseExt( const char **data_p, bool allowLineBreaks )
 {
 	int      c = 0, len;
 	bool hasNewLines = false;
-	char     *data;
+	const char *data;
 
 	data = *data_p;
 	len = 0;
@@ -1078,17 +1078,17 @@ char *COM_ParseExt( char **data_p, bool allowLineBreaks )
 	return com_token;
 }
 
-char           *COM_Parse2( char **data_p )
+char           *COM_Parse2( const char **data_p )
 {
 	return COM_ParseExt2( data_p, true );
 }
 
 // *INDENT-OFF*
-char           *COM_ParseExt2( char **data_p, bool allowLineBreaks )
+char           *COM_ParseExt2( const char **data_p, bool allowLineBreaks )
 {
 	int        c = 0, len;
 	bool   hasNewLines = false;
-	char       *data;
+	const char *data;
 	const char **punc;
 
 	if ( !data_p )
@@ -1355,7 +1355,7 @@ char           *COM_ParseExt2( char **data_p, bool allowLineBreaks )
 COM_MatchToken
 ==================
 */
-void COM_MatchToken( char **buf_p, char *match )
+void COM_MatchToken( const char **buf_p, const char *match )
 {
 	char *token;
 
@@ -1373,7 +1373,7 @@ SkipBracedSection_Depth
 
 =================
 */
-bool SkipBracedSection_Depth( char **program, int depth )
+bool SkipBracedSection_Depth( const char **program, int depth )
 {
 	char *token;
 
@@ -1408,7 +1408,7 @@ Internal brace depths are properly skipped.
 Returns whether the close brace was found.
 =================
 */
-bool SkipBracedSection( char **program )
+bool SkipBracedSection( const char **program )
 {
 	char *token;
 	int  depth;
@@ -1441,9 +1441,9 @@ bool SkipBracedSection( char **program )
 SkipRestOfLine
 =================
 */
-void SkipRestOfLine( char **data )
+void SkipRestOfLine( const char **data )
 {
-	char *p;
+	const char *p;
 	int  c;
 
 	p = *data;
@@ -1460,7 +1460,7 @@ void SkipRestOfLine( char **data )
 	*data = p;
 }
 
-void Parse1DMatrix( char **buf_p, int x, float *m )
+void Parse1DMatrix( const char **buf_p, int x, float *m )
 {
 	char *token;
 	int  i;
@@ -1476,7 +1476,7 @@ void Parse1DMatrix( char **buf_p, int x, float *m )
 	COM_MatchToken( buf_p, ")" );
 }
 
-void Parse2DMatrix( char **buf_p, int y, int x, float *m )
+void Parse2DMatrix( const char **buf_p, int y, int x, float *m )
 {
 	int i;
 
@@ -1490,7 +1490,7 @@ void Parse2DMatrix( char **buf_p, int y, int x, float *m )
 	COM_MatchToken( buf_p, ")" );
 }
 
-void Parse3DMatrix( char **buf_p, int z, int y, int x, float *m )
+void Parse3DMatrix( const char **buf_p, int z, int y, int x, float *m )
 {
 	int i;
 
@@ -1509,7 +1509,7 @@ void Parse3DMatrix( char **buf_p, int z, int y, int x, float *m )
 Com_ParseInfos
 ===============
 */
-int Com_ParseInfos( char *buf, int max, char infos[][ MAX_INFO_STRING ] )
+int Com_ParseInfos( const char *buf, int max, char infos[][ MAX_INFO_STRING ] )
 {
 	const char *token;
 	int        count;
@@ -1573,7 +1573,7 @@ int Com_ParseInfos( char *buf, int max, char infos[][ MAX_INFO_STRING ] )
 	return count;
 }
 
-void Com_Parse1DMatrix( char **buf_p, int x, float *m, bool checkBrackets )
+void Com_Parse1DMatrix( const char **buf_p, int x, float *m, bool checkBrackets )
 {
 	char *token;
 	int  i;
@@ -1595,7 +1595,7 @@ void Com_Parse1DMatrix( char **buf_p, int x, float *m, bool checkBrackets )
 	}
 }
 
-void Com_Parse2DMatrix( char **buf_p, int y, int x, float *m )
+void Com_Parse2DMatrix( const char **buf_p, int y, int x, float *m )
 {
 	int i;
 
@@ -1609,7 +1609,7 @@ void Com_Parse2DMatrix( char **buf_p, int y, int x, float *m )
 	COM_MatchToken( buf_p, ")" );
 }
 
-void Com_Parse3DMatrix( char **buf_p, int z, int y, int x, float *m )
+void Com_Parse3DMatrix( const char **buf_p, int z, int y, int x, float *m )
 {
 	int i;
 
@@ -2676,7 +2676,7 @@ key and returns the associated value, or an empty string.
 FIXME: overflow check?
 ===============
 */
-char *Info_ValueForKey( const char *s, const char *key )
+const char *Info_ValueForKey( const char *s, const char *key )
 {
 	char        pkey[ BIG_INFO_KEY ];
 	static char value[ 2 ][ BIG_INFO_VALUE ]; // use two buffers so compares

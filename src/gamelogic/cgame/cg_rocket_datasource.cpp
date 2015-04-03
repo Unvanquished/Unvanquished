@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-static void AddToServerList( char *name, char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
+static void AddToServerList( const char *name, const char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
 {
 	server_t *node;
 
@@ -480,7 +480,7 @@ void CG_Rocket_ExecServerList( const char *table )
 	trap_SendConsoleCommand( va( "connect %s", rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverIndex[ netSrc ] ].addr ) );
 }
 
-static bool Parse( char **p, char **out )
+static bool Parse( const char **p, char **out )
 {
 	char *token;
 
@@ -520,7 +520,7 @@ void CG_Rocket_BuildResolutionList( const char *args )
 {
 	char        buf[ MAX_STRING_CHARS ];
 	int         w, h;
-	char        *p;
+	const char        *p;
 	char        *out;
 	int          i;
 

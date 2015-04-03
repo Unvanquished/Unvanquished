@@ -728,7 +728,7 @@ CG_ParseTrailBeam
 Parse a trail beam
 ===============
 */
-static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
+static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
 {
 	char *token;
 
@@ -1064,7 +1064,7 @@ CG_ParseTrailSystem
 Parse a trail system section
 ===============
 */
-static bool CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, const char *name )
+static bool CG_ParseTrailSystem( baseTrailSystem_t *bts, const char **text_p, const char *name )
 {
 	char *token;
 
@@ -1157,7 +1157,7 @@ Load the trail systems from a trail file
 */
 static bool CG_ParseTrailFile( const char *fileName )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          i;
 	int          len;
 	char         *token;

@@ -30,7 +30,7 @@ static shaderTable_t *shaderTableHashTable[ MAX_SHADERTABLE_HASH ];
 static shader_t      *shaderHashTable[ FILE_HASH_SIZE ];
 
 #define MAX_SHADERTEXT_HASH  2048
-static char          **shaderTextHashTable[ MAX_SHADERTEXT_HASH ];
+static const char          **shaderTextHashTable[ MAX_SHADERTEXT_HASH ];
 
 static char          *s_shaderText;
 
@@ -157,7 +157,7 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 ParseVector
 ===============
 */
-static bool ParseVector( char **text, int count, float *v )
+static bool ParseVector( const char **text, int count, float *v )
 {
 	char *token;
 	int  i;
@@ -448,10 +448,10 @@ static int GetOpPrecedence( opcode_t oc )
 	}
 }
 
-static char    *ParseExpressionElement( char **data_p )
+static char    *ParseExpressionElement( const char **data_p )
 {
 	int         c = 0, len;
-	char        *data;
+	const char        *data;
 	const char  *const *punc;
 	static char token[ MAX_TOKEN_CHARS ];
 
@@ -700,7 +700,7 @@ static char    *ParseExpressionElement( char **data_p )
 ParseExpression
 ===============
 */
-static void ParseExpression( char **text, expression_t *exp )
+static void ParseExpression( const char **text, expression_t *exp )
 {
 	int            i;
 	char           *token;
@@ -1058,7 +1058,7 @@ static genFunc_t NameToGenFunc( const char *funcname )
 ParseWaveForm
 ===================
 */
-static void ParseWaveForm( char **text, waveForm_t *wave )
+static void ParseWaveForm( const char **text, waveForm_t *wave )
 {
 	char *token;
 
@@ -1119,7 +1119,7 @@ static void ParseWaveForm( char **text, waveForm_t *wave )
 ParseTexMod
 ===================
 */
-static bool ParseTexMod( char **text, shaderStage_t *stage )
+static bool ParseTexMod( const char **text, shaderStage_t *stage )
 {
 	const char   *token;
 	texModInfo_t *tmi;
@@ -1373,7 +1373,7 @@ static bool ParseTexMod( char **text, shaderStage_t *stage )
 	return true;
 }
 
-static bool ParseMap( shaderStage_t *stage, char **text, char *buffer, int bufferSize )
+static bool ParseMap( shaderStage_t *stage, const char **text, char *buffer, int bufferSize )
 {
 	int  len;
 	char *token;
@@ -1409,13 +1409,13 @@ static bool ParseMap( shaderStage_t *stage, char **text, char *buffer, int buffe
 	return true;
 }
 
-static bool LoadMap( shaderStage_t *stage, char *buffer )
+static bool LoadMap( shaderStage_t *stage, const char *buffer )
 {
 	char         *token;
 	int          imageBits = 0;
 	filterType_t filterType;
 	wrapType_t   wrapType;
-	char         *buffer_p = &buffer[ 0 ];
+	const char         *buffer_p = &buffer[ 0 ];
 
 	if ( !buffer || !buffer[ 0 ] )
 	{
@@ -1545,7 +1545,7 @@ static bool ParseClampType( char *token, wrapType_t *clamp )
 ParseStage
 ===================
 */
-static bool ParseStage( shaderStage_t *stage, char **text )
+static bool ParseStage( shaderStage_t *stage, const char **text )
 {
 	char         *token;
 	int          colorMaskBits = 0;
@@ -2569,7 +2569,7 @@ deformVertexes autoSprite
 deformVertexes autoSprite2
 ===============
 */
-static void ParseDeform( char **text )
+static void ParseDeform( const char **text )
 {
 	char          *token;
 	deformStage_t *ds;
@@ -2766,7 +2766,7 @@ ParseSkyParms
 skyParms <outerbox> <cloudheight> <innerbox>
 ===============
 */
-static void ParseSkyParms( char **text )
+static void ParseSkyParms( const char **text )
 {
 	char *token;
 	char prefix[ MAX_QPATH ];
@@ -2841,7 +2841,7 @@ static void ParseSkyParms( char **text )
 ParseSort
 =================
 */
-static void ParseSort( char **text )
+static void ParseSort( const char **text )
 {
 	char *token;
 
@@ -3055,7 +3055,7 @@ static bool SurfaceParm( const char *token )
 	return false;
 }
 
-static void ParseSurfaceParm( char **text )
+static void ParseSurfaceParm( const char **text )
 {
 	char *token;
 
@@ -3063,7 +3063,7 @@ static void ParseSurfaceParm( char **text )
 	SurfaceParm( token );
 }
 
-static void ParseDiffuseMap( shaderStage_t *stage, char **text )
+static void ParseDiffuseMap( shaderStage_t *stage, const char **text )
 {
 	char buffer[ 1024 ] = "";
 
@@ -3083,7 +3083,7 @@ static void ParseDiffuseMap( shaderStage_t *stage, char **text )
 	}
 }
 
-static void ParseNormalMap( shaderStage_t *stage, char **text )
+static void ParseNormalMap( shaderStage_t *stage, const char **text )
 {
 	char buffer[ 1024 ] = "";
 
@@ -3111,7 +3111,7 @@ static void ParseNormalMap( shaderStage_t *stage, char **text )
 	}
 }
 
-static void ParseSpecularMap( shaderStage_t *stage, char **text )
+static void ParseSpecularMap( shaderStage_t *stage, const char **text )
 {
 	char buffer[ 1024 ] = "";
 
@@ -3131,7 +3131,7 @@ static void ParseSpecularMap( shaderStage_t *stage, char **text )
 	}
 }
 
-static void ParseGlowMap( shaderStage_t *stage, char **text )
+static void ParseGlowMap( shaderStage_t *stage, const char **text )
 {
 	char buffer[ 1024 ] = "";
 
@@ -3146,7 +3146,7 @@ static void ParseGlowMap( shaderStage_t *stage, char **text )
 	}
 }
 
-static void ParseReflectionMap( shaderStage_t *stage, char **text )
+static void ParseReflectionMap( shaderStage_t *stage, const char **text )
 {
 	char buffer[ 1024 ] = "";
 
@@ -3163,7 +3163,7 @@ static void ParseReflectionMap( shaderStage_t *stage, char **text )
 	}
 }
 
-static void ParseReflectionMapBlended( shaderStage_t *stage, char **text )
+static void ParseReflectionMapBlended( shaderStage_t *stage, const char **text )
 {
 	char buffer[ 1024 ] = "";
 
@@ -3180,7 +3180,7 @@ static void ParseReflectionMapBlended( shaderStage_t *stage, char **text )
 	}
 }
 
-static void ParseLightFalloffImage( shaderStage_t *stage, char **text )
+static void ParseLightFalloffImage( shaderStage_t *stage, const char **text )
 {
 	char buffer[ 1024 ] = "";
 
@@ -3206,9 +3206,9 @@ shader.  Parse it into the global shader variable.  Later functions
 will optimize it.
 =================
 */
-static bool ParseShader( char *_text )
+static bool ParseShader( const char *_text )
 {
-	char **text;
+	const char **text;
 	char *token;
 	int  s;
 
@@ -4519,7 +4519,7 @@ bool RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 {
 	const char      *func_err = "WARNING: RE_LoadDynamicShader";
 	dynamicshader_t *dptr, *lastdptr;
-	char            *q, *token;
+	const char            *q, *token;
 
 	ri.Printf( PRINT_WARNING, "RE_LoadDynamicShader( name = '%s', text = '%s' )\n", shadername, shadertext );
 
@@ -4641,9 +4641,9 @@ return nullptr if not found
 If found, it will return a valid shader
 =====================
 */
-static char    *FindShaderInShaderText( const char *shaderName )
+static const char    *FindShaderInShaderText( const char *shaderName )
 {
-	char *token, *p;
+	const char *token, *p;
 
 	int  i, hash;
 
@@ -4734,7 +4734,7 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 	char     strippedName[ MAX_QPATH ];
 	char     fileName[ MAX_QPATH ];
 	int      i, hash, bits;
-	char     *shaderText;
+	const char     *shaderText;
 	image_t  *image;
 	shader_t *sh;
 
@@ -5057,7 +5057,7 @@ void R_ShaderList_f()
 	int      i;
 	int      count;
 	shader_t *shader;
-	char     *s = nullptr;
+	const char *s = nullptr;
 
 	ri.Printf( PRINT_ALL, "-----------------------" );
 
@@ -5245,7 +5245,7 @@ void R_ShaderExp_f()
 	int          i;
 	int          len;
 	char         buffer[ 1024 ] = "";
-	char         *buffer_p = &buffer[ 0 ];
+	const char         *buffer_p = &buffer[ 0 ];
 	expression_t exp;
 
 	strcpy( shader.name, "dummy" );
@@ -5285,11 +5285,12 @@ static void ScanAndLoadShaderFiles()
 {
 	char **shaderFiles;
 	char *buffers[ MAX_SHADER_FILES ];
-	char *p;
+	const char *p;
 	int  numShaderFiles;
 	int  i;
-	char *oldp, *token, *textEnd;
-	char **hashMem;
+	const char *oldp, *token;
+	char *textEnd;
+	const char **hashMem;
 	int  shaderTextHashTableSizes[ MAX_SHADERTEXT_HASH ], hash, size;
 	char filename[ MAX_QPATH ];
 	long sum = 0, summand;
@@ -5422,7 +5423,7 @@ static void ScanAndLoadShaderFiles()
 
 	size += MAX_SHADERTEXT_HASH;
 
-	hashMem = (char**) ri.Hunk_Alloc( size * sizeof( char * ), h_low );
+	hashMem = (const char**) ri.Hunk_Alloc( size * sizeof( char * ), h_low );
 
 	for ( i = 0; i < MAX_SHADERTEXT_HASH; i++ )
 	{

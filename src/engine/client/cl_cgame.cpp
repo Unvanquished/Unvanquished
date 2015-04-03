@@ -871,7 +871,8 @@ void CL_UpdateLevelHunkUsage()
 	int  handle;
 	const char *memlistfile = "hunkusage.dat";
 	char *buf, *outbuf;
-	char *buftrav, *outbuftrav;
+	const char *buftrav;
+	char *outbuftrav;
 	char *token;
 	char outstr[ 256 ];
 	int  len, memusage;

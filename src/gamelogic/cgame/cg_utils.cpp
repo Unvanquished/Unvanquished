@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 CG_ParseColor
 ===============
 */
-bool CG_ParseColor( byte *c, char **text_p )
+bool CG_ParseColor( byte *c, const char **text_p )
 {
 	char *token;
 	int  i;

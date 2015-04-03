@@ -403,7 +403,7 @@ void Cmd_CompleteCfgName( char *args, int argNum );
 
 void Cmd_PrintUsage( const char *syntax, const char *description );
 int  Cmd_Argc();
-char *Cmd_Argv( int arg );
+const char *Cmd_Argv( int arg );
 void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
 char *Cmd_Args();
 char *Cmd_ArgsFrom( int arg );

@@ -79,7 +79,7 @@ static connstate_t oldConnState;
 void CG_Rocket_Init()
 {
 	int len;
-	char *token, *text_p;
+	const char *token, *text_p;
 	char text[ 20000 ];
 	fileHandle_t f;
 
@@ -303,7 +303,7 @@ void CG_Rocket_Init()
 void CG_Rocket_LoadHuds()
 {
 	int i, len;
-	char *token, *text_p;
+	const char *token, *text_p;
 	char text[ 20000 ];
 	fileHandle_t f;
 

@@ -805,7 +805,7 @@ static char demoName[ MAX_QPATH ]; // compiler bug workaround
 void CL_Record_f()
 {
 	char name[ MAX_OSPATH ];
-	char *s;
+	const char *s;
 
 	if ( Cmd_Argc() > 2 )
 	{
@@ -1167,7 +1167,7 @@ void CL_WriteWaveOpen()
 
 	char name[ MAX_OSPATH ];
 	int  len;
-	char *s;
+	const char *s;
 
 	if ( Cmd_Argc() > 2 )
 	{
@@ -1665,9 +1665,7 @@ so when they are typed in at the console, they will need to be forwarded.
 */
 void CL_ForwardCommandToServer( const char *string )
 {
-	char *cmd;
-
-	cmd = Cmd_Argv( 0 );
+	const char *cmd = Cmd_Argv( 0 );
 
 	// ignore key up commands
 	if ( cmd[ 0 ] == '-' )
@@ -1804,7 +1802,8 @@ CL_Connect_f
 */
 void CL_Connect_f()
 {
-	char         *server, password[ 64 ];
+	char         *server;
+	char password[ 64 ];
 	const char   *serverString;
 	char         *offset;
 	int          argc = Cmd_Argc();
@@ -1818,7 +1817,7 @@ void CL_Connect_f()
 
 	if ( argc == 2 )
 	{
-		server = Cmd_Argv( 1 );
+		server = (char *) Cmd_Argv( 1 );
 	}
 	else
 	{
@@ -1835,7 +1834,7 @@ void CL_Connect_f()
 			Com_Log(LOG_WARN, "only -4 or -6 as address type understood." );
 		}
 
-		server = Cmd_Argv( 2 );
+		server = (char *) Cmd_Argv( 2 );
 	}
 
 	// Skip the URI scheme.
@@ -4266,7 +4265,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 //	char*   str;
 	char *infoString;
 	int  prot;
-	char *gameName;
+	const char *gameName;
 
 	infoString = MSG_ReadString( msg );
 
@@ -4515,7 +4514,7 @@ CL_ServerStatusResponse
 */
 void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 {
-	char           *s;
+	const char           *s;
 	char           info[ MAX_INFO_STRING ];
 	int            i, l, score, ping;
 	int            len;
@@ -4648,7 +4647,7 @@ CL_LocalServers_f
 */
 void CL_LocalServers_f()
 {
-	char     *message;
+	const char *message;
 	int      i, j;
 	netadr_t to;
 
@@ -4933,7 +4932,7 @@ void CL_Ping_f()
 {
 	netadr_t     to;
 	ping_t        *pingptr;
-	char          *server;
+	const char   *server;
 	int          argc;
 	netadrtype_t family = NA_UNSPEC;
 
@@ -5131,7 +5130,7 @@ CL_ServerStatus_f
 void CL_ServerStatus_f()
 {
 	netadr_t       to, *toptr = nullptr;
-	char           *server;
+	const char     *server;
 	serverStatus_t *serverStatus;
 	int            argc;
 	netadrtype_t   family = NA_UNSPEC;

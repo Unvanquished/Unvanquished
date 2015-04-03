@@ -99,7 +99,7 @@ void LerpColor( vec4_t a, vec4_t b, vec4_t c, float t )
 Float_Parse
 =================
 */
-bool Float_Parse( char **p, float *f )
+bool Float_Parse( const char **p, float *f )
 {
 	char *token;
 	token = COM_ParseExt( p, false );
@@ -443,7 +443,7 @@ bool PC_Float_Parse( int handle, float *f )
 Color_Parse
 =================
 */
-bool Color_Parse( char **p, vec4_t *c )
+bool Color_Parse( const char **p, vec4_t *c )
 {
 	int   i;
 	float f;
@@ -489,7 +489,7 @@ bool PC_Color_Parse( int handle, vec4_t *c )
 Int_Parse
 =================
 */
-bool Int_Parse( char **p, int *i )
+bool Int_Parse( const char **p, int *i )
 {
 	char *token;
 	token = COM_ParseExt( p, false );
@@ -566,7 +566,7 @@ bool PC_Int_Parse( int handle, int *i )
 Rect_Parse
 =================
 */
-bool Rect_Parse( char **p, rectDef_t *r )
+bool Rect_Parse( const char **p, rectDef_t *r )
 {
 	if ( Float_Parse( p, &r->x ) )
 	{
@@ -614,7 +614,7 @@ bool PC_Rect_Parse( int handle, rectDef_t *r )
 String_Parse
 =================
 */
-bool String_Parse( char **p, const char **out )
+bool String_Parse( const char **p, const char **out )
 {
 	char *token;
 

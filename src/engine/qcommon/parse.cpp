@@ -127,7 +127,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //punctuation
 typedef struct punctuation_s
 {
-	char                 *p; //punctuation character(s)
+	const char           *p; //punctuation character(s)
 	int                  n; //punctuation indication
 	struct punctuation_s *next; //next punctuation
 } punctuation_t;
@@ -227,7 +227,7 @@ typedef struct source_s
 //directive name with parse function
 typedef struct directive_s
 {
-	char *name;
+	const char *name;
 	int ( *func )( source_t *source );
 } directive_t;
 
@@ -374,7 +374,7 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 Parse_ScriptError
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_ScriptError( script_t *script, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_ScriptError( script_t *script, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -392,7 +392,7 @@ static void QDECL PRINTF_LIKE(2) Parse_ScriptError( script_t *script, char *str,
 Parse_ScriptWarning
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_ScriptWarning( script_t *script, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_ScriptWarning( script_t *script, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -978,7 +978,7 @@ Parse_ReadPunctuation
 static int Parse_ReadPunctuation( script_t *script, token_t *token )
 {
 	int           len;
-	char          *p;
+	const char          *p;
 	punctuation_t *punc;
 
 	for ( punc = script->punctuationtable[( unsigned int ) * script->script_p ]; punc; punc = punc->next )
@@ -1250,7 +1250,7 @@ static void Parse_FreeScript( script_t *script )
 Parse_SourceError
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_SourceError( source_t *source, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_SourceError( source_t *source, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -1266,7 +1266,7 @@ static void QDECL PRINTF_LIKE(2) Parse_SourceError( source_t *source, char *str,
 Parse_SourceWarning
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_SourceWarning( source_t *source, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_SourceWarning( source_t *source, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -3468,7 +3468,7 @@ static int Parse_Directive_endif( source_t *source )
 Parse_CheckTokenString
 ===============
 */
-static int Parse_CheckTokenString( source_t *source, char *string )
+static int Parse_CheckTokenString( source_t *source, const char *string )
 {
 	token_t tok;
 

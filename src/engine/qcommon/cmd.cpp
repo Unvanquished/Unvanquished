@@ -113,7 +113,7 @@ int Cmd_Argc()
 Cmd_Argv
 ============
 */
-char *Cmd_Argv( int arg )
+const char *Cmd_Argv( int arg )
 {
 	if (arg >= Cmd_Argc() || arg < 0) {
 		return "";

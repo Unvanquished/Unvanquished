@@ -1929,7 +1929,7 @@ image_t        *R_Create3DImage( const char *name,
 
 typedef struct
 {
-	char *ext;
+	const char *ext;
 	void ( *ImageLoader )( const char *, unsigned char **, int *, int *, int *, int *, int *, byte );
 } imageExtToLoaderMap_t;
 
@@ -1957,7 +1957,7 @@ Loads any of the supported image types into a canonical
 32 bit format.
 =================
 */
-static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
+static void R_LoadImage( const char **buffer, byte **pic, int *width, int *height,
 			 int *numLayers, int *numMips,
 			 int *bits, const char *materialName )
 {
@@ -2067,7 +2067,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	byte          *mallocPtr = nullptr;
 	long          hash;
 	char          buffer[ 1024 ];
-	char          *buffer_p;
+	const char          *buffer_p;
 	unsigned long diff;
 
 	if ( !imageName )
@@ -2264,20 +2264,20 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	long        hash;
 	int         numPicsToFree = 0;
 
-	static char *openglSuffices[ 6 ] = { "px", "nx", "py", "ny", "pz", "nz" };
+	static const char *openglSuffices[ 6 ] = { "px", "nx", "py", "ny", "pz", "nz" };
 
-	static char     *doom3Suffices[ 6 ] = { "forward", "back", "left", "right", "up", "down" };
-	static bool doom3FlipX[ 6 ] = { true,        true,  false, true,  true,  false };
-	static bool doom3FlipY[ 6 ] = { false,       false, true,  false, false, true };
+	static const char *doom3Suffices[ 6 ] = { "forward", "back", "left", "right", "up", "down" };
+	static bool doom3FlipX[ 6 ] = { true,  true,  false, true,  true,  false };
+	static bool doom3FlipY[ 6 ] = { false, false, true,  false, false, true };
 	static int      doom3Rot[ 6 ] = { 90,           -90,    0,              0,              90,             -90 };
 
-	static char     *quakeSuffices[ 6 ] = { "rt", "lf", "bk", "ft", "up", "dn" };
-	static bool quakeFlipX[ 6 ] = { true,        true,  false, true,  true,  false };
-	static bool quakeFlipY[ 6 ] = { false,       false, true,  false, false, true };
+	static const char *quakeSuffices[ 6 ] = { "rt", "lf", "bk", "ft", "up", "dn" };
+	static bool quakeFlipX[ 6 ] = { true,  true,  false, true,  true,  false };
+	static bool quakeFlipY[ 6 ] = { false, false, true,  false, false, true };
 	static int      quakeRot[ 6 ] = { 90,           -90,    0,              0,              90,             -90 };
 
 	char            buffer[ 1024 ], filename[ 1024 ];
-	char            *filename_p;
+	const  char     *filename_p;
 
 	if ( !imageName )
 	{

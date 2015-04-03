@@ -115,7 +115,7 @@ models/players/visor/character.cfg, etc
 
 static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
@@ -465,7 +465,7 @@ Read a configuration file containing animation counts and rates
 */
 static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 {
-	char         *text_p, *prev;
+	const char         *text_p, *prev;
 	int          len;
 	int          i;
 	char         *token;

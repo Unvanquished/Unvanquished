@@ -955,7 +955,8 @@ static int  numcensors;
 
 void G_LoadCensors()
 {
-	char         *text_p, *token;
+	const char *text_p;
+	char *token;
 	char         text[ 20000 ];
 	char         *term;
 	int          len;

@@ -167,7 +167,7 @@ void BotDebugDrawMesh( BotDebugInterface_t *in )
 void Cmd_NavEdit()
 {
 	int argc = Cmd_Argc();
-	char *arg = nullptr;
+	const char *arg = nullptr;
 	const char usage[] = "Usage: navedit enable/disable/save <navmesh>\n";
 
 	if ( !Cvar_VariableIntegerValue( "sv_cheats" ) )
@@ -239,7 +239,7 @@ void Cmd_AddConnection()
 {
 	const char usage[] = "Usage: addcon start <dir> (radius)\n"
 	                     " addcon end\n";
-	char *arg = nullptr;
+	const char *arg = nullptr;
 	int argc = Cmd_Argc();
 
 	if ( argc < 2 )
@@ -371,7 +371,7 @@ void Cmd_ConnectionSizeDown()
 void Cmd_NavTest()
 {
 	const char usage[] = "Usage: navtest shownodes/hidenodes/showportals/hideportals/startpath/endpath\n";
-	char *arg = nullptr;
+	const char *arg = nullptr;
 	int argc = Cmd_Argc();
 
 	if ( !cmd.enabled )

@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ParseFloats
 ================
 */
-static bool ParseFloats( float* res, const int number, char **text )
+static bool ParseFloats( float* res, const int number, const char **text )
 {
     char* token;
     int i = number;
@@ -63,7 +63,7 @@ static bool ParseFloats( float* res, const int number, char **text )
 CG_ParseMinimapZone
 ================
 */
-static bool CG_ParseMinimapZone( minimapZone_t* z, char **text )
+static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
 {
     char* token;
     bool hasImage = false;
@@ -159,7 +159,7 @@ CG_ParseMinimap
 static bool CG_ParseMinimap( minimap_t* m, const char* filename )
 {
     char text_buffer[ 20000 ];
-    char* text;
+    const char* text;
     char* token;
 
     m->nZones = 0;

@@ -133,7 +133,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	char        *token;
 	std::string libsBuffer; // all libs concatenated
 
-	char        **libs = ( char ** ) &libShaderNames;
+	const char        **libs = &libShaderNames;
 
 	std::string shaderText;
 
@@ -689,7 +689,7 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	if ( !compileMacros.empty() )
 	{
 		const char *compileMacros_ = compileMacros.c_str();
-		char       **compileMacrosP = ( char ** ) &compileMacros_;
+		const char **compileMacrosP = &compileMacros_;
 		char       *token;
 
 		while ( 1 )

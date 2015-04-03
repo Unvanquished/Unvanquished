@@ -474,7 +474,7 @@ void G_admin_cmdlist( gentity_t *ent )
 // match a certain flag within these flags
 static bool admin_permission( char *flags, const char *flag, bool *perm )
 {
-	char     *token, *token_p = flags;
+	const char     *token, *token_p = flags;
 	bool allflags = false;
 	bool p = false;
 	*perm = false;
@@ -901,7 +901,7 @@ void G_admin_writeconfig()
 	trap_FS_FCloseFile( f );
 }
 
-static void admin_readconfig_string( char **cnf, char *s, int size )
+static void admin_readconfig_string( const char **cnf, char *s, int size )
 {
 	char *t;
 
@@ -938,7 +938,7 @@ static void admin_readconfig_string( char **cnf, char *s, int size )
 	}
 }
 
-static void admin_readconfig_int( char **cnf, int *v )
+static void admin_readconfig_int( const char **cnf, int *v )
 {
 	char *t;
 
@@ -1814,7 +1814,7 @@ bool G_admin_readconfig( gentity_t *ent )
 	int               lc = 0, ac = 0, bc = 0, cc = 0;
 	fileHandle_t      f;
 	int               len;
-	char              *cnf, *cnf2;
+	char              *cnf1, *cnf2;
 	char              *t;
 	bool          level_open, admin_open, ban_open, command_open;
 	int               i;
@@ -1839,10 +1839,11 @@ bool G_admin_readconfig( gentity_t *ent )
 		return false;
 	}
 
-	cnf = (char*) BG_Alloc( len + 1 );
-	cnf2 = cnf;
-	trap_FS_Read( cnf, len, f );
-	* ( cnf + len ) = '\0';
+	cnf1 = (char*) BG_Alloc( len + 1 );
+	cnf2 = cnf1;
+	trap_FS_Read(cnf1, len, f );
+	* ( cnf1 + len ) = '\0';
+	const char *cnf = cnf1;
 	trap_FS_FCloseFile( f );
 
 	admin_level_maxname = 0;
@@ -4702,8 +4703,8 @@ static int G_admin_flag_sort( const void *pa, const void *pb )
 const char *G_admin_flag_update( char *newflags, char *oldflags, int size,
                                  const char *flag, bool add, bool permission )
 {
-	char     *token, *token_p;
-	char     *key;
+	const char     *token, *token_p;
+	const char     *key;
 	char     flags[ MAX_ADMIN_FLAG_KEYS ][ MAX_ADMIN_FLAG_LEN ];
 	bool found = false;
 	int      count = 0;
