@@ -238,14 +238,14 @@ if( MSVC )
   endif()
   set_linker_flag( "/LARGEADDRESSAWARE" )
 
-  # Turn off C4503:, e.g: 
+  # Turn off C4503:, e.g:
   # warning C4503: 'std::_Tree<std::_Tmap_traits<_Kty,_Ty,_Pr,_Alloc,false>>::_Insert_hint' : decorated name length exceeded, name was truncated
   # No issue will be caused from this error as long as no two symbols become identical by being truncated.
   # In practice this rarely happens and even the standard libraries are affected as in the example. So there really is not
   # much that can to done about it and the warnings about each truncation really just make it more likely
   # that other more real issues might get missed. So better to remove the distraction when it really is very unlikey to happen.
-  set_c_cxx_flag( "/wd4503" )  
-  
+  set_c_cxx_flag( "/wd4503" )
+
   # Turn off warning C4996:, e.g:
   # warning C4996: 'open': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _open. See online help for details.  set_c_cxx_flag( "/wd4996" )
   # open seems far more popular than _open not to mention nicer. There doesn't seem to be any reason or will to change to _open.
@@ -348,28 +348,28 @@ else()
     if( USE_PEDANTIC )
       set_cxx_flag( "-pedantic-errors" )
     endif()
+    try_cxx_flag_werror( WNO_ABSOLUTE_VALUE "-Wno-error=absolute-value" )
+    try_cxx_flag_werror( WNO_DEPRECATED_REGISTER "-Wno-error=deprecated-register" )
+    try_cxx_flag_werror( WNO_INCONSISTENT_MISSING_OVERRIDE "-Wno-error=inconsistent-missing-override" )
+    try_cxx_flag_werror( WNO_INVALID_SOURCE_ENCODING "-Wno-error=invalid-source-encoding" )
+    try_cxx_flag_werror( WNO_MAYBE_UNINITIALIZED "-Wno-error=maybe-uninitialized" )
+    try_cxx_flag_werror( WNO_MISSING_FIELD_INITIALIZERS "-Wno-error=missing-field-initializers" )
+    try_cxx_flag_werror( WNO_PARENTHESES "-Wno-error=parentheses" )
+    try_cxx_flag_werror( WNO_POINTER_BOOL_CONVERSION "-Wno-error=pointer-bool-conversion" )
+    try_cxx_flag_werror( WNO_PRAGMAS "-Wno-error=pragmas" )
+    try_cxx_flag_werror( WNO_SIGN_COMPARE "-Wno-error=sign-compare" )
+    try_cxx_flag_werror( WNO_STRICT_OVERFLOW "-Wno-error=strict-overflow" )
+    try_cxx_flag_werror( WNO_SWITCH "-Wno-error=switch" )
+    try_cxx_flag_werror( WNO_UNINITIALIZED "-Wno-error=uninitialized" )
+    try_cxx_flag_werror( WNO_UNUSED_BUT_SET_PARAMETER "-Wno-error=unused-but-set-parameter" )
+    try_cxx_flag_werror( WNO_UNUSED_BUT_SET_VARIABLE "-Wno-error=unused-but-set-variable" )
+    try_cxx_flag_werror( WNO_UNUSED_FUNCTION "-Wno-error=unused-function" )
+    try_cxx_flag_werror( WNO_UNUSED_PARAMETER "-Wno-error=unused-parameter" )
+    try_cxx_flag_werror( WNO_UNUSED_PRIVATE_FIELD "-Wno-error=unused-private-field" )
+    try_cxx_flag_werror( WNO_UNUSED_RESULT "-Wno-error=unused-result" )
+    try_cxx_flag_werror( WNO_UNUSED_VARIABLE "-Wno-error=unused-variable" )
+    try_cxx_flag_werror( WNO_WRITE_STRINGS "-Wno-error=write-strings" )
   endif()
-  try_cxx_flag( WNO_ABSOLUTE_VALUE "-Wno-absolute-value" )
-  try_cxx_flag( WNO_DEPRECATED_REGISTER "-Wno-deprecated-register" )
-  try_cxx_flag( WNO_INCONSISTENT_MISSING_OVERRIDE "-Wno-inconsistent-missing-override" )
-  try_cxx_flag( WNO_INVALID_SOURCE_ENCODING "-Wno-invalid-source-encoding" )
-  try_cxx_flag( WNO_MAYBE_UNINITIALIZED "-Wno-maybe-uninitialized" )
-  try_cxx_flag( WNO_MISSING_FIELD_INITIALIZERS "-Wno-missing-field-initializers" )
-  try_cxx_flag( WNO_PARENTHESES "-Wno-parentheses" )
-  try_cxx_flag( WNO_POINTER_BOOL_CONVERSION "-Wno-pointer-bool-conversion" )
-  try_cxx_flag( WNO_PRAGMAS "-Wno-pragmas" )
-  try_cxx_flag( WNO_SIGN_COMPARE "-Wno-sign-compare" )
-  try_cxx_flag( WNO_STRICT_OVERFLOW "-Wno-strict-overflow" )
-  try_cxx_flag( WNO_SWITCH "-Wno-switch" )
-  try_cxx_flag( WNO_UNINITIALIZED "-Wno-uninitialized" )
-  try_cxx_flag( WNO_UNUSED_BUT_SET_PARAMETER "-Wno-unused-but-set-parameter" )
-  try_cxx_flag( WNO_UNUSED_BUT_SET_VARIABLE "-Wno-unused-but-set-variable" )
-  try_cxx_flag( WNO_UNUSED_FUNCTION "-Wno-unused-function" )
-  try_cxx_flag( WNO_UNUSED_PARAMETER "-Wno-unused-parameter" )
-  try_cxx_flag( WNO_UNUSED_PRIVATE_FIELD "-Wno-unused-private-field" )
-  try_cxx_flag( WNO_UNUSED_RESULT "-Wno-unused-result" )
-  try_cxx_flag( WNO_UNUSED_VARIABLE "-Wno-unused-variable" )
-  try_cxx_flag( WNO_WRITE_STRINGS "-Wno-write-strings" )
 
   if( USE_ADDRESS_SANITIZER )
     set_cxx_flag( "-fsanitize=address" )
@@ -1468,17 +1468,17 @@ function( GAMEMODULE )
     endif()
     set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS}
       -Wextra
-      -Wno-absolute-value
-      -Wno-implicit-function-declaration
-      -Wno-missing-field-initializers
-      -Wno-pointer-bool-conversion
-      -Wno-sign-compare
-      -Wno-switch
-      -Wno-uninitialized
-      -Wno-unused-function
-      -Wno-unused-label
-      -Wno-unused-parameter
-      -Wno-writable-strings
+      -Wno-error=absolute-value
+      -Wno-error=implicit-function-declaration
+      -Wno-error=missing-field-initializers
+      -Wno-error=pointer-bool-conversion
+      -Wno-error=sign-compare
+      -Wno-error=switch
+      -Wno-error=uninitialized
+      -Wno-error=unused-function
+      -Wno-error=unused-label
+      -Wno-error=unused-parameter
+      -Wno-error=writable-strings
       -pedantic
     )
     if( USE_WERROR )
