@@ -242,7 +242,7 @@ gfx/weapons/massdriver_MF
 	entityMergable
 	{
 		map gfx/weapons/massdriver_MF
-		blendFunc GL_SRC_ALPHA
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
