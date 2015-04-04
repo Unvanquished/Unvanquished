@@ -266,7 +266,7 @@ gfx/weapons/pulserifletrail
 	entityMergable
 	{
 		map gfx/weapons/pulserifletrail
-		blendFunc GL_SRC_APLHA GL_ONE
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
