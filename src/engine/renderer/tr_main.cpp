@@ -161,6 +161,15 @@ void R_QtangentsToTBN( const i16vec4_t qtangent, vec3_t tangent,
 	}
 }
 
+void R_QtangentsToNormal( const i16vec4_t qtangent, vec3_t normal )
+{
+	vec4_t quat;
+	const vec3_t z = { 0.0f, 0.0f, 1.0f };
+
+	snorm16ToFloat( qtangent, quat );
+	QuatTransformVector( quat, z, normal );
+}
+
 void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
 		       const vec3_t normal, i16vec4_t qtangent )
 {

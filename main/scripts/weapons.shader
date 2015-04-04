@@ -4,7 +4,7 @@ gfx/weapons/blasterMF_1
 	entityMergable
 	{
 		map gfx/weapons/blasterMF_1
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -16,7 +16,7 @@ gfx/weapons/blasterMF_2
 	entityMergable
 	{
 		map gfx/weapons/blasterMF_2
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -52,7 +52,7 @@ gfx/weapons/flash
 	entityMergable
 	{
 		map gfx/weapons/flash
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -64,7 +64,7 @@ gfx/weapons/flash_lgun
 	entityMergable
 	{
 		map gfx/weapons/flash_lgun
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		//rgbGen vertex
 		//alphaGen vertex
 	}
@@ -76,7 +76,7 @@ gfx/weapons/flash_p
 	entityMergable
 	{
 		map gfx/weapons/flash_p
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -87,7 +87,7 @@ gfx/weapons/glow_particle_1
 	cull disable
 	{
 		map gfx/weapons/glow_particle
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		blendFunc blend
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -98,7 +98,7 @@ gfx/weapons/glow_particle_2
 	cull disable
 	{
 		map gfx/weapons/glow_particle2
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		blendFunc blend
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -218,7 +218,7 @@ gfx/weapons/lucy_fire1
 	entityMergable
 	{
 		map gfx/weapons/lucy_fire1
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		//rgbGen vertex
 		//alphaGen vertex
 	}
@@ -230,7 +230,7 @@ gfx/weapons/lucytrail
 	entityMergable
 	{
 		map gfx/weapons/lucytrail
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -242,7 +242,7 @@ gfx/weapons/massdriver_MF
 	entityMergable
 	{
 		map gfx/weapons/massdriver_MF
-		blendFunc add
+		blendFunc GL_SRC_ALPHA
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -254,7 +254,7 @@ gfx/weapons/pulserifleimpact
 	entityMergable
 	{
 		map gfx/weapons/pulserifleimpact
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -266,7 +266,7 @@ gfx/weapons/pulserifletrail
 	entityMergable
 	{
 		map gfx/weapons/pulserifletrail
-		blendFunc add
+		blendFunc GL_SRC_APLHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -278,7 +278,7 @@ gfx/weapons/shotgunspark
 	entityMergable
 	{
 		map gfx/weapons/shotgunspark
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -302,7 +302,7 @@ gfx/weapons/spiderflash
 	entityMergable
 	{
 		map gfx/weapons/spiderflash
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}
@@ -314,7 +314,7 @@ gfx/weapons/spiderflash_lgun
 	entityMergable
 	{
 		map gfx/weapons/spiderflash_lgun
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		//rgbGen vertex
 		//alphaGen vertex
 	}
@@ -326,7 +326,7 @@ gfx/weapons/spiderflash_p
 	entityMergable
 	{
 		map gfx/weapons/spiderflash_p
-		blendFunc add
+		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 		alphaGen vertex
 	}

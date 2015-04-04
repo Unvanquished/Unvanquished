@@ -130,6 +130,11 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 		return;
 	}
 
+	if ( sh->autoSpriteMode != sh2->autoSpriteMode ) {
+		ri.Printf( PRINT_WARNING, "WARNING: R_RemapShader: shaders %s and %s have different autoSprite modes\n", shaderName, newShaderName );
+		return;
+	}
+
 	// remap all the shaders with the given name
 	// even tho they might have different lightmaps
 	COM_StripExtension3( shaderName, strippedName, sizeof( strippedName ) );
@@ -2871,7 +2876,7 @@ deformVertexes wave <spread> <waveform> <base> <amplitude> <phase> <frequency>
 deformVertexes normal <frequency> <amplitude>
 deformVertexes move <vector> <waveform> <base> <amplitude> <phase> <frequency>
 deformVertexes bulge <bulgeWidth> <bulgeHeight> <bulgeSpeed>
-deformVertexes projectionShadow
+deformVertexes rotgrow <growSpeed> <rotSlices> <rotSpeed>
 deformVertexes autoSprite
 deformVertexes autoSprite2
 ===============
@@ -2898,21 +2903,17 @@ static void ParseDeform( char **text )
 	ds = &shader.deforms[ shader.numDeforms ];
 	shader.numDeforms++;
 
-	if ( !Q_stricmp( token, "projectionShadow" ) )
-	{
-		ds->deformation = DEFORM_PROJECTION_SHADOW;
-		return;
-	}
-
 	if ( !Q_stricmp( token, "autosprite" ) )
 	{
-		ds->deformation = DEFORM_AUTOSPRITE;
+		shader.autoSpriteMode = 1;
+		shader.numDeforms--;
 		return;
 	}
 
 	if ( !Q_stricmp( token, "autosprite2" ) )
 	{
-		ds->deformation = DEFORM_AUTOSPRITE2;
+		shader.autoSpriteMode = 2;
+		shader.numDeforms--;
 		return;
 	}
 
@@ -3025,9 +3026,31 @@ static void ParseDeform( char **text )
 		return;
 	}
 
+	if ( !Q_stricmp( token, "rotgrow" ) )
+	{
+		int i;
+
+		for ( i = 0; i < 3; i++ )
+		{
+			token = COM_ParseExt2( text, qfalse );
+
+			if ( token[ 0 ] == 0 )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name );
+				return;
+			}
+
+			ds->moveVector[ i ] = atof( token );
+		}
+
+		ds->deformation = DEFORM_ROTGROW;
+		return;
+	}
+
 	if ( !Q_stricmp( token, "sprite" ) )
 	{
-		ds->deformation = DEFORM_SPRITE;
+		shader.autoSpriteMode = 1;
+		shader.numDeforms--;
 		return;
 	}
 
@@ -5523,6 +5546,10 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 	else
 	{
 		implicitCullType = CT_FRONT_SIDED;
+	}
+
+	if( flags & RSF_SPRITE ) {
+		shader.autoSpriteMode = 1;
 	}
 
 	// attempt to define shader from an explicit parameter file

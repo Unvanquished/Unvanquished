@@ -2950,6 +2950,8 @@ static void R_CreateWorldVBO( void )
 
 	int       numVerts;
 	srfVert_t *verts;
+	shaderVertex_t *vboVerts;
+	glIndex_t      *vboIdxs;
 
 	int           numTriangles;
 	srfTriangle_t *triangles;
@@ -2966,9 +2968,11 @@ static void R_CreateWorldVBO( void )
 	numTriangles = 0;
 	numSurfaces = 0;
 
-	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numSurfaces; k++, surface++ )
+	for ( k = 0; k < s_worldData.numSurfaces; k++ )
 	{
-		if ( surface->shader->isSky || surface->shader->isPortal || ShaderRequiresCPUDeforms( surface->shader ) )
+		surface = &s_worldData.surfaces[ k ];
+
+		if ( surface->shader->isSky || surface->shader->isPortal )
 		{
 			continue;
 		}
@@ -3008,8 +3012,10 @@ static void R_CreateWorldVBO( void )
 	}
 
 	// reset surface view counts
-	for ( i = 0, surface = s_worldData.surfaces; i < s_worldData.numSurfaces; i++, surface++ )
+	for ( i = 0; i < s_worldData.numSurfaces; i++ )
 	{
+		surface = &s_worldData.surfaces[ i ];
+
 		surface->viewCount = -1;
 		surface->lightCount = -1;
 		surface->interactionBits = 0;
@@ -3041,7 +3047,7 @@ static void R_CreateWorldVBO( void )
 
 			shader1 = surf1->shader;
 
-			if ( shader1->isSky || shader1->isPortal || ShaderRequiresCPUDeforms( shader1 ) )
+			if ( shader1->isSky || shader1->isPortal )
 			{
 				continue;
 			}
@@ -3099,9 +3105,11 @@ static void R_CreateWorldVBO( void )
 	surfaces = ( bspSurface_t ** ) ri.Hunk_AllocateTempMemory( sizeof( *surfaces ) * numSurfaces );
 
 	numSurfaces = 0;
-	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numSurfaces; k++, surface++ )
+	for ( k = 0; k < s_worldData.numSurfaces; k++ )
 	{
-		if ( surface->shader->isSky || surface->shader->isPortal || ShaderRequiresCPUDeforms( surface->shader ) )
+		surface = &s_worldData.surfaces[ k ];
+
+		if ( surface->shader->isSky || surface->shader->isPortal )
 		{
 			continue;
 		}
@@ -3123,9 +3131,17 @@ static void R_CreateWorldVBO( void )
 	s_worldData.numTriangles = numTriangles;
 	s_worldData.triangles = triangles = (srfTriangle_t*) ri.Hunk_Alloc( numTriangles * sizeof( srfTriangle_t ), h_low );
 
+	vboVerts = (shaderVertex_t *)ri.Hunk_AllocateTempMemory( numVerts * sizeof( shaderVertex_t ) );
+	vboIdxs = (glIndex_t *)ri.Hunk_AllocateTempMemory( 3 * numTriangles * sizeof( glIndex_t ) );
+
 	// set up triangle and vertex arrays
 	numVerts = 0;
 	numTriangles = 0;
+	tess.buildingVBO = qtrue; // no batch splitting please
+	tess.verts = vboVerts;
+	tess.numVertexes = 0;
+	tess.indexes = vboIdxs;
+	tess.numIndexes = 0;
 
 	for ( k = 0; k < numSurfaces; k++ )
 	{
@@ -3162,6 +3178,10 @@ static void R_CreateWorldVBO( void )
 
 				numVerts += srf->numVerts;
 			}
+
+			rb_surfaceTable[ SF_FACE ]( srf );
+			Tess_AutospriteDeform( surface->shader->autoSpriteMode, srf->firstVert, srf->numVerts,
+					       3 * srf->firstTriangle, 3 * srf->numTriangles );
 		}
 		else if ( *surface->data == SF_GRID )
 		{
@@ -3194,6 +3214,10 @@ static void R_CreateWorldVBO( void )
 
 				numVerts += srf->numVerts;
 			}
+
+			rb_surfaceTable[ SF_GRID ]( srf );
+			Tess_AutospriteDeform( surface->shader->autoSpriteMode, srf->firstVert, srf->numVerts,
+					       3 * srf->firstTriangle, 3 * srf->numTriangles );
 		}
 		else if ( *surface->data == SF_TRIANGLES )
 		{
@@ -3226,14 +3250,27 @@ static void R_CreateWorldVBO( void )
 
 				numVerts += srf->numVerts;
 			}
+
+			rb_surfaceTable[ SF_TRIANGLES ]( srf );
+			Tess_AutospriteDeform( surface->shader->autoSpriteMode, srf->firstVert, srf->numVerts,
+					       3 * srf->firstTriangle, 3 * srf->numTriangles );
 		}
 	}
 
-	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, verts,
-	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR
+	s_worldData.vbo = R_CreateStaticVBO2( va( "staticWorld_VBO %i", 0 ), numVerts, vboVerts,
+					      ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR
 	                                 );
+	s_worldData.ibo = R_CreateStaticIBO2( va( "staticWorld_IBO %i", 0 ), numTriangles, vboIdxs );
 
-	s_worldData.ibo = R_CreateStaticIBO2( va( "staticWorld_IBO %i", 0 ), numTriangles, triangles );
+	tess.verts = NULL;
+	tess.indexes = NULL;
+	tess.buildingVBO = qfalse;
+
+	ri.Hunk_FreeTempMemory( vboIdxs );
+	ri.Hunk_FreeTempMemory( vboVerts );
+
+	R_BindVBO( tess.vbo );
+	R_BindIBO( tess.ibo );
 
 	if ( r_mergeLeafSurfaces->integer )
 	{
@@ -5042,8 +5079,8 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 	int                numVerts;
 
 	int                numTriangles, numLitTriangles;
-	srfTriangle_t      *triangles;
 	srfTriangle_t      *tri;
+	glIndex_t          *indexes;
 
 	interactionVBO_t   *iaVBO;
 
@@ -5091,11 +5128,6 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 			continue;
 		}
 
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
-		{
-			continue;
-		}
-
 		numCaches++;
 	}
 
@@ -5119,11 +5151,6 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 		}
 
 		if ( surface->shader->isPortal )
-		{
-			continue;
-		}
-
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
 		{
 			continue;
 		}
@@ -5248,7 +5275,7 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 			VectorCopy( bounds[ 1 ], vboSurf->bounds[ 1 ] );
 
 			// create arrays
-			triangles = (srfTriangle_t*) ri.Hunk_AllocateTempMemory( numTriangles * sizeof( srfTriangle_t ) );
+			indexes = (glIndex_t*) ri.Hunk_AllocateTempMemory( 3 * numTriangles * sizeof( glIndex_t ) );
 			numTriangles = 0;
 
 			// build triangle indices
@@ -5273,7 +5300,7 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 						{
 							for ( j = 0; j < 3; j++ )
 							{
-								triangles[ numTriangles ].indexes[ j ] = tri->indexes[ j ];
+								indexes[ 3 * numTriangles + j ] = tri->indexes[ j ];
 							}
 
 							numTriangles++;
@@ -5290,7 +5317,7 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 						{
 							for ( j = 0; j < 3; j++ )
 							{
-								triangles[ numTriangles ].indexes[ j ] = tri->indexes[ j ];
+								indexes[ 3 * numTriangles + j ] = tri->indexes[ j ];
 							}
 
 							numTriangles++;
@@ -5307,7 +5334,7 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 						{
 							for ( j = 0; j < 3; j++ )
 							{
-								triangles[ numTriangles ].indexes[ j ] = tri->indexes[ j ];
+								indexes[ 3 * numTriangles + j ] = tri->indexes[ j ];
 							}
 
 							numTriangles++;
@@ -5317,9 +5344,9 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 			}
 
 			vboSurf->vbo = s_worldData.vbo;
-			vboSurf->ibo = R_CreateStaticIBO2( va( "staticLightMesh_IBO %i", c_vboLightSurfaces ), numTriangles, triangles );
+			vboSurf->ibo = R_CreateStaticIBO( va( "staticLightMesh_IBO %i", c_vboLightSurfaces ), indexes, 3 * numTriangles );
 
-			ri.Hunk_FreeTempMemory( triangles );
+			ri.Hunk_FreeTempMemory( indexes );
 
 			// add everything needed to the light
 			iaVBO = R_CreateInteractionVBO( light );
@@ -5345,7 +5372,7 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 	int                numVerts;
 
 	int                numTriangles, numLitTriangles;
-	srfTriangle_t      *triangles;
+	glIndex_t          *indexes;
 	srfTriangle_t      *tri;
 
 	interactionVBO_t   *iaVBO;
@@ -5433,11 +5460,6 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 			continue;
 		}
 
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
-		{
-			continue;
-		}
-
 		numCaches++;
 	}
 
@@ -5476,11 +5498,6 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 		}
 
 		if ( surface->shader->isPortal )
-		{
-			continue;
-		}
-
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
 		{
 			continue;
 		}
@@ -5620,7 +5637,7 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 			VectorCopy( bounds[ 1 ], vboSurf->bounds[ 1 ] );
 
 			// create arrays
-			triangles = (srfTriangle_t*) ri.Hunk_AllocateTempMemory( numTriangles * sizeof( srfTriangle_t ) );
+			indexes = (glIndex_t*) ri.Hunk_AllocateTempMemory( 3 * numTriangles * sizeof( glIndex_t ) );
 			numTriangles = 0;
 
 			// build triangle indices
@@ -5655,7 +5672,7 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 						{
 							for ( j = 0; j < 3; j++ )
 							{
-								triangles[ numTriangles ].indexes[ j ] = tri->indexes[ j ];
+								indexes[ 3 * numTriangles + j ] = tri->indexes[ j ];
 							}
 
 							numTriangles++;
@@ -5672,7 +5689,7 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 						{
 							for ( j = 0; j < 3; j++ )
 							{
-								triangles[ numTriangles ].indexes[ j ] = tri->indexes[ j ];
+								indexes[ 3 * numTriangles + j ] = tri->indexes[ j ];
 							}
 
 							numTriangles++;
@@ -5689,7 +5706,7 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 						{
 							for ( j = 0; j < 3; j++ )
 							{
-								triangles[ numTriangles ].indexes[ j ] = tri->indexes[ j ];
+								indexes[ 3 * numTriangles + j ] = tri->indexes[ j ];
 							}
 
 							numTriangles++;
@@ -5699,9 +5716,9 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 			}
 
 			vboSurf->vbo = s_worldData.vbo;
-			vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowMesh_IBO %i", c_vboLightSurfaces ), numTriangles, triangles );
+			vboSurf->ibo = R_CreateStaticIBO( va( "staticShadowMesh_IBO %i", c_vboLightSurfaces ), indexes, 3 * numTriangles );
 
-			ri.Hunk_FreeTempMemory( triangles );
+			ri.Hunk_FreeTempMemory( indexes );
 
 			// add everything needed to the light
 			iaVBO = R_CreateInteractionVBO( light );
@@ -5727,7 +5744,7 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 	int                numVerts;
 
 	int                numTriangles;
-	srfTriangle_t      *triangles;
+	glIndex_t          *indexes;
 	srfTriangle_t      *tri;
 
 	interactionVBO_t   *iaVBO;
@@ -5807,11 +5824,6 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 			continue;
 		}
 
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
-		{
-			continue;
-		}
-
 		numCaches++;
 	}
 
@@ -5850,11 +5862,6 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 		}
 
 		if ( surface->shader->isPortal )
-		{
-			continue;
-		}
-
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
 		{
 			continue;
 		}
@@ -5979,7 +5986,7 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 				ZeroBounds( vboSurf->bounds[ 0 ], vboSurf->bounds[ 1 ] );
 
 				// create arrays
-				triangles = (srfTriangle_t*) ri.Hunk_AllocateTempMemory( numTriangles * sizeof( srfTriangle_t ) );
+				indexes = (glIndex_t*) ri.Hunk_AllocateTempMemory( 3 * numTriangles * sizeof( glIndex_t ) );
 				numTriangles = 0;
 
 				// build triangle indices
@@ -6019,7 +6026,7 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 							{
 								for ( j = 0; j < 3; j++ )
 								{
-									triangles[ numTriangles ].indexes[ j ] = tri->indexes[ j ];
+									indexes[ 3 * numTriangles + j ] = tri->indexes[ j ];
 								}
 
 								numTriangles++;
@@ -6036,7 +6043,7 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 							{
 								for ( j = 0; j < 3; j++ )
 								{
-									triangles[ numTriangles ].indexes[ j ] = tri->indexes[ j ];
+									indexes[ 3 * numTriangles + j ] = tri->indexes[ j ];
 								}
 
 								numTriangles++;
@@ -6053,7 +6060,7 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 							{
 								for ( j = 0; j < 3; j++ )
 								{
-									triangles[ numTriangles ].indexes[ j ] = tri->indexes[ j ];
+									indexes[ 3 * numTriangles + j ] = tri->indexes[ j ];
 								}
 
 								numTriangles++;
@@ -6063,9 +6070,9 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 				}
 
 				vboSurf->vbo = s_worldData.vbo;
-				vboSurf->ibo = R_CreateStaticIBO2( va( "staticShadowPyramidMesh_IBO %i", c_vboShadowSurfaces ), numTriangles, triangles );
+				vboSurf->ibo = R_CreateStaticIBO( va( "staticShadowPyramidMesh_IBO %i", c_vboShadowSurfaces ), indexes, numTriangles );
 
-				ri.Hunk_FreeTempMemory( triangles );
+				ri.Hunk_FreeTempMemory( indexes );
 
 				// add everything needed to the light
 				iaVBO = R_CreateInteractionVBO( light );

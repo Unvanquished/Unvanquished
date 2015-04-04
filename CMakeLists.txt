@@ -629,7 +629,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_shade.cpp
   ${ENGINE_DIR}/renderer/tr_shade_calc.cpp
   ${ENGINE_DIR}/renderer/tr_shader.cpp
-  ${ENGINE_DIR}/renderer/tr_shadows.cpp
   ${ENGINE_DIR}/renderer/tr_skin.cpp
   ${ENGINE_DIR}/renderer/tr_sky.cpp
   ${ENGINE_DIR}/renderer/tr_surface.cpp

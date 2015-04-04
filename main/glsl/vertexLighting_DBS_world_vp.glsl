@@ -22,11 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* vertexLighting_DBS_world_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec2 		attr_TexCoord0;
-attribute vec4		attr_QTangent;
-attribute vec4		attr_Color;
-
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
 uniform mat4		u_SpecularTextureMatrix;
@@ -40,6 +35,7 @@ uniform vec4		u_Color;
 uniform vec3		u_ViewOrigin;
 
 varying vec4		var_TexDiffuseGlow;
+varying vec4		var_Color;
 
 #if defined(USE_NORMAL_MAPPING)
 varying vec4		var_TexNormalSpecular;
@@ -47,36 +43,23 @@ varying vec3		var_ViewDir;
 varying vec3            var_Position;
 #else
 varying vec3		var_Normal;
-varying vec4		var_LightColor;
 #endif
-
-vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
-	vec3 tmp = 2.0 * cross( quat.xyz, vec );
-	return vec + quat.w * tmp + cross( quat.xyz, tmp );
-}
-
-void QTangentToTBN( in vec4 qtangent, out vec3 tangent,
-                    out vec3 binormal, out vec3 normal ) {
-	tangent = QuatTransVec( qtangent, vec3( 1.0, 0.0, 0.0 ) );
-	binormal = QuatTransVec( qtangent, vec3( 0.0, 1.0, 0.0 ) );
-	normal = QuatTransVec( qtangent, vec3( 0.0, 0.0, 1.0 ) );
-	
-	tangent *= sign( qtangent.w );
-}
 
 void	main()
 {
-	vec4 position = vec4(attr_Position, 1.0);
-	vec3 tangent, binormal, normal;
-	vec2 texCoord;
+	vec4 position;
+	localBasis LB;
+	vec2 texCoord, lmCoord;
+	vec4 color;
 
-	QTangentToTBN( attr_QTangent, tangent, binormal, normal );
+	VertexFetch( position, LB, color, texCoord, lmCoord );
 
-	texCoord = attr_TexCoord0.xy;
+	color = color * u_ColorModulate + u_Color;
 
 	DeformVertex( position,
-		      normal,
+		      LB.normal,
 		      texCoord,
+		      color,
 		      u_Time);
 
 	// transform vertex position into homogenous clip-space
@@ -85,6 +68,9 @@ void	main()
 	// transform diffusemap texcoords
 	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
+	// assign color
+	var_Color = color;
+	
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
 	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
@@ -93,9 +79,9 @@ void	main()
 	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	// construct object-space-to-tangent-space 3x3 matrix
-	mat3 objectToTangentMatrix = mat3( tangent.x, binormal.x, normal.x,
-					   tangent.y, binormal.y, normal.y,
-					   tangent.z, binormal.z, normal.z );
+	mat3 objectToTangentMatrix = mat3( LB.tangent.x, LB.binormal.x, LB.normal.x,
+					   LB.tangent.y, LB.binormal.y, LB.normal.y,
+					   LB.tangent.z, LB.binormal.z, LB.normal.z );
 
 	// assign vertex Position for light grid sampling
 	var_Position = position.xyz;
@@ -103,10 +89,7 @@ void	main()
 	// assign vertex to view origin vector in tangent space
 	var_ViewDir = objectToTangentMatrix * normalize( u_ViewOrigin - position.xyz );
 #else
-	// assign color
-	var_LightColor = attr_Color * u_ColorModulate + u_Color;
-	
-	var_Normal = normal;
+	var_Normal = LB.normal;
 #endif
 
 #if defined(USE_GLOW_MAPPING)

@@ -42,6 +42,7 @@ typedef int16_t  i16vec4_t [ 4 ];
 typedef uint16_t u16vec4_t [ 4 ];
 typedef int16_t  i16vec2_t [ 2 ];
 typedef uint16_t u16vec2_t [ 2 ];
+typedef int16_t  f16vec4_t [ 4 ]; // half float vector
 
 // GL conversion helpers
 static inline float unorm8ToFloat(byte unorm8) {
@@ -119,12 +120,26 @@ static inline int16_t floatToHalf( float in ) {
 	
 	return (int16_t)(((fi.ui & 0x80000000) >> 16) | ((fi.ui & 0x0fffe000) >> 13));
 }
+static inline void floatToHalf( const vec4_t in, f16vec4_t out )
+{
+	out[ 0 ] = floatToHalf( in[ 0 ] );
+	out[ 1 ] = floatToHalf( in[ 1 ] );
+	out[ 2 ] = floatToHalf( in[ 2 ] );
+	out[ 3 ] = floatToHalf( in[ 3 ] );
+}
 static inline float halfToFloat( int16_t in ) {
 	static float scale = powf(2.0f, 127 - 15);
 	floatint_t fi;
 
 	fi.ui = (((unsigned int)in & 0x8000) << 16) | (((unsigned int)in & 0x7fff) << 13);
 	return fi.f * scale;
+}
+static inline void halfToFloat( const f16vec4_t in, vec4_t out )
+{
+	out[ 0 ] = halfToFloat( in[ 0 ] );
+	out[ 1 ] = halfToFloat( in[ 1 ] );
+	out[ 2 ] = halfToFloat( in[ 2 ] );
+	out[ 3 ] = halfToFloat( in[ 3 ] );
 }
 
 // everything that is needed by the backend needs
@@ -595,6 +610,9 @@ static inline float halfToFloat( int16_t in ) {
 		ATTR_INDEX_QTANGENT,
 		ATTR_INDEX_COLOR,
 
+		// Sprites
+		ATTR_INDEX_ORIENTATION,
+
 		// GPU vertex skinning
 		ATTR_INDEX_BONE_FACTORS,
 
@@ -611,6 +629,7 @@ static inline float halfToFloat( int16_t in ) {
 		"attr_TexCoord0",
 		"attr_QTangent",
 		"attr_Color",
+		"attr_Orientation",
 		"attr_BoneFactors",
 		"attr_Position2",
 		"attr_QTangent2"
@@ -623,6 +642,7 @@ static inline float halfToFloat( int16_t in ) {
 	  ATTR_QTANGENT       = BIT( ATTR_INDEX_QTANGENT ),
 	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
 
+	  ATTR_ORIENTATION    = BIT( ATTR_INDEX_ORIENTATION ),
 	  ATTR_BONE_FACTORS   = BIT( ATTR_INDEX_BONE_FACTORS ),
 
 	  // for .md3 interpolation
@@ -667,6 +687,7 @@ static inline float halfToFloat( int16_t in ) {
 		union { i16vec2_t *st; i16vec4_t *stpq; };
 		int    (*boneIndexes)[ 4 ];
 		vec4_t *boneWeights;
+		vec4_t *spriteOrientation;
 
 		int	numFrames;
 		int     numVerts;
@@ -774,38 +795,28 @@ static inline float halfToFloat( int16_t in ) {
 	  DEFORM_NORMALS,
 	  DEFORM_BULGE,
 	  DEFORM_MOVE,
-	  DEFORM_PROJECTION_SHADOW,
-	  DEFORM_AUTOSPRITE,
-	  DEFORM_AUTOSPRITE2,
-	  DEFORM_SPRITE,
-	  DEFORM_FLARE
+	  DEFORM_ROTGROW
 	} deform_t;
 
-// deformVertexes types that can be handled by the GPU
 	typedef enum
 	{
-	  // do not edit: same as genFunc_t
-
-	  DGEN_NONE,
-	  DGEN_WAVE_SIN,
-	  DGEN_WAVE_SQUARE,
-	  DGEN_WAVE_TRIANGLE,
-	  DGEN_WAVE_SAWTOOTH,
-	  DGEN_WAVE_INVERSE_SAWTOOTH,
-	  DGEN_WAVE_NOISE,
-
-	  // do not edit until this line
-
-	  DGEN_BULGE,
-	  DGEN_MOVE
-	} deformGen_t;
-
-	typedef enum
-	{
-	  DEFORM_TYPE_NONE,
-	  DEFORM_TYPE_CPU,
-	  DEFORM_TYPE_GPU,
-	} deformType_t;
+	  DSTEP_NONE,
+	  DSTEP_LOAD_POS,
+	  DSTEP_LOAD_NORM,
+	  DSTEP_LOAD_TC,
+	  DSTEP_LOAD_COLOR,
+	  DSTEP_LOAD_VEC,
+	  DSTEP_MODIFY_POS,
+	  DSTEP_MODIFY_NORM,
+	  DSTEP_MODIFY_COLOR,
+	  DSTEP_SIN,
+	  DSTEP_SQUARE,
+	  DSTEP_TRIANGLE,
+	  DSTEP_SAWTOOTH,
+	  DSTEP_INVERSE_SAWTOOTH,
+	  DSTEP_NOISE,
+	  DSTEP_ROTGROW
+	} deformStep_t;
 
 	typedef enum
 	{
@@ -950,7 +961,8 @@ static inline float halfToFloat( int16_t in ) {
 	} texMod_t;
 
 #define MAX_SHADER_DEFORMS      3
-#define MAX_SHADER_DEFORM_PARMS ( 1 + MAX_SHADER_DEFORMS + MAX_SHADER_DEFORMS * 8 )
+#define MAX_SHADER_DEFORM_STEPS	4
+#define MAX_SHADER_DEFORM_PARMS ( MAX_SHADER_DEFORMS * MAX_SHADER_DEFORM_STEPS )
 	typedef struct
 	{
 		deform_t   deformation; // vertex coordinate modification type
@@ -1279,6 +1291,8 @@ static inline float halfToFloat( int16_t in ) {
 		int             spectrumValue;
 
 		qboolean        interactLight; // this shader can interact with light shaders
+
+		int		autoSpriteMode;
 
 		uint8_t         numDeforms;
 		deformStage_t   deforms[ MAX_SHADER_DEFORMS ];
@@ -3145,6 +3159,7 @@ static inline float halfToFloat( int16_t in ) {
 
 	void R_QtangentsToTBN( const i16vec4_t qtangent, vec3_t tangent,
 			       vec3_t binormal, vec3_t normal );
+	void R_QtangentsToNormal( const i16vec4_t qtangent, vec3_t normal );
 
 	float    R_CalcFov( float fovX, float width, float height );
 
@@ -3348,7 +3363,10 @@ static inline float halfToFloat( int16_t in ) {
 	typedef struct shaderVertex_s {
 		vec3_t    xyz;
 		u8vec4_t  color;
-		i16vec4_t qtangents;
+		union {
+			i16vec4_t qtangents;
+			f16vec4_t spriteOrientation;
+		};
 		i16vec4_t texCoords;
 	} shaderVertex_t;
 
@@ -3401,6 +3419,8 @@ static inline float halfToFloat( int16_t in ) {
 		transform_t bones[ MAX_BONES ];
 
 		qboolean    vboVertexAnimation;
+		qboolean    vboVertexSprite;
+		qboolean    buildingVBO;
 
 		// info extracted from current shader or backend mode
 		void ( *stageIteratorFunc )( void );
@@ -3547,16 +3567,6 @@ static inline float halfToFloat( int16_t in ) {
 	/*
 	============================================================
 
-	SHADOWS, tr_shadows.c
-
-	============================================================
-	*/
-
-	void RB_ProjectionShadowDeform( void );
-
-	/*
-	============================================================
-
 	SKIES
 
 	============================================================
@@ -3623,10 +3633,10 @@ static inline float halfToFloat( int16_t in ) {
 	============================================================
 	*/
 	VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout );
-	VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *vertexes, uint32_t stateBits );
+	VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, shaderVertex_t *verts, uint32_t stateBits );
 
 	IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes );
-	IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, srfTriangle_t *triangles );
+	IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, glIndex_t *indexes );
 
 	void  R_BindVBO( VBO_t *vbo );
 	void  R_BindNullVBO( void );
@@ -3737,8 +3747,8 @@ static inline float halfToFloat( int16_t in ) {
 	void     R_TransformClipToWindow( const vec4_t clip, const viewParms_t *view, vec4_t normalized, vec4_t window );
 	float    R_ProjectRadius( float r, vec3_t location );
 
-	qboolean ShaderRequiresCPUDeforms( const shader_t *shader );
-	void     Tess_DeformGeometry( void );
+	void     Tess_AutospriteDeform( int mode, int firstVertex, int numVertexes,
+					int firstIndex, int numIndexes );
 
 	float    RB_EvalWaveForm( const waveForm_t *wf );
 	float    RB_EvalWaveFormClamped( const waveForm_t *wf );
