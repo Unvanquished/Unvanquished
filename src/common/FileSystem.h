@@ -122,6 +122,9 @@ public:
 	// Copy the entire file to another file
 	void CopyTo(const File& dest, std::error_code& err = throws()) const;
 
+	// Switch the file between line-buffered (true) and fully-buffered (false)
+	void SetLineBuffered(bool enable, std::error_code& err = throws()) const;
+
 private:
 	FILE* fd;
 };

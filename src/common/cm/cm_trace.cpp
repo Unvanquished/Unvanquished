@@ -2734,7 +2734,7 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 				if ( facet == debugFacet )
 				{
 					drawPoly( 4, w->numpoints, w->p[ 0 ] );
-					//Com_Printf( "blue facet has %d border planes\n", facet->numBorders );
+					//Log::Notice( "blue facet has %d border planes", facet->numBorders );
 				}
 				else
 				{
@@ -2745,7 +2745,7 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 			}
 			else
 			{
-				//Com_Printf( "Winding chopped away by border planes\n" );
+				//Log::Notice( "Winding chopped away by border planes" );
 			}
 		}
 	}

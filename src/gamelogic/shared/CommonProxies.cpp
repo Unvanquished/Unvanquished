@@ -149,7 +149,7 @@ namespace Cmd {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Unhandled engine command syscall %i", minor);
+                Sys::Drop("Unhandled engine command syscall %i", minor);
         }
     }
 }
@@ -354,7 +354,7 @@ namespace Cvar{
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Unhandled engine cvar syscall %i", minor);
+                Sys::Drop("Unhandled engine cvar syscall %i", minor);
         }
     }
 }
@@ -488,7 +488,7 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Unhandled common VM syscall major number %i", major);
+                Sys::Drop("Unhandled common VM syscall major number %i", major);
         }
     }
 }

@@ -210,7 +210,7 @@ namespace Resource {
         } else {
             defaultValue = Register(defaultName, _defaultValue).Get();
             if (not defaultValue) {
-                Log::Error("Couldn't load the default resource for %s\n", typeid(T).name());
+                Sys::Error("Couldn't load the default resource for %s\n", typeid(T).name());
             }
         }
     }

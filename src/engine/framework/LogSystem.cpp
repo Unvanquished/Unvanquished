@@ -102,9 +102,9 @@ namespace Log {
     Cvar::Cvar<std::string> logFileName("logs.logFile.filename", "the name of the logfile", Cvar::NONE, "daemon.log");
     Cvar::Cvar<bool> overwrite("logs.logFile.overwrite", "if true the logfile is deleted at each run else the logs are just appended", Cvar::NONE, true);
     Cvar::Cvar<bool> forceFlush("logs.logFile.forceFlush", "are all the logs flushed immediately (more accurate but slower)", Cvar::NONE, false);
-    class LogFileTarget :public Target {
+    class LogFileTarget: public Target {
         public:
-            LogFileTarget() : logFile(0), recursing(false) {
+            LogFileTarget() {
                 this->Register(LOGFILE);
             }
 
@@ -114,31 +114,9 @@ namespace Log {
                     return true;
                 }
 
-                //TODO this is actually wrong because the FS itself doesn't support multiple threads
-                // so we pray it works (it should because the memory touched by FS_Write seems very cold)
-                std::lock_guard<std::recursive_mutex> guard(lock);
-
-                //TODO atomic test and set on recursing
-                if (logFile == 0 and FS::IsInitialized() and not recursing) {
-                    recursing = true;
-
-                    if (overwrite.Get()) {
-                        logFile = FS_FOpenFileWrite(logFileName.Get().c_str());
-                    } else {
-                        logFile = FS_FOpenFileAppend(logFileName.Get().c_str());
-                    }
-
-                    if (forceFlush.Get()) {
-                        FS_ForceFlush(logFile);
-                    }
-
-                    recursing = false;
-                }
-
-                if (logFile != 0) {
+                if (logFile) {
                     for (auto& event : events) {
-                        std::string text = event.text + "\n";
-                        FS_Write(text.c_str(), text.length(), logFile);
+                        logFile.Printf("%s\n", event.text);
                     }
                     return true;
                 } else {
@@ -146,12 +124,29 @@ namespace Log {
                 }
             }
 
-        private:
-            fileHandle_t logFile;
-            //TODO atomic boolean
-            bool recursing;
-            std::recursive_mutex lock;
+            FS::File logFile;
     };
 
     static LogFileTarget logfile;
+
+    void OpenLogFile() {
+        //If we have no log file do nothing here
+        if (not useLogFile.Get()) {
+            return;
+        }
+
+        try {
+            if (overwrite.Get()) {
+                logfile.logFile = FS::HomePath::OpenWrite(logFileName.Get());
+            } else {
+                logfile.logFile = FS::HomePath::OpenAppend(logFileName.Get());
+            }
+
+            if (forceFlush.Get()) {
+                logfile.logFile.SetLineBuffered(true);
+            }
+        } catch (std::system_error& err) {
+            Sys::Error("Could not open log file %s: %s", logFileName.Get(), err.what());
+        }
+    }
 }

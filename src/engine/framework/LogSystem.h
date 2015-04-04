@@ -47,6 +47,9 @@ namespace Log {
     // Can be called by any thread.
     void Dispatch(Log::Event event, int targetControl);
 
+    // Open the log file and start writing to it
+    void OpenLogFile();
+
     class Target {
         public:
             Target();
