@@ -31,8 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CvarSystem.h"
 #include "CommandSystem.h"
 
-#include "../qcommon/qcommon.h"
-#include "../qcommon/cvar.h"
+#include "qcommon/qcommon.h"
+#include "qcommon/cvar.h"
 
 //TODO: thread safety (not possible with the C API that doesn't care at all about this)
 

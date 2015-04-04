@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../Common.h"
+#include "common/Common.h"
 
 #ifndef COMMON_IPC_PRIMITIVES_H_
 #define COMMON_IPC_PRIMITIVES_H_

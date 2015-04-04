@@ -31,8 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FRAMEWORK_COMMAND_BUFFER_HOST_H_
 #define FRAMEWORK_COMMAND_BUFFER_HOST_H_
 
-#include "../../common/IPC/CommandBuffer.h"
-#include "../../common/Serialize.h"
+#include "common/IPC/CommandBuffer.h"
+#include "common/Serialize.h"
 
 namespace IPC {
 

@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "cg_local.h"
-#include "../shared/CommonProxies.h"
+#include "shared/CommonProxies.h"
 
 
 static void CG_Rocket_EventOpen( void )

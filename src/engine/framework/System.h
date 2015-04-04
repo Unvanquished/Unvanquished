@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../qcommon/qcommon.h"
+#include "qcommon/qcommon.h"
 
 #ifndef FRAMEWORK_SYSTEM_H_
 #define FRAMEWORK_SYSTEM_H_

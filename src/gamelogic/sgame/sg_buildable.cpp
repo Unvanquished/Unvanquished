@@ -1402,20 +1402,36 @@ void ASpiker_Think( gentity_t *self )
 	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin,
 	                                                         SPIKER_SPIKE_RANGE ) ); )
 	{
+		float   durability, health;
+		class_t pClass;
+
+		if ( self == ent || ( ent->flags & FL_NOTARGET ) ) continue;
+
 		switch ( ent->s.eType )
 		{
 			case ET_PLAYER:
+				pClass     = (class_t)ent->client->ps.stats[ STAT_CLASS ];
+				if ( G_OnSameTeam( self, ent ) ) {
+					health = (float)ent->health; // current health
+				} else {
+					health = (float)BG_Class( pClass )->health; // max health
+				}
+				durability = health / G_GetNonLocDamageMod( pClass );
+				break;
+
 			case ET_BUILDABLE:
+				if ( G_OnSameTeam( self, ent ) ) {
+					durability = (float)ent->health; // current health
+				} else {
+					durability = (float)BG_Buildable( ent->s.modelindex )->health; // max health
+				}
 				break;
 
 			default:
 				continue;
 		}
 
-		if ( self == ent || ( ent->flags & FL_NOTARGET ) || !G_LineOfSight( self, ent ) )
-		{
-			continue;
-		}
+		if ( !durability || !G_LineOfSight( self, ent ) ) continue;
 
 		vec3_t vecToTarget;
 		VectorSubtract( ent->s.origin, self->s.origin, vecToTarget );
@@ -1433,11 +1449,11 @@ void ASpiker_Think( gentity_t *self )
 		float targetArea = 0.5f * diameter * diameter; // approx. proj. of target on effect area
 		float expectedDamage = ( targetArea / effectArea ) * (float)SPIKER_MISSILES *
 		                       (float)BG_Missile( MIS_SPIKER )->damage;
+		float relativeDamage = expectedDamage / durability;
 
 		if ( G_OnSameTeam( self, ent ) )
 		{
-
-			friendlyDamage += expectedDamage;
+			friendlyDamage += relativeDamage;
 		}
 		else
 		{
@@ -1445,7 +1461,7 @@ void ASpiker_Think( gentity_t *self )
 			{
 				sensing = qtrue;
 			}
-			enemyDamage += expectedDamage;
+			enemyDamage += relativeDamage;
 		}
 	}
 
@@ -5033,7 +5049,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	}
 
 	if( builder->client )
-		Beacon::Tag( built, (team_t)builder->client->pers.team, builder->client->ps.clientNum, qtrue );
+		Beacon::Tag( built, (team_t)builder->client->pers.team, qtrue );
 
 	return built;
 }
@@ -5182,7 +5198,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 
 	trap_LinkEntity( built );
 
-	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, ENTITYNUM_NONE, qtrue );
+	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, qtrue );
 
 	return built;
 }

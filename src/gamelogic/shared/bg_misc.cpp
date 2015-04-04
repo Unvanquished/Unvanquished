@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // bg_misc.c -- both games misc functions, all completely stateless
 
-#include "../../engine/qcommon/q_shared.h"
+#include "engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
 #define N_(x) x
@@ -930,9 +930,9 @@ static const beaconData_t bg_beaconsData[ ] =
 	{ BCT_TIMER,         "timer",         BCF_IMPORTANT | BCF_PER_PLAYER },
 	{ BCT_TAG,           "tag",           BCF_RESERVED },
 	{ BCT_BASE,          "base",          BCF_RESERVED },
-	{ BCT_ATTACK,        "attack",        0 },
-	{ BCT_DEFEND,        "defend",        0 },
-	{ BCT_REPAIR,        "repair",        0 },
+	{ BCT_ATTACK,        "attack",        BCF_IMPORTANT },
+	{ BCT_DEFEND,        "defend",        BCF_IMPORTANT },
+	{ BCT_REPAIR,        "repair",        BCF_IMPORTANT },
 	{ BCT_HEALTH,        "health",        BCF_RESERVED },
 	{ BCT_AMMO,          "ammo",          BCF_RESERVED }
 };

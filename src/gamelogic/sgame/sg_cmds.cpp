@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
-#include "../../engine/qcommon/q_unicode.h"
+#include "engine/qcommon/q_unicode.h"
 
 #define CMD_CHEAT        0x0001
 #define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
@@ -4396,9 +4396,6 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->s.number, BCH_REMOVE ) );
 	return;
-
-invalid_beacon:
-	CP( "cp_tr " QQ(N_("Couldn't place beacon")) "\n" );
 }
 
 /*

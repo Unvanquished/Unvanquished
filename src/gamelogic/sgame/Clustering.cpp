@@ -651,7 +651,7 @@ namespace BaseClustering {
 			gentity_t *beacon;
 			if (!(beacon = Beacon::MoveSimilar(center.coords, tr.endpos, BCT_BASE, 0, team, 0,
 			                                   baseRadius, eFlags, EF_BC_BASE_RELEVANT))) {
-				beacon = Beacon::New(tr.endpos, BCT_BASE, (int)baseRadius, team, ENTITYNUM_NONE);
+				beacon = Beacon::New(tr.endpos, BCT_BASE, (int)baseRadius, team );
 				beacon->s.eFlags |= eFlags;
 				Beacon::Propagate(beacon);
 			}

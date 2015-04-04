@@ -28,13 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Common.h"
-#include "../../common/IPC/CommonSyscalls.h"
+#include "common/Common.h"
+#include "common/IPC/CommonSyscalls.h"
 #include "CommonVMServices.h"
-#include "../framework/CommandSystem.h"
-#include "../framework/CvarSystem.h"
-#include "../framework/LogSystem.h"
-#include "../framework/VirtualMachine.h"
+#include "framework/CommandSystem.h"
+#include "framework/CvarSystem.h"
+#include "framework/LogSystem.h"
+#include "framework/VirtualMachine.h"
 
 namespace VM {
 

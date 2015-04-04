@@ -691,17 +691,10 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 				continue;
 			}
 
-			if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 )
+			// dretches can only bite buildables in construction
+			if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 && target->spawned )
 			{
-				switch ( target->s.modelindex )
-				{
-					case BA_H_MGTURRET:
-					case BA_H_ROCKETPOD:
-						break;
-
-					default:
-						continue;
-				}
+				continue;
 			}
 		}
 

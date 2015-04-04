@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
+#include "qcommon/q_shared.h"
+#include "qcommon/qcommon.h"
 
 #include <unistd.h>
 #include <signal.h>
@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #include <fcntl.h>
 #include <sys/time.h>
 
-#include "../framework/ConsoleField.h"
+#include "framework/ConsoleField.h"
 
 /*
 =============================================================

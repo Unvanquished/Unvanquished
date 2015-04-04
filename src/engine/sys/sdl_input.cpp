@@ -33,9 +33,9 @@ Maryland 20850 USA.
 */
 
 #include <SDL.h>
-#include "../client/client.h"
-#include "../qcommon/q_unicode.h"
-#include "../framework/CommandSystem.h"
+#include "client/client.h"
+#include "qcommon/q_unicode.h"
+#include "framework/CommandSystem.h"
 
 static cvar_t       *in_keyboardDebug = NULL;
 
