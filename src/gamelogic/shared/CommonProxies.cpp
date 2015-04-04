@@ -182,7 +182,7 @@ class TrapProxyCommand: public Cmd::CmdBase {
     public:
         TrapProxyCommand() : Cmd::CmdBase(0) {
         }
-        virtual void Run(const Cmd::Args& args) const {
+        virtual void Run(const Cmd::Args& args) const OVERRIDE {
             // Push a pointer to args, it is fine because we remove the pointer before args goes out of scope
             argStack.push_back(&args);
             ConsoleCommand();
