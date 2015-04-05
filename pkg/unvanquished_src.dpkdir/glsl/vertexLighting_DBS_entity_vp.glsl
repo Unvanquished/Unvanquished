@@ -35,8 +35,7 @@ varying vec3		var_Position;
 varying vec2		var_TexDiffuse;
 varying vec4		var_Color;
 #if defined(USE_NORMAL_MAPPING)
-varying vec2		var_TexNormal;
-varying vec2		var_TexSpecular;
+varying vec4		var_TexNormalSpecular;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
 #endif
@@ -79,10 +78,10 @@ void	main()
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexNormal = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
+	var_TexNormalSpecular.xy = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
-	var_TexSpecular = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
+	var_TexNormalSpecular.zw = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 #endif
 #if defined(USE_GLOW_MAPPING)
 	var_TexGlow = (u_GlowTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
