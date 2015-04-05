@@ -34,6 +34,7 @@ float sawtooth(float x)
 	return fract( x );
 }
 
+#if 0
 // --------------------------------------------------------------------
 ivec4 permute(ivec4 x) {
 	return ((62 * x + 1905) * x) % 961;
@@ -76,6 +77,7 @@ vec4 pnoise(vec4 v) {
 	return value;
 }
 // --------------------------------------------------------------------
+#endif
 
 void DeformVertex( inout vec4 pos,
 		   inout vec3 normal,

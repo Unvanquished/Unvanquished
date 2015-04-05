@@ -45,8 +45,7 @@ varying vec3		var_Position;
 varying vec2		var_TexDiffuse;
 varying vec4		var_Color;
 #if defined(USE_NORMAL_MAPPING)
-varying vec2		var_TexNormal;
-varying vec2		var_TexSpecular;
+varying vec4		var_TexNormalSpecular;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
 #endif
@@ -101,8 +100,8 @@ void	main()
 	}
 #endif
 
-	vec2 texNormal = var_TexNormal.st;
-	vec2 texSpecular = var_TexSpecular.st;
+	vec2 texNormal = var_TexNormalSpecular.xy;
+	vec2 texSpecular = var_TexNormalSpecular.zw;
 
 #if defined(USE_PARALLAX_MAPPING)
 
