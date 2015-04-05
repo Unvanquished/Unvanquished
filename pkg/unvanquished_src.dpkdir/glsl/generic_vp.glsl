@@ -78,8 +78,7 @@ void	main()
 
 		vec3 reflected = LB.normal * 2.0 * d - viewer;
 
-		texCoord.x = 0.5 + reflected.y * 0.5;
-		texCoord.y = 0.5 - reflected.z * 0.5;
+		var_Tex = 0.5 + vec2(0.5, -0.5) * reflected.yz;
 	}
 #elif defined(USE_TCGEN_LIGHTMAP)
 	var_Tex = (u_ColorTextureMatrix * vec4(lmCoord, 0.0, 1.0)).xy;
