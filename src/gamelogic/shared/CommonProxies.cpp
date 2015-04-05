@@ -507,8 +507,8 @@ void NORETURN trap_Error(const char *string)
 
 int trap_Milliseconds(void)
 {
-	auto duration = Sys::SteadyClock::now().time_since_epoch();
-	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+	static Sys::SteadyClock::time_point baseTime = Sys::SteadyClock::now();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(Sys::SteadyClock::now() - baseTime).count();
 }
 
 void trap_SendConsoleCommand(const char *text)
