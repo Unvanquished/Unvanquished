@@ -44,13 +44,7 @@ void VertexFetch(out vec4 position,
 	vec3 normal = normalize( u_ViewOrigin - attr_Position ), up, left;
 	float s, c; // sin & cos of rotation factor
 
-	// autogenerate corner from VertexID, generated coordinates are:
-	//   -1, -1
-	//    1, -1
-	//    1,  1
-	//   -1,  1
-	corner = vec2( float( (gl_VertexID + 0) & 2) - 1.0,
-		       float( (gl_VertexID + 1) & 2) - 1.0 );
+	corner = attr_TexCoord0.xy * 2.0 - 1.0;
 
 	if( radius <= 0.0 ) {
 		// autosprite2 mode, attr_Orientation.xyz contains the up-vector
