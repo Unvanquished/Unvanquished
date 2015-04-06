@@ -9,16 +9,15 @@
 #if !defined({{component.get_name().upper()}}_COMPONENT_1_H_) && defined(ONLY_MESSAGE_COMPONENT_DECLARATION)
 #define {{component.get_name().upper()}}_1_COMPONENT_H_
 
-// Here all your custom message types.
+// //////////// //
+// Custom Types //
+// //////////// //
+
+
 
 #endif
-/*************************************************************************************************\
-***************************************************************************************************
-\*************************************************************************************************/
 #if !defined({{component.get_name().upper()}}_COMPONENT_2_H_) && !defined(ONLY_MESSAGE_COMPONENT_DECLARATION)
 #define {{component.get_name().upper()}}_2_COMPONENT_H_
-
-// Here the rest of the header
 
 class {{component.get_type_name()}}: public {{component.get_base_type_name()}} {
 //* TODO: Uncomment after changing message handler visibility to protected.
