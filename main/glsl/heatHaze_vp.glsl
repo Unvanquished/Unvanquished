@@ -22,15 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* heatHaze_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec4		attr_QTangent;
-attribute vec2 		attr_TexCoord0;
-
-attribute vec3 		attr_Position2;
-attribute vec4		attr_QTangent2;
-
-uniform float		u_VertexInterpolation;
-
 uniform float		u_Time;
 
 uniform mat4		u_NormalTextureMatrix;
@@ -43,42 +34,22 @@ uniform float		u_DeformMagnitude;
 varying vec2		var_TexNormal;
 varying float		var_Deform;
 
-vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
-	vec3 tmp = 2.0 * cross( quat.xyz, vec );
-	return vec + quat.w * tmp + cross( quat.xyz, tmp );
-}
-
 void	main()
 {
 	vec4            deformVec;
 	float           d1, d2;
 
 	vec4 position;
-	vec3 normal;
-	vec2 texCoord;
+	localBasis LB;
+	vec2 texCoord, lmCoord;
+	vec4 color;
 
-#if defined(USE_VERTEX_SKINNING)
-
-	VertexSkinning_P_N(	attr_Position, attr_QTangent,
-				position, normal);
-
-#elif defined(USE_VERTEX_ANIMATION)
-
-	VertexAnimation_P_N(attr_Position, attr_Position2,
-			    attr_QTangent, attr_QTangent2,
-			    u_VertexInterpolation,
-			    position, normal);
-
-#else
-	position = vec4(attr_Position, 1.0);
-	normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
-#endif
-
-	texCoord = attr_TexCoord0;
+	VertexFetch( position, LB, color, texCoord, lmCoord );
 
 	DeformVertex( position,
-		      normal,
+		      LB.normal,
 		      texCoord,
+		      color,
 		      u_Time);
 
 	// transform vertex position into homogenous clip-space
@@ -92,7 +63,7 @@ void	main()
 	var_TexNormal = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	d1 = dot(u_ProjectionMatrixTranspose[0],  deformVec);
-    d2 = dot(u_ProjectionMatrixTranspose[3],  deformVec);
+	d2 = dot(u_ProjectionMatrixTranspose[3],  deformVec);
 
 	// clamp the distance, so the deformations don't get too wacky near the view
 	var_Deform = min(d1 * (1.0 / max(d2, 1.0)), 0.02) * u_DeformMagnitude;

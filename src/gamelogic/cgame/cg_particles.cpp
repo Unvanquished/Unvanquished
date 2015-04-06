@@ -584,7 +584,7 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 					for ( k = 0; k < bp->numFrames; k++ )
 					{
 						bp->shaders[ k ] = trap_R_RegisterShader(bp->shaderNames[k],
-											 RSF_DEFAULT);
+											 RSF_SPRITE);
 					}
 
 					for ( k = 0; k < bp->numModels; k++ )

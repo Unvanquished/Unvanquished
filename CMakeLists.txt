@@ -604,7 +604,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_decals.cpp
   ${ENGINE_DIR}/renderer/tr_fbo.cpp
   ${ENGINE_DIR}/renderer/tr_flares.cpp
-  ${ENGINE_DIR}/renderer/tr_fog.cpp
   ${ENGINE_DIR}/renderer/tr_font.cpp
   ${ENGINE_DIR}/renderer/tr_image.cpp
   ${ENGINE_DIR}/renderer/tr_image_crn.cpp
@@ -630,7 +629,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_shade.cpp
   ${ENGINE_DIR}/renderer/tr_shade_calc.cpp
   ${ENGINE_DIR}/renderer/tr_shader.cpp
-  ${ENGINE_DIR}/renderer/tr_shadows.cpp
   ${ENGINE_DIR}/renderer/tr_skin.cpp
   ${ENGINE_DIR}/renderer/tr_sky.cpp
   ${ENGINE_DIR}/renderer/tr_surface.cpp
@@ -828,7 +826,6 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_snapshot.cpp
   ${GAMELOGIC_DIR}/cgame/cg_view.cpp
   ${GAMELOGIC_DIR}/cgame/cg_weapons.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_scanner.cpp
   ${GAMELOGIC_DIR}/cgame/cg_attachment.cpp
   ${GAMELOGIC_DIR}/cgame/cg_trails.cpp
   ${GAMELOGIC_DIR}/cgame/cg_particles.cpp

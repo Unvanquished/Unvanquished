@@ -22,11 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* lightMapping_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec4 		attr_TexCoord0;
-attribute vec4		attr_QTangent;
-attribute vec4		attr_Color;
-
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
 uniform mat4		u_SpecularTextureMatrix;
@@ -49,67 +44,49 @@ varying vec3		var_Normal;
 varying vec4		var_Color;
 
 
-vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
-	vec3 tmp = 2.0 * cross( quat.xyz, vec );
-	return vec + quat.w * tmp + cross( quat.xyz, tmp );
-}
-
 void	main()
 {
-	vec4 position = vec4(attr_Position, 1.0);
-	vec4 texCoord;
+	vec4 position;
+	localBasis LB;
+	vec2 texCoord, lmCoord;
+	vec4 color;
 
-	var_Normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
+	VertexFetch( position, LB, color, texCoord, lmCoord );
 
-	texCoord = attr_TexCoord0;
+	color = color * u_ColorModulate + u_Color;
 
 	DeformVertex( position,
-		      var_Normal,
+		      LB.normal,
 		      texCoord.xy,
+		      color,
 		      u_Time);
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
 
 	// transform diffusemap texcoords
-	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(texCoord.xy, 0.0, 1.0)).st;
-	var_TexLight = texCoord.zw;
+	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
+	var_TexLight = lmCoord;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(texCoord.xy, 0.0, 1.0)).st;
+	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	// transform specularmap texcoords
-	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(texCoord.xy, 0.0, 1.0)).st;
+	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 #endif
 
 #if defined(USE_GLOW_MAPPING)
-	var_TexDiffuseGlow.pq = (u_GlowTextureMatrix * vec4(texCoord.xy, 0.0, 1.0)).st;
+	var_TexDiffuseGlow.pq = (u_GlowTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 #endif
-
-#if 0
-
-	// transform position into world space
-	var_Position = (u_ModelMatrix * position).xyz;
-
-	var_Normal.xyz = (u_ModelMatrix * vec4(attr_Normal, 0.0)).xyz;
-
-#if defined(USE_NORMAL_MAPPING)
-	var_Tangent.xyz = (u_ModelMatrix * vec4(attr_Tangent, 0.0)).xyz;
-	var_Binormal.xyz = (u_ModelMatrix * vec4(attr_Binormal, 0.0)).xyz;
-#endif
-
-#else
 
 	var_Position = position.xyz;
 
+	var_Normal = LB.normal;
 #if defined(USE_NORMAL_MAPPING)
-	var_Tangent = QuatTransVec( attr_QTangent, vec3( 1.0, 0.0, 0.0 ) );
-	var_Binormal = QuatTransVec( attr_QTangent, vec3( 0.0, 1.0, 0.0 ) );
-	var_Tangent *= sign( attr_QTangent.w );
+	var_Tangent = LB.tangent;
+	var_Binormal = LB.binormal;
 #endif
 
-#endif
-
-	var_Color = attr_Color * u_ColorModulate + u_Color;
+	var_Color = color;
 }

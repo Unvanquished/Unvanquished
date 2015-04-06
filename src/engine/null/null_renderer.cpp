@@ -96,14 +96,6 @@ void RE_GlyphVM( fontHandle_t font, const char *ch, glyphInfo_t *glyph ) { }
 void RE_GlyphCharVM( fontHandle_t font, int ch, glyphInfo_t *glyph ) { }
 void RE_UnregisterFontVM( fontHandle_t font ) { }
 void RE_LoadWorldMap( const char *name ) { }
-qboolean RE_GetSkinModel( qhandle_t skinid, const char *type, char *name )
-{
-	return qtrue;
-}
-qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap )
-{
-	return qtrue;
-}
 void RE_SetWorldVisData( const byte *vis ) { }
 void RE_EndRegistration( void ) { }
 void RE_ClearScene( void ) { }
@@ -116,11 +108,7 @@ void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts
 void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys ) { }
 void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags ) { }
 void RE_AddLightToSceneQ3A( const vec3_t org, float intensity, float r, float g, float b ) { }
-void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible ) { }
-void R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density ) { }
 void RE_RenderScene( const refdef_t *fd ) { }
-void RE_SaveViewParms( void ) { }
-void RE_RestoreViewParms( void ) { }
 void RE_SetColor( const float *rgba ) { }
 void RE_SetClipRegion( const float *region ) { }
 void RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader ) { }
@@ -150,7 +138,6 @@ qboolean R_GetEntityToken( char *buffer, int size )
 	return qtrue;
 }
 void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer ) { }
-void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque ) { }
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 )
 {
 	return qfalse;
@@ -159,7 +146,6 @@ qboolean R_inPVVS( const vec3_t p1, const vec3_t p2 )
 {
 	return qfalse;
 }
-void R_PurgeCache( void ) { }
 qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 {
 	return qtrue;
@@ -248,10 +234,6 @@ refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
     re.GlyphCharVM = RE_GlyphCharVM;
     re.UnregisterFontVM = RE_UnregisterFontVM;
     re.LoadWorld = RE_LoadWorldMap;
-    //----(SA) added
-    re.GetSkinModel = RE_GetSkinModel;
-    re.GetShaderFromModel = RE_GetShaderFromModel;
-    //----(SA) end
     re.SetWorldVisData = RE_SetWorldVisData;
     re.EndRegistration = RE_EndRegistration;
 
@@ -265,14 +247,8 @@ refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
     // done.
     re.AddLightToScene = RE_AddLightToScene;
     re.AddAdditiveLightToScene = RE_AddLightToSceneQ3A;
-    //----(SA)
-    re.AddCoronaToScene = RE_AddCoronaToScene;
-    re.SetFog = R_SetFog;
-    //----(SA)
 
     re.RenderScene = RE_RenderScene;
-    re.SaveViewParms = RE_SaveViewParms;
-    re.RestoreViewParms = RE_RestoreViewParms;
 
     re.SetColor = RE_SetColor;
     re.SetClipRegion = RE_SetClipRegion;
@@ -299,12 +275,8 @@ refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
 
     re.AddPolyBufferToScene = RE_AddPolyBufferToScene;
 
-    re.SetGlobalFog = RE_SetGlobalFog;
-
     re.inPVS = R_inPVS;
     re.inPVVS = R_inPVVS;
-
-    re.purgeCache = R_PurgeCache;
 
     //bani
     re.LoadDynamicShader = RE_LoadDynamicShader;

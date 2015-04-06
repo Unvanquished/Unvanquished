@@ -125,3 +125,16 @@ qboolean BG_IsMainStructure( entityState_t *es )
 			return qfalse;
 	}
 }
+
+/**
+ * @brief Moves a point from the origin of a bounding box to its center.
+ * @param point The origin, will be modified.
+ * @param mins BBOX mins.
+ * @param maxs BBOX maxs.
+ */
+void BG_MoveOriginToBBOXCenter( vec3_t point, const vec3_t mins, const vec3_t maxs )
+{
+	point[ 0 ] = point[ 0 ] + ( maxs[ 0 ] + mins[ 0 ] ) * 0.5f;
+	point[ 1 ] = point[ 1 ] + ( maxs[ 1 ] + mins[ 1 ] ) * 0.5f;
+	point[ 2 ] = point[ 2 ] + ( maxs[ 2 ] + mins[ 2 ] ) * 0.5f;
+}

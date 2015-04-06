@@ -209,19 +209,23 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	AddGLSLDefine( bufferExtra, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
 	AddGLSLDefine( bufferExtra, "MAX_SHADER_DEFORM_PARMS", MAX_SHADER_DEFORM_PARMS );
 
-	AddGLSLDefine( bufferExtra, "deform_t" );
-	AddGLSLDefine( bufferExtra, "DEFORM_WAVE", DEFORM_WAVE );
-	AddGLSLDefine( bufferExtra, "DEFORM_BULGE", DEFORM_BULGE );
-	AddGLSLDefine( bufferExtra, "DEFORM_MOVE", DEFORM_MOVE );
-
-	AddGLSLDefine( bufferExtra, "genFunc_t" );
-	AddGLSLDefine( bufferExtra, "GF_NONE", static_cast<float>( GF_NONE ) );
-	AddGLSLDefine( bufferExtra, "GF_SIN", static_cast<float>( GF_SIN ) );
-	AddGLSLDefine( bufferExtra, "GF_SQUARE", static_cast<float>( GF_SQUARE ) );
-	AddGLSLDefine( bufferExtra, "GF_TRIANGLE", static_cast<float>( GF_TRIANGLE ) );
-	AddGLSLDefine( bufferExtra, "GF_SAWTOOTH", static_cast<float>( GF_SAWTOOTH ) );
-	AddGLSLDefine( bufferExtra, "GF_INVERSE_SAWTOOTH", static_cast<float>( GF_INVERSE_SAWTOOTH ) );
-	AddGLSLDefine( bufferExtra, "GF_NOISE", static_cast<float>( GF_NOISE ) );
+	AddGLSLDefine( bufferExtra, "deformStep_t" );
+	AddGLSLDefine( bufferExtra, "DSTEP_NONE",             DSTEP_NONE);
+	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_POS",         DSTEP_LOAD_POS);
+	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_NORM",        DSTEP_LOAD_NORM);
+	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_COLOR",       DSTEP_LOAD_COLOR);
+	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_TC",          DSTEP_LOAD_TC);
+	AddGLSLDefine( bufferExtra, "DSTEP_LOAD_VEC",         DSTEP_LOAD_VEC);
+	AddGLSLDefine( bufferExtra, "DSTEP_MODIFY_POS",       DSTEP_MODIFY_POS);
+	AddGLSLDefine( bufferExtra, "DSTEP_MODIFY_NORM",      DSTEP_MODIFY_NORM);
+	AddGLSLDefine( bufferExtra, "DSTEP_MODIFY_COLOR",     DSTEP_MODIFY_COLOR);
+	AddGLSLDefine( bufferExtra, "DSTEP_SIN",              DSTEP_SIN);
+	AddGLSLDefine( bufferExtra, "DSTEP_SQUARE",           DSTEP_SQUARE);
+	AddGLSLDefine( bufferExtra, "DSTEP_TRIANGLE",         DSTEP_TRIANGLE);
+	AddGLSLDefine( bufferExtra, "DSTEP_SAWTOOTH",         DSTEP_SAWTOOTH);
+	AddGLSLDefine( bufferExtra, "DSTEP_INVERSE_SAWTOOTH", DSTEP_INVERSE_SAWTOOTH);
+	AddGLSLDefine( bufferExtra, "DSTEP_NOISE",            DSTEP_NOISE);
+	AddGLSLDefine( bufferExtra, "DSTEP_ROTGROW",          DSTEP_ROTGROW);
 
 	float fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
 	float fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );
@@ -911,6 +915,22 @@ uint32_t        GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes
 	return attribs;
 }
 
+bool GLCompileMacro_USE_VERTEX_SPRITE::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
+{
+	for ( size_t i = 0; i < macros.size(); i++ )
+	{
+		GLCompileMacro *macro = macros[ i ];
+
+		if ( ( permutation & macro->GetBit() ) != 0 && (macro->GetType() == USE_VERTEX_SKINNING || macro->GetType() == USE_VERTEX_ANIMATION))
+		{
+			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool GLCompileMacro_USE_PARALLAX_MAPPING::MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
 	bool foundUSE_NORMAL_MAPPING = false;
@@ -1075,6 +1095,7 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	GLShader( "generic", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_ColorTextureMatrix( this ),
 	u_ViewOrigin( this ),
+	u_ViewUp( this ),
 	u_AlphaThreshold( this ),
 	u_ModelMatrix( this ),
 	u_ProjectionMatrixTranspose( this ),
@@ -1087,6 +1108,7 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
+	GLCompileMacro_USE_VERTEX_SPRITE( this ),
 	GLCompileMacro_USE_TCGEN_ENVIRONMENT( this ),
 	GLCompileMacro_USE_TCGEN_LIGHTMAP( this ),
 	GLCompileMacro_USE_DEPTH_FADE( this )
@@ -1095,7 +1117,7 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 
 void GLShader_generic::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation vertexSprite deformVertexes ";
 }
 
 void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1128,7 +1150,7 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 
 void GLShader_lightMapping::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation vertexSprite deformVertexes ";
 }
 
 void GLShader_lightMapping::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1181,7 +1203,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 
 void GLShader_vertexLighting_DBS_entity::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_vertexLighting_DBS_entity::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1236,7 +1258,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 
 void GLShader_vertexLighting_DBS_world::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation vertexSprite deformVertexes ";
 }
 void GLShader_vertexLighting_DBS_world::BuildShaderFragmentLibNames( std::string& fragmentInlines )
 {
@@ -1293,7 +1315,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderMana
 
 void GLShader_forwardLighting_omniXYZ::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_forwardLighting_omniXYZ::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1354,7 +1376,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderMana
 
 void GLShader_forwardLighting_projXYZ::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_forwardLighting_projXYZ::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1418,7 +1440,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 
 void GLShader_forwardLighting_directionalSun::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_forwardLighting_directionalSun::BuildShaderFragmentLibNames( std::string& fragmentInlines )
@@ -1472,7 +1494,7 @@ GLShader_shadowFill::GLShader_shadowFill( GLShaderManager *manager ) :
 
 void GLShader_shadowFill::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_shadowFill::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1498,7 +1520,7 @@ GLShader_reflection::GLShader_reflection( GLShaderManager *manager ):
 
 void GLShader_reflection::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_reflection::BuildShaderCompileMacros( std::string& compileMacros )
@@ -1546,7 +1568,7 @@ GLShader_fogQuake3::GLShader_fogQuake3( GLShaderManager *manager ) :
 
 void GLShader_fogQuake3::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation deformVertexes ";
 }
 
 void GLShader_fogQuake3::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1576,6 +1598,7 @@ GLShader_heatHaze::GLShader_heatHaze( GLShaderManager *manager ) :
 	GLShader( "heatHaze", ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT, manager ),
 	u_NormalTextureMatrix( this ),
 	u_ViewOrigin( this ),
+	u_ViewUp( this ),
 	u_DeformMagnitude( this ),
 	u_ModelMatrix( this ),
 	u_ModelViewProjectionMatrix( this ),
@@ -1587,13 +1610,14 @@ GLShader_heatHaze::GLShader_heatHaze( GLShaderManager *manager ) :
 	u_VertexInterpolation( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
-	GLCompileMacro_USE_VERTEX_ANIMATION( this )
+	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
+	GLCompileMacro_USE_VERTEX_SPRITE( this )
 {
 }
 
 void GLShader_heatHaze::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning vertexAnimation deformVertexes ";
+	vertexInlines += "vertexSimple vertexSkinning vertexAnimation vertexSprite deformVertexes ";
 }
 
 void GLShader_heatHaze::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1700,7 +1724,7 @@ GLShader_depthToColor::GLShader_depthToColor( GLShaderManager *manager ) :
 
 void GLShader_depthToColor::BuildShaderVertexLibNames( std::string& vertexInlines )
 {
-	vertexInlines += "vertexSkinning ";
+	vertexInlines += "vertexSimple vertexSkinning ";
 }
 
 GLShader_lightVolume_omni::GLShader_lightVolume_omni( GLShaderManager *manager ) :

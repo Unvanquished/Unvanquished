@@ -628,7 +628,6 @@ typedef struct buildableCache_s
 // it depends on past states)
 typedef struct
 {
-	qboolean      inuse;
 	qboolean      old;
 	qboolean      eventFired;
 
@@ -638,9 +637,12 @@ typedef struct
 	int           oldFlags;
 	int           ctime;
 	int           etime;
+	int           mtime;
 	int           data;
-	team_t        team;
+	team_t        ownerTeam;
 	int           owner;
+	int           target;
+	float         alphaMod; // A modifier that can be set before the drawing phase begins.
 
 	// cache
 	float         dot;
@@ -655,7 +657,6 @@ typedef struct
 
 	qboolean      clamped;
 	vec2_t        clamp_dir;
-	qboolean      highlighted;
 } cbeacon_t;
 
 typedef struct
@@ -663,7 +664,7 @@ typedef struct
 	// behavior
 	int           fadeIn;
 	int           fadeOut;
-	float         highlightRadius;
+	float         highlightAngle; //angle in config, its cosine on runtime
 	float         highlightScale;
 	float         fadeMinAlpha;
 	float         fadeMaxAlpha;
@@ -682,6 +683,7 @@ typedef struct
 	float         hudMinSize;
 	float         hudMaxSize;
 	float         hudAlpha;
+	float         hudAlphaImportant;
 	vec2_t        hudCenter;    //runtime
 	vec2_t        hudRect[ 2 ]; //runtime
 
@@ -689,6 +691,28 @@ typedef struct
 	float         minimapScale;
 	float         minimapAlpha;
 } beaconsConfig_t;
+
+// strings to display on the libRocket HUD
+typedef struct
+{
+	qhandle_t    icon;
+	float        iconAlpha;
+
+	char         name[ 128 ];
+	float        nameAlpha;
+
+	char         distance[ 48 ];
+	float        distanceAlpha;
+
+	char         info[ 128 ];
+	float        infoAlpha;
+
+	char         age[ 48 ];
+	float        ageAlpha;
+
+	char         owner[ 128 ];
+	float        ownerAlpha;
+} beaconRocket_t;
 
 //======================================================================
 
@@ -774,6 +798,8 @@ typedef struct centity_s
 
 	qboolean              valid;
 	qboolean              oldValid;
+	int                   pvsEnterTime;
+
 	struct centity_s      *nextLocation;
 
 	cbeacon_t             beacon;
@@ -1285,6 +1311,7 @@ typedef struct
 	cbeacon_t               *beacons[ MAX_CBEACONS ];
 	int                     beaconCount;
 	cbeacon_t               *highlightedBeacon;
+	beaconRocket_t          beaconRocket;
 
 	int                     tagScoreTime;
 
@@ -2145,13 +2172,6 @@ void CG_DrawItemSelectText( void );
 float CG_ChargeProgress( void );
 
 //
-// cg_scanner.c
-//
-void CG_UpdateEntityPositions( void );
-void CG_Scanner( rectDef_t *rect );
-void CG_AlienSense( rectDef_t *rect );
-
-//
 // cg_minimap.c
 //
 void CG_InitMinimap( void );
@@ -2272,9 +2292,10 @@ const char *CG_TutorialText( void );
 //
 
 void          CG_LoadBeaconsConfig( void );
-void          CG_ListBeacons( void );
-qhandle_t     CG_BeaconIcon( const cbeacon_t *b, qboolean hud );
-const char    *CG_BeaconText( const cbeacon_t *b );
+void          CG_RunBeacons( void );
+qhandle_t     CG_BeaconIcon( const cbeacon_t *b );
+qhandle_t     CG_BeaconDescriptiveIcon( const cbeacon_t *b );
+char          *CG_BeaconName( const cbeacon_t *b, char *out, size_t len );
 
 //
 //===============================================
@@ -2294,6 +2315,7 @@ qboolean   CG_ParseColor( byte *c, char **text_p );
 const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
 void       CG_ReadableSize( char *buf, int bufsize, int value );
 void       CG_PrintTime( char *buf, int bufsize, int time );
+void CG_FormatSI( char *buf, int size, float num, int sf, const char *unit );
 
 //
 // cg_rocket.c

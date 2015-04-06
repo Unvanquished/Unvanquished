@@ -1254,7 +1254,7 @@ static void CG_RegisterGraphics( void )
 							   (RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.redBuildShader = trap_R_RegisterShader("gfx/misc/redbuild",
 							 (RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.humanSpawningShader = trap_R_RegisterShader("models/buildables/telenode/rep_cyl",
+	cgs.media.humanSpawningShader = trap_R_RegisterShader("models/buildables/humanSpawning",
 							      (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	for ( i = 0; i < 8; i++ )
@@ -1288,7 +1288,7 @@ static void CG_RegisterGraphics( void )
 								 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
 	cgs.media.balloonShader = trap_R_RegisterShader("gfx/sprites/chatballoon",
-							(RegisterShaderFlags_t) RSF_DEFAULT);
+							(RegisterShaderFlags_t) RSF_SPRITE);
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "disconnectPS" );
 

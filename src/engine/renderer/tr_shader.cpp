@@ -126,6 +126,11 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 		return;
 	}
 
+	if ( sh->autoSpriteMode != sh2->autoSpriteMode ) {
+		ri.Printf( PRINT_WARNING, "WARNING: R_RemapShader: shaders %s and %s have different autoSprite modes\n", shaderName, newShaderName );
+		return;
+	}
+
 	// remap all the shaders with the given name
 	// even tho they might have different lightmaps
 	COM_StripExtension3( shaderName, strippedName, sizeof( strippedName ) );
@@ -2559,7 +2564,7 @@ deformVertexes wave <spread> <waveform> <base> <amplitude> <phase> <frequency>
 deformVertexes normal <frequency> <amplitude>
 deformVertexes move <vector> <waveform> <base> <amplitude> <phase> <frequency>
 deformVertexes bulge <bulgeWidth> <bulgeHeight> <bulgeSpeed>
-deformVertexes projectionShadow
+deformVertexes rotgrow <growSpeed> <rotSlices> <rotSpeed>
 deformVertexes autoSprite
 deformVertexes autoSprite2
 ===============
@@ -2586,21 +2591,17 @@ static void ParseDeform( char **text )
 	ds = &shader.deforms[ shader.numDeforms ];
 	shader.numDeforms++;
 
-	if ( !Q_stricmp( token, "projectionShadow" ) )
-	{
-		ds->deformation = DEFORM_PROJECTION_SHADOW;
-		return;
-	}
-
 	if ( !Q_stricmp( token, "autosprite" ) )
 	{
-		ds->deformation = DEFORM_AUTOSPRITE;
+		shader.autoSpriteMode = 1;
+		shader.numDeforms--;
 		return;
 	}
 
 	if ( !Q_stricmp( token, "autosprite2" ) )
 	{
-		ds->deformation = DEFORM_AUTOSPRITE2;
+		shader.autoSpriteMode = 2;
+		shader.numDeforms--;
 		return;
 	}
 
@@ -2713,9 +2714,31 @@ static void ParseDeform( char **text )
 		return;
 	}
 
+	if ( !Q_stricmp( token, "rotgrow" ) )
+	{
+		int i;
+
+		for ( i = 0; i < 3; i++ )
+		{
+			token = COM_ParseExt2( text, qfalse );
+
+			if ( token[ 0 ] == 0 )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name );
+				return;
+			}
+
+			ds->moveVector[ i ] = atof( token );
+		}
+
+		ds->deformation = DEFORM_ROTGROW;
+		return;
+	}
+
 	if ( !Q_stricmp( token, "sprite" ) )
 	{
-		ds->deformation = DEFORM_SPRITE;
+		shader.autoSpriteMode = 1;
+		shader.numDeforms--;
 		return;
 	}
 
@@ -3505,116 +3528,6 @@ static qboolean ParseShader( char *_text )
 			ParseSkyParms( text );
 			continue;
 		}
-		// This is fixed fog for the skybox/clouds determined solely by the shader
-		// it will not change in a level and will not be necessary
-		// to force clients to use a sky fog the server says to.
-		// skyfogvars <(r,g,b)> <dist>
-		else if ( !Q_stricmp( token, "skyfogvars" ) )
-		{
-			vec3_t fogColor;
-
-			if ( !ParseVector( text, 3, fogColor ) )
-			{
-				return qfalse;
-			}
-
-			token = COM_ParseExt( text, qfalse );
-
-			if ( !token[ 0 ] )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: missing density value for sky fog\n" );
-				continue;
-			}
-
-			if ( atof( token ) > 1 )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: last value for skyfogvars is 'density' which needs to be 0.0-1.0\n" );
-				continue;
-			}
-
-			RE_SetFog( FOG_SKY, 0, 5, fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ], atof( token ) );
-			continue;
-		}
-		// ET waterfogvars
-		else if ( !Q_stricmp( token, "waterfogvars" ) )
-		{
-			vec3_t watercolor;
-			float  fogvar;
-
-			if ( !ParseVector( text, 3, watercolor ) )
-			{
-				return qfalse;
-			}
-
-			token = COM_ParseExt( text, qfalse );
-
-			if ( !token[ 0 ] )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: missing density/distance value for water fog\n" );
-				continue;
-			}
-
-			fogvar = atof( token );
-
-			//----(SA)  right now allow one water color per map.  I'm sure this will need
-			//          to change at some point, but I'm not sure how to track fog parameters
-			//          on a "per-water volume" basis yet.
-			if ( fogvar == 0 )
-			{
-				// '0' specifies "use the map values for everything except the fog color
-				// TODO
-			}
-			else if ( fogvar > 1 )
-			{
-				// distance "linear" fog
-				RE_SetFog( FOG_WATER, 0, fogvar, watercolor[ 0 ], watercolor[ 1 ], watercolor[ 2 ], 1.1 );
-			}
-			else
-			{
-				// density "exp" fog
-				RE_SetFog( FOG_WATER, 0, 5, watercolor[ 0 ], watercolor[ 1 ], watercolor[ 2 ], fogvar );
-			}
-			continue;
-		}
-		// ET fogvars
-		else if ( !Q_stricmp( token, "fogvars" ) )
-		{
-			vec3_t fogColor;
-			float  fogDensity;
-			int    fogFar;
-
-			if ( !ParseVector( text, 3, fogColor ) )
-			{
-				return qfalse;
-			}
-
-			token = COM_ParseExt( text, qfalse );
-
-			if ( !token[ 0 ] )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: missing density value for the fog\n" );
-				continue;
-			}
-
-			//----(SA)  NOTE:   fogFar > 1 means the shader is setting the farclip, < 1 means setting
-			//                  density (so old maps or maps that just need softening fog don't have to care about farclip)
-
-			fogDensity = atof( token );
-
-			if ( fogDensity > 1 )
-			{
-				// linear
-				fogFar = fogDensity;
-			}
-			else
-			{
-				fogFar = 5;
-			}
-
-			RE_SetFog( FOG_MAP, 0, fogFar, fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ], fogDensity );
-			RE_SetFog( FOG_CMD_SWITCHFOG, FOG_MAP, 50, 0, 0, 0, 0 );
-			continue;
-		}
 		// ET sunshader <name>
 		else if ( !Q_stricmp( token, "sunshader" ) )
 		{
@@ -3636,40 +3549,6 @@ static qboolean ParseShader( char *_text )
 			tr.sunShaderName = (char*) ri.Hunk_Alloc( sizeof( char ) * tokenLen, h_low );
 			Q_strncpyz( tr.sunShaderName, token, tokenLen );
 		}
-//----(SA)  added
-		else if ( !Q_stricmp( token, "lightgridmulamb" ) )
-		{
-			// ambient multiplier for lightgrid
-			token = COM_ParseExt2( text, qfalse );
-
-			if ( !token[ 0 ] )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: missing value for 'lightgrid ambient multiplier'\n" );
-				continue;
-			}
-
-			if ( atof( token ) > 0 )
-			{
-				tr.lightGridMulAmbient = atof( token );
-			}
-		}
-		else if ( !Q_stricmp( token, "lightgridmuldir" ) )
-		{
-			// directional multiplier for lightgrid
-			token = COM_ParseExt2( text, qfalse );
-
-			if ( !token[ 0 ] )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: missing value for 'lightgrid directional multiplier'\n" );
-				continue;
-			}
-
-			if ( atof( token ) > 0 )
-			{
-				tr.lightGridMulDirected = atof( token );
-			}
-		}
-//----(SA)  end
 		// light <value> determines flaring in xmap, not needed here
 		else if ( !Q_stricmp( token, "light" ) )
 		{
@@ -4912,6 +4791,10 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 	else
 	{
 		implicitCullType = CT_FRONT_SIDED;
+	}
+
+	if( flags & RSF_SPRITE ) {
+		shader.autoSpriteMode = 1;
 	}
 
 	// attempt to define shader from an explicit parameter file

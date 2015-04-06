@@ -4396,9 +4396,6 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->s.number, BCH_REMOVE ) );
 	return;
-
-invalid_beacon:
-	CP( "cp_tr " QQ(N_("Couldn't place beacon")) "\n" );
 }
 
 /*

@@ -16,7 +16,7 @@ set -e
 export LANG=C
 
 # Version of Unvanquished for which this script is built
-VERSION=0.37
+VERSION=0.38
 
 # Download from here
 CDN_URL="http://cdn.unvanquished.net/$VERSION/pkg/"
