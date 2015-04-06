@@ -238,24 +238,60 @@ def load_components(definitions):
     for (name, kwargs) in definitions['components'].items():
         if not 'messages' in kwargs:
             kwargs['messages'] = []
+
         if not 'parameters' in kwargs:
             kwargs['parameters'] = {}
+
         if not 'defaults' in kwargs:
             kwargs['defaults'] = {}
+        else:
+            # Convert defaults to strings that C++ understands.
+            for param, default in kwargs['defaults'].items():
+                if type(default) == bool:
+                    default = str(default).lower()
+                elif type(default) == str:
+                    # HACK: Python doesn't distinguish char and string, so take a guess.
+                    if kwargs['parameters'][param].endswith('char'):
+                        default = '"'+default+'"'
+                    else:
+                        default = '"'+default+'"'
+                else:
+                    default = str(default)
+                kwargs['defaults'][param] = default
+
         if not 'requires' in kwargs:
             kwargs['requires'] = []
+
         if not 'inherits' in kwargs:
             kwargs['inherits'] = {}
         else:
             raise Exception("inherits not handled for now")
+
         components[name] = Component(name, **kwargs)
     return components
 
-def load_entities(definitions):
+def load_entities(definitions, components):
     entities = {}
     for (name, kwargs) in definitions['entities'].items():
         if not 'components' in kwargs or kwargs['components'] == None:
             kwargs['components'] = {}
+
+        # Convert component parameters to strings that C++ understands.
+        for component_name, component_params in kwargs['components'].items():
+            if component_params != None:
+                for param, value in component_params.items():
+                    if type(value) == bool:
+                        value = str(value).lower()
+                    elif type(value) == str:
+                        # HACK: Python doesn't distinguish char and string, so take a guess.
+                        if components[component_name].parameters[param].typ.endswith("char"):
+                            value = "'"+value+"'"
+                        else:
+                            value = '"'+value+'"'
+                    else:
+                        value = str(value)
+                    component_params[param] = value
+
         entities[name] = Entity(name, kwargs['components'])
     return entities
 
@@ -375,7 +411,7 @@ if __name__ == '__main__':
     components = load_components(definitions)
     component_list = list(components.values())
 
-    entities = load_entities(definitions)
+    entities = load_entities(definitions, components)
     entity_list = list(entities.values())
 
     # Compute stuff
