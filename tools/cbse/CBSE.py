@@ -169,6 +169,17 @@ class Entity:
 
     def gather_components(self, components):
         self.components = [components[c] for c in self.params.keys()]
+
+        # Add dependency components.
+        gathering_dependencies = True
+        while gathering_dependencies:
+            gathering_dependencies = False
+            for component in self.components:
+                for dependency in component.get_required_components():
+                    if dependency not in self.components:
+                        self.components.append(dependency)
+                        gathering_dependencies = True
+
         self.components = sorted(self.components, key = lambda component: component.priority)
         self.messages = set()
         for component in self.components:
