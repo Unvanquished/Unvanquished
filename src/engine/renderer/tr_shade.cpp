@@ -1308,8 +1308,6 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_omniXYZ->SetNormalMapping( normalMapping );
 	gl_forwardLightingShader_omniXYZ->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 
-//	gl_forwardLightingShader_omniXYZ->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
-
 	gl_forwardLightingShader_omniXYZ->SetShadowing( shadowCompare );
 
 	gl_forwardLightingShader_omniXYZ->BindProgram();

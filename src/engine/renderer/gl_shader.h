@@ -619,7 +619,6 @@ protected:
 	  USE_PARALLAX_MAPPING,
 	  USE_REFLECTIVE_SPECULAR,
 	  USE_SHADOWING,
-	  TWOSIDED,
 	  LIGHT_DIRECTIONAL,
 	  USE_GLOW_MAPPING,
 	  USE_DEPTH_FADE
@@ -1029,53 +1028,6 @@ public:
 	void SetReflectiveSpecular( bool enable )
 	{
 		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
-class GLCompileMacro_TWOSIDED :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_TWOSIDED( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "TWOSIDED";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return TWOSIDED;
-	}
-
-	uint32_t        GetRequiredVertexAttributes() const
-	{
-		return ATTR_QTANGENT;
-	}
-
-	void EnableMacro_TWOSIDED()
-	{
-		EnableMacro();
-	}
-
-	void DisableMacro_TWOSIDED()
-	{
-		DisableMacro();
-	}
-
-	void SetMacro_TWOSIDED( cullType_t cullType )
-	{
-		if ( cullType == CT_TWO_SIDED || cullType == CT_BACK_SIDED )
 		{
 			EnableMacro();
 		}

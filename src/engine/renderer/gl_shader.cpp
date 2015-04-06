@@ -1143,8 +1143,7 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 	GLDeformStage( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
-	GLCompileMacro_USE_GLOW_MAPPING( this )//,
-	//GLCompileMacro_TWOSIDED(this)
+	GLCompileMacro_USE_GLOW_MAPPING( this )
 {
 }
 
@@ -1160,7 +1159,6 @@ void GLShader_lightMapping::BuildShaderFragmentLibNames( std::string& fragmentIn
 
 void GLShader_lightMapping::BuildShaderCompileMacros( std::string& compileMacros )
 {
-	compileMacros += "TWOSIDED ";
 }
 
 void GLShader_lightMapping::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1196,8 +1194,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this ),
-	GLCompileMacro_USE_GLOW_MAPPING( this )//,
-	//GLCompileMacro_TWOSIDED(this)
+	GLCompileMacro_USE_GLOW_MAPPING( this )
 {
 }
 
@@ -1213,7 +1210,6 @@ void GLShader_vertexLighting_DBS_entity::BuildShaderFragmentLibNames( std::strin
 
 void GLShader_vertexLighting_DBS_entity::BuildShaderCompileMacros( std::string& compileMacros )
 {
-	compileMacros += "TWOSIDED ";
 }
 
 void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1251,8 +1247,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	GLDeformStage( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
-	GLCompileMacro_USE_GLOW_MAPPING( this )//,
-	//GLCompileMacro_TWOSIDED(this)
+	GLCompileMacro_USE_GLOW_MAPPING( this )
 {
 }
 
@@ -1267,7 +1262,6 @@ void GLShader_vertexLighting_DBS_world::BuildShaderFragmentLibNames( std::string
 
 void GLShader_vertexLighting_DBS_world::BuildShaderCompileMacros( std::string& compileMacros )
 {
-	compileMacros += "TWOSIDED ";
 }
 
 void GLShader_vertexLighting_DBS_world::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1308,8 +1302,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderMana
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
-	GLCompileMacro_USE_SHADOWING( this )  //,
-	//GLCompileMacro_TWOSIDED(this)
+	GLCompileMacro_USE_SHADOWING( this )
 {
 }
 
@@ -1325,7 +1318,6 @@ void GLShader_forwardLighting_omniXYZ::BuildShaderFragmentLibNames( std::string&
 
 void GLShader_forwardLighting_omniXYZ::BuildShaderCompileMacros( std::string& compileMacros )
 {
-	compileMacros += "TWOSIDED ";
 }
 
 void GLShader_forwardLighting_omniXYZ::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1369,8 +1361,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderMana
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
-	GLCompileMacro_USE_SHADOWING( this )  //,
-	//GLCompileMacro_TWOSIDED(this)
+	GLCompileMacro_USE_SHADOWING( this )
 {
 }
 
@@ -1387,7 +1378,6 @@ void GLShader_forwardLighting_projXYZ::BuildShaderFragmentLibNames( std::string&
 void GLShader_forwardLighting_projXYZ::BuildShaderCompileMacros( std::string& compileMacros )
 {
 	compileMacros += "LIGHT_PROJ ";
-	compileMacros += "TWOSIDED ";
 }
 
 void GLShader_forwardLighting_projXYZ::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1433,8 +1423,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
-	GLCompileMacro_USE_SHADOWING( this )  //,
-	//GLCompileMacro_TWOSIDED(this)
+	GLCompileMacro_USE_SHADOWING( this )
 {
 }
 
@@ -1451,7 +1440,6 @@ void GLShader_forwardLighting_directionalSun::BuildShaderFragmentLibNames( std::
 void GLShader_forwardLighting_directionalSun::BuildShaderCompileMacros( std::string& compileMacros )
 {
 	compileMacros += "LIGHT_DIRECTIONAL ";
-	compileMacros += "TWOSIDED ";
 }
 
 void GLShader_forwardLighting_directionalSun::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -1513,8 +1501,7 @@ GLShader_reflection::GLShader_reflection( GLShaderManager *manager ):
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_NORMAL_MAPPING( this )  //,
-	//GLCompileMacro_TWOSIDED(this)
+	GLCompileMacro_USE_NORMAL_MAPPING( this )
 {
 }
 
@@ -1525,7 +1512,6 @@ void GLShader_reflection::BuildShaderVertexLibNames( std::string& vertexInlines 
 
 void GLShader_reflection::BuildShaderCompileMacros( std::string& compileMacros )
 {
-	compileMacros += "TWOSIDED ";
 }
 
 void GLShader_reflection::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
