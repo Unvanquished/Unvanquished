@@ -160,10 +160,10 @@ template<typename C> class AllComponents {
 			}
 
 		protected:
-			{% for declaration in component.get_own_param_declarations() %}
+			{% for declaration in component.get_param_declarations() %}
 				const {{declaration}}; /**< An initialization parameter. */
 			{% endfor %}
-			{% for declaration in component.get_own_required_component_declarations() %}
+			{% for declaration in component.get_required_component_declarations() %}
 				{{declaration}}; /**< A component of the owning entity that this component depends on. */
 			{% endfor %}
 		public:
@@ -186,10 +186,10 @@ template<typename C> class AllComponents {
 			{%- endfor -%}
 			)
 				: entity(entity)
-			{%- for name in component.get_own_param_names() -%}
+			{%- for name in component.get_param_names() -%}
 				, {{name}}({{name}})
 			{%- endfor -%}
-			{%- for name in component.get_own_required_component_names() -%}
+			{%- for name in component.get_required_component_names() -%}
 				, {{name}}({{name}})
 			{%- endfor -%}
 			{
@@ -200,7 +200,7 @@ template<typename C> class AllComponents {
 				allSet.erase(({{component.get_type_name()}}*)((char*) this - (char*) ({{component.get_base_type_name()}}*) ({{component.get_type_name()}}*) nullptr));
 			}
 
-			{% for required in component.get_own_required_components() %}
+			{% for required in component.get_required_components() %}
 
 				/**
 				 * @return A reference to the {{required.get_type_name()}} of the owning entity.
