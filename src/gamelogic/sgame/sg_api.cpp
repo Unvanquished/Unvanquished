@@ -52,8 +52,8 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 	if (major == VM::QVM) {
 		switch (minor) {
 		case GAME_STATIC_INIT:
-			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [] {
-				VM::InitializeProxies();
+			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [] (int milliseconds) {
+				VM::InitializeProxies(milliseconds);
 				FS::Initialize();
 				VM::VMInit();
 			});

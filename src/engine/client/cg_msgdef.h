@@ -701,7 +701,7 @@ typedef enum
 
 // CGameStaticInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_STATIC_INIT>>
+	IPC::Message<IPC::Id<VM::QVM, CG_STATIC_INIT>, int>
 > CGameStaticInitMsg;
 // CGameInitMsg
 typedef IPC::SyncMessage<

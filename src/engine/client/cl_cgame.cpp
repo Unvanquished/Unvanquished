@@ -1458,7 +1458,7 @@ void CGameVM::Start()
 
 void CGameVM::CGameStaticInit()
 {
-	this->SendMsg<CGameStaticInitMsg>();
+	this->SendMsg<CGameStaticInitMsg>(Sys_Milliseconds());
 }
 
 void CGameVM::CGameInit(int serverMessageNum, int clientNum)

@@ -470,9 +470,17 @@ namespace Log {
 
 // Common functions for all syscalls
 
+static Sys::SteadyClock::time_point baseTime;
+int trap_Milliseconds(void)
+{
+	return std::chrono::duration_cast<std::chrono::milliseconds>(Sys::SteadyClock::now() - baseTime).count();
+}
+
+
 namespace VM {
 
-    void InitializeProxies() {
+    void InitializeProxies(int milliseconds) {
+        baseTime = Sys::SteadyClock::now() - std::chrono::milliseconds(milliseconds);
         Cmd::InitializeProxy();
         Cvar::InitializeProxy();
     }
@@ -503,12 +511,6 @@ void trap_Print(const char *string)
 void NORETURN trap_Error(const char *string)
 {
 	Sys::Drop(string);
-}
-
-int trap_Milliseconds(void)
-{
-	static Sys::SteadyClock::time_point baseTime = Sys::SteadyClock::now();
-	return std::chrono::duration_cast<std::chrono::milliseconds>(Sys::SteadyClock::now() - baseTime).count();
 }
 
 void trap_SendConsoleCommand(const char *text)
