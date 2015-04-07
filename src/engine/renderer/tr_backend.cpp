@@ -5550,6 +5550,22 @@ const void     *RB_Finish( const void *data )
 }
 
 /*
+=============
+R_ShutdownBackend
+=============
+*/
+void R_ShutdownBackend( void )
+{
+	int i;
+
+	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
+	{
+		glDisableVertexAttribArray( i );
+	}
+	glState.vertexAttribsState = 0;
+}
+
+/*
 ====================
 RB_ExecuteRenderCommands
 

@@ -3150,6 +3150,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void GL_VertexAttribsState( uint32_t stateBits );
 	void GL_VertexAttribPointers( uint32_t attribBits );
 	void GL_Cull( int cullType );
+	void R_ShutdownBackend( void );
 
 	/*
 	====================================================================
