@@ -121,16 +121,36 @@ class Component:
     def get_param_declarations(self):
         return [p.typ + ' ' + p.name for p in self.param_list]
 
+    def get_own_param_declarations(self):
+        #TODO
+        return [p.typ + ' ' + p.name for p in self.param_list]
+
     def get_param_names(self):
+        return [p.name for p in self.param_list]
+
+    def get_own_param_names(self):
+        #TODO
         return [p.name for p in self.param_list]
 
     def get_required_components(self):
         return self.requires
 
+    def get_own_required_components(self):
+        #TODO
+        return self.requires
+
     def get_required_component_declarations(self):
         return [c.get_type_name() + '& r_' + c.get_type_name() for c in self.requires]
 
+    def get_own_required_component_declarations(self):
+        #TODO
+        return [c.get_type_name() + '& r_' + c.get_type_name() for c in self.requires]
+
     def get_required_component_names(self):
+        return ['r_' + c.get_type_name() for c in self.requires]
+
+    def get_own_required_component_names(self):
+        #TODO
         return ['r_' + c.get_type_name() for c in self.requires]
 
     def __repr__(self):
