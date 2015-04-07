@@ -772,7 +772,7 @@ char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 				suffix = "Base";
 			}
 
-			snprintf( out, len, "%s %s", prefix, suffix );
+			Q_snprintf( out, len, "%s %s", prefix, suffix );
 			return out;
 		}
 
