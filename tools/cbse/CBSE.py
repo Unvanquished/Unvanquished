@@ -121,12 +121,6 @@ class Component:
     def get_param_declarations(self):
         return [p.typ + ' ' + p.name for p in self.param_list]
 
-    def get_constructor_declaration(self):
-        return self.get_type_name() + '(Entity &entity' + ''.join([', ' + d for d in self.get_param_declarations()]) + ')'
-
-    def get_super_call(self):
-        return self.get_base_type_name() + '(entity' + ''.join([', ' + p.name for p in self.param_list]) + ')'
-
     def get_param_names(self):
         return [p.name for p in self.param_list]
 
