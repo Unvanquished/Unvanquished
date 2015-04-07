@@ -125,7 +125,7 @@ bool Entity::SendMessage(int msg, const void* data) {
 				, params.{{attrib.get_name()}}
 			{%- endfor -%}
 		)
-		{%- for component in entity.get_components() -%}
+		{% for component in entity.get_components() %}
 			, {{component.get_variable_name()}}(*this
 			{%- for param in component.get_param_names() -%}
 				{%- if param in user_params[component.get_name()] -%}
@@ -135,10 +135,9 @@ bool Entity::SendMessage(int msg, const void* data) {
 				{%- endif -%}
 			{%- endfor -%}
 			{%- for required in component.get_required_components() -%}
-				, *{{required.get_variable_name()}}
+				, {{required.get_variable_name()}}
 			{%- endfor -%})
-		{%- endfor %}
-
+		{% endfor %}
 	{}
 
 	// {{entity.get_type_name()}}'s deconstructor.
