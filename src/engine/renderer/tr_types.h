@@ -61,7 +61,6 @@ Maryland 20850 USA.
 // for lighting.  This allows entities to sink into the floor
 // with their origin going solid, and allows all parts of a
 // player to get the same lighting
-#define RF_SHADOW_PLANE  0x000040 // use refEntity->shadowPlane
 #define RF_WRAP_FRAMES   0x000080 // mod the model frames by the maxframes to allow continuous
 // animation without needing to know the frame count
 #define RF_FORCENOLOD    0x000400
@@ -78,7 +77,6 @@ Maryland 20850 USA.
 //----(SA)
 #define RDF_UNDERWATER   ( 1 << 4 ) // so the renderer knows to use underwater fog when the player is underwater
 #define RDF_DRAWINGSKY   ( 1 << 5 )
-#define RDF_SNOOPERVIEW  ( 1 << 6 ) //----(SA)  added
 
 // XreaL BEGIN
 #define RDF_NOCUBEMAP    ( 1 << 7 ) // RB: don't use cubemaps
@@ -94,7 +92,8 @@ typedef enum RegisterShaderFlags {
 	RSF_DEFAULT           = 0x00,
 	RSF_NOMIP             = 0x01,
 	RSF_LIGHT_ATTENUATION = 0x02,
-	RSF_NOLIGHTSCALE      = 0x04
+	RSF_NOLIGHTSCALE      = 0x04,
+	RSF_SPRITE            = 0x08
 } RegisterShaderFlags_t;
 
 typedef struct
@@ -114,14 +113,7 @@ typedef struct poly_s
 typedef enum
 {
   RT_MODEL,
-  RT_UNUSED_1,
   RT_SPRITE,
-  RT_UNUSED_3,
-  RT_UNUSED_4,
-  RT_UNUSED_5,
-  RT_UNUSED_6,
-  RT_UNUSED_7,
-  RT_UNUSED_8,
   RT_PORTALSURFACE, // doesn't draw anything, just info for portals
 
   RT_MAX_REF_ENTITY_TYPE
@@ -157,11 +149,11 @@ typedef ALIGNED(16, struct
 	refSkeletonType_t type; // skeleton has been reset
 
 	short             numBones;
-	refBone_t         bones[ MAX_BONES ];
 
 	vec3_t            bounds[ 2 ]; // bounds of all applied animations
 	vec_t             scale;
-	int               padding[ 3 ]; // pad to multiple of 16 bytes for QVM code
+
+	refBone_t         bones[ MAX_BONES ];
 } ) refSkeleton_t;
 
 // XreaL END
@@ -175,12 +167,11 @@ typedef struct
 
 	// most recent data
 	vec3_t    lightingOrigin; // so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
-	float     shadowPlane; // projection shadows go here, stencils go slightly lower
 
 	vec3_t    axis[ 3 ]; // rotation vectors
 	qboolean  nonNormalizedAxes; // axis are not normalized, i.e. they have scale
-	vec3_t    origin; // also used as MODEL_BEAM's "from"
-	int       frame; // also used as MODEL_BEAM's diameter
+	vec3_t    origin;
+	int       frame;
 
 	// previous data for frame interpolation
 	vec3_t    oldorigin; // also used as MODEL_BEAM's "to"
@@ -201,20 +192,10 @@ typedef struct
 	float radius;
 	float rotation;
 
-	// Ridah
-	vec3_t fireRiseDir;
-
 	// Ridah, entity fading (gibs, debris, etc)
 	int   fadeStartTime, fadeEndTime;
 
-	float hilightIntensity; //----(SA)  added
-
 	int   entityNum; // currentState.number, so we can attach rendering effects to specific entities (Zombie)
-
-// XreaL BEGIN
-
-	// extra animation information
-	refSkeleton_t skeleton;
 
 #if defined( USE_REFENTITY_NOSHADOWID )
 	// extra light interaction information
@@ -223,7 +204,11 @@ typedef struct
 
 	int altShaderIndex;
 
-// XreaL END
+	// KEEP SKELETON AT THE END OF THE STRUCTURE
+	// it is to make a serialization hack for refEntity_t easier
+	// by memcpying up to skeleton and then serializing skeleton
+	refSkeleton_t skeleton;
+
 } refEntity_t;
 
 // ================================================================================================
@@ -274,52 +259,6 @@ typedef struct
 
 // ================================================================================================
 
-//----(SA)
-
-//                                                                  //
-// WARNING:: synch FOG_SERVER in sv_ccmds.c if you change anything  //
-//                                                                  //
-typedef enum
-{
-  FOG_NONE, //  0
-
-  FOG_SKY, //  1   fog values to apply to the sky when using density fog for the world (non-distance clipping fog) (only used if(glfogsettings[FOG_MAP].registered) or if(glfogsettings[FOG_MAP].registered))
-  FOG_PORTALVIEW, //  2   used by the portal sky scene
-  FOG_HUD, //  3   used by the 3D HUD scene
-
-  //      The result of these for a given frame is copied to the scene.glFog when the scene is rendered
-
-  // the following are fogs applied to the main world scene
-  FOG_MAP, //  4   use fog parameter specified using the "fogvars" in the sky shader
-  FOG_WATER, //  5   used when underwater
-  FOG_SERVER, //  6   the server has set my fog (probably a target_fog) (keep synch in sv_ccmds.c !!!)
-  FOG_CURRENT, //  7   stores the current values when a transition starts
-  FOG_LAST, //  8   stores the current values when a transition starts
-  FOG_TARGET, //  9   the values it's transitioning to.
-
-  FOG_CMD_SWITCHFOG, // 10   transition to the fog specified in the second parameter of R_SetFog(...) (keep synch in sv_ccmds.c !!!)
-
-  NUM_FOGS
-} glfogType_t;
-
-typedef struct
-{
-	int      mode; // GL_LINEAR, GL_EXP
-	int      hint; // GL_DONT_CARE
-	int      startTime; // in ms
-	int      finishTime; // in ms
-	float    color[ 4 ];
-	float    start; // near
-	float    end; // far
-	qboolean useEndForClip; // use the 'far' value for the far clipping plane
-	float    density; // 0.0-1.0
-	qboolean registered; // has this fog been set up?
-	qboolean drawsky; // draw skybox
-	qboolean clearscreen; // clear the GL color buffer
-} glfog_t;
-
-//----(SA)  end
-
 #define MAX_RENDER_STRINGS       8
 #define MAX_RENDER_STRING_LENGTH 32
 
@@ -337,9 +276,6 @@ typedef struct
 	// 1 bits will prevent the associated area from rendering at all
 	byte areamask[ MAX_MAP_AREA_BYTES ];
 
-//----(SA)  added (needed to pass fog infos into the portal sky scene)
-	glfog_t glfog;
-//----(SA)  end
 	vec4_t  gradingWeights;
 } refdef_t;
 
@@ -422,15 +358,6 @@ typedef struct
 	qboolean             anisotropicAvailable; //----(SA)  added
 	float                maxAnisotropy; //----(SA)  added
 
-	// vendor-specific support
-	// NVidia
-	qboolean NVFogAvailable; //----(SA)  added
-	int      NVFogMode; //----(SA)  added
-	// ATI
-	int      ATIMaxTruformTess; // for truform support
-	int      ATINormalMode; // for truform support
-	int      ATIPointMode; // for truform support
-
 	int      vidWidth, vidHeight;
 	// aspect is the screen's physical width / height, which may be different
 	// than scrWidth / scrHeight if the pixels are non-square
@@ -463,7 +390,6 @@ typedef struct
 	qboolean vboVertexSkinningAvailable;
 	int      maxVertexSkinningBones;
 
-	qboolean unused_texture3DAvailable;
 	qboolean textureNPOTAvailable;
 
 	qboolean drawBuffersAvailable;
@@ -471,10 +397,6 @@ typedef struct
 	qboolean textureFloatAvailable;
 	qboolean textureRGAvailable;
 	int      maxDrawBuffers;
-
-	qboolean unused_vertexArrayObjectAvailable;
-
-	qboolean unused_stencilWrapAvailable;
 
 	float    maxTextureAnisotropy;
 	qboolean textureAnisotropyAvailable;

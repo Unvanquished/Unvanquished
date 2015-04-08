@@ -28,8 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../framework/Resource.h"
-#include "../qcommon/qcommon.h"
+#include "framework/Resource.h"
+#include "qcommon/qcommon.h"
 
 #ifndef AUDIO_AUDIO_PRIVATE_H_
 #define AUDIO_AUDIO_PRIVATE_H_

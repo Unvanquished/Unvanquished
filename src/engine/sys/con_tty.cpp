@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
+#include "qcommon/q_shared.h"
+#include "qcommon/qcommon.h"
 
 #include <unistd.h>
 #include <signal.h>
@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #include <fcntl.h>
 #include <sys/time.h>
 
-#include "../framework/ConsoleField.h"
+#include "framework/ConsoleField.h"
 
 /*
 =============================================================
@@ -316,7 +316,7 @@ void CON_Init_TTY( void )
 	fcntl( STDIN_FILENO, F_SETFL, fcntl( STDIN_FILENO, F_GETFL, 0 ) | O_NONBLOCK );
 
 	const char *term = getenv( "TERM" );
-	bool stdinIsATTY = isatty( STDIN_FILENO ) &&
+	bool stdinIsATTY = isatty( STDIN_FILENO ) && isatty( STDOUT_FILENO ) && isatty( STDERR_FILENO ) &&
 	                   !( term && ( !strcmp( term, "raw" ) || !strcmp( term, "dumb" ) ) );
 	if ( !stdinIsATTY )
 	{

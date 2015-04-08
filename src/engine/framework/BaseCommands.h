@@ -28,8 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../qcommon/qcommon.h"
-#include "../qcommon/q_shared.h"
+#include "qcommon/qcommon.h"
+#include "qcommon/q_shared.h"
 
 #ifndef FRAMEWORK_BASE_COMMANDS_H_
 #define FRAMEWORK_BASE_COMMANDS_H_

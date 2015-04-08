@@ -207,7 +207,7 @@ static int CM_CreateNewFloatPlane( vec4_t plane )
 	// create a new plane
 	if ( numPlanes == SHADER_MAX_TRIANGLES )
 	{
-		Com_Error( ERR_DROP, "CM_FindPlane: SHADER_MAX_TRIANGLES" );
+		Sys::Drop( "CM_FindPlane: SHADER_MAX_TRIANGLES" );
 	}
 
 	p = &planes[ numPlanes ];
@@ -498,7 +498,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 			{
 				if ( facet->numBorders > MAX_FACET_BEVELS )
 				{
-					Com_Printf( "ERROR: too many bevels\n" );
+					Log::Warn( "too many bevels" );
 				}
 
 				facet->borderPlanes[ facet->numBorders ] = CM_FindPlane2( plane, &flipped );
@@ -592,7 +592,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 				{
 					if ( facet->numBorders > MAX_FACET_BEVELS )
 					{
-						Com_Printf( "ERROR: too many bevels\n" );
+						Log::Warn( "too many bevels" );
 					}
 
 					facet->borderPlanes[ facet->numBorders ] = CM_FindPlane2( plane, &flipped );
@@ -601,7 +601,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 					{
 						if ( facet->borderPlanes[ facet->numBorders ] == facet->borderPlanes[ k ] )
 						{
-							Com_Printf( "WARNING: bevel plane already used\n" );
+							Log::Warn( "bevel plane already used" );
 						}
 					}
 

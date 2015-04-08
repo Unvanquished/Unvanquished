@@ -712,8 +712,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart, bool inClient )
 	G_Printf( "gamename: %s\n", GAME_VERSION );
 	G_Printf( "gamedate: %s\n", __DATE__ );
 
-	BG_InitMemory();
-
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
 	level.time = levelTime;

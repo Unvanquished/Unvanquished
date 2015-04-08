@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef SHARED_COMMON_PROXIES_H_
 #define SHARED_COMMON_PROXIES_H_
 
-#include "../../common/IPC/Channel.h"
+#include "common/IPC/Channel.h"
 
 namespace Cmd {
 
@@ -42,7 +42,7 @@ namespace Cmd {
 
 namespace VM {
 
-    void InitializeProxies();
+    void InitializeProxies(int milliseconds);
     void HandleCommonSyscall(int major, int minor, Util::Reader reader, IPC::Channel& channel);
 
 }

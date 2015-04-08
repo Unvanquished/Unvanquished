@@ -21,19 +21,19 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../../engine/qcommon/q_shared.h"
+#include "engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
 #ifdef BUILD_SGAME
-#include "../sgame/sg_local.h"
+#include "sgame/sg_local.h"
 #endif
 
 #ifdef BUILD_CGAME
-#include "../cgame/cg_local.h"
+#include "cgame/cg_local.h"
 #endif
 
 #ifdef BUILD_UI
-#include "../../engine/client/ui_api.h"
+#include "engine/client/ui_api.h"
 #endif
 
 // -----------

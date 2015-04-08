@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../../common/IPC/CommonSyscalls.h"
+#include "common/IPC/CommonSyscalls.h"
 
 // game-module-to-engine calls
 typedef enum gameImport_s
@@ -259,7 +259,7 @@ typedef enum
 
 // GameStaticInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, GAME_STATIC_INIT>>
+	IPC::Message<IPC::Id<VM::QVM, GAME_STATIC_INIT>, int>
 > GameStaticInitMsg;
 // GameInitMsg
 typedef IPC::SyncMessage<

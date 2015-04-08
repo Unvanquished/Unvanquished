@@ -29,12 +29,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 #endif
 
-#include "../renderer/tr_local.h"
+#include "renderer/tr_local.h"
 
 #include "sdl_icon.h"
 #include "SDL_syswm.h"
 #include "sdl2_compat.h"
-#include "../framework/CommandSystem.h"
+#include "framework/CommandSystem.h"
 
 SDL_Window         *window = NULL;
 static SDL_GLContext glContext = NULL;
@@ -1087,7 +1087,7 @@ static void GLimp_InitExtensions( void )
 	glGetIntegerv( GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &glConfig2.maxVertexUniforms );
 	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS_ARB, &glConfig2.maxVertexAttribs );
 
-	int reservedComponents = 16 * 10; // approximation how many uniforms we have besides the bone matrices
+	int reservedComponents = 26 * 10; // approximation how many uniforms we have besides the bone matrices
 	glConfig2.maxVertexSkinningBones = Maths::clamp( ( glConfig2.maxVertexUniforms - reservedComponents ) / 16, 0, MAX_BONES );
 	glConfig2.vboVertexSkinningAvailable = r_vboVertexSkinning->integer && ( ( glConfig2.maxVertexSkinningBones >= 12 ) ? qtrue : qfalse );
 

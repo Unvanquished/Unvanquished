@@ -35,7 +35,6 @@ namespace Log {
 
     /*
      * There are 4 log levels that code can use:
-     *   - ERROR when something bad happens TODO: make it crash like Com_Error?
      *   - WARNING when something is not going as expected, it is very visible.
      *   - NOTICE when we want to say something interesting, not very visible.
      *   - DEBUG shouldn't be visible by default.
@@ -45,7 +44,6 @@ namespace Log {
         LOG_DEBUG,
         LOG_NOTICE,
         LOG_WARNING,
-        LOG_ERROR
     };
 
     // The default filtering level
@@ -77,9 +75,6 @@ namespace Log {
             Logger(Str::StringRef name, Level defaultLevel = DEFAULT_FILTER_LEVEL);
 
             template<typename ... Args>
-            void Error(Str::StringRef format, Args&& ... args);
-
-            template<typename ... Args>
             void Warn(Str::StringRef format, Args&& ... args);
 
             template<typename ... Args>
@@ -88,9 +83,14 @@ namespace Log {
             template<typename ... Args>
             void Debug(Str::StringRef format, Args&& ... args);
 
-            void DoWarnCode(std::function<void()> code);
-            void DoNoticeCode(std::function<void()> code);
-            void DoDebugCode(std::function<void()> code);
+            template<typename F>
+            void DoWarnCode(F&& code);
+
+            template<typename F>
+            void DoNoticeCode(F&& code);
+
+            template<typename F>
+            void DoDebugCode(F&& code);
 
         private:
             // the cvar logs.logLevel.<name>
@@ -103,9 +103,6 @@ namespace Log {
      * However it shouldn't stay in production code because it
      * cannot be filtered and will clutter the console.
      */
-
-    template<typename ... Args>
-    void Error(Str::StringRef format, Args&& ... args);
 
     template<typename ... Args>
     void Warn(Str::StringRef format, Args&& ... args);
@@ -150,7 +147,6 @@ namespace Log {
 
     // Common entry points for all the formatted logs of the same level
     // (decide to which log targets the event goes)
-    void CodeSourceError(std::string message);
     void CodeSourceWarn(std::string message);
     void CodeSourceNotice(std::string message);
     void CodeSourceDebug(std::string message);
@@ -162,11 +158,6 @@ namespace Log {
     // Implementation of templates
 
     // Logger
-
-    template<typename ... Args>
-    void Logger::Error(Str::StringRef format, Args&& ... args) {
-        CodeSourceError(Str::Format(format, std::forward<Args>(args) ...));
-    }
 
     template<typename ... Args>
     void Logger::Warn(Str::StringRef format, Args&& ... args) {
@@ -189,12 +180,28 @@ namespace Log {
         }
     }
 
-    // Quick Logs
+    template<typename F>
+    inline void Logger::DoWarnCode(F&& code) {
+        if (filterLevel.Get() <= LOG_WARNING) {
+            code();
+        }
+    };
 
-    template<typename ... Args>
-    void Error(Str::StringRef format, Args&& ... args) {
-        CodeSourceError(Str::Format(format, std::forward<Args>(args) ...));
-    }
+    template<typename F>
+    inline void Logger::DoNoticeCode(F&& code) {
+        if (filterLevel.Get() <= LOG_NOTICE) {
+            code();
+        }
+    };
+
+    template<typename F>
+    inline void Logger::DoDebugCode(F&& code) {
+        if (filterLevel.Get() <= LOG_DEBUG) {
+            code();
+        }
+    };
+
+    // Quick Logs
 
     template<typename ... Args>
     void Warn(Str::StringRef format, Args&& ... args) {

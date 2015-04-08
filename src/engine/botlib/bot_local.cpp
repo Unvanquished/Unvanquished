@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "bot_local.h"
-#include "../server/server.h"
+#include "server/server.h"
 
 /*
 ====================

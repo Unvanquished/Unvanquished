@@ -38,11 +38,11 @@ Maryland 20850 USA.
 #include "cg_msgdef.h"
 
 #include "libmumblelink.h"
-#include "../qcommon/crypto.h"
+#include "qcommon/crypto.h"
 
-#include "../framework/CommonVMServices.h"
-#include "../framework/CommandSystem.h"
-#include "../framework/CvarSystem.h"
+#include "framework/CommonVMServices.h"
+#include "framework/CommandSystem.h"
+#include "framework/CvarSystem.h"
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
@@ -1458,7 +1458,7 @@ void CGameVM::Start()
 
 void CGameVM::CGameStaticInit()
 {
-	this->SendMsg<CGameStaticInitMsg>();
+	this->SendMsg<CGameStaticInitMsg>(Sys_Milliseconds());
 }
 
 void CGameVM::CGameInit(int serverMessageNum, int clientNum)
@@ -1561,6 +1561,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_UPDATESCREEN:
 			IPC::HandleMsg<UpdateScreenMsg>(channel, std::move(reader), [this]  {
+				CGameRocketFrame();
 				SCR_UpdateScreen();
 			});
 			break;

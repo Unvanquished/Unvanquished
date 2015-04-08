@@ -612,6 +612,7 @@ protected:
 	{
 	  USE_VERTEX_SKINNING,
 	  USE_VERTEX_ANIMATION,
+	  USE_VERTEX_SPRITE,
 	  USE_TCGEN_ENVIRONMENT,
 	  USE_TCGEN_LIGHTMAP,
 	  USE_NORMAL_MAPPING,
@@ -763,6 +764,53 @@ public:
 		else
 		{
 			DisableVertexAnimation();
+		}
+	}
+};
+
+class GLCompileMacro_USE_VERTEX_SPRITE :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_VERTEX_SPRITE( GLShader *shader ) :
+		GLCompileMacro( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_VERTEX_SPRITE";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_VERTEX_SPRITE;
+	}
+
+	bool     HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
+	uint32_t GetRequiredVertexAttributes() const {
+		return ATTR_QTANGENT;
+	}
+
+	void EnableVertexSprite()
+	{
+		EnableMacro();
+	}
+
+	void DisableVertexSprite()
+	{
+		DisableMacro();
+	}
+
+	void SetVertexSprite( bool enable )
+	{
+		if ( enable )
+		{
+			EnableVertexSprite();
+		}
+		else
+		{
+			DisableVertexSprite();
 		}
 	}
 };
@@ -1334,6 +1382,21 @@ public:
 	}
 };
 
+class u_ViewUp :
+	GLUniform3f
+{
+public:
+	u_ViewUp( GLShader *shader ) :
+		GLUniform3f( shader, "u_ViewUp" )
+	{
+	}
+
+	void SetUniform_ViewUp( const vec3_t v )
+	{
+		this->SetValue( v );
+	}
+};
+
 class u_LightDir :
 	GLUniform3f
 {
@@ -1815,25 +1878,23 @@ public:
 };
 
 class u_DeformParms :
-	GLUniform1fv
+	GLUniform4fv
 {
 public:
 	u_DeformParms( GLShader *shader ) :
-		GLUniform1fv( shader, "u_DeformParms" )
+		GLUniform4fv( shader, "u_DeformParms" )
 	{
 	}
 
 	void SetUniform_DeformParms( deformStage_t deforms[ MAX_SHADER_DEFORMS ], int numDeforms )
 	{
-		float deformParms[ MAX_SHADER_DEFORM_PARMS ];
-		int   deformOfs = 0;
+		vec4_t deformParms[ MAX_SHADER_DEFORM_PARMS ];
+		int    deformOfs = 0;
 
 		if ( numDeforms > MAX_SHADER_DEFORMS )
 		{
 			numDeforms = MAX_SHADER_DEFORMS;
 		}
-
-		deformParms[ deformOfs++ ] = numDeforms;
 
 		for ( int i = 0; i < numDeforms; i++ )
 		{
@@ -1842,42 +1903,178 @@ public:
 			switch ( ds->deformation )
 			{
 				case DEFORM_WAVE:
-					deformParms[ deformOfs++ ] = DEFORM_WAVE;
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_POS;
+					deformOfs++;
 
-					deformParms[ deformOfs++ ] = ds->deformationWave.func;
-					deformParms[ deformOfs++ ] = ds->deformationWave.base;
-					deformParms[ deformOfs++ ] = ds->deformationWave.amplitude;
-					deformParms[ deformOfs++ ] = ds->deformationWave.phase;
-					deformParms[ deformOfs++ ] = ds->deformationWave.frequency;
+					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.phase;
+					deformParms[ deformOfs ][ 1 ] = ds->deformationSpread;
+					deformParms[ deformOfs ][ 2 ] = ds->deformationWave.frequency;
+					switch( ds->deformationWave.func ) {
+					case GF_SIN:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SIN;
+						break;
+					case GF_SQUARE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SQUARE;
+						break;
+					case GF_TRIANGLE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_TRIANGLE;
+						break;
+					case GF_SAWTOOTH:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SAWTOOTH;
+						break;
+					case GF_INVERSE_SAWTOOTH:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_INVERSE_SAWTOOTH;
+						break;
+					case GF_NOISE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_NOISE;
+						break;
+					default:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_NONE;
+						break;
+					}
+					deformOfs++;
 
-					deformParms[ deformOfs++ ] = ds->deformationSpread;
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_NORM;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.base;
+					deformParms[ deformOfs ][ 1 ] = ds->deformationWave.amplitude;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_POS;
+					deformOfs++;
 					break;
 
 				case DEFORM_BULGE:
-					deformParms[ deformOfs++ ] = DEFORM_BULGE;
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 0.0f;
+					deformParms[ deformOfs ][ 2 ] = 0.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_TC;
+					deformOfs++;
 
-					deformParms[ deformOfs++ ] = ds->bulgeWidth;
-					deformParms[ deformOfs++ ] = ds->bulgeHeight;
-					deformParms[ deformOfs++ ] = ds->bulgeSpeed * 0.001f;
+					deformParms[ deformOfs ][ 0 ] = 0.0f;
+					deformParms[ deformOfs ][ 1 ] = ds->bulgeWidth;
+					deformParms[ deformOfs ][ 2 ] = ds->bulgeSpeed * 0.001f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_SIN;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_NORM;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 0.0f;
+					deformParms[ deformOfs ][ 1 ] = ds->bulgeHeight;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_POS;
+					deformOfs++;
 					break;
 
 				case DEFORM_MOVE:
-					deformParms[ deformOfs++ ] = DEFORM_MOVE;
+					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.phase;
+					deformParms[ deformOfs ][ 1 ] = 0.0f;
+					deformParms[ deformOfs ][ 2 ] = ds->deformationWave.frequency;
+					switch( ds->deformationWave.func ) {
+					case GF_SIN:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SIN;
+						break;
+					case GF_SQUARE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SQUARE;
+						break;
+					case GF_TRIANGLE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_TRIANGLE;
+						break;
+					case GF_SAWTOOTH:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SAWTOOTH;
+						break;
+					case GF_INVERSE_SAWTOOTH:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_INVERSE_SAWTOOTH;
+						break;
+					case GF_NOISE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_NOISE;
+						break;
+					default:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_NONE;
+						break;
+					}
+					deformOfs++;
 
-					deformParms[ deformOfs++ ] = ds->deformationWave.func;
-					deformParms[ deformOfs++ ] = ds->deformationWave.base;
-					deformParms[ deformOfs++ ] = ds->deformationWave.amplitude;
-					deformParms[ deformOfs++ ] = ds->deformationWave.phase;
-					deformParms[ deformOfs++ ] = ds->deformationWave.frequency;
+					deformParms[ deformOfs ][ 0 ] = ds->moveVector[ 0 ];
+					deformParms[ deformOfs ][ 1 ] = ds->moveVector[ 1 ];
+					deformParms[ deformOfs ][ 2 ] = ds->moveVector[ 2 ];
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_VEC;
+					deformOfs++;
 
-					deformParms[ deformOfs++ ] = ds->moveVector[ 0 ];
-					deformParms[ deformOfs++ ] = ds->moveVector[ 1 ];
-					deformParms[ deformOfs++ ] = ds->moveVector[ 2 ];
+					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.base;
+					deformParms[ deformOfs ][ 1 ] = ds->deformationWave.amplitude;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_POS;
+					deformOfs++;
+					break;
+
+				case DEFORM_NORMALS:
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_POS;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 0.0f;
+					deformParms[ deformOfs ][ 1 ] = 0.0f;
+					deformParms[ deformOfs ][ 2 ] = ds->deformationWave.frequency;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_NOISE;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 0.0f;
+					deformParms[ deformOfs ][ 1 ] = 0.98f * ds->deformationWave.amplitude;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_NORM;
+					deformOfs++;
+					break;
+
+				case DEFORM_ROTGROW:
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_POS;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = ds->moveVector[0];
+					deformParms[ deformOfs ][ 1 ] = ds->moveVector[1];
+					deformParms[ deformOfs ][ 2 ] = ds->moveVector[2];
+					deformParms[ deformOfs ][ 3 ] = DSTEP_ROTGROW;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_COLOR;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = -1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 0.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_COLOR;
+					deformOfs++;
 					break;
 
 				default:
 					break;
 			}
+		}
+
+		if( deformOfs < MAX_SHADER_DEFORM_PARMS ) {
+			deformParms[ deformOfs ][ 0 ] = 0.0f;
+			deformParms[ deformOfs ][ 1 ] = 0.0f;
+			deformParms[ deformOfs ][ 2 ] = 0.0f;
+			deformParms[ deformOfs ][ 3 ] = DSTEP_NONE;
+			deformOfs++;
 		}
 
 		this->SetValue( deformOfs, deformParms );
@@ -2131,6 +2328,7 @@ class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
 	public u_ViewOrigin,
+	public u_ViewUp,
 	public u_AlphaThreshold,
 	public u_ModelMatrix,
  	public u_ProjectionMatrixTranspose,
@@ -2143,6 +2341,7 @@ class GLShader_generic :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
+	public GLCompileMacro_USE_VERTEX_SPRITE,
 	public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
 	public GLCompileMacro_USE_TCGEN_LIGHTMAP,
 	public GLCompileMacro_USE_DEPTH_FADE
@@ -2457,6 +2656,7 @@ class GLShader_heatHaze :
 	public GLShader,
 	public u_NormalTextureMatrix,
 	public u_ViewOrigin,
+	public u_ViewUp,
 	public u_DeformMagnitude,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
@@ -2468,7 +2668,8 @@ class GLShader_heatHaze :
 	public u_VertexInterpolation,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
-	public GLCompileMacro_USE_VERTEX_ANIMATION
+	public GLCompileMacro_USE_VERTEX_ANIMATION,
+	public GLCompileMacro_USE_VERTEX_SPRITE
 {
 public:
 	GLShader_heatHaze( GLShaderManager *manager );

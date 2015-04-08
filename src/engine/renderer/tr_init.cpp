@@ -1563,11 +1563,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		}
 	}
 
-	static void RE_PurgeCache( void )
-	{
-		ri.Printf( PRINT_DEVELOPER, S_COLOR_RED "TODO RE_PurgeCache\n" );
-	}
-
 	/*
 	=====================
 	GetRefAPI
@@ -1653,25 +1648,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		// Q3A END
 
 		// ET BEGIN
-		re.GetSkinModel = RE_GetSkinModel;
-		re.GetShaderFromModel = RE_GetShaderFromModel;
-
 		re.ProjectDecal = RE_ProjectDecal;
 		re.ClearDecals = RE_ClearDecals;
 
 		re.DrawDebugPolygon = R_DebugPolygon;
 		re.DrawDebugText = R_DebugText;
 
-		re.SaveViewParms = RE_SaveViewParms;
-		re.RestoreViewParms = RE_RestoreViewParms;
-
-		re.AddCoronaToScene = RE_AddCoronaToScene;
 		re.AddPolyBufferToScene = RE_AddPolyBufferToScene;
-
-		re.SetFog = RE_SetFog;
-		re.SetGlobalFog = RE_SetGlobalFog;
-
-		re.purgeCache = RE_PurgeCache;
 
 		re.LoadDynamicShader = RE_LoadDynamicShader;
 		re.RenderToTexture = RE_RenderToTexture;

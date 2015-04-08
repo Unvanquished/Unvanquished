@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 // Null interface for libRocket
 
-#include "../client/client.h"
+#include "client/client.h"
 
 void Rocket_Init( void ) {}
 void Rocket_Shutdown( void ) {}

@@ -49,7 +49,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.37.0"
+#define PRODUCT_VERSION         "0.38.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -180,9 +180,9 @@ Maryland 20850 USA.
 
 //=============================================================
 
-#include "../../common/Compiler.h"
-#include "../../common/Platform.h"
-#include "../../common/Endian.h"
+#include "common/Compiler.h"
+#include "common/Platform.h"
+#include "common/Endian.h"
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;
@@ -2611,9 +2611,6 @@ int        Com_GMTime( qtime_t *qtime );
 char *Sys_GetClipboardText( clipboard_t clip = SELECTION_CLIPBOARD );
 #endif
 
-// Include common for C++ code
-#ifdef __cplusplus
-#include "../../common/Common.h"
-#endif // __cplusplus
+#include "common/Common.h"
 
 #endif /* Q_SHARED_H_ */

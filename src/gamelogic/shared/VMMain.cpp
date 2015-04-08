@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VMMain.h"
 #include "CommonProxies.h"
-#include "../../common/IPC/CommonSyscalls.h"
+#include "common/IPC/CommonSyscalls.h"
 #ifndef _WIN32
 #include <unistd.h>
 #endif

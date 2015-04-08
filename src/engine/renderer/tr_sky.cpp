@@ -355,7 +355,7 @@ CLOUD VERTEX GENERATION
 **
 ** Parms: s, t range from -1 to 1
 */
-static void MakeSkyVec( float s, float t, int axis, vec4_t outSt, vec4_t outXYZ )
+static void MakeSkyVec( float s, float t, int axis, vec2_t outSt, vec4_t outXYZ )
 {
 	// 1 = s, 2 = t, 3 = 2048
 	static const int st_to_vec[ 6 ][ 3 ] =
@@ -423,13 +423,11 @@ static void MakeSkyVec( float s, float t, int axis, vec4_t outSt, vec4_t outXYZ 
 	{
 		outSt[ 0 ] = s;
 		outSt[ 1 ] = t;
-		outSt[ 2 ] = 0;
-		outSt[ 3 ] = 1;
 	}
 }
 
 static vec4_t s_skyPoints[ SKY_SUBDIVISIONS + 1 ][ SKY_SUBDIVISIONS + 1 ];
-static float  s_skyTexCoords[ SKY_SUBDIVISIONS + 1 ][ SKY_SUBDIVISIONS + 1 ][ 4 ];
+static vec2_t s_skyTexCoords[ SKY_SUBDIVISIONS + 1 ][ SKY_SUBDIVISIONS + 1 ];
 
 static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolean addIndexes )
 {
@@ -446,8 +444,8 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolea
 		{
 			VectorAdd( s_skyPoints[ t ][ s ], backEnd.viewParms.orientation.origin, tess.verts[ tess.numVertexes ].xyz );
 
-			tess.verts[ tess.numVertexes ].texCoords[ 0 ] = s_skyTexCoords[ t ][ s ][ 0 ];
-			tess.verts[ tess.numVertexes ].texCoords[ 1 ] = s_skyTexCoords[ t ][ s ][ 1 ];
+			tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( s_skyTexCoords[ t ][ s ][ 0 ] );
+			tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( s_skyTexCoords[ t ][ s ][ 1 ] );
 
 			tess.numVertexes++;
 

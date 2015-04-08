@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "cm_local.h"
+
 #include "cm_patch.h"
 
 int                     c_totalPatchBlocks;
@@ -410,7 +411,7 @@ static int CM_GridPlane( int gridPlanes[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ][ 2 ], 
 	}
 
 	// should never happen
-	Com_Printf(_( "WARNING: CM_GridPlane unresolvable\n" ));
+	Log::Warn( "CM_GridPlane unresolvable" );
 	return -1;
 }
 
@@ -470,7 +471,7 @@ static int CM_EdgePlaneNum( cGrid_t *grid, int gridPlanes[ MAX_GRID_SIZE ][ MAX_
 			return CM_FindPlane( p1, p2, up );
 	}
 
-	Com_Error( ERR_DROP, "CM_EdgePlaneNum: bad k" );
+	Sys::Drop( "CM_EdgePlaneNum: bad k" );
 }
 
 /*
@@ -510,7 +511,7 @@ static void CM_SetBorderInward( cFacet_t *facet, cGrid_t *grid, int gridPlanes[ 
 			break;
 
 		default:
-			Com_Error( ERR_FATAL, "CM_SetBorderInward: bad parameter" );
+			Sys::Error( "CM_SetBorderInward: bad parameter" );
 	}
 
 	for ( k = 0; k < facet->numBorders; k++ )
@@ -688,7 +689,7 @@ static void CM_SurfaceCollideFromGrid( cGrid_t *grid, cSurfaceCollide_t *sc )
 
 			if ( numFacets == SHADER_MAX_TRIANGLES )
 			{
-				Com_Error( ERR_DROP, "MAX_FACETS" );
+				Sys::Drop( "MAX_FACETS" );
 			}
 
 			facet = &facets[ numFacets ];
@@ -750,7 +751,7 @@ static void CM_SurfaceCollideFromGrid( cGrid_t *grid, cSurfaceCollide_t *sc )
 
 				if ( numFacets == SHADER_MAX_TRIANGLES )
 				{
-					Com_Error( ERR_DROP, "MAX_FACETS" );
+					Sys::Drop( "MAX_FACETS" );
 				}
 
 				facet = &facets[ numFacets ];
@@ -812,17 +813,17 @@ cSurfaceCollide_t *CM_GeneratePatchCollide( int width, int height, vec3_t *point
 
 	if ( width <= 2 || height <= 2 || !points )
 	{
-		Com_Error( ERR_DROP, "CM_GeneratePatchFacets: bad parameters: (%i, %i, %p)", width, height, ( void * ) points );
+		Sys::Drop( "CM_GeneratePatchFacets: bad parameters: (%i, %i, %p)", width, height, ( void * ) points );
 	}
 
 	if ( !( width & 1 ) || !( height & 1 ) )
 	{
-		Com_Error( ERR_DROP, "CM_GeneratePatchFacets: even sizes are invalid for quadratic meshes" );
+		Sys::Drop( "CM_GeneratePatchFacets: even sizes are invalid for quadratic meshes" );
 	}
 
 	if ( width > MAX_GRID_SIZE || height > MAX_GRID_SIZE )
 	{
-		Com_Error( ERR_DROP, "CM_GeneratePatchFacets: source is > MAX_GRID_SIZE" );
+		Sys::Drop( "CM_GeneratePatchFacets: source is > MAX_GRID_SIZE" );
 	}
 
 	// build a grid

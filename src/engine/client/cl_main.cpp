@@ -35,17 +35,17 @@ Maryland 20850 USA.
 // cl_main.c  -- client main loop
 
 #include "client.h"
-#include "../qcommon/q_unicode.h"
+#include "qcommon/q_unicode.h"
 
-#include "../framework/CommandSystem.h"
-#include "../framework/CvarSystem.h"
+#include "framework/CommandSystem.h"
+#include "framework/CvarSystem.h"
 
-#include "../botlib/bot_debug.h"
+#include "botlib/bot_debug.h"
 
 cvar_t *cl_wavefilerecord;
 
 #include "libmumblelink.h"
-#include "../qcommon/crypto.h"
+#include "qcommon/crypto.h"
 
 #ifndef _WIN32
 #include <sys/stat.h>
@@ -1457,6 +1457,7 @@ void CL_MapLoading( void )
 		memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
 		cl.gameState.fill("");
 		clc.lastPacketSentTime = -9999;
+		cgvm.CGameRocketFrame();
 		SCR_UpdateScreen();
 	}
 	else
@@ -1468,6 +1469,7 @@ void CL_MapLoading( void )
 		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = CA_CHALLENGING; // so the connect screen is drawn
 		cls.keyCatchers = 0;
+		cgvm.CGameRocketFrame();
 		SCR_UpdateScreen();
 		clc.connectTime = -RETRANSMIT_TIMEOUT;
 		NET_StringToAdr( cls.servername, &clc.serverAddress, NA_UNSPEC );
@@ -1486,7 +1488,8 @@ Called before parsing a gamestate
 */
 void CL_ClearState( void )
 {
-	cl = clientActive_t();
+	cl.~clientActive_t();
+	new(&cl) clientActive_t{}; // Using {} instead of () to work around MSVC bug
 }
 
 /*
@@ -3598,6 +3601,9 @@ void CL_Frame( int msec )
 
 	// decide on the serverTime to render
 	CL_SetCGameTime();
+
+	// DOM updates from cgame
+	cgvm.CGameRocketFrame();
 
 	// Update librocket
 	Rocket_Update();

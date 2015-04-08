@@ -701,7 +701,6 @@ static const struct svcmd
 	{ "entityShow",         qfalse, Svcmd_EntityShow_f           },
 	{ "evacuation",         qfalse, Svcmd_Evacuation_f           },
 	{ "forceTeam",          qfalse, Svcmd_ForceTeam_f            },
-	{ "game_memory",        qfalse, BG_MemoryInfo                },
 	{ "humanWin",           qfalse, Svcmd_TeamWin_f              },
 	{ "layoutLoad",         qfalse, Svcmd_LayoutLoad_f           },
 	{ "layoutSave",         qfalse, Svcmd_LayoutSave_f           },

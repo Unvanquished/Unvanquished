@@ -37,7 +37,7 @@ Maryland 20850 USA.
 #ifndef SG_CM_WORLD_H_
 #define SG_CM_WORLD_H_
 
-#include "../../common/cm/cm_public.h"
+#include "common/cm/cm_public.h"
 
 void G_CM_ClearWorld( void );
 

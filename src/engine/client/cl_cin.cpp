@@ -47,7 +47,7 @@ Maryland 20850 USA.
 
 #include "client.h"
 
-#include "../framework/CommandSystem.h"
+#include "framework/CommandSystem.h"
 
 #define MAXSIZE            8
 #define MINSIZE            4

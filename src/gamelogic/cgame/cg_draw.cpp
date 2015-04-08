@@ -328,14 +328,17 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	float angle;
 	vec4_t color;
 
-	if( b->type == BCT_TAG && b->clamped )
+	// Don't draw clamped beacons for tags, except for enemy players.
+	if( b->type == BCT_TAG && b->clamped && !( ( b->flags & EF_BC_ENEMY ) &&
+	                                           ( b->flags & EF_BC_TAG_PLAYER ) ) )
 		return;
 
 	Vector4Copy( b->color, color );
 
-	// display important beacons at 100% opacity
 	if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
 		color[ 3 ] *= cgs.bc.hudAlpha;
+	else
+		color[ 3 ] *= cgs.bc.hudAlphaImportant;
 
 	trap_R_SetColor( color );
 
@@ -343,7 +346,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	                       b->pos[ 1 ] - b->size/2,
 	                       b->size, b->size,
 	                       0, 0, 1, 1,
-	                       CG_BeaconIcon( b, qtrue ) );
+	                       CG_BeaconIcon( b ) );
 
 	if( b->flags & EF_BC_DYING )
 		trap_R_DrawStretchPic( b->pos[ 0 ] - b->size/2 * 1.3,
@@ -364,7 +367,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	{
 		int num;
 
-		num = BEACON_TIMER_TIME + b->ctime - cg.time;
+		num = ( BEACON_TIMER_TIME + b->ctime - cg.time ) / 100;
 
 		if( num > 0 )
 		{
@@ -374,7 +377,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 			int i, l, frame;
 
 			h = b->size * 0.4;
-			p = va( "%d", num/100 );
+			p = va( "%d", num );
 			l = strlen( p );
 			tw = h * l;
 
@@ -448,7 +451,7 @@ static void CG_Draw2D( void )
 	}
 
 	// get an up-to-date list of beacons
-	CG_ListBeacons();
+	CG_RunBeacons();
 
 	// draw beacons on HUD
 	for( i = 0; i < cg.beaconCount; i++ )

@@ -29,7 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "Common.h"
-#include "../engine/qcommon/qcommon.h"
+
+#include "engine/qcommon/qcommon.h"
 
 namespace Cmd {
 

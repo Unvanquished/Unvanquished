@@ -2635,7 +2635,6 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	{
 		memset( &jetpack, 0, sizeof( jetpack ) );
 		VectorCopy( torso->lightingOrigin, jetpack.lightingOrigin );
-		jetpack.shadowPlane = torso->shadowPlane;
 		jetpack.renderfx = torso->renderfx;
 
 		jetpack.hModel = cgs.media.jetpackModel;
@@ -2682,7 +2681,6 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			{
 				memset( &flash, 0, sizeof( flash ) );
 				VectorCopy( torso->lightingOrigin, flash.lightingOrigin );
-				flash.shadowPlane = torso->shadowPlane;
 				flash.renderfx = torso->renderfx;
 
 				flash.hModel = cgs.media.jetpackFlashModel;
@@ -2753,7 +2751,6 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	{
 		memset( &radar, 0, sizeof( radar ) );
 		VectorCopy( torso->lightingOrigin, radar.lightingOrigin );
-		radar.shadowPlane = torso->shadowPlane;
 		radar.renderfx = torso->renderfx;
 
 		radar.hModel = cgs.media.radarModel;
@@ -2853,7 +2850,7 @@ Returns the Z component of the surface being shadowed
 ===============
 */
 #define SHADOW_DISTANCE 128
-static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t class_ )
+static qboolean CG_PlayerShadow( centity_t *cent, class_t class_ )
 {
 	vec3_t        end, mins, maxs;
 	trace_t       trace;
@@ -2877,8 +2874,6 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 		}
 	}
 
-	*shadowPlane = 0;
-
 	if ( cg_shadows.integer == SHADOWING_NONE )
 	{
 		return qfalse;
@@ -2894,19 +2889,6 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 	if ( trace.fraction == 1.0 || trace.startsolid || trace.allsolid )
 	{
 		return qfalse;
-	}
-
-	// FIXME: stencil shadows will be broken for walls.
-	//           Unfortunately there isn't much that can be
-	//           done since Q3 references only the Z coord
-	//           of the shadowPlane
-	if ( surfNormal[ 2 ] < 0.0f )
-	{
-		*shadowPlane = trace.endpos[ 2 ] - 1.0f;
-	}
-	else
-	{
-		*shadowPlane = trace.endpos[ 2 ] + 1.0f;
 	}
 
 	if ( cg_shadows.integer > SHADOWING_BLOB &&
@@ -3159,7 +3141,6 @@ void CG_Player( centity_t *cent )
 
 	int           clientNum;
 	int           renderfx;
-	float         shadowPlane = 0.0f;
 	entityState_t *es = &cent->currentState;
 	class_t       class_ = (class_t) ( ( es->misc >> 8 ) & 0xFF );
 	float         scale;
@@ -3305,7 +3286,7 @@ void CG_Player( centity_t *cent )
 		if ( ( es->number == cg.snap->ps.clientNum && cg.renderingThirdPerson ) ||
 			 es->number != cg.snap->ps.clientNum )
 		{
-			CG_PlayerShadow( cent, &shadowPlane, class_ );
+			CG_PlayerShadow( cent, class_ );
 		}
 
 		// add a water splash if partially in and out of water
@@ -3323,7 +3304,6 @@ void CG_Player( centity_t *cent )
 			return;
 		}
 
-		body.shadowPlane = shadowPlane;
 		body.renderfx = renderfx;
 
 		BG_ClassBoundingBox( class_, mins, maxs, NULL, NULL, NULL );
@@ -3513,7 +3493,7 @@ void CG_Player( centity_t *cent )
 	if ( ( es->number == cg.snap->ps.clientNum && cg.renderingThirdPerson ) ||
 	     es->number != cg.snap->ps.clientNum )
 	{
-		CG_PlayerShadow( cent, &shadowPlane, class_ );
+		CG_PlayerShadow( cent, class_ );
 	}
 
 	// add a water splash if partially in and out of water
@@ -3538,7 +3518,6 @@ void CG_Player( centity_t *cent )
 	VectorCopy( cent->lerpOrigin, legs.origin );
 
 	VectorCopy( cent->lerpOrigin, legs.lightingOrigin );
-	legs.shadowPlane = shadowPlane;
 	legs.renderfx = renderfx;
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
@@ -3627,7 +3606,6 @@ void CG_Player( centity_t *cent )
 
 		CG_PositionRotatedEntityOnTag( &torso, &legs, ci->legsModel, "tag_torso" );
 
-		torso.shadowPlane = shadowPlane;
 		torso.renderfx = renderfx;
 
 		torso.altShaderIndex = altShaderIndex;
@@ -3649,7 +3627,6 @@ void CG_Player( centity_t *cent )
 
 		CG_PositionRotatedEntityOnTag( &head, &torso, ci->torsoModel, "tag_head" );
 
-		head.shadowPlane = shadowPlane;
 		head.renderfx = renderfx;
 
 		head.altShaderIndex = altShaderIndex;
@@ -3709,7 +3686,6 @@ void CG_Corpse( centity_t *cent )
 	entityState_t *es = &cent->currentState;
 	int           corpseNum;
 	int           renderfx;
-	float         shadowPlane;
 	vec3_t        origin, liveZ, deadZ, deadMax;
 	float         scale;
 
@@ -3803,7 +3779,7 @@ void CG_Corpse( centity_t *cent )
 	}
 
 	// add the shadow
-	CG_PlayerShadow( cent, &shadowPlane, (class_t) es->clientNum );
+	CG_PlayerShadow( cent, (class_t) es->clientNum );
 
 	// get the player model information
 	renderfx = RF_LIGHTING_ORIGIN; // use the same origin for all
@@ -3832,7 +3808,6 @@ void CG_Corpse( centity_t *cent )
 	VectorCopy( origin, legs.origin );
 
 	VectorCopy( origin, legs.lightingOrigin );
-	legs.shadowPlane = shadowPlane;
 	legs.renderfx = renderfx;
 	legs.origin[ 2 ] += BG_ClassModelConfig( es->clientNum )->zOffset;
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
@@ -3878,7 +3853,6 @@ void CG_Corpse( centity_t *cent )
 
 		CG_PositionRotatedEntityOnTag( &torso, &legs, ci->legsModel, "tag_torso" );
 
-		torso.shadowPlane = shadowPlane;
 		torso.renderfx = renderfx;
 
 		torso.altShaderIndex = CG_ALTSHADER_DEAD;
@@ -3901,7 +3875,6 @@ void CG_Corpse( centity_t *cent )
 
 		CG_PositionRotatedEntityOnTag( &head, &torso, ci->torsoModel, "tag_head" );
 
-		head.shadowPlane = shadowPlane;
 		head.renderfx = renderfx;
 
 		head.altShaderIndex = CG_ALTSHADER_DEAD;

@@ -35,7 +35,7 @@ Maryland 20850 USA.
 // cl.input.c  -- builds an intended movement command to send to the server
 
 #include "client.h"
-#include "../framework/CommandSystem.h"
+#include "framework/CommandSystem.h"
 
 unsigned frame_msec;
 int      old_com_frameTime;

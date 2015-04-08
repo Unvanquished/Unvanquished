@@ -22,9 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sg_local.h"
 #include "sg_cm_world.h"
-#include "../../engine/server/sg_msgdef.h"
-#include "../shared/VMMain.h"
-#include "../shared/CommonProxies.h"
+#include "engine/server/sg_msgdef.h"
+#include "shared/VMMain.h"
+#include "shared/CommonProxies.h"
 
 static IPC::SharedMemory shmRegion;
 
@@ -52,8 +52,8 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 	if (major == VM::QVM) {
 		switch (minor) {
 		case GAME_STATIC_INIT:
-			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [] {
-				VM::InitializeProxies();
+			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [] (int milliseconds) {
+				VM::InitializeProxies(milliseconds);
 				FS::Initialize();
 				VM::VMInit();
 			});

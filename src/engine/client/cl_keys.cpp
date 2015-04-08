@@ -33,10 +33,13 @@ Maryland 20850 USA.
 */
 
 #include "client.h"
-#include "../qcommon/q_unicode.h"
-#include "../framework/CommandSystem.h"
+#include "qcommon/q_unicode.h"
+#include "framework/CommandSystem.h"
 
+#ifdef BUILD_CLIENT
 #include  "../sys/sdl2_compat.h"
+#include <SDL.h>
+#endif
 
 /*
 

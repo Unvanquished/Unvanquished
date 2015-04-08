@@ -51,7 +51,6 @@ const GLsizei sizeSkeletal = sizeof( struct fmtSkeletal );
 // -> struct shaderVertex_t in tr_local.h
 const GLsizei sizeShaderVertex = sizeof( shaderVertex_t );
 
-
 static uint32_t R_DeriveAttrBits( vboData_t data )
 {
 	uint32_t stateBits = 0;
@@ -81,6 +80,11 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 		stateBits |= ATTR_BONE_FACTORS;
 	}
 
+	if ( data.spriteOrientation )
+	{
+		stateBits |= ATTR_ORIENTATION;
+	}
+
 	if ( data.numFrames )
 	{
 		if ( data.xyz )
@@ -95,52 +99,6 @@ static uint32_t R_DeriveAttrBits( vboData_t data )
 	}
 
 	return stateBits;
-}
-
-static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i, qboolean noLightCoords )
-{
-	if ( i == ATTR_INDEX_BONE_FACTORS )
-	{
-		vbo->attribs[ i ].componentType = GL_UNSIGNED_SHORT;
-	}
-	else if ( i == ATTR_INDEX_COLOR )
-	{
-		vbo->attribs[ i ].componentType = GL_UNSIGNED_BYTE;
-	}
-	else if ( i == ATTR_INDEX_TEXCOORD )
-	{
-		vbo->attribs[ i ].componentType = GL_HALF_FLOAT;
-	}
-	else if ( i == ATTR_INDEX_QTANGENT || i == ATTR_INDEX_QTANGENT2 )
-	{
-		vbo->attribs[ i ].componentType = GL_SHORT;
-	}
-	else
-	{
-		vbo->attribs[ i ].componentType = GL_FLOAT;
-	}
-
-	if ( i == ATTR_INDEX_COLOR || i == ATTR_INDEX_QTANGENT || i == ATTR_INDEX_QTANGENT2 )
-	{
-		vbo->attribs[ i ].normalize = GL_TRUE;
-	}
-	else
-	{
-		vbo->attribs[ i ].normalize = GL_FALSE;
-	}
-	
-	if ( i == ATTR_INDEX_TEXCOORD && noLightCoords )
-	{
-		vbo->attribs[ i ].numComponents = 2;
-	}
-	else if ( i == ATTR_INDEX_POSITION || i == ATTR_INDEX_POSITION2 )
-	{
-		vbo->attribs[ i ].numComponents = 3;
-	}
-	else
-	{
-		vbo->attribs[ i ].numComponents = 4;
-	}
 }
 
 static void R_SetAttributeLayoutsVertexAnimation( VBO_t *vbo )
@@ -269,6 +227,14 @@ static void R_SetAttributeLayoutsStatic( VBO_t *vbo )
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride        = sizeShaderVertex;
 	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset   = 0;
 
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].numComponents = 4;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].componentType = GL_HALF_FLOAT;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].ofs           = offsetof( shaderVertex_t, spriteOrientation );
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].realStride    = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].stride        = sizeShaderVertex;
+	vbo->attribs[ ATTR_INDEX_ORIENTATION ].frameOffset   = 0;
+
 	// total size
 	vbo->vertexesSize = sizeShaderVertex * vbo->vertexesNum;
 }
@@ -289,12 +255,6 @@ static void R_SetAttributeLayoutsPosition( VBO_t *vbo )
 
 static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
 {
-	uint32_t i;
-	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
-	{
-		R_SetVBOAttributeComponentType( vbo, i, noLightCoords );
-	}
-
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
 		R_SetAttributeLayoutsVertexAnimation( vbo );
@@ -410,6 +370,11 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 			if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
 			{
 				Vector4Copy( inData.stpq[ v ], ptr[ v ].texCoords );
+			}
+
+			if ( ( vbo->attribBits & ATTR_ORIENTATION ) )
+			{
+				Vector4Copy( inData.spriteOrientation[ v ], ptr[ v ].spriteOrientation );
 			}
 		} else if ( vbo->layout == VBO_LAYOUT_POSITION ) {
 			vec3_t *ptr = ( vec3_t * )outData;
@@ -613,105 +578,14 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	return vbo;
 }
 
-static vboData_t R_CreateVBOData( const VBO_t *vbo, const srfVert_t *verts, qboolean noLightCoords )
-{
-	uint32_t v;
-	vboData_t data;
-	memset( &data, 0, sizeof( data ) );
-	data.numVerts = vbo->vertexesNum;
-	data.numFrames = vbo->framesNum;
-	data.noLightCoords = noLightCoords;
-
-	for ( v = 0; v < vbo->vertexesNum; v++ )
-	{
-		const srfVert_t *vert = verts + v;
-		if ( ( vbo->attribBits & ATTR_POSITION ) )
-		{
-			if ( !data.xyz )
-			{
-				data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.xyz ) * data.numVerts );
-			}
-			VectorCopy( vert->xyz, data.xyz[ v ] );
-		}
-
-		if ( ( vbo->attribBits & ATTR_TEXCOORD ) && noLightCoords )
-		{
-			if ( !data.st )
-			{
-				data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * data.numVerts );
-			}
-			data.st[ v ][ 0 ] = floatToHalf( vert->st[ 0 ] );
-			data.st[ v ][ 1 ] = floatToHalf( vert->st[ 1 ] );
-		}
-
-		if ( ( vbo->attribBits & ATTR_TEXCOORD ) && !noLightCoords )
-		{
-			if ( !data.stpq )
-			{
-				data.stpq = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * data.numVerts );
-			}
-			data.stpq[ v ][ 0 ] = floatToHalf( vert->st[ 0 ] );
-			data.stpq[ v ][ 1 ] = floatToHalf( vert->st[ 1 ] );
-			data.stpq[ v ][ 2 ] = floatToHalf( vert->lightmap[ 0 ] );
-			data.stpq[ v ][ 3 ] = floatToHalf( vert->lightmap[ 1 ] );
-		}
-
-		if ( ( vbo->attribBits & ATTR_QTANGENT ) )
-		{
-			if ( !data.qtangent )
-			{
-				data.qtangent = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.qtangent ) * data.numVerts );
-			}
-			Vector4Copy( vert->qtangent, data.qtangent[ v ] );
-		}
-
-		if ( ( vbo->attribBits & ATTR_COLOR ) )
-		{
-			if ( !data.color )
-			{
-				data.color = ( u8vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.color ) * data.numVerts );
-			}
-			Vector4Copy( vert->lightColor, data.color[ v ] );
-		}
-	}
-
-	return data;
-}
-
-static void R_FreeVBOData( vboData_t data )
-{
-	if ( data.color )
-	{
-		ri.Hunk_FreeTempMemory( data.color );
-	}
-
-	if ( data.qtangent )
-	{
-		ri.Hunk_FreeTempMemory( data.qtangent );
-	}
-
-	if ( data.st )
-	{
-		ri.Hunk_FreeTempMemory( data.st );
-	}
-
-	if ( data.xyz )
-	{
-		ri.Hunk_FreeTempMemory( data.xyz );
-	}
-}
-
 /*
 ============
 R_CreateVBO2
 ============
 */
-VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, unsigned int stateBits )
+VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, shaderVertex_t *verts, unsigned int stateBits )
 {
 	VBO_t  *vbo;
-
-	byte   *data;
-	vboData_t vboData;
 
 	if ( !numVertexes )
 	{
@@ -739,8 +613,6 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, 
 	vbo->attribBits = stateBits;
 	vbo->usage = GL_STATIC_DRAW;
 
-	vboData = R_CreateVBOData( vbo, verts, qfalse );
-
 	R_SetVBOAttributeLayouts( vbo, qfalse );
 	
 	glGenBuffers( 1, &vbo->vertexesVBO );
@@ -748,28 +620,21 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, 
 
 #ifdef GLEW_ARB_buffer_storage
 	if( glConfig2.bufferStorageAvailable ) {
-		data = ( byte * ) ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
-		R_CopyVertexData( vbo, data, vboData );
 		glBufferStorage( GL_ARRAY_BUFFER, vbo->vertexesSize,
-				 data, 0 );
-		ri.Hunk_FreeTempMemory( data );
+				 verts, 0 );
 	} else
 #endif
 	{
 		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize,
-			      NULL, vbo->usage );
-		data = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
-		R_CopyVertexData( vbo, data, vboData );
-		glUnmapBuffer( GL_ARRAY_BUFFER );
+			      verts, vbo->usage );
 	}
 
 	R_BindNullVBO();
 	GL_CheckErrors();
 
-	R_FreeVBOData( vboData );
-
 	return vbo;
 }
+
 
 /*
 ============
@@ -865,14 +730,9 @@ IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes )
 	return ibo;
 }
 
-IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, srfTriangle_t *triangles )
+IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, glIndex_t *indexes )
 {
 	IBO_t         *ibo;
-	int           i, j;
-
-	glIndex_t     *indexes;
-
-	srfTriangle_t *tri;
 
 	if ( !numTriangles )
 	{
@@ -887,19 +747,27 @@ IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, srfTriangle_t *tr
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	indexes = ( glIndex_t * ) ri.Hunk_AllocateTempMemory( numTriangles * 3 * sizeof( glIndex_t ) );
+	ibo = ( IBO_t * ) ri.Hunk_Alloc( sizeof( *ibo ), h_low );
+	Com_AddToGrowList( &tr.ibos, ibo );
 
-	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
+	Q_strncpyz( ibo->name, name, sizeof( ibo->name ) );
+	ibo->indexesNum = numTriangles * 3;
+	ibo->indexesSize = ibo->indexesNum * sizeof( glIndex_t );
+
+	glGenBuffers( 1, &ibo->indexesVBO );
+	R_BindIBO( ibo );
+
+#ifdef GLEW_ARB_buffer_storage
+	if( glConfig2.bufferStorageAvailable ) {
+		glBufferStorage( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize,
+				 indexes, 0 );
+	} else
+#endif
 	{
-		for ( j = 0; j < 3; j++ )
-		{
-			indexes[ i * 3 + j ] = tri->indexes[ j ];
-		}
+		glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize,
+			      indexes, GL_STATIC_DRAW );
 	}
-
-	ibo = R_CreateStaticIBO( name, indexes, numTriangles * 3 );
-
-	ri.Hunk_FreeTempMemory( indexes );
+	R_BindNullIBO();
 
 	return ibo;
 }
