@@ -457,7 +457,7 @@ if __name__ == '__main__':
     template_params = {
         'general': general,
         'messages': message_list,
-        'components': component_list,
+        'components': sorted_components,
         'entities': entity_list,
         'files': outfiles,
         'dirs': outdirs
