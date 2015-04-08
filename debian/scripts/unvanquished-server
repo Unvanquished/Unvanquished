@@ -7,4 +7,4 @@ case "$1" in
   ;;
 esac
 
-exec /usr/lib/games/unvanquished/unvanquishedded -libpath /usr/lib/games/unvanquished -pakpath /var/games/unvanquished/pkg +exec server.cfg "$@"
+exec /usr/lib/games/unvanquished/unvanquishedded -libpath /usr/lib/games/unvanquished -pakpath /var/games/unvanquished/pkg "$@" +exec server.cfg
