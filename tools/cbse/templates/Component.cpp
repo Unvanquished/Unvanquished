@@ -27,4 +27,4 @@
 	}
 {% endfor %}
 
-//* vi:ai:ts=4:filetype=jinja
+//* vi:ai:ts=4
