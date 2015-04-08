@@ -236,9 +236,11 @@ def convert_params(params):
         if type(value) == bool:
             value = str(value).lower()
         elif type(value) == str:
-            # Python doesn't distinguish char and string, so we assume it is a string
-            # if someone wants to use a char parameter, he will still be able to write
-            # the value as a raw number
+            # Python doesn't distinguish char and string, so we default to
+            # string. If someone wants to use a char parameter, they will still
+            # be able to write the value as a raw number or convert a char via
+            #     !!python/object/apply:builtins.ord ['x']
+            # where x is the char to be converted.
             value = '"' + value + '"'
         else:
             value = str(value)
