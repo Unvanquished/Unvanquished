@@ -18,7 +18,7 @@
 
 #include <set>
 
-#include "{{files['types']}}"
+#include "../{{files['types']}}"
 
 // /////////// //
 // Message IDs //

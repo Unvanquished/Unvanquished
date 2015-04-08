@@ -1,6 +1,8 @@
 //* TODO: Add license from input file.
 // TODO: Insert license statement.
 
+// This header provides all types that the CBSE backend needs to know about.
+
 #ifndef COMPONENTS_TYPES_H_
 #define COMPONENTS_TYPES_H_
 
