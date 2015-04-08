@@ -78,4 +78,4 @@ class {{component.get_type_name()}}: public {{component.get_base_type_name()}} {
 
 #endif
 
-//* vi:ai:ts=4:filetype=jinja
+//* vi:ai:ts=4

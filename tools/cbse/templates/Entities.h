@@ -45,4 +45,4 @@
 
 #endif // COMPONENTS_ENTITIES_H_
 
-//* vi:ai:ts=4:filetype=jinja
+//* vi:ai:ts=4

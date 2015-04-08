@@ -148,4 +148,4 @@ bool Entity::SendMessage(int msg, const void* data) {
 
 #undef myoffsetof
 
-//* vi:ai:ts=4:filetype=jinja
+//* vi:ai:ts=4
