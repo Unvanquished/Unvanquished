@@ -377,7 +377,7 @@ class VMCvarProxy : public Cvar::CvarProxy {
         virtual Cvar::OnValueChangedResult OnValueChanged(Str::StringRef newValue) OVERRIDE {
             value = newValue;
             modificationCount++;
-            return {true, ""};
+            return Cvar::OnValueChangedResult{true, ""};
         }
 
         void Update(vmCvar_t* cvar) {
