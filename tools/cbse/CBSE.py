@@ -72,6 +72,8 @@ class Component:
         self.name = name
         self.param_list = []
         self.parameters = {}
+
+        # Create the list of parameters, with potential default parameters
         for (name, typ) in parameters.items():
             p = None
             if name in defaults:
@@ -87,7 +89,7 @@ class Component:
         self.requires = requires
         self.inherits = inherits
 
-    def gather_dependencies(self, messages, components):
+    def gather_messages(self, messages):
         self.messages = [messages[m] for m in self.messages]
 
     def gather_component_dependencies(self, components):
@@ -165,6 +167,7 @@ class Entity:
         self.components = [components[c] for c in self.params.keys()]
 
         # Add dependency components.
+        # TODO more efficient algorithm? (this is worst case O(nComponents)^3)
         gathering_dependencies = True
         while gathering_dependencies:
             gathering_dependencies = False
@@ -175,11 +178,14 @@ class Entity:
                         gathering_dependencies = True
 
         self.components = sorted(self.components, key = lambda component: component.priority)
+
+        # Gather the list of all messages this entity can receive
         self.messages = set()
         for component in self.components:
             self.messages |= set(component.get_messages_to_handle())
         self.messages = list(self.messages)
 
+        # Initialize the parameter state
         self.user_params = {}
         self.has_user_params = False
         for component in self.components:
@@ -187,6 +193,7 @@ class Entity:
             if not component.name in self.params:
                 self.params[component.name] = {}
 
+        # Choose the value for each component parameter (unless it is a user defined param)
         for component in self.components:
             for param in component.param_list:
                 if not param.name in self.params[component.name]:
@@ -239,15 +246,14 @@ def convert_params(params):
 
 
 def load_general(definitions):
-    defs = definitions['general']
     common_entity_attributes = []
-    for attrib in defs['common_entity_attributes']:
+    for attrib in definitions['common_entity_attributes']:
         common_entity_attributes.append(CommonAttribute(attrib['name'], attrib['type']))
     return namedtuple('general', 'common_entity_attributes')(common_entity_attributes)
 
 def load_messages(definitions):
     messages = {}
-    for (name, args) in definitions['messages'].items():
+    for (name, args) in definitions.items():
         if args == None:
             args = []
         messages[name] = Message(name, [(arg['name'], arg['type']) for arg in args])
@@ -255,7 +261,7 @@ def load_messages(definitions):
 
 def load_components(definitions):
     components = {}
-    for (name, kwargs) in definitions['components'].items():
+    for (name, kwargs) in definitions.items():
         if not 'messages' in kwargs:
             kwargs['messages'] = []
 
@@ -277,9 +283,9 @@ def load_components(definitions):
         components[name] = Component(name, **kwargs)
     return components
 
-def load_entities(definitions, components):
+def load_entities(definitions):
     entities = {}
-    for (name, kwargs) in definitions['entities'].items():
+    for (name, kwargs) in definitions.items():
         if not 'components' in kwargs or kwargs['components'] == None:
             kwargs['components'] = {}
 
@@ -317,26 +323,30 @@ def topo_sort_components(components):
     return sorted_components
 
 def parse_definitions(definitions):
-    general = load_general(definitions)
+    # Do the basic loading of objects, independently of other objects
+    general = load_general(definitions['general'])
 
-    messages = load_messages(definitions)
+    messages = load_messages(definitions['messages'])
     message_list = list(messages.values())
 
-    components = load_components(definitions)
+    components = load_components(definitions['components'])
     component_list = list(components.values())
 
-    entities = load_entities(definitions, components)
+    entities = load_entities(definitions['entities'])
     entity_list = list(entities.values())
 
-    # Compute stuff
+    # Link objects together
+
+    # First make each component get its dependencies and then compute their topological order
     for component in component_list:
         component.gather_component_dependencies(components)
 
     sorted_components = topo_sort_components(component_list)
-
     for (i, component) in enumerate(sorted_components):
         component.priority = i
-        component.gather_dependencies(messages, components)
+
+    for component in sorted_components:
+        component.gather_messages(messages)
 
     for entity in entity_list:
         entity.gather_components(components)
@@ -448,7 +458,7 @@ if __name__ == '__main__':
         compdir = outdir + outdirs['components'] + os.path.sep
         skeldir = compdir + outdirs['skeletons'] + os.path.sep
 
-        # Generate a list of files to create, params_dict will get squashed to create the template parameters
+        # Generate a list of files to create, params_dicts will get squashed to create the template parameters
         FileToRender = namedtuple('FileToRender', ['template', 'output', 'params_dicts', 'overwrite'])
         to_render = []
 
