@@ -5,9 +5,9 @@
 #define {{component.get_name().upper()}}_COMPONENT_H_
 
 //* Make sure the backend is included, even though this might have happened before.
-#include "../{{files['backend']}}"
+#include "../{{dirs['backend']}}/{{files['backend']}}"
 //* Make components know each other.
-#include "../{{files['components']}}"
+#include "../{{dirs['backend']}}/{{files['components']}}"
 
 class {{component.get_type_name()}}: public {{component.get_base_type_name()}} {
 //* TODO: Uncomment after changing message handler visibility to protected.

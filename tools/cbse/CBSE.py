@@ -434,54 +434,54 @@ if __name__ == '__main__':
     definitions = parse_definitions(yaml.load(args.definitions[0]))
     args.definitions[0].close()
 
-    unique_files = {
-        'backend':      'Backend.h',
-        'backend_cpp':  'Backend.cpp',
-        'components':   'Components.h',
-        'entities':     'Entities.h',
-        'types':        'Types.h'
-    }
+    # Manage output directories and files
+    Output = namedtuple('Output', ['template', 'subdir', 'outname', 'overwrite'])
 
-    # The output files for the unique files are prefixed with CBSE
-    outfiles = dict([(key, 'CBSE' + val) for (key, val) in unique_files.items()])
-    outdirs = {
+    subdir_names = {
+        'backend':    'backend',
         'components': 'components',
-        'skeletons':  'skel'
+        'skeletons':  'skeletons'
     }
 
-    # Create the template parameters from the definitions
-    #TODO get rid of outfiles and outdirs?
+    unique_files = {
+        'backend':      Output('Backend.h',    subdir_names['backend'], 'CBSEBackend.h',    True),
+        'backend_cpp':  Output('Backend.cpp',  subdir_names['backend'], 'CBSEBackend.cpp',  True),
+        'components':   Output('Components.h', subdir_names['backend'], 'CBSEComponents.h', True),
+        'entities':     Output('Entities.h',   subdir_names['backend'], 'CBSEEntities.h',   True),
+        'types':        Output('Types.h',      '',                      'CBSETypes.h',      False),
+        'helper':       Output('Helper.h',     '',                      'CBSE.h',           False)
+    }
+
     template_params = [definitions, {
-        'files': outfiles,
-        'dirs': outdirs,
+        'files': dict([(key, val.outname) for (key, val) in unique_files.items()]),
+        'dirs': subdir_names
     }]
 
     if args.output_dir != None:
-        outdir = args.output_dir + os.path.sep
-        compdir = outdir + outdirs['components'] + os.path.sep
-        skeldir = compdir + outdirs['skeletons'] + os.path.sep
+        base_dir       = args.output_dir + os.path.sep
+        backend_dir    = base_dir + subdir_names['components'] + os.path.sep
+        components_dir = base_dir + subdir_names['components'] + os.path.sep
+        skeletons_dir  = components_dir + subdir_names['skeletons'] + os.path.sep
 
         # Generate a list of files to create, params_dicts will get squashed to create the template parameters
         FileToRender = namedtuple('FileToRender', ['template', 'output', 'params_dicts', 'overwrite'])
         to_render = []
 
         # Add unique files
-        for (key, output) in outfiles.items():
-            template = unique_files[key]
-            to_render.append(FileToRender(template, outdir + output, template_params, key != 'types'))
+        for (key, val) in unique_files.items():
+            to_render.append(FileToRender(val.template, base_dir + val.subdir + os.path.sep + val.outname, \
+                                          template_params, val.overwrite))
 
         # Add skeleton files
         for component in definitions['components']:
             params = template_params + [{'component': component}]
-            basename = skeldir + component.get_type_name()
 
-            to_render.append(FileToRender('Component.h', basename + '.h', params, True))
-            to_render.append(FileToRender('Component.cpp', basename + '.cpp', params, True))
+            to_render.append(FileToRender('Component.h', skeletons_dir + component.get_type_name() + '.h', params, True))
+            to_render.append(FileToRender('Component.cpp', skeletons_dir + component.get_type_name() + '.cpp', params, True))
 
             if args.copy_skel:
-                basename = compdir + component.get_type_name()
-                to_render.append(FileToRender('Component.h', basename + '.h', params, False))
-                to_render.append(FileToRender('Component.cpp', basename + '.cpp', params, False))
+                to_render.append(FileToRender('Component.h', components_dir + component.get_type_name() + '.h', params, False))
+                to_render.append(FileToRender('Component.cpp', components_dir + component.get_type_name() + '.cpp', params, False))
 
         # Now render the files
         env = jinja2.Environment(loader=PreprocessingLoader(args.template_dir), trim_blocks=True, lstrip_blocks=True)
