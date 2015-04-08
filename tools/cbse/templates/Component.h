@@ -1,23 +1,13 @@
 //* TODO: Add license from input file.
 // TODO: Insert license statement.
 
+#ifndef {{component.get_name().upper()}}_COMPONENT_H_
+#define {{component.get_name().upper()}}_COMPONENT_H_
+
 //* Make sure the backend is included, even though this might have happened before.
 #include "../{{files['backend']}}"
 //* Make components know each other.
 #include "../{{files['components']}}"
-
-#if !defined({{component.get_name().upper()}}_COMPONENT_1_H_) && defined(ONLY_MESSAGE_COMPONENT_DECLARATION)
-#define {{component.get_name().upper()}}_1_COMPONENT_H_
-
-// //////////// //
-// Custom Types //
-// //////////// //
-
-
-
-#endif
-#if !defined({{component.get_name().upper()}}_COMPONENT_2_H_) && !defined(ONLY_MESSAGE_COMPONENT_DECLARATION)
-#define {{component.get_name().upper()}}_2_COMPONENT_H_
 
 class {{component.get_type_name()}}: public {{component.get_base_type_name()}} {
 //* TODO: Uncomment after changing message handler visibility to protected.
@@ -76,6 +66,6 @@ class {{component.get_type_name()}}: public {{component.get_base_type_name()}} {
 
 };
 
-#endif
+#endif // {{component.get_name().upper()}}_COMPONENT_H_
 
 //* vi:ai:ts=4

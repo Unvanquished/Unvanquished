@@ -438,7 +438,8 @@ if __name__ == '__main__':
         'backend':      'Backend.h',
         'backend_cpp':  'Backend.cpp',
         'components':   'Components.h',
-        'entities':     'Entities.h'
+        'entities':     'Entities.h',
+        'types':        'Types.h'
     }
 
     # The output files for the unique files are prefixed with CBSE
@@ -467,7 +468,7 @@ if __name__ == '__main__':
         # Add unique files
         for (key, output) in outfiles.items():
             template = unique_files[key]
-            to_render.append(FileToRender(template, outdir + output, template_params, True))
+            to_render.append(FileToRender(template, outdir + output, template_params, key != 'types'))
 
         # Add skeleton files
         for component in definitions['components']:
