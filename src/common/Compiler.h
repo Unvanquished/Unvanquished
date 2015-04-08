@@ -165,9 +165,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DLLIMPORT __declspec(dllimport)
 #define OVERRIDE override
 #define FINAL final
+// VS2015 supports this
+#if _MSC_VER >= 1900
+#define NOEXCEPT noexcept
+#define NOEXCEPT_IF(x) noexcept(x)
+#define NOEXCEPT_EXPR(x) false
+#else
 #define NOEXCEPT
 #define NOEXCEPT_IF(x)
 #define NOEXCEPT_EXPR(x) false
+#endif
 // Work around lack of C99 support
 #define __func__ __FUNCTION__
 // Work around lack of constexpr
