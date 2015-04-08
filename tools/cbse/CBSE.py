@@ -223,6 +223,21 @@ class Entity:
 
 #############################################################################
 
+def convert_params(params):
+    # Convert defaults to strings that C++ understands.
+    for param, value in params.items():
+        if type(value) == bool:
+            value = str(value).lower()
+        elif type(value) == str:
+            # Python doesn't distinguish char and string, so we assume it is a string
+            # if someone wants to use a char parameter, he will still be able to write
+            # the value as a raw number
+            value = '"' + value + '"'
+        else:
+            value = str(value)
+        params[param] = value
+
+
 def load_general(definitions):
     defs = definitions['general']
     common_entity_attributes = []
@@ -249,20 +264,6 @@ def load_components(definitions):
 
         if not 'defaults' in kwargs:
             kwargs['defaults'] = {}
-        else:
-            # Convert defaults to strings that C++ understands.
-            for param, default in kwargs['defaults'].items():
-                if type(default) == bool:
-                    default = str(default).lower()
-                elif type(default) == str:
-                    # HACK: Python doesn't distinguish char and string, so take a guess.
-                    if kwargs['parameters'][param].endswith('char'):
-                        default = '"'+default+'"'
-                    else:
-                        default = '"'+default+'"'
-                else:
-                    default = str(default)
-                kwargs['defaults'][param] = default
 
         if not 'requires' in kwargs:
             kwargs['requires'] = []
@@ -272,6 +273,7 @@ def load_components(definitions):
         else:
             raise Exception("inherits not handled for now")
 
+        convert_params(kwargs['defaults'])
         components[name] = Component(name, **kwargs)
     return components
 
@@ -281,21 +283,9 @@ def load_entities(definitions, components):
         if not 'components' in kwargs or kwargs['components'] == None:
             kwargs['components'] = {}
 
-        # Convert component parameters to strings that C++ understands.
         for component_name, component_params in kwargs['components'].items():
             if component_params != None:
-                for param, value in component_params.items():
-                    if type(value) == bool:
-                        value = str(value).lower()
-                    elif type(value) == str:
-                        # HACK: Python doesn't distinguish char and string, so take a guess.
-                        if components[component_name].parameters[param].typ.endswith("char"):
-                            value = "'"+value+"'"
-                        else:
-                            value = '"'+value+'"'
-                    else:
-                        value = str(value)
-                    component_params[param] = value
+                convert_params(component_params)
 
         entities[name] = Entity(name, kwargs['components'])
     return entities
@@ -325,6 +315,42 @@ def topo_sort_components(components):
         del component.temp_visited
 
     return sorted_components
+
+def parse_definitions(definitions):
+    general = load_general(definitions)
+
+    messages = load_messages(definitions)
+    message_list = list(messages.values())
+
+    components = load_components(definitions)
+    component_list = list(components.values())
+
+    entities = load_entities(definitions, components)
+    entity_list = list(entities.values())
+
+    # Compute stuff
+    for component in component_list:
+        component.gather_component_dependencies(components)
+
+    sorted_components = topo_sort_components(component_list)
+
+    for (i, component) in enumerate(sorted_components):
+        component.priority = i
+        component.gather_dependencies(messages, components)
+
+    for entity in entity_list:
+        entity.gather_components(components)
+
+    definitions = {
+        'general': general,
+        'messages': message_list,
+        'components': sorted_components,
+        'entities': entity_list,
+    }
+
+    return definitions
+
+############################################################################
 
 # A custom Jinja2 template loader that removes the extra indentation
 # of the template blocks so that the output is correctly indented
@@ -381,56 +407,21 @@ class PreprocessingLoader(jinja2.BaseLoader):
         return '\n'.join(lines)
 
 if __name__ == '__main__':
-    def my_open_read(filename):
-        if filename == "-":
-            return sys.stdin
-        else:
-            return open(filename, "r")
-
-    def my_open_write(filename):
-        if filename == "-":
-            return sys.stdout
-        else:
-            return open(filename, "w")
-
+    # Command line args
     parser = argparse.ArgumentParser(
         description="Outputs C++ plumbing code for the gamelogic given a component/entity definition file.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument('definitions', metavar='DEFINITION_FILE', nargs=1, type=my_open_read, help ="The definitions to use, - for stdin.")
+    parser.add_argument('definitions', metavar='DEFINITION_FILE', nargs=1, type=open, help ="The definitions to use, - for stdin.")
     parser.add_argument('-t', '--template-dir', default="templates", type=str, help="Directory with template files.")
     parser.add_argument('-o', '--output-dir', default=None, type=str, help="Output directory for the generated source files.")
     parser.add_argument('-c', '--copy-skel', action="store_true", help="Copy skeleton files in place if the file doesn't exist.")
 
     args = parser.parse_args()
 
-    # Load everything from the file
-    definitions = yaml.load(args.definitions[0])
+    # Load everything from the definition file
+    definitions = parse_definitions(yaml.load(args.definitions[0]))
     args.definitions[0].close()
-
-    general = load_general(definitions)
-
-    messages = load_messages(definitions)
-    message_list = list(messages.values())
-
-    components = load_components(definitions)
-    component_list = list(components.values())
-
-    entities = load_entities(definitions, components)
-    entity_list = list(entities.values())
-
-    # Compute stuff
-    for component in component_list:
-        component.gather_component_dependencies(components)
-
-    sorted_components = topo_sort_components(component_list)
-
-    for (i, component) in enumerate(sorted_components):
-        component.priority = i
-        component.gather_dependencies(messages, components)
-
-    for entity in entity_list:
-        entity.gather_components(components)
 
     infiles = {
         'backend':      'Backend.h',
@@ -454,14 +445,10 @@ if __name__ == '__main__':
         'skeletons':  'skel'
     }
 
-    template_params = {
-        'general': general,
-        'messages': message_list,
-        'components': sorted_components,
-        'entities': entity_list,
-        'files': outfiles,
-        'dirs': outdirs
-    }
+    # Create the template parameters from the definitions
+    template_params = definitions
+    template_params['files'] = outfiles,
+    template_params['dirs'] = outdirs
 
     if args.output_dir != None:
         env = jinja2.Environment(loader=PreprocessingLoader(args.template_dir), trim_blocks=True, lstrip_blocks=True)
@@ -494,31 +481,31 @@ if __name__ == '__main__':
         if not os.path.isdir(skeldir):
             os.mkdir(skeldir)
 
-        for component in component_list:
+        for component in template_params['components']:
             template_params['component'] = component
 
             basename = component.get_type_name() + ".h"
 
+            skeleleton = render(infiles['skeleton'], template_params)
+
             with open(skeldir + basename, "w") as outfile:
-                outfile.write(render(infiles['skeleton'], template_params))
+                outfile.write(skeleton)
 
             if args.copy_skel and not os.path.exists(compdir + basename):
                 print("Adding new file " + compdir + basename + ".", file=sys.stderr)
-                # TODO: Is there really no file copy in python?
-                with open(skeldir + basename, "r") as infile:
-                    with open(compdir + basename, "w") as outfile:
-                        outfile.write(infile.read())
+                with open(compdir + basename, "w") as outfile:
+                    outfile.write(skeleton)
 
             basename = component.get_type_name() + ".cpp"
 
+            skeleton_cpp = render(infiles['skeleton_cpp'], template_params)
+
             with open(skeldir + basename, "w") as outfile:
-                outfile.write(render(infiles['skeleton_cpp'], template_params))
+                outfile.write(skeleton_cpp)
 
             if args.copy_skel and not os.path.exists(compdir + basename):
                 print("Adding new file " + compdir + basename + ".", file=sys.stderr)
-                # TODO: Is there really no file copy in python?
-                with open(skeldir + basename, "r") as infile:
-                    with open(compdir + basename, "w") as outfile:
-                        outfile.write(infile.read())
+                with open(compdir + basename, "w") as outfile:
+                    outfile.write(skeleton_cpp)
 
 # vi:ts=4:et:ai
