@@ -13,8 +13,8 @@
 //* Likewise we want to be able to ask an entity for a specific component it might have, we have another
 //* vtable containing the offset of the components, if any, for each entity.
 
-#ifndef COMPONENTS_H_
-#define COMPONENTS_H_
+#ifndef CBSE_BACKEND_H_
+#define CBSE_BACKEND_H_
 
 #include <set>
 
@@ -232,6 +232,6 @@ void ForEntities(FuncType f) {
     }
 }
 
-#endif //COMPONENTS_H_
+#endif // CBSE_BACKEND_H_
 
 //* vi:ai:ts=4
