@@ -1,6 +1,6 @@
 #! /bin/sh
 cd /usr/lib/games/unvanquished
-unvanquished-migrate-profile
+#unvanquished-migrate-profile
 
 # Assumptions:
 # - if there's a URI, it's the first parameter (after any debug options)
