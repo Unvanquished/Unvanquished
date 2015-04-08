@@ -1,7 +1,7 @@
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 
-#ifndef COMPONENTS_ENTITIES_H_
-#define COMPONENTS_ENTITIES_H_
+#ifndef CBSE_ENTITIES_H_
+#define CBSE_ENTITIES_H_
 
 #include "{{files['components']}}"
 
@@ -43,6 +43,6 @@
 
 {% endfor %}
 
-#endif // COMPONENTS_ENTITIES_H_
+#endif // CBSE_ENTITIES_H_
 
 //* vi:ai:ts=4
