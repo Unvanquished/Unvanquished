@@ -395,7 +395,6 @@ class PreprocessingLoader(jinja2.BaseLoader):
     blockstart = re.compile('^\s*{%-?\s*(if|for).*$')
     blockend = re.compile('^\s*{%-?\s*end(if|for).*$')
 
-    #TODO remove the need for my_filter
     def my_filter(self, text):
         lines = []
         for line in text.split('\n'):
@@ -423,89 +422,75 @@ if __name__ == '__main__':
     definitions = parse_definitions(yaml.load(args.definitions[0]))
     args.definitions[0].close()
 
-    infiles = {
+    unique_files = {
         'backend':      'Backend.h',
         'backend_cpp':  'Backend.cpp',
-        'skeleton':     'Component.h',
-        'skeleton_cpp': 'Component.cpp',
         'components':   'Components.h',
         'entities':     'Entities.h'
     }
 
-    # Dependency chain: Entities -> Components -> Backend (?)
-    outfiles = {
-        'backend':     'CBSEBackend.h',
-        'backend_cpp': 'CBSEBackend.cpp',
-        'components':  'CBSEComponents.h',
-        'entities':    'CBSEEntities.h'
-    }
-
+    # The output files for the unique files are prefixed with CBSE
+    outfiles = dict([(key, 'CBSE' + val) for (key, val) in unique_files.items()])
     outdirs = {
         'components': 'components',
         'skeletons':  'skel'
     }
 
     # Create the template parameters from the definitions
-    template_params = definitions
-    template_params['files'] = outfiles,
-    template_params['dirs'] = outdirs
+    #TODO get rid of outfiles and outdirs?
+    template_params = [definitions, {
+        'files': outfiles,
+        'dirs': outdirs,
+    }]
 
     if args.output_dir != None:
+        outdir = args.output_dir + os.path.sep
+        compdir = outdir + outdirs['components'] + os.path.sep
+        skeldir = compdir + outdirs['skeletons'] + os.path.sep
+
+        # Generate a list of files to create, params_dict will get squashed to create the template parameters
+        FileToRender = namedtuple('FileToRender', ['template', 'output', 'params_dicts', 'overwrite'])
+        to_render = []
+
+        # Add unique files
+        for (key, output) in outfiles.items():
+            template = unique_files[key]
+            to_render.append(FileToRender(template, outdir + output, template_params, True))
+
+        # Add skeleton files
+        for component in definitions['components']:
+            params = template_params + [{'component': component}]
+            basename = skeldir + component.get_type_name()
+
+            to_render.append(FileToRender('Component.h', basename + '.h', params, True))
+            to_render.append(FileToRender('Component.cpp', basename + '.cpp', params, True))
+
+            if args.copy_skel:
+                basename = compdir + component.get_type_name()
+                to_render.append(FileToRender('Component.h', basename + '.h', params, False))
+                to_render.append(FileToRender('Component.cpp', basename + '.cpp', params, False))
+
+        # Now render the files
         env = jinja2.Environment(loader=PreprocessingLoader(args.template_dir), trim_blocks=True, lstrip_blocks=True)
         env.globals["enumerate"] = enumerate
 
-        def render(name, params):
-            return env.get_template(name).render(**params) + "\n"
+        for render in to_render:
+            if not render.overwrite and os.path.exists(render.output):
+                continue
 
-        outdir = args.output_dir + os.path.sep
+            params = {}
+            for param_dict in render.params_dicts:
+                params.update(param_dict)
+            content = env.get_template(render.template).render(**params) + "\n"
 
-        with open(outdir + outfiles['backend'], "w") as outfile:
-            outfile.write(render(infiles['backend'], template_params))
+            directory = os.path.dirname(render.output)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
 
-        with open(outdir + outfiles['backend_cpp'], "w") as outfile:
-            outfile.write(render(infiles['backend_cpp'], template_params))
+            with open(render.output, 'w') as outfile:
+                outfile.write(content)
 
-        with open(outdir + outfiles['entities'], "w") as outfile:
-            outfile.write(render(infiles['entities'], template_params))
-
-        with open(outdir + outfiles['components'], "w") as outfile:
-            outfile.write(render(infiles['components'], template_params))
-
-        compdir = outdir + outdirs['components'] + os.path.sep
-
-        if not os.path.isdir(compdir):
-            os.mkdir(compdir)
-
-        skeldir = compdir + outdirs['skeletons'] + os.path.sep
-
-        if not os.path.isdir(skeldir):
-            os.mkdir(skeldir)
-
-        for component in template_params['components']:
-            template_params['component'] = component
-
-            basename = component.get_type_name() + ".h"
-
-            skeleleton = render(infiles['skeleton'], template_params)
-
-            with open(skeldir + basename, "w") as outfile:
-                outfile.write(skeleton)
-
-            if args.copy_skel and not os.path.exists(compdir + basename):
-                print("Adding new file " + compdir + basename + ".", file=sys.stderr)
-                with open(compdir + basename, "w") as outfile:
-                    outfile.write(skeleton)
-
-            basename = component.get_type_name() + ".cpp"
-
-            skeleton_cpp = render(infiles['skeleton_cpp'], template_params)
-
-            with open(skeldir + basename, "w") as outfile:
-                outfile.write(skeleton_cpp)
-
-            if args.copy_skel and not os.path.exists(compdir + basename):
-                print("Adding new file " + compdir + basename + ".", file=sys.stderr)
-                with open(compdir + basename, "w") as outfile:
-                    outfile.write(skeleton_cpp)
+            if not render.overwrite:
+                print('Added file, ' + render.output)
 
 # vi:ts=4:et:ai
