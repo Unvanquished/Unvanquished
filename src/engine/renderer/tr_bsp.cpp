@@ -3269,8 +3269,8 @@ static void R_CreateWorldVBO( void )
 	ri.Hunk_FreeTempMemory( vboIdxs );
 	ri.Hunk_FreeTempMemory( vboVerts );
 
-	R_BindVBO( tess.vbo );
-	R_BindIBO( tess.ibo );
+	R_BindVBO( s_worldData.vbo );
+	R_BindIBO( s_worldData.ibo );
 
 	if ( r_mergeLeafSurfaces->integer )
 	{
