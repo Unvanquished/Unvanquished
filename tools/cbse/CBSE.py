@@ -442,6 +442,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--template-dir', default="templates", type=str, help="Directory with template files.")
     parser.add_argument('-o', '--output-dir', default=None, type=str, help="Output directory for the generated source files.")
     parser.add_argument('-c', '--copy-skel', action="store_true", help="Copy skeleton files in place if the file doesn't exist.")
+    parser.add_argument('-p', '--header', default=None, type=argparse.FileType('r'), help="Prepend file contents as a header to all source files.")
 
     args = parser.parse_args()
 
@@ -471,6 +472,9 @@ if __name__ == '__main__':
         'files': dict([(key, val.outname) for (key, val) in unique_files.items()]),
         'dirs': subdir_names
     }]
+
+    if args.header != None:
+        template_params += [{'header': args.header.read().strip().splitlines()}]
 
     if args.output_dir != None:
         base_dir       = args.output_dir + os.path.sep

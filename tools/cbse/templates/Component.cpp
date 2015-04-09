@@ -1,6 +1,11 @@
-//* TODO: Add license from input file.
-// TODO: Insert license statement.
+{% if header is defined %}
+	/*
+	{% for line in header %}
+		 * {{line}}
+	{% endfor %}
+	 */
 
+{% endif %}
 #include "{{component.get_type_name()}}.h"
 
 {{component.get_type_name()}}::{{component.get_type_name()}}(Entity& entity

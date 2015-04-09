@@ -1,6 +1,11 @@
-//* TODO: Add license from input file.
-// TODO: Insert license statement.
+{% if header is defined %}
+	/*
+	{% for line in header %}
+		 * {{line}}
+	{% endfor %}
+	 */
 
+{% endif %}
 // This header includes the rest of the CBSE system.
 // It won't be overwritten on backend generation but there should be no need to
 // add any content here.

@@ -1,6 +1,11 @@
-//* TODO: Add license from input file.
-// TODO: Insert license statement.
+{% if header is defined %}
+	/*
+	{% for line in header %}
+		 * {{line}}
+	{% endfor %}
+	 */
 
+{% endif %}
 // This header provides all types that the CBSE backend needs to know about.
 
 #ifndef CBSE_TYPES_H_
