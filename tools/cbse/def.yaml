@@ -2,6 +2,8 @@ general:
     common_entity_attributes:
         - name: number
           type: int
+    mandatory_components:
+        - Comp2
 
 messages:
     Heal:

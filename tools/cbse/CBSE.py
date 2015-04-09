@@ -190,12 +190,14 @@ class Component:
         return "Component({}, ...)".format(self.name)
 
 class Entity:
-    def __init__(self, name, params):
+    def __init__(self, name, params, general):
         self.name = name
         self.params = params
+        self.general = general
 
     def gather_components(self, components):
-        self.components = [components[c] for c in self.params.keys()]
+        self.components = [components[c] for c in self.general.mandatory_components] + \
+                          [components[c] for c in self.params.keys() if c not in self.general.mandatory_components]
 
         # Add dependency components.
         # TODO more efficient algorithm? (this is worst case O(nComponents)^3)
@@ -279,12 +281,26 @@ def convert_params(params):
 
 
 def load_general(definitions):
+    if definitions is None:
+        definitions = {}
+
     common_entity_attributes = []
-    for attrib in definitions['common_entity_attributes']:
-        common_entity_attributes.append(CommonAttribute(attrib['name'], attrib['type']))
-    return namedtuple('general', 'common_entity_attributes')(common_entity_attributes)
+    mandatory_components = []
+
+    if 'mandatory_components' in definitions:
+        mandatory_components += definitions['mandatory_components']
+
+    if 'common_entity_attributes' in definitions:
+        for attrib in definitions['common_entity_attributes']:
+            common_entity_attributes.append(CommonAttribute(attrib['name'], attrib['type']))
+
+    return namedtuple('general', ['common_entity_attributes', 'mandatory_components']) \
+        (common_entity_attributes, mandatory_components)
 
 def load_messages(definitions):
+    if definitions is None:
+        definitions = {}
+
     messages = OrderedDict()
     for (name, args) in definitions.items():
         if args == None:
@@ -293,8 +309,14 @@ def load_messages(definitions):
     return messages
 
 def load_components(definitions):
+    if definitions is None:
+        definitions = {}
+
     components = OrderedDict()
     for (name, kwargs) in definitions.items():
+        if kwargs is None:
+            kwargs = {}
+
         if not 'messages' in kwargs:
             kwargs['messages'] = []
 
@@ -316,7 +338,10 @@ def load_components(definitions):
         components[name] = Component(name, **kwargs)
     return components
 
-def load_entities(definitions):
+def load_entities(definitions, general):
+    if definitions is None:
+        definitions = {}
+
     entities = OrderedDict()
     for (name, kwargs) in definitions.items():
         if not 'components' in kwargs or kwargs['components'] == None:
@@ -326,7 +351,7 @@ def load_entities(definitions):
             if component_params != None:
                 convert_params(component_params)
 
-        entities[name] = Entity(name, kwargs['components'])
+        entities[name] = Entity(name, kwargs['components'], general)
     return entities
 
 ############################################################################
@@ -365,7 +390,7 @@ def parse_definitions(definitions):
     components = load_components(definitions['components'])
     component_list = list(components.values())
 
-    entities = load_entities(definitions['entities'])
+    entities = load_entities(definitions['entities'], general)
     entity_list = list(entities.values())
 
     # Link objects together
