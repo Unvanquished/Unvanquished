@@ -190,14 +190,13 @@ class Component:
         return "Component({}, ...)".format(self.name)
 
 class Entity:
-    def __init__(self, name, params, general):
+    def __init__(self, name, params):
         self.name = name
         self.params = params
-        self.general = general
 
-    def gather_components(self, components):
-        self.components = [components[c] for c in self.general.mandatory_components] + \
-                          [components[c] for c in self.params.keys() if c not in self.general.mandatory_components]
+    def gather_components(self, components, mandatory):
+        self.components = [components[c] for c in mandatory] + \
+                          [components[c] for c in self.params.keys() if c not in mandatory]
 
         # Add dependency components.
         # TODO more efficient algorithm? (this is worst case O(nComponents)^3)
@@ -338,7 +337,7 @@ def load_components(definitions):
         components[name] = Component(name, **kwargs)
     return components
 
-def load_entities(definitions, general):
+def load_entities(definitions):
     if definitions is None:
         definitions = {}
 
@@ -351,7 +350,7 @@ def load_entities(definitions, general):
             if component_params != None:
                 convert_params(component_params)
 
-        entities[name] = Entity(name, kwargs['components'], general)
+        entities[name] = Entity(name, kwargs['components'])
     return entities
 
 ############################################################################
@@ -390,7 +389,7 @@ def parse_definitions(definitions):
     components = load_components(definitions['components'])
     component_list = list(components.values())
 
-    entities = load_entities(definitions['entities'], general)
+    entities = load_entities(definitions['entities'])
     entity_list = list(entities.values())
 
     # Link objects together
@@ -407,7 +406,7 @@ def parse_definitions(definitions):
         component.gather_messages(messages)
 
     for entity in entity_list:
-        entity.gather_components(components)
+        entity.gather_components(components, general.mandatory_components)
 
     definitions = {
         'general': general,
