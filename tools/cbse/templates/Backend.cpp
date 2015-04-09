@@ -1,11 +1,18 @@
+{% if header is defined %}
+	/*
+	{% for line in header %}
+		 * {{line}}
+	{% endfor %}
+	 */
+
+{% endif %}
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 
 /*
-This file contains:
-	- Implementation of the base entity.
-	- Helper functions for sending messages to entities.
-	- Implementations of the specific entities, including necessary helpers.
-*/
+ * This file contains:
+ *   - Implementation of the base entity.
+ *   - Implementations of the specific entities and related helpers.
+ */
 
 #include "{{files['entities']}}"
 #include <tuple>

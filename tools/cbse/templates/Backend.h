@@ -1,5 +1,19 @@
+{% if header is defined %}
+	/*
+	{% for line in header %}
+		 * {{line}}
+	{% endfor %}
+	 */
+
+{% endif %}
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 
+/*
+ * This file contains:
+ *   - Declaration of the base entity.
+ *   - Implementations of the base components.
+ *   - Helpers to access entities and components.
+ */
 //* Message and enum list used to tag each message sent to an entity with its 'type'.
 //* Components could have been implemented using multiple (virtual?) inheritance except:
 //*  - We want to be able to allocate them in different pools and we would need ugly

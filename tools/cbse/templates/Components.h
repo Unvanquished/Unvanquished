@@ -1,3 +1,11 @@
+{% if header is defined %}
+	/*
+	{% for line in header %}
+		 * {{line}}
+	{% endfor %}
+	 */
+
+{% endif %}
 // THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
 
 #ifndef CBSE_COMPONENTS_H_

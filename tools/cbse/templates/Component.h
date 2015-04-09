@@ -1,6 +1,11 @@
-//* TODO: Add license from input file.
-// TODO: Insert license statement.
+{% if header is defined %}
+	/*
+	{% for line in header %}
+		 * {{line}}
+	{% endfor %}
+	 */
 
+{% endif %}
 #ifndef {{component.get_name().upper()}}_COMPONENT_H_
 #define {{component.get_name().upper()}}_COMPONENT_H_
 
