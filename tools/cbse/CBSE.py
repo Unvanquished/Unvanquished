@@ -2,10 +2,12 @@
 
 import jinja2
 import yaml
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 import argparse, sys
 import os.path
 import re
+
+
 
 class CommonAttribute:
     def __init__(self, name, typ):
@@ -71,7 +73,7 @@ class Component:
     def __init__(self, name, parameters=None, messages=None, requires=None, inherits=None, defaults=None):
         self.name = name
         self.param_list = []
-        self.parameters = {}
+        self.parameters = OrderedDict()
 
         # Create the list of parameters, with potential default parameters
         for (name, typ) in parameters.items():
@@ -186,12 +188,12 @@ class Entity:
         self.messages = list(self.messages)
 
         # Initialize the parameter state
-        self.user_params = {}
+        self.user_params = OrderedDict()
         self.has_user_params = False
         for component in self.components:
-            self.user_params[component.name] = {}
+            self.user_params[component.name] = OrderedDict()
             if not component.name in self.params:
-                self.params[component.name] = {}
+                self.params[component.name] = OrderedDict()
 
         # Choose the value for each component parameter (unless it is a user defined param)
         for component in self.components:
@@ -254,7 +256,7 @@ def load_general(definitions):
     return namedtuple('general', 'common_entity_attributes')(common_entity_attributes)
 
 def load_messages(definitions):
-    messages = {}
+    messages = OrderedDict()
     for (name, args) in definitions.items():
         if args == None:
             args = []
@@ -262,22 +264,22 @@ def load_messages(definitions):
     return messages
 
 def load_components(definitions):
-    components = {}
+    components = OrderedDict()
     for (name, kwargs) in definitions.items():
         if not 'messages' in kwargs:
             kwargs['messages'] = []
 
         if not 'parameters' in kwargs:
-            kwargs['parameters'] = {}
+            kwargs['parameters'] = OrderedDict()
 
         if not 'defaults' in kwargs:
-            kwargs['defaults'] = {}
+            kwargs['defaults'] = OrderedDict()
 
         if not 'requires' in kwargs:
             kwargs['requires'] = []
 
         if not 'inherits' in kwargs:
-            kwargs['inherits'] = {}
+            kwargs['inherits'] = OrderedDict()
         else:
             raise Exception("inherits not handled for now")
 
@@ -286,10 +288,10 @@ def load_components(definitions):
     return components
 
 def load_entities(definitions):
-    entities = {}
+    entities = OrderedDict()
     for (name, kwargs) in definitions.items():
         if not 'components' in kwargs or kwargs['components'] == None:
-            kwargs['components'] = {}
+            kwargs['components'] = OrderedDict()
 
         for component_name, component_params in kwargs['components'].items():
             if component_params != None:
@@ -417,6 +419,19 @@ class PreprocessingLoader(jinja2.BaseLoader):
             lines.append(line)
         return '\n'.join(lines)
 
+
+# A yaml loader that uses OrderedDict instead of dict internally.
+class OrderedLoader(yaml.Loader):
+    @staticmethod
+    def OrderedMapping(loader, node):
+        loader.flatten_mapping(node)
+        return OrderedDict(loader.construct_pairs(node))
+
+    def __init__(self, stream):
+        yaml.Loader.__init__(self, stream)
+        self.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, self.OrderedMapping)
+
+
 if __name__ == '__main__':
     # Command line args
     parser = argparse.ArgumentParser(
@@ -431,7 +446,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Load everything from the definition file
-    definitions = parse_definitions(yaml.load(args.definitions[0]))
+    definitions = parse_definitions(yaml.load(args.definitions[0], OrderedLoader))
     args.definitions[0].close()
 
     # Manage output directories and files
@@ -491,7 +506,7 @@ if __name__ == '__main__':
             if not render.overwrite and os.path.exists(render.output):
                 continue
 
-            params = {}
+            params = OrderedDict()
             for param_dict in render.params_dicts:
                 params.update(param_dict)
             content = env.get_template(render.template).render(**params) + "\n"
