@@ -1,23 +1,49 @@
-Unvanquished CBSE
-=================
+CBSE Generator
+==============
 
-Testing auto generation of plumbing code for a component-based gamelogic for the game Unvanquished.
+Code generator that produces the plumbing for a component-based gamelogic for the game Unvanquished.
+This allows to have a flexible gamelogic where entities are defined as sets of behavior vs. inheritance or master-entity like in Quake3.
 
-Please, please keep in mind that this is *very* WIP.
+The only dependencies of the script are python3 and python3-yaml as well as a C++11 compiler to compile the output.
 
-Terminology
------------
+Rational and Terminology
+------------------------
 
-An *entity* is an object of the game that contains a number of behaviors called *components* that interact using entity-wide broadcast *messages* and shared *attributes* that are read-only variable with an added broadcast "set" message.
-Because using only messages and attributes is a bit limited, we support component dependencies and component inheritance.
-When a component depends on another, it can call methods on the other directly.
-In addition inheritance allows to surcharge some message handling as well as methods directly with a dependency.
+In Quake3 an entity is represented by always the same C structure, for most entities this is a waste of space as they use only a subset of the fields.
+Worse, different entity types sometimes use the same fields for different purpose which is horrible confusing; so the gamelogic programmer is torn between adding new fields for his purpose and increase the memory footprint or reuse fields or work around them.
+
+Some games use an inheritance scheme to make the gamelogic more flexible, but it quickly gets limiting .
+For example considering the following entity type tree, ``MonsterChest`` (the thing that bites you when you loot it) would have to be both a ``Monster`` and a ``Chest`` which is not possible:
+```
+- Entity
+    - StaticEntity
+        - Door
+        - Chest
+    - DynamicEntity
+        - Monster
+            - Lion
+            - Trolloc
+```
+
+Component-based software engineering helps solve that problem by agregating multiple behaviors together to make the entity.
+In the case of the ``MonsterChest`` it would have both a ``Monster`` behavior and a ``Lootable`` behavior.
+
+We say that an object of the game is an *entity* that contains a number of behaviors called *components* that interact using entity-wide broadcast *messages*.
+In addition components can depend from one another when they need tighter coupling while still being logically separate components.
+We will eventually have component inheritance, so that each behavior can be an inheritance tree.
+For example physics can take advantage of this by having a virtual ``PhysicsComponent`` implemented differently by ``StaticPhysicsComponent`` and ``RagdollPhysicsComponent``.
+Obviously care will be needed to balance between inheritance and dependencies.
 
 How the generation works
 ------------------------
 
-A python tool reads a YAML definition of the components/entities... does processing and calls Jinja2 templates to "render" C++ files.
+The definition of the components and entities used by the gamelogic is parsed from a YAML file by the python generator which will then use Jinja2 templates to "render" C++ files.
+As part of the processing, consistency checks will be made (TODO).
 As part of the processing, the correctness of the definition should be checked (for example the dependency-inheritance graph must be acyclic) and each component will gather its "own" attributes/messages... for rendering.
+
+NOT FINISHED YET
+================
+
 
 How the generated code works
 ----------------------------
