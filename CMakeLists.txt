@@ -50,11 +50,9 @@ project( Daemon C CXX )
 
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
-option( BUILD_GAME_NACL_NATIVE_EXE "Build native executable NaCl game logic" 1 )
-option( BUILD_GAME_NACL_NATIVE_DLL "Build native shared library NaCl game logic" 1 )
+option( BUILD_GAME_NATIVE_EXE "Build native executable game logic" 1 )
+option( BUILD_GAME_NATIVE_DLL "Build native shared library game logic" 1 )
 option( BUILD_GAME_NACL "Build NaCl game logic" 1 )
-option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1 )
-option( BUILD_GAME_QVM "Build QVM game logic" 1 )
 option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
@@ -63,12 +61,13 @@ cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT
 option( USE_LTO "Use link-time optimization for release builds" 0 )
 cmake_dependent_option( USE_SLIM_LTO "Generate slim LTO objects, improves build times" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0 )
 option( USE_HARDENING "Use stack protection and other hardening flags" 0 )
-option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
 option( USE_WEXTRA "Enable extra compilation warnings" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
 option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
+
+set( NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries" )
 
 ################################################################################
 # Determine platform
@@ -90,6 +89,65 @@ if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
   set( ARCH "x86_64" )
 else()
   set( ARCH "x86" )
+endif()
+
+################################################################################
+# Directories
+################################################################################
+
+# Dependencies version, this must match the number in external_deps/build.sh
+set( DEPS_VERSION 3 )
+
+set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
+set( OBJ_DIR ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY} )
+set( ENGINE_DIR ${MOUNT_DIR}/engine )
+set( COMMON_DIR ${MOUNT_DIR}/common )
+set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
+set( LIB_DIR ${MOUNT_DIR}/libs )
+set( ROCKET_DIR ${LIB_DIR}/libRocket )
+if( CMAKE_CFG_INTDIR STREQUAL "." )
+  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
+else()
+  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
+endif()
+if( MSVC )
+  set( DEPS_EXT ".zip" )
+  if( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc64-${DEPS_VERSION} )
+  else()
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc32-${DEPS_VERSION} )
+  endif()
+elseif( WIN32 )
+  set( DEPS_EXT ".zip" )
+  if( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw64-${DEPS_VERSION} )
+  else()
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw32-${DEPS_VERSION} )
+  endif()
+elseif( APPLE )
+  set( DEPS_EXT ".tar.bz2" )
+  if( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx64-${DEPS_VERSION} )
+  else()
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx32-${DEPS_VERSION} )
+  endif()
+elseif( LINUX )
+  set( DEPS_EXT ".tar.bz2" )
+  # Our minimal NaCl .debs put the files in /usr/lib/nacl, so check that first
+  if( EXISTS "/usr/lib/nacl/nacl_loader" )
+    set( DEPS_DIR "/usr/lib/nacl" )
+  elseif( ARCH STREQUAL "x86_64" )
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux64-${DEPS_VERSION} )
+  else()
+    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux32-${DEPS_VERSION} )
+  endif()
+endif()
+set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin )
+if( WIN32 )
+  set( PNACL_BIN_EXT ".bat" )
+else()
+  set( PNACL_BIN_EXT "" )
 endif()
 
 ################################################################################
@@ -178,6 +236,22 @@ if( MSVC )
     set_linker_flag( "/LTCG" RELWITHDEBINFO )
     set_linker_flag( "/LTCG" RELEASE )
   endif()
+  set_linker_flag( "/LARGEADDRESSAWARE" )
+
+  # Turn off C4503:, e.g: 
+  # warning C4503: 'std::_Tree<std::_Tmap_traits<_Kty,_Ty,_Pr,_Alloc,false>>::_Insert_hint' : decorated name length exceeded, name was truncated
+  # No issue will be caused from this error as long as no two symbols become identical by being truncated.
+  # In practice this rarely happens and even the standard libraries are affected as in the example. So there really is not
+  # much that can to done about it and the warnings about each truncation really just make it more likely
+  # that other more real issues might get missed. So better to remove the distraction when it really is very unlikey to happen.
+  set_c_cxx_flag( "/wd4503" )  
+  
+  # Turn off warning C4996:, e.g:
+  # warning C4996: 'open': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _open. See online help for details.  set_c_cxx_flag( "/wd4996" )
+  # open seems far more popular than _open not to mention nicer. There doesn't seem to be any reason or will to change to _open.
+  # So until there is a specific plan to tackle all of these type of warnings it's best to turn them off to the distraction.
+  set_c_cxx_flag( "/wd4996" )
+
 else()
   set_c_cxx_flag( "-ffast-math" )
   set_c_cxx_flag( "-fno-strict-aliasing" )
@@ -253,6 +327,7 @@ else()
   if( WIN32 )
     try_linker_flag( LINKER_DYNAMICBASE "-Wl,--dynamicbase" )
     try_linker_flag( LINKER_NXCOMPAT "-Wl,--nxcompat" )
+    try_linker_flag( LINKER_LARGE_ADDRESS_AWARE "-Wl,--large-address-aware" )
   endif()
 
   # The -pthread flag sets some preprocessor defines, it is also used to link
@@ -347,7 +422,7 @@ endif()
 if( APPLE )
   add_definitions( -DMACOS_X )
   set_linker_flag( "-Wl,-no_pie" )
-  set( CMAKE_INSTALL_RPATH "@executable_path/" )
+  set( CMAKE_INSTALL_RPATH "@executable_path/;${DEPS_DIR};${DEPS_DIR}/lib" )
   set( CMAKE_BUILD_WITH_INSTALL_RPATH ON )
 endif()
 
@@ -362,71 +437,6 @@ if( BUILD_GAME_NACL AND NOT CMAKE_HOST_WIN32 )
     message( "Please set the PNACLPYTHON environment variable to your Python2 executable")
   endif()
   set( PNACLPYTHON_PREFIX env "PNACLPYTHON=${PYTHON_EXECUTABLE}" )
-endif()
-
-################################################################################
-# Directories
-################################################################################
-
-# Dependencies version, this must match the number in external_deps/build.sh
-set( DEPS_VERSION 2 )
-
-set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
-set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( OBJ_DIR ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY} )
-set( ENGINE_DIR ${MOUNT_DIR}/engine )
-set( COMMON_DIR ${MOUNT_DIR}/common )
-set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
-set( TOOLS_DIR ${MOUNT_DIR}/tools )
-set( LCC_DIR ${TOOLS_DIR}/lcc )
-set( LIB_DIR ${MOUNT_DIR}/libs )
-set( ROCKET_DIR ${LIB_DIR}/libRocket )
-if( CMAKE_CFG_INTDIR STREQUAL "." )
-  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
-else()
-  set( FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
-endif()
-if( MSVC )
-  set( DEPS_EXT ".zip" )
-  if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/msvc32-${DEPS_VERSION} )
-  endif()
-elseif( WIN32 )
-  set( DEPS_EXT ".zip" )
-  if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/mingw32-${DEPS_VERSION} )
-  endif()
-elseif( APPLE )
-  set( DEPS_EXT ".tar.bz2" )
-  if( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/macosx32-${DEPS_VERSION} )
-  endif()
-elseif( LINUX )
-  set( DEPS_EXT ".tar.bz2" )
-  # Our minimal NaCl .debs put the files in /usr/lib/nacl, so check that first
-  if( EXISTS "/usr/lib/nacl/sel_ldr" )
-    set( DEPS_DIR "/usr/lib/nacl" )
-  elseif( ARCH STREQUAL "x86_64" )
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux64-${DEPS_VERSION} )
-  else()
-    set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/linux32-${DEPS_VERSION} )
-  endif()
-endif()
-if( LINUX AND ARCH STREQUAL "x86_64" )
-  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin64 )
-else()
-  set( PNACL_TOOLCHAIN ${DEPS_DIR}/pnacl/bin )
-endif()
-if( WIN32 )
-  set( PNACL_BIN_EXT ".bat" )
-else()
-  set( PNACL_BIN_EXT "" )
 endif()
 
 ################################################################################
@@ -511,7 +521,7 @@ function( ADD_PRECOMPILED_HEADER Target Header )
     endif()
 
     # Compiler-specific PCH support
-    if( CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+    if( CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
       add_custom_command( OUTPUT "${OBJ_DIR}/${Target}.h.gch"
         COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
         DEPENDS ${Header}
@@ -521,7 +531,7 @@ function( ADD_PRECOMPILED_HEADER Target Header )
       add_custom_target( ${Target}-pch DEPENDS "${OBJ_DIR}/${Target}.h.gch" )
       add_dependencies( ${Target} ${Target}-pch )
 
-      if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+      if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
         set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${OBJ_DIR}/${Target}.h.gch" )
       else()
         set_target_properties( ${Target} PROPERTIES COMPILE_FLAGS "-include ${OBJ_DIR}/${Target}.h -Winvalid-pch" )
@@ -537,25 +547,14 @@ endfunction()
 # File lists
 ################################################################################
 
-set( SHAREDLIST_H
-  ${ENGINE_DIR}/qcommon/q_shared.h
-  ${ENGINE_DIR}/qcommon/q_unicode.h
-  ${ENGINE_DIR}/qcommon/unicode_data.h
-  ${ENGINE_DIR}/qcommon/logging.h
-)
-
-set( SHAREDLIST_C
-  ${ENGINE_DIR}/qcommon/q_shared.c
-  ${ENGINE_DIR}/qcommon/q_unicode.c
-  ${ENGINE_DIR}/qcommon/q_math.c
-  ${SHAREDLIST_H}
-)
-
 set( SHAREDLIST
   ${ENGINE_DIR}/qcommon/q_shared.cpp
   ${ENGINE_DIR}/qcommon/q_unicode.cpp
   ${ENGINE_DIR}/qcommon/q_math.cpp
-  ${SHAREDLIST_H}
+  ${ENGINE_DIR}/qcommon/q_shared.h
+  ${ENGINE_DIR}/qcommon/q_unicode.h
+  ${ENGINE_DIR}/qcommon/unicode_data.h
+  ${ENGINE_DIR}/qcommon/logging.h
 )
 
 set( COMMONLIST
@@ -566,15 +565,15 @@ set( COMMONLIST
   ${COMMON_DIR}/DisjointSets.h
   ${COMMON_DIR}/FileSystem.cpp
   ${COMMON_DIR}/FileSystem.h
-  ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/LineEditData.cpp
   ${COMMON_DIR}/LineEditData.h
   ${COMMON_DIR}/Log.cpp
   ${COMMON_DIR}/Log.h
-  ${COMMON_DIR}/IPC.cpp
-  ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/String.cpp
   ${COMMON_DIR}/String.h
+  ${COMMON_DIR}/System.cpp
+  ${COMMON_DIR}/System.h
+  ${COMMON_DIR}/Serialize.h
   ${COMMON_DIR}/cm/cm_load.cpp
   ${COMMON_DIR}/cm/cm_trisoup.cpp
   ${COMMON_DIR}/cm/cm_patch.cpp
@@ -586,10 +585,15 @@ set( COMMONLIST
   ${COMMON_DIR}/cm/cm_patch.h
   ${COMMON_DIR}/cm/cm_polylib.h
   ${COMMON_DIR}/cm/cm_public.h
+  ${COMMON_DIR}/IPC/Channel.h
+  ${COMMON_DIR}/IPC/CommonSyscalls.h
+  ${COMMON_DIR}/IPC/CommandBuffer.cpp
+  ${COMMON_DIR}/IPC/CommandBuffer.h
+  ${COMMON_DIR}/IPC/Primitives.cpp
+  ${COMMON_DIR}/IPC/Primitives.h
 )
 
 set( RENDERERLIST
-  ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sdl_glimp.cpp
   ${ENGINE_DIR}/renderer/gl_shader.cpp
   ${ENGINE_DIR}/renderer/tr_animation.cpp
@@ -600,7 +604,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_decals.cpp
   ${ENGINE_DIR}/renderer/tr_fbo.cpp
   ${ENGINE_DIR}/renderer/tr_flares.cpp
-  ${ENGINE_DIR}/renderer/tr_fog.cpp
   ${ENGINE_DIR}/renderer/tr_font.cpp
   ${ENGINE_DIR}/renderer/tr_image.cpp
   ${ENGINE_DIR}/renderer/tr_image_crn.cpp
@@ -626,7 +629,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_shade.cpp
   ${ENGINE_DIR}/renderer/tr_shade_calc.cpp
   ${ENGINE_DIR}/renderer/tr_shader.cpp
-  ${ENGINE_DIR}/renderer/tr_shadows.cpp
   ${ENGINE_DIR}/renderer/tr_skin.cpp
   ${ENGINE_DIR}/renderer/tr_sky.cpp
   ${ENGINE_DIR}/renderer/tr_surface.cpp
@@ -648,13 +650,14 @@ set( SERVERLIST
   ${ENGINE_DIR}/server/sv_bot.cpp
   ${ENGINE_DIR}/server/sv_ccmds.cpp
   ${ENGINE_DIR}/server/sv_client.cpp
-  ${ENGINE_DIR}/server/sv_game.cpp
+  ${ENGINE_DIR}/server/sv_sgame.cpp
   ${ENGINE_DIR}/server/sv_init.cpp
   ${ENGINE_DIR}/server/sv_main.cpp
   ${ENGINE_DIR}/server/sv_net_chan.cpp
   ${ENGINE_DIR}/server/sv_snapshot.cpp
   ${ENGINE_DIR}/server/server.h
-  ${ENGINE_DIR}/server/g_api.h
+  ${ENGINE_DIR}/server/sg_api.h
+  ${ENGINE_DIR}/server/sg_msgdef.h
   ${ENGINE_DIR}/qcommon/print_translated.h
 )
 
@@ -665,6 +668,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/CommandSystem.h
   ${ENGINE_DIR}/framework/CvarSystem.cpp
   ${ENGINE_DIR}/framework/CvarSystem.h
+  ${ENGINE_DIR}/framework/CommandBufferHost.cpp
+  ${ENGINE_DIR}/framework/CommandBufferHost.h
   ${ENGINE_DIR}/framework/CommonVMServices.cpp
   ${ENGINE_DIR}/framework/CommonVMServices.h
   ${ENGINE_DIR}/framework/ConsoleField.cpp
@@ -675,6 +680,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/LogSystem.h
   ${ENGINE_DIR}/framework/Resource.cpp
   ${ENGINE_DIR}/framework/Resource.h
+  ${ENGINE_DIR}/framework/System.cpp
+  ${ENGINE_DIR}/framework/System.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
   ${ENGINE_DIR}/qcommon/cmd.cpp
@@ -692,34 +699,18 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/net_ip.cpp
   ${ENGINE_DIR}/qcommon/parse.cpp
   ${ENGINE_DIR}/qcommon/translation.cpp
-  ${ENGINE_DIR}/qcommon/vm.cpp
-  ${ENGINE_DIR}/qcommon/vm_interpreted.cpp
-  ${ENGINE_DIR}/qcommon/vm_local.h
-  ${ENGINE_DIR}/qcommon/vm_traps.h
-  ${ENGINE_DIR}/sys/sys_main.cpp
   ${ENGINE_DIR}/sys/con_log.cpp
   ${ENGINE_DIR}/qcommon/qcommon.h
   ${ENGINE_DIR}/qcommon/surfaceflags.h
   ${COMMONLIST}
 )
 
-if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
-  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/qcommon/vm_x86.cpp )
-  if( MSVC AND CMAKE_CL_64 )
-    add_custom_command( OUTPUT vm_x86_64.obj COMMAND ml64 ARGS /c "${ENGINE_DIR}/qcommon/vm_x86_64.asm" MAIN_DEPENDENCY ${ENGINE_DIR}/qcommon/vm_x86_64.asm )
-    set( ENGINELIST ${ENGINELIST} vm_x86_64.obj )
-  endif()
-endif()
-
 if( WIN32 )
   set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_win32.cpp
-    ${ENGINE_DIR}/sys/sys_win32.h
     ${ENGINE_DIR}/sys/con_passive.cpp
   )
 else()
   set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_unix.cpp
     ${ENGINE_DIR}/sys/con_tty.cpp
   )
 endif()
@@ -734,7 +725,7 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/botlib/bot_debug.cpp
   ${ENGINE_DIR}/botlib/bot_nav_edit.cpp
   ${ENGINE_DIR}/client/cg_api.h
-  ${ENGINE_DIR}/client/ui_api.h
+  ${ENGINE_DIR}/client/cg_msgdef.h
   ${ENGINE_DIR}/client/client.h
   ${ENGINE_DIR}/client/cin_ogm.cpp
   ${ENGINE_DIR}/client/cl_avi.cpp
@@ -796,114 +787,107 @@ set( DEDSERVERLIST
 
 set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.cpp
-  ${ENGINE_DIR}/sys/sdl2_compat.cpp
-  ${ENGINE_DIR}/sys/sys_local.h
+)
+
+set( GAMESHAREDLIST
+  ${GAMELOGIC_DIR}/shared/bg_misc.cpp
+  ${GAMELOGIC_DIR}/shared/bg_parse.cpp
+  ${GAMELOGIC_DIR}/shared/bg_pmove.cpp
+  ${GAMELOGIC_DIR}/shared/bg_slidemove.cpp
+  ${GAMELOGIC_DIR}/shared/bg_alloc.cpp
+  ${GAMELOGIC_DIR}/shared/bg_voice.cpp
+  ${GAMELOGIC_DIR}/shared/bg_teamprogress.cpp
+  ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
+  ${GAMELOGIC_DIR}/shared/CommandBufferClient.cpp
+  ${GAMELOGIC_DIR}/shared/CommandBufferClient.h
+  ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
+  ${GAMELOGIC_DIR}/shared/CommonProxies.h
+  ${GAMELOGIC_DIR}/shared/VMMain.cpp
+  ${GAMELOGIC_DIR}/shared/VMMain.h
 )
 
 set( CGAMELIST
-  ${GAMELOGIC_DIR}/cgame/cg_main.c #keep it first because vmMain must be the first function compiled in qvms
-  ${GAMELOGIC_DIR}/shared/bg_misc.c
-  ${GAMELOGIC_DIR}/shared/bg_parse.c
-  ${GAMELOGIC_DIR}/shared/bg_pmove.c
-  ${GAMELOGIC_DIR}/shared/bg_slidemove.c
-  ${GAMELOGIC_DIR}/shared/bg_alloc.c
-  ${GAMELOGIC_DIR}/shared/bg_voice.c
-  ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
-  ${GAMELOGIC_DIR}/shared/bg_utilities.c
-  ${GAMELOGIC_DIR}/cgame/cg_consolecmds.c
-  ${GAMELOGIC_DIR}/cgame/cg_buildable.c
-  ${GAMELOGIC_DIR}/cgame/cg_animation.c
-  ${GAMELOGIC_DIR}/cgame/cg_animmapobj.c
-  ${GAMELOGIC_DIR}/cgame/cg_draw.c
-  ${GAMELOGIC_DIR}/cgame/cg_drawtools.c
-  ${GAMELOGIC_DIR}/cgame/cg_ents.c
-  ${GAMELOGIC_DIR}/cgame/cg_event.c
-  ${GAMELOGIC_DIR}/cgame/cg_marks.c
-  ${GAMELOGIC_DIR}/cgame/cg_minimap.c
-  ${GAMELOGIC_DIR}/cgame/cg_players.c
-  ${GAMELOGIC_DIR}/cgame/cg_playerstate.c
-  ${GAMELOGIC_DIR}/cgame/cg_predict.c
-  ${GAMELOGIC_DIR}/cgame/cg_servercmds.c
-  ${GAMELOGIC_DIR}/cgame/cg_snapshot.c
-  ${GAMELOGIC_DIR}/cgame/cg_view.c
-  ${GAMELOGIC_DIR}/cgame/cg_weapons.c
-  ${GAMELOGIC_DIR}/cgame/cg_scanner.c
-  ${GAMELOGIC_DIR}/cgame/cg_attachment.c
-  ${GAMELOGIC_DIR}/cgame/cg_trails.c
-  ${GAMELOGIC_DIR}/cgame/cg_particles.c
-  ${GAMELOGIC_DIR}/cgame/cg_tutorial.c
-  ${GAMELOGIC_DIR}/cgame/cg_utils.c
-  ${GAMELOGIC_DIR}/cgame/cg_beacon.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_draw.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_events.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_datasource.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_progressbar.c
-  ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.c
-  ${GAMELOGIC_DIR}/cgame/cg_gameinfo.c
-  ${GAMELOGIC_DIR}/cgame/cg_parseutils.c
+  ${GAMELOGIC_DIR}/cgame/cg_api.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_consolecmds.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_buildable.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_animation.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_animmapobj.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_draw.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_drawtools.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_ents.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_event.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_main.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_marks.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_minimap.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_players.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_playerstate.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_predict.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_servercmds.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_snapshot.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_view.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_weapons.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_attachment.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_trails.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_particles.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_tutorial.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_utils.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_beacon.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_draw.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_events.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_datasource.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_progressbar.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_parseutils.cpp
   ${ENGINE_DIR}/client/cg_api.h
+  ${ENGINE_DIR}/client/cg_msgdef.h
   ${ENGINE_DIR}/qcommon/print_translated.h
-)
-
-set( CGAMENATIVELIST
-  ${GAMELOGIC_DIR}/cgame/cg_api.c
-)
-
-set( CGAMEQVMLIST
-  ${GAMELOGIC_DIR}/shared/bg_lib.c
-  ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST_C}
-)
-
-set( CGAMEASMLIST
-  ${GAMELOGIC_DIR}/cgame/cg_api.asm
+  ${GAMESHAREDLIST}
+  ${COMMONLIST}
 )
 
 set( SGAMELIST
-  ${GAMELOGIC_DIR}/sgame/g_main.cpp #keep it first because vmMain must be the first function compiled in qvms
-  ${GAMELOGIC_DIR}/shared/bg_misc.c
-  ${GAMELOGIC_DIR}/shared/bg_parse.c
-  ${GAMELOGIC_DIR}/shared/bg_pmove.c
-  ${GAMELOGIC_DIR}/shared/bg_slidemove.c
-  ${GAMELOGIC_DIR}/shared/bg_alloc.c
-  ${GAMELOGIC_DIR}/shared/bg_voice.c
-  ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
-  ${GAMELOGIC_DIR}/shared/bg_utilities.c
-  ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
-  ${GAMELOGIC_DIR}/shared/CommonProxies.h
-  ${GAMELOGIC_DIR}/shared/VMMain.h
-  ${GAMELOGIC_DIR}/sgame/g_active.cpp
-  ${GAMELOGIC_DIR}/sgame/Beacon.cpp 
+  ${GAMELOGIC_DIR}/sgame/sg_active.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_api.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_buildpoints.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_client.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_cmds.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_combat.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_momentum.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_entities.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_physics.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_buildable.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_main.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_missile.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_session.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_afx.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_ctrl.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_fx.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_game.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_generic.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_gfx.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_mover.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_position.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_sensor.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn_shared.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_svcmds.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_team.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_utils.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_maprotation.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_admin.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_namelog.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_bot.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_bot_ai.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_bot_nav.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_bot_parse.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_bot_util.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_cm_world.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_cm_world.h
+  ${GAMELOGIC_DIR}/sgame/Beacon.cpp
   ${GAMELOGIC_DIR}/sgame/Clustering.cpp
-  ${GAMELOGIC_DIR}/sgame/g_client.cpp
-  ${GAMELOGIC_DIR}/sgame/g_cmds.cpp
-  ${GAMELOGIC_DIR}/sgame/g_combat.cpp
-  ${GAMELOGIC_DIR}/sgame/g_momentum.cpp
-  ${GAMELOGIC_DIR}/sgame/g_entities.cpp
-  ${GAMELOGIC_DIR}/sgame/g_physics.cpp
-  ${GAMELOGIC_DIR}/sgame/g_buildable.cpp
-  ${GAMELOGIC_DIR}/sgame/g_buildpoints.cpp
-  ${GAMELOGIC_DIR}/sgame/g_missile.cpp
-  ${GAMELOGIC_DIR}/sgame/g_session.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn_afx.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn_ctrl.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn_fx.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn_game.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn_generic.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn_gfx.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn_mover.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn_position.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn_sensor.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn_shared.cpp
-  ${GAMELOGIC_DIR}/sgame/g_spawn.cpp
-  ${GAMELOGIC_DIR}/sgame/g_svcmds.cpp
-  ${GAMELOGIC_DIR}/sgame/g_team.cpp
-  ${GAMELOGIC_DIR}/sgame/g_utils.cpp
-  ${GAMELOGIC_DIR}/sgame/g_maprotation.cpp
-  ${GAMELOGIC_DIR}/sgame/g_weapon.cpp
-  ${GAMELOGIC_DIR}/sgame/g_admin.cpp
-  ${GAMELOGIC_DIR}/sgame/g_namelog.cpp
   ${GAMELOGIC_DIR}/sgame/CBSEBackend.cpp
   ${GAMELOGIC_DIR}/sgame/CBSEBackend.h
   ${GAMELOGIC_DIR}/sgame/CBSEComponents.h
@@ -912,47 +896,10 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
   ${GAMELOGIC_DIR}/sgame/components/DeferedFreeingComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/DeferedFreeingComponent.h
-  ${GAMELOGIC_DIR}/sgame/g_bot.cpp
-  ${GAMELOGIC_DIR}/sgame/g_bot_ai.cpp
-  ${GAMELOGIC_DIR}/sgame/g_bot_nav.cpp
-  ${GAMELOGIC_DIR}/sgame/g_bot_parse.cpp
-  ${GAMELOGIC_DIR}/sgame/g_bot_util.cpp
-  ${GAMELOGIC_DIR}/sgame/g_cm_world.cpp
-  ${GAMELOGIC_DIR}/sgame/g_cm_world.h
-  ${ENGINE_DIR}/server/g_api.h
-)
-
-set( SGAMENACLLIST
-  ${GAMELOGIC_DIR}/sgame/g_api.cpp
+  ${ENGINE_DIR}/server/sg_api.h
+  ${ENGINE_DIR}/server/sg_msgdef.h
+  ${GAMESHAREDLIST}
   ${COMMONLIST}
-)
-
-set( UILIST
-  ${GAMELOGIC_DIR}/ui/ui_main.c #keep it first because vmMain must be the first function compiled in qvms
-  ${GAMELOGIC_DIR}/ui/ui_atoms.c
-  ${GAMELOGIC_DIR}/ui/ui_shared.c
-  ${GAMELOGIC_DIR}/ui/ui_gameinfo.c
-  ${GAMELOGIC_DIR}/shared/bg_misc.c
-  ${GAMELOGIC_DIR}/shared/bg_parse.c
-  ${GAMELOGIC_DIR}/shared/bg_alloc.c
-  ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
-  ${GAMELOGIC_DIR}/shared/bg_utilities.c
-  ${GAMELOGIC_DIR}/ui/ui_utf8.c
-  ${ENGINE_DIR}/client/ui_api.h
-)
-
-set( UINATIVELIST
-  ${GAMELOGIC_DIR}/ui/ui_api.c
-)
-
-set( UIQVMLIST
-  ${GAMELOGIC_DIR}/shared/bg_lib.c
-  ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST_C}
-)
-
-set( UIASMLIST
-  ${GAMELOGIC_DIR}/ui/ui_api.asm
 )
 
 set( WIN_RC ${ENGINE_DIR}/sys/daemon.rc )
@@ -1133,9 +1080,8 @@ set( NACLLIST_MODULE
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
 )
 
-# HACK: Force the compilation of EVERYTHING in C++
-file( GLOB_RECURSE EVERYTHING_C "src/engine/*.c" "src/gamelogic/*.c" )
-set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
+# Add include dirs
+include_directories( ${MOUNT_DIR} )
 
 ################################################################################
 # Libraries
@@ -1202,7 +1148,7 @@ else()
     set( LIBS_ENGINE ${LIBS_ENGINE} ${LIBICONV} )
   endif()
   mark_as_advanced( LIBM LIBRT LIBICONV )
-  set( LIBS_ENGINE ${LIBS_ENGINE} ${CMAKE_DL_LIBS} )
+  set( LIBS_BASE ${LIBS_BASE} ${CMAKE_DL_LIBS} )
   find_package( Threads REQUIRED )
   set( LIBS_BASE ${LIBS_BASE} ${CMAKE_THREAD_LIBS_INIT} )
   if( APPLE )
@@ -1248,24 +1194,18 @@ endif()
 include_directories( ${LIB_DIR}/nacl )
 set( LIBSRC_NACL ${LIBSRC_NACL} ${NACLLIST_NATIVE} )
 
+if( NACL_RUNTIME_PATH )
+  add_definitions( "-DNACL_RUNTIME_PATH=${NACL_RUNTIME_PATH}" )
+endif()
+
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
-  if( USE_SDL2 )
-    find_package( SDL2 REQUIRED )
-    include_directories( ${SDL2_INCLUDE_DIR} )
-    if( WIN32 )
-      set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL2_LIBRARY} )
-    else()
-      set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL2_LIBRARY} )
-    endif()
+  find_package( SDL2 REQUIRED )
+  include_directories( ${SDL2_INCLUDE_DIR} )
+  if( WIN32 )
+    set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL2_LIBRARY} )
   else()
-    find_package( SDL REQUIRED )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    if( WIN32 )
-      set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL_LIBRARY} )
-    else()
-      set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
-    endif()
+    set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL2_LIBRARY} )
   endif()
 
   # Used by tinygettext to use SDL_iconv instead of base iconv
@@ -1273,7 +1213,6 @@ if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
     add_definitions( -DHAVE_SDL )
   endif()
 endif()
-mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR MINGW32_LIBRARY )
 mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
 
 # libRocket
@@ -1425,45 +1364,36 @@ set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
 # Game logic
 ################################################################################
 
-# Function to setup all the sgame/cgame/ui libraries
+# Function to setup all the Game/Cgame/UI libraries
 include( CMakeParseArguments )
 function( GAMEMODULE )
   # ParseArguments setup
-  set( oneValueArgs NAME HAS_NACL HAS_QVM )
-  set( multiValueArgs COMPILE_DEF FILES NACL_FILES NATIVE_FILES QVM_FILES QVM_ASM )
+  set( oneValueArgs NAME )
+  set( multiValueArgs COMPILE_DEF FILES )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_DLL )
-    add_library( ${GAMEMODULE_NAME}-nacl-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-dll nacl-source-libs ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-nacl-native-dll PROPERTIES
+  if( BUILD_GAME_NATIVE_DLL )
+    add_library( ${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
+    target_link_libraries( ${GAMEMODULE_NAME}-native-dll nacl-source-libs ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-native-dll PROPERTIES
       PREFIX ""
+      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};BUILD_VM_IN_PROCESS"
+    )
+    set_property( TARGET ${GAMEMODULE_NAME}-native-dll APPEND PROPERTY INCLUDE_DIRECTORIES ${GAMELOGIC_DIR} )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-dll ${COMMON_DIR}/Common.h )
+  endif()
+
+  if( BUILD_GAME_NATIVE_EXE )
+    add_executable( ${GAMEMODULE_NAME}-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
+    target_link_libraries( ${GAMEMODULE_NAME}-native-exe nacl-source-libs ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-native-exe PROPERTIES
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
-    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-dll ${COMMON_DIR}/Common.h )
+    set_property( TARGET ${GAMEMODULE_NAME}-native-exe APPEND PROPERTY INCLUDE_DIRECTORIES ${GAMELOGIC_DIR} )
+    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-exe ${COMMON_DIR}/Common.h )
   endif()
 
-  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE_EXE )
-    add_executable( ${GAMEMODULE_NAME}-nacl-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} )
-    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native-exe nacl-source-libs ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-nacl-native-exe PROPERTIES
-      COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
-    )
-    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-nacl-native-exe ${COMMON_DIR}/Common.h )
-  endif()
-
-  if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM_NATIVE )
-    set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
-    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
-    target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
-      PREFIX ""
-      COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
-    )
-    ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-qvm-native ${COMMON_DIR}/Common.h )
-  endif()
-
-  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL )
+  if( BUILD_GAME_NACL )
     if( CMAKE_CFG_INTDIR STREQUAL "." )
       set( NACL_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-nacl.dir )
     else()
@@ -1474,6 +1404,8 @@ function( GAMEMODULE )
     set( NACL_COMPILE_OPTIONS
       -I${LIB_DIR}/nacl
       -I${LIB_DIR}/zlib
+      -I${MOUNT_DIR}
+      -I${GAMELOGIC_DIR}
       -DNACL_BUILD_ARCH=x86 # Not actually used
       -DNACL_BUILD_SUBARCH=64 # Not actually used
       -Wall
@@ -1536,7 +1468,7 @@ function( GAMEMODULE )
 
     # Compile C files with clang and C++ files with clang++
     set( OBJECTS )
-    foreach( FILE ${GAMEMODULE_FILES} ${GAMEMODULE_NACL_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} ${ZLIBLIST} ${LIBSRC_BASE} )
+    foreach( FILE ${GAMEMODULE_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} ${ZLIBLIST} ${LIBSRC_BASE} )
       get_filename_component( FILENAME ${FILE} NAME_WE )
       get_filename_component( FILEDIR ${FILE} PATH )
       get_filename_component( EXT ${FILE} EXT )
@@ -1575,7 +1507,7 @@ function( GAMEMODULE )
       COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
         ${NACL_COMPILE_OPTIONS}
         -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-        ${OBJECTS}
+        ${OBJECTS} -lnacl_exception
       DEPENDS ${OBJECTS}
     )
 
@@ -1633,81 +1565,16 @@ function( GAMEMODULE )
     )
   endif()
 
-  if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM )
-    if( CMAKE_CFG_INTDIR STREQUAL "." )
-      set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir )
-    else()
-      set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir/${CMAKE_CFG_INTDIR} )
-    endif()
-
-    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/sgame -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM_ABI)
-    foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
-      set( QVM_COMPILE_OPTIONS ${QVM_COMPILE_OPTIONS} -D${DEF} )
-    endforeach()
-
-    set( OBJECTS )
-    set( QVM_FILES ${GAMEMODULE_FILES} ${GAMEMODULE_QVM_FILES} )
-    foreach( QVM_FILE ${QVM_FILES} )
-      get_filename_component( QVM_FILENAME ${QVM_FILE} NAME_WE )
-      get_filename_component( QVM_FILEDIR ${QVM_FILE} PATH )
-      get_filename_component( QVM_FILEEXT ${QVM_FILE} EXT )
-      set( ASM_FILE ${QVM_DIR}/${QVM_FILENAME}.asm )
-
-      if( QVM_FILEEXT STREQUAL ".c" )
-        add_custom_command( OUTPUT ${ASM_FILE}
-          COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} ${QVM_FILE} -o ${ASM_FILE}
-          DEPENDS lcc rcc cpp ${QVM_FILE}
-          IMPLICIT_DEPENDS C ${QVM_FILE}
-          WORKING_DIRECTORY ${QVM_DIR}
-        )
-
-        set( OBJECTS ${OBJECTS} ${ASM_FILE} )
-      endif()
-    endforeach()
-
-    # Link *.asm into a qvm
-    add_custom_command( OUTPUT ${CMAKE_BINARY_DIR}/vm/${GAMEMODULE_NAME}.qvm
-      COMMAND asm -o ${CMAKE_BINARY_DIR}/vm/${GAMEMODULE_NAME}.qvm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
-      DEPENDS asm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
-    )
-
-    # Dummy target to get CMake to execute the commands
-    add_custom_target( ${GAMEMODULE_NAME}-qvm ALL
-      DEPENDS ${CMAKE_BINARY_DIR}/vm/${GAMEMODULE_NAME}.qvm
-    )
-
-    # Create the build directory before building
-    add_custom_command( TARGET ${GAMEMODULE_NAME}-qvm PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/vm
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${QVM_DIR}
-    )
-  endif()
 endfunction()
 
-if( BUILD_GAME_QVM )
-  add_subdirectory( ${LCC_DIR} ${CMAKE_BINARY_DIR}/lcc )
-endif()
-
 GAMEMODULE( NAME sgame
-  COMPILE_DEF BUILD_VM BUILD_GAME
-  HAS_NACL 1
-  HAS_QVM 0
+  COMPILE_DEF BUILD_VM BUILD_SGAME
   FILES ${SGAMELIST}
-  NACL_FILES ${SGAMENACLLIST}
-  NATIVE_FILES ${SGAMENATIVELIST}
-  QVM_FILES ${SGAMEQVMLIST}
-  QVM_ASM ${SGAMEASMLIST}
 )
 
 GAMEMODULE( NAME cgame
   COMPILE_DEF BUILD_VM BUILD_CGAME
-  HAS_NACL 0
-  HAS_QVM 1
   FILES ${CGAMELIST}
-  NACL_FILES ${CGAMENACLLIST}
-  NATIVE_FILES ${CGAMENATIVELIST}
-  QVM_FILES ${CGAMEQVMLIST}
-  QVM_ASM ${CGAMEASMLIST}
 )
 
 ################################################################################
@@ -1726,6 +1593,7 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
+  set_property( TARGET client APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} )
   ADD_PRECOMPILED_HEADER( client ${COMMON_DIR}/Common.h )
 endif()
 
@@ -1734,6 +1602,7 @@ if( BUILD_SERVER )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
+  set_property( TARGET server APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} )
   ADD_PRECOMPILED_HEADER( server ${COMMON_DIR}/Common.h )
 endif()
 
@@ -1742,27 +1611,64 @@ if( BUILD_TTY_CLIENT )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
+  set_property( TARGET ttyclient APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} )
   ADD_PRECOMPILED_HEADER( ttyclient ${COMMON_DIR}/Common.h )
 endif()
 
 ################################################################################
-# NaCl SDK files
+# Runtime dependencies
 ################################################################################
 
-if( LINUX )
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
-elseif(WIN32 AND ARCH STREQUAL x86)
-  # Win32 requires sel_ldr64.exe in order to run on Win64
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-x86_64.nexe ${FULL_OUTPUT_DIR}/irt_core-x86_64.nexe )
-else()
-  add_custom_target( nacl_sdk ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX}
+if( BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT )
+  add_custom_target( runtime_deps )
+
+  # The NaCl loader and IRT are required to load .nexe files
+  add_custom_command( TARGET runtime_deps PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/nacl_loader${CMAKE_EXECUTABLE_SUFFIX} )
+  add_custom_command( TARGET runtime_deps PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-${ARCH}.nexe ${FULL_OUTPUT_DIR}/irt_core-${ARCH}.nexe )
+
+  # Linux uses a bootstrap program to reserve address space
+  if( LINUX )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/nacl_helper_bootstrap ${FULL_OUTPUT_DIR}/nacl_helper_bootstrap )
+  endif()
+
+  # Win32 requires nacl_loader64.exe in order to run on Win64
+  if( WIN32 AND ARCH STREQUAL x86 )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/sel_ldr64${CMAKE_EXECUTABLE_SUFFIX} ${FULL_OUTPUT_DIR}/nacl_loader64${CMAKE_EXECUTABLE_SUFFIX} )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DEPS_DIR}/irt_core-x86_64.nexe ${FULL_OUTPUT_DIR}/irt_core-x86_64.nexe )
+  endif()
+
+  # Mac requires some libraries from external_deps
+  if( APPLE )
+    add_custom_command( TARGET runtime_deps PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_DIR}/SDL2.framework ${FULL_OUTPUT_DIR}/SDL2.framework )
+    file( GLOB RUNTIME_LIBS ${DEPS_DIR}/lib/*.dylib )
+    foreach( RUNTIME_LIB ${RUNTIME_LIBS} )
+      add_custom_command( TARGET runtime_deps PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RUNTIME_LIB} ${FULL_OUTPUT_DIR} )
+    endforeach()
+  endif()
+
+  # Windows requires some libraries from external_deps
+  if( WIN32 )
+    file( GLOB RUNTIME_LIBS ${DEPS_DIR}/bin/*.dll )
+    foreach( RUNTIME_LIB ${RUNTIME_LIBS} )
+      add_custom_command( TARGET runtime_deps PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RUNTIME_LIB} ${FULL_OUTPUT_DIR} )
+    endforeach()
+  endif()
+
+  if( BUILD_CLIENT )
+    add_dependencies( client runtime_deps )
+  endif()
+  if( BUILD_SERVER )
+    add_dependencies( server runtime_deps )
+  endif()
+  if( BUILD_TTY_CLIENT )
+    add_dependencies( ttyclient runtime_deps )
+  endif()
 endif()

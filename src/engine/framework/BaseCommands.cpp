@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
+#include "qcommon/q_shared.h"
 #include "BaseCommands.h"
 
 #include "CommandSystem.h"
@@ -111,15 +111,11 @@ namespace Cmd {
                 const std::string& filename = args.Argv(filenameArg);
 
                 SetExecArgs(args, filenameArg + 1);
-                if (not ExecFile(filename)) {
+                if (not ExecFile(filename, executeSilent)) {
                     if (not failSilent) {
                         Print("couldn't exec '%s'", filename.c_str());
                     }
                     return;
-                }
-
-                if (not executeSilent) {
-                    Print("execing '%s'", filename.c_str());
                 }
             }
 
@@ -143,11 +139,11 @@ namespace Cmd {
                 ExecuteAfter(Str::Format("set arg_count %d", args.Argc() - start));
 
                 for (int i = start; i < args.Argc(); i++) {
-                    ExecuteAfter(Str::Format("set arg_%d %s", i, Cmd::Escape(args.Argv(i + start - 1))));
+                    ExecuteAfter(Str::Format("set arg_%d %s", i - start, Cmd::Escape(args.Argv(i))));
                 }
             }
 
-            bool ExecFile(Str::StringRef filename) const {
+            bool ExecFile(Str::StringRef filename, bool executeSilent) const {
                 std::string buffer;
                 try {
                     if (readHomepath) {
@@ -158,6 +154,11 @@ namespace Cmd {
                 } catch (std::system_error&) {
                     return false;
                 }
+
+                if (not executeSilent) {
+                    Print("execing '%s'", filename.c_str());
+                }
+
                 ExecuteAfter(buffer, true);
                 return true;
             }
@@ -613,7 +614,7 @@ namespace Cmd {
                 int argc = args.Argc();
 
                 if (argc < 3) {
-		            PrintUsage(args, "delay (name) <delay in milliseconds> <command>\n  delay <delay in frames>f <command>", "executes <command> after the delay" );
+		            PrintUsage(args, "delay (name) <delay in milliseconds> <command>\n  delay (name) <delay in frames>f <command>", "executes <command> after the delay" );
 		            return;
                 }
 
@@ -646,9 +647,7 @@ namespace Cmd {
                 delays.emplace_back(delayRecord_t{name, command, target, type});
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
-                Q_UNUSED(args);
-
+            Cmd::CompletionResult Complete(int argNum, const Args&, Str::StringRef prefix) const OVERRIDE {
                 if (argNum == 1) {
                     return CompleteDelayName(prefix);
                 }

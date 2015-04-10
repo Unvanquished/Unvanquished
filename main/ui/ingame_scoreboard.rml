@@ -72,46 +72,58 @@
 		datagridrow
 		{
 			height: 1.4em;
-			padding: 0.1em;
 			background: rgba( 50%, 50%, 50%, 50%);
 			color: white;  /* Default nickname starting colour */
+                        padding-top: 0.1em;
+                        padding-bottom: 0.1em;
 		}
+                datagridrow, datagridheader {
+                        padding-right: 0.2em;
+                }
 		datagridrow:nth-child(odd) {
 			background: rgba( 50%, 50%, 50%, 20%);
 		}
 
+                datagridcell, datagridcolumn {
+                        overflow: hidden;
+                        width: 100%;
+                        margin: 0;
+                        padding: 0;
+                }
+		datagridcell:nth-child(1), datagridcolumn:nth-child(1) {
+                        max-width: 14%;
+                        position: relative;
+                        bottom: 0.1em;
+                }
+		datagridcell:nth-child(2), datagridcolumn:nth-child(2) {
+			/* Name cell */
+			text-align: left;
+                        max-width: 56%;
+		}
+                datagridcell:nth-child(n+3), datagridcolumn:nth-child(n+3) {
+                        text-align: right;
+                        max-width: 10%;
+                }
+
 		datagridcell {
 			text-align: center;
 		}
-		datagridcell:nth-child(1n){
-			/* Icon cell */
-			padding: 0;
-		}
-		datagridcell:nth-child(2n){
-			/* Name cell */
-			padding: 0;
+		datagridcolumn {
 			text-align: left;
+                        padding-top: 0.25em;
 		}
+
 		/* Player weapon/class icons */
 		datagrid img
 		{
 			width: 1.2em;
 			height: 1.2em;
-			margin:auto;
-		}
-		datagridheader {
-			display: none;
-		}
-
-		datagridcolumn {
-			text-align: left;
-			margin: 0.1em;
+                        vertical-align: middle;
 		}
 
 		div.playername {
-			margin: 0.3em;
+                        color: white;
 		}
-
 
 
 	</style>
@@ -123,11 +135,11 @@
 		<teamname> Aliens </teamname>
 		<teambox class="alien">
 			<datagrid source="playerList.aliens" id="aliens">
-				<col fields="num" formatter="GearOrReady" width="8%"></col>
-				<col fields="num" formatter="PlayerName" width="57%">Name</col>
-				<col fields="score" width="10%">Score</col>
-				<col fields="time" width="10%">Time</col>
-				<col fields="ping" width="10%">Ping</col>
+				<col fields="num" formatter="GearOrReady"></col>
+				<col fields="num" formatter="PlayerName">Name</col>
+				<col fields="score">Score</col>
+				<col fields="time">Time</col>
+				<col fields="ping">Ping</col>
 			</datagrid>
 		</teambox>
 	</half>
@@ -136,11 +148,11 @@
 		<teamname> Humans </teamname>
 		<teambox class="human">
 			<datagrid source="playerList.humans" id="humans">
-				<col fields="num" formatter="GearOrReady" width="8%"></col>
-				<col fields="num" formatter="PlayerName" width="57%">Name</col>
-				<col fields="score" width="10%">Score</col>
-				<col fields="time" width="10%">Time</col>
-				<col fields="ping" width="10%">Ping</col>
+				<col fields="num" formatter="GearOrReady"></col>
+				<col fields="num" formatter="PlayerName">Name</col>
+				<col fields="score">Score</col>
+				<col fields="time">Time</col>
+				<col fields="ping">Ping</col>
 			</datagrid>
 		</teambox>
 	</half>

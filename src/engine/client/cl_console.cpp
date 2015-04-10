@@ -36,8 +36,8 @@ Maryland 20850 USA.
 
 #include "revision.h"
 #include "client.h"
-#include "../qcommon/q_unicode.h"
-#include "../framework/LogSystem.h"
+#include "qcommon/q_unicode.h"
+#include "framework/LogSystem.h"
 
 
 #define CONSOLE_COLOR COLOR_WHITE //COLOR_BLACK
@@ -612,9 +612,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 	{
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
-		Cmd_TokenizeString( Cmd::Escape(text).c_str() );
-		Rocket_AddConsoleText();
-		Cmd_RestoreCmdContext();
+		Rocket_AddConsoleText(text);
 	}
 
 	color = ColorIndex( CONSOLE_COLOR );
@@ -1267,7 +1265,7 @@ void Con_RunAnimatedConsole( void )
 /*
 ==================
 Con_DrawConsole
-runs each render-frame (possibly twice with stereo enabled)
+runs each render-frame
 ==================
 */
 void Con_DrawConsole( void )
@@ -1371,7 +1369,7 @@ class GraphicalTarget : public Log::Target {
 			this->Register(Log::GRAPHICAL_CONSOLE);
 		}
 
-		virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
+		virtual bool Process(const std::vector<Log::Event>& events) OVERRIDE {
 			// for some demos we don't want to ever show anything on the console
 			// flush the buffer
 			if ( cl_noprint && cl_noprint->integer )
@@ -1384,15 +1382,11 @@ class GraphicalTarget : public Log::Target {
 				return false;
 			}
 
-			if (com_dedicated && !com_dedicated->integer) {
-				for (Log::Event event : events) {
-					CL_ConsolePrint(std::move(event.text));
-					CL_ConsolePrint("\n");
-				}
-				return true;
-			} else {
-				return false;
+			for (auto& event : events) {
+				CL_ConsolePrint(std::move(event.text));
+				CL_ConsolePrint("\n");
 			}
+			return true;
 		}
 };
 

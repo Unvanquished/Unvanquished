@@ -28,7 +28,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #include "../CBSEBackend.h"
 #include "../CBSEComponents.h"
 
-#include "../g_local.h"
+#include "../sg_local.h"
 
 class IgnitableComponent: public IgnitableComponentBase {
 

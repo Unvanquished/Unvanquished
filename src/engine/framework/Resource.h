@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FRAMEWORK_RESOURCE_H_
 #define FRAMEWORK_RESOURCE_H_
 
-#include "../../common/Common.h"
+#include "common/Common.h"
 
 /*
  * Resource registration logic.
@@ -210,7 +210,7 @@ namespace Resource {
         } else {
             defaultValue = Register(defaultName, _defaultValue).Get();
             if (not defaultValue) {
-                Log::Error("Couldn't load the default resource for %s\n", typeid(T).name());
+                Sys::Error("Couldn't load the default resource for %s\n", typeid(T).name());
             }
         }
     }

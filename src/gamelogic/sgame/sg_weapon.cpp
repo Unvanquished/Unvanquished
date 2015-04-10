@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// g_weapon.c
+// sg_weapon.c
 // perform the server side effects of a weapon firing
 
-#include "g_local.h"
+#include "sg_local.h"
 #include "CBSEEntities.h"
 
 static vec3_t forward, right, up;
@@ -739,7 +739,7 @@ static void HiveMissileThink( gentity_t *self )
 	int       i;
 	float     d, nearest;
 
-	if ( level.time > self->timestamp )
+	if ( level.time > self->timestamp ) // swarm lifetime exceeded
 	{
 		VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
 		self->s.pos.trType = TR_STATIONARY;
@@ -803,6 +803,85 @@ static void FireHive( gentity_t *self )
 	                    HiveMissileThink, level.time + HIVE_DIR_CHANGE_PERIOD );
 
 	m->timestamp = level.time + HIVE_LIFETIME;
+}
+
+/*
+======================================================================
+
+ROCKET POD
+
+======================================================================
+*/
+
+static void RocketThink( gentity_t *self )
+{
+	vec3_t currentDir, targetDir, newDir, rotAxis;
+	float  rotAngle;
+
+	if ( level.time > self->timestamp )
+	{
+		self->think     = G_ExplodeMissile;
+		self->nextthink = level.time;
+
+		return;
+	}
+
+	self->nextthink = level.time + ROCKET_TURN_PERIOD;
+
+	// Calculate current and target direction.
+	VectorNormalize2( self->s.pos.trDelta, currentDir );
+	VectorSubtract( self->target->r.currentOrigin, self->r.currentOrigin, targetDir );
+	VectorNormalize( targetDir );
+
+	// Don't turn anymore after the target was passed.
+	if ( DotProduct( currentDir, targetDir ) < 0 )
+	{
+		return;
+	}
+
+	// Calculate new direction. Use a fixed turning angle.
+	CrossProduct( currentDir, targetDir, rotAxis );
+	rotAngle = RAD2DEG( acos( DotProduct( currentDir, targetDir ) ) );
+	RotatePointAroundVector( newDir, rotAxis, currentDir,
+	                         Maths::clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
+
+	// Check if new direction is safe. Turn anyway if old direction is unsafe, too.
+	if ( !G_RocketpodSafeShot( ENTITYNUM_NONE, self->r.currentOrigin, newDir ) &&
+	     G_RocketpodSafeShot( ENTITYNUM_NONE, self->r.currentOrigin, currentDir ) )
+	{
+		return;
+	}
+
+	// Update trajectory.
+	VectorScale( newDir, BG_Missile( self->s.modelindex )->speed, self->s.pos.trDelta );
+	SnapVector( self->s.pos.trDelta );
+	VectorCopy( self->r.currentOrigin, self->s.pos.trBase ); // TODO: Snap this, too?
+	self->s.pos.trTime = level.time;
+}
+
+static void FireRocket( gentity_t *self )
+{
+	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, self->target, RocketThink,
+	                level.time + ROCKET_TURN_PERIOD )->timestamp = level.time + ROCKET_LIFETIME;
+}
+
+bool G_RocketpodSafeShot( int passEntityNum, vec3_t origin, vec3_t dir )
+{
+	trace_t tr;
+	vec3_t mins, maxs, end;
+	float  size;
+	const missileAttributes_t *attr = BG_Missile( MIS_ROCKET );
+
+	size = attr->size;
+
+	VectorSet( mins, -size, -size, -size);
+	VectorSet( maxs, size, size, size );
+	VectorMA( origin, 8192, dir, end );
+
+	trap_Trace( &tr, origin, mins, maxs, end, passEntityNum, MASK_SHOT, 0 );
+
+	return !G_RadiusDamage( tr.endpos, NULL, attr->splashDamage, attr->splashRadius, NULL,
+	                        0, MOD_ROCKETPOD, TEAM_HUMANS );
 }
 
 /*
@@ -1056,60 +1135,6 @@ static void FireLcannon( gentity_t *self, qboolean secondary )
 /*
 ======================================================================
 
-TESLA GENERATOR
-
-======================================================================
-*/
-
-static void FireTesla( gentity_t *self )
-{
-	trace_t   tr;
-	vec3_t    origin, target;
-	gentity_t *tent;
-
-	if ( !self->target )
-	{
-		return;
-	}
-
-	// Move the muzzle from the entity origin up a bit to fire over turrets
-	VectorMA( muzzle, self->r.maxs[ 2 ], self->s.origin2, origin );
-
-	// Don't aim for the center, aim at the top of the bounding box
-	VectorCopy( self->target->s.origin, target );
-	target[ 2 ] += self->target->r.maxs[ 2 ];
-
-	// Trace to the target entity
-	trap_Trace( &tr, origin, NULL, NULL, target, self->s.number, MASK_SHOT, 0 );
-
-	if ( tr.entityNum != self->target->s.number )
-	{
-		return;
-	}
-
-	// Client side firing effect
-	self->s.eFlags |= EF_FIRING;
-
-	// Deal damage
-	if ( self->target->takedamage )
-	{
-		vec3_t dir;
-
-		VectorSubtract( target, origin, dir );
-		VectorNormalize( dir );
-		G_Damage( self->target, self, self, dir, tr.endpos,
-		          TESLAGEN_DMG, 0, MOD_TESLAGEN );
-	}
-
-	// Send tesla zap trail
-	tent = G_NewTempEntity( tr.endpos, EV_TESLATRAIL );
-	tent->s.generic1 = self->s.number; // src
-	tent->s.clientNum = self->target->s.number; // dest
-}
-
-/*
-======================================================================
-
 BUILD GUN
 
 ======================================================================
@@ -1264,18 +1289,10 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 		return qfalse;
 	}
 
-	// only allow bites to work against turrets or buildables in construction
+	// only allow bites to work against buildables in construction
 	if ( traceEnt->s.eType == ET_BUILDABLE && traceEnt->spawned )
 	{
-		switch ( traceEnt->s.modelindex )
-		{
-			case BA_H_MGTURRET:
-			case BA_H_TESLAGEN:
-				break;
-
-			default:
-				return qfalse;
-		}
+		return qfalse;
 	}
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
@@ -1700,7 +1717,7 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 
 	// calculate impact damage
 	attackerMass = BG_Class( self->client->pers.classSelection )->mass;
-	impactVelocity = fabs( self->client->pmext.fallImpactVelocity[ 2 ] ) * IMPACTDMG_QU_TO_METER; // in m/s
+	impactVelocity = fabs( self->client->pmext.fallImpactVelocity[ 2 ] ) * QU_TO_METER; // in m/s
 	impactEnergy = attackerMass * impactVelocity * impactVelocity; // in J
 	impactDamage = ( int )( impactEnergy * IMPACTDMG_JOULE_TO_DAMAGE );
 
@@ -1892,12 +1909,12 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					FireHive( self );
 					break;
 
-				case WP_TESLAGEN:
-					FireTesla( self );
+				case WP_ROCKETPOD:
+					FireRocket( self );
 					break;
 
 				case WP_MGTURRET:
-					FireBullet( self, TURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
+					FireBullet( self, MGTURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
 					break;
 
 				case WP_ABUILD:

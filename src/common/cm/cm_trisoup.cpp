@@ -44,12 +44,12 @@ CM_TrianglePlane
         p = trianglePlanes[tri];
         if(p != -1)
         {
-                //Com_Printf( "CM_TrianglePlane %i %i\n", tri, p);
+                //Log::Notice( "CM_TrianglePlane %i %i", tri, p);
                 return p;
         }
 
         // should never happen
-        Com_Printf( "WARNING: CM_TrianglePlane unresolvable\n" );
+		Log::Warn( "CM_TrianglePlane unresolvable" );
         return -1;
 }*/
 
@@ -66,7 +66,7 @@ static int CM_EdgePlaneNum(cTriangleSoup_t * triSoup, int tri, int edgeType)
         vec3_t          up;
         int             p;
 
-//  Com_Printf( "CM_EdgePlaneNum: %i %i\n", tri, edgeType );
+//  Log::Notice( "CM_EdgePlaneNum: %i %i", tri, edgeType );
 
         switch (edgeType)
         {
@@ -98,7 +98,7 @@ static int CM_EdgePlaneNum(cTriangleSoup_t * triSoup, int tri, int edgeType)
                         return CM_FindPlane(p2, p1, up);
 
                 default:
-                        Com_Error(ERR_DROP, "CM_EdgePlaneNum: bad edgeType=%i", edgeType);
+                        Sys::Drop("CM_EdgePlaneNum: bad edgeType=%i", edgeType);
 
         }
 
@@ -134,7 +134,7 @@ static void CM_SetBorderInward( cFacet_t *facet, cTriangleSoup_t *triSoup, int i
 			break;
 
 		default:
-			Com_Error( ERR_FATAL, "CM_SetBorderInward: bad parameter %i", which );
+			Sys::Error( "CM_SetBorderInward: bad parameter %i", which );
 	}
 
 	for ( k = 0; k < facet->numBorders; k++ )
@@ -207,7 +207,7 @@ static void CM_SurfaceCollideFromTriangleSoup( cTriangleSoup_t *triSoup, cSurfac
 
 		triSoup->trianglePlanes[ i ] = CM_FindPlane( p1, p2, p3 );
 
-		//Com_Printf( "trianglePlane[%i] = %i\n", i, trianglePlanes[i]);
+		//Log::Notive( "trianglePlane[%i] = %i", i, trianglePlanes[i]);
 	}
 
 	// create the borders for each triangle
@@ -296,13 +296,13 @@ cSurfaceCollide_t *CM_GenerateTriangleSoupCollide( int numVertexes, vec3_t *vert
 
 	if ( numVertexes <= 2 || !vertexes || numIndexes <= 2 || !indexes )
 	{
-		Com_Error( ERR_DROP, "CM_GenerateTriangleSoupCollide: bad parameters: (%i, %p, %i, %p)", numVertexes, vertexes, numIndexes,
+		Sys::Drop( "CM_GenerateTriangleSoupCollide: bad parameters: (%i, %p, %i, %p)", numVertexes, vertexes, numIndexes,
 		           indexes );
 	}
 
 	if ( numIndexes > SHADER_MAX_INDEXES )
 	{
-		Com_Error( ERR_DROP, "CM_GenerateTriangleSoupCollide: source is > SHADER_MAX_TRIANGLES" );
+		Sys::Drop( "CM_GenerateTriangleSoupCollide: source is > SHADER_MAX_TRIANGLES" );
 	}
 
 	// build a triangle soup

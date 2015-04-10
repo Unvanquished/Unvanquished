@@ -20,125 +20,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "g_local.h"
-#include "g_cm_world.h"
-#include "../shared/VMMain.h"
-#include "../shared/CommonProxies.h"
-
-// This really should go in the common code
-static IPC::Channel GetRootChannel(int argc, char** argv)
-{
-	const char* channel;
-	if (argc == 1) {
-		channel = getenv("ROOT_SOCKET");
-		if (!channel) {
-			fprintf(stderr, "Environment variable ROOT_SOCKET not found\n");
-			VM::Exit();
-		}
-	} else {
-		channel = argv[1];
-	}
-
-	char* end;
-	IPC::OSHandleType h = (IPC::OSHandleType)strtol(channel, &end, 10);
-	if (channel == end || *end != '\0') {
-		fprintf(stderr, "Environment variable ROOT_SOCKET does not contain a valid handle\n");
-		VM::Exit();
-	}
-
-	return IPC::Channel(IPC::Socket::FromHandle(h));
-}
-
-class ExitException{};
-
-void VM::Exit() {
-  throw ExitException();
-}
-
-IPC::Channel VM::rootChannel;
+#include "sg_local.h"
+#include "sg_cm_world.h"
+#include "engine/server/sg_msgdef.h"
+#include "shared/VMMain.h"
+#include "shared/CommonProxies.h"
 
 static IPC::SharedMemory shmRegion;
 
-DLLEXPORT int main(int argc, char** argv)
-{
-	try {
-		VM::rootChannel = GetRootChannel(argc, argv);
+// Symbols required by the shared VMMain code
 
-		// Send syscall ABI version, also acts as a sign that the module loaded
-		IPC::Writer writer;
-		writer.Write<uint32_t>(GAME_API_VERSION);
-		VM::rootChannel.SendMsg(writer);
+int VM::VM_API_VERSION = GAME_API_VERSION;
 
-		// Allocate entities and clients shared memory region
-		shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
-		char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
-		g_entities = reinterpret_cast<gentity_t*>(shmBase);
-		g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
+void VM::VMInit() {
+	// Allocate entities and clients shared memory region
+	shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
+	char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
+	g_entities = reinterpret_cast<gentity_t*>(shmBase);
+	g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
 
-		// Start main loop
-		while (true) {
-			IPC::Reader reader = VM::rootChannel.RecvMsg();
-			uint32_t id = reader.Read<uint32_t>();
-			VM::VMMain(id, std::move(reader));
-		}
-	} catch (ExitException e) {
-		return 0;
-	}
-}
-
-//HACK: NaCl doesn't support messages bigger than 128k so for now
-//we send it by small chunks
-
-std::vector<char> mapData;
-
-void G_LoadMapChunk(std::vector<char> data)
-{
-	mapData.insert(mapData.end(), data.begin(), data.end());
-}
-
-void G_FinishMapLoad(std::string name)
-{
-	CM_LoadMap(name.c_str(), mapData.data(), false);
-	mapData.clear();
+	// Load the map collision data
+	std::string mapName = Cvar::GetValue("mapname");
+	CM_LoadMap(mapName);
 	G_CM_ClearWorld();
 }
 
-void VM::VMMain(uint32_t id, IPC::Reader reader)
-{
+void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
+
 	int major = id >> 16;
 	int minor = id & 0xffff;
 	if (major == VM::QVM) {
 		switch (minor) {
 		case GAME_STATIC_INIT:
-			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [](){
-				// Initialize VM proxies
-				VM::InitializeProxies();
+			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [] (int milliseconds) {
+				VM::InitializeProxies(milliseconds);
+				FS::Initialize();
+				VM::VMInit();
 			});
 			break;
 
 		case GAME_INIT:
-			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart, bool cheats) {
-				FS::Initialize();
+			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart, bool cheats, bool inClient) {
 				g_cheats.integer = cheats;
-				G_InitGame(levelTime, randomSeed, restart);
+				G_InitGame(levelTime, randomSeed, restart, inClient);
 			});
 			break;
 
 		case GAME_SHUTDOWN:
 			IPC::HandleMsg<GameShutdownMsg>(VM::rootChannel, std::move(reader), [](bool restart) {
 				G_ShutdownGame(restart);
-			});
-			break;
-
-		case GAME_LOADMAP:
-			IPC::HandleMsg<GameLoadMapMsg>(VM::rootChannel, std::move(reader), [](std::string name) {
-				G_FinishMapLoad(std::move(name));
-			});
-			break;
-
-		case GAME_LOADMAPCHUNK:
-			IPC::HandleMsg<GameLoadMapChunkMsg>(VM::rootChannel, std::move(reader), [](std::vector<char> data) {
-				G_LoadMapChunk(std::move(data));
 			});
 			break;
 
@@ -211,90 +141,7 @@ void VM::VMMain(uint32_t id, IPC::Reader reader)
 	}
 }
 
-void trap_Print(const char *string)
-{
-	VM::SendMsg<PrintMsg>(string);
-}
-
-void NORETURN trap_Error(const char *string)
-{
-	static bool recursiveError = false;
-	if (recursiveError)
-		VM::Exit();
-	recursiveError = true;
-	VM::SendMsg<ErrorMsg>(string);
-	VM::Exit(); // Amanieu: Need to implement proper error handling
-}
-
-void trap_Log(log_event_t *event)
-{
-	G_Error("trap_Log not implemented");
-}
-
-int trap_Milliseconds(void)
-{
-#ifdef LIBSTDCXX_BROKEN_CXX11
-	auto duration = std::chrono::monotonic_clock::now().time_since_epoch();
-#else
-	auto duration = std::chrono::steady_clock::now().time_since_epoch();
-#endif
-	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-}
-
-void trap_SendConsoleCommand(const char *text)
-{
-	VM::SendMsg<SendConsoleCommandMsg>(text);
-}
-
-int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
-{
-	int ret, handle;
-	VM::SendMsg<FSFOpenFileMsg>(qpath, f != NULL, mode, ret, handle);
-	if (f)
-		*f = handle;
-	return ret;
-}
-
-void trap_FS_Read(void *buffer, int len, fileHandle_t f)
-{
-	std::string res;
-	VM::SendMsg<FSReadMsg>(f, len, res);
-	memcpy(buffer, res.c_str(), std::min((int)res.size() + 1, len));
-}
-
-int trap_FS_Write(const void *buffer, int len, fileHandle_t f)
-{
-	int res;
-	std::string text((const char*)buffer, len);
-	VM::SendMsg<FSWriteMsg>(f, text, res);
-	return res;
-}
-
-void trap_FS_Rename(const char *from, const char *to)
-{
-	VM::SendMsg<FSRenameMsg>(from, to);
-}
-
-void trap_FS_FCloseFile(fileHandle_t f)
-{
-	VM::SendMsg<FSFCloseFileMsg>(f);
-}
-
-int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize)
-{
-	int res;
-	std::string text;
-	VM::SendMsg<FSGetFileListMsg>(path, extension, bufsize, res, text);
-	memcpy(listbuf, text.c_str(), std::min((int)text.size() + 1, bufsize));
-	return res;
-}
-
-qboolean trap_FindPak(const char *name)
-{
-	bool res;
-	VM::SendMsg<FSFindPakMsg>(name, res);
-	return res;
-}
+// Definition of the VM->Engine calls
 
 // The actual shared memory region is handled in this file, and is pretty much invisible to the rest of the code
 void trap_LocateGameData(gentity_t *, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient)
@@ -497,18 +344,6 @@ void trap_GetPlayerPubkey(int clientNum, char *pubkey, int size)
 	Q_strncpyz(pubkey, pubkey2.c_str(), size);
 }
 
-int trap_GMTime(qtime_t *qtime)
-{
-	int res;
-	if (qtime) {
-		VM::SendMsg<GMTimeMsg>(res, *qtime);
-	} else {
-		qtime_t t;
-		VM::SendMsg<GMTimeMsg>(res, t);
-	}
-	return res;
-}
-
 void trap_GetTimeString(char *buffer, int size, const char *format, const qtime_t *tm)
 {
 	std::string text;
@@ -516,52 +351,15 @@ void trap_GetTimeString(char *buffer, int size, const char *format, const qtime_
 	Q_strncpyz(buffer, text.c_str(), size);
 }
 
-int trap_Parse_AddGlobalDefine(const char *define)
-{
-	int res;
-	VM::SendMsg<ParseAddGlobalDefineMsg>(define, res);
-	return res;
-}
-
-int trap_Parse_LoadSource(const char *filename)
-{
-	int res;
-	VM::SendMsg<ParseLoadSourceMsg>(filename, res);
-	return res;
-}
-
-int trap_Parse_FreeSource(int handle)
-{
-	int res;
-	VM::SendMsg<ParseFreeSourceMsg>(handle, res);
-	return res;
-}
-
-int trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
-{
-	int res;
-	VM::SendMsg<ParseReadTokenMsg>(handle, res, *pc_token);
-	return res;
-}
-
-int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
-{
-	int res;
-	std::string filename2;
-	VM::SendMsg<ParseSourceFileAndLineMsg>(handle, res, filename2, *line);
-	Q_strncpyz(filename, filename2.c_str(), 128);
-	return res;
-}
-
 void trap_QuoteString(const char *str, char *buffer, int size)
 {
 	Q_strncpyz(buffer, Cmd::Escape(str).c_str(), size);
 }
 
-int trap_BotAllocateClient(int clientNum)
+int trap_BotAllocateClient( void )
 {
 	int res;
-	VM::SendMsg<BotAllocateClientMsg>(clientNum, res);
+	VM::SendMsg<BotAllocateClientMsg>(res);
 	return res;
 }
 

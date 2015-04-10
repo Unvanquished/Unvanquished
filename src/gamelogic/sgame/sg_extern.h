@@ -22,8 +22,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#ifndef G_EXTERN_H_
-#define G_EXTERN_H_
+#ifndef SG_EXTERN_H_
+#define SG_EXTERN_H_
 
 // -----
 // world
@@ -41,7 +41,6 @@ extern gclient_t *g_clients;
 // cvars
 // -----
 
-extern  vmCvar_t g_dedicated;
 extern  vmCvar_t g_cheats;
 extern  vmCvar_t g_maxclients;
 extern  vmCvar_t g_maxGameClients;
@@ -64,7 +63,6 @@ extern  vmCvar_t g_debugDamage;
 extern  vmCvar_t g_debugKnockback;
 extern  vmCvar_t g_debugTurrets;
 extern  vmCvar_t g_debugFire;
-extern  vmCvar_t g_synchronousClients;
 extern  vmCvar_t g_motd;
 extern  vmCvar_t g_warmup;
 extern  vmCvar_t g_doWarmup;
@@ -86,9 +84,6 @@ extern  vmCvar_t g_botKickVotesAllowed;
 extern  vmCvar_t g_botKickVotesAllowedThisMap;
 extern  vmCvar_t g_teamForceBalance;
 extern  vmCvar_t g_smoothClients;
-extern  vmCvar_t pmove_fixed;
-extern  vmCvar_t pmove_msec;
-extern  vmCvar_t pmove_accurate;
 
 extern  vmCvar_t g_initialMineRate;
 extern  vmCvar_t g_initialBuildPoints;
@@ -215,4 +210,4 @@ extern vmCvar_t g_bot_persistent;
 extern vmCvar_t g_bot_buildLayout;
 extern vmCvar_t g_bot_debug;
 
-#endif // G_EXTERN_H_
+#endif // SG_EXTERN_H_

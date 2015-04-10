@@ -33,8 +33,11 @@ Maryland 20850 USA.
 */
 
 #include "client.h"
-#include "../qcommon/q_unicode.h"
-#include "../framework/CommandSystem.h"
+#include "qcommon/q_unicode.h"
+#include "framework/CommandSystem.h"
+#ifdef BUILD_CLIENT
+#include <SDL.h>
+#endif
 
 /*
 
@@ -426,11 +429,12 @@ void Field_BigDraw(const Util::LineEditData& edit, int x, int y, qboolean showCu
 Field_Paste
 ================
 */
-static void Field_Paste(Util::LineEditData& edit, clipboard_t clip )
+static void Field_Paste(Util::LineEditData& edit)
 {
+#ifdef BUILD_CLIENT
 	const char *cbd;
 	int        pasteLen, width;
-	char       *ptr = Sys_GetClipboardData(clip);
+	char       *ptr = SDL_GetClipboardText();
 
 	if ( !ptr )
 	{
@@ -438,7 +442,7 @@ static void Field_Paste(Util::LineEditData& edit, clipboard_t clip )
 	}
 
 	cbd = Com_ClearForeignCharacters( ptr );
-	Z_Free( ptr );
+	SDL_free( ptr );
 
 	// send as if typed, so insert / overstrike works properly
 	pasteLen = strlen( cbd );
@@ -450,6 +454,7 @@ static void Field_Paste(Util::LineEditData& edit, clipboard_t clip )
 		cbd += width;
 		pasteLen -= width;
 	}
+#endif
 }
 
 /*
@@ -462,16 +467,6 @@ in-game talk, and menu fields
 Key events are used for non-printable characters, others are gotten from char events.
 =================
 */
-#ifdef BUILD_TTY_CLIENT
-# define SDL1_case(v)
-#else
-# include "SDL_version.h"
-# if SDL_VERSION_ATLEAST( 2, 0, 0 )
-#  define SDL1_case(v)
-# else
-#  define SDL1_case(v) case v:
-# endif
-#endif
 void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
     key = tolower(key);
 
@@ -480,12 +475,6 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             edit.DeleteNext();
             break;
 
-#ifndef BUILD_TTY_CLIENT
-# if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-        case 'h':
-            if ( keys[ K_CTRL ].down )
-# endif
-#endif
         case K_BACKSPACE:
             edit.DeletePrev();
             break;
@@ -515,7 +504,6 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             break;
 
         case K_HOME:
-		SDL1_case( 1 )
             edit.CursorStart();
             break;
 
@@ -526,13 +514,12 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             break;
 
         case K_END:
-		SDL1_case( 5 )
             edit.CursorEnd();
             break;
 
         case K_INS:
             if (keys[ K_SHIFT ].down) {
-                Field_Paste(edit, SELECTION_PRIMARY);
+                Field_Paste(edit);
             } else {
                 key_overstrikeMode = !key_overstrikeMode;
             }
@@ -542,7 +529,6 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
         //kangz: I'm not sure we *need* this shortcut
         case 't':
             if ( keys[ K_CTRL ].down )
-		SDL1_case( 20 )
 			if( edit->cursor)
 			{
                 char *p, tmp[4];
@@ -566,28 +552,23 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
         */
         case 'v':
             if (keys[ K_CTRL ].down) {
-		SDL1_case( 22 )
-                Field_Paste( edit, SELECTION_CLIPBOARD );
+                Field_Paste( edit );
             }
             break;
         case 'd':
             if (keys[ K_CTRL ].down) {
-		SDL1_case( 4 )
                 edit.DeleteNext();
             }
             break;
         case 'c':
         case 'u':
             if (keys[ K_CTRL ].down) {
-		SDL1_case( 3 )
-		SDL1_case( 21 )
                 edit.Clear();
             }
             break;
         case 'k':
             if (keys[ K_CTRL ].down) {
-		SDL1_case( 11 )
-		edit.DeleteEnd();
+				edit.DeleteEnd();
             }
             break;
     }
@@ -1522,8 +1503,6 @@ static void Key_CompleteEditbind( char *args, int argNum )
 Helper functions for Cmd_If_f & Cmd_ModCase_f
 ===============
 */
-static const char modifierList[] = "shift, ctrl, alt, command/cmd, mode, super, compose, menu; ! negates; e.g. shift,!alt";
-
 static const struct
 {
 	char name[ 8 ];
@@ -1797,7 +1776,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		case K_KP_INS:
 		case K_KP_DEL:
 		case K_KP_HOME:
-			if ( Sys_IsNumLockDown() )
+			if ( IN_IsNumLockDown() )
 			{
 				onlybinds = qtrue;
 			}
@@ -1946,11 +1925,11 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		// Handle any +commands which were invoked on the corresponding key-down
 		Cmd::BufferCommandText(va("keyup %d %d %u", plusCommand.check, key, time));
 
-		if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
+		if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm.IsActive() )
 		{
 			if ( !onlybinds )
 			{
-				VM_Call( cgvm, CG_KEY_EVENT, key, down );
+				cgvm.CGameKeyEvent(key, down);
 			}
 		}
 
@@ -1967,11 +1946,11 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	}
 	else if ( cls.keyCatchers & KEYCATCH_CGAME && !bypassMenu )
 	{
-		if ( cgvm )
+		if ( cgvm.IsActive() )
 		{
 			if ( !onlybinds )
 			{
-				VM_Call( cgvm, CG_KEY_EVENT, key, down );
+				cgvm.CGameKeyEvent(key, down);
 			}
 		}
 	}

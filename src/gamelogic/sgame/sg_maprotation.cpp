@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// g_maprotation.c -- the map rotation system
+// sg_maprotation.c -- the map rotation system
 
-#include "g_local.h"
+#include "sg_local.h"
 
 #define MAX_MAP_ROTATIONS     64
 #define MAX_MAP_ROTATION_MAPS 256

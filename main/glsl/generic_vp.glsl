@@ -22,68 +22,51 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* generic_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec4 		attr_TexCoord0;
-attribute vec4		attr_QTangent;
-attribute vec4		attr_Color;
-
-attribute vec3 		attr_Position2;
-attribute vec4		attr_QTangent2;
-
-uniform float		u_VertexInterpolation;
-
 uniform mat4		u_ColorTextureMatrix;
+#if !defined(USE_VERTEX_SPRITE)
 uniform vec3		u_ViewOrigin;
+#endif
 
 uniform float		u_Time;
 
 uniform vec4		u_ColorModulate;
 uniform vec4		u_Color;
+#if defined(USE_TCGEN_ENVIRONMENT)
 uniform mat4		u_ModelMatrix;
+#endif
 uniform mat4		u_ModelViewProjectionMatrix;
+
+#if defined(USE_VERTEX_SPRITE)
+varying vec2            var_FadeDepth;
+uniform mat4		u_ProjectionMatrixTranspose;
+#elif defined(USE_DEPTH_FADE)
+uniform float           u_DepthScale;
+varying vec2            var_FadeDepth;
+#endif
 
 varying vec2		var_Tex;
 varying vec4		var_Color;
 
-vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
-	vec3 tmp = 2.0 * cross( quat.xyz, vec );
-	return vec + quat.w * tmp + cross( quat.xyz, tmp );
-}
-
 void	main()
 {
 	vec4 position;
-	vec3 normal;
+	localBasis LB;
+	vec4 color;
+	vec2 texCoord, lmCoord;
 
-#if defined(USE_VERTEX_SKINNING)
+	VertexFetch( position, LB, color, texCoord, lmCoord );
+	color = color * u_ColorModulate + u_Color;
 
-	VertexSkinning_P_N(	attr_Position, attr_QTangent,
-				position, normal);
-
-#elif defined(USE_VERTEX_ANIMATION)
-
-	VertexAnimation_P_N(attr_Position, attr_Position2,
-			    attr_QTangent, attr_QTangent2,
-			    u_VertexInterpolation,
-			    position, normal);
-	
-#else
-	position = vec4(attr_Position, 1.0);
-	normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
-#endif
-
-#if defined(USE_DEFORM_VERTEXES)
-	position = DeformPosition2(	position,
-					normal,
-					attr_TexCoord0.st,
-					u_Time);
-#endif
+	DeformVertex( position,
+		      LB.normal,
+		      texCoord,
+		      color,
+		      u_Time);
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
 
 	// transform texcoords
-	vec4 texCoord;
 #if defined(USE_TCGEN_ENVIRONMENT)
 	{
 		// TODO: Explain why only the rotational part of u_ModelMatrix is relevant
@@ -91,22 +74,24 @@ void	main()
 
 		vec3 viewer = normalize(u_ViewOrigin - position.xyz);
 
-		float d = dot(normal, viewer);
+		float d = dot(LB.normal, viewer);
 
-		vec3 reflected = normal * 2.0 * d - viewer;
+		vec3 reflected = LB.normal * 2.0 * d - viewer;
 
-		texCoord.s = 0.5 + reflected.y * 0.5;
-		texCoord.t = 0.5 - reflected.z * 0.5;
-		texCoord.q = 0;
-		texCoord.w = 1;
+		var_Tex = 0.5 + vec2(0.5, -0.5) * reflected.yz;
 	}
 #elif defined(USE_TCGEN_LIGHTMAP)
-	texCoord = vec4(attr_TexCoord0.zw, 0.0, 1.0);
+	var_Tex = (u_ColorTextureMatrix * vec4(lmCoord, 0.0, 1.0)).xy;
 #else
-	texCoord = vec4(attr_TexCoord0.xy, 0.0, 1.0);
+	var_Tex = (u_ColorTextureMatrix * vec4(texCoord, 0.0, 1.0)).xy;
 #endif
 
-	var_Tex = (u_ColorTextureMatrix * texCoord).st;
+#if defined(USE_DEPTH_FADE) || defined(USE_VERTEX_SPRITE)
+	// compute z of end of fading effect
+	vec4 fadeDepth = u_ModelViewProjectionMatrix * (position - u_DepthScale * vec4(LB.normal, 0.0));
+	var_FadeDepth = fadeDepth.zw;
 
-	var_Color = attr_Color * u_ColorModulate + u_Color;
+#endif
+
+	var_Color = color;
 }

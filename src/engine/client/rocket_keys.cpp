@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 #include "rocket.h"
 #include "client.h"
-#include "../qcommon/q_unicode.h"
+#include "qcommon/q_unicode.h"
 
 using namespace Rocket::Core::Input;
 
@@ -209,7 +209,7 @@ KeyModifier Rocket_GetKeyModifiers( void )
 	{
 		mod |= KM_CAPSLOCK;
 	}
-	if ( Sys_IsNumLockDown() )
+	if ( IN_IsNumLockDown() )
 	{
 		mod |= KM_NUMLOCK;
 	}
@@ -217,11 +217,27 @@ KeyModifier Rocket_GetKeyModifiers( void )
 	return static_cast< KeyModifier >( mod );
 }
 
+static bool wasDownBefore = false;
 void Rocket_ProcessMouseClick( int button, qboolean down )
 {
 	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
 	{
 		return;
+	}
+
+	if ( button == K_MOUSE1 )
+	{
+		if ( !down && !wasDownBefore )
+		{
+			return;
+		} else if ( !down && wasDownBefore )
+		{
+			wasDownBefore = false;
+		}
+		else if ( down )
+		{
+			wasDownBefore = true;
+		}
 	}
 
 	int idx = 0;

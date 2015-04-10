@@ -22,8 +22,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#ifndef G_TRAPCALLS_H_
-#define G_TRAPCALLS_H_
+#ifndef SG_TRAPCALLS_H_
+#define SG_TRAPCALLS_H_
 
 void             trap_Print( const char *string );
 void NORETURN    trap_Error( const char *string );
@@ -66,11 +66,10 @@ void             trap_GetUserinfo( int num, char *buffer, int bufferSize );
 void             trap_GetServerinfo( char *buffer, int bufferSize );
 void             trap_AdjustAreaPortalState( gentity_t *ent, qboolean open );
 qboolean         trap_AreasConnected( int area1, int area2 );
-int              trap_BotAllocateClient( int clientNum );
+int              trap_BotAllocateClient( void );
 void             trap_BotFreeClient( int clientNum );
 void             trap_GetUsercmd( int clientNum, usercmd_t *cmd );
 qboolean         trap_GetEntityToken( char *buffer, int bufferSize );
-int              trap_GMTime( qtime_t *qtime );
 void             trap_SendGameStat( const char *data );
 void             trap_AddCommand( const char *cmdName );
 void             trap_RemoveCommand( const char *cmdName );
@@ -110,4 +109,4 @@ void             trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhan
 void             trap_BotRemoveObstacle( qhandle_t handle );
 void             trap_BotUpdateObstacles( void );
 
-#endif // G_TRAPCALLS_H_
+#endif // SG_TRAPCALLS_H_

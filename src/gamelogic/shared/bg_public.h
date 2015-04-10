@@ -335,42 +335,42 @@ typedef enum
 #define EF_DEAD             0x0001 // don't draw a foe marker over players with EF_DEAD
 #define EF_TELEPORT_BIT     0x0002 // toggled every time the origin abruptly changes
 #define EF_PLAYER_EVENT     0x0004 // only used for eType > ET_EVENTS
-#define EF_BMODEL           0x0008
 
 // for missiles:
-#define EF_BOUNCE           0x0016 // for missiles
-#define EF_BOUNCE_HALF      0x0020 // for missiles
-#define EF_NO_BOUNCE_SOUND  0x0040 // for missiles
+#define EF_BOUNCE           0x0008 // for missiles
+#define EF_BOUNCE_HALF      0x0010 // for missiles
+#define EF_NO_BOUNCE_SOUND  0x0020 // for missiles
 
 // buildable flags:
-#define EF_B_SPAWNED        0x0016
-#define EF_B_POWERED        0x0020
-#define EF_B_MARKED         0x0040
-#define EF_B_ONFIRE         0x0080
+#define EF_B_SPAWNED        0x0008
+#define EF_B_POWERED        0x0010
+#define EF_B_MARKED         0x0020
+#define EF_B_ONFIRE         0x0040
+#define EF_B_LOCKON         0x0080
 
 // for players
-#define EF_POWER_AVAILABLE  0x0020
-#define EF_WARN_CHARGE      0x0040 // Lucifer Cannon is about to overcharge
-#define EF_WALLCLIMB        0x0080 // wall walking
-#define EF_WALLCLIMBCEILING 0x0100 // wall walking ceiling hack
-#define EF_NODRAW           0x0200 // may have an event, but no model (unspawned items)
-#define EF_FIRING           0x0400 // for lightning gun
-#define EF_FIRING2          0x0800 // alt fire
-#define EF_FIRING3          0x1000 // third fire
-#define EF_MOVER_STOP       0x2000 // will push otherwise
-#define EF_UNUSED_1         0x4000 // UNUSED
-#define EF_CONNECTION       0x8000 // draw a connection trouble sprite
-#define EF_BLOBLOCKED       0x10000 // caught by a trapper
+#define EF_POWER_AVAILABLE  0x0010
+#define EF_WARN_CHARGE      0x0020 // Lucifer Cannon is about to overcharge
+#define EF_WALLCLIMB        0x0040 // wall walking
+#define EF_WALLCLIMBCEILING 0x0080 // wall walking ceiling hack
+#define EF_NODRAW           0x0100 // may have an event, but no model (unspawned items)
+#define EF_FIRING           0x0200 // for lightning gun
+#define EF_FIRING2          0x0400 // alt fire
+#define EF_FIRING3          0x0800 // third fire
+#define EF_MOVER_STOP       0x1000 // will push otherwise
+#define EF_UNUSED_1         0x2000 // UNUSED
+#define EF_CONNECTION       0x4000 // draw a connection trouble sprite
+#define EF_BLOBLOCKED       0x8000 // caught by a trapper
 
 // entityState_t->modelIndex2 "public flags" when used for client entities
 #define PF_JETPACK_ENABLED  BIT(0)
 #define PF_JETPACK_ACTIVE   BIT(1)
 
 // for beacons:
-#define EF_BC_DYING         BIT(4) // beacon is fading out
-#define EF_BC_ENEMY         BIT(5) // entity/base is from the enemy
-#define EF_BC_TAG_PLAYER    BIT(6) // entity is a player
-#define EF_BC_BASE_OUTPOST  BIT(7) // base is an outpost
+#define EF_BC_DYING         BIT(3) // beacon is fading out
+#define EF_BC_ENEMY         BIT(4) // entity/base is from the enemy
+#define EF_BC_TAG_PLAYER    BIT(5) // entity is a player
+#define EF_BC_BASE_OUTPOST  BIT(6) // base is an outpost
 
 #define EF_BC_TAG_RELEVANT  (EF_BC_ENEMY|EF_BC_TAG_PLAYER)   // relevant flags for tags
 #define EF_BC_BASE_RELEVANT (EF_BC_ENEMY|EF_BC_BASE_OUTPOST) // relevant flags for bases
@@ -413,7 +413,7 @@ typedef enum
   WP_LUCIFER_CANNON,
   WP_LOCKBLOB_LAUNCHER,
   WP_HIVE,
-  WP_TESLAGEN,
+  WP_ROCKETPOD,
   WP_MGTURRET,
 
   // build weapons must remain in a block ← I'm not asking why but I can imagine
@@ -459,6 +459,8 @@ typedef enum
 	MIS_LOCKBLOB,
 	MIS_SLOWBLOB,
 	MIS_BOUNCEBALL,
+	MIS_ROCKET,
+	MIS_SPIKER,
 
 	MIS_NUM_MISSILES
 } missile_t;
@@ -487,11 +489,12 @@ typedef enum
   BA_A_BOOSTER,
   BA_A_HIVE,
   BA_A_LEECH,
+  BA_A_SPIKER,
 
   BA_H_SPAWN,
 
   BA_H_MGTURRET,
-  BA_H_TESLAGEN,
+  BA_H_ROCKETPOD,
 
   BA_H_ARMOURY,
   BA_H_MEDISTAT,
@@ -840,11 +843,12 @@ typedef enum
   BANIM_IDLE1, // inactive idle
   BANIM_IDLE2, // active idle
 
-  BANIM_POWERDOWN, // note: not looped
+  BANIM_POWERDOWN, // BANIM_IDLE1 -> BANIM_IDLE_UNPOWERED
   BANIM_IDLE_UNPOWERED,
 
-  BANIM_CONSTRUCT1,
-  BANIM_CONSTRUCT2, // return to idle state
+  BANIM_CONSTRUCT, // -> BANIM_IDLE1
+
+  BANIM_POWERUP, // BANIM_IDLE_UNPOWERED -> BANIM_IDLE1
 
   BANIM_ATTACK1,
   BANIM_ATTACK2,
@@ -855,8 +859,8 @@ typedef enum
   BANIM_PAIN1,
   BANIM_PAIN2,
 
-  BANIM_DESTROY1,
-  BANIM_DESTROY_UNPOWERED, // if unpowered
+  BANIM_DESTROY, // BANIM_IDLE1 -> BANIM_DESTROYED
+  BANIM_DESTROY_UNPOWERED, // BANIM_IDLE_UNPOWERED -> BANIM_DESTROYED
   BANIM_DESTROYED,
 
   MAX_BUILDABLE_ANIMATIONS
@@ -966,7 +970,7 @@ typedef enum
 
 // means of death
 // keep modNames[] in g_combat.c in sync with this list!
-// keep bg_meansOfDeathData[] in g_misc.c in sync, too!
+// keep bg_meansOfDeathData[] in bg_misc.c in sync, too!
 // TODO: Get rid of the former and use the latter instead
 typedef enum
 {
@@ -1014,12 +1018,13 @@ typedef enum
   MOD_SWARM,
 
   MOD_HSPAWN,
-  MOD_TESLAGEN,
+  MOD_ROCKETPOD,
   MOD_MGTURRET,
   MOD_REACTOR,
 
   MOD_ASPAWN,
   MOD_ATUBE,
+  MOD_SPIKER,
   MOD_OVERMIND,
   MOD_DECONSTRUCT,
   MOD_REPLACE,
@@ -1050,7 +1055,7 @@ typedef enum
 	//implicit
 	BCT_HEALTH,
 	BCT_AMMO,
-
+	
 	NUM_BEACON_TYPES
 } beaconType_t;
 
@@ -1082,10 +1087,10 @@ typedef struct
 #ifdef BUILD_CGAME
 	const char    *text[ 4 ];
 	const char    *desc;
-	qhandle_t     icon[ 4 ];
+	qhandle_t     icon[ 2 ][ 4 ];
 	sfxHandle_t   inSound;
 	sfxHandle_t   outSound;
-#endif
+#endif	
 
 	int           decayTime;
 } beaconAttributes_t;
@@ -1139,8 +1144,6 @@ typedef struct
 
 	int      cost;
 	int      value;
-
-	float    radarFadeOut;
 } classAttributes_t;
 
 typedef struct
@@ -1199,8 +1202,6 @@ typedef struct
 	team_t      team;
 	weapon_t    buildWeapon;
 
-	int         idleAnim;
-
 	int         buildTime;
 	qboolean    usable;
 
@@ -1212,8 +1213,6 @@ typedef struct
 
 	qboolean    transparentTest;
 	qboolean    uniqueTest;
-
-	float       radarFadeOut;
 } buildableAttributes_t;
 
 typedef struct
@@ -1221,6 +1220,7 @@ typedef struct
 	char   models[ MAX_BUILDABLE_MODELS ][ MAX_QPATH ];
 
 	float  modelScale;
+	vec3_t modelRotation;
 	vec3_t mins;
 	vec3_t maxs;
 	float  zOffset;
@@ -1306,9 +1306,13 @@ typedef struct
 	float          lag;
 	int            flags;
 	qboolean       doKnockback;
+	qboolean       doLocationalDamage;
 
 	// display
 	qhandle_t      model;
+	float          modelScale;
+	vec3_t         modelRotation;
+
 	sfxHandle_t    sound;
 	qboolean       usesDlight;
 	float          dlight;
@@ -1331,6 +1335,7 @@ typedef struct
 	// impact
 	qboolean       alwaysImpact;
 	qhandle_t      impactParticleSystem;
+	qboolean       impactFlightDirection;
 	qboolean       usesImpactMark;
 	qhandle_t      impactMark;
 	qhandle_t      impactMarkSize;
@@ -1343,6 +1348,7 @@ qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
                                 vec2_t angles, vec3_t dir1, vec3_t dir2 );
 void     BG_BuildEntityDescription( char *str, size_t size, entityState_t *es );
 qboolean BG_IsMainStructure( entityState_t *es );
+void     BG_MoveOriginToBBOXCenter( vec3_t point, const vec3_t mins, const vec3_t maxs );
 
 qboolean BG_WeaponIsFull(int weapon, int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, const int stats[] );
@@ -1452,7 +1458,7 @@ qboolean BG_ClassUnlocked( int class_ );
 unlockableType_t              BG_UnlockableType( int num );
 int                           BG_UnlockableTypeIndex( int num );
 momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, team_t team, int *threshold, qboolean *unlocked );
-#ifdef BUILD_GAME
+#ifdef BUILD_SGAME
 void     G_UpdateUnlockables( void );
 #endif
 #ifdef BUILD_CGAME

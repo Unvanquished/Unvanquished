@@ -19,7 +19,7 @@ along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-#include "g_local.h"
+#include "sg_local.h"
 
 #ifndef __BOT_AI_HEADER
 #define __BOT_AI_HEADER
@@ -41,7 +41,7 @@ typedef enum
 	E_A_LEECH,
 	E_H_SPAWN,
 	E_H_MGTURRET,
-	E_H_TESLAGEN,
+	E_H_ROCKETPOD,
 	E_H_ARMOURY,
 	E_H_MEDISTAT,
 	E_H_DRILL,

@@ -21,7 +21,7 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "g_local.h"
+#include "sg_local.h"
 
 #define MINING_PERIOD 1000
 

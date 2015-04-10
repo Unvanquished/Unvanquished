@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __BOT_PARSE_HEADER
 #define __BOT_PARSE_HEADER
 
-#include "g_bot_ai.h"
+#include "sg_bot_ai.h"
 
 #define allocNode( T ) ( T * ) BG_Alloc( sizeof( T ) );
 #define stringify( v ) va( #v " %d", v )

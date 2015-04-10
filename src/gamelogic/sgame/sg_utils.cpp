@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// g_utils.c -- misc utility functions for game module
+// sg_utils.c -- misc utility functions for game module
 
-#include "g_local.h"
+#include "sg_local.h"
 #include "CBSEEntities.h"
 
 typedef struct
@@ -1069,4 +1069,25 @@ team_t G_Enemy( team_t team )
 // TODO: Add LocationComponent
 float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
 	return Distance(ent1->s.origin, ent2->s.origin);
+}
+
+/**
+ * @return Whether ent is a player or buildable with positive health.
+ */
+bool G_Alive( gentity_t *ent )
+{
+	if ( !ent->inuse ) return false;
+
+	switch ( ent->s.eType )
+	{
+		case ET_PLAYER:
+			return ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
+			         ent->client->ps.stats[ STAT_HEALTH ] > 0 );
+
+		case ET_BUILDABLE:
+			return ( ent->health > 0 );
+
+		default:
+			return false;
+	}
 }

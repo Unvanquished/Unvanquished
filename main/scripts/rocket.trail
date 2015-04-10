@@ -1,0 +1,27 @@
+rocketTS
+{
+	// fire
+	beam
+	{
+		shader      gfx/weapons/pulserifletrail
+		segments    4
+		width       3 0
+		alpha       0.8 0
+		segmentTime 25
+		textureType stretch 1 0
+
+		jitter      0 10
+	}
+
+	// smoke
+	beam
+	{
+		shader      gfx/weapons/smoke
+		segments    8
+		width       2 2
+		alpha       0.15 0
+		segmentTime 50
+		textureType repeat front 500
+	}
+}
+

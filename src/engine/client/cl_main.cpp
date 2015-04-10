@@ -35,22 +35,23 @@ Maryland 20850 USA.
 // cl_main.c  -- client main loop
 
 #include "client.h"
-#include "../qcommon/q_unicode.h"
+#include "qcommon/q_unicode.h"
 
-#include "../framework/CommandSystem.h"
-#include "../framework/CvarSystem.h"
+#include "framework/CommandSystem.h"
+#include "framework/CvarSystem.h"
 
-#include "../sys/sys_loadlib.h"
-#include "../sys/sys_local.h"
-#include "../botlib/bot_debug.h"
+#include "botlib/bot_debug.h"
 
 cvar_t *cl_wavefilerecord;
 
 #include "libmumblelink.h"
-#include "../qcommon/crypto.h"
+#include "qcommon/crypto.h"
 
 #ifndef _WIN32
 #include <sys/stat.h>
+#endif
+#ifdef BUILD_CLIENT
+#include <SDL.h>
 #endif
 
 cvar_t *cl_useMumble;
@@ -169,7 +170,7 @@ cvar_t             *cl_cgameSyscallStats;
 clientActive_t     cl;
 clientConnection_t clc;
 clientStatic_t     cls;
-vm_t               *cgvm;
+CGameVM            cgvm;
 
 // Structure containing functions exported from refresh DLL
 refexport_t        re;
@@ -886,7 +887,6 @@ void CL_Record( const char *name )
 	byte          bufData[ MAX_MSGLEN ];
 	entityState_t *ent;
 	entityState_t nullstate;
-	char          *s;
 	int           len;
 
 	// open the demo file
@@ -921,15 +921,14 @@ void CL_Record( const char *name )
 	// configstrings
 	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
 	{
-		if ( !cl.gameState.stringOffsets[ i ] )
+		if ( cl.gameState[i].empty() )
 		{
 			continue;
 		}
 
-		s = cl.gameState.stringData + cl.gameState.stringOffsets[ i ];
 		MSG_WriteByte( &buf, svc_configstring );
 		MSG_WriteShort( &buf, i );
-		MSG_WriteBigString( &buf, s );
+		MSG_WriteBigString( &buf, cl.gameState[i].c_str() );
 	}
 
 	// baselines
@@ -1327,48 +1326,6 @@ static DemoCmd DemoCmdRegistration;
 
 /*
 ==================
-CL_DemoState
-
-Returns the current state of the demo system
-==================
-*/
-demoState_t CL_DemoState( void )
-{
-	if ( clc.demoplaying )
-	{
-		return DS_PLAYBACK;
-	}
-	else if ( clc.demorecording )
-	{
-		return DS_RECORDING;
-	}
-	else
-	{
-		return DS_NONE;
-	}
-}
-
-/*
-==================
-CL_DemoPos
-
-Returns the current position of the demo
-==================
-*/
-int CL_DemoPos( void )
-{
-	if ( clc.demoplaying || clc.demorecording )
-	{
-		return FS_FTell( clc.demofile );
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-/*
-==================
 CL_NextDemo
 
 Called when a demo or cinematic finishes
@@ -1391,25 +1348,6 @@ void CL_NextDemo( void )
 	Cvar_Set( "nextdemo", "" );
 	Cmd::BufferCommandTextAfter(v, true);
 	Cmd::ExecuteCommandBuffer();
-}
-
-/*
-==================
-CL_DemoName
-
-Returns the name of the demo
-==================
-*/
-void CL_DemoName( char *buffer, int size )
-{
-	if ( clc.demoplaying || clc.demorecording )
-	{
-		Q_strncpyz( buffer, clc.demoName, size );
-	}
-	else if ( size >= 1 )
-	{
-		buffer[ 0 ] = '\0';
-	}
 }
 
 //======================================================================
@@ -1516,8 +1454,9 @@ void CL_MapLoading( void )
 		cls.state = CA_CONNECTED; // so the connect screen is drawn
 		memset( cls.updateInfoString, 0, sizeof( cls.updateInfoString ) );
 		memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
-		memset( &cl.gameState, 0, sizeof( cl.gameState ) );
+		cl.gameState.fill("");
 		clc.lastPacketSentTime = -9999;
+		cgvm.CGameRocketFrame();
 		SCR_UpdateScreen();
 	}
 	else
@@ -1529,6 +1468,7 @@ void CL_MapLoading( void )
 		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = CA_CHALLENGING; // so the connect screen is drawn
 		cls.keyCatchers = 0;
+		cgvm.CGameRocketFrame();
 		SCR_UpdateScreen();
 		clc.connectTime = -RETRANSMIT_TIMEOUT;
 		NET_StringToAdr( cls.servername, &clc.serverAddress, NA_UNSPEC );
@@ -1547,7 +1487,8 @@ Called before parsing a gamestate
 */
 void CL_ClearState( void )
 {
-	Com_Memset( &cl, 0, sizeof( cl ) );
+	cl.~clientActive_t();
+	new(&cl) clientActive_t{}; // Using {} instead of () to work around MSVC bug
 }
 
 /*
@@ -1693,7 +1634,7 @@ void CL_Disconnect( qboolean showMainMenu )
 
 	// show_bug.cgi?id=589
 	// don't try a restart if rocket is NULL, as we might be in the middle of a restart already
-	if ( cgvm && cls.state > CA_DISCONNECTED )
+	if ( cgvm.IsActive() && cls.state > CA_DISCONNECTED )
 	{
 		// restart the UI
 		cls.state = CA_DISCONNECTED;
@@ -1702,7 +1643,8 @@ void CL_Disconnect( qboolean showMainMenu )
 		CL_ShutdownCGame();
 
 		// init the UI
-		CL_InitUI();
+		cgvm.Start();
+		cgvm.CGameRocketInit();
 	}
 	else
 	{
@@ -1789,7 +1731,6 @@ void CL_RequestMotd( void )
 	             "%i", ( ( rand() << 16 ) ^ rand() ) ^ Com_Milliseconds() );
 
 	Info_SetValueForKey( info, "challenge", cls.updateChallenge, qfalse );
-	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string, qfalse );
 	Info_SetValueForKey( info, "version", com_version->string, qfalse );
 
 	NET_OutOfBandPrint( NS_CLIENT, cls.updateServer, "getmotd%s", info );
@@ -2158,7 +2099,7 @@ doesn't know what graphics to reload
 */
 
 #ifdef _WIN32
-extern void Sys_In_Restart_f( void );  // fretn
+extern void IN_Restart( void );  // fretn
 
 #endif
 
@@ -2173,9 +2114,6 @@ void CL_Vid_Restart_f( void )
 	}
 
 // XreaL END
-
-	// RF, don't show percent bar, since the memory usage will just sit at the same level anyway
-	com_expectedhunkusage = -1;
 
 	// don't let them loop during the restart
 	Audio::StopAllSounds();
@@ -2212,7 +2150,7 @@ void CL_Vid_Restart_f( void )
 	CL_StartHunkUsers();
 
 #ifdef _WIN32
-	Sys_In_Restart_f(); // fretn
+	IN_Restart(); // fretn
 #endif
 
 	// start the cgame if connected
@@ -2236,7 +2174,8 @@ void CL_UI_Restart_f( void )
 	// NERVE - SMF
 	Rocket_Shutdown();
 	// init the UI
-	CL_InitUI();
+	cgvm.Start();
+	cgvm.CGameRocketInit();
 }
 
 /*
@@ -2299,14 +2238,12 @@ void CL_Configstrings_f( void )
 
 	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
 	{
-		ofs = cl.gameState.stringOffsets[ i ];
-
-		if ( !ofs )
+		if (cl.gameState[i].empty())
 		{
 			continue;
 		}
 
-		Com_Printf( "%4i: %s\n", i, cl.gameState.stringData + ofs );
+		Com_Printf( "%4i: %s\n", i, cl.gameState[i].c_str() );
 	}
 }
 
@@ -2452,7 +2389,7 @@ void CL_DownloadsComplete( void )
 		cls.downloadRestart = qfalse;
 
 		FS::PakPath::ClearPaks();
-		FS_LoadServerPaks(Cvar_VariableString("sv_paks")); // We possibly downloaded a pak, restart the file system to load it
+		FS_LoadServerPaks(Cvar_VariableString("sv_paks"), clc.demoplaying); // We possibly downloaded a pak, restart the file system to load it
 
 		if ( !cls.bWWWDlDisconnected )
 		{
@@ -3083,7 +3020,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 				if ( addresses[ numservers ].port == cls.serverLinks[ j ].port4 && !memcmp( addresses[ numservers ].ip, cls.serverLinks[ j ].ip, 4 ) )
 				{
 					// found it, so look up the corresponding address
-					char s[ NET_ADDRSTRMAXLEN ];
+					char s[ NET_ADDR_W_PORT_STR_MAX_LEN ];
 
 					// hax to get the IP address & port as a string (memcmp etc. SHOULD work, but...)
 					cls.serverLinks[ j ].type = NA_IP6;
@@ -3135,7 +3072,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 				if ( addresses[ numservers ].port == cls.serverLinks[ j ].port6 && !memcmp( addresses[ numservers ].ip6, cls.serverLinks[ j ].ip6, 16 ) )
 				{
 					// found it, so look up the corresponding address
-					char s[ NET_ADDRSTRMAXLEN ];
+					char s[ NET_ADDR_W_PORT_STR_MAX_LEN ];
 
 					// hax to get the IP address & port as a string (memcmp etc. SHOULD work, but...)
 					cls.serverLinks[ j ].type = NA_IP;
@@ -3664,6 +3601,9 @@ void CL_Frame( int msec )
 	// decide on the serverTime to render
 	CL_SetCGameTime();
 
+	// DOM updates from cgame
+	cgvm.CGameRocketFrame();
+
 	// Update librocket
 	Rocket_Update();
 
@@ -3683,8 +3623,6 @@ void CL_Frame( int msec )
 	SCR_RunCinematic();
 
 	Con_RunConsole();
-
-	CL_CGameStats();
 
 	cls.framecount++;
 }
@@ -3826,7 +3764,8 @@ void CL_StartHunkUsers( void )
 	{
 		cls.uiStarted = qtrue;
 
-		CL_InitUI();
+		cgvm.Start();
+		cgvm.CGameRocketInit();
 	}
 }
 
@@ -4157,7 +4096,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "irc_quit", CL_IRCInitiateShutdown );
 	Cmd_AddCommand( "irc_say", CL_IRCSay );
 
-	Cmd_AddCommand( "updatehunkusage", CL_UpdateLevelHunkUsage );
 	Cmd_AddCommand( "updatescreen", SCR_UpdateScreen );
 	// done.
 
@@ -4246,7 +4184,6 @@ void CL_Shutdown( void )
 	Cmd_RemoveCommand( "showip" );
 	Cmd_RemoveCommand( "model" );
 
-	Cmd_RemoveCommand( "updatehunkusage" );
 	Cmd_RemoveCommand( "wav_record" );
 	Cmd_RemoveCommand( "wav_stoprecord" );
 	// done.
@@ -4499,7 +4436,7 @@ serverStatus_t *CL_GetServerStatus( netadr_t from )
 CL_ServerStatus
 ===================
 */
-int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
+int CL_ServerStatus( const char *serverAddress, char *serverStatusString, int maxLen )
 {
 	int            i;
 	netadr_t       to;
@@ -5272,8 +5209,9 @@ CL_GetClipboardData
 */
 void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 {
+#ifdef BUILD_CLIENT
 	int         i, j;
-	char       *cbd = Sys_GetClipboardData( clip );
+	char       *cbd = SDL_GetClipboardText();
 	const char *clean;
 
 	if ( !cbd )
@@ -5283,7 +5221,7 @@ void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 	}
 
 	clean = Com_ClearForeignCharacters( cbd ); // yes, I know
-	Z_Free( cbd );
+	SDL_free( cbd );
 
 	i = j = 0;
 	while ( clean[ i ] )
@@ -5318,4 +5256,7 @@ void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 	}
 
 	buf[ j ] = '\0';
+#else
+	buf[ 0 ] = '\0';
+#endif
 }

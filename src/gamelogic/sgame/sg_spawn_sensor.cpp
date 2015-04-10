@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "g_local.h"
-#include "g_spawn.h"
+#include "sg_local.h"
+#include "sg_spawn.h"
 
 //the same as InitTrigger
 void InitBrushSensor( gentity_t *self )
@@ -489,7 +489,7 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 	}
 	else
 	{
-		shouldFire = qfalse;
+		shouldFire = qtrue;
 	}
 
 	if( shouldFire == !self->conditions.negated )

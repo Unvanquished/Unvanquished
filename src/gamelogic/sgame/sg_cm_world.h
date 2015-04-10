@@ -32,12 +32,12 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// g_cm_world.h -- world query functions
+// sg_cm_world.h -- world query functions
 
-#ifndef G_CM_WORLD_H_
-#define G_CM_WORLD_H_
+#ifndef SG_CM_WORLD_H_
+#define SG_CM_WORLD_H_
 
-#include "../../common/cm/cm_public.h"
+#include "common/cm/cm_public.h"
 
 void G_CM_ClearWorld( void );
 
@@ -99,4 +99,4 @@ qboolean G_CM_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity
 
 void G_CM_SetBrushModel( gentity_t *ent, const char *name );
 
-#endif // G_CM_WORLD_H_
+#endif // SG_CM_WORLD_H_

@@ -81,6 +81,11 @@ void Tess_CheckOverflow( int verts, int indexes )
 		Tess_CheckVBOAndIBO( tess.vbo, tess.ibo );
 	}
 
+	if ( tess.buildingVBO )
+	{
+		return;
+	}
+
 	if ( tess.numVertexes + verts < SHADER_MAX_VERTEXES && tess.numIndexes + indexes < SHADER_MAX_INDEXES )
 	{
 		return;
@@ -159,7 +164,7 @@ static qboolean Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIn
 		return qfalse;
 	}
 
-	if ( tess.skipVBO || ShaderRequiresCPUDeforms( tess.surfaceShader ) || tess.stageIteratorFunc == &Tess_StageIteratorSky )
+	if ( tess.skipVBO || tess.stageIteratorFunc == &Tess_StageIteratorSky )
 	{
 		return qfalse;
 	}
@@ -387,6 +392,47 @@ void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const vec4_t color )
 	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, qtrue );
 }
 
+void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, float rotation )
+{
+	int    i;
+	int    ndx;
+
+	GLimp_LogComment( "--- Tess_AddSprite ---\n" );
+
+	Tess_CheckOverflow( 4, 6 );
+
+	ndx = tess.numVertexes;
+
+	// triangle indexes for a simple quad
+	tess.indexes[ tess.numIndexes     ] = ndx;
+	tess.indexes[ tess.numIndexes + 1 ] = ndx + 1;
+	tess.indexes[ tess.numIndexes + 2 ] = ndx + 3;
+
+	tess.indexes[ tess.numIndexes + 3 ] = ndx + 3;
+	tess.indexes[ tess.numIndexes + 4 ] = ndx + 1;
+	tess.indexes[ tess.numIndexes + 5 ] = ndx + 2;
+
+	for ( i = 0; i < 4; i++ )
+	{
+		vec4_t texCoord;
+		vec4_t orientation;
+
+		Vector4Set( texCoord, 0.5f * (i & 2), 0.5f * ( (i + 1) & 2 ),
+			    0.5f * (i & 2), 0.5f * ( (i + 1) & 2 ) );
+
+		VectorCopy( center, tess.verts[ ndx + i ].xyz );
+		Vector4Copy( color, tess.verts[ ndx + i ].color );
+		floatToHalf( texCoord, tess.verts[ ndx + i ].texCoords );
+		Vector4Set( orientation, rotation, 0.0f, 0.0f, radius );
+		floatToHalf( orientation, tess.verts[ ndx + i ].spriteOrientation );
+	}
+
+	tess.numVertexes += 4;
+	tess.numIndexes += 6;
+
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD | ATTR_ORIENTATION;
+}
+
 void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const vec4_t colorf )
 {
 	int k;
@@ -583,42 +629,47 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 Tess_SurfaceSprite
 ==============
 */
+#define NORMAL_EPSILON 0.0001
+
 static void Tess_SurfaceSprite( void )
 {
-	vec3_t left, up;
+	vec3_t delta, left, up;
 	float  radius;
 	vec4_t color;
 
 	GLimp_LogComment( "--- Tess_SurfaceSprite ---\n" );
 
-	// calculate the xyz locations for the four corners
 	radius = backEnd.currentEntity->e.radius;
 
-	if ( backEnd.currentEntity->e.rotation == 0 )
-	{
-		VectorScale( backEnd.viewParms.orientation.axis[ 1 ], radius, left );
-		VectorScale( backEnd.viewParms.orientation.axis[ 2 ], radius, up );
+	if( tess.surfaceShader->autoSpriteMode == 1 ) {
+		// the calculations are done in GLSL shader
+
+		Tess_AddSprite( backEnd.currentEntity->e.origin, 
+				backEnd.currentEntity->e.shaderRGBA,
+				radius, backEnd.currentEntity->e.rotation );
+		return;
 	}
-	else
-	{
-		float s, c;
-		float ang;
 
-		ang = M_PI * backEnd.currentEntity->e.rotation / 180;
-		s = sin( ang );
-		c = cos( ang );
+	VectorSubtract( backEnd.currentEntity->e.origin, backEnd.viewParms.pvsOrigin, delta );
 
-		VectorScale( backEnd.viewParms.orientation.axis[ 1 ], c * radius, left );
-		VectorMA( left, -s * radius, backEnd.viewParms.orientation.axis[ 2 ], left );
+	if( VectorNormalize( delta ) < NORMAL_EPSILON )
+		return;
 
-		VectorScale( backEnd.viewParms.orientation.axis[ 2 ], c * radius, up );
-		VectorMA( up, s * radius, backEnd.viewParms.orientation.axis[ 1 ], up );
-	}
+	CrossProduct( backEnd.viewParms.orientation.axis[ 2 ], delta, left );
+
+	if( VectorNormalize( left ) < NORMAL_EPSILON )
+		VectorSet( left, 1, 0, 0 );
+
+	if( backEnd.currentEntity->e.rotation != 0 )
+		RotatePointAroundVector( left, delta, left, backEnd.currentEntity->e.rotation );
+
+	CrossProduct( delta, left, up );
+
+	VectorScale( left, radius, left );
+	VectorScale( up, radius, up );
 
 	if ( backEnd.viewParms.isMirror )
-	{
 		VectorSubtract( vec3_origin, left, left );
-	}
 
 	color[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
 	color[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );

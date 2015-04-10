@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_models.c -- model loading and caching
 #include "tr_local.h"
-#include "../../common/Maths.h"
 
 #define LL(x) x = LittleLong(x)
 #define LF(x) x = LittleFloat(x)
@@ -294,9 +293,6 @@ qboolean RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Ou
 	tr.worldEntity.e.shaderRGBA[ 3 ] = 255;
 
 	tr.worldEntity.e.nonNormalizedAxes = qfalse;
-
-	// RB: world will be never ignored by occusion query test
-	tr.worldEntity.occlusionQuerySamples = 1;
 
 	tr.registered = qtrue;
 

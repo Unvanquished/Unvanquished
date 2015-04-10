@@ -36,7 +36,6 @@ Maryland 20850 USA.
 #include "q_shared.h"
 #include "q_unicode.h"
 
-#ifndef Q3_VM
 /*
 ============================================================================
 
@@ -254,7 +253,7 @@ float MemStreamGetFloat( memStream_t *s )
 
 	return LittleFloat( c.f );
 }
-#endif
+
 //=============================================================================
 
 float Com_Clamp( float min, float max, float value )
@@ -1671,7 +1670,6 @@ int Com_HexStrToInt( const char *str )
 	return -1;
 }
 
-#ifndef Q3_VM
 /*
 ===================
 Com_QuoteStr
@@ -1841,7 +1839,7 @@ const char *Com_ClearForeignCharacters( const char *str )
 
 	return clean;
 }
-#endif
+
 /*
 ============================================================================
 
@@ -3120,3 +3118,54 @@ void Q_ParseNewlines( char *dest, const char *src, int destsize )
 }
 
 //====================================================================
+
+/* Internals for Com_RealTime & Com_GMTime */
+static int internalTime( qtime_t *qtime, struct tm *( *timefunc )( const time_t * ) )
+{
+	time_t    t;
+	struct tm *tms;
+
+	t = time( NULL );
+
+	if ( !qtime )
+	{
+		return t;
+	}
+
+	tms = timefunc( &t );
+
+	if ( tms )
+	{
+		qtime->tm_sec = tms->tm_sec;
+		qtime->tm_min = tms->tm_min;
+		qtime->tm_hour = tms->tm_hour;
+		qtime->tm_mday = tms->tm_mday;
+		qtime->tm_mon = tms->tm_mon;
+		qtime->tm_year = tms->tm_year;
+		qtime->tm_wday = tms->tm_wday;
+		qtime->tm_yday = tms->tm_yday;
+		qtime->tm_isdst = tms->tm_isdst;
+	}
+
+	return t;
+}
+
+/*
+================
+Com_RealTime
+================
+*/
+int Com_RealTime( qtime_t *qtime )
+{
+	return internalTime( qtime, localtime );
+}
+
+/*
+================
+Com_GMTime
+================
+*/
+int Com_GMTime( qtime_t *qtime )
+{
+	return internalTime( qtime, gmtime );
+}

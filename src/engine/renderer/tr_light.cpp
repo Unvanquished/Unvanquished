@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_light.c
 #include "tr_local.h"
-#include "../../common/Maths.h"
 
 /*
 =============
@@ -255,20 +254,6 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 		ambientLight[ 2 ] = r_forceAmbient->value;
 	}
 
-//----(SA)  added
-	// cheats?  check for single player?
-	if ( tr.lightGridMulDirected )
-	{
-		VectorScale( directedLight, tr.lightGridMulDirected, directedLight );
-	}
-
-	if ( tr.lightGridMulAmbient )
-	{
-		VectorScale( ambientLight, tr.lightGridMulAmbient, ambientLight );
-	}
-
-//----(SA)  end
-
 	return qtrue;
 }
 
@@ -345,24 +330,12 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 		VectorNormalize( ent->lightDir );
 	}
 
-	if ( ent->e.hilightIntensity )
-	{
-		// level of intensity was set because the item was looked at
-		ent->ambientLight[ 0 ] += tr.identityLight * 0.5f * ent->e.hilightIntensity;
-		ent->ambientLight[ 1 ] += tr.identityLight * 0.5f * ent->e.hilightIntensity;
-		ent->ambientLight[ 2 ] += tr.identityLight * 0.5f * ent->e.hilightIntensity;
-	}
-	else if ( ( ent->e.renderfx & RF_MINLIGHT ) ) // && VectorLength(ent->ambientLight) <= 0)
+	if ( ( ent->e.renderfx & RF_MINLIGHT ) ) // && VectorLength(ent->ambientLight) <= 0)
 	{
 		// give everything a minimum light add
 		ent->ambientLight[ 0 ] += tr.identityLight * 0.125f;
 		ent->ambientLight[ 1 ] += tr.identityLight * 0.125f;
 		ent->ambientLight[ 2 ] += tr.identityLight * 0.125f;
-	}
-
-	if ( ent->e.entityNum < MAX_CLIENTS && ( refdef->rdflags & RDF_SNOOPERVIEW ) )
-	{
-		VectorSet( ent->ambientLight, 0.96f, 0.96f, 0.96f );  // allow a little room for flicker from directed light
 	}
 }
 
@@ -963,11 +936,6 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	ia->scissorWidth = light->scissor.coords[ 2 ] - light->scissor.coords[ 0 ];
 	ia->scissorHeight = light->scissor.coords[ 3 ] - light->scissor.coords[ 1 ];
 
-	if ( glConfig2.occlusionQueryAvailable )
-	{
-		ia->noOcclusionQueries = light->noOcclusionQueries;
-	}
-
 	if ( light->isStatic )
 	{
 		tr.pc.c_slightInteractions++;
@@ -1161,10 +1129,6 @@ static void R_AddEdgeToLightScissor( trRefLight_t *light, const vec3_t in_world1
 		// only clip against near plane
 		frust = &tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ];
 		int sides = R_ClipEdgeToPlane( *frust, in_world1, in_world2, clip1, clip2 );
-		if ( glConfig2.occlusionQueryAvailable && sides != 3 )
-		{
-			light->noOcclusionQueries = qtrue;
-		}
 		if ( !sides )
 		{
 			return;
@@ -1180,14 +1144,6 @@ static void R_AddEdgeToLightScissor( trRefLight_t *light, const vec3_t in_world1
 			frust = &tr.viewParms.frustums[ 0 ][ i ];
 
 			int sides = R_ClipEdgeToPlane( *frust, in_world1, in_world2, clip1, clip2 );
-
-			if ( glConfig2.occlusionQueryAvailable && i == FRUSTUM_NEAR )
-			{
-				if ( sides != 3 )
-				{
-					light->noOcclusionQueries = qtrue;
-				}
-			}
 
 			if ( !sides )
 			{
@@ -1216,20 +1172,6 @@ void R_SetupLightScissor( trRefLight_t *light )
 	light->scissor.coords[ 1 ] = tr.viewParms.viewportY;
 	light->scissor.coords[ 2 ] = tr.viewParms.viewportX + tr.viewParms.viewportWidth;
 	light->scissor.coords[ 3 ] = tr.viewParms.viewportY + tr.viewParms.viewportHeight;
-
-	if ( glConfig2.occlusionQueryAvailable )
-	{
-		light->noOcclusionQueries = qfalse;
-	}
-
-	if ( r_lightScissors->integer == 0 )
-	{
-		if ( glConfig2.occlusionQueryAvailable )
-		{
-			light->noOcclusionQueries = qtrue;
-		}
-		return;
-	}
 
 	// transform world light corners to eye space -> clip space -> window space
 	// and extend the light scissor's mins maxs by resulting window coords

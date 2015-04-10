@@ -60,7 +60,7 @@
 				<h2> Overall </h2>
 				<row>
 					<input cvar="g_bot_buy" type="checkbox" />
-					<h3> Human bots purchase weapons/items </h3>
+					<h3> Human bots purchase equipment </h3>
 				</row>
 				<row>
 					<input cvar="g_bot_repair" type="checkbox" />
@@ -70,7 +70,7 @@
 				<h2> Individually </h2>
 				<row>
 					<input cvar="g_bot_rifle" type="checkbox" />
-					<h3> Rifle </h3>
+					<h3> SMG </h3>
 				</row>
 				<row>
 					<input cvar="g_bot_shotgun" type="checkbox" />
@@ -112,7 +112,7 @@
 				<h2> Overall </h2>
 				<row>
 					<input cvar="g_bot_evolve" type="checkbox" />
-					<h3> Alien bots evolve </h3>
+					<h3> Alien bots morph </h3>
 				</row>
 				
 				<h2> Individually </h2>
@@ -146,7 +146,7 @@
 			<panel>
 				<row>
 					<input cvar="g_bot_infinite_funds" type="checkbox" />
-					<h3> Infinite funds/evos </h3>
+					<h3> Infinite funds </h3>
 				</row>
 			</panel>
 			

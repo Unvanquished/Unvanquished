@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_image.c
 #include "tr_local.h"
-#include "../../common/Maths.h"
 
 int                  gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
 int                  gl_filter_max = GL_LINEAR;
@@ -1380,7 +1379,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				}
 
 				if( image->bits & IF_NORMALMAP ) {
-					c = image->width * image->height;
+					c = scaledWidth * scaledHeight;
 					for ( i = 0; i < c; i++ )
 					{
 						vec3_t n;

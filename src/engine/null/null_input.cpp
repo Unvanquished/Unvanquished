@@ -26,8 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
+#include "qcommon/q_shared.h"
+#include "qcommon/qcommon.h"
 
 void IN_Init( void* windowData )
 {
@@ -64,4 +64,9 @@ void IN_Activate( qboolean active )
 
 void IN_DropInputsForFrame( void )
 {
+}
+
+bool IN_IsNumLockDown()
+{
+    return false;
 }

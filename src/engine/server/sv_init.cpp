@@ -320,15 +320,7 @@ void SV_Startup( void )
 		Com_Error( ERR_FATAL, "SV_Startup: unable to allocate svs.clients" );
 	}
 
-	if ( com_dedicated->integer )
-	{
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
-	}
-	else
-	{
-		// we don't need nearly as many when playing locally
-		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
-	}
+	svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
 
 	svs.initialized = qtrue;
 
@@ -421,70 +413,7 @@ void SV_ChangeMaxClients( void )
 	// free the old clients on the hunk
 	Hunk_FreeTempMemory( oldClients );
 
-	// allocate new snapshot entities
-	if ( com_dedicated->integer )
-	{
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
-	}
-	else
-	{
-		// we don't need nearly as many when playing locally
-		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
-	}
-}
-
-/*
-====================
-SV_SetExpectedHunkUsage
-
-  Sets com_expectedhunkusage, so the client knows how to draw the percentage bar
-====================
-*/
-void SV_SetExpectedHunkUsage( char *mapname )
-{
-	int  handle;
-	const char *memlistfile = "hunkusage.dat";
-	char *buf;
-	char *buftrav;
-	char *token;
-	int  len;
-
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
-
-	if ( len >= 0 )
-	{
-		// the file exists, so read it in, strip out the current entry for this map, and save it out, so we can append the new value
-		buf = ( char * ) Z_Malloc( len + 1 );
-		memset( buf, 0, len + 1 );
-
-		FS_Read( ( void * ) buf, len, handle );
-		FS_FCloseFile( handle );
-
-		// now parse the file, filtering out the current map
-		buftrav = buf;
-
-		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[ 0 ] )
-		{
-			if ( !Q_stricmp( token, mapname ) )
-			{
-				// found a match
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && token[ 0 ] )
-				{
-					// this is the usage
-					com_expectedhunkusage = atoi( token );
-					Z_Free( buf );
-					return;
-				}
-			}
-		}
-
-		Z_Free( buf );
-	}
-
-	// just set it to a negative number,so the cgame knows not to draw the percent bar
-	com_expectedhunkusage = -1;
+	svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
 }
 
 /*
@@ -527,12 +456,12 @@ void SV_SpawnServer( const char *server )
 	PrintBanner( "Server Initialization" )
 	Com_Printf( "Server: %s\n", server );
 
+	// clear the whole hunk because we're (re)loading the server
+	Hunk_Clear();
+
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
 	CL_MapLoading();
-
-	// clear the whole hunk because we're (re)loading the server
-	Hunk_Clear();
 
 	// clear collision map data     // (SA) NOTE: TODO: used in missionpack
 	CM_ClearMap();
@@ -572,9 +501,6 @@ void SV_SpawnServer( const char *server )
 	// set sv_nextmap to the same map, but it may be overridden
 	// by the game startup or another console command
 	Cvar_Set( "sv_nextmap", "map_restart 0" );
-//  Cvar_Set( "sv_nextmap", va("map %s", server) );
-
-	SV_SetExpectedHunkUsage( va( "maps/%s.bsp", server ) );
 
 	// make sure we are not paused
 	Cvar_Set( "cl_paused", "0" );
@@ -588,23 +514,10 @@ void SV_SpawnServer( const char *server )
 	if (!FS_LoadPak(va("map-%s", server)))
 		Com_Error(ERR_DROP, "Could not load map pak\n");
 
-	void* buffer;
-	const char* name = va( "maps/%s.bsp", server );
-	FS_ReadFile( name, ( void ** ) &buffer );
-
-	if ( !buffer )
-	{
-		Com_Error( ERR_DROP, "Couldn't load %s", name );
-	}
-
-	CM_LoadMap( name, buffer, qfalse );
-
-	FS_FreeFile( buffer );
+	CM_LoadMap(server);
 
 	// set serverinfo visible name
 	Cvar_Set( "mapname", server );
-
-	sv_newGameShlib = Cvar_Get( "sv_newGameShlib", "", CVAR_TEMP );
 
 	// serverid should be different each time
 	sv.serverId = com_frameTime;
@@ -616,15 +529,13 @@ void SV_SpawnServer( const char *server )
 	// to load during actual gameplay
 	sv.state = SS_LOADING;
 
-	Cvar_Set( "sv_serverRestarting", "1" );
-
 	// load and spawn all other entities
 	SV_InitGameProgs(server);
 
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		gvm->GameRunFrame( sv.time );
+		gvm.GameRunFrame( sv.time );
 		svs.time += FRAMETIME;
 		sv.time += FRAMETIME;
 	}
@@ -640,18 +551,10 @@ void SV_SpawnServer( const char *server )
 			qboolean denied;
 			char reason[ MAX_STRING_CHARS ];
 
-			if ( svs.clients[ i ].netchan.remoteAddress.type == NA_BOT )
-			{
-
-				isBot = qtrue;
-			}
-			else
-			{
-				isBot = qfalse;
-			}
+			isBot = SV_IsBot(&svs.clients[i]);
 
 			// connect the client again
-			denied = gvm->GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
+			denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
 
 			if ( denied )
 			{
@@ -681,14 +584,14 @@ void SV_SpawnServer( const char *server )
 					client->deltaMessage = -1;
 					client->nextSnapshotTime = svs.time; // generate a snapshot immediately
 
-					gvm->GameClientBegin( i );
+					gvm.GameClientBegin( i );
 				}
 			}
 		}
 	}
 
 	// run another frame to allow things to look at all the players
-	gvm->GameRunFrame( sv.time );
+	gvm.GameRunFrame( sv.time );
 	svs.time += FRAMETIME;
 	sv.time += FRAMETIME;
 
@@ -715,8 +618,6 @@ void SV_SpawnServer( const char *server )
 	Hunk_SetMark();
 
 	SV_UpdateConfigStrings();
-
-	Cvar_Set( "sv_serverRestarting", "0" );
 
 	SV_AddOperatorCommands();
 
@@ -867,7 +768,7 @@ void SV_Shutdown( const char *finalmsg )
 
 	NET_LeaveMulticast6();
 
-	if ( svs.clients && !com_errorEntered )
+	if ( svs.clients )
 	{
 		SV_FinalCommand( va( "print %s", Cmd_QuoteString( finalmsg ) ), qtrue );
 	}
@@ -889,8 +790,7 @@ void SV_Shutdown( const char *finalmsg )
 			SV_FreeClient( &svs.clients[ index ] );
 		}
 
-		//Z_Free( svs.clients );
-		free( svs.clients );  // RF, avoid trying to allocate large chunk on a fragmented zone
+		free( svs.clients );
 	}
 
 	memset( &svs, 0, sizeof( svs ) );

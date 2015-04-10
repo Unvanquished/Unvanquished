@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifndef _G_ADMIN_H
-#define _G_ADMIN_H
+#ifndef SG_ADMIN_H
+#define SG_ADMIN_H
 
 #define AP(x)         trap_SendServerCommand(-1, x)
 #define CP(x)         trap_SendServerCommand(ent - g_entities, x)
@@ -243,4 +243,4 @@ void            G_admin_buffer_end( gentity_t *ent );
 void            G_admin_duration( int secs, char *time, int timesize, char *duration, int dursize );
 void            G_admin_cleanup( void );
 
-#endif /* ifndef _G_ADMIN_H */
+#endif /* ifndef SG_ADMIN_H */

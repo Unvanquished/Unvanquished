@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "g_local.h"
-#include "g_spawn.h"
+#include "sg_local.h"
+#include "sg_spawn.h"
 
 void InitEnvAFXEntity( gentity_t *self, qboolean link )
 {

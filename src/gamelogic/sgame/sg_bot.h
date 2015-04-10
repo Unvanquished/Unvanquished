@@ -57,7 +57,7 @@ typedef struct
 	float aimShake;
 } botSkill_t;
 
-#include "g_bot_ai.h"
+#include "sg_bot_ai.h"
 #define MAX_NODE_DEPTH 20
 
 typedef struct

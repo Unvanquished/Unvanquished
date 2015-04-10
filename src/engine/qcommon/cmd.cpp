@@ -34,11 +34,11 @@ Maryland 20850 USA.
 
 // cmd_c -- Quake script command processing module
 
-#include "../qcommon/q_shared.h"
+#include "qcommon/q_shared.h"
 #include "qcommon.h"
-#include "../client/keys.h"
+#include "client/keys.h"
 
-#include "../framework/CommandSystem.h"
+#include "framework/CommandSystem.h"
 
 #define MAX_CMD_BUFFER 131072
 
@@ -168,7 +168,7 @@ Cmd_EscapedArgsBuffer
 void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength )
 {
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.EscapedArgs(0);
+	std::string res = args.EscapedArgs(0);
 	Q_strncpyz( buffer, res.c_str(), bufferLength );
 }
 
@@ -181,7 +181,7 @@ Cmd_LiteralArgsBuffer
 void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength )
 {
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.ConcatArgs(0);
+	std::string res = args.ConcatArgs(0);
 	Q_strncpyz( buffer, res.c_str(), bufferLength );
 }
 

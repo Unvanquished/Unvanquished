@@ -19,8 +19,8 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  ===========================================================================
  */
-#include "g_bot_ai.h"
-#include "g_bot_util.h"
+#include "sg_bot_ai.h"
+#include "sg_bot_util.h"
 
 void BotDPrintf( const char* fmt, ... )
 {
@@ -218,7 +218,7 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case BA_H_REACTOR:
 				enemyScore = 0.5;
 				break;
-			case BA_H_TESLAGEN:
+			case BA_H_ROCKETPOD:
 				enemyScore = 0.7;
 				break;
 			case BA_H_SPAWN:
@@ -691,17 +691,10 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 				continue;
 			}
 
-			if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 )
+			// dretches can only bite buildables in construction
+			if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 && target->spawned )
 			{
-				switch ( target->s.modelindex )
-				{
-					case BA_H_MGTURRET:
-					case BA_H_TESLAGEN:
-						break;
-
-					default:
-						continue;
-				}
+				continue;
 			}
 		}
 

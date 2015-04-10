@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #ifndef __BOT_UTIL_HEADER
 #define __BOT_UTIL_HEADER
-#include "g_local.h"
-#include "../../engine/botlib/bot_types.h"
-#include "g_bot.h"
+#include "sg_local.h"
+#include "engine/botlib/bot_types.h"
+#include "sg_bot.h"
 
 //g_bot.c
 void     BotError( const char* fmt, ... ) PRINTF_LIKE(1);

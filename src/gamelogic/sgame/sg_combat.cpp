@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "g_local.h"
+#include "sg_local.h"
 
 #define MAX_DAMAGE_REGION_TEXT 8192
 #define MAX_DAMAGE_REGIONS     16
@@ -78,12 +78,13 @@ static const char *const modNames[] =
 	"MOD_SWARM",
 
 	"MOD_HSPAWN",
-	"MOD_TESLAGEN",
+	"MOD_ROCKETPOD",
 	"MOD_MGTURRET",
 	"MOD_REACTOR",
 
 	"MOD_ASPAWN",
 	"MOD_ATUBE",
+	"MOD_SPIKER",
 	"MOD_OVERMIND",
 	"MOD_DECONSTRUCT",
 	"MOD_REPLACE",
@@ -1502,8 +1503,8 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 	return hitClient;
 }
 
-qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage,
-                         float radius, gentity_t *ignore, int dflags, int mod )
+qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
+                         float radius, gentity_t *ignore, int dflags, int mod, team_t testHit )
 {
 	float     points, dist;
 	gentity_t *ent;
@@ -1513,7 +1514,7 @@ qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage,
 	vec3_t    v;
 	vec3_t    dir;
 	int       i, e;
-	qboolean  hitClient = qfalse;
+	qboolean  hitSomething = qfalse;
 
 	if ( radius < 1 )
 	{
@@ -1570,18 +1571,25 @@ qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage,
 
 		if ( G_CanDamage( ent, origin ) )
 		{
-			VectorSubtract( ent->r.currentOrigin, origin, dir );
-			// push the center of mass higher than the origin so players
-			// get knocked into the air more
-			dir[ 2 ] += 24;
-			VectorNormalize( dir );
-			hitClient = qtrue;
-			G_Damage( ent, NULL, attacker, dir, origin,
-			          ( int ) points, ( DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE | dflags ), mod );
+			if ( testHit == TEAM_NONE )
+			{
+				VectorSubtract( ent->r.currentOrigin, origin, dir );
+				// push the center of mass higher than the origin so players
+				// get knocked into the air more
+				dir[ 2 ] += 24;
+				VectorNormalize( dir );
+				hitSomething = qtrue;
+				G_Damage( ent, NULL, attacker, dir, origin, ( int ) points,
+				          ( DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE | dflags ), mod );
+			}
+			else if ( G_Team( ent ) == testHit && ent->health > 0 )
+			{
+				return qtrue;
+			}
 		}
 	}
 
-	return hitClient;
+	return hitSomething;
 }
 
 /**

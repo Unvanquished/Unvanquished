@@ -22,8 +22,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#ifndef G_DEFINITIONS_H_
-#define G_DEFINITIONS_H_
+#ifndef SG_DEFINITIONS_H_
+#define SG_DEFINITIONS_H_
 
 // ------------------
 // shared definitions
@@ -54,4 +54,4 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #define FOFS(x) ((size_t)&(((gentity_t *)0 )->x ))
 
-#endif // G_DEFINITIONS_H_
+#endif // SG_DEFINITIONS_H_

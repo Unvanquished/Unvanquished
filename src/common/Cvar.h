@@ -40,8 +40,8 @@ namespace Cvar {
         NONE       = 0,
         ARCHIVE    = BIT(0), // The cvar is saved to the configuration file
         USERINFO   = BIT(1), // The cvar is sent to the server as part of the client state
-        SERVERINFO = BIT(2), // The cvar is send to the client as part of the server state
-        SYSTEMINFO = BIT(3), // ???
+        SERVERINFO = BIT(2), // The cvar is sent to the client when doing server status request and in a config string (mostly for mapname)
+        SYSTEMINFO = BIT(3), // The cvar is sent to the client when changed, to synchronize some global game options (for example pmove config)
         ROM        = BIT(6), // The cvar cannot be changed by the user
         TEMPORARY  = BIT(8), // The cvar is temporary and is not to be archived (overrides archive flags)
         CHEAT      = BIT(9), // The cvar is a cheat and should stay at its default value on pure servers.
@@ -233,6 +233,7 @@ namespace Cvar {
     bool Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
     std::string GetValue(const std::string& cvarName);
     void SetValue(const std::string& cvarName, std::string value);
+    bool AddFlags(const std::string& cvarName, int flags);
 
     // Implementation of templates
 
@@ -273,12 +274,12 @@ namespace Cvar {
         if (Parse(text, value)) {
             OnValueChangedResult validationResult = Validate(value);
             if (validationResult.success) {
-                return {true, GetDescription()};
+                return OnValueChangedResult{true, GetDescription()};
             } else {
                 return validationResult;
             }
         } else {
-            return {false, Str::Format("value \"%s\" is not of type '%s' as expected", text, GetCvarTypeName<T>())};
+            return OnValueChangedResult{false, Str::Format("value \"%s\" is not of type '%s' as expected", text, GetCvarTypeName<T>())};
         }
     }
 
@@ -289,7 +290,7 @@ namespace Cvar {
 
     template<typename T>
     OnValueChangedResult Cvar<T>::Validate(const T&) {
-        return {true, ""};
+        return OnValueChangedResult{true, ""};
     }
 
     template<typename T>
@@ -386,9 +387,9 @@ namespace Cvar {
     OnValueChangedResult Range<Base>::Validate(const value_type& value) {
         bool inBounds = value <= max and value >= min;
         if (inBounds) {
-            return {true, ""};
+            return OnValueChangedResult{true, ""};
         } else {
-            return {false, Str::Format("%s is not between %s and %s", SerializeCvarValue(value), SerializeCvarValue(min), SerializeCvarValue(max))};
+            return OnValueChangedResult{false, Str::Format("%s is not between %s and %s", SerializeCvarValue(value), SerializeCvarValue(min), SerializeCvarValue(max))};
         }
     }
 

@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "g_local.h"
-#include "g_spawn.h"
+#include "sg_local.h"
+#include "sg_spawn.h"
 
 qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
 {
@@ -1056,6 +1056,11 @@ void SP_worldspawn( void )
 
 	if(G_SpawnString( "gradingTexture", "", &s ))
 		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
+
+	if(G_SpawnString( "colorGrade", "", &s )) {
+		Com_Printf("^3Warning: ^7\"colorGrade\" deprecated. Please use \"gradingTexture\"");
+		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
+	}
 
 	if(G_SpawnString( "reverbIntensity", "", &s ))
 		sscanf( s, "%f", &reverbIntensity );

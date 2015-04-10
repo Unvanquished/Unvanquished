@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #define SPAWN_H_
 
 /*
- * g_spawn.c
+ * sg_spawn.c
  */
 
 /** spawn string returns a temporary reference, you must CopyString() if you want to keep it */

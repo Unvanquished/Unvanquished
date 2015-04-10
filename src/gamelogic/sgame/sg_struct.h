@@ -22,8 +22,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#ifndef G_STRUCT_H_
-#define G_STRUCT_H_
+#ifndef SG_STRUCT_H_
+#define SG_STRUCT_H_
 
 struct variatingTime_s
 {
@@ -385,16 +385,24 @@ struct gentity_s
 	vec3_t      buildableAim; // aim vector for buildables
 
 	// turret
-	//qboolean    turretHasFastLoader; // a turret upgrade (currently unused)
 	int         turretNextShot;
-	int         turretSuccessiveShots;
-	int         turretLastShotAtTarget;
-	int         turretLastSeenATarget;
+	int         turretLastLOSToTarget;
+	int         turretLastValidTargetTime;
+	int         turretLastTargetSearch;
 	int         turretLastHeadMove;
 	int         turretCurrentDamage;
 	vec3_t      turretDirToTarget;
 	vec3_t      turretBaseDir;
 	qboolean    turretDisabled;
+	int         turretSafeModeCheckTime;
+	qboolean    turretSafeMode;
+	int         turretPrepareTime; // when the turret can start locking on and/or firing
+	int         turretLockonTime;  // when the turret can start firing
+
+	// spiker
+	int         spikerRestUntil;
+	float       spikerLastScoring;
+	qboolean    spikerLastSensing;
 
 	vec4_t      animation; // animated map objects
 
@@ -671,6 +679,8 @@ struct level_locals_s
 	// store latched cvars here that we want to get at often
 	int      maxclients;
 
+	bool     inClient;
+
 	int      framenum;
 	int      time; // time the map was first started in milliseconds (map restart will update startTime)
 	int      previousTime; // so movers can back up when blocked
@@ -790,6 +800,14 @@ struct level_locals_s
 		float            momentum;
 		int              layoutBuildPoints;
 	} team[ NUM_TEAMS ];
+
+	struct {
+		int synchronous;
+		int fixed;
+		int msec;
+		int accurate;
+		bool initialized;
+	} pmoveParams;
 };
 
 struct commands_s
@@ -813,4 +831,4 @@ struct zap_s
 	gentity_t *effectChannel;
 };
 
-#endif // G_STRUCT_H_
+#endif // SG_STRUCT_H_

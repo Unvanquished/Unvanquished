@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "g_local.h"
-#include "../../engine/qcommon/q_unicode.h"
+#include "sg_local.h"
+#include "engine/qcommon/q_unicode.h"
 
-// g_client.c -- client functions that don't happen every frame
+// sg_client.c -- client functions that don't happen every frame
 
 static const vec3_t playerMins = { -15, -15, -24 };
 static const vec3_t playerMaxs = { 15, 15, 32 };
@@ -1208,7 +1208,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	if ( client->pers.admin )
 	{
-		trap_GMTime( &client->pers.admin->lastSeen );
+		Com_GMTime( &client->pers.admin->lastSeen );
 	}
 
 	// check for admin ban
@@ -1279,6 +1279,8 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	country = Info_ValueForKey( userinfo, "geoip" );
 	Q_strncpyz( client->pers.country, country, sizeof( client->pers.country ) );
+
+	G_SendClientPmoveParams(clientNum);
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
@@ -1483,12 +1485,6 @@ void ClientBegin( int clientNum )
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
-
-	// send the client a list of commands that can be used
-	if ( !client->pers.admin )
-	{
-		G_ListCommands( ent );
-	}
 
 	// display the help menu, if connecting the first time
 	if ( !client->sess.seenWelcome )
@@ -1881,7 +1877,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// (re)tag the client for its team
 	Beacon::DeleteTags( ent );
-	Beacon::Tag( ent, (team_t)ent->client->ps.persistant[ PERS_TEAM ], 0, true );
+	Beacon::Tag( ent, (team_t)ent->client->ps.persistant[ PERS_TEAM ], true );
 }
 
 /*

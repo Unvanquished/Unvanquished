@@ -346,7 +346,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 			{
 				cl = &svs.clients[ i ];
 
-				if ( cl->netchan.remoteAddress.type == NA_BOT )
+				if ( SV_IsBot(cl) )
 				{
 					count++;
 				}
@@ -407,7 +407,7 @@ gotnewcl:
 	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 
 	// get the game a chance to reject this connection or modify the userinfo
-	denied = gvm->GameClientConnect( reason, sizeof( reason ), clientNum, qtrue, qfalse );  // firstTime = qtrue
+	denied = gvm.GameClientConnect( reason, sizeof( reason ), clientNum, qtrue, qfalse );  // firstTime = qtrue
 
 	if ( denied )
 	{
@@ -476,6 +476,22 @@ void SV_FreeClient( client_t *client )
 	client->queuedVoipPackets = 0;
 #endif
 
+	// NA_BOT happens to be the default value for address types (value 0) and are
+	// never for clients that send challenges. For NA_BOT, skip the checks for
+	// challenges as it makes NET_CompareAdr yell at us.
+	if (client->netchan.remoteAddress.type != NA_BOT) {
+		// see if we already have a challenge for this IP address
+		challenge_t* challenge = &svs.challenges[ 0 ];
+		for (int i = 0; i < MAX_CHALLENGES; i++, challenge++)
+		{
+			if ( NET_CompareAdr( client->netchan.remoteAddress, challenge->adr ) )
+			{
+				challenge->connected = qfalse;
+				break;
+			}
+		}
+	}
+
 	SV_Netchan_FreeQueue( client );
 	SV_CloseDownload( client );
 }
@@ -491,83 +507,41 @@ or crashing -- SV_FinalCommand() will handle that
 */
 void SV_DropClient( client_t *drop, const char *reason )
 {
-	int         i;
-	challenge_t *challenge;
-	qboolean    isBot = qfalse;
-
 	if ( drop->state == CS_ZOMBIE )
 	{
 		return; // already dropped
 	}
-
-	if ( drop->gentity && ( drop->gentity->r.svFlags & SVF_BOT ) )
-	{
-		isBot = qtrue;
-	}
-	else
-	{
-		if ( drop->netchan.remoteAddress.type == NA_BOT )
-		{
-			isBot = qtrue;
-		}
-	}
-
-	if ( !isBot )
-	{
-		// see if we already have a challenge for this IP address
-		challenge = &svs.challenges[ 0 ];
-
-		for ( i = 0; i < MAX_CHALLENGES; i++, challenge++ )
-		{
-			if ( NET_CompareAdr( drop->netchan.remoteAddress, challenge->adr ) )
-			{
-				challenge->connected = qfalse;
-				break;
-			}
-		}
-
-		// Kill any download
-		SV_CloseDownload( drop );
-	}
-
-	// Free all allocated data on the client structure
-	SV_FreeClient( drop );
-
-	if ( !isBot )
-	{
-		// tell everyone why they got dropped
-
-		// Gordon: we want this displayed elsewhere now
-		SV_SendServerCommand( NULL, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
-	}
-
 	Com_DPrintf( "Going to CS_ZOMBIE for %s\n", drop->name );
 	drop->state = CS_ZOMBIE; // become free in a few seconds
 
-	if ( drop->download )
-	{
-		drop->download = nullptr;
-	}
-
 	// call the prog function for removing a client
 	// this will remove the body, among other things
-	gvm->GameClientDisconnect( drop - svs.clients );
+	gvm.GameClientDisconnect( drop - svs.clients );
 
-	// add the disconnect command
-	SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
-
-	if ( drop->netchan.remoteAddress.type == NA_BOT )
+	if ( SV_IsBot(drop) )
 	{
 		SV_BotFreeClient( drop - svs.clients );
+	}
+	else
+	{
+		// tell everyone why they got dropped
+		// Gordon: we want this displayed elsewhere now
+		SV_SendServerCommand( NULL, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
+
+		// add the disconnect command
+		SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
 	}
 
 	// nuke user info
 	SV_SetUserinfo( drop - svs.clients, "" );
 
+	SV_FreeClient( drop );
+
 	// if this was the last client on the server, send a heartbeat
 	// to the master so it is known the server is empty
 	// send a heartbeat now so the master will get up to date info
 	// if there is already a slot for this IP address, reuse it
+	int i;
 	for ( i = 0; i < sv_maxclients->integer; i++ )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
@@ -690,7 +664,7 @@ void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd )
 	client->lastUsercmd = *cmd;
 
 	// call the game begin function
-	gvm->GameClientBegin( client - svs.clients );
+	gvm.GameClientBegin( client - svs.clients );
 }
 
 /*
@@ -715,6 +689,7 @@ static void SV_CloseDownload( client_t *cl )
 	// EOF
 	if ( cl->download )
 	{
+		delete cl->download;
 		cl->download = nullptr;
 	}
 
@@ -934,6 +909,8 @@ static qboolean SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *m
 
 	Com_Printf( "clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string );
 
+	Q_strncpyz(cl->downloadURL, va("%s/%s", sv_wwwFallbackURL->string, pakName), sizeof(cl->downloadURL));
+
 	MSG_WriteByte( msg, svc_download );
 	MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
 	MSG_WriteString( msg, va( "%s/%s", sv_wwwFallbackURL->string, pakName ) );
@@ -1092,7 +1069,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
 			if (pak) {
 				try {
-					cl->download = std::make_shared<FS::File>(FS::RawPath::OpenRead(pak->path));
+					cl->download = new FS::File(FS::RawPath::OpenRead(pak->path));
 					cl->downloadSize = cl->download->Length();
 				} catch (std::system_error&) {
 					success = false;
@@ -1278,7 +1255,7 @@ void SV_UserinfoChanged( client_t *cl )
 
 	// if the client is on the same subnet as the server and we aren't running an
 	// Internet server, assume that they don't need a rate choke
-	if ( Sys_IsLANAddress( cl->netchan.remoteAddress ) && com_dedicated->integer != 2 && sv_lanForceRate->integer == 1 )
+	if ( Sys_IsLANAddress( cl->netchan.remoteAddress ) && isLanOnly.Get() && sv_lanForceRate->integer == 1 )
 	{
 		cl->rate = 99999; // lans should not rate limit
 	}
@@ -1375,7 +1352,7 @@ static void SV_UpdateUserinfo_f( client_t *cl, const Cmd::Args& args )
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides
-	gvm->GameClientUserInfoChanged( cl - svs.clients );
+	gvm.GameClientUserInfoChanged( cl - svs.clients );
 }
 
 #ifdef USE_VOIP
@@ -1484,7 +1461,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 		// pass unknown strings to the game
 		if ( !u->name && sv.state == SS_GAME )
 		{
-			gvm->GameClientCommand( cl - svs.clients, s );
+			gvm.GameClientCommand( cl - svs.clients, s );
 		}
 	}
 	else if ( !bProcessed )
@@ -1579,7 +1556,7 @@ void SV_ClientThink( client_t *cl, usercmd_t *cmd )
 		return; // may have been kicked during the last usercmd
 	}
 
-	gvm->GameClientThink( cl - svs.clients );
+	gvm.GameClientThink( cl - svs.clients );
 }
 
 /*
@@ -1596,7 +1573,7 @@ each of the backup packets.
 */
 static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 {
-	int       i, key;
+	int       i;
 	int       cmdCount;
 	usercmd_t nullcmd;
 	usercmd_t cmds[ MAX_PACKET_USERCMDS ];
@@ -1625,20 +1602,13 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 		return;
 	}
 
-	// use the checksum feed in the key
-	key = sv.checksumFeed;
-	// also use the message acknowledge
-	key ^= cl->messageAcknowledge;
-	// also use the last acknowledged server command in the key
-	key ^= Com_HashKey( cl->reliableCommands[ cl->reliableAcknowledge & ( MAX_RELIABLE_COMMANDS - 1 ) ], 32 );
-
 	memset( &nullcmd, 0, sizeof( nullcmd ) );
 	oldcmd = &nullcmd;
 
 	for ( i = 0; i < cmdCount; i++ )
 	{
 		cmd = &cmds[ i ];
-		MSG_ReadDeltaUsercmdKey( msg, key, oldcmd, cmd );
+		MSG_ReadDeltaUsercmd( msg, oldcmd, cmd );
 //      MSG_ReadDeltaUsercmd( msg, oldcmd, cmd );
 		oldcmd = cmd;
 	}

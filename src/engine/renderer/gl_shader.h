@@ -610,10 +610,9 @@ protected:
 // It also works regardless of RTTI is enabled or not.
 	enum EGLCompileMacro
 	{
-	  USE_FRUSTUM_CLIPPING,
 	  USE_VERTEX_SKINNING,
 	  USE_VERTEX_ANIMATION,
-	  USE_DEFORM_VERTEXES,
+	  USE_VERTEX_SPRITE,
 	  USE_TCGEN_ENVIRONMENT,
 	  USE_TCGEN_LIGHTMAP,
 	  USE_NORMAL_MAPPING,
@@ -621,11 +620,9 @@ protected:
 	  USE_REFLECTIVE_SPECULAR,
 	  USE_SHADOWING,
 	  TWOSIDED,
-	  EYE_OUTSIDE,
-	  BRIGHTPASS_FILTER,
 	  LIGHT_DIRECTIONAL,
-	  USE_GBUFFER,
-	  USE_GLOW_MAPPING
+	  USE_GLOW_MAPPING,
+	  USE_DEPTH_FADE
 	};
 
 public:
@@ -674,48 +671,6 @@ public:
 	}
 
 	virtual ~GLCompileMacro() {}
-};
-
-class GLCompileMacro_USE_FRUSTUM_CLIPPING :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_FRUSTUM_CLIPPING( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_FRUSTUM_CLIPPING";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return USE_FRUSTUM_CLIPPING;
-	}
-
-	void EnableFrustumClipping()
-	{
-		EnableMacro();
-	}
-
-	void DisableFrustumClipping()
-	{
-		DisableMacro();
-	}
-
-	void SetFrustumClipping( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
 };
 
 class GLCompileMacro_USE_VERTEX_SKINNING :
@@ -813,58 +768,49 @@ public:
 	}
 };
 
-class GLCompileMacro_USE_DEFORM_VERTEXES :
+class GLCompileMacro_USE_VERTEX_SPRITE :
 	GLCompileMacro
 {
 public:
-	GLCompileMacro_USE_DEFORM_VERTEXES( GLShader *shader ) :
+	GLCompileMacro_USE_VERTEX_SPRITE( GLShader *shader ) :
 		GLCompileMacro( shader )
 	{
 	}
 
 	const char *GetName() const
 	{
-		return "USE_DEFORM_VERTEXES";
+		return "USE_VERTEX_SPRITE";
 	}
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_DEFORM_VERTEXES;
+		return USE_VERTEX_SPRITE;
 	}
 
-	bool HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
-
-	uint32_t        GetRequiredVertexAttributes() const
-	{
+	bool     HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
+	uint32_t GetRequiredVertexAttributes() const {
 		return ATTR_QTANGENT;
 	}
 
-	void EnableDeformVertexes()
+	void EnableVertexSprite()
 	{
-		if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
+		EnableMacro();
 	}
 
-	void DisableDeformVertexes()
+	void DisableVertexSprite()
 	{
 		DisableMacro();
 	}
 
-	void SetDeformVertexes( bool enable )
+	void SetVertexSprite( bool enable )
 	{
-		if ( enable && ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer ) )
+		if ( enable )
 		{
-			EnableMacro();
+			EnableVertexSprite();
 		}
 		else
 		{
-			DisableMacro();
+			DisableVertexSprite();
 		}
 	}
 };
@@ -1140,90 +1086,6 @@ public:
 	}
 };
 
-class GLCompileMacro_EYE_OUTSIDE :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_EYE_OUTSIDE( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "EYE_OUTSIDE";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return EYE_OUTSIDE;
-	}
-
-	void EnableMacro_EYE_OUTSIDE()
-	{
-		EnableMacro();
-	}
-
-	void DisableMacro_EYE_OUTSIDE()
-	{
-		DisableMacro();
-	}
-
-	void SetMacro_EYE_OUTSIDE( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
-class GLCompileMacro_BRIGHTPASS_FILTER :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_BRIGHTPASS_FILTER( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "BRIGHTPASS_FILTER";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return BRIGHTPASS_FILTER;
-	}
-
-	void EnableMacro_BRIGHTPASS_FILTER()
-	{
-		EnableMacro();
-	}
-
-	void DisableMacro_BRIGHTPASS_FILTER()
-	{
-		DisableMacro();
-	}
-
-	void SetMacro_BRIGHTPASS_FILTER( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
 class GLCompileMacro_LIGHT_DIRECTIONAL :
 	GLCompileMacro
 {
@@ -1308,48 +1170,6 @@ public:
 	}
 };
 
-class GLCompileMacro_USE_GBUFFER :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_GBUFFER( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_GBUFFER";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return USE_GBUFFER;
-	}
-
-	void EnableMacro_USE_GBUFFER()
-	{
-		EnableMacro();
-	}
-
-	void DisableMacro_USE_GBUFFER()
-	{
-		DisableMacro();
-	}
-
-	void SetMacro_USE_GBUFFER( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
 class GLCompileMacro_USE_GLOW_MAPPING :
 	GLCompileMacro
 {
@@ -1380,6 +1200,48 @@ public:
 	}
 
 	void SetGlowMapping( bool enable )
+	{
+		if ( enable )
+		{
+			EnableMacro();
+		}
+		else
+		{
+			DisableMacro();
+		}
+	}
+};
+
+class GLCompileMacro_USE_DEPTH_FADE :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_DEPTH_FADE( GLShader *shader ) :
+		GLCompileMacro( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_DEPTH_FADE";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_DEPTH_FADE;
+	}
+
+	void EnableMacro_USE_DEPTH_FADE()
+	{
+		EnableMacro();
+	}
+
+	void DisableMacro_USE_DEPTH_FADE()
+	{
+		DisableMacro();
+	}
+
+	void SetDepthFade( bool enable )
 	{
 		if ( enable )
 		{
@@ -1515,6 +1377,21 @@ public:
 	}
 
 	void SetUniform_ViewOrigin( const vec3_t v )
+	{
+		this->SetValue( v );
+	}
+};
+
+class u_ViewUp :
+	GLUniform3f
+{
+public:
+	u_ViewUp( GLShader *shader ) :
+		GLUniform3f( shader, "u_ViewUp" )
+	{
+	}
+
+	void SetUniform_ViewUp( const vec3_t v )
 	{
 		this->SetValue( v );
 	}
@@ -2001,25 +1878,23 @@ public:
 };
 
 class u_DeformParms :
-	GLUniform1fv
+	GLUniform4fv
 {
 public:
 	u_DeformParms( GLShader *shader ) :
-		GLUniform1fv( shader, "u_DeformParms" )
+		GLUniform4fv( shader, "u_DeformParms" )
 	{
 	}
 
 	void SetUniform_DeformParms( deformStage_t deforms[ MAX_SHADER_DEFORMS ], int numDeforms )
 	{
-		float deformParms[ MAX_SHADER_DEFORM_PARMS ];
-		int   deformOfs = 0;
+		vec4_t deformParms[ MAX_SHADER_DEFORM_PARMS ];
+		int    deformOfs = 0;
 
 		if ( numDeforms > MAX_SHADER_DEFORMS )
 		{
 			numDeforms = MAX_SHADER_DEFORMS;
 		}
-
-		deformParms[ deformOfs++ ] = numDeforms;
 
 		for ( int i = 0; i < numDeforms; i++ )
 		{
@@ -2028,42 +1903,178 @@ public:
 			switch ( ds->deformation )
 			{
 				case DEFORM_WAVE:
-					deformParms[ deformOfs++ ] = DEFORM_WAVE;
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_POS;
+					deformOfs++;
 
-					deformParms[ deformOfs++ ] = ds->deformationWave.func;
-					deformParms[ deformOfs++ ] = ds->deformationWave.base;
-					deformParms[ deformOfs++ ] = ds->deformationWave.amplitude;
-					deformParms[ deformOfs++ ] = ds->deformationWave.phase;
-					deformParms[ deformOfs++ ] = ds->deformationWave.frequency;
+					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.phase;
+					deformParms[ deformOfs ][ 1 ] = ds->deformationSpread;
+					deformParms[ deformOfs ][ 2 ] = ds->deformationWave.frequency;
+					switch( ds->deformationWave.func ) {
+					case GF_SIN:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SIN;
+						break;
+					case GF_SQUARE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SQUARE;
+						break;
+					case GF_TRIANGLE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_TRIANGLE;
+						break;
+					case GF_SAWTOOTH:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SAWTOOTH;
+						break;
+					case GF_INVERSE_SAWTOOTH:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_INVERSE_SAWTOOTH;
+						break;
+					case GF_NOISE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_NOISE;
+						break;
+					default:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_NONE;
+						break;
+					}
+					deformOfs++;
 
-					deformParms[ deformOfs++ ] = ds->deformationSpread;
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_NORM;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.base;
+					deformParms[ deformOfs ][ 1 ] = ds->deformationWave.amplitude;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_POS;
+					deformOfs++;
 					break;
 
 				case DEFORM_BULGE:
-					deformParms[ deformOfs++ ] = DEFORM_BULGE;
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 0.0f;
+					deformParms[ deformOfs ][ 2 ] = 0.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_TC;
+					deformOfs++;
 
-					deformParms[ deformOfs++ ] = ds->bulgeWidth;
-					deformParms[ deformOfs++ ] = ds->bulgeHeight;
-					deformParms[ deformOfs++ ] = ds->bulgeSpeed * 0.001f;
+					deformParms[ deformOfs ][ 0 ] = 0.0f;
+					deformParms[ deformOfs ][ 1 ] = ds->bulgeWidth;
+					deformParms[ deformOfs ][ 2 ] = ds->bulgeSpeed * 0.001f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_SIN;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_NORM;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 0.0f;
+					deformParms[ deformOfs ][ 1 ] = ds->bulgeHeight;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_POS;
+					deformOfs++;
 					break;
 
 				case DEFORM_MOVE:
-					deformParms[ deformOfs++ ] = DEFORM_MOVE;
+					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.phase;
+					deformParms[ deformOfs ][ 1 ] = 0.0f;
+					deformParms[ deformOfs ][ 2 ] = ds->deformationWave.frequency;
+					switch( ds->deformationWave.func ) {
+					case GF_SIN:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SIN;
+						break;
+					case GF_SQUARE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SQUARE;
+						break;
+					case GF_TRIANGLE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_TRIANGLE;
+						break;
+					case GF_SAWTOOTH:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_SAWTOOTH;
+						break;
+					case GF_INVERSE_SAWTOOTH:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_INVERSE_SAWTOOTH;
+						break;
+					case GF_NOISE:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_NOISE;
+						break;
+					default:
+						deformParms[ deformOfs ][ 3 ] = DSTEP_NONE;
+						break;
+					}
+					deformOfs++;
 
-					deformParms[ deformOfs++ ] = ds->deformationWave.func;
-					deformParms[ deformOfs++ ] = ds->deformationWave.base;
-					deformParms[ deformOfs++ ] = ds->deformationWave.amplitude;
-					deformParms[ deformOfs++ ] = ds->deformationWave.phase;
-					deformParms[ deformOfs++ ] = ds->deformationWave.frequency;
+					deformParms[ deformOfs ][ 0 ] = ds->moveVector[ 0 ];
+					deformParms[ deformOfs ][ 1 ] = ds->moveVector[ 1 ];
+					deformParms[ deformOfs ][ 2 ] = ds->moveVector[ 2 ];
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_VEC;
+					deformOfs++;
 
-					deformParms[ deformOfs++ ] = ds->moveVector[ 0 ];
-					deformParms[ deformOfs++ ] = ds->moveVector[ 1 ];
-					deformParms[ deformOfs++ ] = ds->moveVector[ 2 ];
+					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.base;
+					deformParms[ deformOfs ][ 1 ] = ds->deformationWave.amplitude;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_POS;
+					deformOfs++;
+					break;
+
+				case DEFORM_NORMALS:
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_POS;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 0.0f;
+					deformParms[ deformOfs ][ 1 ] = 0.0f;
+					deformParms[ deformOfs ][ 2 ] = ds->deformationWave.frequency;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_NOISE;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 0.0f;
+					deformParms[ deformOfs ][ 1 ] = 0.98f * ds->deformationWave.amplitude;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_NORM;
+					deformOfs++;
+					break;
+
+				case DEFORM_ROTGROW:
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_POS;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = ds->moveVector[0];
+					deformParms[ deformOfs ][ 1 ] = ds->moveVector[1];
+					deformParms[ deformOfs ][ 2 ] = ds->moveVector[2];
+					deformParms[ deformOfs ][ 3 ] = DSTEP_ROTGROW;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = 1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 1.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_COLOR;
+					deformOfs++;
+
+					deformParms[ deformOfs ][ 0 ] = -1.0f;
+					deformParms[ deformOfs ][ 1 ] = 1.0f;
+					deformParms[ deformOfs ][ 2 ] = 0.0f;
+					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_COLOR;
+					deformOfs++;
 					break;
 
 				default:
 					break;
 			}
+		}
+
+		if( deformOfs < MAX_SHADER_DEFORM_PARMS ) {
+			deformParms[ deformOfs ][ 0 ] = 0.0f;
+			deformParms[ deformOfs ][ 1 ] = 0.0f;
+			deformParms[ deformOfs ][ 2 ] = 0.0f;
+			deformParms[ deformOfs ][ 3 ] = DSTEP_NONE;
+			deformOfs++;
 		}
 
 		this->SetValue( deformOfs, deformParms );
@@ -2317,19 +2328,23 @@ class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
 	public u_ViewOrigin,
+	public u_ViewUp,
 	public u_AlphaThreshold,
 	public u_ModelMatrix,
+ 	public u_ProjectionMatrixTranspose,
 	public u_ModelViewProjectionMatrix,
 	public u_ColorModulate,
 	public u_Color,
 	public u_Bones,
 	public u_VertexInterpolation,
+	public u_DepthScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
+	public GLCompileMacro_USE_VERTEX_SPRITE,
 	public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
-	public GLCompileMacro_USE_TCGEN_LIGHTMAP
+	public GLCompileMacro_USE_TCGEN_LIGHTMAP,
+	public GLCompileMacro_USE_DEPTH_FADE
 {
 public:
 	GLShader_generic( GLShaderManager *manager );
@@ -2352,7 +2367,6 @@ class GLShader_lightMapping :
 	public u_ModelViewProjectionMatrix,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_GLOW_MAPPING
@@ -2385,7 +2399,6 @@ class GLShader_vertexLighting_DBS_entity :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_REFLECTIVE_SPECULAR,
@@ -2417,7 +2430,6 @@ class GLShader_vertexLighting_DBS_world :
 	public u_LightGridOrigin,
 	public u_LightGridScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_GLOW_MAPPING
@@ -2456,7 +2468,6 @@ class GLShader_forwardLighting_omniXYZ :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -2496,7 +2507,6 @@ class GLShader_forwardLighting_projXYZ :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -2538,7 +2548,6 @@ class GLShader_forwardLighting_directionalSun :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -2566,7 +2575,6 @@ class GLShader_shadowFill :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_LIGHT_DIRECTIONAL
 {
 public:
@@ -2586,7 +2594,6 @@ class GLShader_reflection :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING //,
 {
 public:
@@ -2622,9 +2629,7 @@ class GLShader_fogQuake3 :
 	public u_FogEyeT,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
-	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
-	public GLCompileMacro_EYE_OUTSIDE
+	public GLCompileMacro_USE_VERTEX_ANIMATION
 {
 public:
 	GLShader_fogQuake3( GLShaderManager *manager );
@@ -2651,6 +2656,7 @@ class GLShader_heatHaze :
 	public GLShader,
 	public u_NormalTextureMatrix,
 	public u_ViewOrigin,
+	public u_ViewUp,
 	public u_DeformMagnitude,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
@@ -2663,7 +2669,7 @@ class GLShader_heatHaze :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES
+	public GLCompileMacro_USE_VERTEX_SPRITE
 {
 public:
 	GLShader_heatHaze( GLShaderManager *manager );

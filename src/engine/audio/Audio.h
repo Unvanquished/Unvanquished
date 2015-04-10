@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AUDIO_AUDIO_H_
 #define AUDIO_AUDIO_H_
 
-#include "../../common/Common.h"
+#include "common/Common.h"
 
 namespace Audio {
 
@@ -60,6 +60,7 @@ namespace Audio {
     void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum);
 
     void UpdateListener(int entityNum, const vec3_t orientation[3]);
+    void UpdateListenerGain();
     void UpdateEntityPosition(int entityNum, const vec3_t position);
     void UpdateEntityVelocity(int entityNum, const vec3_t velocity);
 

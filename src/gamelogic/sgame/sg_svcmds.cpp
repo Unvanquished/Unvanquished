@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 // this file holds commands that can be executed by the server console, but not remote clients
 
-#include "g_local.h"
+#include "sg_local.h"
 
 #define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
 
@@ -89,7 +89,7 @@ void Svcmd_EntityFire_f( void )
 }
 
 
-STATIC_INLINE void PrintEntityOverviewLine( gentity_t *entity )
+static inline void PrintEntityOverviewLine( gentity_t *entity )
 {
 	G_Printf( "%3i: %15s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s%s\n",
 			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
@@ -683,7 +683,7 @@ static void Svcmd_G_AdvanceMapRotation_f( void )
 static const struct svcmd
 {
 	const char *cmd;
-	qboolean dedicated;
+	qboolean conflicts; //With a command registered by cgame
 	void ( *function )( void );
 } svcmds[] =
 {
@@ -701,7 +701,6 @@ static const struct svcmd
 	{ "entityShow",         qfalse, Svcmd_EntityShow_f           },
 	{ "evacuation",         qfalse, Svcmd_Evacuation_f           },
 	{ "forceTeam",          qfalse, Svcmd_ForceTeam_f            },
-	{ "game_memory",        qfalse, BG_MemoryInfo                },
 	{ "humanWin",           qfalse, Svcmd_TeamWin_f              },
 	{ "layoutLoad",         qfalse, Svcmd_LayoutLoad_f           },
 	{ "layoutSave",         qfalse, Svcmd_LayoutSave_f           },
@@ -740,15 +739,15 @@ qboolean  ConsoleCommand( void )
 			return qtrue;
 		}
 
-		if ( g_dedicated.integer )
+		if ( level.inClient )
 		{
-			G_Printf( "unknown command: %s\n", cmd );
+			G_Printf( "unknown command server console command: %s\n", cmd );
 		}
 
 		return qfalse;
 	}
 
-	if ( command->dedicated && !g_dedicated.integer )
+	if ( command->conflicts && level.inClient )
 	{
 		return qfalse;
 	}
@@ -757,13 +756,17 @@ qboolean  ConsoleCommand( void )
 	return qtrue;
 }
 
+void CompleteCommand(int)
+{
+}
+
 void G_RegisterCommands( void )
 {
 	int i;
 
 	for ( i = 0; i < ARRAY_LEN( svcmds ); i++ )
 	{
-		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
+		if ( svcmds[ i ].conflicts && level.inClient )
 		{
 			continue;
 		}
@@ -780,7 +783,7 @@ void G_UnregisterCommands( void )
 
 	for ( i = 0; i < ARRAY_LEN( svcmds ); i++ )
 	{
-		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
+		if ( svcmds[ i ].conflicts && level.inClient )
 		{
 			continue;
 		}

@@ -22,9 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // deformVertexes_vp.glsl - Quake 3 deformVertexes semantic
 
 
-uniform float		u_DeformParms[MAX_SHADER_DEFORM_PARMS];
-
-#if !defined(GLDRV_MESA)
+uniform vec4 u_DeformParms[MAX_SHADER_DEFORM_PARMS];
 
 float triangle(float x)
 {
@@ -36,100 +34,102 @@ float sawtooth(float x)
 	return fract( x );
 }
 
-/*
-	define	WAVEVALUE( table, base, amplitude, phase, freq ) \
-		((base) + table[ Q_ftol( ( ( (phase) + backEnd.refdef.floatTime * (freq) ) * FUNCTABLE_SIZE ) ) & FUNCTABLE_MASK ] * (amplitude))
-*/
-
-float WaveValue(float func, float base, float amplitude, float phase, float freq, float time)
-{
-	float value = phase + ( time * freq );
-	
-	float d;
-	
-	if(func == GF_SIN)
-		d = sin(value * 2.0 * M_PI) ;
-	else if(func == GF_SQUARE)
-		d = sign(sin(value * 2.0 * M_PI));
-	else if(func == GF_TRIANGLE)
-		d = triangle(value);
-	else if(func == GF_SAWTOOTH)
-		d = sawtooth(value);
-	else
-		d = 1.0 - sawtooth(value);
-
-	return base + d * amplitude;
+#if 0
+// --------------------------------------------------------------------
+ivec4 permute(ivec4 x) {
+	return ((62 * x + 1905) * x) % 961;
 }
 
-vec4 DeformPosition2(	const vec4 pos,
-						const vec3 normal,
-						const vec2 st,
-						float time)
-{
+float grad(int idx, vec4 p) {
+	int i = idx & 31;
+	float u = i < 24 ? p.x : p.y;
+	float v = i < 16 ? p.y : p.z;
+	float w = i < 8  ? p.z : p.w;
 
-	int i, deformOfs = 0;
-	int numDeforms = int(u_DeformParms[deformOfs++]);
+	return ((i & 4) != 0 ? -u : u)
+	     + ((i & 2) != 0 ? -v : v)
+	     + ((i & 1) != 0 ? -w : w);
+}
 
-	vec4 deformed = pos;
+vec4 fade(in vec4 t) {
+	return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+}
 
-	for(i = 0; i < numDeforms; i++)
-	{
-		int deformGen = int(u_DeformParms[deformOfs++]);
+vec4 pnoise(vec4 v) {
+	ivec4 iv = ivec4(floor(v));
+	vec4 rv = fract(v);
+	vec4 f[2];
 
+	f[0] = fade(rv);
+	f[1] = 1.0 - f[0];
 
-		if(deformGen == DEFORM_WAVE)
-		{
-			float func = u_DeformParms[deformOfs++];
-			float base = u_DeformParms[deformOfs++];
-			float amplitude = u_DeformParms[deformOfs++];
-			float phase = u_DeformParms[deformOfs++];
-			float freq = u_DeformParms[deformOfs++];
+	vec4 value = vec4(0.0);
+	for(int idx = 0; idx < 16; idx++) {
+		ivec4 offs = ivec4( idx & 1, (idx & 2) >> 1, (idx & 4) >> 2, (idx & 8) >> 3 );
+		float w = f[offs.x].x * f[offs.y].y * f[offs.z].z * f[offs.w].w;
+		ivec4 p = permute(iv + offs);
 
-			float spread = u_DeformParms[deformOfs++];
-
-			float off = (pos.x + pos.y + pos.z) * spread;
-			float scale = WaveValue(func, base, amplitude, phase + off, freq, time);
-			vec3 offset = normal * scale;
-
-			deformed.xyz += offset;
-		}
-		else if(deformGen == DEFORM_BULGE)
-		{
-			float bulgeWidth = u_DeformParms[deformOfs++];
-			float bulgeHeight = u_DeformParms[deformOfs++];
-			float bulgeSpeed = u_DeformParms[deformOfs++];
-
-			float now = time * bulgeSpeed;
-
-			float off = st.x * bulgeWidth + now;
-			float scale = sin(off) * bulgeHeight;
-			vec3 offset = normal * scale;
-
-			deformed.xyz += offset;
-		}
-		else if(deformGen == DEFORM_MOVE)
-		{
-			float func = u_DeformParms[deformOfs++];
-			float base = u_DeformParms[deformOfs++];
-			float amplitude = u_DeformParms[deformOfs++];
-			float phase = u_DeformParms[deformOfs++];
-			float freq = u_DeformParms[deformOfs++];
-
-			vec3 move;
-			move.x = u_DeformParms[deformOfs++];
-			move.y = u_DeformParms[deformOfs++];
-			move.z = u_DeformParms[deformOfs++];
-			
-			float scale = WaveValue(func, base, amplitude, phase, freq, time);
-			vec3 offset = move * scale;
-
-			deformed.xyz += offset;
-		}
+		value.x += w * grad(p.x, rv);
+		value.y += w * grad(p.y, rv);
+		value.z += w * grad(p.z, rv);
+		value.w += w * grad(p.w, rv);
 	}
-
-	return deformed;
+	return value;
 }
+// --------------------------------------------------------------------
+#endif
 
+void DeformVertex( inout vec4 pos,
+		   inout vec3 normal,
+		   inout vec2 st,
+		   inout vec4 color,
+		   in    float time)
+{
+	vec4 work = vec4(0.0);
 
-#endif // !defined(GLDRV_MESA)
+	for(int deformOfs = 0; deformOfs < MAX_SHADER_DEFORM_PARMS; deformOfs++)
+	{
+		vec4 parms = u_DeformParms[ deformOfs ];
+		int  cmd   = int(parms.w);
 
+		if( cmd == DSTEP_LOAD_POS ) {
+			work.xyz = pos.xyz * parms.xyz;
+		} else if( cmd == DSTEP_LOAD_NORM ) {
+			work.xyz = normal.xyz * parms.xyz;
+		} else if( cmd == DSTEP_LOAD_COLOR ) {
+			work.xyz = color.xyz * parms.xyz;
+		} else if( cmd == DSTEP_LOAD_TC ) {
+			work.xyz = vec3(st, 1.0) * parms.xyz;
+		} else if( cmd == DSTEP_LOAD_VEC ) {
+			work.xyz = parms.xyz;
+		} else if( cmd == DSTEP_MODIFY_POS ) {
+			pos.xyz += (parms.x + parms.y * work.a) * work.xyz;
+		} else if( cmd == DSTEP_MODIFY_NORM ) {
+			normal.xyz += (parms.x + parms.y * work.a) * work.xyz;
+			normal = normalize(normal);
+		} else if( cmd == DSTEP_MODIFY_COLOR ) {
+			color.xyz += (parms.x + parms.y * work.a) * work.xyz;
+		} else if( cmd == DSTEP_SIN ) {
+			work.a = sin( 2.0 * M_PI * (parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time) );
+		} else if( cmd == DSTEP_SQUARE ) {
+			work.a = sign(sin( 2.0 * M_PI * (parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time) ) );
+		} else if( cmd == DSTEP_TRIANGLE ) {
+			work.a = triangle(parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time);
+		} else if( cmd == DSTEP_SAWTOOTH ) {
+			work.a = sawtooth(parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time);
+		} else if( cmd == DSTEP_INVERSE_SAWTOOTH ) {
+			work.a = 1.0 - sawtooth(parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time);
+		} else if( cmd == DSTEP_NOISE ) {
+			//work = pnoise(vec4(parms.y * work.xyz, parms.z * time));
+			work = noise4(vec4(parms.y * work.xyz, parms.z * time));
+		} else if( cmd == DSTEP_ROTGROW ) {
+			if(work.z > parms.x * time)
+				work.a = 0.0;
+			else {
+				work.a = parms.y * atan(pos.y, pos.x) + parms.z * time;
+				work.a = 0.5 * sin(work.a) + 0.5;
+			}
+		} else
+			break;
+	}
+}

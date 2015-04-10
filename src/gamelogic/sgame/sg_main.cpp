@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "g_local.h"
+#include "sg_local.h"
 #include "CBSEEntities.h"
 
 #define INTERMISSION_DELAY_TIME 1000
@@ -62,7 +62,6 @@ vmCvar_t           g_password;
 vmCvar_t           g_needpass;
 vmCvar_t           g_maxclients;
 vmCvar_t           g_maxGameClients;
-vmCvar_t           g_dedicated;
 vmCvar_t           g_speed;
 vmCvar_t           g_gravity;
 vmCvar_t           g_cheats;
@@ -252,7 +251,6 @@ static cvarTable_t gameCvarTable[] =
 	{ NULL,                           "B",                             "",                                 CVAR_SERVERINFO,                                 0, qfalse           },
 	{ NULL,                           "g_mapStartupMessage",           "",                                 0,                                               0, qfalse           },
 	{ NULL,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, qfalse           },
-	{ &g_dedicated,                   "dedicated",                     "0",                                0,                                               0, qfalse           },
 	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, qfalse           },
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, qfalse           },
 	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                0,                                               0, qfalse           },
@@ -269,10 +267,10 @@ static cvarTable_t gameCvarTable[] =
 	// server: network related
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO,                                 0, qtrue            },
 	{ &g_smoothClients,               "g_smoothClients",               "1",                                0,                                               0, qfalse           },
-	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &pmove_accurate,                "pmove_accurate",                "1",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
+	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                0,                                               0, qfalse           },
+	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                0,                                               0, qfalse           },
+	{ &pmove_msec,                    "pmove_msec",                    "8",                                0,                                               0, qfalse           },
+	{ &pmove_accurate,                "pmove_accurate",                "1",                                0,                                               0, qfalse           },
 	{ &g_floodMaxDemerits,            "g_floodMaxDemerits",            "5000",                             0,                                               0, qfalse           },
 	{ &g_floodMinTime,                "g_floodMinTime",                "2000",                             0,                                               0, qfalse           },
 
@@ -338,15 +336,15 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                0,                                               0, qfalse           },
 
 	// debug switches
-	{ &g_debugMove,                   "g_debugMove",                   "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugDamage,                 "g_debugDamage",                 "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugKnockback,              "g_debugKnockback",              "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugTurrets,                "g_debugTurrets",                "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                CVAR_TEMP,                                       0, qfalse           },
+	{ &g_debugMove,                   "g_debugMove",                   "0",                                0,                                               0, qfalse           },
+	{ &g_debugDamage,                 "g_debugDamage",                 "0",                                0,                                               0, qfalse           },
+	{ &g_debugKnockback,              "g_debugKnockback",              "0",                                0,                                               0, qfalse           },
+	{ &g_debugTurrets,                "g_debugTurrets",                "0",                                0,                                               0, qfalse           },
+	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                0,                                               0, qfalse           },
 	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, qfalse           },
-	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugEntities,               "g_debugEntities",               "0",                                CVAR_TEMP,                                       0, qfalse           },
-	{ &g_debugFire,                   "g_debugFire",                   "0",                                CVAR_TEMP,                                       0, qfalse           },
+	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                0,                                               0, qfalse           },
+	{ &g_debugEntities,               "g_debugEntities",               "0",                                0,                                               0, qfalse           },
+	{ &g_debugFire,                   "g_debugFire",                   "0",                                0,                                               0, qfalse           },
 
 	// gameplay: basic
 	{ &g_timelimit,                   "timelimit",                     "45",                               CVAR_SERVERINFO,                                 0, qtrue            },
@@ -703,7 +701,7 @@ G_InitGame
 
 ============
 */
-void G_InitGame( int levelTime, int randomSeed, int restart )
+void G_InitGame( int levelTime, int randomSeed, int restart, bool inClient )
 {
 	int i;
 
@@ -715,11 +713,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	G_Printf( "gamename: %s\n", GAME_VERSION );
 	G_Printf( "gamedate: %s\n", __DATE__ );
 
-	BG_InitMemory();
-
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
 	level.time = levelTime;
+	level.inClient = inClient;
 	level.startTime = levelTime;
 	level.snd_fry = G_SoundIndex( "sound/misc/fry.wav" );  // FIXME standing in lava / slime
 
@@ -749,7 +746,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 			G_LogPrintf( "------------------------------------------------------------\n" );
 			G_LogPrintf( "InitGame: %s\n", serverinfo );
 
-			trap_GMTime( &qt );
+			Com_GMTime( &qt );
 			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i Z\n",
 			             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 			             qt.tm_hour, qt.tm_min, qt.tm_sec );
@@ -767,7 +764,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		char    logfile[ 128 ], mapname[ 64 ];
 		qtime_t qt;
 
-		trap_GMTime( &qt );
+		Com_GMTime( &qt );
 		trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 
 		Com_sprintf( logfile, sizeof( logfile ),
@@ -877,6 +874,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	G_FindEntityGroups();
 	G_InitSetEntities();
+
+	G_CheckPmoveParamChanges();
 
 	G_InitDamageLocations();
 
@@ -1039,6 +1038,37 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 	va_end( argptr );
 
 	trap_Print( text );
+}
+
+void G_CheckPmoveParamChanges() {
+	if ( pmove_msec.integer < 8 )
+	{
+		trap_Cvar_Set( "pmove_msec", "8" );
+	}
+	else if ( pmove_msec.integer > 33 )
+	{
+		trap_Cvar_Set( "pmove_msec", "33" );
+	}
+
+	if(not level.pmoveParams.initialized or
+			level.pmoveParams.synchronous != g_synchronousClients.integer or
+			level.pmoveParams.msec != pmove_msec.integer or
+			level.pmoveParams.fixed != pmove_fixed.integer or
+			level.pmoveParams.accurate != pmove_accurate.integer) {
+		level.pmoveParams.initialized = true;
+		level.pmoveParams.synchronous = g_synchronousClients.integer;
+		level.pmoveParams.msec = pmove_msec.integer;
+		level.pmoveParams.fixed = pmove_fixed.integer;
+		level.pmoveParams.accurate = pmove_accurate.integer;
+		G_SendClientPmoveParams(-1);
+	}
+}
+void G_SendClientPmoveParams(int client) {
+	trap_SendServerCommand(client, va("pmove_params %i %i %i %i",
+		level.pmoveParams.synchronous,
+		level.pmoveParams.fixed,
+		level.pmoveParams.msec,
+		level.pmoveParams.accurate));
 }
 
 /*
@@ -1839,7 +1869,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	Q_vsnprintf( string + 7, sizeof( string ) - 7, fmt, argptr );
 	va_end( argptr );
 
-	if ( g_dedicated.integer )
+	if ( !level.inClient )
 	{
 		G_UnEscapeString( string, decolored, sizeof( decolored ) );
 		G_Printf( "%s", decolored + 7 );
@@ -1927,7 +1957,7 @@ static void G_LogGameplayStats( int state )
 			qtime_t t;
 
 			trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
-			trap_GMTime( &t );
+			Com_GMTime( &t );
 
 			Com_sprintf( logline, sizeof( logline ),
 			             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
@@ -2816,6 +2846,8 @@ void G_RunFrame( int levelTime )
 
 	// now we are done spawning
 	level.spawning = qfalse;
+
+	G_CheckPmoveParamChanges();
 
 	// go through all allocated objects
 	ent = &g_entities[ 0 ];

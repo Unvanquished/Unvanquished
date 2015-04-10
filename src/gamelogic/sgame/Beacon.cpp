@@ -24,17 +24,28 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 // Beacon.cpp
 // handle the server-side beacon-related stuff
 
-#include "g_local.h"
+#include "sg_local.h"
 
-// beacon entityState fields:
-// eType           : ET_BEACON
-// otherEntityNum  : creator
-// otherEntityNum2 : tagged entity
-// modelindex      : type
-// modelindex2     : additional data (e.g. buildable type for BCT_TAG)
-// generic1        : team
-// time            : creation time
-// time2           : expiration time (0 if never)
+// entityState_t   | cbeacon_t    | description
+// ----------------+--------------+-------------
+// eType           | n/a          | always ET_BEACON
+// otherEntityNum  | target       | tagged entity's number
+// otherEntityNum2 | owner        | beacon's owner (ENTITYNUM_NONE if none, ENTITYNUM_WORLD if auto)
+// modelindex      | type         | beacon's type (BCT_*)
+// modelindex2     | data         | additional data (e.g. buildable type for BCT_TAG)
+// generic1        | team         | beacon's team
+// time            | ctime        | creation time
+// time2           | etime        | expiration time
+// apos.trTime     | mtime        | modification (update) time
+
+#define bc_target otherEntityNum
+#define bc_owner otherEntityNum2
+#define bc_type modelindex
+#define bc_data modelindex2
+#define bc_team generic1
+#define bc_ctime time
+#define bc_etime time2
+#define bc_mtime apos.trTime
 
 namespace Beacon //this should eventually become a class
 {
@@ -45,7 +56,7 @@ namespace Beacon //this should eventually become a class
 	{
 		ent->nextthink = level.time + 1000000;
 	}
-	
+
 	/**
 	 * @brief Handles beacon expiration and tag score decay. Called every server frame.
 	 */
@@ -70,7 +81,7 @@ namespace Beacon //this should eventually become a class
 					break;
 
 				case ET_BEACON:
-					if ( ent->s.time2 && level.time > ent->s.time2 )
+					if ( ent->s.bc_etime && level.time > ent->s.bc_etime )
 						Delete( ent );
 					continue;
 
@@ -120,16 +131,17 @@ namespace Beacon //this should eventually become a class
 		ent->s.eType = ET_BEACON;
 		ent->classname = "beacon";
 
-		ent->s.modelindex = type;
-		ent->s.modelindex2 = data;
-		ent->s.generic1 = team;
-		ent->s.otherEntityNum = owner;
+		ent->s.bc_type = type;
+		ent->s.bc_data = data;
+		ent->s.bc_team = team;
+		ent->s.bc_owner = owner;
 		ent->think = Think;
 		ent->nextthink = level.time;
 
-		ent->s.time = level.time;
+		ent->s.bc_ctime = level.time;
+		ent->s.bc_mtime = level.time;
 		decayTime = BG_Beacon( type )->decayTime;
-		ent->s.time2 = ( decayTime ? level.time + decayTime : 0 );
+		ent->s.bc_etime = ( decayTime ? level.time + decayTime : 0 );
 
 		ent->s.pos.trType = TR_INTERPOLATE;
 		Move( ent, origin );
@@ -160,23 +172,23 @@ namespace Beacon //this should eventually become a class
 	 */
 	void Delete( gentity_t *ent, bool verbose )
 	{
-		if( !ent )
-			return;
-
-		if( ent->tagAttachment )
-			*ent->tagAttachment = NULL;
+		if( !ent ) return;
 
 		if( verbose )
 		{
+			// Defer removal and play death effects.
 			if ( !( ent->s.eFlags & EF_BC_DYING ) )
 			{
 				ent->s.eFlags |= EF_BC_DYING;
-				ent->s.time2 = level.time + 1500;
+				ent->s.bc_etime = level.time + 1500;
 				BaseClustering::Remove( ent );
 			}
 		}
 		else
 		{
+			// Detach link from tagged entity to its beacon.
+			if( ent->tagAttachment ) *ent->tagAttachment = NULL;
+
 			// BaseClustering::Remove will be called inside G_FreeEntity since we need to be sure
 			// that it happens no matter how the beacon was destroyed.
 			G_FreeEntity( ent );
@@ -278,16 +290,16 @@ namespace Beacon //this should eventually become a class
 			if ( ent->s.eType != ET_BEACON )
 				continue;
 
-			if ( ent->s.modelindex != type )
+			if ( ent->s.bc_type != type )
 				continue;
 
 			if ( ( ent->s.eFlags & eFlagsRelevant ) != ( eFlags & eFlagsRelevant ) )
 				continue;
 
-			if( ent->s.generic1 != team )
+			if( ent->s.bc_team != team )
 				continue;
 
-			if ( ( flags & BCF_DATA_UNIQUE ) && ent->s.modelindex2 != data )
+			if ( ( flags & BCF_DATA_UNIQUE ) && ent->s.bc_data != data )
 				continue;
 
 			if ( ent->s.eFlags & EF_BC_DYING )
@@ -297,7 +309,7 @@ namespace Beacon //this should eventually become a class
 			{}
 			else if( flags & BCF_PER_PLAYER )
 			{
-				if( ent->s.otherEntityNum != owner )
+				if( ent->s.bc_owner != owner )
 					continue;
 			}
 			else
@@ -352,7 +364,7 @@ namespace Beacon //this should eventually become a class
 	{
 		ent->r.svFlags = SVF_BROADCAST | SVF_CLIENTMASK;
 
-		G_TeamToClientmask( (team_t)ent->s.generic1, &ent->r.loMask, &ent->r.hiMask );
+		G_TeamToClientmask( (team_t)ent->s.bc_team, &ent->r.loMask, &ent->r.hiMask );
 
 		// Don't send enemy bases or tagged enemy entities to spectators.
 		if ( ent->s.eFlags & EF_BC_ENEMY )
@@ -369,10 +381,10 @@ namespace Beacon //this should eventually become a class
 		}
 
 		// Don't send a player tag to the tagged client itself.
-		if ( ent->s.modelindex == BCT_TAG && (ent->s.eFlags & EF_BC_TAG_PLAYER) )
+		if ( ent->s.bc_type == BCT_TAG && (ent->s.eFlags & EF_BC_TAG_PLAYER) )
 		{
 			int loMask, hiMask;
-			G_ClientnumToMask( ent->s.otherEntityNum2, &loMask, &hiMask );
+			G_ClientnumToMask( ent->s.bc_target, &loMask, &hiMask );
 			ent->r.loMask &= ~loMask;
 			ent->r.hiMask &= ~hiMask;
 		}
@@ -403,35 +415,47 @@ namespace Beacon //this should eventually become a class
 	 */
 	void RemoveOrphaned( int clientNum )
 	{
-		int i;
-		gentity_t *ent;
-
-		for ( i = MAX_CLIENTS - 1; i < level.num_entities; i++ )
+		for ( gentity_t *ent = NULL; ( ent = G_IterateEntities( ent ) ); )
 		{
-			ent = g_entities + i;
-
 			if ( ent->s.eType != ET_BEACON )
 				continue;
 
-			if ( ent->s.otherEntityNum != clientNum )
+			if ( ent->s.bc_owner != clientNum )
 				continue;
 
-			if ( BG_Beacon( ent->s.modelindex )->flags & BCF_PER_PLAYER )
-				Delete( ent );
-			else
-				ent->s.otherEntityNum = ENTITYNUM_NONE;
+			Delete( ent );
 		}
 	}
 
-	static void UpdateTag( gentity_t *ent, gentity_t *parent )
+	/**
+	 * @brief Moves a tag to the parent entity's bounding box center.
+	 */
+	static void UpdateTagLocation( gentity_t *ent, gentity_t *parent )
 	{
-		Move( ent, parent->s.origin );
+		vec3_t mins, maxs, center;
 
-		if( parent->client )
+		if ( !parent ) return;
+
+		VectorCopy( parent->s.origin, center );
+
+		if ( parent->client )
 		{
+			BG_ClassBoundingBox( parent->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
+			BG_MoveOriginToBBOXCenter( center, mins, maxs );
+
+			// Also update weapon for humans.
 			if( parent->client->pers.team == TEAM_HUMANS )
-				ent->s.modelindex2 = BG_GetPlayerWeapon( &parent->client->ps );
+			{
+				ent->s.bc_data = BG_GetPlayerWeapon( &parent->client->ps );
+			}
 		}
+		else if ( parent->s.eType == ET_BUILDABLE )
+		{
+			BG_BuildableBoundingBox( parent->s.modelindex, mins, maxs );
+			BG_MoveOriginToBBOXCenter( center, mins, maxs );
+		}
+
+		Move( ent, center );
 	}
 
 	/**
@@ -439,14 +463,14 @@ namespace Beacon //this should eventually become a class
 	 */
 	void UpdateTags( gentity_t *ent )
 	{
-		// buildables are supposed to be static
+		// Buildables are supposed to be static.
 		if( ent->s.eType == ET_BUILDABLE )
 			return;
 
 		if( ent->alienTag )
-			UpdateTag( ent->alienTag, ent );
+			UpdateTagLocation( ent->alienTag, ent );
 		if( ent->humanTag )
-			UpdateTag( ent->humanTag, ent );
+			UpdateTagLocation( ent->humanTag, ent );
 	}
 
 	/**
@@ -493,13 +517,19 @@ namespace Beacon //this should eventually become a class
 	/**
 	 * @brief Reset a tag's expiration timer.
 	 */
-	static inline void RefreshTag( gentity_t *ent, bool force=false )
+	static inline void RefreshTag( gentity_t *ent, bool force = false )
 	{
-		if( !force && !ent->s.time2 )
-			return;
+		// Don't refreshing dying beacons, this would reset their animation.
+		if ( ent->s.eFlags & EF_BC_DYING ) return;
+
+		// Touch update time.
+		ent->s.bc_mtime = level.time;
+
+		// Don't "refresh" permanent/uninitialized tags unless forced to.
+		if( !force && !ent->s.bc_etime ) return;
 
 		if( ent->s.eFlags & EF_BC_TAG_PLAYER )
-			ent->s.time2 = level.time + 2000;
+			ent->s.bc_etime = level.time + 2000;
 	}
 
 	static inline bool CheckRefreshTag( gentity_t *ent, team_t team )
@@ -514,22 +544,21 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Check if an entity can be tagged.
+	 * @param num Entity number of target.
+	 * @param team Tagging team.
+	 * @param trace Whether the tag is done manually by looking at an entity.
 	 */
-	static qboolean EntityTaggable( int num, team_t team = TEAM_NONE )
+	bool EntityTaggable( int num, team_t team, bool trace )
 	{
 		gentity_t *ent;
 
-		if( num == ENTITYNUM_NONE ||
-		    num == ENTITYNUM_WORLD )
-			return false;
+		if( num == ENTITYNUM_NONE || num == ENTITYNUM_WORLD ) return false;
 
 		ent = g_entities + num;
 
 		switch( ent->s.eType )
 		{
 			case ET_BUILDABLE:
-				if( ! (ent->s.eFlags & EF_B_SPAWNED ) )
-					return false;
 				if( ent->health <= 0 )
 					return false;
 				if( ent->buildableTeam == team )
@@ -537,6 +566,8 @@ namespace Beacon //this should eventually become a class
 				return true;
 
 			case ET_PLAYER:
+				if ( trace ) return false;
+
 				if( !ent->client )
 					return false;
 				// don't tag teammates
@@ -581,7 +612,7 @@ namespace Beacon //this should eventually become a class
 		{
 			trace_t tr;
 			trap_Trace( &tr, begin, NULL, NULL, end, skip, mask, 0 );
-			if ( EntityTaggable( tr.entityNum, team ) )
+			if ( EntityTaggable( tr.entityNum, team, true ) )
 			{
 				reticleEnt = g_entities + tr.entityNum;
 				if ( !refreshTagged || !CheckRefreshTag( reticleEnt, team ) )
@@ -599,7 +630,7 @@ namespace Beacon //this should eventually become a class
 			if( !ent->inuse )
 				continue;
 
-			if( !EntityTaggable( i, team ) )
+			if( !EntityTaggable( i, team, true ) )
 				continue;
 
 			VectorSubtract( ent->r.currentOrigin, begin, delta );
@@ -636,46 +667,48 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Tags an entity.
-	 * @todo Don't create a new beacon entity if retagged since that triggers regeneration of base
-	 *       clusterings.
 	 */
-	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent )
+	void Tag( gentity_t *ent, team_t team, qboolean permanent )
 	{
-		int i, data;
+		int data;
 		vec3_t origin, mins, maxs;
 		qboolean dead, player;
 		gentity_t *beacon, **attachment;
 		team_t targetTeam;
 
-		switch( ent->s.eType )
-		{
+		// Get the beacon attachment owned by the tagging team.
+		switch( team ) {
+			case TEAM_ALIENS: attachment = &ent->alienTag; break;
+			case TEAM_HUMANS: attachment = &ent->humanTag; break;
+			default:                                       return;
+		}
+
+		// Just refresh existing tags.
+		if ( *attachment ) {
+			RefreshTag( *attachment, true );
+			return;
+		}
+
+		switch( ent->s.eType ) {
 			case ET_BUILDABLE:
 				targetTeam = ent->buildableTeam;
+				data       = ent->s.modelindex;
+				dead       = ( ent->health <= 0 );
+				player     = qfalse;
 				BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
-				data = ent->s.modelindex;
-				dead = ( ent->health <= 0 );
-				player = qfalse;
 				break;
 
 			case ET_PLAYER:
 				targetTeam = (team_t)ent->client->pers.team;
+				dead       = ( ent->client && ent->client->ps.stats[ STAT_HEALTH ] <= 0 );
+				player     = qtrue;
 				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, NULL, NULL, NULL );
-				dead = ( ent->client && ent->client->ps.stats[ STAT_HEALTH ] <= 0 );
-				player = qtrue;
 
-				// data is the class (aliens) or the weapon number (humans)
-				switch( targetTeam )
-				{
-					case TEAM_ALIENS:
-						data = ent->client->ps.stats[ STAT_CLASS ];
-						break;
-
-					case TEAM_HUMANS:
-						data = BG_GetPlayerWeapon( &ent->client->ps );
-						break;
-
-					default:
-						return;
+				// Set beacon data to class (aliens) or weapon (humans).
+				switch( targetTeam ) {
+					case TEAM_ALIENS: data = ent->client->ps.stats[ STAT_CLASS ];    break;
+					case TEAM_HUMANS: data = BG_GetPlayerWeapon( &ent->client->ps ); break;
+					default:                                                         return;
 				}
 
 				break;
@@ -684,50 +717,32 @@ namespace Beacon //this should eventually become a class
 				return;
 		}
 
-		for( i = 0; i < 3; i++ )
-			origin[ i ] = ent->s.origin[ i ] + ( mins[ i ] + maxs[ i ] ) / 2.0;
+		// Don't tag dead targets.
+		if ( dead ) return;
 
-		switch( team )
-		{
-			case TEAM_ALIENS:
-				attachment = &ent->alienTag;
-				break;
+		// Set beacon origin to center of target bounding box.
+		VectorCopy( ent->s.origin, origin );
+		BG_MoveOriginToBBOXCenter( origin, mins, maxs );
 
-			case TEAM_HUMANS:
-				attachment = &ent->humanTag;
-				break;
-
-			default:
-				return;
-		}
-
-		if ( *attachment )
-			Delete( *attachment );
-
-		beacon = New( origin, BCT_TAG, data, team, owner );
+		// Create new beacon and attach it.
+		beacon = New( origin, BCT_TAG, data, team );
 		beacon->tagAttachment = attachment;
-		beacon->s.otherEntityNum2 = ent - g_entities;
+		*attachment = beacon;
+		beacon->s.bc_target = ent - g_entities;
 
+		// Reset the entity's tag score.
 		ent->tagScore = 0;
 
-		if( player )
-			beacon->s.eFlags |= EF_BC_TAG_PLAYER;
+		// Set flags.
+		if( player )             beacon->s.eFlags |= EF_BC_TAG_PLAYER;
+		if( team != targetTeam ) beacon->s.eFlags |= EF_BC_ENEMY;
 
-		if( team != targetTeam )
-			beacon->s.eFlags |= EF_BC_ENEMY;
+		// Set expiration time.
+		if( permanent ) beacon->s.bc_etime = 0;
+		else            RefreshTag( beacon, true );
 
-		if( permanent )
-			beacon->s.time2 = 0;
-		else
-			RefreshTag( beacon, true );
-
-		if( dead )
-			Delete( beacon, true );
-		else
-		{
-			*attachment = beacon;
-			if ( ent->s.eType == ET_BUILDABLE ) BaseClustering::Update( beacon );
-		}
+		// Update the base clusterings.
+		if ( ent->s.eType == ET_BUILDABLE ) BaseClustering::Update( beacon );
 
 		Propagate( beacon );
 	}

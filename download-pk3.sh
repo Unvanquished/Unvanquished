@@ -15,10 +15,18 @@ set -e
 # Work around a reported locale problem
 export LANG=C
 
+# Version of Unvanquished for which this script is built
+VERSION=0.38
+
 # Download from here
+CDN_URL="http://cdn.unvanquished.net/$VERSION/pkg/"
 BASE_URL='http://downloads.sourceforge.net/project/unvanquished/Assets/'
 MIRROR_DOMAIN='dl.sourceforge.net'
 MIRROR_URL="http://%s.$MIRROR_DOMAIN/project/unvanquished/Assets/"
+
+MD5SUMS_BASE="md5sums$VERSION"
+MD5SUMS_CDN='md5sums'
+MD5SUMS="$MD5SUMS_BASE"
 
 # Default destination directory
 case "$(uname -s)" in
@@ -29,9 +37,6 @@ case "$(uname -s)" in
     DEFAULT_DEST_DIR=~/.unvanquished/pkg
     ;;
 esac
-
-# Version of Unvanquished for which this script is built
-VERSION=0.31
 
 # Option flags
 RUN_DOWNLOAD=1
@@ -46,6 +51,7 @@ while test -z "$DONE"; do
       echo "Options:"
       echo "  -v, --verify     Verify downloaded .pk3s"
       echo "  --source MIRROR  Download from MIRROR"
+      echo "  --cdn            Download from cdn.unvanquished.net"
       echo
       echo "Mirror URL examples (not real URLs!):"
       echo "  http://example.com/unvanquished/"
@@ -69,6 +75,13 @@ while test -z "$DONE"; do
       if echo "$BASE_URL" | grep -vq '[./]'; then
         BASE_URL="$(printf "$MIRROR_URL" "$1")"
       fi
+      MD5SUMS="$MD5SUMS_BASE"
+      ;;
+
+    --cdn)
+      shift
+      BASE_URL="$CDN_URL"
+      MD5SUMS="$MD5SUMS_CDN"
       ;;
 
     *)
@@ -143,14 +156,24 @@ verify_md5sums()
   (
     set -e
     cd "$DEST_DIR"
-    md5sum --quiet -c "$CACHE/md5sums" 2>/dev/null
+    while read record; do
+      filename=`echo "$record" | sed 's/^.* [ *]//'`
+      sum=`echo "$record" | cut -d" " -f1`
+      if [ ! -f $filename ]; then
+        echo "$filename"
+      else
+        if [ "`md5sum $filename | cut -d" " -f1`" != "$sum" ]; then
+          echo "$filename"
+        fi
+      fi
+    done < "$CACHE/md5sums"
   )
 }
 
 if test -n "$RUN_DOWNLOAD"; then
   # Get the md5sum checksums
   test -f "$CACHE/md5sums" && mv -f "$CACHE/md5sums" "$CACHE/md5sums.old"
-  download "$CACHE" "md5sums$VERSION" "md5sums"
+  download "$CACHE" "$MD5SUMS" "md5sums"
 elif test ! -f "$CACHE/md5sums"; then
   echo '[1;31mNo md5sums file found.[m'
   exit 1

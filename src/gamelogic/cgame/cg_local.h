@@ -23,17 +23,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef CG_LOCAL_H
 #define CG_LOCAL_H
 
-#include "../../engine/qcommon/q_shared.h"
-#include "../../engine/renderer/tr_types.h"
-#include "../../engine/client/cg_api.h"
-#include "../shared/bg_public.h"
-#include "../../engine/client/keycodes.h"
+#include "engine/qcommon/q_shared.h"
+#include "engine/renderer/tr_types.h"
+#include "engine/client/cg_api.h"
+#include "shared/bg_public.h"
+#include "engine/client/keycodes.h"
 #include "cg_ui.h"
-
-// future imports
-#ifndef Q3_VM
-#include "../../common/Maths.h"
-#endif
 
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is no persistent data between levels on the client side.
@@ -633,7 +628,6 @@ typedef struct buildableCache_s
 // it depends on past states)
 typedef struct
 {
-	qboolean      inuse;
 	qboolean      old;
 	qboolean      eventFired;
 
@@ -643,9 +637,12 @@ typedef struct
 	int           oldFlags;
 	int           ctime;
 	int           etime;
+	int           mtime;
 	int           data;
-	team_t        team;
+	team_t        ownerTeam;
 	int           owner;
+	int           target;
+	float         alphaMod; // A modifier that can be set before the drawing phase begins.
 
 	// cache
 	float         dot;
@@ -660,7 +657,6 @@ typedef struct
 
 	qboolean      clamped;
 	vec2_t        clamp_dir;
-	qboolean      highlighted;
 } cbeacon_t;
 
 typedef struct
@@ -668,7 +664,7 @@ typedef struct
 	// behavior
 	int           fadeIn;
 	int           fadeOut;
-	float         highlightRadius;
+	float         highlightAngle; //angle in config, its cosine on runtime
 	float         highlightScale;
 	float         fadeMinAlpha;
 	float         fadeMaxAlpha;
@@ -687,6 +683,7 @@ typedef struct
 	float         hudMinSize;
 	float         hudMaxSize;
 	float         hudAlpha;
+	float         hudAlphaImportant;
 	vec2_t        hudCenter;    //runtime
 	vec2_t        hudRect[ 2 ]; //runtime
 
@@ -694,6 +691,28 @@ typedef struct
 	float         minimapScale;
 	float         minimapAlpha;
 } beaconsConfig_t;
+
+// strings to display on the libRocket HUD
+typedef struct
+{
+	qhandle_t    icon;
+	float        iconAlpha;
+
+	char         name[ 128 ];
+	float        nameAlpha;
+
+	char         distance[ 48 ];
+	float        distanceAlpha;
+
+	char         info[ 128 ];
+	float        infoAlpha;
+
+	char         age[ 48 ];
+	float        ageAlpha;
+
+	char         owner[ 128 ];
+	float        ownerAlpha;
+} beaconRocket_t;
 
 //======================================================================
 
@@ -745,6 +764,8 @@ typedef struct centity_s
 	float                 lastBuildableHealth;
 	int                   lastBuildableDamageSoundTime;
 
+	vec3_t                overmindEyeAngle;
+
 	lightFlareStatus_t    lfs;
 
 	qboolean              doorState;
@@ -767,13 +788,18 @@ typedef struct centity_s
 	trailSystem_t         *level2ZapTS[ LEVEL2_AREAZAP_MAX_TARGETS ];
 	int                   level2ZapTime;
 
-	trailSystem_t         *muzzleTS; //used for the tesla and reactor
+	trailSystem_t         *muzzleTS;
 	int                   muzzleTSDeathTime;
+
+	particleSystem_t      *missilePS;
+	trailSystem_t         *missileTS;
 
 	float                 radarVisibility;
 
 	qboolean              valid;
 	qboolean              oldValid;
+	int                   pvsEnterTime;
+
 	struct centity_s      *nextLocation;
 
 	cbeacon_t             beacon;
@@ -1165,6 +1191,7 @@ typedef struct
 	char     spectatorList[ MAX_STRING_CHARS ]; // list of names
 	int      spectatorTime; // next time to offset
 	float    spectatorOffset; // current offset from start
+	qboolean scoreInvalidated; // needs update on next RocketUpdate
 
 	// centerprinting
 	int  centerPrintTime;
@@ -1284,8 +1311,17 @@ typedef struct
 	cbeacon_t               *beacons[ MAX_CBEACONS ];
 	int                     beaconCount;
 	cbeacon_t               *highlightedBeacon;
+	beaconRocket_t          beaconRocket;
 
 	int                     tagScoreTime;
+
+	// pmove params
+	struct {
+		int synchronous;
+		int fixed;
+		int msec;
+		int accurate;
+	} pmoveParams;
 } cg_t;
 
 typedef struct
@@ -1421,7 +1457,6 @@ typedef struct
 	int currentNetSrc;
 	int serversLastRefresh;
 	int serverStatusLastRefresh;
-	int scoresLastUpdate;
 	int realtime;
 	char downloadName[ MAX_STRING_CHARS ];
 	cgClientState_t cstate;
@@ -1495,7 +1530,6 @@ typedef struct
 	qhandle_t disconnectSound;
 
 	// sounds
-	sfxHandle_t tracerSound;
 	sfxHandle_t weaponEmptyClick;
 	sfxHandle_t selectSound;
 	sfxHandle_t footsteps[ FOOTSTEP_TOTAL ][ 4 ];
@@ -1579,6 +1613,8 @@ typedef struct
 	sfxHandle_t lCannonWarningSound;
 	sfxHandle_t lCannonWarningSound2;
 
+	sfxHandle_t rocketpodLockonSound;
+
 	qhandle_t   buildWeaponTimerPie[ 8 ];
 	qhandle_t   healthCross;
 	qhandle_t   healthCross2X;
@@ -1631,14 +1667,13 @@ typedef struct
 // all clients to begin playing instantly
 typedef struct
 {
-	gameState_t gameState; // gamestate from server
+	GameStateCSs gameState; // gamestate from server
 	glconfig_t  glconfig; // rendering configuration
 	float       screenXScale; // derived from glconfig
 	float       screenYScale;
 	float       screenXBias;
 	float       aspectScale;
 
-	int         serverCommandSequence; // reliable command stream counter
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
 
 	// parsed from serverinfo
@@ -1820,11 +1855,9 @@ extern  vmCvar_t            cg_thirdPersonShoulderViewMode;
 extern  vmCvar_t            cg_staticDeathCam;
 extern  vmCvar_t            cg_thirdPersonPitchFollow;
 extern  vmCvar_t            cg_thirdPersonRange;
-extern  vmCvar_t            cg_stereoSeparation;
 extern  vmCvar_t            cg_lagometer;
 extern  vmCvar_t            cg_drawSpeed;
 extern  vmCvar_t            cg_maxSpeedTimeWindow;
-extern  vmCvar_t            cg_synchronousClients;
 extern  vmCvar_t            cg_stats;
 extern  vmCvar_t            cg_paused;
 extern  vmCvar_t            cg_blood;
@@ -1835,9 +1868,6 @@ extern  vmCvar_t            cg_noVoiceText;
 extern  vmCvar_t            cg_hudFiles;
 extern  vmCvar_t            cg_hudFilesEnable;
 extern  vmCvar_t            cg_smoothClients;
-extern  vmCvar_t            pmove_fixed;
-extern  vmCvar_t            pmove_accurate;
-extern  vmCvar_t            pmove_msec;
 extern  vmCvar_t            cg_timescaleFadeEnd;
 extern  vmCvar_t            cg_timescaleFadeSpeed;
 extern  vmCvar_t            cg_timescale;
@@ -1916,6 +1946,7 @@ extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
 extern vmCvar_t             ui_chatPromptColors;
+extern vmCvar_t             cg_spawnEffects;
 
 //
 // Rocket cvars
@@ -1964,7 +1995,7 @@ void     CG_TestModelPrevSkin_f( void );
 void     CG_AddBufferedSound( sfxHandle_t sfx );
 qboolean CG_CullBox(vec3_t mins, vec3_t maxs);
 qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
-void     CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+void     CG_DrawActiveFrame( int serverTime, qboolean demoPlayback );
 void     CG_OffsetFirstPersonView( void );
 void     CG_OffsetThirdPersonView( void );
 void     CG_OffsetShoulderView( void );
@@ -2015,7 +2046,7 @@ void CG_AddLagometerFrameInfo( void );
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed( void );
 void CG_CenterPrint( const char *str, int y, int charWidth );
-void CG_DrawActive( stereoFrame_t stereoView );
+void CG_DrawActive( void );
 void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float text_y, int ownerDraw, int ownerDrawFlags,
                    int align, int textalign, int textvalign,
@@ -2141,13 +2172,6 @@ void CG_DrawItemSelectText( void );
 float CG_ChargeProgress( void );
 
 //
-// cg_scanner.c
-//
-void CG_UpdateEntityPositions( void );
-void CG_Scanner( rectDef_t *rect );
-void CG_AlienSense( rectDef_t *rect );
-
-//
 // cg_minimap.c
 //
 void CG_InitMinimap( void );
@@ -2173,7 +2197,7 @@ void CG_ProcessSnapshots( void );
 //
 // cg_consolecmds.c
 //
-qboolean CG_ConsoleCommand( void );
+qboolean ConsoleCommand( void );
 void     CG_InitConsoleCommands( void );
 void     CG_RequestScores( void );
 void     CG_HideScores_f( void );
@@ -2182,7 +2206,7 @@ void     CG_ShowScores_f( void );
 //
 // cg_servercmds.c
 //
-void CG_ExecuteNewServerCommands( int latestSequence );
+void CG_ExecuteServerCommands( snapshot_t* snap );
 void CG_ParseServerinfo( void );
 void CG_SetConfigValues( void );
 void CG_ShaderStateChanged( void );
@@ -2268,9 +2292,10 @@ const char *CG_TutorialText( void );
 //
 
 void          CG_LoadBeaconsConfig( void );
-void          CG_ListBeacons( void );
-qhandle_t     CG_BeaconIcon( const cbeacon_t *b, qboolean hud );
-const char    *CG_BeaconText( const cbeacon_t *b );
+void          CG_RunBeacons( void );
+qhandle_t     CG_BeaconIcon( const cbeacon_t *b );
+qhandle_t     CG_BeaconDescriptiveIcon( const cbeacon_t *b );
+char          *CG_BeaconName( const cbeacon_t *b, char *out, size_t len );
 
 //
 //===============================================
@@ -2283,15 +2308,6 @@ enum
   CROSSHAIR_ALWAYSON
 };
 
-// menu types for cg_disable*Dialogs
-typedef enum
-{
-  DT_INTERACTIVE, // team, class, armoury
-  DT_ARMOURYEVOLVE, // Insufficient funds et al
-  DT_BUILD, // build errors
-  DT_COMMAND, // You must be alive/human/spec/etc.
-} dialogType_t;
-
 //
 // cg_utils.c
 //
@@ -2299,6 +2315,7 @@ qboolean   CG_ParseColor( byte *c, char **text_p );
 const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
 void       CG_ReadableSize( char *buf, int bufsize, int value );
 void       CG_PrintTime( char *buf, int bufsize, int time );
+void CG_FormatSI( char *buf, int size, float num, int sf, const char *unit );
 
 //
 // cg_rocket.c
@@ -2306,7 +2323,7 @@ void       CG_PrintTime( char *buf, int bufsize, int time );
 
 void CG_Rocket_Init( void );
 void CG_Rocket_LoadHuds( void );
-void CG_Rocket_Frame( void );
+void CG_Rocket_Frame( cgClientState_t state );
 const char *CG_Rocket_GetTag();
 const char *CG_Rocket_GetAttribute( const char *attribute );
 int CG_StringToNetSource( const char *src );

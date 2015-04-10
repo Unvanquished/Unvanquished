@@ -294,11 +294,11 @@ int NaClSendDatagram(NaClHandle handle, const NaClMessageHeader* message,
         success = g_broker_duplicate_handle_func(message->handles[i],
                                                  header.pid,
                                                  &temp_remote_handle,
-                                                 0, DUPLICATE_SAME_ACCESS);
+                                                 0, DUPLICATE_SAME_ACCESS) != 0;
       } else {
         success = DuplicateHandle(GetCurrentProcess(), message->handles[i],
                                   target, &temp_remote_handle,
-                                  0, FALSE, DUPLICATE_SAME_ACCESS);
+                                  0, FALSE, DUPLICATE_SAME_ACCESS) != FALSE;
       }
       if (!success) {
         /*

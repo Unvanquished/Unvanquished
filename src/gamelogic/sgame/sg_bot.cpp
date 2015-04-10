@@ -20,8 +20,8 @@
  ===========================================================================
  */
 
-#include "g_bot_parse.h"
-#include "g_bot_util.h"
+#include "sg_bot_parse.h"
+#include "sg_bot_util.h"
 
 static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
@@ -226,7 +226,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	}
 
 	// find what clientNum to use for bot
-	clientNum = trap_BotAllocateClient( 0 );
+	clientNum = trap_BotAllocateClient();
 
 	if ( clientNum < 0 )
 	{

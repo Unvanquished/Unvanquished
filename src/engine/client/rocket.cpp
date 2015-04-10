@@ -70,10 +70,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include <Rocket/Debugger.h>
 
-extern "C"
-{
-	#include <SDL.h>
-}
+#include <SDL.h>
 
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
@@ -349,9 +346,6 @@ cvar_t *cg_draw2D;
 
 void Rocket_Init( void )
 {
-	char **fonts;
-	int numFiles;
-
 	Rocket::Core::SetFileInterface( &fileInterface );
 	Rocket::Core::SetSystemInterface( &systemInterface );
 	Rocket::Core::SetRenderInterface( &renderInterface );

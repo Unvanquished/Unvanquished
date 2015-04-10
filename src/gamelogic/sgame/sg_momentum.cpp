@@ -21,7 +21,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "g_local.h"
+#include "sg_local.h"
 
 // -----------
 // definitions
@@ -138,6 +138,19 @@ static INLINE float MomentumTimeMod( void )
 }
 
 /**
+ * @todo Currently this function is just a guess, find out the correct mod via statistics.
+ */
+static INLINE float MomentumPlayerCountMod( void )
+{
+	int playerCount = std::max( 2, level.team[ TEAM_ALIENS ].numClients +
+	                               level.team[ TEAM_HUMANS ].numClients );
+
+	// HACK: This uses the average number of players taking part in development games so that the
+	//       average momentum gain through all matches remains unchanged for now.
+	return 9.0f / (float)playerCount;
+}
+
+/**
  * Modifies a momentum reward based on type, player count and match time.
  */
 static float MomentumMod( momentum_t type )
@@ -151,7 +164,7 @@ static float MomentumMod( momentum_t type )
 			baseMod        = g_momentumBaseMod.value;
 			typeMod        = g_momentumKillMod.value;
 			timeMod        = MomentumTimeMod();
-			playerCountMod = 1.0f;
+			playerCountMod = MomentumPlayerCountMod();
 			break;
 
 		case CONF_BUILDING:
@@ -389,7 +402,15 @@ float G_AddMomentumForBuilding( gentity_t *buildable )
 
 	value   = BG_Buildable( buildable->s.modelindex )->buildPoints;
 	team    = BG_Buildable( buildable->s.modelindex )->team;
-	builder = &g_entities[ buildable->builtBy->slot ];
+
+	if ( buildable->builtBy->slot != -1 )
+	{
+		builder = &g_entities[ buildable->builtBy->slot ];
+	}
+	else
+	{
+		builder = NULL;
+	}
 
 	reward = AddMomentum( CONF_BUILDING, team, value, builder, qfalse );
 

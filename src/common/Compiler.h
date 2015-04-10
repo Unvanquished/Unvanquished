@@ -165,26 +165,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DLLIMPORT __declspec(dllimport)
 #define OVERRIDE override
 #define FINAL final
+// VS2015 supports this
+#if _MSC_VER >= 1900
+#define NOEXCEPT noexcept
+#define NOEXCEPT_IF(x) noexcept(x)
+#define NOEXCEPT_EXPR(x) false
+#else
 #define NOEXCEPT
 #define NOEXCEPT_IF(x)
 #define NOEXCEPT_EXPR(x) false
+#endif
 // Work around lack of C99 support
 #define __func__ __FUNCTION__
 // Work around lack of constexpr
 #define CONSTEXPR const
 #define ATTRIBUTE_NO_SANITIZE_ADDRESS
-
-#elif defined(Q3_VM)
-#define DEPRECATED
-#define COLD
-#define NORETURN
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define PRINTF_TRANSLATE_ARG(a)
-#define MALLOC_LIKE
-#define ALIGNED(a,x) x
-#define DLLEXPORT
-#define DLLIMPORT
 
 // Other compilers, unsupported
 #else
@@ -202,27 +197,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 // Compat macros
-#ifdef Q3_VM
-#define STATIC_INLINE
-#define QDECL
-#define INLINE
-#define Q_EXPORT
-#ifdef Q3_VM_INSTANTIATE
-#define IFDECLARE
-#else
-#define IFDECLARE ;
-#endif
-#else // Q3_VM
-#define Q3_VM_INSTANTIATE
 #define QDECL
 #if defined(_MSC_VER) && !defined(__cplusplus)
 #define INLINE __inline
 #else
 #define INLINE inline
 #endif
-#define STATIC_INLINE static INLINE
 #define Q_EXPORT DLLEXPORT
-#define IFDECLARE
-#endif // Q3_VM
 
 #endif // COMMON_COMPILER_H_

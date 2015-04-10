@@ -22,15 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* vertexLighting_DBS_entity_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec2 		attr_TexCoord0;
-attribute vec4		attr_QTangent;
-
-attribute vec3 		attr_Position2;
-attribute vec4		attr_QTangent2;
-
-uniform float		u_VertexInterpolation;
-
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
 uniform mat4		u_SpecularTextureMatrix;
@@ -42,9 +33,9 @@ uniform float		u_Time;
 
 varying vec3		var_Position;
 varying vec2		var_TexDiffuse;
+varying vec4		var_Color;
 #if defined(USE_NORMAL_MAPPING)
-varying vec2		var_TexNormal;
-varying vec2		var_TexSpecular;
+varying vec4		var_TexNormalSpecular;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
 #endif
@@ -54,61 +45,20 @@ varying vec2		var_TexGlow;
 
 varying vec3		var_Normal;
 
-vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
-	vec3 tmp = 2.0 * cross( quat.xyz, vec );
-	return vec + quat.w * tmp + cross( quat.xyz, tmp );
-}
-
-
 void	main()
 {
 	vec4 position;
-	vec3 tangent;
-	vec3 binormal;
-	vec3 normal;
+	localBasis LB;
+	vec2 texCoord, lmCoord;
+	vec4 color;
 
-#if defined(USE_VERTEX_SKINNING)
+	VertexFetch( position, LB, color, texCoord, lmCoord);
 
-	#if defined(USE_NORMAL_MAPPING)
-	VertexSkinning_P_TBN(	attr_Position, attr_QTangent,
-				position, tangent, binormal, normal);
-	#else
-	VertexSkinning_P_N(	attr_Position, attr_QTangent,
-				position, normal);
-	#endif
-
-#elif defined(USE_VERTEX_ANIMATION)
-
-	#if defined(USE_NORMAL_MAPPING)
-	VertexAnimation_P_TBN(	attr_Position, attr_Position2,
-				attr_QTangent, attr_QTangent2,
-				u_VertexInterpolation,
-				position, tangent, binormal, normal);
-	#else
-	VertexAnimation_P_N(attr_Position, attr_Position2,
-			    attr_QTangent, attr_QTangent2,
-			    u_VertexInterpolation,
-			    position, normal);
-	#endif
-
-#else
-	position = vec4(attr_Position, 1.0);
-
-	#if defined(USE_NORMAL_MAPPING)
-	tangent = QuatTransVec( attr_QTangent, vec3( 1.0, 0.0, 0.0 ) );
-	binormal = QuatTransVec( attr_QTangent, vec3( 0.0, 1.0, 0.0 ) );
-	tangent *= sign( attr_QTangent.w );
-	#endif
-
-	normal = QuatTransVec( attr_QTangent, vec3( 0.0, 0.0, 1.0 ) );
-#endif
-
-#if defined(USE_DEFORM_VERTEXES)
-	position = DeformPosition2(	position,
-					normal,
-					attr_TexCoord0.st,
-					u_Time);
-#endif
+	DeformVertex( position,
+		      LB.normal,
+		      texCoord,
+		      color,
+		      u_Time);
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
@@ -116,23 +66,24 @@ void	main()
 	// transform position into world space
 	var_Position = (u_ModelMatrix * position).xyz;
 
-	#if defined(USE_NORMAL_MAPPING)
-	var_Tangent.xyz = (u_ModelMatrix * vec4(tangent, 0.0)).xyz;
-	var_Binormal.xyz = (u_ModelMatrix * vec4(binormal, 0.0)).xyz;
-	#endif
+#if defined(USE_NORMAL_MAPPING)
+	var_Tangent.xyz = (u_ModelMatrix * vec4(LB.tangent, 0.0)).xyz;
+	var_Binormal.xyz = (u_ModelMatrix * vec4(LB.binormal, 0.0)).xyz;
+#endif
 
-	var_Normal.xyz = (u_ModelMatrix * vec4(normal, 0.0)).xyz;
+	var_Normal.xyz = (u_ModelMatrix * vec4(LB.normal, 0.0)).xyz;
 	// transform diffusemap texcoords
-	var_TexDiffuse = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexDiffuse = (u_DiffuseTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
+	var_Color = color;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexNormal = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.xy = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
-	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.zw = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 #endif
 #if defined(USE_GLOW_MAPPING)
-	var_TexGlow = (u_GlowTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexGlow = (u_GlowTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 #endif
 }

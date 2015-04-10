@@ -1,14 +1,6 @@
-models/players/level1/level1
+models/players/level1/mantis
 {
-	qer_editorimage models/players/level1/level1
-	diffuseMap models/players/level1/level1
-	normalMap models/players/level1/level1_n
+	diffuseMap models/players/level1/mantis_d
+	normalMap models/players/level1/mantis_n
+	specularMap models/players/level1/mantis_s
 }
-
-models/players/level1/level1upg
-{
-	qer_editorimage models/players/level1/level1_u
-	diffuseMap models/players/level1/level1_u
-	normalMap models/players/level1/level1_n
-}
-
