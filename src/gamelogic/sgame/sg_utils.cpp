@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // sg_utils.c -- misc utility functions for game module
 
 #include "sg_local.h"
-#include "CBSEEntities.h"
+#include "CBSE.h"
 
 typedef struct
 {
@@ -850,7 +850,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	fire->s.eType   = ET_FIRE;
 	fire->clipmask  = 0;
 
-	fire->entity = new FireEntity(fire);
+	fire->entity = new FireEntity(FireEntity::Params{fire});
 	fire->entity->Ignite(fireStarter);
 
 	// attacker

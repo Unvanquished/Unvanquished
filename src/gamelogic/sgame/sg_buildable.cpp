@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
-#include "CBSEEntities.h"
+#include "CBSE.h"
 
 #define PRIMARY_ATTACK_PERIOD 7500
 #define NEARBY_ATTACK_PERIOD  15000
@@ -4796,7 +4796,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->die = AGeneric_Die;
 			built->think = ASpawn_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity(built);
+			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
 			break;
 
 		case BA_A_BARRICADE:
@@ -4805,7 +4805,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->pain = ABarricade_Pain;
 			built->touch = ABarricade_Touch;
 			built->shrunkTime = 0;
-			built->entity = new AlienBuildableEntity(built);
+			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
 			ABarricade_Shrink( built, qtrue );
 			break;
 
@@ -4814,48 +4814,49 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->think = ABooster_Think;
 			built->pain = AGeneric_Pain;
 			built->touch = ABooster_Touch;
-			built->entity = new AlienBuildableEntity(built);
+			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
 			break;
 
 		case BA_A_ACIDTUBE:
 			built->die = AGeneric_Die;
 			built->think = AAcidTube_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity(built);
+			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
 			break;
 
 		case BA_A_HIVE:
 			built->die = AGeneric_Die;
 			built->think = AHive_Think;
 			built->pain = AHive_Pain;
-			built->entity = new AlienBuildableEntity(built);
+			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
 			break;
 
 		case BA_A_TRAPPER:
 			built->die = AGeneric_Die;
 			built->think = ATrapper_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity(built);
+			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
 			break;
 
 		case BA_A_LEECH:
 			built->die = ALeech_Die;
 			built->think = ALeech_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity(built);
+			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
 			break;
 
 		case BA_A_SPIKER:
 			built->die = AGeneric_Die;
 			built->think = ASpiker_Think;
 			built->pain = ASpiker_Pain;
+			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
 			break;
 
 		case BA_A_OVERMIND:
 			built->die = AOvermind_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity(built);
+			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
 			break;
 
 		case BA_H_SPAWN:

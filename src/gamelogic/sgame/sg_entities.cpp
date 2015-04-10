@@ -34,9 +34,9 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_entities.h"
-#include "CBSEEntities.h"
+#include "CBSE.h"
 
-static EmptyEntity emptyEntity(nullptr);
+static EmptyEntity emptyEntity(EmptyEntity::Params{nullptr});
 
 /*
 =================================================================================

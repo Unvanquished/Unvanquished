@@ -888,10 +888,12 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/sg_cm_world.h
   ${GAMELOGIC_DIR}/sgame/Beacon.cpp
   ${GAMELOGIC_DIR}/sgame/Clustering.cpp
-  ${GAMELOGIC_DIR}/sgame/CBSEBackend.cpp
-  ${GAMELOGIC_DIR}/sgame/CBSEBackend.h
-  ${GAMELOGIC_DIR}/sgame/CBSEComponents.h
-  ${GAMELOGIC_DIR}/sgame/CBSEEntities.h
+  ${GAMELOGIC_DIR}/sgame/CBSE.h
+  ${GAMELOGIC_DIR}/sgame/CBSETypes.h
+  ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.cpp
+  ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.h
+  ${GAMELOGIC_DIR}/sgame/backend/CBSEComponents.h
+  ${GAMELOGIC_DIR}/sgame/backend/CBSEEntities.h
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
   ${GAMELOGIC_DIR}/sgame/components/DeferedFreeingComponent.cpp
