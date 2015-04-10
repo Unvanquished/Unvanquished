@@ -53,13 +53,6 @@
 {% for entity in entities %}
 	/** A specific entity. */
 	class {{entity.get_type_name()}}: public Entity {
-		private:
-			/** {{entity.get_type_name()}}'s message handler vtable. */
-			static const MessageHandler messageHandlers[];
-
-			/** {{entity.get_type_name()}}'s component offset table. */
-			static const int componentOffsets[];
-
 		public:
 			{% set user_params = entity.get_user_params() %}
 			/** Initialization parameters for {{entity.get_type_name()}}. */
@@ -84,6 +77,13 @@
 			{% for component in entity.get_components() %}
 				{{component.get_type_name()}} {{component.get_variable_name()}}; /**< {{entity.get_type_name()}}'s {{component.get_type_name()}} instance. */
 			{% endfor %}
+
+		private:
+			/** {{entity.get_type_name()}}'s message handler vtable. */
+			static const MessageHandler messageHandlers[];
+
+			/** {{entity.get_type_name()}}'s component offset table. */
+			static const int componentOffsets[];
 	};
 
 {% endfor %}
