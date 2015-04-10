@@ -89,13 +89,10 @@ class {{component.get_type_name()}}: public {{component.get_base_type_name()}} {
 		// Handwritten Members //
 		// /////////////////// //
 
-
-
 	private:
 		// /////////////////// //
 		// Handwritten Members //
 		// /////////////////// //
-
 
 };
 

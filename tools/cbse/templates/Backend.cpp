@@ -99,7 +99,6 @@ bool Entity::SendMessage(int msg, const void* data) {
 // ////////////////////// //
 // Entity implementations //
 // ////////////////////// //
-//* TODO: Move to new file Entities.cpp?
 {% for entity in entities %}
 
 	// {{entity.get_type_name()}}
@@ -130,7 +129,7 @@ bool Entity::SendMessage(int msg, const void* data) {
 					{% endif %}
 				{% endfor %}
 			{% else %}
-				//* Cast the message content to the right type (receive a const void*)
+				//* Cast the message content to the right type (received a const void*)
 				const {{message.get_tuple_type()}}* data = (const {{message.get_tuple_type()}}*) _data;
 				{% for component in entity.get_components() %}
 					{% if message in component.get_messages_to_handle() %}
