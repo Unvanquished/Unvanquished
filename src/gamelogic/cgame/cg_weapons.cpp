@@ -1510,7 +1510,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	Com_Memset( &flash, 0, sizeof( flash ) );
 
 	VectorCopy( parent->lightingOrigin, gun.lightingOrigin );
-	gun.shadowPlane = parent->shadowPlane;
 	gun.renderfx = parent->renderfx;
 
 	if ( ps )
@@ -1646,7 +1645,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		if ( barrel.hModel )
 		{
 			VectorCopy( parent->lightingOrigin, barrel.lightingOrigin );
-			barrel.shadowPlane = parent->shadowPlane;
 			barrel.renderfx = parent->renderfx;
 
 			angles[ YAW ] = 0;
@@ -1693,7 +1691,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 
 	VectorCopy( parent->lightingOrigin, flash.lightingOrigin );
-	flash.shadowPlane = parent->shadowPlane;
 	flash.renderfx = parent->renderfx;
 
 	if ( !ps )

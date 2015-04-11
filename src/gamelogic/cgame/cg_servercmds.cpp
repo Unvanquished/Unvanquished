@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // be a valid snapshot this frame
 
 #include "cg_local.h"
-#include "../shared/CommonProxies.h"
+#include "shared/CommonProxies.h"
 
 /*
 =================
@@ -1122,7 +1122,7 @@ static void CG_ParseVoice( void )
 #define PLURAL_TRANSLATE_FUNC P_
 #define Cmd_Argv CG_Argv
 #define Cmd_Argc trap_Argc
-#include "../../engine/qcommon/print_translated.h"
+#include "engine/qcommon/print_translated.h"
 
 /*
 =================

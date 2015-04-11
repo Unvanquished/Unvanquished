@@ -29,11 +29,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "cg_local.h"
-#include "../../engine/client/cg_msgdef.h"
+#include "engine/client/cg_msgdef.h"
 
-#include "../shared/VMMain.h"
-#include "../shared/CommandBufferClient.h"
-#include "../shared/CommonProxies.h"
+#include "shared/VMMain.h"
+#include "shared/CommandBufferClient.h"
+#include "shared/CommonProxies.h"
 
 // Symbols required by the shared VMMain code
 
@@ -51,8 +51,8 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
     if (major == VM::QVM) {
         switch (minor) {
             case CG_STATIC_INIT:
-                IPC::HandleMsg<CGameStaticInitMsg>(VM::rootChannel, std::move(reader), [] {
-                    VM::InitializeProxies();
+                IPC::HandleMsg<CGameStaticInitMsg>(VM::rootChannel, std::move(reader), [] (int milliseconds) {
+                    VM::InitializeProxies(milliseconds);
                     FS::Initialize();
                     srand(time(nullptr));
 					cmdBuffer.Init();

@@ -489,7 +489,7 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 	}
 	else
 	{
-		shouldFire = qfalse;
+		shouldFire = qtrue;
 	}
 
 	if( shouldFire == !self->conditions.negated )

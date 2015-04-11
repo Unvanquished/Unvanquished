@@ -275,6 +275,23 @@ namespace Util {
 			return value;
 		}
 	};
+	template<>
+	struct SerializeTraits<std::vector<bool>> {
+		static void Write(Writer& stream, const std::vector<bool>& value)
+		{
+			stream.WriteSize(value.size());
+			for (bool x: value)
+				stream.Write<bool>(x);
+		}
+		static std::vector<bool> Read(Reader& stream)
+		{
+			std::vector<bool> value;
+			value.resize(stream.ReadSize<bool>());
+			for (auto i = value.begin(); i != value.end(); ++i)
+				*i = stream.Read<bool>();
+			return value;
+		}
+	};
 
 	// std::pair
 	template<typename T, typename U>

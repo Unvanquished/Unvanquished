@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
-#include "../../engine/qcommon/q_unicode.h"
+#include "engine/qcommon/q_unicode.h"
 
 // sg_client.c -- client functions that don't happen every frame
 
@@ -1877,7 +1877,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// (re)tag the client for its team
 	Beacon::DeleteTags( ent );
-	Beacon::Tag( ent, (team_t)ent->client->ps.persistant[ PERS_TEAM ], 0, true );
+	Beacon::Tag( ent, (team_t)ent->client->ps.persistant[ PERS_TEAM ], true );
 }
 
 /*

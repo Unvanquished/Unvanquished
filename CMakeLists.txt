@@ -604,7 +604,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_decals.cpp
   ${ENGINE_DIR}/renderer/tr_fbo.cpp
   ${ENGINE_DIR}/renderer/tr_flares.cpp
-  ${ENGINE_DIR}/renderer/tr_fog.cpp
   ${ENGINE_DIR}/renderer/tr_font.cpp
   ${ENGINE_DIR}/renderer/tr_image.cpp
   ${ENGINE_DIR}/renderer/tr_image_crn.cpp
@@ -630,7 +629,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_shade.cpp
   ${ENGINE_DIR}/renderer/tr_shade_calc.cpp
   ${ENGINE_DIR}/renderer/tr_shader.cpp
-  ${ENGINE_DIR}/renderer/tr_shadows.cpp
   ${ENGINE_DIR}/renderer/tr_skin.cpp
   ${ENGINE_DIR}/renderer/tr_sky.cpp
   ${ENGINE_DIR}/renderer/tr_surface.cpp
@@ -819,7 +817,6 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_snapshot.cpp
   ${GAMELOGIC_DIR}/cgame/cg_view.cpp
   ${GAMELOGIC_DIR}/cgame/cg_weapons.cpp
-  ${GAMELOGIC_DIR}/cgame/cg_scanner.cpp
   ${GAMELOGIC_DIR}/cgame/cg_attachment.cpp
   ${GAMELOGIC_DIR}/cgame/cg_trails.cpp
   ${GAMELOGIC_DIR}/cgame/cg_particles.cpp
@@ -1074,6 +1071,9 @@ set( NACLLIST_MODULE
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_sendmsg.c
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
 )
+
+# Add include dirs
+include_directories( ${MOUNT_DIR} )
 
 ################################################################################
 # Libraries
@@ -1374,6 +1374,7 @@ function( GAMEMODULE )
       PREFIX ""
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};BUILD_VM_IN_PROCESS"
     )
+    set_property( TARGET ${GAMEMODULE_NAME}-native-dll APPEND PROPERTY INCLUDE_DIRECTORIES ${GAMELOGIC_DIR} )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-dll ${COMMON_DIR}/Common.h )
   endif()
 
@@ -1383,6 +1384,7 @@ function( GAMEMODULE )
     set_target_properties( ${GAMEMODULE_NAME}-native-exe PROPERTIES
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
     )
+    set_property( TARGET ${GAMEMODULE_NAME}-native-exe APPEND PROPERTY INCLUDE_DIRECTORIES ${GAMELOGIC_DIR} )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-exe ${COMMON_DIR}/Common.h )
   endif()
 
@@ -1397,6 +1399,8 @@ function( GAMEMODULE )
     set( NACL_COMPILE_OPTIONS
       -I${LIB_DIR}/nacl
       -I${LIB_DIR}/zlib
+      -I${MOUNT_DIR}
+      -I${GAMELOGIC_DIR}
       -DNACL_BUILD_ARCH=x86 # Not actually used
       -DNACL_BUILD_SUBARCH=64 # Not actually used
       -Wall
@@ -1584,6 +1588,7 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
+  set_property( TARGET client APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} )
   ADD_PRECOMPILED_HEADER( client ${COMMON_DIR}/Common.h )
 endif()
 
@@ -1592,6 +1597,7 @@ if( BUILD_SERVER )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
+  set_property( TARGET server APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} )
   ADD_PRECOMPILED_HEADER( server ${COMMON_DIR}/Common.h )
 endif()
 
@@ -1600,6 +1606,7 @@ if( BUILD_TTY_CLIENT )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
+  set_property( TARGET ttyclient APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} )
   ADD_PRECOMPILED_HEADER( ttyclient ${COMMON_DIR}/Common.h )
 endif()
 

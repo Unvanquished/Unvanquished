@@ -430,7 +430,6 @@ static const struct
 	{ "buy",              0,                       CG_CompleteBuy   },
 	{ "callteamvote",     0,                       CG_CompleteTeamVote },
 	{ "callvote",         0,                       CG_CompleteVote  },
-	{ "cgame_memory",     BG_MemoryInfo,           0                },
 	{ "class",            0,                       CG_CompleteClass },
 	{ "clientlist",       CG_ClientList_f,         0                },
 	{ "damage",           0,                       0                },

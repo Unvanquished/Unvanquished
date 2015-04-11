@@ -37,16 +37,16 @@ Maryland 20850 USA.
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qcommon.h"
-#include "../renderer/tr_public.h"
+#include "qcommon/q_shared.h"
+#include "qcommon/qcommon.h"
+#include "renderer/tr_public.h"
 #include "keys.h"
-#include "../audio/Audio.h"
-#include "../client/cg_api.h"
-#include "../framework/VirtualMachine.h"
-#include "../framework/CommonVMServices.h"
-#include "../framework/CommandBufferHost.h"
-#include "../../common/IPC/CommandBuffer.h"
+#include "audio/Audio.h"
+#include "client/cg_api.h"
+#include "framework/VirtualMachine.h"
+#include "framework/CommonVMServices.h"
+#include "framework/CommandBufferHost.h"
+#include "common/IPC/CommandBuffer.h"
 
 #if defined(USE_VOIP) && !defined(BUILD_SERVER)
 #include <speex/speex.h>

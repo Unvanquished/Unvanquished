@@ -35,16 +35,16 @@ Maryland 20850 USA.
 // common.c -- misc functions used in client and server
 
 #include "revision.h"
-#include "../qcommon/q_shared.h"
+#include "qcommon/q_shared.h"
 #include "q_unicode.h"
 #include "qcommon.h"
 
-#include "../framework/BaseCommands.h"
-#include "../framework/CommandSystem.h"
-#include "../framework/CvarSystem.h"
-#include "../framework/ConsoleHistory.h"
-#include "../framework/LogSystem.h"
-#include "../framework/System.h"
+#include "framework/BaseCommands.h"
+#include "framework/CommandSystem.h"
+#include "framework/CvarSystem.h"
+#include "framework/ConsoleHistory.h"
+#include "framework/LogSystem.h"
+#include "framework/System.h"
 
 // htons
 #ifdef _WIN32
@@ -1564,7 +1564,7 @@ A way to force a bus error for development reasons
 static void NORETURN Com_Crash_f( void )
 {
 	* ( volatile int * ) 0 = 0x12345678;
-	exit( 1 ); // silence warning
+	Sys::OSExit(1); // silence warning
 }
 
 void Com_SetRecommended( void )

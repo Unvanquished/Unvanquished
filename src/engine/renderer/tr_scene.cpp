@@ -541,17 +541,6 @@ void RE_AddDynamicLightToSceneQ3A( const vec3_t org, float radius, float r, floa
 }
 
 /*
-==============
-RE_AddCoronaToScene
-
-RB: TODO
-==============
-*/
-void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible )
-{
-}
-
-/*
 @@@@@@@@@@@@@@@@@@@@@
 RE_RenderScene
 
@@ -727,38 +716,6 @@ void RE_RenderScene( const refdef_t *fd )
 	r_firstSceneVisTest = r_numVisTests;
 
 	tr.frontEndMsec += ri.Milliseconds() - startTime;
-}
-
-// Temp storage for saving view paramters.  Drawing the animated head in the corner
-// was creaming important view info.
-static viewParms_t g_oldViewParms;
-
-/*
-================
-RE_SaveViewParms
-
-Save out the old render info to a temp place so we don't kill the LOD system
-when we do a second render.
-================
-*/
-void RE_SaveViewParms( void )
-{
-	// save old viewParms so we can return to it after the mirror view
-	g_oldViewParms = tr.viewParms;
-}
-
-/*
-================
-RE_RestoreViewParms
-
-Restore the old render info so we don't kill the LOD system
-when we do a second render.
-================
-*/
-void RE_RestoreViewParms( void )
-{
-	// This was killing the LOD computation
-	tr.viewParms = g_oldViewParms;
 }
 
 /*

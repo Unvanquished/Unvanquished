@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../qcommon/qcommon.h"
+#include "qcommon/qcommon.h"
 #include "VirtualMachine.h"
 
 #ifdef _WIN32
@@ -51,11 +51,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // MinGW doesn't define JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
 #ifndef JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
 #define JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE 0x2000
-#endif
-
-// On windows use _snprintf instead of snprintf
-#ifdef _WIN32
-#define snprintf _snprintf
 #endif
 
 namespace VM {
@@ -246,18 +241,26 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 			FS::PakPath::CopyFile(module, out);
 			out.Close();
 		} catch (std::system_error& err) {
-			Sys::Drop("VM: Failed to extract VM module %s: %s\n", module, err.what());
+			Sys::Drop("VM: Failed to extract VM module %s: %s", module, err.what());
 		}
 		modulePath = FS::Path::Build(FS::GetHomePath(), module);
 	} else
 		modulePath = FS::Path::Build(libPath, module);
 
 	// Generate command line
-	snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
+	Q_snprintf(rootSocketRedir, sizeof(rootSocketRedir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair.second.GetHandle());
 	irt = FS::Path::Build(naclPath, win32Force64Bit ? "irt_core-x86_64.nexe" : "irt_core-" ARCH_STRING ".nexe");
 	nacl_loader = FS::Path::Build(naclPath, win32Force64Bit ? "nacl_loader64" EXE_EXT : "nacl_loader" EXE_EXT);
+	if (!FS::RawPath::FileExists(modulePath))
+		Log::Warn("VM module file not found: %s", modulePath);
+	if (!FS::RawPath::FileExists(nacl_loader))
+		Log::Warn("NaCl loader not found: %s", nacl_loader);
+	if (!FS::RawPath::FileExists(irt))
+		Log::Warn("NaCl integrated runtime not found: %s", irt);
 #ifdef __linux__
 	bootstrap = FS::Path::Build(naclPath, "nacl_helper_bootstrap");
+	if (!FS::RawPath::FileExists(bootstrap))
+		Log::Warn("NaCl bootstrap helper not found: %s", bootstrap);
 	args.push_back(bootstrap.c_str());
 	args.push_back(nacl_loader.c_str());
 	args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");

@@ -72,7 +72,7 @@ void FreeWinding( winding_t *w )
 {
 	if ( * ( unsigned * ) w == 0xdeaddead )
 	{
-		Com_Error( ERR_FATAL, "FreeWinding: freed a freed winding" );
+		Sys::Error( "FreeWinding: freed a freed winding" );
 	}
 
 	* ( unsigned * ) w = 0xdeaddead;
@@ -138,7 +138,7 @@ winding_t      *BaseWindingForPlane( vec3_t normal, vec_t dist )
 
 	if ( x == -1 )
 	{
-		Com_Error( ERR_DROP, "BaseWindingForPlane: no axis found" );
+		Sys::Drop( "BaseWindingForPlane: no axis found" );
 	}
 
 	VectorCopy( vec3_origin, vup );
@@ -316,12 +316,12 @@ void ChopWindingInPlace( winding_t **inout, vec3_t normal, vec_t dist, vec_t eps
 
 	if ( f->numpoints > maxpts )
 	{
-		Com_Error( ERR_DROP, "ClipWinding: points exceeded estimate" );
+		Sys::Drop( "ClipWinding: points exceeded estimate" );
 	}
 
 	if ( f->numpoints > MAX_POINTS_ON_WINDING )
 	{
-		Com_Error( ERR_DROP, "ClipWinding: MAX_POINTS_ON_WINDING" );
+		Sys::Drop( "ClipWinding: MAX_POINTS_ON_WINDING" );
 	}
 
 	FreeWinding( in );

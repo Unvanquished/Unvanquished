@@ -165,6 +165,10 @@ private:
 };
 #endif // __native_client__
 
+void OSExit(int exitCode);
+
+bool IsProcessTerminating();
+
 } // namespace Sys
 
 #endif // COMMON_SYSTEM_H_

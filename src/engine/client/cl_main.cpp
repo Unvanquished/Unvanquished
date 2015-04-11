@@ -35,17 +35,17 @@ Maryland 20850 USA.
 // cl_main.c  -- client main loop
 
 #include "client.h"
-#include "../qcommon/q_unicode.h"
+#include "qcommon/q_unicode.h"
 
-#include "../framework/CommandSystem.h"
-#include "../framework/CvarSystem.h"
+#include "framework/CommandSystem.h"
+#include "framework/CvarSystem.h"
 
-#include "../botlib/bot_debug.h"
+#include "botlib/bot_debug.h"
 
 cvar_t *cl_wavefilerecord;
 
 #include "libmumblelink.h"
-#include "../qcommon/crypto.h"
+#include "qcommon/crypto.h"
 
 #ifndef _WIN32
 #include <sys/stat.h>
@@ -1487,7 +1487,8 @@ Called before parsing a gamestate
 */
 void CL_ClearState( void )
 {
-	cl = clientActive_t();
+	cl.~clientActive_t();
+	new(&cl) clientActive_t{}; // Using {} instead of () to work around MSVC bug
 }
 
 /*

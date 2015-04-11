@@ -34,11 +34,11 @@ Maryland 20850 USA.
 
 // cvar.c -- dynamic variable tracking
 
-#include "../qcommon/q_shared.h"
+#include "qcommon/q_shared.h"
 #include "qcommon.h"
 
-#include "../framework/CommandSystem.h"
-#include "../framework/CvarSystem.h"
+#include "framework/CommandSystem.h"
+#include "framework/CvarSystem.h"
 
 cvar_t        *cvar_vars;
 int           cvar_modifiedFlags;

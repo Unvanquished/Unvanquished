@@ -28,12 +28,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../libs/minizip/unzip.h"
+#include "libs/minizip/unzip.h"
 
 #ifdef BUILD_VM
-#include "../gamelogic/shared/VMMain.h"
+#include "gamelogic/shared/VMMain.h"
 #else
-#include "../engine/qcommon/qcommon.h"
+#include "engine/qcommon/qcommon.h"
 #endif
 
 #include "IPC/CommonSyscalls.h"
@@ -612,6 +612,13 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 		if (err)
 			return;
 	}
+}
+void File::SetLineBuffered(bool enable, std::error_code& err) const
+{
+	if (setvbuf(fd, NULL, enable ? _IOLBF : _IOFBF, BUFSIZ) != 0)
+		SetErrorCodeSystem(err);
+	else
+		ClearErrorCode(err);
 }
 
 #ifdef BUILD_VM

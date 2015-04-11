@@ -45,7 +45,8 @@ namespace Beacon
 {
 	void Frame( void );
 	void Move( gentity_t *ent, const vec3_t origin );
-	gentity_t *New( const vec3_t origin, beaconType_t type, int data, team_t team, int owner,
+	gentity_t *New( const vec3_t origin, beaconType_t type, int data, team_t team,
+	                int owner = ENTITYNUM_NONE,
 	                beaconConflictHandler_t conflictHandler = BCH_NONE );
 	gentity_t *NewArea( beaconType_t type, const vec3_t point, team_t team );
 	void Delete( gentity_t *ent, bool verbose = false );
@@ -60,8 +61,9 @@ namespace Beacon
 	void Propagate( gentity_t *ent );
 	void PropagateAll( void );
 	void RemoveOrphaned( int clientNum );
+	bool EntityTaggable( int num, team_t team, bool trace );
 	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, qboolean refreshTagged );
-	void Tag( gentity_t *ent, team_t team, int owner, qboolean permanent );
+	void Tag( gentity_t *ent, team_t team, qboolean permanent );
 	void UpdateTags( gentity_t *ent );
 	void DetachTags( gentity_t *ent );
 	void DeleteTags( gentity_t *ent );

@@ -35,7 +35,7 @@ Maryland 20850 USA.
 // cl_scrn.c -- master for refresh, status bar, console, chat, notify, etc
 
 #include "client.h"
-#include "../qcommon/q_unicode.h"
+#include "qcommon/q_unicode.h"
 
 qboolean scr_initialized; // ready to draw
 

@@ -617,6 +617,12 @@ void GL_VertexAttribsState( uint32_t stateBits )
 		stateBits |= ATTR_BONE_FACTORS;
 	}
 
+	if ( tess.vboVertexSprite )
+	{
+		stateBits &= ~ATTR_QTANGENT;
+		stateBits |= ATTR_ORIENTATION;
+	}
+
 	GL_VertexAttribPointers( stateBits );
 
 	diff = stateBits ^ glState.vertexAttribsState;
@@ -896,6 +902,11 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 		{
 			if ( oldShader != NULL )
 			{
+				if ( oldShader->autoSpriteMode && !(tess.attribsSet & ATTR_ORIENTATION) ) {
+					Tess_AutospriteDeform( oldShader->autoSpriteMode,
+							       0, tess.numVertexes,
+							       0, tess.numIndexes );
+				}
 				Tess_End();
 			}
 
@@ -957,6 +968,11 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	// draw the contents of the last shader batch
 	if ( oldShader != NULL )
 	{
+		if ( oldShader->autoSpriteMode && !(tess.attribsSet & ATTR_ORIENTATION) ) {
+			Tess_AutospriteDeform( oldShader->autoSpriteMode,
+					       0, tess.numVertexes,
+					       0, tess.numIndexes );
+		}
 		Tess_End();
 	}
 
@@ -1335,20 +1351,6 @@ static void RB_RenderInteractions()
 		endTime = ri.Milliseconds();
 		backEnd.pc.c_forwardLightingTime = endTime - startTime;
 	}
-}
-
-static deformType_t GetDeformType( const shader_t *shader )
-{
-	deformType_t deformType;
-	if ( shader->numDeforms )
-	{
-		deformType = ShaderRequiresCPUDeforms( shader ) ? DEFORM_TYPE_CPU : DEFORM_TYPE_GPU;
-	}
-	else
-	{
-		deformType = DEFORM_TYPE_NONE;
-	}
-	return deformType;
 }
 
 static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
@@ -2069,7 +2071,6 @@ static void RB_RenderInteractionsShadowMapped()
 	surfaceType_t  *surface;
 	qboolean       depthRange, oldDepthRange;
 	qboolean       alphaTest, oldAlphaTest;
-	deformType_t   deformType, oldDeformType;
 	qboolean       shadowClipFound;
 
 	int            startTime = 0, endTime = 0;
@@ -2098,7 +2099,6 @@ static void RB_RenderInteractionsShadowMapped()
 	oldShader = NULL;
 	oldDepthRange = depthRange = qfalse;
 	oldAlphaTest = alphaTest = qfalse;
-	oldDeformType = deformType = DEFORM_TYPE_NONE;
 
 	// if we need to clear the FBO color buffers then it should be white
 	GL_ClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -2154,7 +2154,6 @@ static void RB_RenderInteractionsShadowMapped()
 				surface = ia->surface;
 				shader = tr.sortedShaders[ ia->shaderNum ];
 				alphaTest = shader->alphaTest;
-				deformType = GetDeformType( shader );
 
 				if ( entity->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) )
 				{
@@ -2196,7 +2195,7 @@ static void RB_RenderInteractionsShadowMapped()
 					case RL_PROJ:
 					case RL_DIRECTIONAL:
 						{
-							if ( entity == oldEntity && ( alphaTest ? shader == oldShader : alphaTest == oldAlphaTest ) && deformType == oldDeformType )
+							if ( entity == oldEntity && ( alphaTest ? shader == oldShader : alphaTest == oldAlphaTest ) )
 							{
 								if ( r_logFile->integer )
 								{
@@ -2300,7 +2299,6 @@ static void RB_RenderInteractionsShadowMapped()
 				oldEntity = entity;
 				oldShader = shader;
 				oldAlphaTest = alphaTest;
-				oldDeformType = deformType;
 			}
 
 			if ( r_logFile->integer )
@@ -2339,7 +2337,6 @@ static void RB_RenderInteractionsShadowMapped()
 					surface = ia->surface;
 					shader = tr.sortedShaders[ ia->shaderNum ];
 					alphaTest = shader->alphaTest;
-					deformType = GetDeformType( shader );
 
 					if ( entity->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) )
 					{
@@ -2377,7 +2374,7 @@ static void RB_RenderInteractionsShadowMapped()
 						case RL_PROJ:
 						case RL_DIRECTIONAL:
 							{
-								if ( entity == oldEntity && ( alphaTest ? shader == oldShader : alphaTest == oldAlphaTest ) && deformType == oldDeformType )
+								if ( entity == oldEntity && ( alphaTest ? shader == oldShader : alphaTest == oldAlphaTest ) )
 								{
 									if ( r_logFile->integer )
 									{
@@ -2481,7 +2478,6 @@ static void RB_RenderInteractionsShadowMapped()
 					oldEntity = entity;
 					oldShader = shader;
 					oldAlphaTest = alphaTest;
-					oldDeformType = deformType;
 				}
 
 				if ( r_logFile->integer )
@@ -2520,7 +2516,6 @@ static void RB_RenderInteractionsShadowMapped()
 			surface = ia->surface;
 			shader = tr.sortedShaders[ ia->shaderNum ];
 			alphaTest = shader->alphaTest;
-			deformType = GetDeformType( shader );
 
 			if ( !shader->interactLight )
 			{
@@ -2609,7 +2604,6 @@ static void RB_RenderInteractionsShadowMapped()
 			oldEntity = entity;
 			oldShader = shader;
 			oldAlphaTest = alphaTest;
-			oldDeformType = deformType;
 		}
 
 		if ( r_logFile->integer )
@@ -4395,135 +4389,6 @@ static void RB_RenderView( void )
 	// clear relevant buffers
 	clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
-	// ydnar: global q3 fog volume
-	if ( tr.world && tr.world->globalFog >= 0 )
-	{
-		if ( !( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) )
-		{
-			clearBits |= GL_COLOR_BUFFER_BIT;
-
-			GL_ClearColor( tr.world->fogs[ tr.world->globalFog ].color[ 0 ],
-				            tr.world->fogs[ tr.world->globalFog ].color[ 1 ],
-				            tr.world->fogs[ tr.world->globalFog ].color[ 2 ], 1.0 );
-		}
-	}
-	else if ( tr.world && tr.world->hasSkyboxPortal )
-	{
-		if ( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL )
-		{
-			// portal scene, clear whatever is necessary
-
-			if ( r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
-			{
-				// fastsky: clear color
-
-				// try clearing first with the portal sky fog color, then the world fog color, then finally a default
-				clearBits |= GL_COLOR_BUFFER_BIT;
-
-				if ( tr.glfogsettings[ FOG_PORTALVIEW ].registered )
-				{
-					GL_ClearColor( tr.glfogsettings[ FOG_PORTALVIEW ].color[ 0 ], tr.glfogsettings[ FOG_PORTALVIEW ].color[ 1 ],
-						            tr.glfogsettings[ FOG_PORTALVIEW ].color[ 2 ], tr.glfogsettings[ FOG_PORTALVIEW ].color[ 3 ] );
-				}
-				else if ( tr.glfogNum > FOG_NONE && tr.glfogsettings[ FOG_CURRENT ].registered )
-				{
-					GL_ClearColor( tr.glfogsettings[ FOG_CURRENT ].color[ 0 ], tr.glfogsettings[ FOG_CURRENT ].color[ 1 ],
-						            tr.glfogsettings[ FOG_CURRENT ].color[ 2 ], tr.glfogsettings[ FOG_CURRENT ].color[ 3 ] );
-				}
-				else
-				{
-					GL_ClearColor( 0.5, 0.5, 0.5, 1.0 );
-				}
-			}
-			else
-			{
-				// rendered sky (either clear color or draw quake sky)
-				if ( tr.glfogsettings[ FOG_PORTALVIEW ].registered )
-				{
-					GL_ClearColor( tr.glfogsettings[ FOG_PORTALVIEW ].color[ 0 ], tr.glfogsettings[ FOG_PORTALVIEW ].color[ 1 ],
-						            tr.glfogsettings[ FOG_PORTALVIEW ].color[ 2 ], tr.glfogsettings[ FOG_PORTALVIEW ].color[ 3 ] );
-
-					if ( tr.glfogsettings[ FOG_PORTALVIEW ].clearscreen )
-					{
-						// portal fog requests a screen clear (distance fog rather than quake sky)
-						clearBits |= GL_COLOR_BUFFER_BIT;
-					}
-				}
-			}
-		}
-		else
-		{
-			// world scene with portal sky, don't clear any buffers, just set the fog color if there is one
-
-			if ( tr.glfogNum > FOG_NONE && tr.glfogsettings[ FOG_CURRENT ].registered )
-			{
-				if ( backEnd.refdef.rdflags & RDF_UNDERWATER )
-				{
-					if ( tr.glfogsettings[ FOG_CURRENT ].mode == GL_LINEAR )
-					{
-						clearBits |= GL_COLOR_BUFFER_BIT;
-					}
-				}
-				else if ( !r_portalSky->integer )
-				{
-					// portal skies have been manually turned off, clear bg color
-					clearBits |= GL_COLOR_BUFFER_BIT;
-				}
-
-				GL_ClearColor( tr.glfogsettings[ FOG_CURRENT ].color[ 0 ], tr.glfogsettings[ FOG_CURRENT ].color[ 1 ],
-					            tr.glfogsettings[ FOG_CURRENT ].color[ 2 ], tr.glfogsettings[ FOG_CURRENT ].color[ 3 ] );
-			}
-			else if ( !r_portalSky->integer )
-			{
-				// ydnar: portal skies have been manually turned off, clear bg color
-				clearBits |= GL_COLOR_BUFFER_BIT;
-				GL_ClearColor( 0.5, 0.5, 0.5, 1.0 );
-			}
-		}
-	}
-	else
-	{
-		// world scene with no portal sky
-
-		// NERVE - SMF - we don't want to clear the buffer when no world model is specified
-		if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
-		{
-			clearBits &= ~GL_COLOR_BUFFER_BIT;
-		}
-		// -NERVE - SMF
-		else if ( r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
-		{
-			clearBits |= GL_COLOR_BUFFER_BIT;
-
-			if ( tr.glfogsettings[ FOG_CURRENT ].registered )
-			{
-				// try to clear fastsky with current fog color
-				GL_ClearColor( tr.glfogsettings[ FOG_CURRENT ].color[ 0 ], tr.glfogsettings[ FOG_CURRENT ].color[ 1 ],
-					            tr.glfogsettings[ FOG_CURRENT ].color[ 2 ], tr.glfogsettings[ FOG_CURRENT ].color[ 3 ] );
-			}
-			else
-			{
-				GL_ClearColor( 0.05, 0.05, 0.05, 1.0 );  // JPW NERVE changed per id req was 0.5s
-			}
-		}
-		else
-		{
-			// world scene, no portal sky, not fastsky, clear color if fog says to, otherwise, just set the clearcolor
-			if ( tr.glfogsettings[ FOG_CURRENT ].registered )
-			{
-				// try to clear fastsky with current fog color
-				GL_ClearColor( tr.glfogsettings[ FOG_CURRENT ].color[ 0 ], tr.glfogsettings[ FOG_CURRENT ].color[ 1 ],
-					            tr.glfogsettings[ FOG_CURRENT ].color[ 2 ], tr.glfogsettings[ FOG_CURRENT ].color[ 3 ] );
-
-				if ( tr.glfogsettings[ FOG_CURRENT ].clearscreen )
-				{
-					// world fog requests a screen clear (distance fog rather than quake sky)
-					clearBits |= GL_COLOR_BUFFER_BIT;
-				}
-			}
-		}
-	}
-
 	glClear( clearBits );
 	backEnd.depthRenderImageValid = qfalse;
 
@@ -5682,6 +5547,22 @@ const void     *RB_Finish( const void *data )
 	glFinish();
 
 	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
+R_ShutdownBackend
+=============
+*/
+void R_ShutdownBackend( void )
+{
+	int i;
+
+	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
+	{
+		glDisableVertexAttribArray( i );
+	}
+	glState.vertexAttribsState = 0;
 }
 
 /*

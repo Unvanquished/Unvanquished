@@ -1081,6 +1081,8 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	cent->lerpFrame.animationNumber = BANIM_NONE;
 	cent->oldBuildableAnim = (buildableAnimNumber_t) es->legsAnim;
 	cent->radarVisibility = 0.0f;
+
+	cent->pvsEnterTime = cg.time;
 }
 
 /**
@@ -1307,9 +1309,6 @@ void CG_AddPacketEntities( void )
 
 	// lerp the non-predicted value for lightning gun origins
 	CG_CalcEntityLerpPositions( &cg_entities[ cg.snap->ps.clientNum ] );
-
-	// scanner
-	CG_UpdateEntityPositions();
 
 	for ( num = 0; num < MAX_GENTITIES; num++ )
 	{

@@ -274,12 +274,12 @@ namespace Cvar {
         if (Parse(text, value)) {
             OnValueChangedResult validationResult = Validate(value);
             if (validationResult.success) {
-                return {true, GetDescription()};
+                return OnValueChangedResult{true, GetDescription()};
             } else {
                 return validationResult;
             }
         } else {
-            return {false, Str::Format("value \"%s\" is not of type '%s' as expected", text, GetCvarTypeName<T>())};
+            return OnValueChangedResult{false, Str::Format("value \"%s\" is not of type '%s' as expected", text, GetCvarTypeName<T>())};
         }
     }
 
@@ -290,7 +290,7 @@ namespace Cvar {
 
     template<typename T>
     OnValueChangedResult Cvar<T>::Validate(const T&) {
-        return {true, ""};
+        return OnValueChangedResult{true, ""};
     }
 
     template<typename T>
@@ -387,9 +387,9 @@ namespace Cvar {
     OnValueChangedResult Range<Base>::Validate(const value_type& value) {
         bool inBounds = value <= max and value >= min;
         if (inBounds) {
-            return {true, ""};
+            return OnValueChangedResult{true, ""};
         } else {
-            return {false, Str::Format("%s is not between %s and %s", SerializeCvarValue(value), SerializeCvarValue(min), SerializeCvarValue(max))};
+            return OnValueChangedResult{false, Str::Format("%s is not between %s and %s", SerializeCvarValue(value), SerializeCvarValue(min), SerializeCvarValue(max))};
         }
     }
 

@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef SHARED_VM_MAIN_H_
 #define SHARED_VM_MAIN_H_
 
-#include "../../common/IPC/Channel.h"
+#include "common/IPC/Channel.h"
 
 namespace VM {
 

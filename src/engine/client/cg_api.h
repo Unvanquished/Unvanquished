@@ -24,9 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CGAPI_H
 
 
-#include "../qcommon/q_shared.h"
-#include "../renderer/tr_types.h"
-#include "../../common/cm/cm_public.h"
+#include "engine/qcommon/q_shared.h"
+#include "engine/renderer/tr_types.h"
+#include "common/cm/cm_public.h"
 
 #define CGAME_API_VERSION 1
 

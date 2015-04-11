@@ -89,14 +89,9 @@ void CG_Rocket_Init( glconfig_t gl )
 	// Init Rocket
 	Rocket_Init();
 
-	// Dynamic memory
-	BG_InitMemory();
-
-
 	// rocket cvars
 	CG_RegisterRocketCvars();
 	CG_InitConsoleCommands();
-
 
 	// Intialize data sources...
 	CG_Rocket_RegisterDataSources();

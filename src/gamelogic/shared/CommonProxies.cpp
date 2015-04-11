@@ -28,8 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../../common/Common.h"
-#include "../../common/IPC/CommonSyscalls.h"
+#include "common/Common.h"
+#include "common/IPC/CommonSyscalls.h"
 #include "VMMain.h"
 
 // The old console command handler that should be defined in all VMs
@@ -149,7 +149,7 @@ namespace Cmd {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Unhandled engine command syscall %i", minor);
+                Sys::Drop("Unhandled engine command syscall %i", minor);
         }
     }
 }
@@ -354,7 +354,7 @@ namespace Cvar{
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Unhandled engine cvar syscall %i", minor);
+                Sys::Drop("Unhandled engine cvar syscall %i", minor);
         }
     }
 }
@@ -377,7 +377,7 @@ class VMCvarProxy : public Cvar::CvarProxy {
         virtual Cvar::OnValueChangedResult OnValueChanged(Str::StringRef newValue) OVERRIDE {
             value = newValue;
             modificationCount++;
-            return {true, ""};
+            return Cvar::OnValueChangedResult{true, ""};
         }
 
         void Update(vmCvar_t* cvar) {
@@ -470,9 +470,17 @@ namespace Log {
 
 // Common functions for all syscalls
 
+static Sys::SteadyClock::time_point baseTime;
+int trap_Milliseconds(void)
+{
+	return std::chrono::duration_cast<std::chrono::milliseconds>(Sys::SteadyClock::now() - baseTime).count();
+}
+
+
 namespace VM {
 
-    void InitializeProxies() {
+    void InitializeProxies(int milliseconds) {
+        baseTime = Sys::SteadyClock::now() - std::chrono::milliseconds(milliseconds);
         Cmd::InitializeProxy();
         Cvar::InitializeProxy();
     }
@@ -488,7 +496,7 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Unhandled common VM syscall major number %i", major);
+                Sys::Drop("Unhandled common VM syscall major number %i", major);
         }
     }
 }
@@ -503,12 +511,6 @@ void trap_Print(const char *string)
 void NORETURN trap_Error(const char *string)
 {
 	Sys::Drop(string);
-}
-
-int trap_Milliseconds(void)
-{
-	auto duration = Sys::SteadyClock::now().time_since_epoch();
-	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
 void trap_SendConsoleCommand(const char *text)

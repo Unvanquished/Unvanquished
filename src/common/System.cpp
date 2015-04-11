@@ -314,6 +314,17 @@ intptr_t DynamicLib::InternalLoadSym(Str::StringRef sym, std::string& errorStrin
 }
 #endif // __native_client__
 
+bool processTerminating = false;
+
+void OSExit(int exitCode) {
+    processTerminating = true;
+    exit(exitCode);
+}
+
+bool IsProcessTerminating() {
+	return processTerminating;
+}
+
 } // namespace Sys
 
 // Global operator new/delete override to not throw an exception when out of
@@ -327,5 +338,7 @@ void* operator new(size_t n)
 }
 void operator delete(void* p) NOEXCEPT
 {
-	free(p);
+	if (!Sys::processTerminating) {
+		free(p);
+	}
 }

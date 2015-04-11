@@ -1288,18 +1288,10 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 		return qfalse;
 	}
 
-	// only allow bites to work against turrets or buildables in construction
+	// only allow bites to work against buildables in construction
 	if ( traceEnt->s.eType == ET_BUILDABLE && traceEnt->spawned )
 	{
-		switch ( traceEnt->s.modelindex )
-		{
-			case BA_H_MGTURRET:
-			case BA_H_ROCKETPOD:
-				break;
-
-			default:
-				return qfalse;
-		}
+		return qfalse;
 	}
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
@@ -1724,7 +1716,7 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 
 	// calculate impact damage
 	attackerMass = BG_Class( self->client->pers.classSelection )->mass;
-	impactVelocity = fabs( self->client->pmext.fallImpactVelocity[ 2 ] ) * IMPACTDMG_QU_TO_METER; // in m/s
+	impactVelocity = fabs( self->client->pmext.fallImpactVelocity[ 2 ] ) * QU_TO_METER; // in m/s
 	impactEnergy = attackerMass * impactVelocity * impactVelocity; // in J
 	impactDamage = ( int )( impactEnergy * IMPACTDMG_JOULE_TO_DAMAGE );
 
