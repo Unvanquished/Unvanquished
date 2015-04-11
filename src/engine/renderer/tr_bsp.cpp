@@ -3262,15 +3262,14 @@ static void R_CreateWorldVBO( void )
 	                                 );
 	s_worldData.ibo = R_CreateStaticIBO2( va( "staticWorld_IBO %i", 0 ), numTriangles, vboIdxs );
 
+	tess.numVertexes = 0;
+	tess.numIndexes = 0;
 	tess.verts = NULL;
 	tess.indexes = NULL;
 	tess.buildingVBO = qfalse;
 
 	ri.Hunk_FreeTempMemory( vboIdxs );
 	ri.Hunk_FreeTempMemory( vboVerts );
-
-	R_BindVBO( s_worldData.vbo );
-	R_BindIBO( s_worldData.ibo );
 
 	if ( r_mergeLeafSurfaces->integer )
 	{
