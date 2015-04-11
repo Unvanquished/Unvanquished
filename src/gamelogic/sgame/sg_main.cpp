@@ -2690,25 +2690,32 @@ Runs thinking code for this frame if necessary
 */
 void G_RunThink( gentity_t *ent )
 {
-	// new style thinking
-	// TODO: As soon as every component comes with a list of all entity/component instaces that
-	//       use it, group think calls by component type.
-	ent->entity->Think( level.time - level.previousTime );
-
-	// TODO: After grouping together think calls by component type, handle the defered freeing
-	//       correctly. Right now we simply lie about its semantics by treating everything
-	//       except DONT_FREE as "free after the entity's component thinkers were called".
+	// Free entities with FREE_BEFORE_THINKING set.
 	DeferedFreeingComponent *deferedFreeing;
 	if ( ( deferedFreeing = ent->entity->Get<DeferedFreeingComponent>() ) )
 	{
-		if ( deferedFreeing->GetFreeTime() != DeferedFreeingComponent::DONT_FREE )
+		if ( deferedFreeing->GetFreeTime() == DeferedFreeingComponent::FREE_BEFORE_THINKING )
 		{
 			G_FreeEntity( ent );
 			return;
 		}
 	}
 
-	// old style thinking
+	// Do CBSE style thinking.
+	// TODO: Group think calls by component type?
+	ent->entity->Think( level.time - level.previousTime );
+
+	// Free entities with FREE_AFTER_THINKING set.
+	if ( ( deferedFreeing = ent->entity->Get<DeferedFreeingComponent>() ) )
+	{
+		if ( deferedFreeing->GetFreeTime() == DeferedFreeingComponent::FREE_AFTER_THINKING )
+		{
+			G_FreeEntity( ent );
+			return;
+		}
+	}
+
+	// Do legacy thinking.
 	// TODO: Replace this kind of thinking entirely with CBSE.
 	float thinktime = ent->nextthink;
 	if ( thinktime <= 0 || thinktime > level.time ) return;

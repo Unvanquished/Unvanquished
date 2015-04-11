@@ -42,10 +42,8 @@ void IgnitableComponent::HandleIgnite(struct gentity_s* fireStarter) {
 	if (level.time < immuneUntil) {
 		fireLogger.DoDebugCode([&]{
 			char selfDescr[64];
-			if (onFire) {
-				BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity.oldEnt->s);
-				fireLogger.Debug("%s was immune against fire.", selfDescr);
-			}
+			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity.oldEnt->s);
+			fireLogger.Debug("%s was immune against fire.", selfDescr);
 		});
 
 		return;
@@ -92,8 +90,8 @@ void IgnitableComponent::HandleExtinguish(int immunityTime) {
 	onFire      = false;
 	immuneUntil = level.time + immunityTime;
 
-	if (alwaysOnFire) {
-		entity.FreeAt(DeferedFreeingComponent::FREE_AFTER_GROUP_THINKING);
+	if (freeOnExtinguish) {
+		entity.FreeAt(DeferedFreeingComponent::FREE_BEFORE_THINKING);
 	}
 }
 

@@ -4,19 +4,19 @@ general:
           type: struct gentity_s*
 
 messages:
-    # Make all components export their networked state
+    # Make all components export their networked state.
     PrepareNetCode:
 
-    # Sent unconditionally once every frame
+    # Sent unconditionally once every frame.
     Think:
         - name: timeDelta
           type: int
 
-    #
-    # Component-affine messages
-    # Every component can listen to them but few (and atleast one) will
-    # TODO: Define them inside their affine component's definition below
-    #
+    # ######################### #
+    # Component-affine messages #
+    # ######################### #
+    # Every component can listen to them but few (and atleast one) will.
+    # TODO: Define them inside their affine component's definition below.
 
     FreeAt:
         - name: freeTime
@@ -37,7 +37,7 @@ components:
 
     Ignitable:
         parameters:
-            alwaysOnFire: bool
+            freeOnExtinguish: bool
         messages:
             - PrepareNetCode
             - Think
@@ -51,12 +51,12 @@ entities:
     Fire:
         components:
             Ignitable:
-                alwaysOnFire: "true"
+                freeOnExtinguish: true
             DeferedFreeing:
 
     AlienBuildable:
         components:
             Ignitable:
-                alwaysOnFire: "false"
+                freeOnExtinguish: false
 
 # vi:ts=4:et:ai

@@ -34,8 +34,8 @@ class DeferedFreeingComponent: public DeferedFreeingComponentBase {
 		/** A logical point in time when an entity shall be freed. */
 		typedef enum {
 			DONT_FREE,
-			FREE_AFTER_GROUP_THINKING,
-			FREE_AFTER_ALL_THINKING,
+			FREE_BEFORE_THINKING,
+			FREE_AFTER_THINKING
 		} freeTime_t;
 
 		// ///////////////////// //
