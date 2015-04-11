@@ -130,6 +130,6 @@ void DeformVertex( inout vec4 pos,
 				work.a = 0.5 * sin(work.a) + 0.5;
 			}
 		} else
-			break;
+			deformOfs = MAX_SHADER_DEFORM_PARMS;
 	}
 }
