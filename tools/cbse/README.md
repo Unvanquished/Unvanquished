@@ -1,13 +1,11 @@
-CBSE Generator
-==============
+# CBSE Generator
 
 Code generator that produces the plumbing for a component-based gamelogic for the game Unvanquished.
 This allows to have a flexible gamelogic where entities are defined as sets of behavior vs. inheritance or master-entity like in Quake3.
 
 The only dependencies of the script are python3 and python3-yaml as well as a C++11 compiler to compile the output.
 
-Rational and Terminology
-------------------------
+## Rational and Terminology
 
 In Quake3 an entity is represented by always the same C structure, for most entities this is a waste of space as they use only a subset of the fields.
 Worse, different entity types sometimes use the same fields for different purpose which is horrible confusing; so the gamelogic programmer is torn between adding new fields for his purpose and increase the memory footprint or reuse fields or work around them.
@@ -34,39 +32,42 @@ We will eventually have component inheritance, so that each behavior can be an i
 For example physics can take advantage of this by having a virtual ``PhysicsComponent`` implemented differently by ``StaticPhysicsComponent`` and ``RagdollPhysicsComponent``.
 Obviously care will be needed to balance between inheritance and dependencies.
 
-How the generation works
-------------------------
+### How the generation works
 
 The definition of the components and entities used by the gamelogic is parsed from a YAML file by the python generator which will then use Jinja2 templates to "render" C++ files.
 As part of the processing, consistency checks will be made (TODO).
 As part of the processing, the correctness of the definition should be checked (for example the dependency-inheritance graph must be acyclic) and each component will gather its "own" attributes/messages... for rendering.
 
-NOT FINISHED YET
-================
+## Using the generated code
 
+### The Entity object
 
-How the generated code works
-----------------------------
-
-Each entity contains a pointer to each component and has a virtual function that dispatches the messages to the right components (known statically since the code is auto-generated).
-It also contains the shared attributes.
-Each component contains a pointer to the entity, pointers to component dependencies and shared attributes.
-
-Each component is implemented as a "stub" class that only contains helper functions, the customer code will be able to us that class as such
-```c++
-class MyComponent: protected BaseMyComponent {
-    // the constructor will probably be forced :/
-    // but otherwise you can use helper functions here
+Sending messages to components handling them can be done from ``Entity``: suppose we have defined a ``Damage`` message taking ``int`` and an ``AttackType`` argument, then the following code sends a damage message that can be used like and event:
+```cpp
+Entity* entity = HitEntity(attackOrigin, attackDirection);
+if (entity) {
+    bool damaged = entity->Damage(attackDamage, attackType);
+    if (damaged) {
+        PlayHitSound();
+    }
 }
 ```
-Inheritance is handled as such, if AliceComponent is the parent of BobComponent then the tool will generate a stub class for Alice and a stub class for Bob that doesn't contain the properties of Alice, then the customer code is like this:
+The function that sends the message returns ``true`` if there was at least one component that handled the message; in this case this tells us that the entity was hit in some way so we should play a hit sound.
 
-```c++
-class AliceComponent: protected BaseAliceComponent {
-    //Stuff
+Messages are great for broadcasting but sometimes given an ``Entity`` all you need is call a method of a specific component; defining a message handled only by that component would be wastefully.
+To avoid that anti-pattern the ``Entity`` can also be queried for a specific component, returning ``nullptr`` if it doesn't exist:
+```cpp
+for (Entity* grabber: EntitiesColliding(pointsBonus->hitbox)) {
+    ScoreComponent* score = grabber->Get<ScoreComponent>();
+    if (score != nullptr) {
+        score->acquire(pointsBonus);
+    }
 }
+```
 
-class BobComponent: protected AliceComponent, BaseBobComponent {
-    //Moar stuff
-}
+Likewise it is possible to iterate over all entities with a certain component to help process them in batch:
+```cpp
+ForEntities<FireComponent>([] (Entity* entity, FireComponent* fire) {
+   fire->Spread();
+});
 ```
