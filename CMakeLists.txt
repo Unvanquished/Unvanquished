@@ -896,8 +896,8 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/backend/CBSEEntities.h
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/DeferedFreeingComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/DeferedFreeingComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.h
   ${ENGINE_DIR}/server/sg_api.h
   ${ENGINE_DIR}/server/sg_msgdef.h
   ${GAMESHAREDLIST}

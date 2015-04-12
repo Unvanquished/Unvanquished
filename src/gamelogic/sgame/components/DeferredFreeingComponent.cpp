@@ -22,16 +22,16 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 ===========================================================================
 */
 
-#include "DeferedFreeingComponent.h"
+#include "DeferredFreeingComponent.h"
 
-DeferedFreeingComponent::DeferedFreeingComponent(Entity &entity)
-	: DeferedFreeingComponentBase(entity), freeTime(DONT_FREE)
+DeferredFreeingComponent::DeferredFreeingComponent(Entity &entity)
+	: DeferredFreeingComponentBase(entity), freeTime(DONT_FREE)
 {}
 
-void DeferedFreeingComponent::HandleFreeAt(int freeTime) {
+void DeferredFreeingComponent::HandleFreeAt(int freeTime) {
 	this->freeTime = freeTime;
 }
 
-int DeferedFreeingComponent::GetFreeTime() {
+int DeferredFreeingComponent::GetFreeTime() {
 	return freeTime;
 }

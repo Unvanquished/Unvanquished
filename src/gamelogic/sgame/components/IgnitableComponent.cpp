@@ -91,7 +91,7 @@ void IgnitableComponent::HandleExtinguish(int immunityTime) {
 	immuneUntil = level.time + immunityTime;
 
 	if (freeOnExtinguish) {
-		entity.FreeAt(DeferedFreeingComponent::FREE_BEFORE_THINKING);
+		entity.FreeAt(DeferredFreeingComponent::FREE_BEFORE_THINKING);
 	}
 }
 

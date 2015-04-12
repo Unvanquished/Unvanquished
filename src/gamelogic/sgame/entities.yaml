@@ -31,7 +31,7 @@ messages:
           type: int
 
 components:
-    DeferedFreeing:
+    DeferredFreeing:
         messages:
             - FreeAt
 
@@ -52,7 +52,7 @@ entities:
         components:
             Ignitable:
                 freeOnExtinguish: true
-            DeferedFreeing:
+            DeferredFreeing:
 
     AlienBuildable:
         components:

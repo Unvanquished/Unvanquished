@@ -2691,10 +2691,10 @@ Runs thinking code for this frame if necessary
 void G_RunThink( gentity_t *ent )
 {
 	// Free entities with FREE_BEFORE_THINKING set.
-	DeferedFreeingComponent *deferedFreeing;
-	if ( ( deferedFreeing = ent->entity->Get<DeferedFreeingComponent>() ) )
+	DeferredFreeingComponent *deferredFreeing;
+	if ( ( deferredFreeing = ent->entity->Get<DeferredFreeingComponent>() ) )
 	{
-		if ( deferedFreeing->GetFreeTime() == DeferedFreeingComponent::FREE_BEFORE_THINKING )
+		if ( deferredFreeing->GetFreeTime() == DeferredFreeingComponent::FREE_BEFORE_THINKING )
 		{
 			G_FreeEntity( ent );
 			return;
@@ -2706,9 +2706,9 @@ void G_RunThink( gentity_t *ent )
 	ent->entity->Think( level.time - level.previousTime );
 
 	// Free entities with FREE_AFTER_THINKING set.
-	if ( ( deferedFreeing = ent->entity->Get<DeferedFreeingComponent>() ) )
+	if ( ( deferredFreeing = ent->entity->Get<DeferredFreeingComponent>() ) )
 	{
-		if ( deferedFreeing->GetFreeTime() == DeferedFreeingComponent::FREE_AFTER_THINKING )
+		if ( deferredFreeing->GetFreeTime() == DeferredFreeingComponent::FREE_AFTER_THINKING )
 		{
 			G_FreeEntity( ent );
 			return;
