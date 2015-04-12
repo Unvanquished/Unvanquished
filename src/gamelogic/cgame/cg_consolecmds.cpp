@@ -453,6 +453,8 @@ static const struct
 	{ "listrotation",     0,                       0                },
 	{ "m",                0,                       CG_CompleteName  },
 	{ "maplog",           0,                       0                },
+	{ "me",               0,                       0                },
+	{ "me_team",          0,                       0                },
 	{ "message_admin",    CG_MessageAdmin_f,       0                },
 	{ "message_command",  CG_MessageCommand_f,     0                },
 	{ "message_public",   CG_MessagePublic_f,      0                },

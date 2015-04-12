@@ -965,6 +965,8 @@ typedef enum
   SAY_RAW,
   SAY_DEFAULT_DEPRECATED, // old - do not use
   SAY_ALL_ADMIN,
+  SAY_ALL_ME,
+  SAY_TEAM_ME,
   SAY_DEFAULT = 99
 } saymode_t;
 

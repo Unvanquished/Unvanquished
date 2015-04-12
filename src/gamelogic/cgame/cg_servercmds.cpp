@@ -766,7 +766,6 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	char *ignore = "";
 	char *location = "";
 	char color;
-	char *maybeColon;
 	team_t team = TEAM_NONE;
 
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
@@ -846,11 +845,6 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	{
 		text += 4;
 		Q_strcat( prefix, sizeof( prefix ), "* " );
-		maybeColon = "";
-	}
-	else
-	{
-		maybeColon = ":";
 	}
 
 	color = '0' + UI_GetChatColour( mode, team );
@@ -865,34 +859,34 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			}
 
 		case SAY_ALL_ADMIN:
-			CG_Printf(  "%s%s%s^7%s ^%c%s\n",
-			           ignore, prefix, name, maybeColon, color, text );
+			CG_Printf(  "%s%s%s^7: ^%c%s\n",
+			           ignore, prefix, name, color, text );
 			break;
 
 		case SAY_TEAM:
-			CG_Printf( "%s%s(%s^7)%s%s ^%c%s\n",
-			           ignore, prefix, name, location, maybeColon, color, text );
+			CG_Printf( "%s%s(%s^7)%s: ^%c%s\n",
+			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_ADMINS:
 		case SAY_ADMINS_PUBLIC:
-			CG_Printf( "%s%s%s%s^7%s ^%c%s\n",
+			CG_Printf( "%s%s%s%s^7: ^%c%s\n",
 			           ignore, prefix,
 			           ( mode == SAY_ADMINS ) ? "[ADMIN]" : "[PLAYER]",
-			           name, maybeColon, color, text );
+			           name, color, text );
 			break;
 
 		case SAY_AREA:
 		case SAY_AREA_TEAM:
-			CG_Printf( "%s%s<%s^7>%s%s ^%c%s\n",
-			           ignore, prefix, name, location, maybeColon, color, text );
+			CG_Printf( "%s%s<%s^7>%s: ^%c%s\n",
+			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_PRIVMSG:
 		case SAY_TPRIVMSG:
-			CG_Printf( "%s%s[%s^7 → %s^7]%s ^%c%s\n",
+			CG_Printf( "%s%s[%s^7 → %s^7]: ^%c%s\n",
 			           ignore, prefix, name, cgs.clientinfo[ cg.clientNum ].name,
-			           maybeColon, color, text );
+			           color, text );
 
 			if ( !ignore[ 0 ] )
 			{
@@ -907,6 +901,16 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 				CG_Printf(_( ">> to reply, say: /m %d [your message] <<\n"), clientNum );
 			}
 
+			break;
+
+		case SAY_ALL_ME:
+			CG_Printf(  "%s* %s%s^7 ^%c%s\n",
+			           ignore, prefix, name, color, text );
+			break;
+
+		case SAY_TEAM_ME:
+			CG_Printf( "%s* %s(%s^7)%s ^%c%s\n",
+			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_RAW:

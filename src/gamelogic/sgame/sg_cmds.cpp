@@ -1398,6 +1398,34 @@ static void Cmd_Say_f( gentity_t *ent )
 
 /*
 ==================
+Cmd_Me_f
+==================
+*/
+static void Cmd_Me_f( gentity_t *ent )
+{
+	char      *p;
+	char      cmd[ MAX_TOKEN_CHARS ];
+	saymode_t mode = SAY_ALL_ME;
+
+	if ( trap_Argc() < 2 )
+	{
+		return;
+	}
+
+	trap_Argv( 0, cmd, sizeof( cmd ) );
+
+	if ( Q_stricmp( cmd, "me_team" ) == 0 )
+	{
+		mode = SAY_TEAM_ME;
+	}
+
+	p = ConcatArgs( 1 );
+
+	G_Say( ent, mode, p );
+}
+
+/*
+==================
 Cmd_VSay_f
 ==================
 */
@@ -4501,6 +4529,8 @@ static const commands_t cmds[] =
 	{ "listrotation",    CMD_MESSAGE | CMD_INTERMISSION,      G_PrintCurrentRotation },
 	{ "m",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
 	{ "maplog",          CMD_MESSAGE | CMD_INTERMISSION,      Cmd_MapLog_f           },
+	{ "me",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Me_f               },
+	{ "me_team",         CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Me_f               },
 	{ "mt",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
 	{ "noclip",          CMD_CHEAT_TEAM,                      Cmd_Noclip_f           },
 	{ "notarget",        CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Notarget_f         },
