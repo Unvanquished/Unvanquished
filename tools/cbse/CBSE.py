@@ -349,6 +349,8 @@ def load_entities(definitions):
         for component_name, component_params in kwargs['components'].items():
             if component_params != None:
                 convert_params(component_params)
+            else:
+                kwargs['components'][component_name] = OrderedDict()
 
         entities[name] = Entity(name, kwargs['components'])
     return entities
