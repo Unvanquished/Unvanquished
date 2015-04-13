@@ -1704,11 +1704,6 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 		return; // notarget cancels even beneficial effects?
 	}
 
-	if ( level.time - client->boostedTime > BOOST_TIME )
-	{
-		self->buildableStatsCount++;
-	}
-
 	client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
 	client->ps.stats[ STAT_STATE ] |= SS_BOOSTEDNEW;
 	client->boostedTime = level.time;
@@ -2748,7 +2743,7 @@ void HMedistat_Think( gentity_t *self )
 		// restore health
 		if ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] )
 		{
-			self->buildableStatsTotal += G_Heal( player, 1 );
+			G_Heal( player, 1 );
 
 			// check if fully healed
 			if ( player->health == client->ps.stats[ STAT_MAX_HEALTH ] )
@@ -2758,8 +2753,6 @@ void HMedistat_Think( gentity_t *self )
 				{
 					BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
 				}
-
-				self->buildableStatsCount++;
 			}
 		}
 	}
@@ -4796,7 +4789,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->die = AGeneric_Die;
 			built->think = ASpawn_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
+			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_BARRICADE:
@@ -4805,7 +4798,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->pain = ABarricade_Pain;
 			built->touch = ABarricade_Touch;
 			built->shrunkTime = 0;
-			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
+			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			ABarricade_Shrink( built, qtrue );
 			break;
 
@@ -4814,49 +4807,49 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->think = ABooster_Think;
 			built->pain = AGeneric_Pain;
 			built->touch = ABooster_Touch;
-			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
+			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_ACIDTUBE:
 			built->die = AGeneric_Die;
 			built->think = AAcidTube_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
+			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_HIVE:
 			built->die = AGeneric_Die;
 			built->think = AHive_Think;
 			built->pain = AHive_Pain;
-			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
+			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_TRAPPER:
 			built->die = AGeneric_Die;
 			built->think = ATrapper_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
+			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_LEECH:
 			built->die = ALeech_Die;
 			built->think = ALeech_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
+			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_SPIKER:
 			built->die = AGeneric_Die;
 			built->think = ASpiker_Think;
 			built->pain = ASpiker_Pain;
-			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
+			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_OVERMIND:
 			built->die = AOvermind_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity(AlienBuildableEntity::Params{built});
+			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_H_SPAWN:

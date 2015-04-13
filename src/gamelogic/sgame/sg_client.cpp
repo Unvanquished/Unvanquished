@@ -1604,8 +1604,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		{
 			G_SetBuildableAnim( spawnPoint, BANIM_SPAWN1, qtrue );
 
-			spawnPoint->buildableStatsCount++;
-
 			if ( spawnPoint->buildableTeam == TEAM_ALIENS )
 			{
 				spawnPoint->clientSpawnTime = ALIEN_SPAWN_REPEAT_TIME;

@@ -1203,7 +1203,6 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 	{
 		// save damage (w/o armor modifier), knockback
 		client->damage_received  += damage;
-		client->damage_knockback += knockback;
 
 		// save damage direction
 		if ( dir )
@@ -1301,12 +1300,6 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 			// notify the attacker of a hit
 			NotifyClientOfHit( attacker );
 		}
-
-		// update buildable stats
-		if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
-		{
-			attacker->buildableStatsTotal += loss;
-		}
 	}
 
 	// handle dying target
@@ -1328,12 +1321,6 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 		if ( target->die )
 		{
 			target->die( target, inflictor, attacker, mod );
-		}
-
-		// update buildable stats
-		if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
-		{
-			attacker->buildableStatsCount++;
 		}
 
 		// for non-client victims, fire ON_DIE event

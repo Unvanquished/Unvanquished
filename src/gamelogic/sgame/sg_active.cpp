@@ -93,7 +93,6 @@ void P_DamageFeedback( gentity_t *player )
 	// clear totals
 	//
 	client->damage_received = 0;
-	client->damage_knockback = 0;
 }
 
 /*

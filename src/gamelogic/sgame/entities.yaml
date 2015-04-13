@@ -24,11 +24,31 @@ messages:
 
     Ignite:
         - name: fireStarter
-          type: struct gentity_s*
+          type: gentity_t*
 
     Extinguish:
         - name: immunityTime
           type: int
+
+    Heal:
+        - name: amount
+          type: float
+        - name: source
+          type: gentity_t*
+
+    Damage:
+        - name: amount
+          type: float
+        - name: source
+          type: gentity_t*
+        - name: location
+          type: Util::optional<Vec3>
+        - name: direction
+          type: Util::optional<Vec3>
+        - name: flags
+          type: int
+        - name: meansOfDeath
+          type: meansOfDeath_t
 
 components:
     DeferredFreeing:
@@ -44,6 +64,16 @@ components:
             - Ignite
             - Extinguish
 
+    Health:
+        parameters:
+            maxHealth: float
+        messages:
+            - PrepareNetCode
+            - Heal
+            - Damage
+
+    Armor:
+
 entities:
     Empty:
         components:
@@ -58,5 +88,6 @@ entities:
         components:
             Ignitable:
                 freeOnExtinguish: false
+            Health:
 
 # vi:ts=4:et:ai

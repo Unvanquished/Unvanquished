@@ -898,6 +898,10 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
   ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/HealthComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/HealthComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.h
   ${ENGINE_DIR}/server/sg_api.h
   ${ENGINE_DIR}/server/sg_msgdef.h
   ${GAMESHAREDLIST}

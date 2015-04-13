@@ -333,13 +333,6 @@ struct gentity_s
 	int       waterlevel;
 
 	/*
-	 * Buildable statistics
-	 */
-	int       buildableStatsCount;  // players spawned/healed/killed, posion given
-	int       buildableStatsTotal;  // total damage/healing done
-	float     buildableStatsTotalF; // total resources mined
-
-	/*
 	 * variables that got randomly semantically abused by everyone
 	 * so now we rather name them to indicate the fact, that we cannot imply any meaning by the name
 	 *
@@ -571,7 +564,6 @@ struct gclient_s
 
 	// sum up damage over an entire frame, so shotgun blasts give a single big kick
 	int      damage_received;  // damage received this frame
-	int      damage_knockback; // total knockback this frame
 	vec3_t   damage_from;      // last damage direction
 	qboolean damage_fromWorld; // if true, don't use the damage_from vector
 
