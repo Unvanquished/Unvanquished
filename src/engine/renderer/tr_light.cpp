@@ -1293,11 +1293,11 @@ void R_SetupLightScissor( trRefLight_t *light )
 			break;
 	}
 
-	light->scissor.coords[ 0 ] = Maths::clamp( light->scissor.coords[ 0 ], tr.viewParms.viewportX, tr.viewParms.viewportX + tr.viewParms.viewportWidth );
-	light->scissor.coords[ 2 ] = Maths::clamp( light->scissor.coords[ 2 ], tr.viewParms.viewportX, tr.viewParms.viewportX + tr.viewParms.viewportWidth );
+	light->scissor.coords[ 0 ] = Math::Clamp( light->scissor.coords[ 0 ], tr.viewParms.viewportX, tr.viewParms.viewportX + tr.viewParms.viewportWidth );
+	light->scissor.coords[ 2 ] = Math::Clamp( light->scissor.coords[ 2 ], tr.viewParms.viewportX, tr.viewParms.viewportX + tr.viewParms.viewportWidth );
 
-	light->scissor.coords[ 1 ] = Maths::clamp( light->scissor.coords[ 1 ], tr.viewParms.viewportY, tr.viewParms.viewportY + tr.viewParms.viewportHeight );
-	light->scissor.coords[ 3 ] = Maths::clamp( light->scissor.coords[ 3 ], tr.viewParms.viewportY, tr.viewParms.viewportY + tr.viewParms.viewportHeight );
+	light->scissor.coords[ 1 ] = Math::Clamp( light->scissor.coords[ 1 ], tr.viewParms.viewportY, tr.viewParms.viewportY + tr.viewParms.viewportHeight );
+	light->scissor.coords[ 3 ] = Math::Clamp( light->scissor.coords[ 3 ], tr.viewParms.viewportY, tr.viewParms.viewportY + tr.viewParms.viewportHeight );
 }
 
 /*

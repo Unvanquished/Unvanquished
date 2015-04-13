@@ -28,26 +28,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#ifndef COMMON_MATHS_H_
-#define COMMON_MATHS_H_
+#ifndef COMMON_MATH_H_
+#define COMMON_MATH_H_
 
-namespace Maths {
+namespace Math {
 
-	template<typename T> static inline T clamp(T value, T min, T max)
+	template<typename T> static inline T Clamp(T value, T min, T max)
 	{
 		// if min > max, use min instead of max
 		return std::max(min, std::min(std::max(min, max), value));
 	}
 
-	static inline float clampFraction(float value)
-	{
-		return clamp(value, 0.0f, 1.0f);
-	}
-
-	static inline double clampFraction(double value)
-	{
-		return clamp(value, 0.0, 1.0);
-	}
 }
 
-#endif //COMMON_MATHS_H_
+#include "math/Vector.h"
+
+#endif //COMMON_MATH_H_

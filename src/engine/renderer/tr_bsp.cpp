@@ -3262,15 +3262,14 @@ static void R_CreateWorldVBO( void )
 	                                 );
 	s_worldData.ibo = R_CreateStaticIBO2( va( "staticWorld_IBO %i", 0 ), numTriangles, vboIdxs );
 
+	tess.numVertexes = 0;
+	tess.numIndexes = 0;
 	tess.verts = NULL;
 	tess.indexes = NULL;
 	tess.buildingVBO = qfalse;
 
 	ri.Hunk_FreeTempMemory( vboIdxs );
 	ri.Hunk_FreeTempMemory( vboVerts );
-
-	R_BindVBO( s_worldData.vbo );
-	R_BindIBO( s_worldData.ibo );
 
 	if ( r_mergeLeafSurfaces->integer )
 	{
@@ -4370,7 +4369,7 @@ void R_LoadEntities( lump_t *l )
 		// check for mapOverBrightBits override
 		else if ( !Q_stricmp( keyname, "mapOverBrightBits" ) )
 		{
-			tr.mapOverBrightBits = Maths::clamp( atof( value ), 0.0, 3.0 );
+			tr.mapOverBrightBits = Math::Clamp( atof( value ), 0.0, 3.0 );
 		}
 
 		// check for deluxe mapping provided by NetRadiant's q3map2
