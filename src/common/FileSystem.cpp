@@ -2026,39 +2026,53 @@ void Initialize()
 #else
 void Initialize(Str::StringRef homePath, Str::StringRef libPath, const std::vector<std::string>& paths)
 {
+	// The first path in the list is implicitly added by the engine, so don't
+	// print a warning if it is not valid.
+	bool first = true;
+
 	for (const std::string& path: paths) {
 		// Convert the given path to an absolute path and check that it exists
 #ifdef _WIN32
 		std::wstring path_u16 = Str::UTF8To16(path);
 		DWORD attr = GetFileAttributesW(path_u16.c_str());
 		if (attr == INVALID_FILE_ATTRIBUTES || !(attr & FILE_ATTRIBUTE_DIRECTORY)) {
-			fsLogs.Warn("Ignoring path %s: %s", path, attr == INVALID_FILE_ATTRIBUTES ? Sys::Win32StrError(GetLastError()) : "Not a directory");
+			if (!first)
+				fsLogs.Warn("Ignoring path %s: %s", path, attr == INVALID_FILE_ATTRIBUTES ? Sys::Win32StrError(GetLastError()) : "Not a directory");
+			first = false;
 			continue;
 		}
 
 		size_t len = GetFullPathNameW(path_u16.c_str(), 0, nullptr, nullptr);
 		if (!len) {
-			fsLogs.Warn("Ignoring path %s: %s", path, Sys::Win32StrError(GetLastError()));
+			if (!first)
+				fsLogs.Warn("Ignoring path %s: %s", path, Sys::Win32StrError(GetLastError()));
+			first = false;
 			continue;
 		}
 		std::unique_ptr<wchar_t[]> realPath(new wchar_t[len]);
 		if (!GetFullPathNameW(path_u16.c_str(), len, realPath.get(), nullptr)) {
-			fsLogs.Warn("Ignoring path %s: %s", path, Sys::Win32StrError(GetLastError()));
+			if (!first)
+				fsLogs.Warn("Ignoring path %s: %s", path, Sys::Win32StrError(GetLastError()));
+			first = false;
 			continue;
 		}
 
 		if (std::find(FS::pakPaths.begin(), FS::pakPaths.end(), Str::UTF16To8(realPath.get())) == FS::pakPaths.end())
 			FS::pakPaths.push_back(Str::UTF16To8(realPath.get()));
+		first = false;
 #else
 		char* realPath = realpath(path.c_str(), NULL);
 		if (!realPath) {
-			fsLogs.Warn("Ignoring path %s: %s", path, strerror(errno));
+			if (!first)
+				fsLogs.Warn("Ignoring path %s: %s", path, strerror(errno));
+			first = false;
 			continue;
 		}
 
 		if (std::find(FS::pakPaths.begin(), FS::pakPaths.end(), realPath) == FS::pakPaths.end())
 			FS::pakPaths.push_back(realPath);
 		free(realPath);
+		first = false;
 #endif
 	}
 	FS::homePath = homePath;
