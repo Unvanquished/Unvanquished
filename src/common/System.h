@@ -165,7 +165,7 @@ private:
 };
 #endif // __native_client__
 
-void OSExit(int exitCode);
+NORETURN void OSExit(int exitCode);
 
 bool IsProcessTerminating();
 
