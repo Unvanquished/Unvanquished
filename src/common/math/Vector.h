@@ -75,6 +75,10 @@ namespace Math {
 		{
 			return data;
 		}
+		Type* Data()
+		{
+			return data;
+		}
 
 		// Swizzle operations
 		template<size_t x> Type Swizzle() const;
@@ -93,7 +97,7 @@ namespace Math {
 		template<typename Func> Type Reduce(Type init, Func func);
 
 		// Get an element of the vector
-		Type operator[](size_t index) const {return data[index];}
+		Type& operator[](size_t index) const {return data[index];}
 	};
 
 	// Type-specific vector operations
