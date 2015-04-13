@@ -168,6 +168,7 @@ int RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t model, qhandle_t anim )
 }
 int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin )
 {
+	skel->numBones = 0;
 	return 1;
 }
 int RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
