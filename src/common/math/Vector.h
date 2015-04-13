@@ -70,6 +70,12 @@ namespace Math {
 		}
 
 	public:
+		// Expose internal data
+		const Type* Data() const
+		{
+			return data;
+		}
+
 		// Swizzle operations
 		template<size_t x> Type Swizzle() const;
 		template<size_t x, size_t y, size_t... indices> Vector<sizeof...(indices) + 2, Type> Swizzle() const;
