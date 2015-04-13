@@ -45,7 +45,7 @@ key up events are sent even if in console mode
 
 */
 
-#define CLIP(t) Maths::clamp( (t), 0, MAX_TEAMS - 1 )
+#define CLIP(t) Math::Clamp( (t), 0, MAX_TEAMS - 1 )
 
 Console::Field g_consoleField(INT_MAX);
 qboolean chat_irc;

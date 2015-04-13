@@ -4071,7 +4071,7 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
 
 	// save remaining health fraction
-	self->deconHealthFrac = Maths::clamp( self->health / ( float )attr->health, 0.0f, 1.0f );
+	self->deconHealthFrac = Math::Clamp( self->health / ( float )attr->health, 0.0f, 1.0f );
 
 	// return BP
 	int refund = attr->buildPoints * self->deconHealthFrac;

@@ -4369,7 +4369,7 @@ void R_LoadEntities( lump_t *l )
 		// check for mapOverBrightBits override
 		else if ( !Q_stricmp( keyname, "mapOverBrightBits" ) )
 		{
-			tr.mapOverBrightBits = Maths::clamp( atof( value ), 0.0, 3.0 );
+			tr.mapOverBrightBits = Math::Clamp( atof( value ), 0.0, 3.0 );
 		}
 
 		// check for deluxe mapping provided by NetRadiant's q3map2
