@@ -50,6 +50,18 @@ messages:
         - name: meansOfDeath
           type: meansOfDeath_t
 
+    ApplyDamageModifier:
+        - name: damage
+          type: float&
+        - name: location
+          type: Util::optional<Vec3>
+        - name: direction
+          type: Util::optional<Vec3>
+        - name: flags
+          type: int
+        - name: meansOfDeath
+          type: meansOfDeath_t
+
 components:
     DeferredFreeing:
         messages:
@@ -73,6 +85,8 @@ components:
             - Damage
 
     Armor:
+        messages:
+            - ApplyDamageModifier
 
 entities:
     Empty:

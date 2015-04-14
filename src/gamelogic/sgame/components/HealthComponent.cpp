@@ -64,8 +64,6 @@ static void SpawnHitNotification(gentity_t *attacker)
 
 void HealthComponent::HandleDamage(float amount, gentity_t* source, Util::optional<Vec3> location,
 Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
-	float modifier, take;
-
 	if (health <= 0.0f) return;
 
 	gclient_t *client = entity.oldEnt->client;
@@ -89,7 +87,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	}
 
 	// Do knockback against clients.
-	// TODO: Add a knockback message.
+	// TODO: Catch damage message elsewhere to handle knockback.
 	if ((flags & DAMAGE_KNOCKBACK) && client && direction) {
 		G_KnockbackByDir(entity.oldEnt, direction.value().Data(), amount * DAMAGE_TO_KNOCKBACK, false);
 	}
@@ -142,6 +140,10 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		}
 	}
 
+	// Apply damage modifiers.
+	float take = amount;
+	entity.ApplyDamageModifier(take, location, direction, flags, meansOfDeath);
+
 	// Update combat timers.
 	// TODO: Add a message to update combat timers.
 	if (client && source->client && entity.oldEnt != source) {
@@ -166,15 +168,6 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		client->ps.stats[STAT_FUEL] = std::max(0, client->ps.stats[STAT_FUEL] -
 		                                       (int)(amount + 0.5f) * JETPACK_FUEL_PER_DMG);
 
-		// Apply damage modifier.
-		ArmorComponent *armor;
-		if ((armor = entity.Get<ArmorComponent>())) {
-			modifier = armor->DamageModifier(location, flags);
-		} else {
-			modifier = 1.0f;
-		}
-		take = amount * modifier;
-
 		// If boosted poison every attack.
 		// TODO: Add a poison message and a PoisonableComponent.
 		if (source->client && (source->client->ps.stats[STAT_STATE] & SS_BOOSTED) &&
@@ -191,8 +184,6 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 					break;
 			}
 		}
-	} else {
-		take = amount;
 	}
 
 	healthLogger.Debug("Taking damage: %3.1f (%3.1f → %3.1f)", take, health, health - take);

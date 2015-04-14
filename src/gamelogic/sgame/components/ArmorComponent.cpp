@@ -1,20 +1,78 @@
 #include "ArmorComponent.h"
 
+static Log::Logger armorLogger("sgame.armor");
+
 ArmorComponent::ArmorComponent(Entity& entity)
 	: ArmorComponentBase(entity)
 {}
 
+float ArmorComponent::GetNonLocationalDamageMod() {
+	class_t pcl = (class_t)entity.oldEnt->client->ps.stats[STAT_CLASS];
+
+	for (int regionNum = 0; regionNum < g_numDamageRegions[pcl]; regionNum++) {
+		damageRegion_t *region = &g_damageRegions[pcl][regionNum];
+
+		if (!region->nonlocational) continue;
+
+		armorLogger.Debug("Found non-locational damage modifier of %.2f.", region->modifier);
+
+		return region->modifier;
+	}
+
+	armorLogger.Debug("No non-locational damage modifier found.");
+
+	return 1.0f;
+}
+
+float ArmorComponent::GetLocationalDamageMod(float angle, float height) {
+	class_t pcl = (class_t)entity.oldEnt->client->ps.stats[STAT_CLASS];
+
+	bool crouching = (entity.oldEnt->client->ps.pm_flags & PMF_DUCKED);
+
+	for (int regionNum = 0; regionNum < g_numDamageRegions[pcl]; regionNum++) {
+		damageRegion_t *region = &g_damageRegions[pcl][regionNum];
+
+		// Ignore the non-locational pseudo region.
+		if (region->nonlocational) continue;
+
+		// Crouch state must match.
+		if (region->crouch != crouching) continue;
+
+		// Height must be within given range.
+		if (height < region->minHeight || height > region->maxHeight) continue;
+
+		// Angle must be within given range.
+		if ((region->minAngle <= region->maxAngle && (angle < region->minAngle || angle > region->maxAngle)) ||
+		    (region->minAngle >  region->maxAngle && (angle > region->maxAngle && angle < region->minAngle))) {
+			continue;
+		}
+
+		armorLogger.Debug("Locational damage modifier of %.2f found for angle %.2f and height %.2f (%s).",
+		                  angle, height, region->modifier, region->name);
+
+		return region->modifier;
+	}
+
+	armorLogger.Debug("Locational damage modifier for angle %.2f and height %.2f not found.",
+	                  angle, height);
+
+	return 1.0f;
+}
+
+
 // TODO: Use new vector math library for all calculations.
-float ArmorComponent::DamageModifier(Util::optional<Vec3> location, int damageFlags) {
+void ArmorComponent::HandleApplyDamageModifier(float& damage, Util::optional<Vec3> location,
+Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	vec3_t origin, bulletPath, bulletAngle, locationRelativeToFloor, floor, normal;
 
 	// TODO: Make ArmorComponent depend on ClientComponent or allow armor on all entities.
-	if (!entity.oldEnt->client) return 1.0f;
+	if (!entity.oldEnt->client) return;
 
 	// Use non-regional damage where appropriate.
-	if (damageFlags & DAMAGE_NO_LOCDAMAGE || !location) {
+	if (flags & DAMAGE_NO_LOCDAMAGE || !location) {
 		// TODO: Move G_GetNonLocDamageMod to ArmorComponent.
-		return G_GetNonLocDamageMod((class_t)entity.oldEnt->client->ps.stats[STAT_CLASS]);
+		damage *= GetNonLocationalDamageMod();
+		return;
 	}
 
 	// Get hit location relative to the floor beneath.
@@ -40,6 +98,5 @@ float ArmorComponent::DamageModifier(Util::optional<Vec3> location, int damageFl
 
 	// Use regional modifier.
 	// TODO: Move G_GetPointDamageMod to ArmorComponent.
-	return G_GetPointDamageMod(entity.oldEnt, (class_t)entity.oldEnt->client->ps.stats[STAT_CLASS],
-	                           hitRotation, hitRatio);
+	damage *= GetLocationalDamageMod(hitRotation, hitRatio);
 }

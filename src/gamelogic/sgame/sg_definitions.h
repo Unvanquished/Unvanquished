@@ -52,6 +52,9 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define DAMAGE_NO_PROTECTION 0x00000008 // kills everything except godmode
 #define DAMAGE_NO_LOCDAMAGE  0x00000010 // do not apply locational damage
 
+#define MAX_DAMAGE_REGIONS     16
+#define MAX_DAMAGE_REGION_TEXT 8192
+
 #define FOFS(x) ((size_t)&(((gentity_t *)0 )->x ))
 
 #endif // SG_DEFINITIONS_H_

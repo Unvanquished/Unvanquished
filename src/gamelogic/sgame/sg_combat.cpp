@@ -23,9 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 
-#define MAX_DAMAGE_REGION_TEXT 8192
-#define MAX_DAMAGE_REGIONS     16
-
 // damage region data
 damageRegion_t g_damageRegions[ PCL_NUM_CLASSES ][ MAX_DAMAGE_REGIONS ];
 int            g_numDamageRegions[ PCL_NUM_CLASSES ];
