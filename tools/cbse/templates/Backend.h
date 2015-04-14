@@ -249,7 +249,7 @@ class AllComponents {
 
 		protected:
 			{% for declaration in component.get_own_param_declarations() %}
-				const {{declaration}}; /**< An initialization parameter. */
+				{{declaration}}; /**< An initialization parameter. */
 			{% endfor %}
 
 		private:
