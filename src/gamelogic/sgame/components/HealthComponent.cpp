@@ -7,6 +7,11 @@ HealthComponent::HealthComponent(Entity& entity, float maxHealth)
 	: HealthComponentBase(entity, maxHealth), health(maxHealth)
 {}
 
+HealthComponent& HealthComponent::operator=(const HealthComponent& other) {
+	health = (other.health / other.maxHealth) * maxHealth;
+	return *this;
+}
+
 void HealthComponent::HandlePrepareNetCode() {
 	int transmittedHealth = Math::Clamp((int)std::ceil(health), -999, 999);
 
@@ -234,4 +239,13 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	} else if (entity.oldEnt->pain) {
 		entity.oldEnt->pain(entity.oldEnt, source, (int)std::ceil(take));
 	}
+}
+
+void HealthComponent::SetMaxHealth(float maxHealth) {
+	assert(maxHealth > 0.0f);
+
+	float scale = HealthComponent::maxHealth / maxHealth;
+
+	HealthComponent::maxHealth = maxHealth;
+	health *= scale;
 }

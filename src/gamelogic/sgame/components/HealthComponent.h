@@ -49,6 +49,14 @@ class HealthComponent: public HealthComponentBase {
 		// Handwritten Members //
 		// /////////////////// //
 
+		void SetMaxHealth(float maxHealth);
+
+		/**
+		 * @brief Copies state from another HealthComponent.
+		 * @note Copies the current health's relative, not absolute value.
+		 */
+		HealthComponent& operator=(const HealthComponent& other);
+
 	private:
 		// /////////////////// //
 		// Handwritten Members //

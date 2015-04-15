@@ -2,8 +2,8 @@
 
 static Log::Logger armorLogger("sgame.armor");
 
-ArmorComponent::ArmorComponent(Entity& entity)
-	: ArmorComponentBase(entity)
+ArmorComponent::ArmorComponent(Entity& entity, ClientComponent& r_ClientComponent)
+	: ArmorComponentBase(entity, r_ClientComponent)
 {}
 
 float ArmorComponent::GetNonLocationalDamageMod() {
@@ -65,7 +65,7 @@ void ArmorComponent::HandleApplyDamageModifier(float& damage, Util::optional<Vec
 Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	vec3_t origin, bulletPath, bulletAngle, locationRelativeToFloor, floor, normal;
 
-	// TODO: Make ArmorComponent depend on ClientComponent or allow armor on all entities.
+	// TODO: Remove this once ClientComponent is used instead.
 	if (!entity.oldEnt->client) return;
 
 	// Use non-regional damage where appropriate.

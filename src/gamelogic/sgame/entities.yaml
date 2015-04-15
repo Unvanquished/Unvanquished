@@ -67,6 +67,10 @@ components:
         messages:
             - FreeAt
 
+    Client:
+        parameters:
+            clientData: gclient_t*
+
     Ignitable:
         parameters:
             freeOnExtinguish: bool
@@ -87,10 +91,97 @@ components:
     Armor:
         messages:
             - ApplyDamageModifier
+        requires:
+            - Client
 
 entities:
     Empty:
         components:
+
+    # A generic client entity, not spawned yet.
+    Client:
+        components:
+            Client:
+            Health:
+                maxHealth: 1
+
+    Dretch:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    Mantis:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    Marauder:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    AdvMarauder:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    Dragoon:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    AdvDragoon:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    Tyrant:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    Granger:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    AdvGranger:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    NakedHuman:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    LightHuman:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    MediumHuman:
+        components:
+            Client:
+            Health:
+            Armor:
+
+    HeavyHuman:
+        components:
+            Client:
+            Health:
+            Armor:
 
     Fire:
         components:

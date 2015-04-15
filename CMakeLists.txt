@@ -894,14 +894,16 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.h
   ${GAMELOGIC_DIR}/sgame/backend/CBSEComponents.h
   ${GAMELOGIC_DIR}/sgame/backend/CBSEEntities.h
-  ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/ClientComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/ClientComponent.h
   ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.h
   ${GAMELOGIC_DIR}/sgame/components/HealthComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/HealthComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
   ${ENGINE_DIR}/server/sg_api.h
   ${ENGINE_DIR}/server/sg_msgdef.h
   ${GAMESHAREDLIST}
