@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA	02110-1301	USA
 
 int  trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void trap_FS_Read( void *buffer, int len, fileHandle_t f );
-void trap_FS_Write( const void *buffer, int len, fileHandle_t f );
+int  trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void trap_FS_FCloseFile( fileHandle_t f );
 
 #define PARSE(text, token) \
