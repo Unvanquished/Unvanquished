@@ -271,7 +271,7 @@ public:
 
 	void EnableScissorRegion( bool enable )
 	{
-		re.ScissorEnable( enable ? true :  false );
+		re.ScissorEnable( enable );
 
 	}
 

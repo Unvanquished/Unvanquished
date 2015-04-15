@@ -434,14 +434,7 @@ bool GetNews( bool begin )
 		Cvar_Set( "cl_newsString", "Retrieving…" );
 	}
 
-	if ( Cvar_VariableString( "cl_newsString" ) [ 0 ] == 'R' )
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	return Cvar_VariableString( "cl_newsString" ) [ 0 ] == 'R';
 }
 
 /*

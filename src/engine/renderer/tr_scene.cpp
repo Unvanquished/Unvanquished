@@ -515,7 +515,7 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	light->l.color[ 1 ] = g;
 	light->l.color[ 2 ] = b;
 
-	light->l.inverseShadows = !!( flags & REF_INVERSE_DLIGHT );
+	light->l.inverseShadows = (flags & REF_INVERSE_DLIGHT) != 0;
 	light->l.noShadows = !r_dynamicLightCastShadows->integer && !light->l.inverseShadows;
 
 	if( flags & REF_RESTRICT_DLIGHT ) {
@@ -818,15 +818,9 @@ void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
 	result = &backEndData[ tr.smpFrame ]->visTests[ r_numVisTests++ ];
 
 	// cancel the currently running query if the parameters change
-	if ( !VectorCompare( test->position, pos ) || test->depthAdjust != depthAdjust ||
-	     test->area != area )
-	{
-		result->discardExisting = true;
-	}
-	else
-	{
-		result->discardExisting = false;
-	}
+	result->discardExisting = !VectorCompare(test->position, pos)
+							  || test->depthAdjust != depthAdjust
+							  || test->area != area;
 
 	VectorCopy( pos, result->position );
 	result->depthAdjust = depthAdjust;

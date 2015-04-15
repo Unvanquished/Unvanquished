@@ -335,14 +335,7 @@ void R_Modellist_f( void )
 	int      totalDataSize;
 	bool showFrames;
 
-	if ( !strcmp( ri.Cmd_Argv( 1 ), "frames" ) )
-	{
-		showFrames = true;
-	}
-	else
-	{
-		showFrames = false;
-	}
+	showFrames = !strcmp( ri.Cmd_Argv( 1 ), "frames" );
 
 	total = 0;
 	totalDataSize = 0;

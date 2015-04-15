@@ -292,8 +292,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	static INLINE bool StackEmpty( link_t *l )
 	{
-		// GCC shit: cannot convert 'bool' to 'bool' in return
-		return l->next == l ? true : false;
+		return l->next == l;
 	}
 
 	static INLINE link_t *StackTop( link_t *l )
@@ -344,7 +343,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	static INLINE bool QueueEmpty( link_t *l )
 	{
-		return l->prev == l ? true : false;
+		return l->prev == l;
 	}
 
 	static INLINE void EnQueue( link_t *sentinel, void *data )

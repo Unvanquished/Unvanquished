@@ -1025,7 +1025,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 				cent->buildableIdleAnim = true;
 			}
 		}
-		else if ( cent->buildableIdleAnim == true &&
+		else if ( cent->buildableIdleAnim &&
 		          cent->buildableAnim != es->torsoAnim )
 		{
 			cent->buildableAnim = (buildableAnimNumber_t) es->torsoAnim;
@@ -2796,10 +2796,10 @@ void CG_Buildable( centity_t *cent )
 			drawRange = cg.predictedPlayerState.weapon == WP_ABUILD ||
 			            cg.predictedPlayerState.weapon == WP_ABUILD2;
 		} else {
-			drawRange = !!(cg_buildableRangeMarkerMask.integer & (1 << BA_NONE));
+			drawRange = (cg_buildableRangeMarkerMask.integer & (1 << BA_NONE)) != 0;
 		}
 
-		drawRange &= !!(cg_buildableRangeMarkerMask.integer & (1 << ba->number));
+		drawRange &= (cg_buildableRangeMarkerMask.integer & (1 << ba->number)) != 0;
 
 		dist = Distance( cent->lerpOrigin, cg.refdef.vieworg );
 

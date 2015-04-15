@@ -704,21 +704,18 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 			xoff = i % tr.fatLightmapStep;
 			yoff = i / tr.fatLightmapStep;
 
-			if ( 1 )
+			for ( y = 0; y < LIGHTMAP_SIZE; y++ )
 			{
-				for ( y = 0; y < LIGHTMAP_SIZE; y++ )
+				for ( x = 0; x < LIGHTMAP_SIZE; x++ )
 				{
-					for ( x = 0; x < LIGHTMAP_SIZE; x++ )
-					{
-						int index =
-						  ( x + ( y * tr.fatLightmapSize ) ) + ( ( xoff * LIGHTMAP_SIZE ) + ( yoff * tr.fatLightmapSize * LIGHTMAP_SIZE ) );
-						fatbuffer[( index * 4 ) + 0 ] = buf_p[( ( x + ( y * LIGHTMAP_SIZE ) ) * 3 ) + 0 ];
-						fatbuffer[( index * 4 ) + 1 ] = buf_p[( ( x + ( y * LIGHTMAP_SIZE ) ) * 3 ) + 1 ];
-						fatbuffer[( index * 4 ) + 2 ] = buf_p[( ( x + ( y * LIGHTMAP_SIZE ) ) * 3 ) + 2 ];
-						fatbuffer[( index * 4 ) + 3 ] = 255;
+					int index =
+					  ( x + ( y * tr.fatLightmapSize ) ) + ( ( xoff * LIGHTMAP_SIZE ) + ( yoff * tr.fatLightmapSize * LIGHTMAP_SIZE ) );
+					fatbuffer[( index * 4 ) + 0 ] = buf_p[( ( x + ( y * LIGHTMAP_SIZE ) ) * 3 ) + 0 ];
+					fatbuffer[( index * 4 ) + 1 ] = buf_p[( ( x + ( y * LIGHTMAP_SIZE ) ) * 3 ) + 1 ];
+					fatbuffer[( index * 4 ) + 2 ] = buf_p[( ( x + ( y * LIGHTMAP_SIZE ) ) * 3 ) + 2 ];
+					fatbuffer[( index * 4 ) + 3 ] = 255;
 
-						R_ColorShiftLightingBytes( &fatbuffer[( index * 4 ) + 0 ], &fatbuffer[( index * 4 ) + 0 ] );
-					}
+					R_ColorShiftLightingBytes( &fatbuffer[( index * 4 ) + 0 ], &fatbuffer[( index * 4 ) + 0 ] );
 				}
 			}
 		}
@@ -4799,12 +4796,7 @@ R_PrecacheGenericSurfInteraction
 */
 static bool R_PrecacheGenericSurfInteraction( srfGeneric_t *face, trRefLight_t *light )
 {
-	if ( !BoundsIntersect( face->bounds[ 0 ], face->bounds[ 1 ], light->worldBounds[ 0 ], light->worldBounds[ 1 ] ) )
-	{
-		return false;
-	}
-
-	return true;
+	return BoundsIntersect( face->bounds[ 0 ], face->bounds[ 1 ], light->worldBounds[ 0 ], light->worldBounds[ 1 ] );
 }
 
 /*
@@ -5023,28 +5015,14 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 
 				d = DotProduct( triPlane, lightDirection );
 
-				if ( surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED ) )
-				{
-					tri->facingLight = true;
-				}
-				else
-				{
-					tri->facingLight = false;
-				}
+				tri->facingLight = surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED );
 			}
 			else
 			{
 				// check if light origin is behind triangle
 				d = DotProduct( triPlane, light->origin ) - triPlane[ 3 ];
 
-				if ( surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED ) )
-				{
-					tri->facingLight = true;
-				}
-				else
-				{
-					tri->facingLight = false;
-				}
+				tri->facingLight = surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED );
 			}
 		}
 		else
@@ -6763,37 +6741,34 @@ void R_BuildCubeMaps( void )
 			}
 
 			// encode the pixel intensity into the alpha channel, saves work in the shader
-			if ( true )
+			byte r, g, b, best;
+
+			dest = tr.cubeTemp[ i ];
+
+			for ( y = 0; y < REF_CUBEMAP_SIZE; y++ )
 			{
-				byte r, g, b, best;
-
-				dest = tr.cubeTemp[ i ];
-
-				for ( y = 0; y < REF_CUBEMAP_SIZE; y++ )
+				for ( x = 0; x < REF_CUBEMAP_SIZE; x++ )
 				{
-					for ( x = 0; x < REF_CUBEMAP_SIZE; x++ )
+					xy = ( ( y * REF_CUBEMAP_SIZE ) + x ) * 4;
+
+					r = dest[ xy + 0 ];
+					g = dest[ xy + 1 ];
+					b = dest[ xy + 2 ];
+
+					if ( ( r > g ) && ( r > b ) )
 					{
-						xy = ( ( y * REF_CUBEMAP_SIZE ) + x ) * 4;
-
-						r = dest[ xy + 0 ];
-						g = dest[ xy + 1 ];
-						b = dest[ xy + 2 ];
-
-						if ( ( r > g ) && ( r > b ) )
-						{
-							best = r;
-						}
-						else if ( ( g > r ) && ( g > b ) )
-						{
-							best = g;
-						}
-						else
-						{
-							best = b;
-						}
-
-						dest[ xy + 3 ] = best;
+						best = r;
 					}
+					else if ( ( g > r ) && ( g > b ) )
+					{
+						best = g;
+					}
+					else
+					{
+						best = b;
+					}
+
+					dest[ xy + 3 ] = best;
 				}
 			}
 		}
