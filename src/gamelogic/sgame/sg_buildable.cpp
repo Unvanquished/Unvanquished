@@ -4721,6 +4721,112 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	return reason;
 }
 
+/** Sets shared buildable entity parameters. */
+#define BUILDABLE_ENTITY_SET_PARAMS(params)\
+	params.oldEnt = ent;\
+	params.Health_maxHealth = BG_Buildable(buildable)->health;
+
+/** Creates basic buildable entity of specific type. */
+#define BUILDABLE_ENTITY_CREATE(entityType)\
+	entityType::Params params;\
+	BUILDABLE_ENTITY_SET_PARAMS(params);\
+	ent->entity = new entityType(params);\
+
+/**
+ * @brief Handles creation of buildable entities.
+ */
+static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
+	switch (buildable) {
+		case BA_A_ACIDTUBE: {
+			BUILDABLE_ENTITY_CREATE(AcidTubeEntity);
+			break;
+		}
+
+		case BA_A_BARRICADE: {
+			BUILDABLE_ENTITY_CREATE(BarricadeEntity);
+			break;
+		}
+
+		case BA_A_BOOSTER: {
+			BUILDABLE_ENTITY_CREATE(BoosterEntity);
+			break;
+		}
+
+		case BA_A_HIVE: {
+			BUILDABLE_ENTITY_CREATE(HiveEntity);
+			break;
+		}
+
+		case BA_A_LEECH: {
+			BUILDABLE_ENTITY_CREATE(LeechEntity);
+			break;
+		}
+
+		case BA_A_OVERMIND: {
+			BUILDABLE_ENTITY_CREATE(OvermindEntity);
+			break;
+		}
+
+		case BA_A_SPAWN: {
+			BUILDABLE_ENTITY_CREATE(EggEntity);
+			break;
+		}
+
+		case BA_A_SPIKER: {
+			BUILDABLE_ENTITY_CREATE(SpikerEntity);
+			break;
+		}
+
+		case BA_A_TRAPPER: {
+			BUILDABLE_ENTITY_CREATE(TrapperEntity);
+			break;
+		}
+
+		case BA_H_ARMOURY: {
+			BUILDABLE_ENTITY_CREATE(ArmouryEntity);
+			break;
+		}
+
+		case BA_H_DRILL: {
+			BUILDABLE_ENTITY_CREATE(DrillEntity);
+			break;
+		}
+
+		case BA_H_MEDISTAT: {
+			BUILDABLE_ENTITY_CREATE(MedipadEntity);
+			break;
+		}
+
+		case BA_H_MGTURRET: {
+			BUILDABLE_ENTITY_CREATE(MGTurretEntity);
+			break;
+		}
+
+		case BA_H_REACTOR: {
+			BUILDABLE_ENTITY_CREATE(ReactorEntity);
+			break;
+		}
+
+		case BA_H_REPEATER: {
+			BUILDABLE_ENTITY_CREATE(RepeaterEntity);
+			break;
+		}
+
+		case BA_H_ROCKETPOD: {
+			BUILDABLE_ENTITY_CREATE(RocketpodEntity);
+			break;
+		}
+
+		case BA_H_SPAWN: {
+			BUILDABLE_ENTITY_CREATE(TelenodeEntity);
+			break;
+		}
+
+		default:
+			assert(false);
+	}
+}
+
 /*
 ================
 G_Build
@@ -4747,6 +4853,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	}
 
 	built = G_NewEntity();
+
+	BuildableSpawnCBSE(built, buildable);
 
 	// Free existing buildables
 	G_FreeMarkedBuildables( builder, readable, sizeof( readable ), buildnums, sizeof( buildnums ) );
@@ -4789,7 +4897,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->die = AGeneric_Die;
 			built->think = ASpawn_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_BARRICADE:
@@ -4798,7 +4905,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->pain = ABarricade_Pain;
 			built->touch = ABarricade_Touch;
 			built->shrunkTime = 0;
-			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			ABarricade_Shrink( built, qtrue );
 			break;
 
@@ -4807,49 +4913,42 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			built->think = ABooster_Think;
 			built->pain = AGeneric_Pain;
 			built->touch = ABooster_Touch;
-			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_ACIDTUBE:
 			built->die = AGeneric_Die;
 			built->think = AAcidTube_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_HIVE:
 			built->die = AGeneric_Die;
 			built->think = AHive_Think;
 			built->pain = AHive_Pain;
-			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_TRAPPER:
 			built->die = AGeneric_Die;
 			built->think = ATrapper_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_LEECH:
 			built->die = ALeech_Die;
 			built->think = ALeech_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_SPIKER:
 			built->die = AGeneric_Die;
 			built->think = ASpiker_Think;
 			built->pain = ASpiker_Pain;
-			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_A_OVERMIND:
 			built->die = AOvermind_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
-			built->entity = new AlienBuildableEntity({built, (float)attr->health});
 			break;
 
 		case BA_H_SPAWN:

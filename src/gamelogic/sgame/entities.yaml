@@ -105,6 +105,10 @@ entities:
             Health:
                 maxHealth: 1
 
+    ##################
+    # Player classes #
+    ##################
+
     Dretch:
         components:
             Client:
@@ -183,16 +187,104 @@ entities:
             Health:
             Armor:
 
+    ##############
+    # Buildables #
+    ##############
+
+    AcidTube:
+        components:
+            Ignitable:
+                freeOnExtinguish: false
+            Health:
+
+    Barricade:
+        components:
+            Ignitable:
+                freeOnExtinguish: false
+            Health:
+
+    Booster:
+        components:
+            Ignitable:
+                freeOnExtinguish: false
+            Health:
+
+    Egg:
+        components:
+            Ignitable:
+                freeOnExtinguish: false
+            Health:
+
+    Hive:
+        components:
+            Ignitable:
+                freeOnExtinguish: false
+            Health:
+
+    Leech:
+        components:
+            Ignitable:
+                freeOnExtinguish: false
+            Health:
+
+    Overmind:
+        components:
+            Ignitable:
+                freeOnExtinguish: false
+            Health:
+
+    Spiker:
+        components:
+            Ignitable:
+                freeOnExtinguish: false
+            Health:
+
+    Trapper:
+        components:
+            Ignitable:
+                freeOnExtinguish: false
+            Health:
+
+    Armoury:
+        components:
+            Health:
+
+    Drill:
+        components:
+            Health:
+
+    Medipad:
+        components:
+            Health:
+
+    MGTurret:
+        components:
+            Health:
+
+    Reactor:
+        components:
+            Health:
+
+    Repeater:
+        components:
+            Health:
+
+    Rocketpod:
+        components:
+            Health:
+
+    Telenode:
+        components:
+            Health:
+
+    ############
+    # Unsorted #
+    ############
+
     Fire:
         components:
             Ignitable:
                 freeOnExtinguish: true
             DeferredFreeing:
-
-    AlienBuildable:
-        components:
-            Ignitable:
-                freeOnExtinguish: false
-            Health:
 
 # vi:ts=4:et:ai
