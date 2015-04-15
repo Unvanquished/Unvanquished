@@ -301,7 +301,7 @@ namespace VM {
 
             case QVM_COMMON_FS_FIND_PAK:
                 IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
-                    found = FS::FindPak(pakName);
+                    found = FS::FindPak(pakName) != nullptr;
                 });
                 break;
 
