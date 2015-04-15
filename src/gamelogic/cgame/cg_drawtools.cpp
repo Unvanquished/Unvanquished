@@ -115,7 +115,7 @@ void CG_FillRect( float x, float y, float width, float height, const float *colo
 	CG_AdjustFrom640( &x, &y, &width, &height );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader );
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 /*
@@ -159,7 +159,7 @@ void CG_DrawRect( float x, float y, float width, float height, float size, const
 	CG_DrawTopBottom( x, y, width, height, size );
 	CG_DrawSides( x, y, width, height, size );
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 /*
@@ -282,7 +282,7 @@ void CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
 
 	trap_R_SetColor( finalcolor );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 /*
@@ -388,14 +388,14 @@ float *CG_FadeColor( int startMsec, int totalMsec )
 
 	if ( startMsec == 0 )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	t = cg.time - startMsec;
 
 	if ( t >= totalMsec )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// fade out
@@ -569,7 +569,7 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const f
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if ( shaderRGBA != NULL )
+	if ( shaderRGBA != nullptr )
 	{
 		int i;
 
@@ -606,7 +606,7 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if ( shaderRGBA != NULL )
+	if ( shaderRGBA != nullptr )
 	{
 		int i;
 
@@ -680,18 +680,18 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 			{
 				if ( cg_rangeMarkerDrawIntersection.integer )
 				{
-					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, NULL );
+					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, nullptr );
 				}
 
-				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, NULL );
+				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, nullptr );
 			}
 
 			if ( cg_rangeMarkerDrawIntersection.integer )
 			{
-				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, NULL );
+				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, nullptr );
 			}
 
-			CG_DrawSphere( origin, range + lineThickness / 2, mbsh->f1, NULL );
+			CG_DrawSphere( origin, range + lineThickness / 2, mbsh->f1, nullptr );
 		}
 		else
 		{
@@ -702,7 +702,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 			t2 = ( rmType == RM_SPHERICAL_CONE_240 );
 			f = lineThickness * ( t2 ? 0.26f : 0.8f );
 			r = f + lineThickness * ( t2 ? 0.23f : 0.43f );
-			AngleVectors( angles, forward, NULL, NULL );
+			AngleVectors( angles, forward, nullptr, nullptr );
 
 			if ( range > r )
 			{
@@ -710,20 +710,20 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 
 				if ( cg_rangeMarkerDrawIntersection.integer )
 				{
-					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, NULL );
+					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, nullptr );
 				}
 
-				CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->f2, NULL );
+				CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->f2, nullptr );
 			}
 
 			VectorMA( origin, -f, forward, tip );
 
 			if ( cg_rangeMarkerDrawIntersection.integer )
 			{
-				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, NULL );
+				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, nullptr );
 			}
 
-			CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->f1, NULL );
+			CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->f1, nullptr );
 		}
 
 		bshs = &cg.binaryShaderSettings[ cg.numBinaryShadersUsed ];

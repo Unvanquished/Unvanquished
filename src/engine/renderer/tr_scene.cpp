@@ -225,7 +225,7 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 		r_numPolyVerts += numVerts;
 
 		// if no world is loaded
-		if ( tr.world == NULL )
+		if ( tr.world == nullptr )
 		{
 			fogIndex = 0;
 		}
@@ -669,7 +669,7 @@ void RE_RenderScene( const refdef_t *fd )
 	//
 	Com_Memset( &parms, 0, sizeof( parms ) );
 
-	if ( tr.refdef.pixelTarget == NULL )
+	if ( tr.refdef.pixelTarget == nullptr )
 	{
 		parms.viewportX = tr.refdef.x;
 		parms.viewportY = glConfig.vidHeight - ( tr.refdef.y + tr.refdef.height );

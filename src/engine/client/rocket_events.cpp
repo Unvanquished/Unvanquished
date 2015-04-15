@@ -69,7 +69,7 @@ void Rocket_DeleteEvent( void )
 {
 	RocketEvent_t *event = eventQueue.front();
 	eventQueue.pop();
-	activeElement = NULL;
+	activeElement = nullptr;
 	delete event;
 }
 

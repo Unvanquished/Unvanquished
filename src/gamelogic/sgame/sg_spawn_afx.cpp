@@ -232,7 +232,7 @@ void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 		dflags = 0;
 	}
 
-	G_Damage( other, self, self, NULL, NULL, self->damage, dflags, MOD_TRIGGER_HURT );
+	G_Damage( other, self, self, nullptr, nullptr, self->damage, dflags, MOD_TRIGGER_HURT );
 }
 
 void SP_env_afx_hurt( gentity_t *self )

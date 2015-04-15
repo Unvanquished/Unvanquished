@@ -84,7 +84,7 @@ cvar_t *cl_timeNudge;
 cvar_t *cl_showTimeDelta;
 cvar_t *cl_freezeDemo;
 
-cvar_t *cl_shownet = NULL; // NERVE - SMF - This is referenced in msg.c and we need to make sure it is NULL
+cvar_t *cl_shownet = nullptr; // NERVE - SMF - This is referenced in msg.c and we need to make sure it is NULL
 cvar_t *cl_shownuments; // DHM - Nerve
 cvar_t *cl_showSend;
 cvar_t *cl_showServerCommands; // NERVE - SMF
@@ -211,7 +211,7 @@ static void CL_UpdateMumble( void )
 	}
 
 	// !!! FIXME: not sure if this is even close to correct.
-	AngleVectors( cl.snap.ps.viewangles, forward, NULL, up );
+	AngleVectors( cl.snap.ps.viewangles, forward, nullptr, up );
 
 	pos[ 0 ] = cl.snap.ps.origin[ 0 ] * scale;
 	pos[ 1 ] = cl.snap.ps.origin[ 2 ] * scale;
@@ -280,7 +280,7 @@ void CL_UpdateVoipGain( const char *idstr, float gain )
 void CL_Voip_f( void )
 {
 	const char *cmd = Cmd_Argv( 1 );
-	const char *reason = NULL;
+	const char *reason = nullptr;
 
 	if ( cls.state != CA_ACTIVE )
 	{
@@ -295,7 +295,7 @@ void CL_Voip_f( void )
 		reason = "Server doesn't support VoIP";
 	}
 
-	if ( reason != NULL )
+	if ( reason != nullptr )
 	{
 		Com_Printf( "VoIP: command ignored: %s\n", reason );
 		return;
@@ -331,7 +331,7 @@ void CL_Voip_f( void )
 		}
 		else
 		{
-			Cmd_PrintUsage("gain <playerID#> [<value>]", NULL);
+			Cmd_PrintUsage("gain <playerID#> [<value>]", nullptr);
 		}
 	}
 	else if ( strcmp( cmd, "muteall" ) == 0 )
@@ -348,9 +348,9 @@ void CL_Voip_f( void )
 	}
 	else
 	{
-		Cmd_PrintUsage("[un]ignore <playerID#>", NULL);
-		Cmd_PrintUsage("[un]muteall", NULL);
-		Cmd_PrintUsage("gain <playerID#> [value]", NULL);
+		Cmd_PrintUsage("[un]ignore <playerID#>", nullptr);
+		Cmd_PrintUsage("[un]muteall", nullptr);
+		Cmd_PrintUsage("gain <playerID#> [value]", nullptr);
 	}
 }
 
@@ -809,7 +809,7 @@ void CL_Record_f( void )
 
 	if ( Cmd_Argc() > 2 )
 	{
-		Cmd_PrintUsage( "<name>", NULL );
+		Cmd_PrintUsage( "<name>", nullptr );
 		return;
 	}
 
@@ -1171,7 +1171,7 @@ void CL_WriteWaveOpen( void )
 
 	if ( Cmd_Argc() > 2 )
 	{
-		Cmd_PrintUsage("<name>", NULL);
+		Cmd_PrintUsage("<name>", nullptr);
 		return;
 	}
 
@@ -1812,7 +1812,7 @@ void CL_Connect_f( void )
 
 	if ( argc != 2 && argc != 3 )
 	{
-		Cmd_PrintUsage("[-4|-6] <server>", NULL);
+		Cmd_PrintUsage("[-4|-6] <server>", nullptr);
 		return;
 	}
 
@@ -1845,14 +1845,14 @@ void CL_Connect_f( void )
 	}
 
 	// Set and skip the password.
-	if ( ( offset = strchr( server, '@' ) ) != NULL )
+	if ( ( offset = strchr( server, '@' ) ) != nullptr )
 	{
 		Q_strncpyz( password, server, std::min( sizeof( password ), (size_t)( offset - server + 1 ) ) );
 		Cvar_Set( "password", password );
 		server = offset + 1;
 	}
 
-	if ( ( offset = strchr( server, '/' ) ) != NULL )
+	if ( ( offset = strchr( server, '/' ) ) != nullptr )
 	{
 		// trailing slash, or path supplied - chop it off since we don't use it
 		*offset = 0;
@@ -2005,14 +2005,14 @@ static void CL_GenerateRSAKeys( const char *fileName )
 
 	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
 
-	if ( !rsa_generate_keypair( &public_key, &private_key, NULL, qnettle_random, NULL, NULL, RSA_KEY_LENGTH, 0 ) )
+	if ( !rsa_generate_keypair( &public_key, &private_key, nullptr, qnettle_random, nullptr, nullptr, RSA_KEY_LENGTH, 0 ) )
 	{
 		Com_Error( ERR_FATAL, "Error generating RSA keypair" );
 	}
 
 	nettle_buffer_init( &key_buffer );
 
-	if ( !rsa_keypair_to_sexp( &key_buffer, NULL, &public_key, &private_key ) )
+	if ( !rsa_keypair_to_sexp( &key_buffer, nullptr, &public_key, &private_key ) )
 	{
 		Com_Error( ERR_FATAL, "Error converting RSA keypair to sexp" );
 	}
@@ -2120,7 +2120,7 @@ void CL_Vid_Restart_f( void )
 	// shutdown the CGame
 	CL_ShutdownCGame();
 	// clear the font cache
-	re.UnregisterFont( NULL );
+	re.UnregisterFont( nullptr );
 	cls.consoleFont = nullptr;
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
@@ -2497,7 +2497,7 @@ void CL_NextDownload( void )
 
 		remoteName = s;
 
-		if ( ( s = strchr( s, '@' ) ) == NULL )
+		if ( ( s = strchr( s, '@' ) ) == nullptr )
 		{
 			CL_DownloadsComplete();
 			return;
@@ -2506,7 +2506,7 @@ void CL_NextDownload( void )
 		*s++ = 0;
 		localName = s;
 
-		if ( ( s = strchr( s, '@' ) ) != NULL )
+		if ( ( s = strchr( s, '@' ) ) != nullptr )
 		{
 			*s++ = 0;
 		}
@@ -3692,7 +3692,7 @@ bool CL_InitRenderer( void )
 	{
 		if ( FS_FOpenFileRead( cl_consoleFont->string, &f, false ) >= 0 )
 		{
-			re.RegisterFont( cl_consoleFont->string, NULL, cl_consoleFontSize->integer, &cls.consoleFont );
+			re.RegisterFont( cl_consoleFont->string, nullptr, cl_consoleFontSize->integer, &cls.consoleFont );
 			cls.useLegacyConsoleFont = false;
 		}
 
@@ -4157,7 +4157,7 @@ void CL_Shutdown( void )
 
 	if ( re.UnregisterFont )
 	{
-		re.UnregisterFont( NULL );
+		re.UnregisterFont( nullptr );
 		cls.consoleFont = nullptr;
 	}
 
@@ -4521,7 +4521,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 	int            len;
 	serverStatus_t *serverStatus;
 
-	serverStatus = NULL;
+	serverStatus = nullptr;
 
 	for ( i = 0; i < MAX_SERVERSTATUSREQUESTS; i++ )
 	{
@@ -4705,7 +4705,7 @@ void CL_GlobalServers_f( void )
 
 	if ( ( count = Cmd_Argc() ) < 2 || ( masterNum = atoi( Cmd_Argv( 1 ) ) ) < 0 || masterNum > MAX_MASTER_SERVERS - 1 )
 	{
-		Cmd_PrintUsage("<master# 0-" XSTRING(MAX_MASTER_SERVERS - 1) "> [<protocol>] [<keywords>]", NULL);
+		Cmd_PrintUsage("<master# 0-" XSTRING(MAX_MASTER_SERVERS - 1) "> [<protocol>] [<keywords>]", nullptr);
 		return;
 	}
 
@@ -4941,7 +4941,7 @@ void CL_Ping_f( void )
 
 	if ( argc != 2 && argc != 3 )
 	{
-		Cmd_PrintUsage("[-4|-6] <server>", NULL);
+		Cmd_PrintUsage("[-4|-6] <server>", nullptr);
 		return;
 	}
 
@@ -4980,7 +4980,7 @@ void CL_Ping_f( void )
 	pingptr->start = Sys_Milliseconds();
 	pingptr->time = 0;
 
-	CL_SetServerInfoByAddress( pingptr->adr, NULL, 0 );
+	CL_SetServerInfoByAddress( pingptr->adr, nullptr, 0 );
 
 	NET_OutOfBandPrint( NS_CLIENT, to, "getinfo xxx" );
 }
@@ -5009,7 +5009,7 @@ bool CL_UpdateVisiblePings_f( int source )
 
 	if ( slots < MAX_PINGREQUESTS )
 	{
-		serverInfo_t *server = NULL;
+		serverInfo_t *server = nullptr;
 
 		max = ( source == AS_GLOBAL ) ? MAX_GLOBAL_SERVERS : MAX_OTHER_SERVERS;
 
@@ -5130,7 +5130,7 @@ CL_ServerStatus_f
 */
 void CL_ServerStatus_f( void )
 {
-	netadr_t       to, *toptr = NULL;
+	netadr_t       to, *toptr = nullptr;
 	char           *server;
 	serverStatus_t *serverStatus;
 	int            argc;
@@ -5143,7 +5143,7 @@ void CL_ServerStatus_f( void )
 		if ( cls.state != CA_ACTIVE || clc.demoplaying )
 		{
 			Com_Printf( "Not connected to a server.\n" );
-			Cmd_PrintUsage("[-4|-6] <server>", NULL);
+			Cmd_PrintUsage("[-4|-6] <server>", nullptr);
 			return;
 		}
 

@@ -339,8 +339,8 @@ static DaemonRenderInterface renderInterface;
 
 static RocketFocusManager fm;
 
-Rocket::Core::Context *menuContext = NULL;
-Rocket::Core::Context *hudContext = NULL;
+Rocket::Core::Context *menuContext = nullptr;
+Rocket::Core::Context *hudContext = nullptr;
 
 cvar_t *cg_draw2D;
 
@@ -416,13 +416,13 @@ void Rocket_Shutdown( void )
 	if ( menuContext )
 	{
 		menuContext->RemoveReference();
-		menuContext = NULL;
+		menuContext = nullptr;
 	}
 
 	if ( hudContext )
 	{
 		hudContext->RemoveReference();
-		hudContext = NULL;
+		hudContext = nullptr;
 	}
 
 	Rocket::Core::Shutdown();
@@ -627,7 +627,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 
 			// TODO: Dont hardcode the extension.
 			path =  va( "emoticons/%s.crn", emoticon.CString() );
-			if ( FS_FOpenFileRead( path, NULL, true ) )
+			if ( FS_FOpenFileRead( path, nullptr, true ) )
 			{
 				out.Erase( openBracket, closeBracket - openBracket + 1 );
 				path = va( "<img class='trem-emoticon' src='/emoticons/%s' />", emoticon.CString() );

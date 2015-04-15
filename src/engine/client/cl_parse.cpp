@@ -119,7 +119,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 
 	// delta from the entities present in oldframe
 	oldindex = 0;
-	oldstate = NULL;
+	oldstate = nullptr;
 
 	if ( !oldframe )
 	{
@@ -309,7 +309,7 @@ void CL_ParseSnapshot( msg_t *msg )
 	if ( newSnap.deltaNum <= 0 )
 	{
 		newSnap.valid = true; // uncompressed frame
-		old = NULL;
+		old = nullptr;
 
 		if ( clc.demorecording )
 		{
@@ -406,7 +406,7 @@ void CL_ParseSnapshot( msg_t *msg )
 	}
 	else
 	{
-		MSG_ReadDeltaPlayerstate( msg, NULL, &newSnap.ps );
+		MSG_ReadDeltaPlayerstate( msg, nullptr, &newSnap.ps );
 	}
 
 	// read packet entities
@@ -946,7 +946,7 @@ void CL_ParseVoip( msg_t *msg )
 		for ( i = 0; i < seqdiff; i++ )
 		{
 			assert( ( written + clc.speexFrameSize ) * 2 < decodedSize );
-			speex_decode_int( clc.speexDecoder[ sender ], NULL, decoded + written );
+			speex_decode_int( clc.speexDecoder[ sender ], nullptr, decoded + written );
 			written += clc.speexFrameSize;
 		}
 	}

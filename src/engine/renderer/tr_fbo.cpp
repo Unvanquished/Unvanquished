@@ -399,7 +399,7 @@ void R_BindNullFBO( void )
 	{
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 		glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
-		glState.currentFBO = NULL;
+		glState.currentFBO = nullptr;
 	}
 }
 

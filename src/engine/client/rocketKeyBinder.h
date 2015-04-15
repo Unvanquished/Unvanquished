@@ -81,7 +81,7 @@ public:
 		{
 			context->RemoveEventListener( "mousemove", this );
 			context->RemoveEventListener( "keydown", this );
-			context = NULL;
+			context = nullptr;
 		}
 	}
 
@@ -164,7 +164,7 @@ protected:
 
 		if ( key > 0 )
 		{
-			Key_SetBinding( key, team, NULL );
+			Key_SetBinding( key, team, nullptr );
 		}
 
 		key = newKey;

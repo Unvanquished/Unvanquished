@@ -214,7 +214,7 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 	VectorCopy( origin, player->client->ps.origin );
 	player->client->ps.groundEntityNum = ENTITYNUM_NONE;
 
-	AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
+	AngleVectors( angles, player->client->ps.velocity, nullptr, nullptr );
 	VectorScale( player->client->ps.velocity, speed, player->client->ps.velocity );
 	player->client->ps.pm_time = 0.4f * abs( speed ); // duration of loss of control
 	if ( player->client->ps.pm_time > 160 )
@@ -303,7 +303,7 @@ void G_KillBox( gentity_t *ent )
 		}
 
 		// nail it
-		G_Damage( hit, ent, ent, NULL, NULL,
+		G_Damage( hit, ent, ent, nullptr, nullptr,
 		          100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
 	}
 }
@@ -334,7 +334,7 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
                 e->r.currentOrigin, e->s.number, e->clipmask, 0 );
 
     if( tr.entityNum != ENTITYNUM_NONE )
-      G_Damage( e, ent, activator, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_CRUSH );
+      G_Damage( e, ent, activator, nullptr, nullptr, 100000, DAMAGE_NO_PROTECTION, MOD_CRUSH );
   }
 }
 
@@ -533,7 +533,7 @@ static const char *addr4parse( const char *str, addr_t *addr )
 		{
 			if ( num < 0 || num > 255 )
 			{
-				return NULL;
+				return nullptr;
 			}
 
 			addr->addr[ octet ] = ( byte ) num;
@@ -582,7 +582,7 @@ static const char *addr6parse( const char *str, addr_t *addr )
 		{
 			if ( num < 0 || num > 65535 )
 			{
-				return NULL;
+				return nullptr;
 			}
 
 			if ( i == 0 )
@@ -625,7 +625,7 @@ static const char *addr6parse( const char *str, addr_t *addr )
 			}
 			else if ( i == 0 ) // starts with : but not ::
 			{
-				return NULL;
+				return nullptr;
 			}
 
 			num = 0;
@@ -637,12 +637,12 @@ static const char *addr6parse( const char *str, addr_t *addr )
 		// there have to be fewer than 8 hexadectets when :: is present
 		if ( before + after == 8 )
 		{
-			return NULL;
+			return nullptr;
 		}
 	}
 	else if ( before + after < 8 ) // require exactly 8 hexadectets
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	memset( addr, 0, sizeof( addr_t ) );
@@ -843,7 +843,7 @@ void G_FireThink( gentity_t *self )
 				Com_Printf( "%s ^3took burn damage^7.", descr );
 			}
 
-			G_Damage( self, self, self->fireStarter, NULL, NULL, BURN_SELFDAMAGE, 0, MOD_BURN );
+			G_Damage( self, self, self->fireStarter, nullptr, nullptr, BURN_SELFDAMAGE, 0, MOD_BURN );
 
 			self->nextBurnDamage = level.time + BURN_SELFDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
 		}
@@ -869,7 +869,7 @@ void G_FireThink( gentity_t *self )
 		float     burnStopChance = BURN_STOP_CHANCE;
 
 		// lower burn stop chance if there are other burning entities nearby
-		neighbor = NULL;
+		neighbor = nullptr;
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_STOP_RADIUS ) ) )
 		{
 			if ( neighbor == self ) continue;
@@ -906,7 +906,7 @@ void G_FireThink( gentity_t *self )
 		}
 
 		// attempt to ignite close alien buildables
-		neighbor = NULL;
+		neighbor = nullptr;
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_SPREAD_RADIUS ) ) )
 		{
 			float chance;
@@ -958,16 +958,16 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	// TODO: Add fire effects for floor and ceiling
 	if ( DotProduct( normal, floorNormal ) < 0.71f ) // 0.71 ~= cos(45°)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// don't spawn a fire inside another fire
-	fire = NULL;
+	fire = nullptr;
 	while ( ( fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ) ) )
 	{
 		if ( fire->s.eType == ET_FIRE )
 		{
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -1020,7 +1020,7 @@ bool G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool u
 		return false;
 	}
 
-	trap_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, NULL, NULL, to->s.origin,
+	trap_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, nullptr, nullptr, to->s.origin,
 	            from->s.number, mask, 0 );
 
 	// Also check for fraction in case the mask is chosen so that the trace skips the target entity
@@ -1052,7 +1052,7 @@ bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 {
 	trace_t trace;
 
-	trap_Trace( &trace, point1, NULL, NULL, point2, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	trap_Trace( &trace, point1, nullptr, nullptr, point2, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }

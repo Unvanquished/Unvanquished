@@ -174,12 +174,12 @@ void BG_BuildableBoundingBox( int buildable,
 {
 	buildableModelConfig_t *buildableModelConfig = BG_BuildableModelConfig( buildable );
 
-	if ( mins != NULL )
+	if ( mins != nullptr )
 	{
 		VectorCopy( buildableModelConfig->mins, mins );
 	}
 
-	if ( maxs != NULL )
+	if ( maxs != nullptr )
 	{
 		VectorCopy( buildableModelConfig->maxs, maxs );
 	}
@@ -374,27 +374,27 @@ void BG_ClassBoundingBox( int pClass,
 {
 	classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
 
-	if ( mins != NULL )
+	if ( mins != nullptr )
 	{
 		VectorCopy( classModelConfig->mins, mins );
 	}
 
-	if ( maxs != NULL )
+	if ( maxs != nullptr )
 	{
 		VectorCopy( classModelConfig->maxs, maxs );
 	}
 
-	if ( cmaxs != NULL )
+	if ( cmaxs != nullptr )
 	{
 		VectorCopy( classModelConfig->crouchMaxs, cmaxs );
 	}
 
-	if ( dmins != NULL )
+	if ( dmins != nullptr )
 	{
 		VectorCopy( classModelConfig->deadMins, dmins );
 	}
 
-	if ( dmaxs != NULL )
+	if ( dmaxs != nullptr )
 	{
 		VectorCopy( classModelConfig->deadMaxs, dmaxs );
 	}
@@ -953,7 +953,7 @@ const beaconAttributes_t *BG_BeaconByName( const char *name )
 		if ( !Q_stricmp( bg_beacons[ i ].name, name ) )
 			return bg_beacons + i;
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -1973,7 +1973,7 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 	VectorCopy( ps->viewangles, angles );
 	VectorCopy( ps->origin, playerOrigin );
 
-	AngleVectors( angles, aimDir, NULL, NULL );
+	AngleVectors( angles, aimDir, nullptr, nullptr );
 	ProjectPointOnPlane( forward, aimDir, playerNormal );
 	VectorNormalize( forward );
 
@@ -2737,7 +2737,7 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 			continue;
 		}
 
-		if ( !trap_FS_FOpenFile( va( "emoticons/%s", filePtr ), NULL, FS_READ ) )
+		if ( !trap_FS_FOpenFile( va( "emoticons/%s", filePtr ), nullptr, FS_READ ) )
 		{
 			Com_Printf( S_COLOR_YELLOW "could not open \"emoticons/%s\"\n", filePtr );
 			continue;
@@ -2855,9 +2855,9 @@ char *BG_strdup( const char *string )
 	length = strlen(string) + 1;
 	copy = (char *)BG_Alloc(length);
 
-	if ( copy == NULL )
+	if ( copy == nullptr )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	memcpy( copy, string, length );

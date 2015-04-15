@@ -378,19 +378,19 @@ bool BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const
 
 	Bot_t *bot = &agents[ botClientNum ];
 
-	status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, NULL );
+	status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, nullptr );
 	if ( dtStatusFailed( status ) || startRef == 0 )
 	{
 		//try larger extents
 		extents[ 1 ] += 500;
-		status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, NULL );
+		status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, nullptr );
 		if ( dtStatusFailed( status ) || startRef == 0 )
 		{
 			return false;
 		}
 	}
 
-	status = bot->nav->query->raycast( startRef, spos, epos, &bot->nav->filter, &trace->frac, trace->normal, NULL, NULL, 0 );
+	status = bot->nav->query->raycast( startRef, spos, epos, &bot->nav->filter, &trace->frac, trace->normal, nullptr, nullptr, 0 );
 	if ( dtStatusFailed( status ) )
 	{
 		return false;

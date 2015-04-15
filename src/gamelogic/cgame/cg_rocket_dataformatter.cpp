@@ -289,7 +289,7 @@ static score_t *ScoreFromClientNum( int clientNum )
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static void CG_Rocket_DFGearOrReady( int handle, const char *data )

@@ -44,7 +44,7 @@ void Svcmd_EntityFire_f( void )
 	int  entityNum;
 	gentity_t *selection;
 	gentityCall_t call;
-	gentityCallDefinition_t callDefinition = { NULL, ON_DEFAULT, NULL, NULL, ECA_DEFAULT };
+	gentityCallDefinition_t callDefinition = { nullptr, ON_DEFAULT, nullptr, nullptr, ECA_DEFAULT };
 
 	if ( trap_Argc() < 2 || trap_Argc() > 3 )
 	{
@@ -106,7 +106,7 @@ void Svcmd_EntityShow_f( void )
 	int       entityNum;
 	int       lastTargetIndex, targetIndex;
 	gentity_t *selection;
-	gentity_t *possibleTarget = NULL;
+	gentity_t *possibleTarget = nullptr;
 	char argument[ 6 ];
 
 
@@ -168,7 +168,7 @@ void Svcmd_EntityShow_f( void )
 	{
 		G_Printf( "Aims at\n");
 
-		while ((possibleTarget = G_IterateTargets(possibleTarget, &targetIndex, selection)) != NULL )
+		while ((possibleTarget = G_IterateTargets(possibleTarget, &targetIndex, selection)) != nullptr )
 		{
 			G_Printf(" • %s %s\n", etos( possibleTarget ), vtos( possibleTarget->s.origin));
 		}
@@ -178,7 +178,7 @@ void Svcmd_EntityShow_f( void )
 	if(selection->callTargetCount)
 	{
 		lastTargetIndex = -1;
-		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex, selection)) != NULL )
+		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex, selection)) != nullptr )
 		{
 
 			if(lastTargetIndex != targetIndex)
@@ -224,7 +224,7 @@ void  Svcmd_EntityList_f( void )
 	}
 	else
 	{
-		filter = NULL;
+		filter = nullptr;
 	}
 
 	for ( entityNum = 0, currentEntityCount = 0; entityNum < level.num_entities; entityNum++, displayedEntity++ )
@@ -263,7 +263,7 @@ static gclient_t *ClientForString( char *s )
 	if ( idnum == -1 )
 	{
 		G_Printf( "%s", err );
-		return NULL;
+		return nullptr;
 	}
 
 	return &level.clients[ idnum ];
@@ -650,29 +650,29 @@ static void Svcmd_MessageWrapper( void )
 
 	if ( !Q_stricmp( cmd, "a" ) )
 	{
-		Cmd_AdminMessage_f( NULL );
+		Cmd_AdminMessage_f( nullptr );
 	}
 	else if ( !Q_stricmp( cmd, "asay" ) )
 	{
-		G_Say( NULL, SAY_ALL_ADMIN, ConcatArgs( 1 ) );
+		G_Say( nullptr, SAY_ALL_ADMIN, ConcatArgs( 1 ) );
 	}
 	else if ( !Q_stricmp( cmd, "m" ) )
 	{
-		Cmd_PrivateMessage_f( NULL );
+		Cmd_PrivateMessage_f( nullptr );
 	}
 	else if ( !Q_stricmp( cmd, "say" ) )
 	{
-		G_Say( NULL, SAY_ALL, ConcatArgs( 1 ) );
+		G_Say( nullptr, SAY_ALL, ConcatArgs( 1 ) );
 	}
 	else if ( !Q_stricmp( cmd, "chat" ) )
 	{
-		G_Say( NULL, SAY_RAW, ConcatArgs( 1 ) );
+		G_Say( nullptr, SAY_RAW, ConcatArgs( 1 ) );
 	}
 }
 
 static void Svcmd_MapLogWrapper( void )
 {
-	Cmd_MapLog_f( NULL );
+	Cmd_MapLog_f( nullptr );
 }
 
 static void Svcmd_G_AdvanceMapRotation_f( void )
@@ -734,7 +734,7 @@ bool  ConsoleCommand( void )
 	if ( !command )
 	{
 		// see if this is an admin command
-		if ( G_admin_cmd_check( NULL ) )
+		if ( G_admin_cmd_check( nullptr ) )
 		{
 			return true;
 		}

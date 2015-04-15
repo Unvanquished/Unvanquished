@@ -40,11 +40,11 @@ Maryland 20850 USA.
 void RE_Shutdown( bool destroyWindow ) { }
 qhandle_t RE_RegisterModel( const char *name )
 {
-	return FS_FOpenFileRead( name, NULL, false );
+	return FS_FOpenFileRead( name, nullptr, false );
 }
 qhandle_t RE_RegisterSkin( const char *name )
 {
-	return FS_FOpenFileRead( name, NULL, false );
+	return FS_FOpenFileRead( name, nullptr, false );
 }
 qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 {
@@ -81,7 +81,7 @@ void RE_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
 }
 void RE_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
 {
-	RE_Glyph( font, NULL, glyph );
+	RE_Glyph( font, nullptr, glyph );
 }
 void RE_UnregisterFont( fontInfo_t *font ) { }
 void RE_RegisterFontVM( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )

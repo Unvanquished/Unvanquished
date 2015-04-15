@@ -434,7 +434,7 @@ Parse a map rotation section
 static bool G_ParseMapRotation( mapRotation_t *mr, char **text_p )
 {
 	char   *token;
-	mrNode_t *node = NULL;
+	mrNode_t *node = nullptr;
 
 	// read optional parameters
 	while ( 1 )
@@ -448,7 +448,7 @@ static bool G_ParseMapRotation( mapRotation_t *mr, char **text_p )
 
 		if ( !Q_stricmp( token, "{" ) )
 		{
-			if ( node == NULL )
+			if ( node == nullptr )
 			{
 				G_Printf( S_ERROR "map command section with no associated map\n" );
 				return false;
@@ -768,13 +768,13 @@ Print the current rotation to an entity
 void G_PrintCurrentRotation( gentity_t *ent )
 {
 	int           mapRotationIndex = g_currentMapRotation.integer;
-	mapRotation_t *mapRotation = G_MapRotationActive() ? &mapRotations.rotations[ mapRotationIndex ] : NULL;
+	mapRotation_t *mapRotation = G_MapRotationActive() ? &mapRotations.rotations[ mapRotationIndex ] : nullptr;
 	int           i = 0;
 	char          currentMapName[ MAX_QPATH ];
 	bool      currentShown = false;
 	mrNode_t        *node;
 
-	if ( mapRotation == NULL )
+	if ( mapRotation == nullptr )
 	{
 		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("^3listrotation: ^7there is no active map rotation on this server\n") "\"" );
 		return;
@@ -937,7 +937,7 @@ static char *G_RotationNameByIndex( int index )
 		return mapRotations.rotations[ index ].name;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -1026,7 +1026,7 @@ static mrNode_t *G_NodeByIndex( int index, int rotation )
 		return mapRotations.rotations[ rotation ].nodes[ index ];
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -1436,7 +1436,7 @@ void G_InitMapRotations( void )
 	const char *fileName = "maprotation.cfg";
 
 	// Load the file if it exists
-	if ( trap_FS_FOpenFile( fileName, NULL, FS_READ ) )
+	if ( trap_FS_FOpenFile( fileName, nullptr, FS_READ ) )
 	{
 		if ( !G_ParseMapRotationFile( fileName ) )
 		{

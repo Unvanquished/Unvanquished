@@ -321,7 +321,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	// set up lighting now that we know we aren't culled
 	if ( !personalModel || r_shadows->integer > SHADOWING_BLOB )
 	{
-		R_SetupEntityLighting( &tr.refdef, ent, NULL );
+		R_SetupEntityLighting( &tr.refdef, ent, nullptr );
 	}
 
 	// see if we are in a fog volume

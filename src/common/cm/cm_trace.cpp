@@ -1036,7 +1036,7 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 
 	enterFrac = -1.0;
 	leaveFrac = 1.0;
-	clipplane = NULL;
+	clipplane = nullptr;
 
 	if ( !brush->numsides )
 	{
@@ -1048,7 +1048,7 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 	getout = false;
 	startout = false;
 
-	leadside = NULL;
+	leadside = nullptr;
 
 	if ( tw->type == TT_BISPHERE )
 	{
@@ -2333,7 +2333,7 @@ CM_BoxTrace
 void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end, vec3_t mins, vec3_t maxs,
                   clipHandle_t model, int brushmask, int skipmask, traceType_t type )
 {
-	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, skipmask, type, NULL );
+	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, skipmask, type, nullptr );
 }
 
 /*

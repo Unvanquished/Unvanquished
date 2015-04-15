@@ -136,7 +136,7 @@ static int loadPagesToStreams( void )
 	int              r = -1;
 	int              AudioPages = 0;
 	int              VideoPages = 0;
-	ogg_stream_state *osptr = NULL;
+	ogg_stream_state *osptr = nullptr;
 	ogg_page         og;
 
 	while ( !AudioPages || !VideoPages )
@@ -158,7 +158,7 @@ static int loadPagesToStreams( void )
 			++VideoPages;
 		}
 
-		if ( osptr != NULL )
+		if ( osptr != nullptr )
 		{
 			ogg_stream_pagein( osptr, &og );
 		}
@@ -335,7 +335,7 @@ static int loadVideoFrameTheora( void )
 				/* Allocate the new buffer */
 				g_ogm.outputBuffer = ( unsigned char * ) malloc( g_ogm.outputBufferSize * 4 );
 
-				if ( g_ogm.outputBuffer == NULL )
+				if ( g_ogm.outputBuffer == nullptr )
 				{
 					g_ogm.outputBufferSize = 0;
 					r = -2;
@@ -752,12 +752,12 @@ int Cin_OGM_Run( int time )
 */
 unsigned char  *Cin_OGM_GetOutput( int *outWidth, int *outHeight )
 {
-	if ( outWidth != NULL )
+	if ( outWidth != nullptr )
 	{
 		*outWidth = g_ogm.outputWidht;
 	}
 
-	if ( outHeight != NULL )
+	if ( outHeight != nullptr )
 	{
 		*outHeight = g_ogm.outputHeight;
 	}
@@ -776,7 +776,7 @@ void Cin_OGM_Shutdown( void )
 		free( g_ogm.outputBuffer );
 	}
 
-	g_ogm.outputBuffer = NULL;
+	g_ogm.outputBuffer = nullptr;
 
 	vorbis_dsp_clear( &g_ogm.vd );
 	vorbis_comment_clear( &g_ogm.vc );

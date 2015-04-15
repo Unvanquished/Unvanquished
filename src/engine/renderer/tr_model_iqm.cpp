@@ -517,7 +517,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		IQModel->anims = (IQAnim_t *)ptr;
 		ptr = IQModel->anims + header->num_anims;
 	} else {
-		IQModel->anims = NULL;
+		IQModel->anims = nullptr;
 	}
 
 	IQModel->joints = (transform_t *)PADP(ptr, 16);
@@ -527,14 +527,14 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		poses = (transform_t *)ptr;
 		ptr = poses + header->num_poses * header->num_frames;
 	} else {
-		poses = NULL;
+		poses = nullptr;
 	}
 
 	if( header->ofs_bounds ) {
 		bounds = (float *)ptr;
 		ptr = bounds + 6 * header->num_frames;
 	} else {
-		bounds = NULL;
+		bounds = nullptr;
 	}
 
 	IQModel->positions = (float *)ptr;
@@ -591,12 +591,12 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		if( poses ) {
 			IQAnim->poses    = poses + anim->first_frame * header->num_poses;
 		} else {
-			IQAnim->poses    = NULL;
+			IQAnim->poses    = nullptr;
 		}
 		if( bounds ) {
 			IQAnim->bounds   = bounds + anim->first_frame * 6;
 		} else {
-			IQAnim->bounds    = NULL;
+			IQAnim->bounds    = nullptr;
 		}
 		IQAnim->name         = str;
 		IQAnim->jointNames   = IQModel->jointNames;
@@ -774,7 +774,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 				indexbuf[ 4 * i + 3 ] = IQModel->blendIndexes[ 4 * i + 3 ];
 			}
 		} else {
-			indexbuf = NULL;
+			indexbuf = nullptr;
 		}
 		if( IQModel->blendWeights ) {
 			const float weightscale = 1.0f / 255.0f;
@@ -793,7 +793,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 				weightbuf[ 4 * i + 3 ] = weightscale * IQModel->blendWeights[ 4 * i + 3 ];
 			}
 		} else {
-			weightbuf = NULL;
+			weightbuf = nullptr;
 		}
 
 		qtangentbuf = (i16vec4_t *)ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * IQModel->num_vertexes );
@@ -832,8 +832,8 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		// create IBO
 		ibo = R_CreateStaticIBO( "IQM surface IBO", ( glIndex_t* )IQModel->triangles, IQModel->num_triangles * 3 );
 	} else {
-		vbo = NULL;
-		ibo = NULL;
+		vbo = nullptr;
+		ibo = nullptr;
 	}
 
 	// register shaders
@@ -850,7 +850,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			Com_Memcpy( str, name, len );
 			str += len;
 		} else {
-			surface->name = NULL;
+			surface->name = nullptr;
 		}
 
 		surface->shader = R_FindShader( ( char* )IQMPtr(header, header->ofs_text + mesh->material),
@@ -1042,7 +1042,7 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 	// set up lighting now that we know we aren't culled
 	//
 	if ( !personalModel || r_shadows->integer > SHADOWING_BLOB ) {
-		R_SetupEntityLighting( &tr.refdef, ent, NULL );
+		R_SetupEntityLighting( &tr.refdef, ent, nullptr );
 	}
 
 	//

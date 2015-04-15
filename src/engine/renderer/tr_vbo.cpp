@@ -410,7 +410,7 @@ static void R_InitRingbuffer( GLenum target, GLsizei elementSize,
 	GLsizei totalSize = elementSize * segmentElements * DYN_BUFFER_SEGMENTS;
 	int i;
 
-	glBufferStorage( target, totalSize, NULL,
+	glBufferStorage( target, totalSize, nullptr,
 			 GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT );
 	rb->baseAddr = glMapBufferRange( target, 0, totalSize,
 					 GL_MAP_WRITE_BIT |
@@ -455,7 +455,7 @@ static void R_ShutdownRingbuffer( GLenum target, glRingbuffer_t *rb ) {
 	int i;
 
 	glUnmapBuffer( target );
-	rb->baseAddr = NULL;
+	rb->baseAddr = nullptr;
 
 	for( i = 0; i < DYN_BUFFER_SEGMENTS; i++ ) {
 		if( i == rb->activeSegment )
@@ -472,7 +472,7 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 
 	if ( !numVertexes )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( strlen( name ) >= MAX_QPATH )
@@ -510,7 +510,7 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 	} else
 #endif
 	{
-		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
+		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, nullptr, vbo->usage );
 	}
 	R_BindNullVBO();
 
@@ -565,7 +565,7 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	} else
 #endif
 	{
-		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
+		glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, nullptr, vbo->usage );
 		outData = (byte *)glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
 		R_CopyVertexData( vbo, outData, data );
 		glUnmapBuffer( GL_ARRAY_BUFFER );
@@ -589,7 +589,7 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, shaderVertex_t *ve
 
 	if ( !numVertexes )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( strlen( name ) >= MAX_QPATH )
@@ -672,7 +672,7 @@ IBO_t *R_CreateDynamicIBO( const char *name, int numIndexes )
 	} else
 #endif
 	{
-		glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, NULL, GL_DYNAMIC_DRAW );
+		glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, nullptr, GL_DYNAMIC_DRAW );
 	}
 	R_BindNullIBO();
 
@@ -692,7 +692,7 @@ IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes )
 
 	if ( !numIndexes )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( strlen( name ) >= MAX_QPATH )
@@ -736,7 +736,7 @@ IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, glIndex_t *indexe
 
 	if ( !numTriangles )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( strlen( name ) >= MAX_QPATH )
@@ -817,7 +817,7 @@ void R_BindNullVBO( void )
 	if ( glState.currentVBO )
 	{
 		glBindBuffer( GL_ARRAY_BUFFER, 0 );
-		glState.currentVBO = NULL;
+		glState.currentVBO = nullptr;
 	}
 
 	GL_CheckErrors();
@@ -863,7 +863,7 @@ void R_BindNullIBO( void )
 	if ( glState.currentIBO )
 	{
 		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-		glState.currentIBO = NULL;
+		glState.currentIBO = nullptr;
 		glState.vertexAttribPointersSet = 0;
 	}
 }
@@ -903,8 +903,8 @@ static void R_InitUnitCubeVBO( void )
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-	tess.verts = NULL;
-	tess.indexes = NULL;
+	tess.verts = nullptr;
+	tess.indexes = nullptr;
 }
 
 const int vertexCapacity = DYN_BUFFER_SIZE / sizeof( shaderVertex_t );
@@ -947,7 +947,7 @@ void R_InitVBOs( void )
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
 	glBufferData( GL_PIXEL_PACK_BUFFER,
 		      REF_COLORGRADEMAP_STORE_SIZE * sizeof(u8vec4_t),
-		      NULL, GL_STREAM_COPY );
+		      nullptr, GL_STREAM_COPY );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
 
 	GL_CheckErrors();
@@ -979,12 +979,12 @@ void R_ShutdownVBOs( void )
 	}
 #endif
 	else {
-		if( tess.verts != NULL && tess.verts != tess.vertsBuffer ) {
+		if( tess.verts != nullptr && tess.verts != tess.vertsBuffer ) {
 			R_BindVBO( tess.vbo );
 			glUnmapBuffer( GL_ARRAY_BUFFER );
 		}
 
-		if( tess.indexes != NULL && tess.indexes != tess.indexesBuffer ) {
+		if( tess.indexes != nullptr && tess.indexes != tess.indexesBuffer ) {
 			R_BindIBO( tess.ibo );
 			glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
 		}
@@ -1021,8 +1021,8 @@ void R_ShutdownVBOs( void )
 	Com_Free_Aligned( tess.vertsBuffer );
 	Com_Free_Aligned( tess.indexesBuffer );
 
-	tess.verts = tess.vertsBuffer = NULL;
-	tess.indexes = tess.indexesBuffer = NULL;
+	tess.verts = tess.vertsBuffer = nullptr;
+	tess.indexes = tess.indexesBuffer = nullptr;
 }
 
 /*
@@ -1041,7 +1041,7 @@ void Tess_MapVBOs( bool forceCPU ) {
 		return;
 	}
 
-	if( tess.verts == NULL ) {
+	if( tess.verts == nullptr ) {
 		R_BindVBO( tess.vbo );
 
 #if defined( GLEW_ARB_buffer_storage ) && defined( GL_ARB_sync )
@@ -1057,7 +1057,7 @@ void Tess_MapVBOs( bool forceCPU ) {
 		{
 			if( vertexCapacity - tess.vertsWritten < SHADER_MAX_VERTEXES ) {
 				// buffer is full, allocate a new one
-				glBufferData( GL_ARRAY_BUFFER, vertexCapacity * sizeof( shaderVertex_t ), NULL, GL_DYNAMIC_DRAW );
+				glBufferData( GL_ARRAY_BUFFER, vertexCapacity * sizeof( shaderVertex_t ), nullptr, GL_DYNAMIC_DRAW );
 				tess.vertsWritten = 0;
 			}
 			tess.verts = ( shaderVertex_t *) glMapBufferRange( 
@@ -1068,7 +1068,7 @@ void Tess_MapVBOs( bool forceCPU ) {
 		}
 	}
 
-	if( tess.indexes == NULL ) {
+	if( tess.indexes == nullptr ) {
 		R_BindIBO( tess.ibo );
 
 #if defined( GLEW_ARB_buffer_storage ) && defined( GL_ARB_sync )
@@ -1084,7 +1084,7 @@ void Tess_MapVBOs( bool forceCPU ) {
 		{
 			if( indexCapacity - tess.indexesWritten < SHADER_MAX_INDEXES ) {
 				// buffer is full, allocate a new one
-				glBufferData( GL_ELEMENT_ARRAY_BUFFER, indexCapacity * sizeof( glIndex_t ), NULL, GL_DYNAMIC_DRAW );
+				glBufferData( GL_ELEMENT_ARRAY_BUFFER, indexCapacity * sizeof( glIndex_t ), nullptr, GL_DYNAMIC_DRAW );
 				tess.indexesWritten = 0;
 			}
 			tess.indexes = ( glIndex_t *) glMapBufferRange( 
@@ -1140,7 +1140,7 @@ void Tess_UpdateVBOs( void )
 			tess.vertexBase = tess.vertsWritten;
 			tess.vertsWritten += tess.numVertexes;
 
-			tess.verts = NULL;
+			tess.verts = nullptr;
 		}
 	}
 
@@ -1172,7 +1172,7 @@ void Tess_UpdateVBOs( void )
 			tess.indexBase = tess.indexesWritten;
 			tess.indexesWritten += tess.numIndexes;
 
-			tess.indexes = NULL;
+			tess.indexes = nullptr;
 		}
 	}
 

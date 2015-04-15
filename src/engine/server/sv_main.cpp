@@ -173,7 +173,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		return;
 	}
 
-	if ( cl != NULL )
+	if ( cl != nullptr )
 	{
 		SV_AddServerCommand( cl, ( char * ) message );
 		return;

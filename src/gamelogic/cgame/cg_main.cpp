@@ -268,13 +268,13 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawBBOX,                    "cg_drawBBOX",                    "0",            CVAR_CHEAT                   },
 	{ &cg_drawEntityInfo,              "cg_drawEntityInfo",              "0",            CVAR_CHEAT                   },
 	{ &cg_wwSmoothTime,                "cg_wwSmoothTime",                "150",          0                            },
-	{ NULL,                            "cg_wwFollow",                    "1",            CVAR_USERINFO                },
-	{ NULL,                            "cg_wwToggle",                    "1",            CVAR_USERINFO                },
-	{ NULL,                            "cg_disableBlueprintErrors",      "0",            CVAR_USERINFO                },
+	{ nullptr,                            "cg_wwFollow",                    "1",            CVAR_USERINFO                },
+	{ nullptr,                            "cg_wwToggle",                    "1",            CVAR_USERINFO                },
+	{ nullptr,                            "cg_disableBlueprintErrors",      "0",            CVAR_USERINFO                },
 	{ &cg_stickySpec,                  "cg_stickySpec",                  "1",            CVAR_USERINFO                },
 	{ &cg_sprintToggle,                "cg_sprintToggle",                "0",            CVAR_USERINFO                },
 	{ &cg_unlagged,                    "cg_unlagged",                    "1",            CVAR_USERINFO                },
-	{ NULL,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
+	{ nullptr,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
 	{ &cg_depthSortParticles,          "cg_depthSortParticles",          "1",            0                            },
 	{ &cg_bounceParticles,             "cg_bounceParticles",             "0",            0                            },
 	{ &cg_consoleLatency,              "cg_consoleLatency",              "3000",         0                            },
@@ -303,9 +303,9 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_hudFiles,                    "cg_hudFiles",                    "ui/hud.txt",   0                            },
 	{ &cg_hudFilesEnable,              "cg_hudFilesEnable",              "0",            0                            },
-	{ NULL,                            "cg_alienConfig",                 "",             0                            },
-	{ NULL,                            "cg_humanConfig",                 "",             0                            },
-	{ NULL,                            "cg_spectatorConfig",             "",             0                            },
+	{ nullptr,                            "cg_alienConfig",                 "",             0                            },
+	{ nullptr,                            "cg_humanConfig",                 "",             0                            },
+	{ nullptr,                            "cg_spectatorConfig",             "",             0                            },
 
 	{ &cg_painBlendUpRate,             "cg_painBlendUpRate",             "10.0",         0                            },
 	{ &cg_painBlendDownRate,           "cg_painBlendDownRate",           "0.5",          0                            },
@@ -883,7 +883,7 @@ Test if a specific file exists or not
 */
 bool CG_FileExists( const char *filename )
 {
-	return trap_FS_FOpenFile( filename, NULL, FS_READ );
+	return trap_FS_FOpenFile( filename, nullptr, FS_READ );
 }
 
 /*
@@ -976,33 +976,33 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			break;
 
 		case LOAD_TRAILS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.0f, choose("Tracking your movements", "Letting out the magic smoke", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.0f, choose("Tracking your movements", "Letting out the magic smoke", nullptr) );
 			break;
 		case LOAD_PARTICLES:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", nullptr) );
 			break;
 		case LOAD_SOUNDS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.08f, choose("Recording granger purring", "Generating annoying noises", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.08f, choose("Recording granger purring", "Generating annoying noises", nullptr) );
 			break;
 		case LOAD_GEOMETRY:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Hello World!", "Making a scene.", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Hello World!", "Making a scene.", nullptr) );
 			break;
 		case LOAD_ASSETS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.63f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.63f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", nullptr) );
 			break;
 		case LOAD_CONFIGS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.80f, choose("Reading the manual", "Looking at blueprints", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.80f, choose("Reading the manual", "Looking at blueprints", nullptr) );
 			break;
 		case LOAD_WEAPONS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", nullptr) );
 			break;
 		case LOAD_UPGRADES:
 		case LOAD_CLASSES:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.95f, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.95f, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", nullptr) );
 			break;
 		case LOAD_BUILDINGS:
 			cg.mediaFraction = 1.0f;
-			CG_UpdateLoadingProgress( LOADBAR_BUILDABLES, 0.0f, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_BUILDABLES, 0.0f, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", nullptr) );
 			break;
 
 		case LOAD_DONE:

@@ -40,7 +40,7 @@ static skelAnimation_t *R_AllocAnimation( void )
 
 	if ( tr.numAnimations == MAX_ANIMATIONFILES )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	anim = (skelAnimation_t*) ri.Hunk_Alloc( sizeof( *anim ), h_low );
@@ -449,7 +449,7 @@ qhandle_t RE_RegisterAnimationIQM( const char *name, IQAnim_t *data )
 	}
 
 	// allocate a new model_t
-	if ( ( anim = R_AllocAnimation() ) == NULL )
+	if ( ( anim = R_AllocAnimation() ) == nullptr )
 	{
 		ri.Printf( PRINT_WARNING, "RE_RegisterAnimationIQM: R_AllocAnimation() failed for '%s'\n", name );
 		return 0;
@@ -507,7 +507,7 @@ qhandle_t RE_RegisterAnimation( const char *name )
 	}
 
 	// allocate a new model_t
-	if ( ( anim = R_AllocAnimation() ) == NULL )
+	if ( ( anim = R_AllocAnimation() ) == nullptr )
 	{
 		ri.Printf( PRINT_WARNING, "RE_RegisterAnimation: R_AllocAnimation() failed for '%s'\n", name );
 		return 0;
@@ -671,7 +671,7 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 	// set up lighting now that we know we aren't culled
 	if ( !personalModel || r_shadows->integer > SHADOWING_BLOB )
 	{
-		R_SetupEntityLighting( &tr.refdef, ent, NULL );
+		R_SetupEntityLighting( &tr.refdef, ent, nullptr );
 	}
 
 	// see if we are in a fog volume

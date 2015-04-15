@@ -62,10 +62,10 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	// each one listed affects a command's output or limits its functionality
 	// none of these prevent all use of the command if denied
 	// (in this list, *function is re-used for the command name)
-	{ NULL, 0, false, "buildlog",       "builder",       NULL },
-	{ NULL, 0, false, "buildlog_admin", "buildlog",      NULL },
-	{ NULL, 0, false, "gametimelimit",  "time",          NULL },
-	{ NULL, 0, false, "setlevel",       "listplayers",   NULL },
+	{ nullptr, 0, false, "buildlog",       "builder",       nullptr },
+	{ nullptr, 0, false, "buildlog_admin", "buildlog",      nullptr },
+	{ nullptr, 0, false, "gametimelimit",  "time",          nullptr },
+	{ nullptr, 0, false, "setlevel",       "listplayers",   nullptr },
 
 	// now the actual commands
 	{
@@ -215,8 +215,8 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 
 	{
 		"maprestarted", G_admin_maprestarted, false, "",
-		NULL,
-		NULL
+		nullptr,
+		nullptr
 	},
 
 	{
@@ -386,11 +386,11 @@ static const g_admin_flag_t g_admin_flags[] = {
 #define adminNumFlags ARRAY_LEN( g_admin_flags )
 
 static int        admin_level_maxname = 0;
-g_admin_level_t   *g_admin_levels = NULL;
-g_admin_admin_t   *g_admin_admins = NULL;
-g_admin_ban_t     *g_admin_bans = NULL;
-g_admin_spec_t    *g_admin_specs = NULL;
-g_admin_command_t *g_admin_commands = NULL;
+g_admin_level_t   *g_admin_levels = nullptr;
+g_admin_admin_t   *g_admin_admins = nullptr;
+g_admin_ban_t     *g_admin_bans = nullptr;
+g_admin_spec_t    *g_admin_specs = nullptr;
+g_admin_command_t *g_admin_commands = nullptr;
 
 /* ent must be non-NULL */
 #define G_ADMIN_NAME( ent ) ( ent->client->pers.admin ? ent->client->pers.admin->name : ent->client->pers.netname )
@@ -521,7 +521,7 @@ g_admin_cmd_t *G_admin_cmd( const char *cmd )
 
 	if ( !count )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	return (g_admin_cmd_t*) bsearch( cmd, cmds, count, sizeof( g_admin_cmd_t ), cmdcmp );
@@ -539,7 +539,7 @@ g_admin_level_t *G_admin_level( const int l )
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 g_admin_admin_t *G_admin_admin( const char *guid )
@@ -554,7 +554,7 @@ g_admin_admin_t *G_admin_admin( const char *guid )
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 g_admin_command_t *G_admin_command( const char *cmd )
@@ -569,7 +569,7 @@ g_admin_command_t *G_admin_command( const char *cmd )
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool G_admin_permission( gentity_t *ent, const char *flag )
@@ -579,7 +579,7 @@ bool G_admin_permission( gentity_t *ent, const char *flag )
 	g_admin_level_t *l;
 
 	// Always return true for dummy commands.
-	if ( flag == NULL )
+	if ( flag == nullptr )
 	{
 		return true;
 	}
@@ -799,7 +799,7 @@ void G_admin_writeconfig( void )
 		return;
 	}
 
-	t = Com_GMTime( NULL );
+	t = Com_GMTime( nullptr );
 
 	if ( trap_FS_FOpenFile( g_admin.string, &f, FS_WRITE_VIA_TEMPORARY ) < 0 )
 	{
@@ -1107,7 +1107,7 @@ static int admin_search( gentity_t *ent,
 
 	for ( total = 0; l; l = l->next )
 	{
-		int id = out( l, NULL );
+		int id = out( l, nullptr );
 		// assume that returned ids are in ascending order
 		total = id ? id : ( total + 1 );
 	}
@@ -1132,7 +1132,7 @@ static int admin_search( gentity_t *ent,
 	{
 		if ( match( l, arg ) )
 		{
-			int id = out( l, NULL );
+			int id = out( l, nullptr );
 
 			if ( id )
 			{
@@ -1246,18 +1246,18 @@ static int admin_find_admin( gentity_t *ent, char *name, const char *command,
 	int             id = -1;
 	int             matches = 0;
 	int             i;
-	g_admin_admin_t *a = NULL;
-	gentity_t       *vic = NULL;
+	g_admin_admin_t *a = nullptr;
+	gentity_t       *vic = nullptr;
 	bool        numeric = true;
 
 	if ( client )
 	{
-		*client = NULL;
+		*client = nullptr;
 	}
 
 	if ( admin )
 	{
-		*admin = NULL;
+		*admin = nullptr;
 	}
 
 	if ( !name || !name[ 0 ] )
@@ -1457,7 +1457,7 @@ static void G_admin_ban_message(
 	{
 		char  duration[ MAX_DURATION_LENGTH ];
 		char  time[ MAX_DURATION_LENGTH ];
-		G_admin_duration( ban->expires - Com_GMTime( NULL ), time, sizeof( time ), duration,
+		G_admin_duration( ban->expires - Com_GMTime( nullptr ), time, sizeof( time ), duration,
 		                  sizeof( duration ) );
 		// part of this might get cut off on the connect screen
 		Com_sprintf( creason, clen,
@@ -1491,11 +1491,11 @@ static g_admin_ban_t *G_admin_match_ban( gentity_t *ent, const g_admin_ban_t *st
 	int           t;
 	g_admin_ban_t *ban;
 
-	t = Com_GMTime( NULL );
+	t = Com_GMTime( nullptr );
 
 	if ( ent->client->pers.localClient )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	for ( ban = start ? start->next : g_admin_bans; ban; ban = ban->next )
@@ -1512,12 +1512,12 @@ static g_admin_ban_t *G_admin_match_ban( gentity_t *ent, const g_admin_ban_t *st
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 {
-	g_admin_ban_t *ban = NULL;
+	g_admin_ban_t *ban = nullptr;
 	char          warningMessage[ MAX_STRING_CHARS ];
 
 	if ( ent->client->pers.localClient )
@@ -1541,7 +1541,7 @@ bool G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 		// don't spam admins
 		if ( ban->warnCount++ < 5 )
 		{
-			G_AdminMessage( NULL, warningMessage );
+			G_AdminMessage( nullptr, warningMessage );
 		}
 		// and don't fill the console
 		else if ( ban->warnCount < 10 )
@@ -1564,7 +1564,7 @@ g_admin_spec_t *G_admin_match_spec( gentity_t *ent )
 
 	if ( ent->client->pers.localClient )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	for ( spec = g_admin_specs; spec; spec = spec->next )
@@ -1575,7 +1575,7 @@ g_admin_spec_t *G_admin_match_spec( gentity_t *ent )
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool G_admin_cmd_check( gentity_t *ent )
@@ -1599,17 +1599,17 @@ bool G_admin_cmd_check( gentity_t *ent )
 	if ( ( c = G_admin_command( command ) ) )
 	{
 		int j;
-		trap_Cvar_Register( NULL, "arg_all", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+		trap_Cvar_Register( nullptr, "arg_all", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
 		trap_Cvar_Set( "arg_all", ConcatArgs( 1 ) );
-		trap_Cvar_Register( NULL, "arg_count", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+		trap_Cvar_Register( nullptr, "arg_count", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
 		trap_Cvar_Set( "arg_count", va( "%i", trap_Argc() - ( 1 ) ) );
-		trap_Cvar_Register( NULL, "arg_client", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+		trap_Cvar_Register( nullptr, "arg_client", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
 		trap_Cvar_Set( "arg_client", G_admin_name( ent ) );
 
 		for ( j = trap_Argc() - ( 1 ); j; j-- )
 		{
 			char this_arg[ MAX_CVAR_VALUE_STRING ];
-			trap_Cvar_Register( NULL, va( "arg_%i", j ), "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+			trap_Cvar_Register( nullptr, va( "arg_%i", j ), "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
 			trap_Argv( j, this_arg, sizeof( this_arg ) );
 			trap_Cvar_Set( va( "arg_%i", j ), this_arg );
 		}
@@ -1682,11 +1682,11 @@ static void llsort( struct llist **head, int compar( const void *, const void * 
 		return;
 	}
 
-	b = t = NULL;
+	b = t = nullptr;
 
 	do
 	{
-		a = *head; l = *head = NULL;
+		a = *head; l = *head = nullptr;
 
 		for ( ns = 0; a; ns++, a = b )
 		{
@@ -1724,7 +1724,7 @@ static void llsort( struct llist **head, int compar( const void *, const void * 
 			}
 		}
 
-		l->next = NULL;
+		l->next = nullptr;
 		c *= 2;
 	}
 	while ( ns > 1 );
@@ -1737,7 +1737,7 @@ static int cmplevel( const void *a, const void *b )
 
 void G_admin_pubkey( void )
 {
-	g_admin_admin_t *highest = NULL, *a = NULL;
+	g_admin_admin_t *highest = nullptr, *a = nullptr;
 
 	// Uncomment this if your server lags (shouldn't happen unless you are on a *very* old computer)
 	// Will only regenrate messages when there are no active client (When they are all loading the map)
@@ -1807,10 +1807,10 @@ void G_admin_pubkey( void )
 
 bool G_admin_readconfig( gentity_t *ent )
 {
-	g_admin_level_t   *l = NULL;
-	g_admin_admin_t   *a = NULL;
-	g_admin_ban_t     *b = NULL;
-	g_admin_command_t *c = NULL;
+	g_admin_level_t   *l = nullptr;
+	g_admin_admin_t   *a = nullptr;
+	g_admin_ban_t     *b = nullptr;
+	g_admin_command_t *c = nullptr;
 	int               lc = 0, ac = 0, bc = 0, cc = 0;
 	fileHandle_t      f;
 	int               len;
@@ -2085,7 +2085,7 @@ bool G_admin_readconfig( gentity_t *ent )
 		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
 		{
 			level.clients[ i ].pers.admin = level.clients[ i ].pers.pubkey_authenticated ?
-			                                G_admin_admin( level.clients[ i ].pers.guid ) : NULL;
+			                                G_admin_admin( level.clients[ i ].pers.guid ) : nullptr;
 
 			if ( level.clients[ i ].pers.admin )
 			{
@@ -2193,8 +2193,8 @@ bool G_admin_setlevel( gentity_t *ent )
 {
 	char            name[ MAX_NAME_LENGTH ];
 	char            lstr[ 12 ]; // 11 is max strlen() for 32-bit (signed) int
-	gentity_t       *vic = NULL;
-	g_admin_admin_t *a = NULL;
+	gentity_t       *vic = nullptr;
+	g_admin_admin_t *a = nullptr;
 	g_admin_level_t *l;
 
 	if ( trap_Argc() < 3 )
@@ -2296,8 +2296,8 @@ bool G_admin_setlevel( gentity_t *ent )
 static g_admin_ban_t *admin_create_ban_entry( gentity_t *ent, char *netname, char *guid,
                                               addr_t *ip, int seconds, const char *reason )
 {
-	g_admin_ban_t *b = NULL;
-	g_admin_ban_t *prev = NULL;
+	g_admin_ban_t *b = nullptr;
+	g_admin_ban_t *prev = nullptr;
 	qtime_t       qt;
 	int           t;
 	int           id = 1;
@@ -2399,7 +2399,7 @@ static void admin_create_ban( gentity_t *ent,
 	char          disconnect[ MAX_STRING_CHARS ];
 	g_admin_ban_t *b = admin_create_ban_entry( ent, netname, guid, ip, seconds, ( reason && *reason ) ? reason : "banned by admin" );
 
-	G_admin_ban_message( NULL, b, disconnect, sizeof( disconnect ), NULL, 0 );
+	G_admin_ban_message( nullptr, b, disconnect, sizeof( disconnect ), nullptr, 0 );
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
@@ -2483,7 +2483,7 @@ int G_admin_parse_time( const char *time )
 
 static void G_admin_reflag_warnings_ent( int i )
 {
-	const g_admin_ban_t *ban = NULL;
+	const g_admin_ban_t *ban = nullptr;
 
 	level.clients[ i ].pers.hasWarnings = false;
 
@@ -2583,7 +2583,7 @@ bool G_admin_ban( gentity_t *ent )
 	int       i;
 	addr_t    ip;
 	bool  ipmatch = false;
-	namelog_t *match = NULL;
+	namelog_t *match = nullptr;
 
 	if ( trap_Argc() < 2 )
 	{
@@ -2741,7 +2741,7 @@ bool G_admin_ban( gentity_t *ent )
 bool G_admin_unban( gentity_t *ent )
 {
 	int           bnum;
-	int           time = Com_GMTime( NULL );
+	int           time = Com_GMTime( nullptr );
 	char          bs[ 5 ];
 	g_admin_ban_t *ban, *p;
 	bool      expireOnly;
@@ -2828,7 +2828,7 @@ bool G_admin_adjustban( gentity_t *ent )
 	int           bnum;
 	int           length, maximum;
 	int           expires;
-	int           time = Com_GMTime( NULL );
+	int           time = Com_GMTime( nullptr );
 	char          duration[ MAX_DURATION_LENGTH ] = { "" };
 	char          seconds[ MAX_DURATION_LENGTH ];
 	char          *reason;
@@ -3118,7 +3118,7 @@ bool G_admin_speclock( gentity_t *ent )
 	if ( lockTime )
 	{
 		G_admin_duration( lockTime, time, sizeof( time ), duration, sizeof( duration ) );
-		spec->expires = Com_GMTime( NULL ) + lockTime;
+		spec->expires = Com_GMTime( nullptr ) + lockTime;
 	}
 	else
 	{
@@ -3218,7 +3218,7 @@ bool G_admin_changemap( gentity_t *ent )
 
 		if ( !Q_stricmp( layout, S_BUILTIN_LAYOUT ) ||
 		     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
-		                        NULL, FS_READ ) > 0 )
+		                        nullptr, FS_READ ) > 0 )
 		{
 			// nothing to do
 		}
@@ -3717,7 +3717,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		denied = p->pers.namelog->denyBuild ? 'B' : ' ';
 
 		l = d;
-		registeredname = NULL;
+		registeredname = nullptr;
 		hint = canset;
 
 		if ( p->pers.admin )
@@ -3799,7 +3799,7 @@ static bool ban_matchname( void *ban, const void *name )
 	char match[ MAX_NAME_LENGTH ];
 
 	G_SanitiseString( ( ( g_admin_ban_t * ) ban )->name, match, sizeof( match ) );
-	return strstr( match, ( const char * ) name ) != NULL;
+	return strstr( match, ( const char * ) name ) != nullptr;
 }
 
 static int ban_out( void *ban, char *str )
@@ -3818,7 +3818,7 @@ static int ban_out( void *ban, char *str )
 		return b->id;
 	}
 
-	t = Com_GMTime( NULL );
+	t = Com_GMTime( nullptr );
 
 	for ( i = 0; b->name[ i ]; i++ )
 	{
@@ -4204,7 +4204,7 @@ bool G_admin_rename( gentity_t *ent )
 	char      newname[ MAX_NAME_LENGTH ];
 	char      err[ MAX_STRING_CHARS ];
 	char      userinfo[ MAX_INFO_STRING ];
-	gentity_t *victim = NULL;
+	gentity_t *victim = nullptr;
 
 	if ( trap_Argc() < 3 )
 	{
@@ -4297,7 +4297,7 @@ bool G_admin_restart( gentity_t *ent )
 	// check that the layout's available
 	builtin = !*layout || !Q_stricmp( layout, S_BUILTIN_LAYOUT );
 
-	if ( !builtin && !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ), NULL, FS_READ ) )
+	if ( !builtin && !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ), nullptr, FS_READ ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3restart: ^7layout '$1$' does not exist\n") ), layout ) );
 		return false;
@@ -4534,14 +4534,14 @@ Returns NULL if not exactly 1 match
 */
 namelog_t *G_NamelogFromString( gentity_t *ent, char *s )
 {
-	namelog_t *p, *m = NULL;
+	namelog_t *p, *m = nullptr;
 	int       i, found = 0;
 	char      n2[ MAX_NAME_LENGTH ] = { "" };
 	char      s2[ MAX_NAME_LENGTH ] = { "" };
 
 	if ( !s[ 0 ] )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// if a number is provided, it is a clientnum or namelog id
@@ -4574,7 +4574,7 @@ namelog_t *G_NamelogFromString( gentity_t *ent, char *s )
 			}
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	// check for a name match
@@ -4615,7 +4615,7 @@ namelog_t *G_NamelogFromString( gentity_t *ent, char *s )
 		              namelog_out, level.namelogs, s2, s2, 0, MAX_CLIENTS, -1 );
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool G_admin_lock( gentity_t *ent )
@@ -4765,7 +4765,7 @@ const char *G_admin_flag_update( char *newflags, char *oldflags, int size,
 		          va( "%s%s", ( i ) ? " " : "", flags[ i ] ) );
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool G_admin_flaglist( gentity_t *ent )
@@ -4831,9 +4831,9 @@ bool G_admin_flaglist( gentity_t *ent )
 
 bool G_admin_flag( gentity_t *ent )
 {
-	g_admin_admin_t *admin = NULL;
-	g_admin_level_t *level = NULL;
-	gentity_t       *vic = NULL;
+	g_admin_admin_t *admin = nullptr;
+	g_admin_level_t *level = nullptr;
+	gentity_t       *vic = nullptr;
 	char            command[ MAX_ADMIN_CMD_LEN ];
 	char            name[ MAX_NAME_LENGTH ];
 	char            adminname[ MAX_NAME_LENGTH ];
@@ -5049,7 +5049,7 @@ bool G_admin_builder( gentity_t *ent )
 
 	VectorMA( start, 1000, forward, end );
 
-	trap_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr, start, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == ET_BUILDABLE ) )
@@ -5376,8 +5376,8 @@ bool G_admin_revert( gentity_t *ent )
 bool G_admin_l0( gentity_t *ent )
 {
 	char            name[ MAX_NAME_LENGTH ];
-	gentity_t       *vic = NULL;
-	g_admin_admin_t *a = NULL;
+	gentity_t       *vic = nullptr;
+	g_admin_admin_t *a = nullptr;
 	int             id;
 
 	if ( trap_Argc() < 2 )
@@ -5411,8 +5411,8 @@ bool G_admin_l0( gentity_t *ent )
 bool G_admin_l1( gentity_t *ent )
 {
 	char            name[ MAX_NAME_LENGTH ];
-	gentity_t       *vic = NULL;
-	g_admin_admin_t *a = NULL;
+	gentity_t       *vic = nullptr;
+	g_admin_admin_t *a = nullptr;
 	int             id;
 
 	if ( trap_Argc() < 2 )
@@ -5552,7 +5552,7 @@ void G_admin_buffer_begin( void )
 
 void G_admin_buffer_end( gentity_t *ent )
 {
-	G_admin_buffer_print( ent, NULL );
+	G_admin_buffer_print( ent, nullptr );
 }
 
 void G_admin_buffer_print( gentity_t *ent, const char *m )
@@ -5585,7 +5585,7 @@ void G_admin_cleanup( void )
 		BG_Free( l );
 	}
 
-	g_admin_levels = NULL;
+	g_admin_levels = nullptr;
 
 	for ( a = g_admin_admins; a; a = (g_admin_admin_t*) n )
 	{
@@ -5593,7 +5593,7 @@ void G_admin_cleanup( void )
 		BG_Free( a );
 	}
 
-	g_admin_admins = NULL;
+	g_admin_admins = nullptr;
 
 	for ( b = g_admin_bans; b; b = (g_admin_ban_t*) n )
 	{
@@ -5601,7 +5601,7 @@ void G_admin_cleanup( void )
 		BG_Free( b );
 	}
 
-	g_admin_bans = NULL;
+	g_admin_bans = nullptr;
 
 	for ( s = g_admin_specs; s; s = (g_admin_spec_t*) n )
 	{
@@ -5609,7 +5609,7 @@ void G_admin_cleanup( void )
 		BG_Free( s );
 	}
 
-	g_admin_specs = NULL;
+	g_admin_specs = nullptr;
 
 	for ( c = g_admin_commands; c; c = (g_admin_command_t*) n )
 	{
@@ -5618,7 +5618,7 @@ void G_admin_cleanup( void )
 		BG_Free( c );
 	}
 
-	g_admin_commands = NULL;
+	g_admin_commands = nullptr;
 }
 
 bool G_admin_bot( gentity_t *ent )

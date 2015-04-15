@@ -51,10 +51,10 @@ bool GetPointPointedTo( NavData_t *nav, rVec &p )
 
 	VectorSet( extents, 640, 96, 640 );
 
-	AngleVectors( cl.snap.ps.viewangles, forward, NULL, NULL );
+	AngleVectors( cl.snap.ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( cl.snap.ps.origin, 8096, forward, end );
 
-	CM_BoxTrace( &trace, cl.snap.ps.origin, end, NULL, NULL, 0,
+	CM_BoxTrace( &trace, cl.snap.ps.origin, end, nullptr, nullptr, 0,
 	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP, 0, TT_AABB );
 
 	pos = qVec( trace.endpos );
@@ -167,7 +167,7 @@ void BotDebugDrawMesh( BotDebugInterface_t *in )
 void Cmd_NavEdit( void )
 {
 	int argc = Cmd_Argc();
-	char *arg = NULL;
+	char *arg = nullptr;
 	const char usage[] = "Usage: navedit enable/disable/save <navmesh>\n";
 
 	if ( !Cvar_VariableIntegerValue( "sv_cheats" ) )
@@ -239,7 +239,7 @@ void Cmd_AddConnection( void )
 {
 	const char usage[] = "Usage: addcon start <dir> (radius)\n"
 	                     " addcon end\n";
-	char *arg = NULL;
+	char *arg = nullptr;
 	int argc = Cmd_Argc();
 
 	if ( argc < 2 )
@@ -371,7 +371,7 @@ void Cmd_ConnectionSizeDown( void )
 void Cmd_NavTest( void )
 {
 	const char usage[] = "Usage: navtest shownodes/hidenodes/showportals/hideportals/startpath/endpath\n";
-	char *arg = NULL;
+	char *arg = nullptr;
 	int argc = Cmd_Argc();
 
 	if ( !cmd.enabled )

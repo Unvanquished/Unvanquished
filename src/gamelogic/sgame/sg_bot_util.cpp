@@ -460,7 +460,7 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 {
 	float minDistance = -1;
-	gentity_t* closestBuilding = NULL;
+	gentity_t* closestBuilding = nullptr;
 	float newDistance;
 	float rangeSquared = Square( range );
 	gentity_t *target = &g_entities[MAX_CLIENTS];
@@ -498,7 +498,7 @@ void BotFindClosestBuildings( gentity_t *self )
 	// clear out building list
 	for ( i = 0; i < ARRAY_LEN( self->botMind->closestBuildings ); i++ )
 	{
-		self->botMind->closestBuildings[ i ].ent = NULL;
+		self->botMind->closestBuildings[ i ].ent = nullptr;
 		self->botMind->closestBuildings[ i ].distance = INT_MAX;
 	}
 
@@ -546,7 +546,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 	float minDistSqr;
 
 	gentity_t *target;
-	self->botMind->closestDamagedBuilding.ent = NULL;
+	self->botMind->closestDamagedBuilding.ent = nullptr;
 	self->botMind->closestDamagedBuilding.distance = INT_MAX;
 
 	minDistSqr = Square( self->botMind->closestDamagedBuilding.distance );
@@ -598,7 +598,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 bool BotEntityIsVisible( gentity_t *self, gentity_t *target, int mask )
 {
 	botTarget_t bt;
-	BotSetTarget( &bt, target, NULL );
+	BotSetTarget( &bt, target, nullptr );
 	return BotTargetIsVisible( self, bt, mask );
 }
 
@@ -606,8 +606,8 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 {
 	float bestVisibleEnemyScore = 0;
 	float bestInvisibleEnemyScore = 0;
-	gentity_t *bestVisibleEnemy = NULL;
-	gentity_t *bestInvisibleEnemy = NULL;
+	gentity_t *bestVisibleEnemy = nullptr;
+	gentity_t *bestInvisibleEnemy = nullptr;
 	gentity_t *target;
 	team_t    team = BotGetEntityTeam( self );
 	bool  hasRadar = ( team == TEAM_ALIENS ) ||
@@ -664,7 +664,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 
 gentity_t* BotFindClosestEnemy( gentity_t *self )
 {
-	gentity_t* closestEnemy = NULL;
+	gentity_t* closestEnemy = nullptr;
 	float minDistance = Square( ALIENSENSE_RANGE );
 	gentity_t *target;
 
@@ -731,7 +731,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 botTarget_t BotGetRushTarget( gentity_t *self )
 {
 	botTarget_t target;
-	gentity_t* rushTarget = NULL;
+	gentity_t* rushTarget = nullptr;
 	if ( BotGetEntityTeam( self ) == TEAM_HUMANS )
 	{
 		if ( self->botMind->closestBuildings[BA_A_SPAWN].ent )
@@ -754,14 +754,14 @@ botTarget_t BotGetRushTarget( gentity_t *self )
 			rushTarget = self->botMind->closestBuildings[BA_H_REACTOR].ent;
 		}
 	}
-	BotSetTarget( &target, rushTarget, NULL );
+	BotSetTarget( &target, rushTarget, nullptr );
 	return target;
 }
 
 botTarget_t BotGetRetreatTarget( gentity_t *self )
 {
 	botTarget_t target;
-	gentity_t* retreatTarget = NULL;
+	gentity_t* retreatTarget = nullptr;
 	//FIXME, this seems like it could be done better...
 	if ( self->client->pers.team == TEAM_HUMANS )
 	{
@@ -777,7 +777,7 @@ botTarget_t BotGetRetreatTarget( gentity_t *self )
 			retreatTarget = self->botMind->closestBuildings[BA_A_OVERMIND].ent;
 		}
 	}
-	BotSetTarget( &target, retreatTarget, NULL );
+	BotSetTarget( &target, retreatTarget, nullptr );
 	return target;
 }
 
@@ -787,7 +787,7 @@ botTarget_t BotGetRoamTarget( gentity_t *self )
 	vec3_t targetPos;
 
 	BotFindRandomPointOnMesh( self, targetPos );
-	BotSetTarget( &target, NULL, targetPos );
+	BotSetTarget( &target, nullptr, targetPos );
 	return target;
 }
 /*
@@ -806,13 +806,13 @@ void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos )
 	}
 	else if ( pos )
 	{
-		target->ent = NULL;
+		target->ent = nullptr;
 		VectorCopy( pos, target->coord );
 		target->inuse = true;
 	}
 	else
 	{
-		target->ent = NULL;
+		target->ent = nullptr;
 		VectorClear( target->coord );
 		target->inuse = false;
 	}
@@ -861,7 +861,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	{
 		if ( target.ent->client )
 		{
-			BG_ClassBoundingBox( ( class_t ) target.ent->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
+			BG_ClassBoundingBox( ( class_t ) target.ent->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
 		}
 		else if ( target.ent->s.eType == ET_BUILDABLE )
 		{
@@ -998,14 +998,14 @@ bool BotChangeGoal( gentity_t *self, botTarget_t target )
 bool BotChangeGoalEntity( gentity_t *self, gentity_t *goal )
 {
 	botTarget_t target;
-	BotSetTarget( &target, goal, NULL );
+	BotSetTarget( &target, goal, nullptr );
 	return BotChangeGoal( self, target );
 }
 
 bool BotChangeGoalPos( gentity_t *self, vec3_t goal )
 {
 	botTarget_t target;
-	BotSetTarget( &target, NULL, goal );
+	BotSetTarget( &target, nullptr, goal );
 	return BotChangeGoal( self, target );
 }
 
@@ -1189,7 +1189,7 @@ bool BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 		return false;
 	}
 
-	trap_Trace( &trace, muzzle, NULL, NULL, targetPos, self->s.number, mask,
+	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, self->s.number, mask,
 	            ( mask == CONTENTS_SOLID ) ? MASK_ENTITY : 0 );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
@@ -1241,7 +1241,7 @@ void BotPredictPosition( gentity_t *self, gentity_t *predict, vec3_t pos, int ti
 {
 	botTarget_t target;
 	vec3_t aimLoc;
-	BotSetTarget( &target, predict, NULL );
+	BotSetTarget( &target, predict, nullptr );
 	BotGetIdealAimLocation( self, target, aimLoc );
 	VectorMA( aimLoc, time / 1000.0f, predict->s.apos.trDelta, pos );
 }
@@ -1267,7 +1267,7 @@ void BotAimAtEnemy( gentity_t *self )
 	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
 	VectorSubtract( self->botMind->futureAim, viewOrigin, desired );
 	VectorNormalize( desired );
-	AngleVectors( self->client->ps.viewangles, current, NULL, NULL );
+	AngleVectors( self->client->ps.viewangles, current, nullptr, nullptr );
 
 	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
 	VectorLerp( current, desired, frac, newAim );
@@ -1335,7 +1335,7 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	length = VectorNormalize( aimVec );
 
 	//take the current aim Vector
-	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
 
 	cosAngle = DotProduct( forward, aimVec );
 	cosAngle = ( cosAngle + 1 ) / 2;
@@ -1353,7 +1353,7 @@ float BotAimAngle( gentity_t *self, vec3_t pos )
 	vec3_t forward;
 	vec3_t ideal;
 
-	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
 	BG_GetClientViewOrigin( &self->client->ps, viewPos );
 	VectorSubtract( pos, viewPos, ideal );
 
@@ -1616,7 +1616,7 @@ void BotFireWeaponAI( gentity_t *self )
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetIdealAimLocation( self, self->botMind->goal, targetPos );
 
-	trap_Trace( &trace, muzzle, NULL, NULL, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
+	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = Distance( muzzle, trace.endpos );
 	switch ( self->s.weapon )
 	{
@@ -2093,7 +2093,7 @@ gentity_t *BotPopEnemy( enemyQueue_t *queue )
 	// queue empty
 	if ( queue->front == queue->back )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.integer )
@@ -2103,7 +2103,7 @@ gentity_t *BotPopEnemy( enemyQueue_t *queue )
 		return ret;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )

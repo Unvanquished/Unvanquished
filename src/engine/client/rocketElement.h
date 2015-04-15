@@ -45,7 +45,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include "rocket.h"
 
-Rocket::Core::Element *activeElement = NULL;
+Rocket::Core::Element *activeElement = nullptr;
 
 class RocketElement : public Rocket::Core::Element
 {

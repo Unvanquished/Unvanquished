@@ -61,7 +61,7 @@ model_t        *R_AllocModel( void )
 
 	if ( tr.numModels == MAX_MOD_KNOWN )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	mod = (model_t*) ri.Hunk_Alloc( sizeof( *tr.models[ tr.numModels ] ), h_low );
@@ -124,7 +124,7 @@ qhandle_t RE_RegisterModel( const char *name )
 	}
 
 	// allocate a new model_t
-	if ( ( mod = R_AllocModel() ) == NULL )
+	if ( ( mod = R_AllocModel() ) == nullptr )
 	{
 		ri.Printf( PRINT_WARNING, "RE_RegisterModel: R_AllocModel() failed for '%s'\n", name );
 		return 0;
@@ -418,7 +418,7 @@ static int R_GetTag( mdvModel_t *model, int frame, const char *_tagName, int sta
 
 	if ( startTagIndex > model->numTags )
 	{
-		*outTag = NULL;
+		*outTag = nullptr;
 		return -1;
 	}
 
@@ -434,7 +434,7 @@ static int R_GetTag( mdvModel_t *model, int frame, const char *_tagName, int sta
 		}
 	}
 
-	*outTag = NULL;
+	*outTag = nullptr;
 	return -1;
 }
 
@@ -467,7 +467,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 	frontLerp = frac;
 	backLerp = 1.0 - frac;
 
-	start = end = NULL;
+	start = end = nullptr;
 	if ( model->type == MOD_MD5 || model->type == MOD_IQM )
 	{
 		vec3_t tmp;

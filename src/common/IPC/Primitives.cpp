@@ -495,7 +495,7 @@ static void* MapSharedMemory(Sys::OSHandle handle, size_t size)
 		Sys::Drop("IPC: Failed to map shared memory object of size %zu: %s", size, Sys::Win32StrError(GetLastError()));
 	return base;
 #else
-	void* base = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, handle, 0);
+	void* base = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, handle, 0);
 	if (base == MAP_FAILED)
 		Sys::Drop("IPC: Failed to map shared memory object of size %zu: %s", size, strerror(errno));
 	return base;

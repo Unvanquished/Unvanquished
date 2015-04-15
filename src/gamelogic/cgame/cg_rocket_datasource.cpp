@@ -159,7 +159,7 @@ void CG_Rocket_BuildServerInfo( void )
 		}
 
 		Q_strncpyz( name, start + 1, end - start );
-		start = end = NULL;
+		start = end = nullptr;
 		Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
 		Info_SetValueForKeyRocket( buf, "name", name, false );
 		Info_SetValueForKey( buf, "score", va( "%d", score ), false );
@@ -188,7 +188,7 @@ void CG_Rocket_BuildServerInfo( void )
 				}
 
 				Q_strncpyz( name, start + 1, end - start );
-				start = end = NULL;
+				start = end = nullptr;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
 				Info_SetValueForKeyRocket( buf, "name", name, false );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), false );
@@ -214,7 +214,7 @@ void CG_Rocket_BuildServerInfo( void )
 				}
 
 				Q_strncpyz( name, start + 1, end - start );
-				start = end = NULL;
+				start = end = nullptr;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
 				Info_SetValueForKeyRocket( buf, "name", name, false );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), false );
@@ -635,7 +635,7 @@ void CG_Rocket_BuildLanguageList( const char *args )
 		if ( *p == '"' && quoted )
 		{
 			temp[ index ] = '\0';
-			AddToLanguageList( BG_strdup( temp ), NULL );
+			AddToLanguageList( BG_strdup( temp ), nullptr );
 			quoted = false;
 			index = 0;
 		}
@@ -704,7 +704,7 @@ int CG_Rocket_GetLanguageListIndex( const char *args )
 {
 	if ( !rocketInfo.data.languageCount )
 	{
-		CG_Rocket_BuildLanguageList( NULL );
+		CG_Rocket_BuildLanguageList( nullptr );
 	}
 
 	return rocketInfo.data.languageIndex;
@@ -1202,7 +1202,7 @@ void CG_Rocket_BuildTeamList( const char *args )
 		,
 		"\\name\\Auto Select\\description\\Join the team with the least players.\\"
 		,
-		NULL
+		nullptr
 	};
 
 	int i = 0;
@@ -1222,7 +1222,7 @@ void CG_Rocket_SetTeamList( const char *table, int index )
 
 void CG_Rocket_ExecTeamList( const char *table )
 {
-	const char *cmd = NULL;
+	const char *cmd = nullptr;
 
 	switch ( rocketInfo.data.selectedTeamIndex )
 	{
@@ -1290,7 +1290,7 @@ void CG_Rocket_SetHumanSpawnItems( const char *table, int index )
 
 void CG_Rocket_ExecHumanSpawnItems( const char *table )
 {
-	const char *cmd = NULL;
+	const char *cmd = nullptr;
 
 	switch ( rocketInfo.data.selectedHumanSpawnItem )
 	{
@@ -1485,7 +1485,7 @@ void CG_Rocket_BuildArmourySellList( const char *table );
 void CG_Rocket_ExecArmouryBuyList( const char *table )
 {
 	int item;
-	const char *buy = NULL;
+	const char *buy = nullptr;
 	char c = table ? *table : 'd';
 	int tblIndex;
 
@@ -1605,7 +1605,7 @@ void CG_Rocket_SetArmourySellList( const char *table, int index )
 void CG_Rocket_ExecArmourySellList( const char *table )
 {
 	int item;
-	const char *sell = NULL;
+	const char *sell = nullptr;
 
 	if ( rocketInfo.data.selectedArmourySellItem < 0 || rocketInfo.data.selectedArmourySellItem >= rocketInfo.data.armourySellListCount )
 	{
@@ -1867,7 +1867,7 @@ void CG_Rocket_SetAlienSpawnList( const char *table, int index )
 
 void CG_Rocket_ExecAlienSpawnList( const char *table )
 {
-	const char *_class = NULL;
+	const char *_class = nullptr;
 
 	switch ( rocketInfo.data.selectedAlienSpawnClass )
 	{
@@ -2114,6 +2114,6 @@ void CG_Rocket_CleanUpDataSources( void )
 
 	for ( i = 0; i < dataSourceCmdListCount; ++i )
 	{
-		dataSourceCmdList[ i ].cleanup( NULL );
+		dataSourceCmdList[ i ].cleanup( nullptr );
 	}
 }

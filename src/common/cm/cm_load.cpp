@@ -592,7 +592,7 @@ static void CMod_CreateBrushSideWindings( void )
 			w = BaseWindingForPlane( plane->normal, plane->dist );
 
 			// walk the list of brush sides
-			for ( k = 0; k < brush->numsides && w != NULL; k++ )
+			for ( k = 0; k < brush->numsides && w != nullptr; k++ )
 			{
 				chopSide = &brush->sides[ k ];
 
@@ -641,7 +641,7 @@ static void CMod_CreateBrushSideWindings( void )
 				}
 
 				FreeWinding( side->winding );
-				side->winding = NULL;
+				side->winding = nullptr;
 			}
 		}
 
@@ -1008,7 +1008,7 @@ cmodel_t       *CM_ClipHandleToModel( clipHandle_t handle )
 
 	Sys::Drop( "CM_ClipHandleToModel: bad handle %i (max %d)", handle, cm.numSubModels );
 
-	return NULL;
+	return nullptr;
 }
 
 /*

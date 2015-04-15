@@ -615,7 +615,7 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 }
 void File::SetLineBuffered(bool enable, std::error_code& err) const
 {
-	if (setvbuf(fd, NULL, enable ? _IOLBF : _IOFBF, BUFSIZ) != 0)
+	if (setvbuf(fd, nullptr, enable ? _IOLBF : _IOFBF, BUFSIZ) != 0)
 		SetErrorCodeSystem(err);
 	else
 		ClearErrorCode(err);
@@ -2061,7 +2061,7 @@ void Initialize(Str::StringRef homePath, Str::StringRef libPath, const std::vect
 			FS::pakPaths.push_back(Str::UTF16To8(realPath.get()));
 		first = false;
 #else
-		char* realPath = realpath(path.c_str(), NULL);
+		char* realPath = realpath(path.c_str(), nullptr);
 		if (!realPath) {
 			if (!first)
 				fsLogs.Warn("Ignoring path %s: %s", path, strerror(errno));

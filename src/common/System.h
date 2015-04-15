@@ -103,7 +103,7 @@ typedef void* OSHandle;
 const OSHandle INVALID_HANDLE = reinterpret_cast<void*>(-1);
 inline bool IsValidHandle(OSHandle handle)
 {
-	return handle != NULL && handle != INVALID_HANDLE;
+	return handle != nullptr && handle != INVALID_HANDLE;
 }
 #else
 typedef int OSHandle;

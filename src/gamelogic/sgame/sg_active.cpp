@@ -153,7 +153,7 @@ void P_WorldEffects( gentity_t *ent )
 				// don't play a general pain sound
 				ent->pain_debounce_time = level.time + 200;
 
-				G_Damage( ent, NULL, NULL, NULL, NULL,
+				G_Damage( ent, nullptr, nullptr, nullptr, nullptr,
 				          ent->damage, DAMAGE_NO_ARMOR, MOD_WATER );
 			}
 		}
@@ -175,13 +175,13 @@ void P_WorldEffects( gentity_t *ent )
 		{
 			if ( ent->watertype & CONTENTS_LAVA )
 			{
-				G_Damage( ent, NULL, NULL, NULL, NULL,
+				G_Damage( ent, nullptr, nullptr, nullptr, nullptr,
 				          30 * waterlevel, 0, MOD_LAVA );
 			}
 
 			if ( ent->watertype & CONTENTS_SLIME )
 			{
-				G_Damage( ent, NULL, NULL, NULL, NULL,
+				G_Damage( ent, nullptr, nullptr, nullptr, nullptr,
 				          10 * waterlevel, 0, MOD_SLIME );
 			}
 		}
@@ -325,7 +325,7 @@ void PushBot(gentity_t * ent, gentity_t * other)
 	VectorSubtract(other->r.currentOrigin, ent->r.currentOrigin, dir);
 	VectorNormalize(dir);
 	vectoangles(dir, ang);
-	AngleVectors(ang, f, r, NULL);
+	AngleVectors(ang, f, r, nullptr);
 	f[2] = 0;
 	r[2] = 0;
 
@@ -444,7 +444,7 @@ void  G_TouchTriggers( gentity_t *ent )
 	}
 
 	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ],
-	                     pmins, pmaxs, NULL, NULL, NULL );
+	                     pmins, pmaxs, nullptr, nullptr, nullptr );
 
 	VectorAdd( ent->client->ps.origin, pmins, mins );
 	VectorAdd( ent->client->ps.origin, pmaxs, maxs );
@@ -796,7 +796,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 	team = (team_t)client->pers.team;
 
 	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
-	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 65536, forward, end );
 
 	G_UnlaggedOn( self, viewOrigin, 65536 );
@@ -805,7 +805,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 
 	client->ps.stats[ STAT_TAGSCORE ] = 0;
 
-	for ( target = NULL; ( target = G_IterateEntities( target ) ); )
+	for ( target = nullptr; ( target = G_IterateEntities( target ) ); )
 	{
 		// Tag entity directly hit and entities in human radar range, make sure the latter are also
 		// in vis and, for buildables, are in a line of sight.
@@ -899,7 +899,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 					int dist;
 
 					BG_GetClientNormal( &client->ps,normal );
-					AngleVectors( client->ps.viewangles, aimDir, NULL, NULL );
+					AngleVectors( client->ps.viewangles, aimDir, nullptr, nullptr );
 					ProjectPointOnPlane( forward, aimDir, normal );
 					VectorNormalize( forward );
 
@@ -961,7 +961,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 		// remove orphaned tags for enemy structures when the structure's death was confirmed
 		{
-			gentity_t *other = NULL;
+			gentity_t *other = nullptr;
 			while ( ( other = G_IterateEntities( other ) ) )
 			{
 				if ( other->s.eType == ET_BEACON &&
@@ -984,22 +984,22 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		// deal poison damage
 		if ( client->ps.stats[ STAT_STATE ] & SS_POISONED )
 		{
-			G_Damage( ent, client->lastPoisonClient, client->lastPoisonClient, NULL,
-			          NULL, ALIEN_POISON_DMG, DAMAGE_NO_LOCDAMAGE, MOD_POISON );
+			G_Damage( ent, client->lastPoisonClient, client->lastPoisonClient, nullptr,
+			          nullptr, ALIEN_POISON_DMG, DAMAGE_NO_LOCDAMAGE, MOD_POISON );
 		}
 
 		// turn off life support when a team admits defeat
 		if ( client->pers.team == TEAM_ALIENS &&
 		     level.surrenderTeam == TEAM_ALIENS )
 		{
-			G_Damage( ent, NULL, NULL, NULL, NULL,
+			G_Damage( ent, nullptr, nullptr, nullptr, nullptr,
 			          BG_Class( client->ps.stats[ STAT_CLASS ] )->regenRate,
 			          DAMAGE_NO_ARMOR, MOD_SUICIDE );
 		}
 		else if ( client->pers.team == TEAM_HUMANS &&
 		          level.surrenderTeam == TEAM_HUMANS )
 		{
-			G_Damage( ent, NULL, NULL, NULL, NULL, 5, DAMAGE_NO_ARMOR, MOD_SUICIDE );
+			G_Damage( ent, nullptr, nullptr, nullptr, nullptr, 5, DAMAGE_NO_ARMOR, MOD_SUICIDE );
 		}
 
 		// lose some voice enthusiasm
@@ -1143,12 +1143,12 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 				                  BG_Class( pcl )->fallDamage * fallDistance );
 
 				VectorSet( dir, 0, 0, 1 );
-				BG_ClassBoundingBox( pcl, mins, NULL, NULL, NULL, NULL );
+				BG_ClassBoundingBox( pcl, mins, nullptr, nullptr, nullptr, nullptr );
 				mins[ 0 ] = mins[ 1 ] = 0.0f;
 				VectorAdd( client->ps.origin, mins, point );
 
 				ent->pain_debounce_time = level.time + 200; // no general pain sound
-				G_Damage( ent, NULL, NULL, dir, point, damage, DAMAGE_NO_LOCDAMAGE, MOD_FALLING );
+				G_Damage( ent, nullptr, nullptr, dir, point, damage, DAMAGE_NO_LOCDAMAGE, MOD_FALLING );
 				break;
 
 			case EV_FIRE_WEAPON:
@@ -1603,9 +1603,9 @@ static int FindAlienHealthSource( gentity_t *self )
 	needsHealing = self->client->ps.stats[ STAT_HEALTH ] <
 	               BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
 
-	self->boosterUsed = NULL;
+	self->boosterUsed = nullptr;
 
-	for ( ent = NULL; ( ent = G_IterateEntities( ent, NULL, true, 0, NULL ) ); )
+	for ( ent = nullptr; ( ent = G_IterateEntities( ent, nullptr, true, 0, nullptr ) ); )
 	{
 		if ( !G_OnSameTeam( self, ent ) ) continue;
 		if ( ent->health <= 0 )           continue;
@@ -2163,9 +2163,9 @@ void ClientThink_real( gentity_t *self )
 		gentity_t *ent;
 
 		// look for object infront of player
-		AngleVectors( client->ps.viewangles, view, NULL, NULL );
+		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
 		VectorMA( client->ps.origin, ENTITY_USE_RANGE, view, point );
-		trap_Trace( &trace, client->ps.origin, NULL, NULL, point, self->s.number, MASK_SHOT, 0 );
+		trap_Trace( &trace, client->ps.origin, nullptr, nullptr, point, self->s.number, MASK_SHOT, 0 );
 
 		ent = &g_entities[ trace.entityNum ];
 
@@ -2183,7 +2183,7 @@ void ClientThink_real( gentity_t *self )
 		else
 		{
 			// no entity in front of player - do a small area search
-			for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, client->ps.origin, ENTITY_USE_RANGE ) ); )
+			for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, client->ps.origin, ENTITY_USE_RANGE ) ); )
 			{
 				if ( ent && ent->use && ent->buildableTeam == client->pers.team)
 				{

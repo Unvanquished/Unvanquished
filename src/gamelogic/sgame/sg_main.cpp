@@ -243,13 +243,13 @@ static cvarTable_t gameCvarTable[] =
 {
 	// special purpose (external source, read only, etc.)
 	// TODO: Split and comment this section
-	{ NULL,                           "gamename",                      GAME_VERSION,                       CVAR_SERVERINFO | CVAR_ROM,                      0, false           },
-	{ NULL,                           "gamedate",                      __DATE__,                           CVAR_ROM,                                        0, false           },
-	{ NULL,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO,                                 0, false           },
-	{ NULL,                           "P",                             "",                                 CVAR_SERVERINFO,                                 0, false           },
-	{ NULL,                           "B",                             "",                                 CVAR_SERVERINFO,                                 0, false           },
-	{ NULL,                           "g_mapStartupMessage",           "",                                 0,                                               0, false           },
-	{ NULL,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, false           },
+	{ nullptr,                           "gamename",                      GAME_VERSION,                       CVAR_SERVERINFO | CVAR_ROM,                      0, false           },
+	{ nullptr,                           "gamedate",                      __DATE__,                           CVAR_ROM,                                        0, false           },
+	{ nullptr,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO,                                 0, false           },
+	{ nullptr,                           "P",                             "",                                 CVAR_SERVERINFO,                                 0, false           },
+	{ nullptr,                           "B",                             "",                                 CVAR_SERVERINFO,                                 0, false           },
+	{ nullptr,                           "g_mapStartupMessage",           "",                                 0,                                               0, false           },
+	{ nullptr,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, false           },
 	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, false           },
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, false           },
 	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                0,                                               0, false           },
@@ -536,7 +536,7 @@ void G_FindEntityGroups( void )
 				for (k = 0; comparedEntity->names[k]; k++)
 				{
 					masterEntity->names[k] = comparedEntity->names[k];
-					comparedEntity->names[k] = NULL;
+					comparedEntity->names[k] = nullptr;
 				}
 			}
 		}
@@ -656,14 +656,14 @@ void G_RestoreCvars( void )
 
 vmCvar_t *G_FindCvar( const char *name )
 {
-	cvarTable_t *c = NULL;
+	cvarTable_t *c = nullptr;
 	cvarTable_t comp;
 	comp.cvarName = name;
 	c = ( cvarTable_t * ) bsearch( &comp, gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
 
 	if ( !c )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	return c->vmCvar;
@@ -806,7 +806,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart, bool inClient )
 	trap_Cvar_Set( "g_mapConfigsLoaded", "0" );
 
 	G_RegisterCommands();
-	G_admin_readconfig( NULL );
+	G_admin_readconfig( nullptr );
 	G_LoadCensors();
 
 	// initialize all entities for this game
@@ -1354,7 +1354,7 @@ void G_SpawnClients( team_t team )
 	int          clientNum;
 	gentity_t    *ent, *spawn;
 	vec3_t       spawn_origin, spawn_angles;
-	spawnQueue_t *sq = NULL;
+	spawnQueue_t *sq = nullptr;
 	int          numSpawns = 0;
 
 	assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
@@ -1775,7 +1775,7 @@ void ExitLevel( void )
 	trap_Cvar_Set( "g_nextMap", "" );
 
 	level.restarted = true;
-	level.changemap = NULL;
+	level.changemap = nullptr;
 	level.intermissiontime = 0;
 
 	// reset all the scores so we don't enter the intermission again

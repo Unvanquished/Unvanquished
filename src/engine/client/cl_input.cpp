@@ -1146,7 +1146,7 @@ void CL_SendCmd( void )
 	CL_WritePacket();
 }
 
-static char *registeredButtonCommands[ USERCMD_BUTTONS ] = { NULL };
+static char *registeredButtonCommands[ USERCMD_BUTTONS ] = { nullptr };
 
 static const struct{
 	const char* name;
@@ -1165,7 +1165,7 @@ static const struct{
 	{ "moveright",  KB_MOVERIGHT },
 	{ "speed",      KB_SPEED     },
 	{ "mlook",      KB_MLOOK     },
-	{ NULL, 0                    }
+	{ nullptr, 0                    }
 };
 
 //A proxy command for +/-commands
@@ -1196,7 +1196,7 @@ void IN_BuiltinButtonCommand( void )
 	if ( key == -1 )
 	{
 		i = 0;
-		while ( builtinButtonCommands[i].name != NULL )
+		while ( builtinButtonCommands[i].name != nullptr )
 		{
 			if ( !Q_stricmp( builtinButtonCommands[i].name, name ) )
 			{
@@ -1271,7 +1271,7 @@ void IN_KeysUp_f( void )
 	{
 		Cmd::ExecuteCommand( keyup[ key ] );
 		Z_Free( keyup[ key ] );
-		keyup[ key ] = NULL;
+		keyup[ key ] = nullptr;
 	}
 }
 
@@ -1342,7 +1342,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 			registeredButtonCommands[ i ][ 0 ] = '-';
 			Cmd_RemoveCommand( registeredButtonCommands[ i ] );
 			Z_Free( registeredButtonCommands[ i ] );
-			registeredButtonCommands[ i ] = NULL;
+			registeredButtonCommands[ i ] = nullptr;
 		}
 	}
 
@@ -1390,7 +1390,7 @@ void CL_InitInput( void )
 
 	Cmd_AddCommand ("centerview", IN_CenterView);
 
-	while( builtinButtonCommands[i].name != NULL )
+	while( builtinButtonCommands[i].name != nullptr )
 	{
 		Cmd_AddCommand( va( "-%s", builtinButtonCommands[i].name ), IN_BuiltinButtonCommand );
 		Cmd_AddCommand( va( "+%s", builtinButtonCommands[i].name ), IN_BuiltinButtonCommand );
@@ -1424,7 +1424,7 @@ void CL_ClearKeys( void )
 		if ( keyup[ i ] )
 		{
 			Z_Free( keyup[ i ] );
-			keyup[ i ] = NULL;
+			keyup[ i ] = nullptr;
 		}
 	}
 

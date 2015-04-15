@@ -60,7 +60,7 @@ CON_Input
 */
 char *CON_Input_TTY( void )
 {
-	return NULL;
+	return nullptr;
 }
 
 /*

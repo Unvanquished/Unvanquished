@@ -158,7 +158,7 @@ void R_ImageList_f( void )
 	{
 		"no ", "yes"
 	};
-	const char *filter = ri.Cmd_Argc() > 1 ? ri.Cmd_Argv(1) : NULL;
+	const char *filter = ri.Cmd_Argc() > 1 ? ri.Cmd_Argv(1) : nullptr;
 
 	ri.Printf( PRINT_ALL, "\n      -w-- -h-- -mm- -type-   -if-- wrap --name-------\n" );
 
@@ -1024,7 +1024,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 		    image_t *image )
 {
 	const byte *data;
-	byte       *scaledBuffer = NULL;
+	byte       *scaledBuffer = nullptr;
 	int        scaledWidth, scaledHeight;
 	int        mipWidth, mipHeight, mipLayers, mipSize, blockSize;
 	int        i, j, c;
@@ -1346,7 +1346,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 		for( i = 0; i < numMips; i++ ) {
 			glTexImage3D( GL_TEXTURE_3D, i, internalFormat,
 				      scaledWidth, scaledHeight, mipLayers,
-				      0, format, GL_UNSIGNED_BYTE, NULL );
+				      0, format, GL_UNSIGNED_BYTE, nullptr );
 
 			if( mipWidth  > 1 ) mipWidth  >>= 1;
 			if( mipHeight > 1 ) mipHeight >>= 1;
@@ -1363,7 +1363,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			if( dataArray )
 				data = dataArray[ i ];
 			else
-				data = NULL;
+				data = nullptr;
 
 			if( scaledBuffer )
 			{
@@ -1417,7 +1417,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			default:
 				if ( image->bits & IF_PACKED_DEPTH24_STENCIL8 )
 				{
-					glTexImage2D( target, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_INT_24_8_EXT, NULL );
+					glTexImage2D( target, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_INT_24_8_EXT, nullptr );
 				}
 				else
 				{
@@ -1521,7 +1521,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				if( dataArray )
 					data = dataArray[ j * numMips + i ];
 				else
-					data = NULL;
+					data = nullptr;
 
 				switch ( image->type )
 				{
@@ -1720,7 +1720,7 @@ image_t        *R_AllocImage( const char *name, bool linkIntoHashTable )
 	if ( strlen( name ) >= 1024 )
 	{
 		ri.Error( ERR_DROP, "R_AllocImage: \"%s\" image name is too long", name );
-		return NULL;
+		return nullptr;
 	}
 
 	image = (image_t*) ri.Hunk_Alloc( sizeof( image_t ), h_low );
@@ -1779,7 +1779,7 @@ image_t        *R_CreateImage( const char *name, const byte **pic, int width, in
 
 	if ( !image )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	image->type = GL_TEXTURE_2D;
@@ -1811,7 +1811,7 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 
 	if ( !image )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	image->type = GL_TEXTURE_2D;
@@ -1859,7 +1859,7 @@ image_t        *R_CreateCubeImage( const char *name,
 
 	if ( !image )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	image->type = GL_TEXTURE_CUBE_MAP;
@@ -1899,7 +1899,7 @@ image_t        *R_Create3DImage( const char *name,
 
 	if ( !image )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	image->type = GL_TEXTURE_3D;
@@ -1963,7 +1963,7 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
 {
 	char *token;
 
-	*pic = NULL;
+	*pic = nullptr;
 	*width = 0;
 	*height = 0;
 
@@ -2010,7 +2010,7 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
 		// a loader was found
 		if ( i < numImageLoaders )
 		{
-			if ( *pic == NULL )
+			if ( *pic == nullptr )
 			{
 				// loader failed, most likely because the file isn't there;
 				// try again without the extension
@@ -2061,10 +2061,10 @@ Returns NULL if it fails, not a default image.
 */
 image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName )
 {
-	image_t       *image = NULL;
+	image_t       *image = nullptr;
 	int           width = 0, height = 0, numLayers = 0, numMips = 0;
 	byte          *pic[ MAX_TEXTURE_MIPS * MAX_TEXTURE_LAYERS ];
-	byte          *mallocPtr = NULL;
+	byte          *mallocPtr = nullptr;
 	long          hash;
 	char          buffer[ 1024 ];
 	char          *buffer_p;
@@ -2072,7 +2072,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 
 	if ( !imageName )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	Q_strncpyz( buffer, imageName, sizeof( buffer ) );
@@ -2104,17 +2104,17 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	}
 
 	// load the pic from disk
-	pic[ 0 ] = NULL;
+	pic[ 0 ] = nullptr;
 	buffer_p = &buffer[ 0 ];
 	R_LoadImage( &buffer_p, pic, &width, &height, &numLayers, &numMips, &bits, materialName );
 
-	if ( (mallocPtr = pic[ 0 ]) == NULL || numLayers > 0 )
+	if ( (mallocPtr = pic[ 0 ]) == nullptr || numLayers > 0 )
 	{
 		if ( mallocPtr )
 		{
 			ri.Free( mallocPtr );
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	if ( bits & IF_LIGHTMAP )
@@ -2258,7 +2258,7 @@ static void R_FreeCubePics( byte **pic, int count )
 image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName )
 {
 	int         i;
-	image_t     *image = NULL;
+	image_t     *image = nullptr;
 	int         width = 0, height = 0, numLayers = 0, numMips = 0;
 	byte        *pic[ MAX_TEXTURE_MIPS * MAX_TEXTURE_LAYERS ];
 	long        hash;
@@ -2281,7 +2281,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 
 	if ( !imageName )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	Q_strncpyz( buffer, imageName, sizeof( buffer ) );
@@ -2316,7 +2316,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 
 	for ( i = 0; i < 6; i++ )
 	{
-		pic[ i ] = NULL;
+		pic[ i ] = nullptr;
 	}
 
 	for ( i = 0; i < 6; i++ )
@@ -2334,7 +2334,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
-			image = NULL;
+			image = nullptr;
 			goto tryDoom3Suffices;
 		}
 		numPicsToFree = i;
@@ -2346,7 +2346,7 @@ tryDoom3Suffices:
 
 	for ( i = 0; i < numPicsToFree; i++ ) {
 		ri.Free( pic[i] );
-		pic[i] = NULL;
+		pic[i] = nullptr;
 	}
 	numPicsToFree = 0;
 
@@ -2365,7 +2365,7 @@ tryDoom3Suffices:
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
-			image = NULL;
+			image = nullptr;
 			goto tryQuakeSuffices;
 		}
 
@@ -2390,7 +2390,7 @@ tryQuakeSuffices:
 
 	for ( i = 0; i < numPicsToFree; i++ ) {
 		ri.Free( pic[i] );
-		pic[i] = NULL;
+		pic[i] = nullptr;
 	}
 	numPicsToFree = 0;
 
@@ -2409,7 +2409,7 @@ tryQuakeSuffices:
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
-			image = NULL;
+			image = nullptr;
 			goto skipCubeImage;
 		}
 
@@ -2678,7 +2678,7 @@ static void R_CreateContrastRenderFBOImage( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight ) * 0.25f;
 	}
 
-	tr.contrastRenderFBOImage = R_CreateImage( "_contrastRenderFBO", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
+	tr.contrastRenderFBOImage = R_CreateImage( "_contrastRenderFBO", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
 }
 
 static void R_CreateBloomRenderFBOImage( void )
@@ -2699,7 +2699,7 @@ static void R_CreateBloomRenderFBOImage( void )
 
 	for ( i = 0; i < 2; i++ )
 	{
-		tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
+		tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
 	}
 }
 
@@ -2718,7 +2718,7 @@ static void R_CreateCurrentRenderImage( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	tr.currentRenderImage = R_CreateImage( "_currentRender", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.currentRenderImage = R_CreateImage( "_currentRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 }
 
 static void R_CreateDepthRenderImage( void )
@@ -2737,7 +2737,7 @@ static void R_CreateDepthRenderImage( void )
 	}
 
 	{
-		tr.depthRenderImage = R_CreateImage( "_depthRender", NULL, width, height, 1, IF_NOPICMIP | IF_DEPTH24, FT_NEAREST, WT_CLAMP );
+		tr.depthRenderImage = R_CreateImage( "_depthRender", nullptr, width, height, 1, IF_NOPICMIP | IF_DEPTH24, FT_NEAREST, WT_CLAMP );
 	}
 }
 
@@ -2756,7 +2756,7 @@ static void R_CreatePortalRenderImage( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	tr.portalRenderImage = R_CreateImage( "_portalRender", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.portalRenderImage = R_CreateImage( "_portalRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 }
 
 static void R_CreateOcclusionRenderFBOImage( void )
@@ -2775,7 +2775,7 @@ static void R_CreateOcclusionRenderFBOImage( void )
 	}
 
 	{
-		tr.occlusionRenderFBOImage = R_CreateImage( "_occlusionFBORender", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+		tr.occlusionRenderFBOImage = R_CreateImage( "_occlusionFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 	}
 }
 
@@ -2795,8 +2795,8 @@ static void R_CreateDepthToColorFBOImages( void )
 	}
 
 	{
-		tr.depthToColorBackFacesFBOImage = R_CreateImage( "_depthToColorBackFacesFBORender", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		tr.depthToColorFrontFacesFBOImage = R_CreateImage( "_depthToColorFrontFacesFBORender", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+		tr.depthToColorBackFacesFBOImage = R_CreateImage( "_depthToColorBackFacesFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+		tr.depthToColorFrontFacesFBOImage = R_CreateImage( "_depthToColorFrontFacesFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 	}
 }
 
@@ -2816,11 +2816,11 @@ static void R_CreateDownScaleFBOImages( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight * 0.25f );
 	}
 
-	tr.downScaleFBOImage_quarter = R_CreateImage( "_downScaleFBOImage_quarter", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.downScaleFBOImage_quarter = R_CreateImage( "_downScaleFBOImage_quarter", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 
 	width = height = 64;
 
-	tr.downScaleFBOImage_64x64 = R_CreateImage( "_downScaleFBOImage_64x64", NULL, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.downScaleFBOImage_64x64 = R_CreateImage( "_downScaleFBOImage_64x64", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 }
 
 // *INDENT-OFF*
@@ -2881,8 +2881,8 @@ static void R_CreateShadowMapFBOImage( void )
 	{
 		width = height = shadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
-		tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, 1, format, filter, WT_ONE_CLAMP );
-		tr.shadowClipMapFBOImage[ i ] = R_CreateImage( va( "_shadowClipMapFBO%d", i ), NULL, width, height, 1, format, filter, WT_ONE_CLAMP );
+		tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), nullptr, width, height, 1, format, filter, WT_ONE_CLAMP );
+		tr.shadowClipMapFBOImage[ i ] = R_CreateImage( va( "_shadowClipMapFBO%d", i ), nullptr, width, height, 1, format, filter, WT_ONE_CLAMP );
 	}
 
 	// sun shadow maps
@@ -2890,8 +2890,8 @@ static void R_CreateShadowMapFBOImage( void )
 	{
 		width = height = sunShadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
-		tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, 1, format, filter, WT_ONE_CLAMP );
-		tr.sunShadowClipMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowClipMapFBO%d", i ), NULL, width, height, 1, format, filter, WT_ONE_CLAMP );
+		tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), nullptr, width, height, 1, format, filter, WT_ONE_CLAMP );
+		tr.sunShadowClipMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowClipMapFBO%d", i ), nullptr, width, height, 1, format, filter, WT_ONE_CLAMP );
 	}
 }
 
@@ -2954,8 +2954,8 @@ static void R_CreateShadowCubeFBOImage( void )
 	{
 		width = height = shadowMapResolutions[ j ];
 
-		tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
-		tr.shadowClipCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowClipCubeFBO%d", j ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
+		tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), nullptr, width, height, format, filter, WT_EDGE_CLAMP );
+		tr.shadowClipCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowClipCubeFBO%d", j ), nullptr, width, height, format, filter, WT_EDGE_CLAMP );
 	}
 }
 
@@ -3190,7 +3190,7 @@ void R_InitImages( void )
 	// create default texture and white texture
 	R_CreateBuiltinImages();
 
-	tr.charsetImage = R_FindImageFile( charsetImage, IF_NOCOMPRESSION | IF_NOPICMIP, FT_DEFAULT, WT_CLAMP, NULL );
+	tr.charsetImage = R_FindImageFile( charsetImage, IF_NOCOMPRESSION | IF_NOPICMIP, FT_DEFAULT, WT_CLAMP, nullptr );
 
 	if ( !tr.charsetImage )
 	{

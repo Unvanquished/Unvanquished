@@ -570,9 +570,9 @@ char *CON_Input( void )
 		com_ansiColor->modified = false;
 	}
 
-	if ( Com_Time( NULL ) != lasttime )
+	if ( Com_Time( nullptr ) != lasttime )
 	{
-		lasttime = Com_Time( NULL );
+		lasttime = Com_Time( nullptr );
 		CON_UpdateClock();
 		num_chars++;
 	}
@@ -605,7 +605,7 @@ char *CON_Input( void )
 					doupdate();
 				}
 
-				return NULL;
+				return nullptr;
 
 			case '\n':
 			case '\r':

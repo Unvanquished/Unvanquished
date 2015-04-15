@@ -118,7 +118,7 @@ void SCR_FillRect( float x, float y, float width, float height, const float *col
 {
 	re.SetColor( color );
 	re.DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
-	re.SetColor( NULL );
+	re.SetColor( nullptr );
 }
 
 /*
@@ -372,7 +372,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 		s += Q_UTF8_WidthCP( ch );
 	}
 
-	re.SetColor( NULL );
+	re.SetColor( nullptr );
 }
 
 void SCR_DrawBigString( int x, int y, const char *s, float alpha, bool noColorEscape )
@@ -460,7 +460,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 		s += Q_UTF8_WidthCP( ch );
 	}
 
-	re.SetColor( NULL );
+	re.SetColor( nullptr );
 }
 
 /*
@@ -682,7 +682,7 @@ void SCR_DrawScreenField( void )
 		{
 			re.SetColor( g_color_table[ 0 ] );
 			re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
-			re.SetColor( NULL );
+			re.SetColor( nullptr );
 		}
 	}
 
@@ -780,7 +780,7 @@ void SCR_UpdateScreen( void )
 		}
 		else
 		{
-			re.EndFrame( NULL, NULL );
+			re.EndFrame( nullptr, nullptr );
 		}
 	}
 

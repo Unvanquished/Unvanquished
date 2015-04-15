@@ -46,7 +46,7 @@ Maryland 20850 USA.
 class RocketDataSource : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener
 {
 public:
-	RocketDataSource( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( NULL ), data_source( NULL )
+	RocketDataSource( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( nullptr ), data_source( nullptr )
 	{
 	}
 
@@ -167,7 +167,7 @@ public:
 		if ( event == "mouseover" )
 		{
 			Rocket::Core::Element *parent = event.GetTargetElement();
-			Rocket::Core::Element *button = parent->GetTagName() == "button" ? parent : NULL;
+			Rocket::Core::Element *button = parent->GetTagName() == "button" ? parent : nullptr;
 			while ( ( parent = parent->GetParentNode() ) )
 			{
 				if ( !button && parent->GetTagName() == "button" )

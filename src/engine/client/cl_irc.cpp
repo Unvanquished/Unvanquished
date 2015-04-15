@@ -368,7 +368,7 @@ struct irc_delayed_t
 };
 
 /* Delayed execution queue head & tail */
-static struct irc_delayed_t *IRC_DEQueue = NULL;
+static struct irc_delayed_t *IRC_DEQueue = nullptr;
 
 /*
 ==================
@@ -411,7 +411,7 @@ static void IRC_SetTimeout( irc_handler_func_t function, int time )
 	}
 	else
 	{
-		qe->next = NULL;
+		qe->next = nullptr;
 		IRC_DEQueue = qe;
 	}
 }
@@ -1155,7 +1155,7 @@ static int IRC_Wait( void )
 		FD_SET( IRC_Socket, &read_set );
 		timeout.tv_sec = 0;
 		timeout.tv_usec = IRC_TIMEOUT_US;
-		rv = select( SELECT_ARG, &read_set, NULL, NULL, &timeout );
+		rv = select( SELECT_ARG, &read_set, nullptr, nullptr, &timeout );
 	}
 	while ( SELECT_CHECK );
 
@@ -1649,7 +1649,7 @@ static int IRCH_Joined( void )
 		event = IRC_MakeEvent( JOIN, 0 );
 	}
 
-	IRC_Display( event, IRC_String( pfx_nickOrServer ), NULL );
+	IRC_Display( event, IRC_String( pfx_nickOrServer ), nullptr );
 	return IRC_CMD_SUCCESS;
 }
 
@@ -1775,7 +1775,7 @@ static int IRC_HandleCTCP( bool is_channel, char *string, int string_len )
 
 	end_of_action = strchr( string, ' ' );
 
-	if ( end_of_action == NULL )
+	if ( end_of_action == nullptr )
 	{
 		end_of_action = string + string_len - 1;
 		*end_of_action = 0;
@@ -1994,7 +1994,7 @@ void CL_IRCSay( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Cmd_PrintUsage("<text>", NULL);
+		Cmd_PrintUsage("<text>", nullptr);
 		return;
 	}
 
@@ -2239,7 +2239,7 @@ static int IRC_AttemptConnection( void )
 	// Find server address
 	Q_strncpyz( host_name, cl_IRC_server->string, sizeof( host_name ) );
 
-	if ( ( host = gethostbyname( host_name ) ) == NULL )
+	if ( ( host = gethostbyname( host_name ) ) == nullptr )
 	{
 		Com_Printf("…IRC: %s\n", "unknown server" );
 		return IRC_CMD_FATAL;
@@ -2513,7 +2513,7 @@ static void IRC_Thread( void )
 
 /****** THREAD HANDLING - WINDOWS VARIANT ******/
 
-static HANDLE IRC_ThreadHandle = NULL;
+static HANDLE IRC_ThreadHandle = nullptr;
 
 /*
 ==================
@@ -2533,9 +2533,9 @@ IRC_StartThread
 */
 static void IRC_StartThread( void )
 {
-	if ( IRC_ThreadHandle == NULL )
+	if ( IRC_ThreadHandle == nullptr )
 	{
-		IRC_ThreadHandle = CreateThread( NULL, 0, IRC_SystemThreadProc, NULL, 0, NULL );
+		IRC_ThreadHandle = CreateThread( nullptr, 0, IRC_SystemThreadProc, nullptr, 0, nullptr );
 	}
 }
 
@@ -2547,7 +2547,7 @@ IRC_SetThreadDead
 static void IRC_SetThreadDead( void )
 {
 	IRC_ThreadStatus = IRC_THREAD_DEAD;
-	IRC_ThreadHandle = NULL;
+	IRC_ThreadHandle = nullptr;
 }
 
 /*
@@ -2557,7 +2557,7 @@ IRC_StartThread
 */
 static void IRC_WaitThread( void )
 {
-	if ( IRC_ThreadHandle != NULL )
+	if ( IRC_ThreadHandle != nullptr )
 	{
 		if ( IRC_ThreadStatus != IRC_THREAD_DEAD )
 		{
@@ -2565,7 +2565,7 @@ static void IRC_WaitThread( void )
 			CloseHandle( IRC_ThreadHandle );
 		}
 
-		IRC_ThreadHandle = NULL;
+		IRC_ThreadHandle = nullptr;
 	}
 }
 
@@ -2573,7 +2573,7 @@ static void IRC_WaitThread( void )
 
 /****** THREAD HANDLING - UNIX VARIANT ******/
 
-static pthread_t IRC_ThreadHandle = ( pthread_t ) NULL;
+static pthread_t IRC_ThreadHandle = ( pthread_t ) nullptr;
 
 /*
 ==================
@@ -2583,7 +2583,7 @@ IRC_SystemThreadProc
 static void *IRC_SystemThreadProc( void *dummy )
 {
 	IRC_Thread();
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -2593,9 +2593,9 @@ IRC_StartThread
 */
 static void IRC_StartThread( void )
 {
-	if ( IRC_ThreadHandle == ( pthread_t ) NULL )
+	if ( IRC_ThreadHandle == ( pthread_t ) nullptr )
 	{
-		pthread_create( &IRC_ThreadHandle, NULL, IRC_SystemThreadProc, NULL );
+		pthread_create( &IRC_ThreadHandle, nullptr, IRC_SystemThreadProc, nullptr );
 	}
 }
 
@@ -2607,7 +2607,7 @@ IRC_SetThreadDead
 static void IRC_SetThreadDead( void )
 {
 	IRC_ThreadStatus = IRC_THREAD_DEAD;
-	IRC_ThreadHandle = ( pthread_t ) NULL;
+	IRC_ThreadHandle = ( pthread_t ) nullptr;
 }
 
 /*
@@ -2617,14 +2617,14 @@ IRC_WaitThread
 */
 static void IRC_WaitThread( void )
 {
-	if ( IRC_ThreadHandle != ( pthread_t ) NULL )
+	if ( IRC_ThreadHandle != ( pthread_t ) nullptr )
 	{
 		if ( IRC_ThreadStatus != IRC_THREAD_DEAD )
 		{
-			pthread_join( IRC_ThreadHandle, NULL );
+			pthread_join( IRC_ThreadHandle, nullptr );
 		}
 
-		IRC_ThreadHandle = ( pthread_t ) NULL;
+		IRC_ThreadHandle = ( pthread_t ) nullptr;
 	}
 }
 

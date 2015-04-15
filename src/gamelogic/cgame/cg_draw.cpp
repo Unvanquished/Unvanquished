@@ -419,7 +419,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		}
 	}
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 //==================================================================================
@@ -464,7 +464,7 @@ static void CG_Draw2D( void )
 		trap_R_SetColor( black );
 		trap_R_DrawStretchPic( 0, 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
 		trap_R_DrawStretchPic( cgs.glconfig.vidWidth - ( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ) ), 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
-		trap_R_SetColor( NULL );
+		trap_R_SetColor( nullptr );
 	}
 }
 
@@ -620,7 +620,7 @@ static void CG_PainBlend( void )
 	CG_ScalePainBlendTCs( &s1, &t1, &s2, &t2 );
 	trap_R_DrawStretchPic( x, y, w, h, s1, t1, s2, t2, shader );
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 /*

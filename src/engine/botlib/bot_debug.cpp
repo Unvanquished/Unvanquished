@@ -56,7 +56,7 @@ void DebugDrawQuake::begin(duDebugDrawPrimitives prim, float s)
 
 void DebugDrawQuake::vertex(const float* pos, unsigned int c)
 {
-	vertex( pos, c, NULL );
+	vertex( pos, c, nullptr );
 }
 
 void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color)
@@ -64,7 +64,7 @@ void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigne
 	vec3_t vert;
 	VectorSet( vert, x, y, z );
 	recast2quake( vert );
-	re->DebugDrawVertex( vert, color, NULL );
+	re->DebugDrawVertex( vert, color, nullptr );
 }
 
 void DebugDrawQuake::vertex(const float *pos, unsigned int color, const float* uv)

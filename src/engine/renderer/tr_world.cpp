@@ -496,7 +496,7 @@ static void R_RecursiveWorldNode( bspNode_t *node, int planeBits, int decalBits 
 				if ( decalBits & ( 1 << i ) )
 				{
 					// test decal bounds against node bounds
-					if ( tr.refdef.decalProjectors[ i ].shader == NULL ||
+					if ( tr.refdef.decalProjectors[ i ].shader == nullptr ||
 					     !R_TestDecalBoundingBox( &tr.refdef.decalProjectors[ i ], node->mins, node->maxs ) )
 					{
 						decalBits &= ~( 1 << i );

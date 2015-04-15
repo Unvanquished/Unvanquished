@@ -157,7 +157,7 @@ static bool LoadExplicitBeacons( void )
 	entityState_t *es;
 	cbeacon_t     *beacon;
 
-	cg.highlightedBeacon = NULL;
+	cg.highlightedBeacon = nullptr;
 
 	// Find beacons and add them to cg.beacons.
 	for( cg.beaconCount = 0, i = 0; i < cg.snap->entities.size(); i++ )
@@ -195,7 +195,7 @@ static bool LoadExplicitBeacons( void )
 			int pClass = ( ( targetES->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
 
 			VectorCopy( targetCent->lerpOrigin, center );
-			BG_ClassBoundingBox( pClass, mins, maxs, NULL, NULL, NULL );
+			BG_ClassBoundingBox( pClass, mins, maxs, nullptr, nullptr, nullptr );
 			BG_MoveOriginToBBOXCenter( center, mins, maxs );
 
 			// TODO: Interpolate when target entity pops in.
@@ -250,7 +250,7 @@ static bool LoadImplicitBeacons( void )
 				int pClass = ( ( es->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
 
 				VectorCopy( ent->lerpOrigin, center );
-				BG_ClassBoundingBox( pClass, mins, maxs, NULL, NULL, NULL );
+				BG_ClassBoundingBox( pClass, mins, maxs, nullptr, nullptr, nullptr );
 				BG_MoveOriginToBBOXCenter( center, mins, maxs );
 
 				VectorCopy( center, beacon->origin );

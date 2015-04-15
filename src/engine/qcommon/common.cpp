@@ -64,7 +64,7 @@ Maryland 20850 USA.
 
 static fileHandle_t logfile;
 
-cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
+cvar_t              *com_crashed = nullptr; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
 cvar_t *com_pid; // bani - process id
 
@@ -129,7 +129,7 @@ A raw string should NEVER be passed as fmt, because of "%f" type crashers.
 int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 {
 #ifdef SMP
-	static SDL_mutex *lock = NULL;
+	static SDL_mutex *lock = nullptr;
 
 	// would be racy, but this gets called prior to renderer threads etc. being started
 	if ( !lock )
@@ -213,7 +213,7 @@ void QDECL PRINTF_LIKE(2) Com_Logf( log_level_t level, const char *fmt, ... )
 	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
 	va_end( argptr );
 
-	Com_LogEvent( &event, NULL );
+	Com_LogEvent( &event, nullptr );
 }
 
 void QDECL Com_Log( log_level_t level, const char* message )
@@ -221,7 +221,7 @@ void QDECL Com_Log( log_level_t level, const char* message )
 	log_event_t event;
 	event.level = level;
 	event.message = message;
-	Com_LogEvent( &event, NULL );
+	Com_LogEvent( &event, nullptr );
 }
 
 /*
@@ -630,7 +630,7 @@ static hunkblock_t *hunkblocks;
 static hunkUsed_t  hunk_low, hunk_high;
 static hunkUsed_t  *hunk_permanent, *hunk_temp;
 
-static byte        *s_hunkData = NULL;
+static byte        *s_hunkData = nullptr;
 static int         s_hunkTotal;
 
 /*
@@ -695,7 +695,7 @@ void *Com_Allocate_Aligned( size_t alignment, size_t size )
 	if( !posix_memalign( &ptr, alignment, size ) )
 		return ptr;
 	else
-		return NULL;
+		return nullptr;
 #endif
 }
 
@@ -935,7 +935,7 @@ void Hunk_Clear( void )
 
 	Com_DPrintf( "Hunk_Clear: reset the hunk ok\n" );
 #ifdef HUNK_DEBUG
-	hunkblocks = NULL;
+	hunkblocks = nullptr;
 #endif
 }
 
@@ -975,7 +975,7 @@ void           *Hunk_Alloc( int size, ha_pref preference )
 #endif
 	void *buf;
 
-	if ( s_hunkData == NULL )
+	if ( s_hunkData == nullptr )
 	{
 		Com_Error( ERR_FATAL, "Hunk_Alloc: Hunk memory system not initialized" );
 	}
@@ -1060,7 +1060,7 @@ void           *Hunk_AllocateTempMemory( int size )
 	// this allows the config and product id files ( journal files too ) to be loaded
 	// by the file system without redundant routines in the file system utilizing different
 	// memory systems
-	if ( s_hunkData == NULL )
+	if ( s_hunkData == nullptr )
 	{
 		return Z_Malloc( size );
 	}
@@ -1117,7 +1117,7 @@ void Hunk_FreeTempMemory( void *buf )
 	// this allows the config and product id files ( journal files too ) to be loaded
 	// by the file system without redundant routines in the file system utilizing different
 	// memory systems
-	if ( s_hunkData == NULL )
+	if ( s_hunkData == nullptr )
 	{
 		Z_Free( buf );
 		return;
@@ -1611,7 +1611,7 @@ void Com_Init( char *commandLine )
 	Com_ParseCommandLine( commandLine );
 
 	// override anything from the config files with command line args
-	Com_StartupVariable( NULL );
+	Com_StartupVariable( nullptr );
 
 	// get the developer cvar set as early as possible
 	Com_StartupVariable( "developer" );
@@ -1778,7 +1778,7 @@ void Com_WriteConfig_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage("<filename>", NULL);
+		Cmd_PrintUsage("<filename>", nullptr);
 		return;
 	}
 
@@ -1802,7 +1802,7 @@ void Com_WriteBindings_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage("<filename>", NULL);
+		Cmd_PrintUsage("<filename>", nullptr);
 		return;
 	}
 

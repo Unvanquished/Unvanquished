@@ -258,7 +258,7 @@ static void CG_CompleteVsay( void )
 	voice_t     *voice = cgs.voices;
 	voiceCmd_t  *voiceCmd = voice->cmds;
 
-	while ( voiceCmd != NULL )
+	while ( voiceCmd != nullptr )
 	{
 		trap_CompleteCallback( voiceCmd->cmd );
 		voiceCmd = voiceCmd->next;

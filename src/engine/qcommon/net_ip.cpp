@@ -106,8 +106,8 @@ typedef int SOCKET;
 
 #ifdef HAVE_GEOIP
 #include <GeoIP.h>
-static GeoIP *geoip_data_4 = NULL;
-static GeoIP *geoip_data_6 = NULL;
+static GeoIP *geoip_data_4 = nullptr;
+static GeoIP *geoip_data_6 = nullptr;
 #endif
 
 static bool            usingSocks = false;
@@ -383,7 +383,7 @@ static struct addrinfo *SearchAddrInfo( struct addrinfo *hints, sa_family_t fami
 		hints = hints->ai_next;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -395,8 +395,8 @@ static bool Sys_StringToSockaddr( const char *s, struct sockaddr *sadr, int sadr
 {
 	struct addrinfo hints;
 
-	struct addrinfo *res = NULL;
-	struct addrinfo *search = NULL;
+	struct addrinfo *res = nullptr;
+	struct addrinfo *search = nullptr;
 	struct addrinfo *hintsp;
 
 	int             retval;
@@ -408,7 +408,7 @@ static bool Sys_StringToSockaddr( const char *s, struct sockaddr *sadr, int sadr
 	hintsp->ai_family = family;
 	hintsp->ai_socktype = SOCK_DGRAM;
 
-	retval = getaddrinfo( s, NULL, hintsp, &res );
+	retval = getaddrinfo( s, nullptr, hintsp, &res );
 
 	if ( !retval )
 	{
@@ -493,7 +493,7 @@ static void Sys_SockaddrToString( char *dest, int destlen, struct sockaddr *inpu
 		inputlen = sizeof( struct sockaddr_in );
 	}
 
-	if ( getnameinfo( input, inputlen, dest, destlen, NULL, 0, NI_NUMERICHOST ) && destlen > 0 )
+	if ( getnameinfo( input, inputlen, dest, destlen, nullptr, 0, NI_NUMERICHOST ) && destlen > 0 )
 	{
 		*dest = '\0';
 	}
@@ -1283,7 +1283,7 @@ void NET_JoinMulticast6( void )
 	}
 	else
 	{
-		if ( ( multicast6_socket = NET_IP6Socket( net_mcast6addr->string, ntohs( boundto.sin6_port ), NULL, &err ) ) == INVALID_SOCKET )
+		if ( ( multicast6_socket = NET_IP6Socket( net_mcast6addr->string, ntohs( boundto.sin6_port ), nullptr, &err ) ) == INVALID_SOCKET )
 		{
 			// If the OS does not support binding to multicast addresses, like Windows XP, at least try with a non-multicast socket.
 			multicast6_socket = ip6_socket;
@@ -1363,7 +1363,7 @@ void NET_OpenSocks( int port )
 
 	h = gethostbyname( net_socksServer->string );
 
-	if ( h == NULL )
+	if ( h == nullptr )
 	{
 		Com_Printf( "WARNING: NET_OpenSocks: gethostbyname: %s\n", NET_ErrorString() );
 		return;
@@ -1636,7 +1636,7 @@ static void NET_GetLocalAddress( void )
 	char            hostname[ 256 ];
 	struct addrinfo hint;
 
-	struct addrinfo *res = NULL;
+	struct addrinfo *res = nullptr;
 
 	numIP = 0;
 
@@ -1652,7 +1652,7 @@ static void NET_GetLocalAddress( void )
 	hint.ai_family = AF_UNSPEC;
 	hint.ai_socktype = SOCK_DGRAM;
 
-	if ( !getaddrinfo( hostname, NULL, &hint, &res ) )
+	if ( !getaddrinfo( hostname, nullptr, &hint, &res ) )
 	{
 		struct sockaddr_in  mask4;
 
@@ -1990,13 +1990,13 @@ const char *NET_GeoIP_Country( const netadr_t *from )
 	switch ( from->type )
 	{
 	case NA_IP:
-		return geoip_data_4 ? GeoIP_country_name_by_ipnum( geoip_data_4, htonl( *(uint32_t *)from->ip ) ) : NULL;
+		return geoip_data_4 ? GeoIP_country_name_by_ipnum( geoip_data_4, htonl( *(uint32_t *)from->ip ) ) : nullptr;
 
 	case NA_IP6:
-		return geoip_data_6 ? GeoIP_country_name_by_ipnum_v6( geoip_data_6, *(struct in6_addr *)from->ip6 ) : NULL;
+		return geoip_data_6 ? GeoIP_country_name_by_ipnum_v6( geoip_data_6, *(struct in6_addr *)from->ip6 ) : nullptr;
 
 	default:
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -2111,7 +2111,7 @@ void NET_Sleep( int msec )
 
 	timeout.tv_sec = msec / 1000;
 	timeout.tv_usec = ( msec % 1000 ) * 1000;
-	select( highestfd + 1, &fdset, NULL, NULL, &timeout );
+	select( highestfd + 1, &fdset, nullptr, nullptr, &timeout );
 }
 
 /*

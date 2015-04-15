@@ -170,7 +170,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 
 	buff = ( byte * ) pImageData;
 
-	data[0] = NULL;
+	data[0] = nullptr;
 
 	if ( strncmp( ( const char * ) buff, "DDS ", 4 ) != 0 )
 	{

@@ -48,7 +48,7 @@ struct HudUnit
 };
 
 typedef std::list<HudUnit> RocketHud;
-RocketHud *activeHud = NULL;
+RocketHud *activeHud = nullptr;
 std::vector<RocketHud> huds;
 
 
@@ -62,7 +62,7 @@ void Rocket_InitializeHuds( int size )
 		huds.push_back( RocketHud() );
 	}
 
-	activeHud = NULL;
+	activeHud = nullptr;
 }
 
 void Rocket_LoadUnit( const char *path )
@@ -110,7 +110,7 @@ static HudUnit *findUnit( RocketHud *in, HudUnit &find )
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void Rocket_ShowHud( int weapon )

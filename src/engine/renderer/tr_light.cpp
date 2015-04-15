@@ -34,8 +34,8 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 {
 	int               i;
 	bspSurface_t      *surf;
-	bspModel_t        *bspModel = NULL;
-	model_t           *pModel = NULL;
+	bspModel_t        *bspModel = nullptr;
+	model_t           *pModel = nullptr;
 	byte              cubeSideBits;
 
 	// cull the entire model if it is outside the view frustum
@@ -191,8 +191,8 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 	float           totalFactor;
 
 	// bk010103 - this segfaults with -nolight maps
-	if ( tr.world->lightGridData1 == NULL ||
-	     tr.world->lightGridData2 == NULL )
+	if ( tr.world->lightGridData1 == nullptr ||
+	     tr.world->lightGridData2 == nullptr )
 	{
 		return false;
 	}
@@ -692,7 +692,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 
-		R_TessLight( light, NULL );
+		R_TessLight( light, nullptr );
 
 		memset( &data, 0, sizeof( data ) );
 		data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( *data.xyz ) );
@@ -920,7 +920,7 @@ bool R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, shader_
 		light->numLightOnlyInteractions++;
 	}
 
-	ia->next = NULL;
+	ia->next = nullptr;
 
 	ia->type = iaType;
 
@@ -1021,7 +1021,7 @@ void R_SortInteractions( trRefLight_t *light )
 	qsort( iaFirst, light->numInteractions, sizeof( interaction_t ), InteractionCompare );
 
 	// fix linked list
-	iaLast = NULL;
+	iaLast = nullptr;
 
 	for ( i = 0; i < light->numInteractions; i++ )
 	{
@@ -1032,7 +1032,7 @@ void R_SortInteractions( trRefLight_t *light )
 			iaLast->next = ia;
 		}
 
-		ia->next = NULL;
+		ia->next = nullptr;
 
 		iaLast = ia;
 	}

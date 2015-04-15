@@ -216,7 +216,7 @@ static float MomentumMod( momentum_t type )
 static float AddMomentum( momentum_t type, team_t team, float amount,
                             gentity_t *source, bool skipChangeHook )
 {
-	gentity_t *event = NULL;
+	gentity_t *event = nullptr;
 	gclient_t *client;
 	char      *clientName;
 
@@ -351,7 +351,7 @@ void G_DecreaseMomentum( void )
  */
 float G_AddMomentumGeneric( team_t team, float amount )
 {
-	AddMomentum( CONF_GENERIC, team, amount, NULL, false );
+	AddMomentum( CONF_GENERIC, team, amount, nullptr, false );
 
 	return amount;
 }
@@ -363,7 +363,7 @@ float G_AddMomentumGeneric( team_t team, float amount )
  */
 float G_AddMomentumGenericStep( team_t team, float amount )
 {
-	AddMomentum( CONF_GENERIC, team, amount, NULL, true );
+	AddMomentum( CONF_GENERIC, team, amount, nullptr, true );
 
 	return amount;
 }
@@ -409,7 +409,7 @@ float G_AddMomentumForBuilding( gentity_t *buildable )
 	}
 	else
 	{
-		builder = NULL;
+		builder = nullptr;
 	}
 
 	reward = AddMomentum( CONF_BUILDING, team, value, builder, false );

@@ -866,12 +866,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		glState.vertexAttribsState = 0;
 		glState.vertexAttribPointersSet = 0;
 
-		GL_BindProgram( NULL );
+		GL_BindProgram( nullptr );
 
 		glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-		glState.currentVBO = NULL;
-		glState.currentIBO = NULL;
+		glState.currentVBO = nullptr;
+		glState.currentIBO = nullptr;
 
 		GL_CheckErrors();
 
@@ -891,7 +891,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		{
 			glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 			glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
-			glState.currentFBO = NULL;
+			glState.currentFBO = nullptr;
 		}
 
 		GL_PolygonMode( GL_FRONT_AND_BACK, GL_FILL );
@@ -1438,7 +1438,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		}
 		else
 		{
-			backEndData[ 1 ] = NULL;
+			backEndData[ 1 ] = nullptr;
 		}
 
 		R_ToggleSmpFrame();
@@ -1582,7 +1582,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		if ( apiVersion != REF_API_VERSION )
 		{
 			ri.Printf( PRINT_ALL, "Mismatched REF_API_VERSION: expected %i, got %i\n", REF_API_VERSION, apiVersion );
-			return NULL;
+			return nullptr;
 		}
 
 		// the RE_ functions are Renderer Entry points

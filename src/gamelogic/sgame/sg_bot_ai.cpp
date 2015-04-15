@@ -155,7 +155,7 @@ void AIDestroyValue( AIValue_t v )
 
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
-	static const botEntityAndDistance_t nullEntity = { NULL, HUGE_QFLT };
+	static const botEntityAndDistance_t nullEntity = { nullptr, HUGE_QFLT };
 	botEntityAndDistance_t              ret = nullEntity;
 
 	if ( e > E_NONE && e < E_NUM_BUILDABLES )
@@ -473,7 +473,7 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 	// we do this so we can re-pathfind on the next entrance
 	if ( ( status == STATUS_SUCCESS || status == STATUS_FAILURE ) && self->botMind->currentNode == node )
 	{
-		self->botMind->currentNode = NULL;
+		self->botMind->currentNode = nullptr;
 	}
 
 	// reset running information on node success so sequences and selectors reset their state
@@ -712,7 +712,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	if ( !BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
 	{
 		botTarget_t proposedTarget;
-		BotSetTarget( &proposedTarget, self->botMind->bestEnemy.ent, NULL );
+		BotSetTarget( &proposedTarget, self->botMind->bestEnemy.ent, nullptr );
 
 		//we can see another enemy (not our target) so switch to it
 		if ( self->botMind->bestEnemy.ent && self->botMind->goal.ent != self->botMind->bestEnemy.ent && BotPathIsWalkable( self, proposedTarget ) )
@@ -885,7 +885,7 @@ botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
 {
 	botTarget_t target;
 	botEntityAndDistance_t en = AIEntityToGentity( self, e );
-	BotSetTarget( &target, en.ent, NULL );
+	BotSetTarget( &target, en.ent, nullptr );
 	return target;
 }
 
@@ -1050,7 +1050,7 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 {
 	const int maxHealth = BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->health;
-	gentity_t *healTarget = NULL;
+	gentity_t *healTarget = nullptr;
 
 	if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
 	{
@@ -1214,7 +1214,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		G_ForceWeaponChange( self, WP_HBUILD );
 	}
 
-	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
 	BotGetTargetPos( self->botMind->goal, targetPos );
 	VectorMA( self->s.origin, self->r.maxs[1], forward, selfPos );
 

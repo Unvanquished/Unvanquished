@@ -128,32 +128,32 @@ void GLSL_ShutdownGPUShaders( void )
 
 	gl_shaderManager.freeAll();
 
-	gl_genericShader = NULL;
-	gl_vertexLightingShader_DBS_entity = NULL;
-	gl_vertexLightingShader_DBS_world = NULL;
-	gl_lightMappingShader = NULL;
-	gl_forwardLightingShader_omniXYZ = NULL;
-	gl_forwardLightingShader_projXYZ = NULL;
-	gl_forwardLightingShader_directionalSun = NULL;
-	gl_depthToColorShader = NULL;
-	gl_shadowFillShader = NULL;
-	gl_lightVolumeShader_omni = NULL;
-	gl_reflectionShader = NULL;
-	gl_skyboxShader = NULL;
-	gl_fogQuake3Shader = NULL;
-	gl_fogGlobalShader = NULL;
-	gl_heatHazeShader = NULL;
-	gl_screenShader = NULL;
-	gl_portalShader = NULL;
-	gl_contrastShader = NULL;
-	gl_cameraEffectsShader = NULL;
-	gl_blurXShader = NULL;
-	gl_blurYShader = NULL;
-	gl_debugShadowMapShader = NULL;
-	gl_liquidShader = NULL;
-	gl_volumetricFogShader = NULL;
-	gl_motionblurShader = NULL;
-	gl_fxaaShader = NULL;
+	gl_genericShader = nullptr;
+	gl_vertexLightingShader_DBS_entity = nullptr;
+	gl_vertexLightingShader_DBS_world = nullptr;
+	gl_lightMappingShader = nullptr;
+	gl_forwardLightingShader_omniXYZ = nullptr;
+	gl_forwardLightingShader_projXYZ = nullptr;
+	gl_forwardLightingShader_directionalSun = nullptr;
+	gl_depthToColorShader = nullptr;
+	gl_shadowFillShader = nullptr;
+	gl_lightVolumeShader_omni = nullptr;
+	gl_reflectionShader = nullptr;
+	gl_skyboxShader = nullptr;
+	gl_fogQuake3Shader = nullptr;
+	gl_fogGlobalShader = nullptr;
+	gl_heatHazeShader = nullptr;
+	gl_screenShader = nullptr;
+	gl_portalShader = nullptr;
+	gl_contrastShader = nullptr;
+	gl_cameraEffectsShader = nullptr;
+	gl_blurXShader = nullptr;
+	gl_blurYShader = nullptr;
+	gl_debugShadowMapShader = nullptr;
+	gl_liquidShader = nullptr;
+	gl_volumetricFogShader = nullptr;
+	gl_motionblurShader = nullptr;
+	gl_fxaaShader = nullptr;
 
 	GL_BindNullProgram();
 }
@@ -256,7 +256,7 @@ static void BindLightMap( int tmu )
 	}
 	else
 	{
-		lightmap = NULL;
+		lightmap = nullptr;
 	}
 
 	if ( !tr.lightmaps.currentElements || !lightmap )
@@ -283,7 +283,7 @@ static void BindDeluxeMap( int tmu )
 	}
 	else
 	{
-		deluxemap = NULL;
+		deluxemap = nullptr;
 	}
 
 	if ( !tr.deluxemaps.currentElements || !deluxemap )
@@ -396,7 +396,7 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 	tess.multiDrawPrimitives = 0;
 
 	// materials are optional
-	if ( surfaceShader != NULL )
+	if ( surfaceShader != nullptr )
 	{
 		state = ( surfaceShader->remappedShader ) ? surfaceShader->remappedShader : surfaceShader;
 
@@ -408,16 +408,16 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 	}
 	else
 	{
-		state = NULL;
+		state = nullptr;
 
 		tess.numSurfaceStages = 0;
-		tess.surfaceShader = NULL;
-		tess.surfaceStages = NULL;
+		tess.surfaceShader = nullptr;
+		tess.surfaceStages = nullptr;
 		Tess_MapVBOs( false );
 	}
 
 
-	bool isSky = ( state != NULL && state->isSky != false );
+	bool isSky = ( state != nullptr && state->isSky != false );
 
 	tess.lightShader = lightShader;
 
@@ -455,7 +455,7 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
-		GLimp_LogComment( va( "--- Tess_Begin( surfaceShader = %s, lightShader = %s, skipTangentSpaces = %i, lightmapNum = %i, fogNum = %i) ---\n", tess.surfaceShader->name, tess.lightShader ? tess.lightShader->name : NULL, tess.skipTangentSpaces, tess.lightmapNum, tess.fogNum ) );
+		GLimp_LogComment( va( "--- Tess_Begin( surfaceShader = %s, lightShader = %s, skipTangentSpaces = %i, lightmapNum = %i, fogNum = %i) ---\n", tess.surfaceShader->name, tess.lightShader ? tess.lightShader->name : nullptr, tess.skipTangentSpaces, tess.lightmapNum, tess.fogNum ) );
 	}
 }
 
@@ -610,8 +610,8 @@ static void Render_vertexLighting_DBS_entity( int stage )
 		backEnd.depthRenderImageValid = false;
 	}
 
-	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
-	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL );
+	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != nullptr );
+	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != nullptr );
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -622,7 +622,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	gl_vertexLightingShader_DBS_entity->SetNormalMapping( normalMapping );
 	gl_vertexLightingShader_DBS_entity->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 
-	gl_vertexLightingShader_DBS_entity->SetReflectiveSpecular( normalMapping && tr.cubeHashTable != NULL );
+	gl_vertexLightingShader_DBS_entity->SetReflectiveSpecular( normalMapping && tr.cubeHashTable != nullptr );
 
 	gl_vertexLightingShader_DBS_entity->SetGlowMapping( glowMapping );
 
@@ -706,7 +706,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_SpecularExponent( minSpec, maxSpec );
 		
-		if ( tr.cubeHashTable != NULL )
+		if ( tr.cubeHashTable != nullptr )
 		{
 			cubemapProbe_t *cubeProbeNearest;
 			cubemapProbe_t *cubeProbeSecondNearest;
@@ -721,7 +721,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				R_FindTwoNearestCubeMaps( backEnd.viewParms.orientation.origin, &cubeProbeNearest, &cubeProbeSecondNearest );
 			}
 
-			if ( cubeProbeNearest == NULL && cubeProbeSecondNearest == NULL )
+			if ( cubeProbeNearest == nullptr && cubeProbeSecondNearest == nullptr )
 			{
 				GLimp_LogComment( "cubeProbeNearest && cubeProbeSecondNearest == NULL\n" );
 
@@ -731,7 +731,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				// bind u_EnvironmentMap1
 				GL_BindToTMU( 4, tr.whiteCubeImage ); 
 			}
-			else if ( cubeProbeNearest == NULL )
+			else if ( cubeProbeNearest == nullptr )
 			{
 				GLimp_LogComment( "cubeProbeNearest == NULL\n" );
 
@@ -741,7 +741,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				// u_EnvironmentInterpolation
 				gl_vertexLightingShader_DBS_entity->SetUniform_EnvironmentInterpolation( 0.0 );
 			}
-			else if ( cubeProbeSecondNearest == NULL )
+			else if ( cubeProbeSecondNearest == nullptr )
 			{
 				GLimp_LogComment( "cubeProbeSecondNearest == NULL\n" );
 
@@ -822,8 +822,8 @@ static void Render_vertexLighting_DBS_world( int stage )
 
 	stateBits = pStage->stateBits;
 
-	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
-	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL );
+	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != nullptr );
+	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != nullptr );
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_world->SetNormalMapping( normalMapping );
@@ -1013,12 +1013,12 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 		backEnd.depthRenderImageValid = false;
 	}
 
-	if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] == NULL )
+	if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] == nullptr )
 	{
 		normalMapping = false;
 	}
 
-	if ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL )
+	if ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != nullptr )
 	{
 		glowMapping = true;
 	}
@@ -1295,7 +1295,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 
 	GLimp_LogComment( "--- Render_forwardLighting_DBS_omni ---\n" );
 
-	bool normalMapping = r_normalMapping->integer && ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
+	bool normalMapping = r_normalMapping->integer && ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] != nullptr );
 
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
@@ -1489,7 +1489,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 
 	GLimp_LogComment( "--- Render_fowardLighting_DBS_proj ---\n" );
 
-	bool normalMapping = r_normalMapping->integer && ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
+	bool normalMapping = r_normalMapping->integer && ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] != nullptr );
 
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
@@ -1682,7 +1682,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 	GLimp_LogComment( "--- Render_forwardLighting_DBS_directional ---\n" );
 
-	bool normalMapping = r_normalMapping->integer && ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
+	bool normalMapping = r_normalMapping->integer && ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] != nullptr );
 
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
@@ -1892,7 +1892,7 @@ static void Render_reflection_CB( int stage )
 		backEnd.depthRenderImageValid = false;
 	}
 
-	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
+	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != nullptr );
 
 	// choose right shader program ----------------------------------
 	gl_reflectionShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );

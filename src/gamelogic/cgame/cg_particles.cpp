@@ -141,7 +141,7 @@ Introduce a new particle into the world
 static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *parent )
 {
 	int               i, j;
-	particle_t        *p = NULL;
+	particle_t        *p = nullptr;
 	particleEjector_t *pe = parent;
 	particleSystem_t  *ps = parent->parent;
 	vec3_t            attachmentPoint, attachmentVelocity;
@@ -205,7 +205,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 
 			if ( !CG_AttachmentPoint( &ps->attachment, attachmentPoint ) )
 			{
-				return NULL;
+				return nullptr;
 			}
 
 			VectorCopy( attachmentPoint, p->origin );
@@ -244,7 +244,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 				case PMT_STATIC_TRANSFORM:
 					if ( !CG_AttachmentAxis( &ps->attachment, transform ) )
 					{
-						return NULL;
+						return nullptr;
 					}
 
 					if ( bp->velMoveValues.dirType == PMD_POINT )
@@ -271,7 +271,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 					{
 						if ( !CG_AttachmentDir( &ps->attachment, p->velocity ) )
 						{
-							return NULL;
+							return nullptr;
 						}
 					}
 
@@ -282,7 +282,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 					{
 						CG_Printf( S_ERROR "a particle with velocityType "
 						           "normal has no normal\n" );
-						return NULL;
+						return nullptr;
 					}
 
 					VectorCopy( ps->normal, p->velocity );
@@ -456,7 +456,7 @@ static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe
     particleSystem_t *parent )
 {
 	int               i;
-	particleEjector_t *pe = NULL;
+	particleEjector_t *pe = nullptr;
 	particleSystem_t  *ps = parent;
 
 	for ( i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
@@ -504,13 +504,13 @@ Allocate a new particle system
 particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 {
 	int                  i, j;
-	particleSystem_t     *ps = NULL;
+	particleSystem_t     *ps = nullptr;
 	baseParticleSystem_t *bps = &baseParticleSystems[ psHandle - 1 ];
 
 	if ( !bps->registered )
 	{
 		CG_Printf( S_ERROR "a particle system has not been registered yet\n" );
-		return NULL;
+		return nullptr;
 	}
 
 	for ( i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
@@ -651,7 +651,7 @@ Parse a value and its random variance
 static void CG_ParseValueAndVariance( char *token, float *value, float *variance, bool allowNegative )
 {
 	char  valueBuffer[ 16 ];
-	char  *variancePtr = NULL, *varEndPointer = NULL;
+	char  *variancePtr = nullptr, *varEndPointer = nullptr;
 	float localValue = 0.0f;
 	float localVariance = 0.0f;
 
@@ -691,12 +691,12 @@ static void CG_ParseValueAndVariance( char *token, float *value, float *variance
 		localValue = atof_neg( valueBuffer, allowNegative );
 	}
 
-	if ( value != NULL )
+	if ( value != nullptr )
 	{
 		*value = localValue;
 	}
 
-	if ( variance != NULL )
+	if ( variance != nullptr )
 	{
 		*variance = localVariance;
 	}
@@ -1061,7 +1061,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, NULL, &bp->velMoveValues.dirRandAngle, false );
+			CG_ParseValueAndVariance( token, nullptr, &bp->velMoveValues.dirRandAngle, false );
 		}
 		else if ( !Q_stricmp( token, "velocityPoint" ) )
 		{
@@ -1084,7 +1084,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, NULL, &bp->velMoveValues.pointRandAngle, false );
+			CG_ParseValueAndVariance( token, nullptr, &bp->velMoveValues.pointRandAngle, false );
 		}
 		///
 		else if ( !Q_stricmp( token, "accelerationType" ) )
@@ -1133,7 +1133,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, NULL, &bp->accMoveValues.dirRandAngle, false );
+			CG_ParseValueAndVariance( token, nullptr, &bp->accMoveValues.dirRandAngle, false );
 		}
 		else if ( !Q_stricmp( token, "accelerationPoint" ) )
 		{
@@ -1156,7 +1156,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, NULL, &bp->accMoveValues.pointRandAngle, false );
+			CG_ParseValueAndVariance( token, nullptr, &bp->accMoveValues.pointRandAngle, false );
 		}
 		///
 		else if ( !Q_stricmp( token, "displacement" ) )
@@ -1182,7 +1182,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			if ( token )
 			{
-				CG_ParseValueAndVariance( token, NULL, &randFrac, true );
+				CG_ParseValueAndVariance( token, nullptr, &randFrac, true );
 			}
 
 			for ( i = 0; i < 3; i++ )
@@ -1587,7 +1587,7 @@ static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, NULL, &bpe->eject.randFrac, false );
+			CG_ParseValueAndVariance( token, nullptr, &bpe->eject.randFrac, false );
 		}
 		else if ( !Q_stricmp( token, "count" ) )
 		{
@@ -1939,7 +1939,7 @@ CG_SetParticleSystemNormal
 */
 void CG_SetParticleSystemNormal( particleSystem_t *ps, vec3_t normal )
 {
-	if ( ps == NULL || !ps->valid )
+	if ( ps == nullptr || !ps->valid )
 	{
 		CG_Printf( S_WARNING "tried to modify a NULL particle system\n" );
 		return;
@@ -1959,7 +1959,7 @@ CG_SetParticleSystemLastNormal
 */
 void CG_SetParticleSystemLastNormal( particleSystem_t *ps, const vec3_t normal )
 {
-	if ( ps == NULL || !ps->valid )
+	if ( ps == nullptr || !ps->valid )
 	{
 		CG_Printf( S_WARNING "tried to modify a NULL particle system\n" );
 		return;
@@ -1993,7 +1993,7 @@ void CG_DestroyParticleSystem( particleSystem_t **ps )
 	int               i;
 	particleEjector_t *pe;
 
-	if ( *ps == NULL || !( *ps )->valid )
+	if ( *ps == nullptr || !( *ps )->valid )
 	{
 		CG_Printf( S_WARNING "tried to destroy a NULL particle system\n" );
 		return;
@@ -2014,7 +2014,7 @@ void CG_DestroyParticleSystem( particleSystem_t **ps )
 		}
 	}
 
-	*ps = NULL;
+	*ps = nullptr;
 }
 
 /*
@@ -2029,7 +2029,7 @@ bool CG_IsParticleSystemInfinite( particleSystem_t *ps )
 	int               i;
 	particleEjector_t *pe;
 
-	if ( ps == NULL )
+	if ( ps == nullptr )
 	{
 		CG_Printf( S_WARNING "tried to test a NULL particle system\n" );
 		return false;
@@ -2072,11 +2072,11 @@ Test a particle system for validity
 */
 bool CG_IsParticleSystemValid( particleSystem_t **ps )
 {
-	if ( *ps == NULL || ( *ps && !( *ps )->valid ) )
+	if ( *ps == nullptr || ( *ps && !( *ps )->valid ) )
 	{
 		if ( *ps && !( *ps )->valid )
 		{
-			*ps = NULL;
+			*ps = nullptr;
 		}
 
 		return false;
@@ -2334,7 +2334,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 
 		if ( ( contents & CONTENTS_SOLID ) || ( contents & CONTENTS_NODROP ) )
 		{
-			CG_DestroyParticle( p, NULL );
+			CG_DestroyParticle( p, nullptr );
 		}
 		else
 		{
@@ -2352,7 +2352,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	{
 		VectorCopy( newOrigin, p->origin );
 		if ( CG_IsParticleSystemValid( &p->childParticleSystem ) )
-			CG_SetParticleSystemLastNormal( p->childParticleSystem, NULL );
+			CG_SetParticleSystemLastNormal( p->childParticleSystem, nullptr );
 		return;
 	}
 
@@ -2360,7 +2360,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	if ( ( trap_CM_PointContents( trace.endpos, 0 ) & CONTENTS_NODROP ) ||
 	     ( bp->cullOnStartSolid && trace.startsolid ) )
 	{
-		CG_DestroyParticle( p, NULL );
+		CG_DestroyParticle( p, nullptr );
 		return;
 	}
 	else if ( bp->bounceCull )
@@ -2729,7 +2729,7 @@ void CG_AddParticles( void )
 			}
 			else
 			{
-				CG_DestroyParticle( p, NULL );
+				CG_DestroyParticle( p, nullptr );
 			}
 		}
 	}

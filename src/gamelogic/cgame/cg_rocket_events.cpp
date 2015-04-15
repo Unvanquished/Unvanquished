@@ -164,7 +164,7 @@ static void CG_Rocket_FilterDS( void )
 
 static void CG_Rocket_SetChatCommand( void )
 {
-	const char *cmd = NULL;
+	const char *cmd = nullptr;
 
 	switch ( cg.sayType )
 	{
@@ -353,7 +353,7 @@ static void CG_Rocket_GraphicsQualityChanged( void )
 
 static void CG_Rocket_EventPlay( void )
 {
-	const char *track = NULL;
+	const char *track = nullptr;
 
 	// Specifying multiple files to randomly select between
 	if ( trap_Argc() > 2 )

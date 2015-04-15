@@ -661,7 +661,7 @@ CG_DrawMinimap
 void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
 {
     minimap_t* m = &cg.minimap;
-    minimapZone_t *z = NULL;
+    minimapZone_t *z = nullptr;
     rectDef_t rect = *rect640;
 
     CG_UpdateMinimapActive( m );
@@ -696,5 +696,5 @@ void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
     CG_MinimapDrawBeacons( m, &rect );
 
     //Reset the color for other hud elements
-    trap_R_SetColor( NULL );
+    trap_R_SetColor( nullptr );
 }

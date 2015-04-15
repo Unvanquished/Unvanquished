@@ -445,7 +445,7 @@ bool GetNews( bool begin )
 static void LAN_ResetPings( int source )
 {
 	int          count, i;
-	serverInfo_t *servers = NULL;
+	serverInfo_t *servers = nullptr;
 
 	count = 0;
 
@@ -506,7 +506,7 @@ static int LAN_GetServerCount( int source )
 static void LAN_GetServerInfo( int source, int n, char *buf, int buflen )
 {
 	char         info[ MAX_STRING_CHARS ];
-	serverInfo_t *server = NULL;
+	serverInfo_t *server = nullptr;
 
 	info[ 0 ] = '\0';
 
@@ -574,7 +574,7 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen )
  */
 static int LAN_GetServerPing( int source, int n )
 {
-	serverInfo_t *server = NULL;
+	serverInfo_t *server = nullptr;
 
 	switch ( source )
 	{
@@ -621,7 +621,7 @@ static void LAN_MarkServerVisible( int source, int n, bool visible )
 	if ( n == -1 )
 	{
 		int          count = MAX_OTHER_SERVERS;
-		serverInfo_t *server = NULL;
+		serverInfo_t *server = nullptr;
 
 		switch ( source )
 		{
@@ -747,7 +747,7 @@ int LAN_GetServerStatus( const char *serverAddress, char *serverStatus, int maxL
 bool LAN_ServerIsInFavoriteList( int source, int n )
 {
 	int          i;
-	serverInfo_t *server = NULL;
+	serverInfo_t *server = nullptr;
 
 	switch ( source )
 	{
@@ -894,7 +894,7 @@ void CL_UpdateLevelHunkUsage( void )
 		outbuftrav = outbuf;
 		outbuftrav[ 0 ] = '\0';
 
-		while ( ( token = COM_Parse( &buftrav ) ) != NULL && token[ 0 ] )
+		while ( ( token = COM_Parse( &buftrav ) ) != nullptr && token[ 0 ] )
 		{
 			if ( !Q_stricmp( token, cl.mapname ) )
 			{

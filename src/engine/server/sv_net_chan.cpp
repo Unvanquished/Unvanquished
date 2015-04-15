@@ -51,7 +51,7 @@ void SV_Netchan_FreeQueue( client_t *client )
 		Z_Free( netbuf );
 	}
 
-	client->netchan_start_queue = NULL;
+	client->netchan_start_queue = nullptr;
 	client->netchan_end_queue = client->netchan_start_queue;
 }
 
@@ -78,7 +78,7 @@ void SV_Netchan_TransmitNextFragment( client_t *client )
 
 		if ( !client->netchan_start_queue )
 		{
-			client->netchan_end_queue = NULL;
+			client->netchan_end_queue = nullptr;
 		}
 
 		Netchan_Transmit( &client->netchan, netbuf->msg.cursize, netbuf->msg.data );
@@ -143,7 +143,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg )
 		// otherwise lose the proper encryption key
 		strcpy( netbuf->lastClientCommandString, client->lastClientCommandString );
 
-		netbuf->next = NULL;
+		netbuf->next = nullptr;
 
 		if ( !client->netchan_start_queue )
 		{

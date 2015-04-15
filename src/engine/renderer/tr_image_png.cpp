@@ -74,7 +74,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 		return;
 	}
 
-	png = png_create_read_struct( PNG_LIBPNG_VER_STRING, ( png_voidp ) NULL, png_user_error_fn, png_user_warning_fn );
+	png = png_create_read_struct( PNG_LIBPNG_VER_STRING, ( png_voidp ) nullptr, png_user_error_fn, png_user_warning_fn );
 
 	if ( !png )
 	{
@@ -90,7 +90,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 	{
 		ri.Printf( PRINT_WARNING, "LoadPNG: png_create_info_struct() failed for (%s)\n", name );
 		ri.FS_FreeFile( data );
-		png_destroy_read_struct( &png, ( png_infopp ) NULL, ( png_infopp ) NULL );
+		png_destroy_read_struct( &png, ( png_infopp ) nullptr, ( png_infopp ) nullptr );
 		return;
 	}
 
@@ -104,7 +104,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 		// if we get here, we had a problem reading the file
 		ri.Printf( PRINT_WARNING, "LoadPNG: first exception handler called for (%s)\n", name );
 		ri.FS_FreeFile( data );
-		png_destroy_read_struct( &png, ( png_infopp ) & info, ( png_infopp ) NULL );
+		png_destroy_read_struct( &png, ( png_infopp ) & info, ( png_infopp ) nullptr );
 		return;
 	}
 
@@ -117,7 +117,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 	png_read_info( png, info );
 
 	// get picture info
-	png_get_IHDR( png, info, ( png_uint_32 * ) &w, ( png_uint_32 * ) &h, &bit_depth, &color_type, NULL, NULL, NULL );
+	png_get_IHDR( png, info, ( png_uint_32 * ) &w, ( png_uint_32 * ) &h, &bit_depth, &color_type, nullptr, nullptr, nullptr );
 
 	// tell libpng to strip 16 bit/color files down to 8 bits/color
 	png_set_strip_16( png );
@@ -173,7 +173,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 		ri.Printf( PRINT_WARNING, "LoadPNG: second exception handler called for (%s)\n", name );
 		ri.Hunk_FreeTempMemory( row_pointers );
 		ri.FS_FreeFile( data );
-		png_destroy_read_struct( &png, ( png_infopp ) & info, ( png_infopp ) NULL );
+		png_destroy_read_struct( &png, ( png_infopp ) & info, ( png_infopp ) nullptr );
 		return;
 	}
 
@@ -189,7 +189,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 	png_read_end( png, info );
 
 	// clean up after the read, and free any memory allocated
-	png_destroy_read_struct( &png, &info, ( png_infopp ) NULL );
+	png_destroy_read_struct( &png, &info, ( png_infopp ) nullptr );
 
 	ri.Hunk_FreeTempMemory( row_pointers );
 	ri.FS_FreeFile( data );
@@ -226,7 +226,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 	byte        *row;
 	png_bytep   *row_pointers;
 
-	png = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
+	png = png_create_write_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr );
 
 	if ( !png )
 	{
@@ -238,7 +238,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 
 	if ( !info )
 	{
-		png_destroy_write_struct( &png, ( png_infopp ) NULL );
+		png_destroy_write_struct( &png, ( png_infopp ) nullptr );
 		return;
 	}
 

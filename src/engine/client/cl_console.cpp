@@ -234,13 +234,13 @@ void Con_Dump_f( void )
 
 	if ( l > 2 )
 	{
-		Cmd_PrintUsage("[<filename>]", NULL);
+		Cmd_PrintUsage("[<filename>]", nullptr);
 		return;
 	}
 
 	if ( l == 1 )
 	{
-		time_t now = time( NULL );
+		time_t now = time( nullptr );
 		strftime( name, sizeof( name ), "condump/%Y%m%d-%H%M%S%z.txt",
 		          localtime( &now ) );
 	}
@@ -293,7 +293,7 @@ void Con_Search_f( void )
 
 	if ( c < 2 )
 	{
-		Cmd_PrintUsage("<string>…", NULL);
+		Cmd_PrintUsage("<string>…", nullptr);
 		return;
 	}
 
@@ -333,12 +333,12 @@ void Con_Grep_f( void )
 {
 	int    l;
 	char  *search;
-	char  *printbuf = NULL;
+	char  *printbuf = nullptr;
 	size_t pbAlloc = 0, pbLength = 0;
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Cmd_PrintUsage("<string>", NULL);
+		Cmd_PrintUsage("<string>", nullptr);
 		return;
 	}
 
@@ -912,7 +912,7 @@ void Con_DrawConsoleScrollbar( void )
 	}
 
 	if(con_debug->integer) {
-		Con_DrawRightFloatingTextLine( 6, NULL, va( "Scrollbar (px): Size %d HandleSize %d Position %d", (int) scrollBarLength, (int) scrollHandleLength, (int) scrollHandlePostition ) );
+		Con_DrawRightFloatingTextLine( 6, nullptr, va( "Scrollbar (px): Size %d HandleSize %d Position %d", (int) scrollBarLength, (int) scrollHandleLength, (int) scrollHandlePostition ) );
 	}
 }
 
@@ -999,8 +999,8 @@ void Con_DrawConsoleContent( void )
 	}
 
 	if(con_debug->integer) {
-		Con_DrawRightFloatingTextLine( 3, NULL, va( "Buffer (lines): ScrollbackLength %d/%d  CurrentIndex %d", consoleState.usedScrollbackLengthInLines, consoleState.maxScrollbackLengthInLines, consoleState.currentLine) );
-		Con_DrawRightFloatingTextLine( 4, NULL, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine-consoleState.maxScrollbackLengthInLines, consoleState.scrollLineIndex, consoleState.visibleAmountOfLines, charHeight ) );
+		Con_DrawRightFloatingTextLine( 3, nullptr, va( "Buffer (lines): ScrollbackLength %d/%d  CurrentIndex %d", consoleState.usedScrollbackLengthInLines, consoleState.maxScrollbackLengthInLines, consoleState.currentLine) );
+		Con_DrawRightFloatingTextLine( 4, nullptr, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine-consoleState.maxScrollbackLengthInLines, consoleState.scrollLineIndex, consoleState.visibleAmountOfLines, charHeight ) );
 	}
 
 	/*
@@ -1077,7 +1077,7 @@ void Con_DrawConsoleContent( void )
 
 	Con_DrawConsoleScrollbar( );
 
-	re.SetColor( NULL ); //set back to white
+	re.SetColor( nullptr ); //set back to white
 }
 
 /*
@@ -1105,13 +1105,13 @@ void Con_DrawAnimatedConsole( void )
 	Con_DrawAboutText();
 
 	if(con_debug->integer) {
-			Con_DrawRightFloatingTextLine( 8, NULL, va( "Animation: target %d current fraction %f alpha %f", (int) consoleState.isOpened, consoleState.currentAnimationFraction, consoleState.currentAlphaFactor) );
+			Con_DrawRightFloatingTextLine( 8, nullptr, va( "Animation: target %d current fraction %f alpha %f", (int) consoleState.isOpened, consoleState.currentAnimationFraction, consoleState.currentAlphaFactor) );
 	}
 
 	//input, scrollbackindicator, scrollback text
 	Con_DrawConsoleContent( );
 
-	re.SetClipRegion( NULL ); //unclip
+	re.SetClipRegion( nullptr ); //unclip
 }
 
 /*
@@ -1149,7 +1149,7 @@ void Con_UpdateConsoleState( void )
 		consoleState.border.top = 0;
 	}
 
-	SCR_AdjustFrom640( &horizontalMargin, &verticalMargin, NULL, NULL );
+	SCR_AdjustFrom640( &horizontalMargin, &verticalMargin, nullptr, nullptr );
 
 	consoleState.margin.top = verticalMargin;
 	consoleState.margin.bottom = verticalMargin;
@@ -1165,7 +1165,7 @@ void Con_UpdateConsoleState( void )
 	if(con_horizontalPadding->integer)
 	{
 		float horizontalVidPadding = con_horizontalPadding->value;
-		SCR_AdjustFrom640( &horizontalVidPadding, NULL, NULL, NULL );
+		SCR_AdjustFrom640( &horizontalVidPadding, nullptr, nullptr, nullptr );
 		consoleState.padding.sides = horizontalVidPadding;
 	}
 	else

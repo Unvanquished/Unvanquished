@@ -124,11 +124,11 @@ static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 
 				VectorAdd( origin, delta, test );
 
-				trap_Trace( &trace, test, NULL, NULL, test, ENTITYNUM_NONE, MASK_SOLID, 0 );
+				trap_Trace( &trace, test, nullptr, nullptr, test, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 				if ( !trace.allsolid )
 				{
-					trap_Trace( &trace, test, NULL, NULL, origin, ENTITYNUM_NONE, MASK_SOLID, 0 );
+					trap_Trace( &trace, test, nullptr, nullptr, origin, ENTITYNUM_NONE, MASK_SOLID, 0 );
 					VectorScale( delta, trace.fraction, delta );
 					VectorAdd( total, delta, total );
 				}

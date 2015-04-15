@@ -74,7 +74,7 @@ static void RGSCalculateRate( gentity_t *self )
 	{
 		rate = level.mineRate;
 
-		for ( rgs = NULL;
+		for ( rgs = nullptr;
 		      ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
 		{
 			if ( rgs->s.eType == ET_BUILDABLE &&
@@ -100,7 +100,7 @@ static void RGSInformNeighbors( gentity_t *self )
 {
 	gentity_t *rgs;
 
-	for ( rgs = NULL;
+	for ( rgs = nullptr;
 	      ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
 	{
 		if ( rgs->s.eType == ET_BUILDABLE &&
@@ -227,7 +227,7 @@ float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
 
 	delta = G_RGSPredictEfficiency( origin );
 
-	for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, origin, RGS_RANGE * 2.0f ) ); )
+	for ( rgs = nullptr; ( rgs = G_IterateEntitiesWithinRadius( rgs, origin, RGS_RANGE * 2.0f ) ); )
 	{
 		if ( rgs->s.eType == ET_BUILDABLE &&
 		     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )

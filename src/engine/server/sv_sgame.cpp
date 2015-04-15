@@ -92,7 +92,7 @@ void SV_GameSendServerCommand( int clientNum, const char *text )
 {
 	if ( clientNum == -1 )
 	{
-		SV_SendServerCommand( NULL, "%s", text );
+		SV_SendServerCommand( nullptr, "%s", text );
 	}
 	else if ( clientNum == -2 )
 	{
@@ -150,7 +150,7 @@ int SV_RSAGenMsg( const char *pubkey, char *cleartext, char *encrypted )
 	if ( retval )
 	{
 		rsa_public_key_prepare( &public_key );
-		retval = rsa_encrypt( &public_key, NULL, qnettle_random, RSA_KEY_LENGTH / 8 - 11, buffer, message );
+		retval = rsa_encrypt( &public_key, nullptr, qnettle_random, RSA_KEY_LENGTH / 8 - 11, buffer, message );
 	}
 
 	rsa_public_key_clear( &public_key );
@@ -301,7 +301,7 @@ static void SV_GetTimeString( char *buffer, int length, const char *format, cons
 	}
 	else
 	{
-		strftime( buffer, length, format, gmtime( NULL ) );
+		strftime( buffer, length, format, gmtime( nullptr ) );
 	}
 }
 
@@ -341,7 +341,7 @@ static void SV_InitGameVM( bool restart )
 	// a previous level
 	for ( i = 0; i < sv_maxclients->integer; i++ )
 	{
-		svs.clients[ i ].gentity = NULL;
+		svs.clients[ i ].gentity = nullptr;
 	}
 
 	// use the current msec count for a random seed

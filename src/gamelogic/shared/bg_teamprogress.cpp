@@ -78,7 +78,7 @@ static const char *UnlockableHumanName( unlockable_t *unlockable )
 	}
 
 	Com_Error( ERR_FATAL, "UnlockableHumanName: Unlockable has unknown type" );
-	return NULL;
+	return nullptr;
 }
 
 #ifdef BUILD_CGAME

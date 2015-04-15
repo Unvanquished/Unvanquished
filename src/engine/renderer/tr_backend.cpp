@@ -127,7 +127,7 @@ void GL_BindNullProgram( void )
 	if ( glState.currentProgram )
 	{
 		glUseProgram( 0 );
-		glState.currentProgram = NULL;
+		glState.currentProgram = nullptr;
 	}
 }
 
@@ -844,13 +844,13 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	GLimp_LogComment( "--- RB_RenderDrawSurfaces ---\n" );
 
 	// draw everything
-	oldEntity = NULL;
-	oldShader = NULL;
+	oldEntity = nullptr;
+	oldShader = nullptr;
 	oldLightmapNum = -1;
 	oldFogNum = -1;
 	oldDepthRange = false;
 	depthRange = false;
-	backEnd.currentLight = NULL;
+	backEnd.currentLight = nullptr;
 
 	for ( i = 0, drawSurf = backEnd.viewParms.drawSurfs; i < backEnd.viewParms.numDrawSurfs; i++, drawSurf++ )
 	{
@@ -900,7 +900,7 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 		// entities merged into a single batch, like smoke and blood puff sprites
 		if ( shader != oldShader || lightmapNum != oldLightmapNum || fogNum != oldFogNum || ( entity != oldEntity && !shader->entityMergable ) )
 		{
-			if ( oldShader != NULL )
+			if ( oldShader != nullptr )
 			{
 				if ( oldShader->autoSpriteMode && !(tess.attribsSet & ATTR_ORIENTATION) ) {
 					Tess_AutospriteDeform( oldShader->autoSpriteMode,
@@ -910,7 +910,7 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 				Tess_End();
 			}
 
-			Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, lightmapNum, fogNum );
+			Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, lightmapNum, fogNum );
 
 			oldShader = shader;
 			oldLightmapNum = lightmapNum;
@@ -966,7 +966,7 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	}
 
 	// draw the contents of the last shader batch
-	if ( oldShader != NULL )
+	if ( oldShader != nullptr )
 	{
 		if ( oldShader->autoSpriteMode && !(tess.attribsSet & ATTR_ORIENTATION) ) {
 			Tess_AutospriteDeform( oldShader->autoSpriteMode,
@@ -1119,7 +1119,7 @@ static interaction_t *IterateLights( const interaction_t *prev )
 
 	if ( backEnd.viewParms.numInteractions <= 0 )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	const interaction_t *next = prev;
@@ -1132,7 +1132,7 @@ static interaction_t *IterateLights( const interaction_t *prev )
 
 	if ( next > last )
 	{
-		next = NULL;
+		next = nullptr;
 	}
 
 	return ( interaction_t * ) next;
@@ -1225,11 +1225,11 @@ static void RB_RenderInteractions()
 	}
 
 	// draw everything
-	oldEntity = NULL;
-	oldShader = NULL;
+	oldEntity = nullptr;
+	oldShader = nullptr;
 	oldDepthRange = false;
 	depthRange = false;
-	iaFirst = NULL;
+	iaFirst = nullptr;
 
 	// render interactions
 	while ( ( iaFirst = IterateLights( iaFirst ) ) )
@@ -1272,7 +1272,7 @@ static void RB_RenderInteractions()
 			Tess_End();
 
 			// begin a new batch
-			Tess_Begin( Tess_StageIteratorLighting, NULL, shader, light->shader, false, false, -1, 0 );
+			Tess_Begin( Tess_StageIteratorLighting, nullptr, shader, light->shader, false, false, -1, 0 );
 
 			// change the modelview matrix if needed
 			if ( entity != oldEntity )
@@ -1325,8 +1325,8 @@ static void RB_RenderInteractions()
 		Tess_End();
 
 		// force updates
-		oldEntity = NULL;
-		oldShader = NULL;
+		oldEntity = nullptr;
+		oldShader = nullptr;
 	}
 
 	Tess_End();
@@ -1357,7 +1357,7 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				       bool shadowClip )
 {
 	// HACK: bring OpenGL into a safe state or strange FBO update problems will occur
-	GL_BindProgram( NULL );
+	GL_BindProgram( nullptr );
 	GL_State( GLS_DEFAULT );
 
 	GL_BindToTMU( 0, tr.whiteImage );
@@ -2095,8 +2095,8 @@ static void RB_RenderInteractionsShadowMapped()
 	}
 
 	// draw everything
-	oldEntity = NULL;
-	oldShader = NULL;
+	oldEntity = nullptr;
+	oldShader = nullptr;
 	oldDepthRange = depthRange = false;
 	oldAlphaTest = alphaTest = false;
 
@@ -2104,7 +2104,7 @@ static void RB_RenderInteractionsShadowMapped()
 	GL_ClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
 
 	// render each light
-	iaFirst = NULL;
+	iaFirst = nullptr;
 
 	while ( ( iaFirst = IterateLights( iaFirst ) ) )
 	{
@@ -2128,10 +2128,10 @@ static void RB_RenderInteractionsShadowMapped()
 		const interaction_t *iaLast = iaFirst;
 		for ( int i = 0; i < numMaps; i++ )
 		{
-			entity = NULL;
-			shader = NULL;
-			oldEntity = NULL;
-			oldShader = NULL;
+			entity = nullptr;
+			shader = nullptr;
+			oldEntity = nullptr;
+			oldShader = nullptr;
 
 			if ( light->l.noShadows || light->shadowLOD < 0 )
 			{
@@ -2221,7 +2221,7 @@ static void RB_RenderInteractionsShadowMapped()
 								}
 
 								// we don't need tangent space calculations here
-								Tess_Begin( Tess_StageIteratorShadowFill, NULL, shader, light->shader, true, false, -1, 0 );
+								Tess_Begin( Tess_StageIteratorShadowFill, nullptr, shader, light->shader, true, false, -1, 0 );
 							}
 
 							break;
@@ -2312,10 +2312,10 @@ static void RB_RenderInteractionsShadowMapped()
 
 			if( shadowClipFound )
 			{
-				entity = NULL;
-				shader = NULL;
-				oldEntity = NULL;
-				oldShader = NULL;
+				entity = nullptr;
+				shader = nullptr;
+				oldEntity = nullptr;
+				oldShader = nullptr;
 
 				if ( light->l.noShadows || light->shadowLOD < 0 )
 				{
@@ -2400,7 +2400,7 @@ static void RB_RenderInteractionsShadowMapped()
 									}
 
 									// we don't need tangent space calculations here
-									Tess_Begin( Tess_StageIteratorShadowFill, NULL, shader, light->shader, true, false, -1, 0 );
+									Tess_Begin( Tess_StageIteratorShadowFill, nullptr, shader, light->shader, true, false, -1, 0 );
 								}
 
 								break;
@@ -2505,10 +2505,10 @@ static void RB_RenderInteractionsShadowMapped()
 
 		// begin lighting
 		RB_SetupLightForLighting( light );
-		entity = NULL;
-		shader = NULL;
-		oldEntity = NULL;
-		oldShader = NULL;
+		entity = nullptr;
+		shader = nullptr;
+		oldEntity = nullptr;
+		oldShader = nullptr;
 		for ( ia = iaFirst; ia; ia = ia->next )
 		{
 			iaLast = ia;
@@ -2553,7 +2553,7 @@ static void RB_RenderInteractionsShadowMapped()
 				}
 
 				// begin a new batch
-				Tess_Begin( Tess_StageIteratorLighting, NULL, shader, light->shader, light->l.inverseShadows, false, -1, 0 );
+				Tess_Begin( Tess_StageIteratorLighting, nullptr, shader, light->shader, light->l.inverseShadows, false, -1, 0 );
 			}
 
 			// change the modelview matrix if needed
@@ -3031,7 +3031,7 @@ static void RB_RenderDebugUtils()
 		GL_BindToTMU( 0, tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
-		ia = NULL;
+		ia = nullptr;
 		while ( ( ia = IterateLights( ia ) ) )
 		{
 			backEnd.currentLight = light = ia->light;
@@ -3081,7 +3081,7 @@ static void RB_RenderDebugUtils()
 			VectorMA( vec3_origin, 16, left, left );
 			VectorMA( vec3_origin, 16, up, up );
 
-			Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, true, true, 0, 0 );
+			Tess_Begin( Tess_StageIteratorDebug, nullptr, nullptr, nullptr, true, true, 0, 0 );
 
 			if ( light->isStatic && light->frustumVBO && light->frustumIBO )
 			{
@@ -3405,7 +3405,7 @@ static void RB_RenderDebugUtils()
 			tess.numVertexes = 0;
 			tess.numIndexes = 0;
 
-			skel = NULL;
+			skel = nullptr;
 
 			if ( ent->e.skeleton.type == SK_ABSOLUTE )
 			{
@@ -3687,7 +3687,7 @@ static void RB_RenderDebugUtils()
 		gl_reflectionShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 		gl_reflectionShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, true, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorDebug, nullptr, nullptr, nullptr, true, false, -1, 0 );
 
 		for ( j = 0; j < tr.cubeProbes.currentElements; j++ )
 		{
@@ -3735,17 +3735,17 @@ static void RB_RenderDebugUtils()
 
 			R_FindTwoNearestCubeMaps( backEnd.viewParms.orientation.origin, &cubeProbeNearest, &cubeProbeSecondNearest );
 
-			Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, true, false, -1, 0 );
+			Tess_Begin( Tess_StageIteratorDebug, nullptr, nullptr, nullptr, true, false, -1, 0 );
 
-			if ( cubeProbeNearest == NULL && cubeProbeSecondNearest == NULL )
+			if ( cubeProbeNearest == nullptr && cubeProbeSecondNearest == nullptr )
 			{
 				// bad
 			}
-			else if ( cubeProbeNearest == NULL )
+			else if ( cubeProbeNearest == nullptr )
 			{
 				Tess_AddCubeWithNormals( cubeProbeSecondNearest->origin, mins, maxs, colorBlue );
 			}
-			else if ( cubeProbeSecondNearest == NULL )
+			else if ( cubeProbeSecondNearest == nullptr )
 			{
 				Tess_AddCubeWithNormals( cubeProbeNearest->origin, mins, maxs, colorYellow );
 			}
@@ -3808,7 +3808,7 @@ static void RB_RenderDebugUtils()
 
 		for ( z = 0; z < tr.world->lightGridBounds[ 2 ]; z++ ) {
 			for ( y = 0; y < tr.world->lightGridBounds[ 1 ]; y++ ) {
-				Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, true, false, -1, 0 );
+				Tess_Begin( Tess_StageIteratorDebug, nullptr, nullptr, nullptr, true, false, -1, 0 );
 
 				for ( x = 0; x < tr.world->lightGridBounds[ 0 ]; x++ ) {
 					vec3_t origin;
@@ -4182,7 +4182,7 @@ static void RB_RenderDebugUtils()
 
 		GL_CheckErrors();
 
-		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, true, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorDebug, nullptr, nullptr, nullptr, true, false, -1, 0 );
 
 		for ( i = 0, dp = backEnd.refdef.decalProjectors; i < backEnd.refdef.numDecalProjectors; i++, dp++ )
 		{
@@ -4479,7 +4479,7 @@ static void RB_RenderView( void )
 	RB_CameraPostFX();
 
 	// copy to given byte buffer that is NOT a FBO
-	if ( tr.refdef.pixelTarget != NULL )
+	if ( tr.refdef.pixelTarget != nullptr )
 	{
 		int i;
 
@@ -4727,7 +4727,7 @@ const void *RB_SetColorGrading( const void *data )
 
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
 
-	glGetTexImage( cmd->image->type, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	glGetTexImage( cmd->image->type, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
 
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, tr.colorGradePBO );
@@ -4738,7 +4738,7 @@ const void *RB_SetColorGrading( const void *data )
 	{
 		glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, cmd->slot * REF_COLORGRADEMAP_SIZE,
 		                 REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE,
-		                 GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+		                 GL_RGBA, GL_UNSIGNED_BYTE, nullptr );
 	}
 	else
 	{
@@ -4750,7 +4750,7 @@ const void *RB_SetColorGrading( const void *data )
 		{
 			glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i + cmd->slot * REF_COLORGRADEMAP_SIZE,
 			                 REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE, 1,
-			                 GL_RGBA, GL_UNSIGNED_BYTE, ( ( u8vec4_t * ) NULL ) + REF_COLORGRADEMAP_SIZE );
+			                 GL_RGBA, GL_UNSIGNED_BYTE, ( ( u8vec4_t * ) nullptr ) + REF_COLORGRADEMAP_SIZE );
 		}
 
 		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
@@ -4791,11 +4791,11 @@ const void     *RB_StretchPic( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
 	if( !tess.indexes ) {
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
 	Tess_CheckOverflow( 4, 6 );
@@ -4862,7 +4862,7 @@ const void     *RB_ScissorSet( const void *data )
 
 	Tess_End();
 	GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
-	tess.surfaceShader = NULL;
+	tess.surfaceShader = nullptr;
 
 	return ( const void * )( cmd + 1 );
 }
@@ -4890,7 +4890,7 @@ const void     *RB_Draw2dPolys( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
 	Tess_CheckOverflow( cmd->numverts, ( cmd->numverts - 2 ) * 3 );
@@ -4947,11 +4947,11 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
 	if( !tess.verts ) {
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
 	Tess_CheckOverflow( cmd->numverts, cmd->numIndexes );
@@ -5017,11 +5017,11 @@ const void     *RB_RotatedPic( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
 	if( !tess.indexes ) {
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
 	Tess_CheckOverflow( 4, 6 );
@@ -5114,11 +5114,11 @@ const void     *RB_StretchPicGradient( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
 	if( !tess.indexes ) {
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
 	Tess_CheckOverflow( 4, 6 );

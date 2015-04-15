@@ -1822,7 +1822,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
-		CG_SetLerpFrameAnimation( ci, lf, newAnimation, NULL );
+		CG_SetLerpFrameAnimation( ci, lf, newAnimation, nullptr );
 
 		if ( !lf->animation )
 		{
@@ -1888,18 +1888,18 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 	// do the shuffle turn frames locally
 	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, NULL, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, nullptr, speedScale );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, NULL, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, nullptr, speedScale );
 	}
 
 	*legsOld = cent->pe.legs.oldFrame;
 	*legs = cent->pe.legs.frame;
 	*legsBackLerp = cent->pe.legs.backlerp;
 
-	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, NULL, speedScale );
+	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, nullptr, speedScale );
 
 	*torsoOld = cent->pe.torso.oldFrame;
 	*torso = cent->pe.torso.frame;
@@ -1931,11 +1931,11 @@ static void CG_PlayerNonSegAnimation( centity_t *cent, int *nonSegOld,
 	// do the shuffle turn frames locally
 	if ( cent->pe.nonseg.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_STAND )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, NULL, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, nullptr, speedScale );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, NULL, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, nullptr, speedScale );
 	}
 
 	*nonSegOld = cent->pe.nonseg.oldFrame;
@@ -2566,7 +2566,7 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 			{
 				oldSkeleton = jetpackSkeleton;
 
-				if ( lf->old_animation != NULL && lf->old_animation->handle )
+				if ( lf->old_animation != nullptr && lf->old_animation->handle )
 				{
 					if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 					{
@@ -2774,7 +2774,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		VectorCopy( es->pos.trBase, temp );
 		temp[ 2 ] -= 4096.0f;
 
-		CG_Trace( &tr, es->pos.trBase, NULL, NULL, temp, es->number, MASK_SOLID, 0 );
+		CG_Trace( &tr, es->pos.trBase, nullptr, nullptr, temp, es->number, MASK_SOLID, 0 );
 		VectorCopy( tr.endpos, origin );
 
 		size = 32.0f;
@@ -2858,7 +2858,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 	entityState_t *es = &cent->currentState;
 	vec3_t        surfNormal = { 0.0f, 0.0f, 1.0f };
 
-	BG_ClassBoundingBox( class_, mins, maxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
 	mins[ 2 ] = 0.0f;
 	maxs[ 2 ] = 2.0f;
 
@@ -2948,7 +2948,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 		return;
 	}
 
-	BG_ClassBoundingBox( class_, mins, maxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
 
 	VectorCopy( cent->lerpOrigin, end );
 	end[ 2 ] += mins[ 2 ];
@@ -2974,7 +2974,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 	}
 
 	// trace down to find the surface
-	trap_CM_BoxTrace( &trace, start, end, NULL, NULL, 0,
+	trap_CM_BoxTrace( &trace, start, end, nullptr, nullptr, 0,
 	                  ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ), 0 );
 
 	if ( trace.fraction == 1.0f )
@@ -3204,7 +3204,7 @@ void CG_Player( centity_t *cent )
 	{
 		vec3_t mins, maxs;
 
-		BG_ClassBoundingBox( class_, mins, maxs, NULL, NULL, NULL );
+		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
 		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 	}
 
@@ -3306,7 +3306,7 @@ void CG_Player( centity_t *cent )
 
 		body.renderfx = renderfx;
 
-		BG_ClassBoundingBox( class_, mins, maxs, NULL, NULL, NULL );
+		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
 
 		// move the origin closer into the wall with a CapTrace
 		if ( es->eFlags & EF_WALLCLIMB && !( es->eFlags & EF_DEAD ) && !( cg.intermissionStarted ) )
@@ -3326,7 +3326,7 @@ void CG_Player( centity_t *cent )
 
 			VectorMA( cent->lerpOrigin, -TRACE_DEPTH, surfNormal, end );
 			VectorMA( cent->lerpOrigin, 1.0f, surfNormal, start );
-			CG_CapTrace( &tr, start, NULL, NULL, end, es->number, MASK_PLAYERSOLID, 0 );
+			CG_CapTrace( &tr, start, nullptr, nullptr, end, es->number, MASK_PLAYERSOLID, 0 );
 
 			// if the trace misses completely then just use body.origin
 			// apparently capsule traces are "smaller" than box traces
@@ -3438,7 +3438,7 @@ void CG_Player( centity_t *cent )
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE )
 		{
-			CG_AddPlayerWeapon( &body, NULL, cent );
+			CG_AddPlayerWeapon( &body, nullptr, cent );
 		}
 
 		CG_PlayerUpgrades( cent, &body );
@@ -3536,7 +3536,7 @@ void CG_Player( centity_t *cent )
 			VectorCopy( es->angles2, surfNormal );
 		}
 
-		BG_ClassBoundingBox( class_, mins, maxs, NULL, NULL, NULL );
+		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
 
 		VectorMA( legs.origin, -TRACE_DEPTH, surfNormal, end );
 		VectorMA( legs.origin, 1.0f, surfNormal, start );
@@ -3640,11 +3640,11 @@ void CG_Player( centity_t *cent )
 	{
 		if ( !ci->nonsegmented )
 		{
-			CG_AddPlayerWeapon( &torso, NULL, cent );
+			CG_AddPlayerWeapon( &torso, nullptr, cent );
 		}
 		else
 		{
-			CG_AddPlayerWeapon( &legs, NULL, cent );
+			CG_AddPlayerWeapon( &legs, nullptr, cent );
 		}
 	}
 
@@ -3710,7 +3710,7 @@ void CG_Corpse( centity_t *cent )
 	memset( &head, 0, sizeof( head ) );
 
 	VectorCopy( cent->lerpOrigin, origin );
-	BG_ClassBoundingBox( es->clientNum, liveZ, NULL, NULL, deadZ, deadMax );
+	BG_ClassBoundingBox( es->clientNum, liveZ, nullptr, nullptr, deadZ, deadMax );
 	origin[ 2 ] -= ( liveZ[ 2 ] - deadZ[ 2 ] );
 
 	if( ci->md5 )
@@ -3758,13 +3758,13 @@ void CG_Corpse( centity_t *cent )
 	else if ( !ci->nonsegmented )
 	{
 		memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, es->legsAnim, NULL, 1 );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, es->legsAnim, nullptr, 1 );
 		legs.oldframe = cent->pe.legs.oldFrame;
 		legs.frame = cent->pe.legs.frame;
 		legs.backlerp = cent->pe.legs.backlerp;
 
 		memset( &cent->pe.torso, 0, sizeof( lerpFrame_t ) );
-		CG_RunPlayerLerpFrame( ci, &cent->pe.torso, es->torsoAnim, NULL, 1 );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.torso, es->torsoAnim, nullptr, 1 );
 		torso.oldframe = cent->pe.torso.oldFrame;
 		torso.frame = cent->pe.torso.frame;
 		torso.backlerp = cent->pe.torso.backlerp;
@@ -3772,7 +3772,7 @@ void CG_Corpse( centity_t *cent )
 	else
 	{
 		memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, es->legsAnim, NULL, 1 );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, es->legsAnim, nullptr, 1 );
 		legs.oldframe = cent->pe.nonseg.oldFrame;
 		legs.frame = cent->pe.nonseg.frame;
 		legs.backlerp = cent->pe.nonseg.backlerp;
@@ -3961,7 +3961,7 @@ centity_t *CG_GetLocation( vec3_t origin )
 	centity_t *eloc, *best;
 	float     bestlen, len;
 
-	best = NULL;
+	best = nullptr;
 	bestlen = 3.0f * 8192.0f * 8192.0f;
 
 	for ( i = MAX_CLIENTS; i < MAX_GENTITIES; i++ )

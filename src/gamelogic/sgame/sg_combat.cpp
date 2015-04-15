@@ -151,7 +151,7 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
  */
 static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *killer, team_t *team )
 {
-	const gentity_t *assistant = NULL;
+	const gentity_t *assistant = nullptr;
 	float           damage;
 	int             when = 0;
 	int             playerNum;
@@ -159,7 +159,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	// Suicide? No assistance needed with that
 	if ( killer == self)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// Require that the assist was for, at least, 25% of the damage or
@@ -312,7 +312,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	const gentity_t *assistantEnt;
 	int             assistant = ENTITYNUM_NONE;
-	const char      *assistantName = NULL;
+	const char      *assistantName = nullptr;
 	team_t          assistantTeam = TEAM_NONE;
 
 	if ( self->client->ps.pm_type == PM_DEAD )
@@ -1495,7 +1495,7 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		{
 			hitClient = true;
 
-			G_Damage( ent, NULL, attacker, NULL, origin, ( int ) points,
+			G_Damage( ent, nullptr, attacker, nullptr, origin, ( int ) points,
 			          DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE, mod );
 		}
 	}
@@ -1579,7 +1579,7 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 				dir[ 2 ] += 24;
 				VectorNormalize( dir );
 				hitSomething = true;
-				G_Damage( ent, NULL, attacker, dir, origin, ( int ) points,
+				G_Damage( ent, nullptr, attacker, dir, origin, ( int ) points,
 				          ( DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE | dflags ), mod );
 			}
 			else if ( G_Team( ent ) == testHit && ent->health > 0 )

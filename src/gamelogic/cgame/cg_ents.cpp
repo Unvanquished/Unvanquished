@@ -369,7 +369,7 @@ static void CG_Speaker( centity_t *cent )
 		return;
 	}
 
-	trap_S_StartSound( NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[ cent->currentState.eventParm ] );
+	trap_S_StartSound( nullptr, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[ cent->currentState.eventParm ] );
 
 	//  ent->s.frame = ent->wait * 10;
 	//  ent->s.clientNum = ent->random * 10;
@@ -718,7 +718,7 @@ static void CG_LightFlare( centity_t *cent )
 	flare.renderfx |= RF_DEPTHHACK;
 
 	//bunch of geometry
-	AngleVectors( es->angles, forward, NULL, NULL );
+	AngleVectors( es->angles, forward, nullptr, nullptr );
 	VectorCopy( cent->lerpOrigin, flare.origin );
 	VectorSubtract( flare.origin, cg.refdef.vieworg, delta );
 	len = VectorLength( delta );
@@ -838,7 +838,7 @@ static void CG_Lev2ZapChain( centity_t *cent )
 {
 	int           i;
 	entityState_t *es;
-	centity_t     *source = NULL, *target = NULL;
+	centity_t     *source = nullptr, *target = nullptr;
 	int           entityNums[ LEVEL2_AREAZAP_MAX_TARGETS + 1 ];
 	int           count;
 
@@ -932,7 +932,7 @@ static void CG_InterpolateEntityPosition( centity_t *cent )
 
 	// it would be an internal error to find an entity that interpolates without
 	// a snapshot ahead of the current one
-	if ( cg.nextSnap == NULL )
+	if ( cg.nextSnap == nullptr )
 	{
 		CG_Error( "CG_InterpoateEntityPosition: cg.nextSnap == NULL" );
 	}
@@ -1063,17 +1063,17 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	}
 
 	//clear any particle systems from previous uses of this centity_t
-	cent->muzzlePS = NULL;
+	cent->muzzlePS = nullptr;
 	cent->muzzlePsTrigger = false;
-	cent->jetPackPS[ 0 ] = NULL;
-	cent->jetPackPS[ 1 ] = NULL;
+	cent->jetPackPS[ 0 ] = nullptr;
+	cent->jetPackPS[ 1 ] = nullptr;
 	cent->jetPackState = JPS_INACTIVE;
-	cent->buildablePS = NULL;
-	cent->buildableStatusPS = NULL;
-	cent->entityPS = NULL;
+	cent->buildablePS = nullptr;
+	cent->buildableStatusPS = nullptr;
+	cent->entityPS = nullptr;
 	cent->entityPSMissing = false;
-	cent->missilePS = NULL;
-	cent->missileTS = NULL;
+	cent->missilePS = nullptr;
+	cent->missileTS = nullptr;
 
 	//make sure that the buildable animations are in a consistent state
 	//when a buildable enters the PVS

@@ -72,7 +72,7 @@ typedef enum shorthand_e {
 
 // Buildable animation names.
 static const char* shorthandToName[ NUM_SHORTHANDS ] = {
-    NULL,
+    nullptr,
 
 	"idle",
 	"idle2",
@@ -204,8 +204,8 @@ Called for human buildables as they are destroyed
 */
 void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir )
 {
-	particleSystem_t *explosion = NULL;
-	particleSystem_t *nova = NULL;
+	particleSystem_t *explosion = nullptr;
+	particleSystem_t *nova = nullptr;
 
 	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
 	{
@@ -278,7 +278,7 @@ static void CG_Creep( centity_t *cent )
 	VectorScale( temp, -attr->creepSize, temp );
 	VectorAdd( temp, cent->lerpOrigin, temp );
 
-	CG_Trace( &tr, cent->lerpOrigin, NULL, NULL, temp, cent->currentState.number,
+	CG_Trace( &tr, cent->lerpOrigin, nullptr, nullptr, temp, cent->currentState.number,
 	          MASK_PLAYERSOLID, 0 );
 
 	if ( size > 0.0f && tr.fraction < 1.0f )
@@ -854,7 +854,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 		{
 			oldbSkeleton = bSkeleton;
 
-			if ( lf->old_animation != NULL && lf->old_animation->handle )
+			if ( lf->old_animation != nullptr && lf->old_animation->handle )
 			{
 				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 				{
@@ -1062,13 +1062,13 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
 	trace_t tr;
 	float   fraction;
 
-	AngleVectors( angles, forward, NULL, NULL );
+	AngleVectors( angles, forward, nullptr, nullptr );
 	VectorCopy( normal, outAxis[ 2 ] );
 	ProjectPointOnPlane( outAxis[ 0 ], forward, outAxis[ 2 ] );
 
 	if ( !VectorNormalize( outAxis[ 0 ] ) )
 	{
-		AngleVectors( angles, NULL, NULL, forward );
+		AngleVectors( angles, nullptr, nullptr, forward );
 		ProjectPointOnPlane( outAxis[ 0 ], forward, outAxis[ 2 ] );
 		VectorNormalize( outAxis[ 0 ] );
 	}
@@ -1125,7 +1125,7 @@ static void CG_DrawBuildableRangeMarker( buildable_t buildable, const vec3_t ori
 
 		if ( rmType == RM_SPHERE )
 		{
-			CG_DrawRangeMarker( rmType, localOrigin, range, NULL, rgba );
+			CG_DrawRangeMarker( rmType, localOrigin, range, nullptr, rgba );
 		}
 		else
 		{
@@ -1255,7 +1255,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 		vec4_t backColour;
 
-		const char *text = NULL;
+		const char *text = nullptr;
 		qhandle_t  shader = 0;
 
 		picM = picH * scale;
@@ -1320,7 +1320,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 			CG_DrawPic( picX - picM / 2, picY - picM / 2, picM, picM, cgs.media.whiteShader );
 			trap_R_SetColor( bs->foreColor );
 			CG_DrawPic( picX - picH / 2, picY - picH / 2, picH, picH, bs->noPowerShader );
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		if ( text )
@@ -1340,7 +1340,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 			            ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ),
 			            cgs.media.whiteShader );
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 
 			colour[0] = bs->foreColor[0];
 			colour[1] = bs->foreColor[1];
@@ -1757,13 +1757,13 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		{
 			case 1:
 				// step right
-				AngleVectors( cg.refdefViewAngles, NULL, right, NULL );
+				AngleVectors( cg.refdefViewAngles, nullptr, right, nullptr );
 				VectorMA( trOrigin, STATUS_PEEK_DIST, right, trOrigin );
 				break;
 
 			case 2:
 				// step left
-				AngleVectors( cg.refdefViewAngles, NULL, right, NULL );
+				AngleVectors( cg.refdefViewAngles, nullptr, right, nullptr );
 				VectorMA( trOrigin, -STATUS_PEEK_DIST, right, trOrigin );
 				break;
 
@@ -1774,7 +1774,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		// look through up to 3 players and/or transparent buildables
 		for ( i = 0; i < 3; i++ )
 		{
-			CG_Trace( &tr, trOrigin, NULL, NULL, origin, entNum, MASK_SHOT, 0 );
+			CG_Trace( &tr, trOrigin, nullptr, nullptr, origin, entNum, MASK_SHOT, 0 );
 
 			if ( tr.entityNum == cent->currentState.number )
 			{
@@ -1959,7 +1959,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 				CG_ClearClipRegion();
 			}
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		// draw mine rate bar
@@ -1979,7 +1979,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 
 			// TODO: Draw text using libRocket
 			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
@@ -2005,7 +2005,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 
 			// TODO: Draw text using libRocket
 			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
@@ -2028,7 +2028,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			trap_R_SetColor( separatorColor );
 			CG_DrawPic( sepX, sepY, sepW, sepH, cgs.media.whiteShader );
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		// draw health bar
@@ -2048,7 +2048,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		// draw power consumption bar
@@ -2083,7 +2083,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			trap_R_SetColor( markColor );
 			CG_DrawPic( markX, barY, markW, markH, cgs.media.whiteShader );
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		if ( bs->overlayShader )
@@ -2101,7 +2101,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			trap_R_SetColor( frameColor );
 			CG_DrawPic( oX, oY, oW, oH, bs->overlayShader );
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		trap_R_SetColor( color );
@@ -2160,7 +2160,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawField( nX, subY, 4, subH, subH, healthPoints );
 		}
 
-		trap_R_SetColor( NULL );
+		trap_R_SetColor( nullptr );
 		CG_ClearClipRegion();
 	}
 }
@@ -2770,7 +2770,7 @@ void CG_Buildable( centity_t *cent )
 			if ( team == TEAM_HUMANS )
 			{
 				int i = rand() % 4;
-				trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
+				trap_S_StartSound( nullptr, es->number, CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
 			}
 
 			cent->lastBuildableDamageSoundTime = cg.time;

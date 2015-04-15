@@ -214,7 +214,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Could not init navmesh\n" );
 		dtFreeNavMesh( nav.mesh );
-		nav.mesh = NULL;
+		nav.mesh = nullptr;
 		FS_FCloseFile( f );
 		return false;
 	}
@@ -225,7 +225,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Could not allocate tile cache\n" );
 		dtFreeNavMesh( nav.mesh );
-		nav.mesh = NULL;
+		nav.mesh = nullptr;
 		FS_FCloseFile( f );
 		return false;
 	}
@@ -237,8 +237,8 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 		Com_Printf( S_COLOR_RED "ERROR: Could not init tile cache\n" );
 		dtFreeNavMesh( nav.mesh );
 		dtFreeTileCache( nav.cache );
-		nav.mesh = NULL;
-		nav.cache = NULL;
+		nav.mesh = nullptr;
+		nav.cache = nullptr;
 		FS_FCloseFile( f );
 		return false;
 	}
@@ -256,8 +256,8 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 			Com_Printf( S_COLOR_RED "ERROR: NUll Tile in navmesh\n" );
 			dtFreeNavMesh( nav.mesh );
 			dtFreeTileCache( nav.cache );
-			nav.cache = NULL;
-			nav.mesh = NULL;
+			nav.cache = nullptr;
+			nav.mesh = nullptr;
 			FS_FCloseFile( f );
 			return false;
 		}
@@ -269,8 +269,8 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 			Com_Printf( S_COLOR_RED "ERROR: Failed to allocate memory for tile data\n" );
 			dtFreeNavMesh( nav.mesh );
 			dtFreeTileCache( nav.cache );
-			nav.cache = NULL;
-			nav.mesh = NULL;
+			nav.cache = nullptr;
+			nav.mesh = nullptr;
 			FS_FCloseFile( f );
 			return false;
 		}
@@ -293,8 +293,8 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 			dtFree( data );
 			dtFreeTileCache( nav.cache );
 			dtFreeNavMesh( nav.mesh );
-			nav.cache = NULL;
-			nav.mesh = NULL;
+			nav.cache = nullptr;
+			nav.mesh = nullptr;
 			FS_FCloseFile( f );
 			return false;
 		}
@@ -377,7 +377,7 @@ bool BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 			agents[ i ].corridor.reset( 0, clearVec );
 			agents[ i ].clientNum = i;
 			agents[ i ].needReplan = true;
-			agents[ i ].nav = NULL;
+			agents[ i ].nav = nullptr;
 			agents[ i ].offMesh = false;
 			memset( agents[ i ].routeResults, 0, sizeof( agents[ i ].routeResults ) );
 		}

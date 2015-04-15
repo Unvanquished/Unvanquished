@@ -71,7 +71,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 	/* This struct contains the JPEG decompression parameters and pointers to
 	 * working space (which is allocated as needed by the JPEG library).
 	 */
-	struct jpeg_decompress_struct cinfo = { NULL };
+	struct jpeg_decompress_struct cinfo = { nullptr };
 
 	/* We use our private extension JPEG error handler.
 	 * Note that this struct must live as long as the main JPEG parameter
@@ -362,7 +362,7 @@ static void jpegDest( j_compress_ptr cinfo, byte *outfile, int size )
 	 * manager serially with the same JPEG object, because their private object
 	 * sizes may be different.  Caveat programmer.
 	 */
-	if ( cinfo->dest == NULL )
+	if ( cinfo->dest == nullptr )
 	{
 		/* first time for this JPEG object? */
 		cinfo->dest = ( struct jpeg_destination_mgr * )

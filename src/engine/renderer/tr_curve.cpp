@@ -714,7 +714,7 @@ srfGridMesh_t  *R_GridInsertColumn( srfGridMesh_t *grid, int column, int row, ve
 
 	if ( width > MAX_GRID_SIZE )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	height = grid->height;
@@ -790,7 +790,7 @@ srfGridMesh_t  *R_GridInsertRow( srfGridMesh_t *grid, int row, int column, vec3_
 
 	if ( height > MAX_GRID_SIZE )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	for ( i = 0; i < height; i++ )

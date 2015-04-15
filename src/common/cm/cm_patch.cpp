@@ -50,8 +50,8 @@ CM_ClearLevelPatches
 */
 void CM_ClearLevelPatches( void )
 {
-	debugSurfaceCollide = NULL;
-	debugFacet = NULL;
+	debugSurfaceCollide = nullptr;
+	debugFacet = nullptr;
 }
 
 /*

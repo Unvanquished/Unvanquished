@@ -177,7 +177,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 
 			if ( i == cg_numSolidEntities )
 			{
-				BG_ClassBoundingBox( ( ent->misc >> 8 ) & 0xFF, bmins, bmaxs, NULL, NULL, NULL );
+				BG_ClassBoundingBox( ( ent->misc >> 8 ) & 0xFF, bmins, bmaxs, nullptr, nullptr, nullptr );
 			}
 
 			VectorAdd( cent->lerpOrigin, bmins, bmins );
@@ -204,8 +204,8 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			break;
 
 		case TT_BISPHERE:
-			assert( maxs != NULL );
-			assert( mins != NULL );
+			assert( maxs != nullptr );
+			assert( mins != nullptr );
 			trap_CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
 			                                  mask, skipmask, origin );
 			break;

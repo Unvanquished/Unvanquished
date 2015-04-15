@@ -1056,9 +1056,9 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 	assert( numFields + 1 == sizeof( *from ) / 4 );
 
 	// a NULL to is a delta remove message
-	if ( to == NULL )
+	if ( to == nullptr )
 	{
-		if ( from == NULL )
+		if ( from == nullptr )
 		{
 			return;
 		}

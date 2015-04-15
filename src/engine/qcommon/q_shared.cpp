@@ -135,16 +135,16 @@ memStream_t *AllocMemStream( byte *buffer, int bufSize )
 {
 	memStream_t *s;
 
-	if ( buffer == NULL || bufSize <= 0 )
+	if ( buffer == nullptr || bufSize <= 0 )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	s = (memStream_t*)Com_Allocate( sizeof( memStream_t ) );
 
-	if ( s == NULL )
+	if ( s == nullptr )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	Com_Memset( s, 0, sizeof( memStream_t ) );
@@ -166,7 +166,7 @@ int MemStreamRead( memStream_t *s, void *buffer, int len )
 {
 	int ret = 1;
 
-	if ( s == NULL || buffer == NULL )
+	if ( s == nullptr || buffer == nullptr )
 	{
 		return 0;
 	}
@@ -190,7 +190,7 @@ int MemStreamGetC( memStream_t *s )
 {
 	int c = 0;
 
-	if ( s == NULL )
+	if ( s == nullptr )
 	{
 		return -1;
 	}
@@ -207,7 +207,7 @@ int MemStreamGetLong( memStream_t *s )
 {
 	int c = 0;
 
-	if ( s == NULL )
+	if ( s == nullptr )
 	{
 		return -1;
 	}
@@ -224,7 +224,7 @@ int MemStreamGetShort( memStream_t *s )
 {
 	int c = 0;
 
-	if ( s == NULL )
+	if ( s == nullptr )
 	{
 		return -1;
 	}
@@ -241,7 +241,7 @@ float MemStreamGetFloat( memStream_t *s )
 {
 	floatint_t c;
 
-	if ( s == NULL )
+	if ( s == nullptr )
 	{
 		return -1;
 	}
@@ -714,7 +714,7 @@ const char *Com_EntityTypeName(entityType_t entityType)
 	default:
 		if(entityType >= ET_EVENTS)
 			return "EVENT";
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -731,7 +731,7 @@ static const char *punctuation[] =
 {
 	"+=", "-=", "*=", "/=", "&=", "|=", "++", "--",
 	"&&", "||", "<=", ">=", "==", "!=",
-	NULL
+	nullptr
 };
 
 static char com_token[ MAX_TOKEN_CHARS ];
@@ -818,7 +818,7 @@ static char *SkipWhitespace( char *data, bool *hasNewLines )
 	{
 		if ( !c )
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		if ( c == '\n' )
@@ -916,7 +916,7 @@ char *COM_ParseExt( char **data_p, bool allowLineBreaks )
 	// make sure incoming data is valid
 	if ( !data )
 	{
-		*data_p = NULL;
+		*data_p = nullptr;
 		return com_token;
 	}
 
@@ -930,7 +930,7 @@ char *COM_ParseExt( char **data_p, bool allowLineBreaks )
 
 		if ( !data )
 		{
-			*data_p = NULL;
+			*data_p = nullptr;
 			return com_token;
 		}
 
@@ -1103,7 +1103,7 @@ char           *COM_ParseExt2( char **data_p, bool allowLineBreaks )
 	// make sure incoming data is valid
 	if ( !data )
 	{
-		*data_p = NULL;
+		*data_p = nullptr;
 		return com_token;
 	}
 
@@ -1117,7 +1117,7 @@ char           *COM_ParseExt2( char **data_p, bool allowLineBreaks )
 
 		if ( !data )
 		{
-			*data_p = NULL;
+			*data_p = nullptr;
 			return com_token;
 		}
 
@@ -1677,7 +1677,7 @@ Com_QuoteStr
 */
 const char *Com_QuoteStr( const char *str )
 {
-	static char   *buf = NULL;
+	static char   *buf = nullptr;
 	static size_t buflen = 0;
 
 	size_t        length;
@@ -1723,7 +1723,7 @@ Com_UnquoteStr
 */
 const char *Com_UnquoteStr( const char *str )
 {
-	static char *buf = NULL;
+	static char *buf = nullptr;
 
 	size_t      length;
 	char        *ptr;
@@ -1788,7 +1788,7 @@ some cvar values need to be safe from foreign characters
 */
 const char *Com_ClearForeignCharacters( const char *str )
 {
-	static char *clean = NULL; // much longer than needed
+	static char *clean = nullptr; // much longer than needed
 	int          i, j, size;
 
 	free( clean );
@@ -2079,11 +2079,11 @@ int Q_strncmp( const char *s1, const char *s2, int n )
 {
 	int c1, c2;
 
-	if ( s1 == NULL )
+	if ( s1 == nullptr )
 	{
-		return ( s2 == NULL ) ? 0 : -1;
+		return ( s2 == nullptr ) ? 0 : -1;
 	}
-	else if ( s2 == NULL )
+	else if ( s2 == nullptr )
 	{
 		return 1;
 	}
@@ -2162,11 +2162,11 @@ int Q_strnicmp( const char *string1, const char *string2, int n )
 {
 	int c1, c2;
 
-	if ( string1 == NULL )
+	if ( string1 == nullptr )
 	{
-		return ( string2 == NULL ) ? 0 : -1;
+		return ( string2 == nullptr ) ? 0 : -1;
 	}
-	else if ( string2 == NULL )
+	else if ( string2 == nullptr )
 	{
 		return 1;
 	}
@@ -2227,7 +2227,7 @@ const char *Q_stristr( const char *s, const char *find )
 			{
 				if ( ( sc = *s++ ) == 0 )
 				{
-					return NULL;
+					return nullptr;
 				}
 
 				if ( sc >= 'a' && sc <= 'z' )
@@ -2282,7 +2282,7 @@ const char *Com_StringContains( const char *str1, const char *str2, int casesens
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -3125,7 +3125,7 @@ static int internalTime( qtime_t *qtime, struct tm *( *timefunc )( const time_t 
 	time_t    t;
 	struct tm *tms;
 
-	t = time( NULL );
+	t = time( nullptr );
 
 	if ( !qtime )
 	{

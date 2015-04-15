@@ -45,8 +45,8 @@ Maryland 20850 USA.
 class RocketDataSourceSingle : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener, public Rocket::Core::EventListener
 {
 public:
-	RocketDataSourceSingle( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), formatter( NULL ), data_source( NULL ), selection( -1 ),
-	targetElement( NULL ), dirty_query( false ), dirty_listener( false ) { }
+	RocketDataSourceSingle( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), formatter( nullptr ), data_source( nullptr ), selection( -1 ),
+	targetElement( nullptr ), dirty_query( false ), dirty_listener( false ) { }
 
 	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{

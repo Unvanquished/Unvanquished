@@ -403,8 +403,8 @@ CG_Menu
 void CG_Menu( int menuType, int arg )
 {
 	int          menu = -1; // Menu to open
-	const char   *longMsg = NULL; // command parameter
-	const char   *shortMsg = NULL; // non-modal version of message
+	const char   *longMsg = nullptr; // command parameter
+	const char   *shortMsg = nullptr; // non-modal version of message
 
 	switch ( menuType )
 	{
@@ -531,7 +531,7 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		case MN_B_CANNOT:
-			longMsg = NULL;
+			longMsg = nullptr;
 			shortMsg = _("You cannot build that structure");
 			break;
 
@@ -963,7 +963,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 	if ( !v )
 	{
 		CG_Printf( "[skipnotify]WARNING: could not find voice \"%s\"\n", voice );
-		return NULL;
+		return nullptr;
 	}
 
 	c = BG_VoiceCmdByNum( v->cmds, cmd );
@@ -972,7 +972,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 	{
 		CG_Printf( "[skipnotify]WARNING: could not find command %d "
 		           "in voice \"%s\"\n", cmd, voice );
-		return NULL;
+		return nullptr;
 	}
 
 	t = BG_VoiceTrackByNum( c->tracks, track );
@@ -981,7 +981,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 	{
 		CG_Printf( "[skipnotify]WARNING: could not find track %d for command %d in "
 		           "voice \"%s\"\n", track, cmd, voice );
-		return NULL;
+		return nullptr;
 	}
 
 	return t;
@@ -1069,15 +1069,15 @@ static void CG_ParseVoice( void )
 		switch ( vChan )
 		{
 			case VOICE_CHAN_ALL:
-				CG_Say( NULL, clientNum, SAY_ALL, sayText );
+				CG_Say( nullptr, clientNum, SAY_ALL, sayText );
 				break;
 
 			case VOICE_CHAN_TEAM:
-				CG_Say( NULL, clientNum, SAY_TEAM, sayText );
+				CG_Say( nullptr, clientNum, SAY_TEAM, sayText );
 				break;
 
 			case VOICE_CHAN_LOCAL:
-				CG_Say( NULL, clientNum, SAY_AREA_TEAM, sayText );
+				CG_Say( nullptr, clientNum, SAY_AREA_TEAM, sayText );
 				break;
 
 			default:
@@ -1114,7 +1114,7 @@ static void CG_ParseVoice( void )
 			break;
 
 		case VOICE_CHAN_LOCAL:
-			trap_S_StartSound( NULL, clientNum, CHAN_VOICE, track->track );
+			trap_S_StartSound( nullptr, clientNum, CHAN_VOICE, track->track );
 			break;
 
 		default:
@@ -1212,7 +1212,7 @@ static void CG_Chat_f( void )
 	trap_Argv( 1, id, sizeof( id ) );
 	trap_Argv( 2, mode, sizeof( mode ) );
 
-	CG_Say( NULL, atoi( id ), (saymode_t) atoi( mode ), CG_Argv( 3 ) );
+	CG_Say( nullptr, atoi( id ), (saymode_t) atoi( mode ), CG_Argv( 3 ) );
 }
 
 /*

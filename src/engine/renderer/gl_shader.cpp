@@ -25,32 +25,32 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // *INDENT-OFF*
 
-GLShader_generic                         *gl_genericShader = NULL;
-GLShader_lightMapping                    *gl_lightMappingShader = NULL;
-GLShader_vertexLighting_DBS_entity       *gl_vertexLightingShader_DBS_entity = NULL;
-GLShader_vertexLighting_DBS_world        *gl_vertexLightingShader_DBS_world = NULL;
-GLShader_forwardLighting_omniXYZ         *gl_forwardLightingShader_omniXYZ = NULL;
-GLShader_forwardLighting_projXYZ         *gl_forwardLightingShader_projXYZ = NULL;
-GLShader_forwardLighting_directionalSun  *gl_forwardLightingShader_directionalSun = NULL;
-GLShader_shadowFill                      *gl_shadowFillShader = NULL;
-GLShader_reflection                      *gl_reflectionShader = NULL;
-GLShader_skybox                          *gl_skyboxShader = NULL;
-GLShader_fogQuake3                       *gl_fogQuake3Shader = NULL;
-GLShader_fogGlobal                       *gl_fogGlobalShader = NULL;
-GLShader_heatHaze                        *gl_heatHazeShader = NULL;
-GLShader_screen                          *gl_screenShader = NULL;
-GLShader_portal                          *gl_portalShader = NULL;
-GLShader_contrast                        *gl_contrastShader = NULL;
-GLShader_cameraEffects                   *gl_cameraEffectsShader = NULL;
-GLShader_blurX                           *gl_blurXShader = NULL;
-GLShader_blurY                           *gl_blurYShader = NULL;
-GLShader_debugShadowMap                  *gl_debugShadowMapShader = NULL;
-GLShader_depthToColor                    *gl_depthToColorShader = NULL;
-GLShader_lightVolume_omni                *gl_lightVolumeShader_omni = NULL;
-GLShader_liquid                          *gl_liquidShader = NULL;
-GLShader_volumetricFog                   *gl_volumetricFogShader = NULL;
-GLShader_motionblur                      *gl_motionblurShader = NULL;
-GLShader_fxaa                            *gl_fxaaShader = NULL;
+GLShader_generic                         *gl_genericShader = nullptr;
+GLShader_lightMapping                    *gl_lightMappingShader = nullptr;
+GLShader_vertexLighting_DBS_entity       *gl_vertexLightingShader_DBS_entity = nullptr;
+GLShader_vertexLighting_DBS_world        *gl_vertexLightingShader_DBS_world = nullptr;
+GLShader_forwardLighting_omniXYZ         *gl_forwardLightingShader_omniXYZ = nullptr;
+GLShader_forwardLighting_projXYZ         *gl_forwardLightingShader_projXYZ = nullptr;
+GLShader_forwardLighting_directionalSun  *gl_forwardLightingShader_directionalSun = nullptr;
+GLShader_shadowFill                      *gl_shadowFillShader = nullptr;
+GLShader_reflection                      *gl_reflectionShader = nullptr;
+GLShader_skybox                          *gl_skyboxShader = nullptr;
+GLShader_fogQuake3                       *gl_fogQuake3Shader = nullptr;
+GLShader_fogGlobal                       *gl_fogGlobalShader = nullptr;
+GLShader_heatHaze                        *gl_heatHazeShader = nullptr;
+GLShader_screen                          *gl_screenShader = nullptr;
+GLShader_portal                          *gl_portalShader = nullptr;
+GLShader_contrast                        *gl_contrastShader = nullptr;
+GLShader_cameraEffects                   *gl_cameraEffectsShader = nullptr;
+GLShader_blurX                           *gl_blurXShader = nullptr;
+GLShader_blurY                           *gl_blurYShader = nullptr;
+GLShader_debugShadowMap                  *gl_debugShadowMapShader = nullptr;
+GLShader_depthToColor                    *gl_depthToColorShader = nullptr;
+GLShader_lightVolume_omni                *gl_lightVolumeShader_omni = nullptr;
+GLShader_liquid                          *gl_liquidShader = nullptr;
+GLShader_volumetricFog                   *gl_volumetricFogShader = nullptr;
+GLShader_motionblur                      *gl_motionblurShader = nullptr;
+GLShader_fxaa                            *gl_fxaaShader = nullptr;
 GLShaderManager                           gl_shaderManager;
 
 GLShaderManager::~GLShaderManager( )
@@ -129,7 +129,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
     GLenum shaderType ) const
 {
 	char        filename[ MAX_QPATH ];
-	GLchar      *mainBuffer = NULL;
+	GLchar      *mainBuffer = nullptr;
 	char        *token;
 	std::string libsBuffer; // all libs concatenated
 
@@ -446,7 +446,7 @@ bool GLShaderManager::buildPermutation( GLShader *shader, size_t i )
 		UpdateShaderProgramUniformLocations( shader, shaderProgram );
 		GL_BindProgram( shaderProgram );
 		shader->SetShaderProgramUniforms( shaderProgram );
-		GL_BindProgram( NULL );
+		GL_BindProgram( nullptr );
 
 		ValidateProgram( shaderProgram->program );
 		GL_CheckErrors();
@@ -623,7 +623,7 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 	binaryptr += sizeof( shaderHeader );
 
 	// get the program binary and write it to the buffer
-	glGetProgramBinary( shaderProgram->program, binaryLength, NULL, &shaderHeader.binaryFormat, binaryptr );
+	glGetProgramBinary( shaderProgram->program, binaryLength, nullptr, &shaderHeader.binaryFormat, binaryptr );
 
 	// set the header
 	shaderHeader.version = GL_SHADER_VERSION;

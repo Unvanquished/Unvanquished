@@ -341,7 +341,7 @@ static const keyname_t keynames[] =
 	{ "XBOX360_DPAD_LEFTUP",    K_XBOX360_DPAD_LEFTUP    },
 	{ "XBOX360_DPAD_LEFTDOWN",  K_XBOX360_DPAD_LEFTDOWN  },
 
-	{ NULL,                     0                        }
+	{ nullptr,                     0                        }
 };
 
 /*
@@ -960,7 +960,7 @@ void Key_SetBinding( int keynum, int team, const char *binding )
 			if ( keys[ keynum ].binding[ team ] )
 			{
 				Z_Free( keys[ keynum ].binding[ team ] );
-				keys[ keynum ].binding[ team ] = NULL;
+				keys[ keynum ].binding[ team ] = nullptr;
 			}
 		}
 		// team == 0...
@@ -984,7 +984,7 @@ void Key_SetBinding( int keynum, int team, const char *binding )
 	}
 	else
 	{
-		keys[ keynum ].binding[ team ] = NULL;
+		keys[ keynum ].binding[ team ] = nullptr;
 	}
 
 	bindingsModified = true;
@@ -1003,7 +1003,7 @@ const char *Key_GetBinding( int keynum, int team )
 
 	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( team <= 0 )
@@ -1075,7 +1075,7 @@ void Key_Unbind_f( void )
 		return;
 	}
 
-	Key_SetBinding( b, team, NULL );
+	Key_SetBinding( b, team, nullptr );
 }
 
 /*
@@ -1089,7 +1089,7 @@ void Key_Unbindall_f( void )
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		Key_SetBinding( i, -1, NULL );
+		Key_SetBinding( i, -1, nullptr );
 	}
 }
 
@@ -1102,7 +1102,7 @@ void Key_Bind_f( void )
 {
 	int        c, b;
 	const char *key;
-	const char *cmd = NULL;
+	const char *cmd = nullptr;
 	int        team = -1;
 
 	int teambind = !Q_stricmp( Cmd_Argv( 0 ), "teambind" );
@@ -1204,7 +1204,7 @@ void Key_EditBind_f( void )
 
 	if ( b < 2 || b > 3 )
 	{
-		Cmd_PrintUsage("[<team>] <key>", NULL);
+		Cmd_PrintUsage("[<team>] <key>", nullptr);
 		return;
 	}
 
@@ -1416,7 +1416,7 @@ void Key_KeynameCompletion( void ( *callback )( const char *s ) )
 {
 	int i;
 
-	for ( i = 0; keynames[ i ].name != NULL; i++ )
+	for ( i = 0; keynames[ i ].name != nullptr; i++ )
 	{
 		callback( keynames[ i ].name );
 	}
@@ -1660,7 +1660,7 @@ void Key_ModCase_f( void )
 
 	if ( argc < 3 )
 	{
-		Cmd_PrintUsage( "<modifiers> <command> [<modifiers> <command>] … [<command>]", NULL );
+		Cmd_PrintUsage( "<modifiers> <command> [<modifiers> <command>] … [<command>]", nullptr );
 		return;
 	}
 
@@ -1684,7 +1684,7 @@ void Key_ModCase_f( void )
 	}
 
 	// If we have a tail command, use it as default
-	v = ( argc & 1 ) ? NULL : Cmd_Argv( argc - 1 );
+	v = ( argc & 1 ) ? nullptr : Cmd_Argv( argc - 1 );
 
 	// Search for a suitable command to execute.
 	// Search is done as if the commands are sorted by modifier count

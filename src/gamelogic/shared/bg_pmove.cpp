@@ -2435,7 +2435,7 @@ static void PM_GroundTraceMissed( void )
 		VectorCopy( pm->ps->origin, point );
 		point[ 2 ] -= 64.0f;
 
-		pm->trace( &trace, pm->ps->origin, NULL, NULL, point, pm->ps->clientNum, pm->tracemask, 0 );
+		pm->trace( &trace, pm->ps->origin, nullptr, nullptr, point, pm->ps->clientNum, pm->tracemask, 0 );
 
 		if ( trace.fraction == 1.0f )
 		{
@@ -2853,7 +2853,7 @@ static void PM_GroundClimbTrace( void )
 			{
 				vec3_t xNormal;
 
-				AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
+				AngleVectors( pm->ps->viewangles, forward, nullptr, nullptr );
 
 				if ( pm->ps->eFlags & EF_WALLCLIMBCEILING )
 				{
@@ -2973,7 +2973,7 @@ static void PM_GroundTrace( void )
 				//The rotation applied there causes our view to turn around
 				//We correct this here
 				vec3_t xNormal;
-				AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
+				AngleVectors( pm->ps->viewangles, forward, nullptr, nullptr );
 				if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
 				{
 					VectorCopy(pm->ps->grapplePoint, xNormal);
@@ -3213,7 +3213,7 @@ static void PM_CheckDuck( void )
 	trace_t trace;
 	vec3_t  PCmins, PCmaxs, PCcmaxs;
 
-	BG_ClassBoundingBox( pm->ps->stats[ STAT_CLASS ], PCmins, PCmaxs, PCcmaxs, NULL, NULL );
+	BG_ClassBoundingBox( pm->ps->stats[ STAT_CLASS ], PCmins, PCmaxs, PCcmaxs, nullptr, nullptr );
 
 	pm->mins[ 0 ] = PCmins[ 0 ];
 	pm->mins[ 1 ] = PCmins[ 1 ];
@@ -3783,7 +3783,7 @@ static void PM_Weapon( void )
 					int    charge = pml.msec;
 					vec3_t dir, vel;
 
-					AngleVectors( pm->ps->viewangles, dir, NULL, NULL );
+					AngleVectors( pm->ps->viewangles, dir, nullptr, nullptr );
 					VectorCopy( pm->ps->velocity, vel );
 					vel[ 2 ] = 0;
 					dir[ 2 ] = 0;

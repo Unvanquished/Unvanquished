@@ -76,7 +76,7 @@ Tess_CheckOverflow
 void Tess_CheckOverflow( int verts, int indexes )
 {
 	// FIXME: need to check if a vbo is bound, otherwise we fail on startup
-	if ( glState.currentVBO != NULL && glState.currentIBO != NULL )
+	if ( glState.currentVBO != nullptr && glState.currentIBO != nullptr )
 	{
 		Tess_CheckVBOAndIBO( tess.vbo, tess.ibo );
 	}
@@ -1252,7 +1252,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 		R_BindIBO( surf->ibo );
 		tess.vboVertexSkinning = true;
 
-		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ((glIndex_t *)NULL) + surf->first_triangle * 3;
+		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ((glIndex_t *)nullptr) + surf->first_triangle * 3;
 		tess.multiDrawCounts[ tess.multiDrawPrimitives ] = surf->num_triangles * 3;
 		tess.multiDrawPrimitives++;
 

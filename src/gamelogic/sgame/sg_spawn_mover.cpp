@@ -81,7 +81,7 @@ gentity_t *G_TestEntityPosition( gentity_t *ent )
 		return &g_entities[ tr.entityNum ];
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -270,7 +270,7 @@ bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obst
 	int       listedEntities;
 	vec3_t    totalMins, totalMaxs;
 
-	*obstacle = NULL;
+	*obstacle = nullptr;
 
 	// mins/maxs are the bounds at the destination
 	// totalMins / totalMaxs are the bounds for the entire move
@@ -369,7 +369,7 @@ bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obst
 		// bobbing entities are instant-kill and never get blocked
 		if ( pusher->s.pos.trType == TR_SINE || pusher->s.apos.trType == TR_SINE )
 		{
-			G_Damage( check, pusher, pusher, NULL, NULL, 99999, 0, MOD_CRUSH );
+			G_Damage( check, pusher, pusher, nullptr, nullptr, 99999, 0, MOD_CRUSH );
 			continue;
 		}
 
@@ -410,7 +410,7 @@ void G_MoverGroup( gentity_t *ent )
 	gentity_t *part, *obstacle;
 	vec3_t    origin, angles;
 
-	obstacle = NULL;
+	obstacle = nullptr;
 
 	// make sure all group slaves can move before commiting
 	// any moves or calling any think functions
@@ -1383,7 +1383,7 @@ void func_door_block( gentity_t *self, gentity_t *other )
 
 	if ( self->damage )
 	{
-		G_Damage( other, self, self, NULL, NULL, self->damage, 0, MOD_CRUSH );
+		G_Damage( other, self, self, nullptr, nullptr, self->damage, 0, MOD_CRUSH );
 	}
 
 	if ( self->spawnflags & 4 )
@@ -2129,7 +2129,7 @@ void func_train_reached( gentity_t *self )
 	}
 
 	// fire all other targets
-	G_FireEntity( next, NULL );
+	G_FireEntity( next, nullptr );
 
 	// set the new trajectory
 	self->nextPathSegment = next->nextPathSegment;
@@ -2248,7 +2248,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 	gentity_t *path, *next, *start;
 	int targetIndex;
 
-	self->nextPathSegment = G_IterateTargets( NULL, &targetIndex, self );
+	self->nextPathSegment = G_IterateTargets( nullptr, &targetIndex, self );
 
 	if ( !self->nextPathSegment )
 	{
@@ -2257,7 +2257,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 		return;
 	}
 
-	start = NULL;
+	start = nullptr;
 
 	for ( path = self->nextPathSegment; path != start; path = next )
 	{
@@ -2276,7 +2276,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 		// find a path_corner among the targets
 		// there may also be other targets that get fired when the corner
 		// is reached
-		next = NULL;
+		next = nullptr;
 
 		do
 		{
@@ -2316,7 +2316,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			//whatever is blocking the train isn't a client
 
 			//KILL!!1!!!
-			G_Damage( other, self, self, NULL, NULL, 10000, 0, MOD_CRUSH );
+			G_Damage( other, self, self, nullptr, nullptr, 10000, 0, MOD_CRUSH );
 
 			//buildables need to be handled differently since even when
 			//dealt fatal amounts of damage they won't instantly become non-solid
@@ -2344,7 +2344,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			return;
 		}
 
-		G_Damage( other, self, self, NULL, NULL, 10000, 0, MOD_CRUSH );
+		G_Damage( other, self, self, nullptr, nullptr, 10000, 0, MOD_CRUSH );
 	}
 }
 

@@ -618,7 +618,7 @@ void CG_Rocket_Frame( cgClientState_t state )
 
 	if ( cg.scoreInvalidated )
 	{
-		CG_Rocket_BuildPlayerList( NULL );
+		CG_Rocket_BuildPlayerList( nullptr );
 		cg.scoreInvalidated = false;
 	}
 

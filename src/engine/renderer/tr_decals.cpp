@@ -160,7 +160,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 	decalProjector_t *dp, temp;
 
 	/* first frame rendered does not have a valid decals list */
-	if ( tr.refdef.decalProjectors == NULL )
+	if ( tr.refdef.decalProjectors == nullptr )
 	{
 		return;
 	}
@@ -328,7 +328,7 @@ void RE_ClearDecals( void )
 	int i, j;
 
 	/* dummy check */
-	if ( tr.world == NULL || tr.world->numModels <= 0 )
+	if ( tr.world == nullptr || tr.world->numModels <= 0 )
 	{
 		return;
 	}
@@ -336,7 +336,7 @@ void RE_ClearDecals( void )
 	/* clear world decals */
 	for ( j = 0; j < MAX_WORLD_DECALS; j++ )
 	{
-		tr.world->models[ 0 ].decals[ j ].shader = NULL;
+		tr.world->models[ 0 ].decals[ j ].shader = nullptr;
 	}
 
 	/* clear entity decals */
@@ -344,7 +344,7 @@ void RE_ClearDecals( void )
 	{
 		for ( j = 0; j < MAX_ENTITY_DECALS; j++ )
 		{
-			tr.world->models[ i ].decals[ j ].shader = NULL;
+			tr.world->models[ i ].decals[ j ].shader = nullptr;
 		}
 	}
 }
@@ -601,7 +601,7 @@ static void ProjectDecalOntoWinding( decalProjector_t *dp, int numPoints, vec3_t
 	for ( i = 0; i < count; i++, decal++ )
 	{
 		/* try to find an empty decal slot */
-		if ( decal->shader == NULL )
+		if ( decal->shader == nullptr )
 		{
 			break;
 		}
@@ -765,7 +765,7 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspMod
 	srfGeneric_t *gen;
 
 	/* early outs */
-	if ( dp->shader == NULL )
+	if ( dp->shader == nullptr )
 	{
 		return;
 	}
@@ -852,7 +852,7 @@ void R_AddDecalSurface( decal_t *decal )
 	srfDecal_t *srf;
 
 	/* early outs */
-	if ( decal->shader == NULL || decal->parent->viewCount != tr.viewCountNoReset || tr.refdef.numDecals >= MAX_DECALS )
+	if ( decal->shader == nullptr || decal->parent->viewCount != tr.viewCountNoReset || tr.refdef.numDecals >= MAX_DECALS )
 	{
 		return;
 	}
@@ -887,7 +887,7 @@ void R_AddDecalSurface( decal_t *decal )
 	/* free temporary decal */
 	if ( decal->fadeEndTime <= tr.refdef.time )
 	{
-		decal->shader = NULL;
+		decal->shader = nullptr;
 	}
 }
 
@@ -937,7 +937,7 @@ void R_CullDecalProjectors( void )
 	{
 		if ( R_CullPointAndRadius( dp->center, dp->radius ) == CULL_OUT )
 		{
-			dp->shader = NULL;
+			dp->shader = nullptr;
 		}
 		else
 		{

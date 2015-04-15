@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define DYN_BUFFER_SIZE ( 4 * 1024 * 1024 )
 #define DYN_BUFFER_SEGMENTS 4
-#define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
+#define BUFFER_OFFSET(i) ((char *)nullptr + ( i ))
 
 typedef int8_t   i8vec4_t[ 4 ];
 typedef uint8_t  u8vec4_t[ 4 ];
@@ -269,7 +269,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	static INLINE void ClearLink( link_t *l )
 	{
-		l->data = NULL;
+		l->data = nullptr;
 		l->prev = l->next = l;
 	}
 
@@ -278,7 +278,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		l->next->prev = l->prev;
 		l->prev->next = l->next;
 
-		l->prev = l->next = NULL;
+		l->prev = l->next = nullptr;
 	}
 
 	static INLINE void InsertLink( link_t *l, link_t *sentinel )
@@ -317,7 +317,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		if ( l->next == l )
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		top = l->next;
@@ -331,7 +331,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	static INLINE void QueueInit( link_t *l )
 	{
-		l->data = NULL;
+		l->data = nullptr;
 		l->numElements = 0;
 		l->prev = l->next = l;
 	}

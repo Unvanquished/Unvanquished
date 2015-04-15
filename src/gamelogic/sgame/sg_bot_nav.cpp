@@ -136,7 +136,7 @@ float BotGetGoalRadius( gentity_t *self )
 
 bool GoalInRange( gentity_t *self, float r )
 {
-	gentity_t *ent = NULL;
+	gentity_t *ent = nullptr;
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
 	{
@@ -394,10 +394,10 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 
 	if ( !( self && self->client ) )
 	{
-		return NULL;
+		return nullptr;
 	}
 
-	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, nullptr, nullptr, nullptr );
 
 	//account for how large we can step
 	playerMins[2] += STEPSIZE;
@@ -412,7 +412,7 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -433,7 +433,7 @@ bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 
 	//already normalized
 
-	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, nullptr, nullptr, nullptr );
 
 	playerMins[2] += STEPSIZE;
 	playerMaxs[2] += STEPSIZE;
@@ -488,7 +488,7 @@ bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 	}
 
 	//get bbox
-	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, nullptr, nullptr, nullptr );
 
 	//account for stepsize
 	playerMins[2] += STEPSIZE;
@@ -567,7 +567,7 @@ bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 			vec3_t angles;
 			vec3_t right;
 			vectoangles( dir, angles );
-			AngleVectors( angles, dir, right, NULL );
+			AngleVectors( angles, dir, right, nullptr );
 
 			if ( ( self->client->time10000 % 2000 ) < 1000 )
 			{
@@ -597,10 +597,10 @@ bool BotOnLadder( gentity_t *self )
 		return false;
 	}
 
-	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
 
 	forward[ 2 ] = 0.0f;
-	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
 	VectorMA( self->s.origin, 1.0f, forward, end );
 
 	trap_Trace( &trace, self->s.origin, mins, maxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
@@ -624,7 +624,7 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 	float rightmove;
 	signed char speed = BotGetMaxMoveSpeed( self );
 
-	AngleVectors( self->client->ps.viewangles, forward, right, NULL );
+	AngleVectors( self->client->ps.viewangles, forward, right, nullptr );
 	forward[2] = 0;
 	VectorNormalize( forward );
 	right[2] = 0;
@@ -687,7 +687,7 @@ void BotClampPos( gentity_t *self )
 	trace_t trace;
 	vec3_t mins, maxs;
 	VectorSet( origin, self->botMind->nav.pos[ 0 ], self->botMind->nav.pos[ 1 ], height );
-	BG_ClassBoundingBox( self->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( self->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
 	trap_Trace( &trace, self->client->ps.origin, mins, maxs, origin, self->client->ps.clientNum,
 	            MASK_PLAYERSOLID, 0 );
 	G_SetOrigin( self, trace.endpos );

@@ -642,7 +642,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			if ( !Q_stricmp( token, "null" ) )
 			{
-				ba->icon = NULL;
+				ba->icon = nullptr;
 			}
 			else
 			{
@@ -799,7 +799,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 			ba->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
 		}
-		else if( (var = BG_FindConfigVar( va( "b_%s_%s", ba->name, token ) ) ) != NULL )
+		else if( (var = BG_FindConfigVar( va( "b_%s_%s", ba->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}
@@ -993,7 +993,7 @@ Parses a configuration file describing the attributes of a class
 
 void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 {
-	char         *token = NULL;
+	char         *token = nullptr;
 	char         text_buffer[ 20000 ];
 	char         *text;
 	configVar_t  *var;
@@ -1058,7 +1058,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 
 			if ( !Q_stricmp( token, "null" ) )
 			{
-				ca->icon = NULL;
+				ca->icon = nullptr;
 			}
 			else
 			{
@@ -1209,7 +1209,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			ca->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
 		}
-		else if( (var = BG_FindConfigVar( va( "c_%s_%s", ca->name, token ) ) ) != NULL )
+		else if( (var = BG_FindConfigVar( va( "c_%s_%s", ca->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}
@@ -1273,7 +1273,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !( defined & JUMPMAGNITUDE ) )   { token = "jumpMagnitude"; }
 		else if ( !( defined & ICON ) )            { token = "icon"; }
 		else if ( !( defined & COST ) )            { token = "cost"; }
-		else                                       { token = NULL; }
+		else                                       { token = nullptr; }
 
 		if ( token )
 		{
@@ -1290,7 +1290,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !( defined & STAMINAJOGRESTORE ) )  { token = "staminaJogRestore"; }
 		else if ( !( defined & STAMINAWALKRESTORE ) ) { token = "staminaWalkRestore"; }
 		else if ( !( defined & STAMINASTOPRESTORE ) ) { token = "staminaStopRestore"; }
-		else                                          { token = NULL; }
+		else                                          { token = nullptr; }
 
 		if ( token )
 		{
@@ -1791,7 +1791,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 			wa->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
 		}
-		else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != NULL )
+		else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}
@@ -1885,7 +1885,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 
 			if ( !Q_stricmp( token, "null" ) )
 			{
-				ua->icon = NULL;
+				ua->icon = nullptr;
 			}
 			else
 			{
@@ -1925,7 +1925,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 			ua->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
 		}
-		else if( (var = BG_FindConfigVar( va( "u_%s_%s", ua->name, token ) ) ) != NULL )
+		else if( (var = BG_FindConfigVar( va( "u_%s_%s", ua->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}

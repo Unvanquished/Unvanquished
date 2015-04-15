@@ -276,7 +276,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	ent->client->pers.team = newTeam;
 	ent->client->pers.teamInfo = level.startTime - 1;
 	ent->client->pers.classSelection = PCL_NONE;
-	ClientSpawn( ent, NULL, NULL, NULL );
+	ClientSpawn( ent, nullptr, nullptr, nullptr );
 
 	if ( oldTeam == TEAM_HUMANS && newTeam == TEAM_ALIENS )
 	{
@@ -334,7 +334,7 @@ gentity_t *Team_GetLocation( gentity_t *ent )
 	gentity_t *eloc, *best;
 	float     bestlen, len;
 
-	best = NULL;
+	best = nullptr;
 	bestlen = 3.0f * 8192.0f * 8192.0f;
 
 	for ( eloc = level.locationHead; eloc; eloc = eloc->nextPathSegment )

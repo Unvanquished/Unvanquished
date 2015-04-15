@@ -32,8 +32,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "SDL_syswm.h"
 #include "framework/CommandSystem.h"
 
-SDL_Window         *window = NULL;
-static SDL_GLContext glContext = NULL;
+SDL_Window         *window = nullptr;
+static SDL_GLContext glContext = nullptr;
 static int colorBits = 0;
 
 #ifdef SMP
@@ -45,7 +45,7 @@ static void GLimp_SetCurrentContext( bool enable )
 	}
 	else
 	{
-		SDL_GL_MakeCurrent( window, NULL );
+		SDL_GL_MakeCurrent( window, nullptr );
 	}
 }
 
@@ -62,11 +62,11 @@ SMP acceleration
  * thread-safe OpenGL libraries.
  */
 
-static SDL_mutex  *smpMutex = NULL;
-static SDL_cond   *renderCommandsEvent = NULL;
-static SDL_cond   *renderCompletedEvent = NULL;
-static void ( *renderThreadFunction )( void ) = NULL;
-static SDL_Thread *renderThread = NULL;
+static SDL_mutex  *smpMutex = nullptr;
+static SDL_cond   *renderCommandsEvent = nullptr;
+static SDL_cond   *renderCompletedEvent = nullptr;
+static void ( *renderThreadFunction )( void ) = nullptr;
+static SDL_Thread *renderThread = nullptr;
 
 /*
 ===============
@@ -102,7 +102,7 @@ bool GLimp_SpawnRenderThread( void ( *function )( void ) )
 		warned = true;
 	}
 
-	if ( renderThread != NULL ) /* hopefully just a zombie at this point... */
+	if ( renderThread != nullptr ) /* hopefully just a zombie at this point... */
 	{
 		Com_Printf( "Already a render thread? Trying to clean it up...\n" );
 		GLimp_ShutdownRenderThread();
@@ -110,7 +110,7 @@ bool GLimp_SpawnRenderThread( void ( *function )( void ) )
 
 	smpMutex = SDL_CreateMutex();
 
-	if ( smpMutex == NULL )
+	if ( smpMutex == nullptr )
 	{
 		Com_Printf( "smpMutex creation failed: %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
@@ -119,7 +119,7 @@ bool GLimp_SpawnRenderThread( void ( *function )( void ) )
 
 	renderCommandsEvent = SDL_CreateCond();
 
-	if ( renderCommandsEvent == NULL )
+	if ( renderCommandsEvent == nullptr )
 	{
 		Com_Printf( "renderCommandsEvent creation failed: %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
@@ -128,7 +128,7 @@ bool GLimp_SpawnRenderThread( void ( *function )( void ) )
 
 	renderCompletedEvent = SDL_CreateCond();
 
-	if ( renderCompletedEvent == NULL )
+	if ( renderCompletedEvent == nullptr )
 	{
 		Com_Printf( "renderCompletedEvent creation failed: %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
@@ -136,9 +136,9 @@ bool GLimp_SpawnRenderThread( void ( *function )( void ) )
 	}
 
 	renderThreadFunction = function;
-	renderThread = SDL_CreateThread( GLimp_RenderThreadWrapper, "render thread", NULL );
+	renderThread = SDL_CreateThread( GLimp_RenderThreadWrapper, "render thread", nullptr );
 
-	if ( renderThread == NULL )
+	if ( renderThread == nullptr )
 	{
 		ri.Printf( PRINT_ALL, "SDL_CreateThread() returned %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
@@ -155,36 +155,36 @@ GLimp_ShutdownRenderThread
 */
 void GLimp_ShutdownRenderThread( void )
 {
-	if ( renderThread != NULL )
+	if ( renderThread != nullptr )
 	{
-		GLimp_WakeRenderer( NULL );
-		SDL_WaitThread( renderThread, NULL );
-		renderThread = NULL;
+		GLimp_WakeRenderer( nullptr );
+		SDL_WaitThread( renderThread, nullptr );
+		renderThread = nullptr;
 		glConfig.smpActive = false;
 	}
 
-	if ( smpMutex != NULL )
+	if ( smpMutex != nullptr )
 	{
 		SDL_DestroyMutex( smpMutex );
-		smpMutex = NULL;
+		smpMutex = nullptr;
 	}
 
-	if ( renderCommandsEvent != NULL )
+	if ( renderCommandsEvent != nullptr )
 	{
 		SDL_DestroyCond( renderCommandsEvent );
-		renderCommandsEvent = NULL;
+		renderCommandsEvent = nullptr;
 	}
 
-	if ( renderCompletedEvent != NULL )
+	if ( renderCompletedEvent != nullptr )
 	{
 		SDL_DestroyCond( renderCompletedEvent );
-		renderCompletedEvent = NULL;
+		renderCompletedEvent = nullptr;
 	}
 
-	renderThreadFunction = NULL;
+	renderThreadFunction = nullptr;
 }
 
-static volatile void     *smpData = NULL;
+static volatile void     *smpData = nullptr;
 static volatile bool smpDataReady;
 
 /*
@@ -194,13 +194,13 @@ GLimp_RendererSleep
 */
 void           *GLimp_RendererSleep( void )
 {
-	void *data = NULL;
+	void *data = nullptr;
 
 	GLimp_SetCurrentContext( false );
 
 	SDL_LockMutex( smpMutex );
 	{
-		smpData = NULL;
+		smpData = nullptr;
 		smpDataReady = false;
 
 		// after this, the front end can exit GLimp_FrontEndSleep
@@ -260,7 +260,7 @@ void GLimp_WakeRenderer( void *data )
 
 	SDL_LockMutex( smpMutex );
 	{
-		assert( smpData == NULL );
+		assert( smpData == nullptr );
 		smpData = data;
 		smpDataReady = true;
 
@@ -289,7 +289,7 @@ void GLimp_ShutdownRenderThread( void )
 
 void *GLimp_RendererSleep( void )
 {
-	return NULL;
+	return nullptr;
 }
 
 void GLimp_FrontEndSleep( void )
@@ -335,7 +335,7 @@ void GLimp_Shutdown( void )
 
 #if defined( SMP )
 
-	if ( renderThread != NULL )
+	if ( renderThread != nullptr )
 	{
 		Com_Printf( "Destroying renderer thread...\n" );
 		GLimp_ShutdownRenderThread();
@@ -346,13 +346,13 @@ void GLimp_Shutdown( void )
 	if ( glContext )
 	{
 		SDL_GL_DeleteContext( glContext );
-		glContext = NULL;
+		glContext = nullptr;
 	}
 
 	if ( window )
 	{
 		SDL_DestroyWindow( window );
-		window = NULL;
+		window = nullptr;
 	}
 
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
@@ -483,7 +483,7 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	int         alphaBits, depthBits, stencilBits;
 	int         samples;
 	int         i = 0;
-	SDL_Surface *icon = NULL;
+	SDL_Surface *icon = nullptr;
 	SDL_DisplayMode desktopMode;
 	Uint32      flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 	int         x, y;
@@ -567,18 +567,18 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 
 	do
 	{
-		if ( glContext != NULL )
+		if ( glContext != nullptr )
 		{
 			SDL_GL_DeleteContext( glContext );
-			glContext = NULL;
+			glContext = nullptr;
 		}
 
-		if ( window != NULL )
+		if ( window != nullptr )
 		{
 			SDL_GetWindowPosition( window, &x, &y );
 			ri.Printf( PRINT_DEVELOPER, "Existing window at %dx%d before being destroyed\n", x, y );
 			SDL_DestroyWindow( window );
-			window = NULL;
+			window = nullptr;
 		}
 		// we come back here if we couldn't get a visual and there's
 		// something we can switch off
@@ -1058,7 +1058,7 @@ static void GLimp_InitExtensions( void )
 
 	if ( LOAD_EXTENSION_WITH_CVAR(ARB_debug_output, r_glDebugProfile) )
 	{
-		glDebugMessageCallbackARB( (GLDEBUGPROCARB)GLimp_DebugCallback, NULL );
+		glDebugMessageCallbackARB( (GLDEBUGPROCARB)GLimp_DebugCallback, nullptr );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB );
 	}
 

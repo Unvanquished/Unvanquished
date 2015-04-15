@@ -65,29 +65,29 @@ static voice_t *BG_VoiceList( void )
 	int     numFiles, i, fileLen = 0;
 	int     count = 0;
 	char    *filePtr;
-	voice_t *voices = NULL;
-	voice_t *top = NULL;
+	voice_t *voices = nullptr;
+	voice_t *top = nullptr;
 
 	numFiles = trap_FS_GetFileList( "voice", ".voice", fileList,
 	                                sizeof( fileList ) );
 
 	if ( numFiles < 1 )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// special case for default.voice.  this file is REQUIRED and will
 	// always be loaded first in the event of overflow of voice definitions
-	if ( !trap_FS_FOpenFile( "voice/default.voice", NULL, FS_READ ) )
+	if ( !trap_FS_FOpenFile( "voice/default.voice", nullptr, FS_READ ) )
 	{
 		Com_Printf( "voice/default.voice missing, voice system disabled.\n" );
-		return NULL;
+		return nullptr;
 	}
 
 	voices = ( voice_t * ) BG_Alloc( sizeof( voice_t ) );
 	Q_strncpyz( voices->name, "default", sizeof( voices->name ) );
-	voices->cmds = NULL;
-	voices->next = NULL;
+	voices->cmds = nullptr;
+	voices->next = nullptr;
 	count = 1;
 
 	top = voices;
@@ -112,7 +112,7 @@ static voice_t *BG_VoiceList( void )
 		}
 
 		// trap_FS_GetFileList() buffer has overflowed
-		if ( !trap_FS_FOpenFile( va( "voice/%s", filePtr ), NULL, FS_READ ) )
+		if ( !trap_FS_FOpenFile( va( "voice/%s", filePtr ), nullptr, FS_READ ) )
 		{
 			Com_Printf( S_WARNING "BG_VoiceList(): detected "
 			            "an invalid .voice file \"%s\" in directory listing.  You have "
@@ -135,8 +135,8 @@ static voice_t *BG_VoiceList( void )
 		Q_strncpyz( voices->name, filePtr, sizeof( voices->name ) );
 		// strip extension
 		voices->name[ fileLen - 6 ] = '\0';
-		voices->cmds = NULL;
-		voices->next = NULL;
+		voices->cmds = nullptr;
+		voices->next = nullptr;
 		count++;
 	}
 
@@ -245,7 +245,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				{
 					model = BG_ClassModelConfigByName( token.string );
 
-					if ( model != BG_ClassModelConfigByName( NULL ) )
+					if ( model != BG_ClassModelConfigByName( nullptr ) )
 					{
 						modelno = 1 << ( model - BG_ClassModelConfig( 0 ) );
 
@@ -351,8 +351,8 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 {
 	pc_token_t   token;
 	bool     parsingTrack = false;
-	voiceTrack_t *voiceTracks = NULL;
-	voiceTrack_t *top = NULL;
+	voiceTrack_t *voiceTracks = nullptr;
+	voiceTrack_t *top = nullptr;
 
 	while ( trap_Parse_ReadToken( handle, &token ) )
 	{
@@ -376,7 +376,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 			}
 		}
 
-		if ( top == NULL )
+		if ( top == nullptr )
 		{
 			voiceTracks = (voiceTrack_t*) BG_Alloc( sizeof( voiceTrack_t ) );
 			top = voiceTracks;
@@ -387,7 +387,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 			voiceTracks = voiceTracks->next;
 		}
 
-		if ( !trap_FS_FOpenFile( token.string, NULL, FS_READ ) )
+		if ( !trap_FS_FOpenFile( token.string, nullptr, FS_READ ) )
 		{
 			int  line;
 			char filename[ MAX_QPATH ];
@@ -409,12 +409,12 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 		voiceTracks->pClass = -1;
 		voiceTracks->weapon = -1;
 		voiceTracks->enthusiasm = 0;
-		voiceTracks->text = NULL;
-		voiceTracks->next = NULL;
+		voiceTracks->text = nullptr;
+		voiceTracks->next = nullptr;
 		parsingTrack = true;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -424,8 +424,8 @@ BG_VoiceParse
 */
 static voiceCmd_t *BG_VoiceParse( const char *name )
 {
-	voiceCmd_t *voiceCmds = NULL;
-	voiceCmd_t *top = NULL;
+	voiceCmd_t *voiceCmds = nullptr;
+	voiceCmd_t *top = nullptr;
 	pc_token_t token;
 	bool   parsingCmd = false;
 	int        handle;
@@ -434,7 +434,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 
 	if ( !handle )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	while ( trap_Parse_ReadToken( handle, &token ) )
@@ -469,7 +469,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 			           token.string, MAX_VOICE_CMD_LEN, line, filename );
 		}
 
-		if ( top == NULL )
+		if ( top == nullptr )
 		{
 			voiceCmds = (voiceCmd_t*) BG_Alloc( sizeof( voiceCmd_t ) );
 			top = voiceCmds;
@@ -481,7 +481,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 		}
 
 		Q_strncpyz( voiceCmds->cmd, token.string, sizeof( voiceCmds->cmd ) );
-		voiceCmds->next = NULL;
+		voiceCmds->next = nullptr;
 		parsingCmd = true;
 	}
 
@@ -527,13 +527,13 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 	int          cmdCount;
 	int          trackCount;
 
-	if ( voice == NULL )
+	if ( voice == nullptr )
 	{
 		Com_Printf( "voice list is empty\n" );
 		return;
 	}
 
-	while ( voice != NULL )
+	while ( voice != nullptr )
 	{
 		if ( debugLevel > 0 )
 		{
@@ -544,7 +544,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 		cmdCount = 0;
 		trackCount = 0;
 
-		while ( voiceCmd != NULL )
+		while ( voiceCmd != nullptr )
 		{
 			if ( debugLevel > 0 )
 			{
@@ -554,7 +554,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 			voiceTrack = voiceCmd->tracks;
 			cmdCount++;
 
-			while ( voiceTrack != NULL )
+			while ( voiceTrack != nullptr )
 			{
 				if ( debugLevel > 1 )
 				{
@@ -613,7 +613,7 @@ voice_t *BG_VoiceByName( voice_t *head, const char *name )
 		v = v->next;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -639,7 +639,7 @@ voiceCmd_t *BG_VoiceCmdFind( voiceCmd_t *head, const char *name, int *cmdNum )
 		vc = vc->next;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -664,7 +664,7 @@ voiceCmd_t *BG_VoiceCmdByNum( voiceCmd_t *head, int num )
 		vc = vc->next;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -689,7 +689,7 @@ voiceTrack_t *BG_VoiceTrackByNum( voiceTrack_t *head, int num )
 		vt = vt->next;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -735,7 +735,7 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
 
 	if ( !matchCount )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// return randomly selected match
@@ -766,5 +766,5 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
 		vt = vt->next;
 	}
 
-	return NULL;
+	return nullptr;
 }

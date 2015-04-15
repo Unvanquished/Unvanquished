@@ -136,7 +136,7 @@ static char *G_BotSelectName( team_t team )
 
 	if ( botNames[team].count < 1 )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	choice = rand() % botNames[team].count;
@@ -150,7 +150,7 @@ static char *G_BotSelectName( team_t team )
 		choice = ( choice + 1 ) % botNames[team].count;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static void G_BotNameUsed( team_t team, const char *name, bool inUse )
@@ -178,7 +178,7 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 
 	memset( botMind->runningNodes, 0, sizeof( botMind->runningNodes ) );
 	botMind->numRunningNodes = 0;
-	botMind->currentNode = NULL;
+	botMind->currentNode = nullptr;
 	memset( &botMind->nav, 0, sizeof( botMind->nav ) );
 	BotResetEnemyQueue( &botMind->enemyQueue );
 
@@ -240,7 +240,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	if ( !Q_stricmp( name, "*" ) )
 	{
 		name = G_BotSelectName( team );
-		autoname = name != NULL;
+		autoname = name != nullptr;
 	}
 
 	//default bot data
@@ -432,7 +432,7 @@ void G_BotSpectatorThink( gentity_t *self )
 			}
 			else
 			{
-				sq = NULL;
+				sq = nullptr;
 			}
 
 			if ( sq && PlayersBehindBotInSpawnQueue( self ) )
@@ -445,10 +445,10 @@ void G_BotSpectatorThink( gentity_t *self )
 	}
 
 	//reset stuff
-	BotSetTarget( &self->botMind->goal, NULL, NULL );
-	self->botMind->bestEnemy.ent = NULL;
+	BotSetTarget( &self->botMind->goal, nullptr, nullptr );
+	self->botMind->bestEnemy.ent = nullptr;
 	BotResetEnemyQueue( &self->botMind->enemyQueue );
-	self->botMind->currentNode = NULL;
+	self->botMind->currentNode = nullptr;
 	memset( &self->botMind->nav, 0, sizeof( self->botMind->nav ) );
 	self->botMind->futureAimTime = 0;
 	self->botMind->futureAimTimeInterval = 0;

@@ -554,7 +554,7 @@ static void blitVQQuad32fs( byte **status, unsigned char *data )
 				break;
 		}
 	}
-	while ( status[ index ] != NULL );
+	while ( status[ index ] != nullptr );
 }
 
 /******************************************************************************
@@ -1175,7 +1175,7 @@ static void setupQuad( long xOff, long yOff )
 		}
 	}
 
-	temp = NULL;
+	temp = nullptr;
 
 	for ( i = ( numQuadCels - 64 ); i < numQuadCels; i++ )
 	{
@@ -1577,7 +1577,7 @@ static void RoQShutdown( void )
 	if ( cinTable[ currentHandle ].fileType == FT_OGM )
 	{
 		Cin_OGM_Shutdown();
-		cinTable[ currentHandle ].buf = NULL;
+		cinTable[ currentHandle ].buf = nullptr;
 	}
 
 	currentHandle = -1;
@@ -1707,7 +1707,7 @@ e_status CIN_RunCinematic( int handle )
 			{
 				Cin_OGM_Shutdown();
 				Cin_OGM_Init( cinTable[ currentHandle ].fileName );
-				cinTable[ currentHandle ].buf = NULL;
+				cinTable[ currentHandle ].buf = nullptr;
 				cinTable[ currentHandle ].startTime = 0;
 				cinTable[ currentHandle ].status = FMV_PLAY;
 			}
@@ -1783,7 +1783,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 	int            i;
 	char           *fileextPtr;
 
-	if ( strstr( arg, "/" ) == NULL && strstr( arg, "\\" ) == NULL )
+	if ( strstr( arg, "/" ) == nullptr && strstr( arg, "\\" ) == nullptr )
 	{
 		Com_sprintf( name, sizeof( name ), "video/%s", arg );
 	}
@@ -2094,7 +2094,7 @@ void CL_PlayCinematic_f( void )
 		{
 			SCR_RunCinematic();
 		}
-		while ( cinTable[ currentHandle ].buf == NULL && cinTable[ currentHandle ].status == FMV_PLAY ); // wait for first frame (load codebook and sound)
+		while ( cinTable[ currentHandle ].buf == nullptr && cinTable[ currentHandle ].status == FMV_PLAY ); // wait for first frame (load codebook and sound)
 	}
 }
 

@@ -113,14 +113,14 @@ public:
 				re.SetColor( color );
 				re.DrawStretchPic( position.x, position.y, dimensions.x, height,
 						       0.0f, 0.0f, 1.0f, value, shader );
-				re.SetColor( NULL );
+				re.SetColor( nullptr );
 			}
 			else
 			{
 				re.SetColor( color );
 				re.DrawStretchPic( position.x, position.y - height + dimensions.y, dimensions.x,
 						       height, 0.0f, 1.0f - value, 1.0f, 1.0f, shader );
-				re.SetColor( NULL );
+				re.SetColor( nullptr );
 			}
 		}
 
@@ -137,14 +137,14 @@ public:
 				re.SetColor( color );
 				re.DrawStretchPic( position.x, position.y, width,
 						       dimensions.y, 0.0f, 0.0f, value, 1.0f, shader );
-				re.SetColor( NULL );
+				re.SetColor( nullptr );
 			}
 			else
 			{
 				re.SetColor( color );
 				re.DrawStretchPic( position.x - width + dimensions.x, position.y, width,
 						       dimensions.y, 1.0f - value, 0.0f, 1.0f, 1.0f, shader );
-				re.SetColor( NULL );
+				re.SetColor( nullptr );
 			}
 		}
 	}

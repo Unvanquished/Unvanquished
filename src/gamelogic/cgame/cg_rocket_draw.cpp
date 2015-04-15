@@ -293,7 +293,7 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	// draw
 	trap_R_SetColor( drawColor );
 	CG_DrawPic( x, y, w, h, indicator );
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 static void CG_Rocket_DrawCrosshair( void )
@@ -353,7 +353,7 @@ static void CG_Rocket_DrawCrosshair( void )
 		CG_GetRocketElementColor( color );
 		trap_R_SetColor( color );
 		CG_DrawPic( x, y, w, h, crosshair );
-		trap_R_SetColor( NULL );
+		trap_R_SetColor( nullptr );
 	}
 }
 
@@ -525,7 +525,7 @@ static void CG_Rocket_DrawSpeedGraph( void )
 				cgs.media.whiteShader );
 		}
 
-		trap_R_SetColor( NULL );
+		trap_R_SetColor( nullptr );
 	}
 
 	if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_TEXT )
@@ -584,7 +584,7 @@ static void CG_Rocket_DrawWeaponIcon( void )
 {
 	playerState_t *ps;
 	weapon_t      weapon;
-	const char    *rmlClass = NULL;
+	const char    *rmlClass = nullptr;
 
 	ps = &cg.snap->ps;
 	weapon = BG_GetPlayerWeapon( ps );
@@ -631,9 +631,9 @@ static void CG_Rocket_DrawUsableBuildable( void )
 	trace_t       trace;
 	entityState_t *es;
 
-	AngleVectors( cg.refdefViewAngles, view, NULL, NULL );
+	AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
 	VectorMA( cg.refdef.vieworg, 64, view, point );
-	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL,
+	CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr,
 			  point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
 
 	es = &cg_entities[ trace.entityNum ].currentState;
@@ -865,7 +865,7 @@ static void CG_Rocket_DrawLagometer( void )
 
 	trap_R_SetColor( adjustedColor );
 	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 
 	//
 	// draw the graph
@@ -977,7 +977,7 @@ static void CG_Rocket_DrawLagometer( void )
 		}
 	}
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 
 	if ( cg_nopredict.integer || cg.pmoveParams.synchronous )
 	{
@@ -1270,7 +1270,7 @@ void CG_Rocket_DrawBeaconIcon( void )
 
 	trap_R_SetColor( color );
 	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cg.beaconRocket.icon );
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 void CG_Rocket_DrawBeaconOwner( void )
@@ -1370,7 +1370,7 @@ void CG_Rocket_DrawPlayerHealthCross( void )
 			color[ 3 ] = ref_alpha * ( 1.0f - cg.healthCrossFade );
 			trap_R_SetColor( color );
 			CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cg.lastHealthCross );
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 			return;
 		}
 	}
@@ -1379,7 +1379,7 @@ void CG_Rocket_DrawPlayerHealthCross( void )
 	color[ 3 ] = ref_alpha;
 	trap_R_SetColor( color );
 	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, shader );
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 
 }
 
@@ -1490,7 +1490,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 						cgs.media.whiteShader );
 		}
 
-		trap_R_SetColor( NULL );
+		trap_R_SetColor( nullptr );
 		return;
 	}
 
@@ -1544,7 +1544,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 	// if there is a partial square, draw it dropping off the end of the stack
 	if ( frac <= 0.f )
 	{
-		trap_R_SetColor( NULL );
+		trap_R_SetColor( nullptr );
 		return; // no partial square, we're done here
 	}
 
@@ -1589,7 +1589,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 			}
 	}
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 static void CG_DrawPlayerAmmoStack( void )
@@ -2066,7 +2066,7 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 		}
 	}
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 
 }
 
@@ -2260,7 +2260,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 		}
 	}
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 static void CG_Rocket_DrawVote_internal( team_t team )

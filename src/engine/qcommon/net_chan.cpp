@@ -504,7 +504,7 @@ typedef struct packetQueue_s
 	int                  release;
 } packetQueue_t;
 
-packetQueue_t *packetQueue = NULL;
+packetQueue_t *packetQueue = nullptr;
 
 static void NET_QueuePacket( int length, const void *data, netadr_t to,
                              int offset )
@@ -522,7 +522,7 @@ static void NET_QueuePacket( int length, const void *data, netadr_t to,
 	newp->length = length;
 	newp->to = to;
 	newp->release = Sys_Milliseconds() + ( int )( ( float ) offset / com_timescale->value );
-	newp->next = NULL;
+	newp->next = nullptr;
 
 	if ( !packetQueue )
 	{
@@ -676,7 +676,7 @@ return 0 on address not found, 1 on address found with port, 2 on address found 
 int NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 {
 	char base[ MAX_STRING_CHARS ], *search;
-	char *port = NULL;
+	char *port = nullptr;
 
 	if ( !strcmp( s, "localhost" ) )
 	{

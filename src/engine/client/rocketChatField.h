@@ -46,7 +46,7 @@ Maryland 20850 USA.
 class RocketChatField : public Rocket::Core::Element, Rocket::Core::EventListener
 {
 public:
-	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cursor_timer( 0 ), last_update_time( 0 ), focus( false ), cursor_character_index( 0 ), text_element( NULL )
+	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cursor_timer( 0 ), last_update_time( 0 ), focus( false ), cursor_character_index( 0 ), text_element( nullptr )
 	{
 		// Spawn text container
 		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
@@ -66,7 +66,7 @@ public:
 			context->GetRootElement()->RemoveEventListener( "blur", this );
 			context->GetRootElement()->RemoveEventListener( "mousemove", this );
 
-			context = NULL;
+			context = nullptr;
 		}
 	}
 
@@ -314,7 +314,7 @@ protected:
 
 	void UpdateCursorPosition( void )
 	{
-		if ( text_element->GetFontFaceHandle() == NULL )
+		if ( text_element->GetFontFaceHandle() == nullptr )
 		{
 			return;
 		}
@@ -341,7 +341,7 @@ protected:
 	{
 		const char *p;
 		Rocket::Core::String out;
-		Rocket::Core::Element *child = NULL;
+		Rocket::Core::Element *child = nullptr;
 		bool span = false;
 
 		if ( !*in )

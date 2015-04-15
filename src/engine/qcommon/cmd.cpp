@@ -529,7 +529,7 @@ Cmd_AddCommand
 */
 void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 {
-	proxies[cmd_name] = proxyInfo_t{function, NULL};
+	proxies[cmd_name] = proxyInfo_t{function, nullptr};
 
 	//VMs do not properly clean up commands so we avoid creating a command if there is already one
 	if (not Cmd::CommandExists(cmd_name)) {

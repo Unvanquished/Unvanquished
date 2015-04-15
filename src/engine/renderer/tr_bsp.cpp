@@ -276,7 +276,7 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 		float f;
 	} sample;
 
-	*pic = NULL;
+	*pic = nullptr;
 
 	// load the file
 	ri.FS_ReadFile( ( char * ) name, ( void ** ) &buffer );
@@ -579,7 +579,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 				{
 					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
-					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP, NULL );
+					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP, nullptr );
 					Com_AddToGrowList( &tr.deluxemaps, image );
 				}
 			}
@@ -624,18 +624,18 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 				{
 					if ( i % 2 == 0 )
 					{
-						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP, NULL );
+						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP, nullptr );
 						Com_AddToGrowList( &tr.lightmaps, image );
 					}
 					else
 					{
-						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP, NULL );
+						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP, nullptr );
 						Com_AddToGrowList( &tr.deluxemaps, image );
 					}
 				}
 				else
 				{
-					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP, NULL );
+					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP, nullptr );
 					Com_AddToGrowList( &tr.lightmaps, image );
 				}
 			}
@@ -3261,8 +3261,8 @@ static void R_CreateWorldVBO( void )
 
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
-	tess.verts = NULL;
-	tess.indexes = NULL;
+	tess.verts = nullptr;
+	tess.indexes = nullptr;
 	tess.buildingVBO = false;
 
 	ri.Hunk_FreeTempMemory( vboIdxs );
@@ -3585,9 +3585,9 @@ static void R_LoadSubmodels( lump_t *l )
 
 		model = R_AllocModel();
 
-		assert( model != NULL );  // this should never happen
+		assert( model != nullptr );  // this should never happen
 
-		if ( model == NULL )
+		if ( model == nullptr )
 		{
 			ri.Error( ERR_DROP, "R_LoadSubmodels: R_AllocModel() failed" );
 		}
@@ -3723,7 +3723,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	}
 
 	// chain decendants and compute surface bounds
-	R_SetParent( s_worldData.nodes, NULL );
+	R_SetParent( s_worldData.nodes, nullptr );
 
 	backEndData[ 0 ]->traversalList = ( bspNode_t ** ) ri.Hunk_Alloc( sizeof( bspNode_t * ) * s_worldData.numnodes, h_low );
 	backEndData[ 0 ]->traversalLength = 0;
@@ -4062,8 +4062,8 @@ void R_LoadLightGrid( lump_t *l )
 	if ( l->filelen != w->numLightGridPoints * sizeof( dgridPoint_t ) )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: light grid mismatch\n" );
-		w->lightGridData1 = NULL;
-		w->lightGridData2 = NULL;
+		w->lightGridData1 = nullptr;
+		w->lightGridData2 = nullptr;
 		return;
 	}
 
@@ -4783,7 +4783,7 @@ static void R_PrecacheInteraction( trRefLight_t *light, bspSurface_t *surface )
 
 	light->lastInteractionCache = iaCache;
 
-	iaCache->next = NULL;
+	iaCache->next = nullptr;
 	iaCache->surface = surface;
 
 	iaCache->redundant = false;
@@ -4941,7 +4941,7 @@ static interactionVBO_t *R_CreateInteractionVBO( trRefLight_t *light )
 	}
 
 	light->lastInteractionVBO = iaVBO;
-	iaVBO->next = NULL;
+	iaVBO->next = nullptr;
 
 	return iaVBO;
 }
@@ -5140,7 +5140,7 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 	qsort( iaCachesSorted, numCaches, sizeof( *iaCachesSorted ), InteractionCacheCompare );
 
 	// create a VBO for each shader
-	shader = oldShader = NULL;
+	shader = oldShader = nullptr;
 
 	for ( k = 0; k < numCaches; k++ )
 	{
@@ -5487,7 +5487,7 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 	qsort( iaCachesSorted, numCaches, sizeof( *iaCachesSorted ), InteractionCacheCompare );
 
 	// create a VBO for each shader
-	shader = oldShader = NULL;
+	shader = oldShader = nullptr;
 	oldAlphaTest = alphaTest = -1;
 
 	for ( k = 0; k < numCaches; k++ )
@@ -5853,7 +5853,7 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 	// create a VBO for each shader
 	for ( cubeSide = 0; cubeSide < 6; cubeSide++ )
 	{
-		shader = oldShader = NULL;
+		shader = oldShader = nullptr;
 		oldAlphaTest = alphaTest = -1;
 
 		for ( k = 0; k < numCaches; k++ )
@@ -6181,11 +6181,11 @@ void R_PrecacheInteractions( void )
 		R_SetupLightFrustum( light );
 
 		// setup interactions
-		light->firstInteractionCache = NULL;
-		light->lastInteractionCache = NULL;
+		light->firstInteractionCache = nullptr;
+		light->lastInteractionCache = nullptr;
 
-		light->firstInteractionVBO = NULL;
-		light->lastInteractionVBO = NULL;
+		light->firstInteractionVBO = nullptr;
+		light->lastInteractionVBO = nullptr;
 
 		// perform culling and add all the potentially visible surfaces
 		s_lightCount++;
@@ -6288,7 +6288,7 @@ void FreeVertexHashTable( vertexHash_t **hashTable )
 	vertexHash_t *vertexHash;
 	vertexHash_t *nextVertexHash;
 
-	if ( hashTable == NULL )
+	if ( hashTable == nullptr )
 	{
 		return;
 	}
@@ -6297,7 +6297,7 @@ void FreeVertexHashTable( vertexHash_t **hashTable )
 	{
 		if ( hashTable[ i ] )
 		{
-			nextVertexHash = NULL;
+			nextVertexHash = nullptr;
 
 			for ( vertexHash = hashTable[ i ]; vertexHash; vertexHash = nextVertexHash )
 			{
@@ -6316,9 +6316,9 @@ vertexHash_t *FindVertexInHashTable( vertexHash_t **hashTable, const vec3_t xyz,
 	unsigned int hash;
 	vertexHash_t *vertexHash;
 
-	if ( hashTable == NULL || xyz == NULL )
+	if ( hashTable == nullptr || xyz == nullptr )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	hash = VertexCoordGenerateHash( xyz );
@@ -6353,7 +6353,7 @@ vertexHash_t *FindVertexInHashTable( vertexHash_t **hashTable, const vec3_t xyz,
 		return vertexHash;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 vertexHash_t *AddVertexToHashTable( vertexHash_t **hashTable, vec3_t xyz, void *data )
@@ -6361,16 +6361,16 @@ vertexHash_t *AddVertexToHashTable( vertexHash_t **hashTable, vec3_t xyz, void *
 	unsigned int hash;
 	vertexHash_t *vertexHash;
 
-	if ( hashTable == NULL || xyz == NULL )
+	if ( hashTable == nullptr || xyz == nullptr )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	vertexHash = (vertexHash_t*) Com_Allocate( sizeof( vertexHash_t ) );
 
 	if ( !vertexHash )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	hash = VertexCoordGenerateHash( xyz );
@@ -6399,7 +6399,7 @@ void GL_BindNearestCubeMap( const vec3_t xyz )
 		return;
 	}
 
-	if ( tr.cubeHashTable == NULL || xyz == NULL )
+	if ( tr.cubeHashTable == nullptr || xyz == nullptr )
 	{
 		return;
 	}
@@ -6434,10 +6434,10 @@ void R_FindTwoNearestCubeMaps( const vec3_t position, cubemapProbe_t **cubeProbe
 
 	GLimp_LogComment( "--- R_FindTwoNearestCubeMaps ---\n" );
 
-	*cubeProbeNearest = NULL;
-	*cubeProbeSecondNearest = NULL;
+	*cubeProbeNearest = nullptr;
+	*cubeProbeSecondNearest = nullptr;
 
-	if ( tr.cubeHashTable == NULL || position == NULL )
+	if ( tr.cubeHashTable == nullptr || position == nullptr )
 	{
 		return;
 	}
@@ -6519,7 +6519,7 @@ void R_BuildCubeMaps( void )
 			VectorAdd( node->maxs, node->mins, origin );
 			VectorScale( origin, 0.5, origin );
 
-			if ( FindVertexInHashTable( tr.cubeHashTable, origin, 256 ) == NULL )
+			if ( FindVertexInHashTable( tr.cubeHashTable, origin, 256 ) == nullptr )
 			{
 				cubeProbe = (cubemapProbe_t*) ri.Hunk_Alloc( sizeof( *cubeProbe ), h_high );
 				Com_AddToGrowList( &tr.cubeProbes, cubeProbe );
@@ -6796,7 +6796,7 @@ void R_BuildCubeMaps( void )
 	ri.Printf( PRINT_ALL, "\n" );
 
 	// turn pixel targets off
-	tr.refdef.pixelTarget = NULL;
+	tr.refdef.pixelTarget = nullptr;
 
 	// assign the surfs a cubemap
 	endTime = ri.Milliseconds();
@@ -6850,7 +6850,7 @@ void RE_LoadWorldMap( const char *name )
 
 	// clear tr.world so if the level fails to load, the next
 	// try will not look at the partially loaded version
-	tr.world = NULL;
+	tr.world = nullptr;
 
 	// tr.worldDeluxeMapping will be set by R_LoadEntities()
 	tr.worldDeluxeMapping = false;

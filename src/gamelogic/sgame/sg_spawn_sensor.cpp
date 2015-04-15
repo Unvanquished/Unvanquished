@@ -164,12 +164,12 @@ void SP_sensor_start( gentity_t *self )
 
 void G_notify_sensor_start()
 {
-	gentity_t *sensor = NULL;
+	gentity_t *sensor = nullptr;
 
 	if( g_debugEntities.integer >= 2 )
 		G_Printf( S_DEBUG "Notification of match start.\n");
 
-	while ((sensor = G_IterateEntitiesOfClass(sensor, S_SENSOR_START)) != NULL )
+	while ((sensor = G_IterateEntitiesOfClass(sensor, S_SENSOR_START)) != nullptr )
 	{
 		sensor_start_fireAndForget(sensor);
 	}
@@ -238,7 +238,7 @@ Called when stages change
 */
 void G_notify_sensor_stage( team_t team, int previousStage, int newStage )
 {
-	gentity_t *entities = NULL;
+	gentity_t *entities = nullptr;
 
 	if( g_debugEntities.integer >= 2 )
 		G_Printf( S_DEBUG "Notification of team %i changing stage from %i to %i (0-2).\n", team, previousStage, newStage );
@@ -246,7 +246,7 @@ void G_notify_sensor_stage( team_t team, int previousStage, int newStage )
 	if(newStage <= previousStage) //not supporting stage down yet, also no need to fire if stage didn't change at all
 		return;
 
-	while ((entities = G_IterateEntitiesOfClass(entities, S_SENSOR_STAGE)) != NULL )
+	while ((entities = G_IterateEntitiesOfClass(entities, S_SENSOR_STAGE)) != nullptr )
 	{
 		if (((!entities->conditions.stage || newStage == entities->conditions.stage)
 				&& (!entities->conditions.team || team == entities->conditions.team))
@@ -279,12 +279,12 @@ sensor_end
 
 void G_notify_sensor_end( team_t winningTeam )
 {
-	gentity_t *entity = NULL;
+	gentity_t *entity = nullptr;
 
 	if( g_debugEntities.integer >= 2 )
 		G_Printf( S_DEBUG "Notification of game end. Winning team %i.\n", winningTeam );
 
-	while ((entity = G_IterateEntitiesOfClass(entity, S_SENSOR_END)) != NULL )
+	while ((entity = G_IterateEntitiesOfClass(entity, S_SENSOR_END)) != nullptr )
 	{
 		if ((winningTeam == entity->conditions.team) == !entity->conditions.negated)
 			G_FireEntity(entity, entity);

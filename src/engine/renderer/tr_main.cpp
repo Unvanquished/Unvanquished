@@ -1480,7 +1480,7 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 128 ] 
 		tr.orientation = tr.viewParms.world;
 	}
 
-	Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, true, true, -1, 0 );
+	Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, true, true, -1, 0 );
 	rb_surfaceTable[ *drawSurf->surface ]( drawSurf->surface );
 
 	// Tr3B: former assertion
@@ -1748,7 +1748,7 @@ static void R_SortDrawSurfs( void )
 
 		// reset last interaction's next pointer
 		ia = &tr.viewParms.interactions[ tr.viewParms.numInteractions - 1 ];
-		ia->next = NULL;
+		ia->next = nullptr;
 	}
 
 	std::sort( tr.viewParms.drawSurfs, tr.viewParms.drawSurfs + tr.viewParms.numDrawSurfs,
@@ -2191,8 +2191,8 @@ void R_AddLightInteractions( void )
 		R_SetupLightShader( light );
 
 		// setup interactions
-		light->firstInteraction = NULL;
-		light->lastInteraction = NULL;
+		light->firstInteraction = nullptr;
+		light->lastInteraction = nullptr;
 
 		light->numInteractions = 0;
 		light->numShadowOnlyInteractions = 0;

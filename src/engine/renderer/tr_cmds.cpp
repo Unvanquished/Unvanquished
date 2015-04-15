@@ -240,7 +240,7 @@ void           *R_GetCommandBuffer( int bytes )
 		}
 
 		// if we run out of room, just start dropping commands
-		return NULL;
+		return nullptr;
 	}
 
 	cmdList->used += bytes;
@@ -470,7 +470,7 @@ RE_SetClipRegion
 */
 void RE_SetClipRegion( const float *region )
 {
-	if ( region == NULL )
+	if ( region == nullptr )
 	{
 		Com_Memset( tr.clipRegion, 0, sizeof( vec4_t ) );
 	}

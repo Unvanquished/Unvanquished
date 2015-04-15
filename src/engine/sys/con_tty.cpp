@@ -379,7 +379,7 @@ char *CON_Input_TTY( void )
 				TTY_field.DeletePrev();
 				CON_Show();
 				CON_FlushIn();
-				return NULL;
+				return nullptr;
 			}
 
 			// check if this is a control char
@@ -389,7 +389,7 @@ char *CON_Input_TTY( void )
 				{
 					TTY_field.RunCommand(com_consoleCommand->string);
 					write( STDOUT_FILENO, "\n]", 2 );
-					return NULL;
+					return nullptr;
 				}
 
 				if ( key == '\t' )
@@ -397,7 +397,7 @@ char *CON_Input_TTY( void )
 					CON_Hide();
 					TTY_field.AutoComplete();
 					CON_Show();
-					return NULL;
+					return nullptr;
 				}
 
 				if ( key == '\x15' ) // ^U
@@ -405,7 +405,7 @@ char *CON_Input_TTY( void )
 					CON_Hide();
 					TTY_field.Clear();
 					CON_Show();
-					return NULL;
+					return nullptr;
 				}
 
 				avail = read( STDIN_FILENO, &key, 1 );
@@ -426,20 +426,20 @@ char *CON_Input_TTY( void )
 									TTY_field.HistoryPrev();
 									CON_Show();
 									CON_FlushIn();
-									return NULL;
+									return nullptr;
 
 								case 'B':
 									CON_Hide();
 									TTY_field.HistoryNext();
 									CON_Show();
 									CON_FlushIn();
-									return NULL;
+									return nullptr;
 
 								case 'C':
-									return NULL;
+									return nullptr;
 
 								case 'D':
-									return NULL;
+									return nullptr;
 							}
 						}
 					}
@@ -447,7 +447,7 @@ char *CON_Input_TTY( void )
 
 				Com_DPrintf( "droping ISCTL sequence: %d, TTY_erase: %d\n", key, TTY_erase );
 				CON_FlushIn();
-				return NULL;
+				return nullptr;
 			}
 
 			CON_Hide();
@@ -455,7 +455,7 @@ char *CON_Input_TTY( void )
 			CON_Show();
 		}
 
-		return NULL;
+		return nullptr;
 	}
 	else if ( stdin_active )
 	{
@@ -468,9 +468,9 @@ char *CON_Input_TTY( void )
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 0;
 
-		if ( select( STDIN_FILENO + 1, &fdset, NULL, NULL, &timeout ) == -1 || !FD_ISSET( STDIN_FILENO, &fdset ) )
+		if ( select( STDIN_FILENO + 1, &fdset, nullptr, nullptr, &timeout ) == -1 || !FD_ISSET( STDIN_FILENO, &fdset ) )
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		len = read( STDIN_FILENO, text, sizeof( text ) );
@@ -479,12 +479,12 @@ char *CON_Input_TTY( void )
 		{
 			// eof!
 			stdin_active = false;
-			return NULL;
+			return nullptr;
 		}
 
 		if ( len < 1 )
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		text[ len - 1 ] = 0; // rip off the /n and terminate
@@ -492,7 +492,7 @@ char *CON_Input_TTY( void )
 		return text;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*

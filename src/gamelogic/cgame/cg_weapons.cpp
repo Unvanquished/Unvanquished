@@ -2625,7 +2625,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
 
-		CG_Trace( &tr, origin, NULL, NULL, end, attackerNum, MASK_SHOT, 0 );
+		CG_Trace( &tr, origin, nullptr, nullptr, end, attackerNum, MASK_SHOT, 0 );
 
 		if ( !( tr.surfaceFlags & SURF_NOIMPACT ) )
 		{
@@ -2705,7 +2705,7 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 
 		if ( wi->wim[ weaponMode ].flashSound[ c ] )
 		{
-			trap_S_StartSound( NULL, es->number, CHAN_WEAPON, wi->wim[ weaponMode ].flashSound[ c ] );
+			trap_S_StartSound( nullptr, es->number, CHAN_WEAPON, wi->wim[ weaponMode ].flashSound[ c ] );
 		}
 	}
 }

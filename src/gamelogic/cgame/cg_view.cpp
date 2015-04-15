@@ -713,7 +713,7 @@ void CG_OffsetFirstPersonView( void )
 		float  fraction1, fraction2;
 		vec3_t forward;
 
-		AngleVectors( angles, forward, NULL, NULL );
+		AngleVectors( angles, forward, nullptr, nullptr );
 		VectorNormalize( forward );
 
 		fraction1 = ( float ) cg.predictedPlayerState.stats[ STAT_MISC ] /
@@ -1071,7 +1071,7 @@ static void CG_DrawSurfNormal( void )
 
 	VectorMA( cg.refdef.vieworg, 8192, cg.refdef.viewaxis[ 0 ], end );
 
-	CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, end, cg.predictedPlayerState.clientNum,
+	CG_Trace( &tr, cg.refdef.vieworg, nullptr, nullptr, end, cg.predictedPlayerState.clientNum,
 	          MASK_SOLID, 0 );
 
 	VectorCopy( tr.endpos, normal[ 0 ].xyz );

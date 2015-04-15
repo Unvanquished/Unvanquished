@@ -35,7 +35,7 @@ void G_namelog_cleanup( void )
 
 void G_namelog_connect( gclient_t *client )
 {
-	namelog_t *n, *p = NULL;
+	namelog_t *n, *p = nullptr;
 	int       i;
 	char      *newname;
 
@@ -78,7 +78,7 @@ void G_namelog_connect( gclient_t *client )
 	// If they're muted, copy in their last known name - this will stop people
 	// reconnecting to get around the name change protection.
 	if ( n->muted && G_admin_name_check( &g_entities[ n->slot ],
-	                                     newname, NULL, 0 ) )
+	                                     newname, nullptr, 0 ) )
 	{
 		Q_strncpyz( client->pers.netname, newname, MAX_NAME_LENGTH );
 	}
@@ -101,20 +101,20 @@ void G_namelog_connect( gclient_t *client )
 
 void G_namelog_disconnect( gclient_t *client )
 {
-	if ( client->pers.namelog == NULL )
+	if ( client->pers.namelog == nullptr )
 	{
 		return;
 	}
 
 	client->pers.namelog->slot = -1;
-	client->pers.namelog = NULL;
+	client->pers.namelog = nullptr;
 }
 
 void G_namelog_update_score( gclient_t *client )
 {
 	namelog_t *n = client->pers.namelog;
 
-	if ( n == NULL )
+	if ( n == nullptr )
 	{
 		return;
 	}

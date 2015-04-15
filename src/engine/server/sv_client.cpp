@@ -129,7 +129,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	int                 count;
 	const char          *ip;
 #ifdef HAVE_GEOIP
-	const char          *country = NULL;
+	const char          *country = nullptr;
 #endif
 
 	if ( args.Argc() < 2 )
@@ -323,7 +323,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		startIndex = sv_privateClients->integer;
 	}
 
-	newcl = NULL;
+	newcl = nullptr;
 
 	for ( i = startIndex; i < sv_maxclients->integer; i++ )
 	{
@@ -526,7 +526,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	{
 		// tell everyone why they got dropped
 		// Gordon: we want this displayed elsewhere now
-		SV_SendServerCommand( NULL, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
+		SV_SendServerCommand( nullptr, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
 
 		// add the disconnect command
 		SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
@@ -701,7 +701,7 @@ static void SV_CloseDownload( client_t *cl )
 		if ( cl->downloadBlocks[ i ] )
 		{
 			Z_Free( cl->downloadBlocks[ i ] );
-			cl->downloadBlocks[ i ] = NULL;
+			cl->downloadBlocks[ i ] = nullptr;
 		}
 	}
 }
@@ -1332,7 +1332,7 @@ void SV_UserinfoChanged( client_t *cl )
 		// force the "ip" info key to "localhost" for local clients
 		Info_SetValueForKey( cl->userinfo, "ip", "localhost", false );
 #ifdef HAVE_GEOIP
-		Info_SetValueForKey( cl->userinfo, "geoip", NULL, false );
+		Info_SetValueForKey( cl->userinfo, "geoip", nullptr, false );
 #endif
 	}
 }
@@ -1421,7 +1421,7 @@ static ucmd_t ucmds[] =
 	{ "voip",       SV_Voip_f,            false },
 #endif
 	{ "wwwdl",      SV_WWWDownload_f,     false },
-	{ NULL,         NULL, false}
+	{ nullptr,         nullptr, false}
 };
 
 /*
@@ -1705,8 +1705,8 @@ void SV_UserVoip( client_t *cl, msg_t *msg )
 	uint8_t            recips[( MAX_CLIENTS + 7 ) / 8 ];
 	int                flags;
 	byte               encoded[ sizeof( cl->voipPacket[ 0 ]->data ) ];
-	client_t           *client = NULL;
-	voipServerPacket_t *packet = NULL;
+	client_t           *client = nullptr;
+	voipServerPacket_t *packet = nullptr;
 	int                i;
 
 	sender = cl - svs.clients;

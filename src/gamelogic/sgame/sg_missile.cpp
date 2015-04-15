@@ -166,7 +166,7 @@ static int ImpactGrenade( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 
 static int ImpactFlamer( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 {
-	gentity_t *neighbor = NULL;
+	gentity_t *neighbor = nullptr;
 
 	// ignite alien buildables on direct hit
 	if ( random() < FLAMER_IGNITE_CHANCE )
@@ -223,7 +223,7 @@ static int ImpactLockblock( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	{
 		hitEnt->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
 		hitEnt->client->lastLockTime = level.time;
-		AngleVectors( hitEnt->client->ps.viewangles, dir, NULL, NULL );
+		AngleVectors( hitEnt->client->ps.viewangles, dir, nullptr, nullptr );
 		hitEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
 	}
 
@@ -250,7 +250,7 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	else if ( hitEnt->s.number == ENTITYNUM_WORLD )
 	{
 		// put out floor fires in range
-		neighbor = NULL;
+		neighbor = nullptr;
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
 		                                                    ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
 		{
@@ -495,7 +495,7 @@ void G_RunMissile( gentity_t *ent )
 		}
 		else
 		{
-			trap_Trace( &tr, ent->r.currentOrigin, NULL, NULL, origin,
+			trap_Trace( &tr, ent->r.currentOrigin, nullptr, nullptr, origin,
 			            passent, ent->clipmask, 0 );
 
 			if ( tr.fraction < 1.0f )
@@ -576,7 +576,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, v
 
 	if ( !parent )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	ma = BG_Missile( missile );

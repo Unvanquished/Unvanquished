@@ -41,7 +41,7 @@ Fills in trailBeamNode_t.textureCoord
 */
 static void CG_CalculateBeamNodeProperties( trailBeam_t *tb )
 {
-	trailBeamNode_t *i = NULL;
+	trailBeamNode_t *i = nullptr;
 	trailSystem_t   *ts;
 	baseTrailBeam_t *btb;
 	float           nodeDistances[ MAX_TRAIL_BEAM_NODES ];
@@ -151,9 +151,9 @@ Renders a beam
 */
 static void CG_RenderBeam( trailBeam_t *tb )
 {
-	trailBeamNode_t   *i = NULL;
-	trailBeamNode_t   *prev = NULL;
-	trailBeamNode_t   *next = NULL;
+	trailBeamNode_t   *i = nullptr;
+	trailBeamNode_t   *prev = nullptr;
+	trailBeamNode_t   *next = nullptr;
 	vec3_t            up;
 	polyVert_t        verts[( MAX_TRAIL_BEAM_NODES - 1 ) * 4 ];
 	int               numVerts = 0;
@@ -304,15 +304,15 @@ static trailBeamNode_t *CG_AllocateBeamNode( trailBeam_t *tb )
 		if ( !tbn->used )
 		{
 			tbn->timeLeft = btb->segmentTime;
-			tbn->prev = NULL;
-			tbn->next = NULL;
+			tbn->prev = nullptr;
+			tbn->next = nullptr;
 			tbn->used = true;
 			return tbn;
 		}
 	}
 
 	// no space left
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -325,7 +325,7 @@ Returns the new head
 */
 static trailBeamNode_t *CG_DestroyBeamNode( trailBeamNode_t *tbn )
 {
-	trailBeamNode_t *newHead = NULL;
+	trailBeamNode_t *newHead = nullptr;
 
 	if ( tbn->prev )
 	{
@@ -337,7 +337,7 @@ static trailBeamNode_t *CG_DestroyBeamNode( trailBeamNode_t *tbn )
 		}
 		else // node is at the back
 		{
-			tbn->prev->next = NULL;
+			tbn->prev->next = nullptr;
 		}
 
 		// find the new head (shouldn't have changed)
@@ -351,12 +351,12 @@ static trailBeamNode_t *CG_DestroyBeamNode( trailBeamNode_t *tbn )
 	else if ( tbn->next )
 	{
 		//node is at the front
-		tbn->next->prev = NULL;
+		tbn->next->prev = nullptr;
 		newHead = tbn->next;
 	}
 
-	tbn->prev = NULL;
-	tbn->next = NULL;
+	tbn->prev = nullptr;
+	tbn->next = nullptr;
 	tbn->used = false;
 
 	return newHead;
@@ -461,7 +461,7 @@ static trailBeamNode_t *CG_AppendBeamNode( trailBeam_t *tb )
 		{
 			last->next = i;
 			i->prev = last;
-			i->next = NULL;
+			i->next = nullptr;
 		}
 	}
 	else //add first node
@@ -484,7 +484,7 @@ CG_ApplyJitters
 */
 static void CG_ApplyJitters( trailBeam_t *tb )
 {
-	trailBeamNode_t *i = NULL;
+	trailBeamNode_t *i = nullptr;
 	int             j;
 	baseTrailBeam_t *btb;
 	trailSystem_t   *ts;
@@ -1363,7 +1363,7 @@ static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
     trailSystem_t *parent )
 {
 	int           i;
-	trailBeam_t   *tb = NULL;
+	trailBeam_t   *tb = nullptr;
 	trailSystem_t *ts = parent;
 
 	for ( i = 0; i < MAX_TRAIL_BEAMS; i++ )
@@ -1394,7 +1394,7 @@ static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
 		CG_Printf( "MAX_TRAIL_BEAMS\n" );
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -1407,13 +1407,13 @@ Spawns a new trail system
 trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 {
 	int               i, j;
-	trailSystem_t     *ts = NULL;
+	trailSystem_t     *ts = nullptr;
 	baseTrailSystem_t *bts = &baseTrailSystems[ psHandle - 1 ];
 
 	if ( !bts->registered )
 	{
 		CG_Printf( S_ERROR "a trail system has not been registered yet\n" );
-		return NULL;
+		return nullptr;
 	}
 
 	for ( i = 0; i < MAX_TRAIL_SYSTEMS; i++ )
@@ -1450,7 +1450,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 		CG_Printf( "MAX_TRAIL_SYSTEMS\n" );
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -1477,7 +1477,7 @@ void CG_DestroyTrailSystem( trailSystem_t **ts )
 		( *ts )->frontAttachment.centValid = false; // a bit naughty
 	}
 
-	ts = NULL;
+	ts = nullptr;
 }
 
 /*
@@ -1489,11 +1489,11 @@ Test a trail system for validity
 */
 bool CG_IsTrailSystemValid( trailSystem_t **ts )
 {
-	if ( *ts == NULL || ( *ts && !( *ts )->valid ) )
+	if ( *ts == nullptr || ( *ts && !( *ts )->valid ) )
 	{
 		if ( *ts && !( *ts )->valid )
 		{
-			*ts = NULL;
+			*ts = nullptr;
 		}
 
 		return false;

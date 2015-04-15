@@ -83,8 +83,8 @@ static void SV_EmitPacketEntities( const clientSnapshot_t *from, clientSnapshot_
 		from_num_entities = from->num_entities;
 	}
 
-	newent = NULL;
-	oldent = NULL;
+	newent = nullptr;
+	oldent = nullptr;
 	newindex = 0;
 	oldindex = 0;
 
@@ -132,7 +132,7 @@ static void SV_EmitPacketEntities( const clientSnapshot_t *from, clientSnapshot_
 		if ( newnum > oldnum )
 		{
 			// the old entity isn't present in the new message
-			MSG_WriteDeltaEntity( msg, oldent, NULL, true );
+			MSG_WriteDeltaEntity( msg, oldent, nullptr, true );
 			oldindex++;
 			continue;
 		}
@@ -160,14 +160,14 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 	if ( client->deltaMessage <= 0 || client->state != CS_ACTIVE )
 	{
 		// client is asking for a retransmit
-		oldframe = NULL;
+		oldframe = nullptr;
 		lastframe = 0;
 	}
 	else if ( client->netchan.outgoingSequence - client->deltaMessage >= ( PACKET_BACKUP - 3 ) )
 	{
 		// client hasn't gotten a good message through in a long time
 		Com_DPrintf( "%s^7: Delta request from out of date packet.\n", client->name );
-		oldframe = NULL;
+		oldframe = nullptr;
 		lastframe = 0;
 	}
 	else
@@ -180,7 +180,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 		if ( oldframe->first_entity <= svs.nextSnapshotEntities - svs.numSnapshotEntities )
 		{
 			Com_DPrintf( "%s^7: Delta request from out of date entities.\n", client->name );
-			oldframe = NULL;
+			oldframe = nullptr;
 			lastframe = 0;
 		}
 	}
@@ -224,7 +224,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 		}
 		else
 		{
-			MSG_WriteDeltaPlayerstate( msg, NULL, &frame->ps );
+			MSG_WriteDeltaPlayerstate( msg, nullptr, &frame->ps );
 		}
 	}
 

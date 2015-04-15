@@ -100,13 +100,13 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 
 	sh = R_FindShaderByName( shaderName );
 
-	if ( sh == NULL || sh == tr.defaultShader )
+	if ( sh == nullptr || sh == tr.defaultShader )
 	{
 		h = RE_RegisterShader( shaderName, RSF_DEFAULT );
 		sh = R_GetShaderByHandle( h );
 	}
 
-	if ( sh == NULL || sh == tr.defaultShader )
+	if ( sh == nullptr || sh == tr.defaultShader )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: R_RemapShader: shader %s not found\n", shaderName );
 		return;
@@ -114,13 +114,13 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 
 	sh2 = R_FindShaderByName( newShaderName );
 
-	if ( sh2 == NULL || sh2 == tr.defaultShader )
+	if ( sh2 == nullptr || sh2 == tr.defaultShader )
 	{
 		h = RE_RegisterShader( newShaderName, RSF_DEFAULT );
 		sh2 = R_GetShaderByHandle( h );
 	}
 
-	if ( sh2 == NULL || sh2 == tr.defaultShader )
+	if ( sh2 == nullptr || sh2 == tr.defaultShader )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: R_RemapShader: new shader %s not found\n", newShaderName );
 		return;
@@ -146,7 +146,7 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 			}
 			else
 			{
-				sh->remappedShader = NULL;
+				sh->remappedShader = nullptr;
 			}
 		}
 	}
@@ -295,7 +295,7 @@ const opstring_t opStrings[] =
 	{ "table",              OP_TABLE              }
 	,
 
-	{ NULL,                 OP_BAD                }
+	{ nullptr,                 OP_BAD                }
 };
 
 const char* GetOpName(opcode_t type)
@@ -458,7 +458,7 @@ static char    *ParseExpressionElement( char **data_p )
 	// multiple character punctuation tokens
 	static const char *const punctuation[] =
 	{
-		"&&", "||", "<=", ">=", "==", "!=", NULL
+		"&&", "||", "<=", ">=", "==", "!=", nullptr
 	};
 
 	if ( !data_p )
@@ -473,7 +473,7 @@ static char    *ParseExpressionElement( char **data_p )
 	// make sure incoming data is valid
 	if ( !data )
 	{
-		*data_p = NULL;
+		*data_p = nullptr;
 		return token;
 	}
 
@@ -485,7 +485,7 @@ static char    *ParseExpressionElement( char **data_p )
 		{
 			if ( !c )
 			{
-				*data_p = NULL;
+				*data_p = nullptr;
 				return token;
 			}
 			else if ( c == '\n' )
@@ -4502,7 +4502,7 @@ struct dynamicshader
 	dynamicshader_t *next;
 };
 
-static dynamicshader_t *dshader = NULL;
+static dynamicshader_t *dshader = nullptr;
 
 /*
 ====================
@@ -4548,13 +4548,13 @@ bool RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 			dptr = lastdptr;
 		}
 
-		dshader = NULL;
+		dshader = nullptr;
 		return true;
 	}
 
 	//walk list for existing shader to delete, or end of the list
 	dptr = dshader;
-	lastdptr = NULL;
+	lastdptr = nullptr;
 
 	while ( dptr )
 	{
@@ -4569,7 +4569,7 @@ bool RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 			{
 				if ( !lastdptr )
 				{
-					dshader = NULL;
+					dshader = nullptr;
 				}
 				else
 				{
@@ -4617,7 +4617,7 @@ bool RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 	}
 
 	Q_strncpyz( dptr->shadertext, shadertext, strlen( shadertext ) + 1 );
-	dptr->next = NULL;
+	dptr->next = nullptr;
 
 	if ( !dshader )
 	{
@@ -4661,7 +4661,7 @@ static char    *FindShaderInShaderText( const char *shaderName )
 	}
 
 	// if the shader is not in the table, it must not exist
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -4678,7 +4678,7 @@ shader_t       *R_FindShaderByName( const char *name )
 	int      hash;
 	shader_t *sh;
 
-	if ( ( name == NULL ) || ( name[ 0 ] == 0 ) )
+	if ( ( name == nullptr ) || ( name[ 0 ] == 0 ) )
 	{
 		// bk001205
 		return tr.defaultShader;
@@ -5057,7 +5057,7 @@ void R_ShaderList_f( void )
 	int      i;
 	int      count;
 	shader_t *shader;
-	char     *s = NULL;
+	char     *s = nullptr;
 
 	ri.Printf( PRINT_ALL, "-----------------------" );
 
@@ -5350,7 +5350,7 @@ static void ScanAndLoadShaderFiles( void )
 			{
 				ri.Printf( PRINT_WARNING, "WARNING: Bad shader file %s has incorrect syntax.\n", filename );
 				ri.FS_FreeFile( buffers[ i ] );
-				buffers[ i ] = NULL;
+				buffers[ i ] = nullptr;
 				break;
 			}
 		}

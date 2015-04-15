@@ -907,7 +907,7 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	// Cannot join a team for a while after a locking putteam.
-	t = Com_GMTime( NULL );
+	t = Com_GMTime( nullptr );
 
 	if ( team != TEAM_NONE && ( specOnly = G_admin_match_spec( ent ) ) )
 	{
@@ -1642,7 +1642,7 @@ static const struct {
 	{ "poll",         false, V_ANY,    T_NONE,    false,  false, qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO },
 	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
 	{ "spectatebots", false, V_PUBLIC, T_NONE,    false,  false, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
-	{ NULL }
+	{ nullptr }
 	// note: map votes use the reason, if given, as the layout name
 };
 
@@ -1908,7 +1908,7 @@ vote_is_disabled:
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s", QQ( N_("$1$: admin is immune\n") ), cmd ) );
-			G_AdminMessage( NULL,
+			G_AdminMessage( nullptr,
 			                va( "^7%s^3 attempted %s %s"
 			                    " on immune admin ^7%s"
 			                    " ^3for: %s",
@@ -2116,7 +2116,7 @@ vote_is_disabled:
 			trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
 			if ( Q_stricmp( arg, S_BUILTIN_LAYOUT ) &&
-			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), NULL, FS_READ ) )
+			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), nullptr, FS_READ ) )
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("callvote: "
 				                        "layout '$1$' could not be found on the server\n") ), Quote( arg ) ) );
@@ -2362,8 +2362,8 @@ bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 	float   maxHorizGrowth;
 	class_t oldClass = (class_t) ent->client->ps.stats[ STAT_CLASS ];
 
-	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
-	BG_ClassBoundingBox( pcl, toMins, toMaxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, nullptr, nullptr, nullptr );
+	BG_ClassBoundingBox( pcl, toMins, toMaxs, nullptr, nullptr, nullptr );
 
 	VectorCopy( ent->client->ps.origin, newOrigin );
 
@@ -2710,9 +2710,9 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 
 	// trace for target
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
-	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 100, forward, end );
-	trap_Trace( &trace, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	buildable = &g_entities[ trace.entityNum ];
 
 	// check if target is valid
@@ -2809,9 +2809,9 @@ void Cmd_Ignite_f( gentity_t *player )
 	gentity_t *target;
 
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
-	AngleVectors( player->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( player->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 100, forward, end );
-	trap_Trace( &trace, viewOrigin, NULL, NULL, end, player->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, player->s.number, MASK_PLAYERSOLID, 0 );
 	target = &g_entities[ trace.entityNum ];
 
 	if ( !target || target->s.eType != ET_BUILDABLE || target->buildableTeam != TEAM_ALIENS )
@@ -3510,7 +3510,7 @@ void Cmd_Build_f( gentity_t *ent )
 		itemBuildError_t reason;
 
 		BG_GetClientNormal( &ent->client->ps, normal );
-		AngleVectors( ent->client->ps.viewangles, aimDir, NULL, NULL );
+		AngleVectors( ent->client->ps.viewangles, aimDir, nullptr, nullptr );
 		ProjectPointOnPlane( forward, aimDir, normal);
 		VectorNormalize( forward );
 
@@ -4361,7 +4361,7 @@ void Cmd_Damage_f( gentity_t *ent )
 	point[ 0 ] += dx;
 	point[ 1 ] += dy;
 	point[ 2 ] += dz;
-	G_Damage( ent, NULL, NULL, NULL, point, damage,
+	G_Damage( ent, nullptr, nullptr, nullptr, point, damage,
 	          ( nonloc ? DAMAGE_NO_LOCDAMAGE : 0 ), MOD_TARGET_LASER );
 }
 
@@ -4408,11 +4408,11 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	// Trace in view direction.
 	BG_GetClientViewOrigin( &ent->client->ps, origin );
-	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( origin, 65536, forward, end );
 
 	G_UnlaggedOn( ent, origin, 65536 );
-	trap_Trace( &tr, origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr, origin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	G_UnlaggedOff( );
 
 	// Evaluate flood limit.

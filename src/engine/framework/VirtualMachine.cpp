@@ -64,7 +64,7 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 		Sys::Drop("VM: Could not make socket inheritable: %s", Sys::Win32StrError(GetLastError()));
 
 	// Inherit the stderr redirect in the child process
-	HANDLE stderrRedirectHandle = stderrRedirect ? reinterpret_cast<HANDLE>(_get_osfhandle(fileno(stderrRedirect.GetHandle()))) : NULL;
+	HANDLE stderrRedirectHandle = stderrRedirect ? reinterpret_cast<HANDLE>(_get_osfhandle(fileno(stderrRedirect.GetHandle()))) : nullptr;
 	if (stderrRedirect && !SetHandleInformation(stderrRedirectHandle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
 		Sys::Drop("VM: Could not make stderr redirect inheritable: %s", Sys::Win32StrError(GetLastError()));
 
@@ -106,7 +106,7 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 	std::wstring wcmdline = Str::UTF8To16(cmdline) + L"\0";
 
 	// Create a job object to ensure the process is terminated if the parent dies
-	HANDLE job = CreateJobObject(NULL, NULL);
+	HANDLE job = CreateJobObject(nullptr, nullptr);
 	if (!job)
 		Sys::Drop("VM: Could not create job object: %s", Sys::Win32StrError(GetLastError()));
 	JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
@@ -123,7 +123,7 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 		startupInfo.dwFlags = STARTF_USESTDHANDLES;
 	}
 	startupInfo.cb = sizeof(startupInfo);
-	if (!CreateProcessW(NULL, &wcmdline[0], NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | CREATE_NO_WINDOW, NULL, NULL, &startupInfo, &processInfo)) {
+	if (!CreateProcessW(nullptr, &wcmdline[0], nullptr, nullptr, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | CREATE_NO_WINDOW, nullptr, nullptr, &startupInfo, &processInfo)) {
 		CloseHandle(job);
 		Sys::Drop("VM: Could not create child process: %s", Sys::Win32StrError(GetLastError()));
 	}
@@ -139,7 +139,7 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 #ifndef _WIN64
 	// Attempt to reserve 1GB of address space for the NaCl sandbox
 	if (reserve_mem)
-		VirtualAllocEx(processInfo.hProcess, NULL, 1 << 30, MEM_RESERVE, PAGE_NOACCESS);
+		VirtualAllocEx(processInfo.hProcess, nullptr, 1 << 30, MEM_RESERVE, PAGE_NOACCESS);
 #endif
 
 	ResumeThread(processInfo.hThread);
@@ -202,7 +202,7 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 	}
 	close(pipefds[0]);
 	if (count) {
-		waitpid(pid, NULL, 0);
+		waitpid(pid, nullptr, 0);
 		Sys::Drop("VM: Failed to exec: %s", strerror(err));
 	}
 
@@ -292,7 +292,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 	args.push_back("--");
 	args.push_back(modulePath.c_str());
 	args.push_back(XSTRING(ROOT_SOCKET_FD));
-	args.push_back(NULL);
+	args.push_back(nullptr);
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
 
@@ -323,7 +323,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC:
 	}
 	args.push_back(module.c_str());
 	args.push_back(handleArg.c_str());
-	args.push_back(NULL);
+	args.push_back(nullptr);
 
 	Com_Printf("Loading VM module %s...\n", module.c_str());
 
@@ -488,7 +488,7 @@ void VMBase::Free()
 				Log::Warn("VM exited with non-zero exit code %d\n", WEXITSTATUS(status));
 		}
 		kill(processHandle, SIGKILL);
-		waitpid(processHandle, NULL, 0);
+		waitpid(processHandle, nullptr, 0);
 #endif
 		processHandle = Sys::INVALID_HANDLE;
 	} else {

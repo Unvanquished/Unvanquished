@@ -156,7 +156,7 @@ bool CG_AttachmentDir( attachment_t *a, vec3_t v )
 			}
 
 			cent = &cg_entities[ a->centNum ];
-			AngleVectors( cent->lerpAngles, forward, NULL, NULL );
+			AngleVectors( cent->lerpAngles, forward, nullptr, nullptr );
 			VectorCopy( forward, v );
 			break;
 

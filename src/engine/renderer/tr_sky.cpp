@@ -655,7 +655,7 @@ static void FillCloudBox( const shader_t *shader, int stage )
 			for ( s = sky_mins_subd[ 0 ] + HALF_SKY_SUBDIVISIONS; s <= sky_maxs_subd[ 0 ] + HALF_SKY_SUBDIVISIONS; s++ )
 			{
 				MakeSkyVec( ( s - HALF_SKY_SUBDIVISIONS ) / ( float ) HALF_SKY_SUBDIVISIONS,
-				            ( t - HALF_SKY_SUBDIVISIONS ) / ( float ) HALF_SKY_SUBDIVISIONS, i, NULL, s_skyPoints[ t ][ s ] );
+				            ( t - HALF_SKY_SUBDIVISIONS ) / ( float ) HALF_SKY_SUBDIVISIONS, i, nullptr, s_skyPoints[ t ][ s ] );
 
 				s_skyTexCoords[ t ][ s ][ 0 ] = s_cloudTexCoords[ i ][ t ][ s ][ 0 ];
 				s_skyTexCoords[ t ][ s ][ 1 ] = s_cloudTexCoords[ i ][ t ][ s ][ 1 ];
@@ -723,7 +723,7 @@ void R_InitSkyTexCoords( float heightCloud )
 			{
 				// compute vector from view origin to sky side integral point
 				MakeSkyVec( ( s - HALF_SKY_SUBDIVISIONS ) / ( float ) HALF_SKY_SUBDIVISIONS,
-				            ( t - HALF_SKY_SUBDIVISIONS ) / ( float ) HALF_SKY_SUBDIVISIONS, i, NULL, skyVec );
+				            ( t - HALF_SKY_SUBDIVISIONS ) / ( float ) HALF_SKY_SUBDIVISIONS, i, nullptr, skyVec );
 
 				// compute parametric value 'p' that intersects with cloud layer
 				p = ( 1.0f / ( 2 * DotProduct( skyVec, skyVec ) ) ) *
@@ -783,7 +783,7 @@ void Tess_StageIteratorSky( void )
 	}
 
 	// trebor: HACK why does this happen with cg_draw2D 0 ?
-	if ( tess.stageIteratorFunc2 == NULL )
+	if ( tess.stageIteratorFunc2 == nullptr )
 	{
 		//tess.stageIteratorFunc2 = Tess_StageIteratorGeneric;
 		ri.Error( ERR_FATAL, "tess.stageIteratorFunc == NULL" );

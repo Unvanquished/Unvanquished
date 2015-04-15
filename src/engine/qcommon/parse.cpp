@@ -246,76 +246,76 @@ define_t        *globaldefines;
 punctuation_t   Default_Punctuations[] =
 {
 	//binary operators
-	{ ">>=", P_RSHIFT_ASSIGN,    NULL },
-	{ "<<=", P_LSHIFT_ASSIGN,    NULL },
+	{ ">>=", P_RSHIFT_ASSIGN,    nullptr },
+	{ "<<=", P_LSHIFT_ASSIGN,    nullptr },
 	//
-	{ "...", P_PARMS,            NULL },
+	{ "...", P_PARMS,            nullptr },
 	//define merge operator
-	{ "##", P_PRECOMPMERGE,     NULL },
+	{ "##", P_PRECOMPMERGE,     nullptr },
 	//logic operators
-	{ "&&", P_LOGIC_AND,        NULL },
-	{ "||", P_LOGIC_OR,         NULL },
-	{ ">=", P_LOGIC_GEQ,        NULL },
-	{ "<=", P_LOGIC_LEQ,        NULL },
-	{ "==", P_LOGIC_EQ,         NULL },
-	{ "!=", P_LOGIC_UNEQ,       NULL },
+	{ "&&", P_LOGIC_AND,        nullptr },
+	{ "||", P_LOGIC_OR,         nullptr },
+	{ ">=", P_LOGIC_GEQ,        nullptr },
+	{ "<=", P_LOGIC_LEQ,        nullptr },
+	{ "==", P_LOGIC_EQ,         nullptr },
+	{ "!=", P_LOGIC_UNEQ,       nullptr },
 	//arithmatic operators
-	{ "*=", P_MUL_ASSIGN,       NULL },
-	{ "/=", P_DIV_ASSIGN,       NULL },
-	{ "%=", P_MOD_ASSIGN,       NULL },
-	{ "+=", P_ADD_ASSIGN,       NULL },
-	{ "-=", P_SUB_ASSIGN,       NULL },
-	{ "++", P_INC,              NULL },
-	{ "--", P_DEC,              NULL },
+	{ "*=", P_MUL_ASSIGN,       nullptr },
+	{ "/=", P_DIV_ASSIGN,       nullptr },
+	{ "%=", P_MOD_ASSIGN,       nullptr },
+	{ "+=", P_ADD_ASSIGN,       nullptr },
+	{ "-=", P_SUB_ASSIGN,       nullptr },
+	{ "++", P_INC,              nullptr },
+	{ "--", P_DEC,              nullptr },
 	//binary operators
-	{ "&=", P_BIN_AND_ASSIGN,   NULL },
-	{ "|=", P_BIN_OR_ASSIGN,    NULL },
-	{ "^=", P_BIN_XOR_ASSIGN,   NULL },
-	{ ">>", P_RSHIFT,           NULL },
-	{ "<<", P_LSHIFT,           NULL },
+	{ "&=", P_BIN_AND_ASSIGN,   nullptr },
+	{ "|=", P_BIN_OR_ASSIGN,    nullptr },
+	{ "^=", P_BIN_XOR_ASSIGN,   nullptr },
+	{ ">>", P_RSHIFT,           nullptr },
+	{ "<<", P_LSHIFT,           nullptr },
 	//reference operators
-	{ "->", P_POINTERREF,       NULL },
+	{ "->", P_POINTERREF,       nullptr },
 	//C++
-	{ "::", P_CPP1,             NULL },
-	{ ".*", P_CPP2,             NULL },
+	{ "::", P_CPP1,             nullptr },
+	{ ".*", P_CPP2,             nullptr },
 	//arithmatic operators
-	{ "*",  P_MUL,              NULL },
-	{ "/",  P_DIV,              NULL },
-	{ "%",  P_MOD,              NULL },
-	{ "+",  P_ADD,              NULL },
-	{ "-",  P_SUB,              NULL },
-	{ "=",  P_ASSIGN,           NULL },
+	{ "*",  P_MUL,              nullptr },
+	{ "/",  P_DIV,              nullptr },
+	{ "%",  P_MOD,              nullptr },
+	{ "+",  P_ADD,              nullptr },
+	{ "-",  P_SUB,              nullptr },
+	{ "=",  P_ASSIGN,           nullptr },
 	//binary operators
-	{ "&",  P_BIN_AND,          NULL },
-	{ "|",  P_BIN_OR,           NULL },
-	{ "^",  P_BIN_XOR,          NULL },
-	{ "~",  P_BIN_NOT,          NULL },
+	{ "&",  P_BIN_AND,          nullptr },
+	{ "|",  P_BIN_OR,           nullptr },
+	{ "^",  P_BIN_XOR,          nullptr },
+	{ "~",  P_BIN_NOT,          nullptr },
 	//logic operators
-	{ "!",  P_LOGIC_NOT,        NULL },
-	{ ">",  P_LOGIC_GREATER,    NULL },
-	{ "<",  P_LOGIC_LESS,       NULL },
+	{ "!",  P_LOGIC_NOT,        nullptr },
+	{ ">",  P_LOGIC_GREATER,    nullptr },
+	{ "<",  P_LOGIC_LESS,       nullptr },
 	//reference operator
-	{ ".",  P_REF,              NULL },
+	{ ".",  P_REF,              nullptr },
 	//separators
-	{ ",",  P_COMMA,            NULL },
-	{ ";",  P_SEMICOLON,        NULL },
+	{ ",",  P_COMMA,            nullptr },
+	{ ";",  P_SEMICOLON,        nullptr },
 	//label indication
-	{ ":",  P_COLON,            NULL },
+	{ ":",  P_COLON,            nullptr },
 	//if statement
-	{ "?",  P_QUESTIONMARK,     NULL },
+	{ "?",  P_QUESTIONMARK,     nullptr },
 	//embracements
-	{ "(",  P_PARENTHESESOPEN,  NULL },
-	{ ")",  P_PARENTHESESCLOSE, NULL },
-	{ "{",  P_BRACEOPEN,        NULL },
-	{ "}",  P_BRACECLOSE,       NULL },
-	{ "[",  P_SQBRACKETOPEN,    NULL },
-	{ "]",  P_SQBRACKETCLOSE,   NULL },
+	{ "(",  P_PARENTHESESOPEN,  nullptr },
+	{ ")",  P_PARENTHESESCLOSE, nullptr },
+	{ "{",  P_BRACEOPEN,        nullptr },
+	{ "}",  P_BRACECLOSE,       nullptr },
+	{ "[",  P_SQBRACKETOPEN,    nullptr },
+	{ "]",  P_SQBRACKETCLOSE,   nullptr },
 	//
-	{ "\\", P_BACKSLASH,        NULL },
+	{ "\\", P_BACKSLASH,        nullptr },
 	//precompiler operator
-	{ "#",  P_PRECOMP,          NULL },
-	{ "$",  P_DOLLAR,           NULL },
-	{ NULL, 0 }
+	{ "#",  P_PRECOMP,          nullptr },
+	{ "$",  P_DOLLAR,           nullptr },
+	{ nullptr, 0 }
 };
 
 /*
@@ -341,7 +341,7 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 	for ( i = 0; punctuations[ i ].p; i++ )
 	{
 		newp = &punctuations[ i ];
-		lastp = NULL;
+		lastp = nullptr;
 
 		//sort the punctuations in this table entry on length (longer punctuations first)
 		for ( p = script->punctuationtable[( unsigned int ) newp->p[ 0 ] ]; p; p = p->next )
@@ -361,7 +361,7 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 
 		if ( !p )
 		{
-			newp->next = NULL;
+			newp->next = nullptr;
 
 			if ( lastp ) { lastp->next = newp; }
 			else { script->punctuationtable[( unsigned int ) newp->p[ 0 ] ] = newp; }
@@ -1163,7 +1163,7 @@ static script_t *Parse_LoadScriptFile( const char *filename )
 
 	length = FS_FOpenFileRead( filename, &fp, false );
 
-	if ( !fp ) { return NULL; }
+	if ( !fp ) { return nullptr; }
 
 	buffer = Z_Malloc( sizeof( script_t ) + length + 1 );
 	Com_Memset( buffer, 0, sizeof( script_t ) + length + 1 );
@@ -1186,7 +1186,7 @@ static script_t *Parse_LoadScriptFile( const char *filename )
 	script->line = 1;
 	script->lastline = 1;
 	//
-	Parse_SetScriptPunctuations( script, NULL );
+	Parse_SetScriptPunctuations( script, nullptr );
 	//
 	FS_Read( script->buffer, length, fp );
 	FS_FCloseFile( fp );
@@ -1226,7 +1226,7 @@ static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char
 	script->line = 1;
 	script->lastline = 1;
 	//
-	Parse_SetScriptPunctuations( script, NULL );
+	Parse_SetScriptPunctuations( script, nullptr );
 	//
 	Com_Memcpy( script->buffer, ptr, length );
 	//
@@ -1360,12 +1360,12 @@ static token_t *Parse_CopyToken( token_t *token )
 	if ( !t )
 	{
 		Com_Error( ERR_FATAL, "out of token space" );
-		return NULL;
+		return nullptr;
 	}
 
 //  freetokens = freetokens->next;
 	Com_Memcpy( t, token, sizeof( token_t ) );
-	t->next = NULL;
+	t->next = nullptr;
 	numtokens++;
 	return t;
 }
@@ -1479,7 +1479,7 @@ static int Parse_ReadDefineParms( source_t *source, define_t *define, token_t **
 	}
 
 	//
-	for ( i = 0; i < define->numparms; i++ ) { parms[ i ] = NULL; }
+	for ( i = 0; i < define->numparms; i++ ) { parms[ i ] = nullptr; }
 
 	//if no leading "("
 	if ( strcmp( token.string, "(" ) )
@@ -1504,9 +1504,9 @@ static int Parse_ReadDefineParms( source_t *source, define_t *define, token_t **
 			return false;
 		}
 
-		parms[ numparms ] = NULL;
+		parms[ numparms ] = nullptr;
 		lastcomma = 1;
-		last = NULL;
+		last = nullptr;
 
 		while ( !done )
 		{
@@ -1556,7 +1556,7 @@ static int Parse_ReadDefineParms( source_t *source, define_t *define, token_t **
 			{
 				//
 				t = Parse_CopyToken( &token );
-				t->next = NULL;
+				t->next = nullptr;
 
 				if ( last ) { last->next = t; }
 				else { parms[ numparms ] = t; }
@@ -1581,8 +1581,8 @@ static int Parse_StringizeTokens( token_t *tokens, token_t *token )
 	token_t *t;
 
 	token->type = TT_STRING;
-	token->whitespace_p = NULL;
-	token->endwhitespace_p = NULL;
+	token->whitespace_p = nullptr;
+	token->endwhitespace_p = nullptr;
 	token->string[ 0 ] = '\0';
 	strcat( token->string, "\"" );
 
@@ -1677,7 +1677,7 @@ static define_t *Parse_FindHashedDefine( define_t **definehash, char *name )
 		if ( !strcmp( d->name, name ) ) { return d; }
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -1770,7 +1770,7 @@ static int Parse_ExpandBuiltinDefine( source_t *source, token_t *deftoken, defin
 
 		case BUILTIN_DATE:
 			{
-				t = time( NULL );
+				t = time( nullptr );
 				curtime = ctime( &t );
 				strcpy( token->string, "\"" );
 				strncat( token->string, curtime + 4, 7 );
@@ -1786,7 +1786,7 @@ static int Parse_ExpandBuiltinDefine( source_t *source, token_t *deftoken, defin
 
 		case BUILTIN_TIME:
 			{
-				t = time( NULL );
+				t = time( nullptr );
 				curtime = ctime( &t );
 				strcpy( token->string, "\"" );
 				strncat( token->string, curtime + 11, 8 );
@@ -1802,8 +1802,8 @@ static int Parse_ExpandBuiltinDefine( source_t *source, token_t *deftoken, defin
 		case BUILTIN_STDC:
 		default:
 			{
-				*firsttoken = NULL;
-				*lasttoken = NULL;
+				*firsttoken = nullptr;
+				*lasttoken = nullptr;
 				break;
 			}
 	}
@@ -1836,8 +1836,8 @@ static int Parse_ExpandDefine( source_t *source, token_t *deftoken, define_t *de
 	}
 
 	//empty list at first
-	first = NULL;
-	last = NULL;
+	first = nullptr;
+	last = nullptr;
 
 	//create a list with tokens of the expanded define
 	for ( dt = define->tokens; dt; dt = dt->next )
@@ -1857,7 +1857,7 @@ static int Parse_ExpandDefine( source_t *source, token_t *deftoken, define_t *de
 			{
 				t = Parse_CopyToken( pt );
 				//add the token to the list
-				t->next = NULL;
+				t->next = nullptr;
 
 				if ( last ) { last->next = t; }
 				else { first = t; }
@@ -1901,7 +1901,7 @@ static int Parse_ExpandDefine( source_t *source, token_t *deftoken, define_t *de
 			}
 
 			//add the token to the list
-			t->next = NULL;
+			t->next = nullptr;
 
 			if ( last ) { last->next = t; }
 			else { first = t; }
@@ -2180,8 +2180,8 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 	value_t    value_heap[ MAX_VALUES ];
 	int        numvalues = 0;
 
-	firstoperator = lastoperator = NULL;
-	firstvalue = lastvalue = NULL;
+	firstoperator = lastoperator = nullptr;
+	firstvalue = lastvalue = nullptr;
 
 	if ( intvalue ) { *intvalue = 0; }
 
@@ -2237,7 +2237,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 					}
 
 					v->parentheses = parentheses;
-					v->next = NULL;
+					v->next = nullptr;
 					v->prev = lastvalue;
 
 					if ( lastvalue ) { lastvalue->next = v; }
@@ -2287,7 +2287,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 					}
 
 					v->parentheses = parentheses;
-					v->next = NULL;
+					v->next = nullptr;
 					v->prev = lastvalue;
 
 					if ( lastvalue ) { lastvalue->next = v; }
@@ -2423,7 +2423,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 						o->op = t->subtype;
 						o->priority = Parse_OperatorPriority( t->subtype );
 						o->parentheses = parentheses;
-						o->next = NULL;
+						o->next = nullptr;
 						o->prev = lastoperator;
 
 						if ( lastoperator ) { lastoperator->next = o; }
@@ -2736,8 +2736,8 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
 		return false;
 	}
 
-	firsttoken = NULL;
-	lasttoken = NULL;
+	firsttoken = nullptr;
+	lasttoken = nullptr;
 
 	do
 	{
@@ -2748,7 +2748,7 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
 			{
 				defined = false;
 				t = Parse_CopyToken( &token );
-				t->next = NULL;
+				t->next = nullptr;
 
 				if ( lasttoken ) { lasttoken->next = t; }
 				else { firsttoken = t; }
@@ -2759,7 +2759,7 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
 			{
 				defined = true;
 				t = Parse_CopyToken( &token );
-				t->next = NULL;
+				t->next = nullptr;
 
 				if ( lasttoken ) { lasttoken->next = t; }
 				else { firsttoken = t; }
@@ -2784,7 +2784,7 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
 		else if ( token.type == TT_NUMBER || token.type == TT_PUNCTUATION )
 		{
 			t = Parse_CopyToken( &token );
-			t->next = NULL;
+			t->next = nullptr;
 
 			if ( lasttoken ) { lasttoken->next = t; }
 			else { firsttoken = t; }
@@ -2844,8 +2844,8 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 	}
 
 	indent = 1;
-	firsttoken = NULL;
-	lasttoken = NULL;
+	firsttoken = nullptr;
+	lasttoken = nullptr;
 
 	do
 	{
@@ -2856,7 +2856,7 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 			{
 				defined = false;
 				t = Parse_CopyToken( &token );
-				t->next = NULL;
+				t->next = nullptr;
 
 				if ( lasttoken ) { lasttoken->next = t; }
 				else { firsttoken = t; }
@@ -2867,7 +2867,7 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 			{
 				defined = true;
 				t = Parse_CopyToken( &token );
-				t->next = NULL;
+				t->next = nullptr;
 
 				if ( lasttoken ) { lasttoken->next = t; }
 				else { firsttoken = t; }
@@ -2910,7 +2910,7 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 			if ( indent <= 0 ) { break; }
 
 			t = Parse_CopyToken( &token );
-			t->next = NULL;
+			t->next = nullptr;
 
 			if ( lasttoken ) { lasttoken->next = t; }
 			else { firsttoken = t; }
@@ -3044,8 +3044,8 @@ Parse_ClearTokenWhiteSpace
 */
 static void Parse_ClearTokenWhiteSpace( token_t *token )
 {
-	token->whitespace_p = NULL;
-	token->endwhitespace_p = NULL;
+	token->whitespace_p = nullptr;
+	token->endwhitespace_p = nullptr;
 	token->linescrossed = 0;
 }
 
@@ -3078,7 +3078,7 @@ static int Parse_Directive_undef( source_t *source )
 
 	hash = Parse_NameHash( token.string );
 
-	for ( lastdefine = NULL, define = source->definehash[ hash ]; define; define = define->hashnext )
+	for ( lastdefine = nullptr, define = source->definehash[ hash ]; define; define = define->hashnext )
 	{
 		if ( !strcmp( define->name, token.string ) )
 		{
@@ -3121,7 +3121,7 @@ static int Parse_Directive_elif( source_t *source )
 		return false;
 	}
 
-	if ( !Parse_Evaluate( source, &value, NULL, true ) ) { return false; }
+	if ( !Parse_Evaluate( source, &value, nullptr, true ) ) { return false; }
 
 	skip = ( value == 0 );
 	Parse_PushIndent( source, INDENT_ELIF, skip );
@@ -3138,7 +3138,7 @@ static int Parse_Directive_if( source_t *source )
 	signed long int value;
 	int             skip;
 
-	if ( !Parse_Evaluate( source, &value, NULL, true ) ) { return false; }
+	if ( !Parse_Evaluate( source, &value, nullptr, true ) ) { return false; }
 
 	skip = ( value == 0 );
 	Parse_PushIndent( source, INDENT_IF, skip );
@@ -3216,7 +3216,7 @@ static int Parse_Directive_eval( source_t *source )
 	signed long int value;
 	token_t         token;
 
-	if ( !Parse_Evaluate( source, &value, NULL, true ) ) { return false; }
+	if ( !Parse_Evaluate( source, &value, nullptr, true ) ) { return false; }
 
 	//
 	token.line = source->scriptstack->line;
@@ -3243,7 +3243,7 @@ static int Parse_Directive_evalfloat( source_t *source )
 	double  value;
 	token_t token;
 
-	if ( !Parse_Evaluate( source, NULL, &value, false ) ) { return false; }
+	if ( !Parse_Evaluate( source, nullptr, &value, false ) ) { return false; }
 
 	token.line = source->scriptstack->line;
 	token.whitespace_p = source->scriptstack->script_p;
@@ -3269,7 +3269,7 @@ static int Parse_DollarDirective_evalint( source_t *source )
 	signed long int value;
 	token_t         token;
 
-	if ( !Parse_DollarEvaluate( source, &value, NULL, true ) ) { return false; }
+	if ( !Parse_DollarEvaluate( source, &value, nullptr, true ) ) { return false; }
 
 	//
 	token.line = source->scriptstack->line;
@@ -3298,7 +3298,7 @@ static int Parse_DollarDirective_evalfloat( source_t *source )
 	double  value;
 	token_t token;
 
-	if ( !Parse_DollarEvaluate( source, NULL, &value, false ) ) { return false; }
+	if ( !Parse_DollarEvaluate( source, nullptr, &value, false ) ) { return false; }
 
 	token.line = source->scriptstack->line;
 	token.whitespace_p = source->scriptstack->script_p;
@@ -3325,7 +3325,7 @@ directive_t DollarDirectives[ 20 ] =
 {
 	{ "evalint",   Parse_DollarDirective_evalint   },
 	{ "evalfloat", Parse_DollarDirective_evalfloat },
-	{ NULL,        NULL                            }
+	{ nullptr,        nullptr                            }
 };
 
 static int Parse_ReadDollarDirective( source_t *source )
@@ -3391,7 +3391,7 @@ static int Parse_Directive_if_def( source_t *source, int type )
 	}
 
 	d = Parse_FindHashedDefine( source->definehash, token.string );
-	skip = ( type == INDENT_IFDEF ) == ( d == NULL );
+	skip = ( type == INDENT_IFDEF ) == ( d == nullptr );
 	Parse_PushIndent( source, type, skip );
 	return true;
 }
@@ -3544,7 +3544,7 @@ static int Parse_Directive_define( source_t *source )
 	if ( !Parse_WhiteSpaceBeforeToken( &token ) && !strcmp( token.string, "(" ) )
 	{
 		//read the define parameters
-		last = NULL;
+		last = nullptr;
 
 		if ( !Parse_CheckTokenString( source, ")" ) )
 		{
@@ -3573,7 +3573,7 @@ static int Parse_Directive_define( source_t *source )
 				//add the define parm
 				t = Parse_CopyToken( &token );
 				Parse_ClearTokenWhiteSpace( t );
-				t->next = NULL;
+				t->next = nullptr;
 
 				if ( last ) { last->next = t; }
 				else { define->parms = t; }
@@ -3604,7 +3604,7 @@ static int Parse_Directive_define( source_t *source )
 	}
 
 	//read the defined stuff
-	last = NULL;
+	last = nullptr;
 
 	do
 	{
@@ -3617,7 +3617,7 @@ static int Parse_Directive_define( source_t *source )
 		}
 
 		Parse_ClearTokenWhiteSpace( t );
-		t->next = NULL;
+		t->next = nullptr;
 
 		if ( last ) { last->next = t; }
 		else { define->tokens = t; }
@@ -3662,7 +3662,7 @@ directive_t Directives[ 20 ] =
 	{ "pragma",    Parse_Directive_pragma    },
 	{ "eval",      Parse_Directive_eval      },
 	{ "evalfloat", Parse_Directive_evalfloat },
-	{ NULL,        NULL                      }
+	{ nullptr,        nullptr                      }
 };
 
 static int Parse_ReadDirective( source_t *source )
@@ -3993,7 +3993,7 @@ static define_t *Parse_DefineFromString( const char *string )
 		Parse_FreeToken( t );
 	}
 
-	def = NULL;
+	def = nullptr;
 
 	for ( i = 0; i < DEFINEHASHSIZE; i++ )
 	{
@@ -4016,7 +4016,7 @@ static define_t *Parse_DefineFromString( const char *string )
 	if ( src.defines ) { Parse_FreeDefine( def ); }
 
 	//
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -4050,7 +4050,7 @@ int Parse_AddGlobalDefine( const char *string )
 		return false;
 	}
 
-	prev = NULL;
+	prev = nullptr;
 
 	for ( curr = globaldefines; curr; curr = curr->next )
 	{
@@ -4101,15 +4101,15 @@ static define_t *Parse_CopyDefine( source_t *source, define_t *define )
 	newdefine->builtin = define->builtin;
 	newdefine->numparms = define->numparms;
 	//the define is not linked
-	newdefine->next = NULL;
-	newdefine->hashnext = NULL;
+	newdefine->next = nullptr;
+	newdefine->hashnext = nullptr;
 	//copy the define tokens
-	newdefine->tokens = NULL;
+	newdefine->tokens = nullptr;
 
-	for ( lasttoken = NULL, token = define->tokens; token; token = token->next )
+	for ( lasttoken = nullptr, token = define->tokens; token; token = token->next )
 	{
 		newtoken = Parse_CopyToken( token );
-		newtoken->next = NULL;
+		newtoken->next = nullptr;
 
 		if ( lasttoken ) { lasttoken->next = newtoken; }
 		else { newdefine->tokens = newtoken; }
@@ -4118,12 +4118,12 @@ static define_t *Parse_CopyDefine( source_t *source, define_t *define )
 	}
 
 	//copy the define parameters
-	newdefine->parms = NULL;
+	newdefine->parms = nullptr;
 
-	for ( lasttoken = NULL, token = define->parms; token; token = token->next )
+	for ( lasttoken = nullptr, token = define->parms; token; token = token->next )
 	{
 		newtoken = Parse_CopyToken( token );
-		newtoken->next = NULL;
+		newtoken->next = nullptr;
 
 		if ( lasttoken ) { lasttoken->next = newtoken; }
 		else { newdefine->parms = newtoken; }
@@ -4162,18 +4162,18 @@ static source_t *Parse_LoadSourceFile( const char *filename )
 
 	script = Parse_LoadScriptFile( filename );
 
-	if ( !script ) { return NULL; }
+	if ( !script ) { return nullptr; }
 
-	script->next = NULL;
+	script->next = nullptr;
 
 	source = ( source_t * ) Z_Malloc( sizeof( source_t ) );
 	Com_Memset( source, 0, sizeof( source_t ) );
 
 	Q_strncpyz( source->filename, filename, MAX_QPATH );
 	source->scriptstack = script;
-	source->tokens = NULL;
-	source->defines = NULL;
-	source->indentstack = NULL;
+	source->tokens = nullptr;
+	source->defines = nullptr;
+	source->indentstack = nullptr;
 	source->skip = 0;
 
 	source->definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
@@ -4293,7 +4293,7 @@ int Parse_FreeSourceHandle( int handle )
 	}
 
 	Parse_FreeSource( sourceFiles[ handle ] );
-	sourceFiles[ handle ] = NULL;
+	sourceFiles[ handle ] = nullptr;
 	return true;
 }
 

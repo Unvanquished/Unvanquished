@@ -299,7 +299,7 @@ worldSector_t  *G_CM_CreateworldSector( int depth, vec3_t mins, vec3_t maxs )
 	if ( depth == AREA_DEPTH )
 	{
 		anode->axis = -1;
-		anode->children[ 0 ] = anode->children[ 1 ] = NULL;
+		anode->children[ 0 ] = anode->children[ 1 ] = nullptr;
 		return anode;
 	}
 
@@ -371,7 +371,7 @@ void G_CM_UnlinkEntity( gentity_t *gEnt )
 		return; // not linked in anywhere
 	}
 
-	went->worldSector = NULL;
+	went->worldSector = nullptr;
 
 	if ( ws->entities == went )
 	{
