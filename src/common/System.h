@@ -82,7 +82,7 @@ template<typename ... Args> void Error(Str::StringRef format, Args&& ... args)
 {
 	Error(Str::Format(format, std::forward<Args>(args)...));
 }
-template<typename ... Args> void Drop(Str::StringRef format, Args&& ... args)
+template<typename ... Args> NORETURN void Drop(Str::StringRef format, Args&& ... args)
 {
 	Drop(Str::Format(format, std::forward<Args>(args)...));
 }
